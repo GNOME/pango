@@ -243,8 +243,8 @@ apply_gpos_ltr (PangoGlyphString    *glyphs,
 
   for (i = 0; i < glyphs->num_glyphs; i++)
     {
-      FT_Pos x_pos = positions[i].x_pos;
-      FT_Pos y_pos = positions[i].y_pos;
+      FT_Pos x_offset = positions[i].x_offset;
+      FT_Pos y_offset = positions[i].y_offset;
       int back = i;
       int j;
       int adjustment;
@@ -264,15 +264,15 @@ apply_gpos_ltr (PangoGlyphString    *glyphs,
       while (positions[back].back != 0)
 	{
 	  back  -= positions[back].back;
-	  x_pos += positions[back].x_pos;
-	  y_pos += positions[back].y_pos;
+	  x_offset += positions[back].x_offset;
+	  y_offset += positions[back].y_offset;
 	}
 
       for (j = back; j < i; j++)
 	glyphs->glyphs[i].geometry.x_offset -= glyphs->glyphs[j].geometry.width;
 
-      glyphs->glyphs[i].geometry.x_offset += PANGO_UNITS_26_6(x_pos);
-      glyphs->glyphs[i].geometry.y_offset -= PANGO_UNITS_26_6(y_pos);
+      glyphs->glyphs[i].geometry.x_offset += PANGO_UNITS_26_6(x_offset);
+      glyphs->glyphs[i].geometry.y_offset -= PANGO_UNITS_26_6(y_offset);
     }
 }
 
@@ -288,8 +288,8 @@ apply_gpos_rtl (PangoGlyphString    *glyphs,
       int i_rev = glyphs->num_glyphs - i - 1;
       int back_rev = i_rev;
       int back;
-      FT_Pos x_pos = positions[i_rev].x_pos;
-      FT_Pos y_pos = positions[i_rev].y_pos;
+      FT_Pos x_offset = positions[i_rev].x_offset;
+      FT_Pos y_offset = positions[i_rev].y_offset;
       int j;
       int adjustment;
 
@@ -308,8 +308,8 @@ apply_gpos_rtl (PangoGlyphString    *glyphs,
       while (positions[back_rev].back != 0)
 	{
 	  back_rev -= positions[back_rev].back;
-	  x_pos += positions[back_rev].x_pos;
-	  y_pos += positions[back_rev].y_pos;
+	  x_offset += positions[back_rev].x_offset;
+	  y_offset += positions[back_rev].y_offset;
 	}
 
       back = glyphs->num_glyphs - back_rev - 1;
@@ -317,8 +317,8 @@ apply_gpos_rtl (PangoGlyphString    *glyphs,
       for (j = i; j < back; j++)
 	glyphs->glyphs[i].geometry.x_offset += glyphs->glyphs[j].geometry.width;
 
-      glyphs->glyphs[i].geometry.x_offset += PANGO_UNITS_26_6(x_pos);
-      glyphs->glyphs[i].geometry.y_offset -= PANGO_UNITS_26_6(y_pos);
+      glyphs->glyphs[i].geometry.x_offset += PANGO_UNITS_26_6(x_offset);
+      glyphs->glyphs[i].geometry.y_offset -= PANGO_UNITS_26_6(y_offset);
     }
 }
 

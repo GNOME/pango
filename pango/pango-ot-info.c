@@ -619,7 +619,7 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
       for (j = 0; j < len; j++)
       {
 	if (positions[j].cursive_chain > 0)
-	  positions[j].y_pos += positions[j - positions[j].cursive_chain].y_pos;
+	  positions[j].y_offset += positions[j - positions[j].cursive_chain].y_offset;
       }
 
       /* Then handle all right-to-left connections */
@@ -628,7 +628,7 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 	j = i - 1;
 
 	if (positions[j].cursive_chain < 0)
-	  positions[j].y_pos += positions[j - positions[j].cursive_chain].y_pos;
+	  positions[j].y_offset += positions[j - positions[j].cursive_chain].y_offset;
       }
     }
 
