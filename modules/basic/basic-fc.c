@@ -167,8 +167,9 @@ static hb_position_t
 pango_fc_hb_font_get_kerning (hb_font_t *font, hb_face_t *face, const void *user_data,
 			      hb_codepoint_t first_glyph, hb_codepoint_t second_glyph)
 {
-  PangoFcFont *fc_font = (PangoFcFont *) user_data;
 #if 0
+  PangoFcFont *fc_font = (PangoFcFont *) user_data;
+
   FT_Face ft_face = (FT_Face) user_data;
   FT_Vector kerning;
 
@@ -255,7 +256,7 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
   hb_shape (hb_font, hb_face, hb_buffer, NULL, 0);
 
   /* buffer output */
-  num_glyphs = hb_buffer_get_len (hb_buffer);
+  num_glyphs = hb_buffer_get_length (hb_buffer);
   hb_glyph = hb_buffer_get_glyph_infos (hb_buffer);
   hb_position = hb_buffer_get_glyph_positions (hb_buffer);
   pango_glyph_string_set_size (glyphs, num_glyphs);

@@ -211,7 +211,7 @@ pango_ot_buffer_get_glyphs (const PangoOTBuffer  *buffer,
     *glyphs = (PangoOTGlyph *) hb_buffer_get_glyph_infos (buffer->buffer);
 
   if (n_glyphs)
-    *n_glyphs = hb_buffer_get_len (buffer->buffer);
+    *n_glyphs = hb_buffer_get_length (buffer->buffer);
 }
 
 static void
