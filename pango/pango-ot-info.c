@@ -121,7 +121,7 @@ pango_ot_info_get (FT_Face face)
       info->hb_face = hb_ft_face_create (face, NULL);
 
       /* XXX this is such a waste if not SFNT */
-      if (!hb_ot_layout_has_font_glyph_classes (info->hb_face))
+      if (!hb_ot_layout_has_glyph_classes (info->hb_face))
 	synthesize_class_def (info);
     }
 
@@ -589,7 +589,7 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 					       lookup_indexes);
 
       for (j = 0; j < lookup_count; j++)
-	hb_ot_layout_position_lookup (info->hb_face, hb_font,
+	hb_ot_layout_position_lookup (hb_font, info->hb_face,
 				      buffer->buffer,
 				      lookup_indexes[j],
 				      rule->property_bit);
@@ -598,7 +598,7 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
     }
 
   if (buffer->applied_gpos)
-    hb_ot_layout_position_finish (info->hb_face, hb_font, buffer->buffer);
+    hb_ot_layout_position_finish (hb_font, info->hb_face, buffer->buffer);
 
   hb_font_destroy (hb_font);
 }
