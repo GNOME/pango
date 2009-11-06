@@ -528,11 +528,11 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 			    const PangoOTRuleset *ruleset,
 			    PangoOTBuffer        *buffer)
 {
-  unsigned int i;
+  unsigned int i, num_glyphs;
   gboolean is_hinted;
   hb_font_t *hb_font;
-
-  hb_buffer_clear_positions (buffer->buffer);
+  hb_glyph_info_t *hb_glyph;
+  hb_glyph_position_t *hb_position;
 
   /* XXX reuse hb_font */
   hb_font = hb_font_create ();
@@ -543,6 +543,31 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
   hb_font_set_ppem (hb_font,
 		    is_hinted ? info->face->size->metrics.x_ppem : 0,
 		    is_hinted ? info->face->size->metrics.y_ppem : 0);
+
+
+  /* Apply default positioning */
+  num_glyphs = hb_buffer_get_length (buffer->buffer);
+  hb_glyph = hb_buffer_get_glyph_infos (buffer->buffer);
+  hb_position = hb_buffer_get_glyph_positions (buffer->buffer);
+
+  hb_buffer_clear_positions (buffer->buffer);
+  for (i = 0; i < num_glyphs; i++)
+    {
+      if (hb_glyph->codepoint &&
+	  (!buffer->zero_width_marks ||
+	   hb_ot_layout_get_glyph_class (info->hb_face, hb_glyph->codepoint) != HB_OT_LAYOUT_GLYPH_CLASS_MARK))
+	{
+	  PangoRectangle logical_rect;
+	  pango_font_get_glyph_extents ((PangoFont *) buffer->font, hb_glyph->codepoint, NULL, &logical_rect);
+	  hb_position->x_advance = PANGO_UNITS_TO_26_6 (logical_rect.width);
+	}
+      else
+	hb_position->x_advance = 0;
+
+      hb_glyph++;
+      hb_position++;
+    }
+
 
   for (i = 0; i < ruleset->rules->len; i++)
     {
@@ -572,28 +597,8 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
       buffer->applied_gpos = TRUE;
     }
 
-    if (buffer->applied_gpos)
-    {
-      unsigned int i, j;
-      unsigned int len = hb_buffer_get_len (buffer->buffer);
-      hb_glyph_position_t *positions = hb_buffer_get_glyph_positions (buffer->buffer);
-
-      /* First handle all left-to-right connections */
-      for (j = 0; j < len; j++)
-      {
-	if (positions[j].cursive_chain > 0)
-	  positions[j].y_offset += positions[j - positions[j].cursive_chain].y_offset;
-      }
-
-      /* Then handle all right-to-left connections */
-      for (i = len; i > 0; i--)
-      {
-	j = i - 1;
-
-	if (positions[j].cursive_chain < 0)
-	  positions[j].y_offset += positions[j - positions[j].cursive_chain].y_offset;
-      }
-    }
+  if (buffer->applied_gpos)
+    hb_ot_layout_position_finish (info->hb_face, hb_font, buffer->buffer);
 
   hb_font_destroy (hb_font);
 }

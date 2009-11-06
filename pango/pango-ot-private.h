@@ -29,6 +29,8 @@
 #include <hb-ft.h>
 #include <hb-glib.h>
 
+#include "pangofc-private.h"
+
 G_BEGIN_DECLS
 
 typedef struct _PangoOTInfoClass PangoOTInfoClass;
