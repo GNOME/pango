@@ -132,7 +132,7 @@ pangoinclude_HEADERS =	   \
 
 pango-enum-types.h: s-enum-types-h
 	$(AM_V_GEN) true
-s-enum-types-h: @REBUILD@ $(pango_headers) Makefile
+s-enum-types-h: $(pango_headers) Makefile
 	$(AM_V_GEN) ( cd $(srcdir) && $(GLIB_MKENUMS) \
 			--fhead "#ifndef __PANGO_ENUM_TYPES_H__\n#define __PANGO_ENUM_TYPES_H__\n\n#include <glib-object.h>\n\nG_BEGIN_DECLS\n" \
 			--fprod "/* enumerations from \"@filename@\" */\n" \
@@ -145,7 +145,7 @@ s-enum-types-h: @REBUILD@ $(pango_headers) Makefile
 
 pango-enum-types.c: s-enum-types-c
 	$(AM_V_GEN) true
-s-enum-types-c: @REBUILD@ $(pango_headers) Makefile
+s-enum-types-c: $(pango_headers) Makefile
 	$(AM_V_GEN) ( cd $(srcdir) && $(GLIB_MKENUMS) \
 			--fhead "#include <pango.h>" \
 			--fprod "\n/* enumerations from \"@filename@\" */" \
