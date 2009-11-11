@@ -86,7 +86,7 @@ endif
 
 MAINTAINERCLEANFILES = pango-view.1.in
 EXTRA_DIST += pango-view.1.in
-CLEANFILES += pango-view
+CLEANFILES += pango-view.1
 
 nodist_man_MANS = pango-view.1
 
