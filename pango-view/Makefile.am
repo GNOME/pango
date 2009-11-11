@@ -84,27 +84,25 @@ endif
 
 #########################################################
 
-MAINTAINERCLEANFILES = pango-view.1 pango-view.stamp
-EXTRA_DIST += pango-view.stamp
+MAINTAINERCLEANFILES = pango-view.1.in
+EXTRA_DIST += pango-view.1.in
+CLEANFILES += pango-view
 
-dist_man_MANS = pango-view.1
+nodist_man_MANS = pango-view.1
 
-# The indirection through pango-view.stamp is to make parallel build work.
+# The indirection through pango-view.1.in is to make parallel build work.
 # See bug 587768.
-pango-view.stamp: ../configure.in $(pango_view_SOURCES)
-	$(AM_V_GEN) X="$(srcdir)/pango-view.1"; \
-	$(top_builddir)/missing --run \
+$(srcdir)/pango-view.1.in: ../configure.in $(pango_view_SOURCES)
+	$(AM_V_GEN) $(top_builddir)/missing --run \
 	   help2man --no-info --section=1 \
-		    --help-option="--help-all" --output="$$X.tmp" \
+		    --help-option="--help-all" --output="$@.tmp" \
 		    --name 'Pango text viewer' ./pango-view \
-	 && mv "$$X.tmp" "$$X" && touch $@ \
+	 && mv "$@.tmp" "$@" \
 	  || (echo Failed to update pango-view.1, the man page may be outdated >&2; \
-	      (test -f "$$X" || echo help2man is required to generate this file. >> "$$X"));
-$(srcdir)/pango-view.1: pango-view$(EXEEXT) pango-view.stamp
-	$(AM_V_GEN) if test -f $@; then touch $@; else \
-		$(RM) pango-view.stamp; \
-		$(MAKE) $(AM_MAKEFLAGS) pango-view.stamp; \
-	fi
+	      (test -f "$@" || echo help2man is required to generate this file. >> "$@"));
+pango-view.1: pango-view$(EXEEXT)
+	$(AM_V_GEN) $(MAKE) $(AM_MAKEFLAGS) pango-view.1.in && \
+	cp $(srcdir)/pango-view.1.in $@
 
 #########################################################
 
