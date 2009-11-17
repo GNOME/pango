@@ -659,5 +659,3 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 	}
     }
 }
-
-

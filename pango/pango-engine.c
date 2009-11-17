@@ -140,6 +140,9 @@ fallback_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 
       p = g_utf8_next_char (p);
     }
+
+  if (analysis->level & 1)
+    pango_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
 }
 
 static PangoCoverageLevel
