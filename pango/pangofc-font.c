@@ -807,6 +807,9 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
   FT_Vector kerning;
   int i;
   gboolean hinting = font->is_hinted;
+  gboolean scale = FALSE;
+  double xscale = 1;
+  PangoFcFontKey *key;
 
   g_return_if_fail (PANGO_IS_FC_FONT (font));
   g_return_if_fail (glyphs != NULL);
@@ -821,6 +824,20 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
       return;
     }
 
+  /* This is a kludge, and dupped in pango_ot_buffer_output().
+   * Should move the scale factor to PangoFcFont layer. */
+  key = _pango_fc_font_get_font_key (font);
+  if (key) {
+    const PangoMatrix *matrix = pango_fc_font_key_get_matrix (key);
+    PangoMatrix identity = PANGO_MATRIX_INIT;
+    if (G_UNLIKELY (matrix && 0 != memcmp (&identity, matrix, 2 * sizeof (double))))
+      {
+	scale = TRUE;
+	pango_matrix_get_font_scale_factors (matrix, &xscale, NULL);
+	if (xscale) xscale = 1 / xscale;
+      }
+  }
+
   for (i = 1; i < glyphs->num_glyphs; ++i)
     {
       error = FT_Get_Kerning (face,
@@ -834,6 +851,8 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
 
 	if (hinting)
 	  adjustment = PANGO_UNITS_ROUND (adjustment);
+	if (G_UNLIKELY (scale))
+	  adjustment *= xscale;
 
 	glyphs->glyphs[i-1].geometry.width += adjustment;
       }
