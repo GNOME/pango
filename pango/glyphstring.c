@@ -347,7 +347,7 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
 		     NULL}};
   PangoGlyphItem glyph_item = {&item, glyphs};
 
-  return pango_glyph_item_get_logical_widths (&glyph_item, text, logical_widths);
+  pango_glyph_item_get_logical_widths (&glyph_item, text, logical_widths);
 }
 
 /* The initial implementation here is script independent,
