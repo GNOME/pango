@@ -134,7 +134,7 @@ pango_cairo_atsui_font_create_metrics_for_context (PangoCairoFont *font,
   metrics = pango_font_metrics_new ();
 
   metrics->ascent = CTFontGetAscent(ct_font) * PANGO_SCALE;
-  metrics->descent = -CTFontGetDescent(ct_font) * PANGO_SCALE;
+  metrics->descent = CTFontGetDescent(ct_font) * PANGO_SCALE;
 
   metrics->underline_position = CTFontGetUnderlinePosition(ct_font) * PANGO_SCALE;
   metrics->underline_thickness = CTFontGetUnderlineThickness(ct_font) * PANGO_SCALE;
