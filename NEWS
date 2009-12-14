@@ -1,3 +1,12 @@
+Overview of changes between 1.26.1 and 1.26.2
+=============================================
+- Fix non-standard C++ usage
+- Fix OpenType mark ligation
+- Bugs fixed:
+    Bug 602823 - void function cannot return value
+    Bug 602660 - [HB] don't use flexible arrays
+    Bug 602408 - Invalid C++ code breaks compile with Sun C++ Compiler
+
 Overview of changes between 1.26.0 and 1.26.1
 =============================================
 - Finally fix GPOS positioning and kerning with non-identity cairo matrices
