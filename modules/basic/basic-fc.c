@@ -33,6 +33,10 @@
 #include <hb-ft.h>
 #include <hb-glib.h>
 
+#define PANGO_SCALE_26_6 (PANGO_SCALE / (1<<6))
+#define PANGO_UNITS_26_6(d)    ((d) * PANGO_SCALE_26_6)
+
+
 /* No extra fields needed */
 typedef PangoEngineShape      BasicEngineFc;
 typedef PangoEngineShapeClass BasicEngineFcClass;
@@ -103,12 +107,17 @@ release_buffer (hb_buffer_t *buffer, gboolean free_buffer)
     hb_buffer_destroy (buffer);
 }
 
+typedef struct _PangoFcHbContext {
+  FT_Face ft_face;
+  PangoFcFont *fc_font;
+} PangoFcHbContext;
 
 static hb_codepoint_t
 pango_fc_hb_font_get_glyph (hb_font_t *font, hb_face_t *face, const void *user_data,
 			    hb_codepoint_t unicode, hb_codepoint_t variation_selector)
 {
-  PangoFcFont *fc_font = (PangoFcFont *) user_data;
+  PangoFcHbContext *context = (PangoFcHbContext *) user_data;
+  PangoFcFont *fc_font = context->fc_font;
   PangoGlyph glyph;
 
   glyph = pango_fc_font_get_glyph (fc_font, unicode);
@@ -150,7 +159,8 @@ static void
 pango_fc_hb_font_get_glyph_metrics (hb_font_t *font, hb_face_t *face, const void *user_data,
 				    hb_codepoint_t glyph, hb_glyph_metrics_t *metrics)
 {
-  PangoFcFont *fc_font = (PangoFcFont *) user_data;
+  PangoFcHbContext *context = (PangoFcHbContext *) user_data;
+  PangoFcFont *fc_font = context->fc_font;
   PangoRectangle ink, logical;
 
   pango_font_get_glyph_extents ((PangoFont *) fc_font, glyph, &ink, &logical);
@@ -167,19 +177,15 @@ static hb_position_t
 pango_fc_hb_font_get_kerning (hb_font_t *font, hb_face_t *face, const void *user_data,
 			      hb_codepoint_t first_glyph, hb_codepoint_t second_glyph)
 {
-#if 0
-  PangoFcFont *fc_font = (PangoFcFont *) user_data;
-
-  FT_Face ft_face = (FT_Face) user_data;
+  PangoFcHbContext *context = (PangoFcHbContext *) user_data;
+  FT_Face ft_face = context->ft_face;
   FT_Vector kerning;
 
   /* TODO: Kern type? */
   if (FT_Get_Kerning (ft_face, first_glyph, second_glyph, FT_KERNING_DEFAULT, &kerning))
       return 0;
 
-  return kerning.x;
-#endif
-  return 0;
+  return PANGO_UNITS_26_6 (kerning.x);
 }
 
 static hb_font_funcs_t *
@@ -209,6 +215,7 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 		    const PangoAnalysis *analysis,
 		    PangoGlyphString *glyphs)
 {
+  PangoFcHbContext context;
   PangoFcFont *fc_font;
   FT_Face ft_face;
   hb_face_t *hb_face;
@@ -232,12 +239,14 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
     return;
   hb_face = hb_ft_face_create_cached (ft_face);
 
-  /* TODO: Cache hb_font */
+  /* TODO: Cache hb_font? */
+  context.ft_face = ft_face;
+  context.fc_font = fc_font;
   hb_font = hb_font_create ();
   hb_font_set_funcs (hb_font,
 		     pango_fc_get_hb_font_funcs (),
 		     NULL,
-		     fc_font);
+		     &context);
   hb_font_set_scale (hb_font,
 		     /* XXX CTM */
 		     ft_face->size->metrics.x_scale,
