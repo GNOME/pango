@@ -239,6 +239,7 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 		     NULL,
 		     fc_font);
   hb_font_set_scale (hb_font,
+		     /* XXX CTM */
 		     ft_face->size->metrics.x_scale,
 		     ft_face->size->metrics.y_scale);
   is_hinted = fc_font->is_hinted;
@@ -277,6 +278,7 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
     }
 
   release_buffer (hb_buffer, free_buffer);
+  hb_font_destroy (hb_font);
   hb_face_destroy (hb_face);
   pango_fc_font_unlock_face (fc_font);
 }
