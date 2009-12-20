@@ -249,8 +249,8 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 		     &context);
   hb_font_set_scale (hb_font,
 		     /* XXX CTM */
-		     ft_face->size->metrics.x_scale,
-		     ft_face->size->metrics.y_scale);
+		     PANGO_UNITS_26_6 (ft_face->size->metrics.x_scale),
+		     PANGO_UNITS_26_6 (ft_face->size->metrics.y_scale));
   is_hinted = fc_font->is_hinted;
   hb_font_set_ppem (hb_font,
 		    is_hinted ? ft_face->size->metrics.x_ppem : 0,
