@@ -95,6 +95,8 @@ void                  _pango_atsui_font_set_context_key      (PangoATSUIFont    
                                                               gpointer           context_key);
 void                  _pango_atsui_font_set_cgfont           (PangoATSUIFont    *font,
                                                               CGFontRef         font_id);
+void                  _pango_atsui_font_set_atsfont          (PangoATSUIFont    *font,
+                                                              ATSFontRef        font_ref);
 
 G_END_DECLS
 
