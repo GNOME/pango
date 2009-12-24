@@ -220,7 +220,7 @@ pango_atsui_font_get_cgfont (PangoATSUIFont *font)
  *
  * Return value: the ATSFontRef associated to @font.
  *
- * Since: 1.27
+ * Since: 1.28
  */
 ATSFontRef
 pango_atsui_font_get_atsfont (PangoATSUIFont *font)
