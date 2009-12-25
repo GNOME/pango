@@ -4853,7 +4853,6 @@ zero_line_final_space (PangoLayoutLine *line,
   PangoItem *item = run->item;
   PangoGlyphString *glyphs = run->glyphs;
   int glyph = item->analysis.level % 2 ? 0 : glyphs->num_glyphs - 1;
-  const char *p;
 
   /* if the final char of line forms a cluster, and it's
    * a whitespace char, zero its glyph's width as it's been wrapped
@@ -4863,8 +4862,8 @@ zero_line_final_space (PangoLayoutLine *line,
       !layout->log_attrs[state->start_offset - 1].is_white)
     return;
 
-  p = g_utf8_prev_char (layout->text + item->offset + item->length);
-  if (p != layout->text + item->offset + glyphs->log_clusters[glyph])
+  if (glyphs->num_glyphs >= 2 &&
+      glyphs->log_clusters[glyph] == glyphs->log_clusters[glyph + (item->analysis.level % 2 ? 1 : -1)])
     return;
 
   state->remaining_width += glyphs->glyphs[glyph].geometry.width;
