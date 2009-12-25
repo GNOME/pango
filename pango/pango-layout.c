@@ -3352,17 +3352,11 @@ process_item (PangoLayout     *layout,
 	      length = g_utf8_offset_to_pointer (layout->text + item->offset, break_num_chars) - (layout->text + item->offset);
 
 	      new_item = pango_item_split (item, length, break_num_chars);
-	      
-	      /* reshaping may slightly change the item width.  update
-	       * remaining_width if we are justifying */
 
+	      /* Add the width back, to the line, reshape, subtract the new width */
 	      state->remaining_width += break_width;
-
 	      insert_run (line, state, new_item, FALSE);
-
-	      if (layout->justify)
-		break_width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
-
+	      break_width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
 	      state->remaining_width -= break_width;
 
 	      state->log_widths_offset += break_num_chars;
