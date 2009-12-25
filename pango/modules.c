@@ -100,6 +100,22 @@ static void init_modules (void);
 
 static GType pango_module_get_type (void);
 
+/* If a module cannot be used, or does not create an engine
+ * correctly, we print out an error containing module name and id,
+ * but to not flood the terminal with zillions of the message, we
+ * set a flag on the module to only err once per module.
+ */
+static GQuark
+get_warned_quark (void)
+{
+  static GQuark warned_quark = 0;
+
+  if (G_UNLIKELY (!warned_quark))
+    warned_quark = g_quark_from_static_string ("pango-module-warned");
+
+  return warned_quark;
+}
+
 /**
  * pango_find_map:
  * @language: the language tag for which to find the map
@@ -172,7 +188,13 @@ pango_module_load (GTypeModule *module)
       pango_module->library = g_module_open (pango_module->path, G_MODULE_BIND_LOCAL);
       if (!pango_module->library)
 	{
-	  g_warning ("%s", g_module_error());
+	  GQuark warned_quark = get_warned_quark ();
+	  if (!g_object_get_qdata (G_OBJECT (pango_module), warned_quark))
+	    {
+	      g_warning ("%s", g_module_error());
+	      g_object_set_qdata_full (G_OBJECT (pango_module), warned_quark,
+				       GINT_TO_POINTER (1), NULL);
+	    }
 	  return FALSE;
 	}
 
@@ -186,7 +208,14 @@ pango_module_load (GTypeModule *module)
 	  !g_module_symbol (pango_module->library, "script_engine_create",
 			    (gpointer *)(void *)&pango_module->create))
 	{
-	  g_warning ("%s", g_module_error());
+	  GQuark warned_quark = get_warned_quark ();
+	  if (!g_object_get_qdata (G_OBJECT (pango_module), warned_quark))
+	    {
+	      g_warning ("%s", g_module_error());
+	      g_object_set_qdata_full (G_OBJECT (pango_module), warned_quark,
+				       GINT_TO_POINTER (1), NULL);
+	    }
+
 	  g_module_close (pango_module->library);
 
 	  return FALSE;
@@ -263,16 +292,7 @@ pango_engine_pair_get_engine (PangoEnginePair *pair)
 
       if (!pair->engine)
 	{
-	  /* If a module cannot be used, or doesn't not create an engine
-	   * correctly, we print out an error containing module name and id,
-	   * but to not flood the terminal with zillions of the message, we
-	   * set a flag on the module to only err once per module.
-	   */
-	  static GQuark warned_quark = 0;
-
-	  if (!warned_quark)
-	    warned_quark = g_quark_from_static_string ("pango-module-warned");
-
+	  GQuark warned_quark = get_warned_quark ();
 	  if (!g_object_get_qdata (G_OBJECT (pair->module), warned_quark))
 	    {
 	      g_warning ("Failed to load Pango module '%s' for id '%s'", pair->module->path, pair->info.id);
