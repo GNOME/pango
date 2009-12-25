@@ -3307,6 +3307,16 @@ process_item (PangoLayout     *layout,
 	  width += state->log_widths[state->log_widths_offset + num_chars];
 	}
 
+      /* If there's a space at the end of the line, include that also.
+       * The logic here should match zero_line_final_space().
+       * XXX Currently it doesn't quite match the logic there.  We don't check
+       * the cluster here.  But should be fine in practice. */
+      if (break_num_chars > 0 && break_num_chars < item->num_chars &&
+	  layout->log_attrs[state->start_offset + break_num_chars - 1].is_white)
+      {
+	  break_width -= state->log_widths[state->log_widths_offset + break_num_chars - 1];
+      }
+
       if (layout->wrap == PANGO_WRAP_WORD_CHAR && force_fit && break_width > state->remaining_width && !retrying_with_char_breaks)
 	{
 	  retrying_with_char_breaks = TRUE;
