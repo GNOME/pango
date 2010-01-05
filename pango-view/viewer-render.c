@@ -34,6 +34,7 @@
 
 gboolean opt_display = TRUE;
 int opt_dpi = 96;
+gboolean opt_pixels = FALSE;
 const char *opt_font = "";
 gboolean opt_header = FALSE;
 const char *opt_output = NULL;
@@ -622,7 +623,7 @@ parse_backend (const char *name G_GNUC_UNUSED,
 }
 
 
-static gboolean
+static G_GNUC_NORETURN gboolean
 show_version(const char *name G_GNUC_UNUSED,
 	     const char *arg G_GNUC_UNUSED,
 	     gpointer    data G_GNUC_UNUSED,
@@ -687,6 +688,8 @@ parse_options (int argc, char *argv[])
      "Save rendered image to output file",			      "file"},
     {"pangorc",		0, 0, G_OPTION_ARG_STRING,			&opt_pangorc,
      "pangorc file to use (default is ./pangorc)",		      "file"},
+    {"pixels",		0, 0, G_OPTION_ARG_NONE,			&opt_pixels,
+     "Use pixel units instead of points (sets dpi to 72)",		NULL},
     {"rtl",		0, 0, G_OPTION_ARG_NONE,			&opt_rtl,
      "Set base direction to right-to-left",				NULL},
     {"rotate",		0, 0, G_OPTION_ARG_DOUBLE,			&opt_rotate,
@@ -735,6 +738,9 @@ parse_options (int argc, char *argv[])
   g_option_context_free(context);
   g_free(backend_options);
   g_free(backend_desc);
+
+  if (opt_pixels)
+    opt_dpi = 72;
 
   if ((opt_text && argc != 1) || (!opt_text && argc != 2))
     {
