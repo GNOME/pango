@@ -28,9 +28,6 @@ m4_define([pango_version],
           [pango_version_major.pango_version_minor.pango_version_micro])
 dnl The X.Y in -lpango-X.Y line. This is expected to stay 1.0 until Pango 2.
 m4_define([pango_api_version], [1.0])
-dnl Number of releases since we've added interfaces
-dnl XXX For 1.25 release simply remove it and make it automatic.
-m4_define([pango_interface_age], [0])
 m4_if(m4_eval(pango_version_minor % 2), [1],
       [
 	dnl for unstable releases
