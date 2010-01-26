@@ -301,8 +301,7 @@ synthesize_class_def (PangoOTInfo *info)
 
   g_array_free (glyph_infos, TRUE);
 
-  hb_ot_layout_build_glyph_classes (info->hb_face, info->face->num_glyphs,
-				    glyph_indices, classes, j);
+  hb_ot_layout_build_glyph_classes (info->hb_face, glyph_indices, classes, j);
 
   g_free (glyph_indices);
   g_free (classes);
