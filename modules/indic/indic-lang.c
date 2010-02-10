@@ -23,6 +23,10 @@
 #include "config.h"
 #include <string.h>
 
+#ifndef PANGO_MODULE_PREFIX
+#define PANGO_MODULE_PREFIX _pango_indic_lang
+#endif
+
 #include "pango-engine.h"
 #include "pango-break.h"
 

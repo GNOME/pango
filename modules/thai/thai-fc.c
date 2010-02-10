@@ -32,6 +32,11 @@
 
 #include <glib.h>
 #include "pango-ot.h"
+
+#ifndef PANGO_MODULE_PREFIX
+#define PANGO_MODULE_PREFIX _pango_thai_fc
+#endif
+
 #include "pango-engine.h"
 #include "pangofc-font.h"
 

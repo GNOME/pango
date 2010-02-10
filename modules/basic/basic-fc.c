@@ -26,6 +26,11 @@
 #include <string.h>
 
 #include <glib/gprintf.h>
+
+#ifndef PANGO_MODULE_PREFIX
+#define PANGO_MODULE_PREFIX _pango_basic_fc
+#endif
+
 #include "pango-engine.h"
 #include "pango-utils.h"
 #include "pangofc-font.h"

@@ -27,6 +27,10 @@
 
 #include "arabic-ot.h"
 
+#ifndef PANGO_MODULE_PREFIX
+#define PANGO_MODULE_PREFIX _pango_arabic_fc
+#endif
+
 #include "pango-engine.h"
 #include "pango-utils.h"
 #include "pangofc-font.h"

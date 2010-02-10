@@ -758,9 +758,9 @@ for module in $included_modules; do
   module_c=`echo $module | sed s/-/_/`
   cat >> pango/module-defs.h <<EOTEXT
 extern void         _pango_${module_c}_script_engine_list (PangoEngineInfo **engines, int *n_engines);
-extern PangoEngine *_pango_${module_c}_script_engine_init (GTypeModule *module);
+extern void         _pango_${module_c}_script_engine_init (GTypeModule *module);
 extern void         _pango_${module_c}_script_engine_exit (void);
-extern void         _pango_${module_c}_script_engine_create (const char *id);
+extern PangoEngine *_pango_${module_c}_script_engine_create (const char *id);
 
 EOTEXT
 done 
@@ -963,6 +963,7 @@ pango/opentype/Makefile
 pango/pango.rc
 pango/pangoft2.rc
 pango/pangowin32.rc
+pango/pangocairo.rc
 pango/pangox.rc
 pango/pangoxft.rc
 pango-view/Makefile
@@ -981,6 +982,9 @@ docs/Makefile
 docs/version.xml
 tools/Makefile
 tests/Makefile
+build/Makefile
+build/win32/Makefile
+build/win32/vs9/Makefile
 pango.pc
 pangox.pc
 pangowin32.pc
@@ -994,6 +998,7 @@ pangoft2-uninstalled.pc
 pangoxft-uninstalled.pc
 pangocairo-uninstalled.pc
 pango-zip.sh
+config.h.win32
 ])
 
 AC_CONFIG_FILES([tests/runtests.sh],

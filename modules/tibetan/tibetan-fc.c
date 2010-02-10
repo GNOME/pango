@@ -67,6 +67,10 @@
 #include "config.h"
 #include <string.h>
 
+#ifndef PANGO_MODULE_PREFIX
+#define PANGO_MODULE_PREFIX _pango_tibetan_fc
+#endif
+
 #include "pango-engine.h"
 #include "pango-ot.h"
 #include "pango-utils.h"

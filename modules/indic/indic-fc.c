@@ -27,6 +27,10 @@
 
 #include "indic-ot.h"
 
+#ifndef PANGO_MODULE_PREFIX
+#define PANGO_MODULE_PREFIX _pango_indic_fc
+#endif
+
 #include "pango-engine.h"
 #include "pango-ot.h"
 #include "pango-utils.h"
