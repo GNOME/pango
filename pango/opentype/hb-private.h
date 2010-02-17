@@ -158,7 +158,7 @@ typedef GStaticMutex hb_mutex_t;
 #define __attribute__(x)
 #endif
 
-#if __GNUC__ >= 3
+#if __GNUC__ >= 4
 #define HB_GNUC_UNUSED	__attribute__((unused))
 #define HB_GNUC_PURE	__attribute__((pure))
 #define HB_GNUC_CONST	__attribute__((const))
