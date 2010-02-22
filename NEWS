@@ -1,3 +1,15 @@
+Overview of changes between 1.26.2 and 1.27.1
+=============================================
+- Enable introspection again
+- Misc HarfBuzz bug fixes
+- Improve PangoLayout line breaking
+- Revert usage of CoreText in ATSUI backend
+- Fix FT_Face finalizer call
+- Bugs fixed:
+    Bug 593240 - (pangoosx) Crash / infinite loop with Mac OS X
+    Bug 610183 - Pango doesn't compile with gcc 3.3.3
+    Bug 582697 - Add pango-view --pixels option
+
 Overview of changes between 1.26.1 and 1.26.2
 =============================================
 - Fix non-standard C++ usage
