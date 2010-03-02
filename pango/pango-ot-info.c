@@ -144,13 +144,7 @@ pango_ot_info_get (FT_Face face)
 
       info->face = face;
 
-      if (
-#ifdef G_OS_WIN32
-	  FALSE &&		/* Work around possible bug in FreeType, FT_StreamRec::base
-				 * can be non-NULL even if the stream is not memory-based.
-				 */
-#endif
-	  face->stream->base != NULL) {
+      if (face->stream->read == NULL) {
 	hb_blob_t *blob;
 
 	blob = hb_blob_create ((const char *) face->stream->base,
