@@ -34,6 +34,73 @@ typedef PangoEngineLangClass	IndicEngineLangClass;
 #define INDIC_ENGINE_INFO(script)					\
   {#script ENGINE_SUFFIX, PANGO_ENGINE_TYPE_LANG, RENDER_TYPE, script##_scripts, G_N_ELEMENTS(script##_scripts)}
 
+#define DEV_RRA 0x0931 /* 0930 + 093c */
+#define DEV_QA 0x0958 /* 0915 + 093c */
+#define DEV_YA 0x095F /* 092f + 003c */
+#define DEV_KHHA 0x0959
+#define DEV_GHHA 0x095A
+#define DEV_ZA 0x095B
+#define DEV_DDDHA 0x095C
+#define DEV_RHA 0x095D
+#define DEV_FA 0x095E
+#define DEV_YYA 0x095F
+
+/* Bengali */
+/* for split matras in all brahmi based script */
+#define BENGALI_SIGN_O 0x09CB  /* 09c7 + 09be */
+#define BENGALI_SIGN_AU 0x09CC /* 09c7 + 09d7 */
+#define BENGALI_RRA 0x09DC
+#define BENGALI_RHA 0x09DD
+#define BENGALI_YYA 0x09DF
+
+/* Gurumukhi */
+#define GURUMUKHI_LLA 0x0A33
+#define GURUMUKHI_SHA 0x0A36
+#define GURUMUKHI_KHHA 0x0A59
+#define GURUMUKHI_GHHA 0x0A5A
+#define GURUMUKHI_ZA 0x0A5B
+#define GURUMUKHI_RRA 0x0A5C
+#define GURUMUKHI_FA 0x0A5E
+
+/* Oriya */
+#define ORIYA_AI 0x0B48
+#define ORIYA_O 0x0B4B
+#define ORIYA_AU 0x0B4C
+
+/* Telugu */
+#define TELUGU_EE 0x0C47
+#define TELUGU_AI 0x0C48
+
+/* Tamil */
+#define TAMIL_O 0x0BCA
+#define TAMIL_OO 0x0BCB
+#define TAMIL_AU 0x0BCC
+
+/* Kannada */
+#define KNDA_EE 0x0CC7
+#define KNDA_AI 0x0CC8
+#define KNDA_O 0x0CCA
+#define KNDA_OO 0x0CCB
+
+/* Malayalam */
+#define MLYM_O 0x0D4A
+#define MLYM_OO 0x0D4B
+#define MLYM_AU 0x0D4C
+
+#define IS_COMPOSITE_WITH_BRAHMI_NUKTA(c) ( \
+	(c >= BENGALI_RRA  && c <= BENGALI_YYA) || \
+	(c >= DEV_QA  && c <= DEV_YA) || (c == DEV_RRA) || (c >= DEV_KHHA  && c <= DEV_YYA) || \
+	(c >= KNDA_EE  && c <= KNDA_AI) ||(c >= KNDA_O  && c <= KNDA_OO) || \
+	(c == TAMIL_O) || (c == TAMIL_OO) || (c == TAMIL_AU) || \
+	(c == TELUGU_EE) || (c == TELUGU_AI) || \
+	(c == ORIYA_AI) || (c == ORIYA_O) || (c == ORIYA_AU) || \
+	(c >= GURUMUKHI_KHHA  && c <= GURUMUKHI_RRA) || (c == GURUMUKHI_FA)|| (c == GURUMUKHI_LLA)|| (c == GURUMUKHI_SHA) || \
+	FALSE)
+#define IS_SPLIT_MATRA_BRAHMI(c) ( \
+	(c == BENGALI_SIGN_O) || (c == BENGALI_SIGN_AU) || \
+	(c >= MLYM_O  && c <= MLYM_AU) || \
+	FALSE)
+
 
 static PangoEngineScriptInfo deva_scripts[] = {
   { PANGO_SCRIPT_DEVANAGARI, "*" }
@@ -110,6 +177,12 @@ indic_engine_break (PangoEngineLang *engine G_GNUC_UNUSED,
     {
       this_wc = g_utf8_get_char (p);
       next = g_utf8_next_char (p);
+
+    if (G_UNLIKELY (
+               IS_COMPOSITE_WITH_BRAHMI_NUKTA(this_wc) || IS_SPLIT_MATRA_BRAHMI(this_wc))) {
+         attrs[i+1].backspace_deletes_character = FALSE;
+      }
+
       if (next != NULL && next < (text + length))
 	{
 	  next_wc = g_utf8_get_char (next);
