@@ -26,7 +26,11 @@
 #include "pango-impl-utils.h"
 
 #if defined (HAVE_CAIRO_ATSUI)
-#  include "pangocairo-atsui.h"
+#  if defined (HAVE_CORE_TEXT)
+#    include "pangocairo-coretext.h"
+#  else
+#    include "pangocairo-atsui.h"
+#  endif
 #endif
 #if defined (HAVE_CAIRO_WIN32)
 #  include "pangocairo-win32.h"
@@ -92,7 +96,11 @@ pango_cairo_font_map_new (void)
   g_type_init ();
 
 #if defined(HAVE_CAIRO_ATSUI)
+#if defined(HAVE_CORE_TEXT)
+  return g_object_new (PANGO_TYPE_CAIRO_CORE_TEXT_FONT_MAP, NULL);
+#else
   return g_object_new (PANGO_TYPE_CAIRO_ATSUI_FONT_MAP, NULL);
+#endif
 #elif defined(HAVE_CAIRO_WIN32)
   return g_object_new (PANGO_TYPE_CAIRO_WIN32_FONT_MAP, NULL);
 #elif defined(HAVE_CAIRO_FREETYPE)
@@ -131,7 +139,11 @@ pango_cairo_font_map_new_for_font_type (cairo_font_type_t fonttype)
   {
 #if defined(HAVE_CAIRO_ATSUI)
     case CAIRO_FONT_TYPE_QUARTZ:
+#if defined(HAVE_CORE_TEXT)
+      return g_object_new (PANGO_TYPE_CAIRO_CORE_TEXT_FONT_MAP, NULL);
+#else
       return g_object_new (PANGO_TYPE_CAIRO_ATSUI_FONT_MAP, NULL);
+#endif
 #endif
 #if defined(HAVE_CAIRO_WIN32)
     case CAIRO_FONT_TYPE_WIN32:
