@@ -65,6 +65,7 @@ struct _PangoCoreTextFace
 
   float weight;
   int traits;
+  guint synthetic_italic : 1;
 };
 
 static GType pango_core_text_family_get_type (void);
@@ -145,6 +146,12 @@ pango_coverage_from_cf_charset (CFCharacterSetRef charset)
   return coverage;
 }
 
+static inline gboolean
+pango_core_text_face_is_oblique (PangoCoreTextFace *face)
+{
+  return g_strrstr (face->style_name, "Oblique") != NULL;
+}
+
 static inline PangoCoreTextFace *
 pango_core_text_face_from_ct_font_descriptor (CTFontDescriptorRef desc)
 {
@@ -157,6 +164,8 @@ pango_core_text_face_from_ct_font_descriptor (CTFontDescriptorRef desc)
   CFCharacterSetRef charset;
   PangoCoreTextFace *face = g_object_new (PANGO_TYPE_CORE_TEXT_FACE,
                                           NULL);
+
+  face->synthetic_italic = FALSE;
 
   /* Get font name */
   str = CTFontDescriptorCopyAttribute (desc, kCTFontNameAttribute);
@@ -215,6 +224,8 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
     {
       GList *l;
       GList *faces = NULL;
+      GList *synthetic_faces = NULL;
+      GHashTable *italic_faces;
       const char *real_family = get_real_family (ctfamily->family_name);
       CTFontCollectionRef collection;
       CFArrayRef ctfaces;
@@ -250,7 +261,8 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
 
       ctfaces = CTFontCollectionCreateMatchingFontDescriptors (collection);
 
-      /* FIXME: do we need the code for the synthetic italic faces? */
+      italic_faces = g_hash_table_new (g_direct_hash, g_direct_equal);
+
       count = CFArrayGetCount (ctfaces);
       for (i = 0; i < count; i++)
         {
@@ -261,11 +273,50 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
           face->family = ctfamily;
 
           faces = g_list_prepend (faces, face);
+
+          if (face->traits & kCTFontItalicTrait
+              || pango_core_text_face_is_oblique (face))
+            g_hash_table_insert (italic_faces, GINT_TO_POINTER (face->weight),
+                                 face);
         }
 
       CFRelease (font_descriptors);
       CFRelease (attributes);
       CFRelease (ctfaces);
+
+      /* For all fonts for which a non-synthetic italic variant does
+       * not exist on the system, we create synthesized versions here.
+       */
+      for (l = faces; l; l = l->next)
+        {
+          PangoCoreTextFace *face = l->data;
+
+          if (!g_hash_table_lookup (italic_faces,
+                                    GINT_TO_POINTER (face->weight)))
+            {
+              PangoCoreTextFace *italic_face;
+
+              italic_face = g_object_new (PANGO_TYPE_CORE_TEXT_FACE, NULL);
+
+              italic_face->family = ctfamily;
+              italic_face->postscript_name = g_strdup (face->postscript_name);
+              italic_face->weight = face->weight;
+              italic_face->traits = face->traits | kCTFontItalicTrait;
+              italic_face->synthetic_italic = TRUE;
+              italic_face->coverage = pango_coverage_ref (face->coverage);
+
+              /* Try to create a sensible face name. */
+              if (strcasecmp (face->style_name, "regular") == 0)
+                italic_face->style_name = g_strdup ("Oblique");
+              else
+                italic_face->style_name = g_strdup_printf ("%s Oblique",
+                                                           face->style_name);
+
+              synthetic_faces = g_list_prepend (synthetic_faces, italic_face);
+            }
+        }
+
+      faces = g_list_concat (faces, synthetic_faces);
 
       ctfamily->n_faces = g_list_length (faces);
       ctfamily->faces = g_new (PangoFontFace *, ctfamily->n_faces);
@@ -274,6 +325,7 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
 	ctfamily->faces[i] = l->data;
 
       g_list_free (faces);
+      g_hash_table_destroy (italic_faces);
     }
 
   if (n_faces)
@@ -429,6 +481,8 @@ pango_core_text_face_describe (PangoFontFace *face)
 
   if (ctface->traits & kCTFontItalicTrait)
     pango_style = PANGO_STYLE_ITALIC;
+  else if (pango_core_text_face_is_oblique (ctface))
+    pango_style = PANGO_STYLE_OBLIQUE;
   else
     pango_style = PANGO_STYLE_NORMAL;
 
@@ -478,6 +532,14 @@ pango_core_text_face_finalize (GObject *object)
   G_OBJECT_CLASS (pango_core_text_face_parent_class)->finalize (object);
 }
 
+static gboolean
+pango_core_text_face_is_synthesized (PangoFontFace *face)
+{
+  PangoCoreTextFace *cface = PANGO_CORE_TEXT_FACE (face);
+
+  return cface->synthetic_italic;
+}
+
 static void
 pango_core_text_face_class_init (PangoFontFaceClass *class)
 {
@@ -490,6 +552,7 @@ pango_core_text_face_class_init (PangoFontFaceClass *class)
   class->describe = pango_core_text_face_describe;
   class->get_face_name = pango_core_text_face_get_face_name;
   class->list_sizes = pango_core_text_face_list_sizes;
+  class->is_synthesized = pango_core_text_face_is_synthesized;
 }
 
 GType
@@ -524,6 +587,12 @@ const char *
 _pango_core_text_face_get_postscript_name (PangoCoreTextFace *face)
 {
   return face->postscript_name;
+}
+
+gboolean
+_pango_core_text_face_get_synthetic_italic (PangoCoreTextFace *face)
+{
+  return face->synthetic_italic;
 }
 
 PangoCoverage *

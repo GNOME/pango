@@ -79,6 +79,7 @@ struct _PangoCoreTextFontMapClass
 GType                 pango_core_text_font_map_get_type          (void) G_GNUC_CONST;
 
 const char *          _pango_core_text_face_get_postscript_name  (PangoCoreTextFace    *face);
+gboolean              _pango_core_text_face_get_synthetic_italic (PangoCoreTextFace    *face);
 PangoCoverage *       _pango_core_text_face_get_coverage         (PangoCoreTextFace    *face,
                                                                   PangoLanguage     *language);
 

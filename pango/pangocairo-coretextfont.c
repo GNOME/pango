@@ -212,6 +212,7 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
                                  const PangoFontDescription *desc)
 {
   const char *postscript_name;
+  gboolean synthesize_italic = FALSE;
   PangoCairoCoreTextFont *cafont;
   PangoCoreTextFont *cfont;
   CFStringRef cfstr;
@@ -245,7 +246,9 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
   font_ref = CTFontCreateWithName (cfstr, size, NULL);
   CFRelease (cfstr);
 
-  /* FIXME: Do we need the synthetic italic handling here? */
+  if (_pango_core_text_face_get_synthetic_italic (face))
+    synthesize_italic = TRUE;
+
   font_id = CTFontCopyGraphicsFont (font_ref, NULL);
   if (!font_id)
     return NULL;
@@ -265,7 +268,14 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
 
   cafont->size = size;
 
-  cairo_matrix_init_identity (&font_matrix);
+  if (synthesize_italic)
+    cairo_matrix_init (&font_matrix,
+                       1, 0,
+                       -0.25, 1,
+                       0, 0);
+  else
+    cairo_matrix_init_identity (&font_matrix);
+
   cairo_matrix_scale (&font_matrix, size, size);
 
   _pango_cairo_font_private_initialize (&cafont->cf_priv,
