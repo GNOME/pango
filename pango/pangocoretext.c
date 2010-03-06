@@ -114,7 +114,6 @@ pango_core_text_font_class_init (PangoCoreTextFontClass *class)
   g_type_class_add_private (object_class, sizeof (PangoCoreTextFontPrivate));
 }
 
-/* FIXME: why are these defined like this? */
 void
 _pango_core_text_font_set_font_description (PangoCoreTextFont          *font,
                                             const PangoFontDescription *desc)
