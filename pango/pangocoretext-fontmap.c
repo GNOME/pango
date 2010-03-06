@@ -145,6 +145,65 @@ pango_coverage_from_cf_charset (CFCharacterSetRef charset)
   return coverage;
 }
 
+static inline PangoCoreTextFace *
+pango_core_text_face_from_ct_font_descriptor (CTFontDescriptorRef desc)
+{
+  int font_traits;
+  char *buffer;
+  CFStringRef str;
+  CFNumberRef number;
+  CGFloat value;
+  CFDictionaryRef dict;
+  CFCharacterSetRef charset;
+  PangoCoreTextFace *face = g_object_new (PANGO_TYPE_CORE_TEXT_FACE,
+                                          NULL);
+
+  /* Get font name */
+  str = CTFontDescriptorCopyAttribute (desc, kCTFontNameAttribute);
+  buffer = gchar_from_cf_string (str);
+
+  /* We strdup again to save space. */
+  face->postscript_name = g_strdup (buffer);
+
+  CFRelease (str);
+  g_free (buffer);
+
+  /* Get style name */
+  str = CTFontDescriptorCopyAttribute (desc, kCTFontStyleNameAttribute);
+  buffer = gchar_from_cf_string (str);
+
+  face->style_name = g_strdup (buffer);
+
+  CFRelease (str);
+  g_free (buffer);
+
+  /* Get font traits, symbolic traits */
+  dict = CTFontDescriptorCopyAttribute (desc, kCTFontTraitsAttribute);
+  number = (CFNumberRef)CFDictionaryGetValue (dict,
+                                              kCTFontWeightTrait);
+  if (CFNumberGetValue (number, kCFNumberCGFloatType, &value))
+    /* Map value from range [-1.0, 1.0] to range [1, 14] */
+    face->weight = (value + 1.0f) * 6.5f + 1;
+  else
+    face->weight = PANGO_WEIGHT_NORMAL;
+
+  number = (CFNumberRef)CFDictionaryGetValue (dict,
+                                              kCTFontSymbolicTrait);
+  if (CFNumberGetValue (number, kCFNumberIntType, &font_traits))
+    {
+      face->traits = font_traits;
+    }
+  CFRelease (dict);
+
+  /* Get font coverage */
+  charset = CTFontDescriptorCopyAttribute (desc,
+                                           kCTFontCharacterSetAttribute);
+  face->coverage = pango_coverage_from_cf_charset (charset);
+  CFRelease (charset);
+
+  return face;
+}
+
 static void
 pango_core_text_family_list_faces (PangoFontFamily  *family,
                                    PangoFontFace  ***faces,
@@ -195,61 +254,11 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
       count = CFArrayGetCount (ctfaces);
       for (i = 0; i < count; i++)
         {
-          int font_traits;
-          char *buffer;
-          CFStringRef str;
-          CFNumberRef number;
-          CGFloat value;
-          CFDictionaryRef dict;
-          CFCharacterSetRef charset;
+          PangoCoreTextFace *face;
           CTFontDescriptorRef desc = CFArrayGetValueAtIndex (ctfaces, i);
-          PangoCoreTextFace *face = g_object_new (PANGO_TYPE_CORE_TEXT_FACE,
-                                                  NULL);
 
+          face = pango_core_text_face_from_ct_font_descriptor (desc);
           face->family = ctfamily;
-
-          /* Get font name */
-          str = CTFontDescriptorCopyAttribute (desc, kCTFontNameAttribute);
-          buffer = gchar_from_cf_string (str);
-
-          /* We strdup again to save space. */
-          face->postscript_name = g_strdup (buffer);
-
-          CFRelease (str);
-          g_free (buffer);
-
-          /* Get style name */
-          str = CTFontDescriptorCopyAttribute (desc, kCTFontStyleNameAttribute);
-          buffer = gchar_from_cf_string (str);
-
-          face->style_name = g_strdup (buffer);
-
-          CFRelease (str);
-          g_free (buffer);
-
-          /* Get font traits, symbolic traits */
-          dict = CTFontDescriptorCopyAttribute (desc, kCTFontTraitsAttribute);
-          number = (CFNumberRef)CFDictionaryGetValue (dict,
-                                                      kCTFontWeightTrait);
-          if (CFNumberGetValue (number, kCFNumberCGFloatType, &value))
-            /* Map value from range [-1.0, 1.0] to range [1, 14] */
-            face->weight = (value + 1.0f) * 6.5f + 1;
-          else
-            face->weight = PANGO_WEIGHT_NORMAL;
-
-          number = (CFNumberRef)CFDictionaryGetValue (dict,
-                                                      kCTFontSymbolicTrait);
-          if (CFNumberGetValue (number, kCFNumberIntType, &font_traits))
-            {
-              face->traits = font_traits;
-            }
-          CFRelease (dict);
-
-          /* Get font coverage */
-          charset = CTFontDescriptorCopyAttribute (desc,
-                                                   kCTFontCharacterSetAttribute);
-          face->coverage = pango_coverage_from_cf_charset (charset);
-          CFRelease (charset);
 
           faces = g_list_prepend (faces, face);
         }
