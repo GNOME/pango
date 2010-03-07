@@ -86,6 +86,7 @@ basic_engine_shape (PangoEngineShape    *engine,
   PangoCoverage *coverage;
   CFArrayRef runs;
   CTRunRef run;
+  CTRunStatus run_status;
   CFIndex i, glyph_count;
   const CGGlyph *cgglyphs;
 
@@ -119,7 +120,11 @@ basic_engine_shape (PangoEngineShape    *engine,
 
   runs = CTLineGetGlyphRuns (line);
 
+  /* Since Pango divides things into runs already, we assume there is
+   * only a single run in this line.
+   */
   run = CFArrayGetValueAtIndex (runs, 0);
+  run_status = CTRunGetStatus (run);
   glyph_count = CTRunGetGlyphCount (run);
   cgglyphs = CTRunGetGlyphsPtr (run);
 
@@ -130,6 +135,7 @@ basic_engine_shape (PangoEngineShape    *engine,
 
   for (i = 0; i < glyph_count; i++)
     {
+      CFIndex real_i, prev_i;
       gunichar wc;
       gunichar mirrored_ch;
 
@@ -139,12 +145,23 @@ basic_engine_shape (PangoEngineShape    *engine,
 	if (pango_get_mirror_char (wc, &mirrored_ch))
 	  wc = mirrored_ch;
 
+      if (run_status & kCTRunStatusRightToLeft)
+        {
+          real_i = glyph_count - i - 1;
+          prev_i = real_i + 1;
+        }
+      else
+        {
+          real_i = i;
+          prev_i = real_i - 1;
+        }
+
       if (wc == 0xa0)	/* non-break-space */
 	wc = 0x20;
 
       if (pango_is_zero_width (wc))
 	{
-	  set_glyph (font, glyphs, i, p - text, PANGO_GLYPH_EMPTY);
+	  set_glyph (font, glyphs, real_i, p - text, PANGO_GLYPH_EMPTY);
 	}
       else
 	{
@@ -154,7 +171,7 @@ basic_engine_shape (PangoEngineShape    *engine,
 
           if (result != PANGO_COVERAGE_NONE)
             {
-              set_glyph (font, glyphs, i, p - text, cgglyphs[i]);
+              set_glyph (font, glyphs, real_i, p - text, cgglyphs[real_i]);
 
               if (g_unichar_type (wc) == G_UNICODE_NON_SPACING_MARK)
                 {
@@ -162,23 +179,23 @@ basic_engine_shape (PangoEngineShape    *engine,
                     {
                       PangoRectangle logical_rect, ink_rect;
 
-                      glyphs->glyphs[i].geometry.width = MAX (glyphs->glyphs[i-1].geometry.width,
-                                                              glyphs->glyphs[i].geometry.width);
-                      glyphs->glyphs[i-1].geometry.width = 0;
-                      glyphs->log_clusters[i] = glyphs->log_clusters[i-1];
+                      glyphs->glyphs[real_i].geometry.width = MAX (glyphs->glyphs[prev_i].geometry.width,
+                                                                   glyphs->glyphs[prev_i].geometry.width);
+                      glyphs->glyphs[prev_i].geometry.width = 0;
+                      glyphs->log_clusters[real_i] = glyphs->log_clusters[prev_i];
 
                       /* Some heuristics to try to guess how overstrike glyphs are
                        * done and compensate
                        */
-                      pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, &ink_rect, &logical_rect);
+                      pango_font_get_glyph_extents (font, glyphs->glyphs[real_i].glyph, &ink_rect, &logical_rect);
                       if (logical_rect.width == 0 && ink_rect.x == 0)
-                        glyphs->glyphs[i].geometry.x_offset = (glyphs->glyphs[i].geometry.width - ink_rect.width) / 2;
+                        glyphs->glyphs[real_i].geometry.x_offset = (glyphs->glyphs[real_i].geometry.width - ink_rect.width) / 2;
                     }
                 }
             }
           else
             {
-              set_glyph (font, glyphs, i, p - text,
+              set_glyph (font, glyphs, real_i, p - text,
                          PANGO_GET_UNKNOWN_GLYPH (wc));
             }
         }
