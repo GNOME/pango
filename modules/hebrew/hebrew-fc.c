@@ -28,10 +28,6 @@
 
 #include <pango/pango-ot.h>
 
-#if defined(G_OS_WIN32) && !defined(PANGO_MODULE_PREFIX)
-#define PANGO_MODULE_PREFIX _pango_hebrew_fc
-#endif
-
 #include "pango-engine.h"
 #include "pango-utils.h"
 #include "pangofc-font.h"

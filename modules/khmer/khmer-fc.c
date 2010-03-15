@@ -59,10 +59,6 @@
 #include "config.h"
 #include <string.h>
 
-#if defined(G_OS_WIN32) && !defined(PANGO_MODULE_PREFIX)
-#define PANGO_MODULE_PREFIX _pango_khmer_fc
-#endif
-
 #include "pango-engine.h"
 #include "pango-ot.h"
 #include "pango-utils.h"
