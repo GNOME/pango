@@ -27,7 +27,7 @@
 
 #include "arabic-ot.h"
 
-#ifndef PANGO_MODULE_PREFIX
+#if defined(G_OS_WIN32) && !defined(PANGO_MODULE_PREFIX)
 #define PANGO_MODULE_PREFIX _pango_arabic_fc
 #endif
 
