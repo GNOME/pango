@@ -51,6 +51,8 @@
 template <typename Type>
 struct Record
 {
+  static inline unsigned int get_size () { return sizeof (Record<Type>); }
+
   inline bool sanitize (SANITIZE_ARG_DEF, const void *base) {
     TRACE_SANITIZE ();
     return SANITIZE (tag) && SANITIZE_BASE (offset, base);
@@ -348,6 +350,8 @@ struct CoverageRangeRecord
 {
   friend struct CoverageFormat2;
 
+  static inline unsigned int get_size () { return sizeof (CoverageRangeRecord); }
+
   private:
   inline unsigned int get_coverage (hb_codepoint_t glyph_id) const
   {
@@ -466,6 +470,8 @@ struct ClassRangeRecord
 {
   friend struct ClassDefFormat2;
 
+  static inline unsigned int get_size () { return sizeof (ClassRangeRecord); }
+
   private:
   inline hb_ot_layout_class_t get_class (hb_codepoint_t glyph_id) const
   {
@@ -583,8 +589,8 @@ struct Device
   inline unsigned int get_size () const
   {
     unsigned int f = deltaFormat;
-    if (HB_UNLIKELY (f < 1 || f > 3 || startSize > endSize)) return sizeof (*this);
-    return sizeof (*this) + ((endSize - startSize + (1 << (4 - f)) - 1) >> (4 - f));
+    if (HB_UNLIKELY (f < 1 || f > 3 || startSize > endSize)) return 3 * USHORT::get_size ();
+    return 3 * USHORT::get_size () + ((endSize - startSize + (1 << (4 - f)) - 1) >> (4 - f));
   }
 
   inline bool sanitize (SANITIZE_ARG_DEF) {
