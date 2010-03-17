@@ -37,8 +37,7 @@ struct _PangoCairoCoreTextFont
   PangoCoreTextFont font;
   PangoCairoFontPrivate cf_priv;
 
-  double size;
-  int absolute_size;
+  int abs_size;
 };
 
 struct _PangoCairoCoreTextFontClass
@@ -172,7 +171,7 @@ pango_cairo_core_text_font_describe_absolute (PangoFont *font)
   PangoCairoCoreTextFont *cafont = (PangoCairoCoreTextFont *) font;
 
   desc = pango_font_describe (font);
-  pango_font_description_set_absolute_size (desc, cafont->absolute_size);
+  pango_font_description_set_absolute_size (desc, cafont->abs_size);
 
   return desc;
 }
@@ -218,14 +217,13 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
   CFStringRef cfstr;
   CTFontRef font_ref;
   CGFontRef font_id;
-  double size;
+  double size, abs_size;
   double dpi;
   cairo_matrix_t font_matrix;
 
   postscript_name = _pango_core_text_face_get_postscript_name (face);
 
-  /* Calculate size in points */
-  size = (double) pango_font_description_get_size (desc) / PANGO_SCALE;
+  abs_size = size = (double) pango_font_description_get_size (desc) / PANGO_SCALE;
 
   if (context)
     {
@@ -239,7 +237,8 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
 
   if (pango_font_description_get_size_is_absolute (desc))
     size *= dpi / 72.;
-
+  else
+    abs_size *= dpi / 72.;
 
   cfstr = CFStringCreateWithCString (NULL, postscript_name,
                                      kCFStringEncodingUTF8);
@@ -259,14 +258,9 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
   _pango_core_text_font_set_font_description (cfont, desc);
   _pango_core_text_font_set_face (cfont, face);
 
+  cafont->abs_size = abs_size * PANGO_SCALE;
+
   _pango_core_text_font_set_ctfont (cfont, font_ref);
-
-  if (pango_font_description_get_size_is_absolute (desc))
-    cafont->absolute_size = pango_font_description_get_size (desc);
-  else
-    cafont->absolute_size = pango_font_description_get_size (desc) * (dpi / 72.);
-
-  cafont->size = size;
 
   if (synthesize_italic)
     cairo_matrix_init (&font_matrix,
@@ -275,8 +269,9 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
                        0, 0);
   else
     cairo_matrix_init_identity (&font_matrix);
-
-  cairo_matrix_scale (&font_matrix, size, size);
+ 
+  /* Scale using absolute size */
+  cairo_matrix_scale (&font_matrix, abs_size, abs_size);
 
   _pango_cairo_font_private_initialize (&cafont->cf_priv,
 					(PangoCairoFont *) cafont,
