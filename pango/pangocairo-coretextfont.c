@@ -223,7 +223,7 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
 
   postscript_name = _pango_core_text_face_get_postscript_name (face);
 
-  abs_size = size = (double) pango_font_description_get_size (desc) / PANGO_SCALE;
+  abs_size = size = pango_units_to_double (pango_font_description_get_size (desc));
 
   if (context)
     {
@@ -236,7 +236,7 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
     dpi = cafontmap->dpi;
 
   if (pango_font_description_get_size_is_absolute (desc))
-    size *= dpi / 72.;
+    size *= 72. / dpi;
   else
     abs_size *= dpi / 72.;
 
