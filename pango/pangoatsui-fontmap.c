@@ -672,10 +672,13 @@ pango_atsui_font_map_load_font (PangoFontMap               *fontmap,
   const gchar *family;
   gchar *name;
   gint size;
+  gboolean is_absolute;
 
   size = pango_font_description_get_size (description);
   if (size < 0)
     return NULL;
+
+  is_absolute = pango_font_description_get_size_is_absolute (description);
 
   family = pango_font_description_get_family (description);
   family = family ? family : "";
@@ -695,7 +698,10 @@ pango_atsui_font_map_load_font (PangoFontMap               *fontmap,
       if (!find_best_match (font_family, description, &best_description, &best_face))
 	return NULL;
       
-      pango_font_description_set_size (best_description, size);
+      if (is_absolute)
+        pango_font_description_set_absolute_size (best_description, size);
+      else
+        pango_font_description_set_size (best_description, size);
 
       best_font = pango_atsui_font_map_lookup (atsuifontmap, 
 					       context, 

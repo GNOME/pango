@@ -36,8 +36,7 @@ struct _PangoCairoATSUIFont
   PangoATSUIFont font;
   PangoCairoFontPrivate cf_priv;
 
-  double size;
-  int absolute_size;
+  double size; /* Absolute size */
 };
 
 struct _PangoCairoATSUIFontClass
@@ -166,7 +165,8 @@ pango_cairo_atsui_font_describe_absolute (PangoFont *font)
   PangoCairoATSUIFont *cafont = (PangoCairoATSUIFont *) font;
 
   desc = pango_font_describe (font);
-  pango_font_description_set_absolute_size (desc, cafont->absolute_size);
+  pango_font_description_set_absolute_size (desc,
+                                            cafont->size * PANGO_SCALE);
 
   return desc;
 }
@@ -212,7 +212,7 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
   CFStringRef cfstr;
   ATSFontRef font_ref;
   CGFontRef font_id;
-  double size;
+  double size, abs_size;
   double dpi;
   double m;
   cairo_matrix_t font_matrix;
@@ -223,6 +223,23 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
 				     kCFStringEncodingUTF8);
   font_ref = ATSFontFindFromPostScriptName (cfstr, kATSOptionFlagsDefault);
   CFRelease (cfstr);
+
+  abs_size = size = pango_units_to_double (pango_font_description_get_size (desc));
+
+  if (context)
+    {
+      dpi = pango_cairo_context_get_resolution (context);
+
+      if (dpi <= 0)
+	dpi = cafontmap->dpi;
+    }
+  else
+    dpi = cafontmap->dpi;
+
+  if (pango_font_description_get_size_is_absolute (desc))
+    size *= 72. / dpi;
+  else
+    abs_size *= dpi / 72.;
 
   /* We synthesize italic in two cases. The first is when
    * NSFontManager has handed out a face that it claims has italic but
@@ -235,8 +252,6 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
       NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
       NSString *nsname;
       NSFont *nsfont, *converted_font;
-
-      size = (double) pango_font_description_get_size (desc) / PANGO_SCALE;
 
       nsname = [NSString stringWithUTF8String:postscript_name];
       nsfont = [NSFont fontWithName:nsname size:size];
@@ -266,26 +281,10 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
   _pango_atsui_font_set_font_description (afont, desc);
   _pango_atsui_font_set_face (afont, face);
 
-  size = (double) pango_font_description_get_size (desc) / PANGO_SCALE;
   _pango_atsui_font_set_cgfont (afont, font_id);
   _pango_atsui_font_set_atsfont (afont, font_ref);
 
-  if (context)
-    {
-      dpi = pango_cairo_context_get_resolution (context);
-
-      if (dpi <= 0)
-	dpi = cafontmap->dpi;
-    }
-  else
-    dpi = cafontmap->dpi;
-
-  cafont->absolute_size = pango_font_description_get_size (desc);
-
-  if (!pango_font_description_get_size_is_absolute (desc))
-    size *= dpi / 72.;
-
-  cafont->size = size;
+  cafont->size = abs_size;
 
   /* When synthesizing italics, apply a shear matrix matching what Cocoa
    * does. Cairo quartz had transformed text wrong before 1.5.13, stay
@@ -304,7 +303,7 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
   else
     cairo_matrix_init_identity (&font_matrix);
 
-  cairo_matrix_scale (&font_matrix, size, size);
+  cairo_matrix_scale (&font_matrix, abs_size, abs_size);
 
   _pango_cairo_font_private_initialize (&cafont->cf_priv,
 					(PangoCairoFont *) cafont,
