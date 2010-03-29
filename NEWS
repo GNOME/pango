@@ -1,3 +1,18 @@
+Overview of changes between 1.27.1 and 1.28.0
+=============================================
+- [HB] Fix leak when duplicating blob
+- Misc bug fixes
+- Bugs fixed:
+    Bug 611033 - Layout using ATSUI fontmap treats absolute font sizes a...
+    Bug 605655 - Pango 1.26.2 introduces kerning bug
+    Bug 611229 - Pango reads from uninitialized memory
+    Bug 594101 - [Indic] needed character class data updates to support unicode 5.1
+    Bug 345066 - backspace changes independent indic characters
+    Bug 609326 - Complex script shaping failed in the FT2 backend on Windows
+    Bug 604128 - Applications crash when displaying Hebrew characters
+    Bug 608923 - Incorrect/broken ligatures on MacOS
+    Bug 610791 - checks fail for unused documented symbols
+
 Overview of changes between 1.26.2 and 1.27.1
 =============================================
 - Enable introspection again

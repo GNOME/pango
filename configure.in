@@ -5,24 +5,14 @@ dnl ==========================================================================
 dnl                               Versioning              
 dnl ==========================================================================
 
-dnl Making releases:
-dnl   PANGO_VERSION_MICRO += 1;
-dnl   PANGO_INTERFACE_AGE += 1;
-dnl   PANGO_BINARY_AGE += 1;
-dnl if any functions have been added, set PANGO_INTERFACE_AGE to 0.
-dnl if backwards compatibility has been broken,
-dnl set PANGO_BINARY_AGE _and_ PANGO_INTERFACE_AGE to 0.
-
-dnl
-dnl We do the version number components as m4 macros
-dnl so that we can base configure --help output off
-dnl of them.
-dnl
-
-dnl The triplet 
+dnl The triplet
 m4_define([pango_version_major], [1])
-m4_define([pango_version_minor], [27])
-m4_define([pango_version_micro], [1])
+m4_define([pango_version_minor], [28])
+m4_define([pango_version_micro], [0])
+dnl Module API version.  This should be stepped up when a change causes
+dnl older modules to not work with new pango.
+m4_define([pango_module_version], [1.6.0])
+
 
 m4_define([pango_version],
           [pango_version_major.pango_version_minor.pango_version_micro])
@@ -40,9 +30,6 @@ m4_if(m4_eval(pango_version_minor % 2), [1],
 dnl Number of releases since we've broken binary compatibility.
 m4_define([pango_binary_age],
           [m4_eval(100 * pango_version_minor + pango_version_micro)])
-dnl Module API version.  This should be stepped up when a change causes
-dnl older modules to not work with new pango.
-m4_define([pango_module_version], [1.6.0])
 
 
 AC_INIT(pango, pango_version(),
