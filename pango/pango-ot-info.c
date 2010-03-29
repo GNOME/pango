@@ -578,10 +578,12 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
   hb_font_set_scale (hb_font,
 		     info->face->size->metrics.x_scale,
 		     info->face->size->metrics.y_scale);
+  /*
   is_hinted = buffer->font->is_hinted;
   hb_font_set_ppem (hb_font,
 		    is_hinted ? info->face->size->metrics.x_ppem : 0,
 		    is_hinted ? info->face->size->metrics.y_ppem : 0);
+		    */
 
   for (i = 0; i < ruleset->rules->len; i++)
     {
