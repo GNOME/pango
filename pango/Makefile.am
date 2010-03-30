@@ -645,6 +645,7 @@ dist-hook: \
 # pangowin32.vcproj is not automatically built, it is not being changed
 
 ../build/win32/vs9/pango.vcproj: $(top_srcdir)/build/win32/vs9/pango.vcprojin mini-fribidi/libmini-fribidi.sourcefiles
+	-rm $@
 	for F in $(libpango_1_0_la_SOURCES); do \
 		case $$F in \
 		*.c) echo '   <File RelativePath="..\..\..\pango\'$$F'" />' \
@@ -654,6 +655,7 @@ dist-hook: \
 	$(CPP) -P - <$(top_srcdir)/build/win32/vs9/pango.vcprojin >$@
 
 ../build/win32/vs9/pangoft2.vcproj: $(top_srcdir)/build/win32/vs9/pangoft2.vcprojin opentype/libharfbuzz.sourcefiles
+	-rm $@
 	for F in $(libpangoft2_1_0_la_SOURCES); do \
 		case $$F in \
 		*.c) echo '   <File RelativePath="..\..\..\pango\'$$F'" />' \
@@ -665,6 +667,7 @@ dist-hook: \
 ../build/win32/vs9/pangocairo.vcproj: $(top_srcdir)/build/win32/vs9/pangocairo.vcprojin
 # Backend-specific sources for the libpangocairo DLL are explicitly
 # listed in the vcprojin file
+	-rm $@
 	for F in $(pangocairo_core_sources); do \
 		case $$F in \
 		*.c) echo '   <File RelativePath="..\..\..\pango\'$$F'" />' \
