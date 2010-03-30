@@ -32,7 +32,6 @@
 
 #include <glib.h>
 #include "pango-ot.h"
-
 #include "pango-engine.h"
 #include "pangofc-font.h"
 

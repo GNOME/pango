@@ -14,6 +14,8 @@ if HAVE_FREETYPE
 OPENTYPE_SUBDIR=opentype
 endif
 
+EXTRA_DIST = 
+
 FRIBIDI_SUBDIR=mini-fribidi
 
 SUBDIRS = $(OPENTYPE_SUBDIR) $(FRIBIDI_SUBDIR)
@@ -348,23 +350,18 @@ libpangocairo_1_0_la_LIBADD =			\
 	$(libm)
 libpangocairo_1_0_la_DEPENDENCIES =		\
 	libpango-$(PANGO_API_VERSION).la
-pangocairo_core_sources = \
+libpangocairo_1_0_la_SOURCES =  \
 	pangocairo-context.c    \
 	pangocairo-font.c	\
 	pangocairo-fontmap.c    \
 	pangocairo-render.c	\
 	pangocairo-private.h
 
-libpangocairo_1_0_la_SOURCES = $(pangocairo_core_sources)
-
 if HAVE_CAIRO_WIN32
 if PLATFORM_WIN32
-libpangocairo_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangocairo.def -Wl,pangocairo-win32-res.o
-libpangocairo_1_0_la_DEPENDENCIES += pangocairo-win32-res.o pangocairo.def
+libpangocairo_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangocairo.def
+libpangocairo_1_0_la_DEPENDENCIES += pangocairo.def
 endif
-pangocairo-win32-res.o: pangocairo.rc
-	$(AM_V_GEN) $(WINDRES) $< $@
-
 
 libpangocairo_1_0_la_LIBADD += libpangowin32-$(PANGO_API_VERSION).la $(WIN32_LIBS)
 libpangocairo_1_0_la_DEPENDENCIES += libpangowin32-$(PANGO_API_VERSION).la 
@@ -559,11 +556,9 @@ pango_querymodules_LDADD += libpangowin32-$(PANGO_API_VERSION).la
 endif
 pango_querymodules_LDADD += libpango-$(PANGO_API_VERSION).la $(GLIB_LIBS)
 
-EXTRA_DIST =					\
+EXTRA_DIST +=					\
 	pango-enum-types.h			\
 	module-defs.h				\
-	module-defs.h.win32			\
-	module-defs-lang.c.win32		\
 	module-defs-fc.c.win32			\
 	module-defs-win32.c.win32		\
 	pango.def				\
@@ -578,8 +573,6 @@ EXTRA_DIST =					\
 	pangoft2.rc.in				\
 	pangowin32.rc				\
 	pangowin32.rc.in			\
-	pangocairo.rc				\
-	pangocairo.rc.in			\
 	pangox.rc				\
 	pangox.rc.in				\
 	pangoxft.rc				\
@@ -636,44 +629,5 @@ endif
 uninstall-local: uninstall-ms-lib uninstall-def-files
 
 TESTS = check.defs
-
-dist-hook: \
-	../build/win32/vs9/pango.vcproj \
-	../build/win32/vs9/pangoft2.vcproj \
-	../build/win32/vs9/pangocairo.vcproj
-
-# pangowin32.vcproj is not automatically built, it is not being changed
-
-../build/win32/vs9/pango.vcproj: $(top_srcdir)/build/win32/vs9/pango.vcprojin mini-fribidi/libmini-fribidi.sourcefiles
-	-rm $@
-	for F in $(libpango_1_0_la_SOURCES); do \
-		case $$F in \
-		*.c) echo '   <File RelativePath="..\..\..\pango\'$$F'" />' \
-		     ;; \
-		esac; \
-	done >libpango.sourcefiles
-	$(CPP) -P - <$(top_srcdir)/build/win32/vs9/pango.vcprojin >$@
-
-../build/win32/vs9/pangoft2.vcproj: $(top_srcdir)/build/win32/vs9/pangoft2.vcprojin opentype/libharfbuzz.sourcefiles
-	-rm $@
-	for F in $(libpangoft2_1_0_la_SOURCES); do \
-		case $$F in \
-		*.c) echo '   <File RelativePath="..\..\..\pango\'$$F'" />' \
-		     ;; \
-		esac; \
-	done >libpangoft2.sourcefiles
-	$(CPP) -P - <$(top_srcdir)/build/win32/vs9/pangoft2.vcprojin >$@
-
-../build/win32/vs9/pangocairo.vcproj: $(top_srcdir)/build/win32/vs9/pangocairo.vcprojin
-# Backend-specific sources for the libpangocairo DLL are explicitly
-# listed in the vcprojin file
-	-rm $@
-	for F in $(pangocairo_core_sources); do \
-		case $$F in \
-		*.c) echo '   <File RelativePath="..\..\..\pango\'$$F'" />' \
-		     ;; \
-		esac; \
-	done >libpangocairo.sourcefiles
-	$(CPP) -P - <$(top_srcdir)/build/win32/vs9/pangocairo.vcprojin >$@
 
 -include $(top_srcdir)/git.mk

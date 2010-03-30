@@ -55,14 +55,4 @@ main_LDADD = libharfbuzz.la $(GLIB_LIBS)
 
 EXTRA_DIST = README COPYING
 
-dist-hook: libharfbuzz.sourcefiles
-
-libharfbuzz.sourcefiles: Makefile
-	for F in $(libharfbuzz_la_SOURCES); do \
-		case $$F in \
-		*.c|*.cc) echo '   <File RelativePath="..\..\..\pango\opentype\'$$F'" />' \
-		     ;; \
-		esac; \
-	done >libharfbuzz.sourcefiles
-
 -include $(top_srcdir)/git.mk

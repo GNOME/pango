@@ -30,11 +30,6 @@
 #include <glib.h>
 
 #include "pangowin32.h"
-
-#ifndef PANGO_MODULE_PREFIX
-#define PANGO_MODULE_PREFIX _pango_basic_win32
-#endif
-
 #include "pango-engine.h"
 #include "pango-utils.h"
 
