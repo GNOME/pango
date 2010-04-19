@@ -104,13 +104,13 @@ struct ValueRecord {
     y_scale = context->font->y_scale;
     /* design units -> fractional pixel */
     if (format & xPlacement)
-      glyph_pos->x_pos += _hb_16dot16_mul_trunc (x_scale, *(SHORT*)values++);
+      glyph_pos->x_pos += _hb_16dot16_mul_round (x_scale, *(SHORT*)values++);
     if (format & yPlacement)
-      glyph_pos->y_pos += _hb_16dot16_mul_trunc (y_scale, *(SHORT*)values++);
+      glyph_pos->y_pos += _hb_16dot16_mul_round (y_scale, *(SHORT*)values++);
     if (format & xAdvance)
-      glyph_pos->x_advance += _hb_16dot16_mul_trunc (x_scale, *(SHORT*)values++);
+      glyph_pos->x_advance += _hb_16dot16_mul_round (x_scale, *(SHORT*)values++);
     if (format & yAdvance)
-      glyph_pos->y_advance += _hb_16dot16_mul_trunc (y_scale, *(SHORT*)values++);
+      glyph_pos->y_advance += _hb_16dot16_mul_round (y_scale, *(SHORT*)values++);
 
     x_ppem = context->font->x_ppem;
     y_ppem = context->font->y_ppem;
@@ -152,8 +152,8 @@ struct AnchorFormat1
   inline void get_anchor (hb_ot_layout_context_t *context, hb_codepoint_t glyph_id HB_GNUC_UNUSED,
 			  hb_position_t *x, hb_position_t *y) const
   {
-      *x = _hb_16dot16_mul_trunc (context->font->x_scale, xCoordinate);
-      *y = _hb_16dot16_mul_trunc (context->font->y_scale, yCoordinate);
+      *x = _hb_16dot16_mul_round (context->font->x_scale, xCoordinate);
+      *y = _hb_16dot16_mul_round (context->font->y_scale, yCoordinate);
   }
 
   inline bool sanitize (SANITIZE_ARG_DEF) {
@@ -177,8 +177,8 @@ struct AnchorFormat2
 			  hb_position_t *x, hb_position_t *y) const
   {
       /* TODO Contour */
-      *x = _hb_16dot16_mul_trunc (context->font->x_scale, xCoordinate);
-      *y = _hb_16dot16_mul_trunc (context->font->y_scale, yCoordinate);
+      *x = _hb_16dot16_mul_round (context->font->x_scale, xCoordinate);
+      *y = _hb_16dot16_mul_round (context->font->y_scale, yCoordinate);
   }
 
   inline bool sanitize (SANITIZE_ARG_DEF) {
@@ -202,8 +202,8 @@ struct AnchorFormat3
   inline void get_anchor (hb_ot_layout_context_t *context, hb_codepoint_t glyph_id HB_GNUC_UNUSED,
 			  hb_position_t *x, hb_position_t *y) const
   {
-      *x = _hb_16dot16_mul_trunc (context->font->x_scale, xCoordinate);
-      *y = _hb_16dot16_mul_trunc (context->font->y_scale, yCoordinate);
+      *x = _hb_16dot16_mul_round (context->font->x_scale, xCoordinate);
+      *y = _hb_16dot16_mul_round (context->font->y_scale, yCoordinate);
 
       /* pixel -> fractional pixel */
       if (context->font->x_ppem)
