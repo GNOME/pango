@@ -53,7 +53,7 @@ struct ValueFormat : USHORT
     ignored	= 0x0F00,	/* Was used in TrueType Open for MM fonts */
     reserved	= 0xF000,	/* For future use */
 
-    devices	= 0x00F0,	/* Mask for having any Device table */
+    devices	= 0x00F0	/* Mask for having any Device table */
   };
 
 /* All fields are options.  Only those available advance the value pointer. */
