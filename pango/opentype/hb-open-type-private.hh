@@ -346,7 +346,7 @@ struct Sanitizer
   { \
     inline NAME& set (TYPE i) { (TYPE&) v = BIG_ENDIAN (i); return *this; } \
     inline operator TYPE(void) const { return BIG_ENDIAN ((TYPE&) v); } \
-    inline bool operator== (const NAME &o) const { return (TYPE&) v == (TYPE&) o.v; } \
+    inline bool operator == (const NAME &o) const { return (TYPE&) v == (TYPE&) o.v; } \
     inline bool sanitize (SANITIZE_ARG_DEF) { \
       TRACE_SANITIZE (); \
       return SANITIZE_SELF (); \
@@ -361,7 +361,7 @@ struct Sanitizer
     static inline unsigned int get_size () { return BYTES; } \
     inline NAME& set (TYPE i) { BIG_ENDIAN##_put_unaligned(v, i); return *this; } \
     inline operator TYPE(void) const { return BIG_ENDIAN##_get_unaligned (v); } \
-    inline bool operator== (const NAME &o) const { return BIG_ENDIAN##_cmp_unaligned (v, o.v); } \
+    inline bool operator == (const NAME &o) const { return BIG_ENDIAN##_cmp_unaligned (v, o.v); } \
     inline bool sanitize (SANITIZE_ARG_DEF) { \
       TRACE_SANITIZE (); \
       return SANITIZE_SELF (); \
@@ -386,7 +386,7 @@ struct Tag : ULONG
   inline Tag (const Tag &o) { *(ULONG*)this = (ULONG&) o; }
   inline Tag (uint32_t i) { (*(ULONG*)this).set (i); }
   inline Tag (const char *c) { *(ULONG*)this = *(ULONG*)c; }
-  inline bool operator== (const char *c) const { return *(ULONG*)this == *(ULONG*)c; }
+  inline bool operator == (const char *c) const { return *(ULONG*)this == *(ULONG*)c; }
   /* What the char* converters return is NOT nul-terminated.  Print using "%.4s" */
   inline operator const char* (void) const { return CONST_CHARP(this); }
   inline operator char* (void) { return CHARP(this); }
@@ -459,7 +459,7 @@ ASSERT_SIZE (FixedVersion, 4);
 template <typename OffsetType, typename Type>
 struct GenericOffsetTo : OffsetType
 {
-  inline const Type& operator() (const void *base) const
+  inline const Type& operator () (const void *base) const
   {
     unsigned int offset = *this;
     if (HB_UNLIKELY (!offset)) return Null(Type);
