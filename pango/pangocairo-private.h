@@ -75,7 +75,7 @@ struct _PangoCairoFontPrivateScaledFontData
 struct _PangoCairoFontPrivate
 {
   PangoCairoFont *cfont;
-   
+
   PangoCairoFontPrivateScaledFontData *data;
 
   cairo_scaled_font_t *scaled_font;
