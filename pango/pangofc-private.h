@@ -90,8 +90,8 @@ void            pango_fc_font_get_raw_extents    (PangoFcFont    *font,
 						  PangoRectangle *ink_rect,
 						  PangoRectangle *logical_rect);
 
-PangoFontMetrics *pango_fc_font_create_metrics_for_context (PangoFcFont   *font,
-							    PangoContext  *context);
+PangoFontMetrics *pango_fc_font_create_base_metrics_for_context (PangoFcFont   *font,
+								 PangoContext  *context);
 
 
 

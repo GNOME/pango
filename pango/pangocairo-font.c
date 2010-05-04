@@ -206,6 +206,30 @@ _pango_cairo_font_install (PangoFont *font,
 }
 
 
+static int
+max_glyph_width (PangoLayout *layout)
+{
+  int max_width = 0;
+  GSList *l, *r;
+
+  for (l = pango_layout_get_lines_readonly (layout); l; l = l->next)
+    {
+      PangoLayoutLine *line = l->data;
+
+      for (r = line->runs; r; r = r->next)
+	{
+	  PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
+	  int i;
+
+	  for (i = 0; i < glyphs->num_glyphs; i++)
+	    if (glyphs->glyphs[i].geometry.width > max_width)
+	      max_width = glyphs->glyphs[i].geometry.width;
+	}
+    }
+
+  return max_width;
+}
+
 typedef struct _PangoCairoFontMetricsInfo
 {
   const char       *sample_str;
@@ -239,6 +263,10 @@ _pango_cairo_font_get_metrics (PangoFont     *font,
       PangoFontMap *fontmap;
       PangoContext *context;
       cairo_font_options_t *font_options;
+      PangoLayout *layout;
+      PangoRectangle extents;
+      PangoFontDescription *desc;
+
       int height, shift;
 
       /* XXX this is racy.  need a ref'ing getter... */
@@ -260,7 +288,25 @@ _pango_cairo_font_get_metrics (PangoFont     *font,
       pango_cairo_context_set_font_options (context, font_options);
       cairo_font_options_destroy (font_options);
 
-      info->metrics = (* PANGO_CAIRO_FONT_GET_IFACE (font)->create_metrics_for_context) (cfont, context);
+      info->metrics = (* PANGO_CAIRO_FONT_GET_IFACE (font)->create_base_metrics_for_context) (cfont, context);
+
+      /* Update approximate_*_width now */
+
+      layout = pango_layout_new (context);
+      desc = pango_font_describe_with_absolute_size (font);
+      pango_layout_set_font_description (layout, desc);
+      pango_font_description_free (desc);
+
+      pango_layout_set_text (layout, sample_str, -1);
+      pango_layout_get_extents (layout, NULL, &extents);
+
+      info->metrics->approximate_char_width = extents.width / pango_utf8_strwidth (sample_str);
+
+      pango_layout_set_text (layout, "0123456789", -1);
+      info->metrics->approximate_digit_width = max_glyph_width (layout);
+
+      g_object_unref (layout);
+
 
       /* We may actually reuse ascent/descent we got from cairo here.  that's
        * in cf_priv->font_extents.

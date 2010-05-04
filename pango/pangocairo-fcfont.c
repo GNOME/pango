@@ -64,19 +64,19 @@ pango_cairo_fc_font_create_font_face (PangoCairoFont *cfont)
 }
 
 static PangoFontMetrics *
-pango_cairo_fc_font_create_metrics_for_context (PangoCairoFont *cfont,
-					        PangoContext   *context)
+pango_cairo_fc_font_create_base_metrics_for_context (PangoCairoFont *cfont,
+						     PangoContext   *context)
 {
   PangoFcFont *fcfont = (PangoFcFont *) (cfont);
 
-  return pango_fc_font_create_metrics_for_context (fcfont, context);
+  return pango_fc_font_create_base_metrics_for_context (fcfont, context);
 }
 
 static void
 cairo_font_iface_init (PangoCairoFontIface *iface)
 {
   iface->create_font_face = pango_cairo_fc_font_create_font_face;
-  iface->create_metrics_for_context = pango_cairo_fc_font_create_metrics_for_context;
+  iface->create_base_metrics_for_context = pango_cairo_fc_font_create_base_metrics_for_context;
   iface->cf_priv_offset = G_STRUCT_OFFSET (PangoCairoFcFont, cf_priv);
 }
 

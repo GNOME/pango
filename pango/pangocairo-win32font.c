@@ -54,16 +54,16 @@ struct _PangoCairoWin32FontClass
 
 GType pango_cairo_win32_font_get_type (void);
 
-static cairo_font_face_t *pango_cairo_win32_font_create_font_face           (PangoCairoFont *font);
-static PangoFontMetrics  *pango_cairo_win32_font_create_metrics_for_context (PangoCairoFont *font,
-									     PangoContext    *context);
+static cairo_font_face_t *pango_cairo_win32_font_create_font_face                (PangoCairoFont *font);
+static PangoFontMetrics  *pango_cairo_win32_font_create_base_metrics_for_context (PangoCairoFont *font,
+										  PangoContext    *context);
 
 
 static void
 cairo_font_iface_init (PangoCairoFontIface *iface)
 {
   iface->create_font_face = pango_cairo_win32_font_create_font_face;
-  iface->create_metrics_for_context = pango_cairo_win32_font_create_metrics_for_context;
+  iface->create_base_metrics_for_context = pango_cairo_win32_font_create_base_metrics_for_context;
   iface->cf_priv_offset = G_STRUCT_OFFSET (PangoCairoWin32Font, cf_priv);
 }
 
@@ -104,15 +104,10 @@ max_glyph_width (PangoLayout *layout)
 }
 
 static PangoFontMetrics *
-pango_cairo_win32_font_create_metrics_for_context (PangoCairoFont *font,
-                                                   PangoContext   *context)
+pango_cairo_win32_font_create_base_metrics_for_context (PangoCairoFont *font,
+							PangoContext   *context)
 {
   PangoFontMetrics *metrics;
-  PangoFontDescription *font_desc;
-  PangoLayout *layout;
-  PangoRectangle extents;
-  PangoLanguage *language = pango_context_get_language (context);
-  const char *sample_str = pango_language_get_sample_string (language);
   cairo_scaled_font_t *scaled_font;
   cairo_font_extents_t font_extents;
   double height;
@@ -143,20 +138,6 @@ pango_cairo_win32_font_create_metrics_for_context (PangoCairoFont *font,
   /* Quantizing may have pushed underline_position to 0.  Not good */
   if (metrics->underline_position == 0)
     metrics->underline_position = - metrics->underline_thickness;
-
-  layout = pango_layout_new (context);
-  font_desc = pango_font_describe_with_absolute_size ((PangoFont *) font);
-  pango_layout_set_font_description (layout, font_desc);
-  pango_layout_set_text (layout, sample_str, -1);
-  pango_layout_get_extents (layout, NULL, &extents);
-
-  metrics->approximate_char_width = extents.width / pango_utf8_strwidth (sample_str);
-
-  pango_layout_set_text (layout, "0123456789", -1);
-  metrics->approximate_digit_width = max_glyph_width (layout);
-
-  pango_font_description_free (font_desc);
-  g_object_unref (layout);
 
   return metrics;
 }
