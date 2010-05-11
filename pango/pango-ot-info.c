@@ -171,14 +171,14 @@ get_glyph_class (gunichar        charcode,
     case G_UNICODE_COMBINING_MARK:
     case G_UNICODE_ENCLOSING_MARK:
     case G_UNICODE_NON_SPACING_MARK:
-      *class = 3;		/* Mark glyph (non-spacing combining glyph) */
+      *class = HB_OT_LAYOUT_GLYPH_CLASS_MARK;		/* Mark glyph (non-spacing combining glyph) */
       return TRUE;
     case G_UNICODE_UNASSIGNED:
     case G_UNICODE_PRIVATE_USE:
       return FALSE;		/* Unknown, don't assign a class; classes get
 				 * propagated during GSUB application */
     default:
-      *class = 1;               /* Base glyph (single character, spacing glyph) */
+      *class = HB_OT_LAYOUT_GLYPH_CLASS_BASE_GLYPH;	/* Base glyph (single character, spacing glyph) */
       return TRUE;
     }
 }
