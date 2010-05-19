@@ -33,8 +33,7 @@
 #include <hb-ft.h>
 #include <hb-glib.h>
 
-#define PANGO_SCALE_26_6 (PANGO_SCALE / (1<<6))
-#define PANGO_UNITS_26_6(d)    ((d) * PANGO_SCALE_26_6)
+#define PANGO_UNITS_26_6(d)	((d) << 4)
 
 
 /* No extra fields needed */
@@ -249,8 +248,8 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 		     &context);
   hb_font_set_scale (hb_font,
 		     /* XXX CTM */
-		     PANGO_UNITS_26_6 (ft_face->size->metrics.x_scale),
-		     PANGO_UNITS_26_6 (ft_face->size->metrics.y_scale));
+		     ((guint64) ft_face->size->metrics.x_scale * ft_face->units_per_EM) >> 12,
+		     ((guint64) ft_face->size->metrics.y_scale * ft_face->units_per_EM) >> 12);
   is_hinted = fc_font->is_hinted;
   hb_font_set_ppem (hb_font,
 		    is_hinted ? ft_face->size->metrics.x_ppem : 0,

@@ -536,8 +536,8 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
   /* XXX reuse hb_font */
   hb_font = hb_font_create ();
   hb_font_set_scale (hb_font,
-		     info->face->size->metrics.x_scale,
-		     info->face->size->metrics.y_scale);
+		     ((guint64) info->face->size->metrics.x_scale * info->face->units_per_EM) >> 12,
+		     ((guint64) info->face->size->metrics.y_scale * info->face->units_per_EM) >> 12);
   is_hinted = buffer->font->is_hinted;
   hb_font_set_ppem (hb_font,
 		    is_hinted ? info->face->size->metrics.x_ppem : 0,
@@ -558,7 +558,7 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 	{
 	  PangoRectangle logical_rect;
 	  pango_font_get_glyph_extents ((PangoFont *) buffer->font, hb_glyph->codepoint, NULL, &logical_rect);
-	  hb_position->x_advance = PANGO_UNITS_TO_26_6 (logical_rect.width);
+	  hb_position->x_advance = logical_rect.width;
 	}
       else
 	hb_position->x_advance = 0;

@@ -273,12 +273,12 @@ pango_ot_buffer_output (const PangoOTBuffer *buffer,
       glyphs->glyphs[i].attr.is_cluster_start = glyphs->log_clusters[i] != last_cluster;
       last_cluster = glyphs->log_clusters[i];
 
-      advance = PANGO_UNITS_26_6(hb_position->x_advance);
+      advance = hb_position->x_advance;
       if (is_hinted)
 	advance = PANGO_UNITS_ROUND (advance);
       glyphs->glyphs[i].geometry.width = advance;
-      glyphs->glyphs[i].geometry.x_offset =  PANGO_UNITS_26_6 (hb_position->x_offset);
-      glyphs->glyphs[i].geometry.y_offset = -PANGO_UNITS_26_6 (hb_position->y_offset);
+      glyphs->glyphs[i].geometry.x_offset =  hb_position->x_offset;
+      glyphs->glyphs[i].geometry.y_offset = -hb_position->y_offset;
 
       hb_glyph++;
       hb_position++;
