@@ -148,7 +148,7 @@ pango_ot_buffer_add_glyph (PangoOTBuffer *buffer,
 			   guint          cluster)
 {
   hb_buffer_add_glyph (buffer->buffer,
-			glyph, properties, cluster);
+			glyph, ~properties, cluster);
 }
 
 /**
