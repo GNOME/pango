@@ -182,7 +182,7 @@ const PangoScriptProperties script_properties[] =
 
       /* Unicode-4.0 additions */
       {LTR, NONE, S, FALSE},	/* Brai */
-      {LTR, NONE, S, FALSE},	/* Cprt */
+      {RTL, NONE, S, FALSE},	/* Cprt */
       {LTR, NONE, S, FALSE},	/* Limb */
       {LTR, NONE, S, FALSE},	/* Osma */
       {LTR, NONE, S, FALSE},	/* Shaw */
