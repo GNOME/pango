@@ -1419,10 +1419,10 @@ struct PosLookupSubTable
     }
   }
 
-  inline bool sanitize (SANITIZE_ARG_DEF) {
+  inline bool sanitize (SANITIZE_ARG_DEF, unsigned int lookup_type) {
     TRACE_SANITIZE ();
-    if (!SANITIZE (u.format)) return false;
-    switch (u.format) {
+    if (!SANITIZE (u.sub_format)) return false;
+    switch (lookup_type) {
     case Single:		return u.single->sanitize (SANITIZE_ARG);
     case Pair:			return u.pair->sanitize (SANITIZE_ARG);
     case Cursive:		return u.cursive->sanitize (SANITIZE_ARG);
@@ -1438,7 +1438,7 @@ struct PosLookupSubTable
 
   private:
   union {
-  USHORT		format;
+  USHORT		sub_format;
   SinglePos		single[VAR];
   PairPos		pair[VAR];
   CursivePos		cursive[VAR];
@@ -1535,7 +1535,7 @@ struct PosLookup : Lookup
     TRACE_SANITIZE ();
     if (!Lookup::sanitize (SANITIZE_ARG)) return false;
     OffsetArrayOf<PosLookupSubTable> &list = (OffsetArrayOf<PosLookupSubTable> &) subTable;
-    return SANITIZE_THIS (list);
+    return list.sanitize (SANITIZE_ARG, this, get_type ());
   }
 };
 
@@ -1591,7 +1591,7 @@ inline bool ExtensionPos::sanitize (SANITIZE_ARG_DEF)
   return Extension::sanitize (SANITIZE_ARG) &&
 	 (&(Extension::get_subtable ()) == &Null(LookupSubTable) ||
 	  get_type () == PosLookupSubTable::Extension ||
-	  DECONST_CAST (PosLookupSubTable, get_subtable (), 0).sanitize (SANITIZE_ARG));
+	  DECONST_CAST (PosLookupSubTable, get_subtable (), 0).sanitize (SANITIZE_ARG, get_type ()));
 }
 
 static inline bool position_lookup (APPLY_ARG_DEF, unsigned int lookup_index)
