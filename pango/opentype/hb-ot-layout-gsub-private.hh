@@ -702,10 +702,10 @@ struct SubstLookupSubTable
     }
   }
 
-  inline bool sanitize (SANITIZE_ARG_DEF) {
+  inline bool sanitize (SANITIZE_ARG_DEF, unsigned int lookup_type) {
     TRACE_SANITIZE ();
-    if (!SANITIZE (u.format)) return false;
-    switch (u.format) {
+    if (!SANITIZE (u.sub_format)) return false;
+    switch (lookup_type) {
     case Single:		return u.single->sanitize (SANITIZE_ARG);
     case Multiple:		return u.multiple->sanitize (SANITIZE_ARG);
     case Alternate:		return u.alternate->sanitize (SANITIZE_ARG);
@@ -720,7 +720,7 @@ struct SubstLookupSubTable
 
   private:
   union {
-  USHORT			format;
+  USHORT			sub_format;
   SingleSubst			single[VAR];
   MultipleSubst			multiple[VAR];
   AlternateSubst		alternate[VAR];
@@ -830,7 +830,7 @@ struct SubstLookup : Lookup
     TRACE_SANITIZE ();
     if (!Lookup::sanitize (SANITIZE_ARG)) return false;
     OffsetArrayOf<SubstLookupSubTable> &list = (OffsetArrayOf<SubstLookupSubTable> &) subTable;
-    return SANITIZE_THIS (list);
+    return list.sanitize (SANITIZE_ARG, this, get_type ());
   }
 };
 
@@ -887,7 +887,7 @@ inline bool ExtensionSubst::sanitize (SANITIZE_ARG_DEF)
   return Extension::sanitize (SANITIZE_ARG) &&
 	 (&(Extension::get_subtable ()) == &Null(LookupSubTable) ||
 	  get_type () == SubstLookupSubTable::Extension ||
-	  DECONST_CAST (SubstLookupSubTable, get_subtable (), 0).sanitize (SANITIZE_ARG));
+	  DECONST_CAST (SubstLookupSubTable, get_subtable (), 0).sanitize (SANITIZE_ARG, get_type ()));
 }
 
 static inline bool substitute_lookup (APPLY_ARG_DEF, unsigned int lookup_index)

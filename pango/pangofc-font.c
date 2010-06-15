@@ -479,59 +479,14 @@ get_face_metrics (PangoFcFont      *fcfont,
   PANGO_FC_FONT_UNLOCK_FACE (fcfont);
 }
 
-static int
-max_glyph_width (PangoLayout *layout)
-{
-  int max_width = 0;
-  GSList *l, *r;
-
-  for (l = pango_layout_get_lines_readonly (layout); l; l = l->next)
-    {
-      PangoLayoutLine *line = l->data;
-
-      for (r = line->runs; r; r = r->next)
-	{
-	  PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
-	  int i;
-
-	  for (i = 0; i < glyphs->num_glyphs; i++)
-	    if (glyphs->glyphs[i].geometry.width > max_width)
-	      max_width = glyphs->glyphs[i].geometry.width;
-	}
-    }
-
-  return max_width;
-}
-
 PangoFontMetrics *
-pango_fc_font_create_metrics_for_context (PangoFcFont   *fcfont,
-					  PangoContext  *context)
+pango_fc_font_create_base_metrics_for_context (PangoFcFont   *fcfont,
+					       PangoContext  *context)
 {
   PangoFontMetrics *metrics;
-  PangoLayout *layout;
-  PangoRectangle extents;
-  PangoLanguage *language = pango_context_get_language (context);
-  const char *sample_str = pango_language_get_sample_string (language);
-  PangoFontDescription *desc = pango_font_describe_with_absolute_size (PANGO_FONT (fcfont));
-
   metrics = pango_font_metrics_new ();
 
   get_face_metrics (fcfont, metrics);
-
-  layout = pango_layout_new (context);
-  pango_layout_set_font_description (layout, desc);
-  pango_font_description_free (desc);
-
-  pango_layout_set_text (layout, sample_str, -1);
-  pango_layout_get_extents (layout, NULL, &extents);
-
-  metrics->approximate_char_width =
-    extents.width / pango_utf8_strwidth (sample_str);
-
-  pango_layout_set_text (layout, "0123456789", -1);
-  metrics->approximate_digit_width = max_glyph_width (layout);
-
-  g_object_unref (layout);
 
   return metrics;
 }
@@ -581,7 +536,7 @@ pango_fc_font_get_metrics (PangoFont     *font,
       context = pango_font_map_create_context (fontmap);
       pango_context_set_language (context, language);
 
-      info->metrics = pango_fc_font_create_metrics_for_context (fcfont, context);
+      info->metrics = pango_fc_font_create_base_metrics_for_context (fcfont, context);
 
       g_object_unref (context);
       g_object_unref (fontmap);

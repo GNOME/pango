@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007,2008,2009  Red Hat, Inc.
+ * Copyright (C) 2007,2008,2009,2010  Red Hat, Inc.
  *
  *  This is part of HarfBuzz, an OpenType Layout engine library.
  *
@@ -61,32 +61,26 @@
 /* Null objects */
 
 /* Global nul-content Null pool.  Enlarge as necessary. */
-static const void *NullPool[32 / sizeof (void *)];
+static const void *_NullPool[32 / sizeof (void *)];
 
 /* Generic template for nul-content sizeof-sized Null objects. */
 template <typename Type>
-struct Null
-{
-  ASSERT_STATIC (sizeof (Type) <= sizeof (NullPool));
-  static inline const Type &get () { return CONST_CAST (Type, *NullPool, 0); }
-};
+static inline const Type& Null () {
+  ASSERT_STATIC (sizeof (Type) <= sizeof (_NullPool));
+  return CONST_CAST (Type, *_NullPool, 0);
+}
 
 /* Specializaiton for arbitrary-content arbitrary-sized Null objects. */
 #define DEFINE_NULL_DATA(Type, size, data) \
-static const char _Null##Type[size] = data; \
+static const char _Null##Type[size + 1] = data; \
 template <> \
-struct Null <Type> \
-{ \
-  static inline const Type &get () { return CONST_CAST (Type, *_Null##Type, 0); } \
+inline const Type& Null<Type> () { \
+  return CONST_CAST (Type, *_Null##Type, 0); \
 }
 
 /* Accessor macro. */
-#define Null(Type) (Null<Type>::get())
+#define Null(Type) Null<Type>()
 
-
-#define ASSERT_SIZE_DATA(Type, size, data) \
-  ASSERT_SIZE (Type, size); \
-  DEFINE_NULL_DATA (Type, size, data)
 
 /* get_for_data() is a static class method returning a reference to an
  * instance of Type located at the input data location.  It's just a
@@ -117,14 +111,14 @@ struct Null <Type> \
 #endif
 
 #if HB_DEBUG_SANITIZE
-#define TRACE_SANITIZE_ARG_DEF	, unsigned int sanitize_depth
+#define TRACE_SANITIZE_ARG_DEF	, unsigned int sanitize_depth HB_GNUC_UNUSED
 #define TRACE_SANITIZE_ARG	, sanitize_depth + 1
 #define TRACE_SANITIZE_ARG_INIT	, 1
 #define TRACE_SANITIZE() \
 	HB_STMT_START { \
 	    if (sanitize_depth < HB_DEBUG_SANITIZE) \
 		fprintf (stderr, "SANITIZE(%p) %-*d-> %s\n", \
-			 (CONST_CHARP (this) == NullPool) ? 0 : this, \
+			 (CONST_CHARP (this) == CONST_CHARP (&NullPool)) ? 0 : this, \
 			 sanitize_depth, sanitize_depth, \
 			 __PRETTY_FUNCTION__); \
 	} HB_STMT_END
@@ -253,7 +247,6 @@ _hb_sanitize_edit (SANITIZE_ARG_DEF,
 #define SANITIZE_OBJ(X) SANITIZE_MEM(&(X), sizeof (X))
 #define SANITIZE_GET_SIZE() SANITIZE_SELF() && SANITIZE_MEM (this, this->get_size ())
 
-/* TODO Optimize this if L is fixed (gcc magic) */
 #define SANITIZE_MEM(B,L) HB_LIKELY (_hb_sanitize_check (SANITIZE_ARG, CONST_CHARP(B), (L)))
 
 #define SANITIZE_ARRAY(A,S,L) HB_LIKELY (_hb_sanitize_array (SANITIZE_ARG, CONST_CHARP(A), S, L))
@@ -350,7 +343,7 @@ struct Sanitizer
   { \
     inline NAME& set (TYPE i) { (TYPE&) v = BIG_ENDIAN (i); return *this; } \
     inline operator TYPE(void) const { return BIG_ENDIAN ((TYPE&) v); } \
-    inline bool operator== (NAME o) const { return (TYPE&) v == (TYPE&) o.v; } \
+    inline bool operator == (const NAME &o) const { return (TYPE&) v == (TYPE&) o.v; } \
     inline bool sanitize (SANITIZE_ARG_DEF) { \
       TRACE_SANITIZE (); \
       return SANITIZE_SELF (); \
@@ -363,9 +356,9 @@ struct Sanitizer
   struct NAME \
   { \
     static inline unsigned int get_size () { return BYTES; } \
-    inline NAME& set (TYPE i) { BIG_ENDIAN##_put_unaligned(v, i); return *this; } \
+    inline void set (TYPE i) { BIG_ENDIAN##_put_unaligned(v, i); } \
     inline operator TYPE(void) const { return BIG_ENDIAN##_get_unaligned (v); } \
-    inline bool operator== (NAME o) const { return BIG_ENDIAN##_cmp_unaligned (v, o.v); } \
+    inline bool operator == (const NAME &o) const { return BIG_ENDIAN##_cmp_unaligned (v, o.v); } \
     inline bool sanitize (SANITIZE_ARG_DEF) { \
       TRACE_SANITIZE (); \
       return SANITIZE_SELF (); \
@@ -387,10 +380,6 @@ DEFINE_INT_TYPE (LONG,	  , 32);	/* 32-bit signed integer. */
  * system, feature, or baseline */
 struct Tag : ULONG
 {
-  inline Tag (const Tag &o) { *(ULONG*)this = (ULONG&) o; }
-  inline Tag (uint32_t i) { (*(ULONG*)this).set (i); }
-  inline Tag (const char *c) { *(ULONG*)this = *(ULONG*)c; }
-  inline bool operator== (const char *c) const { return *(ULONG*)this == *(ULONG*)c; }
   /* What the char* converters return is NOT nul-terminated.  Print using "%.4s" */
   inline operator const char* (void) const { return CONST_CHARP(this); }
   inline operator char* (void) { return CHARP(this); }
@@ -405,9 +394,7 @@ struct Tag : ULONG
   }
 };
 ASSERT_SIZE (Tag, 4);
-#define _NULL_TAG_INIT  {' ', ' ', ' ', ' '}
-DEFINE_NULL_DATA (Tag, 4, _NULL_TAG_INIT);
-#undef _NULL_TAG_INIT
+DEFINE_NULL_DATA (Tag, 4, "    ");
 
 /* Glyph index number, same as uint16 (length = 16 bits) */
 typedef USHORT GlyphID;
@@ -463,7 +450,7 @@ ASSERT_SIZE (FixedVersion, 4);
 template <typename OffsetType, typename Type>
 struct GenericOffsetTo : OffsetType
 {
-  inline const Type& operator() (const void *base) const
+  inline const Type& operator () (const void *base) const
   {
     unsigned int offset = *this;
     if (HB_UNLIKELY (!offset)) return Null(Type);
@@ -523,11 +510,14 @@ struct GenericArrayOf
   inline bool sanitize (SANITIZE_ARG_DEF) {
     TRACE_SANITIZE ();
     if (!SANITIZE_GET_SIZE()) return false;
-    /* Note:
-     * for non-recursive types, this is not much needed.
-     * But we keep the code to make sure the objects pointed to
-     * do have a simple sanitize(). */
+    /* Note: for structs that do not reference other structs,
+     * we do not need to call their sanitize() as we already did
+     * a bound check on the aggregate array size, hence the return.
+     */
     return true;
+    /* We do keep this code though to make sure the structs pointed
+     * to do have a simple sanitize(), ie. they do not reference
+     * other structs. */
     unsigned int count = len;
     for (unsigned int i = 0; i < count; i++)
       if (!SANITIZE (array()[i]))
@@ -626,11 +616,14 @@ struct HeadlessArrayOf
   inline bool sanitize (SANITIZE_ARG_DEF) {
     TRACE_SANITIZE ();
     if (!SANITIZE_GET_SIZE()) return false;
-    /* Note:
-     * for non-recursive types, this is not much needed.
-     * But we keep the code to make sure the objects pointed to
-     * do have a simple sanitize(). */
+    /* Note: for structs that do not reference other structs,
+     * we do not need to call their sanitize() as we already did
+     * a bound check on the aggregate array size, hence the return.
+     */
     return true;
+    /* We do keep this code though to make sure the structs pointed
+     * to do have a simple sanitize(), ie. they do not reference
+     * other structs. */
     unsigned int count = len ? len - 1 : 0;
     Type *a = array();
     for (unsigned int i = 0; i < count; i++)

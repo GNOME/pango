@@ -84,7 +84,8 @@ struct RecordArrayOf : ArrayOf<Record<Type> > {
   }
   inline bool find_index (hb_tag_t tag, unsigned int *index) const
   {
-    const Tag t = tag;
+    Tag t;
+    t.set (tag);
     // TODO bsearch
     const Record<Type> *a = this->const_array();
     unsigned int count = this->len;
@@ -171,7 +172,8 @@ struct LangSys
 				 * = 0xFFFF */
   IndexArray	featureIndex;	/* Array of indices into the FeatureList */
 };
-ASSERT_SIZE_DATA (LangSys, 6, "\0\0\xFF\xFF");
+ASSERT_SIZE (LangSys, 6);
+DEFINE_NULL_DATA (LangSys, 6, "\0\0\xFF\xFF");
 
 
 struct Script
@@ -372,7 +374,8 @@ struct CoverageRangeRecord
   USHORT	startCoverageIndex;	/* Coverage Index of first GlyphID in
 					 * range */
 };
-ASSERT_SIZE_DATA (CoverageRangeRecord, 6, "\000\001");
+ASSERT_SIZE (CoverageRangeRecord, 6);
+DEFINE_NULL_DATA (CoverageRangeRecord, 6, "\000\001");
 
 struct CoverageFormat2
 {
@@ -408,7 +411,7 @@ ASSERT_SIZE (CoverageFormat2, 4);
 
 struct Coverage
 {
-  inline unsigned int operator() (hb_codepoint_t glyph_id) const { return get_coverage (glyph_id); }
+  inline unsigned int operator () (hb_codepoint_t glyph_id) const { return get_coverage (glyph_id); }
 
   inline unsigned int get_coverage (hb_codepoint_t glyph_id) const
   {
@@ -491,7 +494,8 @@ struct ClassRangeRecord
   GlyphID	end;		/* Last GlyphID in the range */
   USHORT	classValue;	/* Applied to all glyphs in the range */
 };
-ASSERT_SIZE_DATA (ClassRangeRecord, 6, "\000\001");
+ASSERT_SIZE (ClassRangeRecord, 6);
+DEFINE_NULL_DATA (ClassRangeRecord, 6, "\000\001");
 
 struct ClassDefFormat2
 {
@@ -525,7 +529,7 @@ ASSERT_SIZE (ClassDefFormat2, 4);
 
 struct ClassDef
 {
-  inline unsigned int operator() (hb_codepoint_t glyph_id) const { return get_class (glyph_id); }
+  inline hb_ot_layout_class_t operator () (hb_codepoint_t glyph_id) const { return get_class (glyph_id); }
 
   inline hb_ot_layout_class_t get_class (hb_codepoint_t glyph_id) const
   {
@@ -561,7 +565,7 @@ struct ClassDef
 
 struct Device
 {
-  inline int operator() (unsigned int ppem_size) const { return get_delta (ppem_size); }
+  inline int operator () (unsigned int ppem_size) const { return get_delta (ppem_size); }
 
   inline int get_delta (unsigned int ppem_size) const
   {

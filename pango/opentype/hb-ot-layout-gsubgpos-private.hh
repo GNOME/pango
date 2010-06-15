@@ -36,14 +36,14 @@
 #endif
 
 #if HB_DEBUG_APPLY
-#define TRACE_APPLY_ARG_DEF	, unsigned int apply_depth
+#define TRACE_APPLY_ARG_DEF	, unsigned int apply_depth HB_GNUC_UNUSED
 #define TRACE_APPLY_ARG		, apply_depth + 1
 #define TRACE_APPLY_ARG_INIT	, 1
 #define TRACE_APPLY() \
 	HB_STMT_START { \
 	    if (apply_depth < HB_DEBUG_APPLY) \
 		fprintf (stderr, "APPLY(%p) %-*d-> %s\n", \
-			 (CONST_CHARP (this) == NullPool) ? 0 : this, \
+			 (CONST_CHARP (this) == CONST_CHARP (&NullPool)) ? 0 : this, \
 			 apply_depth, apply_depth, \
 			 __PRETTY_FUNCTION__); \
 	} HB_STMT_END
@@ -59,7 +59,7 @@
 	hb_buffer_t    *buffer, \
 	unsigned int    context_length HB_GNUC_UNUSED, \
 	unsigned int    nesting_level_left HB_GNUC_UNUSED, \
-	unsigned int    lookup_flag, \
+	unsigned int    lookup_flag HB_GNUC_UNUSED, \
 	unsigned int    property HB_GNUC_UNUSED /* propety of first glyph */ \
 	TRACE_APPLY_ARG_DEF
 #define APPLY_ARG \
@@ -90,7 +90,7 @@ struct ContextFuncs
 };
 
 
-static inline bool match_glyph (hb_codepoint_t glyph_id, const USHORT &value, char *data)
+static inline bool match_glyph (hb_codepoint_t glyph_id, const USHORT &value, char *data HB_GNUC_UNUSED)
 {
   return glyph_id == value;
 }
