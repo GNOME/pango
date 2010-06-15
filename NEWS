@@ -1,3 +1,15 @@
+Overview of changes between 1.28.0 and 1.28.1
+=============================================
+- pango-view now accepts --margin
+- Various HarfBuzz bug fixes
+- Build fixes
+- Bugs fixed:
+    Bug 582698 - Support CSS-style margin specification
+    Bug 621612 - VPATH build fix
+    Bug 605870 - Incorrect shaping for Syriac
+    Bug 457990 - font metrics are not converted to user space in cairo backend
+    Bug 613015 - [HB] Does not sanitize Device tables referenced from ValueRecords
+
 Overview of changes between 1.27.1 and 1.28.0
 =============================================
 - [HB] Fix leak when duplicating blob

@@ -8,7 +8,7 @@ dnl ==========================================================================
 dnl The triplet
 m4_define([pango_version_major], [1])
 m4_define([pango_version_minor], [28])
-m4_define([pango_version_micro], [0])
+m4_define([pango_version_micro], [1])
 dnl Module API version.  This should be stepped up when a change causes
 dnl older modules to not work with new pango.
 m4_define([pango_module_version], [1.6.0])
