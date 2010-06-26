@@ -3,6 +3,7 @@ EXPORTS
 	_pango_win32_make_matching_logfontw
  	_pango_win32_font_get_type
  	_pango_win32_font_map_get_type
+ 	_pango_win32_font_get_hfont
 	pango_win32_font_cache_free
 	pango_win32_font_cache_load
 	pango_win32_font_cache_loadw

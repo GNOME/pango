@@ -129,11 +129,8 @@ struct _PangoWin32Font
 
   PangoFontMap *fontmap;
 
-  /* Written by pango_win32_get_hfont: */
+  /* Written by _pango_win32_font_get_hfont: */
   HFONT hfont;
-  gint tm_ascent;
-  gint tm_descent;
-  gint tm_overhang;
 
   PangoWin32Face *win32face;
 
@@ -274,6 +271,8 @@ gboolean	_pango_win32_get_name_header	    (HDC                 hdc,
 gboolean	_pango_win32_get_name_record        (HDC                 hdc,
 						     gint                i,
 						     struct name_record *record);
+
+HFONT		_pango_win32_font_get_hfont         (PangoFont          *font);
 
 extern HDC _pango_win32_hdc;
 extern OSVERSIONINFO _pango_win32_os_version_info;
