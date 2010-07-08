@@ -692,19 +692,23 @@ DllMain (HINSTANCE hinstDLL,
 G_CONST_RETURN char *
 pango_get_sysconf_subdirectory (void)
 {
-#ifdef G_OS_WIN32
-  static gchar *result = NULL;
+  static const gchar *result = NULL;
 
   if (result == NULL)
     {
+#ifdef G_OS_WIN32
       gchar *root = g_win32_get_package_installation_directory_of_module (pango_dll);
       result = g_build_filename (root, "etc\\pango", NULL);
       g_free (root);
+#else
+      const char *sysconfdir = g_getenv ("PANGO_SYSCONFDIR");
+      if (sysconfdir != NULL)
+	result = g_build_filename (sysconfdir, "pango", NULL);
+      else
+	result = SYSCONFDIR "/pango";
+#endif
     }
   return result;
-#else
-  return SYSCONFDIR "/pango";
-#endif
 }
 
 /**
@@ -721,11 +725,11 @@ pango_get_sysconf_subdirectory (void)
 G_CONST_RETURN char *
 pango_get_lib_subdirectory (void)
 {
-#ifdef G_OS_WIN32
   static gchar *result = NULL;
 
   if (result == NULL)
     {
+#ifdef G_OS_WIN32
       gchar *root = g_win32_get_package_installation_directory_of_module (pango_dll);
       /* If we are running against an uninstalled copy of the Pango DLL,
        * use the compile-time installation prefix.
@@ -735,11 +739,15 @@ pango_get_lib_subdirectory (void)
       else
 	result = g_build_filename (root, "lib\\pango", NULL);
       g_free (root);
+#else
+      const char *libdir = g_getenv ("PANGO_LIBDIR");
+      if (libdir != NULL)
+	result = g_build_filename (libdir, "pango", NULL);
+      else
+	result = LIBDIR "/pango";
+#endif
     }
   return result;
-#else
-  return LIBDIR "/pango";
-#endif
 }
 
 
