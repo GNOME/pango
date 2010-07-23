@@ -171,7 +171,7 @@ Pango_1_0_gir_PACKAGES = gobject-2.0 cairo freetype2
 Pango_1_0_gir_INCLUDES = GObject-2.0 cairo-1.0
 Pango_1_0_gir_LIBS = libpango-1.0.la
 Pango_1_0_gir_CFLAGS = -I$(top_srcdir) $(PANGO_CFLAGS)
-Pango_1_0_gir_FILES = $(addprefix $(srcdir)/,$(pango_introspection_files))
+Pango_1_0_gir_FILES = $(pango_introspection_files)
 
 # ------------------- libpangox -------------------
 

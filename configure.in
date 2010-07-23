@@ -481,7 +481,7 @@ PKG_CHECK_MODULES(LIBTHAI, libthai >= $LIBTHAI_REQUIRED_VERSION, have_libthai=tr
 # Checks for GObject Introspection
 #
 
-GOBJECT_INTROSPECTION_CHECK([0.6.7])
+GOBJECT_INTROSPECTION_CHECK([0.6.14])
 
 #
 # Modules to build
