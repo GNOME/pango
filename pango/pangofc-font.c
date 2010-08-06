@@ -491,9 +491,30 @@ pango_fc_font_create_base_metrics_for_context (PangoFcFont   *fcfont,
   return metrics;
 }
 
-/* This function is cut-and-pasted into pangocairo-fcfont.c - it might be
- * better to add a virtual fcfont->create_context (font).
- */
+static int
+max_glyph_width (PangoLayout *layout)
+{
+  int max_width = 0;
+  GSList *l, *r;
+
+  for (l = pango_layout_get_lines_readonly (layout); l; l = l->next)
+    {
+      PangoLayoutLine *line = l->data;
+
+      for (r = line->runs; r; r = r->next)
+	{
+	  PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
+	  int i;
+
+	  for (i = 0; i < glyphs->num_glyphs; i++)
+	    if (glyphs->glyphs[i].geometry.width > max_width)
+	      max_width = glyphs->glyphs[i].geometry.width;
+	}
+    }
+
+  return max_width;
+}
+
 static PangoFontMetrics *
 pango_fc_font_get_metrics (PangoFont     *font,
 			   PangoLanguage *language)
@@ -537,6 +558,27 @@ pango_fc_font_get_metrics (PangoFont     *font,
       pango_context_set_language (context, language);
 
       info->metrics = pango_fc_font_create_base_metrics_for_context (fcfont, context);
+
+      { /* Compute derived metrics */
+	PangoLayout *layout;
+	PangoRectangle extents;
+	const char *sample_str = pango_language_get_sample_string (language);
+	PangoFontDescription *desc = pango_font_describe_with_absolute_size (font);
+
+        layout = pango_layout_new (context);
+	pango_layout_set_font_description (layout, desc);
+	pango_font_description_free (desc);
+
+	pango_layout_set_text (layout, sample_str, -1);
+	pango_layout_get_extents (layout, NULL, &extents);
+
+	info->metrics->approximate_char_width = extents.width / pango_utf8_strwidth (sample_str);
+
+	pango_layout_set_text (layout, "0123456789", -1);
+	info->metrics->approximate_digit_width = max_glyph_width (layout);
+
+	g_object_unref (layout);
+      }
 
       g_object_unref (context);
       g_object_unref (fontmap);
