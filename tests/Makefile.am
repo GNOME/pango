@@ -52,15 +52,18 @@ if HAVE_FREETYPE
 check_PROGRAMS += test-ot-tags
 endif
 
-gen_all_unicode_LDADD = $(GLIB_LIBS)
-testboundaries_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
-testboundaries_ucd_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
-testcolor_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
-testiter_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la ../pango/libpangocairo-$(PANGO_API_VERSION).la 
-testscript_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
-test_ot_tags_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la ../pango/libpangoft2-$(PANGO_API_VERSION).la 
+TEST_PANGO_LIBS = $(GLIB_LIBS) ../pango/libpango-$(PANGO_API_VERSION).la
+TEST_PANGOFT2_LIBS = $(TEST_PANGO_LIBS) ../pango/libpangoft2-$(PANGO_API_VERSION).la
+TEST_PANGOCAIRO_LIBS = $(TEST_PANGO_LIBS) ../pango/libpangocairo-$(PANGO_API_VERSION).la
 
-dump_boundaries_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
+gen_all_unicode_LDADD = $(GLIB_LIBS)
+testboundaries_LDADD = $(TEST_PANGO_LIBS)
+testboundaries_ucd_LDADD = $(TEST_PANGO_LIBS)
+testcolor_LDADD = $(TEST_PANGO_LIBS)
+testiter_LDADD = $(TEST_PANGOCAIRO_LIBS)
+testscript_LDADD = $(TEST_PANGO_LIBS)
+test_ot_tags_LDADD = $(TEST_PANGOFT2_LIBS)
+dump_boundaries_LDADD = $(TEST_PANGO_LIBS)
 
 if HAVE_CXX
 check_PROGRAMS += cxx-test
