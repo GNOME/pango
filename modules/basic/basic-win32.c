@@ -33,6 +33,8 @@
 #include "pango-engine.h"
 #include "pango-utils.h"
 
+extern HFONT _pango_win32_font_get_hfont (PangoFont *font);
+
 /* No extra fields needed */
 typedef PangoEngineShape      BasicEngineWin32;
 typedef PangoEngineShapeClass BasicEngineWin32Class ;
@@ -495,8 +497,7 @@ itemize_shape_and_place (PangoFont           *font,
 			 wchar_t             *wtext,
 			 int                  wlen,
 			 const PangoAnalysis *analysis,
-			 PangoGlyphString    *glyphs,
-			 SCRIPT_CACHE        *script_cache)
+			 PangoGlyphString    *glyphs)
 {
   int i;
   int item, nitems, item_step;
@@ -505,6 +506,11 @@ itemize_shape_and_place (PangoFont           *font,
   SCRIPT_STATE state;
   SCRIPT_ITEM items[100];
   double scale = pango_win32_font_get_metrics_factor (font);
+  HFONT hfont = _pango_win32_font_get_hfont (font);
+  static GHashTable *script_cache_hash = NULL;
+
+  if (!script_cache_hash)
+    script_cache_hash = g_hash_table_new (g_int64_hash, g_int64_equal);
 
   memset (&control, 0, sizeof (control));
   memset (&state, 0, sizeof (state));
@@ -551,9 +557,11 @@ itemize_shape_and_place (PangoFont           *font,
       int advances[1000];
       GOFFSET offsets[1000];
       ABC abc;
-      int script = items[item].a.eScript;
+      gint32 script = items[item].a.eScript;
       int ng;
       int char_offset;
+      SCRIPT_CACHE *script_cache;
+      gint64 font_and_script_key;
 
       memset (advances, 0, sizeof (advances));
       memset (offsets, 0, sizeof (offsets));
@@ -579,9 +587,33 @@ itemize_shape_and_place (PangoFont           *font,
 		 items[item].a.fNoGlyphIndex ? " fNoGlyphIndex" : "",
 		 items[item].iCharPos, items[item+1].iCharPos-1, itemlen);
 #endif
+      /* Create a hash key based on hfont and script engine */
+      font_and_script_key = (((gint64) ((gint32) hfont)) << 32) | script;
+
+      /* Get the script cache for this hfont and script */
+      script_cache = g_hash_table_lookup (script_cache_hash, &font_and_script_key);
+      if (!script_cache)
+	{
+	  gint64 *key_n;
+	  SCRIPT_CACHE *new_script_cache;
+
+	  key_n = g_new (gint64, 1);
+	  *key_n = font_and_script_key;
+
+	  new_script_cache = g_new0 (SCRIPT_CACHE, 1);
+	  script_cache = new_script_cache;
+
+	  /* Insert the new value */
+	  g_hash_table_insert (script_cache_hash, key_n, new_script_cache);
+
+#ifdef BASIC_WIN32_DEBUGGING
+	  if (pango_win32_debug)
+	    g_print ("  New SCRIPT_CACHE for font %p and script %d\n", hfont, script);
+#endif
+	}
 
       items[item].a.fRTL = analysis->level % 2;
-      if ((*script_shape) (hdc, &script_cache[script],
+      if ((*script_shape) (hdc, script_cache,
 			   wtext + items[item].iCharPos, itemlen,
 			   G_N_ELEMENTS (iglyphs),
 			   &items[item].a,
@@ -611,7 +643,7 @@ itemize_shape_and_place (PangoFont           *font,
 				 nglyphs, glyphs->log_clusters + ng,
 				 char_offset);
 
-      if ((*script_place) (hdc, &script_cache[script], iglyphs, nglyphs,
+      if ((*script_place) (hdc, script_cache, iglyphs, nglyphs,
 			   visattrs, &items[item].a,
 			   advances, offsets, &abc))
 	{
@@ -671,9 +703,7 @@ uniscribe_shape (PangoFont           *font,
 {
   wchar_t *wtext;
   long wlen;
-  int i;
   gboolean retval = TRUE;
-  SCRIPT_CACHE script_cache[100];
 
   if (!pango_win32_font_select_font (font, hdc))
     return FALSE;
@@ -684,11 +714,7 @@ uniscribe_shape (PangoFont           *font,
 
   if (retval)
     {
-      memset (script_cache, 0, sizeof (script_cache));
-      retval = itemize_shape_and_place (font, hdc, wtext, wlen, analysis, glyphs, script_cache);
-      for (i = 0; i < G_N_ELEMENTS (script_cache); i++)
-	if (script_cache[i])
-	  (*script_free_cache)(&script_cache[i]);
+      retval = itemize_shape_and_place (font, hdc, wtext, wlen, analysis, glyphs);
     }
 
   if (retval)
