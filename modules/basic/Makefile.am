@@ -47,7 +47,8 @@ endif
 endif
 
 pango_basic_win32_la_LDFLAGS = -module $(MODULE_LIBTOOL_OPTIONS)
-pango_basic_win32_la_LIBADD = $(pangowin32libs) -lgdi32
+pango_basic_win32_la_LIBADD = $(pangowin32libs) -lgdi32 -lusp10
+libpango_basic_win32_la_LIBADD = -lgdi32 -lusp10
 pango_basic_win32_la_SOURCES = basic-win32.c
 libpango_basic_win32_la_SOURCES = basic-win32.c
 libpango_basic_win32_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_basic_win32
