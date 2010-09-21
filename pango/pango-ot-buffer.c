@@ -23,6 +23,7 @@
 
 #include "pango-ot-private.h"
 #include "pangofc-private.h"
+#include "pango-impl-utils.h"
 
 /* cache a single hb_buffer_t */
 static hb_buffer_t *cached_buffer = NULL;
@@ -214,26 +215,6 @@ pango_ot_buffer_get_glyphs (const PangoOTBuffer  *buffer,
     *n_glyphs = hb_buffer_get_length (buffer->buffer);
 }
 
-static void
-swap_range (PangoGlyphString *glyphs, int start, int end)
-{
-  int i, j;
-
-  for (i = start, j = end - 1; i < j; i++, j--)
-    {
-      PangoGlyphInfo glyph_info;
-      gint log_cluster;
-
-      glyph_info = glyphs->glyphs[i];
-      glyphs->glyphs[i] = glyphs->glyphs[j];
-      glyphs->glyphs[j] = glyph_info;
-
-      log_cluster = glyphs->log_clusters[i];
-      glyphs->log_clusters[i] = glyphs->log_clusters[j];
-      glyphs->log_clusters[j] = log_cluster;
-    }
-}
-
 /**
  * pango_ot_buffer_output
  * @buffer: a #PangoOTBuffer
@@ -285,7 +266,7 @@ pango_ot_buffer_output (const PangoOTBuffer *buffer,
     }
 
   if (buffer->rtl)
-    swap_range (glyphs, 0, glyphs->num_glyphs);
+    pango_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
   if (!buffer->applied_gpos)
     pango_fc_font_kern_glyphs (buffer->font, glyphs);
 }

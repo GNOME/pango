@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in.
 
-SUBDIRS= pango modules pango-view examples docs tools tests
+SUBDIRS= pango modules pango-view examples docs tools tests build
 
 EXTRA_DIST = 			\
 	autogen.sh		\
@@ -31,9 +31,11 @@ EXTRA_DIST = 			\
 	MAINTAINERS		\
 	HACKING			\
 	README.win32		\
+	config.h.win32		\
 	pango-zip.sh.in		\
 	sanitize-la.sh		\
 	pango.doap
+
 MAINTAINERCLEANFILES = \
 	$(srcdir)/INSTALL \
 	$(srcdir)/aclocal.m4 \
@@ -98,6 +100,6 @@ if HAVE_WIN32
 pkgconfig_DATA += pangowin32.pc
 endif
 
-DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc --enable-man --disable-doc-cross-references
+DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc --enable-man --disable-doc-cross-references --enable-introspection
 
 -include $(top_srcdir)/git.mk

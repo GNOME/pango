@@ -75,7 +75,7 @@ struct _PangoCairoFontPrivateScaledFontData
 struct _PangoCairoFontPrivate
 {
   PangoCairoFont *cfont;
-   
+
   PangoCairoFontPrivateScaledFontData *data;
 
   cairo_scaled_font_t *scaled_font;
@@ -95,8 +95,8 @@ struct _PangoCairoFontIface
   GTypeInterface g_iface;
 
   cairo_font_face_t *(*create_font_face) (PangoCairoFont *cfont);
-  PangoFontMetrics *(*create_metrics_for_context) (PangoCairoFont *cfont,
-						   PangoContext   *context);
+  PangoFontMetrics *(*create_base_metrics_for_context) (PangoCairoFont *cfont,
+							PangoContext   *context);
 
   gssize cf_priv_offset;
 };

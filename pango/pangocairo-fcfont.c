@@ -64,19 +64,19 @@ pango_cairo_fc_font_create_font_face (PangoCairoFont *cfont)
 }
 
 static PangoFontMetrics *
-pango_cairo_fc_font_create_metrics_for_context (PangoCairoFont *cfont,
-					        PangoContext   *context)
+pango_cairo_fc_font_create_base_metrics_for_context (PangoCairoFont *cfont,
+						     PangoContext   *context)
 {
   PangoFcFont *fcfont = (PangoFcFont *) (cfont);
 
-  return pango_fc_font_create_metrics_for_context (fcfont, context);
+  return pango_fc_font_create_base_metrics_for_context (fcfont, context);
 }
 
 static void
 cairo_font_iface_init (PangoCairoFontIface *iface)
 {
   iface->create_font_face = pango_cairo_fc_font_create_font_face;
-  iface->create_metrics_for_context = pango_cairo_fc_font_create_metrics_for_context;
+  iface->create_base_metrics_for_context = pango_cairo_fc_font_create_base_metrics_for_context;
   iface->cf_priv_offset = G_STRUCT_OFFSET (PangoCairoFcFont, cf_priv);
 }
 
@@ -166,7 +166,7 @@ get_font_size (const FcPattern *pattern)
   double dpi;
 
   if (FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size) == FcResultMatch)
-    return size * PANGO_SCALE;
+    return size;
 
   /* Just in case FC_PIXEL_SIZE got unset between pango_fc_make_pattern()
    * and here.  That would be very weird.
@@ -240,8 +240,7 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap *cffontmap,
 		     fc_matrix.yy,
 		     0., 0.);
 
-  cairo_matrix_scale (&font_matrix,
-		      size / PANGO_SCALE, size / PANGO_SCALE);
+  cairo_matrix_scale (&font_matrix, size, size);
 
   _pango_cairo_font_private_initialize (&cffont->cf_priv,
 					(PangoCairoFont *) cffont,

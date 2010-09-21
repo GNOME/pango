@@ -108,20 +108,21 @@ pango_shape (const gchar      *text,
   else
     glyphs->num_glyphs = 0;
 
-  if (!glyphs->num_glyphs)
+  if (G_UNLIKELY (!glyphs->num_glyphs))
     {
       PangoEngineShape *fallback_engine = _pango_get_fallback_shaper ();
 
       _pango_engine_shape_shape (fallback_engine, analysis->font,
 				 text, length, analysis, glyphs);
+      if (G_UNLIKELY (!glyphs->num_glyphs))
+        return;
     }
 
   /* make sure last_cluster is invalid */
   last_cluster = glyphs->log_clusters[0] - 1;
   for (i = 0; i < glyphs->num_glyphs; i++)
     {
-     /* Set glyphs[i].attr.is_cluster_start based on log_clusters[]
-      */
+      /* Set glyphs[i].attr.is_cluster_start based on log_clusters[] */
       if (glyphs->log_clusters[i] != last_cluster)
 	{
 	  glyphs->glyphs[i].attr.is_cluster_start = TRUE;
@@ -140,5 +141,32 @@ pango_shape (const gchar      *text,
 	  glyphs->glyphs[i].geometry.width = -glyphs->glyphs[i].geometry.width;
 	  glyphs->glyphs[i].geometry.x_offset += glyphs->glyphs[i].geometry.width;
 	}
+    }
+
+  /* Make sure glyphstring direction conforms to analysis->level */
+  if (G_UNLIKELY ((analysis->level & 1) &&
+		  glyphs->log_clusters[0] < glyphs->log_clusters[glyphs->num_glyphs - 1]))
+    {
+      /* Warn once per shaper */
+      static GQuark warned_quark = 0;
+
+      if (!warned_quark)
+	warned_quark = g_quark_from_static_string ("pango-shape-warned");
+
+      if (analysis->shape_engine && !g_object_get_qdata (G_OBJECT (analysis->shape_engine), warned_quark))
+	{
+	  GType engine_type = G_OBJECT_TYPE (analysis->shape_engine);
+	  const char *engine_name = g_type_name (engine_type);
+	  if (!engine_name)
+	    engine_name = "(unknown)";
+
+	  g_warning ("Expected RTL run but shape-engine='%s' returned LTR. Fixing.", engine_name);
+
+	  g_object_set_qdata_full (G_OBJECT (analysis->shape_engine), warned_quark,
+				   GINT_TO_POINTER (1), NULL);
+	}
+
+      /* *Fix* it so we don't crash later */
+      pango_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
     }
 }

@@ -1,3 +1,36 @@
+Overview of changes between 1.26.2 and 1.27.1
+=============================================
+- Enable introspection again
+- Misc HarfBuzz bug fixes
+- Improve PangoLayout line breaking
+- Revert usage of CoreText in ATSUI backend
+- Fix FT_Face finalizer call
+- Bugs fixed:
+    Bug 593240 - (pangoosx) Crash / infinite loop with Mac OS X
+    Bug 610183 - Pango doesn't compile with gcc 3.3.3
+    Bug 582697 - Add pango-view --pixels option
+
+Overview of changes between 1.26.1 and 1.26.2
+=============================================
+- Fix non-standard C++ usage
+- Fix OpenType mark ligation
+- Bugs fixed:
+    Bug 602823 - void function cannot return value
+    Bug 602660 - [HB] don't use flexible arrays
+    Bug 602408 - Invalid C++ code breaks compile with Sun C++ Compiler
+
+Overview of changes between 1.26.0 and 1.26.1
+=============================================
+- Finally fix GPOS positioning and kerning with non-identity cairo matrices
+- [HB] Fix lookup_flag ignoring
+- Fix leak with non-mmapped fonts
+- Allow using uninstalled glib
+- Bugs fixed:
+    Bug 341481 - pangocairo kerning problem with nonidentity scaling
+    Bug 587768 - [patch] Don't build pango-view twice
+    Bug 594101 - [Indic] character class data updates to support unicode 5.1
+    Bug 596837 - Typo in pango_cairo_show_layout documentation
+
 Overview of changes between 1.25.6 and 1.26.0
 =============================================
 - New stable release series

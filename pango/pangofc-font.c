@@ -479,6 +479,18 @@ get_face_metrics (PangoFcFont      *fcfont,
   PANGO_FC_FONT_UNLOCK_FACE (fcfont);
 }
 
+PangoFontMetrics *
+pango_fc_font_create_base_metrics_for_context (PangoFcFont   *fcfont,
+					       PangoContext  *context)
+{
+  PangoFontMetrics *metrics;
+  metrics = pango_font_metrics_new ();
+
+  get_face_metrics (fcfont, metrics);
+
+  return metrics;
+}
+
 static int
 max_glyph_width (PangoLayout *layout)
 {
@@ -503,42 +515,6 @@ max_glyph_width (PangoLayout *layout)
   return max_width;
 }
 
-PangoFontMetrics *
-pango_fc_font_create_metrics_for_context (PangoFcFont   *fcfont,
-					  PangoContext  *context)
-{
-  PangoFontMetrics *metrics;
-  PangoLayout *layout;
-  PangoRectangle extents;
-  PangoLanguage *language = pango_context_get_language (context);
-  const char *sample_str = pango_language_get_sample_string (language);
-  PangoFontDescription *desc = pango_font_describe_with_absolute_size (PANGO_FONT (fcfont));
-
-  metrics = pango_font_metrics_new ();
-
-  get_face_metrics (fcfont, metrics);
-
-  layout = pango_layout_new (context);
-  pango_layout_set_font_description (layout, desc);
-  pango_font_description_free (desc);
-
-  pango_layout_set_text (layout, sample_str, -1);
-  pango_layout_get_extents (layout, NULL, &extents);
-
-  metrics->approximate_char_width =
-    extents.width / pango_utf8_strwidth (sample_str);
-
-  pango_layout_set_text (layout, "0123456789", -1);
-  metrics->approximate_digit_width = max_glyph_width (layout);
-
-  g_object_unref (layout);
-
-  return metrics;
-}
-
-/* This function is cut-and-pasted into pangocairo-fcfont.c - it might be
- * better to add a virtual fcfont->create_context (font).
- */
 static PangoFontMetrics *
 pango_fc_font_get_metrics (PangoFont     *font,
 			   PangoLanguage *language)
@@ -581,7 +557,28 @@ pango_fc_font_get_metrics (PangoFont     *font,
       context = pango_font_map_create_context (fontmap);
       pango_context_set_language (context, language);
 
-      info->metrics = pango_fc_font_create_metrics_for_context (fcfont, context);
+      info->metrics = pango_fc_font_create_base_metrics_for_context (fcfont, context);
+
+      { /* Compute derived metrics */
+	PangoLayout *layout;
+	PangoRectangle extents;
+	const char *sample_str = pango_language_get_sample_string (language);
+	PangoFontDescription *desc = pango_font_describe_with_absolute_size (font);
+
+        layout = pango_layout_new (context);
+	pango_layout_set_font_description (layout, desc);
+	pango_font_description_free (desc);
+
+	pango_layout_set_text (layout, sample_str, -1);
+	pango_layout_get_extents (layout, NULL, &extents);
+
+	info->metrics->approximate_char_width = extents.width / pango_utf8_strwidth (sample_str);
+
+	pango_layout_set_text (layout, "0123456789", -1);
+	info->metrics->approximate_digit_width = max_glyph_width (layout);
+
+	g_object_unref (layout);
+      }
 
       g_object_unref (context);
       g_object_unref (fontmap);
@@ -807,6 +804,9 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
   FT_Vector kerning;
   int i;
   gboolean hinting = font->is_hinted;
+  gboolean scale = FALSE;
+  double xscale = 1;
+  PangoFcFontKey *key;
 
   g_return_if_fail (PANGO_IS_FC_FONT (font));
   g_return_if_fail (glyphs != NULL);
@@ -821,6 +821,20 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
       return;
     }
 
+  /* This is a kludge, and dupped in pango_ot_buffer_output().
+   * Should move the scale factor to PangoFcFont layer. */
+  key = _pango_fc_font_get_font_key (font);
+  if (key) {
+    const PangoMatrix *matrix = pango_fc_font_key_get_matrix (key);
+    PangoMatrix identity = PANGO_MATRIX_INIT;
+    if (G_UNLIKELY (matrix && 0 != memcmp (&identity, matrix, 2 * sizeof (double))))
+      {
+	scale = TRUE;
+	pango_matrix_get_font_scale_factors (matrix, &xscale, NULL);
+	if (xscale) xscale = 1 / xscale;
+      }
+  }
+
   for (i = 1; i < glyphs->num_glyphs; ++i)
     {
       error = FT_Get_Kerning (face,
@@ -834,6 +848,8 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
 
 	if (hinting)
 	  adjustment = PANGO_UNITS_ROUND (adjustment);
+	if (G_UNLIKELY (scale))
+	  adjustment *= xscale;
 
 	glyphs->glyphs[i-1].geometry.width += adjustment;
       }

@@ -252,6 +252,7 @@ indic_engine_shape (PangoEngineShape *engine,
 
   pango_glyph_string_set_size (glyphs, n_glyphs);
   buffer = pango_ot_buffer_new (fc_font);
+  pango_ot_buffer_set_rtl (buffer, analysis->level % 2 != 0);
 
   set_glyphs(font, wc_out, tags, n_glyphs, buffer,
 	     (indic_shape_engine->classTable->scriptFlags & SF_PROCESS_ZWJ) != 0);

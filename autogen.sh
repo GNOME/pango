@@ -7,6 +7,7 @@ test -z "$srcdir" && srcdir=.
 REQUIRED_AUTOMAKE_VERSION=1.9
 
 PKG_NAME="pango"
+#REQUIRED_M4MACROS=introspection.m4
 
 (test -f $srcdir/configure.in \
   && test -f $srcdir/README \

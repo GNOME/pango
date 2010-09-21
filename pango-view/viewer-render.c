@@ -34,10 +34,14 @@
 
 gboolean opt_display = TRUE;
 int opt_dpi = 96;
+gboolean opt_pixels = FALSE;
 const char *opt_font = "";
 gboolean opt_header = FALSE;
 const char *opt_output = NULL;
-int opt_margin = 10;
+int opt_margin_t = 10;
+int opt_margin_r = 10;
+int opt_margin_b = 10;
+int opt_margin_l = 10;
 int opt_markup = FALSE;
 gboolean opt_rtl = FALSE;
 double opt_rotate = 0;
@@ -247,8 +251,8 @@ do_output (PangoContext     *context,
   PangoMatrix *orig_matrix;
   gboolean supports_matrix;
   int rotated_width, rotated_height;
-  int x = opt_margin;
-  int y = opt_margin;
+  int x = opt_margin_l;
+  int y = opt_margin_t;
   int width, height;
 
   width = 0;
@@ -330,8 +334,8 @@ do_output (PangoContext     *context,
   width = MAX (width, rect.width);
   height += rect.height;
 
-  width += 2 * opt_margin;
-  height += 2 * opt_margin;
+  width += opt_margin_l + opt_margin_r;
+  height += opt_margin_t + opt_margin_b;
 
   if (width_out)
     *width_out = width;
@@ -542,6 +546,30 @@ parse_background (const char *name,
 			   name, arg, data, error);
 }
 
+static gboolean
+parse_margin (const char *name G_GNUC_UNUSED,
+	      const char *arg,
+	      gpointer    data G_GNUC_UNUSED,
+	      GError    **error)
+{
+  switch (sscanf (arg, "%d %d %d %d", &opt_margin_t, &opt_margin_r, &opt_margin_b, &opt_margin_l))
+  {
+    case 0:
+    {
+      g_set_error(error,
+		  G_OPTION_ERROR,
+		  G_OPTION_ERROR_BAD_VALUE,
+		  "Argument for --margin must be one to four space-separated numbers");
+      return FALSE;
+    }
+    case 1: opt_margin_r = opt_margin_t;
+    case 2: opt_margin_b = opt_margin_t;
+    case 3: opt_margin_l = opt_margin_r;
+  }
+  return TRUE;
+}
+
+
 static gchar *
 backends_to_string (void)
 {
@@ -622,7 +650,7 @@ parse_backend (const char *name G_GNUC_UNUSED,
 }
 
 
-static gboolean
+static G_GNUC_NORETURN gboolean
 show_version(const char *name G_GNUC_UNUSED,
 	     const char *arg G_GNUC_UNUSED,
 	     gpointer    data G_GNUC_UNUSED,
@@ -679,14 +707,16 @@ parse_options (int argc, char *argv[])
      "Align paragraph lines to be justified",			    	NULL},
     {"language",	0, 0, G_OPTION_ARG_STRING,			&opt_language,
      "Language to use for font selection",			    "en_US/etc"},
-    {"margin",		0, 0, G_OPTION_ARG_INT,				&opt_margin,
-     "Set the margin on the output in pixels",			    "pixels"},
+    {"margin",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_margin,
+     "Set the margin on the output in pixels",			    "CSS-style numbers in pixels"},
     {"markup",		0, 0, G_OPTION_ARG_NONE,			&opt_markup,
      "Interpret text as Pango markup",					NULL},
     {"output",		'o', 0, G_OPTION_ARG_STRING,			&opt_output,
      "Save rendered image to output file",			      "file"},
     {"pangorc",		0, 0, G_OPTION_ARG_STRING,			&opt_pangorc,
      "pangorc file to use (default is ./pangorc)",		      "file"},
+    {"pixels",		0, 0, G_OPTION_ARG_NONE,			&opt_pixels,
+     "Use pixel units instead of points (sets dpi to 72)",		NULL},
     {"rtl",		0, 0, G_OPTION_ARG_NONE,			&opt_rtl,
      "Set base direction to right-to-left",				NULL},
     {"rotate",		0, 0, G_OPTION_ARG_DOUBLE,			&opt_rotate,
@@ -735,6 +765,9 @@ parse_options (int argc, char *argv[])
   g_option_context_free(context);
   g_free(backend_options);
   g_free(backend_desc);
+
+  if (opt_pixels)
+    opt_dpi = 72;
 
   if ((opt_text && argc != 1) || (!opt_text && argc != 2))
     {

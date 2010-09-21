@@ -27,6 +27,7 @@
 
 #define PANGO_ENABLE_BACKEND 1 /* XXX */
 #include <glib/gprintf.h>
+
 #include "pango-engine.h"
 #include "pango-utils.h"
 #include "pangofc-font.h"

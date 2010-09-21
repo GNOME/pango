@@ -481,6 +481,7 @@ khmer_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
     return;
 
   buffer = pango_ot_buffer_new (fc_font);
+  pango_ot_buffer_set_rtl (buffer, analysis->level % 2 != 0);
 
   wcs = g_utf8_to_ucs4_fast (text, length, &n_chars);
 

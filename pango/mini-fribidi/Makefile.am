@@ -30,4 +30,14 @@ EXTRA_DIST = 			\
         fribidi_types.i
 
 
+dist-hook: libmini-fribidi.sourcefiles
+
+libmini-fribidi.sourcefiles: Makefile
+	for F in $(libmini_fribidi_la_SOURCES); do \
+		case $$F in \
+		*.c) echo '			<File RelativePath="..\..\..\pango\mini-fribidi\'$$F'" />' \
+		     ;; \
+		esac; \
+	done >libmini-fribidi.sourcefiles
+
 -include $(top_srcdir)/git.mk

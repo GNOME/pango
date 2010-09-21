@@ -123,7 +123,7 @@ static const IndicOTCharClass bengCharClasses[] =
     _rv, _xx, _ct, _xx, _xx, _xx, _ct, _ct, _ct, _ct, _xx, _xx, _nu, _xx, _dr, _dl, /* 09B0 - 09BF */
     _dr, _db, _db, _db, _db, _xx, _xx, _dl, _dl, _xx, _xx, _s1, _s2, _vr, _xx, _xx, /* 09C0 - 09CF */
     _xx, _xx, _xx, _xx, _xx, _xx, _xx, _dr, _xx, _xx, _xx, _xx, _cn, _cn, _xx, _cn, /* 09D0 - 09DF */
-    _iv, _iv, _dv, _dv, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, /* 09E0 - 09EF */
+    _iv, _iv, _db, _db, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, /* 09E0 - 09EF */
     _rv, _ct, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx                           /* 09F0 - 09FA */
 };
 
@@ -136,7 +136,7 @@ static const IndicOTCharClass guruCharClasses[] =
     _dr, _db, _db, _xx, _xx, _xx, _xx, _da, _da, _xx, _xx, _da, _da, _vr, _xx, _xx, /* 0A40 - 0A4F */
     _xx, _db, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _cn, _cn, _cn, _ct, _xx, _cn, _xx, /* 0A50 - 0A5F */
     _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, /* 0A60 - 0A6F */
-    _ma, _ma, _ct, _ct, _xx, _db                                                    /* 0A70 - 0A75 */
+    _ma, _ma, _iv, _iv, _xx, _db                                                    /* 0A70 - 0A75 */
 };
 
 static const IndicOTCharClass gujrCharClasses[] =
@@ -164,7 +164,7 @@ static const IndicOTCharClass oryaCharClasses[] =
 
 static const IndicOTCharClass tamlCharClasses[] =
 {
-    _xx, _xx, _ma, _mp, _xx, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _xx, _xx, _iv, _iv, /* 0B80 - 0B8F */
+    _xx, _xx, _ma, _xx, _xx, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _xx, _xx, _iv, _iv, /* 0B80 - 0B8F */
     _iv, _xx, _iv, _iv, _iv, _ct, _xx, _xx, _xx, _ct, _ct, _xx, _ct, _xx, _ct, _ct, /* 0B90 - 0B9F */
     _xx, _xx, _xx, _ct, _ct, _xx, _xx, _xx, _ct, _ct, _ct, _xx, _xx, _xx, _ct, _ct, /* 0BA0 - 0BAF */
     _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _xx, _xx, _xx, _xx, _dr, _dr, /* 0BB0 - 0BBF */
@@ -181,9 +181,9 @@ static const IndicOTCharClass teluCharClasses[] =
     _iv, _xx, _iv, _iv, _iv, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, /* 0C10 - 0C1F */
     _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _xx, _bb, _bb, _bb, _bb, _bb, _bb, /* 0C20 - 0C2F */
     _bb, _bb, _bb, _bb, _xx, _bb, _bb, _bb, _bb, _bb, _xx, _xx, _xx, _xx, _da, _da, /* 0C30 - 0C3F */
-    _da, _dr, _dr, _dr, _dr, _xx, _da, _da, _s1, _xx, _da, _da, _da, _vr, _xx, _xx, /* 0C40 - 0C4F */
+    _da, _dr, _dr, _lm, _lm, _xx, _da, _da, _s1, _xx, _da, _da, _da, _vr, _xx, _xx, /* 0C40 - 0C4F */
     _xx, _xx, _xx, _xx, _xx, _da, _db, _xx, _bb, _bb, _xx, _xx, _xx, _xx, _xx, _xx, /* 0C50 - 0C5F */
-    _iv, _iv, _db, _db, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, /* 0C60 - 0C6F */
+    _iv, _iv, _lm, _lm, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, /* 0C60 - 0C6F */
     _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx  /* 0C70 - 0C7F */
 };
 
@@ -200,7 +200,7 @@ static const IndicOTCharClass kndaCharClasses[] =
     _xx, _xx, _mp, _mp, _xx, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _iv, _iv, /* 0C80 - 0C8F */
     _iv, _xx, _iv, _iv, _iv, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, /* 0C90 - 0C9F */
     _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _xx, _bb, _bb, _bb, _bb, _bb, _bb, /* 0CA0 - 0CAF */
-    _rb, _ct, _bb, _bb, _xx, _bb, _bb, _bb, _bb, _bb, _xx, _xx, _nu, _xx, _dr, _da, /* 0CB0 - 0CBF */
+    _rb, _bb, _bb, _bb, _xx, _bb, _bb, _bb, _bb, _bb, _xx, _xx, _nu, _xx, _dr, _da, /* 0CB0 - 0CBF */
     _s1, _dr, _dr, _lm, _lm, _xx, _da, _s2, _s3, _xx, _s4, _s5, _da, _vr, _xx, _xx, /* 0CC0 - 0CCF */
     _xx, _xx, _xx, _xx, _xx, _lm, _lm, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _ct, _xx, /* 0CD0 - 0CDF */
     _iv, _iv, _lm, _lm, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx  /* 0CE0 - 0CEF */

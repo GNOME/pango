@@ -86,21 +86,24 @@ basic_engine_shape (PangoEngineShape    *engine,
   const char *p;
   PangoATSUIFont *afont = PANGO_ATSUI_FONT (font);
   ATSUStyle style;
-  CGFontRef fontID;
+  ATSUFontID fontID;
   ATSUAttributeTag styleTags[] = { kATSUFontTag };
   ATSUAttributeValuePtr styleValues[] = { &fontID };
-  ByteCount styleSizes[] = { sizeof (CGFontRef) };
+  ByteCount styleSizes[] = { sizeof (ATSUFontID) };
 
   utf16 = g_utf8_to_utf16 (text, length, NULL, &n16, NULL);
 
-  err = ATSUCreateTextLayout (&text_layout);
-  err = ATSUSetTextPointerLocation (text_layout, utf16, 0, n16, n16);
+  err = ATSUCreateTextLayoutWithTextPtr (utf16, 0, n16, n16,
+                                         0,
+                                         NULL,
+                                         NULL,
+                                         &text_layout);
 
   err = ATSUCreateStyle(&style);
-  fontID = pango_atsui_font_get_cgfont (afont);
+  fontID = pango_atsui_font_get_atsfont (afont);
 
   err = ATSUSetAttributes(style,
-			  sizeof(styleTags) / sizeof(styleTags[0]),
+			  (ItemCount)(sizeof(styleTags) / sizeof(styleTags[0])),
 			  styleTags, styleSizes, styleValues);
 
   err = ATSUSetRunStyle(text_layout,

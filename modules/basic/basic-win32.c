@@ -30,6 +30,13 @@
 #include <glib.h>
 
 #include "pangowin32.h"
+
+extern HFONT _pango_win32_font_get_hfont (PangoFont *font);
+
+#ifndef PANGO_MODULE_PREFIX
+#define PANGO_MODULE_PREFIX _pango_basic_win32
+#endif
+
 #include "pango-engine.h"
 #include "pango-utils.h"
 
@@ -43,54 +50,7 @@ static gboolean pango_win32_debug = FALSE;
 
 #include <usp10.h>
 
-static gboolean have_uniscribe = FALSE;
-
 static HDC hdc;
-
-typedef HRESULT (WINAPI *pScriptGetProperties) (const SCRIPT_PROPERTIES ***,
-						int *);
-
-typedef HRESULT (WINAPI *pScriptItemize) (const WCHAR *,
-					  int,
-					  int,
-					  const SCRIPT_CONTROL *,
-					  const SCRIPT_STATE *,
-					  SCRIPT_ITEM *,
-					  int *);
-
-typedef HRESULT (WINAPI *pScriptShape) (HDC,
-					SCRIPT_CACHE *,
-					const WCHAR *,
-					int,
-					int,
-					SCRIPT_ANALYSIS *,
-					WORD *,
-					WORD *,
-					SCRIPT_VISATTR *,
-					int *);
-
-typedef HRESULT (WINAPI *pScriptPlace) (HDC,
-					SCRIPT_CACHE *,
-					const WORD *,
-					int,
-					const SCRIPT_VISATTR *,
-					SCRIPT_ANALYSIS *,
-					int *,
-					GOFFSET *,
-					ABC *);
-
-typedef HRESULT (WINAPI *pScriptFreeCache) (SCRIPT_CACHE *);
-
-typedef HRESULT (WINAPI *pScriptIsComplex) (WCHAR *,
-					    int,
-					    DWORD);
-
-static pScriptGetProperties script_get_properties;
-static pScriptItemize script_itemize;
-static pScriptShape script_shape;
-static pScriptPlace script_place;
-static pScriptFreeCache script_free_cache;
-static pScriptIsComplex script_is_complex;
 
 #ifdef BASIC_WIN32_DEBUGGING
 static const SCRIPT_PROPERTIES **scripts;
@@ -495,8 +455,7 @@ itemize_shape_and_place (PangoFont           *font,
 			 wchar_t             *wtext,
 			 int                  wlen,
 			 const PangoAnalysis *analysis,
-			 PangoGlyphString    *glyphs,
-			 SCRIPT_CACHE        *script_cache)
+			 PangoGlyphString    *glyphs)
 {
   int i;
   int item, nitems, item_step;
@@ -505,6 +464,11 @@ itemize_shape_and_place (PangoFont           *font,
   SCRIPT_STATE state;
   SCRIPT_ITEM items[100];
   double scale = pango_win32_font_get_metrics_factor (font);
+  HFONT hfont = _pango_win32_font_get_hfont (font);
+  static GHashTable *script_cache_hash = NULL;
+
+  if (!script_cache_hash)
+    script_cache_hash = g_hash_table_new (g_int64_hash, g_int64_equal);
 
   memset (&control, 0, sizeof (control));
   memset (&state, 0, sizeof (state));
@@ -517,8 +481,8 @@ itemize_shape_and_place (PangoFont           *font,
     g_print (G_STRLOC ": ScriptItemize: uDefaultLanguage:%04x uBidiLevel:%d\n",
 	     control.uDefaultLanguage, state.uBidiLevel);
 #endif
-  if ((*script_itemize) (wtext, wlen, G_N_ELEMENTS (items), &control, NULL,
-			 items, &nitems))
+  if (ScriptItemize (wtext, wlen, G_N_ELEMENTS (items), &control, NULL,
+		     items, &nitems))
     {
 #ifdef BASIC_WIN32_DEBUGGING
       if (pango_win32_debug)
@@ -551,9 +515,11 @@ itemize_shape_and_place (PangoFont           *font,
       int advances[1000];
       GOFFSET offsets[1000];
       ABC abc;
-      int script = items[item].a.eScript;
+      gint32 script = items[item].a.eScript;
       int ng;
       int char_offset;
+      SCRIPT_CACHE *script_cache;
+      gint64 font_and_script_key;
 
       memset (advances, 0, sizeof (advances));
       memset (offsets, 0, sizeof (offsets));
@@ -579,16 +545,40 @@ itemize_shape_and_place (PangoFont           *font,
 		 items[item].a.fNoGlyphIndex ? " fNoGlyphIndex" : "",
 		 items[item].iCharPos, items[item+1].iCharPos-1, itemlen);
 #endif
+      /* Create a hash key based on hfont and script engine */
+      font_and_script_key = (((gint64) ((gint32) hfont)) << 32) | script;
+
+      /* Get the script cache for this hfont and script */
+      script_cache = g_hash_table_lookup (script_cache_hash, &font_and_script_key);
+      if (!script_cache)
+	{
+	  gint64 *key_n;
+	  SCRIPT_CACHE *new_script_cache;
+
+	  key_n = g_new (gint64, 1);
+	  *key_n = font_and_script_key;
+
+	  new_script_cache = g_new0 (SCRIPT_CACHE, 1);
+	  script_cache = new_script_cache;
+
+	  /* Insert the new value */
+	  g_hash_table_insert (script_cache_hash, key_n, new_script_cache);
+
+#ifdef BASIC_WIN32_DEBUGGING
+	  if (pango_win32_debug)
+	    g_print ("  New SCRIPT_CACHE for font %p and script %d\n", hfont, script);
+#endif
+	}
 
       items[item].a.fRTL = analysis->level % 2;
-      if ((*script_shape) (hdc, &script_cache[script],
-			   wtext + items[item].iCharPos, itemlen,
-			   G_N_ELEMENTS (iglyphs),
-			   &items[item].a,
-			   iglyphs,
-			   log_clusters,
-			   visattrs,
-			   &nglyphs))
+      if (ScriptShape (hdc, script_cache,
+		       wtext + items[item].iCharPos, itemlen,
+		       G_N_ELEMENTS (iglyphs),
+		       &items[item].a,
+		       iglyphs,
+		       log_clusters,
+		       visattrs,
+		       &nglyphs))
 	{
 #ifdef BASIC_WIN32_DEBUGGING
 	  if (pango_win32_debug)
@@ -611,9 +601,9 @@ itemize_shape_and_place (PangoFont           *font,
 				 nglyphs, glyphs->log_clusters + ng,
 				 char_offset);
 
-      if ((*script_place) (hdc, &script_cache[script], iglyphs, nglyphs,
-			   visattrs, &items[item].a,
-			   advances, offsets, &abc))
+      if (ScriptPlace (hdc, script_cache, iglyphs, nglyphs,
+		       visattrs, &items[item].a,
+		       advances, offsets, &abc))
 	{
 #ifdef BASIC_WIN32_DEBUGGING
 	  if (pango_win32_debug)
@@ -671,9 +661,7 @@ uniscribe_shape (PangoFont           *font,
 {
   wchar_t *wtext;
   long wlen;
-  int i;
   gboolean retval = TRUE;
-  SCRIPT_CACHE script_cache[100];
 
   if (!pango_win32_font_select_font (font, hdc))
     return FALSE;
@@ -684,11 +672,7 @@ uniscribe_shape (PangoFont           *font,
 
   if (retval)
     {
-      memset (script_cache, 0, sizeof (script_cache));
-      retval = itemize_shape_and_place (font, hdc, wtext, wlen, analysis, glyphs, script_cache);
-      for (i = 0; i < G_N_ELEMENTS (script_cache); i++)
-	if (script_cache[i])
-	  (*script_free_cache)(&script_cache[i]);
+      retval = itemize_shape_and_place (font, hdc, wtext, wlen, analysis, glyphs);
     }
 
   if (retval)
@@ -726,7 +710,7 @@ text_is_simple (const char *text,
   if (wtext == NULL)
     return TRUE;
 
-  retval = ((*script_is_complex) (wtext, wlen, SIC_COMPLEX) == S_FALSE);
+  retval = (ScriptIsComplex (wtext, wlen, SIC_COMPLEX) == S_FALSE);
 
   g_free (wtext);
 
@@ -756,8 +740,7 @@ basic_engine_shape (PangoEngineShape 	*engine,
   g_return_if_fail (length >= 0);
   g_return_if_fail (analysis != NULL);
 
-  if (have_uniscribe &&
-      !text_is_simple (text, length) &&
+  if (!text_is_simple (text, length) &&
       uniscribe_shape (font, text, length, analysis, glyphs))
     return;
 
@@ -846,33 +829,10 @@ basic_engine_shape (PangoEngineShape 	*engine,
 static void
 init_uniscribe (void)
 {
-  HMODULE usp10_dll;
-
-  have_uniscribe = FALSE;
-
-  if ((usp10_dll = LoadLibrary ("usp10.dll")) != NULL)
-    {
-      (script_get_properties = (pScriptGetProperties)
-       GetProcAddress (usp10_dll, "ScriptGetProperties")) &&
-      (script_itemize = (pScriptItemize)
-       GetProcAddress (usp10_dll, "ScriptItemize")) &&
-      (script_shape = (pScriptShape)
-       GetProcAddress (usp10_dll, "ScriptShape")) &&
-      (script_place = (pScriptPlace)
-       GetProcAddress (usp10_dll, "ScriptPlace")) &&
-      (script_free_cache = (pScriptFreeCache)
-       GetProcAddress (usp10_dll, "ScriptFreeCache")) &&
-      (script_is_complex = (pScriptIsComplex)
-       GetProcAddress (usp10_dll, "ScriptIsComplex")) &&
-      (have_uniscribe = TRUE);
-    }
-  if (have_uniscribe)
-    {
 #ifdef BASIC_WIN32_DEBUGGING
-      (*script_get_properties) (&scripts, &nscripts);
+  ScriptGetProperties (&scripts, &nscripts);
 #endif
-      hdc = pango_win32_get_dc ();
-    }
+  hdc = pango_win32_get_dc ();
 }
 
 static void
@@ -909,28 +869,25 @@ PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
   script_engines[0].scripts = basic_scripts;
   script_engines[0].n_scripts = G_N_ELEMENTS (basic_scripts);
 
-  if (have_uniscribe)
-    {
 #if 0
-      int i;
-      GArray *ranges = g_array_new (FALSE, FALSE, sizeof (PangoEngineRange));
+  int i;
+  GArray *ranges = g_array_new (FALSE, FALSE, sizeof (PangoEngineRange));
 
-      /* Walk through scripts supported by the Uniscribe implementation on this
-       * machine, and mark corresponding Unicode ranges.
-       */
-      for (i = 0; i < nscripts; i++)
-	{
-	}
-
-      /* Sort range array */
-      g_array_sort (ranges, compare_range);
-      script_engines[0].ranges = ranges;
-      script_engines[0].n_ranges = ranges->len;
-#else
-      script_engines[0].scripts = uniscribe_scripts;
-      script_engines[0].n_scripts = G_N_ELEMENTS (uniscribe_scripts);
-#endif
+  /* Walk through scripts supported by the Uniscribe implementation on this
+   * machine, and mark corresponding Unicode ranges.
+   */
+  for (i = 0; i < nscripts; i++)
+    {
     }
+
+  /* Sort range array */
+  g_array_sort (ranges, compare_range);
+  script_engines[0].ranges = ranges;
+  script_engines[0].n_ranges = ranges->len;
+#else
+  script_engines[0].scripts = uniscribe_scripts;
+  script_engines[0].n_scripts = G_N_ELEMENTS (uniscribe_scripts);
+#endif
 
   *engines = script_engines;
   *n_engines = G_N_ELEMENTS (script_engines);

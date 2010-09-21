@@ -32,6 +32,7 @@
 
 #include <glib.h>
 #include "pango-ot.h"
+
 #include "pango-engine.h"
 #include "pangofc-font.h"
 
@@ -298,6 +299,7 @@ thai_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
   thai_set_glyphs (font_info, text, length, analysis->script, glyphs); 
 
   buffer = pango_ot_buffer_new (PANGO_FC_FONT (font));
+  pango_ot_buffer_set_rtl (buffer, analysis->level % 2 != 0);
 
   for (i = 0; i < glyphs->num_glyphs; i++)
     pango_ot_buffer_add_glyph (buffer,

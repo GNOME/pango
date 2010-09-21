@@ -84,20 +84,25 @@ endif
 
 #########################################################
 
-MAINTAINERCLEANFILES = pango-view.1
+MAINTAINERCLEANFILES = pango-view.1.in
+EXTRA_DIST += pango-view.1.in
+CLEANFILES += pango-view.1
 
-dist_man_MANS = pango-view.1
+nodist_man_MANS = pango-view.1
 
-$(srcdir)/pango-view.1: ../configure.in $(pango_view_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) pango-view$(EXEEXT)
-	$(AM_V_GEN) $(top_builddir)/missing --run \
+# The indirection through pango-view.1.in is to make parallel build work.
+# See bug 587768.
+$(srcdir)/pango-view.1.in: ../configure.in $(pango_view_SOURCES)
+	$(AM_V_GEN) $(top_srcdir)/missing --run \
 	   help2man --no-info --section=1 \
 		    --help-option="--help-all" --output="$@.tmp" \
 		    --name 'Pango text viewer' ./pango-view \
 	 && mv "$@.tmp" "$@" \
-	  || ($(RM) "$@"; \
-	      echo Failed to update pango-view.1, the man page may be outdated >&2; \
+	  || (echo Failed to update pango-view.1, the man page may be outdated >&2; \
 	      (test -f "$@" || echo help2man is required to generate this file. >> "$@"));
+pango-view.1: pango-view$(EXEEXT)
+	$(AM_V_GEN) $(MAKE) $(AM_MAKEFLAGS) pango-view.1.in && \
+	cp $(srcdir)/pango-view.1.in $@
 
 #########################################################
 

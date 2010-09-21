@@ -23,7 +23,7 @@
 #ifndef __PANGO_ENGINE_PRIVATE_H__
 #define __PANGO_ENGINE_PRIVATE_H__
 
-#include <pango-engine.h>
+#include <pango/pango-engine.h>
 
 G_BEGIN_DECLS
 

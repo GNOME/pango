@@ -74,7 +74,6 @@ static gboolean pango_win32_font_real_select_font      (PangoFont *font,
 static void     pango_win32_font_real_done_font        (PangoFont *font);
 static double   pango_win32_font_real_get_metrics_factor (PangoFont *font);
 
-static HFONT                 pango_win32_get_hfont              (PangoFont        *font);
 static void                  pango_win32_get_item_properties    (PangoItem        *item,
 								 PangoUnderline   *uline,
 								 PangoAttrColor   *fg_color,
@@ -82,12 +81,11 @@ static void                  pango_win32_get_item_properties    (PangoItem      
 								 PangoAttrColor   *bg_color,
 								 gboolean         *bg_set);
 
-static HFONT
-pango_win32_get_hfont (PangoFont *font)
+HFONT
+_pango_win32_font_get_hfont (PangoFont *font)
 {
   PangoWin32Font *win32font = (PangoWin32Font *)font;
   PangoWin32FontCache *cache;
-  TEXTMETRIC tm;
 
   if (!win32font)
     return NULL;
@@ -105,13 +103,6 @@ pango_win32_get_hfont (PangoFont *font)
 	  g_free (face_utf8);
 	  return NULL;
 	}
-
-      SelectObject (_pango_win32_hdc, win32font->hfont);
-      GetTextMetrics (_pango_win32_hdc, &tm);
-
-      win32font->tm_overhang = tm.tmOverhang;
-      win32font->tm_descent = tm.tmDescent;
-      win32font->tm_ascent = tm.tmAscent;
     }
 
   return win32font->hfont;
@@ -261,7 +252,7 @@ pango_win32_render (HDC               hdc,
   if (glyphs->num_glyphs == 0)
     return;
 
-  hfont = pango_win32_get_hfont (font);
+  hfont = _pango_win32_font_get_hfont (font);
   if (!hfont)
     return;
 
@@ -440,6 +431,7 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
   PangoWin32Font *win32font = (PangoWin32Font *)font;
   guint16 glyph_index = glyph;
   GLYPHMETRICS gm;
+  TEXTMETRIC tm;
   guint32 res;
   HFONT hfont;
   MAT2 m = {{0,1}, {0,0}, {0,0}, {0,1}};
@@ -465,7 +457,7 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
 
       memset (&gm, 0, sizeof (gm));
 
-      hfont = pango_win32_get_hfont (font);
+      hfont = _pango_win32_font_get_hfont (font);
       SelectObject (_pango_win32_hdc, hfont);
       /* FIXME: (Alex) This constant reuse of _pango_win32_hdc is
 	 not thread-safe */
@@ -491,10 +483,11 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
       info->ink_rect.y = - PANGO_SCALE * gm.gmptGlyphOrigin.y;
       info->ink_rect.height = PANGO_SCALE * gm.gmBlackBoxY;
 
+      GetTextMetrics (_pango_win32_hdc, &tm);
       info->logical_rect.x = 0;
       info->logical_rect.width = PANGO_SCALE * gm.gmCellIncX;
-      info->logical_rect.y = - PANGO_SCALE * win32font->tm_ascent;
-      info->logical_rect.height = PANGO_SCALE * (win32font->tm_ascent + win32font->tm_descent);
+      info->logical_rect.y = - PANGO_SCALE * tm.tmAscent;
+      info->logical_rect.height = PANGO_SCALE * (tm.tmAscent + tm.tmDescent);
 
       g_hash_table_insert (win32font->glyph_info, GUINT_TO_POINTER(glyph), info);
     }
@@ -562,7 +555,7 @@ pango_win32_font_get_metrics (PangoFont     *font,
       info->sample_str = sample_str;
       info->metrics = metrics = pango_font_metrics_new ();
 
-      hfont = pango_win32_get_hfont (font);
+      hfont = _pango_win32_font_get_hfont (font);
       if (hfont != NULL)
 	{
 	  PangoCoverage *coverage;
@@ -626,7 +619,7 @@ static gboolean
 pango_win32_font_real_select_font (PangoFont *font,
 				   HDC        hdc)
 {
-  HFONT hfont = pango_win32_get_hfont (font);
+  HFONT hfont = _pango_win32_font_get_hfont (font);
 
   if (!hfont)
     return FALSE;
@@ -1611,7 +1604,7 @@ font_has_name_in (PangoFont                       *font,
   if (cjkv == PANGO_WIN32_COVERAGE_UNSPEC)
     return TRUE;
 
-  hfont = pango_win32_get_hfont (font);
+  hfont = _pango_win32_font_get_hfont (font);
   oldhfont = SelectObject (_pango_win32_hdc, hfont);
 
   if (!_pango_win32_get_name_header (_pango_win32_hdc, &header))
