@@ -57,13 +57,15 @@ INCLUDES =               	\
 	$(FREETYPE_CFLAGS)	\
 	$(X_CFLAGS)
 
-# libpangoxft.la and/or libpangocairo.la pull in libpango.la
-# and libpangoft2.la;
 # We're assuming here that we'll only regenerate the
 # HTML docs on Unix. We don't get introspection on Win32
 # specific types, but that isn't a big deal.
 
-GTKDOC_LIBS =
+GTKDOC_LIBS = $(top_builddir)/pango/libpango-1.0.la
+
+if HAVE_FREETYPE
+GTKDOC_LIBS += $(top_builddir)/pango/libpangoft2-1.0.la
+endif
 
 if HAVE_XFT
 GTKDOC_LIBS += $(top_builddir)/pango/libpangoxft-1.0.la
