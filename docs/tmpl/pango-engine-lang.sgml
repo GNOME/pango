@@ -19,6 +19,9 @@ These engines are used in pango_break().
 <!-- ##### SECTION Stability_Level ##### -->
 Unstable
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### STRUCT PangoEngineLang ##### -->
 <para>
 </para>

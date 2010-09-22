@@ -18,6 +18,9 @@ backends and modules, but may be useful for other purposes too.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### FUNCTION pango_split_file_list ##### -->
 <para>
 
@@ -166,6 +169,7 @@ backends and modules, but may be useful for other purposes too.
 
 </para>
 
+@void: 
 @Returns: 
 
 
@@ -174,6 +178,7 @@ backends and modules, but may be useful for other purposes too.
 
 </para>
 
+@void: 
 @Returns: 
 
 

@@ -22,6 +22,9 @@ at run-time.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### MACRO PANGO_VERSION_ENCODE ##### -->
 <para>
 This macro encodes the given Pango version into an integer.  The numbers
@@ -86,6 +89,7 @@ the provided version number.
 
 </para>
 
+@void: 
 @Returns: 
 
 
@@ -94,6 +98,7 @@ the provided version number.
 
 </para>
 
+@void: 
 @Returns: 
 
 

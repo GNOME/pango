@@ -21,6 +21,9 @@ of attributes applied to a portion of text.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### ENUM PangoAttrType ##### -->
 <para>
 The #PangoAttrType
@@ -653,6 +656,7 @@ The #GObject type for #PangoAttrList.
 
 </para>
 
+@void: 
 @Returns: 
 
 

@@ -20,6 +20,9 @@ various steps of this process.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### STRUCT PangoContext ##### -->
 <para>
 The #PangoContext structure stores global information
@@ -124,6 +127,7 @@ The #GObject type for #PangoDirection.
 
 </para>
 
+@void: 
 @Returns: 
 
 
@@ -152,6 +156,7 @@ The #GObject type for #PangoDirection.
 
 </para>
 
+@void: 
 @Returns: 
 
 

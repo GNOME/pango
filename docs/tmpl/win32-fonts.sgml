@@ -18,6 +18,9 @@ Win32 systems and to render text in conjunction with Win32 APIs.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### MACRO PANGO_RENDER_TYPE_WIN32 ##### -->
 <para>
 A string constant identifying the Win32 renderer. The associated quark (see
@@ -31,6 +34,7 @@ g_quark_from_string()) is used to identify the renderer in pango_find_map().
 
 </para>
 
+@void: 
 @Returns: 
 
 
@@ -133,6 +137,7 @@ g_quark_from_string()) is used to identify the renderer in pango_find_map().
 
 </para>
 
+@void: 
 @Returns: 
 
 
@@ -141,6 +146,7 @@ g_quark_from_string()) is used to identify the renderer in pango_find_map().
 
 </para>
 
+@void: 
 @Returns: 
 
 
@@ -156,6 +162,7 @@ HFONTs by their LOGFONT descriptions.
 
 </para>
 
+@void: 
 @Returns: 
 
 
@@ -201,6 +208,7 @@ HFONTs by their LOGFONT descriptions.
 
 </para>
 
+@void: 
 @Returns: 
 
 
@@ -209,6 +217,7 @@ HFONTs by their LOGFONT descriptions.
 
 </para>
 
+@void: 
 
 
 <!-- ##### FUNCTION pango_win32_font_map_get_font_cache ##### -->

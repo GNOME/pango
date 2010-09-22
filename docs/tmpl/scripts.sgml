@@ -19,6 +19,9 @@ and of ranges within a larger text string.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### ENUM PangoScript ##### -->
 <para>
 The #PangoScript enumeration identifies different writing
@@ -252,6 +255,7 @@ The #GObject type for #PangoLanguage.
 
 </para>
 
+@void: 
 @Returns: 
 
 

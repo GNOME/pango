@@ -18,6 +18,9 @@ that can be used to set tab stop positions in a #PangoLayout.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### STRUCT PangoTabArray ##### -->
 <para>
 A #PangoTabArray struct contains an array

@@ -31,6 +31,9 @@ function is used when building a catalog of all available modules.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### STRUCT PangoEngineInfo ##### -->
 <para>
 The #PangoEngineInfo structure contains information about a particular
@@ -103,6 +106,7 @@ specific.
 
 </para>
 
+@void: 
 
 
 <!-- ##### FUNCTION script_engine_create ##### -->
