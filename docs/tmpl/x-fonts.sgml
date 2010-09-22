@@ -21,6 +21,9 @@ or <link linkend="pango-Cairo-Rendering">Cairo</link> backend instead.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### MACRO PANGO_RENDER_TYPE_X ##### -->
 <para>
 A string constant identifying the X renderer. The associated quark (see 

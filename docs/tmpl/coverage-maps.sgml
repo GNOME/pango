@@ -20,6 +20,9 @@ to represent that information.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### ENUM PangoCoverageLevel ##### -->
 <para>
 Used to indicate how well a font can represent a particular Unicode
@@ -56,6 +59,7 @@ to #PangoCoverageLevel. It is an opaque structure with no public fields.
 
 </para>
 
+@void: 
 @Returns: 
 
 

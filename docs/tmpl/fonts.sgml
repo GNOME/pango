@@ -22,6 +22,9 @@ to load a font of a given description.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### STRUCT PangoFontDescription ##### -->
 <para>
 The #PangoFontDescription structure represents the description
@@ -143,6 +146,7 @@ The #GObject type for #PangoFontMask.
 
 </para>
 
+@void: 
 @Returns: 
 
 

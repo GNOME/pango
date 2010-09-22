@@ -73,6 +73,9 @@ pango_attr_gravity_hint_new()
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### ENUM PangoGravity ##### -->
 <para>
 

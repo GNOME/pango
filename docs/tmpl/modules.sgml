@@ -18,6 +18,9 @@ modules that add engines to Pango at run time.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### STRUCT PangoIncludedModule ##### -->
 <para>
 The #PangoIncludedModule structure for a statically linked module 

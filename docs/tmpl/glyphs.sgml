@@ -20,6 +20,9 @@ glyphs.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### MACRO PANGO_SCALE ##### -->
 <para>
 The %PANGO_SCALE macro represents the scale between dimensions used
@@ -476,6 +479,7 @@ The #GObject type for #PangoGlyphString.
 
 </para>
 
+@void: 
 @Returns: 
 
 

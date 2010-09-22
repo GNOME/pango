@@ -19,6 +19,9 @@ These engines are used in pango_shape().
 <!-- ##### SECTION Stability_Level ##### -->
 Unstable
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### STRUCT PangoEngineShape ##### -->
 <para>
 </para>
