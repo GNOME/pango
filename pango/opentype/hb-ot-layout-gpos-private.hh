@@ -337,6 +337,7 @@ struct AnchorMatrix
   inline bool sanitize (SANITIZE_ARG_DEF, unsigned int cols) {
     TRACE_SANITIZE ();
     if (!SANITIZE_SELF ()) return false;
+    if (rows > 0 && cols >= ((unsigned int) -1) / rows) return false;
     unsigned int count = rows * cols;
     if (!SANITIZE_ARRAY (matrix, matrix[0].get_size (), count)) return false;
     for (unsigned int i = 0; i < count; i++)

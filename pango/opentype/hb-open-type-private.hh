@@ -199,7 +199,7 @@ _hb_sanitize_array (SANITIZE_ARG_DEF,
 		    unsigned int record_size,
 		    unsigned int len)
 {
-  bool overflows = len >= ((unsigned int) -1) / record_size;
+  bool overflows = record_size > 0 && len >= ((unsigned int) -1) / record_size;
 
 #if HB_DEBUG_SANITIZE
   if (sanitize_depth < HB_DEBUG_SANITIZE) \
