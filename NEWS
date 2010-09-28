@@ -1,3 +1,13 @@
+Overview of changes between 1.28.1 and 1.28.2
+=============================================
+- Reduce DLL hijack risk and simplify code in basic-win32 module
+- Improve performance on Windows especially for non-Latin scripts
+- Bugs fixed:
+    Bug 628497 - Crash in pango_layout_line_get_extents at pango-layout.c
+    Bug 626966 - SIGFPE _hb_sanitize_array
+    Bug 629632 - configure bug
+    Bug 625807 - approximate character width is 0 on pangoft2
+
 Overview of changes between 1.28.0 and 1.28.1
 =============================================
 - pango-view now accepts --margin
