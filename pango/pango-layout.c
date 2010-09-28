@@ -133,7 +133,7 @@ struct _PangoLayoutClass
 
 };
 
-#define LINE_IS_VALID(line) ((line)->layout != NULL)
+#define LINE_IS_VALID(line) ((line) && (line)->layout != NULL)
 
 #ifdef G_DISABLE_CHECKS
 #define ITER_IS_INVALID(iter) FALSE
@@ -3987,11 +3987,7 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
   gint last_trailing;
   gboolean suppress_last_trailing;
 
-  g_return_val_if_fail (line != NULL, FALSE);
   g_return_val_if_fail (LINE_IS_VALID (line), FALSE);
-
-  if (!LINE_IS_VALID (line))
-    return FALSE;
 
   layout = line->layout;
 
@@ -4556,9 +4552,6 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
   gboolean caching = FALSE;
 
   g_return_if_fail (LINE_IS_VALID (line));
-
-  if (!LINE_IS_VALID (line))
-    return;
 
   if (G_UNLIKELY (!ink_rect && !logical_rect))
     return;
