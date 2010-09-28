@@ -552,7 +552,7 @@ for module in $included_modules; do
     *-win32)	INCLUDED_WIN32_MODULES="$INCLUDED_WIN32_MODULES $included_path" ;;
     *-atsui)	INCLUDED_ATSUI_MODULES="$INCLUDED_ATSUI_MODULES $included_path" ;;
     *-lang)	INCLUDED_LANG_MODULES="$INCLUDED_LANG_MODULES $included_path" ;;
-    *)		IFS="$pango_save_ifs" AC_MSG_ERROR([specified module $module not recognized]) ;;
+    *)		IFS="$pango_save_ifs"; AC_MSG_ERROR([specified module $module not recognized]) ;;
   esac
 done
 IFS="$pango_save_ifs"
