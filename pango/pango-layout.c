@@ -1302,7 +1302,7 @@ pango_layout_get_line_count (PangoLayout   *layout)
  * Use the faster pango_layout_get_lines_readonly() if you do not plan
  * to modify the contents of the lines (glyphs, glyph widths, etc.).
  *
- * Return value: (element-type Pango.LayoutLine): (transfer none): a #GSList containing
+ * Return value: (element-type Pango.LayoutLine) (transfer none): a #GSList containing
  * the lines in the layout. This points to internal data of the #PangoLayout
  * and must be used with care. It will become invalid on any change to the layout's
  * text or properties.
@@ -1337,7 +1337,7 @@ pango_layout_get_lines (PangoLayout *layout)
  * but the user is not expected
  * to modify the contents of the lines (glyphs, glyph widths, etc.).
  *
- * Return value: (element-type Pango.LayoutLine): (transfer none): a #GSList containing
+ * Return value: (element-type Pango.LayoutLine) (transfer none): a #GSList containing
  * the lines in the layout. This points to internal data of the #PangoLayout and
  * must be used with care. It will become invalid on any change to the layout's
  * text or properties.  No changes should be made to the lines.
@@ -4180,7 +4180,7 @@ pango_layout_line_get_width (PangoLayoutLine *line)
  *               the last range will extend all the way to the trailing
  *               edge of the layout. Otherwise, it will end at the
  *               trailing edge of the last character.
- * @ranges: (out): (array length=n_ranges): (transfer=full):
+ * @ranges: (out) (array length=n_ranges) (transfer=full):
  *               location to store a pointer to an array of ranges.
  *               The array will be of length <literal>2*n_ranges</literal>,
  *               with each range starting at <literal>(*ranges)[2*n]</literal>
