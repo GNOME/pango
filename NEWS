@@ -1,3 +1,8 @@
+Overview of changes between 1.28.2 and 1.28.3
+=============================================
+- Bugs fixed:
+    Bug 630857 - introspection: Use --include-uninstalled
+
 Overview of changes between 1.28.1 and 1.28.2
 =============================================
 - Reduce DLL hijack risk and simplify code in basic-win32 module
