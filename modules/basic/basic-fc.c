@@ -167,8 +167,8 @@ pango_fc_hb_font_get_glyph_metrics (hb_font_t *font, hb_face_t *face, const void
 
   metrics->x_advance = logical.width;
   metrics->y_advance = 0;
-  metrics->x_offset  = ink.x;
-  metrics->y_offset  = ink.y;
+  metrics->x_offset  =  ink.x;
+  metrics->y_offset  = -ink.y;
   metrics->width     = ink.width;
   metrics->height    = ink.height;
 }
@@ -279,8 +279,8 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
       last_cluster = glyphs->log_clusters[i];
 
       glyphs->glyphs[i].geometry.width = hb_position->x_advance;
-      glyphs->glyphs[i].geometry.x_offset = hb_position->x_offset;
-      glyphs->glyphs[i].geometry.y_offset = hb_position->y_offset;
+      glyphs->glyphs[i].geometry.x_offset =  hb_position->x_offset;
+      glyphs->glyphs[i].geometry.y_offset = -hb_position->y_offset;
 
       hb_glyph++;
       hb_position++;
