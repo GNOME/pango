@@ -28,8 +28,6 @@
 static void pango_ot_info_class_init (GObjectClass *object_class);
 static void pango_ot_info_finalize   (GObject *object);
 
-static void synthesize_class_def (PangoOTInfo *info);
-
 static GObjectClass *parent_class;
 
 GType
@@ -119,10 +117,6 @@ pango_ot_info_get (FT_Face face)
 
       info->face = face;
       info->hb_face = hb_ft_face_create (face, NULL);
-
-      /* XXX this is such a waste if not SFNT */
-      if (!hb_ot_layout_has_glyph_classes (info->hb_face))
-	synthesize_class_def (info);
     }
 
   return info;
@@ -132,142 +126,6 @@ hb_face_t *
 _pango_ot_info_get_hb_face (PangoOTInfo *info)
 {
   return info->hb_face;
-}
-
-typedef struct _GlyphInfo GlyphInfo;
-
-struct _GlyphInfo {
-  unsigned short glyph;
-  unsigned short class;
-};
-
-static int
-compare_glyph_info (gconstpointer a,
-		    gconstpointer b)
-{
-  const GlyphInfo *info_a = a;
-  const GlyphInfo *info_b = b;
-
-  return (info_a->glyph < info_b->glyph) ? -1 :
-    (info_a->glyph == info_b->glyph) ? 0 : 1;
-}
-
-/* Make a guess at the appropriate class for a glyph given
- * a character code that maps to the glyph
- */
-static gboolean
-get_glyph_class (gunichar        charcode,
-		 unsigned short *class)
-{
-  /* For characters mapped into the Arabic Presentation forms, using properties
-   * derived as we apply GSUB substitutions will be more reliable
-   */
-  if ((charcode >= 0xFB50 && charcode <= 0xFDFF) || /* Arabic Presentation Forms-A */
-      (charcode >= 0xFE70 && charcode <= 0XFEFF))   /* Arabic Presentation Forms-B */
-    return FALSE;
-
-  switch ((int) g_unichar_type (charcode))
-    {
-    case G_UNICODE_COMBINING_MARK:
-    case G_UNICODE_ENCLOSING_MARK:
-    case G_UNICODE_NON_SPACING_MARK:
-      *class = HB_OT_LAYOUT_GLYPH_CLASS_MARK;		/* Mark glyph (non-spacing combining glyph) */
-      return TRUE;
-    case G_UNICODE_UNASSIGNED:
-    case G_UNICODE_PRIVATE_USE:
-      return FALSE;		/* Unknown, don't assign a class; classes get
-				 * propagated during GSUB application */
-    default:
-      *class = HB_OT_LAYOUT_GLYPH_CLASS_BASE_GLYPH;	/* Base glyph (single character, spacing glyph) */
-      return TRUE;
-    }
-}
-
-static gboolean
-set_unicode_charmap (FT_Face face)
-{
-  int charmap;
-
-  for (charmap = 0; charmap < face->num_charmaps; charmap++)
-    if (face->charmaps[charmap]->encoding == ft_encoding_unicode)
-      {
-	FT_Error error = FT_Set_Charmap(face, face->charmaps[charmap]);
-	return error == FT_Err_Ok;
-      }
-
-  return FALSE;
-}
-
-/* Synthesize a GDEF table using the font's charmap and the
- * Unicode property database. We'll fill in class definitions
- * for glyphs not in the charmap as we walk through the tables.
- */
-static void
-synthesize_class_def (PangoOTInfo *info)
-{
-  GArray *glyph_infos;
-  hb_codepoint_t *glyph_indices;
-  unsigned char *classes;
-  gunichar charcode;
-  FT_UInt glyph;
-  unsigned int i, j;
-  FT_CharMap old_charmap;
-
-  old_charmap = info->face->charmap;
-
-  if (!old_charmap || !old_charmap->encoding != ft_encoding_unicode)
-    if (!set_unicode_charmap (info->face))
-      return;
-
-  glyph_infos = g_array_new (FALSE, FALSE, sizeof (GlyphInfo));
-
-  /* Collect all the glyphs in the charmap, and guess
-   * the appropriate classes for them
-   */
-  charcode = FT_Get_First_Char (info->face, &glyph);
-  while (glyph != 0)
-    {
-      GlyphInfo glyph_info;
-
-      if (glyph <= 65535)
-	{
-	  glyph_info.glyph = glyph;
-	  if (get_glyph_class (charcode, &glyph_info.class))
-	    g_array_append_val (glyph_infos, glyph_info);
-	}
-
-      charcode = FT_Get_Next_Char (info->face, charcode, &glyph);
-    }
-
-  /* Sort and remove duplicates
-   */
-  g_array_sort (glyph_infos, compare_glyph_info);
-
-  glyph_indices = g_new (hb_codepoint_t, glyph_infos->len);
-  classes = g_new (unsigned char, glyph_infos->len);
-
-  for (i = 0, j = 0; i < glyph_infos->len; i++)
-    {
-      GlyphInfo *info = &g_array_index (glyph_infos, GlyphInfo, i);
-
-      if (j == 0 || info->glyph != glyph_indices[j - 1])
-	{
-	  glyph_indices[j] = info->glyph;
-	  classes[j] = info->class;
-
-	  j++;
-	}
-    }
-
-  g_array_free (glyph_infos, TRUE);
-
-  hb_ot_layout_build_glyph_classes (info->hb_face, glyph_indices, classes, j);
-
-  g_free (glyph_indices);
-  g_free (classes);
-
-  if (old_charmap && info->face->charmap != old_charmap)
-    FT_Set_Charmap (info->face, old_charmap);
 }
 
 static hb_tag_t
@@ -552,16 +410,9 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
   hb_buffer_clear_positions (buffer->buffer);
   for (i = 0; i < num_glyphs; i++)
     {
-      if (hb_glyph->codepoint &&
-	  (!buffer->zero_width_marks ||
-	   hb_ot_layout_get_glyph_class (info->hb_face, hb_glyph->codepoint) != HB_OT_LAYOUT_GLYPH_CLASS_MARK))
-	{
-	  PangoRectangle logical_rect;
-	  pango_font_get_glyph_extents ((PangoFont *) buffer->font, hb_glyph->codepoint, NULL, &logical_rect);
-	  hb_position->x_advance = logical_rect.width;
-	}
-      else
-	hb_position->x_advance = 0;
+      PangoRectangle logical_rect;
+      pango_font_get_glyph_extents ((PangoFont *) buffer->font, hb_glyph->codepoint, NULL, &logical_rect);
+      hb_position->x_advance = logical_rect.width;
 
       hb_glyph++;
       hb_position++;
@@ -597,7 +448,7 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
     }
 
   if (buffer->applied_gpos)
-    hb_ot_layout_position_finish (hb_font, info->hb_face, buffer->buffer);
+    hb_ot_layout_position_finish (buffer->buffer);
 
   hb_font_destroy (hb_font);
 }
