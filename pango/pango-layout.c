@@ -319,9 +319,9 @@ pango_layout_copy (PangoLayout *src)
  *
  * Retrieves the #PangoContext used for this layout.
  *
- * Return value: the #PangoContext for the layout. This does not
- * have an additional refcount added, so if you want to keep
- * a copy of this around, you must reference it yourself.
+ * Return value: (transfer none): the #PangoContext for the layout.
+ * This does not have an additional refcount added, so if you want to
+ * keep a copy of this around, you must reference it yourself.
  **/
 PangoContext *
 pango_layout_get_context (PangoLayout *layout)
