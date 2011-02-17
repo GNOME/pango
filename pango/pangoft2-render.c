@@ -121,9 +121,14 @@ pango_ft2_font_render_box_glyph (int      width,
 
   box->bitmap.width = width;
   box->bitmap.rows = height;
-  box->bitmap.pitch = height;
+  box->bitmap.pitch = width;
 
-  box->bitmap.buffer = g_malloc0 (box->bitmap.rows * box->bitmap.pitch);
+  box->bitmap.buffer = g_malloc0_n (box->bitmap.rows, box->bitmap.pitch);
+
+  if (G_UNLIKELY (!box->bitmap.buffer)) {
+    g_slice_free (PangoFT2RenderedGlyph, box);
+    return NULL;
+  }
 
   /* draw the box */
   for (j = 0; j < line_width; j++)
@@ -226,6 +231,11 @@ pango_ft2_font_render_glyph (PangoFont *font,
       rendered->bitmap_left = face->glyph->bitmap_left;
       rendered->bitmap_top = face->glyph->bitmap_top;
 
+      if (G_UNLIKELY (!rendered->bitmap.buffer)) {
+        g_slice_free (PangoFT2RenderedGlyph, rendered);
+	return NULL;
+      }
+
       return rendered;
     }
   else
@@ -276,6 +286,8 @@ pango_ft2_renderer_draw_glyph (PangoRenderer *renderer,
   if (rendered_glyph == NULL)
     {
       rendered_glyph = pango_ft2_font_render_glyph (font, glyph);
+      if (rendered_glyph == NULL)
+        return;
       add_glyph_to_cache = TRUE;
     }
 
