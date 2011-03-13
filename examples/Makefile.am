@@ -21,7 +21,8 @@ cairosimple_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangocairo-$(PANGO_API_VERSION).la	\
 	$(GLIB_LIBS)					\
-	$(CAIRO_LIBS)
+	$(CAIRO_LIBS)					\
+	-lm
 if HAVE_FREETYPE
 cairosimple_LDADD +=					\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la

@@ -60,7 +60,7 @@ testiter_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la ../pango/libpangocair
 testscript_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
 test_ot_tags_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la ../pango/libpangoft2-$(PANGO_API_VERSION).la 
 
-dump_boundaries_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
+dump_boundaries_LDADD = $(GLIB_LIBS) ../pango/libpango-$(PANGO_API_VERSION).la
 
 if HAVE_CXX
 check_PROGRAMS += cxx-test
