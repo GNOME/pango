@@ -75,6 +75,8 @@ if HAVE_CAIRO
 GTKDOC_LIBS += $(top_builddir)/pango/libpangocairo-1.0.la
 endif
 
+GTKDOC_LIBS += $(GLIB_LIBS)
+
 # Extra options to supply to gtkdoc-mkdb
 MKDB_OPTIONS=--sgml-mode --output-format=xml
 
