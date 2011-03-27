@@ -48,14 +48,14 @@ struct _PangoCairoCoreTextFontClass
 
 
 static cairo_font_face_t *pango_cairo_core_text_font_create_font_face           (PangoCairoFont *font);
-static PangoFontMetrics  *pango_cairo_core_text_font_create_metrics_for_context (PangoCairoFont *font,
-                                                                                 PangoContext    *context);
+static PangoFontMetrics  *pango_cairo_core_text_font_create_base_metrics_for_context (PangoCairoFont *font,
+                                                                                      PangoContext    *context);
 
 static void
 cairo_font_iface_init (PangoCairoFontIface *iface)
 {
   iface->create_font_face = pango_cairo_core_text_font_create_font_face;
-  iface->create_metrics_for_context = pango_cairo_core_text_font_create_metrics_for_context;
+  iface->create_base_metrics_for_context = pango_cairo_core_text_font_create_base_metrics_for_context;
   iface->cf_priv_offset = G_STRUCT_OFFSET (PangoCairoCoreTextFont, cf_priv);
 }
 
@@ -122,8 +122,8 @@ max_glyph_width (PangoLayout *layout)
 }
 
 static PangoFontMetrics *
-pango_cairo_core_text_font_create_metrics_for_context (PangoCairoFont *font,
-                                                       PangoContext   *context)
+pango_cairo_core_text_font_create_base_metrics_for_context (PangoCairoFont *font,
+                                                            PangoContext   *context)
 {
   PangoCoreTextFont *cfont = (PangoCoreTextFont *) font;
   PangoFontMetrics *metrics;
