@@ -627,7 +627,8 @@ MODULE_DEF_FILES = \
 	module-defs-x.c \
 	module-defs-fc.c \
 	module-defs-win32.c \
-	module-defs-atsui.c
+	module-defs-atsui.c \
+	module-defs-coretext.c
 
 $(MODULE_DEF_FILES): $(top_builddir)/config.status
 	$(AM_V_GEN) cd $(top_builddir) && $(SHELL) ./config.status pango/$@
