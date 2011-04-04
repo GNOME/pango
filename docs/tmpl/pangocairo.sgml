@@ -145,6 +145,9 @@ int main (int argc, char **argv)
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### STRUCT PangoCairoFont ##### -->
 <para>
 
@@ -162,6 +165,7 @@ int main (int argc, char **argv)
 
 </para>
 
+@void: 
 @Returns: 
 
 
@@ -178,6 +182,7 @@ int main (int argc, char **argv)
 
 </para>
 
+@void: 
 @Returns: 
 
 

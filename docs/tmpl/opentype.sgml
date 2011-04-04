@@ -19,6 +19,9 @@ shaping engines
 <!-- ##### SECTION Stability_Level ##### -->
 Unstable
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### TYPEDEF PangoOTTag ##### -->
 <para>
 The <type>PangoOTTag</type> typedef is used to represent TrueType and OpenType

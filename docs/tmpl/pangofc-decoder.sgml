@@ -18,6 +18,9 @@ for handling a font that is encoded in a custom way.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### STRUCT PangoFcDecoder ##### -->
 <para>
 

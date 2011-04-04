@@ -28,6 +28,9 @@ pango_itemize_with_base_dir()
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### ENUM PangoDirection ##### -->
 <para>
 </para>

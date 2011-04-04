@@ -18,6 +18,9 @@ MacOS systems using the ATSUI text rendering subsystem.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### MACRO PANGO_RENDER_TYPE_ATSUI ##### -->
 <para>
 A string constant identifying the ATSUI renderer. The associated quark (see

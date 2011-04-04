@@ -18,6 +18,9 @@ text to bitmaps using the FreeType 2 library.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### STRUCT PangoFT2FontMap ##### -->
 <para>
 The #PangoFT2FontMap is the #PangoFontMap implementation for FreeType fonts.
@@ -37,6 +40,7 @@ with the FreeType backend. See %PANGO_RENDER_TYPE_FC for the replacement.
 
 </para>
 
+@void: 
 @Returns: 
 
 
@@ -210,6 +214,7 @@ Function type for doing final config tweaking on prepared FcPatterns.
 
 </para>
 
+@void: 
 @Returns: 
 
 
@@ -218,5 +223,6 @@ Function type for doing final config tweaking on prepared FcPatterns.
 
 </para>
 
+@void: 
 
 
