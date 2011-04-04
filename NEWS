@@ -1,3 +1,12 @@
+Overview of changes between 1.28.3 and 1.28.4
+=============================================
+- Various introspection annotation fixes
+- Build fixes
+- Require glib >= 2.24.0
+- Bugs fixed:
+    Bug 636348 - Hex boxes are incorrectly scaled with non identity cairo scale
+    Bug 639882 - Heap corruption in font parsing with FreeType2 backend
+
 Overview of changes between 1.28.2 and 1.28.3
 =============================================
 - Bugs fixed:
