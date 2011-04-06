@@ -346,7 +346,7 @@ render_syllable (PangoFont *font, const char *str, int length,
 	      *n_glyphs = oldlen;
 	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 	      set_glyph (font, glyphs, *n_glyphs, cluster_offset,
-			 PANGO_GET_UNKNOWN_GLYPH (text[i]));
+			 PANGO_GET_UNKNOWN_GLYPH (wc));
 	      (*n_glyphs)++;
 	      break;
 	    }
