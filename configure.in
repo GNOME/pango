@@ -923,7 +923,7 @@ EOTEXT
 
 IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
 for module in $included_modules; do
-  if echo $module | egrep -- "-atsui($|,)" > /dev/null; then
+  if echo $module | egrep -- "-coretext($|,)" > /dev/null; then
     module_c=`echo $module | sed s/-/_/`
     cat >> pango/module-defs-coretext.c <<EOTEXT
  { _pango_${module_c}_script_engine_list, _pango_${module_c}_script_engine_init, _pango_${module_c}_script_engine_exit, _pango_${module_c}_script_engine_create },
