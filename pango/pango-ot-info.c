@@ -447,8 +447,7 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
       buffer->applied_gpos = TRUE;
     }
 
-  if (buffer->applied_gpos)
-    hb_ot_layout_position_finish (buffer->buffer);
+  hb_ot_layout_position_finish (buffer->buffer);
 
   hb_font_destroy (hb_font);
 }
