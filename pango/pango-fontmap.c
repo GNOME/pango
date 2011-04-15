@@ -97,9 +97,9 @@ pango_font_map_load_font  (PangoFontMap               *fontmap,
 /**
  * pango_font_map_list_families:
  * @fontmap: a #PangoFontMap
- * @families: location to store a pointer to an array of #PangoFontFamily *.
+ * @families: (out) (array length=n_families): location to store a pointer to an array of #PangoFontFamily *.
  *            This array should be freed with g_free().
- * @n_families: location to store the number of elements in @families
+ * @n_families: (out): location to store the number of elements in @families
  *
  * List all families for a fontmap.
  **/
