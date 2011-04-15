@@ -407,7 +407,8 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
   hb_glyph = hb_buffer_get_glyph_infos (buffer->buffer);
   hb_position = hb_buffer_get_glyph_positions (buffer->buffer);
 
-  hb_buffer_clear_positions (buffer->buffer);
+  hb_ot_layout_position_start (buffer->buffer);
+
   for (i = 0; i < num_glyphs; i++)
     {
       PangoRectangle logical_rect;
