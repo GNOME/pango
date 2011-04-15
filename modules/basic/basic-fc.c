@@ -100,7 +100,7 @@ release_buffer (hb_buffer_t *buffer, gboolean free_buffer)
 {
   if (G_LIKELY (!free_buffer) && hb_buffer_get_reference_count (buffer) == 1)
     {
-      hb_buffer_clear (buffer);
+      hb_buffer_reset (buffer);
       G_UNLOCK (cached_buffer);
     }
   else
