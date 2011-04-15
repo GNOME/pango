@@ -243,9 +243,9 @@ pango_context_get_font_map (PangoContext *context)
 /**
  * pango_context_list_families:
  * @context: a #PangoContext
- * @families: location to store a pointer to an array of #PangoFontFamily *.
+ * @families: (out) (array length=n_families): location to store a pointer to an array of #PangoFontFamily *.
  *            This array should be freed with g_free().
- * @n_families: location to store the number of elements in @descs
+ * @n_families: (out): location to store the number of elements in @descs
  *
  * List all families for a context.
  **/
