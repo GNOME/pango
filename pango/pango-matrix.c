@@ -26,18 +26,9 @@
 #include "pango-matrix.h"
 #include "pango-impl-utils.h"
 
-GType
-pango_matrix_get_type (void)
-{
-  static GType our_type = 0;
-
-  if (G_UNLIKELY (our_type == 0))
-    our_type = g_boxed_type_register_static (I_("PangoMatrix"),
-					     (GBoxedCopyFunc) pango_matrix_copy,
-					     (GBoxedFreeFunc) pango_matrix_free);
-
-  return our_type;
-}
+G_DEFINE_BOXED_TYPE (PangoMatrix, pango_matrix,
+                     pango_matrix_copy,
+                     pango_matrix_free);
 
 /**
  * pango_matrix_copy:

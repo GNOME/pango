@@ -129,17 +129,9 @@ pango_language_free (PangoLanguage *language G_GNUC_UNUSED)
   return; /* nothing */
 }
 
-GType
-pango_language_get_type (void)
-{
-  static GType our_type = 0;
-
-  if (G_UNLIKELY (our_type == 0))
-    our_type = g_boxed_type_register_static (I_("PangoLanguage"),
-					     (GBoxedCopyFunc)pango_language_copy,
-					     (GBoxedFreeFunc)pango_language_free);
-  return our_type;
-}
+G_DEFINE_BOXED_TYPE (PangoLanguage, pango_language,
+                     pango_language_copy,
+                     pango_language_free);
 
 /**
  * _pango_get_lc_ctype:

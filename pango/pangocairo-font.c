@@ -433,6 +433,8 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
   pango_ctm.x0 = cairo_ctm.x0;
   pango_ctm.y0 = cairo_ctm.y0;
 
+  size /= pango_matrix_get_font_scale_factor (&pango_ctm);
+
   if (is_hinted)
     {
       /* prepare for some hinting */

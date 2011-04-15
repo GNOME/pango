@@ -164,7 +164,7 @@ Pango_1_0_gir_PACKAGES = gobject-2.0 cairo freetype2
 Pango_1_0_gir_INCLUDES = GObject-2.0 cairo-1.0
 Pango_1_0_gir_LIBS = libpango-1.0.la
 Pango_1_0_gir_CFLAGS = -I$(top_srcdir) $(PANGO_CFLAGS)
-Pango_1_0_gir_FILES = $(filter-out %-private.h, $(pango_introspection_files))
+Pango_1_0_gir_FILES = $(filter-out %-private.h pango-color-table.h, $(pango_introspection_files))
 
 # ------------------- libpangox -------------------
 
@@ -267,10 +267,11 @@ pangoft2_introspection_files = \
 PangoFT2-1.0.gir: libpangoft2-1.0.la
 PangoFT2-1.0.gir: Pango-1.0.gir
 
-PangoFT2_1_0_gir_PACKAGES = gobject-2.0 freetype2 pangoft2
-PangoFT2_1_0_gir_INCLUDES = GObject-2.0 cairo-1.0 Pango-1.0 freetype2-2.0 fontconfig-2.0
+PangoFT2_1_0_gir_PACKAGES = freetype2
+PangoFT2_1_0_gir_INCLUDES = GObject-2.0 cairo-1.0 freetype2-2.0 fontconfig-2.0
 PangoFT2_1_0_gir_LIBS = libpangoft2-1.0.la
 PangoFT2_1_0_gir_CFLAGS = -I$(top_srcdir)
+PangoFT2_1_0_gir_SCANNERFLAGS = --include-uninstalled=$(builddir)/Pango-1.0.gir
 PangoFT2_1_0_gir_FILES = $(filter-out %-private.h, $(addprefix $(srcdir)/,$(pangoft2_introspection_files)))
 
 # ------------------- libpangoxft -------------------
@@ -317,9 +318,10 @@ PangoXft-1.0.gir: libpangoxft-1.0.la
 PangoXft-1.0.gir: PangoFT2-1.0.gir
 
 PangoXft_1_0_gir_PACKAGES = gobject-2.0 freetype2
-PangoXft_1_0_gir_INCLUDES = GObject-2.0 PangoFT2-1.0 xft-2.0 xlib-2.0
+PangoXft_1_0_gir_INCLUDES = GObject-2.0 xft-2.0 xlib-2.0
 PangoXft_1_0_gir_LIBS = libpangoxft-1.0.la
 PangoXft_1_0_gir_CFLAGS = -I$(top_srcdir) $(PANGO_CFLAGS)
+PangoXft_1_0_gir_SCANNERFLAGS = --include-uninstalled=$(builddir)/PangoFT2-1.0.gir
 PangoXft_1_0_gir_FILES = $(filter-out %-private.h, $(addprefix $(srcdir)/,$(pangoxft_introspection_files)))
 
 # ------------------- libpangocairo -------------------
@@ -404,9 +406,10 @@ PangoCairo-1.0.gir: libpangocairo-1.0.la
 PangoCairo-1.0.gir: Pango-1.0.gir $(PANGOCAIRO_FONT_BACKEND_GI_MODULE).gir
 
 PangoCairo_1_0_gir_PACKAGES = gobject-2.0 cairo
-PangoCairo_1_0_gir_INCLUDES = GObject-2.0 cairo-1.0 Pango-1.0 $(PANGOCAIRO_FONT_BACKEND_GI_MODULE)
+PangoCairo_1_0_gir_INCLUDES = GObject-2.0 cairo-1.0 $(PANGOCAIRO_FONT_BACKEND_GI_MODULE)
 PangoCairo_1_0_gir_LIBS = libpangocairo-1.0.la
 PangoCairo_1_0_gir_CFLAGS = -I$(top_srcdir) $(PANGO_CFLAGS)
+PangoCairo_1_0_gir_SCANNERFLAGS = --include-uninstalled=$(builddir)/Pango-1.0.gir --include-uninstalled=$(builddir)/$(PANGOCAIRO_FONT_BACKEND_GI_MODULE).gir
 PangoCairo_1_0_gir_FILES = $(filter-out %-private.h, $(addprefix $(srcdir)/,$(pangocairo_introspection_files)))
 
 # ------------------- libpangowin32 -------------------

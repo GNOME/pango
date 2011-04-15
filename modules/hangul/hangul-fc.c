@@ -338,15 +338,16 @@ render_syllable (PangoFont *font, const char *str, int length,
       oldlen = *n_glyphs;
       for (j = 0; j < 3 && (__jamo_to_ksc5601[jindex][j] != 0); j++)
 	{
-	  wc = __jamo_to_ksc5601[jindex][j] - KSC_JAMOBASE + UNI_JAMOBASE;
-	  index = (wc >= 0x3131) ? find_char (font, wc) : 0;
+	  gunichar comp_wc;
+	  comp_wc = __jamo_to_ksc5601[jindex][j] - KSC_JAMOBASE + UNI_JAMOBASE;
+	  index = (comp_wc >= 0x3131) ? find_char (font, comp_wc) : 0;
 	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 	  if (!index)
 	    {
 	      *n_glyphs = oldlen;
 	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 	      set_glyph (font, glyphs, *n_glyphs, cluster_offset,
-			 PANGO_GET_UNKNOWN_GLYPH (text[i]));
+			 PANGO_GET_UNKNOWN_GLYPH (wc));
 	      (*n_glyphs)++;
 	      break;
 	    }

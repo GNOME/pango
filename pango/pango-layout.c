@@ -133,7 +133,7 @@ struct _PangoLayoutClass
 
 };
 
-#define LINE_IS_VALID(line) ((line)->layout != NULL)
+#define LINE_IS_VALID(line) ((line) && (line)->layout != NULL)
 
 #ifdef G_DISABLE_CHECKS
 #define ITER_IS_INVALID(iter) FALSE
@@ -319,9 +319,9 @@ pango_layout_copy (PangoLayout *src)
  *
  * Retrieves the #PangoContext used for this layout.
  *
- * Return value: the #PangoContext for the layout. This does not
- * have an additional refcount added, so if you want to keep
- * a copy of this around, you must reference it yourself.
+ * Return value: (transfer none): the #PangoContext for the layout.
+ * This does not have an additional refcount added, so if you want to
+ * keep a copy of this around, you must reference it yourself.
  **/
 PangoContext *
 pango_layout_get_context (PangoLayout *layout)
@@ -1245,7 +1245,8 @@ pango_layout_context_changed (PangoLayout *layout)
 /**
  * pango_layout_get_log_attrs:
  * @layout: a #PangoLayout
- * @attrs: location to store a pointer to an array of logical attributes
+ * @attrs: (out)(array length=n_attrs)(transfer container):
+ *         location to store a pointer to an array of logical attributes
  *         This value must be freed with g_free().
  * @n_attrs: location to store the number of the attributes in the
  *           array. (The stored value will be one more than the total number
@@ -1302,7 +1303,7 @@ pango_layout_get_line_count (PangoLayout   *layout)
  * Use the faster pango_layout_get_lines_readonly() if you do not plan
  * to modify the contents of the lines (glyphs, glyph widths, etc.).
  *
- * Return value: (element-type Pango.LayoutLine): (transfer none): a #GSList containing
+ * Return value: (element-type Pango.LayoutLine) (transfer none): a #GSList containing
  * the lines in the layout. This points to internal data of the #PangoLayout
  * and must be used with care. It will become invalid on any change to the layout's
  * text or properties.
@@ -1337,7 +1338,7 @@ pango_layout_get_lines (PangoLayout *layout)
  * but the user is not expected
  * to modify the contents of the lines (glyphs, glyph widths, etc.).
  *
- * Return value: (element-type Pango.LayoutLine): (transfer none): a #GSList containing
+ * Return value: (element-type Pango.LayoutLine) (transfer none): a #GSList containing
  * the lines in the layout. This points to internal data of the #PangoLayout and
  * must be used with care. It will become invalid on any change to the layout's
  * text or properties.  No changes should be made to the lines.
@@ -1445,7 +1446,7 @@ pango_layout_get_line_readonly (PangoLayout *layout,
  * @trailing: an integer indicating the edge of the grapheme to retrieve
  *            the position of. If > 0, the trailing edge of the grapheme,
  *            if 0, the leading of the grapheme.
- * @x_pos: location to store the x_offset (in Pango unit)
+ * @x_pos: (out): location to store the x_offset (in Pango unit)
  *
  * Converts an index within a line to a X position.
  *
@@ -1596,10 +1597,10 @@ pango_layout_index_to_line_and_extents (PangoLayout     *layout,
  * @trailing:  an integer indicating the edge of the grapheme to retrieve the
  *             position of. If 0, the trailing edge of the grapheme, if > 0,
  *             the leading of the grapheme.
- * @line:      location to store resulting line index. (which will
- *             between 0 and pango_layout_get_line_count(layout) - 1)
- * @x_pos:     location to store resulting position within line
- *             (%PANGO_SCALE units per device unit)
+ * @line: (out): location to store resulting line index. (which will
+ *               between 0 and pango_layout_get_line_count(layout) - 1)
+ * @x_pos (out): location to store resulting position within line
+ *              (%PANGO_SCALE units per device unit)
  *
  * Converts from byte @index_ within the @layout to line and X position.
  * (X position is measured from the left edge of the line)
@@ -1655,7 +1656,7 @@ pango_layout_index_to_line_x (PangoLayout *layout,
  *                was at the leading edge.
  * @direction:    direction to move cursor. A negative
  *                value indicates motion to the left.
- * @new_index:    location to store the new cursor byte index. A value of -1
+ * @new_index: (out): location to store the new cursor byte index. A value of -1
  *                indicates that the cursor has been moved off the beginning
  *                of the layout. A value of %G_MAXINT indicates that
  *                the cursor has been moved off the end of the layout.
@@ -1836,8 +1837,8 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
  *             from the left edge of the layout.
  * @y:         the Y offset (in Pango units)
  *             from the top edge of the layout
- * @index_:    location to store calculated byte index
- * @trailing:  location to store a integer indicating where
+ * @index_: (out):   location to store calculated byte index
+ * @trailing: (out): location to store a integer indicating where
  *             in the grapheme the user clicked. It will either
  *             be zero, or the number of characters in the
  *             grapheme. 0 represents the trailing edge of the grapheme.
@@ -1938,7 +1939,7 @@ pango_layout_xy_to_index (PangoLayout *layout,
  * pango_layout_index_to_pos:
  * @layout: a #PangoLayout
  * @index_: byte index within @layout
- * @pos: rectangle in which to store the position of the grapheme
+ * @pos: (out): rectangle in which to store the position of the grapheme
  *
  * Converts from an index within a #PangoLayout to the onscreen position
  * corresponding to the grapheme at that index, which is represented
@@ -2165,8 +2166,9 @@ pango_layout_line_get_char_direction (PangoLayoutLine *layout_line,
  * pango_layout_get_cursor_pos:
  * @layout: a #PangoLayout
  * @index_: the byte index of the cursor
- * @strong_pos: location to store the strong cursor position (may be %NULL)
- * @weak_pos: location to store the weak cursor position (may be %NULL)
+ * @strong_pos: (out): location to store the strong cursor position
+ *                     (may be %NULL)
+ * @weak_pos: (out): location to store the weak cursor position (may be %NULL)
  *
  * Given an index within a layout, determines the positions that of the
  * strong and weak cursors if the insertion point is at that
@@ -2586,10 +2588,11 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
 /**
  * pango_layout_get_extents:
  * @layout:   a #PangoLayout
- * @ink_rect: rectangle used to store the extents of the layout as drawn
- *            or %NULL to indicate that the result is not needed.
- * @logical_rect: rectangle used to store the logical extents of the layout
-		 or %NULL to indicate that the result is not needed.
+ * @ink_rect: (out): rectangle used to store the extents of the layout as drawn
+ *                   or %NULL to indicate that the result is not needed.
+ * @logical_rect: (out):rectangle used to store the logical extents of the
+ *                      layout or %NULL to indicate that the result is not
+ *                      needed.
  *
  * Computes the logical and ink extents of @layout. Logical extents
  * are usually what you want for positioning things.  Note that both extents
@@ -2614,10 +2617,11 @@ pango_layout_get_extents (PangoLayout    *layout,
 /**
  * pango_layout_get_pixel_extents:
  * @layout:   a #PangoLayout
- * @ink_rect: rectangle used to store the extents of the layout as drawn
- *            or %NULL to indicate that the result is not needed.
- * @logical_rect: rectangle used to store the logical extents of the
- *              layout or %NULL to indicate that the result is not needed.
+ * @ink_rect: (out): rectangle used to store the extents of the layout as drawn
+ *                   or %NULL to indicate that the result is not needed.
+ * @logical_rect: (out): rectangle used to store the logical extents of the
+ *                       layout or %NULL to indicate that the result is not
+ *                       needed.
  *
  * Computes the logical and ink extents of @layout in device units.
  * This function just calls pango_layout_get_extents() followed by
@@ -2640,8 +2644,8 @@ pango_layout_get_pixel_extents (PangoLayout *layout,
 /**
  * pango_layout_get_size:
  * @layout: a #PangoLayout
- * @width: location to store the logical width, or %NULL
- * @height: location to store the logical height, or %NULL
+ * @width: (out): location to store the logical width, or %NULL
+ * @height: (out): location to store the logical height, or %NULL
  *
  * Determines the logical width and height of a #PangoLayout
  * in Pango units (device units scaled by %PANGO_SCALE). This
@@ -2665,8 +2669,8 @@ pango_layout_get_size (PangoLayout *layout,
 /**
  * pango_layout_get_pixel_size:
  * @layout: a #PangoLayout
- * @width: location to store the logical width, or %NULL
- * @height: location to store the logical height, or %NULL
+ * @width: (out): location to store the logical width, or %NULL
+ * @height: (out): location to store the logical height, or %NULL
  *
  * Determines the logical width and height of a #PangoLayout
  * in device units. (pango_layout_get_size() returns the width
@@ -3932,29 +3936,21 @@ pango_layout_line_unref (PangoLayoutLine *line)
     }
 }
 
-GType
-pango_layout_line_get_type (void)
-{
-  static GType our_type = 0;
-
-  if (G_UNLIKELY (our_type == 0))
-    our_type = g_boxed_type_register_static (I_("PangoLayoutLine"),
-					     (GBoxedCopyFunc) pango_layout_line_ref,
-					     (GBoxedFreeFunc) pango_layout_line_unref);
-  return our_type;
-}
+G_DEFINE_BOXED_TYPE (PangoLayoutLine, pango_layout_line,
+                     pango_layout_line_ref,
+                     pango_layout_line_unref);
 
 /**
  * pango_layout_line_x_to_index:
  * @line:      a #PangoLayoutLine
  * @x_pos:     the X offset (in Pango units)
  *             from the left edge of the line.
- * @index_:    location to store calculated byte index for
- *             the grapheme in which the user clicked.
- * @trailing:  location to store an integer indicating where
- *             in the grapheme the user clicked. It will either
- *             be zero, or the number of characters in the
- *             grapheme. 0 represents the leading edge of the grapheme.
+ * @index_: (out):   location to store calculated byte index for
+ *                   the grapheme in which the user clicked.
+ * @trailing: (out): location to store an integer indicating where
+ *                   in the grapheme the user clicked. It will either
+ *                   be zero, or the number of characters in the
+ *                   grapheme. 0 represents the leading edge of the grapheme.
  *
  * Converts from x offset to the byte index of the corresponding
  * character within the text of the layout. If @x_pos is outside the line,
@@ -3987,11 +3983,7 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
   gint last_trailing;
   gboolean suppress_last_trailing;
 
-  g_return_val_if_fail (line != NULL, FALSE);
   g_return_val_if_fail (LINE_IS_VALID (line), FALSE);
-
-  if (!LINE_IS_VALID (line))
-    return FALSE;
 
   layout = line->layout;
 
@@ -4184,7 +4176,7 @@ pango_layout_line_get_width (PangoLayoutLine *line)
  *               the last range will extend all the way to the trailing
  *               edge of the layout. Otherwise, it will end at the
  *               trailing edge of the last character.
- * @ranges: (out): (array length=n_ranges): (transfer=full):
+ * @ranges: (out) (array length=n_ranges) (transfer=full):
  *               location to store a pointer to an array of ranges.
  *               The array will be of length <literal>2*n_ranges</literal>,
  *               with each range starting at <literal>(*ranges)[2*n]</literal>
@@ -4536,10 +4528,10 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
 /**
  * pango_layout_line_get_extents:
  * @line:     a #PangoLayoutLine
- * @ink_rect: rectangle used to store the extents of the glyph string
- *            as drawn, or %NULL
- * @logical_rect: rectangle used to store the logical extents of the glyph
- *            string, or %NULL
+ * @ink_rect: (out): rectangle used to store the extents of the glyph string
+ *                   as drawn, or %NULL
+ * @logical_rect: (out):rectangle used to store the logical extents of the glyph
+ *                      string, or %NULL
  *
  * Computes the logical and ink extents of a layout line. See
  * pango_font_get_glyph_extents() for details about the interpretation
@@ -4556,9 +4548,6 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
   gboolean caching = FALSE;
 
   g_return_if_fail (LINE_IS_VALID (line));
-
-  if (!LINE_IS_VALID (line))
-    return;
 
   if (G_UNLIKELY (!ink_rect && !logical_rect))
     return;
@@ -4687,10 +4676,10 @@ pango_layout_line_new (PangoLayout *layout)
 /**
  * pango_layout_line_get_pixel_extents:
  * @layout_line: a #PangoLayoutLine
- * @ink_rect:    rectangle used to store the extents of the glyph string
- *               as drawn, or %NULL
- * @logical_rect: rectangle used to store the logical extents of the glyph
- *               string, or %NULL
+ * @ink_rect: (out): rectangle used to store the extents of the glyph string
+ *                   as drawn, or %NULL
+ * @logical_rect: (out): rectangle used to store the logical extents of the
+ *                       glyph string, or %NULL
  *
  * Computes the logical and ink extents of @layout_line in device units.
  * This function just calls pango_layout_line_get_extents() followed by
@@ -5469,18 +5458,9 @@ pango_layout_iter_copy (PangoLayoutIter *iter)
   return new;
 }
 
-GType
-pango_layout_iter_get_type (void)
-{
-  static GType our_type = 0;
-
-  if (G_UNLIKELY (our_type == 0))
-    our_type = g_boxed_type_register_static (I_("PangoLayoutIter"),
-					     (GBoxedCopyFunc) pango_layout_iter_copy,
-					     (GBoxedFreeFunc) pango_layout_iter_free);
-
-  return our_type;
-}
+G_DEFINE_BOXED_TYPE (PangoLayoutIter, pango_layout_iter,
+                     pango_layout_iter_copy,
+                     pango_layout_iter_free);
 
 /**
  * pango_layout_get_iter:

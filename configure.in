@@ -451,7 +451,7 @@ fi
 #
 # Checks for GLib
 #
-GLIB_REQUIRED_VERSION=2.17.3
+GLIB_REQUIRED_VERSION=2.26.0
 GLIB_MODULES="glib-2.0 >= $GLIB_REQUIRED_VERSION gobject-2.0 gmodule-no-export-2.0"
 
 PKG_CHECK_MODULES(GLIB, $GLIB_MODULES, :,
@@ -486,7 +486,7 @@ PKG_CHECK_MODULES(LIBTHAI, libthai >= $LIBTHAI_REQUIRED_VERSION, have_libthai=tr
 # Checks for GObject Introspection
 #
 
-GOBJECT_INTROSPECTION_CHECK([0.6.14])
+GOBJECT_INTROSPECTION_CHECK([0.9.5])
 
 #
 # Modules to build

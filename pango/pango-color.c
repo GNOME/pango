@@ -27,18 +27,9 @@
 #include "pango-attributes.h"
 #include "pango-impl-utils.h"
 
-GType
-pango_color_get_type (void)
-{
-  static GType our_type = 0;
-
-  if (G_UNLIKELY (our_type == 0))
-    our_type = g_boxed_type_register_static (I_("PangoColor"),
-					     (GBoxedCopyFunc) pango_color_copy,
-					     (GBoxedFreeFunc) pango_color_free);
-
-  return our_type;
-}
+G_DEFINE_BOXED_TYPE (PangoColor, pango_color,
+                     pango_color_copy,
+                     pango_color_free);
 
 /**
  * pango_color_copy:
