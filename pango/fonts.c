@@ -1918,7 +1918,7 @@ pango_font_family_get_name (PangoFontFamily  *family)
 /**
  * pango_font_family_list_faces:
  * @family: a #PangoFontFamily
- * @faces: (array length=n_faces) (out): location to store an array of pointers to #PangoFontFace
+ * @faces: (out) (allow-none) (array length=n_faces): location to store an array of pointers to #PangoFontFace
  *   objects, or %NULL. This array should be freed with g_free()
  *   when it is no longer needed.
  * @n_faces: (out): location to store number of elements in @faces.
