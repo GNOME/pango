@@ -148,8 +148,7 @@ pango_ot_buffer_add_glyph (PangoOTBuffer *buffer,
 			   guint          properties,
 			   guint          cluster)
 {
-  hb_buffer_add_glyph (buffer->buffer,
-			glyph, ~properties, cluster);
+  hb_buffer_add (buffer->buffer, glyph, ~properties, cluster);
 }
 
 /**
@@ -209,7 +208,7 @@ pango_ot_buffer_get_glyphs (const PangoOTBuffer  *buffer,
 			    int                  *n_glyphs)
 {
   if (glyphs)
-    *glyphs = (PangoOTGlyph *) hb_buffer_get_glyph_infos (buffer->buffer);
+    *glyphs = (PangoOTGlyph *) hb_buffer_get_glyph_infos (buffer->buffer, NULL);
 
   if (n_glyphs)
     *n_glyphs = hb_buffer_get_length (buffer->buffer);
@@ -241,8 +240,8 @@ pango_ot_buffer_output (const PangoOTBuffer *buffer,
 
   /* Copy glyphs into output glyph string */
   num_glyphs = hb_buffer_get_length (hb_buffer);
-  hb_glyph = hb_buffer_get_glyph_infos (hb_buffer);
-  hb_position = hb_buffer_get_glyph_positions (hb_buffer);
+  hb_glyph = hb_buffer_get_glyph_infos (hb_buffer, NULL);
+  hb_position = hb_buffer_get_glyph_positions (hb_buffer, NULL);
   pango_glyph_string_set_size (glyphs, num_glyphs);
   last_cluster = -1;
   for (i = 0; i < num_glyphs; i++)

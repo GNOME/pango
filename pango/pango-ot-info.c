@@ -404,8 +404,8 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 
   /* Apply default positioning */
   num_glyphs = hb_buffer_get_length (buffer->buffer);
-  hb_glyph = hb_buffer_get_glyph_infos (buffer->buffer);
-  hb_position = hb_buffer_get_glyph_positions (buffer->buffer);
+  hb_glyph = hb_buffer_get_glyph_infos (buffer->buffer, NULL);
+  hb_position = hb_buffer_get_glyph_positions (buffer->buffer, NULL);
 
   hb_ot_layout_position_start (buffer->buffer);
 

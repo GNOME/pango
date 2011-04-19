@@ -279,8 +279,8 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 
   /* buffer output */
   num_glyphs = hb_buffer_get_length (hb_buffer);
-  hb_glyph = hb_buffer_get_glyph_infos (hb_buffer);
-  hb_position = hb_buffer_get_glyph_positions (hb_buffer);
+  hb_glyph = hb_buffer_get_glyph_infos (hb_buffer, NULL);
+  hb_position = hb_buffer_get_glyph_positions (hb_buffer, NULL);
   pango_glyph_string_set_size (glyphs, num_glyphs);
   last_cluster = -1;
   for (i = 0; i < num_glyphs; i++)
