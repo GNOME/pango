@@ -257,8 +257,8 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
   hb_font = hb_font_create ();
   hb_font_set_funcs (hb_font,
 		     pango_fc_get_hb_font_funcs (),
-		     NULL,
-		     &context);
+		     &context,
+		     NULL);
   hb_font_set_scale (hb_font,
 		     /* XXX CTM */
 		     ((guint64) ft_face->size->metrics.x_scale * ft_face->units_per_EM) >> 12,
@@ -271,7 +271,7 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
   hb_buffer = acquire_buffer (&free_buffer);
   /* setup buffer */
   hb_buffer_set_direction (hb_buffer, analysis->level % 2 != 0 ? HB_DIRECTION_RTL : HB_DIRECTION_LTR);
-  hb_buffer_set_script (hb_buffer, analysis->script);
+  hb_buffer_set_script (hb_buffer, hb_glib_script_to_script (analysis->script));
   hb_buffer_set_language (hb_buffer, hb_language_from_string (pango_language_to_string (analysis->language)));
   hb_buffer_add_utf8 (hb_buffer, text, length, 0, length);
 
