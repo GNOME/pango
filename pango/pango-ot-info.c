@@ -394,8 +394,8 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
   /* XXX reuse hb_font */
   hb_font = hb_font_create ();
   hb_font_set_scale (hb_font,
-		     ((guint64) info->face->size->metrics.x_scale * info->face->units_per_EM) >> 12,
-		     ((guint64) info->face->size->metrics.y_scale * info->face->units_per_EM) >> 12);
+		      (((guint64) info->face->size->metrics.x_scale * info->face->units_per_EM) >> 12),
+		     -(((guint64) info->face->size->metrics.y_scale * info->face->units_per_EM) >> 12));
   is_hinted = buffer->font->is_hinted;
   hb_font_set_ppem (hb_font,
 		    is_hinted ? info->face->size->metrics.x_ppem : 0,

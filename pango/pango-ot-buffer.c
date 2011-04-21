@@ -257,8 +257,8 @@ pango_ot_buffer_output (const PangoOTBuffer *buffer,
       if (is_hinted)
 	advance = PANGO_UNITS_ROUND (advance);
       glyphs->glyphs[i].geometry.width = advance;
-      glyphs->glyphs[i].geometry.x_offset =  hb_position->x_offset;
-      glyphs->glyphs[i].geometry.y_offset = -hb_position->y_offset;
+      glyphs->glyphs[i].geometry.x_offset = hb_position->x_offset;
+      glyphs->glyphs[i].geometry.y_offset = hb_position->y_offset;
 
       hb_glyph++;
       hb_position++;

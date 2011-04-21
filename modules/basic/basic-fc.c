@@ -261,8 +261,8 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 		     NULL);
   hb_font_set_scale (hb_font,
 		     /* XXX CTM */
-		     ((guint64) ft_face->size->metrics.x_scale * ft_face->units_per_EM) >> 12,
-		     ((guint64) ft_face->size->metrics.y_scale * ft_face->units_per_EM) >> 12);
+		      (((guint64) ft_face->size->metrics.x_scale * ft_face->units_per_EM) >> 12),
+		     -(((guint64) ft_face->size->metrics.y_scale * ft_face->units_per_EM) >> 12));
   is_hinted = fc_font->is_hinted;
   hb_font_set_ppem (hb_font,
 		    is_hinted ? ft_face->size->metrics.x_ppem : 0,
@@ -295,8 +295,8 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 	advance = PANGO_UNITS_ROUND (advance);
 	*/
       glyphs->glyphs[i].geometry.width = hb_position->x_advance;
-      glyphs->glyphs[i].geometry.x_offset =  hb_position->x_offset;
-      glyphs->glyphs[i].geometry.y_offset = -hb_position->y_offset;
+      glyphs->glyphs[i].geometry.x_offset = hb_position->x_offset;
+      glyphs->glyphs[i].geometry.y_offset = hb_position->y_offset;
 
       hb_glyph++;
       hb_position++;
