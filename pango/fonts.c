@@ -1546,10 +1546,10 @@ pango_font_find_shaper (PangoFont     *font,
  * pango_font_get_glyph_extents:
  * @font: a #PangoFont
  * @glyph: the glyph index
- * @ink_rect: rectangle used to store the extents of the glyph as drawn
- *            or %NULL to indicate that the result is not needed.
- * @logical_rect: rectangle used to store the logical extents of the glyph
- *            or %NULL to indicate that the result is not needed.
+ * @ink_rect: (allowe-none): rectangle used to store the extents of the glyph
+ *            as drawn or %NULL to indicate that the result is not needed.
+ * @logical_rect (allow-none): rectangle used to store the logical extents of
+ *            the glyph or %NULL to indicate that the result is not needed.
  *
  * Gets the logical and ink extents of a glyph within a font. The
  * coordinate system for each rectangle has its origin at the
