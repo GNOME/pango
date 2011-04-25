@@ -188,7 +188,7 @@ pango_matrix_concat (PangoMatrix       *matrix,
 
 /**
  * pango_matrix_get_font_scale_factor:
- * @matrix: a #PangoMatrix, may be %NULL
+ * @matrix: (allow-none): a #PangoMatrix, may be %NULL
  *
  * Returns the scale factor of a matrix on the height of the font.
  * That is, the scale factor in the direction perpendicular to the
