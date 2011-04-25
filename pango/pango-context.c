@@ -1674,13 +1674,13 @@ update_metrics_from_items (PangoFontMetrics *metrics,
 /**
  * pango_context_get_metrics:
  * @context: a #PangoContext
- * @desc: a #PangoFontDescription structure.  %NULL means that the font
- * 	      description from the context will be used.
- * @language: language tag used to determine which script to get the metrics
- *            for. %NULL means that the language tag from the context will
- *            be used. If no language tag is set on the context, metrics
- *            for the default language (as determined by
- *            pango_language_get_default()) will be returned.
+ * @desc: (allow-none): a #PangoFontDescription structure.  %NULL means that the
+ *            font description from the context will be used.
+ * @language: (allow-none): language tag used to determine which script to get
+ *            the metrics for. %NULL means that the language tag from the context
+ *            will be used. If no language tag is set on the context, metrics
+ *            for the default language (as determined by pango_language_get_default())
+ *            will be returned.
  *
  * Get overall metric information for a particular font
  * description.  Since the metrics may be substantially different for
