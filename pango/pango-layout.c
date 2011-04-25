@@ -2671,8 +2671,8 @@ pango_layout_get_size (PangoLayout *layout,
 /**
  * pango_layout_get_pixel_size:
  * @layout: a #PangoLayout
- * @width: (out): location to store the logical width, or %NULL
- * @height: (out): location to store the logical height, or %NULL
+ * @width: (out) (allow-none): location to store the logical width, or %NULL
+ * @height: (out) (allow-none): location to store the logical height, or %NULL
  *
  * Determines the logical width and height of a #PangoLayout
  * in device units. (pango_layout_get_size() returns the width
