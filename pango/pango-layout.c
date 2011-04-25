@@ -5596,7 +5596,7 @@ pango_layout_iter_get_run (PangoLayoutIter *iter)
  * but the user is not expected
  * to modify the contents of the run (glyphs, glyph widths, etc.).
  *
- * Return value: the current run, that should not be modified.
+ * Return value: (transfer none): the current run, that should not be modified.
  *
  * Since: 1.16
  **/
