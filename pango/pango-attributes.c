@@ -1931,9 +1931,9 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 /**
  * pango_attr_list_filter:
  * @list: a #PangoAttrList
- * @func: callback function; returns %TRUE if an attribute
+ * @func: (scope call) (closure data): callback function; returns %TRUE if an attribute
  *        should be filtered out.
- * @data: Data to be passed to @func
+ * @data: (closure): Data to be passed to @func
  *
  * Given a #PangoAttrList and callback function, removes any elements
  * of @list for which @func returns %TRUE and inserts them into
