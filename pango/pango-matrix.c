@@ -388,7 +388,7 @@ pango_matrix_transform_rectangle (const PangoMatrix *matrix,
 /**
  * pango_matrix_transform_pixel_rectangle:
  * @matrix: a #PangoMatrix, or %NULL
- * @rect: in/out bounding box in device units, or %NULL
+ * @rect: (allow-none): in/out bounding box in device units, or %NULL
  *
  * First transforms the @rect using @matrix, then calculates the bounding box
  * of the transformed rectangle.  The rectangle should be in device units
