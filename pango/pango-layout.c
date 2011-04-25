@@ -1100,7 +1100,7 @@ pango_layout_get_text (PangoLayout *layout)
  * @layout: a #PangoLayout
  * @markup: marked-up text
  * @length: length of marked-up text in bytes, or -1 if @markup is
- * nul-terminated
+ *          null-terminated
  *
  * Same as pango_layout_set_markup_with_accel(), but
  * the markup text isn't scanned for accelerators.
@@ -1120,9 +1120,10 @@ pango_layout_set_markup (PangoLayout *layout,
  * @markup: marked-up text
  * (see <link linkend="PangoMarkupFormat">markup format</link>)
  * @length: length of marked-up text in bytes, or -1 if @markup is
- * nul-terminated
+ *          null-terminated
  * @accel_marker: marker for accelerators in the text
- * @accel_char: return location for first located accelerator, or %NULL
+ * @accel_char: (out caller-allocates) (allow-none): return location
+ *                    for first located accelerator, or %NULL
  *
  * Sets the layout text and attribute list from marked-up text (see
  * <link linkend="PangoMarkupFormat">markup format</link>). Replaces
