@@ -308,7 +308,7 @@ pango_matrix_transform_point (const PangoMatrix *matrix,
 /**
  * pango_matrix_transform_rectangle:
  * @matrix: a #PangoMatrix, or %NULL
- * @rect: (allow-none): in/out bounding box in Pango units, or %NULL
+ * @rect: (inout) (allow-none): in/out bounding box in Pango units, or %NULL
  *
  * First transforms @rect using @matrix, then calculates the bounding box
  * of the transformed rectangle.  The rectangle should be in Pango units.
