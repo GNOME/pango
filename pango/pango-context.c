@@ -1581,7 +1581,7 @@ itemize_with_font (PangoContext               *context,
  * the range covering the position just after @start_index + @length.
  * (i.e. if itemizing in a loop, just keep passing in the same @cached_iter).
  *
- * Return value: a #GList of #PangoItem structures.
+ * Return value: (transfer full) (element-type Pango.Item): a #GList of #PangoItem structures.
  */
 GList *
 pango_itemize (PangoContext      *context,
