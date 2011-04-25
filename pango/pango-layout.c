@@ -591,7 +591,7 @@ pango_layout_get_spacing (PangoLayout *layout)
 /**
  * pango_layout_set_attributes:
  * @layout: a #PangoLayout
- * @attrs: a #PangoAttrList, can be %NULL
+ * @attrs: (allow-none) (transfer full): a #PangoAttrList, can be %NULL
  *
  * Sets the text attributes for a layout object.
  * References @attrs, so the caller can unref its reference.
