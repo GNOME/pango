@@ -4679,10 +4679,10 @@ pango_layout_line_new (PangoLayout *layout)
 /**
  * pango_layout_line_get_pixel_extents:
  * @layout_line: a #PangoLayoutLine
- * @ink_rect: (out): rectangle used to store the extents of the glyph string
- *                   as drawn, or %NULL
- * @logical_rect: (out): rectangle used to store the logical extents of the
- *                       glyph string, or %NULL
+ * @ink_rect: (out) (allow-none): rectangle used to store the extents of
+ *                   the glyph string as drawn, or %NULL
+ * @logical_rect: (out) (allow-none): rectangle used to store the logical
+ *                       extents of the glyph string, or %NULL
  *
  * Computes the logical and ink extents of @layout_line in device units.
  * This function just calls pango_layout_line_get_extents() followed by
