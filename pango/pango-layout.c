@@ -5998,8 +5998,8 @@ pango_layout_iter_get_char_extents (PangoLayoutIter *iter,
 /**
  * pango_layout_iter_get_cluster_extents:
  * @iter: a #PangoLayoutIter
- * @ink_rect: rectangle to fill with ink extents, or %NULL
- * @logical_rect: rectangle to fill with logical extents, or %NULL
+ * @ink_rect: (allow-none): rectangle to fill with ink extents, or %NULL
+ * @logical_rect: (allow-none): rectangle to fill with logical extents, or %NULL
  *
  * Gets the extents of the current cluster, in layout coordinates
  * (origin is the top left of the entire layout).
