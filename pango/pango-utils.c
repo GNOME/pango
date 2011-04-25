@@ -497,8 +497,8 @@ pango_scan_string (const char **pos, GString *out)
 
 /**
  * pango_scan_int:
- * @pos: in/out string position
- * @out: an int into which to write the result
+ * @pos: (inout): in/out string position
+ * @out: (out): an int into which to write the result
  *
  * Scans an integer.
  * Leading white space is skipped.
