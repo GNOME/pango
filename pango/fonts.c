@@ -509,7 +509,7 @@ pango_font_description_unset_fields (PangoFontDescription *desc,
 /**
  * pango_font_description_merge:
  * @desc: a #PangoFontDescription
- * @desc_to_merge: the #PangoFontDescription to merge from, or %NULL
+ * @desc_to_merge: (allow-none): the #PangoFontDescription to merge from, or %NULL
  * @replace_existing: if %TRUE, replace fields in @desc with the
  *   corresponding values from @desc_to_merge, even if they
  *   are already exist.
