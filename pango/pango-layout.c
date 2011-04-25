@@ -2166,9 +2166,9 @@ pango_layout_line_get_char_direction (PangoLayoutLine *layout_line,
  * pango_layout_get_cursor_pos:
  * @layout: a #PangoLayout
  * @index_: the byte index of the cursor
- * @strong_pos: (out): location to store the strong cursor position
+ * @strong_pos: (out) (allow-none): location to store the strong cursor position
  *                     (may be %NULL)
- * @weak_pos: (out): location to store the weak cursor position (may be %NULL)
+ * @weak_pos: (out) (allow-none): location to store the weak cursor position (may be %NULL)
  *
  * Given an index within a layout, determines the positions that of the
  * strong and weak cursors if the insertion point is at that
