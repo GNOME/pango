@@ -774,9 +774,9 @@ parse_int (const char *word,
  * pango_parse_enum:
  * @type: enum type to parse, eg. %PANGO_TYPE_ELLIPSIZE_MODE.
  * @str: (allow-none): string to parse.  May be %NULL.
- * @value: (allow-none): integer to store the result in, or %NULL.
+ * @value: (out) (allow-none): integer to store the result in, or %NULL.
  * @warn: if %TRUE, issue a g_warning() on bad input.
- * @possible_values: (allow-none): place to store list of possible values on failure, or %NULL.
+ * @possible_values: (out) (allow-none): place to store list of possible values on failure, or %NULL.
  *
  * Parses an enum type and stores the result in @value.
  *
