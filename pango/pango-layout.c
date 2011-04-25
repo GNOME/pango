@@ -5686,7 +5686,7 @@ pango_layout_iter_at_last_line (PangoLayoutIter *iter)
  *
  * Gets the layout associated with a #PangoLayoutIter.
  *
- * Return value: the layout associated with @iter.
+ * Return value: (transfer none): the layout associated with @iter.
  *
  * Since: 1.20
  **/
