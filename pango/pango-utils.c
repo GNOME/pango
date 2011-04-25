@@ -1294,8 +1294,8 @@ pango_units_to_double (int i)
 
 /**
  * pango_extents_to_pixels:
- * @inclusive: rectangle to round to pixels inclusively, or %NULL.
- * @nearest: rectangle to round to nearest pixels, or %NULL.
+ * @inclusive: (allow-none): rectangle to round to pixels inclusively, or %NULL.
+ * @nearest: (allow-none): rectangle to round to nearest pixels, or %NULL.
  *
  * Converts extents from Pango units to device units, dividing by the
  * %PANGO_SCALE factor and performing rounding.
