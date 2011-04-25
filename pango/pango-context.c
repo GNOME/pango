@@ -1482,14 +1482,14 @@ itemize_state_finish (ItemizeState *state)
  * pango_itemize_with_base_dir:
  * @context:   a structure holding information that affects
 	       the itemization process.
+ * @base_dir:  base direction to use for bidirectional processing
  * @text:      the text to itemize.
  * @start_index: first byte in @text to process
  * @length:    the number of bytes (not characters) to process
  *             after @start_index.
  *             This must be >= 0.
- * @base_dir:  base direction to use for bidirectional processing
  * @attrs:     the set of attributes that apply to @text.
- * @cached_iter:      Cached attribute iterator, or %NULL
+ * @cached_iter: (allow-none): Cached attribute iterator, or %NULL
  *
  * Like pango_itemize(), but the base direction to use when
  * computing bidirectional levels (see pango_context_set_base_dir ()),
