@@ -280,7 +280,8 @@ pango_context_list_families (PangoContext          *context,
  * Loads the font in one of the fontmaps in the context
  * that is the closest match for @desc.
  *
- * Returns: the font loaded, or %NULL if no font matched.
+ * Returns: (transfer full): a newlly allocated #PangoFont that
+ *          was loaded, or %NULL if no font matched.
  **/
 PangoFont *
 pango_context_load_font (PangoContext               *context,
