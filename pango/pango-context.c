@@ -227,8 +227,8 @@ pango_context_set_font_map (PangoContext *context,
  *
  * Gets the #PangoFontmap used to look up fonts for this context.
  *
- * Return value: the font map for the #PangoContext. This value
- *  is owned by Pango and should not be unreferenced.
+ * Return value: (transfer none): the font map for the #PangoContext.
+ *               This value is owned by Pango and should not be unreferenced.
  *
  * Since: 1.6
  **/
@@ -243,8 +243,9 @@ pango_context_get_font_map (PangoContext *context)
 /**
  * pango_context_list_families:
  * @context: a #PangoContext
- * @families: (out) (array length=n_families): location to store a pointer to an array of #PangoFontFamily *.
- *            This array should be freed with g_free().
+ * @families: (out) (array length=n_families): location to store a pointer to
+ *            an array of #PangoFontFamily *. This array should be freed
+ *            with g_free().
  * @n_families: (out): location to store the number of elements in @descs
  *
  * List all families for a context.
