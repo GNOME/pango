@@ -1481,13 +1481,12 @@ itemize_state_finish (ItemizeState *state)
 /**
  * pango_itemize_with_base_dir:
  * @context:   a structure holding information that affects
-	       the itemization process.
+ *             the itemization process.
  * @base_dir:  base direction to use for bidirectional processing
  * @text:      the text to itemize.
  * @start_index: first byte in @text to process
  * @length:    the number of bytes (not characters) to process
- *             after @start_index.
- *             This must be >= 0.
+ *             after @start_index. This must be >= 0.
  * @attrs:     the set of attributes that apply to @text.
  * @cached_iter: (allow-none): Cached attribute iterator, or %NULL
  *
@@ -1566,7 +1565,7 @@ itemize_with_font (PangoContext               *context,
  *             after @start_index.
  *             This must be >= 0.
  * @attrs:     the set of attributes that apply to @text.
- * @cached_iter:      Cached attribute iterator, or %NULL
+ * @cached_iter: (allow-none): Cached attribute iterator, or %NULL
  *
  * Breaks a piece of text into segments with consistent
  * directional level and shaping engine. Each byte of @text will
