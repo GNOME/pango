@@ -1145,7 +1145,7 @@ pango_renderer_deactivate (PangoRenderer *renderer)
  * pango_renderer_set_color:
  * @renderer: a #PangoRenderer
  * @part: the part to change the color of
- * @color: the new color or %NULL to unset the current color
+ * @color: (allow-none): the new color or %NULL to unset the current color
  *
  * Sets the color for part of the rendering.
  *
