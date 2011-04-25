@@ -1593,9 +1593,8 @@ pango_font_get_glyph_extents  (PangoFont      *font,
 /**
  * pango_font_get_metrics:
  * @font: a #PangoFont
- * @language: language tag used to determine which script to get the metrics
- *            for, or %NULL to indicate to get the metrics for the entire
- *            font.
+ * @language: (allow-none): language tag used to determine which script to get the metrics
+ *            for, or %NULL to indicate to get the metrics for the entire font.
  *
  * Gets overall metric information for a font. Since the metrics may be
  * substantially different for different scripts, a language tag can
