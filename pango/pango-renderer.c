@@ -1321,7 +1321,7 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
 /**
  * pango_renderer_set_matrix:
  * @renderer: a #PangoRenderer
- * @matrix: a #PangoMatrix, or %NULL to unset any existing matrix.
+ * @matrix: (allow-none): a #PangoMatrix, or %NULL to unset any existing matrix.
  *  (No matrix set is the same as setting the identity matrix.)
  *
  * Sets the transformation matrix that will be applied when rendering.
