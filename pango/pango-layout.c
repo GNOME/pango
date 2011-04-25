@@ -832,7 +832,7 @@ pango_layout_get_alignment (PangoLayout *layout)
 /**
  * pango_layout_set_tabs:
  * @layout: a #PangoLayout
- * @tabs: a #PangoTabArray, or %NULL
+ * @tabs: (allow-none): a #PangoTabArray, or %NULL
  *
  * Sets the tabs to use for @layout, overriding the default tabs
  * (by default, tabs are every 8 spaces). If @tabs is %NULL, the default
