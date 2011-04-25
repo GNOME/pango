@@ -1371,7 +1371,7 @@ pango_renderer_get_matrix (PangoRenderer *renderer)
  * The returned layout should not be modified while still being
  * rendered.
  *
- * Return value: the layout, or %NULL if no layout is being
+ * Return value: (transfer none): the layout, or %NULL if no layout is being
  *  rendered using @renderer at this time.
  *
  * Since: 1.20
