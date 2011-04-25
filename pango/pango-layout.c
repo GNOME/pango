@@ -6143,8 +6143,8 @@ pango_layout_iter_get_line_extents (PangoLayoutIter *iter,
 /**
  * pango_layout_iter_get_line_yrange:
  * @iter: a #PangoLayoutIter
- * @y0_: start of line
- * @y1_: end of line
+ * @y0_: (out) (allow-none): start of line, or %NULL
+ * @y1_: (out) (allow-none): end of line, or %NULL
  *
  * Divides the vertical space in the #PangoLayout being iterated over
  * between the lines in the layout, and returns the space belonging to
