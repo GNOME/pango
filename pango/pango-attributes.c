@@ -960,11 +960,11 @@ pango_attr_shape_equal (const PangoAttribute *attr1,
  * @ink_rect:     ink rectangle to assign to each character
  * @logical_rect: logical rectangle to assign to each character
  * @data:         user data pointer
- * @copy_func:    function to copy @data when the attribute
- *                is copied. If %NULL, @data is simply copied
- *                as a pointer.
- * @destroy_func: function to free @data when the attribute
- *                is freed, or %NULL
+ * @copy_func: (allow-none): function to copy @data when the
+ *                attribute is copied. If %NULL, @data is simply
+ *                copied as a pointer.
+ * @destroy_func: (allow-none): function to free @data when the
+ *                attribute is freed, or %NULL
  *
  * Like pango_attr_shape_new(), but a user data pointer is also
  * provided; this pointer can be accessed when later
