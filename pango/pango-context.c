@@ -146,8 +146,8 @@ update_resolved_gravity (PangoContext *context)
 /**
  * pango_context_set_matrix:
  * @context: a #PangoContext
- * @matrix: a #PangoMatrix, or %NULL to unset any existing matrix.
- *  (No matrix set is the same as setting the identity matrix.)
+ * @matrix: (allow-none): a #PangoMatrix, or %NULL to unset any existing
+ * matrix. (No matrix set is the same as setting the identity matrix.)
  *
  * Sets the transformation matrix that will be applied when rendering
  * with this context. Note that reported metrics are in the user space
