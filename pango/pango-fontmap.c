@@ -82,7 +82,8 @@ pango_font_map_create_context (PangoFontMap *fontmap)
  *
  * Load the font in the fontmap that is the closest match for @desc.
  *
- * Returns: the font loaded, or %NULL if no font matched.
+ * Returns: (transfer full): the newly allocated #PangoFont loaded,
+ *          or %NULL if no font matched.
  **/
 PangoFont *
 pango_font_map_load_font  (PangoFontMap               *fontmap,
