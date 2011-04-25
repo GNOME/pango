@@ -6219,9 +6219,9 @@ pango_layout_iter_get_baseline (PangoLayoutIter *iter)
 /**
  * pango_layout_iter_get_layout_extents:
  * @iter: a #PangoLayoutIter
- * @ink_rect: (allow-none): rectangle to fill with ink extents,
+ * @ink_rect: (out) (allow-none): rectangle to fill with ink extents,
  *            or %NULL
- * @logical_rect: (allow-none): rectangle to fill with logical
+ * @logical_rect: (out) (allow-none): rectangle to fill with logical
  *                extents, or %NULL
  *
  * Obtains the extents of the #PangoLayout being iterated
