@@ -176,7 +176,8 @@ pango_trim_string (const char *str)
  * Splits a %G_SEARCHPATH_SEPARATOR-separated list of files, stripping
  * white space and substituting ~/ with $HOME/.
  *
- * Return value: a list of strings to be freed with g_strfreev()
+ * Return value: (transfer full) (array zero-terminated=1): a list of
+ * strings to be freed with g_strfreev()
  **/
 char **
 pango_split_file_list (const char *str)
