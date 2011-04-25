@@ -615,7 +615,7 @@ compute_distance (const PangoFontDescription *a,
 /**
  * pango_font_description_better_match:
  * @desc: a #PangoFontDescription
- * @old_match: a #PangoFontDescription, or %NULL
+ * @old_match: (allow-none): a #PangoFontDescription, or %NULL
  * @new_match: a #PangoFontDescription
  *
  * Determines if the style attributes of @new_match are a closer match
