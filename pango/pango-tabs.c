@@ -309,8 +309,8 @@ pango_tab_array_get_tab  (PangoTabArray *tab_array,
 /**
  * pango_tab_array_get_tabs:
  * @tab_array: a #PangoTabArray
- * @alignments: location to store an array of tab stop alignments, or %NULL
- * @locations: location to store an array of tab positions, or %NULL
+ * @alignments: (allow-none): location to store an array of tab stop alignments, or %NULL
+ * @locations: (allow-none): location to store an array of tab positions, or %NULL
  *
  * If non-%NULL, @alignments and @locations are filled with allocated
  * arrays of length pango_tab_array_get_size(). You must free the
