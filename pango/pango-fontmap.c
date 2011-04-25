@@ -124,7 +124,8 @@ pango_font_map_list_families (PangoFontMap      *fontmap,
  * Load a set of fonts in the fontmap that can be used to render
  * a font matching @desc.
  *
- * Returns: the fontset, or %NULL if no font matched.
+ * Returns: (transfer full): the newly allocated #PangoFontset
+ *          loaded, or %NULL if no font matched.
  **/
 PangoFontset *
 pango_font_map_load_fontset (PangoFontMap                 *fontmap,
