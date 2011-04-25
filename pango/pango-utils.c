@@ -365,8 +365,8 @@ pango_skip_space (const char **pos)
 
 /**
  * pango_scan_word:
- * @pos: in/out string position
- * @out: a #GString into which to write the result
+ * @pos: (inout): in/out string position
+ * @out: (out): a #GString into which to write the result
  *
  * Scans a word into a #GString buffer. A word consists
  * of [A-Za-z_] followed by zero or more [A-Za-z_0-9]
@@ -408,7 +408,7 @@ pango_scan_word (const char **pos, GString *out)
 /**
  * pango_scan_string:
  * @pos: (inout): in/out string position
- * @out: (out) : a #GString into which to write the result
+ * @out: (out): a #GString into which to write the result
  *
  * Scans a string into a #GString buffer. The string may either
  * be a sequence of non-white-space characters, or a quoted
