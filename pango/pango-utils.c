@@ -1094,9 +1094,9 @@ pango_load_aliases (void)
 /**
  * pango_lookup_aliases:
  * @fontname: an ascii string
- * @families: will be set to an array of font family names.
+ * @families: (out) (array length=n_families): will be set to an array of font family names.
  *    this array is owned by pango and should not be freed.
- * @n_families: will be set to the length of the @families array.
+ * @n_families: (out): will be set to the length of the @families array.
  *
  * Look up all user defined aliases for the alias @fontname.
  * The resulting font family names will be stored in @families,
