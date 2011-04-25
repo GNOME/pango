@@ -82,8 +82,8 @@ pango_fontset_get_metrics (PangoFontset  *fontset)
 /**
  * pango_fontset_foreach:
  * @fontset: a #PangoFontset
- * @func: Callback function
- * @data: data to pass to the callback function
+ * @func: (closure data) (scope call): Callback function
+ * @data: (closure): data to pass to the callback function
  *
  * Iterates through all the fonts in a fontset, calling @func for
  * each one. If @func returns %TRUE, that stops the iteration.
