@@ -2618,11 +2618,12 @@ pango_layout_get_extents (PangoLayout    *layout,
 /**
  * pango_layout_get_pixel_extents:
  * @layout:   a #PangoLayout
- * @ink_rect: (out): rectangle used to store the extents of the layout as drawn
- *                   or %NULL to indicate that the result is not needed.
- * @logical_rect: (out): rectangle used to store the logical extents of the
- *                       layout or %NULL to indicate that the result is not
- *                       needed.
+ * @ink_rect: (out) (allow-none): rectangle used to store the extents of the
+ *                   layout as drawn or %NULL to indicate that the result is
+ *                   not needed.
+ * @logical_rect: (out) (allow-none): rectangle used to store the logical
+ *                       extents of the layout or %NULL to indicate that the
+ *                       result is not needed.
  *
  * Computes the logical and ink extents of @layout in device units.
  * This function just calls pango_layout_get_extents() followed by
