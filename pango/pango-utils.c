@@ -235,7 +235,7 @@ pango_split_file_list (const char *str)
 /**
  * pango_read_line:
  * @stream: a stdio stream
- * @str: #GString buffer into which to write the result
+ * @str: (out): #GString buffer into which to write the result
  *
  * Reads an entire line from a file into a buffer. Lines may
  * be delimited with '\n', '\r', '\n\r', or '\r\n'. The delimiter
