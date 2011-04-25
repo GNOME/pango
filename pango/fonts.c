@@ -1644,7 +1644,8 @@ pango_font_get_metrics (PangoFont        *font,
  * alive.  In most uses this is not an issue as a #PangoContext holds
  * a reference to the font map.
  *
- * Return value: the #PangoFontMap for the font, or %NULL if @font is %NULL.
+ * Return value: (transfer none): the #PangoFontMap for the font, or %NULL
+ *               if @font is %NULL.
  *
  * Since: 1.10
  **/
