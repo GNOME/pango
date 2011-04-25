@@ -6103,8 +6103,8 @@ pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
 /**
  * pango_layout_iter_get_line_extents:
  * @iter: a #PangoLayoutIter
- * @ink_rect: rectangle to fill with ink extents, or %NULL
- * @logical_rect: rectangle to fill with logical extents, or %NULL
+ * @ink_rect: (allow-none): rectangle to fill with ink extents, or %NULL
+ * @logical_rect: (allow-none): rectangle to fill with logical extents, or %NULL
  *
  * Obtains the extents of the current line. @ink_rect or @logical_rect
  * can be %NULL if you aren't interested in them. Extents are in layout
