@@ -343,7 +343,7 @@ pango_read_line (FILE *stream, GString *str)
 
 /**
  * pango_skip_space:
- * @pos: in/out string position
+ * @pos: (inout): in/out string position
  *
  * Skips 0 or more characters of white space.
  *
