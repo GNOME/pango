@@ -676,7 +676,7 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
 /**
  * pango_renderer_draw_glyph_item:
  * @renderer: a #PangoRenderer
- * @text: the UTF-8 text that @glyph_item refers to, or %NULL
+ * @text: (allow-none): the UTF-8 text that @glyph_item refers to, or %NULL
  * @glyph_item: a #PangoGlyphItem
  * @x: X position of left edge of baseline, in user space coordinates
  *   in Pango units.
