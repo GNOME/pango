@@ -1222,8 +1222,8 @@ pango_is_zero_width (gunichar ch)
 
 /**
  * pango_quantize_line_geometry:
- * @thickness: pointer to the thickness of a line, in Pango units
- * @position: corresponding position
+ * @thickness: (inout): pointer to the thickness of a line, in Pango units
+ * @position: (inout): corresponding position
  *
  * Quantizes the thickness and position of a line, typically an
  * underline or strikethrough, to whole device pixels, that is integer
