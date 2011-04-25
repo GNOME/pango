@@ -815,7 +815,8 @@ pango_font_description_free  (PangoFontDescription  *desc)
 
 /**
  * pango_font_descriptions_free:
- * @descs: (allow-none) (array length=n_descs): a pointer to an array of #PangoFontDescription, may be %NULL
+ * @descs: (allow-none) (array length=n_descs) (transfer full): a pointer
+ * to an array of #PangoFontDescription, may be %NULL
  * @n_descs: number of font descriptions in @descs
  *
  * Frees an array of font descriptions.
