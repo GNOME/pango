@@ -245,7 +245,7 @@ pango_language_get_default (void)
 
 /**
  * pango_language_from_string:
- * @language: a string representing a language tag, or %NULL
+ * @language: (allow-none): a string representing a language tag, or %NULL
  *
  * Take a RFC-3066 format language tag as a string and convert it to a
  * #PangoLanguage pointer that can be efficiently copied (copy the
