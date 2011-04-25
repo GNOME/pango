@@ -1782,9 +1782,9 @@ pango_attr_iterator_get (PangoAttrIterator *iterator,
  *        an attribute in the #PangoAttrList associated with the iterator,
  *        so if you plan to keep it around, you must call:
  *        <literal>pango_font_description_set_family (desc, pango_font_description_get_family (desc))</literal>.
- * @language: if non-%NULL, location to store language tag for item, or %NULL
+ * @language: (allow-none): if non-%NULL, location to store language tag for item, or %NULL
  *            if none is found.
- * @extra_attrs: (element type Pango.Attribute) (transfer full): if non-%NULL,
+ * @extra_attrs: (allow-none) (element type Pango.Attribute) (transfer full): if non-%NULL,
  *           location in which to store a list of non-font
  *           attributes at the the current position; only the highest priority
  *           value of each attribute will be added to this list. In order
