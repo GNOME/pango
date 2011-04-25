@@ -1598,10 +1598,10 @@ pango_layout_index_to_line_and_extents (PangoLayout     *layout,
  * @trailing:  an integer indicating the edge of the grapheme to retrieve the
  *             position of. If 0, the trailing edge of the grapheme, if > 0,
  *             the leading of the grapheme.
- * @line: (out): location to store resulting line index. (which will
- *               between 0 and pango_layout_get_line_count(layout) - 1)
- * @x_pos (out): location to store resulting position within line
- *              (%PANGO_SCALE units per device unit)
+ * @line: (out) (allow-none): location to store resulting line index. (which will
+ *               between 0 and pango_layout_get_line_count(layout) - 1), or %NULL
+ * @x_pos: (out) (allow-none): location to store resulting position within line
+ *              (%PANGO_SCALE units per device unit), or %NULL
  *
  * Converts from byte @index_ within the @layout to line and X position.
  * (X position is measured from the left edge of the line)
