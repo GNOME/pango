@@ -56,8 +56,8 @@ pango_font_map_init (PangoFontMap *fontmap G_GNUC_UNUSED)
  * gdk_pango_context_get_for_screen(), and
  * gtk_widget_get_pango_context().  Use those instead.
  *
- * Return value: the newly allocated #PangoContext, which should
- *               be freed with g_object_unref().
+ * Return value: (transfer full): the newly allocated #PangoContext,
+ *               which should be freed with g_object_unref().
  *
  * Since: 1.22
  **/
