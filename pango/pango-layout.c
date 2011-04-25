@@ -5570,7 +5570,7 @@ pango_layout_iter_get_index (PangoLayoutIter *iter)
  * Use the faster pango_layout_iter_get_run_readonly() if you do not plan
  * to modify the contents of the run (glyphs, glyph widths, etc.).
  *
- * Return value: the current run.
+ * Return value: (transfer none): the current run.
  **/
 PangoLayoutRun*
 pango_layout_iter_get_run (PangoLayoutIter *iter)
