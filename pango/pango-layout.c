@@ -638,7 +638,7 @@ pango_layout_get_attributes (PangoLayout *layout)
 /**
  * pango_layout_set_font_description:
  * @layout: a #PangoLayout
- * @desc: the new #PangoFontDescription, or %NULL to unset the
+ * @desc: (allow-none): the new #PangoFontDescription, or %NULL to unset the
  *        current font description
  *
  * Sets the default font description for the layout. If no font
