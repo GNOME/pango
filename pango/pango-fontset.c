@@ -49,8 +49,8 @@ PANGO_DEFINE_TYPE_ABSTRACT (PangoFontset, pango_fontset,
  * Returns the font in the fontset that contains the best glyph for the
  * Unicode character @wc.
  *
- * Return value: a #PangoFont. The caller must call g_object_unref when finished
- *          with the font.
+ * Return value: (transfer full): a #PangoFont. The caller must call
+ *          g_object_unref when finished with the font.
  **/
 PangoFont *
 pango_fontset_get_font (PangoFontset  *fontset,
