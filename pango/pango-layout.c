@@ -4531,10 +4531,10 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
 /**
  * pango_layout_line_get_extents:
  * @line:     a #PangoLayoutLine
- * @ink_rect: (out): rectangle used to store the extents of the glyph string
- *                   as drawn, or %NULL
- * @logical_rect: (out):rectangle used to store the logical extents of the glyph
- *                      string, or %NULL
+ * @ink_rect: (out) (allow-none): rectangle used to store the extents of
+ *            the glyph string as drawn, or %NULL
+ * @logical_rect: (out) (allow-none):rectangle used to store the logical
+ *                extents of the glyph string, or %NULL
  *
  * Computes the logical and ink extents of a layout line. See
  * pango_font_get_glyph_extents() for details about the interpretation
