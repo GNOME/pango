@@ -553,8 +553,9 @@ pango_language_get_sample_string (PangoLanguage *language)
 
 /**
  * pango_language_get_scripts:
- * @language: a #PangoLanguage, or %NULL
- * @num_scripts: location to return number of scripts, or %NULL
+ * @language: (allow-none): a #PangoLanguage, or %NULL
+ * @num_scripts: (allow-none): location to return number of scripts,
+ *            or %NULL
  *
  * Determines the scripts used to to write @language.
  * If nothing is known about the language tag @language,
