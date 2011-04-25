@@ -244,8 +244,8 @@ pango_matrix_get_font_scale_factor (const PangoMatrix *matrix)
 /**
  * pango_matrix_transform_distance:
  * @matrix: a #PangoMatrix, or %NULL
- * @dx: in/out X component of a distance vector
- * @dy: yn/out Y component of a distance vector
+ * @dx: (inout): in/out X component of a distance vector
+ * @dy: (inout): in/out Y component of a distance vector
  *
  * Transforms the distance vector (@dx,@dy) by @matrix. This is
  * similar to pango_matrix_transform_point() except that the translation
