@@ -407,8 +407,8 @@ pango_scan_word (const char **pos, GString *out)
 
 /**
  * pango_scan_string:
- * @pos: in/out string position
- * @out: a #GString into which to write the result
+ * @pos: (inout): in/out string position
+ * @out: (out) : a #GString into which to write the result
  *
  * Scans a string into a #GString buffer. The string may either
  * be a sequence of non-white-space characters, or a quoted
