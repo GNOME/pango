@@ -300,7 +300,8 @@ pango_context_load_font (PangoContext               *context,
  * Load a set of fonts in the context that can be used to render
  * a font matching @desc.
  *
- * Returns: the fontset, or %NULL if no font matched.
+ * Returns: (transfer full): a newly allocated fontset, or %NULL
+ *          if no font matched.
  **/
 PangoFontset *
 pango_context_load_fontset (PangoContext               *context,
