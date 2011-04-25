@@ -4179,7 +4179,7 @@ pango_layout_line_get_width (PangoLayoutLine *line)
  *               the last range will extend all the way to the trailing
  *               edge of the layout. Otherwise, it will end at the
  *               trailing edge of the last character.
- * @ranges: (out) (array length=n_ranges) (transfer=full):
+ * @ranges: (out) (array length=n_ranges) (transfer full):
  *               location to store a pointer to an array of ranges.
  *               The array will be of length <literal>2*n_ranges</literal>,
  *               with each range starting at <literal>(*ranges)[2*n]</literal>
