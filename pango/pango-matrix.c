@@ -284,8 +284,8 @@ pango_matrix_transform_distance (const PangoMatrix *matrix,
 /**
  * pango_matrix_transform_point:
  * @matrix: a #PangoMatrix, or %NULL
- * @x: in/out X position
- * @y: in/out Y position
+ * @x: (inout): in/out X position
+ * @y: (inout): in/out Y position
  *
  * Transforms the point (@x, @y) by @matrix.
  *
