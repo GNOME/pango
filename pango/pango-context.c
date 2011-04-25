@@ -1497,9 +1497,10 @@ itemize_state_finish (ItemizeState *state)
  * computing bidirectional levels (see pango_context_set_base_dir ()),
  * is specified explicitly rather than gotten from the #PangoContext.
  *
- * Return value: a #GList of #PangoItem structures.  The items should be
- * freed using pango_item_free() probably in combination with g_list_foreach(),
- * and the list itself using g_list_free().
+ * Return value: (transfer full) (element-type Pango.Item): a #GList of
+ *               #PangoItem structures.  The items should be freed using
+ *               pango_item_free() probably in combination with
+ *               g_list_foreach(), and the list itself using g_list_free().
  *
  * Since: 1.4
  */
@@ -1581,7 +1582,10 @@ itemize_with_font (PangoContext               *context,
  * the range covering the position just after @start_index + @length.
  * (i.e. if itemizing in a loop, just keep passing in the same @cached_iter).
  *
- * Return value: (transfer full) (element-type Pango.Item): a #GList of #PangoItem structures.
+ * Return value: (transfer full) (element-type Pango.Item): a #GList of #PangoItem
+ *               structures. The items should be freed using pango_item_free()
+ *               probably in combination with g_list_foreach(), and the list itself
+ *               using g_list_free().
  */
 GList *
 pango_itemize (PangoContext      *context,
