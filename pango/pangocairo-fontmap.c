@@ -84,8 +84,8 @@ pango_cairo_font_map_get_type (void)
  * You generally should only use the #PangoFontMap and
  * #PangoCairoFontMap interfaces on the returned object.
  *
- * Return value: the newly allocated #PangoFontMap, which should
- *               be freed with g_object_unref().
+ * Return value: (transfer full): the newly allocated #PangoFontMap,
+ *               which should be freed with g_object_unref().
  *
  * Since: 1.10
  **/
@@ -122,10 +122,10 @@ pango_cairo_font_map_new (void)
  * or in fact in most of those cases, just use
  * @pango_cairo_font_map_get_default().
  *
- * Return value: the newly allocated #PangoFontMap of suitable type
- *               which should be freed with g_object_unref(),
- *               or %NULL if the requested cairo font backend is
- *               not supported / compiled in.
+ * Return value: (transfer full) : the newly allocated #PangoFontMap
+ *               of suitable type which should be freed with
+ *               g_object_unref(), or %NULL if the requested cairo
+ *               font backend is not supported / compiled in.
  *
  * Since: 1.18
  **/
@@ -175,8 +175,8 @@ static PangoFontMap *default_font_map = NULL;
  * change the Cairo font backend that the default fontmap
  * uses for example.
  *
- * Return value: the default Cairo fontmap for Pango. This
- *  object is owned by Pango and must not be freed.
+ * Return value: (transfer none): the default Cairo fontmap
+ *  for Pango. This object is owned by Pango and must not be freed.
  *
  * Since: 1.10
  **/
@@ -262,7 +262,7 @@ pango_cairo_font_map_get_resolution (PangoCairoFontMap *fontmap)
 }
 
 /**
- * pango_cairo_font_map_create_context:
+ * pango_cairo_font_map_create_context: (skip):
  * @fontmap: a #PangoCairoFontMap
  *
  * Create a #PangoContext for the given fontmap.
