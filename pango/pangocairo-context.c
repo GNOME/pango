@@ -340,7 +340,7 @@ pango_cairo_context_set_shape_renderer (PangoContext                *context,
 }
 
 /**
- * pango_cairo_context_get_shape_renderer:
+ * pango_cairo_context_get_shape_renderer: (skip):
  * @context: a #PangoContext, from a pangocairo font map
  * @data: Pointer to #gpointer to return user data
  *
@@ -394,7 +394,7 @@ pango_cairo_context_get_shape_renderer (PangoContext                *context,
  * create a layout for use with @cr and do not need to access #PangoContext
  * directly, you can use pango_cairo_create_layout() instead.
  *
- * Return value: the newly created #PangoContext. Free with
+ * Return value: (transfer full): the newly created #PangoContext. Free with
  *   g_object_unref().
  *
  * Since: 1.22
@@ -430,7 +430,7 @@ pango_cairo_create_context (cairo_t *cr)
  * #PangoContext object for each layout. This might matter in an
  * application that was laying out large amounts of text.
  *
- * Return value: the newly created #PangoLayout. Free with
+ * Return value: (transfer full): the newly created #PangoLayout. Free with
  *   g_object_unref().
  *
  * Since: 1.10
