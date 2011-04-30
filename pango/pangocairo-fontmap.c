@@ -39,35 +39,13 @@
 #  include "pangocairo-fc.h"
 #endif
 
-GType
-pango_cairo_font_map_get_type (void)
+
+typedef PangoCairoFontMapIface PangoCairoFontMapInterface;
+G_DEFINE_INTERFACE (PangoCairoFontMap, pango_cairo_font_map, PANGO_TYPE_FONT_MAP)
+
+static void
+pango_cairo_font_map_default_init (PangoCairoFontMapIface *iface)
 {
-  static GType cairo_font_map_type = 0;
-
-  if (! cairo_font_map_type)
-    {
-      const GTypeInfo cairo_font_map_info =
-      {
-	sizeof (PangoCairoFontMapIface), /* class_size */
-	NULL,           /* base_init */
-	NULL,		/* base_finalize */
-	NULL,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	0,
-	0,
-	NULL,
-	NULL
-      };
-
-      cairo_font_map_type =
-	g_type_register_static (G_TYPE_INTERFACE, I_("PangoCairoFontMap"),
-				&cairo_font_map_info, 0);
-
-      g_type_interface_add_prerequisite (cairo_font_map_type, PANGO_TYPE_FONT_MAP);
-    }
-
-  return cairo_font_map_type;
 }
 
 /**
