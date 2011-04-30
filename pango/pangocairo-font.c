@@ -34,36 +34,14 @@
     G_STRUCT_MEMBER_P (font,			\
     PANGO_CAIRO_FONT_GET_IFACE(PANGO_CAIRO_FONT(font))->cf_priv_offset)))
 
-GType
-pango_cairo_font_get_type (void)
+typedef PangoCairoFontIface PangoCairoFontInterface;
+G_DEFINE_INTERFACE (PangoCairoFont, pango_cairo_font, PANGO_TYPE_FONT)
+
+static void
+pango_cairo_font_default_init (PangoCairoFontIface *iface)
 {
-  static GType cairo_font_type = 0;
-
-  if (! cairo_font_type)
-    {
-      const GTypeInfo cairo_font_info =
-      {
-	sizeof (PangoCairoFontIface), /* class_size */
-	NULL,           /* base_init */
-	NULL,		/* base_finalize */
-	NULL,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	0,
-	0,
-	NULL,
-	NULL
-      };
-
-      cairo_font_type =
-	g_type_register_static (G_TYPE_INTERFACE, I_("PangoCairoFont"),
-				&cairo_font_info, 0);
-
-      g_type_interface_add_prerequisite (cairo_font_type, PANGO_TYPE_FONT);
-    }
-
-  return cairo_font_type;
 }
+
 
 static PangoCairoFontPrivateScaledFontData *
 _pango_cairo_font_private_scaled_font_data_create (void)
