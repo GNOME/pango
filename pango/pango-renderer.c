@@ -106,14 +106,10 @@ to_device (PangoMatrix *matrix,
 
 G_DEFINE_ABSTRACT_TYPE (PangoRenderer, pango_renderer, G_TYPE_OBJECT)
 
-static GObjectClass *parent_class;
-
 static void
 pango_renderer_class_init (PangoRendererClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-
-  parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 
   klass->draw_glyphs = pango_renderer_default_draw_glyphs;
   klass->draw_glyph_item = pango_renderer_default_draw_glyph_item;
@@ -143,7 +139,7 @@ pango_renderer_finalize (GObject *gobject)
   if (renderer->matrix)
     pango_matrix_free (renderer->matrix);
 
-  parent_class->finalize (gobject);
+  G_OBJECT_CLASS (pango_renderer_parent_class)->finalize (gobject);
 }
 
 /**
