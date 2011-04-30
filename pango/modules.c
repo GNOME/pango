@@ -93,8 +93,6 @@ static GSList *registered_engines = NULL;
 static GSList *dlloaded_engines = NULL;
 static GHashTable *dlloaded_modules;
 
-static GObjectClass *parent_class;
-
 static void build_map    (PangoMapInfo *info);
 static void init_modules (void);
 
@@ -178,6 +176,8 @@ pango_find_map (PangoLanguage *language,
   return map_info->map;
 }
 
+G_DEFINE_TYPE (PangoModule, pango_module, G_TYPE_TYPE_MODULE);
+
 static gboolean
 pango_module_load (GTypeModule *module)
 {
@@ -258,7 +258,12 @@ pango_module_finalize (GObject *object)
 
   g_free (module->path);
 
-  parent_class->finalize (object);
+  G_OBJECT_CLASS (pango_module_parent_class)->finalize (object);
+}
+
+static void
+pango_module_init (PangoModule *self)
+{
 }
 
 static void
@@ -267,17 +272,12 @@ pango_module_class_init (PangoModuleClass *class)
   GTypeModuleClass *module_class = G_TYPE_MODULE_CLASS (class);
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
 
-  parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (class));
-
   module_class->load = pango_module_load;
   module_class->unload = pango_module_unload;
 
   gobject_class->finalize = pango_module_finalize;
 }
 
-static PANGO_DEFINE_TYPE (PangoModule, pango_module,
-			  pango_module_class_init, NULL,
-			  G_TYPE_TYPE_MODULE)
 
 static PangoEngine *
 pango_engine_pair_get_engine (PangoEnginePair *pair)
