@@ -29,52 +29,6 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_DEFINE_TYPE_FULL(name, prefix,				   \
-			       class_init, instance_init,		   \
-			       parent_type, abstract)			   \
-GType									   \
-prefix ## _get_type (void)				                   \
-{									   \
-  static GType object_type = 0;						   \
-									   \
-  if (!object_type)							   \
-    {									   \
-      static const GTypeInfo object_info =				   \
-	{								   \
-	  sizeof (name ## Class),					   \
-	  (GBaseInitFunc) NULL,						   \
-	  (GBaseFinalizeFunc) NULL,					   \
-	  (GClassInitFunc) class_init,					   \
-	  (GClassFinalizeFunc) NULL,					   \
-	  NULL,          /* class_data */				   \
-	  sizeof (name),						   \
-	  0,             /* n_prelocs */				   \
-	  (GInstanceInitFunc) instance_init,				   \
-	  NULL           /* value_table */				   \
-	};								   \
-									   \
-      object_type = g_type_register_static (parent_type,		   \
-					    g_intern_static_string (# name), \
-					    &object_info, abstract);	   \
-    }									   \
-									   \
-  return object_type;							   \
-}
-
-#define PANGO_DEFINE_TYPE(name, prefix,			\
-			  class_init, instance_init,	\
-			  parent_type)			\
- PANGO_DEFINE_TYPE_FULL (name, prefix,			\
-			 class_init, instance_init,	\
-			 parent_type, 0)
-
-#define PANGO_DEFINE_TYPE_ABSTRACT(name, prefix,		\
-			  class_init, instance_init,		\
-			  parent_type)				\
- PANGO_DEFINE_TYPE_FULL (name, prefix,				\
-			 class_init, instance_init,		\
-			 parent_type, G_TYPE_FLAG_ABSTRACT)
-
 
 /* String interning for static strings */
 #define I_(string) g_intern_static_string (string)
