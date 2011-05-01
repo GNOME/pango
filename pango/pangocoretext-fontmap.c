@@ -77,7 +77,7 @@ struct _PangoCoreTextFace
   char *postscript_name;
   char *style_name;
 
-  float weight;
+  PangoWeight weight;
   int traits;
   guint synthetic_italic : 1;
 };
@@ -91,6 +91,28 @@ typedef struct _PangoCoreTextFaceClass PangoCoreTextFaceClass;
 
 static GType pango_core_text_family_get_type (void);
 static GType pango_core_text_face_get_type (void);
+
+typedef struct
+{
+    float bound;
+    PangoWeight weight;
+} PangoCTWeight;
+
+static const float ct_weight_min = -1.00f;
+static const float ct_weight_max = 1.00f;
+
+static const PangoCTWeight ct_weight_limits[] = {
+    { -0.70, PANGO_WEIGHT_THIN},
+    { -0.50, PANGO_WEIGHT_ULTRALIGHT },
+    { -0.35, PANGO_WEIGHT_LIGHT },
+    { -0.10, PANGO_WEIGHT_BOOK },
+    {  0.10, PANGO_WEIGHT_NORMAL },
+    {  0.24, PANGO_WEIGHT_MEDIUM },
+    {  0.36, PANGO_WEIGHT_SEMIBOLD },
+    {  0.50, PANGO_WEIGHT_BOLD },
+    {  0.75, PANGO_WEIGHT_ULTRABOLD },
+    {  1.00, PANGO_WEIGHT_HEAVY }
+};
 
 static const char *
 get_real_family (const char *family_name)
@@ -209,13 +231,26 @@ pango_core_text_face_from_ct_font_descriptor (CTFontDescriptorRef desc)
   number = (CFNumberRef)CFDictionaryGetValue (dict,
                                               kCTFontWeightTrait);
   if (CFNumberGetValue (number, kCFNumberCGFloatType, &value))
-    /* Map value from range [-1.0, 1.0] to range [1, 14] */
-    face->weight = (value + 1.0f) * 6.5f + 1;
+    {
+      if (value < ct_weight_min || value > ct_weight_max)
+	{
+	  face->weight = PANGO_WEIGHT_NORMAL; /* This is really an error */
+	}
+      else
+	{
+	  guint i;
+	  for (i = 0; i < G_N_ELEMENTS(ct_weight_limits); i++)
+	    if (value < ct_weight_limits[i].bound)
+	      {
+		face->weight = ct_weight_limits[i].weight;
+		break;
+	      }
+	}
+    }
   else
     face->weight = PANGO_WEIGHT_NORMAL;
 
-  number = (CFNumberRef)CFDictionaryGetValue (dict,
-                                              kCTFontSymbolicTrait);
+  number = (CFNumberRef)CFDictionaryGetValue (dict, kCTFontSymbolicTrait);
   if (CFNumberGetValue (number, kCFNumberIntType, &font_traits))
     {
       face->traits = font_traits;
@@ -294,7 +329,8 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
 
           if (face->traits & kCTFontItalicTrait
               || pango_core_text_face_is_oblique (face))
-            g_hash_table_insert (italic_faces, GINT_TO_POINTER (face->weight),
+            g_hash_table_insert (italic_faces,
+				 GINT_TO_POINTER ((gint)face->weight),
                                  face);
         }
 
@@ -310,7 +346,7 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
           PangoCoreTextFace *face = l->data;
 
           if (!g_hash_table_lookup (italic_faces,
-                                    GINT_TO_POINTER (face->weight)))
+                                    GINT_TO_POINTER ((gint)face->weight)))
             {
               PangoCoreTextFace *italic_face;
 
@@ -419,57 +455,13 @@ pango_core_text_face_describe (PangoFontFace *face)
 {
   PangoCoreTextFace *ctface = PANGO_CORE_TEXT_FACE (face);
   PangoFontDescription *description;
-  PangoWeight pango_weight;
   PangoStyle pango_style;
   PangoVariant pango_variant;
-  int weight;
 
   description = pango_font_description_new ();
 
   pango_font_description_set_family (description, ctface->family->family_name);
 
-  weight = ctface->weight;
-
-  switch (weight)
-    {
-      case 1:
-      case 2:
-        pango_weight = PANGO_WEIGHT_ULTRALIGHT;
-        break;
-
-      case 3:
-      case 4:
-        pango_weight = PANGO_WEIGHT_LIGHT;
-        break;
-
-      case 5:
-      case 6:
-        pango_weight = PANGO_WEIGHT_NORMAL;
-        break;
-
-      case 7:
-      case 8:
-        pango_weight = PANGO_WEIGHT_SEMIBOLD;
-        break;
-
-      case 9:
-      case 10:
-        pango_weight = PANGO_WEIGHT_BOLD;
-        break;
-
-      case 11:
-      case 12:
-        pango_weight = PANGO_WEIGHT_ULTRABOLD;
-        break;
-
-      case 13:
-      case 14:
-        pango_weight = PANGO_WEIGHT_HEAVY;
-        break;
-
-      default:
-        g_assert_not_reached ();
-    };
 
   if (ctface->traits & kCTFontItalicTrait)
     pango_style = PANGO_STYLE_ITALIC;
@@ -486,7 +478,7 @@ pango_core_text_face_describe (PangoFontFace *face)
 #endif
     pango_variant = PANGO_VARIANT_NORMAL;
 
-  pango_font_description_set_weight (description, pango_weight);
+  pango_font_description_set_weight (description, ctface->weight);
   pango_font_description_set_style (description, pango_style);
   pango_font_description_set_variant (description, pango_variant);
 
