@@ -32,6 +32,14 @@
 
 typedef struct _FontHashKey      FontHashKey;
 
+
+#define PANGO_TYPE_CORE_TEXT_FAMILY              (pango_core_text_family_get_type ())
+#define PANGO_CORE_TEXT_FAMILY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CORE_TEXT_FAMILY, PangoCoreTextFamily))
+#define PANGO_IS_CORE_TEXT_FAMILY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CORE_TEXT_FAMILY))
+#define PANGO_CORE_TEXT_FAMILY_CLASS(klass)	(G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_CORE_TEXT_FAMILY, PangoCoreTextFamilyClass))
+#define PANGO_IS_CORE_TEXT_FAMILY_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_CORE_TEXT_FAMILY))
+#define PANGO_CORE_TEXT_FAMILY_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS((object), PANGO_CORE_TEXT_FAMILY, PangoCoreTextFamilyClass))
+
 struct _PangoCoreTextFamily
 {
   PangoFontFamily parent_instance;
@@ -44,13 +52,19 @@ struct _PangoCoreTextFamily
   gint n_faces;
 };
 
-#define PANGO_TYPE_CORE_TEXT_FAMILY              (pango_core_text_family_get_type ())
-#define PANGO_CORE_TEXT_FAMILY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CORE_TEXT_FAMILY, PangoCoreTextFamily))
-#define PANGO_IS_CORE_TEXT_FAMILY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CORE_TEXT_FAMILY))
+struct _PangoCoreTextFamilyClass
+{
+  PangoFontFamilyClass parent_class;
+};
+
+typedef struct _PangoCoreTextFamilyClass PangoCoreTextFamilyClass;
 
 #define PANGO_TYPE_CORE_TEXT_FACE              (pango_core_text_face_get_type ())
 #define PANGO_CORE_TEXT_FACE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CORE_TEXT_FACE, PangoCoreTextFace))
 #define PANGO_IS_CORE_TEXT_FACE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CORE_TEXT_FACE))
+#define PANGO_CORE_TEXT_FACE_CLASS(klass)	(G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_CORE_TEXT_FACE, PangoCoreTextFaceClass))
+#define PANGO_IS_CORE_TEXT_FACE_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_CORE_TEXT_FACE))
+#define PANGO_CORE_TEXT_FACE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS((object), PANGO_CORE_TEXT_FACE, PangoCoreTextFaceClass))
 
 struct _PangoCoreTextFace
 {
@@ -67,6 +81,13 @@ struct _PangoCoreTextFace
   int traits;
   guint synthetic_italic : 1;
 };
+
+struct _PangoCoreTextFaceClass
+{
+  PangoFontFaceClass parent_class;
+};
+
+typedef struct _PangoCoreTextFaceClass PangoCoreTextFaceClass;
 
 static GType pango_core_text_family_get_type (void);
 static GType pango_core_text_face_get_type (void);
@@ -348,6 +369,8 @@ pango_core_text_family_is_monospace (PangoFontFamily *family)
   return ctfamily->is_monospace;
 }
 
+G_DEFINE_TYPE (PangoCoreTextFamily, pango_core_text_family, PANGO_TYPE_FONT_FAMILY);
+
 static void
 pango_core_text_family_finalize (GObject *object)
 {
@@ -367,19 +390,19 @@ pango_core_text_family_finalize (GObject *object)
   G_OBJECT_CLASS (pango_core_text_family_parent_class)->finalize (object);
 }
 
-G_DEFINE_TYPE (PangoCoreTextFamily, pango_core_text_family, PANGO_TYPE_FONT_FAMILY);
 
 static void
-pango_core_text_family_class_init (PangoFontFamilyClass *class)
+pango_core_text_family_class_init (PangoCoreTextFamilyClass *klass)
 {
-  GObjectClass *object_class = (GObjectClass *)class;
+  GObjectClass *object_class = (GObjectClass *)klass;
   int i;
+  PangoFontFamilyClass *pfclass = PANGO_FONT_FAMILY_CLASS(klass);
 
   object_class->finalize = pango_core_text_family_finalize;
 
-  class->list_faces = pango_core_text_family_list_faces;
-  class->get_name = pango_core_text_family_get_name;
-  class->is_monospace = pango_core_text_family_is_monospace;
+  pfclass->list_faces = pango_core_text_family_list_faces;
+  pfclass->get_name = pango_core_text_family_get_name;
+  pfclass->is_monospace = pango_core_text_family_is_monospace;
 
   for (i = 0; _pango_included_core_text_modules[i].list; i++)
     pango_module_register (&_pango_included_core_text_modules[i]);
@@ -487,6 +510,17 @@ pango_core_text_face_list_sizes (PangoFontFace  *face,
   *sizes = NULL;
 }
 
+G_DEFINE_TYPE (PangoCoreTextFace, pango_core_text_face, PANGO_TYPE_FONT_FACE);
+
+static void
+pango_core_text_face_init (PangoCoreTextFace *face)
+{
+  face->family = NULL;
+  face->coverage = NULL;
+}
+
+
+
 static void
 pango_core_text_face_finalize (GObject *object)
 {
@@ -510,44 +544,17 @@ pango_core_text_face_is_synthesized (PangoFontFace *face)
 }
 
 static void
-pango_core_text_face_class_init (PangoFontFaceClass *class)
+pango_core_text_face_class_init (PangoCoreTextFaceClass *klass)
 {
-  GObjectClass *object_class = (GObjectClass *)class;
+  GObjectClass *object_class = (GObjectClass *)klass;
+  PangoFontFaceClass *pfclass = PANGO_FONT_FACE_CLASS(klass);
 
   object_class->finalize = pango_core_text_face_finalize;
 
-  class->describe = pango_core_text_face_describe;
-  class->get_face_name = pango_core_text_face_get_face_name;
-  class->list_sizes = pango_core_text_face_list_sizes;
-  class->is_synthesized = pango_core_text_face_is_synthesized;
-}
-
-GType
-pango_core_text_face_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (G_UNLIKELY (!object_type))
-    {
-      const GTypeInfo object_info =
-      {
-	sizeof (PangoFontFaceClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) pango_core_text_face_class_init,
-	NULL,           /* class_finalize */
-	NULL,           /* class_data */
-	sizeof (PangoCoreTextFace),
-	0,              /* n_preallocs */
-	(GInstanceInitFunc) NULL,
-      };
-
-      object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
-					    I_("PangoCoreTextFace"),
-					    &object_info, 0);
-    }
-
-  return object_type;
+  pfclass->describe = pango_core_text_face_describe;
+  pfclass->get_face_name = pango_core_text_face_get_face_name;
+  pfclass->list_sizes = pango_core_text_face_list_sizes;
+  pfclass->is_synthesized = pango_core_text_face_is_synthesized;
 }
 
 const char *
