@@ -230,7 +230,7 @@ synthesize_class_def (PangoOTInfo *info)
 
   old_charmap = info->face->charmap;
 
-  if (!old_charmap || !old_charmap->encoding != ft_encoding_unicode)
+  if (!old_charmap || old_charmap->encoding != ft_encoding_unicode)
     if (!set_unicode_charmap (info->face))
       return;
 
