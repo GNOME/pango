@@ -69,8 +69,6 @@ struct _PangoXFontClass
   PangoFontClass parent_class;
 };
 
-static void pango_x_font_class_init (PangoXFontClass *class);
-static void pango_x_font_init       (PangoXFont      *xfont);
 static void pango_x_font_dispose    (GObject         *object);
 static void pango_x_font_finalize   (GObject         *object);
 

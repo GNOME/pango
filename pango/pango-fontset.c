@@ -32,6 +32,9 @@
 
 static PangoFontMetrics *pango_fontset_real_get_metrics (PangoFontset      *fontset);
 
+
+G_DEFINE_ABSTRACT_TYPE (PangoFontset, pango_fontset, G_TYPE_OBJECT);
+
 static void
 pango_fontset_init (PangoFontset *self)
 {
@@ -43,7 +46,6 @@ pango_fontset_class_init (PangoFontsetClass *class)
   class->get_metrics = pango_fontset_real_get_metrics;
 }
 
-G_DEFINE_ABSTRACT_TYPE (PangoFontset, pango_fontset, G_TYPE_OBJECT);
 
 /**
  * pango_fontset_get_font:
@@ -206,7 +208,6 @@ pango_fontset_real_get_metrics (PangoFontset  *fontset)
 #define PANGO_FONTSET_SIMPLE_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONTSET_SIMPLE, PangoFontsetSimpleClass))
 
 static void              pango_fontset_simple_finalize     (GObject                 *object);
-static void              pango_fontset_simple_init         (PangoFontsetSimple      *fontset);
 static PangoFontMetrics *pango_fontset_simple_get_metrics  (PangoFontset            *fontset);
 static PangoLanguage *   pango_fontset_simple_get_language (PangoFontset            *fontset);
 static  PangoFont *      pango_fontset_simple_get_font     (PangoFontset            *fontset,
@@ -249,6 +250,9 @@ pango_fontset_simple_new (PangoLanguage *language)
   return fontset;
 }
 
+
+G_DEFINE_TYPE (PangoFontsetSimple, pango_fontset_simple, PANGO_TYPE_FONTSET);
+
 static void
 pango_fontset_simple_class_init (PangoFontsetSimpleClass *class)
 {
@@ -270,8 +274,6 @@ pango_fontset_simple_init (PangoFontsetSimple *fontset)
   fontset->coverages = g_ptr_array_new ();
   fontset->language = NULL;
 }
-
-G_DEFINE_TYPE (PangoFontsetSimple, pango_fontset_simple, PANGO_TYPE_FONTSET);
 
 static void
 pango_fontset_simple_finalize (GObject *object)

@@ -790,7 +790,6 @@ pango_fc_patterns_get_font_pattern (PangoFcPatterns *pats, int i)
  */
 
 static void              pango_fc_fontset_finalize     (GObject                 *object);
-static void              pango_fc_fontset_init         (PangoFcFontset      *fontset);
 static PangoLanguage *   pango_fc_fontset_get_language (PangoFontset            *fontset);
 static  PangoFont *      pango_fc_fontset_get_font     (PangoFontset            *fontset,
 							guint                    wc);

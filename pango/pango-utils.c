@@ -726,7 +726,7 @@ pango_get_sysconf_subdirectory (void)
 G_CONST_RETURN char *
 pango_get_lib_subdirectory (void)
 {
-  static gchar *result = NULL;
+  static const gchar *result = NULL;
 
   if (result == NULL)
     {

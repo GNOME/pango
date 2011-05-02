@@ -25,6 +25,9 @@
 #include "pango-engine-private.h"
 #include "pango-impl-utils.h"
 
+
+G_DEFINE_ABSTRACT_TYPE (PangoEngine, pango_engine, G_TYPE_OBJECT);
+
 static void
 pango_engine_init (PangoEngine *self)
 {
@@ -35,8 +38,8 @@ pango_engine_class_init (PangoEngineClass *klass)
 {
 }
 
-G_DEFINE_ABSTRACT_TYPE (PangoEngine, pango_engine, G_TYPE_OBJECT);
 
+G_DEFINE_ABSTRACT_TYPE (PangoEngineLang, pango_engine_lang, PANGO_TYPE_ENGINE);
 
 static void
 pango_engine_lang_init (PangoEngineLang *self)
@@ -48,7 +51,6 @@ pango_engine_lang_class_init (PangoEngineLangClass *klass)
 {
 }
 
-G_DEFINE_ABSTRACT_TYPE (PangoEngineLang, pango_engine_lang, PANGO_TYPE_ENGINE);
 
 static PangoCoverageLevel
 pango_engine_shape_real_covers (PangoEngineShape *engine G_GNUC_UNUSED,
@@ -65,6 +67,9 @@ pango_engine_shape_real_covers (PangoEngineShape *engine G_GNUC_UNUSED,
   return result;
 }
 
+
+G_DEFINE_ABSTRACT_TYPE (PangoEngineShape, pango_engine_shape, PANGO_TYPE_ENGINE);
+
 static void
 pango_engine_shape_init (PangoEngineShape *klass)
 {
@@ -75,8 +80,6 @@ pango_engine_shape_class_init (PangoEngineShapeClass *class)
 {
   class->covers = pango_engine_shape_real_covers;
 }
-
-G_DEFINE_ABSTRACT_TYPE (PangoEngineShape, pango_engine_shape, PANGO_TYPE_ENGINE);
 
 void
 _pango_engine_shape_shape (PangoEngineShape *engine,
@@ -174,6 +177,11 @@ fallback_engine_covers (PangoEngineShape *engine G_GNUC_UNUSED,
   return PANGO_COVERAGE_NONE;
 }
 
+
+static GType pango_fallback_engine_get_type (void);
+
+G_DEFINE_ABSTRACT_TYPE (PangoFallbackEngine, pango_fallback_engine, PANGO_TYPE_ENGINE_SHAPE);
+
 static void
 pango_fallback_engine_init (PangoFallbackEngine *self)
 {
@@ -185,8 +193,6 @@ pango_fallback_engine_class_init (PangoFallbackEngineClass *class)
   class->covers = fallback_engine_covers;
   class->script_shape = fallback_engine_shape;
 }
-
-G_DEFINE_ABSTRACT_TYPE (PangoFallbackEngine, pango_fallback_engine, PANGO_TYPE_ENGINE_SHAPE);
 
 PangoEngineShape *
 _pango_get_fallback_shaper (void)
