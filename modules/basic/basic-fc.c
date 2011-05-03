@@ -113,7 +113,7 @@ typedef struct _PangoFcHbContext {
 } PangoFcHbContext;
 
 static hb_codepoint_t
-pango_fc_hb_font_get_glyph (hb_font_t *font, hb_face_t *face, const void *user_data,
+pango_fc_hb_font_get_glyph (hb_font_t *font, const void *user_data,
 			    hb_codepoint_t unicode, hb_codepoint_t variation_selector)
 {
   PangoFcHbContext *context = (PangoFcHbContext *) user_data;
@@ -128,7 +128,7 @@ pango_fc_hb_font_get_glyph (hb_font_t *font, hb_face_t *face, const void *user_d
 }
 
 static hb_bool_t
-pango_fc_hb_font_get_contour_point (hb_font_t *font, hb_face_t *face, const void *user_data,
+pango_fc_hb_font_get_contour_point (hb_font_t *font, const void *user_data,
 				    unsigned int point_index,
 				    hb_codepoint_t glyph, hb_position_t *x, hb_position_t *y)
 {
@@ -156,7 +156,7 @@ pango_fc_hb_font_get_contour_point (hb_font_t *font, hb_face_t *face, const void
 }
 
 static void
-pango_fc_hb_font_get_glyph_advance (hb_font_t *font, hb_face_t *face, const void *user_data,
+pango_fc_hb_font_get_glyph_advance (hb_font_t *font, const void *user_data,
 				    hb_codepoint_t glyph, hb_position_t *x_advance, hb_position_t *y_advance G_GNUC_UNUSED)
 {
   PangoFcHbContext *context = (PangoFcHbContext *) user_data;
@@ -169,7 +169,7 @@ pango_fc_hb_font_get_glyph_advance (hb_font_t *font, hb_face_t *face, const void
 }
 
 static void
-pango_fc_hb_font_get_glyph_extents (hb_font_t *font, hb_face_t *face, const void *user_data,
+pango_fc_hb_font_get_glyph_extents (hb_font_t *font,  const void *user_data,
 				    hb_codepoint_t glyph, hb_glyph_extents_t *extents)
 {
   PangoFcHbContext *context = (PangoFcHbContext *) user_data;
@@ -185,7 +185,7 @@ pango_fc_hb_font_get_glyph_extents (hb_font_t *font, hb_face_t *face, const void
 }
 
 static hb_position_t
-pango_fc_hb_font_get_kerning (hb_font_t *font, hb_face_t *face, const void *user_data,
+pango_fc_hb_font_get_kerning (hb_font_t *font, const void *user_data,
 			      hb_codepoint_t first_glyph, hb_codepoint_t second_glyph)
 {
   PangoFcHbContext *context = (PangoFcHbContext *) user_data;
@@ -230,7 +230,6 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
   PangoFcHbContext context;
   PangoFcFont *fc_font;
   FT_Face ft_face;
-  hb_face_t *hb_face;
   hb_font_t *hb_font;
   hb_buffer_t *hb_buffer;
   gboolean free_buffer;
@@ -249,12 +248,11 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
   ft_face = pango_fc_font_lock_face (fc_font);
   if (!ft_face)
     return;
-  hb_face = hb_ft_face_create_cached (ft_face);
 
   /* TODO: Cache hb_font? */
   context.ft_face = ft_face;
   context.fc_font = fc_font;
-  hb_font = hb_font_create ();
+  hb_font = hb_font_create (hb_ft_face_create_cached (ft_face));
   hb_font_set_funcs (hb_font,
 		     pango_fc_get_hb_font_funcs (),
 		     &context,
@@ -275,7 +273,7 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
   hb_buffer_set_language (hb_buffer, hb_language_from_string (pango_language_to_string (analysis->language)));
   hb_buffer_add_utf8 (hb_buffer, text, length, 0, length);
 
-  hb_shape (hb_font, hb_face, hb_buffer, NULL, 0);
+  hb_shape (hb_font, hb_buffer, NULL, 0);
 
   /* buffer output */
   num_glyphs = hb_buffer_get_length (hb_buffer);
@@ -304,7 +302,6 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 
   release_buffer (hb_buffer, free_buffer);
   hb_font_destroy (hb_font);
-  hb_face_destroy (hb_face);
   pango_fc_font_unlock_face (fc_font);
 }
 

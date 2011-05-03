@@ -392,7 +392,7 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
   hb_glyph_position_t *hb_position;
 
   /* XXX reuse hb_font */
-  hb_font = hb_font_create ();
+  hb_font = hb_font_create (info->hb_face);
   hb_font_set_scale (hb_font,
 		      (((guint64) info->face->size->metrics.x_scale * info->face->units_per_EM) >> 12),
 		     -(((guint64) info->face->size->metrics.y_scale * info->face->units_per_EM) >> 12));
@@ -440,7 +440,7 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 					       lookup_indexes);
 
       for (j = 0; j < lookup_count; j++)
-	hb_ot_layout_position_lookup (hb_font, info->hb_face,
+	hb_ot_layout_position_lookup (hb_font,
 				      buffer->buffer,
 				      lookup_indexes[j],
 				      rule->property_bit);
