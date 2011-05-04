@@ -49,8 +49,8 @@ struct _TypeLink
   TypeLink *prev;
   TypeLink *next;
 
-  FriBidiCharType type;
   FriBidiStrIndex pos, len;
+  FriBidiCharType type;
   FriBidiLevel level;
 };
 
