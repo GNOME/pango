@@ -113,10 +113,11 @@ typedef struct _PangoFcHbContext {
 } PangoFcHbContext;
 
 static hb_codepoint_t
-pango_fc_hb_font_get_glyph (hb_font_t *font, const void *user_data,
-			    hb_codepoint_t unicode, hb_codepoint_t variation_selector)
+pango_fc_hb_font_get_glyph (hb_font_t *font, const void *font_data,
+			    hb_codepoint_t unicode, hb_codepoint_t variation_selector,
+			    const void *user_data G_GNUC_UNUSED)
 {
-  PangoFcHbContext *context = (PangoFcHbContext *) user_data;
+  PangoFcHbContext *context = (PangoFcHbContext *) font_data;
   PangoFcFont *fc_font = context->fc_font;
   PangoGlyph glyph;
 
@@ -128,13 +129,14 @@ pango_fc_hb_font_get_glyph (hb_font_t *font, const void *user_data,
 }
 
 static hb_bool_t
-pango_fc_hb_font_get_contour_point (hb_font_t *font, const void *user_data,
-				    unsigned int point_index,
-				    hb_codepoint_t glyph, hb_position_t *x, hb_position_t *y)
+pango_fc_hb_font_get_contour_point (hb_font_t *font, const void *font_data,
+				    hb_codepoint_t glyph, unsigned int point_index,
+				    hb_position_t *x, hb_position_t *y,
+				    const void *user_data G_GNUC_UNUSED)
 {
   return FALSE;
 #if 0
-  FT_Face ft_face = (FT_Face) user_data;
+  FT_Face ft_face = (FT_Face) font_data;
   int load_flags = FT_LOAD_DEFAULT;
 
   /* TODO: load_flags, embolden, etc */
@@ -156,10 +158,12 @@ pango_fc_hb_font_get_contour_point (hb_font_t *font, const void *user_data,
 }
 
 static void
-pango_fc_hb_font_get_glyph_advance (hb_font_t *font, const void *user_data,
-				    hb_codepoint_t glyph, hb_position_t *x_advance, hb_position_t *y_advance G_GNUC_UNUSED)
+pango_fc_hb_font_get_glyph_advance (hb_font_t *font, const void *font_data,
+				    hb_codepoint_t glyph,
+				    hb_position_t *x_advance, hb_position_t *y_advance G_GNUC_UNUSED,
+				    const void *user_data G_GNUC_UNUSED)
 {
-  PangoFcHbContext *context = (PangoFcHbContext *) user_data;
+  PangoFcHbContext *context = (PangoFcHbContext *) font_data;
   PangoFcFont *fc_font = context->fc_font;
   PangoRectangle logical;
 
@@ -169,34 +173,38 @@ pango_fc_hb_font_get_glyph_advance (hb_font_t *font, const void *user_data,
 }
 
 static void
-pango_fc_hb_font_get_glyph_extents (hb_font_t *font,  const void *user_data,
-				    hb_codepoint_t glyph, hb_glyph_extents_t *extents)
+pango_fc_hb_font_get_glyph_extents (hb_font_t *font,  const void *font_data,
+				    hb_codepoint_t glyph, hb_glyph_extents_t *extents,
+				    const void *user_data G_GNUC_UNUSED)
 {
-  PangoFcHbContext *context = (PangoFcHbContext *) user_data;
+  PangoFcHbContext *context = (PangoFcHbContext *) font_data;
   PangoFcFont *fc_font = context->fc_font;
   PangoRectangle ink;
 
   pango_font_get_glyph_extents ((PangoFont *) fc_font, glyph, &ink, NULL);
 
-  extents->x_bearing  =  ink.x;
-  extents->y_bearing  = -ink.y; /* XXX */
-  extents->width     = ink.width;
-  extents->height    = ink.height;
+  extents->x_bearing  = ink.x;
+  extents->y_bearing  = ink.y;
+  extents->width      = ink.width;
+  extents->height     = ink.height;
 }
 
-static hb_position_t
-pango_fc_hb_font_get_kerning (hb_font_t *font, const void *user_data,
-			      hb_codepoint_t first_glyph, hb_codepoint_t second_glyph)
+static void
+pango_fc_hb_font_get_kerning (hb_font_t *font, const void *font_data,
+			      hb_codepoint_t first_glyph, hb_codepoint_t second_glyph,
+			      hb_position_t *x_kern, hb_position_t *y_kern,
+			      const void *user_data G_GNUC_UNUSED)
 {
-  PangoFcHbContext *context = (PangoFcHbContext *) user_data;
+  PangoFcHbContext *context = (PangoFcHbContext *) font_data;
   FT_Face ft_face = context->ft_face;
   FT_Vector kerning;
 
   /* TODO: Kern type? */
   if (FT_Get_Kerning (ft_face, first_glyph, second_glyph, FT_KERNING_DEFAULT, &kerning))
-      return 0;
+    return;
 
-  return PANGO_UNITS_26_6 (kerning.x);
+  *x_kern = PANGO_UNITS_26_6 (kerning.x);
+  *y_kern = PANGO_UNITS_26_6 (kerning.y);
 }
 
 static hb_font_funcs_t *
@@ -206,11 +214,11 @@ pango_fc_get_hb_font_funcs (void)
 
   if (G_UNLIKELY (!funcs)) {
     funcs = hb_font_funcs_create ();
-    hb_font_funcs_set_glyph_func (funcs, pango_fc_hb_font_get_glyph);
-    hb_font_funcs_set_glyph_advance_func (funcs, pango_fc_hb_font_get_glyph_advance);
-    hb_font_funcs_set_glyph_extents_func (funcs, pango_fc_hb_font_get_glyph_extents);
-    hb_font_funcs_set_contour_point_func (funcs, pango_fc_hb_font_get_contour_point);
-    hb_font_funcs_set_kerning_func (funcs, pango_fc_hb_font_get_kerning);
+    hb_font_funcs_set_glyph_func (funcs, pango_fc_hb_font_get_glyph, NULL, NULL);
+    hb_font_funcs_set_glyph_advance_func (funcs, pango_fc_hb_font_get_glyph_advance, NULL, NULL);
+    hb_font_funcs_set_glyph_extents_func (funcs, pango_fc_hb_font_get_glyph_extents, NULL, NULL);
+    hb_font_funcs_set_contour_point_func (funcs, pango_fc_hb_font_get_contour_point, NULL, NULL);
+    hb_font_funcs_set_kerning_func (funcs, pango_fc_hb_font_get_kerning, NULL, NULL);
   }
 
   return funcs;
