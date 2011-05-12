@@ -113,9 +113,9 @@ typedef struct _PangoFcHbContext {
 } PangoFcHbContext;
 
 static hb_codepoint_t
-pango_fc_hb_font_get_glyph (hb_font_t *font, const void *font_data,
+pango_fc_hb_font_get_glyph (hb_font_t *font, void *font_data,
 			    hb_codepoint_t unicode, hb_codepoint_t variation_selector,
-			    const void *user_data G_GNUC_UNUSED)
+			    void *user_data G_GNUC_UNUSED)
 {
   PangoFcHbContext *context = (PangoFcHbContext *) font_data;
   PangoFcFont *fc_font = context->fc_font;
@@ -129,10 +129,10 @@ pango_fc_hb_font_get_glyph (hb_font_t *font, const void *font_data,
 }
 
 static hb_bool_t
-pango_fc_hb_font_get_contour_point (hb_font_t *font, const void *font_data,
+pango_fc_hb_font_get_contour_point (hb_font_t *font, void *font_data,
 				    hb_codepoint_t glyph, unsigned int point_index,
 				    hb_position_t *x, hb_position_t *y,
-				    const void *user_data G_GNUC_UNUSED)
+				    void *user_data G_GNUC_UNUSED)
 {
   return FALSE;
 #if 0
@@ -158,10 +158,10 @@ pango_fc_hb_font_get_contour_point (hb_font_t *font, const void *font_data,
 }
 
 static void
-pango_fc_hb_font_get_glyph_advance (hb_font_t *font, const void *font_data,
+pango_fc_hb_font_get_glyph_advance (hb_font_t *font, void *font_data,
 				    hb_codepoint_t glyph,
 				    hb_position_t *x_advance, hb_position_t *y_advance G_GNUC_UNUSED,
-				    const void *user_data G_GNUC_UNUSED)
+				    void *user_data G_GNUC_UNUSED)
 {
   PangoFcHbContext *context = (PangoFcHbContext *) font_data;
   PangoFcFont *fc_font = context->fc_font;
@@ -173,9 +173,9 @@ pango_fc_hb_font_get_glyph_advance (hb_font_t *font, const void *font_data,
 }
 
 static void
-pango_fc_hb_font_get_glyph_extents (hb_font_t *font,  const void *font_data,
+pango_fc_hb_font_get_glyph_extents (hb_font_t *font,  void *font_data,
 				    hb_codepoint_t glyph, hb_glyph_extents_t *extents,
-				    const void *user_data G_GNUC_UNUSED)
+				    void *user_data G_GNUC_UNUSED)
 {
   PangoFcHbContext *context = (PangoFcHbContext *) font_data;
   PangoFcFont *fc_font = context->fc_font;
@@ -190,10 +190,10 @@ pango_fc_hb_font_get_glyph_extents (hb_font_t *font,  const void *font_data,
 }
 
 static void
-pango_fc_hb_font_get_kerning (hb_font_t *font, const void *font_data,
+pango_fc_hb_font_get_kerning (hb_font_t *font, void *font_data,
 			      hb_codepoint_t first_glyph, hb_codepoint_t second_glyph,
 			      hb_position_t *x_kern, hb_position_t *y_kern,
-			      const void *user_data G_GNUC_UNUSED)
+			      void *user_data G_GNUC_UNUSED)
 {
   PangoFcHbContext *context = (PangoFcHbContext *) font_data;
   FT_Face ft_face = context->ft_face;
