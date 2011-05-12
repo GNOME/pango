@@ -353,6 +353,8 @@ _pango_ot_info_substitute  (const PangoOTInfo    *info,
 {
   unsigned int i;
 
+  hb_ot_layout_substitute_start (buffer->buffer);
+
   for (i = 0; i < ruleset->rules->len; i++)
     {
       PangoOTRule *rule = &g_array_index (ruleset->rules, PangoOTRule, i);
@@ -378,6 +380,8 @@ _pango_ot_info_substitute  (const PangoOTInfo    *info,
 					lookup_indexes[j],
 					rule->property_bit);
     }
+
+  hb_ot_layout_substitute_finish (buffer->buffer);
 }
 
 void
