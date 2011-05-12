@@ -112,20 +112,21 @@ typedef struct _PangoFcHbContext {
   PangoFcFont *fc_font;
 } PangoFcHbContext;
 
-static hb_codepoint_t
+static hb_bool_t
 pango_fc_hb_font_get_glyph (hb_font_t *font, void *font_data,
 			    hb_codepoint_t unicode, hb_codepoint_t variation_selector,
+			    hb_codepoint_t *glyph,
 			    void *user_data G_GNUC_UNUSED)
 {
   PangoFcHbContext *context = (PangoFcHbContext *) font_data;
   PangoFcFont *fc_font = context->fc_font;
-  PangoGlyph glyph;
 
-  glyph = pango_fc_font_get_glyph (fc_font, unicode);
-  if (G_UNLIKELY (!glyph))
-    glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
+  *glyph = pango_fc_font_get_glyph (fc_font, unicode);
+  if (G_LIKELY (*glyph))
+    return TRUE;
 
-  return glyph;
+  *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
+  return FALSE;
 }
 
 static hb_bool_t
@@ -191,7 +192,7 @@ pango_fc_hb_font_get_glyph_extents (hb_font_t *font,  void *font_data,
 
 static void
 pango_fc_hb_font_get_kerning (hb_font_t *font, void *font_data,
-			      hb_codepoint_t first_glyph, hb_codepoint_t second_glyph,
+			      hb_codepoint_t left_glyph, hb_codepoint_t right_glyph,
 			      hb_position_t *x_kern, hb_position_t *y_kern,
 			      void *user_data G_GNUC_UNUSED)
 {
@@ -200,7 +201,7 @@ pango_fc_hb_font_get_kerning (hb_font_t *font, void *font_data,
   FT_Vector kerning;
 
   /* TODO: Kern type? */
-  if (FT_Get_Kerning (ft_face, first_glyph, second_glyph, FT_KERNING_DEFAULT, &kerning))
+  if (FT_Get_Kerning (ft_face, left_glyph, right_glyph, FT_KERNING_DEFAULT, &kerning))
     return;
 
   *x_kern = PANGO_UNITS_26_6 (kerning.x);
