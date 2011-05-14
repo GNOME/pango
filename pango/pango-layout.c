@@ -1277,6 +1277,41 @@ pango_layout_get_log_attrs (PangoLayout    *layout,
     *n_attrs = layout->n_chars + 1;
 }
 
+/**
+ * pango_layout_get_log_attrs_readonly:
+ * @layout: a #PangoLayout
+ * @n_attrs: location to store the number of the attributes in the array
+ *
+ * Retrieves an array of logical attributes for each character in
+ * the @layout.
+ *
+ * This is a faster alternative to pango_layout_get_log_attrs().
+ * The returned array is part of @layout and must not be modified.
+ * Modifying the layout will invalidate the returned array.
+ *
+ * The number of attributes returned in @n_attrs will be one more
+ * than the total number of characters in the layout, since there
+ * need to be attributes corresponding to both the position before
+ * the first character and the position after the last character.
+ *
+ * Returns: an array of logical attributes
+ *
+ * Since: 1.30
+ */
+PangoLogAttr *
+pango_layout_get_log_attrs_readonly (PangoLayout *layout,
+                                     gint        *n_attrs)
+{
+  g_return_if_fail (layout != NULL);
+
+  pango_layout_check_lines (layout);
+
+  if (n_attrs)
+    *n_attrs = layout->n_chars + 1;
+
+  return layout->log_attrs;
+}
+
 
 /**
  * pango_layout_get_line_count:

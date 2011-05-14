@@ -177,6 +177,7 @@ EXPORTS
 	pango_fontset_simple_size
 	pango_get_lib_subdirectory
 	pango_get_log_attrs
+	pango_get_log_attrs_readonly
 	pango_get_mirror_char
 	pango_get_sysconf_subdirectory
 	pango_glyph_item_apply_attrs

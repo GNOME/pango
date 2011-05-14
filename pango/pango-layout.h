@@ -166,6 +166,9 @@ void     pango_layout_get_log_attrs (PangoLayout    *layout,
 				     PangoLogAttr  **attrs,
 				     gint           *n_attrs);
 
+PangoLogAttr *pango_layout_get_log_attrs_readonly (PangoLayout *layout,
+                                                   gint        *n_attrs);
+
 void     pango_layout_index_to_pos         (PangoLayout    *layout,
 					    int             index_,
 					    PangoRectangle *pos);
