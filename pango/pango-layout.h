@@ -103,6 +103,8 @@ void           pango_layout_set_text       (PangoLayout    *layout,
 					    int             length);
 const char    *pango_layout_get_text       (PangoLayout    *layout);
 
+gint           pango_layout_get_character_count (PangoLayout *layout);
+
 void           pango_layout_set_markup     (PangoLayout    *layout,
 					    const char     *markup,
 					    int             length);

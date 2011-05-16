@@ -1096,6 +1096,26 @@ pango_layout_get_text (PangoLayout *layout)
 }
 
 /**
+ * pango_layout_get_character_count:
+ * @layout: a #PangoLayout
+ *
+ * Returns the number of Unicode characters in the
+ * the text of @layout.
+ *
+ * Return value: the number of Unicode characters
+ *     in the text of @layout
+ *
+ * Since: 1.30
+ */
+gint
+pango_layout_get_character_count (PangoLayout *layout)
+{
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+
+  return layout->n_chars;
+}
+
+/**
  * pango_layout_set_markup:
  * @layout: a #PangoLayout
  * @markup: marked-up text

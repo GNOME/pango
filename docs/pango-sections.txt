@@ -442,6 +442,7 @@ pango_layout_context_changed
 
 pango_layout_set_text
 pango_layout_get_text
+pango_layout_get_character_count
 pango_layout_set_markup
 pango_layout_set_markup_with_accel
 pango_layout_set_attributes
