@@ -62,6 +62,10 @@ copy ..\..\..\pango\module-defs-win32.c.win32 ..\..\..\pango\DONE_MODULE_DEFS_WI
 		Value="G_LOG_DOMAIN=\&quot;Pango\&quot;;PANGO_ENABLE_BACKEND;PANGO_ENABLE_ENGINE;SYSCONFDIR=\&quot;$(PangoDummyPrefix)/etc\&quot;;LIBDIR=\&quot;$(PangoDummyPrefix)/lib\&quot;"
 	/>
 	<UserMacro
+		Name="NoFCDef"
+		Value="PANGO_VISUALC_NO_FC"
+	/>
+	<UserMacro
 		Name="PangoDoInstall"
 		Value="
 echo on&#x0D;&#x0A;
@@ -100,11 +104,16 @@ copy ..\..\..\pango\pango-tabs.h $(OutDir)\include\pango-$(PangoApiVersion)\pang
 copy ..\..\..\pango\pango-types.h $(OutDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
 copy ..\..\..\pango\pango-utils.h $(OutDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
 copy ..\..\..\pango\pangocairo.h $(OutDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangowin32.h $(OutDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+"
+	/>
+	<UserMacro
+		Name="PangoInstallFCHeaders"
+		Value="
 copy ..\..\..\pango\pangofc-decoder.h $(OutDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
 copy ..\..\..\pango\pangofc-font.h $(OutDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
 copy ..\..\..\pango\pangofc-fontmap.h $(OutDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
 copy ..\..\..\pango\pangoft2.h $(OutDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
-copy ..\..\..\pango\pangowin32.h $(OutDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
 "
 	/>
 	<UserMacro

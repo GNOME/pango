@@ -20,15 +20,18 @@
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Debug|Win32"
-			InheritedPropertySheets=".\pango.vsprops"
+			Name="Debug_FC|Win32"
 			ConfigurationType="2"
+			InheritedPropertySheets=".\pango.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\"
+				AdditionalIncludeDirectories=".;..\"
 				PreprocessorDefinitions="_DEBUG;$(PangoDefines);HAVE_GLIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -50,14 +53,17 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|Win32"
-			InheritedPropertySheets=".\pango.vsprops"
+			Name="Release_FC|Win32"
 			ConfigurationType="2"
+			InheritedPropertySheets=".\pango.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\"
+				AdditionalIncludeDirectories=".;..\"
 				PreprocessorDefinitions="$(PangoDefines);HAVE_GLIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -79,7 +85,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Debug|x64"
+			Name="Debug_FC|x64"
 			InheritedPropertySheets=".\pango.vsprops"
 			ConfigurationType="2"
 			CharacterSet="2"
@@ -87,7 +93,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\"
+				AdditionalIncludeDirectories=".;..\"
 				PreprocessorDefinitions="_DEBUG;$(PangoDefines);HAVE_GLIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -109,14 +115,14 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|x64"
+			Name="Release_FC|x64"
 			InheritedPropertySheets=".\pango.vsprops"
 			ConfigurationType="2"
 			CharacterSet="2"
 			>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\"
+				AdditionalIncludeDirectories=".;..\"
 				PreprocessorDefinitions="$(PangoDefines);HAVE_GLIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -163,246 +169,66 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File RelativePath="..\..\..\modules\arabic\arabic-fc.c">
-				<FileConfiguration Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_arabic_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Debug|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_arabic_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_arabic_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_arabic_fc"
-					/>
-				</FileConfiguration>
+				<FileConfiguration Name="Debug_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_arabic_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_arabic_fc" /></FileConfiguration>
+				<FileConfiguration Name="Debug_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_arabic_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_arabic_fc" /></FileConfiguration>
 			</File>
 			<File RelativePath="..\..\..\modules\arabic\arabic-ot.c" />
 			<File RelativePath="..\..\..\modules\basic\basic-fc.c">
-				<FileConfiguration Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_basic_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Debug|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_basic_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_basic_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_basic_fc"
-					/>
-				</FileConfiguration>
+				<FileConfiguration Name="Debug_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_basic_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_basic_fc" /></FileConfiguration>
+				<FileConfiguration Name="Debug_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_basic_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_basic_fc" /></FileConfiguration>
 			</File>
 			<File RelativePath="..\..\..\modules\hangul\hangul-fc.c">
-				<FileConfiguration Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_hangul_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Debug|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_hangul_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_hangul_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_hangul_fc"
-					/>
-				</FileConfiguration>
+				<FileConfiguration Name="Debug_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_hangul_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_hangul_fc" /></FileConfiguration>
+				<FileConfiguration Name="Debug_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_hangul_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_hangul_fc" /></FileConfiguration>
 			</File>
 			<File RelativePath="..\..\..\modules\hebrew\hebrew-fc.c">
-				<FileConfiguration Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_hebrew_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Debug|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_hebrew_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_hebrew_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_hebrew_fc"
-					/>
-				</FileConfiguration>
+				<FileConfiguration Name="Debug_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_hebrew_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_hebrew_fc" /></FileConfiguration>
+				<FileConfiguration Name="Debug_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_hebrew_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_hebrew_fc" /></FileConfiguration>
 			</File>
 			<File RelativePath="..\..\..\modules\hebrew\hebrew-shaper.c" />
 			<File RelativePath="..\..\..\modules\indic\indic-fc.c">
-				<FileConfiguration Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_indic_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Debug|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_indic_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_indic_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_indic_fc"
-					/>
-				</FileConfiguration>
+				<FileConfiguration Name="Debug_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_indic_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_indic_fc" /></FileConfiguration>
+				<FileConfiguration Name="Debug_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_indic_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_indic_fc" /></FileConfiguration>
 			</File>
-			<File RelativePath="..\..\..\modules\indic\indic-ot.c" />
 			<File RelativePath="..\..\..\modules\indic\indic-ot-class-tables.c" />
+			<File RelativePath="..\..\..\modules\indic\indic-ot.c" />
 			<File RelativePath="..\..\..\modules\indic\mprefixups.c" />
 			<File RelativePath="..\..\..\modules\khmer\khmer-fc.c">
-				<FileConfiguration Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_khmer_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Debug|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_khmer_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_khmer_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_khmer_fc"
-					/>
-				</FileConfiguration>
+				<FileConfiguration Name="Debug_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_khmer_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_khmer_fc" /></FileConfiguration>
+				<FileConfiguration Name="Debug_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_khmer_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_khmer_fc" /></FileConfiguration>
 			</File>
 			<File RelativePath="..\..\..\modules\syriac\syriac-fc.c">
-				<FileConfiguration Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_syriac_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Debug|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_syriac_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_syriac_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_syriac_fc"
-					/>
-				</FileConfiguration>
+				<FileConfiguration Name="Debug_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_syriac_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_syriac_fc" /></FileConfiguration>
+				<FileConfiguration Name="Debug_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_syriac_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_syriac_fc" /></FileConfiguration>
 			</File>
 			<File RelativePath="..\..\..\modules\syriac\syriac-ot.c" />
 			<File RelativePath="..\..\..\modules\thai\thai-charprop.c" />
 			<File RelativePath="..\..\..\modules\thai\thai-fc.c">
-				<FileConfiguration Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_thai_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Debug|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_thai_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_thai_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_thai_fc"
-					/>
-				</FileConfiguration>
+				<FileConfiguration Name="Debug_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_thai_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_thai_fc" /></FileConfiguration>
+				<FileConfiguration Name="Debug_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_thai_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_thai_fc" /></FileConfiguration>
 			</File>
 			<File RelativePath="..\..\..\modules\thai\thai-shaper.c" />
 			<File RelativePath="..\..\..\modules\tibetan\tibetan-fc.c">
-				<FileConfiguration Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_tibetan_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Debug|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_tibetan_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_tibetan_fc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration Name="Release|x64">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_tibetan_fc"
-					/>
-				</FileConfiguration>
+				<FileConfiguration Name="Debug_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_tibetan_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_tibetan_fc" /></FileConfiguration>
+				<FileConfiguration Name="Debug_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_tibetan_fc" /></FileConfiguration>
+				<FileConfiguration Name="Release_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_tibetan_fc" /></FileConfiguration>
 			</File>
 #include "opentype/libharfbuzz.sourcefiles"
 #include "libpangoft2.sourcefiles"
