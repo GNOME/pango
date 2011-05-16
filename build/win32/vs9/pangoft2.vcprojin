@@ -28,7 +28,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="."
+				AdditionalIncludeDirectories="..\"
 				PreprocessorDefinitions="_DEBUG;$(PangoDefines);HAVE_GLIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -57,7 +57,7 @@
 			>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="."
+				AdditionalIncludeDirectories="..\"
 				PreprocessorDefinitions="$(PangoDefines);HAVE_GLIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -87,7 +87,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="."
+				AdditionalIncludeDirectories="..\"
 				PreprocessorDefinitions="_DEBUG;$(PangoDefines);HAVE_GLIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -116,7 +116,7 @@
 			>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="."
+				AdditionalIncludeDirectories="..\"
 				PreprocessorDefinitions="$(PangoDefines);HAVE_GLIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
