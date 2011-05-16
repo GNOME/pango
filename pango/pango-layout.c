@@ -1110,7 +1110,7 @@ pango_layout_get_text (PangoLayout *layout)
 gint
 pango_layout_get_character_count (PangoLayout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), 0);
 
   return layout->n_chars;
 }
@@ -1318,11 +1318,13 @@ pango_layout_get_log_attrs (PangoLayout    *layout,
  *
  * Since: 1.30
  */
-PangoLogAttr *
+const PangoLogAttr *
 pango_layout_get_log_attrs_readonly (PangoLayout *layout,
                                      gint        *n_attrs)
 {
-  g_return_if_fail (layout != NULL);
+  if (n_attrs)
+    *n_attrs = 0;
+  g_return_val_if_fail (layout != NULL, NULL);
 
   pango_layout_check_lines (layout);
 
