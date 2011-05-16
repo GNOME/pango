@@ -39,6 +39,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="usp10.lib"
 				OutputFile="$(OutDir)\$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile="..\..\..\pango\pangowin32.def"
@@ -64,6 +65,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="usp10.lib"
 				OutputFile="$(OutDir)\$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile="..\..\..\pango\pangowin32.def"
@@ -94,6 +96,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="usp10.lib"
 				OutputFile="$(OutDir)\$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile="..\..\..\pango\pangowin32.def"
@@ -119,6 +122,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="usp10.lib"
 				OutputFile="$(OutDir)\$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile="..\..\..\pango\pangowin32.def"
