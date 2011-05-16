@@ -433,8 +433,9 @@ AM_CONDITIONAL(HAVE_CAIRO_FREETYPE, $have_cairo_freetype)
 AM_CONDITIONAL(HAVE_CAIRO_ATSUI, $have_cairo_atsui)
 
 
-harfbuzz_required=0.3
-PKG_CHECK_MODULES(HARFBUZZ, harfbuzz >= $harfbuzz_required, have_harfbuzz=true, have_harfbuzz=false)
+harfbuzz_required=0.5
+have_harfbuzz=false
+PKG_CHECK_MODULES(HARFBUZZ, harfbuzz >= $harfbuzz_required, have_harfbuzz=true)
 AM_CONDITIONAL(HAVE_HARFBUZZ, $have_harfbuzz)
 
 #
