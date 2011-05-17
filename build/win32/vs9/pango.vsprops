@@ -105,6 +105,12 @@ copy ..\..\..\pango\pango-types.h $(OutDir)\include\pango-$(PangoApiVersion)\pan
 copy ..\..\..\pango\pango-utils.h $(OutDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
 copy ..\..\..\pango\pangocairo.h $(OutDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
 copy ..\..\..\pango\pangowin32.h $(OutDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+
+mkdir $(OutDir)\etc\pango&#x0D;&#x0A;
+echo tahoma = &quot;tahoma,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal&quot; > $(OutDir)\etc\pango\pango.aliases&#x0D;&#x0A;
+echo sans = &quot;arial,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal&quot; >> $(OutDir)\etc\pango\pango.aliases&#x0D;&#x0A;
+echo serif = &quot;times new roman,angsana new,mingliu,simsun,gulimche,ms gothic,latha,mangal&quot; >> $(OutDir)\etc\pango\pango.aliases&#x0D;&#x0A;
+echo monospace = &quot;courier new,courier monothai,mingliu,simsun,gulimche,ms gothic,latha,mangal&quot; >> $(OutDir)\etc\pango\pango.aliases&#x0D;&#x0A;
 "
 	/>
 	<UserMacro
