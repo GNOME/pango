@@ -10,7 +10,7 @@ files.
 It is recommended that GLib is compiled with VS9 to compile Pango.
 External dependencies are at least Cairo,  zlib, libpng,
 gettext-runtime; optional dependencies include fontconfig, freetype,
-and expat.  Please see the build/win32/vs9/README.txt file in glib
+and expat.  Please see the build\win32\vs9\README.txt file in glib
 for details where to unpack them.
 
 Decide first whether you would want to use fontconfig (which also includes
@@ -26,7 +26,7 @@ caused by mixing calls to different CRTs can be kept at a minimum.
 zlib, libpng, and Cairo do contain support for compiling under VS9
 using VS project files and/or makefiles at this time of writing.
 For GLib, VS9 project files are available under
-$(srcroot)/build/vs9 in the case of GLib (stable/unstable).
+$(srcroot)\build\vs9 in the case of GLib (stable/unstable).
 
 There is no known official VS9 build support for fontconfig
 (along with freetype and expat which will work with the pre-compiled
@@ -52,11 +52,11 @@ Note: put the resulting zlib, libpng, pcre and Cairo files as follows:
 
 The recommended build order for these dependencies:
 (first unzip any dependent binaries downloaded from the ftp.gnome.org
- as described in the README.txt file in the build/win32/vs9 folder)
+ as described in the README.txt file in the build\win32\vs9 folder)
 -zlib
 -libpng
 -(optional for GLib) PCRE (version 8.12 or later, use of CMake to
-  build PCRE is recommended-see build/win32/vs9/README.txt of GLib)
+  build PCRE is recommended-see build\win32\vs9\README.txt of GLib)
 -GLib (put the sources in <root>\<GLib-Source-Tree>, and build it from
        there with VS9)
 -Cairo (inclusive of Cairo-GObject-if using GTK+-3.x)
