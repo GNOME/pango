@@ -1397,10 +1397,8 @@ pango_win32_font_description_from_logfontw (const LOGFONTW *lfp)
 }
 
 static char *
-charset_name (int charset)
+charset_name (int charset, char* num)
 {
-  static char num[10];
-
   switch (charset)
     {
 #define CASE(x) case x##_CHARSET: return #x
@@ -1431,10 +1429,8 @@ charset_name (int charset)
 }
 
 static char *
-ff_name (int ff)
+ff_name (int ff, char* num)
 {
-  static char num[10];
-
   switch (ff)
     {
 #define CASE(x) case FF_##x: return #x
@@ -1462,13 +1458,16 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   PangoWin32Face *win32face;
   gint i;
 
+  char tmp_for_charset_name[10];
+  char tmp_for_ff_name[10];
+
   PING (("face=%S,charset=%s,it=%s,wt=%ld,ht=%ld,ff=%s%s",
 	 lfp->lfFaceName,
-	 charset_name (lfp->lfCharSet),
+	 charset_name (lfp->lfCharSet, tmp_for_charset_name),
 	 lfp->lfItalic ? "yes" : "no",
 	 lfp->lfWeight,
 	 lfp->lfHeight,
-	 ff_name (lfp->lfPitchAndFamily & 0xF0),
+	 ff_name (lfp->lfPitchAndFamily & 0xF0, tmp_for_ff_name),
 	 is_synthetic ? " synthetic" : ""));
 
   /* Ignore Symbol fonts (which don't have any Unicode mapping
