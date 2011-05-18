@@ -119,6 +119,15 @@ has no user-visible fields.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_layout_get_character_count ##### -->
+<para>
+
+</para>
+
+@layout:
+@Returns:
+
+
 <!-- ##### FUNCTION pango_layout_set_markup ##### -->
 <para>
 
@@ -462,6 +471,16 @@ The #GObject type for #PangoAlignment.
 @layout: 
 @attrs: 
 @n_attrs: 
+
+
+<!-- ##### FUNCTION pango_layout_get_log_attrs_readonly ##### -->
+<para>
+
+</para>
+
+@layout:
+@n_attrs:
+@Returns:
 
 
 <!-- ##### FUNCTION pango_layout_index_to_pos ##### -->
