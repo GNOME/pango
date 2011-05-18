@@ -978,7 +978,7 @@ handle_alias_line (GString  *line_buffer,
 
 #ifdef HAVE_CAIRO_WIN32
 
-static const char *builtin_aliases[] = {
+static const char * const builtin_aliases[] = {
   "courier = \"courier new\"",
   "\"segoe ui\" = \"segoe ui,meiryo,malgun gothic,microsoft jhenghei,microsoft yahei,gisha,leelawadee,arial unicode ms,browallia new,mingliu,simhei,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
   "tahoma = \"tahoma,arial unicode ms,lucida sans unicode,browallia new,mingliu,simhei,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
