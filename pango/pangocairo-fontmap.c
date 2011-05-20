@@ -149,8 +149,8 @@ static PangoFontMap *default_font_map = NULL;
 PangoFontMap *
 pango_cairo_font_map_get_default (void)
 {
-  if (G_UNLIKELY (!default_font_map))
-    default_font_map = pango_cairo_font_map_new ();
+  if (g_once_init_enter ((gsize*)&default_font_map))
+    g_once_init_leave((gsize*)&default_font_map, (gsize)pango_cairo_font_map_new ());
 
   return default_font_map;
 }
