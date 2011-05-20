@@ -121,7 +121,7 @@
 #define PACKAGE_NAME "pango"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "pango @PANGO_VERSION"
+#define PACKAGE_STRING "pango @PANGO_VERSION@"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "pango"
@@ -136,7 +136,7 @@
 #define PANGO_INTERFACE_AGE @PANGO_INTERFACE_AGE@
 
 /* PANGO major version */
-#define PANGO_VERSION_MAJOR @PANEG_VERSION_MAJOR@
+#define PANGO_VERSION_MAJOR @PANGO_VERSION_MAJOR@
 
 /* PANGO micro version */
 #define PANGO_VERSION_MICRO @PANGO_VERSION_MICRO@
