@@ -56,7 +56,7 @@ main_LDADD = libharfbuzz.la $(GLIB_LIBS)
 
 EXTRA_DIST = README COPYING
 
-dist-hook: libharfbuzz.sourcefiles
+dist-hook: libharfbuzz.sourcefiles libharfbuzz.vs10.sourcefiles libharfbuzz.vs10.sourcefiles.filters
 
 libharfbuzz.sourcefiles: Makefile
 	for F in $(libharfbuzz_la_SOURCES); do \
@@ -65,5 +65,23 @@ libharfbuzz.sourcefiles: Makefile
 		     ;; \
 		esac; \
 	done >libharfbuzz.sourcefiles
+
+libharfbuzz.vs10.sourcefiles: Makefile
+	for F in $(libharfbuzz_la_SOURCES); do \
+		case $$F in \
+		*.c|*.cc) echo '   <ClCompile Include="..\..\..\pango\opentype\'$$F'" />' \
+		     ;; \
+		esac; \
+	done >libharfbuzz.vs10.sourcefiles
+
+libharfbuzz.vs10.sourcefiles.filters: Makefile
+	for F in $(libharfbuzz_la_SOURCES); do \
+		case $$F in \
+		*.c|*.cc) echo '   <ClCompile Include="..\..\..\pango\opentype\'$$F'"><Filter>Source Files</Filter></ClCompile>' \
+		     ;; \
+		esac; \
+	done >libharfbuzz.vs10.sourcefiles.filters
+	
+DISTCLEANFILES = libharfbuzz.sourcefiles libharfbuzz.vs10.sourcefiles libharfbuzz.vs10.sourcefiles.filters
 
 -include $(top_srcdir)/git.mk

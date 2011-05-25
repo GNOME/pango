@@ -671,9 +671,17 @@ TESTS = check.defs
 dist-hook: \
 	../build/win32/vs9/pango.vcproj \
 	../build/win32/vs9/pangoft2.vcproj \
-	../build/win32/vs9/pangocairo.vcproj
+	../build/win32/vs9/pangocairo.vcproj \
+	../build/win32/vs10/pango.vcxproj \
+	../build/win32/vs10/pango.vcxproj.filters \
+	../build/win32/vs10/pangocairo.vcxproj \
+	../build/win32/vs10/pangocairo.vcxproj.filters \
+	../build/win32/vs10/pangocairo_fc.vcxproj \
+	../build/win32/vs10/pangocairo_fc.vcxproj.filters \
+	../build/win32/vs10/pangoft2.vcxproj \
+	../build/win32/vs10/pangoft2.vcxproj.filters
 
-# pangowin32.vcproj is not automatically built, it is not being changed
+# pangowin32.vcproj, pangowin32.vcxproj and pangowin32.vcxproj.filters are not automatically built, it is not being changed
 
 ../build/win32/vs9/pango.vcproj: $(top_srcdir)/build/win32/vs9/pango.vcprojin mini-fribidi/libmini-fribidi.sourcefiles
 	-rm $@
@@ -685,6 +693,26 @@ dist-hook: \
 	done >libpango.sourcefiles
 	$(CPP) -P - <$(top_srcdir)/build/win32/vs9/pango.vcprojin >$@
 
+../build/win32/vs10/pango.vcxproj: $(top_srcdir)/build/win32/vs10/pango.vcxprojin mini-fribidi/libmini-fribidi.vs10.sourcefiles
+	-rm $@
+	for F in $(libpango_1_0_la_SOURCES); do \
+		case $$F in \
+		*.c) echo '   <ClCompile Include="..\..\..\pango\'$$F'" />' \
+		     ;; \
+		esac; \
+	done >libpango.vs10.sourcefiles
+	$(CPP) -P - <$(top_srcdir)/build/win32/vs10/pango.vcxprojin >$@
+
+../build/win32/vs10/pango.vcxproj.filters: $(top_srcdir)/build/win32/vs10/pango.vcxproj.filtersin mini-fribidi/libmini-fribidi.vs10.sourcefiles.filters
+	-rm $@
+	for F in $(libpango_1_0_la_SOURCES); do \
+		case $$F in \
+		*.c) echo '   <ClCompile Include="..\..\..\pango\'$$F'"><Filter>Source Files</Filter></ClCompile>' \
+		     ;; \
+		esac; \
+	done >libpango.vs10.sourcefiles.filters
+	$(CPP) -P - <$(top_srcdir)/build/win32/vs10/pango.vcxproj.filtersin >$@
+
 ../build/win32/vs9/pangoft2.vcproj: $(top_srcdir)/build/win32/vs9/pangoft2.vcprojin opentype/libharfbuzz.sourcefiles
 	-rm $@
 	for F in $(libpangoft2_1_0_la_SOURCES); do \
@@ -694,6 +722,26 @@ dist-hook: \
 		esac; \
 	done >libpangoft2.sourcefiles
 	$(CPP) -P - <$(top_srcdir)/build/win32/vs9/pangoft2.vcprojin >$@
+
+../build/win32/vs10/pangoft2.vcxproj: $(top_srcdir)/build/win32/vs10/pangoft2.vcxprojin opentype/libharfbuzz.vs10.sourcefiles
+	-rm $@
+	for F in $(libpangoft2_1_0_la_SOURCES); do \
+		case $$F in \
+		*.c) echo '   <ClCompile Include="..\..\..\pango\'$$F'" />' \
+		     ;; \
+		esac; \
+	done >libpangoft2.vs10.sourcefiles
+	$(CPP) -P - <$(top_srcdir)/build/win32/vs10/pangoft2.vcxprojin >$@
+
+../build/win32/vs10/pangoft2.vcxproj.filters: $(top_srcdir)/build/win32/vs10/pangoft2.vcxproj.filtersin opentype/libharfbuzz.vs10.sourcefiles.filters
+	-rm $@
+	for F in $(libpangoft2_1_0_la_SOURCES); do \
+		case $$F in \
+		*.c) echo '   <ClCompile Include="..\..\..\pango\'$$F'"><Filter>Source Files</Filter></ClCompile>' \
+		     ;; \
+		esac; \
+	done >libpangoft2.vs10.sourcefiles.filters
+	$(CPP) -P - <$(top_srcdir)/build/win32/vs10/pangoft2.vcxproj.filtersin >$@
 
 ../build/win32/vs9/pangocairo.vcproj: $(top_srcdir)/build/win32/vs9/pangocairo.vcprojin
 # Backend-specific sources for the libpangocairo DLL are explicitly
@@ -706,5 +754,74 @@ dist-hook: \
 		esac; \
 	done >libpangocairo.sourcefiles
 	$(CPP) -P - <$(top_srcdir)/build/win32/vs9/pangocairo.vcprojin >$@
+
+../build/win32/vs10/pangocairo.vcxproj: $(top_srcdir)/build/win32/vs10/pangocairo.vcxprojin
+# Backend-specific sources for the libpangocairo DLL are explicitly
+# listed in the vcxprojin file
+# I know it does not sound nice to have 2 pangocairo projects/filters sets due to FontConfig usage (or not), but VS2010 forces me to do that...
+	-rm $@
+	for F in $(pangocairo_core_sources); do \
+		case $$F in \
+		*.c) echo '   <ClCompile Include="..\..\..\pango\'$$F'" />' \
+		     ;; \
+		esac; \
+	done >libpangocairo.vs10.sourcefiles
+	$(CPP) -P - <$(top_srcdir)/build/win32/vs10/pangocairo.vcxprojin >$@
+
+../build/win32/vs10/pangocairo.vcxproj.filters: $(top_srcdir)/build/win32/vs10/pangocairo.vcxproj.filtersin
+# Backend-specific sources for the libpangocairo DLL are explicitly
+# listed in the vcxproj.filtersin file
+	-rm $@
+	for F in $(pangocairo_core_sources); do \
+		case $$F in \
+		*.c) echo '   <ClCompile Include="..\..\..\pango\'$$F'"><Filter>Source Files</Filter></ClCompile>' \
+		     ;; \
+		esac; \
+	done >libpangocairo.vs10.sourcefiles.filters
+	$(CPP) -P - <$(top_srcdir)/build/win32/vs10/pangocairo.vcxproj.filtersin >$@
+
+../build/win32/vs10/pangocairo_fc.vcxproj: $(top_srcdir)/build/win32/vs10/pangocairo_fc.vcxprojin
+# Backend-specific sources for the libpangocairo DLL are explicitly
+# listed in the vcxprojin file
+	-rm $@
+	for F in $(pangocairo_core_sources); do \
+		case $$F in \
+		*.c) echo '   <ClCompile Include="..\..\..\pango\'$$F'" />' \
+		     ;; \
+		esac; \
+	done >libpangocairo.vs10.sourcefiles
+	$(CPP) -P - <$(top_srcdir)/build/win32/vs10/pangocairo_fc.vcxprojin >$@
+
+../build/win32/vs10/pangocairo_fc.vcxproj.filters: $(top_srcdir)/build/win32/vs10/pangocairo_fc.vcxproj.filtersin
+# Backend-specific sources for the libpangocairo DLL are explicitly
+# listed in the vcxproj.filtersin file
+	-rm $@
+	for F in $(pangocairo_core_sources); do \
+		case $$F in \
+		*.c) echo '   <ClCompile Include="..\..\..\pango\'$$F'"><Filter>Source Files</Filter></ClCompile>' \
+		     ;; \
+		esac; \
+	done >libpangocairo.vs10.sourcefiles.filters
+	$(CPP) -P - <$(top_srcdir)/build/win32/vs10/pangocairo_fc.vcxproj.filtersin >$@
+
+DISTCLEANFILES += \
+	../build/win32/vs9/pango.vcproj \
+	../build/win32/vs9/pangoft2.vcproj \
+	../build/win32/vs9/pangocairo.vcproj \
+	../build/win32/vs10/pango.vcxproj \
+	../build/win32/vs10/pango.vcxproj.filters \
+	../build/win32/vs10/pangocairo.vcxproj \
+	../build/win32/vs10/pangocairo.vcxproj.filters \
+	../build/win32/vs10/pangocairo_fc.vcxproj \
+	../build/win32/vs10/pangocairo_fc.vcxproj.filters \
+	../build/win32/vs10/pangoft2.vcxproj \
+	../build/win32/vs10/pangoft2.vcxproj.filters \
+	libpangocairo.vs10.sourcefiles.filters \
+	libpangocairo.vs10.sourcefiles \
+	libpangoft2.vs10.sourcefiles.filters \
+	libpangoft2.vs10.sourcefiles \
+	libpango.vs10.sourcefiles \
+	libpango.vs10.sourcefiles
+	
 
 -include $(top_srcdir)/git.mk
