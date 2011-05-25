@@ -10,4 +10,5 @@ EXTRA_DIST = \
 	pangocairo.vcprojin \
 	pangocairo.vcproj \
 	install.vcproj	\
-	stdint.h
+	stdint.h \
+	README.txt
