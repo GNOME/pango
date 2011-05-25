@@ -269,10 +269,8 @@ pango_ft2_get_context (double dpi_x, double dpi_y)
 PangoFontMap *
 pango_ft2_font_map_for_display (void)
 {
-  if (pango_ft2_global_fontmap != NULL)
-    return PANGO_FONT_MAP (pango_ft2_global_fontmap);
-
-  pango_ft2_global_fontmap = (PangoFT2FontMap *)pango_ft2_font_map_new ();
+  if (g_once_init_enter ((gsize*)&pango_ft2_global_fontmap))
+    g_once_init_leave((gsize*)&pango_ft2_global_fontmap, (gsize)pango_ft2_font_map_new ());
 
   return PANGO_FONT_MAP (pango_ft2_global_fontmap);
 }
