@@ -1368,8 +1368,8 @@ string_from_script (PangoScript script)
 {
   static GEnumClass *class = NULL;
   GEnumValue *value;
-  if (!class)
-    class = g_type_class_ref (PANGO_TYPE_SCRIPT);
+  if (g_once_init_enter ((gsize*)&class))
+    g_once_init_leave((gsize*)&class, (gsize)g_type_class_ref (PANGO_TYPE_SCRIPT));
 
   value = g_enum_get_value (class, script);
   if (!value)
