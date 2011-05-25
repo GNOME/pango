@@ -696,10 +696,8 @@ pango_win32_font_map_for_display (void)
   /* Make sure that the type system is initialized */
   g_type_init ();
 
-  if (default_fontmap != NULL)
-    return PANGO_FONT_MAP (default_fontmap);
-
-  default_fontmap = g_object_new (PANGO_TYPE_WIN32_FONT_MAP, NULL);
+  if (g_once_init_enter ((gsize*)&default_fontmap))
+    g_once_init_leave((gsize*)&default_fontmap, (gsize)g_object_new (PANGO_TYPE_WIN32_FONT_MAP, NULL));
 
   return PANGO_FONT_MAP (default_fontmap);
 }
