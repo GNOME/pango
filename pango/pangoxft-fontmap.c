@@ -65,7 +65,8 @@ static PangoFcFont * pango_xft_font_map_new_font           (PangoFcFontMap      
 							    FcPattern            *pattern);
 static void          pango_xft_font_map_finalize           (GObject              *object);
 
-static GSList *fontmaps = NULL;
+G_LOCK_DEFINE_STATIC (fontmaps);
+static GSList *fontmaps = NULL; /* MT-safe */
 
 G_DEFINE_TYPE (PangoXftFontMap, pango_xft_font_map, PANGO_TYPE_FC_FONT_MAP)
 
@@ -93,7 +94,9 @@ pango_xft_font_map_finalize (GObject *object)
   if (xftfontmap->renderer)
     g_object_unref (xftfontmap->renderer);
 
+  G_LOCK (fontmaps);
   fontmaps = g_slist_remove (fontmaps, object);
+  G_UNLOCK (fontmaps);
 
   if (xftfontmap->substitute_destroy)
     xftfontmap->substitute_destroy (xftfontmap->substitute_data);
@@ -108,6 +111,7 @@ pango_xft_find_font_map (Display *display,
 {
   GSList *tmp_list;
 
+  G_LOCK (fontmaps);
   tmp_list = fontmaps;
   while (tmp_list)
     {
@@ -115,10 +119,14 @@ pango_xft_find_font_map (Display *display,
 
       if (xftfontmap->display == display &&
 	  xftfontmap->screen == screen)
-	return PANGO_FONT_MAP (xftfontmap);
+        {
+          G_UNLOCK (fontmaps);
+	  return PANGO_FONT_MAP (xftfontmap);
+        }
 
       tmp_list = tmp_list->next;
     }
+  G_UNLOCK (fontmaps);
 
   return NULL;
 }
@@ -126,13 +134,15 @@ pango_xft_find_font_map (Display *display,
 /*
  * Hackery to set up notification when a Display is closed
  */
-static GSList *registered_displays;
+static GSList *registered_displays; /* MT-safe, protected by fontmaps lock */
 
 static int
 close_display_cb (Display   *display,
 		  XExtCodes *extcodes G_GNUC_UNUSED)
 {
   GSList *tmp_list;
+
+  G_LOCK (fontmaps);
 
   tmp_list = fontmaps;
   while (tmp_list)
@@ -145,6 +155,8 @@ close_display_cb (Display   *display,
     }
 
   registered_displays = g_slist_remove (registered_displays, display);
+
+  G_UNLOCK (fontmaps);
 
   return 0;
 }
@@ -201,9 +213,13 @@ pango_xft_get_font_map (Display *display,
   xftfontmap->display = display;
   xftfontmap->screen = screen;
 
+  G_LOCK (fontmaps);
+
   register_display (display);
 
   fontmaps = g_slist_prepend (fontmaps, xftfontmap);
+
+  G_UNLOCK (fontmaps);
 
   return PANGO_FONT_MAP (xftfontmap);
 }
@@ -231,7 +247,9 @@ pango_xft_shutdown_display (Display *display,
     {
       PangoXftFontMap *xftfontmap = PANGO_XFT_FONT_MAP (fontmap);
 
+      G_LOCK (fontmaps);
       fontmaps = g_slist_remove (fontmaps, fontmap);
+      G_UNLOCK (fontmaps);
       pango_fc_font_map_shutdown (PANGO_FC_FONT_MAP (fontmap));
 
       xftfontmap->display = NULL;
