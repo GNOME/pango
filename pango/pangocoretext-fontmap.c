@@ -939,9 +939,6 @@ pango_core_text_font_map_init (PangoCoreTextFontMap *ctfontmap)
 
       family_name = g_utf8_casefold (buffer, -1);
 
-      CFRelease (str);
-      g_free (buffer);
-
       family = g_hash_table_lookup (ctfontmap->families, family_name);
       if (!family)
         {
@@ -949,12 +946,13 @@ pango_core_text_font_map_init (PangoCoreTextFontMap *ctfontmap)
           g_hash_table_insert (ctfontmap->families, g_strdup (family_name),
                                family);
 
-          family->family_name = family_name;
-          family_name = NULL;
+          family->family_name = g_strdup (buffer);
         }
 
-      if (family_name)
-        g_free (family_name);
+      CFRelease (str);
+      g_free (buffer);
+
+      g_free (family_name);
 
       /* We assume that all faces in the family are monospaced or none. */
       dict = CTFontDescriptorCopyAttribute (desc, kCTFontTraitsAttribute);
