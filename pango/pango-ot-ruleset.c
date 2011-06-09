@@ -76,7 +76,7 @@ pango_ot_ruleset_finalize (GObject *object)
  *
  * Since: 1.18
  **/
-G_CONST_RETURN PangoOTRuleset *
+const PangoOTRuleset *
 pango_ot_ruleset_get_for_description (PangoOTInfo                     *info,
 				      const PangoOTRulesetDescription *desc)
 {

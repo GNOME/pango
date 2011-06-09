@@ -311,7 +311,7 @@ pango_language_from_string (const char *language)
  * Returns: a string representing the language tag.  This is owned by
  *          Pango and should not be freed.
  */
-G_CONST_RETURN char *
+const char *
 (pango_language_to_string) (PangoLanguage *language)
 {
   return pango_language_to_string (language);
@@ -523,7 +523,7 @@ static const LangInfo lang_texts[] = {
  * Return value: the sample string. This value is owned by Pango
  *   and should not be freed.
  **/
-G_CONST_RETURN char *
+const char *
 pango_language_get_sample_string (PangoLanguage *language)
 {
   const LangInfo *lang_info;
@@ -585,7 +585,7 @@ pango_language_get_sample_string (PangoLanguage *language)
  
  * Since: 1.22
  **/
-G_CONST_RETURN PangoScript *
+const PangoScript *
 pango_language_get_scripts (PangoLanguage *language,
 			    int           *num_scripts)
 {

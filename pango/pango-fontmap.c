@@ -292,7 +292,7 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
  *
  * Since: 1.4
  **/
-G_CONST_RETURN char *
+const char *
 pango_font_map_get_shape_engine_type (PangoFontMap *fontmap)
 {
   g_return_val_if_fail (PANGO_IS_FONT_MAP (fontmap), NULL);

@@ -1348,7 +1348,7 @@ pango_renderer_set_matrix (PangoRenderer     *renderer,
  *
  * Since: 1.8
  **/
-G_CONST_RETURN PangoMatrix *
+const PangoMatrix *
 pango_renderer_get_matrix (PangoRenderer *renderer)
 {
   g_return_val_if_fail (PANGO_IS_RENDERER (renderer), NULL);

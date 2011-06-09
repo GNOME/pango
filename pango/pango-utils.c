@@ -690,7 +690,7 @@ DllMain (HINSTANCE hinstDLL,
  * Return value: the Pango sysconf directory. The returned string should
  * not be freed.
  */
-G_CONST_RETURN char *
+const char *
 pango_get_sysconf_subdirectory (void)
 {
   static const gchar *result = NULL;
@@ -723,7 +723,7 @@ pango_get_sysconf_subdirectory (void)
  * Return value: the Pango lib directory. The returned string should
  * not be freed.
  */
-G_CONST_RETURN char *
+const char *
 pango_get_lib_subdirectory (void)
 {
   static const gchar *result = NULL;

@@ -97,7 +97,7 @@ pango_attr_type_register (const gchar *name)
  *
  * Since: 1.22
  **/
-G_CONST_RETURN char *
+const char *
 pango_attr_type_get_name (PangoAttrType type)
 {
   const char *result = NULL;

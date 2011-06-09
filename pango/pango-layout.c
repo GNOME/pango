@@ -677,7 +677,7 @@ pango_layout_set_font_description (PangoLayout                 *layout,
  *
  * Since: 1.8
  **/
-G_CONST_RETURN PangoFontDescription *
+const PangoFontDescription *
 pango_layout_get_font_description (PangoLayout *layout)
 {
   g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
@@ -1087,7 +1087,7 @@ pango_layout_set_text (PangoLayout *layout,
  *
  * Return value: the text in the @layout.
  **/
-G_CONST_RETURN char*
+const char*
 pango_layout_get_text (PangoLayout *layout)
 {
   g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);

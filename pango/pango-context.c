@@ -188,7 +188,7 @@ pango_context_set_matrix (PangoContext       *context,
  *
  * Since: 1.6
  **/
-G_CONST_RETURN PangoMatrix *
+const PangoMatrix *
 pango_context_get_matrix (PangoContext *context)
 {
   g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);

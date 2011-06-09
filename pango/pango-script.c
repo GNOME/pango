@@ -164,10 +164,10 @@ pango_script_iter_free (PangoScriptIter *iter)
  * Since: 1.4
  **/
 void
-pango_script_iter_get_range (PangoScriptIter      *iter,
-			     G_CONST_RETURN char **start,
-			     G_CONST_RETURN char **end,
-			     PangoScript          *script)
+pango_script_iter_get_range (PangoScriptIter  *iter,
+                             const char      **start,
+                             const char      **end,
+                             PangoScript      *script)
 {
   if (start)
     *start = iter->script_start;

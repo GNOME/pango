@@ -249,7 +249,7 @@ PangoColor *pango_renderer_get_color (PangoRenderer    *renderer,
 
 void                        pango_renderer_set_matrix (PangoRenderer     *renderer,
 						       const PangoMatrix *matrix);
-G_CONST_RETURN PangoMatrix *pango_renderer_get_matrix (PangoRenderer     *renderer);
+const PangoMatrix          *pango_renderer_get_matrix (PangoRenderer     *renderer);
 
 PangoLayout     *pango_renderer_get_layout      (PangoRenderer     *renderer);
 PangoLayoutLine *pango_renderer_get_layout_line (PangoRenderer     *renderer);

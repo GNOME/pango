@@ -155,7 +155,7 @@ pango_font_description_set_family_static (PangoFontDescription *desc,
  *               %NULL if not previously set.  This has the same life-time
  *               as the font description itself and should not be freed.
  **/
-G_CONST_RETURN char *
+const char *
 pango_font_description_get_family (const PangoFontDescription *desc)
 {
   g_return_val_if_fail (desc != NULL, NULL);
@@ -1908,7 +1908,7 @@ pango_font_family_init (PangoFontFamily *family G_GNUC_UNUSED)
  * Return value: the name of the family. This string is owned
  *   by the family object and must not be modified or freed.
  **/
-G_CONST_RETURN char *
+const char *
 pango_font_family_get_name (PangoFontFamily  *family)
 {
   g_return_val_if_fail (PANGO_IS_FONT_FAMILY (family), NULL);
@@ -2041,7 +2041,7 @@ pango_font_face_is_synthesized (PangoFontFace  *face)
  * Return value: the face name for the face. This string is
  *   owned by the face object and must not be modified or freed.
  **/
-G_CONST_RETURN char *
+const char *
 pango_font_face_get_face_name (PangoFontFace *face)
 {
   g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);

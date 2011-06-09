@@ -84,9 +84,9 @@ void                      pango_context_set_gravity_hint     (PangoContext      
 							      PangoGravityHint            hint);
 PangoGravityHint          pango_context_get_gravity_hint     (PangoContext               *context);
 
-void                        pango_context_set_matrix (PangoContext      *context,
-						      const PangoMatrix *matrix);
-G_CONST_RETURN PangoMatrix *pango_context_get_matrix (PangoContext      *context);
+void                      pango_context_set_matrix           (PangoContext      *context,
+						              const PangoMatrix *matrix);
+const PangoMatrix *       pango_context_get_matrix           (PangoContext      *context);
 
 /* Break a string of Unicode characters into segments with
  * consistent shaping/language engine and bidrectional level.

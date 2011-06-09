@@ -118,7 +118,7 @@ void           pango_layout_set_markup_with_accel (PangoLayout    *layout,
 void           pango_layout_set_font_description (PangoLayout                *layout,
 						  const PangoFontDescription *desc);
 
-G_CONST_RETURN PangoFontDescription *pango_layout_get_font_description (PangoLayout *layout);
+const PangoFontDescription *pango_layout_get_font_description (PangoLayout *layout);
 
 void           pango_layout_set_width            (PangoLayout                *layout,
 						  int                         width);

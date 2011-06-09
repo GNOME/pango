@@ -260,7 +260,7 @@ pango_cairo_context_set_font_options (PangoContext               *context,
  *
  * Since: 1.10
  **/
-G_CONST_RETURN cairo_font_options_t *
+const cairo_font_options_t *
 pango_cairo_context_get_font_options (PangoContext *context)
 {
   PangoCairoContextInfo *info;
@@ -286,7 +286,7 @@ pango_cairo_context_get_font_options (PangoContext *context)
  * Return value: the combined set of font options. This value is owned
  * by the context and must not be modified or freed.
  **/
-G_CONST_RETURN cairo_font_options_t *
+const cairo_font_options_t *
 _pango_cairo_context_get_merged_font_options (PangoContext *context)
 {
   PangoCairoContextInfo *info = get_context_info (context, TRUE);
