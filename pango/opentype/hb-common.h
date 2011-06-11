@@ -27,7 +27,11 @@
 #ifndef HB_COMMON_H
 #define HB_COMMON_H
 
-#include <stdint.h>
+# ifdef HAVE_STDINT_H
+#  include <stdint.h>
+# else ifdef HAVE_INTTYPES_H
+# include <inttypes.h>
+# endif
 
 # ifdef __cplusplus
 #  define HB_BEGIN_DECLS	extern "C" {
