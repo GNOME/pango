@@ -5220,7 +5220,8 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
 
   /* Ellipsize the line if necessary
    */
-  if (G_UNLIKELY (state->line_width >= 0 && line->layout->ellipsize))
+  if (G_UNLIKELY (state->line_width >= 0 &&
+		  should_ellipsize_current_line (line->layout, state)))
     {
       ellipsized = _pango_layout_line_ellipsize (line, state->attrs, state->line_width);
     }
