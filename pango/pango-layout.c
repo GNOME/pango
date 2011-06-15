@@ -1433,7 +1433,6 @@ pango_layout_get_line (PangoLayout *layout,
 {
   GSList *list_item;
   g_return_val_if_fail (layout != NULL, NULL);
-  g_return_val_if_fail (line >= 0, NULL);
 
   if (line < 0)
     return NULL;
@@ -1479,7 +1478,6 @@ pango_layout_get_line_readonly (PangoLayout *layout,
 {
   GSList *list_item;
   g_return_val_if_fail (layout != NULL, NULL);
-  g_return_val_if_fail (line >= 0, NULL);
 
   if (line < 0)
     return NULL;
