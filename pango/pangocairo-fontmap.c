@@ -240,7 +240,7 @@ pango_cairo_font_map_get_resolution (PangoCairoFontMap *fontmap)
 }
 
 /**
- * pango_cairo_font_map_create_context: (skip):
+ * pango_cairo_font_map_create_context: (skip)
  * @fontmap: a #PangoCairoFontMap
  *
  * Create a #PangoContext for the given fontmap.

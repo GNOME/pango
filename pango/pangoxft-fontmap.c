@@ -310,7 +310,7 @@ _pango_xft_font_map_get_info (PangoFontMap *fontmap,
 }
 
 /**
- * pango_xft_get_context: (skip):
+ * pango_xft_get_context: (skip)
  * @display: an X display.
  * @screen: an X screen.
  *

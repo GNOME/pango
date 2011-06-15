@@ -340,7 +340,7 @@ pango_cairo_context_set_shape_renderer (PangoContext                *context,
 }
 
 /**
- * pango_cairo_context_get_shape_renderer: (skip):
+ * pango_cairo_context_get_shape_renderer: (skip)
  * @context: a #PangoContext, from a pangocairo font map
  * @data: Pointer to #gpointer to return user data
  *
