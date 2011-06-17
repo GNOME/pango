@@ -513,14 +513,12 @@ _pango_ot_info_substitute  (const PangoOTInfo    *info,
   for (i = 0; i < ruleset->rules->len; i++)
     {
       PangoOTRule *rule = &g_array_index (ruleset->rules, PangoOTRule, i);
-      hb_mask_t mask;
       unsigned int lookup_count, j;
       unsigned int lookup_indexes[1000];
 
       if (rule->table_type != PANGO_OT_TABLE_GSUB)
 	continue;
 
-      mask = rule->property_bit;
       lookup_count = G_N_ELEMENTS (lookup_indexes);
       hb_ot_layout_feature_get_lookup_indexes (info->hb_face,
 					       HB_OT_TAG_GSUB,

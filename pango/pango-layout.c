@@ -4406,13 +4406,6 @@ pango_layout_get_empty_extents_at_index (PangoLayout    *layout,
 
 	      if (start <= index && index < end)
 		{
-		  PangoFontDescription *base_font_desc;
-
-		  if (layout->font_desc)
-		    base_font_desc = layout->font_desc;
-		  else
-		    base_font_desc = pango_context_get_font_description (layout->context);
-
 		  if (!free_font_desc)
 		    {
 		      font_desc = pango_font_description_copy_static (font_desc);

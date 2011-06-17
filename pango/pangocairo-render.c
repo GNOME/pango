@@ -573,7 +573,6 @@ draw_error_underline (cairo_t *cr,
   int i;
 
   x += (width - width_units * unit_width) / 2;
-  width = width_units * unit_width;
 
   y_top = y;
   y_bottom = y + height;

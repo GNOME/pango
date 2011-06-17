@@ -315,7 +315,6 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 	    postBaseLimit = class_table->scriptFlags & SF_POST_BASE_LIMIT_MASK;
 	    seenVattu = false;
 	    seenBelowBaseForm = false;
-	    supressVattu = true;
 
 	    while (baseConsonant > baseLimit) {
 		IndicOTCharClass charClass = indic_ot_get_char_class(class_table, chars[baseConsonant]);

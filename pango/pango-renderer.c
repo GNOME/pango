@@ -985,7 +985,6 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
   int i;
 
   x += (width - width_units * unit_width) / 2;
-  width = width_units * unit_width;
 
   if (renderer->matrix)
     matrix = renderer->matrix;

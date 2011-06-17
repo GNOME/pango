@@ -256,13 +256,9 @@ pango_gravity_get_for_script (PangoScript      script,
 			      PangoGravityHint hint)
 {
   PangoScriptProperties props = get_script_properties (script);
-  gboolean vertical;
-
 
   if (G_UNLIKELY (base_gravity == PANGO_GRAVITY_AUTO))
     base_gravity = props.preferred_gravity;
-
-  vertical = PANGO_GRAVITY_IS_VERTICAL (base_gravity);
 
   return pango_gravity_get_for_script_and_width (script, props.wide,
 						 base_gravity, hint);

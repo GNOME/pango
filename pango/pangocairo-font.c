@@ -378,7 +378,7 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
   cairo_scaled_font_t *scaled_font, *scaled_mini_font;
   PangoMatrix pango_ctm;
   cairo_matrix_t cairo_ctm;
-  PangoGravity gravity;
+  /*PangoGravity gravity;*/
 
   if (!cf_priv)
     return NULL;
@@ -395,7 +395,7 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
   font_options = cairo_font_options_create ();
   desc = pango_font_describe_with_absolute_size ((PangoFont *)cf_priv->cfont);
   size = pango_font_description_get_size (desc) / (1.*PANGO_SCALE);
-  gravity = pango_font_description_get_gravity (desc);
+  /*gravity = pango_font_description_get_gravity (desc);*/
 
   cairo_scaled_font_get_ctm (scaled_font, &cairo_ctm);
   cairo_scaled_font_get_font_options (scaled_font, font_options);

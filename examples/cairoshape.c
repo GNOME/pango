@@ -58,12 +58,12 @@ mini_svg_render (MiniSvg  *shape,
   double x, y;
   const char *p;
   char op[2];
-  int items, len;
+  int len;
 
   cairo_get_current_point (cr, &x, &y);
   cairo_translate (cr, x, y);
 
-  for (p = shape->path; (items = sscanf (p, "%1s %n", op, &len)), p += len, *p;)
+  for (p = shape->path; sscanf (p, "%1s %n", op, &len), p += len, *p;)
     switch (*op)
     {
       case 'M':
