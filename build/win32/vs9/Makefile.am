@@ -1,5 +1,6 @@
 EXTRA_DIST = \
 	pango.sln \
+	pango_fc.sln \
 	pango.vsprops \
 	pango.vcprojin \
 	pango.vcproj \
@@ -8,4 +9,6 @@ EXTRA_DIST = \
 	pangowin32.vcproj \
 	pangocairo.vcprojin \
 	pangocairo.vcproj \
-	install.vcproj
+	install.vcproj	\
+	stdint.h \
+	README.txt

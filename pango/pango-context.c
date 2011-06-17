@@ -146,8 +146,8 @@ update_resolved_gravity (PangoContext *context)
 /**
  * pango_context_set_matrix:
  * @context: a #PangoContext
- * @matrix: a #PangoMatrix, or %NULL to unset any existing matrix.
- *  (No matrix set is the same as setting the identity matrix.)
+ * @matrix: (allow-none): a #PangoMatrix, or %NULL to unset any existing
+ * matrix. (No matrix set is the same as setting the identity matrix.)
  *
  * Sets the transformation matrix that will be applied when rendering
  * with this context. Note that reported metrics are in the user space
@@ -188,7 +188,7 @@ pango_context_set_matrix (PangoContext       *context,
  *
  * Since: 1.6
  **/
-G_CONST_RETURN PangoMatrix *
+const PangoMatrix *
 pango_context_get_matrix (PangoContext *context)
 {
   g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
@@ -227,8 +227,8 @@ pango_context_set_font_map (PangoContext *context,
  *
  * Gets the #PangoFontmap used to look up fonts for this context.
  *
- * Return value: the font map for the #PangoContext. This value
- *  is owned by Pango and should not be unreferenced.
+ * Return value: (transfer none): the font map for the #PangoContext.
+ *               This value is owned by Pango and should not be unreferenced.
  *
  * Since: 1.6
  **/
@@ -243,9 +243,10 @@ pango_context_get_font_map (PangoContext *context)
 /**
  * pango_context_list_families:
  * @context: a #PangoContext
- * @families: location to store a pointer to an array of #PangoFontFamily *.
- *            This array should be freed with g_free().
- * @n_families: location to store the number of elements in @descs
+ * @families: (out) (array length=n_families): location to store a pointer to
+ *            an array of #PangoFontFamily *. This array should be freed
+ *            with g_free().
+ * @n_families: (out): location to store the number of elements in @descs
  *
  * List all families for a context.
  **/
@@ -280,7 +281,8 @@ pango_context_list_families (PangoContext          *context,
  * Loads the font in one of the fontmaps in the context
  * that is the closest match for @desc.
  *
- * Returns: the font loaded, or %NULL if no font matched.
+ * Returns: (transfer full): the newly allocated #PangoFont that
+ *          was loaded, or %NULL if no font matched.
  **/
 PangoFont *
 pango_context_load_font (PangoContext               *context,
@@ -300,7 +302,8 @@ pango_context_load_font (PangoContext               *context,
  * Load a set of fonts in the context that can be used to render
  * a font matching @desc.
  *
- * Returns: the fontset, or %NULL if no font matched.
+ * Returns: (transfer full): the newly allocated #PangoFontset loaded,
+ *          or %NULL if no font matched.
  **/
 PangoFontset *
 pango_context_load_fontset (PangoContext               *context,
@@ -1481,23 +1484,23 @@ itemize_state_finish (ItemizeState *state)
 /**
  * pango_itemize_with_base_dir:
  * @context:   a structure holding information that affects
-	       the itemization process.
+ *             the itemization process.
+ * @base_dir:  base direction to use for bidirectional processing
  * @text:      the text to itemize.
  * @start_index: first byte in @text to process
  * @length:    the number of bytes (not characters) to process
- *             after @start_index.
- *             This must be >= 0.
- * @base_dir:  base direction to use for bidirectional processing
+ *             after @start_index. This must be >= 0.
  * @attrs:     the set of attributes that apply to @text.
- * @cached_iter:      Cached attribute iterator, or %NULL
+ * @cached_iter: (allow-none): Cached attribute iterator, or %NULL
  *
  * Like pango_itemize(), but the base direction to use when
  * computing bidirectional levels (see pango_context_set_base_dir ()),
  * is specified explicitly rather than gotten from the #PangoContext.
  *
- * Return value: a #GList of #PangoItem structures.  The items should be
- * freed using pango_item_free() probably in combination with g_list_foreach(),
- * and the list itself using g_list_free().
+ * Return value: (transfer full) (element-type Pango.Item): a #GList of
+ *               #PangoItem structures.  The items should be freed using
+ *               pango_item_free() probably in combination with
+ *               g_list_foreach(), and the list itself using g_list_free().
  *
  * Since: 1.4
  */
@@ -1566,7 +1569,7 @@ itemize_with_font (PangoContext               *context,
  *             after @start_index.
  *             This must be >= 0.
  * @attrs:     the set of attributes that apply to @text.
- * @cached_iter:      Cached attribute iterator, or %NULL
+ * @cached_iter: (allow-none): Cached attribute iterator, or %NULL
  *
  * Breaks a piece of text into segments with consistent
  * directional level and shaping engine. Each byte of @text will
@@ -1579,7 +1582,10 @@ itemize_with_font (PangoContext               *context,
  * the range covering the position just after @start_index + @length.
  * (i.e. if itemizing in a loop, just keep passing in the same @cached_iter).
  *
- * Return value: a #GList of #PangoItem structures.
+ * Return value: (transfer full) (element-type Pango.Item): a #GList of #PangoItem
+ *               structures. The items should be freed using pango_item_free()
+ *               probably in combination with g_list_foreach(), and the list itself
+ *               using g_list_free().
  */
 GList *
 pango_itemize (PangoContext      *context,
@@ -1674,13 +1680,13 @@ update_metrics_from_items (PangoFontMetrics *metrics,
 /**
  * pango_context_get_metrics:
  * @context: a #PangoContext
- * @desc: a #PangoFontDescription structure.  %NULL means that the font
- * 	      description from the context will be used.
- * @language: language tag used to determine which script to get the metrics
- *            for. %NULL means that the language tag from the context will
- *            be used. If no language tag is set on the context, metrics
- *            for the default language (as determined by
- *            pango_language_get_default()) will be returned.
+ * @desc: (allow-none): a #PangoFontDescription structure.  %NULL means that the
+ *            font description from the context will be used.
+ * @language: (allow-none): language tag used to determine which script to get
+ *            the metrics for. %NULL means that the language tag from the context
+ *            will be used. If no language tag is set on the context, metrics
+ *            for the default language (as determined by pango_language_get_default())
+ *            will be returned.
  *
  * Get overall metric information for a particular font
  * description.  Since the metrics may be substantially different for

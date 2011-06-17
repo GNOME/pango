@@ -167,7 +167,7 @@ static const gboolean compose_table[4][4] = {
 #define	is_composible(cur_wc, nxt_wc)	(compose_table[char_type_table[ucs2iso8859_8 (cur_wc)]]\
 						      [char_type_table[ucs2iso8859_8 (nxt_wc)]])
 
-G_CONST_RETURN char *
+const char *
 hebrew_shaper_get_next_cluster(const char      *text,
 			       gint		length,
 			       gunichar        *cluster,

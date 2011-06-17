@@ -119,6 +119,15 @@ has no user-visible fields.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_layout_get_character_count ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_layout_set_markup ##### -->
 <para>
 
@@ -462,6 +471,16 @@ The #GObject type for #PangoAlignment.
 @layout: 
 @attrs: 
 @n_attrs: 
+
+
+<!-- ##### FUNCTION pango_layout_get_log_attrs_readonly ##### -->
+<para>
+
+</para>
+
+@layout: 
+@n_attrs: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_layout_index_to_pos ##### -->
@@ -826,12 +845,6 @@ Routines for rendering PangoLayout objects are provided in
 code specific to each rendering system.
 </para>
 
-@layout: the parent layout for this line
-@start_index: the start of the line as byte index into @layout->text
-@length: the length of the line in bytes
-@runs: a list containing the runs of the line in visual order
-@is_paragraph_start: %TRUE if this is the first line of the paragraph
-@resolved_dir: the resolved #PangoDirection of the line
 
 <!-- ##### TYPEDEF PangoLayoutRun ##### -->
 <para>

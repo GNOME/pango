@@ -24,45 +24,14 @@
 #include "pango-ot-private.h"
 #include "pango-impl-utils.h"
 
-static void pango_ot_ruleset_class_init (GObjectClass   *object_class);
-static void pango_ot_ruleset_init       (PangoOTRuleset *ruleset);
 static void pango_ot_ruleset_finalize   (GObject        *object);
 
-static GObjectClass *parent_class;
-
-GType
-pango_ot_ruleset_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (G_UNLIKELY (!object_type))
-    {
-      const GTypeInfo object_info =
-      {
-	sizeof (PangoOTRulesetClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc)pango_ot_ruleset_class_init,
-	NULL,           /* class_finalize */
-	NULL,           /* class_data */
-	sizeof (PangoOTRuleset),
-	0,              /* n_preallocs */
-	(GInstanceInitFunc)pango_ot_ruleset_init,
-	NULL            /* value_table */
-      };
-
-      object_type = g_type_register_static (G_TYPE_OBJECT,
-					    I_("PangoOTRuleset"),
-					    &object_info, 0);
-    }
-
-  return object_type;
-}
+G_DEFINE_TYPE (PangoOTRuleset, pango_ot_ruleset, G_TYPE_OBJECT);
 
 static void
-pango_ot_ruleset_class_init (GObjectClass *object_class)
+pango_ot_ruleset_class_init (PangoOTRulesetClass *klass)
 {
-  parent_class = g_type_class_peek_parent (object_class);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
   object_class->finalize = pango_ot_ruleset_finalize;
 }
@@ -86,7 +55,7 @@ pango_ot_ruleset_finalize (GObject *object)
   if (ruleset->info)
     g_object_remove_weak_pointer (G_OBJECT (ruleset->info), (gpointer *)(void *)&ruleset->info);
 
-  parent_class->finalize (object);
+  G_OBJECT_CLASS (pango_ot_ruleset_parent_class)->finalize (object);
 }
 
 /**
@@ -107,7 +76,7 @@ pango_ot_ruleset_finalize (GObject *object)
  *
  * Since: 1.18
  **/
-G_CONST_RETURN PangoOTRuleset *
+const PangoOTRuleset *
 pango_ot_ruleset_get_for_description (PangoOTInfo                     *info,
 				      const PangoOTRulesetDescription *desc)
 {

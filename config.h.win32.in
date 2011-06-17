@@ -9,7 +9,9 @@
 /* #undef HAVE_CAIRO_ATSUI */
 
 /* Whether Cairo can use FreeType for fonts */
+#ifndef PANGO_VISUALC_NO_FC
 #define HAVE_CAIRO_FREETYPE 1
+#endif
 
 /* Whether Cairo has PDF support */
 #define HAVE_CAIRO_PDF 1
@@ -37,7 +39,9 @@
 /* #undef HAVE_FLOCKFILE */
 
 /* Have FreeType 2 library */
+#ifndef PANGO_VISUALC_NO_FC
 #define HAVE_FREETYPE 1
+#endif
 
 /* Define to 1 if you have the `getpagesize' function. */
 /* #undef HAVE_GETPAGESIZE */
@@ -55,7 +59,9 @@
 /* #undef HAVE_NDIR_H */
 
 /* Define to 1 if you have the <stdint.h> header file. */
-/* #undef HAVE_STDINT_H */
+#if (_MSC_VER >= 1600)
+#define HAVE_STDINT_H 1
+#endif
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #define HAVE_STDLIB_H 1
@@ -115,7 +121,7 @@
 #define PACKAGE_NAME "pango"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "pango @PANGO_VERSION"
+#define PACKAGE_STRING "pango @PANGO_VERSION@"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "pango"
@@ -130,7 +136,7 @@
 #define PANGO_INTERFACE_AGE @PANGO_INTERFACE_AGE@
 
 /* PANGO major version */
-#define PANGO_VERSION_MAJOR @PANEG_VERSION_MAJOR@
+#define PANGO_VERSION_MAJOR @PANGO_VERSION_MAJOR@
 
 /* PANGO micro version */
 #define PANGO_VERSION_MICRO @PANGO_VERSION_MICRO@
@@ -148,4 +154,4 @@
 #define VERSION "@PANGO_VERSION@"
 
 /* Define to 1 if the X Window System is missing or not being used. */
-/* #undef X_DISPLAY_MISSING */
+#define X_DISPLAY_MISSING 1

@@ -1,3 +1,63 @@
+Overview of changes between 1.29.1 and 1.29.3
+=============================================
+- Minor fix in 1.29.1 tarball
+
+Overview of changes between 1.28.4 and 1.29.1
+=============================================
+- Lots of introspection markup added
+- Misc fixes
+
+Overview of changes between 1.28.3 and 1.28.4
+=============================================
+- Various introspection annotation fixes
+- Build fixes
+- Require glib >= 2.24.0
+- Bugs fixed:
+    Bug 636348 - Hex boxes are incorrectly scaled with non identity cairo scale
+    Bug 639882 - Heap corruption in font parsing with FreeType2 backend
+
+Overview of changes between 1.28.2 and 1.28.3
+=============================================
+- Bugs fixed:
+    Bug 630857 - introspection: Use --include-uninstalled
+
+Overview of changes between 1.28.1 and 1.28.2
+=============================================
+- Reduce DLL hijack risk and simplify code in basic-win32 module
+- Improve performance on Windows especially for non-Latin scripts
+- Bugs fixed:
+    Bug 628497 - Crash in pango_layout_line_get_extents at pango-layout.c
+    Bug 626966 - SIGFPE _hb_sanitize_array
+    Bug 629632 - configure bug
+    Bug 625807 - approximate character width is 0 on pangoft2
+
+Overview of changes between 1.28.0 and 1.28.1
+=============================================
+- pango-view now accepts --margin
+- Various HarfBuzz bug fixes
+- Build fixes
+- Bugs fixed:
+    Bug 582698 - Support CSS-style margin specification
+    Bug 621612 - VPATH build fix
+    Bug 605870 - Incorrect shaping for Syriac
+    Bug 457990 - font metrics are not converted to user space in cairo backend
+    Bug 613015 - [HB] Does not sanitize Device tables referenced from ValueRecords
+
+Overview of changes between 1.27.1 and 1.28.0
+=============================================
+- [HB] Fix leak when duplicating blob
+- Misc bug fixes
+- Bugs fixed:
+    Bug 611033 - Layout using ATSUI fontmap treats absolute font sizes a...
+    Bug 605655 - Pango 1.26.2 introduces kerning bug
+    Bug 611229 - Pango reads from uninitialized memory
+    Bug 594101 - [Indic] needed character class data updates to support unicode 5.1
+    Bug 345066 - backspace changes independent indic characters
+    Bug 609326 - Complex script shaping failed in the FT2 backend on Windows
+    Bug 604128 - Applications crash when displaying Hebrew characters
+    Bug 608923 - Incorrect/broken ligatures on MacOS
+    Bug 610791 - checks fail for unused documented symbols
+
 Overview of changes between 1.26.2 and 1.27.1
 =============================================
 - Enable introspection again

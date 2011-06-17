@@ -26,7 +26,11 @@
 #include "pango-impl-utils.h"
 
 #if defined (HAVE_CAIRO_ATSUI)
-#  include "pangocairo-atsui.h"
+#  if defined (HAVE_CORE_TEXT)
+#    include "pangocairo-coretext.h"
+#  else
+#    include "pangocairo-atsui.h"
+#  endif
 #endif
 #if defined (HAVE_CAIRO_WIN32)
 #  include "pangocairo-win32.h"
@@ -35,35 +39,13 @@
 #  include "pangocairo-fc.h"
 #endif
 
-GType
-pango_cairo_font_map_get_type (void)
+
+typedef PangoCairoFontMapIface PangoCairoFontMapInterface;
+G_DEFINE_INTERFACE (PangoCairoFontMap, pango_cairo_font_map, PANGO_TYPE_FONT_MAP)
+
+static void
+pango_cairo_font_map_default_init (PangoCairoFontMapIface *iface)
 {
-  static GType cairo_font_map_type = 0;
-
-  if (! cairo_font_map_type)
-    {
-      const GTypeInfo cairo_font_map_info =
-      {
-	sizeof (PangoCairoFontMapIface), /* class_size */
-	NULL,           /* base_init */
-	NULL,		/* base_finalize */
-	NULL,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	0,
-	0,
-	NULL,
-	NULL
-      };
-
-      cairo_font_map_type =
-	g_type_register_static (G_TYPE_INTERFACE, I_("PangoCairoFontMap"),
-				&cairo_font_map_info, 0);
-
-      g_type_interface_add_prerequisite (cairo_font_map_type, PANGO_TYPE_FONT_MAP);
-    }
-
-  return cairo_font_map_type;
 }
 
 /**
@@ -80,8 +62,8 @@ pango_cairo_font_map_get_type (void)
  * You generally should only use the #PangoFontMap and
  * #PangoCairoFontMap interfaces on the returned object.
  *
- * Return value: the newly allocated #PangoFontMap, which should
- *               be freed with g_object_unref().
+ * Return value: (transfer full): the newly allocated #PangoFontMap,
+ *               which should be freed with g_object_unref().
  *
  * Since: 1.10
  **/
@@ -92,7 +74,11 @@ pango_cairo_font_map_new (void)
   g_type_init ();
 
 #if defined(HAVE_CAIRO_ATSUI)
+#if defined(HAVE_CORE_TEXT)
+  return g_object_new (PANGO_TYPE_CAIRO_CORE_TEXT_FONT_MAP, NULL);
+#else
   return g_object_new (PANGO_TYPE_CAIRO_ATSUI_FONT_MAP, NULL);
+#endif
 #elif defined(HAVE_CAIRO_WIN32)
   return g_object_new (PANGO_TYPE_CAIRO_WIN32_FONT_MAP, NULL);
 #elif defined(HAVE_CAIRO_FREETYPE)
@@ -114,10 +100,10 @@ pango_cairo_font_map_new (void)
  * or in fact in most of those cases, just use
  * @pango_cairo_font_map_get_default().
  *
- * Return value: the newly allocated #PangoFontMap of suitable type
- *               which should be freed with g_object_unref(),
- *               or %NULL if the requested cairo font backend is
- *               not supported / compiled in.
+ * Return value: (transfer full) : the newly allocated #PangoFontMap
+ *               of suitable type which should be freed with
+ *               g_object_unref(), or %NULL if the requested cairo
+ *               font backend is not supported / compiled in.
  *
  * Since: 1.18
  **/
@@ -131,7 +117,11 @@ pango_cairo_font_map_new_for_font_type (cairo_font_type_t fonttype)
   {
 #if defined(HAVE_CAIRO_ATSUI)
     case CAIRO_FONT_TYPE_QUARTZ:
+#if defined(HAVE_CORE_TEXT)
+      return g_object_new (PANGO_TYPE_CAIRO_CORE_TEXT_FONT_MAP, NULL);
+#else
       return g_object_new (PANGO_TYPE_CAIRO_ATSUI_FONT_MAP, NULL);
+#endif
 #endif
 #if defined(HAVE_CAIRO_WIN32)
     case CAIRO_FONT_TYPE_WIN32:
@@ -163,8 +153,8 @@ static PangoFontMap *default_font_map = NULL;
  * change the Cairo font backend that the default fontmap
  * uses for example.
  *
- * Return value: the default Cairo fontmap for Pango. This
- *  object is owned by Pango and must not be freed.
+ * Return value: (transfer none): the default Cairo fontmap
+ *  for Pango. This object is owned by Pango and must not be freed.
  *
  * Since: 1.10
  **/
@@ -250,7 +240,7 @@ pango_cairo_font_map_get_resolution (PangoCairoFontMap *fontmap)
 }
 
 /**
- * pango_cairo_font_map_create_context:
+ * pango_cairo_font_map_create_context: (skip)
  * @fontmap: a #PangoCairoFontMap
  *
  * Create a #PangoContext for the given fontmap.

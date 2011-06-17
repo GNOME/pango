@@ -245,7 +245,7 @@ pango_language_get_default (void)
 
 /**
  * pango_language_from_string:
- * @language: a string representing a language tag, or %NULL
+ * @language: (allow-none): a string representing a language tag, or %NULL
  *
  * Take a RFC-3066 format language tag as a string and convert it to a
  * #PangoLanguage pointer that can be efficiently copied (copy the
@@ -311,7 +311,7 @@ pango_language_from_string (const char *language)
  * Returns: a string representing the language tag.  This is owned by
  *          Pango and should not be freed.
  */
-G_CONST_RETURN char *
+const char *
 (pango_language_to_string) (PangoLanguage *language)
 {
   return pango_language_to_string (language);
@@ -523,7 +523,7 @@ static const LangInfo lang_texts[] = {
  * Return value: the sample string. This value is owned by Pango
  *   and should not be freed.
  **/
-G_CONST_RETURN char *
+const char *
 pango_language_get_sample_string (PangoLanguage *language)
 {
   const LangInfo *lang_info;
@@ -553,8 +553,9 @@ pango_language_get_sample_string (PangoLanguage *language)
 
 /**
  * pango_language_get_scripts:
- * @language: a #PangoLanguage, or %NULL
- * @num_scripts: location to return number of scripts, or %NULL
+ * @language: (allow-none): a #PangoLanguage, or %NULL
+ * @num_scripts: (out caller-allocates) (allow-none): location to return number of scripts,
+ *            or %NULL
  *
  * Determines the scripts used to to write @language.
  * If nothing is known about the language tag @language,
@@ -584,7 +585,7 @@ pango_language_get_sample_string (PangoLanguage *language)
  
  * Since: 1.22
  **/
-G_CONST_RETURN PangoScript *
+const PangoScript *
 pango_language_get_scripts (PangoLanguage *language,
 			    int           *num_scripts)
 {

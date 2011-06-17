@@ -82,13 +82,13 @@ gboolean pango_parse_stretch (const char   *str,
  * stored in the registry). The returned string should not be
  * g_free'd.
  */
-G_CONST_RETURN char *   pango_get_sysconf_subdirectory (void) G_GNUC_PURE;
+const char *   pango_get_sysconf_subdirectory (void) G_GNUC_PURE;
 
 /* Ditto for LIBDIR/pango. On Win32, use the same Pango
  * installation directory. This returned string should not be
  * g_free'd either.
  */
-G_CONST_RETURN char *   pango_get_lib_subdirectory (void) G_GNUC_PURE;
+const char *   pango_get_lib_subdirectory (void) G_GNUC_PURE;
 
 #endif /* PANGO_ENABLE_BACKEND */
 
@@ -131,12 +131,12 @@ gboolean pango_is_zero_width (gunichar ch) G_GNUC_CONST;
 int pango_version (void) G_GNUC_CONST;
 
 /* Return run-time Pango version as an string */
-G_CONST_RETURN char * pango_version_string (void) G_GNUC_CONST;
+const char * pango_version_string (void) G_GNUC_CONST;
 
 /* Check that run-time Pango is as new as required */
-G_CONST_RETURN char * pango_version_check (int required_major,
-					   int required_minor,
-					   int required_micro) G_GNUC_CONST;
+const char * pango_version_check (int required_major,
+                                  int required_minor,
+                                  int required_micro) G_GNUC_CONST;
 
 G_END_DECLS
 

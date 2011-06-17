@@ -168,12 +168,6 @@ horizontal origin.
 
 </para>
 
-@xx: 
-@xy: 
-@yx: 
-@yy: 
-@x0: 
-@y0: 
 
 <!-- ##### MACRO PANGO_TYPE_MATRIX ##### -->
 <para>
@@ -395,11 +389,6 @@ The storage for the glyph information is owned
 by the structure which simplifies memory management.
 </para>
 
-@num_glyphs: the number of glyphs in the string.
-@glyphs: an array of #PangoGlyphInfo structures of length <structfield>num_glyphs</structfield>.
-@log_clusters: for each glyph, byte index of the starting character for the
-cluster. The indices are relative to the start of the text
-corresponding to the PangoGlyphString.
 
 <!-- ##### STRUCT PangoGlyphItem ##### -->
 <para>
@@ -410,10 +399,6 @@ of shaping text with #PangoLayout is a list of #PangoLayoutLine,
 each of which contains a list of #PangoGlyphItem.
 </para>
 
-@item: a #PangoItem structure that provides information
-       about a segment of text.
-@glyphs: the glyphs obtained by shaping the text
-         corresponding to @item.
 
 <!-- ##### STRUCT PangoGlyphItemIter ##### -->
 <para>
@@ -457,14 +442,6 @@ None of the members of a #PangoGlyphItemIter should be modified manually.
 
 </para>
 
-@glyph_item: the #PangoGlyphItem this iterator iterates over
-@text: the UTF-8 text that @glyph_item refers to
-@start_glyph: starting glyph of the cluster
-@start_index: starting text index of the cluster
-@start_char: starting number of characters of the cluster
-@end_glyph: ending glyph of the cluster
-@end_index: ending text index of the cluster
-@end_char: ending number of characters of the cluster
 @Since: 1.22
 
 <!-- ##### MACRO PANGO_TYPE_GLYPH_STRING ##### -->

@@ -442,6 +442,7 @@ pango_layout_context_changed
 
 pango_layout_set_text
 pango_layout_get_text
+pango_layout_get_character_count
 pango_layout_set_markup
 pango_layout_set_markup_with_accel
 pango_layout_set_attributes
@@ -481,6 +482,7 @@ PANGO_TYPE_ALIGNMENT
 
 pango_layout_get_unknown_glyphs_count
 pango_layout_get_log_attrs
+pango_layout_get_log_attrs_readonly
 
 pango_layout_index_to_pos
 pango_layout_index_to_line_x
@@ -911,6 +913,48 @@ PangoCairoATSUIFont
 PangoCairoATSUIFontClass
 pango_atsui_font_get_type
 pango_cairo_atsui_font_get_type
+</SECTION>
+
+<SECTION>
+<TITLE>CoreText Fonts</TITLE>
+<FILE>coretext-fonts</FILE>
+PANGO_RENDER_TYPE_CORE_TEXT
+pango_core_text_font_get_ctfont
+<SUBSECTION Standard>
+PANGO_CAIRO_CORE_TEXT_FONT
+PANGO_CAIRO_CORE_TEXT_FONT_CLASS
+PANGO_CAIRO_CORE_TEXT_FONT_GET_CLASS
+PANGO_CAIRO_CORE_TEXT_FONT_MAP
+PANGO_CORE_TEXT_FONT
+PANGO_CORE_TEXT_FONT_CLASS
+PANGO_CORE_TEXT_FONT_GET_CLASS
+PANGO_CORE_TEXT_FONT_MAP
+PANGO_CORE_TEXT_FONT_MAP_CLASS
+PANGO_CORE_TEXT_FONT_MAP_GET_CLASS
+PANGO_CORE_TEXT_IS_FONT_MAP
+PANGO_IS_CAIRO_CORE_TEXT_FONT_CLASS
+PANGO_IS_CAIRO_CORE_TEXT_FONT_MAP
+PANGO_IS_CORE_TEXT_FONT
+PANGO_IS_CORE_TEXT_FONT_CLASS
+PANGO_IS_CORE_TEXT_FONT_MAP_CLASS
+PANGO_TYPE_CAIRO_CORE_TEXT_FONT
+PANGO_TYPE_CAIRO_CORE_TEXT_FONT_MAP
+PANGO_TYPE_CORE_TEXT_FONT
+PANGO_TYPE_CORE_TEXT_FONT_MAP
+PangoCairoCoreTextFont
+PangoCairoCoreTextFontClass
+PangoCairoCoreTextFontMap
+PangoCoreTextFace
+PangoCoreTextFamily
+PangoCoreTextFont
+PangoCoreTextFontClass
+PangoCoreTextFontMap
+PangoCoreTextFontMapClass
+PangoCoreTextFontPrivate
+pango_cairo_core_text_font_get_type
+pango_cairo_core_text_font_map_get_type
+pango_core_text_font_get_type
+pango_core_text_font_map_get_type
 </SECTION>
 
 <SECTION>

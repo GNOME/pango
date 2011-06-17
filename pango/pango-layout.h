@@ -103,6 +103,8 @@ void           pango_layout_set_text       (PangoLayout    *layout,
 					    int             length);
 const char    *pango_layout_get_text       (PangoLayout    *layout);
 
+gint           pango_layout_get_character_count (PangoLayout *layout);
+
 void           pango_layout_set_markup     (PangoLayout    *layout,
 					    const char     *markup,
 					    int             length);
@@ -116,7 +118,7 @@ void           pango_layout_set_markup_with_accel (PangoLayout    *layout,
 void           pango_layout_set_font_description (PangoLayout                *layout,
 						  const PangoFontDescription *desc);
 
-G_CONST_RETURN PangoFontDescription *pango_layout_get_font_description (PangoLayout *layout);
+const PangoFontDescription *pango_layout_get_font_description (PangoLayout *layout);
 
 void           pango_layout_set_width            (PangoLayout                *layout,
 						  int                         width);
@@ -165,6 +167,9 @@ void     pango_layout_context_changed (PangoLayout    *layout);
 void     pango_layout_get_log_attrs (PangoLayout    *layout,
 				     PangoLogAttr  **attrs,
 				     gint           *n_attrs);
+
+const PangoLogAttr *pango_layout_get_log_attrs_readonly (PangoLayout *layout,
+							 gint        *n_attrs);
 
 void     pango_layout_index_to_pos         (PangoLayout    *layout,
 					    int             index_,

@@ -106,14 +106,10 @@ to_device (PangoMatrix *matrix,
 
 G_DEFINE_ABSTRACT_TYPE (PangoRenderer, pango_renderer, G_TYPE_OBJECT)
 
-static GObjectClass *parent_class;
-
 static void
 pango_renderer_class_init (PangoRendererClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-
-  parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 
   klass->draw_glyphs = pango_renderer_default_draw_glyphs;
   klass->draw_glyph_item = pango_renderer_default_draw_glyph_item;
@@ -143,7 +139,7 @@ pango_renderer_finalize (GObject *gobject)
   if (renderer->matrix)
     pango_matrix_free (renderer->matrix);
 
-  parent_class->finalize (gobject);
+  G_OBJECT_CLASS (pango_renderer_parent_class)->finalize (gobject);
 }
 
 /**
@@ -676,7 +672,7 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
 /**
  * pango_renderer_draw_glyph_item:
  * @renderer: a #PangoRenderer
- * @text: the UTF-8 text that @glyph_item refers to, or %NULL
+ * @text: (allow-none): the UTF-8 text that @glyph_item refers to, or %NULL
  * @glyph_item: a #PangoGlyphItem
  * @x: X position of left edge of baseline, in user space coordinates
  *   in Pango units.
@@ -1145,7 +1141,7 @@ pango_renderer_deactivate (PangoRenderer *renderer)
  * pango_renderer_set_color:
  * @renderer: a #PangoRenderer
  * @part: the part to change the color of
- * @color: the new color or %NULL to unset the current color
+ * @color: (allow-none): the new color or %NULL to unset the current color
  *
  * Sets the color for part of the rendering.
  *
@@ -1321,7 +1317,7 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
 /**
  * pango_renderer_set_matrix:
  * @renderer: a #PangoRenderer
- * @matrix: a #PangoMatrix, or %NULL to unset any existing matrix.
+ * @matrix: (allow-none): a #PangoMatrix, or %NULL to unset any existing matrix.
  *  (No matrix set is the same as setting the identity matrix.)
  *
  * Sets the transformation matrix that will be applied when rendering.
@@ -1352,7 +1348,7 @@ pango_renderer_set_matrix (PangoRenderer     *renderer,
  *
  * Since: 1.8
  **/
-G_CONST_RETURN PangoMatrix *
+const PangoMatrix *
 pango_renderer_get_matrix (PangoRenderer *renderer)
 {
   g_return_val_if_fail (PANGO_IS_RENDERER (renderer), NULL);
@@ -1371,7 +1367,7 @@ pango_renderer_get_matrix (PangoRenderer *renderer)
  * The returned layout should not be modified while still being
  * rendered.
  *
- * Return value: the layout, or %NULL if no layout is being
+ * Return value: (transfer none): the layout, or %NULL if no layout is being
  *  rendered using @renderer at this time.
  *
  * Since: 1.20

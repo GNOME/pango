@@ -188,7 +188,7 @@ pango_matrix_concat (PangoMatrix       *matrix,
 
 /**
  * pango_matrix_get_font_scale_factor:
- * @matrix: a #PangoMatrix, may be %NULL
+ * @matrix: (allow-none): a #PangoMatrix, may be %NULL
  *
  * Returns the scale factor of a matrix on the height of the font.
  * That is, the scale factor in the direction perpendicular to the
@@ -244,8 +244,8 @@ pango_matrix_get_font_scale_factor (const PangoMatrix *matrix)
 /**
  * pango_matrix_transform_distance:
  * @matrix: a #PangoMatrix, or %NULL
- * @dx: in/out X component of a distance vector
- * @dy: yn/out Y component of a distance vector
+ * @dx: (inout): in/out X component of a distance vector
+ * @dy: (inout): in/out Y component of a distance vector
  *
  * Transforms the distance vector (@dx,@dy) by @matrix. This is
  * similar to pango_matrix_transform_point() except that the translation
@@ -284,8 +284,8 @@ pango_matrix_transform_distance (const PangoMatrix *matrix,
 /**
  * pango_matrix_transform_point:
  * @matrix: a #PangoMatrix, or %NULL
- * @x: in/out X position
- * @y: in/out Y position
+ * @x: (inout): in/out X position
+ * @y: (inout): in/out Y position
  *
  * Transforms the point (@x, @y) by @matrix.
  *
@@ -308,7 +308,7 @@ pango_matrix_transform_point (const PangoMatrix *matrix,
 /**
  * pango_matrix_transform_rectangle:
  * @matrix: a #PangoMatrix, or %NULL
- * @rect: in/out bounding box in Pango units, or %NULL
+ * @rect: (inout) (allow-none): in/out bounding box in Pango units, or %NULL
  *
  * First transforms @rect using @matrix, then calculates the bounding box
  * of the transformed rectangle.  The rectangle should be in Pango units.
@@ -388,7 +388,7 @@ pango_matrix_transform_rectangle (const PangoMatrix *matrix,
 /**
  * pango_matrix_transform_pixel_rectangle:
  * @matrix: a #PangoMatrix, or %NULL
- * @rect: in/out bounding box in device units, or %NULL
+ * @rect: (inout) (allow-none): in/out bounding box in device units, or %NULL
  *
  * First transforms the @rect using @matrix, then calculates the bounding box
  * of the transformed rectangle.  The rectangle should be in device units

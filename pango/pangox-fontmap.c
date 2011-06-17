@@ -41,6 +41,7 @@
 #include "pangox-private.h"
 
 typedef struct _PangoXFamily       PangoXFamily;
+typedef struct _PangoXFamilyClass  PangoXFamilyClass;
 typedef struct _PangoXSizeInfo     PangoXSizeInfo;
 
 /* Number of freed fonts */
@@ -77,6 +78,11 @@ struct _PangoXFamily
 
   char *family_name;
   GSList *font_entries;
+};
+
+struct _PangoXFamilyClass
+{
+  PangoFontFamilyClass parent_class;
 };
 
 struct _PangoXFace
@@ -133,9 +139,6 @@ static const struct {
   { "condensed",     PANGO_STRETCH_CONDENSED },
 };
 
-static void     pango_x_font_map_init       (PangoXFontMap      *fontmap);
-static void     pango_x_font_map_class_init (PangoFontMapClass *class);
-
 static void       pango_x_font_map_finalize      (GObject                      *object);
 static PangoFont *pango_x_font_map_load_font     (PangoFontMap                 *fontmap,
 						  PangoContext                 *context,
@@ -171,37 +174,7 @@ GType           pango_x_family_get_type (void);
 
 GType           pango_x_face_get_type (void);
 
-
-static PangoFontClass *font_map_parent_class;	/* Parent class structure for PangoXFontMap */
-
-GType
-pango_x_font_map_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (G_UNLIKELY (!object_type))
-    {
-      const GTypeInfo object_info =
-      {
-	sizeof (PangoFontMapClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) pango_x_font_map_class_init,
-	NULL,           /* class_finalize */
-	NULL,           /* class_data */
-	sizeof (PangoXFontMap),
-	0,              /* n_preallocs */
-	(GInstanceInitFunc) pango_x_font_map_init,
-	NULL            /* value_table */
-      };
-
-      object_type = g_type_register_static (PANGO_TYPE_FONT_MAP,
-					    I_("PangoXFontMap"),
-					    &object_info, 0);
-    }
-
-  return object_type;
-}
+G_DEFINE_TYPE (PangoXFontMap, pango_x_font_map, PANGO_TYPE_FONT_MAP);
 
 static void
 pango_x_font_map_init (PangoXFontMap *xfontmap)
@@ -214,16 +187,16 @@ pango_x_font_map_init (PangoXFontMap *xfontmap)
 }
 
 static void
-pango_x_font_map_class_init (PangoFontMapClass *class)
+pango_x_font_map_class_init (PangoXFontMapClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
-
-  font_map_parent_class = g_type_class_peek_parent (class);
+  PangoFontMapClass *font_map_class = PANGO_FONT_MAP_CLASS (class);
 
   object_class->finalize = pango_x_font_map_finalize;
-  class->load_font = pango_x_font_map_load_font;
-  class->list_families = pango_x_font_map_list_families;
-  class->shape_engine_type = PANGO_RENDER_TYPE_X;
+
+  font_map_class->load_font = pango_x_font_map_load_font;
+  font_map_class->list_families = pango_x_font_map_list_families;
+  font_map_class->shape_engine_type = PANGO_RENDER_TYPE_X;
 }
 
 /*
@@ -393,7 +366,7 @@ pango_x_font_map_finalize (GObject *object)
 
   fontmaps = g_list_remove (fontmaps, xfontmap);
 
-  G_OBJECT_CLASS (font_map_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango_x_font_map_parent_class)->finalize (object);
 }
 
 static void
@@ -1441,7 +1414,7 @@ pango_x_fontmap_atom_from_name (PangoFontMap *fontmap,
 }
 
 
-G_CONST_RETURN char *
+const char *
 pango_x_fontmap_name_from_atom (PangoFontMap *fontmap,
 				Atom          atom)
 {
@@ -1494,40 +1467,19 @@ pango_x_face_get_face_name (PangoFontFace *face)
   return xface->face_name;
 }
 
+typedef PangoFontFaceClass PangoXFaceClass;
+G_DEFINE_TYPE (PangoXFace, pango_x_face, PANGO_TYPE_FONT_FACE);
+
 static void
-pango_x_face_class_init (PangoFontFaceClass *class)
+pango_x_face_class_init (PangoXFaceClass *class)
 {
   class->describe = pango_x_face_describe;
   class->get_face_name = pango_x_face_get_face_name;
 }
 
-GType
-pango_x_face_get_type (void)
+static void
+pango_x_face_init (PangoXFace *self)
 {
-  static GType object_type = 0;
-
-  if (G_UNLIKELY (!object_type))
-    {
-      const GTypeInfo object_info =
-      {
-	sizeof (PangoFontFaceClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) pango_x_face_class_init,
-	NULL,           /* class_finalize */
-	NULL,           /* class_data */
-	sizeof (PangoXFace),
-	0,              /* n_preallocs */
-	(GInstanceInitFunc) NULL,
-	NULL            /* value_table */
-      };
-
-      object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
-					    I_("PangoXFace"),
-					    &object_info, 0);
-    }
-
-  return object_type;
 }
 
 /* Cut and paste here to avoid an inter-module dependency */
@@ -1645,7 +1597,7 @@ pango_x_family_list_faces (PangoFontFamily  *family,
     }
 }
 
-static G_CONST_RETURN char *
+static const char *
 pango_x_family_get_name (PangoFontFamily  *family)
 {
   PangoXFamily *xfamily = PANGO_X_FAMILY (family);
@@ -1653,39 +1605,18 @@ pango_x_family_get_name (PangoFontFamily  *family)
   return xfamily->family_name;
 }
 
+G_DEFINE_TYPE (PangoXFamily, pango_x_family, PANGO_TYPE_FONT_FAMILY);
+
 static void
-pango_x_family_class_init (PangoFontFamilyClass *class)
+pango_x_family_class_init (PangoXFamilyClass *klass)
 {
-  class->list_faces = pango_x_family_list_faces;
-  class->get_name = pango_x_family_get_name;
+  PangoFontFamilyClass *font_family_class = PANGO_FONT_FAMILY_CLASS (klass);
+
+  font_family_class->list_faces = pango_x_family_list_faces;
+  font_family_class->get_name = pango_x_family_get_name;
 }
 
-GType
-pango_x_family_get_type (void)
+static void
+pango_x_family_init (PangoXFamily *self)
 {
-  static GType object_type = 0;
-
-  if (G_UNLIKELY (!object_type))
-    {
-      const GTypeInfo object_info =
-      {
-	sizeof (PangoFontFamilyClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) pango_x_family_class_init,
-	NULL,           /* class_finalize */
-	NULL,           /* class_data */
-	sizeof (PangoXFamily),
-	0,              /* n_preallocs */
-	(GInstanceInitFunc) NULL,
-	NULL            /* value_table */
-      };
-
-      object_type = g_type_register_static (PANGO_TYPE_FONT_FAMILY,
-					    I_("PangoXFamily"),
-					    &object_info, 0);
-    }
-
-  return object_type;
 }
-

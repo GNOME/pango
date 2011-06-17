@@ -25,44 +25,19 @@
 #include "pango-impl-utils.h"
 #include FT_TRUETYPE_TABLES_H
 
-static void pango_ot_info_class_init (GObjectClass *object_class);
 static void pango_ot_info_finalize   (GObject *object);
 
-static GObjectClass *parent_class;
+G_DEFINE_TYPE (PangoOTInfo, pango_ot_info, G_TYPE_OBJECT);
 
-GType
-pango_ot_info_get_type (void)
+static void
+pango_ot_info_init (PangoOTInfo *self)
 {
-  static GType object_type = 0;
-
-  if (G_UNLIKELY (!object_type))
-    {
-      const GTypeInfo object_info =
-      {
-	sizeof (PangoOTInfoClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc)pango_ot_info_class_init,
-	NULL,           /* class_finalize */
-	NULL,           /* class_data */
-	sizeof (PangoOTInfo),
-	0,              /* n_preallocs */
-	NULL,           /* init */
-	NULL,           /* value_table */
-      };
-
-      object_type = g_type_register_static (G_TYPE_OBJECT,
-					    I_("PangoOTInfo"),
-					    &object_info, 0);
-    }
-
-  return object_type;
 }
 
 static void
-pango_ot_info_class_init (GObjectClass *object_class)
+pango_ot_info_class_init (PangoOTInfoClass *klass)
 {
-  parent_class = g_type_class_peek_parent (object_class);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
   object_class->finalize = pango_ot_info_finalize;
 }
@@ -75,7 +50,7 @@ pango_ot_info_finalize (GObject *object)
   if (info->hb_face)
     hb_face_destroy (info->hb_face);
 
-  parent_class->finalize (object);
+  G_OBJECT_CLASS (pango_ot_info_parent_class)->finalize (object);
 }
 
 static void

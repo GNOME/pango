@@ -34,11 +34,11 @@ typedef struct _PangoLanguage PangoLanguage;
 GType          pango_language_get_type    (void) G_GNUC_CONST;
 PangoLanguage *pango_language_from_string (const char *language);
 
-G_CONST_RETURN char *pango_language_to_string   (PangoLanguage *language) G_GNUC_CONST;
+const char    *pango_language_to_string   (PangoLanguage *language) G_GNUC_CONST;
 /* For back compat.  Will have to keep indefinitely. */
 #define pango_language_to_string(language) ((const char *)language)
 
-G_CONST_RETURN char *pango_language_get_sample_string (PangoLanguage *language) G_GNUC_CONST;
+const char    *pango_language_get_sample_string (PangoLanguage *language) G_GNUC_CONST;
 PangoLanguage *pango_language_get_default (void) G_GNUC_CONST;
 
 gboolean      pango_language_matches  (PangoLanguage *language,
@@ -48,7 +48,7 @@ gboolean      pango_language_matches  (PangoLanguage *language,
 
 gboolean		    pango_language_includes_script (PangoLanguage *language,
 							    PangoScript    script) G_GNUC_PURE;
-G_CONST_RETURN PangoScript *pango_language_get_scripts	   (PangoLanguage *language,
+const PangoScript          *pango_language_get_scripts	   (PangoLanguage *language,
 							    int           *num_scripts);
 
 G_END_DECLS

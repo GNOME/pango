@@ -97,7 +97,7 @@ pango_attr_type_register (const gchar *name)
  *
  * Since: 1.22
  **/
-G_CONST_RETURN char *
+const char *
 pango_attr_type_get_name (PangoAttrType type)
 {
   const char *result = NULL;
@@ -960,11 +960,11 @@ pango_attr_shape_equal (const PangoAttribute *attr1,
  * @ink_rect:     ink rectangle to assign to each character
  * @logical_rect: logical rectangle to assign to each character
  * @data:         user data pointer
- * @copy_func:    function to copy @data when the attribute
- *                is copied. If %NULL, @data is simply copied
- *                as a pointer.
- * @destroy_func: function to free @data when the attribute
- *                is freed, or %NULL
+ * @copy_func: (allow-none): function to copy @data when the
+ *                attribute is copied. If %NULL, @data is simply
+ *                copied as a pointer.
+ * @destroy_func: (allow-none): function to free @data when the
+ *                attribute is freed, or %NULL
  *
  * Like pango_attr_shape_new(), but a user data pointer is also
  * provided; this pointer can be accessed when later
@@ -1782,9 +1782,9 @@ pango_attr_iterator_get (PangoAttrIterator *iterator,
  *        an attribute in the #PangoAttrList associated with the iterator,
  *        so if you plan to keep it around, you must call:
  *        <literal>pango_font_description_set_family (desc, pango_font_description_get_family (desc))</literal>.
- * @language: if non-%NULL, location to store language tag for item, or %NULL
+ * @language: (allow-none): if non-%NULL, location to store language tag for item, or %NULL
  *            if none is found.
- * @extra_attrs: (element type Pango.Attribute) (transfer full): if non-%NULL,
+ * @extra_attrs: (allow-none) (element-type Pango.Attribute) (transfer full): if non-%NULL,
  *           location in which to store a list of non-font
  *           attributes at the the current position; only the highest priority
  *           value of each attribute will be added to this list. In order
@@ -1931,15 +1931,15 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 /**
  * pango_attr_list_filter:
  * @list: a #PangoAttrList
- * @func: callback function; returns %TRUE if an attribute
- *        should be filtered out.
- * @data: Data to be passed to @func
+ * @func: (scope call) (closure data): callback function; returns %TRUE
+ *        if an attribute should be filtered out.
+ * @data: (closure): Data to be passed to @func
  *
  * Given a #PangoAttrList and callback function, removes any elements
  * of @list for which @func returns %TRUE and inserts them into
  * a new list.
  *
- * Return value: the new #PangoAttrList or %NULL if
+ * Return value: (transfer full): the new #PangoAttrList or %NULL if
  *  no attributes of the given types were found.
  *
  * Since: 1.2

@@ -11,6 +11,7 @@ pango_x_font_cache_free
 pango_x_font_cache_load
 pango_x_font_cache_new
 pango_x_font_cache_unload
+pango_x_font_get_type
 pango_x_font_get_unknown_glyph
 pango_x_font_map_for_display
 pango_x_font_map_get_font_cache

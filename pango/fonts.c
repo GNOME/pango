@@ -155,7 +155,7 @@ pango_font_description_set_family_static (PangoFontDescription *desc,
  *               %NULL if not previously set.  This has the same life-time
  *               as the font description itself and should not be freed.
  **/
-G_CONST_RETURN char *
+const char *
 pango_font_description_get_family (const PangoFontDescription *desc)
 {
   g_return_val_if_fail (desc != NULL, NULL);
@@ -509,7 +509,7 @@ pango_font_description_unset_fields (PangoFontDescription *desc,
 /**
  * pango_font_description_merge:
  * @desc: a #PangoFontDescription
- * @desc_to_merge: the #PangoFontDescription to merge from, or %NULL
+ * @desc_to_merge: (allow-none): the #PangoFontDescription to merge from, or %NULL
  * @replace_existing: if %TRUE, replace fields in @desc with the
  *   corresponding values from @desc_to_merge, even if they
  *   are already exist.
@@ -615,7 +615,7 @@ compute_distance (const PangoFontDescription *a,
 /**
  * pango_font_description_better_match:
  * @desc: a #PangoFontDescription
- * @old_match: a #PangoFontDescription, or %NULL
+ * @old_match: (allow-none): a #PangoFontDescription, or %NULL
  * @new_match: a #PangoFontDescription
  *
  * Determines if the style attributes of @new_match are a closer match
@@ -815,7 +815,8 @@ pango_font_description_free  (PangoFontDescription  *desc)
 
 /**
  * pango_font_descriptions_free:
- * @descs: a pointer to an array of #PangoFontDescription, may be %NULL
+ * @descs: (allow-none) (array length=n_descs) (transfer full): a pointer
+ * to an array of #PangoFontDescription, may be %NULL
  * @n_descs: number of font descriptions in @descs
  *
  * Frees an array of font descriptions.
@@ -1545,10 +1546,10 @@ pango_font_find_shaper (PangoFont     *font,
  * pango_font_get_glyph_extents:
  * @font: a #PangoFont
  * @glyph: the glyph index
- * @ink_rect: rectangle used to store the extents of the glyph as drawn
- *            or %NULL to indicate that the result is not needed.
- * @logical_rect: rectangle used to store the logical extents of the glyph
- *            or %NULL to indicate that the result is not needed.
+ * @ink_rect: (out) (allow-none): rectangle used to store the extents of the glyph
+ *            as drawn or %NULL to indicate that the result is not needed.
+ * @logical_rect: (out) (allow-none): rectangle used to store the logical extents of
+ *            the glyph or %NULL to indicate that the result is not needed.
  *
  * Gets the logical and ink extents of a glyph within a font. The
  * coordinate system for each rectangle has its origin at the
@@ -1592,9 +1593,8 @@ pango_font_get_glyph_extents  (PangoFont      *font,
 /**
  * pango_font_get_metrics:
  * @font: a #PangoFont
- * @language: language tag used to determine which script to get the metrics
- *            for, or %NULL to indicate to get the metrics for the entire
- *            font.
+ * @language: (allow-none): language tag used to determine which script to get the metrics
+ *            for, or %NULL to indicate to get the metrics for the entire font.
  *
  * Gets overall metric information for a font. Since the metrics may be
  * substantially different for different scripts, a language tag can
@@ -1644,7 +1644,8 @@ pango_font_get_metrics (PangoFont        *font,
  * alive.  In most uses this is not an issue as a #PangoContext holds
  * a reference to the font map.
  *
- * Return value: the #PangoFontMap for the font, or %NULL if @font is %NULL.
+ * Return value: (transfer none): the #PangoFontMap for the font, or %NULL
+ *               if @font is %NULL.
  *
  * Since: 1.10
  **/
@@ -1907,7 +1908,7 @@ pango_font_family_init (PangoFontFamily *family G_GNUC_UNUSED)
  * Return value: the name of the family. This string is owned
  *   by the family object and must not be modified or freed.
  **/
-G_CONST_RETURN char *
+const char *
 pango_font_family_get_name (PangoFontFamily  *family)
 {
   g_return_val_if_fail (PANGO_IS_FONT_FAMILY (family), NULL);
@@ -1918,10 +1919,10 @@ pango_font_family_get_name (PangoFontFamily  *family)
 /**
  * pango_font_family_list_faces:
  * @family: a #PangoFontFamily
- * @faces: location to store an array of pointers to #PangoFontFace
+ * @faces: (out) (allow-none) (array length=n_faces): location to store an array of pointers to #PangoFontFace
  *   objects, or %NULL. This array should be freed with g_free()
  *   when it is no longer needed.
- * @n_faces: location to store number of elements in @faces.
+ * @n_faces: (out): location to store number of elements in @faces.
  *
  * Lists the different font faces that make up @family. The faces
  * in a family share a common design, but differ in slant, weight,
@@ -2040,7 +2041,7 @@ pango_font_face_is_synthesized (PangoFontFace  *face)
  * Return value: the face name for the face. This string is
  *   owned by the face object and must not be modified or freed.
  **/
-G_CONST_RETURN char *
+const char *
 pango_font_face_get_face_name (PangoFontFace *face)
 {
   g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);

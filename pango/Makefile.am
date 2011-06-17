@@ -378,6 +378,26 @@ libpangocairo_1_0_la_SOURCES += \
 endif
 
 if HAVE_CAIRO_ATSUI
+if HAVE_CORE_TEXT
+libpangocairo_1_0_la_SOURCES += \
+	modules.h		\
+	module-defs-coretext.c	\
+	pangocoretext.h		\
+	pangocoretext.c		\
+	pangocoretext-private.h	\
+	pangocoretext-fontmap.c	\
+	pangocairo-coretext.h	\
+	pangocairo-coretextfont.c	\
+	pangocairo-coretextfont.h	\
+	pangocairo-coretextfontmap.c
+pangoinclude_HEADERS += pangocoretext.h
+
+libpangocairo_1_0_la_LDFLAGS += -framework CoreFoundation -framework ApplicationServices
+libpangocairo_1_0_la_LIBADD += $(INCLUDED_CORE_TEXT_MODULES)
+# We don't have an CoreText GIR right now, so this is just hypothetical
+PANGOCAIRO_FONT_BACKEND_GI_MODULE = PangoCoreText-1.0
+
+else
 libpangocairo_1_0_la_SOURCES += \
 	modules.h		\
 	module-defs-atsui.c	\
@@ -396,6 +416,7 @@ libpangocairo_1_0_la_LDFLAGS += -framework CoreFoundation -framework Carbon -fra
 libpangocairo_1_0_la_LIBADD += $(INCLUDED_ATSUI_MODULES)
 # We don't have an ATSUI GIR right now, so this is just hypothetical
 PANGOCAIRO_FONT_BACKEND_GI_MODULE = PangoATSUI-1.0
+endif
 endif
 
 pangocairo_introspection_files = \
@@ -598,7 +619,8 @@ MODULE_DEF_FILES = \
 	module-defs-x.c \
 	module-defs-fc.c \
 	module-defs-win32.c \
-	module-defs-atsui.c
+	module-defs-atsui.c \
+	module-defs-coretext.c
 
 $(MODULE_DEF_FILES): $(top_builddir)/config.status
 	$(AM_V_GEN) cd $(top_builddir) && $(SHELL) ./config.status pango/$@

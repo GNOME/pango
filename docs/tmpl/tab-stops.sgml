@@ -68,7 +68,7 @@ The #GObject type for #PangoTabAlign.
 @positions_in_pixels: 
 @first_alignment: 
 @first_position: 
-@Varargs: 
+@...: 
 @Returns: 
 
 

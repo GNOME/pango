@@ -69,10 +69,6 @@ struct _PangoXFontClass
   PangoFontClass parent_class;
 };
 
-static PangoFontClass *parent_class;	/* Parent class structure for PangoXFont */
-
-static void pango_x_font_class_init (PangoXFontClass *class);
-static void pango_x_font_init       (PangoXFont      *xfont);
 static void pango_x_font_dispose    (GObject         *object);
 static void pango_x_font_finalize   (GObject         *object);
 
@@ -224,34 +220,7 @@ pango_x_context_set_funcs  (PangoContext     *context,
   info->free_gc_func = free_gc_func;
 }
 
-static GType
-pango_x_font_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (G_UNLIKELY (!object_type))
-    {
-      const GTypeInfo object_info =
-      {
-	sizeof (PangoXFontClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) pango_x_font_class_init,
-	NULL,           /* class_finalize */
-	NULL,           /* class_data */
-	sizeof (PangoXFont),
-	0,              /* n_preallocs */
-	(GInstanceInitFunc) pango_x_font_init,
-	NULL            /* value_table */
-      };
-
-      object_type = g_type_register_static (PANGO_TYPE_FONT,
-					    I_("PangoXFont"),
-					    &object_info, 0);
-    }
-
-  return object_type;
-}
+G_DEFINE_TYPE (PangoXFont, pango_x_font, PANGO_TYPE_FONT);
 
 static void
 pango_x_font_init (PangoXFont *xfont)
@@ -274,8 +243,6 @@ pango_x_font_class_init (PangoXFontClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontClass *font_class = PANGO_FONT_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
 
   object_class->finalize = pango_x_font_finalize;
   object_class->dispose = pango_x_font_dispose;
@@ -1271,7 +1238,7 @@ pango_x_font_dispose (GObject *object)
   if (!xfont->in_cache && xfont->fontmap)
     pango_x_fontmap_cache_add (xfont->fontmap, xfont);
 
-  G_OBJECT_CLASS (parent_class)->dispose (object);
+  G_OBJECT_CLASS (pango_x_font_parent_class)->dispose (object);
 }
 
 
@@ -1326,7 +1293,7 @@ pango_x_font_finalize (GObject *object)
 
   g_strfreev (xfont->fonts);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango_x_font_parent_class)->finalize (object);
 }
 
 static PangoFontDescription *

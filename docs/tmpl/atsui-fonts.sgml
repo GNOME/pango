@@ -21,29 +21,3 @@ MacOS systems using the ATSUI text rendering subsystem.
 <!-- ##### SECTION Image ##### -->
 
 
-<!-- ##### MACRO PANGO_RENDER_TYPE_ATSUI ##### -->
-<para>
-A string constant identifying the ATSUI renderer. The associated quark (see
-g_quark_from_string()) is used to identify the renderer in pango_find_map().
-</para>
-
-
-
-<!-- ##### FUNCTION pango_atsui_font_get_cgfont ##### -->
-<para>
-
-</para>
-
-@font: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_atsui_font_get_atsfont ##### -->
-<para>
-
-</para>
-
-@font: 
-@Returns: 
-
-

@@ -578,12 +578,6 @@ The #PangoColor structure is used to
 represent a color in an uncalibrated RGB color-space.
 </para>
 
-@red: The red component of the color. This is a value between 0 and 65535, 
-      with 65535 indicating full intensity.
-@green: The green component of the color. This is a value between 0 and 65535, 
-      with 65535 indicating full intensity.
-@blue: The blue component of the color. This is a value between 0 and 65535, 
-      with 65535 indicating full intensity.
 
 <!-- ##### MACRO PANGO_TYPE_COLOR ##### -->
 <para>

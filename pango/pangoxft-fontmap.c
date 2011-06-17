@@ -176,7 +176,7 @@ register_display (Display *display)
  * The fontmap is owned by Pango and will be valid until
  * the display is closed.
  *
- * Return value: a #PangoFontMap object, owned by Pango.
+ * Return value: (transfer none): a #PangoFontMap object, owned by Pango.
  *
  * Since: 1.2
  **/
@@ -310,7 +310,7 @@ _pango_xft_font_map_get_info (PangoFontMap *fontmap,
 }
 
 /**
- * pango_xft_get_context:
+ * pango_xft_get_context: (skip)
  * @display: an X display.
  * @screen: an X screen.
  *

@@ -261,10 +261,10 @@ pango_glyph_string_extents_range (PangoGlyphString *glyphs,
  * pango_glyph_string_extents:
  * @glyphs:   a #PangoGlyphString
  * @font:     a #PangoFont
- * @ink_rect: rectangle used to store the extents of the glyph string as drawn
- *            or %NULL to indicate that the result is not needed.
- * @logical_rect: rectangle used to store the logical extents of the glyph string
- *            or %NULL to indicate that the result is not needed.
+ * @ink_rect: (out) (allow-none): rectangle used to store the extents of the glyph string
+ *            as drawn or %NULL to indicate that the result is not needed.
+ * @logical_rect: (out) (allow-none): rectangle used to store the logical extents of the
+ *            glyph string or %NULL to indicate that the result is not needed.
  *
  * Compute the logical and ink extents of a glyph string. See the documentation
  * for pango_font_get_glyph_extents() for details about the interpretation

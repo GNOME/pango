@@ -32,14 +32,20 @@
 
 static PangoFontMetrics *pango_fontset_real_get_metrics (PangoFontset      *fontset);
 
+
+G_DEFINE_ABSTRACT_TYPE (PangoFontset, pango_fontset, G_TYPE_OBJECT);
+
+static void
+pango_fontset_init (PangoFontset *self)
+{
+}
+
 static void
 pango_fontset_class_init (PangoFontsetClass *class)
 {
   class->get_metrics = pango_fontset_real_get_metrics;
 }
 
-PANGO_DEFINE_TYPE_ABSTRACT (PangoFontset, pango_fontset,
-			    pango_fontset_class_init, NULL, G_TYPE_OBJECT)
 
 /**
  * pango_fontset_get_font:
@@ -49,8 +55,8 @@ PANGO_DEFINE_TYPE_ABSTRACT (PangoFontset, pango_fontset,
  * Returns the font in the fontset that contains the best glyph for the
  * Unicode character @wc.
  *
- * Return value: a #PangoFont. The caller must call g_object_unref when finished
- *          with the font.
+ * Return value: (transfer full): a #PangoFont. The caller must call
+ *          g_object_unref when finished with the font.
  **/
 PangoFont *
 pango_fontset_get_font (PangoFontset  *fontset,
@@ -82,8 +88,8 @@ pango_fontset_get_metrics (PangoFontset  *fontset)
 /**
  * pango_fontset_foreach:
  * @fontset: a #PangoFontset
- * @func: Callback function
- * @data: data to pass to the callback function
+ * @func: (closure data) (scope call): Callback function
+ * @data: (closure): data to pass to the callback function
  *
  * Iterates through all the fonts in a fontset, calling @func for
  * each one. If @func returns %TRUE, that stops the iteration.
@@ -202,7 +208,6 @@ pango_fontset_real_get_metrics (PangoFontset  *fontset)
 #define PANGO_FONTSET_SIMPLE_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONTSET_SIMPLE, PangoFontsetSimpleClass))
 
 static void              pango_fontset_simple_finalize     (GObject                 *object);
-static void              pango_fontset_simple_init         (PangoFontsetSimple      *fontset);
 static PangoFontMetrics *pango_fontset_simple_get_metrics  (PangoFontset            *fontset);
 static PangoLanguage *   pango_fontset_simple_get_language (PangoFontset            *fontset);
 static  PangoFont *      pango_fontset_simple_get_font     (PangoFontset            *fontset,
@@ -225,8 +230,6 @@ struct _PangoFontsetSimpleClass
   PangoFontsetClass parent_class;
 };
 
-static PangoFontsetClass *simple_parent_class;	/* Parent class structure for PangoFontsetSimple */
-
 /**
  * pango_fontset_simple_new:
  * @language: a #PangoLanguage tag
@@ -247,15 +250,17 @@ pango_fontset_simple_new (PangoLanguage *language)
   return fontset;
 }
 
+
+G_DEFINE_TYPE (PangoFontsetSimple, pango_fontset_simple, PANGO_TYPE_FONTSET);
+
 static void
 pango_fontset_simple_class_init (PangoFontsetSimpleClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontsetClass *fontset_class = PANGO_FONTSET_CLASS (class);
 
-  simple_parent_class = g_type_class_peek_parent (class);
-
   object_class->finalize = pango_fontset_simple_finalize;
+
   fontset_class->get_font = pango_fontset_simple_get_font;
   fontset_class->get_metrics = pango_fontset_simple_get_metrics;
   fontset_class->get_language = pango_fontset_simple_get_language;
@@ -269,10 +274,6 @@ pango_fontset_simple_init (PangoFontsetSimple *fontset)
   fontset->coverages = g_ptr_array_new ();
   fontset->language = NULL;
 }
-
-PANGO_DEFINE_TYPE (PangoFontsetSimple, pango_fontset_simple,
-		   pango_fontset_simple_class_init, pango_fontset_simple_init,
-		   PANGO_TYPE_FONTSET)
 
 static void
 pango_fontset_simple_finalize (GObject *object)
@@ -295,7 +296,7 @@ pango_fontset_simple_finalize (GObject *object)
 
   g_ptr_array_free (fontset->coverages, TRUE);
 
-  G_OBJECT_CLASS (simple_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango_fontset_simple_parent_class)->finalize (object);
 }
 
 /**
@@ -344,7 +345,7 @@ pango_fontset_simple_get_metrics (PangoFontset  *fontset)
     return pango_font_get_metrics (PANGO_FONT (g_ptr_array_index(simple->fonts, 0)),
 				   simple->language);
 
-  return PANGO_FONTSET_CLASS (simple_parent_class)->get_metrics (fontset);
+  return PANGO_FONTSET_CLASS (pango_fontset_simple_parent_class)->get_metrics (fontset);
 }
 
 static PangoFont *

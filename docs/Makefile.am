@@ -7,7 +7,7 @@ DOC_MODULE=pango
 DOC_MAIN_SGML_FILE=pango-docs.sgml
 
 # Extra options to supply to gtkdoc-scan
-SCAN_OPTIONS=--deprecated-guards="PANGO_DISABLE_DEPRECATED"
+SCAN_OPTIONS=--deprecated-guards="PANGO_DISABLE_DEPRECATED" --rebuild-types
 
 # The directory containing the source code. Relative to $(srcdir)
 DOC_SOURCE_DIR=../pango
@@ -44,6 +44,24 @@ IGNORE_HFILES=			\
 	pango-ot-private.h	\
 	pango-script-lang-table.h	\
 	pango-language-sample-table.h
+
+if HAVE_CORE_TEXT
+else
+IGNORE_HFILES+=			\
+	pangocoretext.h			\
+	pangocoretext-private.h		\
+	pangocairo-coretext.h		\
+	pangocairo-coretextfont.h
+endif
+
+if HAVE_CAIRO_ATSUI
+else
+IGNORE_HFILES+=			\
+	pangoatsui.h			\
+	pangoatsui-private.h		\
+	pangocairo-atsui.h		\
+	pangocairo-atsuifont.h
+endif
 
 # CFLAGS and LDFLAGS for compiling scan program. Only needed
 # if $(DOC_MODULE).types is non-empty.

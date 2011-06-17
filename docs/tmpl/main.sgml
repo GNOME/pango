@@ -36,11 +36,6 @@ The #PangoItem structure stores information about
 a segment of text. It contains the following fields:
 </para>
 
-@offset: the offset of the segment from the beginning of the
-         string in bytes.
-@length: the length of the segment in bytes.
-@num_chars: the length of the segment in characters.
-@analysis: the properties of the segment.
 
 <!-- ##### STRUCT PangoAnalysis ##### -->
 <para>

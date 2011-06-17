@@ -25,13 +25,32 @@
 #include "pango-engine-private.h"
 #include "pango-impl-utils.h"
 
-PANGO_DEFINE_TYPE_ABSTRACT (PangoEngine, pango_engine,
-			    NULL, NULL,
-			    G_TYPE_OBJECT)
 
-PANGO_DEFINE_TYPE_ABSTRACT (PangoEngineLang, pango_engine_lang,
-			    NULL, NULL,
-			    PANGO_TYPE_ENGINE)
+G_DEFINE_ABSTRACT_TYPE (PangoEngine, pango_engine, G_TYPE_OBJECT);
+
+static void
+pango_engine_init (PangoEngine *self)
+{
+}
+
+static void
+pango_engine_class_init (PangoEngineClass *klass)
+{
+}
+
+
+G_DEFINE_ABSTRACT_TYPE (PangoEngineLang, pango_engine_lang, PANGO_TYPE_ENGINE);
+
+static void
+pango_engine_lang_init (PangoEngineLang *self)
+{
+}
+
+static void
+pango_engine_lang_class_init (PangoEngineLangClass *klass)
+{
+}
+
 
 static PangoCoverageLevel
 pango_engine_shape_real_covers (PangoEngineShape *engine G_GNUC_UNUSED,
@@ -48,15 +67,19 @@ pango_engine_shape_real_covers (PangoEngineShape *engine G_GNUC_UNUSED,
   return result;
 }
 
+
+G_DEFINE_ABSTRACT_TYPE (PangoEngineShape, pango_engine_shape, PANGO_TYPE_ENGINE);
+
+static void
+pango_engine_shape_init (PangoEngineShape *klass)
+{
+}
+
 static void
 pango_engine_shape_class_init (PangoEngineShapeClass *class)
 {
   class->covers = pango_engine_shape_real_covers;
 }
-
-PANGO_DEFINE_TYPE_ABSTRACT (PangoEngineShape, pango_engine_shape,
-			    pango_engine_shape_class_init, NULL,
-			    PANGO_TYPE_ENGINE)
 
 void
 _pango_engine_shape_shape (PangoEngineShape *engine,
@@ -154,16 +177,22 @@ fallback_engine_covers (PangoEngineShape *engine G_GNUC_UNUSED,
   return PANGO_COVERAGE_NONE;
 }
 
+
+static GType pango_fallback_engine_get_type (void);
+
+G_DEFINE_ABSTRACT_TYPE (PangoFallbackEngine, pango_fallback_engine, PANGO_TYPE_ENGINE_SHAPE);
+
 static void
-fallback_engine_class_init (PangoEngineShapeClass *class)
+pango_fallback_engine_init (PangoFallbackEngine *self)
+{
+}
+
+static void
+pango_fallback_engine_class_init (PangoFallbackEngineClass *class)
 {
   class->covers = fallback_engine_covers;
   class->script_shape = fallback_engine_shape;
 }
-
-static PANGO_DEFINE_TYPE (PangoFallbackEngine, pango_fallback_engine,
-			  fallback_engine_class_init, NULL,
-			  PANGO_TYPE_ENGINE_SHAPE)
 
 PangoEngineShape *
 _pango_get_fallback_shaper (void)

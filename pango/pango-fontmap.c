@@ -56,8 +56,8 @@ pango_font_map_init (PangoFontMap *fontmap G_GNUC_UNUSED)
  * gdk_pango_context_get_for_screen(), and
  * gtk_widget_get_pango_context().  Use those instead.
  *
- * Return value: the newly allocated #PangoContext, which should
- *               be freed with g_object_unref().
+ * Return value: (transfer full): the newly allocated #PangoContext,
+ *               which should be freed with g_object_unref().
  *
  * Since: 1.22
  **/
@@ -82,7 +82,8 @@ pango_font_map_create_context (PangoFontMap *fontmap)
  *
  * Load the font in the fontmap that is the closest match for @desc.
  *
- * Returns: the font loaded, or %NULL if no font matched.
+ * Returns: (transfer full): the newly allocated #PangoFont loaded,
+ *          or %NULL if no font matched.
  **/
 PangoFont *
 pango_font_map_load_font  (PangoFontMap               *fontmap,
@@ -97,9 +98,9 @@ pango_font_map_load_font  (PangoFontMap               *fontmap,
 /**
  * pango_font_map_list_families:
  * @fontmap: a #PangoFontMap
- * @families: location to store a pointer to an array of #PangoFontFamily *.
+ * @families: (out) (array length=n_families): location to store a pointer to an array of #PangoFontFamily *.
  *            This array should be freed with g_free().
- * @n_families: location to store the number of elements in @families
+ * @n_families: (out): location to store the number of elements in @families
  *
  * List all families for a fontmap.
  **/
@@ -123,7 +124,8 @@ pango_font_map_list_families (PangoFontMap      *fontmap,
  * Load a set of fonts in the fontmap that can be used to render
  * a font matching @desc.
  *
- * Returns: the fontset, or %NULL if no font matched.
+ * Returns: (transfer full): the newly allocated #PangoFontset
+ *          loaded, or %NULL if no font matched.
  **/
 PangoFontset *
 pango_font_map_load_fontset (PangoFontMap                 *fontmap,
@@ -290,7 +292,7 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
  *
  * Since: 1.4
  **/
-G_CONST_RETURN char *
+const char *
 pango_font_map_get_shape_engine_type (PangoFontMap *fontmap)
 {
   g_return_val_if_fail (PANGO_IS_FONT_MAP (fontmap), NULL);

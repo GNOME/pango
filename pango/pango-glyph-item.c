@@ -564,9 +564,9 @@ split_before_cluster_start (ApplyAttrsState *state)
  * This function takes ownership of @glyph_item; it will be reused
  * as one of the elements in the list.
  *
- * Return value: a list of glyph items resulting from splitting
- *   @glyph_item. Free the elements using pango_glyph_item_free(),
- *   the list using g_slist_free().
+ * Return value: (transfer full): a list of glyph items resulting
+ *   from splitting @glyph_item. Free the elements using
+ *   pango_glyph_item_free(), the list using g_slist_free().
  *
  * Since: 1.2
  **/
