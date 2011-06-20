@@ -1,39 +1,11 @@
 <?xml version="1.0"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
-               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
-<!ENTITY pango-Text-Processing SYSTEM "xml/main.xml">
-<!ENTITY pango-Glyph-Storage SYSTEM "xml/glyphs.xml">
-<!ENTITY pango-Coverage-Maps SYSTEM "xml/coverage-maps.xml">
-<!ENTITY pango-Fonts SYSTEM "xml/fonts.xml">
-<!ENTITY pango-Text-Attributes SYSTEM "xml/text-attributes.xml">
-<!ENTITY pango-Tab-Stops SYSTEM "xml/tab-stops.xml">
-<!ENTITY pango-Layout-Objects SYSTEM "xml/layout.xml">
-<!ENTITY pango-Scripts SYSTEM "xml/scripts.xml">
-<!ENTITY pango-Engines SYSTEM "xml/engines.xml">
-<!ENTITY PangoEngineLang SYSTEM "xml/pango-engine-lang.xml">
-<!ENTITY PangoEngineShape SYSTEM "xml/pango-engine-shape.xml">
-<!ENTITY PangoRenderer SYSTEM "xml/pango-renderer.xml">
-<!ENTITY pango-Modules SYSTEM "xml/modules.xml">
-<!ENTITY pango-X-Fonts-and-Rendering SYSTEM "xml/x-fonts.xml">
-<!ENTITY pango-Win32-Fonts-and-Rendering SYSTEM "xml/win32-fonts.xml">
-<!ENTITY pango-FreeType-Fonts-and-Rendering SYSTEM "xml/freetype-fonts.xml">
-<!ENTITY pango-Xft-Fonts-and-Rendering SYSTEM "xml/xft-fonts.xml">
-<!ENTITY pango-ATSUI-Fonts SYSTEM "xml/atsui-fonts.xml">
-<!ENTITY pangocairo SYSTEM "xml/pangocairo.xml">
-<!ENTITY PangoFcFontMap SYSTEM "xml/pangofc-fontmap.xml">
-<!ENTITY PangoFcFont SYSTEM "xml/pangofc-font.xml">
-<!ENTITY PangoFcDecoder SYSTEM "xml/pangofc-decoder.xml">
-<!ENTITY pango-OpenType-Font-Handling SYSTEM "xml/opentype.xml">
-<!ENTITY pango-Misc-Utils SYSTEM "xml/utils.xml">
-<!ENTITY markup-format SYSTEM "pango_markup.sgml">
-<!ENTITY pango-querymodules SYSTEM "pango-querymodules.xml">
-<!ENTITY pango-Version SYSTEM "xml/pango-version.xml">
-<!ENTITY pango-Vertical-Text SYSTEM "xml/vertical.xml">
-<!ENTITY pango-Bidi-Text SYSTEM "xml/bidi.xml">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+  "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 <!ENTITY version SYSTEM "version.xml">
-<!ENTITY pango-tree-index SYSTEM "xml/tree_index.sgml">
 ]>
-<book id="index">
+<book id="index" xmlns:xi="http://www.w3.org/2003/XInclude">
   <bookinfo>
     <title>Pango Reference Manual</title>
     <releaseinfo>for Pango &version;</releaseinfo>
@@ -41,54 +13,55 @@
 
   <chapter id="pango">
     <title>Basic Pango Interfaces</title>
-    &pango-Text-Processing;
-    &pango-Glyph-Storage;
-    &pango-Fonts;
-    &pango-Text-Attributes;
-    &pango-Tab-Stops;
-    &markup-format;
-    &pango-Layout-Objects;
-    &pango-Scripts;
-    &pango-Bidi-Text;
-    &pango-Vertical-Text;
+    <xi:include href="xml/main.xml"/>
+    <xi:include href="xml/glyphs.xml"/>
+    <xi:include href="xml/fonts.xml"/>
+    <xi:include href="xml/text-attributes.xml"/>
+    <xi:include href="xml/tab-stops.xml"/>
+    <xi:include href="pango_markup.sgml"/>
+    <xi:include href="xml/layout.xml"/>
+    <xi:include href="xml/scripts.xml"/>
+    <xi:include href="xml/bidi.xml"/>
+    <xi:include href="xml/vertical.xml"/>
   </chapter>
 
   <chapter id="rendering">
     <title>Rendering with Pango</title>
-    &pango-Win32-Fonts-and-Rendering;
-    &pango-FreeType-Fonts-and-Rendering;
-    &pango-Xft-Fonts-and-Rendering;
-    &pangocairo;
-    &pango-ATSUI-Fonts;
-    &pango-X-Fonts-and-Rendering;
+    <xi:include href="xml/win32-fonts.xml"/>
+    <xi:include href="xml/freetype-fonts.xml"/>
+    <xi:include href="xml/xft-fonts.xml"/>
+    <xi:include href="xml/pangocairo.xml"/>
+    <xi:include href="xml/atsui-fonts.xml"/>
+    <xi:include href="xml/x-fonts.xml"/>
   </chapter>
 
   <chapter id="lowlevel">
     <title>Low Level Functionality</title>
-    &PangoRenderer;
-    &PangoFcFontMap;
-    &PangoFcFont;
-    &PangoFcDecoder;
-    &pango-OpenType-Font-Handling;
-    &pango-Coverage-Maps;
-    &pango-Engines;
-    &PangoEngineLang;
-    &PangoEngineShape;
-    &pango-Modules;
-    &pango-Misc-Utils;
-    &pango-Version;
+    <xi:include href="xml/pango-renderer.xml"/>
+    <xi:include href="xml/pangofc-fontmap.xml"/>
+    <xi:include href="xml/pangofc-font.xml"/>
+    <xi:include href="xml/pangofc-decoder.xml"/>
+    <xi:include href="xml/opentype.xml"/>
+    <xi:include href="xml/coverage-maps.xml"/>
+    <xi:include href="xml/engines.xml"/>
+    <xi:include href="xml/pango-engine-lang.xml"/>
+    <xi:include href="xml/pango-engine-shape.xml"/>
+    <xi:include href="xml/modules.xml"/>
+    <xi:include href="xml/utils.xml"/>
+    <xi:include href="xml/pango-version.xml"/>
     </chapter>
 
   <chapter id="tools">
     <title>Pango Tools</title>
-
-    &pango-querymodules;
+    <xi:include href="pango-querymodules.xml"/>
   </chapter>
 
   <chapter id="pango-hierarchy">
     <title>Object Hierarchy</title>
-    &pango-tree-index;
+    <xi:include href="xml/tree_index.sgml"/>
   </chapter>
+
+  <xi:include href="xml/annotation-glossary.xml"><xi:fallback /></xi:include>
 
   <index id="index-all">
     <title>Index</title>
