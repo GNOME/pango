@@ -5452,7 +5452,7 @@ update_run (PangoLayoutIter *iter,
  * pango_layout_iter_copy:
  * @iter: a #PangoLayoutIter, may be %NULL
  *
- * Copies a #PangLayoutIter.
+ * Copies a #PangoLayoutIter.
  *
  * Return value: the newly allocated #PangoLayoutIter, which should
  *               be freed with pango_layout_iter_free(), or %NULL if
