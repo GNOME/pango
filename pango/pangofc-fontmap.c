@@ -1754,7 +1754,7 @@ pango_fc_font_map_load_fontset (PangoFontMap                 *fontmap,
 
 /**
  * pango_fc_font_map_cache_clear:
- * @fcfontmap: a #PangoFcFontmap
+ * @fcfontmap: a #PangoFcFontMap
  *
  * Clear all cached information and fontsets for this font map;
  * this should be called whenever there is a change in the
@@ -1943,7 +1943,7 @@ _pango_fc_font_map_fc_to_coverage (FcCharSet *charset)
  * @fcfontmap: a #PangoFcFontMap
  *
  * Creates a new context for this fontmap. This function is intended
- * only for backend implementations deriving from #PangoFcFontmap;
+ * only for backend implementations deriving from #PangoFcFontMap;
  * it is possible that a backend will store additional information
  * needed for correct operation on the #PangoContext after calling
  * this function.
@@ -1975,14 +1975,14 @@ shutdown_font (gpointer        key,
 
 /**
  * pango_fc_font_map_shutdown:
- * @fcfontmap: a #PangoFcFontmap
+ * @fcfontmap: a #PangoFcFontMap
  *
  * Clears all cached information for the fontmap and marks
  * all fonts open for the fontmap as dead. (See the shutdown()
  * virtual function of #PangoFcFont.) This function might be used
  * by a backend when the underlying windowing system for the font
  * map exits. This function is only intended to be called
- * only for backend implementations deriving from #PangoFcFontmap.
+ * only for backend implementations deriving from #PangoFcFontMap.
  *
  * Since: 1.4
  **/
