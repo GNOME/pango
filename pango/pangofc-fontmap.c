@@ -1119,7 +1119,7 @@ pango_fc_font_map_class_init (PangoFcFontMapClass *class)
  * characters to glyphs.  This will allow applications to have
  * application-specific encodings for various fonts.
  *
- * Since: 1.6.
+ * Since: 1.6
  **/
 void
 pango_fc_font_map_add_decoder_find_func (PangoFcFontMap        *fcfontmap,
@@ -1154,7 +1154,7 @@ pango_fc_font_map_add_decoder_find_func (PangoFcFontMap        *fcfontmap,
  * Returns: a newly created #PangoFcDecoder object or %NULL if
  *          no decoder is set for @pattern.
  *
- * Since: 1.26.
+ * Since: 1.26
  **/
 PangoFcDecoder *
 pango_fc_font_map_find_decoder  (PangoFcFontMap *fcfontmap,
