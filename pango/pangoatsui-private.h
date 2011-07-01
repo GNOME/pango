@@ -38,6 +38,8 @@ G_BEGIN_DECLS
 
 
 typedef struct _PangoATSUIFamily       PangoATSUIFamily;
+typedef struct _PangoFontFamilyClass   PangoATSUIFamilyClass;
+
 typedef struct _PangoATSUIFace         PangoATSUIFace;
 
 typedef struct _PangoATSUIFontMap      PangoATSUIFontMap;

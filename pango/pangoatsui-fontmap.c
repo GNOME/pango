@@ -70,6 +70,8 @@ struct _PangoATSUIFace
 static GType pango_atsui_family_get_type (void);
 static GType pango_atsui_face_get_type (void);
 
+static gpointer pango_atsui_face_parent_class;
+
 static const char *
 get_real_family (const char *family_name)
 {
@@ -200,6 +202,8 @@ pango_atsui_family_is_monospace (PangoFontFamily *family)
   return atsuifamily->is_monospace;
 }
 
+G_DEFINE_TYPE (PangoATSUIFamily, pango_atsui_family, PANGO_TYPE_FONT_FAMILY);
+
 static void
 pango_atsui_family_finalize (GObject *object)
 {
@@ -218,8 +222,6 @@ pango_atsui_family_finalize (GObject *object)
 
   G_OBJECT_CLASS (pango_atsui_family_parent_class)->finalize (object);
 }
-
-G_DEFINE_TYPE (PangoATSUIFamilyClass, pango_atsui_family, PANGO_TYPE_FONT_FAMILY);
 
 static void
 pango_atsui_family_class_init (PangoATSUIFamilyClass *class)
@@ -336,6 +338,8 @@ static void
 pango_atsui_face_class_init (PangoFontFaceClass *class)
 {
   GObjectClass *object_class = (GObjectClass *)class;
+
+  pango_atsui_face_parent_class = g_type_class_peek_parent (class);
 
   object_class->finalize = pango_atsui_face_finalize;
 
