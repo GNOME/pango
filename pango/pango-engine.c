@@ -180,7 +180,7 @@ fallback_engine_covers (PangoEngineShape *engine G_GNUC_UNUSED,
 
 static GType pango_fallback_engine_get_type (void);
 
-G_DEFINE_ABSTRACT_TYPE (PangoFallbackEngine, pango_fallback_engine, PANGO_TYPE_ENGINE_SHAPE);
+G_DEFINE_TYPE (PangoFallbackEngine, pango_fallback_engine, PANGO_TYPE_ENGINE_SHAPE);
 
 static void
 pango_fallback_engine_init (PangoFallbackEngine *self)
