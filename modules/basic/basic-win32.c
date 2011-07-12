@@ -33,10 +33,6 @@
 
 extern HFONT _pango_win32_font_get_hfont (PangoFont *font);
 
-#ifndef PANGO_MODULE_PREFIX
-#define PANGO_MODULE_PREFIX _pango_basic_win32
-#endif
-
 #include "pango-engine.h"
 #include "pango-utils.h"
 
