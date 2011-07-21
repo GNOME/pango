@@ -293,7 +293,14 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
   for (i = 0; i < num_glyphs; i++)
     {
       glyphs->glyphs[i].glyph = hb_glyph->codepoint;
-      glyphs->log_clusters[i] = hb_glyph->cluster;
+      if (i && glyphs->log_clusters[i-1] != hb_glyph->cluster) {
+	GUnicodeType t = g_unichar_type (g_utf8_get_char (text + hb_glyph->cluster));
+	if ((1<<t) & ((1<<G_UNICODE_COMBINING_MARK)|(1<<G_UNICODE_ENCLOSING_MARK)|(1<<G_UNICODE_NON_SPACING_MARK)))
+	  glyphs->log_clusters[i] = last_cluster;
+	else
+	  glyphs->log_clusters[i] = hb_glyph->cluster;
+      } else
+	glyphs->log_clusters[i] = hb_glyph->cluster;
       glyphs->glyphs[i].attr.is_cluster_start = glyphs->log_clusters[i] != last_cluster;
       last_cluster = glyphs->log_clusters[i];
 
