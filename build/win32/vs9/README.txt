@@ -1,11 +1,14 @@
 Note that all this is rather experimental.
 
+Please do not compile Pango in a path with spaces to avoid potential
+problems during the build and/or during the usage of the Pango
+library.
+
 This VS9 solution and the projects it includes are intented to be used
 in a Pango source tree unpacked from a tarball. In a git checkout you
 first need to use some Unix-like environment or manual work to expand
 files as needed, for instance the .vcprojin files here into .vcproj
 files.
-
 
 It is recommended that GLib is compiled with VS9 to compile Pango.
 External dependencies are at least Cairo,  zlib, libpng,
