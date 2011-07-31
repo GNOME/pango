@@ -865,25 +865,8 @@ PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
   script_engines[0].scripts = basic_scripts;
   script_engines[0].n_scripts = G_N_ELEMENTS (basic_scripts);
 
-#if 0
-  int i;
-  GArray *ranges = g_array_new (FALSE, FALSE, sizeof (PangoEngineRange));
-
-  /* Walk through scripts supported by the Uniscribe implementation on this
-   * machine, and mark corresponding Unicode ranges.
-   */
-  for (i = 0; i < nscripts; i++)
-    {
-    }
-
-  /* Sort range array */
-  g_array_sort (ranges, compare_range);
-  script_engines[0].ranges = ranges;
-  script_engines[0].n_ranges = ranges->len;
-#else
   script_engines[0].scripts = uniscribe_scripts;
   script_engines[0].n_scripts = G_N_ELEMENTS (uniscribe_scripts);
-#endif
 
   *engines = script_engines;
   *n_engines = G_N_ELEMENTS (script_engines);
