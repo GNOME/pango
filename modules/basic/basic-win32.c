@@ -865,6 +865,8 @@ PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
   script_engines[0].scripts = basic_scripts;
   script_engines[0].n_scripts = G_N_ELEMENTS (basic_scripts);
 
+  /* This is stupid, we rewrite the previous two lines.  Not
+   * going to touch it now. */
   script_engines[0].scripts = uniscribe_scripts;
   script_engines[0].n_scripts = G_N_ELEMENTS (uniscribe_scripts);
 
