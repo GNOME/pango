@@ -494,7 +494,7 @@ fi
 #
 have_libthai=false
 LIBTHAI_REQUIRED_VERSION=0.1.9
-PKG_CHECK_MODULES(LIBTHAI, libthai >= $LIBTHAI_REQUIRED_VERSION, have_libthai=true, AC_MSG_RESULT([no]))
+PKG_CHECK_MODULES(LIBTHAI, libthai >= $LIBTHAI_REQUIRED_VERSION, have_libthai=true, :)
 
 #
 # Checks for GObject Introspection
