@@ -1422,7 +1422,7 @@ pango_layout_get_lines_readonly (PangoLayout *layout)
  * Use the faster pango_layout_get_line_readonly() if you do not plan
  * to modify the contents of the line (glyphs, glyph widths, etc.).
  *
- * Return value: the requested #PangoLayoutLine, or %NULL if the
+ * Return value: (transfer none): the requested #PangoLayoutLine, or %NULL if the
  *               index is out of range. This layout line can
  *               be ref'ed and retained, but will become invalid
  *               if changes are made to the #PangoLayout.
@@ -1464,7 +1464,7 @@ pango_layout_get_line (PangoLayout *layout,
  * but the user is not expected
  * to modify the contents of the line (glyphs, glyph widths, etc.).
  *
- * Return value: the requested #PangoLayoutLine, or %NULL if the
+ * Return value: (transfer none): the requested #PangoLayoutLine, or %NULL if the
  *               index is out of range. This layout line can
  *               be ref'ed and retained, but will become invalid
  *               if changes are made to the #PangoLayout.
