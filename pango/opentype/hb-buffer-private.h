@@ -130,6 +130,7 @@ _hb_buffer_allocate_lig_id (hb_buffer_t *buffer);
 #define CURPOSITION()		(&buffer->positions[buffer->in_pos])
 #define OUT_GLYPH(pos)		(buffer->out_string[(pos)].codepoint)
 #define OUT_INFO(pos)		(&buffer->out_string[(pos)])
+#define BACKTRACK_LEN()		((buffer->have_output? buffer->out_length : buffer->in_pos))
 
 HB_END_DECLS
 
