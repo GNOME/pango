@@ -45,6 +45,7 @@ HBHEADERS = \
 
 libharfbuzz_la_SOURCES = $(HBSOURCES) $(HBHEADERS)
 libharfbuzz_la_CPPFLAGS = -DHAVE_GLIB $(GLIB_CFLAGS)
+libharfbuzz_la_CXXFLAGS = -fPIC
 libharfbuzz_la_LIBADD = $(GLIB_LIBS)
 
 noinst_PROGRAMS = main
