@@ -4,6 +4,11 @@ Please do not compile Pango in a path with spaces to avoid potential
 problems during the build and/or during the usage of the Pango
 library.
 
+Please refer to the following GNOME Live! page for more detailed
+instructions on building Pango and its dependencies with Visual C++:
+
+https://live.gnome.org/GTK%2B/Win32/MSVCCompilationOfGTKStack
+
 This VS9 solution and the projects it includes are intented to be used
 in a Pango source tree unpacked from a tarball. In a git checkout you
 first need to use some Unix-like environment or manual work to expand
