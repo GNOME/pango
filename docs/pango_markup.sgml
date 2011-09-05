@@ -29,13 +29,19 @@ position.
 The solution is to include the text attributes in the string to be
 translated. Pango provides this feature with a small markup language.
 You can parse a marked-up string into the string text plus a
-<link linkend="PangoAttrList">PangoAttrList</link> using the function 
+<link linkend="PangoAttrList">PangoAttrList</link> using the function
 <link linkend="pango-parse-markup">pango_parse_markup()</link>.
 </para>
 
 <para>
 A simple example of a marked-up string might be:
 <literal>"&lt;span foreground="blue" size="x-large"&gt;Blue text&lt;/span&gt; is &lt;i&gt;cool&lt;/i&gt;!"</literal>
+</para>
+
+<para>
+Pango uses #GMarkup to parse this language, which means that XML features
+such as numeric character entities such as &amp;#169; for &#169; can
+be used too.
 </para>
 
 <para>
@@ -50,8 +56,8 @@ tags. &lt;span&gt; has the following attributes:
 <term>font<footnote id='since_1_21'><para>Since 1.21</para></footnote></term>
 <term>font_desc</term>
 <listitem><para>
-A font description string, such as "Sans Italic 12". See 
-<link linkend="pango-font-description-from-string">pango_font_description_from_string()</link> 
+A font description string, such as "Sans Italic 12". See
+<link linkend="pango-font-description-from-string">pango_font_description_from_string()</link>
 for a description of the format of the string representation . Note that any 
 other span attributes will override this description. So if you have 
 "Sans Italic" and also a style="normal" attribute, you will get Sans normal, 
