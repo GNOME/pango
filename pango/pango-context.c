@@ -339,8 +339,8 @@ pango_context_set_font_description (PangoContext               *context,
  *
  * Retrieve the default font description for the context.
  *
- * Return value: a pointer to the context's default font description.
- *               This value must not be modified or freed.
+ * Return value: (transfer none) a pointer to the context's default font
+ *               description. This value must not be modified or freed.
  **/
 PangoFontDescription *
 pango_context_get_font_description (PangoContext *context)
