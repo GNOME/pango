@@ -25,6 +25,10 @@
 #include "pango-impl-utils.h"
 #include FT_TRUETYPE_TABLES_H
 
+#if (!GLIB_CHECK_VERSION(2,29,15))
+#define G_UNICODE_SPACING_MARK G_UNICODE_COMBINING_MARK
+#endif
+
 static void pango_ot_info_finalize   (GObject *object);
 
 static void synthesize_class_def (PangoOTInfo *info);
@@ -183,7 +187,7 @@ get_glyph_class (gunichar        charcode,
 
   switch ((int) g_unichar_type (charcode))
     {
-    case G_UNICODE_COMBINING_MARK:
+    case G_UNICODE_SPACING_MARK:
     case G_UNICODE_ENCLOSING_MARK:
     case G_UNICODE_NON_SPACING_MARK:
       *class = HB_OT_LAYOUT_GLYPH_CLASS_MARK;		/* Mark glyph (non-spacing combining glyph) */

@@ -30,6 +30,10 @@
 #define PARAGRAPH_SEPARATOR 0x2029
 #define PARAGRAPH_SEPARATOR_STRING "\xE2\x80\xA9"
 
+#if (!GLIB_CHECK_VERSION (2,29,15))
+#define G_UNICODE_SPACING_MARK G_UNICODE_COMBINING_MARK
+#endif
+
 /* See http://www.unicode.org/unicode/reports/tr14/ if you hope
  * to understand the line breaking code.
  */
@@ -687,7 +691,7 @@ pango_default_break (const gchar   *text,
 	      GB_type = GB_Extend; /* Other_Grapheme_Extend */
 	    break;
 
-	  case G_UNICODE_COMBINING_MARK:
+	  case G_UNICODE_SPACING_MARK:
 	    GB_type = GB_SpacingMark; /* SpacingMark */
 	    if (wc >= 0x0900)
 	      {
@@ -796,7 +800,7 @@ pango_default_break (const gchar   *text,
 		  break;
 
 		case G_UNICODE_FORMAT:
-		case G_UNICODE_COMBINING_MARK:
+		case G_UNICODE_SPACING_MARK:
 		case G_UNICODE_ENCLOSING_MARK:
 		case G_UNICODE_NON_SPACING_MARK:
 		  WB_type = WB_ExtendFormat; /* Extend, Format */
@@ -1121,7 +1125,7 @@ pango_default_break (const gchar   *text,
 	  /* Check for a word end */
 	  switch ((int) type)
 	    {
-	    case G_UNICODE_COMBINING_MARK:
+	    case G_UNICODE_SPACING_MARK:
 	    case G_UNICODE_ENCLOSING_MARK:
 	    case G_UNICODE_NON_SPACING_MARK:
 	    case G_UNICODE_FORMAT:
@@ -1636,7 +1640,7 @@ pango_default_break (const gchar   *text,
 
       /* wc might not be a valid Unicode base character, but really all we
        * need to know is the last non-combining character */
-      if (type != G_UNICODE_COMBINING_MARK &&
+      if (type != G_UNICODE_SPACING_MARK &&
 	  type != G_UNICODE_ENCLOSING_MARK &&
 	  type != G_UNICODE_NON_SPACING_MARK)
 	base_character = wc;
