@@ -82,8 +82,10 @@ copy ..\..\..\pango\pangocairo.h $(CopyDir)\include\pango-$(PangoApiVersion)\pan
 copy ..\..\..\pango\pangowin32.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
 
 
-mkdir $(CopyDir)\etc\pango
+if not exist $(CopyDir)\etc\pango mkdir $(CopyDir)\etc\pango
 
+
+if exist $(CopyDir)\etc\pango\pango.aliases goto END
 
 echo tahoma = "tahoma,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal" > $(CopyDir)\etc\pango\pango.aliases
 
@@ -92,6 +94,8 @@ echo sans = "arial,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal"
 echo serif = "times new roman,angsana new,mingliu,simsun,gulimche,ms gothic,latha,mangal" >> $(CopyDir)\etc\pango\pango.aliases
 
 echo monospace = "courier new,courier monothai,mingliu,simsun,gulimche,ms gothic,latha,mangal" >> $(CopyDir)\etc\pango\pango.aliases
+
+:END
 </PangoDoInstall>
 <PangoInstallFCHeaders>
 copy ..\..\..\pango\pangofc-decoder.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
@@ -111,10 +115,9 @@ copy ..\..\..\pango\pangoft2.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
     <PangoDllSuffix>$(PangoSeparateVS10DllSuffix)</PangoDllSuffix>
   </PropertyGroup>
   <PropertyGroup>
-    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <_PropertySheetDisplayName>pangoprops</_PropertySheetDisplayName>
     <OutDir>$(SolutionDir)$(Configuration)\$(PlatformName)\bin\</OutDir>
-    <IntDir>$(SolutionDir)$(Configuration)\$(PlatformName)\obj\</IntDir>
+    <IntDir>$(SolutionDir)$(Configuration)\$(PlatformName)\obj\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
