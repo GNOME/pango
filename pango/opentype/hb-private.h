@@ -62,7 +62,11 @@
 #define hb_be_int32(v)		GINT32_FROM_BE (v)
 
 typedef int hb_atomic_int_t;
+#if !GLIB_CHECK_VERSION(2,29,5)
 #define hb_atomic_int_fetch_and_add(AI, V)	g_atomic_int_exchange_and_add (&(AI), V)
+#else
+#define hb_atomic_int_fetch_and_add(AI, V)	g_atomic_int_add (&(AI), V)
+#endif
 #define hb_atomic_int_get(AI)			g_atomic_int_get (&(AI))
 #define hb_atomic_int_set(AI, V)		g_atomic_int_set (&(AI), V)
 
