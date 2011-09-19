@@ -34,7 +34,7 @@ create_buffer (void)
 {
   hb_buffer_t *buffer;
 
-  buffer = hb_buffer_create (32);
+  buffer = hb_buffer_create ();
   hb_buffer_set_unicode_funcs (buffer, hb_glib_get_unicode_funcs ());
 
   return buffer;

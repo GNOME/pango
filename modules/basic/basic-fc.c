@@ -67,7 +67,7 @@ create_buffer (void)
 {
   hb_buffer_t *buffer;
 
-  buffer = hb_buffer_create (32);
+  buffer = hb_buffer_create ();
   hb_buffer_set_unicode_funcs (buffer, hb_glib_get_unicode_funcs ());
 
   return buffer;
@@ -279,7 +279,7 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
   /* setup buffer */
   hb_buffer_set_direction (hb_buffer, analysis->level % 2 != 0 ? HB_DIRECTION_RTL : HB_DIRECTION_LTR);
   hb_buffer_set_script (hb_buffer, hb_glib_script_to_script (analysis->script));
-  hb_buffer_set_language (hb_buffer, hb_language_from_string (pango_language_to_string (analysis->language)));
+  hb_buffer_set_language (hb_buffer, hb_language_from_string (pango_language_to_string (analysis->language), -1));
   hb_buffer_add_utf8 (hb_buffer, text, length, 0, length);
 
   hb_shape (hb_font, hb_buffer, NULL, 0);
