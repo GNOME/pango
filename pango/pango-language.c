@@ -29,6 +29,10 @@
 #include "pango-language.h"
 #include "pango-impl-utils.h"
 
+#ifdef HAVE_CORE_TEXT
+#include <CoreFoundation/CoreFoundation.h>
+#endif /* HAVE_CORE_TEXT */
+
 
 /* We embed a private struct right *before* a where a PangoLanguage *
  * points to.
@@ -188,6 +192,23 @@ _pango_get_lc_ctype (void)
     return g_strdup (p);
 
   return g_win32_getlocale ();
+#elif HAVE_CORE_TEXT
+  CFArrayRef languages;
+  CFStringRef language;
+  gchar ret[16];
+
+  languages = CFLocaleCopyPreferredLanguages ();
+  language = CFArrayGetValueAtIndex (languages, 0);
+
+  if (!CFStringGetCString (language, ret, 16, kCFStringEncodingUTF8))
+    {
+      CFRelease (languages);
+      return g_strdup (setlocale (LC_CTYPE, NULL));
+    }
+
+  CFRelease (languages);
+
+  return g_strdup (ret);
 #else
   return g_strdup (setlocale (LC_CTYPE, NULL));
 #endif
