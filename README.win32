@@ -25,10 +25,10 @@ Pango 1.10.0:
 
 PATH=/devel/dist/glib-2.8.0/bin:$PATH ACLOCAL_FLAGS="-I /devel/dist/glib-2.8.0/share/aclocal" PKG_CONFIG_PATH=/devel/dist/glib-2.8.0/lib/pkgconfig:$PKG_CONFIG_PATH CC='gcc -mtune=pentium3' CPPFLAGS='-I/opt/gnu/include' LDFLAGS='-L/opt/gnu/lib' CFLAGS=-O ./configure --disable-gtk-doc  --without-x --prefix=c:/devel/target/pango-1.10.0
 
-2) Use Visual Studio 2008 (Express or above). Use the solution file in
-build/win32/vs9. See the README.txt there for more information,
-or see the following GNOME Live! page for a more detailed description
-of building Pango and its dependencies with Visual Studio 2008:
+2) Use Visual Studio 2008/2010 (Express or above). Use the solution file
+in build/win32/vs9 or build/win32/vs10. See the README.txt there for more
+information, or see the following GNOME Live! page for a more detailed
+description of building Pango and its dependencies with Visual Studio:
 
 https://live.gnome.org/GTK%2B/Win32/MSVCCompilationOfGTKStack
 
