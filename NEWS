@@ -1,3 +1,8 @@
+Overview of changes between 1.29.3 and 1.29.4
+=============================================
+- Prevent a crash when hitting the fallback engine
+  Bug 660360 - gnome-terminal and gedit crashes when selecting font
+
 Overview of changes between 1.29.1 and 1.29.3
 =============================================
 - Minor fix in 1.29.1 tarball
