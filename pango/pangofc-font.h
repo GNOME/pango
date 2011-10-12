@@ -134,6 +134,7 @@ gboolean   pango_fc_font_has_char          (PangoFcFont      *font,
 guint      pango_fc_font_get_glyph         (PangoFcFont      *font,
 					    gunichar          wc);
 #ifndef PANGO_DISABLE_DEPRECATED
+G_DEPRECATED_FOR(PANGO_GET_UNKNOWN_GLYPH)
 PangoGlyph pango_fc_font_get_unknown_glyph (PangoFcFont      *font,
 					    gunichar          wc);
 #endif /* PANGO_DISABLE_DEPRECATED */

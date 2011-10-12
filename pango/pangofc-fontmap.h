@@ -186,6 +186,7 @@ struct _PangoFcFontMapClass
 };
 
 #ifndef PANGO_DISABLE_DEPRECATED
+G_DEPRECATED_FOR(pango_font_map_create_context)
 PangoContext * pango_fc_font_map_create_context (PangoFcFontMap *fcfontmap);
 #endif
 void           pango_fc_font_map_shutdown       (PangoFcFontMap *fcfontmap);

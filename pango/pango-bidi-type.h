@@ -126,6 +126,7 @@ PangoDirection pango_find_base_dir          (const gchar *text,
 					     gint         length);
 
 #ifndef PANGO_DISABLE_DEPRECATED
+G_DEPRECATED_FOR(g_unichar_get_mirror_char)
 gboolean       pango_get_mirror_char        (gunichar     ch,
 					     gunichar    *mirrored_ch);
 #endif

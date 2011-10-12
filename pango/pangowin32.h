@@ -42,6 +42,7 @@ G_BEGIN_DECLS
 /* Calls for applications
  */
 #ifndef PANGO_DISABLE_DEPRECATED
+G_DEPRECATED_FOR(pango_font_map_create_context)
 PangoContext * pango_win32_get_context        (void);
 #endif
 
@@ -72,6 +73,7 @@ void           pango_win32_render_transformed (HDC         hdc,
  */
 
 #ifndef PANGO_DISABLE_DEPRECATED
+G_DEPRECATED_FOR(PANGO_GET_UNKNOWN_GLYPH)
 PangoGlyph     pango_win32_get_unknown_glyph  (PangoFont        *font,
 					       gunichar          wc);
 #endif /* PANGO_DISABLE_DEPRECATED */

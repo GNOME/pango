@@ -80,12 +80,17 @@ GType      pango_xft_font_get_type (void) G_GNUC_CONST;
 XftFont *     pango_xft_font_get_font          (PangoFont *font);
 Display *     pango_xft_font_get_display       (PangoFont *font);
 #ifndef PANGO_DISABLE_DEPRECATED
+G_DEPRECATED_FOR(pango_fc_font_lock_face)
 FT_Face       pango_xft_font_lock_face         (PangoFont *font);
+G_DEPRECATED_FOR(pango_fc_font_unlock_face)
 void	      pango_xft_font_unlock_face       (PangoFont *font);
+G_DEPRECATED_FOR(pango_fc_font_get_glyph)
 guint	      pango_xft_font_get_glyph	       (PangoFont *font,
 						gunichar   wc);
+G_DEPRECATED_FOR(pango_fc_font_has_char)
 gboolean      pango_xft_font_has_char          (PangoFont *font,
 						gunichar   wc);
+G_DEPRECATED_FOR(PANGO_GET_UNKNOWN_GLYPH)
 PangoGlyph    pango_xft_font_get_unknown_glyph (PangoFont *font,
 						gunichar   wc);
 #endif /* PANGO_DISABLE_DEPRECATED */
