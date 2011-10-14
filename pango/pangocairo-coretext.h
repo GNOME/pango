@@ -46,9 +46,7 @@ GType pango_cairo_core_text_font_map_get_type (void) G_GNUC_CONST;
 
 PangoCoreTextFont *
 _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
-                                 PangoContext               *context,
-                                 PangoCoreTextFace          *face,
-                                 const PangoFontDescription *desc);
+                                 PangoCoreTextFontKey       *key);
 
 G_END_DECLS
 

@@ -44,10 +44,14 @@ typedef struct _PangoCoreTextFace         PangoCoreTextFace;
 typedef struct _PangoCoreTextFontMap      PangoCoreTextFontMap;
 typedef struct _PangoCoreTextFontMapClass PangoCoreTextFontMapClass;
 
+typedef struct _PangoCoreTextFontsetKey   PangoCoreTextFontsetKey;
+typedef struct _PangoCoreTextFontKey      PangoCoreTextFontKey;
+
 struct _PangoCoreTextFontMap
 {
   PangoFontMap parent_instance;
 
+  GHashTable *fontset_hash;
   GHashTable *font_hash;
 
   GHashTable *families;
@@ -70,22 +74,15 @@ struct _PangoCoreTextFontMapClass
                                       gconstpointer           key_b);
 
   PangoCoreTextFont * (* create_font)   (PangoCoreTextFontMap       *fontmap,
-                                         PangoContext               *context,
-                                         PangoCoreTextFace          *face,
-                                         const PangoFontDescription *desc);
+                                         PangoCoreTextFontKey       *key);
+
+  double              (* get_resolution) (PangoCoreTextFontMap      *fontmap,
+                                          PangoContext              *context);
 };
 
 
 GType                 pango_core_text_font_map_get_type          (void) G_GNUC_CONST;
 
-const char *          _pango_core_text_face_get_postscript_name  (PangoCoreTextFace    *face);
-gboolean              _pango_core_text_face_get_synthetic_italic (PangoCoreTextFace    *face);
-PangoCoverage *       _pango_core_text_face_get_coverage         (PangoCoreTextFace    *face,
-                                                                  PangoLanguage     *language);
-
-void                  _pango_core_text_font_set_font_description (PangoCoreTextFont    *afont,
-                                                                  const PangoFontDescription *desc);
-PangoFontDescription *_pango_core_text_font_get_font_description (PangoCoreTextFont    *afont);
 void                  _pango_core_text_font_set_font_map         (PangoCoreTextFont    *afont,
                                                                   PangoCoreTextFontMap *fontmap);
 void                  _pango_core_text_font_set_face             (PangoCoreTextFont    *afont, 
@@ -94,8 +91,20 @@ PangoCoreTextFace *   _pango_core_text_font_get_face             (PangoCoreTextF
 gpointer              _pango_core_text_font_get_context_key      (PangoCoreTextFont    *afont);
 void                  _pango_core_text_font_set_context_key      (PangoCoreTextFont    *afont,
                                                                   gpointer           context_key);
+void                  _pango_core_text_font_set_font_key         (PangoCoreTextFont    *font,
+                                                                  PangoCoreTextFontKey *key);
 void                  _pango_core_text_font_set_ctfont           (PangoCoreTextFont    *font,
                                                                   CTFontRef         font_ref);
+
+PangoFontDescription *_pango_core_text_font_description_from_ct_font_descriptor (CTFontDescriptorRef desc);
+
+int                   pango_core_text_font_key_get_absolute_size    (const PangoCoreTextFontKey *key);
+double                pango_core_text_font_key_get_resolution       (const PangoCoreTextFontKey *key);
+gboolean              pango_core_text_font_key_get_synthetic_italic (const PangoCoreTextFontKey *key);
+gpointer              pango_core_text_font_key_get_context_key      (const PangoCoreTextFontKey *key);
+const PangoMatrix    *pango_core_text_font_key_get_matrix           (const PangoCoreTextFontKey *key);
+PangoGravity          pango_core_text_font_key_get_gravity          (const PangoCoreTextFontKey *key);
+CTFontDescriptorRef   pango_core_text_font_key_get_ctfontdescriptor (const PangoCoreTextFontKey *key);
 
 G_END_DECLS
 

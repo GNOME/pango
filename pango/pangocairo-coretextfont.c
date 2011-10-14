@@ -206,46 +206,24 @@ pango_cairo_core_text_font_init (PangoCairoCoreTextFont *cafont G_GNUC_UNUSED)
 
 PangoCoreTextFont *
 _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
-                                 PangoContext               *context,
-                                 PangoCoreTextFace          *face,
-                                 const PangoFontDescription *desc)
+                                 PangoCoreTextFontKey       *key)
 {
-  const char *postscript_name;
   gboolean synthesize_italic = FALSE;
   PangoCairoCoreTextFont *cafont;
   PangoCoreTextFont *cfont;
-  CFStringRef cfstr;
   CTFontRef font_ref;
+  CTFontDescriptorRef ctdescriptor;
   CGFontRef font_id;
   double size, abs_size;
-  double dpi;
   cairo_matrix_t font_matrix;
 
-  postscript_name = _pango_core_text_face_get_postscript_name (face);
+  abs_size = pango_core_text_font_key_get_absolute_size (key);
+  size = pango_units_to_double (abs_size);
 
-  abs_size = size = pango_units_to_double (pango_font_description_get_size (desc));
+  ctdescriptor = pango_core_text_font_key_get_ctfontdescriptor (key);
+  font_ref = CTFontCreateWithFontDescriptor (ctdescriptor, size, NULL);
 
-  if (context)
-    {
-      dpi = pango_cairo_context_get_resolution (context);
-
-      if (dpi <= 0)
-	dpi = cafontmap->dpi;
-    }
-  else
-    dpi = cafontmap->dpi;
-
-  if (pango_font_description_get_size_is_absolute (desc))
-    size *= 72. / dpi;
-  else
-    abs_size *= dpi / 72.;
-
-  cfstr = CFStringCreateWithCString (NULL, postscript_name,
-                                     kCFStringEncodingUTF8);
-  font_ref = CTFontCreateWithName (cfstr, size, NULL);
-  CFRelease (cfstr);
-
-  if (_pango_core_text_face_get_synthetic_italic (face))
+  if (pango_core_text_font_key_get_synthetic_italic (key))
     synthesize_italic = TRUE;
 
   font_id = CTFontCopyGraphicsFont (font_ref, NULL);
@@ -255,10 +233,7 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
   cafont = g_object_new (PANGO_TYPE_CAIRO_CORE_TEXT_FONT, NULL);
   cfont = PANGO_CORE_TEXT_FONT (cafont);
 
-  _pango_core_text_font_set_font_description (cfont, desc);
-  _pango_core_text_font_set_face (cfont, face);
-
-  cafont->abs_size = abs_size * PANGO_SCALE;
+  cafont->abs_size = abs_size;
 
   _pango_core_text_font_set_ctfont (cfont, font_ref);
 
@@ -270,14 +245,13 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
   else
     cairo_matrix_init_identity (&font_matrix);
  
-  /* Scale using absolute size */
-  cairo_matrix_scale (&font_matrix, abs_size, abs_size);
+  cairo_matrix_scale (&font_matrix, size, size);
 
   _pango_cairo_font_private_initialize (&cafont->cf_priv,
 					(PangoCairoFont *) cafont,
-					pango_font_description_get_gravity (desc),
-					_pango_cairo_context_get_merged_font_options (context),
-					pango_context_get_matrix (context),
+                                        pango_core_text_font_key_get_gravity (key),
+                                        pango_core_text_font_key_get_context_key (key),
+                                        pango_core_text_font_key_get_matrix (key),
 					&font_matrix);
 
   return cfont;

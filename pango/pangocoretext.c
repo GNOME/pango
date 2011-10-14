@@ -30,10 +30,12 @@ G_DEFINE_TYPE (PangoCoreTextFont, pango_core_text_font, PANGO_TYPE_FONT);
 struct _PangoCoreTextFontPrivate
 {
   PangoCoreTextFace *face;
-  PangoFontDescription *desc;
   gpointer context_key;
 
   CTFontRef font_ref;
+  PangoCoreTextFontKey *key;
+
+  PangoCoverage *coverage;
 
   PangoFontMap *fontmap;
 };
@@ -44,11 +46,12 @@ pango_core_text_font_finalize (GObject *object)
   PangoCoreTextFont *ctfont = (PangoCoreTextFont *)object;
   PangoCoreTextFontPrivate *priv = ctfont->priv;
 
-  pango_font_description_free (priv->desc);
-
   g_assert (priv->fontmap != NULL);
   g_object_remove_weak_pointer (G_OBJECT (priv->fontmap), (gpointer *) (gpointer) &priv->fontmap);
   priv->fontmap = NULL;
+
+  if (priv->coverage)
+    pango_coverage_unref (priv->coverage);
 
   G_OBJECT_CLASS (pango_core_text_font_parent_class)->finalize (object);
 }
@@ -58,8 +61,47 @@ pango_core_text_font_describe (PangoFont *font)
 {
   PangoCoreTextFont *ctfont = (PangoCoreTextFont *)font;
   PangoCoreTextFontPrivate *priv = ctfont->priv;
+  CTFontDescriptorRef ctfontdesc;
 
-  return pango_font_description_copy (priv->desc);
+  ctfontdesc = pango_core_text_font_key_get_ctfontdescriptor (priv->key);
+
+  return _pango_core_text_font_description_from_ct_font_descriptor (ctfontdesc);
+}
+
+static PangoCoverage *
+ct_font_descriptor_get_coverage (CTFontDescriptorRef desc)
+{
+  CFCharacterSetRef charset;
+  CFIndex i, length;
+  CFDataRef bitmap;
+  const UInt8 *ptr;
+  PangoCoverage *coverage;
+
+  coverage = pango_coverage_new ();
+
+  charset = CTFontDescriptorCopyAttribute (desc, kCTFontCharacterSetAttribute);
+  bitmap = CFCharacterSetCreateBitmapRepresentation (kCFAllocatorDefault,
+                                                     charset);
+
+  /* We only handle the BMP plane */
+  length = MIN (CFDataGetLength (bitmap), 8192);
+  ptr = CFDataGetBytePtr (bitmap);
+
+  /* FIXME: can and should this be done more efficiently? */
+  for (i = 0; i < length; i++)
+    {
+      int j;
+
+      for (j = 0; j < 8; j++)
+        pango_coverage_set (coverage, i * 8 + j,
+                            ((ptr[i] & (1 << j)) == (1 << j)) ?
+                            PANGO_COVERAGE_EXACT : PANGO_COVERAGE_NONE);
+    }
+
+  CFRelease (bitmap);
+  CFRelease (charset);
+
+  return coverage;
 }
 
 static PangoCoverage *
@@ -69,8 +111,16 @@ pango_core_text_font_get_coverage (PangoFont     *font,
   PangoCoreTextFont *ctfont = (PangoCoreTextFont *)font;
   PangoCoreTextFontPrivate *priv = ctfont->priv;
 
-  return pango_coverage_ref (_pango_core_text_face_get_coverage (priv->face,
-                                                                 language));
+  if (!priv->coverage)
+    {
+      CTFontDescriptorRef ctfontdesc;
+
+      ctfontdesc = pango_core_text_font_key_get_ctfontdescriptor (priv->key);
+
+      priv->coverage = ct_font_descriptor_get_coverage (ctfontdesc);
+    }
+
+  return pango_coverage_ref (priv->coverage);
 }
 
 static PangoEngineShape *
@@ -112,23 +162,6 @@ pango_core_text_font_class_init (PangoCoreTextFontClass *class)
   font_class->get_font_map = pango_core_text_font_get_font_map;
 
   g_type_class_add_private (object_class, sizeof (PangoCoreTextFontPrivate));
-}
-
-void
-_pango_core_text_font_set_font_description (PangoCoreTextFont          *font,
-                                            const PangoFontDescription *desc)
-{
-  PangoCoreTextFontPrivate *priv = font->priv;
-
-  priv->desc = pango_font_description_copy (desc);
-}
-
-PangoFontDescription *
-_pango_core_text_font_get_font_description (PangoCoreTextFont *font)
-{
-  PangoCoreTextFontPrivate *priv = font->priv;
-
-  return priv->desc;
 }
 
 void
@@ -174,6 +207,21 @@ _pango_core_text_font_set_context_key (PangoCoreTextFont *font,
   PangoCoreTextFontPrivate *priv = font->priv;
 
   priv->context_key = context_key;
+}
+
+void
+_pango_core_text_font_set_font_key (PangoCoreTextFont    *font,
+                                    PangoCoreTextFontKey *key)
+{
+  PangoCoreTextFontPrivate *priv = font->priv;
+
+  priv->key = key;
+
+  if (priv->coverage)
+    {
+      pango_coverage_unref (priv->coverage);
+      priv->coverage = NULL;
+    }
 }
 
 void
