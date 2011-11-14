@@ -78,7 +78,7 @@ struct _PangoCoreTextFace
   char *style_name;
 
   PangoWeight weight;
-  int traits;
+  CTFontSymbolicTraits traits;
   guint synthetic_italic : 1;
 };
 
@@ -195,7 +195,7 @@ pango_core_text_face_is_oblique (PangoCoreTextFace *face)
 static inline PangoCoreTextFace *
 pango_core_text_face_from_ct_font_descriptor (CTFontDescriptorRef desc)
 {
-  int font_traits;
+  SInt64 font_traits;
   char *buffer;
   CFStringRef str;
   CFNumberRef number;
@@ -250,8 +250,14 @@ pango_core_text_face_from_ct_font_descriptor (CTFontDescriptorRef desc)
   else
     face->weight = PANGO_WEIGHT_NORMAL;
 
+  /* This is interesting, the value stored is a CTFontSymbolicTraits which
+   * is defined as uint32_t.  CFNumber does not have an obvious type which
+   * deals with unsigned values.  Upon inspection with CFNumberGetType,
+   * it turns out this value is stored as SInt64, so we use that to
+   * obtain the value from the CFNumber.
+   */
   number = (CFNumberRef)CFDictionaryGetValue (dict, kCTFontSymbolicTrait);
-  if (CFNumberGetValue (number, kCFNumberIntType, &font_traits))
+  if (CFNumberGetValue (number, kCFNumberSInt64Type, &font_traits))
     {
       face->traits = font_traits;
     }
@@ -327,8 +333,8 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
 
           faces = g_list_prepend (faces, face);
 
-          if (face->traits & kCTFontItalicTrait
-              || pango_core_text_face_is_oblique (face))
+          if ((face->traits & kCTFontItalicTrait) == kCTFontItalicTrait ||
+              pango_core_text_face_is_oblique (face))
             g_hash_table_insert (italic_faces,
 				 GINT_TO_POINTER ((gint)face->weight),
                                  face);
