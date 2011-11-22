@@ -7,7 +7,7 @@ DOC_MODULE=pango
 DOC_MAIN_SGML_FILE=pango-docs.sgml
 
 # Extra options to supply to gtkdoc-scan
-SCAN_OPTIONS=--deprecated-guards="PANGO_DISABLE_DEPRECATED" --rebuild-types
+SCAN_OPTIONS=--deprecated-guards="PANGO_DISABLE_DEPRECATED"
 
 # Extra options to supply to gtkdoc-mkdb.
 MKDB_OPTIONS=--sgml-mode --output-format=xml
@@ -46,25 +46,9 @@ IGNORE_HFILES=			\
 	pangoxft-private.h	\
 	pango-ot-private.h	\
 	pango-script-lang-table.h	\
-	pango-language-sample-table.h
-
-if HAVE_CORE_TEXT
-else
-IGNORE_HFILES+=			\
-	pangocoretext.h			\
+	pango-language-sample-table.h 	\
 	pangocoretext-private.h		\
-	pangocairo-coretext.h		\
-	pangocairo-coretextfont.h
-endif
-
-if HAVE_CAIRO_ATSUI
-else
-IGNORE_HFILES+=			\
-	pangoatsui.h			\
-	pangoatsui-private.h		\
-	pangocairo-atsui.h		\
-	pangocairo-atsuifont.h
-endif
+	pangoatsui-private.h
 
 # CFLAGS and LDFLAGS for compiling scan program. Only needed
 # if $(DOC_MODULE).types is non-empty.
@@ -122,7 +106,7 @@ $(REPORT_FILES): sgml-build.stamp
 
 pango.types:
 	@echo "Rebuilding $@"
-	@LANG=C; LIST=$$(grep 'pango_[_a-zA-Z0-9]*_get_type' $(HFILE_GLOB) | grep -v '\(private\|atsui\|win32\)' | sed 's/\([^:]*:\).*\(pango[_a-zA-Z0-9]*_get_type\).*/\1\2/') && \
+	@LANG=C; LIST=$$(grep 'pango_[_a-zA-Z0-9]*_get_type' $(HFILE_GLOB) | grep -v '\(private\|atsui\|core_text\|win32\)' | sed 's/\([^:]*:\).*\(pango[_a-zA-Z0-9]*_get_type\).*/\1\2/') && \
 	echo "$$LIST" | sed 's/.*\/\(pango\/.*\):.*/#include <\1>/' | sort -u > $@.tmp && \
 	echo >> $@.tmp && \
 	echo "$$LIST" | cut -d : -f 2 | sort -u >> $@.tmp && \
