@@ -103,7 +103,7 @@ pango_tab_array_new (gint initial_size,
  * @positions_in_pixels: whether positions are in pixel units
  * @first_alignment: alignment of first tab stop
  * @first_position: position of first tab stop
- * @varargs: additional alignment/position pairs
+ * @...: additional alignment/position pairs
  *
  * This is a convenience function that creates a #PangoTabArray
  * and allows you to specify the alignment and position of each
