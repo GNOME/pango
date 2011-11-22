@@ -1,3 +1,19 @@
+Overview of changes between 1.29.4 and 1.29.5
+=============================================
+- Documentation fixes
+- Build fixes for ATSUI backend
+- Add more Chinese poetry
+- Fix ChanContext backtrack matching with GPOS
+- Bug 653985 - Pango 1.29.x make GTK3-demo.exe crashed in Windows
+- Bug 635399 - Add C include and exported packages information to GIRs
+- Bug 658561 - Double free after calling Pango.Context.get_font_des...
+- Bug 656014 - Missing GIR annotation/wrapper for pango_layout_get_...
+- Bug 654689 - Slightly broken Introspection build
+- Bug 403499 - Text Attribute Markup page does not describe charact...
+- Bug 650456 - Visual C++ 2010 Project Files to compile Pango
+- Bug 653985 - Pango 1.29.x make GTK3-demo.exe crashed in Windows
+- Bug 661612 - Add deprecation attributes to deprecated functions
+
 Overview of changes between 1.29.1 and 1.29.3
 =============================================
 - Minor fix in 1.29.1 tarball
