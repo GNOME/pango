@@ -28,6 +28,9 @@
 /* Whether Cairo has Xlib support */
 /* #undef HAVE_CAIRO_XLIB */
 
+/* Whether CoreText is available on the system */
+/* #undef HAVE_CORE_TEXT */
+
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
 /* #undef HAVE_DIRENT_H */
