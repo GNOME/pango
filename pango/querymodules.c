@@ -44,6 +44,8 @@
 #endif
 #define SOEXT_LEN ((int) strlen (SOEXT))
 
+static gboolean system_mode;
+
 static gboolean
 string_needs_escape (const char *str)
 {
@@ -205,6 +207,8 @@ main (int argc, char **argv)
     {
       {"version",	0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, &show_version,
        "Show version numbers",                                             NULL},
+      {"system",	0, 0, G_OPTION_ARG_NONE, &system_mode,
+       "Do not load configuration from home directory", NULL},
       {NULL}
     };
 
@@ -237,7 +241,10 @@ main (int argc, char **argv)
       char **dirs;
       int i;
 
-      path = pango_config_key_get ("Pango/ModulesPath");
+      if (system_mode)
+	path = pango_config_key_get_system ("Pango/ModulesPath");
+      else
+	path = pango_config_key_get ("Pango/ModulesPath");
       if (!path)
 	path = g_build_filename (pango_get_lib_subdirectory (),
 				 MODULE_VERSION,

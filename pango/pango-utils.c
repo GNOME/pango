@@ -532,6 +532,7 @@ pango_scan_int (const char **pos, int *out)
 }
 
 static GHashTable *config_hash = NULL;
+static gboolean did_read_user_config = FALSE;
 
 static void
 read_config_file (const char *filename, gboolean enoent_error)
@@ -604,23 +605,41 @@ read_config_file (const char *filename, gboolean enoent_error)
 }
 
 static void
-read_config (void)
+ensure_config_hash (void)
 {
   if (!config_hash)
+    config_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
+					 (GDestroyNotify)g_free,
+					 (GDestroyNotify)g_free);
+}
+
+static void
+read_config_system (void)
+{
+  char *filename;
+
+  ensure_config_hash ();
+
+  filename = g_build_filename (pango_get_sysconf_subdirectory (),
+			       "pangorc",
+			       NULL);
+  read_config_file (filename, FALSE);
+  g_free (filename);
+}
+
+static void
+read_config (void)
+{
+  char *filename;
+  const char *home;
+  const char *envvar;
+
+  read_config_system ();
+
+  if (!did_read_user_config)
     {
-      char *filename;
-      const char *home;
-      const char *envvar;
-
-      config_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
-					   (GDestroyNotify)g_free,
-					   (GDestroyNotify)g_free);
-      filename = g_build_filename (pango_get_sysconf_subdirectory (),
-				   "pangorc",
-				   NULL);
-      read_config_file (filename, FALSE);
-      g_free (filename);
-
+      did_read_user_config = TRUE;
+  
       home = g_get_home_dir ();
       if (home && *home)
 	{
@@ -633,6 +652,26 @@ read_config (void)
       if (envvar)
 	read_config_file (envvar, TRUE);
     }
+}
+
+/**
+ * pango_config_key_get_system:
+ * @key: Key to look up, in the form "SECTION/KEY".
+ *
+ * Looks up a key, consulting only the Pango system config database
+ * in $sysconfdir/pango/pangorc.
+ *
+ * Return value: the value, if found, otherwise %NULL. The value is a
+ * newly-allocated string and must be freed with g_free().
+ **/
+char *
+pango_config_key_get_system (const char *key)
+{
+  g_return_val_if_fail (key != NULL, NULL);
+
+  read_config_system ();
+
+  return g_strdup (g_hash_table_lookup (config_hash, key));
 }
 
 /**
