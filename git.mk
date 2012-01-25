@@ -1,18 +1,20 @@
 # git.mk
 #
 # Copyright 2009, Red Hat, Inc.
+# Copyright 2010,2011 Behdad Esfahbod
 # Written by Behdad Esfahbod
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
 # notice and this notice are preserved.
 #
-# The canonical source for this file is pango/git.mk, or whereever the
-# header of pango/git.mk suggests in the future.
+# The canonical source for this file is https://github.com/behdad/git.mk.
 #
 # To use in your project, import this file in your git repo's toplevel,
 # then do "make -f git.mk".  This modifies all Makefile.am files in
-# your project to include git.mk.
+# your project to -include git.mk.  Remember to add that line to new
+# Makefile.am files you create in your project, or just rerun the
+# "make -f git.mk".
 #
 # This enables automatic .gitignore generation.  If you need to ignore
 # more files, add them to the GITIGNOREFILES variable in your Makefile.am.
@@ -22,7 +24,7 @@
 #
 # The only case that you need to manually add a file to GITIGNOREFILES is
 # when remove files in one of mostlyclean-local, clean-local, distclean-local,
-# or maintainer-clean-local.
+# or maintainer-clean-local make targets.
 #
 # Note that for files like editor backup, etc, there are better places to
 # ignore them.  See "man gitignore".
@@ -30,10 +32,10 @@
 # If "make maintainer-clean" removes the files but they are not recognized
 # by this script (that is, if "git status" shows untracked files still), send
 # me the output of "git status" as well as your Makefile.am and Makefile for
-# the directories involved.
+# the directories involved and I'll diagnose.
 #
 # For a list of toplevel files that should be in MAINTAINERCLEANFILES, see
-# pango/Makefile.am.
+# Makefile.am.sample in the git.mk git repo.
 #
 # Don't EXTRA_DIST this file.  It is supposed to only live in git clones,
 # not tarballs.  It serves no useful purpose in tarballs and clutters the
@@ -52,16 +54,13 @@
 #   And add those files to git.  See vte/gnome-pty-helper/git.mk for
 #   example.
 #
-# ChangeLog
-#
-# - 2010-12-06 Add support for Mallard docs
-# - 2010-12-06 Start this change log
 
 git-all: git-mk-install
 
 git-mk-install:
 	@echo Installing git makefile
-	@any_failed=; find $(top_srcdir) -name Makefile.am | while read x; do \
+	@any_failed=; \
+		find "`test -z "$(top_srcdir)" && echo . || echo "$(top_srcdir)"`" -name Makefile.am | while read x; do \
 		if grep 'include .*/git.mk' $$x >/dev/null; then \
 			echo $$x already includes git.mk; \
 		else \
