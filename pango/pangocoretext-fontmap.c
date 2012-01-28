@@ -167,12 +167,63 @@ gchar_from_cf_string (CFStringRef str)
 }
 
 static char *
+ct_font_descriptor_get_family_name (CTFontDescriptorRef desc)
+{
+  CFStringRef cf_str;
+  char *buffer;
+
+  cf_str = CTFontDescriptorCopyAttribute (desc, kCTFontFamilyNameAttribute);
+  if (!cf_str)
+    {
+      int i;
+
+      /* No font family name is set, try to retrieve font name and deduce
+       * the family name from that instead.
+       */
+      cf_str = CTFontDescriptorCopyAttribute (desc, kCTFontNameAttribute);
+      if (!cf_str)
+        {
+          /* This font is likely broken, return a default family name ... */
+          return g_strdup ("Sans");
+        }
+
+      buffer = gchar_from_cf_string (cf_str);
+      CFRelease (cf_str);
+
+      for (i = 0; i < strlen (buffer); i++)
+        if (buffer[i] == '-')
+          break;
+
+      if (i < strlen (buffer))
+        {
+          char *ret;
+
+          ret = g_strndup (buffer, i);
+          g_free (buffer);
+
+          return ret;
+        }
+      else
+        return buffer;
+    }
+  /* else */
+
+  buffer = gchar_from_cf_string (cf_str);
+  CFRelease (cf_str);
+
+  return buffer;
+}
+
+static char *
 ct_font_descriptor_get_style_name (CTFontDescriptorRef desc)
 {
   CFStringRef cf_str;
   char *buffer;
 
   cf_str = CTFontDescriptorCopyAttribute (desc, kCTFontStyleNameAttribute);
+  if (!cf_str)
+    return NULL;
+
   buffer = gchar_from_cf_string (cf_str);
   CFRelease (cf_str);
 
@@ -271,6 +322,9 @@ ct_font_descriptor_get_weight (CTFontDescriptorRef desc)
 static inline gboolean
 pango_core_text_style_name_is_oblique (const char *style_name)
 {
+  if (!style_name)
+    return FALSE;
+
   return g_strrstr (style_name, "Oblique") != NULL;
 }
 
@@ -278,25 +332,20 @@ PangoFontDescription *
 _pango_core_text_font_description_from_ct_font_descriptor (CTFontDescriptorRef desc)
 {
   SInt64 font_traits;
-  char *buffer;
+  char *family_name;
   char *style_name;
-  CFStringRef cf_str;
   PangoFontDescription *font_desc;
 
   font_desc = pango_font_description_new ();
 
   /* Family name */
 
-  /* FIXME: Should we actually retrieve the family name from the list of families
-   * in a font map?
+  /* FIXME: Should we actually retrieve the family name from the list of
+   * families in a font map?
    */
-  cf_str = CTFontDescriptorCopyAttribute (desc, kCTFontFamilyNameAttribute);
-  buffer = gchar_from_cf_string (cf_str);
-
-  pango_font_description_set_family (font_desc, buffer);
-
-  g_free (buffer);
-  CFRelease (cf_str);
+  family_name = ct_font_descriptor_get_family_name (desc);
+  pango_font_description_set_family (font_desc, family_name);
+  g_free (family_name);
 
   /* Weight */
   pango_font_description_set_weight (font_desc,

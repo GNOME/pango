@@ -80,6 +80,10 @@ ct_font_descriptor_get_coverage (CTFontDescriptorRef desc)
   coverage = pango_coverage_new ();
 
   charset = CTFontDescriptorCopyAttribute (desc, kCTFontCharacterSetAttribute);
+  if (!charset)
+    /* Return an empty coverage */
+    return coverage;
+
   bitmap = CFCharacterSetCreateBitmapRepresentation (kCFAllocatorDefault,
                                                      charset);
 
