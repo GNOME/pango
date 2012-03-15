@@ -6,7 +6,7 @@
     <PangoDummyPrefix>/dummy</PangoDummyPrefix>
     <PangoDefines>G_LOG_DOMAIN="Pango";PANGO_ENABLE_BACKEND;PANGO_ENABLE_ENGINE;SYSCONFDIR="$(PangoDummyPrefix)/etc";LIBDIR="$(PangoDummyPrefix)/lib"</PangoDefines>
     <NoFCDef>PANGO_VISUALC_NO_FC</NoFCDef>
-	<GlibEtcInstallRoot>..\..\..\..\..\vs10\$(Platform)</GlibEtcInstallRoot>
+	<GlibEtcInstallRoot>..\..\..\..\vs10\$(Platform)</GlibEtcInstallRoot>
 	<CopyDir>$(GlibEtcInstallRoot)</CopyDir>
     <PangoDoInstall>
 echo on

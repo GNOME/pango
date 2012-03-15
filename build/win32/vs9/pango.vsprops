@@ -153,6 +153,6 @@ copy ..\..\..\pango\pangoft2.h $(OutDir)\include\pango-$(PangoApiVersion)\pango&
 	/>
 	<UserMacro
 		Name="GlibEtcInstallRoot"
-		Value="..\..\..\..\..\vs9\$(PlatformName)"
+		Value="..\..\..\..\vs9\$(PlatformName)"
 	/>
 </VisualStudioPropertySheet>
