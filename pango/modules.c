@@ -400,7 +400,7 @@ script_info_free (PangoEngineScriptInfo *script_info,
 }
 
 static gboolean /* Returns true if succeeded, false if failed */
-process_module_file (FILE *module_file)
+process_module_file (FILE *module_file, const gchar *module_file_dir)
 {
   GString *line_buf = g_string_new (NULL);
   GString *tmp_buf = g_string_new (NULL);
@@ -438,6 +438,11 @@ process_module_file (FILE *module_file)
 	  switch (i)
 	    {
 	    case 0:
+	      if (!g_path_is_absolute (tmp_buf->str)) {
+		const gchar *abs_file_name = g_build_filename (module_file_dir, tmp_buf->str, NULL);
+		g_string_assign (tmp_buf, abs_file_name);
+		g_free ((gpointer) abs_file_name);
+	      }
 	      pair->module = find_or_create_module (tmp_buf->str);
 	      break;
 	    case 1:
@@ -543,7 +548,9 @@ read_modules (void)
       module_file = g_fopen (files[n], "r");
       if (module_file)
 	{
-	  process_module_file(module_file);
+	  const gchar *module_file_dir = g_path_get_dirname (files[n]);
+	  process_module_file(module_file, module_file_dir);
+	  g_free ((gpointer) module_file_dir);
 	  fclose(module_file);
 	}
     }
