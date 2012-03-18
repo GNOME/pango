@@ -225,7 +225,15 @@ run_iterator_create (struct RunIterator *iter,
 
   iter->total_ct_i = 0;
   iter->glyph_count = run_iterator_get_glyph_count (iter);
-  run_iterator_set_current_run (iter, 0);
+
+  /* If CoreText did not render any glyphs for this string (can happen,
+   * e.g. a run solely consisting of a BOM), glyph_count will be zero and
+   * we immediately set the iterator variable to indicate end of glyph list.
+   */
+  if (iter->glyph_count > 0)
+    run_iterator_set_current_run (iter, 0);
+  else
+    iter->total_ct_i = -1;
 }
 
 static void
