@@ -1,3 +1,13 @@
+Overview of changes between 1.29.5 and 1.30.0
+=============================================
+- 667799 - Fix cross-compiling bug in configure.in
+- 664125 - Zero-width spaces cause missing characters
+- CoreText backend: implement font fallbacks
+- CoreText backend: make more robust against broken fonts
+- CoreText backend: make shaping engine more robust
+- CoreText backend: Guard against glyph count of zero
+- Win32 build fixes
+
 Overview of changes between 1.29.4 and 1.29.5
 =============================================
 - Documentation fixes
