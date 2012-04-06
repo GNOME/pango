@@ -34,7 +34,7 @@
 /*
  *
  *     Here a table of the joining classes for characters in the range
- *     U+0620 - U+06FF and U+0750 - U+077F.
+ *     U+0620 - U+06FF, U+0750 - U+077F and U+08A0 - U+08FF.
  *
  *    The following character also has a joining class:
  *
@@ -47,7 +47,7 @@
 static const joining_class  arabic[] =
 {
   /* U+0620 */
-  none, none, right, right,
+  dual, none, right, right,
   right, right, dual, right,
   dual, right, dual, dual,
   dual, dual, dual, right,
@@ -55,8 +55,8 @@ static const joining_class  arabic[] =
   /* U+0630 */
   right, right, right, dual,
   dual, dual, dual, dual,
-  dual, dual, dual, none,
-  none, none, none, none,
+  dual, dual, dual, dual,
+  dual, dual, dual, dual,
 
   /* U+0640 */
   causing, dual, dual, dual,
@@ -107,16 +107,16 @@ static const joining_class  arabic[] =
   dual, dual, dual, dual,
 
   /* U+06C0 */
-  right, dual, right, right,
+  right, dual, dual, right,
   right, right, right, right,
   right, right, right, right,
   dual, right, dual, right,
 
   /* U+06D0 */
   dual, dual, right, right,
-  none, right, none, transparent,
+  none, right, transparent, transparent,
   transparent, transparent, transparent, transparent,
-  transparent, transparent, transparent, transparent,
+  transparent, none, none, transparent,
 
   /* U+06E0 */
   transparent, transparent, transparent, transparent,
@@ -143,13 +143,52 @@ static const joining_class  arabic_supplement[] =
   dual, dual, dual, dual,
   dual, dual, dual, dual,
   dual, dual, dual, right,
-  right, dual, none, none,
+  right, dual, dual, dual,
 
   /* U+0770 */
+  dual, right, dual, right,
+  right, dual, dual, dual,
+  right, right, dual, dual,
+  dual, dual, dual, dual,
+};
+
+static const joining_class  arabic_extended_a[] =
+{
+  /* U+08A0 */
+  dual, none, dual, dual,
+  dual, dual, dual, dual,
+  dual, dual, right, right,
+  right, none, none, none,
+
+  /* U+08B0 */
   none, none, none, none,
   none, none, none, none,
   none, none, none, none,
-  none, none, none, none
+  none, none, none, none,
+
+  /* U+08C0 */
+  none, none, none, none,
+  none, none, none, none,
+  none, none, none, none,
+  none, none, none, none,
+
+  /* U+08D0 */
+  none, none, none, none,
+  none, none, none, none,
+  none, none, none, none,
+  none, none, none, none,
+
+  /* U+08E0 */
+  none, none, none, none,
+  transparent, transparent, transparent, transparent,
+  transparent, transparent, transparent, transparent,
+  transparent, transparent, transparent, transparent,
+
+  /* U+08F0 */
+  transparent, transparent, transparent, transparent,
+  transparent, transparent, transparent, transparent,
+  transparent, transparent, transparent, transparent,
+  transparent, transparent, transparent, none,
 };
 
 /*     Here a table of the joining classes for characters in the range
@@ -344,6 +383,9 @@ static joining_class  Get_Joining_Class (gunichar*   string,
       else if (string[pos] >= 0x07C0 &&
 	  string[pos] < 0x0800)
 	j = nko[string[pos] - 0x07C0];
+      else if (string[pos] >= 0x08A0 &&
+          string[pos] < 0x08FF)
+	j = arabic_extended_a[string[pos] - 0x08A0];
       else if (string[pos] == 0x200D)
 	return causing;
       else
