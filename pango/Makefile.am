@@ -282,7 +282,7 @@ PangoFT2_1_0_gir_PACKAGES = freetype2
 PangoFT2_1_0_gir_EXPORT_PACKAGES = pangoft2
 PangoFT2_1_0_gir_INCLUDES = GObject-2.0 cairo-1.0 freetype2-2.0 fontconfig-2.0
 PangoFT2_1_0_gir_LIBS = libpangoft2-1.0.la
-PangoFT2_1_0_gir_CFLAGS = -I$(top_builddir) I$(top_srcdir)
+PangoFT2_1_0_gir_CFLAGS = -I$(top_builddir) -I$(top_srcdir)
 PangoFT2_1_0_gir_SCANNERFLAGS = --include-uninstalled=$(builddir)/Pango-1.0.gir --c-include "pango/pangoft2.h"
 PangoFT2_1_0_gir_FILES = $(filter-out %-private.h, $(addprefix $(srcdir)/,$(pangoft2_introspection_files)))
 
@@ -333,7 +333,7 @@ PangoXft_1_0_gir_PACKAGES = gobject-2.0 freetype2
 PangoXft_1_0_gir_EXPORT_PACKAGES = pangoxft
 PangoXft_1_0_gir_INCLUDES = GObject-2.0 xft-2.0 xlib-2.0
 PangoXft_1_0_gir_LIBS = libpangoxft-1.0.la
-PangoXft_1_0_gir_CFLAGS = I$(top_builddir) -I$(top_srcdir) $(PANGO_CFLAGS)
+PangoXft_1_0_gir_CFLAGS = -I$(top_builddir) -I$(top_srcdir) $(PANGO_CFLAGS)
 PangoXft_1_0_gir_SCANNERFLAGS = --include-uninstalled=$(builddir)/Pango-1.0.gir --include-uninstalled=$(builddir)/PangoFT2-1.0.gir --c-include "pango/pangoxft.h"
 PangoXft_1_0_gir_FILES = $(filter-out %-private.h, $(addprefix $(srcdir)/,$(pangoxft_introspection_files)))
 
