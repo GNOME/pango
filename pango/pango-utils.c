@@ -631,7 +631,6 @@ static void
 read_config (void)
 {
   char *filename;
-  const char *home;
   const char *envvar;
 
   read_config_system ();
@@ -639,18 +638,14 @@ read_config (void)
   if (!did_read_user_config)
     {
       did_read_user_config = TRUE;
-  
-      home = g_get_home_dir ();
-      if (home && *home)
-	{
-	  filename = g_build_filename (home, ".pangorc", NULL);
-	  read_config_file (filename, FALSE);
-	  g_free (filename);
-	}
+
+      filename = g_build_filename (g_get_user_config_dir (), "pango", "pangorc", NULL);
+      read_config_file (filename, FALSE);
+      g_free (filename);
 
       envvar = g_getenv ("PANGO_RC_FILE");
       if (envvar)
-	read_config_file (envvar, TRUE);
+        read_config_file (envvar, TRUE);
     }
 }
 
@@ -680,7 +675,7 @@ pango_config_key_get_system (const char *key)
  *
  * Looks up a key in the Pango config database
  * (pseudo-win.ini style, read from $sysconfdir/pango/pangorc,
- *  ~/.pangorc, and getenv (PANGO_RC_FILE).)
+ *  $XDG_CONFIG_HOME/pango/pangorc, and getenv (PANGO_RC_FILE).)
  *
  * Return value: the value, if found, otherwise %NULL. The value is a
  * newly-allocated string and must be freed with g_free().
