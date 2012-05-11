@@ -906,11 +906,17 @@ static void
 pango_x_font_map_read_aliases (PangoXFontMap *xfontmap)
 {
   char **files;
+  char *user_file;
   char *files_str = pango_config_key_get ("PangoX/AliasFiles");
   int n;
 
   if (!files_str)
-    files_str = g_strdup ("~/.pangox_aliases:" SYSCONFDIR "/pango/pangox.aliases");
+    {
+      user_file = g_build_filename (g_get_user_config_dir (), "pango", "pangox.aliases", NULL);
+
+      files_str = g_strconcat (user_file, ":" SYSCONFDIR "/pango/pangox.aliases", NULL);
+      g_free (user_file);
+    }
 
   files = pango_split_file_list (files_str);
 
