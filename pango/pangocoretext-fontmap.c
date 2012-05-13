@@ -167,7 +167,8 @@ gchar_from_cf_string (CFStringRef str)
 }
 
 static char *
-ct_font_descriptor_get_family_name (CTFontDescriptorRef desc)
+ct_font_descriptor_get_family_name (CTFontDescriptorRef desc,
+                                    gboolean            may_fail)
 {
   CFStringRef cf_str;
   char *buffer;
@@ -183,6 +184,9 @@ ct_font_descriptor_get_family_name (CTFontDescriptorRef desc)
       cf_str = CTFontDescriptorCopyAttribute (desc, kCTFontNameAttribute);
       if (!cf_str)
         {
+          if (may_fail)
+            return NULL;
+
           /* This font is likely broken, return a default family name ... */
           return g_strdup ("Sans");
         }
@@ -343,7 +347,7 @@ _pango_core_text_font_description_from_ct_font_descriptor (CTFontDescriptorRef d
   /* FIXME: Should we actually retrieve the family name from the list of
    * families in a font map?
    */
-  family_name = ct_font_descriptor_get_family_name (desc);
+  family_name = ct_font_descriptor_get_family_name (desc, FALSE);
   pango_font_description_set_family (font_desc, family_name);
   g_free (family_name);
 
@@ -1308,13 +1312,13 @@ pango_core_text_font_map_init (PangoCoreTextFontMap *ctfontmap)
       SInt64 font_traits;
       char *buffer;
       char *family_name;
-      CFStringRef str;
       CFNumberRef number;
       CFDictionaryRef dict;
       CTFontDescriptorRef desc = CFArrayGetValueAtIndex (ctfaces, i);
 
-      str = CTFontDescriptorCopyAttribute (desc, kCTFontFamilyNameAttribute);
-      buffer = gchar_from_cf_string (str);
+      buffer = ct_font_descriptor_get_family_name (desc, TRUE);
+      if (!buffer)
+        continue;
 
       family_name = g_utf8_casefold (buffer, -1);
 
@@ -1328,7 +1332,6 @@ pango_core_text_font_map_init (PangoCoreTextFontMap *ctfontmap)
           family->family_name = g_strdup (buffer);
         }
 
-      CFRelease (str);
       g_free (buffer);
 
       g_free (family_name);
