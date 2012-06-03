@@ -511,7 +511,7 @@ pango_layout_is_wrapped (PangoLayout *layout)
 }
 
 /**
- * pango_layout_set_indent
+ * pango_layout_set_indent:
  * @layout: a #PangoLayout.
  * @indent: the amount by which to indent.
  *

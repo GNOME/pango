@@ -48,7 +48,7 @@ typedef enum {
 } PangoWrapMode;
 
 /**
- * PangoEllipsizeMode
+ * PangoEllipsizeMode:
  * @PANGO_ELLIPSIZE_NONE: No ellipsization
  * @PANGO_ELLIPSIZE_START: Omit characters at the start of the text
  * @PANGO_ELLIPSIZE_MIDDLE: Omit characters in the middle of the text

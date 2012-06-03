@@ -786,7 +786,7 @@ _pango_fc_font_shutdown (PangoFcFont *font)
 }
 
 /**
- * pango_fc_font_kern_glyphs
+ * pango_fc_font_kern_glyphs:
  * @font: a #PangoFcFont
  * @glyphs: a #PangoGlyphString
  *
@@ -859,7 +859,7 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
 }
 
 /**
- * _pango_fc_font_get_decoder
+ * _pango_fc_font_get_decoder:
  * @font: a #PangoFcFont
  *
  * This will return any custom decoder set on this font.
@@ -878,7 +878,7 @@ _pango_fc_font_get_decoder (PangoFcFont *font)
 }
 
 /**
- * _pango_fc_font_set_decoder
+ * _pango_fc_font_set_decoder:
  * @font: a #PangoFcFont
  * @decoder: a #PangoFcDecoder to set for this font
  *

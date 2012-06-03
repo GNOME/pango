@@ -42,7 +42,7 @@ GType pango_fontset_get_type (void) G_GNUC_CONST;
 typedef struct _PangoFontset        PangoFontset;
 
 /**
- * PangoFontsetForeachFunc
+ * PangoFontsetForeachFunc:
  * @fontset: a #PangoFontset
  * @font: a font from @fontset
  * @data: callback data

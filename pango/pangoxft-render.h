@@ -46,7 +46,7 @@ typedef struct _PangoXftRendererPrivate PangoXftRendererPrivate;
 #define PANGO_XFT_RENDERER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_XFT_RENDERER, PangoXftRendererClass))
 
 /**
- * PangoXftRenderer
+ * PangoXftRenderer:
  *
  * #PangoXftRenderer is a subclass of #PangoRenderer used for rendering
  * with Pango's Xft backend. It can be used directly, or it can be
@@ -68,7 +68,7 @@ struct _PangoXftRenderer
 };
 
 /**
- * PangoXftRendererClass
+ * PangoXftRendererClass:
  * @composite_trapezoids: draw the specified trapezoids using
  *   the current color and other attributes for @part
  * @composite_glyphs: draw the specified glyphs using

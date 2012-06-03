@@ -31,7 +31,7 @@
 
 
 /**
- * pango_bidi_type_for_unichar
+ * pango_bidi_type_for_unichar:
  * @ch: a Unicode character
  *
  * Determines the normative bidirectional character type of a
