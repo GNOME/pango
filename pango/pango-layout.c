@@ -1716,12 +1716,13 @@ pango_layout_index_to_line_x (PangoLayout *layout,
  *                indicates that the cursor has been moved off the beginning
  *                of the layout. A value of %G_MAXINT indicates that
  *                the cursor has been moved off the end of the layout.
- * @new_trailing: number of characters to move forward from the location returned
- *                for @new_index to get the position where the cursor should
- *                be displayed. This allows distinguishing the position at
- *                the beginning of one line from the position at the end
- *                of the preceding line. @new_index is always on the line
- *                where the cursor should be displayed.
+ * @new_trailing: (out): number of characters to move forward from the
+ *                location returned for @new_index to get the position
+ *                where the cursor should be displayed. This allows
+ *                distinguishing the position at the beginning of one
+ *                line from the position at the end of the preceding
+ *                line. @new_index is always on the line where the
+ *                cursor should be displayed.
  *
  * Computes a new cursor position from an old position and
  * a count of positions to move visually. If @direction is positive,
