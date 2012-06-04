@@ -1233,6 +1233,7 @@ pango_core_text_font_map_load_fontset (PangoFontMap               *fontmap,
   PangoCoreTextFontset *fontset;
   PangoCoreTextFontsetKey key;
   PangoCoreTextFontMap *ctfontmap = PANGO_CORE_TEXT_FONT_MAP (fontmap);
+  static gboolean warned_full_fallback = FALSE;
 
   pango_core_text_fontset_key_init (&key, ctfontmap,
                                     context, desc, language);
@@ -1250,7 +1251,8 @@ pango_core_text_font_map_load_fontset (PangoFontMap               *fontmap,
       else
         {
           /* If no font(set) could be loaded, we fallback to "Sans",
-           * which should always work on Mac.
+           * which should always work on Mac. We try to adhere to the
+           * requested style at first.
            */
           PangoFontDescription *tmp_desc;
 
@@ -1265,13 +1267,47 @@ pango_core_text_font_map_load_fontset (PangoFontMap               *fontmap,
 
           fontset = g_hash_table_lookup (ctfontmap->fontset_hash, &key);
           if (G_UNLIKELY (!fontset))
-            {
-              fontset = pango_core_text_fontset_new (&key, tmp_desc);
-              g_hash_table_insert (ctfontmap->fontset_hash,
-                                   pango_core_text_fontset_get_key (fontset),
-                                   fontset);
+            fontset = pango_core_text_fontset_new (&key, tmp_desc);
 
+          if (G_UNLIKELY (!fontset))
+            {
+              /* We could not load Sans in the requested style; reset
+               * variant, weight and stretch to sensible defaults (we should
+               * be able to adhere the PangoStyle with "Sans").
+               */
+              pango_font_description_set_variant (tmp_desc, PANGO_VARIANT_NORMAL);
+              pango_font_description_set_weight (tmp_desc, PANGO_WEIGHT_NORMAL);
+              pango_font_description_set_stretch (tmp_desc, PANGO_STRETCH_NORMAL);
+
+              if (!warned_full_fallback)
+                {
+                  char *ctmp;
+
+                  warned_full_fallback = TRUE;
+
+                  ctmp = pango_font_description_to_string (desc);
+                  g_warning ("couldn't load font \"%s\", modified variant/"
+                             "weight/stretch as fallback, expect ugly output.",
+                             ctmp);
+                  g_free (ctmp);
+                }
+
+              fontset = g_hash_table_lookup (ctfontmap->fontset_hash, &key);
+              if (G_UNLIKELY (!fontset))
+                fontset = pango_core_text_fontset_new (&key, tmp_desc);
+
+              if (G_UNLIKELY (!fontset))
+                {
+                  /* If even that failed, display a sensible error message
+                   * and bail out, in contrast to failing randomly.
+                   */
+                  g_error ("Could not load fallback font, bailing out.");
+                }
             }
+
+          g_hash_table_insert (ctfontmap->fontset_hash,
+                               pango_core_text_fontset_get_key (fontset),
+                               fontset);
         }
     }
 
