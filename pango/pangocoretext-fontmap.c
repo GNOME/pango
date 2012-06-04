@@ -323,6 +323,51 @@ ct_font_descriptor_get_weight (CTFontDescriptorRef desc)
   return weight;
 }
 
+static gboolean
+ct_font_descriptor_is_small_caps (CTFontDescriptorRef desc)
+{
+  CFIndex i, count;
+  CFArrayRef array;
+  CFStringRef str;
+  gboolean retval = FALSE;
+
+  /* See http://stackoverflow.com/a/4811371 for why this works and an
+   * explanation of the magic number "3" used below.
+   */
+  array = CTFontDescriptorCopyAttribute (desc, kCTFontFeaturesAttribute);
+  if (!array)
+    return FALSE;
+
+  str = CFStringCreateWithCString (NULL, "CTFeatureTypeIdentifier",
+                                   kCFStringEncodingASCII);
+
+  count = CFArrayGetCount (array);
+  for (i = 0; i < count; i++)
+    {
+      CFDictionaryRef dict = CFArrayGetValueAtIndex (array, i);
+      CFNumberRef num;
+
+      num = (CFNumberRef)CFDictionaryGetValue (dict, str);
+      if (num)
+        {
+          int value = 0;
+
+          if (CFNumberGetValue (num, kCFNumberSInt32Type, &value) &&
+              value == 3)
+            {
+              /* This font supports small caps. */
+              retval = TRUE;
+              break;
+            }
+        }
+    }
+
+  CFRelease (str);
+  CFRelease (array);
+
+  return retval;
+}
+
 static inline gboolean
 pango_core_text_style_name_is_oblique (const char *style_name)
 {
@@ -366,12 +411,9 @@ _pango_core_text_font_description_from_ct_font_descriptor (CTFontDescriptorRef d
   else
     pango_font_description_set_style (font_desc, PANGO_STYLE_NORMAL);
 
-  /* FIXME: How can this be figured using CoreText? */
-#if 0
-  if (font_traits & NSSmallCapsFontMask)
+  if (ct_font_descriptor_is_small_caps (desc))
     pango_font_description_set_variant (font_desc, PANGO_VARIANT_SMALL_CAPS);
   else
-#endif
     pango_font_description_set_variant (font_desc, PANGO_VARIANT_NORMAL);
 
   g_free (style_name);
