@@ -57,6 +57,7 @@ EXPORTS
 	pango_color_parse
 	pango_color_to_string
 	pango_config_key_get
+	pango_config_key_get_system
 	pango_context_get_base_dir
 	pango_context_get_base_gravity
 	pango_context_get_font_description
