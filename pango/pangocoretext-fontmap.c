@@ -1284,13 +1284,11 @@ pango_core_text_font_map_load_fontset (PangoFontMap               *fontmap,
 
   if (G_UNLIKELY (!fontset))
     {
+      gboolean insert_in_hash = TRUE;
+
       fontset = pango_core_text_fontset_new (&key, desc);
 
-      if (G_LIKELY (fontset))
-        g_hash_table_insert (ctfontmap->fontset_hash,
-                             pango_core_text_fontset_get_key (fontset),
-                             fontset);
-      else
+      if (G_UNLIKELY (!fontset))
         {
           /* If no font(set) could be loaded, we fallback to "Sans",
            * which should always work on Mac. We try to adhere to the
@@ -1308,7 +1306,9 @@ pango_core_text_font_map_load_fontset (PangoFontMap               *fontmap,
                                             language);
 
           fontset = g_hash_table_lookup (ctfontmap->fontset_hash, &key);
-          if (G_UNLIKELY (!fontset))
+          if (G_LIKELY (fontset))
+            insert_in_hash = FALSE;
+          else
             fontset = pango_core_text_fontset_new (&key, tmp_desc);
 
           if (G_UNLIKELY (!fontset))
@@ -1335,7 +1335,9 @@ pango_core_text_font_map_load_fontset (PangoFontMap               *fontmap,
                 }
 
               fontset = g_hash_table_lookup (ctfontmap->fontset_hash, &key);
-              if (G_UNLIKELY (!fontset))
+              if (G_LIKELY (fontset))
+                insert_in_hash = FALSE;
+              else
                 fontset = pango_core_text_fontset_new (&key, tmp_desc);
 
               if (G_UNLIKELY (!fontset))
@@ -1346,11 +1348,12 @@ pango_core_text_font_map_load_fontset (PangoFontMap               *fontmap,
                   g_error ("Could not load fallback font, bailing out.");
                 }
             }
-
-          g_hash_table_insert (ctfontmap->fontset_hash,
-                               pango_core_text_fontset_get_key (fontset),
-                               fontset);
         }
+
+      if (insert_in_hash)
+        g_hash_table_insert (ctfontmap->fontset_hash,
+                             pango_core_text_fontset_get_key (fontset),
+                             fontset);
     }
 
   /* Cannot use pango_core_text_fontset_key_free() here */
