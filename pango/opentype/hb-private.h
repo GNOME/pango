@@ -76,6 +76,7 @@ typedef GStaticMutex hb_mutex_t;
 #define hb_mutex_lock(M)		g_static_mutex_lock (&M)
 #define hb_mutex_trylock(M)		g_static_mutex_trylock (&M)
 #define hb_mutex_unlock(M)		g_static_mutex_unlock (&M)
+#define hb_mutex_free(M)		g_static_mutex_free (&M)
 
 #else
 #error "Could not find any system to define platform macros, see hb-private.h"
