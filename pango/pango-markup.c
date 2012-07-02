@@ -585,7 +585,6 @@ pango_parse_markup (const char                 *markup_text,
 {
   GMarkupParseContext *context = NULL;
   MarkupData *md = NULL;
-  gboolean needs_root = TRUE;
   GSList *tmp_list;
   const char *p;
   const char *end;
@@ -626,15 +625,11 @@ pango_parse_markup (const char                 *markup_text,
   while (p != end && xml_isspace (*p))
     ++p;
 
-  if (end - p >= 8 && strncmp (p, "<markup>", 8) == 0)
-     needs_root = FALSE;
-
-  if (needs_root)
-    if (!g_markup_parse_context_parse (context,
-				       "<markup>",
-				       -1,
-				       error))
-      goto error;
+  if (!g_markup_parse_context_parse (context,
+                                     "<markup>",
+                                     -1,
+                                     error))
+    goto error;
 
 
   if (!g_markup_parse_context_parse (context,
@@ -643,12 +638,11 @@ pango_parse_markup (const char                 *markup_text,
 				     error))
     goto error;
 
-  if (needs_root)
-    if (!g_markup_parse_context_parse (context,
-				       "</markup>",
-				       -1,
-				       error))
-      goto error;
+  if (!g_markup_parse_context_parse (context,
+                                     "</markup>",
+                                     -1,
+                                     error))
+    goto error;
 
   if (!g_markup_parse_context_end_parse (context, error))
     goto error;
