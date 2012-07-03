@@ -547,6 +547,65 @@ static const GMarkupParser pango_markup_parser = {
   NULL
 };
 
+static void
+destroy_markup_data (MarkupData *md)
+{
+  g_slist_free_full (md->tag_stack, (GDestroyNotify) open_tag_free);
+  g_slist_free_full (md->to_apply, (GDestroyNotify) pango_attribute_destroy);
+  if (md->text)
+      g_string_free (md->text, TRUE);
+
+  if (md->attr_list)
+    pango_attr_list_unref (md->attr_list);
+
+  g_slice_free (MarkupData, md);
+}
+
+static GMarkupParseContext *
+pango_markup_parser_new_internal (char       accel_marker,
+				  GError   **error,
+				  gboolean   want_attr_list)
+{
+  MarkupData *md;
+  GMarkupParseContext *context;
+
+  md = g_slice_new (MarkupData);
+
+  /* Don't bother creating these if they weren't requested;
+   * might be useful e.g. if you just want to validate
+   * some markup.
+   */
+  if (want_attr_list)
+    md->attr_list = pango_attr_list_new ();
+  else
+    md->attr_list = NULL;
+
+  md->text = g_string_new (NULL);
+
+  md->accel_marker = accel_marker;
+  md->accel_char = 0;
+
+  md->index = 0;
+  md->tag_stack = NULL;
+  md->to_apply = NULL;
+
+  context = g_markup_parse_context_new (&pango_markup_parser,
+					0, md,
+                                        (GDestroyNotify)destroy_markup_data);
+
+  if (!g_markup_parse_context_parse (context,
+                                     "<markup>",
+                                     -1,
+                                     error))
+    goto error;
+
+  return context;
+
+ error:
+  g_markup_parse_context_free (context);
+  return NULL;
+}
+
 /**
  * pango_parse_markup:
  * @markup_text: markup to parse (see <link linkend="PangoMarkupFormat">markup format</link>)
@@ -569,6 +628,8 @@ static const GMarkupParser pango_markup_parser = {
  * Two @accel_marker characters following each other produce a single
  * literal @accel_marker character.
  *
+ * To parse a stream of pango markup incrementally, use pango_markup_parser_new().
+ *
  * If any error happens, none of the output arguments are touched except
  * for @error.
  *
@@ -584,38 +645,11 @@ pango_parse_markup (const char                 *markup_text,
 		    GError                    **error)
 {
   GMarkupParseContext *context = NULL;
-  MarkupData *md = NULL;
-  GSList *tmp_list;
+  gboolean ret = FALSE;
   const char *p;
   const char *end;
 
   g_return_val_if_fail (markup_text != NULL, FALSE);
-
-  md = g_slice_new (MarkupData);
-
-  /* Don't bother creating these if they weren't requested;
-   * might be useful e.g. if you just want to validate
-   * some markup.
-   */
-  if (attr_list)
-    md->attr_list = pango_attr_list_new ();
-  else
-    md->attr_list = NULL;
-
-  md->text = g_string_new (NULL);
-
-  if (accel_char)
-    *accel_char = 0;
-
-  md->accel_marker = accel_marker;
-  md->accel_char = 0;
-
-  md->index = 0;
-  md->tag_stack = NULL;
-  md->to_apply = NULL;
-
-  context = g_markup_parse_context_new (&pango_markup_parser,
-					0, md, NULL);
 
   if (length < 0)
     length = strlen (markup_text);
@@ -625,29 +659,110 @@ pango_parse_markup (const char                 *markup_text,
   while (p != end && xml_isspace (*p))
     ++p;
 
+  context = pango_markup_parser_new_internal (accel_marker,
+                                              error,
+                                              (attr_list != NULL));
+  if (context == NULL)
+    goto out;
+
   if (!g_markup_parse_context_parse (context,
-                                     "<markup>",
-                                     -1,
+                                     markup_text,
+                                     length,
                                      error))
-    goto error;
+    goto out;
 
+  if (!pango_markup_parser_finish (context,
+                                   attr_list,
+                                   text,
+                                   accel_char,
+                                   error))
+    goto out;
 
-  if (!g_markup_parse_context_parse (context,
-				     markup_text,
-				     length,
-				     error))
-    goto error;
+  ret = TRUE;
+
+ out:
+  if (context != NULL)
+    g_markup_parse_context_free (context);
+  return ret;
+}
+
+/**
+ * pango_markup_parser_new:
+ * @accel_marker: character that precedes an accelerator, or 0 for none
+ * @error: address of return location for errors, or %NULL
+ *
+ * Parses marked-up text (see
+ * <link linkend="PangoMarkupFormat">markup format</link>) to create
+ * a plain-text string and an attribute list.
+ *
+ * If @accel_marker is nonzero, the given character will mark the
+ * character following it as an accelerator. For example, @accel_marker
+ * might be an ampersand or underscore. All characters marked
+ * as an accelerator will receive a %PANGO_UNDERLINE_LOW attribute,
+ * and the first character so marked will be returned in @accel_char,
+ * when calling finish(). Two @accel_marker characters following each
+ * other produce a single literal @accel_marker character.
+ *
+ * If any error happens, none of the output arguments are touched except
+ * for @error.
+ *
+ * To feed markup to the parser, use g_markup_parse_context_parse()
+ * on the returned #GMarkupParseContext. When done with feeding markup
+ * to the parser, use pango_markup_parser_finish() to get the data out
+ * of it, and then use g_markup_parse_context_free() to free it.
+ *
+ * This function is designed for applications that read pango markup
+ * from streams. To simply parse a string containing pango markup,
+ * the simpler pango_parse_markup() API is recommended instead.
+ *
+ * Return value: (transfer none): a #GMarkupParseContext that should be
+ * destroyed with g_markup_parse_context_free().
+ *
+ * Since: 1.31.0
+ **/
+GMarkupParseContext *
+pango_markup_parser_new (gunichar               accel_marker,
+                         GError               **error)
+{
+  return pango_markup_parser_new_internal (accel_marker, error, TRUE);
+}
+
+/**
+ * pango_markup_parser_finish:
+ * @context: A valid parse context that was returned from pango_markup_parser_new()
+ * @attr_list: (out) (allow-none): address of return location for a #PangoAttrList, or %NULL
+ * @text: (out) (allow-none): address of return location for text with tags stripped, or %NULL
+ * @accel_char: (out) (allow-none): address of return location for accelerator char, or %NULL
+ * @error: address of return location for errors, or %NULL
+ *
+ * After feeding a pango markup parser some data with g_markup_parse_context_parse(),
+ * use this function to get the list of pango attributes and text out of the
+ * markup. This function will not free @context, use g_markup_parse_context_free()
+ * to do so.
+ *
+ * Return value: %FALSE if @error is set, otherwise %TRUE
+ *
+ * Since: 1.31.0
+ */
+gboolean
+pango_markup_parser_finish (GMarkupParseContext   *context,
+                            PangoAttrList        **attr_list,
+                            char                 **text,
+                            gunichar              *accel_char,
+                            GError               **error)
+{
+  gboolean ret = FALSE;
+  MarkupData *md = g_markup_parse_context_get_user_data (context);
+  GSList *tmp_list;
 
   if (!g_markup_parse_context_parse (context,
                                      "</markup>",
                                      -1,
                                      error))
-    goto error;
+    goto out;
 
   if (!g_markup_parse_context_end_parse (context, error))
-    goto error;
-
-  g_markup_parse_context_free (context);
+    goto out;
 
   if (md->attr_list)
     {
@@ -669,38 +784,25 @@ pango_parse_markup (const char                 *markup_text,
     }
 
   if (attr_list)
-    *attr_list = md->attr_list;
+    {
+      *attr_list = md->attr_list;
+      md->attr_list = NULL;
+    }
 
   if (text)
-    *text = g_string_free (md->text, FALSE);
-  else
-    g_string_free (md->text, TRUE);
+    {
+      *text = g_string_free (md->text, FALSE);
+      md->text = NULL;
+    }
 
   if (accel_char)
     *accel_char = md->accel_char;
 
   g_assert (md->tag_stack == NULL);
+  ret = TRUE;
 
-  g_slice_free (MarkupData, md);
-
-  return TRUE;
-
- error:
-  g_slist_foreach (md->tag_stack, (GFunc) open_tag_free, NULL);
-  g_slist_free (md->tag_stack);
-  g_slist_foreach (md->to_apply, (GFunc) pango_attribute_destroy, NULL);
-  g_slist_free (md->to_apply);
-  g_string_free (md->text, TRUE);
-
-  if (md->attr_list)
-    pango_attr_list_unref (md->attr_list);
-
-  g_slice_free (MarkupData, md);
-
-  if (context)
-    g_markup_parse_context_free (context);
-
-  return FALSE;
+ out:
+  return ret;
 }
 
 static void

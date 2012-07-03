@@ -335,6 +335,8 @@ PangoAttrFontDesc
 PangoAttrShape
 PangoAttrSize
 pango_parse_markup
+pango_markup_parser_new
+pango_markup_parser_finish
 pango_attr_type_register
 pango_attr_type_get_name
 pango_attribute_init

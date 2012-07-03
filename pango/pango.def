@@ -321,6 +321,8 @@ EXPORTS
 	pango_lookup_aliases
 	pango_map_get_engine
 	pango_map_get_engines
+	pango_markup_parser_new
+	pango_markup_parser_finish
 	pango_matrix_concat
 	pango_matrix_copy
 	pango_matrix_free

@@ -293,6 +293,14 @@ gboolean pango_parse_markup (const char                 *markup_text,
 			     gunichar                   *accel_char,
 			     GError                    **error);
 
+GMarkupParseContext * pango_markup_parser_new (gunichar               accel_marker,
+                                               GError               **error);
+gboolean              pango_markup_parser_finish (GMarkupParseContext   *context,
+                                                  PangoAttrList        **attr_list,
+                                                  char                 **text,
+                                                  gunichar              *accel_char,
+                                                  GError               **error);
+
 G_END_DECLS
 
 #endif /* __PANGO_ATTRIBUTES_H__ */

@@ -29,8 +29,9 @@ position.
 The solution is to include the text attributes in the string to be
 translated. Pango provides this feature with a small markup language.
 You can parse a marked-up string into the string text plus a
-<link linkend="PangoAttrList">PangoAttrList</link> using the function
-<link linkend="pango-parse-markup">pango_parse_markup()</link>.
+<link linkend="PangoAttrList">PangoAttrList</link> using either of
+<link linkend="pango-parse-markup">pango_parse_markup()</link> or
+<link linkend="pango-markup-parser-new">pango_markup_parser_new()</link>.
 </para>
 
 <para>
