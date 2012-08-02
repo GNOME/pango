@@ -192,7 +192,7 @@ _pango_get_lc_ctype (void)
     return g_strdup (p);
 
   return g_win32_getlocale ();
-#elif HAVE_CORE_TEXT
+#elif defined(HAVE_CORE_TEXT)
   CFArrayRef languages;
   CFStringRef language;
   gchar ret[16];
@@ -471,12 +471,6 @@ find_best_lang_match_cached (PangoLanguage *language,
 
   return result;
 }
-
-#define FIND_BEST_LANG_MATCH(language, records) \
-	find_best_lang_match ((language), \
-			      records, \
-			      G_N_ELEMENTS (records), \
-			      sizeof (*records));
 
 #define FIND_BEST_LANG_MATCH_CACHED(language, cache_key, records) \
 	find_best_lang_match_cached ((language), \
