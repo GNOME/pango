@@ -112,9 +112,9 @@ struct _PangoAttribute
 };
 
 typedef gboolean (*PangoAttrFilterFunc) (PangoAttribute *attribute,
-					 gpointer        data);
+					 gpointer        user_data);
 
-typedef gpointer (*PangoAttrDataCopyFunc) (gconstpointer data);
+typedef gpointer (*PangoAttrDataCopyFunc) (gconstpointer user_data);
 
 struct _PangoAttrClass
 {

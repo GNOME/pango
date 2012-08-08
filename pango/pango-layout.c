@@ -625,7 +625,7 @@ pango_layout_set_attributes (PangoLayout   *layout,
  *
  * Gets the attribute list for the layout, if any.
  *
- * Return value: a #PangoAttrList.
+ * Return value: (transfer none): a #PangoAttrList.
  **/
 PangoAttrList*
 pango_layout_get_attributes (PangoLayout *layout)
@@ -1269,7 +1269,7 @@ pango_layout_context_changed (PangoLayout *layout)
  * @attrs: (out)(array length=n_attrs)(transfer container):
  *         location to store a pointer to an array of logical attributes
  *         This value must be freed with g_free().
- * @n_attrs: location to store the number of the attributes in the
+ * @n_attrs: (out): location to store the number of the attributes in the
  *           array. (The stored value will be one more than the total number
  *           of characters in the layout, since there need to be attributes
  *           corresponding to both the position before the first character
@@ -1300,7 +1300,8 @@ pango_layout_get_log_attrs (PangoLayout    *layout,
 /**
  * pango_layout_get_log_attrs_readonly:
  * @layout: a #PangoLayout
- * @n_attrs: location to store the number of the attributes in the array
+ * @n_attrs: (out): location to store the number of the attributes in
+ *   the array
  *
  * Retrieves an array of logical attributes for each character in
  * the @layout.
@@ -1314,7 +1315,7 @@ pango_layout_get_log_attrs (PangoLayout    *layout,
  * need to be attributes corresponding to both the position before
  * the first character and the position after the last character.
  *
- * Returns: an array of logical attributes
+ * Returns: (array length=n_attrs): an array of logical attributes
  *
  * Since: 1.30
  */
@@ -5699,7 +5700,8 @@ pango_layout_iter_get_line (PangoLayoutIter *iter)
  * but the user is not expected
  * to modify the contents of the line (glyphs, glyph widths, etc.).
  *
- * Return value: the current line, that should not be modified.
+ * Return value: (transfer none): the current line, that should not be
+ * modified.
  *
  * Since: 1.16
  **/
@@ -6003,7 +6005,8 @@ pango_layout_iter_next_line (PangoLayoutIter *iter)
 /**
  * pango_layout_iter_get_char_extents:
  * @iter: a #PangoLayoutIter
- * @logical_rect: rectangle to fill with logical extents
+ * @logical_rect: (out caller-allocates): rectangle to fill with
+ *   logical extents
  *
  * Gets the extents of the current character, in layout coordinates
  * (origin is the top left of the entire layout). Only logical extents

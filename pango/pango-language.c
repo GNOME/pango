@@ -244,8 +244,8 @@ _pango_get_lc_ctype (void)
  * functions automatically (by calling gtk_set_locale()).
  * See <literal>man setlocale</literal> for more details.
  *
- * Return value: the default language as a #PangoLanguage, must not be
- *               freed.
+ * Return value: (transfer none): the default language as a
+ *               #PangoLanguage, must not be freed.
  *
  * Since: 1.16
  **/
@@ -280,9 +280,10 @@ pango_language_get_default (void)
  * Use pango_language_get_default() if you want to get the #PangoLanguage for
  * the current locale of the process.
  *
- * Return value: an opaque pointer to a #PangoLanguage structure, or %NULL
- *               if @language was %NULL.  The returned pointer will be valid
- *               forever after, and should not be freed.
+ * Return value: (transfer none): an opaque pointer to a
+ *               #PangoLanguage structure, or %NULL if @language was
+ *               %NULL.  The returned pointer will be valid forever
+ *               after, and should not be freed.
  **/
 PangoLanguage *
 pango_language_from_string (const char *language)
@@ -591,12 +592,12 @@ pango_language_get_sample_string (PangoLanguage *language)
  * The pango_language_includes_script() function uses this function
  * internally.
  *
- * Return value: An array of #PangoScript values, with the
- * number of entries in the array stored in @num_scripts, or
- * %NULL if Pango does not have any information about this
- * particular language tag (also the case if @language is %NULL).
- * The returned array is owned by Pango and should not be modified
- * or freed.
+ * Return value: (array length=num_scripts): An array of #PangoScript
+ * values, with the number of entries in the array stored in
+ * @num_scripts, or %NULL if Pango does not have any information about
+ * this particular language tag (also the case if @language is %NULL).
+ * The returned array is owned by Pango and should not be modified or
+ * freed.
  
  * Since: 1.22
  **/

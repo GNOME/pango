@@ -149,10 +149,12 @@ pango_glyph_string_free (PangoGlyphString *string)
  * @end:      end index (the range is the set of bytes with
 	      indices such that start <= index < end)
  * @font:     a #PangoFont
- * @ink_rect: rectangle used to store the extents of the glyph string range as drawn
- *            or %NULL to indicate that the result is not needed.
- * @logical_rect: rectangle used to store the logical extents of the glyph string range
- *            or %NULL to indicate that the result is not needed.
+ * @ink_rect: (out caller-allocates): rectangle used to store the
+ *            extents of the glyph string range as drawn or %NULL to
+ *            indicate that the result is not needed.
+ * @logical_rect: (out caller-allocates): rectangle used to store the
+ *            logical extents of the glyph string range or %NULL to
+ *            indicate that the result is not needed.
  *
  * Computes the extents of a sub-portion of a glyph string. The extents are
  * relative to the start of the glyph string range (the origin of their
@@ -311,10 +313,10 @@ pango_glyph_string_get_width (PangoGlyphString *glyphs)
  * @text: the text corresponding to the glyphs
  * @length: the length of @text, in bytes
  * @embedding_level: the embedding level of the string
- * @logical_widths: an array whose length is the number of characters in
- *                  text (equal to g_utf8_strlen (text, length) unless
- *                  text has NUL bytes)
- *                  to be filled in with the resulting character widths.
+ * @logical_widths: (array): an array whose length is the number of
+ *                  characters in text (equal to g_utf8_strlen (text,
+ *                  length) unless text has NUL bytes) to be filled in
+ *                  with the resulting character widths.
  *
  * Given a #PangoGlyphString resulting from pango_shape() and the corresponding
  * text, determine the screen width corresponding to each character. When
@@ -359,7 +361,7 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
  * @index_:    the byte index within @text
  * @trailing:  whether we should compute the result for the beginning (%FALSE)
  *             or end (%TRUE) of the character.
- * @x_pos:     location to store result
+ * @x_pos:     (out): location to store result
  *
  * Converts from character position to x position. (X position
  * is measured from the left edge of the run). Character positions
@@ -485,8 +487,8 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
  * @length:    the number of bytes (not characters) in text.
  * @analysis:  the analysis information return from pango_itemize()
  * @x_pos:     the x offset (in Pango units)
- * @index_:    location to store calculated byte index within @text
- * @trailing:  location to store a boolean indicating
+ * @index_:    (out): location to store calculated byte index within @text
+ * @trailing:  (out): location to store a boolean indicating
  *             whether the user clicked on the leading or trailing
  *             edge of the character.
  *

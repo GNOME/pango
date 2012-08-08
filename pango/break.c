@@ -1683,7 +1683,8 @@ tailor_break (const gchar   *text,
  * @text:      the text to process
  * @length:    length of @text in bytes (may be -1 if @text is nul-terminated)
  * @analysis:  #PangoAnalysis structure from pango_itemize()
- * @attrs:     an array to store character information in
+ * @attrs:     (array length=attrs_len): an array to store character
+ *             information in
  * @attrs_len: size of the array passed as @attrs
  *
  * Determines possible line, word, and character breaks
@@ -1708,8 +1709,10 @@ pango_break (const gchar   *text,
  * pango_find_paragraph_boundary:
  * @text: UTF-8 text
  * @length: length of @text in bytes, or -1 if nul-terminated
- * @paragraph_delimiter_index: return location for index of delimiter
- * @next_paragraph_start: return location for start of next paragraph
+ * @paragraph_delimiter_index: (out): return location for index of
+ *   delimiter
+ * @next_paragraph_start: (out): return location for start of next
+ *   paragraph
  *
  * Locates a paragraph boundary in @text. A boundary is caused by
  * delimiter characters, such as a newline, carriage return, carriage
@@ -1843,7 +1846,8 @@ tailor_segment (const char      *range_start,
  * @length: length in bytes of @text
  * @level: embedding level, or -1 if unknown
  * @language: language tag
- * @log_attrs: array with one #PangoLogAttr per character in @text, plus one extra, to be filled in
+ * @log_attrs: (array length=attrs_len): array with one #PangoLogAttr
+ *   per character in @text, plus one extra, to be filled in
  * @attrs_len: length of @log_attrs array
  *
  * Computes a #PangoLogAttr for each character in @text. The @log_attrs

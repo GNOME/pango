@@ -1391,8 +1391,8 @@ pango_renderer_get_layout (PangoRenderer *renderer)
  * The returned layout line should not be modified while still being
  * rendered.
  *
- * Return value: the layout line, or %NULL if no layout line is being
- *  rendered using @renderer at this time.
+ * Return value: (transfer none): the layout line, or %NULL if no
+ *   layout line is being rendered using @renderer at this time.
  *
  * Since: 1.20
  **/

@@ -1357,7 +1357,8 @@ parse_field (const char *what,
 /**
  * pango_parse_style:
  * @str: a string to parse.
- * @style: a #PangoStyle to store the result in.
+ * @style: (out caller-allocates): a #PangoStyle to store the result
+ *   in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  *
  * Parses a font style. The allowed values are "normal",
@@ -1377,7 +1378,8 @@ pango_parse_style (const char *str,
 /**
  * pango_parse_variant:
  * @str: a string to parse.
- * @variant: a #PangoVariant to store the result in.
+ * @variant: (out caller-allocates): a #PangoVariant to store the
+ *   result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  *
  * Parses a font variant. The allowed values are "normal"
@@ -1397,7 +1399,8 @@ pango_parse_variant (const char   *str,
 /**
  * pango_parse_weight:
  * @str: a string to parse.
- * @weight: a #PangoWeight to store the result in.
+ * @weight: (out caller-allocates): a #PangoWeight to store the result
+ *   in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  *
  * Parses a font weight. The allowed values are "heavy",
@@ -1417,7 +1420,8 @@ pango_parse_weight (const char  *str,
 /**
  * pango_parse_stretch:
  * @str: a string to parse.
- * @stretch: a #PangoStretch to store the result in.
+ * @stretch: (out caller-allocates): a #PangoStretch to store the
+ *   result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  *
  * Parses a font stretch. The allowed values are
@@ -1506,7 +1510,8 @@ pango_font_describe_with_absolute_size (PangoFont      *font)
  *
  * Computes the coverage map for a given font and language tag.
  *
- * Return value: a newly-allocated #PangoCoverage object.
+ * Return value: (transfer full): a newly-allocated #PangoCoverage
+ *   object.
  **/
 PangoCoverage *
 pango_font_get_coverage (PangoFont     *font,
@@ -2053,8 +2058,9 @@ pango_font_face_get_face_name (PangoFontFace *face)
 /**
  * pango_font_face_list_sizes:
  * @face: a #PangoFontFace.
- * @sizes: location to store a pointer to an array of int. This array
- *         should be freed with g_free().
+ * @sizes: (out) (array length=n_sizes): location to store a pointer
+ *         to an array of int. This array should be freed with
+ *         g_free().
  * @n_sizes: location to store the number of elements in @sizes
  *
  * List the available sizes for a font. This is only applicable to bitmap
