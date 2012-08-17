@@ -343,7 +343,6 @@ libpangocairo_1_0_la_SOURCES += \
 	pangocairo-fc.h
 endif
 
-if HAVE_CAIRO_ATSUI
 if HAVE_CORE_TEXT
 libpangocairo_1_0_la_SOURCES += \
 	modules.h		\
@@ -362,27 +361,6 @@ libpangocairo_1_0_la_LDFLAGS += -framework CoreFoundation -framework Application
 libpangocairo_1_0_la_LIBADD += $(INCLUDED_CORE_TEXT_MODULES)
 # We don't have an CoreText GIR right now, so this is just hypothetical
 PANGOCAIRO_FONT_BACKEND_GI_MODULE = PangoCoreText-1.0
-
-else
-libpangocairo_1_0_la_SOURCES += \
-	modules.h		\
-	module-defs-atsui.c	\
-	pangoatsui.h		\
-	pangoatsui.c		\
-	pangoatsui-private.h	\
-	pangoatsui-fontmap.c	\
-	pangocairo-atsui.h	\
-	pangocairo-atsuifont.c	\
-	pangocairo-atsuifont.h	\
-	pangocairo-atsuifontmap.c
-pangoinclude_HEADERS += pangoatsui.h
-
-libpangocairo_1_0_la_CFLAGS = -xobjective-c
-libpangocairo_1_0_la_LDFLAGS += -framework CoreFoundation -framework Carbon -framework Cocoa
-libpangocairo_1_0_la_LIBADD += $(INCLUDED_ATSUI_MODULES)
-# We don't have an ATSUI GIR right now, so this is just hypothetical
-PANGOCAIRO_FONT_BACKEND_GI_MODULE = PangoATSUI-1.0
-endif
 endif
 
 pangocairo_introspection_files = \
@@ -563,7 +541,7 @@ if HAVE_INCLUDED_MODULES
 included-modules:
 	$(AM_V_GEN) cd $(top_builddir)/modules && $(MAKE) $(AM_MAKEFLAGS) included-modules
 
-$(INCLUDED_LANG_MODULES) $(INCLUDED_X_MODULES) $(INCLUDED_FC_MODULES) $(INCLUDED_WIN32_MODULES) $(INCLUDED_ATSUI_MODULES): included-modules
+$(INCLUDED_LANG_MODULES) $(INCLUDED_X_MODULES) $(INCLUDED_FC_MODULES) $(INCLUDED_WIN32_MODULES) $(INCLUDED_CORE_TEXT_MODULES): included-modules
 	$(AM_V_GEN) true
 
 .PHONY: included-modules
@@ -575,7 +553,6 @@ MODULE_DEF_FILES = \
 	module-defs-x.c \
 	module-defs-fc.c \
 	module-defs-win32.c \
-	module-defs-atsui.c \
 	module-defs-coretext.c
 
 $(MODULE_DEF_FILES): $(top_builddir)/config.status

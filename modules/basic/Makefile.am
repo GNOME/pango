@@ -35,7 +35,6 @@ pango_basic_win32_la_SOURCES = basic-win32.c
 libpango_basic_win32_la_SOURCES = basic-win32.c
 libpango_basic_win32_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_basic_win32
 
-if HAVE_CAIRO_ATSUI
 if HAVE_CORE_TEXT
 INCLUDES += $(CAIRO_CFLAGS)
 if INCLUDE_BASIC_CORE_TEXT
@@ -45,16 +44,6 @@ if DYNAMIC_BASIC_CORE_TEXT
 module_LTLIBRARIES += pango-basic-coretext.la
 endif
 endif
-else
-INCLUDES += $(ATSUI_CFLAGS) $(CAIRO_CFLAGS)
-if INCLUDE_BASIC_ATSUI
-noinst_LTLIBRARIES += libpango-basic-atsui.la
-else
-if DYNAMIC_BASIC_ATSUI
-module_LTLIBRARIES += pango-basic-atsui.la
-endif
-endif
-endif
 endif
 
 pango_basic_coretext_la_LDFLAGS = -module $(MODULE_LIBTOOL_OPTIONS) -framework Carbon
@@ -62,12 +51,6 @@ pango_basic_coretext_la_LIBADD = $(pangocoretextlibs)
 pango_basic_coretext_la_SOURCES = basic-coretext.c
 libpango_basic_coretext_la_SOURCES = basic-coretext.c
 libpango_basic_coretext_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_basic_coretext
-
-pango_basic_atsui_la_LDFLAGS = -module $(MODULE_LIBTOOL_OPTIONS) -framework Carbon
-pango_basic_atsui_la_LIBADD = $(pangoatsuilibs)
-pango_basic_atsui_la_SOURCES = basic-atsui.c
-libpango_basic_atsui_la_SOURCES = basic-atsui.c
-libpango_basic_atsui_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_basic_atsui
 
 EXTRA_DIST =		\
 	tables-big.i	\
