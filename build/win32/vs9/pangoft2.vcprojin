@@ -230,7 +230,6 @@
 				<FileConfiguration Name="Debug_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_tibetan_fc" /></FileConfiguration>
 				<FileConfiguration Name="Release_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_tibetan_fc" /></FileConfiguration>
 			</File>
-#include "opentype/libharfbuzz.sourcefiles"
 #include "libpangoft2.sourcefiles"
 		</Filter>
 	</Files>

@@ -223,7 +223,6 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release_FC|Win32'">PANGO_MODULE_PREFIX=_pango_tibetan_fc;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release_FC|x64'">PANGO_MODULE_PREFIX=_pango_tibetan_fc;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-#include "opentype/libharfbuzz.vs10.sourcefiles"
 #include "libpangoft2.vs10.sourcefiles"
   </ItemGroup>
   <ItemGroup>

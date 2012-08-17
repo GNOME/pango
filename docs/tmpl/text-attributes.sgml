@@ -465,8 +465,10 @@ A copy function passed to attribute new functions that take
 user data.
 </para>
 
-@data: the user data
+@user_data: 
 @Returns: a new copy of @data.
+<!-- # Unused Parameters # -->
+@data: the user data
 
 
 <!-- ##### FUNCTION pango_attr_scale_new ##### -->
@@ -578,10 +580,9 @@ The #PangoColor structure is used to
 represent a color in an uncalibrated RGB color-space.
 </para>
 
-@red: the red component of the color. This is a value between 0 and
-    65535, with 65535 indicating full intensity
-@green: the green component of the color
-@blue: the blue component of the color
+@red: 
+@green: 
+@blue: 
 
 <!-- ##### MACRO PANGO_TYPE_COLOR ##### -->
 <para>
@@ -740,8 +741,10 @@ to filter out a subset of attributes for a list.
 </para>
 
 @attribute: a #PangoAttribute
-@data: callback data passed to pango_attr_list_filter()
+@user_data: 
 @Returns: %TRUE if the attribute should be filtered out
+<!-- # Unused Parameters # -->
+@data: callback data passed to pango_attr_list_filter()
 
 
 <!-- ##### FUNCTION pango_attr_list_get_iterator ##### -->

@@ -3,13 +3,8 @@
 SUBDIRS = 		\
 	arabic		\
 	basic 		\
-	hangul 		\
-	hebrew		\
 	indic           \
-	khmer		\
-	syriac		\
-	thai		\
-	tibetan
+	thai
 
 EXTRA_DIST =		\
 	Module.mk	\

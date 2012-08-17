@@ -61,7 +61,8 @@ struct _PangoFcCmapCache
   (((d) >= 0) ?						\
    ((d) + PANGO_SCALE_26_6 / 2) / PANGO_SCALE_26_6 :	\
    ((d) - PANGO_SCALE_26_6 / 2) / PANGO_SCALE_26_6)
-#define PANGO_UNITS_26_6(d) (PANGO_SCALE_26_6 * (d))
+#define PANGO_UNITS_26_6(d)    ((d) * PANGO_SCALE_26_6)
+#define PANGO_UNITS_TO_26_6(d) ((d) / PANGO_SCALE_26_6)
 
 void _pango_fc_font_shutdown (PangoFcFont *fcfont);
 

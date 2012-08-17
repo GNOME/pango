@@ -35,7 +35,6 @@
     <ClCompile Include="..\..\..\modules\thai\thai-fc.c"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="..\..\..\modules\thai\thai-shaper.c"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="..\..\..\modules\tibetan\tibetan-fc.c"><Filter>Source Files</Filter></ClCompile>
-#include "opentype/libharfbuzz.vs10.sourcefiles.filters"
 #include "libpangoft2.vs10.sourcefiles.filters"
   </ItemGroup>
 </Project>

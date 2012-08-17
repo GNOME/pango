@@ -19,7 +19,7 @@ libpango_basic_x_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_basic_x
 
 
 if HAVE_FREETYPE
-INCLUDES += $(FREETYPE_CFLAGS)
+INCLUDES += $(FREETYPE_CFLAGS) $(HARFBUZZ_CFLAGS)
 if INCLUDE_BASIC_FC
 noinst_LTLIBRARIES += libpango-basic-fc.la
 else

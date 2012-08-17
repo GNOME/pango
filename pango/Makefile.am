@@ -10,15 +10,7 @@ INTROSPECTION_GIRS =
 INTROSPECTION_SCANNER_ARGS = --warn-all --add-include-path=$(srcdir) --add-include-path=.
 INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir) --includedir=.
 
-if HAVE_FREETYPE
-OPENTYPE_SUBDIR=opentype
-endif
-
-FRIBIDI_SUBDIR=mini-fribidi
-
-SUBDIRS = $(OPENTYPE_SUBDIR) $(FRIBIDI_SUBDIR)
-
-DIST_SUBDIRS = mini-fribidi opentype
+SUBDIRS = mini-fribidi
 
 INCLUDES =						\
 	-DG_LOG_DOMAIN=\"Pango\"			\
@@ -32,6 +24,7 @@ INCLUDES =						\
 	$(GLIB_CFLAGS)					\
 	$(XFT_CFLAGS)					\
 	$(CAIRO_CFLAGS)					\
+	$(HARFBUZZ_CFLAGS)				\
 	$(FREETYPE_CFLAGS)				\
 	$(X_CFLAGS)
 
@@ -143,7 +136,7 @@ s-enum-types-h: $(pango_headers) Makefile.am
 			--ftail "G_END_DECLS\n\n#endif /* __PANGO_ENUM_TYPES_H__ */" \
 		$(pango_headers) ) > tmp-pango-enum-types.h \
 	&& (cmp -s tmp-pango-enum-types.h pango-enum-types.h || cp tmp-pango-enum-types.h pango-enum-types.h ) \
-	&& rm -f tmp-pango-enum-types.h	\
+	&& $(RM) tmp-pango-enum-types.h	\
 	&& echo timestamp > $(@F)
 
 pango-enum-types.c: s-enum-types-c
@@ -156,7 +149,7 @@ s-enum-types-c: $(pango_headers) Makefile.am
 			--vtail "      { 0, NULL, NULL }\n    };\n    etype = g_@type@_register_static (g_intern_static_string (\"@EnumName@\"), values);\n  }\n  return etype;\n}\n" \
 		$(pango_headers) ) > tmp-pango-enum-types.c \
 	&& (cmp -s tmp-pango-enum-types.c pango-enum-types.c || cp tmp-pango-enum-types.c pango-enum-types.c ) \
-	&& rm -f tmp-pango-enum-types.c \
+	&& $(RM) tmp-pango-enum-types.c \
 	&& echo timestamp > $(@F)
 
 pango-features.h:
@@ -238,14 +231,13 @@ pangoft2_public_sources = 	\
 
 libpangoft2_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
 libpangoft2_1_0_la_LIBADD =			\
-	opentype/libharfbuzz.la			\
 	libpango-$(PANGO_API_VERSION).la	\
 	$(INCLUDED_FC_MODULES)			\
 	$(GLIB_LIBS)				\
+	$(HARFBUZZ_LIBS)			\
 	$(FREETYPE_LIBS)			\
 	$(libm)
 libpangoft2_1_0_la_DEPENDENCIES =		\
-	opentype/libharfbuzz.la			\
 	libpango-$(PANGO_API_VERSION).la	\
 	$(INCLUDED_FC_MODULES)
 libpangoft2_1_0_la_SOURCES =   	\
@@ -496,15 +488,15 @@ if HAVE_X
 	$(INSTALL) $(srcdir)/pangoxft.def $(DESTDIR)$(libdir)/pangoxft-$(PANGO_API_VERSION).def
 endif
 uninstall-def-files:
-	-rm $(DESTDIR)$(libdir)/pango$(PANGO_API_VERSION).def
+	-$(RM) $(DESTDIR)$(libdir)/pango$(PANGO_API_VERSION).def
 if HAVE_FREETYPE
-	-rm $(DESTDIR)$(libdir)/pangoft2-$(PANGO_API_VERSION).def
+	-$(RM) $(DESTDIR)$(libdir)/pangoft2-$(PANGO_API_VERSION).def
 endif
-	-rm $(DESTDIR)$(libdir)/pangowin32-$(PANGO_API_VERSION).def
-	-rm $(DESTDIR)$(libdir)/pangocairo-$(PANGO_API_VERSION).def
+	-$(RM) $(DESTDIR)$(libdir)/pangowin32-$(PANGO_API_VERSION).def
+	-$(RM) $(DESTDIR)$(libdir)/pangocairo-$(PANGO_API_VERSION).def
 if HAVE_X
-	-rm $(DESTDIR)$(libdir)/pangox-$(PANGO_API_VERSION).def
-	-rm $(DESTDIR)$(libdir)/pangoxft-$(PANGO_API_VERSION).def
+	-$(RM) $(DESTDIR)$(libdir)/pangox-$(PANGO_API_VERSION).def
+	-$(RM) $(DESTDIR)$(libdir)/pangoxft-$(PANGO_API_VERSION).def
 endif
 else
 install-def-files:
@@ -530,10 +522,10 @@ endif
 	$(INSTALL) pangocairo-$(PANGO_API_VERSION).lib $(DESTDIR)$(libdir)
 
 uninstall-ms-lib:
-	-rm $(DESTDIR)$(libdir)/pango-$(PANGO_API_VERSION).lib
-	-rm $(DESTDIR)$(libdir)/pangoft2-$(PANGO_API_VERSION).lib
-	-rm $(DESTDIR)$(libdir)/pangowin32-$(PANGO_API_VERSION).lib
-	-rm $(DESTDIR)$(libdir)/pangocairo-$(PANGO_API_VERSION).lib
+	-$(RM) $(DESTDIR)$(libdir)/pango-$(PANGO_API_VERSION).lib
+	-$(RM) $(DESTDIR)$(libdir)/pangoft2-$(PANGO_API_VERSION).lib
+	-$(RM) $(DESTDIR)$(libdir)/pangowin32-$(PANGO_API_VERSION).lib
+	-$(RM) $(DESTDIR)$(libdir)/pangocairo-$(PANGO_API_VERSION).lib
 else
 install-ms-lib:
 uninstall-ms-lib:
@@ -684,7 +676,7 @@ dist-hook: \
 # pangowin32.vcproj, pangowin32.vcxproj and pangowin32.vcxproj.filters are not automatically built, it is not being changed
 
 ../build/win32/vs9/pango.vcproj: $(top_srcdir)/build/win32/vs9/pango.vcprojin mini-fribidi/libmini-fribidi.sourcefiles
-	-rm $@
+	-$(RM) $@
 	for F in $(libpango_1_0_la_SOURCES); do \
 		case $$F in \
 		*.c) echo '   <File RelativePath="..\..\..\pango\'$$F'" />' \
@@ -694,7 +686,7 @@ dist-hook: \
 	$(CPP) -P - <$(top_srcdir)/build/win32/vs9/pango.vcprojin >$@
 
 ../build/win32/vs10/pango.vcxproj: $(top_srcdir)/build/win32/vs10/pango.vcxprojin mini-fribidi/libmini-fribidi.vs10.sourcefiles
-	-rm $@
+	-$(RM) $@
 	for F in $(libpango_1_0_la_SOURCES); do \
 		case $$F in \
 		*.c) echo '   <ClCompile Include="..\..\..\pango\'$$F'" />' \
@@ -704,7 +696,7 @@ dist-hook: \
 	$(CPP) -P - <$(top_srcdir)/build/win32/vs10/pango.vcxprojin >$@
 
 ../build/win32/vs10/pango.vcxproj.filters: $(top_srcdir)/build/win32/vs10/pango.vcxproj.filtersin mini-fribidi/libmini-fribidi.vs10.sourcefiles.filters
-	-rm $@
+	-$(RM) $@
 	for F in $(libpango_1_0_la_SOURCES); do \
 		case $$F in \
 		*.c) echo '   <ClCompile Include="..\..\..\pango\'$$F'"><Filter>Source Files</Filter></ClCompile>' \
@@ -713,8 +705,8 @@ dist-hook: \
 	done >libpango.vs10.sourcefiles.filters
 	$(CPP) -P - <$(top_srcdir)/build/win32/vs10/pango.vcxproj.filtersin >$@
 
-../build/win32/vs9/pangoft2.vcproj: $(top_srcdir)/build/win32/vs9/pangoft2.vcprojin opentype/libharfbuzz.sourcefiles
-	-rm $@
+../build/win32/vs9/pangoft2.vcproj: $(top_srcdir)/build/win32/vs9/pangoft2.vcprojin
+	-$(RM) $@
 	for F in $(libpangoft2_1_0_la_SOURCES); do \
 		case $$F in \
 		*.c) echo '   <File RelativePath="..\..\..\pango\'$$F'" />' \
@@ -723,8 +715,8 @@ dist-hook: \
 	done >libpangoft2.sourcefiles
 	$(CPP) -P - <$(top_srcdir)/build/win32/vs9/pangoft2.vcprojin >$@
 
-../build/win32/vs10/pangoft2.vcxproj: $(top_srcdir)/build/win32/vs10/pangoft2.vcxprojin opentype/libharfbuzz.vs10.sourcefiles
-	-rm $@
+../build/win32/vs10/pangoft2.vcxproj: $(top_srcdir)/build/win32/vs10/pangoft2.vcxprojin
+	-$(RM) $@
 	for F in $(libpangoft2_1_0_la_SOURCES); do \
 		case $$F in \
 		*.c) echo '   <ClCompile Include="..\..\..\pango\'$$F'" />' \
@@ -733,8 +725,8 @@ dist-hook: \
 	done >libpangoft2.vs10.sourcefiles
 	$(CPP) -P - <$(top_srcdir)/build/win32/vs10/pangoft2.vcxprojin >$@
 
-../build/win32/vs10/pangoft2.vcxproj.filters: $(top_srcdir)/build/win32/vs10/pangoft2.vcxproj.filtersin opentype/libharfbuzz.vs10.sourcefiles.filters
-	-rm $@
+../build/win32/vs10/pangoft2.vcxproj.filters: $(top_srcdir)/build/win32/vs10/pangoft2.vcxproj.filtersin
+	-$(RM) $@
 	for F in $(libpangoft2_1_0_la_SOURCES); do \
 		case $$F in \
 		*.c) echo '   <ClCompile Include="..\..\..\pango\'$$F'"><Filter>Source Files</Filter></ClCompile>' \
@@ -746,7 +738,7 @@ dist-hook: \
 ../build/win32/vs9/pangocairo.vcproj: $(top_srcdir)/build/win32/vs9/pangocairo.vcprojin
 # Backend-specific sources for the libpangocairo DLL are explicitly
 # listed in the vcprojin file
-	-rm $@
+	-$(RM) $@
 	for F in $(pangocairo_core_sources); do \
 		case $$F in \
 		*.c) echo '   <File RelativePath="..\..\..\pango\'$$F'" />' \
@@ -759,7 +751,7 @@ dist-hook: \
 # Backend-specific sources for the libpangocairo DLL are explicitly
 # listed in the vcxprojin file
 # I know it does not sound nice to have 2 pangocairo projects/filters sets due to FontConfig usage (or not), but VS2010 forces me to do that...
-	-rm $@
+	-$(RM) $@
 	for F in $(pangocairo_core_sources); do \
 		case $$F in \
 		*.c) echo '   <ClCompile Include="..\..\..\pango\'$$F'" />' \
@@ -771,7 +763,7 @@ dist-hook: \
 ../build/win32/vs10/pangocairo.vcxproj.filters: $(top_srcdir)/build/win32/vs10/pangocairo.vcxproj.filtersin
 # Backend-specific sources for the libpangocairo DLL are explicitly
 # listed in the vcxproj.filtersin file
-	-rm $@
+	-$(RM) $@
 	for F in $(pangocairo_core_sources); do \
 		case $$F in \
 		*.c) echo '   <ClCompile Include="..\..\..\pango\'$$F'"><Filter>Source Files</Filter></ClCompile>' \
@@ -783,7 +775,7 @@ dist-hook: \
 ../build/win32/vs10/pangocairo_fc.vcxproj: $(top_srcdir)/build/win32/vs10/pangocairo_fc.vcxprojin
 # Backend-specific sources for the libpangocairo DLL are explicitly
 # listed in the vcxprojin file
-	-rm $@
+	-$(RM) $@
 	for F in $(pangocairo_core_sources); do \
 		case $$F in \
 		*.c) echo '   <ClCompile Include="..\..\..\pango\'$$F'" />' \
@@ -795,7 +787,7 @@ dist-hook: \
 ../build/win32/vs10/pangocairo_fc.vcxproj.filters: $(top_srcdir)/build/win32/vs10/pangocairo_fc.vcxproj.filtersin
 # Backend-specific sources for the libpangocairo DLL are explicitly
 # listed in the vcxproj.filtersin file
-	-rm $@
+	-$(RM) $@
 	for F in $(pangocairo_core_sources); do \
 		case $$F in \
 		*.c) echo '   <ClCompile Include="..\..\..\pango\'$$F'"><Filter>Source Files</Filter></ClCompile>' \
