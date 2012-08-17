@@ -513,18 +513,14 @@ GOBJECT_INTROSPECTION_CHECK([0.9.5])
 #
 arabic_modules="arabic-lang"
 basic_modules="basic-fc,basic-win32,basic-x,basic-atsui,basic-coretext"
-hangul_modules="hangul-fc"
-hebrew_modules="hebrew-fc"
 indic_modules="indic-fc,indic-lang"
-khmer_modules="khmer-fc"
 thai_modules="thai-fc"
-tibetan_modules="tibetan-fc"
 
 if $have_libthai ; then
   thai_modules="$thai_modules,thai-lang"
 fi
 
-all_modules="$arabic_modules,$basic_modules,$hangul_modules,$hebrew_modules,$indic_modules,$khmer_modules,$thai_modules,$tibetan_modules"
+all_modules="$arabic_modules,$basic_modules,$indic_modules,$thai_modules"
 
 #
 # Allow building some or all modules included
@@ -603,14 +599,10 @@ AM_CONDITIONAL(INCLUDE_BASIC_WIN32,	echo $included_modules | egrep '(^|,)basic-w
 AM_CONDITIONAL(INCLUDE_BASIC_X,		echo $included_modules | egrep '(^|,)basic-x($|,)' 	> /dev/null)
 AM_CONDITIONAL(INCLUDE_BASIC_ATSUI,	echo $included_modules | egrep '(^|,)basic-atsui($|,)' 	> /dev/null)
 AM_CONDITIONAL(INCLUDE_BASIC_CORE_TEXT,	echo $included_modules | egrep '(^|,)basic-coretext($|,)'	> /dev/null)
-AM_CONDITIONAL(INCLUDE_HANGUL_FC,	echo $included_modules | egrep '(^|,)hangul-fc($|,)' 	> /dev/null)
-AM_CONDITIONAL(INCLUDE_HEBREW_FC,	echo $included_modules | egrep '(^|,)hebrew-fc($|,)' 	> /dev/null)
 AM_CONDITIONAL(INCLUDE_INDIC_FC,	echo $included_modules | egrep '(^|,)indic-fc($|,)' 	> /dev/null)
 AM_CONDITIONAL(INCLUDE_INDIC_LANG,	echo $included_modules | egrep '(^|,)indic-lang($|,)'	> /dev/null)
-AM_CONDITIONAL(INCLUDE_KHMER_FC,	echo $included_modules | egrep '(^|,)khmer-fc($|,)' 	> /dev/null)
 AM_CONDITIONAL(INCLUDE_THAI_FC,		echo $included_modules | egrep '(^|,)thai-fc($|,)' 	> /dev/null)
 AM_CONDITIONAL(INCLUDE_THAI_LANG,	echo $included_modules | egrep '(^|,)thai-lang($|,)' 	> /dev/null)
-AM_CONDITIONAL(INCLUDE_TIBETAN_FC,	echo $included_modules | egrep '(^|,)tibetan-fc($|,)' 	> /dev/null)
 
 AM_CONDITIONAL(DYNAMIC_ARABIC_LANG,	echo $dynamic_modules | egrep '(^|,)arabic-lang($|,)' 	> /dev/null)
 AM_CONDITIONAL(DYNAMIC_BASIC_FC,	echo $dynamic_modules | egrep '(^|,)basic-fc($|,)' 	> /dev/null)
@@ -618,14 +610,10 @@ AM_CONDITIONAL(DYNAMIC_BASIC_WIN32,	echo $dynamic_modules | egrep '(^|,)basic-wi
 AM_CONDITIONAL(DYNAMIC_BASIC_X,		echo $dynamic_modules | egrep '(^|,)basic-x($|,)' 	> /dev/null)
 AM_CONDITIONAL(DYNAMIC_BASIC_ATSUI,	echo $dynamic_modules | egrep '(^|,)basic-atsui($|,)' 	> /dev/null)
 AM_CONDITIONAL(DYNAMIC_BASIC_CORE_TEXT,	echo $dynamic_modules | egrep '(^|,)basic-coretext($|,)' 	> /dev/null)
-AM_CONDITIONAL(DYNAMIC_HANGUL_FC,	echo $dynamic_modules | egrep '(^|,)hangul-fc($|,)'	> /dev/null)
-AM_CONDITIONAL(DYNAMIC_HEBREW_FC,	echo $dynamic_modules | egrep '(^|,)hebrew-fc($|,)' 	> /dev/null)
 AM_CONDITIONAL(DYNAMIC_INDIC_FC,	echo $dynamic_modules | egrep '(^|,)indic-fc($|,)' 	> /dev/null)
 AM_CONDITIONAL(DYNAMIC_INDIC_LANG,	echo $dynamic_modules | egrep '(^|,)indic-lang($|,)'	> /dev/null)
-AM_CONDITIONAL(DYNAMIC_KHMER_FC,	echo $dynamic_modules | egrep '(^|,)khmer-fc($|,)' 	> /dev/null)
 AM_CONDITIONAL(DYNAMIC_THAI_FC,		echo $dynamic_modules | egrep '(^|,)thai-fc($|,)' 	> /dev/null)
 AM_CONDITIONAL(DYNAMIC_THAI_LANG,	echo $dynamic_modules | egrep '(^|,)thai-lang($|,)' 	> /dev/null)
-AM_CONDITIONAL(DYNAMIC_TIBETAN_FC,	echo $dynamic_modules | egrep '(^|,)tibetan-fc($|,)' 	> /dev/null)
 
 #
 # We use flockfile to implement pango_getline() - should be moved to GLib
@@ -1023,12 +1011,8 @@ pango-view/Makefile
 modules/Makefile
 modules/arabic/Makefile
 modules/basic/Makefile
-modules/hangul/Makefile
-modules/hebrew/Makefile
 modules/indic/Makefile
-modules/khmer/Makefile
 modules/thai/Makefile
-modules/tibetan/Makefile
 examples/Makefile
 docs/Makefile
 docs/version.xml
