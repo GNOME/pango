@@ -48,15 +48,6 @@ pango_view_SOURCES =					\
 pango_view_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	$(GLIB_LIBS)
-if HAVE_X
-pango_view_SOURCES +=					\
-	viewer-x.h					\
-	viewer-x.c					\
-	viewer-pangox.c
-pango_view_LDADD +=					\
-	../pango/libpangox-$(PANGO_API_VERSION).la	\
-	$(X_LIBS)
-endif
 if HAVE_FREETYPE
 pango_view_SOURCES +=					\
 	viewer-pangoft2.c
@@ -66,7 +57,9 @@ pango_view_LDADD +=					\
 endif
 if HAVE_XFT
 pango_view_SOURCES +=					\
-	viewer-pangoxft.c
+	viewer-pangoxft.c				\
+	viewer-x.h					\
+	viewer-x.c
 pango_view_LDADD +=					\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
 	../pango/libpangoxft-$(PANGO_API_VERSION).la	\

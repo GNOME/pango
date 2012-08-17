@@ -692,40 +692,6 @@ PangoRendererPrivate
 </SECTION>
 
 <SECTION>
-<TITLE>X Fonts and Rendering</TITLE>
-<FILE>x-fonts</FILE>
-PANGO_RENDER_TYPE_X
-pango_x_get_context
-pango_x_context_set_funcs
-PangoGetGCFunc
-PangoFreeGCFunc
-pango_x_render
-pango_x_render_layout_line
-pango_x_render_layout
-PangoXSubfont
-PANGO_X_MAKE_GLYPH
-PANGO_X_GLYPH_SUBFONT
-PANGO_X_GLYPH_INDEX
-pango_x_load_font
-pango_x_get_unknown_glyph
-pango_x_has_glyph
-pango_x_list_subfonts
-pango_x_font_map_for_display
-pango_x_shutdown_display
-pango_x_font_map_get_font_cache
-pango_x_font_subfont_xlfd
-pango_x_find_first_subfont
-pango_x_font_get_unknown_glyph
-pango_x_apply_ligatures
-pango_x_fallback_shape
-PangoXFontCache
-pango_x_font_cache_new
-pango_x_font_cache_free
-pango_x_font_cache_load
-pango_x_font_cache_unload
-</SECTION>
-
-<SECTION>
 <TITLE>Win32 Fonts and Rendering</TITLE>
 <FILE>win32-fonts</FILE>
 PANGO_RENDER_TYPE_WIN32

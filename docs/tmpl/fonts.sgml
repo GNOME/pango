@@ -442,15 +442,6 @@ the documentation of the corresponding getters for documentation
 of their meaning.
 </para>
 
-@ref_count: 
-@ascent: 
-@descent: 
-@approximate_char_width: 
-@approximate_digit_width: 
-@underline_position: 
-@underline_thickness: 
-@strikethrough_position: 
-@strikethrough_thickness: 
 
 <!-- ##### MACRO PANGO_TYPE_FONT_METRICS ##### -->
 <para>

@@ -6,13 +6,11 @@ EXTRA_DIST = 			\
 	autogen.sh		\
 	pango.pc.in		\
 	pangocairo.pc.in	\
-	pangox.pc.in		\
 	pangoxft.pc.in		\
 	pangoft2.pc.in		\
 	pangowin32.pc.in	\
 	pango-uninstalled.pc.in		\
 	pangocairo-uninstalled.pc.in	\
-	pangox-uninstalled.pc.in	\
 	pangoxft-uninstalled.pc.in	\
 	pangoft2-uninstalled.pc.in	\
 	pangowin32-uninstalled.pc.in	\
@@ -82,10 +80,6 @@ pkgconfig_DATA = pango.pc
 
 if HAVE_CAIRO
 pkgconfig_DATA += pangocairo.pc
-endif
-
-if HAVE_X
-pkgconfig_DATA += pangox.pc
 endif
 
 if HAVE_XFT

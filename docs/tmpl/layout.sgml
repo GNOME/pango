@@ -845,12 +845,6 @@ Routines for rendering PangoLayout objects are provided in
 code specific to each rendering system.
 </para>
 
-@layout: 
-@start_index: 
-@length: 
-@runs: 
-@is_paragraph_start: 
-@resolved_dir: 
 
 <!-- ##### TYPEDEF PangoLayoutRun ##### -->
 <para>

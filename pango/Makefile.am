@@ -169,45 +169,6 @@ Pango_1_0_gir_CFLAGS = -I$(top_builddir) -I$(top_srcdir) $(PANGO_CFLAGS)
 Pango_1_0_gir_FILES = $(filter-out %-private.h pango-color-table.h, $(pango_introspection_files))
 Pango_1_0_gir_SCANNERFLAGS = --c-include "pango/pango.h"
 
-# ------------------- libpangox -------------------
-
-if HAVE_X
-pangoinclude_HEADERS += $(pangox_headers)
-lib_LTLIBRARIES += libpangox-1.0.la
-aliasdir = $(sysconfdir)/pango
-alias_DATA = pangox.aliases
-endif
-
-pangox_headers = pangox.h
-pangox_public_sources = pangox.c
-
-libpangox_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
-libpangox_1_0_la_LIBADD = 			\
-	libpango-$(PANGO_API_VERSION).la	\
-	$(INCLUDED_X_MODULES)			\
-	$(GLIB_LIBS)				\
-	$(X_LIBS)				\
-	$(X_EXTRA_LIBS)
-libpangox_1_0_la_DEPENDENCIES =			\
-	libpango-$(PANGO_API_VERSION).la	\
-	$(INCLUDED_X_MODULES)
-
-if PLATFORM_WIN32
-libpangox_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangox.def -Wl,pangox-win32-res.o
-libpangox_1_0_la_DEPENDENCIES += pangox-win32-res.o pangox.def
-endif
-
-pangox-win32-res.o: pangox.rc
-	$(WINDRES) $< $@
-
-libpangox_1_0_la_SOURCES = 			\
-	$(pangox_public_sources) 		\
-	modules.h 	   			\
-	module-defs-x.c	   			\
-	pangox-private.h   			\
-	pangox-fontcache.c 			\
-	pangox-fontmap.c
-
 # ------------------- libpangoft2 -------------------
 
 if HAVE_FREETYPE
@@ -483,8 +444,7 @@ if HAVE_FREETYPE
 endif
 	$(INSTALL) $(srcdir)/pangowin32.def $(DESTDIR)$(libdir)/pangowin32-$(PANGO_API_VERSION).def
 	$(INSTALL) $(srcdir)/pangocairo.def $(DESTDIR)$(libdir)/pangocairo-$(PANGO_API_VERSION).def
-if HAVE_X
-	$(INSTALL) $(srcdir)/pangox.def $(DESTDIR)$(libdir)/pangox-$(PANGO_API_VERSION).def
+if HAVE_XFT
 	$(INSTALL) $(srcdir)/pangoxft.def $(DESTDIR)$(libdir)/pangoxft-$(PANGO_API_VERSION).def
 endif
 uninstall-def-files:
@@ -494,8 +454,7 @@ if HAVE_FREETYPE
 endif
 	-$(RM) $(DESTDIR)$(libdir)/pangowin32-$(PANGO_API_VERSION).def
 	-$(RM) $(DESTDIR)$(libdir)/pangocairo-$(PANGO_API_VERSION).def
-if HAVE_X
-	-$(RM) $(DESTDIR)$(libdir)/pangox-$(PANGO_API_VERSION).def
+if HAVE_XFT
 	-$(RM) $(DESTDIR)$(libdir)/pangoxft-$(PANGO_API_VERSION).def
 endif
 else
@@ -560,16 +519,10 @@ endif # HAVE_INTROSPECTION
 
 bin_PROGRAMS = pango-querymodules
 
-#
-# As a temporary hack, we pull in libpangox here so that we can link
-#
 pango_querymodules_SOURCES = \
 	querymodules.c
 
 pango_querymodules_LDADD =
-if HAVE_X
-pango_querymodules_LDADD += libpangox-$(PANGO_API_VERSION).la
-endif
 if HAVE_XFT
 pango_querymodules_LDADD += libpangoxft-$(PANGO_API_VERSION).la
 endif
@@ -595,15 +548,12 @@ EXTRA_DIST =					\
 	makefile.msc				\
 	pango.rc				\
 	pango.rc.in				\
-	pangox.aliases				\
 	pangoft2.rc				\
 	pangoft2.rc.in				\
 	pangowin32.rc				\
 	pangowin32.rc.in			\
 	pangocairo.rc				\
 	pangocairo.rc.in			\
-	pangox.rc				\
-	pangox.rc.in				\
 	pangoxft.rc				\
 	pangoxft.rc.in				\
 	check.defs
@@ -651,7 +601,7 @@ install-data-local: install-ms-lib install-def-files
 
 install-exec-hook: 
 if DISABLE_EXPLICIT_DEPS
-	-for i in libpangoft2-$(PANGO_API_VERSION).la libpangoxft-$(PANGO_API_VERSION).la libpangox-$(PANGO_API_VERSION).la libpangowin32-$(PANGO_API_VERSION).la; do \
+	-for i in libpangoft2-$(PANGO_API_VERSION).la libpangoxft-$(PANGO_API_VERSION).la libpangowin32-$(PANGO_API_VERSION).la; do \
 	  test -f $(DESTDIR)$(libdir)/$$i && $(SHELL) $(top_srcdir)/sanitize-la.sh $(DESTDIR)$(libdir)/$$i ; \
 	done
 endif

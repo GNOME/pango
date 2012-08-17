@@ -168,12 +168,6 @@ horizontal origin.
 
 </para>
 
-@xx: 
-@xy: 
-@yx: 
-@yy: 
-@x0: 
-@y0: 
 
 <!-- ##### MACRO PANGO_TYPE_MATRIX ##### -->
 <para>
@@ -395,9 +389,6 @@ The storage for the glyph information is owned
 by the structure which simplifies memory management.
 </para>
 
-@num_glyphs: 
-@glyphs: 
-@log_clusters: 
 
 <!-- ##### STRUCT PangoGlyphItem ##### -->
 <para>
@@ -408,8 +399,6 @@ of shaping text with #PangoLayout is a list of #PangoLayoutLine,
 each of which contains a list of #PangoGlyphItem.
 </para>
 
-@item: 
-@glyphs: 
 
 <!-- ##### STRUCT PangoGlyphItemIter ##### -->
 <para>
@@ -453,14 +442,6 @@ None of the members of a #PangoGlyphItemIter should be modified manually.
 
 </para>
 
-@glyph_item: 
-@text: 
-@start_glyph: 
-@start_index: 
-@start_char: 
-@end_glyph: 
-@end_index: 
-@end_char: 
 @Since: 1.22
 
 <!-- ##### MACRO PANGO_TYPE_GLYPH_STRING ##### -->

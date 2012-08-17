@@ -580,9 +580,6 @@ The #PangoColor structure is used to
 represent a color in an uncalibrated RGB color-space.
 </para>
 
-@red: 
-@green: 
-@blue: 
 
 <!-- ##### MACRO PANGO_TYPE_COLOR ##### -->
 <para>

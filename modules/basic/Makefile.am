@@ -1,23 +1,5 @@
 include $(top_srcdir)/modules/Module.mk
 
-if HAVE_X
-INCLUDES += $(X_CFLAGS)
-if INCLUDE_BASIC_X
-noinst_LTLIBRARIES += libpango-basic-x.la
-else
-if DYNAMIC_BASIC_X
-module_LTLIBRARIES += pango-basic-x.la
-endif
-endif
-endif
-
-pango_basic_x_la_LDFLAGS = -module $(MODULE_LIBTOOL_OPTIONS)
-pango_basic_x_la_LIBADD = $(pangoxlibs)
-pango_basic_x_la_SOURCES = basic-x.c
-libpango_basic_x_la_SOURCES = basic-x.c
-libpango_basic_x_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_basic_x
-
-
 if HAVE_FREETYPE
 INCLUDES += $(FREETYPE_CFLAGS) $(HARFBUZZ_CFLAGS)
 if INCLUDE_BASIC_FC
