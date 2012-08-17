@@ -326,37 +326,7 @@ _pango_ot_info_substitute  (const PangoOTInfo    *info,
 			    const PangoOTRuleset *ruleset,
 			    PangoOTBuffer        *buffer)
 {
-  unsigned int i;
-
-  hb_ot_layout_substitute_start (buffer->buffer);
-
-  for (i = 0; i < ruleset->rules->len; i++)
-    {
-      PangoOTRule *rule = &g_array_index (ruleset->rules, PangoOTRule, i);
-      hb_mask_t mask;
-      unsigned int lookup_count, j;
-      unsigned int lookup_indexes[1000];
-
-      if (rule->table_type != PANGO_OT_TABLE_GSUB)
-	continue;
-
-      mask = rule->property_bit;
-      lookup_count = G_N_ELEMENTS (lookup_indexes);
-      hb_ot_layout_feature_get_lookup_indexes (info->hb_face,
-					       HB_OT_TAG_GSUB,
-					       rule->feature_index,
-					       0,
-					       &lookup_count,
-					       lookup_indexes);
-
-      for (j = 0; j < lookup_count; j++)
-	hb_ot_layout_substitute_lookup (info->hb_face,
-					buffer->buffer,
-					lookup_indexes[j],
-					rule->property_bit);
-    }
-
-  hb_ot_layout_substitute_finish (buffer->buffer);
+  /* Deprecated. */
 }
 
 void
@@ -364,70 +334,5 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 			    const PangoOTRuleset *ruleset,
 			    PangoOTBuffer        *buffer)
 {
-  unsigned int i, num_glyphs;
-  gboolean is_hinted;
-  hb_font_t *hb_font;
-  hb_glyph_info_t *hb_glyph;
-  hb_glyph_position_t *hb_position;
-
-  /* XXX reuse hb_font */
-  hb_font = hb_font_create (info->hb_face);
-  hb_font_set_scale (hb_font,
-		      (((guint64) info->face->size->metrics.x_scale * info->face->units_per_EM) >> 12),
-		     -(((guint64) info->face->size->metrics.y_scale * info->face->units_per_EM) >> 12));
-  is_hinted = buffer->font->is_hinted;
-  hb_font_set_ppem (hb_font,
-		    is_hinted ? info->face->size->metrics.x_ppem : 0,
-		    is_hinted ? info->face->size->metrics.y_ppem : 0);
-
-
-  /* Apply default positioning */
-  num_glyphs = hb_buffer_get_length (buffer->buffer);
-  hb_glyph = hb_buffer_get_glyph_infos (buffer->buffer, NULL);
-  hb_position = hb_buffer_get_glyph_positions (buffer->buffer, NULL);
-
-  hb_ot_layout_position_start (buffer->buffer);
-
-  for (i = 0; i < num_glyphs; i++)
-    {
-      PangoRectangle logical_rect;
-      pango_font_get_glyph_extents ((PangoFont *) buffer->font, hb_glyph->codepoint, NULL, &logical_rect);
-      hb_position->x_advance = logical_rect.width;
-
-      hb_glyph++;
-      hb_position++;
-    }
-
-
-  for (i = 0; i < ruleset->rules->len; i++)
-    {
-      PangoOTRule *rule = &g_array_index (ruleset->rules, PangoOTRule, i);
-      hb_mask_t mask;
-      unsigned int lookup_count, j;
-      unsigned int lookup_indexes[1000];
-
-      if (rule->table_type != PANGO_OT_TABLE_GPOS)
-	continue;
-
-      mask = rule->property_bit;
-      lookup_count = G_N_ELEMENTS (lookup_indexes);
-      hb_ot_layout_feature_get_lookup_indexes (info->hb_face,
-					       HB_OT_TAG_GPOS,
-					       rule->feature_index,
-					       0,
-					       &lookup_count,
-					       lookup_indexes);
-
-      for (j = 0; j < lookup_count; j++)
-	hb_ot_layout_position_lookup (hb_font,
-				      buffer->buffer,
-				      lookup_indexes[j],
-				      rule->property_bit);
-
-      buffer->applied_gpos = TRUE;
-    }
-
-  hb_ot_layout_position_finish (buffer->buffer);
-
-  hb_font_destroy (hb_font);
+  /* Deprecated. */
 }
