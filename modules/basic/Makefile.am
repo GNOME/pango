@@ -52,8 +52,4 @@ pango_basic_coretext_la_SOURCES = basic-coretext.c
 libpango_basic_coretext_la_SOURCES = basic-coretext.c
 libpango_basic_coretext_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_basic_coretext
 
-EXTRA_DIST =		\
-	tables-big.i	\
-	tables-small.i
-
 -include $(top_srcdir)/git.mk
