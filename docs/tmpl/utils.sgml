@@ -97,6 +97,15 @@ backends and modules, but may be useful for other purposes too.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_config_key_get_system ##### -->
+<para>
+
+</para>
+
+@key: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_lookup_aliases ##### -->
 <para>
 

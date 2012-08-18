@@ -1053,6 +1053,7 @@ pango_scan_word
 pango_scan_string
 pango_scan_int
 pango_config_key_get
+pango_config_key_get_system
 pango_lookup_aliases
 pango_parse_enum
 pango_parse_style
