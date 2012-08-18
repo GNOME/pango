@@ -10,10 +10,6 @@
 #include <pango/pangowin32.h>
 #endif
 
-#ifdef HAVE_X
-#include <pango/pangox.h>
-#endif
-
 #ifdef HAVE_XFT
 #include <pango/pangoxft.h>
 #endif
