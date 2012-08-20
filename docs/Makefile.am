@@ -141,7 +141,7 @@ EXTRA_DIST +=				\
 	$(man_MANS)
 
 # force doc rebulid after configure
-dist-hook-local: dist-local-check-mans-enabled dist-local-check-no-cross-references pango-docs-clean all-local
+dist-hook-local: dist-local-check-mans-enabled dist-local-check-no-cross-references
 
 pango-docs-clean: clean
 	cd $(srcdir) && rm -rf xml html
