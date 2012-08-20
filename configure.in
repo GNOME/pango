@@ -433,8 +433,12 @@ AM_CONDITIONAL(HAVE_CAIRO_QUARTZ, $have_cairo_quartz)
 
 harfbuzz_required=0.9
 have_harfbuzz=false
-PKG_CHECK_MODULES(HARFBUZZ, harfbuzz >= $harfbuzz_required, have_harfbuzz=true)
+PKG_CHECK_MODULES(HARFBUZZ, harfbuzz >= $harfbuzz_required, have_harfbuzz=true, have_harfbuzz=false)
 AM_CONDITIONAL(HAVE_HARFBUZZ, $have_harfbuzz)
+if ! $have_harfbuzz; then
+	have_freetype=false
+	have_xft=false
+fi
 
 #
 # We must have some backend defined, in order for the pango-querymodules
@@ -443,7 +447,7 @@ AM_CONDITIONAL(HAVE_HARFBUZZ, $have_harfbuzz)
 # patch to fix that rule. :-)
 #
 if $have_freetype || $have_xft || $have_cairo || $have_win32 ; then : ; else
-  AC_MSG_ERROR([*** Could not enable any of FreeType, Xft, Cairo, or Win32 backends.
+  AC_MSG_ERROR([*** Could not enable any backends.
 *** Must have at least one backend to build Pango.])
 fi
 

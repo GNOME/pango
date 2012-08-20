@@ -12,11 +12,12 @@ multiple options for rendering with each.
    Rendering can be with with Cairo or Xft libraries, or directly
    to an in-memory buffer with no additional libraries.
 
- - Native fonts on Microsoft Windows using Uniscribe if available for
-   complex script handling. Rendering can be done via Cairo or
-   directly using the native Win32 API.
+ - Native fonts on Microsoft Windows using Uniscribe for complex
+   script handling. Rendering can be done via Cairo or directly
+   using the native Win32 API.
 
-  - Native fonts on MacOS X, rendering via Cairo.
+ - Native fonts on MacOS X with the CoreText framework, rendering via
+   Cairo.
 
 The integration of Pango with Cairo (http://cairographics.org)
 provides a complete solution with high quality text handling 
@@ -39,10 +40,14 @@ Dependencies
 Pango depends on the GLib library; more information about GLib can
 be found at http://www.gtk.org/.
 
-When using client side fonts, the fontconfig library
-(http://www.fontconfig.org) to look up fonts. At least version 2.0.9
-of the FreeType font handling library (http://www.freetype.org) is
-also required.
+To use the Free Software stack backend, Pango depends on the following
+libraries:
+
+  * fontconfig for font discovery (http://www.fontconfig.org),
+
+  * FreeType for font access (http://www.freetype.org),
+
+  * HarfBuzz for complex text shaping (http://www.harfbuzz.org/)
 
 Cairo support depends on the Cairo library (http://cairographics.org).
 The Cairo backend is the preferred backend to use Pango with and is
@@ -92,4 +97,4 @@ otaylor@redhat.com
 Behdad Esfahbod
 behdad@gnome.org
 
-26 February 2007
+20 August 2012
