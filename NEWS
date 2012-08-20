@@ -1,3 +1,15 @@
+Overview of changes between 1.30.1 and 1.31.0
+=============================================
+- Port to harfbuzz 0.9.x, use external harfbuzz
+- Remove Arabic, Syriac, Hangul Hebrew, Khmer,
+  Tibetan and Thai shapers (replaced by harfbuzz)
+- Remove Indic module (replaced by harfbuzz)
+- Remove Atsui support (superseded by CoreText)
+- Remove PangoX
+- 679654 - Crash for PangoContext.list_families
+- 680965 - missing language strings for ...
+- 681423 - introspection: assorted fixes...
+
 Overview of changes between 1.30.0 and 1.30.1
 =============================================
 - Update Arabic joining classes to 6.1.0
