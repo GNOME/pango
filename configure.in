@@ -227,7 +227,6 @@ AM_CONDITIONAL(CROSS_COMPILING, [test $cross_compiling = yes])
 
 have_fontconfig=false
 have_freetype=false
-have_xft=false
 
 #
 # Check for fontconfig
@@ -443,8 +442,8 @@ AM_CONDITIONAL(HAVE_HARFBUZZ, $have_harfbuzz)
 # a new Pango backend outside of Pango, you are up to sending the necessary
 # patch to fix that rule. :-)
 #
-if $have_freetype || $have_x || $have_xft || $have_cairo || $have_win32 ; then : ; else
-  AC_MSG_ERROR([*** Could not enable any of FreeType, X11, Cairo, or Win32 backends.
+if $have_freetype || $have_xft || $have_cairo || $have_win32 ; then : ; else
+  AC_MSG_ERROR([*** Could not enable any of FreeType, Xft, Cairo, or Win32 backends.
 *** Must have at least one backend to build Pango.])
 fi
 
@@ -973,7 +972,6 @@ if $have_cairo ; then backends="$backends Cairo"; fi
 if $have_win32 ; then backends="$backends Win32"; fi
 if $have_xft ; then backends="$backends Xft"; fi
 if $have_freetype && $have_fontconfig ; then backends="$backends FreeType"; fi
-if $have_x ; then backends="$backends X"; fi
-   
+
 echo "configuration:
 	backends:$backends"
