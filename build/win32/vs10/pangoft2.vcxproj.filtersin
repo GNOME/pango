@@ -18,23 +18,7 @@
     <ResourceCompile Include="..\..\..\pango\pangoft2.rc"><Filter>Resource Files</Filter></ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\modules\arabic\arabic-fc.c"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="..\..\..\modules\arabic\arabic-ot.c"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="..\..\..\modules\basic\basic-fc.c"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="..\..\..\modules\hangul\hangul-fc.c"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="..\..\..\modules\hebrew\hebrew-fc.c"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="..\..\..\modules\hebrew\hebrew-shaper.c"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="..\..\..\modules\indic\indic-fc.c"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="..\..\..\modules\indic\indic-ot-class-tables.c"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="..\..\..\modules\indic\indic-ot.c"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="..\..\..\modules\indic\mprefixups.c"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="..\..\..\modules\khmer\khmer-fc.c"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="..\..\..\modules\syriac\syriac-fc.c"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="..\..\..\modules\syriac\syriac-ot.c"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="..\..\..\modules\thai\thai-charprop.c"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="..\..\..\modules\thai\thai-fc.c"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="..\..\..\modules\thai\thai-shaper.c"><Filter>Source Files</Filter></ClCompile>
-    <ClCompile Include="..\..\..\modules\tibetan\tibetan-fc.c"><Filter>Source Files</Filter></ClCompile>
 #include "libpangoft2.vs10.sourcefiles.filters"
   </ItemGroup>
 </Project>
