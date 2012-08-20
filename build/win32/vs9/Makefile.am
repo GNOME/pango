@@ -12,3 +12,5 @@ EXTRA_DIST = \
 	install.vcproj	\
 	stdint.h \
 	README.txt
+
+-include $(top_srcdir)/git.mk

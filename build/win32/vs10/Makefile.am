@@ -22,3 +22,5 @@ EXTRA_DIST = \
 	pangocairo_fc.vcxproj.filtersin \
 	install.vcxproj \
 	README.txt
+
+-include $(top_srcdir)/git.mk
