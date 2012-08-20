@@ -1,7 +1,5 @@
 #!/bin/sh
 
-exit 0
-
 LC_ALL=C
 export LC_ALL
 
