@@ -131,9 +131,8 @@ AC_TRY_COMPILE(,[class a { int b; } c;], ,CXX=)
 AM_CONDITIONAL(HAVE_CXX, test "$CXX" != "")
 AC_LANG_RESTORE
 
-#
-# Checks for HarfBuzz
-#
+
+
 
 AC_PROG_CXX
 AC_CHECK_FUNCS(mprotect sysconf getpagesize)
@@ -225,17 +224,30 @@ AC_ARG_ENABLE(rebuilds,
 
 AM_CONDITIONAL(CROSS_COMPILING, [test $cross_compiling = yes])
 
-have_fontconfig=false
-have_freetype=false
+
+#
+# Checks for HarfBuzz
+#
+have_harfbuzz=false
+PKG_CHECK_MODULES(HARFBUZZ, harfbuzz >= 0.9.3, have_harfbuzz=true, AC_MSG_RESULT([no]))
+AM_CONDITIONAL(HAVE_HARFBUZZ, $have_harfbuzz)
+if ! $have_harfbuzz; then
+	have_freetype=false
+	have_xft=false
+fi
 
 #
 # Check for fontconfig
 #
-PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 2.5.0, have_fontconfig=true, AC_MSG_RESULT([no]))
+have_fontconfig=false
+if $have_harfbuzz ; then
+  PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 2.5.0, have_fontconfig=true, AC_MSG_RESULT([no]))
+fi
 
 #
 # Checks for FreeType
 #
+have_freetype=false
 if $have_fontconfig ; then
   # The first version of freetype with a .pc file is 2.1.5.  That's recent
   # enough for all the functions we use I guess.  No version check needed.
@@ -430,15 +442,6 @@ AM_CONDITIONAL(HAVE_CAIRO_WIN32, $have_cairo_win32)
 AM_CONDITIONAL(HAVE_CAIRO_FREETYPE, $have_cairo_freetype)
 AM_CONDITIONAL(HAVE_CAIRO_QUARTZ, $have_cairo_quartz)
 
-
-harfbuzz_required=0.9
-have_harfbuzz=false
-PKG_CHECK_MODULES(HARFBUZZ, harfbuzz >= $harfbuzz_required, have_harfbuzz=true, have_harfbuzz=false)
-AM_CONDITIONAL(HAVE_HARFBUZZ, $have_harfbuzz)
-if ! $have_harfbuzz; then
-	have_freetype=false
-	have_xft=false
-fi
 
 #
 # We must have some backend defined, in order for the pango-querymodules
