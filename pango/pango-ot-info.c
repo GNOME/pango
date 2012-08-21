@@ -22,12 +22,6 @@
 #include "config.h"
 
 #include "pango-ot-private.h"
-#include "pango-impl-utils.h"
-#include FT_TRUETYPE_TABLES_H
-
-#if (!GLIB_CHECK_VERSION(2,29,15))
-#define G_UNICODE_SPACING_MARK G_UNICODE_COMBINING_MARK
-#endif
 
 static void pango_ot_info_finalize   (GObject *object);
 
