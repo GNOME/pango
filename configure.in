@@ -226,7 +226,33 @@ AM_CONDITIONAL(CROSS_COMPILING, [test $cross_compiling = yes])
 
 
 #
-# Checks for HarfBuzz
+# Check for fontconfig
+#
+have_fontconfig=false
+if $have_harfbuzz ; then
+  PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 2.5.0, have_fontconfig=true, AC_MSG_RESULT([no]))
+fi
+
+#
+# Checks for FreeType. Set the environment after checking for HarfBuzz.
+#
+have_freetype=false
+if $have_fontconfig ; then
+  # The first version of freetype with a .pc file is 2.1.5.  That's recent
+  # enough for all the functions we use I guess.  No version check needed.
+  PKG_CHECK_MODULES(FREETYPE, freetype2, have_freetype=true, AC_MSG_RESULT([no]))
+fi
+
+#
+# Checks for Xft/XRender. Set the environment after checking for HarfBuzz
+#
+have_xft=false
+if $have_freetype ; then
+  PKG_CHECK_MODULES(XFT, xft >= 2.0.0 xrender, have_xft=true, AC_MSG_RESULT([no]))
+fi
+
+#
+# Checks for HarfBuzz, disables Freetype and Xft if it's not present.
 #
 have_harfbuzz=false
 PKG_CHECK_MODULES(HARFBUZZ, harfbuzz >= 0.9.3, have_harfbuzz=true, AC_MSG_RESULT([no]))
@@ -237,22 +263,10 @@ if ! $have_harfbuzz; then
 fi
 
 #
-# Check for fontconfig
+# Now set the environment for Freetype and Xft. CFLAGS and LDFLAGS are
+# already set for each, but shouldn't matter since anything requiring
+# them will be ifdeffed or not built at all.
 #
-have_fontconfig=false
-if $have_harfbuzz ; then
-  PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 2.5.0, have_fontconfig=true, AC_MSG_RESULT([no]))
-fi
-
-#
-# Checks for FreeType
-#
-have_freetype=false
-if $have_fontconfig ; then
-  # The first version of freetype with a .pc file is 2.1.5.  That's recent
-  # enough for all the functions we use I guess.  No version check needed.
-  PKG_CHECK_MODULES(FREETYPE, freetype2, have_freetype=true, AC_MSG_RESULT([no]))
-fi
 if $have_freetype ; then
   AC_DEFINE(HAVE_FREETYPE, 1, [Have FreeType 2 library])
   # By freetype, we really always mean freetype+fontconfig
@@ -260,13 +274,6 @@ if $have_freetype ; then
   FREETYPE_LIBS="$FREETYPE_LIBS $FONTCONFIG_LIBS"
 fi
 AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype)
-
-#
-# Checks for Xft/XRender
-#
-if $have_freetype ; then
-  PKG_CHECK_MODULES(XFT, xft >= 2.0.0 xrender, have_xft=true, AC_MSG_RESULT([no]))
-fi
 if $have_xft ; then
   AC_DEFINE(HAVE_XFT, 1, [Have Xft library])
 fi
