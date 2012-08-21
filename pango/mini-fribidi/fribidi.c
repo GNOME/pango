@@ -494,12 +494,16 @@ fribidi_analyse_string_utf8 (	/* input */
 		   				 &ored_types, &anded_strongs);
 
     /* The case that all resolved levels will be ltr.
-     * First, all strongs should be ltr, and one of the following:
+     * First, all strongs should be ltr, there should be no Arabic numbers
+     * (or letters for that matter), and one of the following:
      *
      *	o *pbase_dir doesn't have an rtl taste.
      *	o there are letters, and *pbase_dir is weak.
+     *
+     *	For details see:
+     *	https://bugzilla.gnome.org/show_bug.cgi?id=590183
      */
-    if (!FRIBIDI_IS_RTL (ored_types) &&
+    if (!FRIBIDI_IS_RTL (ored_types) && !FRIBIDI_IS_ARABIC (ored_types) &&
 	     (!FRIBIDI_IS_RTL (*pbase_dir) ||
 	      (FRIBIDI_IS_WEAK (*pbase_dir) && FRIBIDI_IS_LETTER (ored_types))
 	     ))
