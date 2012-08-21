@@ -23,6 +23,6 @@
     <ClCompile Include="..\..\..\modules\arabic\arabic-lang.c"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="..\..\..\modules\indic\indic-lang.c"><Filter>Source Files</Filter></ClCompile>
 #include "libpango.vs10.sourcefiles.filters"
-#include "mini-fribidi/libmini-fribidi.vs10.sourcefiles.filters"
+#include "libmini-fribidi.vs10.sourcefiles.filters"
   </ItemGroup>
 </Project>

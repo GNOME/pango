@@ -295,7 +295,7 @@
 				<FileConfiguration Name="Release|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_indic_lang" /></FileConfiguration>
 			</File>
 #include "libpango.sourcefiles"
-#include "mini-fribidi/libmini-fribidi.sourcefiles"
+#include "libmini-fribidi.sourcefiles"
 		</Filter>
 	</Files>
 </VisualStudioProject>

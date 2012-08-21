@@ -308,7 +308,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PANGO_MODULE_PREFIX=_pango_indic_lang;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
 #include "libpango.vs10.sourcefiles"
-#include "mini-fribidi/libmini-fribidi.vs10.sourcefiles"
+#include "libmini-fribidi.vs10.sourcefiles"
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
