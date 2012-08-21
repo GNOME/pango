@@ -1,0 +1,255 @@
+# Pango
+# Makefile-msvcproj.am
+# Makefile to fill in the various Visual C++ project files
+#
+# Copyright (C) 2012 Chun-wei Fan
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+# Library General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this library; if not, write to the
+# Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.
+
+########################################################################
+# Note:                                                                #
+# pangowin32.vcproj, pangowin32.vcxproj and pangowin32.vcxproj.filters #
+# are not automatically built, it is not being changed                 #
+########################################################################
+
+################################################################
+# The source file listings to input in the pango MSVC projects #
+################################################################
+fribidi_msvcproj_srcfiles = \
+	$(top_builddir)/build/libmini-fribidi.sourcefiles	\
+	$(top_builddir)/build/libmini-fribidi.vs10.sourcefiles	\
+	$(top_builddir)/build/libmini-fribidi.vs10.sourcefiles.filters
+
+#############################################
+# The various MSVC projects to be filled in #
+#############################################
+pango_vcproj_stuff = \
+	$(top_builddir)/build/win32/vs9/pango.vcproj	\
+	$(top_builddir)/build/win32/vs9/pangoft2.vcproj	\
+	$(top_builddir)/build/win32/vs9/pangocairo.vcproj	\
+	$(top_builddir)/build/win32/vs9/pango.vs9.headers	\
+	$(top_builddir)/build/win32/vs10/pango.vcxproj	\
+	$(top_builddir)/build/win32/vs10/pango.vcxproj.filters	\
+	$(top_builddir)/build/win32/vs10/pangocairo.vcxproj	\
+	$(top_builddir)/build/win32/vs10/pangocairo.vcxproj.filters	\
+	$(top_builddir)/build/win32/vs10/pangocairo_fc.vcxproj	\
+	$(top_builddir)/build/win32/vs10/pangocairo_fc.vcxproj.filters	\
+	$(top_builddir)/build/win32/vs10/pangoft2.vcxproj	\
+	$(top_builddir)/build/win32/vs10/pangoft2.vcxproj.filters	\
+	$(top_builddir)/build/win32/vs10/pango.vs10.headers
+
+###################################################
+# Gather the source file listing for mini-fribidi #
+###################################################
+
+$(top_builddir)/build/libmini-fribidi.sourcefiles: Makefile
+	for F in $(libmini_fribidi_la_SOURCES); do \
+		case $$F in \
+		*.c) echo '			<File RelativePath="..\..\..\pango\mini-fribidi\'$$F'" />' \
+		     ;; \
+		esac; \
+	done >$(top_builddir)/build/libmini-fribidi.sourcefiles
+
+$(top_builddir)/build/libmini-fribidi.vs10.sourcefiles: Makefile
+	for F in $(libmini_fribidi_la_SOURCES); do \
+		case $$F in \
+		*.c) echo '			<ClCompile Include="..\..\..\pango\mini-fribidi\'$$F'" />' \
+		     ;; \
+		esac; \
+	done >$(top_builddir)/build/libmini-fribidi.vs10.sourcefiles
+
+$(top_builddir)/build/libmini-fribidi.vs10.sourcefiles.filters: Makefile
+	for F in $(libmini_fribidi_la_SOURCES); do \
+		case $$F in \
+		*.c) echo '			<ClCompile Include="..\..\..\pango\mini-fribidi\'$$F'"><Filter>Source Files</Filter></ClCompile>' \
+		     ;; \
+		esac; \
+	done >$(top_builddir)/build/libmini-fribidi.vs10.sourcefiles.filters
+
+####################################################
+# Gather the source files listings for pangocairo  #
+# for MSVC 2010, as 2 projects are needed for that #
+# due to the case that one may or may not be using #
+# pango-ft2                                        #
+####################################################
+$(top_builddir)/build/libpangocairo.vs10.sourcefiles:
+	for F in $(pangocairo_core_sources); do \
+	case $$F in \
+		*.c) echo ' <ClCompile Include="..\..\..\pango\'$$F'" />' ;; \
+		esac; \
+	done >$(top_builddir)/build/libpangocairo.vs10.sourcefiles
+
+$(top_builddir)/build/libpangocairo.vs10.sourcefiles.filters:
+	for F in $(pangocairo_core_sources); do \
+	case $$F in \
+		*.c) echo ' <ClCompile Include="..\..\..\pango\'$$F'"><Filter>Source Files</Filter></ClCompile>' \
+		;; \
+		esac; \
+	done >$(top_builddir)/build/libpangocairo.vs10.sourcefiles.filters
+
+######################################
+# Fill in the Pango DLL MSVC project #
+######################################
+
+$(top_builddir)/build/win32/vs9/pango.vcproj: \
+	$(top_srcdir)/build/win32/vs9/pango.vcprojin $(top_builddir)/build/libmini-fribidi.sourcefiles
+# (Seperator)
+	-$(RM) $@
+	for F in $(libpango_1_0_la_SOURCES); do \
+		case $$F in \
+			*.c) echo ' <File RelativePath="..\..\..\pango\'$$F'" />' \
+			;; \
+		esac; \
+	done >$(top_builddir)/build/libpango.sourcefiles
+	$(CPP) -P -I$(top_builddir)/build - <$(top_srcdir)/build/win32/vs9/pango.vcprojin >$@
+	-$(RM) $(top_builddir)/build/libpango.sourcefiles
+	-$(RM) $(top_builddir)/build/libmini-fribidi.sourcefiles
+
+$(top_builddir)/build/win32/vs10/pango.vcxproj: \
+	$(top_srcdir)/build/win32/vs10/pango.vcxprojin $(top_builddir)/build/libmini-fribidi.vs10.sourcefiles
+# (Seperator)
+	-$(RM) $@
+	for F in $(libpango_1_0_la_SOURCES); do \
+		case $$F in \
+			*.c) echo ' <ClCompile Include="..\..\..\pango\'$$F'" />' \
+			;; \
+		esac; \
+	done >$(top_builddir)/build/libpango.vs10.sourcefiles
+	$(CPP) -P -I$(top_builddir)/build - <$(top_srcdir)/build/win32/vs10/pango.vcxprojin >$@
+	-$(RM) $(top_builddir)/build/libpango.vs10.sourcefiles
+	-$(RM) $(top_builddir)/build/libmini-fribidi.vs10.sourcefiles
+
+$(top_builddir)/build/win32/vs10/pango.vcxproj.filters: \
+	$(top_srcdir)/build/win32/vs10/pango.vcxproj.filtersin $(top_builddir)/build/libmini-fribidi.vs10.sourcefiles.filters
+# (Seperator)
+	-$(RM) $@
+	for F in $(libpango_1_0_la_SOURCES); do \
+		case $$F in \
+			*.c) echo ' <ClCompile Include="..\..\..\pango\'$$F'"><Filter>Source Files</Filter></ClCompile>' \
+			;; \
+		esac; \
+	done >$(top_builddir)/build/libpango.vs10.sourcefiles.filters
+	$(CPP) -I$(top_builddir)/build -P - <$(top_srcdir)/build/win32/vs10/pango.vcxproj.filtersin >$@
+	-$(RM) $(top_builddir)/build/libpango.vs10.sourcefiles.filters
+	-$(RM) $(top_builddir)/build/libmini-fribidi.vs10.sourcefiles.filters
+
+##########################################
+# Fill in the Pango-FT2 DLL MSVC project #
+##########################################
+
+$(top_builddir)/build/win32/vs9/pangoft2.vcproj: $(top_srcdir)/build/win32/vs9/pangoft2.vcprojin
+	-$(RM) $@
+	for F in $(libpangoft2_1_0_la_SOURCES); do \
+		case $$F in \
+		*.c) echo ' <File RelativePath="..\..\..\pango\'$$F'" />' ;; \
+		esac; \
+	done >$(top_builddir)/build/libpangoft2.sourcefiles
+	$(CPP) -I$(top_builddir)/build -P - <$(top_srcdir)/build/win32/vs9/pangoft2.vcprojin >$@
+	-$(RM) $(top_builddir)/build/libpangoft2.sourcefiles
+
+$(top_builddir)/build/win32/vs10/pangoft2.vcxproj: $(top_srcdir)/build/win32/vs10/pangoft2.vcxprojin
+	-$(RM) $@
+	for F in $(libpangoft2_1_0_la_SOURCES); do \
+		case $$F in \
+			*.c) echo ' <ClCompile Include="..\..\..\pango\'$$F'" />' ;; \
+		esac; \
+	done >$(top_builddir)/build/libpangoft2.vs10.sourcefiles
+	$(CPP) -I$(top_builddir)/build -P - <$(top_srcdir)/build/win32/vs10/pangoft2.vcxprojin >$@
+	-$(RM) $(top_builddir)/build/libpangoft2.vs10.sourcefiles
+
+$(top_builddir)/build/win32/vs10/pangoft2.vcxproj.filters: $(top_srcdir)/build/win32/vs10/pangoft2.vcxproj.filtersin
+	-$(RM) $@
+	for F in $(libpangoft2_1_0_la_SOURCES); do \
+		case $$F in \
+		*.c) echo ' <ClCompile Include="..\..\..\pango\'$$F'"><Filter>Source Files</Filter></ClCompile>' ;; \
+		esac; \
+	done >$(top_builddir)/build/libpangoft2.vs10.sourcefiles.filters
+	$(CPP) -I$(top_builddir)/build -P - <$(top_srcdir)/build/win32/vs10/pangoft2.vcxproj.filtersin >$@
+	-$(RM) $(top_builddir)/build/libpangoft2.vs10.sourcefiles.filters
+
+############################################
+# Fill in the Pango-Cairo DLL MSVC project #
+#                                          #
+# Backend-specific sources for the         #
+# libpangocairo DLL are explicitly         #
+# listed in the vcprojin file              #
+############################################
+
+$(top_builddir)/build/win32/vs9/pangocairo.vcproj: $(top_srcdir)/build/win32/vs9/pangocairo.vcprojin
+	-$(RM) $@
+	for F in $(pangocairo_core_sources); do \
+		case $$F in \
+		*.c) echo ' <File RelativePath="..\..\..\pango\'$$F'" />' \
+		;; \
+		esac; \
+	done >$(top_builddir)/build/libpangocairo.sourcefiles
+	$(CPP) -I$(top_builddir)/build -P - <$(top_srcdir)/build/win32/vs9/pangocairo.vcprojin >$@
+	-$(RM) $(top_builddir)/build/libpangocairo.sourcefiles
+
+$(top_builddir)/build/win32/vs10/pangocairo.vcxproj: \
+	$(top_srcdir)/build/win32/vs10/pangocairo.vcxprojin $(top_builddir)/build/libpangocairo.vs10.sourcefiles
+# (Seperator)
+	-$(RM) $@
+	$(CPP) -I$(top_builddir)/build -P - <$(top_srcdir)/build/win32/vs10/pangocairo.vcxprojin >$@
+
+$(top_builddir)/build/win32/vs10/pangocairo.vcxproj.filters: \
+	$(top_srcdir)/build/win32/vs10/pangocairo.vcxproj.filtersin $(top_builddir)/build/libpangocairo.vs10.sourcefiles.filters
+# (Seperator)
+	-$(RM) $@
+	$(CPP) -I$(top_builddir)/build -P - <$(top_srcdir)/build/win32/vs10/pangocairo.vcxproj.filtersin >$@
+
+$(top_builddir)/build/win32/vs10/pangocairo_fc.vcxproj: \
+	$(top_srcdir)/build/win32/vs10/pangocairo_fc.vcxprojin \
+	$(top_builddir)/build/libpangocairo.vs10.sourcefiles \
+	$(top_builddir)/build/win32/vs10/pangocairo.vcxproj
+# (Seperator)
+	-$(RM) $@
+	$(CPP) -I$(top_builddir)/build -P - <$(top_srcdir)/build/win32/vs10/pangocairo_fc.vcxprojin >$@
+	-$(RM) $(top_builddir)/build/libpangocairo.vs10.sourcefiles
+
+$(top_builddir)/build/win32/vs10/pangocairo_fc.vcxproj.filters: \
+	$(top_srcdir)/build/win32/vs10/pangocairo_fc.vcxproj.filtersin \
+	$(top_builddir)/build/libpangocairo.vs10.sourcefiles.filters \
+	$(top_builddir)/build/win32/vs10/pangocairo.vcxproj.filters
+# (Seperator)
+	-$(RM) $@
+	$(CPP) -I$(top_builddir)/build -P - <$(top_srcdir)/build/win32/vs10/pangocairo.vcxproj.filtersin >$@
+	-$(RM) $(top_builddir)/build/libpangocairo.vs10.sourcefiles.filters
+
+##############################################
+# Now fill in the header "installation" list #
+# We deal with the pangoft2 headers in the   #
+# property sheets directly                   #
+##############################################
+$(top_builddir)/build/win32/vs9/pango.vs9.headers:
+	echo 'mkdir $$(CopyDir)\include\pango-$$(PangoApiVersion)\pango&#x0D;&#x0A;' >$(top_builddir)/build/win32/vs9/pango.vs9.headers
+	echo '' >>$(top_builddir)/build/win32/vs9/pango.vs9.headers
+	for F in `echo $(pango_headers) $(pangocairo_headers) | tr '/' '\\'`; do \
+		case $$F in \
+		*.h) echo 'copy ..\..\..\pango\'$$F' $$(CopyDir)\include\pango-$$(PangoApiVersion)\pango&#x0D;&#x0A;' \
+			;; \
+		esac; \
+	done >>$(top_builddir)/build/win32/vs9/pango.vs9.headers
+
+$(top_builddir)/build/win32/vs10/pango.vs10.headers:
+	echo 'mkdir $$(CopyDir)\include\pango-$$(PangoApiVersion)\pango' >$(top_builddir)/build/win32/vs10/pango.vs10.headers
+	echo '' >>$(top_builddir)/build/win32/vs10/pango.vs10.headers
+	for F in `echo $(pango_headers) $(pangocairo_headers) | tr '/' '\\'`; do \
+		case $$F in \
+		*.h) echo 'copy ..\..\..\pango\'$$F' $$(CopyDir)\include\pango-$$(PangoApiVersion)\pango' \
+			;; \
+		esac; \
+	done >>$(top_builddir)/build/win32/vs10/pango.vs10.headers

@@ -488,6 +488,10 @@ MODULE_DEF_FILES = \
 $(MODULE_DEF_FILES): $(top_builddir)/config.status
 	$(AM_V_GEN) cd $(top_builddir) && $(SHELL) ./config.status pango/$@
 
+include $(top_srcdir)/build/Makefile-msvcproj.am
+
+dist-hook: $(pango_vcproj_stuff)
+
 CLEANFILES =			\
 	pango-enum-types.h	\
 	s-enum-types-h		\
@@ -502,7 +506,8 @@ MOSTLYCLEANFILES = 		\
 
 DISTCLEANFILES = 		\
 	pango-features.h	\
-	$(MODULE_DEF_FILES)
+	$(MODULE_DEF_FILES)	\
+	$(pango_vcproj_stuff)
 
 install-exec-hook:
 if DISABLE_EXPLICIT_DEPS

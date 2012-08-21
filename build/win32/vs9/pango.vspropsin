@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="pangoprops"
+	OutputDirectory="$(SolutionDir)$(ConfigurationName)\$(PlatformName)\bin"
+	IntermediateDirectory="$(SolutionDir)$(ConfigurationName)\$(PlatformName)\obj\$(ProjectName)"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="..\..\..;..\..\..\pango;$(GlibEtcInstallRoot)\lib\glib-2.0\include;$(GlibEtcInstallRoot)\include\glib-2.0;$(GlibEtcInstallRoot)\include;$(GlibEtcInstallRoot)\include\cairo;$(GlibEtcInstallRoot)\include\fontconfig;$(GlibEtcInstallRoot)\include\freetype2"
+		PreprocessorDefinitions="HAVE_CONFIG_H;G_DISABLE_SINGLE_INCLUDES"
+		ForcedIncludeFiles="msvc_recommended_pragmas.h"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="gio-2.0.lib gmodule-2.0.lib gobject-2.0.lib glib-2.0.lib intl.lib"
+		AdditionalLibraryDirectories="$(GlibEtcInstallRoot)\lib"
+	/>
+	<Tool
+		Name="VCPreBuildEventTool"
+		CommandLine="
+if exist ..\..\..\config.h goto DONE_CONFIG_H&#x0D;&#x0A;
+copy ..\..\..\config.h.win32 ..\..\..\config.h&#x0D;&#x0A;
+:DONE_CONFIG_H&#x0D;&#x0A;
+
+if exist ..\..\..\pango\DONE_MODULE_DEFS_H goto DONE_MODULE_DEFS_H&#x0D;&#x0A;
+copy /y ..\..\..\pango\module-defs.h.win32 ..\..\..\pango\module-defs.h&#x0D;&#x0A;
+copy ..\..\..\pango\module-defs.h.win32 ..\..\..\pango\DONE_MODULE_DEFS_H&#x0D;&#x0A;
+:DONE_MODULE_DEFS_H&#x0D;&#x0A;
+
+if exist ..\..\..\pango\DONE_MODULE_DEFS_LANG_C goto DONE_MODULE_DEFS_LANG_C&#x0D;&#x0A;
+copy ..\..\..\pango\module-defs-lang.c.win32 ..\..\..\pango\module-defs-lang.c&#x0D;&#x0A;
+copy ..\..\..\pango\module-defs-lang.c.win32 ..\..\..\pango\DONE_MODULE_DEFS_LANG_C&#x0D;&#x0A;
+:DONE_MODULE_DEFS_LANG_C&#x0D;&#x0A;
+
+if exist ..\..\..\pango\DONE_MODULE_DEFS_FC_C goto DONE_MODULE_DEFS_FC_C&#x0D;&#x0A;
+copy ..\..\..\pango\module-defs-fc.c.win32 ..\..\..\pango\module-defs-fc.c&#x0D;&#x0A;
+copy ..\..\..\pango\module-defs-fc.c.win32 ..\..\..\pango\DONE_MODULE_DEFS_FC_C&#x0D;&#x0A;
+:DONE_MODULE_DEFS_FC_C&#x0D;&#x0A;
+
+if exist ..\..\..\pango\DONE_MODULE_DEFS_WIN32_C goto DONE_MODULE_DEFS_WIN32_C&#x0D;&#x0A;
+copy ..\..\..\pango\module-defs-win32.c.win32 ..\..\..\pango\module-defs-win32.c&#x0D;&#x0A;
+copy ..\..\..\pango\module-defs-win32.c.win32 ..\..\..\pango\DONE_MODULE_DEFS_WIN32_C&#x0D;&#x0A;
+:DONE_MODULE_DEFS_WIN32_C&#x0D;&#x0A;
+"
+	/>
+	<UserMacro
+		Name="GlibEtcInstallRoot"
+		Value="..\..\..\..\vs9\$(PlatformName)"
+	/>
+	<UserMacro
+		Name="CopyDir"
+		Value="$(GlibEtcInstallRoot)"
+	/>
+	<UserMacro
+		Name="PangoApiVersion"
+		Value="1.0"
+	/>
+	<UserMacro
+		Name="PangoBinaryVersion"
+		Value="1.8.0"
+	/>
+	<UserMacro
+		Name="PangoDummyPrefix"
+		Value="/dummy"
+	/>
+	<UserMacro
+		Name="PangoDefines"
+		Value="G_LOG_DOMAIN=\&quot;Pango\&quot;;PANGO_ENABLE_BACKEND;PANGO_ENABLE_ENGINE;SYSCONFDIR=\&quot;$(PangoDummyPrefix)/etc\&quot;;LIBDIR=\&quot;$(PangoDummyPrefix)/lib\&quot;"
+	/>
+	<UserMacro
+		Name="NoFCDef"
+		Value="PANGO_VISUALC_NO_FC"
+	/>
+	<UserMacro
+		Name="PangoDoInstall"
+		Value="
+echo on&#x0D;&#x0A;
+mkdir $(CopyDir)\bin&#x0D;&#x0A;
+copy $(ConfigurationName)\$(PlatformName)\bin\*.dll $(CopyDir)\bin&#x0D;&#x0A;
+copy $(ConfigurationName)\$(PlatformName)\bin\*.exe $(CopyDir)\bin&#x0D;&#x0A;
+
+mkdir $(CopyDir)\lib&#x0D;&#x0A;
+copy $(ConfigurationName)\$(PlatformName)\bin\*-$(PangoApiVersion).lib $(CopyDir)\lib&#x0D;&#x0A;
+
+#include "pango.vs9.headers"
+copy ..\..\..\pango\pango-features.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pango-enum-types.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangowin32.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+
+if not exist $(CopyDir)\etc\pango mkdir $(CopyDir)\etc\pango&#x0D;&#x0A;
+
+if exist $(CopyDir)\etc\pango\pango.aliases goto END&#x0D;&#x0A;
+echo tahoma = &quot;tahoma,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal&quot; > $(CopyDir)\etc\pango\pango.aliases&#x0D;&#x0A;
+echo sans = &quot;arial,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal&quot; >> $(CopyDir)\etc\pango\pango.aliases&#x0D;&#x0A;
+echo serif = &quot;times new roman,angsana new,mingliu,simsun,gulimche,ms gothic,latha,mangal&quot; >> $(CopyDir)\etc\pango\pango.aliases&#x0D;&#x0A;
+echo monospace = &quot;courier new,courier monothai,mingliu,simsun,gulimche,ms gothic,latha,mangal&quot; >> $(CopyDir)\etc\pango\pango.aliases&#x0D;&#x0A;
+:END
+"
+	/>
+	<UserMacro
+		Name="PangoInstallFCHeaders"
+		Value="
+copy ..\..\..\pango\pangofc-decoder.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangofc-font.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangofc-fontmap.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pango-ot.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangoft2.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+"
+	/>
+	<UserMacro
+		Name="PangoLibtoolCompatibleDllPrefix"
+		Value="lib"
+	/>
+	<UserMacro
+		Name="PangoLibtoolCompatibleDllSuffix"
+		Value="-$(PangoApiVersion)-0"
+	/>
+	<UserMacro
+		Name="PangoSeparateVS9DllPrefix"
+		Value=""
+	/>
+	<UserMacro
+		Name="PangoSeparateVS9DllSuffix"
+		Value="-1-vs9"
+	/>
+	<!-- Change these two to PangoLibtoolCompatibleDllPrefix and
+	PangoLibtoolCompatibleDllSuffix if that is what you want -->
+	<UserMacro
+		Name="PangoDllPrefix"
+		Value="$(PangoSeparateVS9DllPrefix)"
+	/>
+	<UserMacro
+		Name="PangoDllSuffix"
+		Value="$(PangoSeparateVS9DllSuffix)"
+	/>
+</VisualStudioPropertySheet>
