@@ -487,7 +487,7 @@ GOBJECT_INTROSPECTION_CHECK([0.9.5])
 # Modules to build
 #
 arabic_modules="arabic-lang"
-basic_modules="basic-fc,basic-win32,basic-x,basic-coretext"
+basic_modules="basic-fc,basic-win32,basic-coretext"
 indic_modules="indic-lang"
 thai_modules=""
 
@@ -562,7 +562,6 @@ IFS="$pango_save_ifs"
 AM_CONDITIONAL(INCLUDE_ARABIC_LANG,	echo $included_modules | egrep '(^|,)arabic-lang($|,)' 	> /dev/null)
 AM_CONDITIONAL(INCLUDE_BASIC_FC,	echo $included_modules | egrep '(^|,)basic-fc($|,)' 	> /dev/null)
 AM_CONDITIONAL(INCLUDE_BASIC_WIN32,	echo $included_modules | egrep '(^|,)basic-win32($|,)' 	> /dev/null)
-AM_CONDITIONAL(INCLUDE_BASIC_X,		echo $included_modules | egrep '(^|,)basic-x($|,)' 	> /dev/null)
 AM_CONDITIONAL(INCLUDE_BASIC_CORE_TEXT,	echo $included_modules | egrep '(^|,)basic-coretext($|,)'	> /dev/null)
 AM_CONDITIONAL(INCLUDE_INDIC_LANG,	echo $included_modules | egrep '(^|,)indic-lang($|,)'	> /dev/null)
 AM_CONDITIONAL(INCLUDE_THAI_LANG,	echo $included_modules | egrep '(^|,)thai-lang($|,)' 	> /dev/null)
@@ -570,7 +569,6 @@ AM_CONDITIONAL(INCLUDE_THAI_LANG,	echo $included_modules | egrep '(^|,)thai-lang
 AM_CONDITIONAL(DYNAMIC_ARABIC_LANG,	echo $dynamic_modules | egrep '(^|,)arabic-lang($|,)' 	> /dev/null)
 AM_CONDITIONAL(DYNAMIC_BASIC_FC,	echo $dynamic_modules | egrep '(^|,)basic-fc($|,)' 	> /dev/null)
 AM_CONDITIONAL(DYNAMIC_BASIC_WIN32,	echo $dynamic_modules | egrep '(^|,)basic-win32($|,)' 	> /dev/null)
-AM_CONDITIONAL(DYNAMIC_BASIC_X,		echo $dynamic_modules | egrep '(^|,)basic-x($|,)' 	> /dev/null)
 AM_CONDITIONAL(DYNAMIC_BASIC_CORE_TEXT,	echo $dynamic_modules | egrep '(^|,)basic-coretext($|,)' 	> /dev/null)
 AM_CONDITIONAL(DYNAMIC_INDIC_LANG,	echo $dynamic_modules | egrep '(^|,)indic-lang($|,)'	> /dev/null)
 AM_CONDITIONAL(DYNAMIC_THAI_LANG,	echo $dynamic_modules | egrep '(^|,)thai-lang($|,)' 	> /dev/null)
