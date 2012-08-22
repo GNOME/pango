@@ -96,6 +96,14 @@ pango_attr_gravity_hint_new()
 @PANGO_GRAVITY_HINT_STRONG: 
 @PANGO_GRAVITY_HINT_LINE: 
 
+<!-- ##### MACRO PANGO_GRAVITY_IS_IMPROPER ##### -->
+<para>
+
+</para>
+
+@gravity:
+
+
 <!-- ##### MACRO PANGO_GRAVITY_IS_VERTICAL ##### -->
 <para>
 

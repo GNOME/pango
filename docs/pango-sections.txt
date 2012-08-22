@@ -1087,6 +1087,7 @@ pango_version_check
 <FILE>vertical</FILE>
 PangoGravity
 PangoGravityHint
+PANGO_GRAVITY_IS_IMPROPER
 PANGO_GRAVITY_IS_VERTICAL
 pango_gravity_get_for_matrix
 pango_gravity_get_for_script
