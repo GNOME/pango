@@ -57,7 +57,7 @@ pango_cairo_core_text_font_map_get_font_type (PangoCairoFontMap *cfontmap)
   /* This is a bit misleading, but Cairo takes a CoreGraphics font
    * for rendering and does not use ATSUI.
    */
-  return CAIRO_FONT_TYPE_ATSUI;
+  return CAIRO_FONT_TYPE_QUARTZ;
 }
 
 static void
