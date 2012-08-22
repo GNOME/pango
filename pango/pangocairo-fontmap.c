@@ -25,7 +25,7 @@
 #include "pangocairo-private.h"
 #include "pango-impl-utils.h"
 
-#if defined (HAVE_CORE_TEXT)
+#if defined (HAVE_CORE_TEXT) && defined (HAVE_CAIRO_QUARTZ)
 #  include "pangocairo-coretext.h"
 #endif
 #if defined (HAVE_CAIRO_WIN32)
@@ -69,7 +69,7 @@ pango_cairo_font_map_new (void)
   /* Make sure that the type system is initialized */
   g_type_init ();
 
-#if defined(HAVE_CORE_TEXT)
+#if defined(HAVE_CORE_TEXT) && defined (HAVE_CAIRO_QUARTZ)
   return g_object_new (PANGO_TYPE_CAIRO_CORE_TEXT_FONT_MAP, NULL);
 #elif defined(HAVE_CAIRO_WIN32)
   return g_object_new (PANGO_TYPE_CAIRO_WIN32_FONT_MAP, NULL);
@@ -107,7 +107,7 @@ pango_cairo_font_map_new_for_font_type (cairo_font_type_t fonttype)
 
   switch ((int) fonttype)
   {
-#if defined(HAVE_CORE_TEXT)
+#if defined(HAVE_CORE_TEXT) && defined (HAVE_CAIRO_QUARTZ)
     case CAIRO_FONT_TYPE_QUARTZ:
       return g_object_new (PANGO_TYPE_CAIRO_CORE_TEXT_FONT_MAP, NULL);
 #endif
