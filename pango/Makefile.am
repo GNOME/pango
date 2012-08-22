@@ -453,7 +453,6 @@ EXTRA_DIST =					\
 	pangocairo.def				\
 	pangowin32.def				\
 	pangoft2.def				\
-	makefile.msc				\
 	pango.rc				\
 	pango.rc.in				\
 	pangoft2.rc				\
