@@ -360,7 +360,7 @@ pangoinclude_HEADERS += pangocoretext.h
 libpangocairo_1_0_la_LDFLAGS += -framework CoreFoundation -framework ApplicationServices
 libpangocairo_1_0_la_LIBADD += $(INCLUDED_CORE_TEXT_MODULES)
 # We don't have an CoreText GIR right now, so this is just hypothetical
-PANGOCAIRO_FONT_BACKEND_GI_MODULE = PangoCoreText-1.0
+# PANGOCAIRO_FONT_BACKEND_GI_MODULE = PangoCoreText-1.0
 endif
 
 pangocairo_introspection_files = \
