@@ -26,7 +26,6 @@
 #include <string.h>
 
 #define PANGO_ENABLE_BACKEND 1 /* XXX */
-#include <glib/gprintf.h>
 
 #include "pango-engine.h"
 #include "pango-utils.h"
@@ -110,6 +109,8 @@ release_buffer (hb_buffer_t *buffer, gboolean free_buffer)
 typedef struct _PangoFcHbContext {
   FT_Face ft_face;
   PangoFcFont *fc_font;
+  gboolean vertical;
+  int improper_sign;
 } PangoFcHbContext;
 
 static hb_bool_t
@@ -159,9 +160,9 @@ pango_fc_hb_font_get_glyph_contour_point (hb_font_t *font, void *font_data,
 }
 
 static hb_position_t
-pango_fc_hb_font_get_glyph_h_advance (hb_font_t *font, void *font_data,
-				      hb_codepoint_t glyph,
-				      void *user_data G_GNUC_UNUSED)
+pango_fc_hb_font_get_glyph_advance (hb_font_t *font, void *font_data,
+				    hb_codepoint_t glyph,
+				    void *user_data G_GNUC_UNUSED)
 {
   PangoFcHbContext *context = (PangoFcHbContext *) font_data;
   PangoFcFont *fc_font = context->fc_font;
@@ -184,13 +185,74 @@ pango_fc_hb_font_get_glyph_extents (hb_font_t *font,  void *font_data,
 
   pango_font_get_glyph_extents ((PangoFont *) fc_font, glyph, &ink, NULL);
 
-  extents->x_bearing  = ink.x;
-  extents->y_bearing  = ink.y;
-  extents->width      = ink.width;
-  extents->height     = ink.height;
+  if (G_LIKELY (!context->vertical)) {
+    extents->x_bearing  = ink.x;
+    extents->y_bearing  = ink.y;
+    extents->width      = ink.width;
+    extents->height     = ink.height;
+  } else {
+    /* XXX */
+    extents->x_bearing  = ink.x;
+    extents->y_bearing  = ink.y;
+    extents->width      = ink.height;
+    extents->height     = ink.width;
+  }
 
   return TRUE;
 }
+
+static hb_bool_t
+pango_fc_hb_font_get_glyph_h_origin (hb_font_t *font, void *font_data,
+				     hb_codepoint_t glyph,
+				     hb_position_t *x, hb_position_t *y,
+				     void *user_data G_GNUC_UNUSED)
+{
+  PangoFcHbContext *context = (PangoFcHbContext *) font_data;
+  FT_Face ft_face = context->ft_face;
+  int load_flags = FT_LOAD_DEFAULT;
+
+  if (!context->vertical) return TRUE;
+
+  if (FT_Load_Glyph (ft_face, glyph, load_flags))
+    return FALSE;
+
+  /* Note: FreeType's vertical metrics grows downward while other FreeType coordinates
+   * have a Y growing upward.  Hence the extra negation. */
+  *x = PANGO_UNITS_26_6 (ft_face->glyph->metrics.horiBearingX -   ft_face->glyph->metrics.vertBearingX);
+  *y = PANGO_UNITS_26_6 (ft_face->glyph->metrics.horiBearingY - (-ft_face->glyph->metrics.vertBearingY));
+
+  /* XXX */
+  *x = -*x;
+  *y =  *y;
+
+  return TRUE;
+}
+
+static hb_bool_t
+pango_fc_hb_font_get_glyph_v_origin (hb_font_t *font, void *font_data,
+				     hb_codepoint_t glyph,
+				     hb_position_t *x, hb_position_t *y,
+				     void *user_data G_GNUC_UNUSED)
+{
+  PangoFcHbContext *context = (PangoFcHbContext *) font_data;
+  FT_Face ft_face = context->ft_face;
+  int load_flags = FT_LOAD_DEFAULT;
+
+  if (context->vertical) return TRUE;
+
+  if (FT_Load_Glyph (ft_face, glyph, load_flags))
+    return FALSE;
+
+  /* Note: FreeType's vertical metrics grows downward while other FreeType coordinates
+   * have a Y growing upward.  Hence the extra negation. */
+  *x = PANGO_UNITS_26_6 (ft_face->glyph->metrics.horiBearingX -   ft_face->glyph->metrics.vertBearingX);
+  *y = PANGO_UNITS_26_6 (ft_face->glyph->metrics.horiBearingY - (-ft_face->glyph->metrics.vertBearingY));
+
+  /* XXX */
+
+  return TRUE;
+}
+
 
 static hb_position_t
 pango_fc_hb_font_get_h_kerning (hb_font_t *font, void *font_data,
@@ -215,11 +277,15 @@ pango_fc_get_hb_font_funcs (void)
   if (G_UNLIKELY (!funcs)) {
     funcs = hb_font_funcs_create ();
     hb_font_funcs_set_glyph_func (funcs, pango_fc_hb_font_get_glyph, NULL, NULL);
-    /* XXX vertical */
-    hb_font_funcs_set_glyph_h_advance_func (funcs, pango_fc_hb_font_get_glyph_h_advance, NULL, NULL);
+    hb_font_funcs_set_glyph_h_advance_func (funcs, pango_fc_hb_font_get_glyph_advance, NULL, NULL);
+    hb_font_funcs_set_glyph_v_advance_func (funcs, pango_fc_hb_font_get_glyph_advance, NULL, NULL);
+    hb_font_funcs_set_glyph_h_origin_func (funcs, pango_fc_hb_font_get_glyph_h_origin, NULL, NULL);
+    hb_font_funcs_set_glyph_v_origin_func (funcs, pango_fc_hb_font_get_glyph_v_origin, NULL, NULL);
+    hb_font_funcs_set_glyph_h_kerning_func (funcs, pango_fc_hb_font_get_h_kerning, NULL, NULL);
+    /* Don't need v_kerning. */
     hb_font_funcs_set_glyph_extents_func (funcs, pango_fc_hb_font_get_glyph_extents, NULL, NULL);
     hb_font_funcs_set_glyph_contour_point_func (funcs, pango_fc_hb_font_get_glyph_contour_point, NULL, NULL);
-    hb_font_funcs_set_glyph_h_kerning_func (funcs, pango_fc_hb_font_get_h_kerning, NULL, NULL);
+    /* Don't need glyph_name / glyph_from_name */
   }
 
   return funcs;
@@ -241,6 +307,7 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
   FT_Face ft_face;
   hb_font_t *hb_font;
   hb_buffer_t *hb_buffer;
+  hb_direction_t hb_direction;
   gboolean free_buffer;
   gboolean is_hinted;
   hb_glyph_info_t *hb_glyph;
@@ -261,6 +328,8 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
   /* TODO: Cache hb_font? */
   context.ft_face = ft_face;
   context.fc_font = fc_font;
+  context.vertical = PANGO_GRAVITY_IS_VERTICAL (analysis->gravity);
+  context.improper_sign = PANGO_GRAVITY_IS_IMPROPER (analysis->gravity) ? -1 : +1;
   hb_font = hb_font_create (hb_ft_face_create_cached (ft_face));
   hb_font_set_funcs (hb_font,
 		     pango_fc_get_hb_font_funcs (),
@@ -268,7 +337,9 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 		     NULL);
   hb_font_set_scale (hb_font,
 		     /* XXX CTM */
-		      (((guint64) ft_face->size->metrics.x_scale * ft_face->units_per_EM) >> 12),
+		     context.improper_sign *
+		     (((guint64) ft_face->size->metrics.x_scale * ft_face->units_per_EM) >> 12),
+		     context.improper_sign *
 		     -(((guint64) ft_face->size->metrics.y_scale * ft_face->units_per_EM) >> 12));
   is_hinted = fc_font->is_hinted;
   hb_font_set_ppem (hb_font,
@@ -276,18 +347,28 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 		    is_hinted ? ft_face->size->metrics.y_ppem : 0);
 
   hb_buffer = acquire_buffer (&free_buffer);
+
+  hb_direction = PANGO_GRAVITY_IS_VERTICAL (analysis->gravity) ? HB_DIRECTION_TTB : HB_DIRECTION_LTR;
+  if (analysis->level % 2)
+    hb_direction = HB_DIRECTION_REVERSE (hb_direction);
+  if (PANGO_GRAVITY_IS_IMPROPER (analysis->gravity))
+    hb_direction = HB_DIRECTION_REVERSE (hb_direction);
+
   /* setup buffer */
-  hb_buffer_set_direction (hb_buffer, analysis->level % 2 != 0 ? HB_DIRECTION_RTL : HB_DIRECTION_LTR);
+
+  hb_buffer_set_direction (hb_buffer, hb_direction);
   hb_buffer_set_script (hb_buffer, hb_glib_script_to_script (analysis->script));
   hb_buffer_set_language (hb_buffer, hb_language_from_string (pango_language_to_string (analysis->language), -1));
-  hb_buffer_add_utf8 (hb_buffer, text, length, 0, length);
 
+  hb_buffer_add_utf8 (hb_buffer, text, length, 0, length);
   hb_shape (hb_font, hb_buffer, NULL, 0);
+
+  if (PANGO_GRAVITY_IS_IMPROPER (analysis->gravity))
+    hb_buffer_reverse (hb_buffer);
 
   /* buffer output */
   num_glyphs = hb_buffer_get_length (hb_buffer);
   hb_glyph = hb_buffer_get_glyph_infos (hb_buffer, NULL);
-  hb_position = hb_buffer_get_glyph_positions (hb_buffer, NULL);
   pango_glyph_string_set_size (glyphs, num_glyphs);
   last_cluster = -1;
   for (i = 0; i < num_glyphs; i++)
@@ -295,19 +376,36 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
       glyphs->glyphs[i].glyph = hb_glyph->codepoint;
       glyphs->log_clusters[i] = hb_glyph->cluster;
       glyphs->glyphs[i].attr.is_cluster_start = glyphs->log_clusters[i] != last_cluster;
-      last_cluster = glyphs->log_clusters[i];
-
-      /* XXX
-      if (is_hinted)
-	advance = PANGO_UNITS_ROUND (advance);
-	*/
-      glyphs->glyphs[i].geometry.width = hb_position->x_advance;
-      glyphs->glyphs[i].geometry.x_offset = hb_position->x_offset;
-      glyphs->glyphs[i].geometry.y_offset = hb_position->y_offset;
-
       hb_glyph++;
-      hb_position++;
+      last_cluster = glyphs->log_clusters[i];
     }
+
+  hb_position = hb_buffer_get_glyph_positions (hb_buffer, NULL);
+  if (context.vertical)
+    for (i = 0; i < num_glyphs; i++)
+      {
+	/* XXX
+	if (is_hinted)
+	  advance = PANGO_UNITS_ROUND (advance);
+	  */
+	glyphs->glyphs[i].geometry.width    = hb_position->y_advance;
+	/* XXX */
+	glyphs->glyphs[i].geometry.x_offset = hb_position->y_offset;
+	glyphs->glyphs[i].geometry.y_offset = -hb_position->x_offset;
+	hb_position++;
+      }
+  else /* horizontal */
+    for (i = 0; i < num_glyphs; i++)
+      {
+	/* XXX
+	if (is_hinted)
+	  advance = PANGO_UNITS_ROUND (advance);
+	  */
+	glyphs->glyphs[i].geometry.width    = hb_position->x_advance;
+	glyphs->glyphs[i].geometry.x_offset = hb_position->x_offset;
+	glyphs->glyphs[i].geometry.y_offset = hb_position->y_offset;
+	hb_position++;
+      }
 
   release_buffer (hb_buffer, free_buffer);
   hb_font_destroy (hb_font);
