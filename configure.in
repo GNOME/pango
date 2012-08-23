@@ -231,10 +231,6 @@ AM_CONDITIONAL(CROSS_COMPILING, [test $cross_compiling = yes])
 have_harfbuzz=false
 PKG_CHECK_MODULES(HARFBUZZ, harfbuzz >= 0.9.3, have_harfbuzz=true, AC_MSG_RESULT([no]))
 AM_CONDITIONAL(HAVE_HARFBUZZ, $have_harfbuzz)
-if ! $have_harfbuzz; then
-	have_freetype=false
-	have_xft=false
-fi
 
 #
 # Check for fontconfig
@@ -264,6 +260,7 @@ AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype)
 #
 # Checks for Xft/XRender
 #
+have_xft=false
 if $have_freetype ; then
   PKG_CHECK_MODULES(XFT, xft >= 2.0.0 xrender, have_xft=true, AC_MSG_RESULT([no]))
 fi
