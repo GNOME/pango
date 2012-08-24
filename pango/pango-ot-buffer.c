@@ -22,57 +22,6 @@
 #include "config.h"
 
 #include "pango-ot-private.h"
-#include "pangofc-private.h"
-#include "pango-impl-utils.h"
-
-/* cache a single hb_buffer_t */
-static hb_buffer_t *cached_buffer = NULL;
-G_LOCK_DEFINE_STATIC (cached_buffer);
-
-static hb_buffer_t *
-create_buffer (void)
-{
-  hb_buffer_t *buffer;
-
-  buffer = hb_buffer_create ();
-  hb_buffer_set_unicode_funcs (buffer, hb_glib_get_unicode_funcs ());
-
-  return buffer;
-}
-
-static hb_buffer_t *
-acquire_buffer (gboolean *free_buffer)
-{
-  hb_buffer_t *buffer;
-
-  if (G_LIKELY (G_TRYLOCK (cached_buffer)))
-    {
-      if (G_UNLIKELY (!cached_buffer))
-	cached_buffer = create_buffer ();
-
-      buffer = cached_buffer;
-      *free_buffer = FALSE;
-    }
-  else
-    {
-      buffer = create_buffer ();
-      *free_buffer = TRUE;
-    }
-
-  return buffer;
-}
-
-static void
-release_buffer (hb_buffer_t *buffer, gboolean free_buffer)
-{
-  if (G_LIKELY (!free_buffer))
-    {
-      hb_buffer_reset (buffer);
-      G_UNLOCK (cached_buffer);
-    }
-  else
-    hb_buffer_destroy (buffer);
-}
 
 /**
  * pango_ot_buffer_new
@@ -90,11 +39,8 @@ pango_ot_buffer_new (PangoFcFont *font)
 {
   PangoOTBuffer *buffer = g_slice_new (PangoOTBuffer);
 
-  buffer->buffer = acquire_buffer (&buffer->should_free_hb_buffer);
-  buffer->font = g_object_ref (font);
-  buffer->applied_gpos = FALSE;
-  buffer->rtl = FALSE;
-  buffer->zero_width_marks = FALSE;
+  buffer->buffer = hb_buffer_create ();
+  hb_buffer_set_unicode_funcs (buffer->buffer, hb_glib_get_unicode_funcs ());
 
   return buffer;
 }
@@ -110,8 +56,7 @@ pango_ot_buffer_new (PangoFcFont *font)
 void
 pango_ot_buffer_destroy (PangoOTBuffer *buffer)
 {
-  release_buffer (buffer->buffer, buffer->should_free_hb_buffer);
-  g_object_unref (buffer->font);
+  hb_buffer_destroy (buffer->buffer);
   g_slice_free (PangoOTBuffer, buffer);
 }
 
@@ -127,7 +72,6 @@ void
 pango_ot_buffer_clear (PangoOTBuffer *buffer)
 {
   hb_buffer_reset (buffer->buffer);
-  buffer->applied_gpos = FALSE;
 }
 
 /**
@@ -165,9 +109,7 @@ void
 pango_ot_buffer_set_rtl (PangoOTBuffer *buffer,
 			 gboolean       rtl)
 {
-  buffer->rtl = rtl != FALSE;
-  hb_buffer_set_direction (buffer->buffer,
-			   buffer->rtl ? HB_DIRECTION_RTL : HB_DIRECTION_LTR);
+  hb_buffer_set_direction (buffer->buffer, rtl ? HB_DIRECTION_RTL : HB_DIRECTION_LTR);
 }
 
 /**
@@ -187,7 +129,6 @@ void
 pango_ot_buffer_set_zero_width_marks (PangoOTBuffer     *buffer,
 				      gboolean           zero_width_marks)
 {
-  buffer->zero_width_marks = zero_width_marks != FALSE;
 }
 
 /**
@@ -234,9 +175,11 @@ pango_ot_buffer_output (const PangoOTBuffer *buffer,
 
   unsigned int num_glyphs;
   hb_buffer_t *hb_buffer = buffer->buffer;
-  gboolean is_hinted = buffer->font->is_hinted;
   hb_glyph_info_t *hb_glyph;
   hb_glyph_position_t *hb_position;
+
+  if (HB_DIRECTION_IS_BACKWARD (hb_buffer_get_direction (buffer->buffer)))
+    hb_buffer_reverse (buffer->buffer);
 
   /* Copy glyphs into output glyph string */
   num_glyphs = hb_buffer_get_length (hb_buffer);
@@ -246,17 +189,12 @@ pango_ot_buffer_output (const PangoOTBuffer *buffer,
   last_cluster = -1;
   for (i = 0; i < num_glyphs; i++)
     {
-      int advance;
-
       glyphs->glyphs[i].glyph = hb_glyph->codepoint;
       glyphs->log_clusters[i] = hb_glyph->cluster;
       glyphs->glyphs[i].attr.is_cluster_start = glyphs->log_clusters[i] != last_cluster;
       last_cluster = glyphs->log_clusters[i];
 
-      advance = hb_position->x_advance;
-      if (is_hinted)
-	advance = PANGO_UNITS_ROUND (advance);
-      glyphs->glyphs[i].geometry.width = advance;
+      glyphs->glyphs[i].geometry.width = hb_position->x_advance;
       glyphs->glyphs[i].geometry.x_offset = hb_position->x_offset;
       glyphs->glyphs[i].geometry.y_offset = hb_position->y_offset;
 
@@ -264,8 +202,6 @@ pango_ot_buffer_output (const PangoOTBuffer *buffer,
       hb_position++;
     }
 
-  if (buffer->rtl)
-    pango_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
-  if (!buffer->applied_gpos)
-    pango_fc_font_kern_glyphs (buffer->font, glyphs);
+  if (HB_DIRECTION_IS_BACKWARD (hb_buffer_get_direction (buffer->buffer)))
+    hb_buffer_reverse (buffer->buffer);
 }

@@ -39,10 +39,7 @@ struct _PangoOTInfo
 {
   GObject parent_instance;
 
-  guint loaded;
-
   FT_Face face;
-
   hb_face_t *hb_face;
 };
 
@@ -52,28 +49,11 @@ struct _PangoOTInfoClass
 };
 
 
-typedef struct _PangoOTRule PangoOTRule;
-
-struct _PangoOTRule
-{
-  gulong property_bit;
-  guint  feature_index;
-  guint  table_type : 1;
-};
-
 typedef struct _PangoOTRulesetClass PangoOTRulesetClass;
 
 struct _PangoOTRuleset
 {
   GObject parent_instance;
-
-  GArray *rules;
-  PangoOTInfo *info;
-
-  /* the index into these arrays is a PangoOTTableType */
-  guint n_features[2];
-  guint script_index[2];
-  guint language_index[2];
 };
 
 struct _PangoOTRulesetClass
@@ -84,20 +64,7 @@ struct _PangoOTRulesetClass
 struct _PangoOTBuffer
 {
   hb_buffer_t *buffer;
-  gboolean should_free_hb_buffer;
-  PangoFcFont *font;
-  guint rtl : 1;
-  guint zero_width_marks : 1;
-  guint applied_gpos : 1;
 };
-
-hb_face_t *_pango_ot_info_get_hb_face (PangoOTInfo *info);
-void _pango_ot_info_substitute  (const PangoOTInfo    *info,
-				 const PangoOTRuleset *ruleset,
-				 PangoOTBuffer        *buffer);
-void _pango_ot_info_position    (const PangoOTInfo    *info,
-				 const PangoOTRuleset *ruleset,
-				 PangoOTBuffer        *buffer);
 
 G_END_DECLS
 

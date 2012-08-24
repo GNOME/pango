@@ -22,6 +22,8 @@
 #ifndef __PANGO_OT_H__
 #define __PANGO_OT_H__
 
+/* Deprecated.  Use HarfBuzz directly! */
+
 #include <pango/pangofc-font.h>
 #include <pango/pango-glyph.h>
 #include <pango/pango-font.h>
@@ -102,18 +104,23 @@ GType pango_ot_info_get_type (void) G_GNUC_CONST;
 GType pango_ot_ruleset_get_type (void) G_GNUC_CONST;
 
 
+G_DEPRECATED
 PangoOTInfo *pango_ot_info_get (FT_Face face);
 
+G_DEPRECATED
 gboolean pango_ot_info_find_script   (PangoOTInfo      *info,
 				      PangoOTTableType  table_type,
 				      PangoOTTag        script_tag,
 				      guint            *script_index);
+
+G_DEPRECATED
 gboolean pango_ot_info_find_language (PangoOTInfo      *info,
 				      PangoOTTableType  table_type,
 				      guint             script_index,
 				      PangoOTTag        language_tag,
 				      guint            *language_index,
 				      guint            *required_feature_index);
+G_DEPRECATED
 gboolean pango_ot_info_find_feature  (PangoOTInfo      *info,
 				      PangoOTTableType  table_type,
 				      PangoOTTag        feature_tag,
@@ -121,72 +128,110 @@ gboolean pango_ot_info_find_feature  (PangoOTInfo      *info,
 				      guint             language_index,
 				      guint            *feature_index);
 
+G_DEPRECATED
 PangoOTTag *pango_ot_info_list_scripts   (PangoOTInfo      *info,
 					  PangoOTTableType  table_type);
+G_DEPRECATED
 PangoOTTag *pango_ot_info_list_languages (PangoOTInfo      *info,
 					  PangoOTTableType  table_type,
 					  guint             script_index,
 					  PangoOTTag        language_tag);
+G_DEPRECATED
 PangoOTTag *pango_ot_info_list_features  (PangoOTInfo      *info,
 					  PangoOTTableType  table_type,
 					  PangoOTTag        tag,
 					  guint             script_index,
 					  guint             language_index);
 
+G_DEPRECATED
 PangoOTBuffer *pango_ot_buffer_new        (PangoFcFont       *font);
+G_DEPRECATED
 void           pango_ot_buffer_destroy    (PangoOTBuffer     *buffer);
+G_DEPRECATED
 void           pango_ot_buffer_clear      (PangoOTBuffer     *buffer);
+G_DEPRECATED
 void           pango_ot_buffer_set_rtl    (PangoOTBuffer     *buffer,
 					   gboolean           rtl);
+G_DEPRECATED
 void           pango_ot_buffer_add_glyph  (PangoOTBuffer     *buffer,
 					   guint              glyph,
 					   guint              properties,
 					   guint              cluster);
+G_DEPRECATED
 void           pango_ot_buffer_get_glyphs (const PangoOTBuffer  *buffer,
 					   PangoOTGlyph        **glyphs,
 					   int                  *n_glyphs);
+G_DEPRECATED
 void           pango_ot_buffer_output     (const PangoOTBuffer  *buffer,
 					   PangoGlyphString     *glyphs);
 
+G_DEPRECATED
 void           pango_ot_buffer_set_zero_width_marks (PangoOTBuffer     *buffer,
 						     gboolean           zero_width_marks);
 
+G_DEPRECATED
 const PangoOTRuleset *pango_ot_ruleset_get_for_description (PangoOTInfo                     *info,
 							    const PangoOTRulesetDescription *desc);
+G_DEPRECATED
 PangoOTRuleset *pango_ot_ruleset_new (PangoOTInfo       *info);
+G_DEPRECATED
 PangoOTRuleset *pango_ot_ruleset_new_for (PangoOTInfo       *info,
 					  PangoScript        script,
 					  PangoLanguage     *language);
+G_DEPRECATED
 PangoOTRuleset *pango_ot_ruleset_new_from_description (PangoOTInfo                     *info,
 						       const PangoOTRulesetDescription *desc);
+G_DEPRECATED
 void            pango_ot_ruleset_add_feature (PangoOTRuleset   *ruleset,
 					      PangoOTTableType  table_type,
 					      guint             feature_index,
 					      gulong            property_bit);
+G_DEPRECATED
 gboolean        pango_ot_ruleset_maybe_add_feature (PangoOTRuleset   *ruleset,
 						    PangoOTTableType  table_type,
 						    PangoOTTag        feature_tag,
 						    gulong            property_bit);
+G_DEPRECATED
 guint           pango_ot_ruleset_maybe_add_features (PangoOTRuleset          *ruleset,
 						     PangoOTTableType         table_type,
 						     const PangoOTFeatureMap *features,
 						     guint                    n_features);
+G_DEPRECATED
 guint           pango_ot_ruleset_get_feature_count (const PangoOTRuleset   *ruleset,
 						    guint                  *n_gsub_features,
 						    guint                  *n_gpos_features);
+
+G_DEPRECATED
 void            pango_ot_ruleset_substitute  (const PangoOTRuleset   *ruleset,
 					      PangoOTBuffer          *buffer);
+
+G_DEPRECATED
 void            pango_ot_ruleset_position    (const PangoOTRuleset   *ruleset,
 					      PangoOTBuffer          *buffer);
+
+G_DEPRECATED
 PangoScript     pango_ot_tag_to_script     (PangoOTTag     script_tag) G_GNUC_CONST;
+
+G_DEPRECATED
 PangoOTTag      pango_ot_tag_from_script   (PangoScript    script) G_GNUC_CONST;
+
+G_DEPRECATED
 PangoLanguage  *pango_ot_tag_to_language   (PangoOTTag     language_tag) G_GNUC_CONST;
+
+G_DEPRECATED
 PangoOTTag      pango_ot_tag_from_language (PangoLanguage *language) G_GNUC_CONST;
 
+G_DEPRECATED
 guint           pango_ot_ruleset_description_hash  (const PangoOTRulesetDescription *desc) G_GNUC_PURE;
+
+G_DEPRECATED
 gboolean        pango_ot_ruleset_description_equal (const PangoOTRulesetDescription *desc1,
 						    const PangoOTRulesetDescription *desc2) G_GNUC_PURE;
+
+G_DEPRECATED
 PangoOTRulesetDescription *pango_ot_ruleset_description_copy  (const PangoOTRulesetDescription *desc);
+
+G_DEPRECATED
 void            pango_ot_ruleset_description_free  (PangoOTRulesetDescription       *desc);
 
 

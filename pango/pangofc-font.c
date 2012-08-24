@@ -821,8 +821,6 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
       return;
     }
 
-  /* This is a kludge, and dupped in pango_ot_buffer_output().
-   * Should move the scale factor to PangoFcFont layer. */
   key = _pango_fc_font_get_font_key (font);
   if (key) {
     const PangoMatrix *matrix = pango_fc_font_key_get_matrix (key);

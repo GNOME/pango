@@ -95,12 +95,6 @@ pango_ot_info_get (FT_Face face)
   return info;
 }
 
-hb_face_t *
-_pango_ot_info_get_hb_face (PangoOTInfo *info)
-{
-  return info->hb_face;
-}
-
 static hb_tag_t
 get_hb_table_type (PangoOTTableType table_type)
 {
@@ -317,20 +311,4 @@ pango_ot_info_list_features  (PangoOTInfo      *info,
   result[count] = 0;
 
   return result;
-}
-
-void
-_pango_ot_info_substitute  (const PangoOTInfo    *info,
-			    const PangoOTRuleset *ruleset,
-			    PangoOTBuffer        *buffer)
-{
-  /* Deprecated. */
-}
-
-void
-_pango_ot_info_position    (const PangoOTInfo    *info,
-			    const PangoOTRuleset *ruleset,
-			    PangoOTBuffer        *buffer)
-{
-  /* Deprecated. */
 }

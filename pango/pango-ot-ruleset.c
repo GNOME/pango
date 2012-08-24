@@ -22,7 +22,6 @@
 #include "config.h"
 
 #include "pango-ot-private.h"
-#include "pango-impl-utils.h"
 
 static void pango_ot_ruleset_finalize   (GObject        *object);
 
@@ -39,22 +38,11 @@ pango_ot_ruleset_class_init (PangoOTRulesetClass *klass)
 static void
 pango_ot_ruleset_init (PangoOTRuleset *ruleset)
 {
-  ruleset->rules = g_array_new (FALSE, FALSE, sizeof (PangoOTRule));
-  ruleset->script_index[0]   = PANGO_OT_NO_SCRIPT;
-  ruleset->script_index[1]   = PANGO_OT_NO_SCRIPT;
-  ruleset->language_index[0] = PANGO_OT_DEFAULT_LANGUAGE;
-  ruleset->language_index[1] = PANGO_OT_DEFAULT_LANGUAGE;
 }
 
 static void
 pango_ot_ruleset_finalize (GObject *object)
 {
-  PangoOTRuleset *ruleset = PANGO_OT_RULESET (object);
-
-  g_array_free (ruleset->rules, TRUE);
-  if (ruleset->info)
-    g_object_remove_weak_pointer (G_OBJECT (ruleset->info), (gpointer *)(void *)&ruleset->info);
-
   G_OBJECT_CLASS (pango_ot_ruleset_parent_class)->finalize (object);
 }
 
@@ -80,38 +68,10 @@ const PangoOTRuleset *
 pango_ot_ruleset_get_for_description (PangoOTInfo                     *info,
 				      const PangoOTRulesetDescription *desc)
 {
-  PangoOTRuleset *ruleset;
-  static GQuark rulesets_quark = 0;
-  GHashTable *rulesets;
-
-  g_return_val_if_fail (info != NULL, NULL);
-  g_return_val_if_fail (desc != NULL, NULL);
-
-  if (!rulesets_quark)
-    rulesets_quark = g_quark_from_string ("pango-info-rulesets");
-
-  rulesets = g_object_get_qdata (G_OBJECT (info), rulesets_quark);
-
-  if (!rulesets)
-    {
-      rulesets = g_hash_table_new_full ((GHashFunc)  pango_ot_ruleset_description_hash,
-					(GEqualFunc) pango_ot_ruleset_description_equal,
-					(GDestroyNotify) pango_ot_ruleset_description_free,
-					(GDestroyNotify) g_object_unref);
-
-      g_object_set_qdata_full (G_OBJECT (info), rulesets_quark, rulesets, (GDestroyNotify) g_hash_table_destroy);
-    }
-
-  ruleset = g_hash_table_lookup (rulesets, desc);
+  static PangoOTRuleset *ruleset;
 
   if (!ruleset)
-    {
-      ruleset = pango_ot_ruleset_new_from_description (info, desc);
-
-      g_hash_table_insert (rulesets,
-			   pango_ot_ruleset_description_copy (desc),
-			   ruleset);
-    }
+    ruleset = g_object_new (PANGO_TYPE_OT_RULESET, NULL);
 
   return ruleset;
 }
@@ -128,16 +88,7 @@ pango_ot_ruleset_get_for_description (PangoOTInfo                     *info,
 PangoOTRuleset *
 pango_ot_ruleset_new (PangoOTInfo *info)
 {
-  PangoOTRuleset *ruleset;
-
-  g_return_val_if_fail (PANGO_IS_OT_INFO (info), NULL);
-
-  ruleset = g_object_new (PANGO_TYPE_OT_RULESET, NULL);
-
-  ruleset->info = info;
-  g_object_add_weak_pointer (G_OBJECT (ruleset->info), (gpointer *)(void*)&ruleset->info);
-
-  return ruleset;
+  return g_object_new (PANGO_TYPE_OT_RULESET, NULL);
 }
 
 /**
@@ -195,36 +146,7 @@ pango_ot_ruleset_new_for (PangoOTInfo       *info,
 			  PangoScript        script,
 			  PangoLanguage     *language)
 {
-  PangoOTRuleset *ruleset;
-  PangoOTTag script_tag, language_tag;
-  PangoOTTableType table_type;
-
-  g_return_val_if_fail (PANGO_IS_OT_INFO (info), NULL);
-
-  ruleset = pango_ot_ruleset_new (info);
-
-  script_tag   = pango_ot_tag_from_script (script);
-  language_tag = pango_ot_tag_from_language (language);
-
-  for (table_type = PANGO_OT_TABLE_GSUB; table_type <= PANGO_OT_TABLE_GPOS; table_type++)
-    {
-      guint script_index, language_index, feature_index;
-
-      pango_ot_info_find_script   (ruleset->info, table_type,
-				   script_tag, &script_index);
-      pango_ot_info_find_language (ruleset->info, table_type, script_index,
-				   language_tag, &language_index,
-				   &feature_index);
-
-      ruleset->script_index[table_type] = script_index;
-      ruleset->language_index[table_type] = language_index;
-
-      /* add required feature of the language */
-      pango_ot_ruleset_add_feature (ruleset, table_type,
-				    feature_index, PANGO_OT_ALL_GLYPHS);
-    }
-
-  return ruleset;
+  return g_object_new (PANGO_TYPE_OT_RULESET, NULL);
 }
 
 /**
@@ -251,35 +173,7 @@ PangoOTRuleset *
 pango_ot_ruleset_new_from_description (PangoOTInfo                     *info,
 				       const PangoOTRulesetDescription *desc)
 {
-  PangoOTRuleset *ruleset;
-
-  g_return_val_if_fail (info != NULL, NULL);
-  g_return_val_if_fail (desc != NULL, NULL);
-
-  ruleset = pango_ot_ruleset_new_for (info,
-				      desc->script,
-				      desc->language);
-
-  if (desc->n_static_gsub_features)
-    pango_ot_ruleset_maybe_add_features (ruleset, PANGO_OT_TABLE_GSUB,
-					 desc->static_gsub_features,
-					 desc->n_static_gsub_features);
-  if (desc->n_static_gpos_features)
-    pango_ot_ruleset_maybe_add_features (ruleset, PANGO_OT_TABLE_GPOS,
-					 desc->static_gpos_features,
-					 desc->n_static_gpos_features);
-
-  if (desc->n_other_features)
-    {
-      pango_ot_ruleset_maybe_add_features (ruleset, PANGO_OT_TABLE_GSUB,
-					   desc->other_features,
-					   desc->n_other_features);
-      pango_ot_ruleset_maybe_add_features (ruleset, PANGO_OT_TABLE_GPOS,
-					   desc->other_features,
-					   desc->n_other_features);
-    }
-
-  return ruleset;
+  return g_object_new (PANGO_TYPE_OT_RULESET, NULL);
 }
 
 /**
@@ -299,21 +193,6 @@ pango_ot_ruleset_add_feature (PangoOTRuleset   *ruleset,
 			      guint             feature_index,
 			      gulong            property_bit)
 {
-  PangoOTRule tmp_rule;
-
-  g_return_if_fail (PANGO_IS_OT_RULESET (ruleset));
-  g_return_if_fail (ruleset->info != NULL);
-
-  if (feature_index == PANGO_OT_NO_FEATURE)
-    return;
-
-  tmp_rule.table_type = table_type;
-  tmp_rule.feature_index = feature_index;
-  tmp_rule.property_bit = property_bit;
-
-  g_array_append_val (ruleset->rules, tmp_rule);
-
-  ruleset->n_features[table_type]++;
 }
 
 /**
@@ -344,24 +223,6 @@ pango_ot_ruleset_maybe_add_feature (PangoOTRuleset          *ruleset,
 				    PangoOTTag               feature_tag,
 				    gulong                   property_bit)
 {
-  guint feature_index;
-
-  g_return_val_if_fail (PANGO_IS_OT_RULESET (ruleset), FALSE);
-  g_return_val_if_fail (ruleset->info != NULL, FALSE);
-
-  pango_ot_info_find_feature (ruleset->info, table_type,
-			      feature_tag,
-			      ruleset->script_index[table_type],
-			      ruleset->language_index[table_type],
-			      &feature_index);
-
-  if (feature_index != PANGO_OT_NO_FEATURE)
-    {
-      pango_ot_ruleset_add_feature (ruleset, table_type,
-				    feature_index, property_bit);
-      return TRUE;
-    }
-
   return FALSE;
 }
 
@@ -388,25 +249,7 @@ pango_ot_ruleset_maybe_add_features (PangoOTRuleset          *ruleset,
 				     const PangoOTFeatureMap *features,
 				     guint                    n_features)
 {
-  guint i, n_found_features = 0;
-
-  g_return_val_if_fail (PANGO_IS_OT_RULESET (ruleset), 0);
-  g_return_val_if_fail (ruleset->info != NULL, 0);
-
-  for (i = 0; i < n_features; i++)
-    {
-      PangoOTTag feature_tag = PANGO_OT_TAG_MAKE (features[i].feature_name[0],
-						  features[i].feature_name[1],
-						  features[i].feature_name[2],
-						  features[i].feature_name[3]);
-
-      n_found_features += pango_ot_ruleset_maybe_add_feature (ruleset,
-							      table_type,
-							      feature_tag,
-							      features[i].property_bit);
-    }
-
-  return n_found_features;
+  return 0;
 }
 
 /**
@@ -426,15 +269,7 @@ pango_ot_ruleset_get_feature_count (const PangoOTRuleset   *ruleset,
 				    guint                  *n_gsub_features,
 				    guint                  *n_gpos_features)
 {
-  g_return_val_if_fail (PANGO_IS_OT_RULESET (ruleset), 0);
-  
-  if (n_gsub_features)
-    *n_gsub_features = ruleset->n_features[PANGO_OT_TABLE_GSUB];
-
-  if (n_gpos_features)
-    *n_gpos_features = ruleset->n_features[PANGO_OT_TABLE_GPOS];
-
-  return ruleset->n_features[PANGO_OT_TABLE_GSUB] + ruleset->n_features[PANGO_OT_TABLE_GPOS];
+  return 0;
 }
 
 /**
@@ -451,12 +286,6 @@ void
 pango_ot_ruleset_substitute  (const PangoOTRuleset *ruleset,
 			      PangoOTBuffer        *buffer)
 {
-  g_return_if_fail (PANGO_IS_OT_RULESET (ruleset));
-  g_return_if_fail (ruleset->info != NULL);
-
-  _pango_ot_info_substitute (ruleset->info,
-			     ruleset,
-			     buffer);
 }
 
 /**
@@ -473,12 +302,6 @@ void
 pango_ot_ruleset_position (const PangoOTRuleset *ruleset,
 			   PangoOTBuffer        *buffer)
 {
-  g_return_if_fail (PANGO_IS_OT_RULESET (ruleset));
-  g_return_if_fail (ruleset->info != NULL);
-
-  _pango_ot_info_position   (ruleset->info,
-			     ruleset,
-			     buffer);
 }
 
 
@@ -498,26 +321,7 @@ pango_ot_ruleset_position (const PangoOTRuleset *ruleset,
 guint
 pango_ot_ruleset_description_hash  (const PangoOTRulesetDescription *desc)
 {
-  guint hash = 0;
-  guint i;
-
-  hash ^= desc->script;
-  hash ^= GPOINTER_TO_UINT (desc->language);
-
-  hash ^= desc->n_static_gsub_features << 8;
-  hash ^= GPOINTER_TO_UINT (desc->static_gsub_features);
-
-  hash ^= desc->n_static_gpos_features << 12;
-  hash ^= GPOINTER_TO_UINT (desc->static_gpos_features);
-
-  hash ^= desc->n_other_features << 16;
-  for (i = 0; i < desc->n_other_features; i++)
-    {
-      hash ^= * (guint32 *) desc->other_features[i].feature_name;
-      hash ^= desc->other_features[i].property_bit;
-    }
-
-  return hash;
+  return 0;
 }
 
 /**
@@ -543,30 +347,6 @@ gboolean
 pango_ot_ruleset_description_equal (const PangoOTRulesetDescription *desc1,
 				    const PangoOTRulesetDescription *desc2)
 {
-  guint i;
-
-#undef CHECK
-#define CHECK(x) if (desc1->x != desc2->x) return FALSE;
-#define CHECK_FEATURE_NAME(x) if (*(guint32 *)desc1->x != *(guint32 *)desc2->x) return FALSE
-
-  CHECK (script);
-  CHECK (language);
-
-  CHECK (static_gsub_features);
-  CHECK (n_static_gsub_features);
-  CHECK (static_gpos_features);
-  CHECK (n_static_gpos_features);
-
-  CHECK (n_other_features);
-
-  for (i = 0; i < desc1->n_other_features; i++)
-    {
-      CHECK_FEATURE_NAME (other_features[i].feature_name);
-      CHECK (other_features[i].property_bit);
-    }
-
-#undef CHECK
-
   return TRUE;
 }
 
@@ -595,17 +375,6 @@ pango_ot_ruleset_description_copy  (const PangoOTRulesetDescription *desc)
 
   *copy = *desc;
 
-  if (desc->n_other_features)
-    {
-      PangoOTFeatureMap *map = g_new (PangoOTFeatureMap, desc->n_other_features);
-      memcpy (map, desc->other_features, desc->n_other_features * sizeof (PangoOTFeatureMap));
-      copy->other_features = map;
-    }
-  else
-    {
-      copy->other_features = NULL;
-    }
-
   return copy;
 }
 
@@ -621,9 +390,5 @@ pango_ot_ruleset_description_copy  (const PangoOTRulesetDescription *desc)
 void
 pango_ot_ruleset_description_free  (PangoOTRulesetDescription *desc)
 {
-  g_return_if_fail (desc != NULL);
-
-  free ((gpointer) desc->other_features);
-
   g_slice_free (PangoOTRulesetDescription, desc);
 }
