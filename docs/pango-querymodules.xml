@@ -31,7 +31,8 @@
 <refsynopsisdiv>
 <cmdsynopsis>
 <command>pango-querymodules</command>
-<arg choice="opt" rep="repeat">module</arg>
+<arg choice="opt" rep="repeat">OPTION</arg>
+<arg choice="opt" rep="repeat">MODULE</arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
@@ -41,11 +42,13 @@
 modules for Pango and writes it to <filename>stdout</filename>.
 </para>
 <para>
-If called without arguments, it looks for modules in the Pango module path.
+If called without MODULE arguments, it looks for modules in the Pango
+module path, which is specified by the key <literal>Pango/ModulesPath</literal>
+in the Pango configuration database.
 </para>
 <para>
-If called with arguments, it looks for the specified modules. The arguments
-may be absolute or relative paths.
+If called with MODULE arguments, it looks for the specified modules. The
+arguments may be absolute or relative paths.
 </para>
 <para>
 At runtime, Pango looks for the loadable module information (i.e. the output
@@ -53,15 +56,68 @@ of pango-querymodules) in <filename><replaceable>libdir</replaceable>/pango/1.8.
 </para>
 </refsect1>
 
+<refsect1><title>Options</title>
+<variablelist>
+
+<varlistentry>
+<term><option>-?</option>, <option>--help</option></term>
+<listitem><para>Prints a short help text and exits.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--version</option></term>
+<listitem><para>Prints version information.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--system</option></term>
+<listitem><para>Do not load user-specific configuration.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--update-cache</option></term>
+<listitem><para>Update the Pango module cache file directly,
+instead of writing the information to <filename>stdout</filename>.</para></listitem>
+</varlistentry>
+
+</variablelist>
+
+</refsect1>
+
 <refsect1 id="Environment"><title>Environment</title>
-<para>
-The Pango module path is specified by the key
-<literal>Pango/ModulesPath</literal> in the Pango config database, which is
-read from
-      <filename><replaceable>sysconfdir</replaceable>/pango/pangorc</filename>,
-      <filename>~/.config/pango/pangorc</filename> and the file specified in
-      the environment variable <envar>PANGO_RC_FILE</envar>.
-</para>
+<variablelist>
+
+<varlistentry>
+<term><envar>PANGO_RC_FILE</envar></term>
+<listitem><para>Specifies an additional rc file for the Pango configuration
+database, in addition to the system-wide and per-user files.</para></listitem>
+</varlistentry>
+
+</variablelist>
+
+</refsect1>
+
+<refsect1><title>Files</title>
+
+<variablelist>
+
+<varlistentry>
+<term><filename><replaceable>sysconfdir</replaceable>/pango/pangorc</filename></term>
+<listitem><para>System-wide Pango configuration file.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><filename><envar>$XDG_CONFIG_HOME</envar>/pango/pangorc</filename></term>
+<listitem><para>User-specific Pango configuration file.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><filename><replaceable>libdir</replaceable>/pango/1.8.0/modules.cache</filename></term>
+<listitem><para>Location of the module cache file read by Pango.</para></listitem>
+</varlistentry>
+
+</variablelist>
+
 </refsect1>
 
 <refsect1 id="Bugs"><title>Bugs</title>

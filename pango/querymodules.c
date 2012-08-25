@@ -113,7 +113,7 @@ string_from_script (PangoScript script)
 }
 
 static void
-query_module (const char *dir, const char *name)
+query_module (const char *dir, const char *name, GString *contents)
 {
   void (*list) (PangoEngineInfo **engines, gint *n_engines);
   void (*init) (GTypeModule *module);
@@ -161,17 +161,21 @@ query_module (const char *dir, const char *name)
 	      quoted_path = g_strdup (path);
 	    }
 
-	  g_printf ("%s%s%s %s %s %s", quote, quoted_path, quote,
-		    engines[i].id, engines[i].engine_type, engines[i].render_type);
+	  g_string_append_printf (contents,
+                                  "%s%s%s %s %s %s",
+                                  quote, quoted_path, quote,
+		                  engines[i].id, engines[i].engine_type,
+                                  engines[i].render_type);
 	  g_free (quoted_path);
 
 	  for (j=0; j < engines[i].n_scripts; j++)
 	    {
-	      g_printf (" %s:%s",
-			string_from_script (engines[i].scripts[j].script),
-			engines[i].scripts[j].langs);
+	      g_string_append_printf (contents,
+                                      " %s:%s",
+			              string_from_script (engines[i].scripts[j].script),
+			              engines[i].scripts[j].langs);
 	    }
-	  g_printf ("\n");
+	  g_string_append_c (contents, '\n');
 	}
     }
   else
@@ -203,12 +207,16 @@ main (int argc, char **argv)
   char *path;
   GOptionContext *context;
   GError *parse_error = NULL;
+  gboolean update_cache = FALSE;
+  GString *contents;
   GOptionEntry entries[] =
     {
       {"version",	0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, &show_version,
        "Show version numbers",                                             NULL},
       {"system",	0, 0, G_OPTION_ARG_NONE, &system_mode,
        "Do not load configuration from home directory", NULL},
+      {"update-cache",	0, 0, G_OPTION_ARG_NONE, &update_cache,
+       "Update the default cache file", NULL},
       {NULL}
     };
 
@@ -232,9 +240,11 @@ main (int argc, char **argv)
 
   g_type_init ();
 
-  g_printf ("# Pango Modules file\n"
-	    "# Automatically generated file, do not edit\n"
-	    "#\n");
+  contents = g_string_new ("");
+  g_string_append (contents,
+                   "# Pango Modules file\n"
+                   "# Automatically generated file, do not edit\n"
+                   "#\n");
 
   if (argc == 1)		/* No arguments given */
     {
@@ -251,7 +261,7 @@ main (int argc, char **argv)
 				 "modules",
 				 NULL);
 
-      g_printf ("# ModulesPath = %s\n#\n", path);
+      g_string_append_printf (contents, "# ModulesPath = %s\n#\n", path);
 
       dirs = pango_split_file_list (path);
 
@@ -268,7 +278,7 @@ main (int argc, char **argv)
 		{
 		  int len = strlen (dent);
 		  if (len > SOEXT_LEN && strcmp (dent + len - SOEXT_LEN, SOEXT) == 0)
-		    query_module (dirs[i], dent);
+		    query_module (dirs[i], dent, contents);
 		}
 
 	      g_dir_close (dir);
@@ -282,10 +292,30 @@ main (int argc, char **argv)
       cwd = g_get_current_dir ();
 
       for (i=1; i<argc; i++)
-	query_module (cwd, argv[i]);
+	query_module (cwd, argv[i], contents);
 
       g_free (cwd);
     }
+
+  if (update_cache)
+    {
+      gchar *cache_file;
+      GError *err;
+
+      cache_file = g_build_filename (pango_get_lib_subdirectory (),
+                                     MODULE_VERSION,
+                                     "modules.cache",
+                                     NULL);
+      err = NULL;
+      if (!g_file_set_contents (cache_file, contents->str, -1, &err))
+        {
+          g_fprintf (stderr, "%s\n", err->message);
+          exit(1);
+        }
+      g_free (cache_file);
+    }
+  else
+    g_print ("%s\n", contents->str);
 
   return 0;
 }
