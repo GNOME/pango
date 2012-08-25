@@ -904,7 +904,34 @@ pango_script_get_sample_language (PangoScript script)
     "",    /* PANGO_SCRIPT_CUNEIFORM */
     "",    /* PANGO_SCRIPT_PHOENICIAN */
     "",    /* PANGO_SCRIPT_PHAGS_PA */
-    "nqo"  /* PANGO_SCRIPT_NKO */
+    "nqo", /* PANGO_SCRIPT_NKO */
+
+    /* Unicode-5.1 additions */
+    "",    /* PANGO_SCRIPT_KAYAH_LI */
+    "",    /* PANGO_SCRIPT_LEPCHA */
+    "",    /* PANGO_SCRIPT_REJANG */
+    "",    /* PANGO_SCRIPT_SUNDANESE */
+    "",    /* PANGO_SCRIPT_SAURASHTRA */
+    "",    /* PANGO_SCRIPT_CHAM */
+    "",    /* PANGO_SCRIPT_OL_CHIKI */
+    "",    /* PANGO_SCRIPT_VAI */
+    "",    /* PANGO_SCRIPT_CARIAN */
+    "",    /* PANGO_SCRIPT_LYCIAN */
+    "",    /* PANGO_SCRIPT_LYDIAN */
+
+    /* Unicode-6.0 additions */
+    "",    /* PANGO_SCRIPT_BATAK */
+    "",    /* PANGO_SCRIPT_BRAHMI */
+    "",    /* PANGO_SCRIPT_MANDAIC */
+
+    /* Unicode-6.1 additions */
+    "",    /* PANGO_SCRIPT_CHAKMA */
+    "",    /* PANGO_SCRIPT_MEROITIC_CURSIVE */
+    "",    /* PANGO_SCRIPT_MEROITIC_HIEROGLYPHS */
+    "",    /* PANGO_SCRIPT_MIAO */
+    "",    /* PANGO_SCRIPT_SHARADA */
+    "",    /* PANGO_SCRIPT_SORA_SOMPENG */
+    "",    /* PANGO_SCRIPT_TAKRI */
   };
   const char *sample_language;
   PangoLanguage *result;

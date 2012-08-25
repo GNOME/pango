@@ -121,7 +121,21 @@ typedef enum {                         /* ISO 15924 code */
       PANGO_SCRIPT_VAI,                /* Vaii */
       PANGO_SCRIPT_CARIAN,             /* Cari */
       PANGO_SCRIPT_LYCIAN,             /* Lyci */
-      PANGO_SCRIPT_LYDIAN              /* Lydi */
+      PANGO_SCRIPT_LYDIAN,             /* Lydi */
+
+      /* Unicode-6.0 additions */
+      PANGO_SCRIPT_BATAK,              /* Batk */
+      PANGO_SCRIPT_BRAHMI,             /* Brah */
+      PANGO_SCRIPT_MANDAIC,            /* Mand */
+
+      /* Unicode-6.1 additions */
+      PANGO_SCRIPT_CHAKMA,             /* Cakm */
+      PANGO_SCRIPT_MEROITIC_CURSIVE,   /* Merc */
+      PANGO_SCRIPT_MEROITIC_HIEROGLYPHS,/* Mero */
+      PANGO_SCRIPT_MIAO,               /* Plrd */
+      PANGO_SCRIPT_SHARADA,            /* Shrd */
+      PANGO_SCRIPT_SORA_SOMPENG,       /* Sora */
+      PANGO_SCRIPT_TAKRI               /* Takr */
 } PangoScript;
 
 PangoScript pango_script_for_unichar         (gunichar             ch) G_GNUC_CONST;

@@ -114,6 +114,16 @@ url="http://www.unicode.org/reports/tr24/">Unicode Standard Annex
 @PANGO_SCRIPT_CARIAN:     Carian. Since 1.20.1
 @PANGO_SCRIPT_LYCIAN:     Lycian. Since 1.20.1
 @PANGO_SCRIPT_LYDIAN:     Lydian. Since 1.20.1
+@PANGO_SCRIPT_BATAK:      Batak. Since 1.32
+@PANGO_SCRIPT_BRAHMI:     Brahmi. Since 1.32
+@PANGO_SCRIPT_MANDAIC:    Mandaic. Since 1.32
+@PANGO_SCRIPT_CHAKMA:               Chakma. Since: 1.32
+@PANGO_SCRIPT_MEROITIC_CURSIVE:     Meroitic Cursive. Since: 1.32
+@PANGO_SCRIPT_MEROITIC_HIEROGLYPHS: Meroitic Hieroglyphs. Since: 1.32
+@PANGO_SCRIPT_MIAO:                 Miao. Since: 1.32
+@PANGO_SCRIPT_SHARADA:              Sharada. Since: 1.32
+@PANGO_SCRIPT_SORA_SOMPENG:         Sora Sompeng. Since: 1.32
+@PANGO_SCRIPT_TAKRI:                Takri. Since: 1.32
 
 <!-- ##### MACRO PANGO_TYPE_SCRIPT ##### -->
 <para>
