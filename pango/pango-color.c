@@ -144,10 +144,28 @@ pango_color_to_string (const PangoColor *color)
 
 #include "pango-color-table.h"
 
+#define ISUPPER(c)              ((c) >= 'A' && (c) <= 'Z')
+#define TOLOWER(c)              (ISUPPER (c) ? (c) - 'A' + 'a' : (c))
+
 static int
 compare_xcolor_entries (const void *a, const void *b)
 {
-  return g_ascii_strcasecmp ((const char *) a, color_names + ((const ColorEntry *) b)->name_offset);
+  const guchar *s1 = (const guchar *) a;
+  const guchar *s2 = (const guchar *) (color_names + ((const ColorEntry *) b)->name_offset);
+
+  while (*s1 && *s2)
+    {
+      int c1, c2;
+      while (*s1 == ' ') s1++;
+      while (*s2 == ' ') s1++;
+      c1 = (gint)(guchar) TOLOWER (*s1);
+      c2 = (gint)(guchar) TOLOWER (*s2);
+      if (c1 != c2)
+        return (c1 - c2);
+      s1++; s2++;
+    }
+
+  return ((gint) *s1) - ((gint) *s2);
 }
 
 static gboolean
