@@ -479,7 +479,6 @@ endif
 MODULE_DEF_FILES = \
 	module-defs.h \
 	module-defs-lang.c \
-	module-defs-x.c \
 	module-defs-fc.c \
 	module-defs-win32.c \
 	module-defs-coretext.c
