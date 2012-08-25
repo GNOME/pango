@@ -533,16 +533,20 @@ read_modules (void)
   dlloaded_modules = g_hash_table_new (g_str_hash, g_str_equal);
 
   if (!file_str)
-    file_str = g_build_filename (pango_get_lib_subdirectory (),
-                                 MODULE_VERSION,
-				 "modules.cache",
-				 NULL);
-  if (!file_str)
-    file_str = g_build_filename (pango_get_sysconf_subdirectory (),
-				 "pango.modules",
-				 NULL);
+    {
+      files = g_new (char *, 3);
 
-  files = pango_split_file_list (file_str);
+      files[0] = g_build_filename (pango_get_sysconf_subdirectory (),
+                                   "pango.modules",
+                                   NULL);
+      files[1] = g_build_filename (pango_get_lib_subdirectory (),
+                                   MODULE_VERSION,
+                                   "modules.cache",
+                                   NULL);
+      files[2] = NULL;
+    }
+  else
+    files = pango_split_file_list (file_str);
 
   n = 0;
   while (files[n])
@@ -554,7 +558,7 @@ read_modules (void)
       if (module_file)
 	{
 	  const gchar *module_file_dir = g_path_get_dirname (files[n]);
-	  process_module_file(module_file, module_file_dir);
+	  process_module_file (module_file, module_file_dir);
 	  g_free ((gpointer) module_file_dir);
 	  fclose(module_file);
 	}
