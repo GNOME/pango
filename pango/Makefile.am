@@ -453,6 +453,7 @@ EXTRA_DIST =					\
 	pangocairo.def				\
 	pangowin32.def				\
 	pangoft2.def				\
+	pangoxft.def				\
 	pango.rc				\
 	pango.rc.in				\
 	pangoft2.rc				\
