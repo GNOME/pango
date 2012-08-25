@@ -11,7 +11,8 @@ EXTRA_PROGRAMS = 		\
 	gen-script-for-lang
 
 EXTRA_DIST= 			\
-	gen-color-table.pl
+	gen-color-table.pl	\
+	rgb.txt
 
 gen_script_for_lang_SOURCES = gen-script-for-lang.c
 gen_script_for_lang_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la $(FREETYPE_LIBS) $(GLIB_LIBS)
