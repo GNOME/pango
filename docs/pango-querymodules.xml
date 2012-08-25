@@ -37,15 +37,19 @@
 
 <refsect1 id="Description"><title>Description</title>
 <para>
-<command>pango-querymodules</command> collects information about loadable 
-modules for Pango and writes it to <filename>stdout</filename>. 
+<command>pango-querymodules</command> collects information about loadable
+modules for Pango and writes it to <filename>stdout</filename>.
 </para>
 <para>
-If called without arguments, it looks for modules in the Pango module path.  
+If called without arguments, it looks for modules in the Pango module path.
 </para>
 <para>
 If called with arguments, it looks for the specified modules. The arguments
 may be absolute or relative paths.
+</para>
+<para>
+At runtime, Pango looks for the loadable module information (i.e. the output
+of pango-querymodules) in <filename><replaceable>libdir</replaceable>/pango/1.8.0/modules.cache</filename>.
 </para>
 </refsect1>
 
