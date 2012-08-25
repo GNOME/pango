@@ -655,3 +655,6 @@
 139   0 139		DarkMagenta
 139   0   0		DarkRed
 144 238 144		LightGreen
+0   255 255		aqua
+192 192 192		silver
+75  0   130		indigo
