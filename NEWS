@@ -1,3 +1,7 @@
+Overview of changes between 1.31.0 and 1.31.1
+=============================================
+- The module cache file can now be located in libdir
+
 Overview of changes between 1.30.1 and 1.31.0
 =============================================
 - Port to harfbuzz 0.9.x, use external harfbuzz
