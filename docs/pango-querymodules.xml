@@ -1,8 +1,26 @@
 <refentry id="pango-querymodules">
 
+<refentryinfo>
+<title>pango-querymodules</title>
+<productname>Pango</productname>
+<authorgroup>
+<author>
+<contrib>Developer</contrib>
+<firstname>Owen</firstname>
+<surname>Taylor</surname>
+</author>
+<author>
+<contrib>Developer</contrib>
+<firstname>Behdad</firstname>
+<surname>Esfahbod</surname>
+</author>
+</authorgroup>
+</refentryinfo>
+
 <refmeta>
 <refentrytitle>pango-querymodules</refentrytitle>
 <manvolnum>1</manvolnum>
+<refmiscinfo class="manual">User Commands</refmiscinfo>
 </refmeta>
 
 <refnamediv>
