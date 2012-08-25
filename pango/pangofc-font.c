@@ -794,6 +794,7 @@ _pango_fc_font_shutdown (PangoFcFont *font)
  * kerning information in @font.
  *
  * Since: 1.4
+ * Deprecated: 1.32
  **/
 void
 pango_fc_font_kern_glyphs (PangoFcFont      *font,

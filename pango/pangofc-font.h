@@ -137,9 +137,10 @@ guint      pango_fc_font_get_glyph         (PangoFcFont      *font,
 G_DEPRECATED_FOR(PANGO_GET_UNKNOWN_GLYPH)
 PangoGlyph pango_fc_font_get_unknown_glyph (PangoFcFont      *font,
 					    gunichar          wc);
-#endif /* PANGO_DISABLE_DEPRECATED */
+G_DEPRECATED
 void       pango_fc_font_kern_glyphs       (PangoFcFont      *font,
 					    PangoGlyphString *glyphs);
+#endif /* PANGO_DISABLE_DEPRECATED */
 
 #endif /* PANGO_ENABLE_ENGINE || PANGO_ENABLE_BACKEND */
 
