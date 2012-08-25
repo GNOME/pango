@@ -533,6 +533,11 @@ read_modules (void)
   dlloaded_modules = g_hash_table_new (g_str_hash, g_str_equal);
 
   if (!file_str)
+    file_str = g_build_filename (pango_get_lib_subdirectory (),
+                                 MODULE_VERSION,
+				 "modules.cache",
+				 NULL);
+  if (!file_str)
     file_str = g_build_filename (pango_get_sysconf_subdirectory (),
 				 "pango.modules",
 				 NULL);
