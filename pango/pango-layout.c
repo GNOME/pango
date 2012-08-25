@@ -4129,10 +4129,7 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
   while (tmp_list)
     {
       PangoLayoutRun *run = tmp_list->data;
-      ItemProperties properties;
       int logical_width;
-
-      pango_layout_get_item_properties (run->item, &properties);
 
       logical_width = pango_glyph_string_get_width (run->glyphs);
 
