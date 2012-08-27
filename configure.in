@@ -643,7 +643,6 @@ LIBRARY_LIBTOOL_OPTIONS="-version-info $VERSION_INFO"
 MODULE_LIBTOOL_OPTIONS="-export-dynamic -avoid-version"
 if test "$pango_platform_win32" = yes; then
     # We currently use .def files on Windows
-    true
     LIBRARY_LIBTOOL_OPTIONS="$LIBRARY_LIBTOOL_OPTIONS -no-undefined"
     MODULE_LIBTOOL_OPTIONS="$MODULE_LIBTOOL_OPTIONS -no-undefined"
 else
