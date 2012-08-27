@@ -101,7 +101,7 @@ pango_attr_gravity_hint_new()
 
 </para>
 
-@gravity:
+@gravity: 
 
 
 <!-- ##### MACRO PANGO_GRAVITY_IS_VERTICAL ##### -->
