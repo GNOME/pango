@@ -139,6 +139,12 @@ run_iterator_get_glyph_count (struct RunIterator *iter)
   return accumulator;
 }
 
+/* These functions are commented out to silence the compiler, but
+ * kept around because they might be of use when fixing the more
+ * intricate issues noted in the comment in the function
+ * basic_engine_shape() below.
+ */
+#if 0
 static gboolean
 run_iterator_is_rtl (struct RunIterator *iter)
 {
@@ -155,6 +161,7 @@ run_iterator_run_is_non_monotonic (struct RunIterator *iter)
 
   return run_status & kCTRunStatusNonMonotonic;
 }
+#endif
 
 static gunichar
 run_iterator_get_character (struct RunIterator *iter)
