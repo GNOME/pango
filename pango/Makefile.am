@@ -471,7 +471,7 @@ if HAVE_INCLUDED_MODULES
 included-modules:
 	$(AM_V_GEN) cd $(top_builddir)/modules && $(MAKE) $(AM_MAKEFLAGS) included-modules
 
-$(INCLUDED_LANG_MODULES) $(INCLUDED_X_MODULES) $(INCLUDED_FC_MODULES) $(INCLUDED_WIN32_MODULES) $(INCLUDED_CORE_TEXT_MODULES): included-modules
+$(INCLUDED_LANG_MODULES) $(INCLUDED_FC_MODULES) $(INCLUDED_WIN32_MODULES) $(INCLUDED_CORE_TEXT_MODULES): included-modules
 	$(AM_V_GEN) true
 
 .PHONY: included-modules
