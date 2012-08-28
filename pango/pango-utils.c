@@ -721,7 +721,7 @@ pango_get_sysconf_subdirectory (void)
 
   if (g_once_init_enter ((gsize*)&result))
     {
-      gchar *tmp_result = NULL;
+      const char *tmp_result = NULL;
 #ifdef G_OS_WIN32
       gchar *root = g_win32_get_package_installation_directory_of_module (pango_dll);
       tmp_result = g_build_filename (root, "etc\\pango", NULL);
@@ -756,7 +756,7 @@ pango_get_lib_subdirectory (void)
 
   if (g_once_init_enter ((gsize*)&result))
     {
-      gchar *tmp_result = NULL;
+      const gchar *tmp_result = NULL;
 #ifdef G_OS_WIN32
       gchar *root = g_win32_get_package_installation_directory_of_module (pango_dll);
       /* If we are running against an uninstalled copy of the Pango DLL,
