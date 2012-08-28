@@ -54,7 +54,8 @@ static PangoAttribute *pango_attr_size_new_internal (int                   size,
 						     gboolean              absolute);
 
 
-static GHashTable *name_map = NULL;
+G_LOCK_DEFINE_STATIC (attr_type);
+static GHashTable *name_map = NULL; /* MT-safe */
 
 /**
  * pango_attr_type_register:
@@ -68,7 +69,10 @@ static GHashTable *name_map = NULL;
 PangoAttrType
 pango_attr_type_register (const gchar *name)
 {
-  static guint current_type = 0x1000000;
+  static guint current_type = 0x1000000; /* MT-safe */
+
+  G_LOCK (attr_type);
+
   guint type = current_type++;
 
   if (name)
@@ -78,6 +82,8 @@ pango_attr_type_register (const gchar *name)
 
       g_hash_table_insert (name_map, GUINT_TO_POINTER (type), (gpointer) g_intern_string (name));
     }
+
+  G_UNLOCK (attr_type);
 
   return type;
 }
@@ -102,8 +108,12 @@ pango_attr_type_get_name (PangoAttrType type)
 {
   const char *result = NULL;
 
+  G_LOCK (attr_type);
+
   if (name_map)
     result = g_hash_table_lookup (name_map, GUINT_TO_POINTER ((guint) type));
+
+  G_UNLOCK (attr_type);
 
   return result;
 }
