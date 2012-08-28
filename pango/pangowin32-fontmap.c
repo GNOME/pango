@@ -299,6 +299,282 @@ synthesize_foreach (gpointer key,
     }
 }
 
+struct PangoAlias
+{
+  char *alias;
+  int n_families;
+  char **families;
+  gboolean visible; /* Do we want/need this? */
+};
+
+static GHashTable *pango_aliases_ht = NULL;
+
+static guint
+alias_hash (struct PangoAlias *alias)
+{
+  return g_str_hash (alias->alias);
+}
+
+static gboolean
+alias_equal (struct PangoAlias *alias1,
+             struct PangoAlias *alias2)
+{
+  return g_str_equal (alias1->alias,
+                      alias2->alias);
+}
+
+static void
+alias_free (struct PangoAlias *alias)
+{
+  int i;
+  g_free (alias->alias);
+
+  for (i = 0; i < alias->n_families; i++)
+    g_free (alias->families[i]);
+
+  g_free (alias->families);
+
+  g_slice_free (struct PangoAlias, alias);
+}
+
+static void
+handle_alias_line (GString  *line_buffer,
+                   char    **errstring)
+{
+  GString *tmp_buffer1;
+  GString *tmp_buffer2;
+  const char *pos;
+  struct PangoAlias alias_key;
+  struct PangoAlias *alias;
+  gboolean append = FALSE;
+  char **new_families;
+  int n_new;
+  int i;
+
+  tmp_buffer1 = g_string_new (NULL);
+  tmp_buffer2 = g_string_new (NULL);
+
+  pos = line_buffer->str;
+  if (!pango_skip_space (&pos))
+    return;
+
+  if (!pango_scan_string (&pos, tmp_buffer1) ||
+      !pango_skip_space (&pos))
+    {
+      *errstring = g_strdup ("Line is not of the form KEY=VALUE or KEY+=VALUE");
+      goto error;
+    }
+
+  if (*pos == '+')
+    {
+      append = TRUE;
+      pos++;
+    }
+
+  if (*(pos++) != '=')
+    {
+      *errstring = g_strdup ("Line is not of the form KEY=VALUE or KEY+=VALUE");
+      goto error;
+    }
+
+  if (!pango_scan_string (&pos, tmp_buffer2))
+    {
+      *errstring = g_strdup ("Error parsing value string");
+      goto error;
+    }
+  if (pango_skip_space (&pos))
+    {
+      *errstring = g_strdup ("Junk after value string");
+      goto error;
+    }
+
+  alias_key.alias = g_ascii_strdown (tmp_buffer1->str, -1);
+
+  /* Remove any existing values */
+  alias = g_hash_table_lookup (pango_aliases_ht, &alias_key);
+
+  if (!alias)
+    {
+      alias = g_slice_new0 (struct PangoAlias);
+      alias->alias = alias_key.alias;
+
+      g_hash_table_insert (pango_aliases_ht, alias, alias);
+    }
+  else
+    g_free (alias_key.alias);
+
+  new_families = g_strsplit (tmp_buffer2->str, ",", -1);
+
+  n_new = 0;
+  while (new_families[n_new])
+    n_new++;
+
+  if (alias->families && append)
+    {
+      alias->families = g_realloc (alias->families,
+                                   sizeof (char *) *(n_new + alias->n_families));
+      for (i = 0; i < n_new; i++)
+        alias->families[alias->n_families + i] = new_families[i];
+      g_free (new_families);
+      alias->n_families += n_new;
+    }
+  else
+    {
+      for (i = 0; i < alias->n_families; i++)
+        g_free (alias->families[i]);
+      g_free (alias->families);
+      
+      alias->families = new_families;
+      alias->n_families = n_new;
+    }
+
+ error:
+  
+  g_string_free (tmp_buffer1, TRUE);
+  g_string_free (tmp_buffer2, TRUE);
+}
+
+#ifdef HAVE_CAIRO_WIN32
+
+static const char * const builtin_aliases[] = {
+  "courier = \"courier new\"",
+  "\"segoe ui\" = \"segoe ui,meiryo,malgun gothic,microsoft jhenghei,microsoft yahei,gisha,leelawadee,arial unicode ms,browallia new,mingliu,simhei,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
+  "tahoma = \"tahoma,arial unicode ms,lucida sans unicode,browallia new,mingliu,simhei,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
+  /* It sucks to use the same GulimChe, MS Gothic, Sylfaen, Kartika,
+   * Latha, Mangal and Raavi fonts for all three of sans, serif and
+   * mono, but it isn't like there would be much choice. For most
+   * non-Latin scripts that Windows includes any font at all for, it
+   * has ony one. One solution is to install the free DejaVu fonts
+   * that are popular on Linux. They are listed here first.
+   */
+  "sans = \"dejavu sans,tahoma,arial unicode ms,lucida sans unicode,browallia new,mingliu,simhei,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
+  "sans-serif = \"dejavu sans,tahoma,arial unicode ms,lucida sans unicode,browallia new,mingliu,simhei,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
+  "serif = \"dejavu serif,georgia,angsana new,mingliu,simsun,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
+ "mono = \"dejavu sans mono,courier new,lucida console,courier monothai,mingliu,simsun,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
+  "monospace = \"dejavu sans mono,courier new,lucida console,courier monothai,mingliu,simsun,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\""
+};
+
+static void
+read_builtin_aliases (void)
+{
+
+  GString *line_buffer;
+  char *errstring = NULL;
+  int line;
+
+  line_buffer = g_string_new (NULL);
+
+  for (line = 0; line < G_N_ELEMENTS (builtin_aliases) && errstring == NULL; line++)
+    {
+      g_string_assign (line_buffer, builtin_aliases[line]);
+      handle_alias_line (line_buffer, &errstring);
+    }
+
+  if (errstring)
+    {
+      g_error ("error in built-in aliases:%d: %s\n", line, errstring);
+      g_free (errstring);
+    }
+
+  g_string_free (line_buffer, TRUE);
+}
+
+
+static void
+read_alias_file (const char *filename)
+{
+  FILE *file;
+
+  GString *line_buffer;
+  char *errstring = NULL;
+  int line = 0;
+
+  file = g_fopen (filename, "r");
+  if (!file)
+    return;
+
+  line_buffer = g_string_new (NULL);
+
+  while (pango_read_line (file, line_buffer) &&
+         errstring == NULL)
+    {
+      line++;
+      handle_alias_line (line_buffer, &errstring);
+    }
+
+  if (errstring == NULL && ferror (file))
+    errstring = g_strdup (g_strerror(errno));
+
+  if (errstring)
+    {
+      g_warning ("error reading alias file: %s:%d: %s\n", filename, line, errstring);
+      g_free (errstring);
+    }
+
+  g_string_free (line_buffer, TRUE);
+
+  fclose (file);
+}
+
+static void
+pango_load_aliases (void)
+{
+  char *filename;
+  const char *home;
+
+  pango_aliases_ht = g_hash_table_new_full ((GHashFunc)alias_hash,
+                                            (GEqualFunc)alias_equal,
+                                            (GDestroyNotify)alias_free,
+                                            NULL);
+
+#ifdef HAVE_CAIRO_WIN32
+  read_builtin_aliases ();
+#endif
+
+  filename = g_strconcat (pango_get_sysconf_subdirectory (),
+                          G_DIR_SEPARATOR_S "pango.aliases",
+                          NULL);
+  read_alias_file (filename);
+  g_free (filename);
+
+  home = g_get_home_dir ();
+  if (home && *home)
+    {
+      filename = g_strconcat (home,
+                              G_DIR_SEPARATOR_S ".pango.aliases",
+                              NULL);
+      read_alias_file (filename);
+      g_free (filename);
+    }
+}
+
+static void
+lookup_aliases (const char   *fontname,
+                char       ***families,
+                int          *n_families)
+{
+  struct PangoAlias alias_key;
+  struct PangoAlias *alias;
+
+  if (pango_aliases_ht == NULL)
+    load_aliases ();
+
+  alias_key.alias = g_ascii_strdown (fontname, -1);
+  alias = g_hash_table_lookup (pango_aliases_ht, &alias_key);
+  g_free (alias_key.alias);
+
+  if (alias)
+    {
+      *families = alias->families;
+      *n_families = alias->n_families;
+    }
+  else
+    {
+      *families = NULL;
+      *n_families = 0;
+    }
+}
+
 static void
 create_standard_family (PangoWin32FontMap *win32fontmap,
 			const char        *standard_family_name)
@@ -307,7 +583,7 @@ create_standard_family (PangoWin32FontMap *win32fontmap,
   int n_aliases;
   char **aliases;
 
-  pango_lookup_aliases (standard_family_name, &aliases, &n_aliases);
+  lookup_aliases (standard_family_name, &aliases, &n_aliases);
   for (i = 0; i < n_aliases; i++)
     {
       PangoWin32Family *existing_family = g_hash_table_lookup (win32fontmap->families, aliases[i]);

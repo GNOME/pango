@@ -44,6 +44,7 @@ gboolean pango_scan_int       (const char **pos,
 #ifdef PANGO_ENABLE_BACKEND
 char *   pango_config_key_get_system (const char *key);
 char *   pango_config_key_get (const char  *key);
+G_DEPRECATED
 void     pango_lookup_aliases (const char   *fontname,
 			       char       ***families,
 			       int          *n_families);

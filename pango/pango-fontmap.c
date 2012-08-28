@@ -145,32 +145,12 @@ pango_font_map_fontset_add_fonts (PangoFontMap          *fontmap,
 				  PangoFontDescription  *desc,
 				  const char            *family)
 {
-  char **aliases;
-  int n_aliases;
-  int j;
   PangoFont *font;
 
-  pango_lookup_aliases (family,
-			&aliases,
-			&n_aliases);
-
-  if (n_aliases)
-    {
-      for (j = 0; j < n_aliases; j++)
-	{
-	  pango_font_description_set_family_static (desc, aliases[j]);
-	  font = pango_font_map_load_font (fontmap, context, desc);
-	  if (font)
-	    pango_fontset_simple_append (fonts, font);
-	}
-    }
-  else
-    {
-      pango_font_description_set_family_static (desc, family);
-      font = pango_font_map_load_font (fontmap, context, desc);
-      if (font)
-	pango_fontset_simple_append (fonts, font);
-    }
+  pango_font_description_set_family_static (desc, family);
+  font = pango_font_map_load_font (fontmap, context, desc);
+  if (font)
+    pango_fontset_simple_append (fonts, font);
 }
 
 static PangoFontset *
