@@ -525,7 +525,7 @@ static GHashTable *config_hash = NULL;
 static gboolean did_read_user_config = FALSE;
 
 static void
-read_config_file (const char *filename, gboolean enoent_error)
+read_config_file (const char *filename, gboolean enoent_error, GHashTable *ht)
 {
   GKeyFile *key_file = g_key_file_new();
   GError *key_file_error = NULL;
@@ -569,7 +569,7 @@ read_config_file (const char *filename, gboolean enoent_error)
 	      gchar *value =  g_key_file_get_value(key_file, group, key, &key_error);
 	      if (value != NULL)
 		{
-		  g_hash_table_insert (config_hash,
+		  g_hash_table_insert (ht,
 				       g_strdup_printf ("%s/%s", group, key),
 				       value);
 		}
@@ -613,7 +613,7 @@ read_config_system (void)
   filename = g_build_filename (pango_get_sysconf_subdirectory (),
 			       "pangorc",
 			       NULL);
-  read_config_file (filename, FALSE);
+  read_config_file (filename, FALSE, config_hash);
   g_free (filename);
 }
 
@@ -630,12 +630,12 @@ read_config (void)
       did_read_user_config = TRUE;
 
       filename = g_build_filename (g_get_user_config_dir (), "pango", "pangorc", NULL);
-      read_config_file (filename, FALSE);
+      read_config_file (filename, FALSE, config_hash);
       g_free (filename);
 
       envvar = g_getenv ("PANGO_RC_FILE");
       if (envvar)
-        read_config_file (envvar, TRUE);
+        read_config_file (envvar, TRUE, config_hash);
     }
 }
 
