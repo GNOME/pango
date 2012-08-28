@@ -58,7 +58,7 @@ static PangoEngineInfo script_engines[] = {
 
 
 /* cache a single hb_buffer_t */
-static hb_buffer_t *cached_buffer = NULL;
+static hb_buffer_t *cached_buffer = NULL; /* MT-safe */
 G_LOCK_DEFINE_STATIC (cached_buffer);
 
 static hb_buffer_t *

@@ -862,14 +862,13 @@ pango_win32_font_describe_absolute (PangoFont *font)
 static PangoMap *
 pango_win32_get_shaper_map (PangoLanguage *lang)
 {
-  static guint engine_type_id = 0;
-  static guint render_type_id = 0;
+  static guint engine_type_id = 0; /* MT-safe */
+  static guint render_type_id = 0; /* MT-safe */
 
   if (engine_type_id == 0)
-    {
-      engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_SHAPE);
-      render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_WIN32);
-    }
+    engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_SHAPE);
+  if (render_type_id == 0)
+    render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_WIN32);
 
   return pango_find_map (lang, engine_type_id, render_type_id);
 }
@@ -1323,7 +1322,7 @@ find_segment (struct format_4_cmap *table,
   guint16 seg_count = table->seg_count_x_2/2;
   guint16 *end_count = get_end_count (table);
   guint16 *start_count = get_start_count (table);
-  static guint last = 0; /* Cache of one */
+  static guint last = 0; /* Cache of one */ /* MT-safe */
 
   if (last < seg_count &&
       wc >= start_count[last] &&

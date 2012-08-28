@@ -978,7 +978,7 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
   int square = height / HEIGHT_SQUARES;
   int unit_width = (HEIGHT_SQUARES - 1) * square;
   int width_units = (width + unit_width / 2) / unit_width;
-  static const PangoMatrix identity = PANGO_MATRIX_INIT;
+  const PangoMatrix identity = PANGO_MATRIX_INIT;
   const PangoMatrix *matrix;
   double dx, dx0, dy0;
   PangoMatrix total;

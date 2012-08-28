@@ -92,7 +92,7 @@ done:
     {
       cairo_scaled_font_t *scaled_font = cf_priv->scaled_font;
       PangoFont *font = PANGO_FONT (cf_priv->cfont);
-      static GQuark warned_quark = 0;
+      static GQuark warned_quark = 0; /* MT-safe */
       if (!warned_quark)
 	warned_quark = g_quark_from_static_string ("pangocairo-scaledfont-warned");
 
@@ -357,7 +357,7 @@ _pango_cairo_font_get_metrics (PangoFont     *font,
 static PangoCairoFontHexBoxInfo *
 _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
 {
-  static const char hexdigits[] = "0123456789ABCDEF";
+  const char hexdigits[] = "0123456789ABCDEF";
   char c[2] = {0, 0};
   PangoFont *mini_font;
   PangoCairoFontHexBoxInfo *hbi;

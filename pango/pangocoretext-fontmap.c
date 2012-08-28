@@ -111,8 +111,8 @@ typedef struct
     PangoWeight weight;
 } PangoCTWeight;
 
-static const float ct_weight_min = -1.00f;
-static const float ct_weight_max = 1.00f;
+const float ct_weight_min = -1.00f;
+const float ct_weight_max = 1.00f;
 
 static const PangoCTWeight ct_weight_limits[] = {
     { -0.70, PANGO_WEIGHT_THIN},
@@ -780,7 +780,7 @@ get_context_matrix (PangoContext *context,
 		    PangoMatrix *matrix)
 {
   const PangoMatrix *set_matrix;
-  static const PangoMatrix identity = PANGO_MATRIX_INIT;
+  const PangoMatrix identity = PANGO_MATRIX_INIT;
 
   if (context)
     set_matrix = pango_context_get_matrix (context);
@@ -1275,7 +1275,7 @@ pango_core_text_font_map_load_fontset (PangoFontMap               *fontmap,
   PangoCoreTextFontset *fontset;
   PangoCoreTextFontsetKey key;
   PangoCoreTextFontMap *ctfontmap = PANGO_CORE_TEXT_FONT_MAP (fontmap);
-  static gboolean warned_full_fallback = FALSE;
+  static gboolean warned_full_fallback = FALSE; /* MT-safe */
 
   pango_core_text_fontset_key_init (&key, ctfontmap,
                                     context, desc, language);
@@ -1492,8 +1492,6 @@ struct _PangoCoreTextFontset
 
 typedef PangoFontsetClass PangoCoreTextFontsetClass;
 
-static PangoFontsetClass *core_text_fontset_parent_class;
-
 
 /* This symbol does exist in the CoreText library shipped with Snow
  * Leopard and Lion, however, it is not found in the public header files.
@@ -1619,8 +1617,6 @@ pango_core_text_fontset_class_init (PangoCoreTextFontsetClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   PangoFontsetClass *fontset_class = PANGO_FONTSET_CLASS (klass);
 
-  core_text_fontset_parent_class = g_type_class_peek_parent (klass);
-
   object_class->finalize = pango_core_text_fontset_finalize;
 
   fontset_class->get_font = pango_core_text_fontset_get_font;
@@ -1666,7 +1662,7 @@ pango_core_text_fontset_finalize (GObject *object)
   if (ctfontset->key)
     pango_core_text_fontset_key_free (ctfontset->key);
 
-  G_OBJECT_CLASS (core_text_fontset_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango_core_text_fontset_parent_class)->finalize (object);
 }
 
 static PangoCoreTextFontsetKey *

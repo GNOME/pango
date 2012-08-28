@@ -44,7 +44,7 @@
 #endif
 #define SOEXT_LEN ((int) strlen (SOEXT))
 
-static gboolean system_mode;
+static gboolean system_mode; /* MT-safe as we're single-threaded! */
 
 static gboolean
 string_needs_escape (const char *str)
@@ -97,7 +97,7 @@ escape_string (const char *str)
 static const char *
 string_from_script (PangoScript script)
 {
-  static GEnumClass *class = NULL;
+  static GEnumClass *class = NULL; /* MT-safe as we're single-threaded! */
   GEnumValue *value;
   if (!class)
     class = g_type_class_ref (PANGO_TYPE_SCRIPT);

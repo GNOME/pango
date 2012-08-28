@@ -542,10 +542,10 @@ _pango_ft2_ft_strerror (FT_Error error)
     return found->msg;
   else
     {
-      static char *default_msg = NULL;
+      static char *default_msg = NULL; /* MT-safe */
 
-      if (!default_msg)
-	default_msg = g_malloc (60);
+      if (g_once_init_enter (&default_msg))
+	g_once_init_leve (&default_msg, g_malloc (60));
 
       g_sprintf (default_msg, "Unknown FreeType2 error %#x", error);
       return default_msg;

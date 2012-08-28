@@ -106,7 +106,7 @@ static GType pango_module_get_type (void);
 static GQuark
 get_warned_quark (void)
 {
-  static GQuark warned_quark = 0;
+  static GQuark warned_quark = 0; /* MT-safe */
 
   if (G_UNLIKELY (!warned_quark))
     warned_quark = g_quark_from_static_string ("pango-module-warned");
@@ -382,8 +382,8 @@ script_from_string (const char *str)
 {
   static GEnumClass *class = NULL;
   GEnumValue *value;
-  if (!class)
-    class = g_type_class_ref (PANGO_TYPE_SCRIPT);
+  if (g_once_init_enter (&class))
+    g_once_init_leave (&class, g_type_class_ref (PANGO_TYPE_SCRIPT));
 
   value = g_enum_get_value_by_nick (class, str);
   if (!value)
@@ -652,7 +652,7 @@ build_map (PangoMapInfo *info)
 
   if (!dlloaded_engines && !registered_engines)
     {
-      static gboolean no_module_warning = FALSE;
+      static gboolean no_module_warning = FALSE; /* MT-safe */
       if (!no_module_warning)
 	{
 	  gchar *filename = g_build_filename (pango_get_sysconf_subdirectory (),

@@ -164,7 +164,8 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
   char **families;
   int i;
   PangoFontsetSimple *fonts;
-  static GHashTable *warned_fonts = NULL;
+  static GHashTable *warned_fonts = NULL; /* MT-safe */
+  G_LOCK_DEFINE_STATIC (warned_fonts);
 
   family = pango_font_description_get_family (desc);
   families = g_strsplit (family ? family : "", ",", -1);
@@ -193,6 +194,7 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
       ctmp1 = pango_font_description_to_string (desc);
       pango_font_description_set_family_static (tmp_desc, "Sans");
 
+      G_LOCK (warned_fonts);
       if (!warned_fonts || !g_hash_table_lookup (warned_fonts, ctmp1))
 	{
 	  if (!warned_fonts)
@@ -205,6 +207,7 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
 		     "expect ugly output.", ctmp1, ctmp2);
 	  g_free (ctmp2);
 	}
+      G_UNLOCK (warned_fonts);
       g_free (ctmp1);
 
       pango_font_map_fontset_add_fonts (fontmap,
@@ -227,6 +230,7 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
       pango_font_description_set_variant (tmp_desc, PANGO_VARIANT_NORMAL);
       pango_font_description_set_stretch (tmp_desc, PANGO_STRETCH_NORMAL);
 
+      G_LOCK (warned_fonts);
       if (!warned_fonts || !g_hash_table_lookup (warned_fonts, ctmp1))
 	{
 	  g_hash_table_insert (warned_fonts, g_strdup (ctmp1), GINT_TO_POINTER (1));
@@ -237,7 +241,7 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
 		     "expect ugly output.", ctmp1, ctmp2);
 	  g_free (ctmp2);
 	}
-
+      G_UNLOCK (warned_fonts);
       g_free (ctmp1);
 
       pango_font_map_fontset_add_fonts (fontmap,

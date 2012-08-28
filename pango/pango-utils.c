@@ -684,7 +684,7 @@ pango_config_key_get (const char *key)
 
 /* DllMain function needed to tuck away the DLL handle */
 
-static HMODULE pango_dll;
+static HMODULE pango_dll; /* MT-safe */
 
 BOOL WINAPI
 DllMain (HINSTANCE hinstDLL,

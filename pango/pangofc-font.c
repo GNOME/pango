@@ -300,14 +300,13 @@ pango_fc_font_describe_absolute (PangoFont *font)
 static PangoMap *
 pango_fc_get_shaper_map (PangoLanguage *language)
 {
-  static guint engine_type_id = 0;
-  static guint render_type_id = 0;
+  static guint engine_type_id = 0; /* MT-safe */
+  static guint render_type_id = 0; /* MT-safe */
 
   if (engine_type_id == 0)
-    {
-      engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_SHAPE);
-      render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_FC);
-    }
+    engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_SHAPE);
+  if (render_type_id == 0)
+    render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_FC);
 
   return pango_find_map (language, engine_type_id, render_type_id);
 }

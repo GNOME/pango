@@ -698,7 +698,7 @@ pango_cairo_renderer_class_init (PangoCairoRendererClass *klass)
   renderer_class->draw_shape = pango_cairo_renderer_draw_shape;
 }
 
-static PangoCairoRenderer *cached_renderer = NULL;
+static PangoCairoRenderer *cached_renderer = NULL; /* MT-safe */
 G_LOCK_DEFINE_STATIC (cached_renderer);
 
 static PangoCairoRenderer *

@@ -67,7 +67,7 @@ static PangoFcFont * pango_ft2_font_map_new_font            (PangoFcFontMap     
 static double        pango_ft2_font_map_get_resolution      (PangoFcFontMap       *fcfontmap,
 							     PangoContext         *context);
 
-static PangoFT2FontMap *pango_ft2_global_fontmap = NULL;
+static PangoFT2FontMap *pango_ft2_global_fontmap = NULL; /* MT-safe */
 
 G_DEFINE_TYPE (PangoFT2FontMap, pango_ft2_font_map, PANGO_TYPE_FC_FONT_MAP)
 

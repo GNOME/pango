@@ -68,10 +68,10 @@ const PangoOTRuleset *
 pango_ot_ruleset_get_for_description (PangoOTInfo                     *info,
 				      const PangoOTRulesetDescription *desc)
 {
-  static PangoOTRuleset *ruleset;
+  static PangoOTRuleset *ruleset; /* MT-safe */
 
-  if (!ruleset)
-    ruleset = g_object_new (PANGO_TYPE_OT_RULESET, NULL);
+  if (g_once_init_enter (&ruleset))
+    g_once_init_leave (&ruleset, g_object_new (PANGO_TYPE_OT_RULESET, NULL));
 
   return ruleset;
 }

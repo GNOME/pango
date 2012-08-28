@@ -1871,8 +1871,8 @@ pango_get_log_attrs (const char    *text,
   const char *range_start, *range_end;
   PangoScript script;
   PangoEngineLang *range_engine;
-  static guint engine_type_id = 0;
-  static guint render_type_id = 0;
+  static guint engine_type_id = 0; /* MT-safe */
+  static guint render_type_id = 0; /* MT-safe */
   PangoAnalysis analysis = { NULL };
   PangoScriptIter iter;
 
@@ -1884,10 +1884,9 @@ pango_get_log_attrs (const char    *text,
   pango_default_break (text, length, &analysis, log_attrs, attrs_len);
 
   if (engine_type_id == 0)
-    {
-      engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_LANG);
-      render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_NONE);
-    }
+    engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_LANG);
+  if (render_type_id == 0)
+    render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_NONE);
 
   lang_map = pango_find_map (language, engine_type_id, render_type_id);
 

@@ -95,7 +95,7 @@ static PangoWin32Family *pango_win32_get_font_family (PangoWin32FontMap         
 
 static const char *pango_win32_face_get_face_name    (PangoFontFace *face);
 
-static PangoWin32FontMap *default_fontmap = NULL;
+static PangoWin32FontMap *default_fontmap = NULL; /* MT-safe */
 
 G_DEFINE_TYPE (PangoWin32FontMap, _pango_win32_font_map, PANGO_TYPE_FONT_MAP)
 
@@ -307,7 +307,7 @@ struct PangoAlias
   gboolean visible; /* Do we want/need this? */
 };
 
-static GHashTable *pango_aliases_ht = NULL;
+static GHashTable *pango_aliases_ht = NULL; /* MT-unsafe */
 
 static guint
 alias_hash (struct PangoAlias *alias)

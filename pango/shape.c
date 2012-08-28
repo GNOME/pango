@@ -148,7 +148,7 @@ pango_shape (const gchar      *text,
 		  glyphs->log_clusters[0] < glyphs->log_clusters[glyphs->num_glyphs - 1]))
     {
       /* Warn once per shaper */
-      static GQuark warned_quark = 0;
+      static GQuark warned_quark = 0; /* MT-safe */
 
       if (!warned_quark)
 	warned_quark = g_quark_from_static_string ("pango-shape-warned");

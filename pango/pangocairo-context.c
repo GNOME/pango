@@ -62,7 +62,7 @@ static PangoCairoContextInfo *
 get_context_info (PangoContext *context,
 		  gboolean      create)
 {
-  static GQuark context_info_quark;
+  static GQuark context_info_quark; /* MT-safe */
   PangoCairoContextInfo *info;
 
   if (G_UNLIKELY (!context_info_quark))

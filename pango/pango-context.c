@@ -590,7 +590,7 @@ get_shaper_font_cache (PangoFontset *fontset)
 {
   ShaperFontCache *cache;
 
-  static GQuark cache_quark = 0;
+  static GQuark cache_quark = 0; /* MT-safe */
   if (G_UNLIKELY (!cache_quark))
     cache_quark = g_quark_from_static_string ("pango-shaper-font-cache");
 
@@ -1275,14 +1275,13 @@ compute_derived_language (PangoLanguage *lang,
 static PangoMap *
 get_lang_map (PangoLanguage *lang)
 {
-  static guint engine_type_id = 0;
-  static guint render_type_id = 0;
+  static guint engine_type_id = 0; /* MT-safe */
+  static guint render_type_id = 0; /* MT-safe */
 
   if (engine_type_id == 0)
-    {
-      engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_LANG);
-      render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_NONE);
-    }
+    engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_LANG);
+  if (render_type_id == 0)
+    render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_NONE);
 
   return pango_find_map (lang, engine_type_id, render_type_id);
 }
