@@ -299,7 +299,7 @@ get_context_matrix (PangoContext *context,
 		    PangoMatrix *matrix)
 {
   const PangoMatrix *set_matrix;
-  static const PangoMatrix identity = PANGO_MATRIX_INIT;
+  const PangoMatrix identity = PANGO_MATRIX_INIT;
 
   set_matrix = context ? pango_context_get_matrix (context) : NULL;
   *matrix = set_matrix ? *set_matrix : identity;
@@ -1015,21 +1015,21 @@ G_DEFINE_ABSTRACT_TYPE (PangoFcFontMap, pango_fc_font_map, PANGO_TYPE_FONT_MAP)
 static void
 pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 {
-  static gboolean registered_modules = FALSE;
+  static gsize registered_modules = 0; /* MT-safe */
   PangoFcFontMapPrivate *priv;
 
   priv = fcfontmap->priv = G_TYPE_INSTANCE_GET_PRIVATE (fcfontmap,
 							PANGO_TYPE_FC_FONT_MAP,
 							PangoFcFontMapPrivate);
 
-  if (!registered_modules)
+  if (g_once_init_enter (&registered_modules))
     {
       int i;
 
-      registered_modules = TRUE;
-
       for (i = 0; _pango_included_fc_modules[i].list; i++)
 	pango_module_register (&_pango_included_fc_modules[i]);
+
+      g_once_init_leave(&registered_modules, 1);
     }
 
   priv->n_families = -1;
