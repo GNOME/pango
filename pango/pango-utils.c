@@ -717,7 +717,7 @@ DllMain (HINSTANCE hinstDLL,
 const char *
 pango_get_sysconf_subdirectory (void)
 {
-  static const gchar *result = NULL;
+  static const gchar *result = NULL; /* MT-safe */
 
   if (g_once_init_enter ((gsize*)&result))
     {
@@ -752,7 +752,7 @@ pango_get_sysconf_subdirectory (void)
 const char *
 pango_get_lib_subdirectory (void)
 {
-  static const gchar *result = NULL;
+  static const gchar *result = NULL; /* MT-safe */
 
   if (g_once_init_enter ((gsize*)&result))
     {

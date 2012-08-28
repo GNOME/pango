@@ -252,13 +252,18 @@ _pango_get_lc_ctype (void)
 PangoLanguage *
 pango_language_get_default (void)
 {
-  static PangoLanguage *result = NULL;
+  static PangoLanguage *result = NULL; /* MT-safe */
 
-  if (G_UNLIKELY (!result))
+  if (g_once_init_enter (&result))
     {
-      gchar *lang = _pango_get_lc_ctype ();
-      result = pango_language_from_string (lang);
-      g_free (lang);
+      gchar *lc_ctype;
+      PangoLanguage *lang;
+
+      lc_ctype = _pango_get_lc_ctype ();
+      lang = pango_language_from_string (lc_ctype);
+      g_free (lc_ctype);
+
+      g_once_init_leave (&result, lang);
     }
 
   return result;
@@ -288,7 +293,8 @@ pango_language_get_default (void)
 PangoLanguage *
 pango_language_from_string (const char *language)
 {
-  static GHashTable *hash = NULL;
+  G_LOCK_DEFINE_STATIC (lang_from_string);
+  static GHashTable *hash = NULL; /* MT-safe */
   PangoLanguagePrivate *priv;
   char *result;
   int len;
@@ -297,13 +303,15 @@ pango_language_from_string (const char *language)
   if (language == NULL)
     return NULL;
 
+  G_LOCK (lang_from_string);
+
   if (G_UNLIKELY (!hash))
     hash = g_hash_table_new (lang_hash, lang_equal);
   else
     {
       result = g_hash_table_lookup (hash, language);
       if (result)
-	return (PangoLanguage *)result;
+        goto out;
     }
 
   len = strlen (language);
@@ -320,6 +328,9 @@ pango_language_from_string (const char *language)
     ;
 
   g_hash_table_insert (hash, result, result);
+
+out:
+  G_UNLOCK (lang_from_string);
 
   return (PangoLanguage *)result;
 }
@@ -744,10 +755,13 @@ parse_default_languages (void)
 static PangoLanguage *
 _pango_script_get_default_language (PangoScript script)
 {
-  static gboolean initialized = FALSE;
-  static PangoLanguage * const * languages = NULL;
-  static GHashTable *hash = NULL;
+  G_LOCK_DEFINE_STATIC (languages);
+  static gboolean initialized = FALSE; /* MT-safe */
+  static PangoLanguage * const * languages = NULL; /* MT-safe */
+  static GHashTable *hash = NULL; /* MT-safe */
   PangoLanguage *result, * const * p;
+
+  G_LOCK (languages);
 
   if (G_UNLIKELY (!initialized))
     {
@@ -760,10 +774,13 @@ _pango_script_get_default_language (PangoScript script)
     }
 
   if (!languages)
-    return NULL;
+    {
+      result = NULL;
+      goto out;
+    }
 
   if (g_hash_table_lookup_extended (hash, GINT_TO_POINTER (script), NULL, (gpointer *) (gpointer) &result))
-    return result;
+    goto out;
 
   for (p = languages; *p; p++)
     if (pango_language_includes_script (*p, script))
@@ -771,6 +788,9 @@ _pango_script_get_default_language (PangoScript script)
   result = *p;
 
   g_hash_table_insert (hash, GINT_TO_POINTER (script), result);
+
+out:
+  G_UNLOCK (languages);
 
   return result;
 }
