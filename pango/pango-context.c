@@ -1366,7 +1366,7 @@ itemize_state_update_for_new_run (ItemizeState *state)
 static const char *
 string_from_script (PangoScript script)
 {
-  static GEnumClass *class = NULL;
+  static GEnumClass *class = NULL; /* MT-safe */
   GEnumValue *value;
   if (g_once_init_enter ((gsize*)&class))
     g_once_init_leave((gsize*)&class, (gsize)g_type_class_ref (PANGO_TYPE_SCRIPT));

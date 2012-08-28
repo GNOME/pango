@@ -124,7 +124,7 @@ pango_cairo_font_map_new_for_font_type (cairo_font_type_t fonttype)
   }
 }
 
-static PangoFontMap *default_font_map = NULL;
+static PangoFontMap *default_font_map = NULL; /* MT-safe */
 
 /**
  * pango_cairo_font_map_get_default:
@@ -174,17 +174,21 @@ pango_cairo_font_map_get_default (void)
 void
 pango_cairo_font_map_set_default (PangoCairoFontMap *fontmap)
 {
+  PangoCairoFontMap *def;
+
   g_return_if_fail (fontmap == NULL || PANGO_IS_CAIRO_FONT_MAP (fontmap));
 
-  if ((PangoFontMap *) fontmap == default_font_map)
-    return;
+retry:
+  def = g_atomic_pointer_get (&default_font_map);
 
-  if (default_font_map)
-    g_object_unref (default_font_map);
+  if (!g_atomic_pointer_compare_and_exchange (&default_font_map, def, fontmap))
+    goto retry;
 
   if (fontmap)
     g_object_ref (fontmap);
-  default_font_map = (PangoFontMap *) fontmap;
+
+  if (def)
+    g_object_unref (def);
 }
 
 /**

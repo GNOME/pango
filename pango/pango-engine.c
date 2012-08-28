@@ -197,7 +197,7 @@ pango_fallback_engine_class_init (PangoFallbackEngineClass *class)
 PangoEngineShape *
 _pango_get_fallback_shaper (void)
 {
-  static PangoEngineShape *fallback_shaper = NULL;
+  static PangoEngineShape *fallback_shaper = NULL; /* MT-safe */
   if (g_once_init_enter ((gsize*)&fallback_shaper))
     g_once_init_leave((gsize*)&fallback_shaper, (gsize)g_object_new (pango_fallback_engine_get_type (), NULL));
 
