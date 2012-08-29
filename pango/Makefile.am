@@ -128,29 +128,18 @@ pangoinclude_HEADERS =	   \
 	pango-enum-types.h
 
 pango-enum-types.h: s-enum-types-h
-s-enum-types-h: $(pango_headers) Makefile.am
+s-enum-types-h: $(pango_headers) Makefile.am pango-enum-types.h.template
 	$(AM_V_GEN) ( cd $(srcdir) && $(GLIB_MKENUMS) \
-			--fhead "#ifndef __PANGO_ENUM_TYPES_H__\n#define __PANGO_ENUM_TYPES_H__\n\n#include <glib-object.h>\n\nG_BEGIN_DECLS\n" \
-			--fprod "/* enumerations from \"@filename@\" */\n" \
-			--vhead "GType @enum_name@_get_type (void);\n#define @ENUMPREFIX@_TYPE_@ENUMSHORT@ (@enum_name@_get_type())\n" 	\
-			--ftail "G_END_DECLS\n\n#endif /* __PANGO_ENUM_TYPES_H__ */" \
-		$(pango_headers) ) > tmp-pango-enum-types.h \
-	&& (cmp -s tmp-pango-enum-types.h pango-enum-types.h || cp tmp-pango-enum-types.h pango-enum-types.h ) \
-	&& $(RM) tmp-pango-enum-types.h	\
-	&& echo timestamp > $(@F)
+			 --template pango-enum-types.h.template \
+			$(pango_headers) ) > pango-enum-types.h.tmp \
+			&& mv pango-enum-types.h.tmp pango-enum-types.h
 
 pango-enum-types.c: s-enum-types-c
-s-enum-types-c: $(pango_headers) Makefile.am
+s-enum-types-c: $(pango_headers) Makefile.am pango-enum-types.c.template
 	$(AM_V_GEN) ( cd $(srcdir) && $(GLIB_MKENUMS) \
-			--fhead "#include <pango.h>" \
-			--fprod "\n/* enumerations from \"@filename@\" */" \
-			--vhead "GType\n@enum_name@_get_type (void)\n{\n  static GType etype = 0;\n  if (etype == 0) {\n    static const G@Type@Value values[] = {" 	\
-			--vprod "      { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
-			--vtail "      { 0, NULL, NULL }\n    };\n    etype = g_@type@_register_static (g_intern_static_string (\"@EnumName@\"), values);\n  }\n  return etype;\n}\n" \
-		$(pango_headers) ) > tmp-pango-enum-types.c \
-	&& (cmp -s tmp-pango-enum-types.c pango-enum-types.c || cp tmp-pango-enum-types.c pango-enum-types.c ) \
-	&& $(RM) tmp-pango-enum-types.c \
-	&& echo timestamp > $(@F)
+			 --template pango-enum-types.c.template \
+			$(pango_headers) ) > pango-enum-types.c.tmp \
+			&& mv pango-enum-types.c.tmp pango-enum-types.c
 
 pango-features.h:
 	$(AM_V_GEN) cd $(top_builddir) && ./config.status pango/pango-features.h
@@ -444,6 +433,8 @@ pango_querymodules_LDADD += libpango-$(PANGO_API_VERSION).la $(GLIB_LIBS)
 
 EXTRA_DIST =					\
 	pango-enum-types.h			\
+	pango-enum-types.h.template		\
+	pango-enum-types.c.template		\
 	module-defs.h				\
 	module-defs.h.win32			\
 	module-defs-lang.c.win32		\
