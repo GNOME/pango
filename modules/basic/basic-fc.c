@@ -305,6 +305,7 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
   PangoFcHbContext context;
   PangoFcFont *fc_font;
   FT_Face ft_face;
+  hb_face_t *hb_face;
   hb_font_t *hb_font;
   hb_buffer_t *hb_buffer;
   hb_direction_t hb_direction;
@@ -330,7 +331,8 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
   context.fc_font = fc_font;
   context.vertical = PANGO_GRAVITY_IS_VERTICAL (analysis->gravity);
   context.improper_sign = PANGO_GRAVITY_IS_IMPROPER (analysis->gravity) ? -1 : +1;
-  hb_font = hb_font_create (hb_ft_face_create_cached (ft_face));
+  hb_face = hb_ft_face_create_cached (ft_face);
+  hb_font = hb_font_create (hb_face);
   hb_font_set_funcs (hb_font,
 		     pango_fc_get_hb_font_funcs (),
 		     &context,
@@ -409,6 +411,7 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 
   release_buffer (hb_buffer, free_buffer);
   hb_font_destroy (hb_font);
+  hb_face_destroy (hb_face);
   pango_fc_font_unlock_face (fc_font);
 }
 
