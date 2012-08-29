@@ -259,9 +259,7 @@ pango_fc_font_get_property (GObject       *object,
       {
 	PangoFcFont *fcfont = PANGO_FC_FONT (object);
 	PangoFontMap *fontmap = g_weak_ref_get ((GWeakRef *) &fcfont->fontmap);
-	g_value_set_object (value, fontmap);
-	if (fontmap)
-	  g_object_unref (fontmap);
+	g_value_take_object (value, fontmap);
       }
       break;
     default:
