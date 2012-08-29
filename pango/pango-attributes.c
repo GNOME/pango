@@ -70,10 +70,11 @@ PangoAttrType
 pango_attr_type_register (const gchar *name)
 {
   static guint current_type = 0x1000000; /* MT-safe */
+  guint type;
 
   G_LOCK (attr_type);
 
-  guint type = current_type++;
+  type = current_type++;
 
   if (name)
     {
