@@ -30,10 +30,6 @@
 #define PARAGRAPH_SEPARATOR 0x2029
 #define PARAGRAPH_SEPARATOR_STRING "\xE2\x80\xA9"
 
-#if (!GLIB_CHECK_VERSION (2,29,15))
-#define G_UNICODE_SPACING_MARK G_UNICODE_COMBINING_MARK
-#endif
-
 /* See http://www.unicode.org/unicode/reports/tr14/ if you hope
  * to understand the line breaking code.
  */
