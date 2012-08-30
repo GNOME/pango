@@ -1490,8 +1490,16 @@ struct _PangoCoreTextFontset
   GPtrArray *coverages;
 };
 
-typedef PangoFontsetClass PangoCoreTextFontsetClass;
+struct _PangoCoreTextFontsetClass
+{
+  PangoFontsetClass parent_instance;
+};
 
+typedef struct _PangoCoreTextFontsetClass PangoCoreTextFontsetClass;
+
+G_DEFINE_TYPE (PangoCoreTextFontset,
+               pango_core_text_fontset,
+               PANGO_TYPE_FONTSET);
 
 /* This symbol does exist in the CoreText library shipped with Snow
  * Leopard and Lion, however, it is not found in the public header files.
@@ -1744,6 +1752,3 @@ pango_core_text_fontset_foreach (PangoFontset *fontset,
     }
 }
 
-G_DEFINE_TYPE (PangoCoreTextFontset,
-               pango_core_text_fontset,
-               PANGO_TYPE_FONTSET);
