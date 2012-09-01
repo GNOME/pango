@@ -68,6 +68,7 @@ get_context_info (PangoContext *context,
   if (G_UNLIKELY (!context_info_quark))
     context_info_quark = g_quark_from_static_string ("pango-cairo-context-info");
 
+retry:
   info = g_object_get_qdata (G_OBJECT (context), context_info_quark);
 
   if (G_UNLIKELY (!info) && create)
@@ -75,8 +76,13 @@ get_context_info (PangoContext *context,
       info = g_slice_new0 (PangoCairoContextInfo);
       info->dpi = -1.0;
 
-      g_object_set_qdata_full (G_OBJECT (context), context_info_quark,
-			       info, (GDestroyNotify)free_context_info);
+      if (!g_object_replace_qdata (G_OBJECT (context), context_info_quark, NULL,
+                                   info, (GDestroyNotify)free_context_info,
+                                   NULL))
+        {
+          free_context_info (info);
+          goto retry;
+        }
     }
 
   return info;

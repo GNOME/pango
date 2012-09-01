@@ -594,15 +594,20 @@ get_shaper_font_cache (PangoFontset *fontset)
   if (G_UNLIKELY (!cache_quark))
     cache_quark = g_quark_from_static_string ("pango-shaper-font-cache");
 
+retry:
   cache = g_object_get_qdata (G_OBJECT (fontset), cache_quark);
-  if (!cache)
+  if (G_UNLIKELY (!cache))
     {
       cache = g_slice_new (ShaperFontCache);
       cache->hash = g_hash_table_new_full (g_direct_hash, NULL,
 					   NULL, (GDestroyNotify)shaper_font_element_destroy);
-
-      g_object_set_qdata_full (G_OBJECT (fontset), cache_quark,
-			       cache, (GDestroyNotify)shaper_font_cache_destroy);
+      if (!g_object_replace_qdata (G_OBJECT (fontset), cache_quark, NULL,
+                                   cache, (GDestroyNotify)shaper_font_cache_destroy,
+                                   NULL))
+        {
+          shaper_font_cache_destroy (cache);
+          goto retry;
+        }
     }
 
   return cache;
