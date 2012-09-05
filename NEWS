@@ -1,9 +1,16 @@
 Overview of changes between 1.31.0 and 1.31.1
 =============================================
 - The module cache file can now be located in libdir
-- 682421 - Fix vertical text, gravity, etc, with HarfBuzz
-- Deprecate pango-ot.h.
+- Initial work towards making pango thread-safe
 - Update to Unicode 6.1.
+- 682421 - Fix vertical text, gravity, etc, with HarfBuzz
+- 678721 - Don't need to get item properties...
+- 678997 - Colors aqua, silver and indigo missing...
+- 653347 - rise units documented incorrectly
+- 682952 - remove old glib check
+- Deprecate pango-ot.h.
+- Deprecate pango_fc_font_kern_glyphs
+- Deprecate pango_lookup_aliases
 
 Overview of changes between 1.30.1 and 1.31.0
 =============================================

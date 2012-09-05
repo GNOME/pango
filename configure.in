@@ -19,7 +19,7 @@ dnl so that we can base configure --help output off
 dnl of them.
 dnl
 
-dnl The triplet 
+dnl The triplet
 m4_define([pango_version_major], [1])
 m4_define([pango_version_minor], [31])
 m4_define([pango_version_micro], [1])
