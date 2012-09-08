@@ -332,6 +332,7 @@ libpangocairo_1_0_la_SOURCES += \
 	pangocairo-fc.h
 endif
 
+if HAVE_CAIRO_QUARTZ
 if HAVE_CORE_TEXT
 libpangocairo_1_0_la_SOURCES += \
 	modules.h		\
@@ -350,6 +351,7 @@ libpangocairo_1_0_la_LDFLAGS += -framework CoreFoundation -framework Application
 libpangocairo_1_0_la_LIBADD += $(INCLUDED_CORE_TEXT_MODULES)
 # We don't have an CoreText GIR right now, so this is just hypothetical
 # PANGOCAIRO_FONT_BACKEND_GI_MODULE = PangoCoreText-1.0
+endif
 endif
 
 pangocairo_introspection_files = \
