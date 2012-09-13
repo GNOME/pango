@@ -150,7 +150,10 @@ pango_introspection_files = \
 	    pango-enum-types.h
 Pango-1.0.gir: libpango-1.0.la
 
-Pango_1_0_gir_PACKAGES = gobject-2.0 cairo freetype2
+Pango_1_0_gir_PACKAGES = gobject-2.0 cairo glib-2.0
+if HAVE_CAIRO_FREETYPE
+Pango_1_0_gir_PACKAGES += freetype2
+endif
 Pango_1_0_gir_EXPORT_PACKAGES = pango
 Pango_1_0_gir_INCLUDES = GObject-2.0 cairo-1.0
 Pango_1_0_gir_LIBS = libpango-1.0.la
@@ -324,7 +327,7 @@ endif
 if HAVE_CAIRO_FREETYPE
 libpangocairo_1_0_la_LIBADD +=  libpangoft2-$(PANGO_API_VERSION).la $(FREETYPE_LIBS)
 libpangocairo_1_0_la_DEPENDENCIES += libpangoft2-$(PANGO_API_VERSION).la 
-PANGOCAIRO_FONT_BACKEND_GI_MODULE = PangoFT2-1.0
+PANGOCAIRO_FONT_BACKEND_GI_MODULE = PangoFT2-1.0.gir
 
 libpangocairo_1_0_la_SOURCES += \
 	pangocairo-fcfont.c	\
@@ -350,7 +353,7 @@ pangoinclude_HEADERS += pangocoretext.h
 libpangocairo_1_0_la_LDFLAGS += -framework CoreFoundation -framework ApplicationServices
 libpangocairo_1_0_la_LIBADD += $(INCLUDED_CORE_TEXT_MODULES)
 # We don't have an CoreText GIR right now, so this is just hypothetical
-# PANGOCAIRO_FONT_BACKEND_GI_MODULE = PangoCoreText-1.0
+# PANGOCAIRO_FONT_BACKEND_GI_MODULE = PangoCoreText-1.0.gir
 endif
 endif
 
@@ -359,14 +362,17 @@ pangocairo_introspection_files = \
     $(pangocairo_headers)
 
 PangoCairo-1.0.gir: libpangocairo-1.0.la
-PangoCairo-1.0.gir: Pango-1.0.gir $(PANGOCAIRO_FONT_BACKEND_GI_MODULE).gir
+PangoCairo-1.0.gir: Pango-1.0.gir $(PANGOCAIRO_FONT_BACKEND_GI_MODULE)
 
 PangoCairo_1_0_gir_PACKAGES = gobject-2.0 cairo
 PangoCairo_1_0_gir_EXPORT_PACKAGES = pangocairo
 PangoCairo_1_0_gir_INCLUDES = GObject-2.0 cairo-1.0
 PangoCairo_1_0_gir_LIBS = libpangocairo-1.0.la
 PangoCairo_1_0_gir_CFLAGS = -I$(top_builddir) -I$(top_srcdir) $(PANGO_CFLAGS)
-PangoCairo_1_0_gir_SCANNERFLAGS = --include-uninstalled=$(builddir)/Pango-1.0.gir --include-uninstalled=$(builddir)/$(PANGOCAIRO_FONT_BACKEND_GI_MODULE).gir --c-include "pango/pangocairo.h"
+PangoCairo_1_0_gir_SCANNERFLAGS = --include-uninstalled=$(builddir)/Pango-1.0.gir --c-include "pango/pangocairo.h"
+if HAVE_CAIRO_FREETYPE
+PangoCairo_1_0_gir_SCANNERFLAGS += --include-uninstalled=$(builddir)/$(PANGOCAIRO_FONT_BACKEND_GI_MODULE)
+endif
 PangoCairo_1_0_gir_FILES = $(filter-out %-private.h, $(addprefix $(srcdir)/,$(pangocairo_introspection_files)))
 
 # ------------------- libpangowin32 -------------------
