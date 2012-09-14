@@ -522,6 +522,7 @@ pango_scan_int (const char **pos, int *out)
 }
 
 static GHashTable *config_hash = NULL;
+static gboolean did_read_system_config = FALSE;
 static gboolean did_read_user_config = FALSE;
 
 static void
@@ -608,13 +609,18 @@ read_config_system (void)
 {
   char *filename;
 
-  ensure_config_hash ();
+  if (!did_read_system_config)
+    {
+      did_read_system_config = TRUE;
 
-  filename = g_build_filename (pango_get_sysconf_subdirectory (),
-			       "pangorc",
-			       NULL);
-  read_config_file (filename, FALSE, config_hash);
-  g_free (filename);
+      ensure_config_hash ();
+
+      filename = g_build_filename (pango_get_sysconf_subdirectory (),
+                                   "pangorc",
+			           NULL);
+      read_config_file (filename, FALSE, config_hash);
+      g_free (filename);
+    }
 }
 
 static void
