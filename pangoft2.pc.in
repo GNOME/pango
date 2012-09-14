@@ -7,5 +7,6 @@ Name: Pango FT2 and Pango Fc
 Description: Freetype 2.0 and fontconfig font support for Pango
 Version: @VERSION@
 Requires: pango freetype2 fontconfig
+Requires.private: harfbuzz
 Libs: -L${libdir} -lpangoft2-@PANGO_API_VERSION@
 Cflags: -I${includedir}/pango-1.0
