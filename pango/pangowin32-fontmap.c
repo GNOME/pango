@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <glib/gstdio.h>
 
 #include "pango-fontmap.h"
 #include "pango-impl-utils.h"
@@ -478,6 +479,7 @@ read_builtin_aliases (void)
 
   g_string_free (line_buffer, TRUE);
 }
+#endif
 
 
 static void
@@ -517,7 +519,7 @@ read_alias_file (const char *filename)
 }
 
 static void
-pango_load_aliases (void)
+load_aliases (void)
 {
   char *filename;
   const char *home;
