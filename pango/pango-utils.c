@@ -521,9 +521,6 @@ pango_scan_int (const char **pos, int *out)
   return TRUE;
 }
 
-static GHashTable *config_hash = NULL;
-static gboolean did_read_system_config = FALSE;
-static gboolean did_read_user_config = FALSE;
 
 static void
 read_config_file (const char *filename, gboolean enoent_error, GHashTable *ht)
@@ -595,54 +592,53 @@ read_config_file (const char *filename, gboolean enoent_error, GHashTable *ht)
   g_key_file_free(key_file);
 }
 
-static void
-ensure_config_hash (void)
-{
-  if (!config_hash)
-    config_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
-					 (GDestroyNotify)g_free,
-					 (GDestroyNotify)g_free);
-}
-
-static void
+static GHashTable *
 read_config_system (void)
 {
   char *filename;
+  GHashTable *config_hash;
 
-  if (!did_read_system_config)
-    {
-      did_read_system_config = TRUE;
+  config_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
+                                       (GDestroyNotify)g_free,
+                                       (GDestroyNotify)g_free);
 
-      ensure_config_hash ();
+  filename = g_build_filename (pango_get_sysconf_subdirectory (),
+                               "pangorc",
+			       NULL);
+  read_config_file (filename, FALSE, config_hash);
+  g_free (filename);
 
-      filename = g_build_filename (pango_get_sysconf_subdirectory (),
-                                   "pangorc",
-			           NULL);
-      read_config_file (filename, FALSE, config_hash);
-      g_free (filename);
-    }
+  return config_hash;
 }
 
-static void
+static GHashTable *
 read_config (void)
 {
-  char *filename;
-  const char *envvar;
+  static GHashTable *config_hash = NULL;
 
-  read_config_system ();
-
-  if (!did_read_user_config)
+  if (g_once_init_enter ((gsize*)&config_hash))
     {
-      did_read_user_config = TRUE;
+      GHashTable *tmp_hash;
+      char *filename;
+      const char *envvar;
 
-      filename = g_build_filename (g_get_user_config_dir (), "pango", "pangorc", NULL);
-      read_config_file (filename, FALSE, config_hash);
+      tmp_hash = read_config_system ();
+
+      filename = g_build_filename (g_get_user_config_dir (),
+                                   "pango",
+                                   "pangorc",
+                                   NULL);
+      read_config_file (filename, FALSE, tmp_hash);
       g_free (filename);
 
       envvar = g_getenv ("PANGO_RC_FILE");
       if (envvar)
-        read_config_file (envvar, TRUE, config_hash);
+        read_config_file (envvar, TRUE, tmp_hash);
+
+      g_once_init_leave ((gsize*)&config_hash, (gsize)tmp_hash);
     }
+
+  return config_hash;
 }
 
 /**
@@ -658,11 +654,16 @@ read_config (void)
 char *
 pango_config_key_get_system (const char *key)
 {
+  GHashTable *config_hash;
+  gchar *ret;
+
   g_return_val_if_fail (key != NULL, NULL);
 
-  read_config_system ();
+  config_hash = read_config_system ();
+  ret = g_strdup (g_hash_table_lookup (config_hash, key));
+  g_hash_table_unref (config_hash);
 
-  return g_strdup (g_hash_table_lookup (config_hash, key));
+  return ret;
 }
 
 /**
@@ -679,9 +680,11 @@ pango_config_key_get_system (const char *key)
 char *
 pango_config_key_get (const char *key)
 {
+  GHashTable *config_hash;
+
   g_return_val_if_fail (key != NULL, NULL);
 
-  read_config ();
+  config_hash = read_config ();
 
   return g_strdup (g_hash_table_lookup (config_hash, key));
 }
