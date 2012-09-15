@@ -88,7 +88,9 @@ struct _PangoModuleClass
   GTypeModuleClass parent_class;
 };
 
+G_LOCK_DEFINE_STATIC (maps);
 static GList *maps = NULL;
+/* the following are readonly after init_modules */
 static GSList *registered_engines = NULL;
 static GSList *dlloaded_engines = NULL;
 static GHashTable *dlloaded_modules;
@@ -131,10 +133,13 @@ pango_find_map (PangoLanguage *language,
 		guint          engine_type_id,
 		guint          render_type_id)
 {
-  GList *tmp_list = maps;
+  GList *tmp_list;
   PangoMapInfo *map_info = NULL;
   gboolean found_earlier = FALSE;
 
+  G_LOCK (maps);
+
+  tmp_list = maps;
   while (tmp_list)
     {
       map_info = tmp_list->data;
@@ -172,6 +177,8 @@ pango_find_map (PangoLanguage *language,
       maps = g_list_prepend(maps, tmp_list->data);
       g_list_free_1(tmp_list);
     }
+
+  G_UNLOCK (maps);
 
   return map_info->map;
 }
@@ -278,10 +285,13 @@ pango_module_class_init (PangoModuleClass *class)
   gobject_class->finalize = pango_module_finalize;
 }
 
+G_LOCK_DEFINE_STATIC (engine);
 
 static PangoEngine *
 pango_engine_pair_get_engine (PangoEnginePair *pair)
 {
+  G_LOCK (engine);
+
   if (!pair->engine)
     {
       if (g_type_module_use (G_TYPE_MODULE (pair->module)))
@@ -302,6 +312,8 @@ pango_engine_pair_get_engine (PangoEnginePair *pair)
 	    }
 	}
     }
+
+  G_UNLOCK (engine);
 
   return pair->engine;
 }
@@ -573,20 +585,20 @@ read_modules (void)
 static void
 init_modules (void)
 {
-  static gboolean init = FALSE;
+  static gsize init = 0;
   int i;
 
-  if (init)
-    return;
-  else
-    init = TRUE;
+  if (g_once_init_enter (&init))
+    {
+      /* Make sure that the type system is initialized */
+      g_type_init ();
 
-  /* Make sure that the type system is initialized */
-  g_type_init ();
+      for (i = 0; _pango_included_lang_modules[i].list; i++)
+        pango_module_register (&_pango_included_lang_modules[i]);
+      read_modules ();
 
-  for (i = 0; _pango_included_lang_modules[i].list; i++)
-    pango_module_register (&_pango_included_lang_modules[i]);
-  read_modules ();
+      g_once_init_leave (&init, 1);
+    }
 }
 
 static void
