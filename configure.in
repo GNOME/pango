@@ -257,13 +257,16 @@ AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype)
 # Checks for Xft/XRender
 #
 have_xft=false
+AC_ARG_WITH(xft,
+  AS_HELP_STRING([--with-xft], [build xft backend]),
+  [], [with_xft=yes])
 if $have_freetype ; then
-  PKG_CHECK_MODULES(XFT, xft >= 2.0.0 xrender, have_xft=true, AC_MSG_RESULT([no]))
+  PKG_CHECK_MODULES(XFT, xft >= 2.0.0 xrender, have_xft=true, have_xft=false)
 fi
-if $have_xft ; then
+if test "x$with_xft" = xyes && $have_xft ; then
   AC_DEFINE(HAVE_XFT, 1, [Have Xft library])
 fi
-AM_CONDITIONAL(HAVE_XFT, $have_xft)
+AM_CONDITIONAL(HAVE_XFT, test "x$with_xft" = xyes && $have_xft )
 
 #
 # Checks for Win32 GDI
@@ -442,7 +445,7 @@ AM_CONDITIONAL(HAVE_CAIRO_QUARTZ, $have_cairo_quartz)
 # a new Pango backend outside of Pango, you are up to sending the necessary
 # patch to fix that rule. :-)
 #
-if $have_freetype || $have_xft || $have_cairo || $have_win32 ; then : ; else
+if $have_freetype || `test "x$with_xft" = xyes && $have_xft` || $have_cairo || $have_win32 ; then : ; else
   AC_MSG_ERROR([*** Could not enable any backends.
 *** Must have at least one backend to build Pango.])
 fi
@@ -938,7 +941,7 @@ AC_OUTPUT
 backends=""
 if $have_cairo ; then backends="$backends Cairo"; fi
 if $have_win32 ; then backends="$backends Win32"; fi
-if $have_xft ; then backends="$backends Xft"; fi
+if test "x$with_xft" = xyes && $have_xft ; then backends="$backends Xft"; fi
 if $have_freetype && $have_fontconfig ; then backends="$backends FreeType"; fi
 
 echo "configuration:
