@@ -128,6 +128,13 @@ void pango_shape (const gchar      *text,
 		  const PangoAnalysis *analysis,
 		  PangoGlyphString *glyphs);
 
+void pango_shape_full (const gchar      *item_text,
+		       gint              item_length,
+		       const gchar      *paragraph_text,
+		       gint              paragraph_length,
+		       const PangoAnalysis *analysis,
+		       PangoGlyphString *glyphs);
+
 GList *pango_reorder_items (GList *logical_items);
 
 G_END_DECLS

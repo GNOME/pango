@@ -3181,7 +3181,9 @@ shape_run (PangoLayoutLine *line,
 			    state->properties.shape_ink_rect, state->properties.shape_logical_rect,
 			    glyphs);
       else
-	pango_shape (layout->text + item->offset, item->length, &item->analysis, glyphs);
+	pango_shape_full (layout->text + item->offset, item->length,
+			  layout->text, layout->length,
+			  &item->analysis, glyphs);
 
       if (state->properties.letter_spacing)
 	{

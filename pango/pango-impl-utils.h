@@ -36,7 +36,7 @@ G_BEGIN_DECLS
 
 /* Some functions for handling PANGO_ATTR_SHAPE */
 void _pango_shape_shape (const char       *text,
-			 gint              n_chars,
+			 unsigned int      n_chars,
 			 PangoRectangle   *shape_ink,
 			 PangoRectangle   *shape_logical,
 			 PangoGlyphString *glyphs);

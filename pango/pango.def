@@ -369,6 +369,7 @@ EXPORTS
 	pango_script_iter_new
 	pango_script_iter_next
 	pango_shape
+	pango_shape_full
 	pango_skip_space
 	pango_split_file_list
 	pango_stretch_get_type

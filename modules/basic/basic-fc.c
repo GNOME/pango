@@ -295,12 +295,14 @@ pango_fc_get_hb_font_funcs (void)
 
 
 static void
-basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
-		    PangoFont        *font,
-		    const char       *text,
-		    gint              length,
+basic_engine_shape (PangoEngineShape    *engine G_GNUC_UNUSED,
+		    PangoFont           *font,
+		    const char          *item_text,
+		    unsigned int         item_length,
 		    const PangoAnalysis *analysis,
-		    PangoGlyphString *glyphs)
+		    PangoGlyphString    *glyphs,
+		    const char          *paragraph_text,
+		    unsigned int         paragraph_length)
 {
   PangoFcHbContext context;
   PangoFcFont *fc_font;
@@ -317,8 +319,6 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
   guint i, num_glyphs;
 
   g_return_if_fail (font != NULL);
-  g_return_if_fail (text != NULL);
-  g_return_if_fail (length >= 0);
   g_return_if_fail (analysis != NULL);
 
   fc_font = PANGO_FC_FONT (font);
@@ -362,7 +362,7 @@ basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
   hb_buffer_set_script (hb_buffer, hb_glib_script_to_script (analysis->script));
   hb_buffer_set_language (hb_buffer, hb_language_from_string (pango_language_to_string (analysis->language), -1));
 
-  hb_buffer_add_utf8 (hb_buffer, text, length, 0, length);
+  hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_text - paragraph_text, item_length);
   hb_shape (hb_font, hb_buffer, NULL, 0);
 
   if (PANGO_GRAVITY_IS_IMPROPER (analysis->gravity))

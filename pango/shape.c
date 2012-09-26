@@ -38,6 +38,10 @@
  * #PangoAnalysis structure returned from pango_itemize(),
  * convert the characters into glyphs. You may also pass
  * in only a substring of the item from pango_itemize().
+ *
+ * It is recommended that you use pango_shape_full() instead, since
+ * that API allows for shaping interaction happening across text item
+ * boundaries.
  */
 void
 pango_shape (const gchar      *text,
@@ -45,15 +49,64 @@ pango_shape (const gchar      *text,
 	     const PangoAnalysis *analysis,
 	     PangoGlyphString *glyphs)
 {
+  pango_shape_full (text, length, text, length, analysis, glyphs);
+}
+
+/**
+ * pango_shape_full:
+ * @item_text:        valid UTF-8 text to shape.
+ * @item_length:      the length (in bytes) of @item_text. -1 means nul-terminated text.
+ * @paragraph_text: (allow-none)  text of the paragraph (see details).  May be %NULL.
+ * @paragraph_length: the length (in bytes) of @paragraph_text. -1 means nul-terminated text.
+ * @analysis:  #PangoAnalysis structure from pango_itemize().
+ * @glyphs:    glyph string in which to store results.
+ *
+ * Given a segment of text and the corresponding
+ * #PangoAnalysis structure returned from pango_itemize(),
+ * convert the characters into glyphs. You may also pass
+ * in only a substring of the item from pango_itemize().
+ *
+ * This is similar to pango_shape(), except it also can optionally take
+ * the full paragraph text as input, which will then be used to perform
+ * certain cross-item shaping interactions.  If you have access to the broader
+ * text of which @item_text is part of, provide the broader text as
+ * @paragraph_text.  If @paragraph_text is %NULL, item text is used instead.
+ *
+ * Since: 1.32
+ */
+void
+pango_shape_full (const gchar      *item_text,
+		  gint              item_length,
+		  const gchar      *paragraph_text,
+		  gint              paragraph_length,
+		  const PangoAnalysis *analysis,
+		  PangoGlyphString *glyphs)
+{
   int i;
   int last_cluster;
 
   glyphs->num_glyphs = 0;
 
+  if (item_length == -1)
+    item_length = strlen (item_text);
+
+  if (!paragraph_text)
+    {
+      paragraph_text = item_text;
+      paragraph_length = item_length;
+    }
+  if (paragraph_length == -1)
+    paragraph_length = strlen (paragraph_text);
+
+  g_return_if_fail (paragraph_text <= item_text);
+  g_return_if_fail (paragraph_text + paragraph_length >= item_text + item_length);
+
   if (G_LIKELY (analysis->shape_engine && analysis->font))
     {
       _pango_engine_shape_shape (analysis->shape_engine, analysis->font,
-				 text, length, analysis, glyphs);
+				 item_text, item_length,
+				 paragraph_text, paragraph_length,
+				 analysis, glyphs);
 
       if (G_UNLIKELY (glyphs->num_glyphs == 0))
 	{
@@ -90,9 +143,7 @@ pango_shape (const gchar      *text,
 		    engine_name = "(unknown)";
 
 		  g_warning ("shaping failure, expect ugly output. shape-engine='%s', font='%s', text='%.*s'",
-			     engine_name,
-			     font_name,
-			     length == -1 ? (gint) strlen (text) : length, text);
+			     engine_name, font_name, item_length, item_text);
 
 		  g_object_set_data_full (G_OBJECT (analysis->shape_engine), font_name,
 					  GINT_TO_POINTER (1), NULL);
@@ -113,7 +164,9 @@ pango_shape (const gchar      *text,
       PangoEngineShape *fallback_engine = _pango_get_fallback_shaper ();
 
       _pango_engine_shape_shape (fallback_engine, analysis->font,
-				 text, length, analysis, glyphs);
+				 item_text, item_length,
+				 paragraph_text, paragraph_length,
+				 analysis, glyphs);
       if (G_UNLIKELY (!glyphs->num_glyphs))
         return;
     }

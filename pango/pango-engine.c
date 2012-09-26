@@ -82,20 +82,25 @@ pango_engine_shape_class_init (PangoEngineShapeClass *class)
 }
 
 void
-_pango_engine_shape_shape (PangoEngineShape *engine,
-			   PangoFont        *font,
-			   const char       *text,
-			   int               length,
+_pango_engine_shape_shape (PangoEngineShape    *engine,
+			   PangoFont           *font,
+			   const char          *item_text,
+			   unsigned int         item_length,
+			   const char          *paragraph_text,
+			   unsigned int         paragraph_len,
 			   const PangoAnalysis *analysis,
-			   PangoGlyphString *glyphs)
+			   PangoGlyphString    *glyphs)
 {
   glyphs->num_glyphs = 0;
 
   PANGO_ENGINE_SHAPE_GET_CLASS (engine)->script_shape (engine,
 						       font,
-						       text, length,
+						       item_text,
+						       item_length,
 						       analysis,
-						       glyphs);
+						       glyphs,
+						       paragraph_text,
+						       paragraph_len);
 }
 
 PangoCoverageLevel

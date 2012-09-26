@@ -1646,6 +1646,7 @@ static void
 update_metrics_from_items (PangoFontMetrics *metrics,
 			   PangoLanguage    *language,
 			   const char       *text,
+			   unsigned int      text_len,
 			   GList            *items)
 
 {
@@ -1671,7 +1672,9 @@ update_metrics_from_items (PangoFontMetrics *metrics,
 	  pango_font_metrics_unref (raw_metrics);
 	}
 
-      pango_shape (text + item->offset, item->length, &item->analysis, glyphs);
+      pango_shape_full (text + item->offset, item->length,
+			text, text_len,
+			&item->analysis, glyphs);
       metrics->approximate_char_width += pango_glyph_string_get_width (glyphs);
     }
 
@@ -1716,6 +1719,7 @@ pango_context_get_metrics (PangoContext                 *context,
   PangoFontset *current_fonts = NULL;
   PangoFontMetrics *metrics;
   const char *sample_str;
+  unsigned int text_len;
   GList *items;
 
   g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
@@ -1730,9 +1734,10 @@ pango_context_get_metrics (PangoContext                 *context,
   metrics = get_base_metrics (current_fonts);
 
   sample_str = pango_language_get_sample_string (language);
-  items = itemize_with_font (context, sample_str, 0, strlen (sample_str), desc);
+  text_len = strlen (sample_str);
+  items = itemize_with_font (context, sample_str, 0, text_len, desc);
 
-  update_metrics_from_items (metrics, language, sample_str, items);
+  update_metrics_from_items (metrics, language, sample_str, text_len, items);
 
   g_list_foreach (items, (GFunc)pango_item_free, NULL);
   g_list_free (items);

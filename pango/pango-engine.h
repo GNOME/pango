@@ -186,12 +186,14 @@ struct _PangoEngineShapeClass
   PangoEngineClass parent_class;
 
   /*< public >*/
-  void (*script_shape) (PangoEngineShape *engine,
-			PangoFont        *font,
-			const char       *text,
-			int               length,
+  void (*script_shape) (PangoEngineShape    *engine,
+			PangoFont           *font,
+			const char          *item_text,
+			unsigned int         item_length,
 			const PangoAnalysis *analysis,
-			PangoGlyphString *glyphs);
+			PangoGlyphString    *glyphs,
+			const char          *paragraph_text,
+			unsigned int         paragraph_length);
   PangoCoverageLevel (*covers)   (PangoEngineShape *engine,
 				  PangoFont        *font,
 				  PangoLanguage    *language,

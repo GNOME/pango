@@ -53,6 +53,7 @@ pango_default_break
 PangoLogAttr
 <SUBSECTION>
 pango_shape
+pango_shape_full
 
 <SUBSECTION Private>
 pango_context_get_type
