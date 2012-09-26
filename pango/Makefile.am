@@ -132,14 +132,16 @@ s-enum-types-h: $(pango_headers) Makefile.am pango-enum-types.h.template
 	$(AM_V_GEN) ( cd $(srcdir) && $(GLIB_MKENUMS) \
 			 --template pango-enum-types.h.template \
 			$(pango_headers) ) > pango-enum-types.h.tmp \
-			&& mv pango-enum-types.h.tmp pango-enum-types.h
+			&& mv pango-enum-types.h.tmp pango-enum-types.h \
+			&& echo timestamp > $@
 
 pango-enum-types.c: s-enum-types-c
 s-enum-types-c: $(pango_headers) Makefile.am pango-enum-types.c.template
 	$(AM_V_GEN) ( cd $(srcdir) && $(GLIB_MKENUMS) \
 			 --template pango-enum-types.c.template \
 			$(pango_headers) ) > pango-enum-types.c.tmp \
-			&& mv pango-enum-types.c.tmp pango-enum-types.c
+			&& mv pango-enum-types.c.tmp pango-enum-types.c \
+			&& echo timestamp > $@
 
 pango-features.h:
 	$(AM_V_GEN) cd $(top_builddir) && ./config.status pango/pango-features.h
