@@ -448,3 +448,14 @@ about the attributes of a single character.
 @glyphs: 
 
 
+<!-- ##### FUNCTION pango_shape_full ##### -->
+<para>
+
+</para>
+
+@item_text:
+@item_length:
+@paragraph_text:
+@paragraph_length:
+@analysis:
+@glyphs:
