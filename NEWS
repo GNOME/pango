@@ -1,3 +1,8 @@
+Overview of changes between 1.31.2 and 1.32.0
+=============================================
+- Add a --without-xfg configure option
+- Add pango_shape_full()
+
 Overview of changes between 1.31.1 and 1.31.2
 =============================================
 - More work on towards thread-safety
