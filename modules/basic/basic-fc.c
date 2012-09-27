@@ -317,6 +317,7 @@ basic_engine_shape (PangoEngineShape    *engine G_GNUC_UNUSED,
   hb_glyph_position_t *hb_position;
   int last_cluster;
   guint i, num_glyphs;
+  unsigned int item_offset = item_text - paragraph_text;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (analysis != NULL);
@@ -362,7 +363,7 @@ basic_engine_shape (PangoEngineShape    *engine G_GNUC_UNUSED,
   hb_buffer_set_script (hb_buffer, hb_glib_script_to_script (analysis->script));
   hb_buffer_set_language (hb_buffer, hb_language_from_string (pango_language_to_string (analysis->language), -1));
 
-  hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_text - paragraph_text, item_length);
+  hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_offset, item_length);
   hb_shape (hb_font, hb_buffer, NULL, 0);
 
   if (PANGO_GRAVITY_IS_IMPROPER (analysis->gravity))
@@ -376,7 +377,7 @@ basic_engine_shape (PangoEngineShape    *engine G_GNUC_UNUSED,
   for (i = 0; i < num_glyphs; i++)
     {
       glyphs->glyphs[i].glyph = hb_glyph->codepoint;
-      glyphs->log_clusters[i] = hb_glyph->cluster;
+      glyphs->log_clusters[i] = hb_glyph->cluster - item_offset;
       glyphs->glyphs[i].attr.is_cluster_start = glyphs->log_clusters[i] != last_cluster;
       hb_glyph++;
       last_cluster = glyphs->log_clusters[i];
