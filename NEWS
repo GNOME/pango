@@ -1,3 +1,8 @@
+Overview of changes between 1.32.0 and 1.32.1
+=============================================
+- Fixup grapheme clusters
+- 684959 - crash after "Add pango_shape_full()"
+
 Overview of changes between 1.31.2 and 1.32.0
 =============================================
 - Add a --without-xfg configure option
