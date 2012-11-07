@@ -276,6 +276,8 @@ render_callback (PangoLayout *layout,
   pango_cairo_show_layout (cr, layout);
 
   cairo_restore (cr);
+
+  cairo_surface_flush (cairo_get_target (cr));
 }
 
 static void
