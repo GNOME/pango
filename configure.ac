@@ -454,7 +454,7 @@ fi
 # Checks for GLib
 #
 GLIB_REQUIRED_VERSION=2.33.12
-GLIB_MODULES="glib-2.0 >= $GLIB_REQUIRED_VERSION gobject-2.0 gmodule-no-export-2.0"
+GLIB_MODULES="glib-2.0 >= $GLIB_REQUIRED_VERSION gobject-2.0 gmodule-no-export-2.0 gthread-2.0"
 
 PKG_CHECK_MODULES(GLIB, $GLIB_MODULES, :,
   AC_MSG_ERROR([
@@ -464,11 +464,6 @@ PKG_CHECK_MODULES(GLIB, $GLIB_MODULES, :,
 # Setup GLIB_MKENUMS to use glib-mkenums even if GLib is uninstalled.
 GLIB_MKENUMS=`$PKG_CONFIG --variable=glib_mkenums glib-2.0`
 AC_SUBST(GLIB_MKENUMS)
-
-
-# Add in gthread-2.0 to CFLAGS but not to LIBS so we get any
-# necesary defines for thread-safety.
-GLIB_CFLAGS=`$PKG_CONFIG --cflags $GLIB_MODULES gthread-2.0`
 
 #
 # Checks for LibThai

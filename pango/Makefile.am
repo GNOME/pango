@@ -89,7 +89,7 @@ libpango_1_0_la_SOURCES =			\
 	pango-renderer.c			\
 	pango-script.c				\
 	pango-script-lang-table.h		\
-	pango-script-private.h				\
+	pango-script-private.h			\
 	pango-tabs.c				\
 	pango-utils.c				\
 	reorder-items.c				\
