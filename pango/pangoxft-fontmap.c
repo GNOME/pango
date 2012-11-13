@@ -143,8 +143,9 @@ close_display_cb (Display   *display,
   GSList *tmp_list;
 
   G_LOCK (fontmaps);
+  tmp_list = g_slist_copy (fontmaps);
+  G_UNLOCK (fontmaps);
 
-  tmp_list = fontmaps;
   while (tmp_list)
     {
       PangoXftFontMap *xftfontmap = tmp_list->data;
@@ -154,9 +155,9 @@ close_display_cb (Display   *display,
 	pango_xft_shutdown_display (display, xftfontmap->screen);
     }
 
-  registered_displays = g_slist_remove (registered_displays, display);
+  g_slist_free (tmp_list);
 
-  G_UNLOCK (fontmaps);
+  registered_displays = g_slist_remove (registered_displays, display);
 
   return 0;
 }
