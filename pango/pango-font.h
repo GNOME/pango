@@ -374,10 +374,12 @@ struct _PangoFontClass
 #define PANGO_UNKNOWN_GLYPH_HEIGHT 14
 
 #endif /* PANGO_ENABLE_BACKEND */
-
-#define PANGO_GLYPH_EMPTY           ((PangoGlyph)0x0FFFFFFF)
-#define PANGO_GLYPH_INVALID_INPUT   ((PangoGlyph)0xFFFFFFFF)
-#define PANGO_GLYPH_UNKNOWN_FLAG    ((PangoGlyph)0x10000000)
+enum
+{
+  PANGO_GLYPH_EMPTY =           ((PangoGlyph)0x0FFFFFFF),
+  PANGO_GLYPH_INVALID_INPUT =   ((PangoGlyph)0xFFFFFFFF),
+  PANGO_GLYPH_UNKNOWN_FLAG =    ((PangoGlyph)0x10000000),
+};
 #define PANGO_GET_UNKNOWN_GLYPH(wc) ((PangoGlyph)(wc)|PANGO_GLYPH_UNKNOWN_FLAG)
 
 
