@@ -1,3 +1,11 @@
+Overview of changes between 1.32.1 and 1.32.2
+=============================================
+- 685021 - Fix load_fontset() for Win32 backend
+- pango-viewer: Flush cairo surface when done
+- 687470 - Xft: Fix a deadlock on display close
+- Add missing colors from the web palette
+- Rename configure.in to configure.ac
+
 Overview of changes between 1.32.0 and 1.32.1
 =============================================
 - Fixup grapheme clusters
