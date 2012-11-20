@@ -1,3 +1,9 @@
+Overview of changes between 1.32.2 and 1.32.3
+=============================================
+- make gobject-introspection PANGO_GLYPH happy
+- provide a phony define for LANGUAGE
+- adjust to harfbuzz 0.97 api
+
 Overview of changes between 1.32.1 and 1.32.2
 =============================================
 - 685021 - Fix load_fontset() for Win32 backend
