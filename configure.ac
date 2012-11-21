@@ -225,7 +225,7 @@ AM_CONDITIONAL(CROSS_COMPILING, [test $cross_compiling = yes])
 # Checks for HarfBuzz
 #
 have_harfbuzz=false
-PKG_CHECK_MODULES(HARFBUZZ, harfbuzz >= 0.9.3, have_harfbuzz=true, AC_MSG_RESULT([no]))
+PKG_CHECK_MODULES(HARFBUZZ, harfbuzz >= 0.9.7, have_harfbuzz=true, AC_MSG_RESULT([no]))
 AM_CONDITIONAL(HAVE_HARFBUZZ, $have_harfbuzz)
 
 #
