@@ -128,7 +128,7 @@ _pango_cairo_renderer_draw_frame (PangoCairoRenderer *crenderer,
 	  alpha = G_PI_2 - alpha;
 	  tan_alpha2 = tan (alpha * .5);
 	  if (tan_alpha2 < 1e-5 || (sy = d2 / tan_alpha2, 2. * sy > height - d))
-	    sy = (width - d) * .5;
+	    sy = (height - d) * .5;
 
 	  cos_alpha = cos (alpha);
 	  if (cos_alpha < 1e-5 || (sx = d2 / cos_alpha, 2. * sx > width - d))
