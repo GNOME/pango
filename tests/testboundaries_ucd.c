@@ -244,6 +244,7 @@ do_test (gchar *filename,
 	  exit (1);
 	}
     }
+  g_print ("Testing %s.\n", filename);
 
   i = 1;
   for (;;)
