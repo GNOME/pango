@@ -933,9 +933,6 @@ pango-zip.sh
 config.h.win32
 ])
 
-AC_CONFIG_FILES([tests/runtests.sh],
-	        [chmod +x tests/runtests.sh])
-
 AC_OUTPUT
 
 backends=""

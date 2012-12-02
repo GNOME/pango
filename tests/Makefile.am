@@ -1,12 +1,10 @@
 ## Process this file with automake to create Makefile.in.
 
 EXTRA_DIST = 			\
-	all-unicode.txt		\
-	boundaries.utf8		\
-	runtests.sh
+	boundaries.utf8
 
 CLEANFILES = pangorc
-DISTCLEANFILES = all-unicode.txt runtests.log
+DISTCLEANFILES = all-unicode.txt
 
 INCLUDES =					\
 	-I$(top_srcdir)				\
@@ -34,7 +32,7 @@ endif
 if CROSS_COMPILING
 TESTS=
 else
-TESTS=runtests.sh
+TESTS=$(check_PROGRAMS)
 endif
 
 TESTS_ENVIRONMENT =                    \
