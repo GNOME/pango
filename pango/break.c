@@ -752,7 +752,7 @@ pango_default_break (const gchar   *text,
 		case 0xFF:
 		  if (wc == 0xFF70)
 		    WB_type = WB_Katakana; /* Katakana exceptions */
-		  else if (wc >= 0xFF9E || wc <= 0xFF9F)
+		  else if (wc >= 0xFF9E && wc <= 0xFF9F)
 		    WB_type = WB_ExtendFormat; /* Other_Grapheme_Extend */
 		  break;
 		case 0x05:
