@@ -41,8 +41,6 @@ TESTS_ENVIRONMENT =                    \
    srcdir=$(srcdir)                    \
    PANGO_RC_FILE=./pangorc
 
-noinst_PROGRAMS = gen-all-unicode dump-boundaries
-
 check_PROGRAMS = testboundaries testboundaries_ucd testcolor testscript
 
 if HAVE_CAIRO
@@ -77,5 +75,7 @@ pangorc: $(srcdir)/../modules/pangorc
 	cp $(srcdir)/../modules/pangorc $@
 
 $(noinst_PROGRAMS) $(check_PROGRAMS): pangorc
+
+noinst_PROGRAMS = $(check_PROGRAMS) gen-all-unicode dump-boundaries
 
 -include $(top_srcdir)/git.mk
