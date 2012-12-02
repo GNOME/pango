@@ -1,7 +1,8 @@
 ## Process this file with automake to create Makefile.in.
 
 EXTRA_DIST = 			\
-	boundaries.utf8
+	boundaries.utf8		\
+	GraphemeBreakTest.txt
 
 CLEANFILES = pangorc
 DISTCLEANFILES = all-unicode.txt
