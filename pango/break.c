@@ -665,8 +665,18 @@ pango_default_break (const gchar   *text,
 	  case G_UNICODE_CONTROL:
 	  case G_UNICODE_LINE_SEPARATOR:
 	  case G_UNICODE_PARAGRAPH_SEPARATOR:
+	  case G_UNICODE_SURROGATE:
 	    GB_type = GB_ControlCRLF;
 	    break;
+
+	  case G_UNICODE_UNASSIGNED:
+	    /* Unassigned default ignorables */
+	    if ((wc >= 0xFFF0 && wc <= 0xFFF8) ||
+		(wc >= 0xE0000 && wc <= 0xE0FFF))
+	      {
+		GB_type = GB_ControlCRLF;
+		break;
+	      }
 
 	  case G_UNICODE_OTHER_LETTER:
 	    if (makes_hangul_syllable)
