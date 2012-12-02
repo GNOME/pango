@@ -656,7 +656,7 @@ pango_default_break (const gchar   *text,
 	switch ((int) type)
 	  {
 	  case G_UNICODE_FORMAT:
-	    if (wc == 0x200C && wc == 0x200D)
+	    if (wc == 0x200C || wc == 0x200D)
 	      {
 		GB_type = GB_Extend; /* U+200C and U+200D are Other_Grapheme_Extend */
 		break;
