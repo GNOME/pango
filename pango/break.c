@@ -671,15 +671,6 @@ pango_default_break (const gchar   *text,
 	  case G_UNICODE_OTHER_LETTER:
 	    if (makes_hangul_syllable)
 	      GB_type = GB_InHangulSyllable;
-	    else if ((wc & 0x0E00) == 0x0E00)
-	      {
-	        /* Thai and Lao stuff hardcoded in UAX#29 */
-		if ((wc >= 0x0E40 && wc <= 0x0E44) || (wc >= 0x0EC0 && wc <= 0x0EC4))
-		  GB_type = GB_Prepend; /* Prepend */
-		else if (wc == 0x0E30 || wc == 0x0E32 || wc == 0x0E33 || wc == 0x0E45 ||
-			 wc == 0x0EB0 || wc == 0x0EB2 || wc == 0x0EB3)
-		  GB_type = GB_Extend; /* Exceptions in the Extend definition */
-	      }
 	    break;
 
 	  case G_UNICODE_MODIFIER_LETTER:
