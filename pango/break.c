@@ -986,7 +986,8 @@ pango_default_break (const gchar   *text,
 	      break;
 
 	    case G_UNICODE_BREAK_SURROGATE:
-	      g_assert_not_reached ();
+	      /* Undefined according to UTR#14, but ALLOWED in test data. */
+	      break_op = BREAK_ALLOWED;
 	      break;
 
 	    default:
@@ -1022,7 +1023,8 @@ pango_default_break (const gchar   *text,
 		  break;
 
 		case G_UNICODE_BREAK_SURROGATE:
-		  g_assert_not_reached ();
+		  /* Undefined according to UTR#14, but ALLOWED in test data. */
+		  break_op = BREAK_ALLOWED;
 		  break;
 
 		/* Hangul additions are from Unicode 4.1 UAX#14 */
