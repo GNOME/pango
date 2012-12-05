@@ -37,6 +37,7 @@ struct _PangoCairoFcFontMap
 {
   PangoFcFontMap parent_instance;
 
+  guint serial;
   double dpi;
 
   FT_Library library;

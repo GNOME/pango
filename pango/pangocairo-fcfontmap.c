@@ -33,15 +33,29 @@ struct _PangoCairoFcFontMapClass
   PangoFcFontMapClass parent_class;
 };
 
+static guint
+pango_cairo_fc_font_map_get_serial (PangoFontMap *fontmap)
+{
+  PangoCairoFcFontMap *cffontmap = (PangoCairoFcFontMap *) (fontmap);
+
+  return cffontmap->serial;
+}
+
 static void
 pango_cairo_fc_font_map_set_resolution (PangoCairoFontMap *cfontmap,
 					double             dpi)
 {
   PangoCairoFcFontMap *cffontmap = (PangoCairoFcFontMap *) (cfontmap);
 
-  cffontmap->dpi = dpi;
+  if (dpi != cffontmap->dpi)
+    {
+      cffontmap->serial++;
+      if (cffontmap->serial == 0)
+	cffontmap->serial++;
+      cffontmap->dpi = dpi;
 
-  pango_fc_font_map_cache_clear ((PangoFcFontMap *) (cfontmap));
+      pango_fc_font_map_cache_clear ((PangoFcFontMap *) (cfontmap));
+    }
 }
 
 static double
@@ -162,9 +176,12 @@ static void
 pango_cairo_fc_font_map_class_init (PangoCairoFcFontMapClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  PangoFontMapClass *fontmap_class = PANGO_FONT_MAP_CLASS (class);
   PangoFcFontMapClass *fcfontmap_class = PANGO_FC_FONT_MAP_CLASS (class);
 
   gobject_class->finalize  = pango_cairo_fc_font_map_finalize;
+
+  fontmap_class->get_serial = pango_cairo_fc_font_map_get_serial;
 
   fcfontmap_class->fontset_key_substitute = pango_cairo_fc_font_map_fontset_key_substitute;
   fcfontmap_class->get_resolution = pango_cairo_fc_font_map_get_resolution_fc;
@@ -188,6 +205,7 @@ pango_cairo_fc_font_map_init (PangoCairoFcFontMap *cffontmap)
   if (error != FT_Err_Ok)
     g_critical ("pango_cairo_font_map_init: Could not initialize freetype");
 
+  cffontmap->serial = 1;
   cffontmap->dpi   = 96.0;
 }
 

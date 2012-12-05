@@ -33,12 +33,23 @@ struct _PangoCairoWin32FontMapClass
   PangoWin32FontMapClass parent_class;
 };
 
+static guint
+pango_cairo_win32_font_map_get_serial (PangoFontMap *fontmap)
+{
+  PangoCairoWin32FontMap *cwfontmap = PANGO_CAIRO_WIN32_FONT_MAP (fontmap);
+
+  return cwfontmap->serial;
+}
+
 static void
 pango_cairo_win32_font_map_set_resolution (PangoCairoFontMap *cfontmap,
 					   double             dpi)
 {
   PangoCairoWin32FontMap *cwfontmap = PANGO_CAIRO_WIN32_FONT_MAP (cfontmap);
 
+  cwfontmap->serial++;
+  if (cwfontmap->serial == 0)
+    cwfontmap->serial++;
   cwfontmap->dpi = dpi;
 }
 
@@ -89,14 +100,17 @@ static void
 pango_cairo_win32_font_map_class_init (PangoCairoWin32FontMapClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  PangoFontMapClass *fontmap_class = PANGO_FONT_MAP_CLASS (class);
   PangoWin32FontMapClass *win32fontmap_class = PANGO_WIN32_FONT_MAP_CLASS (class);
 
   gobject_class->finalize  = pango_cairo_win32_font_map_finalize;
+  fontmap_class->get_serial = pango_cairo_win32_font_map_get_serial;
   win32fontmap_class->find_font = pango_cairo_win32_font_map_find_font;
 }
 
 static void
 pango_cairo_win32_font_map_init (PangoCairoWin32FontMap *cwfontmap)
 {
+  cwfontmap->serial = 1;
   cwfontmap->dpi = GetDeviceCaps (pango_win32_get_dc (), LOGPIXELSY);
 }

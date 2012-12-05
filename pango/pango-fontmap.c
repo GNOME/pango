@@ -284,3 +284,33 @@ pango_font_map_get_shape_engine_type (PangoFontMap *fontmap)
   return PANGO_FONT_MAP_GET_CLASS (fontmap)->shape_engine_type;
 }
 
+/**
+ * pango_font_map_get_serial:
+ * @fontmap: a #PangoFontMap
+ *
+ * Returns the current serial number of @fontmap.  The serial number is
+ * initialized to an small number larger than zero when a new fontmap
+ * is created and is increased whenever the fontmap is changed. It may
+ * wrap, but will never have the value 0. Since it can wrap, never compare
+ * it with "less than", always use "not equals".
+ *
+ * The fontmap can only be changed using backend-specific API, like changing
+ * fontmap resolution.
+ *
+ * This can be used to automatically detect changes to a #PangoFontMap, like
+ * in #PangoContext.
+ *
+ * Return value: The current serial number of @fontmap.
+ *
+ * Since: 1.32.4
+ **/
+guint
+pango_font_map_get_serial (PangoFontMap *fontmap)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_MAP (fontmap), 0);
+
+  if (PANGO_FONT_MAP_GET_CLASS (fontmap)->get_serial)
+    return PANGO_FONT_MAP_GET_CLASS (fontmap)->get_serial (fontmap);
+  else
+    return 1;
+}

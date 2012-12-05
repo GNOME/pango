@@ -38,6 +38,7 @@ struct _PangoCairoWin32FontMap
 {
   PangoWin32FontMap parent_instance;
 
+  guint serial;
   double dpi;
 };
 

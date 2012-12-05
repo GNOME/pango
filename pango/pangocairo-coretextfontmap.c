@@ -34,12 +34,23 @@ struct _PangoCairoCoreTextFontMapClass
   PangoCoreTextFontMapClass parent_class;
 };
 
+static guint
+pango_cairo_core_text_font_map_get_serial (PangoFontMap *fontmap)
+{
+  PangoCairoCoreTextFontMap *cafontmap = PANGO_CAIRO_CORE_TEXT_FONT_MAP (fontmap);
+
+  return cafontmap->serial;
+}
+
 static void
 pango_cairo_core_text_font_map_set_resolution (PangoCairoFontMap *cfontmap,
                                                double             dpi)
 {
   PangoCairoCoreTextFontMap *cafontmap = PANGO_CAIRO_CORE_TEXT_FONT_MAP (cfontmap);
 
+  cafontmap->serial++;
+  if (cafontmap->serial == 0)
+    cafontmap->serial++;
   cafontmap->dpi = dpi;
 }
 
@@ -144,9 +155,12 @@ static void
 pango_cairo_core_text_font_map_class_init (PangoCairoCoreTextFontMapClass *class)
 {
   PangoCoreTextFontMapClass *ctfontmapclass = (PangoCoreTextFontMapClass *)class;
+  PangoFontMapClass *fontmap_class = PANGO_FONT_MAP_CLASS (class);
   GObjectClass *object_class = (GObjectClass *)class;
 
   object_class->finalize = pango_cairo_core_text_font_map_finalize;
+
+  fontmap_class->get_serial = pango_cairo_core_text_font_map_get_serial;
 
   ctfontmapclass->get_resolution = pango_cairo_core_text_font_map_get_resolution_core_text;
   ctfontmapclass->create_font = pango_cairo_core_text_font_map_create_font;
@@ -160,5 +174,6 @@ pango_cairo_core_text_font_map_class_init (PangoCairoCoreTextFontMapClass *class
 static void
 pango_cairo_core_text_font_map_init (PangoCairoCoreTextFontMap *cafontmap)
 {
+  cafontmap->serial = 1;
   cafontmap->dpi = 72.;
 }

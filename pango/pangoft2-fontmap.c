@@ -43,6 +43,7 @@ struct _PangoFT2FontMap
 
   FT_Library library;
 
+  guint serial;
   double dpi_x;
   double dpi_y;
 
@@ -66,6 +67,7 @@ static PangoFcFont * pango_ft2_font_map_new_font            (PangoFcFontMap     
 							     FcPattern            *pattern);
 static double        pango_ft2_font_map_get_resolution      (PangoFcFontMap       *fcfontmap,
 							     PangoContext         *context);
+static guint         pango_ft2_font_map_get_serial          (PangoFontMap         *fontmap);
 
 static PangoFT2FontMap *pango_ft2_global_fontmap = NULL; /* MT-safe */
 
@@ -75,9 +77,11 @@ static void
 pango_ft2_font_map_class_init (PangoFT2FontMapClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  PangoFontMapClass *fontmap_class = PANGO_FONT_MAP_CLASS (class);
   PangoFcFontMapClass *fcfontmap_class = PANGO_FC_FONT_MAP_CLASS (class);
 
   gobject_class->finalize = pango_ft2_font_map_finalize;
+  fontmap_class->get_serial = pango_ft2_font_map_get_serial;
   fcfontmap_class->default_substitute = _pango_ft2_font_map_default_substitute;
   fcfontmap_class->new_font = pango_ft2_font_map_new_font;
   fcfontmap_class->get_resolution = pango_ft2_font_map_get_resolution;
@@ -86,6 +90,7 @@ pango_ft2_font_map_class_init (PangoFT2FontMapClass *class)
 static void
 pango_ft2_font_map_init (PangoFT2FontMap *fontmap)
 {
+  fontmap->serial = 1;
   fontmap->library = NULL;
   fontmap->dpi_x   = 72.0;
   fontmap->dpi_y   = 72.0;
@@ -139,6 +144,14 @@ pango_ft2_font_map_new (void)
   return (PangoFontMap *)ft2fontmap;
 }
 
+static guint
+pango_ft2_font_map_get_serial (PangoFontMap *fontmap)
+{
+  PangoFT2FontMap *ft2fontmap = PANGO_FT2_FONT_MAP (fontmap);
+
+  return ft2fontmap->serial;
+}
+
 /**
  * pango_ft2_font_map_set_default_substitute:
  * @fontmap: a #PangoFT2FontMap
@@ -160,6 +173,10 @@ pango_ft2_font_map_set_default_substitute (PangoFT2FontMap        *fontmap,
 					   gpointer                data,
 					   GDestroyNotify          notify)
 {
+  fontmap->serial++;
+  if (fontmap->serial == 0)
+    fontmap->serial++;
+
   if (fontmap->substitute_destroy)
     fontmap->substitute_destroy (fontmap->substitute_data);
 
@@ -185,6 +202,9 @@ pango_ft2_font_map_set_default_substitute (PangoFT2FontMap        *fontmap,
 void
 pango_ft2_font_map_substitute_changed (PangoFT2FontMap *fontmap)
 {
+  fontmap->serial++;
+  if (fontmap->serial == 0)
+    fontmap->serial++;
   pango_fc_font_map_cache_clear (PANGO_FC_FONT_MAP (fontmap));
 }
 

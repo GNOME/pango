@@ -51,6 +51,7 @@ struct _PangoCoreTextFontMap
 {
   PangoFontMap parent_instance;
 
+  guint serial;
   GHashTable *fontset_hash;
   GHashTable *font_hash;
 

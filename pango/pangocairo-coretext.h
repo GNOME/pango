@@ -39,6 +39,7 @@ struct _PangoCairoCoreTextFontMap
 {
   PangoCoreTextFontMap parent_instance;
 
+  guint serial;
   gdouble dpi;
 };
 

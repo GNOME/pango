@@ -1191,6 +1191,14 @@ get_first_font (PangoFontset *fontset G_GNUC_UNUSED,
   return TRUE;
 }
 
+static guint
+pango_core_text_font_map_get_serial (PangoFontMap *fontmap)
+{
+  PangoCoreTextFontMap *ctfontmap = PANGO_CORE_TEXT_FONT_MAP (fontmap);
+
+  return ctfontmap->serial;
+}
+
 static PangoFont *
 pango_core_text_font_map_load_font (PangoFontMap               *fontmap,
                                     PangoContext               *context,
@@ -1370,6 +1378,7 @@ pango_core_text_font_map_init (PangoCoreTextFontMap *ctfontmap)
   CFArrayRef ctfaces;
   CFIndex i, count;
 
+  ctfontmap->serial = 1;
   ctfontmap->families = g_hash_table_new_full (g_str_hash, g_str_equal,
                                                g_free, g_object_unref);
 
@@ -1461,6 +1470,7 @@ pango_core_text_font_map_class_init (PangoCoreTextFontMapClass *class)
   fontmap_class->list_families = pango_core_text_font_map_list_families;
   fontmap_class->load_fontset = pango_core_text_font_map_load_fontset;
   fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_CORE_TEXT;
+  fontmap_class->get_serial = pango_core_text_font_map_get_serial;
 }
 
 /*
