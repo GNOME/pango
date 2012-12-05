@@ -88,7 +88,7 @@ retry:
   return info;
 }
 
-static gboolean
+static void
 _pango_cairo_update_context (cairo_t      *cr,
 			     PangoContext *context)
 {
@@ -144,8 +144,8 @@ _pango_cairo_update_context (cairo_t      *cr,
 
   pango_context_set_matrix (context, &pango_matrix);
 
-
-  return changed;
+  if (changed)
+    pango_context_changed (context);
 }
 
 /**
@@ -168,7 +168,7 @@ pango_cairo_update_context (cairo_t      *cr,
   g_return_if_fail (cr != NULL);
   g_return_if_fail (PANGO_IS_CONTEXT (context));
 
-  (void) _pango_cairo_update_context (cr, context);
+  _pango_cairo_update_context (cr, context);
 }
 
 /**
@@ -237,7 +237,10 @@ pango_cairo_context_set_font_options (PangoContext               *context,
 
   info  = get_context_info (context, TRUE);
 
-  if (info->set_options)
+  if (info->set_options || options)
+    pango_context_changed (context);
+
+ if (info->set_options)
     cairo_font_options_destroy (info->set_options);
 
   if (options)
@@ -474,7 +477,6 @@ pango_cairo_update_layout (cairo_t     *cr,
   g_return_if_fail (cr != NULL);
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
-  if (_pango_cairo_update_context (cr, pango_layout_get_context (layout)))
-    pango_layout_context_changed (layout);
+  _pango_cairo_update_context (cr, pango_layout_get_context (layout));
 }
 

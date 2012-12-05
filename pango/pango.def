@@ -58,6 +58,7 @@ EXPORTS
 	pango_color_to_string
 	pango_config_key_get
 	pango_config_key_get_system
+	pango_context_changed
 	pango_context_get_base_dir
 	pango_context_get_base_gravity
 	pango_context_get_font_description
@@ -67,6 +68,7 @@ EXPORTS
 	pango_context_get_language
 	pango_context_get_matrix
 	pango_context_get_metrics
+	pango_context_get_serial
 	pango_context_get_type
 	pango_context_list_families
 	pango_context_load_font

@@ -34,6 +34,8 @@
 struct _PangoContext
 {
   GObject parent_instance;
+  guint serial;
+  guint fontmap_serial;
 
   PangoLanguage *set_language;
   PangoLanguage *language;
@@ -55,7 +57,8 @@ struct _PangoContextClass
 
 };
 
-static void pango_context_finalize    (GObject           *object);
+static void pango_context_finalize    (GObject       *object);
+static void context_changed           (PangoContext  *context);
 
 G_DEFINE_TYPE (PangoContext, pango_context, G_TYPE_OBJECT)
 
@@ -66,6 +69,7 @@ pango_context_init (PangoContext *context)
   context->resolved_gravity = context->base_gravity = PANGO_GRAVITY_SOUTH;
   context->gravity_hint = PANGO_GRAVITY_HINT_NATURAL;
 
+  context->serial = 1;
   context->set_language = NULL;
   context->language = pango_language_get_default ();
   context->font_map = NULL;
@@ -164,6 +168,9 @@ pango_context_set_matrix (PangoContext       *context,
 {
   g_return_if_fail (PANGO_IS_CONTEXT (context));
 
+  if (context->matrix || matrix)
+    context_changed (context);
+
   if (context->matrix)
     pango_matrix_free (context->matrix);
   if (matrix)
@@ -212,6 +219,11 @@ pango_context_set_font_map (PangoContext *context,
   g_return_if_fail (PANGO_IS_CONTEXT (context));
   g_return_if_fail (!font_map || PANGO_IS_FONT_MAP (font_map));
 
+  if (font_map == context->font_map)
+    return;
+
+  context_changed (context);
+
   if (font_map)
     g_object_ref (font_map);
 
@@ -219,6 +231,7 @@ pango_context_set_font_map (PangoContext *context,
     g_object_unref (context->font_map);
 
   context->font_map = font_map;
+  context->fontmap_serial = pango_font_map_get_serial (font_map);
 }
 
 /**
@@ -289,6 +302,7 @@ pango_context_load_font (PangoContext               *context,
 			 const PangoFontDescription *desc)
 {
   g_return_val_if_fail (context != NULL, NULL);
+  g_return_val_if_fail (context->font_map != NULL, NULL);
 
   return pango_font_map_load_font (context->font_map, context, desc);
 }
@@ -329,8 +343,14 @@ pango_context_set_font_description (PangoContext               *context,
   g_return_if_fail (context != NULL);
   g_return_if_fail (desc != NULL);
 
-  pango_font_description_free (context->font_desc);
-  context->font_desc = pango_font_description_copy (desc);
+  if (desc != context->font_desc &&
+      (!desc || !context->font_desc || !pango_font_description_equal(desc, context->font_desc)))
+    {
+      context_changed (context);
+
+      pango_font_description_free (context->font_desc);
+      context->font_desc = pango_font_description_copy (desc);
+    }
 }
 
 /**
@@ -364,6 +384,9 @@ pango_context_set_language (PangoContext *context,
 			    PangoLanguage    *language)
 {
   g_return_if_fail (context != NULL);
+
+  if (language != context->language)
+    context_changed (context);
 
   context->set_language = language;
   if (language)
@@ -408,6 +431,9 @@ pango_context_set_base_dir (PangoContext  *context,
 {
   g_return_if_fail (context != NULL);
 
+  if (direction != context->base_dir)
+    context_changed (context);
+
   context->base_dir = direction;
 }
 
@@ -444,6 +470,9 @@ pango_context_set_base_gravity (PangoContext  *context,
 				PangoGravity gravity)
 {
   g_return_if_fail (context != NULL);
+
+  if (gravity != context->base_gravity)
+    context_changed (context);
 
   context->base_gravity = gravity;
 
@@ -508,6 +537,9 @@ pango_context_set_gravity_hint (PangoContext    *context,
 				PangoGravityHint hint)
 {
   g_return_if_fail (context != NULL);
+
+  if (hint != context->gravity_hint)
+    context_changed (context);
 
   context->gravity_hint = hint;
 }
@@ -1745,4 +1777,72 @@ pango_context_get_metrics (PangoContext                 *context,
   g_object_unref (current_fonts);
 
   return metrics;
+}
+
+static void
+context_changed  (PangoContext *context)
+{
+  context->serial++;
+  if (context->serial == 0)
+    context->serial++;
+}
+
+/**
+ * pango_context_changed:
+ * @context: a #PangoContext
+ *
+ * Forces a change in the context, which will cause any #PangoLayout
+ * using this context to re-layout.
+ *
+ * This function is only useful when implementing a new backend
+ * for Pango, something applications won't do. Backends should
+ * call this function if they have attached extra data to the context
+ * and such data is changed.
+ *
+ * Since: 1.32.4
+ **/
+void
+pango_context_changed  (PangoContext *context)
+{
+  context_changed (context);
+}
+
+static void
+check_fontmap_changed (PangoContext *context)
+{
+  guint old_serial = context->fontmap_serial;
+
+  if (!context->font_map)
+    return;
+
+  context->fontmap_serial = pango_font_map_get_serial (context->font_map);
+
+  if (old_serial != context->fontmap_serial)
+    context_changed (context);
+}
+
+/**
+ * pango_context_get_serial:
+ * @context: a #PangoContext
+ *
+ * Returns the current serial number of @context.  The serial number is
+ * initialized to an small number larger than zero when a new context
+ * is created and is increased whenever the context is changed using any
+ * of the setter functions, or the #PangoFontMap it uses to find fonts has
+ * changed. The serial may wrap, but will never have the value 0. Since it
+ * can wrap, never compare it with "less than", always use "not equals".
+ *
+ * This can be used to automatically detect changes to a #PangoContext, and
+ * is only useful when implementing objects that need update when their
+ * #PangoContext changes, like #PangoLayout.
+ *
+ * Return value: The current serial number of @context.
+ *
+ * Since: 1.32.4
+ **/
+guint
+pango_context_get_serial (PangoContext *context)
+{
+  check_fontmap_changed (context);
+  return context->serial;
 }

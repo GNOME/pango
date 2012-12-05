@@ -155,6 +155,23 @@ The #GObject type for #PangoDirection.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_context_changed ##### -->
+<para>
+
+</para>
+
+@context: 
+
+
+<!-- ##### FUNCTION pango_context_get_serial ##### -->
+<para>
+
+</para>
+
+@context: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_context_set_font_map ##### -->
 <para>
 

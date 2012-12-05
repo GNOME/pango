@@ -17,6 +17,8 @@ pango_item_split
 pango_reorder_items
 <SUBSECTION>
 pango_context_new
+pango_context_changed
+pango_context_get_serial
 pango_context_set_font_map
 pango_context_get_font_map
 pango_context_get_font_description

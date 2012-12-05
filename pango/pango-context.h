@@ -50,10 +50,11 @@ typedef struct _PangoContextClass PangoContextClass;
 GType         pango_context_get_type      (void) G_GNUC_CONST;
 
 PangoContext *pango_context_new           (void);
+void          pango_context_changed       (PangoContext                 *context);
 void          pango_context_set_font_map  (PangoContext                 *context,
 					   PangoFontMap                 *font_map);
 PangoFontMap *pango_context_get_font_map  (PangoContext                 *context);
-
+guint         pango_context_get_serial    (PangoContext                 *context);
 void          pango_context_list_families (PangoContext                 *context,
 					   PangoFontFamily            ***families,
 					   int                          *n_families);
