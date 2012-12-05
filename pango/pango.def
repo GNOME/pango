@@ -255,6 +255,7 @@ EXPORTS
 	pango_layout_get_log_attrs_readonly
 	pango_layout_get_pixel_extents
 	pango_layout_get_pixel_size
+	pango_layout_get_serial
 	pango_layout_get_single_paragraph_mode
 	pango_layout_get_size
 	pango_layout_get_spacing

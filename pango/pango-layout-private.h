@@ -46,6 +46,9 @@ struct _PangoLayout
   /* Value fields.  These will be memcpy'd in _copy() */
   int copy_begin;
 
+  guint serial;
+  guint context_serial;
+
   int length;			/* length of text in bytes */
   int n_chars;		        /* number of characters in layout */
   int width;			/* wrap/ellipsize width, in device units, or -1 if not set */

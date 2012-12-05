@@ -108,7 +108,6 @@ pango_context_finalize (GObject *object)
   G_OBJECT_CLASS (pango_context_parent_class)->finalize (object);
 }
 
-
 /**
  * pango_context_new:
  *

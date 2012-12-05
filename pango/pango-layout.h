@@ -163,6 +163,7 @@ gboolean           pango_layout_is_ellipsized (PangoLayout        *layout);
 int      pango_layout_get_unknown_glyphs_count (PangoLayout    *layout);
 
 void     pango_layout_context_changed (PangoLayout    *layout);
+guint    pango_layout_get_serial      (PangoLayout    *layout);
 
 void     pango_layout_get_log_attrs (PangoLayout    *layout,
 				     PangoLogAttr  **attrs,

@@ -443,6 +443,7 @@ pango_layout_copy
 
 pango_layout_get_context
 pango_layout_context_changed
+pango_layout_get_serial
 
 pango_layout_set_text
 pango_layout_get_text

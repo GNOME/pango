@@ -100,6 +100,15 @@ has no user-visible fields.
 @layout: 
 
 
+<!-- ##### FUNCTION pango_layout_get_serial ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_layout_set_text ##### -->
 <para>
 

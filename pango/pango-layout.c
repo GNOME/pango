@@ -155,6 +155,9 @@ check_invalid (PangoLayoutIter *iter,
 }
 #endif
 
+static void check_context_changed  (PangoLayout *layout);
+static void layout_changed  (PangoLayout *layout);
+
 static void pango_layout_clear_lines (PangoLayout *layout);
 static void pango_layout_check_lines (PangoLayout *layout);
 
@@ -188,6 +191,7 @@ G_DEFINE_TYPE (PangoLayout, pango_layout, G_TYPE_OBJECT)
 static void
 pango_layout_init (PangoLayout *layout)
 {
+  layout->serial = 1;
   layout->attrs = NULL;
   layout->font_desc = NULL;
   layout->text = NULL;
@@ -269,6 +273,7 @@ pango_layout_new (PangoContext *context)
   layout = g_object_new (PANGO_TYPE_LAYOUT, NULL);
 
   layout->context = context;
+  layout->context_serial = pango_context_get_serial (context);
   g_object_ref (context);
 
   return layout;
@@ -346,10 +351,13 @@ pango_layout_set_width (PangoLayout *layout,
 {
   g_return_if_fail (layout != NULL);
 
+  if (width < 0)
+    width = -1;
+
   if (width != layout->width)
     {
       layout->width = width;
-      pango_layout_clear_lines (layout);
+      layout_changed (layout);
     }
 }
 
@@ -418,7 +426,7 @@ pango_layout_set_height (PangoLayout *layout,
       if (layout->ellipsize != PANGO_ELLIPSIZE_NONE &&
 	  !(layout->lines && layout->is_ellipsized == FALSE &&
 	    height < 0 && layout->line_count <= (guint) -height))
-	pango_layout_clear_lines (layout);
+	layout_changed (layout);
     }
 }
 
@@ -461,7 +469,7 @@ pango_layout_set_wrap (PangoLayout  *layout,
       layout->wrap = wrap;
 
       if (layout->width != -1)
-	pango_layout_clear_lines (layout);
+	layout_changed (layout);
     }
 }
 
@@ -532,7 +540,7 @@ pango_layout_set_indent (PangoLayout *layout,
   if (indent != layout->indent)
     {
       layout->indent = indent;
-      pango_layout_clear_lines (layout);
+      layout_changed (layout);
     }
 }
 
@@ -569,7 +577,7 @@ pango_layout_set_spacing (PangoLayout *layout,
   if (spacing != layout->spacing)
     {
       layout->spacing = spacing;
-      pango_layout_clear_lines (layout);
+      layout_changed (layout);
     }
 }
 
@@ -612,7 +620,8 @@ pango_layout_set_attributes (PangoLayout   *layout,
   layout->attrs = attrs;
   if (layout->attrs)
     pango_attr_list_ref (layout->attrs);
-  pango_layout_clear_lines (layout);
+
+  layout_changed (layout);
 
   if (old_attrs)
     pango_attr_list_unref (old_attrs);
@@ -659,7 +668,7 @@ pango_layout_set_font_description (PangoLayout                 *layout,
 
       layout->font_desc = desc ? pango_font_description_copy (desc) : NULL;
 
-      pango_layout_clear_lines (layout);
+      layout_changed (layout);
       layout->tab_width = -1;
     }
 }
@@ -710,7 +719,7 @@ pango_layout_set_justify (PangoLayout *layout,
       layout->justify = justify;
 
       if (layout->is_ellipsized || layout->is_wrapped)
-	pango_layout_clear_lines (layout);
+	layout_changed (layout);
     }
 }
 
@@ -766,7 +775,7 @@ pango_layout_set_auto_dir (PangoLayout *layout,
   if (auto_dir != layout->auto_dir)
     {
       layout->auto_dir = auto_dir;
-      pango_layout_clear_lines (layout);
+      layout_changed (layout);
     }
 }
 
@@ -808,7 +817,7 @@ pango_layout_set_alignment (PangoLayout   *layout,
   if (alignment != layout->alignment)
     {
       layout->alignment = alignment;
-      pango_layout_clear_lines (layout);
+      layout_changed (layout);
     }
 }
 
@@ -853,7 +862,7 @@ pango_layout_set_tabs (PangoLayout   *layout,
 
       layout->tabs = tabs ? pango_tab_array_copy (tabs) : NULL;
 
-      pango_layout_clear_lines (layout);
+      layout_changed (layout);
     }
 }
 
@@ -900,8 +909,7 @@ pango_layout_set_single_paragraph_mode (PangoLayout *layout,
   if (layout->single_paragraph != setting)
     {
       layout->single_paragraph = setting;
-
-      pango_layout_clear_lines (layout);
+      layout_changed (layout);
     }
 }
 
@@ -952,7 +960,7 @@ pango_layout_set_ellipsize (PangoLayout        *layout,
       layout->ellipsize = ellipsize;
 
       if (layout->is_ellipsized || layout->is_wrapped)
-	pango_layout_clear_lines (layout);
+	layout_changed (layout);
     }
 }
 
@@ -1073,7 +1081,7 @@ pango_layout_set_text (PangoLayout *layout,
 
   layout->n_chars = pango_utf8_strlen (layout->text, -1);
 
-  pango_layout_clear_lines (layout);
+  layout_changed (layout);
 
   g_free (old_text);
 }
@@ -1247,6 +1255,26 @@ pango_layout_get_unknown_glyphs_count (PangoLayout *layout)
     return count;
 }
 
+static void
+check_context_changed (PangoLayout *layout)
+{
+  int old_serial = layout->context_serial;
+
+  layout->context_serial = pango_context_get_serial (layout->context);
+
+  if (old_serial != layout->context_serial)
+    pango_layout_context_changed (layout);
+}
+
+static void
+layout_changed (PangoLayout *layout)
+{
+  layout->serial++;
+  if (layout->serial == 0)
+    layout->serial++;
+  pango_layout_clear_lines (layout);
+}
+
 /**
  * pango_layout_context_changed:
  * @layout: a #PangoLayout
@@ -1259,8 +1287,36 @@ pango_layout_get_unknown_glyphs_count (PangoLayout *layout)
 void
 pango_layout_context_changed (PangoLayout *layout)
 {
-  pango_layout_clear_lines (layout);
+  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+
+  layout_changed (layout);
   layout->tab_width = -1;
+}
+
+/**
+ * pango_layout_get_serial:
+ * @layout: a #PangoLayout
+ *
+ * Returns the current serial number of @layout.  The serial number is
+ * initialized to an small number  larger than zero when a new layout
+ * is created and is increased whenever the layout is changed using any
+ * of the setter functions, or the #PangoContext it uses has changed.
+ * The serial may wrap, but will never have the value 0. Since it
+ * can wrap, never compare it with "less than", always use "not equals".
+ *
+ * This can be used to automatically detect changes to a #PangoLayout, and
+ * is useful for example to decide whether a layout needs redrawing.
+ * To force the serial to be increased, use pango_layout_context_changed().
+ *
+ * Return value: The current serial number of @layout.
+ *
+ * Since: 1.32.4
+ **/
+guint
+pango_layout_get_serial (PangoLayout *layout)
+{
+  check_context_changed (layout);
+  return layout->serial;
 }
 
 /**
@@ -2475,6 +2531,8 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
 
   g_return_if_fail (layout != NULL);
 
+  pango_layout_check_lines (layout);
+
   if (ink_rect && layout->ink_rect_cached)
     {
       *ink_rect = layout->ink_rect;
@@ -2487,8 +2545,6 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
     }
   if (!ink_rect && !logical_rect && !line_extents)
     return;
-
-  pango_layout_check_lines (layout);
 
   /* When we are not wrapping, we need the overall width of the layout to
    * figure out the x_offsets of each line. However, we only need the
@@ -3798,6 +3854,8 @@ pango_layout_check_lines (PangoLayout *layout)
   PangoAttrIterator *iter;
   PangoDirection prev_base_dir = PANGO_DIRECTION_NEUTRAL, base_dir = PANGO_DIRECTION_NEUTRAL;
   ParaBreakState state;
+
+  check_context_changed (layout);
 
   if (G_LIKELY (layout->lines))
     return;
