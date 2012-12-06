@@ -1,3 +1,18 @@
+Overview of changes between 1.32.3 and 1.32.4
+=============================================
+- Require harfbuzz 0.9.9
+- 340066 - Add serials tracking changes in PangoFontMap/PangoContext/PangoLayout
+- Automatically relayout PangoLayout if PangoContext has changed
+- Fix rendering of rotated frames
+- 576156 - Remove Thai/Lao Prepend/Extend properties
+- Fix grapheme properties of joiner / nonjoiner
+- Fix grapheme properties of U+FFxx range
+- Fix line break of surrogate characters
+- Fix grapheme boundaries of surrogates and unassigned default ignorables
+- Update bidi tables to Unicode 6.2.0
+- 689648 - Use -Bsymbolic-functions by default if available
+- Fix Win32 and CoreText cairo backends to take cairo CTM into account
+
 Overview of changes between 1.32.2 and 1.32.3
 =============================================
 - make gobject-introspection PANGO_GLYPH happy
