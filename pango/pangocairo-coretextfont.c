@@ -220,6 +220,8 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
   abs_size = pango_core_text_font_key_get_absolute_size (key);
   size = pango_units_to_double (abs_size);
 
+  size /= pango_matrix_get_font_scale_factor (pango_core_text_font_key_get_matrix (key));
+
   ctdescriptor = pango_core_text_font_key_get_ctfontdescriptor (key);
   font_ref = CTFontCreateWithFontDescriptor (ctdescriptor, size, NULL);
 

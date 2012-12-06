@@ -252,6 +252,9 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
   if (!pango_font_description_get_size_is_absolute (desc))
     size *= dpi / 72.;
 
+  if (context)
+    size /= pango_matrix_get_font_scale_factor (pango_context_get_matrix (context));
+
 #ifdef USE_FACE_CACHED_FONTS
   win32fontmap = PANGO_WIN32_FONT_MAP (cwfontmap);
 
