@@ -89,7 +89,7 @@ struct _PangoFontMapClass
   void (*_pango_reserved3) (void);
 };
 
-G_CONST_RETURN char   *pango_font_map_get_shape_engine_type (PangoFontMap *fontmap);
+const char   *pango_font_map_get_shape_engine_type (PangoFontMap *fontmap);
 
 #endif /* PANGO_ENABLE_BACKEND */
 
