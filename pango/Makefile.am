@@ -369,7 +369,7 @@ PangoCairo-1.0.gir: Pango-1.0.gir $(PANGOCAIRO_FONT_BACKEND_GI_MODULE)
 PangoCairo_1_0_gir_PACKAGES = gobject-2.0 cairo
 PangoCairo_1_0_gir_EXPORT_PACKAGES = pangocairo
 PangoCairo_1_0_gir_INCLUDES = GObject-2.0 cairo-1.0
-PangoCairo_1_0_gir_LIBS = libpangocairo-1.0.la
+PangoCairo_1_0_gir_LIBS = libpango-1.0.la libpangocairo-1.0.la
 PangoCairo_1_0_gir_CFLAGS = -I$(top_builddir) -I$(top_srcdir) $(PANGO_CFLAGS)
 PangoCairo_1_0_gir_SCANNERFLAGS = --include-uninstalled=$(builddir)/Pango-1.0.gir --c-include "pango/pangocairo.h"
 if HAVE_CAIRO_FREETYPE
