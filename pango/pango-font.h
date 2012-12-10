@@ -378,7 +378,7 @@ enum
 {
   PANGO_GLYPH_EMPTY =           ((PangoGlyph)0x0FFFFFFF),
   PANGO_GLYPH_INVALID_INPUT =   ((PangoGlyph)0xFFFFFFFF),
-  PANGO_GLYPH_UNKNOWN_FLAG =    ((PangoGlyph)0x10000000),
+  PANGO_GLYPH_UNKNOWN_FLAG =    ((PangoGlyph)0x10000000)
 };
 #define PANGO_GET_UNKNOWN_GLYPH(wc) ((PangoGlyph)(wc)|PANGO_GLYPH_UNKNOWN_FLAG)
 
