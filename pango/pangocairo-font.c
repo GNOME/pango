@@ -488,6 +488,8 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
 
 
   scaled_mini_font = pango_cairo_font_get_scaled_font ((PangoCairoFont *) mini_font);
+  if (G_UNLIKELY (scaled_mini_font == NULL || cairo_scaled_font_status (scaled_mini_font) != CAIRO_STATUS_SUCCESS))
+    return NULL;
 
   for (i = 0 ; i < 16 ; i++)
     {
