@@ -841,7 +841,7 @@ pango_fc_fontset_load_next_font (PangoFcFontset *fontset)
   FcPattern *pattern, *font_pattern;
   PangoFont *font;
 
-  pattern = pango_fc_patterns_get_pattern (fontset->patterns),
+  pattern = pango_fc_patterns_get_pattern (fontset->patterns);
   font_pattern = pango_fc_patterns_get_font_pattern (fontset->patterns,
 						     fontset->patterns_i++);
   if (G_UNLIKELY (!font_pattern))
