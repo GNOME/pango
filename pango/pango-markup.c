@@ -689,7 +689,6 @@ pango_parse_markup (const char                 *markup_text,
 /**
  * pango_markup_parser_new:
  * @accel_marker: character that precedes an accelerator, or 0 for none
- * @error: address of return location for errors, or %NULL
  *
  * Parses marked-up text (see
  * <link linkend="PangoMarkupFormat">markup format</link>) to create
@@ -702,9 +701,6 @@ pango_parse_markup (const char                 *markup_text,
  * and the first character so marked will be returned in @accel_char,
  * when calling finish(). Two @accel_marker characters following each
  * other produce a single literal @accel_marker character.
- *
- * If any error happens, none of the output arguments are touched except
- * for @error.
  *
  * To feed markup to the parser, use g_markup_parse_context_parse()
  * on the returned #GMarkupParseContext. When done with feeding markup
@@ -721,10 +717,16 @@ pango_parse_markup (const char                 *markup_text,
  * Since: 1.31.0
  **/
 GMarkupParseContext *
-pango_markup_parser_new (gunichar               accel_marker,
-                         GError               **error)
+pango_markup_parser_new (gunichar               accel_marker)
 {
-  return pango_markup_parser_new_internal (accel_marker, error, TRUE);
+  GError *error = NULL;
+  GMarkupParseContext *context;
+  context = pango_markup_parser_new_internal (accel_marker, &error, TRUE);
+
+  if (context == NULL)
+    g_critical ("Had error when making markup parser: %s\n", error->message);
+
+  return context;
 }
 
 /**
