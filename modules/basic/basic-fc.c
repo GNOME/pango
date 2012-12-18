@@ -387,11 +387,10 @@ basic_engine_shape (PangoEngineShape    *engine G_GNUC_UNUSED,
   if (context.vertical)
     for (i = 0; i < num_glyphs; i++)
       {
-	/* XXX
+        unsigned int advance = hb_position->y_advance;
 	if (is_hinted)
 	  advance = PANGO_UNITS_ROUND (advance);
-	  */
-	glyphs->glyphs[i].geometry.width    = hb_position->y_advance;
+	glyphs->glyphs[i].geometry.width    = advance;
 	/* XXX */
 	glyphs->glyphs[i].geometry.x_offset = hb_position->y_offset;
 	glyphs->glyphs[i].geometry.y_offset = -hb_position->x_offset;
@@ -400,11 +399,10 @@ basic_engine_shape (PangoEngineShape    *engine G_GNUC_UNUSED,
   else /* horizontal */
     for (i = 0; i < num_glyphs; i++)
       {
-	/* XXX
+        unsigned int advance = hb_position->x_advance;
 	if (is_hinted)
 	  advance = PANGO_UNITS_ROUND (advance);
-	  */
-	glyphs->glyphs[i].geometry.width    = hb_position->x_advance;
+	glyphs->glyphs[i].geometry.width    = advance;
 	glyphs->glyphs[i].geometry.x_offset = hb_position->x_offset;
 	glyphs->glyphs[i].geometry.y_offset = hb_position->y_offset;
 	hb_position++;
