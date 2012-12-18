@@ -1,3 +1,12 @@
+Overview of changes between 1.32.4 and 1.32.5
+=============================================
+- 689843 - Drop last ues of G_CONST_RETURN
+- 689864 - build failure
+- 689882 - pango-font.h:381: error: comma at end of enumerator list
+- 686512 - pango_cairo_font_get_scaled_font failed under wine
+- 690081 - pangofc-fontmap: Remove bad use of the comma operator
+- 679299 - Allow incrementally parsing pango markup
+
 Overview of changes between 1.32.3 and 1.32.4
 =============================================
 - Require harfbuzz 0.9.9
