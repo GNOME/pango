@@ -362,6 +362,9 @@ basic_engine_shape (PangoEngineShape    *engine G_GNUC_UNUSED,
   hb_buffer_set_direction (hb_buffer, hb_direction);
   hb_buffer_set_script (hb_buffer, hb_glib_script_to_script (analysis->script));
   hb_buffer_set_language (hb_buffer, hb_language_from_string (pango_language_to_string (analysis->language), -1));
+  hb_buffer_set_flags (hb_buffer,
+		       (item_offset == 0 ? HB_BUFFER_FLAG_BOT : 0) |
+		       (item_offset + item_length == paragraph_length ? HB_BUFFER_FLAG_EOT : 0));
 
   hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_offset, item_length);
   hb_shape (hb_font, hb_buffer, NULL, 0);
