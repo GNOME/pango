@@ -12,7 +12,7 @@ endif
 endif
 
 pango_basic_fc_la_LDFLAGS = -module $(MODULE_LIBTOOL_OPTIONS)
-pango_basic_fc_la_LIBADD = $(pangoft2libs)
+pango_basic_fc_la_LIBADD = $(pangoft2libs) $(HARFBUZZ_LIBS)
 pango_basic_fc_la_SOURCES = basic-fc.c
 libpango_basic_fc_la_SOURCES = basic-fc.c
 libpango_basic_fc_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_basic_fc
