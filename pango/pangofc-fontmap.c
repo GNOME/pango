@@ -420,7 +420,7 @@ pango_fc_upattern_unref (PangoFcUPattern *upattern, PangoFcFontMap *fcfontmap)
       upattern == g_hash_table_lookup(fcfontmap->priv->pattern_hash, upattern))
     g_hash_table_remove (fcfontmap->priv->pattern_hash, upattern);
   else
-    pango_fc_upattern_free(upattern);
+    pango_fc_upattern_free (upattern);
 }
 
 struct _PangoFcFontsetKey {
@@ -690,8 +690,7 @@ pango_fc_font_key_copy (const PangoFcFontKey *old)
   PangoFcFontKey *key = g_slice_new (PangoFcFontKey);
 
   key->fontmap = old->fontmap;
-  pango_fc_upattern_ref(old->upattern);
-  key->upattern = old->upattern;
+  key->upattern = pango_fc_upattern_ref (old->upattern);
   key->matrix = old->matrix;
   if (old->context_key)
     key->context_key = PANGO_FC_FONT_MAP_GET_CLASS (key->fontmap)->context_key_copy (key->fontmap,
@@ -1606,7 +1605,7 @@ uniquify_pattern (PangoFcFontMap *fcfontmap,
 				  pango_fc_upattern_init_key(&upat_key, pattern));
   if ( upattern )
     {
-      return pango_fc_upattern_ref(upattern);
+      return pango_fc_upattern_ref (upattern);
     }
   else
     {
