@@ -1155,7 +1155,7 @@ typedef struct {
 } GetShaperFontInfo;
 
 static gboolean
-get_shaper_and_font_foreach (PangoFontset *fontset G_GNUC_UNUSED,
+get_shaper_and_font_foreach (PangoFontset *fontset,
 			     PangoFont    *font,
 			     gpointer      data)
 {
@@ -1178,6 +1178,15 @@ get_shaper_and_font_foreach (PangoFontset *fontset G_GNUC_UNUSED,
 	  info->font = font;
 	  return TRUE;
 	}
+    }
+
+  if (!fontset && info->engines && info->engines->next == NULL)
+    {
+      /* We are in no-fallback mode and there's only one engine, just
+       * return it. */
+      info->shape_engine = (PangoEngineShape *) info->engines->data;
+      info->font = font;
+      return TRUE;
     }
 
   return FALSE;
