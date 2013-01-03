@@ -40,7 +40,7 @@ TESTS_ENVIRONMENT =                    \
    srcdir=$(srcdir)                    \
    PANGO_RC_FILE=./pangorc
 
-check_PROGRAMS = testboundaries testboundaries_ucd testcolor testscript
+check_PROGRAMS = testboundaries testboundaries_ucd testcolor testscript test-pangocairo-threads
 
 if HAVE_CAIRO
 check_PROGRAMS += testiter
@@ -60,6 +60,7 @@ testcolor_LDADD = $(TEST_PANGO_LIBS) $(GLIB_LIBS)
 testiter_LDADD = $(TEST_PANGOCAIRO_LIBS) $(GLIB_LIBS)
 testscript_LDADD = $(TEST_PANGO_LIBS) $(GLIB_LIBS)
 test_ot_tags_LDADD = $(TEST_PANGOFT2_LIBS) $(GLIB_LIBS)
+test_pangocairo_threads_LDADD = $(TEST_PANGOCAIRO_LIBS) $(CAIRO_LIBS) $(GLIB_LIBS)
 dump_boundaries_LDADD = $(TEST_PANGO_LIBS) $(GLIB_LIBS)
 
 if HAVE_CXX
