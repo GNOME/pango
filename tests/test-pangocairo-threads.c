@@ -12,19 +12,19 @@ thread_func (gpointer data)
   int i;
   char *filename;
 
-  cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 500, 300);
+  cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 100, 100);
   cairo_t *cr = cairo_create (surface);
   PangoLayout *layout = pango_cairo_create_layout (cr);
 
-  cairo_set_source_rgb (cr, 1, 1, 1);
-  cairo_paint (cr);
-  cairo_set_source_rgb (cr, 0, 0, 0);
-
   pango_layout_set_text (layout, text, -1);
-  pango_layout_set_width (layout, 500 * PANGO_SCALE);
+  pango_layout_set_width (layout, 100 * PANGO_SCALE);
 
   for (i = 0; i < num_iters; i++)
     {
+      cairo_set_source_rgb (cr, 1, 1, 1);
+      cairo_paint (cr);
+      cairo_set_source_rgb (cr, 0, 0, 0);
+
       /* force a relayout */
       PangoWrapMode wrap = pango_layout_get_wrap (layout);
       wrap = wrap == PANGO_WRAP_WORD ? PANGO_WRAP_CHAR : PANGO_WRAP_WORD;
@@ -40,19 +40,12 @@ thread_func (gpointer data)
   return 0;
 }
 
-static void
-join_thread (gpointer thread, gpointer self)
-{
-  if (thread != self)
-    g_thread_join (thread);
-}
-
-
 int
 main (int argc, char **argv)
 {
   int num_threads = 2;
   int i;
+  GPtrArray *threads = g_ptr_array_new ();
 
   if (argc > 1)
     num_threads = atoi (argv[1]);
@@ -62,13 +55,14 @@ main (int argc, char **argv)
   g_type_init ();
   g_thread_init (NULL);
 
-  /* force pango module initializations */
-/*  thread_func (GINT_TO_POINTER (0)); */
+  for (i = 0; i < num_threads; i++)
+    g_ptr_array_add (threads,
+		     g_thread_new (g_strdup_printf ("%d", i + 1),
+				   thread_func,
+				   GINT_TO_POINTER (i+1)));
 
   for (i = 0; i < num_threads; i++)
-    g_thread_create (thread_func, GINT_TO_POINTER (i+1), TRUE, NULL);
-
-  g_thread_foreach (join_thread, g_thread_self ());
+    g_thread_join (g_ptr_array_index (threads, i));
 
   return 0;
 }
