@@ -135,8 +135,12 @@ static GPrivate default_font_map = G_PRIVATE_INIT (g_object_unref); /* MT-safe *
  * change the Cairo font backend that the default fontmap
  * uses for example.
  *
- * Return value: (transfer none): the default Cairo fontmap
- *  for Pango. This object is owned by Pango and must not be freed.
+ * Note that since Pango 1.32.6, the default fontmap is per-thread.
+ * Each thread gets its own default fontmap.  In this way,
+ * PangoCairo can be used safely from multiple threads.
+ *
+ * Return value: (transfer none): the default PangoCairo fontmap
+ *  for the current thread. This object is owned by Pango and must not be freed.
  *
  * Since: 1.10
  **/
@@ -163,6 +167,12 @@ pango_cairo_font_map_get_default (void)
  * This can be used to change the Cairo font backend that the
  * default fontmap uses for example.  The old default font map
  * is unreffed and the new font map referenced.
+ *
+ * Note that since Pango 1.32.6, the default fontmap is per-thread.
+ * This function only changes the default fontmap for
+ * the current thread.   Default fontmaps of exisiting threads
+ * are not changed.  Default fontmaps of any new threads will
+ * still be created using pango_cairo_font_map_new().
  *
  * A value of %NULL for @fontmap will cause the current default
  * font map to be released and a new default font
