@@ -5,30 +5,38 @@
 const char *text = "The quick brown fox jumped over the lazy dog!";
 int num_iters = 100;
 
+GMutex mutex;
+
 static gpointer
 thread_func (gpointer data)
 {
   int num = GPOINTER_TO_INT (data);
   int i;
   char *filename;
+  PangoLayout *layout;
 
-  cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 100, 100);
+  cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_A8, 100, 100);
   cairo_t *cr = cairo_create (surface);
-  PangoLayout *layout = pango_cairo_create_layout (cr);
+
+  g_mutex_lock (&mutex);
+  g_mutex_unlock (&mutex);
+
+  layout = pango_cairo_create_layout (cr);
 
   pango_layout_set_text (layout, text, -1);
   pango_layout_set_width (layout, 100 * PANGO_SCALE);
 
   for (i = 0; i < num_iters; i++)
     {
-      cairo_set_source_rgb (cr, 1, 1, 1);
+      cairo_set_source_rgba (cr, 1, 1, 1, 1);
       cairo_paint (cr);
-      cairo_set_source_rgb (cr, 0, 0, 0);
+      cairo_set_source_rgba (cr, 1, 1, 1, 0);
+      cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
 
       /* force a relayout */
-      PangoWrapMode wrap = pango_layout_get_wrap (layout);
-      wrap = wrap == PANGO_WRAP_WORD ? PANGO_WRAP_CHAR : PANGO_WRAP_WORD;
-      pango_layout_set_wrap (layout, wrap);
+      pango_layout_set_wrap (layout,
+			     pango_layout_get_wrap (layout) == PANGO_WRAP_WORD ?
+			     PANGO_WRAP_CHAR : PANGO_WRAP_WORD);
 
       pango_cairo_show_layout (cr, layout);
     }
@@ -52,14 +60,16 @@ main (int argc, char **argv)
   if (argc > 2)
     num_iters = atoi (argv[2]);
 
-  g_type_init ();
-  g_thread_init (NULL);
+  g_mutex_lock (&mutex);
 
   for (i = 0; i < num_threads; i++)
     g_ptr_array_add (threads,
 		     g_thread_new (g_strdup_printf ("%d", i + 1),
 				   thread_func,
 				   GINT_TO_POINTER (i+1)));
+
+  /* Let them loose! */
+  g_mutex_unlock (&mutex);
 
   for (i = 0; i < num_threads; i++)
     g_thread_join (g_ptr_array_index (threads, i));
