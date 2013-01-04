@@ -43,7 +43,7 @@ TESTS_ENVIRONMENT =                    \
 check_PROGRAMS = testboundaries testboundaries_ucd testcolor testscript test-pangocairo-threads
 
 if HAVE_CAIRO
-check_PROGRAMS += testiter
+check_PROGRAMS += testiter test-pangocairo-threads
 endif
 if HAVE_FREETYPE
 check_PROGRAMS += test-ot-tags
