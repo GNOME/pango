@@ -58,6 +58,10 @@ thread_func (gpointer data)
   for (i = 0; i < num_iters; i++)
     draw (cr, layout, i);
 
+  g_object_unref (layout);
+
+  cairo_destroy (cr);
+
   return 0;
 }
 
@@ -92,6 +96,8 @@ main (int argc, char **argv)
   for (i = 0; i < num_threads; i++)
     g_thread_join (g_ptr_array_index (threads, i));
 
+  g_ptr_array_free (threads, TRUE);
+
   /* Now, draw a reference image and check results. */
   {
     cairo_surface_t *ref_surface = create_surface ();
@@ -101,6 +107,9 @@ main (int argc, char **argv)
     unsigned int len = WIDTH * HEIGHT;
 
     draw (cr, layout, num_iters - 1);
+
+    g_object_unref (layout);
+    cairo_destroy (cr);
 
     /* cairo_surface_write_to_png (ref_surface, "test-pangocairo-threads-reference.png"); */
 
@@ -117,8 +126,15 @@ main (int argc, char **argv)
 	    cairo_surface_write_to_png (surface, "test-pangocairo-threads-failed.png");
 	    return 1;
 	  }
+	cairo_surface_destroy (surface);
       }
+
+    cairo_surface_destroy (ref_surface);
   }
+
+  g_ptr_array_free (surfaces, TRUE);
+
+  pango_cairo_font_map_set_default (NULL);
 
   return 0;
 }
