@@ -54,7 +54,7 @@ dnl -Wno-portability tells automake to stop complaining about the
 dnl usage of GNU Make specific features.
 AM_INIT_AUTOMAKE(1.9 gnits dist-xz no-dist-gzip -Wno-portability)
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
-AM_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
 
 PANGO_VERSION_MAJOR=pango_version_major()
