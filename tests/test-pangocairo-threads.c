@@ -82,10 +82,12 @@ main (int argc, char **argv)
 
   for (i = 0; i < num_threads; i++)
     {
+      char buf[10];
       cairo_surface_t *surface = create_surface ();
       g_ptr_array_add (surfaces, surface);
+      snprintf (buf, sizeof (buf), "%d", i);
       g_ptr_array_add (threads,
-		       g_thread_new (g_strdup_printf ("%d", i),
+		       g_thread_new (buf,
 				     thread_func,
 				     surface));
     }
