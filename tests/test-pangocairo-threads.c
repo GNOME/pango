@@ -27,15 +27,16 @@ create_layout (cairo_t *cr)
 }
 
 static void
-draw (cairo_t *cr, PangoLayout *layout)
+draw (cairo_t *cr, PangoLayout *layout, unsigned int i)
 {
   cairo_set_source_rgba (cr, 1, 1, 1, 1);
   cairo_paint (cr);
   cairo_set_source_rgba (cr, 1, 1, 1, 0);
   cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
 
-  /* force a relayout */
-  pango_layout_context_changed (layout);
+  cairo_identity_matrix (cr);
+  cairo_scale (cr, (100 + i) / 10.,  (100 + i) / 10.);
+  pango_cairo_update_layout (cr, layout);
 
   pango_cairo_show_layout (cr, layout);
 }
@@ -55,7 +56,7 @@ thread_func (gpointer data)
   g_mutex_unlock (&mutex);
 
   for (i = 0; i < num_iters; i++)
-    draw (cr, layout);
+    draw (cr, layout, i);
 
   return 0;
 }
@@ -99,7 +100,7 @@ main (int argc, char **argv)
     unsigned char *ref_data = cairo_image_surface_get_data (ref_surface);
     unsigned int len = WIDTH * HEIGHT;
 
-    draw (cr, layout);
+    draw (cr, layout, num_iters - 1);
 
     /* cairo_surface_write_to_png (ref_surface, "test-pangocairo-threads-reference.png"); */
 
