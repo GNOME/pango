@@ -185,7 +185,10 @@ pango_cairo_font_map_set_default (PangoCairoFontMap *fontmap)
 {
   g_return_if_fail (fontmap == NULL || PANGO_IS_CAIRO_FONT_MAP (fontmap));
 
-  g_private_replace (&default_font_map, g_object_ref (fontmap));
+  if (fontmap)
+    g_object_ref (fontmap);
+
+  g_private_replace (&default_font_map, fontmap);
 }
 
 /**
