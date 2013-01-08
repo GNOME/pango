@@ -266,6 +266,7 @@ pango_ft2_font_map_create_context (PangoFT2FontMap *fontmap)
  *
  * Deprecated: 1.22: Use pango_font_map_create_context() instead.
  **/
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 PangoContext *
 pango_ft2_get_context (double dpi_x, double dpi_y)
 {
@@ -276,6 +277,7 @@ pango_ft2_get_context (double dpi_x, double dpi_y)
 
   return pango_font_map_create_context (fontmap);
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 /**
  * pango_ft2_font_map_for_display:
