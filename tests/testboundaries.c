@@ -274,6 +274,7 @@ check_grapheme_invariants (const char   *text,
 
 }
 
+#if 0
 static void print_sentences (const char   *text,
 			     PangoLogAttr *attrs);
 static void
@@ -301,6 +302,7 @@ print_sentences (const char   *text,
       ++i;
     }
 }
+#endif
 
 static void
 check_invariants (const char *text)
