@@ -526,7 +526,7 @@ pango_xft_font_get_unknown_glyph (PangoFont *font,
 {
   g_return_val_if_fail (PANGO_XFT_IS_FONT (font), PANGO_GLYPH_EMPTY);
 
-  return pango_fc_font_get_unknown_glyph (PANGO_FC_FONT (font), wc);
+  return PANGO_GET_UNKNOWN_GLYPH (wc);
 }
 
 /**
