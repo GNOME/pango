@@ -36,30 +36,6 @@
  */
 
 
-/* "virama script" is just an optimization; it includes a bunch of
- * scripts without viramas in them
- */
-#define VIRAMA_SCRIPT(wc)        ((wc) >= 0x0901 && (wc) <= 0x17FF)
-#define VIRAMA(wc) ((wc) == 0x094D || \
-		    (wc) == 0x09CD || \
-		    (wc) == 0x0A4D || \
-		    (wc) == 0x0ACD || \
-		    (wc) == 0x0B4D || \
-		    (wc) == 0x0BCD || \
-		    (wc) == 0x0C4D || \
-		    (wc) == 0x0CCD || \
-		    (wc) == 0x0D4D || \
-		    (wc) == 0x0DCA || \
-		    (wc) == 0x0E3A || \
-		    (wc) == 0x0F84 || \
-		    (wc) == 0x1039 || \
-		    (wc) == 0x17D2)
-/* Types of Japanese characters */
-#define JAPANESE(wc) ((wc) >= 0x2F00 && (wc) <= 0x30FF)
-#define KANJI(wc)    ((wc) >= 0x2F00 && (wc) <= 0x2FDF)
-#define HIRAGANA(wc) ((wc) >= 0x3040 && (wc) <= 0x309F)
-#define KATAKANA(wc) ((wc) >= 0x30A0 && (wc) <= 0x30FF)
-
 static int offset = 0;
 static int line = 0;
 static gunichar current_wc = 0;
