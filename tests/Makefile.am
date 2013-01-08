@@ -40,7 +40,7 @@ TESTS_ENVIRONMENT =                    \
    srcdir=$(srcdir)                    \
    PANGO_RC_FILE=./pangorc
 
-check_PROGRAMS = testboundaries testboundaries_ucd testcolor testscript test-pangocairo-threads
+check_PROGRAMS = testboundaries testboundaries_ucd testcolor testscript
 
 if HAVE_CAIRO
 check_PROGRAMS += testiter test-pangocairo-threads
