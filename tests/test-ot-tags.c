@@ -35,6 +35,8 @@
       }									\
 } G_STMT_END
 
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+
 static void
 test_script_tags (void)
 {
@@ -94,7 +96,9 @@ test_language_tags (void)
     {
       PangoLanguage *l = pango_language_from_string (languages[i]);
       PangoOTTag tag   = pango_ot_tag_from_language (l);
+#if 0
       PangoLanguage *m = pango_ot_tag_to_language (tag);
+#endif
 
       if (i == 0)
         {
@@ -127,3 +131,5 @@ main (int argc, char **argv)
 
   return 0;
 }
+
+G_GNUC_END_IGNORE_DEPRECATIONS
