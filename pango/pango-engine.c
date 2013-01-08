@@ -126,9 +126,11 @@ static void
 fallback_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 		       PangoFont        *font G_GNUC_UNUSED,
 		       const char       *text,
-		       gint              length,
+		       unsigned int      length,
 		       const PangoAnalysis *analysis,
-		       PangoGlyphString *glyphs)
+		       PangoGlyphString *glyphs,
+                       const char       *paragraph_text G_GNUC_UNUSED,
+                       unsigned int      paragraph_length G_GNUC_UNUSED)
 {
   int n_chars;
   const char *p;
