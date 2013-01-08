@@ -737,8 +737,10 @@ _pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
 PangoFontMap *
 pango_win32_font_map_for_display (void)
 {
+#if !GLIB_CHECK_VERSION (2, 35, 3)
   /* Make sure that the type system is initialized */
   g_type_init ();
+#endif
 
   if (g_once_init_enter ((gsize*)&default_fontmap))
     g_once_init_leave((gsize*)&default_fontmap, (gsize)g_object_new (PANGO_TYPE_WIN32_FONT_MAP, NULL));

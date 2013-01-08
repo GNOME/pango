@@ -602,8 +602,10 @@ init_modules (void)
 
   if (g_once_init_enter (&init))
     {
+#if !GLIB_CHECK_VERSION (2, 35, 3)
       /* Make sure that the type system is initialized */
       g_type_init ();
+#endif
 
       for (i = 0; _pango_included_lang_modules[i].list; i++)
         pango_module_register (&_pango_included_lang_modules[i]);

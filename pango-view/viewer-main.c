@@ -47,7 +47,9 @@ main (int    argc,
   int width, height;
   gpointer surface;
 
+#if !GLIB_CHECK_VERSION (2, 35, 3)
   g_type_init();
+#endif
   g_set_prgname ("pango-view");
   setlocale (LC_ALL, "");
   parse_options (argc, argv);

@@ -238,7 +238,9 @@ main (int argc, char **argv)
 
   g_option_context_free(context);
 
+#if !GLIB_CHECK_VERSION (2, 35, 3)
   g_type_init ();
+#endif
 
   contents = g_string_new ("");
   g_string_append (contents,

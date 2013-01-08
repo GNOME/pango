@@ -132,8 +132,10 @@ pango_ft2_font_map_new (void)
   PangoFT2FontMap *ft2fontmap;
   FT_Error error;
 
+#if !GLIB_CHECK_VERSION (2, 35, 3)
   /* Make sure that the type system is initialized */
   g_type_init ();
+#endif
 
   ft2fontmap = g_object_new (PANGO_TYPE_FT2_FONT_MAP, NULL);
 
