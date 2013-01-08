@@ -78,6 +78,10 @@ main (int argc, char **argv)
   if (argc > 2)
     num_iters = atoi (argv[2]);
 
+#if !GLIB_CHECK_VERSION (2, 35, 3)
+  g_type_init();
+#endif
+
   g_mutex_lock (&mutex);
 
   for (i = 0; i < num_threads; i++)
