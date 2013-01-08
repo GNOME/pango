@@ -50,7 +50,7 @@
  * Needless to say, the list MUST be sorted on the language code.
  */
 /* Sacrificial define to make introspection happy. */
-#ifndef LANGUAGE(x, y, z)
+#ifndef LANGUAGE
 #define LANGUAGE(x, y, z)
 #endif
 LANGUAGE(
