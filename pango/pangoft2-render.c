@@ -210,7 +210,7 @@ pango_ft2_font_render_glyph (PangoFont *font,
       return box;
     }
 
-  face = pango_ft2_font_get_face (font);
+  face = pango_fc_font_lock_face (PANGO_FC_FONT (font));
 
   if (face)
     {
@@ -231,6 +231,8 @@ pango_ft2_font_render_glyph (PangoFont *font,
       rendered->bitmap_left = face->glyph->bitmap_left;
       rendered->bitmap_top = face->glyph->bitmap_top;
 
+      pango_fc_font_unlock_face (PANGO_FC_FONT (font));
+
       if (G_UNLIKELY (!rendered->bitmap.buffer)) {
         g_slice_free (PangoFT2RenderedGlyph, rendered);
 	return NULL;
@@ -240,6 +242,8 @@ pango_ft2_font_render_glyph (PangoFont *font,
     }
   else
     {
+      pango_fc_font_unlock_face (PANGO_FC_FONT (font));
+
 generic_box:
       return  pango_ft2_font_render_box_glyph (PANGO_UNKNOWN_GLYPH_WIDTH,
 					       PANGO_UNKNOWN_GLYPH_HEIGHT,

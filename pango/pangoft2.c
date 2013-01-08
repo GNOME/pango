@@ -424,12 +424,13 @@ pango_ft2_font_get_kerning (PangoFont *font,
 static FT_Face
 pango_ft2_font_real_lock_face (PangoFcFont *font)
 {
-  return pango_ft2_font_get_face ((PangoFont *)font);
+  return pango_fc_font_lock_face (font);
 }
 
 static void
-pango_ft2_font_real_unlock_face (PangoFcFont *font G_GNUC_UNUSED)
+pango_ft2_font_real_unlock_face (PangoFcFont *font)
 {
+  pango_fc_font_unlock_face (font);
 }
 
 static gboolean
@@ -499,12 +500,18 @@ pango_ft2_font_get_coverage (PangoFont     *font,
 PangoGlyph
 pango_ft2_get_unknown_glyph (PangoFont *font)
 {
-  FT_Face face = pango_ft2_font_get_face (font);
+  PangoFcFont *fc_font = PANGO_FC_FONT (font);
+  FT_Face face;
+  PangoGlyph glyph;
+
+  face = pango_fc_font_lock_face (fc_font);
   if (face && FT_IS_SFNT (face))
     /* TrueType fonts have an 'unknown glyph' box on glyph index 0 */
-    return 0;
+    glyph = 0;
   else
-    return PANGO_GLYPH_EMPTY;
+    glyph = PANGO_GLYPH_EMPTY;
+  pango_fc_font_unlock_face (fc_font);
+  return glyph;
 }
 
 typedef struct
