@@ -233,7 +233,7 @@ AM_CONDITIONAL(HAVE_HARFBUZZ, $have_harfbuzz)
 #
 have_fontconfig=false
 if $have_harfbuzz ; then
-  PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 2.5.0, have_fontconfig=true, AC_MSG_RESULT([no]))
+  PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 2.10.91, have_fontconfig=true, AC_MSG_RESULT([no]))
 fi
 
 #
