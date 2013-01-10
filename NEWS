@@ -1,3 +1,10 @@
+Overview of changes between 1.32.5 and 1.32.6
+=============================================
+- Make pango threadsafe
+- Pass down BOT/EOT flags to HarfBuzz
+- 690279 - broken relocation of modules
+- 691263 - Build with automake-1.13 broken
+
 Overview of changes between 1.32.4 and 1.32.5
 =============================================
 - 689843 - Drop last ues of G_CONST_RETURN
