@@ -29,6 +29,7 @@
 
 #include "pango-engine.h"
 #include "pango-utils.h"
+#include "pangofc-fontmap.h"
 #include "pangofc-font.h"
 #include <hb-ft.h>
 #include <hb-glib.h>
@@ -318,6 +319,8 @@ basic_engine_shape (PangoEngineShape    *engine G_GNUC_UNUSED,
   int last_cluster;
   guint i, num_glyphs;
   unsigned int item_offset = item_text - paragraph_text;
+  hb_feature_t features[8];
+  unsigned int num_features = 0;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (analysis != NULL);
@@ -367,7 +370,26 @@ basic_engine_shape (PangoEngineShape    *engine G_GNUC_UNUSED,
 		       (item_offset + item_length == paragraph_length ? HB_BUFFER_FLAG_EOT : 0));
 
   hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_offset, item_length);
-  hb_shape (hb_font, hb_buffer, NULL, 0);
+
+  /* Setup features from fontconfig pattern. */
+  if (fc_font->font_pattern)
+    {
+      char *s;
+      while (num_features < G_N_ELEMENTS (features) &&
+	     FcResultMatch == FcPatternGetString (fc_font->font_pattern,
+						  PANGO_FC_FONT_FEATURES,
+						  num_features,
+						  (FcChar8 **) &s))
+	{
+	  features[num_features].tag   = hb_tag_from_string (s, -1);
+	  features[num_features].value = 1;
+	  features[num_features].start = 0;
+	  features[num_features].end   = (unsigned int) -1;
+	  num_features++;
+	}
+    }
+
+  hb_shape (hb_font, hb_buffer, features, num_features);
 
   if (PANGO_GRAVITY_IS_IMPROPER (analysis->gravity))
     hb_buffer_reverse (hb_buffer);

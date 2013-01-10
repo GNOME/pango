@@ -915,6 +915,7 @@ pango_fc_font_map_find_decoder
 pango_fc_font_map_cache_clear
 pango_fc_font_map_shutdown
 pango_fc_font_description_from_pattern
+PANGO_FC_FONT_FEATURES
 PANGO_FC_GRAVITY
 PANGO_FC_VERSION
 PANGO_FC_PRGNAME

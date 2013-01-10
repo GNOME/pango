@@ -266,6 +266,20 @@ PangoFontDescription *pango_fc_font_description_from_pattern (FcPattern *pattern
  */
 #define PANGO_FC_PRGNAME "pangoprgname"
 
+/**
+ * PANGO_FC_FONT_FEATURES:
+ *
+ * String representing a fontconfig property name that Pango reads from font
+ * patterns to populate list of OpenType features to be enabled for the font
+ * by default.
+ *
+ * The property will have a number of string elements, each of which is the
+ * OpenType feature tag of one feature to enable.
+ *
+ * Since: 1.34
+ */
+#define PANGO_FC_FONT_FEATURES "pangofontfeatures"
+
 G_END_DECLS
 
 #endif /* __PANGO_FC_FONT_MAP_H__ */
