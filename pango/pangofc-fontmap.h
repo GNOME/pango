@@ -262,9 +262,11 @@ PangoFontDescription *pango_fc_font_description_from_pattern (FcPattern *pattern
  * This can be used to write fontconfig configuration rules that only affect
  * certain applications.
  *
+ * This is equivalent to FC_PRGNAME in versions of fontconfig that have that.
+ *
  * Since: 1.24
  */
-#define PANGO_FC_PRGNAME "pangoprgname"
+#define PANGO_FC_PRGNAME "prgname"
 
 /**
  * PANGO_FC_FONT_FEATURES:
@@ -276,9 +278,11 @@ PangoFontDescription *pango_fc_font_description_from_pattern (FcPattern *pattern
  * The property will have a number of string elements, each of which is the
  * OpenType feature tag of one feature to enable.
  *
+ * This is equivalent to FC_FONT_FEATURES in versions of fontconfig that have that.
+ *
  * Since: 1.34
  */
-#define PANGO_FC_FONT_FEATURES "pangofontfeatures"
+#define PANGO_FC_FONT_FEATURES "fontfeatures"
 
 G_END_DECLS
 
