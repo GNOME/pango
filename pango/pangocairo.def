@@ -32,3 +32,4 @@ EXPORTS
 	pango_cairo_show_layout_line
 	pango_cairo_update_context
 	pango_cairo_update_layout
+	pango_cairo_win32_font_map_get_type
