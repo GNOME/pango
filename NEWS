@@ -1,3 +1,8 @@
+Overview of changes between 1.32.6 and 1.33.7
+=============================================
+- Allow enabling font features through fontconfig snipplets
+- Fix an infinite loop when starting Inkscape
+
 Overview of changes between 1.32.5 and 1.32.6
 =============================================
 - Make pango threadsafe
