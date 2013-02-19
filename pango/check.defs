@@ -21,8 +21,12 @@ for def in $srcdir/*.def; do
 
 	expected=$lib.expected
 	list=$lib.list
-	eval $get_pango_syms | sort -u > "$expected"
-	cut -f 2 "$def" | grep -v EXPORTS | sort -u > "$list"
+	eval $get_pango_syms |
+	sort -u > "$expected"
+	cut -f 2 "$def" |
+	grep -v pango_cairo_win32_font_map_get_type |
+	grep -v EXPORTS |
+	sort -u > "$list"
 
 	diff -u "$list" "$expected" >&2 && rm -f "$list" "$expected" || status=1
 done
