@@ -1790,6 +1790,8 @@ pango_fc_font_map_cache_clear (PangoFcFontMap *fcfontmap)
 
   pango_fc_font_map_fini (fcfontmap);
   pango_fc_font_map_init (fcfontmap);
+
+  pango_font_map_changed (PANGO_FONT_MAP (fcfontmap));
 }
 
 static PangoFcFontFaceData *
