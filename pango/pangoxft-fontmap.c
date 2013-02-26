@@ -62,6 +62,7 @@ struct _PangoXftFontMapClass
 };
 
 static guint         pango_xft_font_map_get_serial         (PangoFontMap         *fontmap);
+static void          pango_xft_font_map_changed            (PangoFontMap         *fontmap);
 static void          pango_xft_font_map_default_substitute (PangoFcFontMap       *fcfontmap,
 							    FcPattern            *pattern);
 static PangoFcFont * pango_xft_font_map_new_font           (PangoFcFontMap       *fcfontmap,
@@ -83,6 +84,7 @@ pango_xft_font_map_class_init (PangoXftFontMapClass *class)
   gobject_class->finalize  = pango_xft_font_map_finalize;
 
   fontmap_class->get_serial = pango_xft_font_map_get_serial;
+  fontmap_class->changed = pango_xft_font_map_changed;
 
   fcfontmap_class->default_substitute = pango_xft_font_map_default_substitute;
   fcfontmap_class->new_font = pango_xft_font_map_new_font;
@@ -119,6 +121,16 @@ pango_xft_font_map_get_serial (PangoFontMap *fontmap)
   PangoXftFontMap *xftfontmap = PANGO_XFT_FONT_MAP (fontmap);
 
   return xftfontmap->serial;
+}
+
+static void
+pango_xft_font_map_changed (PangoFontMap *fontmap)
+{
+  PangoXftFontMap *xftfontmap = PANGO_XFT_FONT_MAP (fontmap);
+
+  xftfontmap->serial++;
+  if (xftfontmap->serial == 0)
+    xftfontmap->serial++;
 }
 
 static PangoFontMap *

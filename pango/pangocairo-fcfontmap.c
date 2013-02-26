@@ -42,6 +42,16 @@ pango_cairo_fc_font_map_get_serial (PangoFontMap *fontmap)
 }
 
 static void
+pango_cairo_fc_font_map_changed (PangoFontMap *fontmap)
+{
+  PangoCairoFcFontMap *cffontmap = (PangoCairoFcFontMap *) (fontmap);
+
+  cffontmap->serial++;
+  if (cffontmap->serial == 0)
+    cffontmap->serial++;
+}
+
+static void
 pango_cairo_fc_font_map_set_resolution (PangoCairoFontMap *cfontmap,
 					double             dpi)
 {
@@ -182,6 +192,7 @@ pango_cairo_fc_font_map_class_init (PangoCairoFcFontMapClass *class)
   gobject_class->finalize  = pango_cairo_fc_font_map_finalize;
 
   fontmap_class->get_serial = pango_cairo_fc_font_map_get_serial;
+  fontmap_class->changed = pango_cairo_fc_font_map_changed;
 
   fcfontmap_class->fontset_key_substitute = pango_cairo_fc_font_map_fontset_key_substitute;
   fcfontmap_class->get_resolution = pango_cairo_fc_font_map_get_resolution_fc;

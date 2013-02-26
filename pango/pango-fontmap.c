@@ -314,3 +314,26 @@ pango_font_map_get_serial (PangoFontMap *fontmap)
   else
     return 1;
 }
+
+/**
+ * pango_font_map_changed:
+ * @fontmap: a #PangoFontMap
+ *
+ * Forces a change in the context, which will cause any #PangoContext
+ * using this fontmap to change.
+ *
+ * This function is only useful when implementing a new backend
+ * for Pango, something applications won't do. Backends should
+ * call this function if they have attached extra data to the context
+ * and such data is changed.
+ *
+ * Since: 1.34.0
+ **/
+void
+pango_font_map_changed (PangoFontMap *fontmap)
+{
+  g_return_if_fail (PANGO_IS_FONT_MAP (fontmap));
+
+  if (PANGO_FONT_MAP_GET_CLASS (fontmap)->changed)
+    return PANGO_FONT_MAP_GET_CLASS (fontmap)->changed (fontmap);
+}

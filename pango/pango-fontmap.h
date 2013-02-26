@@ -46,6 +46,7 @@ void          pango_font_map_list_families (PangoFontMap                 *fontma
 					    PangoFontFamily            ***families,
 					    int                          *n_families);
 guint         pango_font_map_get_serial    (PangoFontMap                 *fontmap);
+void          pango_font_map_changed       (PangoFontMap                 *fontmap);
 
 #ifdef PANGO_ENABLE_BACKEND
 
@@ -80,13 +81,13 @@ struct _PangoFontMapClass
   const char     *shape_engine_type;
 
   guint         (*get_serial)    (PangoFontMap               *fontmap);
+  void          (*changed)       (PangoFontMap               *fontmap);
 
   /*< private >*/
 
   /* Padding for future expansion */
   void (*_pango_reserved1) (void);
   void (*_pango_reserved2) (void);
-  void (*_pango_reserved3) (void);
 };
 
 const char   *pango_font_map_get_shape_engine_type (PangoFontMap *fontmap);

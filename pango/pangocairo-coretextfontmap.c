@@ -43,6 +43,16 @@ pango_cairo_core_text_font_map_get_serial (PangoFontMap *fontmap)
 }
 
 static void
+pango_cairo_core_text_font_map_changed (PangoFontMap *fontmap)
+{
+  PangoCairoCoreTextFontMap *cafontmap = PANGO_CAIRO_CORE_TEXT_FONT_MAP (fontmap);
+
+  cafontmap->serial++;
+  if (cafontmap->serial == 0)
+    cafontmap->serial++;
+}
+
+static void
 pango_cairo_core_text_font_map_set_resolution (PangoCairoFontMap *cfontmap,
                                                double             dpi)
 {
@@ -161,6 +171,7 @@ pango_cairo_core_text_font_map_class_init (PangoCairoCoreTextFontMapClass *class
   object_class->finalize = pango_cairo_core_text_font_map_finalize;
 
   fontmap_class->get_serial = pango_cairo_core_text_font_map_get_serial;
+  fontmap_class->changed = pango_cairo_core_text_font_map_changed;
 
   ctfontmapclass->get_resolution = pango_cairo_core_text_font_map_get_resolution_core_text;
   ctfontmapclass->create_font = pango_cairo_core_text_font_map_create_font;

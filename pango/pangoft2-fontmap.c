@@ -68,6 +68,7 @@ static PangoFcFont * pango_ft2_font_map_new_font            (PangoFcFontMap     
 static double        pango_ft2_font_map_get_resolution      (PangoFcFontMap       *fcfontmap,
 							     PangoContext         *context);
 static guint         pango_ft2_font_map_get_serial          (PangoFontMap         *fontmap);
+static void          pango_ft2_font_map_changed             (PangoFontMap         *fontmap);
 
 static PangoFT2FontMap *pango_ft2_global_fontmap = NULL; /* MT-safe */
 
@@ -82,6 +83,7 @@ pango_ft2_font_map_class_init (PangoFT2FontMapClass *class)
 
   gobject_class->finalize = pango_ft2_font_map_finalize;
   fontmap_class->get_serial = pango_ft2_font_map_get_serial;
+  fontmap_class->changed = pango_ft2_font_map_changed;
   fcfontmap_class->default_substitute = _pango_ft2_font_map_default_substitute;
   fcfontmap_class->new_font = pango_ft2_font_map_new_font;
   fcfontmap_class->get_resolution = pango_ft2_font_map_get_resolution;
@@ -152,6 +154,16 @@ pango_ft2_font_map_get_serial (PangoFontMap *fontmap)
   PangoFT2FontMap *ft2fontmap = PANGO_FT2_FONT_MAP (fontmap);
 
   return ft2fontmap->serial;
+}
+
+static void
+pango_ft2_font_map_changed (PangoFontMap *fontmap)
+{
+  PangoFT2FontMap *ft2fontmap = PANGO_FT2_FONT_MAP (fontmap);
+
+  ft2fontmap->serial++;
+  if (ft2fontmap->serial == 0)
+    ft2fontmap->serial++;
 }
 
 /**
