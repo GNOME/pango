@@ -1701,7 +1701,9 @@ pango_win32_face_get_type (void)
 PangoWin32FontCache *
 pango_win32_font_map_get_font_cache (PangoFontMap *font_map)
 {
-  g_return_val_if_fail (font_map != NULL, NULL);
+  if (G_UNLIKELY (!font_map))
+    return NULL;
+
   g_return_val_if_fail (PANGO_WIN32_IS_FONT_MAP (font_map), NULL);
 
   return PANGO_WIN32_FONT_MAP (font_map)->font_cache;
