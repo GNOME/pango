@@ -151,6 +151,7 @@ EXPORTS
 	pango_font_get_glyph_extents
 	pango_font_get_metrics
 	pango_font_get_type
+	pango_font_map_changed
 	pango_font_map_create_context
 	pango_font_map_get_shape_engine_type
 	pango_font_map_get_serial
