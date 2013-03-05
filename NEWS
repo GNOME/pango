@@ -1,3 +1,13 @@
+Overview of changes between 1.33.7 and 1.33.8
+=============================================
+- 694095 - Fails make check: -pango_cairo_win32_font_map_get_type
+- 668154 - GTK+ Crashes on Non BMP utf-8 charpoints
+- 694626 - Add pango_font_map_changed
+- 694626 - PangoFc: change FontMap in pango_fc_font_map_clear_cache
+- 694830 - Fails make check: +pango_font_map_change
+- 694918 - Pango layout is misrendered with non-identity transformation
+- 694882 - build broken - introspection of pangoxft2 and pangoxft
+
 Overview of changes between 1.32.6 and 1.33.7
 =============================================
 - Allow enabling font features through fontconfig snipplets
