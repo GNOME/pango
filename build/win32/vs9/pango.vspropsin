@@ -46,8 +46,16 @@ copy ..\..\..\pango\module-defs-win32.c.win32 ..\..\..\pango\DONE_MODULE_DEFS_WI
 "
 	/>
 	<UserMacro
+		Name="VSVer"
+		Value="9"
+	/>
+	<UserMacro
 		Name="GlibEtcInstallRoot"
-		Value="..\..\..\..\vs9\$(PlatformName)"
+		Value="..\..\..\..\vs$(VSVer)\$(PlatformName)"
+	/>
+	<UserMacro
+		Name="GlibEtcInstallRootFromBuildWin32"
+		Value="..\..\..\vs$(VSVer)\$(PlatformName)"
 	/>
 	<UserMacro
 		Name="CopyDir"
@@ -110,6 +118,19 @@ copy ..\..\..\pango\pangoft2.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
 "
 	/>
 	<UserMacro
+		Name="DoGenGir"
+		Value="
+set VSVER=$(VSVer)&#x0D;&#x0A;
+set CONF=$(ConfigurationName)&#x0D;&#x0A;
+set PLAT=$(PlatformName)&#x0D;&#x0A;
+set BASEDIR=$(GlibEtcInstallRootFromBuildWin32)&#x0D;&#x0A;
+
+cd ..&#x0D;&#x0A;
+call gengir_pango.bat&#x0D;&#x0A;
+cd vs$(VSVer)&#x0D;&#x0A;
+			  "
+	/>
+	<UserMacro
 		Name="PangoLibtoolCompatibleDllPrefix"
 		Value="lib"
 	/>
@@ -118,21 +139,21 @@ copy ..\..\..\pango\pangoft2.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
 		Value="-$(PangoApiVersion)-0"
 	/>
 	<UserMacro
-		Name="PangoSeparateVS9DllPrefix"
+		Name="PangoSeparateVSDllPrefix"
 		Value=""
 	/>
 	<UserMacro
-		Name="PangoSeparateVS9DllSuffix"
-		Value="-1-vs9"
+		Name="PangoSeparateVSDllSuffix"
+		Value="-1-vs$(VSVer)"
 	/>
 	<!-- Change these two to PangoLibtoolCompatibleDllPrefix and
 	PangoLibtoolCompatibleDllSuffix if that is what you want -->
 	<UserMacro
 		Name="PangoDllPrefix"
-		Value="$(PangoSeparateVS9DllPrefix)"
+		Value="$(PangoSeparateVSDllPrefix)"
 	/>
 	<UserMacro
 		Name="PangoDllSuffix"
-		Value="$(PangoSeparateVS9DllSuffix)"
+		Value="$(PangoSeparateVSDllSuffix)"
 	/>
 </VisualStudioPropertySheet>
