@@ -36,7 +36,8 @@
 #include "pangowin32-private.h"
 #include "modules.h"
 
-typedef struct _PangoWin32Family       PangoWin32Family;
+typedef struct _PangoWin32Family PangoWin32Family;
+typedef PangoFontFamilyClass PangoWin32FamilyClass;
 
 struct _PangoWin32Family
 {
@@ -48,6 +49,7 @@ struct _PangoWin32Family
   gboolean is_monospace;
 };
 
+
 #if !defined(NTM_PS_OPENTYPE)
 # define NTM_PS_OPENTYPE 0x20000
 #endif
@@ -58,11 +60,17 @@ struct _PangoWin32Family
 
 #define PANGO_WIN32_TYPE_FAMILY              (pango_win32_family_get_type ())
 #define PANGO_WIN32_FAMILY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_WIN32_TYPE_FAMILY, PangoWin32Family))
-#define PANGO_WIN32_IS_FAMILY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_WIN32_TYPE_FAMILY))
+#define PANGO_WIN32_IS_FAMILY (object)       (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_WIN32_TYPE_FAMILY))
+#define PANGO_WIN32_FAMILY_CLASS (klass)     (G_TYPE_CHECK_CLASS_CAST (klass), PANGO_WIN32_TYPE_FAMILY, PangoWin32Family))
+#define PANGO_WIN32_IS_FAMILY_CLASS (klass)  (G_TYPE_CHECK_CLASS_CAST (klass), PANGO_WIN32_TYPE_FAMILY))
+#define PANGO_WIN32_FAMILY_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS((object), PANGO_WIN32_FAMILY, PangoWin32FamilyClass))
 
 #define PANGO_WIN32_TYPE_FACE              (pango_win32_face_get_type ())
 #define PANGO_WIN32_FACE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_WIN32_TYPE_FACE, PangoWin32Face))
 #define PANGO_WIN32_IS_FACE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_WIN32_TYPE_FACE))
+#define PANGO_WIN32_FACE_CLASS (klass)     (G_TYPE_CHECK_CLASS_CAST (klass), PANGO_WIN32_TYPE_FACE, PangoWin32Face))
+#define PANGO_WIN32_IS_FACE_CLASS (klass)  (G_TYPE_CHECK_CLASS_CAST (klass), PANGO_WIN32_TYPE_FACE))
+#define PANGO_WIN32_FACE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS((object), PANGO_WIN32_FACE, PangoWin32FaceClass))
 
 static GType      pango_win32_face_get_type          (void);
 
@@ -832,6 +840,8 @@ pango_win32_family_is_monospace (PangoFontFamily *family)
   return win32family->is_monospace;
 }
 
+G_DEFINE_TYPE (PangoWin32Family, pango_win32_family, PANGO_TYPE_FONT_FAMILY)
+
 static void
 pango_win32_family_class_init (PangoFontFamilyClass *class)
 {
@@ -840,32 +850,9 @@ pango_win32_family_class_init (PangoFontFamilyClass *class)
   class->is_monospace = pango_win32_family_is_monospace;
 }
 
-static GType
-pango_win32_family_get_type (void)
+static void
+pango_win32_family_init (PangoWin32Family *family)
 {
-  static GType object_type = 0;
-
-  if (G_UNLIKELY (!object_type))
-    {
-      const GTypeInfo object_info =
-      {
-	sizeof (PangoFontFamilyClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) pango_win32_family_class_init,
-	NULL,           /* class_finalize */
-	NULL,           /* class_data */
-	sizeof (PangoWin32Family),
-	0,              /* n_preallocs */
-	(GInstanceInitFunc) NULL,
-      };
-
-      object_type = g_type_register_static (PANGO_TYPE_FONT_FAMILY,
-					    I_("PangoWin32Family"),
-					    &object_info, 0);
-    }
-
-  return object_type;
 }
 
 static void
@@ -1640,6 +1627,8 @@ pango_win32_face_is_synthesized (PangoFontFace *face)
   return win32face->is_synthetic;
 }
 
+G_DEFINE_TYPE (PangoWin32Face, pango_win32_face, PANGO_TYPE_FONT_FACE)
+
 static void
 pango_win32_face_class_init (PangoFontFaceClass *class)
 {
@@ -1647,6 +1636,11 @@ pango_win32_face_class_init (PangoFontFaceClass *class)
   class->get_face_name = pango_win32_face_get_face_name;
   class->list_sizes = pango_win32_face_list_sizes;
   class->is_synthesized = pango_win32_face_is_synthesized;
+}
+
+static void
+pango_win32_face_init (PangoWin32Face *face)
+{
 }
 
 static void
@@ -1660,34 +1654,6 @@ pango_win32_face_list_sizes (PangoFontFace  *face,
    */
   *sizes = NULL;
   *n_sizes = 0;
-}
-
-static GType
-pango_win32_face_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (G_UNLIKELY (!object_type))
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (PangoFontFaceClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_win32_face_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoWin32Face),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) NULL,
-      };
-      
-      object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
-                                            I_("PangoWin32Face"),
-                                            &object_info, 0);
-    }
-  
-  return object_type;
 }
 
 /**

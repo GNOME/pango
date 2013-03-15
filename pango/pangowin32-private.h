@@ -85,6 +85,7 @@ typedef struct _PangoWin32FontMapClass PangoWin32FontMapClass;
 typedef struct _PangoWin32Font         PangoWin32Font;
 typedef struct _PangoWin32FontClass    PangoWin32FontClass;
 typedef struct _PangoWin32Face         PangoWin32Face;
+typedef PangoFontFaceClass             PangoWin32FaceClass;
 typedef struct _PangoWin32GlyphInfo    PangoWin32GlyphInfo;
 typedef struct _PangoWin32MetricsInfo  PangoWin32MetricsInfo;
 
