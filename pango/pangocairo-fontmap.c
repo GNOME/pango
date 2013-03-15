@@ -66,6 +66,10 @@ pango_cairo_font_map_default_init (PangoCairoFontMapIface *iface)
 PangoFontMap *
 pango_cairo_font_map_new (void)
 {
+#if !GLIB_CHECK_VERSION (2, 35, 3)
+  /* Make sure that the type system is initialized */
+  g_type_init ();
+#endif
 #if defined(HAVE_CORE_TEXT) && defined (HAVE_CAIRO_QUARTZ)
   return g_object_new (PANGO_TYPE_CAIRO_CORE_TEXT_FONT_MAP, NULL);
 #elif defined(HAVE_CAIRO_WIN32)
@@ -99,6 +103,10 @@ pango_cairo_font_map_new (void)
 PangoFontMap *
 pango_cairo_font_map_new_for_font_type (cairo_font_type_t fonttype)
 {
+#if !GLIB_CHECK_VERSION (2, 35, 3)
+  /* Make sure that the type system is initialized */
+  g_type_init ();
+#endif
   switch ((int) fonttype)
   {
 #if defined(HAVE_CORE_TEXT) && defined (HAVE_CAIRO_QUARTZ)
