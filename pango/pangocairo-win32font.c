@@ -79,30 +79,6 @@ pango_cairo_win32_font_create_font_face (PangoCairoFont *font)
   return cairo_win32_font_face_create_for_logfontw (&win32font->logfontw);
 }
 
-static int
-max_glyph_width (PangoLayout *layout)
-{
-  int max_width = 0;
-  GSList *l, *r;
-
-  for (l = pango_layout_get_lines_readonly (layout); l; l = l->next)
-    {
-      PangoLayoutLine *line = l->data;
-
-      for (r = line->runs; r; r = r->next)
-	{
-	  PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
-	  int i;
-
-	  for (i = 0; i < glyphs->num_glyphs; i++)
-	    if (glyphs->glyphs[i].geometry.width > max_width)
-	      max_width = glyphs->glyphs[i].geometry.width;
-	}
-    }
-
-  return max_width;
-}
-
 static PangoFontMetrics *
 pango_cairo_win32_font_create_base_metrics_for_context (PangoCairoFont *font,
 							PangoContext   *context)
@@ -114,7 +90,7 @@ pango_cairo_win32_font_create_base_metrics_for_context (PangoCairoFont *font,
 
   metrics = pango_font_metrics_new ();
 
-  scaled_font = pango_cairo_font_get_scaled_font ((PangoFont *) font);
+  scaled_font = pango_cairo_font_get_scaled_font (font);
 
   cairo_scaled_font_extents (scaled_font, &font_extents);
   cairo_win32_scaled_font_done_font (scaled_font);
