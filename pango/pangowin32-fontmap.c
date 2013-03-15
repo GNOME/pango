@@ -678,7 +678,7 @@ pango_win32_font_map_fontset_add_fonts (PangoFontMap          *fontmap,
   /* Mostly use the "old" pango_font_map_fontset_add_fonts() */
   /* on Windows so that we can go through the .aliases file */
   /* to load the appropriate fontset for various texts */
-  PangoFont *font, *result;
+  PangoFont *font;
   char **aliases;
   int n_aliases;
   int j;
@@ -989,9 +989,9 @@ pango_win32_font_neww (PangoFontMap   *fontmap,
 
   result = (PangoWin32Font *)g_object_new (PANGO_TYPE_WIN32_FONT, NULL);
 
-  g_assert (result->fontmap == NULL);
-  result->fontmap = fontmap;
-  g_object_add_weak_pointer (G_OBJECT (result->fontmap), (gpointer *) (gpointer) &result->fontmap);
+  if (G_UNLIKELY(result->fontmap))
+    return result;
+  g_weak_ref_set ((GWeakRef *)&result->fontmap, fontmap);
 
   result->size = size;
   _pango_win32_make_matching_logfontw (fontmap, lfp, size, &result->logfontw);
