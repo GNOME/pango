@@ -35,7 +35,7 @@ draw (cairo_t *cr, PangoLayout *layout, unsigned int i)
   cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
 
   cairo_identity_matrix (cr);
-  cairo_scale (cr, (100 + i) / 10.,  (100 + i) / 10.);
+  cairo_scale (cr, (100 + i) / 100.,  (100 + i) / 100.);
   pango_cairo_update_layout (cr, layout);
 
   pango_cairo_show_layout (cr, layout);
