@@ -35,7 +35,7 @@
 				PreprocessorDefinitions="_DEBUG;$(PangoDefines);HAVE_GLIB;HAVE_STDINT_H=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="2"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
