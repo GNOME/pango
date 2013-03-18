@@ -1,3 +1,10 @@
+Overview of changes between 1.33.8 and 1.33.9
+=============================================
+- Port PangoWin32 to use GWeakRef
+- 682846 - Use G_DEFINE_TYPE in pangowin32-fontmap
+- Fix scale in pangocairo-threads test
+- Misc Win32 build fixes
+
 Overview of changes between 1.33.7 and 1.33.8
 =============================================
 - 694095 - Fails make check: -pango_cairo_win32_font_map_get_type
