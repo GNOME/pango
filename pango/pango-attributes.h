@@ -118,8 +118,8 @@ struct _PangoAttribute
  *
  * Type of a function filtering a list of attributes.
  *
- * Return value: %TRUE if the attribute should be kept, %FALSE if it should be
- * filtered out.
+ * Return value: %TRUE if the attribute should be selected for
+ * filtering, %FALSE otherwise.
  **/
 typedef gboolean (*PangoAttrFilterFunc) (PangoAttribute *attribute,
 					 gpointer        user_data);
