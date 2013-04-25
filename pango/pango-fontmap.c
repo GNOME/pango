@@ -335,5 +335,5 @@ pango_font_map_changed (PangoFontMap *fontmap)
   g_return_if_fail (PANGO_IS_FONT_MAP (fontmap));
 
   if (PANGO_FONT_MAP_GET_CLASS (fontmap)->changed)
-    return PANGO_FONT_MAP_GET_CLASS (fontmap)->changed (fontmap);
+    PANGO_FONT_MAP_GET_CLASS (fontmap)->changed (fontmap);
 }
