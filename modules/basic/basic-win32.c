@@ -716,7 +716,9 @@ basic_engine_shape (PangoEngineShape 	*engine,
 		    const char       	*text,
 		    int              	 length,
 		    const PangoAnalysis *analysis,
-		    PangoGlyphString    *glyphs)
+		    PangoGlyphString    *glyphs,
+		    const char          *paragraph_text G_GNUC_UNUSED,
+		    unsigned int         paragraph_length G_GNUC_UNUSED)
 {
   int n_chars;
   int i;
