@@ -453,8 +453,8 @@ typedef enum
   STATE_SENTENCE_POST_DOT_SEP
 } SentenceState;
 
-/* We call "123" and "foobar" words, but "123foo" is two words;
- * the Unicode spec just calls "123" a non-word
+/* Previously "123foo" was two words. But in UAX 29 of Unicode, 
+ * we know don't break words between consecutive letters and numbers
  */
 typedef enum
 {
@@ -1155,27 +1155,12 @@ pango_default_break (const gchar   *text,
 			attrs[i].is_word_end = TRUE;
 		    }
 		}
-	      else
-		{
-		  /* end the number word, start the letter word */
-		  attrs[i].is_word_end = TRUE;
-		  attrs[i].is_word_start = TRUE;
-		  current_word_type = WordLetters;
-		}
-
 	      last_word_letter = wc;
 	      break;
 
 	    case G_UNICODE_DECIMAL_NUMBER:
 	    case G_UNICODE_LETTER_NUMBER:
 	    case G_UNICODE_OTHER_NUMBER:
-	      if (current_word_type != WordNumbers)
-		{
-		  attrs[i].is_word_end = TRUE;
-		  attrs[i].is_word_start = TRUE;
-		  current_word_type = WordNumbers;
-		}
-
 	      last_word_letter = wc;
 	      break;
 
