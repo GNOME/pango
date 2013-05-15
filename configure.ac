@@ -353,7 +353,7 @@ have_cairo_xlib=false
 have_cairo_freetype=false
 have_cairo_win32=false
 have_cairo_quartz=false
-cairo_required=1.7.6
+cairo_required=1.12.10
 
 PKG_CHECK_MODULES(CAIRO, cairo >= $cairo_required, have_cairo=true, AC_MSG_RESULT([no]))
 
