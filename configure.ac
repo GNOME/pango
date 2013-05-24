@@ -355,7 +355,12 @@ have_cairo_win32=false
 have_cairo_quartz=false
 cairo_required=1.12.10
 
-PKG_CHECK_MODULES(CAIRO, cairo >= $cairo_required, have_cairo=true, AC_MSG_RESULT([no]))
+AC_ARG_WITH(cairo,
+	    AS_HELP_STRING([--without-cairo], [Do not use cairo]),
+	    :, with_cairo=auto)
+AS_IF([test x$with_cairo != xno], [
+  PKG_CHECK_MODULES(CAIRO, cairo >= $cairo_required, have_cairo=true, AC_MSG_RESULT([no]))
+])
 
 if $have_cairo ; then
   pango_save_libs=$LIBS
@@ -397,6 +402,9 @@ if $have_cairo ; then
   if $have_cairo ; then
     AC_MSG_RESULT([$cairo_font_backends])
   else
+    if test x${with_cairo} != xauto; then
+      AC_MSG_ERROR([cairo support requested, but not present])
+    fi
     AC_MSG_RESULT([none])
     AC_MSG_NOTICE([Disabling cairo support])
   fi
