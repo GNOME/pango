@@ -1747,7 +1747,7 @@ pango_find_paragraph_boundary (const gchar *text,
 
   prev_sep = 0;
 
-  while (p != end)
+  while (p < end)
     {
       if (prev_sep == '\n' ||
 	  prev_sep == PARAGRAPH_SEPARATOR_STRING[0])
