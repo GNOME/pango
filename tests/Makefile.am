@@ -7,7 +7,7 @@ EXTRA_DIST = 			\
 CLEANFILES = pangorc
 DISTCLEANFILES = all-unicode.txt
 
-INCLUDES =					\
+AM_CPPFLAGS =					\
 	-I$(top_srcdir)				\
 	$(PANGO_DEBUG_FLAGS)			\
 	$(GLIB_CFLAGS)				\
@@ -17,23 +17,23 @@ INCLUDES =					\
 	$(X_CFLAGS)
 
 if HAVE_XFT
-INCLUDES += -DHAVE_X
+AM_CPPFLAGS += -DHAVE_X
 endif
 if HAVE_XFT
-INCLUDES += -DHAVE_XFT
+AM_CPPFLAGS += -DHAVE_XFT
 endif
 if HAVE_FREETYPE
-INCLUDES += -DHAVE_FREETYPE
+AM_CPPFLAGS += -DHAVE_FREETYPE
 endif
 if HAVE_WIN32
-INCLUDES += -DHAVE_WIN32
+AM_CPPFLAGS += -DHAVE_WIN32
 endif
 
 
 if CROSS_COMPILING
-TESTS=
+TESTS =
 else
-TESTS=$(check_PROGRAMS)
+TESTS = $(check_PROGRAMS)
 endif
 
 TESTS_ENVIRONMENT =                    \
@@ -77,5 +77,25 @@ pangorc: $(srcdir)/../modules/pangorc
 $(noinst_PROGRAMS) $(check_PROGRAMS): pangorc
 
 noinst_PROGRAMS = $(check_PROGRAMS) gen-all-unicode dump-boundaries
+
+if BUILDOPT_INSTALL_TESTS
+insttestdir=$(pkglibexecdir)/installed-tests
+insttest_PROGRAMS = $(check_PROGRAMS)
+
+testdatadir = $(insttestdir)
+testdata_DATA = 		\
+	all-unicode.txt 	\
+	boundaries.utf8 	\
+	GraphemeBreakTest.txt
+
+testmetadir = $(datadir)/installed-tests/$(PACKAGE)
+testmeta_DATA = $(check_PROGRAMS:=.test)
+
+%.test: %$(EXEEXT) Makefile
+	$(AM_V_GEN) (echo '[Test]' > $@.tmp; \
+	 echo 'Type=session' >> $@.tmp; \
+	 echo 'Exec=$(pkglibexecdir)/installed-tests/$<' >> $@.tmp; \
+	 mv $@.tmp $@)
+endif
 
 -include $(top_srcdir)/git.mk

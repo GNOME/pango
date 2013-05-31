@@ -222,9 +222,9 @@ test_script_iter (void)
 int
 main (int argc, char **argv)
 {
-  g_setenv ("PANGO_RC_FILE", "./pangorc", TRUE);
+  g_test_init (&argc, &argv, NULL);
 
-  test_script_iter ();
+  g_test_add_func ("/script/iter", test_script_iter);
 
-  return 0;
+  return g_test_run ();
 }

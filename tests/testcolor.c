@@ -30,7 +30,7 @@ typedef struct _ColorSpec {
   guint16 blue;
 } ColorSpec;
 
-static gboolean test_color (ColorSpec *spec)
+static gboolean test_one_color (ColorSpec *spec)
 {
   PangoColor color;
   gboolean accepted;
@@ -78,17 +78,22 @@ ColorSpec specs [] = {
   { NULL,            0, 0, 0, 0 }
 };
 
+static void
+test_color (void)
+{
+  ColorSpec *spec;
+
+  for (spec = specs; spec->spec; spec++)
+    g_assert (test_one_color (spec));
+
+}
+
 int
 main (int argc, char *argv[])
 {
-  gboolean success;
-  ColorSpec *spec;
+  g_test_init (&argc, &argv, NULL);
 
-  g_setenv ("PANGO_RC_FILE", "./pangorc", TRUE);
+  g_test_add_func ("/color/parse", test_color);
 
-  success = TRUE;
-  for (spec = specs; spec->spec; spec++)
-    success &= test_color (spec);
-
-  return !success;
+  return g_test_run ();
 }

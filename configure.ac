@@ -22,7 +22,7 @@ dnl
 dnl The triplet
 m4_define([pango_version_major], [1])
 m4_define([pango_version_minor], [34])
-m4_define([pango_version_micro], [0])
+m4_define([pango_version_micro], [1])
 
 m4_define([pango_version],
           [pango_version_major.pango_version_minor.pango_version_micro])
@@ -676,6 +676,17 @@ AC_ARG_ENABLE(Bsymbolic,
 if test "x${enable_Bsymbolic}" = "xyes"; then
   LIBRARY_LIBTOOL_OPTIONS="$LIBRARY_LIBTOOL_OPTIONS -Wl,-Bsymbolic-functions"
 fi
+
+dnl ********************************************************
+dnl * Installed test                                       *
+dnl ********************************************************
+
+AC_ARG_ENABLE(installed_tests,
+              AS_HELP_STRING([--enable-installed-tests],
+                             [Install test programs (default: no)]),,
+              [enable_installed_tests=no])
+AM_CONDITIONAL(BUILDOPT_INSTALL_TESTS, test x$enable_installed_tests = xyes)
+
 
 dnl ********************************************************
 dnl * See whether we need to load our modules as .la files *

@@ -124,12 +124,12 @@ test_language_tags (void)
 int
 main (int argc, char **argv)
 {
-  g_setenv ("PANGO_RC_FILE", "./pangorc", TRUE);
+  g_test_init (&argc, &argv, NULL);
 
-  test_script_tags ();
-  test_language_tags ();
+  g_test_add_func ("/tags/script", test_script_tags);
+  g_test_add_func ("/tags/language", test_language_tags);
 
-  return 0;
+  return g_test_run ();
 }
 
 G_GNUC_END_IGNORE_DEPRECATIONS

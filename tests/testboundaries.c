@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <glib.h>
 #include <pango/pango.h>
 
 #define CHFORMAT "%0#6x"
@@ -311,20 +312,13 @@ check_invariants (const char *text)
   g_free (attrs);
 }
 
-int
-main (int argc, char *argv[])
+static void
+test_boundaries (void)
 {
   gchar *text;
-  const gchar *srcdir;
   const gchar *filename;
-
-  g_setenv ("PANGO_RC_FILE", "./pangorc", TRUE);
-
-  srcdir = getenv ("srcdir");
-  if (!srcdir)
-    srcdir = ".";
-
-  filename = g_strdup_printf ("%s/boundaries.utf8", srcdir);
+  filename = g_test_get_filename (G_TEST_DIST, "boundaries.utf8", NULL);
+  g_print ("sample file: %s\n", filename);
 
   if (!g_file_get_contents (filename, &text, NULL, NULL))
     fail ("Couldn't open sample text file");
@@ -334,7 +328,15 @@ main (int argc, char *argv[])
   g_free (text);
 
   printf ("testboundaries passed\n");
+}
 
-  return 0;
+int
+main (int argc, char *argv[])
+{
+  g_test_init (&argc, &argv, NULL);
+
+  g_test_add_func ("/text/boundaries", test_boundaries);
+
+  return g_test_run ();
 }
 

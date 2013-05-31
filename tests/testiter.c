@@ -207,15 +207,13 @@ iter_cluster_test (PangoLayout *layout)
   pango_layout_iter_free (iter);
 }
 
-int
-main (int argc, char *argv[])
+static void
+test_layout_iter (void)
 {
   const char  **ptext;
   PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout  *layout;
-
-  g_setenv ("PANGO_RC_FILE", "./pangorc", TRUE);
 
   fontmap = pango_cairo_font_map_get_default ();
   context = pango_font_map_create_context (fontmap);
@@ -236,5 +234,14 @@ main (int argc, char *argv[])
     }
 
   g_object_unref (layout);
-  return 0;
+}
+
+int
+main (int argc, char *argv[])
+{
+  g_test_init (&argc, &argv, NULL);
+
+  g_test_add_func ("/layout/iter", test_layout_iter);
+
+  return g_test_run ();
 }
