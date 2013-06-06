@@ -1447,17 +1447,17 @@ itemize_state_process_run (ItemizeState *state)
       PangoFont *font;
 
       /* We don't want space characters to affect font selection; in general,
-       * it's always wrong to select a font just to render a space.  But until
-       * we have a better solution, choosing a font for spaces seems to work
-       * better.  However, all fonts are assumed to cover ASCII space, so that
-       * one is an exception.  See bug #355987.
+       * it's always wrong to select a font just to render a space.
+       * We assume that all fonts have the ASCII space, and for other space
+       * characters if they don't, HarfBuzz will compatibility-decompose them
+       * to ASCII space...
+       * See bugs #355987 and #701652.
        *
        * The exception of PrivateUse and Unassigned characters is necessary
        * to be able to render any of them. (for private or being encoded
        * scripts, etc.) (Recent glib returns true in isprint for PrivateUse.)
        */
-      if (wc == 0x0020 ||
-	  G_UNLIKELY (!g_unichar_isprint (wc) &&
+      if (G_UNLIKELY (!g_unichar_isgraph (wc) &&
 		      g_unichar_type (wc) != G_UNICODE_PRIVATE_USE &&
 		      g_unichar_type (wc) != G_UNICODE_UNASSIGNED))
 	{
