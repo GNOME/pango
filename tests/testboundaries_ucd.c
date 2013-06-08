@@ -332,7 +332,11 @@ test_grapheme_break (void)
   const gchar *filename;
   AttrBits bits;
 
+#if GLIB_CHECK_VERSION(2, 37, 2)
   filename = g_test_get_filename (G_TEST_DIST, "GraphemeBreakTest.txt", NULL);
+#else
+  filename = SRCDIR "/GraphemeBreakTest.txt";
+#endif
   bits.bits = 0;
   bits.attr.is_cursor_position = 1;
   do_test (filename, bits, FALSE);
@@ -344,7 +348,11 @@ test_word_break (void)
   const gchar *filename;
   AttrBits bits;
 
+#if GLIB_CHECK_VERSION(2, 37, 2)
   filename = g_test_get_filename (G_TEST_DIST, "WordBreakTest.txt", NULL);
+#else
+  filename = SRCDIR "/WordBreakTest.txt";
+#endif
   bits.bits = 0;
   bits.attr.is_word_boundary = 1;
   do_test (filename, bits, FALSE);
@@ -356,7 +364,11 @@ test_sentence_break (void)
   const gchar *filename;
   AttrBits bits;
 
+#if GLIB_CHECK_VERSION(2, 37, 2)
   filename = g_test_get_filename (G_TEST_DIST, "SentenceBreakTest.txt", NULL);
+#else
+  filename = SRCDIR "/SentenceBreakTest.txt";
+#endif
   bits.bits = 0;
   bits.attr.is_sentence_boundary = 1;
   do_test (filename, bits, FALSE);
@@ -368,7 +380,11 @@ test_line_break (void)
   const gchar *filename;
   AttrBits bits;
 
+#if GLIB_CHECK_VERSION(2, 37, 2)
   filename = g_test_get_filename (G_TEST_DIST, "LineBreakTest.txt", NULL);
+#else
+  filename = SRCDIR "/LineBreakTest.txt";
+#endif
   bits.bits = 0;
   bits.attr.is_line_break = 1;
   bits.attr.is_mandatory_break = 1;

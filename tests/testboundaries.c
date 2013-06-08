@@ -317,7 +317,12 @@ test_boundaries (void)
 {
   gchar *text;
   const gchar *filename;
+#if GLIB_CHECK_VERSION(2, 37, 2)
   filename = g_test_get_filename (G_TEST_DIST, "boundaries.utf8", NULL);
+#else
+  filename = SRCDIR "/boundaries.utf8";
+#endif
+
   g_print ("sample file: %s\n", filename);
 
   if (!g_file_get_contents (filename, &text, NULL, NULL))

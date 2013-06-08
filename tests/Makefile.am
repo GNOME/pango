@@ -8,6 +8,7 @@ CLEANFILES = pangorc
 DISTCLEANFILES = all-unicode.txt
 
 AM_CPPFLAGS =					\
+	-DSRCDIR=\"$(srcdir)\"			\
 	-I$(top_srcdir)				\
 	$(PANGO_DEBUG_FLAGS)			\
 	$(GLIB_CFLAGS)				\
