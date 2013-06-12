@@ -4882,8 +4882,36 @@ static void
 pango_layout_line_reorder (PangoLayoutLine *line)
 {
   GSList *logical_runs = line->runs;
-  line->runs = reorder_runs_recurse (logical_runs, g_slist_length (logical_runs));
-  g_slist_free (logical_runs);
+  GSList *tmp_list;
+  gboolean all_even, all_odd;
+  guint8 level_or = 0, level_and = 1;
+  int length = 0;
+
+  /* Check if all items are in the same direction, in that case, the
+   * line does not need modification and we can avoid the expensive
+   * reorder runs recurse procedure.
+   */
+  for (tmp_list = logical_runs; tmp_list != NULL; tmp_list = tmp_list->next)
+    {
+      PangoLayoutRun *run = tmp_list->data;
+
+      level_or |= run->item->analysis.level;
+      level_and &= run->item->analysis.level;
+
+      length++;
+    }
+
+  /* If none of the levels had the LSB set, all numbers were even. */
+  all_even = (level_or & 0x1) == 0;
+
+  /* If all of the levels had the LSB set, all numbers were odd. */
+  all_odd = (level_and & 0x1) == 1;
+
+  if (!all_even && !all_odd)
+    {
+      line->runs = reorder_runs_recurse (logical_runs, length);
+      g_slist_free (logical_runs);
+    }
 }
 
 static int
