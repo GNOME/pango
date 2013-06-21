@@ -1,3 +1,11 @@
+Overview of changes between 1.34 and 1.35.0
+===========================================
+- Requires cairo 1.12.10
+- Add a --with-cairo option
+- Handle invalid utf8 better (#700577)
+- Install some tests
+- Don't change fonts for space (#701652)
+
 Overview of changes between 1.34.0 and 1.34.1
 =============================================
 - 96238 - PangoAttrFilterFunc vs pango_attr_list_filter docs
