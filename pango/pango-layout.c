@@ -4912,6 +4912,8 @@ pango_layout_line_reorder (PangoLayoutLine *line)
       line->runs = reorder_runs_recurse (logical_runs, length);
       g_slist_free (logical_runs);
     }
+  else if (all_odd)
+      line->runs = g_slist_reverse (logical_runs);
 }
 
 static int
