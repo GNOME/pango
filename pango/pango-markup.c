@@ -1190,18 +1190,15 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	  const char *end;
 	  gint n;
 
-/* cap size from the top at an arbitrary 2048 */
-#define MAX_SIZE (2048 * PANGO_SCALE)
-
-	  if ((end = size, !pango_scan_int (&end, &n)) || *end != '\0' || n < 0 || n > MAX_SIZE)
+	  if ((end = size, !pango_scan_int (&end, &n)) || *end != '\0' || n < 0 || n > INT_MAX)
 	    {
 	      g_set_error (error,
 			   G_MARKUP_ERROR,
 			   G_MARKUP_ERROR_INVALID_CONTENT,
 			   _("Value of 'size' attribute on <span> tag on line %d "
-			     "could not be parsed; should be an integer less than %d, or a "
-			     "string such as 'small', not '%s'"),
-			   line_number, MAX_SIZE+1, size);
+			     "could not be parsed; should be an integer no more than %d,"
+			     " or a string such as 'small', not '%s'"),
+			   line_number, INT_MAX, size);
 	      goto error;
 	    }
 
