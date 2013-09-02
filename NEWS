@@ -1,3 +1,8 @@
+Overview of changes between 1.35.2 and 1.35.3
+============================================
+- Compiler warnings about strict aliasing (#703995)
+- Getting rid of the arbitrary MAX_SIZE for font (707131)
+
 Overview of changes between 1.35.0 and 1.35.2
 ============================================
 - Bypass line reordering in some cases (#705007)
