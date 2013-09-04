@@ -1190,7 +1190,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	  const char *end;
 	  gint n;
 
-	  if ((end = size, !pango_scan_int (&end, &n)) || *end != '\0' || n < 0 || n > INT_MAX)
+	  if ((end = size, !pango_scan_int (&end, &n)) || *end != '\0' || n < 0)
 	    {
 	      g_set_error (error,
 			   G_MARKUP_ERROR,
