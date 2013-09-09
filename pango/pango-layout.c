@@ -1100,6 +1100,11 @@ pango_layout_get_text (PangoLayout *layout)
 {
   g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
 
+  /* We don't ever want to return NULL as the text.
+   */
+  if (G_UNLIKELY (!layout->text))
+    return "";
+
   return layout->text;
 }
 
