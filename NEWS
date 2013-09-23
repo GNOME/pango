@@ -1,3 +1,10 @@
+Overview of changes between 1.35.3 and 1.36.0
+=============================================
+- Remove a useless test (#707131)
+- Never return NULL from pango_layout_get_test (#707659)
+- Correct an annotation (#707874)
+- Fix gravity map (#708432)
+
 Overview of changes between 1.35.2 and 1.35.3
 ============================================
 - Compiler warnings about strict aliasing (#703995)
