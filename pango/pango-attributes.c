@@ -1936,8 +1936,12 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
     }
 
   if (have_scale)
-    pango_font_description_set_size (desc, scale * pango_font_description_get_size (desc));
-
+    {
+      if (pango_font_description_get_size_is_absolute (desc))
+        pango_font_description_set_absolute_size (desc, scale * pango_font_description_get_size (desc));
+      else
+        pango_font_description_set_size (desc, scale * pango_font_description_get_size (desc));
+    }
 }
 
 /**
