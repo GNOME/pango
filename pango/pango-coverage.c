@@ -19,6 +19,16 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/**
+ * SECTION:coverage-maps
+ * @short_description:Unicode character range coverage storage
+ * @title:Coverage Maps
+ *
+ * It is often necessary in Pango to determine if a particular font can
+ * represent a particular character, and also how well it can represent
+ * that character. The #PangoCoverage is a data structure that is used
+ * to represent that information.
+ */
 #include "config.h"
 #include <string.h>
 
@@ -444,7 +454,7 @@ pango_coverage_get_uint32 (guchar **ptr)
  *   representing a #PangoCoverage
  * @n_bytes: the size of @bytes in bytes
  *
- * Convert data generated from pango_converage_to_bytes() back
+ * Convert data generated from pango_coverage_to_bytes() back
  * to a #PangoCoverage
  *
  * Return value: (transfer full): a newly allocated #PangoCoverage, or

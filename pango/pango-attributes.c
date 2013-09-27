@@ -19,6 +19,17 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/**
+ * SECTION:text-attributes
+ * @short_description:Font and other attributes for annotating text
+ * @title:Text Attributes
+ *
+ * Attributed text is used in a number of places in Pango. It
+ * is used as the input to the itemization process and also when
+ * creating a #PangoLayout. The data types and functions in
+ * this section are used to represent and manipulate sets
+ * of attributes applied to a portion of text.
+ */
 #include "config.h"
 #include <string.h>
 
@@ -122,7 +133,7 @@ pango_attr_type_get_name (PangoAttrType type)
 /**
  * pango_attribute_init:
  * @attr: a #PangoAttribute
- * @klass: a #PangoAttributeClass
+ * @klass: a #PangoAttrClass
  *
  * Initializes @attr's klass to @klass,
  * it's start_index to %PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING

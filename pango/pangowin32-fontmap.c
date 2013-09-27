@@ -736,7 +736,7 @@ _pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
 /**
  * pango_win32_font_map_for_display:
  *
- * Returns a #PangoWin32FontMap. Font maps are cached and should
+ * Returns a <type>PangoWin32FontMap</type>. Font maps are cached and should
  * not be freed. If the font map is no longer needed, it can
  * be released with pango_win32_shutdown_display().
  *
@@ -1658,7 +1658,7 @@ pango_win32_face_list_sizes (PangoFontFace  *face,
 
 /**
  * pango_win32_font_map_get_font_cache:
- * @font_map: a #PangoWin32FontMap.
+ * @font_map: a <type>PangoWin32FontMap</type>.
  *
  * Obtains the font cache associated with the given font map.
  *

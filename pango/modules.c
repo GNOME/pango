@@ -19,6 +19,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/**
+ * SECTION:modules
+ * @short_description:Support for loadable modules
+ * @title:Modules
+ *
+ * Functions and macros in this section are used to support loading dynamic
+ * modules that add engines to Pango at run time.
+ */
 #include "config.h"
 
 #include <string.h>
@@ -44,11 +52,24 @@ typedef struct _PangoMapInfo PangoMapInfo;
 typedef struct _PangoEnginePair PangoEnginePair;
 typedef struct _PangoSubmap PangoSubmap;
 
+/**
+ * PangoMap:
+ *
+ * A #PangoMap structure can be used to determine the engine to
+ * use for each character.
+ */
 struct _PangoMap
 {
   GArray *entries;
 };
 
+/**
+ * PangoMapEntry:
+ *
+ * A #PangoMapEntry contains information about the engine that should be used
+ * for the codepoint to which this entry belongs and also whether the engine
+ * matches the language tag for this entry's map exactly or just approximately.
+ */
 struct _PangoMapEntry
 {
   GSList *exact;

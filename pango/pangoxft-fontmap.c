@@ -213,7 +213,7 @@ register_display (Display *display)
  * @display: an X display
  * @screen: the screen number of a screen within @display
  *
- * Returns the #PangoXftFontmap for the given display and screen.
+ * Returns the #PangoXftFontMap for the given display and screen.
  * The fontmap is owned by Pango and will be valid until
  * the display is closed.
  *
@@ -389,7 +389,7 @@ pango_xft_get_context (Display *display,
 
 /**
  * _pango_xft_font_map_get_renderer:
- * @fontmap: a #PangoXftFontmap
+ * @fontmap: a #PangoXftFontMap
  *
  * Gets the singleton #PangoXFTRenderer for this fontmap.
  *

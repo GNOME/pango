@@ -31,6 +31,12 @@
 G_BEGIN_DECLS
 
 #ifndef PANGO_DISABLE_DEPRECATED
+/**
+ * PANGO_RENDER_TYPE_FT2:
+ *
+ * A string constant that was used to identify shape engines that work
+ * with the FreeType backend. See %PANGO_RENDER_TYPE_FC for the replacement.
+ */
 #define PANGO_RENDER_TYPE_FT2 "PangoRenderFT2"
 #endif
 
@@ -40,6 +46,13 @@ G_BEGIN_DECLS
 
 typedef struct _PangoFT2FontMap      PangoFT2FontMap;
 
+/**
+ * PangoFT2SubstituteFunc:
+ * @pattern: the <type>FcPattern</type> to tweak.
+ * @data: user data.
+ *
+ * Function type for doing final config tweaking on prepared FcPatterns.
+ */
 typedef void (*PangoFT2SubstituteFunc) (FcPattern *pattern,
 					gpointer   data);
 

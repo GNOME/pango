@@ -25,6 +25,18 @@
 
 static void pango_ot_ruleset_finalize   (GObject        *object);
 
+/**
+ * PangoOTRuleset:
+ *
+ * The #PangoOTRuleset structure holds a
+ * set of features selected from the tables in an OpenType font.
+ * (A feature is an operation such as adjusting glyph positioning
+ * that should be applied to a text feature such as a certain
+ * type of accent.) A #PangoOTRuleset
+ * is created with pango_ot_ruleset_new(), features are added
+ * to it with pango_ot_ruleset_add_feature(), then it is
+ * applied to a #PangoGlyphString with pango_ot_ruleset_shape().
+ */
 G_DEFINE_TYPE (PangoOTRuleset, pango_ot_ruleset, G_TYPE_OBJECT);
 
 static void

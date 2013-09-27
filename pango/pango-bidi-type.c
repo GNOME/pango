@@ -19,6 +19,24 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/**
+ * SECTION:bidi
+ * @short_description:Types and functions to help with handling bidirectional text
+ * @title:Bidirectional Text
+ * @see_also:
+ * pango_context_get_base_dir(),
+ * pango_context_set_base_dir(),
+ * pango_itemize_with_base_dir()
+ *
+ * Pango supports bidirectional text (like Arabic and Hebrew) automatically.
+ * Some applications however, need some help to correctly handle bidirectional text.
+ *
+ * The #PangoDirection type can be used with pango_context_set_base_dir() to
+ * instruct Pango about direction of text, though in most cases Pango detects
+ * that correctly and automatically.  The rest of the facilities in this section
+ * are used internally by Pango already, and are provided to help applications
+ * that need more direct control over bidirectional setting of text.
+ */
 #include "config.h"
 
 #include <string.h>
@@ -38,7 +56,7 @@
  * character, as specified in the Unicode Character Database.
  *
  * A simplified version of this function is available as
- * pango_unichar_get_direction().
+ * pango_unichar_direction().
  *
  * Return value: the bidirectional character type, as used in the
  * Unicode bidirectional algorithm.
@@ -162,7 +180,7 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
  * This function is useful to categorize characters into left-to-right
  * letters, right-to-left letters, and everything else.  If full
  * Unicode bidirectional type of a character is needed,
- * pango_bidi_type_for_gunichar() can be used instead.
+ * pango_bidi_type_for_unichar() can be used instead.
  *
  * Return value: the direction of the character.
  */

@@ -34,6 +34,108 @@ G_BEGIN_DECLS
  **/
 typedef struct _PangoScriptIter PangoScriptIter;
 
+/**
+ * PangoScript:
+ * @PANGO_SCRIPT_INVALID_CODE: a value never returned from pango_script_for_unichar()
+ * @PANGO_SCRIPT_COMMON: a character used by multiple different scripts
+ * @PANGO_SCRIPT_INHERITED: a mark glyph that takes its script from the
+ * base glyph to which it is attached
+ * @PANGO_SCRIPT_ARABIC: 	Arabic
+ * @PANGO_SCRIPT_ARMENIAN: Armenian
+ * @PANGO_SCRIPT_BENGALI: 	Bengali
+ * @PANGO_SCRIPT_BOPOMOFO: Bopomofo
+ * @PANGO_SCRIPT_CHEROKEE: 	Cherokee
+ * @PANGO_SCRIPT_COPTIC: 	Coptic
+ * @PANGO_SCRIPT_CYRILLIC: 	Cyrillic
+ * @PANGO_SCRIPT_DESERET: 	Deseret
+ * @PANGO_SCRIPT_DEVANAGARI: 	Devanagari
+ * @PANGO_SCRIPT_ETHIOPIC: 	Ethiopic
+ * @PANGO_SCRIPT_GEORGIAN: 	Georgian
+ * @PANGO_SCRIPT_GOTHIC: 	Gothic
+ * @PANGO_SCRIPT_GREEK: 	Greek
+ * @PANGO_SCRIPT_GUJARATI: 	Gujarati
+ * @PANGO_SCRIPT_GURMUKHI: 	Gurmukhi
+ * @PANGO_SCRIPT_HAN: 	Han
+ * @PANGO_SCRIPT_HANGUL: 	Hangul
+ * @PANGO_SCRIPT_HEBREW: 	Hebrew
+ * @PANGO_SCRIPT_HIRAGANA: 	Hiragana
+ * @PANGO_SCRIPT_KANNADA: 	Kannada
+ * @PANGO_SCRIPT_KATAKANA: 	Katakana
+ * @PANGO_SCRIPT_KHMER: 	Khmer
+ * @PANGO_SCRIPT_LAO: 	Lao
+ * @PANGO_SCRIPT_LATIN: 	Latin
+ * @PANGO_SCRIPT_MALAYALAM: 	Malayalam
+ * @PANGO_SCRIPT_MONGOLIAN: 	Mongolian
+ * @PANGO_SCRIPT_MYANMAR: 	Myanmar
+ * @PANGO_SCRIPT_OGHAM: 	Ogham
+ * @PANGO_SCRIPT_OLD_ITALIC: 	Old Italic
+ * @PANGO_SCRIPT_ORIYA: 	Oriya
+ * @PANGO_SCRIPT_RUNIC: 	Runic
+ * @PANGO_SCRIPT_SINHALA: 	Sinhala
+ * @PANGO_SCRIPT_SYRIAC: 	Syriac
+ * @PANGO_SCRIPT_TAMIL: 	Tamil
+ * @PANGO_SCRIPT_TELUGU: 	Telugu
+ * @PANGO_SCRIPT_THAANA: 	Thaana
+ * @PANGO_SCRIPT_THAI: 	Thai
+ * @PANGO_SCRIPT_TIBETAN: 	Tibetan
+ * @PANGO_SCRIPT_CANADIAN_ABORIGINAL: 	Canadian Aboriginal
+ * @PANGO_SCRIPT_YI: 	Yi
+ * @PANGO_SCRIPT_TAGALOG: 	Tagalog
+ * @PANGO_SCRIPT_HANUNOO: 	Hanunoo
+ * @PANGO_SCRIPT_BUHID: 	Buhid
+ * @PANGO_SCRIPT_TAGBANWA: 	Tagbanwa
+ * @PANGO_SCRIPT_BRAILLE: 	Braille
+ * @PANGO_SCRIPT_CYPRIOT: 	Cypriot
+ * @PANGO_SCRIPT_LIMBU: 	Limbu
+ * @PANGO_SCRIPT_OSMANYA: 	Osmanya
+ * @PANGO_SCRIPT_SHAVIAN: 	Shavian
+ * @PANGO_SCRIPT_LINEAR_B: 	Linear B
+ * @PANGO_SCRIPT_TAI_LE: 	Tai Le
+ * @PANGO_SCRIPT_UGARITIC: 	Ugaritic
+ * @PANGO_SCRIPT_NEW_TAI_LUE: 	New Tai Lue. Since 1.10
+ * @PANGO_SCRIPT_BUGINESE: 	Buginese. Since 1.10
+ * @PANGO_SCRIPT_GLAGOLITIC: 	Glagolitic. Since 1.10
+ * @PANGO_SCRIPT_TIFINAGH: 	Tifinagh. Since 1.10
+ * @PANGO_SCRIPT_SYLOTI_NAGRI: 	Syloti Nagri. Since 1.10
+ * @PANGO_SCRIPT_OLD_PERSIAN: 	Old Persian. Since 1.10
+ * @PANGO_SCRIPT_KHAROSHTHI: 	Kharoshthi. Since 1.10
+ * @PANGO_SCRIPT_UNKNOWN: 		an unassigned code point. Since 1.14
+ * @PANGO_SCRIPT_BALINESE: 		Balinese. Since 1.14
+ * @PANGO_SCRIPT_CUNEIFORM: 	Cuneiform. Since 1.14
+ * @PANGO_SCRIPT_PHOENICIAN: 	Phoenician. Since 1.14
+ * @PANGO_SCRIPT_PHAGS_PA: 		Phags-pa. Since 1.14
+ * @PANGO_SCRIPT_NKO: 		N'Ko. Since 1.14
+ * @PANGO_SCRIPT_KAYAH_LI:   Kayah Li. Since 1.20.1
+ * @PANGO_SCRIPT_LEPCHA:     Lepcha. Since 1.20.1
+ * @PANGO_SCRIPT_REJANG:     Rejang. Since 1.20.1
+ * @PANGO_SCRIPT_SUNDANESE:  Sundanese. Since 1.20.1
+ * @PANGO_SCRIPT_SAURASHTRA: Saurashtra. Since 1.20.1
+ * @PANGO_SCRIPT_CHAM:       Cham. Since 1.20.1
+ * @PANGO_SCRIPT_OL_CHIKI:   Ol Chiki. Since 1.20.1
+ * @PANGO_SCRIPT_VAI:        Vai. Since 1.20.1
+ * @PANGO_SCRIPT_CARIAN:     Carian. Since 1.20.1
+ * @PANGO_SCRIPT_LYCIAN:     Lycian. Since 1.20.1
+ * @PANGO_SCRIPT_LYDIAN:     Lydian. Since 1.20.1
+ * @PANGO_SCRIPT_BATAK:      Batak. Since 1.32
+ * @PANGO_SCRIPT_BRAHMI:     Brahmi. Since 1.32
+ * @PANGO_SCRIPT_MANDAIC:    Mandaic. Since 1.32
+ * @PANGO_SCRIPT_CHAKMA:               Chakma. Since: 1.32
+ * @PANGO_SCRIPT_MEROITIC_CURSIVE:     Meroitic Cursive. Since: 1.32
+ * @PANGO_SCRIPT_MEROITIC_HIEROGLYPHS: Meroitic Hieroglyphs. Since: 1.32
+ * @PANGO_SCRIPT_MIAO:                 Miao. Since: 1.32
+ * @PANGO_SCRIPT_SHARADA:              Sharada. Since: 1.32
+ * @PANGO_SCRIPT_SORA_SOMPENG:         Sora Sompeng. Since: 1.32
+ * @PANGO_SCRIPT_TAKRI:                Takri. Since: 1.32
+ *
+ * The #PangoScript enumeration identifies different writing
+ * systems. The values correspond to the names as defined in the
+ * Unicode standard.
+ * Note that new types may be added in the future. Applications should be ready
+ * to handle unknown values.  This enumeration is interchangeable with
+ * #GUnicodeScript.  See <ulink
+ * url="http://www.unicode.org/reports/tr24/">Unicode Standard Annex
+ * #24: Script names</ulink>.
+ */
 typedef enum {                         /* ISO 15924 code */
       PANGO_SCRIPT_INVALID_CODE = -1,
       PANGO_SCRIPT_COMMON       = 0,   /* Zyyy */

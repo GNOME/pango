@@ -33,9 +33,29 @@ typedef struct _PangoGlyphInfo PangoGlyphInfo;
 typedef struct _PangoGlyphString PangoGlyphString;
 
 /* 1024ths of a device unit */
+/**
+ * PangoGlyphUnit:
+ *
+ * The #PangoGlyphUnit type is used to store dimensions within
+ * Pango. Dimensions are stored in 1/%PANGO_SCALE of a device unit.
+ * (A device unit might be a pixel for screen display, or
+ * a point on a printer.) %PANGO_SCALE is currently 1024, and
+ * may change in the future (unlikely though), but you should not
+ * depend on its exact value. The PANGO_PIXELS() macro can be used
+ * to convert from glyph units into device units with correct rounding.
+ */
 typedef gint32 PangoGlyphUnit;
 
 /* Positioning information about a glyph
+ */
+/**
+ * PangoGlyphGeometry:
+ * @width: the logical width to use for the the character.
+ * @x_offset: horizontal offset from nominal character position.
+ * @y_offset: vertical offset from nominal character position.
+ *
+ * The #PangoGlyphGeometry structure contains width and positioning
+ * information for a single glyph.
  */
 struct _PangoGlyphGeometry
 {
@@ -46,12 +66,34 @@ struct _PangoGlyphGeometry
 
 /* Visual attributes of a glyph
  */
+/**
+ * PangoGlyphVisAttr:
+ * @is_cluster_start: set for the first logical glyph in each cluster. (Clusters
+ * are stored in visual order, within the cluster, glyphs
+ * are always ordered in logical order, since visual
+ * order is meaningless; that is, in Arabic text, accent glyphs
+ * follow the glyphs for the base character.)
+ *
+ * The PangoGlyphVisAttr is used to communicate information between
+ * the shaping phase and the rendering phase.  More attributes may be
+ * added in the future.
+ */
 struct _PangoGlyphVisAttr
 {
   guint is_cluster_start : 1;
 };
 
 /* A single glyph
+ */
+/**
+ * PangoGlyphInfo:
+ * @glyph: the glyph itself.
+ * @geometry: the positional information about the glyph.
+ * @attr: the visual attributes of the glyph.
+ *
+ * The #PangoGlyphInfo structure represents a single glyph together with
+ * positioning information and visual attributes.
+ * It contains the following fields.
  */
 struct _PangoGlyphInfo
 {
@@ -62,6 +104,14 @@ struct _PangoGlyphInfo
 
 /* A string of glyphs with positional information and visual attributes -
  * ready for drawing
+ */
+/**
+ * PangoGlyphString:
+ *
+ * The #PangoGlyphString structure is used to store strings
+ * of glyphs with geometry and visual attribute information.
+ * The storage for the glyph information is owned
+ * by the structure which simplifies memory management.
  */
 struct _PangoGlyphString {
   gint num_glyphs;
@@ -79,6 +129,11 @@ struct _PangoGlyphString {
   gint space;
 };
 
+/**
+ * PANGO_TYPE_GLYPH_STRING:
+ *
+ * The #GObject type for #PangoGlyphString.
+ */
 #define PANGO_TYPE_GLYPH_STRING (pango_glyph_string_get_type ())
 
 PangoGlyphString *pango_glyph_string_new      (void);

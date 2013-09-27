@@ -19,6 +19,16 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/**
+ * SECTION:main
+ * @title:Rendering
+ * @short_description:Functions to run the rendering pipeline
+ *
+ * The Pango rendering pipeline takes a string of
+ * Unicode characters and converts it into glyphs.
+ * The functions described in this section accomplish
+ * various steps of this process.
+ */
 #include "config.h"
 #include <string.h>
 #include <stdlib.h>
@@ -31,6 +41,12 @@
 #include "pango-modules.h"
 #include "pango-script-private.h"
 
+/**
+ * PangoContext:
+ *
+ * The #PangoContext structure stores global information
+ * used to control the itemization process.
+ */
 struct _PangoContext
 {
   GObject parent_instance;
@@ -237,7 +253,7 @@ pango_context_set_font_map (PangoContext *context,
  * pango_context_get_font_map:
  * @context: a #PangoContext
  *
- * Gets the #PangoFontmap used to look up fonts for this context.
+ * Gets the #PangoFontMap used to look up fonts for this context.
  *
  * Return value: (transfer none): the font map for the #PangoContext.
  *               This value is owned by Pango and should not be unreferenced.

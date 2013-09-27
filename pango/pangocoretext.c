@@ -20,6 +20,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/**
+ * SECTION:coretext-fonts
+ * @short_description:Font handling with CoreText fonts
+ * @title:CoreText Fonts
+ *
+ * The macros and functions in this section are used to access fonts natively on
+ * OS X using the CoreText text rendering subsystem.
+ */
 #include "config.h"
 
 #include "pangocoretext.h"

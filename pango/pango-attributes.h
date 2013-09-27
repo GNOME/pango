@@ -31,6 +31,15 @@ G_BEGIN_DECLS
 
 typedef struct _PangoColor PangoColor;
 
+/**
+ * PangoColor:
+ * @red: value of red component
+ * @green: value of green component
+ * @blue: value of blue component
+ *
+ * The #PangoColor structure is used to
+ * represent a color in an uncalibrated RGB color-space.
+ */
 struct _PangoColor
 {
   guint16 red;
@@ -38,6 +47,11 @@ struct _PangoColor
   guint16 blue;
 };
 
+/**
+ * PANGO_TYPE_COLOR:
+ *
+ * The #GObject type for #PangoColor.
+ */
 #define PANGO_TYPE_COLOR pango_color_get_type ()
 GType       pango_color_get_type (void) G_GNUC_CONST;
 
@@ -62,10 +76,73 @@ typedef struct _PangoAttrColor    PangoAttrColor;
 typedef struct _PangoAttrFontDesc PangoAttrFontDesc;
 typedef struct _PangoAttrShape    PangoAttrShape;
 
+/**
+ * PANGO_TYPE_ATTR_LIST:
+ *
+ * The #GObject type for #PangoAttrList.
+ */
 #define PANGO_TYPE_ATTR_LIST pango_attr_list_get_type ()
+/**
+ * PangoAttrIterator:
+ *
+ * The #PangoAttrIterator structure is used to represent an
+ * iterator through a #PangoAttrList. A new iterator is created
+ * with pango_attr_list_get_iterator(). Once the iterator
+ * is created, it can be advanced through the style changes
+ * in the text using pango_attr_iterator_next(). At each
+ * style change, the range of the current style segment and the
+ * attributes currently in effect can be queried.
+ */
+/**
+ * PangoAttrList:
+ *
+ * The #PangoAttrList structure represents a list of attributes
+ * that apply to a section of text. The attributes are, in general,
+ * allowed to overlap in an arbitrary fashion, however, if the
+ * attributes are manipulated only through pango_attr_list_change(),
+ * the overlap between properties will meet stricter criteria.
+ *
+ * Since the #PangoAttrList structure is stored as a linear list,
+ * it is not suitable for storing attributes for large amounts
+ * of text. In general, you should not use a single #PangoAttrList
+ * for more than one paragraph of text.
+ */
 typedef struct _PangoAttrList     PangoAttrList;
 typedef struct _PangoAttrIterator PangoAttrIterator;
 
+/**
+ * PangoAttrType:
+ * @PANGO_ATTR_INVALID: does not happen
+ * @PANGO_ATTR_LANGUAGE: language (#PangoAttrLanguage)
+ * @PANGO_ATTR_FAMILY: font family name list (#PangoAttrString)
+ * @PANGO_ATTR_STYLE: font slant style (#PangoAttrInt)
+ * @PANGO_ATTR_WEIGHT: font weight (#PangoAttrInt)
+ * @PANGO_ATTR_VARIANT: font variant (normal or small caps) (#PangoAttrInt)
+ * @PANGO_ATTR_STRETCH: font stretch (#PangoAttrInt)
+ * @PANGO_ATTR_SIZE: font size in points scaled by %PANGO_SCALE (#PangoAttrInt)
+ * @PANGO_ATTR_FONT_DESC: font description (#PangoAttrFontDesc)
+ * @PANGO_ATTR_FOREGROUND: foreground color (#PangoAttrColor)
+ * @PANGO_ATTR_BACKGROUND: background color (#PangoAttrColor)
+ * @PANGO_ATTR_UNDERLINE: whether the text has an underline (#PangoAttrInt)
+ * @PANGO_ATTR_STRIKETHROUGH: whether the text is struck-through (#PangoAttrInt)
+ * @PANGO_ATTR_RISE: baseline displacement (#PangoAttrInt)
+ * @PANGO_ATTR_SHAPE: shape (#PangoAttrShape)
+ * @PANGO_ATTR_SCALE: font size scale factor (#PangoAttrFloat)
+ * @PANGO_ATTR_FALLBACK: whether fallback is enabled (#PangoAttrInt)
+ * @PANGO_ATTR_LETTER_SPACING: letter spacing (#PangoAttrInt)
+ * @PANGO_ATTR_UNDERLINE_COLOR: underline color (#PangoAttrColor)
+ * @PANGO_ATTR_STRIKETHROUGH_COLOR: strikethrough color (#PangoAttrColor)
+ * @PANGO_ATTR_ABSOLUTE_SIZE: font size in pixels scaled by %PANGO_SCALE (#PangoAttrInt)
+ * @PANGO_ATTR_GRAVITY: base text gravity (#PangoAttrInt)
+ * @PANGO_ATTR_GRAVITY_HINT: gravity hint (#PangoAttrInt)
+ *
+ * The #PangoAttrType
+ * distinguishes between different types of attributes. Along with the
+ * predefined values, it is possible to allocate additional values
+ * for custom attributes using pango_attr_type_register(). The predefined
+ * values are given below. The type of structure used to store the
+ * attribute is listed in parentheses after the description.
+ */
 typedef enum
 {
   PANGO_ATTR_INVALID,           /* 0 is an invalid attribute type */
@@ -93,6 +170,27 @@ typedef enum
   PANGO_ATTR_GRAVITY_HINT	/* PangoAttrInt */
 } PangoAttrType;
 
+/**
+ * PangoUnderline:
+ * @PANGO_UNDERLINE_NONE: no underline should be drawn
+ * @PANGO_UNDERLINE_SINGLE: a single underline should be drawn
+ * @PANGO_UNDERLINE_DOUBLE: a double underline should be drawn
+ * @PANGO_UNDERLINE_LOW: a single underline should be drawn at a position
+ * beneath the ink extents of the text being
+ * underlined. This should be used only for underlining
+ * single characters, such as for keyboard
+ * accelerators. %PANGO_UNDERLINE_SINGLE should
+ * be used for extended portions of text.
+ * @PANGO_UNDERLINE_ERROR: a wavy underline should be drawn below.
+ * This underline is typically used to indicate
+ * an error such as a possilble mispelling; in some
+ * cases a contrasting color may automatically
+ * be used. This type of underlining is available since Pango 1.4.
+ *
+ * The #PangoUnderline enumeration is used to specify
+ * whether text should be underlined, and if so, the type
+ * of underlining.
+ */
 typedef enum {
   PANGO_UNDERLINE_NONE,
   PANGO_UNDERLINE_SINGLE,
@@ -101,9 +199,39 @@ typedef enum {
   PANGO_UNDERLINE_ERROR
 } PangoUnderline;
 
+/**
+ * PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING:
+ *
+ * This value can be used to set the start_index member of a #PangoAttribute
+ * such that the attribute covers from the beginning of the text.
+ *
+ * Since: 1.24
+ */
+/**
+ * PANGO_ATTR_INDEX_TO_TEXT_END:
+ *
+ * This value can be used to set the end_index member of a #PangoAttribute
+ * such that the attribute covers to the end of the text.
+ *
+ * Since: 1.24
+ */
 #define PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING	0
 #define PANGO_ATTR_INDEX_TO_TEXT_END		G_MAXUINT
 
+/**
+ * PangoAttribute:
+ * @klass: the class structure holding information about the type of the attribute
+ * @start_index: the start index of the range (in bytes).
+ * @end_index: end index of the range (in bytes). The character at this index
+ * is not included in the range.
+ *
+ * The #PangoAttribute structure represents the common portions of all
+ * attributes. Particular types of attributes include this structure
+ * as their initial portion. The common portion of the attribute holds
+ * the range to which the value in the type-specific part of the attribute
+ * applies and should be initialized using pango_attribute_init().
+ * By default an attribute will have an all-inclusive range of [0,%G_MAXUINT].
+ */
 struct _PangoAttribute
 {
   const PangoAttrClass *klass;
@@ -134,6 +262,18 @@ typedef gboolean (*PangoAttrFilterFunc) (PangoAttribute *attribute,
  **/
 typedef gpointer (*PangoAttrDataCopyFunc) (gconstpointer user_data);
 
+/**
+ * PangoAttrClass:
+ * @type: the type ID for this attribute
+ * @copy: function to duplicate an attribute of this type (see pango_attribute_copy())
+ * @destroy: function to free an attribute of this type (see pango_attribute_destroy())
+ * @equal: function to check two attributes of this type for equality (see pango_attribute_equal())
+ *
+ * The #PangoAttrClass structure stores the type and operations for
+ * a particular type of attribute. The functions in this structure should
+ * not be called directly. Instead, one should use the wrapper functions
+ * provided for #PangoAttribute.
+ */
 struct _PangoAttrClass
 {
   /*< public >*/
@@ -143,36 +283,85 @@ struct _PangoAttrClass
   gboolean         (*equal) (const PangoAttribute *attr1, const PangoAttribute *attr2);
 };
 
+/**
+ * PangoAttrString:
+ * @attr: the common portion of the attribute
+ * @value: the string which is the value of the attribute
+ *
+ * The #PangoAttrString structure is used to represent attributes with
+ * a string value.
+ */
 struct _PangoAttrString
 {
   PangoAttribute attr;
   char *value;
 };
-
+/**
+ * PangoAttrLanguage:
+ * @attr: the common portion of the attribute
+ * @value: the #PangoLanguage which is the value of the attribute
+ *
+ * The #PangoAttrLanguage structure is used to represent attributes that
+ * are languages.
+ */
 struct _PangoAttrLanguage
 {
   PangoAttribute attr;
   PangoLanguage *value;
 };
-
+/**
+ * PangoAttrInt:
+ * @attr: the common portion of the attribute
+ * @value: the value of the attribute
+ *
+ * The #PangoAttrInt structure is used to represent attributes with
+ * an integer or enumeration value.
+ */
 struct _PangoAttrInt
 {
   PangoAttribute attr;
   int value;
 };
-
+/**
+ * PangoAttrFloat:
+ * @attr: the common portion of the attribute
+ * @value: the value of the attribute
+ *
+ * The #PangoAttrFloat structure is used to represent attributes with
+ * a float or double value.
+ */
 struct _PangoAttrFloat
 {
   PangoAttribute attr;
   double value;
 };
-
+/**
+ * PangoAttrColor:
+ * @attr: the common portion of the attribute
+ * @color: the #PangoColor which is the value of the attribute
+ *
+ * The #PangoAttrColor structure is used to represent attributes that
+ * are colors.
+ */
 struct _PangoAttrColor
 {
   PangoAttribute attr;
   PangoColor color;
 };
 
+/**
+ * PangoAttrSize:
+ * @attr: the common portion of the attribute
+ * @size: size of font, in units of 1/%PANGO_SCALE of a point (for
+ * %PANGO_ATTR_SIZE) or of a device uni (for %PANGO_ATTR_ABSOLUTE_SIZE)
+ * @absolute: whether the font size is in device units or points.
+ * This field is only present for compatibility with Pango-1.8.0
+ * (%PANGO_ATTR_ABSOLUTE_SIZE was added in 1.8.1); and always will
+ * be %FALSE for %PANGO_ATTR_SIZE and %TRUE for %PANGO_ATTR_ABSOLUTE_SIZE.
+ *
+ * The #PangoAttrSize structure is used to represent attributes which
+ * set font size.
+ */
 struct _PangoAttrSize
 {
   PangoAttribute attr;
@@ -180,6 +369,18 @@ struct _PangoAttrSize
   guint absolute : 1;
 };
 
+/**
+ * PangoAttrShape:
+ * @attr: the common portion of the attribute
+ * @ink_rect: the ink rectangle to restrict to
+ * @logical_rect: the logical rectangle to restrict to
+ * @data: user data set (see pango_attr_shape_new_with_data())
+ * @copy_func: copy function for the user data
+ * @destroy_func: destroy function for the user data
+ *
+ * The #PangoAttrShape structure is used to represent attributes which
+ * impose shape restrictions.
+ */
 struct _PangoAttrShape
 {
   PangoAttribute attr;
@@ -191,6 +392,14 @@ struct _PangoAttrShape
   GDestroyNotify        destroy_func;
 };
 
+/**
+ * PangoAttrFontDesc:
+ * @attr: the common portion of the attribute
+ * @desc: the font description which is the value of this attribute
+ *
+ * The #PangoAttrFontDesc structure is used to store an attribute that
+ * sets all aspects of the font description at once.
+ */
 struct _PangoAttrFontDesc
 {
   PangoAttribute attr;

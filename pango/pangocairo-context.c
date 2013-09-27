@@ -260,7 +260,7 @@ pango_cairo_context_set_font_options (PangoContext               *context,
  * @context: a #PangoContext, from a pangocairo font map
  *
  * Retrieves any font rendering options previously set with
- * pango_cairo_font_map_set_font_options(). This function does not report options
+ * pango_cairo_context_set_font_options(). This function does not report options
  * that are derived from the target surface by pango_cairo_update_context()
  *
  * Return value: the font options previously set on the context, or %NULL

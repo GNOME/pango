@@ -33,6 +33,17 @@ typedef struct _PangoMapEntry PangoMapEntry;
 
 typedef struct _PangoIncludedModule PangoIncludedModule;
 
+/**
+ * PangoIncludedModule:
+ * @list: a function that lists the engines defined in this module.
+ * @init: a function to initialize the module.
+ * @exit: a function to finalize the module.
+ * @create: a function to create an engine, given the engine name.
+ *
+ * The #PangoIncludedModule structure for a statically linked module
+ * contains the functions that would otherwise be loaded from a dynamically
+ * loaded module.
+ */
 struct _PangoIncludedModule
 {
   void (*list) (PangoEngineInfo **engines,

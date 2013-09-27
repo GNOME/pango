@@ -113,18 +113,62 @@ gboolean pango_is_zero_width (gunichar ch) G_GNUC_CONST;
 /* Pango version checking */
 
 /* Encode a Pango version as an integer */
+/**
+ * PANGO_VERSION_ENCODE:
+ * @major: the major component of the version number
+ * @minor: the minor component of the version number
+ * @micro: the micro component of the version number
+ *
+ * This macro encodes the given Pango version into an integer.  The numbers
+ * returned by %PANGO_VERSION and pango_version() are encoded using this macro.
+ * Two encoded version numbers can be compared as integers.
+ */
 #define PANGO_VERSION_ENCODE(major, minor, micro) (     \
 	  ((major) * 10000)                             \
 	+ ((minor) *   100)                             \
 	+ ((micro) *     1))
 
 /* Encoded version of Pango at compile-time */
+/**
+ * PANGO_VERSION:
+ *
+ * The version of Pango available at compile-time, encoded using PANGO_VERSION_ENCODE().
+ */
+/**
+ * PANGO_VERSION_STRING:
+ *
+ * A string literal containing the version of Pango available at compile-time.
+ */
+/**
+ * PANGO_VERSION_MAJOR:
+ *
+ * The major component of the version of Pango available at compile-time.
+ */
+/**
+ * PANGO_VERSION_MINOR:
+ *
+ * The minor component of the version of Pango available at compile-time.
+ */
+/**
+ * PANGO_VERSION_MICRO:
+ *
+ * The micro component of the version of Pango available at compile-time.
+ */
 #define PANGO_VERSION PANGO_VERSION_ENCODE(     \
 	PANGO_VERSION_MAJOR,                    \
 	PANGO_VERSION_MINOR,                    \
 	PANGO_VERSION_MICRO)
 
 /* Check that compile-time Pango is as new as required */
+/**
+ * PANGO_VERSION_CHECK:
+ * @major: the major component of the version number
+ * @minor: the minor component of the version number
+ * @micro: the micro component of the version number
+ *
+ * Checks that the version of Pango available at compile-time is not older than
+ * the provided version number.
+ */
 #define PANGO_VERSION_CHECK(major,minor,micro)    \
 	(PANGO_VERSION >= PANGO_VERSION_ENCODE(major,minor,micro))
 

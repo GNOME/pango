@@ -35,6 +35,11 @@
 
 typedef struct _CacheEntry CacheEntry;
 
+/**
+ * PangoWin32FontCache:
+ *
+ * A #PangoWin32FontCache caches HFONTs by their LOGFONT descriptions.
+ */
 struct _PangoWin32FontCache
 {
   GHashTable *forward;

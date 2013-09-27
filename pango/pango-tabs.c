@@ -19,6 +19,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/**
+ * SECTION:tab-stops
+ * @short_description:Structures for storing tab stops
+ * @title:Tab Stops
+ *
+ * Functions in this section are used to deal with #PangoTabArray objects
+ * that can be used to set tab stop positions in a #PangoLayout.
+ */
 #include "config.h"
 #include "pango-tabs.h"
 #include "pango-impl-utils.h"
@@ -36,6 +44,12 @@ struct _PangoTab
 				 */
 };
 
+/**
+ * PangoTabArray:
+ *
+ * A #PangoTabArray struct contains an array
+ * of tab stops. Each tab stop has an alignment and a position.
+ */
 struct _PangoTabArray
 {
   gint size;

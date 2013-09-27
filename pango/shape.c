@@ -19,6 +19,16 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/**
+ * SECTION:glyphs
+ * @short_description:Structures for storing information about glyphs
+ * @title:Glyph Storage
+ *
+ * pango_shape() produces a string of glyphs which
+ * can be measured or drawn to the screen. The following
+ * structures are used to store information about
+ * glyphs.
+ */
 #include "config.h"
 
 #include "pango-impl-utils.h"

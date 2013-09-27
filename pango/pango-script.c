@@ -53,6 +53,15 @@
  * of the copyright holder.
  */
 
+/**
+ * SECTION:scripts
+ * @short_description:Identifying writing systems and languages
+ * @title:Scripts and Languages
+ *
+ * The functions in this section are used to identify the writing
+ * system, or <firstterm>script</firstterm> of individual characters
+ * and of ranges within a larger text string.
+ */
 #include "config.h"
 #include <stdlib.h>
 #include <string.h>
@@ -65,7 +74,7 @@
  * @ch: a Unicode character
  *
  * Looks up the #PangoScript for a particular character (as defined by
- * Unicode Standard Annex #24). No check is made for @ch being a
+ * Unicode Standard Annex \#24). No check is made for @ch being a
  * valid Unicode character; if you pass in invalid character, the
  * result is undefined.
  *

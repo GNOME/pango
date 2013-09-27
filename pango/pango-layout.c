@@ -19,6 +19,54 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/**
+ * SECTION:layout
+ * @short_description:High-level layout driver objects
+ * @title:Layout Objects
+ *
+ * While complete access to the layout capabilities of Pango is provided
+ * using the detailed interfaces for itemization and shaping, using
+ * that functionality directly involves writing a fairly large amount
+ * of code. The objects and functions in this section provide a
+ * high-level driver for formatting entire paragraphs of text
+ * at once.
+ */
+
+/**
+ * PangoLayout:
+ *
+ * The #PangoLayout structure represents an entire paragraph
+ * of text. It is initialized with a #PangoContext, UTF-8 string
+ * and set of attributes for that string. Once that is done, the
+ * set of formatted lines can be extracted from the object,
+ * the layout can be rendered, and conversion between logical
+ * character positions within the layout's text, and the physical
+ * position of the resulting glyphs can be made.
+ *
+ * There are also a number of parameters to adjust the formatting
+ * of a #PangoLayout, which are illustrated in <xref linkend="parameters"/>.
+ * It is possible, as well, to ignore the 2-D setup, and simply
+ * treat the results of a #PangoLayout as a list of lines.
+ *
+ * <figure id="parameters">
+ * <title>Adjustable parameters for a PangoLayout</title>
+ * <graphic fileref="layout.gif" format="GIF"></graphic>
+ * </figure>
+ *
+ * The #PangoLayout structure is opaque, and has no user-visible
+ * fields.
+ */
+
+/**
+ * PangoLayoutIter:
+ *
+ * A #PangoLayoutIter structure can be used to
+ * iterate over the visual extents of a #PangoLayout.
+ *
+ * The #PangoLayoutIter structure is opaque, and
+ * has no user-visible fields.
+ */
+
 #include "config.h"
 #include "pango-glyph.h"		/* For pango_shape() */
 #include "pango-break.h"
@@ -1967,7 +2015,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
  * Y position is not inside the layout, the closest position is chosen
  * (the position will be clamped inside the layout). If the
  * X position is not within the layout, then the start or the
- * end of the line is chosen as  described for pango_layout_x_to_index().
+ * end of the line is chosen as  described for pango_layout_xy_to_index().
  * If either the X or Y positions were not inside the layout, then the
  * function returns %FALSE; on an exact hit, it returns %TRUE.
  *

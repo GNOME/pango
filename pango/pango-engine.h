@@ -36,6 +36,12 @@ G_BEGIN_DECLS
 
 #include <gmodule.h>
 
+/**
+ * PANGO_RENDER_TYPE_NONE:
+ *
+ * A string constant defining the render type
+ * for engines that are not rendering-system specific.
+ */
 #define PANGO_RENDER_TYPE_NONE "PangoRenderNone"
 
 #define PANGO_TYPE_ENGINE              (pango_engine_get_type ())
@@ -73,6 +79,12 @@ struct _PangoEngineClass
 
 GType pango_engine_get_type (void) G_GNUC_CONST;
 
+/**
+ * PANGO_ENGINE_TYPE_LANG:
+ *
+ * A string constant defining the engine type for language engines.
+ * These engines derive from #PangoEngineLang.
+ */
 #define PANGO_ENGINE_TYPE_LANG "PangoEngineLang"
 
 #define PANGO_TYPE_ENGINE_LANG              (pango_engine_lang_get_type ())
@@ -127,6 +139,12 @@ struct _PangoEngineLangClass
 
 GType pango_engine_lang_get_type (void) G_GNUC_CONST;
 
+/**
+ * PANGO_ENGINE_TYPE_SHAPE:
+ *
+ * A string constant defining the engine type for shaping engines.
+ * These engines derive from #PangoEngineShape.
+ */
 #define PANGO_ENGINE_TYPE_SHAPE "PangoEngineShape"
 
 #define PANGO_TYPE_ENGINE_SHAPE              (pango_engine_shape_get_type ())
@@ -205,12 +223,40 @@ GType pango_engine_shape_get_type (void) G_GNUC_CONST;
 typedef struct _PangoEngineInfo PangoEngineInfo;
 typedef struct _PangoEngineScriptInfo PangoEngineScriptInfo;
 
+/**
+ * PangoEngineScriptInfo
+ * @script: a #PangoScript. The value %PANGO_SCRIPT_COMMON has
+ * the special meaning here of "all scripts"
+ * @langs: a semicolon separated list of languages that this
+ * engine handles for this script. This may be empty,
+ * in which case the engine is saying that it is a
+ * fallback choice for all languages for this range,
+ * but should not be used if another engine
+ * indicates that it is specific for the language for
+ * a given code point. An entry in this list of "*"
+ * indicates that this engine is specific to all
+ * languages for this range.
+ *
+ * The #PangoEngineScriptInfo structure contains
+ * information about how the shaper covers a particular script.
+ */
 struct _PangoEngineScriptInfo
 {
   PangoScript script;
   const gchar *langs;
 };
 
+/**
+ * PangoEngineInfo:
+ * @id: a unique string ID for the engine.
+ * @engine_type: a string identifying the engine type.
+ * @render_type: a string identifying the render type.
+ * @scripts: array of scripts this engine supports.
+ * @n_scripts: number of items in @scripts.
+ *
+ * The #PangoEngineInfo structure contains information about a particular
+ * engine. It contains the following fields:
+ */
 struct _PangoEngineInfo
 {
   const gchar *id;

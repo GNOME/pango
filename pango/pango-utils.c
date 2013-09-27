@@ -19,6 +19,24 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/**
+ * SECTION:pango-version
+ * @short_description:Tools for checking Pango version at compile- and run-time.
+ * @title:Version Checking
+ *
+ * The capital-letter macros defined here can be used to check the version of Pango
+ * at compile-time, and to <firstterm>encode</firstterm> Pango versions into integers.
+ *
+ * The functions can be used to check the version of the linked Pango library at run-time.
+ */
+/**
+ * SECTION:utils
+ * @short_description:Various convenience and utility functions
+ * @title: Miscellaneous Utilities
+ *
+ * The functions and utilities in this section are mostly used from Pango
+ * backends and modules, but may be useful for other purposes too.
+ */
 #include "config.h"
 #include <errno.h>
 #include <string.h>

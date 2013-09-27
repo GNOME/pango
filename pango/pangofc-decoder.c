@@ -19,6 +19,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/**
+ * SECTION:pangofc-decoder
+ * @short_description:Custom font encoding handling
+ * @title:PangoFcDecoder
+ *
+ * PangoFcDecoder represents a decoder that an application provides
+ * for handling a font that is encoded in a custom way.
+ */
 #include "config.h"
 #include "pangofc-decoder.h"
 

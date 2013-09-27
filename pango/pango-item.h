@@ -30,8 +30,31 @@ typedef struct _PangoAnalysis PangoAnalysis;
 typedef struct _PangoItem PangoItem;
 
 /* TODO: if more flags are needed, turn this into a real PangoAnalysisFlags enum */
+/**
+ * PANGO_ANALYSIS_FLAG_CENTERED_BASELINE:
+ *
+ * Whether the segment should be shifted to center around the baseline.
+ * Used in vertical writing directions mostly.
+ *
+ * Since: 1.16
+ */
 #define PANGO_ANALYSIS_FLAG_CENTERED_BASELINE (1 << 0)
 
+/**
+ * PangoAnalysis:
+ * @shape_engine: the engine for doing rendering-system-dependent processing.
+ * @lang_engine: the engine for doing rendering-system-independent processing.
+ * @font: the font for this segment.
+ * @level: the bidirectional level for this segment.
+ * @gravity: the glyph orientation for this segment (A #PangoGravity).
+ * @flags: boolean flags for this segment (currently only one) (Since: 1.16).
+ * @script: the detected script for this segment (A #PangoScript) (Since: 1.18).
+ * @language: the detected language for this segment.
+ * @extra_attrs: extra attributes for this segment.
+ *
+ * The #PangoAnalysis structure stores information about
+ * the properties of a segment of text.
+ */
 struct _PangoAnalysis
 {
   PangoEngineShape *shape_engine;
@@ -48,6 +71,11 @@ struct _PangoAnalysis
   GSList *extra_attrs;
 };
 
+/**
+ * PangoItem:
+ *
+ * The #PangoItem structure stores information abouta segment of text.
+ */
 struct _PangoItem
 {
   gint offset;

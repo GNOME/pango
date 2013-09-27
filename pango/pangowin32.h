@@ -37,6 +37,12 @@ G_BEGIN_DECLS
 #include <windows.h>
 #undef STRICT
 
+/**
+ * PANGO_RENDER_TYPE_WIN32:
+ *
+ * A string constant identifying the Win32 renderer. The associated quark (see
+ * g_quark_from_string()) is used to identify the renderer in pango_find_map().
+ */
 #define PANGO_RENDER_TYPE_WIN32 "PangoRenderWin32"
 
 /* Calls for applications

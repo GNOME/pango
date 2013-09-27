@@ -133,6 +133,15 @@ pango_language_free (PangoLanguage *language G_GNUC_UNUSED)
   return; /* nothing */
 }
 
+/**
+ * PangoLanguage:
+ *
+ * The #PangoLanguage structure is used to
+ * represent a language.
+ *
+ * #PangoLanguage pointers can be efficiently
+ * copied and compared with each other.
+ */
 G_DEFINE_BOXED_TYPE (PangoLanguage, pango_language,
                      pango_language_copy,
                      pango_language_free);

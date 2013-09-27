@@ -82,7 +82,7 @@ pango_ot_buffer_clear (PangoOTBuffer *buffer)
  * @cluster: the cluster that this glyph belongs to
  *
  * Appends a glyph to a #PangoOTBuffer, with @properties identifying which
- * features should be applied on this glyph.  See pango_ruleset_add_feature().
+ * features should be applied on this glyph.  See pango_ot_ruleset_add_feature().
  *
  * Since: 1.4
  **/

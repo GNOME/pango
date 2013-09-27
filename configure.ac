@@ -592,7 +592,7 @@ if $have_cairo ; then : ; else
    fi
 fi
 
-GTK_DOC_CHECK([1.0])
+GTK_DOC_CHECK([1.15], [--flavour no-tmpl])
 
 AC_ARG_ENABLE(man,
               AC_HELP_STRING([--enable-man],

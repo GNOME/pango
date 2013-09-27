@@ -31,18 +31,44 @@
 
 G_BEGIN_DECLS
 
+/**
+ * PANGO_RENDER_TYPE_XFT:
+ *
+ * A string constant that was used to identify shape engines that work
+ * with the Xft backend. See %PANGO_RENDER_TYPE_FC for the replacement.
+ */
 #ifndef PANGO_DISABLE_DEPRECATED
 #define PANGO_RENDER_TYPE_XFT "PangoRenderXft"
 #endif
 
+/**
+ * PangoXftFontMap:
+ *
+ * #PangoXftFontMap is an implementation of #PangoFcFontMap suitable for
+ * the Xft library as the renderer.  It is used in to create fonts of
+ * type #PangoXftFont.
+ */
 #define PANGO_TYPE_XFT_FONT_MAP              (pango_xft_font_map_get_type ())
 #define PANGO_XFT_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_XFT_FONT_MAP, PangoXftFontMap))
 #define PANGO_XFT_IS_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_XFT_FONT_MAP))
 
 typedef struct _PangoXftFontMap      PangoXftFontMap;
 
+/**
+ * PangoXftFont:
+ *
+ * #PangoXftFont is an implementation of #PangoFcFont using the Xft
+ * library for rendering.  It is used in conjunction with #PangoXftFontMap.
+ */
 typedef struct _PangoXftFont    PangoXftFont;
 
+/**
+ * PangoXftSubstituteFunc:
+ * @pattern: the FcPattern to tweak.
+ * @data: user data.
+ *
+ * Function type for doing final config tweaking on prepared FcPatterns.
+ */
 typedef void (*PangoXftSubstituteFunc) (FcPattern *pattern,
 					gpointer   data);
 
