@@ -327,7 +327,7 @@ pango_font_map_get_serial (PangoFontMap *fontmap)
  * call this function if they have attached extra data to the context
  * and such data is changed.
  *
- * Since: 1.34.0
+ * Since: 1.34
  **/
 void
 pango_font_map_changed (PangoFontMap *fontmap)

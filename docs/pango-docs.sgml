@@ -127,9 +127,21 @@
     <title>Index of new symbols in 1.30</title>
     <xi:include href="xml/api-index-1.30.xml"><xi:fallback /></xi:include>
   </index>
+  <index id="api-index-1-31-0" role="1.31.0">
+    <title>Index of new symbols in 1.32</title>
+    <xi:include href="xml/api-index-1.31.0.xml"><xi:fallback /></xi:include>
+  </index>
   <index id="api-index-1-32" role="1.32">
     <title>Index of new symbols in 1.32</title>
     <xi:include href="xml/api-index-1.32.xml"><xi:fallback /></xi:include>
+  </index>
+  <index id="api-index-1-32-4" role="1.32.4">
+    <title>Index of new symbols in 1.32</title>
+    <xi:include href="xml/api-index-1.32.4.xml"><xi:fallback /></xi:include>
+  </index>
+  <index id="api-index-1-34" role="1.34">
+    <title>Index of new symbols in 1.32</title>
+    <xi:include href="xml/api-index-1.34.xml"><xi:fallback /></xi:include>
   </index>
 
 </book>
