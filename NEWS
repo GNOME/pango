@@ -1,3 +1,8 @@
+Overview of changes between 1.36.0 and 1.36.1
+=============================================
+- Handle scaling absolute font sizes (#708778)
+- Small documentation fixes
+
 Overview of changes between 1.35.3 and 1.36.0
 =============================================
 - Remove a useless test (#707131)
