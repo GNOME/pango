@@ -812,8 +812,14 @@ parse_int (const char *word,
 	   int        *out)
 {
   char *end;
-  long val = strtol (word, &end, 10);
-  int i = val;
+  long val;
+  int i;
+
+  if (word == NULL)
+    return FALSE;
+
+  val = strtol (word, &end, 10);
+  i = val;
 
   if (end != word && *end == '\0' && val >= 0 && val == i)
     {
