@@ -45,8 +45,6 @@ pango_vcproj_stuff = \
 	$(top_builddir)/build/win32/vs10/pango.vcxproj.filters	\
 	$(top_builddir)/build/win32/vs10/pangocairo.vcxproj	\
 	$(top_builddir)/build/win32/vs10/pangocairo.vcxproj.filters	\
-	$(top_builddir)/build/win32/vs10/pangocairo_fc.vcxproj	\
-	$(top_builddir)/build/win32/vs10/pangocairo_fc.vcxproj.filters	\
 	$(top_builddir)/build/win32/vs10/pangoft2.vcxproj	\
 	$(top_builddir)/build/win32/vs10/pangoft2.vcxproj.filters	\
 	$(top_builddir)/build/win32/vs10/pango.vs10.headers
