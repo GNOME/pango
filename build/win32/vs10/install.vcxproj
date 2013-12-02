@@ -140,42 +140,42 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_FC|Win32'">
     <PreBuildEvent>
-      <Command>$(PangoDoInstall) $(PangoInstallFCHeaders)</Command>
+      <Command>$(PangoInstallFC) $(PangoDoInstall)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
-      <Command>$(PangoDoInstall)</Command>
+      <Command>$(PangoInstallNoFC) $(PangoDoInstall)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_FC|Win32'">
     <PreBuildEvent>
-      <Command>$(PangoDoInstall) $(PangoInstallFCHeaders)</Command>
+      <Command>$(PangoInstallFC) $(PangoDoInstall)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
-      <Command>$(PangoDoInstall)</Command>
+      <Command>$(PangoInstallNoFC) $(PangoDoInstall)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_FC|x64'">
     <PreBuildEvent>
-      <Command>$(PangoDoInstall) $(PangoInstallFCHeaders)</Command>
+      <Command>$(PangoInstallFC) $(PangoDoInstall)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PreBuildEvent>
-      <Command>$(PangoDoInstall)</Command>
+      <Command>$(PangoInstallNoFC) $(PangoDoInstall)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_FC|x64'">
     <PreBuildEvent>
-      <Command>$(PangoDoInstall) $(PangoInstallFCHeaders)</Command>
+      <Command>$(PangoInstallFC) $(PangoDoInstall)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PreBuildEvent>
-      <Command>$(PangoDoInstall)</Command>
+      <Command>$(PangoInstallNoFC) $(PangoDoInstall)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

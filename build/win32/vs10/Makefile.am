@@ -1,8 +1,8 @@
 EXTRA_DIST =	\
 	pango.sln	\
-	pango_fc.sln	\
 	pango.propsin	\
 	pango.props	\
+	pango-ignore-fc.props	\
 	pango.vcxproj	\
 	pango.vcxproj.filters	\
 	pango.vcxprojin	\
@@ -17,10 +17,6 @@ EXTRA_DIST =	\
 	pangocairo.vcxproj.filters	\
 	pangocairo.vcxprojin	\
 	pangocairo.vcxproj.filtersin	\
-	pangocairo_fc.vcxproj	\
-	pangocairo_fc.vcxproj.filters	\
-	pangocairo_fc.vcxprojin	\
-	pangocairo_fc.vcxproj.filtersin	\
 	install.vcxproj	\
 	gengir.vcxproj	\
 	README.txt

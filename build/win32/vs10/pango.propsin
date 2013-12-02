@@ -10,21 +10,24 @@
     <PangoDummyPrefix>/dummy</PangoDummyPrefix>
     <PangoDefines>G_LOG_DOMAIN="Pango";PANGO_ENABLE_BACKEND;PANGO_ENABLE_ENGINE;SYSCONFDIR="$(PangoDummyPrefix)/etc";LIBDIR="$(PangoDummyPrefix)/lib"</PangoDefines>
     <NoFCDef>PANGO_VISUALC_NO_FC</NoFCDef>
-    <PangoDoInstall>
-echo on
-
+    <PangoInstallNoFC>
 mkdir $(CopyDir)\bin
 
-copy $(Configuration)\$(Platform)\bin\*.dll $(CopyDir)\bin
+copy $(Configuration)\$(Platform)\bin\pango-1-vs*.dll $(CopyDir)\bin
 
-copy $(Configuration)\$(Platform)\bin\*.exe $(CopyDir)\bin
+copy $(Configuration)\$(Platform)\bin\pangowin32-1-vs*.dll $(CopyDir)\bin
 
+copy $(Configuration)\$(Platform)\bin\pangocairo-1-vs*.dll $(CopyDir)\bin
 
 mkdir $(CopyDir)\lib
 
-copy $(Configuration)\$(Platform)\bin\*-$(PangoApiVersion).lib $(CopyDir)\lib
+copy $(Configuration)\$(Platform)\bin\pango-$(PangoApiVersion).lib $(CopyDir)\lib
 
+copy $(Configuration)\$(Platform)\bin\pangowin32-$(PangoApiVersion).lib $(CopyDir)\lib
 
+copy $(Configuration)\$(Platform)\bin\pangocairo-$(PangoApiVersion).lib $(CopyDir)\lib
+    </PangoInstallNoFC>
+    <PangoDoInstall>
 #include "pango.vs10.headers"
 
 copy ..\..\..\pango\pango-features.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
@@ -49,7 +52,49 @@ echo monospace = "courier new,courier monothai,mingliu,simsun,gulimche,ms gothic
 
 :END
 </PangoDoInstall>
-<PangoInstallFCHeaders>
+<PangoInstallFC>
+mkdir $(CopyDir)\bin
+
+mkdir $(CopyDir)\lib
+
+
+if "$(Configuration)" == "Debug_FC" goto installDbg
+
+copy $(SolutionDir)\Release\$(Platform)\bin\pango-1-vs*.dll $(CopyDir)\bin
+
+copy $(SolutionDir)\Release\$(Platform)\bin\pangowin32-1-vs*.dll $(CopyDir)\bin
+
+copy $(SolutionDir)\Release\bin\pango-$(PangoApiVersion).lib $(CopyDir)\lib
+
+copy $(SolutionDir)\Release\bin\pangowin32-$(PangoApiVersion).lib $(CopyDir)\lib
+
+goto installFcDLLs
+
+
+:installDbg
+
+copy $(SolutionDir)\Debug\$(Platform)\bin\pango-1-vs*.dll $(CopyDir)\bin
+
+copy $(SolutionDir)\Debug\$(Platform)\bin\pangowin32-1-vs*.dll $(CopyDir)\bin
+
+copy $(SolutionDir)\Debug\bin\pango-$(PangoApiVersion).lib $(CopyDir)\lib
+
+copy $(SolutionDir)\Debug\bin\pangowin32-$(PangoApiVersion).lib $(CopyDir)\lib
+
+
+:installFcDLLs
+
+copy $(Configuration)\$(Platform)\bin\pangoft2-1-vs*.dll $(CopyDir)\bin
+
+copy $(Configuration)\$(Platform)\bin\pangocairo-1-vs*.dll $(CopyDir)\bin
+
+copy $(Configuration)\$(Platform)\bin\pangoft2-$(PangoApiVersion).lib $(CopyDir)\lib
+
+copy $(Configuration)\$(Platform)\bin\pangocairo-$(PangoApiVersion).lib $(CopyDir)\lib
+
+
+mkdir $(CopyDir)\include\pango-$(PangoApiVersion)\pango
+
 copy ..\..\..\pango\pangofc-decoder.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
 
 copy ..\..\..\pango\pangofc-font.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
@@ -60,7 +105,7 @@ copy ..\..\..\pango\pango-ot.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
 
 copy ..\..\..\pango\pangoft2.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
 
-</PangoInstallFCHeaders>
+</PangoInstallFC>
 <DoGenGir>
 set VSVER=$(VSVer)
 
@@ -161,11 +206,14 @@ copy ..\..\..\pango\module-defs-win32.c.win32 ..\..\..\pango\DONE_MODULE_DEFS_WI
     <BuildMacro Include="NoFCDef">
       <Value>$(NoFCDef)</Value>
     </BuildMacro>
+    <BuildMacro Include="PangoInstallNoFC">
+      <Value>$(PangoInstallNoFC)</Value>
+    </BuildMacro>
     <BuildMacro Include="PangoDoInstall">
       <Value>$(PangoDoInstall)</Value>
     </BuildMacro>
-    <BuildMacro Include="PangoInstallFCHeaders">
-      <Value>$(PangoInstallFCHeaders)</Value>
+    <BuildMacro Include="PangoInstallFC">
+      <Value>$(PangoInstallFC)</Value>
     </BuildMacro>
     <BuildMacro Include="DoGenGir">
       <Value>$(DoGenGir)</Value>
