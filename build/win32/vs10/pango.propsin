@@ -70,9 +70,9 @@ copy $(SolutionDir)\Release\$(Platform)\bin\$(PangoDllPrefix)pango$(PangoDllSuff
 
 copy $(SolutionDir)\Release\$(Platform)\bin\$(PangoDllPrefix)pangowin32$(PangoDllSuffix).dll $(CopyDir)\bin
 
-copy $(SolutionDir)\Release\bin\pango-$(PangoApiVersion).lib $(CopyDir)\lib
+copy $(SolutionDir)\Release\$(Platform)\bin\pango-$(PangoApiVersion).lib $(CopyDir)\lib
 
-copy $(SolutionDir)\Release\bin\pangowin32-$(PangoApiVersion).lib $(CopyDir)\lib
+copy $(SolutionDir)\Release\$(Platform)\bin\pangowin32-$(PangoApiVersion).lib $(CopyDir)\lib
 
 goto installFcDLLs
 
@@ -83,9 +83,9 @@ copy $(SolutionDir)\Debug\$(Platform)\bin\$(PangoDllPrefix)pango$(PangoDllSuffix
 
 copy $(SolutionDir)\Debug\$(Platform)\bin\$(PangoDllPrefix)pangowin32$(PangoDllSuffix).dll $(CopyDir)\bin
 
-copy $(SolutionDir)\Debug\bin\pango-$(PangoApiVersion).lib $(CopyDir)\lib
+copy $(SolutionDir)\Debug\$(Platform)\bin\pango-$(PangoApiVersion).lib $(CopyDir)\lib
 
-copy $(SolutionDir)\Debug\bin\pangowin32-$(PangoApiVersion).lib $(CopyDir)\lib
+copy $(SolutionDir)\Debug\$(Platform)\bin\pangowin32-$(PangoApiVersion).lib $(CopyDir)\lib
 
 
 :installFcDLLs
