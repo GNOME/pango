@@ -69,8 +69,8 @@ The recommended build order for these dependencies:
        there with VS10)
 -Cairo (inclusive of Cairo-GObject-if using GTK+-3.x)
 
-Use the pango_fc.sln solution if usage of fontconfig is desired; otherwise
-use the pango.sln solution.
+Use the *_fc configs if the usage of fontconfig is desired; otherwise
+use the configs that do not end with _fc.
 
 *this* file you are now reading is thus located at
 <root>\<this-pango-source-tree>\build\win32\vs10\README.txt.
