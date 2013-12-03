@@ -98,9 +98,6 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 /* #undef HAVE_UNISTD_H */
 
-/* Have X libraries */
-/* #undef HAVE_X */
-
 /* Have Xft library */
 /* #undef HAVE_XFT */
 
@@ -109,7 +106,7 @@
 #define LT_OBJDIR ".libs/"
 
 /* Module interface version */
-#define MODULE_VERSION "1.6.0"
+#define MODULE_VERSION "1.8.0"
 
 /* Name of package */
 #define PACKAGE "pango"
