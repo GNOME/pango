@@ -1,8 +1,13 @@
 EXTRA_DIST =	\
 	pango.sln	\
-	pango.propsin	\
-	pango.props	\
+	pango-build-defines.props	\
+	pango-gengir.props	\
 	pango-ignore-fc.props	\
+	pango-install-bin.props	\
+	pango-install.props	\
+	pango-install.propsin	\
+	pango-prebuild.props	\
+	pango-version-paths.props	\
 	pango.vcxproj	\
 	pango.vcxproj.filters	\
 	pango.vcxprojin	\
@@ -21,10 +26,10 @@ EXTRA_DIST =	\
 	gengir.vcxproj	\
 	README.txt
 
-pango.props: $(top_srcdir)/build/win32/vs10/pango.propsin pango.vs10.headers
-	$(CPP) -P - <$(top_srcdir)/build/win32/vs10/pango.propsin >$@
+pango-install.props: $(top_srcdir)/build/win32/vs10/pango-install.propsin pango.vs10.headers
+	$(CPP) -P - <$(top_srcdir)/build/win32/vs10/pango-install.propsin >$@
 	rm pango.vs10.headers
 
-DISTCLEANFILES = pango.props
+DISTCLEANFILES = pango-install.props
 
 -include $(top_srcdir)/git.mk

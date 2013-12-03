@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+    <Import Project="pango-build-defines.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros">
+<DoGenGir>
+set VSVER=$(VSVer)
+
+set CONF=$(Configuration)
+
+set PLAT=$(Platform)
+
+set BASEDIR=$(GlibEtcInstallRoot)
+
+cd ..
+
+call gengir_pango.bat
+
+cd vs$(VSVer)
+</DoGenGir>
+  </PropertyGroup>
+  <PropertyGroup>
+    <_PropertySheetDisplayName>pangogengirprops</_PropertySheetDisplayName>
+  </PropertyGroup>
+  <ItemGroup>
+    <BuildMacro Include="DoGenGir">
+      <Value>$(DoGenGir)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>
