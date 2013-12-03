@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="pangoinstallprops"
+	InheritedPropertySheets=".\pango-install-bin.vsprops"
+	>
+	<UserMacro
+		Name="PangoInstallHeadersData"
+		Value="
+#include "pango.vs9.headers"
+copy ..\..\..\pango\pango-features.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pango-enum-types.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangowin32.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+
+if &quot;$(ConfigurationName)&quot; == &quot;Release&quot; goto DO_CREATE_PANGO_ALIASES&#x0D;&#x0A;
+if &quot;$(ConfigurationName)&quot; == &quot;Debug&quot; goto DO_CREATE_PANGO_ALIASES&#x0D;&#x0A;
+
+copy ..\..\..\pango\pangofc-decoder.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangofc-font.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangofc-fontmap.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pango-ot.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangoft2.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+
+:DO_CREATE_PANGO_ALIASES&#x0D;&#x0A;
+if not exist $(CopyDir)\etc\pango mkdir $(CopyDir)\etc\pango&#x0D;&#x0A;
+
+if exist $(CopyDir)\etc\pango\pango.aliases goto END&#x0D;&#x0A;
+echo tahoma = &quot;tahoma,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal&quot; > $(CopyDir)\etc\pango\pango.aliases&#x0D;&#x0A;
+echo sans = &quot;arial,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal&quot; >> $(CopyDir)\etc\pango\pango.aliases&#x0D;&#x0A;
+echo serif = &quot;times new roman,angsana new,mingliu,simsun,gulimche,ms gothic,latha,mangal&quot; >> $(CopyDir)\etc\pango\pango.aliases&#x0D;&#x0A;
+echo monospace = &quot;courier new,courier monothai,mingliu,simsun,gulimche,ms gothic,latha,mangal&quot; >> $(CopyDir)\etc\pango\pango.aliases&#x0D;&#x0A;
+:END
+"
+	/>
+</VisualStudioPropertySheet>

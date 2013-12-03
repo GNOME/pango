@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="pangobuilddefinesprops"
+	OutputDirectory="$(SolutionDir)$(ConfigurationName)\$(PlatformName)\bin"
+	IntermediateDirectory="$(SolutionDir)$(ConfigurationName)\$(PlatformName)\obj\$(ProjectName)\"
+	InheritedPropertySheets=".\pango-version-paths.vsprops"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="..\..\..;..\..\..\pango;$(GlibEtcInstallRoot)\lib\glib-2.0\include;$(GlibEtcInstallRoot)\include\glib-2.0;$(GlibEtcInstallRoot)\include;$(GlibEtcInstallRoot)\include\cairo;$(GlibEtcInstallRoot)\include\fontconfig;$(GlibEtcInstallRoot)\include\freetype2"
+		PreprocessorDefinitions="HAVE_CONFIG_H;G_DISABLE_SINGLE_INCLUDES"
+		ForcedIncludeFiles="msvc_recommended_pragmas.h"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="gobject-2.0.lib gmodule-2.0.lib glib-2.0.lib intl.lib"
+		AdditionalLibraryDirectories="$(GlibEtcInstallRoot)\lib"
+	/>
+	<UserMacro
+		Name="PangoBinaryVersion"
+		Value="1.8.0"
+	/>
+	<UserMacro
+		Name="PangoDummyPrefix"
+		Value="/dummy"
+	/>
+	<UserMacro
+		Name="PangoDefines"
+		Value="G_LOG_DOMAIN=\&quot;Pango\&quot;;PANGO_ENABLE_BACKEND;PANGO_ENABLE_ENGINE;SYSCONFDIR=\&quot;$(PangoDummyPrefix)/etc\&quot;;LIBDIR=\&quot;$(PangoDummyPrefix)/lib\&quot;"
+	/>
+	<UserMacro
+		Name="NoFCDef"
+		Value="PANGO_VISUALC_NO_FC"
+	/>
+</VisualStudioPropertySheet>

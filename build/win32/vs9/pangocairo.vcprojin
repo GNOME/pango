@@ -20,7 +20,7 @@
 		<Configuration
 			Name="Debug_FC|Win32"
 			ConfigurationType="2"
-			InheritedPropertySheets=".\pango.vsprops"
+			InheritedPropertySheets=".\pango-build-defines.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -53,7 +53,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			ConfigurationType="2"
-			InheritedPropertySheets=".\pango.vsprops;.\pango-ignore-fc.vsprops"
+			InheritedPropertySheets=".\pango-build-defines.vsprops;.\pango-ignore-fc.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -87,9 +87,8 @@
 		<Configuration
 			Name="Release_FC|Win32"
 			ConfigurationType="2"
-			InheritedPropertySheets=".\pango.vsprops"
+			InheritedPropertySheets=".\pango-build-defines.vsprops"
 			CharacterSet="2"
-			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -120,9 +119,8 @@
 		<Configuration
 			Name="Release|Win32"
 			ConfigurationType="2"
-			InheritedPropertySheets=".\pango.vsprops;.\pango-ignore-fc.vsprops"
+			InheritedPropertySheets=".\pango-build-defines.vsprops;.\pango-ignore-fc.vsprops"
 			CharacterSet="2"
-			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -153,7 +151,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug_FC|x64"
-			InheritedPropertySheets=".\pango.vsprops"
+			InheritedPropertySheets=".\pango-build-defines.vsprops"
 			ConfigurationType="2"
 			CharacterSet="2"
 			>
@@ -183,7 +181,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
-			InheritedPropertySheets=".\pango.vsprops;.\pango-ignore-fc.vsprops"
+			InheritedPropertySheets=".\pango-build-defines.vsprops;.\pango-ignore-fc.vsprops"
 			ConfigurationType="2"
 			CharacterSet="2"
 			>
@@ -214,10 +212,9 @@
 		</Configuration>
 		<Configuration
 			Name="Release_FC|x64"
-			InheritedPropertySheets=".\pango.vsprops"
+			InheritedPropertySheets=".\pango-build-defines.vsprops"
 			ConfigurationType="2"
 			CharacterSet="2"
-			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -244,10 +241,9 @@
 		</Configuration>
 		<Configuration
 			Name="Release|x64"
-			InheritedPropertySheets=".\pango.vsprops;.\pango-ignore-fc.vsprops"
+			InheritedPropertySheets=".\pango-build-defines.vsprops;.\pango-ignore-fc.vsprops"
 			ConfigurationType="2"
 			CharacterSet="2"
-			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCCLCompilerTool"
