@@ -10,14 +10,20 @@
     <PangoDummyPrefix>/dummy</PangoDummyPrefix>
     <PangoDefines>G_LOG_DOMAIN="Pango";PANGO_ENABLE_BACKEND;PANGO_ENABLE_ENGINE;SYSCONFDIR="$(PangoDummyPrefix)/etc";LIBDIR="$(PangoDummyPrefix)/lib"</PangoDefines>
     <NoFCDef>PANGO_VISUALC_NO_FC</NoFCDef>
+    <PangoLibtoolCompatibleDllPrefix>lib</PangoLibtoolCompatibleDllPrefix>
+    <PangoLibtoolCompatibleDllSuffix>-$(PangoApiVersion)-0</PangoLibtoolCompatibleDllSuffix>
+    <PangoSeparateVSDllPrefix />
+    <PangoSeparateVSDllSuffix>-1-vs$(VSVer)</PangoSeparateVSDllSuffix>
+    <PangoDllPrefix>$(PangoSeparateVSDllPrefix)</PangoDllPrefix>
+    <PangoDllSuffix>$(PangoSeparateVSDllSuffix)</PangoDllSuffix>
     <PangoInstallNoFC>
 mkdir $(CopyDir)\bin
 
-copy $(Configuration)\$(Platform)\bin\pango-1-vs*.dll $(CopyDir)\bin
+copy $(Configuration)\$(Platform)\bin\$(PangoDllPrefix)pango$(PangoDllSuffix).dll $(CopyDir)\bin
 
-copy $(Configuration)\$(Platform)\bin\pangowin32-1-vs*.dll $(CopyDir)\bin
+copy $(Configuration)\$(Platform)\bin\$(PangoDllPrefix)pangowin32$(PangoDllSuffix).dll $(CopyDir)\bin
 
-copy $(Configuration)\$(Platform)\bin\pangocairo-1-vs*.dll $(CopyDir)\bin
+copy $(Configuration)\$(Platform)\bin\$(PangoDllPrefix)pangocairo$(PangoDllSuffix).dll $(CopyDir)\bin
 
 mkdir $(CopyDir)\lib
 
@@ -60,9 +66,9 @@ mkdir $(CopyDir)\lib
 
 if "$(Configuration)" == "Debug_FC" goto installDbg
 
-copy $(SolutionDir)\Release\$(Platform)\bin\pango-1-vs*.dll $(CopyDir)\bin
+copy $(SolutionDir)\Release\$(Platform)\bin\$(PangoDllPrefix)pango$(PangoDllSuffix).dll $(CopyDir)\bin
 
-copy $(SolutionDir)\Release\$(Platform)\bin\pangowin32-1-vs*.dll $(CopyDir)\bin
+copy $(SolutionDir)\Release\$(Platform)\bin\$(PangoDllPrefix)pangowin32$(PangoDllSuffix).dll $(CopyDir)\bin
 
 copy $(SolutionDir)\Release\bin\pango-$(PangoApiVersion).lib $(CopyDir)\lib
 
@@ -73,9 +79,9 @@ goto installFcDLLs
 
 :installDbg
 
-copy $(SolutionDir)\Debug\$(Platform)\bin\pango-1-vs*.dll $(CopyDir)\bin
+copy $(SolutionDir)\Debug\$(Platform)\bin\$(PangoDllPrefix)pango$(PangoDllSuffix).dll $(CopyDir)\bin
 
-copy $(SolutionDir)\Debug\$(Platform)\bin\pangowin32-1-vs*.dll $(CopyDir)\bin
+copy $(SolutionDir)\Debug\$(Platform)\bin\$(PangoDllPrefix)pangowin32$(PangoDllSuffix).dll $(CopyDir)\bin
 
 copy $(SolutionDir)\Debug\bin\pango-$(PangoApiVersion).lib $(CopyDir)\lib
 
@@ -84,9 +90,9 @@ copy $(SolutionDir)\Debug\bin\pangowin32-$(PangoApiVersion).lib $(CopyDir)\lib
 
 :installFcDLLs
 
-copy $(Configuration)\$(Platform)\bin\pangoft2-1-vs*.dll $(CopyDir)\bin
+copy $(Configuration)\$(Platform)\bin\$(PangoDllPrefix)pangoft2$(PangoDllSuffix).dll $(CopyDir)\bin
 
-copy $(Configuration)\$(Platform)\bin\pangocairo-1-vs*.dll $(CopyDir)\bin
+copy $(Configuration)\$(Platform)\bin\$(PangoDllPrefix)pangocairo$(PangoDllSuffix).dll $(CopyDir)\bin
 
 copy $(Configuration)\$(Platform)\bin\pangoft2-$(PangoApiVersion).lib $(CopyDir)\lib
 
@@ -121,12 +127,6 @@ call gengir_pango.bat
 
 cd vs$(VSVer)
 </DoGenGir>
-    <PangoLibtoolCompatibleDllPrefix>lib</PangoLibtoolCompatibleDllPrefix>
-    <PangoLibtoolCompatibleDllSuffix>-$(PangoApiVersion)-0</PangoLibtoolCompatibleDllSuffix>
-    <PangoSeparateVSDllPrefix />
-    <PangoSeparateVSDllSuffix>-1-vs$(VSVer)</PangoSeparateVSDllSuffix>
-    <PangoDllPrefix>$(PangoSeparateVSDllPrefix)</PangoDllPrefix>
-    <PangoDllSuffix>$(PangoSeparateVSDllSuffix)</PangoDllSuffix>
   </PropertyGroup>
   <PropertyGroup>
     <_PropertySheetDisplayName>pangoprops</_PropertySheetDisplayName>
