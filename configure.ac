@@ -494,7 +494,7 @@ indic_modules="indic-lang"
 thai_modules=""
 
 if $have_libthai ; then
-  thai_modules="$thai_modules,thai-lang"
+  thai_modules="thai-lang"
 fi
 
 all_modules="$arabic_modules,$basic_modules,$indic_modules,$thai_modules"
