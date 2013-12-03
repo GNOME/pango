@@ -1,8 +1,8 @@
 EXTRA_DIST =	\
 	pango.sln	\
-	pango_fc.sln	\
 	pango.vspropsin	\
 	pango.vsprops	\
+	pango-ignore-fc.vsprops	\
 	pango.vcprojin	\
 	pango.vcproj	\
 	pangoft2.vcprojin	\

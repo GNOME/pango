@@ -51,11 +51,7 @@ copy ..\..\..\pango\module-defs-win32.c.win32 ..\..\..\pango\DONE_MODULE_DEFS_WI
 	/>
 	<UserMacro
 		Name="GlibEtcInstallRoot"
-		Value="..\..\..\..\vs$(VSVer)\$(PlatformName)"
-	/>
-	<UserMacro
-		Name="GlibEtcInstallRootFromBuildWin32"
-		Value="..\..\..\vs$(VSVer)\$(PlatformName)"
+		Value="$(SolutionDir)\..\..\..\..\vs$(VSVer)\$(PlatformName)"
 	/>
 	<UserMacro
 		Name="CopyDir"
@@ -82,55 +78,6 @@ copy ..\..\..\pango\module-defs-win32.c.win32 ..\..\..\pango\DONE_MODULE_DEFS_WI
 		Value="PANGO_VISUALC_NO_FC"
 	/>
 	<UserMacro
-		Name="PangoDoInstall"
-		Value="
-echo on&#x0D;&#x0A;
-mkdir $(CopyDir)\bin&#x0D;&#x0A;
-copy $(ConfigurationName)\$(PlatformName)\bin\*.dll $(CopyDir)\bin&#x0D;&#x0A;
-copy $(ConfigurationName)\$(PlatformName)\bin\*.exe $(CopyDir)\bin&#x0D;&#x0A;
-
-mkdir $(CopyDir)\lib&#x0D;&#x0A;
-copy $(ConfigurationName)\$(PlatformName)\bin\*-$(PangoApiVersion).lib $(CopyDir)\lib&#x0D;&#x0A;
-
-#include "pango.vs9.headers"
-copy ..\..\..\pango\pango-features.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
-copy ..\..\..\pango\pango-enum-types.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
-copy ..\..\..\pango\pangowin32.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
-
-if not exist $(CopyDir)\etc\pango mkdir $(CopyDir)\etc\pango&#x0D;&#x0A;
-
-if exist $(CopyDir)\etc\pango\pango.aliases goto END&#x0D;&#x0A;
-echo tahoma = &quot;tahoma,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal&quot; > $(CopyDir)\etc\pango\pango.aliases&#x0D;&#x0A;
-echo sans = &quot;arial,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal&quot; >> $(CopyDir)\etc\pango\pango.aliases&#x0D;&#x0A;
-echo serif = &quot;times new roman,angsana new,mingliu,simsun,gulimche,ms gothic,latha,mangal&quot; >> $(CopyDir)\etc\pango\pango.aliases&#x0D;&#x0A;
-echo monospace = &quot;courier new,courier monothai,mingliu,simsun,gulimche,ms gothic,latha,mangal&quot; >> $(CopyDir)\etc\pango\pango.aliases&#x0D;&#x0A;
-:END
-"
-	/>
-	<UserMacro
-		Name="PangoInstallFCHeaders"
-		Value="
-copy ..\..\..\pango\pangofc-decoder.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
-copy ..\..\..\pango\pangofc-font.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
-copy ..\..\..\pango\pangofc-fontmap.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
-copy ..\..\..\pango\pango-ot.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
-copy ..\..\..\pango\pangoft2.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
-"
-	/>
-	<UserMacro
-		Name="DoGenGir"
-		Value="
-set VSVER=$(VSVer)&#x0D;&#x0A;
-set CONF=$(ConfigurationName)&#x0D;&#x0A;
-set PLAT=$(PlatformName)&#x0D;&#x0A;
-set BASEDIR=$(GlibEtcInstallRootFromBuildWin32)&#x0D;&#x0A;
-
-cd ..&#x0D;&#x0A;
-call gengir_pango.bat&#x0D;&#x0A;
-cd vs$(VSVer)&#x0D;&#x0A;
-			  "
-	/>
-	<UserMacro
 		Name="PangoLibtoolCompatibleDllPrefix"
 		Value="lib"
 	/>
@@ -155,5 +102,84 @@ cd vs$(VSVer)&#x0D;&#x0A;
 	<UserMacro
 		Name="PangoDllSuffix"
 		Value="$(PangoSeparateVSDllSuffix)"
+	/>
+	<UserMacro
+		Name="PangoInstallNoFC"
+		Value="
+mkdir $(CopyDir)\bin&#x0D;&#x0A;
+copy $(ConfigurationName)\$(PlatformName)\bin\$(PangoDllPrefix)pango$(PangoDllSuffix).dll $(CopyDir)\bin&#x0D;&#x0A;
+copy $(ConfigurationName)\$(PlatformName)\bin\$(PangoDllPrefix)pangowin32$(PangoDllSuffix).dll $(CopyDir)\bin&#x0D;&#x0A;
+copy $(ConfigurationName)\$(PlatformName)\bin\$(PangoDllPrefix)pangocairo$(PangoDllSuffix).dll $(CopyDir)\bin&#x0D;&#x0A;
+
+mkdir $(CopyDir)\lib&#x0D;&#x0A;
+copy $(ConfigurationName)\$(PlatformName)\bin\pango-$(PangoApiVersion).lib $(CopyDir)\lib&#x0D;&#x0A;
+copy $(ConfigurationName)\$(PlatformName)\bin\pangowin32-$(PangoApiVersion).lib $(CopyDir)\lib&#x0D;&#x0A;
+copy $(ConfigurationName)\$(PlatformName)\bin\pangocairo-$(PangoApiVersion).lib $(CopyDir)\lib&#x0D;&#x0A;
+		      "
+	/>
+	<UserMacro
+		Name="PangoDoInstall"
+		Value="
+
+#include "pango.vs9.headers"
+copy ..\..\..\pango\pango-features.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pango-enum-types.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangowin32.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+
+if not exist $(CopyDir)\etc\pango mkdir $(CopyDir)\etc\pango&#x0D;&#x0A;
+
+if exist $(CopyDir)\etc\pango\pango.aliases goto END&#x0D;&#x0A;
+echo tahoma = &quot;tahoma,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal&quot; > $(CopyDir)\etc\pango\pango.aliases&#x0D;&#x0A;
+echo sans = &quot;arial,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal&quot; >> $(CopyDir)\etc\pango\pango.aliases&#x0D;&#x0A;
+echo serif = &quot;times new roman,angsana new,mingliu,simsun,gulimche,ms gothic,latha,mangal&quot; >> $(CopyDir)\etc\pango\pango.aliases&#x0D;&#x0A;
+echo monospace = &quot;courier new,courier monothai,mingliu,simsun,gulimche,ms gothic,latha,mangal&quot; >> $(CopyDir)\etc\pango\pango.aliases&#x0D;&#x0A;
+:END
+"
+	/>
+	<UserMacro
+		Name="PangoInstallFC"
+		Value="
+mkdir $(CopyDir)\bin&#x0D;&#x0A;
+mkdir $(CopyDir)\lib&#x0D;&#x0A;
+
+if &quot;$(ConfigurationName)&quot; == &quot;Debug_FC&quot; goto installDbg&#x0D;&#x0A;
+copy $(SolutionDir)\Release\$(PlatformName)\bin\$(PangoDllPrefix)pango$(PangoDllSuffix) $(CopyDir)\bin&#x0D;&#x0A;
+copy $(SolutionDir)\Release\$(PlatformName)\bin\$(PangoDllPrefix)pangowin32$(PangoDllSuffix).dll $(CopyDir)\bin&#x0D;&#x0A;
+copy $(SolutionDir)\Release\$(PlatformName)\bin\pango-$(PangoApiVersion).lib $(CopyDir)\lib&#x0D;&#x0A;
+copy $(SolutionDir)\Release\$(PlatformName)\bin\pangowin32-$(PangoApiVersion).lib $(CopyDir)\lib&#x0D;&#x0A;
+goto installFcDLLs&#x0D;&#x0A;
+
+:installDbg&#x0D;&#x0A;
+copy $(SolutionDir)\Debug\$(PlatformName)\bin\$(PangoDllPrefix)pango$(PangoDllSuffix) $(CopyDir)\bin&#x0D;&#x0A;
+copy $(SolutionDir)\Debug\$(PlatformName)\bin\$(PangoDllPrefix)pangowin32$(PangoDllSuffix).dll $(CopyDir)\bin&#x0D;&#x0A;
+copy $(SolutionDir)\Debug\$(PlatformName)\bin\pango-$(PangoApiVersion).lib $(CopyDir)\lib&#x0D;&#x0A;
+copy $(SolutionDir)\Debug\$(PlatformName)\bin\pangowin32-$(PangoApiVersion).lib $(CopyDir)\lib&#x0D;&#x0A;
+
+:installFcDLLs&#x0D;&#x0A;
+copy $(ConfigurationName)\$(PlatformName)\bin\$(PangoDllPrefix)pangoft2$(PangoDllSuffix).dll $(CopyDir)\bin&#x0D;&#x0A;
+copy $(ConfigurationName)\$(PlatformName)\bin\$(PangoDllPrefix)pangocairo$(PangoDllSuffix).dll $(CopyDir)\bin&#x0D;&#x0A;
+copy $(ConfigurationName)\$(PlatformName)\bin\pangoft2-$(PangoApiVersion).lib $(CopyDir)\lib&#x0D;&#x0A;
+copy $(ConfigurationName)\$(PlatformName)\bin\pangocairo-$(PangoApiVersion).lib $(CopyDir)\lib&#x0D;&#x0A;
+
+mkdir $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangofc-decoder.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangofc-font.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangofc-fontmap.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pango-ot.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangoft2.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+"
+	/>
+	<UserMacro
+		Name="DoGenGir"
+		Value="
+set VSVER=$(VSVer)&#x0D;&#x0A;
+set CONF=$(ConfigurationName)&#x0D;&#x0A;
+set PLAT=$(PlatformName)&#x0D;&#x0A;
+set BASEDIR=$(GlibEtcInstallRoot)&#x0D;&#x0A;
+
+cd ..&#x0D;&#x0A;
+call gengir_pango.bat&#x0D;&#x0A;
+cd vs$(VSVer)&#x0D;&#x0A;
+			  "
 	/>
 </VisualStudioPropertySheet>
