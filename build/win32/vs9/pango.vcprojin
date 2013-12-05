@@ -156,23 +156,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File RelativePath="..\..\..\modules\arabic\arabic-lang.c" >
-				<FileConfiguration Name="Debug_FC|Win32"><Tool Name="VCCLCompilerTool"	PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_arabic_lang" /></FileConfiguration>
 				<FileConfiguration Name="Debug|Win32"><Tool Name="VCCLCompilerTool"	PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_arabic_lang" /></FileConfiguration>
-				<FileConfiguration Name="Release_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_arabic_lang" /></FileConfiguration>
 				<FileConfiguration Name="Release|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_arabic_lang" /></FileConfiguration>
-				<FileConfiguration Name="Debug_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_arabic_lang" /></FileConfiguration>
 				<FileConfiguration Name="Debug|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_arabic_lang" /></FileConfiguration>
-				<FileConfiguration Name="Release_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_arabic_lang" /></FileConfiguration>
 				<FileConfiguration Name="Release|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_arabic_lang" /></FileConfiguration>
 			</File>
 			<File RelativePath="..\..\..\modules\indic\indic-lang.c" >
-				<FileConfiguration Name="Debug_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_indic_lang" /></FileConfiguration>
 				<FileConfiguration Name="Debug|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_indic_lang" /></FileConfiguration>
-				<FileConfiguration Name="Release_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_indic_lang" /></FileConfiguration>
 				<FileConfiguration Name="Release|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_indic_lang" /></FileConfiguration>
-				<FileConfiguration Name="Debug_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_indic_lang" /></FileConfiguration>
 				<FileConfiguration Name="Debug|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_indic_lang" /></FileConfiguration>
-				<FileConfiguration Name="Release_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_indic_lang" /></FileConfiguration>
 				<FileConfiguration Name="Release|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_indic_lang" /></FileConfiguration>
 			</File>
 #include "libpango.sourcefiles"
