@@ -714,7 +714,7 @@ static void
 basic_engine_shape (PangoEngineShape 	*engine,
 		    PangoFont        	*font,
 		    const char       	*text,
-		    int              	 length,
+		    unsigned int     	 length,
 		    const PangoAnalysis *analysis,
 		    PangoGlyphString    *glyphs,
 		    const char          *paragraph_text G_GNUC_UNUSED,
