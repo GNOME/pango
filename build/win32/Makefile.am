@@ -1,8 +1,6 @@
 SUBDIRS = vs9 vs10
 
 EXTRA_DIST =	\
-	unistd.h	\
-	gen-file-list-pango.py	\
-	gengir_pango.bat
+	unistd.h
 
 -include $(top_srcdir)/git.mk

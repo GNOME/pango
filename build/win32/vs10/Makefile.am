@@ -1,7 +1,6 @@
 EXTRA_DIST =	\
 	pango.sln	\
 	pango-build-defines.props	\
-	pango-gengir.props	\
 	pango-ignore-fc.props	\
 	pango-install-bin.props	\
 	pango-install.props	\
@@ -23,7 +22,6 @@ EXTRA_DIST =	\
 	pangocairo.vcxprojin	\
 	pangocairo.vcxproj.filtersin	\
 	install.vcxproj	\
-	gengir.vcxproj	\
 	README.txt
 
 pango-install.props: $(top_srcdir)/build/win32/vs10/pango-install.propsin pango.vs10.headers

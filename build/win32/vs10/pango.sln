@@ -10,8 +10,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pangocairo", "pangocairo.vc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "install", "install.vcxproj", "{FC5AADB5-95CD-4BF0-BA8B-0C16FE7073FB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gengir", "gengir.vcxproj", "{2093D218-190E-4194-9421-3BA7CBF33B15}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_FC|Win32 = Debug_FC|Win32
@@ -100,14 +98,6 @@ Global
 		{FC5AADB5-95CD-4BF0-BA8B-0C16FE7073FB}.Release_FC|Win32.Build.0 = Release_FC|Win32
 		{FC5AADB5-95CD-4BF0-BA8B-0C16FE7073FB}.Release_FC|x64.ActiveCfg = Release_FC|x64
 		{FC5AADB5-95CD-4BF0-BA8B-0C16FE7073FB}.Release_FC|x64.Build.0 = Release_FC|x64
-		{2093D218-190E-4194-9421-3BA7CBF33B15}.Debug|Win32.ActiveCfg = Debug|Win32
-		{2093D218-190E-4194-9421-3BA7CBF33B15}.Debug|x64.ActiveCfg = Debug|x64
-		{2093D218-190E-4194-9421-3BA7CBF33B15}.Release|Win32.ActiveCfg = Release|Win32
-		{2093D218-190E-4194-9421-3BA7CBF33B15}.Release|x64.ActiveCfg = Release|x64
-		{2093D218-190E-4194-9421-3BA7CBF33B15}.Debug_FC|Win32.ActiveCfg = Debug|Win32
-		{2093D218-190E-4194-9421-3BA7CBF33B15}.Debug_FC|x64.ActiveCfg = Debug|x64
-		{2093D218-190E-4194-9421-3BA7CBF33B15}.Release_FC|Win32.ActiveCfg = Release|Win32
-		{2093D218-190E-4194-9421-3BA7CBF33B15}.Release_FC|x64.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

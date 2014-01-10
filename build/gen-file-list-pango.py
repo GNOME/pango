@@ -40,19 +40,17 @@ def gen_pangoft_filelist(srcroot, subdir, dest):
             d.write(srcroot + '\\' + subdir + '\\' + i.replace('/', '\\') + '\n')
 
 def gen_pangocairo_filelist(srcroot, subdir, dest, is_fc_used):
+    cond_pangocairo = {}
+    if is_fc_used == 1:
+        cond_pangocairo = {'HAVE_CAIRO_WIN32': True, 'PLATFORM_WIN32': True, 'HAVE_CAIRO_FREETYPE': True}
+    else:
+        cond_pangocairo = {'HAVE_CAIRO_WIN32': True, 'PLATFORM_WIN32': True}
     vars = read_vars_from_AM(os.path.join(srcroot, subdir, 'Makefile.am'),
                              vars = {},
-                             conds = {},
+                             conds = cond_pangocairo,
                              filters = ['libpangocairo_1_0_la_SOURCES', 'pangocairo_headers'])
-    vars['pangocairo_win32_introspection_files'] = 'pangocairo-win32font.c pangocairo-win32fontmap.c pangocairo-win32.h'
-    if is_fc_used == 1:
-        vars['pangocairo_ft2_introspection_files'] = 'pangocairo-fcfont.c pangocairo-fcfontmap.c pangocairo-fc.h'
-    else:
-        vars['pangocairo_ft2_introspection_files'] = ''
 
     files = vars['libpangocairo_1_0_la_SOURCES'].split() + \
-            vars['pangocairo_win32_introspection_files'].split() + \
-            vars['pangocairo_ft2_introspection_files'].split() + \
             vars['pangocairo_headers'].split()
 
     sources = [i for i in files \
@@ -74,6 +72,7 @@ def read_vars_from_AM(path, vars = {}, conds = {}, filters = None):
     RE_AM_VAR_REF = re.compile(r'\$\((\w+?)\)')
     RE_AM_VAR = re.compile(r'^\s*(\w+)\s*=(.*)$')
     RE_AM_INCLUDE = re.compile(r'^\s*include\s+(\w+)')
+    RE_AM_VAR_ADD = re.compile(r'^\s*(\w+)\s*\+=(.*)$')
     RE_AM_CONTINUING = re.compile(r'\\\s*$')
     RE_AM_IF = re.compile(r'^\s*if\s+(\w+)')
     RE_AM_ELSE = re.compile(r'^\s*else')
@@ -131,6 +130,14 @@ def read_vars_from_AM(path, vars = {}, conds = {}, filters = None):
             if mo:
                 cur_vars[mo.group(1)] = am_eval(mo.group(2).strip())
                 continue
+            mo = RE_AM_VAR_ADD.search(line)
+            if mo:
+                try:
+                    cur_vars[mo.group(1)] += ' '
+                except KeyError:
+                    cur_vars[mo.group(1)] = ''
+                cur_vars[mo.group(1)] += am_eval(mo.group(2).strip())
+                continue
 
     #filter:
     if filters != None:
@@ -142,7 +149,7 @@ def read_vars_from_AM(path, vars = {}, conds = {}, filters = None):
         return cur_vars
 
 def main(argv):
-    srcroot = '..\\..'
+    srcroot = '..'
     subdir = 'pango'
     gen_pango_filelist(srcroot, subdir, 'pango_list')
     gen_pangoft_filelist(srcroot, subdir, 'pangoft_list')
