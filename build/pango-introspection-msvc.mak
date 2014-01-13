@@ -43,8 +43,9 @@ install-introspection: setbuildenv Pango-$(APIVERSION).gir Pango-$(APIVERSION).t
 setbuildenv:
 	@set CC=$(CC)
 	@set PYTHONPATH=$(BASEDIR)\lib\gobject-introspection
-	@set PATH=win32\vs$(VSVER)\$(CFG)\$(PLAT)\bin;$(PATH);$(MINGWDIR)\bin
+	@set PATH=win32\vs$(VSVER)\$(CFG)\$(PLAT)\bin;$(BASEDIR)\bin;$(PATH);$(MINGWDIR)\bin
 	@set PKG_CONFIG_PATH=$(PKG_CONFIG_PATH)
+	@set LIB=win32\vs$(VSVER)\$(CFG)\$(PLAT)\bin;$(BASEDIR)\lib;$(LIB)
 
 Pango-$(APIVERSION).gir: pango_list
 	@-echo Generating Pango-$(APIVERSION).gir...
