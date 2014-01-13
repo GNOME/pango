@@ -7,11 +7,11 @@
 
 BASEDIR = ..\..\vs$(VSVER)\$(PLAT)
 GIR_SUBDIR = share\gir-1.0
-GIR_SUBDIR = share\gir-1.0
+GIR_TYPELIBDIR = lib\girepository-1.0
 G_IR_SCANNER = $(BASEDIR)\bin\g-ir-scanner
 G_IR_COMPILER = $(BASEDIR)\bin\g-ir-compiler.exe
 G_IR_INCLUDEDIR = $(BASEDIR)\$(GIR_SUBDIR)
-G_IR_TYPELIBDIR = $(BASEDIR)\$(GIR_SUBDIR)
+G_IR_TYPELIBDIR = $(BASEDIR)\$(GIR_TYPELIBDIR)
 
 # Note: The PYTHON2 must be a Python 2.6.x or 2.7.x Interpretor!
 # Either having python.exe from Python 2.6.x/2.7.x in your PATH will work
