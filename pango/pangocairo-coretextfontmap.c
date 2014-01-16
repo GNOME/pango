@@ -186,5 +186,5 @@ static void
 pango_cairo_core_text_font_map_init (PangoCairoCoreTextFontMap *cafontmap)
 {
   cafontmap->serial = 1;
-  cafontmap->dpi = 72.;
+  cafontmap->dpi = 96.;
 }
