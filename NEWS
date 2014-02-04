@@ -1,3 +1,11 @@
+Overview of changes between 1.36.1 and 1.36.2
+=============================================
+- Win32 build fixes
+- Fix a possible strtol(NULL) (#719549)
+- Fix --with-included-modules
+- Fix a FPE in pango_layout_iter_get_char_extents (#720379)
+- Use 96 dpi for CoreText by default
+
 Overview of changes between 1.36.0 and 1.36.1
 =============================================
 - Handle scaling absolute font sizes (#708778)
