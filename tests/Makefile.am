@@ -39,6 +39,8 @@ endif
 
 TESTS_ENVIRONMENT =                    \
    srcdir=$(srcdir)                    \
+   G_TEST_SRCDIR=$(abs_srcdir)         \
+   G_TEST_BUILDDIR=$(abs_builddir)     \
    PANGO_RC_FILE=./pangorc
 
 check_PROGRAMS = testboundaries testboundaries_ucd testcolor testscript
