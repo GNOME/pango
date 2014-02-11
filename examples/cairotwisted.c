@@ -245,7 +245,7 @@ parametrize_path (cairo_path_t *path)
 			   + two_points_distance (&data[1], &data[2])
 			   + two_points_distance (&data[2], &data[3]);
 	*/
-	parametrization[i] = curve_length (current_point.point.x, current_point.point.x,
+	parametrization[i] = curve_length (current_point.point.x, current_point.point.y,
 					   data[1].point.x, data[1].point.y,
 					   data[2].point.x, data[2].point.y,
 					   data[3].point.x, data[3].point.y);
