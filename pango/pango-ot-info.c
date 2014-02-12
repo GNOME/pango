@@ -88,6 +88,9 @@ pango_ot_info_get (FT_Face face)
 {
   PangoOTInfo *info;
 
+  if (G_UNLIKELY (!face))
+    return NULL;
+
   if (G_LIKELY (face->generic.data && face->generic.finalizer == pango_ot_info_finalizer))
     return face->generic.data;
   else
