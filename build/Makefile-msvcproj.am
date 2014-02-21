@@ -202,12 +202,14 @@ $(top_builddir)/build/win32/vs10/pangocairo.vcxproj: \
 # (Seperator)
 	-$(RM) $@
 	$(CPP) -I$(top_builddir)/build -P - <$(top_srcdir)/build/win32/vs10/pangocairo.vcxprojin >$@
+	-$(RM) $(top_builddir)/build/libpangocairo.vs10.sourcefiles
 
 $(top_builddir)/build/win32/vs10/pangocairo.vcxproj.filters: \
 	$(top_srcdir)/build/win32/vs10/pangocairo.vcxproj.filtersin $(top_builddir)/build/libpangocairo.vs10.sourcefiles.filters
 # (Seperator)
 	-$(RM) $@
 	$(CPP) -I$(top_builddir)/build -P - <$(top_srcdir)/build/win32/vs10/pangocairo.vcxproj.filtersin >$@
+	-$(RM) $(top_builddir)/build/libpangocairo.vs10.sourcefiles.filters
 
 ##############################################
 # Now fill in the header "installation" list #
