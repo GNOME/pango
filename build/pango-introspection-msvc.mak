@@ -1,14 +1,5 @@
 # NMake Makefile to build Introspection Files for Pango
 
-# Change or pass in as variable/env var if needed
-DLLPREFIX =
-DLLSUFFIX = -1-vs$(VSVER)
-PANGO_DLLNAME = $(DLLPREFIX)pango$(DLLSUFFIX)
-PANGOFT_DLLNAME = $(DLLPREFIX)pangoft2$(DLLSUFFIX)
-PANGOCAIRO_DLLNAME = $(DLLPREFIX)pangocairo$(DLLSUFFIX)
-
-# Please do not change anything after this line
-
 !include testsrules_msvc.mak
 
 APIVERSION = 1.0
@@ -21,7 +12,7 @@ CHECK_PACKAGE = gobject-2.0 cairo
 !if "$(BUILD_PANGOFT2_INTROSPECTION)" == "1"
 
 # Build of PangoFT2 introspection files is not currently supported.
-PangoFT2LIBS = --library=$(PANGO_DLLNAME)
+PangoFT2LIBS = --library=pangoft2-1.0
 PangoFT2GIR = --include-uninstalled=./PangoFT2-$(APIVERSION)
 
 all: setbuildenv Pango-$(APIVERSION).gir Pango-$(APIVERSION).typelib PangoFT2-$(APIVERSION).gir PangoFT2-$(APIVERSION).typelib PangoCairo-$(APIVERSION).gir PangoCairo-$(APIVERSION).typelib
@@ -53,7 +44,7 @@ Pango-$(APIVERSION).gir: pango_list
 	-I$(BASEDIR)\include\glib-2.0 -I$(BASEDIR)\lib\glib-2.0\include	\
 	--namespace=Pango --nsversion=$(APIVERSION)	\
 	--include=GObject-2.0 --include=cairo-1.0	\
-	--no-libtool --pkg=gobject-2.0 --pkg=cairo --pkg=glib-2.0 --library=$(PANGO_DLLNAME)	\
+	--no-libtool --pkg=gobject-2.0 --pkg=cairo --pkg=glib-2.0 --library=pango-1.0	\
 	--reparse-validate --add-include-path=$(G_IR_INCLUDEDIR)	\
 	--pkg-export pango --warn-all --c-include "pango/pango.h"	\
 	-DG_LOG_DOMAIN=\"Pango\" -DPANGO_ENABLE_BACKEND -DPANGO_ENABLE_ENGINE	\
@@ -66,7 +57,7 @@ PangoCairo-$(APIVERSION).gir: Pango-$(APIVERSION).gir
 	-I$(BASEDIR)\include\glib-2.0 -I$(BASEDIR)\lib\glib-2.0\include -I$(BASEDIR)\include	\
 	--namespace=PangoCairo --nsversion=$(APIVERSION)	\
 	--include=GObject-2.0 --include=cairo-1.0	\
-	--no-libtool --pkg=gobject-2.0 --pkg=cairo --library=$(PANGOCAIRO_DLLNAME) $(PangoFT2LIBS) --library=$(PANGO_DLLNAME)	\
+	--no-libtool --pkg=gobject-2.0 --pkg=cairo --library=pangocairo-1.0 $(PangoFT2LIBS) --library=pango-1.0	\
 	--reparse-validate --add-include-path=$(G_IR_INCLUDEDIR) --add-include-path=.	\
 	--pkg-export pangocairo --warn-all $(PangoFT2GIR) --include-uninstalled=./Pango-$(APIVERSION).gir	\
 	--c-include "pango/pangocairo.h"	\
