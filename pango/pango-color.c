@@ -212,7 +212,8 @@ hex (const char *spec,
  *
  * Fill in the fields of a color from a string specification. The
  * string can either one of a large set of standard names. (Taken
- * from the X11 <filename>rgb.txt</filename> file), or it can be a hex value in the
+ * from the CSS <ulink url="http://dev.w3.org/csswg/css-color/#named-colors">specification</ulink>), or it can be a hexadecimal
+ * value in the
  * form '&num;rgb' '&num;rrggbb' '&num;rrrgggbbb' or '&num;rrrrggggbbbb' where
  * 'r', 'g' and 'b' are hex digits of the red, green, and blue
  * components of the color, respectively. (White in the four
