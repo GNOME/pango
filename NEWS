@@ -1,3 +1,10 @@
+Overview of changes between 1.36.2 and 1.36.3
+=============================================
+- Fix builddir != srdir builds
+- Avoid a crash when FT_Face is NULL (#724006)
+- Win32 build fixes
+- Update pango_color_parse docs (#711061)
+
 Overview of changes between 1.36.1 and 1.36.2
 =============================================
 - Win32 build fixes
