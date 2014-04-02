@@ -36,6 +36,8 @@ copy ..\..\..\pango\pangoft2.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
 
 if exist $(CopyDir)\etc\pango\pango.aliases goto END
 
+if not exist $(CopyDir)\etc\pango mkdir $(CopyDir)\etc\pango
+
 echo tahoma = "tahoma,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal" > $(CopyDir)\etc\pango\pango.aliases
 
 echo sans = "arial,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal" >> $(CopyDir)\etc\pango\pango.aliases
