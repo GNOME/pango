@@ -320,8 +320,6 @@ struct PangoAlias
   gboolean visible; /* Do we want/need this? */
 };
 
-static GHashTable *pango_aliases_ht = NULL; /* MT-unsafe */
-
 static guint
 alias_hash (struct PangoAlias *alias)
 {
@@ -351,8 +349,9 @@ alias_free (struct PangoAlias *alias)
 }
 
 static void
-handle_alias_line (GString  *line_buffer,
-                   char    **errstring)
+handle_alias_line (GString    *line_buffer,
+                   char       **errstring,
+                   GHashTable *ht_aliases)
 {
   GString *tmp_buffer1;
   GString *tmp_buffer2;
@@ -404,14 +403,14 @@ handle_alias_line (GString  *line_buffer,
   alias_key.alias = g_ascii_strdown (tmp_buffer1->str, -1);
 
   /* Remove any existing values */
-  alias = g_hash_table_lookup (pango_aliases_ht, &alias_key);
+  alias = g_hash_table_lookup (ht_aliases, &alias_key);
 
   if (!alias)
     {
       alias = g_slice_new0 (struct PangoAlias);
       alias->alias = alias_key.alias;
 
-      g_hash_table_insert (pango_aliases_ht, alias, alias);
+      g_hash_table_insert (ht_aliases, alias, alias);
     }
   else
     g_free (alias_key.alias);
@@ -468,7 +467,7 @@ static const char * const builtin_aliases[] = {
 };
 
 static void
-read_builtin_aliases (void)
+read_builtin_aliases (GHashTable **ht_aliases)
 {
 
   GString *line_buffer;
@@ -480,7 +479,7 @@ read_builtin_aliases (void)
   for (line = 0; line < G_N_ELEMENTS (builtin_aliases) && errstring == NULL; line++)
     {
       g_string_assign (line_buffer, builtin_aliases[line]);
-      handle_alias_line (line_buffer, &errstring);
+      handle_alias_line (line_buffer, &errstring, ht_aliases);
     }
 
   if (errstring)
@@ -495,7 +494,7 @@ read_builtin_aliases (void)
 
 
 static void
-read_alias_file (const char *filename)
+read_alias_file (const char *filename, GHashTable *ht_aliases)
 {
   FILE *file;
 
@@ -513,7 +512,7 @@ read_alias_file (const char *filename)
          errstring == NULL)
     {
       line++;
-      handle_alias_line (line_buffer, &errstring);
+      handle_alias_line (line_buffer, &errstring, ht_aliases);
     }
 
   if (errstring == NULL && ferror (file))
@@ -530,25 +529,25 @@ read_alias_file (const char *filename)
   fclose (file);
 }
 
-static void
+static GHashTable *
 load_aliases (void)
 {
   char *filename;
   const char *home;
 
-  pango_aliases_ht = g_hash_table_new_full ((GHashFunc)alias_hash,
-                                            (GEqualFunc)alias_equal,
-                                            (GDestroyNotify)alias_free,
-                                            NULL);
+  GHashTable *ht_aliases = g_hash_table_new_full ((GHashFunc)alias_hash,
+                                                  (GEqualFunc)alias_equal,
+                                                  (GDestroyNotify)alias_free,
+                                                  NULL);
 
 #ifdef HAVE_CAIRO_WIN32
-  read_builtin_aliases ();
+  read_builtin_aliases (ht_aliases);
 #endif
 
   filename = g_strconcat (pango_get_sysconf_subdirectory (),
                           G_DIR_SEPARATOR_S "pango.aliases",
                           NULL);
-  read_alias_file (filename);
+  read_alias_file (filename, ht_aliases);
   g_free (filename);
 
   home = g_get_home_dir ();
@@ -557,9 +556,10 @@ load_aliases (void)
       filename = g_strconcat (home,
                               G_DIR_SEPARATOR_S ".pango.aliases",
                               NULL);
-      read_alias_file (filename);
+      read_alias_file (filename, ht_aliases);
       g_free (filename);
     }
+  return ht_aliases;
 }
 
 static void
@@ -567,14 +567,18 @@ lookup_aliases (const char   *fontname,
                 char       ***families,
                 int          *n_families)
 {
+  static GHashTable *aliases_ht = NULL; /* MT-safe */
+
   struct PangoAlias alias_key;
   struct PangoAlias *alias;
 
-  if (pango_aliases_ht == NULL)
-    load_aliases ();
+  if (g_once_init_enter (&aliases_ht))
+    {
+      g_once_init_leave (&aliases_ht, load_aliases ());
+    }
 
   alias_key.alias = g_ascii_strdown (fontname, -1);
-  alias = g_hash_table_lookup (pango_aliases_ht, &alias_key);
+  alias = g_hash_table_lookup (aliases_ht, &alias_key);
   g_free (alias_key.alias);
 
   if (alias)
