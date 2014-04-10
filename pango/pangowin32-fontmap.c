@@ -467,7 +467,7 @@ static const char * const builtin_aliases[] = {
 };
 
 static void
-read_builtin_aliases (GHashTable **ht_aliases)
+read_builtin_aliases (GHashTable *ht_aliases)
 {
 
   GString *line_buffer;
