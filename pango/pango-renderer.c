@@ -1181,8 +1181,8 @@ pango_renderer_set_color (PangoRenderer    *renderer,
  *
  * Gets the current rendering color for the specified part.
  *
- * Return value: the color for the specified part, or %NULL
- *  if it hasn't been set and should be inherited from the
+ * Return value: (transfer non): the color for the specified part, or
+ *  %NULL if it hasn't been set and should be inherited from the
  *  environment.
  *
  * Since: 1.8
