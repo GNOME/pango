@@ -82,7 +82,7 @@ $(noinst_PROGRAMS) $(check_PROGRAMS): pangorc
 noinst_PROGRAMS = $(check_PROGRAMS) gen-all-unicode dump-boundaries
 
 if BUILDOPT_INSTALL_TESTS
-insttestdir=$(pkglibexecdir)/installed-tests
+insttestdir=$(libexecdir)/installed-tests/$(PACKAGE)
 insttest_PROGRAMS = $(check_PROGRAMS)
 
 testdatadir = $(insttestdir)
@@ -97,7 +97,7 @@ testmeta_DATA = $(check_PROGRAMS:=.test)
 %.test: %$(EXEEXT) Makefile
 	$(AM_V_GEN) (echo '[Test]' > $@.tmp; \
 	 echo 'Type=session' >> $@.tmp; \
-	 echo 'Exec=$(pkglibexecdir)/installed-tests/$<' >> $@.tmp; \
+	 echo 'Exec=$(libexecdir)/installed-tests/$(PACKAGE)/$<' >> $@.tmp; \
 	 mv $@.tmp $@)
 endif
 
