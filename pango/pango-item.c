@@ -42,13 +42,13 @@ pango_item_new (void)
 
 /**
  * pango_item_copy:
- * @item: a #PangoItem, may be %NULL
+ * @item: (nullable): a #PangoItem, may be %NULL
  *
  * Copy an existing #PangoItem structure.
  *
- * Return value: the newly allocated #PangoItem, which should
- *               be freed with pango_item_free(), or %NULL if
- *               @item was NULL.
+ * Return value: (nullable): the newly allocated #PangoItem, which
+ *               should be freed with pango_item_free(), or %NULL if
+ *               @item was %NULL.
  **/
 PangoItem *
 pango_item_copy (PangoItem *item)
@@ -84,7 +84,7 @@ pango_item_copy (PangoItem *item)
 
 /**
  * pango_item_free:
- * @item: a #PangoItem, may be %NULL
+ * @item: (nullable): a #PangoItem, may be %NULL
  *
  * Free a #PangoItem and all associated memory.
  **/

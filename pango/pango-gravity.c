@@ -120,7 +120,7 @@ pango_gravity_to_rotation (PangoGravity gravity)
 
 /**
  * pango_gravity_get_for_matrix:
- * @matrix: a #PangoMatrix
+ * @matrix: (nullable): a #PangoMatrix
  *
  * Finds the gravity that best matches the rotation component
  * in a #PangoMatrix.

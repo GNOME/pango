@@ -81,7 +81,7 @@ pango_ot_tag_to_script (PangoOTTag script_tag)
 
 /**
  * pango_ot_tag_from_language:
- * @language: A #PangoLanguage, or %NULL
+ * @language: (nullable): A #PangoLanguage, or %NULL
  *
  * Finds the OpenType language-system tag best describing @language.
  *

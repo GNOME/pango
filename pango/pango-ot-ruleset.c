@@ -267,8 +267,10 @@ pango_ot_ruleset_maybe_add_features (PangoOTRuleset          *ruleset,
 /**
  * pango_ot_ruleset_get_feature_count:
  * @ruleset: a #PangoOTRuleset.
- * @n_gsub_features: location to store number of GSUB features, or %NULL.
- * @n_gpos_features: location to store number of GPOS features, or %NULL.
+ * @n_gsub_featuresL: (out) (optional): location to store number of
+ *   GSUB features, or %NULL.
+ * @n_gpos_features: (out) (optional): location to store number of
+ *   GPOS features, or %NULL.
  *
  * Gets the number of GSUB and GPOS features in the ruleset.
  *

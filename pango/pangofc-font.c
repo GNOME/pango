@@ -958,8 +958,10 @@ get_per_char (FT_Face      face,
  * @fcfont: a #PangoFcFont
  * @load_flags: flags to pass to FT_Load_Glyph()
  * @glyph: the glyph index to load
- * @ink_rect: location to store ink extents of the glyph, or %NULL
- * @logical_rect: location to store logical extents of the glyph or %NULL
+ * @ink_rect: (out) (optional): location to store ink extents of the
+ *   glyph, or %NULL
+ * @logical_rect: (out) (optional): location to store logical extents
+ *   of the glyph or %NULL
  *
  * Gets the extents of a single glyph from a font. The extents are in
  * user space; that is, they are not transformed by any matrix in effect

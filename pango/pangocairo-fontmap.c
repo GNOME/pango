@@ -121,10 +121,10 @@ pango_cairo_font_map_new (void)
  * or in fact in most of those cases, just use
  * @pango_cairo_font_map_get_default().
  *
- * Return value: (transfer full) : the newly allocated #PangoFontMap
- *               of suitable type which should be freed with
- *               g_object_unref(), or %NULL if the requested cairo
- *               font backend is not supported / compiled in.
+ * Return value: (transfer full) (nullable): the newly allocated
+ *               #PangoFontMap of suitable type which should be freed
+ *               with g_object_unref(), or %NULL if the requested
+ *               cairo font backend is not supported / compiled in.
  *
  * Since: 1.18
  **/
@@ -196,7 +196,7 @@ pango_cairo_font_map_get_default (void)
 
 /**
  * pango_cairo_font_map_set_default:
- * @fontmap: The new default font map, or %NULL
+ * @fontmap: (nullable): The new default font map, or %NULL
  *
  * Sets a default #PangoCairoFontMap to use with Cairo.
  *

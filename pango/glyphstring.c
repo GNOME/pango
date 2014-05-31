@@ -97,12 +97,12 @@ G_DEFINE_BOXED_TYPE (PangoGlyphString, pango_glyph_string,
 
 /**
  * pango_glyph_string_copy:
- * @string: a #PangoGlyphString, may be %NULL
+ * @string: (nullable): a #PangoGlyphString, may be %NULL
  *
  * Copy a glyph string and associated storage.
  *
- * Return value: the newly allocated #PangoGlyphString, which
- *               should be freed with pango_glyph_string_free(),
+ * Return value: (nullable): the newly allocated #PangoGlyphString,
+ *               which should be freed with pango_glyph_string_free(),
  *               or %NULL if @string was %NULL.
  */
 PangoGlyphString *
@@ -127,7 +127,7 @@ pango_glyph_string_copy (PangoGlyphString *string)
 
 /**
  * pango_glyph_string_free:
- * @string: a #PangoGlyphString, may be %NULL
+ * @string: (nullable): a #PangoGlyphString, may be %NULL
  *
  * Free a glyph string and associated storage.
  */
@@ -149,12 +149,12 @@ pango_glyph_string_free (PangoGlyphString *string)
  * @end:      end index (the range is the set of bytes with
 	      indices such that start <= index < end)
  * @font:     a #PangoFont
- * @ink_rect: (out caller-allocates): rectangle used to store the
- *            extents of the glyph string range as drawn or %NULL to
- *            indicate that the result is not needed.
- * @logical_rect: (out caller-allocates): rectangle used to store the
- *            logical extents of the glyph string range or %NULL to
- *            indicate that the result is not needed.
+ * @ink_rect: (out caller-allocates) (optional): rectangle used to
+ *            store the extents of the glyph string range as drawn or
+ *            %NULL to indicate that the result is not needed.
+ * @logical_rect: (out caller-allocates) (optional): rectangle used to
+ *            store the logical extents of the glyph string range or
+ *            %NULL to indicate that the result is not needed.
  *
  * Computes the extents of a sub-portion of a glyph string. The extents are
  * relative to the start of the glyph string range (the origin of their

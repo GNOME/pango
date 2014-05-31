@@ -382,7 +382,8 @@ pango_win32_render (HDC               hdc,
 /**
  * pango_win32_render_transformed:
  * @hdc:     a windows device context
- * @matrix:  a #PangoMatrix, or %NULL to use an identity transformation
+ * @matrix:  (nullable): a #PangoMatrix, or %NULL to use an identity
+ *           transformation
  * @font:    the font in which to draw the string
  * @glyphs:  the glyph string to draw
  * @x:       the x position of the start of the string (in Pango

@@ -185,8 +185,8 @@ cache_entry_unref (PangoWin32FontCache *cache,
  * result may be newly loaded, or it may have been previously
  * stored
  *
- * Return value: The font structure, or %NULL if the font could
- * not be loaded. In order to free this structure, you must call
+ * Return value: (nullable): The font structure, or %NULL if the font
+ * could not be loaded. In order to free this structure, you must call
  * pango_win32_font_cache_unload().
  **/
 HFONT
@@ -215,8 +215,8 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
  * result may be newly loaded, or it may have been previously
  * stored
  *
- * Return value: The font structure, or %NULL if the font could
- * not be loaded. In order to free this structure, you must call
+ * Return value: (nullable): The font structure, or %NULL if the font
+ * could not be loaded. In order to free this structure, you must call
  * pango_win32_font_cache_unload().
  *
  * Since: 1.16

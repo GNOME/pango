@@ -134,8 +134,10 @@ pango_ot_buffer_set_zero_width_marks (PangoOTBuffer     *buffer,
 /**
  * pango_ot_buffer_get_glyphs
  * @buffer: a #PangoOTBuffer
- * @glyphs: location to store the array of glyphs, or %NULL
- * @n_glyphs: location to store the number of glyphs, or %NULL
+ * @glyphs: (array length=n_glyphs) (out) (optional): location to
+ *   store the array of glyphs, or %NULL
+ * @n_glyphs: (out) (optional): location to store the number of
+ *   glyphs, or %NULL
  *
  * Gets the glyph array contained in a #PangoOTBuffer.  The glyphs are
  * owned by the buffer and should not be freed, and are only valid as long

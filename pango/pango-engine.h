@@ -114,12 +114,12 @@ struct _PangoEngineLang
 
 /**
  * PangoEngineLangClass:
- * @script_break: Provides a custom implementation of pango_break().
- * If %NULL, pango_default_break() is used instead. If not %NULL, for
- * Pango versions before 1.16 (module interface version before 1.6.0),
- * this was called instead of pango_default_break(), but in newer versions,
- * pango_default_break() is always called and this is called after that to
- * allow tailoring the breaking results.
+ * @script_break: (nullable): Provides a custom implementation of
+ * pango_break().  If %NULL, pango_default_break() is used instead. If
+ * not %NULL, for Pango versions before 1.16 (module interface version
+ * before 1.6.0), this was called instead of pango_default_break(),
+ * but in newer versions, pango_default_break() is always called and
+ * this is called after that to allow tailoring the breaking results.
  *
  * Class structure for #PangoEngineLang
  **/
@@ -347,8 +347,8 @@ prefix ## _register_type (GTypeModule *module)				  \
  * PANGO_ENGINE_LANG_DEFINE_TYPE:
  * @name: Name of the the type to register (for example:, <literal>ArabicEngineFc</literal>
  * @prefix: Prefix for symbols that will be defined (for example:, <literal>arabic_engine_fc</literal>
- * @class_init: Class initialization function for the new type, or %NULL
- * @instance_init: Instance initialization function for the new type, or %NULL
+ * @class_init: (nullable): Class initialization function for the new type, or %NULL
+ * @instance_init: (nullable): Instance initialization function for the new type, or %NULL
  *
  * Outputs the necessary code for GObject type registration for a
  * #PangoEngineLang class defined in a module. Two static symbols
@@ -377,8 +377,8 @@ prefix ## _register_type (GTypeModule *module)				  \
  * PANGO_ENGINE_SHAPE_DEFINE_TYPE:
  * @name: Name of the the type to register (for example:, <literal>ArabicEngineFc</literal>
  * @prefix: Prefix for symbols that will be defined (for example:, <literal>arabic_engine_fc</literal>
- * @class_init: Class initialization function for the new type, or %NULL
- * @instance_init: Instance initialization function for the new type, or %NULL
+ * @class_init: (nullable): Class initialization function for the new type, or %NULL
+ * @instance_init: (nullable): Instance initialization function for the new type, or %NULL
  *
  * Outputs the necessary code for GObject type registration for a
  * #PangoEngineShape class defined in a module. Two static symbols

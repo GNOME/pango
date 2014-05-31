@@ -203,10 +203,9 @@ pango_context_set_matrix (PangoContext       *context,
  * Gets the transformation matrix that will be applied when
  * rendering with this context. See pango_context_set_matrix().
  *
- * Return value: the matrix, or %NULL if no matrix has been set
- *  (which is the same as the identity matrix). The returned
- *  matrix is owned by Pango and must not be modified or
- *  freed.
+ * Return value: (nullable): the matrix, or %NULL if no matrix has
+ *  been set (which is the same as the identity matrix). The returned
+ *  matrix is owned by Pango and must not be modified or freed.
  *
  * Since: 1.6
  **/
@@ -309,8 +308,8 @@ pango_context_list_families (PangoContext          *context,
  * Loads the font in one of the fontmaps in the context
  * that is the closest match for @desc.
  *
- * Returns: (transfer full): the newly allocated #PangoFont that
- *          was loaded, or %NULL if no font matched.
+ * Returns: (transfer full) (nullable): the newly allocated #PangoFont
+ *          that was loaded, or %NULL if no font matched.
  **/
 PangoFont *
 pango_context_load_font (PangoContext               *context,
@@ -331,8 +330,8 @@ pango_context_load_font (PangoContext               *context,
  * Load a set of fonts in the context that can be used to render
  * a font matching @desc.
  *
- * Returns: (transfer full): the newly allocated #PangoFontset loaded,
- *          or %NULL if no font matched.
+ * Returns: (transfer full) (nullable): the newly allocated
+ *          #PangoFontset loaded, or %NULL if no font matched.
  **/
 PangoFontset *
 pango_context_load_fontset (PangoContext               *context,

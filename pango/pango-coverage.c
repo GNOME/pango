@@ -457,8 +457,8 @@ pango_coverage_get_uint32 (guchar **ptr)
  * Convert data generated from pango_coverage_to_bytes() back
  * to a #PangoCoverage
  *
- * Return value: (transfer full): a newly allocated #PangoCoverage, or
- *               %NULL if the data was invalid.
+ * Return value: (transfer full) (nullable): a newly allocated
+ *               #PangoCoverage, or %NULL if the data was invalid.
  **/
 PangoCoverage *
 pango_coverage_from_bytes (guchar *bytes,

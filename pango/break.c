@@ -468,7 +468,7 @@ typedef enum
  * pango_default_break:
  * @text: text to break
  * @length: length of text in bytes (may be -1 if @text is nul-terminated)
- * @analysis: a #PangoAnalysis for the @text
+ * @analysis: (nullable): a #PangoAnalysis for the @text
  * @attrs: logical attributes to fill in
  * @attrs_len: size of the array passed as @attrs
  *

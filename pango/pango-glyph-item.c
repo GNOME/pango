@@ -131,11 +131,11 @@ pango_glyph_item_split (PangoGlyphItem *orig,
 
 /**
  * pango_glyph_item_copy:
- * @orig: a #PangoGlyphItem, may be %NULL
+ * @orig: (nullable): a #PangoGlyphItem, may be %NULL
  *
  * Make a deep copy of an existing #PangoGlyphItem structure.
  *
- * Return value: the newly allocated #PangoGlyphItem, which should
+ * Return value: (nullable): the newly allocated #PangoGlyphItem, which should
  *               be freed with pango_glyph_item_free(), or %NULL
  *               if @orig was %NULL.
  *
@@ -159,7 +159,7 @@ pango_glyph_item_copy  (PangoGlyphItem *orig)
 
 /**
  * pango_glyph_item_free:
- * @glyph_item: a #PangoGlyphItem, may be %NULL
+ * @glyph_item: (nullable): a #PangoGlyphItem, may be %NULL
  *
  * Frees a #PangoGlyphItem and resources to which it points.
  *
@@ -186,11 +186,11 @@ G_DEFINE_BOXED_TYPE (PangoGlyphItem, pango_glyph_item,
 
 /**
  * pango_glyph_item_iter_copy:
- * @orig: a #PangoGlyphItemIter, may be %NULL
+ * @orig: (nullable): a #PangoGlyphItemIter, may be %NULL
  *
  * Make a shallow copy of an existing #PangoGlyphItemIter structure.
  *
- * Return value: the newly allocated #PangoGlyphItemIter, which should
+ * Return value: (nullable): the newly allocated #PangoGlyphItemIter, which should
  *               be freed with pango_glyph_item_iter_free(), or %NULL
  *               if @orig was %NULL.
  *
@@ -213,7 +213,7 @@ pango_glyph_item_iter_copy  (PangoGlyphItemIter *orig)
 
 /**
  * pango_glyph_item_iter_free:
- * @iter: a #PangoGlyphItemIter, may be %NULL
+ * @iter: (nullable): a #PangoGlyphItemIter, may be %NULL
  *
  * Frees a #PangoGlyphItemIter created by pango_glyph_item_iter_copy().
  *

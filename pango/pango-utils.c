@@ -128,10 +128,10 @@ pango_version_string (void)
  *
  * For compile-time version checking use PANGO_VERSION_CHECK().
  *
- * Return value: %NULL if the Pango library is compatible with the
- *   given version, or a string describing the version mismatch.
- *   The returned string is owned by Pango and should not be modified
- *   or freed.
+ * Return value: (nullable): %NULL if the Pango library is compatible
+ *   with the given version, or a string describing the version
+ *   mismatch.  The returned string is owned by Pango and should not
+ *   be modified or freed.
  *
  * Since: 1.16
  **/
@@ -666,8 +666,8 @@ read_config (void)
  * Looks up a key, consulting only the Pango system config database
  * in $sysconfdir/pango/pangorc.
  *
- * Return value: the value, if found, otherwise %NULL. The value is a
- * newly-allocated string and must be freed with g_free().
+ * Return value: (nullable): the value, if found, otherwise %NULL. The
+ * value is a newly-allocated string and must be freed with g_free().
  **/
 char *
 pango_config_key_get_system (const char *key)
@@ -692,8 +692,8 @@ pango_config_key_get_system (const char *key)
  * (pseudo-win.ini style, read from $sysconfdir/pango/pangorc,
  *  $XDG_CONFIG_HOME/pango/pangorc, and getenv (PANGO_RC_FILE).)
  *
- * Return value: the value, if found, otherwise %NULL. The value is a
- * newly-allocated string and must be freed with g_free().
+ * Return value: (nullable): the value, if found, otherwise %NULL. The
+ * value is a newly-allocated string and must be freed with g_free().
  **/
 char *
 pango_config_key_get (const char *key)

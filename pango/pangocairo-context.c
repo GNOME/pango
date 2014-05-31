@@ -218,8 +218,8 @@ pango_cairo_context_get_resolution (PangoContext *context)
 /**
  * pango_cairo_context_set_font_options:
  * @context: a #PangoContext, from a pangocairo font map
- * @options: a #cairo_font_options_t, or %NULL to unset any previously set
- *           options. A copy is made.
+ * @options: (nullable): a #cairo_font_options_t, or %NULL to unset
+ *           any previously set options. A copy is made.
  *
  * Sets the font options used when rendering text with this context.
  * These options override any options that pango_cairo_update_context()
@@ -263,9 +263,9 @@ pango_cairo_context_set_font_options (PangoContext               *context,
  * pango_cairo_context_set_font_options(). This function does not report options
  * that are derived from the target surface by pango_cairo_update_context()
  *
- * Return value: the font options previously set on the context, or %NULL
- *   if no options have been set. This value is owned by the context
- *   and must not be modified or freed.
+ * Return value: (nullable): the font options previously set on the
+ *   context, or %NULL if no options have been set. This value is
+ *   owned by the context and must not be modified or freed.
  *
  * Since: 1.10
  **/
@@ -316,8 +316,8 @@ _pango_cairo_context_get_merged_font_options (PangoContext *context)
 /**
  * pango_cairo_context_set_shape_renderer:
  * @context: a #PangoContext, from a pangocairo font map
- * @func: Callback function for rendering attributes of type
- * %PANGO_ATTR_SHAPE, or %NULL to disable shape rendering.
+ * @func: (nullable): Callback function for rendering attributes of
+ *        type %PANGO_ATTR_SHAPE, or %NULL to disable shape rendering.
  * @data: User data that will be passed to @func.
  * @dnotify: Callback that will be called when the
  *           context is freed to release @data, or %NULL.
@@ -361,8 +361,9 @@ pango_cairo_context_set_shape_renderer (PangoContext                *context,
  * attributes of type %PANGO_ATTR_SHAPE as set by
  * pango_cairo_context_set_shape_renderer(), if any.
  *
- * Return value: the shape rendering callback previously set on the context, or %NULL
- *   if no shape rendering callback have been set.
+ * Return value: (nullable): the shape rendering callback previously
+ *   set on the context, or %NULL if no shape rendering callback have
+ *   been set.
  *
  * Since: 1.18
  */

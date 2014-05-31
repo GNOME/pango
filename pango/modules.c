@@ -734,8 +734,8 @@ build_map (PangoMapInfo *info)
  *
  * Returns the best engine listed in the map for a given script
  *
- * Return value: the best engine, if one is listed for the script,
- *    or %NULL. The lookup may cause the engine to be loaded;
+ * Return value: (nullable): the best engine, if one is listed for the
+ *    script, or %NULL. The lookup may cause the engine to be loaded;
  *    once an engine is loaded, it won't be unloaded. If multiple
  *    engines are exact for the script, the choice of which is
  *    returned is arbitrary.

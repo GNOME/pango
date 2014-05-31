@@ -59,8 +59,9 @@ typedef enum
 
 /**
  * PangoRenderer:
- * @matrix: the current transformation matrix for the Renderer; may
- *    be %NULL, which should be treated the same as the identity matrix.
+ * @matrix: (nullable): the current transformation matrix for
+ *    the Renderer; may be %NULL, which should be treated the
+ *    same as the identity matrix.
  *
  * #PangoRenderer is a base class for objects that are used to
  * render Pango objects such as #PangoGlyphString and

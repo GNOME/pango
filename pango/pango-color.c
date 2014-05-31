@@ -33,16 +33,16 @@ G_DEFINE_BOXED_TYPE (PangoColor, pango_color,
 
 /**
  * pango_color_copy:
- * @src: color to copy, may be %NULL
+ * @src: (nullable): color to copy, may be %NULL
  *
  * Creates a copy of @src, which should be freed with
  * pango_color_free(). Primarily used by language bindings,
  * not that useful otherwise (since colors can just be copied
  * by assignment in C).
  *
- * Return value: the newly allocated #PangoColor, which should
- *               be freed with pango_color_free(), or %NULL
- *               if @src was %NULL.
+ * Return value: (nullable): the newly allocated #PangoColor, which
+ *               should be freed with pango_color_free(), or %NULL if
+ *               @src was %NULL.
  **/
 PangoColor*
 pango_color_copy (const PangoColor *src)
@@ -61,7 +61,7 @@ pango_color_copy (const PangoColor *src)
 
 /**
  * pango_color_free:
- * @color: an allocated #PangoColor, may be %NULL
+ * @color: (nullable): an allocated #PangoColor, may be %NULL
  *
  * Frees a color allocated by pango_color_copy().
  **/
@@ -207,7 +207,8 @@ hex (const char *spec,
 
 /**
  * pango_color_parse:
- * @color: a #PangoColor structure in which to store the result, or %NULL
+ * @color: (nullable): a #PangoColor structure in which to store the
+ *   result, or %NULL
  * @spec: a string specifying the new color
  *
  * Fill in the fields of a color from a string specification. The

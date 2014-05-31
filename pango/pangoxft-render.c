@@ -786,7 +786,8 @@ pango_xft_render_layout_line (XftDraw         *draw,
  * @draw:    an #XftDraw
  * @color:   the color in which to draw the glyphs
  * @font:    the font in which to draw the string
- * @matrix:  a #PangoMatrix, or %NULL to use an identity transformation
+ * @matrix:  (nullable): a #PangoMatrix, or %NULL to use an identity
+ *           transformation
  * @glyphs:  the glyph string to draw
  * @x:       the x position of the start of the string (in Pango
  *           units in user space coordinates)

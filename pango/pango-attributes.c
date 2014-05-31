@@ -110,8 +110,8 @@ pango_attr_type_register (const gchar *name)
  * The returned value is an interned string (see g_intern_string() for what
  * that means) that should not be modified or freed.
  *
- * Return value: the type ID name (which may be %NULL), or %NULL if @type is
- * a built-in Pango attribute type or invalid. 
+ * Return value: (nullable): the type ID name (which may be %NULL), or
+ * %NULL if @type is a built-in Pango attribute type or invalid.
  *
  * Since: 1.22
  **/
@@ -1132,7 +1132,7 @@ pango_attr_list_new (void)
 
 /**
  * pango_attr_list_ref:
- * @list: a #PangoAttrList, may be %NULL
+ * @list: (nullable): a #PangoAttrList, may be %NULL
  *
  * Increase the reference count of the given attribute list by one.
  *
@@ -1153,7 +1153,7 @@ pango_attr_list_ref (PangoAttrList *list)
 
 /**
  * pango_attr_list_unref:
- * @list: a #PangoAttrList, may be %NULL
+ * @list: (nullable): a #PangoAttrList, may be %NULL
  *
  * Decrease the reference count of the given attribute list by one.
  * If the result is zero, free the attribute list and the attributes
@@ -1188,11 +1188,11 @@ pango_attr_list_unref (PangoAttrList *list)
 
 /**
  * pango_attr_list_copy:
- * @list: a #PangoAttrList, may be %NULL
+ * @list (nullable): a #PangoAttrList, may be %NULL
  *
  * Copy @list and return an identical new list.
  *
- * Return value: the newly allocated #PangoAttrList, with a
+ * Return value: (nullable): the newly allocated #PangoAttrList, with a
  *               reference count of one, which should
  *               be freed with pango_attr_list_unref().
  *               Returns %NULL if @list was %NULL.
@@ -1770,9 +1770,9 @@ pango_attr_iterator_destroy (PangoAttrIterator *iterator)
  * the attribute whose range starts closest to the current location
  * is used.
  *
- * Return value: the current attribute of the given type, or %NULL if
- *               no attribute of that type applies to the current
- *               location.
+ * Return value: (nullable): the current attribute of the given type,
+ *               or %NULL if no attribute of that type applies to the
+ *               current location.
  **/
 PangoAttribute *
 pango_attr_iterator_get (PangoAttrIterator *iterator,
@@ -1966,8 +1966,8 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
  * of @list for which @func returns %TRUE and inserts them into
  * a new list.
  *
- * Return value: (transfer full): the new #PangoAttrList or %NULL if
- *  no attributes of the given types were found.
+ * Return value: (transfer full) (nullable): the new #PangoAttrList or
+ *  %NULL if no attributes of the given types were found.
  *
  * Since: 1.2
  **/

@@ -142,7 +142,7 @@ done:
  * The scaled font can be referenced and kept using
  * cairo_scaled_font_reference().
  *
- * Return value: the #cairo_scaled_font_t used by @font,
+ * Return value: (nullable): the #cairo_scaled_font_t used by @font,
  *               or %NULL if @font is %NULL.
  *
  * Since: 1.18

@@ -301,7 +301,7 @@ pango_language_get_default (void)
  * Use pango_language_get_default() if you want to get the #PangoLanguage for
  * the current locale of the process.
  *
- * Return value: (transfer none): an opaque pointer to a
+ * Return value: (transfer none) (nullable): an opaque pointer to a
  *               #PangoLanguage structure, or %NULL if @language was
  *               %NULL.  The returned pointer will be valid forever
  *               after, and should not be freed.
@@ -368,7 +368,7 @@ const char *
 
 /**
  * pango_language_matches:
- * @language: a language tag (see pango_language_from_string()),
+ * @language: (nullable): a language tag (see pango_language_from_string()),
  *            %NULL is allowed and matches nothing but '*'
  * @range_list: a list of language ranges, separated by ';', ':',
  *   ',', or space characters.
@@ -542,7 +542,7 @@ static const LangInfo lang_texts[] = {
 
 /**
  * pango_language_get_sample_string:
- * @language: a #PangoLanguage, or %NULL
+ * @language: (nullable): a #PangoLanguage, or %NULL
  *
  * Get a string that is representative of the characters needed to
  * render a particular language.
@@ -619,12 +619,12 @@ pango_language_get_sample_string (PangoLanguage *language)
  * The pango_language_includes_script() function uses this function
  * internally.
  *
- * Return value: (array length=num_scripts): An array of #PangoScript
- * values, with the number of entries in the array stored in
- * @num_scripts, or %NULL if Pango does not have any information about
- * this particular language tag (also the case if @language is %NULL).
- * The returned array is owned by Pango and should not be modified or
- * freed.
+ * Return value: (array length=num_scripts) (nullable): An array of
+ * #PangoScript values, with the number of entries in the array stored
+ * in @num_scripts, or %NULL if Pango does not have any information
+ * about this particular language tag (also the case if @language is
+ * %NULL).  The returned array is owned by Pango and should not be
+ * modified or freed.
  
  * Since: 1.22
  **/
@@ -663,7 +663,7 @@ pango_language_get_scripts (PangoLanguage *language,
 
 /**
  * pango_language_includes_script:
- * @language: a #PangoLanguage, or %NULL
+ * @language: (nullable): a #PangoLanguage, or %NULL
  * @script: a #PangoScript
  *
  * Determines if @script is one of the scripts used to
@@ -846,7 +846,7 @@ out:
  * choose a default language for %PANGO_SCRIPT_HAN when setting
  * context language is not feasible.
  *
- * Return value: a #PangoLanguage that is representative
+ * Return value: (nullable): a #PangoLanguage that is representative
  * of the script, or %NULL if no such language exists.
  *
  * Since: 1.4

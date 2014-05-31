@@ -699,7 +699,8 @@ pango_ft2_render_layout_line (FT_Bitmap       *bitmap,
  * pango_ft2_render_transformed:
  * @bitmap:  the FreeType2 bitmap onto which to draw the string
  * @font:    the font in which to draw the string
- * @matrix:  a #PangoMatrix, or %NULL to use an identity transformation
+ * @matrix:  (nullable): a #PangoMatrix, or %NULL to use an identity
+ *           transformation
  * @glyphs:  the glyph string to draw
  * @x:       the x position of the start of the string (in Pango
  *           units in user space coordinates)

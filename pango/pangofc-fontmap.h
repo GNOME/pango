@@ -102,10 +102,10 @@ struct _PangoFcFontMap
 
 /**
  * PangoFcFontMapClass:
- * @default_substitute: Substitutes in default values for
- *  unspecified fields in a #FcPattern. This will be called
- *  prior to creating a font for the pattern. May be %NULL.
- *  Deprecated in favor of @font_key_substitute().
+ * @default_substitute: (nullable): Substitutes in default
+ *  values for unspecified fields in a #FcPattern. This will
+ *  be called prior to creating a font for the pattern. May be
+ *  %NULL.  Deprecated in favor of @font_key_substitute().
  * @new_font: Creates a new #PangoFcFont for the specified
  *  pattern of the appropriate type for this font map. The
  *  @pattern argument must be passed to the "pattern" property
@@ -128,17 +128,17 @@ struct _PangoFcFontMap
  *  @context_key_copy.
  * @context_key_hash: Gets a hash value for a context key
  * @context_key_equal: Compares two context keys for equality.
- * @fontset_key_substitute: Substitutes in default values for
- *  unspecified fields in a #FcPattern. This will be called
- *  prior to creating a font for the pattern. May be %NULL.
- *  (Since: 1.24)
- * @create_font: Creates a new #PangoFcFont for the specified
- *  pattern of the appropriate type for this font map using
- *  information from the font key that is passed in. The
- *  @pattern member of @font_key can be retrieved using
- *  pango_fc_font_key_get_pattern() and must be passed to
- *  the "pattern" property of #PangoFcFont when you call
- *  g_object_new().  If %NULL, new_font() is used.
+ * @fontset_key_substitute: (nullable): Substitutes in
+ *  default values for unspecified fields in a
+ *  #FcPattern. This will be called prior to creating a font
+ *  for the pattern. May be %NULL.  (Since: 1.24)
+ * @create_font: (nullable): Creates a new #PangoFcFont for
+ *  the specified pattern of the appropriate type for this
+ *  font map using information from the font key that is
+ *  passed in. The @pattern member of @font_key can be
+ *  retrieved using pango_fc_font_key_get_pattern() and must
+ *  be passed to the "pattern" property of #PangoFcFont when
+ *  you call g_object_new().  If %NULL, new_font() is used.
  *  (Since: 1.24)
  *
  * Class structure for #PangoFcFontMap.

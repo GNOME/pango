@@ -1181,9 +1181,9 @@ pango_renderer_set_color (PangoRenderer    *renderer,
  *
  * Gets the current rendering color for the specified part.
  *
- * Return value: (transfer none): the color for the specified part, or
- *  %NULL if it hasn't been set and should be inherited from the
- *  environment.
+ * Return value: (transfer none) (nullable): the color for the
+ *   specified part, or %NULL if it hasn't been set and should be
+ *   inherited from the environment.
  *
  * Since: 1.8
  **/
@@ -1340,10 +1340,9 @@ pango_renderer_set_matrix (PangoRenderer     *renderer,
  * Gets the transformation matrix that will be applied when
  * rendering. See pango_renderer_set_matrix().
  *
- * Return value: the matrix, or %NULL if no matrix has been set
- *  (which is the same as the identity matrix). The returned
- *  matrix is owned by Pango and must not be modified or
- *  freed.
+ * Return value: (nullable): the matrix, or %NULL if no matrix has
+ *  been set (which is the same as the identity matrix). The returned
+ *  matrix is owned by Pango and must not be modified or freed.
  *
  * Since: 1.8
  **/
@@ -1366,8 +1365,8 @@ pango_renderer_get_matrix (PangoRenderer *renderer)
  * The returned layout should not be modified while still being
  * rendered.
  *
- * Return value: (transfer none): the layout, or %NULL if no layout is being
- *  rendered using @renderer at this time.
+ * Return value: (transfer none) (nullable): the layout, or %NULL if
+ *  no layout is being rendered using @renderer at this time.
  *
  * Since: 1.20
  **/
@@ -1391,8 +1390,8 @@ pango_renderer_get_layout (PangoRenderer *renderer)
  * The returned layout line should not be modified while still being
  * rendered.
  *
- * Return value: (transfer none): the layout line, or %NULL if no
- *   layout line is being rendered using @renderer at this time.
+ * Return value: (transfer none) (nullable): the layout line, or %NULL
+ *   if no layout line is being rendered using @renderer at this time.
  *
  * Since: 1.20
  **/

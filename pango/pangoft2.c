@@ -169,8 +169,9 @@ set_transform (PangoFT2Font *ft2font)
  * face from pango_fc_font_lock_face() you must call
  * pango_fc_font_unlock_face().
  *
- * Return value: a pointer to a <type>FT_Face</type> structure, with the size set correctly,
- *               or %NULL if @font is %NULL.
+ * Return value: (nullable): a pointer to a <type>FT_Face</type>
+ *               structure, with the size set correctly, or %NULL if
+ *               @font is %NULL.
  **/
 FT_Face
 pango_ft2_font_get_face (PangoFont *font)

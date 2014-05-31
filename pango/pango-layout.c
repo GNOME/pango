@@ -727,10 +727,10 @@ pango_layout_set_font_description (PangoLayout                 *layout,
  *
  * Gets the font description for the layout, if any.
  *
- * Return value: a pointer to the layout's font description,
- *  or %NULL if the font description from the layout's
- *  context is inherited. This value is owned by the layout
- *  and must not be modified or freed.
+ * Return value: (nullable): a pointer to the layout's font
+ *  description, or %NULL if the font description from the layout's
+ *  context is inherited. This value is owned by the layout and must
+ *  not be modified or freed.
  *
  * Since: 1.8
  **/
@@ -923,7 +923,8 @@ pango_layout_set_tabs (PangoLayout   *layout,
  * and %NULL is returned. Default tabs are every 8 spaces.
  * The return value should be freed with pango_tab_array_free().
  *
- * Return value: a copy of the tabs for this layout, or %NULL.
+ * Return value: (nullable): a copy of the tabs for this layout, or
+ * %NULL.
  **/
 PangoTabArray*
 pango_layout_get_tabs (PangoLayout *layout)
@@ -1532,10 +1533,11 @@ pango_layout_get_lines_readonly (PangoLayout *layout)
  * Use the faster pango_layout_get_line_readonly() if you do not plan
  * to modify the contents of the line (glyphs, glyph widths, etc.).
  *
- * Return value: (transfer none): the requested #PangoLayoutLine, or %NULL if the
- *               index is out of range. This layout line can
- *               be ref'ed and retained, but will become invalid
- *               if changes are made to the #PangoLayout.
+ * Return value: (transfer none) (nullable): the requested
+ *               #PangoLayoutLine, or %NULL if the index is out of
+ *               range. This layout line can be ref'ed and retained,
+ *               but will become invalid if changes are made to the
+ *               #PangoLayout.
  **/
 PangoLayoutLine *
 pango_layout_get_line (PangoLayout *layout,
@@ -1574,11 +1576,11 @@ pango_layout_get_line (PangoLayout *layout,
  * but the user is not expected
  * to modify the contents of the line (glyphs, glyph widths, etc.).
  *
- * Return value: (transfer none): the requested #PangoLayoutLine, or %NULL if the
- *               index is out of range. This layout line can
- *               be ref'ed and retained, but will become invalid
- *               if changes are made to the #PangoLayout.
- *               No changes should be made to the line.
+ * Return value: (transfer none) (nullable): the requested
+ *               #PangoLayoutLine, or %NULL if the index is out of
+ *               range. This layout line can be ref'ed and retained,
+ *               but will become invalid if changes are made to the
+ *               #PangoLayout.  No changes should be made to the line.
  *
  * Since: 1.16
  **/
@@ -4062,7 +4064,7 @@ pango_layout_check_lines (PangoLayout *layout)
 
 /**
  * pango_layout_line_ref:
- * @line: a #PangoLayoutLine, may be %NULL
+ * @line: (nullable): a #PangoLayoutLine, may be %NULL
  *
  * Increase the reference count of a #PangoLayoutLine by one.
  *
@@ -5592,13 +5594,13 @@ update_run (PangoLayoutIter *iter,
 
 /**
  * pango_layout_iter_copy:
- * @iter: a #PangoLayoutIter, may be %NULL
+ * @iter: (nullable): a #PangoLayoutIter, may be %NULL
  *
  * Copies a #PangoLayoutIter.
  *
- * Return value: the newly allocated #PangoLayoutIter, which should
- *               be freed with pango_layout_iter_free(), or %NULL if
- *               @iter was %NULL.
+ * Return value: (nullable): the newly allocated #PangoLayoutIter,
+ *               which should be freed with pango_layout_iter_free(),
+ *               or %NULL if @iter was %NULL.
  *
  * Since: 1.20
  **/
@@ -5711,7 +5713,7 @@ pango_layout_get_iter (PangoLayout *layout)
 
 /**
  * pango_layout_iter_free:
- * @iter: a #PangoLayoutIter, may be %NULL
+ * @iter: (nullable): a #PangoLayoutIter, may be %NULL
  *
  * Frees an iterator that's no longer in use.
  **/
@@ -5760,7 +5762,7 @@ pango_layout_iter_get_index (PangoLayoutIter *iter)
  * Use the faster pango_layout_iter_get_run_readonly() if you do not plan
  * to modify the contents of the run (glyphs, glyph widths, etc.).
  *
- * Return value: (transfer none): the current run.
+ * Return value: (transfer none) (nullable): the current run.
  **/
 PangoLayoutRun*
 pango_layout_iter_get_run (PangoLayoutIter *iter)
@@ -5786,7 +5788,8 @@ pango_layout_iter_get_run (PangoLayoutIter *iter)
  * but the user is not expected
  * to modify the contents of the run (glyphs, glyph widths, etc.).
  *
- * Return value: (transfer none): the current run, that should not be modified.
+ * Return value: (transfer none) (nullable): the current run, that
+ * should not be modified.
  *
  * Since: 1.16
  **/
