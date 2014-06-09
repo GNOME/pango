@@ -4,6 +4,9 @@
     <Import Project="pango-install-bin.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
+    <BinDir>$(SolutionDir)$(Configuration)\$(Platform)\bin</BinDir>
+    <InstalledDlls>$(BinDir)\$(PangoDllPrefix)pango(PangoDllSuffix).dll;$(BinDir)\$(PangoDllPrefix)pangowin32(PangoDllSuffix).dll;$(BinDir)\$(PangoDllPrefix)pangocairo(PangoDllSuffix).dll</InstalledDlls>
+    <InstalledFCDlls>$(BinDir)\$(PangoDllPrefix)pangoft2(PangoDllSuffix).dll</InstalledFCDlls>
     <PangoInstallHeadersData>
 #include "pango.vs10.headers"
 
@@ -55,6 +58,15 @@ echo monospace = "courier new,courier monothai,mingliu,simsun,gulimche,ms gothic
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <BuildMacro Include="BinDir">
+      <Value>$(BinDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="InstalledDlls">
+      <Value>$(InstalledDlls)</Value>
+    </BuildMacro>
+    <BuildMacro Include="InstalledFCDlls">
+      <Value>$(InstalledFCDlls)</Value>
+    </BuildMacro>
     <BuildMacro Include="PangoInstallHeadersData">
       <Value>$(PangoInstallHeadersData)</Value>
     </BuildMacro>
