@@ -91,7 +91,7 @@ typedef enum {
  * @PANGO_WEIGHT_ULTRAHEAVY: the ultraheavy weight (= 1000; Since: 1.24)
  *
  * An enumeration specifying the weight (boldness) of a font. This is a numerical
- * value ranging from 100 to 900, but there are some predefined values:
+ * value ranging from 100 to 1000, but there are some predefined values:
  */
 typedef enum {
   PANGO_WEIGHT_THIN = 100,
