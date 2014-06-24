@@ -189,11 +189,10 @@ pango_ot_info_find_language (PangoOTInfo      *info,
 					   &l_index);
   if (language_index) *language_index = l_index;
 
-  hb_ot_layout_language_get_required_feature (info->hb_face, tt,
-                                              script_index,
-                                              l_index,
-                                              required_feature_index,
-                                              NULL);
+  hb_ot_layout_language_get_required_feature_index (info->hb_face, tt,
+						    script_index,
+						    l_index,
+						    required_feature_index);
 
   return ret;
 }
