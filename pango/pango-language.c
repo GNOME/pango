@@ -219,7 +219,14 @@ _pango_get_lc_ctype (void)
 
   return g_strdup (ret);
 #else
-  return g_strdup (setlocale (LC_CTYPE, NULL));
+  {
+    gchar *lc_ctype = setlocale (LC_CTYPE, NULL);
+
+    if (lc_ctype)
+      return g_strdup (lc_ctype);
+    else
+      return g_strdup ("C");
+  }
 #endif
 }
 
