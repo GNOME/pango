@@ -954,6 +954,8 @@ build/Makefile
 build/win32/Makefile
 build/win32/vs9/Makefile
 build/win32/vs10/Makefile
+build/win32/vs11/Makefile
+build/win32/vs12/Makefile
 pango.pc
 pangowin32.pc
 pangoft2.pc
