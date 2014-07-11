@@ -128,6 +128,12 @@ pango_fc_hb_font_get_glyph (hb_font_t *font, void *font_data,
     return TRUE;
 
   *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
+
+  /* We draw our own invalid-Unicode shape, so prevent HarfBuzz
+   * from using REPLACEMENT CHARACTER. */
+  if (unicode > 0x10FFFF)
+    return TRUE;
+
   return FALSE;
 }
 
