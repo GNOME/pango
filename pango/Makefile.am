@@ -9,6 +9,7 @@ include $(INTROSPECTION_MAKEFILE)
 INTROSPECTION_GIRS =
 INTROSPECTION_SCANNER_ARGS = --warn-all --add-include-path=$(srcdir) --add-include-path=.
 INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir) --includedir=.
+INTROSPECTION_SCANNER_ENV = CC="$(CC)"
 
 SUBDIRS = mini-fribidi
 
