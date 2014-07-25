@@ -28,6 +28,12 @@
 G_BEGIN_DECLS
 
 
+#ifndef FC_WEIGHT_DEMILIGHT
+#define FC_WEIGHT_DEMILIGHT 55
+#define FC_WEIGHT_SEMILIGHT FC_WEIGHT_DEMILIGHT
+#endif
+
+
 typedef struct _PangoFcMetricsInfo  PangoFcMetricsInfo;
 
 struct _PangoFcMetricsInfo

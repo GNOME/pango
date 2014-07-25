@@ -871,6 +871,8 @@ static const FieldMap weight_map[] = {
   { PANGO_WEIGHT_ULTRALIGHT, "Ultra-Light" },
   { PANGO_WEIGHT_ULTRALIGHT, "Extra-Light" },
   { PANGO_WEIGHT_LIGHT, "Light" },
+  { PANGO_WEIGHT_SEMILIGHT, "Semi-Light" },
+  { PANGO_WEIGHT_SEMILIGHT, "Demi-Light" },
   { PANGO_WEIGHT_BOOK, "Book" },
   { PANGO_WEIGHT_NORMAL, "" },
   { PANGO_WEIGHT_NORMAL, "Regular" },
