@@ -1196,26 +1196,11 @@ pango_win32_font_description_from_logfont (const LOGFONT *lfp)
 
   variant = PANGO_VARIANT_NORMAL;
 
-  /* The PangoWeight values PANGO_WEIGHT_* map exactly do Windows FW_*
-   * values.  Is this on purpose? Quantize the weight to exact
-   * PANGO_WEIGHT_* values. Is this a good idea?
-   */
   if (lfp->lfWeight == FW_DONTCARE)
     weight = PANGO_WEIGHT_NORMAL;
-  else if (lfp->lfWeight <= (FW_ULTRALIGHT + FW_LIGHT) / 2)
-    weight = PANGO_WEIGHT_ULTRALIGHT;
-  else if (lfp->lfWeight <= (FW_LIGHT + FW_NORMAL) / 2)
-    weight = PANGO_WEIGHT_LIGHT;
-  else if (lfp->lfWeight <= (FW_NORMAL + FW_SEMIBOLD) / 2)
-    weight = PANGO_WEIGHT_NORMAL;
-  else if (lfp->lfWeight <= (FW_SEMIBOLD + FW_BOLD) / 2)
-    weight = PANGO_WEIGHT_SEMIBOLD;
-  else if (lfp->lfWeight <= (FW_BOLD + FW_ULTRABOLD) / 2)
-    weight = PANGO_WEIGHT_BOLD;
-  else if (lfp->lfWeight <= (FW_ULTRABOLD + FW_HEAVY) / 2)
-    weight = PANGO_WEIGHT_ULTRABOLD;
   else
-    weight = PANGO_WEIGHT_HEAVY;
+    /* The PangoWeight values PANGO_WEIGHT_* map exactly to Windows FW_*. */
+    weight = (PangoWeight) lfp->lfWeight;
 
   /* XXX No idea how to figure out the stretch */
   stretch = PANGO_STRETCH_NORMAL;
@@ -1396,26 +1381,11 @@ pango_win32_font_description_from_logfontw (const LOGFONTW *lfp)
 
   variant = PANGO_VARIANT_NORMAL;
 
-  /* The PangoWeight values PANGO_WEIGHT_* map exactly do Windows FW_*
-   * values.  Is this on purpose? Quantize the weight to exact
-   * PANGO_WEIGHT_* values. Is this a good idea?
-   */
   if (lfp->lfWeight == FW_DONTCARE)
     weight = PANGO_WEIGHT_NORMAL;
-  else if (lfp->lfWeight <= (FW_ULTRALIGHT + FW_LIGHT) / 2)
-    weight = PANGO_WEIGHT_ULTRALIGHT;
-  else if (lfp->lfWeight <= (FW_LIGHT + FW_NORMAL) / 2)
-    weight = PANGO_WEIGHT_LIGHT;
-  else if (lfp->lfWeight <= (FW_NORMAL + FW_SEMIBOLD) / 2)
-    weight = PANGO_WEIGHT_NORMAL;
-  else if (lfp->lfWeight <= (FW_SEMIBOLD + FW_BOLD) / 2)
-    weight = PANGO_WEIGHT_SEMIBOLD;
-  else if (lfp->lfWeight <= (FW_BOLD + FW_ULTRABOLD) / 2)
-    weight = PANGO_WEIGHT_BOLD;
-  else if (lfp->lfWeight <= (FW_ULTRABOLD + FW_HEAVY) / 2)
-    weight = PANGO_WEIGHT_ULTRABOLD;
   else
-    weight = PANGO_WEIGHT_HEAVY;
+    /* The PangoWeight values PANGO_WEIGHT_* map exactly to Windows FW_*. */
+    weight = (PangoWeight) lfp->lfWeight;
 
   /* XXX No idea how to figure out the stretch */
   stretch = PANGO_STRETCH_NORMAL;
