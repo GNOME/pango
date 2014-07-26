@@ -61,11 +61,6 @@ included-modules:
 		( cd $$d && $(MAKE) $(AM_MAKEFLAGS) included-modules ) ; \
         done
 
-dynamic-modules:
-	@for d in $(SUBDIRS) ; do \
-		( cd $$d && $(MAKE) $(AM_MAKEFLAGS) dynamic-modules ) ; \
-        done
-
-.PHONY: included-modules dynamic-modules
+.PHONY: included-modules
 
 -include $(top_srcdir)/git.mk

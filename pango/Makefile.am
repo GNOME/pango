@@ -470,7 +470,6 @@ EXTRA_DIST =					\
 	check.defs
 
 
-if HAVE_INCLUDED_MODULES
 included-modules:
 	$(AM_V_GEN) cd $(top_builddir)/modules && $(MAKE) $(AM_MAKEFLAGS) included-modules
 
@@ -478,7 +477,6 @@ $(INCLUDED_LANG_MODULES) $(INCLUDED_FC_MODULES) $(INCLUDED_WIN32_MODULES) $(INCL
 	$(AM_V_GEN) true
 
 .PHONY: included-modules
-endif
 
 MODULE_DEF_FILES = \
 	module-defs.h \

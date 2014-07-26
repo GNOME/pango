@@ -494,43 +494,6 @@ fi
 
 all_modules="$arabic_modules,$basic_modules,$indic_modules,$thai_modules"
 
-#
-# Allow building some or all modules included
-#
-AC_MSG_CHECKING(modules to link statically)
-
-AC_ARG_WITH(included_modules,
-   AC_HELP_STRING([--with-included-modules=no/yes/MODULE1 MODULE2 ...],
-                  [build the given modules included @<:@default=yes@:>@]))
-
-included_modules=""
-case x$with_included_modules in
-	xyes|x)	included_modules=$all_modules ;;
-	xno)	included_modules="" ;;
-	*)	included_modules=$with_included_modules ;;
-esac
-AC_MSG_RESULT($included_modules)
-AM_CONDITIONAL(HAVE_INCLUDED_MODULES, test "x$included_modules" != x)
-
-#
-# Allow building only some or none of modules dynamic
-#
-AC_MSG_CHECKING(dynamic modules to build)
-
-AC_ARG_WITH(dynamic_modules,
-   AC_HELP_STRING([--with-dynamic-modules=no/yes/MODULE1 MODULE2 ...],
-                  [build the given dynamic modules @<:@default=no@:>@]))
-
-dynamic_modules=""
-case x$with_dynamic_modules in
-	xyes)	dynamic_modules=$all_modules ;;
-	xno|x)	dynamic_modules="" ;;
-	*)	dynamic_modules=$with_dynamic_modules ;;
-esac
-AC_MSG_RESULT([$dynamic_modules (those built into Pango will be excluded)])
-AM_CONDITIONAL(HAVE_DYNAMIC_MODULES, test "x$dynamic_modules" != x)
-
-
 INCLUDED_FC_MODULES=
 INCLUDED_WIN32_MODULES=
 INCLUDED_CORE_TEXT_MODULES=
@@ -542,7 +505,7 @@ AC_SUBST(INCLUDED_CORE_TEXT_MODULES)
 AC_SUBST(INCLUDED_LANG_MODULES)
 
 IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=", "
-for module in $included_modules; do
+for module in $all_modules; do
   dir=`echo $module | sed "s/-.*//"`
   included_path="\$(top_builddir)/modules/$dir/libpango-$module.la"
 
@@ -556,19 +519,12 @@ for module in $included_modules; do
 done
 IFS="$pango_save_ifs"
 
-AM_CONDITIONAL(INCLUDE_ARABIC_LANG,	echo $included_modules | egrep '(^|,)arabic-lang($|,)' 	> /dev/null)
-AM_CONDITIONAL(INCLUDE_BASIC_FC,	echo $included_modules | egrep '(^|,)basic-fc($|,)' 	> /dev/null)
-AM_CONDITIONAL(INCLUDE_BASIC_WIN32,	echo $included_modules | egrep '(^|,)basic-win32($|,)' 	> /dev/null)
-AM_CONDITIONAL(INCLUDE_BASIC_CORE_TEXT,	echo $included_modules | egrep '(^|,)basic-coretext($|,)'	> /dev/null)
-AM_CONDITIONAL(INCLUDE_INDIC_LANG,	echo $included_modules | egrep '(^|,)indic-lang($|,)'	> /dev/null)
-AM_CONDITIONAL(INCLUDE_THAI_LANG,	echo $included_modules | egrep '(^|,)thai-lang($|,)' 	> /dev/null)
-
-AM_CONDITIONAL(DYNAMIC_ARABIC_LANG,	echo $dynamic_modules | egrep '(^|,)arabic-lang($|,)' 	> /dev/null)
-AM_CONDITIONAL(DYNAMIC_BASIC_FC,	echo $dynamic_modules | egrep '(^|,)basic-fc($|,)' 	> /dev/null)
-AM_CONDITIONAL(DYNAMIC_BASIC_WIN32,	echo $dynamic_modules | egrep '(^|,)basic-win32($|,)' 	> /dev/null)
-AM_CONDITIONAL(DYNAMIC_BASIC_CORE_TEXT,	echo $dynamic_modules | egrep '(^|,)basic-coretext($|,)' 	> /dev/null)
-AM_CONDITIONAL(DYNAMIC_INDIC_LANG,	echo $dynamic_modules | egrep '(^|,)indic-lang($|,)'	> /dev/null)
-AM_CONDITIONAL(DYNAMIC_THAI_LANG,	echo $dynamic_modules | egrep '(^|,)thai-lang($|,)' 	> /dev/null)
+AM_CONDITIONAL(INCLUDE_ARABIC_LANG,	echo $all_modules | egrep '(^|,)arabic-lang($|,)' 	> /dev/null)
+AM_CONDITIONAL(INCLUDE_BASIC_FC,	echo $all_modules | egrep '(^|,)basic-fc($|,)' 	> /dev/null)
+AM_CONDITIONAL(INCLUDE_BASIC_WIN32,	echo $all_modules | egrep '(^|,)basic-win32($|,)' 	> /dev/null)
+AM_CONDITIONAL(INCLUDE_BASIC_CORE_TEXT,	echo $all_modules | egrep '(^|,)basic-coretext($|,)'	> /dev/null)
+AM_CONDITIONAL(INCLUDE_INDIC_LANG,	echo $all_modules | egrep '(^|,)indic-lang($|,)'	> /dev/null)
+AM_CONDITIONAL(INCLUDE_THAI_LANG,	echo $all_modules | egrep '(^|,)thai-lang($|,)' 	> /dev/null)
 
 #
 # We use flockfile to implement pango_getline() - should be moved to GLib
@@ -637,19 +593,15 @@ dnl ********************************************************
 # that something like pango-basic-fc.la is a valid libtool archive
 #
 LIBRARY_LIBTOOL_OPTIONS="-version-info $VERSION_INFO"
-MODULE_LIBTOOL_OPTIONS="-export-dynamic -avoid-version"
 if test "$pango_platform_win32" = yes; then
     # We currently use .def files on Windows
     LIBRARY_LIBTOOL_OPTIONS="$LIBRARY_LIBTOOL_OPTIONS -no-undefined"
-    MODULE_LIBTOOL_OPTIONS="$MODULE_LIBTOOL_OPTIONS -no-undefined"
 else
     # libtool option to control which symbols are exported
     # right now, symbols starting with '_' are not exported
     LIBRARY_LIBTOOL_OPTIONS="$LIBRARY_LIBTOOL_OPTIONS "'-export-symbols-regex "^pango_.*"'
-    MODULE_LIBTOOL_OPTIONS="$MODULE_LIBTOOL_OPTIONS "'-export-symbols-regex "^script_engine_.*"'
 fi
 AC_SUBST(LIBRARY_LIBTOOL_OPTIONS)
-AC_SUBST(MODULE_LIBTOOL_OPTIONS)
 
 dnl
 dnl Check for -Bsymbolic-functions linker flag used to avoid
@@ -753,7 +705,7 @@ cat > pango/module-defs.h <<EOTEXT
 EOTEXT
 
 IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
-for module in $included_modules; do
+for module in $all_modules; do
   module_c=`echo $module | sed s/-/_/`
   cat >> pango/module-defs.h <<EOTEXT
 extern void         _pango_${module_c}_script_engine_list (PangoEngineInfo **engines, int *n_engines);
@@ -766,7 +718,7 @@ done
 
 IFS="$pango_save_ifs"
 ],[
-included_modules=$included_modules
+all_modules=$all_modules
 ])
 
 AC_CONFIG_COMMANDS([pango/module-defs-fc.c],
@@ -781,7 +733,7 @@ PangoIncludedModule _pango_included_fc_modules@<:@@:>@ = {
 EOTEXT
 
 IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
-for module in $included_modules; do
+for module in $all_modules; do
   if echo $module | egrep -- "-fc($|,)" > /dev/null; then
     module_c=`echo $module | sed s/-/_/`
     cat >> pango/module-defs-fc.c <<EOTEXT
@@ -810,7 +762,7 @@ PangoIncludedModule _pango_included_win32_modules@<:@@:>@ = {
 EOTEXT
 
 IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
-for module in $included_modules; do
+for module in $all_modules; do
   if echo $module | egrep -- "-win32($|,)" > /dev/null; then
     module_c=`echo $module | sed s/-/_/`
     cat >> pango/module-defs-win32.c <<EOTEXT
@@ -839,7 +791,7 @@ PangoIncludedModule _pango_included_core_text_modules@<:@@:>@ = {
 EOTEXT
 
 IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
-for module in $included_modules; do
+for module in $all_modules; do
   if echo $module | egrep -- "-coretext($|,)" > /dev/null; then
     module_c=`echo $module | sed s/-/_/`
     cat >> pango/module-defs-coretext.c <<EOTEXT
@@ -868,7 +820,7 @@ PangoIncludedModule _pango_included_lang_modules@<:@@:>@ = {
 EOTEXT
 
 IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
-for module in $included_modules; do
+for module in $all_modules; do
   if echo $module | egrep -- "-lang($|,)" > /dev/null; then
     module_c=`echo $module | sed s/-/_/`
     cat >> pango/module-defs-lang.c <<EOTEXT
