@@ -15,7 +15,6 @@ cp -p @abs_srcdir@/COPYING share/doc/pango-dev-@PANGO_VERSION@
 rm $ZIP
 zip $ZIP -@ <<EOF
 bin/pango-querymodules.exe
-etc/pango/pango.modules
 bin/libpango-@PANGO_API_VERSION@-@PANGO_CURRENT_MINUS_AGE@.dll
 bin/libpangoft2-@PANGO_API_VERSION@-@PANGO_CURRENT_MINUS_AGE@.dll
 bin/libpangowin32-@PANGO_API_VERSION@-@PANGO_CURRENT_MINUS_AGE@.dll
