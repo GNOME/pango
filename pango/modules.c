@@ -95,9 +95,6 @@ struct _PangoModule
 {
   GTypeModule parent_instance;
 
-  char *path;
-  GModule *library;
-
   void         (*list)   (PangoEngineInfo **engines, gint *n_engines);
   void         (*init)   (GTypeModule *module);
   void         (*exit)   (void);
@@ -113,29 +110,11 @@ G_LOCK_DEFINE_STATIC (maps);
 static GList *maps = NULL;
 /* the following are readonly after init_modules */
 static GSList *registered_engines = NULL;
-static GSList *dlloaded_engines = NULL;
-static GHashTable *dlloaded_modules;
 
 static void build_map    (PangoMapInfo *info);
 static void init_modules (void);
 
 static GType pango_module_get_type (void);
-
-/* If a module cannot be used, or does not create an engine
- * correctly, we print out an error containing module name and id,
- * but to not flood the terminal with zillions of the message, we
- * set a flag on the module to only err once per module.
- */
-static GQuark
-get_warned_quark (void)
-{
-  static GQuark warned_quark = 0; /* MT-safe */
-
-  if (G_UNLIKELY (!warned_quark))
-    warned_quark = g_quark_from_static_string ("pango-module-warned");
-
-  return warned_quark;
-}
 
 /**
  * pango_find_map:
@@ -211,45 +190,6 @@ pango_module_load (GTypeModule *module)
 {
   PangoModule *pango_module = PANGO_MODULE (module);
 
-  if (pango_module->path)
-    {
-      pango_module->library = g_module_open (pango_module->path, G_MODULE_BIND_LOCAL);
-      if (!pango_module->library)
-	{
-	  GQuark warned_quark = get_warned_quark ();
-	  if (!g_object_get_qdata (G_OBJECT (pango_module), warned_quark))
-	    {
-	      g_warning ("%s", g_module_error());
-	      g_object_set_qdata_full (G_OBJECT (pango_module), warned_quark,
-				       GINT_TO_POINTER (1), NULL);
-	    }
-	  return FALSE;
-	}
-
-      /* extract symbols from the lib */
-      if (!g_module_symbol (pango_module->library, "script_engine_init",
-			    (gpointer *)(void *)&pango_module->init) ||
-	  !g_module_symbol (pango_module->library, "script_engine_exit",
-			    (gpointer *)(void *)&pango_module->exit) ||
-	  !g_module_symbol (pango_module->library, "script_engine_list",
-			    (gpointer *)(void *)&pango_module->list) ||
-	  !g_module_symbol (pango_module->library, "script_engine_create",
-			    (gpointer *)(void *)&pango_module->create))
-	{
-	  GQuark warned_quark = get_warned_quark ();
-	  if (!g_object_get_qdata (G_OBJECT (pango_module), warned_quark))
-	    {
-	      g_warning ("%s", g_module_error());
-	      g_object_set_qdata_full (G_OBJECT (pango_module), warned_quark,
-				       GINT_TO_POINTER (1), NULL);
-	    }
-
-	  g_module_close (pango_module->library);
-
-	  return FALSE;
-	}
-    }
-
   /* call the module's init function to let it */
   /* setup anything it needs to set up. */
   pango_module->init (module);
@@ -263,17 +203,6 @@ pango_module_unload (GTypeModule *module)
   PangoModule *pango_module = PANGO_MODULE (module);
 
   pango_module->exit();
-
-  if (pango_module->path)
-    {
-      g_module_close (pango_module->library);
-      pango_module->library = NULL;
-
-      pango_module->init = NULL;
-      pango_module->exit = NULL;
-      pango_module->list = NULL;
-      pango_module->create = NULL;
-    }
 }
 
 /* This only will ever be called if an error occurs during
@@ -282,10 +211,6 @@ pango_module_unload (GTypeModule *module)
 static void
 pango_module_finalize (GObject *object)
 {
-  PangoModule *module = PANGO_MODULE (object);
-
-  g_free (module->path);
-
   G_OBJECT_CLASS (pango_module_parent_class)->finalize (object);
 }
 
@@ -319,18 +244,6 @@ pango_engine_pair_get_engine (PangoEnginePair *pair)
 	{
 	  pair->engine = pair->module->create (pair->info.id);
 	  g_type_module_unuse (G_TYPE_MODULE (pair->module));
-	}
-
-      if (!pair->engine)
-	{
-	  GQuark warned_quark = get_warned_quark ();
-	  if (!g_object_get_qdata (G_OBJECT (pair->module), warned_quark))
-	    {
-	      g_warning ("Failed to load Pango module '%s' for id '%s'", pair->module->path, pair->info.id);
-
-	      g_object_set_qdata_full (G_OBJECT (pair->module), warned_quark,
-				       GINT_TO_POINTER (1), NULL);
-	    }
 	}
     }
 
@@ -367,254 +280,6 @@ handle_included_module (PangoIncludedModule *included_module,
     }
 }
 
-static PangoModule *
-find_or_create_module (const char *raw_path)
-{
-  PangoModule *module;
-  char *path;
-
-#if defined(G_OS_WIN32) && defined(LIBDIR)
-  if (strncmp (raw_path,
-	       LIBDIR "/pango/" MODULE_VERSION "/modules/",
-	       strlen (LIBDIR "/pango/" MODULE_VERSION "/modules/")) == 0)
-    {
-      /* This is an entry put there by make install on the
-       * packager's system. On Windows a prebuilt Pango
-       * package can be installed in a random
-       * location. The pango.modules file distributed in
-       * such a package contains paths from the package
-       * builder's machine. Replace the path with the real
-       * one on this machine. */
-      path =
-	g_strconcat (pango_get_lib_subdirectory (),
-		     "\\" MODULE_VERSION "\\modules\\",
-		     raw_path + strlen (LIBDIR "/pango/" MODULE_VERSION "/modules/"),
-		     NULL);
-    }
-  else
-#endif
-    {
-      path = g_strdup (raw_path);
-    }
-
-  module = g_hash_table_lookup (dlloaded_modules, path);
-  if (module)
-    g_free (path);
-  else
-    {
-      module = g_object_new (PANGO_TYPE_MODULE, NULL);
-      module->path = path;
-      g_hash_table_insert (dlloaded_modules, path, module);
-    }
-
-  return module;
-}
-
-static PangoScript
-script_from_string (const char *str)
-{
-  static GEnumClass *class = NULL;
-  GEnumValue *value;
-  if (g_once_init_enter (&class))
-    g_once_init_leave (&class, g_type_class_ref (PANGO_TYPE_SCRIPT));
-
-  value = g_enum_get_value_by_nick (class, str);
-  if (!value)
-    return PANGO_SCRIPT_INVALID_CODE;
-
-  return value->value;
-}
-
-static void
-script_info_free (PangoEngineScriptInfo *script_info,
-		  gpointer data G_GNUC_UNUSED)
-{
-  g_slice_free (PangoEngineScriptInfo, script_info);
-}
-
-static gboolean /* Returns true if succeeded, false if failed */
-process_module_file (FILE *module_file, const gchar *module_file_dir)
-{
-  GString *line_buf = g_string_new (NULL);
-  GString *tmp_buf = g_string_new (NULL);
-  gboolean have_error = FALSE;
-
-  while (pango_read_line (module_file, line_buf))
-    {
-      PangoEnginePair *pair = g_slice_new (PangoEnginePair);
-      PangoEngineScriptInfo *script_info;
-      PangoScript script;
-      GList *scripts = NULL;
-      GList *tmp_list;
-
-      const char *p;
-      char *q;
-      int i;
-
-      p = line_buf->str;
-
-      if (!pango_skip_space (&p))
-	{
-	  g_slice_free (PangoEnginePair, pair);
-	  continue;
-	}
-
-      i = 0;
-      while (1)
-	{
-	  if (!pango_scan_string (&p, tmp_buf))
-	    {
-	      have_error = TRUE;
-	      goto error;
-	    }
-
-	  switch (i)
-	    {
-	    case 0:
-	      if (!g_path_is_absolute (tmp_buf->str)
-#ifdef __APPLE__
-	          && strncmp (tmp_buf->str, "@executable_path/", 17)
-	          && strncmp (tmp_buf->str, "@loader_path/", 13)
-	          && strncmp (tmp_buf->str, "@rpath/", 7)
-#endif
-	         )
-		{
-		  const gchar *lib_dir = pango_get_lib_subdirectory ();
-		  const gchar *abs_file_name = g_build_filename (lib_dir,
-								 MODULE_VERSION,
-								 "modules",
-								 tmp_buf->str,
-								 NULL);
-		  g_string_assign (tmp_buf, abs_file_name);
-		  g_free ((gpointer) abs_file_name);
-		}
-	      pair->module = find_or_create_module (tmp_buf->str);
-	      break;
-	    case 1:
-	      pair->info.id = g_strdup (tmp_buf->str);
-	      break;
-	    case 2:
-	      pair->info.engine_type = g_strdup (tmp_buf->str);
-	      break;
-	    case 3:
-	      pair->info.render_type = g_strdup (tmp_buf->str);
-	      break;
-	    default:
-	      q = strchr (tmp_buf->str, ':');
-	      if (!q)
-		{
-		  have_error = TRUE;
-		  goto error;
-		}
-	      *q = '\0';
-	      script = script_from_string (tmp_buf->str);
-	      if (script == PANGO_SCRIPT_INVALID_CODE)
-		{
-		  have_error = TRUE;
-		  goto error;
-		}
-
-	      script_info = g_slice_new (PangoEngineScriptInfo);
-	      script_info->script = script;
-	      script_info->langs = g_strdup (q + 1);
-
-	      scripts = g_list_prepend (scripts, script_info);
-	    }
-
-	  if (!pango_skip_space (&p))
-	    break;
-
-	  i++;
-	}
-
-      if (i<3)
-	{
-	  have_error = TRUE;
-	  goto error;
-	}
-
-      scripts = g_list_reverse (scripts);
-      pair->info.n_scripts = g_list_length (scripts);
-      pair->info.scripts = g_new (PangoEngineScriptInfo, pair->info.n_scripts);
-
-      tmp_list = scripts;
-      for (i=0; i<pair->info.n_scripts; i++)
-	{
-	  pair->info.scripts[i] = *(PangoEngineScriptInfo *)tmp_list->data;
-	  tmp_list = tmp_list->next;
-	}
-
-      pair->engine = NULL;
-
-      dlloaded_engines = g_slist_prepend (dlloaded_engines, pair);
-
-    error:
-      g_list_foreach (scripts, (GFunc)script_info_free, NULL);
-      g_list_free (scripts);
-
-      if (have_error)
-	{
-	  g_printerr ("Error reading Pango modules file\n");
-	  g_slice_free(PangoEnginePair, pair);
-	  break;
-	}
-    }
-
-  g_string_free (line_buf, TRUE);
-  g_string_free (tmp_buf, TRUE);
-
-  return !have_error;
-}
-
-static void
-read_modules (void)
-{
-  FILE *module_file;
-
-  char *file_str =  pango_config_key_get ("Pango/ModuleFiles");
-  char **files;
-  int n;
-
-  dlloaded_modules = g_hash_table_new (g_str_hash, g_str_equal);
-
-  if (!file_str)
-    {
-      files = g_new (char *, 3);
-
-      files[0] = g_build_filename (pango_get_sysconf_subdirectory (),
-                                   "pango.modules",
-                                   NULL);
-      files[1] = g_build_filename (pango_get_lib_subdirectory (),
-                                   MODULE_VERSION,
-                                   "modules.cache",
-                                   NULL);
-      files[2] = NULL;
-    }
-  else
-    files = pango_split_file_list (file_str);
-
-  n = 0;
-  while (files[n])
-    n++;
-
-  while (n-- > 0)
-    {
-      module_file = g_fopen (files[n], "r");
-      if (module_file)
-	{
-	  const gchar *module_file_dir = g_path_get_dirname (files[n]);
-	  process_module_file (module_file, module_file_dir);
-	  g_free ((gpointer) module_file_dir);
-	  fclose(module_file);
-	}
-    }
-
-  g_strfreev (files);
-  g_free (file_str);
-
-  dlloaded_engines = g_slist_reverse (dlloaded_engines);
-}
-
 static void
 init_modules (void)
 {
@@ -630,7 +295,6 @@ init_modules (void)
 
       for (i = 0; _pango_included_lang_modules[i].list; i++)
         pango_module_register (&_pango_included_lang_modules[i]);
-      read_modules ();
 
       g_once_init_leave (&init, 1);
     }
@@ -697,24 +361,15 @@ build_map (PangoMapInfo *info)
 
   init_modules();
 
-  if (!dlloaded_engines && !registered_engines)
+  /* XXX: Can this even happen, now all modules are built statically? */
+  if (!registered_engines)
     {
       static gboolean no_module_warning = FALSE; /* MT-safe */
       if (!no_module_warning)
 	{
-	  gchar *filename = g_build_filename (pango_get_sysconf_subdirectory (),
-					      "pango.modules",
-					      NULL);
 	  g_critical ("No modules found:\n"
 		      "No builtin or dynamically loaded modules were found.\n"
-		      "PangoFc will not work correctly.\n"
-		      "This probably means there was an error in the creation of:\n"
-		      "  '%s'\n"
-		      "You should create this file by running:\n"
-		      "  pango-querymodules > '%s'",
-		     filename,
-		     filename);
-	  g_free (filename);
+		      "PangoFc will not work correctly.");
 
 	  no_module_warning = TRUE;
 	}
@@ -723,7 +378,6 @@ build_map (PangoMapInfo *info)
   info->map = g_slice_new (PangoMap);
   info->map->entries = g_array_new (FALSE, TRUE, sizeof (PangoMapEntry));
 
-  map_add_engine_list (info, dlloaded_engines, engine_type, render_type);
   map_add_engine_list (info, registered_engines, engine_type, render_type);
 }
 
