@@ -8,7 +8,6 @@ SUBDIRS = 		\
 
 EXTRA_DIST =		\
 	Module.mk	\
-	module.def	\
-	pangorc
+	module.def
 
 -include $(top_srcdir)/git.mk

@@ -112,8 +112,6 @@ main (int    argc,
 {
   gchar *text;
 
-  g_setenv ("PANGO_RC_FILE", "./pangorc", TRUE);
-
   if (argc < 2)
     fail ("must give a filename on the command line");
 
