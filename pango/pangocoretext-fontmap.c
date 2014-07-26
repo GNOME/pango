@@ -115,13 +115,14 @@ const float ct_weight_min = -1.00f;
 const float ct_weight_max = 1.00f;
 
 static const PangoCTWeight ct_weight_limits[] = {
-    { -0.70, PANGO_WEIGHT_THIN},
-    { -0.50, PANGO_WEIGHT_ULTRALIGHT },
-    { -0.35, PANGO_WEIGHT_LIGHT },
+    { -0.00, PANGO_WEIGHT_THIN },
+    { -0.75, PANGO_WEIGHT_ULTRALIGHT },
+    { -0.50, PANGO_WEIGHT_LIGHT },
+    { -0.25, PANGO_WEIGHT_SEMILIGHT },
     { -0.10, PANGO_WEIGHT_BOOK },
-    {  0.10, PANGO_WEIGHT_NORMAL },
-    {  0.24, PANGO_WEIGHT_MEDIUM },
-    {  0.36, PANGO_WEIGHT_SEMIBOLD },
+    {  0.00, PANGO_WEIGHT_NORMAL },
+    {  0.10, PANGO_WEIGHT_MEDIUM },
+    {  0.25, PANGO_WEIGHT_SEMIBOLD },
     {  0.50, PANGO_WEIGHT_BOLD },
     {  0.75, PANGO_WEIGHT_ULTRABOLD },
     {  1.00, PANGO_WEIGHT_HEAVY }
@@ -310,6 +311,7 @@ ct_font_descriptor_get_weight (CTFontDescriptorRef desc)
 	  for (i = 0; i < G_N_ELEMENTS(ct_weight_limits); i++)
 	    if (value < ct_weight_limits[i].bound)
 	      {
+	        /* TODO interpolate weight. */
                 weight = ct_weight_limits[i].weight;
                 break;
 	      }
