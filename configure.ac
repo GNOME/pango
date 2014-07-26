@@ -501,12 +501,12 @@ AC_MSG_CHECKING(modules to link statically)
 
 AC_ARG_WITH(included_modules,
    AC_HELP_STRING([--with-included-modules=no/yes/MODULE1 MODULE2 ...],
-                  [build the given modules included @<:@default=no@:>@]))
+                  [build the given modules included @<:@default=yes@:>@]))
 
 included_modules=""
 case x$with_included_modules in
-	xyes)	included_modules=$all_modules ;;
-	xno|x)	included_modules="" ;;
+	xyes|x)	included_modules=$all_modules ;;
+	xno)	included_modules="" ;;
 	*)	included_modules=$with_included_modules ;;
 esac
 AC_MSG_RESULT($included_modules)
@@ -519,12 +519,12 @@ AC_MSG_CHECKING(dynamic modules to build)
 
 AC_ARG_WITH(dynamic_modules,
    AC_HELP_STRING([--with-dynamic-modules=no/yes/MODULE1 MODULE2 ...],
-                  [build the given dynamic modules @<:@default=yes@:>@]))
+                  [build the given dynamic modules @<:@default=no@:>@]))
 
 dynamic_modules=""
 case x$with_dynamic_modules in
-	xyes|x)	dynamic_modules=$all_modules ;;
-	xno)	dynamic_modules="" ;;
+	xyes)	dynamic_modules=$all_modules ;;
+	xno|x)	dynamic_modules="" ;;
 	*)	dynamic_modules=$with_dynamic_modules ;;
 esac
 AC_MSG_RESULT([$dynamic_modules (those built into Pango will be excluded)])
