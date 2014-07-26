@@ -1,7 +1,7 @@
 include $(top_srcdir)/modules/Module.mk
 
-if INCLUDE_THAI_LANG
-noinst_LTLIBRARIES += libpango-thai-lang.la
+if HAVE_LIBTHAI
+noinst_LTLIBRARIES = libpango-thai-lang.la
 endif
 
 libpango_thai_lang_la_SOURCES = thai-lang.c

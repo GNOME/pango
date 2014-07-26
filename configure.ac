@@ -470,6 +470,7 @@ AC_SUBST(GLIB_MKENUMS)
 #
 LIBTHAI_REQUIRED_VERSION=0.1.9
 PKG_CHECK_MODULES(LIBTHAI, libthai >= $LIBTHAI_REQUIRED_VERSION, have_libthai=true, have_libthai=false)
+AM_CONDITIONAL(HAVE_LIBTHAI, $have_libthai)
 
 #
 # Checks for GObject Introspection
@@ -515,13 +516,6 @@ for module in $all_modules; do
   esac
 done
 IFS="$pango_save_ifs"
-
-AM_CONDITIONAL(INCLUDE_ARABIC_LANG,	echo $all_modules | egrep '(^|,)arabic-lang($|,)' 	> /dev/null)
-AM_CONDITIONAL(INCLUDE_BASIC_FC,	echo $all_modules | egrep '(^|,)basic-fc($|,)' 	> /dev/null)
-AM_CONDITIONAL(INCLUDE_BASIC_WIN32,	echo $all_modules | egrep '(^|,)basic-win32($|,)' 	> /dev/null)
-AM_CONDITIONAL(INCLUDE_BASIC_CORE_TEXT,	echo $all_modules | egrep '(^|,)basic-coretext($|,)'	> /dev/null)
-AM_CONDITIONAL(INCLUDE_INDIC_LANG,	echo $all_modules | egrep '(^|,)indic-lang($|,)'	> /dev/null)
-AM_CONDITIONAL(INCLUDE_THAI_LANG,	echo $all_modules | egrep '(^|,)thai-lang($|,)' 	> /dev/null)
 
 #
 # We use flockfile to implement pango_getline() - should be moved to GLib

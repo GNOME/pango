@@ -5,10 +5,3 @@ INCLUDES = 				\
 	-I$(top_srcdir)			\
 	-I$(top_srcdir)/pango		\
 	$(GLIB_CFLAGS)
-
-noinst_LTLIBRARIES =
-
-
-included-modules: $(noinst_LTLIBRARIES)
-
-.PHONY: included-modules

@@ -452,13 +452,13 @@ EXTRA_DIST =					\
 	check.defs
 
 
-included-modules:
-	$(AM_V_GEN) cd $(top_builddir)/modules && $(MAKE) $(AM_MAKEFLAGS) included-modules
+modules:
+	$(AM_V_GEN) cd $(top_builddir)/modules && $(MAKE) $(AM_MAKEFLAGS)
 
-$(INCLUDED_LANG_MODULES) $(INCLUDED_FC_MODULES) $(INCLUDED_WIN32_MODULES) $(INCLUDED_CORE_TEXT_MODULES): included-modules
+$(INCLUDED_LANG_MODULES) $(INCLUDED_FC_MODULES) $(INCLUDED_WIN32_MODULES) $(INCLUDED_CORE_TEXT_MODULES): modules
 	$(AM_V_GEN) true
 
-.PHONY: included-modules
+.PHONY: modules
 
 MODULE_DEF_FILES = \
 	module-defs.h \
