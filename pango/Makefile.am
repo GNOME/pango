@@ -424,24 +424,6 @@ typelibs_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
 endif # HAVE_INTROSPECTION
 
-# ------------------- pango-querymodules -------------------
-
-bin_PROGRAMS = pango-querymodules
-
-pango_querymodules_SOURCES = \
-	querymodules.c
-
-pango_querymodules_LDADD =
-if HAVE_XFT
-pango_querymodules_LDADD += libpangoxft-$(PANGO_API_VERSION).la
-endif
-if HAVE_FREETYPE
-pango_querymodules_LDADD += libpangoft2-$(PANGO_API_VERSION).la
-endif
-if HAVE_WIN32
-pango_querymodules_LDADD += libpangowin32-$(PANGO_API_VERSION).la
-endif
-pango_querymodules_LDADD += libpango-$(PANGO_API_VERSION).la $(GLIB_LIBS)
 
 EXTRA_DIST =					\
 	pango-enum-types.h			\

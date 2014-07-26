@@ -443,10 +443,7 @@ AM_CONDITIONAL(HAVE_CAIRO_QUARTZ, $have_cairo_quartz)
 
 
 #
-# We must have some backend defined, in order for the pango-querymodules
-# rule in pango/Makefile.am to work correctly. If you are up to writing
-# a new Pango backend outside of Pango, you are up to sending the necessary
-# patch to fix that rule. :-)
+# We must have some backend defined
 #
 if $have_freetype || `test "x$with_xft" = xyes && $have_xft` || $have_cairo || $have_win32 ; then : ; else
   AC_MSG_ERROR([*** Could not enable any backends.
@@ -544,32 +541,6 @@ if $have_cairo ; then : ; else
 fi
 
 GTK_DOC_CHECK([1.15], [--flavour no-tmpl])
-
-AC_ARG_ENABLE(man,
-              AC_HELP_STRING([--enable-man],
-                             [regenerate man pages from Docbook @<:@default=no@:>@]),
-	      enable_man=yes,
-              enable_man=no)
-
-if test "x$enable_man" != xno ; then
-  dnl
-  dnl Check for xsltproc
-  dnl
-  AC_PATH_PROG([XSLTPROC], [xsltproc])
-  if test -z "$XSLTPROC"; then
-    enable_man=no
-  fi
-fi
-
-if test "x$enable_man" != xno ; then
-  dnl check for DocBook DTD and stylesheets in the local catalog.
-  JH_CHECK_XML_CATALOG([-//OASIS//DTD DocBook XML V4.1.2//EN],
-     [DocBook XML DTD V4.1.2],,enable_man=no)
-  JH_CHECK_XML_CATALOG([http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl],
-     [DocBook XSL Stylesheets],,enable_man=no)
-fi
-
-AM_CONDITIONAL(ENABLE_MAN, test x$enable_man != xno)
 
 AC_ARG_ENABLE(doc-cross-references,
               AC_HELP_STRING([--disable-doc-cross-references],
