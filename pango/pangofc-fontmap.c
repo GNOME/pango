@@ -1375,6 +1375,9 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 static int
 pango_fc_convert_weight_to_fc (PangoWeight pango_weight)
 {
+#ifdef HAVE_FCWEIGHTFROMOPENTYPE
+  return FcWeightFromOpenType (pango_weight);
+#else
   if (pango_weight <= (PANGO_WEIGHT_THIN + PANGO_WEIGHT_ULTRALIGHT) / 2)
     return FC_WEIGHT_THIN;
   else if (pango_weight <= (PANGO_WEIGHT_ULTRALIGHT + PANGO_WEIGHT_LIGHT) / 2)
@@ -1399,6 +1402,7 @@ pango_fc_convert_weight_to_fc (PangoWeight pango_weight)
     return FC_WEIGHT_BLACK;
   else
     return FC_WEIGHT_EXTRABLACK;
+#endif
 }
 
 static int
@@ -2061,6 +2065,9 @@ pango_fc_font_map_shutdown (PangoFcFontMap *fcfontmap)
 static PangoWeight
 pango_fc_convert_weight_to_pango (int fc_weight)
 {
+#ifdef HAVE_FCWEIGHTFROMOPENTYPE
+  return FcWeightToOpenType (fc_weight);
+#else
   if (fc_weight <= (FC_WEIGHT_THIN + FC_WEIGHT_EXTRALIGHT) / 2)
     return PANGO_WEIGHT_THIN;
   else if (fc_weight <= (FC_WEIGHT_EXTRALIGHT + FC_WEIGHT_LIGHT) / 2)
@@ -2085,6 +2092,7 @@ pango_fc_convert_weight_to_pango (int fc_weight)
     return PANGO_WEIGHT_HEAVY;
   else
     return PANGO_WEIGHT_ULTRAHEAVY;
+#endif
 }
 
 static PangoStyle

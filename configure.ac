@@ -224,6 +224,12 @@ have_fontconfig=false
 if $have_harfbuzz ; then
   PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 2.10.91, have_fontconfig=true, AC_MSG_RESULT([no]))
 fi
+if $have_fontconfig ; then
+  pango_save_libs=$LIBS
+  LIBS="$LIBS $FONTCONFIG_LIBS"
+  AC_CHECK_FUNCS(FcWeightFromOpenType)
+  LIBS=$pango_save_libs
+fi
 
 #
 # Checks for FreeType
