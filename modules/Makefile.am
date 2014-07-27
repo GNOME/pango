@@ -2,7 +2,6 @@
 
 SUBDIRS = 		\
 	arabic		\
-	basic 		\
 	indic           \
 	thai
 

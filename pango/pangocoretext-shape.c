@@ -544,4 +544,3 @@ PANGO_MODULE_ENTRY(create) (const char *id)
   else
     return NULL;
 }
-

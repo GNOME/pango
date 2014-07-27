@@ -258,24 +258,15 @@ fi
 AM_CONDITIONAL(HAVE_XFT, test "x$with_xft" = xyes && $have_xft )
 
 #
-# Checks for Win32 GDI
+# Checks for Win32
 #
 have_win32=false
-WIN32_LIBS=""
-WIN32_CFLAGS=""
 # The following doesn't work with autoconf-2.13, so we check $host instead
 # AC_CHECK_LIB(gdi32, GetTextMetricsA@8, have_win32=true, : )
 case "$host" in
   *-*-mingw*|*-*-cygwin*) have_win32=true ;;
 esac
-
-
-if test $have_win32 = true; then
-  WIN32_LIBS="-lgdi32"
-fi
-
-AC_SUBST(WIN32_LIBS)
-AM_CONDITIONAL(HAVE_WIN32, $have_win32) 
+AM_CONDITIONAL(HAVE_WIN32, $have_win32)
 
 # Ensure MSVC-compatible struct packing convention is used when
 # compiling for Win32 with gcc.

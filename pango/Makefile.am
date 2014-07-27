@@ -183,6 +183,7 @@ pangoft2_public_sources = 	\
 	pangofc-font.c	   	\
 	pangofc-fontmap.c	\
 	pangofc-decoder.c	\
+	pangofc-shape.c		\
 	pangoft2.c
 
 libpangoft2_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
@@ -321,8 +322,8 @@ pangocairo-win32-res.o: pangocairo.rc
 	$(AM_V_GEN) $(WINDRES) $< $@
 
 
-libpangocairo_1_0_la_LIBADD += libpangowin32-$(PANGO_API_VERSION).la $(WIN32_LIBS)
-libpangocairo_1_0_la_DEPENDENCIES += libpangowin32-$(PANGO_API_VERSION).la 
+libpangocairo_1_0_la_LIBADD += libpangowin32-$(PANGO_API_VERSION).la -lgdi32
+libpangocairo_1_0_la_DEPENDENCIES += libpangowin32-$(PANGO_API_VERSION).la
 
 libpangocairo_1_0_la_SOURCES += pangocairo-win32font.c pangocairo-win32fontmap.c pangocairo-win32.h
 endif
@@ -347,6 +348,7 @@ libpangocairo_1_0_la_SOURCES += \
 	pangocoretext.c		\
 	pangocoretext-private.h	\
 	pangocoretext-fontmap.c	\
+	pangocoretext-shape.c	\
 	pangocairo-coretext.h	\
 	pangocairo-coretextfont.c	\
 	pangocairo-coretextfont.h	\
@@ -391,7 +393,7 @@ libpangowin32_1_0_la_LIBADD =			\
 	libpango-$(PANGO_API_VERSION).la	\
 	$(INCLUDED_WIN32_MODULES)		\
 	$(GLIB_LIBS)				\
-	$(WIN32_LIBS)
+	-lgdi32 -lusp10
 libpangowin32_1_0_la_DEPENDENCIES =		\
 	libpango-$(PANGO_API_VERSION).la	\
 	$(INCLUDED_WIN32_MODULES)
@@ -402,7 +404,8 @@ libpangowin32_1_0_la_SOURCES =	\
 	pangowin32.c		\
 	pangowin32-private.h	\
 	pangowin32-fontcache.c	\
-	pangowin32-fontmap.c
+	pangowin32-fontmap.c	\
+	pangowin32-shape.c
 
 if PLATFORM_WIN32
 libpangowin32_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangowin32.def -Wl,pangowin32-win32-res.o
