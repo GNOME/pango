@@ -872,7 +872,6 @@ pangowin32-uninstalled.pc
 pangoft2-uninstalled.pc
 pangoxft-uninstalled.pc
 pangocairo-uninstalled.pc
-pango-zip.sh
 config.h.win32
 ])
 

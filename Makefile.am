@@ -30,8 +30,6 @@ EXTRA_DIST = 			\
 	HACKING			\
 	README.win32		\
 	config.h.win32		\
-	pango-zip.sh.in		\
-	sanitize-la.sh		\
 	pango.doap
 
 MAINTAINERCLEANFILES = \
