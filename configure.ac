@@ -40,9 +40,6 @@ m4_if(m4_eval(pango_version_minor % 2), [1],
 dnl Number of releases since we've broken binary compatibility.
 m4_define([pango_binary_age],
           [m4_eval(100 * pango_version_minor + pango_version_micro)])
-dnl Module API version.  This should be stepped up when a change causes
-dnl older modules to not work with new pango.
-m4_define([pango_module_version], [1.8.0])
 
 
 AC_INIT(pango, pango_version(),
@@ -64,7 +61,6 @@ PANGO_VERSION=pango_version()
 PANGO_API_VERSION=pango_api_version()
 PANGO_INTERFACE_AGE=pango_interface_age()
 PANGO_BINARY_AGE=pango_binary_age()
-PANGO_MODULE_VERSION=pango_module_version()
 
 AC_SUBST(PANGO_VERSION_MAJOR)
 AC_SUBST(PANGO_VERSION_MINOR)
@@ -73,9 +69,7 @@ AC_SUBST(PANGO_VERSION)
 AC_SUBST(PANGO_API_VERSION)
 AC_SUBST(PANGO_INTERFACE_AGE)
 AC_SUBST(PANGO_BINARY_AGE)
-AC_SUBST(PANGO_MODULE_VERSION)
 
-AC_DEFINE(MODULE_VERSION, "pango_module_version()", [Module interface version])
 AC_DEFINE(PANGO_BINARY_AGE, pango_binary_age(), [PANGO binary age])
 AC_DEFINE(PANGO_INTERFACE_AGE, pango_interface_age(), [PANGO interface age])
 AC_DEFINE(PANGO_VERSION_MAJOR, pango_version_major(), [PANGO major version])

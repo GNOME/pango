@@ -657,7 +657,6 @@ show_version(const char *name G_GNUC_UNUSED,
 	     GError    **error G_GNUC_UNUSED)
 {
   g_printf("%s (%s) %s\n", g_get_prgname (), PACKAGE_NAME, PACKAGE_VERSION);
-  g_printf("\nPango module interface version: %s\n", MODULE_VERSION);
 
   if (PANGO_VERSION != pango_version())
     g_printf("Linked Pango library has a different version: %s\n", pango_version_string ());

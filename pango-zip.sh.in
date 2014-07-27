@@ -20,8 +20,6 @@ bin/libpangowin32-@PANGO_API_VERSION@-@PANGO_CURRENT_MINUS_AGE@.dll
 bin/libpangocairo-@PANGO_API_VERSION@-@PANGO_CURRENT_MINUS_AGE@.dll
 EOF
 
-zip $ZIP lib/pango/@PANGO_MODULE_VERSION@/modules/*.dll
-
 zip -r $ZIP share/doc/pango-@PANGO_VERSION@
 
 rm $DEVZIP

@@ -3,8 +3,6 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-pango_module_version=@PANGO_MODULE_VERSION@
-
 Name: Pango
 Description: Internationalized text handling
 Version: @VERSION@
