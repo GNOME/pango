@@ -1,5 +1,0 @@
-EXPORTS
-	script_engine_create
-	script_engine_list
-	script_engine_init
-	script_engine_exit

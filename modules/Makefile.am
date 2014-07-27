@@ -6,8 +6,4 @@ SUBDIRS = 		\
 	indic           \
 	thai
 
-EXTRA_DIST =		\
-	Module.mk	\
-	module.def
-
 -include $(top_srcdir)/git.mk
