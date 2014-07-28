@@ -22,12 +22,10 @@
 #ifndef __PANGO_FC_FONT_H__
 #define __PANGO_FC_FONT_H__
 
+#include <pango/pango.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include <fontconfig/fontconfig.h>
-#include <pango/pango-font.h>
-#include <pango/pango-fontmap.h>
-#include <pango/pango-glyph.h>
 
 G_BEGIN_DECLS
 

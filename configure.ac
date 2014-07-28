@@ -467,7 +467,6 @@ GOBJECT_INTROSPECTION_CHECK([0.9.5])
 # Modules to build
 #
 arabic_modules="arabic-lang"
-basic_modules="basic-fc,basic-win32,basic-coretext"
 indic_modules="indic-lang"
 thai_modules=""
 
@@ -475,7 +474,7 @@ if $have_libthai ; then
   thai_modules="thai-lang"
 fi
 
-all_modules="$arabic_modules,$basic_modules,$indic_modules,$thai_modules"
+all_modules="$arabic_modules,$indic_modules,$thai_modules"
 
 INCLUDED_FC_MODULES=
 INCLUDED_WIN32_MODULES=
@@ -839,7 +838,6 @@ pango/pangoxft.rc
 pango-view/Makefile
 modules/Makefile
 modules/arabic/Makefile
-modules/basic/Makefile
 modules/indic/Makefile
 modules/thai/Makefile
 examples/Makefile

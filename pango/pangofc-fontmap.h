@@ -22,8 +22,8 @@
 #ifndef __PANGO_FC_FONT_MAP_H__
 #define __PANGO_FC_FONT_MAP_H__
 
+#include <pango/pango.h>
 #include <fontconfig/fontconfig.h>
-#include <pango/pango-fontmap.h>
 #include <pango/pangofc-decoder.h>
 #include <pango/pangofc-font.h>
 

@@ -212,6 +212,7 @@ struct _PangoEngineShapeClass
 			PangoGlyphString    *glyphs,
 			const char          *paragraph_text,
 			unsigned int         paragraph_length);
+  G_DEPRECATED
   PangoCoverageLevel (*covers)   (PangoEngineShape *engine,
 				  PangoFont        *font,
 				  PangoLanguage    *language,
@@ -271,14 +272,11 @@ struct _PangoEngineInfo
  * @engines: location to store a pointer to an array of engines.
  * @n_engines: location to store the number of elements in @engines.
  *
- * Function to be provided by a module to list the engines that the
- * module supplies. The function stores a pointer to an array
- * of #PangoEngineInfo structures and the length of that array in
- * the given location.
+ * Do not use.
  *
- * Note that script_engine_init() will not be called before this
- * function.
+ * Deprecated: 1.37
  **/
+G_DEPRECATED
 void script_engine_list (PangoEngineInfo **engines,
 			 int              *n_engines);
 
@@ -287,33 +285,33 @@ void script_engine_list (PangoEngineInfo **engines,
  * @module: a #GTypeModule structure used to associate any
  *  GObject types created in this module with the module.
  *
- * Function to be provided by a module to register any
- * GObject types in the module.
+ * Do not use.
+ *
+ * Deprecated: 1.37
  **/
+G_DEPRECATED
 void script_engine_init (GTypeModule *module);
 
 
 /**
  * script_engine_exit:
  *
- * Function to be provided by the module that is called
- * when the module is unloading. Frequently does nothing.
+ * Do not use.
+ *
+ * Deprecated: 1.37
  **/
+G_DEPRECATED
 void script_engine_exit (void);
 
 /**
  * script_engine_create:
  * @id: the ID of an engine as reported by script_engine_list.
  *
- * Function to be provided by the module to create an instance
- * of one of the engines implemented by the module.
+ * Do not use.
  *
- * Return value: a newly created #PangoEngine of the specified
- *  type, or %NULL if an error occurred. (In normal operation,
- *  a module should not return %NULL. A %NULL return is only
- *  acceptable in the case where system misconfiguration or
- *  bugs in the driver routine are encountered.)
+ * Deprecated: 1.37
  **/
+G_DEPRECATED
 PangoEngine *script_engine_create (const char *id);
 
 /* Utility macro used by PANGO_ENGINE_LANG_DEFINE_TYPE and

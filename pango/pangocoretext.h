@@ -23,8 +23,7 @@
 #ifndef __PANGOCORETEXT_H__
 #define __PANGOCORETEXT_H__
 
-#include <pango/pango-context.h>
-#include <pango/pango-font.h>
+#include <pango/pango.h>
 #include <Carbon/Carbon.h>
 
 G_BEGIN_DECLS

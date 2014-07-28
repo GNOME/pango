@@ -721,7 +721,6 @@ _pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontMapClass *fontmap_class = PANGO_FONT_MAP_CLASS (class);
-  int i;
 
   class->find_font = pango_win32_font_map_real_find_font;
   object_class->finalize = pango_win32_font_map_finalize;
@@ -732,9 +731,6 @@ _pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
   fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_WIN32;
 
   pango_win32_get_dc ();
-
-  for (i = 0; _pango_included_win32_modules[i].list; i++)
-    pango_module_register (&_pango_included_win32_modules[i]);
 }
 
 /**

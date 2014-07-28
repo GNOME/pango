@@ -100,7 +100,14 @@ void            pango_fc_font_get_raw_extents    (PangoFcFont    *font,
 PangoFontMetrics *pango_fc_font_create_base_metrics_for_context (PangoFcFont   *font,
 								 PangoContext  *context);
 
-
+void
+_pango_fc_shape (PangoFont           *font,
+		 const char          *item_text,
+		 unsigned int         item_length,
+		 const PangoAnalysis *analysis,
+		 PangoGlyphString    *glyphs,
+		 const char          *paragraph_text,
+		 unsigned int         paragraph_length);
 
 /* To be made public at some point */
 
