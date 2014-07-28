@@ -81,18 +81,29 @@ pango_cairo_font_map_new (void)
   g_type_init ();
 #endif
 #if defined(HAVE_CORE_TEXT) && defined (HAVE_CAIRO_QUARTZ)
-  if (!backend || 0 == strcmp (backend, "quartz"))
+  if (!backend || 0 == strcmp (backend, "coretext"))
     return g_object_new (PANGO_TYPE_CAIRO_CORE_TEXT_FONT_MAP, NULL);
-#elif defined(HAVE_CAIRO_WIN32)
+#endif
+#if defined(HAVE_CAIRO_WIN32)
   if (!backend || 0 == strcmp (backend, "win32"))
     return g_object_new (PANGO_TYPE_CAIRO_WIN32_FONT_MAP, NULL);
-#elif defined(HAVE_CAIRO_FREETYPE)
+#endif
+#if defined(HAVE_CAIRO_FREETYPE)
   if (!backend || 0 == strcmp (backend, "fc")
 	       || 0 == strcmp (backend, "fontconfig"))
     return g_object_new (PANGO_TYPE_CAIRO_FC_FONT_MAP, NULL);
 #endif
-  if (!backend)
-    g_assert_not_reached ();
+  g_error ("Unknown $PANGOCAIRO_BACKEND value.  Available backends are:"
+#if defined(HAVE_CORE_TEXT) && defined (HAVE_CAIRO_QUARTZ)
+	      " coretext"
+#endif
+#if defined(HAVE_CAIRO_WIN32)
+	      " win32"
+#endif
+#if defined(HAVE_CAIRO_FREETYPE)
+	      " fontconfig"
+#endif
+	      );
   return NULL;
 }
 
