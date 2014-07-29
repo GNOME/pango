@@ -27,6 +27,7 @@
 #include <Carbon/Carbon.h>
 #include "pango-utils.h"
 #include "pangocoretext-private.h"
+#include "pango-impl-utils.h"
 
 static void
 set_glyph (PangoFont        *font,
