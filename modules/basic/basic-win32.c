@@ -605,8 +605,8 @@ itemize_shape_and_place (PangoFont           *font,
 	    {
 	      glyphs->glyphs[ng+glyphix].glyph = iglyphs[glyphix];
 	      glyphs->glyphs[ng+glyphix].geometry.width = floor (0.5 + scale * advances[glyphix]);
-	      glyphs->glyphs[ng+glyphix].geometry.x_offset = floor (0.5 + scale * offsets[glyphix].du);
-	      glyphs->glyphs[ng+glyphix].geometry.y_offset = floor (0.5 + scale * offsets[glyphix].dv);
+	      glyphs->glyphs[ng+glyphix].geometry.x_offset =  floor (0.5 + scale * offsets[glyphix].du);
+	      glyphs->glyphs[ng+glyphix].geometry.y_offset = -floor (0.5 + scale * offsets[glyphix].dv);
 	    }
 	  else
 	    {
