@@ -29,6 +29,7 @@
 #include "pango-utils.h"
 #include "pango-fontmap.h"
 #include "pangocoretext.h"
+#include "pango-impl-utils.h"
 
 /* No extra fields needed */
 typedef PangoEngineShape      BasicEngineCoreText;
@@ -489,6 +490,9 @@ basic_engine_shape (PangoEngineShape    *engine,
   pango_coverage_unref (coverage);
   g_slist_foreach (glyph_list, glyph_info_free, NULL);
   g_slist_free (glyph_list);
+
+  if (analysis->level & 1)
+    pango_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
 }
 
 static void
