@@ -60,7 +60,7 @@ pango_cairo_font_map_default_init (PangoCairoFontMapIface *iface)
  *
  * You can override the type of backend returned by using an
  * environment variable %PANGOCAIRO_BACKEND.  Supported types,
- * based on your build, are fc (fontconfig), win32, and quartz.
+ * based on your build, are fc (fontconfig), win32, and coretext.
  * If requested type is not available, NULL is returned. Ie.
  * this is only useful for testing, when at least two backends
  * are compiled in.
@@ -93,17 +93,20 @@ pango_cairo_font_map_new (void)
 	       || 0 == strcmp (backend, "fontconfig"))
     return g_object_new (PANGO_TYPE_CAIRO_FC_FONT_MAP, NULL);
 #endif
-  g_error ("Unknown $PANGOCAIRO_BACKEND value.  Available backends are:"
+  {
+    const char backends[] = ""
 #if defined(HAVE_CORE_TEXT) && defined (HAVE_CAIRO_QUARTZ)
-	      " coretext"
+      " coretext"
 #endif
 #if defined(HAVE_CAIRO_WIN32)
-	      " win32"
+      " win32"
 #endif
 #if defined(HAVE_CAIRO_FREETYPE)
-	      " fontconfig"
+      " fontconfig"
 #endif
-	      );
+      ;
+    g_error ("Unknown $PANGOCAIRO_BACKEND value.\n  Available backends are:%s", backends);
+  }
   return NULL;
 }
 
