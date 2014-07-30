@@ -854,6 +854,25 @@ update_end (ItemizeState *state)
     state->run_end = state->width_iter.end;
 }
 
+/* g_unichar_iswide() uses EastAsianWidth, which is broken.
+ * We should switch to using VerticalTextLayout:
+ * http://www.unicode.org/reports/tr50/#Data50
+ *
+ * In the mean time, fixup Hangul jamo to be all wide so we
+ * don't break run in the middle.  The EastAsianWidth has
+ * 'W' for L-jamo, and 'N' for T and V jamo!
+ *
+ * https://bugzilla.gnome.org/show_bug.cgi?id=705727
+ */
+gboolean
+width_iter_iswide (gunichar ch)
+{
+  if (0x1100u <= ch && ch <= 0x11FF)
+    return TRUE;
+
+  return g_unichar_iswide (ch);
+}
+
 static void
 width_iter_next(PangoWidthIter* iter)
 {
@@ -862,13 +881,13 @@ width_iter_next(PangoWidthIter* iter)
   if (iter->end < iter->text_end)
     {
       gunichar ch = g_utf8_get_char (iter->end);
-      iter->wide = g_unichar_iswide (ch);
+      iter->wide = width_iter_iswide (ch);
     }
 
   while (iter->end < iter->text_end)
     {
       gunichar ch = g_utf8_get_char (iter->end);
-      if (g_unichar_iswide (ch) != iter->wide)
+      if (width_iter_iswide (ch) != iter->wide)
         break;
       iter->end = g_utf8_next_char (iter->end);
     }
