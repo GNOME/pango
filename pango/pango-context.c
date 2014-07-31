@@ -867,7 +867,9 @@ update_end (ItemizeState *state)
 gboolean
 width_iter_iswide (gunichar ch)
 {
-  if (0x1100u <= ch && ch <= 0x11FF)
+  if ((0x1100u <= ch && ch <= 0x11FFu) ||
+      (0xA960u <= ch && ch <= 0xA97Cu) ||
+      (0xD7B0u <= ch && ch <= 0xD7FBu))
     return TRUE;
 
   return g_unichar_iswide (ch);
