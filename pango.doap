@@ -7,6 +7,7 @@
   <name xml:lang="en">pango</name>
   <shortdesc xml:lang="en">Internationalized text layout and rendering library</shortdesc>
   <category rdf:resource="http://api.gnome.org/doap-extensions#core" />
+  <programming-language>C</programming-language>
 
   <homepage
   rdf:resource="http://www.pango.org/" />
