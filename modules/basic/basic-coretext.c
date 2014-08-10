@@ -93,6 +93,7 @@ struct RunIterator
   CTRunRef current_run;
   CFIndex *current_indices;
   const CGGlyph *current_cgglyphs;
+  CGGlyph *current_cgglyphs_buffer;
   CTRunStatus current_run_status;
 };
 
@@ -102,6 +103,9 @@ run_iterator_free_current_run (struct RunIterator *iter)
   iter->current_run_number = -1;
   iter->current_run = NULL;
   iter->current_cgglyphs = NULL;
+  if (iter->current_cgglyphs_buffer)
+    free (iter->current_cgglyphs_buffer);
+  iter->current_cgglyphs_buffer = NULL;
   if (iter->current_indices)
     free (iter->current_indices);
   iter->current_indices = NULL;
@@ -117,10 +121,18 @@ run_iterator_set_current_run (struct RunIterator *iter,
 
   iter->current_run_number = run_number;
   iter->current_run = CFArrayGetValueAtIndex (iter->runs, run_number);
+  ct_glyph_count = CTRunGetGlyphCount (iter->current_run);
+
   iter->current_run_status = CTRunGetStatus (iter->current_run);
   iter->current_cgglyphs = CTRunGetGlyphsPtr (iter->current_run);
+  if (!iter->current_cgglyphs)
+    {
+      iter->current_cgglyphs_buffer = (CGGlyph *)malloc (sizeof (CGGlyph) * ct_glyph_count);
+      CTRunGetGlyphs (iter->current_run, CFRangeMake (0, ct_glyph_count),
+                      iter->current_cgglyphs_buffer);
+      iter->current_cgglyphs = iter->current_cgglyphs_buffer;
+    }
 
-  ct_glyph_count = CTRunGetGlyphCount (iter->current_run);
   iter->current_indices = malloc (sizeof (CFIndex *) * ct_glyph_count);
   CTRunGetStringIndices (iter->current_run, CFRangeMake (0, ct_glyph_count),
                          iter->current_indices);
@@ -205,6 +217,7 @@ run_iterator_create (struct RunIterator *iter,
   iter->current_run = NULL;
   iter->current_indices = NULL;
   iter->current_cgglyphs = NULL;
+  iter->current_cgglyphs_buffer = NULL;
 
   /* Create CTLine */
   attributes = CFDictionaryCreate (kCFAllocatorDefault,
