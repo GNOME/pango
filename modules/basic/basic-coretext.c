@@ -133,7 +133,7 @@ run_iterator_set_current_run (struct RunIterator *iter,
       iter->current_cgglyphs = iter->current_cgglyphs_buffer;
     }
 
-  iter->current_indices = malloc (sizeof (CFIndex *) * ct_glyph_count);
+  iter->current_indices = malloc (sizeof (CFIndex) * ct_glyph_count);
   CTRunGetStringIndices (iter->current_run, CFRangeMake (0, ct_glyph_count),
                          iter->current_indices);
 
