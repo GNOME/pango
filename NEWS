@@ -1,3 +1,13 @@
+Overview of changes between 1.36.5 and 1.36.6
+=============================================
+- Cope with lack of LC_CTYPE (#732276)
+- Prevent harfbuzz from using replacement char
+- Don't force static builds on win32 (#733137)
+- Allow backend selection via PANGOCAIRO_BACKEND
+- Support more font weights (#733764)
+- Fix vertical positioning on win32
+- Don't break in the middle of jamo (#705727)
+
 Overview of changes between 1.36.4 and 1.36.5
 =============================================
 - Lower the harfbuzz requirement
