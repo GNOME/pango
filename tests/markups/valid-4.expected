@@ -1,0 +1,38 @@
+bold big italic strikethroughsub smallsup tt underline
+
+
+---
+
+range 0 5
+[0 15] weight 700
+range 5 8
+[0 15] weight 700
+[5 8] scale 1.200000
+range 8 9
+[0 15] weight 700
+range 9 15
+[0 15] weight 700
+[9 15] style 2
+range 15 16
+range 16 29
+[16 41] strikethrough 1
+range 29 32
+[16 41] strikethrough 1
+[29 32] scale 0.833333
+[29 32] rise -5000
+range 32 33
+[16 41] strikethrough 1
+range 33 38
+[16 41] strikethrough 1
+[33 38] scale 0.833333
+range 38 41
+[16 41] strikethrough 1
+[38 41] scale 0.833333
+[38 41] rise 5000
+range 41 42
+range 42 45
+[42 54] family Monospace
+range 45 54
+[42 54] family Monospace
+[45 54] underline 1
+range 54 2147483647
