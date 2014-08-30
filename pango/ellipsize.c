@@ -645,6 +645,8 @@ fixup_ellipsis_run (EllipsizeState *state)
     level = MIN (level, state->run_info[i].run->item->analysis.level);
 
   item->analysis.level = level;
+
+  item->analysis.flags |= PANGO_ANALYSIS_FLAG_IS_ELLIPSIS;
 }
 
 /* Computes the new list of runs for the line

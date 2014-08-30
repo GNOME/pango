@@ -29,7 +29,6 @@ G_BEGIN_DECLS
 typedef struct _PangoAnalysis PangoAnalysis;
 typedef struct _PangoItem PangoItem;
 
-/* TODO: if more flags are needed, turn this into a real PangoAnalysisFlags enum */
 /**
  * PANGO_ANALYSIS_FLAG_CENTERED_BASELINE:
  *
@@ -39,6 +38,16 @@ typedef struct _PangoItem PangoItem;
  * Since: 1.16
  */
 #define PANGO_ANALYSIS_FLAG_CENTERED_BASELINE (1 << 0)
+
+/**
+ * PANGO_ANALYSIS_FLAG_IS_ELLIPSIS:
+ *
+ * This flag is used to mark runs that hold ellipsized text,
+ * in an ellipsized layout.
+ *
+ * Since: 1.36.7
+ */
+#define PANGO_ANALYSIS_FLAG_IS_ELLIPSIS (1 << 1)
 
 /**
  * PangoAnalysis:
@@ -74,7 +83,7 @@ struct _PangoAnalysis
 /**
  * PangoItem:
  *
- * The #PangoItem structure stores information abouta segment of text.
+ * The #PangoItem structure stores information about a segment of text.
  */
 struct _PangoItem
 {
