@@ -79,8 +79,7 @@ pango_color_free (PangoColor *color)
  * @color: a #PangoColor
  *
  * Returns a textual specification of @color in the hexadecimal form
- * <literal>&num;rrrrggggbbbb</literal>, where <literal>r</literal>,
- * <literal>g</literal> and <literal>b</literal> are hex digits representing
+ * “\#rrrrggggbbbb”, where “r”, “g” and “b” are hex digits representing
  * the red, green, and blue components respectively.
  *
  * Return value: a newly-allocated text string that must be freed with g_free().
