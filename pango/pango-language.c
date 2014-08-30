@@ -151,7 +151,7 @@ G_DEFINE_BOXED_TYPE (PangoLanguage, pango_language,
  *
  * Return the Unix-style locale string for the language currently in
  * effect. On Unix systems, this is the return value from
- * `setlocale(LC_CTYPE, NULL)`, and the user can
+ * <literal>setlocale(LC_CTYPE, NULL)</literal>, and the user can
  * affect this through the environment variables LC_ALL, LC_CTYPE or
  * LANG (checked in that order). The locale strings typically is in
  * the form lang_COUNTRY, where lang is an ISO-639 language code, and
@@ -237,7 +237,7 @@ _pango_get_lc_ctype (void)
  * Note that this can change over the life of an application.
  *
  * On Unix systems, this is the return value is derived from
- * `setlocale(LC_CTYPE, NULL)`, and the user can
+ * <literal>setlocale(LC_CTYPE, NULL)</literal>, and the user can
  * affect this through the environment variables LC_ALL, LC_CTYPE or
  * LANG (checked in that order). The locale string typically is in
  * the form lang_COUNTRY, where lang is an ISO-639 language code, and
@@ -255,10 +255,10 @@ _pango_get_lc_ctype (void)
  * variables, and does return a Unix-style locale string based on
  * either said environment variables or the thread's current locale.
  *
- * Your application should call `setlocale(LC_ALL, "")` for the user
- * settings to take effect.  GTK+ does this in its initialization
+ * Your application should call <literal>setlocale(LC_ALL, "");</literal>
+ * for the user settings to take effect.  Gtk+ does this in its initialization
  * functions automatically (by calling gtk_set_locale()).
- * See `man setlocale` for more details.
+ * See <literal>man setlocale</literal> for more details.
  *
  * Return value: (transfer none): the default language as a
  *               #PangoLanguage, must not be freed.
@@ -819,24 +819,25 @@ out:
  * representative of that script. This will usually be the
  * most widely spoken or used language written in that script:
  * for instance, the sample language for %PANGO_SCRIPT_CYRILLIC
- * is `ru` (Russian), the sample language for %PANGO_SCRIPT_ARABIC
- * is `ar`.
+ * is <literal>ru</literal> (Russian), the sample language
+ * for %PANGO_SCRIPT_ARABIC is <literal>ar</literal>.
  *
- * For some scripts, no sample language will be returned because
- * there is no language that is sufficiently representative. The
- * best example of this is %PANGO_SCRIPT_HAN, where various
- * different variants of written Chinese, Japanese, and Korean
- * all use significantly different sets of Han characters and
- * forms of shared characters. No sample language can be provided
+ * For some
+ * scripts, no sample language will be returned because there
+ * is no language that is sufficiently representative. The best
+ * example of this is %PANGO_SCRIPT_HAN, where various different
+ * variants of written Chinese, Japanese, and Korean all use
+ * significantly different sets of Han characters and forms
+ * of shared characters. No sample language can be provided
  * for many historical scripts as well.
  *
  * As of 1.18, this function checks the environment variables
  * PANGO_LANGUAGE and LANGUAGE (checked in that order) first.
  * If one of them is set, it is parsed as a list of language tags
- * separated by colons or other separators. This function
+ * separated by colons or other separators.  This function
  * will return the first language in the parsed list that Pango
- * believes may use @script for writing. This last predicate
- * is tested using pango_language_includes_script(). This can
+ * believes may use @script for writing.  This last predicate
+ * is tested using pango_language_includes_script().  This can
  * be used to control Pango's font selection for non-primary
  * languages.  For example, a PANGO_LANGUAGE enviroment variable
  * set to "en:fa" makes Pango choose fonts suitable for Persian (fa) 

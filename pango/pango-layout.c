@@ -1525,7 +1525,7 @@ pango_layout_get_lines_readonly (PangoLayout *layout)
  * pango_layout_get_line:
  * @layout: a #PangoLayout
  * @line: the index of a line, which must be between 0 and
- *        `pango_layout_get_line_count(layout) - 1`, inclusive.
+ *        <literal>pango_layout_get_line_count(layout) - 1</literal>, inclusive.
  *
  * Retrieves a particular line from a #PangoLayout.
  *
@@ -1566,7 +1566,7 @@ pango_layout_get_line (PangoLayout *layout,
  * pango_layout_get_line_readonly:
  * @layout: a #PangoLayout
  * @line: the index of a line, which must be between 0 and
- *        `pango_layout_get_line_count(layout) - 1`, inclusive.
+ *        <literal>pango_layout_get_line_count(layout) - 1</literal>, inclusive.
  *
  * Retrieves a particular line from a #PangoLayout.
  *
@@ -2110,10 +2110,10 @@ pango_layout_xy_to_index (PangoLayout *layout,
  *
  * Converts from an index within a #PangoLayout to the onscreen position
  * corresponding to the grapheme at that index, which is represented
- * as rectangle.  Note that `@pos->x` is always the leading edge of the
- * grapheme and `@pos->x + @pos->width` the trailing edge of the grapheme.
- * If the directionality of the grapheme is right-to-left, then `@pos->width`
- * will be negative.
+ * as rectangle.  Note that <literal>pos->x</literal> is always the leading
+ * edge of the grapheme and <literal>pos->x + pos->width</literal> the trailing
+ * edge of the grapheme. If the directionality of the grapheme is right-to-left,
+ * then <literal>pos->width</literal> will be negative.
  **/
 void
 pango_layout_index_to_pos (PangoLayout    *layout,
@@ -4348,8 +4348,9 @@ pango_layout_line_get_width (PangoLayoutLine *line)
  *               trailing edge of the last character.
  * @ranges: (out) (array length=n_ranges) (transfer full):
  *               location to store a pointer to an array of ranges.
- *               The array will be of length `2*n_ranges`, with each range
- *               starting at `(*ranges)[2*n]` and of width `(*ranges)[2*n + 1] - (*ranges)[2*n]`.
+ *               The array will be of length <literal>2*n_ranges</literal>,
+ *               with each range starting at <literal>(*ranges)[2*n]</literal>
+ *               and of width <literal>(*ranges)[2*n + 1] - (*ranges)[2*n]</literal>.
  *               This array must be freed with g_free(). The coordinates are relative
  *               to the layout and are in Pango units.
  * @n_ranges: The number of ranges stored in @ranges.

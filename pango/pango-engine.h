@@ -182,9 +182,10 @@ struct _PangoEngineShape
  *   appropriately using pango_glyph_string_set_size()). All fields
  *   of the @log_clusters and @glyphs array must be filled in, with
  *   the exception that Pango will automatically generate
- *   `glyphs->glyphs[i].attr.is_cluster_start` using the @log_clusters
- *   array. Each input character must occur in one of the output logical
- *   clusters; if no rendering is desired for a character, this may involve
+ *   <literal>glyphs->glyphs[i].attr.is_cluster_start</literal>
+ *   using the @log_clusters array. Each input character must occur in one
+ *   of the output logical clusters;
+ *   if no rendering is desired for a character, this may involve
  *   inserting glyphs with the #PangoGlyph ID #PANGO_GLYPH_EMPTY, which
  *   is guaranteed never to render. If the shaping fails for any reason,
  *   the shaper should return with an empty (zero-size) glyph string.
@@ -344,8 +345,8 @@ prefix ## _register_type (GTypeModule *module)				  \
 
 /**
  * PANGO_ENGINE_LANG_DEFINE_TYPE:
- * @name: Name of the the type to register (for example:, `ArabicEngineFc`)
- * @prefix: Prefix for symbols that will be defined (for example:, `arabic_engine_fc`)
+ * @name: Name of the the type to register (for example:, <literal>ArabicEngineFc</literal>
+ * @prefix: Prefix for symbols that will be defined (for example:, <literal>arabic_engine_fc</literal>
  * @class_init: Class initialization function for the new type, or %NULL
  * @instance_init: Instance initialization function for the new type, or %NULL
  *
@@ -353,19 +354,19 @@ prefix ## _register_type (GTypeModule *module)				  \
  * #PangoEngineLang class defined in a module. Two static symbols
  * are defined.
  *
- * |[<!-- language="C" -->
- *  static GType `prefix`_type;
- *  static void `prefix`_register_type (GTypeModule module);
- * ]|
+ * <programlisting>
+ *  static GType <replaceable>prefix</replaceable>_type;
+ *  static void <replaceable>prefix</replaceable>_register_type (GTypeModule module);
+ * </programlisting>
  *
- * The `prefix`_register_type() function should be called in your
- * script_engine_init() function for each type that your module implements,
- * and then your script_engine_create() function can create instances of the
- * object as follows:
+ * The <function><replaceable>prefix</replaceable>_register_type()</function>
+ * function should be called in your script_engine_init() function for
+ * each type that your module implements, and then your script_engine_create()
+ * function can create instances of the object as follows:
  *
- * |[<!-- language="C" -->
- *  PangoEngine *engine = g_object_new (`prefix`_type, NULL);
- * ]|
+ * <informalexample><programlisting>
+ *  PangoEngine *engine = g_object_new (<replaceable>prefix</replaceable>_type, NULL);
+ * </programlisting></informalexample>
  **/
 #define PANGO_ENGINE_LANG_DEFINE_TYPE(name, prefix, class_init, instance_init)	\
   PANGO_ENGINE_DEFINE_TYPE (name, prefix,				\
@@ -374,8 +375,8 @@ prefix ## _register_type (GTypeModule *module)				  \
 
 /**
  * PANGO_ENGINE_SHAPE_DEFINE_TYPE:
- * @name: Name of the the type to register (for example:, `ArabicEngineFc`)
- * @prefix: Prefix for symbols that will be defined (for example:, `arabic_engine_fc`)
+ * @name: Name of the the type to register (for example:, <literal>ArabicEngineFc</literal>
+ * @prefix: Prefix for symbols that will be defined (for example:, <literal>arabic_engine_fc</literal>
  * @class_init: Class initialization function for the new type, or %NULL
  * @instance_init: Instance initialization function for the new type, or %NULL
  *
@@ -383,19 +384,19 @@ prefix ## _register_type (GTypeModule *module)				  \
  * #PangoEngineShape class defined in a module. Two static symbols
  * are defined.
  *
- * |[<!-- language="C" -->
- *  static GType `prefix`_type;
- *  static void `prefix`_register_type (GTypeModule module);
- * ]|
+ * <programlisting>
+ *  static GType <replaceable>prefix</replaceable>_type;
+ *  static void <replaceable>prefix</replaceable>_register_type (GTypeModule module);
+ * </programlisting>
  *
- * The `prefix`_register_type() function should be called in your
- * script_engine_init() function for each type that your module implements,
- * and then your script_engine_create() function can create instances of the
- * object as follows:
+ * The <function><replaceable>prefix</replaceable>_register_type()</function>
+ * function should be called in your script_engine_init() function for
+ * each type that your module implements, and then your script_engine_create()
+ * function can create instances of the object as follows:
  *
- * |[<!-- language="C" -->
- *  PangoEngine *engine = g_object_new (`prefix`_type, NULL);
- * ]|
+ * <informalexample><programlisting>
+ *  PangoEngine *engine = g_object_new (<replaceable>prefix</replaceable>_type, NULL);
+ * </programlisting></informalexample>
  **/
 #define PANGO_ENGINE_SHAPE_DEFINE_TYPE(name, prefix, class_init, instance_init)	\
   PANGO_ENGINE_DEFINE_TYPE (name, prefix,				\

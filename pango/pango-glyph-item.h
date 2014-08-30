@@ -79,7 +79,7 @@ void 	  pango_glyph_item_get_logical_widths (PangoGlyphItem *glyph_item,
  * #PangoGlyphItem.  The <firstterm>forward direction</firstterm> of the
  * iterator is the logical direction of text.  That is, with increasing
  * @start_index and @start_char values.  If @glyph_item is right-to-left
- * (that is, if `@glyph_item->item->analysis.level` is odd),
+ * (that is, if <literal>@glyph_item->item->analysis.level</literal> is odd),
  * then @start_glyph decreases as the iterator moves forward.  Moreover,
  * in right-to-left cases, @start_glyph is greater than @end_glyph.
  *
@@ -90,26 +90,26 @@ void 	  pango_glyph_item_get_logical_widths (PangoGlyphItem *glyph_item,
  * pango_glyph_item_iter_next_cluster() and
  * pango_glyph_item_iter_prev_cluster().  A common idiom for doing a
  * forward iteration over the clusters is:
- * |[<!-- language="C" -->
+ * <programlisting>
  * PangoGlyphItemIter cluster_iter;
  * gboolean have_cluster;
  *
- * for (have_cluster = pango_glyph_item_iter_init_start (&cluster_iter,
+ * for (have_cluster = pango_glyph_item_iter_init_start (&amp;cluster_iter,
  *                                                       glyph_item, text);
  *      have_cluster;
- *      have_cluster = pango_glyph_item_iter_next_cluster (&cluster_iter))
+ *      have_cluster = pango_glyph_item_iter_next_cluster (&amp;cluster_iter))
  * {
  *   ...
  * }
- * ]|
+ * </programlisting>
  *
  * Note that @text is the start of the text for layout, which is then
- * indexed by `@glyph_item->item->offset` to get to the text of @glyph_item.
- * The @start_index and @end_index values can directly index into @text. The
- * @start_glyph, @end_glyph, @start_char, and @end_char values however are
- * zero-based for the @glyph_item. For each cluster, the item pointed at by
- * the start variables is included in the cluster while the one pointed at
- * by end variables is not.
+ * indexed by <literal>@glyph_item->item->offset</literal> to get to the
+ * text of @glyph_item.  The @start_index and @end_index values can directly
+ * index into @text.  The @start_glyph, @end_glyph, @start_char, and @end_char
+ * values however are zero-based for the @glyph_item.  For each cluster, the
+ * item pointed at by the start variables is included in the cluster while
+ * the one pointed at by end variables is not.
  *
  * None of the members of a #PangoGlyphItemIter should be modified manually.
  *

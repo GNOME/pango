@@ -1080,7 +1080,7 @@ pango_cairo_show_glyph_string (cairo_t          *cr,
  * be drawn at the current point of the cairo context.
  *
  * Note that @text is the start of the text for layout, which is then
- * indexed by `@glyph_item->item->offset`.
+ * indexed by <literal>@glyph_item->item->offset</literal>.
  *
  * Since: 1.22
  **/

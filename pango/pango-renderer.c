@@ -684,7 +684,7 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
  * output format supports it (PDF for example).
  *
  * Note that @text is the start of the text for layout, which is then
- * indexed by `@glyph_item->item->offset`.
+ * indexed by <literal>@glyph_item->item->offset</literal>.
  *
  * If @text is %NULL, this simply calls pango_renderer_draw_glyphs().
  *
