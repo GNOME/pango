@@ -582,6 +582,7 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
   gboolean start_new_segment = FALSE;
   gboolean have_cluster;
   int range_start, range_end;
+  gboolean is_ellipsis;
 
   /* This routine works by iterating through the item cluster by
    * cluster; we accumulate the attributes that we need to
@@ -608,11 +609,14 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
 
   state.segment_attrs = pango_attr_iterator_get_attrs (iter);
 
+  is_ellipsis = (glyph_item->item->analysis.flags & PANGO_ANALYSIS_FLAG_IS_ELLIPSIS) != 0;
+
   /* Short circuit the case when we don't actually need to
    * split the item
    */
-  if (range_start <= glyph_item->item->offset &&
-      range_end >= glyph_item->item->offset + glyph_item->item->length)
+  if (is_ellipsis ||
+      (range_start <= glyph_item->item->offset &&
+       range_end >= glyph_item->item->offset + glyph_item->item->length))
     goto out;
 
   for (have_cluster = pango_glyph_item_iter_init_start (&state.iter, glyph_item, text);
