@@ -21,9 +21,59 @@
 
 #include <glib.h>
 #include <string.h>
+#include <unistd.h>
 #include <locale.h>
 
 #include <pango/pangocairo.h>
+
+static char *
+diff_with_file (const char  *file1,
+                char        *text,
+                gssize       len,
+                GError     **error)
+{
+  const char *command[] = { "diff", "-u", file1, NULL, NULL };
+  char *diff, *tmpfile;
+  int fd;
+
+  diff = NULL;
+
+  if (len < 0)
+    len = strlen (text);
+
+  /* write the text buffer to a temporary file */
+  fd = g_file_open_tmp (NULL, &tmpfile, error);
+  if (fd < 0)
+    return NULL;
+
+  if (write (fd, text, len) != (int) len)
+    {
+      close (fd);
+      g_set_error (error,
+                   G_FILE_ERROR, G_FILE_ERROR_FAILED,
+                   "Could not write data to temporary file '%s'", tmpfile);
+      goto done;
+    }
+  close (fd);
+  command[3] = tmpfile;
+
+  /* run diff command */
+  g_spawn_sync (NULL,
+                (char **) command,
+                NULL,
+                G_SPAWN_SEARCH_PATH,
+                NULL, NULL,
+                &diff,
+                NULL, NULL,
+                error);
+
+done:
+  unlink (tmpfile);
+  g_free (tmpfile);
+
+  return diff;
+}
+
 
 static PangoContext *context;
 
@@ -416,23 +466,27 @@ test_layout (gconstpointer d)
 {
   const gchar *filename = d;
   gchar *expected_file;
-  gchar *expected;
   GError *error = NULL;
-  GString *string;
+  GString *dump;
+  gchar *diff;
 
   expected_file = get_expected_filename (filename);
 
-  string = g_string_sized_new (0);
+  dump = g_string_sized_new (0);
 
-  test_file (filename, string);
+  test_file (filename, dump);
 
-  g_file_get_contents (expected_file, &expected, NULL, &error);
+  diff = diff_with_file (expected_file, dump->str, dump->len, &error);
   g_assert_no_error (error);
-  g_assert_cmpstr (string->str, ==, expected);
-  g_free (expected);
 
-  g_string_free (string, TRUE);
+  if (diff && diff[0])
+    {
+      g_printerr ("Contents don't match expected contents:\n%s", diff);
+      g_test_fail ();
+      g_free (diff);
+    }
 
+  g_string_free (dump, TRUE);
   g_free (expected_file);
 }
 
