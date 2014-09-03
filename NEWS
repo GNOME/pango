@@ -1,3 +1,10 @@
+Overview of changes between 1.36.6 and 1.36.7
+=============================================
+- Add tests for pango markup
+- Add tests for PangoLayout
+- Add an analysis flag for ellipsis (#735719)
+- Treat attributes in ellipsis better (#735732)
+
 Overview of changes between 1.36.5 and 1.36.6
 =============================================
 - Cope with lack of LC_CTYPE (#732276)
