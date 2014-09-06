@@ -404,6 +404,7 @@ test_file (const gchar *filename, GString *string)
   gint ellipsize_at = 0;
   PangoEllipsizeMode ellipsize = PANGO_ELLIPSIZE_NONE;
   PangoWrapMode wrap = PANGO_WRAP_WORD;
+  PangoFontDescription *desc;
 
   if (!g_file_get_contents (filename, &contents, &length, &error))
     {
@@ -420,6 +421,11 @@ test_file (const gchar *filename, GString *string)
   parse_params (contents, &width, &ellipsize_at, &ellipsize, &wrap);
 
   layout = pango_layout_new (context);
+
+  desc = pango_font_description_from_string ("Cantarell 11");
+  pango_layout_set_font_description (layout, desc);
+  pango_font_description_free (desc); 
+
   pango_layout_set_markup (layout, markup, length);
   g_free (contents);
 
@@ -497,7 +503,6 @@ main (int argc, char *argv[])
   GError *error = NULL;
   const gchar *name;
   gchar *path;
-  PangoFontDescription *desc;
 
   g_setenv ("LC_ALL", "C", TRUE);
   setlocale (LC_ALL, "");
@@ -505,9 +510,6 @@ main (int argc, char *argv[])
   g_test_init (&argc, &argv, NULL);
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-  desc = pango_font_description_from_string ("Cantarell 11");
-  pango_context_set_font_description (context, desc);
-  pango_font_description_free (desc); 
 
   /* allow to easily generate expected output for new test cases */
   if (argc > 1)
