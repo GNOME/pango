@@ -50,6 +50,7 @@ check_PROGRAMS = 			\
 	testscript 			\
 	markup-parse 			\
 	test-layout			\
+	test-font			\
 	$(NULL)
 
 if HAVE_CAIRO
@@ -74,6 +75,7 @@ test_pangocairo_threads_LDADD = $(TEST_PANGOCAIRO_LIBS) $(CAIRO_LIBS) $(GLIB_LIB
 dump_boundaries_LDADD = $(TEST_PANGO_LIBS) $(GLIB_LIBS)
 markup_parse_LDADD = $(TEST_PANGOCAIRO_LIBS) $(GLIB_LIBS)
 test_layout_LDADD = $(TEST_PANGOCAIRO_LIBS) $(GLIB_LIBS)
+test_font_LDADD = $(TEST_PANGOCAIRO_LIBS) $(GLIB_LIBS)
 
 if HAVE_CXX
 check_PROGRAMS += cxx-test
