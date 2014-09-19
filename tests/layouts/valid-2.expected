@@ -24,11 +24,11 @@ i=2, index=33, paragraph-start=1, dir=ltr ''
 
 ---
 
-i=1, index=0, chars=9, level=0, gravity=south, flags=0, font=Cantarell 11, script=latin, language=c, 'test the '
-i=2, index=9, chars=4, level=0, gravity=south, flags=0, font=Cantarell Oblique 11, script=latin, language=c, 'blue'
-i=3, index=13, chars=7, level=0, gravity=south, flags=0, font=Cantarell 11, script=latin, language=c, ' drink '
-i=4, index=20, chars=5, level=0, gravity=south, flags=0, font=Cantarell 11, script=latin, language=c, 'after'
+i=1, index=0, chars=9, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=c, 'test the '
+i=2, index=9, chars=4, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=c, 'blue'
+i=3, index=13, chars=7, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=c, ' drink '
+i=4, index=20, chars=5, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=c, 'after'
   [20 25] underline 1
-i=5, index=25, chars=7, level=0, gravity=south, flags=0, font=Cantarell 11, script=latin, language=c, ' dinner'
+i=5, index=25, chars=7, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=c, ' dinner'
 i=6, index=32, no run, line end
 i=7, index=33, no run, line end
