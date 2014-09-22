@@ -1,3 +1,7 @@
+Overview of changes between 1.36.7 and 1.36.8
+=============================================
+- Make tests not fail on build.gnome.org
+
 Overview of changes between 1.36.6 and 1.36.7
 =============================================
 - Add tests for pango markup
