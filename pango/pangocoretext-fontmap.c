@@ -298,7 +298,7 @@ ct_font_descriptor_get_weight (CTFontDescriptorRef desc)
   cf_number = (CFNumberRef)CFDictionaryGetValue (dict,
                                                  kCTFontWeightTrait);
 
-  if (CFNumberGetValue (cf_number, kCFNumberCGFloatType, &value))
+  if (cf_number != NULL && CFNumberGetValue (cf_number, kCFNumberCGFloatType, &value))
     {
       if (value < ct_weight_min || value > ct_weight_max)
 	{
