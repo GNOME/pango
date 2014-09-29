@@ -853,7 +853,7 @@ update_end (ItemizeState *state)
  *
  * https://bugzilla.gnome.org/show_bug.cgi?id=705727
  */
-gboolean
+static gboolean
 width_iter_iswide (gunichar ch)
 {
   if ((0x1100u <= ch && ch <= 0x11FFu) ||
