@@ -40,7 +40,7 @@
 #include "pangowin32.h"
 #include "pangowin32-private.h"
 
-#define MAX_FREED_FONTS 16
+#define MAX_FREED_FONTS 256
 
 #define CH_IS_UNIHAN_BMP(ch) ((ch) >= 0x3400 && (ch) <= 0x9FFF)
 #define CH_IS_UNIHAN(ch) (CH_IS_UNIHAN_BMP (ch) || \
