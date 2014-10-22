@@ -845,7 +845,10 @@ pango_win32_font_finalize (GObject *object)
 
   fontmap = g_weak_ref_get ((GWeakRef *) &win32font->fontmap);
   if (fontmap)
+  {
+    g_object_remove_weak_pointer (G_OBJECT (win32font->fontmap), (gpointer *) (gpointer) &win32font->fontmap);
     g_object_unref (fontmap);
+  }
 
   G_OBJECT_CLASS (_pango_win32_font_parent_class)->finalize (object);
 }
