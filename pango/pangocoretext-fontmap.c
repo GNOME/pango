@@ -413,6 +413,9 @@ _pango_core_text_font_description_from_ct_font_descriptor (CTFontDescriptorRef d
   else
     pango_font_description_set_style (font_desc, PANGO_STYLE_NORMAL);
 
+  if ((font_traits & kCTFontCondensedTrait) == kCTFontCondensedTrait)
+    pango_font_description_set_stretch (font_desc, PANGO_STRETCH_CONDENSED);
+
   if (ct_font_descriptor_is_small_caps (desc))
     pango_font_description_set_variant (font_desc, PANGO_VARIANT_SMALL_CAPS);
   else
