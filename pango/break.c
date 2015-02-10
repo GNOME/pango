@@ -917,6 +917,7 @@ pango_default_break (const gchar   *text,
 
       g_assert (prev_break_type != G_UNICODE_BREAK_SPACE);
 
+      attrs[i].is_char_break = FALSE;
       attrs[i].is_line_break = FALSE;
       attrs[i].is_mandatory_break = FALSE;
 
