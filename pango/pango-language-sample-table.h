@@ -210,8 +210,8 @@ LANGUAGE(
 LANGUAGE(
 	 ga	/* Irish */,
 	 WP-PANG,
-	 "D'ḟuascail Íosa Úrṁac na hÓiġe Beannaiṫe pór Éaḃa agus Áḋaiṁ."
-	 /* Jesus, Son of the blessed Virgin, redeemed the seed of Eve and Adam. */
+	 "Chuaigh bé mhórshách le dlúthspád fíorfhinn trí hata mo dhea-phorcáin bhig."
+	 /* A maiden of large appetite with an intensely white, dense spade went through the hat of my good little porker. */
 	)
 LANGUAGE(
 	 gd	/* Scottish Gaelic */,
