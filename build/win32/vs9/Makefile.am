@@ -14,7 +14,7 @@ EXTRA_DIST =	\
 	pangocairo.vcprojin	\
 	pangocairo.vcproj	\
 	pangowin32.vcproj	\
-	install.vcproj	\
+	pango-install.vcproj	\
 	stdint.h	\
 	README.txt
 

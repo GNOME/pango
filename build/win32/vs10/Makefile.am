@@ -21,7 +21,7 @@ EXTRA_DIST =	\
 	pangocairo.vcxproj.filters	\
 	pangocairo.vcxprojin	\
 	pangocairo.vcxproj.filtersin	\
-	install.vcxproj	\
+	pango-install.vcxproj	\
 	README.txt
 
 pango-install.props: $(top_srcdir)/build/win32/vs10/pango-install.propsin pango.vs10.headers
