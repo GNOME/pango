@@ -25,173 +25,11 @@
 #include <locale.h>
 
 #include <pango/pangocairo.h>
-
-static char *
-diff_with_file (const char  *file1,
-                char        *text,
-                gssize       len,
-                GError     **error)
-{
-  const char *command[] = { "diff", "-u", file1, NULL, NULL };
-  char *diff, *tmpfile;
-  int fd;
-
-  diff = NULL;
-
-  if (len < 0)
-    len = strlen (text);
-
-  /* write the text buffer to a temporary file */
-  fd = g_file_open_tmp (NULL, &tmpfile, error);
-  if (fd < 0)
-    return NULL;
-
-  if (write (fd, text, len) != (int) len)
-    {
-      close (fd);
-      g_set_error (error,
-                   G_FILE_ERROR, G_FILE_ERROR_FAILED,
-                   "Could not write data to temporary file '%s'", tmpfile);
-      goto done;
-    }
-  close (fd);
-  command[3] = tmpfile;
-
-  /* run diff command */
-  g_spawn_sync (NULL,
-                (char **) command,
-                NULL,
-                G_SPAWN_SEARCH_PATH,
-                NULL, NULL,
-                &diff,
-                NULL, NULL,
-                error);
-
-done:
-  unlink (tmpfile);
-  g_free (tmpfile);
-
-  return diff;
-}
+#include "test-common.h"
 
 
 static PangoContext *context;
 
-static void
-print_attr (PangoAttribute *attr, GString *string)
-{
-  g_string_append_printf (string, "[%d %d] ", attr->start_index, attr->end_index);
-  switch (attr->klass->type)
-    {
-    case PANGO_ATTR_LANGUAGE:
-      g_string_append_printf (string,"language %s\n", pango_language_to_string (((PangoAttrLanguage *)attr)->value));
-      break;
-    case PANGO_ATTR_FAMILY:
-      g_string_append_printf (string,"family %s\n", ((PangoAttrString *)attr)->value);
-      break;
-    case PANGO_ATTR_STYLE:
-      g_string_append_printf (string,"style %d\n", ((PangoAttrInt *)attr)->value);
-      break;
-    case PANGO_ATTR_WEIGHT:
-      g_string_append_printf (string,"weight %d\n", ((PangoAttrInt *)attr)->value);
-      break;
-    case PANGO_ATTR_VARIANT:
-      g_string_append_printf (string,"variant %d\n", ((PangoAttrInt *)attr)->value);
-      break;
-    case PANGO_ATTR_STRETCH:
-      g_string_append_printf (string,"stretch %d\n", ((PangoAttrInt *)attr)->value);
-      break;
-    case PANGO_ATTR_SIZE:
-      g_string_append_printf (string,"size %d\n", ((PangoAttrSize *)attr)->size);
-      break;
-    case PANGO_ATTR_FONT_DESC:
-      g_string_append_printf (string,"font %s\n", pango_font_description_to_string (((PangoAttrFontDesc *)attr)->desc));
-      break;
-    case PANGO_ATTR_FOREGROUND:
-      g_string_append_printf (string,"foreground %s\n", pango_color_to_string (&((PangoAttrColor *)attr)->color));
-      break;
-    case PANGO_ATTR_BACKGROUND:
-      g_string_append_printf (string,"background %s\n", pango_color_to_string (&((PangoAttrColor *)attr)->color));
-      break;
-    case PANGO_ATTR_UNDERLINE:
-      g_string_append_printf (string,"underline %d\n", ((PangoAttrInt *)attr)->value);
-      break;
-    case PANGO_ATTR_STRIKETHROUGH:
-      g_string_append_printf (string,"strikethrough %d\n", ((PangoAttrInt *)attr)->value);
-      break;
-    case PANGO_ATTR_RISE:
-      g_string_append_printf (string,"rise %d\n", ((PangoAttrInt *)attr)->value);
-      break;
-    case PANGO_ATTR_SHAPE:
-      g_string_append_printf (string,"shape\n");
-      break;
-    case PANGO_ATTR_SCALE:
-      g_string_append_printf (string,"scale %f\n", ((PangoAttrFloat *)attr)->value);
-      break;
-    case PANGO_ATTR_FALLBACK:
-      g_string_append_printf (string,"fallback %d\n", ((PangoAttrInt *)attr)->value);
-      break;
-    case PANGO_ATTR_LETTER_SPACING:
-      g_string_append_printf (string,"letter-spacing %d\n", ((PangoAttrInt *)attr)->value);
-      break;
-    case PANGO_ATTR_UNDERLINE_COLOR:
-      g_string_append_printf (string,"underline-color %s\n", pango_color_to_string (&((PangoAttrColor *)attr)->color));
-      break;
-    case PANGO_ATTR_STRIKETHROUGH_COLOR:
-      g_string_append_printf (string,"strikethrough-color %s\n", pango_color_to_string (&((PangoAttrColor *)attr)->color));
-      break;
-    case PANGO_ATTR_ABSOLUTE_SIZE:
-      g_string_append_printf (string,"absolute-size %d\n", ((PangoAttrSize *)attr)->size);
-      break;
-    case PANGO_ATTR_GRAVITY:
-      g_string_append_printf (string,"gravity %d\n", ((PangoAttrInt *)attr)->value);
-      break;
-    case PANGO_ATTR_GRAVITY_HINT:
-      g_string_append_printf (string,"gravity-hint %d\n", ((PangoAttrInt *)attr)->value);
-      break;
-    default:
-      g_assert_not_reached ();
-      break;
-    }
-}
-
-static void
-dump_attrs (PangoAttrList *attrs, GString *string)
-{
-  PangoAttrIterator *iter;
-
-  iter = pango_attr_list_get_iterator (attrs);
-  do {
-    gint start, end;
-    GSList *list, *l;
-
-    pango_attr_iterator_range (iter, &start, &end);
-    g_string_append_printf (string, "range %d %d\n", start, end);
-    list = pango_attr_iterator_get_attrs (iter);
-    for (l = list; l; l = l->next)
-      {
-        PangoAttribute *attr = l->data;
-        print_attr (attr, string);
-      }
-    g_slist_free_full (list, (GDestroyNotify)pango_attribute_destroy);
-  } while (pango_attr_iterator_next (iter));
-
-  pango_attr_iterator_destroy (iter);
-}
-
-static void
-dump_extra_attrs (GSList *attrs, GString *string)
-{
-  GSList *l;
-
-  for (l = attrs; l; l = l->next)
-    {
-      PangoAttribute *attr = l->data;
-
-      g_string_append (string, "  ");
-      print_attr (attr, string);
-    }
-}
 
 static const gchar *
 enum_value_nick (GType type, gint value)
@@ -218,7 +56,7 @@ direction_name (PangoDirection dir)
 static const gchar *
 gravity_name (PangoGravity gravity)
 {
-  return enum_value_nick (PANGO_TYPE_GRAVITY, gravity);  
+  return enum_value_nick (PANGO_TYPE_GRAVITY, gravity);
 }
 
 static const gchar *
@@ -266,7 +104,7 @@ dump_lines (PangoLayout *layout, GString *string)
       if (has_more)
         {
           index2 = pango_layout_iter_get_index (iter);
-          char_str = g_strndup (text + index, index2 - index);          
+          char_str = g_strndup (text + index, index2 - index);
         }
       else
         {
@@ -274,7 +112,7 @@ dump_lines (PangoLayout *layout, GString *string)
         }
 
       g_string_append_printf (string, "i=%d, index=%d, paragraph-start=%d, dir=%s '%s'\n",
-                              i, index, line->is_paragraph_start, direction_name (line->resolved_dir), 
+                              i, index, line->is_paragraph_start, direction_name (line->resolved_dir),
                               char_str);
       g_free (char_str);
 
@@ -311,7 +149,7 @@ dump_runs (PangoLayout *layout, GString *string)
       if (has_more)
         {
           index2 = pango_layout_iter_get_index (iter);
-          char_str = g_strndup (text + index, index2 - index);          
+          char_str = g_strndup (text + index, index2 - index);
         }
       else
         {
@@ -330,7 +168,7 @@ dump_runs (PangoLayout *layout, GString *string)
                                   script_name (item->analysis.script),
                                   pango_language_to_string (item->analysis.language),
                                   char_str);
-          dump_extra_attrs (item->analysis.extra_attrs, string);
+          print_attributes (item->analysis.extra_attrs, string);
           g_free (font);
         }
       else
@@ -442,7 +280,7 @@ test_file (const gchar *filename, GString *string)
   if (width != 0)
     g_string_append_printf (string, "width: %d\n", pango_layout_get_width (layout));
   g_string_append (string, "\n---\n\n");
-   dump_attrs (pango_layout_get_attributes (layout), string);
+  print_attr_list (pango_layout_get_attributes (layout), string);
   g_string_append (string, "\n---\n\n");
   dump_lines (layout, string);
   g_string_append (string, "\n---\n\n");

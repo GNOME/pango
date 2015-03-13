@@ -64,6 +64,12 @@ TEST_PANGO_LIBS = ../pango/libpango-$(PANGO_API_VERSION).la
 TEST_PANGOFT2_LIBS = $(TEST_PANGO_LIBS) ../pango/libpangoft2-$(PANGO_API_VERSION).la
 TEST_PANGOCAIRO_LIBS = $(TEST_PANGO_LIBS) ../pango/libpangocairo-$(PANGO_API_VERSION).la
 
+test_layout_SOURCES = \
+	test-layout.c \
+	test-common.c \
+	test-common.h \
+	$(NULL)
+
 gen_all_unicode_LDADD = $(GLIB_LIBS)
 testboundaries_LDADD = $(TEST_PANGO_LIBS) $(GLIB_LIBS)
 testboundaries_ucd_LDADD = $(TEST_PANGO_LIBS) $(GLIB_LIBS)
@@ -76,6 +82,7 @@ dump_boundaries_LDADD = $(TEST_PANGO_LIBS) $(GLIB_LIBS)
 markup_parse_LDADD = $(TEST_PANGOCAIRO_LIBS) $(GLIB_LIBS)
 test_layout_LDADD = $(TEST_PANGOCAIRO_LIBS) $(GLIB_LIBS)
 test_font_LDADD = $(TEST_PANGOCAIRO_LIBS) $(GLIB_LIBS)
+testattributes_LDADD = $(TEST_PANGOCAIRO_LIBS) $(GLIB_LIBS)
 
 if HAVE_CXX
 check_PROGRAMS += cxx-test
