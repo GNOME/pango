@@ -51,6 +51,7 @@ check_PROGRAMS = 			\
 	markup-parse 			\
 	test-layout			\
 	test-font			\
+	testattributes			\
 	$(NULL)
 
 if HAVE_CAIRO
@@ -66,6 +67,12 @@ TEST_PANGOCAIRO_LIBS = $(TEST_PANGO_LIBS) ../pango/libpangocairo-$(PANGO_API_VER
 
 test_layout_SOURCES = \
 	test-layout.c \
+	test-common.c \
+	test-common.h \
+	$(NULL)
+
+testattributes_SOURCES = \
+	testattributes.c \
 	test-common.c \
 	test-common.h \
 	$(NULL)
