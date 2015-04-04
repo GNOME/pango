@@ -387,11 +387,11 @@ basic_engine_shape (PangoEngineShape    *engine G_GNUC_UNUSED,
 						  num_features,
 						  (FcChar8 **) &s))
 	{
-	  features[num_features].tag   = hb_tag_from_string (s, -1);
-	  features[num_features].value = 1;
+	  gboolean ret = hb_feature_from_string (s, -1, &features[num_features]);
 	  features[num_features].start = 0;
 	  features[num_features].end   = (unsigned int) -1;
-	  num_features++;
+	  if (ret)
+	    num_features++;
 	}
     }
 
