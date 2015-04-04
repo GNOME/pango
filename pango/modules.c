@@ -96,9 +96,13 @@ pango_map_get_engine (PangoMap   *map G_GNUC_UNUSED,
 void
 pango_map_get_engines (PangoMap     *map G_GNUC_UNUSED,
 		       PangoScript   script G_GNUC_UNUSED,
-		       GSList      **exact_engines G_GNUC_UNUSED,
-		       GSList      **fallback_engines G_GNUC_UNUSED)
+		       GSList      **exact_engines,
+		       GSList      **fallback_engines)
 {
+  if (exact_engines)
+    *exact_engines = NULL;
+  if (fallback_engines)
+    *fallback_engines = NULL;
 }
 
 /**
