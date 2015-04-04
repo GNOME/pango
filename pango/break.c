@@ -1793,7 +1793,6 @@ pango_find_paragraph_boundary (const gchar *text,
 static int
 tailor_segment (const char      *range_start,
 		const char      *range_end,
-		PangoEngineLang *range_engine,
 		int              chars_broken,
 		PangoAnalysis   *analysis,
 		PangoLogAttr    *log_attrs)
@@ -1801,7 +1800,6 @@ tailor_segment (const char      *range_start,
   int chars_in_range;
   PangoLogAttr attr_before = log_attrs[0];
 
-  analysis->lang_engine = range_engine;
   chars_in_range = pango_utf8_strlen (range_start, range_end - range_start);
 
 
@@ -1853,9 +1851,6 @@ pango_get_log_attrs (const char    *text,
 {
   PangoMap *lang_map;
   int chars_broken;
-  const char *range_start, *range_end;
-  PangoScript script;
-  PangoEngineLang *range_engine;
   static guint engine_type_id = 0; /* MT-safe */
   static guint render_type_id = 0; /* MT-safe */
   PangoAnalysis analysis = { NULL };
@@ -1878,36 +1873,18 @@ pango_get_log_attrs (const char    *text,
   chars_broken = 0;
 
   _pango_script_iter_init (&iter, text, length);
-  pango_script_iter_get_range (&iter, &range_start, &range_end, &script);
-  range_engine = (PangoEngineLang*) pango_map_get_engine (lang_map, script);
-  g_assert (range_start == text);
-
   while (pango_script_iter_next (&iter))
     {
       const char *run_start, *run_end;
-      PangoEngineLang* run_engine;
+      PangoScript script;
 
       pango_script_iter_get_range (&iter, &run_start, &run_end, &script);
-      run_engine = (PangoEngineLang*) pango_map_get_engine (lang_map, script);
-      g_assert (range_end == run_start);
+      analysis.script = script;
+      analysis.lang_engine = (PangoEngineLang*) pango_map_get_engine (lang_map, analysis.script);
 
-      if (range_engine != run_engine)
-	{
-	  /* Engine has changed; do the tailoring for the current range,
-	   * then start a new range.
-	   */
-	  chars_broken += tailor_segment (range_start, range_end, range_engine, chars_broken, &analysis, log_attrs);
-
-	  range_start = run_start;
-	  range_engine = run_engine;
-	}
-      range_end = run_end;
+      chars_broken += tailor_segment (run_start, run_end, chars_broken, &analysis, log_attrs);
     }
   _pango_script_iter_fini (&iter);
-
-  g_assert (length < 0 || range_end == text + length);
-
-  chars_broken += tailor_segment (range_start, range_end, range_engine, chars_broken, &analysis, log_attrs);
 
   if (chars_broken + 1 > attrs_len)
     g_warning ("pango_get_log_attrs: attrs_len should have been at least %d, but was %d.  Expect corrupted memory.",
