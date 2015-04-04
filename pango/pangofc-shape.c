@@ -297,7 +297,7 @@ _pango_fc_shape (PangoFont           *font,
   int last_cluster;
   guint i, num_glyphs;
   unsigned int item_offset = item_text - paragraph_text;
-  hb_feature_t features[8];
+  hb_feature_t features[32];
   unsigned int num_features = 0;
 
   g_return_if_fail (font != NULL);
