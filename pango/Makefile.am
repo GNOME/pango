@@ -435,6 +435,9 @@ EXTRA_DIST =					\
 	pangocairo.rc.in			\
 	pangoxft.rc				\
 	pangoxft.rc.in				\
+	break-arabic.c				\
+	break-indic.c				\
+	break-thai.c				\
 	check.defs
 
 
