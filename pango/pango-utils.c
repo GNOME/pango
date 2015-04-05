@@ -544,11 +544,9 @@ pango_scan_int (const char **pos, int *out)
  * pango_config_key_get_system:
  * @key: Key to look up, in the form "SECTION/KEY".
  *
- * Looks up a key, consulting only the Pango system config database
- * in $sysconfdir/pango/pangorc.
+ * Do not use.  Does not do anything.
  *
- * Return value: (nullable): the value, if found, otherwise %NULL. The
- * value is a newly-allocated string and must be freed with g_free().
+ * Return value: %NULL
  *
  * Deprecated: 1.37:
  **/
@@ -562,12 +560,9 @@ pango_config_key_get_system (const char *key)
  * pango_config_key_get:
  * @key: Key to look up, in the form "SECTION/KEY".
  *
- * Looks up a key in the Pango config database
- * (pseudo-win.ini style, read from $sysconfdir/pango/pangorc,
- *  $XDG_CONFIG_HOME/pango/pangorc, and getenv (PANGO_RC_FILE).)
+ * Do not use.  Does not do anything.
  *
- * Return value: (nullable): the value, if found, otherwise %NULL. The
- * value is a newly-allocated string and must be freed with g_free().
+ * Return value: %NULL
  *
  * Deprecated: 1.37:
  **/
