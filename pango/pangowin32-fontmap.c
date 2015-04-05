@@ -493,48 +493,9 @@ read_builtin_aliases (GHashTable *ht_aliases)
 #endif
 
 
-static void
-read_alias_file (const char *filename, GHashTable *ht_aliases)
-{
-  FILE *file;
-
-  GString *line_buffer;
-  char *errstring = NULL;
-  int line = 0;
-
-  file = g_fopen (filename, "r");
-  if (!file)
-    return;
-
-  line_buffer = g_string_new (NULL);
-
-  while (pango_read_line (file, line_buffer) &&
-         errstring == NULL)
-    {
-      line++;
-      handle_alias_line (line_buffer, &errstring, ht_aliases);
-    }
-
-  if (errstring == NULL && ferror (file))
-    errstring = g_strdup (g_strerror(errno));
-
-  if (errstring)
-    {
-      g_warning ("error reading alias file: %s:%d: %s\n", filename, line, errstring);
-      g_free (errstring);
-    }
-
-  g_string_free (line_buffer, TRUE);
-
-  fclose (file);
-}
-
 static GHashTable *
 load_aliases (void)
 {
-  char *filename;
-  const char *home;
-
   GHashTable *ht_aliases = g_hash_table_new_full ((GHashFunc)alias_hash,
                                                   (GEqualFunc)alias_equal,
                                                   (GDestroyNotify)alias_free,
@@ -544,21 +505,6 @@ load_aliases (void)
   read_builtin_aliases (ht_aliases);
 #endif
 
-  filename = g_strconcat (pango_get_sysconf_subdirectory (),
-                          G_DIR_SEPARATOR_S "pango.aliases",
-                          NULL);
-  read_alias_file (filename, ht_aliases);
-  g_free (filename);
-
-  home = g_get_home_dir ();
-  if (home && *home)
-    {
-      filename = g_strconcat (home,
-                              G_DIR_SEPARATOR_S ".pango.aliases",
-                              NULL);
-      read_alias_file (filename, ht_aliases);
-      g_free (filename);
-    }
   return ht_aliases;
 }
 
