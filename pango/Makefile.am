@@ -27,6 +27,7 @@ INCLUDES =						\
 	$(CAIRO_CFLAGS)					\
 	$(HARFBUZZ_CFLAGS)				\
 	$(FREETYPE_CFLAGS)				\
+	$(LIBTHAI_CFLAGS)					\
 	$(X_CFLAGS)
 
 BUILT_SOURCES = pango-enum-types.h pango-enum-types.c pango-features.h
@@ -46,6 +47,7 @@ INTROSPECTION_GIRS += Pango-1.0.gir
 libpango_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
 libpango_1_0_la_LIBADD =		\
 	$(GLIB_LIBS)			\
+	$(LIBTHAI_LIBS)			\
 	$(libm)
 
 libpango_1_0_la_LIBADD += mini-fribidi/libmini-fribidi.la
