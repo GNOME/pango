@@ -34,7 +34,6 @@
 #include "pango-fontmap.h"
 #include "pango-impl-utils.h"
 #include "pangowin32-private.h"
-#include "modules.h"
 
 typedef struct _PangoWin32Family PangoWin32Family;
 typedef PangoFontFamilyClass PangoWin32FamilyClass;

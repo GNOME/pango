@@ -43,6 +43,8 @@ typedef struct _PangoIncludedModule PangoIncludedModule;
  * The #PangoIncludedModule structure for a statically linked module
  * contains the functions that would otherwise be loaded from a dynamically
  * loaded module.
+ *
+ * Deprecated: 1.37
  */
 struct _PangoIncludedModule
 {

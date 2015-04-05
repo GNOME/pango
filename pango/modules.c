@@ -29,17 +29,7 @@
  */
 #include "config.h"
 
-#include <string.h>
-#include <limits.h>
-#include <errno.h>
-
-#include <gmodule.h>
-#include <glib/gstdio.h>
-
-#include "pango-enum-types.h"
 #include "pango-modules.h"
-#include "pango-impl-utils.h"
-#include "modules.h"
 
 /**
  * pango_find_map:

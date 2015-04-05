@@ -32,15 +32,13 @@ G_BEGIN_DECLS
 
 #ifdef PANGO_ENABLE_ENGINE
 
-/* Module API */
-
-#include <gmodule.h>
-
 /**
  * PANGO_RENDER_TYPE_NONE:
  *
  * A string constant defining the render type
  * for engines that are not rendering-system specific.
+ *
+ * Deprecated: 1.37
  */
 #define PANGO_RENDER_TYPE_NONE "PangoRenderNone"
 
@@ -59,6 +57,8 @@ typedef struct _PangoEngineClass PangoEngineClass;
  *
  * #PangoEngine is the base class for all types of language and
  * script specific engines. It has no functionality by itself.
+ *
+ * Deprecated: 1.37
  **/
 struct _PangoEngine
 {
@@ -70,6 +70,8 @@ struct _PangoEngine
  * PangoEngineClass:
  *
  * Class structure for #PangoEngine
+ *
+ * Deprecated: 1.37
  **/
 struct _PangoEngineClass
 {
@@ -84,6 +86,8 @@ GType pango_engine_get_type (void) G_GNUC_CONST;
  *
  * A string constant defining the engine type for language engines.
  * These engines derive from #PangoEngineLang.
+ *
+ * Deprecated: 1.37
  */
 #define PANGO_ENGINE_TYPE_LANG "PangoEngineLang"
 
@@ -105,6 +109,8 @@ typedef struct _PangoEngineLangClass PangoEngineLangClass;
  * instance, a custom #PangoEngineLang could be provided for
  * Thai to implement the dictionary-based word boundary
  * lookups needed for that language.
+ *
+ * Deprecated: 1.37
  **/
 struct _PangoEngineLang
 {
@@ -122,6 +128,8 @@ struct _PangoEngineLang
  * this is called after that to allow tailoring the breaking results.
  *
  * Class structure for #PangoEngineLang
+ *
+ * Deprecated: 1.37
  **/
 struct _PangoEngineLangClass
 {
@@ -144,6 +152,8 @@ GType pango_engine_lang_get_type (void) G_GNUC_CONST;
  *
  * A string constant defining the engine type for shaping engines.
  * These engines derive from #PangoEngineShape.
+ *
+ * Deprecated: 1.37
  */
 #define PANGO_ENGINE_TYPE_SHAPE "PangoEngineShape"
 
@@ -167,6 +177,8 @@ typedef struct _PangoEngineShapeClass PangoEngineShapeClass;
  * and to a particular script. For instance, there is one
  * #PangoEngineShape implementation to handle shaping Arabic
  * for Fontconfig-based backends.
+ *
+ * Deprecated: 1.37
  **/
 struct _PangoEngineShape
 {
@@ -197,6 +209,8 @@ struct _PangoEngineShape
  *   font itself unmodified.
  *
  * Class structure for #PangoEngineShape
+ *
+ * Deprecated: 1.37
  **/
 struct _PangoEngineShapeClass
 {
@@ -240,6 +254,8 @@ typedef struct _PangoEngineScriptInfo PangoEngineScriptInfo;
  *
  * The #PangoEngineScriptInfo structure contains
  * information about how the shaper covers a particular script.
+ *
+ * Deprecated: 1.37
  */
 struct _PangoEngineScriptInfo
 {
@@ -257,6 +273,8 @@ struct _PangoEngineScriptInfo
  *
  * The #PangoEngineInfo structure contains information about a particular
  * engine. It contains the following fields:
+ *
+ * Deprecated: 1.37
  */
 struct _PangoEngineInfo
 {
@@ -365,6 +383,8 @@ prefix ## _register_type (GTypeModule *module)				  \
  * <informalexample><programlisting>
  *  PangoEngine *engine = g_object_new (<replaceable>prefix</replaceable>_type, NULL);
  * </programlisting></informalexample>
+ *
+ * Deprecated: 1.37
  **/
 #define PANGO_ENGINE_LANG_DEFINE_TYPE(name, prefix, class_init, instance_init)	\
   PANGO_ENGINE_DEFINE_TYPE (name, prefix,				\
@@ -395,6 +415,8 @@ prefix ## _register_type (GTypeModule *module)				  \
  * <informalexample><programlisting>
  *  PangoEngine *engine = g_object_new (<replaceable>prefix</replaceable>_type, NULL);
  * </programlisting></informalexample>
+ *
+ * Deprecated: 1.37
  **/
 #define PANGO_ENGINE_SHAPE_DEFINE_TYPE(name, prefix, class_init, instance_init)	\
   PANGO_ENGINE_DEFINE_TYPE (name, prefix,				\

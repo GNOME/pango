@@ -26,7 +26,6 @@
 #include "pango-fontmap.h"
 #include "pangocoretext-private.h"
 #include "pango-impl-utils.h"
-#include "modules.h"
 
 #include <Carbon/Carbon.h>
 

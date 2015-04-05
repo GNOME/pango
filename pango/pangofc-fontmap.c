@@ -49,7 +49,6 @@
 #include "pangofc-fontmap.h"
 #include "pangofc-private.h"
 #include "pango-impl-utils.h"
-#include "modules.h"
 #include "pango-enum-types.h"
 
 

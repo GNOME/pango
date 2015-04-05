@@ -193,7 +193,6 @@ libpangoft2_1_0_la_DEPENDENCIES =		\
 	libpango-$(PANGO_API_VERSION).la
 libpangoft2_1_0_la_SOURCES =   	\
 	$(pangoft2_public_sources) \
-	modules.h		\
 	pangofc-private.h	\
 	pangoft2.h		\
 	pangoft2-private.h	\
@@ -335,7 +334,6 @@ endif
 if HAVE_CAIRO_QUARTZ
 if HAVE_CORE_TEXT
 libpangocairo_1_0_la_SOURCES += \
-	modules.h		\
 	pangocoretext.h		\
 	pangocoretext.c		\
 	pangocoretext-private.h	\
@@ -387,7 +385,6 @@ libpangowin32_1_0_la_LIBADD =			\
 libpangowin32_1_0_la_DEPENDENCIES =		\
 	libpango-$(PANGO_API_VERSION).la
 libpangowin32_1_0_la_SOURCES =	\
-	modules.h		\
 	pangowin32.h		\
 	pangowin32.c		\
 	pangowin32-private.h	\
