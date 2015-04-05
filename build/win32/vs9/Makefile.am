@@ -18,9 +18,10 @@ EXTRA_DIST =	\
 	stdint.h	\
 	README.txt
 
-pango-install.vsprops: $(top_srcdir)/build/win32/vs9/pango-install.vspropsin pango.vs9.headers
-	$(CPP) -P - <$(top_srcdir)/build/win32/vs9/pango-install.vspropsin >$@
-	rm pango.vs9.headers
+# TODO rewrite in a way that doesn't break make distcheck
+#pango-install.vsprops: $(top_srcdir)/build/win32/vs9/pango-install.vspropsin pango.vs9.headers
+#	$(CPP) -P - <$(top_srcdir)/build/win32/vs9/pango-install.vspropsin >$@
+#	rm pango.vs9.headers
 
 DISTCLEANFILES = pango-install.vsprops
 
