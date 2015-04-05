@@ -156,9 +156,9 @@ _pango_win32_font_init (PangoWin32Font *win32font)
 HDC
 pango_win32_get_dc (void)
 {
-  if (_pango_win32_hdc == NULL) /* TODO: MT-unsafe. Use g_once_init/leave */
+  if (g_once_init_enter (&_pango_win32_hdc))
     {
-      _pango_win32_hdc = CreateDC ("DISPLAY", NULL, NULL, NULL);
+      HDC hdc = CreateDC ("DISPLAY", NULL, NULL, NULL);
       memset (&_pango_win32_os_version_info, 0,
 	      sizeof (_pango_win32_os_version_info));
       _pango_win32_os_version_info.dwOSVersionInfoSize =
@@ -173,6 +173,7 @@ pango_win32_get_dc (void)
       if (getenv ("PANGO_WIN32_DEBUG") != NULL)
 	_pango_win32_debug = TRUE;
 #endif
+      g_once_init_leave (&_pango_win32_hdc, hdc);
     }
 
   return _pango_win32_hdc;
@@ -970,8 +971,8 @@ pango_win32_font_find_shaper (PangoFont     *font,
 			      guint32        ch)
 {
   static PangoEngineShape *shaper;
-  if (!shaper)
-    shaper = g_object_new (pango_win32_shape_engine_get_type(), NULL); /* XXX MT-unsafe */
+  if (g_once_init_enter (&shaper))
+    g_once_init_leave (&shaper, g_object_new (pango_win32_shape_engine_get_type(), NULL));
   return shaper;
 }
 

@@ -342,8 +342,8 @@ pango_fc_font_find_shaper (PangoFont     *font G_GNUC_UNUSED,
 			   guint32        ch)
 {
   static PangoEngineShape *shaper;
-  if (!shaper)
-    shaper = g_object_new (pango_fc_shape_engine_get_type(), NULL); /* XXX MT-unsafe */
+  if (g_once_init_enter (&shaper))
+    g_once_init_leave (&shaper, g_object_new (pango_fc_shape_engine_get_type(), NULL));
   return shaper;
 }
 
