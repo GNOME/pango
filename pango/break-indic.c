@@ -1,5 +1,5 @@
 /* Pango
- * indic-lang.c:
+ * break-indic.c:
  *
  * Copyright (C) 2006 Red Hat Software
  * Author: Akira TAGOH <tagoh@redhat.com>
@@ -21,18 +21,8 @@
  */
 
 #include "config.h"
-#include <string.h>
 
-#include "pango-engine.h"
 #include "pango-break.h"
-
-typedef PangoEngineLang	IndicEngineLang;
-typedef PangoEngineLangClass	IndicEngineLangClass;
-
-#define ENGINE_SUFFIX		"IndicScriptEngineLang"
-#define RENDER_TYPE		PANGO_RENDER_TYPE_NONE
-#define INDIC_ENGINE_INFO(script)					\
-  {#script ENGINE_SUFFIX, PANGO_ENGINE_TYPE_LANG, RENDER_TYPE, script##_scripts, G_N_ELEMENTS(script##_scripts)}
 
 #define DEV_RRA 0x0931 /* 0930 + 093c */
 #define DEV_QA 0x0958 /* 0915 + 093c */
@@ -101,54 +91,6 @@ typedef PangoEngineLangClass	IndicEngineLangClass;
 	(c >= MLYM_O  && c <= MLYM_AU) || \
 	FALSE)
 
-
-static PangoEngineScriptInfo deva_scripts[] = {
-  { PANGO_SCRIPT_DEVANAGARI, "*" }
-};
-
-static PangoEngineScriptInfo beng_scripts[] = {
-  { PANGO_SCRIPT_BENGALI, "*" }
-};
-
-static PangoEngineScriptInfo guru_scripts[] = {
-  { PANGO_SCRIPT_GURMUKHI, "*" }
-};
-
-static PangoEngineScriptInfo gujr_scripts[] = {
-  { PANGO_SCRIPT_GUJARATI, "*" }
-};
-
-static PangoEngineScriptInfo orya_scripts[] = {
-  { PANGO_SCRIPT_ORIYA, "*" }
-};
-
-static PangoEngineScriptInfo taml_scripts[] = {
-  { PANGO_SCRIPT_TAMIL, "*" }
-};
-
-static PangoEngineScriptInfo telu_scripts[] = {
-  { PANGO_SCRIPT_TELUGU, "*" }
-};
-
-static PangoEngineScriptInfo knda_scripts[] = {
-  { PANGO_SCRIPT_KANNADA, "*" }
-};
-
-static PangoEngineScriptInfo mlym_scripts[] = {
-  { PANGO_SCRIPT_MALAYALAM, "*" }
-};
-
-static PangoEngineScriptInfo sinh_scripts[] = {
-  { PANGO_SCRIPT_SINHALA, "*" }
-};
-
-static PangoEngineInfo script_engines[] = {
-  INDIC_ENGINE_INFO(deva), INDIC_ENGINE_INFO(beng), INDIC_ENGINE_INFO(guru),
-  INDIC_ENGINE_INFO(gujr), INDIC_ENGINE_INFO(orya), INDIC_ENGINE_INFO(taml),
-  INDIC_ENGINE_INFO(telu), INDIC_ENGINE_INFO(knda), INDIC_ENGINE_INFO(mlym),
-  INDIC_ENGINE_INFO(sinh)
-};
-
 static void
 not_cursor_position (PangoLogAttr *attr)
 {
@@ -159,12 +101,11 @@ not_cursor_position (PangoLogAttr *attr)
 }
 
 static void
-indic_engine_break (PangoEngineLang *engine G_GNUC_UNUSED,
-		    const char      *text,
-		    int              length,
-		    PangoAnalysis   *analysis,
-		    PangoLogAttr    *attrs,
-		    int              attrs_len G_GNUC_UNUSED)
+break_indic (const char          *text,
+	     int                  length,
+	     const PangoAnalysis *analysis,
+	     PangoLogAttr        *attrs,
+	     int                  attrs_len G_GNUC_UNUSED)
 {
   const gchar *p, *next = NULL, *next_next;
   gunichar prev_wc, this_wc, next_wc, next_next_wc;
@@ -264,46 +205,4 @@ indic_engine_break (PangoEngineLang *engine G_GNUC_UNUSED,
 	  break;
       }
     }
-}
-
-static void
-indic_engine_lang_class_init (PangoEngineLangClass *klass)
-{
-  klass->script_break = indic_engine_break;
-}
-
-PANGO_ENGINE_LANG_DEFINE_TYPE (IndicEngineLang, indic_engine_lang,
-			       indic_engine_lang_class_init, NULL)
-
-void
-PANGO_MODULE_ENTRY(init) (GTypeModule *module)
-{
-  indic_engine_lang_register_type (module);
-}
-
-void
-PANGO_MODULE_ENTRY(exit) (void)
-{
-}
-
-void
-PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
-			  int               *n_engines)
-{
-  *engines = script_engines;
-  *n_engines = G_N_ELEMENTS (script_engines);
-}
-
-PangoEngine *
-PANGO_MODULE_ENTRY(create) (const char *id)
-{
-  guint i;
-
-  for (i = 0; i < G_N_ELEMENTS(script_engines); i++)
-    {
-      if (!strcmp (id, script_engines[i].id))
-	return g_object_new (indic_engine_lang_type, NULL);
-    }
-
-  return NULL;
 }

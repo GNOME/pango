@@ -24,7 +24,6 @@ IGNORE_HFILES=			\
 	ftglue.h		\
 	mini-fribidi		\
 	opentype		\
-	module-defs.h		\
 	modules.h		\
 	pangoatsui-private.h	\
 	pangocairo-private.h	\

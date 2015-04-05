@@ -36,9 +36,7 @@
 #include "pango-context.h"
 #include "pango-impl-utils.h"
 
-#include "pango-engine.h"
 #include "pango-engine-private.h"
-#include "pango-modules.h"
 #include "pango-script-private.h"
 
 /**
@@ -1279,20 +1277,6 @@ compute_derived_language (PangoLanguage *lang,
   return derived_lang;
 }
 
-static PangoMap *
-get_lang_map (PangoLanguage *lang)
-{
-  static guint engine_type_id = 0; /* MT-safe */
-  static guint render_type_id = 0; /* MT-safe */
-
-  if (engine_type_id == 0)
-    engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_LANG);
-  if (render_type_id == 0)
-    render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_NONE);
-
-  return pango_find_map (lang, engine_type_id, render_type_id);
-}
-
 static void
 itemize_state_update_for_new_run (ItemizeState *state)
 {
@@ -1338,8 +1322,7 @@ itemize_state_update_for_new_run (ItemizeState *state)
 
   if ((state->changed & DERIVED_LANG_CHANGED) || !state->lang_engine)
     {
-      PangoMap *lang_map = get_lang_map (state->derived_lang);
-      state->lang_engine = (PangoEngineLang *)pango_map_get_engine (lang_map, state->script);
+      state->lang_engine = _pango_get_language_engine ();
     }
 
   if (state->changed & (FONT_CHANGED | DERIVED_LANG_CHANGED) &&
