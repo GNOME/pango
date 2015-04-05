@@ -123,7 +123,7 @@ EXTRA_DIST +=				\
 	pango.types
 
 # force doc rebulid after configure
-dist-hook-local: dist-local-check-mans-enabled dist-local-check-no-cross-references all-local
+dist-hook-local: dist-local-check-no-cross-references all-local
 
 #
 # Require gtk-doc when making dist
