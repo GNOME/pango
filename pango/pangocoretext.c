@@ -120,7 +120,7 @@ ct_font_descriptor_get_coverage (CTFontDescriptorRef desc)
 
 static PangoCoverage *
 pango_core_text_font_get_coverage (PangoFont     *font,
-                                   PangoLanguage *language)
+                                   PangoLanguage *language G_GNUC_UNUSED)
 {
   PangoCoreTextFont *ctfont = (PangoCoreTextFont *)font;
   PangoCoreTextFontPrivate *priv = ctfont->priv;
@@ -168,7 +168,7 @@ pango_core_text_shape_engine_init (PangoEngineShape *object)
 
 static PangoEngineShape *
 pango_core_text_font_find_shaper (PangoFont     *font,
-                                  PangoLanguage *language,
+                                  PangoLanguage *language G_GNUC_UNUSED,
                                   guint32        ch)
 {
   static PangoEngineShape *shaper;

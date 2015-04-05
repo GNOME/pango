@@ -226,7 +226,6 @@ struct _PangoEngineShapeClass
 			PangoGlyphString    *glyphs,
 			const char          *paragraph_text,
 			unsigned int         paragraph_length);
-  G_DEPRECATED
   PangoCoverageLevel (*covers)   (PangoEngineShape *engine,
 				  PangoFont        *font,
 				  PangoLanguage    *language,
