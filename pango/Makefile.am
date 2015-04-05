@@ -440,11 +440,6 @@ EXTRA_DIST =					\
 	break-thai.c				\
 	check.defs
 
-
-include $(top_srcdir)/build/Makefile-msvcproj.am
-
-dist-hook: $(pango_vcproj_stuff)
-
 CLEANFILES =			\
 	pango-enum-types.h	\
 	s-enum-types-h		\
@@ -458,8 +453,7 @@ MOSTLYCLEANFILES = 		\
 	*.expected
 
 DISTCLEANFILES = 		\
-	pango-features.h	\
-	$(pango_vcproj_stuff)
+	pango-features.h
 
 install-exec-hook:
 if DISABLE_EXPLICIT_DEPS
