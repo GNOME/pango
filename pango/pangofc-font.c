@@ -42,8 +42,8 @@
 #include "pangofc-font.h"
 #include "pangofc-fontmap.h"
 #include "pangofc-private.h"
+#include "pango-engine.h"
 #include "pango-layout.h"
-#include "pango-modules.h"
 #include "pango-impl-utils.h"
 
 #include <fontconfig/fcfreetype.h>
@@ -307,18 +307,33 @@ pango_fc_font_describe_absolute (PangoFont *font)
   return desc;
 }
 
-static PangoMap *
-pango_fc_get_shaper_map (PangoLanguage *language)
+/* Wrap shaper in PangoEngineShape to pass it through old API,
+ * from times when there were modules and engines. */
+typedef PangoEngineShape      PangoFcShapeEngine;
+typedef PangoEngineShapeClass PangoFcShapeEngineClass;
+static GType pango_fc_shape_engine_get_type (void) G_GNUC_CONST;
+G_DEFINE_TYPE (PangoFcShapeEngine, pango_fc_shape_engine, PANGO_TYPE_ENGINE_SHAPE);
+static void
+_pango_fc_shape_engine_shape (PangoEngineShape    *engine G_GNUC_UNUSED,
+			      PangoFont           *font,
+			      const char          *item_text,
+			      unsigned int         item_length,
+			      const PangoAnalysis *analysis,
+			      PangoGlyphString    *glyphs,
+			      const char          *paragraph_text,
+			      unsigned int         paragraph_length)
 {
-  static guint engine_type_id = 0; /* MT-safe */
-  static guint render_type_id = 0; /* MT-safe */
-
-  if (engine_type_id == 0)
-    engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_SHAPE);
-  if (render_type_id == 0)
-    render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_FC);
-
-  return pango_find_map (language, engine_type_id, render_type_id);
+  _pango_fc_shape (font, item_text, item_length, analysis, glyphs,
+		   paragraph_text, paragraph_length);
+}
+static void
+pango_fc_shape_engine_class_init (PangoEngineShapeClass *class)
+{
+  class->script_shape = _pango_fc_shape_engine_shape;
+}
+static void
+pango_fc_shape_engine_init (PangoEngineShape *object)
+{
 }
 
 static PangoEngineShape *
@@ -326,12 +341,10 @@ pango_fc_font_find_shaper (PangoFont     *font G_GNUC_UNUSED,
 			   PangoLanguage *language,
 			   guint32        ch)
 {
-  PangoMap *shaper_map = NULL;
-  PangoScript script;
-
-  shaper_map = pango_fc_get_shaper_map (language);
-  script = pango_script_for_unichar (ch);
-  return (PangoEngineShape *)pango_map_get_engine (shaper_map, script);
+  static PangoEngineShape *shaper;
+  if (g_once_init_enter (&shaper))
+    g_once_init_leave (&shaper, g_object_new (pango_fc_shape_engine_get_type(), NULL));
+  return shaper;
 }
 
 static PangoCoverage *

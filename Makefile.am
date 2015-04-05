@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in.
 
-SUBDIRS= pango modules pango-view examples docs tools tests build
+SUBDIRS= pango pango-view examples docs tools tests build
 
 EXTRA_DIST = 			\
 	autogen.sh		\
@@ -30,8 +30,6 @@ EXTRA_DIST = 			\
 	HACKING			\
 	README.win32		\
 	config.h.win32		\
-	pango-zip.sh.in		\
-	sanitize-la.sh		\
 	pango.doap
 
 MAINTAINERCLEANFILES = \

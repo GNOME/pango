@@ -105,9 +105,6 @@
    */
 #define LT_OBJDIR ".libs/"
 
-/* Module interface version */
-#define MODULE_VERSION "1.8.0"
-
 /* Name of package */
 #define PACKAGE "pango"
 
@@ -146,9 +143,6 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
-
-/* Whether to load modules via .la files rather than directly */
-/* #undef USE_LA_MODULES */
 
 /* Version number of package */
 #define VERSION "@PANGO_VERSION@"

@@ -40,9 +40,6 @@ m4_if(m4_eval(pango_version_minor % 2), [1],
 dnl Number of releases since we've broken binary compatibility.
 m4_define([pango_binary_age],
           [m4_eval(100 * pango_version_minor + pango_version_micro)])
-dnl Module API version.  This should be stepped up when a change causes
-dnl older modules to not work with new pango.
-m4_define([pango_module_version], [1.8.0])
 
 
 AC_INIT(pango, pango_version(),
@@ -64,7 +61,6 @@ PANGO_VERSION=pango_version()
 PANGO_API_VERSION=pango_api_version()
 PANGO_INTERFACE_AGE=pango_interface_age()
 PANGO_BINARY_AGE=pango_binary_age()
-PANGO_MODULE_VERSION=pango_module_version()
 
 AC_SUBST(PANGO_VERSION_MAJOR)
 AC_SUBST(PANGO_VERSION_MINOR)
@@ -73,9 +69,7 @@ AC_SUBST(PANGO_VERSION)
 AC_SUBST(PANGO_API_VERSION)
 AC_SUBST(PANGO_INTERFACE_AGE)
 AC_SUBST(PANGO_BINARY_AGE)
-AC_SUBST(PANGO_MODULE_VERSION)
 
-AC_DEFINE(MODULE_VERSION, "pango_module_version()", [Module interface version])
 AC_DEFINE(PANGO_BINARY_AGE, pango_binary_age(), [PANGO binary age])
 AC_DEFINE(PANGO_INTERFACE_AGE, pango_interface_age(), [PANGO interface age])
 AC_DEFINE(PANGO_VERSION_MAJOR, pango_version_major(), [PANGO major version])
@@ -264,24 +258,15 @@ fi
 AM_CONDITIONAL(HAVE_XFT, test "x$with_xft" = xyes && $have_xft )
 
 #
-# Checks for Win32 GDI
+# Checks for Win32
 #
 have_win32=false
-WIN32_LIBS=""
-WIN32_CFLAGS=""
 # The following doesn't work with autoconf-2.13, so we check $host instead
 # AC_CHECK_LIB(gdi32, GetTextMetricsA@8, have_win32=true, : )
 case "$host" in
   *-*-mingw*|*-*-cygwin*) have_win32=true ;;
 esac
-
-
-if test $have_win32 = true; then
-  WIN32_LIBS="-lgdi32"
-fi
-
-AC_SUBST(WIN32_LIBS)
-AM_CONDITIONAL(HAVE_WIN32, $have_win32) 
+AM_CONDITIONAL(HAVE_WIN32, $have_win32)
 
 # Ensure MSVC-compatible struct packing convention is used when
 # compiling for Win32 with gcc.
@@ -443,10 +428,7 @@ AM_CONDITIONAL(HAVE_CAIRO_QUARTZ, $have_cairo_quartz)
 
 
 #
-# We must have some backend defined, in order for the pango-querymodules
-# rule in pango/Makefile.am to work correctly. If you are up to writing
-# a new Pango backend outside of Pango, you are up to sending the necessary
-# patch to fix that rule. :-)
+# We must have some backend defined
 #
 if $have_freetype || `test "x$with_xft" = xyes && $have_xft` || $have_cairo || $have_win32 ; then : ; else
   AC_MSG_ERROR([*** Could not enable any backends.
@@ -457,7 +439,7 @@ fi
 # Checks for GLib
 #
 GLIB_REQUIRED_VERSION=2.33.12
-GLIB_MODULES="glib-2.0 >= $GLIB_REQUIRED_VERSION gobject-2.0 gmodule-no-export-2.0 gthread-2.0"
+GLIB_MODULES="glib-2.0 >= $GLIB_REQUIRED_VERSION gobject-2.0 gthread-2.0"
 
 PKG_CHECK_MODULES(GLIB, $GLIB_MODULES, :,
   AC_MSG_ERROR([
@@ -473,6 +455,9 @@ AC_SUBST(GLIB_MKENUMS)
 #
 LIBTHAI_REQUIRED_VERSION=0.1.9
 PKG_CHECK_MODULES(LIBTHAI, libthai >= $LIBTHAI_REQUIRED_VERSION, have_libthai=true, have_libthai=false)
+if $have_libthai; then
+	AC_DEFINE(HAVE_LIBTHAI, 1, [Whether libthai is available])
+fi
 
 #
 # Checks for GObject Introspection
@@ -480,95 +465,6 @@ PKG_CHECK_MODULES(LIBTHAI, libthai >= $LIBTHAI_REQUIRED_VERSION, have_libthai=tr
 
 GOBJECT_INTROSPECTION_CHECK([0.9.5])
 
-#
-# Modules to build
-#
-arabic_modules="arabic-lang"
-basic_modules="basic-fc,basic-win32,basic-coretext"
-indic_modules="indic-lang"
-thai_modules=""
-
-if $have_libthai ; then
-  thai_modules="thai-lang"
-fi
-
-all_modules="$arabic_modules,$basic_modules,$indic_modules,$thai_modules"
-
-#
-# Allow building some or all modules included
-#
-AC_MSG_CHECKING(modules to link statically)
-
-AC_ARG_WITH(included_modules,
-   AC_HELP_STRING([--with-included-modules=no/yes/MODULE1 MODULE2 ...],
-                  [build the given modules included @<:@default=no@:>@]))
-
-included_modules=""
-case x$with_included_modules in
-	xyes)	included_modules=$all_modules ;;
-	xno|x)	included_modules="" ;;
-	*)	included_modules=$with_included_modules ;;
-esac
-AC_MSG_RESULT($included_modules)
-AM_CONDITIONAL(HAVE_INCLUDED_MODULES, test "x$included_modules" != x)
-
-#
-# Allow building only some or none of modules dynamic
-#
-AC_MSG_CHECKING(dynamic modules to build)
-
-AC_ARG_WITH(dynamic_modules,
-   AC_HELP_STRING([--with-dynamic-modules=no/yes/MODULE1 MODULE2 ...],
-                  [build the given dynamic modules @<:@default=yes@:>@]))
-
-dynamic_modules=""
-case x$with_dynamic_modules in
-	xyes|x)	dynamic_modules=$all_modules ;;
-	xno)	dynamic_modules="" ;;
-	*)	dynamic_modules=$with_dynamic_modules ;;
-esac
-AC_MSG_RESULT([$dynamic_modules (those built into Pango will be excluded)])
-AM_CONDITIONAL(HAVE_DYNAMIC_MODULES, test "x$dynamic_modules" != x)
-
-
-INCLUDED_FC_MODULES=
-INCLUDED_WIN32_MODULES=
-INCLUDED_CORE_TEXT_MODULES=
-INCLUDED_LANG_MODULES=
-
-AC_SUBST(INCLUDED_FC_MODULES)
-AC_SUBST(INCLUDED_WIN32_MODULES)
-AC_SUBST(INCLUDED_CORE_TEXT_MODULES)
-AC_SUBST(INCLUDED_LANG_MODULES)
-
-IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=", "
-for module in $included_modules; do
-  dir=`echo $module | sed "s/-.*//"`
-  included_path="\$(top_builddir)/modules/$dir/libpango-$module.la"
-
-  case $module in
-    *-fc)	INCLUDED_FC_MODULES="$INCLUDED_FC_MODULES $included_path" ;;
-    *-win32)	INCLUDED_WIN32_MODULES="$INCLUDED_WIN32_MODULES $included_path" ;;
-    *-coretext) INCLUDED_CORE_TEXT_MODULES="$INCLUDED_CORE_TEXT_MODULES $included_path" ;;
-    *-lang)	INCLUDED_LANG_MODULES="$INCLUDED_LANG_MODULES $included_path" ;;
-    *)		IFS="$pango_save_ifs"; AC_MSG_ERROR([specified module $module not recognized]) ;;
-  esac
-done
-IFS="$pango_save_ifs"
-
-AM_CONDITIONAL(INCLUDE_ARABIC_LANG,	echo $included_modules | egrep '(^|,)arabic-lang($|,)' 	> /dev/null)
-AM_CONDITIONAL(INCLUDE_BASIC_FC,	echo $included_modules | egrep '(^|,)basic-fc($|,)' 	> /dev/null)
-AM_CONDITIONAL(INCLUDE_BASIC_WIN32,	echo $included_modules | egrep '(^|,)basic-win32($|,)' 	> /dev/null)
-AM_CONDITIONAL(INCLUDE_BASIC_CORE_TEXT,	echo $included_modules | egrep '(^|,)basic-coretext($|,)'	> /dev/null)
-AM_CONDITIONAL(INCLUDE_INDIC_LANG,	echo $included_modules | egrep '(^|,)indic-lang($|,)'	> /dev/null)
-AM_CONDITIONAL(INCLUDE_THAI_LANG,	echo $included_modules | egrep '(^|,)thai-lang($|,)' 	> /dev/null)
-
-AM_CONDITIONAL(DYNAMIC_ARABIC_LANG,	echo $dynamic_modules | egrep '(^|,)arabic-lang($|,)' 	> /dev/null)
-AM_CONDITIONAL(DYNAMIC_BASIC_FC,	echo $dynamic_modules | egrep '(^|,)basic-fc($|,)' 	> /dev/null)
-AM_CONDITIONAL(DYNAMIC_BASIC_WIN32,	echo $dynamic_modules | egrep '(^|,)basic-win32($|,)' 	> /dev/null)
-AM_CONDITIONAL(DYNAMIC_BASIC_CORE_TEXT,	echo $dynamic_modules | egrep '(^|,)basic-coretext($|,)' 	> /dev/null)
-AM_CONDITIONAL(DYNAMIC_INDIC_LANG,	echo $dynamic_modules | egrep '(^|,)indic-lang($|,)'	> /dev/null)
-AM_CONDITIONAL(DYNAMIC_THAI_LANG,	echo $dynamic_modules | egrep '(^|,)thai-lang($|,)' 	> /dev/null)
 
 #
 # We use flockfile to implement pango_getline() - should be moved to GLib
@@ -588,32 +484,6 @@ if $have_cairo ; then : ; else
 fi
 
 GTK_DOC_CHECK([1.15], [--flavour no-tmpl])
-
-AC_ARG_ENABLE(man,
-              AC_HELP_STRING([--enable-man],
-                             [regenerate man pages from Docbook @<:@default=no@:>@]),
-	      enable_man=yes,
-              enable_man=no)
-
-if test "x$enable_man" != xno ; then
-  dnl
-  dnl Check for xsltproc
-  dnl
-  AC_PATH_PROG([XSLTPROC], [xsltproc])
-  if test -z "$XSLTPROC"; then
-    enable_man=no
-  fi
-fi
-
-if test "x$enable_man" != xno ; then
-  dnl check for DocBook DTD and stylesheets in the local catalog.
-  JH_CHECK_XML_CATALOG([-//OASIS//DTD DocBook XML V4.1.2//EN],
-     [DocBook XML DTD V4.1.2],,enable_man=no)
-  JH_CHECK_XML_CATALOG([http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl],
-     [DocBook XSL Stylesheets],,enable_man=no)
-fi
-
-AM_CONDITIONAL(ENABLE_MAN, test x$enable_man != xno)
 
 AC_ARG_ENABLE(doc-cross-references,
               AC_HELP_STRING([--disable-doc-cross-references],
@@ -637,19 +507,15 @@ dnl ********************************************************
 # that something like pango-basic-fc.la is a valid libtool archive
 #
 LIBRARY_LIBTOOL_OPTIONS="-version-info $VERSION_INFO"
-MODULE_LIBTOOL_OPTIONS="-export-dynamic -avoid-version"
 if test "$pango_platform_win32" = yes; then
     # We currently use .def files on Windows
     LIBRARY_LIBTOOL_OPTIONS="$LIBRARY_LIBTOOL_OPTIONS -no-undefined"
-    MODULE_LIBTOOL_OPTIONS="$MODULE_LIBTOOL_OPTIONS -no-undefined"
 else
     # libtool option to control which symbols are exported
     # right now, symbols starting with '_' are not exported
     LIBRARY_LIBTOOL_OPTIONS="$LIBRARY_LIBTOOL_OPTIONS "'-export-symbols-regex "^pango_.*"'
-    MODULE_LIBTOOL_OPTIONS="$MODULE_LIBTOOL_OPTIONS "'-export-symbols-regex "^script_engine_.*"'
 fi
 AC_SUBST(LIBRARY_LIBTOOL_OPTIONS)
-AC_SUBST(MODULE_LIBTOOL_OPTIONS)
 
 dnl
 dnl Check for -Bsymbolic-functions linker flag used to avoid
@@ -682,18 +548,6 @@ AC_ARG_ENABLE(installed_tests,
               [enable_installed_tests=no])
 AM_CONDITIONAL(BUILDOPT_INSTALL_TESTS, test x$enable_installed_tests = xyes)
 
-
-dnl ********************************************************
-dnl * See whether we need to load our modules as .la files *
-dnl ********************************************************
-
-use_la_modules=false
-
-# is there any platform that we have to use .la files?
-
-if $use_la_modules ; then
-   AC_DEFINE(USE_LA_MODULES, 1, [Whether to load modules via .la files rather than directly])
-fi
 
 dnl ******************************************************
 dnl * See whether to include shared library dependencies *
@@ -742,149 +596,6 @@ fi
 AC_SUBST(PKGCONFIG_MATH_LIBS)
 AC_SUBST(PKGCONFIG_CAIRO_REQUIRES)
 AM_CONDITIONAL(DISABLE_EXPLICIT_DEPS, test $enable_explicit_deps = no)
-
-AC_CONFIG_COMMANDS([pango/module-defs.h],
-[
-cat > pango/module-defs.h <<EOTEXT
-/* Autogenerated by configure. Do not edit */
-
-#include "modules.h"
-
-EOTEXT
-
-IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
-for module in $included_modules; do
-  module_c=`echo $module | sed s/-/_/`
-  cat >> pango/module-defs.h <<EOTEXT
-extern void         _pango_${module_c}_script_engine_list (PangoEngineInfo **engines, int *n_engines);
-extern void         _pango_${module_c}_script_engine_init (GTypeModule *module);
-extern void         _pango_${module_c}_script_engine_exit (void);
-extern PangoEngine *_pango_${module_c}_script_engine_create (const char *id);
-
-EOTEXT
-done 
-
-IFS="$pango_save_ifs"
-],[
-included_modules=$included_modules
-])
-
-AC_CONFIG_COMMANDS([pango/module-defs-fc.c],
-[
-### FC modules
-cat > pango/module-defs-fc.c <<EOTEXT
-/* Autogenerated by configure. Do not edit */
-
-#include "module-defs.h"
-
-PangoIncludedModule _pango_included_fc_modules@<:@@:>@ = {
-EOTEXT
-
-IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
-for module in $included_modules; do
-  if echo $module | egrep -- "-fc($|,)" > /dev/null; then
-    module_c=`echo $module | sed s/-/_/`
-    cat >> pango/module-defs-fc.c <<EOTEXT
- { _pango_${module_c}_script_engine_list, _pango_${module_c}_script_engine_init, _pango_${module_c}_script_engine_exit, _pango_${module_c}_script_engine_create },
-EOTEXT
-  fi
-done
-
-IFS="$pango_save_ifs"
-
-cat >> pango/module-defs-fc.c <<EOTEXT
- { NULL, NULL, NULL, NULL },
-};
-EOTEXT
-])
-
-AC_CONFIG_COMMANDS([pango/module-defs-win32.c],
-[
-### Win32 modules
-cat > pango/module-defs-win32.c <<EOTEXT
-/* Autogenerated by configure. Do not edit */
-
-#include "module-defs.h"
-
-PangoIncludedModule _pango_included_win32_modules@<:@@:>@ = {
-EOTEXT
-
-IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
-for module in $included_modules; do
-  if echo $module | egrep -- "-win32($|,)" > /dev/null; then
-    module_c=`echo $module | sed s/-/_/`
-    cat >> pango/module-defs-win32.c <<EOTEXT
- { _pango_${module_c}_script_engine_list, _pango_${module_c}_script_engine_init, _pango_${module_c}_script_engine_exit, _pango_${module_c}_script_engine_create },
-EOTEXT
-  fi
-done
-
-IFS="$pango_save_ifs"
-
-cat >> pango/module-defs-win32.c <<EOTEXT
- { NULL, NULL, NULL, NULL },
-};
-EOTEXT
-])
-
-AC_CONFIG_COMMANDS([pango/module-defs-coretext.c],
-[
-### CoreText modules
-cat > pango/module-defs-coretext.c <<EOTEXT
-/* Autogenerated by configure. Do not edit */
-
-#include "module-defs.h"
-
-PangoIncludedModule _pango_included_core_text_modules@<:@@:>@ = {
-EOTEXT
-
-IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
-for module in $included_modules; do
-  if echo $module | egrep -- "-coretext($|,)" > /dev/null; then
-    module_c=`echo $module | sed s/-/_/`
-    cat >> pango/module-defs-coretext.c <<EOTEXT
- { _pango_${module_c}_script_engine_list, _pango_${module_c}_script_engine_init, _pango_${module_c}_script_engine_exit, _pango_${module_c}_script_engine_create },
-EOTEXT
-  fi
-done
-
-IFS="$pango_save_ifs"
-
-cat >> pango/module-defs-coretext.c <<EOTEXT
- { NULL, NULL, NULL, NULL },
-};
-EOTEXT
-])
-
-AC_CONFIG_COMMANDS([pango/module-defs-lang.c],
-[
-### lang modules
-cat > pango/module-defs-lang.c <<EOTEXT
-/* Autogenerated by configure. Do not edit */
-
-#include "module-defs.h"
-
-PangoIncludedModule _pango_included_lang_modules@<:@@:>@ = {
-EOTEXT
-
-IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
-for module in $included_modules; do
-  if echo $module | egrep -- "-lang($|,)" > /dev/null; then
-    module_c=`echo $module | sed s/-/_/`
-    cat >> pango/module-defs-lang.c <<EOTEXT
- { _pango_${module_c}_script_engine_list, _pango_${module_c}_script_engine_init, _pango_${module_c}_script_engine_exit, _pango_${module_c}_script_engine_create },
-EOTEXT
-  fi
-done
-
-IFS="$pango_save_ifs"
-
-cat >> pango/module-defs-lang.c <<EOTEXT
- { NULL, NULL, NULL, NULL },
-};
-EOTEXT
-])
-
 
 AC_HEADER_DIRENT
 AC_CHECK_HEADERS(unistd.h)
@@ -935,11 +646,6 @@ pango/pangowin32.rc
 pango/pangocairo.rc
 pango/pangoxft.rc
 pango-view/Makefile
-modules/Makefile
-modules/arabic/Makefile
-modules/basic/Makefile
-modules/indic/Makefile
-modules/thai/Makefile
 examples/Makefile
 docs/Makefile
 docs/version.xml
@@ -961,7 +667,6 @@ pangowin32-uninstalled.pc
 pangoft2-uninstalled.pc
 pangoxft-uninstalled.pc
 pangocairo-uninstalled.pc
-pango-zip.sh
 config.h.win32
 ])
 

@@ -1,5 +1,5 @@
 /* Pango
- * basic-fc.c: Basic shaper for FreeType-based backends
+ * pangofc-shape.c: Basic shaper for FreeType-based backends
  *
  * Copyright (C) 2000, 2007, 2009 Red Hat Software
  * Authors:
@@ -27,36 +27,11 @@
 
 #define PANGO_ENABLE_BACKEND 1 /* XXX */
 
-#include "pango-engine.h"
-#include "pango-utils.h"
-#include "pangofc-fontmap.h"
-#include "pangofc-font.h"
+#include "pangofc-private.h"
 #include <hb-ft.h>
 #include <hb-glib.h>
 
 #define PANGO_UNITS_26_6(d)	((d) << 4)
-
-
-/* No extra fields needed */
-typedef PangoEngineShape      BasicEngineFc;
-typedef PangoEngineShapeClass BasicEngineFcClass;
-
-#define SCRIPT_ENGINE_NAME "BasicScriptEngineFc"
-#define RENDER_TYPE PANGO_RENDER_TYPE_FC
-
-static PangoEngineScriptInfo basic_scripts[] = {
-  { PANGO_SCRIPT_COMMON,   "" }
-};
-
-static PangoEngineInfo script_engines[] = {
-  {
-    SCRIPT_ENGINE_NAME,
-    PANGO_ENGINE_TYPE_SHAPE,
-    RENDER_TYPE,
-    basic_scripts, G_N_ELEMENTS(basic_scripts)
-  }
-};
-
 
 /* cache a single hb_buffer_t */
 static hb_buffer_t *cached_buffer = NULL; /* MT-safe */
@@ -299,17 +274,14 @@ pango_fc_get_hb_font_funcs (void)
 }
 
 
-
-
-static void
-basic_engine_shape (PangoEngineShape    *engine G_GNUC_UNUSED,
-		    PangoFont           *font,
-		    const char          *item_text,
-		    unsigned int         item_length,
-		    const PangoAnalysis *analysis,
-		    PangoGlyphString    *glyphs,
-		    const char          *paragraph_text,
-		    unsigned int         paragraph_length)
+void
+_pango_fc_shape (PangoFont           *font,
+		 const char          *item_text,
+		 unsigned int         item_length,
+		 const PangoAnalysis *analysis,
+		 PangoGlyphString    *glyphs,
+		 const char          *paragraph_text,
+		 unsigned int         paragraph_length)
 {
   PangoFcHbContext context;
   PangoFcFont *fc_font;
@@ -325,7 +297,7 @@ basic_engine_shape (PangoEngineShape    *engine G_GNUC_UNUSED,
   int last_cluster;
   guint i, num_glyphs;
   unsigned int item_offset = item_text - paragraph_text;
-  hb_feature_t features[8];
+  hb_feature_t features[32];
   unsigned int num_features = 0;
 
   g_return_if_fail (font != NULL);
@@ -443,41 +415,4 @@ basic_engine_shape (PangoEngineShape    *engine G_GNUC_UNUSED,
   hb_font_destroy (hb_font);
   hb_face_destroy (hb_face);
   pango_fc_font_unlock_face (fc_font);
-}
-
-static void
-basic_engine_fc_class_init (PangoEngineShapeClass *class)
-{
-  class->script_shape = basic_engine_shape;
-}
-
-PANGO_ENGINE_SHAPE_DEFINE_TYPE (BasicEngineFc, basic_engine_fc,
-				basic_engine_fc_class_init, NULL)
-
-void
-PANGO_MODULE_ENTRY(init) (GTypeModule *module)
-{
-  basic_engine_fc_register_type (module);
-}
-
-void
-PANGO_MODULE_ENTRY(exit) (void)
-{
-}
-
-void
-PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
-			  int              *n_engines)
-{
-  *engines = script_engines;
-  *n_engines = G_N_ELEMENTS (script_engines);
-}
-
-PangoEngine *
-PANGO_MODULE_ENTRY(create) (const char *id)
-{
-  if (!strcmp (id, SCRIPT_ENGINE_NAME))
-    return g_object_new (basic_engine_fc_type, NULL);
-  else
-    return NULL;
 }

@@ -120,7 +120,7 @@ ct_font_descriptor_get_coverage (CTFontDescriptorRef desc)
 
 static PangoCoverage *
 pango_core_text_font_get_coverage (PangoFont     *font,
-                                   PangoLanguage *language)
+                                   PangoLanguage *language G_GNUC_UNUSED)
 {
   PangoCoreTextFont *ctfont = (PangoCoreTextFont *)font;
   PangoCoreTextFontPrivate *priv = ctfont->priv;
@@ -137,13 +137,44 @@ pango_core_text_font_get_coverage (PangoFont     *font,
   return pango_coverage_ref (priv->coverage);
 }
 
+/* Wrap shaper in PangoEngineShape to pass it through old API,
+ * from times when there were modules and engines. */
+typedef PangoEngineShape      PangoCoreTextShapeEngine;
+typedef PangoEngineShapeClass PangoCoreTextShapeEngineClass;
+static GType pango_core_text_shape_engine_get_type (void) G_GNUC_CONST;
+G_DEFINE_TYPE (PangoCoreTextShapeEngine, pango_core_text_shape_engine, PANGO_TYPE_ENGINE_SHAPE);
+static void
+_pango_core_text_shape_engine_shape (PangoEngineShape    *engine G_GNUC_UNUSED,
+				 PangoFont           *font,
+				 const char          *item_text,
+				 unsigned int         item_length,
+				 const PangoAnalysis *analysis,
+				 PangoGlyphString    *glyphs,
+				 const char          *paragraph_text,
+				 unsigned int         paragraph_length)
+{
+  _pango_core_text_shape (font, item_text, item_length, analysis, glyphs,
+		      paragraph_text, paragraph_length);
+}
+static void
+pango_core_text_shape_engine_class_init (PangoEngineShapeClass *class)
+{
+  class->script_shape = _pango_core_text_shape_engine_shape;
+}
+static void
+pango_core_text_shape_engine_init (PangoEngineShape *object)
+{
+}
+
 static PangoEngineShape *
 pango_core_text_font_find_shaper (PangoFont     *font,
-                                  PangoLanguage *language,
+                                  PangoLanguage *language G_GNUC_UNUSED,
                                   guint32        ch)
 {
-  /* FIXME: Implement */
-  return NULL;
+  static PangoEngineShape *shaper;
+  if (g_once_init_enter (&shaper))
+    g_once_init_leave (&shaper, g_object_new (pango_core_text_shape_engine_get_type(), NULL));
+  return shaper;
 }
 
 static PangoFontMap *

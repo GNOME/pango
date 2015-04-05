@@ -1,5 +1,5 @@
 /* Pango
- * basic-win32.c:
+ * pangowin32-shape.c:
  *
  * Copyright (C) 1999 Red Hat Software
  * Copyright (C) 2001 Alexander Larsson
@@ -22,87 +22,22 @@
 
 #include "config.h"
 
-#define BASIC_WIN32_DEBUGGING
+/*#define BASIC_WIN32_DEBUGGING */
 
 #include <math.h>
 #include <stdlib.h>
 
 #include <glib.h>
 
-#include "pangowin32.h"
+#include "pangowin32-private.h"
 
 extern HFONT _pango_win32_font_get_hfont (PangoFont *font);
 
-#include "pango-engine.h"
 #include "pango-utils.h"
-
-/* No extra fields needed */
-typedef PangoEngineShape      BasicEngineWin32;
-typedef PangoEngineShapeClass BasicEngineWin32Class ;
-
-#define SCRIPT_ENGINE_NAME "BasicScriptEngineWin32"
 
 static gboolean pango_win32_debug = FALSE;
 
 #include <usp10.h>
-
-static HDC hdc;
-
-#ifdef BASIC_WIN32_DEBUGGING
-static const SCRIPT_PROPERTIES **scripts;
-static int nscripts;
-#endif
-
-static PangoEngineScriptInfo uniscribe_scripts[] = {
-  /* We claim to cover everything ;-) */
-  { PANGO_SCRIPT_COMMON,  "" },
-};
-
-static PangoEngineScriptInfo basic_scripts[] = {
-  /* Those characters that can be rendered legibly without Uniscribe.
-   * I am not certain this list is correct.
-   */
-  { PANGO_SCRIPT_ARMENIAN, "*" },
-  { PANGO_SCRIPT_BOPOMOFO, "*" },
-  { PANGO_SCRIPT_CHEROKEE, "*" },
-  { PANGO_SCRIPT_COPTIC,   "*" },
-  { PANGO_SCRIPT_CYRILLIC, "*" },
-  { PANGO_SCRIPT_DESERET,  "*" },
-  { PANGO_SCRIPT_ETHIOPIC, "*" },
-  { PANGO_SCRIPT_GEORGIAN, "*" },
-  { PANGO_SCRIPT_GOTHIC,   "*" },
-  { PANGO_SCRIPT_GREEK,    "*" },
-  { PANGO_SCRIPT_HAN,      "*" },
-  { PANGO_SCRIPT_HANGUL,   "*" },
-  { PANGO_SCRIPT_HIRAGANA, "*" },
-  { PANGO_SCRIPT_KATAKANA, "*" },
-  { PANGO_SCRIPT_LATIN,    "*" },
-  { PANGO_SCRIPT_OGHAM,    "*" },
-  { PANGO_SCRIPT_OLD_ITALIC, "*" },
-  { PANGO_SCRIPT_RUNIC,     "*" },
-  { PANGO_SCRIPT_THAI,      "*" },
-  { PANGO_SCRIPT_CANADIAN_ABORIGINAL, "*" },
-  { PANGO_SCRIPT_YI,       "*" },
-  { PANGO_SCRIPT_BRAILLE,  "*" },
-  { PANGO_SCRIPT_CYPRIOT,  "*" },
-  { PANGO_SCRIPT_LIMBU,    "*" },
-  { PANGO_SCRIPT_OSMANYA,  "*" },
-  { PANGO_SCRIPT_SHAVIAN,  "*" },
-  { PANGO_SCRIPT_LINEAR_B, "*" },
-  { PANGO_SCRIPT_UGARITIC, "*" },
-
-  /* Claim to handle everything as a fallback */
-  { PANGO_SCRIPT_COMMON,   "" }
-};
-
-static PangoEngineInfo script_engines[] = {
-  {
-    SCRIPT_ENGINE_NAME,
-    PANGO_ENGINE_TYPE_SHAPE,
-    PANGO_RENDER_TYPE_WIN32,
-    NULL, 0
-  }
-};
 
 static PangoGlyph
 find_char (PangoFont *font,
@@ -520,6 +455,11 @@ itemize_shape_and_place (PangoFont           *font,
 
 #ifdef BASIC_WIN32_DEBUGGING
       if (pango_win32_debug)
+       {
+	static const SCRIPT_PROPERTIES **scripts;
+	static int nscripts;
+	if (!nscripts)
+	  ScriptGetProperties (&scripts, &nscripts);
 	g_print ("  Item %d: iCharPos=%d eScript=%d (%s) %s%s%s%s%s%s%s wchar_t %d--%d (%d)\n",
 		 item, items[item].iCharPos, script,
 		 lang_name (scripts[script]->langid),
@@ -569,7 +509,7 @@ itemize_shape_and_place (PangoFont           *font,
 	{
 #ifdef BASIC_WIN32_DEBUGGING
 	  if (pango_win32_debug)
-	    g_print ("pango-basic-win32: ScriptShape failed\n");
+	    g_print ("pangowin32-shape: ScriptShape failed\n");
 #endif
 	  return FALSE;
 	}
@@ -594,7 +534,7 @@ itemize_shape_and_place (PangoFont           *font,
 	{
 #ifdef BASIC_WIN32_DEBUGGING
 	  if (pango_win32_debug)
-	    g_print ("pango-basic-win32: ScriptPlace failed\n");
+	    g_print ("pangowin32-shape: ScriptPlace failed\n");
 #endif
 	  return FALSE;
 	}
@@ -648,6 +588,7 @@ uniscribe_shape (PangoFont           *font,
 {
   wchar_t *wtext;
   long wlen;
+  HDC hdc = _pango_win32_hdc;
   gboolean retval = TRUE;
 
   if (!pango_win32_font_select_font (font, hdc))
@@ -710,9 +651,8 @@ text_is_simple (const char *text,
   return retval;
 }
 
-static void
-basic_engine_shape (PangoEngineShape 	*engine,
-		    PangoFont        	*font,
+void
+_pango_win32_shape (PangoFont        	*font,
 		    const char       	*text,
 		    unsigned int     	 length,
 		    const PangoAnalysis *analysis,
@@ -813,65 +753,4 @@ basic_engine_shape (PangoEngineShape 	*engine,
 	  start = end;
 	}
     }
-}
-
-static void
-init_uniscribe (void)
-{
-#ifdef BASIC_WIN32_DEBUGGING
-  ScriptGetProperties (&scripts, &nscripts);
-#endif
-  hdc = pango_win32_get_dc ();
-}
-
-static void
-basic_engine_win32_class_init (PangoEngineShapeClass *class)
-{
-  class->script_shape = basic_engine_shape;
-}
-
-PANGO_ENGINE_SHAPE_DEFINE_TYPE (BasicEngineWin32, basic_engine_win32,
-				basic_engine_win32_class_init, NULL);
-
-void
-PANGO_MODULE_ENTRY(init) (GTypeModule *module)
-{
-  init_uniscribe ();
-
-  if (pango_win32_get_debug_flag ())
-    pango_win32_debug = TRUE;
-
-  basic_engine_win32_register_type (module);
-}
-
-void
-PANGO_MODULE_ENTRY(exit) (void)
-{
-}
-
-void
-PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
-			  int              *n_engines)
-{
-  init_uniscribe ();
-
-  script_engines[0].scripts = basic_scripts;
-  script_engines[0].n_scripts = G_N_ELEMENTS (basic_scripts);
-
-  /* This is stupid, we rewrite the previous two lines.  Not
-   * going to touch it now. */
-  script_engines[0].scripts = uniscribe_scripts;
-  script_engines[0].n_scripts = G_N_ELEMENTS (uniscribe_scripts);
-
-  *engines = script_engines;
-  *n_engines = G_N_ELEMENTS (script_engines);
-}
-
-PangoEngine *
-PANGO_MODULE_ENTRY(create) (const char *id)
-{
-  if (!strcmp (id, SCRIPT_ENGINE_NAME))
-    return g_object_new (basic_engine_win32_type, NULL);
-  else
-    return NULL;
 }

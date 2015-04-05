@@ -1,5 +1,5 @@
 /* Pango
- * arabic-lang.c:
+ * break-arabic.c:
  *
  * Copyright (C) 2006 Red Hat Software
  * Copyright (C) 2006 Sharif FarsiWeb, Inc.
@@ -23,31 +23,8 @@
  */
 
 #include "config.h"
-#include <string.h>
 
-#include "pango-engine.h"
 #include "pango-break.h"
-
-/* No extra fields needed */
-typedef PangoEngineLang      ArabicEngineLang;
-typedef PangoEngineLangClass ArabicEngineLangClass ;
-
-#define SCRIPT_ENGINE_NAME "ArabicScriptEngineLang"
-#define RENDER_TYPE PANGO_RENDER_TYPE_NONE
-
-static PangoEngineScriptInfo arabic_scripts[] = {
-  { PANGO_SCRIPT_ARABIC, "*" },
-};
-
-static PangoEngineInfo script_engines[] = {
-  {
-    SCRIPT_ENGINE_NAME,
-    PANGO_ENGINE_TYPE_LANG,
-    RENDER_TYPE,
-    arabic_scripts, G_N_ELEMENTS(arabic_scripts)
-  }
-};
-
 
 #define ALEF_WITH_MADDA_ABOVE	0x0622
 #define YEH_WITH_HAMZA_ABOVE	0x0626
@@ -71,12 +48,11 @@ static PangoEngineInfo script_engines[] = {
 #define IS_COMPOSITE_WITH_ALEF(c) (MADDAH_ABOVE <= (c) && (c) <= HAMZA_BELOW)
 
 static void
-arabic_engine_break (PangoEngineLang *engine G_GNUC_UNUSED,
-		     const char      *text,
-		     int              length,
-		     PangoAnalysis   *analysis G_GNUC_UNUSED,
-		     PangoLogAttr    *attrs,
-		     int              attrs_len G_GNUC_UNUSED)
+break_arabic (const char          *text,
+	      int                  length,
+	      const PangoAnalysis *analysis G_GNUC_UNUSED,
+	      PangoLogAttr        *attrs,
+	      int                  attrs_len G_GNUC_UNUSED)
 {
   int i;
   const char *p;
@@ -112,41 +88,4 @@ arabic_engine_break (PangoEngineLang *engine G_GNUC_UNUSED,
 	 ))
 	attrs[i+1].backspace_deletes_character = FALSE;
     }
-}
-
-static void
-arabic_engine_lang_class_init (PangoEngineLangClass *class)
-{
-  class->script_break = arabic_engine_break;
-}
-
-PANGO_ENGINE_LANG_DEFINE_TYPE (ArabicEngineLang, arabic_engine_lang,
-			       arabic_engine_lang_class_init, NULL)
-
-void
-PANGO_MODULE_ENTRY(init) (GTypeModule *module)
-{
-  arabic_engine_lang_register_type (module);
-}
-
-void
-PANGO_MODULE_ENTRY(exit) (void)
-{
-}
-
-void
-PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
-			  int              *n_engines)
-{
-  *engines = script_engines;
-  *n_engines = G_N_ELEMENTS (script_engines);
-}
-
-PangoEngine *
-PANGO_MODULE_ENTRY(create) (const char *id)
-{
-  if (!strcmp (id, SCRIPT_ENGINE_NAME))
-    return g_object_new (arabic_engine_lang_type, NULL);
-  else
-    return NULL;
 }

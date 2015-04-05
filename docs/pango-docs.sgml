@@ -50,11 +50,6 @@
     <xi:include href="xml/pango-version.xml"/>
     </chapter>
 
-  <chapter id="tools">
-    <title>Pango Tools</title>
-    <xi:include href="pango-querymodules.xml"/>
-  </chapter>
-
   <chapter id="pango-hierarchy">
     <title>Object Hierarchy</title>
     <xi:include href="xml/tree_index.sgml"/>

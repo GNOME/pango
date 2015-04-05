@@ -275,6 +275,7 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
  *  or freed.
  *
  * Since: 1.4
+ * Deprecated: 1.37
  **/
 const char *
 pango_font_map_get_shape_engine_type (PangoFontMap *fontmap)

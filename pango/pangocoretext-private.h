@@ -24,8 +24,6 @@
 #ifndef __PANGOCORETEXT_PRIVATE_H__
 #define __PANGOCORETEXT_PRIVATE_H__
 
-#include <pango/pango-fontmap.h>
-#include <pango/pango-context.h>
 #include "pangocoretext.h"
 
 G_BEGIN_DECLS
@@ -106,6 +104,15 @@ gpointer              pango_core_text_font_key_get_context_key      (const Pango
 const PangoMatrix    *pango_core_text_font_key_get_matrix           (const PangoCoreTextFontKey *key);
 PangoGravity          pango_core_text_font_key_get_gravity          (const PangoCoreTextFontKey *key);
 CTFontDescriptorRef   pango_core_text_font_key_get_ctfontdescriptor (const PangoCoreTextFontKey *key);
+
+void
+_pango_core_text_shape (PangoFont           *font,
+			const char          *text,
+			gint                 length,
+			const PangoAnalysis *analysis,
+			PangoGlyphString    *glyphs,
+			const char          *paragraph_text G_GNUC_UNUSED,
+			unsigned int         paragraph_length G_GNUC_UNUSED);
 
 G_END_DECLS
 

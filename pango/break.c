@@ -22,7 +22,7 @@
 #include "config.h"
 
 #include "pango-break.h"
-#include "pango-modules.h"
+#include "pango-engine-private.h"
 #include "pango-script-private.h"
 #include "pango-impl-utils.h"
 #include <string.h>
@@ -1793,7 +1793,6 @@ pango_find_paragraph_boundary (const gchar *text,
 static int
 tailor_segment (const char      *range_start,
 		const char      *range_end,
-		PangoEngineLang *range_engine,
 		int              chars_broken,
 		PangoAnalysis   *analysis,
 		PangoLogAttr    *log_attrs)
@@ -1801,7 +1800,6 @@ tailor_segment (const char      *range_start,
   int chars_in_range;
   PangoLogAttr attr_before = log_attrs[0];
 
-  analysis->lang_engine = range_engine;
   chars_in_range = pango_utf8_strlen (range_start, range_end - range_start);
 
 
@@ -1851,13 +1849,7 @@ pango_get_log_attrs (const char    *text,
 		     PangoLogAttr  *log_attrs,
 		     int            attrs_len)
 {
-  PangoMap *lang_map;
   int chars_broken;
-  const char *range_start, *range_end;
-  PangoScript script;
-  PangoEngineLang *range_engine;
-  static guint engine_type_id = 0; /* MT-safe */
-  static guint render_type_id = 0; /* MT-safe */
   PangoAnalysis analysis = { NULL };
   PangoScriptIter iter;
 
@@ -1868,49 +1860,96 @@ pango_get_log_attrs (const char    *text,
 
   pango_default_break (text, length, &analysis, log_attrs, attrs_len);
 
-  if (engine_type_id == 0)
-    engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_LANG);
-  if (render_type_id == 0)
-    render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_NONE);
-
-  lang_map = pango_find_map (language, engine_type_id, render_type_id);
-
   chars_broken = 0;
 
   _pango_script_iter_init (&iter, text, length);
-  pango_script_iter_get_range (&iter, &range_start, &range_end, &script);
-  range_engine = (PangoEngineLang*) pango_map_get_engine (lang_map, script);
-  g_assert (range_start == text);
-
   while (pango_script_iter_next (&iter))
     {
       const char *run_start, *run_end;
-      PangoEngineLang* run_engine;
+      PangoScript script;
 
       pango_script_iter_get_range (&iter, &run_start, &run_end, &script);
-      run_engine = (PangoEngineLang*) pango_map_get_engine (lang_map, script);
-      g_assert (range_end == run_start);
+      analysis.script = script;
+      analysis.lang_engine = _pango_get_language_engine ();
 
-      if (range_engine != run_engine)
-	{
-	  /* Engine has changed; do the tailoring for the current range,
-	   * then start a new range.
-	   */
-	  chars_broken += tailor_segment (range_start, range_end, range_engine, chars_broken, &analysis, log_attrs);
-
-	  range_start = run_start;
-	  range_engine = run_engine;
-	}
-      range_end = run_end;
+      chars_broken += tailor_segment (run_start, run_end, chars_broken, &analysis, log_attrs);
     }
   _pango_script_iter_fini (&iter);
-
-  g_assert (length < 0 || range_end == text + length);
-
-  chars_broken += tailor_segment (range_start, range_end, range_engine, chars_broken, &analysis, log_attrs);
 
   if (chars_broken + 1 > attrs_len)
     g_warning ("pango_get_log_attrs: attrs_len should have been at least %d, but was %d.  Expect corrupted memory.",
 	       chars_broken + 1,
 	       attrs_len);
+}
+
+#include "break-arabic.c"
+#include "break-indic.c"
+#include "break-thai.c"
+
+static void
+break_script (const char          *item_text,
+	      unsigned int         item_length,
+	      const PangoAnalysis *analysis,
+	      PangoLogAttr        *attrs,
+	      int                  attrs_len)
+{
+  switch (analysis->script)
+    {
+    case PANGO_SCRIPT_ARABIC:
+      break_arabic (item_text, item_length, analysis, attrs, attrs_len);
+      break;
+
+    case PANGO_SCRIPT_DEVANAGARI:
+    case PANGO_SCRIPT_BENGALI:
+    case PANGO_SCRIPT_GURMUKHI:
+    case PANGO_SCRIPT_GUJARATI:
+    case PANGO_SCRIPT_ORIYA:
+    case PANGO_SCRIPT_TAMIL:
+    case PANGO_SCRIPT_TELUGU:
+    case PANGO_SCRIPT_KANNADA:
+    case PANGO_SCRIPT_MALAYALAM:
+    case PANGO_SCRIPT_SINHALA:
+      break_indic (item_text, item_length, analysis, attrs, attrs_len);
+      break;
+
+    case PANGO_SCRIPT_THAI:
+      break_thai (item_text, item_length, analysis, attrs, attrs_len);
+      break;
+    }
+}
+
+
+/* Wrap language breaker in PangoEngineLang to pass it through old API,
+ * from times when there were modules and engines. */
+typedef PangoEngineLang      PangoLanguageEngine;
+typedef PangoEngineLangClass PangoLanguageEngineClass;
+static GType pango_language_engine_get_type (void) G_GNUC_CONST;
+G_DEFINE_TYPE (PangoLanguageEngine, pango_language_engine, PANGO_TYPE_ENGINE_LANG);
+static void
+_pango_language_engine_break (PangoEngineLang *engine G_GNUC_UNUSED,
+			      const char      *item_text,
+			      int              item_length,
+			      PangoAnalysis   *analysis,
+			      PangoLogAttr    *attrs,
+			      int              attrs_len)
+{
+  break_script (item_text, item_length, analysis, attrs, attrs_len);
+}
+static void
+pango_language_engine_class_init (PangoEngineLangClass *class)
+{
+  class->script_break = _pango_language_engine_break;
+}
+static void
+pango_language_engine_init (PangoEngineLang *object)
+{
+}
+
+PangoEngineLang *
+_pango_get_language_engine (void)
+{
+  static PangoEngineLang *engine;
+  if (g_once_init_enter (&engine))
+    g_once_init_leave (&engine, g_object_new (pango_language_engine_get_type(), NULL));
+  return engine;
 }

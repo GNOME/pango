@@ -657,7 +657,6 @@ show_version(const char *name G_GNUC_UNUSED,
 	     GError    **error G_GNUC_UNUSED)
 {
   g_printf("%s (%s) %s\n", g_get_prgname (), PACKAGE_NAME, PACKAGE_VERSION);
-  g_printf("\nPango module interface version: %s\n", MODULE_VERSION);
 
   if (PANGO_VERSION != pango_version())
     g_printf("Linked Pango library has a different version: %s\n", pango_version_string ());
@@ -714,7 +713,7 @@ parse_options (int argc, char *argv[])
     {"output",		'o', 0, G_OPTION_ARG_STRING,			&opt_output,
      "Save rendered image to output file",			      "file"},
     {"pangorc",		0, 0, G_OPTION_ARG_STRING,			&opt_pangorc,
-     "pangorc file to use (default is ./pangorc)",		      "file"},
+     "Deprecated",		      "file"},
     {"pixels",		0, 0, G_OPTION_ARG_NONE,			&opt_pixels,
      "Use pixel units instead of points (sets dpi to 72)",		NULL},
     {"rtl",		0, 0, G_OPTION_ARG_NONE,			&opt_rtl,
@@ -812,14 +811,6 @@ parse_options (int argc, char *argv[])
   if (opt_markup &&
       !pango_parse_markup (text, -1, 0, NULL, NULL, NULL, &error))
     fail ("Cannot parse input as markup: %s", error->message);
-
-  /* Setup PANGO_RC_FILE
-   */
-  if (!opt_pangorc)
-    if (g_file_test ("./pangorc", G_FILE_TEST_IS_REGULAR))
-      opt_pangorc = "./pangorc";
-  if (opt_pangorc)
-    g_setenv ("PANGO_RC_FILE", opt_pangorc, TRUE);
 }
 
 

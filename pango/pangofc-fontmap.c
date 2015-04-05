@@ -49,7 +49,6 @@
 #include "pangofc-fontmap.h"
 #include "pangofc-private.h"
 #include "pango-impl-utils.h"
-#include "modules.h"
 #include "pango-enum-types.h"
 
 
@@ -1054,22 +1053,11 @@ G_DEFINE_ABSTRACT_TYPE (PangoFcFontMap, pango_fc_font_map, PANGO_TYPE_FONT_MAP)
 static void
 pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 {
-  static gsize registered_modules = 0; /* MT-safe */
   PangoFcFontMapPrivate *priv;
 
   priv = fcfontmap->priv = G_TYPE_INSTANCE_GET_PRIVATE (fcfontmap,
 							PANGO_TYPE_FC_FONT_MAP,
 							PangoFcFontMapPrivate);
-
-  if (g_once_init_enter (&registered_modules))
-    {
-      int i;
-
-      for (i = 0; _pango_included_fc_modules[i].list; i++)
-	pango_module_register (&_pango_included_fc_modules[i]);
-
-      g_once_init_leave(&registered_modules, 1);
-    }
 
   priv->n_families = -1;
 

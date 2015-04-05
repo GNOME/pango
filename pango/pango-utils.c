@@ -540,125 +540,6 @@ pango_scan_int (const char **pos, int *out)
 }
 
 
-static void
-read_config_file (const char *filename, gboolean enoent_error, GHashTable *ht)
-{
-  GKeyFile *key_file = g_key_file_new();
-  GError *key_file_error = NULL;
-  gchar **groups;
-  gsize groups_count = 0;
-  guint group_index;
-
-  if (!g_key_file_load_from_file(key_file,filename, 0, &key_file_error))
-    {
-      if (key_file_error)
-	{
-	  if (key_file_error->domain != G_FILE_ERROR || key_file_error->code != G_FILE_ERROR_NOENT || enoent_error)
-	    {
-	      g_warning ("error opening config file '%s': %s\n",
-			  filename, key_file_error->message);
-	    }
-	  g_error_free(key_file_error);
-	}
-      g_key_file_free(key_file);
-      return;
-    }
-
-  groups = g_key_file_get_groups (key_file, &groups_count);
-  for (group_index = 0; group_index < groups_count; group_index++)
-    {
-      gsize keys_count = 0;
-      const gchar *group = groups[group_index];
-      GError *keys_error = NULL;
-      gchar **keys;
-
-      keys = g_key_file_get_keys(key_file, group, &keys_count, &keys_error);
-
-      if (keys)
-	{
-	  guint key_index;
-
-	  for (key_index = 0; key_index < keys_count; key_index++)
-	    {
-	      const gchar *key = keys[key_index];
-	      GError *key_error = NULL;
-	      gchar *value =  g_key_file_get_value(key_file, group, key, &key_error);
-	      if (value != NULL)
-		{
-		  g_hash_table_insert (ht,
-				       g_strdup_printf ("%s/%s", group, key),
-				       value);
-		}
-	      if (key_error)
-		{
-		  g_warning ("error getting key '%s/%s' in config file '%s'\n",
-			     group, key, filename);
-		  g_error_free(key_error);
-		}
-	    }
-	  g_strfreev(keys);
-	}
-
-      if (keys_error)
-	{
-	  g_warning ("error getting keys in group '%s' of config file '%s'\n",
-		     filename, group);
-	  g_error_free(keys_error);
-	}
-    }
-  g_strfreev(groups);
-  g_key_file_free(key_file);
-}
-
-static GHashTable *
-read_config_system (void)
-{
-  char *filename;
-  GHashTable *config_hash;
-
-  config_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
-                                       (GDestroyNotify)g_free,
-                                       (GDestroyNotify)g_free);
-
-  filename = g_build_filename (pango_get_sysconf_subdirectory (),
-                               "pangorc",
-			       NULL);
-  read_config_file (filename, FALSE, config_hash);
-  g_free (filename);
-
-  return config_hash;
-}
-
-static GHashTable *
-read_config (void)
-{
-  static GHashTable *config_hash = NULL;
-
-  if (g_once_init_enter (&config_hash))
-    {
-      GHashTable *tmp_hash;
-      char *filename;
-      const char *envvar;
-
-      tmp_hash = read_config_system ();
-
-      filename = g_build_filename (g_get_user_config_dir (),
-                                   "pango",
-                                   "pangorc",
-                                   NULL);
-      read_config_file (filename, FALSE, tmp_hash);
-      g_free (filename);
-
-      envvar = g_getenv ("PANGO_RC_FILE");
-      if (envvar)
-        read_config_file (envvar, TRUE, tmp_hash);
-
-      g_once_init_leave (&config_hash, tmp_hash);
-    }
-
-  return config_hash;
-}
-
 /**
  * pango_config_key_get_system:
  * @key: Key to look up, in the form "SECTION/KEY".
@@ -668,20 +549,13 @@ read_config (void)
  *
  * Return value: (nullable): the value, if found, otherwise %NULL. The
  * value is a newly-allocated string and must be freed with g_free().
+ *
+ * Deprecated: 1.37:
  **/
 char *
 pango_config_key_get_system (const char *key)
 {
-  GHashTable *config_hash;
-  gchar *ret;
-
-  g_return_val_if_fail (key != NULL, NULL);
-
-  config_hash = read_config_system ();
-  ret = g_strdup (g_hash_table_lookup (config_hash, key));
-  g_hash_table_unref (config_hash);
-
-  return ret;
+  return NULL;
 }
 
 /**
@@ -694,17 +568,13 @@ pango_config_key_get_system (const char *key)
  *
  * Return value: (nullable): the value, if found, otherwise %NULL. The
  * value is a newly-allocated string and must be freed with g_free().
+ *
+ * Deprecated: 1.37:
  **/
 char *
 pango_config_key_get (const char *key)
 {
-  GHashTable *config_hash;
-
-  g_return_val_if_fail (key != NULL, NULL);
-
-  config_hash = read_config ();
-
-  return g_strdup (g_hash_table_lookup (config_hash, key));
+  return NULL;
 }
 
 #ifdef G_OS_WIN32

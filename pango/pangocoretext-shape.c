@@ -1,5 +1,5 @@
 /* Pango
- * basic-coretext.c
+ * pangocoretext-shape.c
  *
  * Copyright (C) 2005 Imendio AB
  * Copyright (C) 2010  Kristian Rietveld  <kris@gtk.org>
@@ -25,31 +25,9 @@
 #include <glib.h>
 #include <string.h>
 #include <Carbon/Carbon.h>
-#include "pango-engine.h"
 #include "pango-utils.h"
-#include "pango-fontmap.h"
-#include "pangocoretext.h"
+#include "pangocoretext-private.h"
 #include "pango-impl-utils.h"
-
-/* No extra fields needed */
-typedef PangoEngineShape      BasicEngineCoreText;
-typedef PangoEngineShapeClass BasicEngineCoreTextClass ;
-
-#define SCRIPT_ENGINE_NAME "BasicScriptEngineCoreText"
-#define RENDER_TYPE PANGO_RENDER_TYPE_CORE_TEXT
-
-static PangoEngineScriptInfo basic_scripts[] = {
-  { PANGO_SCRIPT_COMMON,   "" }
-};
-
-static PangoEngineInfo script_engines[] = {
-  {
-    SCRIPT_ENGINE_NAME,
-    PANGO_ENGINE_TYPE_SHAPE,
-    RENDER_TYPE,
-    basic_scripts, G_N_ELEMENTS(basic_scripts)
-  }
-};
 
 static void
 set_glyph (PangoFont        *font,
@@ -73,10 +51,10 @@ set_glyph (PangoFont        *font,
 
 /* The "RunIterator" helps us to iterate over the array of runs that is obtained from
  * the CoreText type setter. Even though Pango considers the string that is passed to
- * the shaping engine a single run, CoreText might consider it to consist out of
+ * the shape function a single run, CoreText might consider it to consist out of
  * multiple runs. Because of this, we have an interface around the CoreText array of
- * runs that works like iterating a single array, which makes our job in the shaping
- * engine function easier.
+ * runs that works like iterating a single array, which makes our job in the shape
+ * function easier.
  */
 
 struct RunIterator
@@ -155,7 +133,7 @@ run_iterator_get_glyph_count (struct RunIterator *iter)
 /* These functions are commented out to silence the compiler, but
  * kept around because they might be of use when fixing the more
  * intricate issues noted in the comment in the function
- * basic_engine_shape() below.
+ * pangocoretext_shape() below.
  */
 #if 0
 static gboolean
@@ -367,15 +345,14 @@ create_core_text_glyph_list (const char *text,
 }
 
 
-static void
-basic_engine_shape (PangoEngineShape    *engine,
-		    PangoFont           *font,
-		    const char          *text,
-		    gint                 length,
-		    const PangoAnalysis *analysis,
-		    PangoGlyphString    *glyphs,
-		    const char          *paragraph_text G_GNUC_UNUSED,
-		    unsigned int         paragraph_length G_GNUC_UNUSED)
+void
+_pango_core_text_shape (PangoFont           *font,
+			const char          *text,
+			gint                 length,
+			const PangoAnalysis *analysis,
+			PangoGlyphString    *glyphs,
+			const char          *paragraph_text G_GNUC_UNUSED,
+			unsigned int         paragraph_length G_GNUC_UNUSED)
 {
   const char *p;
   gulong n_chars, gs_i, gs_prev_i;
@@ -507,41 +484,3 @@ basic_engine_shape (PangoEngineShape    *engine,
   if (analysis->level & 1)
     pango_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
 }
-
-static void
-basic_engine_core_text_class_init (PangoEngineShapeClass *class)
-{
-  class->script_shape = basic_engine_shape;
-}
-
-PANGO_ENGINE_SHAPE_DEFINE_TYPE (BasicEngineCoreText, basic_engine_core_text,
-				basic_engine_core_text_class_init, NULL);
-
-void
-PANGO_MODULE_ENTRY(init) (GTypeModule *module)
-{
-  basic_engine_core_text_register_type (module);
-}
-
-void
-PANGO_MODULE_ENTRY(exit) (void)
-{
-}
-
-void
-PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
-			  int              *n_engines)
-{
-  *engines = script_engines;
-  *n_engines = G_N_ELEMENTS (script_engines);
-}
-
-PangoEngine *
-PANGO_MODULE_ENTRY(create) (const char *id)
-{
-  if (!strcmp (id, SCRIPT_ENGINE_NAME))
-    return g_object_new (basic_engine_core_text_type, NULL);
-  else
-    return NULL;
-}
-

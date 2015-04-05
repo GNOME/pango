@@ -37,6 +37,8 @@
  * script_engine_create(). The latter three functions are used when
  * creating engines from the module at run time, while the first
  * function is used when building a catalog of all available modules.
+ *
+ * Deprecated: 1.37
  */
 /**
  * SECTION:pango-engine-lang
@@ -47,6 +49,8 @@
  * The <firstterm>language engines</firstterm> are rendering-system independent
  * engines that determine line, word, and character breaks for character strings.
  * These engines are used in pango_break().
+ *
+ * Deprecated: 1.37
  */
 /**
  * SECTION:pango-engine-shape
@@ -57,6 +61,8 @@
  * The <firstterm>shape engines</firstterm> are rendering-system dependent
  * engines that convert character strings into glyph strings.
  * These engines are used in pango_shape().
+ *
+ * Deprecated: 1.37
  */
 #include "config.h"
 
@@ -97,7 +103,6 @@ pango_engine_shape_real_covers (PangoEngineShape *engine G_GNUC_UNUSED,
 				PangoLanguage    *language,
 				gunichar          wc)
 {
-
   PangoCoverage *coverage = pango_font_get_coverage (font, language);
   PangoCoverageLevel result = pango_coverage_get (coverage, wc);
 

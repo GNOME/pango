@@ -26,8 +26,6 @@ TEST_TEXTS =			\
 EXTRA_DIST =			\
 	$(TEST_TEXTS)
 
-CLEANFILES = pangorc
-
 INCLUDES =				\
 	-I$(top_srcdir)			\
 	$(PANGO_DEBUG_FLAGS)		\
@@ -80,7 +78,7 @@ endif
 
 MAINTAINERCLEANFILES = pango-view.1.in
 EXTRA_DIST += pango-view.1.in
-CLEANFILES += pango-view.1
+CLEANFILES = pango-view.1
 
 nodist_man_MANS = pango-view.1
 
@@ -99,10 +97,5 @@ pango-view.1: pango-view$(EXEEXT)
 	cp $(srcdir)/pango-view.1.in $@
 
 #########################################################
-
-BUILT_SOURCES = pangorc
-
-pangorc: $(srcdir)/../modules/pangorc
-	cp $(srcdir)/../modules/pangorc $@
 
 -include $(top_srcdir)/git.mk

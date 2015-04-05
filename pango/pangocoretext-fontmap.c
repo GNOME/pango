@@ -26,7 +26,6 @@
 #include "pango-fontmap.h"
 #include "pangocoretext-private.h"
 #include "pango-impl-utils.h"
-#include "modules.h"
 
 #include <Carbon/Carbon.h>
 
@@ -718,7 +717,6 @@ static void
 pango_core_text_family_class_init (PangoCoreTextFamilyClass *klass)
 {
   GObjectClass *object_class = (GObjectClass *)klass;
-  int i;
   PangoFontFamilyClass *pfclass = PANGO_FONT_FAMILY_CLASS(klass);
 
   object_class->finalize = pango_core_text_family_finalize;
@@ -726,9 +724,6 @@ pango_core_text_family_class_init (PangoCoreTextFamilyClass *klass)
   pfclass->list_faces = pango_core_text_family_list_faces;
   pfclass->get_name = pango_core_text_family_get_name;
   pfclass->is_monospace = pango_core_text_family_is_monospace;
-
-  for (i = 0; _pango_included_core_text_modules[i].list; i++)
-    pango_module_register (&_pango_included_core_text_modules[i]);
 }
 
 static void

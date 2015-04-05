@@ -4,7 +4,6 @@ EXTRA_DIST = 			\
 	boundaries.utf8		\
 	GraphemeBreakTest.txt
 
-CLEANFILES = pangorc
 DISTCLEANFILES = all-unicode.txt
 
 AM_CPPFLAGS =					\
@@ -40,8 +39,7 @@ endif
 TESTS_ENVIRONMENT =                    \
    srcdir=$(srcdir)                    \
    G_TEST_SRCDIR=$(abs_srcdir)         \
-   G_TEST_BUILDDIR=$(abs_builddir)     \
-   PANGO_RC_FILE=./pangorc
+   G_TEST_BUILDDIR=$(abs_builddir)
 
 check_PROGRAMS = 			\
 	testboundaries 			\
@@ -98,11 +96,6 @@ cxx_test_SOURCES = cxx-test.C
 
 all-unicode.txt: gen-all-unicode$(EXEEXT)
 	./gen-all-unicode > all-unicode.txt
-
-pangorc: $(srcdir)/../modules/pangorc
-	cp $(srcdir)/../modules/pangorc $@
-
-$(noinst_PROGRAMS) $(check_PROGRAMS): pangorc
 
 noinst_PROGRAMS = $(check_PROGRAMS) gen-all-unicode dump-boundaries
 
