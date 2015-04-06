@@ -1803,7 +1803,6 @@ tailor_segment (const char      *range_start,
 
   chars_in_range = pango_utf8_strlen (range_start, range_end - range_start);
 
-
   if (tailor_break (range_start,
 		    range_end - range_start,
 		    analysis,
@@ -1864,7 +1863,7 @@ pango_get_log_attrs (const char    *text,
   chars_broken = 0;
 
   _pango_script_iter_init (&iter, text, length);
-  while (pango_script_iter_next (&iter))
+  do
     {
       const char *run_start, *run_end;
       PangoScript script;
@@ -1875,6 +1874,7 @@ pango_get_log_attrs (const char    *text,
 
       chars_broken += tailor_segment (run_start, run_end, chars_broken, &analysis, log_attrs);
     }
+  while (pango_script_iter_next (&iter));
   _pango_script_iter_fini (&iter);
 
   if (chars_broken + 1 > attrs_len)
