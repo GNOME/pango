@@ -1857,6 +1857,7 @@ pango_get_log_attrs (const char    *text,
   g_return_if_fail (log_attrs != NULL);
 
   analysis.level = level;
+  analysis.lang_engine = _pango_get_language_engine ();
 
   pango_default_break (text, length, &analysis, log_attrs, attrs_len);
 
@@ -1870,7 +1871,6 @@ pango_get_log_attrs (const char    *text,
 
       pango_script_iter_get_range (&iter, &run_start, &run_end, &script);
       analysis.script = script;
-      analysis.lang_engine = _pango_get_language_engine ();
 
       chars_broken += tailor_segment (run_start, run_end, chars_broken, &analysis, log_attrs);
     }
