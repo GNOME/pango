@@ -94,7 +94,7 @@ log_attr_foreach (const char     *text,
     return;
 
   offset = 0;
-  line = 0;
+  line = 1;
 
   prev_type = (GUnicodeType) -1;
   prev_wc = 0;
