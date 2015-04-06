@@ -1798,7 +1798,8 @@ tailor_segment (const char      *range_start,
 		PangoLogAttr    *log_attrs)
 {
   int chars_in_range;
-  PangoLogAttr attr_before = log_attrs[0];
+  PangoLogAttr *start = log_attrs + chars_broken;
+  PangoLogAttr attr_before = *start;
 
   chars_in_range = pango_utf8_strlen (range_start, range_end - range_start);
 
@@ -1806,18 +1807,18 @@ tailor_segment (const char      *range_start,
   if (tailor_break (range_start,
 		    range_end - range_start,
 		    analysis,
-		    log_attrs + chars_broken,
+		    start,
 		    chars_in_range + 1))
     {
       /* if tailored, we enforce some of the attrs from before tailoring at
        * the boundary
        */
 
-     log_attrs[0].backspace_deletes_character  = attr_before.backspace_deletes_character;
+     start->backspace_deletes_character  = attr_before.backspace_deletes_character;
 
-     log_attrs[0].is_line_break      |= attr_before.is_line_break;
-     log_attrs[0].is_mandatory_break |= attr_before.is_mandatory_break;
-     log_attrs[0].is_cursor_position |= attr_before.is_cursor_position;
+     start->is_line_break      |= attr_before.is_line_break;
+     start->is_mandatory_break |= attr_before.is_mandatory_break;
+     start->is_cursor_position |= attr_before.is_cursor_position;
     }
 
   return chars_in_range;
