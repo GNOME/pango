@@ -23,7 +23,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\pango\break-arabic.c"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="..\..\..\pango\break-indic.c"><Filter>Source Files</Filter></ClCompile>
-#include "libpango.vs10.sourcefiles.filters"
-#include "libmini-fribidi.vs10.sourcefiles.filters"
+#include "pango.vs10.sourcefiles.filters"
   </ItemGroup>
 </Project>

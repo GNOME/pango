@@ -179,16 +179,7 @@
     <ResourceCompile Include="..\..\..\pango\pangowin32.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\modules\basic\basic-win32.c">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PANGO_MODULE_PREFIX=_pango_basic_win32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PANGO_MODULE_PREFIX=_pango_basic_win32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PANGO_MODULE_PREFIX=_pango_basic_win32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PANGO_MODULE_PREFIX=_pango_basic_win32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-	</ClCompile>
-    <ClCompile Include="..\..\..\pango\module-defs-win32.c" />
-    <ClCompile Include="..\..\..\pango\pangowin32-fontcache.c" />
-    <ClCompile Include="..\..\..\pango\pangowin32-fontmap.c" />
-    <ClCompile Include="..\..\..\pango\pangowin32.c" />
+#include "pangowin32.vs10.sourcefiles"
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="pango.vcxproj">

@@ -454,6 +454,51 @@ MOSTLYCLEANFILES = 		\
 DISTCLEANFILES = 		\
 	pango-features.h
 
+# ------------------- MSVC Build Items ----------------
+
+extra_fribidi_srcs_for_msvc =	\
+	mini-fribidi/fribidi.c			\
+	mini-fribidi/fribidi_char_type.c	\
+	mini-fribidi/fribidi_types.c
+
+MSVCPROJS = pango pangowin32 pangoft2 pangocairo
+
+pango_FILES =	\
+	$(extra_fribidi_srcs_for_msvc)	\
+	$(libpango_1_0_la_SOURCES)
+pango_EXCLUDES = dummy
+pango_HEADERS_DIR = $(pangoincludedir)
+
+# We can't just use $(pangoinclude_HEADERS), due to different platforms this may run on.
+# We don't include the pangoft2 headers here, as it is optional on Windows Builds.
+pango_HEADERS_INST = 	\
+	$(pango_headers)	\
+	$(pangocairo_headers)	\
+	pangowin32.h		\
+	pango-features.h	\
+	pango-enum-types.h
+
+pango_HEADERS_EXCLUDES = dummy
+
+pangowin32_FILES = $(libpangowin32_1_0_la_SOURCES)
+pangowin32_EXCLUDES = dummy
+
+pangoft2_FILES = $(libpangoft2_1_0_la_SOURCES)
+pangoft2_EXCLUDES = dummy
+
+# Again, can't use $(libpangocairo_1_0_la_SOURCES), due to different platforms this may run on.
+pangocairo_FILES = $(pangocairo_core_sources)
+pangocairo_EXCLUDES = dummy
+
+include $(top_srcdir)/build/Makefile.msvcproj
+
+dist-hook: \
+	$(top_builddir)/build/win32/vs9/pango.vcproj		\
+	$(top_builddir)/build/win32/vs9/pangowin32.vcproj	\
+	$(top_builddir)/build/win32/vs9/pangoft2.vcproj		\
+	$(top_builddir)/build/win32/vs9/pangocairo.vcproj	\
+	$(top_builddir)/build/win32/vs9/pango.headers
+
 install-exec-hook:
 if DISABLE_EXPLICIT_DEPS
 	-for i in libpangoft2-$(PANGO_API_VERSION).la libpangoxft-$(PANGO_API_VERSION).la libpangowin32-$(PANGO_API_VERSION).la; do \

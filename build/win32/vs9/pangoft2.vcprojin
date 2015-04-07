@@ -168,13 +168,7 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File RelativePath="..\..\..\modules\basic\basic-fc.c">
-				<FileConfiguration Name="Debug_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_basic_fc" /></FileConfiguration>
-				<FileConfiguration Name="Release_FC|Win32"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_basic_fc" /></FileConfiguration>
-				<FileConfiguration Name="Debug_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_basic_fc" /></FileConfiguration>
-				<FileConfiguration Name="Release_FC|x64"><Tool Name="VCCLCompilerTool" PreprocessorDefinitions="PANGO_MODULE_PREFIX=_pango_basic_fc" /></FileConfiguration>
-			</File>
-#include "libpangoft2.sourcefiles"
+#include "pangoft2.sourcefiles"
 		</Filter>
 	</Files>
 </VisualStudioProject>

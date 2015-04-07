@@ -10,42 +10,14 @@
     <PangoInstallHeadersData>
 #include "pango.vs10.headers"
 
-copy ..\..\..\pango\pango-features.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
-
-copy ..\..\..\pango\pango-enum-types.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
-
-copy ..\..\..\pango\pangowin32.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
-
-
-if "$(Configuration)" == "Release" goto DO_CREATE_PANGO_ALIASES
-
-if "$(Configuration)" == "Debug" goto DO_CREATE_PANGO_ALIASES
-
+if "$(Configuration)" == "Release" goto END
+if "$(Configuration)" == "Debug" goto END
 
 copy ..\..\..\pango\pangofc-decoder.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
-
 copy ..\..\..\pango\pangofc-font.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
-
 copy ..\..\..\pango\pangofc-fontmap.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
-
 copy ..\..\..\pango\pango-ot.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
-
 copy ..\..\..\pango\pangoft2.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
-
-
-:DO_CREATE_PANGO_ALIASES
-
-if exist $(CopyDir)\etc\pango\pango.aliases goto END
-
-if not exist $(CopyDir)\etc\pango mkdir $(CopyDir)\etc\pango
-
-echo tahoma = "tahoma,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal" > $(CopyDir)\etc\pango\pango.aliases
-
-echo sans = "arial,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal" >> $(CopyDir)\etc\pango\pango.aliases
-
-echo serif = "times new roman,angsana new,mingliu,simsun,gulimche,ms gothic,latha,mangal" >> $(CopyDir)\etc\pango\pango.aliases
-
-echo monospace = "courier new,courier monothai,mingliu,simsun,gulimche,ms gothic,latha,mangal" >> $(CopyDir)\etc\pango\pango.aliases
 
 :END
 </PangoInstallHeadersData>

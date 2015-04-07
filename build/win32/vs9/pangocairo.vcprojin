@@ -307,7 +307,7 @@
 			</File>
 			<File RelativePath="..\..\..\pango\pangocairo-win32font.c" />
 			<File RelativePath="..\..\..\pango\pangocairo-win32fontmap.c" />
-#include "libpangocairo.sourcefiles"
+#include "pangocairo.sourcefiles"
 		</Filter>
 	</Files>
 </VisualStudioProject>

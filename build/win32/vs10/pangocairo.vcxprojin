@@ -335,7 +335,7 @@
     </ClCompile>
     <ClCompile Include="..\..\..\pango\pangocairo-win32font.c" />
     <ClCompile Include="..\..\..\pango\pangocairo-win32fontmap.c" />
-#include "libpangocairo.vs10.sourcefiles"
+#include "pangocairo.vs10.sourcefiles"
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="pango.vcxproj">

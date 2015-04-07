@@ -191,8 +191,7 @@
 			>
 			<File RelativePath="..\..\..\pango\break-arabic.c" />
 			<File RelativePath="..\..\..\pango\break-indic.c" />
-#include "libpango.sourcefiles"
-#include "libmini-fribidi.sourcefiles"
+#include "pango.sourcefiles"
 		</Filter>
 	</Files>
 </VisualStudioProject>

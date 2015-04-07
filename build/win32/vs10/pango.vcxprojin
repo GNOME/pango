@@ -160,8 +160,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\pango\break-arabic.c" />
     <ClCompile Include="..\..\..\pango\break-indic.c" />
-#include "libpango.vs10.sourcefiles"
-#include "libmini-fribidi.vs10.sourcefiles"
+#include "pango.vs10.sourcefiles"
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\..\config.h.win32">
