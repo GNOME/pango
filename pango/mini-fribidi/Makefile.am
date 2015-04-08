@@ -29,11 +29,4 @@ EXTRA_DIST = 			\
 	fribidi_tab_char_type_2.i \
         fribidi_types.i
 
-
-include $(top_srcdir)/build/Makefile-msvcproj.am
-
-dist-hook: $(fribidi_msvcproj_srcfiles)
-	
-DISTCLEANFILES = $(fribidi_msvcproj_srcfiles)
-
 -include $(top_srcdir)/git.mk
