@@ -8,17 +8,17 @@
 	<UserMacro
 		Name="PangoInstallHeadersData"
 		Value="
-mkdir $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+mkdir $(CopyDir)\include\pango-$(ApiVersion)\pango&#x0D;&#x0A;
 #include "pango.headers"
 
 if &quot;$(ConfigurationName)&quot; == &quot;Release&quot; goto END&#x0D;&#x0A;
 if &quot;$(ConfigurationName)&quot; == &quot;Debug&quot; goto END&#x0D;&#x0A;
 
-copy ..\..\..\pango\pangofc-decoder.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
-copy ..\..\..\pango\pangofc-font.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
-copy ..\..\..\pango\pangofc-fontmap.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
-copy ..\..\..\pango\pango-ot.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
-copy ..\..\..\pango\pangoft2.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangofc-decoder.h $(CopyDir)\include\pango-$(ApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangofc-font.h $(CopyDir)\include\pango-$(ApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangofc-fontmap.h $(CopyDir)\include\pango-$(ApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pango-ot.h $(CopyDir)\include\pango-$(ApiVersion)\pango&#x0D;&#x0A;
+copy ..\..\..\pango\pangoft2.h $(CopyDir)\include\pango-$(ApiVersion)\pango&#x0D;&#x0A;
 
 :END&#x0D;&#x0A;
 "

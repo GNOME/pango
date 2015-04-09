@@ -17,7 +17,7 @@
 		Value="$(GlibEtcInstallRoot)"
 	/>
 	<UserMacro
-		Name="PangoApiVersion"
+		Name="ApiVersion"
 		Value="1.0"
 	/>
 	<UserMacro
@@ -26,7 +26,7 @@
 	/>
 	<UserMacro
 		Name="PangoLibtoolCompatibleDllSuffix"
-		Value="-$(PangoApiVersion)-0"
+		Value="-$(ApiVersion)-0"
 	/>
 	<UserMacro
 		Name="PangoSeparateVSDllPrefix"

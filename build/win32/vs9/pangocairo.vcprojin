@@ -46,7 +46,7 @@
 				ModuleDefinitionFile="..\..\..\pango\pangocairo.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(TargetDir)$(ProjectName)-$(PangoApiVersion).lib"
+				ImportLibrary="$(TargetDir)$(ProjectName)-$(ApiVersion).lib"
 				TargetMachine="1"
 			/>
 		</Configuration>
@@ -76,11 +76,11 @@
 				AdditionalDependencies="cairo.lib"
 				OutputFile="$(OutDir)\$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll"
 				LinkIncremental="2"
-				IgnoreDefaultLibraryNames="$(OutDir)\pangoft2-$(PangoApiVersion).lib"
+				IgnoreDefaultLibraryNames="$(OutDir)\pangoft2-$(ApiVersion).lib"
 				ModuleDefinitionFile="..\..\..\pango\pangocairo.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(TargetDir)$(ProjectName)-$(PangoApiVersion).lib"
+				ImportLibrary="$(TargetDir)$(ProjectName)-$(ApiVersion).lib"
 				TargetMachine="1"
 			/>
 		</Configuration>
@@ -112,7 +112,7 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(TargetDir)$(ProjectName)-$(PangoApiVersion).lib"
+				ImportLibrary="$(TargetDir)$(ProjectName)-$(ApiVersion).lib"
 				TargetMachine="1"
 			/>
 		</Configuration>
@@ -139,13 +139,13 @@
 				AdditionalDependencies="cairo.lib"
 				OutputFile="$(OutDir)\$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll"
 				LinkIncremental="1"
-				IgnoreDefaultLibraryNames="$(OutDir)\pangoft2-$(PangoApiVersion).lib"
+				IgnoreDefaultLibraryNames="$(OutDir)\pangoft2-$(ApiVersion).lib"
 				ModuleDefinitionFile="..\..\..\pango\pangocairo.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(TargetDir)$(ProjectName)-$(PangoApiVersion).lib"
+				ImportLibrary="$(TargetDir)$(ProjectName)-$(ApiVersion).lib"
 				TargetMachine="1"
 			/>
 		</Configuration>
@@ -175,7 +175,7 @@
 				ModuleDefinitionFile="..\..\..\pango\pangocairo.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(TargetDir)$(ProjectName)-$(PangoApiVersion).lib"
+				ImportLibrary="$(TargetDir)$(ProjectName)-$(ApiVersion).lib"
 				TargetMachine="17"
 			/>
 		</Configuration>
@@ -202,11 +202,11 @@
 				AdditionalDependencies="cairo.lib"
 				OutputFile="$(OutDir)\$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll"
 				LinkIncremental="2"
-				IgnoreDefaultLibraryNames="$(OutDir)\pangoft2-$(PangoApiVersion).lib"
+				IgnoreDefaultLibraryNames="$(OutDir)\pangoft2-$(ApiVersion).lib"
 				ModuleDefinitionFile="..\..\..\pango\pangocairo.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(TargetDir)$(ProjectName)-$(PangoApiVersion).lib"
+				ImportLibrary="$(TargetDir)$(ProjectName)-$(ApiVersion).lib"
 				TargetMachine="17"
 			/>
 		</Configuration>
@@ -235,7 +235,7 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(TargetDir)$(ProjectName)-$(PangoApiVersion).lib"
+				ImportLibrary="$(TargetDir)$(ProjectName)-$(ApiVersion).lib"
 				TargetMachine="17"
 			/>
 		</Configuration>
@@ -264,7 +264,7 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(TargetDir)$(ProjectName)-$(PangoApiVersion).lib"
+				ImportLibrary="$(TargetDir)$(ProjectName)-$(ApiVersion).lib"
 				TargetMachine="17"
 			/>
 		</Configuration>

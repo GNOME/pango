@@ -48,7 +48,7 @@
 				ModuleDefinitionFile="..\..\..\pango\pangowin32.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(TargetDir)$(ProjectName)-$(PangoApiVersion).lib"
+				ImportLibrary="$(TargetDir)$(ProjectName)-$(ApiVersion).lib"
 				TargetMachine="1"
 			/>
 		</Configuration>
@@ -80,7 +80,7 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(TargetDir)$(ProjectName)-$(PangoApiVersion).lib"
+				ImportLibrary="$(TargetDir)$(ProjectName)-$(ApiVersion).lib"
 				TargetMachine="1"
 			/>
 		</Configuration>
@@ -109,7 +109,7 @@
 				ModuleDefinitionFile="..\..\..\pango\pangowin32.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(TargetDir)$(ProjectName)-$(PangoApiVersion).lib"
+				ImportLibrary="$(TargetDir)$(ProjectName)-$(ApiVersion).lib"
 				TargetMachine="17"
 			/>
 		</Configuration>
@@ -138,7 +138,7 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(TargetDir)$(ProjectName)-$(PangoApiVersion).lib"
+				ImportLibrary="$(TargetDir)$(ProjectName)-$(ApiVersion).lib"
 				TargetMachine="17"
 			/>
 		</Configuration>

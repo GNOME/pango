@@ -8,17 +8,17 @@
     <InstalledDlls>$(BinDir)\$(PangoDllPrefix)pango(PangoDllSuffix).dll;$(BinDir)\$(PangoDllPrefix)pangowin32(PangoDllSuffix).dll;$(BinDir)\$(PangoDllPrefix)pangocairo(PangoDllSuffix).dll</InstalledDlls>
     <InstalledFCDlls>$(BinDir)\$(PangoDllPrefix)pangoft2(PangoDllSuffix).dll</InstalledFCDlls>
     <PangoInstallHeadersData>
-mkdir $(CopyDir)\include\pango-$(PangoApiVersion)\pango
+mkdir $(CopyDir)\include\pango-$(ApiVersion)\pango
 #include "pango.vs10.headers"
 
 if "$(Configuration)" == "Release" goto END
 if "$(Configuration)" == "Debug" goto END
 
-copy ..\..\..\pango\pangofc-decoder.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
-copy ..\..\..\pango\pangofc-font.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
-copy ..\..\..\pango\pangofc-fontmap.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
-copy ..\..\..\pango\pango-ot.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
-copy ..\..\..\pango\pangoft2.h $(CopyDir)\include\pango-$(PangoApiVersion)\pango
+copy ..\..\..\pango\pangofc-decoder.h $(CopyDir)\include\pango-$(ApiVersion)\pango
+copy ..\..\..\pango\pangofc-font.h $(CopyDir)\include\pango-$(ApiVersion)\pango
+copy ..\..\..\pango\pangofc-fontmap.h $(CopyDir)\include\pango-$(ApiVersion)\pango
+copy ..\..\..\pango\pango-ot.h $(CopyDir)\include\pango-$(ApiVersion)\pango
+copy ..\..\..\pango\pangoft2.h $(CopyDir)\include\pango-$(ApiVersion)\pango
 
 :END
 </PangoInstallHeadersData>
