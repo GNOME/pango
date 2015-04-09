@@ -552,7 +552,7 @@ parse_margin (const char *name G_GNUC_UNUSED,
 	      gpointer    data G_GNUC_UNUSED,
 	      GError    **error)
 {
-  switch (sscanf (arg, "%d %d %d %d", &opt_margin_t, &opt_margin_r, &opt_margin_b, &opt_margin_l))
+  switch (sscanf (arg, "%d%*[ ,]%d%*[ ,]%d%*[ ,]%d", &opt_margin_t, &opt_margin_r, &opt_margin_b, &opt_margin_l))
   {
     case 0:
     {
