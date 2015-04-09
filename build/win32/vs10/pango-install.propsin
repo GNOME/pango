@@ -8,6 +8,7 @@
     <InstalledDlls>$(BinDir)\$(PangoDllPrefix)pango(PangoDllSuffix).dll;$(BinDir)\$(PangoDllPrefix)pangowin32(PangoDllSuffix).dll;$(BinDir)\$(PangoDllPrefix)pangocairo(PangoDllSuffix).dll</InstalledDlls>
     <InstalledFCDlls>$(BinDir)\$(PangoDllPrefix)pangoft2(PangoDllSuffix).dll</InstalledFCDlls>
     <PangoInstallHeadersData>
+mkdir $(CopyDir)\include\pango-$(PangoApiVersion)\pango
 #include "pango.vs10.headers"
 
 if "$(Configuration)" == "Release" goto END

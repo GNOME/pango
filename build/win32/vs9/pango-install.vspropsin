@@ -8,6 +8,7 @@
 	<UserMacro
 		Name="PangoInstallHeadersData"
 		Value="
+mkdir $(CopyDir)\include\pango-$(PangoApiVersion)\pango&#x0D;&#x0A;
 #include "pango.headers"
 
 if &quot;$(ConfigurationName)&quot; == &quot;Release&quot; goto END&#x0D;&#x0A;
