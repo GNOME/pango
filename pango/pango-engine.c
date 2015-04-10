@@ -153,8 +153,8 @@ _pango_engine_shape_covers (PangoEngineShape *engine,
 			    PangoLanguage    *language,
 			    gunichar          wc)
 {
-  g_return_val_if_fail (PANGO_IS_ENGINE_SHAPE (engine), PANGO_COVERAGE_NONE);
-  g_return_val_if_fail (PANGO_IS_FONT (font), PANGO_COVERAGE_NONE);
+  if (G_UNLIKELY (!engine || !font))
+    return PANGO_COVERAGE_NONE;
 
   return PANGO_ENGINE_SHAPE_GET_CLASS (engine)->covers (engine,
 							font,
