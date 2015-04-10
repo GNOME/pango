@@ -10,19 +10,16 @@
 #
 # Add this to Makefile.am where your library/program is built:
 #   include $(top_srcdir)/build/Makefile.msvcproj
-#   MSVCPROJS = YourProject
+#   MSVCPROJS = YourProject (can be multiple projects in a single srcdir)
 #   YourProject_FILES = $(libyourlib_1_0_SOURCES)
 #   YourProject_EXCLUDES = ... # list of sources to exclude, separated by '|', wildcards allowed; use random unsed value if none
 #   YourProject_HEADERS_DIR = $(libyourlibincludedir)
 #   YourProject_HEADERS_INST = $(libyourlib_1_0_HEADERS)
 #   YourProject_HEADERS_EXCLUDES = ... # <list of headers to exclude from installation, separated by '|', wildcards allowed; use random unsed value if none>
 #
-#   dist-hook: \ # (or add to it if it is already there)
+#   dist-hook: \ # (or add to it if it is already there, note the vs9 items will also call the vs10 items in the process)
 #   	$(top_builddir)/build/win32/vs9/YourProject.vcproj	\
-#   	$(top_builddir)/build/win32/vs9/YourProject.headers	\
-#   	$(top_builddir)/build/win32/vs10/YourProject.vcxproj	\
-#   	$(top_builddir)/build/win32/vs10/YourProject.vcxproj.filters	\
-#   	$(top_builddir)/build/win32/vs9/YourProject.vs10.headers
+#   	$(top_builddir)/build/win32/vs9/YourProject.headers
 
 
 # Private functions
@@ -30,7 +27,7 @@
 ## Transform the MSVC project filename (no filename extensions) to something which can reference through a variable
 ## without automake/make complaining, eg Gtk-2.0 -> Gtk_2_0
 _proj_name=$(subst /,_,$(subst -,_,$(subst .,_,$(1))))
-_proj_path_raw:=$(shell realpath --relative-to=$(top_srcdir) $(srcdir))
+_proj_path_raw:=$(subst $(abs_top_srcdir)/,,$(abs_srcdir))
 _proj_path=$(subst /,\\,$(_proj_path_raw))
 _proj_subdir_int=$(if $(ifeq $(_proj_path),\.),\\,\\$(_proj_path)\\)
 _proj_subdir=$(subst \\.\\,\\,$(_proj_subdir_int))
@@ -43,8 +40,7 @@ _proj_headers_raw=$(subst /,\\,$($(_proj_name)_HEADERS_INST))
 _proj_headers=$(subst $(srcdir)\\,,$(subst $(builddir)\\,,$(subst $(top_builddir)\\$(_proj_path)\\,\\,$(_proj_headers_raw))))
 _proj_headers_excludes=$($(_proj_name)_HEADERS_EXCLUDES)
 
-empty:=
-_headers_dest_posix=$(subst $(includedir),$(empty),$($(_proj_name)_HEADERS_DIR))
+_headers_dest_posix=$(subst $(includedir),,$($(_proj_name)_HEADERS_DIR))
 _headers_destdir=$(subst /,\\,$(_headers_dest_posix))
 
 #
