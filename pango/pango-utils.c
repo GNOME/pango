@@ -548,7 +548,7 @@ pango_scan_int (const char **pos, int *out)
  *
  * Return value: %NULL
  *
- * Deprecated: 1.37:
+ * Deprecated: 1.37
  **/
 char *
 pango_config_key_get_system (const char *key)
@@ -564,7 +564,7 @@ pango_config_key_get_system (const char *key)
  *
  * Return value: %NULL
  *
- * Deprecated: 1.37:
+ * Deprecated: 1.37
  **/
 char *
 pango_config_key_get (const char *key)
