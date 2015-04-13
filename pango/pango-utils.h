@@ -86,12 +86,14 @@ gboolean pango_parse_stretch (const char   *str,
  * stored in the registry). The returned string should not be
  * g_free'd.
  */
+G_DEPRECATED
 const char *   pango_get_sysconf_subdirectory (void) G_GNUC_PURE;
 
 /* Ditto for LIBDIR/pango. On Win32, use the same Pango
  * installation directory. This returned string should not be
  * g_free'd either.
  */
+G_DEPRECATED
 const char *   pango_get_lib_subdirectory (void) G_GNUC_PURE;
 
 #endif /* PANGO_ENABLE_BACKEND */
