@@ -27,6 +27,10 @@
 #include "pango-impl-utils.h"
 #include <string.h>
 
+#ifdef _MSC_VER
+#pragma execution_character_set("utf-8")
+#endif
+
 #define PARAGRAPH_SEPARATOR 0x2029
 #define PARAGRAPH_SEPARATOR_STRING "\xE2\x80\xA9"
 
