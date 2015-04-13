@@ -159,6 +159,8 @@ pango_version_check (int required_major,
  * Trims leading and trailing whitespace from a string.
  *
  * Return value: A newly-allocated string that must be freed with g_free()
+ *
+ * Deprecated: 1.37
  **/
 char *
 pango_trim_string (const char *str)
@@ -186,6 +188,8 @@ pango_trim_string (const char *str)
  *
  * Return value: (transfer full) (array zero-terminated=1): a list of
  * strings to be freed with g_strfreev()
+ *
+ * Deprecated: 1.37
  **/
 char **
 pango_split_file_list (const char *str)
@@ -257,6 +261,8 @@ pango_split_file_list (const char *str)
  * Return value: 0 if the stream was already at an %EOF character, otherwise
  *               the number of lines read (this is useful for maintaining
  *               a line number counter which doesn't combine lines with '\')
+ *
+ * Deprecated: 1.37
  **/
 gint
 pango_read_line (FILE *stream, GString *str)
@@ -358,6 +364,8 @@ pango_read_line (FILE *stream, GString *str)
  *
  * Return value: %FALSE if skipping the white space leaves
  * the position at a '\0' character.
+ *
+ * Deprecated: 1.37
  **/
 gboolean
 pango_skip_space (const char **pos)
@@ -382,6 +390,8 @@ pango_skip_space (const char **pos)
  * Leading white space is skipped.
  *
  * Return value: %FALSE if a parse error occurred.
+ *
+ * Deprecated: 1.37
  **/
 gboolean
 pango_scan_word (const char **pos, GString *out)
@@ -425,6 +435,8 @@ pango_scan_word (const char **pos, GString *out)
  * a literal quote. Leading white space outside of quotes is skipped.
  *
  * Return value: %FALSE if a parse error occurred.
+ *
+ * Deprecated: 1.37
  **/
 gboolean
 pango_scan_string (const char **pos, GString *out)
@@ -513,6 +525,8 @@ pango_scan_string (const char **pos, GString *out)
  * Leading white space is skipped.
  *
  * Return value: %FALSE if a parse error occurred.
+ *
+ * Deprecated: 1.37
  **/
 gboolean
 pango_scan_int (const char **pos, int *out)
@@ -675,6 +689,8 @@ parse_int (const char *word,
  * returned string should be freed using g_free().
  *
  * Return value: %TRUE if @str was successfully parsed.
+ *
+ * Deprecated: 1.37
  *
  * Since: 1.16
  **/

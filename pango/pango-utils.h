@@ -28,16 +28,23 @@
 
 G_BEGIN_DECLS
 
+G_DEPRECATED
 char **  pango_split_file_list (const char *str);
 
+G_DEPRECATED
 char    *pango_trim_string     (const char *str);
+G_DEPRECATED
 gint     pango_read_line      (FILE        *stream,
 			       GString     *str);
+G_DEPRECATED
 gboolean pango_skip_space     (const char **pos);
+G_DEPRECATED
 gboolean pango_scan_word      (const char **pos,
 			       GString     *out);
+G_DEPRECATED
 gboolean pango_scan_string    (const char **pos,
 			       GString     *out);
+G_DEPRECATED
 gboolean pango_scan_int       (const char **pos,
 			       int         *out);
 
@@ -52,6 +59,7 @@ void     pango_lookup_aliases (const char   *fontname,
 			       int          *n_families);
 #endif /* PANGO_ENABLE_BACKEND */
 
+G_DEPRECATED
 gboolean pango_parse_enum     (GType       type,
 			       const char *str,
 			       int        *value,
