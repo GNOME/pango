@@ -49,11 +49,6 @@
  *
  * Needless to say, the list MUST be sorted on the language code.
  */
-
-#ifdef _MSC_VER
-#pragma execution_character_set("utf-8")
-#endif
-
 /* Sacrificial define to make introspection happy. */
 #ifndef LANGUAGE
 #define LANGUAGE(x, y, z)
