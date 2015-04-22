@@ -415,6 +415,15 @@ if $have_cairo ; then
 
   LIBS=$pango_save_libs
   LDFLAGS=$pango_save_ldflags
+
+  PKGCONFIG_CAIRO_REQUIRES=
+  if $have_cairo_freetype;  then
+    PKGCONFIG_CAIRO_REQUIRES="$PKGCONFIG_CAIRO_REQUIRES pangoft2"
+  fi
+  if $have_cairo_win32;  then
+    PKGCONFIG_CAIRO_REQUIRES="$PKGCONFIG_CAIRO_REQUIRES pangowin32"
+  fi
+  AC_SUBST(PKGCONFIG_CAIRO_REQUIRES)
 fi
 
 AM_CONDITIONAL(HAVE_CAIRO, $have_cairo)
@@ -548,54 +557,6 @@ AC_ARG_ENABLE(installed_tests,
               [enable_installed_tests=no])
 AM_CONDITIONAL(BUILDOPT_INSTALL_TESTS, test x$enable_installed_tests = xyes)
 
-
-dnl ******************************************************
-dnl * See whether to include shared library dependencies *
-dnl ******************************************************
-
-AC_ARG_ENABLE(explicit-deps, 
-              AC_HELP_STRING([--enable-explicit-deps=@<:@no/auto/yes@:>@],
-                             [use explicit dependencies in .pc files @<:@default=auto@:>@]),
-              enable_explicit_deps="$enableval", 
-              enable_explicit_deps=auto)
-
-AC_MSG_CHECKING([Whether to write dependencies into .pc files])
-case $enable_explicit_deps in
-  auto)
-    export SED
-    deplibs_check_method=`(./libtool --config; echo 'eval echo \"$deplibs_check_method\"') | sh`
-    if test "x$deplibs_check_method" '!=' xpass_all || test "x$enable_static" = xyes ; then
-      enable_explicit_deps=yes  
-    else
-      enable_explicit_deps=no  
-    fi
-  ;;
-  yes|no) 
-  ;;
-  *) AC_MSG_ERROR([Value given to --enable-explicit-deps must be one of yes, no or auto])
-  ;;
-esac
-AC_MSG_RESULT($enable_explicit_deps)
-
-PKGCONFIG_MATH_LIBS=
-PKGCONFIG_CAIRO_REQUIRES=
-
-if test $enable_explicit_deps = yes ; then
-  PKGCONFIG_MATH_LIBS=-lm
-
-  X_LIBS="$X_LIBS $X_EXTRA_LIBS"
-
-  if $have_cairo_freetype;  then
-    PKGCONFIG_CAIRO_REQUIRES="$PKGCONFIG_CAIRO_REQUIRES pangoft2"
-  fi
-  if $have_cairo_win32;  then
-    PKGCONFIG_CAIRO_REQUIRES="$PKGCONFIG_CAIRO_REQUIRES pangowin32"
-  fi
-fi
-
-AC_SUBST(PKGCONFIG_MATH_LIBS)
-AC_SUBST(PKGCONFIG_CAIRO_REQUIRES)
-AM_CONDITIONAL(DISABLE_EXPLICIT_DEPS, test $enable_explicit_deps = no)
 
 AC_HEADER_DIRENT
 AC_CHECK_HEADERS(unistd.h)

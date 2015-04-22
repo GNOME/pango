@@ -6,6 +6,7 @@ includedir=@includedir@
 Name: Pango Cairo
 Description: Cairo rendering support for Pango
 Version: @VERSION@
-Requires: pango cairo @PKGCONFIG_CAIRO_REQUIRES@
+Requires: pango cairo
+Requires.private: @PKGCONFIG_CAIRO_REQUIRES@
 Libs: -L${libdir} -lpangocairo-@PANGO_API_VERSION@
 Cflags: -I${includedir}/pango-1.0
