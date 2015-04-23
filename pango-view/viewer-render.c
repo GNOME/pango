@@ -60,7 +60,7 @@ PangoGravityHint opt_gravity_hint = PANGO_GRAVITY_HINT_NATURAL;
 HintMode opt_hinting = HINT_DEFAULT;
 PangoWrapMode opt_wrap = PANGO_WRAP_WORD_CHAR;
 gboolean opt_wrap_set = FALSE;
-const char *opt_pangorc = NULL;
+static const char *opt_pangorc = NULL; /* Unused */
 const PangoViewer *opt_viewer = NULL;
 const char *opt_language = NULL;
 gboolean opt_single_par = FALSE;
@@ -712,7 +712,7 @@ parse_options (int argc, char *argv[])
      "Interpret text as Pango markup",					NULL},
     {"output",		'o', 0, G_OPTION_ARG_STRING,			&opt_output,
      "Save rendered image to output file",			      "file"},
-    {"pangorc",		0, 0, G_OPTION_ARG_STRING,			&opt_pangorc,
+    {"pangorc",		0, G_OPTION_FLAG_HIDDEN, G_OPTION_ARG_STRING,	&opt_pangorc,
      "Deprecated",		      "file"},
     {"pixels",		0, 0, G_OPTION_ARG_NONE,			&opt_pixels,
      "Use pixel units instead of points (sets dpi to 72)",		NULL},

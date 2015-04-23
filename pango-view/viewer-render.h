@@ -71,7 +71,6 @@ extern gboolean opt_waterfall;
 extern int opt_width;
 extern int opt_indent;
 extern PangoEllipsizeMode opt_ellipsize;
-extern const char *opt_pangorc;
 
 /* handled by viewer-main.c */
 extern gboolean opt_display;
