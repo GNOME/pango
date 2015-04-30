@@ -236,9 +236,6 @@ if $have_fontconfig ; then
 fi
 if $have_freetype ; then
   AC_DEFINE(HAVE_FREETYPE, 1, [Have FreeType 2 library])
-  # By freetype, we really always mean freetype+fontconfig
-  FREETYPE_CFLAGS="$FREETYPE_CFLAGS $FONTCONFIG_CFLAGS"
-  FREETYPE_LIBS="$FREETYPE_LIBS $FONTCONFIG_LIBS"
 fi
 AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype)
 

@@ -27,6 +27,7 @@ INCLUDES =						\
 	$(CAIRO_CFLAGS)					\
 	$(HARFBUZZ_CFLAGS)				\
 	$(FREETYPE_CFLAGS)				\
+	$(FONTCONFIG_CFLAGS)				\
 	$(LIBTHAI_CFLAGS)					\
 	$(X_CFLAGS)
 
@@ -190,6 +191,7 @@ libpangoft2_1_0_la_LIBADD =			\
 	$(GLIB_LIBS)				\
 	$(HARFBUZZ_LIBS)			\
 	$(FREETYPE_LIBS)			\
+	$(FONTCONFIG_LIBS)			\
 	$(libm)
 libpangoft2_1_0_la_DEPENDENCIES =		\
 	libpango-$(PANGO_API_VERSION).la
