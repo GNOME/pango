@@ -192,7 +192,8 @@ pango_matrix_concat (PangoMatrix       *matrix,
  *
  * Returns the scale factor of a matrix on the height of the font.
  * That is, the scale factor in the direction perpendicular to the
- * vector that the X coordinate is mapped to.
+ * vector that the X coordinate is mapped to.  If the scale in the X
+ * coordinate is needed as well, use pango_matrix_get_font_scale_factors().
  *
  * Return value: the scale factor of @matrix on the height of the font,
  * or 1.0 if @matrix is %NULL.
@@ -202,43 +203,63 @@ pango_matrix_concat (PangoMatrix       *matrix,
 double
 pango_matrix_get_font_scale_factor (const PangoMatrix *matrix)
 {
+  double yscale;
+  pango_matrix_get_font_scale_factors (matrix, NULL, &yscale);
+  return yscale;
+}
+
+/**
+ * pango_matrix_get_font_scale_factors:
+ * @matrix: (nullable): a #PangoMatrix, or %NULL
+ * @xscale: (out) (allow-none): output scale factor in the x direction, or %NULL
+ * @rect: (inout) (allow-none): output scale factor perpendicular to the x direction, or %NULL
+ *
+ * Calculates the scale factor of a matrix on the width and height of the font.
+ * That is, @xscale is the scale factor in the direction of the X coordinate,
+ * and @yscale is the scale factor in the direction perpendicular to the
+ * vector that the X coordinate is mapped to.
+ *
+ * Note that output numbers will always be non-negative.
+ *
+ * Since: 1.38
+ **/
+void
+pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
+				     double *xscale, double *yscale)
+{
 /*
  * Based on cairo-matrix.c:_cairo_matrix_compute_scale_factors()
  *
  * Copyright 2005, Keith Packard
  */
-  double det;
+  double major = 1., minor = 1.;
 
-  if (!matrix)
-    return 1.0;
-
-  det = matrix->xx * matrix->yy - matrix->yx * matrix->xy;
-
-  if (det == 0)
-    {
-      return 0.0;
-    }
-  else
+  if (matrix)
     {
       double x = matrix->xx;
       double y = matrix->yx;
-      double major, minor;
-
       major = sqrt (x*x + y*y);
 
-      /*
-       * ignore mirroring
-       */
-      if (det < 0)
-	det = - det;
-
       if (major)
-	minor = det / major;
-      else
-	minor = 0.0;
+	{
+	  double det = matrix->xx * matrix->yy - matrix->yx * matrix->xy;
 
-      return minor;
+	  /*
+	   * ignore mirroring
+	   */
+	  if (det < 0)
+	    det = - det;
+
+	  minor = det / major;
+	}
+      else
+        minor = 0.;
     }
+
+  if (xscale)
+    *xscale = major;
+  if (yscale)
+    *yscale = minor;
 }
 
 /**

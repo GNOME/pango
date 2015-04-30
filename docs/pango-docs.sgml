@@ -135,8 +135,16 @@
     <xi:include href="xml/api-index-1.32.4.xml"><xi:fallback /></xi:include>
   </index>
   <index id="api-index-1-34" role="1.34">
-    <title>Index of new symbols in 1.32</title>
+    <title>Index of new symbols in 1.34</title>
     <xi:include href="xml/api-index-1.34.xml"><xi:fallback /></xi:include>
+  </index>
+  <index id="api-index-1-36" role="1.36">
+    <title>Index of new symbols in 1.36</title>
+    <xi:include href="xml/api-index-1.36.xml"><xi:fallback /></xi:include>
+  </index>
+  <index id="api-index-1-38" role="1.38">
+    <title>Index of new symbols in 1.38</title>
+    <xi:include href="xml/api-index-1.38.xml"><xi:fallback /></xi:include>
   </index>
 
 </book>

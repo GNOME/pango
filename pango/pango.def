@@ -328,6 +328,7 @@ EXPORTS
 	pango_matrix_copy
 	pango_matrix_free
 	pango_matrix_get_font_scale_factor
+	pango_matrix_get_font_scale_factors
 	pango_matrix_get_type
 	pango_matrix_rotate
 	pango_matrix_scale

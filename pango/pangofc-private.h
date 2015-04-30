@@ -109,48 +109,6 @@ _pango_fc_shape (PangoFont           *font,
 		 const char          *paragraph_text,
 		 unsigned int         paragraph_length);
 
-/* To be made public at some point */
-
-#include <math.h>
-
-static G_GNUC_UNUSED void
-pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
-				     double *xscale, double *yscale)
-{
-/*
- * Based on cairo-matrix.c:_cairo_matrix_compute_scale_factors()
- *
- * Copyright 2005, Keith Packard
- */
-  double major = 0, minor = 0;
-
-  if (matrix) {
-    double det = matrix->xx * matrix->yy - matrix->yx * matrix->xy;
-
-    if (det)
-      {
-	double x = matrix->xx;
-	double y = matrix->yx;
-
-	major = sqrt (x*x + y*y);
-
-	/*
-	 * ignore mirroring
-	 */
-	if (det < 0)
-	  det = - det;
-
-	if (major)
-	  minor = det / major;
-      }
-  }
-
-  if (xscale)
-    *xscale = major;
-  if (yscale)
-    *yscale = minor;
-}
-
 G_END_DECLS
 
 #endif /* __PANGOFC_PRIVATE_H__ */

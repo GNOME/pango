@@ -110,6 +110,8 @@ void pango_matrix_transform_rectangle (const PangoMatrix *matrix,
 void pango_matrix_transform_pixel_rectangle (const PangoMatrix *matrix,
 					     PangoRectangle    *rect);
 double pango_matrix_get_font_scale_factor (const PangoMatrix *matrix) G_GNUC_PURE;
+void pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
+					  double *xscale, double *yscale);
 
 
 G_END_DECLS
