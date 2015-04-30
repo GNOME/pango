@@ -7,5 +7,6 @@ Name: Pango Win32
 Description: Win32 GDI font support for Pango
 Version: @VERSION@
 Requires: pango
-Libs: -L${libdir} -lpangowin32-@PANGO_API_VERSION@ @WIN32_LIBS@
+Libs: -L${libdir} -lpangowin32-@PANGO_API_VERSION@
+Libs.private: -lgdi32 -lusp10
 Cflags: -I${includedir}/pango-1.0
