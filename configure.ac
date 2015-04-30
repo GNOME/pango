@@ -208,7 +208,7 @@ AM_CONDITIONAL(CROSS_COMPILING, [test $cross_compiling = yes])
 # Checks for HarfBuzz
 #
 have_harfbuzz=false
-PKG_CHECK_MODULES(HARFBUZZ, harfbuzz >= 0.9.9, have_harfbuzz=true, AC_MSG_RESULT([no]))
+PKG_CHECK_MODULES(HARFBUZZ, harfbuzz >= 0.9.9, have_harfbuzz=true, :)
 AM_CONDITIONAL(HAVE_HARFBUZZ, $have_harfbuzz)
 
 #
@@ -216,7 +216,7 @@ AM_CONDITIONAL(HAVE_HARFBUZZ, $have_harfbuzz)
 #
 have_fontconfig=false
 if $have_harfbuzz ; then
-  PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 2.10.91, have_fontconfig=true, AC_MSG_RESULT([no]))
+  PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 2.10.91, have_fontconfig=true, :)
 fi
 if $have_fontconfig ; then
   pango_save_libs=$LIBS
@@ -232,7 +232,7 @@ have_freetype=false
 if $have_fontconfig ; then
   # The first version of freetype with a .pc file is 2.1.5.  That's recent
   # enough for all the functions we use I guess.  No version check needed.
-  PKG_CHECK_MODULES(FREETYPE, freetype2, have_freetype=true, AC_MSG_RESULT([no]))
+  PKG_CHECK_MODULES(FREETYPE, freetype2, have_freetype=true, :)
 fi
 if $have_freetype ; then
   AC_DEFINE(HAVE_FREETYPE, 1, [Have FreeType 2 library])
@@ -250,7 +250,7 @@ AC_ARG_WITH(xft,
   AS_HELP_STRING([--with-xft], [build xft backend]),
   [], [with_xft=yes])
 if $have_freetype ; then
-  PKG_CHECK_MODULES(XFT, xft >= 2.0.0 xrender, have_xft=true, have_xft=false)
+  PKG_CHECK_MODULES(XFT, xft >= 2.0.0 xrender, have_xft=true, :)
 fi
 if test "x$with_xft" = xyes && $have_xft ; then
   AC_DEFINE(HAVE_XFT, 1, [Have Xft library])
@@ -339,7 +339,7 @@ AC_ARG_WITH(cairo,
 	    AS_HELP_STRING([--without-cairo], [Do not use cairo]),
 	    :, with_cairo=auto)
 AS_IF([test x$with_cairo != xno], [
-  PKG_CHECK_MODULES(CAIRO, cairo >= $cairo_required, have_cairo=true, AC_MSG_RESULT([no]))
+  PKG_CHECK_MODULES(CAIRO, cairo >= $cairo_required, have_cairo=true, :)
 ])
 
 if $have_cairo ; then
@@ -463,7 +463,8 @@ AC_SUBST(GLIB_MKENUMS)
 # Checks for LibThai
 #
 LIBTHAI_REQUIRED_VERSION=0.1.9
-PKG_CHECK_MODULES(LIBTHAI, libthai >= $LIBTHAI_REQUIRED_VERSION, have_libthai=true, have_libthai=false)
+have_libthai=false
+PKG_CHECK_MODULES(LIBTHAI, libthai >= $LIBTHAI_REQUIRED_VERSION, have_libthai=true, :)
 if $have_libthai; then
 	AC_DEFINE(HAVE_LIBTHAI, 1, [Whether libthai is available])
 fi
