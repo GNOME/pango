@@ -1832,7 +1832,7 @@ pango_fc_font_map_cache_clear (PangoFcFontMap *fcfontmap)
  **/
 void
 pango_fc_font_map_set_config (PangoFcFontMap *fcfontmap,
-				 FcConfig       *fcconfig)
+			      FcConfig       *fcconfig)
 {
   FcConfig *oldconfig;
 
@@ -1844,6 +1844,9 @@ pango_fc_font_map_set_config (PangoFcFontMap *fcfontmap,
     FcConfigReference (fcconfig);
 
   fcfontmap->priv->config = fcconfig;
+
+  if (oldconfig != fcconfig)
+    pango_fc_font_map_cache_clear (fcfontmap);
 
   if (oldconfig)
     FcConfigDestroy (oldconfig);
