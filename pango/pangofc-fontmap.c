@@ -1814,6 +1814,23 @@ pango_fc_font_map_cache_clear (PangoFcFontMap *fcfontmap)
 /**
  * pango_fc_font_map_set_config:
  * @fcfontmap: a #PangoFcFontMap
+ *
+ * Informs font map that the fontconfig configuration (ie, FcConfig object)
+ * used by this font map has changed.  This currently calls
+ * pango_fc_font_map_cache_clear() which ensures that list of fonts, etc
+ * will be regenerated using the updated configuration.
+ *
+ * Since: 1.38
+ **/
+void
+pango_fc_font_map_config_changed (PangoFcFontMap *fcfontmap)
+{
+  pango_fc_font_map_cache_clear (fcfontmap);
+}
+
+/**
+ * pango_fc_font_map_set_config:
+ * @fcfontmap: a #PangoFcFontMap
  * @fcconfig: (nullable) a #FcConfig, or %NULL
  *
  * Set the FcConfig for this font map to use.  The default value
@@ -1824,6 +1841,9 @@ pango_fc_font_map_cache_clear (PangoFcFontMap *fcfontmap)
  * This is particularly useful for example, if you want to use application
  * fonts with Pango.  For that, you would create a fresh FcConfig, add your
  * app fonts to it, and attach it to a new Pango font map.
+ *
+ * If @fcconfig is different from the previous config attached to the font map,
+ * pango_fc_font_map_config_changed() is called.
  *
  * This function acquires a reference to the FcConfig object; the caller
  * does NOT need to retain a reference.
@@ -1846,7 +1866,7 @@ pango_fc_font_map_set_config (PangoFcFontMap *fcfontmap,
   fcfontmap->priv->config = fcconfig;
 
   if (oldconfig != fcconfig)
-    pango_fc_font_map_cache_clear (fcfontmap);
+    pango_fc_font_map_config_changed (fcfontmap);
 
   if (oldconfig)
     FcConfigDestroy (oldconfig);
