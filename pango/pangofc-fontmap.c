@@ -151,7 +151,7 @@ struct _PangoFcFontMapPrivate
 
   guint closed : 1;
 
-  FcConfig *fc_config;
+  FcConfig *config;
 };
 
 struct _PangoFcFontFaceData
@@ -782,7 +782,7 @@ pango_fc_patterns_get_font_pattern (PangoFcPatterns *pats, int i, gboolean *prep
       FcResult result;
       if (!pats->match && !pats->fontset)
         {
-	  pats->match = FcFontMatch (pats->fontmap->priv->fc_config, pats->pattern, &result);
+	  pats->match = FcFontMatch (pats->fontmap->priv->config, pats->pattern, &result);
 #ifdef FC_PATTERN
 	  /* The FC_PATTERN element, which points back to our the original
 	   * pattern defeats our hash tables.
@@ -802,7 +802,7 @@ pango_fc_patterns_get_font_pattern (PangoFcPatterns *pats, int i, gboolean *prep
       if (!pats->fontset)
         {
 	  FcResult result;
-	  pats->fontset = FcFontSort (pats->fontmap->priv->fc_config, pats->pattern, FcTrue, NULL, &result);
+	  pats->fontset = FcFontSort (pats->fontmap->priv->config, pats->pattern, FcTrue, NULL, &result);
 	  if (pats->match)
 	    {
 	      FcPatternDestroy (pats->match);
@@ -1314,7 +1314,7 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
        * the same family have different spacing values */
       GHashTable *temp_family_hash;
 
-      fontset = FcFontList (priv->fc_config, pat, os);
+      fontset = FcFontList (priv->config, pat, os);
 
       FcPatternDestroy (pat);
       FcObjectSetDestroy (os);
@@ -1812,7 +1812,7 @@ pango_fc_font_map_cache_clear (PangoFcFontMap *fcfontmap)
 }
 
 /**
- * pango_fc_font_map_set_fc_config:
+ * pango_fc_font_map_set_config:
  * @fcfontmap: a #PangoFcFontMap
  * @fcconfig: (nullable) a #FcConfig, or %NULL
  *
@@ -1831,29 +1831,29 @@ pango_fc_font_map_cache_clear (PangoFcFontMap *fcfontmap)
  * Since: 1.38
  **/
 void
-pango_fc_font_map_set_fc_config (PangoFcFontMap *fcfontmap,
+pango_fc_font_map_set_config (PangoFcFontMap *fcfontmap,
 				 FcConfig       *fcconfig)
 {
   FcConfig *oldconfig;
 
   g_return_if_fail (PANGO_IS_FC_FONT_MAP (fcfontmap));
 
-  oldconfig = fcfontmap->priv->fc_config;
+  oldconfig = fcfontmap->priv->config;
 
   if (fcconfig)
     FcConfigReference (fcconfig);
 
-  fcfontmap->priv->fc_config = fcconfig;
+  fcfontmap->priv->config = fcconfig;
 
   if (oldconfig)
     FcConfigDestroy (oldconfig);
 }
 
 /**
- * pango_fc_font_map_get_fc_config:
+ * pango_fc_font_map_get_config:
  * @fcfontmap: a #PangoFcFontMap
  *
- * Fetches FcConfig attached to a font map.  See pango_fc_font_map_set_fc_config().
+ * Fetches FcConfig attached to a font map.  See pango_fc_font_map_set_config().
  *
  * Returns: (nullable): the #FcConfig object attached to @fcfontmap, which
  *          might be %NULL.
@@ -1861,11 +1861,11 @@ pango_fc_font_map_set_fc_config (PangoFcFontMap *fcfontmap,
  * Since: 1.38
  **/
 FcConfig *
-pango_fc_font_map_get_fc_config (PangoFcFontMap *fcfontmap)
+pango_fc_font_map_get_config (PangoFcFontMap *fcfontmap)
 {
   g_return_val_if_fail (PANGO_IS_FC_FONT_MAP (fcfontmap), NULL);
 
-  return fcfontmap->priv->fc_config;
+  return fcfontmap->priv->config;
 }
 
 static PangoFcFontFaceData *
@@ -2297,7 +2297,7 @@ pango_fc_face_describe (PangoFontFace *face)
   FcResult res;
   FcPattern *match_pattern;
   FcPattern *result_pattern;
-  FcConfig *fc_config = NULL;
+  FcConfig *config = NULL;
 
   if (G_UNLIKELY (!fcfamily))
     return pango_font_description_new ();
@@ -2325,9 +2325,9 @@ pango_fc_face_describe (PangoFontFace *face)
   FcDefaultSubstitute (match_pattern);
 
   if (fcface->family && fcface->family->fontmap)
-    fc_config = fcface->family->fontmap->priv->fc_config;
+    config = fcface->family->fontmap->priv->config;
 
-  result_pattern = FcFontMatch (fc_config, match_pattern, &res);
+  result_pattern = FcFontMatch (config, match_pattern, &res);
   if (result_pattern)
     {
       desc = pango_fc_font_description_from_pattern (result_pattern, FALSE);
@@ -2547,7 +2547,7 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 	  PangoFcFace **faces;
 	  gint num = 0;
 
-	  fontset = FcFontList (priv->fc_config, pat, os);
+	  fontset = FcFontList (priv->config, pat, os);
 
 	  FcPatternDestroy (pat);
 	  FcObjectSetDestroy (os);

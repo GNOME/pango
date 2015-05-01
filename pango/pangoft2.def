@@ -18,9 +18,9 @@ EXPORTS
 	pango_fc_font_map_cache_clear
 	pango_fc_font_map_create_context
 	pango_fc_font_map_find_decoder
-	pango_fc_font_map_get_fc_config
+	pango_fc_font_map_get_config
 	pango_fc_font_map_get_type
-	pango_fc_font_map_set_fc_config
+	pango_fc_font_map_set_config
 	pango_fc_font_map_shutdown
 	pango_fc_font_unlock_face
 	pango_fc_fontset_key_get_absolute_size
