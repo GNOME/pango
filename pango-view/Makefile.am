@@ -33,6 +33,7 @@ INCLUDES =				\
 	$(XFT_CFLAGS)			\
 	$(CAIRO_CFLAGS)			\
 	$(FREETYPE_CFLAGS)		\
+	$(FONTCONFIG_CFLAGS)		\
 	$(X_CFLAGS)
 
 #########################################################
@@ -52,7 +53,8 @@ pango_view_SOURCES +=					\
 	viewer-pangoft2.c
 pango_view_LDADD +=					\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
-	$(FREETYPE_LIBS)
+	$(FREETYPE_LIBS)				\
+	$(FONTCONFIG_LIBS)
 endif
 if HAVE_XFT
 pango_view_SOURCES +=					\
