@@ -25,6 +25,7 @@
 #include <locale.h>
 
 #include <pango/pangocairo.h>
+#include "test-common.h"
 
 char *
 diff_with_file (const char  *file,
