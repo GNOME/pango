@@ -1812,7 +1812,7 @@ pango_fc_font_map_cache_clear (PangoFcFontMap *fcfontmap)
 }
 
 /**
- * pango_fc_font_map_set_config:
+ * pango_fc_font_map_config_changed:
  * @fcfontmap: a #PangoFcFontMap
  *
  * Informs font map that the fontconfig configuration (ie, FcConfig object)
