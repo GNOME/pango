@@ -1763,7 +1763,7 @@ pango_layout_index_to_line_and_extents (PangoLayout     *layout,
  * @layout:    a #PangoLayout
  * @index_:    the byte index of a grapheme within the layout.
  * @trailing:  an integer indicating the edge of the grapheme to retrieve the
- *             position of. If 0, the trailing edge of the grapheme, if > 0,
+ *             position of. If > 0, the trailing edge of the grapheme, if 0,
  *             the leading of the grapheme.
  * @line: (out) (allow-none): location to store resulting line index. (which will
  *               between 0 and pango_layout_get_line_count(layout) - 1), or %NULL
@@ -1819,9 +1819,9 @@ pango_layout_index_to_line_x (PangoLayout *layout,
  *                weak cursor. The strong cursor is the cursor corresponding
  *                to text insertion in the base direction for the layout.
  * @old_index:    the byte index of the grapheme for the old index
- * @old_trailing: if 0, the cursor was at the trailing edge of the
+ * @old_trailing: if 0, the cursor was at the leading edge of the
  *                grapheme indicated by @old_index, if > 0, the cursor
- *                was at the leading edge.
+ *                was at the trailing edge.
  * @direction:    direction to move cursor. A negative
  *                value indicates motion to the left.
  * @new_index: (out): location to store the new cursor byte index. A value of -1
@@ -2010,7 +2010,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
  * @trailing: (out): location to store a integer indicating where
  *             in the grapheme the user clicked. It will either
  *             be zero, or the number of characters in the
- *             grapheme. 0 represents the trailing edge of the grapheme.
+ *             grapheme. 0 represents the leading edge of the grapheme.
  *
  * Converts from X and Y position within a layout to the byte
  * index to the character at that logical position. If the
