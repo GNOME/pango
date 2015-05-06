@@ -107,6 +107,11 @@ struct _PangoGlyphInfo
  */
 /**
  * PangoGlyphString:
+ * @num_glyphs: number of the glyphs in this glyph string.
+ * @glyphs: (array length=num_glyphs): array of glyph information
+ *          for the glyph string.
+ * @log_clusters: logical cluster info, indexed by the byte index
+ *                within the text corresponding to the glyph string.
  *
  * The #PangoGlyphString structure is used to store strings
  * of glyphs with geometry and visual attribute information.

@@ -299,6 +299,7 @@ PangoFontMetrics *pango_font_metrics_new (void);
 
 struct _PangoFontMetrics
 {
+  /* <private> */
   guint ref_count;
 
   int ascent;

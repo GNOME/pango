@@ -31,6 +31,8 @@ G_BEGIN_DECLS
 
 /**
  * PangoGlyphItem:
+ * @item: corresponding #PangoItem.
+ * @glyphs: corresponding #PangoGlyphString.
  *
  * A #PangoGlyphItem is a pair of a #PangoItem and the glyphs
  * resulting from shaping the text corresponding to an item.
