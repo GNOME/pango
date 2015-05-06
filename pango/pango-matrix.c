@@ -212,7 +212,7 @@ pango_matrix_get_font_scale_factor (const PangoMatrix *matrix)
  * pango_matrix_get_font_scale_factors:
  * @matrix: (nullable): a #PangoMatrix, or %NULL
  * @xscale: (out) (allow-none): output scale factor in the x direction, or %NULL
- * @rect: (inout) (allow-none): output scale factor perpendicular to the x direction, or %NULL
+ * @yscale: (out) (allow-none): output scale factor perpendicular to the x direction, or %NULL
  *
  * Calculates the scale factor of a matrix on the width and height of the font.
  * That is, @xscale is the scale factor in the direction of the X coordinate,

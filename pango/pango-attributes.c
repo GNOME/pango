@@ -1188,7 +1188,7 @@ pango_attr_list_unref (PangoAttrList *list)
 
 /**
  * pango_attr_list_copy:
- * @list (nullable): a #PangoAttrList, may be %NULL
+ * @list: (nullable): a #PangoAttrList, may be %NULL
  *
  * Copy @list and return an identical new list.
  *

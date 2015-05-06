@@ -96,8 +96,11 @@ typedef enum {
 
 /**
  * PangoLayoutLine:
+ * @layout: (allow-none): the layout this line belongs to, might be %NULL
  * @start_index: start of line as byte index into layout->text
  * @length: length of line in bytes
+ * @runs: (allow-none) (element-type: Pango.LayoutRun): list of runs in the
+ *        line, from left to right
  * @is_paragraph_start: #TRUE if this is the first line of the paragraph
  * @resolved_dir: #Resolved PangoDirection of line
  *
