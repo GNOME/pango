@@ -291,7 +291,7 @@ ct_font_descriptor_get_weight (CTFontDescriptorRef desc)
   CFDictionaryRef dict;
   CFNumberRef cf_number;
   CGFloat value;
-  PangoWeight weight;
+  PangoWeight weight = PANGO_WEIGHT_NORMAL;
 
   dict = CTFontDescriptorCopyAttribute (desc, kCTFontTraitsAttribute);
   cf_number = (CFNumberRef)CFDictionaryGetValue (dict,
