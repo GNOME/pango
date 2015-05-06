@@ -1312,7 +1312,7 @@ pango_layout_get_unknown_glyphs_count (PangoLayout *layout)
 static void
 check_context_changed (PangoLayout *layout)
 {
-  int old_serial = layout->context_serial;
+  guint old_serial = layout->context_serial;
 
   layout->context_serial = pango_context_get_serial (layout->context);
 

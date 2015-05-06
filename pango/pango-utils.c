@@ -984,7 +984,7 @@ _pango_shape_shape (const char       *text,
 		    PangoRectangle   *shape_logical,
 		    PangoGlyphString *glyphs)
 {
-  int i;
+  unsigned int i;
   const char *p;
 
   pango_glyph_string_set_size (glyphs, n_chars);

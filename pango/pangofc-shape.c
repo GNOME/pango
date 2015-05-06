@@ -31,8 +31,6 @@
 #include <hb-ft.h>
 #include <hb-glib.h>
 
-#define PANGO_UNITS_26_6(d)	((d) << 4)
-
 /* cache a single hb_buffer_t */
 static hb_buffer_t *cached_buffer = NULL; /* MT-safe */
 G_LOCK_DEFINE_STATIC (cached_buffer);

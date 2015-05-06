@@ -186,7 +186,6 @@ typedef struct {
 
 #define S PANGO_GRAVITY_SOUTH
 #define E PANGO_GRAVITY_EAST
-#define N PANGO_GRAVITY_NORTH
 #define W PANGO_GRAVITY_WEST
 
 const PangoScriptProperties script_properties[] =
