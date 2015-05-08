@@ -55,6 +55,7 @@ INCLUDES =               	\
 	-DPANGO_ENABLE_BACKEND	\
 	-DPANGO_ENABLE_ENGINE	\
 	-I$(top_srcdir)		\
+	-I$(top_builddir)	\
 	$(GLIB_CFLAGS)		\
 	$(XFT_CFLAGS)		\
 	$(CAIRO_CFLAGS)		\
