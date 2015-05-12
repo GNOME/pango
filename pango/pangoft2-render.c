@@ -147,7 +147,7 @@ pango_ft2_font_render_box_glyph (int      width,
       offset1 = box->bitmap.pitch * (MIN (1 + j, height - 1));
       offset2 = box->bitmap.pitch * (MAX (box->bitmap.rows - 2 - j, 0));
       for (i = 1;
-	   i < box->bitmap.width - 1;
+	   i < (int) box->bitmap.width - 1;
 	   i++)
 	{
 	  box->bitmap.buffer[offset1 + i] = 0xff;
@@ -157,9 +157,9 @@ pango_ft2_font_render_box_glyph (int      width,
   for (j = 0; j < line_width; j++)
     {
       offset1 = MIN (1 + j, width - 1);
-      offset2 = MAX (box->bitmap.width - 2 - j, 0);
+      offset2 = MAX ((int) box->bitmap.width - 2 - j, 0);
       for (i = box->bitmap.pitch;
-	   i < (box->bitmap.rows - 1) * box->bitmap.pitch;
+	   i < (int) (box->bitmap.rows - 1) * box->bitmap.pitch;
 	   i += box->bitmap.pitch)
 	{
 	  box->bitmap.buffer[offset1 + i] = 0xff;
@@ -174,7 +174,7 @@ pango_ft2_font_render_box_glyph (int      width,
       offset1 = PANGO_SCALE;
       offset2 = PANGO_SCALE * MAX (width - line_width - 1, 0) ;
       for (i = box->bitmap.pitch;
-	   i < (box->bitmap.rows - 1) * box->bitmap.pitch;
+	   i < (int) (box->bitmap.rows - 1) * box->bitmap.pitch;
 	   i += box->bitmap.pitch)
         {
 	  for (j = 0; j < line_width; j++)
@@ -303,12 +303,12 @@ pango_ft2_renderer_draw_glyph (PangoRenderer *renderer,
     }
 
   x_start = MAX (0, - (ixoff + rendered_glyph->bitmap_left));
-  x_limit = MIN (rendered_glyph->bitmap.width,
-		 bitmap->width - (ixoff + rendered_glyph->bitmap_left));
+  x_limit = MIN ((int) rendered_glyph->bitmap.width,
+		 (int) (bitmap->width - (ixoff + rendered_glyph->bitmap_left)));
 
   y_start = MAX (0,  - (iyoff - rendered_glyph->bitmap_top));
-  y_limit = MIN (rendered_glyph->bitmap.rows,
-		 bitmap->rows - (iyoff - rendered_glyph->bitmap_top));
+  y_limit = MIN ((int) rendered_glyph->bitmap.rows,
+		 (int) (bitmap->rows - (iyoff - rendered_glyph->bitmap_top)));
 
   src = rendered_glyph->bitmap.buffer +
     y_start * rendered_glyph->bitmap.pitch;
@@ -403,7 +403,7 @@ draw_simple_trap (PangoRenderer *renderer,
   double dy = b->y - t->y;
   guchar *dest;
 
-  if (iy < 0 || iy >= bitmap->rows)
+  if (iy < 0 || iy >= (int) bitmap->rows)
     return;
   dest = bitmap->buffer + iy * bitmap->pitch;
 
@@ -417,8 +417,8 @@ draw_simple_trap (PangoRenderer *renderer,
   else
     x2 = ceil (b->x2);
 
-  x1 = CLAMP (x1, 0, bitmap->width);
-  x2 = CLAMP (x2, 0, bitmap->width);
+  x1 = CLAMP (x1, 0, (int) bitmap->width);
+  x2 = CLAMP (x2, 0, (int) bitmap->width);
 
   for (x = x1; x < x2; x++)
     {
