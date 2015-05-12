@@ -24,8 +24,7 @@
 
 #include "config.h"
 #include <string.h>
-
-#define PANGO_ENABLE_BACKEND 1 /* XXX */
+#include <math.h>
 
 #include "pangofc-private.h"
 #include <hb-ft.h>
@@ -84,7 +83,7 @@ typedef struct _PangoFcHbContext {
   FT_Face ft_face;
   PangoFcFont *fc_font;
   gboolean vertical;
-  int improper_sign;
+  double x_scale, y_scale; /* CTM scales. */
 } PangoFcHbContext;
 
 static hb_bool_t
@@ -218,6 +217,7 @@ pango_fc_hb_font_get_glyph_v_origin (hb_font_t *font, void *font_data,
   FT_Face ft_face = context->ft_face;
   int load_flags = FT_LOAD_DEFAULT;
 
+  /* pangocairo-fc configures font in vertical origin for vertical writing. */
   if (context->vertical) return TRUE;
 
   if (FT_Load_Glyph (ft_face, glyph, load_flags))
@@ -246,7 +246,7 @@ pango_fc_hb_font_get_h_kerning (hb_font_t *font, void *font_data,
   if (FT_Get_Kerning (ft_face, left_glyph, right_glyph, FT_KERNING_DEFAULT, &kerning))
     return 0;
 
-  return PANGO_UNITS_26_6 (kerning.x);
+  return PANGO_UNITS_26_6 (kerning.x * context->x_scale);
 }
 
 static hb_font_funcs_t *
@@ -283,13 +283,13 @@ _pango_fc_shape (PangoFont           *font,
 {
   PangoFcHbContext context;
   PangoFcFont *fc_font;
+  PangoFcFontKey *key;
   FT_Face ft_face;
   hb_face_t *hb_face;
   hb_font_t *hb_font;
   hb_buffer_t *hb_buffer;
   hb_direction_t hb_direction;
   gboolean free_buffer;
-  gboolean is_hinted;
   hb_glyph_info_t *hb_glyph;
   hb_glyph_position_t *hb_position;
   int last_cluster;
@@ -297,6 +297,8 @@ _pango_fc_shape (PangoFont           *font,
   unsigned int item_offset = item_text - paragraph_text;
   hb_feature_t features[32];
   unsigned int num_features = 0;
+  double x_scale_inv, y_scale_inv;
+  PangoGlyphInfo *infos;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (analysis != NULL);
@@ -307,10 +309,24 @@ _pango_fc_shape (PangoFont           *font,
     return;
 
   /* TODO: Cache hb_font? */
+
+  x_scale_inv = y_scale_inv = 1.0;
+  key = _pango_fc_font_get_font_key (fc_font);
+  if (key)
+  {
+    const PangoMatrix *matrix = pango_fc_font_key_get_matrix (key);
+    pango_matrix_get_font_scale_factors (matrix, &x_scale_inv, &y_scale_inv);
+  }
+  if (PANGO_GRAVITY_IS_IMPROPER (analysis->gravity))
+  {
+    x_scale_inv = -x_scale_inv;
+    y_scale_inv = -y_scale_inv;
+  }
+  context.x_scale = 1. / x_scale_inv;
+  context.y_scale = 1. / y_scale_inv;
   context.ft_face = ft_face;
   context.fc_font = fc_font;
   context.vertical = PANGO_GRAVITY_IS_VERTICAL (analysis->gravity);
-  context.improper_sign = PANGO_GRAVITY_IS_IMPROPER (analysis->gravity) ? -1 : +1;
   hb_face = hb_ft_face_create_cached (ft_face);
   hb_font = hb_font_create (hb_face);
   hb_font_set_funcs (hb_font,
@@ -318,15 +334,11 @@ _pango_fc_shape (PangoFont           *font,
 		     &context,
 		     NULL);
   hb_font_set_scale (hb_font,
-		     /* XXX CTM */
-		     context.improper_sign *
-		     (((guint64) ft_face->size->metrics.x_scale * ft_face->units_per_EM) >> 12),
-		     context.improper_sign *
-		     -(((guint64) ft_face->size->metrics.y_scale * ft_face->units_per_EM) >> 12));
-  is_hinted = fc_font->is_hinted;
+		     +(((gint64) ft_face->size->metrics.x_scale * ft_face->units_per_EM) >> 12) * context.x_scale,
+		     -(((gint64) ft_face->size->metrics.y_scale * ft_face->units_per_EM) >> 12) * context.y_scale);
   hb_font_set_ppem (hb_font,
-		    is_hinted ? ft_face->size->metrics.x_ppem : 0,
-		    is_hinted ? ft_face->size->metrics.y_ppem : 0);
+		    fc_font->is_hinted ? ft_face->size->metrics.x_ppem : 0,
+		    fc_font->is_hinted ? ft_face->size->metrics.y_ppem : 0);
 
   hb_buffer = acquire_buffer (&free_buffer);
 
@@ -374,12 +386,13 @@ _pango_fc_shape (PangoFont           *font,
   num_glyphs = hb_buffer_get_length (hb_buffer);
   hb_glyph = hb_buffer_get_glyph_infos (hb_buffer, NULL);
   pango_glyph_string_set_size (glyphs, num_glyphs);
+  infos = glyphs->glyphs;
   last_cluster = -1;
   for (i = 0; i < num_glyphs; i++)
     {
-      glyphs->glyphs[i].glyph = hb_glyph->codepoint;
+      infos[i].glyph = hb_glyph->codepoint;
       glyphs->log_clusters[i] = hb_glyph->cluster - item_offset;
-      glyphs->glyphs[i].attr.is_cluster_start = glyphs->log_clusters[i] != last_cluster;
+      infos[i].attr.is_cluster_start = glyphs->log_clusters[i] != last_cluster;
       hb_glyph++;
       last_cluster = glyphs->log_clusters[i];
     }
@@ -388,26 +401,53 @@ _pango_fc_shape (PangoFont           *font,
   if (context.vertical)
     for (i = 0; i < num_glyphs; i++)
       {
-        unsigned int advance = hb_position->y_advance;
-	if (is_hinted)
-	  advance = PANGO_UNITS_ROUND (advance);
-	glyphs->glyphs[i].geometry.width    = advance;
-	/* XXX */
-	glyphs->glyphs[i].geometry.x_offset = hb_position->y_offset;
-	glyphs->glyphs[i].geometry.y_offset = -hb_position->x_offset;
+        /* 90 degrees rotation counter-clockwise. */
+	infos[i].geometry.width    =  hb_position->y_advance;
+	infos[i].geometry.x_offset =  hb_position->y_offset;
+	infos[i].geometry.y_offset = -hb_position->x_offset;
 	hb_position++;
       }
   else /* horizontal */
     for (i = 0; i < num_glyphs; i++)
       {
-        unsigned int advance = hb_position->x_advance;
-	if (is_hinted)
-	  advance = PANGO_UNITS_ROUND (advance);
-	glyphs->glyphs[i].geometry.width    = advance;
-	glyphs->glyphs[i].geometry.x_offset = hb_position->x_offset;
-	glyphs->glyphs[i].geometry.y_offset = hb_position->y_offset;
+	infos[i].geometry.width    = hb_position->x_advance;
+	infos[i].geometry.x_offset = hb_position->x_offset;
+	infos[i].geometry.y_offset = hb_position->y_offset;
 	hb_position++;
       }
+
+  if (fc_font->is_hinted)
+  {
+    if (context.x_scale == 1.0 && context.y_scale == 1.0)
+      {
+	for (i = 0; i < num_glyphs; i++)
+	  infos[i].geometry.width = PANGO_UNITS_ROUND (infos[i].geometry.width);
+      }
+    else
+      {
+#if 0
+	if (context.vertical)
+	  {
+	    /* XXX */
+	    double tmp = x_scale;
+	    x_scale = y_scale;
+	    y_scale = -tmp;
+	  }
+#endif
+#define HINT(value, scale_inv, scale) (PANGO_UNITS_ROUND ((int) ((value) * scale)) * scale_inv)
+#define HINT_X(value) HINT ((value), context.x_scale, x_scale_inv)
+#define HINT_Y(value) HINT ((value), context.y_scale, y_scale_inv)
+	for (i = 0; i < num_glyphs; i++)
+	  {
+	    infos[i].geometry.width    = HINT_X (infos[i].geometry.width);
+	    infos[i].geometry.x_offset = HINT_X (infos[i].geometry.x_offset);
+	    infos[i].geometry.y_offset = HINT_Y (infos[i].geometry.y_offset);
+	  }
+#undef HINT_Y
+#undef HINT_X
+#undef HINT
+      }
+  }
 
   release_buffer (hb_buffer, free_buffer);
   hb_font_destroy (hb_font);

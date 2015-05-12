@@ -6,9 +6,16 @@
 static void
 draw_text (cairo_t *cr)
 {
-#define RADIUS 150
-#define N_WORDS 10
-#define FONT "Sans Bold 27"
+#define RADIUS 200
+#define N_WORDS 8
+#define FONT_WITH_MANUAL_SIZE "Times new roman,Sans"
+#define FONT_SIZE 36
+#define DEVICE_DPI 72
+
+/* The following number applies a cairo CTM.  Tests for
+ * https://bugzilla.gnome.org/show_bug.cgi?id=700592
+ */
+#define TWEAKABLE_SCALE ((double) 0.1)
 
   PangoLayout *layout;
   PangoFontDescription *desc;
@@ -16,13 +23,18 @@ draw_text (cairo_t *cr)
 
   /* Center coordinates on the middle of the region we are drawing
    */
-  cairo_translate (cr, RADIUS, RADIUS);
+  cairo_translate (cr, RADIUS / TWEAKABLE_SCALE, RADIUS / TWEAKABLE_SCALE);
 
   /* Create a PangoLayout, set the font and text */
   layout = pango_cairo_create_layout (cr);
 
-  pango_layout_set_text (layout, "Text", -1);
-  desc = pango_font_description_from_string (FONT);
+  pango_layout_set_text (layout, "Test\nسَلام", -1);
+
+  desc = pango_font_description_from_string (FONT_WITH_MANUAL_SIZE);
+  pango_font_description_set_absolute_size(desc, FONT_SIZE * DEVICE_DPI * PANGO_SCALE / (72.0 * TWEAKABLE_SCALE));
+  //pango_font_description_set_size(desc, 27 * PANGO_SCALE / TWEAKABLE_SCALE);
+
+  printf("PANGO_SCALE = %d\n", PANGO_SCALE);
   pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
 
@@ -45,7 +57,7 @@ draw_text (cairo_t *cr)
       pango_cairo_update_layout (cr, layout);
 
       pango_layout_get_size (layout, &width, &height);
-      cairo_move_to (cr, - ((double)width / PANGO_SCALE) / 2, - RADIUS);
+      cairo_move_to (cr,( - (((double)width) / PANGO_SCALE) / 2.0) , (- RADIUS)  / TWEAKABLE_SCALE);
       pango_cairo_show_layout (cr, layout);
 
       cairo_restore (cr);
@@ -68,12 +80,13 @@ int main (int argc, char **argv)
       return 1;
     }
 
-  filename = argv[1];
+     filename = argv[1];
 
   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-					2 * RADIUS, 2 * RADIUS);
+                                        2 * RADIUS, 2 * RADIUS);
   cr = cairo_create (surface);
 
+  cairo_scale(cr, 1 * TWEAKABLE_SCALE, 1 * TWEAKABLE_SCALE);
 
   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
   cairo_paint (cr);
