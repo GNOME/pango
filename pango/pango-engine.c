@@ -38,7 +38,7 @@
  * creating engines from the module at run time, while the first
  * function is used when building a catalog of all available modules.
  *
- * Deprecated: 1.37
+ * Deprecated: 1.38
  */
 /**
  * SECTION:pango-engine-lang
@@ -50,7 +50,7 @@
  * engines that determine line, word, and character breaks for character strings.
  * These engines are used in pango_break().
  *
- * Deprecated: 1.37
+ * Deprecated: 1.38
  */
 /**
  * SECTION:pango-engine-shape
@@ -62,7 +62,7 @@
  * engines that convert character strings into glyph strings.
  * These engines are used in pango_shape().
  *
- * Deprecated: 1.37
+ * Deprecated: 1.38
  */
 #include "config.h"
 

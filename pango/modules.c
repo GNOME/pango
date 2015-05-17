@@ -41,7 +41,7 @@
  *
  * Return value: %NULL.
  *
- * Deprecated: 1.37
+ * Deprecated: 1.38
  **/
 PangoMap *
 pango_find_map (PangoLanguage *language G_GNUC_UNUSED,
@@ -60,7 +60,7 @@ pango_find_map (PangoLanguage *language G_GNUC_UNUSED,
  *
  * Return value: %NULL.
  *
- * Deprecated: 1.37
+ * Deprecated: 1.38
  **/
 PangoEngine *
 pango_map_get_engine (PangoMap   *map G_GNUC_UNUSED,
@@ -81,7 +81,7 @@ pango_map_get_engine (PangoMap   *map G_GNUC_UNUSED,
  * Do not use.  Does not do anything.
  *
  * Since: 1.4
- * Deprecated: 1.37
+ * Deprecated: 1.38
  **/
 void
 pango_map_get_engines (PangoMap     *map G_GNUC_UNUSED,
@@ -101,7 +101,7 @@ pango_map_get_engines (PangoMap     *map G_GNUC_UNUSED,
  *
  * Do not use.  Does not do anything.
  *
- * Deprecated: 1.37
+ * Deprecated: 1.38
  **/
 void
 pango_module_register (PangoIncludedModule *module G_GNUC_UNUSED)
