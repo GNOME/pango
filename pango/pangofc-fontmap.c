@@ -2143,9 +2143,9 @@ pango_fc_convert_weight_to_pango (int fc_weight)
   else if (fc_weight <= (FC_WEIGHT_EXTRALIGHT + FC_WEIGHT_LIGHT) / 2)
     return PANGO_WEIGHT_ULTRALIGHT;
   else if (fc_weight <= (FC_WEIGHT_LIGHT + FC_WEIGHT_DEMILIGHT) / 2)
-    return PANGO_WEIGHT_SEMILIGHT;
-  else if (fc_weight <= (FC_WEIGHT_DEMILIGHT + FC_WEIGHT_BOOK) / 2)
     return PANGO_WEIGHT_LIGHT;
+  else if (fc_weight <= (FC_WEIGHT_DEMILIGHT + FC_WEIGHT_BOOK) / 2)
+    return PANGO_WEIGHT_SEMILIGHT;
   else if (fc_weight <= (FC_WEIGHT_BOOK + FC_WEIGHT_REGULAR) / 2)
     return PANGO_WEIGHT_BOOK;
   else if (fc_weight <= (FC_WEIGHT_REGULAR + FC_WEIGHT_MEDIUM) / 2)
