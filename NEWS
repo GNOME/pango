@@ -1,3 +1,14 @@
+Overview of changes between 1.36.8 and 1.37.0
+=============================================
+- Pango modules, engines, and config have been removed (#733882)
+- Added pango_fc_font_map_config_changed() (#748767)
+- Added pango_fc_font_map_[sg]et_config() (#547671)
+- Added pango_matrix_get_font_scale_factors
+- Lot of API has been deprecated
+- Fix CoreText font fallback
+- General build fixes
+- Win32 build fixes
+
 Overview of changes between 1.36.7 and 1.36.8
 =============================================
 - Make tests not fail on build.gnome.org
