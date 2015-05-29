@@ -205,7 +205,26 @@ _pango_get_lc_ctype (void)
   CFArrayRef languages;
   CFStringRef language;
   gchar ret[16];
+  gchar *p;
 
+  /* Take the same approach as done for Windows above. First we check
+   * if somebody tried to set the locale through environment variables.
+   */
+  p = getenv ("LC_ALL");
+  if (p != NULL)
+    return g_strdup (p);
+
+  p = getenv ("LC_CTYPE");
+  if (p != NULL)
+    return g_strdup (p);
+
+  p = getenv ("LANG");
+  if (p != NULL)
+    return g_strdup (p);
+
+  /* If the environment variables are not set, determine the locale
+   * through the platform-native API.
+   */
   languages = CFLocaleCopyPreferredLanguages ();
   language = CFArrayGetValueAtIndex (languages, 0);
 
