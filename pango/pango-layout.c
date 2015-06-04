@@ -247,6 +247,7 @@ pango_layout_init (PangoLayout *layout)
   layout->width = -1;
   layout->height = -1;
   layout->indent = 0;
+  layout->spacing = 0;
 
   layout->alignment = PANGO_ALIGN_LEFT;
   layout->justify = FALSE;
@@ -3652,6 +3653,7 @@ add_line (PangoLayoutLine *line,
       PangoRectangle logical_rect;
       pango_layout_line_get_extents (line, NULL, &logical_rect);
       state->remaining_height -= logical_rect.height;
+      state->remaining_height -= layout->spacing;
       state->line_height = logical_rect.height;
     }
 }
