@@ -370,12 +370,14 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
       g_snprintf (buf, sizeof(buf), (ch > 0xffff) ? "%06X" : "%04X", ch);
     }
 
-  width = (2 * hbi->pad_x + cols * (hbi->digit_width + hbi->pad_x));
+  width = (3 * hbi->pad_x + cols * (hbi->digit_width + hbi->pad_x));
   lsb = ((double)gi->geometry.width / PANGO_SCALE - width) * .5;
+  lsb = floor (lsb / hbi->pad_x) * hbi->pad_x;
+
   _pango_cairo_renderer_draw_frame (crenderer,
-				    cx + lsb,
+				    cx + lsb + .5 * hbi->pad_x,
 				    cy + hbi->box_descent - hbi->box_height + hbi->pad_y * 0.5,
-				    width,
+				    width - hbi->pad_x,
 				    (hbi->box_height - hbi->pad_y),
 				    hbi->line_width,
 				    invalid_input);
@@ -383,7 +385,7 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
   if (invalid_input)
     goto done;
 
-  x0 = cx + lsb + hbi->pad_x * 1.5;
+  x0 = cx + lsb + hbi->pad_x * 2;
   y0 = cy + hbi->box_descent - hbi->pad_y * 2;
 
   for (row = 0; row < rows; row++)
