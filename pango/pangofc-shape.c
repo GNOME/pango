@@ -377,6 +377,45 @@ _pango_fc_shape (PangoFont           *font,
 	}
     }
 
+  if (analysis->extra_attrs)
+    {
+      GSList *tmp_attrs;
+
+      for (tmp_attrs = analysis->extra_attrs; tmp_attrs && num_features < G_N_ELEMENTS (features); tmp_attrs = tmp_attrs->next)
+       {
+	 if (((PangoAttribute *) tmp_attrs->data)->klass->type == PANGO_ATTR_FONT_FEATURES)
+	   {
+	     const PangoAttrFontFeatures *fattr = (const PangoAttrFontFeatures *) tmp_attrs->data;
+	      const gchar *feat;
+	      const gchar *end;
+	      int len;
+
+	      feat = fattr->features;
+
+	      while (feat != NULL && num_features < G_N_ELEMENTS (features))
+		{
+		  end = strchr (feat, ',');
+		  if (end)
+		    len = end - feat;
+		  else
+		    len = -1;
+
+		  if (hb_feature_from_string (feat, len, &features[num_features]))
+		  {
+		    num_features++;
+		    features[num_features].start = 0;
+		    features[num_features].end = -1;
+		  }
+
+		  if (end == NULL)
+		    break;
+
+		  feat = end + 1;
+		}
+	   }
+       }
+    }
+
   hb_shape (hb_font, hb_buffer, features, num_features);
 
   if (PANGO_GRAVITY_IS_IMPROPER (analysis->gravity))

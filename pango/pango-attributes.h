@@ -75,6 +75,7 @@ typedef struct _PangoAttrFloat    PangoAttrFloat;
 typedef struct _PangoAttrColor    PangoAttrColor;
 typedef struct _PangoAttrFontDesc PangoAttrFontDesc;
 typedef struct _PangoAttrShape    PangoAttrShape;
+typedef struct _PangoAttrFontFeatures PangoAttrFontFeatures;
 
 /**
  * PANGO_TYPE_ATTR_LIST:
@@ -167,7 +168,8 @@ typedef enum
   PANGO_ATTR_STRIKETHROUGH_COLOR,/* PangoAttrColor */
   PANGO_ATTR_ABSOLUTE_SIZE,	/* PangoAttrSize */
   PANGO_ATTR_GRAVITY,		/* PangoAttrInt */
-  PANGO_ATTR_GRAVITY_HINT	/* PangoAttrInt */
+  PANGO_ATTR_GRAVITY_HINT,	/* PangoAttrInt */
+  PANGO_ATTR_FONT_FEATURES	/* PangoAttrString */
 } PangoAttrType;
 
 /**
@@ -406,6 +408,22 @@ struct _PangoAttrFontDesc
   PangoFontDescription *desc;
 };
 
+/**
+ * PangoAttrFontFeatures:
+ * @attr: the common portion of the attribute
+ * @features: the featues, as a string in CSS syntax
+ *
+ * The #PangoAttrFontFeatures structure is used to represent OpenType
+ * font features as an attribute.
+ *
+ * Since: 1.38
+ */
+struct _PangoAttrFontFeatures
+{
+  PangoAttribute attr;
+  gchar *features;
+};
+
 PangoAttrType         pango_attr_type_register (const gchar        *name);
 const char *          pango_attr_type_get_name (PangoAttrType       type) G_GNUC_CONST;
 
@@ -456,6 +474,7 @@ PangoAttribute *pango_attr_shape_new_with_data (const PangoRectangle       *ink_
 
 PangoAttribute *pango_attr_gravity_new      (PangoGravity     gravity);
 PangoAttribute *pango_attr_gravity_hint_new (PangoGravityHint hint);
+PangoAttribute *pango_attr_font_features_new (const gchar *features);
 
 GType              pango_attr_list_get_type      (void) G_GNUC_CONST;
 PangoAttrList *    pango_attr_list_new           (void);

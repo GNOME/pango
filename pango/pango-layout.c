@@ -3852,6 +3852,11 @@ no_shape_filter_func (PangoAttribute *attribute,
     PANGO_ATTR_UNDERLINE,
     PANGO_ATTR_STRIKETHROUGH,
     PANGO_ATTR_RISE
+    /* Ideally we want font-features here, because we don't
+     * want it to break shaping runs.  But if we put it here,
+     * it won't show up in the shaper anymore :(.  To be
+     * fixed later. */
+    /* PANGO_ATTR_FONT_FEATURES */
   };
 
   int i;

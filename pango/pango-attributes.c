@@ -1101,6 +1101,31 @@ pango_attr_gravity_hint_new (PangoGravityHint hint)
   return pango_attr_int_new (&klass, (int)hint);
 }
 
+/**
+ * pango_attr_font_features_new:
+ * @features: a string with OpenType font features, in CSS syntax
+ *
+ * Create a new font features tag attribute.
+ *
+ * Return value: (transfer full): the newly allocated #PangoAttribute,
+ *               which should be freed with pango_attribute_destroy().
+ *
+ * Since: 1.38
+ **/
+PangoAttribute *
+pango_attr_font_features_new (const gchar *features)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_FONT_FEATURES,
+    pango_attr_string_copy,
+    pango_attr_string_destroy,
+    pango_attr_string_equal
+  };
+
+  g_return_val_if_fail (features != NULL, NULL);
+
+  return pango_attr_string_new (&klass, features);
+}
 
 /*
  * Attribute List
@@ -1928,17 +1953,21 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	      gboolean found = FALSE;
 
 	      tmp_list2 = *extra_attrs;
-	      while (tmp_list2)
-		{
-		  PangoAttribute *old_attr = tmp_list2->data;
-		  if (attr->klass->type == old_attr->klass->type)
-		    {
-		      found = TRUE;
-		      break;
-		    }
+	      /* Hack: special-case FONT_FEATURES.  We don't want them to
+	       * override each other, so we never merge them.  This should
+	       * be fixed when we implement attr-merging. */
+	      if (attr->klass->type != PANGO_ATTR_FONT_FEATURES)
+		while (tmp_list2)
+		  {
+		    PangoAttribute *old_attr = tmp_list2->data;
+		    if (attr->klass->type == old_attr->klass->type)
+		      {
+			found = TRUE;
+			break;
+		      }
 
-		  tmp_list2 = tmp_list2->next;
-		}
+		    tmp_list2 = tmp_list2->next;
+		  }
 
 	      if (!found)
 		*extra_attrs = g_slist_prepend (*extra_attrs, pango_attribute_copy (attr));

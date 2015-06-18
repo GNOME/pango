@@ -336,6 +336,7 @@ PangoAttrFloat
 PangoAttrFontDesc
 PangoAttrShape
 PangoAttrSize
+PangoAttrFontFeatures
 pango_parse_markup
 pango_markup_parser_new
 pango_markup_parser_finish
@@ -379,6 +380,7 @@ pango_attr_letter_spacing_new
 pango_attr_fallback_new
 pango_attr_gravity_new
 pango_attr_gravity_hint_new
+pango_attr_font_features_new
 PangoColor
 PANGO_TYPE_COLOR
 pango_color_parse

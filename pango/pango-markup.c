@@ -1077,6 +1077,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   const char *fallback = NULL;
   const char *gravity = NULL;
   const char *gravity_hint = NULL;
+  const char *font_features = NULL;
 
   g_markup_parse_context_get_position (context,
 				       &line_number, &char_number);
@@ -1119,7 +1120,9 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	CHECK_ATTRIBUTE2(weight, "font_weight");
 
 	CHECK_ATTRIBUTE (foreground);
-	CHECK_ATTRIBUTE2 (foreground, "fgcolor");
+	CHECK_ATTRIBUTE2(foreground, "fgcolor");
+
+	CHECK_ATTRIBUTE (font_features);
 	break;
       case 's':
 	CHECK_ATTRIBUTE (size);
@@ -1142,7 +1145,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	break;
       default:
 	CHECK_ATTRIBUTE (background);
-	CHECK_ATTRIBUTE2 (background, "bgcolor");
+	CHECK_ATTRIBUTE2(background, "bgcolor");
 	CHECK_ATTRIBUTE2(foreground, "color");
 	CHECK_ATTRIBUTE (rise);
 	CHECK_ATTRIBUTE (variant);
@@ -1429,6 +1432,11 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
     {
       add_attribute (tag,
 		     pango_attr_language_new (pango_language_from_string (lang)));
+    }
+
+  if (G_UNLIKELY (font_features))
+    {
+      add_attribute (tag, pango_attr_font_features_new (font_features));
     }
 
   return TRUE;
