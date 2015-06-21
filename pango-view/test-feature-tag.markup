@@ -1,0 +1,130 @@
+<span font_desc="IPAexGothic 8">
+ASCII:
+0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+Full Widths:
+<span font_features="fwid">
+0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+</span>
+Half Widths:
+やさしいカレー
+<span font_features="hwid 1">やさしいカレー</span>
+
+Standard Ligatures:
+<span font_desc="FreeSans 8">
+<span font_features="liga off">ffl fi</span>
+ffl fi
+</span>
+
+Discretionary Ligatures:
+株式会社
+<span font_features="dlig on">株式会社</span>
+
+Discretionary Ligatures (+ Vertical Alternates)
+株式会社
+<span font_features="vert on, dlig on">株式会社</span>
+
+Vertical Alternates:
+<span font_features="vert 1">私の名前は中野です。</span>
+
+Fractions:
+<span font_desc="Linux Libertine O 8">
+1/1000
+<span font_features="frac">1/1000</span>
+</span>
+
+Traditional Forms:
+亜
+<span font_features="trad">亜</span>
+
+JIS X 0213:2000
+<span font_features="jp90">
+逢芦飴溢茨鰯淫迂厩噂餌襖迦牙廻恢晦蟹葛鞄釜翰翫徽
+祇汲灸笈卿饗僅喰櫛屑粂祁隙倦捲牽鍵諺巷梗膏鵠甑叉
+榊薩鯖錆鮫餐杓灼酋楯薯藷哨鞘杖蝕訊逗摺撰煎煽穿箭
+詮噌遡揃遜腿蛸辿樽歎註瀦捗槌鎚辻挺鄭擢溺兎堵屠賭
+瀞遁謎灘楢禰牌這秤駁箸叛挽誹樋稗逼謬豹廟瀕斧蔽瞥
+蔑篇娩鞭庖蓬鱒迄儲餅籾爺鑓愈猷漣煉簾榔屢冤叟咬嘲
+囀徘扁棘橙狡甕甦疼祟竈筵篝腱艘芒虔蜃蠅訝靄靱騙鴉
+</span>
+
+JIS X 0213:2004
+<span font_features="jp04">
+逢芦飴溢茨鰯淫迂厩噂餌襖迦牙廻恢晦蟹葛鞄釜翰翫徽
+祇汲灸笈卿饗僅喰櫛屑粂祁隙倦捲牽鍵諺巷梗膏鵠甑叉
+榊薩鯖錆鮫餐杓灼酋楯薯藷哨鞘杖蝕訊逗摺撰煎煽穿箭
+詮噌遡揃遜腿蛸辿樽歎註瀦捗槌鎚辻挺鄭擢溺兎堵屠賭
+瀞遁謎灘楢禰牌這秤駁箸叛挽誹樋稗逼謬豹廟瀕斧蔽瞥
+蔑篇娩鞭庖蓬鱒迄儲餅籾爺鑓愈猷漣煉簾榔屢冤叟咬嘲
+囀徘扁棘橙狡甕甦疼祟竈筵篝腱艘芒虔蜃蠅訝靄靱騙鴉
+</span>
+
+Alternate Annotation Forms:
+CR+12345一二三月火水木金土日株有社名
+<span font_features="nalt">CR+12345一二三月火水木金土日株有社名</span>
+
+</span>
+<span font_desc="IPAexGothic 8">
+ASCII:
+0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+Full Widths:
+<span font_features="fwid">
+0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+</span>
+Half Widths:
+やさしいカレー
+<span font_features="hwid 1">やさしいカレー</span>
+
+Standard Ligatures:
+<span font_desc="FreeSans 8">
+<span font_features="liga off">ffl fi</span>
+ffl fi
+</span>
+
+Discretionary Ligatures:
+株式会社
+<span font_features="dlig on">株式会社</span>
+
+Discretionary Ligatures (+ Vertical Alternates)
+株式会社
+<span font_features="vert on, dlig on">株式会社</span>
+
+Vertical Alternates:
+<span font_features="vert 1">私の名前は中野です。</span>
+
+Fractions:
+<span font_desc="Linux Libertine O 8">
+1/1000
+<span font_features="frac">1/1000</span>
+</span>
+
+Traditional Forms:
+亜
+<span font_features="trad">亜</span>
+
+JIS X 0213:2000
+<span font_features="jp90">
+逢芦飴溢茨鰯淫迂厩噂餌襖迦牙廻恢晦蟹葛鞄釜翰翫徽
+祇汲灸笈卿饗僅喰櫛屑粂祁隙倦捲牽鍵諺巷梗膏鵠甑叉
+榊薩鯖錆鮫餐杓灼酋楯薯藷哨鞘杖蝕訊逗摺撰煎煽穿箭
+詮噌遡揃遜腿蛸辿樽歎註瀦捗槌鎚辻挺鄭擢溺兎堵屠賭
+瀞遁謎灘楢禰牌這秤駁箸叛挽誹樋稗逼謬豹廟瀕斧蔽瞥
+蔑篇娩鞭庖蓬鱒迄儲餅籾爺鑓愈猷漣煉簾榔屢冤叟咬嘲
+囀徘扁棘橙狡甕甦疼祟竈筵篝腱艘芒虔蜃蠅訝靄靱騙鴉
+</span>
+
+JIS X 0213:2004
+<span font_features="jp04">
+逢芦飴溢茨鰯淫迂厩噂餌襖迦牙廻恢晦蟹葛鞄釜翰翫徽
+祇汲灸笈卿饗僅喰櫛屑粂祁隙倦捲牽鍵諺巷梗膏鵠甑叉
+榊薩鯖錆鮫餐杓灼酋楯薯藷哨鞘杖蝕訊逗摺撰煎煽穿箭
+詮噌遡揃遜腿蛸辿樽歎註瀦捗槌鎚辻挺鄭擢溺兎堵屠賭
+瀞遁謎灘楢禰牌這秤駁箸叛挽誹樋稗逼謬豹廟瀕斧蔽瞥
+蔑篇娩鞭庖蓬鱒迄儲餅籾爺鑓愈猷漣煉簾榔屢冤叟咬嘲
+囀徘扁棘橙狡甕甦疼祟竈筵篝腱艘芒虔蜃蠅訝靄靱騙鴉
+</span>
+
+Alternate Annotation Forms:
+CR+12345一二三月火水木金土日株有社名
+<span font_features="nalt">CR+12345一二三月火水木金土日株有社名</span>
+
+</span>
