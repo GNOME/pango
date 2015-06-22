@@ -4,6 +4,7 @@ EXPORTS
 	pango_attr_fallback_new
 	pango_attr_family_new
 	pango_attr_font_desc_new
+	pango_attr_font_features_new
 	pango_attr_foreground_new
 	pango_attr_gravity_hint_new
 	pango_attr_gravity_new
