@@ -1,3 +1,10 @@
+Overview of changes between 1.37.0 and 1.37.1
+=============================================
+- Add attributes for OpenType font features (#738505)
+- CoreText: locale handling improvements (#750017)
+- Fix ellipsization with line space (#750383)
+- Fix issues with hex boxes (#750463)
+
 Overview of changes between 1.36.8 and 1.37.0
 =============================================
 - Pango modules, engines, and config have been removed (#733882)
