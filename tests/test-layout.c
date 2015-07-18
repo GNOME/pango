@@ -94,6 +94,7 @@ dump_lines (PangoLayout *layout, GString *string)
 
   has_more = TRUE;
   index = pango_layout_iter_get_index (iter);
+  index2 = 0;
   i = 0;
   while (has_more)
     {
@@ -132,13 +133,14 @@ dump_runs (PangoLayout *layout, GString *string)
   gboolean has_more;
   gchar *char_str;
   gint i;
-  gchar *font;
+  gchar *font = 0;
 
   text = pango_layout_get_text (layout);
   iter = pango_layout_get_iter (layout);
 
   has_more = TRUE;
   index = pango_layout_iter_get_index (iter);
+  index2 = 0;
   i = 0;
   while (has_more)
     {
