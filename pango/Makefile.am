@@ -248,6 +248,7 @@ libpangoxft_1_0_la_LIBADD =			\
 	$(GLIB_LIBS)				\
 	$(XFT_LIBS)				\
 	$(FREETYPE_LIBS)			\
+	$(FONTCONFIG_LIBS)			\
 	$(libm)
 libpangoxft_1_0_la_DEPENDENCIES =		\
 	libpangoft2-$(PANGO_API_VERSION).la	\
@@ -296,6 +297,7 @@ libpangocairo_1_0_la_LIBADD =			\
 	libpango-$(PANGO_API_VERSION).la	\
 	$(GLIB_LIBS)				\
 	$(CAIRO_LIBS)				\
+	$(FONTCONFIG_LIBS)			\
 	$(libm)
 libpangocairo_1_0_la_DEPENDENCIES =		\
 	libpango-$(PANGO_API_VERSION).la
