@@ -124,6 +124,14 @@ One of 'ultracondensed', 'extracondensed', 'condensed',
 </varlistentry>
 
 <varlistentry>
+<term>font_features<footnote><para>Since 1.38</para></footnote></term>
+<listitem><para>
+A comma separated list of OpenType font feature settings, in the same
+syntax as accepted by CSS. E.g: <literal>font_features='dlig=1, -kern, afrc on'</literal>
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
 <term>foreground</term>
 <term>fgcolor<footnoteref linkend='since_1_21'/></term>
 <term>color</term>
