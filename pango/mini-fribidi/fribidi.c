@@ -627,6 +627,13 @@ fribidi_analyse_string_utf8 (	/* input */
 	    move_element_before (pp, explicits_list_end);
 	    pp = &temp_link;
 	  }
+	 else if (this_type == FRIBIDI_TYPE_BS)
+	  {
+	    /* X8. All explicit directional embeddings and overrides are
+	       completely terminated at the end of each paragraph. Paragraph
+	       separators are not included in the embedding. */
+	    break;
+	  }
 	else
 	  {
 	    /* X6. For all typed besides RLE, LRE, RLO, LRO, and PDF:
@@ -639,11 +646,6 @@ fribidi_analyse_string_utf8 (	/* input */
 	    if (!FRIBIDI_IS_NEUTRAL (override))
 	      RL_TYPE (pp) = override;
 	  }
-	/* X8. All explicit directional embeddings and overrides are
-	   completely terminated at the end of each paragraph. Paragraph
-	   separators are not included in the embedding. */
-	/* This function is running on a single paragraph, so we can do
-	   X8 after all the input is processed. */
       }
 
     /* Implementing X8. It has no effect on a single paragraph! */
@@ -699,6 +701,10 @@ fribidi_analyse_string_utf8 (	/* input */
 	      pp = merge_with_prev (pp);
 	    else
 	      RL_TYPE (pp) = prev_type;
+	    if (prev_type == next_type && RL_LEVEL (pp) == RL_LEVEL (pp->next))
+	      {
+		pp = merge_with_prev (pp->next);
+	      }
 	    continue;		/* As we know the next condition cannot be true. */
 	  }
 
@@ -717,7 +723,7 @@ fribidi_analyse_string_utf8 (	/* input */
 
     last_strong = base_dir;
     /* Resolving dependency of loops for rules W4 and W5, W5 may
-       want to prevent W4 to take effect in the next turn, do this 
+       want to prevent W4 to take effect in the next turn, do this
        through "w4". */
     w4 = FRIBIDI_TRUE;
     /* Resolving dependency of loops for rules W4 and W5 with W7,
