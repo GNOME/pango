@@ -32,8 +32,6 @@
 
 #include <pango/pangocairo.h>
 
-#undef VERBOSE
-
 static void verbose (const char *format, ...) G_GNUC_PRINTF (1, 2);
 static void
 verbose (const char *format, ...)
@@ -70,9 +68,14 @@ const char *test_texts[] =
     "AAAA\nBBBB\nCCCC\n",
     "DDDD\rEEEE\rFFFF\r",
     "GGGG\r\nHHHH\r\nIIII\r\n",
+    "asdf",
     NULL
   };
 
+/* char iteration test:
+ *  - Total num of iterations match number of chars
+ *  - GlyphString's index_to_x positions match those returned by the Iter
+ */
 static void
 iter_char_test (PangoLayout *layout)
 {
@@ -154,10 +157,6 @@ iter_char_test (PangoLayout *layout)
   pango_layout_iter_free (iter);
 }
 
-/* char iteration test:
- *  - Total num of iterations match number of chars
- *  - GlyphString's index_to_x positions match those returned by the Iter
- */
 static void
 iter_cluster_test (PangoLayout *layout)
 {
