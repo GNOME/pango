@@ -359,14 +359,14 @@ pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter)
       cluster = glyphs->log_clusters[glyph_index - 1];
       while (TRUE)
 	{
-	  glyph_index--;
-
 	  if (glyph_index == 0)
 	    {
 	      iter->start_index = item->offset;
 	      iter->start_char = 0;
 	      break;
 	    }
+
+	  glyph_index--;
 
 	  if (glyphs->log_clusters[glyph_index] != cluster)
 	    {
@@ -383,14 +383,14 @@ pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter)
       cluster = glyphs->log_clusters[glyph_index + 1];
       while (TRUE)
 	{
-	  glyph_index++;
-
 	  if (glyph_index == glyphs->num_glyphs - 1)
 	    {
 	      iter->start_index = item->offset;
 	      iter->start_char = 0;
 	      break;
 	    }
+
+	  glyph_index++;
 
 	  if (glyphs->log_clusters[glyph_index] != cluster)
 	    {
