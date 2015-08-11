@@ -137,6 +137,8 @@ typedef struct _PangoAttrIterator PangoAttrIterator;
  * @PANGO_ATTR_GRAVITY: base text gravity (#PangoAttrInt)
  * @PANGO_ATTR_GRAVITY_HINT: gravity hint (#PangoAttrInt)
  * @PANGO_ATTR_FONT_FEATURES: OpenType font features (#PangoAttrString). Since 1.38
+ * @PANGO_ATTR_FOREGROUND_ALPHA: foreground alpha (#PangoAttrInt). Since 1.38
+ * @PANGO_ATTR_BACKGROUND_ALPHA: background alpha (#PangoAttrInt). Since 1.38
  *
  * The #PangoAttrType
  * distinguishes between different types of attributes. Along with the
@@ -170,7 +172,9 @@ typedef enum
   PANGO_ATTR_ABSOLUTE_SIZE,	/* PangoAttrSize */
   PANGO_ATTR_GRAVITY,		/* PangoAttrInt */
   PANGO_ATTR_GRAVITY_HINT,	/* PangoAttrInt */
-  PANGO_ATTR_FONT_FEATURES	/* PangoAttrString */
+  PANGO_ATTR_FONT_FEATURES,	/* PangoAttrString */
+  PANGO_ATTR_FOREGROUND_ALPHA,	/* PangoAttrInt */
+  PANGO_ATTR_BACKGROUND_ALPHA	/* PangoAttrInt */
 } PangoAttrType;
 
 /**
@@ -476,6 +480,8 @@ PangoAttribute *pango_attr_shape_new_with_data (const PangoRectangle       *ink_
 PangoAttribute *pango_attr_gravity_new      (PangoGravity     gravity);
 PangoAttribute *pango_attr_gravity_hint_new (PangoGravityHint hint);
 PangoAttribute *pango_attr_font_features_new (const gchar *features);
+PangoAttribute *pango_attr_foreground_alpha_new (guint16 alpha);
+PangoAttribute *pango_attr_background_alpha_new (guint16 alpha);
 
 GType              pango_attr_list_get_type      (void) G_GNUC_CONST;
 PangoAttrList *    pango_attr_list_new           (void);

@@ -1127,6 +1127,54 @@ pango_attr_font_features_new (const gchar *features)
   return pango_attr_string_new (&klass, features);
 }
 
+/**
+ * pango_attr_foreground_alpha_new:
+ * @alpha: the alpha value, between 1 and 65536
+ *
+ * Create a new foreground alpha attribute.
+ *
+ * Return value: (transfer full): the new allocated #PangoAttribute,
+ *               which should be freed with pango_attribute_destroy().
+ *
+ * Since: 1.38
+ */
+PangoAttribute *
+pango_attr_foreground_alpha_new (guint16 alpha)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_FOREGROUND_ALPHA,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal
+  };
+
+  return pango_attr_int_new (&klass, (int)alpha);
+}
+
+/**
+ * pango_attr_background_alpha_new:
+ * @alpha: the alpha value, between 1 and 65536
+ *
+ * Create a new background alpha attribute.
+ *
+ * Return value: (transfer full): the new allocated #PangoAttribute,
+ *               which should be freed with pango_attribute_destroy().
+ *
+ * Since: 1.38
+ */
+PangoAttribute *
+pango_attr_background_alpha_new (guint16 alpha)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_BACKGROUND_ALPHA,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal
+  };
+
+  return pango_attr_int_new (&klass, (int)alpha);
+}
+
 /*
  * Attribute List
  */
