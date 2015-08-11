@@ -191,12 +191,17 @@ set_color (PangoCairoRenderer *crenderer,
 	   PangoRenderPart     part)
 {
   PangoColor *color = pango_renderer_get_color ((PangoRenderer *) (crenderer), part);
+  guint16 alpha = pango_renderer_get_alpha ((PangoRenderer *) (crenderer), part);
+
+  if (!alpha)
+    alpha = 0xffff;
 
   if (color)
-    cairo_set_source_rgb (crenderer->cr,
-			  color->red / 65535.,
-			  color->green / 65535.,
-			  color->blue / 65535.);
+    cairo_set_source_rgba (crenderer->cr,
+			   color->red / 65535.,
+			   color->green / 65535.,
+			   color->blue / 65535.,
+                           alpha / 65535.);
 }
 
 /* note: modifies crenderer->cr without doing cairo_save/restore() */
