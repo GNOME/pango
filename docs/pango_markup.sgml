@@ -124,7 +124,7 @@ One of 'ultracondensed', 'extracondensed', 'condensed',
 </varlistentry>
 
 <varlistentry>
-<term>font_features<footnote><para>Since 1.38</para></footnote></term>
+<term>font_features<footnote id='since_1_38'><para>Since 1.38</para></footnote></term>
 <listitem><para>
 A comma separated list of OpenType font feature settings, in the same
 syntax as accepted by CSS. E.g: <literal>font_features='dlig=1, -kern, afrc on'</literal>
@@ -147,6 +147,24 @@ An RGB color specification such as '#00FF00' or a color name such as
 <listitem><para>
 An RGB color specification such as '#00FF00' or a color name such as 
 'red'
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>alpha</term>
+<term>fgalpha<footnoteref linkend='since_1_38'/></term>
+<listitem><para>
+An alpha value for the foreground color, either a plain integer between 1 and 65536
+or a percentage value like '50%'.
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>background_alpha</term>
+<term>bgalpha<footnoteref linkend='since_1_38'/></term>
+<listitem><para>
+An alpha value for the background color, either a plain integer between 1 and 65536
+or a percentage value like '50%'.
 </para></listitem>
 </varlistentry>
 

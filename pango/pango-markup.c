@@ -1022,6 +1022,56 @@ span_parse_color (const char *attr_name,
 }
 
 static gboolean
+span_parse_alpha (const char  *attr_name,
+                  const char  *attr_val,
+                  guint16     *val,
+                  int          line_number,
+                  GError     **error)
+{
+  const char *end = attr_val;
+  int int_val;
+
+  if (pango_scan_int (&end, &int_val))
+    {
+      if (*end == '\0' && int_val > 0 && int_val <= 0xffff)
+        {
+          *val = (guint16)int_val;
+          return TRUE;
+        }
+      else if (*end == '%' && int_val > 0 && int_val <= 100)
+        {
+          *val = (guint16)(int_val * 0xffff / 100);
+          return TRUE;
+        }
+      else
+        {
+          g_set_error (error,
+                       G_MARKUP_ERROR,
+                       G_MARKUP_ERROR_INVALID_CONTENT,
+                       _("Value of '%s' attribute on <span> tag "
+                         "on line %d could not be parsed; "
+                         "should be between 0 and 65536 or a "
+                         "percentage, not '%s'"),
+                         attr_name, line_number, attr_val);
+          return FALSE;
+        }
+    }
+  else
+    {
+      g_set_error (error,
+		   G_MARKUP_ERROR,
+		   G_MARKUP_ERROR_INVALID_CONTENT,
+		   _("Value of '%s' attribute on <span> tag "
+		     "on line %d could not be parsed; "
+		     "should be an integer, not '%s'"),
+		   attr_name, line_number, attr_val);
+      return FALSE;
+    }
+
+  return TRUE;
+}
+
+static gboolean
 span_parse_enum (const char *attr_name,
 		 const char *attr_val,
 		 GType type,
@@ -1078,6 +1128,8 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   const char *gravity = NULL;
   const char *gravity_hint = NULL;
   const char *font_features = NULL;
+  const char *alpha = NULL;
+  const char *background_alpha = NULL;
 
   g_markup_parse_context_get_position (context,
 				       &line_number, &char_number);
@@ -1106,6 +1158,18 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
       gboolean found = FALSE;
 
       switch (names[i][0]) {
+      case 'a':
+        CHECK_ATTRIBUTE (alpha);
+        break;
+      case 'b':
+	CHECK_ATTRIBUTE (background);
+	CHECK_ATTRIBUTE2(background, "bgcolor");
+        CHECK_ATTRIBUTE (background_alpha);
+        CHECK_ATTRIBUTE2(background_alpha, "bgalpha");
+        break;
+      case 'c':
+	CHECK_ATTRIBUTE2(foreground, "color");
+        break;
       case 'f':
 	CHECK_ATTRIBUTE (fallback);
 	CHECK_ATTRIBUTE2(desc, "font");
@@ -1121,6 +1185,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 
 	CHECK_ATTRIBUTE (foreground);
 	CHECK_ATTRIBUTE2(foreground, "fgcolor");
+	CHECK_ATTRIBUTE2(alpha, "fgalpha");
 
 	CHECK_ATTRIBUTE (font_features);
 	break;
@@ -1144,9 +1209,6 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	CHECK_ATTRIBUTE (underline_color);
 	break;
       default:
-	CHECK_ATTRIBUTE (background);
-	CHECK_ATTRIBUTE2(background, "bgcolor");
-	CHECK_ATTRIBUTE2(foreground, "color");
 	CHECK_ATTRIBUTE (rise);
 	CHECK_ATTRIBUTE (variant);
 	CHECK_ATTRIBUTE (weight);
@@ -1336,6 +1398,26 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	goto error;
 
       add_attribute (tag, pango_attr_background_new (color.red, color.green, color.blue));
+    }
+
+  if (G_UNLIKELY (alpha))
+    {
+      guint16 val;
+
+      if (!span_parse_alpha ("alpha", alpha, &val, line_number, error))
+        goto error;
+
+      add_attribute (tag, pango_attr_foreground_alpha_new (val));
+    }
+
+  if (G_UNLIKELY (background_alpha))
+    {
+      guint16 val;
+
+      if (!span_parse_alpha ("background_alpha", background_alpha, &val, line_number, error))
+        goto error;
+
+      add_attribute (tag, pango_attr_background_alpha_new (val));
     }
 
   if (G_UNLIKELY (underline))
