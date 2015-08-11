@@ -687,6 +687,8 @@ pango_renderer_deactivate
 pango_renderer_part_changed
 pango_renderer_set_color
 pango_renderer_get_color
+pango_renderer_set_alpha
+pango_renderer_get_alpha
 pango_renderer_set_matrix
 pango_renderer_get_matrix
 pango_renderer_get_layout

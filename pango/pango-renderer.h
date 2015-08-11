@@ -248,6 +248,12 @@ void        pango_renderer_set_color (PangoRenderer    *renderer,
 PangoColor *pango_renderer_get_color (PangoRenderer    *renderer,
 				      PangoRenderPart   part);
 
+void        pango_renderer_set_alpha (PangoRenderer    *renderer,
+				      PangoRenderPart   part,
+				      guint16           alpha);
+guint16     pango_renderer_get_alpha (PangoRenderer    *renderer,
+				      PangoRenderPart   part);
+
 void                        pango_renderer_set_matrix (PangoRenderer     *renderer,
 						       const PangoMatrix *matrix);
 const PangoMatrix          *pango_renderer_get_matrix (PangoRenderer     *renderer);

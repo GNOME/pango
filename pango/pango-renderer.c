@@ -53,6 +53,7 @@ struct _PangoRendererPrivate
 {
   PangoColor color[N_RENDER_PARTS];
   gboolean color_set[N_RENDER_PARTS];
+  guint16 alpha[N_RENDER_PARTS];
 
   PangoLayoutLine *line;
   LineState *line_state;
@@ -1143,6 +1144,7 @@ pango_renderer_deactivate (PangoRenderer *renderer)
  * @color: (allow-none): the new color or %NULL to unset the current color
  *
  * Sets the color for part of the rendering.
+ * Also see pango_renderer_set_alpha().
  *
  * Since: 1.8
  **/
@@ -1198,6 +1200,59 @@ pango_renderer_get_color (PangoRenderer   *renderer,
     return &renderer->priv->color[part];
   else
     return NULL;
+}
+
+/**
+ * pango_renderer_set_alpha:
+ * @renderer: a #PangoRenderer
+ * @part: the part to set the alpha for
+ * @alpha: an alpha value between 1 and 65536, or 0 to unset the alpha
+ *
+ * Sets the alpha for part of the rendering.
+ * Note that the alpha may only be used if a color is
+ * specified for @part as well.
+ *
+ * Since: 1.38
+ */
+void
+pango_renderer_set_alpha (PangoRenderer   *renderer,
+                          PangoRenderPart  part,
+                          guint16          alpha)
+{
+  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
+  g_return_if_fail (IS_VALID_PART (part));
+
+  if ((!alpha && !renderer->priv->alpha[part]) ||
+      (alpha && renderer->priv->alpha[part] &&
+       renderer->priv->alpha[part] == alpha))
+    return;
+
+  pango_renderer_part_changed (renderer, part);
+
+  renderer->priv->alpha[part] = alpha;
+}
+
+/**
+ * pango_renderer_get_alpha:
+ * @renderer: a #PangoRenderer
+ * @part: the part to get the alpha for
+ *
+ * Gets the current alpha for the specified part.
+ *
+ * Return value: the alpha for the specified part,
+ *   or 0 if it hasn't been set and should be
+ *   inherited from the environment.
+ *
+ * Since: 1.38
+ */
+guint16
+pango_renderer_get_alpha (PangoRenderer   *renderer,
+                          PangoRenderPart  part)
+{
+  g_return_val_if_fail (PANGO_IS_RENDERER_FAST (renderer), NULL);
+  g_return_val_if_fail (IS_VALID_PART (part), NULL);
+
+  return renderer->priv->alpha[part];
 }
 
 /**
@@ -1261,6 +1316,8 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
   PangoColor *bg_color = NULL;
   PangoColor *underline_color = NULL;
   PangoColor *strikethrough_color = NULL;
+  guint16 fg_alpha = 0;
+  guint16 bg_alpha = 0;
   GSList *l;
 
   renderer->underline = PANGO_UNDERLINE_NONE;
@@ -1296,6 +1353,14 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
 	  strikethrough_color = &((PangoAttrColor *)attr)->color;
 	  break;
 
+	case PANGO_ATTR_FOREGROUND_ALPHA:
+          fg_alpha = ((PangoAttrInt *)attr)->value;
+	  break;
+
+	case PANGO_ATTR_BACKGROUND_ALPHA:
+          bg_alpha = ((PangoAttrInt *)attr)->value;
+	  break;
+
 	default:
 	  break;
 	}
@@ -1311,6 +1376,11 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
   pango_renderer_set_color (renderer, PANGO_RENDER_PART_BACKGROUND, bg_color);
   pango_renderer_set_color (renderer, PANGO_RENDER_PART_UNDERLINE, underline_color);
   pango_renderer_set_color (renderer, PANGO_RENDER_PART_STRIKETHROUGH, strikethrough_color);
+
+  pango_renderer_set_alpha (renderer, PANGO_RENDER_PART_FOREGROUND, fg_alpha);
+  pango_renderer_set_alpha (renderer, PANGO_RENDER_PART_BACKGROUND, bg_alpha);
+  pango_renderer_set_alpha (renderer, PANGO_RENDER_PART_UNDERLINE, fg_alpha);
+  pango_renderer_set_alpha (renderer, PANGO_RENDER_PART_STRIKETHROUGH, fg_alpha);
 }
 
 /**
