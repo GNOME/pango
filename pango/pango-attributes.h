@@ -136,6 +136,7 @@ typedef struct _PangoAttrIterator PangoAttrIterator;
  * @PANGO_ATTR_ABSOLUTE_SIZE: font size in pixels scaled by %PANGO_SCALE (#PangoAttrInt)
  * @PANGO_ATTR_GRAVITY: base text gravity (#PangoAttrInt)
  * @PANGO_ATTR_GRAVITY_HINT: gravity hint (#PangoAttrInt)
+ * @PANGO_ATTR_FONT_FEATURES: OpenType font features (#PangoAttrString). Since 1.38
  *
  * The #PangoAttrType
  * distinguishes between different types of attributes. Along with the
