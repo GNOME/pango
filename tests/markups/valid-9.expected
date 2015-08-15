@@ -1,0 +1,8 @@
+Blue text
+
+
+---
+
+range 0 9
+[0 9] font-features kern 0, dlig, lnum 1, -pnum
+range 9 2147483647
