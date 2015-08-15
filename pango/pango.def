@@ -1,10 +1,12 @@
 EXPORTS
 	pango_alignment_get_type
+	pango_attr_background_alpha_new
 	pango_attr_background_new
 	pango_attr_fallback_new
 	pango_attr_family_new
 	pango_attr_font_desc_new
 	pango_attr_font_features_new
+	pango_attr_foreground_alpha_new
 	pango_attr_foreground_new
 	pango_attr_gravity_hint_new
 	pango_attr_gravity_new
@@ -358,12 +360,14 @@ EXPORTS
 	pango_renderer_draw_layout_line
 	pango_renderer_draw_rectangle
 	pango_renderer_draw_trapezoid
+	pango_renderer_get_alpha
 	pango_renderer_get_color
 	pango_renderer_get_layout
 	pango_renderer_get_layout_line
 	pango_renderer_get_matrix
 	pango_renderer_get_type
 	pango_renderer_part_changed
+	pango_renderer_set_alpha
 	pango_renderer_set_color
 	pango_renderer_set_matrix
 	pango_reorder_items
