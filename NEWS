@@ -1,3 +1,9 @@
+Overview of changes between 1.37.2 and 1.37.3
+=============================================
+- Fix pango_glyph_item_iter_prev
+- Add alpha attributes
+- Add support for alpha in markup
+
 Overview of changes between 1.37.1 and 1.37.2
 =============================================
 - Don't use hb_glib_get_unicode_funcs
