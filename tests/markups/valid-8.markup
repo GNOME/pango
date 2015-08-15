@@ -1,0 +1,4 @@
+<span foreground="blue" alpha="65535">Text</span>
+<span foreground="blue" fgalpha="50%">Text</span>
+<span background="blue" background_alpha="1">Text</span>
+<span background="blue" bgalpha="33%">Text</span>

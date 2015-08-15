@@ -1,0 +1,24 @@
+Text
+Text
+Text
+Text
+
+
+---
+
+range 0 4
+[0 4] foreground #00000000ffff
+[0 4] foreground-alpha ffff
+range 4 5
+range 5 9
+[5 9] foreground #00000000ffff
+[5 9] foreground-alpha 7fff
+range 9 10
+range 10 14
+[10 14] background #00000000ffff
+[10 14] background-alpha 0001
+range 14 15
+range 15 19
+[15 19] background #00000000ffff
+[15 19] background-alpha 547a
+range 19 2147483647

@@ -1,0 +1,23 @@
+Text
+Text
+Text
+Text
+
+
+---
+
+range 0 4
+[0 4] foreground #222233334444
+[0 4] foreground-alpha 5555
+range 4 5
+range 5 9
+[5 9] foreground #222233334444
+[5 9] foreground-alpha 5555
+range 9 10
+range 10 14
+[10 14] foreground #222233334444
+range 14 15
+range 15 19
+[15 19] foreground #222233334444
+[15 19] foreground-alpha 5555
+range 19 2147483647

@@ -1,0 +1,12 @@
+Text
+Text
+
+
+---
+
+range 0 4
+[0 4] underline-color #222233334444
+range 4 5
+range 5 9
+[5 9] strikethrough-color #222233334444
+range 9 2147483647
