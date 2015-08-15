@@ -999,14 +999,20 @@ span_parse_boolean (const char *attr_name,
   return TRUE;
 }
 
+extern gboolean
+_pango_color_parse_with_alpha (PangoColor *color,
+                               guint16    *alpha,
+                               const char *spec);
+
 static gboolean
 span_parse_color (const char *attr_name,
 		  const char *attr_val,
 		  PangoColor *color,
+                  guint16 *alpha,
 		  int line_number,
 		  GError **error)
 {
-  if (!pango_color_parse (color, attr_val))
+  if (!_pango_color_parse_with_alpha (color, alpha, attr_val))
     {
       g_set_error (error,
 		   G_MARKUP_ERROR,
@@ -1383,21 +1389,27 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   if (G_UNLIKELY (foreground))
     {
       PangoColor color;
+      guint16 alpha;
 
-      if (!span_parse_color ("foreground", foreground, &color, line_number, error))
+      if (!span_parse_color ("foreground", foreground, &color, &alpha, line_number, error))
 	goto error;
 
       add_attribute (tag, pango_attr_foreground_new (color.red, color.green, color.blue));
+      if (alpha != 0)
+        add_attribute (tag, pango_attr_foreground_alpha_new (alpha));
     }
 
   if (G_UNLIKELY (background))
     {
       PangoColor color;
+      guint16 alpha;
 
-      if (!span_parse_color ("background", background, &color, line_number, error))
+      if (!span_parse_color ("background", background, &color, &alpha, line_number, error))
 	goto error;
 
       add_attribute (tag, pango_attr_background_new (color.red, color.green, color.blue));
+      if (alpha != 0)
+        add_attribute (tag, pango_attr_background_alpha_new (alpha));
     }
 
   if (G_UNLIKELY (alpha))
@@ -1434,7 +1446,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
     {
       PangoColor color;
 
-      if (!span_parse_color ("underline_color", underline_color, &color, line_number, error))
+      if (!span_parse_color ("underline_color", underline_color, &color, NULL, line_number, error))
 	goto error;
 
       add_attribute (tag, pango_attr_underline_color_new (color.red, color.green, color.blue));
@@ -1474,7 +1486,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
     {
       PangoColor color;
 
-      if (!span_parse_color ("strikethrough_color", strikethrough_color, &color, line_number, error))
+      if (!span_parse_color ("strikethrough_color", strikethrough_color, &color, NULL, line_number, error))
 	goto error;
 
       add_attribute (tag, pango_attr_strikethrough_color_new (color.red, color.green, color.blue));

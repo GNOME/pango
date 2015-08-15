@@ -205,6 +205,94 @@ hex (const char *spec,
   return TRUE;
 }
 
+
+/* Like pango_color_parse, but allow strings of the form
+ * '&num;rgba', '&num;rrggbbaa', '&num;rrrrggggbbbbaaaa',
+ * if alpha is not NULL. If no alpha component is found
+ * in the string, *alpha is set to 0.
+ */
+gboolean
+_pango_color_parse_with_alpha (PangoColor *color,
+                               guint16    *alpha,
+		               const char *spec)
+{
+  g_return_val_if_fail (spec != NULL, FALSE);
+
+  if (alpha)
+    *alpha = 0;
+
+  if (spec[0] == '#')
+    {
+      size_t len;
+      unsigned int r, g, b, a;
+      gboolean has_alpha;
+
+      spec++;
+      len = strlen (spec);
+      switch (len)
+        {
+        case 3:
+        case 6:
+        case 9:
+        case 12:
+          len /= 3;
+          has_alpha = FALSE;
+          break;
+        case 4:
+        case 8:
+        case 16:
+          if (!alpha)
+            return FALSE;
+          len /= 4;
+          has_alpha = TRUE;
+          break;
+        default:
+	  return FALSE;
+        }
+
+      if (!hex (spec, len, &r) ||
+	  !hex (spec + len, len, &g) ||
+	  !hex (spec + len * 2, len, &b) ||
+          (has_alpha && !hex (spec + len * 3, len, &a)))
+	return FALSE;
+
+      if (color)
+	{
+	  int bits = len * 4;
+	  r <<= 16 - bits;
+	  g <<= 16 - bits;
+	  b <<= 16 - bits;
+	  while (bits < 16)
+	    {
+	      r |= (r >> bits);
+	      g |= (g >> bits);
+	      b |= (b >> bits);
+	      bits *= 2;
+	    }
+	  color->red   = r;
+	  color->green = g;
+	  color->blue  = b;
+	}
+
+      if (alpha && has_alpha)
+        {
+	  int bits = len * 4;
+          a <<= 16 - bits;
+	  while (bits < 16)
+	    {
+              a |= (a >> bits);
+	      bits *= 2;
+	    }
+          *alpha = a;
+        }
+    }
+  else
+    {
+      if (!find_color (spec, color))
+	return FALSE;
+    }
+  return TRUE;
+}
 /**
  * pango_color_parse:
  * @color: (nullable): a #PangoColor structure in which to store the
@@ -227,47 +315,5 @@ gboolean
 pango_color_parse (PangoColor *color,
 		   const char *spec)
 {
-  g_return_val_if_fail (spec != NULL, FALSE);
-
-  if (spec[0] == '#')
-    {
-      size_t len;
-      unsigned int r, g, b;
-
-      spec++;
-      len = strlen (spec);
-      if (len % 3 || len < 3 || len > 12)
-	return FALSE;
-
-      len /= 3;
-
-      if (!hex (spec, len, &r) ||
-	  !hex (spec + len, len, &g) ||
-	  !hex (spec + len * 2, len, &b))
-	return FALSE;
-
-      if (color)
-	{
-	  int bits = len * 4;
-	  r <<= 16 - bits;
-	  g <<= 16 - bits;
-	  b <<= 16 - bits;
-	  while (bits < 16)
-	    {
-	      r |= (r >> bits);
-	      g |= (g >> bits);
-	      b |= (b >> bits);
-	      bits *= 2;
-	    }
-	  color->red   = r;
-	  color->green = g;
-	  color->blue  = b;
-	}
-    }
-  else
-    {
-      if (!find_color (spec, color))
-	return FALSE;
-    }
-  return TRUE;
+  return _pango_color_parse_with_alpha (color, NULL, spec);
 }

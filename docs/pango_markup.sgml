@@ -136,8 +136,10 @@ syntax as accepted by CSS. E.g: <literal>font_features='dlig=1, -kern, afrc on'<
 <term>fgcolor<footnoteref linkend='since_1_21'/></term>
 <term>color</term>
 <listitem><para>
-An RGB color specification such as '#00FF00' or a color name such as 
-'red'
+An RGB color specification such as '#00FF00' or a color name such as
+'red'.
+Since 1.38, an RGBA color specification such as '#00FF007F' will
+be interpreted as specifying both a foreground color and foreground alpha.
 </para></listitem>
 </varlistentry>
 
@@ -145,8 +147,10 @@ An RGB color specification such as '#00FF00' or a color name such as
 <term>background</term>
 <term>bgcolor<footnoteref linkend='since_1_21'/></term>
 <listitem><para>
-An RGB color specification such as '#00FF00' or a color name such as 
-'red'
+An RGB color specification such as '#00FF00' or a color name such as
+'red'.
+Since 1.38, an RGBA color specification such as '#00FF007F' will
+be interpreted as specifying both a background color and background alpha.
 </para></listitem>
 </varlistentry>
 
