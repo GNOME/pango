@@ -97,10 +97,16 @@ pango_ft2_font_map_class_init (PangoFT2FontMapClass *class)
 static void
 pango_ft2_font_map_init (PangoFT2FontMap *fontmap)
 {
+  FT_Error error;
+
   fontmap->serial = 1;
   fontmap->library = NULL;
   fontmap->dpi_x   = 72.0;
   fontmap->dpi_y   = 72.0;
+
+  error = FT_Init_FreeType (&fontmap->library);
+  if (error != FT_Err_Ok)
+    g_critical ("pango_ft2_font_map_init: Could not initialize freetype");
 }
 
 static void
@@ -136,21 +142,12 @@ pango_ft2_font_map_finalize (GObject *object)
 PangoFontMap *
 pango_ft2_font_map_new (void)
 {
-  PangoFT2FontMap *ft2fontmap;
-  FT_Error error;
-
 #if !GLIB_CHECK_VERSION (2, 35, 3)
   /* Make sure that the type system is initialized */
   g_type_init ();
 #endif
 
-  ft2fontmap = g_object_new (PANGO_TYPE_FT2_FONT_MAP, NULL);
-
-  error = FT_Init_FreeType (&ft2fontmap->library);
-  if (error != FT_Err_Ok)
-    g_critical ("pango_ft2_font_map_new: Could not initialize freetype");
-
-  return (PangoFontMap *)ft2fontmap;
+  return (PangoFontMap *) g_object_new (PANGO_TYPE_FT2_FONT_MAP, NULL);
 }
 
 static guint
