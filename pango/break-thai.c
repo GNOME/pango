@@ -26,6 +26,8 @@
 #include <thai/thwchar.h>
 #include <thai/thbrk.h>
 
+G_LOCK_DEFINE_STATIC (th_brk);
+
 /*
  * tis_text is assumed to be large enough to hold the converted string,
  * i.e. it must be at least g_utf8_strlen(text, len)+1 bytes.
@@ -73,7 +75,10 @@ break_thai (const char          *text,
     brk_pnts = g_new (int, cnt);
 
   /* find line break positions */
+
+  G_LOCK (th_brk);
   len = th_brk (tis_text, brk_pnts, len);
+  G_UNLOCK (th_brk);
   for (cnt = 0; cnt < len; cnt++)
     {
       attrs[brk_pnts[cnt]].is_line_break = TRUE;
