@@ -5,7 +5,7 @@
 
 #define WIDTH 100
 #define HEIGHT 100
-const char *text = "The quick brown fox jumped over the lazy dog!";
+const char *text = "Hamburgerfonts\nวิวิวิวิวิวิ\nبهداد";
 
 int num_iters = 200;
 
