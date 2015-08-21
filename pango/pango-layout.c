@@ -5242,7 +5242,7 @@ justify_clusters (PangoLayoutLine *line,
 		  int leftmost, rightmost;
 		  int adjustment, space_left, space_right;
 
-		  adjustment = ((gaps_so_far * total_remaining_width) - total_gaps/2) / total_gaps - added_so_far;
+		  adjustment = ((gaps_so_far * total_remaining_width) - total_remaining_width/2) / total_gaps - added_so_far;
 		  if (is_hinted)
 		    adjustment = PANGO_UNITS_ROUND (adjustment);
 		  /* distribute to before/after */
