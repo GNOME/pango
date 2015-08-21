@@ -34,6 +34,7 @@
 extern HFONT _pango_win32_font_get_hfont (PangoFont *font);
 
 #include "pango-utils.h"
+#include "pango-impl-utils.h"
 
 static gboolean pango_win32_debug = FALSE;
 
@@ -673,7 +674,7 @@ _pango_win32_shape (PangoFont        	*font,
       uniscribe_shape (font, text, length, analysis, glyphs))
     return;
 
-  n_chars = g_utf8_strlen (text, length);
+  n_chars = pango_utf8_strlen (text, length);
 
   pango_glyph_string_set_size (glyphs, n_chars);
 

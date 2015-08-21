@@ -401,7 +401,7 @@ _pango_core_text_shape (PangoFont           *font,
     return;
 
   /* Translate the glyph list to a PangoGlyphString */
-  n_chars = g_utf8_strlen (text, length);
+  n_chars = pango_utf8_strlen (text, length);
   pango_glyph_string_set_size (glyphs, n_chars);
 
   glyph_iter = glyph_list;

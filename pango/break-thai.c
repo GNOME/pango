@@ -20,7 +20,8 @@
 
 #include "config.h"
 
-#include <pango/pango-break.h>
+#include "pango-break.h"
+#include "pango-impl-utils.h"
 
 #ifdef HAVE_LIBTHAI
 #include <thai/thwchar.h>
@@ -30,7 +31,7 @@ G_LOCK_DEFINE_STATIC (th_brk);
 
 /*
  * tis_text is assumed to be large enough to hold the converted string,
- * i.e. it must be at least g_utf8_strlen(text, len)+1 bytes.
+ * i.e. it must be at least pango_utf8_strlen(text, len)+1 bytes.
  */
 static thchar_t *
 utf8_to_tis (const char *text, int len, thchar_t *tis_text, int *tis_cnt)
@@ -62,7 +63,7 @@ break_thai (const char          *text,
   int *brk_pnts;
   int cnt;
 
-  cnt = g_utf8_strlen (text, len) + 1;
+  cnt = pango_utf8_strlen (text, len) + 1;
 
   tis_text = tis_stack;
   if (cnt > (int) G_N_ELEMENTS (tis_stack))
