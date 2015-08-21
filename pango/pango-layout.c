@@ -5243,11 +5243,14 @@ justify_clusters (PangoLayoutLine *line,
 		      /* distribute to before/after */
 		      distribute_letter_spacing (adjustment, &space_left, &space_right);
 
-		      glyphs->glyphs[i-1].geometry.width    += space_left ;
-		      glyphs->glyphs[i  ].geometry.width    += space_right;
-		      glyphs->glyphs[i  ].geometry.x_offset += space_right;
+		      if (i)
+		      {
+			glyphs->glyphs[i-1].geometry.width    += space_left ;
+			glyphs->glyphs[i  ].geometry.width    += space_right;
+			glyphs->glyphs[i  ].geometry.x_offset += space_right;
 
-		      added_so_far += adjustment;
+			added_so_far += adjustment;
+		      }
 		    }
 		}
 	    }
