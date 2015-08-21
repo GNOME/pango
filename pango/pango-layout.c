@@ -5195,10 +5195,11 @@ justify_clusters (PangoLayoutLine *line,
 	{
 	  PangoLayoutRun *run = run_iter->data;
 	  PangoGlyphString *glyphs = run->glyphs;
-	  gboolean is_first_gap = TRUE;
 	  PangoGlyphItemIter cluster_iter;
 	  gboolean have_cluster;
 	  int offset;
+	  gboolean first_run = run_iter == line->runs;
+	  gboolean last_run = run_iter->next == NULL;
 
 	  /* We need character offset of the start of the run.  We don't have this.
 	   * Compute by counting from the beginning of the line.  The naming is
@@ -5219,58 +5220,65 @@ justify_clusters (PangoLayoutLine *line,
 	    {
 	      int i;
 	      int dir;
+	      int width = 0;
 
 	      /* don't expand in the middle of graphemes */
 	      if (!log_attrs[offset + cluster_iter.start_char].is_cursor_position)
 		continue;
 
 	      dir = (cluster_iter.start_glyph < cluster_iter.end_glyph) ? 1 : -1;
+
 	      for (i = cluster_iter.start_glyph; i != cluster_iter.end_glyph; i += dir)
+		width += glyphs->glyphs[i].geometry.width;
+
+	      /* also don't expand zero-width clusters. */
+	      if (width == 0)
+		continue;
+
+	      gaps_so_far++;
+
+	      if (mode == ADJUST)
 		{
-		  /* also don't expand zero-width spaces at the end of runs */
-		  if (glyphs->glyphs[i].geometry.width == 0)
-		    {
-		      if (i == glyphs->num_glyphs -1)
-			continue;
+		  int leftmost, rightmost;
+		  int adjustment, space_left, space_right;
 
-		      if (i == 0 && glyphs->num_glyphs > 1 && glyphs->glyphs[i+1].attr.is_cluster_start)
-			continue;
-		    }
+		  adjustment = ((gaps_so_far * total_remaining_width) - total_gaps/2) / total_gaps - added_so_far;
+		  if (is_hinted)
+		    adjustment = PANGO_UNITS_ROUND (adjustment);
+		  /* distribute to before/after */
+		  distribute_letter_spacing (adjustment, &space_left, &space_right);
 
-		  if (is_first_gap)
-		    {
-		      is_first_gap = FALSE;
-		      continue;
-		    }
-
-		  gaps_so_far++;
-
-		  if (mode == ADJUST)
-		    {
-		      int adjustment, space_left, space_right;
-
-		      adjustment = (gaps_so_far * total_remaining_width) / total_gaps - added_so_far;
-		      if (is_hinted)
-			adjustment = PANGO_UNITS_ROUND (adjustment);
-		      /* distribute to before/after */
-		      distribute_letter_spacing (adjustment, &space_left, &space_right);
-
-		      if (i)
-		      {
-			glyphs->glyphs[i-1].geometry.width    += space_left ;
-			glyphs->glyphs[i  ].geometry.width    += space_right;
-			glyphs->glyphs[i  ].geometry.x_offset += space_right;
-
-			added_so_far += adjustment;
-		      }
-		    }
+		  if (cluster_iter.start_glyph < cluster_iter.end_glyph)
+		  {
+		    /* LTR */
+		    leftmost  = cluster_iter.start_glyph;
+		    rightmost = cluster_iter.end_glyph - 1;
+		  }
+		  else
+		  {
+		    /* RTL */
+		    leftmost  = cluster_iter.end_glyph + 1;
+		    rightmost = cluster_iter.start_glyph;
+		  }
+		  /* Don't add to left-side of left-most glyph of left-most run. */
+		  if (!first_run || leftmost)
+		  {
+		    added_so_far += adjustment;
+		    glyphs->glyphs[leftmost ].geometry.width    += space_left ;
+		    glyphs->glyphs[leftmost ].geometry.x_offset += space_left ;
+		  }
+		  /* Don't add to right-side of right-most glyph of right-most run. */
+		  if (!last_run || rightmost != glyphs->num_glyphs - 1)
+		  {
+		    glyphs->glyphs[rightmost].geometry.width  += space_right;
+		  }
 		}
 	    }
 	}
 
       if (mode == MEASURE)
 	{
-	  total_gaps = gaps_so_far;
+	  total_gaps = gaps_so_far - 1;
 
 	  if (total_gaps == 0)
 	    {
