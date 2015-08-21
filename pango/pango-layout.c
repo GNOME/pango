@@ -5170,7 +5170,6 @@ justify_clusters (PangoLayoutLine *line,
   const gchar *text = line->layout->text;
   const PangoLogAttr *log_attrs = line->layout->log_attrs;
 
-  int offset;
   int total_remaining_width, total_gaps = 0;
   int added_so_far, gaps_so_far;
   gboolean is_hinted;
@@ -5192,7 +5191,6 @@ justify_clusters (PangoLayoutLine *line,
       added_so_far = 0;
       gaps_so_far = 0;
 
-      offset = state->line_start_offset;
       for (run_iter = line->runs; run_iter; run_iter = run_iter->next)
 	{
 	  PangoLayoutRun *run = run_iter->data;
@@ -5200,6 +5198,20 @@ justify_clusters (PangoLayoutLine *line,
 	  gboolean is_first_gap = TRUE;
 	  PangoGlyphItemIter cluster_iter;
 	  gboolean have_cluster;
+	  int offset;
+
+	  /* We need character offset of the start of the run.  We don't have this.
+	   * Compute by counting from the beginning of the line.  The naming is
+	   * confusing.  Note that:
+	   *
+	   * run->item->offset        is byte offset of start of run in layout->text.
+	   * state->line_start_index  is byte offset of start of line in layout->text.
+	   * state->line_start_offset is character offset of start of line in layout->text.
+	   */
+	  g_assert (run->item->offset >= state->line_start_index);
+	  offset = state->line_start_offset
+		 + pango_utf8_strlen (text + state->line_start_index,
+				      run->item->offset - state->line_start_index);
 
 	  for (have_cluster = pango_glyph_item_iter_init_start (&cluster_iter, run, text);
 	       have_cluster;
@@ -5278,7 +5290,6 @@ justify_words (PangoLayoutLine *line,
   const gchar *text = line->layout->text;
   const PangoLogAttr *log_attrs = line->layout->log_attrs;
 
-  int offset;
   int total_remaining_width, total_space_width = 0;
   int added_so_far, spaces_so_far;
   gboolean is_hinted;
@@ -5300,13 +5311,26 @@ justify_words (PangoLayoutLine *line,
       added_so_far = 0;
       spaces_so_far = 0;
 
-      offset = state->line_start_offset;
       for (run_iter = line->runs; run_iter; run_iter = run_iter->next)
 	{
 	  PangoLayoutRun *run = run_iter->data;
 	  PangoGlyphString *glyphs = run->glyphs;
 	  PangoGlyphItemIter cluster_iter;
 	  gboolean have_cluster;
+	  int offset;
+
+	  /* We need character offset of the start of the run.  We don't have this.
+	   * Compute by counting from the beginning of the line.  The naming is
+	   * confusing.  Note that:
+	   *
+	   * run->item->offset        is byte offset of start of run in layout->text.
+	   * state->line_start_index  is byte offset of start of line in layout->text.
+	   * state->line_start_offset is character offset of start of line in layout->text.
+	   */
+	  g_assert (run->item->offset >= state->line_start_index);
+	  offset = state->line_start_offset
+		 + pango_utf8_strlen (text + state->line_start_index,
+				      run->item->offset - state->line_start_index);
 
 	  for (have_cluster = pango_glyph_item_iter_init_start (&cluster_iter, run, text);
 	       have_cluster;
@@ -5341,8 +5365,6 @@ justify_words (PangoLayoutLine *line,
 		    }
 		}
 	    }
-
-	  offset += glyphs->num_glyphs;
 	}
 
       if (mode == MEASURE)
