@@ -1,3 +1,11 @@
+Overview of changes between 1.37.3 and 1.37.4
+=============================================
+- Use grapheme boundaries in justification
+- Support coloring marks and bases independently (#541608)
+- Fix a crash (#753167)
+- Make Thai and Arabic support thread-safe
+- Fix justification (#753772)
+
 Overview of changes between 1.37.2 and 1.37.3
 =============================================
 - Fix pango_glyph_item_iter_prev
