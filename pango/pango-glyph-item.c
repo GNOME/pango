@@ -281,7 +281,7 @@ pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter)
 	      break;
 	    }
 
-	  if (glyphs->log_clusters[glyph_index] != cluster)
+	  if (glyphs->log_clusters[glyph_index] > cluster)
 	    {
 	      iter->end_index = item->offset + glyphs->log_clusters[glyph_index];
 	      iter->end_char += pango_utf8_strlen (iter->text + iter->start_index,
@@ -304,7 +304,7 @@ pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter)
 	      break;
 	    }
 
-	  if (glyphs->log_clusters[glyph_index] != cluster)
+	  if (glyphs->log_clusters[glyph_index] > cluster)
 	    {
 	      iter->end_index = item->offset + glyphs->log_clusters[glyph_index];
 	      iter->end_char += pango_utf8_strlen (iter->text + iter->start_index,
@@ -372,7 +372,7 @@ pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter)
 
 	  glyph_index--;
 
-	  if (glyphs->log_clusters[glyph_index] != cluster)
+	  if (glyphs->log_clusters[glyph_index] < cluster)
 	    {
 	      glyph_index++;
 	      iter->start_index = item->offset + glyphs->log_clusters[glyph_index];
@@ -396,7 +396,7 @@ pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter)
 
 	  glyph_index++;
 
-	  if (glyphs->log_clusters[glyph_index] != cluster)
+	  if (glyphs->log_clusters[glyph_index] < cluster)
 	    {
 	      glyph_index--;
 	      iter->start_index = item->offset + glyphs->log_clusters[glyph_index];
