@@ -212,10 +212,13 @@ test_layout_iter (void)
   const char  **ptext;
   PangoFontMap *fontmap;
   PangoContext *context;
+  PangoFontDescription *font_desc;
   PangoLayout  *layout;
 
   fontmap = pango_cairo_font_map_get_default ();
   context = pango_font_map_create_context (fontmap);
+  font_desc = pango_font_description_from_string ("cantarell 11");
+  pango_context_set_font_description (context, font_desc);
 
   layout = pango_layout_new (context);
   pango_layout_set_width (layout, LAYOUT_WIDTH);
@@ -241,6 +244,7 @@ test_glyphitem_iter (void)
 {
   PangoFontMap *fontmap;
   PangoContext *context;
+  PangoFontDescription *font_desc;
   PangoLayout  *layout;
   PangoLayoutLine *line;
   const char *text;
@@ -248,6 +252,8 @@ test_glyphitem_iter (void)
 
   fontmap = pango_cairo_font_map_get_default ();
   context = pango_font_map_create_context (fontmap);
+  font_desc = pango_font_description_from_string ("cantarell 11");
+  pango_context_set_font_description (context, font_desc);
 
   layout = pango_layout_new (context);
   /* This shouldn't form any ligatures. */
