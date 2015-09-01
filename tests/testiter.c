@@ -298,7 +298,7 @@ main (int argc, char *argv[])
   g_test_init (&argc, &argv, NULL);
 
   g_test_add_func ("/layout/iter", test_layout_iter);
-  g_test_add_func ("/layout/iter", test_glyphitem_iter);
+  g_test_add_func ("/layout/glyphitem-iter", test_glyphitem_iter);
 
   return g_test_run ();
 }
