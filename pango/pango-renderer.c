@@ -1249,8 +1249,8 @@ guint16
 pango_renderer_get_alpha (PangoRenderer   *renderer,
                           PangoRenderPart  part)
 {
-  g_return_val_if_fail (PANGO_IS_RENDERER_FAST (renderer), NULL);
-  g_return_val_if_fail (IS_VALID_PART (part), NULL);
+  g_return_val_if_fail (PANGO_IS_RENDERER_FAST (renderer), 0);
+  g_return_val_if_fail (IS_VALID_PART (part), 0);
 
   return renderer->priv->alpha[part];
 }
