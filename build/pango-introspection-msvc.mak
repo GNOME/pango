@@ -1,6 +1,6 @@
 # NMake Makefile to build Introspection Files for Pango
 
-!include testsrules_msvc.mak
+!include detectenv-msvc.mak
 
 APIVERSION = 1.0
 
@@ -32,7 +32,6 @@ install-introspection: setbuildenv Pango-$(APIVERSION).gir Pango-$(APIVERSION).t
 !endif
 
 setbuildenv:
-	@set CC=$(CC)
 	@set PYTHONPATH=$(BASEDIR)\lib\gobject-introspection
 	@set PATH=win32\vs$(VSVER)\$(CFG)\$(PLAT)\bin;$(BASEDIR)\bin;$(PATH)
 	@set PKG_CONFIG_PATH=$(PKG_CONFIG_PATH)
