@@ -107,9 +107,8 @@ ct_font_descriptor_get_coverage (CTFontDescriptorRef desc)
       int j;
 
       for (j = 0; j < 8; j++)
-        pango_coverage_set (coverage, i * 8 + j,
-                            ((ptr[i] & (1 << j)) == (1 << j)) ?
-                            PANGO_COVERAGE_EXACT : PANGO_COVERAGE_NONE);
+        if ((ptr[i] & (1 << j)) == (1 << j))
+          pango_coverage_set (coverage, i * 8 + j, PANGO_COVERAGE_EXACT);
     }
 
   CFRelease (bitmap);
