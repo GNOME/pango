@@ -67,6 +67,8 @@ struct RunIterator
   CFIndex total_ct_i;
   CFIndex ct_i;
 
+  CFIndex *chr_idx_lut;
+
   int current_run_number;
   CTRunRef current_run;
   CFIndex *current_indices;
@@ -130,6 +132,35 @@ run_iterator_get_glyph_count (struct RunIterator *iter)
   return accumulator;
 }
 
+/* This function generates a lookup table to match string indices of glyphs to
+ * actual unicode character indices. This also takes unicode characters into
+ * account that are encoded using 2 UTF16 code points in CFStrings. We use the
+ * unicode character index to match up with the unicode characters in the UTF8
+ * string provided by Pango.
+ */
+static CFIndex *
+run_iterator_get_chr_idx_lut (CFStringRef cstr)
+{
+  CFIndex cstr_length = CFStringGetLength (cstr);
+  CFIndex *chr_idx_lut = malloc (sizeof (CFIndex) * cstr_length);
+  CFIndex i;
+  CFIndex current_value = 0;
+
+  for (i = 0; i < cstr_length; i++)
+    {
+      chr_idx_lut[i] = current_value;
+
+      if (CFStringIsSurrogateHighCharacter (CFStringGetCharacterAtIndex (cstr, i)) &&
+          i + 1 < cstr_length &&
+          CFStringIsSurrogateLowCharacter (CFStringGetCharacterAtIndex (cstr, i + 1)))
+        continue;
+
+      current_value++;
+    }
+
+  return chr_idx_lut;
+}
+
 /* These functions are commented out to silence the compiler, but
  * kept around because they might be of use when fixing the more
  * intricate issues noted in the comment in the function
@@ -157,7 +188,18 @@ run_iterator_run_is_non_monotonic (struct RunIterator *iter)
 static gunichar
 run_iterator_get_character (struct RunIterator *iter)
 {
-  return CFStringGetCharacterAtIndex (iter->cstr, iter->current_indices[iter->ct_i]);
+  UniChar ch = CFStringGetCharacterAtIndex (iter->cstr, iter->current_indices[iter->ct_i]);
+
+  if (CFStringIsSurrogateHighCharacter (ch) &&
+      iter->current_indices[iter->ct_i] + 1 < CFStringGetLength (iter->cstr))
+    {
+      UniChar ch2 = CFStringGetCharacterAtIndex (iter->cstr, iter->current_indices[iter->ct_i]+1);
+
+      if (CFStringIsSurrogateLowCharacter (ch2))
+        return CFStringGetLongCharacterForSurrogatePair (ch, ch2);
+    }
+
+  return ch;
 }
 
 static CGGlyph
@@ -169,7 +211,7 @@ run_iterator_get_cgglyph (struct RunIterator *iter)
 static CFIndex
 run_iterator_get_index (struct RunIterator *iter)
 {
-  return iter->current_indices[iter->ct_i];
+  return iter->chr_idx_lut[iter->current_indices[iter->ct_i]];
 }
 
 static gboolean
@@ -194,6 +236,7 @@ run_iterator_create (struct RunIterator *iter,
   iter->current_run_number = -1;
   iter->current_run = NULL;
   iter->current_indices = NULL;
+  iter->chr_idx_lut = NULL;
   iter->current_cgglyphs = NULL;
   iter->current_cgglyphs_buffer = NULL;
 
@@ -228,6 +271,8 @@ run_iterator_create (struct RunIterator *iter,
   CFRelease (attstr);
   CFRelease (attributes);
 
+  iter->chr_idx_lut = run_iterator_get_chr_idx_lut (iter->cstr);
+
   iter->total_ct_i = 0;
   iter->glyph_count = run_iterator_get_glyph_count (iter);
 
@@ -247,6 +292,8 @@ static void
 run_iterator_free (struct RunIterator *iter)
 {
   run_iterator_free_current_run (iter);
+
+  free (iter->chr_idx_lut);
 
   CFRelease (iter->line);
   CFRelease (iter->cstr);
@@ -383,11 +430,6 @@ _pango_core_text_shape (PangoFont           *font,
    * increasing/decreasing.
    *
    * FIXME items for future fixing:
-   *   # CoreText strings are UTF16, and the indices *often* refer to characters,
-   *     but not *always*. Notable exception is when a character is encoded using
-   *     two UTF16 code points. This are two characters in a CFString. At this point
-   *     advancing a single character in the CFString and advancing a single character
-   *     using g_utf8_next_char in the const char string goes out of sync.
    *   # We currently don't bother about LTR, Pango core appears to fix this up for us.
    *     (Even when we cared warnings were generated that strings were in the wrong
    *     order, this should be investigated).
@@ -400,7 +442,7 @@ _pango_core_text_shape (PangoFont           *font,
   if (!glyph_list)
     return;
 
-  /* Translate the glyph list to a PangoGlyphString */
+  /* Set up for translation of the glyph list to a PangoGlyphString. */
   n_chars = pango_utf8_strlen (text, length);
   pango_glyph_string_set_size (glyphs, n_chars);
 
@@ -409,6 +451,10 @@ _pango_core_text_shape (PangoFont           *font,
   coverage = pango_font_get_coverage (PANGO_FONT (cfont),
                                       analysis->language);
 
+  /* gs_i is the index into the Pango glyph string. gi is the iterator into
+   * the (CoreText) glyph list, gi->index is the index into the CFString.
+   * In matching, we want gs_i and gi->index to match up.
+   */
   for (gs_prev_i = -1, gs_i = 0, p = text; gs_i < n_chars;
        gs_prev_i = gs_i, gs_i++, p = g_utf8_next_char (p))
     {
@@ -416,12 +462,20 @@ _pango_core_text_shape (PangoFont           *font,
 
       if (gi == NULL || gi->index > gs_i)
         {
-          /* gs_i is behind, insert empty glyph */
+          /* The glyph string is behind, insert an empty glyph to catch
+           * up with the CoreText glyph list. This occurs for instance when
+           * CoreText inserts a ligature that covers two characters.
+           */
           set_glyph (font, glyphs, gs_i, p - text, PANGO_GLYPH_EMPTY);
           continue;
         }
       else if (gi->index < gs_i)
         {
+          /* The CoreText glyph list is behind, fast forward the iterator
+           * to catch up. This can happen when CoreText emits two glyphs
+           * for once character, which is (as noted in the FIXME) above
+           * not handled by us yet.
+           */
           while (gi && gi->index < gs_i)
             {
               glyph_iter = g_slist_next (glyph_iter);
