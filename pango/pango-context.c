@@ -1387,6 +1387,7 @@ itemize_state_process_run (ItemizeState *state)
       gboolean is_forced_break = (wc == '\t' || wc == LINE_SEPARATOR);
       PangoEngineShape *shape_engine;
       PangoFont *font;
+      GUnicodeType type;
 
       /* We don't want space characters to affect font selection; in general,
        * it's always wrong to select a font just to render a space.
@@ -1394,20 +1395,18 @@ itemize_state_process_run (ItemizeState *state)
        * characters if they don't, HarfBuzz will compatibility-decompose them
        * to ASCII space...
        * See bugs #355987 and #701652.
-       *
-       * The exception of PrivateUse and Unassigned characters is necessary
-       * to be able to render any of them. (for private or being encoded
-       * scripts, etc.) (Recent glib returns true in isprint for PrivateUse.)
        */
-      if (G_UNLIKELY (!g_unichar_isgraph (wc) &&
-		      g_unichar_type (wc) != G_UNICODE_PRIVATE_USE &&
-		      g_unichar_type (wc) != G_UNICODE_UNASSIGNED))
-	{
+      type = g_unichar_type (wc);
+      if (G_UNLIKELY (type == G_UNICODE_CONTROL ||
+                      type == G_UNICODE_FORMAT ||
+                      type == G_UNICODE_SURROGATE ||
+                      type == G_UNICODE_SPACE_SEPARATOR))
+        {
 	  shape_engine = NULL;
 	  font = NULL;
-	}
+        }
       else
-	{
+        {
 	  get_shaper_and_font (state, wc, &shape_engine, &font);
 	}
 
