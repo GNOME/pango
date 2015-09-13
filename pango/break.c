@@ -639,10 +639,20 @@ pango_default_break (const gchar   *text,
 	  makes_hangul_syllable = (prev_end == this_start) || (prev_end + 1 == this_start);
 	}
 
-      /* Can't just use the type here since isspace() doesn't
-       * correspond to a Unicode character type
-       */
-      attrs[i].is_white = g_unichar_isspace (wc);
+      switch (type)
+        {
+        case G_UNICODE_SPACE_SEPARATOR:
+        case G_UNICODE_LINE_SEPARATOR:
+        case G_UNICODE_PARAGRAPH_SEPARATOR:
+          attrs[i].is_white = TRUE;
+          break;
+        default:
+          if (wc == '\t' || wc == '\n' || wc == '\r' || wc == '\f')
+            attrs[i].is_white = TRUE;
+          else
+            attrs[i].is_white = FALSE;
+          break;
+        }
 
       /* Just few spaces have variable width. So explicitly mark them.
        */
