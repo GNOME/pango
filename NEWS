@@ -1,6 +1,11 @@
+Overview of changes between 1.37.5 and 1.38.0
+=============================================
+- No changes
+
 Overview of changes between 1.37.4 and 1.37.5
 =============================================
 - Small optimizations
+
 Overview of changes between 1.37.3 and 1.37.4
 =============================================
 - Use grapheme boundaries in justification
