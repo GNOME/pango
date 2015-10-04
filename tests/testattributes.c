@@ -28,7 +28,7 @@ test_copy (PangoAttribute *attr)
   PangoAttribute *a;
 
   a = pango_attribute_copy (attr);
-  g_assert (pango_attribute_equal (attr, a));
+  g_assert_true (pango_attribute_equal (attr, a));
   pango_attribute_destroy (a);
   pango_attribute_destroy (attr);
 }
@@ -77,8 +77,8 @@ test_attributes_equal (void)
   attr3->start_index = 1;
   attr3->end_index = 2;
 
-  g_assert (!pango_attribute_equal (attr1, attr2));
-  g_assert (pango_attribute_equal (attr2, attr3));
+  g_assert_true (!pango_attribute_equal (attr1, attr2));
+  g_assert_true (pango_attribute_equal (attr2, attr3));
 
   pango_attribute_destroy (attr1);
   pango_attribute_destroy (attr2);
@@ -387,23 +387,23 @@ test_iter (void)
   pango_attr_iterator_range (iter, &start, &end);
   g_assert_cmpint (start, ==, 0);
   g_assert_cmpint (end, ==, 10);
-  g_assert (pango_attr_iterator_next (iter));
+  g_assert_true (pango_attr_iterator_next (iter));
   pango_attr_iterator_range (iter, &start, &end);
   g_assert_cmpint (start, ==, 10);
   g_assert_cmpint (end, ==, 20);
-  g_assert (pango_attr_iterator_next (iter));
+  g_assert_true (pango_attr_iterator_next (iter));
   pango_attr_iterator_range (iter, &start, &end);
   g_assert_cmpint (start, ==, 20);
   g_assert_cmpint (end, ==, 30);
-  g_assert (pango_attr_iterator_next (iter));
+  g_assert_true (pango_attr_iterator_next (iter));
   pango_attr_iterator_range (iter, &start, &end);
   g_assert_cmpint (start, ==, 30);
   g_assert_cmpint (end, ==, G_MAXINT);
-  g_assert (pango_attr_iterator_next (iter));
+  g_assert_true (pango_attr_iterator_next (iter));
   pango_attr_iterator_range (iter, &start, &end);
   g_assert_cmpint (start, ==, G_MAXINT);
   g_assert_cmpint (end, ==, G_MAXINT);
-  g_assert (!pango_attr_iterator_next (iter));
+  g_assert_true (!pango_attr_iterator_next (iter));
 
   pango_attr_iterator_destroy (iter);
 
@@ -488,7 +488,7 @@ test_iter_get_font (void)
   desc = pango_font_description_new ();
   pango_attr_iterator_get_font (iter, desc, &lang, &attrs);
   desc2 = pango_font_description_from_string ("Times 10");
-  g_assert (pango_font_description_equal (desc, desc2));
+  g_assert_true (pango_font_description_equal (desc, desc2));
   g_assert_null (lang);
   g_assert_null (attrs);
   pango_font_description_free (desc);
@@ -498,7 +498,7 @@ test_iter_get_font (void)
   desc = pango_font_description_new ();
   pango_attr_iterator_get_font (iter, desc, &lang, &attrs);
   desc2 = pango_font_description_from_string ("Times Condensed 10");
-  g_assert (pango_font_description_equal (desc, desc2));
+  g_assert_true (pango_font_description_equal (desc, desc2));
   g_assert_nonnull (lang);
   g_assert_cmpstr (pango_language_to_string (lang), ==, "ja-jp");
   g_assert_null (attrs);
@@ -509,7 +509,7 @@ test_iter_get_font (void)
   desc = pango_font_description_new ();
   pango_attr_iterator_get_font (iter, desc, &lang, &attrs);
   desc2 = pango_font_description_from_string ("Times Condensed 10");
-  g_assert (pango_font_description_equal (desc, desc2));
+  g_assert_true (pango_font_description_equal (desc, desc2));
   g_assert_null (lang);
   s = g_string_new ("");
   print_attributes (attrs, s);
