@@ -31,8 +31,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\"
-				PreprocessorDefinitions="_DEBUG;$(PangoDefines);HAVE_GLIB;HAVE_STDINT_H=1"
+				AdditionalIncludeDirectories="$(PangoFT2Incs)"
+				PreprocessorDefinitions="_DEBUG;$(PangoDefines);$(PangoFT2CFlags)"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -42,7 +42,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="fontconfig.lib freetype.lib"
+				AdditionalDependencies="$(PangoFT2Libs)"
 				OutputFile="$(OutDir)\$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile="..\..\..\pango\pangoft2.def"
@@ -63,8 +63,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".;..\"
-				PreprocessorDefinitions="$(PangoDefines);HAVE_GLIB;HAVE_STDINT_H=1"
+				AdditionalIncludeDirectories="$(PangoFT2Incs)"
+				PreprocessorDefinitions="$(PangoDefines);$(PangoFT2CFlags)"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -72,7 +72,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="fontconfig.lib freetype.lib"
+				AdditionalDependencies="$(PangoFT2Libs)"
 				OutputFile="$(OutDir)\$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile="..\..\..\pango\pangoft2.def"
@@ -93,8 +93,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\"
-				PreprocessorDefinitions="_DEBUG;$(PangoDefines);HAVE_GLIB;HAVE_STDINT_H=1"
+				AdditionalIncludeDirectories="$(PangoFT2Incs)"
+				PreprocessorDefinitions="_DEBUG;$(PangoDefines);$(PangoFT2CFlags)"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -104,7 +104,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="fontconfig.lib freetype.lib"
+				AdditionalDependencies="$(PangoFT2Libs)"
 				OutputFile="$(OutDir)\$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile="..\..\..\pango\pangoft2.def"
@@ -122,8 +122,8 @@
 			>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".;..\"
-				PreprocessorDefinitions="$(PangoDefines);HAVE_GLIB;HAVE_STDINT_H=1"
+				AdditionalIncludeDirectories="$(PangoFT2Incs)"
+				PreprocessorDefinitions="$(PangoDefines);$(PangoFT2CFlags)"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -131,7 +131,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="fontconfig.lib freetype.lib"
+				AdditionalDependencies="$(PangoFT2Libs)"
 				OutputFile="$(OutDir)\$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile="..\..\..\pango\pangoft2.def"

@@ -35,4 +35,16 @@
 		Name="NoFCDef"
 		Value="PANGO_VISUALC_NO_FC"
 	/>
+	<UserMacro
+		Name="PangoFT2Incs"
+		Value=".;..;$(GlibEtcInstallRoot)\include\harfbuzz"
+	/>
+	<UserMacro
+		Name="PangoFT2CFlags"
+		Value="HAVE_STDINT_H=1"
+	/>
+	<UserMacro
+		Name="PangoFT2Libs"
+		Value="fontconfig.lib freetype.lib harfbuzz.lib"
+	/>
 </VisualStudioPropertySheet>
