@@ -1,3 +1,9 @@
+Overview of changes between 1.38.0 and 1.38.1
+=============================================
+- Require 0.9.30
+- Fix make check with --enable-debug=no
+- Win32 build fixes
+
 Overview of changes between 1.37.5 and 1.38.0
 =============================================
 - No changes
