@@ -27,6 +27,11 @@
 #include <thai/thwchar.h>
 #include <thai/thbrk.h>
 
+/* TODO
+ * LibThai 0.1.23 claims to be thread-safe.
+ * Check that and avoid locking?
+ * http://linux.thai.net/node/286
+ */
 G_LOCK_DEFINE_STATIC (th_brk);
 
 /*
