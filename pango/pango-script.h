@@ -126,6 +126,35 @@ typedef struct _PangoScriptIter PangoScriptIter;
  * @PANGO_SCRIPT_SHARADA:              Sharada. Since: 1.32
  * @PANGO_SCRIPT_SORA_SOMPENG:         Sora Sompeng. Since: 1.32
  * @PANGO_SCRIPT_TAKRI:                Takri. Since: 1.32
+ * @G_UNICODE_SCRIPT_BASSA_VAH:            Bassa. Since: 1.40
+ * @G_UNICODE_SCRIPT_CAUCASIAN_ALBANIAN:   Caucasian Albanian. Since: 1.40
+ * @G_UNICODE_SCRIPT_DUPLOYAN:             Duployan. Since: 1.40
+ * @G_UNICODE_SCRIPT_ELBASAN:              Elbasan. Since: 1.40
+ * @G_UNICODE_SCRIPT_GRANTHA:              Grantha. Since: 1.40
+ * @G_UNICODE_SCRIPT_KHOJKI:               Kjohki. Since: 1.40
+ * @G_UNICODE_SCRIPT_KHUDAWADI:            Khudawadi, Sindhi. Since: 1.40
+ * @G_UNICODE_SCRIPT_LINEAR_A:             Linear A. Since: 1.40
+ * @G_UNICODE_SCRIPT_MAHAJANI:             Mahajani. Since: 1.40
+ * @G_UNICODE_SCRIPT_MANICHAEAN:           Manichaean. Since: 1.40
+ * @G_UNICODE_SCRIPT_MENDE_KIKAKUI:        Mende Kikakui. Since: 1.40
+ * @G_UNICODE_SCRIPT_MODI:                 Modi. Since: 1.40
+ * @G_UNICODE_SCRIPT_MRO:                  Mro. Since: 1.40
+ * @G_UNICODE_SCRIPT_NABATAEAN:            Nabataean. Since: 1.40
+ * @G_UNICODE_SCRIPT_OLD_NORTH_ARABIAN:    Old North Arabian. Since: 1.40
+ * @G_UNICODE_SCRIPT_OLD_PERMIC:           Old Permic. Since: 1.40
+ * @G_UNICODE_SCRIPT_PAHAWH_HMONG:         Pahawh Hmong. Since: 1.40
+ * @G_UNICODE_SCRIPT_PALMYRENE:            Palmyrene. Since: 1.40
+ * @G_UNICODE_SCRIPT_PAU_CIN_HAU:          Pau Cin Hau. Since: 1.40
+ * @G_UNICODE_SCRIPT_PSALTER_PAHLAVI:      Psalter Pahlavi. Since: 1.40
+ * @G_UNICODE_SCRIPT_SIDDHAM:              Siddham. Since: 1.40
+ * @G_UNICODE_SCRIPT_TIRHUTA:              Tirhuta. Since: 1.40
+ * @G_UNICODE_SCRIPT_WARANG_CITI:          Warang Citi. Since: 1.40
+ * @G_UNICODE_SCRIPT_AHOM:                 Ahom. Since: 1.40
+ * @G_UNICODE_SCRIPT_ANATOLIAN_HIEROGLYPHS: Anatolian Hieroglyphs. Since: 1.40
+ * @G_UNICODE_SCRIPT_HATRAN:               Hatran. Since: 1.40
+ * @G_UNICODE_SCRIPT_MULTANI:              Multani. Since: 1.40
+ * @G_UNICODE_SCRIPT_OLD_HUNGARIAN:        Old Hungarian. Since: 1.40
+ * @G_UNICODE_SCRIPT_SIGNWRITING:          Signwriting. Since: 1.40
  *
  * The #PangoScript enumeration identifies different writing
  * systems. The values correspond to the names as defined in the
@@ -237,7 +266,40 @@ typedef enum {                         /* ISO 15924 code */
       PANGO_SCRIPT_MIAO,               /* Plrd */
       PANGO_SCRIPT_SHARADA,            /* Shrd */
       PANGO_SCRIPT_SORA_SOMPENG,       /* Sora */
-      PANGO_SCRIPT_TAKRI               /* Takr */
+      PANGO_SCRIPT_TAKRI,              /* Takr */
+
+      /* Unicode 7.0 additions */
+      PANGO_SCRIPT_BASSA_VAH,              /* Bass */
+      PANGO_SCRIPT_CAUCASIAN_ALBANIAN,     /* Aghb */
+      PANGO_SCRIPT_DUPLOYAN,               /* Dupl */
+      PANGO_SCRIPT_ELBASAN,                /* Elba */
+      PANGO_SCRIPT_GRANTHA,                /* Gran */
+      PANGO_SCRIPT_KHOJKI,                 /* Khoj */
+      PANGO_SCRIPT_KHUDAWADI,              /* Sind */
+      PANGO_SCRIPT_LINEAR_A,               /* Lina */
+      PANGO_SCRIPT_MAHAJANI,               /* Mahj */
+      PANGO_SCRIPT_MANICHAEAN,             /* Manu */
+      PANGO_SCRIPT_MENDE_KIKAKUI,          /* Mend */
+      PANGO_SCRIPT_MODI,                   /* Modi */
+      PANGO_SCRIPT_MRO,                    /* Mroo */
+      PANGO_SCRIPT_NABATAEAN,              /* Nbat */
+      PANGO_SCRIPT_OLD_NORTH_ARABIAN,      /* Narb */
+      PANGO_SCRIPT_OLD_PERMIC,             /* Perm */
+      PANGO_SCRIPT_PAHAWH_HMONG,           /* Hmng */
+      PANGO_SCRIPT_PALMYRENE,              /* Palm */
+      PANGO_SCRIPT_PAU_CIN_HAU,            /* Pauc */
+      PANGO_SCRIPT_PSALTER_PAHLAVI,        /* Phlp */
+      PANGO_SCRIPT_SIDDHAM,                /* Sidd */
+      PANGO_SCRIPT_TIRHUTA,                /* Tirh */
+      PANGO_SCRIPT_WARANG_CITI,            /* Wara */
+
+      /* Unicode 8.0 additions */
+      PANGO_SCRIPT_AHOM,                   /* Ahom */
+      PANGO_SCRIPT_ANATOLIAN_HIEROGLYPHS,  /* Hluw */
+      PANGO_SCRIPT_HATRAN,                 /* Hatr */
+      PANGO_SCRIPT_MULTANI,                /* Mult */
+      PANGO_SCRIPT_OLD_HUNGARIAN,          /* Hung */
+      PANGO_SCRIPT_SIGNWRITING             /* Sgnw */
 } PangoScript;
 
 PangoScript pango_script_for_unichar         (gunichar             ch) G_GNUC_CONST;
