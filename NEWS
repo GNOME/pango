@@ -1,3 +1,7 @@
+Overview of changes between 1.38.1 and 1.39.0
+=============================================
+- Update PangoScript to Unicode 8.0
+
 Overview of changes between 1.38.0 and 1.38.1
 =============================================
 - Require 0.9.30
