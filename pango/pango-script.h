@@ -126,35 +126,35 @@ typedef struct _PangoScriptIter PangoScriptIter;
  * @PANGO_SCRIPT_SHARADA:              Sharada. Since: 1.32
  * @PANGO_SCRIPT_SORA_SOMPENG:         Sora Sompeng. Since: 1.32
  * @PANGO_SCRIPT_TAKRI:                Takri. Since: 1.32
- * @G_UNICODE_SCRIPT_BASSA_VAH:            Bassa. Since: 1.40
- * @G_UNICODE_SCRIPT_CAUCASIAN_ALBANIAN:   Caucasian Albanian. Since: 1.40
- * @G_UNICODE_SCRIPT_DUPLOYAN:             Duployan. Since: 1.40
- * @G_UNICODE_SCRIPT_ELBASAN:              Elbasan. Since: 1.40
- * @G_UNICODE_SCRIPT_GRANTHA:              Grantha. Since: 1.40
- * @G_UNICODE_SCRIPT_KHOJKI:               Kjohki. Since: 1.40
- * @G_UNICODE_SCRIPT_KHUDAWADI:            Khudawadi, Sindhi. Since: 1.40
- * @G_UNICODE_SCRIPT_LINEAR_A:             Linear A. Since: 1.40
- * @G_UNICODE_SCRIPT_MAHAJANI:             Mahajani. Since: 1.40
- * @G_UNICODE_SCRIPT_MANICHAEAN:           Manichaean. Since: 1.40
- * @G_UNICODE_SCRIPT_MENDE_KIKAKUI:        Mende Kikakui. Since: 1.40
- * @G_UNICODE_SCRIPT_MODI:                 Modi. Since: 1.40
- * @G_UNICODE_SCRIPT_MRO:                  Mro. Since: 1.40
- * @G_UNICODE_SCRIPT_NABATAEAN:            Nabataean. Since: 1.40
- * @G_UNICODE_SCRIPT_OLD_NORTH_ARABIAN:    Old North Arabian. Since: 1.40
- * @G_UNICODE_SCRIPT_OLD_PERMIC:           Old Permic. Since: 1.40
- * @G_UNICODE_SCRIPT_PAHAWH_HMONG:         Pahawh Hmong. Since: 1.40
- * @G_UNICODE_SCRIPT_PALMYRENE:            Palmyrene. Since: 1.40
- * @G_UNICODE_SCRIPT_PAU_CIN_HAU:          Pau Cin Hau. Since: 1.40
- * @G_UNICODE_SCRIPT_PSALTER_PAHLAVI:      Psalter Pahlavi. Since: 1.40
- * @G_UNICODE_SCRIPT_SIDDHAM:              Siddham. Since: 1.40
- * @G_UNICODE_SCRIPT_TIRHUTA:              Tirhuta. Since: 1.40
- * @G_UNICODE_SCRIPT_WARANG_CITI:          Warang Citi. Since: 1.40
- * @G_UNICODE_SCRIPT_AHOM:                 Ahom. Since: 1.40
- * @G_UNICODE_SCRIPT_ANATOLIAN_HIEROGLYPHS: Anatolian Hieroglyphs. Since: 1.40
- * @G_UNICODE_SCRIPT_HATRAN:               Hatran. Since: 1.40
- * @G_UNICODE_SCRIPT_MULTANI:              Multani. Since: 1.40
- * @G_UNICODE_SCRIPT_OLD_HUNGARIAN:        Old Hungarian. Since: 1.40
- * @G_UNICODE_SCRIPT_SIGNWRITING:          Signwriting. Since: 1.40
+ * @PANGO_SCRIPT_BASSA_VAH:            Bassa. Since: 1.40
+ * @PANGO_SCRIPT_CAUCASIAN_ALBANIAN:   Caucasian Albanian. Since: 1.40
+ * @PANGO_SCRIPT_DUPLOYAN:             Duployan. Since: 1.40
+ * @PANGO_SCRIPT_ELBASAN:              Elbasan. Since: 1.40
+ * @PANGO_SCRIPT_GRANTHA:              Grantha. Since: 1.40
+ * @PANGO_SCRIPT_KHOJKI:               Kjohki. Since: 1.40
+ * @PANGO_SCRIPT_KHUDAWADI:            Khudawadi, Sindhi. Since: 1.40
+ * @PANGO_SCRIPT_LINEAR_A:             Linear A. Since: 1.40
+ * @PANGO_SCRIPT_MAHAJANI:             Mahajani. Since: 1.40
+ * @PANGO_SCRIPT_MANICHAEAN:           Manichaean. Since: 1.40
+ * @PANGO_SCRIPT_MENDE_KIKAKUI:        Mende Kikakui. Since: 1.40
+ * @PANGO_SCRIPT_MODI:                 Modi. Since: 1.40
+ * @PANGO_SCRIPT_MRO:                  Mro. Since: 1.40
+ * @PANGO_SCRIPT_NABATAEAN:            Nabataean. Since: 1.40
+ * @PANGO_SCRIPT_OLD_NORTH_ARABIAN:    Old North Arabian. Since: 1.40
+ * @PANGO_SCRIPT_OLD_PERMIC:           Old Permic. Since: 1.40
+ * @PANGO_SCRIPT_PAHAWH_HMONG:         Pahawh Hmong. Since: 1.40
+ * @PANGO_SCRIPT_PALMYRENE:            Palmyrene. Since: 1.40
+ * @PANGO_SCRIPT_PAU_CIN_HAU:          Pau Cin Hau. Since: 1.40
+ * @PANGO_SCRIPT_PSALTER_PAHLAVI:      Psalter Pahlavi. Since: 1.40
+ * @PANGO_SCRIPT_SIDDHAM:              Siddham. Since: 1.40
+ * @PANGO_SCRIPT_TIRHUTA:              Tirhuta. Since: 1.40
+ * @PANGO_SCRIPT_WARANG_CITI:          Warang Citi. Since: 1.40
+ * @PANGO_SCRIPT_AHOM:                 Ahom. Since: 1.40
+ * @PANGO_SCRIPT_ANATOLIAN_HIEROGLYPHS: Anatolian Hieroglyphs. Since: 1.40
+ * @PANGO_SCRIPT_HATRAN:               Hatran. Since: 1.40
+ * @PANGO_SCRIPT_MULTANI:              Multani. Since: 1.40
+ * @PANGO_SCRIPT_OLD_HUNGARIAN:        Old Hungarian. Since: 1.40
+ * @PANGO_SCRIPT_SIGNWRITING:          Signwriting. Since: 1.40
  *
  * The #PangoScript enumeration identifies different writing
  * systems. The values correspond to the names as defined in the
