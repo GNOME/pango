@@ -218,8 +218,6 @@ int main (void)
   struct tm *tmp;
   int fc_version;
 
-  g_type_init ();
-
   script_array = g_array_new (FALSE, FALSE, sizeof (LangInfo));
   
 
@@ -287,7 +285,7 @@ int main (void)
       
       g_print ("  { \"%s\", %*s{ ",
 	       pango_language_to_string (info->lang),
-	       max_lang_len - strlen (pango_language_to_string (info->lang)), "");
+	       (int)(max_lang_len - strlen (pango_language_to_string (info->lang))), "");
       for (j = 0; j < MAX_SCRIPTS; j++)
 	{
 	  if (!info->scripts[j].freq)
