@@ -2018,7 +2018,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
  * Y position is not inside the layout, the closest position is chosen
  * (the position will be clamped inside the layout). If the
  * X position is not within the layout, then the start or the
- * end of the line is chosen as  described for pango_layout_xy_to_index().
+ * end of the line is chosen as described for pango_layout_line_x_to_index().
  * If either the X or Y positions were not inside the layout, then the
  * function returns %FALSE; on an exact hit, it returns %TRUE.
  *
