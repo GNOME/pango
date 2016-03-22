@@ -21,7 +21,7 @@ dnl
 
 dnl The triplet
 m4_define([pango_version_major], [1])
-m4_define([pango_version_minor], [39])
+m4_define([pango_version_minor], [40])
 m4_define([pango_version_micro], [0])
 
 m4_define([pango_version],

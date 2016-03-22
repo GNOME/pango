@@ -1,3 +1,8 @@
+Overview of changes between 1.39.1 and 1.40.0
+=============================================
+- Fix typos
+- Don't treat OGHAM SPACE MARK as whitespace
+
 Overview of changes between 1.38.1 and 1.39.0
 =============================================
 - Update PangoScript to Unicode 8.0
