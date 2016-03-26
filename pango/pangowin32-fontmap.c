@@ -576,6 +576,8 @@ create_standard_family (PangoWin32FontMap *win32fontmap,
 		    new_face->coverages[j] = NULL;
 		}
 
+	      new_face->face_name = NULL;
+
 	      new_face->is_synthetic = TRUE;
 
 	      new_face->has_cmap = old_face->has_cmap;
@@ -601,10 +603,12 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 {
   LOGFONTW logfont;
 
-  win32fontmap->families = g_hash_table_new ((GHashFunc) case_insensitive_str_hash,
-					     (GEqualFunc) case_insensitive_str_equal);
+  win32fontmap->families =
+    g_hash_table_new_full ((GHashFunc) case_insensitive_str_hash,
+                           (GEqualFunc) case_insensitive_str_equal, NULL, g_object_unref);
   win32fontmap->fonts =
-    g_hash_table_new ((GHashFunc) logfontw_nosize_hash, (GEqualFunc) logfontw_nosize_equal);
+    g_hash_table_new_full ((GHashFunc) logfontw_nosize_hash,
+                           (GEqualFunc) logfontw_nosize_equal, NULL, g_free);
 
   win32fontmap->font_cache = pango_win32_font_cache_new ();
   win32fontmap->freed_fonts = g_queue_new ();
@@ -728,6 +732,10 @@ pango_win32_font_map_finalize (GObject *object)
 
   pango_win32_font_cache_free (win32fontmap->font_cache);
 
+  g_hash_table_destroy (win32fontmap->fonts);
+
+  g_hash_table_destroy (win32fontmap->families);
+
   G_OBJECT_CLASS (_pango_win32_font_map_parent_class)->finalize (object);
 }
 
@@ -788,8 +796,23 @@ pango_win32_family_is_monospace (PangoFontFamily *family)
 G_DEFINE_TYPE (PangoWin32Family, pango_win32_family, PANGO_TYPE_FONT_FAMILY)
 
 static void
+pango_win32_family_finalize (GObject *object)
+{
+  PangoWin32Family *win32family = PANGO_WIN32_FAMILY (object);
+
+  g_free (win32family->family_name);
+
+  g_slist_free_full (win32family->faces, g_object_unref);
+
+  G_OBJECT_CLASS (pango_win32_family_parent_class)->finalize (object);
+}
+
+static void
 pango_win32_family_class_init (PangoFontFamilyClass *class)
 {
+  GObjectClass *object_class = G_OBJECT_CLASS (class);
+
+  object_class->finalize = pango_win32_family_finalize;
   class->list_faces = pango_win32_family_list_faces;
   class->get_name = pango_win32_family_get_name;
   class->is_monospace = pango_win32_family_is_monospace;
@@ -1456,6 +1479,8 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   for (i = 0; i < PANGO_WIN32_N_COVERAGES; i++)
      win32face->coverages[i] = NULL;
 
+  win32face->face_name = NULL;
+
   win32face->is_synthetic = is_synthetic;
 
   win32face->has_cmap = TRUE;
@@ -1545,8 +1570,33 @@ pango_win32_face_is_synthesized (PangoFontFace *face)
 G_DEFINE_TYPE (PangoWin32Face, pango_win32_face, PANGO_TYPE_FONT_FACE)
 
 static void
+pango_win32_face_finalize (GObject *object)
+{
+  int j;
+  PangoWin32Face *win32face = PANGO_WIN32_FACE (object);
+
+  pango_font_description_free (win32face->description);
+
+  for (j = 0; j < PANGO_WIN32_N_COVERAGES; j++)
+    if (win32face->coverages[j] != NULL)
+      pango_coverage_unref (win32face->coverages[j]);
+
+  g_free (win32face->face_name);
+
+  //g_free (win32face->cmap); // Err, cmap does not have lifecycle management currently :(
+
+  g_slist_free (win32face->cached_fonts);
+//  g_slist_free_full (win32face->cached_fonts, g_object_unref); // This doesn't work.
+
+  G_OBJECT_CLASS (pango_win32_family_parent_class)->finalize (object);
+}
+
+static void
 pango_win32_face_class_init (PangoFontFaceClass *class)
 {
+  GObjectClass *object_class = G_OBJECT_CLASS (class);
+
+  object_class->finalize = pango_win32_face_finalize;
   class->describe = pango_win32_face_describe;
   class->get_face_name = pango_win32_face_get_face_name;
   class->list_sizes = pango_win32_face_list_sizes;
