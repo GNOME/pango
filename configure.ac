@@ -500,7 +500,7 @@ AC_ARG_ENABLE(doc-cross-references,
 
 if test "x$enable_doc_cross_references" != xno ; then
 	GLIB_PREFIX="`$PKG_CONFIG --variable=prefix glib-2.0`"
-	CAIRO_PREFIX="`pkg-config --variable=prefix cairo`"
+	CAIRO_PREFIX="`$PKG_CONFIG --variable=prefix cairo`"
 	AC_SUBST(GLIB_PREFIX)
 	AC_SUBST(CAIRO_PREFIX)
 fi
