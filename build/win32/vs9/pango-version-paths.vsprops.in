@@ -9,16 +9,28 @@
 		Value="9"
 	/>
 	<UserMacro
+		Name="PangoMajorVersion"
+		Value="@PANGO_VERSION_MAJOR@"
+	/>
+	<UserMacro
+		Name="PangoMinorVersion"
+		Value="@PANGO_VERSION_MINOR@"
+	/>
+	<UserMacro
+		Name="PangoMicroVersion"
+		Value="@PANGO_VERSION_MICRO@"
+	/>
+	<UserMacro
+		Name="ApiVersion"
+		Value="1.0"
+	/>
+	<UserMacro
 		Name="GlibEtcInstallRoot"
 		Value="$(SolutionDir)\..\..\..\..\vs$(VSVer)\$(PlatformName)"
 	/>
 	<UserMacro
 		Name="CopyDir"
 		Value="$(GlibEtcInstallRoot)"
-	/>
-	<UserMacro
-		Name="ApiVersion"
-		Value="1.0"
 	/>
 	<UserMacro
 		Name="PangoLibtoolCompatibleDllPrefix"
@@ -45,5 +57,13 @@
 	<UserMacro
 		Name="PangoDllSuffix"
 		Value="$(PangoSeparateVSDllSuffix)"
+	/>
+	<UserMacro
+		Name="PythonPath"
+		Value="c:\python27"
+	/>
+	<UserMacro
+		Name="PythonPathX64"
+		Value="$(PythonPath).x64"
 	/>
 </VisualStudioPropertySheet>
