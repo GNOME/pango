@@ -34,6 +34,9 @@ EXTRA_DIST =	\
 	pango-introspection-msvc.mak	\
 	introspection-msvc.mak	\
 	detectenv-msvc.mak	\
+	pangopc.py	\
+	pc_base.py	\
+	replace.py	\
 	$(GENERATED_ITEMS)
 
 -include $(top_srcdir)/git.mk

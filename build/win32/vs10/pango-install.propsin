@@ -5,11 +5,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
     <BinDir>$(SolutionDir)$(Configuration)\$(Platform)\bin</BinDir>
-    <InstalledDlls>$(BinDir)\$(PangoDllPrefix)pango(PangoDllSuffix).dll;$(BinDir)\$(PangoDllPrefix)pangowin32(PangoDllSuffix).dll;$(BinDir)\$(PangoDllPrefix)pangocairo(PangoDllSuffix).dll</InstalledDlls>
-    <InstalledFCDlls>$(BinDir)\$(PangoDllPrefix)pangoft2(PangoDllSuffix).dll</InstalledFCDlls>
     <PangoInstallHeadersData>
 mkdir $(CopyDir)\include\pango-$(ApiVersion)\pango
 #include "pango.vs10.headers"
+
+if exist ..\pango.pc (mkdir $(CopyDir)\lib\pkgconfig &amp; copy ..\pango.pc $(CopyDir)\lib\pkgconfig)
+if exist ..\pangowin32.pc copy ..\pangowin32.pc $(CopyDir)\lib\pkgconfig
+if exist ..\pangocairo.pc copy ..\pangocairo.pc $(CopyDir)\lib\pkgconfig
 
 if "$(Configuration)" == "Release" goto END
 if "$(Configuration)" == "Debug" goto END
@@ -20,8 +22,13 @@ copy ..\..\..\pango\pangofc-fontmap.h $(CopyDir)\include\pango-$(ApiVersion)\pan
 copy ..\..\..\pango\pango-ot.h $(CopyDir)\include\pango-$(ApiVersion)\pango
 copy ..\..\..\pango\pangoft2.h $(CopyDir)\include\pango-$(ApiVersion)\pango
 
+if exist ..\pangoft2.pc copy ..\pangoft2.pc $(CopyDir)\lib\pkgconfig
 :END
 </PangoInstallHeadersData>
+    <GenPangoPC>if exist $(PythonPath)\python.exe $(PythonPath)\python.exe ..\pangopc.py --version=$(PangoMajorVersion).$(PangoMinorVersion).$(PangoMicroVersion) --prefix=$(CopyDir)</GenPangoPC>
+    <GenPangoPCX64>if exist $(PythonPathX64)\python.exe $(PythonPathX64)\python.exe ..\pangopc.py --version=$(PangoMajorVersion).$(PangoMinorVersion).$(PangoMicroVersion) --prefix=$(CopyDir)</GenPangoPCX64>
+    <PangoPCFiles>..\pango.pc;..\pangowin32.pc;..\pangocairo.pc</PangoPCFiles>
+    <PangoFT2PCFiles>..\pangoft2.pc</PangoFT2PCFiles>
   </PropertyGroup>
   <PropertyGroup>
     <_PropertySheetDisplayName>pangoinstallprops</_PropertySheetDisplayName>
@@ -32,14 +39,20 @@ copy ..\..\..\pango\pangoft2.h $(CopyDir)\include\pango-$(ApiVersion)\pango
     <BuildMacro Include="BinDir">
       <Value>$(BinDir)</Value>
     </BuildMacro>
-    <BuildMacro Include="InstalledDlls">
-      <Value>$(InstalledDlls)</Value>
-    </BuildMacro>
-    <BuildMacro Include="InstalledFCDlls">
-      <Value>$(InstalledFCDlls)</Value>
-    </BuildMacro>
     <BuildMacro Include="PangoInstallHeadersData">
       <Value>$(PangoInstallHeadersData)</Value>
+    </BuildMacro>
+    <BuildMacro Include="GenPangoPC">
+      <Value>$(GenPangoPC)</Value>
+    </BuildMacro>
+    <BuildMacro Include="GenPangoPCX64">
+      <Value>$(GenPangoPCX64)</Value>
+    </BuildMacro>
+    <BuildMacro Include="PangoPCFiles">
+      <Value>$(PangoPCFiles)</Value>
+    </BuildMacro>
+    <BuildMacro Include="PangoFT2PCFiles">
+      <Value>$(PangoFT2PCFiles)</Value>
     </BuildMacro>
   </ItemGroup>
 </Project>

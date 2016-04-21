@@ -157,29 +157,63 @@
   <ItemGroup>
     <CustomBuild Include="..\..\..\config.h.win32">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Installing Build Results...</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(PangoPCFiles)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(PangoDoInstallBin) $(PangoInstallHeadersData)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InstalledDlls);%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">blah;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug_FC|Win32'">Installing Build Results...</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug_FC|Win32'">$(PangoPCFiles);$(PangoFT2PCFiles)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug_FC|Win32'">$(PangoDoInstallBin) $(PangoInstallHeadersData)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_FC|Win32'">$(InstalledDlls);$(InstalledFCDlls);%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_FC|Win32'">blah;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Installing Build Results...</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(PangoPCFiles)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(PangoDoInstallBin) $(PangoInstallHeadersData)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(InstalledDlls);%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">blah;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug_FC|x64'">Installing Build Results...</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug_FC|x64'">$(PangoPCFiles);$(PangoFT2PCFiles)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug_FC|x64'">$(PangoDoInstallBin) $(PangoInstallHeadersData)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_FC|x64'">$(InstalledDlls);$(InstalledFCDlls);%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_FC|x64'">blah;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Installing Build Results...</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(PangoPCFiles)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(PangoDoInstallBin) $(PangoInstallHeadersData)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(InstalledDlls);%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">blah;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release_FC|Win32'">Installing Build Results...</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release_FC|Win32'">$(PangoPCFiles);$(PangoFT2PCFiles)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release_FC|Win32'">$(PangoDoInstallBin) $(PangoInstallHeadersData)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_FC|Win32'">$(InstalledDlls);$(InstalledFCDlls);%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_FC|Win32'">blah;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Installing Build Results...</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(PangoPCFiles)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(PangoDoInstallBin) $(PangoInstallHeadersData)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(InstalledDlls);%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">blah;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release_FC|x64'">Installing Build Results...</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release_FC|x64'">$(PangoPCFiles);$(PangoFT2PCFiles)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release_FC|x64'">$(PangoDoInstallBin) $(PangoInstallHeadersData)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_FC|x64'">$(InstalledDlls);$(InstalledFCDlls);%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_FC|x64'">blah;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\pangopc.py">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating .pc files...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(GenPangoPC)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(PangoPCFiles);%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_FC|Win32'">Generating .pc files...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_FC|Win32'">$(GenPangoPC) --pangoft2</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_FC|Win32'">$(PangoPCFiles);$(PangoFT2PCFile);%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating .pc files...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(GenPangoPCX64)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(PangoPCFiles);%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_FC|x64'">Generating .pc files...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_FC|x64'">$(GenPangoPCX64) --pangoft2</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_FC|x64'">$(PangoPCFiles);$(PangoFT2PCFile);%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generating .pc files...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(GenPangoPC)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(PangoPCFiles);%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_FC|Win32'">Generating .pc files...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_FC|Win32'">$(GenPangoPC) --pangoft2</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_FC|Win32'">$(PangoPCFiles);$(PangoFT2PCFile);%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating .pc files...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(GenPangoPCX64)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(PangoPCFiles);%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_FC|x64'">Generating .pc files...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_FC|x64'">$(GenPangoPCX64) --pangoft2</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_FC|x64'">$(PangoPCFiles);$(PangoFT2PCFile);%(Outputs)</Outputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

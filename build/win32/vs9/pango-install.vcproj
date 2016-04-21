@@ -28,7 +28,7 @@
 			DeleteExtensionsOnClean=""
 			>
 			<Tool
-				Name="VCPreBuildEventTool"
+				Name="VCPostBuildEventTool"
 				CommandLine="$(PangoInstallBin) $(PangoInstallHeadersData)"
 			/>
 		</Configuration>
@@ -41,7 +41,7 @@
 			DeleteExtensionsOnClean=""
 			>
 			<Tool
-				Name="VCPreBuildEventTool"
+				Name="VCPostBuildEventTool"
 				CommandLine="$(PangoInstallBin) $(PangoInstallHeadersData)"
 			/>
 		</Configuration>
@@ -55,7 +55,7 @@
 			WholeProgramOptimization="1"
 			>
 			<Tool
-				Name="VCPreBuildEventTool"
+				Name="VCPostBuildEventTool"
 				CommandLine="$(PangoInstallBin) $(PangoInstallHeadersData)"
 			/>
 		</Configuration>
@@ -69,7 +69,7 @@
 			WholeProgramOptimization="1"
 			>
 			<Tool
-				Name="VCPreBuildEventTool"
+				Name="VCPostBuildEventTool"
 				CommandLine="$(PangoInstallBin) $(PangoInstallHeadersData)"
 			/>
 		</Configuration>
@@ -82,7 +82,7 @@
 			DeleteExtensionsOnClean=""
 			>
 			<Tool
-				Name="VCPreBuildEventTool"
+				Name="VCPostBuildEventTool"
 				CommandLine="$(PangoInstallBin) $(PangoInstallHeadersData)"
 			/>
 		</Configuration>
@@ -95,7 +95,7 @@
 			DeleteExtensionsOnClean=""
 			>
 			<Tool
-				Name="VCPreBuildEventTool"
+				Name="VCPostBuildEventTool"
 				CommandLine="$(PangoInstallBin) $(PangoInstallHeadersData)"
 			/>
 		</Configuration>
@@ -109,7 +109,7 @@
 			DeleteExtensionsOnClean=""
 			>
 			<Tool
-				Name="VCPreBuildEventTool"
+				Name="VCPostBuildEventTool"
 				CommandLine="$(PangoInstallBin) $(PangoInstallHeadersData)"
 			/>
 		</Configuration>
@@ -123,7 +123,7 @@
 			DeleteExtensionsOnClean=""
 			>
 			<Tool
-				Name="VCPreBuildEventTool"
+				Name="VCPostBuildEventTool"
 				CommandLine="$(PangoInstallBin) $(PangoInstallHeadersData)"
 			/>
 		</Configuration>
@@ -131,6 +131,78 @@
 	<References>
 	</References>
 	<Files>
+		<Filter
+			Name="Resource Files"
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
+			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			>
+			<File RelativePath="..\pangopc.py">
+				<FileConfiguration Name="Debug_FC|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generating .pc files..."
+						CommandLine="$(GenPangoPC) --pangoft2"
+						Outputs="..\pango.pc;..\pangowin32.pc;..\pangocairo.pc;..\pangoft2.pc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generating .pc files..."
+						CommandLine="$(GenPangoPC)"
+						Outputs="..\pango.pc;..\pangowin32.pc;..\pangocairo.pc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration Name="Release_FC|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generating .pc files..."
+						CommandLine="$(GenPangoPC) --pangoft2"
+						Outputs="..\pango.pc;..\pangowin32.pc;..\pangocairo.pc;..\pangoft2.pc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration Name="Release|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generating .pc files..."
+						CommandLine="$(GenPangoPC)"
+						Outputs="..\pango.pc;..\pangowin32.pc;..\pangocairo.pc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration Name="Debug_FC|x64">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generating .pc files..."
+						CommandLine="$(GenPangoPCX64) --pangoft2"
+						Outputs="..\pango.pc;..\pangowin32.pc;..\pangocairo.pc;..\pangoft2.pc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration Name="Debug|x64">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generating .pc files..."
+						CommandLine="$(GenPangoPCX64)"
+						Outputs="..\pango.pc;..\pangowin32.pc;..\pangocairo.pc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration Name="Release_FC|x64">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generating .pc files..."
+						CommandLine="$(GenPangoPCX64) --pangoft2"
+						Outputs="..\pango.pc;..\pangowin32.pc;..\pangocairo.pc;..\pangoft2.pc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration Name="Release|x64">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generating .pc files..."
+						CommandLine="$(GenPangoPCX64)"
+						Outputs="..\pango.pc;..\pangowin32.pc;..\pangocairo.pc"
+					/>
+				</FileConfiguration>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>
