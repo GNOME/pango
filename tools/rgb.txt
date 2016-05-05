@@ -663,3 +663,4 @@
 255   0 255		fuchsia
 220  20  60		crimson
 0   128 128		teal
+102  51 153             rebeccapurple
