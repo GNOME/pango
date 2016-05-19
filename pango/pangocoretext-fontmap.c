@@ -106,25 +106,29 @@ static PangoCoreTextFontsetKey *pango_core_text_fontset_get_key (PangoCoreTextFo
 
 typedef struct
 {
-    float bound;
-    PangoWeight weight;
+    float ct_weight;
+    PangoWeight pango_weight;
 } PangoCTWeight;
 
-const float ct_weight_min = -1.00f;
-const float ct_weight_max = 1.00f;
+const float ct_weight_min = -0.7f;
+const float ct_weight_max = 0.8f;
 
-static const PangoCTWeight ct_weight_limits[] = {
-    { -0.00, PANGO_WEIGHT_THIN },
-    { -0.75, PANGO_WEIGHT_ULTRALIGHT },
-    { -0.50, PANGO_WEIGHT_LIGHT },
-    { -0.25, PANGO_WEIGHT_SEMILIGHT },
-    { -0.10, PANGO_WEIGHT_BOOK },
+/* This map is based on empirical data from analyzing a large collection of
+ * fonts and comparing the opentype value with the value that OSX returns.
+ * see: https://bugzilla.gnome.org/show_bug.cgi?id=766148
+ */
+
+static const PangoCTWeight ct_weight_map[] = {
+    { ct_weight_min, PANGO_WEIGHT_THIN },
+    { -0.5, PANGO_WEIGHT_ULTRALIGHT },
+    { -0.23, PANGO_WEIGHT_LIGHT },
+    { -0.115, PANGO_WEIGHT_SEMILIGHT },
     {  0.00, PANGO_WEIGHT_NORMAL },
-    {  0.10, PANGO_WEIGHT_MEDIUM },
-    {  0.25, PANGO_WEIGHT_SEMIBOLD },
-    {  0.50, PANGO_WEIGHT_BOLD },
-    {  0.75, PANGO_WEIGHT_ULTRABOLD },
-    {  1.00, PANGO_WEIGHT_HEAVY }
+    {  0.2, PANGO_WEIGHT_MEDIUM },
+    {  0.3, PANGO_WEIGHT_SEMIBOLD },
+    {  0.4, PANGO_WEIGHT_BOLD },
+    {  0.6, PANGO_WEIGHT_ULTRABOLD },
+    {  ct_weight_max, PANGO_WEIGHT_HEAVY }
 };
 
 static const char *
@@ -285,6 +289,13 @@ cf_font_descriptor_copy_with_traits (CTFontDescriptorRef        desc,
   return new_desc;
 }
 
+static int
+lerp(float x, float x1, float x2, int y1, int y2) {
+  float dx = x2 - x1;
+  int dy = y2 - y1;
+  return y1 + (dy*(x-x1) + dx/2) / dx;
+}
+
 static PangoWeight
 ct_font_descriptor_get_weight (CTFontDescriptorRef desc)
 {
@@ -299,25 +310,24 @@ ct_font_descriptor_get_weight (CTFontDescriptorRef desc)
 
   if (cf_number != NULL && CFNumberGetValue (cf_number, kCFNumberCGFloatType, &value))
     {
-      if (value < ct_weight_min || value > ct_weight_max)
-	{
-          /* This is really an error */
-          weight = PANGO_WEIGHT_NORMAL;
-	}
-      else
-	{
-	  guint i;
-	  for (i = 0; i < G_N_ELEMENTS(ct_weight_limits); i++)
-	    if (value < ct_weight_limits[i].bound)
-	      {
-	        /* TODO interpolate weight. */
-                weight = ct_weight_limits[i].weight;
-                break;
-	      }
-	}
+    if (value < ct_weight_min || value > ct_weight_max)
+      {
+        /* This is really an error */
+        weight = PANGO_WEIGHT_NORMAL;
+      }
+    else
+      {
+        guint i;
+        for (i = 1; value > ct_weight_map[i].ct_weight; ++i)
+          ;
+
+        weight = lerp(value, ct_weight_map[i-1].ct_weight, ct_weight_map[i].ct_weight,
+                      ct_weight_map[i-1].pango_weight, ct_weight_map[i].pango_weight);
+
+      }
     }
- else
-   weight = PANGO_WEIGHT_NORMAL;
+  else
+    weight = PANGO_WEIGHT_NORMAL;
 
   CFRelease (dict);
 
