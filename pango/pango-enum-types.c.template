@@ -1,4 +1,6 @@
 /*** BEGIN file-header ***/
+#include "config.h"
+
 #include <pango.h>
 
 /*** END file-header ***/
