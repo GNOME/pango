@@ -151,7 +151,6 @@
       <AdditionalDependencies>cairo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll</OutputFile>
       <IgnoreSpecificDefaultLibraries>$(OutDir)pangoft2-$(ApiVersion).lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ModuleDefinitionFile>..\..\..\pango\pangocairo.def</ModuleDefinitionFile>
       <ImportLibrary>$(TargetDir)$(ProjectName)-$(ApiVersion).lib</ImportLibrary>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -172,7 +171,6 @@
       <AdditionalDependencies>cairo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll</OutputFile>
       <IgnoreSpecificDefaultLibraries>$(OutDir)pangoft2-$(ApiVersion).lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ModuleDefinitionFile>..\..\..\pango\pangocairo.def</ModuleDefinitionFile>
       <ImportLibrary>$(TargetDir)$(ProjectName)-$(ApiVersion).lib</ImportLibrary>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -198,7 +196,6 @@
       <AdditionalDependencies>cairo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll</OutputFile>
       <IgnoreSpecificDefaultLibraries>$(OutDir)pangoft2-$(ApiVersion).lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ModuleDefinitionFile>..\..\..\pango\pangocairo.def</ModuleDefinitionFile>
       <ImportLibrary>$(TargetDir)$(ProjectName)-$(ApiVersion).lib</ImportLibrary>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -218,7 +215,6 @@
     <Link>
       <AdditionalDependencies>cairo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll</OutputFile>
-      <ModuleDefinitionFile>..\..\..\pango\pangocairo.def</ModuleDefinitionFile>
       <ImportLibrary>$(TargetDir)$(ProjectName)-$(ApiVersion).lib</ImportLibrary>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -243,7 +239,6 @@
     <Link>
       <AdditionalDependencies>cairo.lib;$(PangoFT2Libs);%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll</OutputFile>
-      <ModuleDefinitionFile>..\..\..\pango\pangocairo.def</ModuleDefinitionFile>
       <ImportLibrary>$(TargetDir)$(ProjectName)-$(ApiVersion).lib</ImportLibrary>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -263,7 +258,6 @@
     <Link>
       <AdditionalDependencies>cairo.lib;$(PangoFT2Libs);%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll</OutputFile>
-      <ModuleDefinitionFile>..\..\..\pango\pangocairo.def</ModuleDefinitionFile>
       <ImportLibrary>$(TargetDir)$(ProjectName)-$(ApiVersion).lib</ImportLibrary>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -288,7 +282,6 @@
     <Link>
       <AdditionalDependencies>cairo.lib;$(PangoFT2Libs);%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll</OutputFile>
-      <ModuleDefinitionFile>..\..\..\pango\pangocairo.def</ModuleDefinitionFile>
       <ImportLibrary>$(TargetDir)$(ProjectName)-$(ApiVersion).lib</ImportLibrary>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -308,7 +301,6 @@
     <Link>
       <AdditionalDependencies>cairo.lib;$(PangoFT2Libs);%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(PangoDllPrefix)$(ProjectName)$(PangoDllSuffix).dll</OutputFile>
-      <ModuleDefinitionFile>..\..\..\pango\pangocairo.def</ModuleDefinitionFile>
       <ImportLibrary>$(TargetDir)$(ProjectName)-$(ApiVersion).lib</ImportLibrary>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>

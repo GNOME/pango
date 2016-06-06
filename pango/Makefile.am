@@ -29,7 +29,8 @@ INCLUDES =						\
 	$(FREETYPE_CFLAGS)				\
 	$(FONTCONFIG_CFLAGS)				\
 	$(LIBTHAI_CFLAGS)					\
-	$(X_CFLAGS)
+	$(X_CFLAGS)					\
+	$(PANGO_HIDDEN_VISIBILITY_CFLAGS)
 
 BUILT_SOURCES = pango-enum-types.h pango-enum-types.c pango-features.h
 
@@ -55,8 +56,8 @@ libpango_1_0_la_LIBADD += mini-fribidi/libmini-fribidi.la
 libpango_1_0_la_DEPENDENCIES = mini-fribidi/libmini-fribidi.la
 
 if PLATFORM_WIN32
-libpango_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pango.def -Wl,pango-win32-res.o
-libpango_1_0_la_DEPENDENCIES += pango-win32-res.o pango.def
+libpango_1_0_la_LDFLAGS += -Wl,pango-win32-res.o
+libpango_1_0_la_DEPENDENCIES += pango-win32-res.o
 endif
 pango-win32-res.o: pango.rc
 	$(AM_V_GEN) $(WINDRES) $< $@
@@ -211,8 +212,8 @@ libpangoft2_1_0_la_SOURCES =   	\
 
 
 if PLATFORM_WIN32
-libpangoft2_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangoft2.def -Wl,pangoft2-win32-res.o
-libpangoft2_1_0_la_DEPENDENCIES += pangoft2-win32-res.o pangoft2.def
+libpangoft2_1_0_la_LDFLAGS += -Wl,pangoft2-win32-res.o
+libpangoft2_1_0_la_DEPENDENCIES += pangoft2-win32-res.o
 endif
 pangoft2-win32-res.o: pangoft2.rc
 	$(AM_V_GEN) $(WINDRES) $< $@
@@ -256,8 +257,8 @@ libpangoxft_1_0_la_DEPENDENCIES =		\
 	libpango-$(PANGO_API_VERSION).la
 
 if PLATFORM_WIN32
-libpangoxft_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangoxft.def -Wl,pangoxft-win32-res.o
-libpangoxft_1_0_la_DEPENDENCIES += pangoxft-win32-res.o pangoxft.def
+libpangoxft_1_0_la_LDFLAGS += -Wl,pangoxft-win32-res.o
+libpangoxft_1_0_la_DEPENDENCIES += pangoxft-win32-res.o
 endif
 pangoxft-win32-res.o: pangoxft.rc
 	$(AM_V_GEN) $(WINDRES) $< $@
@@ -313,8 +314,8 @@ libpangocairo_1_0_la_SOURCES = $(pangocairo_core_sources)
 
 if HAVE_CAIRO_WIN32
 if PLATFORM_WIN32
-libpangocairo_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangocairo.def -Wl,pangocairo-win32-res.o
-libpangocairo_1_0_la_DEPENDENCIES += pangocairo-win32-res.o pangocairo.def
+libpangocairo_1_0_la_LDFLAGS += -Wl,pangocairo-win32-res.o
+libpangocairo_1_0_la_DEPENDENCIES += pangocairo-win32-res.o
 endif
 pangocairo-win32-res.o: pangocairo.rc
 	$(AM_V_GEN) $(WINDRES) $< $@
@@ -399,8 +400,8 @@ libpangowin32_1_0_la_SOURCES =	\
 	pangowin32-shape.c
 
 if PLATFORM_WIN32
-libpangowin32_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangowin32.def -Wl,pangowin32-win32-res.o
-libpangowin32_1_0_la_DEPENDENCIES += pangowin32-win32-res.o pangowin32.def
+libpangowin32_1_0_la_LDFLAGS += -Wl,pangowin32-win32-res.o
+libpangowin32_1_0_la_DEPENDENCIES += pangowin32-win32-res.o
 endif
 pangowin32-win32-res.o: pangowin32.rc
 	$(AM_V_GEN) $(WINDRES) $< $@
@@ -423,11 +424,6 @@ EXTRA_DIST =					\
 	pango-enum-types.h			\
 	pango-enum-types.h.template		\
 	pango-enum-types.c.template		\
-	pango.def				\
-	pangocairo.def				\
-	pangowin32.def				\
-	pangoft2.def				\
-	pangoxft.def				\
 	pango.rc				\
 	pango.rc.in				\
 	pangoft2.rc				\
@@ -440,8 +436,7 @@ EXTRA_DIST =					\
 	pangoxft.rc.in				\
 	break-arabic.c				\
 	break-indic.c				\
-	break-thai.c				\
-	check.defs
+	break-thai.c
 
 CLEANFILES =			\
 	pango-enum-types.h	\
@@ -547,7 +542,5 @@ dist-hook: \
 	$(top_builddir)/build/win32/vs9/pangocairo.vcproj	\
 	$(top_builddir)/build/win32/vs9/pango.headers		\
 	$(INTROSPECTION_INTERMEDIATE_ITEMS)
-
-TESTS = check.defs
 
 -include $(top_srcdir)/git.mk
