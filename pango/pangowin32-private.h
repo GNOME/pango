@@ -254,26 +254,34 @@ struct name_record
   guint16 string_offset;
 };
 
+_PANGO_EXTERN
 GType           _pango_win32_font_get_type          (void) G_GNUC_CONST;
 
+_PANGO_EXTERN
 void            _pango_win32_make_matching_logfontw (PangoFontMap   *fontmap,
 						     const LOGFONTW *lfp,
 						     int             size,
 						     LOGFONTW       *out);
 
+_PANGO_EXTERN
 GType           _pango_win32_font_map_get_type      (void) G_GNUC_CONST;
 
+_PANGO_EXTERN
 void            _pango_win32_fontmap_cache_remove   (PangoFontMap   *fontmap,
 						     PangoWin32Font *xfont);
 
+_PANGO_EXTERN
 gboolean	_pango_win32_get_name_header	    (HDC                 hdc,
 						     struct name_header *header);
+_PANGO_EXTERN
 gboolean	_pango_win32_get_name_record        (HDC                 hdc,
 						     gint                i,
 						     struct name_record *record);
 
+_PANGO_EXTERN
 HFONT		_pango_win32_font_get_hfont         (PangoFont          *font);
 
+_PANGO_EXTERN
 void
 _pango_win32_shape (PangoFont        	*font,
 		    const char       	*text,

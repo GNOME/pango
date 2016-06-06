@@ -191,37 +191,45 @@ struct _PangoRendererClass
   void (*_pango_reserved4) (void);
 };
 
+PANGO_AVAILABLE_IN_1_8
 GType pango_renderer_get_type    (void) G_GNUC_CONST;
 
+PANGO_AVAILABLE_IN_1_8
 void pango_renderer_draw_layout          (PangoRenderer    *renderer,
 					  PangoLayout      *layout,
 					  int               x,
 					  int               y);
+PANGO_AVAILABLE_IN_1_8
 void pango_renderer_draw_layout_line     (PangoRenderer    *renderer,
 					  PangoLayoutLine  *line,
 					  int               x,
 					  int               y);
+PANGO_AVAILABLE_IN_1_8
 void pango_renderer_draw_glyphs          (PangoRenderer    *renderer,
 					  PangoFont        *font,
 					  PangoGlyphString *glyphs,
 					  int               x,
 					  int               y);
+PANGO_AVAILABLE_IN_1_22
 void pango_renderer_draw_glyph_item      (PangoRenderer    *renderer,
 					  const char       *text,
 					  PangoGlyphItem   *glyph_item,
 					  int               x,
 					  int               y);
+PANGO_AVAILABLE_IN_1_8
 void pango_renderer_draw_rectangle       (PangoRenderer    *renderer,
 					  PangoRenderPart   part,
 					  int               x,
 					  int               y,
 					  int               width,
 					  int               height);
+PANGO_AVAILABLE_IN_1_8
 void pango_renderer_draw_error_underline (PangoRenderer    *renderer,
 					  int               x,
 					  int               y,
 					  int               width,
 					  int               height);
+PANGO_AVAILABLE_IN_1_8
 void pango_renderer_draw_trapezoid       (PangoRenderer    *renderer,
 					  PangoRenderPart   part,
 					  double            y1_,
@@ -230,35 +238,47 @@ void pango_renderer_draw_trapezoid       (PangoRenderer    *renderer,
 					  double            y2,
 					  double            x12,
 					  double            x22);
+PANGO_AVAILABLE_IN_1_8
 void pango_renderer_draw_glyph           (PangoRenderer    *renderer,
 					  PangoFont        *font,
 					  PangoGlyph        glyph,
 					  double            x,
 					  double            y);
 
+PANGO_AVAILABLE_IN_1_8
 void pango_renderer_activate             (PangoRenderer    *renderer);
+PANGO_AVAILABLE_IN_1_8
 void pango_renderer_deactivate           (PangoRenderer    *renderer);
 
+PANGO_AVAILABLE_IN_1_8
 void        pango_renderer_part_changed (PangoRenderer   *renderer,
 					 PangoRenderPart  part);
 
+PANGO_AVAILABLE_IN_1_8
 void        pango_renderer_set_color (PangoRenderer    *renderer,
 				      PangoRenderPart   part,
 				      const PangoColor *color);
+PANGO_AVAILABLE_IN_1_8
 PangoColor *pango_renderer_get_color (PangoRenderer    *renderer,
 				      PangoRenderPart   part);
 
+PANGO_AVAILABLE_IN_1_38
 void        pango_renderer_set_alpha (PangoRenderer    *renderer,
 				      PangoRenderPart   part,
 				      guint16           alpha);
+PANGO_AVAILABLE_IN_1_38
 guint16     pango_renderer_get_alpha (PangoRenderer    *renderer,
 				      PangoRenderPart   part);
 
+PANGO_AVAILABLE_IN_1_8
 void                        pango_renderer_set_matrix (PangoRenderer     *renderer,
 						       const PangoMatrix *matrix);
+PANGO_AVAILABLE_IN_1_8
 const PangoMatrix          *pango_renderer_get_matrix (PangoRenderer     *renderer);
 
+PANGO_AVAILABLE_IN_1_20
 PangoLayout     *pango_renderer_get_layout      (PangoRenderer     *renderer);
+PANGO_AVAILABLE_IN_1_20
 PangoLayoutLine *pango_renderer_get_layout_line (PangoRenderer     *renderer);
 
 G_END_DECLS

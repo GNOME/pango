@@ -91,12 +91,14 @@ PangoFcFontKey *_pango_fc_font_get_font_key      (PangoFcFont    *fcfont);
 void            _pango_fc_font_set_font_key      (PangoFcFont    *fcfont,
 						  PangoFcFontKey *key);
 
+_PANGO_EXTERN
 void            pango_fc_font_get_raw_extents    (PangoFcFont    *font,
 						  FT_Int32        load_flags,
 						  PangoGlyph      glyph,
 						  PangoRectangle *ink_rect,
 						  PangoRectangle *logical_rect);
 
+_PANGO_EXTERN
 PangoFontMetrics *pango_fc_font_create_base_metrics_for_context (PangoFcFont   *font,
 								 PangoContext  *context);
 

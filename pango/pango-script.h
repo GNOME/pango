@@ -302,19 +302,27 @@ typedef enum {                         /* ISO 15924 code */
       PANGO_SCRIPT_SIGNWRITING             /* Sgnw */
 } PangoScript;
 
+#include <pango/pango-version-macros.h>
+
+PANGO_AVAILABLE_IN_1_4
 PangoScript pango_script_for_unichar         (gunichar             ch) G_GNUC_CONST;
 
+PANGO_AVAILABLE_IN_1_4
 PangoScriptIter *pango_script_iter_new       (const char          *text,
 					      int                  length);
+PANGO_AVAILABLE_IN_1_4
 void             pango_script_iter_get_range (PangoScriptIter     *iter,
                                               const char         **start,
                                               const char         **end,
                                               PangoScript         *script);
+PANGO_AVAILABLE_IN_1_4
 gboolean         pango_script_iter_next      (PangoScriptIter     *iter);
+PANGO_AVAILABLE_IN_1_4
 void             pango_script_iter_free      (PangoScriptIter     *iter);
 
 #include <pango/pango-language.h>
 
+PANGO_AVAILABLE_IN_1_4
 PangoLanguage *pango_script_get_sample_language (PangoScript    script) G_GNUC_PURE;
 
 G_END_DECLS

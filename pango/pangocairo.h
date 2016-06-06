@@ -77,70 +77,95 @@ typedef void (* PangoCairoShapeRendererFunc) (cairo_t        *cr,
 /*
  * PangoCairoFontMap
  */
+PANGO_AVAILABLE_IN_1_10
 GType         pango_cairo_font_map_get_type          (void) G_GNUC_CONST;
 
+PANGO_AVAILABLE_IN_1_10
 PangoFontMap *pango_cairo_font_map_new               (void);
+PANGO_AVAILABLE_IN_1_18
 PangoFontMap *pango_cairo_font_map_new_for_font_type (cairo_font_type_t fonttype);
+PANGO_AVAILABLE_IN_1_10
 PangoFontMap *pango_cairo_font_map_get_default       (void);
+PANGO_AVAILABLE_IN_1_22
 void          pango_cairo_font_map_set_default       (PangoCairoFontMap *fontmap);
+PANGO_AVAILABLE_IN_1_18
 cairo_font_type_t pango_cairo_font_map_get_font_type (PangoCairoFontMap *fontmap);
 
+PANGO_AVAILABLE_IN_1_10
 void          pango_cairo_font_map_set_resolution (PangoCairoFontMap *fontmap,
 						   double             dpi);
+PANGO_AVAILABLE_IN_1_10
 double        pango_cairo_font_map_get_resolution (PangoCairoFontMap *fontmap);
 #ifndef PANGO_DISABLE_DEPRECATED
-G_DEPRECATED_FOR(pango_font_map_create_context)
+PANGO_DEPRECATED_IN_1_22_FOR(pango_font_map_create_context)
 PangoContext *pango_cairo_font_map_create_context (PangoCairoFontMap *fontmap);
 #endif
 
 /*
  * PangoCairoFont
  */
+PANGO_AVAILABLE_IN_1_18
 GType         pango_cairo_font_get_type               (void) G_GNUC_CONST;
 
+PANGO_AVAILABLE_IN_1_18
 cairo_scaled_font_t *pango_cairo_font_get_scaled_font (PangoCairoFont *font);
 
 /* Update a Pango context for the current state of a cairo context
  */
+PANGO_AVAILABLE_IN_1_10
 void         pango_cairo_update_context (cairo_t      *cr,
 					 PangoContext *context);
 
+PANGO_AVAILABLE_IN_1_10
 void                        pango_cairo_context_set_font_options (PangoContext               *context,
 								  const cairo_font_options_t *options);
+PANGO_AVAILABLE_IN_1_10
 const cairo_font_options_t *pango_cairo_context_get_font_options (PangoContext               *context);
 
+PANGO_AVAILABLE_IN_1_10
 void               pango_cairo_context_set_resolution     (PangoContext       *context,
 							   double              dpi);
+PANGO_AVAILABLE_IN_1_10
 double             pango_cairo_context_get_resolution     (PangoContext       *context);
 
+PANGO_AVAILABLE_IN_1_18
 void                        pango_cairo_context_set_shape_renderer (PangoContext                *context,
 								    PangoCairoShapeRendererFunc  func,
 								    gpointer                     data,
 								    GDestroyNotify               dnotify);
+PANGO_AVAILABLE_IN_1_18
 PangoCairoShapeRendererFunc pango_cairo_context_get_shape_renderer (PangoContext                *context,
 								    gpointer                    *data);
 
 /* Convenience
  */
+PANGO_AVAILABLE_IN_1_22
 PangoContext *pango_cairo_create_context (cairo_t   *cr);
+PANGO_AVAILABLE_IN_ALL
 PangoLayout *pango_cairo_create_layout (cairo_t     *cr);
+PANGO_AVAILABLE_IN_1_10
 void         pango_cairo_update_layout (cairo_t     *cr,
 					PangoLayout *layout);
 
 /*
  * Rendering
  */
+PANGO_AVAILABLE_IN_1_10
 void pango_cairo_show_glyph_string (cairo_t          *cr,
 				    PangoFont        *font,
 				    PangoGlyphString *glyphs);
+PANGO_AVAILABLE_IN_1_22
 void pango_cairo_show_glyph_item   (cairo_t          *cr,
 				    const char       *text,
 				    PangoGlyphItem   *glyph_item);
+PANGO_AVAILABLE_IN_1_10
 void pango_cairo_show_layout_line  (cairo_t          *cr,
 				    PangoLayoutLine  *line);
+PANGO_AVAILABLE_IN_1_10
 void pango_cairo_show_layout       (cairo_t          *cr,
 				    PangoLayout      *layout);
 
+PANGO_AVAILABLE_IN_1_14
 void pango_cairo_show_error_underline (cairo_t       *cr,
 				       double         x,
 				       double         y,
@@ -150,14 +175,18 @@ void pango_cairo_show_error_underline (cairo_t       *cr,
 /*
  * Rendering to a path
  */
+PANGO_AVAILABLE_IN_1_10
 void pango_cairo_glyph_string_path (cairo_t          *cr,
 				    PangoFont        *font,
 				    PangoGlyphString *glyphs);
+PANGO_AVAILABLE_IN_1_10
 void pango_cairo_layout_line_path  (cairo_t          *cr,
 				    PangoLayoutLine  *line);
+PANGO_AVAILABLE_IN_1_10
 void pango_cairo_layout_path       (cairo_t          *cr,
 				    PangoLayout      *layout);
 
+PANGO_AVAILABLE_IN_1_14
 void pango_cairo_error_underline_path (cairo_t       *cr,
 				       double         x,
 				       double         y,

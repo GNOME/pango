@@ -141,18 +141,26 @@ struct _PangoGlyphString {
  */
 #define PANGO_TYPE_GLYPH_STRING (pango_glyph_string_get_type ())
 
+PANGO_AVAILABLE_IN_ALL
 PangoGlyphString *pango_glyph_string_new      (void);
+PANGO_AVAILABLE_IN_ALL
 void              pango_glyph_string_set_size (PangoGlyphString *string,
 					       gint              new_len);
+PANGO_AVAILABLE_IN_ALL
 GType             pango_glyph_string_get_type (void) G_GNUC_CONST;
+PANGO_AVAILABLE_IN_ALL
 PangoGlyphString *pango_glyph_string_copy     (PangoGlyphString *string);
+PANGO_AVAILABLE_IN_ALL
 void              pango_glyph_string_free     (PangoGlyphString *string);
+PANGO_AVAILABLE_IN_ALL
 void              pango_glyph_string_extents  (PangoGlyphString *glyphs,
 					       PangoFont        *font,
 					       PangoRectangle   *ink_rect,
 					       PangoRectangle   *logical_rect);
+PANGO_AVAILABLE_IN_1_14
 int               pango_glyph_string_get_width(PangoGlyphString *glyphs);
 
+PANGO_AVAILABLE_IN_ALL
 void              pango_glyph_string_extents_range  (PangoGlyphString *glyphs,
 						     int               start,
 						     int               end,
@@ -160,12 +168,14 @@ void              pango_glyph_string_extents_range  (PangoGlyphString *glyphs,
 						     PangoRectangle   *ink_rect,
 						     PangoRectangle   *logical_rect);
 
+PANGO_AVAILABLE_IN_ALL
 void pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
 					    const char       *text,
 					    int               length,
 					    int               embedding_level,
 					    int              *logical_widths);
 
+PANGO_AVAILABLE_IN_ALL
 void pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
 				    char             *text,
 				    int               length,
@@ -173,6 +183,7 @@ void pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
 				    int               index_,
 				    gboolean          trailing,
 				    int              *x_pos);
+PANGO_AVAILABLE_IN_ALL
 void pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 				    char             *text,
 				    int               length,
@@ -183,11 +194,13 @@ void pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 
 /* Turn a string of characters into a string of glyphs
  */
+PANGO_AVAILABLE_IN_ALL
 void pango_shape (const gchar      *text,
 		  gint              length,
 		  const PangoAnalysis *analysis,
 		  PangoGlyphString *glyphs);
 
+PANGO_AVAILABLE_IN_1_32
 void pango_shape_full (const gchar      *item_text,
 		       gint              item_length,
 		       const gchar      *paragraph_text,
@@ -195,6 +208,7 @@ void pango_shape_full (const gchar      *item_text,
 		       const PangoAnalysis *analysis,
 		       PangoGlyphString *glyphs);
 
+PANGO_AVAILABLE_IN_ALL
 GList *pango_reorder_items (GList *logical_items);
 
 G_END_DECLS

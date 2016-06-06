@@ -49,6 +49,7 @@ struct _PangoCairoFcFontClass
   PangoFcFontClass  parent_class;
 };
 
+_PANGO_EXTERN
 GType pango_cairo_fc_font_get_type (void);
 
 /********************************

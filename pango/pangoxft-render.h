@@ -95,21 +95,27 @@ struct _PangoXftRendererClass
 				int               n_glyphs);
 };
 
+PANGO_AVAILABLE_IN_1_8
 GType pango_xft_renderer_get_type    (void) G_GNUC_CONST;
 
+PANGO_AVAILABLE_IN_1_8
 PangoRenderer *pango_xft_renderer_new                 (Display          *display,
 						       int               screen);
+PANGO_AVAILABLE_IN_1_8
 void           pango_xft_renderer_set_draw            (PangoXftRenderer *xftrenderer,
 						       XftDraw          *draw);
+PANGO_AVAILABLE_IN_1_8
 void           pango_xft_renderer_set_default_color   (PangoXftRenderer *xftrenderer,
 						       PangoColor       *default_color);
 
+PANGO_AVAILABLE_IN_ALL
 void pango_xft_render             (XftDraw          *draw,
 				   XftColor         *color,
 				   PangoFont        *font,
 				   PangoGlyphString *glyphs,
 				   gint              x,
 				   gint              y);
+PANGO_AVAILABLE_IN_ALL
 void pango_xft_picture_render     (Display          *display,
 				   Picture           src_picture,
 				   Picture           dest_picture,
@@ -117,6 +123,7 @@ void pango_xft_picture_render     (Display          *display,
 				   PangoGlyphString *glyphs,
 				   gint              x,
 				   gint              y);
+PANGO_AVAILABLE_IN_1_8
 void pango_xft_render_transformed (XftDraw          *draw,
 				   XftColor         *color,
 				   PangoMatrix      *matrix,
@@ -124,11 +131,13 @@ void pango_xft_render_transformed (XftDraw          *draw,
 				   PangoGlyphString *glyphs,
 				   int               x,
 				   int               y);
+PANGO_AVAILABLE_IN_1_8
 void pango_xft_render_layout_line (XftDraw          *draw,
 				   XftColor         *color,
 				   PangoLayoutLine  *line,
 				   int               x,
 				   int               y);
+PANGO_AVAILABLE_IN_1_8
 void pango_xft_render_layout      (XftDraw          *draw,
 				   XftColor         *color,
 				   PangoLayout      *layout,

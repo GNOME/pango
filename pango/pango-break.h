@@ -135,17 +135,20 @@ struct _PangoLogAttr
 /* Determine information about cluster/word/line breaks in a string
  * of Unicode text.
  */
+PANGO_AVAILABLE_IN_ALL
 void pango_break (const gchar   *text,
 		  int            length,
 		  PangoAnalysis *analysis,
 		  PangoLogAttr  *attrs,
 		  int            attrs_len);
 
+PANGO_AVAILABLE_IN_ALL
 void pango_find_paragraph_boundary (const gchar *text,
 				    gint         length,
 				    gint        *paragraph_delimiter_index,
 				    gint        *next_paragraph_start);
 
+PANGO_AVAILABLE_IN_ALL
 void pango_get_log_attrs (const char    *text,
 			  int            length,
 			  int            level,
@@ -160,6 +163,7 @@ void pango_get_log_attrs (const char    *text,
  * instead; this function is mostly useful for chaining up
  * from a language engine override.
  */
+PANGO_AVAILABLE_IN_ALL
 void pango_default_break (const gchar   *text,
 			  int            length,
 			  PangoAnalysis *analysis,

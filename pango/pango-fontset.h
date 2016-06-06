@@ -42,6 +42,7 @@ G_BEGIN_DECLS
 #define PANGO_FONTSET(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONTSET, PangoFontset))
 #define PANGO_IS_FONTSET(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONTSET))
 
+PANGO_AVAILABLE_IN_ALL
 GType pango_fontset_get_type (void) G_GNUC_CONST;
 
 typedef struct _PangoFontset        PangoFontset;
@@ -63,9 +64,12 @@ typedef gboolean (*PangoFontsetForeachFunc) (PangoFontset  *fontset,
 					     PangoFont     *font,
 					     gpointer       user_data);
 
+PANGO_AVAILABLE_IN_ALL
 PangoFont *       pango_fontset_get_font    (PangoFontset           *fontset,
 					     guint                   wc);
+PANGO_AVAILABLE_IN_ALL
 PangoFontMetrics *pango_fontset_get_metrics (PangoFontset           *fontset);
+PANGO_AVAILABLE_IN_1_4
 void              pango_fontset_foreach     (PangoFontset           *fontset,
 					     PangoFontsetForeachFunc func,
 					     gpointer                data);
@@ -155,11 +159,15 @@ struct _PangoFontsetClass
 typedef struct _PangoFontsetSimple  PangoFontsetSimple;
 typedef struct _PangoFontsetSimpleClass  PangoFontsetSimpleClass;
 
+PANGO_AVAILABLE_IN_ALL
 GType pango_fontset_simple_get_type (void) G_GNUC_CONST;
 
+PANGO_AVAILABLE_IN_ALL
 PangoFontsetSimple * pango_fontset_simple_new    (PangoLanguage      *language);
+PANGO_AVAILABLE_IN_ALL
 void                 pango_fontset_simple_append (PangoFontsetSimple *fontset,
 						  PangoFont          *font);
+PANGO_AVAILABLE_IN_ALL
 int                  pango_fontset_simple_size   (PangoFontsetSimple *fontset);
 
 #endif /* PANGO_ENABLE_BACKEND */

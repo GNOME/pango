@@ -74,10 +74,12 @@ struct _PangoCoreTextFontClass
 
 #endif /* PANGO_ENABLE_BACKEND */
 
+PANGO_AVAILABLE_IN_1_24
 CTFontRef  pango_core_text_font_get_ctfont  (PangoCoreTextFont *font);
 
 #endif /* PANGO_ENABLE_ENGINE || PANGO_ENABLE_BACKEND */
 
+PANGO_AVAILABLE_IN_ALL
 GType      pango_core_text_font_get_type         (void) G_GNUC_CONST;
 
 G_END_DECLS

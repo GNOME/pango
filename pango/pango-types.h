@@ -25,6 +25,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pango/pango-version-macros.h>
+
 G_BEGIN_DECLS
 
 typedef struct _PangoLogAttr PangoLogAttr;
@@ -114,7 +116,9 @@ typedef guint32 PangoGlyph;
   (((d) + (PANGO_SCALE >> 1)) & ~(PANGO_SCALE - 1))
 
 
+PANGO_AVAILABLE_IN_1_16
 int    pango_units_from_double (double d) G_GNUC_CONST;
+PANGO_AVAILABLE_IN_1_16
 double pango_units_to_double (int i) G_GNUC_CONST;
 
 
@@ -184,6 +188,7 @@ struct _PangoRectangle
 #define PANGO_LBEARING(rect) ((rect).x)
 #define PANGO_RBEARING(rect) ((rect).x + (rect).width)
 
+PANGO_AVAILABLE_IN_1_16
 void pango_extents_to_pixels (PangoRectangle *inclusive,
 			      PangoRectangle *nearest);
 

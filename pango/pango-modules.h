@@ -55,19 +55,19 @@ struct _PangoIncludedModule
   PangoEngine *(*create) (const char       *id);
 };
 
-G_DEPRECATED
+PANGO_DEPRECATED_IN_1_38
 PangoMap *     pango_find_map        (PangoLanguage       *language,
 				      guint                engine_type_id,
 				      guint                render_type_id);
-G_DEPRECATED
+PANGO_DEPRECATED_IN_1_38
 PangoEngine *  pango_map_get_engine  (PangoMap            *map,
 				      PangoScript          script);
-G_DEPRECATED
+PANGO_DEPRECATED_IN_1_38
 void           pango_map_get_engines (PangoMap            *map,
 				      PangoScript          script,
 				      GSList             **exact_engines,
 				      GSList             **fallback_engines);
-G_DEPRECATED
+PANGO_DEPRECATED_IN_1_38
 void           pango_module_register (PangoIncludedModule *module);
 
 #endif /* PANGO_ENABLE_BACKEND */

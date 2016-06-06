@@ -42,11 +42,17 @@ G_BEGIN_DECLS
  **/
 typedef struct _PangoFcFontsetKey  PangoFcFontsetKey;
 
+PANGO_AVAILABLE_IN_1_24
 PangoLanguage              *pango_fc_fontset_key_get_language      (const PangoFcFontsetKey *key);
+PANGO_AVAILABLE_IN_1_24
 const PangoFontDescription *pango_fc_fontset_key_get_description   (const PangoFcFontsetKey *key);
+PANGO_AVAILABLE_IN_1_24
 const PangoMatrix          *pango_fc_fontset_key_get_matrix        (const PangoFcFontsetKey *key);
+PANGO_AVAILABLE_IN_1_24
 double                      pango_fc_fontset_key_get_absolute_size (const PangoFcFontsetKey *key);
+PANGO_AVAILABLE_IN_1_24
 double                      pango_fc_fontset_key_get_resolution    (const PangoFcFontsetKey *key);
+PANGO_AVAILABLE_IN_1_24
 gpointer                    pango_fc_fontset_key_get_context_key   (const PangoFcFontsetKey *key);
 
 /**
@@ -59,8 +65,11 @@ gpointer                    pango_fc_fontset_key_get_context_key   (const PangoF
  **/
 typedef struct _PangoFcFontKey     PangoFcFontKey;
 
+PANGO_AVAILABLE_IN_1_24
 const FcPattern   *pango_fc_font_key_get_pattern     (const PangoFcFontKey *key);
+PANGO_AVAILABLE_IN_1_24
 const PangoMatrix *pango_fc_font_key_get_matrix      (const PangoFcFontKey *key);
+PANGO_AVAILABLE_IN_1_24
 gpointer           pango_fc_font_key_get_context_key (const PangoFcFontKey *key);
 
 #endif
@@ -170,8 +179,8 @@ struct _PangoFcFontMapClass
   gboolean     (*context_key_equal)  (PangoFcFontMap             *fcfontmap,
 				      gconstpointer               key_a,
 				      gconstpointer               key_b);
-
   void         (*fontset_key_substitute)(PangoFcFontMap             *fontmap,
+
 				      PangoFcFontsetKey          *fontsetkey,
 				      FcPattern                  *pattern);
   PangoFcFont  *(*create_font)       (PangoFcFontMap             *fontmap,
@@ -186,23 +195,29 @@ struct _PangoFcFontMapClass
 };
 
 #ifndef PANGO_DISABLE_DEPRECATED
-G_DEPRECATED_FOR(pango_font_map_create_context)
+PANGO_DEPRECATED_IN_1_22_FOR(pango_font_map_create_context)
 PangoContext * pango_fc_font_map_create_context (PangoFcFontMap *fcfontmap);
 #endif
+PANGO_AVAILABLE_IN_1_4
 void           pango_fc_font_map_shutdown       (PangoFcFontMap *fcfontmap);
 
 #endif
 
+PANGO_AVAILABLE_IN_ALL
 GType pango_fc_font_map_get_type (void) G_GNUC_CONST;
 
+PANGO_AVAILABLE_IN_1_4
 void           pango_fc_font_map_cache_clear    (PangoFcFontMap *fcfontmap);
 
+PANGO_AVAILABLE_IN_1_38
 void
 pango_fc_font_map_config_changed (PangoFcFontMap *fcfontmap);
 
+PANGO_AVAILABLE_IN_1_38
 void
 pango_fc_font_map_set_config (PangoFcFontMap *fcfontmap,
 			      FcConfig       *fcconfig);
+PANGO_AVAILABLE_IN_1_38
 FcConfig *
 pango_fc_font_map_get_config (PangoFcFontMap *fcfontmap);
 
@@ -219,13 +234,16 @@ pango_fc_font_map_get_config (PangoFcFontMap *fcfontmap);
 typedef PangoFcDecoder * (*PangoFcDecoderFindFunc) (FcPattern *pattern,
 						    gpointer   user_data);
 
+PANGO_AVAILABLE_IN_1_6
 void pango_fc_font_map_add_decoder_find_func (PangoFcFontMap        *fcfontmap,
 					      PangoFcDecoderFindFunc findfunc,
 					      gpointer               user_data,
 					      GDestroyNotify         dnotify);
+PANGO_AVAILABLE_IN_1_26
 PangoFcDecoder *pango_fc_font_map_find_decoder (PangoFcFontMap *fcfontmap,
 					        FcPattern      *pattern);
 
+PANGO_AVAILABLE_IN_1_4
 PangoFontDescription *pango_fc_font_description_from_pattern (FcPattern *pattern,
 							      gboolean   include_size);
 

@@ -79,6 +79,7 @@ struct _PangoEngineClass
   GObjectClass parent_class;
 };
 
+PANGO_DEPRECATED_IN_1_38
 GType pango_engine_get_type (void) G_GNUC_CONST;
 
 /**
@@ -145,6 +146,7 @@ struct _PangoEngineLangClass
 			int            attrs_len);
 };
 
+PANGO_DEPRECATED_IN_1_38
 GType pango_engine_lang_get_type (void) G_GNUC_CONST;
 
 /**
@@ -232,6 +234,7 @@ struct _PangoEngineShapeClass
 				  gunichar          wc);
 };
 
+PANGO_DEPRECATED_IN_1_38
 GType pango_engine_shape_get_type (void) G_GNUC_CONST;
 
 typedef struct _PangoEngineInfo PangoEngineInfo;
@@ -293,7 +296,7 @@ struct _PangoEngineInfo
  *
  * Deprecated: 1.38
  **/
-G_DEPRECATED
+PANGO_DEPRECATED_IN_1_38
 void script_engine_list (PangoEngineInfo **engines,
 			 int              *n_engines);
 
@@ -306,7 +309,7 @@ void script_engine_list (PangoEngineInfo **engines,
  *
  * Deprecated: 1.38
  **/
-G_DEPRECATED
+PANGO_DEPRECATED_IN_1_38
 void script_engine_init (GTypeModule *module);
 
 
@@ -317,7 +320,7 @@ void script_engine_init (GTypeModule *module);
  *
  * Deprecated: 1.38
  **/
-G_DEPRECATED
+PANGO_DEPRECATED_IN_1_38
 void script_engine_exit (void);
 
 /**
@@ -328,7 +331,7 @@ void script_engine_exit (void);
  *
  * Deprecated: 1.38
  **/
-G_DEPRECATED
+PANGO_DEPRECATED_IN_1_38
 PangoEngine *script_engine_create (const char *id);
 
 /* Utility macro used by PANGO_ENGINE_LANG_DEFINE_TYPE and

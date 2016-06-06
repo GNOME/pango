@@ -95,11 +95,14 @@ struct _PangoFcDecoderClass
   void (*_pango_reserved4) (void);
 };
 
+PANGO_AVAILABLE_IN_1_6
 GType      pango_fc_decoder_get_type    (void) G_GNUC_CONST;
 
+PANGO_AVAILABLE_IN_1_6
 FcCharSet *pango_fc_decoder_get_charset (PangoFcDecoder *decoder,
 					 PangoFcFont    *fcfont);
 
+PANGO_AVAILABLE_IN_1_6
 PangoGlyph pango_fc_decoder_get_glyph   (PangoFcDecoder *decoder,
 					 PangoFcFont    *fcfont,
 					 guint32         wc);

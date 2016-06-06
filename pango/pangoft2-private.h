@@ -77,6 +77,7 @@ struct _PangoFT2GlyphInfo
 #define PANGO_FT2_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FT2_FONT, PangoFT2Font))
 #define PANGO_FT2_IS_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FT2_FONT))
 
+_PANGO_EXTERN
 GType pango_ft2_font_get_type (void) G_GNUC_CONST;
 
 PangoFT2Font * _pango_ft2_font_new                (PangoFT2FontMap   *ft2fontmap,
@@ -111,6 +112,7 @@ void _pango_ft2_draw_error_underline (FT_Bitmap         *bitmap,
 #define PANGO_FT2_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FT2_RENDERER, PangoFT2Renderer))
 #define PANGO_IS_FT2_RENDERER(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FT2_RENDERER))
 
+_PANGO_EXTERN
 GType pango_ft2_renderer_get_type    (void) G_GNUC_CONST;
 
 PangoRenderer *_pango_ft2_font_map_get_renderer (PangoFT2FontMap *ft2fontmap);

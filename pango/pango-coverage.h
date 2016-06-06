@@ -24,6 +24,8 @@
 
 #include <glib.h>
 
+#include <pango/pango-version-macros.h>
+
 G_BEGIN_DECLS
 
 /**
@@ -56,21 +58,30 @@ typedef enum {
   PANGO_COVERAGE_EXACT
 } PangoCoverageLevel;
 
+PANGO_AVAILABLE_IN_ALL
 PangoCoverage *    pango_coverage_new     (void);
+PANGO_AVAILABLE_IN_ALL
 PangoCoverage *    pango_coverage_ref     (PangoCoverage      *coverage);
+PANGO_AVAILABLE_IN_ALL
 void               pango_coverage_unref   (PangoCoverage      *coverage);
+PANGO_AVAILABLE_IN_ALL
 PangoCoverage *    pango_coverage_copy    (PangoCoverage      *coverage);
+PANGO_AVAILABLE_IN_ALL
 PangoCoverageLevel pango_coverage_get     (PangoCoverage      *coverage,
 					   int                 index_);
+PANGO_AVAILABLE_IN_ALL
 void               pango_coverage_set     (PangoCoverage      *coverage,
 					   int                 index_,
 					   PangoCoverageLevel  level);
+PANGO_AVAILABLE_IN_ALL
 void               pango_coverage_max     (PangoCoverage      *coverage,
 					   PangoCoverage      *other);
 
+PANGO_AVAILABLE_IN_ALL
 void           pango_coverage_to_bytes   (PangoCoverage  *coverage,
 					  guchar        **bytes,
 					  int            *n_bytes);
+PANGO_AVAILABLE_IN_ALL
 PangoCoverage *pango_coverage_from_bytes (guchar         *bytes,
 					  int             n_bytes);
 

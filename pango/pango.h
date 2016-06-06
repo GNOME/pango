@@ -44,5 +44,6 @@
 #include <pango/pango-tabs.h>
 #include <pango/pango-types.h>
 #include <pango/pango-utils.h>
+#include <pango/pango-version-macros.h>
 
 #endif /* __PANGO_H__ */

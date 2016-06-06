@@ -48,24 +48,28 @@ G_BEGIN_DECLS
 /* Calls for applications
  */
 #ifndef PANGO_DISABLE_DEPRECATED
-G_DEPRECATED_FOR(pango_font_map_create_context)
+PANGO_DEPRECATED_FOR(pango_font_map_create_context)
 PangoContext * pango_win32_get_context        (void);
 #endif
 
+PANGO_AVAILABLE_IN_ALL
 void           pango_win32_render             (HDC               hdc,
 					       PangoFont        *font,
 					       PangoGlyphString *glyphs,
 					       gint              x,
 					       gint              y);
+PANGO_AVAILABLE_IN_ALL
 void           pango_win32_render_layout_line (HDC               hdc,
 					       PangoLayoutLine  *line,
 					       int               x,
 					       int               y);
+PANGO_AVAILABLE_IN_ALL
 void           pango_win32_render_layout      (HDC               hdc,
 					       PangoLayout      *layout,
 					       int               x,
 					       int               y);
 
+PANGO_AVAILABLE_IN_ALL
 void           pango_win32_render_transformed (HDC         hdc,
 					       const PangoMatrix *matrix,
 					       PangoFont         *font,
@@ -79,20 +83,26 @@ void           pango_win32_render_transformed (HDC         hdc,
  */
 
 #ifndef PANGO_DISABLE_DEPRECATED
-G_DEPRECATED_FOR(PANGO_GET_UNKNOWN_GLYPH)
+PANGO_DEPRECATED_FOR(PANGO_GET_UNKNOWN_GLYPH)
 PangoGlyph     pango_win32_get_unknown_glyph  (PangoFont        *font,
 					       gunichar          wc);
 #endif /* PANGO_DISABLE_DEPRECATED */
+PANGO_AVAILABLE_IN_ALL
 gint	      pango_win32_font_get_glyph_index(PangoFont        *font,
 					       gunichar          wc);
 
+PANGO_AVAILABLE_IN_ALL
 HDC            pango_win32_get_dc             (void);
 
+PANGO_AVAILABLE_IN_1_2
 gboolean       pango_win32_get_debug_flag     (void);
 
+PANGO_AVAILABLE_IN_ALL
 gboolean pango_win32_font_select_font        (PangoFont *font,
 					      HDC        hdc);
+PANGO_AVAILABLE_IN_ALL
 void     pango_win32_font_done_font          (PangoFont *font);
+PANGO_AVAILABLE_IN_ALL
 double   pango_win32_font_get_metrics_factor (PangoFont *font);
 
 #endif
@@ -102,25 +112,37 @@ double   pango_win32_font_get_metrics_factor (PangoFont *font);
  */
 typedef struct _PangoWin32FontCache PangoWin32FontCache;
 
+PANGO_AVAILABLE_IN_ALL
 PangoWin32FontCache *pango_win32_font_cache_new          (void);
+PANGO_AVAILABLE_IN_ALL
 void                 pango_win32_font_cache_free         (PangoWin32FontCache *cache);
 
+PANGO_AVAILABLE_IN_ALL
 HFONT                pango_win32_font_cache_load         (PangoWin32FontCache *cache,
 							  const LOGFONTA      *logfont);
+PANGO_AVAILABLE_IN_1_16
 HFONT                pango_win32_font_cache_loadw        (PangoWin32FontCache *cache,
 							  const LOGFONTW      *logfont);
+PANGO_AVAILABLE_IN_ALL
 void                 pango_win32_font_cache_unload       (PangoWin32FontCache *cache,
 							  HFONT                hfont);
 
+PANGO_AVAILABLE_IN_ALL
 PangoFontMap        *pango_win32_font_map_for_display    (void);
+PANGO_AVAILABLE_IN_ALL
 void                 pango_win32_shutdown_display        (void);
+PANGO_AVAILABLE_IN_ALL
 PangoWin32FontCache *pango_win32_font_map_get_font_cache (PangoFontMap       *font_map);
 
+PANGO_AVAILABLE_IN_ALL
 LOGFONTA            *pango_win32_font_logfont            (PangoFont          *font);
+PANGO_AVAILABLE_IN_1_16
 LOGFONTW            *pango_win32_font_logfontw           (PangoFont          *font);
 
+PANGO_AVAILABLE_IN_1_12
 PangoFontDescription *pango_win32_font_description_from_logfont (const LOGFONTA *lfp);
 
+PANGO_AVAILABLE_IN_1_16
 PangoFontDescription *pango_win32_font_description_from_logfontw (const LOGFONTW *lfp);
 
 G_END_DECLS

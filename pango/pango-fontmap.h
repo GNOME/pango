@@ -50,19 +50,26 @@ G_BEGIN_DECLS
 
 typedef struct _PangoContext PangoContext;
 
+PANGO_AVAILABLE_IN_ALL
 GType         pango_font_map_get_type       (void) G_GNUC_CONST;
+PANGO_AVAILABLE_IN_1_22
 PangoContext * pango_font_map_create_context (PangoFontMap               *fontmap);
+PANGO_AVAILABLE_IN_ALL
 PangoFont *   pango_font_map_load_font     (PangoFontMap                 *fontmap,
 					    PangoContext                 *context,
 					    const PangoFontDescription   *desc);
+PANGO_AVAILABLE_IN_ALL
 PangoFontset *pango_font_map_load_fontset  (PangoFontMap                 *fontmap,
 					    PangoContext                 *context,
 					    const PangoFontDescription   *desc,
 					    PangoLanguage                *language);
+PANGO_AVAILABLE_IN_ALL
 void          pango_font_map_list_families (PangoFontMap                 *fontmap,
 					    PangoFontFamily            ***families,
 					    int                          *n_families);
+PANGO_AVAILABLE_IN_1_32
 guint         pango_font_map_get_serial    (PangoFontMap                 *fontmap);
+PANGO_AVAILABLE_IN_1_34
 void          pango_font_map_changed       (PangoFontMap                 *fontmap);
 
 #ifdef PANGO_ENABLE_BACKEND
@@ -158,6 +165,7 @@ struct _PangoFontMapClass
   void (*_pango_reserved2) (void);
 };
 
+PANGO_DEPRECATED_IN_1_38
 const char   *pango_font_map_get_shape_engine_type (PangoFontMap *fontmap);
 
 #endif /* PANGO_ENABLE_BACKEND */
