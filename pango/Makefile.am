@@ -97,30 +97,31 @@ libpango_1_0_la_SOURCES =			\
 	shape.c					\
 	pango-enum-types.c
 
-pango_headers =		   \
-	pango.h		   \
-	pango-attributes.h \
-	pango-bidi-type.h  \
-	pango-break.h	   \
-	pango-context.h	   \
-	pango-coverage.h   \
-	pango-engine.h	   \
-	pango-font.h       \
-	pango-fontmap.h	   \
-	pango-fontset.h    \
-	pango-glyph.h	   \
-	pango-glyph-item.h \
-	pango-gravity.h    \
-	pango-item.h	   \
-	pango-language.h   \
-	pango-layout.h	   \
-	pango-matrix.h     \
-	pango-modules.h	   \
-	pango-renderer.h   \
-	pango-script.h	   \
-	pango-tabs.h	   \
-	pango-types.h	   \
-	pango-utils.h
+pango_headers =		\
+	pango.h			\
+	pango-attributes.h	\
+	pango-bidi-type.h	\
+	pango-break.h		\
+	pango-context.h		\
+	pango-coverage.h	\
+	pango-engine.h		\
+	pango-font.h		\
+	pango-fontmap.h		\
+	pango-fontset.h		\
+	pango-glyph.h		\
+	pango-glyph-item.h	\
+	pango-gravity.h		\
+	pango-item.h		\
+	pango-language.h	\
+	pango-layout.h		\
+	pango-matrix.h		\
+	pango-modules.h		\
+	pango-renderer.h	\
+	pango-script.h		\
+	pango-tabs.h		\
+	pango-types.h		\
+	pango-utils.h		\
+	pango-version-macros.h
 
 pangoinclude_HEADERS =	   \
 	$(pango_headers)   \
