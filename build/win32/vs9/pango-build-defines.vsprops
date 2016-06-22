@@ -47,4 +47,8 @@
 		Name="PangoFT2Libs"
 		Value="fontconfig.lib freetype.lib harfbuzz.lib"
 	/>
+	<UserMacro
+		Name="PangoCairoIncs"
+		Value="$(GlibEtcInstallRoot)\include\cairo"
+	/>
 </VisualStudioPropertySheet>
