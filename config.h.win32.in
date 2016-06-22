@@ -6,9 +6,7 @@
 #define HAVE_CAIRO 1
 
 /* Whether Cairo can use FreeType for fonts */
-#ifndef PANGO_VISUALC_NO_FC
-#define HAVE_CAIRO_FREETYPE 1
-#endif
+/* HAVE_CAIRO_FREETYPE */
 
 /* Whether Cairo has PDF support */
 #define HAVE_CAIRO_PDF 1

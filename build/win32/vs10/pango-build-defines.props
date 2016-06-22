@@ -7,7 +7,7 @@
     <PangoBinaryVersion>1.8.0</PangoBinaryVersion>
     <PangoDummyPrefix>/dummy</PangoDummyPrefix>
     <PangoDefines>G_LOG_DOMAIN="Pango";PANGO_ENABLE_BACKEND;PANGO_ENABLE_ENGINE;SYSCONFDIR="$(PangoDummyPrefix)/etc";LIBDIR="$(PangoDummyPrefix)/lib"</PangoDefines>
-    <NoFCDef>PANGO_VISUALC_NO_FC</NoFCDef>
+    <CairoFTDefines>HAVE_CAIRO_FREETYPE=1</CairoFTDefines>
     <PangoFT2Incs>..;$(GlibEtcInstallRoot)\include\harfbuzz</PangoFT2Incs>
     <PangoFT2Libs>fontconfig.lib;freetype.lib;harfbuzz.lib</PangoFT2Libs>
     <PangoCairoIncs>$(GlibEtcInstallRoot)\include\cairo</PangoCairoIncs>
@@ -41,8 +41,8 @@
     <BuildMacro Include="PangoDefines">
       <Value>$(PangoDefines)</Value>
     </BuildMacro>
-    <BuildMacro Include="NoFCDef">
-      <Value>$(NoFCDef)</Value>
+    <BuildMacro Include="CairoFTDefines">
+      <Value>$(CairoFTDefines)</Value>
     </BuildMacro>
     <BuildMacro Include="PangoFT2Incs">
       <Value>$(PangoFT2Incs)</Value>

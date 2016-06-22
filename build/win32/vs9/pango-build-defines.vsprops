@@ -32,8 +32,8 @@
 		Value="G_LOG_DOMAIN=\&quot;Pango\&quot;;PANGO_ENABLE_BACKEND;PANGO_ENABLE_ENGINE;SYSCONFDIR=\&quot;$(PangoDummyPrefix)/etc\&quot;;LIBDIR=\&quot;$(PangoDummyPrefix)/lib\&quot;"
 	/>
 	<UserMacro
-		Name="NoFCDef"
-		Value="PANGO_VISUALC_NO_FC"
+		Name="CairoFTDefines"
+		Value="HAVE_CAIRO_FREETYPE=1"
 	/>
 	<UserMacro
 		Name="PangoFT2Incs"
