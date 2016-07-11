@@ -1020,6 +1020,7 @@ pango_win32_render_layout_line (HDC              hdc,
   PangoRectangle overall_rect;
   PangoRectangle logical_rect;
   PangoRectangle ink_rect;
+  int oldbkmode = SetBkMode (hdc, TRANSPARENT);
 
   int x_off = 0;
 
@@ -1145,6 +1146,8 @@ pango_win32_render_layout_line (HDC              hdc,
 
       x_off += logical_rect.width;
     }
+
+    SetBkMode (hdc, oldbkmode);
 }
 
 /**
