@@ -1029,7 +1029,6 @@ pango_win32_render_layout_line (HDC              hdc,
   while (tmp_list)
     {
       COLORREF oldfg = 0;
-      HBRUSH brush = NULL;
       HPEN uline_pen, old_pen;
       POINT points[2];
       PangoUnderline uline = PANGO_UNDERLINE_NONE;
@@ -1052,18 +1051,19 @@ pango_win32_render_layout_line (HDC              hdc,
 
       if (bg_set)
 	{
-	  HBRUSH oldbrush;
-
-	  brush = CreateSolidBrush (RGB ((bg_color.color.red + 128) >> 8,
-					 (bg_color.color.green + 128) >> 8,
-					 (bg_color.color.blue + 128) >> 8));
-	  oldbrush = SelectObject (hdc, brush);
+	  COLORREF bg_col = RGB ((bg_color.color.red) >> 8,
+				 (bg_color.color.green) >> 8,
+				 (bg_color.color.blue) >> 8);
+	  HBRUSH bg_brush = CreateSolidBrush (bg_col);
+	  HBRUSH old_brush = SelectObject (hdc, bg_brush);
+	  old_pen = SelectObject (hdc, GetStockObject (NULL_PEN));
 	  Rectangle (hdc, x + PANGO_PIXELS (x_off + logical_rect.x),
 			  y + PANGO_PIXELS (overall_rect.y),
 			  PANGO_PIXELS (logical_rect.width),
 			  PANGO_PIXELS (overall_rect.height));
-	  SelectObject (hdc, oldbrush);
-	  DeleteObject (brush);
+	  SelectObject (hdc, old_brush);
+	  DeleteObject (bg_brush);
+	  SelectObject (hdc, old_pen);
 	}
 
       if (fg_set)
