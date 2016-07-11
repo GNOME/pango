@@ -1025,7 +1025,7 @@ pango_win32_render_layout_line (HDC              hdc,
 
   while (tmp_list)
     {
-      HBRUSH oldfg = NULL;
+      COLORREF oldfg = 0;
       HBRUSH brush = NULL;
       POINT points[2];
       PangoUnderline uline = PANGO_UNDERLINE_NONE;
@@ -1062,14 +1062,17 @@ pango_win32_render_layout_line (HDC              hdc,
 
       if (fg_set)
 	{
-	  brush = CreateSolidBrush (RGB ((fg_color.color.red + 128) >> 8,
-					 (fg_color.color.green + 128) >> 8,
-					 (fg_color.color.blue + 128) >> 8));
-	  oldfg = SelectObject (hdc, brush);
+	  COLORREF fg_col = RGB ((fg_color.color.red) >> 8,
+				 (fg_color.color.green) >> 8,
+				 (fg_color.color.blue) >> 8);
+	  oldfg = SetTextColor (hdc, fg_col);
 	}
 
       pango_win32_render (hdc, run->item->analysis.font, run->glyphs,
 			  x + PANGO_PIXELS (x_off), y);
+
+      if (fg_set)
+	SetTextColor (hdc, oldfg);
 
       switch (uline)
 	{
@@ -1120,11 +1123,6 @@ pango_win32_render_layout_line (HDC              hdc,
 	  break;
 	}
 
-      if (fg_set)
-	{
-	  SelectObject (hdc, oldfg);
-	  DeleteObject (brush);
-	}
 
       x_off += logical_rect.width;
     }
