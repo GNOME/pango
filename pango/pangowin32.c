@@ -1059,8 +1059,8 @@ pango_win32_render_layout_line (HDC              hdc,
 	  old_pen = SelectObject (hdc, GetStockObject (NULL_PEN));
 	  Rectangle (hdc, x + PANGO_PIXELS (x_off + logical_rect.x),
 			  y + PANGO_PIXELS (overall_rect.y),
-			  PANGO_PIXELS (logical_rect.width),
-			  PANGO_PIXELS (overall_rect.height));
+			  1 + x + PANGO_PIXELS (x_off + logical_rect.x + logical_rect.width),
+			  1 + y + PANGO_PIXELS (overall_rect.y + overall_rect.height));
 	  SelectObject (hdc, old_brush);
 	  DeleteObject (bg_brush);
 	  SelectObject (hdc, old_pen);
