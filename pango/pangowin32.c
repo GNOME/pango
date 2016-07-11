@@ -1001,7 +1001,7 @@ pango_win32_get_unknown_glyph (PangoFont *font,
 
 /**
  * pango_win32_render_layout_line:
- * @hdc:       DC to use for uncolored drawing
+ * @hdc:       DC to use for drawing
  * @line:      a #PangoLayoutLine
  * @x:         the x position of start of string (in pixels)
  * @y:         the y position of baseline (in pixels)
@@ -1152,7 +1152,7 @@ pango_win32_render_layout_line (HDC              hdc,
 
 /**
  * pango_win32_render_layout:
- * @hdc:       HDC to use for uncolored drawing
+ * @hdc:       HDC to use for drawing
  * @layout:    a #PangoLayout
  * @x:         the X position of the left of the layout (in pixels)
  * @y:         the Y position of the top of the layout (in pixels)
