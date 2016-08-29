@@ -1935,7 +1935,9 @@ break_script (const char          *item_text,
 typedef PangoEngineLang      PangoLanguageEngine;
 typedef PangoEngineLangClass PangoLanguageEngineClass;
 static GType pango_language_engine_get_type (void) G_GNUC_CONST;
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 G_DEFINE_TYPE (PangoLanguageEngine, pango_language_engine, PANGO_TYPE_ENGINE_LANG);
+G_GNUC_END_IGNORE_DEPRECATIONS
 static void
 _pango_language_engine_break (PangoEngineLang *engine G_GNUC_UNUSED,
 			      const char      *item_text,

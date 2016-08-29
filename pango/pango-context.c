@@ -1433,9 +1433,11 @@ itemize_state_process_run (ItemizeState *state)
 
 	  if (!g_object_get_data (G_OBJECT (fontmap), script_name))
 	    {
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 	      g_warning ("failed to choose a font, expect ugly output. engine-type='%s', script='%s'",
 			 pango_font_map_get_shape_engine_type (fontmap),
 			 script_name);
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 	      g_object_set_data_full (G_OBJECT (fontmap), script_name,
 				      GINT_TO_POINTER (1), NULL);

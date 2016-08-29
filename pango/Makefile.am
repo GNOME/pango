@@ -94,6 +94,7 @@ libpango_1_0_la_SOURCES =			\
 	pango-script-private.h			\
 	pango-tabs.c				\
 	pango-utils.c				\
+	pango-utils-internal.h			\
 	reorder-items.c				\
 	shape.c					\
 	pango-enum-types.c

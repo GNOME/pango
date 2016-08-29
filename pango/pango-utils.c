@@ -47,6 +47,7 @@
 #include "pango-font.h"
 #include "pango-features.h"
 #include "pango-impl-utils.h"
+#include "pango-utils-internal.h"
 
 #include <glib/gstdio.h>
 
@@ -165,6 +166,12 @@ pango_version_check (int required_major,
 char *
 pango_trim_string (const char *str)
 {
+  return _pango_trim_string (str);
+}
+
+char *
+_pango_trim_string (const char *str)
+{
   int len;
 
   g_return_val_if_fail (str != NULL, NULL);
@@ -202,7 +209,7 @@ pango_split_file_list (const char *str)
 
   while (files[i])
     {
-      char *file = pango_trim_string (files[i]);
+      char *file = _pango_trim_string (files[i]);
 
       /* If the resulting file is empty, skip it */
       if (file[0] == '\0')
@@ -531,6 +538,12 @@ pango_scan_string (const char **pos, GString *out)
 gboolean
 pango_scan_int (const char **pos, int *out)
 {
+  return _pango_scan_int (pos, out);
+}
+
+gboolean
+_pango_scan_int (const char **pos, int *out)
+{
   char *end;
   long temp;
 
@@ -552,7 +565,6 @@ pango_scan_int (const char **pos, int *out)
 
   return TRUE;
 }
-
 
 /**
  * pango_config_key_get_system:
@@ -700,6 +712,16 @@ pango_parse_enum (GType       type,
 		  int        *value,
 		  gboolean    warn,
 		  char      **possible_values)
+{
+  return _pango_parse_enum (type, str, value, warn, possible_values);
+}
+
+gboolean
+_pango_parse_enum (GType       type,
+		   const char *str,
+ 		   int        *value,
+		   gboolean    warn,
+		   char      **possible_values)
 {
   GEnumClass *class = NULL;
   gboolean ret = TRUE;

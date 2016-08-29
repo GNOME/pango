@@ -28,6 +28,7 @@
 #include "pango-font.h"
 #include "pango-enum-types.h"
 #include "pango-impl-utils.h"
+#include "pango-utils-internal.h"
 
 /* FIXME */
 #define _(x) x
@@ -952,7 +953,7 @@ span_parse_int (const char *attr_name,
 {
   const char *end = attr_val;
 
-  if (!pango_scan_int (&end, val) || *end != '\0')
+  if (!_pango_scan_int (&end, val) || *end != '\0')
     {
       g_set_error (error,
 		   G_MARKUP_ERROR,
@@ -1037,7 +1038,7 @@ span_parse_alpha (const char  *attr_name,
   const char *end = attr_val;
   int int_val;
 
-  if (pango_scan_int (&end, &int_val))
+  if (_pango_scan_int (&end, &int_val))
     {
       if (*end == '\0' && int_val > 0 && int_val <= 0xffff)
         {
@@ -1087,7 +1088,7 @@ span_parse_enum (const char *attr_name,
 {
   char *possible_values = NULL;
 
-  if (!pango_parse_enum (type, attr_val, val, FALSE, &possible_values))
+  if (!_pango_parse_enum (type, attr_val, val, FALSE, &possible_values))
     {
       g_set_error (error,
 		   G_MARKUP_ERROR,
@@ -1261,7 +1262,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	  const char *end;
 	  gint n;
 
-	  if ((end = size, !pango_scan_int (&end, &n)) || *end != '\0' || n < 0)
+	  if ((end = size, !_pango_scan_int (&end, &n)) || *end != '\0' || n < 0)
 	    {
 	      g_set_error (error,
 			   G_MARKUP_ERROR,

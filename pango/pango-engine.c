@@ -83,8 +83,9 @@ pango_engine_class_init (PangoEngineClass *klass)
 {
 }
 
-
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 G_DEFINE_ABSTRACT_TYPE (PangoEngineLang, pango_engine_lang, PANGO_TYPE_ENGINE);
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 static void
 pango_engine_lang_init (PangoEngineLang *self)
@@ -111,8 +112,9 @@ pango_engine_shape_real_covers (PangoEngineShape *engine G_GNUC_UNUSED,
   return result;
 }
 
-
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 G_DEFINE_ABSTRACT_TYPE (PangoEngineShape, pango_engine_shape, PANGO_TYPE_ENGINE);
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 static void
 pango_engine_shape_init (PangoEngineShape *klass)
@@ -231,7 +233,9 @@ fallback_engine_covers (PangoEngineShape *engine G_GNUC_UNUSED,
 
 static GType pango_fallback_engine_get_type (void);
 
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 G_DEFINE_TYPE (PangoFallbackEngine, pango_fallback_engine, PANGO_TYPE_ENGINE_SHAPE);
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 static void
 pango_fallback_engine_init (PangoFallbackEngine *self)

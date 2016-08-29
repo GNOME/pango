@@ -358,11 +358,13 @@ parse_enum (GType       type,
   char *possible_values = NULL;
   gboolean ret;
 
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
   ret = pango_parse_enum (type,
 			  arg,
 			  value,
 			  FALSE,
 			  &possible_values);
+G_GNUC_END_IGNORE_DEPRECATIONS
 
   if (!ret && error)
     {
