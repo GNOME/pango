@@ -1,3 +1,10 @@
+Overview of changes between 1.40.1 and 1.40.2
+=============================================
+- Improve introspection builds in msvc (#764984)
+- Properly handle UTF32 chars in coretext
+- Add rebeccapurple to list of colors
+- Correct font weight mapping in coretext (#766148)
+- Use version macros for exports (#767587)
 Overview of changes between 1.40.0 and 1.40.1
 =============================================
 - Use $PKG_CONFIG consistently (#764191)
