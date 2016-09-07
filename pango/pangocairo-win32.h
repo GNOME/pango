@@ -42,6 +42,7 @@ struct _PangoCairoWin32FontMap
   double dpi;
 };
 
+PANGO_AVAILABLE_IN_ALL
 GType pango_cairo_win32_font_map_get_type (void) G_GNUC_CONST;
 
 PangoFont *_pango_cairo_win32_font_new (PangoCairoWin32FontMap       *cwfontmap,
