@@ -110,8 +110,8 @@ typedef struct
     PangoWeight pango_weight;
 } PangoCTWeight;
 
-const float ct_weight_min = -0.7f;
-const float ct_weight_max = 0.8f;
+#define ct_weight_min -0.7f
+#define ct_weight_max  0.8f
 
 /* This map is based on empirical data from analyzing a large collection of
  * fonts and comparing the opentype value with the value that OSX returns.
