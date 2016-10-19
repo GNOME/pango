@@ -31,6 +31,9 @@ EXTRA_DIST =	\
 	$(GENERATED_ITEMS)
 
 pango-install.props: $(top_srcdir)/build/win32/vs10/pango-install.propsin pango.vs10.headers
+	-$(RM) $(top_builddir)/build/win32/vs11/pango-install.props
+	-$(RM) $(top_builddir)/build/win32/vs12/pango-install.props
+	-$(RM) $(top_builddir)/build/win32/vs14/pango-install.props
 	$(CPP) -P - <$(top_srcdir)/build/win32/vs10/pango-install.propsin >$@
 	rm pango.vs10.headers
 
