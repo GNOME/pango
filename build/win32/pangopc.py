@@ -23,7 +23,8 @@ def main(argv):
                               const=1,
                               help='Create .pc for PangoFT2')
     base_pc.setup(argv, pango_parser)
-    base_pkg_replace_items = {'@PANGO_API_VERSION@': '1.0'}
+    base_pkg_replace_items = {'@PANGO_API_VERSION@': '1.0',
+                              '-lm': ''}
 
     base_pkg_replace_items.update(base_pc.base_replace_items)
 
