@@ -8,7 +8,7 @@
 # Change or pass in or set the following to suit your environment
 
 !if "$(PREFIX)" == ""
-PREFIX = ..\..\..\vs$(VSVER)\$(PLAT)
+PREFIX = ..\..\vs$(VSVER)\$(PLAT)
 !endif
 
 !if ![setlocal]		&& \
