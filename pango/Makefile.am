@@ -490,7 +490,7 @@ pangoft2_EXCLUDES = dummy
 pangocairo_FILES = $(pangocairo_core_sources)
 pangocairo_EXCLUDES = dummy
 
-include $(top_srcdir)/build/Makefile.msvcproj
+include $(top_srcdir)/win32/Makefile.msvcproj
 
 if HAVE_INTROSPECTION
 # Introspection Items for MSVC
@@ -502,17 +502,17 @@ BASE_MSVC_GIR_CFLAGS =			\
 	-DPANGO_ENABLE_ENGINE
 
 INTROSPECTION_INTERMEDIATE_ITEMS = \
-	$(top_builddir)/build/win32/Pango-1.0.gir.msvc.introspect		\
-	$(top_builddir)/build/win32/Pango_1_0_gir_list			\
-	$(top_builddir)/build/win32/PangoCairo-1.0.gir.msvc.introspect	\
-	$(top_builddir)/build/win32/PangoCairo_1_0_gir_list
+	$(top_builddir)/win32/Pango-1.0.gir.msvc.introspect		\
+	$(top_builddir)/win32/Pango_1_0_gir_list			\
+	$(top_builddir)/win32/PangoCairo-1.0.gir.msvc.introspect	\
+	$(top_builddir)/win32/PangoCairo_1_0_gir_list
 
 Pango_1_0_gir_MSVC_FILES = $(Pango_1_0_gir_FILES)
 Pango_1_0_gir_MSVC_PACKAGES = gobject-2.0 cairo glib-2.0
 Pango_1_0_gir_MSVC_EXPORT_PACKAGES = $(Pango_1_0_gir_EXPORT_PACKAGES)
 Pango_1_0_gir_MSVC_INCLUDE_GIRS = $(Pango_1_0_gir_INCLUDES)
 Pango_1_0_gir_MSVC_LIBS = pango-1.0
-Pango_1_0_gir_MSVC_CFLAGS = -I../.. $(BASE_MSVC_GIR_CFLAGS)
+Pango_1_0_gir_MSVC_CFLAGS = -I.. $(BASE_MSVC_GIR_CFLAGS)
 Pango_1_0_gir_MSVC_SCANNERFLAGS = $(Pango_1_0_gir_SCANNERFLAGS)
 
 pangocairo_msvc_introspection_files =	\
@@ -531,17 +531,17 @@ PangoCairo_1_0_gir_MSVC_LIBS = $(Pango_1_0_gir_MSVC_LIBS) pangocairo-1.0
 PangoCairo_1_0_gir_MSVC_CFLAGS = $(Pango_1_0_gir_MSVC_CFLAGS)
 PangoCairo_1_0_gir_MSVC_SCANNERFLAGS = --include-uninstalled=./Pango-1.0.gir --c-include "pango/pangocairo.h"
 
-include $(top_srcdir)/build/Makefile.msvc-introspection
+include $(top_srcdir)/win32/Makefile.msvc-introspection
 else
 INTROSPECTION_INTERMEDIATE_ITEMS =
 endif
 
 dist-hook: \
-	$(top_builddir)/build/win32/vs9/pango.vcproj		\
-	$(top_builddir)/build/win32/vs9/pangowin32.vcproj	\
-	$(top_builddir)/build/win32/vs9/pangoft2.vcproj		\
-	$(top_builddir)/build/win32/vs9/pangocairo.vcproj	\
-	$(top_builddir)/build/win32/vs9/pango.headers		\
+	$(top_builddir)/win32/vs9/pango.vcproj		\
+	$(top_builddir)/win32/vs9/pangowin32.vcproj	\
+	$(top_builddir)/win32/vs9/pangoft2.vcproj		\
+	$(top_builddir)/win32/vs9/pangocairo.vcproj	\
+	$(top_builddir)/win32/vs9/pango.headers		\
 	$(INTROSPECTION_INTERMEDIATE_ITEMS)
 
 -include $(top_srcdir)/git.mk

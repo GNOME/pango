@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="pangoversionpathsprops"
+	>
+	<UserMacro
+		Name="VSVer"
+		Value="9"
+	/>
+	<UserMacro
+		Name="PangoMajorVersion"
+		Value="@PANGO_VERSION_MAJOR@"
+	/>
+	<UserMacro
+		Name="PangoMinorVersion"
+		Value="@PANGO_VERSION_MINOR@"
+	/>
+	<UserMacro
+		Name="PangoMicroVersion"
+		Value="@PANGO_VERSION_MICRO@"
+	/>
+	<UserMacro
+		Name="ApiVersion"
+		Value="1.0"
+	/>
+	<UserMacro
+		Name="GlibEtcInstallRoot"
+		Value="$(SolutionDir)\..\..\..\vs$(VSVer)\$(PlatformName)"
+	/>
+	<UserMacro
+		Name="CopyDir"
+		Value="$(GlibEtcInstallRoot)"
+	/>
+	<UserMacro
+		Name="PangoLibtoolCompatibleDllPrefix"
+		Value="lib"
+	/>
+	<UserMacro
+		Name="PangoLibtoolCompatibleDllSuffix"
+		Value="-$(ApiVersion)-0"
+	/>
+	<UserMacro
+		Name="PangoSeparateVSDllPrefix"
+		Value=""
+	/>
+	<UserMacro
+		Name="PangoSeparateVSDllSuffix"
+		Value="-1-vs$(VSVer)"
+	/>
+	<!-- Change these two to PangoLibtoolCompatibleDllPrefix and
+	PangoLibtoolCompatibleDllSuffix if that is what you want -->
+	<UserMacro
+		Name="PangoDllPrefix"
+		Value="$(PangoSeparateVSDllPrefix)"
+	/>
+	<UserMacro
+		Name="PangoDllSuffix"
+		Value="$(PangoSeparateVSDllSuffix)"
+	/>
+	<UserMacro
+		Name="PythonPath"
+		Value="c:\python27"
+	/>
+	<UserMacro
+		Name="PythonPathX64"
+		Value="$(PythonPath).x64"
+	/>
+</VisualStudioPropertySheet>
