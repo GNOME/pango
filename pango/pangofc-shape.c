@@ -393,11 +393,7 @@ _pango_fc_shape (PangoFont           *font,
 		    len = -1;
 
 		  if (hb_feature_from_string (feat, len, &features[num_features]))
-		  {
 		    num_features++;
-		    features[num_features].start = 0;
-		    features[num_features].end = -1;
-		  }
 
 		  if (end == NULL)
 		    break;
