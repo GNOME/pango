@@ -588,6 +588,7 @@ pango_fc_font_get_metrics (PangoFont     *font,
 	PangoRectangle extents;
 	const char *sample_str = pango_language_get_sample_string (language);
 	PangoFontDescription *desc = pango_font_describe_with_absolute_size (font);
+	gulong sample_str_width;
 
         layout = pango_layout_new (context);
 	pango_layout_set_font_description (layout, desc);
@@ -596,7 +597,9 @@ pango_fc_font_get_metrics (PangoFont     *font,
 	pango_layout_set_text (layout, sample_str, -1);
 	pango_layout_get_extents (layout, NULL, &extents);
 
-	info->metrics->approximate_char_width = extents.width / pango_utf8_strwidth (sample_str);
+	sample_str_width = pango_utf8_strwidth (sample_str);
+	g_assert (sample_str_width > 0);
+	info->metrics->approximate_char_width = extents.width / sample_str_width;
 
 	pango_layout_set_text (layout, "0123456789", -1);
 	info->metrics->approximate_digit_width = max_glyph_width (layout);

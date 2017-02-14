@@ -1635,6 +1635,10 @@ update_metrics_from_items (PangoFontMetrics *metrics,
   GHashTable *fonts_seen = g_hash_table_new (NULL, NULL);
   PangoGlyphString *glyphs = pango_glyph_string_new ();
   GList *l;
+  glong text_width;
+
+  /* This should typically be called with a sample text string. */
+  g_return_if_fail (text_len > 0);
 
   metrics->approximate_char_width = 0;
 
@@ -1663,7 +1667,9 @@ update_metrics_from_items (PangoFontMetrics *metrics,
   pango_glyph_string_free (glyphs);
   g_hash_table_destroy (fonts_seen);
 
-  metrics->approximate_char_width /= pango_utf8_strwidth (text);
+  text_width = pango_utf8_strwidth (text);
+  g_assert (text_width > 0);
+  metrics->approximate_char_width /= text_width;
 }
 
 /**

@@ -249,6 +249,7 @@ _pango_cairo_font_get_metrics (PangoFont     *font,
       cairo_matrix_t cairo_matrix;
       PangoMatrix pango_matrix;
       PangoMatrix identity = PANGO_MATRIX_INIT;
+      glong sample_str_width;
 
       int height, shift;
 
@@ -311,7 +312,9 @@ _pango_cairo_font_get_metrics (PangoFont     *font,
       pango_layout_set_text (layout, sample_str, -1);
       pango_layout_get_extents (layout, NULL, &extents);
 
-      info->metrics->approximate_char_width = extents.width / pango_utf8_strwidth (sample_str);
+      sample_str_width = pango_utf8_strwidth (sample_str);
+      g_assert (sample_str_width > 0);
+      info->metrics->approximate_char_width = extents.width / sample_str_width;
 
       pango_layout_set_text (layout, "0123456789", -1);
       info->metrics->approximate_digit_width = max_glyph_width (layout);
