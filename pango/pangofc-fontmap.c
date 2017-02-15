@@ -2347,7 +2347,7 @@ pango_fc_face_describe (PangoFontFace *face)
   FcConfigSubstitute (NULL, match_pattern, FcMatchPattern);
   FcDefaultSubstitute (match_pattern);
 
-  if (fcface->family && fcface->family->fontmap)
+  if (fcface->family->fontmap)
     config = fcface->family->fontmap->priv->config;
 
   result_pattern = FcFontMatch (config, match_pattern, &res);

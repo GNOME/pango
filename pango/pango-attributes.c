@@ -1339,9 +1339,6 @@ pango_attr_list_insert_internal (PangoAttrList  *list,
 	      else
 		list->attributes = link;
 
-	      if (!tmp_list)
-		list->attributes_tail = link;
-
 	      break;
 	    }
 
