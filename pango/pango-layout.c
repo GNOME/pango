@@ -2144,7 +2144,11 @@ pango_layout_index_to_pos (PangoLayout    *layout,
 	    {
 	      /* index is in the paragraph delimiters, move to
 	       * end of previous line
+	       *
+	       * This shouldn’t occur in the first loop iteration as the first
+	       * line’s start_index should always be 0.
 	       */
+	      g_assert (layout_line != NULL);
 	      index = layout_line->start_index + layout_line->length;
 	      break;
 	    }
