@@ -52,7 +52,7 @@ pango_find_map (PangoLanguage *language G_GNUC_UNUSED,
 }
 
 /**
- * pango_map_get_engine:
+ * pango_map_get_engine: (skip)
  * @map: a #PangoMap
  * @script: a #PangoScript
  *
@@ -70,7 +70,7 @@ pango_map_get_engine (PangoMap   *map G_GNUC_UNUSED,
 }
 
 /**
- * pango_map_get_engines:
+ * pango_map_get_engines: (skip)
  * @map: a #PangoMap
  * @script: a #PangoScript
  * @exact_engines: location to store list of engines that exactly
