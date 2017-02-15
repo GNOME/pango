@@ -24,6 +24,5 @@ MSVC_BASE_VER = 10
 MSVC_BASE_VER_LONG = 2010
 MSVC_VER = 14
 MSVC_VER_LONG = 14
-MSVC_FORMAT_VER = 12
 
 include $(top_srcdir)/win32/Makefile-newvs.am

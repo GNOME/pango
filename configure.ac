@@ -594,6 +594,10 @@ AC_SUBST(PANGO_HIDDEN_VISIBILITY_CFLAGS)
 AC_HEADER_DIRENT
 AC_CHECK_HEADERS(unistd.h)
 
+# Check whether MSVC toolset is explicitly set
+AM_CONDITIONAL(MSVC_BASE_NO_TOOLSET_SET, [test x$MSVC_BASE_TOOLSET = x])
+AM_CONDITIONAL(MSVC_NO_TOOLSET_SET, [test x$MSVC_TOOLSET = x])
+
 # Honor aclocal flags
 ACLOCAL="$ACLOCAL $ACLOCAL_FLAGS"
 dnl ===========================================================================
@@ -653,6 +657,7 @@ win32/vs10/pango-version-paths.props
 win32/vs11/Makefile
 win32/vs12/Makefile
 win32/vs14/Makefile
+win32/vs15/Makefile
 pango.pc
 pangowin32.pc
 pangoft2.pc
