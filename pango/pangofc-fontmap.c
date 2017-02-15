@@ -1831,7 +1831,7 @@ pango_fc_font_map_config_changed (PangoFcFontMap *fcfontmap)
 /**
  * pango_fc_font_map_set_config:
  * @fcfontmap: a #PangoFcFontMap
- * @fcconfig: (nullable) a #FcConfig, or %NULL
+ * @fcconfig: (nullable): a #FcConfig, or %NULL
  *
  * Set the FcConfig for this font map to use.  The default value
  * is %NULL, which causes Fontconfig to use its global "current config".

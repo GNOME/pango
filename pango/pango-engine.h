@@ -169,7 +169,7 @@ GType pango_engine_lang_get_type (void) G_GNUC_CONST;
 typedef struct _PangoEngineShapeClass PangoEngineShapeClass;
 
 /**
- * PangoEngineShape
+ * PangoEngineShape:
  *
  * The #PangoEngineShape class is implemented by engines that
  * customize the rendering-system dependent part of the
@@ -241,7 +241,7 @@ typedef struct _PangoEngineInfo PangoEngineInfo;
 typedef struct _PangoEngineScriptInfo PangoEngineScriptInfo;
 
 /**
- * PangoEngineScriptInfo
+ * PangoEngineScriptInfo:
  * @script: a #PangoScript. The value %PANGO_SCRIPT_COMMON has
  * the special meaning here of "all scripts"
  * @langs: a semicolon separated list of languages that this
