@@ -253,7 +253,8 @@ pango_ft2_font_map_set_resolution (PangoFT2FontMap *fontmap,
  *
  * Create a #PangoContext for the given fontmap.
  *
- * Return value: the newly created context; free with g_object_unref().
+ * Return value: (transfer full): the newly created context; free with
+ *     g_object_unref().
  *
  * Since: 1.2
  *
@@ -276,7 +277,7 @@ pango_ft2_font_map_create_context (PangoFT2FontMap *fontmap)
  * (see pango_ft2_font_map_for_display()) and sets the resolution
  * for the default fontmap to @dpi_x by @dpi_y.
  *
- * Return value: the new #PangoContext
+ * Return value: (transfer full): the new #PangoContext
  *
  * Deprecated: 1.22: Use pango_font_map_create_context() instead.
  **/
@@ -302,7 +303,7 @@ G_GNUC_END_IGNORE_DEPRECATIONS
  * global PangoFT2 fontmap is deprecated; use pango_ft2_font_map_new()
  * instead.
  *
- * Return value: a #PangoFT2FontMap.
+ * Return value: (transfer none): a #PangoFT2FontMap.
  **/
 PangoFontMap *
 pango_ft2_font_map_for_display (void)

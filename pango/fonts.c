@@ -1549,7 +1549,7 @@ pango_font_get_coverage (PangoFont     *font,
  * Finds the best matching shaper for a font for a particular
  * language tag and character point.
  *
- * Return value: the best matching shaper.
+ * Return value: (transfer none): the best matching shaper.
  **/
 PangoEngineShape *
 pango_font_find_shaper (PangoFont     *font,
