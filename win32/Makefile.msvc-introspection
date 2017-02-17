@@ -2,7 +2,7 @@
 # Common autotools file for constructing the g-ir-scanner and
 # g-ir-compiler command lines for Visual Studio builds.
 
-# This is copied from the gobject-introspection
+# This is copied from $(srcroot)/win32 from the gobject-introspection
 # project, which may be included in projects that support both
 # Visual Studio builds and introspection.
 
@@ -18,7 +18,7 @@
 #    is required unless --headers-only is specified in
 #    YourLib_1_0_gir__MSVC_SCANNERFLAGS)
 #
-#   include $(top_srcdir)/Makefile.msvc-introspection
+#   include <this Makefile.msvc-introspection>
 #   MSVC_INTROSPECT_GIRS = YourLib-1.0.gir
 #   YourLib_1_0_gir_NAMESPACE = YourLib # This is optional
 #   YourLib_1_0_gir_VERSION = 1.0 # This is optional
@@ -27,7 +27,9 @@
 #   YourLib_1_0_gir_MSVC_PROGRAM = YourProgram
 #   YourLib_1_0_gir_MSVC_PACKAGES = (Dependent .pc files)
 #   YourLib_1_0_gir_MSVC_INCLUDE_GIRS = (Dependent external .gir's)
-#   YourLiv_1_0_gir_MSVC_EXPORT_PACKAGES = (Packages exported by this .gir)
+#   YourLib_1_0_gir_MSVC_EXPORT_PACKAGES = (Packages exported by this .gir)
+#   YourLib_1_0_gir_MSVC_C_INCLUDES = (List of public C headers which need to be included by
+#                                      consumers at compile time to make use of the API)
 
 # Private functions
 
@@ -63,6 +65,7 @@ _gir_libraries_msvc = $(foreach lib,$($(_gir_name)_MSVC_LIBS),--library=$(lib))
 _gir_packages_msvc = $(foreach pkg,$($(_gir_name)_MSVC_PACKAGES),--pkg=$(pkg))
 _gir_includes_msvc = $(foreach include,$($(_gir_name)_MSVC_INCLUDE_GIRS),--include=$(include))
 _gir_export_packages_msvc = $(foreach pkg,$($(_gir_name)_MSVC_EXPORT_PACKAGES),--pkg-export=$(pkg))
+_gir_c_includes_msvc = $(foreach include,$($(_gir_name)_MSVC_C_INCLUDES),--c-include=$(include))
 
 #
 # Create NMake Makefile Sections for Building Introspection files
@@ -104,6 +107,7 @@ $(top_builddir)/win32/$(1).msvc.introspect:
 	echo '	--add-include-path=$$$$(G_IR_INCLUDEDIR)	\'>>$(top_builddir)/win32/$(1).msvc.introspect
 	echo '	'$(_gir_includes_msvc)'	\'>>$(top_builddir)/win32/$(1).msvc.introspect
 	echo '	'$(_gir_export_packages_msvc)'	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+	echo '  '$(_gir_c_includes_msvc)'	\'>>$(top_builddir)/win32/$(1).msvc.introspect
 	echo '	--cflags-begin	\'>>$(top_builddir)/win32/$(1).msvc.introspect
 	echo '	'$($(_gir_name)_MSVC_CFLAGS)'	\'>>$(top_builddir)/win32/$(1).msvc.introspect
 	echo '	--cflags-end	\'>>$(top_builddir)/win32/$(1).msvc.introspect
