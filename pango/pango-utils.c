@@ -338,11 +338,12 @@ pango_read_line (FILE *stream, GString *str)
 	      if (!comment)
 		quoted = TRUE;
 	      break;
+	    case '\r':
 	    case '\n':
 	      {
 		int next_c = getc_unlocked (stream);
 
-		if (!(c == EOF ||
+		if (!(next_c == EOF ||
 		      (c == '\r' && next_c == '\n') ||
 		      (c == '\n' && next_c == '\r')))
 		  ungetc (next_c, stream);
