@@ -2820,8 +2820,8 @@ pango_layout_get_pixel_extents (PangoLayout *layout,
 /**
  * pango_layout_get_size:
  * @layout: a #PangoLayout
- * @width: (out caller-allocates) (allow-none): location to store the logical width, or %NULL
- * @height: (out caller-allocates) (allow-none): location to store the logical height, or %NULL
+ * @width: (out) (allow-none): location to store the logical width, or %NULL
+ * @height: (out) (allow-none): location to store the logical height, or %NULL
  *
  * Determines the logical width and height of a #PangoLayout
  * in Pango units (device units scaled by %PANGO_SCALE). This
