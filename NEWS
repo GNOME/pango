@@ -1,3 +1,8 @@
+Overview of changes between 1.40.3 and 1.40.4
+=============================================
+- Fix some Coverity findings (#778601, #778602, #778654, #778656)
+- Fix introspection annotation of pango_lkayout_get_size (#779232)
+
 Overview of changes between 1.40.2 and 1.40.3
 =============================================
 - Fix export of pango_cairo_win32_font_map_get_type (#771004)
