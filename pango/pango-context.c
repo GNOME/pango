@@ -865,6 +865,7 @@ width_iter_iswide (gunichar ch)
 static void
 width_iter_next(PangoWidthIter* iter)
 {
+  gboolean met_joiner = FALSE;
   iter->start = iter->end;
 
   if (iter->end < iter->text_end)
@@ -876,6 +877,32 @@ width_iter_next(PangoWidthIter* iter)
   while (iter->end < iter->text_end)
     {
       gunichar ch = g_utf8_get_char (iter->end);
+
+      /* for zero width joiner */
+      if (ch == 0x200D)
+        {
+          iter->end = g_utf8_next_char (iter->end);
+          met_joiner = TRUE;
+          continue;
+        }
+
+      /* ignore the wide check if met joiner */
+      if (met_joiner)
+        {
+          iter->end = g_utf8_next_char (iter->end);
+          met_joiner = FALSE;
+          continue;
+        }
+
+      /* for variation selector, tag and emoji modifier. */
+      if (G_UNLIKELY(ch == 0xFE0EU || ch == 0xFE0FU
+                    || (ch >= 0xE0020 && ch <= 0xE007F)
+                    || (ch >= 0x1F3FB && ch <= 0x1F3FF)))
+        {
+          iter->end = g_utf8_next_char (iter->end);
+          continue;
+        }
+
       if (width_iter_iswide (ch) != iter->wide)
         break;
       iter->end = g_utf8_next_char (iter->end);
