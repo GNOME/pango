@@ -5194,7 +5194,7 @@ justify_clusters (PangoLayoutLine *line,
     {
       gboolean leftedge = TRUE;
       PangoGlyphString *rightmost_glyphs = NULL;
-      int rightmost_space;
+      int rightmost_space = 0;
       int residual = 0;
 
       added_so_far = 0;
