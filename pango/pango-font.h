@@ -609,9 +609,9 @@ struct _PangoFontClass
 
   PangoFontDescription *(*describe)           (PangoFont      *font);
   PangoCoverage *       (*get_coverage)       (PangoFont      *font,
-					       PangoLanguage  *lang);
+					       PangoLanguage  *language);
   PangoEngineShape *    (*find_shaper)        (PangoFont      *font,
-					       PangoLanguage  *lang,
+					       PangoLanguage  *language,
 					       guint32         ch);
   void                  (*get_glyph_extents)  (PangoFont      *font,
 					       PangoGlyph      glyph,
