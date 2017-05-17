@@ -28,16 +28,20 @@
 
 G_BEGIN_DECLS
 
-gboolean _pango_scan_int      (const char **pos,
-	         	       int         *out);
+gboolean _pango_scan_int                (const char **pos,
+	         	                 int         *out);
 
-gboolean _pango_parse_enum    (GType       type,
-                               const char *str,
-                               int        *value,
-                               gboolean    warn,
-                               char      **possible_values);
+gboolean _pango_parse_enum              (GType       type,
+                                         const char *str,
+                                         int        *value,
+                                         gboolean    warn,
+                                         char      **possible_values);
 
-char    *_pango_trim_string   (const char *str);
+char    *_pango_trim_string             (const char *str);
+
+gboolean _pango_color_parse_with_alpha  (PangoColor *color,
+                                         guint16    *alpha,
+                                         const char *spec);
 
 
 G_END_DECLS
