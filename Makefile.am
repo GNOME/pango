@@ -9,23 +9,6 @@ EXTRA_DIST = 			\
 	pangoxft.pc.in		\
 	pangoft2.pc.in		\
 	pangowin32.pc.in	\
-	pango-uninstalled.pc.in		\
-	pangocairo-uninstalled.pc.in	\
-	pangoxft-uninstalled.pc.in	\
-	pangoft2-uninstalled.pc.in	\
-	pangowin32-uninstalled.pc.in	\
-	ChangeLog.pre-1-0	\
-	ChangeLog.pre-1-2	\
-	ChangeLog.pre-1-4	\
-	ChangeLog.pre-1-6	\
-	ChangeLog.pre-1-8	\
-	ChangeLog.pre-1-10	\
-	ChangeLog.pre-1-12	\
-	ChangeLog.pre-1-14	\
-	ChangeLog.pre-1-16	\
-	ChangeLog.pre-1-18	\
-	ChangeLog.pre-1-20	\
-	ChangeLog.pre-1-23	\
 	MAINTAINERS		\
 	HACKING			\
 	README.win32		\
@@ -43,7 +26,7 @@ MAINTAINERCLEANFILES = \
 
 ### ChangeLog generation
 
-CHANGELOG_START = 1.23.0^^
+CHANGELOG_START = "`git describe --abbrev=0 | sed -e 's|\([0-9]*\)\.\([0-9]*\)\.[0-9]*|\1.\2.0^^|'`"
 
 ChangeLog: $(srcdir)/ChangeLog
 $(srcdir)/ChangeLog:

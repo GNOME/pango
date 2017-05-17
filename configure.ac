@@ -663,11 +663,6 @@ pangowin32.pc
 pangoft2.pc
 pangoxft.pc
 pangocairo.pc
-pango-uninstalled.pc
-pangowin32-uninstalled.pc
-pangoft2-uninstalled.pc
-pangoxft-uninstalled.pc
-pangocairo-uninstalled.pc
 config.h.win32
 ])
 
