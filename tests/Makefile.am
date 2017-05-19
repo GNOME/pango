@@ -92,7 +92,7 @@ testattributes_LDADD = $(TEST_PANGOCAIRO_LIBS) $(GLIB_LIBS)
 if HAVE_CXX
 check_PROGRAMS += cxx-test
 endif
-cxx_test_SOURCES = cxx-test.C
+cxx_test_SOURCES = cxx-test.cpp
 
 all-unicode.txt: gen-all-unicode$(EXEEXT)
 	./gen-all-unicode > all-unicode.txt
