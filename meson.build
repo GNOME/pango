@@ -15,6 +15,7 @@ pango_libdir = join_paths(pango_prefix, get_option('libdir'))
 pango_sysconfdir = join_paths(pango_prefix, get_option('sysconfdir'))
 pango_includedir = join_paths(pango_prefix, get_option('includedir'))
 pango_datadir = join_paths(pango_prefix, get_option('datadir'))
+pango_libexecdir = join_paths(pango_prefix, get_option('libexecdir'))
 
 version = meson.project_version().split('.')
 pango_major_version = version[0].to_int()
