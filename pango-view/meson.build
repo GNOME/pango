@@ -30,11 +30,29 @@ if cairo_dep.found()
   pango_view_deps += libpangocairo_dep
 endif
 
-executable('pango-view', pango_view_sources,
-           dependencies: pango_view_deps,
-           include_directories: [ root_inc ],
-           install: true,
-           c_args: [
-             '-DPACKAGE_NAME="@0@"'.format(meson.project_name()),
-             '-DPACKAGE_VERSION="@0@"'.format(meson.project_version()),
-           ])
+pango_view = executable('pango-view', pango_view_sources,
+                        dependencies: pango_view_deps,
+                        include_directories: [ root_inc ],
+                        install: true,
+                        c_args: [
+                          '-DPACKAGE_NAME="@0@"'.format(meson.project_name()),
+                          '-DPACKAGE_VERSION="@0@"'.format(meson.project_version()),
+                        ])
+
+help2man = find_program('help2man', required: false)
+if help2man.found()
+  help2man_opts = [
+    '--no-info',
+    '--section=1',
+    '--help-option="--help-all"',
+    '--name="Pango text viewer"',
+  ]
+
+  custom_target('pango-view.1',
+                output: 'pango-view.1',
+                command: [
+                  help2man, help2man_opts, '--output=@OUTPUT@', pango_view
+                ],
+                install: true,
+                install_dir: join_paths(pango_datadir, 'man/man1'))
+endif
