@@ -14,6 +14,4 @@ mini_fribidi_lib = static_library('libmini-fribidi', sources: mini_fribidi_sourc
 
 mini_fribidi_dep = declare_dependency(link_with: mini_fribidi_lib,
                                       dependencies: [ mathlib_dep, gobject_dep ],
-                                      include_directories: [
-                                        include_directories('.'),
-                                      ])
+                                      include_directories: include_directories('.'))

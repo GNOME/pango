@@ -35,7 +35,7 @@ private_headers = [
   'mini-fribidi',
 ]
 
-if not host_system.contains('darwin')
+if host_system != 'darwin'
   private_headers += [
     'pangocairo-coretextfont.h',
     'pangocairo-coretext.h',
@@ -43,7 +43,7 @@ if not host_system.contains('darwin')
   ]
 endif
 
-if not host_system.contains('windows')
+if host_system != 'windows'
   private_headers += [
     'pangocairo-win32.h',
     'pangowin32.h',

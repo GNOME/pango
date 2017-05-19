@@ -242,7 +242,7 @@ if xft_dep.found()
 endif
 
 # Win32
-if host_system.contains('windows')
+if host_system == 'windows'
   pangowin32_headers = [
     'pangowin32.h',
   ]
@@ -306,7 +306,7 @@ if cairo_dep.found()
     pangocairo_gir_deps += pangoft2_gir_dep
   endif
 
-  if host_system.contains('windows') and pango_font_backends.contains('win32')
+  if host_system == 'windows' and pango_font_backends.contains('win32')
     pangocairo_sources += [
       'pangocairo-win32font.c',
       'pangocairo-win32fontmap.c',
@@ -315,7 +315,7 @@ if cairo_dep.found()
     pangocairo_deps += libpangowin32_dep
   endif
 
-  if host_system.contains('darwin') and pango_font_backends.contains('quartz')
+  if host_system == 'darwin' and pango_font_backends.contains('quartz')
     pangocairo_sources += [
       'pangocoretext.c',
       'pangocoretext-fontmap.c',

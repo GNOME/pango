@@ -6,11 +6,7 @@ if xft_dep.found()
   test_cflags += [ '-DHAVE_X', '-DHAVE_XFT' ]
 endif
 
-if freetype_dep.found()
-  test_cflags += '-DHAVE_FREETYPE'
-endif
-
-if host_system.contains('windows')
+if host_system == 'windows'
   test_cflags += '-DHAVE_WIN32'
 endif
 
@@ -25,15 +21,18 @@ tests = [
   [ 'testboundaries_ucd' ],
   [ 'testcolor' ],
   [ 'testscript' ],
+  [ 'cxx-test', [ 'cxx-test.cpp' ] ],
 ]
 
 if freetype_dep.found()
+  test_cflags += '-DHAVE_FREETYPE'
   tests += [
     [ 'test-ot-tags', [ 'test-ot-tags.c' ], [ libpangoft2_dep ] ],
   ]
 endif
 
 if cairo_dep.found()
+  test_cflags += '-DHAVE_CAIRO'
   tests += [
     [ 'testiter', [ 'testiter.c' ], [ libpangocairo_dep ] ],
     [ 'test-pangocairo-threads', [ 'test-pangocairo-threads.c' ], [ libpangocairo_dep, cairo_dep ] ],
@@ -52,6 +51,7 @@ foreach t: tests
   bin = executable(name, src,
                    dependencies: deps,
                    include_directories: root_inc,
-                   c_args: common_cflags + pango_debug_cflags)
+                   c_args: common_cflags + pango_debug_cflags + test_cflags,
+                   cpp_args: common_cppflags + pango_debug_cflags + test_cflags)
   test(name, bin, env: test_env)
 endforeach

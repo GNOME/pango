@@ -1,11 +1,12 @@
-project('pango', 'c', version: '1.40.5',
+project('pango', 'c', 'cpp',
+        version: '1.40.5',
         license: 'LGPLv2.1+',
         default_options: [
           'buildtype=debugoptimized',
           'warning_level=1',
           'c_std=c99',
         ],
-        meson_version : '>= 0.40.0')
+        meson_version : '>= 0.40.1')
 
 add_project_arguments([ '-D_POSIX_C_SOURCE', '-D_POSIX_THREAD_SAFE_FUNCTIONS', '-D_GNU_SOURCE', ], language: 'c')
 
@@ -42,6 +43,7 @@ host_system = host_machine.system()
 
 # Compiler and linker flags
 common_cflags = []
+common_cppflags = []
 common_ldflags = []
 
 # Add more compiler warnings to the default set
@@ -67,19 +69,25 @@ if cc.get_id() == 'msvc'
     '-we4071', # no function prototype given
     '-we4819', # the file contains a character that cannot be represented in the current code page
   ]
+  test_c_only_flags = []
 elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
-  test_cflags = [
-    '-fno-strict-aliasing',
-    '-Wpointer-arith',
-    '-Wmissing-declarations',
+  test_c_only_flags = [
     '-Wimplicit-function-declaration',
-    '-Wformat=2',
-    '-Wformat-nonliteral',
-    '-Wformat-security',
     '-Wstrict-prototypes',
     '-Wmissing-prototypes',
     '-Wnested-externs',
     '-Wold-style-definition',
+    '-Wno-int-conversion',
+    '-Wno-discarded-qualifiers',
+  ]
+
+  test_cflags = test_c_only_flags + [
+    '-fno-strict-aliasing',
+    '-Wpointer-arith',
+    '-Wmissing-declarations',
+    '-Wformat=2',
+    '-Wformat-nonliteral',
+    '-Wformat-security',
     '-Wunused',
     '-Wcast-align',
     '-Wmissing-noreturn',
@@ -88,8 +96,6 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
     '-Wlogical-op',
     '-Wno-uninitialized',
     '-Wno-shadow',
-    '-Wno-int-conversion',
-    '-Wno-discarded-qualifiers',
     '-Werror=redundant-decls',
     '-Werror=implicit',
     '-Werror=nonnull',
@@ -108,31 +114,42 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
     '-Werror=write-strings',
     '-Werror=undef',
   ]
+
+  if host_system == 'windows'
+    test_cflags += [ '-mms-bitfields' ]
+  endif
 else
   test_cflags = []
+  test_c_only_flags = []
 endif
 
+# Symbol visibility
+if get_option('default_library') != 'static'
+  if host_system == 'windows'
+    pango_conf.set('DLL_EXPORT', true)
+    pango_conf.set('_PANGO_EXTERN', '__declspec(dllexport) extern')
+    if cc.get_id() != 'msvc'
+      test_cflags += ['-fvisibility=hidden']
+    endif
+  else
+    pango_conf.set('_PANGO_EXTERN', '__attribute__((visibility("default"))) extern')
+    test_cflags += ['-fvisibility=hidden']
+  endif
+endif
+
+# Check all compiler flags
 foreach cflag: test_cflags
   if cc.has_argument(cflag)
     common_cflags += [ cflag ]
   endif
 endforeach
 
-# Symbol visibility
-if get_option('default_library') != 'static'
-  if host_machine.system() == 'windows'
-    pango_conf.set('DLL_EXPORT', true)
-    if cc.get_id() == 'msvc'
-      pango_conf.set('_PANGO_EXTERN', '__declspec(dllexport) extern')
-    else
-      pango_conf.set('_PANGO_EXTERN', '__attribute__((visibility("default"))) __declspec(dllexport) extern')
-      common_cflags += ['-fvisibility=hidden']
-    endif
-  else
-    pango_conf.set('_PANGO_EXTERN', '__attribute__((visibility("default"))) extern')
-    common_cflags += ['-fvisibility=hidden']
+# Isolate the C++ compiler flags
+foreach cflag: common_cflags
+  if not test_c_only_flags.contains(cflag)
+    common_cppflags += [ cflag ]
   endif
-endif
+endforeach
 
 # Linker flags
 if host_machine.system() == 'linux'
@@ -176,10 +193,14 @@ foreach h: checked_headers
 endforeach
 
 buildtype = get_option('buildtype')
-if buildtype == 'debug' or buildtype == 'debugoptimized'
+if buildtype.startswith('debug')
   pango_debug_cflags = [ '-DPANGO_ENABLE_DEBUG', ]
 elif buildtype == 'release'
   pango_debug_cflags = [ '-DG_DISABLE_CAST_CHECKS', ]
+  # TODO: We may want a configuration argument to add `G_DISABLE_CHECKS`
+  # and `G_DISABLE_ASSERT` from the build, for specific build environments.
+  # On the other hand, those who need these symbols can inject them in their
+  # build as well.
 else
   pango_debug_cflags = []
 endif
@@ -343,6 +364,6 @@ subdir('pango-view')
 subdir('tests')
 subdir('tools')
 
-if get_option('enable-gtk-doc')
+if get_option('enable_docs')
   subdir('docs')
 endif
