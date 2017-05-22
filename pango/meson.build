@@ -67,8 +67,8 @@ pango_features_conf.set('PANGO_VERSION_MICRO', pango_micro_version)
 configure_file(input: 'pango-features.h.meson',
                output: 'pango-features.h',
                configuration: pango_features_conf,
-	       install: true,
-	       install_dir: join_paths(pango_includedir, pango_api_path))
+               install: true,
+               install_dir: join_paths(pango_includedir, pango_api_path))
 
 # Enumerations for GType
 pango_enums = gnome.mkenums('pango-enum-types',
@@ -91,13 +91,13 @@ pango_cflags = [
 pango_inc = include_directories('.')
 
 libpango = shared_library('pango-@0@'.format(pango_api_version),
-			  sources: pango_sources + pango_enums,
-			  soversion: pango_soversion,
-			  install: true,
-			  dependencies: [ gobject_dep, mathlib_dep, thai_dep, mini_fribidi_dep ],
+                          sources: pango_sources + pango_enums,
+                          soversion: pango_soversion,
+                          install: true,
+                          dependencies: [ gobject_dep, mathlib_dep, thai_dep, mini_fribidi_dep ],
                           include_directories: [ root_inc, pango_inc ],
-			  c_args: common_cflags + pango_debug_cflags + pango_cflags,
-			  link_args: common_ldflags)
+                          c_args: common_cflags + pango_debug_cflags + pango_cflags,
+                          link_args: common_ldflags)
 
 libpango_dep = declare_dependency(link_with: libpango,
                                   include_directories: pango_inc,
