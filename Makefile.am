@@ -2,6 +2,22 @@
 
 SUBDIRS= pango pango-view examples docs tools tests win32
 
+meson_dist_files = \
+	pango-view/meson.build \
+	meson.build \
+	meson_options.txt \
+	pango/mini-fribidi/meson.build \
+	pango/meson.build \
+	docs/meson.build \
+	docs/xml/meson.build \
+	docs/xml/gtkdocentities.ent.in \
+	examples/meson.build \
+	tools/meson.build \
+	tests/meson.build \
+	tests/gen-all-unicode.py \
+	tests/gen-installed-test.py \
+	$()
+
 EXTRA_DIST = 			\
 	autogen.sh		\
 	pango.pc.in		\
@@ -13,7 +29,8 @@ EXTRA_DIST = 			\
 	HACKING			\
 	README.win32		\
 	config.h.win32		\
-	pango.doap
+	pango.doap		\
+	$(meson_dist_files)
 
 MAINTAINERCLEANFILES = \
 	$(GITIGNORE_MAINTAINERCLEANFILES_TOPLEVEL) \
