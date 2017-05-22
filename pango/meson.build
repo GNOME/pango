@@ -92,6 +92,7 @@ pango_inc = include_directories('.')
 
 libpango = shared_library('pango-@0@'.format(pango_api_version),
                           sources: pango_sources + pango_enums,
+                          version: pango_libversion,
                           soversion: pango_soversion,
                           install: true,
                           dependencies: [ gobject_dep, mathlib_dep, thai_dep, mini_fribidi_dep ],
@@ -157,6 +158,7 @@ if freetype_dep.found()
 
   libpangoft2 = shared_library('pangoft2-@0@'.format(pango_api_version),
                                sources: pangoft2_sources + [ pango_enum_h ],
+                               version: pango_libversion,
                                soversion: pango_soversion,
                                install: true,
                                dependencies: pango_deps + [ libpango_dep ],
@@ -207,6 +209,7 @@ if xft_dep.found()
 
   libpangoxft = shared_library('pangoxft-@0@'.format(pango_api_version),
                                sources: pangoxft_sources + [ pango_enum_h ],
+                               version: pango_libversion,
                                soversion: pango_soversion,
                                install: true,
                                dependencies: pango_deps + [ libpango_dep, libpangoft2_dep ],
@@ -264,6 +267,7 @@ if host_system == 'windows'
 
   libpangowin32 = shared_library('pangowin32-@0@'.format(pango_api_version),
                                  sources: pangowin32_sources + [ pango_enum_h ],
+                                 version: pango_libversion,
                                  soversion: pango_soversion,
                                  install: true,
                                  dependencies: pangowin32_deps,
@@ -330,6 +334,7 @@ if cairo_dep.found()
 
   libpangocairo = shared_library('pangocairo-@0@'.format(pango_api_version),
                                  sources: pangocairo_sources + [ pango_enum_h ],
+                                 version: pango_libversion,
                                  soversion: pango_soversion,
                                  install: true,
                                  dependencies: pango_deps + pangocairo_deps,

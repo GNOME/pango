@@ -37,7 +37,8 @@ pango_conf.set('PANGO_VERSION_MINOR', pango_minor_version)
 pango_conf.set('PANGO_VERSION_MICRO', pango_micro_version)
 
 # Maintain version scheme with libtool
-pango_soversion = '0.@0@.@1@'.format((pango_binary_age - pango_interface_age), pango_interface_age)
+pango_soversion = 0
+pango_libversion = '@0@.@1@.@2@'.format(pango_soversion, (pango_binary_age - pango_interface_age), pango_interface_age)
 
 cc = meson.get_compiler('c')
 host_system = host_machine.system()
