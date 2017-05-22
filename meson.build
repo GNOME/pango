@@ -344,12 +344,25 @@ pkgconf.set('VERSION', meson.project_version())
 pkgconf.set('PANGO_API_VERSION', pango_api_version)
 pkgconf.set('PKGCONFIG_CAIRO_REQUIRES', pangocairo_requires)
 
-foreach pkg: [ 'pango.pc', 'pangowin32.pc', 'pangoft2.pc', 'pangoxft.pc', 'pangocairo.pc', ]
-  configure_file(input: '@0@.in'.format(pkg),
-                 output: pkg,
-                 configuration: pkgconf,
-                 install: true,
-                 install_dir: join_paths(pango_libdir, 'pkgconfig'))
+pkgconf_files = [
+  [ 'pango.pc' ],
+  [ 'pangowin32.pc', host_system == 'windows' ],
+  [ 'pangoft2.pc', freetype_dep.found() ],
+  [ 'pangoxft.pc', xft_dep.found() ],
+  [ 'pangocairo.pc', cairo_dep.found() ],
+]
+
+foreach pkg: pkgconf_files
+  pkg_name = pkg[0]
+  pkg_enabled = pkg.get(1, true)
+
+  if pkg_enabled
+    configure_file(input: pkg_name + '.in',
+                   output: pkg_name,
+                   configuration: pkgconf,
+                   install: true,
+                   install_dir: join_paths(pango_libdir, 'pkgconfig'))
+  endif
 endforeach
 
 gnome = import('gnome')
