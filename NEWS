@@ -1,3 +1,11 @@
+Overview of changes between 1.40.5 and 1.40.6
+=============================================
+- Don't use deprecated harfbuzz api
+- Correctly implement min-required/max-allowed support
+- Avoid compiler warnings
+- Drop -uninstalled.pd files
+- Add support for building with meson
+
 Overview of changes between 1.40.4 and 1.40.5
 =============================================
 - Add missing introspection annotations (#778663)
