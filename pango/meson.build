@@ -103,7 +103,7 @@ libpango = shared_library('pango-@0@'.format(pango_api_version),
 libpango_dep = declare_dependency(link_with: libpango,
                                   include_directories: pango_inc,
                                   dependencies: pango_deps,
-                                  sources: pango_enums)
+                                  sources: pango_enum_h)
 
 if not meson.is_cross_build()
   gir_args = [
@@ -157,7 +157,7 @@ if freetype_dep.found()
   install_headers(pangoft2_headers, subdir: pango_api_path)
 
   libpangoft2 = shared_library('pangoft2-@0@'.format(pango_api_version),
-                               sources: pangoft2_sources + [ pango_enum_h ],
+                               sources: pangoft2_sources,
                                version: pango_libversion,
                                soversion: pango_soversion,
                                install: true,
@@ -208,7 +208,7 @@ if xft_dep.found()
   install_headers(pangoxft_headers, subdir: pango_api_path)
 
   libpangoxft = shared_library('pangoxft-@0@'.format(pango_api_version),
-                               sources: pangoxft_sources + [ pango_enum_h ],
+                               sources: pangoxft_sources,
                                version: pango_libversion,
                                soversion: pango_soversion,
                                install: true,
@@ -266,7 +266,7 @@ if host_system == 'windows'
   install_headers(pangowin32_headers, subdir: pango_api_path)
 
   libpangowin32 = shared_library('pangowin32-@0@'.format(pango_api_version),
-                                 sources: pangowin32_sources + [ pango_enum_h ],
+                                 sources: pangowin32_sources,
                                  version: pango_libversion,
                                  soversion: pango_soversion,
                                  install: true,
@@ -333,7 +333,7 @@ if cairo_dep.found()
   install_headers(pangocairo_headers, subdir: pango_api_path)
 
   libpangocairo = shared_library('pangocairo-@0@'.format(pango_api_version),
-                                 sources: pangocairo_sources + [ pango_enum_h ],
+                                 sources: pangocairo_sources,
                                  version: pango_libversion,
                                  soversion: pango_soversion,
                                  install: true,
