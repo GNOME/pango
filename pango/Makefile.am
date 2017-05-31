@@ -15,6 +15,7 @@ SUBDIRS = mini-fribidi
 
 INCLUDES =						\
 	-DG_LOG_DOMAIN=\"Pango\"			\
+	-DPANGO_COMPILATION				\
 	-DPANGO_ENABLE_BACKEND				\
 	-DPANGO_ENABLE_ENGINE				\
 	-DSYSCONFDIR=\"$(sysconfdir)\"			\

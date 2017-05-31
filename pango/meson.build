@@ -82,6 +82,7 @@ pango_enum_h = pango_enums[1]
 pango_cflags = [
   '-DG_LOG_DOMAIN="Pango"',
   '-DG_LOG_USE_STRUCTURED=1',
+  '-DPANGO_COMPILATION',
   '-DPANGO_ENABLE_BACKEND',
   '-DPANGO_ENABLE_ENGINE',
   '-DSYSCONFDIR="@0@"'.format(pango_sysconfdir),
