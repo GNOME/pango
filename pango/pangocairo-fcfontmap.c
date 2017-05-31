@@ -19,7 +19,12 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "config.h"
+
+/* Freetype has undefined macros in its headers */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wundef"
 #include <cairo-ft.h>
+#pragma GCC diagnostic pop
 
 #include "pangofc-fontmap.h"
 #include "pangocairo.h"
