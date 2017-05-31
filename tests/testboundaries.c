@@ -22,10 +22,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
 
 #include <glib.h>
 #include <pango/pango.h>
+
+#ifndef G_OS_WIN32
+#include <unistd.h>
+#endif
 
 #define CHFORMAT "%0#6x"
 

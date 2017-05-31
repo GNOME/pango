@@ -21,8 +21,14 @@
 
 #include <glib.h>
 #include <string.h>
-#include <unistd.h>
+
 #include <locale.h>
+
+#ifdef G_OS_WIN32
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 #include <pango/pangocairo.h>
 #include "test-common.h"
