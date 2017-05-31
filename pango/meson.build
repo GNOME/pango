@@ -154,7 +154,7 @@ libpango_dep = declare_dependency(
 )
 
 # FreeType
-if freetype_dep.found()
+if build_pangoft2
   pangoft2_headers = [
     'pango-ot.h',
     'pangofc-font.h',

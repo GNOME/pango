@@ -235,7 +235,10 @@ endif
 # The first version of freetype with a pkg-config file is 2.1.5
 # We require both fontconfig and freetype if we are to have either.
 freetype_dep = dependency('freetype2', required: false)
-if freetype_dep.found() and fontconfig_dep.found()
+
+# To build pangoft2, we need HarfBuzz, FontConfig and FreeType
+build_pangoft2 = harfbuzz_dep.found() and fontconfig_dep.found() and freetype_dep.found()
+if build_pangoft2
   pango_conf.set('HAVE_FREETYPE', 1)
   pango_deps += freetype_dep
 endif
@@ -267,6 +270,7 @@ if cairo_dep.found()
   # - version
   # - define
   # - backend name
+  # Note that Cairo can be built with FreeType but without FontConfig
   cairo_font_backends = [
     [ 'cairo-ft', cairo_req_version, 'HAVE_CAIRO_FREETYPE', 'freetype', ],
     [ 'cairo-win32', cairo_req_version, 'HAVE_CAIRO_WIN32', 'win32', ],
@@ -278,8 +282,15 @@ if cairo_dep.found()
   foreach b: cairo_font_backends
     dep = dependency(b[0], version: b[1], required: false)
     if dep.found()
-      pango_conf.set(b[2], 1)
-      pango_font_backends += b[3]
+      if b[0] == 'cairo-ft'
+        if build_pangoft2
+          pango_conf.set(b[2], 1)
+          pango_font_backends += b[3]
+        endif
+      else
+        pango_conf.set(b[2], 1)
+        pango_font_backends += b[3]
+      endif
     endif
   endforeach
 
@@ -336,7 +347,7 @@ pkgconf.set('PKGCONFIG_CAIRO_REQUIRES', pangocairo_requires)
 pkgconf_files = [
   [ 'pango.pc' ],
   [ 'pangowin32.pc', host_system == 'windows' ],
-  [ 'pangoft2.pc', freetype_dep.found() ],
+  [ 'pangoft2.pc', build_pangoft2 ],
   [ 'pangoxft.pc', xft_dep.found() ],
   [ 'pangocairo.pc', cairo_dep.found() ],
 ]

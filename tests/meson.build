@@ -24,7 +24,7 @@ tests = [
   [ 'cxx-test', [ 'cxx-test.cpp' ] ],
 ]
 
-if freetype_dep.found()
+if build_pangoft2
   test_cflags += '-DHAVE_FREETYPE'
   tests += [
     [ 'test-ot-tags', [ 'test-ot-tags.c' ], [ libpangoft2_dep ] ],

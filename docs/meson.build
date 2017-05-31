@@ -59,7 +59,7 @@ html_images = [
 
 docdeps = [ libpango_dep ]
 
-if freetype_dep.found()
+if build_pangoft2
   docdeps += libpangoft2_dep
 endif
 

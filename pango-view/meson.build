@@ -9,12 +9,12 @@ pango_view_deps = [
   libpango_dep,
 ]
 
-if freetype_dep.found()
+if build_pangoft2
   pango_view_sources += 'viewer-pangoft2.c'
   pango_view_deps += libpangoft2_dep
 endif
 
-if xft_dep.found()
+if xft_dep.found() and build_pangoft2
   pango_view_sources += [
     'viewer-pangoxft.c',
     'viewer-x.c',
