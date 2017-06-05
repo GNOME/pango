@@ -613,14 +613,14 @@ compute_distance (const PangoFontDescription *a,
 {
   if (a->style == b->style)
     {
-      return abs(a->weight - b->weight);
+      return abs((int)(a->weight) - (int)(b->weight));
     }
   else if (a->style != PANGO_STYLE_NORMAL &&
 	   b->style != PANGO_STYLE_NORMAL)
     {
       /* Equate oblique and italic, but with a big penalty
        */
-      return 1000000 + abs (a->weight - b->weight);
+      return 1000000 + abs ((int)(a->weight) - (int)(b->weight));
     }
   else
     return G_MAXINT;
