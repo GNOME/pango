@@ -8,7 +8,7 @@ project('pango', 'c', 'cpp',
         ],
         meson_version : '>= 0.40.1')
 
-add_project_arguments([ '-D_POSIX_C_SOURCE', '-D_POSIX_THREAD_SAFE_FUNCTIONS', '-D_GNU_SOURCE', ], language: 'c')
+add_project_arguments([ '-D_POSIX_C_SOURCE=200809L', '-D_POSIX_THREAD_SAFE_FUNCTIONS', '-D_GNU_SOURCE', ], language: 'c')
 
 pango_prefix = get_option('prefix')
 pango_libdir = join_paths(pango_prefix, get_option('libdir'))
