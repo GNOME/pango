@@ -1188,7 +1188,7 @@ append_field (GString *str, const char *what, const FieldMap *map, int n_element
       if (map[i].value != val)
         continue;
 
-      if (G_LIKELY (map[i].str && map[i].str[0]))
+      if (G_LIKELY (map[i].str[0]))
 	{
 	  if (G_LIKELY (str->len > 0 && str->str[str->len -1] != ' '))
 	    g_string_append_c (str, ' ');
