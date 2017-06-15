@@ -540,12 +540,15 @@ pango_default_break (const gchar   *text,
     WB_NewlineCRLF,
     WB_ExtendFormat,
     WB_Katakana,
+    WB_Hebrew_Letter,
     WB_ALetter,
     WB_MidNumLet,
     WB_MidLetter,
     WB_MidNum,
     WB_Numeric,
     WB_ExtendNumLet,
+    WB_RI_Odd,
+    WB_RI_Even,
   } WordBreakType;
   WordBreakType prev_prev_WB_type = WB_Other, prev_WB_type = WB_Other;
   gint prev_WB_i = -1;
@@ -863,7 +866,8 @@ pango_default_break (const gchar   *text,
       /* ---- UAX#29 Word Boundaries ---- */
       {
 	is_word_boundary = FALSE;
-	if (is_grapheme_boundary) /* Rules WB3 and WB4 */
+	if (is_grapheme_boundary ||
+	    G_UNLIKELY(wc >=0x1F1E6 && wc <=0x1F1FF)) /* Rules WB3 and WB4 */
 	  {
 	    PangoScript script;
 	    WordBreakType WB_type;
@@ -875,6 +879,9 @@ pango_default_break (const gchar   *text,
 
 	    if (script == PANGO_SCRIPT_KATAKANA)
 	      WB_type = WB_Katakana;
+
+	    if (script == PANGO_SCRIPT_HEBREW && type == G_UNICODE_OTHER_LETTER)
+	      WB_type = WB_Hebrew_Letter;
 
 	    if (WB_type == WB_Other)
 	      switch (wc >> 8)
@@ -952,6 +959,17 @@ pango_default_break (const gchar   *text,
 		case G_UNICODE_OTHER_SYMBOL:
 		  if (wc >= 0x24B6 && wc <= 0x24E9) /* Other_Alphabetic */
 		    goto Alphabetic;
+
+		  if (G_UNLIKELY(wc >=0x1F1E6 && wc <=0x1F1FF))
+		    {
+			  if (prev_WB_type == WB_RI_Odd)
+			   WB_type = WB_RI_Even;
+			  else if (prev_WB_type == WB_RI_Even)
+			   WB_type = WB_RI_Odd;
+			  else
+			   WB_type = WB_RI_Odd;
+		    }
+
 		  break;
 
 		case G_UNICODE_OTHER_LETTER:
@@ -998,31 +1016,56 @@ pango_default_break (const gchar   *text,
 	    else if (WB_type == WB_ExtendFormat)
 	      is_word_boundary = FALSE; /* Rules WB4? */
 	    else if ((prev_WB_type == WB_ALetter  ||
-		      prev_WB_type == WB_Numeric  ||
-		      prev_WB_type == WB_ExtendNumLet) &&
-		     (     WB_type == WB_ALetter  ||
-		           WB_type == WB_Numeric  ||
-		           WB_type == WB_ExtendNumLet))
-	      is_word_boundary = FALSE; /* Rules WB5, WB8, WB9, WB10, WB13a, WB13b */
-	    else if ((prev_WB_type == WB_Katakana ||
-		      prev_WB_type == WB_ExtendNumLet) &&
-		     (     WB_type == WB_Katakana ||
-		           WB_type == WB_ExtendNumLet))
-	      is_word_boundary = FALSE; /* Rules WB13, WB13a, WB13b */
-	    else if ((prev_prev_WB_type == WB_ALetter && WB_type == WB_ALetter) &&
-		     (prev_WB_type == WB_MidLetter || prev_WB_type == WB_MidNumLet))
+                  prev_WB_type == WB_Hebrew_Letter ||
+                  prev_WB_type == WB_Numeric) &&
+                 (WB_type == WB_ALetter  ||
+                  WB_type == WB_Hebrew_Letter ||
+                  WB_type == WB_Numeric))
+	      is_word_boundary = FALSE; /* Rules WB5, WB8, WB9, WB10 */
+	    else if (prev_WB_type == WB_Katakana && WB_type == WB_Katakana)
+	      is_word_boundary = FALSE; /* Rule WB13 */
+	    else if ((prev_WB_type == WB_ALetter ||
+                  prev_WB_type == WB_Hebrew_Letter ||
+                  prev_WB_type == WB_Numeric ||
+                  prev_WB_type == WB_Katakana ||
+                  prev_WB_type == WB_ExtendNumLet) &&
+                 WB_type == WB_ExtendNumLet)
+	      is_word_boundary = FALSE; /* Rule WB13a */
+	    else if (prev_WB_type == WB_ExtendNumLet &&
+                 (WB_type == WB_ALetter ||
+                  WB_type == WB_Hebrew_Letter ||
+                  WB_type == WB_Numeric ||
+                  WB_type == WB_Katakana))
+	      is_word_boundary = FALSE; /* Rule WB13b */
+	    else if (((prev_prev_WB_type == WB_ALetter ||
+                   prev_prev_WB_type == WB_Hebrew_Letter) &&
+                  (WB_type == WB_ALetter ||
+                   WB_type == WB_Hebrew_Letter)) &&
+		     (prev_WB_type == WB_MidLetter ||
+              prev_WB_type == WB_MidNumLet ||
+              prev_wc == 0x0027))
 	      {
 		attrs[prev_WB_i].is_word_boundary = FALSE; /* Rule WB6 */
 		is_word_boundary = FALSE; /* Rule WB7 */
 	      }
+	    else if (prev_WB_type == WB_Hebrew_Letter && wc == 0x0027)
+          is_word_boundary = FALSE; /* Rule WB7a */
+	    else if (prev_prev_WB_type == WB_Hebrew_Letter && prev_wc == 0x0022 &&
+                 WB_type == WB_Hebrew_Letter) {
+          attrs[prev_WB_i].is_word_boundary = FALSE; /* Rule WB7b */
+          is_word_boundary = FALSE; /* Rule WB7c */
+        }
 	    else if ((prev_prev_WB_type == WB_Numeric && WB_type == WB_Numeric) &&
-		     (prev_WB_type == WB_MidNum || prev_WB_type == WB_MidNumLet))
+                 (prev_WB_type == WB_MidNum || prev_WB_type == WB_MidNumLet ||
+                  prev_wc == 0x0027))
 	      {
 		is_word_boundary = FALSE; /* Rule WB11 */
 		attrs[prev_WB_i].is_word_boundary = FALSE; /* Rule WB12 */
 	      }
+	    else if (prev_WB_type == WB_RI_Odd && WB_type == WB_RI_Even)
+	      is_word_boundary = FALSE; /* Rule WB15 and WB16 */
 	    else
-	      is_word_boundary = TRUE; /* Rule WB14 */
+	      is_word_boundary = TRUE; /* Rule WB999 */
 
 	    if (WB_type != WB_ExtendFormat)
 	      {
