@@ -598,7 +598,7 @@ pango_cairo_renderer_draw_glyph_item (PangoRenderer     *renderer,
         num_glyphs = backward ? iter.start_glyph - iter.end_glyph : iter.end_glyph - iter.start_glyph;
 
 	if (num_bytes < 1)
-	  g_warning ("pango_cairo_renderer_draw_glyph_item: bad cluster has num_bytess %d", num_bytes);
+	  g_warning ("pango_cairo_renderer_draw_glyph_item: bad cluster has num_bytes %d", num_bytes);
 	if (num_glyphs < 1)
 	  g_warning ("pango_cairo_renderer_draw_glyph_item: bad cluster has num_glyphs %d", num_glyphs);
 
