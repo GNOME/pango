@@ -1,3 +1,10 @@
+Overview of changes between 1.40.6 and 1.40.7
+=============================================
+- Some fixes for meson build support
+- Don't change fonts for variation selectors (#781123)
+- Fix some bugs in the libthai glue layer
+- Pass text along when calling into cairo (#784394)
+
 Overview of changes between 1.40.5 and 1.40.6
 =============================================
 - Don't use deprecated harfbuzz api
