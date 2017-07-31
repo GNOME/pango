@@ -358,6 +358,4 @@
 ÷ D800 ÷ 0308 ÷ 0378 ÷	#  ÷ [0.2] <surrogate-D800> (Control) ÷ [4.0] COMBINING DIAERESIS (Extend) ÷ [999.0] <reserved-0378> (Other) ÷ [0.3]
 ÷ D800 ÷ D800 ÷	#  ÷ [0.2] <surrogate-D800> (Control) ÷ [4.0] <surrogate-D800> (Control) ÷ [0.3]
 ÷ D800 ÷ 0308 ÷ D800 ÷	#  ÷ [0.2] <surrogate-D800> (Control) ÷ [4.0] COMBINING DIAERESIS (Extend) ÷ [5.0] <surrogate-D800> (Control) ÷ [0.3]
-÷ 1F3CC × FE0F × 200D ÷ 2642 × FE0F ÷
-÷ 1F3CC × 200D ÷ 2642 ÷
-# Lines: 340
+# Lines: 338
