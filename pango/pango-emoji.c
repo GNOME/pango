@@ -160,7 +160,7 @@ _pango_emoji_iter_init (PangoEmojiIter *iter,
 
   iter->start = text;
   iter->end = text;
-  iter->is_emoji = FALSE;
+  iter->is_emoji = (gboolean) 2; /* HACK */
 
   _pango_emoji_iter_next (iter);
 
@@ -194,7 +194,7 @@ _pango_emoji_iter_next (PangoEmojiIter *iter)
      * presentation for emoji that are part of a ZWJ sequence, example
      * U+1F441 U+200D U+1F5E8, eye (text presentation) + ZWJ + left speech
      * bubble, see below. */
-    if ((!(ch == kZeroWidthJoinerCharacter && iter->is_emoji) &&
+    if ((!(ch == kZeroWidthJoinerCharacter && !iter->is_emoji) &&
 	 ch != kVariationSelector15Character &&
 	 ch != kVariationSelector16Character &&
 	 ch != kCombiningEnclosingCircleBackslashCharacter &&
@@ -204,14 +204,14 @@ _pango_emoji_iter_next (PangoEmojiIter *iter)
 	    ch == kMaleSignCharacter ||
 	    ch == kFemaleSignCharacter ||
 	    ch == kStaffOfAesculapiusCharacter) &&
-	   iter->is_emoji)) ||
+	   !iter->is_emoji)) ||
 	current_emoji_type == PANGO_EMOJI_TYPE_INVALID) {
       current_emoji_type = _pango_get_emoji_type (ch);
     }
 
-    if (iter->end < iter->text_end)
+    if (g_utf8_next_char (iter->end) < iter->text_end) /* Optimize. */
     {
-      gunichar peek_char = g_utf8_get_char (iter->end);
+      gunichar peek_char = g_utf8_get_char (g_utf8_next_char (iter->end));
 
       /* Variation Selectors */
       if (current_emoji_type ==
@@ -248,9 +248,11 @@ _pango_emoji_iter_next (PangoEmojiIter *iter)
       }
     }
 
-    if (iter->is_emoji != PANGO_EMOJI_TYPE_IS_EMOJI (current_emoji_type) && iter->start != iter->text_start)
+    if (iter->is_emoji == (gboolean) 2)
+      iter->is_emoji = !PANGO_EMOJI_TYPE_IS_EMOJI (current_emoji_type);
+    if (iter->is_emoji == PANGO_EMOJI_TYPE_IS_EMOJI (current_emoji_type))
     {
-      iter->is_emoji = PANGO_EMOJI_TYPE_IS_EMOJI (current_emoji_type);
+      iter->is_emoji = !PANGO_EMOJI_TYPE_IS_EMOJI (current_emoji_type);
       return TRUE;
     }
   }
