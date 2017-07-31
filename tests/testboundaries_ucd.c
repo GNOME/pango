@@ -343,6 +343,22 @@ test_grapheme_break (void)
 }
 
 static void
+test_emoji_break (void)
+{
+  const gchar *filename;
+  AttrBits bits;
+
+#if GLIB_CHECK_VERSION(2, 37, 2)
+  filename = g_test_get_filename (G_TEST_DIST, "EmojiBreakTest.txt", NULL);
+#else
+  filename = SRCDIR "/EmojiBreakTest.txt";
+#endif
+  bits.bits = 0;
+  bits.attr.is_cursor_position = 1;
+  do_test (filename, bits, FALSE);
+}
+
+static void
 test_word_break (void)
 {
   const gchar *filename;
@@ -404,6 +420,7 @@ main (gint argc,
   g_test_add_func ("/text/break/word", test_word_break);
   g_test_add_func ("/text/break/sentence", test_sentence_break);
   g_test_add_func ("/text/break/line", test_line_break);
+  g_test_add_func ("/text/break/emoji", test_emoji_break);
 
   return g_test_run ();
 }
