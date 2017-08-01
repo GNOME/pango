@@ -11,6 +11,7 @@ pango_sources = [
   'pango-color.c',
   'pango-context.c',
   'pango-coverage.c',
+  'pango-emoji.c',
   'pango-engine.c',
   'pango-fontmap.c',
   'pango-fontset.c',
