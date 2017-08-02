@@ -38,6 +38,7 @@
 
 #include "pango-engine-private.h"
 #include "pango-script-private.h"
+#include "pango-emoji-private.h"
 
 /**
  * PangoContext:
@@ -691,7 +692,8 @@ typedef enum {
   LANG_CHANGED         = 1 << 2,
   FONT_CHANGED         = 1 << 3,
   DERIVED_LANG_CHANGED = 1 << 4,
-  WIDTH_CHANGED        = 1 << 5
+  WIDTH_CHANGED        = 1 << 5,
+  EMOJI_CHANGED        = 1 << 6,
 } ChangedFlags;
 
 
@@ -738,6 +740,7 @@ struct _ItemizeState
   gboolean free_attr_iter;
   const char *attr_end;
   PangoFontDescription *font_desc;
+  PangoFontDescription *emoji_font_desc;
   PangoLanguage *lang;
   GSList *extra_attrs;
   gboolean copy_extra_attrs;
@@ -749,6 +752,7 @@ struct _ItemizeState
   PangoScript script;
 
   PangoWidthIter width_iter;
+  PangoEmojiIter emoji_iter;
 
   PangoLanguage *derived_lang;
   PangoEngineLang *lang_engine;
@@ -799,6 +803,12 @@ update_attr_iterator (ItemizeState *state)
   else
     state->attr_end = state->end;
 
+  if (state->emoji_font_desc)
+    {
+      pango_font_description_free (state->emoji_font_desc);
+      state->emoji_font_desc = NULL;
+    }
+
   old_lang = state->lang;
   if (state->font_desc)
     pango_font_description_free (state->font_desc);
@@ -839,6 +849,8 @@ update_end (ItemizeState *state)
     state->run_end = state->script_end;
   if (state->width_iter.end < state->run_end)
     state->run_end = state->width_iter.end;
+  if (state->emoji_iter.end < state->run_end)
+    state->run_end = state->emoji_iter.end;
 }
 
 /* g_unichar_iswide() uses EastAsianWidth, which is broken.
@@ -865,6 +877,7 @@ width_iter_iswide (gunichar ch)
 static void
 width_iter_next(PangoWidthIter* iter)
 {
+  gboolean met_joiner = FALSE;
   iter->start = iter->end;
 
   if (iter->end < iter->text_end)
@@ -876,6 +889,32 @@ width_iter_next(PangoWidthIter* iter)
   while (iter->end < iter->text_end)
     {
       gunichar ch = g_utf8_get_char (iter->end);
+
+      /* for zero width joiner */
+      if (ch == 0x200D)
+        {
+          iter->end = g_utf8_next_char (iter->end);
+          met_joiner = TRUE;
+          continue;
+        }
+
+      /* ignore the wide check if met joiner */
+      if (met_joiner)
+        {
+          iter->end = g_utf8_next_char (iter->end);
+          met_joiner = FALSE;
+          continue;
+        }
+
+      /* for variation selector, tag and emoji modifier. */
+      if (G_UNLIKELY(ch == 0xFE0EU || ch == 0xFE0FU
+                    || (ch >= 0xE0020 && ch <= 0xE007F)
+                    || (ch >= 0x1F3FB && ch <= 0x1F3FF)))
+        {
+          iter->end = g_utf8_next_char (iter->end);
+          continue;
+        }
+
       if (width_iter_iswide (ch) != iter->wide)
         break;
       iter->end = g_utf8_next_char (iter->end);
@@ -890,6 +929,11 @@ width_iter_init (PangoWidthIter* iter, const char* text, int length)
   iter->start = iter->end = text;
 
   width_iter_next (iter);
+}
+
+static void
+width_iter_fini (PangoWidthIter* iter)
+{
 }
 
 static void
@@ -940,6 +984,7 @@ itemize_state_init (ItemizeState      *state,
       state->free_attr_iter = FALSE;
     }
 
+  state->emoji_font_desc = NULL;
   if (state->attr_iter)
     {
       state->font_desc = NULL;
@@ -965,8 +1010,8 @@ itemize_state_init (ItemizeState      *state,
   pango_script_iter_get_range (&state->script_iter, NULL,
 			       &state->script_end, &state->script);
 
-  /* Initialize the width iterator */
   width_iter_init (&state->width_iter, text + start_index, length);
+  _pango_emoji_iter_init (&state->emoji_iter, text + start_index, length);
 
   update_end (state);
 
@@ -985,7 +1030,7 @@ itemize_state_init (ItemizeState      *state,
   state->cache = NULL;
   state->base_font = NULL;
 
-  state->changed = EMBEDDING_CHANGED | SCRIPT_CHANGED | LANG_CHANGED | FONT_CHANGED | WIDTH_CHANGED;
+  state->changed = EMBEDDING_CHANGED | SCRIPT_CHANGED | LANG_CHANGED | FONT_CHANGED | WIDTH_CHANGED | EMOJI_CHANGED;
 }
 
 static gboolean
@@ -1020,6 +1065,11 @@ itemize_state_next (ItemizeState *state)
     {
       width_iter_next (&state->width_iter);
       state->changed |= WIDTH_CHANGED;
+    }
+  if (state->run_end == state->emoji_iter.end)
+    {
+      _pango_emoji_iter_next (&state->emoji_iter);
+      state->changed |= EMOJI_CHANGED;
     }
 
   update_end (state);
@@ -1325,6 +1375,11 @@ itemize_state_update_for_new_run (ItemizeState *state)
       state->lang_engine = _pango_get_language_engine ();
     }
 
+  if (state->changed & (EMOJI_CHANGED))
+    {
+      state->changed |= FONT_CHANGED;
+    }
+
   if (state->changed & (FONT_CHANGED | DERIVED_LANG_CHANGED) &&
       state->current_fonts)
     {
@@ -1335,9 +1390,15 @@ itemize_state_update_for_new_run (ItemizeState *state)
 
   if (!state->current_fonts)
     {
+      gboolean is_emoji = state->emoji_iter.is_emoji;
+      if (is_emoji && !state->emoji_font_desc)
+      {
+        state->emoji_font_desc = pango_font_description_copy_static (state->font_desc);
+        pango_font_description_set_family_static (state->emoji_font_desc, "emoji");
+      }
       state->current_fonts = pango_font_map_load_fontset (state->context->font_map,
 							  state->context,
-							  state->font_desc,
+							  is_emoji ? state->emoji_font_desc : state->font_desc,
 							  state->derived_lang);
       state->cache = get_font_cache (state->current_fonts);
     }
@@ -1395,12 +1456,17 @@ itemize_state_process_run (ItemizeState *state)
        * characters if they don't, HarfBuzz will compatibility-decompose them
        * to ASCII space...
        * See bugs #355987 and #701652.
+       *
+       * We don't want to change fonts just for variation selectors.
+       * See bug #781123.
        */
       type = g_unichar_type (wc);
       if (G_UNLIKELY (type == G_UNICODE_CONTROL ||
                       type == G_UNICODE_FORMAT ||
                       type == G_UNICODE_SURROGATE ||
-                      (type == G_UNICODE_SPACE_SEPARATOR && wc != 0x1680u /* OGHAM SPACE MARK */)))
+                      (type == G_UNICODE_SPACE_SEPARATOR && wc != 0x1680u /* OGHAM SPACE MARK */) ||
+                      (wc >= 0xfe00u && wc <= 0xfe0fu) ||
+                      (wc >= 0xe0100u && wc <= 0xe01efu)))
         {
 	  shape_engine = NULL;
 	  font = NULL;
@@ -1460,6 +1526,9 @@ itemize_state_finish (ItemizeState *state)
     pango_attr_iterator_destroy (state->attr_iter);
   _pango_script_iter_fini (&state->script_iter);
   pango_font_description_free (state->font_desc);
+  pango_font_description_free (state->emoji_font_desc);
+  width_iter_fini (&state->width_iter);
+  _pango_emoji_iter_fini (&state->emoji_iter);
 
   if (state->current_fonts)
     g_object_unref (state->current_fonts);

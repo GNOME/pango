@@ -30,7 +30,7 @@
 👰👰🏻👰🏼👰🏽👰🏾👰🏿 1F470 Bride with veil
 👱👱🏻👱🏼👱🏽👱🏾👱🏿 1F471 Person with blond hair
 👲👲🏻👲🏼👲🏽👲🏾👲🏿 1F472 Man with Gua Pi Mao
-👳👳🏻👳🏼👳🏽👳🏾👳🏿 1F473 Man with Turban 
+👳👳🏻👳🏼👳🏽👳🏾👳🏿 1F473 Man with Turban
 👴👴🏻👴🏼👴🏽👴🏾👴🏿 1F474 Older man
 👵👵🏻👵🏼👵🏽👵🏾👵🏿 1F475 Older woman
 👶👶🏻👶🏼👶🏽👶🏾👶🏿 1F476 Baby
@@ -47,7 +47,7 @@
 🕵🕵🏻🕵🏼🕵🏽🕵🏾🕵🏿 1F575 Sleuth or spy
 🖐🖐🏻🖐🏼🖐🏽🖐🏾🖐🏿 1F590 Raised hand with finder splayed
 🖕🖕🏻🖕🏼🖕🏽🖕🏾🖕🏿 1F595 Reversed hand with middle finder
-🖖🖖🏻🖖🏼🖖🏽🖖🏾🖖🏿 1F596 Raised hand with part between middel and ring fingers
+🖖🖖🏻🖖🏼🖖🏽🖖🏾🖖🏿 1F596 Raised hand with part between middle and ring fingers
 🙅🙅🏻🙅🏼🙅🏽🙅🏾🙅🏿 1F645 Face with no good gesture
 🙆🙆🏻🙆🏼🙆🏽🙆🏾🙆🏿 1F646 Face with OK gesture
 🙇🙇🏻🙇🏼🙇🏽🙇🏾🙇🏿 1F647 Person bowing deeply

@@ -110,7 +110,7 @@ load_fallback_face (PangoFT2Font *ft2font,
 
   _pango_ft2_font_map_default_substitute ((PangoFcFontMap *)fcfont->fontmap, sans);
 
-  matched = FcFontMatch (pango_fc_font_map_get_config (fcfont->fontmap), sans, &result);
+  matched = FcFontMatch (pango_fc_font_map_get_config ((PangoFcFontMap *)fcfont->fontmap), sans, &result);
 
   if (FcPatternGetString (matched, FC_FILE, 0, &filename2) != FcResultMatch)
     goto bail1;

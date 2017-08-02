@@ -15,6 +15,7 @@ SUBDIRS = mini-fribidi
 
 INCLUDES =						\
 	-DG_LOG_DOMAIN=\"Pango\"			\
+	-DPANGO_COMPILATION				\
 	-DPANGO_ENABLE_BACKEND				\
 	-DPANGO_ENABLE_ENGINE				\
 	-DSYSCONFDIR=\"$(sysconfdir)\"			\
@@ -74,6 +75,9 @@ libpango_1_0_la_SOURCES =			\
 	pango-color-table.h			\
 	pango-context.c				\
 	pango-coverage.c			\
+	pango-emoji.c				\
+	pango-emoji-private.h			\
+	pango-emoji-table.h			\
 	pango-engine.c				\
 	pango-engine-private.h			\
 	pango-fontmap.c				\

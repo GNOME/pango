@@ -21,7 +21,11 @@
 
 #include "config.h"
 
+/* Freetype has undefined macros in its header */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wundef"
 #include <cairo-ft.h>
+#pragma GCC diagnostic pop
 
 #include "pango-fontmap.h"
 #include "pangocairo-private.h"

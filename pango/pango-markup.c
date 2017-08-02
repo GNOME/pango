@@ -1000,11 +1000,6 @@ span_parse_boolean (const char *attr_name,
   return TRUE;
 }
 
-extern gboolean
-_pango_color_parse_with_alpha (PangoColor *color,
-                               guint16    *alpha,
-                               const char *spec);
-
 static gboolean
 span_parse_color (const char *attr_name,
 		  const char *attr_val,

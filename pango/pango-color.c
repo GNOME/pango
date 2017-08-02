@@ -26,6 +26,7 @@
 
 #include "pango-attributes.h"
 #include "pango-impl-utils.h"
+#include "pango-utils-internal.h"
 
 G_DEFINE_BOXED_TYPE (PangoColor, pango_color,
                      pango_color_copy,

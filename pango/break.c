@@ -432,27 +432,6 @@ static const CharJamoProps HangulJamoProps[] = {
 #define HANGUL(wc) ((wc) >= 0xAC00 && (wc) <= 0xD7A3)
 #define BACKSPACE_DELETES_CHARACTER(wc) (!LATIN (wc) && !CYRILLIC (wc) && !GREEK (wc) && !KANA(wc) && !HANGUL(wc))
 
-/* p. 132-133 of Unicode spec table 5-6 will help understand this */
-typedef enum
-{
-  STATE_SENTENCE_OUTSIDE,
-  STATE_SENTENCE_BODY,
-  STATE_SENTENCE_TERM,
-  STATE_SENTENCE_POST_TERM_CLOSE,
-  STATE_SENTENCE_POST_TERM_SPACE,
-  STATE_SENTENCE_POST_TERM_SEP,
-  STATE_SENTENCE_DOT,
-  STATE_SENTENCE_POST_DOT_CLOSE,
-  STATE_SENTENCE_POST_DOT_SPACE,
-  STATE_SENTENCE_POST_DOT_OPEN,
-  /* never include line/para separators in a sentence for now */
-  /* This isn't in the spec, but I can't figure out why they'd include
-   * one line/para separator in lines ending with Term but not with
-   * period-terminated lines, so I'm doing it for the dot lines also
-   */
-  STATE_SENTENCE_POST_DOT_SEP
-} SentenceState;
-
 /* Previously "123foo" was two words. But in UAX 29 of Unicode, 
  * we know don't break words between consecutive letters and numbers
  */
@@ -508,7 +487,6 @@ pango_default_break (const gchar   *text,
   JamoType prev_jamo;
 
   GUnicodeBreakType next_break_type;
-  GUnicodeType prev_type;
   GUnicodeBreakType prev_break_type; /* skips spaces */
   gboolean prev_was_break_space;
 
@@ -521,6 +499,15 @@ pango_default_break (const gchar   *text,
     GB_Prepend,
     GB_SpacingMark,
     GB_InHangulSyllable, /* Handles all of L, V, T, LV, LVT rules */
+    /* Use state machine to handle emoji sequence */
+    /* Rule GB10 and GB11 */
+    GB_E_Base,
+    GB_E_Modifier,
+    GB_Glue_After_Zwj,
+    GB_E_Base_GAZ,
+    /* Rule GB12 and GB13 */
+    GB_RI_Odd, /* Meets odd number of RI */
+    GB_RI_Even, /* Meets even number of RI */
   } GraphemeBreakType;
   GraphemeBreakType prev_GB_type = GB_Other;
 
@@ -531,27 +518,47 @@ pango_default_break (const gchar   *text,
     WB_NewlineCRLF,
     WB_ExtendFormat,
     WB_Katakana,
+    WB_Hebrew_Letter,
     WB_ALetter,
     WB_MidNumLet,
     WB_MidLetter,
     WB_MidNum,
     WB_Numeric,
     WB_ExtendNumLet,
+    WB_RI_Odd,
+    WB_RI_Even,
   } WordBreakType;
   WordBreakType prev_prev_WB_type = WB_Other, prev_WB_type = WB_Other;
   gint prev_WB_i = -1;
+
+  /* See Sentence_Break Property Values table of UAX#29 */
+  typedef enum
+  {
+    SB_Other,
+    SB_ExtendFormat,
+    SB_ParaSep,
+    SB_Sp,
+    SB_Lower,
+    SB_Upper,
+    SB_OLetter,
+    SB_Numeric,
+    SB_ATerm,
+    SB_SContinue,
+    SB_STerm,
+    SB_Close,
+    /* Rules SB8 and SB8a */
+    SB_ATerm_Close_Sp,
+    SB_STerm_Close_Sp,
+  } SentenceBreakType;
+  SentenceBreakType prev_prev_SB_type = SB_Other, prev_SB_type = SB_Other;
+  gint prev_SB_i = -1;
 
   WordType current_word_type = WordNone;
   gunichar last_word_letter = 0;
   gunichar base_character = 0;
 
-  SentenceState sentence_state = STATE_SENTENCE_OUTSIDE;
-  /* Tracks what will be the end of the sentence if a period is
-   * determined to actually be a sentence-ending period.
-   */
-  gint possible_sentence_end = -1;
-  /* possible sentence break before Open* after a period-ended sentence */
-  gint possible_sentence_boundary = -1;
+  gint last_sentence_start = -1;
+
   gboolean almost_done = FALSE;
   gboolean done = FALSE;
 
@@ -560,7 +567,6 @@ pango_default_break (const gchar   *text,
 
   next = text;
 
-  prev_type = G_UNICODE_PARAGRAPH_SEPARATOR;
   prev_break_type = G_UNICODE_BREAK_UNKNOWN;
   prev_was_break_space = FALSE;
   prev_wc = 0;
@@ -589,6 +595,7 @@ pango_default_break (const gchar   *text,
       /* UAX#29 boundaries */
       gboolean is_grapheme_boundary;
       gboolean is_word_boundary;
+      gboolean is_sentence_boundary;
 
 
       wc = next_wc;
@@ -671,6 +678,17 @@ pango_default_break (const gchar   *text,
 		GB_type = GB_Extend; /* U+200C and U+200D are Other_Grapheme_Extend */
 		break;
 	      }
+        if (G_UNLIKELY((wc >= 0x600 && wc <= 0x605) ||
+                       wc == 0x6DD ||
+                       wc == 0x70F ||
+                       wc == 0x8E2 ||
+                       wc == 0xD4E ||
+                       wc == 0x110BD ||
+                       (wc >= 0x111C2 && wc <= 0x111C3)))
+          {
+              GB_type = GB_Prepend;
+              break;
+          }
 	    /* fall through */
 	  case G_UNICODE_CONTROL:
 	  case G_UNICODE_LINE_SEPARATOR:
@@ -715,9 +733,86 @@ pango_default_break (const gchar   *text,
 	  case G_UNICODE_NON_SPACING_MARK:
 	    GB_type = GB_Extend; /* Grapheme_Extend */
 	    break;
+
+      case G_UNICODE_OTHER_SYMBOL:
+
+        if (G_UNLIKELY(wc == 0x261D ||
+                       wc == 0x26F9 ||
+                       (wc >= 0x270A && wc <= 0x270D) ||
+                       wc == 0x1F385 ||
+                       (wc >= 0x1F3C2 && wc <= 0x1F3C4) ||
+                       wc == 0x1F3C7 ||
+                       (wc >= 0x1F3CA && wc <= 0x1F3CC) ||
+                       (wc >= 0x1F442 && wc <= 0x1F443) ||
+                       (wc >= 0x1F446 && wc <= 0x1F450) ||
+                       wc == 0x1F46E ||
+                       (wc >= 0x1F470 && wc <= 0x1F478) ||
+                       wc == 0x1F47C ||
+                       (wc >= 0x1F481 && wc <= 0x1F483) ||
+                       (wc >= 0x1F485 && wc <= 0x1F487) ||
+                       wc == 0x1F4AA ||
+                       (wc >= 0x1F574 && wc <= 0x1F575) ||
+                       wc == 0x1F57A ||
+                       wc == 0x1F590 ||
+                       (wc >= 0x1F595 && wc <= 0x1F596) ||
+                       (wc >= 0x1F645 && wc <= 0x1F647) ||
+                       (wc >= 0x1F64B && wc <= 0x1F64F) ||
+                       wc == 0x1F6A3 ||
+                       (wc >= 0x1F6B4 && wc <= 0x1F6B6) ||
+                       wc == 0x1F6C0 ||
+                       wc == 0x1F6CC ||
+                       (wc >= 0x1F918 && wc <= 0x1F91C) ||
+                       (wc >= 0x1F91E && wc <= 0x1F91F) ||
+                       wc == 0x1F926 ||
+                       (wc >= 0x1F930 && wc <= 0x1F939) ||
+                       (wc >= 0x1F93D && wc <= 0x1F93E) ||
+                       (wc >= 0x1F9D1 && wc <= 0x1F9DD)))
+          GB_type = GB_E_Base;
+
+        if (G_UNLIKELY(wc == 0x2640 ||
+                       wc == 0x2642 ||
+                       (wc >= 0x2695 && wc <= 0x2696) ||
+                       wc == 0x2708 ||
+                       wc == 0x2764 ||
+                       wc == 0x1F308 ||
+                       wc == 0x1F33E ||
+                       wc == 0x1F373 ||
+                       wc == 0x1F393 ||
+                       wc == 0x1F3A4 ||
+                       wc == 0x1F3A8 ||
+                       wc == 0x1F3EB ||
+                       wc == 0x1F3ED ||
+                       wc == 0x1F48B ||
+                       (wc >= 0x1F4BB && wc <= 0x1F4BC) ||
+                       wc == 0x1F527 ||
+                       wc == 0x1F52C ||
+                       wc == 0x1F5E8 ||
+                       wc == 0x1F680 ||
+                       wc == 0x1F692))
+          GB_type = GB_Glue_After_Zwj;
+
+        if (G_UNLIKELY(wc >= 0x1F466 && wc <= 0x1F469))
+          GB_type = GB_E_Base_GAZ;
+
+        if (G_UNLIKELY(wc >=0x1F1E6 && wc <=0x1F1FF))
+          {
+            if (prev_GB_type == GB_RI_Odd)
+              GB_type = GB_RI_Even;
+            else if (prev_GB_type == GB_RI_Even)
+              GB_type = GB_RI_Odd;
+            else
+              GB_type = GB_RI_Odd;
+          }
+        break;
+
+    case G_UNICODE_MODIFIER_SYMBOL:
+      if (wc >= 0x1F3FB && wc <= 0x1F3FF)
+        GB_type = GB_E_Modifier;
+      break;
 	  }
 
 	/* Grapheme Cluster Boundary Rules */
+
 	/* We apply Rules GB1 and GB2 at the end of the function */
 	if (wc == '\n' && prev_wc == '\r')
 	  is_grapheme_boundary = FALSE; /* Rule GB3 */
@@ -726,13 +821,31 @@ pango_default_break (const gchar   *text,
 	else if (GB_type == GB_InHangulSyllable)
 	  is_grapheme_boundary = FALSE; /* Rules GB6, GB7, GB8 */
 	else if (GB_type == GB_Extend)
+        {
+      /* Rule GB10 */
+      if (prev_GB_type == GB_E_Base || prev_GB_type == GB_E_Base_GAZ)
+	    GB_type = prev_GB_type;
 	  is_grapheme_boundary = FALSE; /* Rule GB9 */
+        }
 	else if (GB_type == GB_SpacingMark)
 	  is_grapheme_boundary = FALSE; /* Rule GB9a */
 	else if (prev_GB_type == GB_Prepend)
 	  is_grapheme_boundary = FALSE; /* Rule GB9b */
+	/* Rule GB10 */
+	else if (prev_GB_type == GB_E_Base || prev_GB_type == GB_E_Base_GAZ)
+	  {
+        if (GB_type == GB_E_Modifier)
+          is_grapheme_boundary = FALSE;
+        else
+          is_grapheme_boundary = TRUE;
+      }
+	else if (prev_wc == 0x200D &&
+           (GB_type == GB_Glue_After_Zwj || GB_type == GB_E_Base_GAZ))
+	  is_grapheme_boundary = FALSE; /* Rule GB11 */
+	else if (prev_GB_type == GB_RI_Odd && GB_type == GB_RI_Even)
+	  is_grapheme_boundary = FALSE; /* Rule GB12 and GB13 */
 	else
-	  is_grapheme_boundary = TRUE;  /* Rule GB10 */
+	  is_grapheme_boundary = TRUE;  /* Rule GB999 */
 
 	prev_GB_type = GB_type;
 
@@ -748,7 +861,8 @@ pango_default_break (const gchar   *text,
       /* ---- UAX#29 Word Boundaries ---- */
       {
 	is_word_boundary = FALSE;
-	if (is_grapheme_boundary) /* Rules WB3 and WB4 */
+	if (is_grapheme_boundary ||
+	    G_UNLIKELY(wc >=0x1F1E6 && wc <=0x1F1FF)) /* Rules WB3 and WB4 */
 	  {
 	    PangoScript script;
 	    WordBreakType WB_type;
@@ -760,6 +874,9 @@ pango_default_break (const gchar   *text,
 
 	    if (script == PANGO_SCRIPT_KATAKANA)
 	      WB_type = WB_Katakana;
+
+	    if (script == PANGO_SCRIPT_HEBREW && type == G_UNICODE_OTHER_LETTER)
+	      WB_type = WB_Hebrew_Letter;
 
 	    if (WB_type == WB_Other)
 	      switch (wc >> 8)
@@ -837,6 +954,17 @@ pango_default_break (const gchar   *text,
 		case G_UNICODE_OTHER_SYMBOL:
 		  if (wc >= 0x24B6 && wc <= 0x24E9) /* Other_Alphabetic */
 		    goto Alphabetic;
+
+		  if (G_UNLIKELY(wc >=0x1F1E6 && wc <=0x1F1FF))
+		    {
+			  if (prev_WB_type == WB_RI_Odd)
+			   WB_type = WB_RI_Even;
+			  else if (prev_WB_type == WB_RI_Even)
+			   WB_type = WB_RI_Odd;
+			  else
+			   WB_type = WB_RI_Odd;
+		    }
+
 		  break;
 
 		case G_UNICODE_OTHER_LETTER:
@@ -883,31 +1011,56 @@ pango_default_break (const gchar   *text,
 	    else if (WB_type == WB_ExtendFormat)
 	      is_word_boundary = FALSE; /* Rules WB4? */
 	    else if ((prev_WB_type == WB_ALetter  ||
-		      prev_WB_type == WB_Numeric  ||
-		      prev_WB_type == WB_ExtendNumLet) &&
-		     (     WB_type == WB_ALetter  ||
-		           WB_type == WB_Numeric  ||
-		           WB_type == WB_ExtendNumLet))
-	      is_word_boundary = FALSE; /* Rules WB5, WB8, WB9, WB10, WB13a, WB13b */
-	    else if ((prev_WB_type == WB_Katakana ||
-		      prev_WB_type == WB_ExtendNumLet) &&
-		     (     WB_type == WB_Katakana ||
-		           WB_type == WB_ExtendNumLet))
-	      is_word_boundary = FALSE; /* Rules WB13, WB13a, WB13b */
-	    else if ((prev_prev_WB_type == WB_ALetter && WB_type == WB_ALetter) &&
-		     (prev_WB_type == WB_MidLetter || prev_WB_type == WB_MidNumLet))
+                  prev_WB_type == WB_Hebrew_Letter ||
+                  prev_WB_type == WB_Numeric) &&
+                 (WB_type == WB_ALetter  ||
+                  WB_type == WB_Hebrew_Letter ||
+                  WB_type == WB_Numeric))
+	      is_word_boundary = FALSE; /* Rules WB5, WB8, WB9, WB10 */
+	    else if (prev_WB_type == WB_Katakana && WB_type == WB_Katakana)
+	      is_word_boundary = FALSE; /* Rule WB13 */
+	    else if ((prev_WB_type == WB_ALetter ||
+                  prev_WB_type == WB_Hebrew_Letter ||
+                  prev_WB_type == WB_Numeric ||
+                  prev_WB_type == WB_Katakana ||
+                  prev_WB_type == WB_ExtendNumLet) &&
+                 WB_type == WB_ExtendNumLet)
+	      is_word_boundary = FALSE; /* Rule WB13a */
+	    else if (prev_WB_type == WB_ExtendNumLet &&
+                 (WB_type == WB_ALetter ||
+                  WB_type == WB_Hebrew_Letter ||
+                  WB_type == WB_Numeric ||
+                  WB_type == WB_Katakana))
+	      is_word_boundary = FALSE; /* Rule WB13b */
+	    else if (((prev_prev_WB_type == WB_ALetter ||
+                   prev_prev_WB_type == WB_Hebrew_Letter) &&
+                  (WB_type == WB_ALetter ||
+                   WB_type == WB_Hebrew_Letter)) &&
+		     (prev_WB_type == WB_MidLetter ||
+              prev_WB_type == WB_MidNumLet ||
+              prev_wc == 0x0027))
 	      {
 		attrs[prev_WB_i].is_word_boundary = FALSE; /* Rule WB6 */
 		is_word_boundary = FALSE; /* Rule WB7 */
 	      }
+	    else if (prev_WB_type == WB_Hebrew_Letter && wc == 0x0027)
+          is_word_boundary = FALSE; /* Rule WB7a */
+	    else if (prev_prev_WB_type == WB_Hebrew_Letter && prev_wc == 0x0022 &&
+                 WB_type == WB_Hebrew_Letter) {
+          attrs[prev_WB_i].is_word_boundary = FALSE; /* Rule WB7b */
+          is_word_boundary = FALSE; /* Rule WB7c */
+        }
 	    else if ((prev_prev_WB_type == WB_Numeric && WB_type == WB_Numeric) &&
-		     (prev_WB_type == WB_MidNum || prev_WB_type == WB_MidNumLet))
+                 (prev_WB_type == WB_MidNum || prev_WB_type == WB_MidNumLet ||
+                  prev_wc == 0x0027))
 	      {
 		is_word_boundary = FALSE; /* Rule WB11 */
 		attrs[prev_WB_i].is_word_boundary = FALSE; /* Rule WB12 */
 	      }
+	    else if (prev_WB_type == WB_RI_Odd && WB_type == WB_RI_Even)
+	      is_word_boundary = FALSE; /* Rule WB15 and WB16 */
 	    else
-	      is_word_boundary = TRUE; /* Rule WB14 */
+	      is_word_boundary = TRUE; /* Rule WB999 */
 
 	    if (WB_type != WB_ExtendFormat)
 	      {
@@ -920,6 +1073,276 @@ pango_default_break (const gchar   *text,
 	attrs[i].is_word_boundary = is_word_boundary;
       }
 
+      /* ---- UAX#29 Sentence Boundaries ---- */
+      {
+	is_sentence_boundary = FALSE;
+	if (is_word_boundary ||
+	    wc == '\r' || wc == '\n') /* Rules SB3 and SB5 */
+	  {
+	    SentenceBreakType SB_type;
+
+	    /* Find the SentenceBreakType of wc */
+	    SB_type = SB_Other;
+
+	    if (break_type == G_UNICODE_BREAK_NUMERIC)
+	      SB_type = SB_Numeric; /* Numeric */
+
+	    if (SB_type == SB_Other)
+	      switch ((int) type)
+		{
+		case G_UNICODE_CONTROL:
+		  if (wc == '\r' || wc == '\n')
+		    SB_type = SB_ParaSep;
+		  else if (wc == 0x0009 || wc == 0x000B || wc == 0x000C)
+		    SB_type = SB_Sp;
+		  else if (wc == 0x0085)
+		    SB_type = SB_ParaSep;
+		  break;
+
+		case G_UNICODE_SPACE_SEPARATOR:
+		  if (wc == 0x0020 || wc == 0x00A0 || wc == 0x1680 ||
+		      (wc >= 0x2000 && wc <= 0x200A) ||
+		      wc == 0x202F || wc == 0x205F || wc == 0x3000)
+		    SB_type = SB_Sp;
+		  break;
+
+		case G_UNICODE_LINE_SEPARATOR:
+		case G_UNICODE_PARAGRAPH_SEPARATOR:
+		  SB_type = SB_ParaSep;
+		  break;
+
+		case G_UNICODE_FORMAT:
+		case G_UNICODE_SPACING_MARK:
+		case G_UNICODE_ENCLOSING_MARK:
+		case G_UNICODE_NON_SPACING_MARK:
+		  SB_type = SB_ExtendFormat; /* Extend, Format */
+		  break;
+
+		case G_UNICODE_MODIFIER_LETTER:
+		  if (wc >= 0xFF9E && wc <= 0xFF9F)
+		    SB_type = SB_ExtendFormat; /* Other_Grapheme_Extend */
+		  break;
+
+		case G_UNICODE_TITLECASE_LETTER:
+		  SB_type = SB_Upper;
+		  break;
+
+		case G_UNICODE_DASH_PUNCTUATION:
+		  if (wc == 0x002D ||
+		      (wc >= 0x2013 && wc <= 0x2014) ||
+		      (wc >= 0xFE31 && wc <= 0xFE32) ||
+		      wc == 0xFE58 ||
+		      wc == 0xFE63 ||
+		      wc == 0xFF0D)
+		    SB_type = SB_SContinue;
+		  break;
+
+		case G_UNICODE_OTHER_PUNCTUATION:
+		  if (wc == 0x05F3)
+		    SB_type = SB_OLetter;
+		  else if (wc == 0x002E || wc == 0x2024 ||
+		      wc == 0xFE52 || wc == 0xFF0E)
+		    SB_type = SB_ATerm;
+
+		  if (wc == 0x002C ||
+		      wc == 0x003A ||
+		      wc == 0x055D ||
+		      (wc >= 0x060C && wc <= 0x060D) ||
+		      wc == 0x07F8 ||
+		      wc == 0x1802 ||
+		      wc == 0x1808 ||
+		      wc == 0x3001 ||
+		      (wc >= 0xFE10 && wc <= 0xFE11) ||
+		      wc == 0xFE13 ||
+		      (wc >= 0xFE50 && wc <= 0xFE51) ||
+		      wc == 0xFE55 ||
+		      wc == 0xFF0C ||
+		      wc == 0xFF1A ||
+		      wc == 0xFF64)
+		    SB_type = SB_SContinue;
+
+		  if (wc == 0x0021 ||
+		      wc == 0x003F ||
+		      wc == 0x0589 ||
+		      wc == 0x061F ||
+		      wc == 0x06D4 ||
+		      (wc >= 0x0700 && wc <= 0x0702) ||
+		      wc == 0x07F9 ||
+		      (wc >= 0x0964 && wc <= 0x0965) ||
+		      (wc >= 0x104A && wc <= 0x104B) ||
+		      wc == 0x1362 ||
+		      (wc >= 0x1367 && wc <= 0x1368) ||
+		      wc == 0x166E ||
+		      (wc >= 0x1735 && wc <= 0x1736) ||
+		      wc == 0x1803 ||
+		      wc == 0x1809 ||
+		      (wc >= 0x1944 && wc <= 0x1945) ||
+		      (wc >= 0x1AA8 && wc <= 0x1AAB) ||
+		      (wc >= 0x1B5A && wc <= 0x1B5B) ||
+		      (wc >= 0x1B5E && wc <= 0x1B5F) ||
+		      (wc >= 0x1C3B && wc <= 0x1C3C) ||
+		      (wc >= 0x1C7E && wc <= 0x1C7F) ||
+		      (wc >= 0x203C && wc <= 0x203D) ||
+		      (wc >= 0x2047 && wc <= 0x2049) ||
+		      wc == 0x2E2E ||
+		      wc == 0x2E3C ||
+		      wc == 0x3002 ||
+		      wc == 0xA4FF ||
+		      (wc >= 0xA60E && wc <= 0xA60F) ||
+		      wc == 0xA6F3 ||
+		      wc == 0xA6F7 ||
+		      (wc >= 0xA876 && wc <= 0xA877) ||
+		      (wc >= 0xA8CE && wc <= 0xA8CF) ||
+		      wc == 0xA92F ||
+		      (wc >= 0xA9C8 && wc <= 0xA9C9) ||
+		      (wc >= 0xAA5D && wc <= 0xAA5F) ||
+		      (wc >= 0xAAF0 && wc <= 0xAAF1) ||
+		      wc == 0xABEB ||
+		      (wc >= 0xFE56 && wc <= 0xFE57) ||
+		      wc == 0xFF01 ||
+		      wc == 0xFF1F ||
+		      wc == 0xFF61 ||
+		      (wc >= 0x10A56 && wc <= 0x10A57) ||
+		      (wc >= 0x11047 && wc <= 0x11048) ||
+		      (wc >= 0x110BE && wc <= 0x110C1) ||
+		      (wc >= 0x11141 && wc <= 0x11143) ||
+		      (wc >= 0x111C5 && wc <= 0x111C6) ||
+		      wc == 0x111CD ||
+		      (wc >= 0x111DE && wc <= 0x111DF) ||
+		      (wc >= 0x11238 && wc <= 0x11239) ||
+		      (wc >= 0x1123B && wc <= 0x1123C) ||
+		      wc == 0x112A9 ||
+		      (wc >= 0x1144B && wc <= 0x1144C) ||
+		      (wc >= 0x115C2 && wc <= 0x115C3) ||
+		      (wc >= 0x115C9 && wc <= 0x115D7) ||
+		      (wc >= 0x11641 && wc <= 0x11642) ||
+		      (wc >= 0x1173C && wc <= 0x1173E) ||
+		      (wc >= 0x11C41 && wc <= 0x11C42) ||
+		      (wc >= 0x16A6E && wc <= 0x16A6F) ||
+		      wc == 0x16AF5 ||
+		      (wc >= 0x16B37 && wc <= 0x16B38) ||
+		      wc == 0x16B44 ||
+		      wc == 0x1BC9F ||
+		      wc == 0x1DA88)
+		    SB_type = SB_STerm;
+
+		  break;
+		}
+
+	    if (SB_type == SB_Other)
+	      {
+		if (g_unichar_islower(wc))
+		  SB_type = SB_Lower;
+		else if (g_unichar_isupper(wc))
+		  SB_type = SB_Upper;
+		else if (g_unichar_isalpha(wc))
+		  SB_type = SB_OLetter;
+
+		if (type == G_UNICODE_OPEN_PUNCTUATION ||
+		    type == G_UNICODE_CLOSE_PUNCTUATION ||
+		    break_type == G_UNICODE_BREAK_QUOTATION)
+		  SB_type = SB_Close;
+	      }
+
+	    /* Sentence Boundary Rules */
+
+	    /* We apply Rules SB1 and SB2 at the end of the function */
+
+#define IS_OTHER_TERM(SB_type)						\
+	    /* not in (OLetter | Upper | Lower | ParaSep | SATerm) */	\
+	      !(SB_type == SB_OLetter ||				\
+		SB_type == SB_Upper || SB_type == SB_Lower ||		\
+		SB_type == SB_ParaSep ||				\
+		SB_type == SB_ATerm || SB_type == SB_STerm ||		\
+		SB_type == SB_ATerm_Close_Sp ||				\
+		SB_type == SB_STerm_Close_Sp)
+
+
+	    if (wc == '\n' && prev_wc == '\r')
+	      is_sentence_boundary = FALSE; /* Rule SB3 */
+	    else if (prev_SB_type == SB_ParaSep && prev_SB_i + 1 == i)
+	      {
+		/* The extra check for prev_SB_i is to correctly handle sequences like
+		 * ParaSep ÷ Extend × Extend
+		 * since we have not skipped ExtendFormat yet.
+		 */
+
+		is_sentence_boundary = TRUE; /* Rule SB4 */
+	      }
+	    else if (SB_type == SB_ExtendFormat)
+	      is_sentence_boundary = FALSE; /* Rule SB5? */
+	    else if (prev_SB_type == SB_ATerm && SB_type == SB_Numeric)
+	      is_sentence_boundary = FALSE; /* Rule SB6 */
+	    else if ((prev_prev_SB_type == SB_Upper ||
+		      prev_prev_SB_type == SB_Lower) &&
+		     prev_SB_type == SB_ATerm &&
+		     SB_type == SB_Upper)
+	      is_sentence_boundary = FALSE; /* Rule SB7 */
+	    else if (prev_SB_type == SB_ATerm && SB_type == SB_Close)
+		SB_type = SB_ATerm;
+	    else if (prev_SB_type == SB_STerm && SB_type == SB_Close)
+	      SB_type = SB_STerm;
+	    else if (prev_SB_type == SB_ATerm && SB_type == SB_Sp)
+	      SB_type = SB_ATerm_Close_Sp;
+	    else if (prev_SB_type == SB_STerm && SB_type == SB_Sp)
+	      SB_type = SB_STerm_Close_Sp;
+	    /* Rule SB8 */
+	    else if ((prev_SB_type == SB_ATerm ||
+		      prev_SB_type == SB_ATerm_Close_Sp) &&
+		     SB_type == SB_Lower)
+	      is_sentence_boundary = FALSE;
+	    else if ((prev_prev_SB_type == SB_ATerm ||
+		      prev_prev_SB_type == SB_ATerm_Close_Sp) &&
+		     IS_OTHER_TERM(prev_SB_type) &&
+		     SB_type == SB_Lower)
+	      attrs[prev_SB_i].is_sentence_boundary = FALSE;
+	    else if ((prev_SB_type == SB_ATerm ||
+		      prev_SB_type == SB_ATerm_Close_Sp ||
+		      prev_SB_type == SB_STerm ||
+		      prev_SB_type == SB_STerm_Close_Sp) &&
+		     (SB_type == SB_SContinue ||
+		      SB_type == SB_ATerm || SB_type == SB_STerm))
+	      is_sentence_boundary = FALSE; /* Rule SB8a */
+	    else if ((prev_SB_type == SB_ATerm ||
+		      prev_SB_type == SB_STerm) &&
+		     (SB_type == SB_Close || SB_type == SB_Sp ||
+		      SB_type == SB_ParaSep))
+	      is_sentence_boundary = FALSE; /* Rule SB9 */
+	    else if ((prev_SB_type == SB_ATerm ||
+		      prev_SB_type == SB_ATerm_Close_Sp ||
+		      prev_SB_type == SB_STerm ||
+		      prev_SB_type == SB_STerm_Close_Sp) &&
+		     (SB_type == SB_Sp || SB_type == SB_ParaSep))
+	      is_sentence_boundary = FALSE; /* Rule SB10 */
+	    else if ((prev_SB_type == SB_ATerm ||
+		      prev_SB_type == SB_ATerm_Close_Sp ||
+		      prev_SB_type == SB_STerm ||
+		      prev_SB_type == SB_STerm_Close_Sp) &&
+		     SB_type != SB_ParaSep)
+	      is_sentence_boundary = TRUE; /* Rule SB11 */
+	    else
+	      is_sentence_boundary = FALSE; /* Rule SB998 */
+
+	    if (SB_type != SB_ExtendFormat &&
+		!((prev_prev_SB_type == SB_ATerm ||
+		   prev_prev_SB_type == SB_ATerm_Close_Sp) &&
+		  IS_OTHER_TERM(prev_SB_type) &&
+		  IS_OTHER_TERM(SB_type)))
+              {
+                prev_prev_SB_type = prev_SB_type;
+                prev_SB_type = SB_type;
+                prev_SB_i = i;
+              }
+
+#undef IS_OTHER_TERM
+
+	  }
+
+	if (i == 0 || done)
+	  is_sentence_boundary = TRUE; /* Rules SB1 and SB2 */
+
+	attrs[i].is_sentence_boundary = is_sentence_boundary;
+      }
 
       /* ---- Line breaking ---- */
 
@@ -1213,424 +1636,20 @@ pango_default_break (const gchar   *text,
 
       /* ---- Sentence breaks ---- */
 
-      /* The Unicode spec specifies sentence breakpoints, so that a piece of
-       * text would be partitioned into sentences, and all characters would
-       * be inside some sentence. This code implements that for is_sentence_boundary,
-       * but tries to keep leading/trailing whitespace out of sentences for
-       * the start/end flags
-       */
-
-      /* The Unicode spec seems to say that one trailing line/para
-       * separator can be tacked on to a sentence ending in ! or ?,
-       * but not a sentence ending in period; I think they're on crack
-       * so am allowing one to be tacked onto a sentence ending in period.
-       */
-
-#define MAYBE_START_NEW_SENTENCE                                \
-	      switch ((int) type)                               \
-		{                                               \
-		case G_UNICODE_LINE_SEPARATOR:                  \
-		case G_UNICODE_PARAGRAPH_SEPARATOR:             \
-		case G_UNICODE_CONTROL:                         \
-		case G_UNICODE_FORMAT:                          \
-		case G_UNICODE_SPACE_SEPARATOR:                 \
-		  sentence_state = STATE_SENTENCE_OUTSIDE;      \
-		  break;                                        \
-								\
-		default:                                        \
-		  sentence_state = STATE_SENTENCE_BODY;         \
-		  attrs[i].is_sentence_start = TRUE;            \
-		  break;                                        \
-		}
-
-      /* No sentence break at the start of the text */
-
-      /* default to not a sentence breakpoint */
-      attrs[i].is_sentence_boundary = FALSE;
+      /* default to not a sentence start/end */
       attrs[i].is_sentence_start = FALSE;
       attrs[i].is_sentence_end = FALSE;
 
-      /* FIXME the Unicode spec lumps control/format chars with
-       * line/para separators in descriptive text, but not in the
-       * character class specs, in table 5-6, so who knows whether you
-       * are actually supposed to break on control/format
-       * characters. Seems semi-broken to break on tabs...
-       */
+      if (last_sentence_start == -1 && !is_sentence_boundary) {
+	last_sentence_start = i - 1;
+	attrs[i - 1].is_sentence_start = TRUE;
+      }
+
+      if (last_sentence_start != -1 && is_sentence_boundary) {
+	last_sentence_start = -1;
+	attrs[i].is_sentence_end = TRUE;
+      }
 
-      /* Break after line/para separators except carriage return
-       * followed by newline
-       */
-      switch ((int) prev_type)
-	{
-	case G_UNICODE_LINE_SEPARATOR:
-	case G_UNICODE_PARAGRAPH_SEPARATOR:
-	case G_UNICODE_CONTROL:
-	case G_UNICODE_FORMAT:
-	  if (wc == '\r')
-	    {
-	      if (next_wc != '\n')
-		attrs[i].is_sentence_boundary = TRUE;
-	    }
-	  else
-	    attrs[i].is_sentence_boundary = TRUE;
-	  break;
-
-	default:
-	  break;
-	}
-
-      /* break before para/line separators except newline following
-       * carriage return
-       */
-      switch ((int) type)
-	{
-	case G_UNICODE_LINE_SEPARATOR:
-	case G_UNICODE_PARAGRAPH_SEPARATOR:
-	case G_UNICODE_CONTROL:
-	case G_UNICODE_FORMAT:
-	  if (wc == '\n')
-	    {
-	      if (prev_wc != '\r')
-		attrs[i].is_sentence_boundary = TRUE;
-	    }
-	  else
-	    attrs[i].is_sentence_boundary = TRUE;
-	  break;
-
-	default:
-	  break;
-	}
-
-      switch (sentence_state)
-	{
-	case STATE_SENTENCE_OUTSIDE:
-	  /* Start sentence if we have non-whitespace/format/control */
-	  switch ((int) type)
-	    {
-	    case G_UNICODE_LINE_SEPARATOR:
-	    case G_UNICODE_PARAGRAPH_SEPARATOR:
-	    case G_UNICODE_CONTROL:
-	    case G_UNICODE_FORMAT:
-	    case G_UNICODE_SPACE_SEPARATOR:
-	      break;
-
-	    default:
-	      attrs[i].is_sentence_start = TRUE;
-	      sentence_state = STATE_SENTENCE_BODY;
-	      break;
-	    }
-	  break;
-
-	case STATE_SENTENCE_BODY:
-	  /* If we already broke here due to separators, end the sentence. */
-	  if (attrs[i].is_sentence_boundary)
-	    {
-	      attrs[i].is_sentence_end = TRUE;
-
-	      MAYBE_START_NEW_SENTENCE;
-	    }
-	  else
-	    {
-	      if (wc == '.')
-		sentence_state = STATE_SENTENCE_DOT;
-	      else if (wc == '?' || wc == '!')
-		sentence_state = STATE_SENTENCE_TERM;
-	    }
-	  break;
-
-	case STATE_SENTENCE_TERM:
-	  /* End sentence on anything but close punctuation and some
-	   * loosely-specified OTHER_PUNCTUATION such as period,
-	   * comma, etc.; follow Unicode rules for breaks
-	   */
-	  switch ((int) type)
-	    {
-	    case G_UNICODE_OTHER_PUNCTUATION:
-	    case G_UNICODE_CLOSE_PUNCTUATION:
-	      if (type == G_UNICODE_CLOSE_PUNCTUATION ||
-		  wc == '.' ||
-		  wc == ',' ||
-		  wc == '?' ||
-		  wc == '!')
-		sentence_state = STATE_SENTENCE_POST_TERM_CLOSE;
-	      else
-		{
-		  attrs[i].is_sentence_end = TRUE;
-		  attrs[i].is_sentence_boundary = TRUE;
-
-		  MAYBE_START_NEW_SENTENCE;
-		}
-	      break;
-
-	    case G_UNICODE_SPACE_SEPARATOR:
-	      attrs[i].is_sentence_end = TRUE;
-	      sentence_state = STATE_SENTENCE_POST_TERM_SPACE;
-	      break;
-
-	    case G_UNICODE_LINE_SEPARATOR:
-	    case G_UNICODE_PARAGRAPH_SEPARATOR:
-	      attrs[i].is_sentence_end = TRUE;
-	      sentence_state = STATE_SENTENCE_POST_TERM_SEP;
-	      break;
-
-	    default:
-	      attrs[i].is_sentence_end = TRUE;
-	      attrs[i].is_sentence_boundary = TRUE;
-
-	      MAYBE_START_NEW_SENTENCE;
-
-	      break;
-	    }
-	  break;
-
-	case STATE_SENTENCE_POST_TERM_CLOSE:
-	  /* End sentence on anything besides more punctuation; follow
-	   * rules for breaks
-	   */
-	  switch ((int) type)
-	    {
-	    case G_UNICODE_OTHER_PUNCTUATION:
-	    case G_UNICODE_CLOSE_PUNCTUATION:
-	      if (type == G_UNICODE_CLOSE_PUNCTUATION ||
-		  wc == '.' ||
-		  wc == ',' ||
-		  wc == '?' ||
-		  wc == '!')
-		/* continue in this state */
-		;
-	      else
-		{
-		  attrs[i].is_sentence_end = TRUE;
-		  attrs[i].is_sentence_boundary = TRUE;
-
-		  MAYBE_START_NEW_SENTENCE;
-		}
-	      break;
-
-	    case G_UNICODE_SPACE_SEPARATOR:
-	      attrs[i].is_sentence_end = TRUE;
-	      sentence_state = STATE_SENTENCE_POST_TERM_SPACE;
-	      break;
-
-	    case G_UNICODE_LINE_SEPARATOR:
-	    case G_UNICODE_PARAGRAPH_SEPARATOR:
-	      attrs[i].is_sentence_end = TRUE;
-	      /* undo the unconditional break-at-all-line/para-separators
-	       * from above; I'm not sure this is what the Unicode spec
-	       * intends, but it seems right - we get to include
-	       * a single line/para separator in the sentence according
-	       * to their rules
-	       */
-	      attrs[i].is_sentence_boundary = FALSE;
-	      sentence_state = STATE_SENTENCE_POST_TERM_SEP;
-	      break;
-
-	    default:
-	      attrs[i].is_sentence_end = TRUE;
-	      attrs[i].is_sentence_boundary = TRUE;
-
-	      MAYBE_START_NEW_SENTENCE;
-
-	      break;
-	    }
-	  break;
-
-	case STATE_SENTENCE_POST_TERM_SPACE:
-
-	  /* Sentence is definitely already ended; to enter this state
-	   * we had to see a space, which ends the sentence.
-	   */
-
-	  switch ((int) type)
-	    {
-	    case G_UNICODE_SPACE_SEPARATOR:
-	      /* continue in this state */
-	      break;
-
-	    case G_UNICODE_LINE_SEPARATOR:
-	    case G_UNICODE_PARAGRAPH_SEPARATOR:
-	      /* undo the unconditional break-at-all-line/para-separators
-	       * from above; I'm not sure this is what the Unicode spec
-	       * intends, but it seems right
-	       */
-	      attrs[i].is_sentence_boundary = FALSE;
-	      sentence_state = STATE_SENTENCE_POST_TERM_SEP;
-	      break;
-
-	    default:
-	      attrs[i].is_sentence_boundary = TRUE;
-
-	      MAYBE_START_NEW_SENTENCE;
-
-	      break;
-	    }
-	  break;
-
-	case STATE_SENTENCE_POST_TERM_SEP:
-	  /* Break is forced at this point, unless we're a newline
-	   * after a CR, then we will break after the newline on the
-	   * next iteration. Only a single Sep can be in the
-	   * sentence.
-	   */
-	  if (!(prev_wc == '\r' && wc == '\n'))
-	    attrs[i].is_sentence_boundary = TRUE;
-
-	  MAYBE_START_NEW_SENTENCE;
-
-	  break;
-
-	case STATE_SENTENCE_DOT:
-	  switch ((int) type)
-	    {
-	    case G_UNICODE_CLOSE_PUNCTUATION:
-	      sentence_state = STATE_SENTENCE_POST_DOT_CLOSE;
-	      break;
-
-	    case G_UNICODE_SPACE_SEPARATOR:
-	      possible_sentence_end = i;
-	      sentence_state = STATE_SENTENCE_POST_DOT_SPACE;
-	      break;
-
-	    default:
-	      /* If we broke on a control/format char, end the
-	       * sentence; else this was not a sentence end, since
-	       * we didn't enter the POST_DOT_SPACE state.
-	       */
-	      if (attrs[i].is_sentence_boundary)
-		{
-		  attrs[i].is_sentence_end = TRUE;
-
-		  MAYBE_START_NEW_SENTENCE;
-		}
-	      else
-		sentence_state = STATE_SENTENCE_BODY;
-	      break;
-	    }
-	  break;
-
-	case STATE_SENTENCE_POST_DOT_CLOSE:
-	  switch ((int) type)
-	    {
-	    case G_UNICODE_SPACE_SEPARATOR:
-	      possible_sentence_end = i;
-	      sentence_state = STATE_SENTENCE_POST_DOT_SPACE;
-	      break;
-
-	    default:
-	      /* If we broke on a control/format char, end the
-	       * sentence; else this was not a sentence end, since
-	       * we didn't enter the POST_DOT_SPACE state.
-	       */
-	      if (attrs[i].is_sentence_boundary)
-		{
-		  attrs[i].is_sentence_end = TRUE;
-
-		  MAYBE_START_NEW_SENTENCE;
-		}
-	      else
-		sentence_state = STATE_SENTENCE_BODY;
-	      break;
-	    }
-	  break;
-
-	case STATE_SENTENCE_POST_DOT_SPACE:
-
-	  possible_sentence_boundary = i;
-
-	  switch ((int) type)
-	    {
-	    case G_UNICODE_SPACE_SEPARATOR:
-	      /* remain in current state */
-	      break;
-
-	    case G_UNICODE_OPEN_PUNCTUATION:
-	      sentence_state = STATE_SENTENCE_POST_DOT_OPEN;
-	      break;
-
-	    case G_UNICODE_LOWERCASE_LETTER:
-	      /* wasn't a sentence-ending period; so re-enter the sentence
-	       * body
-	       */
-	      sentence_state = STATE_SENTENCE_BODY;
-	      break;
-
-	    default:
-	      /* End the sentence, break, maybe start a new one */
-
-	      g_assert (possible_sentence_end >= 0);
-	      g_assert (possible_sentence_boundary >= 0);
-
-	      attrs[possible_sentence_boundary].is_sentence_boundary = TRUE;
-	      attrs[possible_sentence_end].is_sentence_end = TRUE;
-
-	      possible_sentence_end = -1;
-	      possible_sentence_boundary = -1;
-
-	      MAYBE_START_NEW_SENTENCE;
-
-	      break;
-	    }
-	  break;
-
-	case STATE_SENTENCE_POST_DOT_OPEN:
-	  switch ((int) type)
-	    {
-	    case G_UNICODE_OPEN_PUNCTUATION:
-	      /* continue in current state */
-	      break;
-
-	    case G_UNICODE_LOWERCASE_LETTER:
-	      /* wasn't a sentence-ending period; so re-enter the sentence
-	       * body
-	       */
-	      sentence_state = STATE_SENTENCE_BODY;
-	      break;
-
-	    default:
-	      /* End the sentence, break, maybe start a new one */
-
-	      g_assert (possible_sentence_end >= 0);
-	      g_assert (possible_sentence_boundary >= 0);
-
-	      attrs[possible_sentence_boundary].is_sentence_boundary = TRUE;
-	      attrs[possible_sentence_end].is_sentence_end = TRUE;
-
-	      possible_sentence_end = -1;
-	      possible_sentence_boundary = -1;
-
-	      MAYBE_START_NEW_SENTENCE;
-
-	      break;
-	    }
-	  break;
-
-	case STATE_SENTENCE_POST_DOT_SEP:
-	  /* Break is forced at this point, unless we're a newline
-	   * after a CR, then we will break after the newline on the
-	   * next iteration. Only a single Sep can be in the
-	   * sentence.
-	   */
-	  if (!(prev_wc == '\r' && wc == '\n'))
-	    attrs[i].is_sentence_boundary = TRUE;
-
-	  g_assert (possible_sentence_end >= 0);
-	  g_assert (possible_sentence_boundary >= 0);
-
-	  attrs[possible_sentence_end].is_sentence_end = TRUE;
-
-	  possible_sentence_end = -1;
-	  possible_sentence_boundary = -1;
-
-	  MAYBE_START_NEW_SENTENCE;
-
-	  break;
-
-	default:
-	  g_assert_not_reached ();
-	  break;
-	}
-
-      prev_type = type;
       prev_wc = wc;
 
       /* wc might not be a valid Unicode base character, but really all we
@@ -1640,6 +1659,7 @@ pango_default_break (const gchar   *text,
 	  type != G_UNICODE_NON_SPACING_MARK)
 	base_character = wc;
     }
+
   i--;
 
   attrs[i].is_cursor_position = TRUE;  /* Rule GB2 */

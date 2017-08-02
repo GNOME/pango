@@ -701,7 +701,7 @@ pango_renderer_draw_glyph_item (PangoRenderer    *renderer,
 				int               x,
 				int               y)
 {
-  if (G_UNLIKELY (text))
+  if (!text)
     {
       pango_renderer_draw_glyphs (renderer,
 				  glyph_item->item->analysis.font,

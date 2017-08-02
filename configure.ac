@@ -22,7 +22,7 @@ dnl
 dnl The triplet
 m4_define([pango_version_major], [1])
 m4_define([pango_version_minor], [40])
-m4_define([pango_version_micro], [5])
+m4_define([pango_version_micro], [7])
 
 m4_define([pango_version],
           [pango_version_major.pango_version_minor.pango_version_micro])
@@ -663,11 +663,6 @@ pangowin32.pc
 pangoft2.pc
 pangoxft.pc
 pangocairo.pc
-pango-uninstalled.pc
-pangowin32-uninstalled.pc
-pangoft2-uninstalled.pc
-pangoxft-uninstalled.pc
-pangocairo-uninstalled.pc
 config.h.win32
 ])
 

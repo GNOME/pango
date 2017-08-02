@@ -12,6 +12,7 @@ EXTRA_PROGRAMS = 		\
 
 EXTRA_DIST= 			\
 	gen-color-table.pl	\
+	gen-emoji-table.py	\
 	rgb.txt
 
 gen_script_for_lang_SOURCES = gen-script-for-lang.c

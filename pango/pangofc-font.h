@@ -23,9 +23,20 @@
 #define __PANGO_FC_FONT_H__
 
 #include <pango/pango.h>
+
+/* Freetype has undefined macros in its header */
+#ifdef PANGO_COMPILATION
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wundef"
+#endif
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include <fontconfig/fontconfig.h>
+
+#ifdef PANGO_COMPILATION
+#pragma GCC diagnostic pop
+#endif
 
 G_BEGIN_DECLS
 

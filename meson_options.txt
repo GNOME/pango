@@ -1,0 +1,4 @@
+option('enable_docs',
+       description: 'Build API reference for Pango using GTK-Doc',
+       type: 'boolean',
+       value: false)
