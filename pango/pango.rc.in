@@ -17,7 +17,7 @@ VS_VERSION_INFO VERSIONINFO
 	VALUE "FileDescription", "Pango"
 	VALUE "FileVersion", "@PANGO_VERSION_MAJOR@.@PANGO_VERSION_MINOR@.@PANGO_VERSION_MICRO@.0"
 	VALUE "InternalName", "pango-@PANGO_API_VERSION@-@PANGO_CURRENT_MINUS_AGE@"
-	VALUE "LegalCopyright", "Copyright © 1999 Red Hat Software."
+	VALUE "LegalCopyright", "Copyright 1999 Red Hat Software."
 	VALUE "OriginalFilename", "pango-@PANGO_API_VERSION@-@PANGO_CURRENT_MINUS_AGE@.dll"
 	VALUE "ProductName", "Pango"
 	VALUE "ProductVersion", "@PANGO_VERSION_MAJOR@.@PANGO_VERSION_MINOR@.@PANGO_VERSION_MICRO@"

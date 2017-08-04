@@ -17,7 +17,7 @@ VS_VERSION_INFO VERSIONINFO
 	VALUE "FileDescription", "PangoFT2"
 	VALUE "FileVersion", "@PANGO_VERSION_MAJOR@.@PANGO_VERSION_MINOR@.@PANGO_VERSION_MICRO@.0"
 	VALUE "InternalName", "pangoft2-@PANGO_API_VERSION@-@PANGO_CURRENT_MINUS_AGE@"
-	VALUE "LegalCopyright", "Copyright © 1999 Red Hat Software. Copyright © 2000 Tor Lillqvist"
+	VALUE "LegalCopyright", "Copyright 1999 Red Hat Software. Copyright 2000 Tor Lillqvist"
 	VALUE "OriginalFilename", "pangoft2-@PANGO_API_VERSION@-@PANGO_CURRENT_MINUS_AGE@.dll"
 	VALUE "ProductName", "PangoFT2"
 	VALUE "ProductVersion", "@PANGO_VERSION_MAJOR@.@PANGO_VERSION_MINOR@.@PANGO_VERSION_MICRO@"

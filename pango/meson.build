@@ -64,6 +64,8 @@ pango_features_conf = configuration_data()
 pango_features_conf.set('PANGO_VERSION_MAJOR', pango_major_version)
 pango_features_conf.set('PANGO_VERSION_MINOR', pango_minor_version)
 pango_features_conf.set('PANGO_VERSION_MICRO', pango_micro_version)
+pango_features_conf.set('PANGO_API_VERSION', pango_api_version)
+pango_features_conf.set('PANGO_CURRENT_MINUS_AGE', '0')
 
 configure_file(input: 'pango-features.h.meson',
                output: 'pango-features.h',
@@ -79,6 +81,16 @@ pango_enums = gnome.mkenums('pango-enum-types',
                             install_dir: join_paths(pango_includedir, pango_api_path),
                             install_header: true)
 pango_enum_h = pango_enums[1]
+
+if host_system == 'windows'
+  pango_rc = configure_file(
+    input: 'pango.rc.in',
+    output: 'pango.rc',
+    configuration: pango_features_conf,
+  )
+  pango_res = import('windows').compile_resources(pango_rc)
+  pango_sources += pango_res
+endif
 
 pango_cflags = [
   '-DG_LOG_DOMAIN="Pango"',
@@ -155,6 +167,16 @@ if freetype_dep.found()
     'pango-ot-ruleset.c',
     'pango-ot-tag.c',
   ]
+
+  if host_system == 'windows'
+    pangoft2_rc = configure_file(
+      input: 'pangoft2.rc.in',
+      output: 'pangoft2.rc',
+      configuration: pango_features_conf,
+    )
+    pangoft2_res = import('windows').compile_resources(pangoft2_rc)
+    pangoft2_sources += pangoft2_res
+  endif
 
   install_headers(pangoft2_headers, subdir: pango_api_path)
 
@@ -265,6 +287,14 @@ if host_system == 'windows'
     cc.find_library('usp10'),
   ]
 
+  pangowin32_rc = configure_file(
+    input: 'pangowin32.rc.in',
+    output: 'pangowin32.rc',
+    configuration: pango_features_conf,
+  )
+  pangowin32_res = import('windows').compile_resources(pangowin32_rc)
+  pangowin32_sources += pangowin32_res
+
   install_headers(pangowin32_headers, subdir: pango_api_path)
 
   libpangowin32 = shared_library('pangowin32-@0@'.format(pango_api_version),
@@ -317,6 +347,15 @@ if cairo_dep.found()
       'pangocairo-win32font.c',
       'pangocairo-win32fontmap.c',
     ]
+
+    pangocairo_rc = configure_file(
+      input: 'pangocairo.rc.in',
+      output: 'pangocairo.rc',
+      configuration: pango_features_conf,
+    )
+    pangocairo_res = import('windows').compile_resources(pangocairo_rc)
+    pangocairo_sources += pangocairo_res
+
     pangocairo_deps += cc.find_library('gdi32')
     pangocairo_deps += libpangowin32_dep
   endif
