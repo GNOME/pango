@@ -1,3 +1,8 @@
+Overview of changes between 1.40.7 and 1.40.8
+=============================================
+- Support emoji sequences in boundary determination
+- Choose emoji font for color emoji
+
 Overview of changes between 1.40.6 and 1.40.7
 =============================================
 - Some fixes for meson build support
