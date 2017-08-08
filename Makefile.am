@@ -3,6 +3,7 @@
 SUBDIRS= pango pango-view examples docs tools tests win32
 
 meson_dist_files = \
+	pango/pango-features.h.meson \
 	pango-view/meson.build \
 	meson.build \
 	meson_options.txt \
