@@ -1,3 +1,8 @@
+Overview of changes between 1.40.8 and 1.40.9
+=============================================
+- Build and dist fixes
+- Fix build on Windows with MSVC (#783274)
+
 Overview of changes between 1.40.7 and 1.40.8
 =============================================
 - Support emoji sequences in boundary determination
