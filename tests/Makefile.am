@@ -100,8 +100,8 @@ all-unicode.txt: gen-all-unicode$(EXEEXT)
 noinst_PROGRAMS = $(check_PROGRAMS) gen-all-unicode dump-boundaries
 
 markup_tests = \
-	valid-1 valid-2 valid-3 valid-4 \
-	fail-1 \
+	valid-1 valid-2 valid-3 valid-4 valid-5 valid-6 valid-7 valid-8 valid-9 \
+	fail-1 fail-2 fail-3 fail-4 fail-5 \
 	$(NULL)
 
 all_markup_data = \
