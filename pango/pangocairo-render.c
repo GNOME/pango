@@ -52,9 +52,9 @@
  * functions in Pango report results in integer Pango units. To get
  * to the floating point units used in Cairo divide by %PANGO_SCALE.
  *
- * <example id="rotated-example">
- * <title>Using Pango with Cairo</title>
- *  <programlisting>
+ * ## Using Pango with Cairo ## {#rotated-example}
+ *
+ * |[<!-- language="C" -->
  * #include <math.h>
  * #include <pango/pangocairo.h>
  *
@@ -145,12 +145,12 @@
  *
  *   return 0;
  * }
- * </programlisting>
- * </example>
- * <figure id="rotated-example-output">
- *   <title>Output of <xref linkend="rotated-example"/></title>
- *   <graphic fileref="rotated-text.png" format="PNG"/>
- * </figure>
+ * ]|
+ *
+ * Once you build and run the example code above, you should see the
+ * following result:
+ *
+ * ![Output of rotated-example](rotated-text.png)
  */
 #include "config.h"
 
