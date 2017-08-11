@@ -346,9 +346,7 @@ _pango_fc_shape (PangoFont           *font,
 #if HB_VERSION_ATLEAST(1,0,3)
   hb_buffer_set_cluster_level (hb_buffer, HB_BUFFER_CLUSTER_LEVEL_MONOTONE_CHARACTERS);
 #endif
-  hb_buffer_set_flags (hb_buffer,
-		       (item_offset == 0 ? HB_BUFFER_FLAG_BOT : 0) |
-		       (item_offset + item_length == paragraph_length ? HB_BUFFER_FLAG_EOT : 0));
+  hb_buffer_set_flags (hb_buffer, HB_BUFFER_FLAG_BOT | HB_BUFFER_FLAG_EOT);
 
   hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_offset, item_length);
 
