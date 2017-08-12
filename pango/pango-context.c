@@ -1334,8 +1334,6 @@ itemize_state_update_for_new_run (ItemizeState *state)
    * do it right now */
   if (state->changed & (FONT_CHANGED | SCRIPT_CHANGED | WIDTH_CHANGED))
     {
-      PangoGravity old_gravity = state->resolved_gravity;
-
       /* Font-desc gravity overrides everything */
       if (state->font_desc_gravity != PANGO_GRAVITY_AUTO)
 	{
@@ -1355,7 +1353,7 @@ itemize_state_update_for_new_run (ItemizeState *state)
 									    gravity_hint);
 	}
 
-      if (old_gravity != state->resolved_gravity)
+      if (state->font_desc_gravity != state->resolved_gravity)
 	{
 	  pango_font_description_set_gravity (state->font_desc, state->resolved_gravity);
 	  state->changed |= FONT_CHANGED;
