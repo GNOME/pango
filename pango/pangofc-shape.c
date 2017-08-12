@@ -99,6 +99,27 @@ pango_fc_hb_font_get_nominal_glyph (hb_font_t *font, void *font_data,
 }
 
 static hb_bool_t
+pango_fc_hb_font_get_variation_glyph (hb_font_t *font,
+                                      void *font_data,
+                                      hb_codepoint_t unicode,
+                                      hb_codepoint_t variation_selector,
+                                      hb_codepoint_t *glyph,
+                                      void *user_data G_GNUC_UNUSED)
+{
+  PangoFcHbContext *context = (PangoFcHbContext *) font_data;
+  FT_Face ft_face = context->ft_face;
+  unsigned int g;
+
+  g = FT_Face_GetCharVariantIndex (ft_face, unicode, variation_selector);
+
+  if (G_UNLIKELY (!g))
+    return FALSE;
+
+  *glyph = g;
+  return TRUE;
+}
+
+static hb_bool_t
 pango_fc_hb_font_get_glyph_contour_point (hb_font_t *font, void *font_data,
 					  hb_codepoint_t glyph, unsigned int point_index,
 					  hb_position_t *x, hb_position_t *y,
@@ -246,7 +267,7 @@ pango_fc_get_hb_font_funcs (void)
   if (G_UNLIKELY (!funcs)) {
     funcs = hb_font_funcs_create ();
     hb_font_funcs_set_nominal_glyph_func (funcs, pango_fc_hb_font_get_nominal_glyph, NULL, NULL);
-    /* XXX we don't support variation selectors yet :(. */
+    hb_font_funcs_set_variation_glyph_func (funcs, pango_fc_hb_font_get_variation_glyph, NULL, NULL);
     hb_font_funcs_set_glyph_h_advance_func (funcs, pango_fc_hb_font_get_glyph_advance, NULL, NULL);
     hb_font_funcs_set_glyph_v_advance_func (funcs, pango_fc_hb_font_get_glyph_advance, NULL, NULL);
     hb_font_funcs_set_glyph_h_origin_func (funcs, pango_fc_hb_font_get_glyph_h_origin, NULL, NULL);
