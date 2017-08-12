@@ -5,6 +5,15 @@
 #define HAS_FRIBIDI_TAB_CHAR_TYPE_2_I 1
 #define FRIBIDI_API
 
+/* squash -Werror=undef warnings from the other char types */
+#define HAS_FRIBIDI_TAB_CHAR_TYPE_9_I 0
+#define HAS_FRIBIDI_TAB_CHAR_TYPE_8_I 0
+#define HAS_FRIBIDI_TAB_CHAR_TYPE_7_I 0
+#define HAS_FRIBIDI_TAB_CHAR_TYPE_6_I 0
+#define HAS_FRIBIDI_TAB_CHAR_TYPE_5_I 0
+#define HAS_FRIBIDI_TAB_CHAR_TYPE_4_I 0
+#define HAS_FRIBIDI_TAB_CHAR_TYPE_3_I 0
+
 /* this was in fribidi_unicode.h.  we only need these bits from that
  * file, so moved here. */
 #define UNI_MAX_BIDI_LEVEL 61
