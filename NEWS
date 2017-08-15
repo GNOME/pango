@@ -1,3 +1,10 @@
+Overview of changes between 1.40.9 and 1.40.10
+==============================================
+- Update Emoji data to version 5
+- Apply gravity across spans in markup (#784243)
+- Support variation selectors for shaping
+- CoreText: Rely on CGFont for scaling (#782393)
+- Fix grapheme breaks and backspacing for Emoji
 Overview of changes between 1.40.8 and 1.40.9
 =============================================
 - Build and dist fixes
