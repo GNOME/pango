@@ -1,3 +1,8 @@
-÷ 1F3CC × FE0F × 200D ÷ 2642 × FE0F ÷
-÷ 1F3CC × 200D ÷ 2642 ÷
-# Lines: 2
+÷ 1F3CC × FE0F × 200D × 2642 × FE0F ÷
+÷ 1F3CC × 200D × 2642 ÷
+÷ 1F468 × 200D × 2695 × FE0F ÷ # man health worker
+÷ 1F468 × 1F3FC × 200D × 2695 × FE0F ÷ # man health worker: medium-light skin tone
+÷ 1F468 × 200D × 1F469 × 200D × 1F467 × 200D × 1F466 ÷ # family: man, woman, girl, boy
+÷ 1F1E6 × 1F1FA ÷ # Australia
+÷ 0031 × FE0F × 20E3 ÷ # keycap: 1
+# Lines: 7

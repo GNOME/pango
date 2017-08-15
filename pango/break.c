@@ -496,6 +496,7 @@ pango_default_break (const gchar   *text,
     GB_Other,
     GB_ControlCRLF,
     GB_Extend,
+    GB_ZWJ,
     GB_Prepend,
     GB_SpacingMark,
     GB_InHangulSyllable, /* Handles all of L, V, T, LV, LVT rules */
@@ -673,9 +674,14 @@ pango_default_break (const gchar   *text,
 	switch ((int) type)
 	  {
 	  case G_UNICODE_FORMAT:
-	    if (wc == 0x200C || wc == 0x200D)
+	    if (G_UNLIKELY (wc == 0x200C))
 	      {
-		GB_type = GB_Extend; /* U+200C and U+200D are Other_Grapheme_Extend */
+		GB_type = GB_Extend;
+		break;
+	      }
+	    if (G_UNLIKELY (wc == 0x200D))
+	      {
+		GB_type = GB_ZWJ;
 		break;
 	      }
             if (G_UNLIKELY((wc >= 0x600 && wc <= 0x605) ||
@@ -766,8 +772,10 @@ pango_default_break (const gchar   *text,
                            (wc >= 0x1F930 && wc <= 0x1F939) ||
                            (wc >= 0x1F93D && wc <= 0x1F93E) ||
                            (wc >= 0x1F9D1 && wc <= 0x1F9DD)))
-              GB_type = GB_E_Base;
-
+              {
+                GB_type = GB_E_Base;
+                break;
+              }
             if (G_UNLIKELY(wc == 0x2640 ||
                            wc == 0x2642 ||
                            (wc >= 0x2695 && wc <= 0x2696) ||
@@ -788,11 +796,15 @@ pango_default_break (const gchar   *text,
                            wc == 0x1F5E8 ||
                            wc == 0x1F680 ||
                            wc == 0x1F692))
-              GB_type = GB_Glue_After_Zwj;
-
+              {
+                GB_type = GB_Glue_After_Zwj;
+                break;
+              }
             if (G_UNLIKELY(wc >= 0x1F466 && wc <= 0x1F469))
-              GB_type = GB_E_Base_GAZ;
-
+              {
+                GB_type = GB_E_Base_GAZ;
+                break;
+              }
             if (G_UNLIKELY(wc >=0x1F1E6 && wc <=0x1F1FF))
               {
                 if (prev_GB_type == GB_RI_Odd)
@@ -801,6 +813,7 @@ pango_default_break (const gchar   *text,
                   GB_type = GB_RI_Odd;
                 else
                   GB_type = GB_RI_Odd;
+                break;
               }
             break;
 
@@ -814,7 +827,7 @@ pango_default_break (const gchar   *text,
 
 	/* We apply Rules GB1 and GB2 at the end of the function */
 	if (wc == '\n' && prev_wc == '\r')
-	  is_grapheme_boundary = FALSE; /* Rule GB3 */
+          is_grapheme_boundary = FALSE; /* Rule GB3 */
 	else if (prev_GB_type == GB_ControlCRLF || GB_type == GB_ControlCRLF)
 	  is_grapheme_boundary = TRUE; /* Rules GB4 and GB5 */
 	else if (GB_type == GB_InHangulSyllable)
@@ -826,6 +839,8 @@ pango_default_break (const gchar   *text,
 	      GB_type = prev_GB_type;
 	    is_grapheme_boundary = FALSE; /* Rule GB9 */
           }
+        else if (GB_type == GB_ZWJ)
+	  is_grapheme_boundary = FALSE; /* Rule GB9 */
 	else if (GB_type == GB_SpacingMark)
 	  is_grapheme_boundary = FALSE; /* Rule GB9a */
 	else if (prev_GB_type == GB_Prepend)
@@ -838,13 +853,13 @@ pango_default_break (const gchar   *text,
             else
               is_grapheme_boundary = TRUE;
           }
-	else if (prev_wc == 0x200D &&
+	else if (prev_GB_type == GB_ZWJ &&
                  (GB_type == GB_Glue_After_Zwj || GB_type == GB_E_Base_GAZ))
 	  is_grapheme_boundary = FALSE; /* Rule GB11 */
 	else if (prev_GB_type == GB_RI_Odd && GB_type == GB_RI_Even)
 	  is_grapheme_boundary = FALSE; /* Rule GB12 and GB13 */
 	else
-	  is_grapheme_boundary = TRUE;  /* Rule GB999 */
+	  is_grapheme_boundary = TRUE; /* Rule GB999 */
 
 	prev_GB_type = GB_type;
 
