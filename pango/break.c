@@ -678,17 +678,17 @@ pango_default_break (const gchar   *text,
 		GB_type = GB_Extend; /* U+200C and U+200D are Other_Grapheme_Extend */
 		break;
 	      }
-        if (G_UNLIKELY((wc >= 0x600 && wc <= 0x605) ||
-                       wc == 0x6DD ||
-                       wc == 0x70F ||
-                       wc == 0x8E2 ||
-                       wc == 0xD4E ||
-                       wc == 0x110BD ||
-                       (wc >= 0x111C2 && wc <= 0x111C3)))
-          {
-              GB_type = GB_Prepend;
-              break;
-          }
+            if (G_UNLIKELY((wc >= 0x600 && wc <= 0x605) ||
+                            wc == 0x6DD ||
+                            wc == 0x70F ||
+                            wc == 0x8E2 ||
+                            wc == 0xD4E ||
+                            wc == 0x110BD ||
+                            (wc >= 0x111C2 && wc <= 0x111C3)))
+              {
+                GB_type = GB_Prepend;
+                break;
+              }
 	    /* fall through */
 	  case G_UNICODE_CONTROL:
 	  case G_UNICODE_LINE_SEPARATOR:
@@ -734,81 +734,80 @@ pango_default_break (const gchar   *text,
 	    GB_type = GB_Extend; /* Grapheme_Extend */
 	    break;
 
-      case G_UNICODE_OTHER_SYMBOL:
+          case G_UNICODE_OTHER_SYMBOL:
+            if (G_UNLIKELY(wc == 0x261D ||
+                           wc == 0x26F9 ||
+                           (wc >= 0x270A && wc <= 0x270D) ||
+                           wc == 0x1F385 ||
+                           (wc >= 0x1F3C2 && wc <= 0x1F3C4) ||
+                           wc == 0x1F3C7 ||
+                           (wc >= 0x1F3CA && wc <= 0x1F3CC) ||
+                           (wc >= 0x1F442 && wc <= 0x1F443) ||
+                           (wc >= 0x1F446 && wc <= 0x1F450) ||
+                           wc == 0x1F46E ||
+                           (wc >= 0x1F470 && wc <= 0x1F478) ||
+                           wc == 0x1F47C ||
+                           (wc >= 0x1F481 && wc <= 0x1F483) ||
+                           (wc >= 0x1F485 && wc <= 0x1F487) ||
+                           wc == 0x1F4AA ||
+                           (wc >= 0x1F574 && wc <= 0x1F575) ||
+                           wc == 0x1F57A ||
+                           wc == 0x1F590 ||
+                           (wc >= 0x1F595 && wc <= 0x1F596) ||
+                           (wc >= 0x1F645 && wc <= 0x1F647) ||
+                           (wc >= 0x1F64B && wc <= 0x1F64F) ||
+                           wc == 0x1F6A3 ||
+                           (wc >= 0x1F6B4 && wc <= 0x1F6B6) ||
+                           wc == 0x1F6C0 ||
+                           wc == 0x1F6CC ||
+                           (wc >= 0x1F918 && wc <= 0x1F91C) ||
+                           (wc >= 0x1F91E && wc <= 0x1F91F) ||
+                           wc == 0x1F926 ||
+                           (wc >= 0x1F930 && wc <= 0x1F939) ||
+                           (wc >= 0x1F93D && wc <= 0x1F93E) ||
+                           (wc >= 0x1F9D1 && wc <= 0x1F9DD)))
+              GB_type = GB_E_Base;
 
-        if (G_UNLIKELY(wc == 0x261D ||
-                       wc == 0x26F9 ||
-                       (wc >= 0x270A && wc <= 0x270D) ||
-                       wc == 0x1F385 ||
-                       (wc >= 0x1F3C2 && wc <= 0x1F3C4) ||
-                       wc == 0x1F3C7 ||
-                       (wc >= 0x1F3CA && wc <= 0x1F3CC) ||
-                       (wc >= 0x1F442 && wc <= 0x1F443) ||
-                       (wc >= 0x1F446 && wc <= 0x1F450) ||
-                       wc == 0x1F46E ||
-                       (wc >= 0x1F470 && wc <= 0x1F478) ||
-                       wc == 0x1F47C ||
-                       (wc >= 0x1F481 && wc <= 0x1F483) ||
-                       (wc >= 0x1F485 && wc <= 0x1F487) ||
-                       wc == 0x1F4AA ||
-                       (wc >= 0x1F574 && wc <= 0x1F575) ||
-                       wc == 0x1F57A ||
-                       wc == 0x1F590 ||
-                       (wc >= 0x1F595 && wc <= 0x1F596) ||
-                       (wc >= 0x1F645 && wc <= 0x1F647) ||
-                       (wc >= 0x1F64B && wc <= 0x1F64F) ||
-                       wc == 0x1F6A3 ||
-                       (wc >= 0x1F6B4 && wc <= 0x1F6B6) ||
-                       wc == 0x1F6C0 ||
-                       wc == 0x1F6CC ||
-                       (wc >= 0x1F918 && wc <= 0x1F91C) ||
-                       (wc >= 0x1F91E && wc <= 0x1F91F) ||
-                       wc == 0x1F926 ||
-                       (wc >= 0x1F930 && wc <= 0x1F939) ||
-                       (wc >= 0x1F93D && wc <= 0x1F93E) ||
-                       (wc >= 0x1F9D1 && wc <= 0x1F9DD)))
-          GB_type = GB_E_Base;
+            if (G_UNLIKELY(wc == 0x2640 ||
+                           wc == 0x2642 ||
+                           (wc >= 0x2695 && wc <= 0x2696) ||
+                           wc == 0x2708 ||
+                           wc == 0x2764 ||
+                           wc == 0x1F308 ||
+                           wc == 0x1F33E ||
+                           wc == 0x1F373 ||
+                           wc == 0x1F393 ||
+                           wc == 0x1F3A4 ||
+                           wc == 0x1F3A8 ||
+                           wc == 0x1F3EB ||
+                           wc == 0x1F3ED ||
+                           wc == 0x1F48B ||
+                           (wc >= 0x1F4BB && wc <= 0x1F4BC) ||
+                           wc == 0x1F527 ||
+                           wc == 0x1F52C ||
+                           wc == 0x1F5E8 ||
+                           wc == 0x1F680 ||
+                           wc == 0x1F692))
+              GB_type = GB_Glue_After_Zwj;
 
-        if (G_UNLIKELY(wc == 0x2640 ||
-                       wc == 0x2642 ||
-                       (wc >= 0x2695 && wc <= 0x2696) ||
-                       wc == 0x2708 ||
-                       wc == 0x2764 ||
-                       wc == 0x1F308 ||
-                       wc == 0x1F33E ||
-                       wc == 0x1F373 ||
-                       wc == 0x1F393 ||
-                       wc == 0x1F3A4 ||
-                       wc == 0x1F3A8 ||
-                       wc == 0x1F3EB ||
-                       wc == 0x1F3ED ||
-                       wc == 0x1F48B ||
-                       (wc >= 0x1F4BB && wc <= 0x1F4BC) ||
-                       wc == 0x1F527 ||
-                       wc == 0x1F52C ||
-                       wc == 0x1F5E8 ||
-                       wc == 0x1F680 ||
-                       wc == 0x1F692))
-          GB_type = GB_Glue_After_Zwj;
+            if (G_UNLIKELY(wc >= 0x1F466 && wc <= 0x1F469))
+              GB_type = GB_E_Base_GAZ;
 
-        if (G_UNLIKELY(wc >= 0x1F466 && wc <= 0x1F469))
-          GB_type = GB_E_Base_GAZ;
+            if (G_UNLIKELY(wc >=0x1F1E6 && wc <=0x1F1FF))
+              {
+                if (prev_GB_type == GB_RI_Odd)
+                  GB_type = GB_RI_Even;
+                else if (prev_GB_type == GB_RI_Even)
+                  GB_type = GB_RI_Odd;
+                else
+                  GB_type = GB_RI_Odd;
+              }
+            break;
 
-        if (G_UNLIKELY(wc >=0x1F1E6 && wc <=0x1F1FF))
-          {
-            if (prev_GB_type == GB_RI_Odd)
-              GB_type = GB_RI_Even;
-            else if (prev_GB_type == GB_RI_Even)
-              GB_type = GB_RI_Odd;
-            else
-              GB_type = GB_RI_Odd;
-          }
-        break;
-
-    case G_UNICODE_MODIFIER_SYMBOL:
-      if (wc >= 0x1F3FB && wc <= 0x1F3FF)
-        GB_type = GB_E_Modifier;
-      break;
+          case G_UNICODE_MODIFIER_SYMBOL:
+            if (wc >= 0x1F3FB && wc <= 0x1F3FF)
+              GB_type = GB_E_Modifier;
+            break;
 	  }
 
 	/* Grapheme Cluster Boundary Rules */
@@ -821,12 +820,12 @@ pango_default_break (const gchar   *text,
 	else if (GB_type == GB_InHangulSyllable)
 	  is_grapheme_boundary = FALSE; /* Rules GB6, GB7, GB8 */
 	else if (GB_type == GB_Extend)
-        {
-      /* Rule GB10 */
-      if (prev_GB_type == GB_E_Base || prev_GB_type == GB_E_Base_GAZ)
-	    GB_type = prev_GB_type;
-	  is_grapheme_boundary = FALSE; /* Rule GB9 */
-        }
+          {
+            /* Rule GB10 */
+            if (prev_GB_type == GB_E_Base || prev_GB_type == GB_E_Base_GAZ)
+	      GB_type = prev_GB_type;
+	    is_grapheme_boundary = FALSE; /* Rule GB9 */
+          }
 	else if (GB_type == GB_SpacingMark)
 	  is_grapheme_boundary = FALSE; /* Rule GB9a */
 	else if (prev_GB_type == GB_Prepend)
@@ -834,13 +833,13 @@ pango_default_break (const gchar   *text,
 	/* Rule GB10 */
 	else if (prev_GB_type == GB_E_Base || prev_GB_type == GB_E_Base_GAZ)
 	  {
-        if (GB_type == GB_E_Modifier)
-          is_grapheme_boundary = FALSE;
-        else
-          is_grapheme_boundary = TRUE;
-      }
+            if (GB_type == GB_E_Modifier)
+              is_grapheme_boundary = FALSE;
+            else
+              is_grapheme_boundary = TRUE;
+          }
 	else if (prev_wc == 0x200D &&
-           (GB_type == GB_Glue_After_Zwj || GB_type == GB_E_Base_GAZ))
+                 (GB_type == GB_Glue_After_Zwj || GB_type == GB_E_Base_GAZ))
 	  is_grapheme_boundary = FALSE; /* Rule GB11 */
 	else if (prev_GB_type == GB_RI_Odd && GB_type == GB_RI_Even)
 	  is_grapheme_boundary = FALSE; /* Rule GB12 and GB13 */
