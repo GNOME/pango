@@ -225,6 +225,10 @@ pango_core_text_font_class_init (PangoCoreTextFontClass *class)
   object_class->finalize = pango_core_text_font_finalize;
 
   font_class->describe = pango_core_text_font_describe;
+  /* In CoreText the device unit is points so describe_absoulute and
+   * describe are the same.
+   */
+  font_class->describe_absolute = pango_core_text_font_describe;
   font_class->get_coverage = pango_core_text_font_get_coverage;
   font_class->find_shaper = pango_core_text_font_find_shaper;
   font_class->get_font_map = pango_core_text_font_get_font_map;

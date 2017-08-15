@@ -99,7 +99,7 @@ void                  _pango_core_text_font_set_ctfont           (PangoCoreTextF
 PangoFontDescription *_pango_core_text_font_description_from_ct_font_descriptor (CTFontDescriptorRef desc);
 
 _PANGO_EXTERN
-int                   pango_core_text_font_key_get_absolute_size    (const PangoCoreTextFontKey *key);
+int                   pango_core_text_font_key_get_size    (const PangoCoreTextFontKey *key);
 _PANGO_EXTERN
 double                pango_core_text_font_key_get_resolution       (const PangoCoreTextFontKey *key);
 _PANGO_EXTERN
