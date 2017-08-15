@@ -861,15 +861,23 @@ pango_default_break (const gchar   *text,
 	else
 	  is_grapheme_boundary = TRUE; /* Rule GB999 */
 
-	prev_GB_type = GB_type;
-
 	attrs[i].is_cursor_position = is_grapheme_boundary;
 	/* If this is a grapheme boundary, we have to decide if backspace
 	 * deletes a character or the whole grapheme cluster */
 	if (is_grapheme_boundary)
-	  attrs[i].backspace_deletes_character = BACKSPACE_DELETES_CHARACTER (base_character);
+          {
+            if (prev_GB_type == GB_E_Base ||
+                prev_GB_type == GB_E_Base_GAZ ||
+                prev_GB_type == GB_Glue_After_Zwj ||
+                prev_GB_type == GB_Extend)
+	      attrs[i].backspace_deletes_character = FALSE;
+            else
+	      attrs[i].backspace_deletes_character = BACKSPACE_DELETES_CHARACTER (base_character);
+          }
 	else
 	  attrs[i].backspace_deletes_character = FALSE;
+
+	prev_GB_type = GB_type;
       }
 
       /* ---- UAX#29 Word Boundaries ---- */
