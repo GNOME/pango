@@ -559,6 +559,7 @@ pango_default_break (const gchar   *text,
   gunichar base_character = 0;
 
   gint last_sentence_start = -1;
+  gint last_non_space = -1;
 
   gboolean almost_done = FALSE;
   gboolean done = FALSE;
@@ -1660,19 +1661,37 @@ pango_default_break (const gchar   *text,
 	}
 
       /* ---- Sentence breaks ---- */
+      {
 
-      /* default to not a sentence start/end */
-      attrs[i].is_sentence_start = FALSE;
-      attrs[i].is_sentence_end = FALSE;
+	/* default to not a sentence start/end */
+	attrs[i].is_sentence_start = FALSE;
+	attrs[i].is_sentence_end = FALSE;
 
-      if (last_sentence_start == -1 && !is_sentence_boundary) {
-	last_sentence_start = i - 1;
-	attrs[i - 1].is_sentence_start = TRUE;
-      }
+	/* maybe start sentence */
+	if (last_sentence_start == -1 && !is_sentence_boundary)
+	  last_sentence_start = i - 1;
 
-      if (last_sentence_start != -1 && is_sentence_boundary) {
-	last_sentence_start = -1;
-	attrs[i].is_sentence_end = TRUE;
+	/* remember last non space character position */
+	if (i > 0 && !attrs[i - 1].is_white)
+	  last_non_space = i;
+
+	/* meets sentence end, mark both sentence start and end */
+	if (last_sentence_start != -1 && is_sentence_boundary) {
+	  if (last_non_space != -1) {
+	    attrs[last_sentence_start].is_sentence_start = TRUE;
+	    attrs[last_non_space].is_sentence_end = TRUE;
+	  }
+
+	  last_sentence_start = -1;
+	  last_non_space = -1;
+	}
+
+	/* meets space character, move sentence start */
+	if (last_sentence_start != -1 &&
+	    last_sentence_start == i - 1 &&
+	    attrs[i - 1].is_white)
+	    last_sentence_start++;
+
       }
 
       prev_wc = wc;
