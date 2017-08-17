@@ -869,7 +869,10 @@ pango_default_break (const gchar   *text,
             if (prev_GB_type == GB_E_Base ||
                 prev_GB_type == GB_E_Base_GAZ ||
                 prev_GB_type == GB_Glue_After_Zwj ||
-                prev_GB_type == GB_Extend)
+                prev_GB_type == GB_Extend ||
+                prev_GB_type == GB_E_Modifier ||
+                prev_GB_type == GB_RI_Odd ||
+                prev_GB_type == GB_RI_Even)
 	      attrs[i].backspace_deletes_character = FALSE;
             else
 	      attrs[i].backspace_deletes_character = BACKSPACE_DELETES_CHARACTER (base_character);
