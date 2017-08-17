@@ -7,7 +7,7 @@
 #define HEIGHT 100
 const char *text = "Hamburgerfonts\nวิวิวิวิวิวิ\nبهداد";
 
-int num_iters = 200;
+int num_iters = 50;
 
 GMutex mutex;
 
@@ -68,7 +68,7 @@ thread_func (gpointer data)
 int
 main (int argc, char **argv)
 {
-  int num_threads = 10;
+  int num_threads = 5;
   int i;
   GPtrArray *threads = g_ptr_array_new ();
   GPtrArray *surfaces = g_ptr_array_new ();
