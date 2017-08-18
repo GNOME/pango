@@ -423,6 +423,25 @@ if $have_cairo ; then
   AC_SUBST(PKGCONFIG_CAIRO_REQUIRES)
 fi
 
+# To compensate for Meson builds on MSVC where pkg-config files may well not be
+# available for cairo, harfbuzz, freetype2 and fontconfig
+CAIRO_PC="cairo"
+FREETYPE2_PC="freetype2"
+FONTCONFIG_PC="fontconfig"
+HARFBUZZ_PC="harfbuzz"
+AC_SUBST(CAIRO_PC)
+AC_SUBST(FREETYPE2_PC)
+AC_SUBST(FONTCONFIG_PC)
+AC_SUBST(HARFBUZZ_PC)
+CAIRO_LIB=
+FREETYPE2_LIB=
+FONTCONFIG_LIB=
+HARFBUZZ_LIB=
+AC_SUBST(CAIRO_LIB)
+AC_SUBST(FREETYPE2_LIB)
+AC_SUBST(FONTCONFIG_LIB)
+AC_SUBST(HARFBUZZ_LIB)
+
 AM_CONDITIONAL(HAVE_CAIRO, $have_cairo)
 AM_CONDITIONAL(HAVE_CAIRO_PNG, $have_cairo_png)
 AM_CONDITIONAL(HAVE_CAIRO_PS, $have_cairo_ps)
