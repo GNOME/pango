@@ -1,3 +1,8 @@
+Overview of changes between 1.40.10 and 1.40.11
+===============================================
+- Fix backspacing for more Emoji sequences
+- Make tests run faster
+
 Overview of changes between 1.40.9 and 1.40.10
 ==============================================
 - Update Emoji data to version 5
@@ -5,6 +10,7 @@ Overview of changes between 1.40.9 and 1.40.10
 - Support variation selectors for shaping
 - CoreText: Rely on CGFont for scaling (#782393)
 - Fix grapheme breaks and backspacing for Emoji
+
 Overview of changes between 1.40.8 and 1.40.9
 =============================================
 - Build and dist fixes
