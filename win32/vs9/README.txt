@@ -92,5 +92,21 @@ keep separate the concept of a "source tree", where also non-public
 headers are present, and an "install tree" where only public headers
 are present.
 
+There is now a "pango-introspect" project that is used to build the
+introspection files.  In order for this to work, check that the paths for
+PythonDir (32-bit builds) and PythonDirX64 (x64 builds) are correct for your
+system.  Note that it must be the same Python installation that was used to
+build GObject-Introspection (G-I), and a complete G-I build/installation
+needs to be found in <root>\vs9\<PlatformName>\.  Note also that this is not
+built by default, so you will need to right-click on the project to build it,
+which will build and "install" the other projects that are normally built, if
+those were not yet built.  The introspection files that are built will be
+"installed" to <root>\vs9\<PlatformName>\share\gir-1.0 (the .gir file(s)) and
+<root>\vs9\<PlatformName>\lib\girepository-1.0 (the .typelib files(s)) upon
+successful build.  for building this in a different configuration, therefore,
+you will need to clean this project specifically and then rebuild.  Note that
+this is currently supported only for the non _FC (i.e. where PangoFT2 is not
+built) configurations
+
 --Tor Lillqvist <tml@iki.fi>
 --Updated by Fan, Chun-wei <fanc999@yahoo.com.tw>
