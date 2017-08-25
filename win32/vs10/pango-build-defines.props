@@ -11,6 +11,10 @@
     <PangoFT2Incs>..;$(GlibEtcInstallRoot)\include\harfbuzz</PangoFT2Incs>
     <PangoFT2Libs>fontconfig.lib;freetype.lib;harfbuzz.lib</PangoFT2Libs>
     <PangoCairoIncs>$(GlibEtcInstallRoot)\include\cairo</PangoCairoIncs>
+    <PangoIntrospectNMakeCmd>cd ..
+set VCInstallDir=$(VCInstallDir)
+nmake -f pango-introspection-msvc.mak CFG=$(Configuration) PREFIX=$(GlibEtcInstallRoot)</PangoIntrospectNMakeCmd>
+    <PangoIntrospectBuiltFiles>$(SolutionDir)\..\PangoCairo-1.0.gir;$(SolutionDir)\..\PangoCairo-1.0.typelib;$(SolutionDir)\..\Pango-1.0.gir;$(SolutionDir)\..\Pango-1.0.typelib</PangoIntrospectBuiltFiles>
   </PropertyGroup>
   <PropertyGroup>
     <_PropertySheetDisplayName>pangobuilddefinesprops</_PropertySheetDisplayName>
@@ -52,6 +56,12 @@
     </BuildMacro>
     <BuildMacro Include="PangoCairoIncs">
       <Value>$(PangoCairoIncs)</Value>
+    </BuildMacro>
+    <BuildMacro Include="PangoIntrospectNMakeCmd">
+      <Value>$(PangoIntrospectNMakeCmd)</Value>
+    </BuildMacro>
+    <BuildMacro Include="PangoIntrospectBuiltFiles">
+      <Value>$(PangoIntrospectBuiltFiles)</Value>
     </BuildMacro>
   </ItemGroup>
 </Project>

@@ -51,4 +51,12 @@
 		Name="PangoCairoIncs"
 		Value="$(GlibEtcInstallRoot)\include\cairo"
 	/>
+	<UserMacro
+		Name="PangoIntrospectNMakeCmd"
+		Value="cd ..&#x0D;&#x0A;set VCInstallDir=$(VCInstallDir)&#x0D;&#x0A;nmake -f pango-introspection-msvc.mak CFG=$(ConfigurationName) PREFIX=$(GlibEtcInstallRoot)"
+	/>
+	<UserMacro
+		Name="PangoIntrospectBuiltFiles"
+		Value="$(SolutionDir)\..\PangoCairo-1.0.gir;$(SolutionDir)\..\PangoCairo-1.0.typelib;$(SolutionDir)\..\Pango-1.0.gir;$(SolutionDir)\..\Pango-1.0.typelib"
+	/>
 </VisualStudioPropertySheet>

@@ -31,10 +31,10 @@ if exist ..\pangoft2.pc copy ..\pangoft2.pc $(CopyDir)\lib\pkgconfig&#x0D;&#x0A;
 	/>
 	<UserMacro
 		Name="GenPangoPC"
-		Value="if exist $(PythonPath)\python.exe $(PythonPath)\python.exe ..\pangopc.py --version=$(PangoMajorVersion).$(PangoMinorVersion).$(PangoMicroVersion) --prefix=$(CopyDir)"
+		Value="if exist $(PythonDir)\python.exe $(PythonDir)\python.exe ..\pangopc.py --version=$(PangoMajorVersion).$(PangoMinorVersion).$(PangoMicroVersion) --prefix=$(CopyDir)"
 	/>
 	<UserMacro
 		Name="GenPangoPCX64"
-		Value="if exist $(PythonPathX64)\python.exe $(PythonPathX64)\python.exe ..\pangopc.py --version=$(PangoMajorVersion).$(PangoMinorVersion).$(PangoMicroVersion) --prefix=$(CopyDir)"
+		Value="if exist $(PythonDirX64)\python.exe $(PythonDirX64)\python.exe ..\pangopc.py --version=$(PangoMajorVersion).$(PangoMinorVersion).$(PangoMicroVersion) --prefix=$(CopyDir)"
 	/>
 </VisualStudioPropertySheet>

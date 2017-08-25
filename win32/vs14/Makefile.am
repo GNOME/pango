@@ -16,6 +16,7 @@ EXTRA_DIST =	\
 	pangocairo.vcxproj.filters		\
 	pango-install.vcxproj			\
 	pango-install.vcxproj.filters		\
+	pango-introspect.vcxproj		\
 	README.txt
 
 DISTCLEANFILES = $(EXTRA_DIST)

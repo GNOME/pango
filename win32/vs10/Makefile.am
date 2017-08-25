@@ -27,6 +27,7 @@ EXTRA_DIST =	\
 	pangocairo.vcxproj.filtersin		\
 	pango-install.vcxproj			\
 	pango-install.vcxproj.filters		\
+	pango-introspect.vcxproj		\
 	README.txt				\
 	$(GENERATED_ITEMS)
 

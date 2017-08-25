@@ -18,6 +18,7 @@ EXTRA_DIST =	\
 	pangocairo.vcprojin		\
 	pangowin32.vcprojin		\
 	pango-install.vcproj		\
+	pango-introspect.vcproj		\
 	stdint.h			\
 	README.txt			\
 	$(GENERATED_ITEMS)
