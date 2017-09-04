@@ -1,3 +1,8 @@
+Overview of changes between 1.40.11 and 1.40.12
+===============================================
+- Fix pango_default_break for sentence start/end (#785978)
+- Fix multilib issue in pango-enum-types.h (#786887)
+
 Overview of changes between 1.40.10 and 1.40.11
 ===============================================
 - Fix backspacing for more Emoji sequences
