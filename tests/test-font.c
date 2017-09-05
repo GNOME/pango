@@ -77,6 +77,43 @@ test_roundtrip (void)
   g_free (str);
 }
 
+static void
+test_variation (void)
+{
+  PangoFontDescription *desc1;
+  PangoFontDescription *desc2;
+  gchar *str;
+
+  desc1 = pango_font_description_from_string ("Cantarell 14");
+  g_assert (desc1 != NULL);
+  g_assert ((pango_font_description_get_set_fields (desc1) & PANGO_FONT_MASK_VARIATIONS) == 0);
+  g_assert (pango_font_description_get_variations (desc1) == NULL);
+
+  str = pango_font_description_to_string (desc1);
+  g_assert_cmpstr (str, ==, "Cantarell 14");
+  g_free (str);
+
+  desc2 = pango_font_description_from_string ("Cantarell 14 @wght=100,wdth=235");
+  g_assert (desc2 != NULL);
+  g_assert ((pango_font_description_get_set_fields (desc2) & PANGO_FONT_MASK_VARIATIONS) != 0);
+  g_assert_cmpstr (pango_font_description_get_variations (desc2), ==, "wght=100,wdth=235");
+
+  str = pango_font_description_to_string (desc2);
+  g_assert_cmpstr (str, ==, "Cantarell 14 @wght=100,wdth=235");
+  g_free (str);
+
+  g_assert (!pango_font_description_equal (desc1, desc2));
+
+  pango_font_description_set_variations (desc1, "wght=100,wdth=235");
+  g_assert ((pango_font_description_get_set_fields (desc1) & PANGO_FONT_MASK_VARIATIONS) != 0);
+  g_assert_cmpstr (pango_font_description_get_variations (desc1), ==, "wght=100,wdth=235");
+
+  g_assert (pango_font_description_equal (desc1, desc2));
+
+  pango_font_description_free (desc1);
+  pango_font_description_free (desc2);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -87,6 +124,7 @@ main (int argc, char *argv[])
 
   g_test_add_func ("/pango/fontdescription/parse", test_parse);
   g_test_add_func ("/pango/fontdescription/roundtrip", test_roundtrip);
+  g_test_add_func ("/pango/fontdescription/variation", test_variation);
  
   return g_test_run ();
 }
