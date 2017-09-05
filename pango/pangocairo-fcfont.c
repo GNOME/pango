@@ -33,6 +33,9 @@
 #include "pangofc-private.h"
 #include "pango-impl-utils.h"
 
+#include <hb-ot.h>
+#include <freetype/ftmm.h>
+
 #define PANGO_TYPE_CAIRO_FC_FONT           (pango_cairo_fc_font_get_type ())
 #define PANGO_CAIRO_FC_FONT(object)        (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_FC_FONT, PangoCairoFcFont))
 #define PANGO_CAIRO_FC_FONT_CLASS(klass)   (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_CAIRO_FC_FONT, PangoCairoFcFontClass))
@@ -222,6 +225,8 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap *cffontmap,
   FcMatrix fc_matrix, *fc_matrix_val;
   double size;
   int i;
+  cairo_font_options_t *options;
+  const char *variations;
 
   g_return_val_if_fail (PANGO_IS_CAIRO_FC_FONT_MAP (cffontmap), NULL);
   g_return_val_if_fail (pattern != NULL, NULL);
@@ -247,12 +252,22 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap *cffontmap,
 
   cairo_matrix_scale (&font_matrix, size, size);
 
+  options = pango_fc_font_key_get_context_key (key);
+  variations = pango_fc_font_key_get_variations (key);
+  if (variations) {
+    options = cairo_font_options_copy (options);
+    cairo_font_options_set_variations (options, variations);
+  }
+
   _pango_cairo_font_private_initialize (&cffont->cf_priv,
 					(PangoCairoFont *) cffont,
 					get_gravity (pattern),
-					pango_fc_font_key_get_context_key (key),
+					options,
 					pango_fc_font_key_get_matrix (key),
 					&font_matrix);
+
+  if (variations)
+    cairo_font_options_destroy (options);
 
   ((PangoFcFont *)(cffont))->is_hinted = _pango_cairo_font_private_is_metrics_hinted (&cffont->cf_priv);
 
