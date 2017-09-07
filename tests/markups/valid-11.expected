@@ -1,0 +1,50 @@
+Lots of attrs
+
+
+---
+
+range 0 5
+[0 13] font Sans Italic 12 @wdth=100,wght=200
+[0 13] foreground #0000ffff0000
+[0 13] background #f0f0f0f0f0f0
+[0 13] underline 2
+[0 13] underline-color #ffff00000000
+[0 13] gravity 0
+[0 13] gravity-hint 1
+[0 13] strikethrough 1
+[0 13] strikethrough-color #00000000ffff
+[0 13] fallback 0
+[0 13] language de
+range 5 7
+[0 13] foreground #0000ffff0000
+[0 13] background #f0f0f0f0f0f0
+[0 13] underline 2
+[0 13] underline-color #ffff00000000
+[0 13] gravity 0
+[0 13] gravity-hint 1
+[0 13] strikethrough 1
+[0 13] strikethrough-color #00000000ffff
+[0 13] fallback 0
+[0 13] language de
+[5 7] font Bold
+range 7 13
+[0 13] font Sans Italic 12 @wdth=100,wght=200
+[0 13] foreground #0000ffff0000
+[0 13] background #f0f0f0f0f0f0
+[0 13] underline 2
+[0 13] underline-color #ffff00000000
+[0 13] gravity 0
+[0 13] gravity-hint 1
+[0 13] strikethrough 1
+[0 13] strikethrough-color #00000000ffff
+[0 13] fallback 0
+[0 13] language de
+range 13 2147483647
+
+
+---
+
+[0:5] de Sans Italic 12 @wdth=100,wght=200
+[5:7] de Sans Bold 12 @wdth=100,wght=200
+[7:13] de Sans Italic 12 @wdth=100,wght=200
+[13:2147483647] (null) Sans Italic 12 @wdth=100,wght=200
