@@ -21,6 +21,7 @@
 
 #include <glib.h>
 #include <string.h>
+#include <unistd.h>
 #include <locale.h>
 
 #include <pango/pangocairo.h>
@@ -144,7 +145,12 @@ test_file (const gchar *filename, GString *string)
   GError *error = NULL;
   gchar *text;
   PangoAttrList *attrs;
+  PangoAttrIterator *iter;
+  PangoFontDescription *desc;
+  PangoLanguage *lang;
   gboolean ret;
+  char *str;
+  int start, end;
 
   if (!g_file_get_contents (filename, &contents, &length, &error))
     {
@@ -162,7 +168,19 @@ test_file (const gchar *filename, GString *string)
       g_string_append (string, text);
       g_string_append (string, "\n\n---\n\n");
       attr_list_dump (attrs, string);
+      g_string_append (string, "\n\n---\n\n");
+      desc = pango_font_description_new ();
+      iter = pango_attr_list_get_iterator (attrs);
+      do {
+        pango_attr_iterator_range (iter, &start, &end);
+        pango_attr_iterator_get_font (iter, desc, &lang, NULL);
+        str = pango_font_description_to_string (desc);
+        g_string_append_printf (string, "[%d:%d] %s %s\n", start, end, (char *)lang, str);
+        g_free (str);
+      } while (pango_attr_iterator_next (iter));
+      pango_attr_iterator_destroy (iter);
       pango_attr_list_unref (attrs);
+      pango_font_description_free (desc);
       g_free (text);
     }
   else
@@ -188,14 +206,51 @@ get_expected_filename (const gchar *filename)
   return expected;
 }
 
+static char *
+diff_with_file (const char  *file1,
+                GString     *string,
+                GError     **error)
+{
+  const char *command[] = { "diff", "-u", file1, NULL, NULL };
+  char *diff, *tmpfile;
+  int fd;
+
+  diff = NULL;
+
+  /* write the text buffer to a temporary file */
+  fd = g_file_open_tmp (NULL, &tmpfile, error);
+  if (fd < 0)
+    return NULL;
+
+  if (write (fd, string->str, string->len) != (int) string->len)
+    {
+      close (fd);
+      g_set_error (error,
+                   G_FILE_ERROR, G_FILE_ERROR_FAILED,
+                   "Could not write data to temporary file '%s'", tmpfile);
+      goto done;
+    }
+  close (fd);
+  command[3] = tmpfile;
+
+  /* run diff command */
+  g_spawn_sync (NULL, (char **)command, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, &diff, NULL, NULL, error);
+
+done:
+  unlink (tmpfile);
+  g_free (tmpfile);
+
+  return diff;
+}
+
 static void
 test_parse (gconstpointer d)
 {
   const gchar *filename = d;
   gchar *expected_file;
-  gchar *expected;
   GError *error = NULL;
   GString *string;
+  char *diff;
 
   expected_file = get_expected_filename (filename);
 
@@ -203,10 +258,15 @@ test_parse (gconstpointer d)
 
   test_file (filename, string);
 
-  g_file_get_contents (expected_file, &expected, NULL, &error);
+  diff = diff_with_file (expected_file, string, &error);
   g_assert_no_error (error);
-  g_assert_cmpstr (string->str, ==, expected);
-  g_free (expected);
+
+  if (diff && diff[0])
+    {
+      g_test_message ("Resulting output doesn't match reference:\n%s", diff);
+      g_test_fail ();
+    }
+  g_free (diff);
 
   g_string_free (string, TRUE);
 

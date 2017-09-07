@@ -36,3 +36,21 @@ range 45 54
 [42 54] family Monospace
 [45 54] underline 1
 range 54 2147483647
+
+
+---
+
+[0:5] (null) Bold
+[5:8] (null) Bold 0
+[8:9] (null) Bold 0
+[9:15] (null) Bold Italic 0
+[15:16] (null) Bold Italic 0
+[16:29] (null) Bold Italic 0
+[29:32] (null) Bold Italic 0
+[32:33] (null) Bold Italic 0
+[33:38] (null) Bold Italic 0
+[38:41] (null) Bold Italic 0
+[41:42] (null) Bold Italic 0
+[42:45] (null) Monospace Bold Italic 0
+[45:54] (null) Monospace Bold Italic 0
+[54:2147483647] (null) Monospace Bold Italic 0
