@@ -1,0 +1,11 @@
+<span font="Sans Italic 12 @wdth=100,wght=200"
+      foreground="#00ff00"
+      background="#f0f0f0"
+      underline="double"
+      underline_color="red"
+      strikethrough="true"
+      strikethrough_color="blue"
+      fallback="false"
+      lang="de"
+      gravity="south"
+      gravity_hint="strong">Lots <span font="bold">of</span> attrs</span>
