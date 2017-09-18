@@ -206,13 +206,9 @@ pango_fc_hb_font_get_glyph_h_origin (hb_font_t *font, void *font_data,
     return FALSE;
 
   /* Note: FreeType's vertical metrics grows downward while other FreeType coordinates
-   * have a Y growing upward.  Hence the extra negation. */
-  *x = PANGO_UNITS_26_6 (ft_face->glyph->metrics.horiBearingX -   ft_face->glyph->metrics.vertBearingX);
-  *y = PANGO_UNITS_26_6 (ft_face->glyph->metrics.horiBearingY - (-ft_face->glyph->metrics.vertBearingY));
-
-  /* XXX */
-  *x = -*x;
-  *y =  *y;
+   * have a Y growing upward.  Hence the extra negations. */
+  *x = -PANGO_UNITS_26_6 (ft_face->glyph->metrics.horiBearingX -   ft_face->glyph->metrics.vertBearingX);
+  *y = +PANGO_UNITS_26_6 (ft_face->glyph->metrics.horiBearingY - (-ft_face->glyph->metrics.vertBearingY));
 
   return TRUE;
 }
