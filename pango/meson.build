@@ -134,6 +134,7 @@ if not meson.is_cross_build()
                                  extra_args: gir_args + [
                                    '--c-include=pango/pango.h',
                                  ])
+  pango_gir_dep = declare_dependency(sources: pango_gir)
   pango_dep_sources += pango_gir
 endif
 
@@ -197,7 +198,7 @@ if freetype_dep.found()
   if not meson.is_cross_build()
     pangoft2_gir = gnome.generate_gir(libpangoft2,
                                       sources: pangoft2_headers + pangoft2_public_sources,
-                                      dependencies: libpango_dep,
+                                      dependencies: [ libpango_dep, pango_gir_dep ],
                                       namespace: 'PangoFT2',
                                       nsversion: pango_api_version,
                                       identifier_prefix: 'PangoFT2',
@@ -205,7 +206,11 @@ if freetype_dep.found()
                                       export_packages: 'pangoft2',
                                       includes: [ 'GObject-2.0', 'cairo-1.0', 'freetype2-2.0', 'fontconfig-2.0', ],
                                       install: true,
-                                      extra_args: gir_args + ['--c-include=pango/pangoft2.h'])
+                                      extra_args: gir_args + [
+                                        '--c-include=pango/pangoft2.h',
+                                        '--include-uninstalled=./pango/Pango-1.0.gir',
+                                      ])
+    pangoft2_gir_dep = declare_dependency(sources: pangoft2_gir)
     pangoft2_dep_sources += pangoft2_gir
   endif
 
@@ -246,7 +251,7 @@ if xft_dep.found()
   if not meson.is_cross_build()
     pangoxft_gir = gnome.generate_gir(libpangoxft,
                                       sources: pangoxft_headers + pangoxft_sources,
-                                      dependencies: [ libpango_dep, libpangoft2_dep ],
+                                      dependencies: [ libpango_dep, libpangoft2_dep, pango_gir_dep, pangoft2_gir_dep ],
                                       namespace: 'PangoXft',
                                       nsversion: pango_api_version,
                                       identifier_prefix: 'PangoXft',
@@ -254,7 +259,11 @@ if xft_dep.found()
                                       export_packages: 'pangoxft',
                                       includes: [ 'GObject-2.0', 'xft-2.0', 'xlib-2.0' ],
                                       install: true,
-                                      extra_args: gir_args + ['--c-include=pango/pangoxft.h'])
+                                      extra_args: gir_args + [
+                                        '--c-include=pango/pangoxft.h',
+                                        '--include-uninstalled=./pango/Pango-1.0.gir',
+                                        '--include-uninstalled=./pango/PangoFT2-1.0.gir',
+                                      ])
     pangoxft_dep_sources += pangoxft_gir
   endif
 
@@ -381,7 +390,7 @@ if cairo_dep.found()
   if not meson.is_cross_build()
     pangocairo_gir = gnome.generate_gir(libpangocairo,
                                         sources: pangocairo_headers + pangocairo_sources,
-                                        dependencies: pangocairo_deps,
+                                        dependencies: [ pangocairo_deps, pango_gir_dep ],
                                         namespace: 'PangoCairo',
                                         nsversion: pango_api_version,
                                         identifier_prefix: 'PangoCairo',
@@ -389,7 +398,10 @@ if cairo_dep.found()
                                         export_packages: 'pangocairo',
                                         includes: [ 'GObject-2.0', 'cairo-1.0' ],
                                         install: true,
-                                        extra_args: gir_args + ['--c-include=pango/pangocairo.h'])
+                                        extra_args: gir_args + [
+                                          '--c-include=pango/pangocairo.h',
+                                          '--include-uninstalled=./pango/Pango-1.0.gir',
+                                        ])
     pangocairo_dep_sources += pangocairo_gir
   endif
 
