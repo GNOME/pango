@@ -1682,31 +1682,31 @@ pango_layout_index_to_line_and_extents (PangoLayout     *layout,
 					int              index,
 					PangoRectangle  *line_rect)
 {
-  PangoLayoutIter *iter;
+  PangoLayoutIter iter;
   PangoLayoutLine *line = NULL;
 
-  iter = pango_layout_get_iter (layout);
+  _pango_layout_get_iter (layout, &iter);
 
-  if (!ITER_IS_INVALID (iter))
+  if (!ITER_IS_INVALID (&iter))
     while (TRUE)
       {
-	PangoLayoutLine *tmp_line = _pango_layout_iter_get_line (iter);
+	PangoLayoutLine *tmp_line = _pango_layout_iter_get_line (&iter);
 
 	if (tmp_line->start_index > index)
 	    break; /* index was in paragraph delimiters */
 
 	line = tmp_line;
 
-	pango_layout_iter_get_line_extents (iter, NULL, line_rect);
+	pango_layout_iter_get_line_extents (&iter, NULL, line_rect);
 
 	if (line->start_index + line->length > index)
 	  break;
 
-	if (!pango_layout_iter_next_line (iter))
+	if (!pango_layout_iter_next_line (&iter))
 	  break; /* Use end of last line */
       }
 
-  pango_layout_iter_free (iter);
+  _pango_layout_iter_destroy (&iter);
 
   return line;
 }
@@ -1983,7 +1983,7 @@ pango_layout_xy_to_index (PangoLayout *layout,
 			  int         *index,
 			  gint        *trailing)
 {
-  PangoLayoutIter *iter;
+  PangoLayoutIter iter;
   PangoLayoutLine *prev_line = NULL;
   PangoLayoutLine *found = NULL;
   int found_line_x = 0;
@@ -1994,15 +1994,15 @@ pango_layout_xy_to_index (PangoLayout *layout,
 
   g_return_val_if_fail (PANGO_IS_LAYOUT (layout), FALSE);
 
-  iter = pango_layout_get_iter (layout);
+  _pango_layout_get_iter (layout, &iter);
 
   do
     {
       PangoRectangle line_logical;
       int first_y, last_y;
 
-      pango_layout_iter_get_line_extents (iter, NULL, &line_logical);
-      pango_layout_iter_get_line_yrange (iter, &first_y, &last_y);
+      pango_layout_iter_get_line_extents (&iter, NULL, &line_logical);
+      pango_layout_iter_get_line_yrange (&iter, &first_y, &last_y);
 
       if (y < first_y)
 	{
@@ -2016,27 +2016,27 @@ pango_layout_xy_to_index (PangoLayout *layout,
 	      if (prev_line == NULL)
 		outside = TRUE; /* off the top */
 
-	      found = _pango_layout_iter_get_line (iter);
+	      found = _pango_layout_iter_get_line (&iter);
 	      found_line_x = x - line_logical.x;
 	    }
 	}
       else if (y >= first_y &&
 	       y < last_y)
 	{
-	  found = _pango_layout_iter_get_line (iter);
+	  found = _pango_layout_iter_get_line (&iter);
 	  found_line_x = x - line_logical.x;
 	}
 
-      prev_line = _pango_layout_iter_get_line (iter);
+      prev_line = _pango_layout_iter_get_line (&iter);
       prev_last = last_y;
       prev_line_x = x - line_logical.x;
 
       if (found != NULL)
 	break;
     }
-  while (pango_layout_iter_next_line (iter));
+  while (pango_layout_iter_next_line (&iter));
 
-  pango_layout_iter_free (iter);
+  _pango_layout_iter_destroy (&iter);
 
   if (found == NULL)
     {
@@ -2076,7 +2076,7 @@ pango_layout_index_to_pos (PangoLayout    *layout,
 			   PangoRectangle *pos)
 {
   PangoRectangle logical_rect;
-  PangoLayoutIter *iter;
+  PangoLayoutIter iter;
   PangoLayoutLine *layout_line = NULL;
   int x_pos;
 
@@ -2084,20 +2084,20 @@ pango_layout_index_to_pos (PangoLayout    *layout,
   g_return_if_fail (index >= 0);
   g_return_if_fail (pos != NULL);
 
-  iter = pango_layout_get_iter (layout);
+  _pango_layout_get_iter (layout, &iter);
 
-  if (!ITER_IS_INVALID (iter))
+  if (!ITER_IS_INVALID (&iter))
     {
       while (TRUE)
 	{
-	  PangoLayoutLine *tmp_line = _pango_layout_iter_get_line (iter);
+	  PangoLayoutLine *tmp_line = _pango_layout_iter_get_line (&iter);
 
 	  if (tmp_line->start_index > index)
 	    {
-	      /* index is in the paragraph delimiters, move to
+	      /* index is in the paragraph delim&iters, move to
 	       * end of previous line
 	       *
-	       * This shouldn’t occur in the first loop iteration as the first
+	       * This shouldn’t occur in the first loop &iteration as the first
 	       * line’s start_index should always be 0.
 	       */
 	      g_assert (layout_line != NULL);
@@ -2107,12 +2107,12 @@ pango_layout_index_to_pos (PangoLayout    *layout,
 
 	  layout_line = tmp_line;
 
-	  pango_layout_iter_get_line_extents (iter, NULL, &logical_rect);
+	  pango_layout_iter_get_line_extents (&iter, NULL, &logical_rect);
 
 	  if (layout_line->start_index + layout_line->length > index)
 	    break;
 
-	  if (!pango_layout_iter_next_line (iter))
+	  if (!pango_layout_iter_next_line (&iter))
 	    {
 	      index = layout_line->start_index + layout_line->length;
 	      break;
@@ -2134,7 +2134,7 @@ pango_layout_index_to_pos (PangoLayout    *layout,
 	pos->width = 0;
     }
 
-  pango_layout_iter_free (iter);
+  _pango_layout_iter_destroy (&iter);
 }
 
 static void
@@ -2835,11 +2835,12 @@ int
 pango_layout_get_baseline (PangoLayout    *layout)
 {
   int baseline;
+  PangoLayoutIter iter;
 
   /* XXX this is so inefficient */
-  PangoLayoutIter *iter = pango_layout_get_iter (layout);
-  baseline = pango_layout_iter_get_baseline (iter);
-  pango_layout_iter_free (iter);
+  _pango_layout_get_iter (layout, &iter);
+  baseline = pango_layout_iter_get_baseline (&iter);
+  _pango_layout_iter_destroy (&iter);
 
   return baseline;
 }

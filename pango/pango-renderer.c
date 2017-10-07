@@ -24,6 +24,7 @@
 
 #include "pango-renderer.h"
 #include "pango-impl-utils.h"
+#include "pango-layout-private.h"
 
 #define N_RENDER_PARTS 4
 
@@ -162,7 +163,7 @@ pango_renderer_draw_layout (PangoRenderer    *renderer,
 			    int               x,
 			    int               y)
 {
-  PangoLayoutIter *iter;
+  PangoLayoutIter iter;
 
   g_return_if_fail (PANGO_IS_RENDERER (renderer));
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
@@ -179,7 +180,7 @@ pango_renderer_draw_layout (PangoRenderer    *renderer,
 
   pango_renderer_activate (renderer);
 
-  iter = pango_layout_get_iter (layout);
+  _pango_layout_get_iter (layout, &iter);
 
   do
     {
@@ -187,19 +188,19 @@ pango_renderer_draw_layout (PangoRenderer    *renderer,
       PangoLayoutLine *line;
       int              baseline;
 
-      line = pango_layout_iter_get_line_readonly (iter);
+      line = pango_layout_iter_get_line_readonly (&iter);
 
-      pango_layout_iter_get_line_extents (iter, NULL, &logical_rect);
-      baseline = pango_layout_iter_get_baseline (iter);
+      pango_layout_iter_get_line_extents (&iter, NULL, &logical_rect);
+      baseline = pango_layout_iter_get_baseline (&iter);
 
       pango_renderer_draw_layout_line (renderer,
 				       line,
 				       x + logical_rect.x,
 				       y + baseline);
     }
-  while (pango_layout_iter_next_line (iter));
+  while (pango_layout_iter_next_line (&iter));
 
-  pango_layout_iter_free (iter);
+  _pango_layout_iter_destroy (&iter);
 
   pango_renderer_deactivate (renderer);
 }
