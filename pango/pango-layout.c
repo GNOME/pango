@@ -104,54 +104,6 @@ struct _ItemProperties
   PangoRectangle *shape_logical_rect;
 };
 
-struct _PangoLayoutIter
-{
-  PangoLayout *layout;
-  GSList *line_list_link;
-  PangoLayoutLine *line;
-
-  /* If run is NULL, it means we're on a "virtual run"
-   * at the end of the line with 0 width
-   */
-  GSList *run_list_link;
-  PangoLayoutRun *run; /* FIXME nuke this, just keep the link */
-  int index;
-
-  /* list of Extents for each line in layout coordinates */
-  GSList *line_extents;
-  GSList *line_extents_link;
-
-  /* X position of the current run */
-  int run_x;
-
-  /* Width of the current run */
-  int run_width;
-
-  /* this run is left-to-right */
-  gboolean ltr;
-
-  /* X position of the left side of the current cluster */
-  int cluster_x;
-
-  /* The width of the current cluster */
-  int cluster_width;
-
-  /* glyph offset to the current cluster start */
-  int cluster_start;
-
-  /* first glyph in the next cluster */
-  int next_cluster_glyph;
-
-  /* number of Unicode chars in current cluster */
-  int cluster_num_chars;
-
-  /* visual position of current character within the cluster */
-  int character_position;
-
-  /* the real width of layout */
-  int layout_width;
-};
-
 typedef struct _PangoLayoutLinePrivate PangoLayoutLinePrivate;
 
 struct _PangoLayoutLinePrivate
@@ -5753,16 +5705,27 @@ G_DEFINE_BOXED_TYPE (PangoLayoutIter, pango_layout_iter,
 PangoLayoutIter*
 pango_layout_get_iter (PangoLayout *layout)
 {
-  int run_start_index;
   PangoLayoutIter *iter;
-  PangoRectangle logical_rect;
 
   g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
 
   iter = g_slice_new (PangoLayoutIter);
 
-  iter->layout = layout;
-  g_object_ref (iter->layout);
+  _pango_layout_get_iter (layout, iter);
+
+  return iter;
+}
+
+void
+_pango_layout_get_iter (PangoLayout    *layout,
+                        PangoLayoutIter*iter)
+{
+  int run_start_index;
+  PangoRectangle logical_rect;
+
+  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+
+  iter->layout = g_object_ref (layout);
 
   pango_layout_check_lines (layout);
 
@@ -5791,8 +5754,18 @@ pango_layout_get_iter (PangoLayout *layout)
   iter->line_extents_link = iter->line_extents;
 
   update_run (iter, run_start_index);
+}
 
-  return iter;
+void
+_pango_layout_iter_destroy (PangoLayoutIter *iter)
+{
+  if (iter == NULL)
+    return;
+
+  g_slist_foreach (iter->line_extents, (GFunc)extents_free, NULL);
+  g_slist_free (iter->line_extents);
+  pango_layout_line_unref (iter->line);
+  g_object_unref (iter->layout);
 }
 
 /**
@@ -5807,10 +5780,7 @@ pango_layout_iter_free (PangoLayoutIter *iter)
   if (iter == NULL)
     return;
 
-  g_slist_foreach (iter->line_extents, (GFunc)extents_free, NULL);
-  g_slist_free (iter->line_extents);
-  pango_layout_line_unref (iter->line);
-  g_object_unref (iter->layout);
+  _pango_layout_iter_destroy (iter);
   g_slice_free (PangoLayoutIter, iter);
 }
 
