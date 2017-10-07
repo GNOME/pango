@@ -82,6 +82,17 @@ struct _PangoLayout
   guint line_count;		/* Number of lines in @lines. 0 if lines is %NULL */
 };
 
+typedef struct _Extents Extents;
+struct _Extents
+{
+  /* Vertical position of the line's baseline in layout coords */
+  int baseline;
+
+  /* Line extents in layout coords */
+  PangoRectangle ink_rect;
+  PangoRectangle logical_rect;
+};
+
 struct _PangoLayoutIter
 {
   PangoLayout *layout;
@@ -96,8 +107,8 @@ struct _PangoLayoutIter
   int index;
 
   /* list of Extents for each line in layout coordinates */
-  GSList *line_extents;
-  GSList *line_extents_link;
+  Extents *line_extents;
+  int line_index;
 
   /* X position of the current run */
   int run_x;
