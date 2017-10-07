@@ -237,6 +237,7 @@ test_layout_iter (void)
 
   g_object_unref (layout);
   g_object_unref (context);
+  pango_font_description_free (font_desc);
 }
 
 static void
@@ -290,6 +291,7 @@ test_glyphitem_iter (void)
 
   g_object_unref (layout);
   g_object_unref (context);
+  pango_font_description_free (font_desc);
 }
 
 int
