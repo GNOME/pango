@@ -2829,12 +2829,13 @@ int
 pango_layout_get_baseline (PangoLayout    *layout)
 {
   int baseline;
-  PangoLayoutIter iter;
+  Extents *extents = NULL;
 
-  /* XXX this is so inefficient */
-  _pango_layout_get_iter (layout, &iter);
-  baseline = pango_layout_iter_get_baseline (&iter);
-  _pango_layout_iter_destroy (&iter);
+  /* XXX this is kinda inefficient */
+  pango_layout_get_extents_internal (layout, NULL, NULL, &extents);
+  baseline = extents ? extents[0].baseline : 0;
+
+  g_free (extents);
 
   return baseline;
 }
