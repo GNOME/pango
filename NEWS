@@ -1,3 +1,9 @@
+Overview of changes between 1.40.12 and 1.40.13
+===============================================
+- Some performance improvements (#788643)
+- Update pango_default_break for line breaks (#788115)
+- Fix an introspection warning (#781857)
+
 Overview of changes between 1.40.11 and 1.40.12
 ===============================================
 - Fix pango_default_break for sentence start/end (#785978)
