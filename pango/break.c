@@ -1159,11 +1159,10 @@ pango_default_break (const gchar   *text,
 	    }
 
 	  attrs[i].is_line_break = TRUE; /* Rule LB31 */
-	  /* Unicode doesn't specify char wrap; we wrap around all chars
-	   * except where a line break is prohibited, which means we
-	   * effectively break everywhere except inside runs of spaces.
-	   */
-	  attrs[i].is_char_break = TRUE;
+	  /* Unicode doesn't specify char wrap;
+	     we wrap around all chars currently. */
+	  if (attrs[i].is_cursor_position)
+	    attrs[i].is_char_break = TRUE;
 
 	  /* Make any necessary replacements first */
 	  if (row_break_type == G_UNICODE_BREAK_UNKNOWN)
@@ -1458,7 +1457,6 @@ pango_default_break (const gchar   *text,
 	    {
 	    case BREAK_PROHIBITED:
 	      /* can't break here */
-	      attrs[i].is_char_break = FALSE;
 	      attrs[i].is_line_break = FALSE;
 	      break;
 
