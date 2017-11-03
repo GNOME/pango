@@ -1,3 +1,6 @@
+# As these sequences are not specified in Unicode,
+# may change the test cases if needed.
+
 ÷ 1F3CC × FE0F × 200D × 2642 × FE0F ÷
 ÷ 1F3CC × 200D × 2642 ÷
 ÷ 1F468 × 200D × 2695 × FE0F ÷ # man health worker
