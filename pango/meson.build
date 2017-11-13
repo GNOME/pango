@@ -1,5 +1,3 @@
-subdir('mini-fribidi')
-
 pango_sources = [
   'break.c',
   'ellipsize.c',
@@ -109,7 +107,7 @@ libpango = shared_library('pango-@0@'.format(pango_api_version),
                           version: pango_libversion,
                           soversion: pango_soversion,
                           install: true,
-                          dependencies: [ gobject_dep, mathlib_dep, thai_dep, mini_fribidi_dep ],
+                          dependencies: [ gobject_dep, mathlib_dep, thai_dep, fribidi_dep ],
                           include_directories: [ root_inc, pango_inc ],
                           c_args: common_cflags + pango_debug_cflags + pango_cflags,
                           link_args: common_ldflags)
