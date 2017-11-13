@@ -641,7 +641,6 @@ _EOF
 AC_CONFIG_FILES([
 Makefile
 pango/Makefile
-pango/mini-fribidi/Makefile
 pango/pango.rc
 pango/pangoft2.rc
 pango/pangowin32.rc

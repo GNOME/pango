@@ -32,7 +32,6 @@ private_headers = [
   'pango-language-sample-table.h',
   'pangocoretext-private.h',
   'pangoatsui-private.h',
-  'mini-fribidi',
 ]
 
 if host_system != 'darwin'

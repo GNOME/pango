@@ -7,7 +7,6 @@ meson_dist_files = \
 	pango-view/meson.build \
 	meson.build \
 	meson_options.txt \
-	pango/mini-fribidi/meson.build \
 	pango/meson.build \
 	docs/meson.build \
 	docs/xml/meson.build \
