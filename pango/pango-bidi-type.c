@@ -125,8 +125,12 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
 				    int             length,
 				    PangoDirection *pbase_dir)
 {
-  FriBidiParType fribidi_base_dir;
+  glong n_chars, i;
   guint8 *embedding_levels_list;
+  const gchar *p;
+  FriBidiParType fribidi_base_dir;
+  FriBidiCharType *bidi_types;
+  FriBidiLevel max_level;
 
   G_STATIC_ASSERT (sizeof (FriBidiLevel) == sizeof (guint8));
   G_STATIC_ASSERT (sizeof (FriBidiChar) == sizeof (gunichar));
@@ -151,38 +155,32 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
       break;
     }
 
-#ifdef FRIBIDI_HAVE_UTF8
-  {
-    if (length < 0)
-      length = strlen (text);
-    embedding_levels_list = (guint8 *) fribidi_log2vis_get_embedding_levels_new_utf8 (text, length, &fribidi_base_dir);
-  }
-#else
-  {
-    gunichar *text_ucs4;
-    glong n_chars;
-    FriBidiCharType *bidi_types;
-    FriBidiLevel max_level;
+  if (length < 0)
+    length = strlen (text);
 
-    text_ucs4 = g_utf8_to_ucs4_fast (text, length, &n_chars);
-    bidi_types = g_new (FriBidiCharType, n_chars);
-    embedding_levels_list = g_new (guint8, n_chars);
+  n_chars = g_utf8_strlen (text, length);
 
-    fribidi_get_bidi_types (text_ucs4, n_chars, bidi_types);
-    max_level = fribidi_get_par_embedding_levels (bidi_types, n_chars,
-						  &fribidi_base_dir,
-						  (FriBidiLevel*)embedding_levels_list);
-    if (G_UNLIKELY(max_level == 0))
-      {
-        /* fribidi_get_par_embedding_levels() failed,
-         * is this the best thing to do? */
-        memset (embedding_levels_list, 0, length);
-      }
+  bidi_types = g_new (FriBidiCharType, n_chars);
+  embedding_levels_list = g_new (guint8, n_chars);
 
-    g_free (text_ucs4);
-    g_free (bidi_types);
-  }
-#endif
+  for (i = 0, p = text; p < text + length; p = g_utf8_next_char(p), i++)
+    {
+      gunichar ch = g_utf8_get_char (p);
+      bidi_types[i] = fribidi_get_bidi_type (ch);
+    }
+
+  max_level = fribidi_get_par_embedding_levels (bidi_types, n_chars,
+						&fribidi_base_dir,
+						(FriBidiLevel*)embedding_levels_list);
+
+  g_free (bidi_types);
+
+  if (G_UNLIKELY(max_level == 0))
+    {
+      /* fribidi_get_par_embedding_levels() failed,
+       * is this the best thing to do? */
+      memset (embedding_levels_list, 0, length);
+    }
 
   *pbase_dir = (fribidi_base_dir == FRIBIDI_PAR_LTR) ?  PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL;
 
