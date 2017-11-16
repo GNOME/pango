@@ -1,3 +1,8 @@
+Overview of changes between 1.40.13 and 1.40.14
+===============================================
+- Fix char break problem introduced in 1.40.13 (#789625)
+- Add tests for char breaking
+
 Overview of changes between 1.40.12 and 1.40.13
 ===============================================
 - Some performance improvements (#788643)
