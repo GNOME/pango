@@ -32,6 +32,7 @@ typedef struct _PangoCairoContextInfo PangoCairoContextInfo;
 struct _PangoCairoContextInfo
 {
   double dpi;
+  gboolean set_options_explicit;
 
   cairo_font_options_t *set_options;
   cairo_font_options_t *surface_options;
@@ -108,6 +109,12 @@ _pango_cairo_update_context (cairo_t      *cr,
   if (!info->surface_options)
     info->surface_options = cairo_font_options_create ();
   cairo_surface_get_font_options (target, info->surface_options);
+  if (!info->set_options_explicit)
+  {
+    if (!info->set_options)
+      info->set_options = cairo_font_options_create ();
+    cairo_get_font_options (cr, info->set_options);
+  }
 
   old_merged_options = info->merged_options;
   info->merged_options = NULL;
@@ -244,9 +251,15 @@ pango_cairo_context_set_font_options (PangoContext               *context,
     cairo_font_options_destroy (info->set_options);
 
   if (options)
+  {
     info->set_options = cairo_font_options_copy (options);
+    info->set_options_explicit = TRUE;
+  }
   else
+  {
     info->set_options = NULL;
+    info->set_options_explicit = FALSE;
+  }
 
   if (info->merged_options)
     {
