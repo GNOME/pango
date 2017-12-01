@@ -83,7 +83,6 @@ GType pango_ft2_font_get_type (void) G_GNUC_CONST;
 PangoFT2Font * _pango_ft2_font_new                (PangoFT2FontMap   *ft2fontmap,
 						   FcPattern         *pattern);
 FT_Library     _pango_ft2_font_map_get_library    (PangoFontMap      *fontmap);
-const char    *_pango_ft2_ft_strerror             (FT_Error           error);
 void _pango_ft2_font_map_default_substitute (PangoFcFontMap *fcfontmap,
 					     FcPattern      *pattern);
 
