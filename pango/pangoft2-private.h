@@ -94,19 +94,6 @@ void  _pango_ft2_font_set_cache_glyph_data    (PangoFont      *font,
 void  _pango_ft2_font_set_glyph_cache_destroy (PangoFont      *font,
 					       GDestroyNotify  destroy_notify);
 
-void _pango_ft2_draw_rect            (FT_Bitmap         *bitmap,
-				      const PangoMatrix *matrix,
-				      int                x,
-				      int                y,
-				      int                width,
-				      int                height);
-void _pango_ft2_draw_error_underline (FT_Bitmap         *bitmap,
-				      const PangoMatrix *matrix,
-				      int                x,
-				      int                y,
-				      int                width,
-				      int                height);
-
 #define PANGO_TYPE_FT2_RENDERER            (pango_ft2_renderer_get_type())
 #define PANGO_FT2_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FT2_RENDERER, PangoFT2Renderer))
 #define PANGO_IS_FT2_RENDERER(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FT2_RENDERER))
