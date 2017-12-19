@@ -1,9 +1,9 @@
-Rendering Text using different variations of
-Selawik Variations test:
-<span font_desc="Selawik Variations test @wght=700">Weight: 700</span>
-<span font_desc="Selawik Variations test @wght=600">Weight: 600</span>
-<span font_desc="Selawik Variations test @wght=400">Weight: 400</span>
-<span font_desc="Selawik Variations test @wght=300">Weight: 300</span>
-<span font_desc="Selawik Variations test">Weight: default</span>
-<span font_desc="Selawik Variations test @wght=500">Weight: 500</span>
-<span font_desc="Selawik Variations test @wght=2000">Weight: 2000</span>
+Rendering Text using weight variations.
+This works with fonts that have OpenType
+font variations.
+<span font_desc="@wght=700">Weight: 700</span>
+<span font_desc="@wght=600">Weight: 600</span>
+<span font_desc="@wght=300">Weight: 300</span>
+<span font_desc="@wght=500">Weight: 500</span>
+<span font_desc="@wght=400">Weight: 400</span>
+<span font_desc="@wght=2000">Weight: 2000</span>
