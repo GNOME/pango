@@ -319,8 +319,8 @@ PangoFontDescription *pango_fc_font_description_from_pattern (FcPattern *pattern
  * String representing a fontconfig property name that Pango reads from font
  * patterns to populate list of OpenType font variations to be used for a font.
  *
- * The property will have a number of string elements, each of which is the
- * OpenType axis setting of the form AXIS=VALUE.
+ * The property will have a string elements, each of which a comma-separated
+ * list of OpenType axis setting of the form AXIS=VALUE.
  */
 #define PANGO_FC_FONT_VARIATIONS "fontvariations"
 

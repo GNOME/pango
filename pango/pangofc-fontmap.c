@@ -1519,8 +1519,10 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
 			    FC_DPI, FcTypeDouble, dpi,
 			    FC_SIZE,  FcTypeDouble,  pixel_size * (72. / 1024. / dpi),
 			    FC_PIXEL_SIZE,  FcTypeDouble,  pixel_size / 1024.,
-                            PANGO_FC_FONT_VARIATIONS, FcTypeString, variations ? variations : "",
 			    NULL);
+
+  if (variations)
+    FcPatternAddString (pattern, PANGO_FC_FONT_VARIATIONS, (FcChar8*) variations);
 
   if (pango_font_description_get_family (description))
     {
