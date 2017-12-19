@@ -226,7 +226,6 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap *cffontmap,
   double size;
   int i;
   cairo_font_options_t *options;
-  const char *variations;
 
   g_return_val_if_fail (PANGO_IS_CAIRO_FC_FONT_MAP (cffontmap), NULL);
   g_return_val_if_fail (pattern != NULL, NULL);
@@ -253,11 +252,6 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap *cffontmap,
   cairo_matrix_scale (&font_matrix, size, size);
 
   options = pango_fc_font_key_get_context_key (key);
-  variations = pango_fc_font_key_get_variations (key);
-  if (variations) {
-    options = cairo_font_options_copy (options);
-    cairo_font_options_set_variations (options, variations);
-  }
 
   _pango_cairo_font_private_initialize (&cffont->cf_priv,
 					(PangoCairoFont *) cffont,
@@ -265,9 +259,6 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap *cffontmap,
 					options,
 					pango_fc_font_key_get_matrix (key),
 					&font_matrix);
-
-  if (variations)
-    cairo_font_options_destroy (options);
 
   ((PangoFcFont *)(cffont))->is_hinted = _pango_cairo_font_private_is_metrics_hinted (&cffont->cf_priv);
 
