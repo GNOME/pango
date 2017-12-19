@@ -1513,6 +1513,9 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
 #ifdef FC_VERTICAL_LAYOUT
 			    FC_VERTICAL_LAYOUT,  FcTypeBool, vertical,
 #endif
+#ifdef FC_VARIABLE
+			    FC_VARIABLE,  FcTypeBool, FcDontCare,
+#endif
 			    FC_DPI, FcTypeDouble, dpi,
 			    FC_SIZE,  FcTypeDouble,  pixel_size * (72. / 1024. / dpi),
 			    FC_PIXEL_SIZE,  FcTypeDouble,  pixel_size / 1024.,
