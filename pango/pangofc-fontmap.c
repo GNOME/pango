@@ -172,6 +172,8 @@ struct _PangoFcFace
 
   PangoFcFamily *family;
   char *style;
+  PangoLanguage **languages;
+  int n_languages;
 
   guint fake : 1;
 };
@@ -2514,11 +2516,23 @@ pango_fc_face_is_synthesized (PangoFontFace *face)
 }
 
 static void
+pango_fc_face_get_languages (PangoFontFace   *face,
+                             PangoLanguage ***languages,
+                             int             *n_languages)
+{
+  PangoFcFace *fcface = PANGO_FC_FACE (face);
+
+  *languages = fcface->languages;
+  *n_languages = fcface->n_languages;
+}
+
+static void
 pango_fc_face_finalize (GObject *object)
 {
   PangoFcFace *fcface = PANGO_FC_FACE (object);
 
   g_free (fcface->style);
+  g_free (fcface->languages);
 
   G_OBJECT_CLASS (pango_fc_face_parent_class)->finalize (object);
 }
@@ -2539,6 +2553,7 @@ pango_fc_face_class_init (PangoFcFaceClass *class)
   class->get_face_name = pango_fc_face_get_face_name;
   class->list_sizes = pango_fc_face_list_sizes;
   class->is_synthesized = pango_fc_face_is_synthesized;
+  class->get_languages = pango_fc_face_get_languages;
 }
 
 
@@ -2552,14 +2567,44 @@ G_DEFINE_TYPE (PangoFcFamily, pango_fc_family, PANGO_TYPE_FONT_FAMILY);
 static PangoFcFace *
 create_face (PangoFcFamily *fcfamily,
 	     const char     *style,
-	     gboolean       fake)
+	     gboolean       fake,
+             PangoLanguage **languages,
+             int             n_languages)
 {
   PangoFcFace *face = g_object_new (PANGO_FC_TYPE_FACE, NULL);
   face->style = g_strdup (style);
   face->family = fcfamily;
   face->fake = fake;
+  face->languages = g_memdup (languages, sizeof (PangoLanguage *) * n_languages);
+  face->n_languages = n_languages;
 
   return face;
+}
+
+static void
+pango_languages_from_langset (FcLangSet       *ls,
+                              PangoLanguage ***languages,
+                              int             *n_languages)
+{
+  GPtrArray *array;
+  FcStrSet *ss;
+  FcStrList *sl;
+  char *s;
+
+  array = g_ptr_array_new ();
+
+  ss = FcLangSetGetLangs (ls);
+  sl = FcStrListCreate (ss);
+  FcStrListFirst (sl);
+
+  while ((s = FcStrListNext (sl)))
+    g_ptr_array_add (array, pango_language_from_string (s));
+
+  FcStrListDone (sl);
+  FcStrSetDestroy (ss);
+
+  *n_languages = array->len;
+  *languages = g_ptr_array_free (array, FALSE);
 }
 
 static void
@@ -2589,14 +2634,14 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 	  fcfamily->faces = g_new (PangoFcFace *, fcfamily->n_faces);
 
 	  i = 0;
-	  fcfamily->faces[i++] = create_face (fcfamily, "Regular", TRUE);
-	  fcfamily->faces[i++] = create_face (fcfamily, "Bold", TRUE);
-	  fcfamily->faces[i++] = create_face (fcfamily, "Italic", TRUE);
-	  fcfamily->faces[i++] = create_face (fcfamily, "Bold Italic", TRUE);
+	  fcfamily->faces[i++] = create_face (fcfamily, "Regular", TRUE, NULL, 0);
+	  fcfamily->faces[i++] = create_face (fcfamily, "Bold", TRUE, NULL, 0);
+	  fcfamily->faces[i++] = create_face (fcfamily, "Italic", TRUE, NULL, 0);
+	  fcfamily->faces[i++] = create_face (fcfamily, "Bold Italic", TRUE, NULL, 0);
 	}
       else
 	{
-	  FcObjectSet *os = FcObjectSetBuild (FC_STYLE, FC_WEIGHT, FC_SLANT, NULL);
+	  FcObjectSet *os = FcObjectSetBuild (FC_STYLE, FC_WEIGHT, FC_SLANT, FC_LANG, NULL);
 	  FcPattern *pat = FcPatternBuild (NULL,
 					   FC_FAMILY, FcTypeString, fcfamily->family_name,
 					   NULL);
@@ -2624,6 +2669,9 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 	    {
 	      const char *style, *font_style = NULL;
 	      int weight, slant;
+              FcLangSet *ls;
+              PangoLanguage **languages;
+              int n_languages;
 
 	      if (FcPatternGetInteger(fontset->fonts[i], FC_WEIGHT, 0, &weight) != FcResultMatch)
 		weight = FC_WEIGHT_MEDIUM;
@@ -2633,6 +2681,16 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 
 	      if (FcPatternGetString (fontset->fonts[i], FC_STYLE, 0, (FcChar8 **)(void*)&font_style) != FcResultMatch)
 		font_style = NULL;
+
+              if (FcPatternGetLangSet (fontset->fonts[i], FC_LANG, 0, &ls) != FcResultMatch)
+                {
+                  languages = NULL;
+                  n_languages = 0;
+                }
+              else
+                {
+                  pango_languages_from_langset (ls, &languages, &n_languages);
+                }
 
 	      if (weight <= FC_WEIGHT_MEDIUM)
 		{
@@ -2663,19 +2721,22 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 
 	      if (!font_style)
 		font_style = style;
-	      faces[num++] = create_face (fcfamily, font_style, FALSE);
+
+	      faces[num++] = create_face (fcfamily, font_style, FALSE, languages, n_languages);
+
+              g_free (languages);
 	    }
 
 	  if (has_face[REGULAR])
 	    {
 	      if (!has_face[ITALIC])
-		faces[num++] = create_face (fcfamily, "Italic", TRUE);
+		faces[num++] = create_face (fcfamily, "Italic", TRUE, NULL, 0);
 	      if (!has_face[BOLD])
-		faces[num++] = create_face (fcfamily, "Bold", TRUE);
+		faces[num++] = create_face (fcfamily, "Bold", TRUE, NULL, 0);
 
 	    }
 	  if ((has_face[REGULAR] || has_face[ITALIC] || has_face[BOLD]) && !has_face[BOLD_ITALIC])
-	    faces[num++] = create_face (fcfamily, "Bold Italic", TRUE);
+	    faces[num++] = create_face (fcfamily, "Bold Italic", TRUE, NULL, 0);
 
 	  faces = g_renew (PangoFcFace *, faces, num);
 

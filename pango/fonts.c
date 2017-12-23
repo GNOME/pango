@@ -2261,3 +2261,19 @@ pango_font_face_list_sizes (PangoFontFace  *face,
       *n_sizes = 0;
     }
 }
+
+void
+pango_font_face_get_languages (PangoFontFace   *face,
+                               PangoLanguage ***languages,
+                               int             *n_languages)
+{
+  g_return_if_fail (PANGO_IS_FONT_FACE (face));
+
+  if (PANGO_FONT_FACE_GET_CLASS (face)->get_languages != NULL)
+    PANGO_FONT_FACE_GET_CLASS (face)->get_languages (face, languages, n_languages);
+  else
+    {
+      *languages = NULL;
+      *n_languages = 0;
+    }
+}

@@ -492,6 +492,11 @@ void                  pango_font_face_list_sizes     (PangoFontFace  *face,
 PANGO_AVAILABLE_IN_1_18
 gboolean              pango_font_face_is_synthesized (PangoFontFace  *face) G_GNUC_PURE;
 
+PANGO_AVAILABLE_IN_1_42
+void                  pango_font_face_get_languages  (PangoFontFace   *face,
+                                                      PangoLanguage ***languages,
+                                                      int             *n_languages);
+
 #ifdef PANGO_ENABLE_BACKEND
 
 #define PANGO_FONT_FACE_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT_FACE, PangoFontFaceClass))
@@ -525,10 +530,12 @@ struct _PangoFontFaceClass
   gboolean               (*is_synthesized) (PangoFontFace *face);
 
   /*< private >*/
+  void                   (*get_languages)  (PangoFontFace   *face,
+                                            PangoLanguage ***languages,
+                                            int             *n_languages);
 
   /* Padding for future expansion */
   void (*_pango_reserved3) (void);
-  void (*_pango_reserved4) (void);
 };
 
 #endif /* PANGO_ENABLE_BACKEND */
