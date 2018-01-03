@@ -196,7 +196,7 @@ pango_deps = []
 glib_req_version = '>= 2.33.12'
 libthai_req_version = '>= 0.1.9'
 harfbuzz_req_version = '>= 1.2.3'
-fontconfig_req_version = '>= 2.10.91'
+fontconfig_req_version = '>= 2.11.91'
 xft_req_version = '>= 2.0.0'
 cairo_req_version = '>= 1.12.10'
 
@@ -225,6 +225,9 @@ if fontconfig_dep.found()
 
   if cc.has_function('FcWeightFromOpenType', dependencies: fontconfig_dep)
     pango_conf.set('HAVE_FCWEIGHTFROMOPENTYPE', 1)
+  endif
+  if cc.has_function('FcWeightFromOpenTypeDouble', dependencies: fontconfig_dep)
+    pango_conf.set('HAVE_FCWEIGHTFROMOPENTYPEDOUBLE', 1)
   endif
 endif
 
