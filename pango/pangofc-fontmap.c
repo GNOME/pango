@@ -1387,36 +1387,13 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
     *families = g_memdup (priv->families, priv->n_families * sizeof (PangoFontFamily *));
 }
 
-static int
+static double
 pango_fc_convert_weight_to_fc (PangoWeight pango_weight)
 {
-#ifdef HAVE_FCWEIGHTFROMOPENTYPE
-  return FcWeightFromOpenType (pango_weight);
+#ifdef HAVE_FCWEIGHTFROMOPENTYPEDOUBLE
+  return FcWeightFromOpenTypeDouble (pango_weight);
 #else
-  if (pango_weight <= (PANGO_WEIGHT_THIN + PANGO_WEIGHT_ULTRALIGHT) / 2)
-    return FC_WEIGHT_THIN;
-  else if (pango_weight <= (PANGO_WEIGHT_ULTRALIGHT + PANGO_WEIGHT_LIGHT) / 2)
-    return FC_WEIGHT_ULTRALIGHT;
-  else if (pango_weight <= (PANGO_WEIGHT_LIGHT + PANGO_WEIGHT_SEMILIGHT) / 2)
-    return FC_WEIGHT_LIGHT;
-  else if (pango_weight <= (PANGO_WEIGHT_SEMILIGHT + PANGO_WEIGHT_BOOK) / 2)
-    return FC_WEIGHT_DEMILIGHT;
-  else if (pango_weight <= (PANGO_WEIGHT_BOOK + PANGO_WEIGHT_NORMAL) / 2)
-    return FC_WEIGHT_BOOK;
-  else if (pango_weight <= (PANGO_WEIGHT_NORMAL + PANGO_WEIGHT_MEDIUM) / 2)
-    return FC_WEIGHT_NORMAL;
-  else if (pango_weight <= (PANGO_WEIGHT_MEDIUM + PANGO_WEIGHT_SEMIBOLD) / 2)
-    return FC_WEIGHT_MEDIUM;
-  else if (pango_weight <= (PANGO_WEIGHT_SEMIBOLD + PANGO_WEIGHT_BOLD) / 2)
-    return FC_WEIGHT_DEMIBOLD;
-  else if (pango_weight <= (PANGO_WEIGHT_BOLD + PANGO_WEIGHT_ULTRABOLD) / 2)
-    return FC_WEIGHT_BOLD;
-  else if (pango_weight <= (PANGO_WEIGHT_ULTRABOLD + PANGO_WEIGHT_HEAVY) / 2)
-    return FC_WEIGHT_ULTRABOLD;
-  else if (pango_weight <= (PANGO_WEIGHT_HEAVY + PANGO_WEIGHT_ULTRAHEAVY) / 2)
-    return FC_WEIGHT_BLACK;
-  else
-    return FC_WEIGHT_EXTRABLACK;
+  return FcWeightFromOpenType (pango_weight);
 #endif
 }
 
@@ -1476,7 +1453,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   FcPattern *pattern;
   const char *prgname;
   int slant;
-  int weight;
+  double weight;
   PangoGravity gravity;
   FcBool vertical;
   char **families;
@@ -1505,7 +1482,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
    */
   pattern = FcPatternBuild (NULL,
 			    PANGO_FC_VERSION, FcTypeInteger, pango_version(),
-			    FC_WEIGHT, FcTypeInteger, weight,
+			    FC_WEIGHT, FcTypeDouble, weight,
 			    FC_SLANT,  FcTypeInteger, slant,
 #ifdef FC_WIDTH
 			    FC_WIDTH,  FcTypeInteger, width,
@@ -2169,35 +2146,12 @@ pango_fc_font_map_shutdown (PangoFcFontMap *fcfontmap)
 }
 
 static PangoWeight
-pango_fc_convert_weight_to_pango (int fc_weight)
+pango_fc_convert_weight_to_pango (double fc_weight)
 {
-#ifdef HAVE_FCWEIGHTFROMOPENTYPE
-  return FcWeightToOpenType (fc_weight);
+#ifdef HAVE_FCWEIGHTFROMOPENTYPEDOUBLE
+  return FcWeightToOpenTypeDouble (fc_weight);
 #else
-  if (fc_weight <= (FC_WEIGHT_THIN + FC_WEIGHT_EXTRALIGHT) / 2)
-    return PANGO_WEIGHT_THIN;
-  else if (fc_weight <= (FC_WEIGHT_EXTRALIGHT + FC_WEIGHT_LIGHT) / 2)
-    return PANGO_WEIGHT_ULTRALIGHT;
-  else if (fc_weight <= (FC_WEIGHT_LIGHT + FC_WEIGHT_DEMILIGHT) / 2)
-    return PANGO_WEIGHT_LIGHT;
-  else if (fc_weight <= (FC_WEIGHT_DEMILIGHT + FC_WEIGHT_BOOK) / 2)
-    return PANGO_WEIGHT_SEMILIGHT;
-  else if (fc_weight <= (FC_WEIGHT_BOOK + FC_WEIGHT_REGULAR) / 2)
-    return PANGO_WEIGHT_BOOK;
-  else if (fc_weight <= (FC_WEIGHT_REGULAR + FC_WEIGHT_MEDIUM) / 2)
-    return PANGO_WEIGHT_NORMAL;
-   else if (fc_weight <= (FC_WEIGHT_MEDIUM + FC_WEIGHT_DEMIBOLD) / 2)
-    return PANGO_WEIGHT_MEDIUM;
-  else if (fc_weight <= (FC_WEIGHT_DEMIBOLD + FC_WEIGHT_BOLD) / 2)
-    return PANGO_WEIGHT_SEMIBOLD;
-  else if (fc_weight <= (FC_WEIGHT_BOLD + FC_WEIGHT_EXTRABOLD) / 2)
-    return PANGO_WEIGHT_BOLD;
-  else if (fc_weight <= (FC_WEIGHT_EXTRABOLD + FC_WEIGHT_BLACK) / 2)
-    return PANGO_WEIGHT_ULTRABOLD;
-  else if (fc_weight <= (FC_WEIGHT_BLACK + FC_WEIGHT_EXTRABLACK) / 2)
-    return PANGO_WEIGHT_HEAVY;
-  else
-    return PANGO_WEIGHT_ULTRAHEAVY;
+  return FcWeightToOpenType (fc_weight);
 #endif
 }
 
@@ -2276,6 +2230,7 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
 
   FcChar8 *s;
   int i;
+  double d;
   FcResult res;
 
   desc = pango_font_description_new ();
@@ -2292,8 +2247,8 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
 
   pango_font_description_set_style (desc, style);
 
-  if (FcPatternGetInteger (pattern, FC_WEIGHT, 0, &i) == FcResultMatch)
-    weight = pango_fc_convert_weight_to_pango (i);
+  if (FcPatternGetDouble (pattern, FC_WEIGHT, 0, &d) == FcResultMatch)
+    weight = pango_fc_convert_weight_to_pango (d);
   else
     weight = PANGO_WEIGHT_NORMAL;
 
