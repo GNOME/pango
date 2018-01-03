@@ -10,3 +10,11 @@ range 9 13
 range 13 17
 [13 17] style 2
 range 17 2147483647
+
+
+---
+
+[0:9] (null) Normal 0
+[9:13] (null) Normal 0
+[13:17] (null) Italic 0
+[17:2147483647] (null) Italic 0

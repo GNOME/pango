@@ -1,0 +1,9 @@
+Rendering Text using weight variations.
+This works with fonts that have OpenType
+font variations.
+<span font_desc="@wght=700">Weight: 700</span>
+<span font_desc="@wght=600">Weight: 600</span>
+<span font_desc="@wght=300">Weight: 300</span>
+<span font_desc="@wght=500">Weight: 500</span>
+<span font_desc="@wght=400">Weight: 400</span>
+<span font_desc="@wght=2000">Weight: 2000</span>

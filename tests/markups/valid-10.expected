@@ -4,7 +4,7 @@ Lots of attrs
 ---
 
 range 0 13
-[0 13] font Sans Italic 12
+[0 13] font Sans Italic 12 @wdth=100,wght=200
 [0 13] foreground #0000ffff0000
 [0 13] background #f0f0f0f0f0f0
 [0 13] underline 2
@@ -20,5 +20,5 @@ range 13 2147483647
 
 ---
 
-[0:13] de Sans Italic 12
-[13:2147483647] (null) Sans Italic 12
+[0:13] de Sans Italic 12 @wdth=100,wght=200
+[13:2147483647] (null) Sans Italic 12 @wdth=100,wght=200

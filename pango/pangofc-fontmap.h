@@ -71,6 +71,8 @@ PANGO_AVAILABLE_IN_1_24
 const PangoMatrix *pango_fc_font_key_get_matrix      (const PangoFcFontKey *key);
 PANGO_AVAILABLE_IN_1_24
 gpointer           pango_fc_font_key_get_context_key (const PangoFcFontKey *key);
+PANGO_AVAILABLE_IN_1_40
+const char        *pango_fc_font_key_get_variations  (const PangoFcFontKey *key);
 
 #endif
 
@@ -310,6 +312,17 @@ PangoFontDescription *pango_fc_font_description_from_pattern (FcPattern *pattern
  * Since: 1.34
  */
 #define PANGO_FC_FONT_FEATURES "fontfeatures"
+
+/**
+ * PANGO_FC_FONT_VARIATIONS:
+ *
+ * String representing a fontconfig property name that Pango reads from font
+ * patterns to populate list of OpenType font variations to be used for a font.
+ *
+ * The property will have a string elements, each of which a comma-separated
+ * list of OpenType axis setting of the form AXIS=VALUE.
+ */
+#define PANGO_FC_FONT_VARIATIONS "fontvariations"
 
 G_END_DECLS
 

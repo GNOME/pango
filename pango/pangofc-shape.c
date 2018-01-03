@@ -278,6 +278,38 @@ pango_fc_get_hb_font_funcs (void)
   return funcs;
 }
 
+static void
+parse_variations (const char      *variations,
+                  hb_variation_t **hb_variations,
+                  guint           *n_variations)
+{
+  guint n;
+  hb_variation_t *var;
+  int i;
+  const char *p;
+
+  n = 1;
+  for (i = 0; variations[i]; i++)
+    {
+      if (variations[i] == ',')
+        n++;
+    }
+
+  var = g_new (hb_variation_t, n);
+
+  p = variations;
+  n = 0;
+  while (p && *p)
+    {
+      char *end = strchr (p, ',');
+      if (hb_variation_from_string (p, end ? end - p: -1, &var[n]))
+        n++;
+      p = end ? end + 1 : NULL;
+    }
+
+  *hb_variations = var;
+  *n_variations = n;
+}
 
 void
 _pango_fc_shape (PangoFont           *font,
@@ -306,6 +338,7 @@ _pango_fc_shape (PangoFont           *font,
   unsigned int num_features = 0;
   double x_scale_inv, y_scale_inv;
   PangoGlyphInfo *infos;
+  const char *variations;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (analysis != NULL);
@@ -346,6 +379,18 @@ _pango_fc_shape (PangoFont           *font,
   hb_font_set_ppem (hb_font,
 		    fc_font->is_hinted ? ft_face->size->metrics.x_ppem : 0,
 		    fc_font->is_hinted ? ft_face->size->metrics.y_ppem : 0);
+
+  variations = pango_fc_font_key_get_variations (key);
+  if (variations)
+    {
+      guint n_variations;
+      hb_variation_t *hb_variations;
+
+      parse_variations (variations, &hb_variations, &n_variations);
+      hb_font_set_variations (hb_font, hb_variations, n_variations);
+
+      g_free (hb_variations);
+    }
 
   hb_buffer = acquire_buffer (&free_buffer);
 

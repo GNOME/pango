@@ -18,3 +18,15 @@ range 14 15
 range 15 19
 [15 19] foreground #222233334444
 range 19 2147483647
+
+
+---
+
+[0:4] (null) Normal
+[4:5] (null) Normal
+[5:9] (null) Normal
+[9:10] (null) Normal
+[10:14] (null) Normal
+[14:15] (null) Normal
+[15:19] (null) Normal
+[19:2147483647] (null) Normal

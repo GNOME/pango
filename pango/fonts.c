@@ -52,8 +52,11 @@ struct _PangoFontDescription
   PangoStretch stretch;
   PangoGravity gravity;
 
+  char *variations;
+
   guint16 mask;
   guint static_family : 1;
+  guint static_variations : 1;
   guint size_is_absolute : 1;
 
   int size;
@@ -71,10 +74,12 @@ static const PangoFontDescription pfd_defaults = {
   PANGO_WEIGHT_NORMAL,	/* weight */
   PANGO_STRETCH_NORMAL,	/* stretch */
   PANGO_GRAVITY_SOUTH,  /* gravity */
+  NULL,                 /* variations */
 
   0,			/* mask */
   0,			/* static_family */
-  FALSE,		/* size_is_absolute */
+  0,			/* static_variations*/
+  0,    		/* size_is_absolute */
 
   0,			/* size */
 };
@@ -480,6 +485,98 @@ pango_font_description_get_gravity (const PangoFontDescription *desc)
 }
 
 /**
+ * pango_font_description_set_variations_static:
+ * @desc: a #PangoFontDescription
+ * @variations: a string representing the variations
+ *
+ * Like pango_font_description_set_variations(), except that no
+ * copy of @variations is made. The caller must make sure that the
+ * string passed in stays around until @desc has been freed
+ * or the name is set again. This function can be used if
+ * @variations is a static string such as a C string literal, or
+ * if @desc is only needed temporarily.
+ *
+ * Since: 1.42
+ **/
+void
+pango_font_description_set_variations_static (PangoFontDescription *desc,
+                                              const char           *variations)
+{
+  g_return_if_fail (desc != NULL);
+
+  if (desc->variations == variations)
+    return;
+
+  if (desc->variations && !desc->static_variations)
+    g_free (desc->variations);
+
+  if (variations)
+    {
+      desc->variations = (char *)variations;
+      desc->static_variations = TRUE;
+      desc->mask |= PANGO_FONT_MASK_VARIATIONS;
+    }
+  else
+    {
+      desc->variations = pfd_defaults.variations;
+      desc->static_variations = pfd_defaults.static_variations;
+      desc->mask &= ~PANGO_FONT_MASK_VARIATIONS;
+    }
+}
+
+/**
+ * pango_font_description_set_variations:
+ * @desc: a #PangoFontDescription.
+ * @variations: a string representing the variations
+ *
+ * Sets the variations field of a font description. OpenType
+ * font variations allow to select a font instance by specifying
+ * values for a number of axes, such as width or weight.
+ *
+ * The format of the variations string is AXIS1=VALUE,AXIS2=VALUE...,
+ * with each AXIS a 4 character tag that identifies a font axis,
+ * and each VALUE a floating point number. Unknown axes are ignored,
+ * and values are clamped to their allowed range.
+ *
+ * Pango does not currently have a way to find supported axes of
+ * a font. Both harfbuzz or freetype have API for this.
+ *
+ * Since: 1.42
+ **/
+void
+pango_font_description_set_variations (PangoFontDescription *desc,
+                                       const char           *variations)
+{
+  g_return_if_fail (desc != NULL);
+
+  pango_font_description_set_variations_static (desc, g_strdup (variations));
+  if (variations)
+    desc->static_variations = FALSE;
+}
+
+/**
+ * pango_font_description_get_variations:
+ * @desc: a #PangoFontDescription
+ *
+ * Gets the variations field of a font description. See
+ * pango_font_description_set_variations().
+ *
+ * Return value: (nullable): the varitions field for the font
+ *               description, or %NULL if not previously set.  This
+ *               has the same life-time as the font description itself
+ *               and should not be freed.
+ *
+ * Since: 1.42
+ **/
+const char *
+pango_font_description_get_variations (const PangoFontDescription *desc)
+{
+  g_return_val_if_fail (desc != NULL, NULL);
+
+  return desc->variations;
+}
+
+/**
  * pango_font_description_get_set_fields:
  * @desc: a #PangoFontDescription
  *
@@ -541,6 +638,7 @@ pango_font_description_merge (PangoFontDescription       *desc,
 			      gboolean                    replace_existing)
 {
   gboolean family_merged;
+  gboolean variations_merged;
 
   g_return_if_fail (desc != NULL);
 
@@ -548,6 +646,7 @@ pango_font_description_merge (PangoFontDescription       *desc,
     return;
 
   family_merged = desc_to_merge->family_name && (replace_existing || !desc->family_name);
+  variations_merged = desc_to_merge->variations && (replace_existing || !desc->variations);
 
   pango_font_description_merge_static (desc, desc_to_merge, replace_existing);
 
@@ -555,6 +654,12 @@ pango_font_description_merge (PangoFontDescription       *desc,
     {
       desc->family_name = g_strdup (desc->family_name);
       desc->static_family = FALSE;
+    }
+
+  if (variations_merged)
+    {
+      desc->variations = g_strdup (desc->variations);
+      desc->static_variations = FALSE;
     }
 }
 
@@ -603,6 +708,8 @@ pango_font_description_merge_static (PangoFontDescription       *desc,
     }
   if (new_mask & PANGO_FONT_MASK_GRAVITY)
     desc->gravity = desc_to_merge->gravity;
+  if (new_mask & PANGO_FONT_MASK_VARIATIONS)
+    pango_font_description_set_variations_static (desc, desc_to_merge->variations);
 
   desc->mask |= new_mask;
 }
@@ -697,6 +804,9 @@ pango_font_description_copy  (const PangoFontDescription  *desc)
       result->static_family = FALSE;
     }
 
+  result->variations = g_strdup (result->variations);
+  result->static_variations = FALSE;
+
   return result;
 }
 
@@ -727,6 +837,10 @@ pango_font_description_copy_static (const PangoFontDescription *desc)
   *result = *desc;
   if (result->family_name)
     result->static_family = TRUE;
+
+
+  if (result->variations)
+    result->static_variations = TRUE;
 
   return result;
 }
@@ -760,7 +874,8 @@ pango_font_description_equal (const PangoFontDescription  *desc1,
 	 desc1->size_is_absolute == desc2->size_is_absolute &&
 	 desc1->gravity == desc2->gravity &&
 	 (desc1->family_name == desc2->family_name ||
-	  (desc1->family_name && desc2->family_name && g_ascii_strcasecmp (desc1->family_name, desc2->family_name) == 0));
+	  (desc1->family_name && desc2->family_name && g_ascii_strcasecmp (desc1->family_name, desc2->family_name) == 0)) &&
+         (g_strcmp0 (desc1->variations, desc2->variations) == 0);
 }
 
 #define TOLOWER(c) \
@@ -800,6 +915,8 @@ pango_font_description_hash (const PangoFontDescription *desc)
 
   if (desc->family_name)
     hash = case_insensitive_hash (desc->family_name);
+  if (desc->variations)
+    hash ^= g_str_hash (desc->variations);
   hash ^= desc->size;
   hash ^= desc->size_is_absolute ? 0xc33ca55a : 0;
   hash ^= desc->style << 16;
@@ -825,6 +942,9 @@ pango_font_description_free  (PangoFontDescription  *desc)
 
   if (desc->family_name && !desc->static_family)
     g_free (desc->family_name);
+
+  if (desc->variations && !desc->static_variations)
+    g_free (desc->variations);
 
   g_slice_free (PangoFontDescription, desc);
 }
@@ -1031,7 +1151,7 @@ find_field_any (const char *str, int len, PangoFontDescription *desc)
 }
 
 static const char *
-getword (const char *str, const char *last, size_t *wordlen)
+getword (const char *str, const char *last, size_t *wordlen, const char *stop)
 {
   const char *result;
 
@@ -1039,7 +1159,7 @@ getword (const char *str, const char *last, size_t *wordlen)
     last--;
 
   result = last;
-  while (result > str && !g_ascii_isspace (*(result - 1)) && *(result - 1) != ',')
+  while (result > str && !g_ascii_isspace (*(result - 1)) && !strchr (stop, *(result - 1)))
     result--;
 
   *wordlen = last - result;
@@ -1071,6 +1191,23 @@ parse_size (const char *word,
     }
 
   return FALSE;
+}
+
+static gboolean
+parse_variations (const char  *word,
+                  size_t       wordlen,
+                  char       **variations)
+{
+  if (word[0] != '@')
+    {
+      *variations = NULL;
+      return FALSE;
+    }
+
+  /* XXX: actually validate here */
+  *variations = g_strndup (word + 1, wordlen - 1);
+
+  return TRUE;
 }
 
 /**
@@ -1110,10 +1247,19 @@ pango_font_description_from_string (const char *str)
 
   len = strlen (str);
   last = str + len;
-  p = getword (str, last, &wordlen);
+  p = getword (str, last, &wordlen, "");
+  /* Look for variations at the end of the string */
+  if (wordlen != 0)
+    {
+      if (parse_variations (p, wordlen, &desc->variations))
+        {
+	  desc->mask |= PANGO_FONT_MASK_VARIATIONS;
+	  last = p;
+        }
+    }
 
-  /* Look for a size at the end of the string
-   */
+  p = getword (str, last, &wordlen, ",");
+  /* Look for a size */
   if (wordlen != 0)
     {
       gboolean size_is_absolute;
@@ -1127,7 +1273,7 @@ pango_font_description_from_string (const char *str)
 
   /* Now parse style words
    */
-  p = getword (str, last, &wordlen);
+  p = getword (str, last, &wordlen, ",");
   while (wordlen != 0)
     {
       if (!find_field_any (p, wordlen, desc))
@@ -1135,7 +1281,7 @@ pango_font_description_from_string (const char *str)
       else
 	{
 	  last = p;
-	  p = getword (str, last, &wordlen);
+	  p = getword (str, last, &wordlen, ",");
 	}
     }
 
@@ -1234,7 +1380,7 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
        * in a keyword like "Bold", or if the family name ends in
        * a number and no keywords will be added.
        */
-      p = getword (desc->family_name, desc->family_name + strlen(desc->family_name), &wordlen);
+      p = getword (desc->family_name, desc->family_name + strlen(desc->family_name), &wordlen, ",");
       if (wordlen != 0 &&
 	  (find_field_any (p, wordlen, NULL) ||
 	   (parse_size (p, wordlen, NULL, NULL) &&
@@ -1273,6 +1419,12 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
 
       if (desc->size_is_absolute)
 	g_string_append (result, "px");
+    }
+
+  if (desc->variations && desc->mask & PANGO_FONT_MASK_VARIATIONS)
+    {
+      g_string_append (result, " @");
+      g_string_append (result, desc->variations);
     }
 
   return g_string_free (result, FALSE);
