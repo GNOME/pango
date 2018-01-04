@@ -223,9 +223,6 @@ fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version, requi
 if fontconfig_dep.found()
   pango_deps += fontconfig_dep
 
-  if cc.has_function('FcWeightFromOpenType', dependencies: fontconfig_dep)
-    pango_conf.set('HAVE_FCWEIGHTFROMOPENTYPE', 1)
-  endif
   if cc.has_function('FcWeightFromOpenTypeDouble', dependencies: fontconfig_dep)
     pango_conf.set('HAVE_FCWEIGHTFROMOPENTYPEDOUBLE', 1)
   endif
