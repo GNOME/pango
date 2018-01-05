@@ -656,7 +656,7 @@ pango_fc_font_key_init (PangoFcFontKey    *key,
   key->fontmap = fcfontmap;
   key->pattern = pattern;
   key->matrix = *pango_fc_fontset_key_get_matrix (fontset_key);
-  key->variations = g_strdup (fontset_key->variations);
+  key->variations = fontset_key->variations;
   key->context_key = pango_fc_fontset_key_get_context_key (fontset_key);
 }
 
