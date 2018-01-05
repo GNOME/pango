@@ -1566,7 +1566,7 @@ pango_fc_font_map_new_font (PangoFcFontMap    *fcfontmap,
 
   fcfont = g_hash_table_lookup (priv->font_hash, &key);
   if (fcfont)
-    return g_object_ref (fcfont);
+    return g_object_ref (PANGO_FONT (fcfont));
 
   class = PANGO_FC_FONT_MAP_GET_CLASS (fcfontmap);
 
@@ -1797,7 +1797,7 @@ pango_fc_font_map_load_fontset (PangoFontMap                 *fontmap,
   pango_font_description_free (key.desc);
   g_free (key.variations);
 
-  return g_object_ref (fontset);
+  return g_object_ref (PANGO_FONTSET (fontset));
 }
 
 /**
