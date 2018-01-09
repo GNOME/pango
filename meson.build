@@ -229,8 +229,9 @@ if fontconfig_dep.found()
 endif
 
 # The first version of freetype with a pkg-config file is 2.1.5
+# We require both fontconfig and freetype if we are to have either.
 freetype_dep = dependency('freetype2', required: false)
-if freetype_dep.found()
+if freetype_dep.found() and fontconfig_dep.found()
   pango_conf.set('HAVE_FREETYPE', 1)
   pango_deps += freetype_dep
 endif
