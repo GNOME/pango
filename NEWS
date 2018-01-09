@@ -1,3 +1,9 @@
+Overview of changes in 1.41.0
+=============================
+- Fix up font options from cairo (#790747)
+- Add support for font variations
+- Fix compiler warnings (#792231)
+
 Overview of changes between 1.40.13 and 1.40.14
 ===============================================
 - Fix char break problem introduced in 1.40.13 (#789625)
