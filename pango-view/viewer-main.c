@@ -68,7 +68,7 @@ main (int    argc,
   for (run = 0; run < MAX(1,opt_runs); run++)
     view->render (instance, surface, context, &width, &height, NULL);
 
-  if (opt_output)
+  if (opt_output_file)
     {
       if (!view->write)
 	fail ("%s viewer backend does not support writing", view->name);
@@ -77,12 +77,12 @@ main (int    argc,
 	  FILE *stream;
 	  GPid pid = 0;
 
-	  if (view->write_suffix && g_str_has_suffix (opt_output, view->write_suffix))
+	  if (view->write_suffix && g_str_has_suffix (opt_output_file, view->write_suffix))
 	    {
-	      stream = g_fopen (opt_output, "wb");
+	      stream = g_fopen (opt_output_file, "wb");
 	      if (!stream)
 		fail ("Cannot open output file %s: %s\n",
-		      opt_output, g_strerror (errno));
+		      opt_output_file, g_strerror (errno));
 	    }
 	  else
 	    {
@@ -90,7 +90,7 @@ main (int    argc,
 	      const gchar *convert_argv[4] = {"convert", "-", "%s"};
 	      GError *error;
 
-	      convert_argv[2] = opt_output;
+	      convert_argv[2] = opt_output_file;
 
 	      if (!g_spawn_async_with_pipes (NULL, (gchar **)(void*)convert_argv, NULL,
 					     G_SPAWN_DO_NOT_REAP_CHILD |

@@ -213,34 +213,26 @@ typedef struct
 static gpointer
 cairo_vector_view_create (const PangoViewer *klass G_GNUC_UNUSED)
 {
-  const char *extension = NULL;
   CairoVectorFileCreateFunc constructor = NULL;
 
-  if (opt_output)
-    {
-      extension = strrchr (opt_output, '.');
-      if (extension)
-	  extension++; /* skip the dot */
-    }
-
-  if (!extension)
+  if (!opt_output_format)
     return NULL;
 
   if (0)
     ;
   #ifdef CAIRO_HAS_SVG_SURFACE
-    else if (0 == strcasecmp (extension, "svg"))
+    else if (0 == strcasecmp (opt_output_format, "svg"))
       constructor = cairo_svg_surface_create;
   #endif
   #ifdef CAIRO_HAS_PDF_SURFACE
-    else if (0 == strcasecmp (extension, "pdf"))
+    else if (0 == strcasecmp (opt_output_format, "pdf"))
       constructor = cairo_pdf_surface_create;
   #endif
   #ifdef CAIRO_HAS_PS_SURFACE
-    else if (0 == strcasecmp (extension, "ps"))
+    else if (0 == strcasecmp (opt_output_format, "ps"))
       constructor = cairo_ps_surface_create;
    #ifdef HAS_EPS
-    else if (0 == strcasecmp (extension, "eps"))
+    else if (0 == strcasecmp (opt_output_format, "eps"))
       constructor = _cairo_eps_surface_create;
    #endif
   #endif
@@ -254,8 +246,8 @@ cairo_vector_view_create (const PangoViewer *klass G_GNUC_UNUSED)
       /* save output filename and unset it such that the viewer layer
        * doesn't try to save to file.
        */
-     instance->filename = opt_output;
-     opt_output = NULL;
+     instance->filename = opt_output_file;
+     opt_output_file = NULL;
 
      instance->constructor = constructor;
 

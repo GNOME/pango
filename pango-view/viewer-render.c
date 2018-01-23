@@ -32,12 +32,15 @@
 
 #include "viewer-render.h"
 
+#ifndef BUFSIZ
+#define BUFSIZ 8192
+#endif
+
 gboolean opt_display = TRUE;
 int opt_dpi = 96;
 gboolean opt_pixels = FALSE;
 const char *opt_font = "";
 gboolean opt_header = FALSE;
-const char *opt_output = NULL;
 int opt_margin_t = 10;
 int opt_margin_r = 10;
 int opt_margin_b = 10;
@@ -46,7 +49,6 @@ int opt_markup = FALSE;
 gboolean opt_rtl = FALSE;
 double opt_rotate = 0;
 gboolean opt_auto_dir = TRUE;
-const char *opt_text = NULL;
 gboolean opt_waterfall = FALSE;
 int opt_width = -1;
 int opt_height = -1;
@@ -69,6 +71,10 @@ guint16 opt_fg_alpha = 65535;
 gboolean opt_bg_set = FALSE;
 PangoColor opt_bg_color = {65535, 65535, 65535};
 guint16 opt_bg_alpha = 65535;
+const char *opt_text = NULL;
+const char *opt_text_file = NULL;
+const char *opt_output_file = NULL;
+const char *opt_output_format= NULL;
 
 /* Text (or markup) to render */
 static char *text;
@@ -712,8 +718,12 @@ parse_options (int argc, char *argv[])
      "Set the margin on the output in pixels",			    "CSS-style numbers in pixels"},
     {"markup",		0, 0, G_OPTION_ARG_NONE,			&opt_markup,
      "Interpret text as Pango markup",					NULL},
-    {"output",		'o', 0, G_OPTION_ARG_STRING,			&opt_output,
-     "Save rendered image to output file",			      "file"},
+    {"output",		0, G_OPTION_FLAG_HIDDEN, G_OPTION_ARG_STRING,    &opt_output_file,
+     "Deprecated",          "file"},
+    {"output-file", 'o', 0, G_OPTION_ARG_STRING,          &opt_output_file,
+     "Set output file-name (default: stdout)",          "filename"},
+    {"output-format", 0, 0, G_OPTION_ARG_STRING,          &opt_output_format,
+     "Set output format: pdf, ps, svg, png, jpeg",          "format"},
     {"pangorc",		0, G_OPTION_FLAG_HIDDEN, G_OPTION_ARG_STRING,	&opt_pangorc,
      "Deprecated",		      "file"},
     {"pixels",		0, 0, G_OPTION_ARG_NONE,			&opt_pixels,
@@ -728,6 +738,8 @@ parse_options (int argc, char *argv[])
      "Enable single-paragraph mode",					NULL},
     {"text",		't', 0, G_OPTION_ARG_STRING,			&opt_text,
      "Text to display (instead of a file)",			    "string"},
+    {"text-file",   0, 0, G_OPTION_ARG_STRING,			&opt_text_file,
+     "Set input text file-name. If no text is provided, standard input is used for input.", "filename"},
     {"version",		0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, &show_version,
      "Show version numbers",						NULL},
     {"waterfall",	0, 0, G_OPTION_ARG_NONE,			&opt_waterfall,
@@ -770,35 +782,68 @@ parse_options (int argc, char *argv[])
   if (opt_pixels)
     opt_dpi = 72;
 
-  if ((opt_text && argc != 1) || (!opt_text && argc != 2))
-    {
-      if (opt_text && argc != 1)
-	fail ("When specifying --text, no file should be given");
-
-      g_printerr ("Usage: %s [OPTION...] FILE\n", g_get_prgname ());
-      exit (1);
-    }
-
   /* set up the backend */
   if (!opt_viewer)
-    {
-      opt_viewer = *viewers;
-      if (!opt_viewer)
-	fail ("No viewer backend found");
+  {
+    opt_viewer = *viewers;
+    if (!opt_viewer)
+      fail ("No viewer backend found");
+  }
+
+  argc--, argv++;
+
+  if (argc && !opt_text_file) opt_text_file = argv[0], argc--, argv++;
+  if (argc && !opt_output_file) opt_output_file = argv[0], argc--, argv++;
+  if (argc)
+    fail ("Too many arguments on the command line");
+
+  if (!opt_text && !opt_text_file) opt_text_file = g_strdup ("-");
+  if (!opt_output_file) opt_output_file = g_strdup ("-");
+
+  if (!opt_output_format)
+  {
+    const char *extension = strrchr (opt_output_file, '.');
+    if (extension)
+      extension++;
+      opt_output_format = g_strdup (extension);
+  }
+
+  if (opt_text)
+  {
+    text = g_strdup (opt_text);
+    len = strlen (text);
+  }
+  else
+  {
+    FILE *text_file_handle = stdin;
+
+    if (0 != strcmp (opt_text_file, "-"))
+      text_file_handle = fopen (opt_text_file, "r");
+
+    if (!text_file_handle)
+      fail ("Failed opening text file `%s': %s", opt_text_file, strerror (errno));
+
+    GString *gs = g_string_new (NULL);
+    setvbuf(text_file_handle, NULL, _IOLBF, BUFSIZ);
+    g_string_set_size (gs, 0);
+    char buf[BUFSIZ];
+
+    while (fgets (buf, sizeof (buf), text_file_handle)) {
+      unsigned int bytes = strlen (buf);
+      if (bytes && buf[bytes - 1] == '\n') {
+        bytes--;
+        g_string_append_len (gs, buf, bytes);
+        break;
+      }
+      g_string_append_len (gs, buf, bytes);
     }
 
-  /* Get the text
-   */
-  if (opt_text)
-    {
-      text = g_strdup (opt_text);
-      len = strlen (text);
-    }
-  else
-    {
-      if (!g_file_get_contents (argv[1], &text, &len, &error))
-	fail ("%s\n", error->message);
-    }
+    if (ferror (text_file_handle))
+      fail ("Failed reading text: %s", strerror (errno));
+
+    len = gs->len;
+    text = (!len && feof (text_file_handle)) ? NULL : gs->str;
+  }
 
   /* Strip one trailing newline
    */
