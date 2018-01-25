@@ -804,8 +804,10 @@ parse_options (int argc, char *argv[])
   {
     const char *extension = strrchr (opt_output_file, '.');
     if (extension)
+    {
       extension++;
       opt_output_format = g_strdup (extension);
+    }
   }
 
   if (opt_text)
@@ -833,7 +835,6 @@ parse_options (int argc, char *argv[])
 
       while (fgets(buffer, BUFSIZ, stdin))
       {
-        char *old = text;
         text_size += strlen(buffer);
         text = realloc(text, text_size);
 
