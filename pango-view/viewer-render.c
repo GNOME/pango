@@ -815,34 +815,41 @@ parse_options (int argc, char *argv[])
   }
   else
   {
-    FILE *text_file_handle = stdin;
-
     if (0 != strcmp (opt_text_file, "-"))
-      text_file_handle = fopen (opt_text_file, "r");
-
-    if (!text_file_handle)
-      fail ("Failed opening text file `%s': %s", opt_text_file, strerror (errno));
-
-    GString *gs = g_string_new (NULL);
-    setvbuf(text_file_handle, NULL, _IOLBF, BUFSIZ);
-    g_string_set_size (gs, 0);
-    char buf[BUFSIZ];
-
-    while (fgets (buf, sizeof (buf), text_file_handle)) {
-      unsigned int bytes = strlen (buf);
-      if (bytes && buf[bytes - 1] == '\n') {
-        bytes--;
-        g_string_append_len (gs, buf, bytes);
-        break;
-      }
-      g_string_append_len (gs, buf, bytes);
+    {
+      if (!g_file_get_contents (opt_text_file, &text, &len, &error))
+        fail ("Failed opening text file `%s': %s", opt_text_file, error->message);
     }
+    else
+    {
+      char buffer[BUFSIZ];
+      size_t text_size = 1;
+      text = malloc(sizeof(char) * BUFSIZ);
 
-    if (ferror (text_file_handle))
-      fail ("Failed reading text: %s", strerror (errno));
+      if (text == NULL)
+      {
+        fail ("Failed to allocate memory for text");
+      }
 
-    len = gs->len;
-    text = (!len && feof (text_file_handle)) ? NULL : gs->str;
+      while (fgets(buffer, BUFSIZ, stdin))
+      {
+        char *old = text;
+        text_size += strlen(buffer);
+        text = realloc(text, text_size);
+
+        if (text == NULL)
+        {
+          fail ("Failed to reallocate memory for text");
+        }
+
+        strcat(text, buffer);
+      }
+
+      if (ferror(stdin))
+      {
+        fail ("Error reading from text from stdin");
+      }
+    }
   }
 
   /* Strip one trailing newline

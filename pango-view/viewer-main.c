@@ -63,116 +63,145 @@ main (int    argc,
   width = height = 1;
   surface = view->create_surface (instance, width, height);
   view->render (instance, surface, context, &width, &height, NULL);
-  view->destroy_surface (instance, surface);
   surface = view->create_surface (instance, width, height);
   for (run = 0; run < MAX(1,opt_runs); run++)
     view->render (instance, surface, context, &width, &height, NULL);
 
   if (opt_output_file)
+  {
+    if (!view->write)
     {
-      if (!view->write)
-	fail ("%s viewer backend does not support writing", view->name);
-      else
+      fail ("%s viewer backend does not support writing", view->name);
+    }
+    else
 	{
-	  FILE *stream;
-	  GPid pid = 0;
+      FILE *stream;
+      GPid pid = 0;
 
-	  if (view->write_suffix && g_str_has_suffix (opt_output_file, view->write_suffix))
-	    {
-	      stream = g_fopen (opt_output_file, "wb");
-	      if (!stream)
-		fail ("Cannot open output file %s: %s\n",
-		      opt_output_file, g_strerror (errno));
-	    }
+      if (view->write_suffix && g_str_has_suffix (opt_output_file, view->write_suffix))
+      {
+        if (0 == strcmp (opt_output_file, "-"))
+        {
+          stream = stdout;
+        }
+        else
+        {
+          stream = fopen (opt_output_file, "wb");
+          if (!stream)
+            fail ("Cannot open output file %s: %s\n", opt_output_file, g_strerror (errno));
+        }
+	  }
 	  else
-	    {
-	      int fd;
-	      const gchar *convert_argv[4] = {"convert", "-", "%s"};
-	      GError *error;
+      {
+        int fd;
+        const gchar *convert_argv[4] = {"convert", "-", "%s"};
+        GSpawnFlags spawn_flags = 0;
+        GError *error = NULL;
 
-	      convert_argv[2] = opt_output_file;
+        if (0 == strcmp (opt_output_file, "-"))
+        {
+          const char* conversion_suffix = ":-";
+          char* conversion_format;
+          conversion_format = malloc(strlen(opt_output_format)+strlen(conversion_suffix));
+          strcpy(conversion_format, opt_output_format);
+          strcat(conversion_format, conversion_suffix);
+          convert_argv[2] = conversion_format;
+          spawn_flags = G_SPAWN_DO_NOT_REAP_CHILD |
+                        G_SPAWN_SEARCH_PATH |
+                        G_SPAWN_STDERR_TO_DEV_NULL;
+        }
+        else
+        {
+          convert_argv[2] = opt_output_file;
+          spawn_flags = G_SPAWN_DO_NOT_REAP_CHILD |
+                        G_SPAWN_SEARCH_PATH |
+                        G_SPAWN_STDOUT_TO_DEV_NULL |
+                        G_SPAWN_STDERR_TO_DEV_NULL;
+        }
 
-	      if (!g_spawn_async_with_pipes (NULL, (gchar **)(void*)convert_argv, NULL,
-					     G_SPAWN_DO_NOT_REAP_CHILD |
-					     G_SPAWN_SEARCH_PATH |
-					     G_SPAWN_STDOUT_TO_DEV_NULL |
-					     G_SPAWN_STDERR_TO_DEV_NULL,
-					     NULL, NULL, &pid, &fd, NULL, NULL, &error))
-		fail ("When running ImageMagick 'convert' command: %s\n", error->message);
-	      stream = fdopen (fd, "wb");
-	    }
+        if (!g_spawn_async_with_pipes (NULL, (gchar **)(void*)convert_argv, NULL,
+            spawn_flags, NULL, NULL, &pid, &fd, NULL, NULL, &error))
+          fail ("When running ImageMagick 'convert' command: %s\n", error->message);
+
+        stream = fdopen (fd, "wb");
+	  }
+
 	  view->write (instance, surface, stream, width, height);
 	  fclose (stream);
 #ifdef G_OS_UNIX
 	  if (pid)
 	    waitpid (pid, NULL, 0);
 #endif
-	}
     }
+  }
 
   if (opt_display)
+  {
+    char *title;
+    title = get_options_string ();
+
+    if (view->display)
     {
-      char *title;
-      title = get_options_string ();
+      gpointer window = NULL;
+      gpointer state = NULL;
 
-      if (view->display)
-	{
-	  gpointer window = NULL;
-	  gpointer state = NULL;
-
-	  if (view->create_window)
-	    {
-	      window = view->create_window (instance, title, width, height);
-	      if (!window)
-	        goto no_display;
-	    }
+      if (view->create_window)
+      {
+        window = view->create_window (instance, title, width, height);
+        if (!window)
+          goto no_display;
+      }
 
 	  opt_display = FALSE;
-	  while (1)
-	    {
-	      state = view->display (instance, surface, window, width, height, state);
-	      if (state == GINT_TO_POINTER (-1))
-		break;
 
-	      view->render (instance, surface, context, &width, &height, state);
-	    }
+      while (1)
+      {
+        state = view->display (instance, surface, window, width, height, state);
+        if (state == GINT_TO_POINTER (-1))
+          break;
 
-	  if (view->destroy_window)
-	    view->destroy_window (instance, window);
-	}
+        view->render (instance, surface, context, &width, &height, state);
+      }
+
+      if (view->destroy_window)
+        view->destroy_window (instance, window);
+    }
+
 no_display:
 
-      /* If failed to display natively, call ImageMagick */
-      if (opt_display)
-	{
-	  int fd;
-	  FILE *stream;
-	  const gchar *display_argv[5] = {"display", "-title", "%s", "-"};
-	  GError *error = NULL;
-	  GPid pid;
+    /* If failed to display natively, call ImageMagick */
+    if (opt_display)
+    {
+      int fd;
+      const gchar *display_argv[5] = {"display", "-title", "%s", "-"};
+      FILE *stream;
+      GError *error = NULL;
+      GPid pid;
 
-	  if (!view->write)
-	    fail ("%s viewer backend does not support displaying or writing", view->name);
-	  display_argv[2] = title;
+      if (!view->write)
+        fail ("%s viewer backend does not support displaying or writing", view->name);
 
-	  if (!g_spawn_async_with_pipes (NULL, (gchar **)(void*)display_argv, NULL,
-					 G_SPAWN_DO_NOT_REAP_CHILD |
-					 G_SPAWN_SEARCH_PATH |
-					 G_SPAWN_STDOUT_TO_DEV_NULL |
-					 G_SPAWN_STDERR_TO_DEV_NULL,
-					 NULL, NULL, &pid, &fd, NULL, NULL, &error))
-	    fail ("When running ImageMagick 'display' command: %s\n", error->message);
-	  stream = fdopen (fd, "wb");
-	  view->write (instance, surface, stream, width, height);
-	  fclose (stream);
+      display_argv[2] = title;
+
+      if (!g_spawn_async_with_pipes (NULL, (gchar **)(void*)display_argv, NULL,
+          G_SPAWN_DO_NOT_REAP_CHILD |
+          G_SPAWN_SEARCH_PATH |
+          G_SPAWN_STDOUT_TO_DEV_NULL |
+          G_SPAWN_STDERR_TO_DEV_NULL,
+          NULL, NULL, &pid, &fd, NULL, NULL, &error))
+        fail ("When running ImageMagick 'convert' command: %s\n", error->message);
+
+      stream = fdopen (fd, "wb");
+      view->write (instance, surface, stream, width, height);
+      fclose (stream);
 #ifdef G_OS_UNIX
-	  waitpid (pid, NULL, 0);
+      waitpid (pid, NULL, 0);
 #endif
 	  g_spawn_close_pid (pid);
 	}
 
-      g_free (title);
-    }
+    g_free (title);
+  }
 
   view->destroy_surface (instance, surface);
   g_object_unref (context);
