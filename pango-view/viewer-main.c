@@ -63,6 +63,7 @@ main (int    argc,
   width = height = 1;
   surface = view->create_surface (instance, width, height);
   view->render (instance, surface, context, &width, &height, NULL);
+  view->destroy_surface (instance, surface, FALSE);
   surface = view->create_surface (instance, width, height);
   for (run = 0; run < MAX(1,opt_runs); run++)
     view->render (instance, surface, context, &width, &height, NULL);
@@ -203,7 +204,7 @@ no_display:
     g_free (title);
   }
 
-  view->destroy_surface (instance, surface);
+  view->destroy_surface (instance, surface, TRUE);
   g_object_unref (context);
   view->destroy (instance);
   finalize ();

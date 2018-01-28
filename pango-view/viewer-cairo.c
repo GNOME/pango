@@ -24,15 +24,17 @@
 #include "viewer-render.h"
 
 #include <cairo.h>
-
 #include <string.h>
-
-
 
 #ifdef HAVE_CAIRO_XLIB
 #ifdef HAVE_XFT
 #include "viewer-x.h"
 #include <cairo-xlib.h>
+
+/**
+ * Whether to output to stream when destroying a surface.
+ */
+gboolean output_to_stream = FALSE;
 
 static cairo_surface_t *
 cairo_x_view_iface_create_surface (gpointer instance,
@@ -120,7 +122,8 @@ cairo_image_view_create_surface (gpointer instance,
 
 static void
 cairo_image_view_destroy_surface (gpointer instance,
-				  gpointer surface)
+				  gpointer surface,
+				  gboolean output_on_destroy G_GNUC_UNUSED)
 {
   cairo_surface_destroy (surface);
 }
@@ -298,8 +301,10 @@ cairo_vector_view_create_surface (gpointer instance,
 
 static void
 cairo_vector_view_destroy_surface (gpointer instance,
-				   gpointer surface)
+				   gpointer surface,
+				   gboolean output_on_destroy)
 {
+  output_to_stream = output_on_destroy;
   /* TODO: check for errors */
   cairo_surface_destroy (surface);
 }

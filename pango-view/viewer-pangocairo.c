@@ -119,12 +119,13 @@ pangocairo_view_create_surface (gpointer instance,
 
 static void
 pangocairo_view_destroy_surface (gpointer instance,
-				 gpointer surface)
+				 gpointer surface,
+				 gboolean output_on_destroy)
 {
   CairoViewer *c = (CairoViewer *) instance;
   CairoSurface *c_surface = (CairoSurface *) surface;
 
-  c->iface->backend_class->destroy_surface (c->backend, c_surface->backend);
+  c->iface->backend_class->destroy_surface (c->backend, c_surface->backend, output_on_destroy);
   cairo_surface_destroy (c_surface->cairo);
 
   g_slice_free (CairoSurface, surface);
