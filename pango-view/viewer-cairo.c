@@ -218,12 +218,17 @@ cairo_surface_write_func (void  *closure,
 	        const unsigned char *data,
 	        unsigned int        length)
 {
-  FILE *stream = (FILE *) closure;
-  unsigned int l;
+  if (output_to_stream)
+  {
+    FILE *stream = (FILE *) closure;
+    unsigned int l;
 
-  l = fwrite (data, 1, length, stream);
+    l = fwrite (data, 1, length, stream);
 
-  return l == length ? CAIRO_STATUS_SUCCESS : CAIRO_STATUS_WRITE_ERROR;
+    return l == length ? CAIRO_STATUS_SUCCESS : CAIRO_STATUS_WRITE_ERROR;
+  }
+
+  return CAIRO_STATUS_SUCCESS;
 }
 
 static gpointer
