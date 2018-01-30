@@ -67,14 +67,21 @@ extern gboolean opt_rtl;
 extern double opt_rotate;
 extern gboolean opt_auto_dir;
 extern const char *opt_text;
+extern const char *opt_text_file;
 extern gboolean opt_waterfall;
+extern gboolean opt_trim;
+extern double opt_trim_width;
+extern double opt_trim_height;
+extern double opt_trim_x;
+extern double opt_trim_y;
 extern int opt_width;
 extern int opt_indent;
 extern PangoEllipsizeMode opt_ellipsize;
 
 /* handled by viewer-main.c */
 extern gboolean opt_display;
-extern const char *opt_output;
+extern const char *opt_output_file;
+extern const char *opt_output_format;
 extern int opt_runs;
 extern const PangoViewer *opt_viewer;
 

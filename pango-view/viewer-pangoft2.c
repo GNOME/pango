@@ -89,7 +89,8 @@ pangoft2_view_create_surface (gpointer instance G_GNUC_UNUSED,
 
 static void
 pangoft2_view_destroy_surface (gpointer instance G_GNUC_UNUSED,
-			       gpointer surface)
+			       gpointer surface,
+			       gboolean output_on_destroy G_GNUC_UNUSED)
 {
   FT_Bitmap *bitmap = (FT_Bitmap *) surface;
 

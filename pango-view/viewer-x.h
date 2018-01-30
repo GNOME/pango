@@ -50,7 +50,8 @@ gpointer x_view_create_surface (gpointer instance,
 				int      height);
 
 void x_view_destroy_surface (gpointer instance,
-			     gpointer surface);
+			     gpointer surface,
+			     gboolean output_on_destroy);
 
 gpointer x_view_create_window (gpointer    instance,
 			       const char *title,
