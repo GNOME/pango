@@ -273,7 +273,11 @@ render_callback (PangoLayout *layout,
       cairo_restore (cr);
     }
 
-  cairo_move_to (cr, 0, 0);
+  if (opt_trim)
+    cairo_move_to (cr, opt_trim_x, opt_trim_y);
+  else
+    cairo_move_to (cr, 0, 0);
+
   pango_cairo_show_layout (cr, layout);
 
   cairo_restore (cr);

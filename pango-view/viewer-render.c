@@ -50,6 +50,11 @@ gboolean opt_rtl = FALSE;
 double opt_rotate = 0;
 gboolean opt_auto_dir = TRUE;
 gboolean opt_waterfall = FALSE;
+gboolean opt_trim = FALSE;
+double opt_trim_width = 0;
+double opt_trim_height = 0;
+double opt_trim_x = 0;
+double opt_trim_y = 0;
 int opt_width = -1;
 int opt_height = -1;
 int opt_indent = 0;
@@ -252,7 +257,7 @@ do_output (PangoContext     *context,
 	   int              *height_out)
 {
   PangoLayout *layout;
-  PangoRectangle rect;
+  PangoRectangle trim_extents, rect;
   PangoMatrix matrix = PANGO_MATRIX_INIT;
   PangoMatrix *orig_matrix;
   gboolean supports_matrix;
@@ -312,6 +317,18 @@ do_output (PangoContext     *context,
   pango_context_set_gravity_hint (context, opt_gravity_hint);
 
   layout = make_layout (context, text, -1);
+
+  if (opt_trim)
+  {
+    pango_layout_get_extents (layout, &trim_extents, NULL);
+
+    opt_trim_width  =  (double) trim_extents.width / PANGO_SCALE;
+    opt_trim_height =  (double) trim_extents.height / PANGO_SCALE;
+    opt_trim_x      = -(double) trim_extents.x / PANGO_SCALE;
+    opt_trim_y      = -(double) trim_extents.y / PANGO_SCALE;
+    opt_trim_x     -= (double) opt_margin_l;
+    opt_trim_y     -= (double) opt_margin_t;
+  }
 
   set_transform (context, transform_cb, cb_context, cb_data, &matrix);
 
@@ -744,6 +761,8 @@ parse_options (int argc, char *argv[])
      "Show version numbers",						NULL},
     {"waterfall",	0, 0, G_OPTION_ARG_NONE,			&opt_waterfall,
      "Create a waterfall display",					NULL},
+    {"trim",	0, 0, G_OPTION_ARG_NONE,			&opt_trim,
+     "Trim surrounding whitespace",                 NULL},
     {"width",		'w', 0, G_OPTION_ARG_INT,			&opt_width,
      "Width in points to which to wrap lines or ellipsize",	    "points"},
     {"wrap",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_wrap,
