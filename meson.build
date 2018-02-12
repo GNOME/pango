@@ -97,7 +97,7 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
     '-Werror=pointer-to-int-cast',
     '-Werror=empty-body',
     '-Werror=write-strings',
-    '-Werror=undef',
+    '-Wundef', # FIXME: https://bugzilla.gnome.org/show_bug.cgi?id=792481
   ]
 
   if host_system == 'windows'
