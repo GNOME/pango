@@ -2,3 +2,7 @@ option('enable_docs',
        description: 'Build API reference for Pango using GTK-Doc',
        type: 'boolean',
        value: false)
+option('gir',
+       description: 'Build the GObject introspection data for Pango',
+       type: 'boolean',
+       value: true)

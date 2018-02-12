@@ -6,7 +6,7 @@ project('pango', 'c', 'cpp',
           'warning_level=1',
           'c_std=c99',
         ],
-        meson_version : '>= 0.40.1')
+        meson_version : '>= 0.43.0')
 
 add_project_arguments([ '-D_POSIX_C_SOURCE=200809L', '-D_POSIX_THREAD_SAFE_FUNCTIONS', '-D_GNU_SOURCE', ], language: 'c')
 
