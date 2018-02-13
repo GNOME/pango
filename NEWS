@@ -1,3 +1,10 @@
+Overview of changes in 1.41.1
+=============================
+- Build fixes
+- Avoid UTF-32 conversion for fribidi
+- Use external fribidi and drop mini-fribidi
+- Only enable freetype if fontconfig is available (#792363)
+
 Overview of changes in 1.41.0
 =============================
 - Fix up font options from cairo (#790747)
