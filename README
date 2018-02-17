@@ -8,7 +8,7 @@ Pango is designed to be modular; the core Pango layout can be used
 with different font backends. There are three basic backends, with
 multiple options for rendering with each.
 
- - Client side fonts using the FreeType and fontconfig libraries.
+ - Client side fonts using the FreeType and FontConfig libraries.
    Rendering can be with with Cairo or Xft libraries, or directly
    to an in-memory buffer with no additional libraries.
 
@@ -43,7 +43,7 @@ be found at http://www.gtk.org/.
 To use the Free Software stack backend, Pango depends on the following
 libraries:
 
-  * fontconfig for font discovery (http://www.fontconfig.org),
+  * FontConfig for font discovery (http://www.fontconfig.org),
 
   * FreeType for font access (http://www.freetype.org),
 
@@ -59,42 +59,12 @@ do X-specific rendering using the Xft library. The Xft backend uses
 version 2 of the Xft library to manage client side fonts. Version 2 of
 Xft is available from http://xlibs.freedesktop.org/release/.  You'll
 need the libXft package, and possibly the libXrender and renderext
-packages as well.  You'll also need fontconfig (see below.)
+packages as well.  You'll also need FontConfig.
 
-Installation of Pango on Win32 is possible, but is not documented
-here. See http://www.gimp.org/~tml/gimp/win32/downloads.html
-
-Notes
-=====
-
- - By default, Pango tries to build itself so that no explicit
-   dependency on Xft or FreeType will be introduced in apps that
-   link to Pango. This is to avoid compatibility problems with
-   changes in the Xft or FreeType API's or ABI's. Specifying 
-   --enable-explicit-deps or --enable-static when configuring Pango 
-   will defeat this and should be avoided if possible.
+Installation of Pango on Win32 is possible, see README.win32.
 
 License
 =======
 
 Most of the code of Pango is licensed under the terms of the 
 GNU Lesser Public License (LGPL) - see the file COPYING for details.
-
-The OpenType code in pango/opentype is derived from the FreeType 
-project (http://www.freetype.org) and is dual-licensed under the 
-GNU General Public License and the FreeType license. See see
-pango/opentype/FT-license.txt for full details of the FreeType 
-license.
-
-Note that binary distributions of Pango must include a disclaimer 
-that the software is based in part of the work of the FreeType Team, 
-in the distribution documentation; for instance, by including this 
-README file.
-
-Owen Taylor
-otaylor@redhat.com
-
-Behdad Esfahbod
-behdad@gnome.org
-
-20 August 2012
