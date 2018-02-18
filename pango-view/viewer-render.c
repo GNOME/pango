@@ -41,6 +41,7 @@ int opt_dpi = 96;
 gboolean opt_pixels = FALSE;
 const char *opt_font = "";
 gboolean opt_header = FALSE;
+const char *opt_output = NULL;
 int opt_margin_t = 10;
 int opt_margin_r = 10;
 int opt_margin_b = 10;
@@ -49,6 +50,10 @@ int opt_markup = FALSE;
 gboolean opt_rtl = FALSE;
 double opt_rotate = 0;
 gboolean opt_auto_dir = TRUE;
+const char *opt_text = NULL;
+const char *opt_text_file = NULL;
+const char *opt_output_file = NULL;
+const char *opt_output_format= NULL;
 gboolean opt_waterfall = FALSE;
 gboolean opt_trim = FALSE;
 double opt_trim_width = 0;
@@ -76,10 +81,6 @@ guint16 opt_fg_alpha = 65535;
 gboolean opt_bg_set = FALSE;
 PangoColor opt_bg_color = {65535, 65535, 65535};
 guint16 opt_bg_alpha = 65535;
-const char *opt_text = NULL;
-const char *opt_text_file = NULL;
-const char *opt_output_file = NULL;
-const char *opt_output_format= NULL;
 
 /* Text (or markup) to render */
 static char *text;
@@ -317,18 +318,18 @@ do_output (PangoContext     *context,
   pango_context_set_gravity_hint (context, opt_gravity_hint);
 
   layout = make_layout (context, text, -1);
-
+  
   if (opt_trim)
-  {
-    pango_layout_get_extents (layout, &trim_extents, NULL);
-
-    opt_trim_width  =  (double) trim_extents.width / PANGO_SCALE;
-    opt_trim_height =  (double) trim_extents.height / PANGO_SCALE;
-    opt_trim_x      = -(double) trim_extents.x / PANGO_SCALE;
-    opt_trim_y      = -(double) trim_extents.y / PANGO_SCALE;
-    opt_trim_x     -= (double) opt_margin_l;
-    opt_trim_y     -= (double) opt_margin_t;
-  }
+    {
+      pango_layout_get_extents (layout, &trim_extents, NULL);
+      
+      opt_trim_width  =  (double) trim_extents.width / PANGO_SCALE;
+      opt_trim_height =  (double) trim_extents.height / PANGO_SCALE;
+      opt_trim_x      = -(double) trim_extents.x / PANGO_SCALE;
+      opt_trim_y      = -(double) trim_extents.y / PANGO_SCALE;
+      opt_trim_x     -= (double) opt_margin_l;
+      opt_trim_y     -= (double) opt_margin_t;
+    }
 
   set_transform (context, transform_cb, cb_context, cb_data, &matrix);
 
@@ -735,11 +736,11 @@ parse_options (int argc, char *argv[])
      "Set the margin on the output in pixels",			    "CSS-style numbers in pixels"},
     {"markup",		0, 0, G_OPTION_ARG_NONE,			&opt_markup,
      "Interpret text as Pango markup",					NULL},
-    {"output",		0, G_OPTION_FLAG_HIDDEN, G_OPTION_ARG_STRING,    &opt_output_file,
-     "Deprecated",          "file"},
-    {"output-file", 'o', 0, G_OPTION_ARG_STRING,          &opt_output_file,
+    {"output",		'o', 0, G_OPTION_ARG_STRING,			&opt_output,
+     "Save rendered image to output file",			      "file"},
+    {"output-file", 0, 0, G_OPTION_ARG_STRING,            &opt_output_file,
      "Set output file-name (default: stdout)",          "filename"},
-    {"output-format", 0, 0, G_OPTION_ARG_STRING,          &opt_output_format,
+    {"output-format", 0, 0, G_OPTION_ARG_STRING,        &opt_output_format,
      "Set output format: pdf, ps, svg, png, jpeg",          "format"},
     {"pangorc",		0, G_OPTION_FLAG_HIDDEN, G_OPTION_ARG_STRING,	&opt_pangorc,
      "Deprecated",		      "file"},
@@ -762,7 +763,7 @@ parse_options (int argc, char *argv[])
     {"waterfall",	0, 0, G_OPTION_ARG_NONE,			&opt_waterfall,
      "Create a waterfall display",					NULL},
     {"trim",	0, 0, G_OPTION_ARG_NONE,			&opt_trim,
-     "Trim surrounding whitespace",                 NULL},
+     "Trim surrounding whitespace",                 NULL},"
     {"width",		'w', 0, G_OPTION_ARG_INT,			&opt_width,
      "Width in points to which to wrap lines or ellipsize",	    "points"},
     {"wrap",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_wrap,
@@ -801,76 +802,73 @@ parse_options (int argc, char *argv[])
   if (opt_pixels)
     opt_dpi = 72;
 
-  /* set up the backend */
-  if (!opt_viewer)
-  {
-    opt_viewer = *viewers;
-    if (!opt_viewer)
-      fail ("No viewer backend found");
-  }
-
   argc--, argv++;
-
   if (argc && !opt_text_file) opt_text_file = argv[0], argc--, argv++;
   if (argc && !opt_output_file) opt_output_file = argv[0], argc--, argv++;
   if (argc)
-    fail ("Too many arguments on the command line");
+    {
+      g_printerr ("Usage: %s [OPTION...] FILE\n", g_get_prgname ());
+      exit (1);
+    }
+
+  /* set up the backend */
+  if (!opt_viewer)
+    {
+      opt_viewer = *viewers;
+      if (!opt_viewer)
+	fail ("No viewer backend found");
+    }
 
   if (!opt_text && !opt_text_file) opt_text_file = g_strdup ("-");
   if (!opt_output_file) opt_output_file = g_strdup ("-");
-
   if (!opt_output_format)
-  {
-    const char *extension = strrchr (opt_output_file, '.');
-    if (extension)
     {
-      extension++;
-      opt_output_format = g_strdup (extension);
-    }
-  }
-
-  if (opt_text)
-  {
-    text = g_strdup (opt_text);
-    len = strlen (text);
-  }
-  else
-  {
-    if (0 != strcmp (opt_text_file, "-"))
-    {
-      if (!g_file_get_contents (opt_text_file, &text, &len, &error))
-        fail ("Failed opening text file `%s': %s", opt_text_file, error->message);
-    }
-    else
-    {
-      char buffer[BUFSIZ];
-      size_t text_size = 1;
-      text = malloc(sizeof(char) * BUFSIZ);
-
-      if (text == NULL)
-      {
-        fail ("Failed to allocate memory for text");
-      }
-
-      while (fgets(buffer, BUFSIZ, stdin))
-      {
-        text_size += strlen(buffer);
-        text = realloc(text, text_size);
-
-        if (text == NULL)
+      const char *extension = strrchr (opt_output_file, '.');
+      if (extension)
         {
-          fail ("Failed to reallocate memory for text");
+          extension++;
+          opt_output_format = g_strdup (extension);
         }
-
-        strcat(text, buffer);
-      }
-
-      if (ferror(stdin))
-      {
-        fail ("Error reading from text from stdin");
-      }
     }
-  }
+
+  /* Get the text
+   */
+  if (opt_text)
+    {
+      text = g_strdup (opt_text);
+      len = strlen (text);
+    }
+  else
+    {
+	  if (0 != strcmp (opt_text_file, "-"))
+	    {
+	      if (!g_file_get_contents (opt_text_file, &text, &len, &error))
+	        fail ("%s\n", error->message);
+	    }
+	  else
+	    {
+	      char buffer[BUFSIZ];
+	      size_t text_size = 1;
+	      text = malloc(sizeof(char) * BUFSIZ);
+	      
+	      if (text == NULL)
+	        fail ("Failed to allocate memory for text");
+	      
+	      while (fgets(buffer, BUFSIZ, stdin))
+	        {
+	          text_size += strlen(buffer);
+	          text = realloc(text, text_size);
+	          
+	          if (text == NULL)
+	            fail ("Failed to reallocate memory for text");
+	          
+	          strcat(text, buffer);
+	        }
+	      
+	      if (ferror(stdin))
+	        fail ("Error reading from text from stdin");
+	    }
+    }
 
   /* Strip one trailing newline
    */

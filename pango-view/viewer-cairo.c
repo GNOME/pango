@@ -24,17 +24,18 @@
 #include "viewer-render.h"
 
 #include <cairo.h>
+
 #include <string.h>
+
+
 
 #ifdef HAVE_CAIRO_XLIB
 #ifdef HAVE_XFT
 #include "viewer-x.h"
 #include <cairo-xlib.h>
 
-/**
- * Whether to output to stream when destroying a surface.
- */
-gboolean output_to_stream = FALSE;
+
+gboolean output_to_stream_after_destroying_surface = FALSE;
 
 static cairo_surface_t *
 cairo_x_view_iface_create_surface (gpointer instance,
@@ -188,13 +189,13 @@ static CairoViewerIface cairo_image_viewer_iface = {
 
 static cairo_surface_t *
 _cairo_eps_surface_create (cairo_write_func_t write_func,
-                           void *closure,
-                           double width,
-                           double height)
+			   void        *closure,
+			   double      width,
+			   double      height)
 {
   cairo_surface_t *surface;
 
-  surface = cairo_ps_surface_create_for_stream(write_func, closure, width, height);
+  surface = cairo_ps_surface_create_for_stream (write_func, closure, width, height);
   cairo_ps_surface_set_eps (surface, TRUE);
 
   return surface;
@@ -206,9 +207,9 @@ _cairo_eps_surface_create (cairo_write_func_t write_func,
 #endif
 
 typedef cairo_surface_t *(*CairoVectorFileCreateFunc) (cairo_write_func_t write_func,
-                                                       void *closure,
-                                                       double width,
-                                                       double height);
+						       void   *closure,
+						       double width,
+						       double height);
 
 typedef struct
 {
@@ -221,15 +222,14 @@ cairo_surface_write_func (void  *closure,
 	        const unsigned char *data,
 	        unsigned int        length)
 {
-  if (output_to_stream)
-  {
-    FILE *stream = (FILE *) closure;
-    unsigned int l;
+  if (output_to_stream_after_destroying_surface)
+    {
+      FILE *stream = (FILE *) closure;
+      unsigned int l;
+      l = fwrite (data, 1, length, stream);
 
-    l = fwrite (data, 1, length, stream);
-
-    return l == length ? CAIRO_STATUS_SUCCESS : CAIRO_STATUS_WRITE_ERROR;
-  }
+      return l == length ? CAIRO_STATUS_SUCCESS : CAIRO_STATUS_WRITE_ERROR;
+    }
 
   return CAIRO_STATUS_SUCCESS;
 }
@@ -237,6 +237,7 @@ cairo_surface_write_func (void  *closure,
 static gpointer
 cairo_vector_view_create (const PangoViewer *klass G_GNUC_UNUSED)
 {
+  const char *extension = NULL;
   CairoVectorFileCreateFunc constructor = NULL;
 
   if (!opt_output_format)
@@ -250,11 +251,11 @@ cairo_vector_view_create (const PangoViewer *klass G_GNUC_UNUSED)
   #endif
   #ifdef CAIRO_HAS_PDF_SURFACE
     else if (0 == strcasecmp (opt_output_format, "pdf"))
-      constructor = cairo_pdf_surface_create_for_stream;
+      constructor = cairo_svg_surface_create_for_stream;
   #endif
   #ifdef CAIRO_HAS_PS_SURFACE
     else if (0 == strcasecmp (opt_output_format, "ps"))
-      constructor = cairo_ps_surface_create_for_stream;
+      constructor = cairo_svg_surface_create_for_stream;
    #ifdef HAS_EPS
     else if (0 == strcasecmp (opt_output_format, "eps"))
       constructor = _cairo_eps_surface_create;
@@ -262,26 +263,28 @@ cairo_vector_view_create (const PangoViewer *klass G_GNUC_UNUSED)
   #endif
 
   if (constructor)
-  {
-    FILE *output_file_handle = stdout;
-    CairoVectorViewer *instance;
-    instance = g_slice_new (CairoVectorViewer);
+    {
+      FILE *output_file_handle = stdout;
+      CairoVectorViewer *instance;
 
-    if (0 != strcmp (opt_output_file, "-"))
-      output_file_handle = fopen (opt_output_file, "wb");
+      instance = g_slice_new (CairoVectorViewer);
+      
+      if (0 != strcmp (opt_output_file, "-"))
+        output_file_handle = fopen (opt_output_file, "wb");
 
-    /* save output filename and unset it such that the viewer layer
-     * doesn't try to save to file.
-     */
-    opt_output_file = NULL;
-    instance->file_handle = output_file_handle;
-    instance->constructor = constructor;
+      /* save output filename and unset it such that the viewer layer
+       * doesn't try to save to file.
+       */
+     opt_output_file = NULL;
+     instance->file_handle = output_file_handle;
+
+     instance->constructor = constructor;
 
      /* Fix dpi on 72.  That's what cairo vector surfaces are. */
-    opt_dpi = 72;
+     opt_dpi = 72;
 
-    return instance;
-  }
+     return instance;
+    }
 
   return NULL;
 }
@@ -307,6 +310,8 @@ cairo_vector_view_create_surface (gpointer instance,
   else
     surface = c->constructor (&cairo_surface_write_func, c->file_handle, width, height);
 
+    /*cairo_surface_set_fallback_resolution (surface, fallback_resolution_x, fallback_resolution_y);*/
+
   return surface;
 }
 
@@ -315,7 +320,7 @@ cairo_vector_view_destroy_surface (gpointer instance,
 				   gpointer surface,
 				   gboolean output_on_destroy)
 {
-  output_to_stream = output_on_destroy;
+  output_to_stream_after_destroying_surface = output_on_destroy;
   /* TODO: check for errors */
   cairo_surface_destroy (surface);
 }
