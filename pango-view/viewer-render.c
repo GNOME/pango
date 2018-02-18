@@ -763,7 +763,7 @@ parse_options (int argc, char *argv[])
     {"waterfall",	0, 0, G_OPTION_ARG_NONE,			&opt_waterfall,
      "Create a waterfall display",					NULL},
     {"trim",	0, 0, G_OPTION_ARG_NONE,			&opt_trim,
-     "Trim surrounding whitespace",                 NULL},"
+     "Trim surrounding whitespace",                 NULL},
     {"width",		'w', 0, G_OPTION_ARG_INT,			&opt_width,
      "Width in points to which to wrap lines or ellipsize",	    "points"},
     {"wrap",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_wrap,
@@ -819,6 +819,7 @@ parse_options (int argc, char *argv[])
 	fail ("No viewer backend found");
     }
 
+  if (opt_output && !opt_output_file) opt_output_file = opt_output;
   if (!opt_text && !opt_text_file) opt_text_file = g_strdup ("-");
   if (!opt_output_file) opt_output_file = g_strdup ("-");
   if (!opt_output_format)

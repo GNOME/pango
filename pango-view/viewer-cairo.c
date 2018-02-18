@@ -237,7 +237,6 @@ cairo_surface_write_func (void  *closure,
 static gpointer
 cairo_vector_view_create (const PangoViewer *klass G_GNUC_UNUSED)
 {
-  const char *extension = NULL;
   CairoVectorFileCreateFunc constructor = NULL;
 
   if (!opt_output_format)

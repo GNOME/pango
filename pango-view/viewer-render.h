@@ -80,6 +80,7 @@ extern PangoEllipsizeMode opt_ellipsize;
 
 /* handled by viewer-main.c */
 extern gboolean opt_display;
+extern const char *opt_output;
 extern const char *opt_output_file;
 extern const char *opt_output_format;
 extern int opt_runs;
