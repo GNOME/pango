@@ -34,8 +34,6 @@
 #include "viewer-x.h"
 #include <cairo-xlib.h>
 
-
-
 static cairo_surface_t *
 cairo_x_view_iface_create_surface (gpointer instance,
 				   gpointer surface,
@@ -229,18 +227,18 @@ cairo_vector_view_create (const PangoViewer *klass G_GNUC_UNUSED)
   if (0)
     ;
   #ifdef CAIRO_HAS_SVG_SURFACE
-    else if (0 == strcasecmp (extension, "svg"))
+    else if (0 == g_ascii_strcasecmp (extension, "svg"))
       constructor = cairo_svg_surface_create;
   #endif
   #ifdef CAIRO_HAS_PDF_SURFACE
-    else if (0 == strcasecmp (extension, "pdf"))
+    else if (0 == g_ascii_strcasecmp (extension, "pdf"))
       constructor = cairo_pdf_surface_create;
   #endif
   #ifdef CAIRO_HAS_PS_SURFACE
-    else if (0 == strcasecmp (extension, "ps"))
+    else if (0 == g_ascii_strcasecmp (extension, "ps"))
       constructor = cairo_ps_surface_create;
    #ifdef HAS_EPS
-    else if (0 == strcasecmp (extension, "eps"))
+    else if (0 == g_ascii_strcasecmp (extension, "eps"))
       constructor = _cairo_eps_surface_create;
    #endif
   #endif
