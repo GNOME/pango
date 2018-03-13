@@ -23,7 +23,6 @@ CFILE_GLOB=$(top_srcdir)/pango/*.c
 IGNORE_HFILES=			\
 	ftglue.h		\
 	opentype		\
-	modules.h		\
 	pangoatsui-private.h	\
 	pangocairo-private.h	\
 	pangocairo-fc.h		\

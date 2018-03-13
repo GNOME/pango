@@ -23,9 +23,6 @@ The integration of Pango with Cairo (http://cairographics.org)
 provides a complete solution with high quality text handling 
 and graphics rendering.
 
-Dynamically loaded modules then handle text layout for particular
-combinations of script and font backend.
-
 As well as the low level layout rendering routines, Pango includes
 PangoLayout, a high level driver for laying out entire blocks of text,
 and routines to assist in editing internationalized text.

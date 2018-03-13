@@ -1,10 +1,6 @@
 Formatting
 ==========
 
-All parts of Pango other than modules should use the following formatting
-style; for modules, it is up to the discretion of the module 
-author / maintainer, though they are encouraged to follow the following.
-
 The Pango formatting style is basically the GNU style of formatting
 (see http://www.gnu.org/prep/standards.html), with a few additions.
 In brief overview:
