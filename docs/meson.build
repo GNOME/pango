@@ -7,7 +7,6 @@ configure_file(input: 'version.xml.in',
                configuration: version_xml_conf)
 
 private_headers = [
-  'ftglue.h',
   'pangoatsui-private.h',
   'pangocairo-private.h',
   'pangocairo-fc.h',

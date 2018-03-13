@@ -21,8 +21,6 @@ CFILE_GLOB=$(top_srcdir)/pango/*.c
 
 # Headers to ignore
 IGNORE_HFILES=			\
-	ftglue.h		\
-	opentype		\
 	pangoatsui-private.h	\
 	pangocairo-private.h	\
 	pangocairo-fc.h		\
