@@ -245,18 +245,18 @@ cairo_vector_view_create (const PangoViewer *klass G_GNUC_UNUSED)
   if (0)
     ;
   #ifdef CAIRO_HAS_SVG_SURFACE
-    else if (0 == strcasecmp (opt_output_format, "svg"))
+    else if (0 == g_ascii_strcasecmp (opt_output_format, "svg"))
       constructor = cairo_svg_surface_create_for_stream;
   #endif
   #ifdef CAIRO_HAS_PDF_SURFACE
-    else if (0 == strcasecmp (opt_output_format, "pdf"))
+    else if (0 == g_ascii_strcasecmp (opt_output_format, "pdf"))
       constructor = cairo_svg_surface_create_for_stream;
   #endif
   #ifdef CAIRO_HAS_PS_SURFACE
-    else if (0 == strcasecmp (opt_output_format, "ps"))
+    else if (0 == g_ascii_strcasecmp (opt_output_format, "ps"))
       constructor = cairo_svg_surface_create_for_stream;
    #ifdef HAS_EPS
-    else if (0 == strcasecmp (opt_output_format, "eps"))
+    else if (0 == g_ascii_strcasecmp (opt_output_format, "eps"))
       constructor = _cairo_eps_surface_create;
    #endif
   #endif

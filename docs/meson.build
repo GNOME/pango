@@ -7,8 +7,6 @@ configure_file(input: 'version.xml.in',
                configuration: version_xml_conf)
 
 private_headers = [
-  'ftglue.h',
-  'modules.h',
   'pangoatsui-private.h',
   'pangocairo-private.h',
   'pangocairo-fc.h',
@@ -32,7 +30,6 @@ private_headers = [
   'pango-language-sample-table.h',
   'pangocoretext-private.h',
   'pangoatsui-private.h',
-  'mini-fribidi',
 ]
 
 if host_system != 'darwin'

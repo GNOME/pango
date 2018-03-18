@@ -1,12 +1,12 @@
 project('pango', 'c', 'cpp',
-        version: '1.41.0',
+        version: '1.41.1',
         license: 'LGPLv2.1+',
         default_options: [
           'buildtype=debugoptimized',
           'warning_level=1',
           'c_std=c99',
         ],
-        meson_version : '>= 0.40.1')
+        meson_version : '>= 0.43.0')
 
 add_project_arguments([ '-D_POSIX_C_SOURCE=200809L', '-D_POSIX_THREAD_SAFE_FUNCTIONS', '-D_GNU_SOURCE', ], language: 'c')
 
@@ -97,7 +97,7 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
     '-Werror=pointer-to-int-cast',
     '-Werror=empty-body',
     '-Werror=write-strings',
-    '-Werror=undef',
+    '-Wundef', # FIXME: https://bugzilla.gnome.org/show_bug.cgi?id=792481
   ]
 
   if host_system == 'windows'
@@ -194,6 +194,7 @@ endif
 pango_deps = []
 
 glib_req_version = '>= 2.33.12'
+fribidi_req_version = '>= 0.19.7'
 libthai_req_version = '>= 0.1.9'
 harfbuzz_req_version = '>= 1.2.3'
 fontconfig_req_version = '>= 2.11.91'
@@ -207,6 +208,9 @@ pango_deps += mathlib_dep
 # gobject
 gobject_dep = dependency('gobject-2.0', version: glib_req_version)
 pango_deps += gobject_dep
+
+fribidi_dep = dependency('fribidi', version: fribidi_req_version)
+pango_deps += fribidi_dep
 
 thai_dep = dependency('libthai', version: libthai_req_version, required: false)
 if thai_dep.found()

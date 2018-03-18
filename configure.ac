@@ -21,7 +21,7 @@ dnl
 
 dnl The triplet
 m4_define([pango_version_major], [1])
-m4_define([pango_version_minor], [41])
+m4_define([pango_version_minor], [42])
 m4_define([pango_version_micro], [0])
 
 m4_define([pango_version],
@@ -456,6 +456,10 @@ PKG_CHECK_MODULES(GLIB, $GLIB_MODULES, :,
 GLIB_MKENUMS=`$PKG_CONFIG --variable=glib_mkenums glib-2.0`
 AC_SUBST(GLIB_MKENUMS)
 
+# Checks for FriBiDi
+FRIBIDI_REQUIRED_VERSION=0.19.7
+PKG_CHECK_MODULES(FRIBIDI, fribidi >= $FRIBIDI_REQUIRED_VERSION)
+
 #
 # Checks for LibThai
 #
@@ -637,7 +641,6 @@ _EOF
 AC_CONFIG_FILES([
 Makefile
 pango/Makefile
-pango/mini-fribidi/Makefile
 pango/pango.rc
 pango/pangoft2.rc
 pango/pangowin32.rc

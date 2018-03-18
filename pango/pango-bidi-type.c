@@ -41,12 +41,14 @@
 
 #include <string.h>
 
+#include <fribidi.h>
+
 #include "pango-bidi-type.h"
 #include "pango-utils.h"
 
-#include "mini-fribidi/fribidi.h"
-
-
+#if FRIBIDI_MAJOR_VERSION >= 1
+#define USE_FRIBIDI_EX_API
+#endif
 
 /**
  * pango_bidi_type_for_unichar:
@@ -66,7 +68,11 @@
 PangoBidiType
 pango_bidi_type_for_unichar (gunichar ch)
 {
-  FriBidiCharType fribidi_ch_type = fribidi_get_type (ch);
+  FriBidiCharType fribidi_ch_type;
+
+  G_STATIC_ASSERT (sizeof (FriBidiChar) == sizeof (gunichar));
+
+  fribidi_ch_type = fribidi_get_bidi_type (ch);
 
   switch (fribidi_ch_type)
     {
@@ -122,49 +128,83 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
 				    int             length,
 				    PangoDirection *pbase_dir)
 {
-  FriBidiCharType fribidi_base_dir;
+  glong n_chars, i;
   guint8 *embedding_levels_list;
+  const gchar *p;
+  FriBidiParType fribidi_base_dir;
+  FriBidiCharType *bidi_types;
+#ifdef USE_FRIBIDI_EX_API
+  FriBidiBracketType *bracket_types;
+#endif
+  FriBidiLevel max_level;
+
+  G_STATIC_ASSERT (sizeof (FriBidiLevel) == sizeof (guint8));
+  G_STATIC_ASSERT (sizeof (FriBidiChar) == sizeof (gunichar));
 
   switch (*pbase_dir)
     {
     case PANGO_DIRECTION_LTR:
     case PANGO_DIRECTION_TTB_RTL:
-      fribidi_base_dir = FRIBIDI_TYPE_L;
+      fribidi_base_dir = FRIBIDI_PAR_LTR;
       break;
     case PANGO_DIRECTION_RTL:
     case PANGO_DIRECTION_TTB_LTR:
-      fribidi_base_dir = FRIBIDI_TYPE_R;
+      fribidi_base_dir = FRIBIDI_PAR_RTL;
       break;
     case PANGO_DIRECTION_WEAK_RTL:
-      fribidi_base_dir = FRIBIDI_TYPE_WR;
+      fribidi_base_dir = FRIBIDI_PAR_WRTL;
       break;
     case PANGO_DIRECTION_WEAK_LTR:
     case PANGO_DIRECTION_NEUTRAL:
     default:
-      fribidi_base_dir = FRIBIDI_TYPE_WL;
+      fribidi_base_dir = FRIBIDI_PAR_WLTR;
       break;
     }
 
-#ifdef FRIBIDI_HAVE_UTF8
-  {
-    if (length < 0)
-      length = strlen (text);
-    embedding_levels_list = (guint8 *) fribidi_log2vis_get_embedding_levels_new_utf8 (text, length, &fribidi_base_dir);
-  }
+  if (length < 0)
+    length = strlen (text);
+
+  n_chars = g_utf8_strlen (text, length);
+
+  bidi_types = g_new (FriBidiCharType, n_chars);
+#ifdef USE_FRIBIDI_EX_API
+  bracket_types = g_new (FriBidiBracketType, n_chars);
+#endif
+  embedding_levels_list = g_new (guint8, n_chars);
+
+  for (i = 0, p = text; p < text + length; p = g_utf8_next_char(p), i++)
+    {
+      gunichar ch = g_utf8_get_char (p);
+      bidi_types[i] = fribidi_get_bidi_type (ch);
+#ifdef USE_FRIBIDI_EX_API
+      if (G_UNLIKELY(bidi_types[i] == FRIBIDI_TYPE_ON))
+        bracket_types[i] = fribidi_get_bracket (ch);
+      else
+        bracket_types[i] = FRIBIDI_NO_BRACKET;
+#endif
+    }
+
+#ifdef USE_FRIBIDI_EX_API
+  max_level = fribidi_get_par_embedding_levels_ex (bidi_types, bracket_types, n_chars,
+						   &fribidi_base_dir,
+						   (FriBidiLevel*)embedding_levels_list);
+  g_free (bracket_types);
 #else
-  {
-    gunichar *text_ucs4;
-    int n_chars;
-    text_ucs4 = g_utf8_to_ucs4_fast (text, length, &n_chars);
-    embedding_levels_list = g_new (guint8, n_chars);
-    fribidi_log2vis_get_embedding_levels ((FriBidiChar*)text_ucs4, n_chars,
-					  &fribidi_base_dir,
-					  (FriBidiLevel*)embedding_levels_list);
-    g_free (text_ucs4);
-  }
+  max_level = fribidi_get_par_embedding_levels (bidi_types, n_chars,
+						&fribidi_base_dir,
+						(FriBidiLevel*)embedding_levels_list);
 #endif
 
-  *pbase_dir = (fribidi_base_dir == FRIBIDI_TYPE_L) ?  PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL;
+  g_free (bidi_types);
+
+  if (G_UNLIKELY(max_level == 0))
+    {
+      /* fribidi_get_par_embedding_levels() failed,
+       * is this the best thing to do? */
+      memset (embedding_levels_list, 0, length);
+    }
+
+  *pbase_dir = (fribidi_base_dir == FRIBIDI_PAR_LTR) ?  PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL;
 
   return embedding_levels_list;
 }
@@ -187,7 +227,11 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
 PangoDirection
 pango_unichar_direction (gunichar ch)
 {
-  FriBidiCharType fribidi_ch_type = fribidi_get_type (ch);
+  FriBidiCharType fribidi_ch_type;
+
+  G_STATIC_ASSERT (sizeof (FriBidiChar) == sizeof (gunichar));
+
+  fribidi_ch_type = fribidi_get_bidi_type (ch);
 
   if (!FRIBIDI_IS_STRONG (fribidi_ch_type))
     return PANGO_DIRECTION_NEUTRAL;

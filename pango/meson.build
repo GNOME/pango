@@ -1,5 +1,3 @@
-subdir('mini-fribidi')
-
 pango_sources = [
   'break.c',
   'ellipsize.c',
@@ -67,19 +65,23 @@ pango_features_conf.set('PANGO_VERSION_MICRO', pango_micro_version)
 pango_features_conf.set('PANGO_API_VERSION', pango_api_version)
 pango_features_conf.set('PANGO_CURRENT_MINUS_AGE', '0')
 
-configure_file(input: 'pango-features.h.meson',
-               output: 'pango-features.h',
-               configuration: pango_features_conf,
-               install: true,
-               install_dir: join_paths(pango_includedir, pango_api_path))
+configure_file(
+  input: 'pango-features.h.meson',
+  output: 'pango-features.h',
+  configuration: pango_features_conf,
+  install: true,
+  install_dir: join_paths(pango_includedir, pango_api_path),
+)
 
 # Enumerations for GType
-pango_enums = gnome.mkenums('pango-enum-types',
-                            sources: pango_headers,
-                            c_template: 'pango-enum-types.c.template',
-                            h_template: 'pango-enum-types.h.template',
-                            install_dir: join_paths(pango_includedir, pango_api_path),
-                            install_header: true)
+pango_enums = gnome.mkenums(
+  'pango-enum-types',
+  sources: pango_headers,
+  c_template: 'pango-enum-types.c.template',
+  h_template: 'pango-enum-types.h.template',
+  install_dir: join_paths(pango_includedir, pango_api_path),
+  install_header: true,
+)
 pango_enum_h = pango_enums[1]
 
 if host_system == 'windows'
@@ -104,44 +106,52 @@ pango_cflags = [
 
 pango_inc = include_directories('.')
 
-libpango = shared_library('pango-@0@'.format(pango_api_version),
-                          sources: pango_sources + pango_enums,
-                          version: pango_libversion,
-                          soversion: pango_soversion,
-                          install: true,
-                          dependencies: [ gobject_dep, mathlib_dep, thai_dep, mini_fribidi_dep ],
-                          include_directories: [ root_inc, pango_inc ],
-                          c_args: common_cflags + pango_debug_cflags + pango_cflags,
-                          link_args: common_ldflags)
+libpango = library(
+  'pango-@0@'.format(pango_api_version),
+  sources: pango_sources + pango_enums,
+  version: pango_libversion,
+  soversion: pango_soversion,
+  install: true,
+  dependencies: [ gobject_dep, mathlib_dep, thai_dep, fribidi_dep ],
+  include_directories: [ root_inc, pango_inc ],
+  c_args: common_cflags + pango_debug_cflags + pango_cflags,
+  link_args: common_ldflags,
+)
 
 pango_dep_sources = [pango_enum_h]
-if not meson.is_cross_build()
+
+build_gir = get_option('gir')
+
+if build_gir
   gir_args = [
     '--quiet',
     '-DPANGO_ENABLE_BACKEND',
     '-DPANGO_ENABLE_ENGINE',
   ]
 
-  pango_gir = gnome.generate_gir(libpango,
-                                 sources: pango_sources + pango_headers + [ pango_enum_h ],
-                                 namespace: 'Pango',
-                                 nsversion: pango_api_version,
-                                 identifier_prefix: 'Pango',
-                                 symbol_prefix: 'pango',
-                                 export_packages: 'pango',
-                                 includes: [ 'GObject-2.0', 'cairo-1.0', ],
-                                 install: true,
-                                 extra_args: gir_args + [
-                                   '--c-include=pango/pango.h',
-                                 ])
+  pango_gir = gnome.generate_gir(
+    libpango,
+    sources: pango_sources + pango_headers + [ pango_enum_h ],
+    namespace: 'Pango',
+    nsversion: pango_api_version,
+    identifier_prefix: 'Pango',
+    symbol_prefix: 'pango',
+    export_packages: 'pango',
+    includes: [ 'GObject-2.0', 'cairo-1.0', ],
+    header: 'pango/pango.h',
+    install: true,
+    extra_args: gir_args,
+  )
   pango_gir_dep = declare_dependency(sources: pango_gir)
   pango_dep_sources += pango_gir
 endif
 
-libpango_dep = declare_dependency(link_with: libpango,
-                                  include_directories: pango_inc,
-                                  dependencies: pango_deps,
-                                  sources: pango_dep_sources)
+libpango_dep = declare_dependency(
+  link_with: libpango,
+  include_directories: pango_inc,
+  dependencies: pango_deps,
+  sources: pango_dep_sources,
+)
 
 # FreeType
 if freetype_dep.found()
@@ -182,42 +192,47 @@ if freetype_dep.found()
 
   install_headers(pangoft2_headers, subdir: pango_api_path)
 
-  libpangoft2 = shared_library('pangoft2-@0@'.format(pango_api_version),
-                               sources: pangoft2_sources,
-                               version: pango_libversion,
-                               soversion: pango_soversion,
-                               install: true,
-                               dependencies: pango_deps + [ libpango_dep ],
-                               include_directories: [ root_inc, pango_inc ],
-                               c_args: common_cflags + pango_debug_cflags + pango_cflags + [
-                                 '-DPANGO_DISABLE_DEPRECATION_WARNINGS',
-                               ],
-                               link_args: common_ldflags)
+  libpangoft2 = library(
+    'pangoft2-@0@'.format(pango_api_version),
+    sources: pangoft2_sources,
+    version: pango_libversion,
+    soversion: pango_soversion,
+    install: true,
+    dependencies: pango_deps + [ libpango_dep ],
+    include_directories: [ root_inc, pango_inc ],
+    c_args: common_cflags + pango_debug_cflags + pango_cflags + [
+      '-DPANGO_DISABLE_DEPRECATION_WARNINGS',
+    ],
+    link_args: common_ldflags,
+  )
+
   pangoft2_dep_sources = []
 
-  if not meson.is_cross_build()
-    pangoft2_gir = gnome.generate_gir(libpangoft2,
-                                      sources: pangoft2_headers + pangoft2_public_sources,
-                                      dependencies: [ libpango_dep, pango_gir_dep ],
-                                      namespace: 'PangoFT2',
-                                      nsversion: pango_api_version,
-                                      identifier_prefix: 'PangoFT2',
-                                      symbol_prefix: 'pango_ft2',
-                                      export_packages: 'pangoft2',
-                                      includes: [ 'GObject-2.0', 'cairo-1.0', 'freetype2-2.0', 'fontconfig-2.0', ],
-                                      install: true,
-                                      extra_args: gir_args + [
-                                        '--c-include=pango/pangoft2.h',
-                                        '--include-uninstalled=./pango/Pango-1.0.gir',
-                                      ])
+  if build_gir
+    pangoft2_gir = gnome.generate_gir(
+      libpangoft2,
+      sources: pangoft2_headers + pangoft2_public_sources,
+      dependencies: [ libpango_dep, pango_gir_dep ],
+      namespace: 'PangoFT2',
+      nsversion: pango_api_version,
+      identifier_prefix: 'PangoFT2',
+      symbol_prefix: 'pango_ft2',
+      export_packages: 'pangoft2',
+      includes: [ pango_gir[0], 'GObject-2.0', 'cairo-1.0', 'freetype2-2.0', 'fontconfig-2.0', ],
+      header: 'pango/pangoft2.h',
+      install: true,
+      extra_args: gir_args,
+    )
     pangoft2_gir_dep = declare_dependency(sources: pangoft2_gir)
     pangoft2_dep_sources += pangoft2_gir
   endif
 
-  libpangoft2_dep = declare_dependency(link_with: libpangoft2,
-                                       include_directories: pango_inc,
-                                       dependencies: pango_deps + [ libpango_dep ],
-                                       sources: pangoft2_dep_sources)
+  libpangoft2_dep = declare_dependency(
+    link_with: libpangoft2,
+    include_directories: pango_inc,
+    dependencies: pango_deps + [ libpango_dep ],
+    sources: pangoft2_dep_sources,
+  )
 endif
 
 # Xft
@@ -235,42 +250,45 @@ if xft_dep.found()
 
   install_headers(pangoxft_headers, subdir: pango_api_path)
 
-  libpangoxft = shared_library('pangoxft-@0@'.format(pango_api_version),
-                               sources: pangoxft_sources,
-                               version: pango_libversion,
-                               soversion: pango_soversion,
-                               install: true,
-                               dependencies: pango_deps + [ libpango_dep, libpangoft2_dep ],
-                               include_directories: [ root_inc, pango_inc ],
-                               c_args: common_cflags + pango_debug_cflags + pango_cflags + [
-                                 '-DPANGO_DISABLE_DEPRECATION_WARNINGS',
-                               ],
-                               link_args: common_ldflags)
+  libpangoxft = library(
+    'pangoxft-@0@'.format(pango_api_version),
+    sources: pangoxft_sources,
+    version: pango_libversion,
+    soversion: pango_soversion,
+    install: true,
+    dependencies: pango_deps + [ libpango_dep, libpangoft2_dep ],
+    include_directories: [ root_inc, pango_inc ],
+    c_args: common_cflags + pango_debug_cflags + pango_cflags + [
+      '-DPANGO_DISABLE_DEPRECATION_WARNINGS',
+    ],
+    link_args: common_ldflags,
+  )
   pangoxft_dep_sources = []
 
-  if not meson.is_cross_build()
-    pangoxft_gir = gnome.generate_gir(libpangoxft,
-                                      sources: pangoxft_headers + pangoxft_sources,
-                                      dependencies: [ libpango_dep, libpangoft2_dep, pango_gir_dep, pangoft2_gir_dep ],
-                                      namespace: 'PangoXft',
-                                      nsversion: pango_api_version,
-                                      identifier_prefix: 'PangoXft',
-                                      symbol_prefix: 'pango_xft',
-                                      export_packages: 'pangoxft',
-                                      includes: [ 'GObject-2.0', 'xft-2.0', 'xlib-2.0' ],
-                                      install: true,
-                                      extra_args: gir_args + [
-                                        '--c-include=pango/pangoxft.h',
-                                        '--include-uninstalled=./pango/Pango-1.0.gir',
-                                        '--include-uninstalled=./pango/PangoFT2-1.0.gir',
-                                      ])
+  if build_gir
+    pangoxft_gir = gnome.generate_gir(
+      libpangoxft,
+      sources: pangoxft_headers + pangoxft_sources,
+      dependencies: [ libpango_dep, libpangoft2_dep, pango_gir_dep, pangoft2_gir_dep ],
+      namespace: 'PangoXft',
+      nsversion: pango_api_version,
+      identifier_prefix: 'PangoXft',
+      symbol_prefix: 'pango_xft',
+      export_packages: 'pangoxft',
+      includes: [ pango_gir[0], pangoft2_gir[0], 'GObject-2.0', 'xft-2.0', 'xlib-2.0' ],
+      header: 'pango/pangoxft.h',
+      install: true,
+      extra_args: gir_args,
+    )
     pangoxft_dep_sources += pangoxft_gir
   endif
 
-  libpangoxft_dep = declare_dependency(link_with: libpangoxft,
-                                       include_directories: root_inc,
-                                       dependencies: pango_deps + [ libpango_dep, libpangoft2_dep ],
-                                       sources: pangoxft_dep_sources)
+  libpangoxft_dep = declare_dependency(
+    link_with: libpangoxft,
+    include_directories: root_inc,
+    dependencies: pango_deps + [ libpango_dep, libpangoft2_dep ],
+    sources: pangoxft_dep_sources,
+  )
 endif
 
 # Win32
@@ -302,21 +320,25 @@ if host_system == 'windows'
 
   install_headers(pangowin32_headers, subdir: pango_api_path)
 
-  libpangowin32 = shared_library('pangowin32-@0@'.format(pango_api_version),
-                                 sources: pangowin32_sources,
-                                 version: pango_libversion,
-                                 soversion: pango_soversion,
-                                 install: true,
-                                 dependencies: pangowin32_deps,
-                                 include_directories: [ root_inc, pango_inc ],
-                                 c_args: common_cflags + pango_debug_cflags + pango_cflags + [
-                                   '-DPANGO_DISABLE_DEPRECATION_WARNINGS',
-                                 ],
-                                 link_args: common_ldflags)
+  libpangowin32 = library(
+    'pangowin32-@0@'.format(pango_api_version),
+    sources: pangowin32_sources,
+    version: pango_libversion,
+    soversion: pango_soversion,
+    install: true,
+    dependencies: pangowin32_deps,
+    include_directories: [ root_inc, pango_inc ],
+    c_args: common_cflags + pango_debug_cflags + pango_cflags + [
+      '-DPANGO_DISABLE_DEPRECATION_WARNINGS',
+    ],
+    link_args: common_ldflags,
+  )
 
-  libpangowin32_dep = declare_dependency(link_with: libpangowin32,
-                                         include_directories: root_inc,
-                                         dependencies: pango_deps + [ libpango_dep ])
+  libpangowin32_dep = declare_dependency(
+    link_with: libpangowin32,
+    include_directories: root_inc,
+    dependencies: pango_deps + [ libpango_dep ],
+  )
 endif
 
 # Cairo
@@ -374,39 +396,43 @@ if cairo_dep.found()
 
   install_headers(pangocairo_headers, subdir: pango_api_path)
 
-  libpangocairo = shared_library('pangocairo-@0@'.format(pango_api_version),
-                                 sources: pangocairo_sources,
-                                 version: pango_libversion,
-                                 soversion: pango_soversion,
-                                 install: true,
-                                 dependencies: pango_deps + pangocairo_deps,
-                                 include_directories: [ root_inc, pango_inc ],
-                                 c_args: common_cflags + pango_debug_cflags + pango_cflags + [
-                                   '-DPANGO_DISABLE_DEPRECATION_WARNINGS',
-                                 ],
-                                 link_args: common_ldflags)
+  libpangocairo = library(
+    'pangocairo-@0@'.format(pango_api_version),
+    sources: pangocairo_sources,
+    version: pango_libversion,
+    soversion: pango_soversion,
+    install: true,
+    dependencies: pango_deps + pangocairo_deps,
+    include_directories: [ root_inc, pango_inc ],
+    c_args: common_cflags + pango_debug_cflags + pango_cflags + [
+      '-DPANGO_DISABLE_DEPRECATION_WARNINGS',
+    ],
+    link_args: common_ldflags
+  )
   pangocairo_dep_sources = []
 
-  if not meson.is_cross_build()
-    pangocairo_gir = gnome.generate_gir(libpangocairo,
-                                        sources: pangocairo_headers + pangocairo_sources,
-                                        dependencies: [ pangocairo_deps, pango_gir_dep ],
-                                        namespace: 'PangoCairo',
-                                        nsversion: pango_api_version,
-                                        identifier_prefix: 'PangoCairo',
-                                        symbol_prefix: 'pango_cairo',
-                                        export_packages: 'pangocairo',
-                                        includes: [ 'GObject-2.0', 'cairo-1.0' ],
-                                        install: true,
-                                        extra_args: gir_args + [
-                                          '--c-include=pango/pangocairo.h',
-                                          '--include-uninstalled=./pango/Pango-1.0.gir',
-                                        ])
+  if build_gir
+    pangocairo_gir = gnome.generate_gir(
+      libpangocairo,
+      sources: pangocairo_headers + pangocairo_sources,
+      dependencies: [ pangocairo_deps, pango_gir_dep ],
+      namespace: 'PangoCairo',
+      nsversion: pango_api_version,
+      identifier_prefix: 'PangoCairo',
+      symbol_prefix: 'pango_cairo',
+      export_packages: 'pangocairo',
+      includes: [ pango_gir[0], 'GObject-2.0', 'cairo-1.0' ],
+      header: 'pango/pangocairo.h',
+      install: true,
+      extra_args: gir_args,
+    )
     pangocairo_dep_sources += pangocairo_gir
   endif
 
-  libpangocairo_dep = declare_dependency(link_with: libpangocairo,
-                                         include_directories: root_inc,
-                                         dependencies: pango_deps + [ libpango_dep ],
-                                         sources: pangocairo_dep_sources)
+  libpangocairo_dep = declare_dependency(
+    link_with: libpangocairo,
+    include_directories: root_inc,
+    dependencies: pango_deps + [ libpango_dep ],
+    sources: pangocairo_dep_sources,
+  )
 endif
