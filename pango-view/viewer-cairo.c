@@ -219,8 +219,8 @@ typedef struct
 
 static cairo_status_t
 cairo_surface_write_func (void  *closure,
-	        const unsigned char *data,
-	        unsigned int        length)
+			  const unsigned char *data,
+			  unsigned int length)
 {
   if (output_to_stream_after_destroying_surface)
     {
