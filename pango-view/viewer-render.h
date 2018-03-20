@@ -32,6 +32,13 @@ typedef enum {
   HINT_FULL
 } HintMode;
 
+typedef struct {
+  double x;
+  double y;
+  double width;
+  double height;
+} LayoutExtents;
+
 typedef void (*RenderCallback) (PangoLayout *layout,
 				int          x,
 				int          y,
@@ -90,6 +97,6 @@ extern guint16 opt_fg_alpha;
 extern gboolean opt_bg_set;
 extern PangoColor opt_bg_color;
 extern guint16 opt_bg_alpha;
-extern PangoRectangle layout_extents;
+extern LayoutExtents layout_extents;
 
 #endif /* VIEWER_RENDER_H */

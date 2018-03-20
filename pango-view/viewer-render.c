@@ -77,7 +77,7 @@ guint16 opt_fg_alpha = 65535;
 gboolean opt_bg_set = FALSE;
 PangoColor opt_bg_color = {65535, 65535, 65535};
 guint16 opt_bg_alpha = 65535;
-PangoRectangle layout_extents;
+LayoutExtents layout_extents = {0, 0, 0, 0};
 
 /* Text (or markup) to render */
 static char *text;
