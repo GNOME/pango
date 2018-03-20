@@ -56,10 +56,6 @@ const char *opt_output_file = NULL;
 const char *opt_output_format= NULL;
 gboolean opt_waterfall = FALSE;
 gboolean opt_trim = FALSE;
-double opt_trim_width = 0;
-double opt_trim_height = 0;
-double opt_trim_x = 0;
-double opt_trim_y = 0;
 int opt_width = -1;
 int opt_height = -1;
 int opt_indent = 0;
@@ -81,6 +77,7 @@ guint16 opt_fg_alpha = 65535;
 gboolean opt_bg_set = FALSE;
 PangoColor opt_bg_color = {65535, 65535, 65535};
 guint16 opt_bg_alpha = 65535;
+PangoRectangle layout_extents;
 
 /* Text (or markup) to render */
 static char *text;
@@ -323,12 +320,12 @@ do_output (PangoContext     *context,
     {
       pango_layout_get_extents (layout, &trim_extents, NULL);
       
-      opt_trim_width  =  (double) trim_extents.width / PANGO_SCALE;
-      opt_trim_height =  (double) trim_extents.height / PANGO_SCALE;
-      opt_trim_x      = -(double) trim_extents.x / PANGO_SCALE;
-      opt_trim_y      = -(double) trim_extents.y / PANGO_SCALE;
-      opt_trim_x     -= (double) opt_margin_l;
-      opt_trim_y     -= (double) opt_margin_t;
+      layout_extents.width  =  (double) trim_extents.width / PANGO_SCALE;
+      layout_extents.height =  (double) trim_extents.height / PANGO_SCALE;
+      layout_extents.x      = -(double) trim_extents.x / PANGO_SCALE;
+      layout_extents.y      = -(double) trim_extents.y / PANGO_SCALE;
+      layout_extents.x     -= (double) opt_margin_l;
+      layout_extents.y     -= (double) opt_margin_t;
     }
 
   set_transform (context, transform_cb, cb_context, cb_data, &matrix);

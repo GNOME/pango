@@ -112,7 +112,7 @@ cairo_image_view_create_surface (gpointer instance,
 
   /* TODO: Be smarter about format? */
   if (opt_trim)
-    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, (int) opt_trim_width, (int) opt_trim_height);
+    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, (int) layout_extents.width, (int) layout_extents.height);
   else
     surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
 
@@ -305,7 +305,7 @@ cairo_vector_view_create_surface (gpointer instance,
   cairo_surface_t *surface;
 
   if (opt_trim)
-    surface = c->constructor (&cairo_surface_write_func, c->file_handle, opt_trim_width, opt_trim_height);
+    surface = c->constructor (&cairo_surface_write_func, c->file_handle, layout_extents.width, layout_extents.height);
   else
     surface = c->constructor (&cairo_surface_write_func, c->file_handle, width, height);
 

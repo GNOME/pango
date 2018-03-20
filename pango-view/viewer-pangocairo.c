@@ -274,7 +274,7 @@ render_callback (PangoLayout *layout,
     }
 
   if (opt_trim)
-    cairo_move_to (cr, opt_trim_x, opt_trim_y);
+    cairo_move_to (cr, layout_extents.x, layout_extents.y);
   else
     cairo_move_to (cr, 0, 0);
 

@@ -70,10 +70,6 @@ extern const char *opt_text;
 extern const char *opt_text_file;
 extern gboolean opt_waterfall;
 extern gboolean opt_trim;
-extern double opt_trim_width;
-extern double opt_trim_height;
-extern double opt_trim_x;
-extern double opt_trim_y;
 extern int opt_width;
 extern int opt_indent;
 extern PangoEllipsizeMode opt_ellipsize;
@@ -94,5 +90,6 @@ extern guint16 opt_fg_alpha;
 extern gboolean opt_bg_set;
 extern PangoColor opt_bg_color;
 extern guint16 opt_bg_alpha;
+extern PangoRectangle layout_extents;
 
 #endif /* VIEWER_RENDER_H */
