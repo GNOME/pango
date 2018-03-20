@@ -268,13 +268,13 @@ cairo_vector_view_create (const PangoViewer *klass G_GNUC_UNUSED)
 
       instance = g_slice_new (CairoVectorViewer);
       
-      if (0 != strcmp (opt_output_file, "-"))
-        output_file_handle = fopen (opt_output_file, "wb");
+      if (0 != strcmp (opt_output, "-"))
+        output_file_handle = fopen (opt_output, "wb");
 
       /* save output filename and unset it such that the viewer layer
        * doesn't try to save to file.
        */
-     opt_output_file = NULL;
+     opt_output = NULL;
      instance->file_handle = output_file_handle;
 
      instance->constructor = constructor;

@@ -68,7 +68,7 @@ main (int    argc,
   for (run = 0; run < MAX(1,opt_runs); run++)
     view->render (instance, surface, context, &width, &height, NULL);
 
-  if (opt_output_file)
+  if (opt_output)
     {
       if (!view->write)
 	fail ("%s viewer backend does not support writing", view->name);
@@ -77,15 +77,15 @@ main (int    argc,
 	  FILE *stream;
 	  GPid pid = 0;
 
-	  if (view->write_suffix && g_str_has_suffix (opt_output_file, view->write_suffix))
+	  if (view->write_suffix && g_str_has_suffix (opt_output, view->write_suffix))
 	    {
-	      if (0 == strcmp (opt_output_file, "-"))
+	      if (0 == strcmp (opt_output, "-"))
 	        stream = stdout;
 	      else
 	        stream = g_fopen (opt_output, "wb");
 	      if (!stream)
 		fail ("Cannot open output file %s: %s\n",
-		      opt_output_file, g_strerror (errno));
+		      opt_output, g_strerror (errno));
 	    }
 	  else
 	    {
@@ -94,7 +94,7 @@ main (int    argc,
 	      GError *error;
 	      GSpawnFlags spawn_flags = 0;
 	      
-	      if (0 == strcmp (opt_output_file, "-"))
+	      if (0 == strcmp (opt_output, "-"))
 	        {
 	          const char* conversion_suffix = ":-";
 	          char* conversion_format;
@@ -108,7 +108,7 @@ main (int    argc,
 	        }
 	      else
 	        {
-	          convert_argv[2] = opt_output_file;
+	          convert_argv[2] = opt_output;
 	          spawn_flags = G_SPAWN_DO_NOT_REAP_CHILD |
 	                        G_SPAWN_SEARCH_PATH |
 	                        G_SPAWN_STDOUT_TO_DEV_NULL |

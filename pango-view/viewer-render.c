@@ -51,8 +51,6 @@ gboolean opt_rtl = FALSE;
 double opt_rotate = 0;
 gboolean opt_auto_dir = TRUE;
 const char *opt_text = NULL;
-const char *opt_text_file = NULL;
-const char *opt_output_file = NULL;
 const char *opt_output_format= NULL;
 gboolean opt_waterfall = FALSE;
 gboolean opt_trim = FALSE;
@@ -735,8 +733,6 @@ parse_options (int argc, char *argv[])
      "Interpret text as Pango markup",					NULL},
     {"output",		'o', 0, G_OPTION_ARG_STRING,			&opt_output,
      "Save rendered image to output file",			      "file"},
-    {"output-file", 0, 0, G_OPTION_ARG_STRING,            &opt_output_file,
-     "Set output file-name (default: stdout)",          "filename"},
     {"output-format", 0, 0, G_OPTION_ARG_STRING,        &opt_output_format,
      "Set output format: pdf, ps, svg, png, jpeg",          "format"},
     {"pangorc",		0, G_OPTION_FLAG_HIDDEN, G_OPTION_ARG_STRING,	&opt_pangorc,
@@ -753,8 +749,6 @@ parse_options (int argc, char *argv[])
      "Enable single-paragraph mode",					NULL},
     {"text",		't', 0, G_OPTION_ARG_STRING,			&opt_text,
      "Text to display (instead of a file)",			    "string"},
-    {"text-file",   0, 0, G_OPTION_ARG_STRING,			&opt_text_file,
-     "Set input text file-name. If no text is provided, standard input is used for input.", "filename"},
     {"version",		0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, &show_version,
      "Show version numbers",						NULL},
     {"waterfall",	0, 0, G_OPTION_ARG_NONE,			&opt_waterfall,
@@ -799,11 +793,11 @@ parse_options (int argc, char *argv[])
   if (opt_pixels)
     opt_dpi = 72;
 
-  argc--, argv++;
-  if (argc && !opt_text_file) opt_text_file = argv[0], argc--, argv++;
-  if (argc && !opt_output_file) opt_output_file = argv[0], argc--, argv++;
-  if (argc)
+  if ((opt_text && argc != 1) || (!opt_text && argc != 2))
     {
+      if (opt_text && argc != 1)
+	fail ("When specifying --text, no file should be given");
+
       g_printerr ("Usage: %s [OPTION...] FILE\n", g_get_prgname ());
       exit (1);
     }
@@ -816,12 +810,12 @@ parse_options (int argc, char *argv[])
 	fail ("No viewer backend found");
     }
 
-  if (opt_output && !opt_output_file) opt_output_file = opt_output;
-  if (!opt_text && !opt_text_file) opt_text_file = g_strdup ("-");
-  if (!opt_output_file) opt_output_file = g_strdup ("-");
   if (!opt_output_format)
     {
-      const char *extension = strrchr (opt_output_file, '.');
+      if (opt_output && 0 == strcmp (opt_output, "-"))
+        fail ("The option --output-format must be specified when piping output to stdout");
+
+      const char *extension = strrchr (opt_output, '.');
       if (extension)
         {
           extension++;
@@ -838,9 +832,9 @@ parse_options (int argc, char *argv[])
     }
   else
     {
-	  if (0 != strcmp (opt_text_file, "-"))
+	  if (0 != strcmp (argv[1], "-"))
 	    {
-	      if (!g_file_get_contents (opt_text_file, &text, &len, &error))
+	      if (!g_file_get_contents (argv[1], &text, &len, &error))
 	        fail ("%s\n", error->message);
 	    }
 	  else
