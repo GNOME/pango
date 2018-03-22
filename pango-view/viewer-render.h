@@ -32,6 +32,10 @@ typedef enum {
   HINT_FULL
 } HintMode;
 
+typedef struct {
+  double x, y, width, height;
+} LayoutExtents;
+
 typedef void (*RenderCallback) (PangoLayout *layout,
 				int          x,
 				int          y,
