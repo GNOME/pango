@@ -44,8 +44,8 @@ if help2man.found()
   help2man_opts = [
     '--no-info',
     '--section=1',
-    '--help-option="--help-all"',
-    '--name="Pango text viewer"',
+    '--help-option=--help-all',
+    '--name=Pango text viewer',
   ]
 
   custom_target('pango-view.1',
