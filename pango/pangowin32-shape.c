@@ -31,8 +31,6 @@
 
 #include "pangowin32-private.h"
 
-extern HFONT _pango_win32_font_get_hfont (PangoFont *font);
-
 #include "pango-utils.h"
 #include "pango-impl-utils.h"
 

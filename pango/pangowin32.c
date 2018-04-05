@@ -54,11 +54,6 @@ gboolean _pango_win32_debug = FALSE;
 static void pango_win32_font_dispose    (GObject             *object);
 static void pango_win32_font_finalize   (GObject             *object);
 
-static gboolean pango_win32_font_real_select_font        (PangoFont *font,
-							  HDC        hdc);
-static void     pango_win32_font_real_done_font          (PangoFont *font);
-static double   pango_win32_font_real_get_metrics_factor (PangoFont *font);
-
 static PangoFontDescription *pango_win32_font_describe          (PangoFont        *font);
 static PangoFontDescription *pango_win32_font_describe_absolute (PangoFont        *font);
 static PangoCoverage        *pango_win32_font_get_coverage      (PangoFont        *font,
