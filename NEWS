@@ -1,3 +1,8 @@
+Overview of changes in 1.42.1
+=============================
+- Fix meson build, in particular on Windows (#783274, #795012)
+- Add an Emoji font family on Windows, using Segoe UI (#794705)
+
 Overview of changes in 1.42.0
 =============================
 - No changes
@@ -42,7 +47,7 @@ Overview of changes between 1.40.9 and 1.40.10
 - Apply gravity across spans in markup (#784243)
 - Support variation selectors for shaping
 - CoreText: Rely on CGFont for scaling (#782393)
-- Fix grapheme breaks and backspacing for Emoji
+U- Fix grapheme breaks and backspacing for Emoji
 
 Overview of changes between 1.40.8 and 1.40.9
 =============================================
@@ -140,7 +145,7 @@ Overview of changes between 1.37.1 and 1.37.2
 =============================================
 - Don't use hb_glib_get_unicode_funcs
 - Warning fixes
-
+I
 Overview of changes between 1.37.0 and 1.37.1
 =============================================
 - Add attributes for OpenType font features (#738505)
