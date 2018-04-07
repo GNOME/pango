@@ -393,7 +393,7 @@ libpangowin32_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
 libpangowin32_1_0_la_LIBADD =			\
 	libpango-$(PANGO_API_VERSION).la	\
 	$(GLIB_LIBS)				\
-	-lgdi32 -lusp10
+	-lusp10 -lgdi32
 libpangowin32_1_0_la_DEPENDENCIES =		\
 	libpango-$(PANGO_API_VERSION).la
 libpangowin32_1_0_la_SOURCES =	\

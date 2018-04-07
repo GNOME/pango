@@ -304,10 +304,12 @@ if host_system == 'windows'
     'pangowin32-shape.c',
   ]
 
+  # usp10 needs to be before gdi32
+  # see https://bugzilla.gnome.org/show_bug.cgi?id=795045#c0
   pangowin32_deps = pango_deps + [
     libpango_dep,
-    cc.find_library('gdi32'),
     cc.find_library('usp10'),
+    cc.find_library('gdi32'),
   ]
 
   pangowin32_rc = configure_file(
