@@ -370,6 +370,24 @@ convert_log_clusters_to_byte_offsets (const char       *text,
   g_free (byte_offset);
 }
 
+typedef struct {
+  HFONT hfont;
+  gint32 script;
+} script_cache_key;
+
+static guint
+script_cache_key_hash_func (script_cache_key *key)
+{
+  return g_direct_hash (key->hfont) ^ g_int_hash (&(key->script));
+}
+
+static gboolean
+script_cache_key_equal_func (script_cache_key *a,
+                             script_cache_key *b)
+{
+  return (a->hfont == b->hfont) && (a->script == b->script);
+}
+
 static gboolean
 itemize_shape_and_place (PangoFont           *font,
 			 HDC                  hdc,
@@ -389,7 +407,8 @@ itemize_shape_and_place (PangoFont           *font,
   static GHashTable *script_cache_hash = NULL;
 
   if (!script_cache_hash)
-    script_cache_hash = g_hash_table_new (g_int64_hash, g_int64_equal);
+    script_cache_hash = g_hash_table_new ((GHashFunc)script_cache_key_hash_func,
+                                          (GEqualFunc)script_cache_key_equal_func);
 
   memset (&control, 0, sizeof (control));
   memset (&state, 0, sizeof (state));
@@ -440,7 +459,7 @@ itemize_shape_and_place (PangoFont           *font,
       int ng;
       int char_offset;
       SCRIPT_CACHE *script_cache;
-      gint64 font_and_script_key;
+      script_cache_key font_and_script_key;
 
       memset (advances, 0, sizeof (advances));
       memset (offsets, 0, sizeof (offsets));
@@ -472,16 +491,17 @@ itemize_shape_and_place (PangoFont           *font,
 		 items[item].iCharPos, items[item+1].iCharPos-1, itemlen);
 #endif
       /* Create a hash key based on hfont and script engine */
-      font_and_script_key = (((gint64) ((gint32) hfont)) << 32) | script;
+      font_and_script_key.hfont = hfont;
+      font_and_script_key.script = script;
 
       /* Get the script cache for this hfont and script */
       script_cache = g_hash_table_lookup (script_cache_hash, &font_and_script_key);
       if (!script_cache)
 	{
-	  gint64 *key_n;
+	  script_cache_key *key_n;
 	  SCRIPT_CACHE *new_script_cache;
 
-	  key_n = g_new (gint64, 1);
+	  key_n = g_new (script_cache_key, 1);
 	  *key_n = font_and_script_key;
 
 	  new_script_cache = g_new0 (SCRIPT_CACHE, 1);
