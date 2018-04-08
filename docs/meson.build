@@ -45,6 +45,11 @@ if host_system != 'windows'
     'pangocairo-win32.h',
     'pangowin32.h',
   ]
+else
+  private_headers += [
+    'pangoxft.h',
+    'pangoxft-render.h',
+  ]
 endif
 
 content_files = [
