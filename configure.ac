@@ -487,6 +487,10 @@ have_libthai=false
 PKG_CHECK_MODULES(LIBTHAI, libthai >= $LIBTHAI_REQUIRED_VERSION, have_libthai=true, :)
 if $have_libthai; then
 	AC_DEFINE(HAVE_LIBTHAI, 1, [Whether libthai is available])
+	pango_save_libs=$LIBS
+	LIBS="$LIBS $LIBTHAI_LIBS"
+	AC_CHECK_FUNCS(th_brk_find_breaks)
+	LIBS=$pango_save_libs
 fi
 
 #

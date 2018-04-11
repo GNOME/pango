@@ -27,12 +27,9 @@
 #include <thai/thwchar.h>
 #include <thai/thbrk.h>
 
-/* TODO
- * LibThai 0.1.23 claims to be thread-safe.
- * Check that and avoid locking?
- * http://linux.thai.net/node/286
- */
+#ifndef HAVE_TH_BRK_FIND_BREAKS
 G_LOCK_DEFINE_STATIC (th_brk);
+#endif
 
 /*
  * tis_text is assumed to be large enough to hold the converted string,
@@ -67,6 +64,9 @@ break_thai (const char          *text,
   thchar_t *tis_text;
   int *brk_pnts;
   int cnt;
+#ifdef HAVE_TH_BRK_FIND_BREAKS
+  ThBrk* brk;
+#endif
 
   cnt = pango_utf8_strlen (text, len) + 1;
 
@@ -82,9 +82,15 @@ break_thai (const char          *text,
 
   /* find line break positions */
 
+#ifdef HAVE_TH_BRK_FIND_BREAKS
+  brk = th_brk_new(NULL);
+  len = th_brk_find_breaks(brk, tis_text, brk_pnts, cnt);
+  th_brk_delete(brk);
+#else
   G_LOCK (th_brk);
   len = th_brk (tis_text, brk_pnts, cnt);
   G_UNLOCK (th_brk);
+#endif
   for (cnt = 0; cnt < len; cnt++)
     if (attrs[brk_pnts[cnt]].is_char_break)
     {

@@ -216,6 +216,10 @@ thai_dep = dependency('libthai', version: libthai_req_version, required: false)
 if thai_dep.found()
   pango_conf.set('HAVE_LIBTHAI', 1)
   pango_deps += thai_dep
+
+  if cc.has_function('th_brk_find_breaks', dependencies: thai_dep)
+    pango_conf.set('HAVE_TH_BRK_FIND_BREAKS', 1)
+  endif
 endif
 
 # These are for the various .pc files so that things will link
