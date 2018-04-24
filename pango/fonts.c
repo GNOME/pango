@@ -53,10 +53,12 @@ struct _PangoFontDescription
   PangoGravity gravity;
 
   char *variations;
+  char *features;
 
   guint16 mask;
   guint static_family : 1;
   guint static_variations : 1;
+  guint static_features : 1;
   guint size_is_absolute : 1;
 
   int size;
@@ -75,10 +77,12 @@ static const PangoFontDescription pfd_defaults = {
   PANGO_STRETCH_NORMAL,	/* stretch */
   PANGO_GRAVITY_SOUTH,  /* gravity */
   NULL,                 /* variations */
+  NULL,                 /* features */
 
   0,			/* mask */
   0,			/* static_family */
-  0,			/* static_variations*/
+  0,			/* static_variations */
+  0,			/* static_features */
   0,    		/* size_is_absolute */
 
   0,			/* size */
@@ -526,7 +530,7 @@ pango_font_description_set_variations_static (PangoFontDescription *desc,
 
 /**
  * pango_font_description_set_variations:
- * @desc: a #PangoFontDescription.
+ * @desc: a #PangoFontDescription
  * @variations: a string representing the variations
  *
  * Sets the variations field of a font description. OpenType
@@ -558,15 +562,15 @@ pango_font_description_set_variations (PangoFontDescription *desc,
  * pango_font_description_get_variations:
  * @desc: a #PangoFontDescription
  *
- * Gets the variations field of a font description. See
- * pango_font_description_set_variations().
+ * Gets the variations field of a font description.
+ * See pango_font_description_set_variations().
  *
- * Return value: (nullable): the varitions field for the font
+ * Return value: (nullable): the variations field for the font
  *               description, or %NULL if not previously set.  This
  *               has the same life-time as the font description itself
  *               and should not be freed.
  *
- * Since: 1.42
+ * Since: 1.44
  **/
 const char *
 pango_font_description_get_variations (const PangoFontDescription *desc)
@@ -574,6 +578,96 @@ pango_font_description_get_variations (const PangoFontDescription *desc)
   g_return_val_if_fail (desc != NULL, NULL);
 
   return desc->variations;
+}
+
+/**
+ * pango_font_description_set_features_static:
+ * @desc: a #PangoFontDescription
+ * @features: a string representing the features 
+ *
+ * Like pango_font_description_set_features(), except that no
+ * copy of @features is made. The caller must make sure that the
+ * string passed in stays around until @desc has been freed
+ * or the name is set again. This function can be used if
+ * @features is a static string such as a C string literal,
+ * or if @desc is only needed temporarily.
+ *
+ * Since: 1.44
+ **/
+void
+pango_font_description_set_features_static (PangoFontDescription *desc,
+                                            const char           *features)
+{
+  g_return_if_fail (desc != NULL);
+
+  if (desc->features == features)
+    return;
+
+  if (desc->features && !desc->static_features)
+    g_free (desc->features);
+
+  if (features)
+    {
+      desc->features = (char *)features;
+      desc->static_features = TRUE;
+      desc->mask |= PANGO_FONT_MASK_FEATURES;
+    }
+  else
+    {
+      desc->features = pfd_defaults.features;
+      desc->static_features = pfd_defaults.static_features;
+      desc->mask &= ~PANGO_FONT_MASK_FEATURES;
+    }
+}
+
+/**
+ * pango_font_description_set_features:
+ * @desc: a #PangoFontDescription
+ * @features: a string representing the features 
+ *
+ * Sets the features field of a font description. OpenType
+ * font features allow to change characteristics of a font,
+ * such as small caps.
+ *
+ * The format of the variations string is the same that is allowed
+ * by CSS.
+ *
+ * Pango does not currently have a way to find features of a font.
+ * Both harfbuzz or freetype have API for this.
+ *
+ * Since: 1.44
+ **/
+void
+pango_font_description_set_features (PangoFontDescription *desc,
+                                     const char           *features)
+{
+  g_return_if_fail (desc != NULL);
+
+  pango_font_description_set_features_static (desc, g_strdup (features));
+  if (features)
+    desc->static_features = FALSE;
+}
+
+/**
+ * pango_font_description_get_features:
+ * @desc: a #PangoFontDescription
+ *
+ * Gets the features field of a font description.
+ * See pango_font_description_set_features().
+ *
+ * Return value: (nullable): the features field for the font
+ *               description, or %NULL if not previously set.  This
+ *               has the same life-time as the font description itself
+ *               and should not be freed.
+ *
+ * Since: 1.44
+ **/
+const char *
+pango_font_description_get_features (const PangoFontDescription *desc)
+{
+  g_return_val_if_fail (desc != NULL, NULL);
+
+  return desc->features;
 }
 
 /**
@@ -639,6 +733,7 @@ pango_font_description_merge (PangoFontDescription       *desc,
 {
   gboolean family_merged;
   gboolean variations_merged;
+  gboolean features_merged;
 
   g_return_if_fail (desc != NULL);
 
@@ -647,6 +742,7 @@ pango_font_description_merge (PangoFontDescription       *desc,
 
   family_merged = desc_to_merge->family_name && (replace_existing || !desc->family_name);
   variations_merged = desc_to_merge->variations && (replace_existing || !desc->variations);
+  features_merged = desc_to_merge->features && (replace_existing || !desc->features);
 
   pango_font_description_merge_static (desc, desc_to_merge, replace_existing);
 
@@ -660,6 +756,12 @@ pango_font_description_merge (PangoFontDescription       *desc,
     {
       desc->variations = g_strdup (desc->variations);
       desc->static_variations = FALSE;
+    }
+
+  if (features_merged)
+    {
+      desc->features = g_strdup (desc->features);
+      desc->static_features = FALSE;
     }
 }
 
@@ -710,6 +812,8 @@ pango_font_description_merge_static (PangoFontDescription       *desc,
     desc->gravity = desc_to_merge->gravity;
   if (new_mask & PANGO_FONT_MASK_VARIATIONS)
     pango_font_description_set_variations_static (desc, desc_to_merge->variations);
+  if (new_mask & PANGO_FONT_MASK_FEATURES)
+    pango_font_description_set_features_static (desc, desc_to_merge->features);
 
   desc->mask |= new_mask;
 }
@@ -787,7 +891,7 @@ pango_font_description_better_match (const PangoFontDescription *desc,
  *               %NULL.
  **/
 PangoFontDescription *
-pango_font_description_copy  (const PangoFontDescription  *desc)
+pango_font_description_copy (const PangoFontDescription  *desc)
 {
   PangoFontDescription *result;
 
@@ -806,6 +910,9 @@ pango_font_description_copy  (const PangoFontDescription  *desc)
 
   result->variations = g_strdup (result->variations);
   result->static_variations = FALSE;
+
+  result->features = g_strdup (result->features);
+  result->static_features = FALSE;
 
   return result;
 }
@@ -838,9 +945,11 @@ pango_font_description_copy_static (const PangoFontDescription *desc)
   if (result->family_name)
     result->static_family = TRUE;
 
-
   if (result->variations)
     result->static_variations = TRUE;
+
+  if (result->features)
+    result->static_features = TRUE;
 
   return result;
 }
@@ -875,7 +984,8 @@ pango_font_description_equal (const PangoFontDescription  *desc1,
 	 desc1->gravity == desc2->gravity &&
 	 (desc1->family_name == desc2->family_name ||
 	  (desc1->family_name && desc2->family_name && g_ascii_strcasecmp (desc1->family_name, desc2->family_name) == 0)) &&
-         (g_strcmp0 (desc1->variations, desc2->variations) == 0);
+         (g_strcmp0 (desc1->variations, desc2->variations) == 0) &&
+         (g_strcmp0 (desc1->features, desc2->features) == 0);
 }
 
 #define TOLOWER(c) \
@@ -917,6 +1027,8 @@ pango_font_description_hash (const PangoFontDescription *desc)
     hash = case_insensitive_hash (desc->family_name);
   if (desc->variations)
     hash ^= g_str_hash (desc->variations);
+  if (desc->features)
+    hash ^= g_str_hash (desc->features);
   hash ^= desc->size;
   hash ^= desc->size_is_absolute ? 0xc33ca55a : 0;
   hash ^= desc->style << 16;
@@ -945,6 +1057,9 @@ pango_font_description_free  (PangoFontDescription  *desc)
 
   if (desc->variations && !desc->static_variations)
     g_free (desc->variations);
+
+  if (desc->features && !desc->static_features)
+    g_free (desc->features);
 
   g_slice_free (PangoFontDescription, desc);
 }
@@ -1210,6 +1325,23 @@ parse_variations (const char  *word,
   return TRUE;
 }
 
+static gboolean
+parse_features (const char  *word,
+                size_t       wordlen,
+                char       **features)
+{
+  if (word[0] != '#')
+    {
+      *features = NULL;
+      return FALSE;
+    }
+
+  /* XXX: actually validate here */
+  *features = g_strndup (word + 1, wordlen - 1);
+
+  return TRUE;
+}
+
 /**
  * pango_font_description_from_string:
  * @str: string representation of a font description.
@@ -1248,12 +1380,17 @@ pango_font_description_from_string (const char *str)
   len = strlen (str);
   last = str + len;
   p = getword (str, last, &wordlen, "");
-  /* Look for variations at the end of the string */
+  /* Look for variations or features at the end of the string */
   if (wordlen != 0)
     {
       if (parse_variations (p, wordlen, &desc->variations))
         {
 	  desc->mask |= PANGO_FONT_MASK_VARIATIONS;
+	  last = p;
+        }
+      if (parse_features (p, wordlen, &desc->features))
+        {
+	  desc->mask |= PANGO_FONT_MASK_FEATURES;
 	  last = p;
         }
     }
@@ -1427,6 +1564,11 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
       g_string_append (result, desc->variations);
     }
 
+  if (desc->features && desc->mask & PANGO_FONT_MASK_FEATURES)
+    {
+      g_string_append (result, " #");
+      g_string_append (result, desc->features);
+    }
   return g_string_free (result, FALSE);
 }
 
