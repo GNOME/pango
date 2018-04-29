@@ -36,6 +36,7 @@ struct _PangoCairoCoreTextFont
 {
   PangoCoreTextFont font;
   PangoCairoFontPrivate cf_priv;
+  int abs_size;
 };
 
 struct _PangoCairoCoreTextFontClass
@@ -162,6 +163,17 @@ pango_cairo_core_text_font_create_base_metrics_for_context (PangoCairoFont *font
   return metrics;
 }
 
+static PangoFontDescription *
+pango_cairo_core_text_font_describe_absolute (PangoFont *font)
+{
+  PangoCairoCoreTextFont *cafont = (PangoCairoCoreTextFont *)font;
+  PangoFontDescription *desc = pango_font_describe (font);
+  
+  pango_font_description_set_absolute_size (desc, cafont->abs_size);
+
+  return desc;
+}
+
 static void
 pango_cairo_core_text_font_finalize (GObject *object)
 {
@@ -179,9 +191,10 @@ pango_cairo_core_text_font_class_init (PangoCairoCoreTextFontClass *class)
   PangoFontClass *font_class = PANGO_FONT_CLASS (class);
 
   object_class->finalize = pango_cairo_core_text_font_finalize;
-
+  /* font_class->describe defined by parent class PangoCoreTextFont. */
   font_class->get_glyph_extents = pango_cairo_core_text_font_get_glyph_extents;
   font_class->get_metrics = _pango_cairo_font_get_metrics;
+  font_class->describe_absolute = pango_cairo_core_text_font_describe_absolute;
 }
 
 static void
@@ -218,6 +231,8 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
 
   cafont = g_object_new (PANGO_TYPE_CAIRO_CORE_TEXT_FONT, NULL);
   cfont = PANGO_CORE_TEXT_FONT (cafont);
+
+  cafont->abs_size = pango_core_text_font_key_get_size (key);
 
   _pango_core_text_font_set_ctfont (cfont, font_ref);
 

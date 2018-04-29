@@ -806,6 +806,7 @@ get_context_matrix (PangoContext *context,
 /*
  * Helper functions for PangoCoreTextFontsetKey
  */
+static const double ppi = 72.0; /* typographic points per inch */
 
 static double
 pango_core_text_font_map_get_resolution (PangoCoreTextFontMap *fontmap,
@@ -817,7 +818,7 @@ pango_core_text_font_map_get_resolution (PangoCoreTextFontMap *fontmap,
   /* FIXME: acquire DPI from CoreText using some deafault font */
   g_warning ("FIXME: returning default DPI");
 
-  return 72.0;
+  return ppi;
 }
 
 static int
@@ -826,8 +827,16 @@ get_scaled_size (PangoCoreTextFontMap       *fontmap,
                  const PangoFontDescription *desc)
 {
   double size = pango_font_description_get_size (desc);
+  PangoMatrix *matrix = pango_context_get_matrix (context);
+  double scale_factor = pango_matrix_get_font_scale_factor (matrix);
+  
+  if (!pango_font_description_get_size_is_absolute(desc))
+  {
+    double dpi = pango_core_text_font_map_get_resolution (fontmap, context);
+    size *= (dpi/ppi);
+  }
 
-  return .5 + pango_matrix_get_font_scale_factor (pango_context_get_matrix (context)) * size;
+  return .5 +  scale_factor * size;
 }
 
 
