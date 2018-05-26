@@ -1,0 +1,23 @@
+image: registry.gitlab.gnome.org/gnome/gnome-runtime-images/base:latest
+
+build:
+  script:
+    - >
+      dnf install -y \
+        gcc \
+        gcc-c++ \
+        meson \
+        redhat-rpm-config \
+        glib2-devel \
+        harfbuzz-devel \
+        fribidi-devel \
+        cairo-devel \
+        gobject-introspection-devel \
+        cairo-gobject-devel \
+        abattis-cantarell-fonts
+    - meson _build
+    - ninja -C _build dist
+  artifacts:
+    paths:
+      - build/meson-dist
+    expire_in: 7 days
