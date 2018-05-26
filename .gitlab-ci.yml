@@ -1,0 +1,25 @@
+image: registry.gitlab.gnome.org/gnome/gnome-runtime-images/base:latest
+
+stages:
+  - build
+
+before_script:
+  - >
+    dnf install -y \
+      gcc \
+      gcc-c++ \
+      meson \
+      redhat-rpm-config \
+      glib2-devel \
+      harfbuzz-devel \
+      fribidi-devel \
+      cairo-devel \
+      gobject-introspection-devel \
+      cairo-gobject-devel \
+      abattis-cantarell-fonts
+
+build-pango:
+  stage: build
+  script:
+    - meson _build
+    - ninja -C _build dist
