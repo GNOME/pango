@@ -147,7 +147,7 @@ endif
 
 # Maintain compatibility with autotools on macOS
 if host_machine.system() == 'darwin'
-  common_ldflags += [ '-compatibility_version=1', '-current_version=1.0', ]
+  common_ldflags += [ '-compatibility_version 1', '-current_version 1.0', ]
 endif
 
 # Functions
