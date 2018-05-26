@@ -1,0 +1,21 @@
+image: registry.gitlab.gnome.org/gnome/gnome-runtime-images/base:latest
+
+build:
+  script:
+    - >
+      dnf install -y \
+        gcc \
+        gcc-c++ \
+        meson \
+        glib2-devel \
+        harfbuzz-devel \
+        fribidi-devel \
+        cairo-devel \
+        gobject-introspection-devel \
+        cairo-gobject-devel
+    - meson _build
+    - ninja -C _build dist
+  artifacts:
+    paths:
+      - build/meson-dist
+    expire_in: 7 days
