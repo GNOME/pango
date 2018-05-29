@@ -32,6 +32,10 @@ typedef enum {
   HINT_FULL
 } HintMode;
 
+typedef struct {
+  double x, y, width, height;
+} LayoutExtents;
+
 typedef void (*RenderCallback) (PangoLayout *layout,
 				int          x,
 				int          y,
@@ -68,6 +72,7 @@ extern double opt_rotate;
 extern gboolean opt_auto_dir;
 extern const char *opt_text;
 extern gboolean opt_waterfall;
+extern gboolean opt_trim;
 extern int opt_width;
 extern int opt_indent;
 extern PangoEllipsizeMode opt_ellipsize;
@@ -75,6 +80,7 @@ extern PangoEllipsizeMode opt_ellipsize;
 /* handled by viewer-main.c */
 extern gboolean opt_display;
 extern const char *opt_output;
+extern const char *opt_output_format;
 extern int opt_runs;
 extern const PangoViewer *opt_viewer;
 
@@ -86,5 +92,6 @@ extern guint16 opt_fg_alpha;
 extern gboolean opt_bg_set;
 extern PangoColor opt_bg_color;
 extern guint16 opt_bg_alpha;
+extern LayoutExtents layout_extents;
 
 #endif /* VIEWER_RENDER_H */

@@ -75,7 +75,8 @@ x_view_create_surface (gpointer instance,
 
 void
 x_view_destroy_surface (gpointer instance,
-			gpointer surface)
+			gpointer surface,
+			gboolean output_on_destroy G_GNUC_UNUSED)
 {
   XViewer *x = (XViewer *) instance;
   Pixmap pixmap = (Pixmap) surface;

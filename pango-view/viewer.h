@@ -45,7 +45,8 @@ struct _PangoViewer {
 			      int      height);
 
   void (*destroy_surface) (gpointer instance,
-			   gpointer surface);
+			   gpointer surface,
+			   gboolean output_on_destroy);
 
   void (*render) (gpointer      instance,
 		  gpointer      surface,

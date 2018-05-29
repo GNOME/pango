@@ -63,7 +63,7 @@ main (int    argc,
   width = height = 1;
   surface = view->create_surface (instance, width, height);
   view->render (instance, surface, context, &width, &height, NULL);
-  view->destroy_surface (instance, surface);
+  view->destroy_surface (instance, surface, FALSE);
   surface = view->create_surface (instance, width, height);
   for (run = 0; run < MAX(1,opt_runs); run++)
     view->render (instance, surface, context, &width, &height, NULL);
@@ -79,7 +79,10 @@ main (int    argc,
 
 	  if (view->write_suffix && g_str_has_suffix (opt_output, view->write_suffix))
 	    {
-	      stream = g_fopen (opt_output, "wb");
+	      if (0 == strcmp (opt_output, "-"))
+	        stream = stdout;
+	      else
+	        stream = g_fopen (opt_output, "wb");
 	      if (!stream)
 		fail ("Cannot open output file %s: %s\n",
 		      opt_output, g_strerror (errno));
@@ -89,14 +92,31 @@ main (int    argc,
 	      int fd;
 	      const gchar *convert_argv[4] = {"convert", "-", "%s"};
 	      GError *error;
-
-	      convert_argv[2] = opt_output;
+	      GSpawnFlags spawn_flags = 0;
+	      
+	      if (0 == strcmp (opt_output, "-"))
+	        {
+	          const char* conversion_suffix = ":-";
+	          char* conversion_format;
+	          conversion_format = malloc(strlen(opt_output_format)+strlen(conversion_suffix));
+	          strcpy(conversion_format, opt_output_format);
+	          strcat(conversion_format, conversion_suffix);
+	          convert_argv[2] = conversion_format;
+	          spawn_flags = G_SPAWN_DO_NOT_REAP_CHILD |
+	                        G_SPAWN_SEARCH_PATH |
+	                        G_SPAWN_STDERR_TO_DEV_NULL;
+	        }
+	      else
+	        {
+	          convert_argv[2] = opt_output;
+	          spawn_flags = G_SPAWN_DO_NOT_REAP_CHILD |
+	                        G_SPAWN_SEARCH_PATH |
+	                        G_SPAWN_STDOUT_TO_DEV_NULL |
+	                        G_SPAWN_STDERR_TO_DEV_NULL;
+	        }
 
 	      if (!g_spawn_async_with_pipes (NULL, (gchar **)(void*)convert_argv, NULL,
-					     G_SPAWN_DO_NOT_REAP_CHILD |
-					     G_SPAWN_SEARCH_PATH |
-					     G_SPAWN_STDOUT_TO_DEV_NULL |
-					     G_SPAWN_STDERR_TO_DEV_NULL,
+					     spawn_flags,
 					     NULL, NULL, &pid, &fd, NULL, NULL, &error))
 		fail ("When running ImageMagick 'convert' command: %s\n", error->message);
 	      stream = fdopen (fd, "wb");
@@ -174,7 +194,7 @@ no_display:
       g_free (title);
     }
 
-  view->destroy_surface (instance, surface);
+  view->destroy_surface (instance, surface, TRUE);
   g_object_unref (context);
   view->destroy (instance);
   finalize ();

@@ -32,6 +32,10 @@
 
 #include "viewer-render.h"
 
+#ifndef BUFSIZ
+#define BUFSIZ 8192
+#endif
+
 gboolean opt_display = TRUE;
 int opt_dpi = 96;
 gboolean opt_pixels = FALSE;
@@ -47,7 +51,9 @@ gboolean opt_rtl = FALSE;
 double opt_rotate = 0;
 gboolean opt_auto_dir = TRUE;
 const char *opt_text = NULL;
+const char *opt_output_format= NULL;
 gboolean opt_waterfall = FALSE;
+gboolean opt_trim = FALSE;
 int opt_width = -1;
 int opt_height = -1;
 int opt_indent = 0;
@@ -69,6 +75,7 @@ guint16 opt_fg_alpha = 65535;
 gboolean opt_bg_set = FALSE;
 PangoColor opt_bg_color = {65535, 65535, 65535};
 guint16 opt_bg_alpha = 65535;
+LayoutExtents layout_extents = {0, 0, 0, 0};
 
 /* Text (or markup) to render */
 static char *text;
@@ -246,7 +253,7 @@ do_output (PangoContext     *context,
 	   int              *height_out)
 {
   PangoLayout *layout;
-  PangoRectangle rect;
+  PangoRectangle trim_extents, rect;
   PangoMatrix matrix = PANGO_MATRIX_INIT;
   PangoMatrix *orig_matrix;
   gboolean supports_matrix;
@@ -306,6 +313,18 @@ do_output (PangoContext     *context,
   pango_context_set_gravity_hint (context, opt_gravity_hint);
 
   layout = make_layout (context, text, -1);
+  
+  if (opt_trim)
+    {
+      pango_layout_get_extents (layout, &trim_extents, NULL);
+      
+      layout_extents.width  =  (double) trim_extents.width / PANGO_SCALE;
+      layout_extents.height =  (double) trim_extents.height / PANGO_SCALE;
+      layout_extents.x      = -(double) trim_extents.x / PANGO_SCALE;
+      layout_extents.y      = -(double) trim_extents.y / PANGO_SCALE;
+      layout_extents.x     -= (double) opt_margin_l;
+      layout_extents.y     -= (double) opt_margin_t;
+    }
 
   set_transform (context, transform_cb, cb_context, cb_data, &matrix);
 
@@ -714,6 +733,8 @@ parse_options (int argc, char *argv[])
      "Interpret text as Pango markup",					NULL},
     {"output",		'o', 0, G_OPTION_ARG_STRING,			&opt_output,
      "Save rendered image to output file",			      "file"},
+    {"output-format", 0, 0, G_OPTION_ARG_STRING,        &opt_output_format,
+     "Set output format: pdf, ps, svg, png, jpeg",          "format"},
     {"pangorc",		0, G_OPTION_FLAG_HIDDEN, G_OPTION_ARG_STRING,	&opt_pangorc,
      "Deprecated",		      "file"},
     {"pixels",		0, 0, G_OPTION_ARG_NONE,			&opt_pixels,
@@ -732,6 +753,8 @@ parse_options (int argc, char *argv[])
      "Show version numbers",						NULL},
     {"waterfall",	0, 0, G_OPTION_ARG_NONE,			&opt_waterfall,
      "Create a waterfall display",					NULL},
+    {"trim",	0, 0, G_OPTION_ARG_NONE,			&opt_trim,
+     "Trim surrounding whitespace",                 NULL},
     {"width",		'w', 0, G_OPTION_ARG_INT,			&opt_width,
      "Width in points to which to wrap lines or ellipsize",	    "points"},
     {"wrap",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_wrap,
@@ -787,6 +810,19 @@ parse_options (int argc, char *argv[])
 	fail ("No viewer backend found");
     }
 
+  if (!opt_output_format)
+    {
+      if (opt_output && 0 == strcmp (opt_output, "-"))
+        fail ("The option --output-format must be specified when piping output to stdout");
+
+      const char *extension = strrchr (opt_output, '.');
+      if (extension)
+        {
+          extension++;
+          opt_output_format = g_strdup (extension);
+        }
+    }
+
   /* Get the text
    */
   if (opt_text)
@@ -796,8 +832,34 @@ parse_options (int argc, char *argv[])
     }
   else
     {
-      if (!g_file_get_contents (argv[1], &text, &len, &error))
-	fail ("%s\n", error->message);
+	  if (0 != strcmp (argv[1], "-"))
+	    {
+	      if (!g_file_get_contents (argv[1], &text, &len, &error))
+	        fail ("%s\n", error->message);
+	    }
+	  else
+	    {
+	      char buffer[BUFSIZ];
+	      size_t text_size = 1;
+	      text = malloc(sizeof(char) * BUFSIZ);
+	      
+	      if (text == NULL)
+	        fail ("Failed to allocate memory for text");
+	      
+	      while (fgets(buffer, BUFSIZ, stdin))
+	        {
+	          text_size += strlen(buffer);
+	          text = realloc(text, text_size);
+	          
+	          if (text == NULL)
+	            fail ("Failed to reallocate memory for text");
+	          
+	          strcat(text, buffer);
+	        }
+	      
+	      if (ferror(stdin))
+	        fail ("Error reading from text from stdin");
+	    }
     }
 
   /* Strip one trailing newline
