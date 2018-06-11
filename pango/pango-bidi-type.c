@@ -132,9 +132,11 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
   guint8 *embedding_levels_list;
   const gchar *p;
   FriBidiParType fribidi_base_dir;
-  FriBidiCharType *bidi_types;
+  FriBidiCharType local_bidi_types[128];
+  FriBidiCharType *bidi_types = local_bidi_types;
 #ifdef USE_FRIBIDI_EX_API
-  FriBidiBracketType *bracket_types;
+  FriBidiBracketType local_bracket_types[128];
+  FriBidiBracketType *bracket_types = local_bracket_types;
 #endif
   FriBidiLevel max_level;
 
@@ -166,10 +168,14 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
 
   n_chars = g_utf8_strlen (text, length);
 
-  bidi_types = g_new (FriBidiCharType, n_chars);
+  if G_UNLIKELY (n_chars > G_N_ELEMENTS (local_bidi_types))
+    bidi_types = g_new (FriBidiCharType, n_chars);
+
 #ifdef USE_FRIBIDI_EX_API
-  bracket_types = g_new (FriBidiBracketType, n_chars);
+  if G_UNLIKELY (n_chars > G_N_ELEMENTS (local_bracket_types))
+    bracket_types = g_new (FriBidiBracketType, n_chars);
 #endif
+
   embedding_levels_list = g_new (guint8, n_chars);
 
   for (i = 0, p = text; p < text + length; p = g_utf8_next_char(p), i++)
@@ -188,14 +194,16 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
   max_level = fribidi_get_par_embedding_levels_ex (bidi_types, bracket_types, n_chars,
 						   &fribidi_base_dir,
 						   (FriBidiLevel*)embedding_levels_list);
-  g_free (bracket_types);
+  if (bracket_types != local_bracket_types)
+    g_free (bracket_types);
 #else
   max_level = fribidi_get_par_embedding_levels (bidi_types, n_chars,
 						&fribidi_base_dir,
 						(FriBidiLevel*)embedding_levels_list);
 #endif
 
-  g_free (bidi_types);
+  if (bidi_types != local_bidi_types)
+    g_free (bidi_types);
 
   if (G_UNLIKELY(max_level == 0))
     {
