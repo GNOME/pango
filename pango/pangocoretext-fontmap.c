@@ -1551,45 +1551,59 @@ pango_core_text_fontset_new (PangoCoreTextFontsetKey    *key,
   PangoCoreTextFamily *font_family;
   PangoCoreTextFontset *fontset;
   PangoCoreTextFont *best_font = NULL;
+  gchar **family_names;
   const gchar *family;
   gchar *name;
+  GPtrArray *fonts;
 
+  fonts = g_ptr_array_new ();
   family = pango_font_description_get_family (description);
-  family = family ? family : "";
-  name = g_utf8_casefold (family, -1);
-  font_family = g_hash_table_lookup (key->fontmap->families, name);
-  g_free (name);
+  family_names = g_strsplit (family ? family : "", ",", -1);
 
-  if (font_family)
+  for (int i = 0; family_names[i]; ++i)
     {
-      PangoCoreTextFace *best_face;
+      name = g_utf8_casefold (family_names[i], -1);
+      font_family = g_hash_table_lookup (key->fontmap->families, name);
+      g_free (name);
 
-      /* Force a listing of the available faces */
-      pango_font_family_list_faces ((PangoFontFamily *)font_family, NULL, NULL);
+      if (font_family)
+        {
+          PangoCoreTextFace *family_face;
+          PangoCoreTextFont *font;
 
-      if (!find_best_match (font_family, description, &best_face))
-	return NULL;
+          /* Force a listing of the available faces */
+          pango_font_family_list_faces ((PangoFontFamily *)font_family, NULL, NULL);
 
-      best_font =
-           pango_core_text_font_map_new_font (key->fontmap,
-                                              key,
-                                              best_face->ctfontdescriptor,
-                                              best_face->synthetic_italic);
+          if (find_best_match (font_family, description, &family_face))
+            {
+              font = pango_core_text_font_map_new_font (key->fontmap,
+                                                        key,
+                                                        family_face->ctfontdescriptor,
+                                                        family_face->synthetic_italic);
 
+              if (font)
+                {
+                  g_ptr_array_add (fonts, font);
+                  if (best_font == NULL) best_font = font;
+                }
+            }
+        }
     }
-  else
-    return NULL;
+
+  g_strfreev (family_names);
 
   if (!best_font)
-    return NULL;
+    {
+      g_ptr_array_free (fonts, false);
+      return NULL;
+    }
 
   /* Create a font set with best font */
   fontset = g_object_new (PANGO_TYPE_CORE_TEXT_FONTSET, NULL);
   fontset->key = pango_core_text_fontset_key_copy (key);
   fontset->orig_description = pango_font_description_copy (description);
 
-  fontset->fonts = g_ptr_array_new ();
-  g_ptr_array_add (fontset->fonts, best_font);
+  fontset->fonts = fonts;
   fontset->coverages = g_ptr_array_new ();
 
   /* Add the cascade list for this language */
@@ -1625,8 +1639,8 @@ pango_core_text_fontset_new (PangoCoreTextFontsetKey    *key,
 #endif
 
   /* length of cascade list + 1 for the "real" font at the front */
-  g_ptr_array_set_size (fontset->fonts, CFArrayGetCount (fontset->cascade_list) + 1);
-  g_ptr_array_set_size (fontset->coverages, CFArrayGetCount (fontset->cascade_list) + 1);
+  g_ptr_array_set_size (fontset->fonts, CFArrayGetCount (fontset->cascade_list) + fonts->len);
+  g_ptr_array_set_size (fontset->coverages, CFArrayGetCount (fontset->cascade_list) + fonts->len);
 
   return fontset;
 }
