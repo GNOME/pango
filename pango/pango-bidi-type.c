@@ -96,7 +96,9 @@ pango_bidi_type_for_unichar (gunichar ch)
     case FRIBIDI_TYPE_WS:   return PANGO_BIDI_TYPE_WS;
     case FRIBIDI_TYPE_ON:   return PANGO_BIDI_TYPE_ON;
     default:
-      g_assert_not_reached ();
+      /* TODO
+       * This function has not been updated for latest FriBidi.
+       * Should add new types and / or deprecate this function. */
       return PANGO_BIDI_TYPE_ON;
     }
 }
