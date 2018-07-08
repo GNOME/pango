@@ -2410,13 +2410,15 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
     {
       GArray *size_array;
       double size, dpi = -1.0;
-      int i, size_i;
+      int i, size_i, j;
 
       size_array = g_array_new (FALSE, FALSE, sizeof (int));
 
       for (i = 0; i < fontset->nfont; i++)
 	{
-	  if (FcPatternGetDouble (fontset->fonts[i], FC_PIXEL_SIZE, 0, &size) == FcResultMatch)
+	  for (j = 0;
+	       FcPatternGetDouble (fontset->fonts[i], FC_PIXEL_SIZE, j, &size) == FcResultMatch;
+	       j++)
 	    {
 	      if (dpi < 0)
 		dpi = pango_fc_font_map_get_resolution (fcface->family->fontmap, NULL);
