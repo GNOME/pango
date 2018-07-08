@@ -69,10 +69,10 @@ main (int    argc,
 		for (k = 0; k < n_sizes; k++)
 		  {
 		    if (k)
-		      g_print (",");
+		      g_print (", ");
 		    g_print ("%g", pango_units_to_double (sizes[k]));
 		  }
-		g_print ("\n");
+		g_print ("}\n");
 	      }
 	    g_free (sizes);
 	  }
