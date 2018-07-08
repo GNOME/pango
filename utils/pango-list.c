@@ -48,27 +48,45 @@ main (int    argc,
       int n_faces;
 
       const char *family_name = pango_font_family_get_name (families[i]);
+      g_print ("%s\n", family_name);
 
       pango_font_family_list_faces (families[i], &faces, &n_faces);
       for (j = 0; j < n_faces; j++)
 	{
-	  int *sizes;
-	  int n_sizes;
-
 	  const char *face_name = pango_font_face_get_face_name (faces[j]);
 	  gboolean is_synth = pango_font_face_is_synthesized (faces[j]);
 	  const char *synth_str = is_synth ? "*" : "";
-	  PangoFontDescription *desc = NULL;/*pango_font_face_describe (faces[j]);*/
+	  g_print ("	%s%s\n", synth_str, face_name);
 
-	  pango_font_face_list_sizes (faces[j], &sizes, &n_sizes);
-	  if (!n_sizes)
-	    g_print ("%s%s, %s\n", synth_str, family_name, face_name);
-	  else
-	    for (k = 0; k < n_sizes; k++)
-	      g_print ("%s%s, %s, %g\n", synth_str, family_name, face_name, pango_units_to_double (sizes[k]));
+	  if (1)
+	  {
+	    int *sizes;
+	    int n_sizes;
+	    pango_font_face_list_sizes (faces[j], &sizes, &n_sizes);
+	    if (n_sizes)
+	      {
+		g_print ("		{");
+		for (k = 0; k < n_sizes; k++)
+		  {
+		    if (k)
+		      g_print (",");
+		    g_print ("%g", pango_units_to_double (sizes[k]));
+		  }
+		g_print ("\n");
+	      }
+	    g_free (sizes);
+	  }
 
-	  g_free (sizes);
-	  pango_font_description_free (desc);
+	  if (1)
+	  {
+	    PangoFontDescription *desc = pango_font_face_describe (faces[j]);
+	    char *desc_str = pango_font_description_to_string (desc);
+
+	    g_print ("		\"%s\"\n", desc_str);
+
+	    g_free (desc_str);
+	    pango_font_description_free (desc);
+	  }
 	}
 
       g_free (faces);
