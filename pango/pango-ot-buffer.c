@@ -40,7 +40,6 @@ pango_ot_buffer_new (PangoFcFont *font)
   PangoOTBuffer *buffer = g_slice_new (PangoOTBuffer);
 
   buffer->buffer = hb_buffer_create ();
-  hb_buffer_set_unicode_funcs (buffer->buffer, hb_glib_get_unicode_funcs ());
 
   return buffer;
 }
