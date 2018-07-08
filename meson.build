@@ -510,8 +510,8 @@ configure_file(output: 'config.h', configuration: pango_conf)
 root_inc = include_directories('.')
 
 subdir('pango')
+subdir('utils')
 subdir('examples')
-subdir('pango-view')
 subdir('tests')
 subdir('tools')
 
