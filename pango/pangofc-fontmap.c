@@ -806,15 +806,7 @@ pango_fc_patterns_get_font_pattern (PangoFcPatterns *pats, int i, gboolean *prep
     {
       FcResult result;
       if (!pats->match && !pats->fontset)
-        {
-	  pats->match = FcFontMatch (pats->fontmap->priv->config, pats->pattern, &result);
-#ifdef FC_PATTERN
-	  /* The FC_PATTERN element, which points back to our the original
-	   * pattern defeats our hash tables.
-	   */
-	  FcPatternDel (pats->match, FC_PATTERN);
-#endif /* FC_PATTERN */
-	}
+	pats->match = FcFontMatch (pats->fontmap->priv->config, pats->pattern, &result);
 
       if (pats->match)
 	{
@@ -914,13 +906,6 @@ pango_fc_fontset_load_next_font (PangoFcFontset *fontset)
 
       if (G_UNLIKELY (!font_pattern))
 	return NULL;
-
-#ifdef FC_PATTERN
-	/* The FC_PATTERN element, which points back to our the original
-	 * pattern defeats our hash tables.
-	 */
-	FcPatternDel (font_pattern, FC_PATTERN);
-#endif /* FC_PATTERN */
     }
 
   font = pango_fc_font_map_new_font (fontset->key->fontmap,
@@ -1413,7 +1398,6 @@ pango_fc_convert_slant_to_fc (PangoStyle pango_style)
     }
 }
 
-#ifdef FC_WIDTH
 static int
 pango_fc_convert_width_to_fc (PangoStretch pango_stretch)
 {
@@ -1441,7 +1425,6 @@ pango_fc_convert_width_to_fc (PangoStretch pango_stretch)
       return FC_WIDTH_NORMAL;
     }
 }
-#endif
 
 static FcPattern *
 pango_fc_make_pattern (const  PangoFontDescription *description,
@@ -1458,16 +1441,12 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   FcBool vertical;
   char **families;
   int i;
-#ifdef FC_WIDTH
   int width;
-#endif
 
   prgname = g_get_prgname ();
   slant = pango_fc_convert_slant_to_fc (pango_font_description_get_style (description));
   weight = pango_fc_convert_weight_to_fc (pango_font_description_get_weight (description));
-#ifdef FC_WIDTH
   width = pango_fc_convert_width_to_fc (pango_font_description_get_stretch (description));
-#endif
 
   gravity = pango_font_description_get_gravity (description);
   vertical = PANGO_GRAVITY_IS_VERTICAL (gravity) ? FcTrue : FcFalse;
@@ -1484,12 +1463,8 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
 			    PANGO_FC_VERSION, FcTypeInteger, pango_version(),
 			    FC_WEIGHT, FcTypeDouble, weight,
 			    FC_SLANT,  FcTypeInteger, slant,
-#ifdef FC_WIDTH
 			    FC_WIDTH,  FcTypeInteger, width,
-#endif
-#ifdef FC_VERTICAL_LAYOUT
 			    FC_VERTICAL_LAYOUT,  FcTypeBool, vertical,
-#endif
 #ifdef FC_VARIABLE
 			    FC_VARIABLE,  FcTypeBool, FcDontCare,
 #endif
@@ -2171,7 +2146,6 @@ pango_fc_convert_slant_to_pango (int fc_style)
     }
 }
 
-#ifdef FC_WIDTH
 static PangoStretch
 pango_fc_convert_width_to_pango (int fc_stretch)
 {
@@ -2199,7 +2173,6 @@ pango_fc_convert_width_to_pango (int fc_stretch)
       return PANGO_STRETCH_NORMAL;
     }
 }
-#endif
 
 /**
  * pango_fc_font_description_from_pattern:
@@ -2254,11 +2227,9 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
 
   pango_font_description_set_weight (desc, weight);
 
-#ifdef FC_WIDTH
   if (FcPatternGetInteger (pattern, FC_WIDTH, 0, &i) == FcResultMatch)
     stretch = pango_fc_convert_width_to_pango (i);
   else
-#endif
     stretch = PANGO_STRETCH_NORMAL;
 
   pango_font_description_set_stretch (desc, stretch);
@@ -2664,9 +2635,7 @@ pango_fc_family_is_monospace (PangoFontFamily *family)
   PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
 
   return fcfamily->spacing == FC_MONO ||
-#ifdef FC_DUAL
 	 fcfamily->spacing == FC_DUAL ||
-#endif
 	 fcfamily->spacing == FC_CHARCELL;
 }
 
