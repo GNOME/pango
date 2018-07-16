@@ -172,6 +172,7 @@ struct _PangoFcFace
 
   PangoFcFamily *family;
   char *style;
+  FcPattern *pattern;
 
   guint fake : 1;
 };
@@ -183,6 +184,7 @@ struct _PangoFcFamily
   PangoFcFontMap *fontmap;
   char *family_name;
 
+  FcFontSet *patterns;
   PangoFcFace **faces;
   int n_faces;		/* -1 == uninitialized */
 
@@ -1274,6 +1276,7 @@ create_family (PangoFcFontMap *fcfontmap,
   family->fontmap = fcfontmap;
   family->family_name = g_strdup (family_name);
   family->spacing = spacing;
+  family->patterns = FcFontSetCreate ();
 
   return family;
 }
@@ -1318,10 +1321,8 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 
   if (priv->n_families < 0)
     {
-      FcObjectSet *os = FcObjectSetBuild (FC_FAMILY, FC_SPACING, NULL);
+      FcObjectSet *os = FcObjectSetBuild (FC_FAMILY, FC_SPACING, FC_STYLE, FC_WEIGHT, FC_WIDTH, FC_SLANT, NULL);
       FcPattern *pat = FcPatternCreate ();
-      /* use hash table to avoid duplicate listings if different faces in
-       * the same family have different spacing values */
       GHashTable *temp_family_hash;
 
       fontset = FcFontList (priv->config, pat, os);
@@ -1338,20 +1339,28 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 	  char *s;
 	  FcResult res;
 	  int spacing;
+	  PangoFcFamily *temp_family;
 
 	  res = FcPatternGetString (fontset->fonts[i], FC_FAMILY, 0, (FcChar8 **)(void*)&s);
 	  g_assert (res == FcResultMatch);
 
-	  res = FcPatternGetInteger (fontset->fonts[i], FC_SPACING, 0, &spacing);
-	  g_assert (res == FcResultMatch || res == FcResultNoMatch);
-	  if (res == FcResultNoMatch)
-	    spacing = FC_PROPORTIONAL;
-
-	  if (!is_alias_family (s) && !g_hash_table_lookup (temp_family_hash, s))
+	  temp_family = g_hash_table_lookup (temp_family_hash, s);
+	  if (!is_alias_family (s) && !temp_family)
 	    {
-	      PangoFcFamily *temp_family = create_family (fcfontmap, s, spacing);
-	      g_hash_table_insert (temp_family_hash, g_strdup (s), s);
+	      res = FcPatternGetInteger (fontset->fonts[i], FC_SPACING, 0, &spacing);
+	      g_assert (res == FcResultMatch || res == FcResultNoMatch);
+	      if (res == FcResultNoMatch)
+		spacing = FC_PROPORTIONAL;
+
+	      temp_family = create_family (fcfontmap, s, spacing);
+	      g_hash_table_insert (temp_family_hash, g_strdup (s), temp_family);
 	      priv->families[count++] = temp_family;
+	    }
+
+	  if (temp_family)
+	    {
+	      FcPatternReference (fontset->fonts[i]);
+	      FcFontSetAdd (temp_family->patterns, fontset->fonts[i]);
 	    }
 	}
 
@@ -2285,10 +2294,6 @@ pango_fc_face_describe (PangoFontFace *face)
   PangoFcFace *fcface = PANGO_FC_FACE (face);
   PangoFcFamily *fcfamily = fcface->family;
   PangoFontDescription *desc = NULL;
-  FcResult res;
-  FcPattern *match_pattern;
-  FcPattern *result_pattern;
-  FcConfig *config = NULL;
 
   if (G_UNLIKELY (!fcfamily))
     return pango_font_description_new ();
@@ -2305,27 +2310,8 @@ pango_fc_face_describe (PangoFontFace *face)
 	return make_alias_description (fcfamily, TRUE, TRUE);
     }
 
-  match_pattern = FcPatternBuild (NULL,
-				  FC_FAMILY, FcTypeString, fcfamily->family_name,
-				  FC_STYLE, FcTypeString, fcface->style,
-				  NULL);
-
-  g_assert (match_pattern);
-
-  FcConfigSubstitute (NULL, match_pattern, FcMatchPattern);
-  FcDefaultSubstitute (match_pattern);
-
-  if (fcface->family->fontmap)
-    config = fcface->family->fontmap->priv->config;
-
-  result_pattern = FcFontMatch (config, match_pattern, &res);
-  if (result_pattern)
-    {
-      desc = pango_fc_font_description_from_pattern (result_pattern, FALSE);
-      FcPatternDestroy (result_pattern);
-    }
-
-  FcPatternDestroy (match_pattern);
+  g_assert (fcface->pattern);
+  desc = pango_fc_font_description_from_pattern (fcface->pattern, FALSE);
 
   return desc;
 }
@@ -2447,6 +2433,7 @@ pango_fc_face_finalize (GObject *object)
   PangoFcFace *fcface = PANGO_FC_FACE (object);
 
   g_free (fcface->style);
+  FcPatternDestroy (fcface->pattern);
 
   G_OBJECT_CLASS (pango_fc_face_parent_class)->finalize (object);
 }
@@ -2479,11 +2466,15 @@ G_DEFINE_TYPE (PangoFcFamily, pango_fc_family, PANGO_TYPE_FONT_FAMILY);
 
 static PangoFcFace *
 create_face (PangoFcFamily *fcfamily,
-	     const char     *style,
+	     const char    *style,
+	     FcPattern     *pattern,
 	     gboolean       fake)
 {
   PangoFcFace *face = g_object_new (PANGO_FC_TYPE_FACE, NULL);
   face->style = g_strdup (style);
+  if (pattern)
+    FcPatternReference (pattern);
+  face->pattern = pattern;
   face->family = fcfamily;
   face->fake = fake;
 
@@ -2517,18 +2508,13 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 	  fcfamily->faces = g_new (PangoFcFace *, fcfamily->n_faces);
 
 	  i = 0;
-	  fcfamily->faces[i++] = create_face (fcfamily, "Regular", TRUE);
-	  fcfamily->faces[i++] = create_face (fcfamily, "Bold", TRUE);
-	  fcfamily->faces[i++] = create_face (fcfamily, "Italic", TRUE);
-	  fcfamily->faces[i++] = create_face (fcfamily, "Bold Italic", TRUE);
+	  fcfamily->faces[i++] = create_face (fcfamily, "Regular", NULL, TRUE);
+	  fcfamily->faces[i++] = create_face (fcfamily, "Bold", NULL, TRUE);
+	  fcfamily->faces[i++] = create_face (fcfamily, "Italic", NULL, TRUE);
+	  fcfamily->faces[i++] = create_face (fcfamily, "Bold Italic", NULL, TRUE);
 	}
       else
 	{
-	  FcObjectSet *os = FcObjectSetBuild (FC_STYLE, FC_WEIGHT, FC_SLANT, NULL);
-	  FcPattern *pat = FcPatternBuild (NULL,
-					   FC_FAMILY, FcTypeString, fcfamily->family_name,
-					   NULL);
-
 	  enum {
 	    REGULAR,
 	    ITALIC,
@@ -2540,10 +2526,7 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 	  PangoFcFace **faces;
 	  gint num = 0;
 
-	  fontset = FcFontList (priv->config, pat, os);
-
-	  FcPatternDestroy (pat);
-	  FcObjectSetDestroy (os);
+	  fontset = fcfamily->patterns;
 
 	  /* at most we have 3 additional artifical faces */
 	  faces = g_new (PangoFcFace *, fontset->nfont + 3);
@@ -2591,26 +2574,24 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 
 	      if (!font_style)
 		font_style = style;
-	      faces[num++] = create_face (fcfamily, font_style, FALSE);
+	      faces[num++] = create_face (fcfamily, font_style, fontset->fonts[i], FALSE);
 	    }
 
 	  if (has_face[REGULAR])
 	    {
 	      if (!has_face[ITALIC])
-		faces[num++] = create_face (fcfamily, "Italic", TRUE);
+		faces[num++] = create_face (fcfamily, "Italic", NULL, TRUE);
 	      if (!has_face[BOLD])
-		faces[num++] = create_face (fcfamily, "Bold", TRUE);
+		faces[num++] = create_face (fcfamily, "Bold", NULL, TRUE);
 
 	    }
 	  if ((has_face[REGULAR] || has_face[ITALIC] || has_face[BOLD]) && !has_face[BOLD_ITALIC])
-	    faces[num++] = create_face (fcfamily, "Bold Italic", TRUE);
+	    faces[num++] = create_face (fcfamily, "Bold Italic", NULL, TRUE);
 
 	  faces = g_renew (PangoFcFace *, faces, num);
 
 	  fcfamily->n_faces = num;
 	  fcfamily->faces = faces;
-
-	  FcFontSetDestroy (fontset);
 	}
     }
 
@@ -2652,6 +2633,7 @@ pango_fc_family_finalize (GObject *object)
       fcfamily->faces[i]->family = NULL;
       g_object_unref (fcfamily->faces[i]);
     }
+  FcFontSetDestroy (fcfamily->patterns);
   g_free (fcfamily->faces);
 
   G_OBJECT_CLASS (pango_fc_family_parent_class)->finalize (object);
