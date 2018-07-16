@@ -233,6 +233,9 @@ if build_pangoft2
     dependencies: pango_deps + [ libpango_dep ],
     sources: pangoft2_dep_sources,
   )
+else
+  # For usage as a subproject
+  libpangoft2_dep = dependency('', required : false)
 endif
 
 # Xft
@@ -289,6 +292,9 @@ if xft_dep.found()
     dependencies: pango_deps + [ libpango_dep, libpangoft2_dep ],
     sources: pangoxft_dep_sources,
   )
+else
+  # For usage as a subproject
+  libpangoxft_dep = dependency('', required: false)
 endif
 
 # Win32
@@ -341,6 +347,9 @@ if host_system == 'windows'
     include_directories: root_inc,
     dependencies: pango_deps + [ libpango_dep ],
   )
+else
+  # For usage as a subproject
+  libpangowin32_dep = dependency('', required: false)
 endif
 
 # Cairo
@@ -437,4 +446,7 @@ if cairo_dep.found()
     dependencies: pango_deps + [ libpango_dep ],
     sources: pangocairo_dep_sources,
   )
+else
+  # For usage as a subproject
+  libpangocairo_dep = dependency('', required: false)
 endif
