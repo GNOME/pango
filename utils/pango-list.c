@@ -58,7 +58,7 @@ main (int    argc,
 	  const char *synth_str = is_synth ? "*" : "";
 	  g_print ("	%s%s\n", synth_str, face_name);
 
-	  if (1)
+	  if (0)
 	  {
 	    int *sizes;
 	    int n_sizes;
