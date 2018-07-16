@@ -21,7 +21,6 @@
 #ifndef VIEWER_H
 #define VIEWER_H
 
-#include <stdio.h>
 #include <pango/pango.h>
 
 typedef struct _PangoViewer PangoViewer;

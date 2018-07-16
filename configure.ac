@@ -669,7 +669,7 @@ pango/pangoft2.rc
 pango/pangowin32.rc
 pango/pangocairo.rc
 pango/pangoxft.rc
-pango-view/Makefile
+utils/Makefile
 examples/Makefile
 docs/Makefile
 docs/version.xml

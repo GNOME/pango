@@ -40,6 +40,17 @@ INCLUDES =				\
 #########################################################
 
 bin_PROGRAMS = pango-view
+
+if HAVE_CAIRO
+bin_PROGRAMS += pango-list
+pango_list_SOURCES = pango-list.c
+pango_list_LDADD =					\
+	../pango/libpangocairo-$(PANGO_API_VERSION).la	\
+	../pango/libpango-$(PANGO_API_VERSION).la	\
+	$(GLIB_LIBS)
+endif
+
+
 pango_view_SOURCES =					\
 	viewer-render.h					\
 	viewer-render.c					\

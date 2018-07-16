@@ -96,7 +96,9 @@ pango_bidi_type_for_unichar (gunichar ch)
     case FRIBIDI_TYPE_WS:   return PANGO_BIDI_TYPE_WS;
     case FRIBIDI_TYPE_ON:   return PANGO_BIDI_TYPE_ON;
     default:
-      g_assert_not_reached ();
+      /* TODO
+       * This function has not been updated for latest FriBidi.
+       * Should add new types and / or deprecate this function. */
       return PANGO_BIDI_TYPE_ON;
     }
 }
@@ -139,6 +141,8 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
   FriBidiBracketType *bracket_types = local_bracket_types;
 #endif
   FriBidiLevel max_level;
+  FriBidiCharType ored_types = 0;
+  FriBidiCharType anded_strongs = FRIBIDI_TYPE_RLE;
 
   G_STATIC_ASSERT (sizeof (FriBidiLevel) == sizeof (guint8));
   G_STATIC_ASSERT (sizeof (FriBidiChar) == sizeof (gunichar));
@@ -181,7 +185,12 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
   for (i = 0, p = text; p < text + length; p = g_utf8_next_char(p), i++)
     {
       gunichar ch = g_utf8_get_char (p);
-      bidi_types[i] = fribidi_get_bidi_type (ch);
+      FriBidiCharType char_type;
+      char_type = fribidi_get_bidi_type (ch);
+      bidi_types[i] = char_type;
+      ored_types |= char_type;
+      if (FRIBIDI_IS_STRONG (char_type))
+        anded_strongs &= char_type;
 #ifdef USE_FRIBIDI_EX_API
       if (G_UNLIKELY(bidi_types[i] == FRIBIDI_TYPE_ON))
         bracket_types[i] = fribidi_get_bracket (ch);
@@ -189,6 +198,58 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
         bracket_types[i] = FRIBIDI_NO_BRACKET;
 #endif
     }
+
+    /* Short-circuit (malloc-expensive) FriBidi call for unidirectional
+     * text.
+     *
+     * For details see:
+     * https://bugzilla.gnome.org/show_bug.cgi?id=590183
+     */
+
+#ifndef FRIBIDI_IS_ISOLATE
+#define FRIBIDI_IS_ISOLATE(x) 0
+#endif
+    /* The case that all resolved levels will be ltr.
+     * No isolates, all strongs be LTR, there should be no Arabic numbers
+     * (or letters for that matter), and one of the following:
+     *
+     * o base_dir doesn't have an RTL taste.
+     * o there are letters, and base_dir is weak.
+     */
+    if (!FRIBIDI_IS_ISOLATE (ored_types) &&
+	!FRIBIDI_IS_RTL (ored_types) &&
+	!FRIBIDI_IS_ARABIC (ored_types) &&
+	(!FRIBIDI_IS_RTL (fribidi_base_dir) ||
+	  (FRIBIDI_IS_WEAK (fribidi_base_dir) &&
+	   FRIBIDI_IS_LETTER (ored_types))
+	))
+      {
+        /* all LTR */
+	fribidi_base_dir = FRIBIDI_PAR_LTR;
+	memset (embedding_levels_list, 0, n_chars);
+	goto resolved;
+      }
+    /* The case that all resolved levels will be RTL is much more complex.
+     * No isolates, no numbers, all strongs are RTL, and one of
+     * the following:
+     *
+     * o base_dir has an RTL taste (may be weak).
+     * o there are letters, and base_dir is weak.
+     */
+    else if (!FRIBIDI_IS_ISOLATE (ored_types) &&
+	     !FRIBIDI_IS_NUMBER (ored_types) &&
+	     FRIBIDI_IS_RTL (anded_strongs) &&
+	     (FRIBIDI_IS_RTL (fribidi_base_dir) ||
+	       (FRIBIDI_IS_WEAK (fribidi_base_dir) &&
+		FRIBIDI_IS_LETTER (ored_types))
+	     ))
+      {
+        /* all RTL */
+	fribidi_base_dir = FRIBIDI_PAR_RTL;
+	memset (embedding_levels_list, 1, n_chars);
+	goto resolved;
+      }
+
 
 #ifdef USE_FRIBIDI_EX_API
   max_level = fribidi_get_par_embedding_levels_ex (bidi_types, bracket_types, n_chars,
@@ -207,10 +268,12 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
 
   if (G_UNLIKELY(max_level == 0))
     {
-      /* fribidi_get_par_embedding_levels() failed,
-       * is this the best thing to do? */
+      /* fribidi_get_par_embedding_levels() failed. */
       memset (embedding_levels_list, 0, length);
     }
+
+resolved:
+  g_free (bidi_types);
 
   *pbase_dir = (fribidi_base_dir == FRIBIDI_PAR_LTR) ?  PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL;
 
