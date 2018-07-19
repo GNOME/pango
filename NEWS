@@ -1,3 +1,10 @@
+Overview of changes in 1.42.2
+=============================
+- Require harfbuzz 1.4.2
+- Restore scaling of CoreText fonts
+- Speed up font face enumeration
+- Add a pango-list utility
+
 Overview of changes in 1.42.1
 =============================
 - Fix meson build, in particular on Windows (#783274, #795012)
