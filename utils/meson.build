@@ -56,3 +56,25 @@ if help2man.found()
                 install: true,
                 install_dir: join_paths(pango_datadir, 'man/man1'))
 endif
+
+if cairo_dep.found()
+  pango_list_sources = [
+    'pango-list.c',
+  ]
+
+  pango_list_deps = [
+    pango_deps,
+    libpango_dep,
+    libpangocairo_dep
+  ]
+
+  pango_list = executable('pango-list', pango_list_sources,
+                          dependencies: pango_list_deps,
+                          include_directories: [ root_inc ],
+                          install: true,
+                          c_args: [
+                           '-DPACKAGE_NAME="@0@"'.format(meson.project_name()),
+                           '-DPACKAGE_VERSION="@0@"'.format(meson.project_version()),
+                          ])
+
+endif
