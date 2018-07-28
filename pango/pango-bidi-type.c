@@ -249,7 +249,6 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
   max_level = fribidi_get_par_embedding_levels_ex (bidi_types, bracket_types, n_chars,
 						   &fribidi_base_dir,
 						   (FriBidiLevel*)embedding_levels_list);
-  g_free (bracket_types);
 #else
   max_level = fribidi_get_par_embedding_levels (bidi_types, n_chars,
 						&fribidi_base_dir,
@@ -264,6 +263,10 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
 
 resolved:
   g_free (bidi_types);
+
+#ifdef USE_FRIBIDI_EX_API
+  g_free (bracket_types);
+#endif
 
   *pbase_dir = (fribidi_base_dir == FRIBIDI_PAR_LTR) ?  PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL;
 
