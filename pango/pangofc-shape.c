@@ -504,39 +504,6 @@ _pango_fc_shape (PangoFont           *font,
 	hb_position++;
       }
 
-  if (fc_font->is_hinted)
-  {
-    if (context.x_scale == 1.0 && context.y_scale == 1.0)
-      {
-	for (i = 0; i < num_glyphs; i++)
-	  infos[i].geometry.width = PANGO_UNITS_ROUND (infos[i].geometry.width);
-      }
-    else
-      {
-#if 0
-	if (context.vertical)
-	  {
-	    /* XXX */
-	    double tmp = x_scale;
-	    x_scale = y_scale;
-	    y_scale = -tmp;
-	  }
-#endif
-#define HINT(value, scale_inv, scale) (PANGO_UNITS_ROUND ((int) ((value) * scale)) * scale_inv)
-#define HINT_X(value) HINT ((value), context.x_scale, x_scale_inv)
-#define HINT_Y(value) HINT ((value), context.y_scale, y_scale_inv)
-	for (i = 0; i < num_glyphs; i++)
-	  {
-	    infos[i].geometry.width    = HINT_X (infos[i].geometry.width);
-	    infos[i].geometry.x_offset = HINT_X (infos[i].geometry.x_offset);
-	    infos[i].geometry.y_offset = HINT_Y (infos[i].geometry.y_offset);
-	  }
-#undef HINT_Y
-#undef HINT_X
-#undef HINT
-      }
-  }
-
   release_buffer (hb_buffer, free_buffer);
   hb_font_destroy (hb_font);
   hb_face_destroy (hb_face);
