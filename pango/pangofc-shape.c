@@ -415,62 +415,6 @@ _pango_fc_shape (PangoFont           *font,
 	hb_position++;
       }
 
-  if (PANGO_IS_FC_FONT (font))
-    {
-      PangoFcFont *fc_font = PANGO_FC_FONT (font);
-      if (fc_font->is_hinted)
-        {
-          double x_scale_inv, y_scale_inv;
-          double x_scale, y_scale;
-          PangoFcFontKey *key;
-
-          x_scale_inv = y_scale_inv = 1.0;
-          key = _pango_fc_font_get_font_key (fc_font);
-          if (key)
-            {
-              const PangoMatrix *matrix = pango_fc_font_key_get_matrix (key);
-              pango_matrix_get_font_scale_factors (matrix, &x_scale_inv, &y_scale_inv);
-            }
-          if (PANGO_GRAVITY_IS_IMPROPER (analysis->gravity))
-            {
-              x_scale_inv = -x_scale_inv;
-              y_scale_inv = -y_scale_inv;
-            }
-          x_scale = 1. / x_scale_inv;
-          y_scale = 1. / y_scale_inv;
-
-          if (x_scale == 1.0 && y_scale == 1.0)
-            {
-              for (i = 0; i < num_glyphs; i++)
-                infos[i].geometry.width = PANGO_UNITS_ROUND (infos[i].geometry.width);
-            }
-          else
-            {
-#if 0
-              if (PANGO_GRAVITY_IS_VERTICAL (analysis->gravity))
-                {
-                  /* XXX */
-                  double tmp = x_scale;
-                  x_scale = y_scale;
-                  y_scale = -tmp;
-                }
-#endif
-#define HINT(value, scale_inv, scale) (PANGO_UNITS_ROUND ((int) ((value) * scale)) * scale_inv)
-#define HINT_X(value) HINT ((value), x_scale, x_scale_inv)
-#define HINT_Y(value) HINT ((value), y_scale, y_scale_inv)
-              for (i = 0; i < num_glyphs; i++)
-                {
-                  infos[i].geometry.width    = HINT_X (infos[i].geometry.width);
-                  infos[i].geometry.x_offset = HINT_X (infos[i].geometry.x_offset);
-                  infos[i].geometry.y_offset = HINT_Y (infos[i].geometry.y_offset);
-                }
-#undef HINT_Y
-#undef HINT_X
-#undef HINT
-            }
-        }
-    }
-
   release_buffer (hb_buffer, free_buffer);
   hb_font_destroy (hb_font);
 }
