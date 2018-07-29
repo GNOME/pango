@@ -5853,7 +5853,7 @@ _pango_layout_iter_get_line (PangoLayoutIter *iter)
  * Use the faster pango_layout_iter_get_line_readonly() if you do not plan
  * to modify the contents of the line (glyphs, glyph widths, etc.).
  *
- * Return value: the current line.
+ * Return value: (transfer none): the current line.
  **/
 PangoLayoutLine*
 pango_layout_iter_get_line (PangoLayoutIter *iter)
