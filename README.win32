@@ -6,35 +6,65 @@ pangowin32). Much of the GDI font API calls are in cairo.
 The pangoft2 backend was originally written with Win32 in mind, but
 its main use nowadays is on other platforms than Win32.
 
-There are three ways to build Pango for Win32:
+To build Pango for Win32:
 
-1) Use gcc (mingw), libtool, make, like on Unix.
+You need to have gcc (mingw) or Visual Studio 2008~2017, along with
+Python 3.4.x+ and Meson 0.43.0.  If building the introspection files,
+you will also need to ensure that the Python release series and
+build architecture (i.e. Win32 (x86)/x64 (amd64/x86-64) matches the
+Python release series and build architecture that was used to build
+GObject-Introspection.  The Python interpreter executable directory
+must be in your PATH.  The Ninja build utility must also be in your
+PATH, unless using the Visual Studio IDE as noted below.
 
-If building from git, run the autogen.sh script that runs aclocal,
-automake, autoconf and configure to build makefiles etc. This is what
-tml@novell.com uses. Pass the same switches to autogen.sh that you
-would pass to the configure script.
+You will also need the following libraries installed with their headers
+and import libraries, and their DLLs, if applicable, needs to be found in
+%PATH%.  All of their required dependencies are required as well.  Their
+pkg-config files are needed on all builds unless marked with a *, where
+only their headers/import libraries are needed on Visual Studio:
 
-If building from a tarball, just running the configure script and then
-make should be enough. But, as always, you need to understand what is
-happening and follow the progress in case manual intervention is
-needed.
+-GLib
+-Fribidi
+-Cairo* (With Win32 support built in, and optionally FreeType and FontConfig
+         support for building PangoFT2.)
+-FreeType* (Optional, needed for PangoFT2)
+-FontConfig* (Optional, needed for PangoFT2)
+-HarfBuzz* (Optional, GLib and FreeType support required if used, needed for PangoFT2)
 
-tml ran the configure script like this when building binaries for
-Pango 1.10.0:
+Please see meson.build to see what versions are needed for these dependencies.
 
-PATH=/devel/dist/glib-2.8.0/bin:$PATH ACLOCAL_FLAGS="-I /devel/dist/glib-2.8.0/share/aclocal" PKG_CONFIG_PATH=/devel/dist/glib-2.8.0/lib/pkgconfig:$PKG_CONFIG_PATH CC='gcc -mtune=pentium3' CPPFLAGS='-I/opt/gnu/include' LDFLAGS='-L/opt/gnu/lib' CFLAGS=-O ./configure --disable-gtk-doc  --without-x --prefix=c:/devel/target/pango-1.10.0
+Follow the following steps to build Pango:
 
-2) Use Visual Studio 2008 or later (Express/Community or above). Use the
-solution file in build/win32/vsX, where X corresponds to the numerical
-version of your Visual Studio, such as 9 for 2008 and 12 for 2013.
-See the README.txt there for more information, or see the following
-GNOME Live! page for a more detailed description of building Pango
-and its dependencies with Visual Studio:
+1) Invoke the Meson configuration as follows, in a directory separate from the sources:
+
+(With MinGW, please adjust the paths accordingly, in a MSYS/MSYS2 bash prompt)
+PATH=/devel/dist/glib-2.8.0/bin:$PATH ACLOCAL_FLAGS="-I /devel/dist/glib-2.8.0/share/aclocal" PKG_CONFIG_PATH=/devel/dist/glib-2.8.0/lib/pkgconfig:$PKG_CONFIG_PATH CC='gcc -mtune=pentium3' CPPFLAGS='-I/opt/gnu/include' LDFLAGS='-L/opt/gnu/lib' CFLAGS=-O meson $(PATH_TO_SRC) --buildtype=$(buildtype) --prefix=$(PREFIX)
+
+(With Visual Studio, set the INCLUDE, LIB, PATH and PKG_CONFIG_PATH envvars as
+needed before running the following in a Visual Studio command prompt)
+python $(PATH_TO_meson.py) $(PATH_TO_SRC) --buildtype=$(buildtype) --prefix=$(PREFIX)
+
+For Visual Studio builds, building using the Visual Studio IDE is also supported
+with Visual Studio 2010, 2015 and 2017.  Append --backend=vs to the Meson
+configuration command above to use this support.
+
+2) Build Pango by running Ninja, or by opening and building the generated
+   Visual Studio 2010/2015/2017 solution file.
+	
+3) Run tests and/or install the build using the "test" and "install" targets
+   or sub-projects respectively.
+
+4) If building with Visual Studio 2008, you will need to do the run the following
+   lines in the Visual Studio or SDK command prompt after building and installing.
+   From the build directory:
+   for /f %a in (*.dll.manifest) do if exist $(PREFIX)\bin\%~na /manifest %a /outputresource:$(PREFIX)\bin\%~na;2
+   for /f %a in (*.exe.manifest) do if exist $(PREFIX)\bin\%~na /manifest %a /outputresource:$(PREFIX)\bin\%~na;1
+   for /f %a in (*.exe.manifest) do if exist $(PREFIX)\libexec\installed-tests\pango\%~na /manifest %a /outputresource:$(PREFIX)\libexec\installed-tests\pango\%~na;1
+   
+   So that the security manifests that are generated can be embedded into the built
+   DLLs and EXEs so that they can be usable.
+
+See the following GNOME Live! page for a more detailed description of building
+Pango's dependencies with Visual Studio:
 
 https://live.gnome.org/GTK%2B/Win32/MSVCCompilationOfGTKStack
-
-3) Use MSVC and nmake. Use the makefile.msc makefiles. These makefiles
-are supported by Hans Breuer. They requires manual editing. You need
-to have the source code to some suitable version of glib in a sibling
-directory. Ask Hans for advice.
