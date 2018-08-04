@@ -29,6 +29,20 @@
 #include "pangocoretext-private.h"
 #include "pango-impl-utils.h"
 
+#if defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED < 1060
+CF_INLINE Boolean CFStringIsSurrogateHighCharacter(UniChar character) {
+    return ((character >= 0xD800UL) && (character <= 0xDBFFUL) ? true : false);
+}
+
+CF_INLINE Boolean CFStringIsSurrogateLowCharacter(UniChar character) {
+    return ((character >= 0xDC00UL) && (character <= 0xDFFFUL) ? true : false);
+}
+
+CF_INLINE UTF32Char CFStringGetLongCharacterForSurrogatePair(UniChar surrogateHigh, UniChar surrogateLow) {
+    return ((surrogateHigh - 0xD800UL) << 10) + (surrogateLow - 0xDC00UL) + 0x0010000UL;
+}
+#endif
+
 static void
 set_glyph (PangoFont        *font,
 	   PangoGlyphString *glyphs,
