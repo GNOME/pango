@@ -1555,12 +1555,13 @@ pango_core_text_fontset_new (PangoCoreTextFontsetKey    *key,
   const gchar *family;
   gchar *name;
   GPtrArray *fonts;
+  int i;
 
   fonts = g_ptr_array_new ();
   family = pango_font_description_get_family (description);
   family_names = g_strsplit (family ? family : "", ",", -1);
 
-  for (int i = 0; family_names[i]; ++i)
+  for (i = 0; family_names[i]; ++i)
     {
       name = g_utf8_casefold (family_names[i], -1);
       font_family = g_hash_table_lookup (key->fontmap->families, name);
