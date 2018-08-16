@@ -218,6 +218,7 @@ pango_default_break (const gchar   *text,
     WB_ExtendNumLet,
     WB_RI_Odd,
     WB_RI_Even,
+    WB_WSegSpace,
   } WordBreakType;
   WordBreakType prev_prev_WB_type = WB_Other, prev_WB_type = WB_Other;
   gint prev_WB_i = -1;
@@ -660,7 +661,14 @@ pango_default_break (const gchar   *text,
 		  break;
 		}
 
-	    /* Grapheme Cluster Boundary Rules */
+	    if (WB_type == WB_Other)
+	      {
+		if (type == G_UNICODE_SPACE_SEPARATOR &&
+		    break_type != G_UNICODE_BREAK_NON_BREAKING_GLUE)
+		  WB_type = WB_WSegSpace;
+	      }
+
+	    /* Word Cluster Boundary Rules */
 
 	    /* We apply Rules WB1 and WB2 at the end of the function */
 
@@ -676,6 +684,11 @@ pango_default_break (const gchar   *text,
 	      }
 	    else if (WB_type == WB_NewlineCRLF)
 	      is_word_boundary = TRUE; /* Rule WB3b */
+	    else if (prev_wc == 0x200D && is_Extended_Pictographic)
+	      is_word_boundary = FALSE; /* Rule WB3c */
+	    else if (prev_WB_type == WB_WSegSpace &&
+		     WB_type == WB_WSegSpace && prev_WB_i + 1 == i)
+	      is_word_boundary = FALSE; /* Rule WB3d */
 	    else if (WB_type == WB_ExtendFormat)
 	      is_word_boundary = FALSE; /* Rules WB4? */
 	    else if ((prev_WB_type == WB_ALetter  ||
