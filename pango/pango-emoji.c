@@ -253,6 +253,12 @@ _pango_emoji_iter_next (PangoEmojiIter *iter)
     if (iter->is_emoji == PANGO_EMOJI_TYPE_IS_EMOJI (current_emoji_type))
     {
       iter->is_emoji = !PANGO_EMOJI_TYPE_IS_EMOJI (current_emoji_type);
+
+      /* Make sure we make progress.  Weird sequences, like a VC15 followed
+       * by VC16, can trick us into stalling otherwise. */
+      if (iter->start == iter->end)
+        iter->end = g_utf8_next_char (iter->end);
+
       return TRUE;
     }
   }
