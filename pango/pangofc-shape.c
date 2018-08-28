@@ -380,8 +380,10 @@ _pango_fc_shape (PangoFont           *font,
 		    fc_font->is_hinted ? ft_face->size->metrics.x_ppem : 0,
 		    fc_font->is_hinted ? ft_face->size->metrics.y_ppem : 0);
 
-  variations = pango_fc_font_key_get_variations (key);
-  if (variations)
+  if (key)
+  {
+    variations = pango_fc_font_key_get_variations (key);
+    if (variations)
     {
       guint n_variations;
       hb_variation_t *hb_variations;
@@ -391,6 +393,7 @@ _pango_fc_shape (PangoFont           *font,
 
       g_free (hb_variations);
     }
+  }
 
   hb_buffer = acquire_buffer (&free_buffer);
 
