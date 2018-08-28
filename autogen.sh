@@ -7,16 +7,14 @@ test -n "$srcdir" || srcdir=.
 olddir=`pwd`
 cd "$srcdir"
 
-GTKDOCIZE=`which gtkdocize`
-if test -z $GTKDOCIZE; then
+if ! command -v gtkdocize >/dev/null 2>&1; then
 	echo "*** No GTK-Doc found, please install it ***"
 	exit 1
 else
 	gtkdocize || exit $?
 fi
 
-AUTORECONF=`which autoreconf`
-if test -z $AUTORECONF; then
+if ! command -v autoreconf >/dev/null 2>&1; then
 	echo "*** No autoreconf found, please install it ***"
 	exit 1
 else
