@@ -26,7 +26,8 @@ pango_interface_age = pango_minor_version.is_odd() ? 0 : pango_micro_version
 pango_binary_age = pango_minor_version * 100 + pango_micro_version
 
 pango_api_version = '@0@.0'.format(pango_major_version)
-pango_api_path = 'pango-@0@/pango'.format(pango_api_version)
+pango_api_name = 'pango-@0@'.format(pango_api_version)
+pango_api_path = join_paths(pango_api_name, 'pango')
 
 pango_conf = configuration_data()
 

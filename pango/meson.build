@@ -107,7 +107,7 @@ pango_cflags = [
 pango_inc = include_directories('.')
 
 libpango = library(
-  'pango-@0@'.format(pango_api_version),
+  pango_api_name,
   sources: pango_sources + pango_enums,
   version: pango_libversion,
   soversion: pango_soversion,
