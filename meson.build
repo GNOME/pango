@@ -456,46 +456,8 @@ if cairo_dep.found()
   endif
 endif
 
-# Compat variables for pkgconfig
-pkgconf = configuration_data()
-pkgconf.set('prefix', pango_prefix)
-pkgconf.set('exec_prefix', pango_prefix)
-pkgconf.set('libdir', pango_libdir)
-pkgconf.set('includedir', pango_includedir)
-pkgconf.set('VERSION', meson.project_version())
-pkgconf.set('PANGO_API_VERSION', pango_api_version)
-pkgconf.set('PKGCONFIG_CAIRO_REQUIRES', pangocairo_requires)
-pkgconf.set('CAIRO_PC', cairo_pc)
-pkgconf.set('CAIRO_LIB', cairo_lib)
-pkgconf.set('FREETYPE2_PC', freetype2_pc)
-pkgconf.set('FREETYPE2_LIB', freetype2_lib)
-pkgconf.set('FONTCONFIG_PC', fontconfig_pc)
-pkgconf.set('FONTCONFIG_LIB', fontconfig_lib)
-pkgconf.set('HARFBUZZ_PC', harfbuzz_pc)
-pkgconf.set('HARFBUZZ_LIB', harfbuzz_lib)
-
-pkgconf_files = [
-  [ 'pango.pc' ],
-  [ 'pangowin32.pc', host_system == 'windows' ],
-  [ 'pangoft2.pc', build_pangoft2 ],
-  [ 'pangoxft.pc', xft_dep.found() ],
-  [ 'pangocairo.pc', cairo_dep.found() ],
-]
-
-foreach pkg: pkgconf_files
-  pkg_name = pkg[0]
-  pkg_enabled = pkg.get(1, true)
-
-  if pkg_enabled
-    configure_file(input: pkg_name + '.in',
-                   output: pkg_name,
-                   configuration: pkgconf,
-                   install: true,
-                   install_dir: join_paths(pango_libdir, 'pkgconfig'))
-  endif
-endforeach
-
 gnome = import('gnome')
+pkgconfig = import('pkgconfig')
 
 # Internal configuration header
 configure_file(output: 'config.h', configuration: pango_conf)
