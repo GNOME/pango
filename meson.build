@@ -124,11 +124,7 @@ if get_option('default_library') != 'static'
 endif
 
 # Check all compiler flags
-foreach cflag: test_cflags
-  if cc.has_argument(cflag)
-    common_cflags += [ cflag ]
-  endif
-endforeach
+common_cflags += cc.get_supported_arguments(test_cflags)
 
 # Isolate the C++ compiler flags
 foreach cflag: common_cflags
@@ -139,11 +135,7 @@ endforeach
 
 # Linker flags
 if host_machine.system() == 'linux'
-  foreach ldflag: [ '-Wl,-Bsymbolic', '-Wl,-z,relro', '-Wl,-z,now', ]
-    if cc.has_argument(ldflag)
-      common_ldflags += [ ldflag ]
-    endif
-  endforeach
+  common_ldflags += cc.get_supported_link_arguments([ '-Wl,-Bsymbolic', '-Wl,-z,relro', '-Wl,-z,now', ])
 endif
 
 # Maintain compatibility with autotools on macOS
