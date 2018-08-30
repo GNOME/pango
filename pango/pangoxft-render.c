@@ -83,14 +83,12 @@ static void pango_xft_renderer_end            (PangoRenderer    *renderer);
 static void flush_trapezoids (PangoXftRenderer *xftrenderer);
 static void flush_glyphs (PangoXftRenderer *xftrenderer);
 
-G_DEFINE_TYPE (PangoXftRenderer, pango_xft_renderer, PANGO_TYPE_RENDERER)
+G_DEFINE_TYPE_WITH_PRIVATE (PangoXftRenderer, pango_xft_renderer, PANGO_TYPE_RENDERER)
 
 static void
 pango_xft_renderer_init (PangoXftRenderer *xftrenderer)
 {
-  xftrenderer->priv = G_TYPE_INSTANCE_GET_PRIVATE (xftrenderer,
-						   PANGO_TYPE_XFT_RENDERER,
-						   PangoXftRendererPrivate);
+  xftrenderer->priv = pango_xft_renderer_get_instance_private (xftrenderer);
   xftrenderer->priv->alpha = 0xffff;
 }
 
@@ -122,8 +120,6 @@ pango_xft_renderer_class_init (PangoXftRendererClass *klass)
 						     "The screen being rendered to",
 						     0, G_MAXINT, 0,
 						     G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
-
-  g_type_class_add_private (object_class, sizeof (PangoXftRendererPrivate));
 }
 
 static void
