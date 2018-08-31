@@ -107,7 +107,7 @@ pango_cflags = [
 pango_inc = include_directories('.')
 
 libpango = library(
-  'pango-@0@'.format(pango_api_version),
+  pango_api_name,
   sources: pango_sources + pango_enums,
   version: pango_libversion,
   soversion: pango_soversion,
@@ -151,6 +151,16 @@ libpango_dep = declare_dependency(
   include_directories: pango_inc,
   dependencies: pango_deps,
   sources: pango_dep_sources,
+)
+
+pkgconfig.generate(libpango,
+  name: 'Pango',
+  description: 'Internationalized text handling',
+  version: meson.project_version(),
+  filebase: 'pango',
+  subdirs: pango_api_name,
+  requires: gobject_dep,
+  install_dir: join_paths(pango_libdir, 'pkgconfig'),
 )
 
 # FreeType
@@ -233,6 +243,16 @@ if build_pangoft2
     dependencies: pango_deps + [ libpango_dep ],
     sources: pangoft2_dep_sources,
   )
+
+  pkgconfig.generate(libpangoft2,
+    name: 'Pango FT2 and Pango Fc',
+    description: 'Freetype 2.0 and fontconfig font support for Pango',
+    version: meson.project_version(),
+    filebase: 'pangoft2',
+    subdirs: pango_api_name,
+    requires: [ 'pango', freetype2_pc, fontconfig_pc ],
+    install_dir: join_paths(pango_libdir, 'pkgconfig'),
+  )
 else
   # For usage as a subproject
   libpangoft2_dep = dependency('', required : false)
@@ -292,6 +312,16 @@ if xft_dep.found()
     dependencies: pango_deps + [ libpango_dep, libpangoft2_dep ],
     sources: pangoxft_dep_sources,
   )
+
+  pkgconfig.generate(libpangoxft,
+    name: 'Pango Xft',
+    description: 'Xft font support for Pango',
+    version: meson.project_version(),
+    filebase: 'pangoxft',
+    subdirs: pango_api_name,
+    requires: [ 'pangoft2', 'xft' ],
+    install_dir: join_paths(pango_libdir, 'pkgconfig'),
+  )
 else
   # For usage as a subproject
   libpangoxft_dep = dependency('', required: false)
@@ -346,6 +376,16 @@ if host_system == 'windows'
     link_with: libpangowin32,
     include_directories: root_inc,
     dependencies: pango_deps + [ libpango_dep ],
+  )
+
+  pkgconfig.generate(libpangowin32,
+    name: 'Pango Win32',
+    description: 'Win32 GDI font support for Pango',
+    version: meson.project_version(),
+    filebase: 'pangowin32',
+    subdirs: pango_api_name,
+    requires: 'pango',
+    install_dir: join_paths(pango_libdir, 'pkgconfig'),
   )
 else
   # For usage as a subproject
@@ -445,6 +485,16 @@ if cairo_dep.found()
     include_directories: root_inc,
     dependencies: pango_deps + [ libpango_dep ],
     sources: pangocairo_dep_sources,
+  )
+
+  pkgconfig.generate(libpangocairo,
+    name: 'Pango Cairo',
+    description: 'Cairo rendering support for Pango',
+    version: meson.project_version(),
+    filebase: 'pangocairo',
+    subdirs: pango_api_name,
+    requires: [ 'pango', cairo_pc ],
+    install_dir: join_paths(pango_libdir, 'pkgconfig'),
   )
 else
   # For usage as a subproject

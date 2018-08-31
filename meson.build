@@ -6,7 +6,7 @@ project('pango', 'c', 'cpp',
           'warning_level=1',
           'c_std=c99',
         ],
-        meson_version : '>= 0.43.0')
+        meson_version : '>= 0.46.0')
 
 add_project_arguments([ '-D_POSIX_C_SOURCE=200809L', '-D_POSIX_THREAD_SAFE_FUNCTIONS', '-D_GNU_SOURCE', ], language: 'c')
 
@@ -26,7 +26,8 @@ pango_interface_age = pango_minor_version.is_odd() ? 0 : pango_micro_version
 pango_binary_age = pango_minor_version * 100 + pango_micro_version
 
 pango_api_version = '@0@.0'.format(pango_major_version)
-pango_api_path = 'pango-@0@/pango'.format(pango_api_version)
+pango_api_name = 'pango-@0@'.format(pango_api_version)
+pango_api_path = join_paths(pango_api_name, 'pango')
 
 pango_conf = configuration_data()
 
@@ -123,11 +124,7 @@ if get_option('default_library') != 'static'
 endif
 
 # Check all compiler flags
-foreach cflag: test_cflags
-  if cc.has_argument(cflag)
-    common_cflags += [ cflag ]
-  endif
-endforeach
+common_cflags += cc.get_supported_arguments(test_cflags)
 
 # Isolate the C++ compiler flags
 foreach cflag: common_cflags
@@ -138,11 +135,7 @@ endforeach
 
 # Linker flags
 if host_machine.system() == 'linux'
-  foreach ldflag: [ '-Wl,-Bsymbolic', '-Wl,-z,relro', '-Wl,-z,now', ]
-    if cc.has_argument(ldflag)
-      common_ldflags += [ ldflag ]
-    endif
-  endforeach
+  common_ldflags += cc.get_supported_link_arguments([ '-Wl,-Bsymbolic', '-Wl,-z,relro', '-Wl,-z,now', ])
 endif
 
 # Maintain compatibility with autotools on macOS
@@ -463,46 +456,8 @@ if cairo_dep.found()
   endif
 endif
 
-# Compat variables for pkgconfig
-pkgconf = configuration_data()
-pkgconf.set('prefix', pango_prefix)
-pkgconf.set('exec_prefix', pango_prefix)
-pkgconf.set('libdir', pango_libdir)
-pkgconf.set('includedir', pango_includedir)
-pkgconf.set('VERSION', meson.project_version())
-pkgconf.set('PANGO_API_VERSION', pango_api_version)
-pkgconf.set('PKGCONFIG_CAIRO_REQUIRES', pangocairo_requires)
-pkgconf.set('CAIRO_PC', cairo_pc)
-pkgconf.set('CAIRO_LIB', cairo_lib)
-pkgconf.set('FREETYPE2_PC', freetype2_pc)
-pkgconf.set('FREETYPE2_LIB', freetype2_lib)
-pkgconf.set('FONTCONFIG_PC', fontconfig_pc)
-pkgconf.set('FONTCONFIG_LIB', fontconfig_lib)
-pkgconf.set('HARFBUZZ_PC', harfbuzz_pc)
-pkgconf.set('HARFBUZZ_LIB', harfbuzz_lib)
-
-pkgconf_files = [
-  [ 'pango.pc' ],
-  [ 'pangowin32.pc', host_system == 'windows' ],
-  [ 'pangoft2.pc', build_pangoft2 ],
-  [ 'pangoxft.pc', xft_dep.found() ],
-  [ 'pangocairo.pc', cairo_dep.found() ],
-]
-
-foreach pkg: pkgconf_files
-  pkg_name = pkg[0]
-  pkg_enabled = pkg.get(1, true)
-
-  if pkg_enabled
-    configure_file(input: pkg_name + '.in',
-                   output: pkg_name,
-                   configuration: pkgconf,
-                   install: true,
-                   install_dir: join_paths(pango_libdir, 'pkgconfig'))
-  endif
-endforeach
-
 gnome = import('gnome')
+pkgconfig = import('pkgconfig')
 
 # Internal configuration header
 configure_file(output: 'config.h', configuration: pango_conf)
