@@ -4,7 +4,6 @@ project('pango', 'c', 'cpp',
         default_options: [
           'buildtype=debugoptimized',
           'warning_level=1',
-          'c_std=c99',
         ],
         meson_version : '>= 0.46.0')
 
