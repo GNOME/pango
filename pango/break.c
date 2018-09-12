@@ -1039,7 +1039,7 @@ pango_default_break (const gchar   *text,
 
       /* Rule LB1:
 	 assign a line breaking class to each code point of the input. */
-      switch ((int) break_type)
+      switch (break_type)
 	{
 	case G_UNICODE_BREAK_AMBIGUOUS:
 	case G_UNICODE_BREAK_SURROGATE:
@@ -1072,6 +1072,7 @@ pango_default_break (const gchar   *text,
 	  break_type == G_UNICODE_BREAK_HANGUL_T_JAMO ||
 	  break_type == G_UNICODE_BREAK_HANGUL_LV_SYLLABLE ||
 	  break_type == G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE ||
+	  break_type == G_UNICODE_BREAK_EMOJI_MODIFIER ||
 	  break_type == G_UNICODE_BREAK_REGIONAL_INDICATOR)
 	{
 	  LineBreakType LB_type;
@@ -1375,10 +1376,7 @@ pango_default_break (const gchar   *text,
 	  if (row_break_type == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
 	    break_op = BREAK_ALLOWED; /* Rule LB8 */
 
-	  if (prev_wc == 0x200D &&
-	      (break_type == G_UNICODE_BREAK_IDEOGRAPHIC ||
-	       break_type == G_UNICODE_BREAK_EMOJI_BASE ||
-	       break_type == G_UNICODE_BREAK_EMOJI_MODIFIER))
+	  if (prev_wc == 0x200D)
 	    break_op = BREAK_PROHIBITED; /* Rule LB8a */
 
 	  if (break_type == G_UNICODE_BREAK_SPACE ||
