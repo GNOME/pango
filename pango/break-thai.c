@@ -64,9 +64,6 @@ break_thai (const char          *text,
   thchar_t *tis_text;
   int *brk_pnts;
   int cnt;
-#ifdef HAVE_TH_BRK_FIND_BREAKS
-  ThBrk* brk;
-#endif
 
   cnt = pango_utf8_strlen (text, len) + 1;
 
@@ -83,14 +80,13 @@ break_thai (const char          *text,
   /* find line break positions */
 
 #ifdef HAVE_TH_BRK_FIND_BREAKS
-  brk = th_brk_new(NULL);
-  len = th_brk_find_breaks(brk, tis_text, brk_pnts, cnt);
-  th_brk_delete(brk);
+  len = th_brk_find_breaks(NULL, tis_text, brk_pnts, cnt);
 #else
   G_LOCK (th_brk);
   len = th_brk (tis_text, brk_pnts, cnt);
   G_UNLOCK (th_brk);
 #endif
+
   for (cnt = 0; cnt < len; cnt++)
     if (attrs[brk_pnts[cnt]].is_char_break)
     {
