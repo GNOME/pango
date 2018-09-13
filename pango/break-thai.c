@@ -94,7 +94,7 @@ break_thai (const char          *text,
        * prohibited. (The alternative would be to set is_char_break to
        * TRUE as well.  NOT setting it will break invariants that any
        * line break opportunity is also a char break opportunity. */
-      attrs[brk_pnts[cnt]].is_line_break = TRUE;
+      /* attrs[brk_pnts[cnt]].is_line_break = TRUE; */
       attrs[brk_pnts[cnt]].is_word_start = TRUE;
       attrs[brk_pnts[cnt]].is_word_end = TRUE;
     }
