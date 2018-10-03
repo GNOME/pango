@@ -33,8 +33,6 @@
 #include "pangocoretext.h"
 #include "pangocoretext-private.h"
 
-G_DEFINE_TYPE (PangoCoreTextFont, pango_core_text_font, PANGO_TYPE_FONT);
-
 struct _PangoCoreTextFontPrivate
 {
   PangoCoreTextFace *face;
@@ -47,6 +45,8 @@ struct _PangoCoreTextFontPrivate
 
   PangoFontMap *fontmap;
 };
+
+G_DEFINE_TYPE_WITH_PRIVATE (PangoCoreTextFont, pango_core_text_font, PANGO_TYPE_FONT)
 
 static void
 pango_core_text_font_finalize (GObject *object)
@@ -211,9 +211,7 @@ pango_core_text_font_get_font_map (PangoFont *font)
 static void
 pango_core_text_font_init (PangoCoreTextFont *ctfont)
 {
-  ctfont->priv = G_TYPE_INSTANCE_GET_PRIVATE (ctfont,
-                                              PANGO_TYPE_CORE_TEXT_FONT,
-                                              PangoCoreTextFontPrivate);
+  ctfont->priv = pango_core_text_font_get_instance_private (ctfont);
 }
 
 static void
@@ -229,8 +227,6 @@ pango_core_text_font_class_init (PangoCoreTextFontClass *class)
   font_class->get_coverage = pango_core_text_font_get_coverage;
   font_class->find_shaper = pango_core_text_font_find_shaper;
   font_class->get_font_map = pango_core_text_font_get_font_map;
-
-  g_type_class_add_private (object_class, sizeof (PangoCoreTextFontPrivate));
 }
 
 void

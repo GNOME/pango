@@ -866,7 +866,8 @@ struct _PangoFcFontset
 };
 
 typedef PangoFontsetClass PangoFcFontsetClass;
-G_DEFINE_TYPE (PangoFcFontset, pango_fc_fontset, PANGO_TYPE_FONTSET);
+
+G_DEFINE_TYPE (PangoFcFontset, pango_fc_fontset, PANGO_TYPE_FONTSET)
 
 static PangoFcFontset *
 pango_fc_fontset_new (PangoFcFontsetKey *key,
@@ -1062,16 +1063,15 @@ pango_fc_fontset_foreach (PangoFontset           *fontset,
  * PangoFcFontMap
  */
 
-G_DEFINE_ABSTRACT_TYPE (PangoFcFontMap, pango_fc_font_map, PANGO_TYPE_FONT_MAP)
+G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFcFontMap, pango_fc_font_map, PANGO_TYPE_FONT_MAP,
+                                  G_ADD_PRIVATE (PangoFcFontMap))
 
 static void
 pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 {
   PangoFcFontMapPrivate *priv;
 
-  priv = fcfontmap->priv = G_TYPE_INSTANCE_GET_PRIVATE (fcfontmap,
-							PANGO_TYPE_FC_FONT_MAP,
-							PangoFcFontMapPrivate);
+  priv = fcfontmap->priv = pango_fc_font_map_get_instance_private (fcfontmap);
 
   priv->n_families = -1;
 
@@ -1140,8 +1140,6 @@ pango_fc_font_map_class_init (PangoFcFontMapClass *class)
   fontmap_class->load_fontset = pango_fc_font_map_load_fontset;
   fontmap_class->list_families = pango_fc_font_map_list_families;
   fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_FC;
-
-  g_type_class_add_private (object_class, sizeof (PangoFcFontMapPrivate));
 }
 
 
@@ -2272,7 +2270,8 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
  */
 
 typedef PangoFontFaceClass PangoFcFaceClass;
-G_DEFINE_TYPE (PangoFcFace, pango_fc_face, PANGO_TYPE_FONT_FACE);
+
+G_DEFINE_TYPE (PangoFcFace, pango_fc_face, PANGO_TYPE_FONT_FACE)
 
 static PangoFontDescription *
 make_alias_description (PangoFcFamily *fcfamily,
@@ -2462,7 +2461,8 @@ pango_fc_face_class_init (PangoFcFaceClass *class)
  */
 
 typedef PangoFontFamilyClass PangoFcFamilyClass;
-G_DEFINE_TYPE (PangoFcFamily, pango_fc_family, PANGO_TYPE_FONT_FAMILY);
+
+G_DEFINE_TYPE (PangoFcFamily, pango_fc_family, PANGO_TYPE_FONT_FAMILY)
 
 static PangoFcFace *
 create_face (PangoFcFamily *fcfamily,

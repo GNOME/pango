@@ -106,7 +106,8 @@ to_device (PangoMatrix *matrix,
     }
 }
 
-G_DEFINE_ABSTRACT_TYPE (PangoRenderer, pango_renderer, G_TYPE_OBJECT)
+G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoRenderer, pango_renderer, G_TYPE_OBJECT,
+                                  G_ADD_PRIVATE (PangoRenderer))
 
 static void
 pango_renderer_class_init (PangoRendererClass *klass)
@@ -120,16 +121,12 @@ pango_renderer_class_init (PangoRendererClass *klass)
   klass->prepare_run = pango_renderer_default_prepare_run;
 
   gobject_class->finalize = pango_renderer_finalize;
-
-  g_type_class_add_private (gobject_class, sizeof (PangoRendererPrivate));
 }
 
 static void
 pango_renderer_init (PangoRenderer *renderer)
 {
-  renderer->priv = G_TYPE_INSTANCE_GET_PRIVATE (renderer,
-						PANGO_TYPE_RENDERER,
-						PangoRendererPrivate);
+  renderer->priv = pango_renderer_get_instance_private (renderer);
   renderer->matrix = NULL;
 }
 

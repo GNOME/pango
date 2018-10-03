@@ -94,7 +94,8 @@ static PangoFontDescription *pango_fc_font_describe_absolute (PangoFont        *
 #define PANGO_FC_FONT_LOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->lock_face (font))
 #define PANGO_FC_FONT_UNLOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->unlock_face (font))
 
-G_DEFINE_ABSTRACT_TYPE (PangoFcFont, pango_fc_font, PANGO_TYPE_FONT)
+G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFcFont, pango_fc_font, PANGO_TYPE_FONT,
+                                  G_ADD_PRIVATE (PangoFcFont))
 
 static void
 pango_fc_font_class_init (PangoFcFontClass *class)
@@ -129,16 +130,12 @@ pango_fc_font_class_init (PangoFcFontClass *class)
 							PANGO_TYPE_FC_FONT_MAP,
 							G_PARAM_READWRITE |
 							G_PARAM_STATIC_STRINGS));
-
-  g_type_class_add_private (object_class, sizeof (PangoFcFontPrivate));
 }
 
 static void
 pango_fc_font_init (PangoFcFont *fcfont)
 {
-  fcfont->priv = G_TYPE_INSTANCE_GET_PRIVATE (fcfont,
-					      PANGO_TYPE_FC_FONT,
-					      PangoFcFontPrivate);
+  fcfont->priv = pango_fc_font_get_instance_private (fcfont);
 }
 
 static void
