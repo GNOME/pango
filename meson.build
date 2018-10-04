@@ -312,6 +312,8 @@ if host_system == 'darwin'
   if has_core_text
     pango_conf.set('HAVE_CORE_TEXT', 1)
   endif
+
+  pango_deps += dependency('appleframeworks', modules: [ 'CoreFoundation', 'ApplicationServices' ])
 endif
 
 cairo_pkgconfig_found = false

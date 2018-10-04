@@ -112,7 +112,7 @@ libpango = library(
   version: pango_libversion,
   soversion: pango_soversion,
   install: true,
-  dependencies: [ gobject_dep, mathlib_dep, thai_dep, fribidi_dep ],
+  dependencies: pango_deps,
   include_directories: [ root_inc, pango_inc ],
   c_args: common_cflags + pango_debug_cflags + pango_cflags,
   link_args: common_ldflags,
@@ -442,7 +442,6 @@ if cairo_dep.found()
       'pangocairo-coretextfont.c',
       'pangocairo-coretextfontmap.c',
     ]
-    pangocairo_deps += dependency('appleframeworks', modules: [ 'CoreFoundation', 'ApplicationServices' ])
   endif
 
   install_headers(pangocairo_headers, subdir: pango_api_path)
