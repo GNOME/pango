@@ -6,7 +6,7 @@ project('pango', 'c', 'cpp',
           'warning_level=1',
           'c_std=c99',
         ],
-        meson_version : '>= 0.46.0')
+        meson_version : '>= 0.47.0')
 
 add_project_arguments([ '-D_POSIX_C_SOURCE=200809L', '-D_POSIX_THREAD_SAFE_FUNCTIONS', '-D_GNU_SOURCE', ], language: 'c')
 
@@ -199,10 +199,15 @@ mathlib_dep = cc.find_library('m', required: false)
 pango_deps += mathlib_dep
 
 # gobject
-gobject_dep = dependency('gobject-2.0', version: glib_req_version)
-pango_deps += gobject_dep
+glib_dep = dependency('glib-2.0', version: glib_req_version,
+                      fallback: ['glib', 'libglib_dep'])
+gobject_dep = dependency('gobject-2.0', version: glib_req_version,
+                         fallback: ['glib', 'libgobject_dep'])
+pango_deps += [glib_dep, gobject_dep]
 
-fribidi_dep = dependency('fribidi', version: fribidi_req_version)
+fribidi_dep = dependency('fribidi', version: fribidi_req_version,
+                         fallback: ['fribidi', 'libfribidi_dep'],
+                         default_options: ['docs=false'])
 pango_deps += fribidi_dep
 
 thai_dep = dependency('libthai', version: libthai_req_version, required: false)
@@ -229,7 +234,8 @@ harfbuzz_lib=''
 freetype2_lib=''
 fontconfig_lib=''
 
-harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version, required: false)
+harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version, required: false,
+                          fallback: ['harfbuzz', 'libharfbuzz_dep'])
 if harfbuzz_dep.found()
   harfbuzz_pc = 'harfbuzz'
 else
@@ -246,7 +252,8 @@ if harfbuzz_dep.found()
   pango_deps += harfbuzz_dep
 endif
 
-fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version, required: false)
+fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version, required: false,
+                            fallback: ['fontconfig', 'fontconfig_dep'])
 if fontconfig_dep.found()
   fontconfig_pc = 'fontconfig'
 else
@@ -263,14 +270,26 @@ endif
 if fontconfig_dep.found()
   pango_deps += fontconfig_dep
 
-  if cc.has_function('FcWeightFromOpenTypeDouble', dependencies: fontconfig_dep)
+  if fontconfig_pc == 'fontconfig'
+    if fontconfig_dep.version().version_compare('>=2.12.92')
+      pango_conf.set('HAVE_FCWEIGHTFROMOPENTYPEDOUBLE', 1)
+    endif
+  elif cc.has_function('FcWeightFromOpenTypeDouble', dependencies: fontconfig_dep)
     pango_conf.set('HAVE_FCWEIGHTFROMOPENTYPEDOUBLE', 1)
   endif
 endif
 
+if pango_conf.has('HAVE_FCWEIGHTFROMOPENTYPEDOUBLE')
+  res = 'YES'
+else
+  res = 'NO'
+endif
+message('fontconfig has FcWeightFromOpenTypeDouble: ' + res)
+
 # The first version of freetype with a pkg-config file is 2.1.5
 # We require both fontconfig and freetype if we are to have either.
-freetype_dep = dependency('freetype2', required: false)
+freetype_dep = dependency('freetype2', required: false,
+                          fallback: ['freetype2', 'freetype_dep'])
 
 if freetype_dep.found()
   freetype2_pc = 'freetype2'
@@ -295,7 +314,7 @@ if build_pangoft2
 endif
 
 xft_dep = dependency('xft', version: xft_req_version, required: false)
-if xft_dep.found()
+if xft_dep.found() and fontconfig_dep.found() and freetype_dep.found()
   pango_conf.set('HAVE_XFT', 1)
   pango_deps += dependency('xrender', required: false)
   pango_deps += xft_dep
@@ -316,21 +335,23 @@ if host_system == 'darwin'
   pango_deps += dependency('appleframeworks', modules: [ 'CoreFoundation', 'ApplicationServices' ])
 endif
 
-cairo_pkgconfig_found = false
-cairo_dep = dependency('cairo', version: cairo_req_version, required: false)
+cairo_found_type = ''
+cairo_dep = dependency('cairo', version: cairo_req_version, required: false,
+                       fallback: ['cairo', 'libcairo_dep'])
 
 if cairo_dep.found()
-  cairo_pkgconfig_found = true
+  cairo_found_type = cairo_dep.type_name()
 else
   if cc.get_id() == 'msvc' and cc.has_header('cairo.h')
     cairo_dep = cc.find_library('cairo', required: false)
+    cairo_found_type = 'library'
   endif
 endif
 
 pango_font_backends = []
 pango_cairo_backends = []
 
-if cairo_pkgconfig_found
+if ['pkgconfig', 'internal'].contains(cairo_found_type)
   # Check the following Cairo font backends
   # - dependency
   # - version
@@ -344,8 +365,22 @@ if cairo_pkgconfig_found
     [ 'cairo-quartz', cairo_req_version, 'HAVE_CAIRO_QUARTZ', 'quartz', ],
   ]
 
+  if cairo_found_type == 'internal'
+    cairo_features = subproject('cairo').get_variable('built_features')
+  endif
+
   foreach b: cairo_font_backends
-    dep = dependency(b[0], version: b[1], required: false)
+    if cairo_found_type == 'pkgconfig'
+      dep = dependency(b[0], version: b[1], required: false)
+    else
+      dep = dependency('', required: false)
+      foreach f: cairo_features
+        if f['name'] == b[0]
+          dep = cairo_dep
+          message('Cairo font backend "@0@" enabled'.format(b))
+        endif
+      endforeach
+    endif
     if dep.found()
       if b[0] == 'cairo-ft'
         if build_pangoft2
@@ -376,7 +411,17 @@ if cairo_pkgconfig_found
   ]
 
   foreach b: cairo_surface_backends
-    dep = dependency(b[0], version: b[1], required: false)
+    if cairo_found_type == 'pkgconfig'
+      dep = dependency(b[0], version: b[1], required: false)
+    else
+      dep = dependency('', required: false)
+      foreach f: cairo_features
+        if f['name'] == b[0]
+          dep = cairo_dep
+          message('Cairo surface backend "@0@" enabled'.format(b))
+        endif
+      endforeach
+    endif
     if dep.found()
       pango_conf.set(b[2], 1)
       pango_cairo_backends += b[3]
@@ -386,7 +431,7 @@ if cairo_pkgconfig_found
   # This is to set up pangocairo.pc so that things that refer to
   # it will link correctly
   cairo_pc = 'cairo'
-elif (cc.get_id() == 'msvc' and cairo_dep.found())
+elif cairo_found_type == 'library'
   # Fallback: Look for Cairo items manually
   # We need to check for headers for some
   cairo_headers = [ 'win32', 'quartz', 'ps', 'pdf', 'xlib' ]
@@ -420,7 +465,7 @@ elif (cc.get_id() == 'msvc' and cairo_dep.found())
   endif
 
   if pango_font_backends.length() == 0
-    error('No Cairo font backends found')
+    error('Cairo found, but no Cairo font backends found')
   endif
 
   # Check for Cairo's libpng output surface support

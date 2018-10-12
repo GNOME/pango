@@ -159,7 +159,6 @@ pkgconfig.generate(libpango,
   version: meson.project_version(),
   filebase: 'pango',
   subdirs: pango_api_name,
-  requires: gobject_dep,
   install_dir: join_paths(pango_libdir, 'pkgconfig'),
 )
 
@@ -256,10 +255,13 @@ if build_pangoft2
 else
   # For usage as a subproject
   libpangoft2_dep = dependency('', required : false)
+  # Needed for making ft2 no-op while generating pangoxft_gir below
+  pangoft2_gir_dep = dependency('', required : false)
+  pangoft2_gir = [[]]
 endif
 
 # Xft
-if xft_dep.found()
+if xft_dep.found() and fontconfig_dep.found()
   pangoxft_headers = [
     'pangoxft.h',
     'pangoxft-render.h',
