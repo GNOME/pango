@@ -26,6 +26,7 @@
 #include <pango/pango-types.h>
 
 #include <glib-object.h>
+#include <hb.h>
 
 G_BEGIN_DECLS
 
@@ -583,6 +584,9 @@ void                  pango_font_get_glyph_extents (PangoFont        *font,
 PANGO_AVAILABLE_IN_1_10
 PangoFontMap         *pango_font_get_font_map      (PangoFont        *font);
 
+PANGO_AVAILABLE_IN_1_44
+hb_font_t *           pango_font_get_hb_font       (PangoFont        *font);
+
 #ifdef PANGO_ENABLE_BACKEND
 
 #define PANGO_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT, PangoFontClass))
@@ -632,11 +636,11 @@ struct _PangoFontClass
 					       PangoLanguage  *language);
   PangoFontMap *        (*get_font_map)       (PangoFont      *font);
   PangoFontDescription *(*describe_absolute)  (PangoFont      *font);
+  hb_font_t *           (*get_hb_font)        (PangoFont      *font);
   /*< private >*/
 
   /* Padding for future expansion */
   void (*_pango_reserved1) (void);
-  void (*_pango_reserved2) (void);
 };
 
 /* used for very rare and miserable situtations that we cannot even

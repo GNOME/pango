@@ -1837,6 +1837,29 @@ pango_font_get_font_map (PangoFont *font)
     return NULL;
 }
 
+/**
+ * pango_font_get_hb_font:
+ * @font: a #PangoFont
+ *
+ * Get a hb_font_t object backing this font.
+ *
+ * Returns: (transfer full) (nullable): the hb_font_t object backing the
+ *          font, or %NULL if the font does not have one
+ *
+ * Since: 1.44
+ */
+hb_font_t *
+pango_font_get_hb_font (PangoFont *font)
+{
+  if (G_UNLIKELY (!font))
+    return NULL;
+
+  if (PANGO_FONT_GET_CLASS (font)->get_hb_font)
+    return PANGO_FONT_GET_CLASS (font)->get_hb_font (font);
+  else
+    return NULL;
+}
+
 G_DEFINE_BOXED_TYPE (PangoFontMetrics, pango_font_metrics,
                      pango_font_metrics_ref,
                      pango_font_metrics_unref);
