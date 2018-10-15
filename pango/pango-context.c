@@ -1447,11 +1447,11 @@ string_from_script (PangoScript script)
   static GEnumClass *class = NULL; /* MT-safe */
   GEnumValue *value;
   if (g_once_init_enter (&class))
-    g_once_init_leave(&class, (gpointer)g_type_class_ref (PANGO_TYPE_SCRIPT));
+    g_once_init_leave (&class, (gpointer)g_type_class_ref (G_TYPE_UNICODE_SCRIPT));
 
   value = g_enum_get_value (class, script);
   if (!value)
-    return string_from_script (PANGO_SCRIPT_INVALID_CODE);
+    return string_from_script (G_UNICODE_SCRIPT_INVALID_CODE);
 
   return value->value_nick;
 }
@@ -1536,9 +1536,11 @@ G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 			 script_name);
 G_GNUC_END_IGNORE_DEPRECATIONS
 
-	      g_object_set_data_full (G_OBJECT (fontmap), script_name,
-				      GINT_TO_POINTER (1), NULL);
+             g_object_set_data_full (G_OBJECT (fontmap), script_name,
+                                     GINT_TO_POINTER (1), NULL);
 	    }
+          else
+            g_free (script_name);
 
 	  shape_engine = _pango_get_fallback_shaper ();
 	  font = NULL;
