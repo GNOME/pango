@@ -26,6 +26,7 @@
 #include <pango/pango-types.h>
 
 #include <glib-object.h>
+#include <hb.h>
 
 G_BEGIN_DECLS
 
@@ -492,6 +493,8 @@ void                  pango_font_get_features      (PangoFont        *font,
                                                     hb_feature_t     *features,
                                                     guint             len,
                                                     guint            *num_features);
+PANGO_AVAILABLE_IN_1_44
+hb_font_t *           pango_font_get_hb_font       (PangoFont        *font);
 
 
 /**
