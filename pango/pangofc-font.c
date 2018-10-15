@@ -89,7 +89,7 @@ static PangoFontMetrics *    pango_fc_font_get_metrics  (PangoFont        *font,
 static PangoFontMap *        pango_fc_font_get_font_map (PangoFont        *font);
 static PangoFontDescription *pango_fc_font_describe     (PangoFont        *font);
 static PangoFontDescription *pango_fc_font_describe_absolute (PangoFont        *font);
-
+static hb_font_t *           pango_fc_font_create_hb_font (PangoFont        *font);
 
 #define PANGO_FC_FONT_LOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->lock_face (font))
 #define PANGO_FC_FONT_UNLOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->unlock_face (font))
@@ -116,6 +116,7 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   font_class->get_coverage = pango_fc_font_get_coverage;
   font_class->get_metrics = pango_fc_font_get_metrics;
   font_class->get_font_map = pango_fc_font_get_font_map;
+  font_class->create_hb_font = pango_fc_font_create_hb_font;
 
   g_object_class_install_property (object_class, PROP_PATTERN,
 				   g_param_spec_pointer ("pattern",
@@ -1086,3 +1087,13 @@ pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
   PANGO_FC_FONT_UNLOCK_FACE (fcfont);
 }
 
+static hb_font_t *
+pango_fc_font_create_hb_font (PangoFont *font)
+{
+  PangoFcFont *fcfont = PANGO_FC_FONT (font);
+  hb_face_t *hb_face;
+
+  hb_face = pango_fc_font_map_get_hb_face (PANGO_FC_FONT_MAP (fcfont->fontmap), fcfont);
+
+  return hb_font_create (hb_face);
+}
