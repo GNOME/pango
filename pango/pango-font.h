@@ -492,6 +492,12 @@ void                  pango_font_face_list_sizes     (PangoFontFace  *face,
 PANGO_AVAILABLE_IN_1_18
 gboolean              pango_font_face_is_synthesized (PangoFontFace  *face) G_GNUC_PURE;
 
+PANGO_AVAILABLE_IN_1_44
+gboolean              pango_font_face_is_named_instance (PangoFontFace *face);
+
+PANGO_AVAILABLE_IN_1_44
+gboolean              pango_font_face_is_variable (PangoFontFace *face);
+
 #ifdef PANGO_ENABLE_BACKEND
 
 #define PANGO_FONT_FACE_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT_FACE, PangoFontFaceClass))
@@ -499,6 +505,12 @@ gboolean              pango_font_face_is_synthesized (PangoFontFace  *face) G_GN
 #define PANGO_FONT_FACE_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONT_FACE, PangoFontFaceClass))
 
 typedef struct _PangoFontFaceClass   PangoFontFaceClass;
+
+enum {
+  PANGO_FONT_FACE_IS_SYNTHESIZED    = 1 << 0,
+  PANGO_FONT_FACE_IS_NAMED_INSTANCE = 1 << 1,
+  PANGO_FONT_FACE_IS_VARIABLE       = 1 << 2,
+} PangoFontFaceFlags;
 
 /**
  * PangoFontFace:
@@ -523,11 +535,11 @@ struct _PangoFontFaceClass
 					    int           **sizes,
 					    int            *n_sizes);
   gboolean               (*is_synthesized) (PangoFontFace *face);
+  PangoFontFaceFlags     (*get_flags)      (PangoFontFace *face);
 
   /*< private >*/
 
   /* Padding for future expansion */
-  void (*_pango_reserved3) (void);
   void (*_pango_reserved4) (void);
 };
 
