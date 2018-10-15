@@ -1076,8 +1076,5 @@ pango_fc_font_get_hb_font (PangoFont *font)
 
   hb_face = pango_fc_font_map_get_hb_face (PANGO_FC_FONT_MAP (fcfont->fontmap), fcfont);
 
-  if (hb_face)
-    return hb_font_create (hb_face);
-
-  return NULL;
+  return hb_font_create (hb_face);
 }
