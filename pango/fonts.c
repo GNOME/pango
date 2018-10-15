@@ -2147,6 +2147,28 @@ pango_font_family_is_monospace (PangoFontFamily  *family)
     return FALSE;
 }
 
+/**
+ * pango_font_family_is_variable:
+ * @family: a #PangoFontFamily
+ *
+ * A variable font is a font which has axes that can be modified to
+ * produce different faces.
+ *
+ * Return value: %TRUE if the family is variable
+ *
+ * Since: 1.44
+ **/
+gboolean
+pango_font_family_is_variable (PangoFontFamily  *family)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FAMILY (family), FALSE);
+
+  if (PANGO_FONT_FAMILY_GET_CLASS (family)->is_variable)
+    return PANGO_FONT_FAMILY_GET_CLASS (family)->is_variable (family);
+  else
+    return FALSE;
+}
+
 /*
  * PangoFontFace
  */
