@@ -46,6 +46,7 @@ typedef struct {
 
 static const char *get_script_name (PangoScript script)
 {
+#if 0
   static GEnumClass *class = NULL;
   GEnumValue *value;
   if (!class)
@@ -55,6 +56,10 @@ static const char *get_script_name (PangoScript script)
   g_assert (value);
 
   return value->value_name;
+#else
+  /* FIXME */
+  return NULL;
+#endif
 }
 
 static void fail (const char *format, ...) G_GNUC_PRINTF (1, 2) G_GNUC_NORETURN;

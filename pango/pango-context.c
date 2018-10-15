@@ -1408,19 +1408,10 @@ itemize_state_update_for_new_run (ItemizeState *state)
     }
 }
 
-static const char *
+static char *
 string_from_script (PangoScript script)
 {
-  static GEnumClass *class = NULL; /* MT-safe */
-  GEnumValue *value;
-  if (g_once_init_enter (&class))
-    g_once_init_leave(&class, (gpointer)g_type_class_ref (PANGO_TYPE_SCRIPT));
-
-  value = g_enum_get_value (class, script);
-  if (!value)
-    return string_from_script (PANGO_SCRIPT_INVALID_CODE);
-
-  return value->value_nick;
+  return g_strdup_printf ("script%d", script);
 }
 
 static void
@@ -1493,7 +1484,7 @@ itemize_state_process_run (ItemizeState *state)
 	{
 	  /* If no shaper was found, warn only once per fontmap/script pair */
 	  PangoFontMap *fontmap = state->context->font_map;
-	  const char *script_name = string_from_script (get_script (state));
+	  char *script_name = string_from_script (get_script (state));
 
 	  if (!g_object_get_data (G_OBJECT (fontmap), script_name))
 	    {
@@ -1503,9 +1494,10 @@ G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 			 script_name);
 G_GNUC_END_IGNORE_DEPRECATIONS
 
-	      g_object_set_data_full (G_OBJECT (fontmap), script_name,
-				      GINT_TO_POINTER (1), NULL);
+	      g_object_set_data_full (G_OBJECT (fontmap), script_name, script_name, g_free);
 	    }
+          else
+            g_free (script_name);
 
 	  shape_engine = _pango_get_fallback_shaper ();
 	  font = NULL;
