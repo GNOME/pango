@@ -175,11 +175,12 @@ struct _PangoFontClass
 					       PangoLanguage  *language);
   PangoFontMap *        (*get_font_map)       (PangoFont      *font);
   PangoFontDescription *(*describe_absolute)  (PangoFont      *font);
+  hb_font_t *           (*create_hb_font)     (PangoFont      *font);
+
   /*< private >*/
 
   /* Padding for future expansion */
   void (*_pango_reserved1) (void);
-  void (*_pango_reserved2) (void);
 };
 
 /* used for very rare and miserable situtations that we cannot even

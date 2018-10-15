@@ -26,6 +26,7 @@
 #include <pango/pango-types.h>
 
 #include <glib-object.h>
+#include <hb.h>
 
 G_BEGIN_DECLS
 
@@ -487,6 +488,9 @@ PangoFontMap         *pango_font_get_font_map      (PangoFont        *font);
 PANGO_AVAILABLE_IN_1_44
 gboolean              pango_font_covers            (PangoFont        *font,
                                                     gunichar          unichar);
+PANGO_AVAILABLE_IN_1_44
+hb_font_t *           pango_font_get_hb_font       (PangoFont        *font);
+
 
 /**
  * PANGO_GLYPH_EMPTY:
