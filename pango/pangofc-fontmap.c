@@ -297,8 +297,7 @@ pango_fc_font_face_data_free (PangoFcFontFaceData *data)
   if (data->cmap_cache)
     _pango_fc_cmap_cache_unref (data->cmap_cache);
 
-  if (data->hb_face)
-    hb_face_destroy (data->hb_face);
+  hb_face_destroy (data->hb_face);
 
   g_slice_free (PangoFcFontFaceData, data);
 }
