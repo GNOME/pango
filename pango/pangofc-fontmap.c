@@ -2556,6 +2556,16 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 	      if (FcPatternGetInteger(fontset->fonts[i], FC_SLANT, 0, &slant) != FcResultMatch)
 		slant = FC_SLANT_ROMAN;
 
+#ifdef FC_VARIABLE
+              {
+                gboolean variable;
+                if (FcPatternGetBool(fontset->fonts[i], FC_VARIABLE, 0, &variable) != FcResultMatch)
+                  variable = FALSE;
+                if (variable) /* skip the variable face */
+                  continue;
+              }
+#endif
+
 	      if (FcPatternGetString (fontset->fonts[i], FC_STYLE, 0, (FcChar8 **)(void*)&font_style) != FcResultMatch)
 		font_style = NULL;
 
