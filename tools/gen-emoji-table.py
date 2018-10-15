@@ -51,6 +51,10 @@ print()
 print("struct Interval {\n  gunichar start, end;\n};")
 
 for typ,s in sets.items():
+	if typ not in ['Emoji',
+		       'Emoji_Presentation',
+		       'Emoji_Modifier',
+		       'Emoji_Modifier_Base']: continue
 	print()
 	print("static const struct Interval _pango_%s_table[] =" % typ)
 	print("{")
