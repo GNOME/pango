@@ -51,7 +51,7 @@ emoji_flag_sequence = REGIONAL_INDICATOR REGIONAL_INDICATOR;
 # https://www.unicode.org/reports/tr51/#def_emoji_tag_sequence
 emoji_tag_sequence = TAG_BASE TAG_SEQUENCE+ TAG_TERM;
 
-emoji_keycap_sequence = KEYCAP_BASE COMBINING_ENCLOSING_KEYCAP;
+emoji_keycap_sequence = KEYCAP_BASE VS16 COMBINING_ENCLOSING_KEYCAP;
 
 emoji_zwj_element =  emoji_presentation_sequence | emoji_modifier_sequence | any_emoji;
 
