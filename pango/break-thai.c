@@ -85,7 +85,11 @@ break_thai (const char          *text,
 #ifdef HAVE_TH_BRK_FIND_BREAKS
   brk = th_brk_new(NULL);
   len = th_brk_find_breaks(brk, tis_text, brk_pnts, cnt);
-  th_brk_delete(brk);
+  if (brk)
+    th_brk_delete(brk);
+  else
+    g_warning ("%s: failed to load the default Thai word-breaker.",
+               G_STRLOC);
 #else
   G_LOCK (th_brk);
   len = th_brk (tis_text, brk_pnts, cnt);
