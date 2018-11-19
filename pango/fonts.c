@@ -1617,11 +1617,29 @@ pango_parse_stretch (const char   *str,
  * PangoFont
  */
 
-G_DEFINE_ABSTRACT_TYPE (PangoFont, pango_font, G_TYPE_OBJECT)
+typedef struct {
+  hb_font_t *hb_font;
+} PangoFontPrivate;
+
+G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (PangoFont, pango_font, G_TYPE_OBJECT)
+
+static void
+pango_font_finalize (GObject *object)
+{
+  PangoFont *font = PANGO_FONT (object);
+  PangoFontPrivate *priv = pango_font_get_instance_private (font);
+
+  hb_font_destroy (priv->hb_font);
+  
+  G_OBJECT_CLASS (pango_font_parent_class)->finalize (object);
+}
 
 static void
 pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
 {
+  GObjectClass *object_class = G_OBJECT_CLASS (class);
+
+  object_class->finalize = pango_font_finalize;
 }
 
 static void
@@ -1843,7 +1861,7 @@ pango_font_get_font_map (PangoFont *font)
  *
  * Get a hb_font_t object backing this font.
  *
- * Returns: (transfer full) (nullable): the hb_font_t object backing the
+ * Returns: (transfer none) (nullable): the hb_font_t object backing the
  *          font, or %NULL if the font does not have one
  *
  * Since: 1.44
@@ -1851,13 +1869,20 @@ pango_font_get_font_map (PangoFont *font)
 hb_font_t *
 pango_font_get_hb_font (PangoFont *font)
 {
+  PangoFontPrivate *priv = pango_font_get_instance_private (font);
+
   if (G_UNLIKELY (!font))
     return NULL;
 
-  if (PANGO_FONT_GET_CLASS (font)->get_hb_font)
-    return PANGO_FONT_GET_CLASS (font)->get_hb_font (font);
-  else
-    return NULL;
+  if (priv->hb_font)
+    return priv->hb_font;
+  else if (PANGO_FONT_GET_CLASS (font)->create_hb_font)
+    {
+      priv->hb_font = PANGO_FONT_GET_CLASS (font)->create_hb_font (font);
+      return priv->hb_font;
+    }
+
+  return hb_font_get_empty ();
 }
 
 G_DEFINE_BOXED_TYPE (PangoFontMetrics, pango_font_metrics,

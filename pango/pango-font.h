@@ -636,7 +636,7 @@ struct _PangoFontClass
 					       PangoLanguage  *language);
   PangoFontMap *        (*get_font_map)       (PangoFont      *font);
   PangoFontDescription *(*describe_absolute)  (PangoFont      *font);
-  hb_font_t *           (*get_hb_font)        (PangoFont      *font);
+  hb_font_t *           (*create_hb_font)     (PangoFont      *font);
   /*< private >*/
 
   /* Padding for future expansion */
