@@ -46,8 +46,6 @@ struct _PangoFT2FontMap
 {
   PangoFcFontMap parent_instance;
 
-  FT_Library library;
-
   guint serial;
   double dpi_x;
   double dpi_y;
@@ -97,16 +95,9 @@ pango_ft2_font_map_class_init (PangoFT2FontMapClass *class)
 static void
 pango_ft2_font_map_init (PangoFT2FontMap *fontmap)
 {
-  FT_Error error;
-
   fontmap->serial = 1;
-  fontmap->library = NULL;
   fontmap->dpi_x   = 72.0;
   fontmap->dpi_y   = 72.0;
-
-  error = FT_Init_FreeType (&fontmap->library);
-  if (error != FT_Err_Ok)
-    g_critical ("pango_ft2_font_map_init: Could not initialize freetype");
 }
 
 static void
@@ -121,8 +112,6 @@ pango_ft2_font_map_finalize (GObject *object)
     ft2fontmap->substitute_destroy (ft2fontmap->substitute_data);
 
   G_OBJECT_CLASS (pango_ft2_font_map_parent_class)->finalize (object);
-
-  FT_Done_FreeType (ft2fontmap->library);
 }
 
 /**
@@ -332,15 +321,6 @@ pango_ft2_shutdown_display (void)
       pango_ft2_global_fontmap = NULL;
     }
 }
-
-FT_Library
-_pango_ft2_font_map_get_library (PangoFontMap *fontmap)
-{
-  PangoFT2FontMap *ft2fontmap = (PangoFT2FontMap *)fontmap;
-
-  return ft2fontmap->library;
-}
-
 
 /**
  * _pango_ft2_font_map_get_renderer:
