@@ -51,6 +51,7 @@
 #include "pango-impl-utils.h"
 #include "pango-enum-types.h"
 #include "pangoft2-private.h"
+#include <fontconfig/fcfreetype.h>
 #include <hb-ft.h>
 
 
@@ -2691,6 +2692,8 @@ create_faces (PangoFcFontMap *fcfontmap,
     }
 
   data->hb_face = hb_ft_face_create_cached (data->ft_face);
+  /* Add the FT_Face to the pattern so cairo picks it up */
+  FcPatternAddFTFace (data->pattern, FC_FT_FACE, data->ft_face);
 }
 
 hb_face_t *
