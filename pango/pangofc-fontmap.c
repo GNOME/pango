@@ -189,6 +189,7 @@ struct _PangoFcFamily
   int n_faces;		/* -1 == uninitialized */
 
   int spacing;  /* FC_SPACING */
+  gboolean variable;
 };
 
 struct _PangoFcFindFuncInfo
@@ -1274,6 +1275,7 @@ create_family (PangoFcFontMap *fcfontmap,
   family->fontmap = fcfontmap;
   family->family_name = g_strdup (family_name);
   family->spacing = spacing;
+  family->variable = FALSE;
   family->patterns = FcFontSetCreate ();
 
   return family;
@@ -1319,7 +1321,11 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 
   if (priv->n_families < 0)
     {
-      FcObjectSet *os = FcObjectSetBuild (FC_FAMILY, FC_SPACING, FC_STYLE, FC_WEIGHT, FC_WIDTH, FC_SLANT, NULL);
+      FcObjectSet *os = FcObjectSetBuild (FC_FAMILY, FC_SPACING, FC_STYLE, FC_WEIGHT, FC_WIDTH, FC_SLANT,
+#ifdef FC_VARIABLE
+                                          FC_VARIABLE,
+#endif
+                                          NULL);
       FcPattern *pat = FcPatternCreate ();
       GHashTable *temp_family_hash;
 
@@ -1337,6 +1343,7 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 	  char *s;
 	  FcResult res;
 	  int spacing;
+          int variable;
 	  PangoFcFamily *temp_family;
 
 	  res = FcPatternGetString (fontset->fonts[i], FC_FAMILY, 0, (FcChar8 **)(void*)&s);
@@ -1357,6 +1364,13 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 
 	  if (temp_family)
 	    {
+              variable = FALSE;
+#ifdef FC_VARIABLE
+              res = FcPatternGetBool (fontset->fonts[i], FC_VARIABLE, 0, &variable);
+#endif
+              if (variable)
+                temp_family->variable = TRUE;
+
 	      FcPatternReference (fontset->fonts[i]);
 	      FcFontSetAdd (temp_family->patterns, fontset->fonts[i]);
 	    }
@@ -2542,6 +2556,16 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 	      if (FcPatternGetInteger(fontset->fonts[i], FC_SLANT, 0, &slant) != FcResultMatch)
 		slant = FC_SLANT_ROMAN;
 
+#ifdef FC_VARIABLE
+              {
+                gboolean variable;
+                if (FcPatternGetBool(fontset->fonts[i], FC_VARIABLE, 0, &variable) != FcResultMatch)
+                  variable = FALSE;
+                if (variable) /* skip the variable face */
+                  continue;
+              }
+#endif
+
 	      if (FcPatternGetString (fontset->fonts[i], FC_STYLE, 0, (FcChar8 **)(void*)&font_style) != FcResultMatch)
 		font_style = NULL;
 
@@ -2620,6 +2644,14 @@ pango_fc_family_is_monospace (PangoFontFamily *family)
 	 fcfamily->spacing == FC_CHARCELL;
 }
 
+static gboolean
+pango_fc_family_is_variable (PangoFontFamily *family)
+{
+  PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
+
+  return fcfamily->variable;
+}
+
 static void
 pango_fc_family_finalize (GObject *object)
 {
@@ -2649,6 +2681,7 @@ pango_fc_family_class_init (PangoFcFamilyClass *class)
   class->list_faces = pango_fc_family_list_faces;
   class->get_name = pango_fc_family_get_name;
   class->is_monospace = pango_fc_family_is_monospace;
+  class->is_variable = pango_fc_family_is_variable;
 }
 
 static void

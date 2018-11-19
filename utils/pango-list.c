@@ -46,9 +46,25 @@ main (int    argc,
     {
       PangoFontFace **faces;
       int n_faces;
+      const char *kind;
 
       const char *family_name = pango_font_family_get_name (families[i]);
-      g_print ("%s\n", family_name);
+      if (pango_font_family_is_monospace (families[i]))
+        {
+          if (pango_font_family_is_variable (families[i]))
+            kind = "(monospace, variable)";
+          else
+            kind = "(monospace)";
+        }
+      else
+        {
+          if (pango_font_family_is_variable (families[i]))
+            kind = "(variable)";
+          else
+            kind = "";
+        }
+
+      g_print ("%s %s\n", family_name, kind);
 
       pango_font_family_list_faces (families[i], &faces, &n_faces);
       for (j = 0; j < n_faces; j++)
