@@ -263,7 +263,9 @@ static FcPattern       *pango_fc_patterns_get_font_pattern (PangoFcPatterns *pat
 static FcPattern *uniquify_pattern (PangoFcFontMap *fcfontmap,
 				    FcPattern      *pattern);
 
-static gpointer
+gpointer get_gravity_class (void);
+
+gpointer
 get_gravity_class (void)
 {
   static GEnumClass *class = NULL; /* MT-safe */
