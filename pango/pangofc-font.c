@@ -1334,7 +1334,7 @@ pango_fc_font_create_hb_font (PangoFont *font)
 {
   PangoFcFont *fc_font = PANGO_FC_FONT (font);
   PangoFcFontKey *key;
-  PangoFcHbContext context;
+  PangoFcHbContext *context;
   FT_Face ft_face;
   hb_face_t *hb_face;
   hb_font_t *hb_font;
@@ -1356,22 +1356,26 @@ pango_fc_font_create_hb_font (PangoFont *font)
 
   gravity = pango_fc_font_key_get_gravity (key);
 
-  context.x_scale = 1. / x_scale_inv;
-  context.y_scale = 1. / y_scale_inv;
-  context.ft_face = ft_face;
-  context.fc_font = fc_font;
-  context.vertical = PANGO_GRAVITY_IS_VERTICAL (gravity);
+  context = g_new0 (PangoFcHbContext, 1);
 
   hb_face = pango_fc_font_map_get_hb_face (PANGO_FC_FONT_MAP (fc_font->fontmap), fc_font);
   ft_face = pango_fc_font_map_get_ft_face (PANGO_FC_FONT_MAP (fc_font->fontmap), fc_font);
+
+  context->x_scale = 1. / x_scale_inv;
+  context->y_scale = 1. / y_scale_inv;
+  context->ft_face = ft_face;
+  context->fc_font = fc_font;
+  context->vertical = PANGO_GRAVITY_IS_VERTICAL (gravity);
+  g_object_set_data_full (G_OBJECT (fc_font), "hb-context", context, g_free);
+
   hb_font = hb_font_create (hb_face);
   hb_font_set_funcs (hb_font,
                      pango_fc_get_hb_font_funcs (),
-                     &context,
+                     context,
                      NULL);
   hb_font_set_scale (hb_font,
-                     +(((gint64) ft_face->size->metrics.x_scale * ft_face->units_per_EM) >> 12) * context.x_scale,
-                     -(((gint64) ft_face->size->metrics.y_scale * ft_face->units_per_EM) >> 12) * context.y_scale);
+                     +(((gint64) ft_face->size->metrics.x_scale * ft_face->units_per_EM) >> 12) * context->x_scale,
+                     -(((gint64) ft_face->size->metrics.y_scale * ft_face->units_per_EM) >> 12) * context->y_scale);
   hb_font_set_ppem (hb_font,
                     fc_font->is_hinted ? ft_face->size->metrics.x_ppem : 0,
                     fc_font->is_hinted ? ft_face->size->metrics.y_ppem : 0);

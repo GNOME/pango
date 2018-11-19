@@ -262,5 +262,4 @@ _pango_fc_shape (PangoFont           *font,
   }
 
   release_buffer (hb_buffer, free_buffer);
-  hb_font_destroy (hb_font);
 }
