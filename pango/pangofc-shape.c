@@ -77,7 +77,6 @@ _pango_fc_shape (PangoFont           *font,
 		 const char          *paragraph_text,
 		 unsigned int         paragraph_length)
 {
-  PangoFcFont *fc_font;
   hb_font_t *hb_font;
   hb_buffer_t *hb_buffer;
   hb_direction_t hb_direction;
@@ -116,23 +115,26 @@ _pango_fc_shape (PangoFont           *font,
 
   hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_offset, item_length);
 
-  /* Setup features from fontconfig pattern. */
-  fc_font = PANGO_FC_FONT (font);
-  if (fc_font->font_pattern)
+  if (PANGO_IS_FC_FONT (font))
     {
-      char *s;
-      while (num_features < G_N_ELEMENTS (features) &&
-	     FcResultMatch == FcPatternGetString (fc_font->font_pattern,
-						  PANGO_FC_FONT_FEATURES,
-						  num_features,
-						  (FcChar8 **) &s))
-	{
-	  gboolean ret = hb_feature_from_string (s, -1, &features[num_features]);
-	  features[num_features].start = 0;
-	  features[num_features].end   = (unsigned int) -1;
-	  if (ret)
-	    num_features++;
-	}
+      /* Setup features from fontconfig pattern. */
+      PangoFcFont *fc_font = PANGO_FC_FONT (font);
+      if (fc_font->font_pattern)
+        {
+          char *s;
+          while (num_features < G_N_ELEMENTS (features) &&
+	         FcResultMatch == FcPatternGetString (fc_font->font_pattern,
+                                                      PANGO_FC_FONT_FEATURES,
+                                                      num_features,
+                                                      (FcChar8 **) &s))
+            {
+              gboolean ret = hb_feature_from_string (s, -1, &features[num_features]);
+              features[num_features].start = 0;
+              features[num_features].end   = (unsigned int) -1;
+              if (ret)
+                num_features++;
+            }
+        }
     }
 
   if (analysis->extra_attrs)
@@ -209,57 +211,61 @@ _pango_fc_shape (PangoFont           *font,
 	hb_position++;
       }
 
-  if (fc_font->is_hinted)
-  {
-    double x_scale_inv, y_scale_inv;
-    double x_scale, y_scale;
-    PangoFcFontKey *key;
+  if (PANGO_IS_FC_FONT (font))
+    {
+      PangoFcFont *fc_font = PANGO_FC_FONT (font);
+      if (fc_font->is_hinted)
+        {
+          double x_scale_inv, y_scale_inv;
+          double x_scale, y_scale;
+          PangoFcFontKey *key;
 
-    x_scale_inv = y_scale_inv = 1.0;
-    key = _pango_fc_font_get_font_key (fc_font);
-    if (key)
-      {
-        const PangoMatrix *matrix = pango_fc_font_key_get_matrix (key);
-        pango_matrix_get_font_scale_factors (matrix, &x_scale_inv, &y_scale_inv);
-      }
-    if (PANGO_GRAVITY_IS_IMPROPER (analysis->gravity))
-      {
-        x_scale_inv = -x_scale_inv;
-        y_scale_inv = -y_scale_inv;
-      }
-    x_scale = 1. / x_scale_inv;
-    y_scale = 1. / y_scale_inv;
+          x_scale_inv = y_scale_inv = 1.0;
+          key = _pango_fc_font_get_font_key (fc_font);
+          if (key)
+            {
+              const PangoMatrix *matrix = pango_fc_font_key_get_matrix (key);
+              pango_matrix_get_font_scale_factors (matrix, &x_scale_inv, &y_scale_inv);
+            }
+          if (PANGO_GRAVITY_IS_IMPROPER (analysis->gravity))
+            {
+              x_scale_inv = -x_scale_inv;
+              y_scale_inv = -y_scale_inv;
+            }
+          x_scale = 1. / x_scale_inv;
+          y_scale = 1. / y_scale_inv;
 
-    if (x_scale == 1.0 && y_scale == 1.0)
-      {
-	for (i = 0; i < num_glyphs; i++)
-	  infos[i].geometry.width = PANGO_UNITS_ROUND (infos[i].geometry.width);
-      }
-    else
-      {
+          if (x_scale == 1.0 && y_scale == 1.0)
+            {
+              for (i = 0; i < num_glyphs; i++)
+                infos[i].geometry.width = PANGO_UNITS_ROUND (infos[i].geometry.width);
+            }
+          else
+            {
 #if 0
-	if (PANGO_GRAVITY_IS_VERTICAL (analysis->gravity))
-	  {
-	    /* XXX */
-	    double tmp = x_scale;
-	    x_scale = y_scale;
-	    y_scale = -tmp;
-	  }
+              if (PANGO_GRAVITY_IS_VERTICAL (analysis->gravity))
+                {
+                  /* XXX */
+                  double tmp = x_scale;
+                  x_scale = y_scale;
+                  y_scale = -tmp;
+                }
 #endif
 #define HINT(value, scale_inv, scale) (PANGO_UNITS_ROUND ((int) ((value) * scale)) * scale_inv)
 #define HINT_X(value) HINT ((value), x_scale, x_scale_inv)
 #define HINT_Y(value) HINT ((value), y_scale, y_scale_inv)
-	for (i = 0; i < num_glyphs; i++)
-	  {
-	    infos[i].geometry.width    = HINT_X (infos[i].geometry.width);
-	    infos[i].geometry.x_offset = HINT_X (infos[i].geometry.x_offset);
-	    infos[i].geometry.y_offset = HINT_Y (infos[i].geometry.y_offset);
-	  }
+              for (i = 0; i < num_glyphs; i++)
+                {
+                  infos[i].geometry.width    = HINT_X (infos[i].geometry.width);
+                  infos[i].geometry.x_offset = HINT_X (infos[i].geometry.x_offset);
+                  infos[i].geometry.y_offset = HINT_Y (infos[i].geometry.y_offset);
+                }
 #undef HINT_Y
 #undef HINT_X
 #undef HINT
-      }
-  }
+            }
+        }
+    }
 
   release_buffer (hb_buffer, free_buffer);
 }
