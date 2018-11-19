@@ -27,6 +27,7 @@
 #include <pango/pango-version-macros.h>
 G_BEGIN_DECLS
 
+#ifndef PANGO_DISABLE_DEPRECATED
 /**
  * PangoBidiType:
  * @PANGO_BIDI_TYPE_L: Left-to-Right
@@ -54,6 +55,7 @@ G_BEGIN_DECLS
  * <ulink url="http://www.unicode.org/reports/tr9/">Unicode bidirectional algorithm</ulink>.
  *
  * Since: 1.22
+ * Deprecated: 1.44: Use fribidi for this information
  **/
 typedef enum {
   /* Strong types */
@@ -82,7 +84,7 @@ typedef enum {
   PANGO_BIDI_TYPE_ON
 } PangoBidiType;
 
-PANGO_AVAILABLE_IN_1_22
+PANGO_DEPRECATED_IN_1_44
 PangoBidiType pango_bidi_type_for_unichar (gunichar ch) G_GNUC_CONST;
 
 /**
@@ -112,6 +114,8 @@ PangoBidiType pango_bidi_type_for_unichar (gunichar ch) G_GNUC_CONST;
  * enumeration as the writing direction of a block of
  * text and are no longer used; See #PangoGravity for how
  * vertical text is handled in Pango.
+ *
+ * Deprecated: 1.44: Use fribidi for this information
  **/
 typedef enum {
   PANGO_DIRECTION_LTR,
@@ -123,13 +127,12 @@ typedef enum {
   PANGO_DIRECTION_NEUTRAL
 } PangoDirection;
 
-PANGO_AVAILABLE_IN_ALL
+PANGO_DEPRECATED_IN_1_44
 PangoDirection pango_unichar_direction      (gunichar     ch) G_GNUC_CONST;
-PANGO_AVAILABLE_IN_1_4
+PANGO_DEPRECATED_IN_1_44
 PangoDirection pango_find_base_dir          (const gchar *text,
 					     gint         length);
 
-#ifndef PANGO_DISABLE_DEPRECATED
 PANGO_DEPRECATED_FOR(g_unichar_get_mirror_char)
 gboolean       pango_get_mirror_char        (gunichar     ch,
 					     gunichar    *mirrored_ch);
