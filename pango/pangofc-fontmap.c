@@ -264,7 +264,9 @@ static FcPattern       *pango_fc_patterns_get_font_pattern (PangoFcPatterns *pat
 static FcPattern *uniquify_pattern (PangoFcFontMap *fcfontmap,
 				    FcPattern      *pattern);
 
-static gpointer
+gpointer get_gravity_class (void);
+
+gpointer
 get_gravity_class (void)
 {
   static GEnumClass *class = NULL; /* MT-safe */
@@ -301,6 +303,7 @@ pango_fc_font_face_data_free (PangoFcFontFaceData *data)
     _pango_fc_cmap_cache_unref (data->cmap_cache);
 
   hb_face_destroy (data->hb_face);
+  FT_Done_Face (data->ft_face);
 
   g_slice_free (PangoFcFontFaceData, data);
 }
