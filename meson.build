@@ -6,7 +6,7 @@ project('pango', 'c', 'cpp',
           'warning_level=1',
           'c_std=c99',
         ],
-        meson_version : '>= 0.47.0')
+        meson_version : '>= 0.48.0')
 
 add_project_arguments([ '-D_POSIX_C_SOURCE=200809L', '-D_POSIX_THREAD_SAFE_FUNCTIONS', '-D_GNU_SOURCE', ], language: 'c')
 
@@ -40,6 +40,7 @@ pango_conf.set('PANGO_VERSION_MICRO', pango_micro_version)
 # Maintain version scheme with libtool
 pango_soversion = 0
 pango_libversion = '@0@.@1@.@2@'.format(pango_soversion, (pango_binary_age - pango_interface_age), pango_interface_age)
+pango_osxversion = pango_binary_age + 1
 
 cc = meson.get_compiler('c')
 host_system = host_machine.system()
@@ -136,11 +137,6 @@ endforeach
 # Linker flags
 if host_machine.system() == 'linux'
   common_ldflags += cc.get_supported_link_arguments([ '-Wl,-Bsymbolic', '-Wl,-z,relro', '-Wl,-z,now', ])
-endif
-
-# Maintain compatibility with autotools on macOS
-if host_machine.system() == 'darwin'
-  common_ldflags += [ '-compatibility_version 1', '-current_version 1.0', ]
 endif
 
 # Functions
