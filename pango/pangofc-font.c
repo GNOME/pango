@@ -46,6 +46,7 @@
 #include "pango-layout.h"
 #include "pango-impl-utils.h"
 
+#include <harfbuzz/hb-ot.h>
 #include <fontconfig/fcfreetype.h>
 
 #include FT_TRUETYPE_TABLES_H
@@ -1092,15 +1093,135 @@ pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
   PANGO_FC_FONT_UNLOCK_FACE (fcfont);
 }
 
+extern gpointer get_gravity_class (void);
+
+static PangoGravity
+pango_fc_font_key_get_gravity (PangoFcFontKey *key)
+{
+  FcPattern *pattern;
+  PangoGravity gravity = PANGO_GRAVITY_SOUTH;
+  FcChar8 *s;
+
+  pattern = pango_fc_font_key_get_pattern (key);
+  if (FcPatternGetString (pattern, PANGO_FC_GRAVITY, 0, (FcChar8 **)&s) == FcResultMatch)
+    {
+      GEnumValue *value = g_enum_get_value_by_nick (get_gravity_class (), (char *)s);
+      gravity = value->value;
+    }
+
+  return gravity;
+}
+
+static double
+get_font_size (PangoFcFontKey *key)
+{
+  FcPattern *pattern;
+  double size;
+  double dpi;
+
+  pattern = pango_fc_font_key_get_pattern (key);
+  if (FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size) == FcResultMatch)
+    return size;
+
+  /* Just in case FC_PIXEL_SIZE got unset between pango_fc_make_pattern()
+   * and here.  That would be very weird.
+   */
+
+  if (FcPatternGetDouble (pattern, FC_DPI, 0, &dpi) != FcResultMatch)
+    dpi = 72;
+
+  if (FcPatternGetDouble (pattern, FC_SIZE, 0, &size) == FcResultMatch)
+    return size * dpi / 72.;
+
+  /* Whatever */
+  return 18.;
+}
+
+static void
+parse_variations (const char      *variations,
+                  hb_variation_t **hb_variations,
+                  guint           *n_variations)
+{
+  guint n;
+  hb_variation_t *var;
+  int i;
+  const char *p;
+
+  n = 1;
+  for (i = 0; variations[i]; i++)
+    {
+      if (variations[i] == ',')
+        n++;
+    }
+
+  var = g_new (hb_variation_t, n);
+
+  p = variations;
+  n = 0;
+  while (p && *p)
+    {
+      char *end = strchr (p, ',');
+      if (hb_variation_from_string (p, end ? end - p: -1, &var[n]))
+        n++;
+      p = end ? end + 1 : NULL;
+    }
+
+  *hb_variations = var;
+  *n_variations = n;
+}
+
 static hb_font_t *
 pango_fc_font_create_hb_font (PangoFont *font)
 {
-  PangoFcFont *fcfont = PANGO_FC_FONT (font);
+  PangoFcFont *fc_font = PANGO_FC_FONT (font);
+  PangoFcFontKey *key;
   hb_face_t *hb_face;
+  hb_font_t *hb_font;
+  double x_scale_inv, y_scale_inv;
+  double x_scale, y_scale;
+  double size;
+  PangoGravity gravity;
 
-  hb_face = pango_fc_font_map_get_hb_face (PANGO_FC_FONT_MAP (fcfont->fontmap), fcfont);
+  x_scale_inv = y_scale_inv = 1.0;
+  key = _pango_fc_font_get_font_key (fc_font);
+  if (key)
+    {
+      const PangoMatrix *matrix = pango_fc_font_key_get_matrix (key);
+      pango_matrix_get_font_scale_factors (matrix, &x_scale_inv, &y_scale_inv);
+    }
+  if (PANGO_GRAVITY_IS_IMPROPER (gravity))
+  {
+    x_scale_inv = -x_scale_inv;
+    y_scale_inv = -y_scale_inv;
+  }
 
-  return hb_font_create (hb_face);
+  x_scale = 1. / x_scale_inv;
+  y_scale = 1. / y_scale_inv;
+
+  size = get_font_size (key);
+  gravity = pango_fc_font_key_get_gravity (key);
+  hb_face = pango_fc_font_map_get_hb_face (PANGO_FC_FONT_MAP (fc_font->fontmap), fc_font);
+
+  hb_font = hb_font_create (hb_face);
+  hb_font_set_scale (hb_font,
+                     size * PANGO_SCALE * x_scale,
+                     size * PANGO_SCALE * y_scale);
+  if (key)
+    {
+      const char *variations = pango_fc_font_key_get_variations (key);
+      if (variations)
+        {
+          guint n_variations;
+          hb_variation_t *hb_variations;
+
+          parse_variations (variations, &hb_variations, &n_variations);
+          hb_font_set_variations (hb_font, hb_variations, n_variations);
+
+          g_free (hb_variations);
+        }
+    }
+
+  return hb_font;
 }
 
 static void
