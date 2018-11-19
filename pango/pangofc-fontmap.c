@@ -50,6 +50,7 @@
 #include "pangofc-private.h"
 #include "pango-impl-utils.h"
 #include "pango-enum-types.h"
+#include "pangoft2-private.h"
 #include <hb-ft.h>
 
 
@@ -153,6 +154,7 @@ struct _PangoFcFontMapPrivate
   guint closed : 1;
 
   FcConfig *config;
+  FT_Library library;
 };
 
 struct _PangoFcFontFaceData
@@ -166,6 +168,7 @@ struct _PangoFcFontFaceData
   PangoCoverage *coverage;
   PangoFcCmapCache *cmap_cache;
 
+  FT_Face ft_face;
   hb_face_t *hb_face;
 };
 
@@ -1075,6 +1078,7 @@ static void
 pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 {
   PangoFcFontMapPrivate *priv;
+  FT_Error error;
 
   priv = fcfontmap->priv = pango_fc_font_map_get_instance_private (fcfontmap);
 
@@ -1101,6 +1105,12 @@ pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 						     (GDestroyNotify)pango_fc_font_face_data_free,
 						     NULL);
   priv->dpi = -1;
+
+  priv->library = NULL;
+
+  error = FT_Init_FreeType (&priv->library);
+  if (error != FT_Err_Ok)
+    g_critical ("pango_fc_font_map_init: Could not initialize freetype");
 }
 
 static void
@@ -1230,6 +1240,8 @@ pango_fc_font_map_finalize (GObject *object)
   pango_fc_font_map_shutdown (fcfontmap);
 
   G_OBJECT_CLASS (pango_fc_font_map_parent_class)->finalize (object);
+
+  FT_Done_FreeType (fcfontmap->priv->library);
 }
 
 /* Add a mapping from key to fcfont */
@@ -2662,6 +2674,22 @@ pango_fc_family_init (PangoFcFamily *fcfamily)
   fcfamily->n_faces = -1;
 }
 
+static void
+create_faces (PangoFcFontMap *fcfontmap,
+              PangoFcFontFaceData *data)
+{
+  FT_Error error;
+
+  error = FT_New_Face (fcfontmap->priv->library, data->filename, data->id, &data->ft_face);
+  if (error != FT_Err_Ok)
+    {
+      g_warning ("Failed to load %s", data->filename);
+      return;
+    }
+
+  data->hb_face = hb_ft_face_create_cached (data->ft_face);
+}
+
 hb_face_t *
 pango_fc_font_map_get_hb_face (PangoFcFontMap *fcfontmap,
                                PangoFcFont    *fcfont)
@@ -2671,13 +2699,31 @@ pango_fc_font_map_get_hb_face (PangoFcFontMap *fcfontmap,
   data = pango_fc_font_map_get_font_face_data (fcfontmap, fcfont->font_pattern);
   
   if (!data->hb_face)
-    {
-      hb_blob_t *blob;
-
-      blob = hb_blob_create_from_file (data->filename);
-      data->hb_face = hb_face_create (blob, data->id);
-      hb_blob_destroy (blob);
-    }
+    create_faces (fcfontmap, data);
 
   return data->hb_face;
 }
+
+FT_Face
+pango_fc_font_map_get_ft_face (PangoFcFontMap *fcfontmap,
+                               PangoFcFont    *fcfont)
+{
+  PangoFcFontFaceData *data;
+
+  data = pango_fc_font_map_get_font_face_data (fcfontmap, fcfont->font_pattern);
+  
+  if (!data->ft_face)
+    create_faces (fcfontmap, data);
+
+  return data->ft_face;
+}
+
+FT_Library
+_pango_ft2_font_map_get_library (PangoFontMap *fontmap)
+{
+  PangoFcFontMap *fcfontmap = (PangoFcFontMap *)fontmap;
+
+  return fcfontmap->priv->library;
+}
+
+
