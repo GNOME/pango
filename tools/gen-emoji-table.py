@@ -54,7 +54,8 @@ for typ,s in sets.items():
 	if typ not in ['Emoji',
 		       'Emoji_Presentation',
 		       'Emoji_Modifier',
-		       'Emoji_Modifier_Base']: continue
+		       'Emoji_Modifier_Base',
+		       'Extended_Pictographic']: continue
 	print()
 	print("static const struct Interval _pango_%s_table[] =" % typ)
 	print("{")
