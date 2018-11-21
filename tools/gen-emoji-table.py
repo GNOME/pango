@@ -12,7 +12,7 @@ if len (sys.argv) != 2:
 f = open(sys.argv[1])
 header = [f.readline () for _ in range(10)]
 
-sets = OrderedDict()
+ranges = OrderedDict()
 for line in f.readlines():
 	line = line.strip()
 	if not line or line[0] == '#':
@@ -25,9 +25,12 @@ for line in f.readlines():
 	else:
 		start = end = rang[0]
 
-	if typ not in sets:
-		sets[typ] = set()
-	sets[typ].add((start, end))
+	if typ not in ranges:
+		ranges[typ] = []
+	if ranges[typ] and ranges[typ][-1][1] == start - 1:
+		ranges[typ][-1] = (ranges[typ][-1][0], end)
+	else:
+		ranges[typ].append((start, end))
 
 
 
@@ -50,7 +53,7 @@ print("#include <glib.h>")
 print()
 print("struct Interval {\n  gunichar start, end;\n};")
 
-for typ,s in sets.items():
+for typ,s in ranges.items():
 	if typ not in ['Emoji',
 		       'Emoji_Presentation',
 		       'Emoji_Modifier',
