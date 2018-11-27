@@ -24,6 +24,7 @@
 #include "pango-break.h"
 #include "pango-engine-private.h"
 #include "pango-script-private.h"
+#include "pango-emoji-private.h"
 #include "pango-impl-utils.h"
 #include <string.h>
 
@@ -194,16 +195,12 @@ pango_default_break (const gchar   *text,
     GB_SpacingMark,
     GB_InHangulSyllable, /* Handles all of L, V, T, LV, LVT rules */
     /* Use state machine to handle emoji sequence */
-    /* Rule GB10 and GB11 */
-    GB_E_Base,
-    GB_E_Modifier,
-    GB_Glue_After_Zwj,
-    GB_E_Base_GAZ,
     /* Rule GB12 and GB13 */
     GB_RI_Odd, /* Meets odd number of RI */
     GB_RI_Even, /* Meets even number of RI */
   } GraphemeBreakType;
   GraphemeBreakType prev_GB_type = GB_Other;
+  gboolean met_Extended_Pictographic = FALSE;
 
   /* See Word_Break Property Values table of UAX#29 */
   typedef enum
@@ -221,6 +218,7 @@ pango_default_break (const gchar   *text,
     WB_ExtendNumLet,
     WB_RI_Odd,
     WB_RI_Even,
+    WB_WSegSpace,
   } WordBreakType;
   WordBreakType prev_prev_WB_type = WB_Other, prev_WB_type = WB_Other;
   gint prev_WB_i = -1;
@@ -371,10 +369,14 @@ pango_default_break (const gchar   *text,
       /* Just few spaces have variable width. So explicitly mark them.
        */
       attrs[i].is_expandable_space = (0x0020 == wc || 0x00A0 == wc);
+      gboolean is_Extended_Pictographic =
+	_pango_Is_Emoji_Extended_Pictographic (wc);
+
 
       /* ---- UAX#29 Grapheme Boundaries ---- */
       {
 	GraphemeBreakType GB_type;
+
         /* Find the GraphemeBreakType of wc */
 	GB_type = GB_Other;
 	switch ((int) type)
@@ -447,70 +449,6 @@ pango_default_break (const gchar   *text,
 	    break;
 
           case G_UNICODE_OTHER_SYMBOL:
-            if (G_UNLIKELY(wc == 0x261D ||
-                           wc == 0x26F9 ||
-                           (wc >= 0x270A && wc <= 0x270D) ||
-                           wc == 0x1F385 ||
-                           (wc >= 0x1F3C2 && wc <= 0x1F3C4) ||
-                           wc == 0x1F3C7 ||
-                           (wc >= 0x1F3CA && wc <= 0x1F3CC) ||
-                           (wc >= 0x1F442 && wc <= 0x1F443) ||
-                           (wc >= 0x1F446 && wc <= 0x1F450) ||
-                           wc == 0x1F46E ||
-                           (wc >= 0x1F470 && wc <= 0x1F478) ||
-                           wc == 0x1F47C ||
-                           (wc >= 0x1F481 && wc <= 0x1F483) ||
-                           (wc >= 0x1F485 && wc <= 0x1F487) ||
-                           wc == 0x1F4AA ||
-                           (wc >= 0x1F574 && wc <= 0x1F575) ||
-                           wc == 0x1F57A ||
-                           wc == 0x1F590 ||
-                           (wc >= 0x1F595 && wc <= 0x1F596) ||
-                           (wc >= 0x1F645 && wc <= 0x1F647) ||
-                           (wc >= 0x1F64B && wc <= 0x1F64F) ||
-                           wc == 0x1F6A3 ||
-                           (wc >= 0x1F6B4 && wc <= 0x1F6B6) ||
-                           wc == 0x1F6C0 ||
-                           wc == 0x1F6CC ||
-                           (wc >= 0x1F918 && wc <= 0x1F91C) ||
-                           (wc >= 0x1F91E && wc <= 0x1F91F) ||
-                           wc == 0x1F926 ||
-                           (wc >= 0x1F930 && wc <= 0x1F939) ||
-                           (wc >= 0x1F93D && wc <= 0x1F93E) ||
-                           (wc >= 0x1F9D1 && wc <= 0x1F9DD)))
-              {
-                GB_type = GB_E_Base;
-                break;
-              }
-            if (G_UNLIKELY(wc == 0x2640 ||
-                           wc == 0x2642 ||
-                           (wc >= 0x2695 && wc <= 0x2696) ||
-                           wc == 0x2708 ||
-                           wc == 0x2764 ||
-                           wc == 0x1F308 ||
-                           wc == 0x1F33E ||
-                           wc == 0x1F373 ||
-                           wc == 0x1F393 ||
-                           wc == 0x1F3A4 ||
-                           wc == 0x1F3A8 ||
-                           wc == 0x1F3EB ||
-                           wc == 0x1F3ED ||
-                           wc == 0x1F48B ||
-                           (wc >= 0x1F4BB && wc <= 0x1F4BC) ||
-                           wc == 0x1F527 ||
-                           wc == 0x1F52C ||
-                           wc == 0x1F5E8 ||
-                           wc == 0x1F680 ||
-                           wc == 0x1F692))
-              {
-                GB_type = GB_Glue_After_Zwj;
-                break;
-              }
-            if (G_UNLIKELY(wc >= 0x1F466 && wc <= 0x1F469))
-              {
-                GB_type = GB_E_Base_GAZ;
-                break;
-              }
             if (G_UNLIKELY(wc >=0x1F1E6 && wc <=0x1F1FF))
               {
                 if (prev_GB_type == GB_RI_Odd)
@@ -525,11 +463,28 @@ pango_default_break (const gchar   *text,
 
           case G_UNICODE_MODIFIER_SYMBOL:
             if (wc >= 0x1F3FB && wc <= 0x1F3FF)
-              GB_type = GB_E_Modifier;
+              GB_type = GB_Extend;
             break;
 	  }
 
+	/* Rule GB11 */
+	if (met_Extended_Pictographic)
+	  {
+	    if (GB_type == GB_Extend)
+	      met_Extended_Pictographic = TRUE;
+	    else if (_pango_Is_Emoji_Extended_Pictographic (prev_wc) &&
+		     GB_type == GB_ZWJ)
+	      met_Extended_Pictographic = TRUE;
+	    else if (prev_GB_type == GB_Extend && GB_type == GB_ZWJ)
+	      met_Extended_Pictographic = TRUE;
+	    else if (prev_GB_type == GB_ZWJ && is_Extended_Pictographic)
+	      met_Extended_Pictographic = TRUE;
+	    else
+	      met_Extended_Pictographic = FALSE;
+	  }
+
 	/* Grapheme Cluster Boundary Rules */
+	is_grapheme_boundary = TRUE; /* Rule GB999 */
 
 	/* We apply Rules GB1 and GB2 at the end of the function */
 	if (wc == '\n' && prev_wc == '\r')
@@ -540,9 +495,6 @@ pango_default_break (const gchar   *text,
 	  is_grapheme_boundary = FALSE; /* Rules GB6, GB7, GB8 */
 	else if (GB_type == GB_Extend)
           {
-            /* Rule GB10 */
-            if (prev_GB_type == GB_E_Base || prev_GB_type == GB_E_Base_GAZ)
-	      GB_type = prev_GB_type;
 	    is_grapheme_boundary = FALSE; /* Rule GB9 */
           }
         else if (GB_type == GB_ZWJ)
@@ -551,37 +503,23 @@ pango_default_break (const gchar   *text,
 	  is_grapheme_boundary = FALSE; /* Rule GB9a */
 	else if (prev_GB_type == GB_Prepend)
 	  is_grapheme_boundary = FALSE; /* Rule GB9b */
-	/* Rule GB10 */
-	else if (prev_GB_type == GB_E_Base || prev_GB_type == GB_E_Base_GAZ)
-	  {
-            if (GB_type == GB_E_Modifier)
-              is_grapheme_boundary = FALSE;
-            else
-              is_grapheme_boundary = TRUE;
-          }
-	else if (prev_GB_type == GB_ZWJ &&
-                 (GB_type == GB_Glue_After_Zwj || GB_type == GB_E_Base_GAZ))
-	  is_grapheme_boundary = FALSE; /* Rule GB11 */
+	else if (is_Extended_Pictographic)
+	  { /* Rule GB11 */
+	    if (prev_GB_type == GB_ZWJ && met_Extended_Pictographic)
+	      is_grapheme_boundary = FALSE;
+	  }
 	else if (prev_GB_type == GB_RI_Odd && GB_type == GB_RI_Even)
 	  is_grapheme_boundary = FALSE; /* Rule GB12 and GB13 */
-	else
-	  is_grapheme_boundary = TRUE; /* Rule GB999 */
+
+	if (is_Extended_Pictographic)
+	  met_Extended_Pictographic = TRUE;
 
 	attrs[i].is_cursor_position = is_grapheme_boundary;
 	/* If this is a grapheme boundary, we have to decide if backspace
 	 * deletes a character or the whole grapheme cluster */
 	if (is_grapheme_boundary)
           {
-            if (prev_GB_type == GB_E_Base ||
-                prev_GB_type == GB_E_Base_GAZ ||
-                prev_GB_type == GB_Glue_After_Zwj ||
-                prev_GB_type == GB_Extend ||
-                prev_GB_type == GB_E_Modifier ||
-                prev_GB_type == GB_RI_Odd ||
-                prev_GB_type == GB_RI_Even)
-	      attrs[i].backspace_deletes_character = FALSE;
-            else
-	      attrs[i].backspace_deletes_character = BACKSPACE_DELETES_CHARACTER (base_character);
+	    attrs[i].backspace_deletes_character = BACKSPACE_DELETES_CHARACTER (base_character);
           }
 	else
 	  attrs[i].backspace_deletes_character = FALSE;
@@ -723,7 +661,14 @@ pango_default_break (const gchar   *text,
 		  break;
 		}
 
-	    /* Grapheme Cluster Boundary Rules */
+	    if (WB_type == WB_Other)
+	      {
+		if (type == G_UNICODE_SPACE_SEPARATOR &&
+		    break_type != G_UNICODE_BREAK_NON_BREAKING_GLUE)
+		  WB_type = WB_WSegSpace;
+	      }
+
+	    /* Word Cluster Boundary Rules */
 
 	    /* We apply Rules WB1 and WB2 at the end of the function */
 
@@ -739,6 +684,11 @@ pango_default_break (const gchar   *text,
 	      }
 	    else if (WB_type == WB_NewlineCRLF)
 	      is_word_boundary = TRUE; /* Rule WB3b */
+	    else if (prev_wc == 0x200D && is_Extended_Pictographic)
+	      is_word_boundary = FALSE; /* Rule WB3c */
+	    else if (prev_WB_type == WB_WSegSpace &&
+		     WB_type == WB_WSegSpace && prev_WB_i + 1 == i)
+	      is_word_boundary = FALSE; /* Rule WB3d */
 	    else if (WB_type == WB_ExtendFormat)
 	      is_word_boundary = FALSE; /* Rules WB4? */
 	    else if ((prev_WB_type == WB_ALetter  ||
@@ -1089,7 +1039,7 @@ pango_default_break (const gchar   *text,
 
       /* Rule LB1:
 	 assign a line breaking class to each code point of the input. */
-      switch ((int) break_type)
+      switch (break_type)
 	{
 	case G_UNICODE_BREAK_AMBIGUOUS:
 	case G_UNICODE_BREAK_SURROGATE:
@@ -1122,6 +1072,7 @@ pango_default_break (const gchar   *text,
 	  break_type == G_UNICODE_BREAK_HANGUL_T_JAMO ||
 	  break_type == G_UNICODE_BREAK_HANGUL_LV_SYLLABLE ||
 	  break_type == G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE ||
+	  break_type == G_UNICODE_BREAK_EMOJI_MODIFIER ||
 	  break_type == G_UNICODE_BREAK_REGIONAL_INDICATOR)
 	{
 	  LineBreakType LB_type;
@@ -1425,10 +1376,7 @@ pango_default_break (const gchar   *text,
 	  if (row_break_type == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
 	    break_op = BREAK_ALLOWED; /* Rule LB8 */
 
-	  if (prev_wc == 0x200D &&
-	      (break_type == G_UNICODE_BREAK_IDEOGRAPHIC ||
-	       break_type == G_UNICODE_BREAK_EMOJI_BASE ||
-	       break_type == G_UNICODE_BREAK_EMOJI_MODIFIER))
+	  if (prev_wc == 0x200D)
 	    break_op = BREAK_PROHIBITED; /* Rule LB8a */
 
 	  if (break_type == G_UNICODE_BREAK_SPACE ||

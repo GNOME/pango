@@ -92,7 +92,13 @@ DEFINE_pango_Is_(Emoji)
 DEFINE_pango_Is_(Emoji_Presentation)
 DEFINE_pango_Is_(Emoji_Modifier)
 DEFINE_pango_Is_(Emoji_Modifier_Base)
+DEFINE_pango_Is_(Extended_Pictographic)
 
+gboolean
+_pango_Is_Emoji_Extended_Pictographic (gunichar ch)
+{
+	return _pango_Is_Extended_Pictographic (ch);
+}
 
 static gboolean
 _pango_Is_Emoji_Text_Default (gunichar ch)
