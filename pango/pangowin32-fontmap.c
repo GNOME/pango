@@ -449,8 +449,6 @@ handle_alias_line (GString    *line_buffer,
 
 static const char * const builtin_aliases[] = {
   "courier = \"courier new\"",
-  "\"segoe ui\" = \"segoe ui,meiryo,malgun gothic,microsoft jhenghei,microsoft yahei,gisha,leelawadee,arial unicode ms,browallia new,mingliu,simhei,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
-  "tahoma = \"tahoma,arial unicode ms,lucida sans unicode,browallia new,mingliu,simhei,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
   /* It sucks to use the same GulimChe, MS Gothic, Sylfaen, Kartika,
    * Latha, Mangal and Raavi fonts for all three of sans, serif and
    * mono, but it isn't like there would be much choice. For most
@@ -490,6 +488,105 @@ read_builtin_aliases (GHashTable *ht_aliases)
 
   g_string_free (line_buffer, TRUE);
 }
+
+#define MAX_VALUE_NAME 16383
+
+static void
+read_windows_fallbacks (GHashTable *ht_aliases)
+{
+  DWORD value_index;
+  HKEY hkey;
+  LSTATUS status;
+  GString *line_buffer;
+  char *errstring = NULL;
+
+  /* https://docs.microsoft.com/en-us/globalization/input/font-technology */
+  status = RegOpenKeyExW (
+      HKEY_LOCAL_MACHINE,
+      L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\FontLink\\SystemLink",
+      0, KEY_READ, &hkey);
+  if (status != ERROR_SUCCESS)
+      return;
+
+  line_buffer = g_string_new (NULL);
+  status = ERROR_SUCCESS;
+  for (value_index = 0; status != ERROR_NO_MORE_ITEMS; value_index++)
+    {
+      wchar_t name[MAX_VALUE_NAME];
+      DWORD name_length = MAX_VALUE_NAME, value_length = 0;
+      gchar *utf8_name;
+      wchar_t *value_data, *entry;
+      size_t entry_len;
+
+      status = RegEnumValueW (hkey, value_index, name, &name_length,
+                              NULL, NULL, NULL, NULL);
+
+      if (status != ERROR_SUCCESS )
+          continue;
+
+      utf8_name = g_utf16_to_utf8 (name, -1, NULL, NULL, NULL);
+      if (utf8_name == NULL)
+          continue;
+      g_string_truncate (line_buffer, 0);
+      g_string_append_printf (
+        line_buffer, "\"%s\" = \"%s", utf8_name, utf8_name);
+      g_free (utf8_name);
+
+      status = RegGetValueW (hkey, NULL, name, RRF_RT_REG_MULTI_SZ,
+                             NULL, NULL, &value_length);
+      if (status != ERROR_SUCCESS)
+        continue;
+
+      value_data = g_malloc (value_length);
+      status = RegGetValueW (hkey, NULL, name, RRF_RT_REG_MULTI_SZ, NULL,
+                             value_data, &value_length);
+      if (status != ERROR_SUCCESS)
+        {
+          g_free (value_data);
+          continue;
+        }
+
+      entry = value_data;
+      entry_len = wcslen (entry);
+      while (entry_len)
+        {
+          wchar_t *comma;
+          gchar *entry_utf8;
+
+          comma = wcsstr (entry, L",");
+          /* The value after the first comma, as long as it isn't followed
+           * by another comma with a font scale */
+          if (comma && wcsstr (comma + 1, L",") == NULL)
+            {
+              g_string_append (line_buffer, ",");
+              entry_utf8 = g_utf16_to_utf8 (comma + 1, -1, NULL, NULL, NULL);
+              if (entry_utf8 != NULL)
+                {
+                  g_string_append (line_buffer, entry_utf8);
+                  g_free (entry_utf8);
+                }
+            }
+
+          entry += entry_len + 1;
+          entry_len = wcslen (entry);
+        }
+      g_free (value_data);
+      g_string_append (line_buffer, "\"");
+
+      handle_alias_line (line_buffer, &errstring, ht_aliases);
+      if (errstring)
+        {
+          g_warning ("error in windows fallback: %s (%s)\n",
+                     errstring, line_buffer->str);
+          g_free (errstring);
+          errstring = NULL;
+        }
+    }
+
+  RegCloseKey (hkey);
+  g_string_free (line_buffer, TRUE);
+}
+
 #endif
 
 
@@ -502,6 +599,7 @@ load_aliases (void)
                                                   NULL);
 
 #ifdef HAVE_CAIRO_WIN32
+  read_windows_fallbacks (ht_aliases);
   read_builtin_aliases (ht_aliases);
 #endif
 
