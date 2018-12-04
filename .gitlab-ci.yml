@@ -3,7 +3,7 @@ image: registry.gitlab.gnome.org/gnome/gnome-runtime-images/base:latest
 stages:
   - build
 
-build-pango:
+gnome-runtime-linux:
   stage: build
   before_script:
     - >
