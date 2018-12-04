@@ -302,6 +302,9 @@ pango_default_break (const gchar   *text,
       gboolean is_word_boundary;
       gboolean is_sentence_boundary;
 
+      /* Emoji extended pictographics */
+      gboolean is_Extended_Pictographic;
+
 
       wc = next_wc;
       break_type = next_break_type;
@@ -369,7 +372,7 @@ pango_default_break (const gchar   *text,
       /* Just few spaces have variable width. So explicitly mark them.
        */
       attrs[i].is_expandable_space = (0x0020 == wc || 0x00A0 == wc);
-      gboolean is_Extended_Pictographic =
+      is_Extended_Pictographic =
 	_pango_Is_Emoji_Extended_Pictographic (wc);
 
 
