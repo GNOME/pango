@@ -3,23 +3,38 @@ image: registry.gitlab.gnome.org/gnome/gnome-runtime-images/base:latest
 stages:
   - build
 
-before_script:
-  - >
-    dnf install -y \
-      gcc \
-      gcc-c++ \
-      meson \
-      redhat-rpm-config \
-      glib2-devel \
-      harfbuzz-devel \
-      fribidi-devel \
-      cairo-devel \
-      gobject-introspection-devel \
-      cairo-gobject-devel \
-      abattis-cantarell-fonts
-
 build-pango:
   stage: build
+  before_script:
+    - >
+      dnf install -y \
+        gcc \
+        gcc-c++ \
+        meson \
+        redhat-rpm-config \
+        glib2-devel \
+        harfbuzz-devel \
+        fribidi-devel \
+        cairo-devel \
+        gobject-introspection-devel \
+        cairo-gobject-devel \
+        abattis-cantarell-fonts
   script:
     - meson _build
     - ninja -C _build dist
+
+msys2-mingw64:
+  stage: build
+  tags:
+    - win32
+  variables:
+    MSYSTEM: "MINGW64"
+    CHERE_INVOKING: "yes"
+  script:
+    - C:\msys64\usr\bin\pacman --noconfirm -Syyuu
+    - C:\msys64\usr\bin\bash -lc "bash -x ./.gitlab-ci/test-msys2.sh"
+  artifacts:
+    name: "%CI_JOB_NAME%-%CI_COMMIT_REF_NAME%"
+    when: always
+    paths:
+      - _build/meson-logs
