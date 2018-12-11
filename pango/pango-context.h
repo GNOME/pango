@@ -25,6 +25,7 @@
 #include <pango/pango-font.h>
 #include <pango/pango-fontmap.h>
 #include <pango/pango-attributes.h>
+#include <pango/pango-direction.h>
 
 G_BEGIN_DECLS
 

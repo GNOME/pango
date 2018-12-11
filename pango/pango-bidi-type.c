@@ -43,6 +43,8 @@
 
 #include <fribidi.h>
 
+#undef PANGO_DISABLE_DEPRECATED
+
 #include "pango-bidi-type.h"
 #include "pango-utils.h"
 
@@ -304,6 +306,7 @@ pango_unichar_direction (gunichar ch)
   else
     return PANGO_DIRECTION_LTR;
 }
+
 
 /**
  * pango_get_mirror_char:

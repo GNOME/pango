@@ -35,6 +35,7 @@ pango_headers = [
   'pango-break.h',
   'pango-context.h',
   'pango-coverage.h',
+  'pango-direction.h',
   'pango-engine.h',
   'pango-font.h',
   'pango-fontmap.h',

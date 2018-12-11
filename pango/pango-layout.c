@@ -3851,6 +3851,9 @@ apply_no_shape_attributes (PangoLayout   *layout,
     }
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 static void
 pango_layout_check_lines (PangoLayout *layout)
 {
@@ -4014,6 +4017,8 @@ pango_layout_check_lines (PangoLayout *layout)
 
   layout->lines = g_slist_reverse (layout->lines);
 }
+
+#pragma GCC diagnostic pop
 
 /**
  * pango_layout_line_ref:

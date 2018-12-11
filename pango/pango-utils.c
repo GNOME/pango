@@ -793,6 +793,9 @@ pango_lookup_aliases (const char   *fontname,
   *n_families = 0;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 /**
  * pango_find_base_dir:
  * @text:   the text to process
@@ -830,6 +833,8 @@ pango_find_base_dir (const gchar *text,
 
   return dir;
 }
+
+#pragma GCC diagnostic pop
 
 /**
  * pango_is_zero_width:
