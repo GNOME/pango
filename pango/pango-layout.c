@@ -1006,7 +1006,7 @@ pango_layout_is_ellipsized (PangoLayout *layout)
 /**
  * pango_layout_set_text:
  * @layout: a #PangoLayout
- * @text: a valid UTF-8 string
+ * @text: the text
  * @length: maximum length of @text, in bytes. -1 indicates that
  *          the string is nul-terminated and the length should be
  *          calculated.  The text will also be truncated on
@@ -1014,12 +1014,15 @@ pango_layout_is_ellipsized (PangoLayout *layout)
  *          positive.
  *
  * Sets the text of the layout.
+ * 
+ * This function validates @text and renders invalid UTF-8
+ * with a placeholder glyph.
  *
- * Note that if you have used
- * pango_layout_set_markup() or pango_layout_set_markup_with_accel() on
- * @layout before, you may want to call pango_layout_set_attributes() to clear
- * the attributes set on the layout from the markup as this function does not
- * clear attributes.
+ * Note that if you have used pango_layout_set_markup() or
+ * pango_layout_set_markup_with_accel() on @layout before, you may
+ * want to call pango_layout_set_attributes() to clear the attributes
+ * set on the layout from the markup as this function does not clear
+ * attributes.
  **/
 void
 pango_layout_set_text (PangoLayout *layout,
@@ -1044,8 +1047,7 @@ pango_layout_set_text (PangoLayout *layout,
 
   layout->length = strlen (layout->text);
 
-  /* validate it, and replace invalid bytes with '?'
-   */
+  /* validate it, and replace invalid bytes with -1 */
   start = layout->text;
   for (;;) {
     gboolean valid;

@@ -139,7 +139,7 @@ typedef enum
 
 /**
  * pango_default_break:
- * @text: text to break
+ * @text: text to break. Must be valid UTF-8
  * @length: length of text in bytes (may be -1 if @text is nul-terminated)
  * @analysis: (nullable): a #PangoAnalysis for the @text
  * @attrs: logical attributes to fill in
@@ -1650,7 +1650,7 @@ tailor_break (const gchar   *text,
 
 /**
  * pango_break:
- * @text:      the text to process
+ * @text:      the text to process. Must be valid UTF-8
  * @length:    length of @text in bytes (may be -1 if @text is nul-terminated)
  * @analysis:  #PangoAnalysis structure from pango_itemize()
  * @attrs:     (array length=attrs_len): an array to store character
@@ -1810,7 +1810,7 @@ tailor_segment (const char      *range_start,
 
 /**
  * pango_get_log_attrs:
- * @text: text to process
+ * @text: text to process. Must be valid UTF-8
  * @length: length in bytes of @text
  * @level: embedding level, or -1 if unknown
  * @language: language tag

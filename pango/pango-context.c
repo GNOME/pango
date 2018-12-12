@@ -1616,7 +1616,7 @@ itemize_with_font (PangoContext               *context,
  * pango_itemize:
  * @context:   a structure holding information that affects
 	       the itemization process.
- * @text:      the text to itemize.
+ * @text:      the text to itemize. Must be valid UTF-8
  * @start_index: first byte in @text to process
  * @length:    the number of bytes (not characters) to process
  *             after @start_index.
