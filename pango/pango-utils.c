@@ -798,7 +798,7 @@ pango_lookup_aliases (const char   *fontname,
 
 /**
  * pango_find_base_dir:
- * @text:   the text to process
+ * @text:   the text to process. Must be valid UTF-8
  * @length: length of @text in bytes (may be -1 if @text is nul-terminated)
  *
  * Searches a string the first character that has a strong
