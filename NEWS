@@ -1,3 +1,16 @@
+Overview of changes in 1.43.0
+=============================
+- Drop autotools
+- Drop Visual Studio build
+- Build with meson everywhere
+- Update Emoji tables for Unicode 11
+- Update test data for Unicode 11
+- Fix a crash with Thai breaking
+- Fix a crash with font variations
+- Deprecate bidi apis in favor of fribidi
+- Add a variable font family api
+- Improve font fallback handling on win32
+
 Overview of changes in 1.42.4
 =============================
 - Fix build failures (OS X, C89)
