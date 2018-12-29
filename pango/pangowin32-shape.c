@@ -406,6 +406,8 @@ itemize_shape_and_place (PangoFont           *font,
   HFONT hfont = _pango_win32_font_get_hfont (font);
   static GHashTable *script_cache_hash = NULL;
 
+  /* *** Shape OpenType stuff, for font tweaking *** */
+
   if (!script_cache_hash)
     script_cache_hash = g_hash_table_new ((GHashFunc)script_cache_key_hash_func,
                                           (GEqualFunc)script_cache_key_equal_func);
