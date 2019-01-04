@@ -46,9 +46,18 @@
 PangoOTTag
 pango_ot_tag_from_script (PangoScript script)
 {
-  hb_tag_t tag1, tag2;
-  hb_ot_tags_from_script (hb_glib_script_to_script (script), &tag1, &tag2);
-  return (PangoOTTag) tag1;
+  unsigned int count = 1;
+  hb_tag_t tags[1];
+
+  hb_ot_tags_from_script_and_language (hb_glib_script_to_script (script),
+                                       HB_LANGUAGE_INVALID,
+                                       &count,
+                                       tags,
+                                       NULL, NULL);
+  if (count > 0)
+    return (PangoOTTag) tags[0];
+
+  return PANGO_OT_TAG_DEFAULT_SCRIPT;
 }
 
 /**
@@ -94,7 +103,18 @@ pango_ot_tag_to_script (PangoOTTag script_tag)
 PangoOTTag
 pango_ot_tag_from_language (PangoLanguage *language)
 {
-  return (PangoOTTag) hb_ot_tag_from_language (hb_language_from_string (pango_language_to_string (language), -1));
+  unsigned int count = 1;
+  hb_tag_t tags[1];
+
+  hb_ot_tags_from_script_and_language (HB_SCRIPT_UNKNOWN,
+                                       hb_language_from_string (pango_language_to_string (language), -1),
+                                       NULL, NULL,
+                                       &count, tags);
+
+  if (count > 0)
+    return (PangoOTTag) tags[0];
+
+  return PANGO_OT_TAG_DEFAULT_LANGUAGE;
 }
 
 /**
