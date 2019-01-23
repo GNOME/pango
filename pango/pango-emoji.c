@@ -192,11 +192,15 @@ _pango_EmojiSegmentationCategory (gunichar codepoint)
   return kMaxEmojiScannerCategory;
 }
 
-#define found_text_presentation_sequence
+#define found_text_presentation_sequence                                 \
+  {                                                                      \
+    if (0) g_print ("text  %ld..%ld\n", ts - buffer, te - buffer);       \
+    *end = te - buffer;                                                  \
+    return FALSE;                                                        \
+  }
 #define found_emoji_presentation_sequence                                \
   {                                                                      \
     if (0) g_print ("emoji %ld..%ld\n", ts - buffer, te - buffer);       \
-    *last = ts - buffer;                                                 \
     *end = te - buffer;                                                  \
     return TRUE;                                                         \
   }
@@ -221,7 +225,7 @@ _pango_emoji_iter_init (PangoEmojiIter *iter,
     p = g_utf8_next_char (p);
   }
 
-  iter->text_start = iter->start = iter->end = iter->token_start = iter->token_end = text;
+  iter->text_start = iter->start = iter->end = text;
   if (length >= 0)
     iter->text_end = text + length;
   else
@@ -246,56 +250,31 @@ _pango_emoji_iter_fini (PangoEmojiIter *iter)
 gboolean
 _pango_emoji_iter_next (PangoEmojiIter *iter)
 {
+  unsigned int old_cursor, cursor;
+  gboolean is_emoji;
+
   if (iter->end >= iter->text_end)
     return FALSE;
 
   iter->start = iter->end;
 
-  /* The scan_emoji_presentation scanner function returns false when it reaches
-   * the end of the buffer and has not discovered any emoji runs in between. For
-   * Emoji runs, it returns true, and token_start_ and token_end_ are set to the
-   * start and end of the emoji sequence. This means, it may skip over text runs
-   * in between, see below. */
-  if (iter->start >= iter->token_end)
-    {
-      /* We need to scan furhter. */
-      unsigned int token_start, token_end;
-      if (!scan_emoji_presentation (iter->types, iter->n_chars, iter->cursor,
-				    &token_start, &token_end))
-	{
-	  /* The scanner returned false, which means it has reached the end of the
-	   * buffer without discovering any emoji segments in between. */
-	  iter->end = iter->text_end;
-	  iter->is_emoji = FALSE;
+  old_cursor = cursor = iter->cursor;
+  is_emoji = scan_emoji_presentation (iter->types, iter->n_chars, cursor, &cursor);
+  do
+  {
+    iter->cursor = cursor;
+    iter->is_emoji = is_emoji;
 
-	  return TRUE;
-	};
-      /* Ugly... */
-      g_assert (iter->cursor <= token_start && token_start < token_end && token_end <= iter->n_chars);
-      iter->token_start = g_utf8_offset_to_pointer (iter->token_end, token_start - iter->cursor);
-      iter->token_end   = g_utf8_offset_to_pointer (iter->token_end, token_end   - iter->cursor);
-      iter->cursor = token_end;
-    }
+    if (cursor == iter->n_chars)
+      break;
 
-  if (iter->start < iter->token_start)
-    {
-      /* The scanner function has progressed to the next emoji segment, but we
-       * need to return the text segment over which it had skipped. */
-      iter->end = iter->token_start;
-      iter->is_emoji = FALSE;
-      return TRUE;
-    }
+    is_emoji = scan_emoji_presentation (iter->types, iter->n_chars, cursor, &cursor);
+  }
+  while (iter->is_emoji == is_emoji);
 
-  if (iter->start >= iter->token_start && iter->start < iter->token_end)
-    {
-      /* Now our cursor has reached the emoji segment, and we can return it. */
-      iter->end = iter->token_end;
-      iter->is_emoji = TRUE;
-      return TRUE;
-    }
+  iter->end = g_utf8_offset_to_pointer (iter->start, iter->cursor - old_cursor);
 
-  g_assert_not_reached ();
-  return FALSE;
+  return TRUE;
 }
 
 

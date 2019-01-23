@@ -62,14 +62,15 @@ emoji_presentation = EMOJI_EMOJI_PRESENTATION | TAG_BASE | EMOJI_MODIFIER_BASE |
   emoji_tag_sequence | emoji_keycap_sequence | emoji_zwj_sequence |
   emoji_combining_encloding_circle_backslash_sequence;
 
-emoji_run = emoji_presentation+;
+emoji_run = emoji_presentation;
 
 text_presentation_emoji = any_emoji VS15;
 text_run = text_presentation_emoji | any;
 
 text_and_emoji_run := |*
+text_presentation_emoji => { found_text_presentation_sequence };
 emoji_run => { found_emoji_presentation_sequence };
-text_run => { found_text_presentation_sequence };
+any => { found_text_presentation_sequence };
 *|;
 
 }%%
@@ -78,7 +79,6 @@ static gboolean
 scan_emoji_presentation (const unsigned char* buffer,
                          unsigned buffer_size,
                          unsigned cursor,
-                         unsigned* last,
                          unsigned* end)
 {
   const unsigned char *p = buffer + cursor;
@@ -91,6 +91,7 @@ scan_emoji_presentation (const unsigned char* buffer,
     write init;
     write exec;
   }%%
-  return FALSE;
+
+  g_assert_not_reached ();
 }
 

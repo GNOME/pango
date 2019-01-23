@@ -37,9 +37,6 @@ struct _PangoEmojiIter
   const gchar *end;
   gboolean is_emoji;
 
-  const gchar *token_start;
-  const gchar *token_end;
-
   const unsigned char *types;
   unsigned int n_chars;
   unsigned int cursor;
