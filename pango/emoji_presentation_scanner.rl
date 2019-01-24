@@ -30,7 +30,7 @@ TAG_TERM = 15;
 any_emoji =  EMOJI_TEXT_PRESENTATION | EMOJI_EMOJI_PRESENTATION |  KEYCAP_BASE |
   EMOJI_MODIFIER_BASE | TAG_BASE | EMOJI;
 
-emoji_combining_encloding_circle_backslash_sequence = any_emoji
+emoji_combining_enclosing_circle_backslash_sequence = any_emoji
   COMBINING_ENCLOSING_CIRCLE_BACKSLASH;
 
 # This could be sharper than any_emoji by restricting this only to valid
@@ -58,40 +58,42 @@ emoji_zwj_element =  emoji_presentation_sequence | emoji_modifier_sequence | any
 emoji_zwj_sequence = emoji_zwj_element ( ZWJ emoji_zwj_element )+;
 
 emoji_presentation = EMOJI_EMOJI_PRESENTATION | TAG_BASE | EMOJI_MODIFIER_BASE |
-  emoji_presentation_sequence | emoji_modifier_sequence | emoji_flag_sequence |
-  emoji_tag_sequence | emoji_keycap_sequence | emoji_zwj_sequence |
-  emoji_combining_encloding_circle_backslash_sequence;
+ emoji_presentation_sequence | emoji_modifier_sequence | emoji_flag_sequence |
+ emoji_tag_sequence | emoji_keycap_sequence | emoji_zwj_sequence |
+ emoji_combining_enclosing_circle_backslash_sequence;
 
 emoji_run = emoji_presentation;
 
 text_presentation_emoji = any_emoji VS15;
-text_run = text_presentation_emoji | any;
+text_run = any;
 
 text_and_emoji_run := |*
-text_presentation_emoji => { found_text_presentation_sequence };
-emoji_run => { found_emoji_presentation_sequence };
-any => { found_text_presentation_sequence };
+# In order to give the the VS15 sequences higher priority than detecting
+# emoji sequences they are listed first as scanner token here.
+text_presentation_emoji => { *is_emoji = false; return te; };
+emoji_run => { *is_emoji = true; return te; };
+text_run => { *is_emoji = false; return te; };
 *|;
 
 }%%
 
-static gboolean
-scan_emoji_presentation (const unsigned char* buffer,
-                         unsigned buffer_size,
-                         unsigned cursor,
-                         unsigned* end)
+static emoji_text_iter_t
+scan_emoji_presentation (emoji_text_iter_t p,
+    const emoji_text_iter_t pe,
+    bool* is_emoji)
 {
-  const unsigned char *p = buffer + cursor;
-  const unsigned char *pe, *eof, *ts, *te;
+  emoji_text_iter_t ts, te;
+  const emoji_text_iter_t eof = pe;
+
   unsigned act;
   int cs;
-  pe = eof = buffer + buffer_size;
 
   %%{
     write init;
     write exec;
   }%%
 
-  g_assert_not_reached ();
+  /* Should not be reached. */
+  *is_emoji = false;
+  return pe;
 }
-

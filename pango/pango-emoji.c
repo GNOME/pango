@@ -192,18 +192,10 @@ _pango_EmojiSegmentationCategory (gunichar codepoint)
   return kMaxEmojiScannerCategory;
 }
 
-#define found_text_presentation_sequence                                 \
-  {                                                                      \
-    if (0) g_print ("text  %ld..%ld\n", ts - buffer, te - buffer);       \
-    *end = te - buffer;                                                  \
-    return FALSE;                                                        \
-  }
-#define found_emoji_presentation_sequence                                \
-  {                                                                      \
-    if (0) g_print ("emoji %ld..%ld\n", ts - buffer, te - buffer);       \
-    *end = te - buffer;                                                  \
-    return TRUE;                                                         \
-  }
+
+typedef gboolean bool;
+enum { false = FALSE, true = TRUE };
+typedef unsigned char *emoji_text_iter_t;
 
 #include "emoji_presentation_scanner.c"
 
@@ -259,7 +251,9 @@ _pango_emoji_iter_next (PangoEmojiIter *iter)
   iter->start = iter->end;
 
   old_cursor = cursor = iter->cursor;
-  is_emoji = scan_emoji_presentation (iter->types, iter->n_chars, cursor, &cursor);
+  cursor = scan_emoji_presentation (iter->types + cursor,
+				    iter->types + iter->n_chars,
+				    &is_emoji) - iter->types;
   do
   {
     iter->cursor = cursor;
@@ -268,7 +262,9 @@ _pango_emoji_iter_next (PangoEmojiIter *iter)
     if (cursor == iter->n_chars)
       break;
 
-    is_emoji = scan_emoji_presentation (iter->types, iter->n_chars, cursor, &cursor);
+    cursor = scan_emoji_presentation (iter->types + cursor,
+				      iter->types + iter->n_chars,
+				      &is_emoji) - iter->types;
   }
   while (iter->is_emoji == is_emoji);
 
