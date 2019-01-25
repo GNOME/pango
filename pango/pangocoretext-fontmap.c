@@ -1323,7 +1323,8 @@ pango_core_text_font_map_load_fontset (PangoFontMap               *fontmap,
 
       if (G_UNLIKELY (!fontset))
         {
-          /* If no font(set) could be loaded, we fallback to "Sans",
+          /* If no font(set) could be loaded, we fallback to "Apple Color
+           * Emoji" for emoji font, fallback to "Sans" for other fonts,
            * which should always work on Mac. We try to adhere to the
            * requested style at first.
            */
@@ -1333,7 +1334,10 @@ pango_core_text_font_map_load_fontset (PangoFontMap               *fontmap,
           pango_font_description_free (key.desc);
 
           tmp_desc = pango_font_description_copy_static (desc);
-          pango_font_description_set_family_static (tmp_desc, "Sans");
+          if (!strcmp (pango_font_description_get_family (tmp_desc), "emoji"))
+            pango_font_description_set_family_static (tmp_desc, "Apple Color Emoji");
+          else
+            pango_font_description_set_family_static (tmp_desc, "Sans");
 
           pango_core_text_fontset_key_init (&key, ctfontmap, context, tmp_desc,
                                             language);
