@@ -1334,7 +1334,7 @@ pango_core_text_font_map_load_fontset (PangoFontMap               *fontmap,
           pango_font_description_free (key.desc);
 
           tmp_desc = pango_font_description_copy_static (desc);
-          if (!strcmp (pango_font_description_get_family (tmp_desc), "emoji"))
+          if (strcmp (pango_font_description_get_family (tmp_desc), "emoji") == 0)
             pango_font_description_set_family_static (tmp_desc, "Apple Color Emoji");
           else
             pango_font_description_set_family_static (tmp_desc, "Sans");
