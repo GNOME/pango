@@ -28,6 +28,7 @@
 
 #include "pango-language.h"
 #include "pango-impl-utils.h"
+#include "pango-utils-internal.h"
 
 #ifdef HAVE_CORE_TEXT
 #include <CoreFoundation/CoreFoundation.h>
@@ -714,7 +715,8 @@ pango_language_includes_script (PangoLanguage *language,
 
 /* copied from the one in pango-script.c */
 #define REAL_SCRIPT(script) \
-  ((script) > PANGO_SCRIPT_INHERITED && (script) != PANGO_SCRIPT_UNKNOWN)
+  (((script) > PANGO_SCRIPT_INHERITED && (script) != PANGO_SCRIPT_UNKNOWN) || \
+   ( _pango_use_fixed_font () && script == PANGO_SCRIPT_COMMON))
 
   if (!REAL_SCRIPT (script))
     return TRUE;

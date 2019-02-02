@@ -69,6 +69,9 @@
 #include "pango-script.h"
 #include "pango-script-private.h"
 
+#include "pango-attributes.h"
+#include "pango-utils-internal.h"
+
 /**
  * pango_script_for_unichar:
  * @ch: a Unicode character
@@ -229,7 +232,8 @@ get_pair_index (gunichar ch)
 
 /* duplicated in pango-language.c */
 #define REAL_SCRIPT(script) \
-  ((script) > PANGO_SCRIPT_INHERITED && (script) != PANGO_SCRIPT_UNKNOWN)
+  (((script) > PANGO_SCRIPT_INHERITED && (script) != PANGO_SCRIPT_UNKNOWN) || \
+   (_pango_use_fixed_font () && script == PANGO_SCRIPT_COMMON))
 
 #define SAME_SCRIPT(script1, script2) \
   (!REAL_SCRIPT (script1) || !REAL_SCRIPT (script2) || (script1) == (script2))
@@ -259,6 +263,9 @@ pango_script_iter_next (PangoScriptIter *iter)
   start_sp = iter->paren_sp;
   iter->script_code = PANGO_SCRIPT_COMMON;
   iter->script_start = iter->script_end;
+
+  if (_pango_use_fixed_font ())
+    iter->script_code = PANGO_SCRIPT_UNKNOWN;
 
   for (; iter->script_end < iter->text_end; iter->script_end = g_utf8_next_char (iter->script_end))
     {

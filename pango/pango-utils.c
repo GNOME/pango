@@ -1089,3 +1089,19 @@ _pango_shape_get_extents (gint              n_chars,
     }
 }
 
+gboolean _pango_use_fixed_font (void)
+{
+  static gint use_fixed_font = -1;
+
+  if (-1 == use_fixed_font)
+    {
+      use_fixed_font = FALSE;
+
+      const gchar * common_font = getenv ("PANGO_COMMON_FONT");
+
+      if (0 == g_strcmp0 ("fixed", common_font))
+        use_fixed_font = TRUE;
+    }
+
+  return use_fixed_font;
+}

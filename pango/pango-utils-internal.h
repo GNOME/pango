@@ -43,6 +43,8 @@ gboolean _pango_color_parse_with_alpha  (PangoColor *color,
                                          guint16    *alpha,
                                          const char *spec);
 
+gboolean _pango_use_fixed_font          (void);
+
 
 G_END_DECLS
 
