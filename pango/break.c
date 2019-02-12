@@ -523,6 +523,11 @@ pango_default_break (const gchar   *text,
 	if (is_grapheme_boundary)
           {
 	    attrs[i].backspace_deletes_character = BACKSPACE_DELETES_CHARACTER (base_character);
+
+	    /* Dependent Vowels for Indic language */
+	    if (_pango_Is_Indic_Virama (prev_wc) ||
+		_pango_Is_Indic_Vowel_Dependent (prev_wc))
+	      attrs[i].backspace_deletes_character = TRUE;
           }
 	else
 	  attrs[i].backspace_deletes_character = FALSE;
@@ -845,69 +850,7 @@ pango_default_break (const gchar   *text,
 		      wc == 0xFF64)
 		    SB_type = SB_SContinue;
 
-		  if (wc == 0x0021 ||
-		      wc == 0x003F ||
-		      wc == 0x0589 ||
-		      wc == 0x061F ||
-		      wc == 0x06D4 ||
-		      (wc >= 0x0700 && wc <= 0x0702) ||
-		      wc == 0x07F9 ||
-		      (wc >= 0x0964 && wc <= 0x0965) ||
-		      (wc >= 0x104A && wc <= 0x104B) ||
-		      wc == 0x1362 ||
-		      (wc >= 0x1367 && wc <= 0x1368) ||
-		      wc == 0x166E ||
-		      (wc >= 0x1735 && wc <= 0x1736) ||
-		      wc == 0x1803 ||
-		      wc == 0x1809 ||
-		      (wc >= 0x1944 && wc <= 0x1945) ||
-		      (wc >= 0x1AA8 && wc <= 0x1AAB) ||
-		      (wc >= 0x1B5A && wc <= 0x1B5B) ||
-		      (wc >= 0x1B5E && wc <= 0x1B5F) ||
-		      (wc >= 0x1C3B && wc <= 0x1C3C) ||
-		      (wc >= 0x1C7E && wc <= 0x1C7F) ||
-		      (wc >= 0x203C && wc <= 0x203D) ||
-		      (wc >= 0x2047 && wc <= 0x2049) ||
-		      wc == 0x2E2E ||
-		      wc == 0x2E3C ||
-		      wc == 0x3002 ||
-		      wc == 0xA4FF ||
-		      (wc >= 0xA60E && wc <= 0xA60F) ||
-		      wc == 0xA6F3 ||
-		      wc == 0xA6F7 ||
-		      (wc >= 0xA876 && wc <= 0xA877) ||
-		      (wc >= 0xA8CE && wc <= 0xA8CF) ||
-		      wc == 0xA92F ||
-		      (wc >= 0xA9C8 && wc <= 0xA9C9) ||
-		      (wc >= 0xAA5D && wc <= 0xAA5F) ||
-		      (wc >= 0xAAF0 && wc <= 0xAAF1) ||
-		      wc == 0xABEB ||
-		      (wc >= 0xFE56 && wc <= 0xFE57) ||
-		      wc == 0xFF01 ||
-		      wc == 0xFF1F ||
-		      wc == 0xFF61 ||
-		      (wc >= 0x10A56 && wc <= 0x10A57) ||
-		      (wc >= 0x11047 && wc <= 0x11048) ||
-		      (wc >= 0x110BE && wc <= 0x110C1) ||
-		      (wc >= 0x11141 && wc <= 0x11143) ||
-		      (wc >= 0x111C5 && wc <= 0x111C6) ||
-		      wc == 0x111CD ||
-		      (wc >= 0x111DE && wc <= 0x111DF) ||
-		      (wc >= 0x11238 && wc <= 0x11239) ||
-		      (wc >= 0x1123B && wc <= 0x1123C) ||
-		      wc == 0x112A9 ||
-		      (wc >= 0x1144B && wc <= 0x1144C) ||
-		      (wc >= 0x115C2 && wc <= 0x115C3) ||
-		      (wc >= 0x115C9 && wc <= 0x115D7) ||
-		      (wc >= 0x11641 && wc <= 0x11642) ||
-		      (wc >= 0x1173C && wc <= 0x1173E) ||
-		      (wc >= 0x11C41 && wc <= 0x11C42) ||
-		      (wc >= 0x16A6E && wc <= 0x16A6F) ||
-		      wc == 0x16AF5 ||
-		      (wc >= 0x16B37 && wc <= 0x16B38) ||
-		      wc == 0x16B44 ||
-		      wc == 0x1BC9F ||
-		      wc == 0x1DA88)
+		  if (_pango_Is_Sentence_Term (wc))
 		    SB_type = SB_STerm;
 
 		  break;

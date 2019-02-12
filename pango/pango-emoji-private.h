@@ -27,6 +27,15 @@
 gboolean
 _pango_Is_Emoji_Extended_Pictographic (gunichar ch);
 
+gboolean
+_pango_Is_Sentence_Term (gunichar ch);
+
+gboolean
+_pango_Is_Indic_Vowel_Dependent (gunichar ch);
+
+gboolean
+_pango_Is_Indic_Virama (gunichar ch);
+
 typedef struct _PangoEmojiIter PangoEmojiIter;
 
 struct _PangoEmojiIter

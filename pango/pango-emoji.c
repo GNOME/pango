@@ -93,11 +93,32 @@ DEFINE_pango_Is_(Emoji_Presentation)
 DEFINE_pango_Is_(Emoji_Modifier)
 DEFINE_pango_Is_(Emoji_Modifier_Base)
 DEFINE_pango_Is_(Extended_Pictographic)
+DEFINE_pango_Is_(STerm)
+DEFINE_pango_Is_(Vowel_Dependent)
+DEFINE_pango_Is_(Virama)
 
 gboolean
 _pango_Is_Emoji_Extended_Pictographic (gunichar ch)
 {
 	return _pango_Is_Extended_Pictographic (ch);
+}
+
+gboolean
+_pango_Is_Sentence_Term (gunichar ch)
+{
+	return _pango_Is_STerm (ch);
+}
+
+gboolean
+_pango_Is_Indic_Vowel_Dependent (gunichar ch)
+{
+	return _pango_Is_Vowel_Dependent (ch);
+}
+
+gboolean
+_pango_Is_Indic_Virama (gunichar ch)
+{
+	return _pango_Is_Virama (ch);
 }
 
 static gboolean
