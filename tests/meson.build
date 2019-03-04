@@ -35,7 +35,7 @@ if cairo_dep.found()
   test_cflags += '-DHAVE_CAIRO'
   tests += [
     [ 'testiter', [ 'testiter.c' ], [ libpangocairo_dep ] ],
-    [ 'markup-parse', [ 'markup-parse.c' ], [ libpangocairo_dep ] ],
+    [ 'markup-parse', [ 'markup-parse.c' , 'test-common.c' ], [ libpangocairo_dep ] ],
     [ 'test-layout', [ 'test-layout.c', 'test-common.c' ], [ libpangocairo_dep ] ],
     [ 'test-font', [ 'test-font.c' ], [ libpangocairo_dep ] ],
     [ 'testattributes', [ 'testattributes.c', 'test-common.c' ], [ libpangocairo_dep ] ],
