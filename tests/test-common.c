@@ -153,6 +153,15 @@ print_attribute (PangoAttribute *attr, GString *string)
     case PANGO_ATTR_GRAVITY_HINT:
       g_string_append_printf (string,"gravity-hint %d\n", ((PangoAttrInt *)attr)->value);
       break;
+    case PANGO_ATTR_FONT_FEATURES:
+      g_string_append_printf (string,"font-features %s\n", ((PangoAttrString *)attr)->value);
+      break;
+    case PANGO_ATTR_FOREGROUND_ALPHA:
+      g_string_append_printf (string,"foreground-alpha %04x\n", ((PangoAttrInt *)attr)->value);
+      break;
+    case PANGO_ATTR_BACKGROUND_ALPHA:
+      g_string_append_printf (string,"background-alpha %04x\n", ((PangoAttrInt *)attr)->value);
+      break;
     default:
       g_assert_not_reached ();
       break;
