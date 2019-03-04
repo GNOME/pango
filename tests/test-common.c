@@ -39,7 +39,7 @@ diff_with_file (const char  *file,
                 gssize       len,
                 GError     **error)
 {
-  const char *command[] = { "diff", "-u", file, NULL, NULL };
+  const char *command[] = { "diff", "-u", "-i", file, NULL, NULL };
   char *diff, *tmpfile;
   int fd;
 
@@ -62,7 +62,7 @@ diff_with_file (const char  *file,
       goto done;
     }
   close (fd);
-  command[3] = tmpfile;
+  command[4] = tmpfile;
 
   /* run diff command */
   g_spawn_sync (NULL,
