@@ -35,12 +35,17 @@ if cairo_dep.found()
   test_cflags += '-DHAVE_CAIRO'
   tests += [
     [ 'testiter', [ 'testiter.c' ], [ libpangocairo_dep ] ],
-    [ 'test-pangocairo-threads', [ 'test-pangocairo-threads.c' ], [ libpangocairo_dep, cairo_dep ] ],
     [ 'markup-parse', [ 'markup-parse.c' ], [ libpangocairo_dep ] ],
     [ 'test-layout', [ 'test-layout.c', 'test-common.c' ], [ libpangocairo_dep ] ],
     [ 'test-font', [ 'test-font.c' ], [ libpangocairo_dep ] ],
     [ 'testattributes', [ 'testattributes.c', 'test-common.c' ], [ libpangocairo_dep ] ],
   ]
+
+  if pango_cairo_backends.contains('png')
+    tests += [
+      [ 'test-pangocairo-threads', [ 'test-pangocairo-threads.c' ], [ libpangocairo_dep, cairo_dep ] ],
+    ]
+  endif
 endif
 
 installed_test_data = [
