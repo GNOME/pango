@@ -95,6 +95,12 @@ DEFINE_pango_Is_(Emoji_Modifier_Base)
 DEFINE_pango_Is_(Extended_Pictographic)
 
 gboolean
+_pango_Is_Emoji_Base_Character (gunichar ch)
+{
+	return _pango_Is_Emoji (ch);
+}
+
+gboolean
 _pango_Is_Emoji_Extended_Pictographic (gunichar ch)
 {
 	return _pango_Is_Extended_Pictographic (ch);
