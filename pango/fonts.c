@@ -1527,7 +1527,7 @@ parse_field (const char *what,
 /**
  * pango_parse_style:
  * @str: a string to parse.
- * @style: (out caller-allocates): a #PangoStyle to store the result
+ * @style: (out): a #PangoStyle to store the result
  *   in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  *
@@ -1548,7 +1548,7 @@ pango_parse_style (const char *str,
 /**
  * pango_parse_variant:
  * @str: a string to parse.
- * @variant: (out caller-allocates): a #PangoVariant to store the
+ * @variant: (out): a #PangoVariant to store the
  *   result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  *
@@ -1569,7 +1569,7 @@ pango_parse_variant (const char   *str,
 /**
  * pango_parse_weight:
  * @str: a string to parse.
- * @weight: (out caller-allocates): a #PangoWeight to store the result
+ * @weight: (out): a #PangoWeight to store the result
  *   in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  *
@@ -1590,7 +1590,7 @@ pango_parse_weight (const char  *str,
 /**
  * pango_parse_stretch:
  * @str: a string to parse.
- * @stretch: (out caller-allocates): a #PangoStretch to store the
+ * @stretch: (out): a #PangoStretch to store the
  *   result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  *
