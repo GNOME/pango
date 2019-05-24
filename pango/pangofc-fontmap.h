@@ -254,10 +254,6 @@ PangoFontDescription *pango_fc_font_description_from_pattern (FcPattern *pattern
 PANGO_AVAILABLE_IN_1_44
 hb_face_t * pango_fc_font_map_get_hb_face (PangoFcFontMap *fcfontmap,
                                            PangoFcFont    *fcfont);
-                                          
-PANGO_AVAILABLE_IN_1_44
-FT_Face pango_fc_font_map_get_ft_face (PangoFcFontMap *fcfontmap,
-                                       PangoFcFont    *fcfont);
 
 /**
  * PANGO_FC_GRAVITY:

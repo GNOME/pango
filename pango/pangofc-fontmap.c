@@ -169,7 +169,6 @@ struct _PangoFcFontFaceData
   PangoCoverage *coverage;
   PangoFcCmapCache *cmap_cache;
 
-  FT_Face ft_face;
   hb_face_t *hb_face;
 };
 
@@ -305,7 +304,6 @@ pango_fc_font_face_data_free (PangoFcFontFaceData *data)
     _pango_fc_cmap_cache_unref (data->cmap_cache);
 
   hb_face_destroy (data->hb_face);
-  FT_Done_Face (data->ft_face);
 
   g_slice_free (PangoFcFontFaceData, data);
 }
@@ -2734,20 +2732,6 @@ pango_fc_font_map_get_hb_face (PangoFcFontMap *fcfontmap,
     create_faces (fcfontmap, data);
 
   return data->hb_face;
-}
-
-FT_Face
-pango_fc_font_map_get_ft_face (PangoFcFontMap *fcfontmap,
-                               PangoFcFont    *fcfont)
-{
-  PangoFcFontFaceData *data;
-
-  data = pango_fc_font_map_get_font_face_data (fcfontmap, fcfont->font_pattern);
-  
-  if (!data->ft_face)
-    create_faces (fcfontmap, data);
-
-  return data->ft_face;
 }
 
 FT_Library
