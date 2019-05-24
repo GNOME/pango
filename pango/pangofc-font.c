@@ -799,23 +799,6 @@ _pango_fc_font_set_font_key (PangoFcFont    *fcfont,
   priv->key = key;
 }
 
-static FT_Glyph_Metrics *
-get_per_char (FT_Face      face,
-	      FT_Int32     load_flags,
-	      PangoGlyph   glyph)
-{
-  FT_Error error;
-  FT_Glyph_Metrics *result;
-
-  error = FT_Load_Glyph (face, glyph, load_flags);
-  if (error == FT_Err_Ok)
-    result = &face->glyph->metrics;
-  else
-    result = NULL;
-
-  return result;
-}
-
 /**
  * pango_fc_font_get_raw_extents:
  * @fcfont: a #PangoFcFont
@@ -845,57 +828,9 @@ pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
 			       PangoRectangle *ink_rect,
 			       PangoRectangle *logical_rect)
 {
-  FT_Glyph_Metrics *gm;
-  FT_Face face;
-
   g_return_if_fail (PANGO_IS_FC_FONT (fcfont));
 
-  face = PANGO_FC_FONT_LOCK_FACE (fcfont);
-  if (G_UNLIKELY (!face))
-    {
-      /* Get generic unknown-glyph extents. */
-      pango_font_get_glyph_extents (NULL, glyph, ink_rect, logical_rect);
-      return;
-    }
-
   if (glyph == PANGO_GLYPH_EMPTY)
-    gm = NULL;
-  else
-    gm = get_per_char (face, load_flags, glyph);
-
-  if (gm)
-    {
-      if (ink_rect)
-	{
-	  ink_rect->x = PANGO_UNITS_26_6 (gm->horiBearingX);
-	  ink_rect->width = PANGO_UNITS_26_6 (gm->width);
-	  ink_rect->y = -PANGO_UNITS_26_6 (gm->horiBearingY);
-	  ink_rect->height = PANGO_UNITS_26_6 (gm->height);
-	}
-
-      if (logical_rect)
-	{
-	  logical_rect->x = 0;
-	  logical_rect->width = PANGO_UNITS_26_6 (gm->horiAdvance);
-	  if (fcfont->is_hinted ||
-	      (face->face_flags & FT_FACE_FLAG_SCALABLE) == 0)
-	    {
-	      logical_rect->y = - PANGO_UNITS_26_6 (face->size->metrics.ascender);
-	      logical_rect->height = PANGO_UNITS_26_6 (face->size->metrics.ascender - face->size->metrics.descender);
-	    }
-	  else
-	    {
-	      FT_Fixed ascender, descender;
-
-	      ascender = FT_MulFix (face->ascender, face->size->metrics.y_scale);
-	      descender = FT_MulFix (face->descender, face->size->metrics.y_scale);
-
-	      logical_rect->y = - PANGO_UNITS_26_6 (ascender);
-	      logical_rect->height = PANGO_UNITS_26_6 (ascender - descender);
-	    }
-	}
-    }
-  else
     {
       if (ink_rect)
 	{
@@ -913,8 +848,38 @@ pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
 	  logical_rect->height = 0;
 	}
     }
+  else
+    {
+      hb_font_t *hb_font = pango_font_get_hb_font (PANGO_FONT (fcfont));
+      hb_glyph_extents_t extents;
+      hb_font_extents_t font_extents;
 
-  PANGO_FC_FONT_UNLOCK_FACE (fcfont);
+      hb_font_get_glyph_extents (hb_font, glyph, &extents);
+      hb_font_get_extents_for_direction (hb_font, HB_DIRECTION_LTR, &font_extents);
+
+      if (ink_rect)
+	{
+	  ink_rect->x = extents.x_bearing;
+	  ink_rect->width = extents.width;
+	  ink_rect->y = -extents.y_bearing;
+	  ink_rect->height = extents.height;
+	}
+
+      if (logical_rect)
+	{
+          hb_position_t x, y;
+
+          hb_font_get_glyph_advance_for_direction (hb_font,
+                                                   glyph,
+                                                   HB_DIRECTION_LTR,
+                                                   &x, &y);
+
+	  logical_rect->x = 0;
+	  logical_rect->width = x;
+	  logical_rect->y = - font_extents.ascender;
+	  logical_rect->height = font_extents.ascender - font_extents.descender;
+	}
+    }
 }
 
 static void
