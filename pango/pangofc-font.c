@@ -63,7 +63,6 @@ struct _PangoFcFontPrivate
 {
   PangoFcDecoder *decoder;
   PangoFcFontKey *key;
-  PangoFcCmapCache *cmap_cache;
 };
 
 static gboolean pango_fc_font_real_has_char  (PangoFcFont *font,
@@ -175,9 +174,6 @@ pango_fc_font_finalize (GObject *object)
 
   if (priv->decoder)
     _pango_fc_font_set_decoder (fcfont, NULL);
-
-  if (priv->cmap_cache)
-    _pango_fc_cmap_cache_unref (priv->cmap_cache);
 
   G_OBJECT_CLASS (pango_fc_font_parent_class)->finalize (object);
 }
