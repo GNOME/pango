@@ -721,8 +721,11 @@ _pango_fc_font_shutdown (PangoFcFont *font)
  * @font: a #PangoFcFont
  * @glyphs: a #PangoGlyphString
  *
- * Adjust each adjacent pair of glyphs in @glyphs according to
- * kerning information in @font.
+ * This function used to adjust each adjacent pair of glyphs
+ * in @glyphs according to kerning information in @font.
+ *
+ * Since 1.44, it does nothing.
+ *
  *
  * Since: 1.4
  * Deprecated: 1.32
@@ -731,61 +734,6 @@ void
 pango_fc_font_kern_glyphs (PangoFcFont      *font,
 			   PangoGlyphString *glyphs)
 {
-  FT_Error error;
-  FT_Vector kerning;
-  int i;
-  gboolean hinting = font->is_hinted;
-  gboolean scale = FALSE;
-  double xscale = 1;
-  PangoFcFontKey *key;
-  FT_Face face;
-
-  g_return_if_fail (PANGO_IS_FC_FONT (font));
-  g_return_if_fail (glyphs != NULL);
-
-  face = PANGO_FC_FONT_LOCK_FACE (font);
-  if (G_UNLIKELY (!face))
-    return;
-
-  if (!FT_HAS_KERNING (face))
-    {
-      PANGO_FC_FONT_UNLOCK_FACE (font);
-      return;
-    }
-
-  key = _pango_fc_font_get_font_key (font);
-  if (key) {
-    const PangoMatrix *matrix = pango_fc_font_key_get_matrix (key);
-    PangoMatrix identity = PANGO_MATRIX_INIT;
-    if (G_UNLIKELY (matrix && 0 != memcmp (&identity, matrix, 2 * sizeof (double))))
-      {
-	scale = TRUE;
-	pango_matrix_get_font_scale_factors (matrix, &xscale, NULL);
-	if (xscale) xscale = 1 / xscale;
-      }
-  }
-
-  for (i = 1; i < glyphs->num_glyphs; ++i)
-    {
-      error = FT_Get_Kerning (face,
-			      glyphs->glyphs[i-1].glyph,
-			      glyphs->glyphs[i].glyph,
-			      ft_kerning_default,
-			      &kerning);
-
-      if (error == FT_Err_Ok) {
-	int adjustment = PANGO_UNITS_26_6 (kerning.x);
-
-	if (hinting)
-	  adjustment = PANGO_UNITS_ROUND (adjustment);
-	if (G_UNLIKELY (scale))
-	  adjustment *= xscale;
-
-	glyphs->glyphs[i-1].geometry.width += adjustment;
-      }
-    }
-
-  PANGO_FC_FONT_UNLOCK_FACE (font);
 }
 
 /**
