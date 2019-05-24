@@ -664,50 +664,12 @@ static guint
 pango_fc_font_real_get_glyph (PangoFcFont *font,
 			      gunichar     wc)
 {
-  PangoFcFontPrivate *priv = font->priv;
-  FT_Face face;
-  FT_UInt index;
+  hb_font_t *hb_font = pango_font_get_hb_font (PANGO_FONT (font));
+  hb_codepoint_t glyph = PANGO_GET_UNKNOWN_GLYPH (wc);
 
-  guint idx;
-  PangoFcCmapCacheEntry *entry;
+  hb_font_get_nominal_glyph (hb_font, wc, &glyph);
 
-
-  if (G_UNLIKELY (priv->cmap_cache == NULL))
-    {
-      PangoFcFontMap *fontmap = g_weak_ref_get ((GWeakRef *) &font->fontmap);
-      if (G_UNLIKELY (!fontmap))
-        return 0;
-
-      priv->cmap_cache = _pango_fc_font_map_get_cmap_cache (fontmap, font);
-
-      g_object_unref (fontmap);
-
-      if (G_UNLIKELY (!priv->cmap_cache))
-	return 0;
-    }
-
-  idx = wc & CMAP_CACHE_MASK;
-  entry = priv->cmap_cache->entries + idx;
-
-  if (entry->ch != wc)
-    {
-      face = PANGO_FC_FONT_LOCK_FACE (font);
-      if (G_LIKELY (face))
-        {
-	  index = FcFreeTypeCharIndex (face, wc);
-	  if (index > (FT_UInt)face->num_glyphs)
-	    index = 0;
-
-	  PANGO_FC_FONT_UNLOCK_FACE (font);
-	}
-      else
-        index = 0;
-
-      entry->ch = wc;
-      entry->glyph = index;
-    }
-
-  return entry->glyph;
+  return glyph;
 }
 
 /**
