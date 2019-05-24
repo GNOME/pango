@@ -165,7 +165,6 @@ struct _PangoFcFontFaceData
   /* Data */
   FcPattern *pattern;	/* Referenced pattern that owns filename */
   PangoCoverage *coverage;
-  PangoFcCmapCache *cmap_cache;
 
   hb_face_t *hb_face;
 };
@@ -297,9 +296,6 @@ pango_fc_font_face_data_free (PangoFcFontFaceData *data)
 
   if (data->coverage)
     pango_coverage_unref (data->coverage);
-
-  if (data->cmap_cache)
-    _pango_fc_cmap_cache_unref (data->cmap_cache);
 
   hb_face_destroy (data->hb_face);
 
@@ -1936,53 +1932,6 @@ pango_fc_font_map_get_font_face_data (PangoFcFontMap *fcfontmap,
   g_hash_table_insert (priv->font_face_data_hash, data, data);
 
   return data;
-}
-
-static PangoFcCmapCache *
-_pango_fc_cmap_cache_ref (PangoFcCmapCache *cmap_cache)
-{
-  g_atomic_int_inc ((int *) &cmap_cache->ref_count);
-
-  return cmap_cache;
-}
-
-void
-_pango_fc_cmap_cache_unref (PangoFcCmapCache *cmap_cache)
-{
-  g_return_if_fail (cmap_cache->ref_count > 0);
-
-  if (g_atomic_int_dec_and_test ((int *) &cmap_cache->ref_count))
-    {
-      g_free (cmap_cache);
-    }
-}
-
-PangoFcCmapCache *
-_pango_fc_font_map_get_cmap_cache (PangoFcFontMap *fcfontmap,
-				   PangoFcFont    *fcfont)
-{
-  PangoFcFontFaceData *data;
-
-  if (G_UNLIKELY (fcfontmap == NULL))
-	return NULL;
-
-  if (G_UNLIKELY (!fcfont->font_pattern))
-    return NULL;
-
-  data = pango_fc_font_map_get_font_face_data (fcfontmap, fcfont->font_pattern);
-  if (G_UNLIKELY (!data))
-    return NULL;
-
-  if (G_UNLIKELY (data->cmap_cache == NULL))
-    {
-      data->cmap_cache = g_new0 (PangoFcCmapCache, 1);
-      data->cmap_cache->ref_count = 1;
-
-      /* Make sure all cache entries are invalid initially */
-      data->cmap_cache->entries[0].ch = 1; /* char 1 cannot happen in bucket 0 */
-    }
-
-  return _pango_fc_cmap_cache_ref (data->cmap_cache);
 }
 
 PangoCoverage *
