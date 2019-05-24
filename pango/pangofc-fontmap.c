@@ -2715,18 +2715,11 @@ static void
 create_faces (PangoFcFontMap *fcfontmap,
               PangoFcFontFaceData *data)
 {
-  FT_Error error;
+  hb_blob_t *blob;
 
-  error = FT_New_Face (fcfontmap->priv->library, data->filename, data->id, &data->ft_face);
-  if (error != FT_Err_Ok)
-    {
-      g_warning ("Failed to load %s", data->filename);
-      return;
-    }
-
-  data->hb_face = hb_ft_face_create_cached (data->ft_face);
-  /* Add the FT_Face to the pattern so cairo picks it up */
-  FcPatternAddFTFace (data->pattern, FC_FT_FACE, data->ft_face);
+  blob = hb_blob_create_from_file (data->filename);
+  data->hb_face = hb_face_create (blob, data->id);
+  hb_blob_destroy (blob);
 }
 
 hb_face_t *

@@ -46,6 +46,7 @@
 #include "pango-layout.h"
 #include "pango-impl-utils.h"
 
+#include <harfbuzz/hb-ot.h>
 #include <fontconfig/fcfreetype.h>
 
 #include FT_TRUETYPE_TABLES_H
@@ -1068,215 +1069,6 @@ pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
   PANGO_FC_FONT_UNLOCK_FACE (fcfont);
 }
 
-typedef struct _PangoFcHbContext {
-  FT_Face ft_face;
-  PangoFcFont *fc_font;
-  gboolean vertical;
-  double x_scale, y_scale; /* CTM scales. */
-} PangoFcHbContext;
-
-static hb_bool_t
-pango_fc_hb_font_get_nominal_glyph (hb_font_t *font, void *font_data,
-                                    hb_codepoint_t unicode,
-                                    hb_codepoint_t *glyph,
-                                    void *user_data G_GNUC_UNUSED)
-{
-  PangoFcHbContext *context = (PangoFcHbContext *) font_data;
-  PangoFcFont *fc_font = context->fc_font;
-
-  *glyph = pango_fc_font_get_glyph (fc_font, unicode);
-  if (G_LIKELY (*glyph))
-    return TRUE;
-
-  *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
-
-  /* We draw our own invalid-Unicode shape, so prevent HarfBuzz
-   * from using REPLACEMENT CHARACTER. */
-  if (unicode > 0x10FFFF)
-    return TRUE;
-
-  return FALSE;
-}
-
-static hb_bool_t
-pango_fc_hb_font_get_variation_glyph (hb_font_t *font,
-                                      void *font_data,
-                                      hb_codepoint_t unicode,
-                                      hb_codepoint_t variation_selector,
-                                      hb_codepoint_t *glyph,
-                                      void *user_data G_GNUC_UNUSED)
-{
-  PangoFcHbContext *context = (PangoFcHbContext *) font_data;
-  FT_Face ft_face = context->ft_face;
-  unsigned int g;
-
-  g = FT_Face_GetCharVariantIndex (ft_face, unicode, variation_selector);
-
-  if (G_UNLIKELY (!g))
-    return FALSE;
-
-  *glyph = g;
-  return TRUE;
-}
-
-static hb_bool_t
-pango_fc_hb_font_get_glyph_contour_point (hb_font_t *font, void *font_data,
-                                          hb_codepoint_t glyph, unsigned int point_index,
-                                          hb_position_t *x, hb_position_t *y,
-                                          void *user_data G_GNUC_UNUSED)
-{
-  return FALSE;
-#if 0
-  FT_Face ft_face = (FT_Face) font_data;
-  int load_flags = FT_LOAD_DEFAULT;
-
-  /* TODO: load_flags, embolden, etc */
-
-  if (HB_UNLIKELY (FT_Load_Glyph (ft_face, glyph, load_flags)))
-      return FALSE;
-
-  if (HB_UNLIKELY (ft_face->glyph->format != FT_GLYPH_FORMAT_OUTLINE))
-      return FALSE;
-
-  if (HB_UNLIKELY (point_index >= (unsigned int) ft_face->glyph->outline.n_points))
-      return FALSE;
-
-  *x = ft_face->glyph->outline.points[point_index].x;
-  *y = ft_face->glyph->outline.points[point_index].y;
-
-  return TRUE;
-#endif
-}
-
-static hb_position_t
-pango_fc_hb_font_get_glyph_advance (hb_font_t *font, void *font_data,
-                                    hb_codepoint_t glyph,
-                                    void *user_data G_GNUC_UNUSED)
-{
-  PangoFcHbContext *context = (PangoFcHbContext *) font_data;
-  PangoFcFont *fc_font = context->fc_font;
-  PangoRectangle logical;
-
-  pango_font_get_glyph_extents ((PangoFont *) fc_font, glyph, NULL, &logical);
-
-  return logical.width;
-}
-
-static hb_bool_t
-pango_fc_hb_font_get_glyph_extents (hb_font_t *font,  void *font_data,
-                                    hb_codepoint_t glyph,
-                                    hb_glyph_extents_t *extents,
-                                    void *user_data G_GNUC_UNUSED)
-{
-  PangoFcHbContext *context = (PangoFcHbContext *) font_data;
-  PangoFcFont *fc_font = context->fc_font;
-  PangoRectangle ink;
-
-  pango_font_get_glyph_extents ((PangoFont *) fc_font, glyph, &ink, NULL);
-
-  if (G_LIKELY (!context->vertical)) {
-    extents->x_bearing  = ink.x;
-    extents->y_bearing  = ink.y;
-    extents->width      = ink.width;
-    extents->height     = ink.height;
-  } else {
-    /* XXX */
-    extents->x_bearing  = ink.x;
-    extents->y_bearing  = ink.y;
-    extents->width      = ink.height;
-    extents->height     = ink.width;
-  }
-
-  return TRUE;
-}
-
-static hb_bool_t
-pango_fc_hb_font_get_glyph_h_origin (hb_font_t *font, void *font_data,
-                                     hb_codepoint_t glyph,
-                                     hb_position_t *x, hb_position_t *y,
-                                     void *user_data G_GNUC_UNUSED)
-{
-  PangoFcHbContext *context = (PangoFcHbContext *) font_data;
-  FT_Face ft_face = context->ft_face;
-  int load_flags = FT_LOAD_DEFAULT;
-
-  if (!context->vertical) return TRUE;
-
-  if (FT_Load_Glyph (ft_face, glyph, load_flags))
-    return FALSE;
-
-  /* Note: FreeType's vertical metrics grows downward while other FreeType coordinates
-   * have a Y growing upward.  Hence the extra negations. */
-  *x = -PANGO_UNITS_26_6 (ft_face->glyph->metrics.horiBearingX -   ft_face->glyph->metrics.vertBearingX);
-  *y = +PANGO_UNITS_26_6 (ft_face->glyph->metrics.horiBearingY - (-ft_face->glyph->metrics.vertBearingY));
-
-  return TRUE;
-}
-
-static hb_bool_t
-pango_fc_hb_font_get_glyph_v_origin (hb_font_t *font, void *font_data,
-                                     hb_codepoint_t glyph,
-                                     hb_position_t *x, hb_position_t *y,
-                                     void *user_data G_GNUC_UNUSED)
-{
-  PangoFcHbContext *context = (PangoFcHbContext *) font_data;
-  FT_Face ft_face = context->ft_face;
-  int load_flags = FT_LOAD_DEFAULT;
-
-  /* pangocairo-fc configures font in vertical origin for vertical writing. */
-  if (context->vertical) return TRUE;
-
-  if (FT_Load_Glyph (ft_face, glyph, load_flags))
-    return FALSE;
-
-  /* Note: FreeType's vertical metrics grows downward while other FreeType coordinates
-   * have a Y growing upward.  Hence the extra negation. */
-  *x = PANGO_UNITS_26_6 (ft_face->glyph->metrics.horiBearingX -   ft_face->glyph->metrics.vertBearingX);
-  *y = PANGO_UNITS_26_6 (ft_face->glyph->metrics.horiBearingY - (-ft_face->glyph->metrics.vertBearingY));
-
-  /* XXX */
-
-  return TRUE;
-}
-
-static hb_position_t
-pango_fc_hb_font_get_h_kerning (hb_font_t *font, void *font_data,
-                                hb_codepoint_t left_glyph, hb_codepoint_t right_glyph,
-                                void *user_data G_GNUC_UNUSED)
-{
-  PangoFcHbContext *context = (PangoFcHbContext *) font_data;
-  FT_Face ft_face = context->ft_face;
-  FT_Vector kerning;
-
-  if (FT_Get_Kerning (ft_face, left_glyph, right_glyph, FT_KERNING_DEFAULT, &kerning))
-    return 0;
-
-  return PANGO_UNITS_26_6 (kerning.x * context->x_scale);
-}
-
-static hb_font_funcs_t *
-pango_fc_get_hb_font_funcs (void)
-{
-  static hb_font_funcs_t *funcs;
-
-  if (G_UNLIKELY (!funcs)) {
-    funcs = hb_font_funcs_create ();
-    hb_font_funcs_set_nominal_glyph_func (funcs, pango_fc_hb_font_get_nominal_glyph, NULL, NULL);
-    hb_font_funcs_set_variation_glyph_func (funcs, pango_fc_hb_font_get_variation_glyph, NULL, NULL);
-    hb_font_funcs_set_glyph_h_advance_func (funcs, pango_fc_hb_font_get_glyph_advance, NULL, NULL);
-    hb_font_funcs_set_glyph_v_advance_func (funcs, pango_fc_hb_font_get_glyph_advance, NULL, NULL);
-    hb_font_funcs_set_glyph_h_origin_func (funcs, pango_fc_hb_font_get_glyph_h_origin, NULL, NULL);
-    hb_font_funcs_set_glyph_v_origin_func (funcs, pango_fc_hb_font_get_glyph_v_origin, NULL, NULL);
-    hb_font_funcs_set_glyph_h_kerning_func (funcs, pango_fc_hb_font_get_h_kerning, NULL, NULL);
-    /* Don't need v_kerning. */
-    hb_font_funcs_set_glyph_extents_func (funcs, pango_fc_hb_font_get_glyph_extents, NULL, NULL);
-    hb_font_funcs_set_glyph_contour_point_func (funcs, pango_fc_hb_font_get_glyph_contour_point, NULL, NULL);
-    /* Don't need glyph_name / glyph_from_name */
-  }
-
-  return funcs;
-}
-
 extern gpointer get_gravity_class (void);
 
 static PangoGravity
@@ -1294,6 +1086,31 @@ pango_fc_font_key_get_gravity (PangoFcFontKey *key)
     }
 
   return gravity;
+}
+
+static double
+get_font_size (PangoFcFontKey *key)
+{
+  FcPattern *pattern;
+  double size;
+  double dpi;
+
+  pattern = pango_fc_font_key_get_pattern (key);
+  if (FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size) == FcResultMatch)
+    return size;
+
+  /* Just in case FC_PIXEL_SIZE got unset between pango_fc_make_pattern()
+   * and here.  That would be very weird.
+   */
+
+  if (FcPatternGetDouble (pattern, FC_DPI, 0, &dpi) != FcResultMatch)
+    dpi = 72;
+
+  if (FcPatternGetDouble (pattern, FC_SIZE, 0, &size) == FcResultMatch)
+    return size * dpi / 72.;
+
+  /* Whatever */
+  return 18.;
 }
 
 static void
@@ -1334,11 +1151,11 @@ pango_fc_font_create_hb_font (PangoFont *font)
 {
   PangoFcFont *fc_font = PANGO_FC_FONT (font);
   PangoFcFontKey *key;
-  PangoFcHbContext *context;
-  FT_Face ft_face;
   hb_face_t *hb_face;
   hb_font_t *hb_font;
   double x_scale_inv, y_scale_inv;
+  double x_scale, y_scale;
+  double size;
   PangoGravity gravity;
 
   x_scale_inv = y_scale_inv = 1.0;
@@ -1354,31 +1171,17 @@ pango_fc_font_create_hb_font (PangoFont *font)
     y_scale_inv = -y_scale_inv;
   }
 
+  x_scale = 1. / x_scale_inv;
+  y_scale = 1. / y_scale_inv;
+
+  size = get_font_size (key);
   gravity = pango_fc_font_key_get_gravity (key);
-
-  context = g_new0 (PangoFcHbContext, 1);
-
   hb_face = pango_fc_font_map_get_hb_face (PANGO_FC_FONT_MAP (fc_font->fontmap), fc_font);
-  ft_face = pango_fc_font_map_get_ft_face (PANGO_FC_FONT_MAP (fc_font->fontmap), fc_font);
-
-  context->x_scale = 1. / x_scale_inv;
-  context->y_scale = 1. / y_scale_inv;
-  context->ft_face = ft_face;
-  context->fc_font = fc_font;
-  context->vertical = PANGO_GRAVITY_IS_VERTICAL (gravity);
-  g_object_set_data_full (G_OBJECT (fc_font), "hb-context", context, g_free);
 
   hb_font = hb_font_create (hb_face);
-  hb_font_set_funcs (hb_font,
-                     pango_fc_get_hb_font_funcs (),
-                     context,
-                     NULL);
-  hb_font_set_scale (hb_font,
-                     +(((gint64) ft_face->size->metrics.x_scale * ft_face->units_per_EM) >> 12) * context->x_scale,
-                     -(((gint64) ft_face->size->metrics.y_scale * ft_face->units_per_EM) >> 12) * context->y_scale);
-  hb_font_set_ppem (hb_font,
-                    fc_font->is_hinted ? ft_face->size->metrics.x_ppem : 0,
-                    fc_font->is_hinted ? ft_face->size->metrics.y_ppem : 0);
+  hb_ot_font_set_funcs (hb_font);
+  hb_font_set_scale (hb_font, size * 1024 * x_scale, size * 1024 * y_scale);
+  hb_font_set_ppem (hb_font, 0, 0);
   if (key)
     {
       const char *variations = pango_fc_font_key_get_variations (key);
