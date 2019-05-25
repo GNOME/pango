@@ -66,7 +66,7 @@ gravity_name (PangoGravity gravity)
 static const gchar *
 script_name (PangoScript script)
 {
-  return enum_value_nick (PANGO_TYPE_SCRIPT, script);
+  return enum_value_nick (G_TYPE_UNICODE_SCRIPT, script);
 }
 
 static gchar *

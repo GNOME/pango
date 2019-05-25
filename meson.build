@@ -4,7 +4,9 @@ project('pango', 'c', 'cpp',
         default_options: [
           'buildtype=debugoptimized',
           'warning_level=1',
-          'c_std=c99',
+          # We only need c99, but glib needs GNU-specific features
+          # https://github.com/mesonbuild/meson/issues/2289
+          'c_std=gnu99',
         ],
         meson_version : '>= 0.48.0')
 
@@ -182,7 +184,7 @@ endif
 # Dependencies
 pango_deps = []
 
-glib_req_version = '>= 2.38.0'
+glib_req_version = '>= 2.59.2'
 fribidi_req_version = '>= 0.19.7'
 libthai_req_version = '>= 0.1.9'
 harfbuzz_req_version = '>= 1.4.2'

@@ -18,10 +18,12 @@ gnome-runtime-linux:
         cairo-devel \
         gobject-introspection-devel \
         cairo-gobject-devel \
-        abattis-cantarell-fonts
+        abattis-cantarell-fonts \
+        desktop-file-utils
   script:
     - meson _build
-    - ninja -C _build dist
+    - ninja -C _build
+    - cd _build; meson test --suite pango
 
 msys2-mingw64:
   stage: build
