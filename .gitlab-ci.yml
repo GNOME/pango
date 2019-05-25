@@ -22,7 +22,8 @@ gnome-runtime-linux:
         desktop-file-utils
   script:
     - meson _build
-    - ninja -C _build dist
+    - ninja -C _build
+    - ninja -C _build test
 
 msys2-mingw64:
   stage: build
