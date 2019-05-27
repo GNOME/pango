@@ -73,17 +73,20 @@
  * pango_script_for_unichar:
  * @ch: a Unicode character
  *
- * Looks up the #PangoScript for a particular character (as defined by
+ * Looks up the script for a particular character (as defined by
  * Unicode Standard Annex \#24). No check is made for @ch being a
  * valid Unicode character; if you pass in invalid character, the
  * result is undefined.
  *
- * As of Pango 1.18, this function simply returns the return value of
- * g_unichar_get_script().
+ * Note that while the return type of this function is declared
+ * as PangoScript, as of Pango 1.18, this function simply returns
+ * the return value of g_unichar_get_script(). Callers must be
+ * prepared to handle unknown values.
  *
  * Return value: the #PangoScript for the character.
  *
  * Since: 1.4
+ * Deprecated: 1.44. Use g_unichar_get_script()
  **/
 PangoScript
 pango_script_for_unichar (gunichar ch)
@@ -169,6 +172,11 @@ pango_script_iter_free (PangoScriptIter *iter)
  * Gets information about the range to which @iter currently points.
  * The range is the set of locations p where *start <= p < *end.
  * (That is, it doesn't include the character stored at *end)
+ *
+ * Note that while the type of the @script argument is declared
+ * as PangoScript, as of Pango 1.18, this function simply returns
+ * GUnicodeScript values. Callers must be prepared to handle unknown
+ * values.
  *
  * Since: 1.4
  **/

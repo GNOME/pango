@@ -35,7 +35,7 @@
 #define MAX_SCRIPTS 3
 
 typedef struct {
-  PangoScript script;
+  GUnicodeScript script;
   int freq;
 } ScriptInfo;
 
@@ -49,7 +49,7 @@ static const char *get_script_name (PangoScript script)
   static GEnumClass *class = NULL;
   GEnumValue *value;
   if (!class)
-    class = g_type_class_ref (PANGO_TYPE_SCRIPT);
+    class = g_type_class_ref (G_TYPE_UNICODE_SCRIPT);
   
   value = g_enum_get_value (class, script);
   g_assert (value);
@@ -73,13 +73,13 @@ static void
 script_for_char (gunichar   ch,
 		 LangInfo  *info)
 {
-  PangoScript script = pango_script_for_unichar (ch);
-  if (script != PANGO_SCRIPT_COMMON &&
-      script != PANGO_SCRIPT_INHERITED)
+  GUnicodeScript script = g_unichar_get_script (ch);
+  if (script != G_UNICODE_SCRIPT_COMMON &&
+      script != G_UNICODE_SCRIPT_INHERITED)
     {
       int j;
 
-      if (script == PANGO_SCRIPT_UNKNOWN)
+      if (script == G_UNICODE_SCRIPT_UNKNOWN)
 	{
 	   g_message ("Script unknown for U+%04X", ch);
 	   return;
@@ -89,7 +89,7 @@ script_for_char (gunichar   ch,
 	{
 	  if (info->scripts[j].script == script)
 	    break;
-	  if (info->scripts[j].script == PANGO_SCRIPT_COMMON)
+	  if (info->scripts[j].script == G_UNICODE_SCRIPT_COMMON)
 	    {
 	      info->scripts[j].script = script;
 	      break;
@@ -149,7 +149,7 @@ do_lang (GArray        *script_array,
 
   for (j = 0; j < MAX_SCRIPTS; j++)
     {
-      info.scripts[j].script = PANGO_SCRIPT_COMMON;
+      info.scripts[j].script = G_UNICODE_SCRIPT_COMMON;
       info.scripts[j].freq = 0;
     }
   
@@ -272,7 +272,7 @@ int main (void)
 
   g_print ("typedef struct _PangoScriptForLang {\n"
 	   "  const char lang[%d];\n"
-	   "  PangoScript scripts[%d];\n"
+	   "  GUnicodeScript scripts[%d];\n"
 	   "} PangoScriptForLang;\n"
 	   "\n"
 	   "static const PangoScriptForLang pango_script_for_lang[] = {\n",
