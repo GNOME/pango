@@ -49,7 +49,7 @@ static const char *get_script_name (PangoScript script)
   static GEnumClass *class = NULL;
   GEnumValue *value;
   if (!class)
-    class = g_type_class_ref (G_TYPE_UNICODE_SCRIPT);
+    class = g_type_class_ref (PANGO_TYPE_SCRIPT);
   
   value = g_enum_get_value (class, script);
   g_assert (value);
