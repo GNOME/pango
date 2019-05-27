@@ -158,12 +158,14 @@ typedef struct _PangoScriptIter PangoScriptIter;
  *
  * The #PangoScript enumeration identifies different writing
  * systems. The values correspond to the names as defined in the
- * Unicode standard.
- * Note that new types may be added in the future. Applications should be ready
- * to handle unknown values.  This enumeration is interchangeable with
- * #GUnicodeScript.  See <ulink
+ * Unicode standard. See <ulink
  * url="http://www.unicode.org/reports/tr24/">Unicode Standard Annex
  * #24: Script names</ulink>.
+ *
+ * Note that this enumeration is deprecated and will not be updated
+ * to include values in newer versions of the Unicode standard.
+ * Applications should use the GUnicodeScript enumeration instead,
+ * whose values are interchangeable with PangoScript.
  */
 typedef enum {                         /* ISO 15924 code */
       PANGO_SCRIPT_INVALID_CODE = -1,
