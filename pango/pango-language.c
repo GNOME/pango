@@ -638,6 +638,10 @@ pango_language_get_sample_string (PangoLanguage *language)
  * The pango_language_includes_script() function uses this function
  * internally.
  *
+ * Note: while the return value is declared as PangoScript, the
+ * returned values are from the GUnicodeScript enumeration, which
+ * may have more values. Callers need to handle unknown values.
+ *
  * Return value: (array length=num_scripts) (nullable): An array of
  * #PangoScript values, with the number of entries in the array stored
  * in @num_scripts, or %NULL if Pango does not have any information
