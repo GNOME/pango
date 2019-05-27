@@ -1447,11 +1447,11 @@ string_from_script (PangoScript script)
   static GEnumClass *class = NULL; /* MT-safe */
   GEnumValue *value;
   if (g_once_init_enter (&class))
-    g_once_init_leave(&class, (gpointer)g_type_class_ref (PANGO_TYPE_SCRIPT));
+    g_once_init_leave(&class, (gpointer)g_type_class_ref (G_TYPE_UNICODE_SCRIPT));
 
   value = g_enum_get_value (class, script);
   if (!value)
-    return string_from_script (PANGO_SCRIPT_INVALID_CODE);
+    return string_from_script (G_UNICODE_SCRIPT_INVALID_CODE);
 
   return value->value_nick;
 }
