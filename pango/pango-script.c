@@ -86,6 +86,7 @@
  * Return value: the #PangoScript for the character.
  *
  * Since: 1.4
+ * Deprecated: 1.44. Use g_unichar_get_script()
  **/
 PangoScript
 pango_script_for_unichar (gunichar ch)

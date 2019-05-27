@@ -306,7 +306,7 @@ typedef enum {                         /* ISO 15924 code */
 
 #include <pango/pango-version-macros.h>
 
-PANGO_AVAILABLE_IN_1_4
+PANGO_DEPRECATED_IN_1_44_FOR(g_unichar_get_script)
 PangoScript pango_script_for_unichar         (gunichar             ch) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_1_4
