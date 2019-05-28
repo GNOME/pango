@@ -681,7 +681,7 @@ pango_language_get_scripts (PangoLanguage *language,
       *num_scripts = j;
     }
 
-  return script_for_lang->scripts;
+  return (const PangoScript *) script_for_lang->scripts;
 }
 
 /**
