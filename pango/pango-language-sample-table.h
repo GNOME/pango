@@ -263,9 +263,9 @@ LANGUAGE(
 	)
 LANGUAGE(
 	 hr	/* Croatian */,
-	 GLASS,
-	 "Ja mogu jesti staklo i ne boli me."
-	 /* I can eat glass and it doesn't hurt me. */
+	 MISC,
+	 "Deblji krojač: zgužvah smeđ filc u tanjušni džepić."
+	 /* A fatter taylor: I’ve crumpled a brown felt in a slim pocket. */
 	)
 LANGUAGE(
 	 hu	/* Hungarian */,
