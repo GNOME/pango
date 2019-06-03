@@ -261,6 +261,7 @@ test_file (const gchar *filename, GString *string)
   g_assert (p);
   markup = p + 1;
   *p = '\0';
+  length = strlen (markup);
 
   parse_params (contents, &width, &ellipsize_at, &ellipsize, &wrap);
 
@@ -347,7 +348,7 @@ main (int argc, char *argv[])
   const gchar *name;
   gchar *path;
 
-  g_setenv ("LC_ALL", "C", TRUE);
+  g_setenv ("LC_ALL", "en_US.UTF-8", TRUE);
   setlocale (LC_ALL, "");
 
   g_test_init (&argc, &argv, NULL);
