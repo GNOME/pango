@@ -289,7 +289,13 @@ int main (void)
       for (j = 0; j < MAX_SCRIPTS; j++)
 	{
 	  if (!info->scripts[j].freq)
-	    break;
+	    {
+	      /* Avoid generating code with empty arrays */
+	      if (j == 0)
+	        g_print ("0");
+
+	      break;
+	    }
 
 	  if (j != 0)
 	    g_print (", ");
