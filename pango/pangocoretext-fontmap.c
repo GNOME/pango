@@ -1528,6 +1528,7 @@ struct _PangoCoreTextFontset
 
   GPtrArray *fonts;
   GPtrArray *coverages;
+  guint real_font_count;
 };
 
 struct _PangoCoreTextFontsetClass
@@ -1558,10 +1559,9 @@ pango_core_text_fontset_new (PangoCoreTextFontsetKey    *key,
   gchar **family_names;
   const gchar *family;
   gchar *name;
-  GPtrArray *fonts;
   int i;
 
-  fonts = g_ptr_array_new ();
+  fontset = g_object_new (PANGO_TYPE_CORE_TEXT_FONTSET, NULL);
   family = pango_font_description_get_family (description);
   family_names = g_strsplit (family ? family : "", ",", -1);
 
@@ -1588,7 +1588,7 @@ pango_core_text_fontset_new (PangoCoreTextFontsetKey    *key,
 
               if (font)
                 {
-                  g_ptr_array_add (fonts, font);
+                  g_ptr_array_add (fontset->fonts, font);
                   if (best_font == NULL) best_font = font;
                 }
             }
@@ -1599,17 +1599,15 @@ pango_core_text_fontset_new (PangoCoreTextFontsetKey    *key,
 
   if (!best_font)
     {
-      g_ptr_array_free (fonts, false);
+      g_object_unref (fontset);
       return NULL;
     }
 
   /* Create a font set with best font */
-  fontset = g_object_new (PANGO_TYPE_CORE_TEXT_FONTSET, NULL);
   fontset->key = pango_core_text_fontset_key_copy (key);
   fontset->orig_description = pango_font_description_copy (description);
 
-  fontset->fonts = fonts;
-  fontset->coverages = g_ptr_array_new ();
+  fontset->real_font_count = fontset->fonts->len;
 
   /* Add the cascade list for this language */
 #if defined(MAC_OS_X_VERSION_10_8) && MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_8
@@ -1643,9 +1641,9 @@ pango_core_text_fontset_new (PangoCoreTextFontsetKey    *key,
   fontset->cascade_list = CTFontCopyDefaultCascadeList (pango_core_text_font_get_ctfont (best_font));
 #endif
 
-  /* length of cascade list + 1 for the "real" font at the front */
-  g_ptr_array_set_size (fontset->fonts, CFArrayGetCount (fontset->cascade_list) + fonts->len);
-  g_ptr_array_set_size (fontset->coverages, CFArrayGetCount (fontset->cascade_list) + fonts->len);
+  /* length of cascade list + real_font_count for the "real" fonts at the front */
+  g_ptr_array_set_size (fontset->fonts, CFArrayGetCount (fontset->cascade_list) + fontset->real_font_count);
+  g_ptr_array_set_size (fontset->coverages, CFArrayGetCount (fontset->cascade_list) + fontset->real_font_count);
 
   return fontset;
 }
@@ -1674,8 +1672,8 @@ static PangoFont *
 pango_core_text_fontset_get_font_at (PangoCoreTextFontset *ctfontset,
                                      unsigned int          i)
 {
-  /* The first font is loaded as soon as the fontset is created */
-  if (i == 0)
+  /* These fonts are loaded as soon as the fontset is created */
+  if (i < ctfontset->real_font_count)
     return g_ptr_array_index (ctfontset->fonts, i);
 
   if (i >= ctfontset->fonts->len)
@@ -1683,7 +1681,7 @@ pango_core_text_fontset_get_font_at (PangoCoreTextFontset *ctfontset,
 
   if (g_ptr_array_index (ctfontset->fonts, i) == NULL)
     {
-      CTFontDescriptorRef ctdescriptor = CFArrayGetValueAtIndex (ctfontset->cascade_list, i - 1);
+      CTFontDescriptorRef ctdescriptor = CFArrayGetValueAtIndex (ctfontset->cascade_list, i - ctfontset->real_font_count);
       PangoFont *font = pango_core_text_fontset_load_font (ctfontset, ctdescriptor);
       g_ptr_array_index (ctfontset->fonts, i) = font;
       g_ptr_array_index (ctfontset->coverages, i) = NULL;
@@ -1712,6 +1710,7 @@ pango_core_text_fontset_init (PangoCoreTextFontset *ctfontset)
   ctfontset->cascade_list = NULL;
   ctfontset->fonts = g_ptr_array_new ();
   ctfontset->coverages = g_ptr_array_new ();
+  ctfontset->real_font_count = 0;
 }
 
 static void
