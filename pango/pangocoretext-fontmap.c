@@ -147,6 +147,8 @@ get_real_family (const char *family_name)
 	return "Helvetica";
       else if (g_ascii_strcasecmp (family_name, "serif") == 0)
 	return "Times";
+      else if (g_ascii_strcasecmp (family_name, "system-ui") == 0)
+	return "Helvetica";
       break;
     }
 
