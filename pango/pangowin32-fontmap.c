@@ -462,6 +462,8 @@ static const char * const builtin_aliases[] = {
  "mono = \"dejavu sans mono,courier new,lucida console,courier monothai,mingliu,simsun,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
   "monospace = \"dejavu sans mono,courier new,lucida console,courier monothai,mingliu,simsun,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
   "emoji = \"segoe ui emoji,segoe ui symbol,segoe ui\"",
+  "cursive = \"commic sans ms\"",
+  "fantasy = \"gabriola,impact\"",
   "system-ui = \"yu gothic ui,segoe ui,meiryo\"",
 };
 
@@ -724,10 +726,12 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 
   g_hash_table_foreach (win32fontmap->families, synthesize_foreach, win32fontmap);
 
-  /* Create synthetic "Sans", "Serif", "Monospace" and "System-ui" families */
+  /* Create synthetic "Sans", "Serif", "Monospace", "Cursive", "Fantasy" and "System-ui" families */
   create_standard_family (win32fontmap, "Sans");
   create_standard_family (win32fontmap, "Serif");
   create_standard_family (win32fontmap, "Monospace");
+  create_standard_family (win32fontmap, "Cursive");
+  create_standard_family (win32fontmap, "Fantasy");
   create_standard_family (win32fontmap, "System-ui");
 
   win32fontmap->resolution = (PANGO_SCALE / (double) GetDeviceCaps (_pango_win32_hdc, LOGPIXELSY)) * 72.0;

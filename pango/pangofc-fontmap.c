@@ -1286,6 +1286,12 @@ is_alias_family (const char *family_name)
 {
   switch (family_name[0])
     {
+    case 'c':
+    case 'C':
+      return (g_ascii_strcasecmp (family_name, "cursive") == 0);
+    case 'f':
+    case 'F':
+      return (g_ascii_strcasecmp (family_name, "fantasy") == 0);
     case 'm':
     case 'M':
       return (g_ascii_strcasecmp (family_name, "monospace") == 0);
