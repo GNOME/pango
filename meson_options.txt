@@ -1,8 +1,8 @@
-option('enable_docs',
+option('gtk_doc',
        description: 'Build API reference for Pango using GTK-Doc',
        type: 'boolean',
        value: false)
-option('gir',
+option('introspection',
        description: 'Build the GObject introspection data for Pango',
        type: 'boolean',
        value: true)
