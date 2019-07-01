@@ -122,7 +122,7 @@ libpango = library(
 
 pango_dep_sources = [pango_enum_h]
 
-build_gir = get_option('gir')
+build_gir = get_option('introspection')
 
 if build_gir
   gir_args = [

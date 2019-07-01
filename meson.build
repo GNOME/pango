@@ -515,6 +515,6 @@ subdir('examples')
 subdir('tests')
 subdir('tools')
 
-if get_option('enable_docs')
+if get_option('documentation')
   subdir('docs')
 endif
