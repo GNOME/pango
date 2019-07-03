@@ -51,6 +51,10 @@ endif
 installed_test_data = [
   'boundaries.utf8',
   'GraphemeBreakTest.txt',
+  'WordBreakTest.txt',
+  'SentenceBreakTest.txt',
+  'EmojiBreakTest.txt',
+  'CharBreakTest.txt',
 ]
 
 test_layouts_data = [
