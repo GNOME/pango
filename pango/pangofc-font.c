@@ -47,9 +47,6 @@
 #include "pango-impl-utils.h"
 
 #include <harfbuzz/hb-ot.h>
-#include <fontconfig/fcfreetype.h>
-
-#include FT_TRUETYPE_TABLES_H
 
 enum {
   PROP_0,
@@ -404,11 +401,27 @@ get_face_metrics (PangoFcFont      *fcfont,
       metrics->ascent = extents.ascender;
     }
 
+  metrics->underline_thickness = PANGO_SCALE;
+  metrics->underline_position = - PANGO_SCALE;
+  metrics->strikethrough_thickness = PANGO_SCALE;
+  metrics->strikethrough_position = metrics->ascent / 2;
 
-  metrics->underline_thickness = 0;
-  metrics->underline_position = 0;
-  metrics->strikethrough_thickness = 0;
-  metrics->strikethrough_position = 0;
+  /* FIXME: use the right hb version */
+#if HB_VERSION_ATLEAST (2,5,2)
+  hb_position_t position;
+
+  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_UNDERLINE_SIZE, &position))
+    metrics->underline_thickness = position;
+
+  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_UNDERLINE_OFFSET, &position))
+    metrics->underline_position = position;
+
+  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_STRIKEOUT_SIZE, &position))
+    metrics->strikethrough_thickness = position;
+
+  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_STRIKEOUT_OFFSET, &position))
+    metrics->strikethrough_position = position;
+#endif
 }
 
 PangoFontMetrics *
