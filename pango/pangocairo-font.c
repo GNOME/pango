@@ -293,6 +293,7 @@ _pango_cairo_font_get_metrics (PangoFont     *font,
 
 	  info->metrics->ascent *= xscale;
 	  info->metrics->descent *= xscale;
+	  info->metrics->height *= xscale;
 	  info->metrics->underline_position *= xscale;
 	  info->metrics->underline_thickness *= xscale;
 	  info->metrics->strikethrough_position *= xscale;

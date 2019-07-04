@@ -390,6 +390,7 @@ get_face_metrics (PangoFcFont      *fcfont,
     {
       metrics->descent = 0;
       metrics->ascent = PANGO_SCALE * PANGO_UNKNOWN_GLYPH_HEIGHT;
+      metrics->height = metrics->ascent;
       metrics->underline_thickness = PANGO_SCALE;
       metrics->underline_position = - PANGO_SCALE;
       metrics->strikethrough_thickness = PANGO_SCALE;
@@ -422,24 +423,32 @@ get_face_metrics (PangoFcFont      *fcfont,
       vector.y = face->size->metrics.ascender;
       FT_Vector_Transform (&vector, &ft_matrix);
       metrics->ascent = PANGO_UNITS_26_6 (vector.y);
+
+      vector.x = 0;
+      vector.y = face->size->metrics.height;
+      FT_Vector_Transform (&vector, &ft_matrix);
+      metrics->height = PANGO_UNITS_26_6 (vector.y);
     }
   else if (fcfont->is_hinted ||
 	   (face->face_flags & FT_FACE_FLAG_SCALABLE) == 0)
     {
       metrics->descent = - PANGO_UNITS_26_6 (face->size->metrics.descender);
       metrics->ascent = PANGO_UNITS_26_6 (face->size->metrics.ascender);
+      metrics->height = PANGO_UNITS_26_6 (face->size->metrics.height);
     }
   else
     {
-      FT_Fixed ascender, descender;
+      FT_Fixed ascender, descender, height;
 
       descender = FT_MulFix (face->descender, face->size->metrics.y_scale);
       metrics->descent = - PANGO_UNITS_26_6 (descender);
 
       ascender = FT_MulFix (face->ascender, face->size->metrics.y_scale);
       metrics->ascent = PANGO_UNITS_26_6 (ascender);
-    }
 
+      height = FT_MulFix (face->height, face->size->metrics.y_scale);
+      metrics->height = PANGO_UNITS_26_6 (height);
+    }
 
   metrics->underline_thickness = 0;
   metrics->underline_position = 0;
