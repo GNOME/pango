@@ -51,6 +51,7 @@ gboolean opt_waterfall = FALSE;
 int opt_width = -1;
 int opt_height = -1;
 int opt_indent = 0;
+int opt_spacing = 0;
 gboolean opt_justify = 0;
 int opt_runs = 1;
 PangoAlignment opt_align = PANGO_ALIGN_LEFT;
@@ -121,6 +122,9 @@ make_layout(PangoContext *context,
 
   if (opt_indent != 0)
     pango_layout_set_indent (layout, (opt_indent * opt_dpi * PANGO_SCALE + 36) / 72);
+
+  if (opt_spacing != 0)
+    pango_layout_set_spacing (layout, (opt_spacing * opt_dpi * PANGO_SCALE + 36) / 72);
 
   align = opt_align;
   if (align != PANGO_ALIGN_CENTER &&
@@ -704,6 +708,8 @@ parse_options (int argc, char *argv[])
      "Hinting style",					    "none/auto/full"},
     {"indent",		0, 0, G_OPTION_ARG_INT,				&opt_indent,
      "Width in points to indent paragraphs",			    "points"},
+    {"spacing",		0, 0, G_OPTION_ARG_INT,				&opt_spacing,
+     "Spacing in points between lines",			            "points"},
     {"justify",		0, 0, G_OPTION_ARG_NONE,			&opt_justify,
      "Align paragraph lines to be justified",			    	NULL},
     {"language",	0, 0, G_OPTION_ARG_STRING,			&opt_language,
