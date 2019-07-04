@@ -352,6 +352,10 @@ PANGO_AVAILABLE_IN_ALL
 void     pango_layout_line_get_extents  (PangoLayoutLine  *line,
 					 PangoRectangle   *ink_rect,
 					 PangoRectangle   *logical_rect);
+PANGO_AVAILABLE_IN_1_44
+void     pango_layout_line_get_height   (PangoLayoutLine  *line,
+					 int              *height);
+
 PANGO_AVAILABLE_IN_ALL
 void     pango_layout_line_get_pixel_extents (PangoLayoutLine *layout_line,
 					      PangoRectangle  *ink_rect,
