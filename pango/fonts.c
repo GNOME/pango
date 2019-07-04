@@ -38,7 +38,7 @@
 #include <string.h>
 
 #include "pango-types.h"
-#include "pango-font.h"
+#include "pango-font-private.h"
 #include "pango-fontmap.h"
 #include "pango-impl-utils.h"
 

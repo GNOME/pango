@@ -48,6 +48,7 @@
 #include "pango-features.h"
 #include "pango-impl-utils.h"
 #include "pango-utils-internal.h"
+#include "pango-utils-private.h"
 
 #include <glib/gstdio.h>
 

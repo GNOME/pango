@@ -46,7 +46,8 @@
 #include <math.h>
 
 #include "pango-context.h"
-#include "pangofc-fontmap.h"
+#include "pango-font-private.h"
+#include "pangofc-fontmap-private.h"
 #include "pangofc-private.h"
 #include "pango-impl-utils.h"
 #include "pango-enum-types.h"
