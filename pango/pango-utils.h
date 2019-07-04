@@ -48,17 +48,6 @@ PANGO_DEPRECATED
 gboolean pango_scan_int       (const char **pos,
 			       int         *out);
 
-#ifdef PANGO_ENABLE_BACKEND
-PANGO_DEPRECATED_IN_1_38
-char *   pango_config_key_get_system (const char *key);
-PANGO_DEPRECATED_IN_1_38
-char *   pango_config_key_get (const char  *key);
-PANGO_DEPRECATED_IN_1_32
-void     pango_lookup_aliases (const char   *fontname,
-			       char       ***families,
-			       int          *n_families);
-#endif /* PANGO_ENABLE_BACKEND */
-
 PANGO_DEPRECATED
 gboolean pango_parse_enum     (GType       type,
 			       const char *str,
@@ -90,25 +79,6 @@ gboolean pango_parse_stretch (const char   *str,
 			      PangoStretch *stretch,
 			      gboolean      warn);
 
-#ifdef PANGO_ENABLE_BACKEND
-
-/* On Unix, return the name of the "pango" subdirectory of SYSCONFDIR
- * (which is set at compile time). On Win32, return the Pango
- * installation directory (which is set at installation time, and
- * stored in the registry). The returned string should not be
- * g_free'd.
- */
-PANGO_DEPRECATED
-const char *   pango_get_sysconf_subdirectory (void) G_GNUC_PURE;
-
-/* Ditto for LIBDIR/pango. On Win32, use the same Pango
- * installation directory. This returned string should not be
- * g_free'd either.
- */
-PANGO_DEPRECATED
-const char *   pango_get_lib_subdirectory (void) G_GNUC_PURE;
-
-#endif /* PANGO_ENABLE_BACKEND */
 
 /* Hint line position and thickness.
  */

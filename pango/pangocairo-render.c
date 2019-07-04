@@ -156,6 +156,7 @@
 
 #include <math.h>
 
+#include "pango-font-private.h"
 #include "pangocairo-private.h"
 #include "pango-glyph-item.h"
 

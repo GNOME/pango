@@ -109,12 +109,12 @@ GType      pango_xft_font_get_type (void) G_GNUC_CONST;
 /* For shape engines
  */
 
-#ifdef PANGO_ENABLE_ENGINE
-PANGO_AVAILABLE_IN_ALL
-XftFont *     pango_xft_font_get_font          (PangoFont *font);
-PANGO_AVAILABLE_IN_ALL
-Display *     pango_xft_font_get_display       (PangoFont *font);
 #ifndef PANGO_DISABLE_DEPRECATED
+
+PANGO_DEPRECATED
+XftFont *     pango_xft_font_get_font          (PangoFont *font);
+PANGO_DEPRECATED
+Display *     pango_xft_font_get_display       (PangoFont *font);
 PANGO_DEPRECATED_FOR(pango_fc_font_lock_face)
 FT_Face       pango_xft_font_lock_face         (PangoFont *font);
 PANGO_DEPRECATED_FOR(pango_fc_font_unlock_face)
@@ -129,7 +129,6 @@ PANGO_DEPRECATED_FOR(PANGO_GET_UNKNOWN_GLYPH)
 PangoGlyph    pango_xft_font_get_unknown_glyph (PangoFont *font,
 						gunichar   wc);
 #endif /* PANGO_DISABLE_DEPRECATED */
-#endif /* PANGO_ENABLE_ENGINE */
 
 G_END_DECLS
 

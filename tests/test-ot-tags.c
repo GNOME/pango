@@ -20,7 +20,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#define PANGO_ENABLE_ENGINE
+#undef PANGO_DISABLE_DEPRECATED
 #include <pango/pango-ot.h>
 
 #undef VERBOSE

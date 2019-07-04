@@ -35,49 +35,6 @@ G_BEGIN_DECLS
 typedef struct _PangoCoreTextFont         PangoCoreTextFont;
 typedef struct _PangoCoreTextFontClass    PangoCoreTextFontClass;
 
-#if defined(PANGO_ENABLE_ENGINE) || defined(PANGO_ENABLE_BACKEND)
-
-/**
- * PANGO_RENDER_TYPE_CORE_TEXT:
- *
- * A string constant identifying the CoreText renderer. The associated quark (see
- * g_quark_from_string()) is used to identify the renderer in pango_find_map().
- */
-#define PANGO_RENDER_TYPE_CORE_TEXT "PangoRenderCoreText"
-
-#ifdef PANGO_ENABLE_BACKEND
-
-#define PANGO_CORE_TEXT_FONT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_CORE_TEXT_FONT, PangoCoreTextFontClass))
-#define PANGO_IS_CORE_TEXT_FONT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_CORE_TEXT_FONT))
-#define PANGO_CORE_TEXT_FONT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_CORE_TEXT_FONT, PangoCoreTextFontClass))
-
-typedef struct _PangoCoreTextFontPrivate  PangoCoreTextFontPrivate;
-
-struct _PangoCoreTextFont
-{
-  PangoFont parent_instance;
-  PangoCoreTextFontPrivate *priv;
-};
-
-struct _PangoCoreTextFontClass
-{
-  PangoFontClass parent_class;
-
-  /*< private >*/
-
-  /* Padding for future expansion */
-  void (*_pango_reserved1) (void);
-  void (*_pango_reserved2) (void);
-  void (*_pango_reserved3) (void);
-  void (*_pango_reserved4) (void);
-};
-
-#endif /* PANGO_ENABLE_BACKEND */
-
-PANGO_AVAILABLE_IN_1_24
-CTFontRef  pango_core_text_font_get_ctfont  (PangoCoreTextFont *font);
-
-#endif /* PANGO_ENABLE_ENGINE || PANGO_ENABLE_BACKEND */
 
 PANGO_AVAILABLE_IN_ALL
 GType      pango_core_text_font_get_type         (void) G_GNUC_CONST;

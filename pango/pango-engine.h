@@ -30,7 +30,7 @@
 
 G_BEGIN_DECLS
 
-#ifdef PANGO_ENABLE_ENGINE
+#ifndef PANGO_DISABLE_DEPRECATED
 
 /**
  * PANGO_RENDER_TYPE_NONE:
@@ -444,7 +444,7 @@ prefix ## _register_type (GTypeModule *module)				  \
 #define PANGO_MODULE_ENTRY(func) script_engine_##func
 #endif
 
-#endif /* PANGO_ENABLE_ENGINE */
+#endif /* PANGO_DISABLE_DEPRECATED */
 
 G_END_DECLS
 

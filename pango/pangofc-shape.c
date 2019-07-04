@@ -27,6 +27,8 @@
 #include <math.h>
 
 #include "pangofc-private.h"
+#include "pangofc-font-private.h"
+#include "pangofc-fontmap-private.h"
 #include <hb-ft.h>
 #include <hb-glib.h>
 

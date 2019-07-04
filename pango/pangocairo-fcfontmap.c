@@ -26,10 +26,10 @@
 #include <cairo-ft.h>
 #pragma GCC diagnostic pop
 
-#include "pangofc-fontmap.h"
+#include "pangofc-fontmap-private.h"
 #include "pangocairo.h"
 #include "pangocairo-private.h"
-#include "pangocairo-fc.h"
+#include "pangocairo-fc-private.h"
 
 typedef struct _PangoCairoFcFontMapClass PangoCairoFcFontMapClass;
 

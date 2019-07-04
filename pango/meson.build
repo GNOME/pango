@@ -99,8 +99,6 @@ pango_cflags = [
   '-DG_LOG_DOMAIN="Pango"',
   '-DG_LOG_USE_STRUCTURED=1',
   '-DPANGO_COMPILATION',
-  '-DPANGO_ENABLE_BACKEND',
-  '-DPANGO_ENABLE_ENGINE',
   '-DSYSCONFDIR="@0@"'.format(pango_sysconfdir),
   '-DLIBDIR="@0@"'.format(pango_libdir),
 ]
@@ -127,8 +125,6 @@ build_gir = get_option('introspection')
 if build_gir
   gir_args = [
     '--quiet',
-    '-DPANGO_ENABLE_BACKEND',
-    '-DPANGO_ENABLE_ENGINE',
   ]
 
   pango_gir = gnome.generate_gir(

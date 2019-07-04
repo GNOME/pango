@@ -53,6 +53,9 @@
 #endif
 
 #include "pangowin32.h"
+#include "pango-font-private.h"
+#include "pango-fontset-private.h"
+#include "pango-fontmap-private.h"
 
 typedef enum
   {

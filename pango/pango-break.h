@@ -156,8 +156,6 @@ void pango_get_log_attrs (const char    *text,
 			  PangoLogAttr  *log_attrs,
 			  int            attrs_len);
 
-#ifdef PANGO_ENABLE_ENGINE
-
 /* This is the default break algorithm, used if no language
  * engine overrides it. Normally you should use pango_break()
  * instead; this function is mostly useful for chaining up
@@ -169,8 +167,6 @@ void pango_default_break (const gchar   *text,
 			  PangoAnalysis *analysis,
 			  PangoLogAttr  *attrs,
 			  int            attrs_len);
-
-#endif /* PANGO_ENABLE_ENGINE */
 
 G_END_DECLS
 

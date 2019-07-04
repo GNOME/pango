@@ -23,6 +23,7 @@
 #define __PANGOXFT_PRIVATE_H__
 
 #include <pango/pangoxft.h>
+#include <pango/pangofc-font-private.h>
 #include <pango/pango-renderer.h>
 
 G_BEGIN_DECLS

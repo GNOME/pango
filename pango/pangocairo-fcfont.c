@@ -27,9 +27,9 @@
 #include <cairo-ft.h>
 #pragma GCC diagnostic pop
 
-#include "pango-fontmap.h"
+#include "pangofc-fontmap-private.h"
 #include "pangocairo-private.h"
-#include "pangocairo-fc.h"
+#include "pangocairo-fc-private.h"
 #include "pangofc-private.h"
 #include "pango-impl-utils.h"
 
