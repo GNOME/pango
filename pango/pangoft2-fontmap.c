@@ -142,11 +142,6 @@ pango_ft2_font_map_finalize (GObject *object)
 PangoFontMap *
 pango_ft2_font_map_new (void)
 {
-#if !GLIB_CHECK_VERSION (2, 35, 3)
-  /* Make sure that the type system is initialized */
-  g_type_init ();
-#endif
-
   return (PangoFontMap *) g_object_new (PANGO_TYPE_FT2_FONT_MAP, NULL);
 }
 
