@@ -70,7 +70,6 @@ void            _pango_fc_font_set_font_key      (PangoFcFont    *fcfont,
 
 _PANGO_EXTERN
 void            pango_fc_font_get_raw_extents    (PangoFcFont    *font,
-						  FT_Int32        load_flags,
 						  PangoGlyph      glyph,
 						  PangoRectangle *ink_rect,
 						  PangoRectangle *logical_rect);
