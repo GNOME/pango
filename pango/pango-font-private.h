@@ -41,6 +41,7 @@ struct _PangoFontMetrics
 
   int ascent;
   int descent;
+  int height;
   int approximate_char_width;
   int approximate_digit_width;
   int underline_position;

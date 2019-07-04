@@ -1793,6 +1793,7 @@ pango_font_get_metrics (PangoFont        *font,
 
       metrics->ascent = PANGO_SCALE * PANGO_UNKNOWN_GLYPH_HEIGHT;
       metrics->descent = 0;
+      metrics->height = 0;
       metrics->approximate_char_width = PANGO_SCALE * PANGO_UNKNOWN_GLYPH_WIDTH;
       metrics->approximate_digit_width = PANGO_SCALE * PANGO_UNKNOWN_GLYPH_WIDTH;
       metrics->underline_position = -PANGO_SCALE;
@@ -1937,6 +1938,28 @@ pango_font_metrics_get_descent (PangoFontMetrics *metrics)
   g_return_val_if_fail (metrics != NULL, 0);
 
   return metrics->descent;
+}
+
+/**
+ * pango_font_metrics_get_height:
+ * @metrics: a #PangoFontMetrics structure
+ *
+ * Gets the line height from a font metrics structure. The
+ * line height is the distance between successive baselines
+ * in wrapped text.
+ *
+ * If the line height is not available, 0 is returned.
+ *
+ * Return value: the height, in Pango units
+ *
+ * Since: 1.44
+ */
+int
+pango_font_metrics_get_height (PangoFontMetrics *metrics)
+{
+  g_return_val_if_fail (metrics != NULL, 0);
+
+  return metrics->height;
 }
 
 /**
