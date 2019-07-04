@@ -309,7 +309,7 @@ pango_ft2_font_get_glyph_info (PangoFont   *font,
     {
       info = g_slice_new0 (PangoFT2GlyphInfo);
 
-      pango_fc_font_get_raw_extents (fcfont, ft2font->load_flags,
+      pango_fc_font_get_raw_extents (fcfont,
 				     glyph,
 				     &info->ink_rect,
 				     &info->logical_rect);
