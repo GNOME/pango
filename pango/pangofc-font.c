@@ -194,16 +194,8 @@ pattern_is_transformed (FcPattern *pattern)
 
   if (FcPatternGetMatrix (pattern, FC_MATRIX, 0, &fc_matrix) == FcResultMatch)
     {
-      FT_Matrix ft_matrix;
-
-      ft_matrix.xx = 0x10000L * fc_matrix->xx;
-      ft_matrix.yy = 0x10000L * fc_matrix->yy;
-      ft_matrix.xy = 0x10000L * fc_matrix->xy;
-      ft_matrix.yx = 0x10000L * fc_matrix->yx;
-
-      return ((ft_matrix.xy | ft_matrix.yx) != 0 ||
-	      ft_matrix.xx != 0x10000L ||
-	      ft_matrix.yy != 0x10000L);
+      return fc_matrix->xx != 1 || fc_matrix->xy != 0 ||
+             fc_matrix->yx != 0 || fc_matrix->yy != 1;
     }
   else
     return FALSE;
@@ -803,7 +795,6 @@ _pango_fc_font_set_font_key (PangoFcFont    *fcfont,
 /**
  * pango_fc_font_get_raw_extents:
  * @fcfont: a #PangoFcFont
- * @load_flags: flags to pass to FT_Load_Glyph()
  * @glyph: the glyph index to load
  * @ink_rect: (out) (optional): location to store ink extents of the
  *   glyph, or %NULL
@@ -824,7 +815,6 @@ _pango_fc_font_set_font_key (PangoFcFont    *fcfont,
  **/
 void
 pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
-			       FT_Int32        load_flags,
 			       PangoGlyph      glyph,
 			       PangoRectangle *ink_rect,
 			       PangoRectangle *logical_rect)
