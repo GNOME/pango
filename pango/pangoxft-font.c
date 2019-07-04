@@ -331,7 +331,6 @@ get_glyph_extents_raw (PangoXftFont     *xfont,
       extents = g_slice_new (Extents);
 
       pango_fc_font_get_raw_extents (PANGO_FC_FONT (xfont),
-				     FT_LOAD_NO_BITMAP | FT_LOAD_NO_HINTING,
 				     glyph,
 				     &extents->ink_rect,
 				     &extents->logical_rect);
