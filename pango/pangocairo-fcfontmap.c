@@ -99,16 +99,6 @@ G_DEFINE_TYPE_WITH_CODE (PangoCairoFcFontMap, pango_cairo_fc_font_map, PANGO_TYP
     { G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT_MAP, cairo_font_map_iface_init) })
 
 static void
-pango_cairo_fc_font_map_finalize (GObject *object)
-{
-  PangoCairoFcFontMap *cffontmap = (PangoCairoFcFontMap *) (object);
-
-  G_OBJECT_CLASS (pango_cairo_fc_font_map_parent_class)->finalize (object);
-
-  FT_Done_FreeType (cffontmap->library);
-}
-
-static void
 pango_cairo_fc_font_map_fontset_key_substitute (PangoFcFontMap    *fcfontmap G_GNUC_UNUSED,
 						PangoFcFontsetKey *fontkey,
 						FcPattern         *pattern)
@@ -190,11 +180,8 @@ pango_cairo_fc_font_map_create_font (PangoFcFontMap *fcfontmap,
 static void
 pango_cairo_fc_font_map_class_init (PangoCairoFcFontMapClass *class)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   PangoFontMapClass *fontmap_class = PANGO_FONT_MAP_CLASS (class);
   PangoFcFontMapClass *fcfontmap_class = PANGO_FC_FONT_MAP_CLASS (class);
-
-  gobject_class->finalize  = pango_cairo_fc_font_map_finalize;
 
   fontmap_class->get_serial = pango_cairo_fc_font_map_get_serial;
   fontmap_class->changed = pango_cairo_fc_font_map_changed;
@@ -214,22 +201,6 @@ pango_cairo_fc_font_map_class_init (PangoCairoFcFontMapClass *class)
 static void
 pango_cairo_fc_font_map_init (PangoCairoFcFontMap *cffontmap)
 {
-  FT_Error error;
-
-  cffontmap->library = NULL;
-  error = FT_Init_FreeType (&cffontmap->library);
-  if (error != FT_Err_Ok)
-    g_critical ("pango_cairo_font_map_init: Could not initialize freetype");
-
   cffontmap->serial = 1;
   cffontmap->dpi   = 96.0;
 }
-
-FT_Library
-_pango_cairo_fc_font_map_get_library (PangoCairoFcFontMap *fontmap)
-{
-  g_return_val_if_fail (PANGO_IS_CAIRO_FC_FONT_MAP (fontmap), NULL);
-
-  return fontmap->library;
-}
-
