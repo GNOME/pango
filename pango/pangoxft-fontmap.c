@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "pangofc-fontmap.h"
+#include "pangofc-fontmap-private.h"
 #include "pangoxft.h"
 #include "pangoxft-private.h"
 

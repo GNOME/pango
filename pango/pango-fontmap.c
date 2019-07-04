@@ -20,7 +20,8 @@
  */
 
 #include "config.h"
-#include "pango-fontmap.h"
+#include "pango-fontmap-private.h"
+#include "pango-fontset-private.h"
 #include "pango-impl-utils.h"
 #include <stdlib.h>
 

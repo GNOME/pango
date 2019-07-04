@@ -24,7 +24,7 @@
 #define __PANGOFT2_PRIVATE_H__
 
 #include <pango/pangoft2.h>
-#include <pango/pangofc-fontmap.h>
+#include <pango/pangofc-fontmap-private.h>
 #include <pango/pango-renderer.h>
 #include <fontconfig/fontconfig.h>
 

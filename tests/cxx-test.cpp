@@ -1,8 +1,6 @@
 /* This test makes sure that all Pango headers can be included
  * and compiled in a C++ program.
  */
-#define PANGO_ENABLE_ENGINE
-#define PANGO_ENABLE_BACKEND
 
 #include <pango/pango.h>
 

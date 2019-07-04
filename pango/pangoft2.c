@@ -38,7 +38,7 @@
 
 #include "pangoft2.h"
 #include "pangoft2-private.h"
-#include "pangofc-fontmap.h"
+#include "pangofc-fontmap-private.h"
 #include "pangofc-private.h"
 
 /* for compatibility with older freetype versions */

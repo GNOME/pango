@@ -34,6 +34,7 @@
 #include "config.h"
 #include <math.h>
 
+#include "pango-font-private.h"
 #include "pangoft2-private.h"
 
 /* for compatibility with older freetype versions */

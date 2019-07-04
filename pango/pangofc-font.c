@@ -39,7 +39,7 @@
  */
 #include "config.h"
 
-#include "pangofc-font.h"
+#include "pangofc-font-private.h"
 #include "pangofc-fontmap.h"
 #include "pangofc-private.h"
 #include "pango-engine.h"

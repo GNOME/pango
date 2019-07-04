@@ -23,7 +23,7 @@
 #ifndef __PANGOFC_PRIVATE_H__
 #define __PANGOFC_PRIVATE_H__
 
-#include <pangofc-fontmap.h>
+#include <pangofc-fontmap-private.h>
 
 G_BEGIN_DECLS
 

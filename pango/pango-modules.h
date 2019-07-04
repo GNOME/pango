@@ -26,7 +26,7 @@
 
 G_BEGIN_DECLS
 
-#ifdef PANGO_ENABLE_BACKEND
+#ifndef PANGO_DISABLE_DEPRECATED
 
 typedef struct _PangoMap PangoMap;
 typedef struct _PangoMapEntry PangoMapEntry;
@@ -70,7 +70,7 @@ void           pango_map_get_engines (PangoMap            *map,
 PANGO_DEPRECATED_IN_1_38
 void           pango_module_register (PangoIncludedModule *module);
 
-#endif /* PANGO_ENABLE_BACKEND */
+#endif /* PANGO_DISABLE_DEPRECATED */
 
 G_END_DECLS
 
