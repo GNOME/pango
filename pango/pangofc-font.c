@@ -390,6 +390,7 @@ get_face_metrics (PangoFcFont      *fcfont,
     {
       metrics->descent = 0;
       metrics->ascent = PANGO_SCALE * PANGO_UNKNOWN_GLYPH_HEIGHT;
+      metrics->height = metrics->ascent;
       metrics->underline_thickness = PANGO_SCALE;
       metrics->underline_position = - PANGO_SCALE;
       metrics->strikethrough_thickness = PANGO_SCALE;
@@ -422,24 +423,32 @@ get_face_metrics (PangoFcFont      *fcfont,
       vector.y = face->size->metrics.ascender;
       FT_Vector_Transform (&vector, &ft_matrix);
       metrics->ascent = PANGO_UNITS_26_6 (vector.y);
+
+      vector.x = 0;
+      vector.y = face->size->metrics.height;
+      FT_Vector_Transform (&vector, &ft_matrix);
+      metrics->height = PANGO_UNITS_26_6 (vector.y);
     }
   else if (fcfont->is_hinted ||
 	   (face->face_flags & FT_FACE_FLAG_SCALABLE) == 0)
     {
       metrics->descent = - PANGO_UNITS_26_6 (face->size->metrics.descender);
       metrics->ascent = PANGO_UNITS_26_6 (face->size->metrics.ascender);
+      metrics->height = PANGO_UNITS_26_6 (face->size->metrics.height);
     }
   else
     {
-      FT_Fixed ascender, descender;
+      FT_Fixed ascender, descender, height;
 
       descender = FT_MulFix (face->descender, face->size->metrics.y_scale);
       metrics->descent = - PANGO_UNITS_26_6 (descender);
 
       ascender = FT_MulFix (face->ascender, face->size->metrics.y_scale);
       metrics->ascent = PANGO_UNITS_26_6 (ascender);
-    }
 
+      height = FT_MulFix (face->height, face->size->metrics.y_scale);
+      metrics->height = PANGO_UNITS_26_6 (height);
+    }
 
   metrics->underline_thickness = 0;
   metrics->underline_position = 0;
@@ -545,6 +554,7 @@ pango_fc_font_get_metrics (PangoFont     *font,
   PangoFcFont *fcfont = PANGO_FC_FONT (font);
   PangoFcMetricsInfo *info = NULL; /* Quiet gcc */
   GSList *tmp_list;
+  static int in_get_metrics;
 
   const char *sample_str = pango_language_get_sample_string (language);
 
@@ -570,6 +580,9 @@ pango_fc_font_get_metrics (PangoFont     *font,
 
       info = g_slice_new0 (PangoFcMetricsInfo);
 
+      /* Note: we need to add info to the list before calling
+       * into PangoLayout below, to prevent recursion
+       */
       fcfont->metrics_by_lang = g_slist_prepend (fcfont->metrics_by_lang,
 						 info);
 
@@ -580,29 +593,35 @@ pango_fc_font_get_metrics (PangoFont     *font,
 
       info->metrics = pango_fc_font_create_base_metrics_for_context (fcfont, context);
 
-      { /* Compute derived metrics */
-	PangoLayout *layout;
-	PangoRectangle extents;
-	const char *sample_str = pango_language_get_sample_string (language);
-	PangoFontDescription *desc = pango_font_describe_with_absolute_size (font);
-	gulong sample_str_width;
+      if (!in_get_metrics)
+        {
+          in_get_metrics = 1;
 
-        layout = pango_layout_new (context);
-	pango_layout_set_font_description (layout, desc);
-	pango_font_description_free (desc);
+          /* Compute derived metrics */
+          PangoLayout *layout;
+          PangoRectangle extents;
+          const char *sample_str = pango_language_get_sample_string (language);
+          PangoFontDescription *desc = pango_font_describe_with_absolute_size (font);
+          gulong sample_str_width;
 
-	pango_layout_set_text (layout, sample_str, -1);
-	pango_layout_get_extents (layout, NULL, &extents);
+          layout = pango_layout_new (context);
+          pango_layout_set_font_description (layout, desc);
+          pango_font_description_free (desc);
 
-	sample_str_width = pango_utf8_strwidth (sample_str);
-	g_assert (sample_str_width > 0);
-	info->metrics->approximate_char_width = extents.width / sample_str_width;
+          pango_layout_set_text (layout, sample_str, -1);
+          pango_layout_get_extents (layout, NULL, &extents);
 
-	pango_layout_set_text (layout, "0123456789", -1);
-	info->metrics->approximate_digit_width = max_glyph_width (layout);
+          sample_str_width = pango_utf8_strwidth (sample_str);
+          g_assert (sample_str_width > 0);
+          info->metrics->approximate_char_width = extents.width / sample_str_width;
 
-	g_object_unref (layout);
-      }
+          pango_layout_set_text (layout, "0123456789", -1);
+          info->metrics->approximate_digit_width = max_glyph_width (layout);
+
+          g_object_unref (layout);
+
+          in_get_metrics = 0;
+        }
 
       g_object_unref (context);
       g_object_unref (fontmap);

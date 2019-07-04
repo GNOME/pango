@@ -335,6 +335,8 @@ PANGO_AVAILABLE_IN_ALL
 int               pango_font_metrics_get_ascent                  (PangoFontMetrics *metrics) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
 int               pango_font_metrics_get_descent                 (PangoFontMetrics *metrics) G_GNUC_PURE;
+PANGO_AVAILABLE_IN_1_44
+int               pango_font_metrics_get_height                  (PangoFontMetrics *metrics) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
 int               pango_font_metrics_get_approximate_char_width  (PangoFontMetrics *metrics) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
