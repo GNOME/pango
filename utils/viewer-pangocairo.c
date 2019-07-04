@@ -138,7 +138,7 @@ render_callback (PangoLayout *layout,
 		 gpointer     state)
 {
   cairo_t *cr = (cairo_t *) context;
-  int annotate = (GPOINTER_TO_INT (state) + opt_annotate) % 3;
+  int annotate = (GPOINTER_TO_INT (state) + opt_annotate) % 4;
 
   cairo_save (cr);
   cairo_translate (cr, x, y);
@@ -252,6 +252,7 @@ render_callback (PangoLayout *layout,
       /* draw the logical rect in red */
       cairo_save (cr);
       cairo_set_source_rgba (cr, 1.0, 0.0, 0.0, 0.5);
+
       cairo_rectangle (cr,
 		       (double)logical.x / PANGO_SCALE - lw / 2,
 		       (double)logical.y / PANGO_SCALE - lw / 2,
@@ -270,6 +271,30 @@ render_callback (PangoLayout *layout,
 		       (double)ink.height / PANGO_SCALE + lw);
       cairo_stroke (cr);
       cairo_restore (cr);
+
+      if (opt_annotate >= 3)
+        {
+          /* draw the logical rects for lines in red */
+          cairo_save (cr);
+          cairo_set_source_rgba (cr, 1.0, 0.0, 0.0, 0.5);
+
+          iter = pango_layout_get_iter (layout);
+          do
+	    {
+              PangoRectangle rect;
+
+              pango_layout_iter_get_line_extents (iter, NULL, &rect);
+              cairo_rectangle (cr,
+                               (double)rect.x / PANGO_SCALE - lw / 2,
+                               (double)rect.y / PANGO_SCALE - lw / 2,
+                               (double)rect.width / PANGO_SCALE + lw,
+                               (double)rect.height / PANGO_SCALE + lw);
+              cairo_stroke (cr);
+            }
+          while (pango_layout_iter_next_line (iter));
+          pango_layout_iter_free (iter);
+          cairo_restore (cr);
+        }
     }
 
   cairo_move_to (cr, 0, 0);
@@ -416,7 +441,7 @@ pangocairo_view_get_option_group (const PangoViewer *klass G_GNUC_UNUSED)
   GOptionEntry entries[] =
   {
     {"annotate",	0, 0, G_OPTION_ARG_INT, &opt_annotate,
-     "Annotate the output",				"1 or 2"},
+     "Annotate the output",				"1, 2 or 3"},
     {NULL}
   };
   GOptionGroup *group;
