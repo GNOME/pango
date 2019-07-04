@@ -25,9 +25,11 @@
  * @title:OpenType Font Handling
  * @stability:Unstable
  *
- * Functions and macros in this section are used to implement the OpenType Layout
- * features and algorithms.  These are mostly useful when writing Fontconfig-based
- * shaping engines
+ * Functions and macros in this section are used to implement
+ * the OpenType Layout features and algorithms.
+ *
+ * They have been superseded by the harfbuzz library, and should
+ * not be used anymore.
  */
 #include "config.h"
 

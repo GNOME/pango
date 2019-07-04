@@ -24,8 +24,13 @@
  * @short_description:Support for loadable modules
  * @title:Modules
  *
- * Functions and macros in this section are used to support loading dynamic
- * modules that add engines to Pango at run time.
+ * Functions and macros in this section were used to support
+ * loading dynamic modules that add engines to Pango at run time.
+ *
+ * That is no longer the case, and these APIs should not be
+ * used anymore.
+ *
+ * Deprecated: 1.38
  */
 #include "config.h"
 
