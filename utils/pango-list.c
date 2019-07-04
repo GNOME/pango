@@ -33,9 +33,6 @@ main (int    argc,
   int n_families;
   int i, j, k;
 
-#if !GLIB_CHECK_VERSION (2, 35, 3)
-  g_type_init();
-#endif
   g_set_prgname ("pango-list");
 
   /* Use PangoCairo to get default fontmap so it works on every platform. */

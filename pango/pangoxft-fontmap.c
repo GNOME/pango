@@ -234,11 +234,6 @@ pango_xft_get_font_map (Display *display,
   if (fontmap)
     return fontmap;
 
-#if !GLIB_CHECK_VERSION (2, 35, 3)
-  /* Make sure that the type system is initialized */
-  g_type_init ();
-#endif
-
   xftfontmap = (PangoXftFontMap *)g_object_new (PANGO_TYPE_XFT_FONT_MAP, NULL);
 
   xftfontmap->display = display;
