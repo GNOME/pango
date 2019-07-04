@@ -33,14 +33,11 @@ struct _PangoCairoFcFontMap
 
   guint serial;
   double dpi;
-
-  FT_Library library;
 };
 
 
 PangoFcFont *_pango_cairo_fc_font_new (PangoCairoFcFontMap *cffontmap,
 				       PangoFcFontKey      *key);
-FT_Library   _pango_cairo_fc_font_map_get_library (PangoCairoFcFontMap *fontmap);
 
 G_END_DECLS
 
