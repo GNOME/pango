@@ -25,6 +25,9 @@
 
 #include <fontconfig/fontconfig.h>
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include <pango/pango-layout.h>
 #include <pango/pangofc-font.h>
 
