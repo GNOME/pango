@@ -118,7 +118,7 @@ pango_cairo_fc_font_get_glyph_extents (PangoFont      *font,
 					       logical_rect);
 }
 
-static FT_Face
+static gpointer
 pango_cairo_fc_font_lock_face (PangoFcFont *font)
 {
   PangoCairoFcFont *cffont = (PangoCairoFcFont *) (font);
