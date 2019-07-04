@@ -109,7 +109,7 @@ struct _PangoFcFontClass
   PangoFontClass parent_class;
 
   /*< public >*/
-  FT_Face    (*lock_face)         (PangoFcFont      *font);
+  gpointer   (*lock_face)         (PangoFcFont      *font);
   void       (*unlock_face)       (PangoFcFont      *font);
   gboolean   (*has_char)          (PangoFcFont      *font,
 				   gunichar          wc);
