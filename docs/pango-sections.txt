@@ -484,6 +484,8 @@ pango_layout_set_indent
 pango_layout_get_indent
 pango_layout_get_spacing
 pango_layout_set_spacing
+pango_layout_set_line_spacing
+pango_layout_get_line_spacing
 pango_layout_set_justify
 pango_layout_get_justify
 pango_layout_set_auto_dir
