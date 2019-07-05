@@ -224,6 +224,7 @@ _pango_cairo_font_get_metrics (PangoFont     *font,
   PangoCairoFontPrivate *cf_priv = PANGO_CAIRO_FONT_PRIVATE (font);
   PangoCairoFontMetricsInfo *info = NULL; /* Quiet gcc */
   GSList *tmp_list;
+  static int in_get_metrics;
 
   const char *sample_str = pango_language_get_sample_string (language);
 
@@ -300,29 +301,36 @@ _pango_cairo_font_get_metrics (PangoFont     *font,
 	  info->metrics->strikethrough_thickness *= xscale;
 	}
 
-
       /* Set the matrix on the context so we don't have to adjust the derived
        * metrics. */
       pango_context_set_matrix (context, &pango_matrix);
 
-      /* Update approximate_*_width now */
-      layout = pango_layout_new (context);
-      desc = pango_font_describe_with_absolute_size (font);
-      pango_layout_set_font_description (layout, desc);
-      pango_font_description_free (desc);
+      /* Ugly. We need to prevent recursion when we call into
+       * PangoLayout to determine approximate char width.
+       */
+      if (!in_get_metrics)
+        {
+          in_get_metrics = 1;
 
-      pango_layout_set_text (layout, sample_str, -1);
-      pango_layout_get_extents (layout, NULL, &extents);
+          /* Update approximate_*_width now */
+          layout = pango_layout_new (context);
+          desc = pango_font_describe_with_absolute_size (font);
+          pango_layout_set_font_description (layout, desc);
+          pango_font_description_free (desc);
 
-      sample_str_width = pango_utf8_strwidth (sample_str);
-      g_assert (sample_str_width > 0);
-      info->metrics->approximate_char_width = extents.width / sample_str_width;
+          pango_layout_set_text (layout, sample_str, -1);
+          pango_layout_get_extents (layout, NULL, &extents);
 
-      pango_layout_set_text (layout, "0123456789", -1);
-      info->metrics->approximate_digit_width = max_glyph_width (layout);
+          sample_str_width = pango_utf8_strwidth (sample_str);
+          g_assert (sample_str_width > 0);
+          info->metrics->approximate_char_width = extents.width / sample_str_width;
 
-      g_object_unref (layout);
+          pango_layout_set_text (layout, "0123456789", -1);
+          info->metrics->approximate_digit_width = max_glyph_width (layout);
 
+          g_object_unref (layout);
+          in_get_metrics = 0;
+        }
 
       /* We may actually reuse ascent/descent we got from cairo here.  that's
        * in cf_priv->font_extents.
@@ -356,6 +364,7 @@ _pango_cairo_font_get_metrics (PangoFont     *font,
       g_object_unref (fontmap);
     }
 
+out:
   return pango_font_metrics_ref (info->metrics);
 }
 
