@@ -1455,6 +1455,19 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
       if (!span_parse_enum ("gravity", gravity, PANGO_TYPE_GRAVITY, (int*)(void*)&gr, line_number, error))
 	goto error;
 
+      if (gr == PANGO_GRAVITY_AUTO)
+        {
+	  g_set_error (error,
+		       G_MARKUP_ERROR,
+		       G_MARKUP_ERROR_INVALID_CONTENT,
+		       _("'%s' is not a valid value for the 'stretch' "
+			 "attribute on <span> tag, line %d; valid "
+			 "values are for example 'south', 'east', "
+			 "'north', 'west'"),
+		       gravity, line_number);
+	  goto error;
+        }
+
       add_attribute (tag, pango_attr_gravity_new (gr));
     }
 
