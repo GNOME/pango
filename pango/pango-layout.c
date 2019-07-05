@@ -4654,9 +4654,8 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
       int strikethrough_position;
       int new_pos;
 
-      if (!metrics)
-        metrics = pango_font_get_metrics (run->item->analysis.font,
-					  run->item->analysis.language);
+      metrics = pango_font_get_metrics (run->item->analysis.font,
+                                        run->item->analysis.language);
 
       underline_thickness = pango_font_metrics_get_underline_thickness (metrics);
       underline_position = pango_font_metrics_get_underline_position (metrics);
@@ -4710,10 +4709,10 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
 
   if (height)
     {
-      if (!metrics)
-        metrics = pango_font_get_metrics (run->item->analysis.font,
-				          run->item->analysis.language);
-      *height = pango_font_metrics_get_height (metrics);
+      if (metrics)
+        *height = pango_font_metrics_get_height (metrics);
+      else
+        *height = 0;
     }
 
   if (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
