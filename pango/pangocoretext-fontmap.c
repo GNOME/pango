@@ -1385,6 +1385,9 @@ pango_core_text_font_map_load_fontset (PangoFontMap               *fontmap,
                   g_error ("Could not load fallback font, bailing out.");
                 }
             }
+
+          if (tmp_desc)
+            pango_font_description_free (tmp_desc);
         }
 
       if (insert_in_hash)
