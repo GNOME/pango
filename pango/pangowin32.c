@@ -575,6 +575,7 @@ pango_win32_font_get_metrics (PangoFont     *font,
 
 	  metrics->ascent = tm.tmAscent * PANGO_SCALE;
 	  metrics->descent = tm.tmDescent * PANGO_SCALE;
+          metrics->height = (tm.tmHeight + tm.tmInternalLeading + tm.tmExternalLeading) * PANGO_SCALE;
 	  metrics->approximate_char_width = tm.tmAveCharWidth * PANGO_SCALE;
 
 	  coverage = pango_win32_font_get_coverage (font, language);
