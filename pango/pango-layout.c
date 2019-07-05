@@ -49,8 +49,8 @@
  * treat the results of a #PangoLayout as a list of lines.
  *
  * <figure id="parameters">
- * <title>Adjustable parameters for a PangoLayout</title>
- * <graphic fileref="layout.gif" format="GIF"></graphic>
+ * <title>Adjustable parameters (on the left) and font metrics (on the right) for a PangoLayout</title>
+ * <graphic fileref="layout.png" format="PNG"></graphic>
  * </figure>
  *
  * The #PangoLayout structure is opaque, and has no user-visible
@@ -113,6 +113,7 @@ struct _PangoLayoutLinePrivate
   } cache_status;
   PangoRectangle ink_rect;
   PangoRectangle logical_rect;
+  int height;
 };
 
 struct _PangoLayoutClass
@@ -189,6 +190,7 @@ pango_layout_init (PangoLayout *layout)
   layout->height = -1;
   layout->indent = 0;
   layout->spacing = 0;
+  layout->line_spacing = 1.0;
 
   layout->alignment = PANGO_ALIGN_LEFT;
   layout->justify = FALSE;
@@ -555,8 +557,17 @@ pango_layout_get_indent (PangoLayout *layout)
  * @layout: a #PangoLayout.
  * @spacing: the amount of spacing
  *
- * Sets the amount of spacing in Pango unit between the lines of the
- * layout.
+ * Sets the amount of spacing in Pango unit between
+ * the lines of the layout. When placing lines with
+ * spacing, Pango arranges things so that
+ *
+ * line2.top = line1.bottom + spacing
+ *
+ * Note: Since 1.44, Pango defaults to using the
+ * line height (as determined by the font) for placing
+ * lines. The @spacing set with this function is only
+ * taken into account when the line-height factor is
+ * set to zero with pango_layout_set_line_spacing().
  **/
 void
 pango_layout_set_spacing (PangoLayout *layout,
@@ -584,6 +595,59 @@ pango_layout_get_spacing (PangoLayout *layout)
 {
   g_return_val_if_fail (layout != NULL, 0);
   return layout->spacing;
+}
+
+/**
+ * pango_layout_set_line_spacing:
+ * @layout: a #PangoLayout
+ * @factor: the new line spacing factor
+ *
+ * Sets a factor for line spacing.
+ * Typical values are: 0, 1, 1.5, 2.
+ * The default values is 1.
+ *
+ * If @factor is non-zero, lines are placed
+ * so that
+ *
+ * baseline2 = baseline1 + factor * height2
+ *
+ * where height2 is the line height of the
+ * second line (as determined by the font(s)).
+ * In this case, the spacing set with
+ * pango_layout_set_spacing() is ignored.
+ *
+ * If @factor is zero, spacing is applied as
+ * before.
+ *
+ * Since: 1.44
+ */
+void
+pango_layout_set_line_spacing (PangoLayout *layout,
+			       float        factor)
+{
+  g_return_if_fail (layout != NULL);
+
+  if (layout->line_spacing != factor)
+    {
+      layout->line_spacing = factor;
+      layout_changed (layout);
+    }
+}
+
+/**
+ * pango_layout_get_line_spacing:
+ * @layout: a #PangoLayout
+ *
+ * Gets the value that has been
+ * set with pango_layout_set_line_spacing().
+ *
+ * Since: 1.44
+ */
+float
+pango_layout_get_line_spacing (PangoLayout *layout)
+{
+  g_return_val_if_fail (layout != NULL, 1.0);
+  return layout->line_spacing;
 }
 
 /**
@@ -2481,6 +2545,11 @@ get_x_offset (PangoLayout     *layout,
 }
 
 static void
+pango_layout_line_get_extents_and_height (PangoLayoutLine *line,
+                                          PangoRectangle *ink,
+                                          PangoRectangle *logical,
+                                          int            *height);
+static void
 get_line_extents_layout_coords (PangoLayout     *layout,
 				PangoLayoutLine *line,
 				int              layout_width,
@@ -2493,29 +2562,43 @@ get_line_extents_layout_coords (PangoLayout     *layout,
   /* Line extents in line coords (origin at line baseline) */
   PangoRectangle line_ink;
   PangoRectangle line_logical;
+  gboolean first_line;
+  int new_baseline;
+  int height;
 
-  pango_layout_line_get_extents (line, line_ink_layout ? &line_ink : NULL,
-				 &line_logical);
+  if (layout->lines->data == line)
+    first_line = TRUE;
+  else
+    first_line = FALSE;
+
+  pango_layout_line_get_extents_and_height (line, line_ink_layout ? &line_ink : NULL,
+                                            &line_logical,
+                                            &height);
 
   get_x_offset (layout, line, layout_width, line_logical.width, &x_offset);
+
+  if (first_line || !baseline || layout->line_spacing == 0.0)
+    new_baseline = y_offset - line_logical.y;
+  else
+    new_baseline = *baseline + layout->line_spacing * height;
 
   /* Convert the line's extents into layout coordinates */
   if (line_ink_layout)
     {
       *line_ink_layout = line_ink;
       line_ink_layout->x = line_ink.x + x_offset;
-      line_ink_layout->y = y_offset - line_logical.y + line_ink.y;
+      line_ink_layout->y = new_baseline + line_ink.y;
     }
 
   if (line_logical_layout)
     {
       *line_logical_layout = line_logical;
       line_logical_layout->x = line_logical.x + x_offset;
-      line_logical_layout->y = y_offset;
+      line_logical_layout->y = new_baseline + line_logical.y;
     }
 
   if (baseline)
-    *baseline = y_offset - line_logical.y;
+    *baseline = new_baseline;
 }
 
 /* if non-NULL line_extents returns a list of line extents
@@ -2532,6 +2615,7 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
   int width;
   gboolean need_width = FALSE;
   int line_index = 0;
+  int baseline;
 
   g_return_if_fail (layout != NULL);
 
@@ -2598,6 +2682,7 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
       *line_extents = g_malloc (sizeof (Extents) * layout->line_count);
     }
 
+  baseline = 0;
   line_list = layout->lines;
   while (line_list)
     {
@@ -2610,8 +2695,6 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
 
       /* This block gets the line extents in layout coords */
       {
-	int baseline;
-
 	get_line_extents_layout_coords (layout, line,
 					width, y_offset,
 					&baseline,
@@ -2683,14 +2766,10 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
 		}
 	    }
 
-	  logical_rect->height += line_logical_layout.height;
-
-	  /* No space after the last line, of course. */
-	  if (line_list->next != NULL)
-	    logical_rect->height += layout->spacing;
+	  logical_rect->height = line_logical_layout.y + line_logical_layout.height - logical_rect->y;
 	}
 
-      y_offset += line_logical_layout.height + layout->spacing;
+      y_offset = line_logical_layout.y + line_logical_layout.height + layout->spacing;
       line_list = line_list->next;
       line_index ++;
     }
@@ -4544,12 +4623,14 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
 }
 
 static void
-pango_layout_run_get_extents (PangoLayoutRun *run,
-			      PangoRectangle *run_ink,
-			      PangoRectangle *run_logical)
+pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
+                                         PangoRectangle *run_ink,
+                                         PangoRectangle *run_logical,
+                                         int            *height)
 {
   PangoRectangle logical;
   ItemProperties properties;
+  PangoFontMetrics *metrics = NULL;
 
   if (G_UNLIKELY (!run_ink && !run_logical))
     return;
@@ -4573,14 +4654,20 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
 
   if (run_ink && (properties.uline != PANGO_UNDERLINE_NONE || properties.strikethrough))
     {
-      PangoFontMetrics *metrics = pango_font_get_metrics (run->item->analysis.font,
-							  run->item->analysis.language);
-      int underline_thickness = pango_font_metrics_get_underline_thickness (metrics);
-      int underline_position = pango_font_metrics_get_underline_position (metrics);
-      int strikethrough_thickness = pango_font_metrics_get_strikethrough_thickness (metrics);
-      int strikethrough_position = pango_font_metrics_get_strikethrough_position (metrics);
-
+      int underline_thickness;
+      int underline_position;
+      int strikethrough_thickness;
+      int strikethrough_position;
       int new_pos;
+
+      if (!metrics)
+        metrics = pango_font_get_metrics (run->item->analysis.font,
+					  run->item->analysis.language);
+
+      underline_thickness = pango_font_metrics_get_underline_thickness (metrics);
+      underline_position = pango_font_metrics_get_underline_position (metrics);
+      strikethrough_thickness = pango_font_metrics_get_strikethrough_thickness (metrics);
+      strikethrough_position = pango_font_metrics_get_strikethrough_position (metrics);
 
       /* the underline/strikethrough takes x,width of logical_rect.  reflect
        * that into ink_rect.
@@ -4625,8 +4712,14 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
 	  g_critical ("unknown underline mode");
 	  break;
 	}
+    }
 
-      pango_font_metrics_unref (metrics);
+  if (height)
+    {
+      if (!metrics)
+        metrics = pango_font_get_metrics (run->item->analysis.font,
+				          run->item->analysis.language);
+      *height = pango_font_metrics_get_height (metrics);
     }
 
   if (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
@@ -4648,24 +4741,16 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
       if (run_logical)
 	run_logical->y -= properties.rise;
     }
+
+  if (metrics)
+    pango_font_metrics_unref (metrics);
 }
 
-/**
- * pango_layout_line_get_extents:
- * @line:     a #PangoLayoutLine
- * @ink_rect: (out) (allow-none): rectangle used to store the extents of
- *            the glyph string as drawn, or %NULL
- * @logical_rect: (out) (allow-none):rectangle used to store the logical
- *                extents of the glyph string, or %NULL
- *
- * Computes the logical and ink extents of a layout line. See
- * pango_font_get_glyph_extents() for details about the interpretation
- * of the rectangles.
- */
-void
-pango_layout_line_get_extents (PangoLayoutLine *line,
-			       PangoRectangle  *ink_rect,
-			       PangoRectangle  *logical_rect)
+static void
+pango_layout_line_get_extents_and_height (PangoLayoutLine *line,
+                                          PangoRectangle  *ink_rect,
+                                          PangoRectangle  *logical_rect,
+                                          int             *height)
 {
   PangoLayoutLinePrivate *private = (PangoLayoutLinePrivate *)line;
   GSList *tmp_list;
@@ -4685,6 +4770,8 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
 	  *ink_rect = private->ink_rect;
 	if (logical_rect)
 	  *logical_rect = private->logical_rect;
+        if (height)
+          *height = private->height;
 	return;
       }
     case NOT_CACHED:
@@ -4694,6 +4781,8 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
 	  ink_rect = &private->ink_rect;
 	if (!logical_rect)
 	  logical_rect = &private->logical_rect;
+        if (!height)
+          height = &private->height;
 	break;
       }
     case LEAKED:
@@ -4718,6 +4807,9 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
       logical_rect->height = 0;
     }
 
+  if (height)
+    *height = 0;
+
   tmp_list = line->runs;
   while (tmp_list)
     {
@@ -4725,10 +4817,12 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
       int new_pos;
       PangoRectangle run_ink;
       PangoRectangle run_logical;
+      int run_height;
 
-      pango_layout_run_get_extents (run,
-				    ink_rect ? &run_ink : NULL,
-				    &run_logical);
+      pango_layout_run_get_extents_and_height (run,
+                                               ink_rect ? &run_ink : NULL,
+                                               &run_logical,
+                                               height ? &run_height : NULL);
 
       if (ink_rect)
 	{
@@ -4752,9 +4846,9 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
 	}
 
       if (logical_rect)
-	{
-	  new_pos = MIN (logical_rect->x, x_pos + run_logical.x);
-	  logical_rect->width = MAX (logical_rect->x + logical_rect->width,
+        {
+          new_pos = MIN (logical_rect->x, x_pos + run_logical.x);
+          logical_rect->width = MAX (logical_rect->x + logical_rect->width,
 				     x_pos + run_logical.x + run_logical.width) - new_pos;
 	  logical_rect->x = new_pos;
 
@@ -4762,10 +4856,13 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
 	  logical_rect->height = MAX (logical_rect->y + logical_rect->height,
 				      run_logical.y + run_logical.height) - new_pos;
 	  logical_rect->y = new_pos;
-	}
+        }
 
-     x_pos += run_logical.width;
-     tmp_list = tmp_list->next;
+      if (height)
+        *height = MAX (*height, run_height);
+
+      x_pos += run_logical.width;
+      tmp_list = tmp_list->next;
     }
 
   if (logical_rect && !line->runs)
@@ -4777,8 +4874,47 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
 	private->ink_rect = *ink_rect;
       if (&private->logical_rect != logical_rect)
 	private->logical_rect = *logical_rect;
+      if (&private->height != height)
+        private->height = *height;
       private->cache_status = CACHED;
     }
+}
+
+/**
+ * pango_layout_line_get_extents:
+ * @line:     a #PangoLayoutLine
+ * @ink_rect: (out) (allow-none): rectangle used to store the extents of
+ *            the glyph string as drawn, or %NULL
+ * @logical_rect: (out) (allow-none):rectangle used to store the logical
+ *                extents of the glyph string, or %NULL
+ *
+ * Computes the logical and ink extents of a layout line. See
+ * pango_font_get_glyph_extents() for details about the interpretation
+ * of the rectangles.
+ */
+void
+pango_layout_line_get_extents (PangoLayoutLine *line,
+			       PangoRectangle  *ink_rect,
+			       PangoRectangle  *logical_rect)
+{
+  pango_layout_line_get_extents_and_height (line, ink_rect, logical_rect, NULL);
+}
+
+/**
+ * pango_layout_line_get_height:
+ * @line:     a #PangoLayoutLine
+ * @height: (out) (allow-none): return location for the line height
+ *
+ * Computes the height of the line, ie the distance between
+ * this and the previous lines baseline.
+ *
+ * Since: 1.44
+ */
+void
+pango_layout_line_get_height (PangoLayoutLine *line,
+			      int             *height)
+{
+  pango_layout_line_get_extents_and_height (line, NULL, NULL, height);
 }
 
 static PangoLayoutLine *
@@ -6307,7 +6443,7 @@ pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
 
   if (iter->run)
     {
-      pango_layout_run_get_extents (iter->run, ink_rect, logical_rect);
+      pango_layout_run_get_extents_and_height (iter->run, ink_rect, logical_rect, NULL);
 
       if (ink_rect)
 	{
@@ -6372,7 +6508,7 @@ pango_layout_iter_get_line_extents (PangoLayoutIter *iter,
       get_line_extents_layout_coords (iter->layout, iter->line,
 				      iter->layout_width,
 				      ext->logical_rect.y,
-				      NULL,
+                                      NULL,
 				      ink_rect,
 				      NULL);
     }
@@ -6395,7 +6531,10 @@ pango_layout_iter_get_line_extents (PangoLayoutIter *iter,
  * The Y positions are in layout coordinates (origin at top left of the
  * entire layout).
  *
- **/
+ * Note: Since 1.44, Pango uses line heights for placing lines,
+ * and there may be gaps between the ranges returned by this
+ * function.
+ */
 void
 pango_layout_iter_get_line_yrange (PangoLayoutIter *iter,
 				   int             *y0,

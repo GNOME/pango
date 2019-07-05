@@ -206,6 +206,11 @@ void           pango_layout_set_spacing          (PangoLayout                *la
 						  int                         spacing);
 PANGO_AVAILABLE_IN_ALL
 int            pango_layout_get_spacing          (PangoLayout                *layout);
+PANGO_AVAILABLE_IN_1_44
+void           pango_layout_set_line_spacing     (PangoLayout                *layout,
+                                                  float                       spread);
+PANGO_AVAILABLE_IN_1_44
+float          pango_layout_get_line_spacing     (PangoLayout                *layout);
 PANGO_AVAILABLE_IN_ALL
 void           pango_layout_set_justify          (PangoLayout                *layout,
 						  gboolean                    justify);
@@ -352,6 +357,10 @@ PANGO_AVAILABLE_IN_ALL
 void     pango_layout_line_get_extents  (PangoLayoutLine  *line,
 					 PangoRectangle   *ink_rect,
 					 PangoRectangle   *logical_rect);
+PANGO_AVAILABLE_IN_1_44
+void     pango_layout_line_get_height   (PangoLayoutLine  *line,
+					 int              *height);
+
 PANGO_AVAILABLE_IN_ALL
 void     pango_layout_line_get_pixel_extents (PangoLayoutLine *layout_line,
 					      PangoRectangle  *ink_rect,
