@@ -49,8 +49,8 @@
  * treat the results of a #PangoLayout as a list of lines.
  *
  * <figure id="parameters">
- * <title>Adjustable parameters for a PangoLayout</title>
- * <graphic fileref="layout.gif" format="GIF"></graphic>
+ * <title>Adjustable parameters (on the left) and font metrics (on the right) for a PangoLayout</title>
+ * <graphic fileref="layout.png" format="PNG"></graphic>
  * </figure>
  *
  * The #PangoLayout structure is opaque, and has no user-visible

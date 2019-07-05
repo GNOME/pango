@@ -58,7 +58,7 @@ content_files = [
 ]
 
 html_images = [
-  'layout.gif',
+  'layout.png',
   'rotated-text.png',
 ]
 
