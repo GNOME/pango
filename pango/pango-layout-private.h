@@ -55,6 +55,7 @@ struct _PangoLayout
   int height;			/* ellipsize width, in device units if positive, number of lines if negative */
   int indent;			/* amount by which first line should be shorter */
   int spacing;			/* spacing between lines */
+  float spread;                 /* factor to apply to line spacing */
 
   guint justify : 1;
   guint alignment : 2;

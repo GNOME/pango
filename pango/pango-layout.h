@@ -206,6 +206,11 @@ void           pango_layout_set_spacing          (PangoLayout                *la
 						  int                         spacing);
 PANGO_AVAILABLE_IN_ALL
 int            pango_layout_get_spacing          (PangoLayout                *layout);
+PANGO_AVAILABLE_IN_1_44
+void           pango_layout_set_spread           (PangoLayout                *layout,
+                                                  float                       spread);
+PANGO_AVAILABLE_IN_1_44
+float          pango_layout_get_spread           (PangoLayout                *layout);
 PANGO_AVAILABLE_IN_ALL
 void           pango_layout_set_justify          (PangoLayout                *layout,
 						  gboolean                    justify);
