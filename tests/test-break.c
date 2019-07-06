@@ -45,7 +45,8 @@ test_file (const gchar *filename, GString *string)
   int len;
   char *p;
   int i;
-  GString *s2;
+  GString *s1, *s2, *s3;
+  int m;
 
   if (!g_file_get_contents (filename, &contents, &length, &error))
     {
@@ -61,65 +62,112 @@ test_file (const gchar *filename, GString *string)
 
   pango_get_log_attrs (contents, length, -1, lang, attrs, len);
 
-  s2 = g_string_new ("");
+  s1 = g_string_new ("Breaks: ");
+  s2 = g_string_new ("Whitespace: ");
+  s3 = g_string_new ("Words:");
+
+  g_string_append (string, "Text: ");
+
+  m = MAX (MAX (s1->len, s2->len), MAX (s3->len, strlen ("Text: ")));
+
+  g_string_append_printf (s1, "%*s", (int)(m - s1->len), "");
+  g_string_append_printf (s2, "%*s", (int)(m - s2->len), "");
+  g_string_append_printf (s3, "%*s", (int)(m - s3->len), "");
+  g_string_append_printf (string, "%*s", (int)(m - strlen ("Text: ")), "");
 
   for (i = 0, p = contents; i < len; i++, p = g_utf8_next_char (p))
     {
       PangoLogAttr log = attrs[i];
+      int b = 0;
+      int w = 0;
+      int o = 0;
+
       if (log.is_mandatory_break)
         {
-          g_string_append (string, " ");
-          g_string_append (s2, "L");
+          g_string_append (s1, "L");
+          b++;
         }
       else if (log.is_line_break)
         {
-          g_string_append (string, " ");
-          g_string_append (s2, "l");
+          g_string_append (s1, "l");
+          b++;
         }
       if (log.is_hyphen)
         {
-          g_string_append (string, " ");
-          g_string_append (s2, "h");
+          g_string_append (s1, "h");
+          b++;
         }
       if (log.is_char_break)
         {
-          g_string_append (string, " ");
-          g_string_append (s2, "c");
+          g_string_append (s1, "c");
+          b++;
         }
       if (log.is_white)
         {
-          g_string_append (string, " ");
           g_string_append (s2, "w");
+          w++;
         }
       if (log.is_expandable_space)
         {
-          g_string_append (string, " ");
           g_string_append (s2, "x");
+          w++;
         }
+
+      if (log.is_word_start)
+        {
+          g_string_append (s3, "s");
+          o++;
+        }
+      if (log.is_word_end)
+        {
+          g_string_append (s3, "e");
+          o++;
+        }
+
+      m = MAX (MAX (b, w), o);
+
+      g_string_append_printf (string, "%*s", m, "");
+      g_string_append_printf (s1, "%*s", m - b, "");
+      g_string_append_printf (s2, "%*s", m - w, "");
+      g_string_append_printf (s3, "%*s", m - o, "");
+
       if (i < len - 1)
         {
           gunichar ch = g_utf8_get_char (p);
           if (ch == 0x20)
             {
               g_string_append (string, "[ ]");
+              g_string_append (s1, "   ");
               g_string_append (s2, "   ");
+              g_string_append (s3, "   ");
             }
           else if (g_unichar_isprint (ch))
             {
               g_string_append_unichar (string, ch);
+              g_string_append (s1, " ");
               g_string_append (s2, " ");
+              g_string_append (s3, " ");
             }
           else
             {
               g_string_append_printf (string, "[%#04x]", ch);
+              g_string_append (s1, "      ");
               g_string_append (s2, "      ");
+              g_string_append (s3, "      ");
             }
         }
     }
   g_string_append (string, "\n");
+  g_string_append_len (string, s1->str, s1->len);
+  g_string_append (string, "\n");
   g_string_append_len (string, s2->str, s2->len);
   g_string_append (string, "\n");
+  g_string_append_len (string, s3->str, s3->len);
+  g_string_append (string, "\n");
+
+  g_string_free (s1, TRUE);
   g_string_free (s2, TRUE);
+  g_string_free (s3, TRUE);
 
   g_free (attrs);
   g_free (contents);
