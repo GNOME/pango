@@ -672,6 +672,45 @@ _pango_cairo_font_private_is_metrics_hinted (PangoCairoFontPrivate *cf_priv)
 }
 
 static void
+get_space_extents (PangoCairoFontPrivate *cf_priv,
+                   PangoRectangle        *ink_rect,
+                   PangoRectangle        *logical_rect)
+{
+  const char hexdigits[] = "0123456789ABCDEF";
+  char c[2] = {0, 0};
+  int i;
+  double hex_width;
+  int width;
+
+  /* we don't render missing spaces as hex boxes,
+   * so come up with some width to use. For lack
+   * of anything better, use average hex digit width.
+   */
+
+  hex_width = 0;
+  for (i = 0 ; i < 16 ; i++)
+    {
+      cairo_text_extents_t extents;
+
+      c[0] = hexdigits[i];
+      cairo_scaled_font_text_extents (cf_priv->scaled_font, c, &extents);
+      hex_width += extents.width;
+    }
+  width = pango_units_from_double (hex_width / 16);
+
+  if (ink_rect)
+    {
+      ink_rect->x = ink_rect->y = ink_rect->height = 0;
+      ink_rect->width = width;
+    }
+  if (logical_rect)
+    {
+      *logical_rect = cf_priv->font_extents;
+      logical_rect->width = width;
+    }
+}
+
+static void
 _pango_cairo_font_private_get_glyph_extents_missing (PangoCairoFontPrivate *cf_priv,
 						     PangoGlyph             glyph,
 						     PangoRectangle        *ink_rect,
@@ -680,6 +719,12 @@ _pango_cairo_font_private_get_glyph_extents_missing (PangoCairoFontPrivate *cf_p
   PangoCairoFontHexBoxInfo *hbi;
   gunichar ch;
   gint rows, cols;
+
+  if (glyph == (0x20 | PANGO_GLYPH_UNKNOWN_FLAG))
+    {
+      get_space_extents (cf_priv, ink_rect, logical_rect);
+      return;
+    }
 
   hbi = _pango_cairo_font_private_get_hex_box_info (cf_priv);
   if (!hbi)
@@ -767,6 +812,7 @@ _pango_cairo_font_private_glyph_extents_cache_init (PangoCairoFontPrivate *cf_pr
 
   return TRUE;
 }
+
 
 /* Fills in the glyph extents cache entry
  */
