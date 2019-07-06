@@ -6,3 +6,7 @@ option('introspection',
        description: 'Build the GObject introspection data for Pango',
        type: 'boolean',
        value: true)
+option('install-tests',
+       description : 'Install tests',
+       type: 'boolean',
+       value: 'false')

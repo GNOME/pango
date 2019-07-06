@@ -94,9 +94,11 @@ endforeach
 installed_test_datadir = join_paths(pango_datadir, 'installed-tests', 'pango')
 installed_test_bindir = join_paths(pango_libexecdir, 'installed-tests', 'pango')
 
-install_data(installed_test_data, install_dir: installed_test_bindir)
-install_data(installed_test_layouts_data, install_dir: join_paths(installed_test_bindir, 'layouts'))
-install_data(installed_test_markups_data, install_dir: join_paths(installed_test_bindir, 'markups'))
+if get_option('install-tests')
+  install_data(installed_test_data, install_dir: installed_test_bindir)
+  install_data(installed_test_layouts_data, install_dir: join_paths(installed_test_bindir, 'layouts'))
+  install_data(installed_test_markups_data, install_dir: join_paths(installed_test_bindir, 'markups'))
+endif
 
 python = import('python3').find_python()
 gen_installed_test = files([ 'gen-installed-test.py' ])
@@ -107,7 +109,7 @@ custom_target('all-unicode',
               command: [
                 python, gen_all_unicode, '@OUTPUT@'
               ],
-              install: true,
+              install: get_option('install-tests'),
               install_dir: installed_test_bindir)
 
 foreach t: tests
@@ -123,7 +125,7 @@ foreach t: tests
                   name,
                   '@OUTDIR@',
                 ],
-                install: true,
+                install: get_option('install-tests'),
                 install_dir: installed_test_datadir)
 
   bin = executable(name, src,
@@ -131,7 +133,7 @@ foreach t: tests
                    include_directories: root_inc,
                    c_args: common_cflags + pango_debug_cflags + test_cflags,
                    cpp_args: common_cppflags + pango_debug_cflags + test_cflags,
-                   install: true,
+                   install: get_option('install-tests'),
                    install_dir: installed_test_bindir)
 
   test(name, bin, env: test_env)
