@@ -8,6 +8,7 @@ gnome-runtime-linux:
   before_script:
     - >
       dnf install -y \
+	glibc-langpack-en \
         gcc \
         gcc-c++ \
         meson \
