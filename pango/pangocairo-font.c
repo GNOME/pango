@@ -364,7 +364,6 @@ _pango_cairo_font_get_metrics (PangoFont     *font,
       g_object_unref (fontmap);
     }
 
-out:
   return pango_font_metrics_ref (info->metrics);
 }
 
