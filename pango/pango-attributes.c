@@ -1901,8 +1901,7 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 
   PangoFontMask mask = 0;
   gboolean have_language = FALSE;
-  gdouble scale = 0;
-  gboolean have_scale = FALSE;
+  double scale = 1.0;
 
   g_return_if_fail (iterator != NULL);
   g_return_if_fail (desc != NULL);
@@ -1980,10 +1979,9 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	    }
 	  break;
 	case PANGO_ATTR_SCALE:
-	  if (!have_scale)
+          if (!(mask & PANGO_FONT_MASK_SIZE))
 	    {
-	      have_scale = TRUE;
-	      scale = ((PangoAttrFloat *)attr)->value;
+	      scale *= ((PangoAttrFloat *)attr)->value;
 	    }
 	  break;
 	case PANGO_ATTR_LANGUAGE:
@@ -2024,7 +2022,7 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	}
     }
 
-  if (have_scale)
+  if (scale != 1.0)
     {
       if (pango_font_description_get_size_is_absolute (desc))
         pango_font_description_set_absolute_size (desc, scale * pango_font_description_get_size (desc));

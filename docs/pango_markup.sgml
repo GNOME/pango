@@ -79,7 +79,8 @@ A font family name
 <listitem><para>
 Font size in 1024ths of a point, or one of the absolute sizes 
 'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large',
-'xx-large', or one of the relative sizes 'smaller' or 'larger'.
+'xx-large', or one of the relative sizes 'smaller' or 'larger',
+or a percentage like '150%'.
 If you want to specify a absolute size, it's usually easier
 to take advantage of the ability to specify a partial
 font description using 'font'; you can use
