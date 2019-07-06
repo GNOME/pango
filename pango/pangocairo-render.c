@@ -507,7 +507,12 @@ pango_cairo_renderer_show_text_glyphs (PangoRenderer        *renderer,
 		      base_y + (double)(gi->geometry.y_offset) / PANGO_SCALE;
 
 	  if (gi->glyph & PANGO_GLYPH_UNKNOWN_FLAG)
-	    _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
+            {
+              if (gi->glyph == (0x20 | PANGO_GLYPH_UNKNOWN_FLAG))
+                ; /* no hex boxes for space, please */
+              else
+	        _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
+            }
 	  else
 	    {
 	      cairo_glyphs[count].index = gi->glyph;
