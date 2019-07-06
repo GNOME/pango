@@ -86,7 +86,6 @@ G_BEGIN_DECLS
 struct _PangoLogAttr
 {
   guint is_line_break : 1;      /* Can break line in front of character */
-
   guint is_mandatory_break : 1; /* Must break line in front of character */
 
   guint is_char_break : 1;      /* Can break here when doing char wrap */
@@ -130,6 +129,7 @@ struct _PangoLogAttr
 
   /* Word boundary as defined by UAX#29 */
   guint is_word_boundary : 1;	/* is NOT in the middle of a word */
+  guint is_hyphen : 1;	        /* line break due to hyphen */
 };
 
 /* Determine information about cluster/word/line breaks in a string

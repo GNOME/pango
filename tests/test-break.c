@@ -76,6 +76,11 @@ test_file (const gchar *filename, GString *string)
           g_string_append (string, " ");
           g_string_append (s2, "l");
         }
+      if (log.is_hyphen)
+        {
+          g_string_append (string, " ");
+          g_string_append (s2, "h");
+        }
       if (log.is_char_break)
         {
           g_string_append (string, " ");

@@ -1364,9 +1364,15 @@ pango_default_break (const gchar   *text,
 
 	    case BREAK_ALLOWED:
 	      attrs[i].is_line_break = TRUE;
-	      break;
+              /* fall through */
 
 	    case BREAK_ALREADY_HANDLED:
+              if (attrs[i].is_line_break)
+                {
+                  /* After Soft Hyphen or Hyphen-Minus */
+                  if (prev_wc == 0x00AD || prev_wc == 0x002D)
+                    attrs[i].is_hyphen = TRUE;
+                }
 	      break;
 
 	    default:
