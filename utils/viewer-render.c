@@ -53,6 +53,7 @@ int opt_height = -1;
 int opt_indent = 0;
 int opt_spacing = 0;
 double opt_line_spacing = 0.0;
+gboolean opt_show_ignorables = FALSE;
 gboolean opt_justify = 0;
 int opt_runs = 1;
 PangoAlignment opt_align = PANGO_ALIGN_LEFT;
@@ -96,6 +97,7 @@ make_layout(PangoContext *context,
   static PangoFontDescription *font_description;
   PangoAlignment align;
   PangoLayout *layout;
+  PangoShapeFlags flags;
 
   layout = pango_layout_new (context);
   if (opt_markup)
@@ -129,6 +131,11 @@ make_layout(PangoContext *context,
 
   if (opt_line_spacing != 0.0)
     pango_layout_set_line_spacing (layout, (float)opt_line_spacing);
+
+  flags = PANGO_SHAPE_NONE;
+  if (opt_show_ignorables)
+    flags |= PANGO_SHAPE_SHOW_IGNORABLES;
+  pango_layout_set_shape_flags (layout, flags);
 
   align = opt_align;
   if (align != PANGO_ALIGN_CENTER &&
@@ -716,6 +723,8 @@ parse_options (int argc, char *argv[])
      "Spacing in points between lines",			            "points"},
     {"line-spacing",	0, 0, G_OPTION_ARG_DOUBLE,		        &opt_line_spacing,
      "Spread factor for line height",			            "factor"},
+    {"show-ignorables",	0, 0, G_OPTION_ARG_NONE,		        &opt_show_ignorables,
+     "Show invisible characters",			            "show"},
     {"justify",		0, 0, G_OPTION_ARG_NONE,			&opt_justify,
      "Align paragraph lines to be justified",			    	NULL},
     {"language",	0, 0, G_OPTION_ARG_STRING,			&opt_language,
