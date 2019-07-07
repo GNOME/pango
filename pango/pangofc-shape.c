@@ -113,6 +113,163 @@ apply_extra_attributes (GSList       *attrs,
     }
 }
 
+typedef struct
+{
+  PangoFont *font;
+  hb_font_t *parent;
+  PangoShapeFlags flags;
+} PangoHbShapeContext;
+
+static hb_bool_t
+pango_hb_font_get_nominal_glyph (hb_font_t      *font,
+                                 void           *font_data,
+                                 hb_codepoint_t  unicode,
+                                 hb_codepoint_t *glyph,
+                                 void           *user_data G_GNUC_UNUSED)
+{
+  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
+
+  if (hb_font_get_glyph (context->parent, unicode, 0, glyph))
+    return TRUE;
+
+  *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
+
+  /* We draw our own invalid-Unicode shape, so prevent HarfBuzz
+   * from using REPLACEMENT CHARACTER. */
+  if (unicode > 0x10FFFF)
+    return TRUE;
+
+  return FALSE;
+}
+
+static hb_bool_t
+pango_hb_font_get_variation_glyph (hb_font_t      *font,
+                                   void           *font_data,
+                                   hb_codepoint_t  unicode,
+                                   hb_codepoint_t  variation_selector,
+                                   hb_codepoint_t *glyph,
+                                   void           *user_data G_GNUC_UNUSED)
+{
+  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
+
+  if (hb_font_get_glyph (context->parent,
+                         unicode, variation_selector, glyph))
+    return TRUE;
+
+  return FALSE;
+}
+
+static hb_bool_t
+pango_hb_font_get_glyph_contour_point (hb_font_t      *font,
+                                       void           *font_data,
+                                       hb_codepoint_t  glyph,
+                                       unsigned int    point_index,
+                                       hb_position_t  *x,
+                                       hb_position_t  *y,
+                                       void           *user_data G_GNUC_UNUSED)
+{
+  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
+
+  return hb_font_glyph_contour_point (context->parent, glyph, point_index, x, y);
+}
+
+static hb_position_t
+pango_hb_font_get_glyph_advance (hb_font_t      *font,
+                                 void           *font_data,
+                                 hb_codepoint_t  glyph,
+                                 void           *user_data G_GNUC_UNUSED)
+{
+  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
+
+  return hb_font_get_glyph_h_advance (context->parent, glyph);
+}
+
+static hb_bool_t
+pango_hb_font_get_glyph_extents (hb_font_t          *font,
+                                 void               *font_data,
+                                 hb_codepoint_t      glyph,
+                                 hb_glyph_extents_t *extents,
+                                 void               *user_data G_GNUC_UNUSED)
+{
+  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
+
+  return hb_font_get_glyph_extents (context->parent, glyph, extents);
+}
+
+static hb_bool_t
+pango_hb_font_get_glyph_h_origin (hb_font_t      *font,
+                                  void           *font_data,
+                                  hb_codepoint_t  glyph,
+                                  hb_position_t  *x,
+                                  hb_position_t  *y,
+                                  void           *user_data G_GNUC_UNUSED)
+{
+  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
+
+  return hb_font_get_glyph_h_origin (context->parent, glyph, x, y);
+}
+
+static hb_bool_t
+pango_hb_font_get_glyph_v_origin (hb_font_t      *font,
+                                  void           *font_data,
+                                  hb_codepoint_t  glyph,
+                                  hb_position_t  *x,
+                                  hb_position_t  *y,
+void *user_data G_GNUC_UNUSED)
+{
+  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
+
+  return hb_font_get_glyph_v_origin (context->parent, glyph, x, y);
+}
+
+static hb_position_t
+pango_hb_font_get_h_kerning (hb_font_t      *font,
+                             void           *font_data,
+                             hb_codepoint_t  left_glyph,
+                             hb_codepoint_t  right_glyph,
+                             void           *user_data G_GNUC_UNUSED)
+{
+  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
+
+  return hb_font_get_glyph_h_kerning (context->parent, left_glyph, right_glyph);
+}
+
+static hb_font_t *
+pango_font_get_hb_font_for_flags (PangoFont           *font,
+                                  PangoShapeFlags      flags,
+                                  PangoHbShapeContext *context)
+{
+  hb_font_t *hb_font;
+  static hb_font_funcs_t *funcs;
+
+  hb_font = pango_font_get_hb_font (font);
+  if (flags == PANGO_SHAPE_NONE)
+    return hb_font_reference (hb_font);
+
+  if (G_UNLIKELY (!funcs))
+    {
+      funcs = hb_font_funcs_create ();
+      hb_font_funcs_set_nominal_glyph_func (funcs, pango_hb_font_get_nominal_glyph, NULL, NULL);
+      hb_font_funcs_set_variation_glyph_func (funcs, pango_hb_font_get_variation_glyph, NULL, NULL);
+      hb_font_funcs_set_glyph_h_advance_func (funcs, pango_hb_font_get_glyph_advance, NULL, NULL);
+      hb_font_funcs_set_glyph_v_advance_func (funcs, pango_hb_font_get_glyph_advance, NULL, NULL);
+      hb_font_funcs_set_glyph_h_origin_func (funcs, pango_hb_font_get_glyph_h_origin, NULL, NULL);
+      hb_font_funcs_set_glyph_v_origin_func (funcs, pango_hb_font_get_glyph_v_origin, NULL, NULL);
+      hb_font_funcs_set_glyph_h_kerning_func (funcs, pango_hb_font_get_h_kerning, NULL, NULL);
+      hb_font_funcs_set_glyph_extents_func (funcs, pango_hb_font_get_glyph_extents, NULL, NULL);
+      hb_font_funcs_set_glyph_contour_point_func (funcs, pango_hb_font_get_glyph_contour_point, NULL, NULL);
+  }
+
+  context->font = font;
+  context->parent = hb_font;
+  context->flags = flags;
+
+  hb_font = hb_font_create_sub_font (hb_font);
+  hb_font_set_funcs (hb_font, funcs, context, NULL);
+
+  return hb_font;
+}
+
 void
 _pango_fc_shape (PangoFont           *font,
 		 const char          *item_text,
@@ -123,6 +280,7 @@ _pango_fc_shape (PangoFont           *font,
                  PangoShapeFlags      flags,
 		 PangoGlyphString    *glyphs)
 {
+  PangoHbShapeContext context;
   hb_font_t *hb_font;
   hb_buffer_t *hb_buffer;
   hb_direction_t hb_direction;
@@ -139,8 +297,7 @@ _pango_fc_shape (PangoFont           *font,
   g_return_if_fail (font != NULL);
   g_return_if_fail (analysis != NULL);
 
-  hb_font = pango_font_get_hb_font (font);
-
+  hb_font = pango_font_get_hb_font_for_flags (font, flags, &context);
   hb_buffer = acquire_buffer (&free_buffer);
 
   hb_direction = PANGO_GRAVITY_IS_VERTICAL (analysis->gravity) ? HB_DIRECTION_TTB : HB_DIRECTION_LTR;
@@ -260,4 +417,5 @@ _pango_fc_shape (PangoFont           *font,
     }
 
   release_buffer (hb_buffer, free_buffer);
+  hb_font_destroy (hb_font);
 }
