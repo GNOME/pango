@@ -141,6 +141,11 @@ pango_shape_with_options (const gchar      *item_text,
   g_return_if_fail (paragraph_text <= item_text);
   g_return_if_fail (paragraph_text + paragraph_length >= item_text + item_length);
 
+  /* FIXME: as long as engines are in the way, we have to
+   * funnel the flags through unused bits in the analysis
+   */
+  ((PangoAnalysis*)analysis)->flags |= flags << 4;
+
   if (G_LIKELY (analysis->shape_engine && analysis->font))
     {
       _pango_engine_shape_shape (analysis->shape_engine, analysis->font,

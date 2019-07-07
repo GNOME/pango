@@ -341,9 +341,13 @@ _pango_fc_shape (PangoFont           *font,
   double x_scale_inv, y_scale_inv;
   PangoGlyphInfo *infos;
   const char *variations;
+  PangoShapeFlags flags;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (analysis != NULL);
+
+  /* FIXME: Pass flags separately */
+  flags = analysis->flags >> 4;
 
   fc_font = PANGO_FC_FONT (font);
   ft_face = pango_fc_font_lock_face (fc_font);
