@@ -104,6 +104,9 @@ pango_fc_hb_font_get_nominal_glyph (hb_font_t *font, void *font_data,
           *glyph = pango_fc_font_get_glyph (fc_font, 0x2423);
           if (*glyph)
             return TRUE;
+
+          *glyph = PANGO_GET_UNKNOWN_GLYPH (0x2423);
+          return TRUE;
         }
     }
 
@@ -520,7 +523,11 @@ _pango_fc_shape (PangoFont           *font,
   if (shape_flags & PANGO_SHAPE_SHOW_SPACE)
     {
       space_glyph = pango_fc_font_get_glyph (fc_font, 0x20);
+      if (!space_glyph)
+        space_glyph = PANGO_GET_UNKNOWN_GLYPH (0x20);
       visible_space_glyph = pango_fc_font_get_glyph (fc_font, 0x2423);
+      if (!visible_space_glyph)
+        visible_space_glyph = PANGO_GET_UNKNOWN_GLYPH (0x2423);
     }
 
   for (i = 0; i < num_glyphs; i++)
