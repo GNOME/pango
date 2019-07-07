@@ -394,6 +394,80 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
       rows = hbi->rows;
       cols = 1;
     }
+  else if (ch == 0x2423 ||
+           g_unichar_type (ch) == G_UNICODE_SPACE_SEPARATOR)
+    {
+      /* We never want to show a hex box or other drawing for
+       * space. If we want space to be visible, we replace 0x20
+       * by 0x2423 (visible space).
+       *
+       * Since we don't want to rely on glyph availability,
+       * we render a centered dot ourselves.
+       */
+      double x = cx + 0.5 *((double)gi->geometry.width / PANGO_SCALE);
+      double y = cy + hbi->box_descent - 0.5 * hbi->box_height;
+
+      cairo_new_sub_path (crenderer->cr);
+      cairo_arc (crenderer->cr, x, y, 1.5 * hbi->line_width, 0, 2 * G_PI);
+      cairo_close_path (crenderer->cr);
+      cairo_fill (crenderer->cr);
+      goto done;
+    }
+  else if (ch == '\t')
+    {
+      /* Since we don't want to rely on glyph availability,
+       * we render an arrow like ↦ ourselves.
+       */
+      double y = cy + hbi->box_descent - 0.5 * hbi->box_height;
+      double width = (double)gi->geometry.width / PANGO_SCALE;
+      double arrow_offset = 0.2 * width;
+      double x = cx + arrow_offset;
+      double arrow_length = width - 2 * arrow_offset;
+      double tip_length = MIN (hbi->digit_width, 0.75 * arrow_length);
+      double tip_width = 5 * hbi->line_width;
+
+      cairo_move_to (crenderer->cr, x - 0.5 * hbi->line_width, y - 0.5 * tip_width);
+      cairo_line_to (crenderer->cr, x + 0.5 * hbi->line_width, y - 0.5 * tip_width);
+      cairo_line_to (crenderer->cr, x + 0.5 * hbi->line_width, y - 0.5 * hbi->line_width);
+      cairo_line_to (crenderer->cr, x + arrow_length - tip_length, y - 0.5 * hbi->line_width);
+      cairo_line_to (crenderer->cr, x + arrow_length - tip_length, y - 0.5 * tip_width);
+      cairo_line_to (crenderer->cr, x + arrow_length,  y);
+      cairo_line_to (crenderer->cr, x + arrow_length - tip_length, y + 0.5 * tip_width);
+      cairo_line_to (crenderer->cr, x + arrow_length - tip_length, y + 0.5 * hbi->line_width);
+      cairo_line_to (crenderer->cr, x + 0.5 * hbi->line_width, y + 0.5 * hbi->line_width);
+      cairo_line_to (crenderer->cr, x + 0.5 * hbi->line_width, y + 0.5 * tip_width);
+      cairo_line_to (crenderer->cr, x - 0.5 * hbi->line_width, y + 0.5 * tip_width);
+      cairo_close_path (crenderer->cr);
+      cairo_fill (crenderer->cr);
+      goto done;
+    }
+  else if (ch == '\n')
+    {
+      /* Since we don't want to rely on glyph availability,
+       * we render an arrow like ↵ ourselves.
+       */
+      double width = (double)gi->geometry.width / PANGO_SCALE;
+      double arrow_offset = 0.2 * width;
+      double arrow_length = width - 2 * arrow_offset;
+      double tip_length = MIN (hbi->digit_width, 0.75 * arrow_length);
+      double arrow_height = arrow_length - 0.5 * tip_length;
+      double tip_width = 5 * hbi->line_width;
+      double x = cx + arrow_offset;
+      double y = cy - (hbi->box_height - arrow_length) / 2;
+
+      cairo_move_to (crenderer->cr, x, y);
+      cairo_line_to (crenderer->cr, x + tip_length, y - 0.5 * tip_width);
+      cairo_line_to (crenderer->cr, x + tip_length, y - 0.5 * hbi->line_width);
+      cairo_line_to (crenderer->cr, x + arrow_length - 0.5 * hbi->line_width, y - 0.5 * hbi->line_width);
+      cairo_line_to (crenderer->cr, x + arrow_length - 0.5 * hbi->line_width, y - arrow_height);
+      cairo_line_to (crenderer->cr, x + arrow_length + 0.5 * hbi->line_width, y - arrow_height);
+      cairo_line_to (crenderer->cr, x + arrow_length + 0.5 * hbi->line_width, y + 0.5 * hbi->line_width);
+      cairo_line_to (crenderer->cr, x + tip_length, y + 0.5 * hbi->line_width);
+      cairo_line_to (crenderer->cr, x + tip_length, y + 0.5 * tip_width);
+      cairo_close_path (crenderer->cr);
+      cairo_fill (crenderer->cr);
+      goto done;
+    }
   else if ((name = pango_get_ignorable_size (ch, &rows, &cols)))
     {
       /* Nothing else to do, we render 'default ignorable' chars
@@ -402,6 +476,7 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
     }
   else
     {
+      /* Everything else gets a traditional hex box. */
       rows = hbi->rows;
       cols = (ch > 0xffff ? 6 : 4) / rows;
       g_snprintf (buf, sizeof(buf), (ch > 0xffff) ? "%06X" : "%04X", ch);
