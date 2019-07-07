@@ -28,13 +28,13 @@
 
 G_BEGIN_DECLS
 
-void pango_hb_shape (PangoFont           *font,
-                     const char          *item_text,
+void pango_hb_shape (const char          *item_text,
                      unsigned int         item_length,
-                     const PangoAnalysis *analysis,
-                     PangoGlyphString    *glyphs,
                      const char          *paragraph_text,
-                     unsigned int         paragraph_length);
+                     unsigned int         paragraph_length,
+                     const PangoAnalysis *analysis,
+                     PangoShapeFlags      flags,
+                     PangoGlyphString    *glyphs);
 
 G_END_DECLS
 
