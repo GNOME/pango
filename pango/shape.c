@@ -194,10 +194,9 @@ pango_shape_with_options (const gchar      *item_text,
 
   if (analysis->font)
     {
-      pango_hb_shape (analysis->font,
-                      item_text, item_length,
-                      analysis, glyphs,
-                      paragraph_text, paragraph_length);
+      pango_hb_shape (item_text, item_length,
+                      paragraph_text, paragraph_length,
+                      analysis, flags, glyphs);
 
       if (G_UNLIKELY (glyphs->num_glyphs == 0))
 	{

@@ -114,14 +114,15 @@ apply_extra_attributes (GSList       *attrs,
 }
 
 void
-pango_hb_shape (PangoFont           *font,
-                const char          *item_text,
-                unsigned int         item_length,
-                const PangoAnalysis *analysis,
-                PangoGlyphString    *glyphs,
-                const char          *paragraph_text,
-                unsigned int         paragraph_length)
+pango_hb_shape (const char          *item_text,
+		unsigned int         item_length,
+		const char          *paragraph_text,
+		unsigned int         paragraph_length,
+		const PangoAnalysis *analysis,
+                PangoShapeFlags      flags,
+		PangoGlyphString    *glyphs)
 {
+  PangoFont *font = analysis->font;
   hb_font_t *hb_font;
   hb_buffer_t *hb_buffer;
   hb_direction_t hb_direction;
