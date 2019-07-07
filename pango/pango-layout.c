@@ -3376,6 +3376,66 @@ insert_run (PangoLayoutLine *line,
   line->length += run_item->length;
 }
 
+static void
+advance_iterator_to (PangoAttrIterator *iter,
+                     int                new_index)
+{
+  int start, end;
+
+  do
+    {
+      pango_attr_iterator_range (iter, &start, &end);
+      if (end > new_index)
+        break;
+    }
+  while (pango_attr_iterator_next (iter));
+}
+
+static PangoLayoutRun *
+create_hyphen_run (PangoLayout *layout,
+                   PangoItem   *item,
+                   int          offset)
+{
+  PangoLayoutRun *hyphen;
+  GList *items;
+  const char *hyphen_text = "-";
+  PangoAttrList *attrs;
+  PangoAttrIterator *iter;
+  GSList *list, *l;
+  PangoAttrList *run_attrs;
+
+  run_attrs = pango_attr_list_new ();
+
+  attrs = pango_layout_get_effective_attributes (layout);
+  iter = pango_attr_list_get_iterator (attrs);
+
+  advance_iterator_to (iter, offset);
+  list = pango_attr_iterator_get_attrs (iter);
+  for (l = list; l; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+      attr->start_index = 0;
+      attr->end_index = G_MAXINT;
+      pango_attr_list_insert (attrs, attr);
+    }
+  g_slist_free (list);
+  
+  hyphen = g_slice_new (PangoGlyphItem);
+  hyphen->glyphs = pango_glyph_string_new ();
+  items = pango_itemize (layout->context, hyphen_text, 0, strlen (hyphen_text), attrs, NULL);
+  g_assert (items->next == NULL);
+  hyphen->item = items->data;
+  hyphen->item->offset = offset;
+  g_list_free (items);
+  pango_shape (hyphen_text, strlen (hyphen_text), &hyphen->item->analysis, hyphen->glyphs);
+
+  pango_attr_iterator_destroy (iter);
+  pango_attr_list_unref (attrs);
+  pango_attr_list_unref (run_attrs);
+
+  return hyphen;
+}
+
 #if 0
 # define DEBUG debug
 void
@@ -3483,6 +3543,8 @@ process_item (PangoLayout     *layout,
       int break_num_chars = num_chars;
       int break_width = width;
       int orig_width = width;
+      int break_extra_width;
+      int hyphen_width;
       gboolean retrying_with_char_breaks = FALSE;
 
       if (processing_new_item)
@@ -3492,13 +3554,22 @@ process_item (PangoLayout     *layout,
 	  pango_glyph_item_get_logical_widths (&glyph_item, layout->text, state->log_widths);
 	}
 
+      {
+        PangoLayoutRun *run;
+
+        run = create_hyphen_run (layout, item, state->start_offset);
+        hyphen_width = pango_glyph_string_get_width (run->glyphs);
+        pango_glyph_item_free (run);
+      }
+
     retry_break:
 
       /* See how much of the item we can stuff in the line. */
       width = 0;
+      break_extra_width = 0;
       for (num_chars = 0; num_chars < item->num_chars; num_chars++)
 	{
-	  if (width > state->remaining_width && break_num_chars < item->num_chars)
+	  if (width + break_extra_width > state->remaining_width && break_num_chars < item->num_chars)
 	    break;
 
 	  /* If there are no previous runs we have to take care to grab at least one char. */
@@ -3507,6 +3578,12 @@ process_item (PangoLayout     *layout,
 	    {
 	      break_num_chars = num_chars;
 	      break_width = width;
+
+              /* Check whether to insert a hyphen */
+              if (layout->log_attrs[state->start_offset + num_chars].is_soft_hyphen)
+                break_extra_width = hyphen_width;
+              else
+                break_extra_width = 0;
 	    }
 
 	  width += state->log_widths[state->log_widths_offset + num_chars];
@@ -3543,6 +3620,14 @@ process_item (PangoLayout     *layout,
 	  if (break_num_chars == item->num_chars)
 	    {
 	      insert_run (line, state, item, TRUE);
+              if (layout->log_attrs[state->start_offset + break_num_chars].is_soft_hyphen)
+                {
+                  PangoLayoutRun *run;
+
+                  run = create_hyphen_run (layout, item, state->start_offset + break_num_chars);
+                  line->runs = g_slist_prepend (line->runs, run);
+	          state->remaining_width -= pango_glyph_string_get_width (run->glyphs);
+                }
 
 	      return BREAK_ALL_FIT;
 	    }
@@ -3568,6 +3653,15 @@ process_item (PangoLayout     *layout,
 
 	      /* Shaped items should never be broken */
 	      g_assert (!shape_set);
+
+              if (layout->log_attrs[state->start_offset + break_num_chars].is_soft_hyphen)
+                {
+                  PangoLayoutRun *run;
+
+                  run = create_hyphen_run (layout, item, state->start_offset + break_num_chars);
+                  line->runs = g_slist_prepend (line->runs, run);
+	          state->remaining_width -= pango_glyph_string_get_width (run->glyphs);
+                }
 
 	      return BREAK_SOME_FIT;
 	    }

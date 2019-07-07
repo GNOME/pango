@@ -1,0 +1,5 @@
+Text:        a b c /  d e f [ ]  g h i [0xad]   j k l . [ ]  B l a [0x0a]  
+Breaks:     c c c c lc c c c   lc c c c      lhc c c c c   lc c c c      Lc
+Whitespace:                x                           x          w      w 
+Words:      s     e s      e   s                     e     s      e        
+Sentences:  s                                          e   s      e        
