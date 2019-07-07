@@ -58,6 +58,8 @@ PangoLogAttr
 <SUBSECTION>
 pango_shape
 pango_shape_full
+PangoShapeFlags
+pango_shape_with_options
 
 <SUBSECTION Private>
 pango_context_get_type
