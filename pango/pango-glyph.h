@@ -211,6 +211,7 @@ void pango_shape_full (const gchar      *item_text,
 typedef enum {
   PANGO_SHAPE_NONE            = 0,
   PANGO_SHAPE_SHOW_IGNORABLES = 1 << 0,
+  PANGO_SHAPE_SHOW_SPACE      = 1 << 1,
 } PangoShapeFlags;
 
 PANGO_AVAILABLE_IN_1_44
