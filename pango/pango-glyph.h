@@ -208,6 +208,19 @@ void pango_shape_full (const gchar      *item_text,
 		       const PangoAnalysis *analysis,
 		       PangoGlyphString *glyphs);
 
+typedef enum {
+  PANGO_SHAPE_NONE,
+} PangoShapeFlags;
+
+PANGO_AVAILABLE_IN_1_44
+void pango_shape_with_options (const gchar         *item_text,
+                               gint                 item_length,
+                               const gchar         *paragraph_text,
+                               gint                 paragraph_length,
+                               const PangoAnalysis *analysis,
+                               PangoShapeFlags      flags,
+                               PangoGlyphString    *glyphs);
+
 PANGO_AVAILABLE_IN_ALL
 GList *pango_reorder_items (GList *logical_items);
 
