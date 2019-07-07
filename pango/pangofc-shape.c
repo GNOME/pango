@@ -117,10 +117,11 @@ void
 _pango_fc_shape (PangoFont           *font,
 		 const char          *item_text,
 		 unsigned int         item_length,
-		 const PangoAnalysis *analysis,
-		 PangoGlyphString    *glyphs,
 		 const char          *paragraph_text,
-		 unsigned int         paragraph_length)
+		 unsigned int         paragraph_length,
+		 const PangoAnalysis *analysis,
+                 PangoShapeFlags      flags,
+		 PangoGlyphString    *glyphs)
 {
   hb_font_t *hb_font;
   hb_buffer_t *hb_buffer;
