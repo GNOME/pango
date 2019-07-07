@@ -211,6 +211,12 @@ void           pango_layout_set_line_spacing     (PangoLayout                *la
                                                   float                       spread);
 PANGO_AVAILABLE_IN_1_44
 float          pango_layout_get_line_spacing     (PangoLayout                *layout);
+PANGO_AVAILABLE_IN_1_44
+void           pango_layout_set_shape_flags      (PangoLayout                *layout,
+                                                  PangoShapeFlags             flags);
+PANGO_AVAILABLE_IN_1_44
+PangoShapeFlags pango_layout_get_shape_flags     (PangoLayout                *layout);
+
 PANGO_AVAILABLE_IN_ALL
 void           pango_layout_set_justify          (PangoLayout                *layout,
 						  gboolean                    justify);
