@@ -650,6 +650,26 @@ pango_layout_get_line_spacing (PangoLayout *layout)
   return layout->line_spacing;
 }
 
+void
+pango_layout_set_shape_flags (PangoLayout     *layout,
+                              PangoShapeFlags  flags)
+{
+  g_return_if_fail (layout != NULL);
+
+  if (layout->shape_flags != flags)
+    {
+      layout->shape_flags = flags;
+      layout_changed (layout);
+    }
+}
+
+PangoShapeFlags
+pango_layout_get_shape_flags (PangoLayout *layout)
+{
+  g_return_val_if_fail (layout != NULL, FALSE);
+  return layout->shape_flags;
+}
+
 /**
  * pango_layout_set_attributes:
  * @layout: a #PangoLayout
@@ -3312,7 +3332,6 @@ shape_run (PangoLayoutLine *line,
 {
   PangoLayout *layout = line->layout;
   PangoGlyphString *glyphs = pango_glyph_string_new ();
-  PangoShapeFlags flags = PANGO_SHAPE_FLAGS_NONE;
 
   if (layout->text[item->offset] == '\t')
     shape_tab (line, glyphs);
@@ -3325,7 +3344,7 @@ shape_run (PangoLayoutLine *line,
       else
         pango_shape_with_options (layout->text + item->offset, item->length,
                                   layout->text, layout->length,
-                                  &item->analysis, flags, glyphs);
+                                  &item->analysis, layout->shape_flags, glyphs);
 
       if (state->properties.letter_spacing)
 	{
