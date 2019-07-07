@@ -128,6 +128,76 @@ pango_glyph_string_reverse_range (PangoGlyphString *glyphs,
     }
 }
 
+/* The cairo hexbox drawing code assumes
+ * that these nicks are 1-6 ASCII chars
+ */
+static struct {
+  gunichar ch;
+  const char *nick;
+} ignorables[] = {
+  { 0x00ad, "SHY"   }, /* SOFT HYPHEN */
+  { 0x034f, "CGJ"   }, /* COMBINING GRAPHEME JOINER */
+  { 0x200b, "ZWS"   }, /* ZERO WIDTH SPACE */
+  { 0x200c, "ZWNJ"  }, /* ZERO WIDTH NON-JOINER */
+  { 0x200d, "ZWJ"   }, /* ZERO WIDTH JOINER */
+  { 0x200e, "LRM"   }, /* LEFT-TO-RIGHT MARK */
+  { 0x200f, "RLM"   }, /* RIGHT-TO-LEFT MARK */
+  { 0x2028, "LS"    }, /* LINE SEPARATOR */
+  { 0x2029, "PS"    }, /* PARAGRAPH SEPARATOR */
+  { 0x202a, "LRE"   }, /* LEFT-TO-RIGHT EMBEDDING */
+  { 0x202b, "RLE"   }, /* RIGHT-TO-LEFT EMBEDDING */
+  { 0x202c, "PDF"   }, /* POP DIRECTIONAL FORMATTING */
+  { 0x202d, "LRO"   }, /* LEFT-TO-RIGHT OVERRIDE */
+  { 0x202e, "RLO"   }, /* RIGHT-TO-LEFT OVERRIDE */
+  { 0x2060, "WJ"    }, /* WORD JOINER */
+  { 0x2061, "FA"    }, /* FUNCTION APPLICATION */
+  { 0x2062, "IT"    }, /* INVISIBLE TIMES */
+  { 0x2063, "IS"    }, /* INVISIBLE SEPARATOR */
+  { 0xfeff, "ZWNBS" }, /* ZERO WIDTH NO-BREAK SPACE */
+};
+
+static inline G_GNUC_UNUSED const char *
+pango_get_ignorable (gunichar ch)
+{
+  for (int i = 0; i < G_N_ELEMENTS (ignorables); i++)
+    {
+      if (ch == ignorables[i].ch)
+        return ignorables[i].nick;
+    }
+  return NULL;
+}
+
+static inline G_GNUC_UNUSED const char *
+pango_get_ignorable_size (gunichar  ch,
+                          int      *rows,
+                          int      *cols)
+{
+  const char *nick;
+  int len;
+
+  nick = pango_get_ignorable (ch);
+  if (nick)
+    {
+      len = strlen (nick);
+      if (len < 4)
+        {
+          *rows = 1;
+          *cols = len;
+        }
+      else if (len > 4)
+        {
+          *rows = 2;
+          *cols = 3;
+         }
+       else
+        {
+          *rows = 2;
+          *cols = 2;
+        }
+    }
+
+  return nick;
+}
 
 G_END_DECLS
 
