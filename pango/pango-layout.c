@@ -2975,6 +2975,7 @@ pango_layout_line_leaked (PangoLayoutLine *line)
  *****************/
 
 static void shape_tab (PangoLayoutLine  *line,
+                       PangoItem        *item,
 		       PangoGlyphString *glyphs);
 
 static void
@@ -3182,8 +3183,25 @@ line_width (PangoLayoutLine *line)
   return width;
 }
 
+static gboolean
+showing_space (const PangoAnalysis *analysis)
+{
+  GSList *l;
+
+  for (l = analysis->extra_attrs; l; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+
+      if (attr->klass->type == PANGO_ATTR_SHOW_SPACE)
+        return ((PangoAttrInt*)attr)->value != 0;
+    }
+
+  return FALSE;
+}
+
 static void
 shape_tab (PangoLayoutLine  *line,
+           PangoItem        *item,
 	   PangoGlyphString *glyphs)
 {
   int i, space_width;
@@ -3192,7 +3210,10 @@ shape_tab (PangoLayoutLine  *line,
 
   pango_glyph_string_set_size (glyphs, 1);
 
-  glyphs->glyphs[0].glyph = PANGO_GLYPH_EMPTY;
+  if (showing_space (&item->analysis))
+    glyphs->glyphs[0].glyph = PANGO_GET_UNKNOWN_GLYPH ('\t');
+  else
+    glyphs->glyphs[0].glyph = PANGO_GLYPH_EMPTY;
   glyphs->glyphs[0].geometry.x_offset = 0;
   glyphs->glyphs[0].geometry.y_offset = 0;
   glyphs->glyphs[0].attr.is_cluster_start = 1;
@@ -3329,7 +3350,7 @@ shape_run (PangoLayoutLine *line,
   PangoGlyphString *glyphs = pango_glyph_string_new ();
 
   if (layout->text[item->offset] == '\t')
-    shape_tab (line, glyphs);
+    shape_tab (line, item, glyphs);
   else
     {
       if (state->properties.shape_set)
