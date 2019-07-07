@@ -61,7 +61,8 @@ pango_shape (const gchar      *text,
 	     const PangoAnalysis *analysis,
 	     PangoGlyphString *glyphs)
 {
-  pango_shape_full (text, length, text, length, analysis, glyphs);
+  pango_shape_with_options (text, length, text, length,
+                            analysis, PANGO_SHAPE_NONE, glyphs);
 }
 
 static void
@@ -141,7 +142,36 @@ pango_shape_full (const gchar      *item_text,
 		  const gchar      *paragraph_text,
 		  gint              paragraph_length,
 		  const PangoAnalysis *analysis,
-		  PangoGlyphString *glyphs)
+	          PangoGlyphString *glyphs)
+{
+  pango_shape_with_options (item_text, item_length,
+                            paragraph_text, paragraph_length,
+                            analysis, PANGO_SHAPE_NONE, glyphs);
+}
+
+/**
+ * pango_shape_with_options:
+ * @item_text:        valid UTF-8 text to shape.
+ * @item_length:      the length (in bytes) of @item_text. -1 means nul-terminated text.
+ * @paragraph_text: (allow-none): text of the paragraph (see details).  May be %NULL.
+ * @paragraph_length: the length (in bytes) of @paragraph_text. -1 means nul-terminated text.
+ * @analysis:  #PangoAnalysis structure from pango_itemize().
+ * @flags:     flags influencing the overal shaping operation
+ * @glyphs:    glyph string in which to store results.
+ *
+ * A variant of pango_shape_full() that takes an extra
+ * @flags argument to influence the details of the shaping.
+ *
+ * Since: 1.44
+ */
+void
+pango_shape_with_options (const gchar      *item_text,
+                          gint              item_length,
+                          const gchar      *paragraph_text,
+                          gint              paragraph_length,
+                          const PangoAnalysis *analysis,
+                          PangoShapeFlags   flags,
+                          PangoGlyphString *glyphs)
 {
   int i;
   int last_cluster;
