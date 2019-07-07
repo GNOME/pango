@@ -720,7 +720,9 @@ _pango_cairo_font_private_get_glyph_extents_missing (PangoCairoFontPrivate *cf_p
   gunichar ch;
   gint rows, cols;
 
-  if (glyph == (0x20 | PANGO_GLYPH_UNKNOWN_FLAG))
+  ch = glyph & ~PANGO_GLYPH_UNKNOWN_FLAG;
+
+  if (ch == 0x20 || ch == 0x2423)
     {
       get_space_extents (cf_priv, ink_rect, logical_rect);
       return;
@@ -732,8 +734,6 @@ _pango_cairo_font_private_get_glyph_extents_missing (PangoCairoFontPrivate *cf_p
       pango_font_get_glyph_extents (NULL, glyph, ink_rect, logical_rect);
       return;
     }
-
-  ch = glyph & ~PANGO_GLYPH_UNKNOWN_FLAG;
 
   if (G_UNLIKELY (glyph == PANGO_GLYPH_INVALID_INPUT || ch > 0x10FFFF))
     {
