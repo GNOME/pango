@@ -79,6 +79,9 @@ G_BEGIN_DECLS
  * This flag implements Unicode's
  * <ulink url="http://www.unicode.org/reports/tr29/">Word
  * Boundaries</ulink> semantics. (Since: 1.22)
+ * @is_soft_hyphen: is a line break due to a Soft Hyphen (0x00AD).
+ *     This indicates a position where a hyphen should be inserted
+ *     if the break is taken.
  *
  * The #PangoLogAttr structure stores information
  * about the attributes of a single character.
@@ -129,7 +132,7 @@ struct _PangoLogAttr
 
   /* Word boundary as defined by UAX#29 */
   guint is_word_boundary : 1;	/* is NOT in the middle of a word */
-  guint is_hyphen : 1;	        /* line break due to hyphen */
+  guint is_soft_hyphen : 1;	/* line break due to a soft hyphen */
 };
 
 /* Determine information about cluster/word/line breaks in a string
