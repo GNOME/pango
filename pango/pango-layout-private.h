@@ -65,6 +65,7 @@ struct _PangoLayout
   guint is_wrapped : 1;		/* Whether the layout has any wrapped lines */
   guint ellipsize : 2;		/* PangoEllipsizeMode */
   guint is_ellipsized : 1;	/* Whether the layout has any ellipsized lines */
+  PangoShapeFlags shape_flags;  /* Flags influencing shaping */
   int unknown_glyphs_count;	/* number of unknown glyphs */
 
   /* some caching */
