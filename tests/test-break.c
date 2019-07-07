@@ -117,6 +117,11 @@ test_file (const gchar *filename, GString *string)
           w++;
         }
 
+      if (log.is_word_boundary)
+        {
+          g_string_append (s3, "b");
+          o++;
+        }
       if (log.is_word_start)
         {
           g_string_append (s3, "s");
@@ -128,6 +133,11 @@ test_file (const gchar *filename, GString *string)
           o++;
         }
 
+      if (log.is_sentence_boundary)
+        {
+          g_string_append (s4, "b");
+          s++;
+        }
       if (log.is_sentence_start)
         {
           g_string_append (s4, "s");
@@ -228,7 +238,7 @@ test_break (gconstpointer d)
 
   test_file (filename, dump);
 
-  //diff = diff_with_file (expected_file, dump->str, dump->len, &error);
+  diff = diff_with_file (expected_file, dump->str, dump->len, &error);
   g_assert_no_error (error);
 
   if (diff && diff[0])
