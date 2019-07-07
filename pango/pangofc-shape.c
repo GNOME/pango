@@ -29,6 +29,7 @@
 #include "pangofc-private.h"
 #include "pangofc-font-private.h"
 #include "pangofc-fontmap-private.h"
+#include "pango-impl-utils.h"
 #include <hb-ft.h>
 #include <hb-glib.h>
 
@@ -129,6 +130,15 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
 {
   PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
 
+  if (context->flags & PANGO_SHAPE_SHOW_IGNORABLES)
+    {
+      if (pango_get_ignorable (unicode))
+        {
+          *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
+          return TRUE;
+        }
+    }
+
   if (hb_font_get_glyph (context->parent, unicode, 0, glyph))
     return TRUE;
 
@@ -181,6 +191,14 @@ pango_hb_font_get_glyph_advance (hb_font_t      *font,
 {
   PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
 
+  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+    {
+      PangoRectangle logical;
+
+      pango_font_get_glyph_extents (context->font, glyph, NULL, &logical);
+      return logical.width;
+    }
+
   return hb_font_get_glyph_h_advance (context->parent, glyph);
 }
 
@@ -192,6 +210,20 @@ pango_hb_font_get_glyph_extents (hb_font_t          *font,
                                  void               *user_data G_GNUC_UNUSED)
 {
   PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
+
+  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+    {
+      PangoRectangle ink;
+
+      pango_font_get_glyph_extents (context->font, glyph, &ink, NULL);
+
+      extents->x_bearing = ink.x;
+      extents->y_bearing = ink.y;
+      extents->width     = ink.width;
+      extents->height    = ink.height;
+
+      return TRUE;
+    }
 
   return hb_font_get_glyph_extents (context->parent, glyph, extents);
 }
@@ -283,6 +315,7 @@ _pango_fc_shape (PangoFont           *font,
   PangoHbShapeContext context;
   hb_font_t *hb_font;
   hb_buffer_t *hb_buffer;
+  hb_buffer_flags_t hb_buffer_flags;
   hb_direction_t hb_direction;
   gboolean free_buffer;
   hb_glyph_info_t *hb_glyph;
@@ -306,6 +339,11 @@ _pango_fc_shape (PangoFont           *font,
   if (PANGO_GRAVITY_IS_IMPROPER (analysis->gravity))
     hb_direction = HB_DIRECTION_REVERSE (hb_direction);
 
+  hb_buffer_flags = HB_BUFFER_FLAG_BOT | HB_BUFFER_FLAG_EOT;
+
+  if (flags & PANGO_SHAPE_SHOW_IGNORABLES)
+    hb_buffer_flags |= HB_BUFFER_FLAG_PRESERVE_DEFAULT_IGNORABLES;
+
   /* setup buffer */
 
   hb_buffer_set_direction (hb_buffer, hb_direction);
@@ -314,7 +352,7 @@ _pango_fc_shape (PangoFont           *font,
 #if HB_VERSION_ATLEAST(1,0,3)
   hb_buffer_set_cluster_level (hb_buffer, HB_BUFFER_CLUSTER_LEVEL_MONOTONE_CHARACTERS);
 #endif
-  hb_buffer_set_flags (hb_buffer, HB_BUFFER_FLAG_BOT | HB_BUFFER_FLAG_EOT);
+  hb_buffer_set_flags (hb_buffer, hb_buffer_flags);
 
   hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_offset, item_length);
 
