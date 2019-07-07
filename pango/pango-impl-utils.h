@@ -152,6 +152,7 @@ static struct {
   { 0x2061, "FA"    }, /* FUNCTION APPLICATION */
   { 0x2062, "IT"    }, /* INVISIBLE TIMES */
   { 0x2063, "IS"    }, /* INVISIBLE SEPARATOR */
+  { 0x2423, "SPC"   }, /* VISIBLE SPACE */
   { 0xfeff, "ZWNBS" }, /*ZERO WIDTH NO-BREAK SPACE */
 };
 
