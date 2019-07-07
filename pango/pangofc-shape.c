@@ -75,6 +75,7 @@ typedef struct _PangoFcHbContext {
   PangoFcFont *fc_font;
   gboolean vertical;
   double x_scale, y_scale; /* CTM scales. */
+  PangoShapeFlags shape_flags;
 } PangoFcHbContext;
 
 static hb_bool_t
@@ -341,13 +342,13 @@ _pango_fc_shape (PangoFont           *font,
   double x_scale_inv, y_scale_inv;
   PangoGlyphInfo *infos;
   const char *variations;
-  PangoShapeFlags flags;
+  PangoShapeFlags shape_flags;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (analysis != NULL);
 
-  /* FIXME: Pass flags separately */
-  flags = analysis->flags >> 4;
+  /* FIXME: Pass shape_flags separately */
+  shape_flags = analysis->flags >> 4;
 
   fc_font = PANGO_FC_FONT (font);
   ft_face = pango_fc_font_lock_face (fc_font);
@@ -373,6 +374,8 @@ _pango_fc_shape (PangoFont           *font,
   context.ft_face = ft_face;
   context.fc_font = fc_font;
   context.vertical = PANGO_GRAVITY_IS_VERTICAL (analysis->gravity);
+  context.shape_flags = shape_flags;
+
   hb_face = hb_ft_face_create_cached (ft_face);
   hb_font = hb_font_create (hb_face);
   hb_font_set_funcs (hb_font,
