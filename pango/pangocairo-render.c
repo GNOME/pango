@@ -394,6 +394,17 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
       rows = hbi->rows;
       cols = 1;
     }
+  else if (ch == 0x2423)
+    {
+      double x = cx + 0.5 *((double)gi->geometry.width / PANGO_SCALE);
+      double y = cy + hbi->box_descent - 0.5 * hbi->box_height;
+
+      cairo_new_sub_path (crenderer->cr);
+      cairo_arc (crenderer->cr, x, y, hbi->line_width, 0, 2 * G_PI);
+      cairo_close_path (crenderer->cr);
+      cairo_fill (crenderer->cr);
+      goto done;
+    }
   else if ((name = pango_get_ignorable_size (ch, &rows, &cols)))
     {
       /* nothing else to do */
