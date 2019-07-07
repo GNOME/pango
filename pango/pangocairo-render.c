@@ -159,6 +159,7 @@
 #include "pango-font-private.h"
 #include "pangocairo-private.h"
 #include "pango-glyph-item.h"
+#include "pango-impl-utils.h"
 
 typedef struct _PangoCairoRendererClass PangoCairoRendererClass;
 
@@ -369,10 +370,12 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
   int row, col;
   int rows, cols;
   double width, lsb;
-  char hexbox_string[2] = {0, 0};
+  char hexbox_string[2] = { 0, 0 };
   PangoCairoFontHexBoxInfo *hbi;
   gunichar ch;
   gboolean invalid_input;
+  char *p;
+  const char *name;
 
   cairo_save (crenderer->cr);
 
@@ -386,15 +389,23 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
       goto done;
     }
 
-  rows = hbi->rows;
   if (G_UNLIKELY (invalid_input))
     {
+      rows = hbi->rows;
       cols = 1;
+    }
+  else if ((name = pango_get_ignorable_size (ch, &rows, &cols)))
+    {
+      /* Nothing else to do, we render 'default ignorable' chars
+       * as hex box with their nick.
+       */
     }
   else
     {
+      rows = hbi->rows;
       cols = (ch > 0xffff ? 6 : 4) / rows;
       g_snprintf (buf, sizeof(buf), (ch > 0xffff) ? "%06X" : "%04X", ch);
+      name = buf;
     }
 
   width = (3 * hbi->pad_x + cols * (hbi->digit_width + hbi->pad_x));
@@ -413,18 +424,21 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
     goto done;
 
   x0 = cx + lsb + hbi->pad_x * 2;
-  y0 = cy + hbi->box_descent - hbi->pad_y * 2;
+  y0 = cy + hbi->box_descent - hbi->pad_y * 2 - ((hbi->rows - rows) * hbi->digit_height / 2);
 
-  for (row = 0; row < rows; row++)
+  for (row = 0, p = name; row < rows; row++)
     {
       double y = y0 - (rows - 1 - row) * (hbi->digit_height + hbi->pad_y);
-      for (col = 0; col < cols; col++)
+      for (col = 0; col < cols; col++, p++)
 	{
 	  double x = x0 + col * (hbi->digit_width + hbi->pad_x);
 
+          if (!p)
+            goto done;
+
 	  cairo_move_to (crenderer->cr, x, y);
 
-	  hexbox_string[0] = buf[row * cols + col];
+          hexbox_string[0] = p[0];
 
 	  if (crenderer->do_path)
 	      cairo_text_path (crenderer->cr, hexbox_string);
