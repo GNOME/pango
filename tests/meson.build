@@ -22,7 +22,7 @@ tests = [
   [ 'testcolor' ],
   [ 'testscript' ],
   [ 'cxx-test', [ 'cxx-test.cpp' ] ],
-  [ 'test-break' ],
+  [ 'test-break', [ 'test-break.c', 'test-common.c' ] ],
 ]
 
 if build_pangoft2
