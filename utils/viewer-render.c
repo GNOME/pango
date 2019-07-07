@@ -54,6 +54,7 @@ int opt_indent = 0;
 int opt_spacing = 0;
 double opt_line_spacing = 0.0;
 gboolean opt_show_ignorables = FALSE;
+gboolean opt_show_space = FALSE;
 gboolean opt_justify = 0;
 int opt_runs = 1;
 PangoAlignment opt_align = PANGO_ALIGN_LEFT;
@@ -135,6 +136,8 @@ make_layout(PangoContext *context,
   flags = PANGO_SHAPE_NONE;
   if (opt_show_ignorables)
     flags |= PANGO_SHAPE_SHOW_IGNORABLES;
+  if (opt_show_space)
+    flags |= PANGO_SHAPE_SHOW_SPACE;
   pango_layout_set_shape_flags (layout, flags);
 
   align = opt_align;
@@ -725,6 +728,8 @@ parse_options (int argc, char *argv[])
      "Spread factor for line height",			            "factor"},
     {"show-ignorables",	0, 0, G_OPTION_ARG_NONE,		        &opt_show_ignorables,
      "Show invisible characters",			            "show"},
+    {"show-space",	0, 0, G_OPTION_ARG_NONE,		        &opt_show_space,
+     "Show space",			            "show"},
     {"justify",		0, 0, G_OPTION_ARG_NONE,			&opt_justify,
      "Align paragraph lines to be justified",			    	NULL},
     {"language",	0, 0, G_OPTION_ARG_STRING,			&opt_language,
