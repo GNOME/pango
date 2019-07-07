@@ -3198,7 +3198,10 @@ shape_tab (PangoLayoutLine  *line,
 
   pango_glyph_string_set_size (glyphs, 1);
 
-  glyphs->glyphs[0].glyph = PANGO_GLYPH_EMPTY;
+  if (line->layout->shape_flags & PANGO_SHAPE_SHOW_SPACE)
+    glyphs->glyphs[0].glyph = PANGO_GET_UNKNOWN_GLYPH ('\t');
+  else
+    glyphs->glyphs[0].glyph = PANGO_GLYPH_EMPTY;
   glyphs->glyphs[0].geometry.x_offset = 0;
   glyphs->glyphs[0].geometry.y_offset = 0;
   glyphs->glyphs[0].attr.is_cluster_start = 1;
