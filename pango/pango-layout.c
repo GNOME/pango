@@ -3310,6 +3310,7 @@ shape_run (PangoLayoutLine *line,
 {
   PangoLayout *layout = line->layout;
   PangoGlyphString *glyphs = pango_glyph_string_new ();
+  PangoShapeFlags flags = PANGO_SHAPE_FLAGS_NONE;
 
   if (layout->text[item->offset] == '\t')
     shape_tab (line, glyphs);
@@ -3320,9 +3321,9 @@ shape_run (PangoLayoutLine *line,
 			    state->properties.shape_ink_rect, state->properties.shape_logical_rect,
 			    glyphs);
       else
-	pango_shape_full (layout->text + item->offset, item->length,
-			  layout->text, layout->length,
-			  &item->analysis, glyphs);
+        pango_shape_with_options (layout->text + item->offset, item->length,
+                                  layout->text, layout->length,
+                                  &item->analysis, flags, glyphs);
 
       if (state->properties.letter_spacing)
 	{
