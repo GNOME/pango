@@ -400,7 +400,7 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
       double y = cy + hbi->box_descent - 0.5 * hbi->box_height;
 
       cairo_new_sub_path (crenderer->cr);
-      cairo_arc (crenderer->cr, x, y, hbi->line_width, 0, 2 * G_PI);
+      cairo_arc (crenderer->cr, x, y, 1.5 * hbi->line_width, 0, 2 * G_PI);
       cairo_close_path (crenderer->cr);
       cairo_fill (crenderer->cr);
       goto done;
@@ -413,19 +413,43 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
       double x = cx + arrow_offset;
       double arrow_length = width - 2 * arrow_offset;
       double tip_length = MIN (hbi->digit_width, 0.75 * arrow_length);
-      double tip_width = 3 * hbi->line_width;
+      double tip_width = 5 * hbi->line_width;
 
       cairo_move_to (crenderer->cr, x - 0.5 * hbi->line_width, y - 0.5 * tip_width);
       cairo_line_to (crenderer->cr, x + 0.5 * hbi->line_width, y - 0.5 * tip_width);
       cairo_line_to (crenderer->cr, x + 0.5 * hbi->line_width, y - 0.5 * hbi->line_width);
       cairo_line_to (crenderer->cr, x + arrow_length - tip_length, y - 0.5 * hbi->line_width);
-      cairo_line_to (crenderer->cr, x + arrow_length - tip_length, y - 0.5 * tip_width); 
+      cairo_line_to (crenderer->cr, x + arrow_length - tip_length, y - 0.5 * tip_width);
       cairo_line_to (crenderer->cr, x + arrow_length,  y);
-      cairo_line_to (crenderer->cr, x + arrow_length - tip_length, y + 0.5 * tip_width); 
+      cairo_line_to (crenderer->cr, x + arrow_length - tip_length, y + 0.5 * tip_width);
       cairo_line_to (crenderer->cr, x + arrow_length - tip_length, y + 0.5 * hbi->line_width);
       cairo_line_to (crenderer->cr, x + 0.5 * hbi->line_width, y + 0.5 * hbi->line_width);
       cairo_line_to (crenderer->cr, x + 0.5 * hbi->line_width, y + 0.5 * tip_width);
       cairo_line_to (crenderer->cr, x - 0.5 * hbi->line_width, y + 0.5 * tip_width);
+      cairo_close_path (crenderer->cr);
+      cairo_fill (crenderer->cr);
+      goto done;
+    }
+  else if (ch == '\n')
+    {
+      double width = (double)gi->geometry.width / PANGO_SCALE;
+      double arrow_offset = 0.2 * width;
+      double arrow_length = width - 2 * arrow_offset;
+      double tip_length = MIN (hbi->digit_width, 0.75 * arrow_length);
+      double arrow_height = arrow_length - 0.5 * tip_length;
+      double tip_width = 5 * hbi->line_width;
+      double x = cx + arrow_offset;
+      double y = cy - (hbi->box_height - arrow_length) / 2;
+
+      cairo_move_to (crenderer->cr, x, y);
+      cairo_line_to (crenderer->cr, x + tip_length, y - 0.5 * tip_width);
+      cairo_line_to (crenderer->cr, x + tip_length, y - 0.5 * hbi->line_width);
+      cairo_line_to (crenderer->cr, x + arrow_length - 0.5 * hbi->line_width, y - 0.5 * hbi->line_width);
+      cairo_line_to (crenderer->cr, x + arrow_length - 0.5 * hbi->line_width, y - arrow_height);
+      cairo_line_to (crenderer->cr, x + arrow_length + 0.5 * hbi->line_width, y - arrow_height);
+      cairo_line_to (crenderer->cr, x + arrow_length + 0.5 * hbi->line_width, y + 0.5 * hbi->line_width);
+      cairo_line_to (crenderer->cr, x + tip_length, y + 0.5 * hbi->line_width);
+      cairo_line_to (crenderer->cr, x + tip_length, y + 0.5 * tip_width);
       cairo_close_path (crenderer->cr);
       cairo_fill (crenderer->cr);
       goto done;
