@@ -176,7 +176,9 @@ test_file (const gchar *filename, GString *string)
               g_string_append (s3, "   ");
               g_string_append (s4, "   ");
             }
-          else if (g_unichar_isprint (ch))
+          else if (g_unichar_isgraph (ch) &&
+                   !(g_unichar_type (ch) == G_UNICODE_LINE_SEPARATOR ||
+                     g_unichar_type (ch) == G_UNICODE_PARAGRAPH_SEPARATOR))
             {
               g_string_append_unichar (string, ch);
               g_string_append (s1, " ");
