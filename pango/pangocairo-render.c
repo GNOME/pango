@@ -396,6 +396,13 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
     }
   else if (ch == 0x2423)
     {
+      /* We never want to show a hex box or other drawing for
+       * space. If we want space to be visible, we replace 0x20
+       * by 0x2423 (visible space).
+       *
+       * Since we don't want to rely on glyph availability,
+       * we render a centered dot ourselves.
+       */
       double x = cx + 0.5 *((double)gi->geometry.width / PANGO_SCALE);
       double y = cy + hbi->box_descent - 0.5 * hbi->box_height;
 
@@ -407,6 +414,9 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
     }
   else if (ch == '\t')
     {
+      /* Since we don't want to rely on glyph availability,
+       * we render an arrow like ↦ ourselves.
+       */
       double y = cy + hbi->box_descent - 0.5 * hbi->box_height;
       double width = (double)gi->geometry.width / PANGO_SCALE;
       double arrow_offset = 0.2 * width;
@@ -432,6 +442,9 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
     }
   else if (ch == '\n')
     {
+      /* Since we don't want to rely on glyph availability,
+       * we render an arrow like ↵ ourselves.
+       */
       double width = (double)gi->geometry.width / PANGO_SCALE;
       double arrow_offset = 0.2 * width;
       double arrow_length = width - 2 * arrow_offset;
@@ -456,10 +469,13 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
     }
   else if ((name = pango_get_ignorable_size (ch, &rows, &cols)))
     {
-      /* nothing else to do */
+      /* Nothing else to do, we render 'default ignorable' chars
+       * as hex box with their nick.
+       */
     }
   else
     {
+      /* Everything else gets a traditional hex box. */
       rows = hbi->rows;
       cols = (ch > 0xffff ? 6 : 4) / rows;
       g_snprintf (buf, sizeof(buf), (ch > 0xffff) ? "%06X" : "%04X", ch);
