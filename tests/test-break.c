@@ -47,6 +47,7 @@ test_file (const gchar *filename, GString *string)
   int i;
   GString *s1, *s2, *s3, *s4;
   int m;
+  char *test;
 
   if (!g_file_get_contents (filename, &contents, &length, &error))
     {
@@ -55,12 +56,19 @@ test_file (const gchar *filename, GString *string)
       return;
     }
 
-  len = g_utf8_strlen (contents, -1) + 1;
+  test = contents;
+
+  /* Skip initial comments */
+  while (test[0] == '#')
+    test = strchr (test, '\n') + 1;
+
+  length = strlen (test);
+  len = g_utf8_strlen (test, -1) + 1;
   attrs = g_new (PangoLogAttr, len);
 
   lang = pango_language_from_string ("en");
 
-  pango_get_log_attrs (contents, length, -1, lang, attrs, len);
+  pango_get_log_attrs (test, length, -1, lang, attrs, len);
 
   s1 = g_string_new ("Breaks: ");
   s2 = g_string_new ("Whitespace: ");
@@ -77,7 +85,7 @@ test_file (const gchar *filename, GString *string)
   g_string_append_printf (s4, "%*s", (int)(m - s4->len), "");
   g_string_append_printf (string, "%*s", (int)(m - strlen ("Text: ")), "");
 
-  for (i = 0, p = contents; i < len; i++, p = g_utf8_next_char (p))
+  for (i = 0, p = test; i < len; i++, p = g_utf8_next_char (p))
     {
       PangoLogAttr log = attrs[i];
       int b = 0;
@@ -179,7 +187,7 @@ test_file (const gchar *filename, GString *string)
           else
             {
               char *str = g_strdup_printf ("[%#04x]", ch);
-              g_string_append (string, str); 
+              g_string_append (string, str);
               g_string_append_printf (s1, "%*s", (int)strlen (str), "");
               g_string_append_printf (s2, "%*s", (int)strlen (str), "");
               g_string_append_printf (s3, "%*s", (int)strlen (str), "");
