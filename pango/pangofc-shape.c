@@ -99,9 +99,15 @@ pango_fc_hb_font_get_nominal_glyph (hb_font_t *font, void *font_data,
 
   if (context->shape_flags & PANGO_SHAPE_SHOW_SPACE)
     {
-      if (unicode == 0x20)
+      if (g_unichar_type (unicode) == G_UNICODE_SPACE_SEPARATOR)
         {
-          *glyph = PANGO_GET_UNKNOWN_GLYPH (0x2423);
+          /* Replace 0x20 by visible space, since we
+           * don't draw a hex box for 0x20
+           */
+          if (unicode == 0x20)
+            *glyph = PANGO_GET_UNKNOWN_GLYPH (0x2423);
+          else
+            *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
           return TRUE;
         }
     }
