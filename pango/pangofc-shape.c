@@ -363,8 +363,6 @@ _pango_fc_shape (PangoFont           *font,
   PangoGlyphInfo *infos;
   const char *variations;
   PangoShapeFlags shape_flags;
-  PangoGlyph space_glyph;
-  PangoGlyph visible_space_glyph;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (analysis != NULL);
@@ -448,6 +446,7 @@ _pango_fc_shape (PangoFont           *font,
   hb_buffer_set_cluster_level (hb_buffer, HB_BUFFER_CLUSTER_LEVEL_MONOTONE_CHARACTERS);
 #endif
   hb_buffer_set_flags (hb_buffer, hb_buffer_flags);
+  hb_buffer_set_invisible_glyph (hb_buffer, PANGO_GLYPH_EMPTY);
 
   hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_offset, item_length);
 
@@ -516,30 +515,9 @@ _pango_fc_shape (PangoFont           *font,
   infos = glyphs->glyphs;
   last_cluster = -1;
 
-  if (shape_flags & PANGO_SHAPE_SHOW_SPACE)
-    {
-      space_glyph = pango_fc_font_get_glyph (fc_font, 0x20);
-      if (!space_glyph)
-        space_glyph = PANGO_GET_UNKNOWN_GLYPH (0x20);
-      visible_space_glyph = PANGO_GET_UNKNOWN_GLYPH (0x2423);
-    }
-
   for (i = 0; i < num_glyphs; i++)
     {
       infos[i].glyph = hb_glyph->codepoint;
-
-      if (shape_flags & PANGO_SHAPE_SHOW_SPACE)
-        {
-          /* harfbuzz replaces ignorables with space, and
-           * we don't want those to show up as visible space.
-           * So check that the visible space comes from a
-           * space in the input. If it doesn't, turn it back
-           * into regular space.
-           */
-          if (hb_glyph->codepoint == visible_space_glyph &&
-              paragraph_text[hb_glyph->cluster] != ' ')
-            infos[i].glyph = space_glyph;
-        }
       glyphs->log_clusters[i] = hb_glyph->cluster - item_offset;
       infos[i].attr.is_cluster_start = glyphs->log_clusters[i] != last_cluster;
       hb_glyph++;
