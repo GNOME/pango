@@ -1498,6 +1498,8 @@ itemize_state_process_run (ItemizeState *state)
       if (G_UNLIKELY (type == G_UNICODE_CONTROL ||
                       type == G_UNICODE_FORMAT ||
                       type == G_UNICODE_SURROGATE ||
+                      type == G_UNICODE_LINE_SEPARATOR ||
+                      type == G_UNICODE_PARAGRAPH_SEPARATOR ||
                       (type == G_UNICODE_SPACE_SEPARATOR && wc != 0x1680u /* OGHAM SPACE MARK */) ||
                       (wc >= 0xfe00u && wc <= 0xfe0fu) ||
                       (wc >= 0xe0100u && wc <= 0xe01efu)))
