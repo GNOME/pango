@@ -394,7 +394,8 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
       rows = hbi->rows;
       cols = 1;
     }
-  else if (ch == 0x2423)
+  else if (ch == 0x2423 ||
+           g_unichar_type (ch) == G_UNICODE_SPACE_SEPARATOR)
     {
       /* We never want to show a hex box or other drawing for
        * space. If we want space to be visible, we replace 0x20
