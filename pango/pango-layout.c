@@ -5251,6 +5251,10 @@ zero_line_final_space (PangoLayoutLine *line,
   PangoGlyphString *glyphs = run->glyphs;
   int glyph = item->analysis.level % 2 ? 0 : glyphs->num_glyphs - 1;
 
+  if ((glyphs->glyphs[glyph].glyph & PANGO_GLYPH_UNKNOWN_FLAG) &&
+      (glyphs->glyphs[glyph].glyph != PANGO_GET_UNKNOWN_GLYPH (0x20)))
+    return; /* this space is visible */
+
   /* if the final char of line forms a cluster, and it's
    * a whitespace char, zero its glyph's width as it's been wrapped
    */
