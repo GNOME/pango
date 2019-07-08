@@ -143,6 +143,7 @@ static struct {
   { 0x200e, "LRM"   }, /* LEFT-TO-RIGHT MARK */
   { 0x200f, "RLM"   }, /* RIGHT-TO-LEFT MARK */
   { 0x2028, "LS"    }, /* LINE SEPARATOR */
+  { 0x2029, "PS"    }, /* PARAGRAPH SEPARATOR */
   { 0x202a, "LRE"   }, /* LEFT-TO-RIGHT EMBEDDING */
   { 0x202b, "RLE"   }, /* RIGHT-TO-LEFT EMBEDDING */
   { 0x202c, "PDF"   }, /* POP DIRECTIONAL FORMATTING */
