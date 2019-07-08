@@ -5329,6 +5329,9 @@ zero_line_final_space (PangoLayoutLine *line,
   PangoGlyphString *glyphs = run->glyphs;
   int glyph = item->analysis.level % 2 ? 0 : glyphs->num_glyphs - 1;
 
+  if (glyphs->glyphs[glyph].glyph == PANGO_GET_UNKNOWN_GLYPH (0x2028))
+    return; /* this LS is visible */
+
   /* if the final char of line forms a cluster, and it's
    * a whitespace char, zero its glyph's width as it's been wrapped
    */
@@ -5343,6 +5346,7 @@ zero_line_final_space (PangoLayoutLine *line,
 
   state->remaining_width += glyphs->glyphs[glyph].geometry.width;
   glyphs->glyphs[glyph].geometry.width = 0;
+  glyphs->glyphs[glyph].glyph = PANGO_GLYPH_EMPTY;
 }
 
 /* When doing shaping, we add the letter spacing value for a
