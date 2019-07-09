@@ -30,6 +30,9 @@
 
 G_BEGIN_DECLS
 
+PangoCoverageLevel pango_font_covers (PangoFont     *font,
+                                      PangoLanguage *language,
+                                      gunichar       wc);
 
 PANGO_AVAILABLE_IN_ALL
 PangoFontMetrics *pango_font_metrics_new (void);
