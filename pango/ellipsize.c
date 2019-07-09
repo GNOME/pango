@@ -24,7 +24,7 @@
 
 #include "pango-glyph-item.h"
 #include "pango-layout-private.h"
-#include "pango-engine-private.h"
+#include "pango-font-private.h"
 #include "pango-impl-utils.h"
 
 typedef struct _EllipsizeState EllipsizeState;
@@ -345,8 +345,8 @@ shape_ellipsis (EllipsizeState *state)
   /* If that fails we use "..." in the first matching font
    */
   if (!item->analysis.font ||
-      !_pango_engine_shape_covers (item->analysis.shape_engine, item->analysis.font,
-				   item->analysis.language, g_utf8_get_char (ellipsis_text)))
+      !pango_font_covers (item->analysis.font,
+                          g_utf8_get_char (ellipsis_text)))
     {
       pango_item_free (item);
 
