@@ -103,11 +103,6 @@ test_file (const gchar *filename, GString *string)
           g_string_append (s1, "l");
           b++;
         }
-      if (log.is_soft_hyphen)
-        {
-          g_string_append (s1, "h");
-          b++;
-        }
       if (log.is_char_break)
         {
           g_string_append (s1, "c");

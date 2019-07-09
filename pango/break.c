@@ -984,7 +984,6 @@ pango_default_break (const gchar   *text,
       attrs[i].is_char_break = FALSE;
       attrs[i].is_line_break = FALSE;
       attrs[i].is_mandatory_break = FALSE;
-      attrs[i].is_soft_hyphen = FALSE;
 
       /* Rule LB1:
 	 assign a line breaking class to each code point of the input. */
@@ -1365,15 +1364,9 @@ pango_default_break (const gchar   *text,
 
 	    case BREAK_ALLOWED:
 	      attrs[i].is_line_break = TRUE;
-              /* fall through */
+	      break;
 
 	    case BREAK_ALREADY_HANDLED:
-              if (attrs[i].is_line_break)
-                {
-                  /* After Soft Hyphen */
-                  if (prev_wc == 0x00AD)
-                    attrs[i].is_soft_hyphen = TRUE;
-                }
 	      break;
 
 	    default:
