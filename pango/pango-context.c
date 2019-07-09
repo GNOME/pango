@@ -606,7 +606,7 @@ advance_attr_iterator_to (PangoAttrIterator *iterator,
 }
 
 /***************************************************************************
- * We cache the results of character,fontset => font,shaper in a hash table
+ * We cache the results of character,fontset => font in a hash table
  ***************************************************************************/
 
 typedef struct {
@@ -639,7 +639,7 @@ get_font_cache (PangoFontset *fontset)
 
   static GQuark cache_quark = 0; /* MT-safe */
   if (G_UNLIKELY (!cache_quark))
-    cache_quark = g_quark_from_static_string ("pango-shaper-font-cache");
+    cache_quark = g_quark_from_static_string ("pango-font-cache");
 
 retry:
   cache = g_object_get_qdata (G_OBJECT (fontset), cache_quark);
@@ -1126,46 +1126,39 @@ copy_attr_slist (GSList *attr_slist)
 }
 
 static void
-itemize_state_fill_shaper (ItemizeState     *state,
-			   PangoEngineShape *shape_engine,
-			   PangoFont        *font)
+itemize_state_fill_font (ItemizeState *state,
+			 PangoFont    *font)
 {
   GList *l;
 
   for (l = state->result; l; l = l->next)
     {
       PangoItem *item = l->data;
-      if (item->analysis.shape_engine)
-	break;
+      if (item->analysis.font)
+        break;
       if (font)
 	item->analysis.font = g_object_ref (font);
-      else
-	item->analysis.font = NULL;
-      item->analysis.shape_engine = shape_engine;
     }
 }
 
 static void
-itemize_state_add_character (ItemizeState     *state,
-			     PangoEngineShape *shape_engine,
-			     PangoFont        *font,
-			     gboolean          force_break,
-			     const char       *pos)
+itemize_state_add_character (ItemizeState *state,
+			     PangoFont    *font,
+			     gboolean      force_break,
+			     const char   *pos)
 {
   if (state->item)
     {
-      if (!state->item->analysis.shape_engine && shape_engine)
+      if (!state->item->analysis.font && font)
 	{
-	  itemize_state_fill_shaper (state, shape_engine, font);
+	  itemize_state_fill_font (state, font);
 	}
-      else if (state->item->analysis.shape_engine && !shape_engine)
+      else if (state->item->analysis.font && !font)
 	{
 	  font = state->item->analysis.font;
-	  shape_engine = state->item->analysis.shape_engine;
 	}
 
       if (!force_break &&
-	  state->item->analysis.shape_engine == shape_engine &&
 	  state->item->analysis.font == font)
 	{
 	  state->item->num_chars++;
@@ -1179,7 +1172,6 @@ itemize_state_add_character (ItemizeState     *state,
   state->item->offset = pos - state->text;
   state->item->length = 0;
   state->item->num_chars = 1;
-  state->item->analysis.shape_engine = shape_engine;
 
   if (font)
     g_object_ref (font);
@@ -1278,36 +1270,17 @@ get_base_font (ItemizeState *state)
   return state->base_font;
 }
 
-static PangoScript
-get_script (ItemizeState      *state)
-{
-  /* Always use a basic shaper for vertical layout (ie, east/west gravity)
-   * as none of our script shapers support vertical shaping right now.
-   *
-   * XXX Should move the knowledge into the shaper interface.
-   */
-
-  if (PANGO_GRAVITY_IS_VERTICAL (state->resolved_gravity))
-    return PANGO_SCRIPT_COMMON;
-  else
-    return state->script;
-}
-
 static gboolean
-get_shaper_and_font (ItemizeState      *state,
-		     gunichar           wc,
-		     PangoEngineShape **shape_engine,
-		     PangoFont        **font)
+get_font (ItemizeState  *state,
+          gunichar       wc,
+          PangoFont    **font)
 {
   GetFontInfo info;
 
   /* We'd need a separate cache when fallback is disabled, but since lookup
    * with fallback disabled is faster anyways, we just skip caching */
   if (state->enable_fallback && font_cache_get (state->cache, wc, font))
-  {
-    *shape_engine = pango_font_find_shaper (*font, state->derived_lang, wc);
     return TRUE;
-  }
 
   info.lang = state->derived_lang;
   info.wc = wc;
@@ -1319,7 +1292,6 @@ get_shaper_and_font (ItemizeState      *state,
     get_font_foreach (NULL, get_base_font (state), &info);
 
   *font = info.font;
-  *shape_engine = pango_font_find_shaper (*font, state->derived_lang, wc);
 
   /* skip caching if fallback disabled (see above) */
   if (state->enable_fallback)
@@ -1433,21 +1405,6 @@ itemize_state_update_for_new_run (ItemizeState *state)
     }
 }
 
-static const char *
-string_from_script (PangoScript script)
-{
-  static GEnumClass *class = NULL; /* MT-safe */
-  GEnumValue *value;
-  if (g_once_init_enter (&class))
-    g_once_init_leave(&class, (gpointer)g_type_class_ref (G_TYPE_UNICODE_SCRIPT));
-
-  value = g_enum_get_value (class, script);
-  if (!value)
-    return string_from_script (G_UNICODE_SCRIPT_INVALID_CODE);
-
-  return value->value_nick;
-}
-
 static void
 itemize_state_process_run (ItemizeState *state)
 {
@@ -1469,7 +1426,6 @@ itemize_state_process_run (ItemizeState *state)
     {
       gunichar wc = g_utf8_get_char (p);
       gboolean is_forced_break = (wc == '\t' || wc == LINE_SEPARATOR);
-      PangoEngineShape *shape_engine;
       PangoFont *font;
       GUnicodeType type;
 
@@ -1495,16 +1451,14 @@ itemize_state_process_run (ItemizeState *state)
                       (wc >= 0xfe00u && wc <= 0xfe0fu) ||
                       (wc >= 0xe0100u && wc <= 0xe01efu)))
         {
-	  shape_engine = NULL;
 	  font = NULL;
         }
       else
         {
-	  get_shaper_and_font (state, wc, &shape_engine, &font);
+	  get_font (state, wc, &font);
 	}
 
-      itemize_state_add_character (state,
-				   shape_engine, font,
+      itemize_state_add_character (state, font,
 				   is_forced_break || last_was_forced_break,
 				   p);
 
@@ -1513,34 +1467,28 @@ itemize_state_process_run (ItemizeState *state)
 
   /* Finish the final item from the current segment */
   state->item->length = (p - state->text) - state->item->offset;
-  if (!state->item->analysis.shape_engine)
+  if (!state->item->analysis.font)
     {
-      PangoEngineShape *shape_engine;
       PangoFont *font;
 
-      if (G_UNLIKELY (!get_shaper_and_font (state, ' ', &shape_engine, &font)))
-	{
-	  /* If no shaper was found, warn only once per fontmap/script pair */
-	  PangoFontMap *fontmap = state->context->font_map;
-	  const char *script_name = string_from_script (get_script (state));
+      if (G_UNLIKELY (!get_font (state, ' ', &font)))
+        {
+          /* If no font was found, warn once per fontmap/script pair */
+          PangoFontMap *fontmap = state->context->font_map;
+          const char *script_name = g_enum_to_string (G_TYPE_UNICODE_SCRIPT, state->script);
 
-	  if (!g_object_get_data (G_OBJECT (fontmap), script_name))
-	    {
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-	      g_warning ("failed to choose a font, expect ugly output. engine-type='%s', script='%s'",
-			 pango_font_map_get_shape_engine_type (fontmap),
-			 script_name);
-G_GNUC_END_IGNORE_DEPRECATIONS
+          if (!g_object_get_data (G_OBJECT (fontmap), script_name))
+            {
+              g_warning ("failed to choose a font, expect ugly output. script='%s'",
+                         script_name);
 
-	      g_object_set_data_full (G_OBJECT (fontmap), script_name,
-				      GINT_TO_POINTER (1), NULL);
-	    }
+              g_object_set_data_full (G_OBJECT (fontmap), script_name,
+                                      GINT_TO_POINTER (1), NULL);
+            }
 
-	  shape_engine = _pango_get_fallback_shaper ();
-	  font = NULL;
-	}
-
-      itemize_state_fill_shaper (state, shape_engine, font);
+          font = NULL;
+        }
+      itemize_state_fill_font (state, font);
     }
   state->item = NULL;
 }
