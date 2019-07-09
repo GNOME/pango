@@ -469,7 +469,7 @@ PangoFontDescription *pango_font_describe_with_absolute_size (PangoFont        *
 PANGO_AVAILABLE_IN_ALL
 PangoCoverage *       pango_font_get_coverage      (PangoFont        *font,
 						    PangoLanguage    *language);
-PANGO_AVAILABLE_IN_ALL
+PANGO_DEPRECATED_IN_1_44
 PangoEngineShape *    pango_font_find_shaper       (PangoFont        *font,
 						    PangoLanguage    *language,
 						    guint32           ch);
