@@ -35,6 +35,8 @@
 #include "pango-glyph.h"
 #include "pango-engine-private.h"
 
+#include "pangofc-private.h"
+
 #include <string.h>
 
 /**
@@ -60,6 +62,55 @@ pango_shape (const gchar      *text,
 	     PangoGlyphString *glyphs)
 {
   pango_shape_full (text, length, text, length, analysis, glyphs);
+}
+
+static void
+fallback_shape (const char          *text,
+                unsigned int         length,
+                const PangoAnalysis *analysis,
+                PangoGlyphString    *glyphs)
+{
+  int n_chars;
+  const char *p;
+  int cluster = 0;
+  int i;
+
+  n_chars = text ? pango_utf8_strlen (text, length) : 0;
+
+  pango_glyph_string_set_size (glyphs, n_chars);
+
+  p = text;
+  for (i = 0; i < n_chars; i++)
+    {
+      gunichar wc;
+      PangoGlyph glyph;
+      PangoRectangle logical_rect;
+
+      wc = g_utf8_get_char (p);
+
+      if (g_unichar_type (wc) != G_UNICODE_NON_SPACING_MARK)
+        cluster = p - text;
+
+      if (pango_is_zero_width (wc))
+        glyph = PANGO_GLYPH_EMPTY;
+      else
+        glyph = PANGO_GET_UNKNOWN_GLYPH (wc);
+
+      pango_font_get_glyph_extents (analysis->font, glyph, NULL, &logical_rect);
+
+      glyphs->glyphs[i].glyph = glyph;
+
+      glyphs->glyphs[i].geometry.x_offset = 0;
+      glyphs->glyphs[i].geometry.y_offset = 0;
+      glyphs->glyphs[i].geometry.width = logical_rect.width;
+
+      glyphs->log_clusters[i] = cluster;
+
+      p = g_utf8_next_char (p);
+    }
+
+  if (analysis->level & 1)
+    pango_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
 }
 
 /**
@@ -111,59 +162,42 @@ pango_shape_full (const gchar      *item_text,
   g_return_if_fail (paragraph_text <= item_text);
   g_return_if_fail (paragraph_text + paragraph_length >= item_text + item_length);
 
-  if (G_LIKELY (analysis->shape_engine && analysis->font))
+  if (analysis->font)
     {
-      _pango_engine_shape_shape (analysis->shape_engine, analysis->font,
-				 item_text, item_length,
-				 paragraph_text, paragraph_length,
-				 analysis, glyphs);
+      _pango_fc_shape (analysis->font,
+                       item_text, item_length,
+                       analysis, glyphs,
+                       paragraph_text, paragraph_length);
 
       if (G_UNLIKELY (glyphs->num_glyphs == 0))
 	{
 	  /* If a font has been correctly chosen, but no glyphs are output,
-	   * there's probably something wrong with the shaper, or the font.
+	   * there's probably something wrong with the font.
 	   *
 	   * Trying to be informative, we print out the font description,
-	   * shaper name, and the text, but to not flood the terminal with
+	   * and the text, but to not flood the terminal with
 	   * zillions of the message, we set a flag to only err once per
-	   * font/engine pair.
-	   *
-	   * To do the flag fast, we use the engine qname to qflag the font,
-	   * but also the font description to flag the engine.  This is
-	   * supposed to be fast to check, but also avoid writing out
-	   * duplicate warnings when a new PangoFont is created.
+	   * font.
 	   */
-	  GType engine_type = G_OBJECT_TYPE (analysis->shape_engine);
-	  GQuark warned_quark = g_type_qname (engine_type);
+          GQuark warned_quark = g_quark_from_static_string ("pango-shape-fail-warned");
 
 	  if (!g_object_get_qdata (G_OBJECT (analysis->font), warned_quark))
 	    {
-	      PangoFontDescription *desc;
-	      char *font_name;
-	      const char *engine_name;
+              PangoFontDescription *desc;
+              char *font_name;
 
-	      desc = pango_font_describe (analysis->font);
-	      font_name = pango_font_description_to_string (desc);
-	      pango_font_description_free (desc);
+              desc = pango_font_describe (analysis->font);
+              font_name = pango_font_description_to_string (desc);
+              pango_font_description_free (desc);
 
-	      if (!g_object_get_data (G_OBJECT (analysis->shape_engine), font_name))
-	        {
-		  engine_name = g_type_name (engine_type);
-		  if (!engine_name)
-		    engine_name = "(unknown)";
+              g_warning ("shaping failure, expect ugly output. font='%s', text='%.*s'",
+                         font_name, item_length, item_text);
 
-		  g_warning ("shaping failure, expect ugly output. shape-engine='%s', font='%s', text='%.*s'",
-			     engine_name, font_name, item_length, item_text);
+              g_free (font_name);
 
-		  g_object_set_data_full (G_OBJECT (analysis->shape_engine), font_name,
-					  GINT_TO_POINTER (1), NULL);
-	        }
-
-	      g_free (font_name);
-
-	      g_object_set_qdata_full (G_OBJECT (analysis->font), warned_quark,
-				       GINT_TO_POINTER (1), NULL);
-	    }
+              g_object_set_qdata (G_OBJECT (analysis->font), warned_quark,
+                                  GINT_TO_POINTER (1));
+            }
 	}
     }
   else
@@ -171,12 +205,7 @@ pango_shape_full (const gchar      *item_text,
 
   if (G_UNLIKELY (!glyphs->num_glyphs))
     {
-      PangoEngineShape *fallback_engine = _pango_get_fallback_shaper ();
-
-      _pango_engine_shape_shape (fallback_engine, analysis->font,
-				 item_text, item_length,
-				 paragraph_text, paragraph_length,
-				 analysis, glyphs);
+      fallback_shape (item_text, item_length, analysis, glyphs);
       if (G_UNLIKELY (!glyphs->num_glyphs))
         return;
     }
@@ -210,24 +239,7 @@ pango_shape_full (const gchar      *item_text,
   if (G_UNLIKELY ((analysis->level & 1) &&
 		  glyphs->log_clusters[0] < glyphs->log_clusters[glyphs->num_glyphs - 1]))
     {
-      /* Warn once per shaper */
-      static GQuark warned_quark = 0; /* MT-safe */
-
-      if (!warned_quark)
-	warned_quark = g_quark_from_static_string ("pango-shape-warned");
-
-      if (analysis->shape_engine && !g_object_get_qdata (G_OBJECT (analysis->shape_engine), warned_quark))
-	{
-	  GType engine_type = G_OBJECT_TYPE (analysis->shape_engine);
-	  const char *engine_name = g_type_name (engine_type);
-	  if (!engine_name)
-	    engine_name = "(unknown)";
-
-	  g_warning ("Expected RTL run but shape-engine='%s' returned LTR. Fixing.", engine_name);
-
-	  g_object_set_qdata_full (G_OBJECT (analysis->shape_engine), warned_quark,
-				   GINT_TO_POINTER (1), NULL);
-	}
+      g_warning ("Expected RTL run but got LTR. Fixing.");
 
       /* *Fix* it so we don't crash later */
       pango_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
