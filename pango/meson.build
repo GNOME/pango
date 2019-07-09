@@ -58,6 +58,22 @@ pango_headers = [
 
 install_headers(pango_headers, subdir: pango_api_path)
 
+# Features header
+pango_features_conf = configuration_data()
+pango_features_conf.set('PANGO_VERSION_MAJOR', pango_major_version)
+pango_features_conf.set('PANGO_VERSION_MINOR', pango_minor_version)
+pango_features_conf.set('PANGO_VERSION_MICRO', pango_micro_version)
+pango_features_conf.set('PANGO_API_VERSION', pango_api_version)
+pango_features_conf.set('PANGO_CURRENT_MINUS_AGE', '0')
+
+configure_file(
+  input: 'pango-features.h.meson',
+  output: 'pango-features.h',
+  configuration: pango_features_conf,
+  install: true,
+  install_dir: join_paths(pango_includedir, pango_api_path),
+)
+
 # FreeType
 if build_pangoft2
   pangoft2_headers = [
@@ -139,22 +155,6 @@ if cairo_dep.found()
 
   pango_sources += pangocairo_sources
 endif
-
-# Features header
-pango_features_conf = configuration_data()
-pango_features_conf.set('PANGO_VERSION_MAJOR', pango_major_version)
-pango_features_conf.set('PANGO_VERSION_MINOR', pango_minor_version)
-pango_features_conf.set('PANGO_VERSION_MICRO', pango_micro_version)
-pango_features_conf.set('PANGO_API_VERSION', pango_api_version)
-pango_features_conf.set('PANGO_CURRENT_MINUS_AGE', '0')
-
-configure_file(
-  input: 'pango-features.h.meson',
-  output: 'pango-features.h',
-  configuration: pango_features_conf,
-  install: true,
-  install_dir: join_paths(pango_includedir, pango_api_path),
-)
 
 # Enumerations for GType
 pango_enums = gnome.mkenums(
