@@ -758,7 +758,6 @@ struct _ItemizeState
   PangoEmojiIter emoji_iter;
 
   PangoLanguage *derived_lang;
-  PangoEngineLang *lang_engine;
 
   PangoFontset *current_fonts;
   FontCache *cache;
@@ -1061,7 +1060,6 @@ itemize_state_init (ItemizeState      *state,
   state->gravity_hint = state->context->gravity_hint;
   state->resolved_gravity = PANGO_GRAVITY_AUTO;
   state->derived_lang = NULL;
-  state->lang_engine = NULL;
   state->current_fonts = NULL;
   state->cache = NULL;
   state->base_font = NULL;
@@ -1165,7 +1163,6 @@ itemize_state_add_character (ItemizeState     *state,
 	}
 
       if (!force_break &&
-	  state->item->analysis.lang_engine == state->lang_engine &&
 	  state->item->analysis.shape_engine == shape_engine &&
 	  state->item->analysis.font == font)
 	{
@@ -1181,7 +1178,6 @@ itemize_state_add_character (ItemizeState     *state,
   state->item->length = 0;
   state->item->num_chars = 1;
   state->item->analysis.shape_engine = shape_engine;
-  state->item->analysis.lang_engine = state->lang_engine;
 
   if (font)
     g_object_ref (font);
@@ -1402,11 +1398,6 @@ itemize_state_update_for_new_run (ItemizeState *state)
       state->derived_lang = compute_derived_language (state->lang, state->script);
       if (old_derived_lang != state->derived_lang)
 	state->changed |= DERIVED_LANG_CHANGED;
-    }
-
-  if ((state->changed & DERIVED_LANG_CHANGED) || !state->lang_engine)
-    {
-      state->lang_engine = _pango_get_language_engine ();
     }
 
   if (state->changed & (EMOJI_CHANGED))

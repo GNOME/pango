@@ -3912,13 +3912,8 @@ get_items_log_attrs (const char   *text,
 	  PangoItem *next_item = items->next->data;
 
 	  /* FIXME: Handle language tags */
-	  if (next_item->analysis.lang_engine != tmp_item.analysis.lang_engine)
-	    break;
-	  else
-	    {
-	      tmp_item.length += next_item->length;
-	      tmp_item.num_chars += next_item->num_chars;
-	    }
+	  tmp_item.length += next_item->length;
+	  tmp_item.num_chars += next_item->num_chars;
 
 	  items = items->next;
 	}
@@ -3931,7 +3926,7 @@ get_items_log_attrs (const char   *text,
 	}
 
       /* XXX This is wrong.  we should call pango_default_break on the entire
-       * layout text and then tailor_break on each lang_engine change, like
+       * layout text and then tailor_break on each language change, like
        * pango_get_log_attrs does.
        */
       pango_break (text + index, tmp_item.length, &tmp_item.analysis,

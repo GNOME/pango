@@ -22,7 +22,6 @@
 #include "config.h"
 
 #include "pango-break.h"
-#include "pango-engine-private.h"
 #include "pango-script-private.h"
 #include "pango-emoji-private.h"
 #include "pango-break-table.h"
@@ -1796,7 +1795,6 @@ pango_get_log_attrs (const char    *text,
   g_return_if_fail (log_attrs != NULL);
 
   analysis.level = level;
-  analysis.lang_engine = _pango_get_language_engine ();
 
   pango_default_break (text, length, &analysis, log_attrs, attrs_len);
 
@@ -1860,42 +1858,4 @@ break_script (const char          *item_text,
     }
 
   return TRUE;
-}
-
-
-/* Wrap language breaker in PangoEngineLang to pass it through old API,
- * from times when there were modules and engines. */
-typedef PangoEngineLang      PangoLanguageEngine;
-typedef PangoEngineLangClass PangoLanguageEngineClass;
-static GType pango_language_engine_get_type (void) G_GNUC_CONST;
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-G_DEFINE_TYPE (PangoLanguageEngine, pango_language_engine, PANGO_TYPE_ENGINE_LANG);
-G_GNUC_END_IGNORE_DEPRECATIONS
-static void
-_pango_language_engine_break (PangoEngineLang *engine G_GNUC_UNUSED,
-			      const char      *item_text,
-			      int              item_length,
-			      PangoAnalysis   *analysis,
-			      PangoLogAttr    *attrs,
-			      int              attrs_len)
-{
-  break_script (item_text, item_length, analysis, attrs, attrs_len);
-}
-static void
-pango_language_engine_class_init (PangoEngineLangClass *class)
-{
-  class->script_break = _pango_language_engine_break;
-}
-static void
-pango_language_engine_init (PangoEngineLang *object)
-{
-}
-
-PangoEngineLang *
-_pango_get_language_engine (void)
-{
-  static PangoEngineLang *engine;
-  if (g_once_init_enter (&engine))
-    g_once_init_leave (&engine, g_object_new (pango_language_engine_get_type(), NULL));
-  return engine;
 }

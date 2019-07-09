@@ -42,8 +42,6 @@ PangoCoverageLevel _pango_engine_shape_covers (PangoEngineShape *engine,
 
 PangoEngineShape *_pango_get_fallback_shaper (void) /* XXX got to go when we switch to harfbuzz-only. */;
 
-PangoEngineLang *_pango_get_language_engine (void);
-
 G_END_DECLS
 
 #endif /* __PANGO_ENGINE_PRIVATE_H__ */
