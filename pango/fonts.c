@@ -2306,3 +2306,15 @@ pango_font_face_list_sizes (PangoFontFace  *face,
       *n_sizes = 0;
     }
 }
+
+PangoCoverageLevel
+pango_font_covers (PangoFont     *font,
+                   PangoLanguage *language,
+                   gunichar       wc)
+{
+  PangoCoverage *coverage = pango_font_get_coverage (font, language);
+  PangoCoverageLevel result = pango_coverage_get (coverage, wc);
+  pango_coverage_unref (coverage);
+  return result;
+}
+
