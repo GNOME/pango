@@ -2331,3 +2331,13 @@ pango_font_face_list_sizes (PangoFontFace  *face,
       *n_sizes = 0;
     }
 }
+
+void
+pango_font_get_features (PangoFont    *font,
+                         hb_feature_t *features,
+                         guint         len,
+                         guint        *num_features)
+{
+  if (PANGO_FONT_GET_CLASS (font)->get_features)
+    PANGO_FONT_GET_CLASS (font)->get_features (font, features, len, *num_features);
+}

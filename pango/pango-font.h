@@ -588,6 +588,11 @@ PangoFontMap         *pango_font_get_font_map      (PangoFont        *font);
 
 PANGO_AVAILABLE_IN_1_44
 hb_font_t *           pango_font_get_hb_font       (PangoFont        *font);
+PANGO_AVAILABLE_IN_1_44
+void                  pango_font_get_features      (PangoFont        *font,
+                                                    hb_feature_t     *features,
+                                                    guint             len,
+                                                    guint            *num_features);
 
 #ifdef PANGO_ENABLE_BACKEND
 
@@ -639,10 +644,10 @@ struct _PangoFontClass
   PangoFontMap *        (*get_font_map)       (PangoFont      *font);
   PangoFontDescription *(*describe_absolute)  (PangoFont      *font);
   hb_font_t *           (*create_hb_font)     (PangoFont      *font);
-  /*< private >*/
-
-  /* Padding for future expansion */
-  void (*_pango_reserved1) (void);
+  void                  (*get_features)       (PangoFont      *font,
+                                               hb_feature_t   *features,
+                                               guint           len,
+                                               guint          *num_features);
 };
 
 /* used for very rare and miserable situtations that we cannot even

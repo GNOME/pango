@@ -68,34 +68,6 @@ release_buffer (hb_buffer_t *buffer, gboolean free_buffer)
     hb_buffer_destroy (buffer);
 }
 
-static void
-pango_font_get_features (PangoFont    *font,
-                         hb_feature_t *features,
-                         unsigned int  len,
-                         unsigned int *num_features)
-{
-  if (PANGO_IS_FC_FONT (font))
-    {
-      /* Setup features from fontconfig pattern. */
-      PangoFcFont *fc_font = PANGO_FC_FONT (font);
-      if (fc_font->font_pattern)
-        {
-          char *s;
-          while (*num_features < len &&
-	         FcResultMatch == FcPatternGetString (fc_font->font_pattern,
-                                                      PANGO_FC_FONT_FEATURES,
-                                                      *num_features,
-                                                      (FcChar8 **) &s))
-            {
-              gboolean ret = hb_feature_from_string (s, -1, &features[*num_features]);
-              features[*num_features].start = 0;
-              features[*num_features].end   = (unsigned int) -1;
-              if (ret)
-                (*num_features)++;
-            }
-        }
-    }
-}
 void
 _pango_fc_shape (PangoFont           *font,
 		 const char          *item_text,
