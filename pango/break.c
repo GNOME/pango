@@ -1581,23 +1581,25 @@ pango_default_break (const gchar   *text,
 }
 
 static gboolean
+break_script (const char          *item_text,
+	      unsigned int         item_length,
+	      const PangoAnalysis *analysis,
+	      PangoLogAttr        *attrs,
+	      int                  attrs_len);
+
+static gboolean
 tailor_break (const gchar   *text,
 	     gint           length,
 	     PangoAnalysis *analysis,
 	     PangoLogAttr  *attrs,
 	     int            attrs_len)
 {
-  if (analysis->lang_engine && PANGO_ENGINE_LANG_GET_CLASS (analysis->lang_engine)->script_break)
-    {
-      if (length < 0)
-	length = strlen (text);
-      else if (text == NULL)
-	text = "";
+  if (length < 0)
+    length = strlen (text);
+  else if (text == NULL)
+    text = "";
 
-      PANGO_ENGINE_LANG_GET_CLASS (analysis->lang_engine)->script_break (analysis->lang_engine, text, length, analysis, attrs, attrs_len);
-      return TRUE;
-    }
-  return FALSE;
+  return break_script (text, length, analysis, attrs, attrs_len);
 }
 
 /**
@@ -1824,7 +1826,7 @@ pango_get_log_attrs (const char    *text,
 #include "break-indic.c"
 #include "break-thai.c"
 
-static void
+static gboolean
 break_script (const char          *item_text,
 	      unsigned int         item_length,
 	      const PangoAnalysis *analysis,
@@ -1853,7 +1855,11 @@ break_script (const char          *item_text,
     case PANGO_SCRIPT_THAI:
       break_thai (item_text, item_length, analysis, attrs, attrs_len);
       break;
+    default:
+      return FALSE;
     }
+
+  return TRUE;
 }
 
 
