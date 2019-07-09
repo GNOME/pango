@@ -28,6 +28,8 @@ pango_sources = [
   'shape.c',
 ]
 
+pango_requires = ['gobject-2.0', harfbuzz_pc ]
+
 pango_headers = [
   'pango.h',
   'pango-attributes.h',
@@ -104,6 +106,7 @@ if build_pangoft2
   install_headers(pangoft2_headers, subdir: pango_api_path)
 
   pango_sources += pangoft2_sources
+  pango_requires += [ freetype2_pc, fontconfig_pc ]
 endif
 
 # cairo
@@ -146,6 +149,7 @@ if cairo_dep.found()
   install_headers(pangocairo_headers, subdir: pango_api_path)
 
   pango_sources += pangocairo_sources
+  pango_requires += cairo_pc
 endif
 
 # Win32
@@ -255,7 +259,7 @@ pkgconfig.generate(libpango,
   name: 'Pango',
   description: 'Internationalized text handling',
   version: meson.project_version(),
-  requires: ['gobject-2.0'],
+  requires: pango_requires,
   filebase: 'pango',
   subdirs: pango_api_name,
   install_dir: join_paths(pango_libdir, 'pkgconfig'),
@@ -312,7 +316,7 @@ if build_pangoft2
     version: meson.project_version(),
     filebase: 'pangoft2',
     subdirs: pango_api_name,
-    requires: [ 'pango', freetype2_pc, fontconfig_pc ],
+    requires: 'pango',
     install_dir: join_paths(pango_libdir, 'pkgconfig'),
   )
 else
@@ -385,7 +389,7 @@ if xft_dep.found() and fontconfig_dep.found()
     version: meson.project_version(),
     filebase: 'pangoxft',
     subdirs: pango_api_name,
-    requires: [ 'pangoft2', 'xft' ],
+    requires: [ 'pango', 'xft' ],
     install_dir: join_paths(pango_libdir, 'pkgconfig'),
   )
 else
@@ -478,7 +482,7 @@ if cairo_dep.found()
     version: meson.project_version(),
     filebase: 'pangocairo',
     subdirs: pango_api_name,
-    requires: [ 'pango', cairo_pc ],
+    requires: 'pango',
     install_dir: join_paths(pango_libdir, 'pkgconfig'),
   )
 else

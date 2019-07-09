@@ -489,16 +489,6 @@ endif
 if cairo_dep.found()
   pango_conf.set('HAVE_CAIRO', 1)
   pango_deps += cairo_dep
-
-  pangocairo_requires = ''
-
-  if pango_font_backends.contains('freetype')
-    pangocairo_requires += 'pangoft2 '
-  endif
-
-  if pango_font_backends.contains('win32')
-    pangocairo_requires += 'pangowin32 '
-  endif
 endif
 
 gnome = import('gnome')
