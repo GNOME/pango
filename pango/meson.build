@@ -140,24 +140,6 @@ if cairo_dep.found()
   pango_sources += pangocairo_sources
 endif
 
-# Xft
-if xft_dep.found() and fontconfig_dep.found()
-  pangoxft_headers = [
-    'pangoxft.h',
-    'pangoxft-render.h',
-  ]
-
-  pangoxft_sources = [
-    'pangoxft-font.c',
-    'pangoxft-fontmap.c',
-    'pangoxft-render.c',
-  ]
-
-  install_headers(pangoxft_headers, subdir: pango_api_path)
-
-  pango_sources += pangoxft_sources
-endif
-
 # Features header
 pango_features_conf = configuration_data()
 pango_features_conf.set('PANGO_VERSION_MAJOR', pango_major_version)
@@ -325,9 +307,22 @@ endif
 
 # Xft
 if xft_dep.found() and fontconfig_dep.found()
+  pangoxft_headers = [
+    'pangoxft.h',
+    'pangoxft-render.h',
+  ]
+
+  pangoxft_sources = [
+    'pangoxft-font.c',
+    'pangoxft-fontmap.c',
+    'pangoxft-render.c',
+  ]
+
+  install_headers(pangoxft_headers, subdir: pango_api_path)
+
   libpangoxft = library(
     'pangoxft-@0@'.format(pango_api_version),
-    sources: [],
+    sources: pangoxft_sources,
     version: pango_libversion,
     soversion: pango_soversion,
     darwin_versions : pango_osxversion,
@@ -344,7 +339,7 @@ if xft_dep.found() and fontconfig_dep.found()
   if build_gir
     pangoxft_gir = gnome.generate_gir(
       libpangoxft,
-      sources: [],
+      sources: pangoxft_headers+ pangoxft_sources,
       dependencies: [ libpango_dep, libpangoft2_dep, pango_gir_dep, pangoft2_gir_dep ],
       namespace: 'PangoXft',
       nsversion: pango_api_version,
