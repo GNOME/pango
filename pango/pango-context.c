@@ -1272,21 +1272,6 @@ get_base_font (ItemizeState *state)
   return state->base_font;
 }
 
-static PangoScript
-get_script (ItemizeState      *state)
-{
-  /* Always use a basic shaper for vertical layout (ie, east/west gravity)
-   * as none of our script shapers support vertical shaping right now.
-   *
-   * XXX Should move the knowledge into the shaper interface.
-   */
-
-  if (PANGO_GRAVITY_IS_VERTICAL (state->resolved_gravity))
-    return PANGO_SCRIPT_COMMON;
-  else
-    return state->script;
-}
-
 static gboolean
 get_font (ItemizeState  *state,
           gunichar       wc,
@@ -1425,21 +1410,6 @@ itemize_state_update_for_new_run (ItemizeState *state)
       g_object_unref (state->base_font);
       state->base_font = NULL;
     }
-}
-
-static const char *
-string_from_script (PangoScript script)
-{
-  static GEnumClass *class = NULL; /* MT-safe */
-  GEnumValue *value;
-  if (g_once_init_enter (&class))
-    g_once_init_leave(&class, (gpointer)g_type_class_ref (G_TYPE_UNICODE_SCRIPT));
-
-  value = g_enum_get_value (class, script);
-  if (!value)
-    return string_from_script (G_UNICODE_SCRIPT_INVALID_CODE);
-
-  return value->value_nick;
 }
 
 static void
