@@ -2378,3 +2378,13 @@ pango_font_get_features (PangoFont    *font,
   if (PANGO_FONT_GET_CLASS (font)->get_features)
     PANGO_FONT_GET_CLASS (font)->get_features (font, features, len, num_features);
 }
+
+gboolean
+pango_font_covers (PangoFont     *font,
+                   gunichar       wc)
+{
+  PangoCoverage *coverage = pango_font_get_coverage (font, pango_language_get_default ());
+  PangoCoverageLevel result = pango_coverage_get (coverage, wc);
+  pango_coverage_unref (coverage);
+  return result != PANGO_COVERAGE_NONE;
+}

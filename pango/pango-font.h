@@ -493,6 +493,9 @@ void                  pango_font_get_features      (PangoFont        *font,
                                                     guint             len,
                                                     guint            *num_features);
 
+PANGO_AVAILABLE_IN_1_44
+gboolean              pango_font_covers            (PangoFont        *font,
+                                                    gunichar          unichar);
 
 /**
  * PANGO_GLYPH_EMPTY:
