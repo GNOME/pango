@@ -22,7 +22,6 @@
 #include "config.h"
 
 #include "pango-break.h"
-#include "pango-engine-private.h"
 #include "pango-script-private.h"
 #include "pango-emoji-private.h"
 #include "pango-break-table.h"
@@ -1574,23 +1573,25 @@ pango_default_break (const gchar   *text,
 }
 
 static gboolean
+break_script (const char          *item_text,
+	      unsigned int         item_length,
+	      const PangoAnalysis *analysis,
+	      PangoLogAttr        *attrs,
+	      int                  attrs_len);
+
+static gboolean
 tailor_break (const gchar   *text,
 	     gint           length,
 	     PangoAnalysis *analysis,
 	     PangoLogAttr  *attrs,
 	     int            attrs_len)
 {
-  if (analysis->lang_engine && PANGO_ENGINE_LANG_GET_CLASS (analysis->lang_engine)->script_break)
-    {
-      if (length < 0)
-	length = strlen (text);
-      else if (text == NULL)
-	text = "";
+  if (length < 0)
+    length = strlen (text);
+  else if (text == NULL)
+    text = "";
 
-      PANGO_ENGINE_LANG_GET_CLASS (analysis->lang_engine)->script_break (analysis->lang_engine, text, length, analysis, attrs, attrs_len);
-      return TRUE;
-    }
-  return FALSE;
+  return break_script (text, length, analysis, attrs, attrs_len);
 }
 
 /**
@@ -1787,7 +1788,6 @@ pango_get_log_attrs (const char    *text,
   g_return_if_fail (log_attrs != NULL);
 
   analysis.level = level;
-  analysis.lang_engine = _pango_get_language_engine ();
 
   pango_default_break (text, length, &analysis, log_attrs, attrs_len);
 
@@ -1817,7 +1817,7 @@ pango_get_log_attrs (const char    *text,
 #include "break-indic.c"
 #include "break-thai.c"
 
-static void
+static gboolean
 break_script (const char          *item_text,
 	      unsigned int         item_length,
 	      const PangoAnalysis *analysis,
@@ -1846,43 +1846,9 @@ break_script (const char          *item_text,
     case PANGO_SCRIPT_THAI:
       break_thai (item_text, item_length, analysis, attrs, attrs_len);
       break;
+    default:
+      return FALSE;
     }
-}
 
-
-/* Wrap language breaker in PangoEngineLang to pass it through old API,
- * from times when there were modules and engines. */
-typedef PangoEngineLang      PangoLanguageEngine;
-typedef PangoEngineLangClass PangoLanguageEngineClass;
-static GType pango_language_engine_get_type (void) G_GNUC_CONST;
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-G_DEFINE_TYPE (PangoLanguageEngine, pango_language_engine, PANGO_TYPE_ENGINE_LANG);
-G_GNUC_END_IGNORE_DEPRECATIONS
-static void
-_pango_language_engine_break (PangoEngineLang *engine G_GNUC_UNUSED,
-			      const char      *item_text,
-			      int              item_length,
-			      PangoAnalysis   *analysis,
-			      PangoLogAttr    *attrs,
-			      int              attrs_len)
-{
-  break_script (item_text, item_length, analysis, attrs, attrs_len);
-}
-static void
-pango_language_engine_class_init (PangoEngineLangClass *class)
-{
-  class->script_break = _pango_language_engine_break;
-}
-static void
-pango_language_engine_init (PangoEngineLang *object)
-{
-}
-
-PangoEngineLang *
-_pango_get_language_engine (void)
-{
-  static PangoEngineLang *engine;
-  if (g_once_init_enter (&engine))
-    g_once_init_leave (&engine, g_object_new (pango_language_engine_get_type(), NULL));
-  return engine;
+  return TRUE;
 }
