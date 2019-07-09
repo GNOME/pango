@@ -42,7 +42,6 @@
 #include "pangofc-font-private.h"
 #include "pangofc-fontmap.h"
 #include "pangofc-private.h"
-#include "pango-engine.h"
 #include "pango-layout.h"
 #include "pango-impl-utils.h"
 
@@ -76,9 +75,6 @@ static void                  pango_fc_font_get_property (GObject          *objec
 							 guint             prop_id,
 							 GValue           *value,
 							 GParamSpec       *pspec);
-static PangoEngineShape *    pango_fc_font_find_shaper  (PangoFont        *font,
-							 PangoLanguage    *language,
-							 guint32           ch);
 static PangoCoverage *       pango_fc_font_get_coverage (PangoFont        *font,
 							 PangoLanguage    *language);
 static PangoFontMetrics *    pango_fc_font_get_metrics  (PangoFont        *font,
@@ -113,7 +109,6 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   object_class->get_property = pango_fc_font_get_property;
   font_class->describe = pango_fc_font_describe;
   font_class->describe_absolute = pango_fc_font_describe_absolute;
-  font_class->find_shaper = pango_fc_font_find_shaper;
   font_class->get_coverage = pango_fc_font_get_coverage;
   font_class->get_metrics = pango_fc_font_get_metrics;
   font_class->get_font_map = pango_fc_font_get_font_map;
@@ -295,46 +290,6 @@ pango_fc_font_describe_absolute (PangoFont *font)
     pango_font_description_set_absolute_size (desc, size * PANGO_SCALE);
 
   return desc;
-}
-
-/* Wrap shaper in PangoEngineShape to pass it through old API,
- * from times when there were modules and engines. */
-typedef PangoEngineShape      PangoFcShapeEngine;
-typedef PangoEngineShapeClass PangoFcShapeEngineClass;
-static GType pango_fc_shape_engine_get_type (void) G_GNUC_CONST;
-G_DEFINE_TYPE (PangoFcShapeEngine, pango_fc_shape_engine, PANGO_TYPE_ENGINE_SHAPE);
-static void
-_pango_fc_shape_engine_shape (PangoEngineShape    *engine G_GNUC_UNUSED,
-			      PangoFont           *font,
-			      const char          *item_text,
-			      unsigned int         item_length,
-			      const PangoAnalysis *analysis,
-			      PangoGlyphString    *glyphs,
-			      const char          *paragraph_text,
-			      unsigned int         paragraph_length)
-{
-  _pango_fc_shape (font, item_text, item_length, analysis, glyphs,
-		   paragraph_text, paragraph_length);
-}
-static void
-pango_fc_shape_engine_class_init (PangoEngineShapeClass *class)
-{
-  class->script_shape = _pango_fc_shape_engine_shape;
-}
-static void
-pango_fc_shape_engine_init (PangoEngineShape *object)
-{
-}
-
-static PangoEngineShape *
-pango_fc_font_find_shaper (PangoFont     *font G_GNUC_UNUSED,
-			   PangoLanguage *language,
-			   guint32        ch)
-{
-  static PangoEngineShape *shaper;
-  if (g_once_init_enter (&shaper))
-    g_once_init_leave (&shaper, g_object_new (pango_fc_shape_engine_get_type(), NULL));
-  return shaper;
 }
 
 static PangoCoverage *
