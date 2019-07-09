@@ -1251,14 +1251,12 @@ get_font_foreach (PangoFontset *fontset,
 		  gpointer      data)
 {
   GetFontInfo *info = data;
-  PangoEngineShape *engine;
   PangoCoverageLevel level;
 
   if (G_UNLIKELY (!font))
     return FALSE;
 
-  engine = pango_font_find_shaper (font, info->lang, info->wc),
-  level = _pango_engine_shape_covers (engine, font, info->lang, info->wc);
+  level = pango_font_covers (font, info->lang, info->wc);
   if (level != PANGO_COVERAGE_NONE)
     {
       info->font = font;
