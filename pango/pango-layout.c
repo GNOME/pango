@@ -3443,7 +3443,18 @@ break_needs_hyphen (PangoLayout    *layout,
                     ParaBreakState *state,
                     int             num_chars)
 {
-  return layout->log_attrs[state->start_offset + num_chars].is_soft_hyphen;
+  gunichar *ch;
+
+  if (state->start_offset + num_chars == 0)
+    return FALSE;
+
+  ch = g_utf8_get_char (layout->text + state->start_offset + num_chars - 1);
+
+  /* Just look for soft hyphen, for now */
+  if (ch == 0xAD)
+    return TRUE;
+
+  return FALSE;
 }
 
 static int
