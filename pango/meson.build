@@ -58,6 +58,22 @@ pango_headers = [
 
 install_headers(pango_headers, subdir: pango_api_path)
 
+# Features header
+pango_features_conf = configuration_data()
+pango_features_conf.set('PANGO_VERSION_MAJOR', pango_major_version)
+pango_features_conf.set('PANGO_VERSION_MINOR', pango_minor_version)
+pango_features_conf.set('PANGO_VERSION_MICRO', pango_micro_version)
+pango_features_conf.set('PANGO_API_VERSION', pango_api_version)
+pango_features_conf.set('PANGO_CURRENT_MINUS_AGE', '0')
+
+configure_file(
+  input: 'pango-features.h.meson',
+  output: 'pango-features.h',
+  configuration: pango_features_conf,
+  install: true,
+  install_dir: join_paths(pango_includedir, pango_api_path),
+)
+
 # FreeType
 if build_pangoft2
   pangoft2_headers = [
@@ -140,21 +156,39 @@ if cairo_dep.found()
   pango_sources += pangocairo_sources
 endif
 
-# Features header
-pango_features_conf = configuration_data()
-pango_features_conf.set('PANGO_VERSION_MAJOR', pango_major_version)
-pango_features_conf.set('PANGO_VERSION_MINOR', pango_minor_version)
-pango_features_conf.set('PANGO_VERSION_MICRO', pango_micro_version)
-pango_features_conf.set('PANGO_API_VERSION', pango_api_version)
-pango_features_conf.set('PANGO_CURRENT_MINUS_AGE', '0')
+# Win32
+if host_system == 'windows'
+  pangowin32_headers = [
+    'pangowin32.h',
+  ]
 
-configure_file(
-  input: 'pango-features.h.meson',
-  output: 'pango-features.h',
-  configuration: pango_features_conf,
-  install: true,
-  install_dir: join_paths(pango_includedir, pango_api_path),
-)
+  pangowin32_sources = [
+    'pangowin32.c',
+    'pangowin32-fontcache.c',
+    'pangowin32-fontmap.c',
+    'pangowin32-shape.c',
+  ]
+
+  # usp10 needs to be before gdi32
+  # see https://bugzilla.gnome.org/show_bug.cgi?id=795045#c0
+  pangowin32_deps = [
+    cc.find_library('usp10'),
+    cc.find_library('gdi32'),
+  ]
+
+  pangowin32_rc = configure_file(
+    input: 'pangowin32.rc.in',
+    output: 'pangowin32.rc',
+    configuration: pango_features_conf,
+  )
+  pangowin32_res = import('windows').compile_resources(pangowin32_rc)
+  pangowin32_sources += pangowin32_res
+
+  install_headers(pangowin32_headers, subdir: pango_api_path)
+
+  pango_sources += pangowin32_sources
+  pango_deps += pangowin32_deps
+endif
 
 # Enumerations for GType
 pango_enums = gnome.mkenums(
@@ -377,38 +411,9 @@ endif
 
 # Win32
 if host_system == 'windows'
-  pangowin32_headers = [
-    'pangowin32.h',
-  ]
-
-  pangowin32_sources = [
-    'pangowin32.c',
-    'pangowin32-fontcache.c',
-    'pangowin32-fontmap.c',
-    'pangowin32-shape.c',
-  ]
-
-  # usp10 needs to be before gdi32
-  # see https://bugzilla.gnome.org/show_bug.cgi?id=795045#c0
-  pangowin32_deps = pango_deps + [
-    libpango_dep,
-    cc.find_library('usp10'),
-    cc.find_library('gdi32'),
-  ]
-
-  pangowin32_rc = configure_file(
-    input: 'pangowin32.rc.in',
-    output: 'pangowin32.rc',
-    configuration: pango_features_conf,
-  )
-  pangowin32_res = import('windows').compile_resources(pangowin32_rc)
-  pangowin32_sources += pangowin32_res
-
-  install_headers(pangowin32_headers, subdir: pango_api_path)
-
   libpangowin32 = library(
     'pangowin32-@0@'.format(pango_api_version),
-    sources: pangowin32_sources,
+    sources: [],
     version: pango_libversion,
     soversion: pango_soversion,
     install: true,
