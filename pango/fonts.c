@@ -1720,20 +1720,14 @@ pango_font_get_coverage (PangoFont     *font,
  * language tag and character point.
  *
  * Return value: (transfer none): the best matching shaper.
+ * Deprecated: Shape engines are no longer used
  **/
 PangoEngineShape *
 pango_font_find_shaper (PangoFont     *font,
 			PangoLanguage *language,
 			guint32        ch)
 {
-  PangoEngineShape* shaper;
-
-  if (G_UNLIKELY (!font))
-    return NULL;
-
-  shaper = PANGO_FONT_GET_CLASS (font)->find_shaper (font, language, ch);
-
-  return shaper;
+  return NULL;
 }
 
 /**
