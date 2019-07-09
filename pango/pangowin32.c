@@ -61,9 +61,6 @@ static PangoCoverage        *pango_win32_font_get_coverage      (PangoFont      
 static void                  pango_win32_font_calc_coverage     (PangoFont        *font,
 								 PangoCoverage    *coverage,
 								 PangoLanguage    *lang);
-static PangoEngineShape     *pango_win32_font_find_shaper       (PangoFont        *font,
-								 PangoLanguage    *lang,
-								 guint32           ch);
 static void                  pango_win32_font_get_glyph_extents (PangoFont        *font,
 								 PangoGlyph        glyph,
 								 PangoRectangle   *ink_rect,
@@ -203,7 +200,6 @@ _pango_win32_font_class_init (PangoWin32FontClass *class)
   font_class->describe = pango_win32_font_describe;
   font_class->describe_absolute = pango_win32_font_describe_absolute;
   font_class->get_coverage = pango_win32_font_get_coverage;
-  font_class->find_shaper = pango_win32_font_find_shaper;
   font_class->get_glyph_extents = pango_win32_font_get_glyph_extents;
   font_class->get_metrics = pango_win32_font_get_metrics;
   font_class->get_font_map = pango_win32_font_get_font_map;
@@ -932,46 +928,6 @@ pango_win32_font_get_coverage (PangoFont     *font,
     }
 
   return coverage;
-}
-
-/* Wrap shaper in PangoEngineShape to pass it through old API,
- * from times when there were modules and engines. */
-typedef PangoEngineShape      PangoWin32ShapeEngine;
-typedef PangoEngineShapeClass PangoWin32ShapeEngineClass;
-static GType pango_win32_shape_engine_get_type (void) G_GNUC_CONST;
-G_DEFINE_TYPE (PangoWin32ShapeEngine, pango_win32_shape_engine, PANGO_TYPE_ENGINE_SHAPE);
-static void
-_pango_win32_shape_engine_shape (PangoEngineShape    *engine G_GNUC_UNUSED,
-				 PangoFont           *font,
-				 const char          *item_text,
-				 unsigned int         item_length,
-				 const PangoAnalysis *analysis,
-				 PangoGlyphString    *glyphs,
-				 const char          *paragraph_text,
-				 unsigned int         paragraph_length)
-{
-  _pango_win32_shape (font, item_text, item_length, analysis, glyphs,
-		      paragraph_text, paragraph_length);
-}
-static void
-pango_win32_shape_engine_class_init (PangoEngineShapeClass *class)
-{
-  class->script_shape = _pango_win32_shape_engine_shape;
-}
-static void
-pango_win32_shape_engine_init (PangoEngineShape *object)
-{
-}
-
-static PangoEngineShape *
-pango_win32_font_find_shaper (PangoFont     *font,
-			      PangoLanguage *lang,
-			      guint32        ch)
-{
-  static PangoEngineShape *shaper;
-  if (g_once_init_enter (&shaper))
-    g_once_init_leave (&shaper, g_object_new (pango_win32_shape_engine_get_type(), NULL));
-  return shaper;
 }
 
 /* Utility functions */
