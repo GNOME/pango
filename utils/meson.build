@@ -19,7 +19,7 @@ if xft_dep.found() and build_pangoft2
     'viewer-pangoxft.c',
     'viewer-x.c',
   ]
-  pango_view_deps += [ libpangoft2_dep, libpangoxft_dep, ]
+  pango_view_deps += pangoxft_deps + [ libpangoft2_dep, libpangoxft_dep, ]
 endif
 
 if cairo_dep.found()
@@ -27,7 +27,10 @@ if cairo_dep.found()
     'viewer-cairo.c',
     'viewer-pangocairo.c',
   ]
-  pango_view_deps += libpangocairo_dep
+  pango_view_deps += [
+    pangocairo_deps,
+    libpangocairo_dep
+  ]
 endif
 
 pango_view = executable('pango-view', pango_view_sources,
@@ -66,6 +69,7 @@ if cairo_dep.found()
 
   pango_list_deps = [
     pango_deps,
+    pangocairo_deps,
     libpango_dep,
     libpangocairo_dep
   ]
