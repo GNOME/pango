@@ -87,6 +87,10 @@ test_breaks_data = [
   'breaks/three',
 ]
 
+test_items_data = [
+  'itemize/one',
+]
+
 installed_test_layouts_data = []
 foreach d: test_layouts_data
   installed_test_layouts_data += d + '.markup'
@@ -105,6 +109,12 @@ foreach d: test_breaks_data
   installed_test_breaks_data += d + '.expected'
 endforeach
 
+installed_test_items_data = []
+foreach d: test_items_data
+  installed_test_items_data += d + '.items'
+  installed_test_items_data += d + '.expected'
+endforeach
+
 installed_test_datadir = join_paths(pango_datadir, 'installed-tests', 'pango')
 installed_test_bindir = join_paths(pango_libexecdir, 'installed-tests', 'pango')
 
@@ -113,6 +123,7 @@ if get_option('install-tests')
   install_data(installed_test_layouts_data, install_dir: join_paths(installed_test_bindir, 'layouts'))
   install_data(installed_test_markups_data, install_dir: join_paths(installed_test_bindir, 'markups'))
   install_data(installed_test_breaks_data, install_dir: join_paths(installed_test_bindir, 'breaks'))
+  install_data(installed_test_items_data, install_dir: join_paths(installed_test_bindir, 'itemize'))
 endif
 
 python = import('python3').find_python()
