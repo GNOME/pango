@@ -90,6 +90,10 @@ static PangoFontMap *        pango_fc_font_get_font_map (PangoFont        *font)
 static PangoFontDescription *pango_fc_font_describe     (PangoFont        *font);
 static PangoFontDescription *pango_fc_font_describe_absolute (PangoFont        *font);
 static hb_font_t *           pango_fc_font_create_hb_font (PangoFont        *font);
+static void                  pango_fc_font_get_features (PangoFont        *font,
+                                                         hb_feature_t     *features,
+                                                         guint             len,
+                                                         guint            *num_features);
 
 #define PANGO_FC_FONT_LOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->lock_face (font))
 #define PANGO_FC_FONT_UNLOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->unlock_face (font))
@@ -117,6 +121,7 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   font_class->get_metrics = pango_fc_font_get_metrics;
   font_class->get_font_map = pango_fc_font_get_font_map;
   font_class->create_hb_font = pango_fc_font_create_hb_font;
+  font_class->get_features = pango_fc_font_get_features;
 
   g_object_class_install_property (object_class, PROP_PATTERN,
 				   g_param_spec_pointer ("pattern",
@@ -1096,4 +1101,30 @@ pango_fc_font_create_hb_font (PangoFont *font)
   hb_face = pango_fc_font_map_get_hb_face (PANGO_FC_FONT_MAP (fcfont->fontmap), fcfont);
 
   return hb_font_create (hb_face);
+}
+
+static void
+pango_fc_font_get_features (PangoFont    *font,
+                            hb_feature_t *features,
+                            guint         len,
+                            guint        *num_features)
+{
+  /* Setup features from fontconfig pattern. */
+  PangoFcFont *fc_font = PANGO_FC_FONT (font);
+  if (fc_font->font_pattern)
+    {
+      char *s;
+      while (*num_features < len &&
+             FcResultMatch == FcPatternGetString (fc_font->font_pattern,
+                                                  PANGO_FC_FONT_FEATURES,
+                                                  *num_features,
+                                                  (FcChar8 **) &s))
+        {
+          gboolean ret = hb_feature_from_string (s, -1, &features[*num_features]);
+          features[*num_features].start = 0;
+          features[*num_features].end   = (unsigned int) -1;
+          if (ret)
+            (*num_features)++;
+        }
+    }
 }
