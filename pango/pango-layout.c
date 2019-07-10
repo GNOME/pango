@@ -3443,7 +3443,7 @@ break_needs_hyphen (PangoLayout    *layout,
                     ParaBreakState *state,
                     int             num_chars)
 {
-  gunichar *ch;
+  gunichar ch;
 
   if (state->start_offset + num_chars == 0)
     return FALSE;
