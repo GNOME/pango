@@ -51,8 +51,8 @@ typedef struct _PangoItem PangoItem;
 
 /**
  * PangoAnalysis:
- * @shape_engine: the engine for doing rendering-system-dependent processing.
- * @lang_engine: the engine for doing rendering-system-independent processing.
+ * @shape_engine: unused
+ * @lang_engine: unused
  * @font: the font for this segment.
  * @level: the bidirectional level for this segment.
  * @gravity: the glyph orientation for this segment (A #PangoGravity).
