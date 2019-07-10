@@ -21,8 +21,8 @@ tests = [
   [ 'testboundaries_ucd' ],
   [ 'testcolor' ],
   [ 'testscript' ],
-  [ 'cxx-test', [ 'cxx-test.cpp' ] ],
-  [ 'test-break', [ 'test-break.c', 'test-common.c' ] ],
+  [ 'cxx-test', [ 'cxx-test.cpp' ], [ libpangocairo_dep ] ],
+  [ 'test-break', [ 'test-break.c', 'test-common.c' ], [libpangocairo_dep ] ],
 ]
 
 if build_pangoft2
