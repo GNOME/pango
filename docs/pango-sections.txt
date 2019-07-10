@@ -237,6 +237,7 @@ pango_font_get_glyph_extents
 pango_font_get_metrics
 pango_font_get_font_map
 pango_font_get_hb_font
+pango_font_get_features
 <SUBSECTION>
 PangoFontFamily
 PANGO_TYPE_FONT_FAMILY

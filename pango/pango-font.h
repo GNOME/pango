@@ -490,6 +490,11 @@ gboolean              pango_font_covers            (PangoFont        *font,
                                                     gunichar          unichar);
 PANGO_AVAILABLE_IN_1_44
 hb_font_t *           pango_font_get_hb_font       (PangoFont        *font);
+PANGO_AVAILABLE_IN_1_44
+void                  pango_font_get_features      (PangoFont        *font,
+                                                    hb_feature_t     *features,
+                                                    guint             len,
+                                                    guint            *num_features);
 
 
 /**
