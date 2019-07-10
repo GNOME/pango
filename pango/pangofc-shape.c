@@ -138,6 +138,21 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
         }
     }
 
+  if (context->flags & PANGO_SHAPE_SHOW_SPACE)
+    {
+      if (g_unichar_type (unicode) == G_UNICODE_SPACE_SEPARATOR)
+        {
+          /* Replace 0x20 by visible space, since we
+           * don't draw a hex box for 0x20
+           */
+          if (unicode == 0x20)
+            *glyph = PANGO_GET_UNKNOWN_GLYPH (0x2423);
+          else
+            *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
+          return TRUE;
+        }
+    }
+
   if (hb_font_get_glyph (context->parent, unicode, 0, glyph))
     return TRUE;
 
@@ -352,6 +367,7 @@ pango_hb_shape (const char          *item_text,
   hb_buffer_set_cluster_level (hb_buffer, HB_BUFFER_CLUSTER_LEVEL_MONOTONE_CHARACTERS);
 #endif
   hb_buffer_set_flags (hb_buffer, hb_buffer_flags);
+  hb_buffer_set_invisible_glyph (hb_buffer, PANGO_GLYPH_EMPTY);
 
   hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_offset, item_length);
 
@@ -369,6 +385,7 @@ pango_hb_shape (const char          *item_text,
   pango_glyph_string_set_size (glyphs, num_glyphs);
   infos = glyphs->glyphs;
   last_cluster = -1;
+
   for (i = 0; i < num_glyphs; i++)
     {
       infos[i].glyph = hb_glyph->codepoint;
