@@ -56,6 +56,27 @@ pango_headers = [
   'pango-version-macros.h',
 ]
 
+pango_requires = [
+  'gobject-2.0',
+]
+
+if fontconfig_dep.found()
+  pango_headers += [
+    'pangofc-font.h',
+    'pangofc-fontmap.h',
+    'pangofc-decoder.h',
+  ]
+  pango_sources += [
+    'pangofc-font.c',
+    'pangofc-fontmap.c',
+    'pangofc-decoder.c',
+    'pangofc-shape.c',
+  ]
+  pango_requires += [
+    fontconfig_pc,
+  ]
+endif
+
 install_headers(pango_headers, subdir: pango_api_path)
 
 # Features header
@@ -155,7 +176,7 @@ pkgconfig.generate(libpango,
   name: 'Pango',
   description: 'Internationalized text handling',
   version: meson.project_version(),
-  requires: ['gobject-2.0'],
+  requires: pango_requires,
   filebase: 'pango',
   subdirs: pango_api_name,
   install_dir: join_paths(pango_libdir, 'pkgconfig'),
@@ -165,17 +186,10 @@ pkgconfig.generate(libpango,
 if build_pangoft2
   pangoft2_headers = [
     'pango-ot.h',
-    'pangofc-font.h',
-    'pangofc-fontmap.h',
-    'pangofc-decoder.h',
     'pangoft2.h',
   ]
 
   pangoft2_public_sources = [
-    'pangofc-font.c',
-    'pangofc-fontmap.c',
-    'pangofc-decoder.c',
-    'pangofc-shape.c',
     'pangoft2.c',
   ]
 
@@ -282,7 +296,7 @@ if xft_dep.found() and fontconfig_dep.found()
     soversion: pango_soversion,
     darwin_versions : pango_osxversion,
     install: true,
-    dependencies: pango_deps + [ libpango_dep, libpangoft2_dep ],
+    dependencies: pango_deps + pangoxft_deps + [ libpango_dep, libpangoft2_dep ],
     include_directories: [ root_inc, pango_inc ],
     c_args: common_cflags + pango_debug_cflags + pango_cflags + [
       '-DPANGO_DISABLE_DEPRECATION_WARNINGS',
@@ -408,15 +422,13 @@ if cairo_dep.found()
     'pangocairo-render.c',
   ]
 
-  pangocairo_deps = pango_deps + [ libpango_dep ]
+  pangocairo_deps += libpango_dep
 
   if pango_font_backends.contains('freetype')
     pangocairo_sources += [
       'pangocairo-fcfont.c',
       'pangocairo-fcfontmap.c',
     ]
-
-    pangocairo_deps += libpangoft2_dep
   endif
 
   if host_system == 'windows' and pango_font_backends.contains('win32')
@@ -486,7 +498,7 @@ if cairo_dep.found()
   libpangocairo_dep = declare_dependency(
     link_with: libpangocairo,
     include_directories: root_inc,
-    dependencies: pango_deps + [ libpango_dep ],
+    dependencies: pangocairo_deps + pango_deps + [ libpango_dep ],
     sources: pangocairo_dep_sources,
   )
 
