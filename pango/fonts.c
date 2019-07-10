@@ -2354,3 +2354,27 @@ pango_font_face_list_sizes (PangoFontFace  *face,
       *n_sizes = 0;
     }
 }
+
+/**
+ * pango_font_get_features:
+ * @font: a #PangoFont
+ * @features: (out caller-allocates) (array length=len): Array to features in
+ * @len: the length of @features
+ * @num_features: (inout): the number of used items in @features
+ *
+ * Obtain the OpenType features for this font.
+ *
+ * These are the features used by default for this font,
+ * unless overridden.
+ *
+ * Since: 1.44
+ */
+void
+pango_font_get_features (PangoFont    *font,
+                         hb_feature_t *features,
+                         guint         len,
+                         guint        *num_features)
+{
+  if (PANGO_FONT_GET_CLASS (font)->get_features)
+    PANGO_FONT_GET_CLASS (font)->get_features (font, features, len, num_features);
+}
