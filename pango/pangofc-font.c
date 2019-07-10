@@ -983,9 +983,9 @@ pango_fc_font_create_hb_font (PangoFont *font)
   hb_face = pango_fc_font_map_get_hb_face (PANGO_FC_FONT_MAP (fc_font->fontmap), fc_font);
 
   hb_font = hb_font_create (hb_face);
-  hb_ot_font_set_funcs (hb_font);
-  hb_font_set_scale (hb_font, size * 1024 * x_scale, size * 1024 * y_scale);
-  hb_font_set_ppem (hb_font, 0, 0);
+  hb_font_set_scale (hb_font,
+                     size * PANGO_SCALE * x_scale,
+                     size * PANGO_SCALE * y_scale);
   if (key)
     {
       const char *variations = pango_fc_font_key_get_variations (key);
