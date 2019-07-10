@@ -282,7 +282,7 @@ if xft_dep.found() and fontconfig_dep.found()
     soversion: pango_soversion,
     darwin_versions : pango_osxversion,
     install: true,
-    dependencies: pango_deps + [ libpango_dep, libpangoft2_dep ],
+    dependencies: pango_deps + pangoxft_deps + [ libpango_dep, libpangoft2_dep ],
     include_directories: [ root_inc, pango_inc ],
     c_args: common_cflags + pango_debug_cflags + pango_cflags + [
       '-DPANGO_DISABLE_DEPRECATION_WARNINGS',
@@ -408,15 +408,13 @@ if cairo_dep.found()
     'pangocairo-render.c',
   ]
 
-  pangocairo_deps = pango_deps + [ libpango_dep ]
+  pangocairo_deps += libpango_dep
 
   if pango_font_backends.contains('freetype')
     pangocairo_sources += [
       'pangocairo-fcfont.c',
       'pangocairo-fcfontmap.c',
     ]
-
-    pangocairo_deps += libpangoft2_dep
   endif
 
   if host_system == 'windows' and pango_font_backends.contains('win32')
@@ -486,7 +484,7 @@ if cairo_dep.found()
   libpangocairo_dep = declare_dependency(
     link_with: libpangocairo,
     include_directories: root_inc,
-    dependencies: pango_deps + [ libpango_dep ],
+    dependencies: pangocairo_deps + pango_deps + [ libpango_dep ],
     sources: pangocairo_dep_sources,
   )
 
