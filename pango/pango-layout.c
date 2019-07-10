@@ -3605,7 +3605,6 @@ process_item (PangoLayout     *layout,
       int break_width = width;
       int orig_width = width;
       int break_extra_width;
-      int hyphen_width;
       gboolean retrying_with_char_breaks = FALSE;
 
       if (processing_new_item)
