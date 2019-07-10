@@ -51,9 +51,9 @@ typedef struct _PangoFcFontClass PangoFcFontClass;
 PANGO_AVAILABLE_IN_ALL
 GType      pango_fc_font_get_type (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_1_4
+PANGO_DEPRECATED_IN_1_44_FOR(pango_font_get_hb_font)
 FT_Face    pango_fc_font_lock_face         (PangoFcFont      *font);
-PANGO_AVAILABLE_IN_1_4
+PANGO_DEPRECATED_IN_1_44_FOR(pango_font_get_hb_font)
 void       pango_fc_font_unlock_face       (PangoFcFont      *font);
 
 G_END_DECLS
