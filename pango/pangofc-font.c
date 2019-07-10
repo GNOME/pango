@@ -595,6 +595,7 @@ pango_fc_font_real_get_glyph (PangoFcFont *font,
  * Return value: the FreeType <type>FT_Face</type> associated with @font.
  *
  * Since: 1.4
+ * Deprecated: 1.44: Use pango_font_get_hb_font() instead
  **/
 FT_Face
 pango_fc_font_lock_face (PangoFcFont *font)
@@ -612,6 +613,7 @@ pango_fc_font_lock_face (PangoFcFont *font)
  * pango_fc_font_lock_face().
  *
  * Since: 1.4
+ * Deprecated: 1.44: Use pango_font_get_hb_font() instead
  **/
 void
 pango_fc_font_unlock_face (PangoFcFont *font)
