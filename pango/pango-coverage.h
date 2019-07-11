@@ -25,6 +25,7 @@
 #include <glib.h>
 
 #include <pango/pango-version-macros.h>
+#include <harfbuzz/hb.h>
 
 G_BEGIN_DECLS
 
@@ -84,6 +85,10 @@ void           pango_coverage_to_bytes   (PangoCoverage  *coverage,
 PANGO_AVAILABLE_IN_ALL
 PangoCoverage *pango_coverage_from_bytes (guchar         *bytes,
 					  int             n_bytes);
+PANGO_AVAILABLE_IN_1_44
+PangoCoverage *pango_coverage_new_with_chars (hb_set_t *chars);
+PANGO_AVAILABLE_IN_1_44
+hb_set_t *     pango_coverage_get_chars  (PangoCoverage  *coverage);
 
 G_END_DECLS
 
