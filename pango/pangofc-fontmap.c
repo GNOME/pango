@@ -1985,9 +1985,6 @@ _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
   PangoFcFontFaceData *data;
   FcCharSet *charset;
 
-  if (G_UNLIKELY (!fcfont->font_pattern))
-    return NULL;
-
   data = pango_fc_font_map_get_font_face_data (fcfontmap, fcfont->font_pattern);
   if (G_UNLIKELY (!data))
     return NULL;
@@ -1999,7 +1996,7 @@ _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
        * doesn't require loading the font
        */
       if (FcPatternGetCharSet (fcfont->font_pattern, FC_CHARSET, 0, &charset) != FcResultMatch)
-	return NULL;
+        return NULL;
 
       data->coverage = _pango_fc_font_map_fc_to_coverage (charset);
     }
