@@ -1,0 +1,3 @@
+# test that font_features attributes don't break the
+# runs anymore (but other attributes do)
+<span font="Cantarell 11">one <span font_features="tnum=0">tw<u>o</u> <span font_features="dlig=1">two</span> </span>th<b>r</b>ee</span>
