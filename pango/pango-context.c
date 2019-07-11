@@ -739,7 +739,10 @@ struct _ItemizeState
   PangoGravity font_desc_gravity;
   gboolean centered_baseline;
 
+  PangoAttrList *attrs;
+  PangoAttrList *non_breaking_attrs;
   PangoAttrIterator *attr_iter;
+  PangoAttrIterator *non_breaking_attr_iter;
   gboolean free_attr_iter;
   const char *attr_end;
   PangoFontDescription *font_desc;
@@ -796,6 +799,7 @@ static void
 update_attr_iterator (ItemizeState *state)
 {
   PangoLanguage *old_lang;
+  PangoFontDescription *old_font_desc;
   PangoAttribute *attr;
   int end_index;
 
@@ -812,8 +816,7 @@ update_attr_iterator (ItemizeState *state)
     }
 
   old_lang = state->lang;
-  if (state->font_desc)
-    pango_font_description_free (state->font_desc);
+  old_font_desc = state->font_desc;
   state->font_desc = pango_font_description_copy_static (state->context->font_desc);
   pango_attr_iterator_get_font (state->attr_iter, state->font_desc,
 				&state->lang, &state->extra_attrs);
@@ -836,9 +839,15 @@ update_attr_iterator (ItemizeState *state)
   attr = find_attribute (state->extra_attrs, PANGO_ATTR_GRAVITY_HINT);
   state->gravity_hint = attr == NULL ? state->context->gravity_hint : (PangoGravityHint)((PangoAttrInt *)attr)->value;
 
-  state->changed |= FONT_CHANGED;
+  if (old_font_desc &&
+      !pango_font_description_equal (state->font_desc, old_font_desc))
+    state->changed |= FONT_CHANGED;
+
   if (state->lang != old_lang)
     state->changed |= LANG_CHANGED;
+
+  if (old_font_desc)
+    pango_font_description_free (old_font_desc);
 }
 
 static void
@@ -971,6 +980,23 @@ width_iter_fini (PangoWidthIter* iter)
 {
 }
 
+static gboolean
+is_non_breaking (PangoAttribute *attr,
+                 gpointer        data)
+{
+  gboolean non_breaking;
+
+  non_breaking = attr->klass->type == PANGO_ATTR_FONT_FEATURES;
+  if (data)
+    {
+      gboolean *b = data;
+      *b = *b || non_breaking;
+      return FALSE;
+    }
+  else
+    return non_breaking;
+}
+
 static void
 itemize_state_init (ItemizeState      *state,
 		    PangoContext      *context,
@@ -982,7 +1008,6 @@ itemize_state_init (ItemizeState      *state,
 		    PangoAttrIterator *cached_iter,
 		    const PangoFontDescription *desc)
 {
-
   state->context = context;
   state->text = text;
   state->end = text + start_index + length;
@@ -1001,8 +1026,34 @@ itemize_state_init (ItemizeState      *state,
   state->embedding_end = text + start_index;
   update_embedding_end (state);
 
-  /* Initialize the attribute iterator
+  /* Initialize the attribute iterators
    */
+
+  state->attrs = NULL;
+  state->attr_iter = NULL;
+  state->non_breaking_attrs = NULL;
+  state->non_breaking_attr_iter = NULL;
+  state->free_attr_iter = FALSE;
+
+  if (attrs)
+    {
+      gboolean has_non_breaking = FALSE;
+
+      pango_attr_list_filter (attrs, is_non_breaking, &has_non_breaking);
+
+      if (has_non_breaking)
+        {
+          state->attrs = pango_attr_list_copy (attrs);
+          state->non_breaking_attrs = pango_attr_list_filter (state->attrs, is_non_breaking, NULL);
+
+          state->attr_iter = pango_attr_list_get_iterator (state->attrs);
+          state->non_breaking_attr_iter = pango_attr_list_get_iterator (state->non_breaking_attrs);
+          state->free_attr_iter = TRUE;
+          attrs = NULL;
+          cached_iter = NULL;
+        }
+    }
+
   if (cached_iter)
     {
       state->attr_iter = cached_iter;
@@ -1012,11 +1063,6 @@ itemize_state_init (ItemizeState      *state,
     {
       state->attr_iter = pango_attr_list_get_iterator (attrs);
       state->free_attr_iter = TRUE;
-    }
-  else
-    {
-      state->attr_iter = NULL;
-      state->free_attr_iter = FALSE;
     }
 
   state->emoji_font_desc = NULL;
@@ -1450,6 +1496,53 @@ string_from_script (PangoScript script)
   return value->value_nick;
 }
 
+static int
+compare_attr (gconstpointer p1, gconstpointer p2)
+{
+  if (pango_attribute_equal ((PangoAttribute *)p1, (PangoAttribute *)p2))
+    return 0;
+
+  return 1;
+}
+
+/* Find attributes from the non-breaking attr list that
+ * overlap with the range of the current item, and add
+ * them to the extra_attrs.
+ */
+static void
+collect_non_breaking_attrs (ItemizeState *state)
+{
+  if (state->non_breaking_attr_iter)
+    {
+      int start, end;
+      GSList *attrs = NULL;
+      do
+        {
+          pango_attr_iterator_range (state->non_breaking_attr_iter, &start, &end);
+          if (start >= state->item->offset + state->item->length)
+            break;
+
+          if (end >= state->item->offset)
+            {
+              GSList *list, *l;
+              list = pango_attr_iterator_get_attrs (state->non_breaking_attr_iter);
+              for (l = list; l; l = l->next)
+                {
+                  if (!g_slist_find_custom (attrs, l->data, compare_attr))
+                    attrs = g_slist_prepend (attrs, pango_attribute_copy (l->data));
+                }
+              g_slist_free_full (list, (GDestroyNotify)pango_attribute_destroy);
+            }
+
+          if (end >= state->item->offset + state->item->length)
+            break;
+        }
+      while (pango_attr_iterator_next (state->non_breaking_attr_iter));
+
+      state->item->analysis.extra_attrs = g_slist_concat (state->item->analysis.extra_attrs, attrs);
+    }
+}
+
 static void
 itemize_state_process_run (ItemizeState *state)
 {
@@ -1544,12 +1637,22 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 
       itemize_state_fill_shaper (state, shape_engine, font);
     }
+
+  collect_non_breaking_attrs (state);
+
   state->item = NULL;
 }
 
 static void
 itemize_state_finish (ItemizeState *state)
 {
+  if (state->attrs)
+    pango_attr_list_unref (state->attrs);
+  if (state->non_breaking_attrs)
+    {
+      pango_attr_list_unref (state->non_breaking_attrs);
+      pango_attr_iterator_destroy (state->non_breaking_attr_iter);
+    }
   g_free (state->embedding_levels);
   if (state->free_attr_iter)
     pango_attr_iterator_destroy (state->attr_iter);
