@@ -80,13 +80,115 @@ append_text (GString    *s,
         g_string_append_unichar (s, ch);
     }
 }
+
+static void
+append_attribute (PangoAttribute *attr, GString *string)
+{
+  g_string_append_printf (string, "[%u,%u]", attr->start_index, attr->end_index);
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_LANGUAGE:
+      g_string_append_printf (string, "language=%s", pango_language_to_string (((PangoAttrLanguage *)attr)->value));
+      break;
+    case PANGO_ATTR_FAMILY:
+      g_string_append_printf (string, "family=%s", ((PangoAttrString*)attr)->value);
+      break;
+    case PANGO_ATTR_STYLE:
+      g_string_append_printf (string, "style=%d", ((PangoAttrInt*)attr)->value);
+      break;
+    case PANGO_ATTR_WEIGHT:
+      g_string_append_printf (string, "weight=%d", ((PangoAttrInt*)attr)->value);
+      break;
+    case PANGO_ATTR_VARIANT:
+      g_string_append_printf (string, "variant=%d", ((PangoAttrInt*)attr)->value);
+      break;
+    case PANGO_ATTR_STRETCH:
+      g_string_append_printf (string, "stretch=%d", ((PangoAttrInt*)attr)->value);
+      break;
+    case PANGO_ATTR_SIZE:
+    case PANGO_ATTR_ABSOLUTE_SIZE:
+      g_string_append_printf (string, "size=%d%s", ((PangoAttrSize*)attr)->size, ((PangoAttrSize*)attr)->absolute ? "(abs)" : "");
+      break;
+    case PANGO_ATTR_FONT_DESC:
+      {
+        char *desc = pango_font_description_to_string (((PangoAttrFontDesc*)attr)->desc);
+      g_string_append_printf (string, "font=%s", desc);
+        g_free (desc);
+      }
+      break;
+
+    case PANGO_ATTR_FOREGROUND:
+      g_string_append_printf (string, "fg=%d:%d:%d",
+                              ((PangoAttrColor*)attr)->color.red,
+                              ((PangoAttrColor*)attr)->color.green,
+                              ((PangoAttrColor*)attr)->color.blue);
+      break;
+    case PANGO_ATTR_BACKGROUND:
+      g_string_append_printf (string, "bg=%d:%d:%d",
+                              ((PangoAttrColor*)attr)->color.red,
+                              ((PangoAttrColor*)attr)->color.green,
+                              ((PangoAttrColor*)attr)->color.blue);
+      break;
+    case PANGO_ATTR_UNDERLINE:
+      g_string_append_printf (string, "underline=%d", ((PangoAttrInt*)attr)->value);
+      break;
+    case PANGO_ATTR_STRIKETHROUGH:
+      g_string_append_printf (string, "strikethrough=%d", ((PangoAttrInt*)attr)->value);
+      break;
+    case PANGO_ATTR_RISE:
+      g_string_append_printf (string, "rise=%d", ((PangoAttrInt*)attr)->value);
+      break;
+    case PANGO_ATTR_SHAPE:
+      g_string_append_printf (string, "shape");
+      break;
+    case PANGO_ATTR_SCALE:
+      g_string_append_printf (string, "scale=%g", ((PangoAttrFloat*)attr)->value);
+      break;
+    case PANGO_ATTR_FALLBACK:
+      g_string_append_printf (string, "fallback=%d", ((PangoAttrInt*)attr)->value);
+      break;
+    case PANGO_ATTR_LETTER_SPACING:
+      g_string_append_printf (string, "letterspacing=%d", ((PangoAttrInt*)attr)->value);
+      break;
+    case PANGO_ATTR_UNDERLINE_COLOR:
+      g_string_append_printf (string, "underlinecolor=%d:%d:%d",
+                              ((PangoAttrColor*)attr)->color.red,
+                              ((PangoAttrColor*)attr)->color.green,
+                              ((PangoAttrColor*)attr)->color.blue);
+      break;
+    case PANGO_ATTR_STRIKETHROUGH_COLOR:
+      g_string_append_printf (string, "strikethroughcolor=%d:%d:%d",
+                              ((PangoAttrColor*)attr)->color.red,
+                              ((PangoAttrColor*)attr)->color.green,
+                              ((PangoAttrColor*)attr)->color.blue);
+      break;
+    case PANGO_ATTR_GRAVITY:
+      g_string_append_printf (string, "gravity=%d", ((PangoAttrInt*)attr)->value);
+      break;
+    case PANGO_ATTR_GRAVITY_HINT:
+      g_string_append_printf (string, "gravityhint=%d", ((PangoAttrInt*)attr)->value);
+      break;
+    case PANGO_ATTR_FONT_FEATURES:
+      g_string_append_printf (string, "features=%s", ((PangoAttrString*)attr)->value);
+      break;
+    case PANGO_ATTR_FOREGROUND_ALPHA:
+      g_string_append_printf (string, "fgalpha=%d", ((PangoAttrInt*)attr)->value);
+      break;
+    case PANGO_ATTR_BACKGROUND_ALPHA:
+      g_string_append_printf (string, "bgalpha=%d", ((PangoAttrInt*)attr)->value);
+      break;
+    default:
+      g_assert_not_reached ();
+    }
+}
+
 static void
 test_file (const gchar *filename, GString *string)
 {
   gchar *contents;
   gsize  length;
   GError *error = NULL;
-  GString *s1, *s2, *s3, *s4, *s5;
+ GString *s1, *s2, *s3, *s4, *s5, *s6;
   char *test;
   char *text;
   PangoAttrList *attrs;
@@ -119,6 +221,7 @@ test_file (const gchar *filename, GString *string)
   s3 = g_string_new ("Script: ");
   s4 = g_string_new ("Lang:   ");
   s5 = g_string_new ("Bidi:   ");
+  s6 = g_string_new ("Attrs:  ");
 
   length = strlen (text);
   if (text[length - 1] == '\n')
@@ -132,6 +235,7 @@ test_file (const gchar *filename, GString *string)
       PangoFontDescription *desc;
       char *font;
       int m;
+      GSList *a;
 
       desc = pango_font_describe (item->analysis.font);
       font = pango_font_description_to_string (desc);
@@ -145,17 +249,28 @@ test_file (const gchar *filename, GString *string)
       g_string_append_printf (s3, "%s%s", sep, script_name (item->analysis.script));
       g_string_append_printf (s4, "%s%s", sep, pango_language_to_string (item->analysis.language));
       g_string_append_printf (s5, "%s%d", sep, item->analysis.level);
+      g_string_append_printf (s6, "%s", sep);
+      for (a = item->analysis.extra_attrs; a; a = a->next)
+        {
+          PangoAttribute *attr = a->data;
+          if (a != item->analysis.extra_attrs)
+            g_string_append (s6, ",");
+          append_attribute (attr, s6);
+        }
 
       g_free (font);
       pango_font_description_free (desc);
 
-      m = MAX (MAX (MAX (s1->len, s2->len), MAX (s3->len, s4->len)), s5->len);
+      m = MAX (MAX (MAX (s1->len, s2->len),
+                    MAX (s3->len, s4->len)),
+               MAX (s5->len, s6->len));
 
       g_string_append_printf (s1, "%*s", (int)(m - s1->len), "");
       g_string_append_printf (s2, "%*s", (int)(m - s2->len), "");
       g_string_append_printf (s3, "%*s", (int)(m - s3->len), "");
       g_string_append_printf (s4, "%*s", (int)(m - s4->len), "");
       g_string_append_printf (s5, "%*s", (int)(m - s5->len), "");
+      g_string_append_printf (s6, "%*s", (int)(m - s6->len), "");
     }
 
   g_string_append_printf (string, "%s\n", test);
@@ -164,12 +279,14 @@ test_file (const gchar *filename, GString *string)
   g_string_append_printf (string, "%s\n", s3->str);
   g_string_append_printf (string, "%s\n", s4->str);
   g_string_append_printf (string, "%s\n", s5->str);
+  g_string_append_printf (string, "%s\n", s6->str);
 
   g_string_free (s1, TRUE);
   g_string_free (s2, TRUE);
   g_string_free (s3, TRUE);
   g_string_free (s4, TRUE);
   g_string_free (s5, TRUE);
+  g_string_free (s6, TRUE);
 
   g_list_free_full (items, (GDestroyNotify)pango_item_free);
   pango_attr_list_unref (attrs);

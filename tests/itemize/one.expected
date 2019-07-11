@@ -1,7 +1,8 @@
 <span font="Cantarell 11" fallback="false">a b c</span>
 
-Items:  a b         |[0x2028]    |c           
-Font:   Cantarell 11|Cantarell 11|Cantarell 11
-Script: Latn        |Latn        |Latn        
-Lang:   en-us       |en-us       |en-us       
-Bidi:   0           |0           |0           
+Items:  a b            |[0x2028]       |c              
+Font:   Cantarell 11   |Cantarell 11   |Cantarell 11   
+Script: Latn           |Latn           |Latn           
+Lang:   en-us          |en-us          |en-us          
+Bidi:   0              |0              |0              
+Attrs:  [0,7]fallback=0|[0,7]fallback=0|[0,7]fallback=0
