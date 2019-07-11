@@ -153,3 +153,48 @@ pango_item_split (PangoItem  *orig,
 
   return new_item;
 }
+
+static int
+compare_attr (gconstpointer p1, gconstpointer p2)
+{
+  if (pango_attribute_equal ((PangoAttribute *)p1, (PangoAttribute *)p2))
+    return 0;
+
+  return 1;
+}
+
+void
+pango_item_apply_attrs (PangoItem         *item,
+                        PangoAttrIterator *iter)
+{
+  int start, end;
+  GSList *attrs = NULL;
+
+  do
+    {
+      pango_attr_iterator_range (iter, &start, &end);
+
+      if (start >= item->offset + item->length)
+        break;
+
+      if (end >= item->offset)
+        {
+          GSList *list, *l;
+
+          list = pango_attr_iterator_get_attrs (iter);
+          for (l = list; l; l = l->next)
+            {
+              if (!g_slist_find_custom (attrs, l->data, compare_attr))
+
+              attrs = g_slist_prepend (attrs, pango_attribute_copy (l->data));
+            }
+          g_slist_free_full (list, (GDestroyNotify)pango_attribute_destroy);
+        }
+
+      if (end >= item->offset + item->length)
+        break;
+    }
+  while (pango_attr_iterator_next (iter));
+
+  item->analysis.extra_attrs = g_slist_concat (item->analysis.extra_attrs, attrs);
+}

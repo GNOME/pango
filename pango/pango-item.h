@@ -23,6 +23,7 @@
 #define __PANGO_ITEM_H__
 
 #include <pango/pango-types.h>
+#include <pango/pango-attributes.h>
 
 G_BEGIN_DECLS
 
@@ -112,6 +113,9 @@ PANGO_AVAILABLE_IN_ALL
 PangoItem *pango_item_split (PangoItem  *orig,
 			     int         split_index,
 			     int         split_offset);
+PANGO_AVAILABLE_IN_1_44
+void       pango_item_apply_attrs (PangoItem         *item,
+                                   PangoAttrIterator *iter);
 
 G_END_DECLS
 
