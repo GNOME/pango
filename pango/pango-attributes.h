@@ -57,6 +57,9 @@ PANGO_AVAILABLE_IN_ALL
 GType       pango_color_get_type (void) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
+GType       pango_attribute_get_type    (void) G_GNUC_CONST;
+
+PANGO_AVAILABLE_IN_ALL
 PangoColor *pango_color_copy     (const PangoColor *src);
 PANGO_AVAILABLE_IN_ALL
 void        pango_color_free     (PangoColor       *color);
