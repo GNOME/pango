@@ -3995,39 +3995,29 @@ pango_layout_get_effective_attributes (PangoLayout *layout)
 }
 
 static gboolean
-no_shape_filter_func (PangoAttribute *attribute,
+no_break_filter_func (PangoAttribute *attribute,
 		      gpointer        data G_GNUC_UNUSED)
 {
-  static const PangoAttrType no_shape_types[] = {
-    PANGO_ATTR_FOREGROUND,
-    PANGO_ATTR_BACKGROUND,
-    PANGO_ATTR_UNDERLINE,
-    PANGO_ATTR_STRIKETHROUGH,
-    PANGO_ATTR_RISE
-    /* Ideally we want font-features here, because we don't
-     * want it to break shaping runs.  But if we put it here,
-     * it won't show up in the shaper anymore :(.  To be
-     * fixed later. */
-    /* PANGO_ATTR_FONT_FEATURES */
+  static const PangoAttrType no_break_types[] = {
+    PANGO_ATTR_FONT_FEATURES
   };
 
   int i;
 
-  for (i = 0; i < (int)G_N_ELEMENTS (no_shape_types); i++)
-    if (attribute->klass->type == no_shape_types[i])
+  for (i = 0; i < (int)G_N_ELEMENTS (no_break_types); i++)
+    if (attribute->klass->type == no_break_types[i])
       return TRUE;
 
   return FALSE;
 }
 
 static PangoAttrList *
-filter_no_shape_attributes (PangoAttrList *attrs)
+filter_no_break_attributes (PangoAttrList *attrs)
 {
   return pango_attr_list_filter (attrs,
-				 no_shape_filter_func,
+				 no_break_filter_func,
 				 NULL);
 }
-
 static void
 apply_no_shape_attributes (PangoLayout   *layout,
 			   PangoAttrList *no_shape_attrs)
@@ -4057,6 +4047,53 @@ apply_no_shape_attributes (PangoLayout   *layout,
     }
 }
 
+static gboolean
+no_shape_filter_func (PangoAttribute *attribute,
+		      gpointer        data G_GNUC_UNUSED)
+{
+  static const PangoAttrType no_shape_types[] = {
+    PANGO_ATTR_FOREGROUND,
+    PANGO_ATTR_BACKGROUND,
+    PANGO_ATTR_UNDERLINE,
+    PANGO_ATTR_STRIKETHROUGH,
+    PANGO_ATTR_RISE
+  };
+
+  int i;
+
+  for (i = 0; i < (int)G_N_ELEMENTS (no_shape_types); i++)
+    if (attribute->klass->type == no_shape_types[i])
+      return TRUE;
+
+  return FALSE;
+}
+
+static PangoAttrList *
+filter_no_shape_attributes (PangoAttrList *attrs)
+{
+  return pango_attr_list_filter (attrs,
+				 no_shape_filter_func,
+				 NULL);
+}
+
+static void
+apply_no_break_attributes (GList         *items,
+			   PangoAttrList *no_break_attrs)
+{
+  GList *l;
+  PangoAttrIterator *iter;
+
+  iter = pango_attr_list_get_iterator (no_break_attrs);
+
+  for (l = items; l; l = l->next)
+    {
+      PangoItem *item = l->data;
+      pango_item_apply_attrs (item, iter);
+    }
+
+  pango_attr_iterator_destroy (iter);
+}
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
@@ -4068,6 +4105,7 @@ pango_layout_check_lines (PangoLayout *layout)
   int start_offset;
   PangoAttrList *attrs;
   PangoAttrList *no_shape_attrs;
+  PangoAttrList *no_break_attrs;
   PangoAttrIterator *iter;
   PangoDirection prev_base_dir = PANGO_DIRECTION_NEUTRAL, base_dir = PANGO_DIRECTION_NEUTRAL;
   ParaBreakState state;
@@ -4087,6 +4125,7 @@ pango_layout_check_lines (PangoLayout *layout)
 
   attrs = pango_layout_get_effective_attributes (layout);
   no_shape_attrs = filter_no_shape_attributes (attrs);
+  no_break_attrs = filter_no_break_attributes (attrs);
   iter = pango_attr_list_get_iterator (attrs);
 
   layout->log_attrs = g_new (PangoLogAttr, layout->n_chars + 1);
@@ -4166,6 +4205,12 @@ pango_layout_check_lines (PangoLayout *layout)
 						 end - start,
 						 attrs,
 						 iter);
+
+      if (no_break_attrs)
+        {
+          apply_no_break_attributes (state.items, no_break_attrs);
+          pango_attr_list_unref (no_break_attrs);
+        }
 
       get_items_log_attrs (start, state.items,
 			   layout->log_attrs + start_offset,
