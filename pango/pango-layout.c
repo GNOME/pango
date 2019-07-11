@@ -3995,46 +3995,17 @@ pango_layout_get_effective_attributes (PangoLayout *layout)
 }
 
 static gboolean
-no_shape_filter_func (PangoAttribute *attribute,
-		      gpointer        data G_GNUC_UNUSED)
-{
-  static const PangoAttrType no_shape_types[] = {
-    PANGO_ATTR_FOREGROUND,
-    PANGO_ATTR_BACKGROUND,
-    PANGO_ATTR_UNDERLINE,
-    PANGO_ATTR_STRIKETHROUGH,
-    PANGO_ATTR_RISE
-  };
-
-  int i;
-
-  for (i = 0; i < (int)G_N_ELEMENTS (no_shape_types); i++)
-    if (attribute->klass->type == no_shape_types[i])
-      return TRUE;
-
-  return FALSE;
-}
-
-static PangoAttrList *
-filter_no_shape_attributes (PangoAttrList *attrs)
-{
-  return pango_attr_list_filter (attrs,
-				 no_shape_filter_func,
-				 NULL);
-}
-
-static gboolean
 no_break_filter_func (PangoAttribute *attribute,
 		      gpointer        data G_GNUC_UNUSED)
 {
-  static const PangoAttrType no_shape_types[] = {
+  static const PangoAttrType no_break_types[] = {
     PANGO_ATTR_FONT_FEATURES
   };
 
   int i;
 
-  for (i = 0; i < (int)G_N_ELEMENTS (no_shape_types); i++)
-    if (attribute->klass->type == no_shape_types[i])
+  for (i = 0; i < (int)G_N_ELEMENTS (no_break_types); i++)
+    if (attribute->klass->type == no_break_types[i])
       return TRUE;
 
   return FALSE;
@@ -4074,6 +4045,35 @@ apply_no_shape_attributes (PangoLayout   *layout,
 
       g_slist_free (old_runs);
     }
+}
+
+static gboolean
+no_shape_filter_func (PangoAttribute *attribute,
+		      gpointer        data G_GNUC_UNUSED)
+{
+  static const PangoAttrType no_shape_types[] = {
+    PANGO_ATTR_FOREGROUND,
+    PANGO_ATTR_BACKGROUND,
+    PANGO_ATTR_UNDERLINE,
+    PANGO_ATTR_STRIKETHROUGH,
+    PANGO_ATTR_RISE
+  };
+
+  int i;
+
+  for (i = 0; i < (int)G_N_ELEMENTS (no_shape_types); i++)
+    if (attribute->klass->type == no_shape_types[i])
+      return TRUE;
+
+  return FALSE;
+}
+
+static PangoAttrList *
+filter_no_shape_attributes (PangoAttrList *attrs)
+{
+  return pango_attr_list_filter (attrs,
+				 no_shape_filter_func,
+				 NULL);
 }
 
 static void
