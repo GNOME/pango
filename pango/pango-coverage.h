@@ -51,6 +51,9 @@ typedef struct _PangoCoverage PangoCoverage;
  *
  * Used to indicate how well a font can represent a particular Unicode
  * character point for a particular script.
+ *
+ * Since 1.44, only %PANGO_COVERAGE_NONE and %PANGO_COVERAGE_EXACT
+ * will be returned.
  */
 typedef enum {
   PANGO_COVERAGE_NONE,
@@ -74,15 +77,15 @@ PANGO_AVAILABLE_IN_ALL
 void               pango_coverage_set     (PangoCoverage      *coverage,
 					   int                 index_,
 					   PangoCoverageLevel  level);
-PANGO_AVAILABLE_IN_ALL
+PANGO_DEPRECATED_IN_1_44
 void               pango_coverage_max     (PangoCoverage      *coverage,
 					   PangoCoverage      *other);
 
-PANGO_AVAILABLE_IN_ALL
+PANGO_DEPRECATED_IN_1_44
 void           pango_coverage_to_bytes   (PangoCoverage  *coverage,
 					  guchar        **bytes,
 					  int            *n_bytes);
-PANGO_AVAILABLE_IN_ALL
+PANGO_DEPRECATED_IN_1_44
 PangoCoverage *pango_coverage_from_bytes (guchar         *bytes,
 					  int             n_bytes);
 PANGO_AVAILABLE_IN_1_44

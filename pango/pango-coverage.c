@@ -172,6 +172,8 @@ pango_coverage_set (PangoCoverage     *coverage,
  * Set the coverage for each index in @coverage to be the max (better)
  * value of the current coverage for the index and the coverage for
  * the corresponding index in @other.
+ *
+ * Deprecated: 1.44: This function does nothing
  **/
 void
 pango_coverage_max (PangoCoverage *coverage,
@@ -187,6 +189,8 @@ pango_coverage_max (PangoCoverage *coverage,
  * @n_bytes: (out): location to store size of result
  *
  * Convert a #PangoCoverage structure into a flat binary format
+ *
+ * Deprecated: 1.44: This returns %NULL
  **/
 void
 pango_coverage_to_bytes (PangoCoverage  *coverage,
@@ -208,6 +212,8 @@ pango_coverage_to_bytes (PangoCoverage  *coverage,
  *
  * Return value: (transfer full) (nullable): a newly allocated
  *               #PangoCoverage, or %NULL if the data was invalid.
+ *
+ * Deprecated: 1.44: This returns %NULL
  **/
 PangoCoverage *
 pango_coverage_from_bytes (guchar *bytes,
