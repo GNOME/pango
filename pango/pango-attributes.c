@@ -192,6 +192,10 @@ pango_attribute_destroy (PangoAttribute *attr)
   attr->klass->destroy (attr);
 }
 
+G_DEFINE_BOXED_TYPE (PangoAttribute, pango_attribute,
+                     pango_attribute_copy,
+                     pango_attribute_destroy);
+
 /**
  * pango_attribute_equal:
  * @attr1: a #PangoAttribute
