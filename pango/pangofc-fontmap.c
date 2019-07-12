@@ -1939,6 +1939,7 @@ _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
 				 PangoFcFont    *fcfont)
 {
   PangoFcFontFaceData *data;
+  FcCharSet *charset;
 
   data = pango_fc_font_map_get_font_face_data (fcfontmap, fcfont->font_pattern);
   if (G_UNLIKELY (!data))
@@ -1946,15 +1947,14 @@ _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
 
   if (G_UNLIKELY (data->coverage == NULL))
     {
-      hb_face_t *hb_face;
-      hb_set_t *chars = hb_set_create ();
+      /*
+       * Pull the coverage out of the pattern, this
+       * doesn't require loading the font
+       */
+      if (FcPatternGetCharSet (fcfont->font_pattern, FC_CHARSET, 0, &charset) != FcResultMatch)
+        return NULL;
 
-      hb_face = pango_fc_font_map_get_hb_face (fcfontmap, fcfont);
-      hb_face_collect_unicodes (hb_face, chars);
-
-      data->coverage = pango_coverage_new_with_chars (chars);
-
-      hb_set_destroy (chars);
+      data->coverage = _pango_fc_font_map_fc_to_coverage (charset);
     }
 
   return pango_coverage_ref (data->coverage);
