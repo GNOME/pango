@@ -56,6 +56,9 @@ static PangoCoverageLevel
 pango_coverage_real_get (PangoCoverage *coverage,
 		         int            index)
 {
+  if (coverage->chars == NULL)
+    return PANGO_COVERAGE_NONE;
+
   if (hb_set_has (coverage->chars, (hb_codepoint_t)index))
     return PANGO_COVERAGE_EXACT;
   else
@@ -67,6 +70,9 @@ pango_coverage_real_set (PangoCoverage     *coverage,
 		         int                index,
 		         PangoCoverageLevel level)
 {
+  if (coverage->chars == NULL)
+    coverage->chars = hb_set_create ();
+
   if (level != PANGO_COVERAGE_NONE)
     hb_set_add (coverage->chars, (hb_codepoint_t)index);
   else
@@ -81,8 +87,8 @@ pango_coverage_real_copy (PangoCoverage *coverage)
   g_return_val_if_fail (coverage != NULL, NULL);
 
   copy = g_object_new (PANGO_TYPE_COVERAGE, NULL);
-  hb_set_destroy (copy->chars);
-  copy->chars = hb_set_reference (coverage->chars);
+  if (coverage->chars)
+    copy->chars = hb_set_reference (coverage->chars);
 
   return copy;
 }
