@@ -313,6 +313,49 @@ parse_variations (const char      *variations,
   *n_variations = n;
 }
 
+static void
+apply_extra_attributes (GSList       *attrs,
+                        hb_feature_t *features,
+                        guint         length,
+                        guint        *num_features)
+{
+  GSList *l;
+
+  for (l = attrs; l && *num_features < length; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+      if (attr->klass->type == PANGO_ATTR_FONT_FEATURES)
+        {
+          PangoAttrFontFeatures *fattr = (PangoAttrFontFeatures *) attr;
+          const gchar *feat;
+          const gchar *end;
+          int len;
+
+          feat = fattr->features;
+
+          while (feat != NULL && *num_features < length)
+            {
+              end = strchr (feat, ',');
+              if (end)
+                len = end - feat;
+              else
+                len = -1;
+              if (hb_feature_from_string (feat, len, &features[*num_features]))
+                {
+                  features[*num_features].start = attr->start_index;
+                  features[*num_features].end = attr->end_index;
+                  (*num_features)++;
+                }
+
+              if (end == NULL)
+                break;
+
+              feat = end + 1;
+            }
+        }
+    }
+}
+
 void
 _pango_fc_shape (PangoFont           *font,
 		 const char          *item_text,
@@ -417,62 +460,8 @@ _pango_fc_shape (PangoFont           *font,
 
   hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_offset, item_length);
 
-  /* Setup features from fontconfig pattern. */
-  if (fc_font->font_pattern)
-    {
-      char *s;
-      while (num_features < G_N_ELEMENTS (features) &&
-	     FcResultMatch == FcPatternGetString (fc_font->font_pattern,
-						  PANGO_FC_FONT_FEATURES,
-						  num_features,
-						  (FcChar8 **) &s))
-	{
-	  gboolean ret = hb_feature_from_string (s, -1, &features[num_features]);
-	  features[num_features].start = 0;
-	  features[num_features].end   = (unsigned int) -1;
-	  if (ret)
-	    num_features++;
-	}
-    }
-
-  if (analysis->extra_attrs)
-    {
-      GSList *tmp_attrs;
-
-      for (tmp_attrs = analysis->extra_attrs; tmp_attrs && num_features < G_N_ELEMENTS (features); tmp_attrs = tmp_attrs->next)
-        {
-	  PangoAttribute *attr = tmp_attrs->data;
-	  if (attr->klass->type == PANGO_ATTR_FONT_FEATURES)
-	    {
-	      PangoAttrFontFeatures *fattr = (PangoAttrFontFeatures *) attr;
-	      const gchar *feat;
-	      const gchar *end;
-	      int len;
-
-	      feat = fattr->features;
-
-	      while (feat != NULL && num_features < G_N_ELEMENTS (features))
-                {
-                  end = strchr (feat, ',');
-                  if (end)
-                    len = end - feat;
-                  else
-                    len = -1;
-                  if (hb_feature_from_string (feat, len, &features[num_features]))
-                    {
-                      features[num_features].start = attr->start_index;
-                      features[num_features].end = attr->end_index;
-                      num_features++;
-                    }
-                    
-                  if (end == NULL)
-                    break;
-
-                  feat = end + 1;
-                }
-            }
-        }
-    }
+  pango_font_get_features (font, features, 32, &num_features);
+  apply_extra_attributes (analysis->extra_attrs, features, 32, &num_features);
 
   hb_shape (hb_font, hb_buffer, features, num_features);
 
