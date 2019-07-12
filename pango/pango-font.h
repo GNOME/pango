@@ -487,6 +487,12 @@ PangoFontMap         *pango_font_get_font_map      (PangoFont        *font);
 PANGO_AVAILABLE_IN_1_44
 gboolean              pango_font_covers            (PangoFont        *font,
                                                     gunichar          unichar);
+PANGO_AVAILABLE_IN_1_44
+void                  pango_font_get_features      (PangoFont        *font,
+                                                    hb_feature_t     *features,
+                                                    guint             len,
+                                                    guint            *num_features);
+
 
 /**
  * PANGO_GLYPH_EMPTY:
