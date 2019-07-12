@@ -2335,10 +2335,12 @@ pango_font_covers (PangoFont *font,
  * @len: the length of @features
  * @num_features: (inout): the number of used items in @features
  *
- * Obtain the OpenType features for this font.
+ * Obtain the OpenType features that are provided by the font.
+ * These are passed to the rendering system, together with features
+ * that have been explicitly set via attributes.
  *
- * These are the features used by default for this font,
- * unless overridden.
+ * Note that this does not include OpenType features which the
+ * rendering system enables by default.
  *
  * Since: 1.44
  */
