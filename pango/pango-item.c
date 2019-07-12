@@ -163,6 +163,24 @@ compare_attr (gconstpointer p1, gconstpointer p2)
   return 1;
 }
 
+/**
+ * pango_item_apply_attrs:
+ * @item: a #PangoItem
+ * @iter: a #PangoAttrIterator
+ *
+ * Add attributes to a PangoItem. The idea is that you have
+ * attributes that don't affect itemization, such as font features,
+ * so you filter them out using pango_attr_list_filter(), itemize
+ * your text, then reapply the attributes to the resulting items
+ * using this function.
+ *
+ * The @iter should be positioned before the range of the item,
+ * and will be advanced past it. This function is meant to be called
+ * in a loop over the items resulting from itemization, while passing
+ * the iter to each call.
+ *
+ * Since: 1.44
+ */
 void
 pango_item_apply_attrs (PangoItem         *item,
                         PangoAttrIterator *iter)
