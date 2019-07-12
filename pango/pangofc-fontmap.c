@@ -51,6 +51,7 @@
 #include "pangofc-private.h"
 #include "pango-impl-utils.h"
 #include "pango-enum-types.h"
+#include "pango-coverage-private.h"
 
 
 /* Overview:
@@ -1978,15 +1979,88 @@ _pango_fc_font_map_get_cmap_cache (PangoFcFontMap *fcfontmap,
   return _pango_fc_cmap_cache_ref (data->cmap_cache);
 }
 
+typedef struct {
+  PangoCoverage parent_instance;
+
+  FcCharSet *charset;
+} PangoFcCoverage;
+
+typedef struct {
+  PangoCoverageClass parent_class;
+} PangoFcCoverageClass;
+
+GType pango_fc_coverage_get_type (void) G_GNUC_CONST;
+
+G_DEFINE_TYPE (PangoFcCoverage, pango_fc_coverage, PANGO_TYPE_COVERAGE)
+
+static void
+pango_fc_coverage_init (PangoFcCoverage *coverage)
+{
+}
+
+static PangoCoverageLevel
+pango_fc_coverage_real_get (PangoCoverage *coverage,
+                            int            index)
+{
+  PangoFcCoverage *fc_coverage = (PangoFcCoverage*)coverage;
+
+  return FcCharSetHasChar (fc_coverage->charset, index);
+}
+
+static void
+pango_fc_coverage_real_set (PangoCoverage *coverage,
+                            int            index,
+                            PangoCoverageLevel level)
+{
+  PangoFcCoverage *fc_coverage = (PangoFcCoverage*)coverage;
+
+  if (level == PANGO_COVERAGE_NONE)
+    FcCharSetDelChar (fc_coverage->charset, index);
+  else
+    FcCharSetAddChar (fc_coverage->charset, index);
+}
+
+static PangoCoverage *
+pango_fc_coverage_real_copy (PangoCoverage *coverage)
+{
+  PangoFcCoverage *fc_coverage = (PangoFcCoverage*)coverage;
+  PangoFcCoverage *copy;
+
+  copy = g_object_new (pango_fc_coverage_get_type (), NULL);
+  copy->charset = FcCharSetCopy (fc_coverage->charset);
+
+  return (PangoCoverage *)copy;
+}
+
+static void
+pango_fc_coverage_finalize (GObject *object)
+{
+  PangoFcCoverage *fc_coverage = (PangoFcCoverage*)object;
+
+  FcCharSetDestroy (fc_coverage->charset);
+
+  G_OBJECT_CLASS (pango_fc_coverage_parent_class)->finalize (object);
+}
+
+static void
+pango_fc_coverage_class_init (PangoFcCoverageClass *class)
+{
+  GObjectClass *object_class = G_OBJECT_CLASS (class);
+  PangoCoverageClass *coverage_class = PANGO_COVERAGE_CLASS (class);
+
+  object_class->finalize = pango_fc_coverage_finalize;
+
+  coverage_class->get = pango_fc_coverage_real_get;
+  coverage_class->set = pango_fc_coverage_real_set;
+  coverage_class->copy = pango_fc_coverage_real_copy;
+}
+
 PangoCoverage *
 _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
 				 PangoFcFont    *fcfont)
 {
   PangoFcFontFaceData *data;
   FcCharSet *charset;
-
-  if (G_UNLIKELY (!fcfont->font_pattern))
-    return NULL;
 
   data = pango_fc_font_map_get_font_face_data (fcfontmap, fcfont->font_pattern);
   if (G_UNLIKELY (!data))
@@ -1999,7 +2073,7 @@ _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
        * doesn't require loading the font
        */
       if (FcPatternGetCharSet (fcfont->font_pattern, FC_CHARSET, 0, &charset) != FcResultMatch)
-	return NULL;
+        return NULL;
 
       data->coverage = _pango_fc_font_map_fc_to_coverage (charset);
     }
@@ -2019,50 +2093,12 @@ _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
 PangoCoverage  *
 _pango_fc_font_map_fc_to_coverage (FcCharSet *charset)
 {
-  PangoCoverage *coverage;
-  FcChar32  ucs4, pos;
-  FcChar32  map[FC_CHARSET_MAP_SIZE];
-  int i;
+  PangoFcCoverage *coverage;
 
-  /*
-   * Convert an Fc CharSet into a pango coverage structure.  Sure
-   * would be nice to just use the Fc structure in place...
-   */
-  coverage = pango_coverage_new ();
-  for (ucs4 = FcCharSetFirstPage (charset, map, &pos);
-       ucs4 != FC_CHARSET_DONE;
-       ucs4 = FcCharSetNextPage (charset, map, &pos))
-    {
-      for (i = 0; i < FC_CHARSET_MAP_SIZE; i++)
-	{
-	  FcChar32  bits = map[i];
-	  FcChar32  base = ucs4 + i * 32;
-	  int b = 0;
+  coverage = g_object_new (pango_fc_coverage_get_type (), NULL);
+  coverage->charset = FcCharSetCopy (charset);
 
-	  while (bits)
-	    {
-	      if (bits & 1)
-		pango_coverage_set (coverage, base + b, PANGO_COVERAGE_EXACT);
-
-	      bits >>= 1;
-	      b++;
-	    }
-	}
-    }
-
-  /* Awful hack so Hangul Tone marks get rendered with the same
-   * font and in the same run as other Hangul characters. If a font
-   * covers the first composed Hangul glyph, then it is declared to cover
-   * the Hangul tone marks. This hack probably needs to be formalized
-   * by choosing fonts for scripts rather than individual code points.
-   */
-  if (pango_coverage_get (coverage, 0xac00) == PANGO_COVERAGE_EXACT)
-    {
-      pango_coverage_set (coverage, 0x302e, PANGO_COVERAGE_EXACT);
-      pango_coverage_set (coverage, 0x302f, PANGO_COVERAGE_EXACT);
-    }
-
-  return coverage;
+  return (PangoCoverage *)coverage;
 }
 
 /**

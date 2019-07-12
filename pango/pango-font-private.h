@@ -30,7 +30,6 @@
 
 G_BEGIN_DECLS
 
-
 PANGO_AVAILABLE_IN_ALL
 PangoFontMetrics *pango_font_metrics_new (void);
 

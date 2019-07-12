@@ -2306,3 +2306,24 @@ pango_font_face_list_sizes (PangoFontFace  *face,
       *n_sizes = 0;
     }
 }
+
+/**
+ * pango_font_covers:
+ * @font: a #PangoFont
+ * @wc: a Unicode character
+ *
+ * Returns whether the font provides a glyph for this character.
+ *
+ * Returns %TRUE if @font can render @wc
+ *
+ * Since: 1.44
+ */
+gboolean
+pango_font_covers (PangoFont *font,
+                   gunichar   wc)
+{
+  PangoCoverage *coverage = pango_font_get_coverage (font, pango_language_get_default ());
+  PangoCoverageLevel result = pango_coverage_get (coverage, wc);
+  pango_coverage_unref (coverage);
+  return result != PANGO_COVERAGE_NONE;
+}

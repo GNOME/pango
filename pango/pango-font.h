@@ -484,6 +484,9 @@ void                  pango_font_get_glyph_extents (PangoFont        *font,
 PANGO_AVAILABLE_IN_1_10
 PangoFontMap         *pango_font_get_font_map      (PangoFont        *font);
 
+PANGO_AVAILABLE_IN_1_44
+gboolean              pango_font_covers            (PangoFont        *font,
+                                                    gunichar          unichar);
 
 /**
  * PANGO_GLYPH_EMPTY:
