@@ -78,16 +78,6 @@ _PANGO_EXTERN
 PangoFontMetrics *pango_fc_font_create_base_metrics_for_context (PangoFcFont   *font,
 								 PangoContext  *context);
 
-void
-_pango_fc_shape (PangoFont           *font,
-		 const char          *item_text,
-		 unsigned int         item_length,
-		 const char          *paragraph_text,
-		 unsigned int         paragraph_length,
-		 const PangoAnalysis *analysis,
-                 PangoShapeFlags      flags,
-		 PangoGlyphString    *glyphs);
-
 G_END_DECLS
 
 #endif /* __PANGOFC_PRIVATE_H__ */

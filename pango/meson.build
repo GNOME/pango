@@ -26,6 +26,7 @@ pango_sources = [
   'pango-utils.c',
   'reorder-items.c',
   'shape.c',
+  'pangohb-shape.c',
 ]
 
 pango_headers = [
@@ -70,7 +71,6 @@ if fontconfig_dep.found()
     'pangofc-font.c',
     'pangofc-fontmap.c',
     'pangofc-decoder.c',
-    'pangofc-shape.c',
   ]
   pango_requires += [
     fontconfig_pc,

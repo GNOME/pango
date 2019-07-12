@@ -315,14 +315,14 @@ pango_font_get_hb_font_for_flags (PangoFont           *font,
 }
 
 void
-_pango_fc_shape (PangoFont           *font,
-		 const char          *item_text,
-		 unsigned int         item_length,
-		 const char          *paragraph_text,
-		 unsigned int         paragraph_length,
-		 const PangoAnalysis *analysis,
-                 PangoShapeFlags      flags,
-		 PangoGlyphString    *glyphs)
+pango_hb_shape (PangoFont           *font,
+                const char          *item_text,
+                unsigned int         item_length,
+                const char          *paragraph_text,
+                unsigned int         paragraph_length,
+                const PangoAnalysis *analysis,
+                PangoShapeFlags      flags,
+                PangoGlyphString    *glyphs)
 {
   PangoHbShapeContext context;
   hb_font_t *hb_font;
