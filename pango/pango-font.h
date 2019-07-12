@@ -281,10 +281,10 @@ PangoGravity         pango_font_description_get_gravity       (const PangoFontDe
 
 PANGO_AVAILABLE_IN_1_42
 void                 pango_font_description_set_variations_static (PangoFontDescription       *desc,
-                                                                   const char                 *settings);
+                                                                   const char                 *variations);
 PANGO_AVAILABLE_IN_1_42
 void                 pango_font_description_set_variations    (PangoFontDescription       *desc,
-                                                               const char                 *settings);
+                                                               const char                 *variations);
 PANGO_AVAILABLE_IN_1_42
 const char          *pango_font_description_get_variations    (const PangoFontDescription *desc) G_GNUC_PURE;
 
@@ -486,7 +486,7 @@ PangoFontMap         *pango_font_get_font_map      (PangoFont        *font);
 
 PANGO_AVAILABLE_IN_1_44
 gboolean              pango_font_covers            (PangoFont        *font,
-                                                    gunichar          unichar);
+                                                    gunichar          wc);
 PANGO_AVAILABLE_IN_1_44
 void                  pango_font_get_features      (PangoFont        *font,
                                                     hb_feature_t     *features,

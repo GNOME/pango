@@ -208,7 +208,7 @@ PANGO_AVAILABLE_IN_ALL
 int            pango_layout_get_spacing          (PangoLayout                *layout);
 PANGO_AVAILABLE_IN_1_44
 void           pango_layout_set_line_spacing     (PangoLayout                *layout,
-                                                  float                       spread);
+                                                  float                       factor);
 PANGO_AVAILABLE_IN_1_44
 float          pango_layout_get_line_spacing     (PangoLayout                *layout);
 PANGO_AVAILABLE_IN_ALL
