@@ -187,10 +187,12 @@ pango_ot_info_find_language (PangoOTInfo      *info,
   unsigned l_index;
   hb_tag_t tt = get_hb_table_type (table_type);
 
-  ret = hb_ot_layout_script_find_language (info->hb_face, tt,
-					   script_index,
-					   language_tag,
-					   &l_index);
+  ret = hb_ot_layout_script_select_language (info->hb_face,
+                                             table_type,
+                                             script_index,
+                                             1,
+                                             &language_tag,
+                                             language_index);
   if (language_index) *language_index = l_index;
 
   hb_ot_layout_language_get_required_feature_index (info->hb_face, tt,
