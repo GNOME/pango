@@ -32,14 +32,72 @@
 #include "config.h"
 #include <string.h>
 
-#include "pango-coverage.h"
+#include "pango-coverage-private.h"
 
-struct _PangoCoverage
+G_DEFINE_TYPE (PangoCoverage, pango_coverage, G_TYPE_OBJECT)
+
+static void
+pango_coverage_init (PangoCoverage *coverage)
 {
-  guint ref_count;
+}
 
-  hb_set_t *chars;
-};
+static void
+pango_coverage_finalize (GObject *object)
+{
+  PangoCoverage *coverage = PANGO_COVERAGE (object);
+
+  if (coverage->chars)
+    hb_set_destroy (coverage->chars);
+
+  G_OBJECT_CLASS (pango_coverage_parent_class)->finalize (object);
+}
+
+static PangoCoverageLevel
+pango_coverage_real_get (PangoCoverage *coverage,
+		         int            index)
+{
+  if (hb_set_has (coverage->chars, (hb_codepoint_t)index))
+    return PANGO_COVERAGE_EXACT;
+  else
+    return PANGO_COVERAGE_NONE;
+}
+
+static void
+pango_coverage_real_set (PangoCoverage     *coverage,
+		         int                index,
+		         PangoCoverageLevel level)
+{
+  if (level != PANGO_COVERAGE_NONE)
+    hb_set_add (coverage->chars, (hb_codepoint_t)index);
+  else
+    hb_set_del (coverage->chars, (hb_codepoint_t)index);
+}
+
+static PangoCoverage *
+pango_coverage_real_copy (PangoCoverage *coverage)
+{
+  PangoCoverage *copy;
+
+  g_return_val_if_fail (coverage != NULL, NULL);
+
+  copy = g_object_new (PANGO_TYPE_COVERAGE, NULL);
+  hb_set_destroy (copy->chars);
+  copy->chars = hb_set_reference (coverage->chars);
+
+  return copy;
+}
+
+static void
+pango_coverage_class_init (PangoCoverageClass *class)
+{
+  GObjectClass *object_class = G_OBJECT_CLASS (class);
+
+  object_class->finalize = pango_coverage_finalize;
+
+  class->get = pango_coverage_real_get;
+  class->set = pango_coverage_real_set;
+  class->copy = pango_coverage_real_copy;
+}
 
 /**
  * pango_coverage_new:
@@ -54,13 +112,7 @@ struct _PangoCoverage
 PangoCoverage *
 pango_coverage_new (void)
 {
-  PangoCoverage *coverage = g_slice_new (PangoCoverage);
-
-  coverage->ref_count = 1;
-
-  coverage->chars = hb_set_create ();
-
-  return coverage;
+  return g_object_new (PANGO_TYPE_COVERAGE, NULL);
 }
 
 /**
@@ -77,17 +129,7 @@ pango_coverage_new (void)
 PangoCoverage *
 pango_coverage_copy (PangoCoverage *coverage)
 {
-  PangoCoverage *copy;
-
-  g_return_val_if_fail (coverage != NULL, NULL);
-
-  copy = g_slice_new (PangoCoverage);
-
-  copy->ref_count = 1;
-
-  copy->chars = hb_set_reference (coverage->chars);
-
-  return copy;
+  return PANGO_COVERAGE_GET_CLASS (coverage)->copy (coverage);
 }
 
 /**
@@ -101,11 +143,7 @@ pango_coverage_copy (PangoCoverage *coverage)
 PangoCoverage *
 pango_coverage_ref (PangoCoverage *coverage)
 {
-  g_return_val_if_fail (coverage != NULL, NULL);
-
-  g_atomic_int_inc ((int *) &coverage->ref_count);
-
-  return coverage;
+  return g_object_ref (coverage);
 }
 
 /**
@@ -118,14 +156,7 @@ pango_coverage_ref (PangoCoverage *coverage)
 void
 pango_coverage_unref (PangoCoverage *coverage)
 {
-  g_return_if_fail (coverage != NULL);
-  g_return_if_fail (coverage->ref_count > 0);
-
-  if (g_atomic_int_dec_and_test ((int *) &coverage->ref_count))
-    {
-      hb_set_destroy (coverage->chars);
-      g_slice_free (PangoCoverage, coverage);
-    }
+  g_object_unref (coverage);
 }
 
 /**
@@ -141,10 +172,7 @@ PangoCoverageLevel
 pango_coverage_get (PangoCoverage *coverage,
 		    int            index)
 {
-  if (hb_set_has (coverage->chars, (hb_codepoint_t)index))
-    return PANGO_COVERAGE_EXACT;
-
-  return PANGO_COVERAGE_NONE;
+  return PANGO_COVERAGE_GET_CLASS (coverage)->get (coverage, index);
 }
 
 /**
@@ -160,10 +188,7 @@ pango_coverage_set (PangoCoverage     *coverage,
 		    int                index,
 		    PangoCoverageLevel level)
 {
-  if (level != PANGO_COVERAGE_NONE)
-    hb_set_add (coverage->chars, (hb_codepoint_t)index);
-  else
-    hb_set_del (coverage->chars, (hb_codepoint_t)index);
+  PANGO_COVERAGE_GET_CLASS (coverage)->set (coverage, index, level);
 }
 
 /**
