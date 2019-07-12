@@ -15,6 +15,7 @@ pango_item_free
 pango_item_copy
 pango_item_new
 pango_item_split
+pango_item_apply_attrs
 pango_reorder_items
 <SUBSECTION>
 pango_context_new
@@ -158,6 +159,15 @@ pango_coverage_from_bytes
 
 <SUBSECTION Private>
 pango_coverage_level_get_type
+pango_coverage_get_type
+PANGO_COVERAGE
+PANGO_COVERAGE_CLASS
+PANGO_COVERAGE_GET_CLASS
+PANGO_IS_COVERAGE
+PANGO_IS_COVERAGE_CLASS
+PANGO_TYPE_COVERAGE
+PangoCoverageClass
+PangoCoveragePrivate
 </SECTION>
 
 <SECTION>
@@ -217,6 +227,7 @@ pango_font_metrics_ref
 pango_font_metrics_unref
 pango_font_metrics_get_ascent
 pango_font_metrics_get_descent
+pango_font_metrics_get_height
 pango_font_metrics_get_approximate_char_width
 pango_font_metrics_get_approximate_digit_width
 pango_font_metrics_get_underline_thickness
@@ -244,6 +255,7 @@ PANGO_FONT_FAMILY
 PANGO_IS_FONT_FAMILY
 pango_font_family_get_name
 pango_font_family_is_monospace
+pango_font_family_is_variable
 pango_font_family_list_faces
 <SUBSECTION>
 PangoFontFace
@@ -422,6 +434,7 @@ pango_attr_type_get_type
 pango_attr_list_get_type
 pango_underline_get_type
 pango_color_get_type
+pango_attribute_get_type
 </SECTION>
 
 <SECTION>
@@ -555,6 +568,7 @@ pango_layout_line_get_pixel_extents
 pango_layout_line_index_to_x
 pango_layout_line_x_to_index
 pango_layout_line_get_x_ranges
+pango_layout_line_get_height
 
 <SUBSECTION Standard>
 PANGO_TYPE_LAYOUT
@@ -938,6 +952,7 @@ PANGO_FC_FONT_FEATURES
 PANGO_FC_GRAVITY
 PANGO_FC_VERSION
 PANGO_FC_PRGNAME
+PANGO_FC_FONT_VARIATIONS
 <SUBSECTION Standard>
 PANGO_FC_FONT_MAP
 PANGO_IS_FC_FONT_MAP
@@ -954,6 +969,7 @@ pango_fc_fontset_key_get_language
 pango_fc_fontset_key_get_matrix
 pango_fc_fontset_key_get_absolute_size
 pango_fc_fontset_key_get_resolution
+pango_fc_fontset_key_get_variations
 PangoFcFontKey
 pango_fc_font_key_get_context_key
 pango_fc_font_key_get_matrix
@@ -1128,9 +1144,11 @@ PANGO_VERSION_1_36
 PANGO_VERSION_1_38
 PANGO_VERSION_1_40
 PANGO_VERSION_1_42
-PANGO_MIN_REQUIRED
-PANGO_MAX_ALLOWED
+PANGO_VERSION_1_44
+PANGO_VERSION_MIN_REQUIRED
+PANGO_VERSION_MAX_ALLOWED
 <SUBSECTION Private>
+PANGO_UNAVAILABLE
 PANGO_AVAILABLE_IN_ALL
 PANGO_VERSION_CUR_STABLE
 PANGO_VERSION_PREV_STABLE
@@ -1155,6 +1173,9 @@ PANGO_AVAILABLE_IN_1_36
 PANGO_AVAILABLE_IN_1_38
 PANGO_AVAILABLE_IN_1_40
 PANGO_AVAILABLE_IN_1_42
+PANGO_AVAILABLE_IN_1_44
+PANGO_DEPRECATED
+PANGO_DEPRECATED_FOR
 PANGO_DEPRECATED_IN_1_2
 PANGO_DEPRECATED_IN_1_2_FOR
 PANGO_DEPRECATED_IN_1_4
@@ -1197,6 +1218,8 @@ PANGO_DEPRECATED_IN_1_40
 PANGO_DEPRECATED_IN_1_40_FOR
 PANGO_DEPRECATED_IN_1_42
 PANGO_DEPRECATED_IN_1_42_FOR
+PANGO_DEPRECATED_IN_1_44
+PANGO_DEPRECATED_IN_1_44_FOR
 </SECTION>
 
 <SECTION>
