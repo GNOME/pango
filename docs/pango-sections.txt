@@ -279,7 +279,6 @@ pango_font_map_create_context
 pango_font_map_load_font
 pango_font_map_load_fontset
 pango_font_map_list_families
-pango_font_map_get_shape_engine_type
 pango_font_map_get_serial
 pango_font_map_changed
 <SUBSECTION>
@@ -290,11 +289,6 @@ pango_fontset_get_font
 pango_fontset_get_metrics
 PangoFontsetForeachFunc
 pango_fontset_foreach
-PangoFontsetSimple
-PANGO_TYPE_FONTSET_SIMPLE
-pango_fontset_simple_new
-pango_fontset_simple_append
-pango_fontset_simple_size
 
 <SUBSECTION Standard>
 PANGO_FONT_FACE_CLASS
@@ -1095,16 +1089,11 @@ pango_skip_space
 pango_scan_word
 pango_scan_string
 pango_scan_int
-pango_config_key_get
-pango_config_key_get_system
-pango_lookup_aliases
 pango_parse_enum
 pango_parse_style
 pango_parse_variant
 pango_parse_weight
 pango_parse_stretch
-pango_get_sysconf_subdirectory
-pango_get_lib_subdirectory
 pango_log2vis_get_embedding_levels
 pango_is_zero_width
 pango_quantize_line_geometry
