@@ -753,6 +753,7 @@ pango_fc_font_unlock_face (PangoFcFont *font)
  * Return value: %TRUE if @font has the requested codepoint.
  *
  * Since: 1.4
+ * Deprecated: 1.44: Use pango_font_has_char()
  **/
 gboolean
 pango_fc_font_has_char (PangoFcFont *font,

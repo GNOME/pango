@@ -128,20 +128,18 @@ struct _PangoFcFontClass
 };
 
 
-PANGO_AVAILABLE_IN_1_4
+PANGO_DEPRECATED_IN_1_44
 gboolean   pango_fc_font_has_char          (PangoFcFont      *font,
 					    gunichar          wc);
 PANGO_AVAILABLE_IN_1_4
 guint      pango_fc_font_get_glyph         (PangoFcFont      *font,
 					    gunichar          wc);
-#ifndef PANGO_DISABLE_DEPRECATED
 PANGO_DEPRECATED_FOR(PANGO_GET_UNKNOWN_GLYPH)
 PangoGlyph pango_fc_font_get_unknown_glyph (PangoFcFont      *font,
 					    gunichar          wc);
 PANGO_DEPRECATED_IN_1_32
 void       pango_fc_font_kern_glyphs       (PangoFcFont      *font,
 					    PangoGlyphString *glyphs);
-#endif /* PANGO_DISABLE_DEPRECATED */
 
 
 G_END_DECLS
