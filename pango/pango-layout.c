@@ -3986,6 +3986,12 @@ pango_layout_get_effective_attributes (PangoLayout *layout)
       pango_attr_list_insert_before (attrs, attr);
     }
 
+  if (layout->single_paragraph)
+    {
+      PangoAttribute *attr = pango_attr_show_new (PANGO_SHOW_LINE_BREAKS);
+      pango_attr_list_insert_before (attrs, attr);
+    }
+
   return attrs;
 }
 
