@@ -183,8 +183,6 @@ endif
 
 # Dependencies
 pango_deps = []
-pangoxft_deps = []
-pangocairo_deps = []
 
 glib_req_version = '>= 2.59.2'
 fribidi_req_version = '>= 0.19.7'
@@ -316,8 +314,8 @@ endif
 xft_dep = dependency('xft', version: xft_req_version, required: false)
 if xft_dep.found() and fontconfig_dep.found() and freetype_dep.found()
   pango_conf.set('HAVE_XFT', 1)
-  pangoxft_deps += dependency('xrender', required: false)
-  pangoxft_deps += xft_dep
+  pango_deps += dependency('xrender', required: false)
+  pango_deps += xft_dep
 endif
 
 if host_system == 'darwin'
@@ -490,7 +488,7 @@ endif
 
 if cairo_dep.found()
   pango_conf.set('HAVE_CAIRO', 1)
-  pangocairo_deps += cairo_dep
+  pango_deps += cairo_dep
 
   pangocairo_requires = ''
 
