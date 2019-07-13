@@ -179,11 +179,7 @@ struct _PangoFontClass
                                                hb_feature_t   *features,
                                                guint           len,
                                                guint          *num_features);
-
-  /*< private >*/
-
-  /* Padding for future expansion */
-  void (*_pango_reserved1) (void);
+  hb_font_t *           (*create_hb_font)     (PangoFont      *font);
 };
 
 /* used for very rare and miserable situtations that we cannot even
