@@ -3992,6 +3992,12 @@ pango_layout_get_effective_attributes (PangoLayout *layout)
       pango_attr_list_insert_before (attrs, attr);
     }
 
+  if (layout->single_paragraph)
+    {
+      PangoAttribute *attr = pango_attr_show_line_separators_new (TRUE);
+      pango_attr_list_insert_before (attrs, attr);
+    }
+
   return attrs;
 }
 
