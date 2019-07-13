@@ -1206,6 +1206,30 @@ pango_attr_allow_breaks_new (gboolean allow_breaks)
   return pango_attr_int_new (&klass, (int)allow_breaks);
 }
 
+/**
+ * pango_attr_show_new:
+ * @show: #PangoShowFlags to apply
+ *
+ * Create a new show attribute.
+ *
+ * Return value: (transfer full): the newly allocated #PangoAttribute,
+ *               which should be freed with pango_attribute_destroy().
+ *
+ * Since: 1.44
+ **/
+PangoAttribute *
+pango_attr_show_new (PangoShowFlags flags)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_SHOW,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal,
+  };
+
+  return pango_attr_int_new (&klass, (int)flags);
+}
+
 /*
  * Attribute List
  */
