@@ -27,6 +27,7 @@
 #include <pango/pangocairo.h>
 
 static int opt_annotate = 0;
+static gboolean opt_show_trailing_space;
 
 typedef struct
 {
@@ -131,6 +132,35 @@ pangocairo_view_destroy_surface (gpointer instance,
 }
 
 static void
+post_process_last_runs (const char     *text,
+                        PangoGlyphItem *prev,
+                        PangoGlyphItem *last)
+{
+  int i;
+  PangoGlyphItem *run;
+
+  for (run = last; run; run = prev, prev = NULL)
+    {
+      for (i = run->glyphs->num_glyphs - 1; i >= 0; i--)
+        {
+          gunichar ch;
+          int pos;
+
+          pos = run->glyphs->log_clusters[i];
+          ch = g_utf8_get_char (text + run->item->offset + pos);
+          if (ch == 0x20)
+            run->glyphs->glyphs[i].glyph = PANGO_GET_UNKNOWN_GLYPH (0x2423);
+          else if (ch == 0x2028)
+            run->glyphs->glyphs[i].glyph = PANGO_GET_UNKNOWN_GLYPH ('\n');
+          else
+            break;
+        }
+      if (i > 0)
+        break;
+    }
+}
+
+static void
 render_callback (PangoLayout *layout,
 		 int          x,
 		 int          y,
@@ -139,6 +169,25 @@ render_callback (PangoLayout *layout,
 {
   cairo_t *cr = (cairo_t *) context;
   int annotate = (GPOINTER_TO_INT (state) + opt_annotate) % 4;
+
+  if (opt_show_trailing_space)
+    {
+      PangoLayoutIter *iter;
+      PangoLayoutRun *prev, *run, *next;
+      const char *text;
+
+      text = pango_layout_get_text (layout);
+      iter = pango_layout_get_iter (layout);
+      prev = run = next = NULL;
+      do {
+        prev = run;
+        run = next;
+        next = pango_layout_iter_get_run (iter);
+        if (next == NULL && run != NULL) /* end of line */
+          post_process_last_runs (text, prev, run);
+      } while (pango_layout_iter_next_run (iter));
+      pango_layout_iter_free (iter);
+    }
 
   cairo_save (cr);
   cairo_translate (cr, x, y);
@@ -442,6 +491,8 @@ pangocairo_view_get_option_group (const PangoViewer *klass G_GNUC_UNUSED)
   {
     {"annotate",	0, 0, G_OPTION_ARG_INT, &opt_annotate,
      "Annotate the output",				"1, 2 or 3"},
+    {"show-trailing-space",	0, 0, G_OPTION_ARG_NONE, &opt_show_trailing_space,
+     "Show trailing space",				NULL},
     {NULL}
   };
   GOptionGroup *group;
