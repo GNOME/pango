@@ -415,6 +415,8 @@ pango_color_parse
 pango_color_copy
 pango_color_free
 pango_color_to_string
+PangoShowFlags
+pango_attr_show_new
 <SUBSECTION>
 PangoAttrList
 PANGO_TYPE_ATTR_LIST
