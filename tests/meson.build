@@ -17,6 +17,7 @@ test_env = [
 ]
 
 tests = [
+  [ 'test-coverage' ],
   [ 'testboundaries' ],
   [ 'testboundaries_ucd' ],
   [ 'testcolor' ],
