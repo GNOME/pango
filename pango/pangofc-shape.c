@@ -26,7 +26,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "pangofc-private.h"
+#include "pangohb-private.h"
 #include "pango-impl-utils.h"
 
 #include <hb-ft.h>
@@ -114,13 +114,13 @@ apply_extra_attributes (GSList       *attrs,
 }
 
 void
-_pango_fc_shape (PangoFont           *font,
-		 const char          *item_text,
-		 unsigned int         item_length,
-		 const PangoAnalysis *analysis,
-		 PangoGlyphString    *glyphs,
-		 const char          *paragraph_text,
-		 unsigned int         paragraph_length)
+pango_hb_shape (PangoFont           *font,
+                const char          *item_text,
+                unsigned int         item_length,
+                const PangoAnalysis *analysis,
+                PangoGlyphString    *glyphs,
+                const char          *paragraph_text,
+                unsigned int         paragraph_length)
 {
   hb_font_t *hb_font;
   hb_buffer_t *hb_buffer;
