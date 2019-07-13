@@ -52,6 +52,7 @@
 #include "pango-impl-utils.h"
 #include "pango-enum-types.h"
 #include "pango-coverage-private.h"
+#include <hb-ft.h>
 
 
 /* Overview:
@@ -166,6 +167,8 @@ struct _PangoFcFontFaceData
   FcPattern *pattern;	/* Referenced pattern that owns filename */
   PangoCoverage *coverage;
   PangoFcCmapCache *cmap_cache;
+
+  hb_face_t *hb_face;
 };
 
 struct _PangoFcFace
@@ -296,6 +299,8 @@ pango_fc_font_face_data_free (PangoFcFontFaceData *data)
 
   if (data->cmap_cache)
     _pango_fc_cmap_cache_unref (data->cmap_cache);
+
+  hb_face_destroy (data->hb_face);
 
   g_slice_free (PangoFcFontFaceData, data);
 }
@@ -2727,4 +2732,24 @@ static void
 pango_fc_family_init (PangoFcFamily *fcfamily)
 {
   fcfamily->n_faces = -1;
+}
+
+hb_face_t *
+pango_fc_font_map_get_hb_face (PangoFcFontMap *fcfontmap,
+                               PangoFcFont    *fcfont)
+{
+  PangoFcFontFaceData *data;
+
+  data = pango_fc_font_map_get_font_face_data (fcfontmap, fcfont->font_pattern);
+  
+  if (!data->hb_face)
+    {
+      hb_blob_t *blob;
+
+      blob = hb_blob_create_from_file (data->filename);
+      data->hb_face = hb_face_create (blob, data->id);
+      hb_blob_destroy (blob);
+    }
+
+  return data->hb_face;
 }
