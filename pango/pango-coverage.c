@@ -88,7 +88,16 @@ pango_coverage_real_copy (PangoCoverage *coverage)
 
   copy = g_object_new (PANGO_TYPE_COVERAGE, NULL);
   if (coverage->chars)
-    copy->chars = hb_set_reference (coverage->chars);
+    {
+      int i;
+
+      copy->chars = hb_set_create ();
+      for (i = hb_set_get_min (coverage->chars); i <= hb_set_get_max (coverage->chars); i++)
+        {
+          if (hb_set_has (coverage->chars, (hb_codepoint_t)i))
+            hb_set_add (copy->chars, (hb_codepoint_t)i);
+        }
+    }
 
   return copy;
 }
