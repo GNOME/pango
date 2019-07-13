@@ -177,6 +177,15 @@ append_attribute (PangoAttribute *attr, GString *string)
     case PANGO_ATTR_BACKGROUND_ALPHA:
       g_string_append_printf (string, "bgalpha=%d", ((PangoAttrInt*)attr)->value);
       break;
+    case PANGO_ATTR_SHOW_IGNORABLES:
+      g_string_append_printf (string, "show_ignorables=%d", ((PangoAttrInt*)attr)->value);
+      break;
+    case PANGO_ATTR_SHOW_SPACE:
+      g_string_append_printf (string, "show_space=%d", ((PangoAttrInt*)attr)->value);
+      break;
+    case PANGO_ATTR_SHOW_LINE_SEPARATORS:
+      g_string_append_printf (string, "show_line_separators=%d", ((PangoAttrInt*)attr)->value);
+      break;
     default:
       g_assert_not_reached ();
     }
