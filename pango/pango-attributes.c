@@ -1179,6 +1179,85 @@ pango_attr_background_alpha_new (guint16 alpha)
   return pango_attr_int_new (&klass, (int)alpha);
 }
 
+/**
+ * pango_attr_show_ignorables_new:
+ * @show: %TRUE to render ignorable characters
+ *
+ * Create a new show ignorables attribute.
+ *
+ * If @show is %TRUE, ignorable characters will be rendered
+ * visibly.
+ *
+ * Return value: (transfer full): the newly allocated #PangoAttribute,
+ *               which should be freed with pango_attribute_destroy().
+ *
+ * Since: 1.44
+ **/
+PangoAttribute *
+pango_attr_show_ignorables_new (gboolean show)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_SHOW_IGNORABLES,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal,
+  };
+
+  return pango_attr_int_new (&klass, (int)show);
+}
+
+/**
+ * pango_attr_show_space_new:
+ * @show: %TRUE if we should render spaces
+ *
+ * Create a new show space attribute.
+ *
+ * If @show is %TRUE, spaces will be rendered visibly.
+ *
+ * Return value: (transfer full): the newly allocated #PangoAttribute,
+ *               which should be freed with pango_attribute_destroy().
+ *
+ * Since: 1.44
+ **/
+PangoAttribute *
+pango_attr_show_space_new (gboolean show)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_SHOW_SPACE,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal,
+  };
+
+  return pango_attr_int_new (&klass, (int)show);
+}
+
+/**
+ * pango_attr_show_line_separators_new:
+ * @show: %TRUE if we should render line separators
+ *
+ * Create a new show line separators attribute.
+ *
+ * If @show is %TRUE, line separtors will be rendered visibly.
+ *
+ * Return value: (transfer full): the newly allocated #PangoAttribute,
+ *               which should be freed with pango_attribute_destroy().
+ *
+ * Since: 1.44
+ **/
+PangoAttribute *
+pango_attr_show_line_separators_new (gboolean show)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_SHOW_LINE_SEPARATORS,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal,
+  };
+
+  return pango_attr_int_new (&klass, (int)show);
+}
+
 /*
  * Attribute List
  */
