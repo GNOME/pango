@@ -2308,7 +2308,7 @@ pango_font_face_list_sizes (PangoFontFace  *face,
 }
 
 /**
- * pango_font_covers:
+ * pango_font_has_char:
  * @font: a #PangoFont
  * @wc: a Unicode character
  *
@@ -2319,8 +2319,8 @@ pango_font_face_list_sizes (PangoFontFace  *face,
  * Since: 1.44
  */
 gboolean
-pango_font_covers (PangoFont *font,
-                   gunichar   wc)
+pango_font_has_char (PangoFont *font,
+                     gunichar   wc)
 {
   PangoCoverage *coverage = pango_font_get_coverage (font, pango_language_get_default ());
   PangoCoverageLevel result = pango_coverage_get (coverage, wc);

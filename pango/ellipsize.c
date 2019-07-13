@@ -345,8 +345,8 @@ shape_ellipsis (EllipsizeState *state)
   /* If that fails we use "..." in the first matching font
    */
   if (!item->analysis.font ||
-      !pango_font_covers (item->analysis.font,
-                          g_utf8_get_char (ellipsis_text)))
+      !pango_font_has_char (item->analysis.font,
+                            g_utf8_get_char (ellipsis_text)))
     {
       pango_item_free (item);
 

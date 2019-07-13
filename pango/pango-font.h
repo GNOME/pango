@@ -485,7 +485,7 @@ PANGO_AVAILABLE_IN_1_10
 PangoFontMap         *pango_font_get_font_map      (PangoFont        *font);
 
 PANGO_AVAILABLE_IN_1_44
-gboolean              pango_font_covers            (PangoFont        *font,
+gboolean              pango_font_has_char          (PangoFont        *font,
                                                     gunichar          wc);
 PANGO_AVAILABLE_IN_1_44
 void                  pango_font_get_features      (PangoFont        *font,

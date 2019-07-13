@@ -1247,13 +1247,11 @@ get_font_foreach (PangoFontset *fontset,
 		  gpointer      data)
 {
   GetFontInfo *info = data;
-  PangoCoverageLevel level;
 
   if (G_UNLIKELY (!font))
     return FALSE;
 
-  level = pango_font_covers (font, info->wc);
-  if (level != PANGO_COVERAGE_NONE)
+  if (pango_font_has_char (font, info->wc))
     {
       info->font = font;
       return TRUE;
