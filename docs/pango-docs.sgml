@@ -8,17 +8,19 @@
 <book id="index" xmlns:xi="http://www.w3.org/2003/XInclude">
   <bookinfo>
     <title>Pango Reference Manual</title>
-    <releaseinfo>for Pango &version;</releaseinfo>
+    <abstract>Internationalized text layout and rendering</abstract>
+    <releaseinfo>for Pango &version;.
+      Online at
+      <ulink role="online-location" url="https://developer.gnome.org/pango/">https://developer.gnome.org/pango/</ulink>
+    </releaseinfo>
   </bookinfo>
 
   <chapter id="pango">
     <title>Basic Pango Interfaces</title>
     <xi:include href="xml/main.xml"/>
-    <xi:include href="xml/glyphs.xml"/>
     <xi:include href="xml/fonts.xml"/>
     <xi:include href="xml/text-attributes.xml"/>
-    <xi:include href="xml/tab-stops.xml"/>
-    <xi:include href="pango_markup.sgml"/>
+    <xi:include href="xml/markup.xml"/>
     <xi:include href="xml/layout.xml"/>
     <xi:include href="xml/scripts.xml"/>
     <xi:include href="xml/bidi.xml"/>
@@ -27,15 +29,17 @@
 
   <chapter id="rendering">
     <title>Rendering with Pango</title>
+    <xi:include href="xml/pangocairo.xml"/>
     <xi:include href="xml/win32-fonts.xml"/>
+    <xi:include href="xml/coretext-fonts.xml"/>
     <xi:include href="xml/freetype-fonts.xml"/>
     <xi:include href="xml/xft-fonts.xml"/>
-    <xi:include href="xml/pangocairo.xml"/>
-    <xi:include href="xml/coretext-fonts.xml"/>
   </chapter>
 
   <chapter id="lowlevel">
     <title>Low Level Functionality</title>
+    <xi:include href="xml/glyphs.xml"/>
+    <xi:include href="xml/tab-stops.xml"/>
     <xi:include href="xml/pango-renderer.xml"/>
     <xi:include href="xml/pangofc-fontmap.xml"/>
     <xi:include href="xml/pangofc-font.xml"/>

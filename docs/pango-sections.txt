@@ -349,9 +349,6 @@ PangoAttrFontDesc
 PangoAttrShape
 PangoAttrSize
 PangoAttrFontFeatures
-pango_parse_markup
-pango_markup_parser_new
-pango_markup_parser_finish
 pango_attr_type_register
 pango_attr_type_get_name
 pango_attribute_init
@@ -429,6 +426,14 @@ pango_attr_list_get_type
 pango_underline_get_type
 pango_color_get_type
 pango_attribute_get_type
+</SECTION>
+
+<SECTION>
+<TITLE>Markup</TITLE>
+<FILE>markup</FILE>
+pango_parse_markup
+pango_markup_parser_new
+pango_markup_parser_finish
 </SECTION>
 
 <SECTION>

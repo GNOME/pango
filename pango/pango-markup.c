@@ -30,6 +30,171 @@
 #include "pango-impl-utils.h"
 #include "pango-utils-internal.h"
 
+/**
+ * SECTION:markup
+ * @title:Markup
+ * @short_description:Simple markup language for text with attributes
+ *
+ * Frequently, you want to display some text to the user with attributes
+ * applied to part of the text (for example, you might want bold or
+ * italicized words). With the base Pango interfaces, you could create a
+ * #PangoAttrList and apply it to the text; the problem is that you'd
+ * need to apply attributes to some numeric range of characters, for
+ * example "characters 12-17." This is broken from an internationalization
+ * standpoint; once the text is translated, the word you wanted to
+ * italicize could be in a different position.
+ *
+ * The solution is to include the text attributes in the string to be
+ * translated. Pango provides this feature with a small markup language.
+ * You can parse a marked-up string into the string text plus a
+ * #PangoAttrList using either of pango_parse_markup() or
+ * pango_markup_parser_new().
+ *
+ * A simple example of a marked-up string might be:
+ * |[
+ * <span foreground="blue" size="x-large">Blue text</span> is <i>cool</i>!
+ * ]|
+ *
+ * Pango uses #GMarkup to parse this language, which means that XML
+ * features such as numeric character entities such as &amp;#169; for
+ * © can be used too.
+ *
+ * The root tag of a marked-up document is &lt;markup&gt;, but
+ * pango_parse_markup()allows you to omit this tag, so you will most
+ * likely never need to use it. The most general markup tag is &lt;span&gt;,
+ * then there are some convenience tags.
+ *
+ * &lt;span&gt; has the following attributes:
+ *
+ * font_desc
+ * : A font description string, such as "Sans Italic 12".
+ *   See pango_font_description_from_string() for a description of the
+ *   format of the string representation . Note that any other span
+ *   attributes will override this description. So if you have "Sans Italic"
+ *   and also a style="normal" attribute, you will get Sans normal,
+ *   not italic.
+ *
+ * font_family
+ * : A font family name
+ *
+ * font_size, size
+ * : Font size in 1024ths of a point, or one of the absolute
+ *   sizes 'xx-small', 'x-small', 'small', 'medium', 'large',
+ *   'x-large', 'xx-large', or one of the relative sizes 'smaller'
+ *   or 'larger'. If you want to specify a absolute size, it's usually
+ *   easier to take advantage of the ability to specify a partial
+ *   font description using 'font'; you can use |font='12.5'|
+ *   rather than |size='12800'|.
+ *
+ * font_style
+ * : One of 'normal', 'oblique', 'italic'
+ *
+ * font_weight
+ * : One of 'ultralight', 'light', 'normal', 'bold',
+ *   'ultrabold', 'heavy', or a numeric weight
+ *
+ * font_variant
+ * : One of 'normal' or 'smallcaps'
+ *
+ * font_stretch, stretch
+ * : One of 'ultracondensed', 'extracondensed', 'condensed',
+ *   'semicondensed', 'normal', 'semiexpanded', 'expanded',
+ *   'extraexpanded', 'ultraexpanded'
+ *
+ * font_features
+ * : A comma separated list of OpenType font feature
+ *   settings, in the same syntax as accepted by CSS. E.g:
+ *   |font_features='dlig=1, -kern, afrc on'|
+ *
+ * foreground, fgcolor
+ * : An RGB color specification such as '#00FF00' or a color
+ *   name such as 'red'. Since 1.38, an RGBA color specification such
+ *   as '#00FF007F' will be interpreted as specifying both a foreground
+ *   color and foreground alpha.
+ *
+ * background, bgcolor
+ * : An RGB color specification such as '#00FF00' or a color
+ *   name such as'red'.
+ *   Since 1.38, an RGBA color specification such as '#00FF007F' will
+ *   be interpreted as specifying both a background color and
+ *   background alpha.
+ *
+ * alpha, fgalpha
+ * : An alpha value for the foreground color, either a plain
+ *   integer between 1 and 65536 or a percentage value like '50%'.
+ *
+ * background_alpha, bgalpha
+ * : An alpha value for the background color, either a plain
+ *   integer between 1 and 65536 or a percentage value like '50%'.
+ *
+ * underline
+ * : One of 'none', 'single', 'double', 'low', 'error'
+ *
+ * underline_color
+ * : The color of underlines; an RGB color
+ *   specification such as '#00FF00' or a color name such as 'red'
+ *
+ * rise
+ * : Vertical displacement, in Pango units. Can be negative for
+ *   subscript, positive for superscript.
+ *
+ * strikethrough
+ * : 'true' or 'false' whether to strike through the text
+ *
+ * strikethrough_color
+ * : The color of strikethrough lines; an RGB
+ *   color specification such as '#00FF00' or a color name such as 'red'
+ *
+ * fallback
+ * : 'true' or 'false' whether to enable fallback. If
+ *   disabled, then characters will only be used from the closest
+ *   matching font on the system. No fallback will be done to other
+ *   fonts on the system that might contain the characters in the text.
+ *   Fallback is enabled by default. Most applications should not
+ *   disable fallback.
+ *
+ * lang
+ * : A language code, indicating the text language
+ *
+ * letter_spacing
+ * : Inter-letter spacing in 1024ths of a point.
+ *
+ * gravity
+ * : One of 'south', 'east', 'north', 'west', 'auto'.
+ *
+ * gravity_hint
+ * : One of 'natural', 'strong', 'line'.
+ *
+ * The following convenience tags are provided:
+ *
+ * &lt;b&gt;
+ * : Bold
+ *
+ * &lt;big&gt;
+ * : Makes font relatively larger, equivalent to &lt;span size="larger"&gt;
+ *
+ * &lt;i&gt;
+ * : Italic
+ *
+ * &lt;s&gt;
+ * : Strikethrough
+ *
+ * &lt;sub&gt;
+ * : Subscript
+ *
+ * &lt;sup&gt;
+ * : Superscript
+ *
+ * &lt;small&gt;
+ * : Makes font relatively smaller, equivalent to &lt;span size="smaller"&gt;
+ *
+ * &lt;tt&gt;
+ * : Monospace
+ *
+ * &lt;u&gt;
+ * : Underline
+ */
+
 /* FIXME */
 #define _(x) x
 

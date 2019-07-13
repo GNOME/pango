@@ -21,8 +21,8 @@
 
 /**
  * SECTION:pangocairo
- * @short_description:Rendering with the Cairo backend
- * @title:Cairo Rendering
+ * @short_description:Font handling and rendering with Cairo
+ * @title:Cairo Fonts and Rendering
  *
  * The <ulink url="http://cairographics.org">Cairo library</ulink> is a
  * vector graphics library with a powerful rendering model. It has such

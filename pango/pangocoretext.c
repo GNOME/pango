@@ -22,8 +22,8 @@
 
 /**
  * SECTION:coretext-fonts
- * @short_description:Font handling with CoreText fonts
- * @title:CoreText Fonts
+ * @short_description:Font handling and rendering on OS X
+ * @title:CoreText Fonts and Rendering
  *
  * The macros and functions in this section are used to access fonts natively on
  * OS X using the CoreText text rendering subsystem.

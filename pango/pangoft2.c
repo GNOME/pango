@@ -22,7 +22,7 @@
 
 /**
  * SECTION:freetype-fonts
- * @short_description:Functions for shape engines to manipulate FreeType fonts
+ * @short_description:Font handling and rendering with FreeType
  * @title:FreeType Fonts and Rendering
  *
  * The macros and functions in this section are used to access fonts and render

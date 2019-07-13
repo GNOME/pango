@@ -21,7 +21,7 @@
 
 /**
  * SECTION:bidi
- * @short_description:Types and functions to help with handling bidirectional text
+ * @short_description:Types and functions for bidirectional text
  * @title:Bidirectional Text
  * @see_also:
  * pango_context_get_base_dir(),
