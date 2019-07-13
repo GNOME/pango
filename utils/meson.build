@@ -19,7 +19,7 @@ if xft_dep.found() and build_pangoft2
     'viewer-pangoxft.c',
     'viewer-x.c',
   ]
-  pango_view_deps += pangoxft_deps + [ libpangoft2_dep, libpangoxft_dep, ]
+  pango_view_deps += [ libpangoft2_dep, libpangoxft_dep, ]
 endif
 
 if cairo_dep.found()
