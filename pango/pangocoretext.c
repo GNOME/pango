@@ -208,6 +208,17 @@ pango_core_text_font_get_font_map (PangoFont *font)
   return ctfont->priv->fontmap;
 }
 
+static hb_font_t *
+pango_core_text_font_create_hb_font (PangoFont *font)
+{
+  PangoCoreTextFont *ctfont = (PangoCoreTextFont *)font;
+
+  if (ctfont->priv->font_ref)
+    return hb_coretext_font_create (ctfont->priv->font_ref);
+
+  return NULL;  
+}
+
 static void
 pango_core_text_font_init (PangoCoreTextFont *ctfont)
 {
@@ -227,6 +238,7 @@ pango_core_text_font_class_init (PangoCoreTextFontClass *class)
   font_class->get_coverage = pango_core_text_font_get_coverage;
   font_class->find_shaper = pango_core_text_font_find_shaper;
   font_class->get_font_map = pango_core_text_font_get_font_map;
+  font_class->create_hb_font = pango_core_text_font_create_hb_font;
 }
 
 void
