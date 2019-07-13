@@ -26,6 +26,7 @@
 #include <fontconfig/fontconfig.h>
 #include <pango/pangofc-decoder.h>
 #include <pango/pangofc-font.h>
+#include <hb.h>
 
 G_BEGIN_DECLS
 
@@ -41,7 +42,6 @@ G_BEGIN_DECLS
 typedef struct _PangoFcFontMap        PangoFcFontMap;
 typedef struct _PangoFcFontMapClass   PangoFcFontMapClass;
 typedef struct _PangoFcFontMapPrivate PangoFcFontMapPrivate;
-
 
 PANGO_AVAILABLE_IN_ALL
 GType pango_fc_font_map_get_type (void) G_GNUC_CONST;
@@ -86,6 +86,10 @@ PangoFcDecoder *pango_fc_font_map_find_decoder (PangoFcFontMap *fcfontmap,
 PANGO_AVAILABLE_IN_1_4
 PangoFontDescription *pango_fc_font_description_from_pattern (FcPattern *pattern,
 							      gboolean   include_size);
+
+PANGO_AVAILABLE_IN_1_44
+hb_face_t * pango_fc_font_map_get_hb_face (PangoFcFontMap *fcfontmap,
+                                           PangoFcFont    *fcfont);
 
 /**
  * PANGO_FC_GRAVITY:
