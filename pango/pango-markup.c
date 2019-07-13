@@ -1127,6 +1127,9 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   const char *letter_spacing = NULL;
   const char *lang = NULL;
   const char *fallback = NULL;
+  const char *show_ignorables = NULL;
+  const char *show_space = NULL;
+  const char *show_line_separators = NULL;
   const char *gravity = NULL;
   const char *gravity_hint = NULL;
   const char *font_features = NULL;
@@ -1192,6 +1195,9 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	CHECK_ATTRIBUTE (font_features);
 	break;
       case 's':
+	CHECK_ATTRIBUTE (show_ignorables);
+	CHECK_ATTRIBUTE (show_line_separators);
+	CHECK_ATTRIBUTE (show_space);
 	CHECK_ATTRIBUTE (size);
 	CHECK_ATTRIBUTE (stretch);
 	CHECK_ATTRIBUTE (strikethrough);
@@ -1509,6 +1515,36 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	goto error;
 
       add_attribute (tag, pango_attr_fallback_new (b));
+    }
+
+  if (G_UNLIKELY (show_ignorables))
+    {
+      gboolean b = FALSE;
+
+      if (!span_parse_boolean ("show_ignorables", show_ignorables, &b, line_number, error))
+	goto error;
+
+      add_attribute (tag, pango_attr_show_ignorables_new (b));
+    }
+
+  if (G_UNLIKELY (show_line_separators))
+    {
+      gboolean b = FALSE;
+
+      if (!span_parse_boolean ("show_line_separators", show_line_separators, &b, line_number, error))
+	goto error;
+
+      add_attribute (tag, pango_attr_show_line_separators_new (b));
+    }
+
+  if (G_UNLIKELY (show_space))
+    {
+      gboolean b = FALSE;
+
+      if (!span_parse_boolean ("show_space", show_space, &b, line_number, error))
+	goto error;
+
+      add_attribute (tag, pango_attr_show_space_new (b));
     }
 
   if (G_UNLIKELY (rise))
