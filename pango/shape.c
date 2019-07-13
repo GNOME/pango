@@ -35,7 +35,7 @@
 #include "pango-glyph.h"
 #include "pango-engine-private.h"
 
-#include "pangofc-private.h"
+#include "pangohb-private.h"
 
 #include <string.h>
 
@@ -164,10 +164,10 @@ pango_shape_full (const gchar      *item_text,
 
   if (analysis->font)
     {
-      _pango_fc_shape (analysis->font,
-                       item_text, item_length,
-                       analysis, glyphs,
-                       paragraph_text, paragraph_length);
+      pango_hb_shape (analysis->font,
+                      item_text, item_length,
+                      analysis, glyphs,
+                      paragraph_text, paragraph_length);
 
       if (G_UNLIKELY (glyphs->num_glyphs == 0))
 	{
