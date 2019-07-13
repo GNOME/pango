@@ -29,7 +29,8 @@
  * that functionality directly involves writing a fairly large amount
  * of code. The objects and functions in this section provide a
  * high-level driver for formatting entire paragraphs of text
- * at once.
+ * at once. This includes paragraph-level functionality such as
+ * line-breaking, justification, alignment and ellipsization.
  */
 
 /**

@@ -64,6 +64,7 @@ content_files = [
 
 html_images = [
   'layout.png',
+  'pipeline.png',
   'rotated-text.png',
 ]
 

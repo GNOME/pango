@@ -28,6 +28,8 @@
  * Unicode characters and converts it into glyphs.
  * The functions described in this section accomplish
  * various steps of this process.
+ *
+ * ![](pipeline.png)
  */
 #include "config.h"
 #include <string.h>
