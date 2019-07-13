@@ -158,6 +158,11 @@
  *   not allowed, the range will be kept in a single run as far
  *   as possible. Breaks are allowed by default.
  *
+ * show
+ * : A value determining how invisible characters are treated.
+ *   Possible values are 'spaces', 'line-breaks', 'ignorables'
+ *   or combinations, such as 'spaces|line-breaks'.
+ *
  * lang
  * : A language code, indicating the text language
  *
@@ -1270,6 +1275,32 @@ span_parse_enum (const char *attr_name,
 }
 
 static gboolean
+span_parse_flags (const char  *attr_name,
+                  const char  *attr_val,
+                  GType        type,
+                  int         *val,
+                  int          line_number,
+                  GError     **error)
+{
+  char *possible_values = NULL;
+
+  if (!pango_parse_flags (type, attr_val, val, &possible_values))
+    {
+      g_set_error (error,
+                   G_MARKUP_ERROR,
+                   G_MARKUP_ERROR_INVALID_CONTENT,
+                   _("'%s' is not a valid value for the '%s' "
+                     "attribute on <span> tag, line %d; valid "
+                     "values are %s or combinations with |"),
+                   attr_val, attr_name, line_number, possible_values);
+      g_free (possible_values);
+      return FALSE;
+    }
+
+  return TRUE;
+}
+
+static gboolean
 span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 		     OpenTag               *tag,
 		     const gchar          **names,
@@ -1303,6 +1334,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   const char *alpha = NULL;
   const char *background_alpha = NULL;
   const char *allow_breaks = NULL;
+  const char *show = NULL;
 
   g_markup_parse_context_get_position (context,
 				       &line_number, &char_number);
@@ -1364,6 +1396,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	CHECK_ATTRIBUTE (font_features);
 	break;
       case 's':
+	CHECK_ATTRIBUTE (show);
 	CHECK_ATTRIBUTE (size);
 	CHECK_ATTRIBUTE (stretch);
 	CHECK_ATTRIBUTE (strikethrough);
@@ -1681,6 +1714,16 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	goto error;
 
       add_attribute (tag, pango_attr_fallback_new (b));
+    }
+
+  if (G_UNLIKELY (show))
+    {
+      PangoShowFlags flags;
+
+      if (!span_parse_flags ("show", show, PANGO_TYPE_SHOW_FLAGS, (int*)(void*)&flags, line_number, error))
+	goto error;
+
+      add_attribute (tag, pango_attr_show_new (flags));
     }
 
   if (G_UNLIKELY (rise))
