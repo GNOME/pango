@@ -78,7 +78,6 @@ _PANGO_EXTERN
 PangoFontMetrics *pango_fc_font_create_base_metrics_for_context (PangoFcFont   *font,
 								 PangoContext  *context);
 
-PANGO_AVAILABLE_IN_ALL
 void _pango_fc_shape (PangoFont           *font,
                       const char          *item_text,
                       unsigned int         item_length,
