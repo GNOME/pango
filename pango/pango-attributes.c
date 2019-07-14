@@ -22,7 +22,7 @@
 /**
  * SECTION:text-attributes
  * @short_description:Font and other attributes for annotating text
- * @title:Text Attributes
+ * @title:Attributes
  *
  * Attributed text is used in a number of places in Pango. It
  * is used as the input to the itemization process and also when

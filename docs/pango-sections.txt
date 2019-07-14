@@ -2,12 +2,12 @@
 <TITLE>Text Processing</TITLE>
 <FILE>main</FILE>
 <SUBSECTION>
-PangoContext
 PangoItem
 PangoAnalysis
 PANGO_ANALYSIS_FLAG_CENTERED_BASELINE
 PANGO_ANALYSIS_FLAG_IS_ELLIPSIS
 PANGO_TYPE_DIRECTION
+
 <SUBSECTION>
 pango_itemize
 pango_itemize_with_base_dir
@@ -17,7 +17,29 @@ pango_item_new
 pango_item_split
 pango_item_apply_attrs
 pango_reorder_items
+
 <SUBSECTION>
+pango_break
+pango_get_log_attrs
+pango_find_paragraph_boundary
+pango_default_break
+PangoLogAttr
+
+<SUBSECTION>
+pango_shape
+pango_shape_full
+
+<SUBSECTION Standard>
+PANGO_TYPE_ITEM
+
+<SUBSECTION Private>
+pango_item_get_type
+</SECTION>
+
+<SECTION>
+<TITLE>Contexts</TITLE>
+<FILE>context</FILE>
+PangoContext
 pango_context_new
 pango_context_changed
 pango_context_get_serial
@@ -40,6 +62,7 @@ pango_context_load_font
 pango_context_load_fontset
 pango_context_get_metrics
 pango_context_list_families
+
 <SUBSECTION Standard>
 PANGO_TYPE_CONTEXT
 PangoContextClass
@@ -48,20 +71,9 @@ PANGO_CONTEXT_CLASS
 PANGO_IS_CONTEXT
 PANGO_IS_CONTEXT_CLASS
 PANGO_CONTEXT_GET_CLASS
-PANGO_TYPE_ITEM
-<SUBSECTION>
-pango_break
-pango_get_log_attrs
-pango_find_paragraph_boundary
-pango_default_break
-PangoLogAttr
-<SUBSECTION>
-pango_shape
-pango_shape_full
 
 <SUBSECTION Private>
 pango_context_get_type
-pango_item_get_type
 </SECTION>
 
 <SECTION>

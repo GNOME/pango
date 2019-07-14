@@ -19,6 +19,7 @@
     <title>Basic Pango Interfaces</title>
     <xi:include href="xml/main.xml"/>
     <xi:include href="xml/fonts.xml"/>
+    <xi:include href="xml/glyphs.xml"/>
     <xi:include href="xml/text-attributes.xml"/>
     <xi:include href="xml/markup.xml"/>
     <xi:include href="xml/layout.xml"/>
@@ -38,13 +39,13 @@
 
   <chapter id="lowlevel">
     <title>Low Level Functionality</title>
-    <xi:include href="xml/glyphs.xml"/>
+    <xi:include href="xml/context.xml"/>
     <xi:include href="xml/tab-stops.xml"/>
+    <xi:include href="xml/coverage-maps.xml"/>
     <xi:include href="xml/pango-renderer.xml"/>
     <xi:include href="xml/pangofc-fontmap.xml"/>
     <xi:include href="xml/pangofc-font.xml"/>
     <xi:include href="xml/pangofc-decoder.xml"/>
-    <xi:include href="xml/coverage-maps.xml"/>
     <xi:include href="xml/utils.xml"/>
     <xi:include href="xml/pango-version.xml"/>
     </chapter>

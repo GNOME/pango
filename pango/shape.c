@@ -22,7 +22,7 @@
 /**
  * SECTION:glyphs
  * @short_description:Structures for storing information about glyphs
- * @title:Glyph Storage
+ * @title:Glyphs
  *
  * pango_shape() produces a string of glyphs which
  * can be measured or drawn to the screen. The following

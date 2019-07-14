@@ -46,6 +46,17 @@
 #include "pango-emoji-private.h"
 
 /**
+ * SECTION:context
+ * @title:Contexts
+ * @short_description: Global context object
+ *
+ * The #PangoContext structure stores global information
+ * influencing Pango's operation, such as the fontmap used
+ * to look up fonts, and default values such as the default
+ * language, default gravity, or default font.
+ */
+
+/**
  * PangoContext:
  *
  * The #PangoContext structure stores global information

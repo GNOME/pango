@@ -29,7 +29,7 @@
  * implementation of fonts. The #PangoFont structure
  * represents an abstract rendering-system-independent font.
  * Pango provides routines to list available fonts, and
- * to load a font of a given description.
+ * to load a font matching a given description.
  */
 
 #include "config.h"
