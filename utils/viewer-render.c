@@ -117,43 +117,16 @@ make_layout(PangoContext *context,
   static PangoFontDescription *font_description;
   PangoAlignment align;
   PangoLayout *layout;
-  char *transformed_text;
-  PangoAttrList *transformed_attrs;
   PangoTextTransform transform = transform_from_string (opt_text_transform);
-  char *txt;
-  PangoAttrList *attrs;
-
-  if (opt_markup)
-    {
-      GError *error = NULL;
-      if (!pango_parse_markup (text, -1, 0, &attrs, &txt, NULL, &error))
-        {
-          g_error ("Failed to parse markup: %s", error->message);
-          exit (1);
-        }
-    }
-  else
-    {
-      txt = g_strdup (text);
-      attrs = NULL;
-    }
-
-  pango_transform_text (txt, -1, attrs, transform, NULL, &transformed_text, &transformed_attrs);
-
-  g_free (txt);
-  if (attrs)
-    pango_attr_list_unref (attrs);
 
   layout = pango_layout_new (context);
 
-  pango_layout_set_text (layout, transformed_text, -1);
-  g_free (transformed_text);
+  if (opt_markup)
+    pango_layout_set_markup (layout, text, -1);
+  else
+    pango_layout_set_text (layout, text, -1);
 
-  if (transformed_attrs)
-    {
-      pango_layout_set_attributes (layout, transformed_attrs);
-      pango_attr_list_unref (transformed_attrs);
-    }
+  pango_layout_set_text_transform (layout, transform);
 
   pango_layout_set_auto_dir (layout, opt_auto_dir);
   pango_layout_set_ellipsize (layout, opt_ellipsize);
