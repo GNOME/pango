@@ -254,6 +254,12 @@ pango_layout_finalize (GObject *object)
   if (layout->attrs)
     pango_attr_list_unref (layout->attrs);
 
+  if (layout->orig_attrs)
+    pango_attr_list_unref (layout->orig_attrs);
+
+  if (layout->orig_text != layout->text)
+    g_free (layout->orig_text);
+
   g_free (layout->text);
 
   if (layout->font_desc)
@@ -684,6 +690,8 @@ pango_layout_get_line_spacing (PangoLayout *layout)
   return layout->line_spacing;
 }
 
+static void apply_text_transform (PangoLayout *layout);
+
 /**
  * pango_layout_set_attributes:
  * @layout: a `PangoLayout`
@@ -697,31 +705,22 @@ void
 pango_layout_set_attributes (PangoLayout   *layout,
                              PangoAttrList *attrs)
 {
-  PangoAttrList *old_attrs;
-
   g_return_if_fail (layout != NULL);
 
-  /* Both empty */
-  if (!attrs && !layout->attrs)
+  if (!attrs && !layout->orig_attrs)
     return;
 
-  if (layout->attrs &&
-      pango_attr_list_equal (layout->attrs, attrs))
+  if (attrs && layout->orig_attrs &&
+      pango_attr_list_equal (attrs, layout->orig_attrs))
     return;
 
-  old_attrs = layout->attrs;
+  g_clear_pointer (&layout->orig_attrs, pango_attr_list_unref);
+  layout->orig_attrs = pango_attr_list_ref (attrs);
 
-  /* We always clear lines such that this function can be called
-   * whenever attrs changes.
-   */
-  layout->attrs = attrs;
-  if (layout->attrs)
-    pango_attr_list_ref (layout->attrs);
+  apply_text_transform (layout);
 
   layout_changed (layout);
 
-  if (old_attrs)
-    pango_attr_list_unref (old_attrs);
   layout->tab_width = -1;
 }
 
@@ -738,7 +737,7 @@ pango_layout_get_attributes (PangoLayout *layout)
 {
   g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
 
-  return layout->attrs;
+  return layout->orig_attrs;
 }
 
 /**
@@ -1222,28 +1221,21 @@ pango_layout_set_text (PangoLayout *layout,
   g_return_if_fail (layout != NULL);
   g_return_if_fail (length == 0 || text != NULL);
 
-  old_text = layout->text;
+  old_text = layout->orig_text;
+  if (layout->text == layout->orig_text)
+    layout->text = NULL;
 
   if (length < 0)
-    {
-      layout->length = strlen (text);
-      layout->text = g_strndup (text, layout->length);
-    }
+    layout->orig_text = g_strdup (text);
   else if (length > 0)
-    {
-      /* This is not exactly what we want.  We don't need the padding...
-       */
-      layout->length = length;
-      layout->text = g_strndup (text, length);
-    }
+    /* This is not exactly what we want.  We don't need the padding...
+     */
+    layout->orig_text = g_strndup (text, length);
   else
-    {
-      layout->length = 0;
-      layout->text = g_malloc0 (1);
-    }
+    layout->orig_text = g_malloc0 (1);
 
   /* validate it, and replace invalid bytes with -1 */
-  start = layout->text;
+  start = layout->orig_text;
   for (;;) {
     gboolean valid;
 
@@ -1263,14 +1255,16 @@ pango_layout_set_text (PangoLayout *layout,
     start = end;
   }
 
-  if (start != layout->text)
+  if (start != layout->orig_text)
     /* TODO: Write out the beginning excerpt of text? */
     g_warning ("Invalid UTF-8 string passed to pango_layout_set_text()");
 
-  layout->n_chars = pango_utf8_strlen (layout->text, -1);
-  layout->length = strlen (layout->text);
+  layout->n_chars = pango_utf8_strlen (layout->orig_text, -1);
+  layout->length = strlen (layout->orig_text);
 
   layout_changed (layout);
+
+  apply_text_transform (layout);
 
   g_free (old_text);
 }
@@ -1292,10 +1286,10 @@ pango_layout_get_text (PangoLayout *layout)
 
   /* We don't ever want to return NULL as the text.
    */
-  if (G_UNLIKELY (!layout->text))
+  if (G_UNLIKELY (!layout->orig_text))
     return "";
 
-  return layout->text;
+  return layout->orig_text;
 }
 
 /**
@@ -7256,4 +7250,45 @@ pango_layout_iter_get_layout_extents (PangoLayoutIter *iter,
     return;
 
   pango_layout_get_extents (iter->layout, ink_rect, logical_rect);
+}
+
+static void
+apply_text_transform (PangoLayout *layout)
+{
+  if (layout->orig_text == NULL)
+    return;
+
+  if (layout->text != layout->orig_text)
+    g_clear_pointer (&layout->text, g_free);
+  g_clear_pointer (&layout->attrs, pango_attr_list_unref);
+
+  if (layout->transform != PANGO_TEXT_TRANSFORM_NONE)
+    pango_transform_text (layout->orig_text, -1,
+                          layout->orig_attrs,
+                          layout->transform,
+                          NULL,
+                          &layout->text,
+                          &layout->attrs);
+  else
+    {
+      layout->text = layout->orig_text;
+      layout->attrs = pango_attr_list_ref (layout->orig_attrs);
+    }
+
+  layout->length = strlen (layout->text);
+  layout->n_chars = g_utf8_strlen (layout->text, -1);
+
+  layout_changed (layout);
+}
+
+void
+pango_layout_set_text_transform (PangoLayout        *layout,
+                                 PangoTextTransform  transform)
+{
+  if (layout->transform == transform)
+    return;
+
+  layout->transform = transform;
+
+  apply_text_transform (layout);
 }

@@ -26,6 +26,7 @@
 #include <pango/pango-context.h>
 #include <pango/pango-glyph-item.h>
 #include <pango/pango-tabs.h>
+#include <pango/pango-utils.h>
 
 G_BEGIN_DECLS
 
@@ -181,6 +182,10 @@ void           pango_layout_set_markup_with_accel (PangoLayout    *layout,
 						   int             length,
 						   gunichar        accel_marker,
 						   gunichar       *accel_char);
+
+PANGO_AVAILABLE_IN_1_44
+void           pango_layout_set_text_transform   (PangoLayout        *layout,
+                                                  PangoTextTransform  transform);
 
 PANGO_AVAILABLE_IN_ALL
 void           pango_layout_set_font_description (PangoLayout                *layout,
