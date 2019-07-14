@@ -122,12 +122,6 @@ struct _PangoGlyphString {
   gint num_glyphs;
 
   PangoGlyphInfo *glyphs;
-
-  /* This is a memory inefficient way of representing the information
-   * here - each value gives the byte index within the text
-   * corresponding to the glyph string of the start of the cluster to
-   * which the glyph belongs.
-   */
   gint *log_clusters;
 
   /*< private >*/

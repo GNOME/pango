@@ -72,10 +72,10 @@ struct _PangoAnalysis
   PangoFont *font;
 
   guint8 level;
-  guint8 gravity; /* PangoGravity */
+  guint8 gravity;
   guint8 flags;
 
-  guint8 script; /* PangoScript */
+  guint8 script;
   PangoLanguage *language;
 
   GSList *extra_attrs;
