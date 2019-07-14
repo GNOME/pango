@@ -547,6 +547,11 @@ void               pango_attr_list_splice        (PangoAttrList  *list,
 						  PangoAttrList  *other,
 						  gint            pos,
 						  gint            len);
+PANGO_AVAILABLE_IN_1_44
+void               pango_attr_list_update        (PangoAttrList  *list,
+                                                  int             pos,
+                                                  int             remove,
+                                                  int             add);
 
 PANGO_AVAILABLE_IN_1_2
 PangoAttrList *pango_attr_list_filter (PangoAttrList       *list,
