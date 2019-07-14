@@ -23,6 +23,7 @@ pango_break
 pango_get_log_attrs
 pango_find_paragraph_boundary
 pango_default_break
+pango_tailor_break
 PangoLogAttr
 
 <SUBSECTION>
@@ -71,6 +72,7 @@ PANGO_CONTEXT_CLASS
 PANGO_IS_CONTEXT
 PANGO_IS_CONTEXT_CLASS
 PANGO_CONTEXT_GET_CLASS
+PANGO_TYPE_ITEM
 
 <SUBSECTION Private>
 pango_context_get_type
