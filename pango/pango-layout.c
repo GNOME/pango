@@ -3958,51 +3958,61 @@ process_line (PangoLayout    *layout,
   state->line_start_offset = state->start_offset;
 }
 
+static gboolean
+can_break_together (PangoAnalysis *analysis1,
+                    PangoAnalysis *analysis2)
+{
+  return analysis1->level == analysis2->level &&
+         analysis1->script == analysis2->script &&
+         analysis1->language == analysis2->language;
+}
+
 static void
 get_items_log_attrs (const char   *text,
+                     int           length,
 		     GList        *items,
 		     PangoLogAttr *log_attrs,
-		     int           para_delimiter_len)
+                     int           log_attrs_len)
 {
   int offset = 0;
   int index = 0;
+  int num_bytes = 0;
+  int num_chars = 0;
+  PangoAnalysis analysis = { NULL };
+  GList *l;
 
-  while (items)
+  analysis.level = -1;
+
+  pango_default_break (text, length, &analysis, log_attrs, log_attrs_len);
+
+  for (l = items; l; l = l->next)
     {
-      PangoItem tmp_item = *(PangoItem *)items->data;
+      PangoItem *item = l->data;
 
-      /* Accumulate all the consecutive items that match in language
-       * characteristics, ignoring font, style tags, etc.
-       */
-      while (items->next)
-	{
-	  PangoItem *next_item = items->next->data;
+      if (l == items)
+        {
+          analysis = item->analysis;
+          index = item->offset;
+          offset = 0;
+        }
 
-	  /* FIXME: Handle language tags */
-	  tmp_item.length += next_item->length;
-	  tmp_item.num_chars += next_item->num_chars;
+      if (can_break_together (&analysis, &item->analysis))
+        {
+          num_bytes += item->length;
+          num_chars += item->num_chars;
+        }
+      else
+        {
+          pango_tailor_break (text + index,
+                              num_bytes,
+                              &analysis,
+                              log_attrs + offset,
+                              num_chars + 1);
 
-	  items = items->next;
-	}
-
-      /* Break the paragraph delimiters with the last item */
-      if (items->next == NULL)
-	{
-	  tmp_item.num_chars += pango_utf8_strlen (text + index + tmp_item.length, para_delimiter_len);
-	  tmp_item.length += para_delimiter_len;
-	}
-
-      /* XXX This is wrong.  we should call pango_default_break on the entire
-       * layout text and then tailor_break on each language change, like
-       * pango_get_log_attrs does.
-       */
-      pango_break (text + index, tmp_item.length, &tmp_item.analysis,
-		   log_attrs + offset, tmp_item.num_chars + 1);
-
-      offset += tmp_item.num_chars;
-      index += tmp_item.length;
-
-      items = items->next;
+          analysis = item->analysis;
+          index += num_bytes;
+          offset += num_chars;
+        }
     }
 }
 
@@ -4246,9 +4256,11 @@ pango_layout_check_lines (PangoLayout *layout)
           pango_attr_list_unref (no_break_attrs);
         }
 
-      get_items_log_attrs (start, state.items,
+      get_items_log_attrs (start,
+                           delimiter_index + delim_len,
+                           state.items,
 			   layout->log_attrs + start_offset,
-			   delim_len);
+                           layout->n_chars + 1 - start_offset);
 
       state.base_dir = base_dir;
       state.line_of_par = 1;
