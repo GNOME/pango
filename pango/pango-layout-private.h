@@ -36,12 +36,16 @@ struct _PangoLayout
 
   /* Referenced items */
   PangoContext *context;
-  PangoAttrList *attrs;
+  PangoAttrList *attrs; /* may be transformed */
   PangoFontDescription *font_desc;
   PangoTabArray *tabs;
 
   /* Dupped */
-  gchar *text;
+  char *text; /* may be transformed */
+
+  char *orig_text;
+  PangoAttrList *orig_attrs;
+  PangoTextTransform transform;
 
   /* Value fields.  These will be memcpy'd in _copy() */
   int copy_begin;
