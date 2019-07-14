@@ -71,6 +71,7 @@ guint16 opt_fg_alpha = 65535;
 gboolean opt_bg_set = FALSE;
 PangoColor opt_bg_color = {65535, 65535, 65535};
 guint16 opt_bg_alpha = 65535;
+const char *opt_text_transform = NULL;
 
 /* Text (or markup) to render */
 static char *text;
@@ -88,6 +89,21 @@ fail (const char *format, ...)
   exit (1);
 }
 
+static PangoTextTransform
+transform_from_string (const char *text)
+{
+  if (text == NULL)
+    return PANGO_TEXT_TRANSFORM_NONE;
+  else if (strcmp (text, "uppercase") == 0)
+    return PANGO_TEXT_TRANSFORM_UPPERCASE;
+  else if (strcmp (text, "lowercase") == 0)
+    return PANGO_TEXT_TRANSFORM_LOWERCASE;
+  else if (strcmp (text, "capitalize") == 0)
+    return PANGO_TEXT_TRANSFORM_CAPITALIZE;
+  else
+    return PANGO_TEXT_TRANSFORM_NONE;
+}
+
 static PangoLayout *
 make_layout(PangoContext *context,
 	    const char   *text,
@@ -96,12 +112,43 @@ make_layout(PangoContext *context,
   static PangoFontDescription *font_description;
   PangoAlignment align;
   PangoLayout *layout;
+  char *transformed_text;
+  PangoAttrList *transformed_attrs;
+  PangoTextTransform transform = transform_from_string (opt_text_transform);
+  char *txt;
+  PangoAttrList *attrs;
+
+  if (opt_markup)
+    {
+      GError *error = NULL;
+      if (!pango_parse_markup (text, -1, 0, &attrs, &txt, NULL, &error))
+        {
+          g_error ("Failed to parse markup: %s", error->message);
+          exit (1);
+        }
+    }
+  else
+    {
+      txt = g_strdup (text);
+      attrs = NULL;
+    }
+
+  pango_transform_text (txt, -1, attrs, transform, NULL, &transformed_text, &transformed_attrs);
+
+  g_free (txt);
+  if (attrs)
+    pango_attr_list_unref (attrs);
 
   layout = pango_layout_new (context);
-  if (opt_markup)
-    pango_layout_set_markup (layout, text, -1);
-  else
-    pango_layout_set_text (layout, text, -1);
+
+  pango_layout_set_text (layout, transformed_text, -1);
+  g_free (transformed_text);
+
+  if (transformed_attrs)
+    {
+      pango_layout_set_attributes (layout, transformed_attrs);
+      pango_attr_list_unref (transformed_attrs);
+    }
 
   pango_layout_set_auto_dir (layout, opt_auto_dir);
   pango_layout_set_ellipsize (layout, opt_ellipsize);
@@ -740,6 +787,8 @@ parse_options (int argc, char *argv[])
      "Enable single-paragraph mode",					NULL},
     {"text",		't', 0, G_OPTION_ARG_STRING,			&opt_text,
      "Text to display (instead of a file)",			    "string"},
+    {"text-transform",	0, 0, G_OPTION_ARG_STRING,			&opt_text_transform,
+     "Transformation to apply",			                    "transform"},
     {"version",		0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, &show_version,
      "Show version numbers",						NULL},
     {"waterfall",	0, 0, G_OPTION_ARG_NONE,			&opt_waterfall,
