@@ -84,98 +84,65 @@ append_text (GString    *s,
 static void
 append_attribute (PangoAttribute *attr, GString *string)
 {
+  GEnumClass *class;
+  GEnumValue *value;
+
   g_string_append_printf (string, "[%u,%u]", attr->start_index, attr->end_index);
+
+  class = g_type_class_ref (pango_attr_type_get_type ());
+  value = g_enum_get_value (class, attr->klass->type);
+  g_string_append_printf (string, "%s=", value->value_nick);
+  g_type_class_unref (class);
+
   switch (attr->klass->type)
     {
     case PANGO_ATTR_LANGUAGE:
-      g_string_append_printf (string, "language=%s", pango_language_to_string (((PangoAttrLanguage *)attr)->value));
+      g_string_append_printf (string, "%s", pango_language_to_string (((PangoAttrLanguage *)attr)->value));
       break;
     case PANGO_ATTR_FAMILY:
-      g_string_append_printf (string, "family=%s", ((PangoAttrString*)attr)->value);
+    case PANGO_ATTR_FONT_FEATURES:
+      g_string_append_printf (string, "%s", ((PangoAttrString*)attr)->value);
       break;
     case PANGO_ATTR_STYLE:
-      g_string_append_printf (string, "style=%d", ((PangoAttrInt*)attr)->value);
-      break;
     case PANGO_ATTR_WEIGHT:
-      g_string_append_printf (string, "weight=%d", ((PangoAttrInt*)attr)->value);
-      break;
     case PANGO_ATTR_VARIANT:
-      g_string_append_printf (string, "variant=%d", ((PangoAttrInt*)attr)->value);
-      break;
     case PANGO_ATTR_STRETCH:
-      g_string_append_printf (string, "stretch=%d", ((PangoAttrInt*)attr)->value);
+    case PANGO_ATTR_UNDERLINE:
+    case PANGO_ATTR_STRIKETHROUGH:
+    case PANGO_ATTR_RISE:
+    case PANGO_ATTR_FALLBACK:
+    case PANGO_ATTR_LETTER_SPACING:
+    case PANGO_ATTR_GRAVITY:
+    case PANGO_ATTR_GRAVITY_HINT:
+    case PANGO_ATTR_FOREGROUND_ALPHA:
+    case PANGO_ATTR_BACKGROUND_ALPHA:
+      g_string_append_printf (string, "%d", ((PangoAttrInt*)attr)->value);
       break;
     case PANGO_ATTR_SIZE:
     case PANGO_ATTR_ABSOLUTE_SIZE:
-      g_string_append_printf (string, "size=%d%s", ((PangoAttrSize*)attr)->size, ((PangoAttrSize*)attr)->absolute ? "(abs)" : "");
+      g_string_append_printf (string, "%d", ((PangoAttrSize*)attr)->size);
       break;
     case PANGO_ATTR_FONT_DESC:
       {
         char *desc = pango_font_description_to_string (((PangoAttrFontDesc*)attr)->desc);
-      g_string_append_printf (string, "font=%s", desc);
+        g_string_append_printf (string, "%s", desc);
         g_free (desc);
       }
       break;
 
     case PANGO_ATTR_FOREGROUND:
-      g_string_append_printf (string, "fg=%d:%d:%d",
-                              ((PangoAttrColor*)attr)->color.red,
-                              ((PangoAttrColor*)attr)->color.green,
-                              ((PangoAttrColor*)attr)->color.blue);
-      break;
     case PANGO_ATTR_BACKGROUND:
-      g_string_append_printf (string, "bg=%d:%d:%d",
+    case PANGO_ATTR_UNDERLINE_COLOR:
+    case PANGO_ATTR_STRIKETHROUGH_COLOR:
+      g_string_append_printf (string, "%d:%d:%d",
                               ((PangoAttrColor*)attr)->color.red,
                               ((PangoAttrColor*)attr)->color.green,
                               ((PangoAttrColor*)attr)->color.blue);
-      break;
-    case PANGO_ATTR_UNDERLINE:
-      g_string_append_printf (string, "underline=%d", ((PangoAttrInt*)attr)->value);
-      break;
-    case PANGO_ATTR_STRIKETHROUGH:
-      g_string_append_printf (string, "strikethrough=%d", ((PangoAttrInt*)attr)->value);
-      break;
-    case PANGO_ATTR_RISE:
-      g_string_append_printf (string, "rise=%d", ((PangoAttrInt*)attr)->value);
       break;
     case PANGO_ATTR_SHAPE:
-      g_string_append_printf (string, "shape");
       break;
     case PANGO_ATTR_SCALE:
-      g_string_append_printf (string, "scale=%g", ((PangoAttrFloat*)attr)->value);
-      break;
-    case PANGO_ATTR_FALLBACK:
-      g_string_append_printf (string, "fallback=%d", ((PangoAttrInt*)attr)->value);
-      break;
-    case PANGO_ATTR_LETTER_SPACING:
-      g_string_append_printf (string, "letterspacing=%d", ((PangoAttrInt*)attr)->value);
-      break;
-    case PANGO_ATTR_UNDERLINE_COLOR:
-      g_string_append_printf (string, "underlinecolor=%d:%d:%d",
-                              ((PangoAttrColor*)attr)->color.red,
-                              ((PangoAttrColor*)attr)->color.green,
-                              ((PangoAttrColor*)attr)->color.blue);
-      break;
-    case PANGO_ATTR_STRIKETHROUGH_COLOR:
-      g_string_append_printf (string, "strikethroughcolor=%d:%d:%d",
-                              ((PangoAttrColor*)attr)->color.red,
-                              ((PangoAttrColor*)attr)->color.green,
-                              ((PangoAttrColor*)attr)->color.blue);
-      break;
-    case PANGO_ATTR_GRAVITY:
-      g_string_append_printf (string, "gravity=%d", ((PangoAttrInt*)attr)->value);
-      break;
-    case PANGO_ATTR_GRAVITY_HINT:
-      g_string_append_printf (string, "gravityhint=%d", ((PangoAttrInt*)attr)->value);
-      break;
-    case PANGO_ATTR_FONT_FEATURES:
-      g_string_append_printf (string, "features=%s", ((PangoAttrString*)attr)->value);
-      break;
-    case PANGO_ATTR_FOREGROUND_ALPHA:
-      g_string_append_printf (string, "fgalpha=%d", ((PangoAttrInt*)attr)->value);
-      break;
-    case PANGO_ATTR_BACKGROUND_ALPHA:
-      g_string_append_printf (string, "bgalpha=%d", ((PangoAttrInt*)attr)->value);
+      g_string_append_printf (string, "%g", ((PangoAttrFloat*)attr)->value);
       break;
     default:
       g_assert_not_reached ();
