@@ -410,6 +410,7 @@ pango_attr_list_insert_before
 pango_attr_list_change
 pango_attr_list_splice
 pango_attr_list_filter
+pango_attr_list_apply_delta
 PangoAttrFilterFunc
 pango_attr_list_get_iterator
 PangoAttrIterator

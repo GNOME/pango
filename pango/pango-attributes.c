@@ -1599,6 +1599,48 @@ pango_attr_list_change (PangoAttrList  *list,
 }
 
 /**
+ * pango_attr_list_apply_delta:
+ * @list: a #PangoAttrList
+ * @pos: the position of the change
+ * @remove: the number of removed bytes
+ * @add: the number of added bytes
+ *
+ * Update indices of attributes in @list for
+ * a change in the text they refer to.
+ *
+ * The change that this function applies is
+ * removing @remove bytes at position @pos
+ * and inserting @add bytes instead.
+ *
+ * Attributes start and end positions are updated
+ * if they are behind @pos + @remove. Positions
+ * that fall into the (@pos, @pos + @remove) range
+ * are not updated, since we don't know how the
+ * removed and added text affects them.
+ */
+void
+pango_attr_list_apply_delta (PangoAttrList *list,
+                             int             pos,
+                             int             remove,
+                             int             add)
+{
+  GSList *l;
+
+  for (l = list->attributes; l; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+
+      if (attr->end_index < pos)
+        continue;
+
+      if (attr->start_index >= pos + remove)
+        attr->start_index += add - remove;
+      if (attr->end_index >= pos + remove)
+        attr->end_index += add - remove;
+    }
+}
+
+/**
  * pango_attr_list_splice:
  * @list: a #PangoAttrList
  * @other: another #PangoAttrList
