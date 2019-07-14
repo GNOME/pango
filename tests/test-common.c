@@ -84,83 +84,56 @@ done:
 void
 print_attribute (PangoAttribute *attr, GString *string)
 {
-  g_string_append_printf (string, "[%d %d] ", attr->start_index, attr->end_index);
+  GEnumClass *class;
+  GEnumValue *value;
+
+  g_string_append_printf (string, "[%d,%d]", attr->start_index, attr->end_index);
+
+  class = g_type_class_ref (pango_attr_type_get_type ());
+  value = g_enum_get_value (class, attr->klass->type);
+  g_string_append_printf (string, "%s=", value->value_nick);
+  g_type_class_unref (class);
+
   switch (attr->klass->type)
     {
     case PANGO_ATTR_LANGUAGE:
-      g_string_append_printf (string,"language %s\n", pango_language_to_string (((PangoAttrLanguage *)attr)->value));
+      g_string_append_printf (string, "%s", pango_language_to_string (((PangoAttrLanguage *)attr)->value));
       break;
     case PANGO_ATTR_FAMILY:
-      g_string_append_printf (string,"family %s\n", ((PangoAttrString *)attr)->value);
+    case PANGO_ATTR_FONT_FEATURES:
+      g_string_append_printf (string, "%s", ((PangoAttrString *)attr)->value);
       break;
     case PANGO_ATTR_STYLE:
-      g_string_append_printf (string,"style %d\n", ((PangoAttrInt *)attr)->value);
-      break;
     case PANGO_ATTR_WEIGHT:
-      g_string_append_printf (string,"weight %d\n", ((PangoAttrInt *)attr)->value);
-      break;
     case PANGO_ATTR_VARIANT:
-      g_string_append_printf (string,"variant %d\n", ((PangoAttrInt *)attr)->value);
-      break;
     case PANGO_ATTR_STRETCH:
-      g_string_append_printf (string,"stretch %d\n", ((PangoAttrInt *)attr)->value);
-      break;
     case PANGO_ATTR_SIZE:
-      g_string_append_printf (string,"size %d\n", ((PangoAttrSize *)attr)->size);
+    case PANGO_ATTR_ABSOLUTE_SIZE:
+    case PANGO_ATTR_UNDERLINE:
+    case PANGO_ATTR_STRIKETHROUGH:
+    case PANGO_ATTR_RISE:
+    case PANGO_ATTR_FALLBACK:
+    case PANGO_ATTR_LETTER_SPACING:
+    case PANGO_ATTR_GRAVITY:
+    case PANGO_ATTR_GRAVITY_HINT:
+    case PANGO_ATTR_FOREGROUND_ALPHA:
+    case PANGO_ATTR_BACKGROUND_ALPHA:
+      g_string_append_printf (string, "%d", ((PangoAttrInt *)attr)->value);
       break;
     case PANGO_ATTR_FONT_DESC:
-      g_string_append_printf (string,"font %s\n", pango_font_description_to_string (((PangoAttrFontDesc *)attr)->desc));
+      g_string_append_printf (string, "%s", pango_font_description_to_string (((PangoAttrFontDesc *)attr)->desc));
       break;
     case PANGO_ATTR_FOREGROUND:
-      g_string_append_printf (string,"foreground %s\n", pango_color_to_string (&((PangoAttrColor *)attr)->color));
-      break;
     case PANGO_ATTR_BACKGROUND:
-      g_string_append_printf (string,"background %s\n", pango_color_to_string (&((PangoAttrColor *)attr)->color));
-      break;
-    case PANGO_ATTR_UNDERLINE:
-      g_string_append_printf (string,"underline %d\n", ((PangoAttrInt *)attr)->value);
-      break;
-    case PANGO_ATTR_STRIKETHROUGH:
-      g_string_append_printf (string,"strikethrough %d\n", ((PangoAttrInt *)attr)->value);
-      break;
-    case PANGO_ATTR_RISE:
-      g_string_append_printf (string,"rise %d\n", ((PangoAttrInt *)attr)->value);
+    case PANGO_ATTR_UNDERLINE_COLOR:
+    case PANGO_ATTR_STRIKETHROUGH_COLOR:
+      g_string_append_printf (string, "%s", pango_color_to_string (&((PangoAttrColor *)attr)->color));
       break;
     case PANGO_ATTR_SHAPE:
-      g_string_append_printf (string,"shape\n");
+      g_string_append_printf (string, "shape");
       break;
     case PANGO_ATTR_SCALE:
-      g_string_append_printf (string,"scale %f\n", ((PangoAttrFloat *)attr)->value);
-      break;
-    case PANGO_ATTR_FALLBACK:
-      g_string_append_printf (string,"fallback %d\n", ((PangoAttrInt *)attr)->value);
-      break;
-    case PANGO_ATTR_LETTER_SPACING:
-      g_string_append_printf (string,"letter-spacing %d\n", ((PangoAttrInt *)attr)->value);
-      break;
-    case PANGO_ATTR_UNDERLINE_COLOR:
-      g_string_append_printf (string,"underline-color %s\n", pango_color_to_string (&((PangoAttrColor *)attr)->color));
-      break;
-    case PANGO_ATTR_STRIKETHROUGH_COLOR:
-      g_string_append_printf (string,"strikethrough-color %s\n", pango_color_to_string (&((PangoAttrColor *)attr)->color));
-      break;
-    case PANGO_ATTR_ABSOLUTE_SIZE:
-      g_string_append_printf (string,"absolute-size %d\n", ((PangoAttrSize *)attr)->size);
-      break;
-    case PANGO_ATTR_GRAVITY:
-      g_string_append_printf (string,"gravity %d\n", ((PangoAttrInt *)attr)->value);
-      break;
-    case PANGO_ATTR_GRAVITY_HINT:
-      g_string_append_printf (string,"gravity-hint %d\n", ((PangoAttrInt *)attr)->value);
-      break;
-    case PANGO_ATTR_FONT_FEATURES:
-      g_string_append_printf (string,"font-features %s\n", ((PangoAttrString *)attr)->value);
-      break;
-    case PANGO_ATTR_FOREGROUND_ALPHA:
-      g_string_append_printf (string,"foreground-alpha %04x\n", ((PangoAttrInt *)attr)->value);
-      break;
-    case PANGO_ATTR_BACKGROUND_ALPHA:
-      g_string_append_printf (string,"background-alpha %04x\n", ((PangoAttrInt *)attr)->value);
+      g_string_append_printf (string,"%f", ((PangoAttrFloat *)attr)->value);
       break;
     default:
       g_assert_not_reached ();
@@ -185,6 +158,7 @@ print_attr_list (PangoAttrList *attrs, GString *string)
       {
         PangoAttribute *attr = l->data;
         print_attribute (attr, string);
+        g_string_append (string, "\n");
       }
     g_slist_free_full (list, (GDestroyNotify)pango_attribute_destroy);
   } while (pango_attr_iterator_next (iter));
@@ -201,8 +175,8 @@ print_attributes (GSList *attrs, GString *string)
     {
       PangoAttribute *attr = l->data;
 
-      g_string_append (string, "  ");
       print_attribute (attr, string);
+      g_string_append (string, "\n");
     }
 }
 
@@ -218,3 +192,18 @@ attr_list_to_list (PangoAttrList *attrs)
 {
   return ((AL*)attrs)->attributes;
 }
+
+const char *
+get_script_name (GUnicodeScript s)
+{
+  GEnumClass *class;
+  GEnumValue *value;
+  const char *nick;
+
+  class = g_type_class_ref (g_unicode_script_get_type ());
+  value = g_enum_get_value (class, s);
+  nick = value->value_nick;
+  g_type_class_unref (class);
+  return nick;
+}
+

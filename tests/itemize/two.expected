@@ -1,8 +1,8 @@
 <span font="Cantarell 11">one <span font_features="tnum=0">tw<u>o</u> <span font_features="dlig=1">two</span> </span>th<b>r</b>ee</span>
 
-Items:  one         |tw                   |o                                     |                     |two                                        |                     |th          |r                |ee          
-Font:   Cantarell 11|Cantarell 11         |Cantarell 11                          |Cantarell 11         |Cantarell 11                               |Cantarell 11         |Cantarell 11|Cantarell Bold 11|Cantarell 11
-Script: Latn        |Latn                 |Latn                                  |Latn                 |Latn                                       |Latn                 |Latn        |Latn             |Latn        
-Lang:   en-us       |en-us                |en-us                                 |en-us                |en-us                                      |en-us                |en-us       |en-us            |en-us       
-Bidi:   0           |0                    |0                                     |0                    |0                                          |0                    |0           |0                |0           
-Attrs:              |[4,12]features=tnum=0|[4,12]features=tnum=0,[6,7]underline=1|[4,12]features=tnum=0|[4,12]features=tnum=0,[8,11]features=dlig=1|[4,12]features=tnum=0|            |                 |            
+Items:  one         |tw                        |o                                          |                          |two                                                  |                          |th          |r                |ee          
+Font:   Cantarell 11|Cantarell 11              |Cantarell 11                               |Cantarell 11              |Cantarell 11                                         |Cantarell 11              |Cantarell 11|Cantarell Bold 11|Cantarell 11
+Script: latin       |latin                     |latin                                      |latin                     |latin                                                |latin                     |latin       |latin            |latin       
+Lang:   en-us       |en-us                     |en-us                                      |en-us                     |en-us                                                |en-us                     |en-us       |en-us            |en-us       
+Bidi:   0           |0                         |0                                          |0                         |0                                                    |0                         |0           |0                |0           
+Attrs:              |[4,12]font-features=tnum=0|[4,12]font-features=tnum=0,[6,7]underline=1|[4,12]font-features=tnum=0|[4,12]font-features=tnum=0,[8,11]font-features=dlig=1|[4,12]font-features=tnum=0|            |                 |            

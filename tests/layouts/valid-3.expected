@@ -1,22 +1,22 @@
 ABC😀️D
 
----
+--- parameters
 
 wrapped: 0
 ellipsized: 0
 lines: 2
 
----
+--- attributes
 
 range 0 2147483647
 
----
+--- lines
 
 i=1, index=0, paragraph-start=1, dir=ltr 'ABC😀️D
 '
 i=2, index=12, paragraph-start=1, dir=ltr ''
 
----
+--- runs
 
 i=1, index=0, chars=3, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'ABC'
 i=2, index=3, chars=2, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, '😀️'

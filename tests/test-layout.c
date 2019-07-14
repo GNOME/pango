@@ -279,17 +279,17 @@ test_file (const gchar *filename, GString *string)
   pango_layout_set_wrap (layout, wrap);
 
   g_string_append (string, pango_layout_get_text (layout));
-  g_string_append (string, "\n---\n\n");
+  g_string_append (string, "\n--- parameters\n\n");
   g_string_append_printf (string, "wrapped: %d\n", pango_layout_is_wrapped (layout));
   g_string_append_printf (string, "ellipsized: %d\n", pango_layout_is_ellipsized (layout));
   g_string_append_printf (string, "lines: %d\n", pango_layout_get_line_count (layout));
   if (width != 0)
     g_string_append_printf (string, "width: %d\n", pango_layout_get_width (layout));
-  g_string_append (string, "\n---\n\n");
+  g_string_append (string, "\n--- attributes\n\n");
   print_attr_list (pango_layout_get_attributes (layout), string);
-  g_string_append (string, "\n---\n\n");
+  g_string_append (string, "\n--- lines\n\n");
   dump_lines (layout, string);
-  g_string_append (string, "\n---\n\n");
+  g_string_append (string, "\n--- runs\n\n");
   dump_runs (layout, string);
 
   g_object_unref (layout);

@@ -104,9 +104,9 @@ test_list (void)
   s = g_string_new ("");
   print_attributes (attr_list_to_list (list), s);
   g_assert_cmpstr (s->str, ==,
-"  [0 -1] size 10\n"
-"  [0 -1] size 20\n"
-"  [0 -1] size 30\n");
+"[0,-1]size=10\n"
+"[0,-1]size=20\n"
+"[0,-1]size=30\n");
   g_string_free (s, FALSE);
   pango_attr_list_unref (list);
 
@@ -129,10 +129,10 @@ test_list (void)
   s = g_string_new ("");
   print_attributes (attr_list_to_list (list), s);
   g_assert_cmpstr (s->str, ==,
-"  [0 -1] size 10\n"
-"  [0 -1] size 30\n"
-"  [10 40] size 40\n"
-"  [10 20] size 20\n");
+"[0,-1]size=10\n"
+"[0,-1]size=30\n"
+"[10,40]size=40\n"
+"[10,20]size=20\n");
   g_string_free (s, FALSE);
   pango_attr_list_unref (list);
 }
@@ -162,9 +162,9 @@ test_list_change (void)
   s = g_string_new ("");
   print_attributes (attr_list_to_list (list), s);
   g_assert_cmpstr (s->str, ==,
-"  [0 10] size 10\n"
-"  [0 30] weight 700\n"
-"  [20 30] size 20\n");
+"[0,10]size=10\n"
+"[0,30]weight=700\n"
+"[20,30]size=20\n");
   g_string_free (s, FALSE);
 
   /* simple insertion with pango_attr_list_change */
@@ -176,10 +176,10 @@ test_list_change (void)
   s = g_string_new ("");
   print_attributes (attr_list_to_list (list), s);
   g_assert_cmpstr (s->str, ==,
-"  [0 10] size 10\n"
-"  [0 30] weight 700\n"
-"  [10 20] variant 1\n"
-"  [20 30] size 20\n");
+"[0,10]size=10\n"
+"[0,30]weight=700\n"
+"[10,20]variant=1\n"
+"[20,30]size=20\n");
   g_string_free (s, FALSE);
 
   /* insertion with splitting */
@@ -191,12 +191,12 @@ test_list_change (void)
   s = g_string_new ("");
   print_attributes (attr_list_to_list (list), s);
   g_assert_cmpstr (s->str, ==,
-"  [0 10] size 10\n"
-"  [0 15] weight 700\n"
-"  [10 20] variant 1\n"
-"  [15 20] weight 300\n"
-"  [20 30] size 20\n"
-"  [20 30] weight 700\n");
+"[0,10]size=10\n"
+"[0,15]weight=700\n"
+"[10,20]variant=1\n"
+"[15,20]weight=300\n"
+"[20,30]size=20\n"
+"[20,30]weight=700\n");
   g_string_free (s, FALSE);
 
   /* insertion with joining */
@@ -208,12 +208,12 @@ test_list_change (void)
   s = g_string_new ("");
   print_attributes (attr_list_to_list (list), s);
   g_assert_cmpstr (s->str, ==,
-"  [0 5] size 10\n"
-"  [0 15] weight 700\n"
-"  [5 30] size 20\n"
-"  [10 20] variant 1\n"
-"  [15 20] weight 300\n"
-"  [20 30] weight 700\n");
+"[0,5]size=10\n"
+"[0,15]weight=700\n"
+"[5,30]size=20\n"
+"[10,20]variant=1\n"
+"[15,20]weight=300\n"
+"[20,30]weight=700\n");
   g_string_free (s, FALSE);
 
   pango_attr_list_unref (list);
@@ -245,9 +245,9 @@ test_list_splice (void)
   s = g_string_new ("");
   print_attributes (attr_list_to_list (base), s);
   g_assert_cmpstr (s->str, ==,
-"  [0 -1] size 10\n"
-"  [10 15] weight 700\n"
-"  [20 30] variant 1\n");
+"[0,-1]size=10\n"
+"[10,15]weight=700\n"
+"[20,30]variant=1\n");
   g_string_free (s, FALSE);
 
   /* splice in an empty list */
@@ -258,9 +258,9 @@ test_list_splice (void)
   s = g_string_new ("");
   print_attributes (attr_list_to_list (list), s);
   g_assert_cmpstr (s->str, ==,
-"  [0 -1] size 10\n"
-"  [10 20] weight 700\n"
-"  [25 35] variant 1\n");
+"[0,-1]size=10\n"
+"[10,20]weight=700\n"
+"[25,35]variant=1\n");
   g_string_free (s, FALSE);
 
   pango_attr_list_unref (list);
@@ -283,12 +283,12 @@ test_list_splice (void)
   s = g_string_new ("");
   print_attributes (attr_list_to_list (list), s);
   g_assert_cmpstr (s->str, ==,
-"  [0 11] size 10\n"
-"  [10 20] weight 700\n"
-"  [11 14] size 20\n"
-"  [13 15] stretch 2\n"
-"  [14 -1] size 10\n"
-"  [25 35] variant 1\n");
+"[0,11]size=10\n"
+"[10,20]weight=700\n"
+"[11,14]size=20\n"
+"[13,15]stretch=2\n"
+"[14,-1]size=10\n"
+"[25,35]variant=1\n");
   g_string_free (s, FALSE);
 
   pango_attr_list_unref (list);
@@ -334,9 +334,9 @@ test_list_filter (void)
   s = g_string_new ("");
   print_attributes (attr_list_to_list (list), s);
   g_assert_cmpstr (s->str, ==,
-"  [0 -1] size 10\n"
-"  [10 20] stretch 2\n"
-"  [20 -1] weight 700\n");
+"[0,-1]size=10\n"
+"[10,20]stretch=2\n"
+"[20,-1]weight=700\n");
   g_string_free (s, FALSE);
 
   out = pango_attr_list_filter (list, never_true, NULL);
@@ -348,14 +348,14 @@ test_list_filter (void)
   s = g_string_new ("");
   print_attributes (attr_list_to_list (list), s);
   g_assert_cmpstr (s->str, ==,
-"  [0 -1] size 10\n"
-"  [10 20] stretch 2\n");
+"[0,-1]size=10\n"
+"[10,20]stretch=2\n");
   g_string_free (s, FALSE);
 
   s = g_string_new ("");
   print_attributes (attr_list_to_list (out), s);
   g_assert_cmpstr (s->str, ==,
-"  [20 -1] weight 700\n");
+"[20,-1]weight=700\n");
   g_string_free (s, FALSE);
 
   pango_attr_list_unref (list);
@@ -514,8 +514,8 @@ test_iter_get_font (void)
   s = g_string_new ("");
   print_attributes (attrs, s);
   g_assert_cmpstr (s->str, ==,
-"  [20 -1] rise 100\n"
-"  [20 -1] fallback 0\n");
+"[20,-1]rise=100\n"
+"[20,-1]fallback=0\n");
   g_string_free (s, FALSE);
   g_slist_free_full (attrs, (GDestroyNotify)pango_attribute_destroy);
 
@@ -560,8 +560,8 @@ test_iter_get_attrs (void)
   s = g_string_new ("");
   print_attributes (attrs, s);
   g_assert_cmpstr (s->str, ==,
-"  [0 -1] size 10240\n"
-"  [0 -1] family Times\n");
+"[0,-1]size=10240\n"
+"[0,-1]family=Times\n");
   g_string_free (s, FALSE);
   g_slist_free_full (attrs, (GDestroyNotify)pango_attribute_destroy);
 
@@ -570,10 +570,10 @@ test_iter_get_attrs (void)
   s = g_string_new ("");
   print_attributes (attrs, s);
   g_assert_cmpstr (s->str, ==,
-"  [0 -1] size 10240\n"
-"  [0 -1] family Times\n"
-"  [10 30] stretch 2\n"
-"  [10 20] language ja-jp\n");
+"[0,-1]size=10240\n"
+"[0,-1]family=Times\n"
+"[10,30]stretch=2\n"
+"[10,20]language=ja-jp\n");
   g_string_free (s, FALSE);
   g_slist_free_full (attrs, (GDestroyNotify)pango_attribute_destroy);
 
@@ -582,11 +582,11 @@ test_iter_get_attrs (void)
   s = g_string_new ("");
   print_attributes (attrs, s);
   g_assert_cmpstr (s->str, ==,
-"  [0 -1] size 10240\n"
-"  [0 -1] family Times\n"
-"  [10 30] stretch 2\n"
-"  [20 -1] rise 100\n"
-"  [20 -1] fallback 0\n");
+"[0,-1]size=10240\n"
+"[0,-1]family=Times\n"
+"[10,30]stretch=2\n"
+"[20,-1]rise=100\n"
+"[20,-1]fallback=0\n");
   g_string_free (s, FALSE);
   g_slist_free_full (attrs, (GDestroyNotify)pango_attribute_destroy);
 
@@ -595,10 +595,10 @@ test_iter_get_attrs (void)
   s = g_string_new ("");
   print_attributes (attrs, s);
   g_assert_cmpstr (s->str, ==,
-"  [0 -1] size 10240\n"
-"  [0 -1] family Times\n"
-"  [20 -1] rise 100\n"
-"  [20 -1] fallback 0\n");
+"[0,-1]size=10240\n"
+"[0,-1]family=Times\n"
+"[20,-1]rise=100\n"
+"[20,-1]fallback=0\n");
   g_string_free (s, FALSE);
   g_slist_free_full (attrs, (GDestroyNotify)pango_attribute_destroy);
 

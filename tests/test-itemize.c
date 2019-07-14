@@ -34,36 +34,6 @@
 
 static PangoContext *context;
 
-static const char *
-script_name (GUnicodeScript s)
-{
-  const char *names[] = {
-    "Zyyy", "Zinh", "Arab", "Armn", "Beng", "Bopo", "Cher",
-    "Copt", "Cyrl", "Dsrt", "Deva", "Ethi", "Geor", "Goth",
-    "Grek", "Gujr", "Guru", "Hani", "Hang", "Hebr", "Hira",
-    "Knda", "Kana", "Khmr", "Laoo", "Latn", "Mlym", "Mong",
-    "Mymr", "Ogam", "Ital", "Orya", "Runr", "Sinh", "Syrc",
-    "Taml", "Telu", "Thaa", "Thai", "Tibt", "Cans", "Yiii",
-    "Tglg", "Hano", "Buhd", "Tagb", "Brai", "Cprt", "Limb",
-    "Osma", "Shaw", "Linb", "Tale", "Ugar", "Talu", "Bugi",
-    "Glag", "Tfng", "Sylo", "Xpeo", "Khar", "Zzzz", "Bali",
-    "Xsux", "Phnx", "Phag", "Nkoo", "Kali", "Lepc", "Rjng",
-    "Sund", "Saur", "Cham", "Olck", "Vaii", "Cari", "Lyci",
-    "Lydi", "Avst", "Bamu", "Egyp", "Armi", "Phli", "Prti",
-    "Java", "Kthi", "Lisu", "Mtei", "Sarb", "Orkh", "Samr",
-    "Lana", "Tavt", "Batk", "Brah", "Mand", "Cakm", "Merc",
-    "Mero", "Plrd", "Shrd", "Sora", "Takr", "Bass", "Aghb",
-    "Dupl", "Elba", "Gran", "Khoj", "Sind", "Lina", "Mahj",
-    "Mani", "Mend", "Modi", "Mroo", "Nbat", "Narb", "Perm",
-    "Hmng", "Palm", "Pauc", "Phlp", "Sidd", "Tirh", "Wara",
-    "Ahom", "Hluw", "Hatr", "Mult", "Hung", "Sgnw", "Adlm",
-    "Bhks", "Marc", "Newa", "Osge", "Tang", "Gonm", "Nshu",
-    "Soyo", "Zanb", "Dogr", "Gong", "Rohg", "Maka", "Medf",
-    "Sogo", "Sogd", "Elym", "Nand", "Rohg", "Wcho"
-  };
-  return names[s];
-}
-
 static void
 append_text (GString    *s,
              const char *text,
@@ -78,74 +48,6 @@ append_text (GString    *s,
         g_string_append_printf (s, "[%#04x]", ch);
       else
         g_string_append_unichar (s, ch);
-    }
-}
-
-static void
-append_attribute (PangoAttribute *attr, GString *string)
-{
-  GEnumClass *class;
-  GEnumValue *value;
-
-  g_string_append_printf (string, "[%u,%u]", attr->start_index, attr->end_index);
-
-  class = g_type_class_ref (pango_attr_type_get_type ());
-  value = g_enum_get_value (class, attr->klass->type);
-  g_string_append_printf (string, "%s=", value->value_nick);
-  g_type_class_unref (class);
-
-  switch (attr->klass->type)
-    {
-    case PANGO_ATTR_LANGUAGE:
-      g_string_append_printf (string, "%s", pango_language_to_string (((PangoAttrLanguage *)attr)->value));
-      break;
-    case PANGO_ATTR_FAMILY:
-    case PANGO_ATTR_FONT_FEATURES:
-      g_string_append_printf (string, "%s", ((PangoAttrString*)attr)->value);
-      break;
-    case PANGO_ATTR_STYLE:
-    case PANGO_ATTR_WEIGHT:
-    case PANGO_ATTR_VARIANT:
-    case PANGO_ATTR_STRETCH:
-    case PANGO_ATTR_UNDERLINE:
-    case PANGO_ATTR_STRIKETHROUGH:
-    case PANGO_ATTR_RISE:
-    case PANGO_ATTR_FALLBACK:
-    case PANGO_ATTR_LETTER_SPACING:
-    case PANGO_ATTR_GRAVITY:
-    case PANGO_ATTR_GRAVITY_HINT:
-    case PANGO_ATTR_FOREGROUND_ALPHA:
-    case PANGO_ATTR_BACKGROUND_ALPHA:
-      g_string_append_printf (string, "%d", ((PangoAttrInt*)attr)->value);
-      break;
-    case PANGO_ATTR_SIZE:
-    case PANGO_ATTR_ABSOLUTE_SIZE:
-      g_string_append_printf (string, "%d", ((PangoAttrSize*)attr)->size);
-      break;
-    case PANGO_ATTR_FONT_DESC:
-      {
-        char *desc = pango_font_description_to_string (((PangoAttrFontDesc*)attr)->desc);
-        g_string_append_printf (string, "%s", desc);
-        g_free (desc);
-      }
-      break;
-
-    case PANGO_ATTR_FOREGROUND:
-    case PANGO_ATTR_BACKGROUND:
-    case PANGO_ATTR_UNDERLINE_COLOR:
-    case PANGO_ATTR_STRIKETHROUGH_COLOR:
-      g_string_append_printf (string, "%d:%d:%d",
-                              ((PangoAttrColor*)attr)->color.red,
-                              ((PangoAttrColor*)attr)->color.green,
-                              ((PangoAttrColor*)attr)->color.blue);
-      break;
-    case PANGO_ATTR_SHAPE:
-      break;
-    case PANGO_ATTR_SCALE:
-      g_string_append_printf (string, "%g", ((PangoAttrFloat*)attr)->value);
-      break;
-    default:
-      g_assert_not_reached ();
     }
 }
 
@@ -213,7 +115,7 @@ test_file (const gchar *filename, GString *string)
       append_text (s1, text + item->offset, item->length);
 
       g_string_append_printf (s2, "%s%s", sep, font);
-      g_string_append_printf (s3, "%s%s", sep, script_name (item->analysis.script));
+      g_string_append_printf (s3, "%s%s", sep, get_script_name (item->analysis.script));
       g_string_append_printf (s4, "%s%s", sep, pango_language_to_string (item->analysis.language));
       g_string_append_printf (s5, "%s%d", sep, item->analysis.level);
       g_string_append_printf (s6, "%s", sep);
@@ -222,7 +124,7 @@ test_file (const gchar *filename, GString *string)
           PangoAttribute *attr = a->data;
           if (a != item->analysis.extra_attrs)
             g_string_append (s6, ",");
-          append_attribute (attr, s6);
+          print_attribute (attr, s6);
         }
 
       g_free (font);
