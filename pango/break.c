@@ -1721,6 +1721,42 @@ pango_find_paragraph_boundary (const gchar *text,
     *next_paragraph_start = start - text;
 }
 
+/**
+ * pango_tailor_break:
+ * @text: text to process. Must be valid UTF-8
+ * @length: length in bytes of @text
+ * @log_attrs: (array length=attrs_len): array with one #PangoLogAttr
+ *   per character in @text, plus one extra, to be filled in
+ * @attrs_len: length of @log_attrs array
+ *
+ * Apply language-specific tailoring to the breaks in
+ * @log_attrs, which are assumed to have been produced
+ * by pango_default_break().
+ */
+void
+pango_tailor_break (const char    *text,
+                    int            length,
+                    PangoAnalysis *analysis,
+                    PangoLogAttr  *log_attrs,
+                    int            log_attrs_len)
+{
+  PangoLogAttr *start = log_attrs;
+  PangoLogAttr attr_before = *start;
+
+  if (tailor_break (text, length, analysis, log_attrs, log_attrs_len))
+    {
+      /* if tailored, we enforce some of the attrs from before
+       * tailoring at the boundary
+       */
+
+     start->backspace_deletes_character  = attr_before.backspace_deletes_character;
+
+     start->is_line_break      |= attr_before.is_line_break;
+     start->is_mandatory_break |= attr_before.is_mandatory_break;
+     start->is_cursor_position |= attr_before.is_cursor_position;
+    }
+}
+
 static int
 tailor_segment (const char      *range_start,
 		const char      *range_end,
@@ -1734,22 +1770,11 @@ tailor_segment (const char      *range_start,
 
   chars_in_range = pango_utf8_strlen (range_start, range_end - range_start);
 
-  if (tailor_break (range_start,
-		    range_end - range_start,
-		    analysis,
-		    start,
-		    chars_in_range + 1))
-    {
-      /* if tailored, we enforce some of the attrs from before tailoring at
-       * the boundary
-       */
-
-     start->backspace_deletes_character  = attr_before.backspace_deletes_character;
-
-     start->is_line_break      |= attr_before.is_line_break;
-     start->is_mandatory_break |= attr_before.is_mandatory_break;
-     start->is_cursor_position |= attr_before.is_cursor_position;
-    }
+  pango_tailor_break (range_start,
+                      range_end - range_start,
+                      analysis,
+                      start,
+                      chars_in_range + 1);
 
   return chars_in_range;
 }
