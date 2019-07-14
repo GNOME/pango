@@ -1090,3 +1090,122 @@ _pango_shape_get_extents (gint              n_chars,
     }
 }
 
+/**
+ * pango_transform_text:
+ * @text: the text to transform
+ * @len: the length of @text in bytes, or -1 if NUL-terminated
+ * @attrs: (nullable): a #PangoAttrList for @text
+ * @transform: the transformation to apply
+ * @language: (nullable): the language to use for segmentation,
+ *     or %NULL to use the current locale
+ * @transformed_text: (out): return location for the transformed @text
+ * @transformed_attrs: (out): return location for transformed @attrs
+ *
+ * Apply a text transformation (such as capitalizing words)
+ * to @text.
+ *
+ * Text transformations can change the length of
+ * the text, therefore attributes that apply to the text
+ * need to be updated as well, which is why this function
+ * takes @attrs as an argument as well.
+ */
+void
+pango_transform_text (const char          *text,
+                      int                  len,
+                      PangoAttrList       *attrs,
+                      PangoTextTransform   transform,
+                      PangoLanguage       *language,
+                      char               **transformed_text,
+                      PangoAttrList      **transformed_attrs)
+{
+  int n_chars;
+  PangoLogAttr *log_attrs;
+  GString *str;
+  int i;
+  const char *p;
+
+  if (len == -1)
+    len = strlen (text);
+
+  if (language == NULL)
+    language = pango_language_get_default ();
+
+  if (attrs)
+    *transformed_attrs = pango_attr_list_copy (attrs);
+  else
+    *transformed_attrs = NULL;
+
+  n_chars = g_utf8_strlen (text, len);
+  log_attrs = g_new (PangoLogAttr, n_chars + 1);
+  pango_get_log_attrs (text, len, -1, language, log_attrs, n_chars + 1);
+
+  str = g_string_sized_new (len);
+  for (i = 0, p = text; i < n_chars; i++, p = g_utf8_next_char (p))
+    {
+      if (log_attrs[i].is_word_start)
+        {
+          /* collect a word, and transform it */
+          const char *w;
+          char *wt;
+
+          w = p;
+          do {
+            i++;
+            p = g_utf8_next_char (p);
+          } while (i < len && !log_attrs[i].is_word_end);
+
+          switch (transform)
+            {
+            case PANGO_TEXT_TRANSFORM_NONE:
+              g_string_append_len (str, w, p - w);
+              break;
+
+            case PANGO_TEXT_TRANSFORM_UPPERCASE:
+              wt = g_utf8_strup (w, p - w);
+              g_string_append (str, wt);
+              if (*transformed_attrs)
+                pango_attr_list_apply_delta (*transformed_attrs,
+                                             w - text,
+                                             p - w,
+                                             strlen (wt));
+              g_free (wt);
+              break;
+
+            case PANGO_TEXT_TRANSFORM_LOWERCASE:
+              wt = g_utf8_strdown (w, p - w);
+              g_string_append (str, wt);
+              if (*transformed_attrs)
+                pango_attr_list_apply_delta (*transformed_attrs,
+                                             w - text,
+                                             p - w,
+                                             strlen (wt));
+              g_free (wt);
+              break;
+
+            case PANGO_TEXT_TRANSFORM_CAPITALIZE:
+              {
+                char *ct;
+                char *n = g_utf8_next_char (w);
+                ct = g_utf8_strup (w, n - w);
+                g_string_append (str, ct);
+                g_string_append_len (str, n, p - n);
+                if (*transformed_attrs)
+                  pango_attr_list_apply_delta (*transformed_attrs,
+                                               w - text,
+                                               p - w,
+                                               strlen (ct) + p - n);
+                g_free (ct);
+              }
+              break;
+            default:
+              g_assert_not_reached ();
+            }
+        }
+
+      g_string_append_unichar (str, g_utf8_get_char (p));
+    }
+
+  *transformed_text = g_string_free (str, FALSE);
+
+  g_free (log_attrs);
+}

@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <glib.h>
 #include <pango/pango-font.h>
+#include <pango/pango-attributes.h>
 
 G_BEGIN_DECLS
 
@@ -98,6 +99,33 @@ guint8 * pango_log2vis_get_embedding_levels (const gchar    *text,
  */
 PANGO_AVAILABLE_IN_1_10
 gboolean pango_is_zero_width (gunichar ch) G_GNUC_CONST;
+
+/**
+ * PangoTextTransform:
+ * @PANGO_TEXT_TRANSFORM_NONE: No change
+ * @PANGO_TEXT_TRANSFORM_UPPERCASE: Change each word to uppercase
+ * @PANGO_TEXT_TRANSFORM_LOWERCASE: Change each word to lowercase
+ * @PANGO_TEXT_TRANSFORM_CAPITALIZE: Capitalize the first character
+ *     of every word
+ *
+ * Specifies a text transformation that can
+ * be applied to a text with pango_transform_text().
+ */
+typedef enum {
+  PANGO_TEXT_TRANSFORM_NONE,
+  PANGO_TEXT_TRANSFORM_UPPERCASE,
+  PANGO_TEXT_TRANSFORM_LOWERCASE,
+  PANGO_TEXT_TRANSFORM_CAPITALIZE
+} PangoTextTransform;
+
+PANGO_AVAILABLE_IN_1_44
+void pango_transform_text (const char          *text,
+                           int                  len,
+                           PangoAttrList       *attrs,
+                           PangoTextTransform   transform,
+                           PangoLanguage       *language,
+                           char               **transformed_text,
+                           PangoAttrList      **transformed_attrs);
 
 /* Pango version checking */
 
