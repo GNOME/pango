@@ -54,6 +54,7 @@ pango_break
 pango_get_log_attrs
 pango_find_paragraph_boundary
 pango_default_break
+pango_tailor_break
 PangoLogAttr
 <SUBSECTION>
 pango_shape
