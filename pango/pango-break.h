@@ -100,10 +100,7 @@ struct _PangoLogAttr
   guint is_word_boundary            : 1;
 };
 
-/* Determine information about cluster/word/line breaks in a string
- * of Unicode text.
- */
-PANGO_AVAILABLE_IN_ALL
+PANGO_DEPRECATED_IN_1_44
 void pango_break (const gchar   *text,
 		  int            length,
 		  PangoAnalysis *analysis,
