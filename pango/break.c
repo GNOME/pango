@@ -146,13 +146,11 @@ typedef enum
  * @attrs: logical attributes to fill in
  * @attrs_len: size of the array passed as @attrs
  *
- * This is the default break algorithm, used if no language
- * engine overrides it. Normally you should use pango_break()
- * instead. Unlike pango_break(),
- * @analysis can be %NULL, but only do that if you know what
- * you're doing. If you need an analysis to pass to pango_break(),
- * you need to pango_itemize().  In most cases however you should
- * simply use pango_get_log_attrs().
+ * This is the default break algorithm. It applies Unicode
+ * rules without language-specific tailoring, therefore
+ * the @analyis argument is unused and can be %NULL.
+ *
+ * See pango_tailor_break() for language-specific breaks.
  **/
 void
 pango_default_break (const gchar   *text,
@@ -1604,8 +1602,10 @@ tailor_break (const gchar   *text,
  * @attrs_len: size of the array passed as @attrs
  *
  * Determines possible line, word, and character breaks
- * for a string of Unicode text with a single analysis.  For most
- * purposes you may want to use pango_get_log_attrs().
+ * for a string of Unicode text with a single analysis.
+ * For most purposes you may want to use pango_get_log_attrs().
+ *
+ * Deprecated: 1.44: Use pango_default_break() and pango_tailor_break()
  */
 void
 pango_break (const gchar   *text,
