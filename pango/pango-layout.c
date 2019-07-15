@@ -3694,8 +3694,9 @@ process_item (PangoLayout     *layout,
 
 	  if (break_num_chars == item->num_chars)
 	    {
+              gboolean insert_hyphen = break_needs_hyphen (layout, state, break_num_chars);
 	      insert_run (line, state, item, TRUE);
-              if (break_needs_hyphen (layout, state, break_num_chars))
+              if (insert_hyphen)
                 insert_hyphen_after (line, state, item);
 
 	      return BREAK_ALL_FIT;
@@ -3707,6 +3708,7 @@ process_item (PangoLayout     *layout,
 	  else
 	    {
 	      PangoItem *new_item;
+              gboolean insert_hyphen = break_needs_hyphen (layout, state, break_num_chars);
 
 	      length = g_utf8_offset_to_pointer (layout->text + item->offset, break_num_chars) - (layout->text + item->offset);
 
@@ -3721,7 +3723,7 @@ process_item (PangoLayout     *layout,
 	      /* Shaped items should never be broken */
 	      g_assert (!shape_set);
 
-              if (break_needs_hyphen (layout, state, break_num_chars))
+              if (insert_hyphen)
                 insert_hyphen_after (line, state, new_item);
 
 	      state->log_widths_offset += break_num_chars;
