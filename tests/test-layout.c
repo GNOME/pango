@@ -133,7 +133,7 @@ dump_runs (PangoLayout *layout, GString *string)
   PangoLayoutRun *run;
   PangoItem *item;
   const gchar *text;
-  gint index, index2;
+  gint index;
   gboolean has_more;
   gchar *char_str;
   gint i;
@@ -143,28 +143,18 @@ dump_runs (PangoLayout *layout, GString *string)
   iter = pango_layout_get_iter (layout);
 
   has_more = TRUE;
-  index = pango_layout_iter_get_index (iter);
-  index2 = 0;
   i = 0;
   while (has_more)
     {
       run = pango_layout_iter_get_run (iter);
+      index = pango_layout_iter_get_index (iter);
       has_more = pango_layout_iter_next_run (iter);
       i++;
-
-      if (has_more)
-        {
-          index2 = pango_layout_iter_get_index (iter);
-          char_str = g_strndup (text + index, index2 - index);
-        }
-      else
-        {
-          char_str = g_strdup (text + index);
-        }
 
       if (run)
         {
           item = ((PangoGlyphItem*)run)->item;
+          char_str = g_strndup (text + item->offset, item->length);
           font = font_name (item->analysis.font);
           g_string_append_printf (string, "i=%d, index=%d, chars=%d, level=%d, gravity=%s, flags=%d, font=%s, script=%s, language=%s, '%s'\n",
                                   i, index, item->num_chars, item->analysis.level,
@@ -176,15 +166,13 @@ dump_runs (PangoLayout *layout, GString *string)
                                   char_str);
           print_attributes (item->analysis.extra_attrs, string);
           g_free (font);
+          g_free (char_str);
         }
       else
         {
           g_string_append_printf (string, "i=%d, index=%d, no run, line end\n",
                                   i, index);
         }
-
-      g_free (char_str);
-      index = index2;
     }
   pango_layout_iter_free (iter);
 }
