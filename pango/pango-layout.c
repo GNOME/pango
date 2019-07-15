@@ -3432,8 +3432,12 @@ create_hyphen_run (PangoLayout *layout,
   run = g_slice_new (PangoGlyphItem);
   run->glyphs = pango_glyph_string_new ();
   run->item = items->data;
-  /* insert after item */
+
+  /* insert after item, use SHY as text */
   run->item->offset = item->offset + item->length;
+  run->item->length = 2;
+  run->item->num_chars = 1;
+
   g_list_free (items);
 
   pango_shape (hyphen_text, hyphen_len, &run->item->analysis, run->glyphs);
@@ -3507,6 +3511,9 @@ insert_hyphen_after (PangoLayoutLine *line,
   PangoLayout *layout = line->layout;
   PangoLayoutRun *run;
 
+  /* Use the SHY as text for the hyphen run */
+  item->num_chars -= 1;
+  item->length -= 2;
   run = create_hyphen_run (layout, item);
   line->runs = g_slist_prepend (line->runs, run);
 
