@@ -599,14 +599,14 @@ pango_fc_font_get_metrics (PangoFont     *font,
 
       if (!in_get_metrics)
         {
-          in_get_metrics = 1;
-
           /* Compute derived metrics */
           PangoLayout *layout;
           PangoRectangle extents;
           const char *sample_str = pango_language_get_sample_string (language);
           PangoFontDescription *desc = pango_font_describe_with_absolute_size (font);
           gulong sample_str_width;
+
+          in_get_metrics = 1;
 
           layout = pango_layout_new (context);
           pango_layout_set_font_description (layout, desc);
