@@ -232,8 +232,7 @@ harfbuzz_lib=''
 freetype2_lib=''
 fontconfig_lib=''
 
-harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version, required: false,
-                          fallback: ['harfbuzz', 'libharfbuzz_dep'])
+harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version, required: false)
 if harfbuzz_dep.found()
   harfbuzz_pc = 'harfbuzz'
 else
@@ -246,6 +245,14 @@ else
     endif
   endif
 endif
+
+# Remove when Meson acquires ability to declare deps declaratively, or
+# when finding dependencies via CMake files is fixed.
+if not harfbuzz_dep.found()
+harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version,
+                          fallback: ['harfbuzz', 'libharfbuzz_dep'])
+endif
+
 if harfbuzz_dep.found()
   pango_deps += harfbuzz_dep
 endif
