@@ -3283,7 +3283,7 @@ struct _ParaBreakState
   PangoAttrList *attrs;		/* Attributes being used for itemization */
   GList *items;			/* This paragraph turned into items */
   PangoDirection base_dir;	/* Current resolved base direction */
-  gboolean line_of_par;		/* Line of the paragraph, starting at 1 for first line */
+  int line_of_par;		/* Line of the paragraph, starting at 1 for first line */
 
   PangoGlyphString *glyphs;	/* Glyphs for the first item in state->items */
   int start_offset;		/* Character offset of first item in state->items in layout->text */
