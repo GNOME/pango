@@ -1762,6 +1762,7 @@ update_metrics_from_items (PangoFontMetrics *metrics,
 	  /* metrics will already be initialized from the first font in the fontset */
 	  metrics->ascent = MAX (metrics->ascent, raw_metrics->ascent);
 	  metrics->descent = MAX (metrics->descent, raw_metrics->descent);
+	  metrics->height = MAX (metrics->height, raw_metrics->height);
 	  pango_font_metrics_unref (raw_metrics);
 	}
 
