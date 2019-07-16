@@ -52,7 +52,7 @@ int opt_width = -1;
 int opt_height = -1;
 int opt_indent = 0;
 int opt_spacing = 0;
-double opt_line_spacing = 0.0;
+double opt_line_spacing = -1.0;
 gboolean opt_justify = 0;
 int opt_runs = 1;
 PangoAlignment opt_align = PANGO_ALIGN_LEFT;
@@ -125,9 +125,11 @@ make_layout(PangoContext *context,
     pango_layout_set_indent (layout, (opt_indent * opt_dpi * PANGO_SCALE + 36) / 72);
 
   if (opt_spacing != 0)
-    pango_layout_set_spacing (layout, (opt_spacing * opt_dpi * PANGO_SCALE + 36) / 72);
-
-  if (opt_line_spacing != 0.0)
+    {
+      pango_layout_set_spacing (layout, (opt_spacing * opt_dpi * PANGO_SCALE + 36) / 72);
+      pango_layout_set_line_spacing (layout, 0.0);
+    }
+  if (opt_line_spacing >= 0.0)
     pango_layout_set_line_spacing (layout, (float)opt_line_spacing);
 
   align = opt_align;
