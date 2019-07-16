@@ -4242,10 +4242,7 @@ pango_layout_check_lines (PangoLayout *layout)
 						 iter);
 
       if (no_break_attrs)
-        {
-          apply_no_break_attributes (state.items, no_break_attrs);
-          pango_attr_list_unref (no_break_attrs);
-        }
+        apply_no_break_attributes (state.items, no_break_attrs);
 
       get_items_log_attrs (start, state.items,
 			   layout->log_attrs + start_offset,
@@ -4297,6 +4294,9 @@ pango_layout_check_lines (PangoLayout *layout)
 
   pango_attr_iterator_destroy (iter);
   pango_attr_list_unref (attrs);
+
+  if (no_break_attrs)
+    pango_attr_list_unref (no_break_attrs);
 
   if (no_shape_attrs)
     {
