@@ -86,7 +86,6 @@ pango_cairo_win32_font_create_base_metrics_for_context (PangoCairoFont *font,
   PangoFontMetrics *metrics;
   cairo_scaled_font_t *scaled_font;
   cairo_font_extents_t font_extents;
-  double height;
 
   metrics = pango_font_metrics_new ();
 
@@ -101,11 +100,11 @@ pango_cairo_win32_font_create_base_metrics_for_context (PangoCairoFont *font,
   /* FIXME: Should get the real settings for these from the TrueType
    * font file.
    */
-  height = metrics->ascent + metrics->descent;
-  metrics->underline_thickness = height / 14;
+  metrics->height = metrics->ascent + metrics->descent;
+  metrics->underline_thickness = metrics->height / 14;
   metrics->underline_position = - metrics->underline_thickness;
   metrics->strikethrough_thickness = metrics->underline_thickness;
-  metrics->strikethrough_position = height / 4;
+  metrics->strikethrough_position = metrics->height / 4;
 
   pango_quantize_line_geometry (&metrics->underline_thickness,
 				&metrics->underline_position);
