@@ -24,17 +24,16 @@ i=7, index=152, paragraph-start=1, dir=ltr ''
 
 --- runs
 
-i=1, index=0, chars=24, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'This paragraph should ac'
-i=2, index=24, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=common, language=en-us, '­'
-i=3, index=26, no run, line end
-i=4, index=26, chars=29, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'tual­ly have multiple lines, '
-i=5, index=56, no run, line end
-i=6, index=56, chars=29, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'unlike all the other wannabe '
-i=7, index=85, no run, line end
-i=8, index=85, chars=30, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'äöü pa­ra­graph tests in this '
-i=9, index=120, no run, line end
-i=10, index=120, chars=25, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'ugh test-case. Grow some '
-i=11, index=145, no run, line end
-i=12, index=145, chars=6, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'lines!'
-i=13, index=151, no run, line end
-i=14, index=152, no run, line end
+i=1, index=0, chars=25, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'This paragraph should ac­'
+i=2, index=26, no run, line end
+i=3, index=26, chars=29, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'tual­ly have multiple lines, '
+i=4, index=56, no run, line end
+i=5, index=56, chars=29, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'unlike all the other wannabe '
+i=6, index=85, no run, line end
+i=7, index=85, chars=30, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'äöü pa­ra­graph tests in this '
+i=8, index=120, no run, line end
+i=9, index=120, chars=25, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'ugh test-case. Grow some '
+i=10, index=145, no run, line end
+i=11, index=145, chars=6, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'lines!'
+i=12, index=151, no run, line end
+i=13, index=152, no run, line end
