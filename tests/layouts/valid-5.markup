@@ -1,0 +1,3 @@
+width=190
+A test with multiple <span font_features="tnum=1">paragraphs</span> and with no-break attributes, which might trigger a crash.
+If it doesn't the fix has worked.

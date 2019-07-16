@@ -1,0 +1,48 @@
+A test with multiple paragraphs and with no-break attributes, which might trigger a crash.
+If it doesn't the fix has worked.
+
+--- parameters
+
+wrapped: 1
+ellipsized: 0
+lines: 7
+width: 194560
+
+--- attributes
+
+range 0 21
+range 21 31
+[21,31]font-features=tnum=1
+range 31 2147483647
+
+--- lines
+
+i=1, index=0, paragraph-start=1, dir=ltr 'A test with multiple '
+i=2, index=21, paragraph-start=0, dir=ltr 'paragraphs and with no-'
+i=3, index=44, paragraph-start=0, dir=ltr 'break attributes, which '
+i=4, index=68, paragraph-start=0, dir=ltr 'might trigger a crash.
+'
+i=5, index=91, paragraph-start=1, dir=ltr 'If it doesn't the fix has '
+i=6, index=117, paragraph-start=0, dir=ltr 'worked.
+'
+i=7, index=125, paragraph-start=1, dir=ltr ''
+
+--- runs
+
+i=1, index=0, chars=21, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'A test with multiple '
+[21,31]font-features=tnum=1
+i=2, index=21, no run, line end
+i=3, index=21, chars=23, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'paragraphs and with no-'
+[21,31]font-features=tnum=1
+i=4, index=44, no run, line end
+i=5, index=44, chars=24, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'break attributes, which '
+[21,31]font-features=tnum=1
+i=6, index=68, no run, line end
+i=7, index=68, chars=22, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'might trigger a crash.'
+[21,31]font-features=tnum=1
+i=8, index=90, no run, line end
+i=9, index=91, chars=26, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'If it doesn't the fix has '
+i=10, index=117, no run, line end
+i=11, index=117, chars=7, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'worked.'
+i=12, index=124, no run, line end
+i=13, index=125, no run, line end
