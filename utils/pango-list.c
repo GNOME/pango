@@ -23,6 +23,7 @@
 #include "config.h"
 #include <pango/pangocairo.h>
 #include <glib/gstdio.h>
+#include <stdlib.h>
 
 int
 main (int    argc,
