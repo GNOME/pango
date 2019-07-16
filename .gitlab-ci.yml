@@ -26,7 +26,7 @@ gnome-runtime-linux:
     - ninja -C _build
     - meson test -C_build --suite pango
     - _build/utils/pango-view --no-display --output _build/hello.png utils/HELLO.txt
-    - _build/utils/pango-list > _build/fontlist.txt
+    - _build/utils/pango-list --verbose > _build/fontlist.txt
   artifacts:
     name: "%CI_JOB_NAME%-%CI_COMMIT_REF_NAME%"
     when: always
