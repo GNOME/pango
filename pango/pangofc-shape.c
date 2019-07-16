@@ -459,6 +459,8 @@ _pango_fc_shape (PangoFont           *font,
   hb_buffer_set_flags (hb_buffer, HB_BUFFER_FLAG_BOT | HB_BUFFER_FLAG_EOT);
 
   hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_offset, item_length);
+  if (analysis->flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN)
+    hb_buffer_add (hb_buffer, '-', item_length);
 
   pango_font_get_features (font, features, 32, &num_features);
   apply_extra_attributes (analysis->extra_attrs, features, 32, &num_features);
