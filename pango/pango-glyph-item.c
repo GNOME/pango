@@ -316,7 +316,7 @@ pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter)
 
   iter->end_glyph = glyph_index;
 
-  g_assert (iter->start_char < iter->end_char);
+  g_assert (iter->start_char <= iter->end_char);
   g_assert (iter->end_char <= item->num_chars);
 
   return TRUE;
@@ -409,7 +409,7 @@ pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter)
 
   iter->start_glyph = glyph_index;
 
-  g_assert (iter->start_char < iter->end_char);
+  g_assert (iter->start_char <= iter->end_char);
   g_assert (0 <= iter->start_char);
 
   return TRUE;
