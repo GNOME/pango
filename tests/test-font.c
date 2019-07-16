@@ -25,6 +25,8 @@
 
 #include <pango/pangocairo.h>
 
+static PangoContext *context;
+
 static void
 test_parse (void)
 {
@@ -114,6 +116,44 @@ test_variation (void)
   pango_font_description_free (desc2);
 }
 
+static void
+test_metrics (void)
+{
+  PangoFontDescription *desc;
+  PangoFontMetrics *metrics;
+  char *str;
+
+  desc = pango_font_description_from_string ("Cantarell 11");
+  str = pango_font_description_to_string (desc);
+
+  metrics = pango_context_get_metrics (context, desc, pango_language_get_default ());
+
+  g_test_message ("%s metrics\n"
+                  "\tascent %d\n"
+                  "\tdescent %d\n"
+                  "\theight %d\n"
+                  "\tchar width %d\n"
+                  "\tdigit width %d\n"
+                  "\tunderline position %d\n"
+                  "\tunderline thickness %d\n"
+                  "\tstrikethrough position %d\n"
+                  "\tstrikethrough thickness %d\n",
+                  str,
+                  pango_font_metrics_get_ascent (metrics),
+                  pango_font_metrics_get_descent (metrics),
+                  pango_font_metrics_get_height (metrics),
+                  pango_font_metrics_get_approximate_char_width (metrics),
+                  pango_font_metrics_get_approximate_digit_width (metrics),
+                  pango_font_metrics_get_underline_position (metrics),
+                  pango_font_metrics_get_underline_thickness (metrics),
+                  pango_font_metrics_get_strikethrough_position (metrics),
+                  pango_font_metrics_get_strikethrough_thickness (metrics));
+
+  pango_font_metrics_unref (metrics);
+  g_free (str);
+  pango_font_description_free (desc);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -122,9 +162,12 @@ main (int argc, char *argv[])
 
   g_test_init (&argc, &argv, NULL);
 
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
   g_test_add_func ("/pango/fontdescription/parse", test_parse);
   g_test_add_func ("/pango/fontdescription/roundtrip", test_roundtrip);
   g_test_add_func ("/pango/fontdescription/variation", test_variation);
- 
+  g_test_add_func ("/pango/font/metrics", test_metrics);
+
   return g_test_run ();
 }
