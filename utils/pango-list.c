@@ -28,15 +28,38 @@ int
 main (int    argc,
       char **argv)
 {
+  gboolean opt_verbose = FALSE;
+  GOptionEntry entries[] = {
+    {"verbose", 0, 0, G_OPTION_ARG_NONE,    &opt_verbose, "Print verbose information", NULL },
+    { NULL, }
+  };
+  GOptionContext *context;
   PangoFontMap *fontmap;
   PangoFontFamily **families;
   int n_families;
   int i, j, k;
+  GError *error = NULL;
 
   g_set_prgname ("pango-list");
 
+  context = g_option_context_new ("");
+  g_option_context_add_main_entries (context, entries, NULL);
+  if (!g_option_context_parse (context, &argc, &argv, &error))
+    {
+      if (error != NULL)
+        g_error ("%s", error->message);
+      else
+        g_error ("Option parse error");
+      exit (1);
+    }
+
+  g_option_context_free (context);
+
   /* Use PangoCairo to get default fontmap so it works on every platform. */
   fontmap = pango_cairo_font_map_get_default ();
+
+  if (opt_verbose)
+    g_print ("Using %s\n\n", G_OBJECT_TYPE_NAME (fontmap));
 
   pango_font_map_list_families (fontmap, &families, &n_families);
   for (i = 0; i < n_families; i++)
