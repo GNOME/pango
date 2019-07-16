@@ -55,3 +55,4 @@ msys2-mingw64:
       - _build/meson-logs
       - _build/hello.png
       - _build/fontlist.txt
+      - _build/fontmetrics.txt
