@@ -24,7 +24,7 @@ i=7, index=152, paragraph-start=1, dir=ltr ''
 
 --- runs
 
-i=1, index=0, chars=25, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'This paragraph should ac­'
+i=1, index=0, chars=25, level=0, gravity=south, flags=4, font=OMITTED, script=latin, language=en-us, 'This paragraph should ac­'
 i=2, index=26, no run, line end
 i=3, index=26, chars=29, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'tual­ly have multiple lines, '
 i=4, index=56, no run, line end
