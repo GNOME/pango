@@ -25,6 +25,7 @@ gnome-runtime-linux:
     - meson _build
     - ninja -C _build
     - meson test -C_build --suite pango
+    - _build/tests/test-font -p /pango/font/metrics --verbose
     - _build/utils/pango-view --no-display --output _build/hello.png utils/HELLO.txt
     - _build/utils/pango-list --verbose > _build/fontlist.txt
   artifacts:
