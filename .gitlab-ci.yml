@@ -25,6 +25,7 @@ gnome-runtime-linux:
     - meson _build
     - ninja -C _build
     - cd _build; meson test --suite pango
+    - cd _build; utils/pango-view --output hello.png ../HELLO.txt
   artifacts:
     name: "%CI_JOB_NAME%-%CI_COMMIT_REF_NAME%"
     when: always
