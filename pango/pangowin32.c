@@ -35,6 +35,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <glib.h>
+#include <hb.h>
 
 #include "pango-impl-utils.h"
 #include "pangowin32.h"
@@ -82,6 +83,9 @@ static void                  pango_win32_get_item_properties    (PangoItem      
 								 gboolean         *fg_set,
 								 PangoAttrColor   *bg_color,
 								 gboolean         *bg_set);
+
+static hb_font_t *
+pango_win32_font_create_hb_font (PangoFont *font);
 
 HFONT
 _pango_win32_font_get_hfont (PangoFont *font)
@@ -203,6 +207,7 @@ _pango_win32_font_class_init (PangoWin32FontClass *class)
   font_class->get_glyph_extents = pango_win32_font_get_glyph_extents;
   font_class->get_metrics = pango_win32_font_get_metrics;
   font_class->get_font_map = pango_win32_font_get_font_map;
+  font_class->create_hb_font = pango_win32_font_create_hb_font;
 
   class->select_font = pango_win32_font_real_select_font;
   class->done_font = pango_win32_font_real_done_font;
@@ -1864,4 +1869,76 @@ pango_win32_font_calc_coverage (PangoFont     *font,
   if (_pango_win32_debug)
     g_print ("\n");
 #endif
+}
+
+/* Check for TTC fonts and get their font data */
+# define FONT_TABLE_TTCF  (('t' << 0) + ('t' << 8) + ('c' << 16) + ('f' << 24))
+
+static hb_font_t *
+pango_win32_font_create_hb_font (PangoFont *font)
+{
+  HDC hdc;
+  HFONT hfont;
+  PangoFontDescription *desc = NULL;
+  hb_face_t *face = NULL;
+  hb_font_t *hb_font = NULL;
+  char *variations = NULL;
+  unsigned char buf[4];
+  DWORD is_ttc_font;
+  DWORD size;
+  gchar *font_data_stream;
+  hb_blob_t *blob;
+
+  g_return_val_if_fail (font != NULL, NULL);
+
+  hdc = pango_win32_get_dc ();
+  hfont = _pango_win32_font_get_hfont (font);
+
+  if (SelectObject (hdc, hfont) == NULL)
+    {
+      g_warning ("SelectObject() for the hfont failed!");
+      return hb_font_get_empty ();
+    }
+
+  /* is_ttc_font is GDI_ERROR if the HFONT does not refer to a font in a TTC when,
+   * specifying FONT_TABLE_TTCF for the Font Table type, otherwise it is 1,
+   * so try again without specifying FONT_TABLE_TTCF if is_ttc_font is not 1
+   */
+  is_ttc_font = GetFontData (hdc, FONT_TABLE_TTCF, 0, &buf, 1);
+
+  if (is_ttc_font == 1)
+    size = GetFontData (hdc, FONT_TABLE_TTCF, 0, NULL, 0);
+  else
+    size = GetFontData (hdc, 0, 0, NULL, 0);
+
+  if (size == GDI_ERROR)
+    {
+      g_warning ("GetFontData() for the hfont failed!");
+      return hb_font_get_empty ();
+    }
+
+  font_data_stream = g_malloc (size);
+  if (GetFontData (hdc,
+                   is_ttc_font == 1 ? FONT_TABLE_TTCF : 0,
+                   0,
+                   font_data_stream,
+                   size) == GDI_ERROR)
+    {
+      g_warning ("Failed to acquire font data stream from GetFontData()!");
+      return hb_font_get_empty ();
+    }
+
+  blob = hb_blob_create (font_data_stream,
+                         sizeof (font_data_stream),
+                         HB_MEMORY_MODE_READONLY,
+                         NULL,
+                         NULL);
+
+  face = hb_face_create (blob, 0);
+  hb_blob_destroy (blob);
+  hb_font = hb_font_create (face);
+  hb_face_destroy (face);
+  g_free (font_data_stream);
+
+  return hb_font;
 }
