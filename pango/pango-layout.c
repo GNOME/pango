@@ -3405,8 +3405,37 @@ get_need_hyphen (PangoItem  *item,
 
   for (i = 0, p = text + item->offset; i < item->num_chars; i++, p = g_utf8_next_char (p))
     {
-      gunichar ch = g_utf8_get_char (p);
-      need_hyphen[i] = ch == 0xad;
+      gunichar wc = g_utf8_get_char (p);
+      switch (g_unichar_type(wc))
+        {
+        case G_UNICODE_SPACE_SEPARATOR:
+        case G_UNICODE_LINE_SEPARATOR:
+        case G_UNICODE_PARAGRAPH_SEPARATOR:
+          need_hyphen[i] = FALSE;
+          break;
+        case G_UNICODE_CONTROL:
+          if (wc == '\t' || wc == '\n' || wc == '\r' || wc == '\f')
+            need_hyphen[i] = FALSE;
+          else
+            need_hyphen[i] = TRUE;
+          break;
+        default:
+          if (wc == '-'    || /* Hyphen-minus */
+              wc == 0x058a || /* Armenian hyphen */
+              wc == 0x1400 || /* Canadian syllabics hyphen */
+              wc == 0x1806 || /* Mongolian todo hyphen */
+              wc == 0x2010 || /* Hyphen */
+              wc == 0x2027 || /* Hyphenation point */
+              wc == 0x2e17 || /* Double oblique hyphen */
+              wc == 0x2e40 || /* Double hyphen */
+              wc == 0x30a0 || /* Katakana-Hiragana double hyphen */
+              wc == 0xfe63 || /* Small hyphen-minus */
+              wc == 0xff0d)   /* Fullwidth hyphen-minus */
+            need_hyphen[i] = FALSE;
+          else
+            need_hyphen[i] = TRUE;
+          break;
+        }
     }
 }
 
