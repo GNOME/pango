@@ -30,15 +30,19 @@ main (int    argc,
       char **argv)
 {
   gboolean opt_verbose = FALSE;
+  gboolean opt_metrics = FALSE;
   GOptionEntry entries[] = {
     {"verbose", 0, 0, G_OPTION_ARG_NONE,    &opt_verbose, "Print verbose information", NULL },
+    {"metrics", 0, 0, G_OPTION_ARG_NONE,    &opt_metrics, "Print font metrics", NULL },
     { NULL, }
   };
   GOptionContext *context;
+  PangoContext *ctx;
   PangoFontMap *fontmap;
   PangoFontFamily **families;
   int n_families;
-  int i, j, k;
+  int i, j;
+  int width;
   GError *error = NULL;
 
   g_set_prgname ("pango-list");
@@ -58,6 +62,7 @@ main (int    argc,
 
   /* Use PangoCairo to get default fontmap so it works on every platform. */
   fontmap = pango_cairo_font_map_get_default ();
+  ctx = pango_font_map_create_context (fontmap);
 
   if (opt_verbose)
     g_print ("Using %s\n\n", G_OBJECT_TYPE_NAME (fontmap));
@@ -88,42 +93,48 @@ main (int    argc,
       g_print ("%s %s\n", family_name, kind);
 
       pango_font_family_list_faces (families[i], &faces, &n_faces);
+
+      width = 0;
       for (j = 0; j < n_faces; j++)
 	{
 	  const char *face_name = pango_font_face_get_face_name (faces[j]);
 	  gboolean is_synth = pango_font_face_is_synthesized (faces[j]);
 	  const char *synth_str = is_synth ? "*" : "";
-	  g_print ("	%s%s\n", synth_str, face_name);
+          width = MAX (width, strlen (synth_str) + strlen (face_name));
+        }
 
-	  if (0)
-	  {
-	    int *sizes;
-	    int n_sizes;
-	    pango_font_face_list_sizes (faces[j], &sizes, &n_sizes);
-	    if (n_sizes)
-	      {
-		g_print ("		{");
-		for (k = 0; k < n_sizes; k++)
-		  {
-		    if (k)
-		      g_print (", ");
-		    g_print ("%g", pango_units_to_double (sizes[k]));
-		  }
-		g_print ("}\n");
-	      }
-	    g_free (sizes);
-	  }
+      for (j = 0; j < n_faces; j++)
+	{
+	  const char *face_name = pango_font_face_get_face_name (faces[j]);
+	  gboolean is_synth = pango_font_face_is_synthesized (faces[j]);
+	  const char *synth_str = is_synth ? "*" : "";
+	  PangoFontDescription *desc = pango_font_face_describe (faces[j]);
+	  char *desc_str = pango_font_description_to_string (desc);
 
-	  if (1)
-	  {
-	    PangoFontDescription *desc = pango_font_face_describe (faces[j]);
-	    char *desc_str = pango_font_description_to_string (desc);
+	  g_print ("  %s%s: %*s%s\n", synth_str, face_name,
+                   width - (int)strlen (face_name) - (int)strlen (synth_str), "", desc_str);
 
-	    g_print ("		\"%s\"\n", desc_str);
+          if (opt_metrics)
+            {
+              PangoFontMetrics *metrics;
 
-	    g_free (desc_str);
-	    pango_font_description_free (desc);
-	  }
+              pango_font_description_set_absolute_size (desc, 10 * PANGO_SCALE);
+              metrics = pango_context_get_metrics (ctx, desc, pango_language_from_string ("en-us"));
+              g_print ("    (a %d d %d h %d cw %d dw %d u %d %d s %d %d)\n",
+                       pango_font_metrics_get_ascent (metrics),
+                       pango_font_metrics_get_descent (metrics),
+                       pango_font_metrics_get_height (metrics),
+                       pango_font_metrics_get_approximate_char_width (metrics),
+                       pango_font_metrics_get_approximate_digit_width (metrics),
+                       pango_font_metrics_get_underline_position (metrics),
+                       pango_font_metrics_get_underline_thickness (metrics),
+                       pango_font_metrics_get_strikethrough_position (metrics),
+                       pango_font_metrics_get_strikethrough_thickness (metrics));
+              pango_font_metrics_unref (metrics);
+            }
+
+	  g_free (desc_str);
+	  pango_font_description_free (desc);
 	}
 
       g_free (faces);
