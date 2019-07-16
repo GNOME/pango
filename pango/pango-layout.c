@@ -3482,8 +3482,27 @@ get_need_hyphen (PangoItem  *item,
 
   for (i = 0, p = text + item->offset; i < item->num_chars; i++, p = g_utf8_next_char (p))
     {
-      gunichar ch = g_utf8_get_char (p);
-      need_hyphen[i] = ch == 0xad;
+      gunichar wc = g_utf8_get_char (p);
+      switch (g_unichar_type(wc))
+        {
+        case G_UNICODE_SPACE_SEPARATOR:
+        case G_UNICODE_LINE_SEPARATOR:
+        case G_UNICODE_PARAGRAPH_SEPARATOR:
+          need_hyphen[i] = FALSE;
+          break;
+        case G_UNICODE_CONTROL:
+          if (wc == '\t' || wc == '\n' || wc == '\r' || wc == '\f')
+            need_hyphen[i] = FALSE;
+          else
+            need_hyphen[i] = TRUE;
+          break;
+        default:
+          if (wc == '-' || wc == 0x2010 || wc == 0x2027)
+            need_hyphen[i] = FALSE;
+          else
+            need_hyphen[i] = TRUE;
+          break;
+        }
     }
 }
 
