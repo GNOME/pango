@@ -26,12 +26,14 @@ gnome-runtime-linux:
     - ninja -C _build
     - meson test -C_build --suite pango
     - _build/utils/pango-view --no-display --output _build/hello.png utils/HELLO.txt
+    - _build/utils/pango-list > _build/fontlist
   artifacts:
     name: "%CI_JOB_NAME%-%CI_COMMIT_REF_NAME%"
     when: always
     paths:
       - _build/meson-logs
       - _build/hello.png
+      - _build/fontlist
 
 msys2-mingw64:
   stage: build
@@ -44,9 +46,11 @@ msys2-mingw64:
     - C:\msys64\usr\bin\pacman --noconfirm -Syyuu
     - C:\msys64\usr\bin\bash -lc "bash -x ./.gitlab-ci/test-msys2.sh"
     - C:\msys64\usr\bin\bash -lc "bash -x ./.gitlab-ci/render-msys2.sh"
+    - C:\msys64\usr\bin\bash -lc "bash -x ./.gitlab-ci/list-msys2.sh"
   artifacts:
     name: "%CI_JOB_NAME%-%CI_COMMIT_REF_NAME%"
     when: always
     paths:
       - _build/meson-logs
       - _build/hello.png
+      - _build/fontlist
