@@ -35,6 +35,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <glib.h>
+#include <hb.h>
 
 #include "pango-impl-utils.h"
 #include "pangowin32.h"
@@ -82,6 +83,8 @@ static void                  pango_win32_get_item_properties    (PangoItem      
 								 gboolean         *fg_set,
 								 PangoAttrColor   *bg_color,
 								 gboolean         *bg_set);
+
+static hb_font_t *           pango_win32_font_create_hb_font    (PangoFont *font);
 
 HFONT
 _pango_win32_font_get_hfont (PangoFont *font)
@@ -203,6 +206,7 @@ _pango_win32_font_class_init (PangoWin32FontClass *class)
   font_class->get_glyph_extents = pango_win32_font_get_glyph_extents;
   font_class->get_metrics = pango_win32_font_get_metrics;
   font_class->get_font_map = pango_win32_font_get_font_map;
+  font_class->create_hb_font = pango_win32_font_create_hb_font;
 
   class->select_font = pango_win32_font_real_select_font;
   class->done_font = pango_win32_font_real_done_font;
@@ -1864,4 +1868,81 @@ pango_win32_font_calc_coverage (PangoFont     *font,
   if (_pango_win32_debug)
     g_print ("\n");
 #endif
+}
+
+/*
+ * Swap HarfBuzz-style tags to tags that GetFontData() understands,
+ * adapted from https://github.com/harfbuzz/harfbuzz/pull/1832,
+ * by Ebrahim Byagowi.
+ */
+
+static inline guint16 hb_gdi_uint16_swap (const guint16 v)
+{ return (v >> 8) | (v << 8); }
+static inline guint32 hb_gdi_uint32_swap (const guint32 v)
+{ return (hb_gdi_uint16_swap (v) << 16) | hb_gdi_uint16_swap (v >> 16); }
+
+/*
+ * Adapted from https://www.mail-archive.com/harfbuzz@lists.freedesktop.org/msg06538.html
+ * by Konstantin Ritt.
+ */
+static hb_blob_t *
+hfont_reference_table (hb_face_t *face, hb_tag_t tag, void *user_data)
+{
+  HDC hdc;
+  HFONT hfont, old_hfont;
+  gchar *buf = NULL;
+  DWORD size;
+
+  /* We have a common DC for our PangoWin32Font, so let's just use it */
+  hdc = pango_win32_get_dc ();
+  hfont = (HFONT) user_data;
+
+  /* we want to restore things, just to be safe */
+  old_hfont = SelectObject (hdc, hfont);
+  if (old_hfont == NULL)
+    {
+      g_warning ("SelectObject() for the PangoWin32Font failed!");
+      return hb_blob_get_empty ();
+    }
+
+  size = GetFontData (hdc, hb_gdi_uint32_swap (tag), 0, NULL, 0);
+
+  /*
+   * not all tags support retrieving the sizes, so don't warn,
+   * just return hb_blob_get_empty()
+   */
+  if (size == GDI_ERROR)
+    {
+      SelectObject (hdc, old_hfont);
+      return hb_blob_get_empty ();
+    }
+
+  buf = g_malloc (size * sizeof (gchar));
+
+  /* This should be quite unlikely to fail if size was not GDI_ERROR */
+  if (GetFontData (hdc, hb_gdi_uint32_swap (tag), 0, buf, size) == GDI_ERROR)
+    size = 0;
+
+  SelectObject (hdc, old_hfont);
+  return hb_blob_create (buf, size, HB_MEMORY_MODE_READONLY, buf, g_free);
+}
+
+static hb_font_t *
+pango_win32_font_create_hb_font (PangoFont *font)
+{
+  HFONT hfont;
+  hb_face_t *face = NULL;
+  hb_font_t *hb_font = NULL;
+
+  g_return_val_if_fail (font != NULL, NULL);
+
+  hfont = _pango_win32_font_get_hfont (font);
+
+  /* We are *not* allowed to destroy the HFONT here ! */
+  face = hb_face_create_for_tables (hfont_reference_table, (void *)hfont, NULL);
+
+  hb_font = hb_font_create (face);
+  hb_face_destroy (face);
+
+  return hb_font;
 }
