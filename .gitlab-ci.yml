@@ -26,14 +26,14 @@ gnome-runtime-linux:
     - ninja -C _build
     - meson test -C_build --suite pango
     - _build/utils/pango-view --no-display --output _build/hello.png utils/HELLO.txt
-    - _build/utils/pango-list > _build/fontlist
+    - _build/utils/pango-list > _build/fontlist.txt
   artifacts:
     name: "%CI_JOB_NAME%-%CI_COMMIT_REF_NAME%"
     when: always
     paths:
       - _build/meson-logs
       - _build/hello.png
-      - _build/fontlist
+      - _build/fontlist.txt
 
 msys2-mingw64:
   stage: build
@@ -53,4 +53,4 @@ msys2-mingw64:
     paths:
       - _build/meson-logs
       - _build/hello.png
-      - _build/fontlist
+      - _build/fontlist.txt
