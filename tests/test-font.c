@@ -124,7 +124,7 @@ test_metrics (void)
   char *str;
 
 
-  if (strcmp (G_OBJECT_TYPE_NAME (pango_context_get_font_map ()), "PangoCairoWin32FontMap") == 0)
+  if (strcmp (G_OBJECT_TYPE_NAME (pango_context_get_font_map (context)), "PangoCairoWin32FontMap") == 0)
     desc = pango_font_description_from_string ("Verdana 11");
   else
     desc = pango_font_description_from_string ("Cantarell 11");
