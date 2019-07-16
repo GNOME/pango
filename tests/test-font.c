@@ -123,7 +123,12 @@ test_metrics (void)
   PangoFontMetrics *metrics;
   char *str;
 
-  desc = pango_font_description_from_string ("Cantarell 11");
+
+  if (strcmp (G_OBJECT_TYPE_NAME (pango_context_get_font_map ()), "PangoCairoWin32FontMap") == 0)
+    desc = pango_font_description_from_string ("Verdana 11");
+  else
+    desc = pango_font_description_from_string ("Cantarell 11");
+
   str = pango_font_description_to_string (desc);
 
   metrics = pango_context_get_metrics (context, desc, pango_language_get_default ());
@@ -164,10 +169,10 @@ main (int argc, char *argv[])
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
+  g_test_add_func ("/pango/font/metrics", test_metrics);
   g_test_add_func ("/pango/fontdescription/parse", test_parse);
   g_test_add_func ("/pango/fontdescription/roundtrip", test_roundtrip);
   g_test_add_func ("/pango/fontdescription/variation", test_variation);
-  g_test_add_func ("/pango/font/metrics", test_metrics);
 
   return g_test_run ();
 }
