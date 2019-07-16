@@ -3331,8 +3331,7 @@ should_ellipsize_current_line (PangoLayout    *layout,
 static PangoGlyphString *
 shape_run (PangoLayoutLine *line,
 	   ParaBreakState  *state,
-	   PangoItem       *item,
-           gboolean         with_hyphen)
+	   PangoItem       *item)
 {
   PangoLayout *layout = line->layout;
   PangoGlyphString *glyphs = pango_glyph_string_new ();
@@ -3347,28 +3346,9 @@ shape_run (PangoLayoutLine *line,
 			    glyphs);
       else
         {
-
-          if (with_hyphen)
-            {
-              GString *s = g_string_new ("");
-
-              g_string_append_len (s, layout->text, item->offset + item->length - 2);
-              g_string_append (s, "-");
-              g_string_append_len (s, layout->text + item->offset + item->length, layout->length - (item->offset + item->length));
-
-              pango_shape_full (s->str + item->offset, item->length - 1,
-                                s->str, s->len,
-                                &item->analysis, glyphs);
-
-              g_string_free (s, TRUE);
-
-            }
-          else
-            {
-              pango_shape_full (layout->text + item->offset, item->length,
-                                layout->text, layout->length,
-                                &item->analysis, glyphs);
-            }
+          pango_shape_full (layout->text + item->offset, item->length,
+                            layout->text, layout->length,
+                            &item->analysis, glyphs);
         }
 
       if (state->properties.letter_spacing)
@@ -3399,8 +3379,7 @@ static void
 insert_run (PangoLayoutLine *line,
 	    ParaBreakState  *state,
 	    PangoItem       *run_item,
-	    gboolean         last_run,
-            gboolean         with_hyphen)
+	    gboolean         last_run)
 {
   PangoLayoutRun *run = g_slice_new (PangoLayoutRun);
 
@@ -3409,7 +3388,7 @@ insert_run (PangoLayoutLine *line,
   if (last_run && state->log_widths_offset == 0)
     run->glyphs = state->glyphs;
   else
-    run->glyphs = shape_run (line, state, run_item, with_hyphen);
+    run->glyphs = shape_run (line, state, run_item);
 
   if (last_run)
     {
@@ -3623,7 +3602,7 @@ process_item (PangoLayout     *layout,
   if (!state->glyphs)
     {
       pango_layout_get_item_properties (item, &state->properties);
-      state->glyphs = shape_run (line, state, item, FALSE);
+      state->glyphs = shape_run (line, state, item);
 
       state->log_widths = NULL;
       state->need_hyphen = NULL;
@@ -3636,7 +3615,7 @@ process_item (PangoLayout     *layout,
       g_utf8_get_char (layout->text + item->offset) == LINE_SEPARATOR &&
       !should_ellipsize_current_line (layout, state))
     {
-      insert_run (line, state, item, TRUE, FALSE);
+      insert_run (line, state, item, TRUE);
       state->log_widths_offset += item->num_chars;
 
       return BREAK_LINE_SEPARATOR;
@@ -3644,7 +3623,7 @@ process_item (PangoLayout     *layout,
 
   if (state->remaining_width < 0 && !no_break_at_end)  /* Wrapping off */
     {
-      insert_run (line, state, item, TRUE, FALSE);
+      insert_run (line, state, item, TRUE);
 
       return BREAK_ALL_FIT;
     }
@@ -3665,7 +3644,7 @@ process_item (PangoLayout     *layout,
     {
       state->remaining_width -= width;
       state->remaining_width = MAX (state->remaining_width, 0);
-      insert_run (line, state, item, TRUE, FALSE);
+      insert_run (line, state, item, TRUE);
 
       return BREAK_ALL_FIT;
     }
@@ -3740,9 +3719,9 @@ process_item (PangoLayout     *layout,
 
 	  if (break_num_chars == item->num_chars)
 	    {
-              gboolean hyphen;
-              hyphen = break_needs_hyphen (layout, state, break_num_chars);
-	      insert_run (line, state, item, TRUE, hyphen);
+              if (break_needs_hyphen (layout, state, break_num_chars))
+                item->analysis.flags |= PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
+	      insert_run (line, state, item, TRUE);
 
 	      return BREAK_ALL_FIT;
 	    }
@@ -3753,16 +3732,16 @@ process_item (PangoLayout     *layout,
 	  else
 	    {
 	      PangoItem *new_item;
-              gboolean hyphen;
 
 	      length = g_utf8_offset_to_pointer (layout->text + item->offset, break_num_chars) - (layout->text + item->offset);
 
 	      new_item = pango_item_split (item, length, break_num_chars);
 
-              hyphen = break_needs_hyphen (layout, state, break_num_chars);
+              if (break_needs_hyphen (layout, state, break_num_chars))
+                new_item->analysis.flags |= PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
 	      /* Add the width back, to the line, reshape, subtract the new width */
 	      state->remaining_width += break_width;
-	      insert_run (line, state, new_item, FALSE, hyphen);
+	      insert_run (line, state, new_item, FALSE);
 	      break_width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
 	      state->remaining_width -= break_width;
 

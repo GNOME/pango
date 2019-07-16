@@ -51,13 +51,23 @@ typedef struct _PangoItem PangoItem;
 #define PANGO_ANALYSIS_FLAG_IS_ELLIPSIS (1 << 1)
 
 /**
+ * PANGO_ANALYSIS_FLAG_ADD_HYPHEN:
+ *
+ * This flag tells Pango to add a hyphen at the end of the
+ * run during shaping.
+ *
+ * Since: 1.44
+ */
+#define PANGO_ANALYSIS_FLAG_NEED_HYPHEN (1 << 2)
+
+/**
  * PangoAnalysis:
  * @shape_engine: unused
  * @lang_engine: unused
  * @font: the font for this segment.
  * @level: the bidirectional level for this segment.
  * @gravity: the glyph orientation for this segment (A #PangoGravity).
- * @flags: boolean flags for this segment (currently only one) (Since: 1.16).
+ * @flags: boolean flags for this segment (Since: 1.16).
  * @script: the detected script for this segment (A #PangoScript) (Since: 1.18).
  * @language: the detected language for this segment.
  * @extra_attrs: extra attributes for this segment.
