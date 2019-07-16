@@ -26,7 +26,7 @@ meson --buildtype debug _build
 cd _build
 ninja
 
-_build/test/test-font -p /pango/font/metrics --verbose
+_build/tests/test-font -p /pango/font/metrics --verbose
 
 # FIXME: Fix tests
 meson test || true
