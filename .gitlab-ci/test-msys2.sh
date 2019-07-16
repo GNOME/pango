@@ -19,7 +19,8 @@ pacman --noconfirm -S --needed \
     mingw-w64-$MSYS2_ARCH-libthai \
     mingw-w64-$MSYS2_ARCH-cairo \
     mingw-w64-$MSYS2_ARCH-meson \
-    mingw-w64-$MSYS2_ARCH-toolchain
+    mingw-w64-$MSYS2_ARCH-toolchain \
+    mingw-w64-$MSYS2_ARCH-cantarell-fonts
 
 meson --buildtype debug _build
 cd _build
