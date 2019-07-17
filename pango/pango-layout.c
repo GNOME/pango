@@ -3566,6 +3566,7 @@ process_item (PangoLayout     *layout,
   PangoItem *item = state->items->data;
   gboolean shape_set = FALSE;
   int width;
+  int extra_width;
   int length;
   int i;
   gboolean processing_new_item = FALSE;
@@ -3629,7 +3630,7 @@ process_item (PangoLayout     *layout,
       int break_num_chars = num_chars;
       int break_width = width;
       int orig_width = width;
-      int break_extra_width;
+      int break_extra_width = 0;
       gboolean retrying_with_char_breaks = FALSE;
 
       if (processing_new_item)
@@ -3645,11 +3646,13 @@ process_item (PangoLayout     *layout,
 
       /* See how much of the item we can stuff in the line. */
       width = 0;
-      break_extra_width = 0;
+      extra_width = 0;
       for (num_chars = 0; num_chars < item->num_chars; num_chars++)
 	{
-	  if (width + break_extra_width > state->remaining_width && break_num_chars < item->num_chars)
-	    break;
+	  if (width + extra_width > state->remaining_width && break_num_chars < item->num_chars)
+            {
+              break;
+            }
 
 	  /* If there are no previous runs we have to take care to grab at least one char. */
 	  if (can_break_at (layout, state->start_offset + num_chars, retrying_with_char_breaks) &&
@@ -3657,9 +3660,12 @@ process_item (PangoLayout     *layout,
 	    {
 	      break_num_chars = num_chars;
 	      break_width = width;
+              break_extra_width = extra_width;
 
-              break_extra_width = find_break_extra_width (layout, state, num_chars);
+              extra_width = find_break_extra_width (layout, state, num_chars);
 	    }
+          else
+            extra_width = 0;
 
 	  width += state->log_widths[state->log_widths_offset + num_chars];
 	}
@@ -3674,7 +3680,7 @@ process_item (PangoLayout     *layout,
 	  break_width -= state->log_widths[state->log_widths_offset + break_num_chars - 1];
       }
 
-      if (layout->wrap == PANGO_WRAP_WORD_CHAR && force_fit && break_width > state->remaining_width && !retrying_with_char_breaks)
+      if (layout->wrap == PANGO_WRAP_WORD_CHAR && force_fit && break_width + break_extra_width > state->remaining_width && !retrying_with_char_breaks)
 	{
 	  retrying_with_char_breaks = TRUE;
 	  num_chars = item->num_chars;
@@ -3684,7 +3690,7 @@ process_item (PangoLayout     *layout,
 	  goto retry_break;
 	}
 
-      if (force_fit || break_width <= state->remaining_width)	/* Successfully broke the item */
+      if (force_fit || break_width + break_extra_width <= state->remaining_width)	/* Successfully broke the item */
 	{
 	  if (state->remaining_width >= 0)
 	    {
@@ -3923,7 +3929,7 @@ process_line (PangoLayout    *layout,
 	case BREAK_NONE_FIT:
 	  /* Back up over unused runs to run where there is a break */
 	  while (line->runs && line->runs != break_link)
-	    state->items = g_list_prepend (state->items, uninsert_run (line));
+	    state->items = g_list_prepend (state->items, uninsert_run (line);
 
 	  state->start_offset = break_start_offset;
 	  state->remaining_width = break_remaining_width;
