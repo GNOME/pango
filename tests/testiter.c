@@ -23,6 +23,9 @@
 #undef G_DISABLE_ASSERT
 #undef G_LOG_DOMAIN
 
+
+#define VERBOSE 1
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
