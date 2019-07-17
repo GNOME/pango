@@ -1767,7 +1767,6 @@ tailor_segment (const char      *range_start,
 {
   int chars_in_range;
   PangoLogAttr *start = log_attrs + chars_broken;
-  PangoLogAttr attr_before = *start;
 
   chars_in_range = pango_utf8_strlen (range_start, range_end - range_start);
 
