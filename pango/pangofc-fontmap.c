@@ -2004,7 +2004,9 @@ pango_fc_coverage_real_get (PangoCoverage *coverage,
 {
   PangoFcCoverage *fc_coverage = (PangoFcCoverage*)coverage;
 
-  return FcCharSetHasChar (fc_coverage->charset, index);
+  return FcCharSetHasChar (fc_coverage->charset, index)
+         ? PANGO_COVERAGE_EXACT
+         : PANGO_COVERAGE_NONE;
 }
 
 static void
