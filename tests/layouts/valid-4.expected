@@ -4,7 +4,7 @@ This paragraph should ac­tual­ly have multiple lines, unlike all the other wan
 
 wrapped: 1
 ellipsized: 0
-lines: 7
+lines: 6
 width: 194560
 
 --- attributes
@@ -13,28 +13,26 @@ range 0 2147483647
 
 --- lines
 
-i=1, index=0, paragraph-start=1, dir=ltr 'This paragraph should ac­'
-i=2, index=26, paragraph-start=0, dir=ltr 'tual­ly have multiple lines, '
-i=3, index=56, paragraph-start=0, dir=ltr 'unlike all the other wannabe '
-i=4, index=85, paragraph-start=0, dir=ltr 'äöü pa­ra­graph tests in this '
-i=5, index=120, paragraph-start=0, dir=ltr 'ugh test-case. Grow some '
-i=6, index=145, paragraph-start=0, dir=ltr 'lines!
+i=1, index=0, paragraph-start=1, dir=ltr 'This paragraph should ac­tual­'
+i=2, index=32, paragraph-start=0, dir=ltr 'ly have multiple lines, unlike '
+i=3, index=63, paragraph-start=0, dir=ltr 'all the other wannabe äöü pa­'
+i=4, index=96, paragraph-start=0, dir=ltr 'ra­graph tests in this ugh '
+i=5, index=124, paragraph-start=0, dir=ltr 'test-case. Grow some lines!
 '
-i=7, index=152, paragraph-start=1, dir=ltr ''
+i=6, index=152, paragraph-start=1, dir=ltr ''
 
 --- runs
 
-i=1, index=0, chars=24, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'This paragraph should ac'
-i=2, index=24, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=common, language=en-us, '­'
-i=3, index=26, no run, line end
-i=4, index=26, chars=29, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'tual­ly have multiple lines, '
-i=5, index=56, no run, line end
-i=6, index=56, chars=29, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'unlike all the other wannabe '
-i=7, index=85, no run, line end
-i=8, index=85, chars=30, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'äöü pa­ra­graph tests in this '
-i=9, index=120, no run, line end
-i=10, index=120, chars=25, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'ugh test-case. Grow some '
-i=11, index=145, no run, line end
-i=12, index=145, chars=6, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'lines!'
-i=13, index=151, no run, line end
-i=14, index=152, no run, line end
+i=1, index=0, chars=29, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'This paragraph should ac­tual'
+i=2, index=30, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=common, language=en-us, '­'
+i=3, index=32, no run, line end
+i=4, index=32, chars=31, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'ly have multiple lines, unlike '
+i=5, index=63, no run, line end
+i=6, index=63, chars=28, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'all the other wannabe äöü pa'
+i=7, index=94, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=common, language=en-us, '­'
+i=8, index=96, no run, line end
+i=9, index=96, chars=27, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'ra­graph tests in this ugh '
+i=10, index=124, no run, line end
+i=11, index=124, chars=27, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'test-case. Grow some lines!'
+i=12, index=151, no run, line end
+i=13, index=152, no run, line end
