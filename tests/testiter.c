@@ -118,12 +118,20 @@ iter_char_test (PangoLayout *layout)
 
       if (run)
 	{
+#ifdef VERBOSE
+          PangoFontDescription *desc = pango_font_describe (run->item->analysis.font);
+          char *str = pango_font_description_to_string (desc);
+#endif
 	  /* Get needed data for the GlyphString */
 	  pango_layout_iter_get_run_extents(iter, NULL, &run_extents);
 	  offset = run->item->offset;
 	  rtl = run->item->analysis.level%2;
-	  verbose ("  (current run: offset=%d,x=%d,len=%d,rtl=%d)\n",
-		   offset, run_extents.x, run->item->length, rtl);
+	  verbose ("  (current run: offset=%d,x=%d,len=%d,rtl=%d,font=%s)\n",
+		   offset, run_extents.x, run->item->length, rtl, str);
+#ifdef VERBOSE
+          g_free (str);
+          pango_font_description_free (desc);
+#endif
 
 	  /* Calculate expected x result using index_to_x */
 	  pango_glyph_string_index_to_x (run->glyphs,
@@ -141,8 +149,8 @@ iter_char_test (PangoLayout *layout)
 	  verbose ("  (index_to_x ind=%d: expected x=%d, width=%d)\n",
 		   index - offset, x0, x1 - x0);
 
-	  g_assert (extents.x == x0);
-	  g_assert (extents.width == x1 - x0);
+	  g_assert_cmpint (extents.x, ==, x0);
+	  g_assert_cmpint (extents.width, ==, x1 - x0);
 	}
       else
 	{
