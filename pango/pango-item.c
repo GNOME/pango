@@ -157,7 +157,11 @@ pango_item_split (PangoItem  *orig,
 static int
 compare_attr (gconstpointer p1, gconstpointer p2)
 {
-  if (pango_attribute_equal ((PangoAttribute *)p1, (PangoAttribute *)p2))
+  const PangoAttribute *a1 = p1;
+  const PangoAttribute *a2 = p2;
+  if (pango_attribute_equal (a1, a2) &&
+      a1->start_index == a2->start_index &&
+      a1->end_index == a2->end_index)
     return 0;
 
   return 1;
