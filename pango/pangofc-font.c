@@ -1029,7 +1029,5 @@ pango_fc_font_create_hb_font (PangoFont *font)
         }
     }
 
-  hb_font_make_immutable (hb_font);
-
   return hb_font;
 }

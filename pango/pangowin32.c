@@ -1990,7 +1990,5 @@ pango_win32_font_create_hb_font (PangoFont *font)
   hb_font_set_scale (hb_font, win32font->size, win32font->size);
   hb_face_destroy (face);
 
-  hb_font_make_immutable (hb_font);
-
   return hb_font;
 }

@@ -1879,6 +1879,8 @@ pango_font_get_hb_font (PangoFont *font)
 
   priv->hb_font = PANGO_FONT_GET_CLASS (font)->create_hb_font (font);
 
+  hb_font_make_immutable (priv->hb_font);
+
   return priv->hb_font;
 }
 

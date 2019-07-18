@@ -223,8 +223,6 @@ pango_core_text_font_create_hb_font (PangoFont *font)
       hb_font = hb_coretext_font_create (ctfont->priv->font_ref);
       hb_font_set_scale (hb_font, size, size);
 
-      hb_font_make_immutable (hb_font);
-
       return hb_font;
     }
 
