@@ -1930,6 +1930,7 @@ hfont_reference_table (hb_face_t *face, hb_tag_t tag, void *user_data)
 static hb_font_t *
 pango_win32_font_create_hb_font (PangoFont *font)
 {
+  PangoWin32Font *win32font = (PangoWin32Font *)font;
   HFONT hfont;
   hb_face_t *face = NULL;
   hb_font_t *hb_font = NULL;
@@ -1942,7 +1943,10 @@ pango_win32_font_create_hb_font (PangoFont *font)
   face = hb_face_create_for_tables (hfont_reference_table, (void *)hfont, NULL);
 
   hb_font = hb_font_create (face);
+  hb_font_set_scale (hb_font, win32font->size, win32font->size);
   hb_face_destroy (face);
+
+  hb_font_make_immutable (hb_font);
 
   return hb_font;
 }
