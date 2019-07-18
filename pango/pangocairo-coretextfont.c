@@ -139,7 +139,7 @@ pango_cairo_core_text_font_create_base_metrics_for_context (PangoCairoFont *font
 
   metrics->ascent = CTFontGetAscent (ctfont) * PANGO_SCALE;
   metrics->descent = CTFontGetDescent (ctfont) * PANGO_SCALE;
-  metrics->height = (CTFontGetAscent (ctfont) + CTFontGetDescent (ctfont) + CTFontGetLeading (ctfont) * PANGO_SCALE;
+  metrics->height = (CTFontGetAscent (ctfont) + CTFontGetDescent (ctfont) + CTFontGetLeading (ctfont)) * PANGO_SCALE;
 
   metrics->underline_position = CTFontGetUnderlinePosition (ctfont) * PANGO_SCALE;
   metrics->underline_thickness = CTFontGetUnderlineThickness (ctfont) * PANGO_SCALE;

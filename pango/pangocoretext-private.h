@@ -25,6 +25,9 @@
 #define __PANGOCORETEXT_PRIVATE_H__
 
 #include "pangocoretext.h"
+#include "pango-font-private.h"
+#include "pango-fontmap-private.h"
+#include "pango-fontset-private.h"
 
 G_BEGIN_DECLS
 
