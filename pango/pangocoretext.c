@@ -175,9 +175,18 @@ pango_core_text_font_create_hb_font (PangoFont *font)
   PangoCoreTextFont *ctfont = (PangoCoreTextFont *)font;
 
   if (ctfont->priv->font_ref)
-    return hb_coretext_font_create (ctfont->priv->font_ref);
+    {
+      hb_font_t *hb_font;
+      int size;
 
-  return NULL;  
+      size = pango_core_text_font_key_get_size (ctfont->priv->key);
+      hb_font = hb_coretext_font_create (ctfont->priv->font_ref);
+      hb_font_set_scale (hb_font, size, size);
+
+      return hb_font;
+    }
+
+  return NULL;
 }
 
 static void
