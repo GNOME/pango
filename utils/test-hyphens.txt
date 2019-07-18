@@ -1,0 +1,3 @@
+A hy­phen­ation al­go­rithm is a set of rules, espe­ci­ally one co­di­fied for im­ple­men­tation in a com­pu­ter pro­gram, that de­ci­des at which points a word can be bro­ken over two lines with a hy­phen. For ex­am­ple, a hy­phen­ation al­go­rithm might de­cide that im­peach­ment can be broken as impeach‧ment or im‧peachment but not impe‧‍achment.
+
+One of the rea­sons for the com­plex­ity of the rules of word­break­ing is that dif­fer­ent "di­alects" of English tend to dif­fer on hy­phen­ation[ci­ta­tion needed]: Ame­rican Eng­lish tends to work on sound, but British English tends to look to the ori­gins of the word and then to sound. There are also a large num­ber of ex­cep­tions, which fur­ther com­pli­cates mat­ters.
