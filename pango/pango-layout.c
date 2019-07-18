@@ -3468,7 +3468,7 @@ get_need_hyphen (PangoItem  *item,
                  int        *need_hyphen)
 {
   int i;
-  char *p;
+  const char *p;
 
   for (i = 0, p = text + item->offset; i < item->num_chars; i++, p = g_utf8_next_char (p))
     {

@@ -39,7 +39,7 @@ append_text (GString    *s,
              const char *text,
              int         len)
 {
-  char *p;
+  const char *p;
 
   for (p = text; p < text + len; p = g_utf8_next_char (p))
     {
