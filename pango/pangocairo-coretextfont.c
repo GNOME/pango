@@ -147,20 +147,6 @@ pango_cairo_core_text_font_create_base_metrics_for_context (PangoCairoFont *font
   metrics->strikethrough_position = metrics->ascent / 3;
   metrics->strikethrough_thickness = CTFontGetUnderlineThickness (ctfont) * PANGO_SCALE;
 
-  layout = pango_layout_new (context);
-  font_desc = pango_font_describe_with_absolute_size ((PangoFont *) font);
-  pango_layout_set_font_description (layout, font_desc);
-  pango_layout_set_text (layout, sample_str, -1);
-  pango_layout_get_extents (layout, NULL, &extents);
-
-  metrics->approximate_char_width = extents.width / pango_utf8_strwidth (sample_str);
-
-  pango_layout_set_text (layout, "0123456789", -1);
-  metrics->approximate_digit_width = max_glyph_width (layout);
-
-  pango_font_description_free (font_desc);
-  g_object_unref (layout);
-
   return metrics;
 }
 
