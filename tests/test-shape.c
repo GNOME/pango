@@ -294,6 +294,10 @@ main (int argc, char *argv[])
   path = g_test_build_filename (G_TEST_DIST, "shape", NULL);
   dir = g_dir_open (path, 0, &error);
   g_free (path);
+
+  if (g_error_matches (error, G_FILE_ERROR, G_FILE_ERROR_NOENT))
+    return 0;
+
   g_assert_no_error (error);
   while ((name = g_dir_read_name (dir)) != NULL)
     {
