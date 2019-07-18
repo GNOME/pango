@@ -75,7 +75,7 @@ static void                  pango_xft_font_get_glyph_extents (PangoFont        
 							       PangoRectangle   *ink_rect,
 							       PangoRectangle   *logical_rect);
 
-static FT_Face    pango_xft_font_real_lock_face         (PangoFcFont      *font);
+static gpointer   pango_xft_font_real_lock_face         (PangoFcFont      *font);
 static void       pango_xft_font_real_unlock_face       (PangoFcFont      *font);
 static gboolean   pango_xft_font_real_has_char          (PangoFcFont      *font,
 							 gunichar          wc);
@@ -331,7 +331,6 @@ get_glyph_extents_raw (PangoXftFont     *xfont,
       extents = g_slice_new (Extents);
 
       pango_fc_font_get_raw_extents (PANGO_FC_FONT (xfont),
-				     FT_LOAD_NO_BITMAP | FT_LOAD_NO_HINTING,
 				     glyph,
 				     &extents->ink_rect,
 				     &extents->logical_rect);
@@ -450,12 +449,12 @@ xft_font_get_font (PangoFont *font)
   return xfont->xft_font;
 }
 
-static FT_Face
+static gpointer
 pango_xft_font_real_lock_face (PangoFcFont *font)
 {
   XftFont *xft_font = xft_font_get_font ((PangoFont *)font);
 
-  return XftLockFace (xft_font);
+  return (gpointer)XftLockFace (xft_font);
 }
 
 static void

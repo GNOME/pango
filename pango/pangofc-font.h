@@ -30,8 +30,6 @@
 #pragma GCC diagnostic ignored "-Wundef"
 #endif
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
 #include <fontconfig/fontconfig.h>
 
 #ifdef PANGO_COMPILATION
@@ -47,13 +45,12 @@ G_BEGIN_DECLS
 typedef struct _PangoFcFont      PangoFcFont;
 typedef struct _PangoFcFontClass PangoFcFontClass;
 
-
 PANGO_AVAILABLE_IN_ALL
 GType      pango_fc_font_get_type (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_1_4
-FT_Face    pango_fc_font_lock_face         (PangoFcFont      *font);
-PANGO_AVAILABLE_IN_1_4
+PANGO_DEPRECATED_IN_1_44_FOR(pango_font_get_hb_font)
+gpointer   pango_fc_font_lock_face         (PangoFcFont      *font);
+PANGO_DEPRECATED_IN_1_44_FOR(pango_font_get_hb_font)
 void       pango_fc_font_unlock_face       (PangoFcFont      *font);
 
 G_END_DECLS

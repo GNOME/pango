@@ -43,25 +43,6 @@ struct _PangoFcMetricsInfo
 };
 
 
-typedef struct _PangoFcCmapCacheEntry  PangoFcCmapCacheEntry;
-typedef struct _PangoFcCmapCache       PangoFcCmapCache;
-
-#define CMAP_CACHE_NUM_ENTRIES 256 /* should be power of two */
-#define CMAP_CACHE_MASK (CMAP_CACHE_NUM_ENTRIES - 1)
-
-struct _PangoFcCmapCacheEntry
-{
-  gunichar   ch;
-  PangoGlyph glyph;
-};
-
-struct _PangoFcCmapCache
-{
-  guint ref_count;
-  PangoFcCmapCacheEntry entries[CMAP_CACHE_NUM_ENTRIES];
-};
-
-
 #define PANGO_SCALE_26_6 (PANGO_SCALE / (1<<6))
 #define PANGO_PIXELS_26_6(d)				\
   (((d) >= 0) ?						\
@@ -79,10 +60,6 @@ PangoCoverage *_pango_fc_font_map_get_coverage    (PangoFcFontMap *fcfontmap,
 						   PangoFcFont    *fcfont);
 PangoCoverage  *_pango_fc_font_map_fc_to_coverage (FcCharSet      *charset);
 
-PangoFcCmapCache *_pango_fc_font_map_get_cmap_cache (PangoFcFontMap *fcfontmap,
-						     PangoFcFont    *fcfont);
-void              _pango_fc_cmap_cache_unref (PangoFcCmapCache *cmap_cache);
-
 PangoFcDecoder *_pango_fc_font_get_decoder       (PangoFcFont    *font);
 void            _pango_fc_font_set_decoder       (PangoFcFont    *font,
 						  PangoFcDecoder *decoder);
@@ -93,7 +70,6 @@ void            _pango_fc_font_set_font_key      (PangoFcFont    *fcfont,
 
 _PANGO_EXTERN
 void            pango_fc_font_get_raw_extents    (PangoFcFont    *font,
-						  FT_Int32        load_flags,
 						  PangoGlyph      glyph,
 						  PangoRectangle *ink_rect,
 						  PangoRectangle *logical_rect);

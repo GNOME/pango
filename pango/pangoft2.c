@@ -64,7 +64,7 @@ static void     pango_ft2_font_get_glyph_extents (PangoFont      *font,
                                                   PangoRectangle *ink_rect,
                                                   PangoRectangle *logical_rect);
 
-static FT_Face  pango_ft2_font_real_lock_face    (PangoFcFont    *font);
+static gpointer pango_ft2_font_real_lock_face    (PangoFcFont    *font);
 static void     pango_ft2_font_real_unlock_face  (PangoFcFont    *font);
 
 
@@ -309,7 +309,7 @@ pango_ft2_font_get_glyph_info (PangoFont   *font,
     {
       info = g_slice_new0 (PangoFT2GlyphInfo);
 
-      pango_fc_font_get_raw_extents (fcfont, ft2font->load_flags,
+      pango_fc_font_get_raw_extents (fcfont,
 				     glyph,
 				     &info->ink_rect,
 				     &info->logical_rect);
@@ -430,7 +430,7 @@ pango_ft2_font_get_kerning (PangoFont *font,
   return PANGO_UNITS_26_6 (kerning.x);
 }
 
-static FT_Face
+static gpointer
 pango_ft2_font_real_lock_face (PangoFcFont *font)
 {
   return pango_ft2_font_get_face ((PangoFont *)font);

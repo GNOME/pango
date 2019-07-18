@@ -46,9 +46,7 @@
 #include "pango-layout.h"
 #include "pango-impl-utils.h"
 
-#include <fontconfig/fcfreetype.h>
-
-#include FT_TRUETYPE_TABLES_H
+#include <harfbuzz/hb-ot.h>
 
 enum {
   PROP_0,
@@ -62,7 +60,6 @@ struct _PangoFcFontPrivate
 {
   PangoFcDecoder *decoder;
   PangoFcFontKey *key;
-  PangoFcCmapCache *cmap_cache;
 };
 
 static gboolean pango_fc_font_real_has_char  (PangoFcFont *font,
@@ -93,6 +90,7 @@ static void                  pango_fc_font_get_features (PangoFont        *font,
                                                          hb_feature_t     *features,
                                                          guint             len,
                                                          guint            *num_features);
+static hb_font_t *           pango_fc_font_create_hb_font (PangoFont        *font);
 
 #define PANGO_FC_FONT_LOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->lock_face (font))
 #define PANGO_FC_FONT_UNLOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->unlock_face (font))
@@ -119,6 +117,8 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   font_class->get_coverage = pango_fc_font_get_coverage;
   font_class->get_metrics = pango_fc_font_get_metrics;
   font_class->get_font_map = pango_fc_font_get_font_map;
+  font_class->get_features = pango_fc_font_get_features;
+  font_class->create_hb_font = pango_fc_font_create_hb_font;
   font_class->get_features = pango_fc_font_get_features;
 
   g_object_class_install_property (object_class, PROP_PATTERN,
@@ -173,9 +173,6 @@ pango_fc_font_finalize (GObject *object)
   if (priv->decoder)
     _pango_fc_font_set_decoder (fcfont, NULL);
 
-  if (priv->cmap_cache)
-    _pango_fc_cmap_cache_unref (priv->cmap_cache);
-
   G_OBJECT_CLASS (pango_fc_font_parent_class)->finalize (object);
 }
 
@@ -198,16 +195,8 @@ pattern_is_transformed (FcPattern *pattern)
 
   if (FcPatternGetMatrix (pattern, FC_MATRIX, 0, &fc_matrix) == FcResultMatch)
     {
-      FT_Matrix ft_matrix;
-
-      ft_matrix.xx = 0x10000L * fc_matrix->xx;
-      ft_matrix.yy = 0x10000L * fc_matrix->yy;
-      ft_matrix.xy = 0x10000L * fc_matrix->xy;
-      ft_matrix.yx = 0x10000L * fc_matrix->yx;
-
-      return ((ft_matrix.xy | ft_matrix.yx) != 0 ||
-	      ft_matrix.xx != 0x10000L ||
-	      ft_matrix.yy != 0x10000L);
+      return fc_matrix->xx != 1 || fc_matrix->xy != 0 ||
+             fc_matrix->yx != 0 || fc_matrix->yy != 1;
     }
   else
     return FALSE;
@@ -384,135 +373,55 @@ static void
 get_face_metrics (PangoFcFont      *fcfont,
 		  PangoFontMetrics *metrics)
 {
-  FT_Face face = PANGO_FC_FONT_LOCK_FACE (fcfont);
+  hb_font_t *hb_font = pango_font_get_hb_font (PANGO_FONT (fcfont));
+  hb_font_extents_t extents;
+
   FcMatrix *fc_matrix;
-  FT_Matrix ft_matrix;
-  TT_OS2 *os2;
   gboolean have_transform = FALSE;
 
-  if (G_UNLIKELY (!face))
-    {
-      metrics->descent = 0;
-      metrics->ascent = PANGO_SCALE * PANGO_UNKNOWN_GLYPH_HEIGHT;
-      metrics->height = metrics->ascent;
-      metrics->underline_thickness = PANGO_SCALE;
-      metrics->underline_position = - PANGO_SCALE;
-      metrics->strikethrough_thickness = PANGO_SCALE;
-      metrics->strikethrough_position = PANGO_SCALE * (PANGO_UNKNOWN_GLYPH_HEIGHT/2);
-      return;
-    }
+  hb_font_get_extents_for_direction (hb_font, HB_DIRECTION_LTR, &extents);
 
   if  (FcPatternGetMatrix (fcfont->font_pattern,
 			   FC_MATRIX, 0, &fc_matrix) == FcResultMatch)
     {
-      ft_matrix.xx = 0x10000L * fc_matrix->xx;
-      ft_matrix.yy = 0x10000L * fc_matrix->yy;
-      ft_matrix.xy = 0x10000L * fc_matrix->xy;
-      ft_matrix.yx = 0x10000L * fc_matrix->yx;
-
-      have_transform = (ft_matrix.xx != 0x10000 || ft_matrix.xy != 0 ||
-			ft_matrix.yx != 0 || ft_matrix.yy != 0x10000);
+      have_transform = (fc_matrix->xx != 1 || fc_matrix->xy != 0 ||
+			fc_matrix->yx != 0 || fc_matrix->yy != 1);
     }
 
   if (have_transform)
     {
-      FT_Vector	vector;
-
-      vector.x = 0;
-      vector.y = face->size->metrics.descender;
-      FT_Vector_Transform (&vector, &ft_matrix);
-      metrics->descent = - PANGO_UNITS_26_6 (vector.y);
-
-      vector.x = 0;
-      vector.y = face->size->metrics.ascender;
-      FT_Vector_Transform (&vector, &ft_matrix);
-      metrics->ascent = PANGO_UNITS_26_6 (vector.y);
-
-      vector.x = 0;
-      vector.y = face->size->metrics.height;
-      FT_Vector_Transform (&vector, &ft_matrix);
-      metrics->height = PANGO_UNITS_26_6 (vector.y);
-    }
-  else if (fcfont->is_hinted ||
-	   (face->face_flags & FT_FACE_FLAG_SCALABLE) == 0)
-    {
-      metrics->descent = - PANGO_UNITS_26_6 (face->size->metrics.descender);
-      metrics->ascent = PANGO_UNITS_26_6 (face->size->metrics.ascender);
-      metrics->height = PANGO_UNITS_26_6 (face->size->metrics.height);
+      metrics->descent =  - extents.descender * fc_matrix->yy;
+      metrics->ascent = extents.ascender * fc_matrix->yy;
+      metrics->height = (extents.ascender - extents.descender + extents.line_gap) * fc_matrix->yy;
     }
   else
     {
-      FT_Fixed ascender, descender, height;
-
-      descender = FT_MulFix (face->descender, face->size->metrics.y_scale);
-      metrics->descent = - PANGO_UNITS_26_6 (descender);
-
-      ascender = FT_MulFix (face->ascender, face->size->metrics.y_scale);
-      metrics->ascent = PANGO_UNITS_26_6 (ascender);
-
-      height = FT_MulFix (face->height, face->size->metrics.y_scale);
-      metrics->height = PANGO_UNITS_26_6 (height);
+      metrics->descent = - extents.descender;
+      metrics->ascent = extents.ascender;
+      metrics->height = extents.ascender - extents.descender + extents.line_gap;
     }
 
-  metrics->underline_thickness = 0;
-  metrics->underline_position = 0;
+  metrics->underline_thickness = PANGO_SCALE;
+  metrics->underline_position = - PANGO_SCALE;
+  metrics->strikethrough_thickness = PANGO_SCALE;
+  metrics->strikethrough_position = metrics->ascent / 2;
 
-  {
-    FT_Fixed ft_thickness, ft_position;
+  /* FIXME: use the right hb version */
+#if HB_VERSION_ATLEAST(2,5,4)
+  hb_position_t position;
 
-    ft_thickness = FT_MulFix (face->underline_thickness, face->size->metrics.y_scale);
-    metrics->underline_thickness = PANGO_UNITS_26_6 (ft_thickness);
+  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_UNDERLINE_SIZE, &position))
+    metrics->underline_thickness = position;
 
-    ft_position = FT_MulFix (face->underline_position, face->size->metrics.y_scale);
-    metrics->underline_position = PANGO_UNITS_26_6 (ft_position);
-  }
+  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_UNDERLINE_OFFSET, &position))
+    metrics->underline_position = position;
 
-  if (metrics->underline_thickness == 0 || metrics->underline_position == 0)
-    {
-      metrics->underline_thickness = (PANGO_SCALE * face->size->metrics.y_ppem) / 14;
-      metrics->underline_position = - metrics->underline_thickness;
-    }
+  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_STRIKEOUT_SIZE, &position))
+    metrics->strikethrough_thickness = position;
 
-
-  metrics->strikethrough_thickness = 0;
-  metrics->strikethrough_position = 0;
-
-  os2 = FT_Get_Sfnt_Table (face, ft_sfnt_os2);
-  if (os2 && os2->version != 0xFFFF)
-    {
-      FT_Fixed ft_thickness, ft_position;
-
-      ft_thickness = FT_MulFix (os2->yStrikeoutSize, face->size->metrics.y_scale);
-      metrics->strikethrough_thickness = PANGO_UNITS_26_6 (ft_thickness);
-
-      ft_position = FT_MulFix (os2->yStrikeoutPosition, face->size->metrics.y_scale);
-      metrics->strikethrough_position = PANGO_UNITS_26_6 (ft_position);
-    }
-
-  if (metrics->strikethrough_thickness == 0 || metrics->strikethrough_position == 0)
-    {
-      metrics->strikethrough_thickness = metrics->underline_thickness;
-      metrics->strikethrough_position = (PANGO_SCALE * face->size->metrics.y_ppem) / 4;
-    }
-
-
-  /* If hinting is on for this font, quantize the underline and strikethrough position
-   * to integer values.
-   */
-  if (fcfont->is_hinted)
-    {
-      pango_quantize_line_geometry (&metrics->underline_thickness,
-				    &metrics->underline_position);
-      pango_quantize_line_geometry (&metrics->strikethrough_thickness,
-				    &metrics->strikethrough_position);
-
-      /* Quantizing may have pushed underline_position to 0.  Not good */
-      if (metrics->underline_position == 0)
-	metrics->underline_position = - metrics->underline_thickness;
-    }
-
-
-  PANGO_FC_FONT_UNLOCK_FACE (fcfont);
+  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_STRIKEOUT_OFFSET, &position))
+    metrics->strikethrough_position = position;
+#endif
 }
 
 PangoFontMetrics *
@@ -660,50 +569,12 @@ static guint
 pango_fc_font_real_get_glyph (PangoFcFont *font,
 			      gunichar     wc)
 {
-  PangoFcFontPrivate *priv = font->priv;
-  FT_Face face;
-  FT_UInt index;
+  hb_font_t *hb_font = pango_font_get_hb_font (PANGO_FONT (font));
+  hb_codepoint_t glyph = PANGO_GET_UNKNOWN_GLYPH (wc);
 
-  guint idx;
-  PangoFcCmapCacheEntry *entry;
+  hb_font_get_nominal_glyph (hb_font, wc, &glyph);
 
-
-  if (G_UNLIKELY (priv->cmap_cache == NULL))
-    {
-      PangoFcFontMap *fontmap = g_weak_ref_get ((GWeakRef *) &font->fontmap);
-      if (G_UNLIKELY (!fontmap))
-        return 0;
-
-      priv->cmap_cache = _pango_fc_font_map_get_cmap_cache (fontmap, font);
-
-      g_object_unref (fontmap);
-
-      if (G_UNLIKELY (!priv->cmap_cache))
-	return 0;
-    }
-
-  idx = wc & CMAP_CACHE_MASK;
-  entry = priv->cmap_cache->entries + idx;
-
-  if (entry->ch != wc)
-    {
-      face = PANGO_FC_FONT_LOCK_FACE (font);
-      if (G_LIKELY (face))
-        {
-	  index = FcFreeTypeCharIndex (face, wc);
-	  if (index > (FT_UInt)face->num_glyphs)
-	    index = 0;
-
-	  PANGO_FC_FONT_UNLOCK_FACE (font);
-	}
-      else
-        index = 0;
-
-      entry->ch = wc;
-      entry->glyph = index;
-    }
-
-  return entry->glyph;
+  return glyph;
 }
 
 /**
@@ -717,8 +588,9 @@ pango_fc_font_real_get_glyph (PangoFcFont *font,
  * Return value: the FreeType <type>FT_Face</type> associated with @font.
  *
  * Since: 1.4
+ * Deprecated: 1.44: Use pango_font_get_hb_font() instead
  **/
-FT_Face
+gpointer
 pango_fc_font_lock_face (PangoFcFont *font)
 {
   g_return_val_if_fail (PANGO_IS_FC_FONT (font), NULL);
@@ -734,6 +606,7 @@ pango_fc_font_lock_face (PangoFcFont *font)
  * pango_fc_font_lock_face().
  *
  * Since: 1.4
+ * Deprecated: 1.44: Use pango_font_get_hb_font() instead
  **/
 void
 pango_fc_font_unlock_face (PangoFcFont *font)
@@ -921,27 +794,9 @@ _pango_fc_font_set_font_key (PangoFcFont    *fcfont,
   priv->key = key;
 }
 
-static FT_Glyph_Metrics *
-get_per_char (FT_Face      face,
-	      FT_Int32     load_flags,
-	      PangoGlyph   glyph)
-{
-  FT_Error error;
-  FT_Glyph_Metrics *result;
-
-  error = FT_Load_Glyph (face, glyph, load_flags);
-  if (error == FT_Err_Ok)
-    result = &face->glyph->metrics;
-  else
-    result = NULL;
-
-  return result;
-}
-
 /**
  * pango_fc_font_get_raw_extents:
  * @fcfont: a #PangoFcFont
- * @load_flags: flags to pass to FT_Load_Glyph()
  * @glyph: the glyph index to load
  * @ink_rect: (out) (optional): location to store ink extents of the
  *   glyph, or %NULL
@@ -962,62 +817,13 @@ get_per_char (FT_Face      face,
  **/
 void
 pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
-			       FT_Int32        load_flags,
 			       PangoGlyph      glyph,
 			       PangoRectangle *ink_rect,
 			       PangoRectangle *logical_rect)
 {
-  FT_Glyph_Metrics *gm;
-  FT_Face face;
-
   g_return_if_fail (PANGO_IS_FC_FONT (fcfont));
 
-  face = PANGO_FC_FONT_LOCK_FACE (fcfont);
-  if (G_UNLIKELY (!face))
-    {
-      /* Get generic unknown-glyph extents. */
-      pango_font_get_glyph_extents (NULL, glyph, ink_rect, logical_rect);
-      return;
-    }
-
   if (glyph == PANGO_GLYPH_EMPTY)
-    gm = NULL;
-  else
-    gm = get_per_char (face, load_flags, glyph);
-
-  if (gm)
-    {
-      if (ink_rect)
-	{
-	  ink_rect->x = PANGO_UNITS_26_6 (gm->horiBearingX);
-	  ink_rect->width = PANGO_UNITS_26_6 (gm->width);
-	  ink_rect->y = -PANGO_UNITS_26_6 (gm->horiBearingY);
-	  ink_rect->height = PANGO_UNITS_26_6 (gm->height);
-	}
-
-      if (logical_rect)
-	{
-	  logical_rect->x = 0;
-	  logical_rect->width = PANGO_UNITS_26_6 (gm->horiAdvance);
-	  if (fcfont->is_hinted ||
-	      (face->face_flags & FT_FACE_FLAG_SCALABLE) == 0)
-	    {
-	      logical_rect->y = - PANGO_UNITS_26_6 (face->size->metrics.ascender);
-	      logical_rect->height = PANGO_UNITS_26_6 (face->size->metrics.ascender - face->size->metrics.descender);
-	    }
-	  else
-	    {
-	      FT_Fixed ascender, descender;
-
-	      ascender = FT_MulFix (face->ascender, face->size->metrics.y_scale);
-	      descender = FT_MulFix (face->descender, face->size->metrics.y_scale);
-
-	      logical_rect->y = - PANGO_UNITS_26_6 (ascender);
-	      logical_rect->height = PANGO_UNITS_26_6 (ascender - descender);
-	    }
-	}
-    }
-  else
     {
       if (ink_rect)
 	{
@@ -1035,8 +841,38 @@ pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
 	  logical_rect->height = 0;
 	}
     }
+  else
+    {
+      hb_font_t *hb_font = pango_font_get_hb_font (PANGO_FONT (fcfont));
+      hb_glyph_extents_t extents;
+      hb_font_extents_t font_extents;
 
-  PANGO_FC_FONT_UNLOCK_FACE (fcfont);
+      hb_font_get_glyph_extents (hb_font, glyph, &extents);
+      hb_font_get_extents_for_direction (hb_font, HB_DIRECTION_LTR, &font_extents);
+
+      if (ink_rect)
+	{
+	  ink_rect->x = extents.x_bearing;
+	  ink_rect->width = extents.width;
+	  ink_rect->y = -extents.y_bearing;
+	  ink_rect->height = extents.height;
+	}
+
+      if (logical_rect)
+	{
+          hb_position_t x, y;
+
+          hb_font_get_glyph_advance_for_direction (hb_font,
+                                                   glyph,
+                                                   HB_DIRECTION_LTR,
+                                                   &x, &y);
+
+	  logical_rect->x = 0;
+	  logical_rect->width = x;
+	  logical_rect->y = - font_extents.ascender;
+	  logical_rect->height = font_extents.ascender - font_extents.descender;
+	}
+    }
 }
 
 static void
@@ -1063,4 +899,137 @@ pango_fc_font_get_features (PangoFont    *font,
             (*num_features)++;
         }
     }
+}
+
+extern gpointer get_gravity_class (void);
+
+static PangoGravity
+pango_fc_font_key_get_gravity (PangoFcFontKey *key)
+{
+  FcPattern *pattern;
+  PangoGravity gravity = PANGO_GRAVITY_SOUTH;
+  FcChar8 *s;
+
+  pattern = pango_fc_font_key_get_pattern (key);
+  if (FcPatternGetString (pattern, PANGO_FC_GRAVITY, 0, (FcChar8 **)&s) == FcResultMatch)
+    {
+      GEnumValue *value = g_enum_get_value_by_nick (get_gravity_class (), (char *)s);
+      gravity = value->value;
+    }
+
+  return gravity;
+}
+
+static double
+get_font_size (PangoFcFontKey *key)
+{
+  FcPattern *pattern;
+  double size;
+  double dpi;
+
+  pattern = pango_fc_font_key_get_pattern (key);
+  if (FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size) == FcResultMatch)
+    return size;
+
+  /* Just in case FC_PIXEL_SIZE got unset between pango_fc_make_pattern()
+   * and here.  That would be very weird.
+   */
+
+  if (FcPatternGetDouble (pattern, FC_DPI, 0, &dpi) != FcResultMatch)
+    dpi = 72;
+
+  if (FcPatternGetDouble (pattern, FC_SIZE, 0, &size) == FcResultMatch)
+    return size * dpi / 72.;
+
+  /* Whatever */
+  return 18.;
+}
+
+static void
+parse_variations (const char      *variations,
+                  hb_variation_t **hb_variations,
+                  guint           *n_variations)
+{
+  guint n;
+  hb_variation_t *var;
+  int i;
+  const char *p;
+
+  n = 1;
+  for (i = 0; variations[i]; i++)
+    {
+      if (variations[i] == ',')
+        n++;
+    }
+
+  var = g_new (hb_variation_t, n);
+
+  p = variations;
+  n = 0;
+  while (p && *p)
+    {
+      char *end = strchr (p, ',');
+      if (hb_variation_from_string (p, end ? end - p: -1, &var[n]))
+        n++;
+      p = end ? end + 1 : NULL;
+    }
+
+  *hb_variations = var;
+  *n_variations = n;
+}
+
+static hb_font_t *
+pango_fc_font_create_hb_font (PangoFont *font)
+{
+  PangoFcFont *fc_font = PANGO_FC_FONT (font);
+  PangoFcFontKey *key;
+  hb_face_t *hb_face;
+  hb_font_t *hb_font;
+  double x_scale_inv, y_scale_inv;
+  double x_scale, y_scale;
+  double size;
+  PangoGravity gravity;
+
+  x_scale_inv = y_scale_inv = 1.0;
+  key = _pango_fc_font_get_font_key (fc_font);
+  if (key)
+    {
+      const PangoMatrix *matrix = pango_fc_font_key_get_matrix (key);
+      pango_matrix_get_font_scale_factors (matrix, &x_scale_inv, &y_scale_inv);
+    }
+  if (PANGO_GRAVITY_IS_IMPROPER (gravity))
+  {
+    x_scale_inv = -x_scale_inv;
+    y_scale_inv = -y_scale_inv;
+  }
+
+  x_scale = 1. / x_scale_inv;
+  y_scale = 1. / y_scale_inv;
+
+  size = get_font_size (key);
+  gravity = pango_fc_font_key_get_gravity (key);
+  hb_face = pango_fc_font_map_get_hb_face (PANGO_FC_FONT_MAP (fc_font->fontmap), fc_font);
+
+  hb_font = hb_font_create (hb_face);
+  hb_font_set_scale (hb_font,
+                     size * PANGO_SCALE * x_scale,
+                     size * PANGO_SCALE * y_scale);
+  if (key)
+    {
+      const char *variations = pango_fc_font_key_get_variations (key);
+      if (variations)
+        {
+          guint n_variations;
+          hb_variation_t *hb_variations;
+
+          parse_variations (variations, &hb_variations, &n_variations);
+          hb_font_set_variations (hb_font, hb_variations, n_variations);
+
+          g_free (hb_variations);
+        }
+    }
+
+  hb_font_make_immutable (hb_font);
+
+  return hb_font;
 }
