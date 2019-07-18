@@ -26,6 +26,7 @@ pango_sources = [
   'pango-utils.c',
   'reorder-items.c',
   'shape.c',
+  'pangofc-shape.c',
 ]
 
 pango_headers = [
@@ -175,7 +176,6 @@ if build_pangoft2
     'pangofc-font.c',
     'pangofc-fontmap.c',
     'pangofc-decoder.c',
-    'pangofc-shape.c',
     'pangoft2.c',
   ]
 
