@@ -1862,6 +1862,10 @@ pango_font_get_font_map (PangoFont *font)
  *
  * Get a hb_font_t object backing this font.
  *
+ * Note that the objects returned by this function
+ * are cached and immutable. If you need to make
+ * changes to the hb_font_t, use hb_font_create_sub_font().
+ *
  * Returns: (transfer none) (nullable): the hb_font_t object backing the
  *          font, or %NULL if the font does not have one
  *
