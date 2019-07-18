@@ -96,30 +96,6 @@ pango_cairo_core_text_font_create_font_face (PangoCairoFont *font)
   return cairo_face;
 }
 
-static int
-max_glyph_width (PangoLayout *layout)
-{
-  int max_width = 0;
-  GSList *l, *r;
-
-  for (l = pango_layout_get_lines_readonly (layout); l; l = l->next)
-    {
-      PangoLayoutLine *line = l->data;
-
-      for (r = line->runs; r; r = r->next)
-	{
-	  PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
-	  int i;
-
-	  for (i = 0; i < glyphs->num_glyphs; i++)
-	    if (glyphs->glyphs[i].geometry.width > max_width)
-	      max_width = glyphs->glyphs[i].geometry.width;
-	}
-    }
-
-  return max_width;
-}
-
 static PangoFontMetrics *
 pango_cairo_core_text_font_create_base_metrics_for_context (PangoCairoFont *font,
                                                             PangoContext   *context)
