@@ -1,11 +1,15 @@
 Overview of changes in 1.44.0
 =============================
+- Use harfbuzz for shaping on all platforms
+- Add a getter for hb_font_t
+- Make PangoCoverage a GObject
+- Add a pango_tailor_break api
 - font metrics: Add line height
 - layout: Support line spacing
 - layout: Draw hyphens for line breaks
 - cairo: Don't render hex boxes for space
 - Add tests for itemization and line breaking
-- Remove language engine remnants
+- Remove language and shape engine remnants
 - Rename meson options: gtk_doc, introspection
 - Require GLib 2.59.2
 - Require Harfbuzz 2.0
