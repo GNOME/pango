@@ -543,7 +543,7 @@ pango_default_break (const gchar   *text,
 	    PangoScript script;
 	    WordBreakType WB_type;
 
-	    script = g_unichar_get_script (wc);
+	    script = (PangoScript)g_unichar_get_script (wc);
 
 	    /* Find the WordBreakType of wc */
 	    WB_type = WB_Other;

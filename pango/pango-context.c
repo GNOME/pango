@@ -1454,7 +1454,7 @@ string_from_script (PangoScript script)
 
   value = g_enum_get_value (class, script);
   if (!value)
-    return string_from_script (G_UNICODE_SCRIPT_INVALID_CODE);
+    return string_from_script (PANGO_SCRIPT_INVALID_CODE);
 
   return value->value_nick;
 }
