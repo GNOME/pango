@@ -81,7 +81,7 @@ test_file (const gchar *filename, GString *string)
   char *text;
   PangoAttrList *attrs;
   GList *items, *l;
-  GString *s1, *s2, *s3, *s5, *s6;
+  GString *s1, *s2, *s3, *s4, *s5, *s6, *s7;
   gboolean insert_hyphen = FALSE;
   char *p, *p1;
   const char *sep = "";
@@ -112,11 +112,13 @@ test_file (const gchar *filename, GString *string)
       return;
     }
 
-  s1 = g_string_new ("Text:     ");
-  s2 = g_string_new ("Glyphs:   ");
-  s3 = g_string_new ("Cluster:  ");
+  s1 = g_string_new ("Text:      ");
+  s2 = g_string_new ("Glyphs:    ");
+  s3 = g_string_new ("Cluster:   ");
+  s4 = g_string_new ("Width:     ");
   s5 = g_string_new ("Direction: ");
   s6 = g_string_new ("Item:      ");
+  s7 = g_string_new ("Offset:    ");
 
   length = strlen (text);
   if (text[length - 1] == '\n')
@@ -139,8 +141,10 @@ test_file (const gchar *filename, GString *string)
       g_string_append (s1, sep);
       g_string_append (s2, sep);
       g_string_append (s3, sep);
+      g_string_append (s4, sep);
       g_string_append (s5, sep);
       g_string_append (s6, sep);
+      g_string_append (s7, sep);
       sep = "|";
 
       g_string_append_printf (s6, "%d(%d)", item->num_chars, item->length);
@@ -167,21 +171,27 @@ test_file (const gchar *filename, GString *string)
                 p1 = g_utf8_next_char (p);
             }
           append_text (s1, p, p1 - p);
-          g_string_append_printf (s2, "[%x %d]", gi->glyph, gi->geometry.width);
+          g_string_append_printf (s2, "[%x]", gi->glyph);
+          g_string_append_printf (s4, "%d ", gi->geometry.width);
+          g_string_append_printf (s7, "%d,%d ", gi->geometry.x_offset, gi->geometry.y_offset);
           if (gi->attr.is_cluster_start)
-            g_string_append_printf (s3, "%d", item->offset + glyphs->log_clusters[i]);
+            g_string_append_printf (s3, "%d ", item->offset + glyphs->log_clusters[i]);
           g_string_append (s5, rtl ? "<" : ">");
           len = 0;
           len = MAX (len, g_utf8_strlen (s1->str, s1->len));
           len = MAX (len, g_utf8_strlen (s2->str, s2->len));
           len = MAX (len, g_utf8_strlen (s3->str, s3->len));
+          len = MAX (len, g_utf8_strlen (s4->str, s4->len));
           len = MAX (len, g_utf8_strlen (s5->str, s5->len));
           len = MAX (len, g_utf8_strlen (s6->str, s6->len));
+          len = MAX (len, g_utf8_strlen (s7->str, s7->len));
           g_string_append_printf (s1, "%*s", len - (int)g_utf8_strlen (s1->str, s1->len), "");
+          g_string_append_printf (s4, "%*s", len - (int)g_utf8_strlen (s4->str, s4->len), "");
           g_string_append_printf (s2, "%*s", len - (int)g_utf8_strlen (s2->str, s2->len), "");
           g_string_append_printf (s3, "%*s", len - (int)g_utf8_strlen (s3->str, s3->len), "");
           g_string_append_printf (s5, "%*s", len - (int)g_utf8_strlen (s5->str, s5->len), "");
           g_string_append_printf (s6, "%*s", len - (int)g_utf8_strlen (s6->str, s6->len), "");
+          g_string_append_printf (s7, "%*s", len - (int)g_utf8_strlen (s7->str, s7->len), "");
         }
 
       pango_glyph_string_free (glyphs);
@@ -191,14 +201,18 @@ test_file (const gchar *filename, GString *string)
   g_string_append_printf (string, "%s\n", s6->str);
   g_string_append_printf (string, "%s\n", s1->str);
   g_string_append_printf (string, "%s\n", s2->str);
+  g_string_append_printf (string, "%s\n", s4->str);
+  g_string_append_printf (string, "%s\n", s7->str);
   g_string_append_printf (string, "%s\n", s3->str);
   g_string_append_printf (string, "%s\n", s5->str);
 
   g_string_free (s1, TRUE);
   g_string_free (s2, TRUE);
   g_string_free (s3, TRUE);
+  g_string_free (s4, TRUE);
   g_string_free (s5, TRUE);
   g_string_free (s6, TRUE);
+  g_string_free (s7, TRUE);
 
   g_list_free_full (items, (GDestroyNotify)pango_item_free);
   g_free (contents);
@@ -277,7 +291,7 @@ main (int argc, char *argv[])
       return 0;
     }
 
-  path = g_test_build_filename (G_TEST_DIST, "itemize", NULL);
+  path = g_test_build_filename (G_TEST_DIST, "shape", NULL);
   dir = g_dir_open (path, 0, &error);
   g_free (path);
   g_assert_no_error (error);
