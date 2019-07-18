@@ -52,9 +52,9 @@ main (int    argc,
   if (!g_option_context_parse (context, &argc, &argv, &error))
     {
       if (error != NULL)
-        g_error ("%s", error->message);
+        g_printerr ("%s\n", error->message);
       else
-        g_error ("Option parse error");
+        g_printerr ("Option parse error\n");
       exit (1);
     }
 
