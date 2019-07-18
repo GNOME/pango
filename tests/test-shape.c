@@ -167,7 +167,7 @@ test_file (const gchar *filename, GString *string)
                 p1 = g_utf8_next_char (p);
             }
           append_text (s1, p, p1 - p);
-          g_string_append_printf (s2, "[%x]", gi->glyph);
+          g_string_append_printf (s2, "[%x %d]", gi->glyph, gi->geometry.width);
           if (gi->attr.is_cluster_start)
             g_string_append_printf (s3, "%d", item->offset + glyphs->log_clusters[i]);
           g_string_append (s5, rtl ? "<" : ">");
