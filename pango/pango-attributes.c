@@ -1682,6 +1682,27 @@ pango_attr_list_splice (PangoAttrList *list,
 }
 
 /**
+ * pango_attr_list_get_attributes:
+ * @list: a #PangoAttrList
+ *
+ * Gets a list of all attributes in @list.
+ *
+ * Return value: (element-type Pango.Attribute) (transfer full):
+ *   a list of all attributes in @list. To free this value, call
+ *   pango_attribute_destroy() on each value and g_slist_free()
+ *   on the list.
+ *
+ * Since: 1.44
+ */
+GSList *
+pango_attr_list_get_attributes (PangoAttrList *list)
+{
+  g_return_val_if_fail (list != NULL, NULL);
+
+  return g_slist_copy_deep (list->attributes, (GCopyFunc)pango_attribute_copy, NULL);
+}
+
+/**
  * pango_attr_list_get_iterator:
  * @list: a #PangoAttrList
  *
