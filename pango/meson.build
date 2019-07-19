@@ -10,7 +10,6 @@ pango_sources = [
   'pango-context.c',
   'pango-coverage.c',
   'pango-emoji.c',
-  'pango-engine.c',
   'pango-fontmap.c',
   'pango-fontset.c',
   'pango-glyph-item.c',
