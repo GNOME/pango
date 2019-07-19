@@ -155,15 +155,6 @@ PangoGravity          pango_core_text_font_key_get_gravity          (const Pango
 _PANGO_EXTERN
 CTFontDescriptorRef   pango_core_text_font_key_get_ctfontdescriptor (const PangoCoreTextFontKey *key);
 
-void
-_pango_core_text_shape (PangoFont           *font,
-			const char          *text,
-			gint                 length,
-			const PangoAnalysis *analysis,
-			PangoGlyphString    *glyphs,
-			const char          *paragraph_text G_GNUC_UNUSED,
-			unsigned int         paragraph_length G_GNUC_UNUSED);
-
 G_END_DECLS
 
 #endif /* __PANGOCORETEXT_PRIVATE_H__ */

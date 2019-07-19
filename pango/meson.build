@@ -340,14 +340,10 @@ if host_system == 'windows'
     'pangowin32.c',
     'pangowin32-fontcache.c',
     'pangowin32-fontmap.c',
-    'pangowin32-shape.c',
   ]
 
-  # usp10 needs to be before gdi32
-  # see https://bugzilla.gnome.org/show_bug.cgi?id=795045#c0
   pangowin32_deps = pango_deps + [
     libpango_dep,
-    cc.find_library('usp10'),
     cc.find_library('gdi32'),
   ]
 
@@ -441,7 +437,6 @@ if cairo_dep.found()
     pangocairo_sources += [
       'pangocoretext.c',
       'pangocoretext-fontmap.c',
-      'pangocoretext-shape.c',
       'pangocairo-coretextfont.c',
       'pangocairo-coretextfontmap.c',
     ]
