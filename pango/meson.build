@@ -490,13 +490,21 @@ if cairo_dep.found()
     sources: pangocairo_dep_sources,
   )
 
+  # Create pangocairo.pc according to whether we found Cairo
+  # manually
+  if ['pkgconfig', 'internal'].contains(cairo_found_type)
+    pango_cairo_requires = [ 'pango', cairo_pc ]
+  else
+    pango_cairo_requires = [ 'pango' ]
+  endif
+
   pkgconfig.generate(libpangocairo,
     name: 'Pango Cairo',
     description: 'Cairo rendering support for Pango',
     version: meson.project_version(),
     filebase: 'pangocairo',
     subdirs: pango_api_name,
-    requires: [ 'pango', cairo_pc ],
+    requires: pango_cairo_requires,
     install_dir: join_paths(pango_libdir, 'pkgconfig'),
   )
 else
