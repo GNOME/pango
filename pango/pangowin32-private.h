@@ -284,16 +284,6 @@ gboolean	_pango_win32_get_name_record        (HDC                 hdc,
 _PANGO_EXTERN
 HFONT		_pango_win32_font_get_hfont         (PangoFont          *font);
 
-_PANGO_EXTERN
-void
-_pango_win32_shape (PangoFont        	*font,
-		    const char       	*text,
-		    unsigned int     	 length,
-		    const PangoAnalysis *analysis,
-		    PangoGlyphString    *glyphs,
-		    const char          *paragraph_text G_GNUC_UNUSED,
-		    unsigned int         paragraph_length G_GNUC_UNUSED);
-
 extern HDC _pango_win32_hdc;
 extern OSVERSIONINFO _pango_win32_os_version_info;
 extern gboolean _pango_win32_debug;
