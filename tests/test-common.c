@@ -180,19 +180,6 @@ print_attributes (GSList *attrs, GString *string)
     }
 }
 
-typedef struct
-{
-  guint ref_count;
-  GSList *attributes;
-  GSList *attributes_tail;
-} AL;
-
-GSList *
-attr_list_to_list (PangoAttrList *attrs)
-{
-  return ((AL*)attrs)->attributes;
-}
-
 const char *
 get_script_name (GUnicodeScript s)
 {
