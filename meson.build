@@ -259,8 +259,10 @@ if harfbuzz_dep.found()
   pango_deps += harfbuzz_dep
 endif
 
-fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version, required: false,
-                            fallback: ['fontconfig', 'fontconfig_dep'])
+# Only use FontConfig fallback when required or requested
+fontconfig_required = (host_system != 'windows' and host_system != 'darwin') or get_option('use_fontconfig')
+
+fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version, required: false)
 if fontconfig_dep.found()
   fontconfig_pc = 'fontconfig'
 else
@@ -272,6 +274,11 @@ else
       fontconfig_lib = '-lfontconfig'
     endif
   endif
+endif
+
+if fontconfig_required and not fontconfig_dep.found()
+  fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version,
+                              fallback: ['fontconfig', 'fontconfig_dep'])
 endif
 
 if fontconfig_dep.found()
