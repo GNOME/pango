@@ -425,7 +425,9 @@ pango_attr_list_insert_before
 pango_attr_list_change
 pango_attr_list_splice
 pango_attr_list_filter
+pango_attr_list_update
 PangoAttrFilterFunc
+pango_attr_list_get_attributes
 pango_attr_list_get_iterator
 PangoAttrIterator
 pango_attr_iterator_copy

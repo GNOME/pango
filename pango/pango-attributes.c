@@ -1599,6 +1599,87 @@ pango_attr_list_change (PangoAttrList  *list,
 }
 
 /**
+ * pango_attr_list_update:
+ * @list: a #PangoAttrList
+ * @pos: the position of the change
+ * @remove: the number of removed bytes
+ * @add: the number of added bytes
+ *
+ * Update indices of attributes in @list for
+ * a change in the text they refer to.
+ *
+ * The change that this function applies is
+ * removing @remove bytes at position @pos
+ * and inserting @add bytes instead.
+ *
+ * Attributes that fall entirely in the
+ * (@pos, @pos + @remove) range are removed.
+ *
+ * Attributes that start or end inside the
+ * (@pos, @pos + @remove) range are shortened to
+ * reflect the removal.
+ *
+ * Attributes start and end positions are updated
+ * if they are behind @pos + @remove.
+ *
+ * Since: 1.44
+ */
+void
+pango_attr_list_update (PangoAttrList *list,
+                        int             pos,
+                        int             remove,
+                        int             add)
+{
+  GSList *l, *prev, *next;
+
+   prev = NULL;
+   l = list->attributes;
+   while (l)
+    {
+      next = l->next;
+      PangoAttribute *attr = l->data;
+
+      if (attr->start_index >= pos &&
+          attr->end_index < pos + remove)
+        {
+          pango_attribute_destroy (attr);
+          if (prev == NULL)
+            list->attributes = next;
+          else
+            prev->next = next;
+
+          g_slist_free_1 (l);
+        }
+      else
+        {
+          prev = l;
+
+          if (attr->start_index >= pos &&
+              attr->start_index < pos + remove)
+            {
+              attr->start_index = pos + add;
+            }
+          else if (attr->start_index >= pos + remove)
+            {
+              attr->start_index += add - remove;
+            }
+
+          if (attr->end_index >= pos &&
+              attr->end_index < pos + remove)
+            {
+              attr->end_index = pos;
+            }
+          else if (attr->end_index >= pos + remove)
+            {
+              attr->end_index += add - remove;
+            }
+        }
+
+      l = next;
+    }
+}
+
+/**
  * pango_attr_list_splice:
  * @list: a #PangoAttrList
  * @other: another #PangoAttrList
@@ -1679,6 +1760,27 @@ pango_attr_list_splice (PangoAttrList *list,
       tmp_list = tmp_list->next;
     }
 #undef CLAMP_ADD
+}
+
+/**
+ * pango_attr_list_get_attributes:
+ * @list: a #PangoAttrList
+ *
+ * Gets a list of all attributes in @list.
+ *
+ * Return value: (element-type Pango.Attribute) (transfer full):
+ *   a list of all attributes in @list. To free this value, call
+ *   pango_attribute_destroy() on each value and g_slist_free()
+ *   on the list.
+ *
+ * Since: 1.44
+ */
+GSList *
+pango_attr_list_get_attributes (PangoAttrList *list)
+{
+  g_return_val_if_fail (list != NULL, NULL);
+
+  return g_slist_copy_deep (list->attributes, (GCopyFunc)pango_attribute_copy, NULL);
 }
 
 /**

@@ -15,8 +15,6 @@ void print_attributes (GSList        *attrs,
 void print_attr_list (PangoAttrList  *attrs,
                       GString        *string);
 
-GSList *attr_list_to_list (PangoAttrList *attrs);
-
 const char *get_script_name (GUnicodeScript s);
 
 

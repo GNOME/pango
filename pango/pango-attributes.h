@@ -547,11 +547,19 @@ void               pango_attr_list_splice        (PangoAttrList  *list,
 						  PangoAttrList  *other,
 						  gint            pos,
 						  gint            len);
+PANGO_AVAILABLE_IN_1_44
+void               pango_attr_list_update        (PangoAttrList  *list,
+                                                  int             pos,
+                                                  int             remove,
+                                                  int             add);
 
 PANGO_AVAILABLE_IN_1_2
 PangoAttrList *pango_attr_list_filter (PangoAttrList       *list,
 				       PangoAttrFilterFunc  func,
 				       gpointer             data);
+
+PANGO_AVAILABLE_IN_1_44
+GSList        *pango_attr_list_get_attributes    (PangoAttrList *list);
 
 PANGO_AVAILABLE_IN_ALL
 PangoAttrIterator *pango_attr_list_get_iterator  (PangoAttrList  *list);
