@@ -559,6 +559,50 @@ test_iter_get_attrs (void)
   pango_attr_list_unref (list);
 }
 
+static void
+test_list_update (void)
+{
+  PangoAttrList *list;
+  PangoAttribute *attr;
+
+  list = pango_attr_list_new ();
+  attr = pango_attr_size_new (10 * PANGO_SCALE);
+  attr->start_index = 10;
+  attr->end_index = 11;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_rise_new (100);
+  attr->start_index = 0;
+  attr->end_index = 200;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_family_new ("Times");
+  attr->start_index = 5;
+  attr->end_index = 15;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_fallback_new (FALSE);
+  attr->start_index = 11;
+  attr->end_index = 100;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_stretch_new (PANGO_STRETCH_CONDENSED);
+  attr->start_index = 30;
+  attr->end_index = 60;
+  pango_attr_list_insert (list, attr);
+
+  assert_attr_list (list, "[0,200]rise=100\n"
+                          "[5,15]family=Times\n"
+                          "[10,11]size=10240\n"
+                          "[11,100]fallback=0\n"
+                          "[30,60]stretch=2\n");
+
+  pango_attr_list_update (list, 8, 10, 20);
+
+  assert_attr_list (list, "[0,210]rise=100\n"
+                          "[5,8]family=Times\n"
+                          "[28,110]fallback=0\n"
+                          "[40,70]stretch=2\n");
+
+  pango_attr_list_unref (list);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -570,6 +614,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/attributes/list/change", test_list_change);
   g_test_add_func ("/attributes/list/splice", test_list_splice);
   g_test_add_func ("/attributes/list/filter", test_list_filter);
+  g_test_add_func ("/attributes/list/update", test_list_update);
   g_test_add_func ("/attributes/iter/basic", test_iter);
   g_test_add_func ("/attributes/iter/get", test_iter_get);
   g_test_add_func ("/attributes/iter/get_font", test_iter_get_font);
