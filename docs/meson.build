@@ -15,7 +15,6 @@ private_headers = [
   'pango-coverage-private.h',
   'pango-color-table.h',
   'pango-emoji-private.h',
-  'pango-engine-private.h',
   'pango-font-private.h',
   'pango-fontmap-private.h',
   'pango-fontset-private.h',

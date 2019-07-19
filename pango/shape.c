@@ -33,7 +33,6 @@
 
 #include "pango-impl-utils.h"
 #include "pango-glyph.h"
-#include "pango-engine-private.h"
 
 #include "pangohb-private.h"
 
