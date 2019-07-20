@@ -1636,8 +1636,8 @@ pango_attr_list_update (PangoAttrList *list,
    l = list->attributes;
    while (l)
     {
-      next = l->next;
       PangoAttribute *attr = l->data;
+      next = l->next;
 
       if (attr->start_index >= pos &&
           attr->end_index < pos + remove)
