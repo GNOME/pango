@@ -1754,6 +1754,8 @@ pango_find_paragraph_boundary (const gchar *text,
  *
  * If @offset is not -1, it is used to apply attributes
  * from @analysis that are relevant to line breaking.
+ *
+ * Since: 1.44
  */
 void
 pango_tailor_break (const char    *text,
