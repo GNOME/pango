@@ -147,6 +147,7 @@ typedef struct _PangoAttrIterator PangoAttrIterator;
  * @PANGO_ATTR_FONT_FEATURES: OpenType font features (#PangoAttrString). Since 1.38
  * @PANGO_ATTR_FOREGROUND_ALPHA: foreground alpha (#PangoAttrInt). Since 1.38
  * @PANGO_ATTR_BACKGROUND_ALPHA: background alpha (#PangoAttrInt). Since 1.38
+ * @PANGO_ATTR_ALLOW_BREAKS: whether breaks are allowed (#PangoAttrInt). Since 1.44
  *
  * The #PangoAttrType
  * distinguishes between different types of attributes. Along with the
@@ -182,7 +183,8 @@ typedef enum
   PANGO_ATTR_GRAVITY_HINT,	/* PangoAttrInt */
   PANGO_ATTR_FONT_FEATURES,	/* PangoAttrString */
   PANGO_ATTR_FOREGROUND_ALPHA,	/* PangoAttrInt */
-  PANGO_ATTR_BACKGROUND_ALPHA	/* PangoAttrInt */
+  PANGO_ATTR_BACKGROUND_ALPHA,	/* PangoAttrInt */
+  PANGO_ATTR_ALLOW_BREAKS	/* PangoAttrInt */
 } PangoAttrType;
 
 /**
@@ -522,6 +524,8 @@ PANGO_AVAILABLE_IN_1_38
 PangoAttribute *pango_attr_foreground_alpha_new (guint16 alpha);
 PANGO_AVAILABLE_IN_1_38
 PangoAttribute *pango_attr_background_alpha_new (guint16 alpha);
+PANGO_AVAILABLE_IN_1_44
+PangoAttribute *pango_attr_allow_breaks_new     (gboolean allow_breaks);
 
 PANGO_AVAILABLE_IN_ALL
 GType              pango_attr_list_get_type      (void) G_GNUC_CONST;

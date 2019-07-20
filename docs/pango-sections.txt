@@ -408,6 +408,7 @@ pango_attr_gravity_hint_new
 pango_attr_font_features_new
 pango_attr_foreground_alpha_new
 pango_attr_background_alpha_new
+pango_attr_allow_breaks_new_
 PangoColor
 PANGO_TYPE_COLOR
 pango_color_parse
