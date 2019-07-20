@@ -1726,6 +1726,7 @@ pango_find_paragraph_boundary (const gchar *text,
  * @text: text to process. Must be valid UTF-8
  * @length: length in bytes of @text
  * @analysis:  #PangoAnalysis structure from pango_itemize() for @text
+ * @offset: byte offset of @text in paragraph, or -1
  * @log_attrs: (array length=attrs_len): array with one #PangoLogAttr
  *   per character in @text, plus one extra, to be filled in
  * @attrs_len: length of @log_attrs array
@@ -1738,6 +1739,7 @@ void
 pango_tailor_break (const char    *text,
                     int            length,
                     PangoAnalysis *analysis,
+                    int            offset,
                     PangoLogAttr  *log_attrs,
                     int            log_attrs_len)
 {
