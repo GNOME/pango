@@ -41,7 +41,6 @@ test_file (const gchar *filename, GString *string)
   gsize  length;
   GError *error = NULL;
   PangoLogAttr *attrs;
-  PangoLanguage *lang;
   int len;
   char *p;
   int i;
@@ -68,8 +67,6 @@ test_file (const gchar *filename, GString *string)
   length = strlen (test);
   len = g_utf8_strlen (test, -1) + 1;
   attrs = g_new (PangoLogAttr, len);
-
-  lang = pango_language_from_string ("en");
 
   if (!pango_parse_markup (test, -1, 0, &attributes, &text, NULL, &error))
     {
