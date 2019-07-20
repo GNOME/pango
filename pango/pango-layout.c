@@ -3950,44 +3950,23 @@ get_items_log_attrs (const char   *text,
                      int           log_attrs_len)
 {
   int offset = 0;
-  int index = 0;
-  int num_bytes = 0;
   int num_chars = 0;
-  PangoAnalysis analysis = { NULL };
   GList *l;
 
-  analysis.level = -1;
-
-  pango_default_break (text, length, &analysis, log_attrs, log_attrs_len);
+  pango_default_break (text, length, NULL, log_attrs, log_attrs_len);
 
   for (l = items; l; l = l->next)
     {
       PangoItem *item = l->data;
 
-      if (l == items)
-        {
-          analysis = item->analysis;
-          index = item->offset;
-          offset = 0;
-        }
+      pango_tailor_break (text + item->offset,
+                          item->length,
+                          &item->analysis,
+                          item->offset,
+                          log_attrs + offset,
+                          item->num_chars + 1);
 
-      if (can_break_together (&analysis, &item->analysis))
-        {
-          num_bytes += item->length;
-          num_chars += item->num_chars;
-        }
-      else
-        {
-          pango_tailor_break (text + index,
-                              num_bytes,
-                              &analysis,
-                              log_attrs + offset,
-                              num_chars + 1);
-
-          analysis = item->analysis;
-          index += num_bytes;
-          offset += num_chars;
-        }
+      offset += num_chars;
     }
 }
 
@@ -4075,9 +4054,9 @@ no_break_filter_func (PangoAttribute *attribute,
 		      gpointer        data G_GNUC_UNUSED)
 {
   static const PangoAttrType no_break_types[] = {
-    PANGO_ATTR_FONT_FEATURES
+    PANGO_ATTR_FONT_FEATURES,
+    PANGO_ATTR_ALLOW_BREAKS
   };
-
   int i;
 
   for (i = 0; i < (int)G_N_ELEMENTS (no_break_types); i++)
