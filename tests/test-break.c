@@ -48,6 +48,9 @@ test_file (const gchar *filename, GString *string)
   GString *s1, *s2, *s3, *s4;
   int m;
   char *test;
+  char *text;
+  PangoAttrList *attributes;
+  PangoLayout *layout;
 
   if (!g_file_get_contents (filename, &contents, &length, &error))
     {
@@ -68,7 +71,17 @@ test_file (const gchar *filename, GString *string)
 
   lang = pango_language_from_string ("en");
 
-  pango_get_log_attrs (test, length, -1, lang, attrs, len);
+  if (!pango_parse_markup (test, -1, 0, &attributes, &text, NULL, &error))
+    {
+      fprintf (stderr, "%s\n", error->message);
+      g_error_free (error);
+      return;
+    }
+
+  layout = pango_layout_new (context);
+  pango_layout_set_text (layout, text, length);
+  pango_layout_set_attributes (layout, attributes);
+  pango_layout_get_log_attrs (layout, &attrs, &len);
 
   s1 = g_string_new ("Breaks: ");
   s2 = g_string_new ("Whitespace: ");
@@ -85,7 +98,7 @@ test_file (const gchar *filename, GString *string)
   g_string_append_printf (s4, "%*s", (int)(m - s4->len), "");
   g_string_append_printf (string, "%*s", (int)(m - strlen ("Text: ")), "");
 
-  for (i = 0, p = test; i < len; i++, p = g_utf8_next_char (p))
+  for (i = 0, p = text; i < len; i++, p = g_utf8_next_char (p))
     {
       PangoLogAttr log = attrs[i];
       int b = 0;
@@ -208,8 +221,10 @@ test_file (const gchar *filename, GString *string)
   g_string_free (s3, TRUE);
   g_string_free (s4, TRUE);
 
+  g_object_unref (layout);
   g_free (attrs);
   g_free (contents);
+  pango_attr_list_unref (attributes);
 }
 
 static gchar *
@@ -270,7 +285,7 @@ main (int argc, char *argv[])
 
   g_test_init (&argc, &argv, NULL);
 
-  context = pango_context_new ();
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
   /* allow to easily generate expected output for new test cases */
   if (argc > 1)
