@@ -41,7 +41,6 @@ test_file (const gchar *filename, GString *string)
   gsize  length;
   GError *error = NULL;
   PangoLogAttr *attrs;
-  PangoLanguage *lang;
   int len;
   char *p;
   int i;
