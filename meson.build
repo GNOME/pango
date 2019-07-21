@@ -343,8 +343,7 @@ if host_system == 'darwin'
 endif
 
 cairo_found_type = ''
-cairo_dep = dependency('cairo', version: cairo_req_version, required: false,
-                       fallback: ['cairo', 'libcairo_dep'])
+cairo_dep = dependency('cairo', version: cairo_req_version, required: false)
 
 if cairo_dep.found()
   cairo_found_type = cairo_dep.type_name()
@@ -353,6 +352,14 @@ else
     cairo_dep = cc.find_library('cairo', required: false)
     cairo_found_type = 'library'
   endif
+endif
+
+# Remove once Meson gains capability to declare dependencies
+# in a declarative way
+if not cairo_dep.found()
+  cairo_dep = dependency('cairo', version: cairo_req_version,
+                         fallback: ['cairo', 'libcairo_dep'])
+  cairo_found_type = cairo_dep.type_name()
 endif
 
 pango_font_backends = []
