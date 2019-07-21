@@ -574,6 +574,17 @@ read_windows_fallbacks (GHashTable *ht_aliases)
           entry_len = wcslen (entry);
         }
       g_free (value_data);
+
+      /* For some reason the default fallback list doesn't cover all of Unicode
+       * and Windows has additional fonts for certain languages.
+       * Some of them are listed in
+       * SOFTWARE\Microsoft\Windows NT\CurrentVersion\FontMapperFamilyFallback
+       * but I couldn't find any docs for it. Feel free to improve this */
+      g_string_append (line_buffer,
+                       ",gisha,leelawadee,arial unicode ms,browallia new,"
+                       "mingliu,simhei,gulimche,ms gothic,sylfaen,kartika,"
+                       "latha,mangal,raavi");
+
       g_string_append (line_buffer, "\"");
 
       handle_alias_line (line_buffer, &errstring, ht_aliases);
