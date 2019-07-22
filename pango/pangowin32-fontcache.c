@@ -245,13 +245,8 @@ pango_win32_font_cache_loadw (PangoWin32FontCache *cache,
       BOOL font_smoothing;
       lf = *lfp;
       SystemParametersInfo (SPI_GETFONTSMOOTHING, 0, &font_smoothing, 0);
-      /* If on XP or better, try to use ClearType if the global system
-       * settings ask for it.
-       */
-      if (font_smoothing &&
-	  (_pango_win32_os_version_info.dwMajorVersion > 5 ||
-	   (_pango_win32_os_version_info.dwMajorVersion == 5 &&
-	    _pango_win32_os_version_info.dwMinorVersion >= 1)))
+      /* use ClearType if the global system settings ask for it. */
+      if (font_smoothing)
 	{
 	  UINT smoothing_type;
 

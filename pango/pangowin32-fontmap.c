@@ -209,9 +209,7 @@ pango_win32_enum_proc (LOGFONTW       *lfp,
 
   PING (("%S: %lu %lx", lfp->lfFaceName, fontType, metrics->ntmFlags));
 
-  if (fontType == TRUETYPE_FONTTYPE ||
-      (_pango_win32_os_version_info.dwMajorVersion >= 5 &&
-       ((metrics->ntmFlags & NTM_PS_OPENTYPE) || (metrics->ntmFlags & NTM_TYPE1))))
+  if (fontType == TRUETYPE_FONTTYPE || ((metrics->ntmFlags & NTM_PS_OPENTYPE) || (metrics->ntmFlags & NTM_TYPE1)))
     {
       lf = *lfp;
 
