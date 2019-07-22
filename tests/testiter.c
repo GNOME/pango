@@ -32,6 +32,8 @@
 
 #include <pango/pangocairo.h>
 
+#define VERBOSE 1
+
 static void verbose (const char *format, ...) G_GNUC_PRINTF (1, 2);
 static void
 verbose (const char *format, ...)
@@ -115,12 +117,19 @@ iter_char_test (PangoLayout *layout)
 
       if (run)
 	{
+          PangoFontDescription *desc;
+          char *str;
+
 	  /* Get needed data for the GlyphString */
 	  pango_layout_iter_get_run_extents(iter, NULL, &run_extents);
 	  offset = run->item->offset;
 	  rtl = run->item->analysis.level%2;
-	  verbose ("  (current run: offset=%d,x=%d,len=%d,rtl=%d)\n",
-		   offset, run_extents.x, run->item->length, rtl);
+          desc = pango_font_describe (run->item->analysis.font);
+          str = pango_font_description_to_string (desc);
+	  verbose ("  (current run: font=%s,offset=%d,x=%d,len=%d,rtl=%d)\n",
+		   str, offset, run_extents.x, run->item->length, rtl);
+          g_free (str);
+          pango_font_description_free (desc);
 
 	  /* Calculate expected x result using index_to_x */
 	  pango_glyph_string_index_to_x (run->glyphs,
