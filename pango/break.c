@@ -1578,18 +1578,34 @@ break_script (const char          *item_text,
 	      int                  attrs_len);
 
 static gboolean
-tailor_break (const gchar   *text,
-	     gint           length,
-	     PangoAnalysis *analysis,
-	     PangoLogAttr  *attrs,
-	     int            attrs_len)
+break_attrs (const char   *text,
+	     int           length,
+             GSList       *attributes,
+             int           item_offset,
+             PangoLogAttr *attrs,
+             int           attrs_len);
+
+static gboolean
+tailor_break (const char    *text,
+	      int            length,
+	      PangoAnalysis *analysis,
+              int            item_offset,
+	      PangoLogAttr  *attrs,
+	      int            attrs_len)
 {
+  gboolean res;
+
   if (length < 0)
     length = strlen (text);
   else if (text == NULL)
     text = "";
 
-  return break_script (text, length, analysis, attrs, attrs_len);
+  res = break_script (text, length, analysis, attrs, attrs_len);
+
+  if (item_offset >= 0)
+    res |= break_attrs (text, length, analysis->extra_attrs, item_offset, attrs, attrs_len);
+
+  return res;
 }
 
 /**
@@ -1618,7 +1634,7 @@ pango_break (const gchar   *text,
   g_return_if_fail (attrs != NULL);
 
   pango_default_break (text, length, analysis, attrs, attrs_len);
-  tailor_break        (text, length, analysis, attrs, attrs_len);
+  tailor_break        (text, length, analysis, -1, attrs, attrs_len);
 }
 
 /**
@@ -1726,6 +1742,8 @@ pango_find_paragraph_boundary (const gchar *text,
  * @text: text to process. Must be valid UTF-8
  * @length: length in bytes of @text
  * @analysis:  #PangoAnalysis structure from pango_itemize() for @text
+ * @offset: Byte offset of @text from the beginning of the
+ *     paragraph, or -1 to ignore attributes from @analysis
  * @log_attrs: (array length=attrs_len): array with one #PangoLogAttr
  *   per character in @text, plus one extra, to be filled in
  * @attrs_len: length of @log_attrs array
@@ -1733,18 +1751,24 @@ pango_find_paragraph_boundary (const gchar *text,
  * Apply language-specific tailoring to the breaks in
  * @log_attrs, which are assumed to have been produced
  * by pango_default_break().
+ *
+ * If @offset is not -1, it is used to apply attributes
+ * from @analysis that are relevant to line breaking.
+ *
+ * Since: 1.44
  */
 void
 pango_tailor_break (const char    *text,
                     int            length,
                     PangoAnalysis *analysis,
+                    int            offset,
                     PangoLogAttr  *log_attrs,
                     int            log_attrs_len)
 {
   PangoLogAttr *start = log_attrs;
   PangoLogAttr attr_before = *start;
 
-  if (tailor_break (text, length, analysis, log_attrs, log_attrs_len))
+  if (tailor_break (text, length, analysis, offset, log_attrs, log_attrs_len))
     {
       /* if tailored, we enforce some of the attrs from before
        * tailoring at the boundary
@@ -1773,6 +1797,7 @@ tailor_segment (const char      *range_start,
   pango_tailor_break (range_start,
                       range_end - range_start,
                       analysis,
+                      -1,
                       start,
                       chars_in_range + 1);
 
@@ -1874,6 +1899,63 @@ break_script (const char          *item_text,
     default:
       return FALSE;
     }
+
+  return TRUE;
+}
+
+static gboolean
+break_attrs (const char   *text,
+             int           length,
+             GSList       *attributes,
+             int           offset,
+             PangoLogAttr *log_attrs,
+             int           log_attrs_len)
+{
+  PangoAttrList *list;
+  PangoAttrIterator *iter;
+  GSList *l;
+
+  list = pango_attr_list_new ();
+  for (l = attributes; l; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+
+      if (attr->klass->type == PANGO_ATTR_ALLOW_BREAKS)
+        pango_attr_list_insert (list, (PangoAttribute*)l->data);
+    }
+
+  iter = pango_attr_list_get_iterator (list);
+  do {
+    PangoAttribute *attr;
+
+    attr = pango_attr_iterator_get (iter, PANGO_ATTR_ALLOW_BREAKS);
+    if (attr && ((PangoAttrInt*)attr)->value == 0)
+      {
+        int start, end;
+        int start_pos, end_pos;
+        int pos;
+
+        pango_attr_iterator_range (iter, &start, &end);
+        if (start < offset)
+          start_pos = 0;
+        else
+          start_pos = g_utf8_pointer_to_offset (text, text + start - offset);
+        if (end >= offset + length)
+          end_pos = log_attrs_len;
+        else
+          end_pos = g_utf8_pointer_to_offset (text, text + end - offset);
+
+        for (pos = start_pos + 1; pos < end_pos; pos++)
+          {
+            log_attrs[pos].is_mandatory_break = FALSE;
+            log_attrs[pos].is_line_break = FALSE;
+            log_attrs[pos].is_char_break = FALSE;
+          }
+      }
+  } while (pango_attr_iterator_next (iter));
+
+  pango_attr_iterator_destroy (iter);
+  pango_attr_list_unref (list);
 
   return TRUE;
 }

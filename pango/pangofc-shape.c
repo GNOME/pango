@@ -158,6 +158,20 @@ pango_hb_shape (PangoFont           *font,
   hb_buffer_set_flags (hb_buffer, HB_BUFFER_FLAG_BOT | HB_BUFFER_FLAG_EOT);
 
   hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_offset, item_length);
+  if (analysis->flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN)
+    {
+      /* Insert either a Unicode or ASCII hyphen. We may
+       * want to look for script-specific hyphens here.
+       */
+      const char *p = paragraph_text + item_offset + item_length;
+      int last_char_len = p - g_utf8_prev_char (p);
+      hb_codepoint_t glyph;
+
+      if (hb_font_get_nominal_glyph (hb_font, 0x2010, &glyph))
+        hb_buffer_add (hb_buffer, 0x2010, item_length - last_char_len);
+      else if (hb_font_get_nominal_glyph (hb_font, '-', &glyph))
+        hb_buffer_add (hb_buffer, '-', item_length - last_char_len);
+    }
 
   pango_font_get_features (font, features, G_N_ELEMENTS (features), &num_features);
   apply_extra_attributes (analysis->extra_attrs, features, G_N_ELEMENTS (features), &num_features);

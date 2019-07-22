@@ -861,7 +861,7 @@ extern gpointer get_gravity_class (void);
 static PangoGravity
 pango_fc_font_key_get_gravity (PangoFcFontKey *key)
 {
-  FcPattern *pattern;
+  const FcPattern *pattern;
   PangoGravity gravity = PANGO_GRAVITY_SOUTH;
   FcChar8 *s;
 
@@ -878,7 +878,7 @@ pango_fc_font_key_get_gravity (PangoFcFontKey *key)
 static double
 get_font_size (PangoFcFontKey *key)
 {
-  FcPattern *pattern;
+  const FcPattern *pattern;
   double size;
   double dpi;
 

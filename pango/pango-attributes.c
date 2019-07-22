@@ -1179,6 +1179,33 @@ pango_attr_background_alpha_new (guint16 alpha)
   return pango_attr_int_new (&klass, (int)alpha);
 }
 
+/**
+ * pango_attr_allow_breaks_new:
+ * @allow_breaks: %TRUE if we line breaks are allowed
+ *
+ * Create a new allow-breaks attribute.
+ *
+ * If breaks are disabled, the range will be kept in a
+ * single run, as far as possible.
+ *
+ * Return value: (transfer full): the newly allocated #PangoAttribute,
+ *               which should be freed with pango_attribute_destroy()
+ *
+ * Since: 1.44
+ */
+PangoAttribute *
+pango_attr_allow_breaks_new (gboolean allow_breaks)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_ALLOW_BREAKS,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal,
+  };
+
+  return pango_attr_int_new (&klass, (int)allow_breaks);
+}
+
 /*
  * Attribute List
  */
