@@ -49,7 +49,6 @@
 			  ((ch) >= 0x2F800 && (ch) <= 0x2FA1F))
 
 HDC _pango_win32_hdc;
-OSVERSIONINFO _pango_win32_os_version_info;
 gboolean _pango_win32_debug = FALSE;
 
 static void pango_win32_font_dispose    (GObject             *object);
@@ -156,11 +155,6 @@ pango_win32_get_dc (void)
   if (g_once_init_enter (&_pango_win32_hdc))
     {
       HDC hdc = CreateDC ("DISPLAY", NULL, NULL, NULL);
-      memset (&_pango_win32_os_version_info, 0,
-	      sizeof (_pango_win32_os_version_info));
-      _pango_win32_os_version_info.dwOSVersionInfoSize =
-	sizeof (OSVERSIONINFO);
-      GetVersionEx (&_pango_win32_os_version_info);
 
       /* Also do some generic pangowin32 initialisations... this function
        * is a suitable place for those as it is called from a couple
