@@ -285,7 +285,6 @@ _PANGO_EXTERN
 HFONT		_pango_win32_font_get_hfont         (PangoFont          *font);
 
 extern HDC _pango_win32_hdc;
-extern OSVERSIONINFO _pango_win32_os_version_info;
 extern gboolean _pango_win32_debug;
 
 #endif /* __PANGOWIN32_PRIVATE_H__ */
