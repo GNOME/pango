@@ -7,6 +7,7 @@ Overview of changes in 1.44.0
 - font metrics: Add line height
 - layout: Support line spacing
 - layout: Draw hyphens for line breaks
+- Add an attribute to suppress line breaking
 - cairo: Don't render hex boxes for space
 - Add tests for itemization and line breaking
 - Remove language and shape engine remnants
