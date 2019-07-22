@@ -604,36 +604,30 @@ read_windows_fallbacks (GHashTable *ht_aliases)
 #endif
 
 
-static GHashTable *
-load_aliases (void)
+static gboolean
+load_aliases (GHashTable *ht_aliases)
 {
-  GHashTable *ht_aliases = g_hash_table_new_full ((GHashFunc)alias_hash,
-                                                  (GEqualFunc)alias_equal,
-                                                  (GDestroyNotify)alias_free,
-                                                  NULL);
 
 #ifdef HAVE_CAIRO_WIN32
   read_windows_fallbacks (ht_aliases);
   read_builtin_aliases (ht_aliases);
 #endif
 
-  return ht_aliases;
+  return TRUE;
 }
 
 static void
-lookup_aliases (const char   *fontname,
+lookup_aliases (GHashTable   *aliases_ht,
+                const char   *fontname,
                 char       ***families,
                 int          *n_families)
 {
-  static GHashTable *aliases_ht = NULL; /* MT-safe */
-
   struct PangoAlias alias_key;
   struct PangoAlias *alias;
+  static gsize aliases_inited = 0;
 
-  if (g_once_init_enter (&aliases_ht))
-    {
-      g_once_init_leave (&aliases_ht, load_aliases ());
-    }
+  if (g_once_init_enter (&aliases_inited))
+    g_once_init_leave (&aliases_inited, load_aliases (aliases_ht));
 
   alias_key.alias = g_ascii_strdown (fontname, -1);
   alias = g_hash_table_lookup (aliases_ht, &alias_key);
@@ -659,7 +653,7 @@ create_standard_family (PangoWin32FontMap *win32fontmap,
   int n_aliases;
   char **aliases;
 
-  lookup_aliases (standard_family_name, &aliases, &n_aliases);
+  lookup_aliases (win32fontmap->aliases, standard_family_name, &aliases, &n_aliases);
   for (i = 0; i < n_aliases; i++)
     {
       PangoWin32Family *existing_family = g_hash_table_lookup (win32fontmap->families, aliases[i]);
@@ -726,6 +720,10 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 
   win32fontmap->font_cache = pango_win32_font_cache_new ();
   win32fontmap->freed_fonts = g_queue_new ();
+  win32fontmap->aliases = g_hash_table_new_full ((GHashFunc)alias_hash,
+                                                 (GEqualFunc)alias_equal,
+                                                 (GDestroyNotify)alias_free,
+                                                 NULL);
 
   memset (&logfont, 0, sizeof (logfont));
   logfont.lfCharSet = DEFAULT_CHARSET;
@@ -757,8 +755,9 @@ pango_win32_font_map_fontset_add_fonts (PangoFontMap          *fontmap,
   char **aliases;
   int n_aliases;
   int j;
+  PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (fontmap);
 
-  lookup_aliases (family, &aliases, &n_aliases);
+  lookup_aliases (win32fontmap->aliases, family, &aliases, &n_aliases);
 
   if (n_aliases)
   {
@@ -841,8 +840,8 @@ pango_win32_font_map_finalize (GObject *object)
 
   pango_win32_font_cache_free (win32fontmap->font_cache);
 
+  g_hash_table_destroy (win32fontmap->aliases);
   g_hash_table_destroy (win32fontmap->fonts);
-
   g_hash_table_destroy (win32fontmap->families);
 
   G_OBJECT_CLASS (_pango_win32_font_map_parent_class)->finalize (object);

@@ -107,6 +107,9 @@ struct _PangoWin32FontMap
    */
   GHashTable *fonts;
 
+  /* keeps track of the alias pairs that we might have */
+  GHashTable *aliases;
+
   double resolution;		/* (points / pixel) * PANGO_SCALE */
 };
 
