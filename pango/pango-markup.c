@@ -153,6 +153,11 @@
  *   Fallback is enabled by default. Most applications should not
  *   disable fallback.
  *
+ * allow_breaks
+ * : 'true' or 'false' whether to allow line breaks or not. If
+ *   not allowed, the range will be kept in a single run as far
+ *   as possible. Breaks are allowed by default.
+ *
  * lang
  * : A language code, indicating the text language
  *
@@ -1297,6 +1302,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   const char *font_features = NULL;
   const char *alpha = NULL;
   const char *background_alpha = NULL;
+  const char *allow_breaks = NULL;
 
   g_markup_parse_context_get_position (context,
 				       &line_number, &char_number);
@@ -1326,6 +1332,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 
       switch (names[i][0]) {
       case 'a':
+        CHECK_ATTRIBUTE (allow_breaks);
         CHECK_ATTRIBUTE (alpha);
         break;
       case 'b':
@@ -1705,6 +1712,16 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   if (G_UNLIKELY (font_features))
     {
       add_attribute (tag, pango_attr_font_features_new (font_features));
+    }
+
+  if (G_UNLIKELY (allow_breaks))
+    {
+      gboolean b = FALSE;
+
+      if (!span_parse_boolean ("allow_breaks", allow_breaks, &b, line_number, error))
+	goto error;
+
+      add_attribute (tag, pango_attr_allow_breaks_new (b));
     }
 
   return TRUE;

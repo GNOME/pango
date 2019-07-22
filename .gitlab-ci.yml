@@ -20,6 +20,7 @@ gnome-runtime-linux:
         gobject-introspection-devel \
         cairo-gobject-devel \
         abattis-cantarell-fonts \
+        google-droid-sans-fonts \
         desktop-file-utils
   script:
     - meson _build
