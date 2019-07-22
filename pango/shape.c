@@ -238,7 +238,7 @@ pango_shape_full (const gchar      *item_text,
   if (G_UNLIKELY ((analysis->level & 1) &&
 		  glyphs->log_clusters[0] < glyphs->log_clusters[glyphs->num_glyphs - 1]))
     {
-      g_warning ("Expected RTL run but got LTR. Fixing.");
+      g_debug ("Expected RTL run but got LTR. Fixing.");
 
       /* *Fix* it so we don't crash later */
       pango_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
