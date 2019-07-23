@@ -374,7 +374,7 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
   PangoCairoFontHexBoxInfo *hbi;
   gunichar ch;
   gboolean invalid_input;
-  char *p;
+  const char *p;
   const char *name;
 
   cairo_save (crenderer->cr);
