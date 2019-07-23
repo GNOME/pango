@@ -123,6 +123,13 @@ pango_dep_sources = [pango_enum_h]
 
 build_gir = get_option('introspection')
 
+libpango_dep = declare_dependency(
+  link_with: libpango,
+  include_directories: pango_inc,
+  dependencies: pango_deps,
+  sources: pango_dep_sources,
+)
+
 if build_gir
   gir_args = [
     '--quiet',
@@ -130,6 +137,7 @@ if build_gir
 
   pango_gir = gnome.generate_gir(
     libpango,
+    dependencies: libpango_dep,
     sources: pango_sources + pango_headers + [ pango_enum_h ],
     namespace: 'Pango',
     nsversion: pango_api_version,
@@ -144,13 +152,6 @@ if build_gir
   pango_gir_dep = declare_dependency(sources: pango_gir)
   pango_dep_sources += pango_gir
 endif
-
-libpango_dep = declare_dependency(
-  link_with: libpango,
-  include_directories: pango_inc,
-  dependencies: pango_deps,
-  sources: pango_dep_sources,
-)
 
 pkgconfig.generate(libpango,
   name: 'Pango',
