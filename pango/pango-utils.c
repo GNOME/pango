@@ -772,6 +772,68 @@ _pango_parse_enum (GType       type,
   return ret;
 }
 
+gboolean
+pango_parse_flags (GType        type,
+                   const char  *str,
+                   int         *value,
+                   char       **possible_values)
+{
+  GFlagsClass *class = NULL;
+  gboolean ret = TRUE;
+  GFlagsValue *v = NULL;
+
+  class = g_type_class_ref (type);
+
+  v = g_flags_get_value_by_nick (class, str);
+
+  if (v)
+    {
+      *value = v->value;
+    }
+  else if (!parse_int (str, value))
+    {
+      char **strv = g_strsplit (str, "|", 0);
+      int i;
+
+      *value = 0;
+
+      for (i = 0; strv[i]; i++)
+        {
+          strv[i] = g_strstrip (strv[i]);
+          v = g_flags_get_value_by_nick (class, strv[i]);
+          if (!v)
+            {
+              ret = FALSE;
+              break;
+            }
+          *value |= v->value;
+        }
+      g_strfreev (strv);
+
+      if (!ret && possible_values)
+	{
+	  int i;
+	  GString *s = g_string_new (NULL);
+
+          for (i = 0; i < class->n_values; i++)
+            {
+              v = &class->values[i];
+              if (i)
+                g_string_append_c (s, '/');
+              g_string_append (s, v->value_nick);
+            }
+
+          *possible_values = s->str;
+
+          g_string_free (s, FALSE);
+	}
+    }
+
+  g_type_class_unref (class);
+
+  return ret;
+}
+
 /**
  * pango_lookup_aliases:
  * @fontname: an ascii string

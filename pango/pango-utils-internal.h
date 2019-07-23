@@ -36,6 +36,10 @@ gboolean _pango_parse_enum              (GType       type,
                                          int        *value,
                                          gboolean    warn,
                                          char      **possible_values);
+gboolean pango_parse_flags              (GType       type,
+                                         const char *str,
+                                         int        *value,
+                                         char      **possible_values);
 
 char    *_pango_trim_string             (const char *str);
 
