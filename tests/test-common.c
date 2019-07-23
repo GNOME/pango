@@ -118,6 +118,7 @@ print_attribute (PangoAttribute *attr, GString *string)
     case PANGO_ATTR_GRAVITY_HINT:
     case PANGO_ATTR_FOREGROUND_ALPHA:
     case PANGO_ATTR_BACKGROUND_ALPHA:
+    case PANGO_ATTR_ALLOW_BREAKS:
       g_string_append_printf (string, "%d", ((PangoAttrInt *)attr)->value);
       break;
     case PANGO_ATTR_FONT_DESC:
