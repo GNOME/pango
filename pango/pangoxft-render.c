@@ -185,7 +185,7 @@ flush_glyphs (PangoXftRenderer *xftrenderer)
 
   PANGO_XFT_RENDERER_GET_CLASS (xftrenderer)->composite_glyphs (xftrenderer,
 								xft_font,
-								(XftGlyphSpec *)xftrenderer->priv->glyphs->data,
+								(XftGlyphSpec *)(void*)xftrenderer->priv->glyphs->data,
 								xftrenderer->priv->glyphs->len);
 
   g_array_set_size (xftrenderer->priv->glyphs, 0);
@@ -527,7 +527,7 @@ flush_trapezoids (PangoXftRenderer *xftrenderer)
 
   PANGO_XFT_RENDERER_GET_CLASS (xftrenderer)->composite_trapezoids (xftrenderer,
 								    xftrenderer->priv->trapezoid_part,
-								    (XTrapezoid *)xftrenderer->priv->trapezoids->data,
+								    (XTrapezoid *)(void *)xftrenderer->priv->trapezoids->data,
 								    xftrenderer->priv->trapezoids->len);
 
   g_array_set_size (xftrenderer->priv->trapezoids, 0);
