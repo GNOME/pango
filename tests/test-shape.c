@@ -71,6 +71,75 @@ parse_params (const char *str,
   g_strfreev (strings);
 }
 
+static gboolean
+affects_itemization (PangoAttribute *attr,
+                     gpointer        data)
+{
+  switch (attr->klass->type)
+    {
+    /* These affect font selection */
+    case PANGO_ATTR_LANGUAGE:
+    case PANGO_ATTR_FAMILY:
+    case PANGO_ATTR_STYLE:
+    case PANGO_ATTR_WEIGHT:
+    case PANGO_ATTR_VARIANT:
+    case PANGO_ATTR_STRETCH:
+    case PANGO_ATTR_SIZE:
+    case PANGO_ATTR_FONT_DESC:
+    case PANGO_ATTR_SCALE:
+    case PANGO_ATTR_FALLBACK:
+    case PANGO_ATTR_ABSOLUTE_SIZE:
+    case PANGO_ATTR_GRAVITY:
+    case PANGO_ATTR_GRAVITY_HINT:
+    /* These are part of ItemProperties, so need to break runs */
+    case PANGO_ATTR_SHAPE:
+    case PANGO_ATTR_RISE:
+    case PANGO_ATTR_UNDERLINE:
+    case PANGO_ATTR_STRIKETHROUGH:
+    case PANGO_ATTR_LETTER_SPACING:
+      return TRUE;
+    default:
+      return FALSE;
+    }
+}
+
+static gboolean
+affects_break_or_shape (PangoAttribute *attr,
+                        gpointer        data)
+{
+  switch (attr->klass->type)
+    {
+    /* Affects breaks */
+    case PANGO_ATTR_ALLOW_BREAKS:
+    /* Affects shaping */
+    case PANGO_ATTR_FONT_FEATURES:
+      return TRUE;
+    default:
+      return FALSE;
+    }
+}
+
+static void
+apply_attributes_to_items (GList         *items,
+                           PangoAttrList *attrs)
+{
+  GList *l;
+  PangoAttrIterator *iter;
+
+  if (!attrs)
+    return;
+
+  iter = pango_attr_list_get_iterator (attrs);
+
+  for (l = items; l; l = l->next)
+    {
+      PangoItem *item = l->data;
+      pango_item_apply_attrs (item, iter);
+    }
+
+  pango_attr_iterator_destroy (iter);
+}
+
 static void
 test_file (const gchar *filename, GString *string)
 {
@@ -80,6 +149,8 @@ test_file (const gchar *filename, GString *string)
   char *test;
   char *text;
   PangoAttrList *attrs;
+  PangoAttrList *itemize_attrs;
+  PangoAttrList *shape_attrs;
   GList *items, *l;
   GString *s1, *s2, *s3, *s4, *s5, *s6, *s7;
   gboolean insert_hyphen = FALSE;
@@ -124,7 +195,14 @@ test_file (const gchar *filename, GString *string)
   if (text[length - 1] == '\n')
     length--;
 
-  items = pango_itemize (context, text, 0, length, attrs, NULL);
+  itemize_attrs = pango_attr_list_filter (attrs, affects_itemization, NULL);
+  shape_attrs = pango_attr_list_filter (attrs, affects_break_or_shape, NULL);
+
+  items = pango_itemize (context, text, 0, length, itemize_attrs, NULL);
+  apply_attributes_to_items (items, shape_attrs);
+
+  pango_attr_list_unref (itemize_attrs);
+  pango_attr_list_unref (shape_attrs);
 
   pango_attr_list_unref (attrs);
 
@@ -133,10 +211,15 @@ test_file (const gchar *filename, GString *string)
       PangoItem *item = l->data;
       PangoGlyphString *glyphs;
       gboolean rtl = item->analysis.level % 2;
+      PangoGlyphItem glyph_item;
       int i;
 
       glyphs = pango_glyph_string_new ();
       pango_shape_full (text + item->offset, item->length, text, length, &item->analysis, glyphs);
+
+      glyph_item.item = item;
+      glyph_item.glyphs = glyphs;
+      pango_glyph_item_apply_attrs (&glyph_item, text, attrs);
 
       g_string_append (s1, sep);
       g_string_append (s2, sep);
