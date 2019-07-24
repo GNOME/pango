@@ -208,7 +208,7 @@ pango_item_apply_attrs (PangoItem         *item,
             {
               if (!g_slist_find_custom (attrs, l->data, compare_attr))
 
-              attrs = g_slist_prepend (attrs, pango_attribute_copy (l->data));
+                attrs = g_slist_prepend (attrs, pango_attribute_copy (l->data));
             }
           g_slist_free_full (list, (GDestroyNotify)pango_attribute_destroy);
         }

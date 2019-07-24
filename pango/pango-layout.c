@@ -3981,41 +3981,82 @@ pango_layout_get_effective_attributes (PangoLayout *layout)
 }
 
 static gboolean
-no_shape_filter_func (PangoAttribute *attribute,
-		      gpointer        data G_GNUC_UNUSED)
+affects_itemization (PangoAttribute *attr,
+                     gpointer        data)
 {
-  static const PangoAttrType no_shape_types[] = {
-    PANGO_ATTR_FOREGROUND,
-    PANGO_ATTR_BACKGROUND,
-    PANGO_ATTR_FOREGROUND_ALPHA,
-    PANGO_ATTR_BACKGROUND_ALPHA,
-    PANGO_ATTR_UNDERLINE,
-    PANGO_ATTR_STRIKETHROUGH,
-    PANGO_ATTR_RISE
-  };
-
-  int i;
-
-  for (i = 0; i < (int)G_N_ELEMENTS (no_shape_types); i++)
-    if (attribute->klass->type == no_shape_types[i])
+  switch (attr->klass->type)
+    {
+    /* These affect font selection */
+    case PANGO_ATTR_LANGUAGE:
+    case PANGO_ATTR_FAMILY:
+    case PANGO_ATTR_STYLE:
+    case PANGO_ATTR_WEIGHT:
+    case PANGO_ATTR_VARIANT:
+    case PANGO_ATTR_STRETCH:
+    case PANGO_ATTR_SIZE:
+    case PANGO_ATTR_FONT_DESC:
+    case PANGO_ATTR_SCALE:
+    case PANGO_ATTR_FALLBACK:
+    case PANGO_ATTR_ABSOLUTE_SIZE:
+    case PANGO_ATTR_GRAVITY:
+    case PANGO_ATTR_GRAVITY_HINT:
+    /* These are part of ItemProperties, so need to break runs */
+    case PANGO_ATTR_SHAPE:
+    case PANGO_ATTR_RISE:
+    case PANGO_ATTR_UNDERLINE:
+    case PANGO_ATTR_STRIKETHROUGH:
+    case PANGO_ATTR_LETTER_SPACING:
       return TRUE;
-
-  return FALSE;
+    default:
+      return FALSE;
+    }
 }
 
-static PangoAttrList *
-filter_no_shape_attributes (PangoAttrList *attrs)
+static gboolean
+affects_break_or_shape (PangoAttribute *attr,
+                        gpointer        data)
 {
-  return pango_attr_list_filter (attrs,
-				 no_shape_filter_func,
-				 NULL);
+  switch (attr->klass->type)
+    {
+    /* Affects breaks */
+    case PANGO_ATTR_ALLOW_BREAKS:
+    /* Affects shaping */
+    case PANGO_ATTR_FONT_FEATURES:
+      return TRUE;
+    default:
+      return FALSE;
+    }
 }
 
 static void
-apply_no_shape_attributes (PangoLayout   *layout,
-                           PangoAttrList *no_shape_attrs)
+apply_attributes_to_items (GList         *items,
+                           PangoAttrList *attrs)
+{
+  GList *l;
+  PangoAttrIterator *iter;
+
+  if (!attrs)
+    return;
+
+  iter = pango_attr_list_get_iterator (attrs);
+
+  for (l = items; l; l = l->next)
+    {
+      PangoItem *item = l->data;
+      pango_item_apply_attrs (item, iter);
+    }
+
+  pango_attr_iterator_destroy (iter);
+}
+
+static void
+apply_attributes_to_runs (PangoLayout   *layout,
+                          PangoAttrList *attrs)
 {
   GSList *ll;
+
+  if (!attrs)
+    return;
 
   for (ll = layout->lines; ll; ll = ll->next)
     {
@@ -4030,57 +4071,14 @@ apply_no_shape_attributes (PangoLayout   *layout,
           GSList *new_runs;
 
           new_runs = pango_glyph_item_apply_attrs (glyph_item,
-          layout->text,
-          no_shape_attrs);
+                                                   layout->text,
+                                                   attrs);
 
           line->runs = g_slist_concat (new_runs, line->runs);
         }
 
       g_slist_free (old_runs);
     }
-}
-
-static gboolean
-no_break_filter_func (PangoAttribute *attribute,
-		      gpointer        data G_GNUC_UNUSED)
-{
-  static const PangoAttrType no_break_types[] = {
-    PANGO_ATTR_FONT_FEATURES,
-    PANGO_ATTR_ALLOW_BREAKS
-  };
-  int i;
-
-  for (i = 0; i < (int)G_N_ELEMENTS (no_break_types); i++)
-    if (attribute->klass->type == no_break_types[i])
-      return TRUE;
-
-  return FALSE;
-}
-
-static PangoAttrList *
-filter_no_break_attributes (PangoAttrList *attrs)
-{
-  return pango_attr_list_filter (attrs,
-				 no_break_filter_func,
-				 NULL);
-}
-
-static void
-apply_no_break_attributes (GList         *items,
-			   PangoAttrList *no_break_attrs)
-{
-  GList *l;
-  PangoAttrIterator *iter;
-
-  iter = pango_attr_list_get_iterator (no_break_attrs);
-
-  for (l = items; l; l = l->next)
-    {
-      PangoItem *item = l->data;
-      pango_item_apply_attrs (item, iter);
-    }
-
-  pango_attr_iterator_destroy (iter);
 }
 
 #pragma GCC diagnostic push
@@ -4093,8 +4091,8 @@ pango_layout_check_lines (PangoLayout *layout)
   gboolean done = FALSE;
   int start_offset;
   PangoAttrList *attrs;
-  PangoAttrList *no_shape_attrs;
-  PangoAttrList *no_break_attrs;
+  PangoAttrList *itemize_attrs;
+  PangoAttrList *shape_attrs;
   PangoAttrIterator *iter;
   PangoDirection prev_base_dir = PANGO_DIRECTION_NEUTRAL, base_dir = PANGO_DIRECTION_NEUTRAL;
   ParaBreakState state;
@@ -4113,9 +4111,13 @@ pango_layout_check_lines (PangoLayout *layout)
     pango_layout_set_text (layout, NULL, 0);
 
   attrs = pango_layout_get_effective_attributes (layout);
-  no_shape_attrs = filter_no_shape_attributes (attrs);
-  no_break_attrs = filter_no_break_attributes (attrs);
-  iter = pango_attr_list_get_iterator (attrs);
+
+  shape_attrs = pango_attr_list_filter (attrs, affects_break_or_shape, NULL);
+  itemize_attrs = pango_attr_list_filter (attrs, affects_itemization, NULL);
+  if (itemize_attrs)
+    iter = pango_attr_list_get_iterator (itemize_attrs);
+  else
+    iter = NULL;
 
   layout->log_attrs = g_new (PangoLogAttr, layout->n_chars + 1);
 
@@ -4192,11 +4194,10 @@ pango_layout_check_lines (PangoLayout *layout)
 						 layout->text,
 						 start - layout->text,
 						 end - start,
-						 attrs,
+						 itemize_attrs,
 						 iter);
 
-      if (no_break_attrs)
-        apply_no_break_attributes (state.items, no_break_attrs);
+      apply_attributes_to_items (state.items, shape_attrs);
 
       get_items_log_attrs (start,
                            delimiter_index + delim_len,
@@ -4248,19 +4249,20 @@ pango_layout_check_lines (PangoLayout *layout)
     }
   while (!done);
 
-  pango_attr_iterator_destroy (iter);
-  pango_attr_list_unref (attrs);
-
-  if (no_break_attrs)
-    pango_attr_list_unref (no_break_attrs);
-
-  if (no_shape_attrs)
-    {
-      apply_no_shape_attributes (layout, no_shape_attrs);
-      pango_attr_list_unref (no_shape_attrs);
-    }
-
+  apply_attributes_to_runs (layout, attrs);
   layout->lines = g_slist_reverse (layout->lines);
+
+  if (iter)
+    pango_attr_iterator_destroy (iter);
+
+  if (itemize_attrs)
+    pango_attr_list_unref (itemize_attrs);
+
+  if (shape_attrs)
+    pango_attr_list_unref (shape_attrs);
+
+  if (attrs)
+    pango_attr_list_unref (attrs);
 }
 
 #pragma GCC diagnostic pop

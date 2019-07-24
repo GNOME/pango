@@ -51,6 +51,59 @@ append_text (GString    *s,
     }
 }
 
+static gboolean
+affects_itemization (PangoAttribute *attr,
+                     gpointer        data)
+{
+  switch (attr->klass->type)
+    {
+    /* These affect font selection */
+    case PANGO_ATTR_LANGUAGE:
+    case PANGO_ATTR_FAMILY:
+    case PANGO_ATTR_STYLE:
+    case PANGO_ATTR_WEIGHT:
+    case PANGO_ATTR_VARIANT:
+    case PANGO_ATTR_STRETCH:
+    case PANGO_ATTR_SIZE:
+    case PANGO_ATTR_FONT_DESC:
+    case PANGO_ATTR_SCALE:
+    case PANGO_ATTR_FALLBACK:
+    case PANGO_ATTR_ABSOLUTE_SIZE:
+    case PANGO_ATTR_GRAVITY:
+    case PANGO_ATTR_GRAVITY_HINT:
+    /* These are part of ItemProperties, so need to break runs */
+    case PANGO_ATTR_SHAPE:
+    case PANGO_ATTR_RISE:
+    case PANGO_ATTR_UNDERLINE:
+    case PANGO_ATTR_STRIKETHROUGH:
+    case PANGO_ATTR_LETTER_SPACING:
+      return TRUE;
+    default:
+      return FALSE;
+    }
+}
+
+static void
+apply_attributes_to_items (GList         *items,
+                           PangoAttrList *attrs)
+{
+  GList *l;
+  PangoAttrIterator *iter;
+
+  if (!attrs)
+    return;
+
+  iter = pango_attr_list_get_iterator (attrs);
+
+  for (l = items; l; l = l->next)
+    {
+      PangoItem *item = l->data;
+      pango_item_apply_attrs (item, iter);
+    }
+
+  pango_attr_iterator_destroy (iter);
+}
+
 static void
 test_file (const gchar *filename, GString *string)
 {
@@ -61,6 +114,7 @@ test_file (const gchar *filename, GString *string)
   char *test;
   char *text;
   PangoAttrList *attrs;
+  PangoAttrList *itemize_attrs;
   GList *items, *l;
   const char *sep = "";
 
@@ -96,7 +150,11 @@ test_file (const gchar *filename, GString *string)
   if (text[length - 1] == '\n')
     length--;
 
-  items = pango_itemize (context, text, 0, length, attrs, NULL);
+  itemize_attrs = pango_attr_list_filter (attrs, affects_itemization, NULL);
+  items = pango_itemize (context, text, 0, length, itemize_attrs, NULL);
+
+  apply_attributes_to_items (items, attrs);
+  pango_attr_list_unref (itemize_attrs);
 
   for (l = items; l; l = l->next)
     {
