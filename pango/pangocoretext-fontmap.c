@@ -136,6 +136,16 @@ get_real_family (const char *family_name)
 {
   switch (family_name[0])
     {
+    case 'c':
+    case 'C':
+      if (g_ascii_strcasecmp (family_name, "cursive") == 0)
+	return "Apple Chancery";
+      break;
+    case 'f':
+    case 'F':
+      if (g_ascii_strcasecmp (family_name, "fantasy") == 0)
+	return "Papyrus";
+      break;
     case 'm':
     case 'M':
       if (g_ascii_strcasecmp (family_name, "monospace") == 0)
@@ -147,6 +157,8 @@ get_real_family (const char *family_name)
 	return "Helvetica";
       else if (g_ascii_strcasecmp (family_name, "serif") == 0)
 	return "Times";
+      else if (g_ascii_strcasecmp (family_name, "system-ui") == 0)
+	return "San Francisco";
       break;
     }
 
