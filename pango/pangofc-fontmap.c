@@ -1291,13 +1291,20 @@ is_alias_family (const char *family_name)
 {
   switch (family_name[0])
     {
+    case 'c':
+    case 'C':
+      return (g_ascii_strcasecmp (family_name, "cursive") == 0);
+    case 'f':
+    case 'F':
+      return (g_ascii_strcasecmp (family_name, "fantasy") == 0);
     case 'm':
     case 'M':
       return (g_ascii_strcasecmp (family_name, "monospace") == 0);
     case 's':
     case 'S':
       return (g_ascii_strcasecmp (family_name, "sans") == 0 ||
-	      g_ascii_strcasecmp (family_name, "serif") == 0);
+	      g_ascii_strcasecmp (family_name, "serif") == 0 ||
+	      g_ascii_strcasecmp (family_name, "system-ui") == 0);
     }
 
   return FALSE;
@@ -1339,7 +1346,7 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
       FcPatternDestroy (pat);
       FcObjectSetDestroy (os);
 
-      priv->families = g_new (PangoFcFamily *, fontset->nfont + 3); /* 3 standard aliases */
+      priv->families = g_new (PangoFcFamily *, fontset->nfont + 4); /* 4 standard aliases */
       temp_family_hash = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
       count = 0;
@@ -1387,6 +1394,7 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
       priv->families[count++] = create_family (fcfontmap, "Sans", FC_PROPORTIONAL);
       priv->families[count++] = create_family (fcfontmap, "Serif", FC_PROPORTIONAL);
       priv->families[count++] = create_family (fcfontmap, "Monospace", FC_MONO);
+      priv->families[count++] = create_family (fcfontmap, "System-ui", FC_PROPORTIONAL);
 
       priv->n_families = count;
     }
