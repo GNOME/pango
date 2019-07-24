@@ -4013,7 +4013,7 @@ filter_no_shape_attributes (PangoAttrList *attrs)
 
 static void
 apply_no_shape_attributes (PangoLayout   *layout,
-                           PangoAttrList *no_shape_attrs)
+                           PangoAttrList *attrs)
 {
   GSList *ll;
 
@@ -4030,8 +4030,8 @@ apply_no_shape_attributes (PangoLayout   *layout,
           GSList *new_runs;
 
           new_runs = pango_glyph_item_apply_attrs (glyph_item,
-          layout->text,
-          no_shape_attrs);
+                                                   layout->text,
+                                                   attrs);
 
           line->runs = g_slist_concat (new_runs, line->runs);
         }
@@ -4041,8 +4041,8 @@ apply_no_shape_attributes (PangoLayout   *layout,
 }
 
 static gboolean
-no_break_filter_func (PangoAttribute *attribute,
-		      gpointer        data G_GNUC_UNUSED)
+no_itemize_filter_func (PangoAttribute *attribute,
+                        gpointer        data G_GNUC_UNUSED)
 {
   static const PangoAttrType no_break_types[] = {
     PANGO_ATTR_FONT_FEATURES,
@@ -4058,21 +4058,21 @@ no_break_filter_func (PangoAttribute *attribute,
 }
 
 static PangoAttrList *
-filter_no_break_attributes (PangoAttrList *attrs)
+filter_no_itemize_attributes (PangoAttrList *attrs)
 {
   return pango_attr_list_filter (attrs,
-				 no_break_filter_func,
-				 NULL);
+                                 no_itemize_filter_func,
+                                 NULL);
 }
 
 static void
-apply_no_break_attributes (GList         *items,
-			   PangoAttrList *no_break_attrs)
+apply_no_itemize_attributes (GList         *items,
+                             PangoAttrList *attrs)
 {
   GList *l;
   PangoAttrIterator *iter;
 
-  iter = pango_attr_list_get_iterator (no_break_attrs);
+  iter = pango_attr_list_get_iterator (attrs);
 
   for (l = items; l; l = l->next)
     {
@@ -4094,7 +4094,7 @@ pango_layout_check_lines (PangoLayout *layout)
   int start_offset;
   PangoAttrList *attrs;
   PangoAttrList *no_shape_attrs;
-  PangoAttrList *no_break_attrs;
+  PangoAttrList *no_itemize_attrs;
   PangoAttrIterator *iter;
   PangoDirection prev_base_dir = PANGO_DIRECTION_NEUTRAL, base_dir = PANGO_DIRECTION_NEUTRAL;
   ParaBreakState state;
@@ -4114,7 +4114,7 @@ pango_layout_check_lines (PangoLayout *layout)
 
   attrs = pango_layout_get_effective_attributes (layout);
   no_shape_attrs = filter_no_shape_attributes (attrs);
-  no_break_attrs = filter_no_break_attributes (attrs);
+  no_itemize_attrs = filter_no_itemize_attributes (attrs);
   iter = pango_attr_list_get_iterator (attrs);
 
   layout->log_attrs = g_new (PangoLogAttr, layout->n_chars + 1);
@@ -4195,8 +4195,8 @@ pango_layout_check_lines (PangoLayout *layout)
 						 attrs,
 						 iter);
 
-      if (no_break_attrs)
-        apply_no_break_attributes (state.items, no_break_attrs);
+      if (no_itemize_attrs)
+        apply_no_itemize_attributes (state.items, no_itemize_attrs);
 
       get_items_log_attrs (start,
                            delimiter_index + delim_len,
@@ -4251,8 +4251,8 @@ pango_layout_check_lines (PangoLayout *layout)
   pango_attr_iterator_destroy (iter);
   pango_attr_list_unref (attrs);
 
-  if (no_break_attrs)
-    pango_attr_list_unref (no_break_attrs);
+  if (no_itemize_attrs)
+    pango_attr_list_unref (no_itemize_attrs);
 
   if (no_shape_attrs)
     {
