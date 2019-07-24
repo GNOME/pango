@@ -85,7 +85,6 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
     '-Wlogical-op',
     '-Wno-uninitialized',
     '-Wno-shadow',
-    '-Werror=redundant-decls',
     '-Werror=implicit',
     '-Werror=nonnull',
     '-Werror=init-self',
@@ -106,6 +105,8 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
 
   if host_system == 'windows'
     test_cflags += [ '-mms-bitfields' ]
+  else
+    test_cflags += [ '-Werror=redundant-decls' ]
   endif
 else
   test_cflags = []
