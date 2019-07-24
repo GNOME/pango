@@ -540,6 +540,10 @@ hb_font_t *           pango_font_get_hb_font       (PangoFont        *font);
 #define PANGO_GLYPH_UNKNOWN_FLAG    ((PangoGlyph)0x10000000)
 #define PANGO_GET_UNKNOWN_GLYPH(wc) ((PangoGlyph)(wc)|PANGO_GLYPH_UNKNOWN_FLAG)
 
+#ifndef PANGO_DISABLE_DEPRECATED
+#define PANGO_UNKNOWN_GLYPH_WIDTH  10
+#define PANGO_UNKNOWN_GLYPH_HEIGHT 14
+#endif
 
 G_END_DECLS
 

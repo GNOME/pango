@@ -179,12 +179,6 @@ struct _PangoFontClass
   hb_font_t *           (*create_hb_font)     (PangoFont      *font);
 };
 
-/* used for very rare and miserable situtations that we cannot even
- * draw a hexbox
- */
-#define PANGO_UNKNOWN_GLYPH_WIDTH  10
-#define PANGO_UNKNOWN_GLYPH_HEIGHT 14
-
 
 G_END_DECLS
 
