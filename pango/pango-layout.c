@@ -3933,15 +3933,6 @@ process_line (PangoLayout    *layout,
   state->line_start_offset = state->start_offset;
 }
 
-static gboolean
-can_break_together (PangoAnalysis *analysis1,
-                    PangoAnalysis *analysis2)
-{
-  return analysis1->level == analysis2->level &&
-         analysis1->script == analysis2->script &&
-         analysis1->language == analysis2->language;
-}
-
 static void
 get_items_log_attrs (const char   *text,
                      int           length,
