@@ -1428,7 +1428,7 @@ pango_renderer_get_matrix (PangoRenderer *renderer)
  *
  * Gets the layout currently being rendered using @renderer.
  * Calling this function only makes sense from inside a subclass's
- * methods, like in its draw_shape<!---->() for example.
+ * methods, like in its draw_shape vfunc, for example.
  *
  * The returned layout should not be modified while still being
  * rendered.
@@ -1453,7 +1453,7 @@ pango_renderer_get_layout (PangoRenderer *renderer)
  *
  * Gets the layout line currently being rendered using @renderer.
  * Calling this function only makes sense from inside a subclass's
- * methods, like in its draw_shape<!---->() for example.
+ * methods, like in its draw_shape vfunc, for example.
  *
  * The returned layout line should not be modified while still being
  * rendered.
