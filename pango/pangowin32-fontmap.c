@@ -676,13 +676,10 @@ create_standard_family (PangoWin32FontMap *win32fontmap,
               new_face->description = pango_font_description_copy_static (old_face->description);
               pango_font_description_set_family_static (new_face->description, standard_family_name);
 
-              for (j = 0; j < PANGO_WIN32_N_COVERAGES; j++)
-                {
-                  if (old_face->coverages[j] != NULL)
-                    new_face->coverages[j] = pango_coverage_ref (old_face->coverages[j]);
-                  else
-                    new_face->coverages[j] = NULL;
-                }
+              if (old_face->coverage != NULL)
+                new_face->coverage = pango_coverage_ref (old_face->coverage);
+              else
+                new_face->coverage = NULL;
 
               new_face->face_name = NULL;
 
@@ -1594,8 +1591,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   win32face->logfontw = *lfp;
   win32face->description = description;
 
-  for (i = 0; i < PANGO_WIN32_N_COVERAGES; i++)
-     win32face->coverages[i] = NULL;
+  win32face->coverage = NULL;
 
   win32face->face_name = NULL;
 
@@ -1695,9 +1691,8 @@ pango_win32_face_finalize (GObject *object)
 
   pango_font_description_free (win32face->description);
 
-  for (j = 0; j < PANGO_WIN32_N_COVERAGES; j++)
-    if (win32face->coverages[j] != NULL)
-      pango_coverage_unref (win32face->coverages[j]);
+  if (win32face->coverage != NULL)
+    pango_coverage_unref (win32face->coverage);
 
   g_free (win32face->face_name);
 
