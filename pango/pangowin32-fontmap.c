@@ -1111,6 +1111,38 @@ pango_win32_font_map_real_find_font (PangoWin32FontMap          *win32fontmap,
   return (PangoFont *)win32font;
 }
 
+static gboolean
+_pango_win32_get_name_header (HDC                 hdc,
+			      struct name_header *header)
+{
+  if (GetFontData (hdc, NAME, 0, header, sizeof (*header)) != sizeof (*header))
+    return FALSE;
+
+  header->num_records = GUINT16_FROM_BE (header->num_records);
+  header->string_storage_offset = GUINT16_FROM_BE (header->string_storage_offset);
+
+  return TRUE;
+}
+
+static gboolean
+_pango_win32_get_name_record (HDC                 hdc,
+			      gint                i,
+			      struct name_record *record)
+{
+  if (GetFontData (hdc, NAME, 6 + i * sizeof (*record),
+		   record, sizeof (*record)) != sizeof (*record))
+    return FALSE;
+
+  record->platform_id = GUINT16_FROM_BE (record->platform_id);
+  record->encoding_id = GUINT16_FROM_BE (record->encoding_id);
+  record->language_id = GUINT16_FROM_BE (record->language_id);
+  record->name_id = GUINT16_FROM_BE (record->name_id);
+  record->string_length = GUINT16_FROM_BE (record->string_length);
+  record->string_offset = GUINT16_FROM_BE (record->string_offset);
+
+  return TRUE;
+}
+
 static gchar *
 get_family_nameA (const LOGFONTA *lfp)
 {
