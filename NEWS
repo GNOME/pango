@@ -10,6 +10,7 @@ Overview of changes in 1.44.0
 - Add an attribute to suppress line breaking
 - cairo: Don't render hex boxes for space
 - Add an attribute to show invisible characters
+- Stop quantizing glyph positions
 - Add tests for itemization and line breaking
 - Remove language and shape engine remnants
 - Rename meson options: gtk_doc, introspection
