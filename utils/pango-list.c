@@ -22,8 +22,21 @@
 
 #include "config.h"
 #include <pango/pangocairo.h>
+#include <harfbuzz/hb-ot.h>
 #include <glib/gstdio.h>
 #include <stdlib.h>
+
+/* FIXME: This doesn't work if the font has an avar table */
+static float
+denorm_coord (hb_ot_var_axis_info_t *axis, int coord)
+{
+  float r = coord / 16384.0;
+
+  if (coord < 0)
+    return axis->default_value + r * (axis->default_value - axis->min_value);
+  else
+    return axis->default_value + r * (axis->max_value - axis->default_value);
+}
 
 int
 main (int    argc,
@@ -31,9 +44,11 @@ main (int    argc,
 {
   gboolean opt_verbose = FALSE;
   gboolean opt_metrics = FALSE;
+  gboolean opt_variations = FALSE;
   GOptionEntry entries[] = {
     {"verbose", 0, 0, G_OPTION_ARG_NONE,    &opt_verbose, "Print verbose information", NULL },
     {"metrics", 0, 0, G_OPTION_ARG_NONE,    &opt_metrics, "Print font metrics", NULL },
+    {"variations", 0, 0, G_OPTION_ARG_NONE,    &opt_variations, "Print font variations", NULL },
     { NULL, }
   };
   GOptionContext *context;
@@ -131,6 +146,49 @@ main (int    argc,
                        pango_font_metrics_get_strikethrough_position (metrics),
                        pango_font_metrics_get_strikethrough_thickness (metrics));
               pango_font_metrics_unref (metrics);
+            }
+
+          if (opt_variations &&
+              pango_font_family_is_variable (families[i]))
+            {
+              PangoFont *font;
+              hb_font_t *hb_font;
+              const int *coords;
+              unsigned int length;
+
+              pango_font_description_set_absolute_size (desc, 10 * PANGO_SCALE);
+
+              font = pango_context_load_font (ctx, desc);
+              hb_font = pango_font_get_hb_font (font);
+              coords = hb_font_get_var_coords_normalized (hb_font, &length);
+              if (coords)
+                {
+                  hb_face_t *hb_face = hb_font_get_face (hb_font);
+                  hb_ot_var_axis_info_t *axes;
+                  unsigned int n_axes;
+                  int i;
+
+                  axes = g_new (hb_ot_var_axis_info_t, length);
+                  n_axes = length;
+
+                  hb_ot_var_get_axis_infos (hb_face, 0, &n_axes, axes);
+
+                  for (i = 0; i < length; i++)
+                    {
+                      char name[20];
+                      unsigned int namelen = 20;
+
+                      hb_ot_name_get_utf8 (hb_face, axes[i].name_id, HB_LANGUAGE_INVALID, &namelen, name);
+
+                      g_print ("    %s: %g (%g - %g, %g)\n",
+                               name,
+                               denorm_coord (&axes[i], coords[i]),
+                               axes[i].min_value,
+                               axes[i].max_value,
+                               axes[i].default_value);
+                    }
+                  g_free (axes);
+                }
             }
 
 	  g_free (desc_str);
