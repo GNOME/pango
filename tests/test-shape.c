@@ -113,6 +113,7 @@ affects_break_or_shape (PangoAttribute *attr,
     case PANGO_ATTR_ALLOW_BREAKS:
     /* Affects shaping */
     case PANGO_ATTR_FONT_FEATURES:
+    case PANGO_ATTR_SHOW:
       return TRUE;
     default:
       return FALSE;

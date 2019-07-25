@@ -148,6 +148,7 @@ typedef struct _PangoAttrIterator PangoAttrIterator;
  * @PANGO_ATTR_FOREGROUND_ALPHA: foreground alpha (#PangoAttrInt). Since 1.38
  * @PANGO_ATTR_BACKGROUND_ALPHA: background alpha (#PangoAttrInt). Since 1.38
  * @PANGO_ATTR_ALLOW_BREAKS: whether breaks are allowed (#PangoAttrInt). Since 1.44
+ * @PANGO_ATTR_SHOW: how to render invisible characters (#PangoAttrInt). Since 1.44
  *
  * The #PangoAttrType
  * distinguishes between different types of attributes. Along with the
@@ -184,7 +185,8 @@ typedef enum
   PANGO_ATTR_FONT_FEATURES,	/* PangoAttrString */
   PANGO_ATTR_FOREGROUND_ALPHA,	/* PangoAttrInt */
   PANGO_ATTR_BACKGROUND_ALPHA,	/* PangoAttrInt */
-  PANGO_ATTR_ALLOW_BREAKS	/* PangoAttrInt */
+  PANGO_ATTR_ALLOW_BREAKS,	/* PangoAttrInt */
+  PANGO_ATTR_SHOW,		/* PangoAttrInt */
 } PangoAttrType;
 
 /**
@@ -526,6 +528,27 @@ PANGO_AVAILABLE_IN_1_38
 PangoAttribute *pango_attr_background_alpha_new (guint16 alpha);
 PANGO_AVAILABLE_IN_1_44
 PangoAttribute *pango_attr_allow_breaks_new     (gboolean allow_breaks);
+
+/**
+ * PangoShowFlags:
+ * @PANGO_SHOW_NONE: No special treatment for invisible characters
+ * @PANGO_SHOW_SPACES: Render spaces, tabs and newlines visibly
+ * @PANGO_SHOW_LINE_BREAKS: Render line breaks visibly
+ * @PANGO_SHOW_IGNORABLES: Render default-ignorable Unicode
+ *      characters visibly
+ *
+ * These flags affect how Pango treats characters that are normally
+ * not visible in the output.
+ */
+typedef enum {
+  PANGO_SHOW_NONE        = 0,
+  PANGO_SHOW_SPACES      = 1 << 0,
+  PANGO_SHOW_LINE_BREAKS = 1 << 1,
+  PANGO_SHOW_IGNORABLES  = 1 << 2
+} PangoShowFlags;
+
+PANGO_AVAILABLE_IN_1_44
+PangoAttribute *pango_attr_show_new              (PangoShowFlags flags);
 
 PANGO_AVAILABLE_IN_ALL
 GType              pango_attr_list_get_type      (void) G_GNUC_CONST;

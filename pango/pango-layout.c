@@ -2975,6 +2975,7 @@ pango_layout_line_leaked (PangoLayoutLine *line)
  *****************/
 
 static void shape_tab (PangoLayoutLine  *line,
+                       PangoItem        *item,
 		       PangoGlyphString *glyphs);
 
 static void
@@ -3182,8 +3183,26 @@ line_width (PangoLayoutLine *line)
   return width;
 }
 
+static gboolean
+showing_space (const PangoAnalysis *analysis)
+{
+  GSList *l;
+
+  for (l = analysis->extra_attrs; l; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+
+      if (attr->klass->type == PANGO_ATTR_SHOW &&
+          (((PangoAttrInt*)attr)->value & PANGO_SHOW_SPACES) != 0)
+        return TRUE;
+    }
+
+  return FALSE;
+}
+
 static void
 shape_tab (PangoLayoutLine  *line,
+           PangoItem        *item,
 	   PangoGlyphString *glyphs)
 {
   int i, space_width;
@@ -3192,7 +3211,10 @@ shape_tab (PangoLayoutLine  *line,
 
   pango_glyph_string_set_size (glyphs, 1);
 
-  glyphs->glyphs[0].glyph = PANGO_GLYPH_EMPTY;
+  if (showing_space (&item->analysis))
+    glyphs->glyphs[0].glyph = PANGO_GET_UNKNOWN_GLYPH ('\t');
+  else
+    glyphs->glyphs[0].glyph = PANGO_GLYPH_EMPTY;
   glyphs->glyphs[0].geometry.x_offset = 0;
   glyphs->glyphs[0].geometry.y_offset = 0;
   glyphs->glyphs[0].attr.is_cluster_start = 1;
@@ -3329,7 +3351,7 @@ shape_run (PangoLayoutLine *line,
   PangoGlyphString *glyphs = pango_glyph_string_new ();
 
   if (layout->text[item->offset] == '\t')
-    shape_tab (line, glyphs);
+    shape_tab (line, item, glyphs);
   else
     {
       if (state->properties.shape_set)
@@ -3977,6 +3999,12 @@ pango_layout_get_effective_attributes (PangoLayout *layout)
       pango_attr_list_insert_before (attrs, attr);
     }
 
+  if (layout->single_paragraph)
+    {
+      PangoAttribute *attr = pango_attr_show_new (PANGO_SHOW_LINE_BREAKS);
+      pango_attr_list_insert_before (attrs, attr);
+    }
+
   return attrs;
 }
 
@@ -4022,6 +4050,7 @@ affects_break_or_shape (PangoAttribute *attr,
     case PANGO_ATTR_ALLOW_BREAKS:
     /* Affects shaping */
     case PANGO_ATTR_FONT_FEATURES:
+    case PANGO_ATTR_SHOW:
       return TRUE;
     default:
       return FALSE;
@@ -5300,6 +5329,9 @@ zero_line_final_space (PangoLayoutLine *line,
   PangoGlyphString *glyphs = run->glyphs;
   int glyph = item->analysis.level % 2 ? 0 : glyphs->num_glyphs - 1;
 
+  if (glyphs->glyphs[glyph].glyph == PANGO_GET_UNKNOWN_GLYPH (0x2028))
+    return; /* this LS is visible */
+
   /* if the final char of line forms a cluster, and it's
    * a whitespace char, zero its glyph's width as it's been wrapped
    */
@@ -5314,6 +5346,7 @@ zero_line_final_space (PangoLayoutLine *line,
 
   state->remaining_width += glyphs->glyphs[glyph].geometry.width;
   glyphs->glyphs[glyph].geometry.width = 0;
+  glyphs->glyphs[glyph].glyph = PANGO_GLYPH_EMPTY;
 }
 
 /* When doing shaping, we add the letter spacing value for a
