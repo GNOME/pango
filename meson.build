@@ -256,9 +256,11 @@ if not harfbuzz_dep.found()
                             fallback: ['harfbuzz', 'libharfbuzz_dep'])
 endif
 
-if harfbuzz_dep.found()
-  pango_deps += harfbuzz_dep
+if not harfbuzz_dep.found()
+  error('harfbuzz not found')
 endif
+
+pango_deps += harfbuzz_dep
 
 # Only use FontConfig fallback when required or requested
 fontconfig_required = (host_system != 'windows' and host_system != 'darwin') or get_option('use_fontconfig')
