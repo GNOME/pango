@@ -971,7 +971,21 @@ pango_fc_font_create_hb_font (PangoFont *font)
                      size * PANGO_SCALE * y_scale);
   if (key)
     {
-      const char *variations = pango_fc_font_key_get_variations (key);
+      FcPattern *pattern = pango_fc_font_key_get_pattern (key);
+      const char *variations;
+
+      if (FcPatternGetString (pattern, PANGO_FC_FONT_VARIATIONS, 0, (FcChar8 **)&variations) == FcResultMatch)
+        {
+          guint n_variations;
+          hb_variation_t *hb_variations;
+
+          parse_variations (variations, &hb_variations, &n_variations);
+          hb_font_set_variations (hb_font, hb_variations, n_variations);
+
+          g_free (hb_variations);
+        }
+
+      variations = pango_fc_font_key_get_variations (key);
       if (variations)
         {
           guint n_variations;
