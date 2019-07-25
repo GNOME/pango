@@ -269,14 +269,6 @@ void            _pango_win32_fontmap_cache_remove   (PangoFontMap   *fontmap,
 						     PangoWin32Font *xfont);
 
 _PANGO_EXTERN
-gboolean	_pango_win32_get_name_header	    (HDC                 hdc,
-						     struct name_header *header);
-_PANGO_EXTERN
-gboolean	_pango_win32_get_name_record        (HDC                 hdc,
-						     gint                i,
-						     struct name_record *record);
-
-_PANGO_EXTERN
 HFONT		_pango_win32_font_get_hfont         (PangoFont          *font);
 
 extern HDC _pango_win32_hdc;
