@@ -57,17 +57,6 @@
 #include "pango-fontset-private.h"
 #include "pango-fontmap-private.h"
 
-typedef enum
-  {
-    PANGO_WIN32_COVERAGE_UNSPEC,
-    PANGO_WIN32_COVERAGE_ZH_TW,
-    PANGO_WIN32_COVERAGE_ZH_CN,
-    PANGO_WIN32_COVERAGE_JA,
-    PANGO_WIN32_COVERAGE_KO,
-    PANGO_WIN32_COVERAGE_VI,
-    PANGO_WIN32_N_COVERAGES
-  } PangoWin32CoverageLanguageClass;
-
 #define PANGO_TYPE_WIN32_FONT_MAP             (_pango_win32_font_map_get_type ())
 #define PANGO_WIN32_FONT_MAP(object)          (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_WIN32_FONT_MAP, PangoWin32FontMap))
 #define PANGO_WIN32_IS_FONT_MAP(object)       (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_WIN32_FONT_MAP))
@@ -166,7 +155,7 @@ struct _PangoWin32Face
 
   LOGFONTW logfontw;
   PangoFontDescription *description;
-  PangoCoverage *coverages[PANGO_WIN32_N_COVERAGES];
+  PangoCoverage *coverage;
   char *face_name;
   gboolean is_synthetic;
 
