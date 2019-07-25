@@ -456,15 +456,15 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
 
   if (!info)
     {
+      HDC hdc = pango_win32_get_dc ();
+
       info = g_new0 (PangoWin32GlyphInfo, 1);
 
       memset (&gm, 0, sizeof (gm));
 
       hfont = _pango_win32_font_get_hfont (font);
-      SelectObject (_pango_win32_hdc, hfont);
-      /* FIXME: (Alex) This constant reuse of _pango_win32_hdc is
-	 not thread-safe */
-      res = GetGlyphOutlineA (_pango_win32_hdc,
+      SelectObject (hdc, hfont);
+      res = GetGlyphOutlineA (hdc,
 			      glyph_index,
 			      GGO_METRICS | GGO_GLYPH_INDEX,
 			      &gm,
