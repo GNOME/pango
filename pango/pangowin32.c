@@ -1467,26 +1467,6 @@ font_get_cmap (PangoFont *font)
   return cmap;
 }
 
-static gint
-pango_win32_font_get_type1_glyph_index (PangoFont *font,
-                                        gunichar   wc)
-{
-  wchar_t unicode[2];
-  WORD glyph_index;
-  gint32 res;
-
-  unicode[0] = wc;
-  unicode[1] = 0;
-  pango_win32_font_select_font (font, _pango_win32_hdc);
-  res = GetGlyphIndicesW (_pango_win32_hdc, unicode, 1, &glyph_index, 0);
-  pango_win32_font_done_font (font);
-
-  if (res == 1)
-      return glyph_index;
-  else
-      return 0;
-}
-
 /**
  * pango_win32_font_get_glyph_index:
  * @font: a #PangoFont.
@@ -1501,71 +1481,10 @@ gint
 pango_win32_font_get_glyph_index (PangoFont *font,
 				  gunichar   wc)
 {
-  PangoWin32Font *win32font = (PangoWin32Font *)font;
-  gpointer cmap;
-  guint16 glyph;
+  hb_font_t *hb_font = pango_font_get_hb_font (font);
+  hb_codepoint_t glyph = 0;
 
-  if (win32font->win32face->has_cmap)
-    {
-      /* Do GetFontData magic on font->hfont here. */
-      cmap = font_get_cmap (font);
-      if (cmap == NULL)
-	win32font->win32face->has_cmap = FALSE;
-    }
-
-  if (!win32font->win32face->has_cmap)
-    return pango_win32_font_get_type1_glyph_index (font, wc);
-
-  if (win32font->win32face->cmap_format == 4)
-    {
-      struct format_4_cmap *cmap4 = cmap;
-      guint16 *id_range_offset;
-      guint16 *id_delta;
-      guint16 *start_count;
-      guint16 segment;
-      guint16 id;
-      guint16 ch = wc;
-
-      if (wc > 0xFFFF)
-	return 0;
-
-      if (!find_segment (cmap4, ch, &segment))
-	return 0;
-
-      id_range_offset = get_id_range_offset (cmap4);
-      id_delta = get_id_delta (cmap4);
-      start_count = get_start_count (cmap4);
-
-      if (id_range_offset[segment] == 0)
-	glyph = (id_delta[segment] + ch) % 65536;
-      else
-	{
-	  id = *(id_range_offset[segment]/2 +
-		 (ch - start_count[segment]) +
-		 &id_range_offset[segment]);
-	  if (id)
-	    glyph = (id_delta[segment] + id) %65536;
-	  else
-	    glyph = 0;
-	}
-    }
-  else if (win32font->win32face->cmap_format == 12)
-    {
-      struct format_12_cmap *cmap12 = cmap;
-      guint32 i;
-
-      glyph = 0;
-      for (i = 0; i < cmap12->count; i++)
-	{
-	  if (cmap12->groups[i*3+0] <= wc && wc <= cmap12->groups[i*3+1])
-	    {
-	      glyph = cmap12->groups[i*3+2] + (wc - cmap12->groups[i*3+0]);
-	      break;
-	    }
-	}
-    }
-  else
-    g_assert_not_reached ();
+  hb_font_get_nominal_glyph (hb_font, wc, &glyph);
 
   return glyph;
 }
