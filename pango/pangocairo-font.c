@@ -720,7 +720,9 @@ _pango_cairo_font_private_get_glyph_extents_missing (PangoCairoFontPrivate *cf_p
   gunichar ch;
   gint rows, cols;
 
-  if (glyph == (0x20 | PANGO_GLYPH_UNKNOWN_FLAG))
+  ch = glyph & ~PANGO_GLYPH_UNKNOWN_FLAG;
+
+  if (ch == 0x20 || ch == 0x2423)
     {
       get_space_extents (cf_priv, ink_rect, logical_rect);
       return;
@@ -733,13 +735,20 @@ _pango_cairo_font_private_get_glyph_extents_missing (PangoCairoFontPrivate *cf_p
       return;
     }
 
-  ch = glyph & ~PANGO_GLYPH_UNKNOWN_FLAG;
-
-  rows = hbi->rows;
   if (G_UNLIKELY (glyph == PANGO_GLYPH_INVALID_INPUT || ch > 0x10FFFF))
-    cols = 1;
+    {
+      rows = hbi->rows;
+      cols = 1;
+    }
+  else if (pango_get_ignorable_size (ch, &rows, &cols))
+    {
+      /* We special-case ignorables when rendering hex boxes */
+    }
   else
-    cols = ((glyph & ~PANGO_GLYPH_UNKNOWN_FLAG) > 0xffff ? 6 : 4) / rows;
+    {
+      rows = hbi->rows;
+      cols = ((glyph & ~PANGO_GLYPH_UNKNOWN_FLAG) > 0xffff ? 6 : 4) / rows;
+    }
 
   if (ink_rect)
     {
