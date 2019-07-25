@@ -53,10 +53,6 @@ struct _PangoWin32Family
 # define NTM_PS_OPENTYPE 0x20000
 #endif
 
-#if !defined(NTM_TYPE1)
-# define NTM_TYPE1 0x100000
-#endif
-
 #define PANGO_WIN32_TYPE_FAMILY              (pango_win32_family_get_type ())
 #define PANGO_WIN32_FAMILY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_WIN32_TYPE_FAMILY, PangoWin32Family))
 #define PANGO_WIN32_IS_FAMILY (object)       (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_WIN32_TYPE_FAMILY))
@@ -209,7 +205,7 @@ pango_win32_enum_proc (LOGFONTW       *lfp,
 
   PING (("%S: %lu %lx", lfp->lfFaceName, fontType, metrics->ntmFlags));
 
-  if (fontType == TRUETYPE_FONTTYPE || ((metrics->ntmFlags & NTM_PS_OPENTYPE) || (metrics->ntmFlags & NTM_TYPE1)))
+  if (fontType == TRUETYPE_FONTTYPE || metrics->ntmFlags & NTM_PS_OPENTYPE)
     {
       lf = *lfp;
 
