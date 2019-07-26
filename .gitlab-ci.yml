@@ -11,7 +11,7 @@ gnome-runtime-linux:
         glibc-langpack-en \
         gcc \
         gcc-c++ \
-        meson \
+        python3 \
         redhat-rpm-config \
         glib2-devel \
         harfbuzz-devel \
@@ -22,6 +22,7 @@ gnome-runtime-linux:
         abattis-cantarell-fonts \
         google-droid-sans-fonts \
         desktop-file-utils
+    - pip3 install meson ninja
   script:
     - meson _build
     - ninja -C _build
