@@ -8,7 +8,7 @@ project('pango', 'c', 'cpp',
           # https://github.com/mesonbuild/meson/issues/2289
           'c_std=gnu99',
         ],
-        meson_version : '>= 0.48.0')
+        meson_version : '>= 0.51.0')
 
 add_project_arguments([ '-D_POSIX_C_SOURCE=200809L', '-D_POSIX_THREAD_SAFE_FUNCTIONS', '-D_GNU_SOURCE', ], language: 'c')
 
