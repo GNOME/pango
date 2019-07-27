@@ -1921,7 +1921,7 @@ break_attrs (const char   *text,
       PangoAttribute *attr = l->data;
 
       if (attr->klass->type == PANGO_ATTR_ALLOW_BREAKS)
-        pango_attr_list_insert (list, (PangoAttribute*)l->data);
+        pango_attr_list_insert (list, pango_attribute_copy (attr));
     }
 
   iter = pango_attr_list_get_iterator (list);
