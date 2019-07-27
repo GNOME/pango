@@ -670,19 +670,15 @@ create_standard_family (PangoWin32FontMap *win32fontmap,
             {
               const PangoWin32Face *old_face = p->data;
               PangoWin32Face *new_face = g_object_new (PANGO_WIN32_TYPE_FACE, NULL);
-              int j;
 
               new_face->logfontw = old_face->logfontw;
               new_face->description = pango_font_description_copy_static (old_face->description);
               pango_font_description_set_family_static (new_face->description, standard_family_name);
 
-              for (j = 0; j < PANGO_WIN32_N_COVERAGES; j++)
-                {
-                  if (old_face->coverages[j] != NULL)
-                    new_face->coverages[j] = pango_coverage_ref (old_face->coverages[j]);
-                  else
-                    new_face->coverages[j] = NULL;
-                }
+              if (old_face->coverage != NULL)
+                new_face->coverage = pango_coverage_ref (old_face->coverage);
+              else
+                new_face->coverage = NULL;
 
               new_face->face_name = NULL;
 
@@ -1115,6 +1111,38 @@ pango_win32_font_map_real_find_font (PangoWin32FontMap          *win32fontmap,
   return (PangoFont *)win32font;
 }
 
+static gboolean
+_pango_win32_get_name_header (HDC                 hdc,
+			      struct name_header *header)
+{
+  if (GetFontData (hdc, NAME, 0, header, sizeof (*header)) != sizeof (*header))
+    return FALSE;
+
+  header->num_records = GUINT16_FROM_BE (header->num_records);
+  header->string_storage_offset = GUINT16_FROM_BE (header->string_storage_offset);
+
+  return TRUE;
+}
+
+static gboolean
+_pango_win32_get_name_record (HDC                 hdc,
+			      gint                i,
+			      struct name_record *record)
+{
+  if (GetFontData (hdc, NAME, 6 + i * sizeof (*record),
+		   record, sizeof (*record)) != sizeof (*record))
+    return FALSE;
+
+  record->platform_id = GUINT16_FROM_BE (record->platform_id);
+  record->encoding_id = GUINT16_FROM_BE (record->encoding_id);
+  record->language_id = GUINT16_FROM_BE (record->language_id);
+  record->name_id = GUINT16_FROM_BE (record->name_id);
+  record->string_length = GUINT16_FROM_BE (record->string_length);
+  record->string_offset = GUINT16_FROM_BE (record->string_offset);
+
+  return TRUE;
+}
+
 static gchar *
 get_family_nameA (const LOGFONTA *lfp)
 {
@@ -1543,7 +1571,6 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   PangoFontDescription *description;
   PangoWin32Family *win32family;
   PangoWin32Face *win32face;
-  gint i;
 
   char tmp_for_charset_name[10];
   char tmp_for_ff_name[10];
@@ -1594,8 +1621,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   win32face->logfontw = *lfp;
   win32face->description = description;
 
-  for (i = 0; i < PANGO_WIN32_N_COVERAGES; i++)
-     win32face->coverages[i] = NULL;
+  win32face->coverage = NULL;
 
   win32face->face_name = NULL;
 
@@ -1690,14 +1716,12 @@ G_DEFINE_TYPE (PangoWin32Face, pango_win32_face, PANGO_TYPE_FONT_FACE)
 static void
 pango_win32_face_finalize (GObject *object)
 {
-  int j;
   PangoWin32Face *win32face = PANGO_WIN32_FACE (object);
 
   pango_font_description_free (win32face->description);
 
-  for (j = 0; j < PANGO_WIN32_N_COVERAGES; j++)
-    if (win32face->coverages[j] != NULL)
-      pango_coverage_unref (win32face->coverages[j]);
+  if (win32face->coverage != NULL)
+    pango_coverage_unref (win32face->coverage);
 
   g_free (win32face->face_name);
 
