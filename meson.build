@@ -42,7 +42,8 @@ pango_conf.set('PANGO_VERSION_MICRO', pango_micro_version)
 # Maintain version scheme with libtool
 pango_soversion = 0
 pango_libversion = '@0@.@1@.@2@'.format(pango_soversion, (pango_binary_age - pango_interface_age), pango_interface_age)
-pango_osxversion = pango_binary_age + 1
+osx_current = pango_binary_age - pango_interface_age + 1
+pango_osxversion = [osx_current, '@0@.@1@.0'.format(osx_current, pango_interface_age)]
 
 cc = meson.get_compiler('c')
 host_system = host_machine.system()
