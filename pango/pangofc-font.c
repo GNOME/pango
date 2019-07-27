@@ -999,26 +999,30 @@ pango_fc_font_create_hb_font (PangoFont *font)
   double x_scale_inv, y_scale_inv;
   double x_scale, y_scale;
   double size;
-  PangoGravity gravity;
 
   x_scale_inv = y_scale_inv = 1.0;
+  size = 1.0;
+
   key = _pango_fc_font_get_font_key (fc_font);
   if (key)
     {
-      const PangoMatrix *matrix = pango_fc_font_key_get_matrix (key);
+      const PangoMatrix *matrix;
+      PangoGravity gravity;
+
+      matrix = pango_fc_font_key_get_matrix (key);
       pango_matrix_get_font_scale_factors (matrix, &x_scale_inv, &y_scale_inv);
+      gravity = pango_fc_font_key_get_gravity (key);
+      if (PANGO_GRAVITY_IS_IMPROPER (gravity))
+        {
+          x_scale_inv = -x_scale_inv;
+          y_scale_inv = -y_scale_inv;
+        }
+      size = get_font_size (key);
     }
-  if (PANGO_GRAVITY_IS_IMPROPER (gravity))
-  {
-    x_scale_inv = -x_scale_inv;
-    y_scale_inv = -y_scale_inv;
-  }
 
   x_scale = 1. / x_scale_inv;
   y_scale = 1. / y_scale_inv;
 
-  size = get_font_size (key);
-  gravity = pango_fc_font_key_get_gravity (key);
   hb_face = pango_fc_font_map_get_hb_face (PANGO_FC_FONT_MAP (fc_font->fontmap), fc_font);
 
   hb_font = hb_font_create (hb_face);
