@@ -3424,40 +3424,59 @@ get_need_hyphen (PangoItem  *item,
 {
   int i;
   const char *p;
+  gboolean prev_space;
+  gboolean prev_hyphen;
 
   for (i = 0, p = text + item->offset; i < item->num_chars; i++, p = g_utf8_next_char (p))
     {
       gunichar wc = g_utf8_get_char (p);
-      switch (g_unichar_type(wc))
+      gboolean space;
+      gboolean hyphen;
+
+      switch (g_unichar_type (wc))
         {
         case G_UNICODE_SPACE_SEPARATOR:
         case G_UNICODE_LINE_SEPARATOR:
         case G_UNICODE_PARAGRAPH_SEPARATOR:
-          need_hyphen[i] = FALSE;
+          space = TRUE;
           break;
         case G_UNICODE_CONTROL:
           if (wc == '\t' || wc == '\n' || wc == '\r' || wc == '\f')
-            need_hyphen[i] = FALSE;
+            space = TRUE;
           else
-            need_hyphen[i] = TRUE;
+            space = FALSE;
           break;
         default:
-          if (wc == '-'    || /* Hyphen-minus */
-              wc == 0x058a || /* Armenian hyphen */
-              wc == 0x1400 || /* Canadian syllabics hyphen */
-              wc == 0x1806 || /* Mongolian todo hyphen */
-              wc == 0x2010 || /* Hyphen */
-              wc == 0x2027 || /* Hyphenation point */
-              wc == 0x2e17 || /* Double oblique hyphen */
-              wc == 0x2e40 || /* Double hyphen */
-              wc == 0x30a0 || /* Katakana-Hiragana double hyphen */
-              wc == 0xfe63 || /* Small hyphen-minus */
-              wc == 0xff0d)   /* Fullwidth hyphen-minus */
-            need_hyphen[i] = FALSE;
-          else
-            need_hyphen[i] = TRUE;
+          space = FALSE;
           break;
         }
+
+      if (wc == '-'    || /* Hyphen-minus */
+          wc == 0x058a || /* Armenian hyphen */
+          wc == 0x1400 || /* Canadian syllabics hyphen */
+          wc == 0x1806 || /* Mongolian todo hyphen */
+          wc == 0x2010 || /* Hyphen */
+          wc == 0x2027 || /* Hyphenation point */
+          wc == 0x2e17 || /* Double oblique hyphen */
+          wc == 0x2e40 || /* Double hyphen */
+          wc == 0x30a0 || /* Katakana-Hiragana double hyphen */
+          wc == 0xfe63 || /* Small hyphen-minus */
+          wc == 0xff0d)   /* Fullwidth hyphen-minus */
+        hyphen = TRUE;
+      else
+        hyphen = FALSE;
+
+      if (i == 0)
+        need_hyphen[i] = FALSE;
+      else if (prev_space || space)
+        need_hyphen[i] = FALSE;
+      else if (prev_hyphen || hyphen)
+        need_hyphen[i] = FALSE;
+      else
+        need_hyphen[i] = TRUE;
+
+      prev_space = space;
+      prev_hyphen = hyphen;
     }
 }
 
