@@ -1,6 +1,15 @@
+Overview of changes in 1.44.1
+=============================
+- Fix a crash with allow_break attributes
+- Fix Emoji spacing
+- Fix up includes and pkg-config requires
+- Correct some cases for hyphen insertion
+
 Overview of changes in 1.44.0
 =============================
 - Use harfbuzz for shaping on all platforms
+- Stop using freetype for font loading; this
+    drops support for type1 and bitmap fonts
 - Add a getter for hb_font_t
 - Make PangoCoverage a GObject
 - Add a pango_tailor_break api
