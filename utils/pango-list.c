@@ -22,7 +22,7 @@
 
 #include "config.h"
 #include <pango/pangocairo.h>
-#include <harfbuzz/hb-ot.h>
+#include <hb-ot.h>
 #include <glib/gstdio.h>
 #include <stdlib.h>
 

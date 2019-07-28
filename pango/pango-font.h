@@ -26,7 +26,7 @@
 #include <pango/pango-types.h>
 
 #include <glib-object.h>
-#include <harfbuzz/hb.h>
+#include <hb.h>
 
 G_BEGIN_DECLS
 

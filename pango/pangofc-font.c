@@ -48,7 +48,7 @@
 #include <ft2build.h>
 #include FT_MULTIPLE_MASTERS_H
 
-#include <harfbuzz/hb-ot.h>
+#include <hb-ot.h>
 
 enum {
   PROP_0,

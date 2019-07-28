@@ -32,7 +32,7 @@
 
 #include "pangocoretext.h"
 #include "pangocoretext-private.h"
-#include <harfbuzz/hb-coretext.h>
+#include <hb-coretext.h>
 
 struct _PangoCoreTextFontPrivate
 {

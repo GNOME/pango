@@ -25,7 +25,7 @@
 #include <glib.h>
 
 #include <pango/pango-version-macros.h>
-#include <harfbuzz/hb.h>
+#include <hb.h>
 
 G_BEGIN_DECLS
 
