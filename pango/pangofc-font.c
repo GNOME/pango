@@ -1006,11 +1006,30 @@ pango_fc_font_create_hb_font (PangoFont *font)
   key = _pango_fc_font_get_font_key (fc_font);
   if (key)
     {
+      const FcPattern *pattern = pango_fc_font_key_get_pattern (key);
       const PangoMatrix *matrix;
+      PangoMatrix matrix2;
       PangoGravity gravity;
+      FcMatrix fc_matrix, *fc_matrix_val;
+      double x, y;
+      int i;
 
       matrix = pango_fc_font_key_get_matrix (key);
       pango_matrix_get_font_scale_factors (matrix, &x_scale_inv, &y_scale_inv);
+
+      FcMatrixInit (&fc_matrix);
+      for (i = 0; FcPatternGetMatrix (pattern, FC_MATRIX, i, &fc_matrix_val) == FcResultMatch; i++)
+        FcMatrixMultiply (&fc_matrix, &fc_matrix, fc_matrix_val);
+
+      matrix2.xx = fc_matrix.xx;
+      matrix2.yx = fc_matrix.yx;
+      matrix2.xy = fc_matrix.xy;
+      matrix2.yy = fc_matrix.yy;
+      pango_matrix_get_font_scale_factors (&matrix2, &x, &y);
+
+      x_scale_inv /= x;
+      y_scale_inv /= y;
+
       gravity = pango_fc_font_key_get_gravity (key);
       if (PANGO_GRAVITY_IS_IMPROPER (gravity))
         {
