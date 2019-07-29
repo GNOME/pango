@@ -25,6 +25,7 @@
 #include <hb-ot.h>
 #include <glib/gstdio.h>
 #include <stdlib.h>
+#include <locale.h>
 
 /* FIXME: This doesn't work if the font has an avar table */
 static float
@@ -61,6 +62,7 @@ main (int    argc,
   GError *error = NULL;
 
   g_set_prgname ("pango-list");
+  setlocale (LC_ALL, "");
 
   context = g_option_context_new ("");
   g_option_context_add_main_entries (context, entries, NULL);
