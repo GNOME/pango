@@ -110,6 +110,20 @@ apply_extra_attributes (GSList       *attrs,
             }
         }
     }
+
+  for (l = attrs; l && *num_features < length; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+      if (attr->klass->type == PANGO_ATTR_LETTER_SPACING)
+        {
+          /* Turn off ligatures when letterspacing */
+          features[*num_features].tag = HB_TAG('l','i','g','a');
+          features[*num_features].value = 0;
+          features[*num_features].start = attr->start_index;
+          features[*num_features].end = attr->end_index;
+          (*num_features)++;
+        }
+    }
 }
 
 typedef struct
