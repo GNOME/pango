@@ -45,9 +45,6 @@
 #include "pango-layout.h"
 #include "pango-impl-utils.h"
 
-#include <ft2build.h>
-#include FT_MULTIPLE_MASTERS_H
-
 #include <hb-ot.h>
 
 enum {
@@ -904,90 +901,41 @@ get_font_size (PangoFcFontKey *key)
 }
 
 static void
-set_variation (hb_variation_t *vars,
-               unsigned int    n,
-               hb_variation_t *var)
+parse_variations (const char     *variations,
+                  hb_variation_t *vars,
+                  unsigned int    len,
+                  unsigned int   *n)
 {
-  int i;
-
-  for (i = 0; i < n; i++)
-    {
-      if (vars[i].tag == var->tag)
-        {
-          vars[i].value = var->value;
-          break;
-        }
-    }
-}
-
-static void
-parse_variations (hb_variation_t *vars,
-                  unsigned int    n,
-                  const char     *variations)
-{
-  hb_variation_t var;
   const char *p;
+  const char *end;
 
   p = variations;
   while (p && *p)
     {
-      char *end = strchr (p, ',');
-      if (hb_variation_from_string (p, end ? end - p: -1, &var))
-        set_variation (vars, n, &var);
+      if (*n == len)
+        break;
+
+      end = strchr (p, ',');
+      if (hb_variation_from_string (p, end ? end - p: -1, &vars[*n]))
+        (*n)++;
+
       p = end ? end + 1 : NULL;
     }
 }
 
-#define FixedToFloat(f) (((float)(f))/65536.0)
-
-static gboolean
-get_font_variations (PangoFcFont     *fc_font,
-                     hb_variation_t **vars,
-                     unsigned int    *n)
+#if !HB_VERSION_ATLEAST(2,5,4)
+static void
+hb_font_set_var_named_instance (hb_font_t    *font,
+                                unsigned int  instance)
 {
-  FT_Face ft_face;
-  FT_MM_Var *ft_mm_var;
-  int ret;
-  gboolean retval;
-
-  retval = FALSE;
-
-  ft_face = pango_fc_font_lock_face (fc_font);
-
-  ret = FT_Get_MM_Var (ft_face, &ft_mm_var);
-  if (ret == 0)
-    {
-      FT_Fixed *coords;
-      unsigned int ret;
-
-      coords = g_new (FT_Fixed, ft_mm_var->num_axis);
-      ret = FT_Get_Var_Design_Coordinates (ft_face, ft_mm_var->num_axis, coords);
-      if (ret == 0)
-        {
-          hb_variation_t *v;
-          int i;
-
-          v = g_new (hb_variation_t, ft_mm_var->num_axis);
-
-          for (i = 0; i < ft_mm_var->num_axis; i++)
-            {
-              v[i].tag = ft_mm_var->axis[i].tag;
-              v[i].value = FixedToFloat (coords[i]);
-            }
-
-          *vars = v;
-          *n = ft_mm_var->num_axis;
-          retval = TRUE;
-        }
-      g_free (coords);
-
-      free (ft_mm_var);
-    }
-
-  pango_fc_font_unlock_face (fc_font);
-
-  return retval;
+  hb_face_t *face = hb_font_get_face (font);
+  unsigned int coords_length = hb_ot_var_named_instance_get_design_coords (face, instance, NULL, NULL);
+  float *coords = coords_length ? (float *) calloc (coords_length, sizeof (float)) : NULL;
+  hb_ot_var_named_instance_get_design_coords (face, instance, &coords_length, coords);
+  hb_font_set_var_coords_design (font, coords, coords_length);
+  free (coords);
 }
+#endif
 
 static hb_font_t *
 pango_fc_font_create_hb_font (PangoFont *font)
@@ -1053,21 +1001,25 @@ pango_fc_font_create_hb_font (PangoFont *font)
     {
       FcPattern *pattern = pango_fc_font_key_get_pattern (key);
       const char *variations;
-      hb_variation_t *vars;
-      unsigned int n;
+      hb_variation_t vars[32];
+      unsigned int n = 0;
+      int index;
 
-      if (get_font_variations (fc_font, &vars, &n))
+      if (FcPatternGetInteger (pattern, FC_INDEX, 0, &index) == FcResultMatch &&
+          index != 0)
         {
-          if (FcPatternGetString (pattern, PANGO_FC_FONT_VARIATIONS, 0, (FcChar8 **)&variations) == FcResultMatch)
-            parse_variations (vars, n, variations);
-
-          variations = pango_fc_font_key_get_variations (key);
-          if (variations)
-            parse_variations (vars, n, variations);
-
-          hb_font_set_variations (hb_font, vars, n);
-          g_free (vars);
+          unsigned int instance = (index >> 16) - 1;
+          hb_font_set_var_named_instance (hb_font, instance);
         }
+
+      if (FcPatternGetString (pattern, PANGO_FC_FONT_VARIATIONS, 0, (FcChar8 **)&variations) == FcResultMatch)
+        parse_variations (variations, vars, 32, &n);
+
+      variations = pango_fc_font_key_get_variations (key);
+      if (variations)
+        parse_variations (variations, vars, 32, &n);
+
+      hb_font_set_variations (hb_font, vars, n);
     }
 
   return hb_font;
