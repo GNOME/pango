@@ -1337,6 +1337,7 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 #ifdef FC_VARIABLE
                                           FC_VARIABLE,
 #endif
+                                          FC_FONTFORMAT,
                                           NULL);
       FcPattern *pat = FcPatternCreate ();
       GHashTable *temp_family_hash;
@@ -1357,6 +1358,10 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 	  int spacing;
           int variable;
 	  PangoFcFamily *temp_family;
+
+	  res = FcPatternGetString (fontset->fonts[i], FC_FONTFORMAT, 0, (FcChar8 **)(void*)&s);
+          if (strcmp (s, "Type 1") == 0 || strcmp (s, "PCF") == 0)
+            continue; /* harfbuzz does not support these */
 
 	  res = FcPatternGetString (fontset->fonts[i], FC_FAMILY, 0, (FcChar8 **)(void*)&s);
 	  g_assert (res == FcResultMatch);
