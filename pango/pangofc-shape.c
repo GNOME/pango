@@ -340,7 +340,9 @@ pango_font_get_hb_font_for_context (PangoFont           *font,
       hb_font_funcs_set_glyph_h_kerning_func (funcs, pango_hb_font_get_h_kerning, NULL, NULL);
       hb_font_funcs_set_glyph_extents_func (funcs, pango_hb_font_get_glyph_extents, NULL, NULL);
       hb_font_funcs_set_glyph_contour_point_func (funcs, pango_hb_font_get_glyph_contour_point, NULL, NULL);
-  }
+
+      hb_font_funcs_make_immutable (funcs);
+    }
 
   context->font = font;
   context->parent = hb_font;
