@@ -158,7 +158,7 @@ get_real_family (const char *family_name)
       else if (g_ascii_strcasecmp (family_name, "serif") == 0)
 	return "Times";
       else if (g_ascii_strcasecmp (family_name, "system-ui") == 0)
-	return "San Francisco";
+	return ".AppleSystemUIFont";
       break;
     }
 
@@ -1485,21 +1485,20 @@ pango_core_text_font_map_init (PangoCoreTextFontMap *ctfontmap)
     }
 
   /* Insert aliases */
-  family = g_object_new (PANGO_TYPE_CORE_TEXT_FAMILY, NULL);
-  family->family_name = g_strdup ("Sans");
-  g_hash_table_insert (ctfontmap->families,
-                       g_utf8_casefold (family->family_name, -1), family);
+  /* Keep in sync with get_real_family() */
+  gchar* aliases[] = {
+    "Sans", "Serif", "system-ui", "cursive", "fantasy", "Monospace"
+  };
 
-  family = g_object_new (PANGO_TYPE_CORE_TEXT_FAMILY, NULL);
-  family->family_name = g_strdup ("Serif");
-  g_hash_table_insert (ctfontmap->families,
-                       g_utf8_casefold (family->family_name, -1), family);
-
-  family = g_object_new (PANGO_TYPE_CORE_TEXT_FAMILY, NULL);
-  family->family_name = g_strdup ("Monospace");
-  family->is_monospace = TRUE;
-  g_hash_table_insert (ctfontmap->families,
-                       g_utf8_casefold (family->family_name, -1), family);
+  for (int i = 0; i <  G_N_ELEMENTS(aliases); i++)
+  {
+    family = g_object_new (PANGO_TYPE_CORE_TEXT_FAMILY, NULL);
+    family->family_name = g_strdup (aliases[i]);
+    if (g_ascii_strcasecmp (family->family_name, "Monospace") == 0)
+      family->is_monospace = TRUE;
+    g_hash_table_insert (ctfontmap->families,
+                         g_utf8_casefold (family->family_name, -1), family);
+  }
 }
 
 static void
