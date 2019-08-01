@@ -190,7 +190,7 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
         }
     }
 
-  if (hb_font_get_glyph (context->parent, unicode, 0, glyph))
+  if (hb_font_get_nominal_glyph (context->parent, unicode, glyph))
     return TRUE;
 
   *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
@@ -201,37 +201,6 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
     return TRUE;
 
   return FALSE;
-}
-
-static hb_bool_t
-pango_hb_font_get_variation_glyph (hb_font_t      *font,
-                                   void           *font_data,
-                                   hb_codepoint_t  unicode,
-                                   hb_codepoint_t  variation_selector,
-                                   hb_codepoint_t *glyph,
-                                   void           *user_data G_GNUC_UNUSED)
-{
-  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
-
-  if (hb_font_get_glyph (context->parent,
-                         unicode, variation_selector, glyph))
-    return TRUE;
-
-  return FALSE;
-}
-
-static hb_bool_t
-pango_hb_font_get_glyph_contour_point (hb_font_t      *font,
-                                       void           *font_data,
-                                       hb_codepoint_t  glyph,
-                                       unsigned int    point_index,
-                                       hb_position_t  *x,
-                                       hb_position_t  *y,
-                                       void           *user_data G_GNUC_UNUSED)
-{
-  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
-
-  return hb_font_get_glyph_contour_point (context->parent, glyph, point_index, x, y);
 }
 
 static hb_position_t
@@ -279,44 +248,6 @@ pango_hb_font_get_glyph_extents (hb_font_t          *font,
   return hb_font_get_glyph_extents (context->parent, glyph, extents);
 }
 
-static hb_bool_t
-pango_hb_font_get_glyph_h_origin (hb_font_t      *font,
-                                  void           *font_data,
-                                  hb_codepoint_t  glyph,
-                                  hb_position_t  *x,
-                                  hb_position_t  *y,
-                                  void           *user_data G_GNUC_UNUSED)
-{
-  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
-
-  return hb_font_get_glyph_h_origin (context->parent, glyph, x, y);
-}
-
-static hb_bool_t
-pango_hb_font_get_glyph_v_origin (hb_font_t      *font,
-                                  void           *font_data,
-                                  hb_codepoint_t  glyph,
-                                  hb_position_t  *x,
-                                  hb_position_t  *y,
-void *user_data G_GNUC_UNUSED)
-{
-  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
-
-  return hb_font_get_glyph_v_origin (context->parent, glyph, x, y);
-}
-
-static hb_position_t
-pango_hb_font_get_h_kerning (hb_font_t      *font,
-                             void           *font_data,
-                             hb_codepoint_t  left_glyph,
-                             hb_codepoint_t  right_glyph,
-                             void           *user_data G_GNUC_UNUSED)
-{
-  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
-
-  return hb_font_get_glyph_h_kerning (context->parent, left_glyph, right_glyph);
-}
-
 static hb_font_t *
 pango_font_get_hb_font_for_context (PangoFont           *font,
                                     PangoHbShapeContext *context)
@@ -331,14 +262,9 @@ pango_font_get_hb_font_for_context (PangoFont           *font,
       funcs = hb_font_funcs_create ();
 
       hb_font_funcs_set_nominal_glyph_func (funcs, pango_hb_font_get_nominal_glyph, NULL, NULL);
-      hb_font_funcs_set_variation_glyph_func (funcs, pango_hb_font_get_variation_glyph, NULL, NULL);
       hb_font_funcs_set_glyph_h_advance_func (funcs, pango_hb_font_get_glyph_advance, NULL, NULL);
       hb_font_funcs_set_glyph_v_advance_func (funcs, pango_hb_font_get_glyph_advance, NULL, NULL);
-      hb_font_funcs_set_glyph_h_origin_func (funcs, pango_hb_font_get_glyph_h_origin, NULL, NULL);
-      hb_font_funcs_set_glyph_v_origin_func (funcs, pango_hb_font_get_glyph_v_origin, NULL, NULL);
-      hb_font_funcs_set_glyph_h_kerning_func (funcs, pango_hb_font_get_h_kerning, NULL, NULL);
       hb_font_funcs_set_glyph_extents_func (funcs, pango_hb_font_get_glyph_extents, NULL, NULL);
-      hb_font_funcs_set_glyph_contour_point_func (funcs, pango_hb_font_get_glyph_contour_point, NULL, NULL);
 
       hb_font_funcs_make_immutable (funcs);
     }
