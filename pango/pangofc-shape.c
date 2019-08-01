@@ -190,7 +190,7 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
         }
     }
 
-  if (hb_font_get_glyph (context->parent, unicode, 0, glyph))
+  if (hb_font_get_nominal_glyph (context->parent, unicode, glyph))
     return TRUE;
 
   *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
