@@ -60,6 +60,9 @@ PangoEllipsizeMode opt_ellipsize = PANGO_ELLIPSIZE_NONE;
 PangoGravity opt_gravity = PANGO_GRAVITY_SOUTH;
 PangoGravityHint opt_gravity_hint = PANGO_GRAVITY_HINT_NATURAL;
 HintMode opt_hinting = HINT_DEFAULT;
+HintMetrics opt_hint_metrics = HINT_METRICS_DEFAULT;
+SubpixelOrder opt_subpixel_order = SUBPIXEL_DEFAULT;
+Antialias opt_antialias = ANTIALIAS_DEFAULT;
 PangoWrapMode opt_wrap = PANGO_WRAP_WORD_CHAR;
 gboolean opt_wrap_set = FALSE;
 static const char *opt_pangorc = NULL; /* Unused */
@@ -443,6 +446,10 @@ parse_hinting (const char *name G_GNUC_UNUSED,
     opt_hinting = HINT_NONE;
   else if (strcmp (arg, "auto") == 0)
     opt_hinting = HINT_AUTO;
+  else if (strcmp (arg, "slight") == 0)
+    opt_hinting = HINT_SLIGHT;
+  else if (strcmp (arg, "medium") == 0)
+    opt_hinting = HINT_MEDIUM;
   else if (strcmp (arg, "full") == 0)
     opt_hinting = HINT_FULL;
   else
@@ -450,13 +457,90 @@ parse_hinting (const char *name G_GNUC_UNUSED,
       g_set_error(error,
 		  G_OPTION_ERROR,
 		  G_OPTION_ERROR_BAD_VALUE,
-		  "Argument for --hinting must be one of none/auto/full");
+		  "Argument for --hinting must be one of none/auto/slight/medium/full");
       ret = FALSE;
     }
 
   return ret;
 }
 
+static gboolean
+parse_subpixel_order (const char  *name,
+                      const char  *arg,
+                      gpointer     data,
+                      GError     **error)
+{
+  gboolean ret = TRUE;
+
+  if (strcmp (arg, "rgb") == 0)
+    opt_subpixel_order = SUBPIXEL_RGB;
+  else if (strcmp (arg, "bgr") == 0)
+    opt_subpixel_order = SUBPIXEL_BGR;
+  else if (strcmp (arg, "vrgb") == 0)
+    opt_subpixel_order = SUBPIXEL_VRGB;
+  else if (strcmp (arg, "vbgr") == 0)
+    opt_subpixel_order = SUBPIXEL_VBGR;
+  else
+    {
+      g_set_error (error,
+		   G_OPTION_ERROR,
+		   G_OPTION_ERROR_BAD_VALUE,
+		   "Argument for --subpixel-order must be one of rgb/bgr/vrgb/vbgr");
+      ret = FALSE;
+    }
+
+  return ret;
+}
+
+static gboolean
+parse_hint_metrics (const char  *name,
+                    const char  *arg,
+                    gpointer     data,
+                    GError     **error)
+{
+  gboolean ret = TRUE;
+
+  if (strcmp (arg, "on") == 0)
+    opt_hint_metrics = HINT_METRICS_ON;
+  else if (strcmp (arg, "off") == 0)
+    opt_hint_metrics = HINT_METRICS_OFF;
+  else
+    {
+      g_set_error (error,
+		   G_OPTION_ERROR,
+		   G_OPTION_ERROR_BAD_VALUE,
+		   "Argument for --hint-metrics must be one of on/off");
+      ret = FALSE;
+    }
+
+  return ret;
+}
+
+static gboolean
+parse_antialias (const char  *name,
+                 const char  *arg,
+                 gpointer     data,
+                 GError     **error)
+{
+  gboolean ret = TRUE;
+
+  if (strcmp (arg, "none") == 0)
+    opt_antialias = ANTIALIAS_NONE;
+  else if (strcmp (arg, "gray") == 0)
+    opt_antialias = ANTIALIAS_GRAY;
+  else if (strcmp (arg, "subpixel") == 0)
+    opt_antialias = ANTIALIAS_SUBPIXEL;
+  else
+    {
+      g_set_error (error,
+		   G_OPTION_ERROR,
+		   G_OPTION_ERROR_BAD_VALUE,
+		   "Argument for --antialias must be one of none/gray/subpixel");
+      ret = FALSE;
+    }
+
+  return ret;
+}
 static gboolean
 parse_wrap (const char *name,
 	    const char *arg,
@@ -711,7 +795,13 @@ parse_options (int argc, char *argv[])
     {"height",		0, 0, G_OPTION_ARG_INT,				&opt_height,
      "Height in points (positive) or number of lines (negative) for ellipsizing", "+points/-numlines"},
     {"hinting",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_hinting,
-     "Hinting style",					    "none/auto/full"},
+     "Hinting style",					    "none/auto/slight/medium/full"},
+    {"antialias",       0, 0, G_OPTION_ARG_CALLBACK,                    &parse_antialias,
+     "Antialiasing",                                        "none/gray/subpixel"},
+    {"hint-metrics",    0, 0, G_OPTION_ARG_CALLBACK,                    &parse_hint_metrics,
+     "Hint metrics",                                        "on/off"},
+    {"subpixel-order",  0, 0, G_OPTION_ARG_CALLBACK,                    &parse_subpixel_order,
+     "Subpixel order",                                      "rgb/bgr/vrgb/vbgr"},
     {"indent",		0, 0, G_OPTION_ARG_INT,				&opt_indent,
      "Width in points to indent paragraphs",			    "points"},
     {"spacing",		0, 0, G_OPTION_ARG_INT,				&opt_spacing,

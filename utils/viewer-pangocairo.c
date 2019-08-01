@@ -55,9 +55,23 @@ pangocairo_view_create (const PangoViewer *klass G_GNUC_UNUSED)
     {
       if (opt_hinting == HINT_NONE)
 	cairo_font_options_set_hint_style (instance->font_options, CAIRO_HINT_STYLE_NONE);
+      else if (opt_hinting == HINT_SLIGHT ||
+               opt_hinting == HINT_AUTO)
+	cairo_font_options_set_hint_style (instance->font_options, CAIRO_HINT_STYLE_SLIGHT);
+      else if (opt_hinting == HINT_MEDIUM)
+	cairo_font_options_set_hint_style (instance->font_options, CAIRO_HINT_STYLE_MEDIUM);
       else if (opt_hinting == HINT_FULL)
 	cairo_font_options_set_hint_style (instance->font_options, CAIRO_HINT_STYLE_FULL);
     }
+
+  if (opt_subpixel_order != SUBPIXEL_DEFAULT)
+    cairo_font_options_set_subpixel_order (instance->font_options, (cairo_subpixel_order_t)opt_subpixel_order);
+
+  if (opt_hint_metrics != HINT_METRICS_DEFAULT)
+    cairo_font_options_set_hint_metrics (instance->font_options, (cairo_hint_metrics_t)opt_hint_metrics);
+
+  if (opt_antialias != ANTIALIAS_DEFAULT)
+    cairo_font_options_set_antialias (instance->font_options, (cairo_antialias_t)opt_antialias);
 
   return instance;
 }

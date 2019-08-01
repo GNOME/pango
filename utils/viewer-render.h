@@ -29,8 +29,31 @@ typedef enum {
   HINT_DEFAULT,
   HINT_NONE,
   HINT_AUTO,
+  HINT_SLIGHT,
+  HINT_MEDIUM,
   HINT_FULL
 } HintMode;
+
+typedef enum {
+  SUBPIXEL_DEFAULT,
+  SUBPIXEL_RGB,
+  SUBPIXEL_BGR,
+  SUBPIXEL_VRGB,
+  SUBPIXEL_VBGR
+} SubpixelOrder;
+
+typedef enum {
+  ANTIALIAS_DEFAULT,
+  ANTIALIAS_NONE,
+  ANTIALIAS_GRAY,
+  ANTIALIAS_SUBPIXEL
+} Antialias;
+
+typedef enum {
+  HINT_METRICS_DEFAULT,
+  HINT_METRICS_ON,
+  HINT_METRICS_OFF
+} HintMetrics;
 
 typedef void (*RenderCallback) (PangoLayout *layout,
 				int          x,
@@ -81,6 +104,9 @@ extern const PangoViewer *opt_viewer;
 /* handled by backend-specific code */
 extern int opt_dpi;
 extern HintMode opt_hinting;
+extern SubpixelOrder opt_subpixel_order;
+extern Antialias opt_antialias;
+extern HintMetrics opt_hint_metrics;
 extern PangoColor opt_fg_color;
 extern guint16 opt_fg_alpha;
 extern gboolean opt_bg_set;
