@@ -379,7 +379,7 @@ pango_hb_shape (PangoFont           *font,
                 const char          *paragraph_text,
                 unsigned int         paragraph_length)
 {
-  PangoHbShapeContext context;
+  PangoHbShapeContext context = { 0, };
   hb_buffer_flags_t hb_buffer_flags;
   hb_font_t *hb_font;
   hb_buffer_t *hb_buffer;
