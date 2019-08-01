@@ -22,7 +22,6 @@
 #ifndef __PANGO_FC_FONT_PRIVATE_H__
 #define __PANGO_FC_FONT_PRIVATE_H__
 
-#include <pango/pango-glyph.h>
 #include <pango/pangofc-font.h>
 #include <pango/pango-font-private.h>
 
@@ -126,20 +125,6 @@ struct _PangoFcFontClass
   void (*_pango_reserved3) (void);
   void (*_pango_reserved4) (void);
 };
-
-
-PANGO_DEPRECATED_IN_1_44
-gboolean   pango_fc_font_has_char          (PangoFcFont      *font,
-					    gunichar          wc);
-PANGO_AVAILABLE_IN_1_4
-guint      pango_fc_font_get_glyph         (PangoFcFont      *font,
-					    gunichar          wc);
-PANGO_DEPRECATED_FOR(PANGO_GET_UNKNOWN_GLYPH)
-PangoGlyph pango_fc_font_get_unknown_glyph (PangoFcFont      *font,
-					    gunichar          wc);
-PANGO_DEPRECATED_IN_1_32
-void       pango_fc_font_kern_glyphs       (PangoFcFont      *font,
-					    PangoGlyphString *glyphs);
 
 
 G_END_DECLS
