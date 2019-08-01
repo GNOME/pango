@@ -325,12 +325,11 @@ pango_font_get_hb_font_for_context (PangoFont           *font,
   static hb_font_funcs_t *funcs;
 
   hb_font = pango_font_get_hb_font (font);
-  if (context->show_flags == PANGO_SHOW_NONE)
-    return hb_font_reference (hb_font);
 
   if (G_UNLIKELY (!funcs))
     {
       funcs = hb_font_funcs_create ();
+
       hb_font_funcs_set_nominal_glyph_func (funcs, pango_hb_font_get_nominal_glyph, NULL, NULL);
       hb_font_funcs_set_variation_glyph_func (funcs, pango_hb_font_get_variation_glyph, NULL, NULL);
       hb_font_funcs_set_glyph_h_advance_func (funcs, pango_hb_font_get_glyph_advance, NULL, NULL);
@@ -340,7 +339,9 @@ pango_font_get_hb_font_for_context (PangoFont           *font,
       hb_font_funcs_set_glyph_h_kerning_func (funcs, pango_hb_font_get_h_kerning, NULL, NULL);
       hb_font_funcs_set_glyph_extents_func (funcs, pango_hb_font_get_glyph_extents, NULL, NULL);
       hb_font_funcs_set_glyph_contour_point_func (funcs, pango_hb_font_get_glyph_contour_point, NULL, NULL);
-  }
+
+      hb_font_funcs_make_immutable (funcs);
+    }
 
   context->font = font;
   context->parent = hb_font;
@@ -377,7 +378,7 @@ pango_hb_shape (PangoFont           *font,
                 const char          *paragraph_text,
                 unsigned int         paragraph_length)
 {
-  PangoHbShapeContext context;
+  PangoHbShapeContext context = { 0, };
   hb_buffer_flags_t hb_buffer_flags;
   hb_font_t *hb_font;
   hb_buffer_t *hb_buffer;
