@@ -53,7 +53,7 @@ static int
 compare_font_family (gconstpointer a,
                      gconstpointer b)
 {
-  return strcmp (pango_font_family_get_name ((PangoFamily *)*a), pango_font_family_get_name ((PangoFamily *)*b));
+  return strcmp (pango_font_family_get_name ((PangoFontFamily *)*a), pango_font_family_get_name ((PangoFontFamily *)*b));
 }
 
 int main (int argc, char **argv)
