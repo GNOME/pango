@@ -87,6 +87,7 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
     '-Wno-uninitialized',
     '-Wno-shadow',
     '-Werror=implicit',
+    '-Werror=implicit-fallthrough',
     '-Werror=nonnull',
     '-Werror=init-self',
     '-Werror=main',
@@ -101,6 +102,7 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
     '-Werror=pointer-to-int-cast',
     '-Werror=empty-body',
     '-Werror=write-strings',
+    '-Werror=unused-but-set-variable',
     '-Wundef', # FIXME: https://bugzilla.gnome.org/show_bug.cgi?id=792481
   ]
 

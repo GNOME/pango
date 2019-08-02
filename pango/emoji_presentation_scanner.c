@@ -96,7 +96,7 @@ scan_emoji_presentation (emoji_text_iter_t p,
     const emoji_text_iter_t pe,
     bool* is_emoji)
 {
-  emoji_text_iter_t ts, te;
+  emoji_text_iter_t te;
   const emoji_text_iter_t eof = pe;
 
   unsigned act;
@@ -106,7 +106,6 @@ scan_emoji_presentation (emoji_text_iter_t p,
 #line 107 "emoji_presentation_scanner.c"
 	{
 	cs = emoji_presentation_start;
-	ts = 0;
 	te = 0;
 	act = 0;
 	}
@@ -128,7 +127,6 @@ _resume:
 		switch ( *_acts++ ) {
 	case 1:
 #line 1 "NONE"
-	{ts = p;}
 	break;
 #line 134 "emoji_presentation_scanner.c"
 		}
@@ -255,7 +253,6 @@ _again:
 		switch ( *_acts++ ) {
 	case 0:
 #line 1 "NONE"
-	{ts = 0;}
 	break;
 #line 261 "emoji_presentation_scanner.c"
 		}
