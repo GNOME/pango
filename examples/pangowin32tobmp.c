@@ -50,10 +50,13 @@ calc_duration (GTimeVal *tv1, GTimeVal *tv0)
 }
 
 static int
-compare_font_family (PangoFontFamily** a,
-		     PangoFontFamily** b)
+compare_font_family (gconstpointer a,
+                     gconstpointer b)
 {
-  return strcmp (pango_font_family_get_name (*a), pango_font_family_get_name (*b));
+  const PangoFontFamily** aa = (const PangoFontFamily **)a;
+  const PangoFontFamily** bb = (const PangoFontFamily **)b;
+
+  return strcmp (pango_font_family_get_name (*aa), pango_font_family_get_name (*bb));
 }
 
 int main (int argc, char **argv)
