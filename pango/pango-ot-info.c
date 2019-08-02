@@ -80,8 +80,8 @@ pango_ot_info_finalizer (void *object)
  *
  * Returns the #PangoOTInfo structure for the given FreeType font face.
  *
- * Return value: the #PangoOTInfo for @face. This object will have
- * the same lifetime as @face.
+ * Return value: (transfer none): the #PangoOTInfo for @face. This object
+ *   will have the same lifetime as @face.
  *
  * Since: 1.2
  **/
