@@ -247,6 +247,8 @@ struct _PangoOTRulesetDescription {
   guint                   n_other_features;
 };
 
+PANGO_DEPRECATED
+GType pango_ot_buffer_get_type (void) G_GNUC_CONST;
 
 #define PANGO_TYPE_OT_INFO              (pango_ot_info_get_type ())
 #define PANGO_OT_INFO(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_OT_INFO, PangoOTInfo))
