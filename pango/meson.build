@@ -164,29 +164,40 @@ pkgconfig.generate(libpango,
 
 # FreeType
 if build_pangoft2
-  pangoft2_headers = [
-    'pango-ot.h',
+  pangofc_headers = [
     'pangofc-font.h',
     'pangofc-fontmap.h',
     'pangofc-decoder.h',
-    'pangoft2.h',
   ]
 
-  pangoft2_public_sources = [
+  pangofc_public_sources = [
     'pangofc-font.c',
     'pangofc-fontmap.c',
     'pangofc-decoder.c',
-    'pangoft2.c',
   ]
 
-  pangoft2_sources = pangoft2_public_sources + [
-    'pangoft2-fontmap.c',
-    'pangoft2-render.c',
+  pangoot_headers = [
+    'pango-ot.h',
+  ]
+
+  pangoot_public_sources = [
     'pango-ot-buffer.c',
     'pango-ot-info.c',
     'pango-ot-ruleset.c',
     'pango-ot-tag.c',
   ]
+
+  pangoft2_headers = [
+    'pangoft2.h',
+  ]
+
+  pangoft2_public_sources = [
+    'pangoft2-fontmap.c',
+    'pangoft2-render.c',
+    'pangoft2.c',
+  ]
+
+  pangoft2_sources = pangofc_public_sources + pangoot_public_sources + pangoft2_public_sources
 
   if host_system == 'windows'
     pangoft2_rc = configure_file(
@@ -198,7 +209,7 @@ if build_pangoft2
     pangoft2_sources += pangoft2_res
   endif
 
-  install_headers(pangoft2_headers, subdir: pango_api_path)
+  install_headers(pangoft2_headers + pangofc_headers, subdir: pango_api_path)
 
   libpangoft2 = library(
     'pangoft2-@0@'.format(pango_api_version),
@@ -218,16 +229,49 @@ if build_pangoft2
   pangoft2_dep_sources = []
 
   if build_gir
+    pangofc_gir = gnome.generate_gir(
+      libpangoft2,
+      sources: pangofc_headers + pangofc_public_sources,
+      dependencies: [ libpango_dep, pango_gir_dep ],
+      namespace: 'PangoFc',
+      nsversion: pango_api_version,
+      identifier_prefix: 'PangoFc',
+      symbol_prefix: 'pango_fc',
+      export_packages: 'pangoft2',
+      includes: [ pango_gir[0], 'fontconfig-2.0', ],
+      header: 'pango/pangoft2.h',
+      extra_args: gir_args,
+    )
+    pangofc_gir_dep = declare_dependency(sources: pangofc_gir)
+    pangoft2_dep_sources += pangofc_gir
+
+    # Deprecated API, still needed for PangoXft
+    pangoot_gir = gnome.generate_gir(
+      libpangoft2,
+      sources: pangoot_headers + pangoot_public_sources,
+      dependencies: [ libpango_dep, pango_gir_dep, pangofc_gir_dep ],
+      namespace: 'PangoOT',
+      nsversion: pango_api_version,
+      identifier_prefix: 'PangoOT',
+      symbol_prefix: 'pango_ot',
+      export_packages: 'pangoft2',
+      includes: [ pangofc_gir[0], 'freetype2-2.0', ],
+      header: 'pango/pangoft2.h',
+      extra_args: gir_args,
+    )
+    pangoot_gir_dep = declare_dependency(sources: pangoot_gir)
+    pangoft2_dep_sources += pangoot_gir
+
     pangoft2_gir = gnome.generate_gir(
       libpangoft2,
       sources: pangoft2_headers + pangoft2_public_sources,
-      dependencies: [ libpango_dep, pango_gir_dep ],
+      dependencies: [ libpango_dep, pango_gir_dep, pangofc_gir_dep, pangoot_gir_dep ],
       namespace: 'PangoFT2',
       nsversion: pango_api_version,
       identifier_prefix: 'PangoFT2',
       symbol_prefix: 'pango_ft2',
       export_packages: 'pangoft2',
-      includes: [ pango_gir[0], 'GObject-2.0', 'cairo-1.0', 'freetype2-2.0', 'fontconfig-2.0', ],
+      includes: [ pangofc_gir[0], 'freetype2-2.0', ],
       header: 'pango/pangoft2.h',
       install: true,
       extra_args: gir_args,
@@ -295,13 +339,13 @@ if xft_dep.found() and fontconfig_dep.found()
     pangoxft_gir = gnome.generate_gir(
       libpangoxft,
       sources: pangoxft_headers + pangoxft_sources,
-      dependencies: [ libpango_dep, libpangoft2_dep, pango_gir_dep, pangoft2_gir_dep ],
+      dependencies: [ libpango_dep, libpangoft2_dep, pango_gir_dep, pangoot_gir_dep, pangoft2_gir_dep ],
       namespace: 'PangoXft',
       nsversion: pango_api_version,
       identifier_prefix: 'PangoXft',
       symbol_prefix: 'pango_xft',
       export_packages: 'pangoxft',
-      includes: [ pango_gir[0], pangoft2_gir[0], 'GObject-2.0', 'xft-2.0', 'xlib-2.0' ],
+      includes: [ pango_gir[0], pangoot_gir[0], pangoft2_gir[0], 'GObject-2.0', 'xft-2.0', 'xlib-2.0' ],
       header: 'pango/pangoxft.h',
       install: true,
       extra_args: gir_args,

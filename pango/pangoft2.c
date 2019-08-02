@@ -482,7 +482,7 @@ pango_ft2_font_finalize (GObject *object)
  * Gets the #PangoCoverage for a <type>PangoFT2Font</type>. Use
  * pango_font_get_coverage() instead.
  *
- * Return value: a #PangoCoverage.
+ * Return value: (transfer full): a #PangoCoverage.
  **/
 PangoCoverage *
 pango_ft2_font_get_coverage (PangoFont     *font,
