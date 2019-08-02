@@ -1835,6 +1835,11 @@ pango_attr_list_get_attributes (PangoAttrList *list)
   return g_slist_copy_deep (list->attributes, (GCopyFunc)pango_attribute_copy, NULL);
 }
 
+G_DEFINE_BOXED_TYPE (PangoAttrIterator,
+                     pango_attr_iterator,
+                     pango_attr_iterator_copy,
+                     pango_attr_iterator_destroy)
+
 /**
  * pango_attr_list_get_iterator:
  * @list: a #PangoAttrList
