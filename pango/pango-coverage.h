@@ -22,7 +22,7 @@
 #ifndef __PANGO_COVERAGE_H__
 #define __PANGO_COVERAGE_H__
 
-#include <glib.h>
+#include <glib-object.h>
 
 #include <pango/pango-version-macros.h>
 #include <hb.h>
@@ -61,6 +61,9 @@ typedef enum {
   PANGO_COVERAGE_APPROXIMATE,
   PANGO_COVERAGE_EXACT
 } PangoCoverageLevel;
+
+PANGO_AVAILABLE_IN_ALL
+GType pango_coverage_get_type (void) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
 PangoCoverage *    pango_coverage_new     (void);

@@ -56,10 +56,6 @@ struct _PangoCoverageClass
   PangoCoverage *    (* copy) (PangoCoverage      *coverage);
 };
 
-PANGO_AVAILABLE_IN_ALL
-GType      pango_coverage_get_type (void) G_GNUC_CONST;
-
-
 G_END_DECLS
 
 #endif /* __PANGO_COVERAGE_PRIVATE_H__ */

@@ -1208,7 +1208,7 @@ pango_attr_allow_breaks_new (gboolean allow_breaks)
 
 /**
  * pango_attr_show_new:
- * @show: #PangoShowFlags to apply
+ * @flags: #PangoShowFlags to apply
  *
  * Create a new attribute that influences how invisible
  * characters are rendered.
@@ -1834,6 +1834,11 @@ pango_attr_list_get_attributes (PangoAttrList *list)
 
   return g_slist_copy_deep (list->attributes, (GCopyFunc)pango_attribute_copy, NULL);
 }
+
+G_DEFINE_BOXED_TYPE (PangoAttrIterator,
+                     pango_attr_iterator,
+                     pango_attr_iterator_copy,
+                     pango_attr_iterator_destroy)
 
 /**
  * pango_attr_list_get_iterator:
