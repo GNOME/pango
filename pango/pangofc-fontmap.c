@@ -1196,8 +1196,8 @@ pango_fc_font_map_add_decoder_find_func (PangoFcFontMap        *fcfontmap,
  * Finds the decoder to use for @pattern.  Decoders can be added to
  * a font map using pango_fc_font_map_add_decoder_find_func().
  *
- * Returns: (nullable): a newly created #PangoFcDecoder object or
- *          %NULL if no decoder is set for @pattern.
+ * Returns: (transfer full) (nullable): a newly created #PangoFcDecoder
+ *   object or %NULL if no decoder is set for @pattern.
  *
  * Since: 1.26
  **/
