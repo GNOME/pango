@@ -1,3 +1,15 @@
+Overview of changes in 1.44.2
+=============================
+- Disable ligatures when letterspacing
+- Set design coords on hb_font_t
+- Expose more font options in pango-view
+- OS X: Make 'system-ui' font work
+- Keep deprecated pango-fc apis in headers
+- Make hex boxes work, always
+- introspection: Various build fixes
+- introspection: Add PangoPT, PangoFT2 namespaces
+- layout: Make the new line-spacing opt-in
+
 Overview of changes in 1.44.1
 =============================
 - Fix a crash with allow_break attributes
