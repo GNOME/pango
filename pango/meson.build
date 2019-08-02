@@ -192,13 +192,12 @@ if build_pangoft2
   ]
 
   pangoft2_public_sources = [
+    'pangoft2-fontmap.c',
+    'pangoft2-render.c',
     'pangoft2.c',
   ]
 
-  pangoft2_sources = pangofc_public_sources + pangoot_public_sources + pangoft2_public_sources + [
-    'pangoft2-fontmap.c',
-    'pangoft2-render.c',
-  ]
+  pangoft2_sources = pangofc_public_sources + pangoot_public_sources + pangoft2_public_sources
 
   if host_system == 'windows'
     pangoft2_rc = configure_file(
