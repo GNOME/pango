@@ -191,7 +191,7 @@ pango_layout_init (PangoLayout *layout)
   layout->height = -1;
   layout->indent = 0;
   layout->spacing = 0;
-  layout->line_spacing = 1.0;
+  layout->line_spacing = 0.0;
 
   layout->alignment = PANGO_ALIGN_LEFT;
   layout->justify = FALSE;
@@ -605,7 +605,7 @@ pango_layout_get_spacing (PangoLayout *layout)
  *
  * Sets a factor for line spacing.
  * Typical values are: 0, 1, 1.5, 2.
- * The default values is 1.
+ * The default values is 0.
  *
  * If @factor is non-zero, lines are placed
  * so that
