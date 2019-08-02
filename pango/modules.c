@@ -37,14 +37,14 @@
 #include "pango-modules.h"
 
 /**
- * pango_find_map:
+ * pango_find_map: (skip)
  * @language: the language tag for which to find the map
  * @engine_type_id: the engine type for the map to find
  * @render_type_id: the render type for the map to find
  *
  * Do not use.  Does not do anything.
  *
- * Return value: %NULL.
+ * Return value: (transfer none) (nullable): %NULL.
  *
  * Deprecated: 1.38
  **/
@@ -63,7 +63,7 @@ pango_find_map (PangoLanguage *language G_GNUC_UNUSED,
  *
  * Do not use.  Does not do anything.
  *
- * Return value: %NULL.
+ * Return value: (transfer none) (nullable): %NULL.
  *
  * Deprecated: 1.38
  **/
@@ -78,10 +78,10 @@ pango_map_get_engine (PangoMap   *map G_GNUC_UNUSED,
  * pango_map_get_engines: (skip)
  * @map: a #PangoMap
  * @script: a #PangoScript
- * @exact_engines: location to store list of engines that exactly
+ * @exact_engines: (nullable): location to store list of engines that exactly
  *  handle this script.
- * @fallback_engines: location to store list of engines that approximately
- *  handle this script.
+ * @fallback_engines: (nullable): location to store list of engines that
+ *  approximately handle this script.
  *
  * Do not use.  Does not do anything.
  *
@@ -101,7 +101,7 @@ pango_map_get_engines (PangoMap     *map G_GNUC_UNUSED,
 }
 
 /**
- * pango_module_register:
+ * pango_module_register: (skip)
  * @module: a #PangoIncludedModule
  *
  * Do not use.  Does not do anything.

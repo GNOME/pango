@@ -149,11 +149,11 @@ pango_coverage_copy (PangoCoverage *coverage)
 
 /**
  * pango_coverage_ref:
- * @coverage: a #PangoCoverage
+ * @coverage: (not nullable): a #PangoCoverage
  *
  * Increase the reference count on the #PangoCoverage by one
  *
- * Return value: @coverage
+ * Return value: (transfer full): @coverage
  **/
 PangoCoverage *
 pango_coverage_ref (PangoCoverage *coverage)
@@ -163,7 +163,7 @@ pango_coverage_ref (PangoCoverage *coverage)
 
 /**
  * pango_coverage_unref:
- * @coverage: a #PangoCoverage
+ * @coverage: (transfer full) (not nullable): a #PangoCoverage
  *
  * Decrease the reference count on the #PangoCoverage by one.
  * If the result is zero, free the coverage and all associated memory.

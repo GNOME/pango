@@ -588,6 +588,9 @@ PangoAttrList *pango_attr_list_filter (PangoAttrList       *list,
 PANGO_AVAILABLE_IN_1_44
 GSList        *pango_attr_list_get_attributes    (PangoAttrList *list);
 
+PANGO_AVAILABLE_IN_1_44
+GType              pango_attr_iterator_get_type  (void) G_GNUC_CONST;
+
 PANGO_AVAILABLE_IN_ALL
 PangoAttrIterator *pango_attr_list_get_iterator  (PangoAttrList  *list);
 

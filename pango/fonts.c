@@ -1851,7 +1851,7 @@ pango_font_get_font_map (PangoFont *font)
 }
 
 /**
- * pango_font_get_hb_font:
+ * pango_font_get_hb_font: (skip)
  * @font: a #PangoFont
  *
  * Get a hb_font_t object backing this font.

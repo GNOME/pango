@@ -96,6 +96,13 @@ pango_script_for_unichar (gunichar ch)
 
 /**********************************************************************/
 
+static PangoScriptIter *pango_script_iter_copy (PangoScriptIter *iter);
+
+G_DEFINE_BOXED_TYPE (PangoScriptIter,
+                     pango_script_iter,
+                     pango_script_iter_copy,
+                     pango_script_iter_free)
+
 PangoScriptIter *
 _pango_script_iter_init (PangoScriptIter *iter,
 	                 const char      *text,
@@ -140,6 +147,12 @@ pango_script_iter_new (const char *text,
 		       int         length)
 {
   return _pango_script_iter_init (g_slice_new (PangoScriptIter), text, length);
+}
+
+static PangoScriptIter *
+pango_script_iter_copy (PangoScriptIter *iter)
+{
+  return g_slice_dup (PangoScriptIter, iter);
 }
 
 void
