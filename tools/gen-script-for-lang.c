@@ -253,7 +253,7 @@ int main (void)
       max_script_len = MAX (max_script_len, j);
     }
 
-  if ((t = time(NULL), tmp = localtime (&t)) && strftime(date_buf, sizeof(date_buf), "%F", tmp))
+  if ((t = time(NULL), tmp = localtime (&t)) && strftime(date_buf, sizeof(date_buf), "%Y-%m-%d", tmp))
     date_str = date_buf;
 
   fc_version = FcGetVersion ();
