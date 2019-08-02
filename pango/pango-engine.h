@@ -287,6 +287,11 @@ struct _PangoEngineInfo
   gint n_scripts;
 };
 
+/* We should to ignore these unprefixed symbols when going through
+ * this header with the introspection scanner
+ */
+#ifndef __GI_SCANNER__
+
 /**
  * script_engine_list: (skip)
  * @engines: location to store a pointer to an array of engines.
@@ -445,6 +450,8 @@ prefix ## _register_type (GTypeModule *module)				  \
 #endif
 
 #endif /* PANGO_DISABLE_DEPRECATED */
+
+#endif /* __GI_SCANNER__ */
 
 G_END_DECLS
 
