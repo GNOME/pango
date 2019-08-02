@@ -1208,7 +1208,7 @@ pango_attr_allow_breaks_new (gboolean allow_breaks)
 
 /**
  * pango_attr_show_new:
- * @show: #PangoShowFlags to apply
+ * @flags: #PangoShowFlags to apply
  *
  * Create a new attribute that influences how invisible
  * characters are rendered.

@@ -1745,9 +1745,9 @@ pango_find_paragraph_boundary (const gchar *text,
  * @analysis:  #PangoAnalysis structure from pango_itemize() for @text
  * @offset: Byte offset of @text from the beginning of the
  *     paragraph, or -1 to ignore attributes from @analysis
- * @log_attrs: (array length=attrs_len): array with one #PangoLogAttr
+ * @log_attrs: (array length=log_attrs_len): array with one #PangoLogAttr
  *   per character in @text, plus one extra, to be filled in
- * @attrs_len: length of @log_attrs array
+ * @log_attrs_len: length of @log_attrs array
  *
  * Apply language-specific tailoring to the breaks in
  * @log_attrs, which are assumed to have been produced

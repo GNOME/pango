@@ -138,8 +138,8 @@ void pango_tailor_break  (const char    *text,
                           int            length,
 			  PangoAnalysis *analysis,
                           int            offset,
-			  PangoLogAttr  *attrs,
-			  int            attrs_len);
+			  PangoLogAttr  *log_attrs,
+			  int            log_attrs_len);
 
 G_END_DECLS
 
