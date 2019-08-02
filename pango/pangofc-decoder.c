@@ -52,8 +52,8 @@ pango_fc_decoder_class_init (PangoFcDecoderClass *klass G_GNUC_UNUSED)
  * internal value stored by the #PangoFcDecoder and must not
  * be modified or freed.
  *
- * Return value: the #FcCharset for @fcfont; must not be modified
- *   or freed.
+ * Returns: (transfer none): the #FcCharset for @fcfont; must not
+ *   be modified or freed.
  *
  * Since: 1.6
  **/
