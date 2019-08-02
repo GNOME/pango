@@ -421,6 +421,7 @@ pango_default_break (const gchar   *text,
 		GB_type = GB_ControlCRLF;
 		break;
 	      }
+	    /* fall through */
 
 	  case G_UNICODE_OTHER_LETTER:
 	    if (makes_hangul_syllable)
