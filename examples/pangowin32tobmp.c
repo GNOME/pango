@@ -81,7 +81,7 @@ int main (int argc, char **argv)
    * force initialization of built-in engines, otherwise
    * the rendering get's really fast - too fast to work :-(
    */
-  context = pango_win32_get_context ();
+  context = pango_font_map_create_context (pango_win32_font_map_for_display ());
 
   if (argc == 1)		/* No arguments given */
     {
@@ -208,7 +208,6 @@ int main (int argc, char **argv)
 	  glyphs = pango_glyph_string_new ();
 	  item = pango_item_new ();
 
-	  item->analysis.shape_engine = pango_font_find_shaper (font, lang, s[0]);
 	  item->analysis.font = g_object_ref (font);
 	  pango_shape ( s, sizeof(s), &(item->analysis), glyphs);
 
