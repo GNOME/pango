@@ -335,6 +335,7 @@ pango_ft2_renderer_draw_glyph (PangoRenderer *renderer,
 		  break;
 		case 0xff:
 		  *d = 0xff;
+                  break;
 		default:
 		  *d = MIN ((gushort) *d + (gushort) *s, 0xff);
 		  break;
