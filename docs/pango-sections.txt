@@ -30,6 +30,7 @@ PangoLogAttr
 <SUBSECTION>
 pango_shape
 pango_shape_full
+pango_shape_with_flags
 
 <SUBSECTION Standard>
 PANGO_TYPE_ITEM
