@@ -189,18 +189,43 @@ void pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 /* Turn a string of characters into a string of glyphs
  */
 PANGO_AVAILABLE_IN_ALL
-void pango_shape (const gchar      *text,
-		  gint              length,
-		  const PangoAnalysis *analysis,
-		  PangoGlyphString *glyphs);
+void pango_shape (const char          *text,
+                  int                  length,
+                  const PangoAnalysis *analysis,
+                  PangoGlyphString    *glyphs);
 
 PANGO_AVAILABLE_IN_1_32
-void pango_shape_full (const gchar      *item_text,
-		       gint              item_length,
-		       const gchar      *paragraph_text,
-		       gint              paragraph_length,
-		       const PangoAnalysis *analysis,
-		       PangoGlyphString *glyphs);
+void pango_shape_full (const char          *item_text,
+                       int                  item_length,
+                       const char          *paragraph_text,
+                       int                  paragraph_length,
+                       const PangoAnalysis *analysis,
+                       PangoGlyphString    *glyphs);
+
+/**
+ * PangoShapeFlags:
+ * @PANGO_SHAPE_NONE: Default value.
+ * @PANGO_SHAPE_ROUND_POSITIONS: Round glyph positions
+ *     and widths to whole device units. This option should
+ *     be set if the target renderer can't do subpixel
+ *     positioning of glyphs.
+ *
+ * Flags influencing the shaping process.
+ * These can be passed to pango_shape_with_flags().
+ */
+typedef enum {
+  PANGO_SHAPE_NONE            = 0,
+  PANGO_SHAPE_ROUND_POSITIONS = 1 << 0,
+} PangoShapeFlags;
+
+PANGO_AVAILABLE_IN_1_44
+void pango_shape_with_flags (const char          *item_text,
+                             int                  item_length,
+                             const char          *paragraph_text,
+                             int                  paragraph_length,
+                             const PangoAnalysis *analysis,
+                             PangoGlyphString    *glyphs,
+                             PangoShapeFlags      flags);
 
 PANGO_AVAILABLE_IN_ALL
 GList *pango_reorder_items (GList *logical_items);

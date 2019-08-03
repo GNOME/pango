@@ -107,6 +107,7 @@ extern HintMode opt_hinting;
 extern SubpixelOrder opt_subpixel_order;
 extern Antialias opt_antialias;
 extern HintMetrics opt_hint_metrics;
+extern gboolean opt_subpixel_positions;
 extern PangoColor opt_fg_color;
 extern guint16 opt_fg_alpha;
 extern gboolean opt_bg_set;
