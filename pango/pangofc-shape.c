@@ -416,9 +416,7 @@ pango_hb_shape (PangoFont           *font,
   hb_buffer_set_direction (hb_buffer, hb_direction);
   hb_buffer_set_script (hb_buffer, hb_glib_script_to_script (analysis->script));
   hb_buffer_set_language (hb_buffer, hb_language_from_string (pango_language_to_string (analysis->language), -1));
-#if HB_VERSION_ATLEAST(1,0,3)
   hb_buffer_set_cluster_level (hb_buffer, HB_BUFFER_CLUSTER_LEVEL_MONOTONE_CHARACTERS);
-#endif
   hb_buffer_set_flags (hb_buffer, hb_buffer_flags);
   hb_buffer_set_invisible_glyph (hb_buffer, PANGO_GLYPH_EMPTY);
 
