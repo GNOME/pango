@@ -37,7 +37,10 @@ test_hb_font (void)
   hb_bool_t res;
   hb_codepoint_t glyph;
 
-  desc = pango_font_description_from_string ("Cantarell 11");
+ if (strcmp (G_OBJECT_TYPE_NAME (pango_context_get_font_map (context)), "PangoCairoWin32FontMap") == 0)
+    desc = pango_font_description_from_string ("Verdana 11");
+  else
+    desc = pango_font_description_from_string ("Cantarell 11");
   font = pango_context_load_font (context, desc);
   hb_font = pango_font_get_hb_font (font);
 
