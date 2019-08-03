@@ -30,6 +30,8 @@ PangoLogAttr
 <SUBSECTION>
 pango_shape
 pango_shape_full
+PangoShapeFlags
+pango_shape_with_flags
 
 <SUBSECTION Standard>
 PANGO_TYPE_ITEM
@@ -60,6 +62,8 @@ pango_context_get_gravity_hint
 pango_context_set_gravity_hint
 pango_context_get_matrix
 pango_context_set_matrix
+pango_context_get_round_glyph_positions
+pango_context_set_round_glyph_positions
 pango_context_load_font
 pango_context_load_fontset
 pango_context_get_metrics

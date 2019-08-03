@@ -55,12 +55,49 @@
  * boundaries.
  */
 void
-pango_shape (const gchar      *text,
-	     gint              length,
+pango_shape (const gchar         *text,
+	     gint                 length,
 	     const PangoAnalysis *analysis,
-	     PangoGlyphString *glyphs)
+	     PangoGlyphString    *glyphs)
 {
   pango_shape_full (text, length, text, length, analysis, glyphs);
+}
+
+/**
+ * pango_shape_full:
+ * @item_text:        valid UTF-8 text to shape.
+ * @item_length:      the length (in bytes) of @item_text. -1 means nul-terminated text.
+ * @paragraph_text: (allow-none): text of the paragraph (see details).  May be %NULL.
+ * @paragraph_length: the length (in bytes) of @paragraph_text. -1 means nul-terminated text.
+ * @analysis:  #PangoAnalysis structure from pango_itemize().
+ * @glyphs:    glyph string in which to store results.
+ *
+ * Given a segment of text and the corresponding
+ * #PangoAnalysis structure returned from pango_itemize(),
+ * convert the characters into glyphs. You may also pass
+ * in only a substring of the item from pango_itemize().
+ *
+ * This is similar to pango_shape(), except it also can optionally take
+ * the full paragraph text as input, which will then be used to perform
+ * certain cross-item shaping interactions.  If you have access to the broader
+ * text of which @item_text is part of, provide the broader text as
+ * @paragraph_text.  If @paragraph_text is %NULL, item text is used instead.
+ *
+ * Since: 1.32
+ */
+void
+pango_shape_full (const char          *item_text,
+                  int                  item_length,
+                  const char          *paragraph_text,
+                  int                  paragraph_length,
+                  const PangoAnalysis *analysis,
+                  PangoGlyphString    *glyphs)
+{
+  pango_shape_with_flags (item_text, item_length,
+                          paragraph_text, paragraph_length,
+                          analysis,
+                          glyphs,
+                          PANGO_SHAPE_NONE);
 }
 
 static void
@@ -113,34 +150,36 @@ fallback_shape (const char          *text,
 }
 
 /**
- * pango_shape_full:
- * @item_text:        valid UTF-8 text to shape.
- * @item_length:      the length (in bytes) of @item_text. -1 means nul-terminated text.
- * @paragraph_text: (allow-none): text of the paragraph (see details).  May be %NULL.
- * @paragraph_length: the length (in bytes) of @paragraph_text. -1 means nul-terminated text.
- * @analysis:  #PangoAnalysis structure from pango_itemize().
- * @glyphs:    glyph string in which to store results.
+ * pango_shape_with_flags:
+ * @item_text: valid UTF-8 text to shape
+ * @item_length: the length (in bytes) of @item_text.
+ *     -1 means nul-terminated text.
+ * @paragraph_text: (allow-none): text of the paragraph (see details).
+ *     May be %NULL.
+ * @paragraph_length: the length (in bytes) of @paragraph_text.
+ *     -1 means nul-terminated text.
+ * @analysis:  #PangoAnalysis structure from pango_itemize()
+ * @glyphs: glyph string in which to store results
+ * @flags: flags influencing the shaping process
  *
  * Given a segment of text and the corresponding
  * #PangoAnalysis structure returned from pango_itemize(),
  * convert the characters into glyphs. You may also pass
  * in only a substring of the item from pango_itemize().
  *
- * This is similar to pango_shape(), except it also can optionally take
- * the full paragraph text as input, which will then be used to perform
- * certain cross-item shaping interactions.  If you have access to the broader
- * text of which @item_text is part of, provide the broader text as
- * @paragraph_text.  If @paragraph_text is %NULL, item text is used instead.
+ * This is similar to pango_shape_full(), except it also takes
+ * flags that can influence the shaping process.
  *
- * Since: 1.32
+ * Since: 1.44
  */
 void
-pango_shape_full (const gchar      *item_text,
-		  gint              item_length,
-		  const gchar      *paragraph_text,
-		  gint              paragraph_length,
-		  const PangoAnalysis *analysis,
-		  PangoGlyphString *glyphs)
+pango_shape_with_flags (const gchar         *item_text,
+                        gint                 item_length,
+                        const gchar         *paragraph_text,
+                        gint                 paragraph_length,
+                        const PangoAnalysis *analysis,
+                        PangoGlyphString    *glyphs,
+                        PangoShapeFlags      flags)
 {
   int i;
   int last_cluster;
@@ -242,5 +281,15 @@ pango_shape_full (const gchar      *item_text,
 
       /* *Fix* it so we don't crash later */
       pango_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
+    }
+
+  if (flags & PANGO_SHAPE_ROUND_POSITIONS)
+    {
+      for (i = 0; i < glyphs->num_glyphs; i++)
+        {
+          glyphs->glyphs[i].geometry.width    = PANGO_UNITS_ROUND (glyphs->glyphs[i].geometry.width );
+          glyphs->glyphs[i].geometry.x_offset = PANGO_UNITS_ROUND (glyphs->glyphs[i].geometry.x_offset);
+          glyphs->glyphs[i].geometry.y_offset = PANGO_UNITS_ROUND (glyphs->glyphs[i].geometry.y_offset);
+        }
     }
 }

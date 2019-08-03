@@ -36,6 +36,7 @@ typedef struct
 
   PangoFontMap *fontmap;
   cairo_font_options_t *font_options;
+  gboolean subpixel_positions;
 } CairoViewer;
 
 static gpointer
@@ -73,6 +74,8 @@ pangocairo_view_create (const PangoViewer *klass G_GNUC_UNUSED)
   if (opt_antialias != ANTIALIAS_DEFAULT)
     cairo_font_options_set_antialias (instance->font_options, (cairo_antialias_t)opt_antialias);
 
+  instance->subpixel_positions = opt_subpixel_positions;
+
   return instance;
 }
 
@@ -100,6 +103,7 @@ pangocairo_view_get_context (gpointer instance)
 
   context = pango_font_map_create_context (c->fontmap);
   pango_cairo_context_set_font_options (context, c->font_options);
+  pango_context_set_round_glyph_positions (context, !c->subpixel_positions);
 
   return context;
 }
