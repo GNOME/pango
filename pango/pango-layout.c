@@ -3354,14 +3354,20 @@ shape_run (PangoLayoutLine *line,
     shape_tab (line, item, glyphs);
   else
     {
+      PangoShapeFlags shape_flags = PANGO_SHAPE_NONE;
+
+      if (pango_context_get_round_glyph_positions (layout->context))
+        shape_flags |= PANGO_SHAPE_ROUND_POSITIONS;
+
       if (state->properties.shape_set)
 	_pango_shape_shape (layout->text + item->offset, item->num_chars,
 			    state->properties.shape_ink_rect, state->properties.shape_logical_rect,
 			    glyphs);
       else
-        pango_shape_full (layout->text + item->offset, item->length,
-                          layout->text, layout->length,
-                          &item->analysis, glyphs);
+        pango_shape_with_flags (layout->text + item->offset, item->length,
+                                layout->text, layout->length,
+                                &item->analysis, glyphs,
+                                shape_flags);
 
       if (state->properties.letter_spacing)
 	{
