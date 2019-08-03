@@ -63,6 +63,7 @@ HintMode opt_hinting = HINT_DEFAULT;
 HintMetrics opt_hint_metrics = HINT_METRICS_DEFAULT;
 SubpixelOrder opt_subpixel_order = SUBPIXEL_DEFAULT;
 Antialias opt_antialias = ANTIALIAS_DEFAULT;
+gboolean opt_subpixel_positions = FALSE;
 PangoWrapMode opt_wrap = PANGO_WRAP_WORD_CHAR;
 gboolean opt_wrap_set = FALSE;
 static const char *opt_pangorc = NULL; /* Unused */
@@ -800,6 +801,8 @@ parse_options (int argc, char *argv[])
      "Antialiasing",                                        "none/gray/subpixel"},
     {"hint-metrics",    0, 0, G_OPTION_ARG_CALLBACK,                    &parse_hint_metrics,
      "Hint metrics",                                        "on/off"},
+    { "subpixel-positions", 0, 0, G_OPTION_ARG_NONE,                    &opt_subpixel_positions,
+     "Subpixel positioning",                                        NULL},
     {"subpixel-order",  0, 0, G_OPTION_ARG_CALLBACK,                    &parse_subpixel_order,
      "Subpixel order",                                      "rgb/bgr/vrgb/vbgr"},
     {"indent",		0, 0, G_OPTION_ARG_INT,				&opt_indent,
