@@ -209,7 +209,7 @@ if build_pangoft2
     pangoft2_sources += pangoft2_res
   endif
 
-  install_headers(pangoft2_headers + pangofc_headers, subdir: pango_api_path)
+  install_headers(pangoft2_headers + pangofc_headers + pangoot_headers, subdir: pango_api_path)
 
   libpangoft2 = library(
     'pangoft2-@0@'.format(pango_api_version),
