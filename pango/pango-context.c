@@ -79,6 +79,8 @@ struct _PangoContext
   PangoMatrix *matrix;
 
   PangoFontMap *font_map;
+
+  gboolean round_glyph_positions;
 };
 
 struct _PangoContextClass
@@ -103,6 +105,7 @@ pango_context_init (PangoContext *context)
   context->set_language = NULL;
   context->language = pango_language_get_default ();
   context->font_map = NULL;
+  context->round_glyph_positions = TRUE;
 
   context->font_desc = pango_font_description_new ();
   pango_font_description_set_family_static (context->font_desc, "serif");
@@ -1856,4 +1859,47 @@ pango_context_get_serial (PangoContext *context)
 {
   check_fontmap_changed (context);
   return context->serial;
+}
+
+/**
+ * pango_context_set_round_glyph_positions:
+ * @context: a #PangoContext
+ * @round_positions: whether to round glyph positions
+ *
+ * Sets whether font rendering with this context should
+ * round glyph positions and widths to integral positions,
+ * in device units.
+ *
+ * This is useful when the renderer can't handle subpixel
+ * positioning of glyphs.
+ *
+ * The default value is to round glyph positions, to remain
+ * compatible with previous Pango behavior.
+ *
+ * Since: 1.44
+ */
+void
+pango_context_set_round_glyph_positions (PangoContext *context,
+                                         gboolean      round_positions)
+{
+  if (context->round_glyph_positions != round_positions)
+    {
+      context->round_glyph_positions = round_positions;
+      context_changed (context);
+    }
+}
+
+/**
+ * pango_context_get_round_glyph_positions:
+ * @context: a #PangoContext
+ *
+ * Returns whether font rendering with this context should
+ * round glyph positions and widths.
+ *
+ * Since: 1.44
+ */
+gboolean
+pango_context_get_round_glyph_positions (PangoContext *context)
+{
+  return context->round_glyph_positions;
 }
