@@ -1207,6 +1207,33 @@ pango_attr_allow_breaks_new (gboolean allow_breaks)
 }
 
 /**
+ * pango_attr_insert_hyphens_new:
+ * @insert_hyphens: %TRUE if hyphens should be inserted
+ *
+ * Create a new insert-hyphens attribute.
+ *
+ * Pango will insert hyphens when breaking lines in the middle
+ * of a word. This attribute can be used to suppress the hyphen.
+ *
+ * Return value: (transfer full): the newly allocated #PangoAttribute,
+ *               which should be freed with pango_attribute_destroy()
+ *
+ * Since: 1.44
+ */
+PangoAttribute *
+pango_attr_insert_hyphens_new (gboolean insert_hyphens)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_INSERT_HYPHENS,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal,
+  };
+
+  return pango_attr_int_new (&klass, (int)insert_hyphens);
+}
+
+/**
  * pango_attr_show_new:
  * @flags: #PangoShowFlags to apply
  *

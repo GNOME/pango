@@ -413,6 +413,7 @@ pango_attr_font_features_new
 pango_attr_foreground_alpha_new
 pango_attr_background_alpha_new
 pango_attr_allow_breaks_new
+pango_attr_insert_hyphens_new
 PangoShowFlags
 pango_attr_show_new
 PangoColor
