@@ -63,6 +63,9 @@ test_attributes_basic (void)
   test_copy (pango_attr_shape_new (&rect, &rect));
   test_copy (pango_attr_gravity_new (PANGO_GRAVITY_SOUTH));
   test_copy (pango_attr_gravity_hint_new (PANGO_GRAVITY_HINT_STRONG));
+  test_copy (pango_attr_allow_breaks_new (FALSE));
+  test_copy (pango_attr_show_new (PANGO_SHOW_SPACES));
+  test_copy (pango_attr_insert_hyphens_new (FALSE));
 }
 
 static void
