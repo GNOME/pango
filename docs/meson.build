@@ -65,6 +65,8 @@ html_images = [
   'layout.png',
   'pipeline.png',
   'rotated-text.png',
+  'rects1.png',
+  'rects2.png',
 ]
 
 docdeps = [ libpango_dep ]

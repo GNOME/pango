@@ -271,6 +271,10 @@ pango_glyph_string_extents_range (PangoGlyphString *glyphs,
  * Compute the logical and ink extents of a glyph string. See the documentation
  * for pango_font_get_glyph_extents() for details about the interpretation
  * of the rectangles.
+ *
+ * Examples of logical (red) and ink (green) rects:
+ *
+ * ![](rects1.png) ![](rects2.png)
  */
 void
 pango_glyph_string_extents (PangoGlyphString *glyphs,
