@@ -895,6 +895,20 @@ pango_fc_fontset_get_key (PangoFcFontset *fontset)
   return fontset->key;
 }
 
+static gboolean
+pango_fc_is_supported_font_format (const char *fontformat)
+{
+  /* harfbuzz supports only SFNT fonts. */
+  /* FIXME: "CFF" is used for both CFF in OpenType and bare CFF files, but
+   * HarfBuzz does not support the later and FontConfig does not seem
+   * to have a way to tell them apart.
+   */
+  if (g_ascii_strcasecmp (fontformat, "TrueType") == 0 ||
+      g_ascii_strcasecmp (fontformat, "CFF") == 0)
+    return TRUE;
+  return FALSE;
+}
+
 static PangoFont *
 pango_fc_fontset_load_next_font (PangoFcFontset *fontset,
                                  gboolean       *has_more)
@@ -925,8 +939,7 @@ pango_fc_fontset_load_next_font (PangoFcFontset *fontset,
 
   res = FcPatternGetString (font_pattern, FC_FONTFORMAT, 0, (FcChar8 **)(void*)&s);
   g_assert (res == FcResultMatch);
-  /* harfbuzz does not support these */
-  if (strcmp (s, "Type 1") == 0 || strcmp (s, "PCF") == 0)
+  if (!pango_fc_is_supported_font_format (s))
     font = NULL;
   else
     font = pango_fc_font_map_new_font (fontset->key->fontmap,
@@ -1394,8 +1407,8 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 
 	  res = FcPatternGetString (fontset->fonts[i], FC_FONTFORMAT, 0, (FcChar8 **)(void*)&s);
 	  g_assert (res == FcResultMatch);
-          if (strcmp (s, "Type 1") == 0 || strcmp (s, "PCF") == 0)
-            continue; /* harfbuzz does not support these */
+          if (!pango_fc_is_supported_font_format (s))
+            continue;
 
 	  res = FcPatternGetString (fontset->fonts[i], FC_FAMILY, 0, (FcChar8 **)(void*)&s);
 	  g_assert (res == FcResultMatch);
