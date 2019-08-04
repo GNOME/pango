@@ -1,3 +1,9 @@
+Overview of changes in 1.44.3
+=============================
+- Install pango-ot headers
+- Make subpixel positioning optional
+- fc: Ignore fonts with unsupported formats
+
 Overview of changes in 1.44.2
 =============================
 - Disable ligatures when letterspacing
