@@ -158,6 +158,10 @@
  *   not allowed, the range will be kept in a single run as far
  *   as possible. Breaks are allowed by default.
  *
+ * insert_hyphens
+ * : 'true' or 'false' whether to insert hyphens when breaking
+ *   lines in the middle of a word. Hyphens are inserted by default.
+ *
  * show
  * : A value determining how invisible characters are treated.
  *   Possible values are 'spaces', 'line-breaks', 'ignorables'
@@ -1334,6 +1338,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   const char *alpha = NULL;
   const char *background_alpha = NULL;
   const char *allow_breaks = NULL;
+  const char *insert_hyphens = NULL;
   const char *show = NULL;
 
   g_markup_parse_context_get_position (context,
@@ -1407,6 +1412,9 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	CHECK_ATTRIBUTE (gravity);
 	CHECK_ATTRIBUTE (gravity_hint);
 	break;
+      case 'i':
+        CHECK_ATTRIBUTE (insert_hyphens);
+        break;
       case 'l':
 	CHECK_ATTRIBUTE (lang);
 	CHECK_ATTRIBUTE (letter_spacing);
@@ -1765,6 +1773,16 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	goto error;
 
       add_attribute (tag, pango_attr_allow_breaks_new (b));
+    }
+
+  if (G_UNLIKELY (insert_hyphens))
+    {
+      gboolean b = FALSE;
+
+      if (!span_parse_boolean ("insert_hyphens", insert_hyphens, &b, line_number, error))
+	goto error;
+
+      add_attribute (tag, pango_attr_insert_hyphens_new (b));
     }
 
   return TRUE;

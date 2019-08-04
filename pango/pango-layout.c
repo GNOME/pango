@@ -3327,7 +3327,7 @@ struct _ParaBreakState
   int log_widths_offset;        /* Offset into log_widths to the point corresponding
 				 * to the remaining portion of the first item */
 
-  int *need_hyphen;             /* is this char a soft hyphen ? */
+  int *need_hyphen;             /* Insert a hyphen if breaking here ? */
   int line_start_index;		/* Start index (byte offset) of line in layout->text */
   int line_start_offset;	/* Character offset of line in layout->text */
 
@@ -3432,12 +3432,41 @@ get_need_hyphen (PangoItem  *item,
   const char *p;
   gboolean prev_space;
   gboolean prev_hyphen;
+  PangoAttrList *attrs;
+  PangoAttrIterator *iter;
+  GSList *l;
+
+  attrs = pango_attr_list_new ();
+  for (l = item->analysis.extra_attrs; l; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+      if (attr->klass->type == PANGO_ATTR_INSERT_HYPHENS)
+        pango_attr_list_change (attrs, pango_attribute_copy (attr));
+    }
+  iter = pango_attr_list_get_iterator (attrs);
 
   for (i = 0, p = text + item->offset; i < item->num_chars; i++, p = g_utf8_next_char (p))
     {
       gunichar wc = g_utf8_get_char (p);
       gboolean space;
       gboolean hyphen;
+      int start, end, pos;
+      gboolean insert_hyphens = TRUE;
+
+      pos = p - text;
+      do {
+        pango_attr_iterator_range (iter, &start, &end);
+        if (end > pos)
+          break;
+      } while (pango_attr_iterator_next (iter));
+
+      if (start <= pos && pos < end)
+        {
+          PangoAttribute *attr;
+          attr = pango_attr_iterator_get (iter, PANGO_ATTR_INSERT_HYPHENS);
+          if (attr)
+            insert_hyphens = ((PangoAttrInt*)attr)->value;
+        }
 
       switch (g_unichar_type (wc))
         {
@@ -3479,11 +3508,14 @@ get_need_hyphen (PangoItem  *item,
       else if (prev_hyphen || hyphen)
         need_hyphen[i] = FALSE;
       else
-        need_hyphen[i] = TRUE;
+        need_hyphen[i] = insert_hyphens;
 
       prev_space = space;
       prev_hyphen = hyphen;
     }
+
+  pango_attr_iterator_destroy (iter);
+  pango_attr_list_unref (attrs);
 }
 
 static gboolean
@@ -4074,6 +4106,7 @@ affects_break_or_shape (PangoAttribute *attr,
     /* Affects breaks */
     case PANGO_ATTR_ALLOW_BREAKS:
     /* Affects shaping */
+    case PANGO_ATTR_INSERT_HYPHENS:
     case PANGO_ATTR_FONT_FEATURES:
     case PANGO_ATTR_SHOW:
       return TRUE;
