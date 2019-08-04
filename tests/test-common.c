@@ -119,6 +119,7 @@ print_attribute (PangoAttribute *attr, GString *string)
     case PANGO_ATTR_FOREGROUND_ALPHA:
     case PANGO_ATTR_BACKGROUND_ALPHA:
     case PANGO_ATTR_ALLOW_BREAKS:
+    case PANGO_ATTR_INSERT_HYPHENS:
     case PANGO_ATTR_SHOW:
       g_string_append_printf (string, "%d", ((PangoAttrInt *)attr)->value);
       break;
