@@ -896,18 +896,24 @@ pango_fc_fontset_get_key (PangoFcFontset *fontset)
 }
 
 static PangoFont *
-pango_fc_fontset_load_next_font (PangoFcFontset *fontset)
+pango_fc_fontset_load_next_font (PangoFcFontset *fontset,
+                                 gboolean       *has_more)
 {
   FcPattern *pattern, *font_pattern;
   PangoFont *font;
   gboolean prepare;
+  FcResult res;
+  const char *s;
 
   pattern = pango_fc_patterns_get_pattern (fontset->patterns);
   font_pattern = pango_fc_patterns_get_font_pattern (fontset->patterns,
 						     fontset->patterns_i++,
 						     &prepare);
   if (G_UNLIKELY (!font_pattern))
-    return NULL;
+    {
+      *has_more = FALSE;
+      return NULL;
+    }
 
   if (prepare)
     {
@@ -917,26 +923,35 @@ pango_fc_fontset_load_next_font (PangoFcFontset *fontset)
 	return NULL;
     }
 
-  font = pango_fc_font_map_new_font (fontset->key->fontmap,
-				     fontset->key,
-				     font_pattern);
+  res = FcPatternGetString (font_pattern, FC_FONTFORMAT, 0, (FcChar8 **)(void*)&s);
+  g_assert (res == FcResultMatch);
+  /* harfbuzz does not support these */
+  if (strcmp (s, "Type 1") == 0 || strcmp (s, "PCF") == 0)
+    font = NULL;
+  else
+    font = pango_fc_font_map_new_font (fontset->key->fontmap,
+                                       fontset->key,
+                                       font_pattern);
 
   if (prepare)
     FcPatternDestroy (font_pattern);
+
+  *has_more = TRUE;
 
   return font;
 }
 
 static PangoFont *
 pango_fc_fontset_get_font_at (PangoFcFontset *fontset,
-			      unsigned int i)
+			      unsigned int    i,
+                              gboolean       *has_more)
 {
   while (i >= fontset->fonts->len)
     {
-      PangoFont *font = pango_fc_fontset_load_next_font (fontset);
+      PangoFont *font = pango_fc_fontset_load_next_font (fontset, has_more);
       g_ptr_array_add (fontset->fonts, font);
       g_ptr_array_add (fontset->coverages, NULL);
-      if (!font)
+      if (!*has_more)
         return NULL;
     }
 
@@ -1013,11 +1028,20 @@ pango_fc_fontset_get_font (PangoFontset  *fontset,
   PangoCoverage *coverage;
   int result = -1;
   unsigned int i;
+  gboolean has_more;
 
-  for (i = 0;
-       pango_fc_fontset_get_font_at (fcfontset, i);
-       i++)
+  for (i = 0; TRUE; i++)
     {
+      font = pango_fc_fontset_get_font_at (fcfontset, i, &has_more);
+
+      if (font == NULL)
+        {
+          if (has_more)
+            continue;
+          else
+            break;
+        }
+
       coverage = g_ptr_array_index (fcfontset->coverages, i);
 
       if (coverage == NULL)
@@ -1042,7 +1066,7 @@ pango_fc_fontset_get_font (PangoFontset  *fontset,
   if (G_UNLIKELY (result == -1))
     return NULL;
 
-  font = g_ptr_array_index(fcfontset->fonts, result);
+  font = g_ptr_array_index (fcfontset->fonts, result);
   return g_object_ref (font);
 }
 
@@ -1053,12 +1077,21 @@ pango_fc_fontset_foreach (PangoFontset           *fontset,
 {
   PangoFcFontset *fcfontset = PANGO_FC_FONTSET (fontset);
   PangoFont *font;
+  gboolean has_more;
   unsigned int i;
 
-  for (i = 0;
-       (font = pango_fc_fontset_get_font_at (fcfontset, i));
-       i++)
+  for (i = 0; TRUE; i++)
     {
+      font = pango_fc_fontset_get_font_at (fcfontset, i, &has_more);
+
+      if (font == NULL)
+        {
+          if (has_more)
+            continue;
+          else
+            break;
+        }
+
       if ((*func) (fontset, font, data))
 	return;
     }
@@ -1337,6 +1370,7 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 #ifdef FC_VARIABLE
                                           FC_VARIABLE,
 #endif
+                                          FC_FONTFORMAT,
                                           NULL);
       FcPattern *pat = FcPatternCreate ();
       GHashTable *temp_family_hash;
@@ -1357,6 +1391,11 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 	  int spacing;
           int variable;
 	  PangoFcFamily *temp_family;
+
+	  res = FcPatternGetString (fontset->fonts[i], FC_FONTFORMAT, 0, (FcChar8 **)(void*)&s);
+	  g_assert (res == FcResultMatch);
+          if (strcmp (s, "Type 1") == 0 || strcmp (s, "PCF") == 0)
+            continue; /* harfbuzz does not support these */
 
 	  res = FcPatternGetString (fontset->fonts[i], FC_FAMILY, 0, (FcChar8 **)(void*)&s);
 	  g_assert (res == FcResultMatch);
