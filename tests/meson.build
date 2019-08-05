@@ -60,6 +60,7 @@ installed_test_data = [
   'SentenceBreakTest.txt',
   'EmojiBreakTest.txt',
   'CharBreakTest.txt',
+  'LineBreakTest.txt'
 ]
 
 test_layouts_data = [
