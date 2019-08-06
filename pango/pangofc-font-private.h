@@ -25,20 +25,6 @@
 #include <pango/pangofc-font.h>
 #include <pango/pango-font-private.h>
 
-/* Freetype has undefined macros in its header */
-#ifdef PANGO_COMPILATION
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wundef"
-#endif
-
-#include <ft2build.h>
-#include FT_FREETYPE_H
-#include <fontconfig/fontconfig.h>
-
-#ifdef PANGO_COMPILATION
-#pragma GCC diagnostic pop
-#endif
-
 G_BEGIN_DECLS
 
 
@@ -108,7 +94,7 @@ struct _PangoFcFontClass
   PangoFontClass parent_class;
 
   /*< public >*/
-  gpointer   (*lock_face)         (PangoFcFont      *font);
+  FT_Face    (*lock_face)         (PangoFcFont      *font);
   void       (*unlock_face)       (PangoFcFont      *font);
   gboolean   (*has_char)          (PangoFcFont      *font,
 				   gunichar          wc);

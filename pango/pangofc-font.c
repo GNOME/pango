@@ -545,7 +545,7 @@ pango_fc_font_real_get_glyph (PangoFcFont *font,
  * Since: 1.4
  * Deprecated: 1.44: Use pango_font_get_hb_font() instead
  **/
-gpointer
+FT_Face
 pango_fc_font_lock_face (PangoFcFont *font)
 {
   g_return_val_if_fail (PANGO_IS_FC_FONT (font), NULL);
