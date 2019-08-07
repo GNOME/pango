@@ -28,7 +28,7 @@ i=2, index=22, chars=11, level=0, gravity=south, flags=0, font=OMITTED, script=l
 [22,41]underline=1
 [22,41]foreground=#00000000ffff
 i=3, index=33, chars=15, level=0, gravity=south, flags=2, font=OMITTED, script=common, language=en-us, 'mergency brake!'
-[0,2147483647]foreground=#00000000ffff
+[0,2147483647]underline=1
 [0,2147483647]fallback=0
 [22,41]foreground=#00000000ffff
 i=4, index=48, no run, line end
