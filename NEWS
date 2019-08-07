@@ -1,3 +1,10 @@
+Overview of changes in 1.44.4
+=============================
+- Add an insert-hyphens attribute
+- Reinstate the return type of pango_fc_font_lock_face
+- Fix a problem with ellipses getting the wrong font
+- fc: Improve filtering by font format
+
 Overview of changes in 1.44.3
 =============================
 - Install pango-ot headers
