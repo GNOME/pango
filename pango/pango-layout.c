@@ -4275,7 +4275,7 @@ pango_layout_check_lines (PangoLayout *layout)
       g_assert (delim_len < 4);	/* PS is 3 bytes */
       g_assert (delim_len >= 0);
 
-      state.attrs = attrs;
+      state.attrs = itemize_attrs;
       state.items = pango_itemize_with_base_dir (layout->context,
 						 base_dir,
 						 layout->text,
