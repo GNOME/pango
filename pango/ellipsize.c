@@ -119,7 +119,10 @@ init_state (EllipsizeState  *state,
   int start_offset;
 
   state->layout = line->layout;
-  state->attrs = attrs;
+  if (attrs)
+    state->attrs = pango_attr_list_ref (attrs);
+  else
+    state->attrs = pango_attr_list_new ();
 
   state->n_runs = g_slist_length (line->runs);
   state->run_info = g_new (RunInfo, state->n_runs);
@@ -151,6 +154,7 @@ init_state (EllipsizeState  *state,
 static void
 free_state (EllipsizeState *state)
 {
+  pango_attr_list_unref (state->attrs);
   if (state->line_start_attr)
     pango_attr_iterator_destroy (state->line_start_attr);
   if (state->gap_start_attr)

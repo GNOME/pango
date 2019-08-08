@@ -25,11 +25,11 @@
 
 static PangoContext *context;
 
-/* Test that ellipsization does not change the
- * height of a layout.
+/* Test that ellipsization does not change the height of a layout.
+ * See https://gitlab.gnome.org/GNOME/pango/issues/397
  */
 static void
-test_ellipsize (void)
+test_ellipsize_height (void)
 {
   PangoLayout *layout;
   int height1, height2;
@@ -38,7 +38,7 @@ test_ellipsize (void)
   layout = pango_layout_new (context);
 
   desc = pango_font_description_from_string ("Fixed 7");
-  pango_layout_set_font_description (layout, desc);
+  //pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
 
   pango_layout_set_text (layout, "some text that should be ellipsized", -1);
@@ -57,6 +57,27 @@ test_ellipsize (void)
   g_object_unref (layout);
 }
 
+/* Test that ellipsization without attributes does not crash
+ */
+static void
+test_ellipsize_crash (void)
+{
+  PangoLayout *layout;
+
+  layout = pango_layout_new (context);
+
+  pango_layout_set_text (layout, "some text that should be ellipsized", -1);
+  g_assert_cmpint (pango_layout_get_line_count (layout), ==, 1);
+
+  pango_layout_set_width (layout, 100 * PANGO_SCALE);
+  pango_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
+
+  g_assert_cmpint (pango_layout_get_line_count (layout), ==, 1);
+  g_assert_cmpint (pango_layout_is_ellipsized (layout), ==, 1);
+
+  g_object_unref (layout);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -67,7 +88,8 @@ main (int argc, char *argv[])
 
   g_test_init (&argc, &argv, NULL);
 
-  g_test_add_func ("/layout/ellipsize", test_ellipsize);
+  g_test_add_func ("/layout/ellipsize/height", test_ellipsize_height);
+  g_test_add_func ("/layout/ellipsize/crash", test_ellipsize_crash);
 
   return g_test_run ();
 }
