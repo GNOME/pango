@@ -365,16 +365,16 @@ get_face_metrics (PangoFcFont      *fcfont,
 #if HB_VERSION_ATLEAST(2,5,4)
   hb_position_t position;
 
-  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_UNDERLINE_SIZE, &position))
+  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_UNDERLINE_SIZE, &position))
     metrics->underline_thickness = position;
 
-  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_UNDERLINE_OFFSET, &position))
+  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_UNDERLINE_OFFSET, &position))
     metrics->underline_position = position;
 
-  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_STRIKEOUT_SIZE, &position))
+  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_STRIKEOUT_SIZE, &position))
     metrics->strikethrough_thickness = position;
 
-  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_STRIKEOUT_OFFSET, &position))
+  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_STRIKEOUT_OFFSET, &position))
     metrics->strikethrough_position = position;
 #endif
 }
