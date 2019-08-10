@@ -240,6 +240,7 @@ if build_pangoft2
       export_packages: 'pangoft2',
       includes: [ pango_gir[0], 'fontconfig-2.0', ],
       header: 'pango/pangoft2.h',
+      install: true,
       extra_args: gir_args,
     )
     pangofc_gir_dep = declare_dependency(sources: pangofc_gir)
@@ -257,6 +258,7 @@ if build_pangoft2
       export_packages: 'pangoft2',
       includes: [ pangofc_gir[0], 'freetype2-2.0', ],
       header: 'pango/pangoft2.h',
+      install: true,
       extra_args: gir_args,
     )
     pangoot_gir_dep = declare_dependency(sources: pangoot_gir)
