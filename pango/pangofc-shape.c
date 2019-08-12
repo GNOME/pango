@@ -204,10 +204,10 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
 }
 
 static hb_position_t
-pango_hb_font_get_glyph_advance (hb_font_t      *font,
-                                 void           *font_data,
-                                 hb_codepoint_t  glyph,
-                                 void           *user_data G_GNUC_UNUSED)
+pango_hb_font_get_glyph_h_advance (hb_font_t      *font,
+                                   void           *font_data,
+                                   hb_codepoint_t  glyph,
+                                   void           *user_data G_GNUC_UNUSED)
 {
   PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
 
@@ -220,6 +220,25 @@ pango_hb_font_get_glyph_advance (hb_font_t      *font,
     }
 
   return hb_font_get_glyph_h_advance (context->parent, glyph);
+}
+
+static hb_position_t
+pango_hb_font_get_glyph_v_advance (hb_font_t      *font,
+                                   void           *font_data,
+                                   hb_codepoint_t  glyph,
+                                   void           *user_data G_GNUC_UNUSED)
+{
+  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
+
+  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+    {
+      PangoRectangle logical;
+
+      pango_font_get_glyph_extents (context->font, glyph, NULL, &logical);
+      return logical.height;
+    }
+
+  return hb_font_get_glyph_v_advance (context->parent, glyph);
 }
 
 static hb_bool_t
@@ -262,8 +281,8 @@ pango_font_get_hb_font_for_context (PangoFont           *font,
       funcs = hb_font_funcs_create ();
 
       hb_font_funcs_set_nominal_glyph_func (funcs, pango_hb_font_get_nominal_glyph, NULL, NULL);
-      hb_font_funcs_set_glyph_h_advance_func (funcs, pango_hb_font_get_glyph_advance, NULL, NULL);
-      hb_font_funcs_set_glyph_v_advance_func (funcs, pango_hb_font_get_glyph_advance, NULL, NULL);
+      hb_font_funcs_set_glyph_h_advance_func (funcs, pango_hb_font_get_glyph_h_advance, NULL, NULL);
+      hb_font_funcs_set_glyph_v_advance_func (funcs, pango_hb_font_get_glyph_v_advance, NULL, NULL);
       hb_font_funcs_set_glyph_extents_func (funcs, pango_hb_font_get_glyph_extents, NULL, NULL);
 
       hb_font_funcs_make_immutable (funcs);
