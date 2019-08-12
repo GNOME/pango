@@ -86,8 +86,6 @@ struct _PangoCairoFontPrivate
 
   PangoRectangle font_extents;
   PangoCairoFontGlyphExtentsCacheEntry *glyph_extents_cache;
-
-  GSList *metrics_by_lang;
 };
 
 struct _PangoCairoFontIface
