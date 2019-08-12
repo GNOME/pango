@@ -177,7 +177,6 @@ pango_cairo_win32_font_class_init (PangoCairoWin32FontClass *class)
   object_class->finalize = pango_cairo_win32_font_finalize;
 
   font_class->get_glyph_extents = pango_cairo_win32_font_get_glyph_extents;
-  font_class->get_metrics = _pango_cairo_font_get_metrics;
 
   win32_font_class->select_font = pango_cairo_win32_font_select_font;
   win32_font_class->done_font = pango_cairo_win32_font_done_font;
