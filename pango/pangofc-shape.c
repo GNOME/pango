@@ -117,7 +117,7 @@ apply_extra_attributes (GSList       *attrs,
       PangoAttribute *attr = l->data;
       if (attr->klass->type == PANGO_ATTR_LETTER_SPACING)
         {
-          hb_tag_t *tags[] = {
+          hb_tag_t tags[] = {
             HB_TAG('l','i','g','a'),
             HB_TAG('c','l','i','g'),
             HB_TAG('d','l','i','g'),
