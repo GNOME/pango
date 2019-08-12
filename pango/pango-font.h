@@ -460,6 +460,31 @@ gboolean              pango_font_face_is_synthesized (PangoFontFace  *face) G_GN
 #define PANGO_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONT, PangoFont))
 #define PANGO_IS_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONT))
 
+#ifndef PANGO_DISABLE_DEPRECATED
+
+/**
+ * PangoFont:
+ *
+ * The #PangoFont structure is used to represent
+ * a font in a rendering-system-independent matter.
+ * To create an implementation of a #PangoFont,
+ * the rendering-system specific code should allocate
+ * a larger structure that contains a nested
+ * #PangoFont, fill in the <structfield>klass</structfield> member of
+ * the nested #PangoFont with a pointer to
+ * a appropriate #PangoFontClass, then call
+ * pango_font_init() on the structure.
+ *
+ * The #PangoFont structure contains one member
+ * which the implementation fills in.
+ */
+struct _PangoFont
+{
+  GObject parent_instance;
+};
+
+#endif /* PANGO_DISABLE_DEPRECATED */
+
 PANGO_AVAILABLE_IN_ALL
 GType                 pango_font_get_type          (void) G_GNUC_CONST;
 

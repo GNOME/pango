@@ -27,7 +27,6 @@
 
 G_BEGIN_DECLS
 
-
 /**
  * PANGO_RENDER_TYPE_FC:
  *
@@ -40,32 +39,6 @@ G_BEGIN_DECLS
 #define PANGO_FC_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FC_FONT, PangoFcFontClass))
 #define PANGO_IS_FC_FONT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_FC_FONT))
 #define PANGO_FC_FONT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FC_FONT, PangoFcFontClass))
-
-/**
- * PangoFcFont:
- *
- * #PangoFcFont is a base class for font implementations
- * using the Fontconfig and FreeType libraries and is used in
- * conjunction with #PangoFcFontMap. When deriving from this
- * class, you need to implement all of its virtual functions
- * other than shutdown() along with the get_glyph_extents()
- * virtual function from #PangoFont.
- **/
-struct _PangoFcFont
-{
-  PangoFont parent_instance;
-
-  FcPattern *font_pattern;	    /* fully resolved pattern */
-  PangoFontMap *fontmap;	    /* associated map */
-  gpointer priv;		    /* used internally */
-  PangoMatrix matrix;		    /* used internally */
-  PangoFontDescription *description;
-
-  GSList *metrics_by_lang;
-
-  guint is_hinted : 1;
-  guint is_transformed : 1;
-};
 
 /**
  * PangoFcFontClass:
