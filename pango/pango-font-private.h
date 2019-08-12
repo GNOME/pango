@@ -134,27 +134,6 @@ struct _PangoFontFaceClass
 
 typedef struct _PangoFontClass       PangoFontClass;
 
-/**
- * PangoFont:
- *
- * The #PangoFont structure is used to represent
- * a font in a rendering-system-independent matter.
- * To create an implementation of a #PangoFont,
- * the rendering-system specific code should allocate
- * a larger structure that contains a nested
- * #PangoFont, fill in the <structfield>klass</structfield> member of
- * the nested #PangoFont with a pointer to
- * a appropriate #PangoFontClass, then call
- * pango_font_init() on the structure.
- *
- * The #PangoFont structure contains one member
- * which the implementation fills in.
- */
-struct _PangoFont
-{
-  GObject parent_instance;
-};
-
 struct _PangoFontClass
 {
   GObjectClass parent_class;
