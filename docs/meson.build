@@ -36,26 +36,6 @@ private_headers = [
   'pangocoretext-private.h',
 ]
 
-if host_system != 'darwin'
-  private_headers += [
-    'pangocairo-coretextfont.h',
-    'pangocairo-coretext.h',
-    'pangocoretext.h',
-  ]
-endif
-
-if host_system != 'windows'
-  private_headers += [
-    'pangocairo-win32.h',
-    'pangowin32.h',
-  ]
-else
-  private_headers += [
-    'pangoxft.h',
-    'pangoxft-render.h',
-  ]
-endif
-
 content_files = [
   'pango_markup.sgml',
   'version.xml',
@@ -96,9 +76,10 @@ gnome.gtkdoc('pango',
                join_paths(meson.build_root(), 'pango'),
              ],
              dependencies: docdeps,
-             gobject_typesfile: 'pango.types',
+             gobject_typesfile: configure_file(input: 'pango.types.in',
+                                               output: 'pango.types',
+                                               configuration: pango_conf),
              scan_args: [
-               '--rebuild-types',
                '--deprecated-guards=PANGO_DISABLE_DEPRECATED',
                '--ignore-decorators=_PANGO_EXTERN',
                '--ignore-headers=' + ' '.join(private_headers),
