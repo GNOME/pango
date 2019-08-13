@@ -810,7 +810,7 @@ pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
 	  ink_rect->x = extents.x_bearing;
 	  ink_rect->width = extents.width;
 	  ink_rect->y = -extents.y_bearing;
-	  ink_rect->height = extents.height;
+	  ink_rect->height = -extents.height;
 	}
 
       if (logical_rect)

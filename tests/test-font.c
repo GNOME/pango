@@ -159,6 +159,35 @@ test_metrics (void)
   pango_font_description_free (desc);
 }
 
+static void
+test_extents (void)
+{
+  char *str = "Composer";
+  GList *items;
+  PangoItem *item;
+  PangoGlyphString *glyphs;
+  PangoRectangle ink, log;
+  PangoContext *context;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  pango_context_set_font_description (context, pango_font_description_from_string ("Cantarell 11"));
+
+  items = pango_itemize (context, str, 0, strlen (str), NULL, NULL);
+  glyphs = pango_glyph_string_new ();
+  item = items->data;
+  pango_shape (str, strlen (str), &item->analysis, glyphs);
+  pango_glyph_string_extents (glyphs, item->analysis.font, &ink, &log);
+
+  g_assert_cmpint (ink.width, >=, 0);
+  g_assert_cmpint (ink.height, >=, 0);
+  g_assert_cmpint (log.width, >=, 0);
+  g_assert_cmpint (log.height, >=, 0);
+
+  pango_glyph_string_free (glyphs);
+  g_list_free_full (items, (GDestroyNotify)pango_item_free);
+  g_object_unref (context);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -173,6 +202,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/fontdescription/parse", test_parse);
   g_test_add_func ("/pango/fontdescription/roundtrip", test_roundtrip);
   g_test_add_func ("/pango/fontdescription/variation", test_variation);
+  g_test_add_func ("/pango/font/extents", test_extents);
 
   return g_test_run ();
 }
