@@ -2583,20 +2583,10 @@ create_face (PangoFcFamily *fcfamily,
 }
 
 static void
-pango_fc_family_list_faces (PangoFontFamily  *family,
-			    PangoFontFace  ***faces,
-			    int              *n_faces)
+ensure_faces (PangoFcFamily *fcfamily)
 {
-  PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
   PangoFcFontMap *fcfontmap = fcfamily->fontmap;
-  PangoFcFontMapPrivate *priv;
-
-  *faces = NULL;
-  *n_faces = 0;
-  if (G_UNLIKELY (!fcfontmap))
-    return;
-
-  priv = fcfontmap->priv;
+  PangoFcFontMapPrivate *priv = fcfontmap->priv;
 
   if (fcfamily->n_faces < 0)
     {
@@ -2705,12 +2695,48 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 	  fcfamily->faces = faces;
 	}
     }
+}
+
+static void
+pango_fc_family_list_faces (PangoFontFamily  *family,
+			    PangoFontFace  ***faces,
+			    int              *n_faces)
+{
+  PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
+
+  *faces = NULL;
+  *n_faces = 0;
+
+  if (G_UNLIKELY (!fcfamily->fontmap))
+    return;
+
+  ensure_faces (fcfamily);
 
   if (n_faces)
     *n_faces = fcfamily->n_faces;
 
   if (faces)
     *faces = g_memdup (fcfamily->faces, fcfamily->n_faces * sizeof (PangoFontFace *));
+}
+
+static PangoFontFace *
+pango_fc_family_get_face (PangoFontFamily *family,
+                          const char      *name)
+{
+  PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
+  int i;
+
+  ensure_faces (fcfamily);
+
+  for (i = 0; i < fcfamily->n_faces; i++)
+    {
+      PangoFontFace *face = PANGO_FONT_FACE (fcfamily->faces[i]);
+
+      if (strcmp (name, pango_font_face_get_face_name (face)) == 0)
+        return face;
+    }
+
+  return NULL;
 }
 
 static const char *
@@ -2766,6 +2792,7 @@ pango_fc_family_class_init (PangoFcFamilyClass *class)
   object_class->finalize = pango_fc_family_finalize;
 
   class->list_faces = pango_fc_family_list_faces;
+  class->get_face = pango_fc_family_get_face;
   class->get_name = pango_fc_family_get_name;
   class->is_monospace = pango_fc_family_is_monospace;
   class->is_variable = pango_fc_family_is_variable;

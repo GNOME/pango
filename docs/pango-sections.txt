@@ -264,6 +264,7 @@ pango_font_family_get_name
 pango_font_family_is_monospace
 pango_font_family_is_variable
 pango_font_family_list_faces
+pango_font_family_get_face
 <SUBSECTION>
 PangoFontFace
 pango_font_face_get_face_name

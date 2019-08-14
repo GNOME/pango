@@ -428,11 +428,14 @@ struct _PangoFontFamilyClass
   gboolean (*is_monospace) (PangoFontFamily *family);
   gboolean (*is_variable)  (PangoFontFamily *family);
 
+  PangoFontFace * (*get_face) (PangoFontFamily *family,
+                               const char      *name);
+
+
   /*< private >*/
 
   /* Padding for future expansion */
   void (*_pango_reserved2) (void);
-  void (*_pango_reserved3) (void);
 };
 
 #endif /* PANGO_DISABLE_DEPRECATED */
@@ -450,6 +453,10 @@ PANGO_AVAILABLE_IN_1_4
 gboolean   pango_font_family_is_monospace         (PangoFontFamily  *family) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_1_44
 gboolean   pango_font_family_is_variable          (PangoFontFamily  *family) G_GNUC_PURE;
+
+PANGO_AVAILABLE_IN_1_46
+PangoFontFace *pango_font_family_get_face (PangoFontFamily *family,
+                                           const char      *name);
 
 
 /*
