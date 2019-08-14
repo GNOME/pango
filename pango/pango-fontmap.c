@@ -31,12 +31,16 @@ static PangoFontset *pango_font_map_real_load_fontset (PangoFontMap             
 						       PangoLanguage              *language);
 
 
+static PangoFontFamily *pango_font_map_real_get_family (PangoFontMap *fontmap,
+                                                        const char   *name);
+
 G_DEFINE_ABSTRACT_TYPE (PangoFontMap, pango_font_map, G_TYPE_OBJECT)
 
 static void
 pango_font_map_class_init (PangoFontMapClass *class)
 {
   class->load_fontset = pango_font_map_real_load_fontset;
+  class->get_family = pango_font_map_real_get_family;
 }
 
 static void
@@ -339,3 +343,51 @@ pango_font_map_changed (PangoFontMap *fontmap)
   if (PANGO_FONT_MAP_GET_CLASS (fontmap)->changed)
     PANGO_FONT_MAP_GET_CLASS (fontmap)->changed (fontmap);
 }
+
+static PangoFontFamily *
+pango_font_map_real_get_family (PangoFontMap *fontmap,
+                                const char   *name)
+{
+  PangoFontFamily **families;
+  int n_families;
+  PangoFontFamily *family;
+  int i;
+
+  pango_font_map_list_families (fontmap, &families, &n_families);
+
+  family = NULL;
+
+  for (i = 0; i < n_families; i++)
+    {
+      if (strcmp (name, pango_font_family_get_name (families[i])) == 0)
+        {
+          family = families[i];
+          break;
+        }
+    }
+
+  g_free (families);
+
+  return family;
+}
+
+/**
+ * pango_font_map_get_family:
+ * @fontmap: a #PangoFontMap
+ * @name: a family name
+ *
+ * Gets a font family by name.
+ *
+ * Returns: (transfer none): the #PangoFontFamily
+ *
+ * Since: 1.44
+ */
+PangoFontFamily *
+pango_font_map_get_family (PangoFontMap *fontmap,
+                           const char   *name)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_MAP (fontmap), NULL);
+
+  return PANGO_FONT_MAP_GET_CLASS (fontmap)->get_family (fontmap, name);
+}
+

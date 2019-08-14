@@ -114,11 +114,13 @@ struct _PangoFontMapClass
   guint         (*get_serial)    (PangoFontMap               *fontmap);
   void          (*changed)       (PangoFontMap               *fontmap);
 
+  PangoFontFamily * (*get_family) (PangoFontMap               *fontmap,
+                                   const char                 *name);
+
   /*< private >*/
 
   /* Padding for future expansion */
   void (*_pango_reserved1) (void);
-  void (*_pango_reserved2) (void);
 };
 
 PANGO_AVAILABLE_IN_ALL
@@ -143,6 +145,9 @@ guint         pango_font_map_get_serial    (PangoFontMap                 *fontma
 PANGO_AVAILABLE_IN_1_34
 void          pango_font_map_changed       (PangoFontMap                 *fontmap);
 
+PANGO_AVAILABLE_IN_1_44
+PangoFontFamily *pango_font_map_get_family (PangoFontMap                 *fontmap,
+                                            const char                   *name);
 
 G_END_DECLS
 

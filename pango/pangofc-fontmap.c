@@ -219,6 +219,8 @@ static PangoFontset *pango_fc_font_map_load_fontset  (PangoFontMap              
 static void          pango_fc_font_map_list_families (PangoFontMap                 *fontmap,
 						       PangoFontFamily            ***families,
 						       int                          *n_families);
+static PangoFontFamily *pango_fc_font_map_get_family (PangoFontMap *fontmap,
+                                                      const char   *name);
 
 static double pango_fc_font_map_get_resolution (PangoFcFontMap *fcfontmap,
 						PangoContext   *context);
@@ -1191,6 +1193,7 @@ pango_fc_font_map_class_init (PangoFcFontMapClass *class)
   fontmap_class->load_font = pango_fc_font_map_load_font;
   fontmap_class->load_fontset = pango_fc_font_map_load_fontset;
   fontmap_class->list_families = pango_fc_font_map_list_families;
+  fontmap_class->get_family = pango_fc_font_map_get_family;
   fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_FC;
 }
 
@@ -1357,25 +1360,12 @@ is_alias_family (const char *family_name)
 }
 
 static void
-pango_fc_font_map_list_families (PangoFontMap      *fontmap,
-				 PangoFontFamily ***families,
-				 int               *n_families)
+ensure_families (PangoFcFontMap *fcfontmap)
 {
-  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (fontmap);
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
   FcFontSet *fontset;
   int i;
   int count;
-
-  if (priv->closed)
-    {
-      if (families)
-	*families = NULL;
-      if (n_families)
-	*n_families = 0;
-
-      return;
-    }
 
   if (priv->n_families < 0)
     {
@@ -1450,12 +1440,56 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 
       priv->n_families = count;
     }
+}
+
+static void
+pango_fc_font_map_list_families (PangoFontMap      *fontmap,
+				 PangoFontFamily ***families,
+				 int               *n_families)
+{
+  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (fontmap);
+  PangoFcFontMapPrivate *priv = fcfontmap->priv;
+
+  if (priv->closed)
+    {
+      if (families)
+	*families = NULL;
+      if (n_families)
+	*n_families = 0;
+
+      return;
+    }
+
+  ensure_families (fcfontmap);
 
   if (n_families)
     *n_families = priv->n_families;
 
   if (families)
     *families = g_memdup (priv->families, priv->n_families * sizeof (PangoFontFamily *));
+}
+
+static PangoFontFamily *
+pango_fc_font_map_get_family (PangoFontMap *fontmap,
+                              const char   *name)
+{
+  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (fontmap);
+  PangoFcFontMapPrivate *priv = fcfontmap->priv;
+  int i;
+
+  if (priv->closed)
+    return NULL;
+
+  ensure_families (fcfontmap);
+
+  for (i = 0; i < priv->n_families; i++)
+    {
+      PangoFontFamily *family = PANGO_FONT_FAMILY (priv->families[i]);
+      if (strcmp (name, pango_font_family_get_name (family)) == 0)
+        return family;
+    }
+
+  return NULL;
 }
 
 static double
