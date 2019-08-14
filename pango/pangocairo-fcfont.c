@@ -152,6 +152,7 @@ pango_cairo_fc_font_class_init (PangoCairoFcFontClass *class)
   object_class->finalize = pango_cairo_fc_font_finalize;
 
   font_class->get_glyph_extents = pango_cairo_fc_font_get_glyph_extents;
+  font_class->get_metrics = _pango_cairo_font_get_metrics;
 
   fc_font_class->lock_face = pango_cairo_fc_font_lock_face;
   fc_font_class->unlock_face = pango_cairo_fc_font_unlock_face;

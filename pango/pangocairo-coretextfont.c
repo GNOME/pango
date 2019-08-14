@@ -156,6 +156,7 @@ pango_cairo_core_text_font_class_init (PangoCairoCoreTextFontClass *class)
   object_class->finalize = pango_cairo_core_text_font_finalize;
   /* font_class->describe defined by parent class PangoCoreTextFont. */
   font_class->get_glyph_extents = pango_cairo_core_text_font_get_glyph_extents;
+  font_class->get_metrics = _pango_cairo_font_get_metrics;
   font_class->describe_absolute = pango_cairo_core_text_font_describe_absolute;
 }
 
