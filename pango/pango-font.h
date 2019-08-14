@@ -514,6 +514,7 @@ struct _PangoFontFaceClass
                                             int           **sizes,
                                             int            *n_sizes);
   gboolean               (*is_synthesized) (PangoFontFace *face);
+  PangoFontFamily *      (*get_family)     (PangoFontFace *face);
 
   /*< private >*/
 
@@ -537,6 +538,9 @@ void                  pango_font_face_list_sizes     (PangoFontFace  *face,
 						      int            *n_sizes);
 PANGO_AVAILABLE_IN_1_18
 gboolean              pango_font_face_is_synthesized (PangoFontFace  *face) G_GNUC_PURE;
+
+PANGO_AVAILABLE_IN_1_46
+PangoFontFamily *     pango_font_face_get_family     (PangoFontFace  *face);
 
 
 /*
@@ -653,7 +657,6 @@ void                  pango_font_get_features      (PangoFont        *font,
                                                     guint            *num_features);
 PANGO_AVAILABLE_IN_1_44
 hb_font_t *           pango_font_get_hb_font       (PangoFont        *font);
-
 
 /**
  * PANGO_GLYPH_EMPTY:

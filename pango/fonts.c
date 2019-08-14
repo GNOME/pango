@@ -2432,6 +2432,25 @@ pango_font_face_list_sizes (PangoFontFace  *face,
 }
 
 /**
+ * pango_font_face_get_family:
+ * @face: a #PangoFontFace
+ *
+ * Gets the #PangoFontFamily that @face
+ * belongs to.
+ *
+ * Returns: (transfer none): the #PangoFontFamily
+ *
+ * Since: 1.46
+ */
+PangoFontFamily *
+pango_font_face_get_family (PangoFontFace *face)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);
+
+  return PANGO_FONT_FACE_GET_CLASS (face)->get_family (face);
+}
+
+/**
  * pango_font_has_char:
  * @font: a #PangoFont
  * @wc: a Unicode character

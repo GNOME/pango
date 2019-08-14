@@ -559,6 +559,14 @@ pango_core_text_face_is_synthesized (PangoFontFace *face)
   return cface->synthetic_italic;
 }
 
+static PangoFontFamily *
+pango_core_text_face_get_family (PangoFontFace *face)
+{
+  PangoCoreTextFace *cface = PANGO_CORE_TEXT_FACE (face);
+
+  return PANGO_FONT_FAMILY (cface->family);
+}
+
 static void
 pango_core_text_face_class_init (PangoCoreTextFaceClass *klass)
 {
@@ -571,6 +579,7 @@ pango_core_text_face_class_init (PangoCoreTextFaceClass *klass)
   pfclass->get_face_name = pango_core_text_face_get_face_name;
   pfclass->list_sizes = pango_core_text_face_list_sizes;
   pfclass->is_synthesized = pango_core_text_face_is_synthesized;
+  pfclass->get_family = pango_core_text_face_get_family;
 }
 
 /*

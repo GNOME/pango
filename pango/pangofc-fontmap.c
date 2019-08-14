@@ -2527,6 +2527,14 @@ pango_fc_face_is_synthesized (PangoFontFace *face)
   return fcface->fake;
 }
 
+static PangoFontFamily *
+pango_fc_face_get_family (PangoFontFace *face)
+{
+  PangoFcFace *fcface = PANGO_FC_FACE (face);
+
+  return PANGO_FONT_FAMILY (fcface->family);
+}
+
 static void
 pango_fc_face_finalize (GObject *object)
 {
@@ -2554,6 +2562,7 @@ pango_fc_face_class_init (PangoFcFaceClass *class)
   class->get_face_name = pango_fc_face_get_face_name;
   class->list_sizes = pango_fc_face_list_sizes;
   class->is_synthesized = pango_fc_face_is_synthesized;
+  class->get_family = pango_fc_face_get_family;
 }
 
 
