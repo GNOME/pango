@@ -390,4 +390,3 @@ pango_font_map_get_family (PangoFontMap *fontmap,
 
   return PANGO_FONT_MAP_GET_CLASS (fontmap)->get_family (fontmap, name);
 }
-

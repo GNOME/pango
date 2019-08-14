@@ -1881,6 +1881,24 @@ pango_font_get_font_map (PangoFont *font)
 }
 
 /**
+ * pango_font_get_face:
+ * @font: a #PangoFont
+ *
+ * Gets the #PangoFontFace to which @font belongs.
+ *
+ * Returns: (transfer none): the #PangoFontFace
+ *
+ * Since: 1.44
+ */
+PangoFontFace *
+pango_font_get_face (PangoFont *font)
+{
+  PangoFontMap *map = pango_font_get_font_map (font);
+
+  return PANGO_FONT_MAP_GET_CLASS (map)->get_face (map,font);
+}
+
+/**
  * pango_font_get_hb_font: (skip)
  * @font: a #PangoFont
  *

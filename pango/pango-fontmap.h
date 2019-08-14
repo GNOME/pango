@@ -117,10 +117,8 @@ struct _PangoFontMapClass
   PangoFontFamily * (*get_family) (PangoFontMap               *fontmap,
                                    const char                 *name);
 
-  /*< private >*/
-
-  /* Padding for future expansion */
-  void (*_pango_reserved1) (void);
+  PangoFontFace *   (*get_face)   (PangoFontMap               *fontmap,
+                                   PangoFont                  *font);
 };
 
 PANGO_AVAILABLE_IN_ALL

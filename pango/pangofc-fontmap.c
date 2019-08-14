@@ -228,6 +228,9 @@ static PangoFont *pango_fc_font_map_new_font   (PangoFcFontMap    *fontmap,
 						PangoFcFontsetKey *fontset_key,
 						FcPattern         *match);
 
+static PangoFontFace *pango_fc_font_map_get_face (PangoFontMap *fontmap,
+                                                  PangoFont    *font);
+
 static guint    pango_fc_font_face_data_hash  (PangoFcFontFaceData *key);
 static gboolean pango_fc_font_face_data_equal (PangoFcFontFaceData *key1,
 					       PangoFcFontFaceData *key2);
@@ -1194,6 +1197,7 @@ pango_fc_font_map_class_init (PangoFcFontMapClass *class)
   fontmap_class->load_fontset = pango_fc_font_map_load_fontset;
   fontmap_class->list_families = pango_fc_font_map_list_families;
   fontmap_class->get_family = pango_fc_font_map_get_family;
+  fontmap_class->get_face = pango_fc_font_map_get_face;
   fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_FC;
 }
 
@@ -1709,6 +1713,26 @@ pango_fc_font_map_new_font (PangoFcFontMap    *fcfontmap,
   pango_fc_font_map_add (fcfontmap, &key, fcfont);
 
   return (PangoFont *)fcfont;
+}
+
+static PangoFontFace *
+pango_fc_font_map_get_face (PangoFontMap *fontmap,
+                            PangoFont    *font)
+{
+  PangoFcFont *fcfont = PANGO_FC_FONT (font);
+  FcResult res;
+  const char *s;
+  PangoFontFamily *family;
+
+  res = FcPatternGetString (fcfont->font_pattern, FC_FAMILY, 0, (FcChar8 **) &s);
+  g_assert (res == FcResultMatch);
+
+  family = pango_font_map_get_family (fontmap, s);
+
+  res = FcPatternGetString (fcfont->font_pattern, FC_STYLE, 0, (FcChar8 **)(void*)&s);
+  g_assert (res == FcResultMatch);
+
+  return pango_font_family_get_face (family, s);
 }
 
 static void

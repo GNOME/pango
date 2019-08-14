@@ -1510,6 +1510,15 @@ pango_core_text_font_map_init (PangoCoreTextFontMap *ctfontmap)
   }
 }
 
+static PangoFontFace *
+pango_core_text_font_map_get_face (PangoFontMap *fontmap,
+                                   PangoFont    *font)
+{
+  PangoCoreTextFont *cfont = PANGO_CORE_TEXT_FONT (font);
+
+  return PANGO_FONT_FACE (_pango_core_text_font_get_face (cfont));
+}
+
 static void
 pango_core_text_font_map_class_init (PangoCoreTextFontMapClass *class)
 {
@@ -1524,6 +1533,7 @@ pango_core_text_font_map_class_init (PangoCoreTextFontMapClass *class)
   fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_CORE_TEXT;
   fontmap_class->get_serial = pango_core_text_font_map_get_serial;
   fontmap_class->changed = pango_core_text_font_map_changed;
+  fontmap_class->get_face = pango_core_text_font_map_get_face;
 }
 
 /*
