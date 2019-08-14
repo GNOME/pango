@@ -277,6 +277,7 @@ pango_font_map_create_context
 pango_font_map_load_font
 pango_font_map_load_fontset
 pango_font_map_list_families
+pango_font_map_get_family
 pango_font_map_get_serial
 pango_font_map_changed
 <SUBSECTION>
