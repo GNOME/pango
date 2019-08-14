@@ -196,17 +196,17 @@ typedef enum
  * @PANGO_UNDERLINE_NONE: no underline should be drawn
  * @PANGO_UNDERLINE_SINGLE: a single underline should be drawn
  * @PANGO_UNDERLINE_DOUBLE: a double underline should be drawn
- * @PANGO_UNDERLINE_LOW: a single underline should be drawn at a position
- * beneath the ink extents of the text being
- * underlined. This should be used only for underlining
- * single characters, such as for keyboard
- * accelerators. %PANGO_UNDERLINE_SINGLE should
- * be used for extended portions of text.
+ * @PANGO_UNDERLINE_LOW: a single underline should be drawn at a
+ *     position beneath the ink extents of the text being
+ *     underlined. This should be used only for underlining
+ *     single characters, such as for keyboard accelerators.
+ *     %PANGO_UNDERLINE_SINGLE should be used for extended
+ *     portions of text.
  * @PANGO_UNDERLINE_ERROR: a wavy underline should be drawn below.
- * This underline is typically used to indicate
- * an error such as a possilble mispelling; in some
- * cases a contrasting color may automatically
- * be used. This type of underlining is available since Pango 1.4.
+ *     This underline is typically used to indicate an error such
+ *     as a possible mispelling; in some cases a contrasting color
+ *     may automatically be used. This type of underlining is
+ *     available since Pango 1.4.
  *
  * The #PangoUnderline enumeration is used to specify
  * whether text should be underlined, and if so, the type
