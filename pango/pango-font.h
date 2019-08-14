@@ -438,6 +438,9 @@ void                  pango_font_face_list_sizes     (PangoFontFace  *face,
 PANGO_AVAILABLE_IN_1_18
 gboolean              pango_font_face_is_synthesized (PangoFontFace  *face) G_GNUC_PURE;
 
+PANGO_AVAILABLE_IN_1_44
+PangoFontFamily *     pango_font_face_get_family     (PangoFontFace  *face);
+
 
 /*
  * PangoFont
@@ -524,7 +527,6 @@ void                  pango_font_get_features      (PangoFont        *font,
                                                     guint            *num_features);
 PANGO_AVAILABLE_IN_1_44
 hb_font_t *           pango_font_get_hb_font       (PangoFont        *font);
-
 
 /**
  * PANGO_GLYPH_EMPTY:
