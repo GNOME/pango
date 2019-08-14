@@ -394,6 +394,10 @@ gboolean   pango_font_family_is_monospace         (PangoFontFamily  *family) G_G
 PANGO_AVAILABLE_IN_1_44
 gboolean   pango_font_family_is_variable          (PangoFontFamily  *family) G_GNUC_PURE;
 
+PANGO_AVAILABLE_IN_1_44
+PangoFontFace *pango_font_family_get_face (PangoFontFamily *family,
+                                           const char      *name);
+
 
 /*
  * PangoFontFace

@@ -2160,9 +2160,13 @@ pango_font_metrics_get_strikethrough_thickness (PangoFontMetrics *metrics)
 
 G_DEFINE_ABSTRACT_TYPE (PangoFontFamily, pango_font_family, G_TYPE_OBJECT)
 
+static PangoFontFace *pango_font_family_real_get_face (PangoFontFamily *family,
+                                                       const char      *name);
+
 static void
 pango_font_family_class_init (PangoFontFamilyClass *class G_GNUC_UNUSED)
 {
+  class->get_face = pango_font_family_real_get_face;
 }
 
 static void
@@ -2210,6 +2214,52 @@ pango_font_family_list_faces (PangoFontFamily  *family,
   g_return_if_fail (PANGO_IS_FONT_FAMILY (family));
 
   PANGO_FONT_FAMILY_GET_CLASS (family)->list_faces (family, faces, n_faces);
+}
+
+static PangoFontFace *
+pango_font_family_real_get_face (PangoFontFamily *family,
+                                 const char      *name)
+{
+  PangoFontFace **faces;
+  int n_faces;
+  PangoFontFace *face;
+  int i;
+
+  pango_font_family_list_faces (family, &faces, &n_faces);
+
+  face = NULL;
+  for (i = 0; i < n_faces; i++)
+    {
+      if (strcmp (name, pango_font_face_get_face_name (faces[i])) == 0)
+        {
+          face = faces[i];
+          break;
+        }
+    }
+
+  g_free (faces);
+
+  return face;
+}
+
+/**
+ * pango_font_family_get_face:
+ * @family: a #PangoFontFamily
+ * @name: the name of a face
+ *
+ * Gets the #PangoFontFace of @family with the given name.
+ *
+ * Returns: (transfer none): the #PangoFontFace
+ *
+ * Since: 1.44
+ */
+PangoFontFace *
+pango_font_family_get_face (PangoFontFamily *family,
+                            const char      *name)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FAMILY (family), NULL);
+
+  return PANGO_FONT_FAMILY_GET_CLASS (family)->get_face (family, name);
 }
 
 /**
