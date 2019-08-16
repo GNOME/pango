@@ -529,6 +529,7 @@ pango_layout_set_justify
 pango_layout_get_justify
 pango_layout_set_auto_dir
 pango_layout_get_auto_dir
+pango_layout_get_direction
 pango_layout_set_alignment
 pango_layout_get_alignment
 pango_layout_set_tabs
