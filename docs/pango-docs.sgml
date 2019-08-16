@@ -159,5 +159,9 @@
     <title>Index of new symbols in 1.44</title>
     <xi:include href="xml/api-index-1.44.xml"><xi:fallback /></xi:include>
   </index>
+  <index id="api-index-1-45">
+    <title>Index of new symbols in 1.45</title>
+    <xi:include href="xml/api-index-1.45.xml"><xi:fallback /></xi:include>
+  </index>
 
 </book>
