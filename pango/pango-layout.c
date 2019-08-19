@@ -4978,6 +4978,7 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
 	    }
 	}
 
+<<<<<<< HEAD
       if (properties.uline_low)
         run_ink->height += 2 * underline_thickness;
       if (properties.uline_single)
@@ -5873,15 +5874,18 @@ pango_layout_get_item_properties (PangoItem      *item,
             case PANGO_UNDERLINE_NONE:
               break;
             case PANGO_UNDERLINE_SINGLE:
+            case PANGO_UNDERLINE_SINGLE_LINE:
               properties->uline_single = TRUE;
               break;
             case PANGO_UNDERLINE_DOUBLE:
+            case PANGO_UNDERLINE_DOUBLE_LINE:
               properties->uline_double = TRUE;
               break;
             case PANGO_UNDERLINE_LOW:
               properties->uline_low = TRUE;
               break;
             case PANGO_UNDERLINE_ERROR:
+            case PANGO_UNDERLINE_ERROR_LINE:
               properties->uline_error = TRUE;
               break;
             default:
