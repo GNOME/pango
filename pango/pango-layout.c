@@ -4945,14 +4945,17 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
       switch (properties.uline)
 	{
 	case PANGO_UNDERLINE_ERROR:
+	case PANGO_UNDERLINE_ERROR_LINE:
 	  run_ink->height = MAX (run_ink->height,
 				 3 * underline_thickness - underline_position - run_ink->y);
 	  break;
 	case PANGO_UNDERLINE_SINGLE:
+	case PANGO_UNDERLINE_SINGLE_LINE:
 	  run_ink->height = MAX (run_ink->height,
 				 underline_thickness - underline_position - run_ink->y);
 	  break;
 	case PANGO_UNDERLINE_DOUBLE:
+	case PANGO_UNDERLINE_DOUBLE_LINE:
 	  run_ink->height = MAX (run_ink->height,
 				 3 * underline_thickness - underline_position - run_ink->y);
 	  break;
