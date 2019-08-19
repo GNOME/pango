@@ -207,6 +207,15 @@ typedef enum
  *     as a possible mispelling; in some cases a contrasting color
  *     may automatically be used. This type of underlining is
  *     available since Pango 1.4.
+ * @PANGO_UNDERLINE_SINGLE_LINE: Like @PANGO_UNDERLINE_SINGLE, but
+ *     drawn continuously across multiple runs. This type
+ *     of underlining is available since Pango 1.46.
+ * @PANGO_UNDERLINE_DOUBLE_LINE: Like @PANGO_UNDERLINE_DOUBLE, but
+ *     drawn continuously across multiple runs. This type
+ *     of underlining is available since Pango 1.46.
+ * @PANGO_UNDERLINE_ERROR_LINE: Like @PANGO_UNDERLINE_ERROR, but
+ *     drawn continuously across multiple runs. This type
+ *     of underlining is available since Pango 1.46.
  *
  * The #PangoUnderline enumeration is used to specify
  * whether text should be underlined, and if so, the type
@@ -217,7 +226,10 @@ typedef enum {
   PANGO_UNDERLINE_SINGLE,
   PANGO_UNDERLINE_DOUBLE,
   PANGO_UNDERLINE_LOW,
-  PANGO_UNDERLINE_ERROR
+  PANGO_UNDERLINE_ERROR,
+  PANGO_UNDERLINE_SINGLE_LINE,
+  PANGO_UNDERLINE_DOUBLE_LINE,
+  PANGO_UNDERLINE_ERROR_LINE
 } PangoUnderline;
 
 /**
