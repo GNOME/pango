@@ -128,7 +128,8 @@
  *   integer between 1 and 65536 or a percentage value like '50%'.
  *
  * underline
- * : One of 'none', 'single', 'double', 'low', 'error'
+ * : One of 'none', 'single', 'double', 'low', 'error',
+ *   'single-line', 'double-line' or 'error-line'.
  *
  * underline_color
  * : The color of underlines; an RGB color
