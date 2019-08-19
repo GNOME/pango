@@ -4962,6 +4962,10 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
 	case PANGO_UNDERLINE_LOW:
 	  run_ink->height += 2 * underline_thickness;
 	  break;
+	case PANGO_UNDERLINE_OVER_LINE:
+	  run_ink->y -= underline_thickness - underline_position;
+	  run_ink->height += underline_thickness - underline_position;
+	  break;
 	case PANGO_UNDERLINE_NONE:
 	  break;
 	default:
