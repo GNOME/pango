@@ -216,6 +216,9 @@ typedef enum
  * @PANGO_UNDERLINE_ERROR_LINE: Like @PANGO_UNDERLINE_ERROR, but
  *     drawn continuously across multiple runs. This type
  *     of underlining is available since Pango 1.45.
+ * @PANGO_UNDERLINE_OVER_LINE: Draw a single line above the ink
+ *     extents of the text being underlined. This type
+ *     of underlining is available since Pango 1.45.
  *
  * The #PangoUnderline enumeration is used to specify
  * whether text should be underlined, and if so, the type
@@ -229,7 +232,8 @@ typedef enum {
   PANGO_UNDERLINE_ERROR,
   PANGO_UNDERLINE_SINGLE_LINE,
   PANGO_UNDERLINE_DOUBLE_LINE,
-  PANGO_UNDERLINE_ERROR_LINE
+  PANGO_UNDERLINE_ERROR_LINE,
+  PANGO_UNDERLINE_OVER_LINE
 } PangoUnderline;
 
 /**
