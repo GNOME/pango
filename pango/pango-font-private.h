@@ -82,11 +82,12 @@ struct _PangoFontFamilyClass
   gboolean (*is_monospace) (PangoFontFamily *family);
   gboolean (*is_variable)  (PangoFontFamily *family);
 
+  PangoFontFace * (*get_face) (PangoFontFamily *family,
+                               const char      *name);
   /*< private >*/
 
   /* Padding for future expansion */
   void (*_pango_reserved2) (void);
-  void (*_pango_reserved3) (void);
 };
 
 
@@ -119,12 +120,12 @@ struct _PangoFontFaceClass
 					    int           **sizes,
 					    int            *n_sizes);
   gboolean               (*is_synthesized) (PangoFontFace *face);
+  PangoFontFamily *      (*get_family)     (PangoFontFace *face);
 
   /*< private >*/
 
   /* Padding for future expansion */
-  void (*_pango_reserved3) (void);
-  void (*_pango_reserved4) (void);
+  void (*_pango_reserved1) (void);
 };
 
 

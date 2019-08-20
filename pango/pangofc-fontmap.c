@@ -219,12 +219,17 @@ static PangoFontset *pango_fc_font_map_load_fontset  (PangoFontMap              
 static void          pango_fc_font_map_list_families (PangoFontMap                 *fontmap,
 						       PangoFontFamily            ***families,
 						       int                          *n_families);
+static PangoFontFamily *pango_fc_font_map_get_family (PangoFontMap *fontmap,
+                                                      const char   *name);
 
 static double pango_fc_font_map_get_resolution (PangoFcFontMap *fcfontmap,
 						PangoContext   *context);
 static PangoFont *pango_fc_font_map_new_font   (PangoFcFontMap    *fontmap,
 						PangoFcFontsetKey *fontset_key,
 						FcPattern         *match);
+
+static PangoFontFace *pango_fc_font_map_get_face (PangoFontMap *fontmap,
+                                                  PangoFont    *font);
 
 static guint    pango_fc_font_face_data_hash  (PangoFcFontFaceData *key);
 static gboolean pango_fc_font_face_data_equal (PangoFcFontFaceData *key1,
@@ -1191,6 +1196,8 @@ pango_fc_font_map_class_init (PangoFcFontMapClass *class)
   fontmap_class->load_font = pango_fc_font_map_load_font;
   fontmap_class->load_fontset = pango_fc_font_map_load_fontset;
   fontmap_class->list_families = pango_fc_font_map_list_families;
+  fontmap_class->get_family = pango_fc_font_map_get_family;
+  fontmap_class->get_face = pango_fc_font_map_get_face;
   fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_FC;
 }
 
@@ -1357,25 +1364,12 @@ is_alias_family (const char *family_name)
 }
 
 static void
-pango_fc_font_map_list_families (PangoFontMap      *fontmap,
-				 PangoFontFamily ***families,
-				 int               *n_families)
+ensure_families (PangoFcFontMap *fcfontmap)
 {
-  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (fontmap);
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
   FcFontSet *fontset;
   int i;
   int count;
-
-  if (priv->closed)
-    {
-      if (families)
-	*families = NULL;
-      if (n_families)
-	*n_families = 0;
-
-      return;
-    }
 
   if (priv->n_families < 0)
     {
@@ -1450,12 +1444,56 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 
       priv->n_families = count;
     }
+}
+
+static void
+pango_fc_font_map_list_families (PangoFontMap      *fontmap,
+				 PangoFontFamily ***families,
+				 int               *n_families)
+{
+  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (fontmap);
+  PangoFcFontMapPrivate *priv = fcfontmap->priv;
+
+  if (priv->closed)
+    {
+      if (families)
+	*families = NULL;
+      if (n_families)
+	*n_families = 0;
+
+      return;
+    }
+
+  ensure_families (fcfontmap);
 
   if (n_families)
     *n_families = priv->n_families;
 
   if (families)
     *families = g_memdup (priv->families, priv->n_families * sizeof (PangoFontFamily *));
+}
+
+static PangoFontFamily *
+pango_fc_font_map_get_family (PangoFontMap *fontmap,
+                              const char   *name)
+{
+  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (fontmap);
+  PangoFcFontMapPrivate *priv = fcfontmap->priv;
+  int i;
+
+  if (priv->closed)
+    return NULL;
+
+  ensure_families (fcfontmap);
+
+  for (i = 0; i < priv->n_families; i++)
+    {
+      PangoFontFamily *family = PANGO_FONT_FAMILY (priv->families[i]);
+      if (strcmp (name, pango_font_family_get_name (family)) == 0)
+        return family;
+    }
+
+  return NULL;
 }
 
 static double
@@ -1675,6 +1713,26 @@ pango_fc_font_map_new_font (PangoFcFontMap    *fcfontmap,
   pango_fc_font_map_add (fcfontmap, &key, fcfont);
 
   return (PangoFont *)fcfont;
+}
+
+static PangoFontFace *
+pango_fc_font_map_get_face (PangoFontMap *fontmap,
+                            PangoFont    *font)
+{
+  PangoFcFont *fcfont = PANGO_FC_FONT (font);
+  FcResult res;
+  const char *s;
+  PangoFontFamily *family;
+
+  res = FcPatternGetString (fcfont->font_pattern, FC_FAMILY, 0, (FcChar8 **) &s);
+  g_assert (res == FcResultMatch);
+
+  family = pango_font_map_get_family (fontmap, s);
+
+  res = FcPatternGetString (fcfont->font_pattern, FC_STYLE, 0, (FcChar8 **)(void*)&s);
+  g_assert (res == FcResultMatch);
+
+  return pango_font_family_get_face (family, s);
 }
 
 static void
@@ -2495,6 +2553,14 @@ pango_fc_face_is_synthesized (PangoFontFace *face)
   return fcface->fake;
 }
 
+static PangoFontFamily *
+pango_fc_face_get_family (PangoFontFace *face)
+{
+  PangoFcFace *fcface = PANGO_FC_FACE (face);
+
+  return PANGO_FONT_FAMILY (fcface->family);
+}
+
 static void
 pango_fc_face_finalize (GObject *object)
 {
@@ -2522,6 +2588,7 @@ pango_fc_face_class_init (PangoFcFaceClass *class)
   class->get_face_name = pango_fc_face_get_face_name;
   class->list_sizes = pango_fc_face_list_sizes;
   class->is_synthesized = pango_fc_face_is_synthesized;
+  class->get_family = pango_fc_face_get_family;
 }
 
 
@@ -2551,20 +2618,10 @@ create_face (PangoFcFamily *fcfamily,
 }
 
 static void
-pango_fc_family_list_faces (PangoFontFamily  *family,
-			    PangoFontFace  ***faces,
-			    int              *n_faces)
+ensure_faces (PangoFcFamily *fcfamily)
 {
-  PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
   PangoFcFontMap *fcfontmap = fcfamily->fontmap;
-  PangoFcFontMapPrivate *priv;
-
-  *faces = NULL;
-  *n_faces = 0;
-  if (G_UNLIKELY (!fcfontmap))
-    return;
-
-  priv = fcfontmap->priv;
+  PangoFcFontMapPrivate *priv = fcfontmap->priv;
 
   if (fcfamily->n_faces < 0)
     {
@@ -2673,12 +2730,48 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 	  fcfamily->faces = faces;
 	}
     }
+}
+
+static void
+pango_fc_family_list_faces (PangoFontFamily  *family,
+			    PangoFontFace  ***faces,
+			    int              *n_faces)
+{
+  PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
+
+  *faces = NULL;
+  *n_faces = 0;
+
+  if (G_UNLIKELY (!fcfamily->fontmap))
+    return;
+
+  ensure_faces (fcfamily);
 
   if (n_faces)
     *n_faces = fcfamily->n_faces;
 
   if (faces)
     *faces = g_memdup (fcfamily->faces, fcfamily->n_faces * sizeof (PangoFontFace *));
+}
+
+static PangoFontFace *
+pango_fc_family_get_face (PangoFontFamily *family,
+                          const char      *name)
+{
+  PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
+  int i;
+
+  ensure_faces (fcfamily);
+
+  for (i = 0; i < fcfamily->n_faces; i++)
+    {
+      PangoFontFace *face = PANGO_FONT_FACE (fcfamily->faces[i]);
+
+      if (strcmp (name, pango_font_face_get_face_name (face)) == 0)
+        return face;
+    }
+
+  return NULL;
 }
 
 static const char *
@@ -2734,6 +2827,7 @@ pango_fc_family_class_init (PangoFcFamilyClass *class)
   object_class->finalize = pango_fc_family_finalize;
 
   class->list_faces = pango_fc_family_list_faces;
+  class->get_face = pango_fc_family_get_face;
   class->get_name = pango_fc_family_get_name;
   class->is_monospace = pango_fc_family_is_monospace;
   class->is_variable = pango_fc_family_is_variable;

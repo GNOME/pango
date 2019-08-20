@@ -394,6 +394,10 @@ gboolean   pango_font_family_is_monospace         (PangoFontFamily  *family) G_G
 PANGO_AVAILABLE_IN_1_44
 gboolean   pango_font_family_is_variable          (PangoFontFamily  *family) G_GNUC_PURE;
 
+PANGO_AVAILABLE_IN_1_44
+PangoFontFace *pango_font_family_get_face (PangoFontFamily *family,
+                                           const char      *name);
+
 
 /*
  * PangoFontFace
@@ -433,6 +437,9 @@ void                  pango_font_face_list_sizes     (PangoFontFace  *face,
 						      int            *n_sizes);
 PANGO_AVAILABLE_IN_1_18
 gboolean              pango_font_face_is_synthesized (PangoFontFace  *face) G_GNUC_PURE;
+
+PANGO_AVAILABLE_IN_1_44
+PangoFontFamily *     pango_font_face_get_family     (PangoFontFace  *face);
 
 
 /*
@@ -511,6 +518,9 @@ PANGO_AVAILABLE_IN_1_10
 PangoFontMap         *pango_font_get_font_map      (PangoFont        *font);
 
 PANGO_AVAILABLE_IN_1_44
+PangoFontFace *       pango_font_get_face          (PangoFont        *font);
+
+PANGO_AVAILABLE_IN_1_44
 gboolean              pango_font_has_char          (PangoFont        *font,
                                                     gunichar          wc);
 PANGO_AVAILABLE_IN_1_44
@@ -520,7 +530,6 @@ void                  pango_font_get_features      (PangoFont        *font,
                                                     guint            *num_features);
 PANGO_AVAILABLE_IN_1_44
 hb_font_t *           pango_font_get_hb_font       (PangoFont        *font);
-
 
 /**
  * PANGO_GLYPH_EMPTY:
