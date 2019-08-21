@@ -88,13 +88,13 @@ break_thai (const char          *text,
 #endif
 
   for (cnt = 0; cnt < len; cnt++)
-    if (attrs[brk_pnts[cnt]].is_line_break)
+    if (attrs[brk_pnts[cnt]].is_char_break)
     {
-      /* Only allow additional char breaks if line-breaking is NOT
-       * prohibited. (The alternative would be to set is_line_break to
+      /* Only allow additional line breaks if line-breaking is NOT
+       * prohibited. (The alternative would be to set is_char_break to
        * TRUE as well.  NOT setting it will break invariants that any
        * line break opportunity is also a char break opportunity. */
-      attrs[brk_pnts[cnt]].is_char_break = TRUE;
+      attrs[brk_pnts[cnt]].is_line_break = TRUE;
       attrs[brk_pnts[cnt]].is_word_start = TRUE;
       attrs[brk_pnts[cnt]].is_word_end = TRUE;
     }
