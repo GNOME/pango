@@ -395,6 +395,9 @@ pango_attr_strikethrough_color_new
 pango_attr_underline_new
 pango_attr_underline_color_new
 PangoUnderline
+pango_attr_overline_new
+pango_attr_overline_color_new
+PangoOverline
 pango_attr_shape_new
 pango_attr_shape_new_with_data
 PangoAttrDataCopyFunc
