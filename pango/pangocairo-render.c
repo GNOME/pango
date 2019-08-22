@@ -1051,6 +1051,7 @@ _pango_cairo_do_glyph_string (cairo_t          *cr,
       pango_renderer_set_color (renderer, PANGO_RENDER_PART_BACKGROUND, NULL);
       pango_renderer_set_color (renderer, PANGO_RENDER_PART_UNDERLINE, NULL);
       pango_renderer_set_color (renderer, PANGO_RENDER_PART_STRIKETHROUGH, NULL);
+      pango_renderer_set_color (renderer, PANGO_RENDER_PART_OVERLINE, NULL);
     }
 
   pango_renderer_draw_glyphs (renderer, font, glyphs, 0, 0);
@@ -1090,6 +1091,7 @@ _pango_cairo_do_glyph_item (cairo_t          *cr,
       pango_renderer_set_color (renderer, PANGO_RENDER_PART_BACKGROUND, NULL);
       pango_renderer_set_color (renderer, PANGO_RENDER_PART_UNDERLINE, NULL);
       pango_renderer_set_color (renderer, PANGO_RENDER_PART_STRIKETHROUGH, NULL);
+      pango_renderer_set_color (renderer, PANGO_RENDER_PART_OVERLINE, NULL);
     }
 
   pango_renderer_draw_glyph_item (renderer, text, glyph_item, 0, 0);

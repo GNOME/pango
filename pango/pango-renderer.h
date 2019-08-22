@@ -42,6 +42,7 @@ typedef struct _PangoRendererPrivate PangoRendererPrivate;
  * @PANGO_RENDER_PART_BACKGROUND: the area behind the text
  * @PANGO_RENDER_PART_UNDERLINE: underlines
  * @PANGO_RENDER_PART_STRIKETHROUGH: strikethrough lines
+ * @PANGO_RENDER_PART_OVERLINE: overlines
  *
  * #PangoRenderPart defines different items to render for such
  * purposes as setting colors.
@@ -54,7 +55,8 @@ typedef enum
   PANGO_RENDER_PART_FOREGROUND,
   PANGO_RENDER_PART_BACKGROUND,
   PANGO_RENDER_PART_UNDERLINE,
-  PANGO_RENDER_PART_STRIKETHROUGH
+  PANGO_RENDER_PART_STRIKETHROUGH,
+  PANGO_RENDER_PART_OVERLINE
 } PangoRenderPart;
 
 /**
@@ -75,6 +77,7 @@ struct _PangoRenderer
   GObject parent_instance;
 
   PangoUnderline underline;
+  PangoOverline overline;
   gboolean strikethrough;
   int active_count;
 
