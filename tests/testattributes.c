@@ -53,6 +53,7 @@ test_attributes_basic (void)
   test_copy (pango_attr_font_desc_new (desc));
   pango_font_description_free (desc);
   test_copy (pango_attr_underline_new (PANGO_UNDERLINE_LOW));
+  test_copy (pango_attr_underline_new (PANGO_UNDERLINE_ERROR_LINE));
   test_copy (pango_attr_underline_color_new (100, 200, 300));
   test_copy (pango_attr_overline_new (PANGO_OVERLINE_SINGLE));
   test_copy (pango_attr_overline_color_new (100, 200, 300));
