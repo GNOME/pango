@@ -87,6 +87,14 @@ PANGO_AVAILABLE_IN_1_4
 PangoFontDescription *pango_fc_font_description_from_pattern (FcPattern *pattern,
 							      gboolean   include_size);
 
+#ifndef PANGO_DISABLE_DEPRECATED
+PANGO_DEPRECATED_IN_1_22_FOR(pango_font_map_create_context)
+PangoContext * pango_fc_font_map_create_context (PangoFcFontMap *fcfontmap);
+#endif
+PANGO_AVAILABLE_IN_1_4
+void           pango_fc_font_map_shutdown       (PangoFcFontMap *fcfontmap);
+
+
 PANGO_AVAILABLE_IN_1_44
 hb_face_t * pango_fc_font_map_get_hb_face (PangoFcFontMap *fcfontmap,
                                            PangoFcFont    *fcfont);
