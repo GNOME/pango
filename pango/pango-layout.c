@@ -86,6 +86,7 @@ typedef struct _ParaBreakState ParaBreakState;
 struct _ItemProperties
 {
   PangoUnderline  uline;
+  PangoOverline   oline;
   gboolean        strikethrough;
   gint            rise;
   gint            letter_spacing;
@@ -4089,6 +4090,7 @@ affects_itemization (PangoAttribute *attr,
     case PANGO_ATTR_SHAPE:
     case PANGO_ATTR_RISE:
     case PANGO_ATTR_UNDERLINE:
+    case PANGO_ATTR_OVERLINE:
     case PANGO_ATTR_STRIKETHROUGH:
     case PANGO_ATTR_LETTER_SPACING:
       return TRUE;
@@ -4893,7 +4895,9 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
   if (!run_logical && (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE))
     run_logical = &logical;
 
-  if (!run_logical && (properties.uline != PANGO_UNDERLINE_NONE || properties.strikethrough))
+  if (!run_logical && (properties.uline != PANGO_UNDERLINE_NONE ||
+                       properties.oline != PANGO_OVERLINE_NONE ||
+                       properties.strikethrough))
     run_logical = &logical;
 
   if (properties.shape_set)
@@ -4905,7 +4909,9 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
     pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
 				run_ink, run_logical);
 
-  if (run_ink && (properties.uline != PANGO_UNDERLINE_NONE || properties.strikethrough))
+  if (run_ink && (properties.uline != PANGO_UNDERLINE_NONE ||
+                  properties.oline != PANGO_OVERLINE_NONE ||
+                  properties.strikethrough))
     {
       int underline_thickness;
       int underline_position;
@@ -4941,6 +4947,19 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
 	      run_ink->y = -strikethrough_position;
 	    }
 	}
+
+      switch (properties.oline)
+	{
+	case PANGO_OVERLINE_SINGLE:
+	  run_ink->y -= underline_thickness - underline_position;
+	  run_ink->height += underline_thickness - underline_position;
+	  break;
+	case PANGO_OVERLINE_NONE:
+	  break;
+	default:
+	  g_critical ("unknown overline mode");
+	  break;
+        }
 
       switch (properties.uline)
 	{
@@ -5830,6 +5849,7 @@ pango_layout_get_item_properties (PangoItem      *item,
   GSList *tmp_list = item->analysis.extra_attrs;
 
   properties->uline = PANGO_UNDERLINE_NONE;
+  properties->oline = PANGO_OVERLINE_NONE;
   properties->strikethrough = FALSE;
   properties->letter_spacing = 0;
   properties->rise = 0;
@@ -5845,6 +5865,10 @@ pango_layout_get_item_properties (PangoItem      *item,
 	{
 	case PANGO_ATTR_UNDERLINE:
 	  properties->uline = ((PangoAttrInt *)attr)->value;
+	  break;
+
+	case PANGO_ATTR_OVERLINE:
+	  properties->oline = ((PangoAttrInt *)attr)->value;
 	  break;
 
 	case PANGO_ATTR_STRIKETHROUGH:
