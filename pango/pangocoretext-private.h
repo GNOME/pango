@@ -64,9 +64,6 @@ struct _PangoCoreTextFontClass
   void (*_pango_reserved4) (void);
 };
 
-PANGO_AVAILABLE_IN_1_24
-CTFontRef  pango_core_text_font_get_ctfont  (PangoCoreTextFont *font);
-
 
 #define PANGO_TYPE_CORE_TEXT_FONT_MAP             (pango_core_text_font_map_get_type ())
 #define PANGO_CORE_TEXT_FONT_MAP(object)          (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CORE_TEXT_FONT_MAP, PangoCoreTextFontMap))
