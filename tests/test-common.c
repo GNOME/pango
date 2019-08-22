@@ -110,6 +110,7 @@ print_attribute (PangoAttribute *attr, GString *string)
     case PANGO_ATTR_SIZE:
     case PANGO_ATTR_ABSOLUTE_SIZE:
     case PANGO_ATTR_UNDERLINE:
+    case PANGO_ATTR_OVERLINE:
     case PANGO_ATTR_STRIKETHROUGH:
     case PANGO_ATTR_RISE:
     case PANGO_ATTR_FALLBACK:
@@ -129,6 +130,7 @@ print_attribute (PangoAttribute *attr, GString *string)
     case PANGO_ATTR_FOREGROUND:
     case PANGO_ATTR_BACKGROUND:
     case PANGO_ATTR_UNDERLINE_COLOR:
+    case PANGO_ATTR_OVERLINE_COLOR:
     case PANGO_ATTR_STRIKETHROUGH_COLOR:
       g_string_append_printf (string, "%s", pango_color_to_string (&((PangoAttrColor *)attr)->color));
       break;
