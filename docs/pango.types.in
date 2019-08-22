@@ -4,6 +4,7 @@ pango_attr_list_get_type
 pango_attr_type_get_type
 pango_attribute_get_type
 pango_bidi_type_get_type
+pango_cairo_fc_font_get_type
 pango_cairo_fc_font_map_get_type
 pango_cairo_font_get_type
 pango_cairo_font_map_get_type
