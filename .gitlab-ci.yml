@@ -17,6 +17,7 @@ gnome-runtime-linux:
         harfbuzz-devel \
         fribidi-devel \
         cairo-devel \
+        libthai-devel \
         gobject-introspection-devel \
         cairo-gobject-devel \
         abattis-cantarell-fonts \
