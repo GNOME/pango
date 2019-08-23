@@ -17,10 +17,12 @@ gnome-runtime-linux:
         harfbuzz-devel \
         fribidi-devel \
         cairo-devel \
+        libthai-devel \
         gobject-introspection-devel \
         cairo-gobject-devel \
         abattis-cantarell-fonts \
         google-droid-sans-fonts \
+        thai-scalable-waree-fonts \
         desktop-file-utils
   script:
     - meson _build
