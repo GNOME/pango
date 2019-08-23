@@ -291,7 +291,7 @@ main (int argc, char *argv[])
 
       string = g_string_sized_new (0);
       test_file (argv[1], string);
-      printf ("%s", string->str);
+      write (STDOUT_FILENO, string->str, string->len);
 
       return 0;
     }
