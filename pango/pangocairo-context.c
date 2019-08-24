@@ -321,6 +321,22 @@ _pango_cairo_context_get_merged_font_options (PangoContext *context)
 	cairo_font_options_merge (info->merged_options, info->surface_options);
       if (info->set_options)
 	cairo_font_options_merge (info->merged_options, info->set_options);
+
+      if (!pango_context_get_round_glyph_positions (context))
+        {
+          switch (cairo_font_options_get_hint_style (info->merged_options))
+            {
+            case CAIRO_HINT_STYLE_DEFAULT:
+            case CAIRO_HINT_STYLE_NONE:
+            case CAIRO_HINT_STYLE_SLIGHT:
+              break;
+            case CAIRO_HINT_STYLE_MEDIUM:
+            case CAIRO_HINT_STYLE_FULL:
+              cairo_font_options_set_hint_style (info->merged_options, CAIRO_HINT_STYLE_SLIGHT);
+              break;
+            }
+          cairo_font_options_set_hint_metrics (info->merged_options, CAIRO_HINT_METRICS_OFF);
+        }
     }
 
   return info->merged_options;
