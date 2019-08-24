@@ -89,6 +89,7 @@ test_breaks_data = [
   'breaks/one',
   'breaks/two',
   'breaks/three',
+  'breaks/four',
 ]
 
 test_items_data = [
