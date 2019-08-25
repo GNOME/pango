@@ -4020,7 +4020,6 @@ get_items_log_attrs (const char   *text,
                      int           log_attrs_len)
 {
   int offset = 0;
-  int num_chars = 0;
   GList *l;
 
   pango_default_break (text, length, NULL, log_attrs, log_attrs_len);
@@ -4036,7 +4035,7 @@ get_items_log_attrs (const char   *text,
                           log_attrs + offset,
                           item->num_chars + 1);
 
-      offset += num_chars;
+      offset += item->num_chars;
     }
 }
 
