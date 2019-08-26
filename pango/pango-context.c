@@ -1488,16 +1488,18 @@ itemize_state_process_run (ItemizeState *state)
         {
           /* If no font was found, warn once per fontmap/script pair */
           PangoFontMap *fontmap = state->context->font_map;
-          const char *script_name = g_enum_to_string (G_TYPE_UNICODE_SCRIPT, state->script);
+          char *script_tag = g_strdup_printf ("g-unicode-script-%d", state->script);
 
-          if (!g_object_get_data (G_OBJECT (fontmap), script_name))
+          if (!g_object_get_data (G_OBJECT (fontmap), script_tag))
             {
-              g_warning ("failed to choose a font, expect ugly output. script='%s'",
-                         script_name);
+              g_warning ("failed to choose a font, expect ugly output. script='%d'",
+                         state->script);
 
-              g_object_set_data_full (G_OBJECT (fontmap), script_name,
+              g_object_set_data_full (G_OBJECT (fontmap), script_tag,
                                       GINT_TO_POINTER (1), NULL);
             }
+
+          g_free (script_tag);
 
           font = NULL;
         }
