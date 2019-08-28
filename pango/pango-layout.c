@@ -3466,6 +3466,20 @@ get_need_hyphen (PangoItem  *item,
           attr = pango_attr_iterator_get (iter, PANGO_ATTR_INSERT_HYPHENS);
           if (attr)
             insert_hyphens = ((PangoAttrInt*)attr)->value;
+
+	  /* Some scripts don't use hyphen.*/
+	  switch (item->analysis.script)
+	    {
+	    case PANGO_SCRIPT_HAN:
+	    case PANGO_SCRIPT_HANGUL:
+	    case PANGO_SCRIPT_HIRAGANA:
+	    case PANGO_SCRIPT_KATAKANA:
+	      insert_hyphens = FALSE;
+	      break;
+	    default:
+	      insert_hyphens = TRUE;
+	      break;
+	    }
         }
 
       switch (g_unichar_type (wc))
