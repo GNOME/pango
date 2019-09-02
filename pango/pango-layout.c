@@ -3470,6 +3470,7 @@ get_need_hyphen (PangoItem  *item,
 	  /* Some scripts don't use hyphen.*/
 	  switch (item->analysis.script)
 	    {
+	    case PANGO_SCRIPT_COMMON:
 	    case PANGO_SCRIPT_HAN:
 	    case PANGO_SCRIPT_HANGUL:
 	    case PANGO_SCRIPT_HIRAGANA:
