@@ -2992,8 +2992,7 @@ free_run (PangoLayoutRun *run, gpointer data)
 static PangoItem *
 uninsert_run (PangoLayoutLine *line)
 {
-  PangoLayout *layout = line->layout;
-  PangoLayoutRun *run, *prev;
+  PangoLayoutRun *run;
   PangoItem *item;
 
   GSList *tmp_node = line->runs;
@@ -3003,18 +3002,6 @@ uninsert_run (PangoLayoutLine *line)
 
   line->runs = tmp_node->next;
   line->length -= item->length;
-
-  if (item->length == 2 &&
-      strncmp (layout->text + run->item->offset, "\302\255", 2) == 0)
-    {
-      /* this is a hyphen run, add the SHY back
-       * to the previous item
-       */
-      prev = line->runs->data;
-      item = prev->item;
-      item->length += 2;
-      item->num_chars += 1;
-    }
 
   g_slist_free_1 (tmp_node);
   free_run (run, (gpointer)FALSE);
