@@ -124,6 +124,38 @@ struct _PangoFontsetClass
   void (*_pango_reserved4) (void);
 };
 
+/**
+ * PANGO_TYPE_FONTSET_SIMPLE:
+ *
+ * The #GObject type for #PangoFontsetSimple.
+ */
+/**
+ * PangoFontsetSimple:
+ *
+ * #PangoFontsetSimple is a implementation of the abstract
+ * #PangoFontset base class in terms of an array of fonts,
+ * which the creator provides when constructing the
+ * #PangoFontsetSimple.
+ */
+#define PANGO_TYPE_FONTSET_SIMPLE       (pango_fontset_simple_get_type ())
+#define PANGO_FONTSET_SIMPLE(object)    (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONTSET_SIMPLE, PangoFontsetSimple))
+#define PANGO_IS_FONTSET_SIMPLE(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONTSET_SIMPLE))
+
+typedef struct _PangoFontsetSimple  PangoFontsetSimple;
+typedef struct _PangoFontsetSimpleClass  PangoFontsetSimpleClass;
+
+
+PANGO_DEPRECATED_IN_1_44
+GType pango_fontset_simple_get_type (void) G_GNUC_CONST;
+
+PANGO_DEPRECATED_IN_1_44
+PangoFontsetSimple * pango_fontset_simple_new    (PangoLanguage      *language);
+PANGO_DEPRECATED_IN_1_44
+void                 pango_fontset_simple_append (PangoFontsetSimple *fontset,
+                                                  PangoFont          *font);
+PANGO_DEPRECATED_IN_1_44
+int                  pango_fontset_simple_size   (PangoFontsetSimple *fontset);
+
 #endif  /* PANGO_DISABLE_DEPRECATED */
 
 
@@ -136,6 +168,7 @@ PANGO_AVAILABLE_IN_1_4
 void              pango_fontset_foreach     (PangoFontset           *fontset,
 					     PangoFontsetForeachFunc func,
 					     gpointer                data);
+
 
 
 G_END_DECLS
