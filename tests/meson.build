@@ -89,8 +89,11 @@ test_breaks_data = [
   'breaks/one',
   'breaks/two',
   'breaks/three',
-  'breaks/four',
 ]
+
+if thai_dep.found()
+  test_breaks_data += [ 'breaks/four', ]
+endif
 
 test_items_data = [
   'itemize/one',
