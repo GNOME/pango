@@ -55,7 +55,8 @@ compare_font_family (gconstpointer a,
 {
   PangoFontFamily **aa = (PangoFontFamily **)a;
   PangoFontFamily **bb = (PangoFontFamily **)b;
-  return strcmp (pango_font_family_get_name (*aa, *bb);
+  return strcmp (pango_font_family_get_name (*aa),
+                 pango_font_family_get_name (*bb));
 }
 
 int main (int argc, char **argv)
