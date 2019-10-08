@@ -376,9 +376,9 @@ pango_hb_shape (PangoFont           *font,
       hb_codepoint_t glyph;
 
       if (hb_font_get_nominal_glyph (hb_font, 0x2010, &glyph))
-        hb_buffer_add (hb_buffer, 0x2010, item_length - last_char_len);
+        hb_buffer_add (hb_buffer, 0x2010, item_offset + item_length - last_char_len);
       else if (hb_font_get_nominal_glyph (hb_font, '-', &glyph))
-        hb_buffer_add (hb_buffer, '-', item_length - last_char_len);
+        hb_buffer_add (hb_buffer, '-', item_offset + item_length - last_char_len);
     }
 
   pango_font_get_features (font, features, G_N_ELEMENTS (features), &num_features);
