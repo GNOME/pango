@@ -858,11 +858,13 @@ pango_default_break (const gchar   *text,
 
 	    if (SB_type == SB_Other)
 	      {
-		if (g_unichar_islower(wc))
+                if (type == G_UNICODE_LOWERCASE_LETTER)
 		  SB_type = SB_Lower;
-		else if (g_unichar_isupper(wc))
+                else if (type == G_UNICODE_UPPERCASE_LETTER)
 		  SB_type = SB_Upper;
-		else if (g_unichar_isalpha(wc))
+                else if (type == G_UNICODE_TITLECASE_LETTER ||
+                         type == G_UNICODE_MODIFIER_LETTER ||
+                         type == G_UNICODE_OTHER_LETTER)
 		  SB_type = SB_OLetter;
 
 		if (type == G_UNICODE_OPEN_PUNCTUATION ||
