@@ -1188,6 +1188,7 @@ find_best_match (PangoCoreTextFamily         *font_family,
   for (i = 0; i < font_family->n_faces; i++)
     {
       new_desc = pango_font_face_describe (font_family->faces[i]);
+      pango_font_description_set_gravity (new_desc, pango_font_description_get_gravity (description));
 
       if (pango_font_description_better_match (description, best_description,
                                                new_desc))
