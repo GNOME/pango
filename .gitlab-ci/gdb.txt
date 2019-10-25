@@ -1,5 +1,0 @@
-define hook-stop
-bt
-continue
-end
-run
