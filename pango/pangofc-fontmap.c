@@ -835,8 +835,7 @@ filter_fontset_by_format (FcFontSet *fontset)
       const char *s;
 
       res = FcPatternGetString (fontset->fonts[i], FC_FONTFORMAT, 0, (FcChar8 **)(void*)&s);
-      g_assert (res == FcResultMatch);
-      if (pango_fc_is_supported_font_format (s))
+      if (res == FcResultMatch && pango_fc_is_supported_font_format (s))
         FcFontSetAdd (result, FcPatternDuplicate (fontset->fonts[i]));
     }
 
