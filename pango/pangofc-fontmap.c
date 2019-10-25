@@ -1405,8 +1405,7 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 	  PangoFcFamily *temp_family;
 
 	  res = FcPatternGetString (fontset->fonts[i], FC_FONTFORMAT, 0, (FcChar8 **)(void*)&s);
-	  g_assert (res == FcResultMatch);
-          if (!pango_fc_is_supported_font_format (s))
+          if (res != FcResultMatch || !pango_fc_is_supported_font_format (s))
             continue;
 
 	  res = FcPatternGetString (fontset->fonts[i], FC_FAMILY, 0, (FcChar8 **)(void*)&s);
