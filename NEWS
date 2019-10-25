@@ -1,3 +1,9 @@
+Overview of changes in 1.44.7
+=============================
+- Fix tests without libthai
+- Small speedup to Emoji iteration
+- Bring back PangoFontsetSimple (pygtk bind it)
+
 Overview of changes in 1.44.6
 =============================
 - docs: Fix symbol indices
