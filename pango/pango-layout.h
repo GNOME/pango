@@ -230,7 +230,6 @@ PangoAlignment pango_layout_get_alignment        (PangoLayout                *la
 PANGO_AVAILABLE_IN_ALL
 void           pango_layout_set_tabs             (PangoLayout                *layout,
 						  PangoTabArray              *tabs);
-
 PANGO_AVAILABLE_IN_ALL
 PangoTabArray* pango_layout_get_tabs             (PangoLayout                *layout);
 
@@ -250,6 +249,10 @@ gboolean           pango_layout_is_ellipsized (PangoLayout        *layout);
 
 PANGO_AVAILABLE_IN_1_16
 int      pango_layout_get_unknown_glyphs_count (PangoLayout    *layout);
+
+PANGO_AVAILABLE_IN_1_45
+PangoDirection pango_layout_get_direction (PangoLayout *layout,
+                                           int          index);
 
 PANGO_AVAILABLE_IN_ALL
 void     pango_layout_context_changed (PangoLayout    *layout);

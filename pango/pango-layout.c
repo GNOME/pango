@@ -2345,6 +2345,32 @@ pango_layout_line_get_char_direction (PangoLayoutLine *layout_line,
 }
 
 /**
+ * pango_layout_get_direction:
+ * @layout: a #PangoLayout
+ * @index: the byte index of the char
+ *
+ * Gets the text direction at the given character
+ * position in @layout.
+ *
+ * Returns: the text direction at @index
+ *
+ * Since: 1.45
+ */
+PangoDirection
+pango_layout_get_direction (PangoLayout *layout,
+                            int          index)
+{
+  PangoLayoutLine *line;
+
+  line = pango_layout_index_to_line_and_extents (layout, index, NULL);
+
+  if (line)
+    return pango_layout_line_get_char_direction (line, index);
+
+  return PANGO_DIRECTION_LTR;
+}
+
+/**
  * pango_layout_get_cursor_pos:
  * @layout: a #PangoLayout
  * @index_: the byte index of the cursor
