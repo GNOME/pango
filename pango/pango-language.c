@@ -912,7 +912,7 @@ pango_script_get_sample_language (PangoScript script)
     "ja",  /* PANGO_SCRIPT_KATAKANA */
     "km",  /* PANGO_SCRIPT_KHMER */
     "lo",  /* PANGO_SCRIPT_LAO */
-    "en",  /* PANGO_SCRIPT_LATIN */
+    "",  /* PANGO_SCRIPT_LATIN */
     "ml",  /* PANGO_SCRIPT_MALAYALAM */
     "mn",  /* PANGO_SCRIPT_MONGOLIAN */
     "my",  /* PANGO_SCRIPT_MYANMAR */
