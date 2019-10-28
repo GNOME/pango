@@ -243,15 +243,19 @@ struct _OpenTag
 {
   GSList *attrs;
   gsize start_index;
+  /* Our impact on scale_factor, so we know whether we
+   * need to create an attribute ourselves on close
+   */
+  gboolean has_scale;
   /* Current total scale level; reset whenever
    * an absolute size is set.
    * Each "larger" ups it 1, each "smaller" decrements it 1
    */
   gint scale_level;
-  /* Our impact on scale_level, so we know whether we
-   * need to create an attribute ourselves on close
+  /* Current scale factor; reset whenever
+   * an absolute size is set.
    */
-  gint scale_level_delta;
+  gint scale_factor;
   /* Base scale factor currently in effect
    * or size that this tag
    * forces, or parent's scale factor or size.
@@ -382,7 +386,8 @@ open_tag_set_absolute_font_size (OpenTag *ot,
   ot->base_font_size = font_size;
   ot->has_base_font_size = TRUE;
   ot->scale_level = 0;
-  ot->scale_level_delta = 0;
+  ot->scale_factor = 1.0;
+  ot->has_scale = FALSE;
 }
 
 static void
@@ -392,7 +397,8 @@ open_tag_set_absolute_font_scale (OpenTag *ot,
   ot->base_scale_factor = scale;
   ot->has_base_font_size = FALSE;
   ot->scale_level = 0;
-  ot->scale_level_delta = 0;
+  ot->scale_factor = 1.0;
+  ot->has_scale = FALSE;
 }
 
 static OpenTag*
@@ -410,7 +416,7 @@ markup_data_open_tag (MarkupData   *md)
   ot = g_slice_new (OpenTag);
   ot->attrs = NULL;
   ot->start_index = md->index;
-  ot->scale_level_delta = 0;
+  ot->has_scale = FALSE;
 
   if (parent == NULL)
     {
@@ -418,6 +424,7 @@ markup_data_open_tag (MarkupData   *md)
       ot->base_font_size = 0;
       ot->has_base_font_size = FALSE;
       ot->scale_level = 0;
+      ot->scale_factor = 1.0;
     }
   else
     {
@@ -425,6 +432,7 @@ markup_data_open_tag (MarkupData   *md)
       ot->base_font_size = parent->base_font_size;
       ot->has_base_font_size = parent->has_base_font_size;
       ot->scale_level = parent->scale_level;
+      ot->scale_factor = parent->scale_factor;
     }
 
   md->tag_stack = g_slist_prepend (md->tag_stack, ot);
@@ -464,7 +472,7 @@ markup_data_close_tag (MarkupData *md)
       tmp_list = g_slist_next (tmp_list);
     }
 
-  if (ot->scale_level_delta != 0)
+  if (ot->has_scale)
     {
       /* We affected relative font size; create an appropriate
        * attribute and reverse our effects on the current level
@@ -477,7 +485,7 @@ markup_data_close_tag (MarkupData *md)
 	   * as the base size to be scaled from
 	   */
 	  a = pango_attr_size_new (scale_factor (ot->scale_level,
-						 1.0) *
+                                                 ot->scale_factor) *
 				   ot->base_font_size);
 	}
       else
@@ -486,7 +494,8 @@ markup_data_close_tag (MarkupData *md)
 	   * as the base size to be scaled from
 	   */
 	  a = pango_attr_scale_new (scale_factor (ot->scale_level,
-						  ot->base_scale_factor));
+						  ot->scale_factor *
+                                                  ot->base_scale_factor));
 	}
 
       a->start_index = ot->start_index;
@@ -1049,7 +1058,7 @@ big_parse_func      (MarkupData            *md G_GNUC_UNUSED,
   /* Grow text one level */
   if (tag)
     {
-      tag->scale_level_delta += 1;
+      tag->has_scale = TRUE;
       tag->scale_level += 1;
     }
 
@@ -1470,27 +1479,56 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	  const char *end;
 	  gint n;
 
-	  if ((end = size, !_pango_scan_int (&end, &n)) || *end != '\0' || n < 0)
+          end = size;
+
+          if (_pango_scan_int (&end, &n) && n > 0)
+            {
+              if (*end == '\0')
+                {
+	          add_attribute (tag, pango_attr_size_new (n));
+	          if (tag)
+	            open_tag_set_absolute_font_size (tag, n);
+                }
+              else if (*end == '%' && *(end + 1) == '\0')
+                {
+                  if (tag)
+                    {
+                      tag->has_scale = TRUE;
+                      tag->base_scale_factor = ((double)n) / 100;
+                    }
+                }
+              else
+                {
+	          g_set_error (error,
+                               G_MARKUP_ERROR,
+                               G_MARKUP_ERROR_INVALID_CONTENT,
+                               _("Value of 'size' attribute on <span> tag on line %d "
+                                 "could not be parsed; should be an integer no more than %d,"
+                                 " a percentage, "
+                                 " or a string such as 'small', not '%s'"),
+                               line_number, INT_MAX, size);
+                  goto error;
+                }
+            }
+          else
 	    {
 	      g_set_error (error,
 			   G_MARKUP_ERROR,
 			   G_MARKUP_ERROR_INVALID_CONTENT,
 			   _("Value of 'size' attribute on <span> tag on line %d "
 			     "could not be parsed; should be an integer no more than %d,"
+                             " a percentage,"
 			     " or a string such as 'small', not '%s'"),
 			   line_number, INT_MAX, size);
 	      goto error;
 	    }
 
-	  add_attribute (tag, pango_attr_size_new (n));
-	  if (tag)
-	    open_tag_set_absolute_font_size (tag, n);
 	}
       else if (strcmp (size, "smaller") == 0)
 	{
 	  if (tag)
 	    {
-	      tag->scale_level_delta -= 1;
+	      tag->has_scale = TRUE;
 	      tag->scale_level -= 1;
 	    }
 	}
@@ -1498,7 +1536,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	{
 	  if (tag)
 	    {
-	      tag->scale_level_delta += 1;
+	      tag->has_scale = TRUE;
 	      tag->scale_level += 1;
 	    }
 	}
@@ -1848,7 +1886,7 @@ sub_parse_func      (MarkupData            *md G_GNUC_UNUSED,
   /* Shrink font, and set a negative rise */
   if (tag)
     {
-      tag->scale_level_delta -= 1;
+      tag->has_scale = TRUE;
       tag->scale_level -= 1;
     }
 
@@ -1870,7 +1908,7 @@ sup_parse_func      (MarkupData            *md G_GNUC_UNUSED,
   /* Shrink font, and set a positive rise */
   if (tag)
     {
-      tag->scale_level_delta -= 1;
+      tag->has_scale = TRUE;
       tag->scale_level -= 1;
     }
 
@@ -1892,7 +1930,7 @@ small_parse_func    (MarkupData            *md G_GNUC_UNUSED,
   /* Shrink text one level */
   if (tag)
     {
-      tag->scale_level_delta -= 1;
+      tag->has_scale = TRUE;
       tag->scale_level -= 1;
     }
 
