@@ -116,7 +116,7 @@ _pango_script_iter_init (PangoScriptIter *iter,
 
   iter->script_start = text;
   iter->script_end = text;
-  iter->script_code = PANGO_SCRIPT_COMMON;
+  iter->script_code = PANGO_SCRIPT_INVALID_CODE;
 
   iter->paren_sp = -1;
 
@@ -204,7 +204,10 @@ pango_script_iter_get_range (PangoScriptIter  *iter,
   if (end)
     *end = iter->script_end;
   if (script)
-    *script = iter->script_code;
+    {
+      /* PANGO_SCRIPT_INVALID_CODE should never be returned. so take care of it as Common */
+      *script = iter->script_code == PANGO_SCRIPT_INVALID_CODE ? PANGO_SCRIPT_COMMON : iter->script_code;
+    }
 }
 
 static const gunichar paired_chars[] = {
@@ -291,7 +294,8 @@ get_pair_index (gunichar ch)
 
 /* duplicated in pango-language.c */
 #define REAL_SCRIPT(script) \
-  ((script) > PANGO_SCRIPT_INHERITED && (script) != PANGO_SCRIPT_UNKNOWN)
+  (((script) > PANGO_SCRIPT_INHERITED && (script) != PANGO_SCRIPT_UNKNOWN) || \
+   (script) == PANGO_SCRIPT_UNKNOWN)
 
 #define SAME_SCRIPT(script1, script2) \
   (!REAL_SCRIPT (script1) || !REAL_SCRIPT (script2) || (script1) == (script2))
@@ -319,7 +323,7 @@ pango_script_iter_next (PangoScriptIter *iter)
     return FALSE;
 
   start_sp = iter->paren_sp;
-  iter->script_code = PANGO_SCRIPT_COMMON;
+  iter->script_code = PANGO_SCRIPT_INVALID_CODE;
   iter->script_start = iter->script_end;
 
   for (; iter->script_end < iter->text_end; iter->script_end = g_utf8_next_char (iter->script_end))

@@ -718,7 +718,8 @@ pango_language_includes_script (PangoLanguage *language,
 
 /* copied from the one in pango-script.c */
 #define REAL_SCRIPT(script) \
-  ((script) > PANGO_SCRIPT_INHERITED && (script) != PANGO_SCRIPT_UNKNOWN)
+  (((script) > PANGO_SCRIPT_INHERITED && (script) != PANGO_SCRIPT_UNKNOWN) || \
+   (script) == PANGO_SCRIPT_COMMON)
 
   if (!REAL_SCRIPT (script))
     return TRUE;
@@ -883,8 +884,8 @@ pango_script_get_sample_language (PangoScript script)
    * (Shavian for English, Osmanya for Somali, etc), typically
    * have no sample language
    */
-  static const char sample_languages[][4] = {
-    "",    /* PANGO_SCRIPT_COMMON */
+  static const char sample_languages[][16] = {
+    "und-zyyy",    /* PANGO_SCRIPT_COMMON */
     "",    /* PANGO_SCRIPT_INHERITED */
     "ar",  /* PANGO_SCRIPT_ARABIC */
     "hy",  /* PANGO_SCRIPT_ARMENIAN */
