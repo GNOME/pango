@@ -4085,6 +4085,7 @@ affects_itemization (PangoAttribute *attr,
     /* These need to be constant across runs */
     case PANGO_ATTR_LETTER_SPACING:
     case PANGO_ATTR_SHAPE:
+    case PANGO_ATTR_RISE:
       return TRUE;
     default:
       return FALSE;
