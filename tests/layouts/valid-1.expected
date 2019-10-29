@@ -25,11 +25,11 @@ i=2, index=49, paragraph-start=1, dir=ltr ''
 
 i=1, index=0, chars=22, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'This is a test of the '
 i=2, index=22, chars=11, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'automatic e'
-[22,41]underline=1
 [22,41]foreground=#00000000ffff
+[22,41]underline=1
 i=3, index=33, chars=15, level=0, gravity=south, flags=2, font=OMITTED, script=common, language=en-us, 'mergency brake!'
-[0,2147483647]underline=1
 [0,2147483647]fallback=0
 [22,41]foreground=#00000000ffff
+[22,41]underline=1
 i=4, index=48, no run, line end
 i=5, index=49, no run, line end
