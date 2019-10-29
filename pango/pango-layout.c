@@ -1641,9 +1641,6 @@ pango_layout_line_index_to_x (PangoLayoutLine  *line,
   while (run_list)
     {
       PangoLayoutRun *run = run_list->data;
-      ItemProperties properties;
-
-      pango_layout_get_item_properties (run->item, &properties);
 
       if (run->item->offset <= index && run->item->offset + run->item->length > index)
 	{
