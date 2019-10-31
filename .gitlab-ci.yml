@@ -23,7 +23,8 @@ gnome-runtime-linux:
         abattis-cantarell-fonts \
         google-droid-sans-fonts \
         thai-scalable-waree-fonts \
-        desktop-file-utils
+        desktop-file-utils \
+        diffutils
   script:
     - meson _build
     - ninja -C _build
