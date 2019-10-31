@@ -682,4 +682,3 @@
 #endif
 
 #endif /* __PANGO_VERSION_H__ */
-#endif /* __PANGO_VERSION_H__ */
