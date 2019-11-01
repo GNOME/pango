@@ -4983,8 +4983,8 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
 
       if (properties.oline_single)
         {
-	  run_ink->y -= underline_thickness - underline_position;
-	  run_ink->height += underline_thickness - underline_position;
+	  run_ink->y -= underline_thickness;
+	  run_ink->height += underline_thickness;
         }
 
       if (properties.uline_low)
