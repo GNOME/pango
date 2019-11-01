@@ -1,3 +1,13 @@
+Overview of changes in 1.45.0
+=============================
+- Some new font enumeration apis:
+  pango_font_map_get_family
+  pango_font_family_get_face
+  pango_font_face_get_family
+  pango_font_get_face
+- Support for line-wide underlines
+- Support for overlines
+
 Overview of changes in 1.44.7
 =============================
 - Fix tests without libthai
