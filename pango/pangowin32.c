@@ -1044,6 +1044,11 @@ pango_win32_render_layout_line (HDC              hdc,
 	  points[1].x = x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width);
 	  Polyline (hdc, points, 2);
 	  break;
+	case PANGO_UNDERLINE_SINGLE_LINE:
+	case PANGO_UNDERLINE_DOUBLE_LINE:
+	case PANGO_UNDERLINE_ERROR_LINE:
+          g_warning ("Underline value %d not implemented", uline);
+          break;
 	}
 
       if (uline != PANGO_UNDERLINE_NONE)
