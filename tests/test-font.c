@@ -188,6 +188,67 @@ test_extents (void)
   g_object_unref (context);
 }
 
+static void
+test_enumerate (void)
+{
+  PangoFontMap *fontmap;
+  PangoContext *context;
+  PangoFontFamily **families;
+  PangoFontFamily *family;
+  int n_families;
+  int i;
+  PangoFontFace **faces;
+  PangoFontFace *face;
+  int n_faces;
+  PangoFontDescription *desc;
+  PangoFont *font;
+  gboolean found_face;
+
+  fontmap = pango_cairo_font_map_get_default ();
+  context = pango_font_map_create_context (fontmap);
+
+  pango_font_map_list_families (fontmap, &families, &n_families);
+  g_assert_cmpint (n_families, >, 0);
+
+  for (i = 0; i < n_families; i++)
+    {
+      family = pango_font_map_get_family (fontmap, pango_font_family_get_name (families[i]));
+      g_assert_true (family == families[i]);
+    }
+
+  pango_font_family_list_faces (families[0], &faces, &n_faces);
+  g_assert_cmpint (n_faces, >, 0);
+  for (i = 0; i < n_faces; i++)
+    {
+      face = pango_font_family_get_face (families[0], pango_font_face_get_face_name (faces[i]));
+      g_assert_true (face == faces[i]);
+    }
+
+  desc = pango_font_description_new ();
+  pango_font_description_set_family (desc, pango_font_family_get_name (families[0]));
+  pango_font_description_set_size (desc, 10*PANGO_SCALE);
+
+  font = pango_font_map_load_font (fontmap, context, desc);
+  face = pango_font_get_face (font);
+  found_face = FALSE;
+  for (i = 0; i < n_faces; i++)
+    {
+      if (face == faces[i])
+        {
+          found_face = TRUE;
+          break;
+        }
+    }
+  g_assert_true (found_face);
+
+  g_object_unref (font);
+  pango_font_description_free (desc);
+  g_free (faces);
+  g_free (families); 
+  g_object_unref (context);
+  g_object_unref (fontmap);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -203,6 +264,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/fontdescription/roundtrip", test_roundtrip);
   g_test_add_func ("/pango/fontdescription/variation", test_variation);
   g_test_add_func ("/pango/font/extents", test_extents);
+  g_test_add_func ("/pango/font/enumerate", test_enumerate);
 
   return g_test_run ();
 }
