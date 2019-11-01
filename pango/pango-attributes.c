@@ -1258,6 +1258,60 @@ pango_attr_show_new (PangoShowFlags flags)
   return pango_attr_int_new (&klass, (int)flags);
 }
 
+/**
+ * pango_attr_overline_new:
+ * @overline: the overline style
+ *
+ * Create a new overline-style attribute.
+ *
+ * Return value: (transfer full): the newly allocated #PangoAttribute,
+ *               which should be freed with pango_attribute_destroy().
+ *
+ * Since: 1.45
+ **/
+PangoAttribute *
+pango_attr_overline_new (PangoOverline overline)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_OVERLINE,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal
+  };
+
+  return pango_attr_int_new (&klass, (int)overline);
+}
+
+/**
+ * pango_attr_overline_color_new:
+ * @red: the red value (ranging from 0 to 65535)
+ * @green: the green value
+ * @blue: the blue value
+ *
+ * Create a new overline color attribute. This attribute
+ * modifies the color of overlines. If not set, overlines
+ * will use the foreground color.
+ *
+ * Return value: (transfer full): the newly allocated #PangoAttribute,
+ *               which should be freed with pango_attribute_destroy().
+ *
+ * Since: 1.45
+ **/
+PangoAttribute *
+pango_attr_overline_color_new (guint16 red,
+                               guint16 green,
+                               guint16 blue)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_OVERLINE_COLOR,
+    pango_attr_color_copy,
+    pango_attr_color_destroy,
+    pango_attr_color_equal
+  };
+
+  return pango_attr_color_new (&klass, red, green, blue);
+}
+
 /*
  * Attribute List
  */

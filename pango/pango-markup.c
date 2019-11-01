@@ -134,6 +134,13 @@
  * : The color of underlines; an RGB color
  *   specification such as '#00FF00' or a color name such as 'red'
  *
+ * overline
+ * : One of 'none' or 'single'
+ *
+ * overline_color
+ * : The color of overlines; an RGB color
+ *   specification such as '#00FF00' or a color name such as 'red'
+ *
  * rise
  * : Vertical displacement, in Pango units. Can be negative for
  *   subscript, positive for superscript.
@@ -1326,6 +1333,8 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   const char *background = NULL;
   const char *underline = NULL;
   const char *underline_color = NULL;
+  const char *overline = NULL;
+  const char *overline_color = NULL;
   const char *strikethrough = NULL;
   const char *strikethrough_color = NULL;
   const char *rise = NULL;
@@ -1418,6 +1427,10 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
       case 'l':
 	CHECK_ATTRIBUTE (lang);
 	CHECK_ATTRIBUTE (letter_spacing);
+	break;
+      case 'o':
+	CHECK_ATTRIBUTE (overline);
+	CHECK_ATTRIBUTE (overline_color);
 	break;
       case 'u':
 	CHECK_ATTRIBUTE (underline);
@@ -1659,6 +1672,26 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	goto error;
 
       add_attribute (tag, pango_attr_underline_color_new (color.red, color.green, color.blue));
+    }
+
+  if (G_UNLIKELY (overline))
+    {
+      PangoOverline ol = PANGO_OVERLINE_NONE;
+
+      if (!span_parse_enum ("overline", overline, PANGO_TYPE_OVERLINE, (int*)(void*)&ol, line_number, error))
+	goto error;
+
+      add_attribute (tag, pango_attr_overline_new (ol));
+    }
+
+  if (G_UNLIKELY (overline_color))
+    {
+      PangoColor color;
+
+      if (!span_parse_color ("overline_color", overline_color, &color, NULL, line_number, error))
+	goto error;
+
+      add_attribute (tag, pango_attr_overline_color_new (color.red, color.green, color.blue));
     }
 
   if (G_UNLIKELY (gravity))

@@ -150,6 +150,8 @@ typedef struct _PangoAttrIterator PangoAttrIterator;
  * @PANGO_ATTR_ALLOW_BREAKS: whether breaks are allowed (#PangoAttrInt). Since 1.44
  * @PANGO_ATTR_SHOW: how to render invisible characters (#PangoAttrInt). Since 1.44
  * @PANGO_ATTR_INSERT_HYPHENS: whether to insert hyphens at intra-word line breaks (#PangoAttrInt). Since 1.44
+ * @PANGO_ATTR_OVERLINE: whether the text has an overline (#PangoAttrInt). Sincd 1.46
+ * @PANGO_ATTR_OVERLINE_COLOR: overline color (#PangoAttrColor). Since 1.46
  *
  * The #PangoAttrType
  * distinguishes between different types of attributes. Along with the
@@ -189,6 +191,8 @@ typedef enum
   PANGO_ATTR_ALLOW_BREAKS,	/* PangoAttrInt */
   PANGO_ATTR_SHOW,		/* PangoAttrInt */
   PANGO_ATTR_INSERT_HYPHENS,	/* PangoAttrInt */
+  PANGO_ATTR_OVERLINE,		/* PangoAttrInt */
+  PANGO_ATTR_OVERLINE_COLOR,	/* PangoAttrColor */
 } PangoAttrType;
 
 /**
@@ -207,6 +211,15 @@ typedef enum
  *     as a possible mispelling; in some cases a contrasting color
  *     may automatically be used. This type of underlining is
  *     available since Pango 1.4.
+ * @PANGO_UNDERLINE_SINGLE_LINE: Like @PANGO_UNDERLINE_SINGLE, but
+ *     drawn continuously across multiple runs. This type
+ *     of underlining is available since Pango 1.46.
+ * @PANGO_UNDERLINE_DOUBLE_LINE: Like @PANGO_UNDERLINE_DOUBLE, but
+ *     drawn continuously across multiple runs. This type
+ *     of underlining is available since Pango 1.46.
+ * @PANGO_UNDERLINE_ERROR_LINE: Like @PANGO_UNDERLINE_ERROR, but
+ *     drawn continuously across multiple runs. This type
+ *     of underlining is available since Pango 1.46.
  *
  * The #PangoUnderline enumeration is used to specify
  * whether text should be underlined, and if so, the type
@@ -217,8 +230,29 @@ typedef enum {
   PANGO_UNDERLINE_SINGLE,
   PANGO_UNDERLINE_DOUBLE,
   PANGO_UNDERLINE_LOW,
-  PANGO_UNDERLINE_ERROR
+  PANGO_UNDERLINE_ERROR,
+  PANGO_UNDERLINE_SINGLE_LINE,
+  PANGO_UNDERLINE_DOUBLE_LINE,
+  PANGO_UNDERLINE_ERROR_LINE
 } PangoUnderline;
+
+
+/**
+ * PangoOverline:
+ * @PANGO_OVERLINE_NONE: no overline should be drawn
+ * @PANGO_OVERLINE_SINGLE: Draw a single line above the ink
+ *     extents of the text being underlined.
+ *
+ * The #PangoOverline enumeration is used to specify
+ * whether text should be overlined, and if so, the type
+ * of line.
+ *
+ * Since: 1.46
+ */
+typedef enum {
+  PANGO_OVERLINE_NONE,
+  PANGO_OVERLINE_SINGLE
+} PangoOverline;
 
 /**
  * PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING:
@@ -532,6 +566,13 @@ PANGO_AVAILABLE_IN_1_44
 PangoAttribute *pango_attr_allow_breaks_new     (gboolean allow_breaks);
 PANGO_AVAILABLE_IN_1_44
 PangoAttribute *pango_attr_insert_hyphens_new   (gboolean insert_hyphens);
+
+PANGO_AVAILABLE_IN_1_46
+PangoAttribute *pango_attr_overline_new         (PangoOverline overline);
+PANGO_AVAILABLE_IN_1_46
+PangoAttribute *pango_attr_overline_color_new   (guint16       red,
+						 guint16       green,
+						 guint16       blue);
 
 /**
  * PangoShowFlags:
