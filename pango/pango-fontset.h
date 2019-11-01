@@ -69,8 +69,6 @@ typedef gboolean (*PangoFontsetForeachFunc) (PangoFontset  *fontset,
 					     PangoFont     *font,
 					     gpointer       user_data);
 
-#ifndef PANGO_DISABLE_DEPRECATED
-
 /**
  * PangoFontset:
  *
@@ -145,18 +143,16 @@ typedef struct _PangoFontsetSimple  PangoFontsetSimple;
 typedef struct _PangoFontsetSimpleClass  PangoFontsetSimpleClass;
 
 
-PANGO_DEPRECATED_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 GType pango_fontset_simple_get_type (void) G_GNUC_CONST;
 
-PANGO_DEPRECATED_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 PangoFontsetSimple * pango_fontset_simple_new    (PangoLanguage      *language);
-PANGO_DEPRECATED_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 void                 pango_fontset_simple_append (PangoFontsetSimple *fontset,
                                                   PangoFont          *font);
-PANGO_DEPRECATED_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 int                  pango_fontset_simple_size   (PangoFontsetSimple *fontset);
-
-#endif  /* PANGO_DISABLE_DEPRECATED */
 
 
 PANGO_AVAILABLE_IN_ALL
