@@ -1,0 +1,38 @@
+overline
+overline_color
+single-line
+double-line
+error-line
+
+
+---
+
+range 0 8
+[0,8]overline=1
+range 8 9
+range 9 23
+[9,23]overline-color=#ffff00000000
+range 23 24
+range 24 35
+[24,35]underline=5
+range 35 36
+range 36 47
+[36,47]underline=6
+range 47 48
+range 48 58
+[48,58]underline=7
+range 58 2147483647
+
+
+---
+
+[0:8] (null) Normal
+[8:9] (null) Normal
+[9:23] (null) Normal
+[23:24] (null) Normal
+[24:35] (null) Normal
+[35:36] (null) Normal
+[36:47] (null) Normal
+[47:48] (null) Normal
+[48:58] (null) Normal
+[58:2147483647] (null) Normal
