@@ -28,10 +28,8 @@
 
 G_BEGIN_DECLS
 
-
 PANGO_DEPRECATED_IN_1_38
 const char   *pango_font_map_get_shape_engine_type (PangoFontMap *fontmap);
-
 
 G_END_DECLS
 

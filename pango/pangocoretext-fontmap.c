@@ -559,6 +559,14 @@ pango_core_text_face_is_synthesized (PangoFontFace *face)
   return cface->synthetic_italic;
 }
 
+static PangoFontFamily *
+pango_core_text_face_get_family (PangoFontFace *face)
+{
+  PangoCoreTextFace *cface = PANGO_CORE_TEXT_FACE (face);
+
+  return PANGO_FONT_FAMILY (cface->family);
+}
+
 static void
 pango_core_text_face_class_init (PangoCoreTextFaceClass *klass)
 {
@@ -571,6 +579,7 @@ pango_core_text_face_class_init (PangoCoreTextFaceClass *klass)
   pfclass->get_face_name = pango_core_text_face_get_face_name;
   pfclass->list_sizes = pango_core_text_face_list_sizes;
   pfclass->is_synthesized = pango_core_text_face_is_synthesized;
+  pfclass->get_family = pango_core_text_face_get_family;
 }
 
 /*
@@ -1502,6 +1511,15 @@ pango_core_text_font_map_init (PangoCoreTextFontMap *ctfontmap)
   }
 }
 
+static PangoFontFace *
+pango_core_text_font_map_get_face (PangoFontMap *fontmap,
+                                   PangoFont    *font)
+{
+  PangoCoreTextFont *cfont = PANGO_CORE_TEXT_FONT (font);
+
+  return PANGO_FONT_FACE (_pango_core_text_font_get_face (cfont));
+}
+
 static void
 pango_core_text_font_map_class_init (PangoCoreTextFontMapClass *class)
 {
@@ -1516,6 +1534,7 @@ pango_core_text_font_map_class_init (PangoCoreTextFontMapClass *class)
   fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_CORE_TEXT;
   fontmap_class->get_serial = pango_core_text_font_map_get_serial;
   fontmap_class->changed = pango_core_text_font_map_changed;
+  fontmap_class->get_face = pango_core_text_font_map_get_face;
 }
 
 /*

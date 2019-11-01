@@ -153,6 +153,7 @@ struct _PangoWin32Face
 {
   PangoFontFace parent_instance;
 
+  gpointer family;
   LOGFONTW logfontw;
   PangoFontDescription *description;
   PangoCoverage *coverage;
