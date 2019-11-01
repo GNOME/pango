@@ -66,6 +66,9 @@ installed_test_data = [
 test_layouts_data = [
   'layouts/valid-1',
   'layouts/valid-2',
+  'layouts/valid-3',
+  'layouts/valid-4',
+  'layouts/valid-5',
 ]
 
 test_markups_data = [
@@ -83,12 +86,16 @@ test_markups_data = [
   'markups/valid-7',
   'markups/valid-8',
   'markups/valid-9',
+  'markups/valid-10',
+  'markups/valid-11',
+  'markups/valid-12',
 ]
 
 test_breaks_data = [
   'breaks/one',
   'breaks/two',
   'breaks/three',
+  'breaks/four',
 ]
 
 if thai_dep.found()
