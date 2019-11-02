@@ -411,7 +411,6 @@ add_overline (PangoRenderer    *renderer,
   PangoRectangle *current_rect = &state->overline_rect;
   PangoRectangle new_rect;
   int underline_thickness = pango_font_metrics_get_underline_thickness (metrics);
-  int underline_position = pango_font_metrics_get_underline_position (metrics);
   int ascent = pango_font_metrics_get_ascent (metrics);
 
   new_rect.x = base_x + logical_rect->x;
@@ -425,7 +424,7 @@ add_overline (PangoRenderer    *renderer,
       g_assert_not_reached ();
       break;
     case PANGO_OVERLINE_SINGLE:
-      new_rect.y -= ascent + underline_position;
+      new_rect.y -= ascent;
       if (state->overline == renderer->overline)
         {
           new_rect.y = MIN (current_rect->y, new_rect.y);
