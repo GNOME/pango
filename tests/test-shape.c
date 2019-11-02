@@ -53,24 +53,6 @@ append_text (GString    *s,
     }
 }
 
-static void
-parse_params (const char *str,
-              gboolean *insert_hyphen)
-{
-  char **strings;
-  int i;
-
-  strings = g_strsplit (str, ",", -1);
-  for (i = 0; strings[i]; i++)
-    {
-      char **str2 = g_strsplit (strings[i], "=", -1);
-      if (strcmp (str2[0], "insert-hyphen") == 0)
-        *insert_hyphen = strcmp (str2[1], "true") == 0;
-      g_strfreev (str2);
-    }
-  g_strfreev (strings);
-}
-
 static gboolean
 affects_itemization (PangoAttribute *attr,
                      gpointer        data)
@@ -154,7 +136,6 @@ test_file (const gchar *filename, GString *string)
   PangoAttrList *shape_attrs;
   GList *items, *l;
   GString *s1, *s2, *s3, *s4, *s5, *s6, *s7;
-  gboolean insert_hyphen = FALSE;
   char *p, *p1;
   const char *sep = "";
 
@@ -174,7 +155,6 @@ test_file (const gchar *filename, GString *string)
   p = strchr (test, '\n');
   *p = '\0';
 
-  parse_params (test, &insert_hyphen);
   test  = p + 1;
 
   if (!pango_parse_markup (test, -1, 0, &attrs, &text, NULL, &error))
@@ -320,7 +300,7 @@ get_expected_filename (const gchar *filename)
 }
 
 static void
-test_itemize (gconstpointer d)
+test_shape (gconstpointer d)
 {
   const gchar *filename = d;
   gchar *expected_file;
@@ -390,7 +370,7 @@ main (int argc, char *argv[])
 
       path = g_strdup_printf ("/shape/%s", name);
       g_test_add_data_func_full (path, g_test_build_filename (G_TEST_DIST, "shape", name, NULL),
-                                 test_itemize, g_free);
+                                 test_shape, g_free);
       g_free (path);
     }
   g_dir_close (dir);
