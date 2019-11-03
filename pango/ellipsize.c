@@ -105,14 +105,17 @@ struct _EllipsizeState
 
   LineIter gap_end_iter;	/* Iterator pointing to last cluster in gap */
   int gap_end_x;		/* x position of end of gap, in Pango units */
+
+  PangoShapeFlags shape_flags;
 };
 
 /* Compute global information needed for the itemization process
  */
 static void
 init_state (EllipsizeState  *state,
-	    PangoLayoutLine *line,
-	    PangoAttrList   *attrs)
+            PangoLayoutLine *line,
+            PangoAttrList   *attrs,
+            PangoShapeFlags  shape_flags)
 {
   GSList *l;
   int i;
@@ -123,6 +126,8 @@ init_state (EllipsizeState  *state,
     state->attrs = pango_attr_list_ref (attrs);
   else
     state->attrs = pango_attr_list_new ();
+
+  state->shape_flags = shape_flags;
 
   state->n_runs = g_slist_length (line->runs);
   state->run_info = g_new (RunInfo, state->n_runs);
@@ -301,6 +306,7 @@ shape_ellipsis (EllipsizeState *state)
   GSList *l;
   PangoAttribute *fallback;
   const char *ellipsis_text;
+  int len;
   int i;
 
   /* Create/reset state->ellipsis_run
@@ -370,8 +376,11 @@ shape_ellipsis (EllipsizeState *state)
    */
   glyphs = state->ellipsis_run->glyphs;
 
-  pango_shape (ellipsis_text, strlen (ellipsis_text),
-	       &item->analysis, glyphs);
+  len = strlen (ellipsis_text);
+  pango_shape_with_flags (ellipsis_text, len,
+                          ellipsis_text, len,
+	                  &item->analysis, glyphs,
+                          state->shape_flags);
 
   state->ellipsis_width = 0;
   for (i = 0; i < glyphs->num_glyphs; i++)
@@ -722,6 +731,7 @@ current_width (EllipsizeState *state)
  * _pango_layout_line_ellipsize:
  * @line: a #PangoLayoutLine
  * @attrs: Attributes being used for itemization/shaping
+ * @shape_flags: Flags to use when shaping
  *
  * Given a #PangoLayoutLine with the runs still in logical order, ellipsize
  * it according the layout's policy to fit within the set width of the layout.
@@ -731,6 +741,7 @@ current_width (EllipsizeState *state)
 gboolean
 _pango_layout_line_ellipsize (PangoLayoutLine *line,
 			      PangoAttrList   *attrs,
+                              PangoShapeFlags  shape_flags,
 			      int              goal_width)
 {
   EllipsizeState state;
@@ -738,7 +749,7 @@ _pango_layout_line_ellipsize (PangoLayoutLine *line,
 
   g_return_val_if_fail (line->layout->ellipsize != PANGO_ELLIPSIZE_NONE && goal_width >= 0, is_ellipsized);
 
-  init_state (&state, line, attrs);
+  init_state (&state, line, attrs, shape_flags);
 
   if (state.total_width <= goal_width)
     goto out;

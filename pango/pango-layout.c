@@ -5784,7 +5784,12 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
   if (G_UNLIKELY (state->line_width >= 0 &&
 		  should_ellipsize_current_line (line->layout, state)))
     {
-      ellipsized = _pango_layout_line_ellipsize (line, state->attrs, state->line_width);
+      PangoShapeFlags shape_flags = PANGO_SHAPE_NONE;
+
+      if (pango_context_get_round_glyph_positions (line->layout->context))
+        shape_flags |= PANGO_SHAPE_ROUND_POSITIONS;
+
+      ellipsized = _pango_layout_line_ellipsize (line, state->attrs, shape_flags, state->line_width);
     }
 
   DEBUG ("after removing final space", line, state);
