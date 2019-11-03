@@ -78,6 +78,34 @@ test_ellipsize_crash (void)
   g_object_unref (layout);
 }
 
+/* Check that the width of a fully ellipsized paragraph
+ * is the same as that of an explicit ellipsis.
+ */
+static void
+test_ellipsize_fully (void)
+{
+  PangoLayout *layout;
+  PangoRectangle ink, logical;
+  PangoRectangle ink2, logical2;
+
+  layout = pango_layout_new (context);
+
+  pango_layout_set_text (layout, "…", -1);
+  pango_layout_get_extents (layout, &ink, &logical);
+
+  pango_layout_set_text (layout, "ellipsized", -1);
+
+  pango_layout_set_width (layout, 10 * PANGO_SCALE);
+  pango_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
+
+  pango_layout_get_extents (layout, &ink2, &logical2);
+
+  g_assert_cmpint (ink.width, ==, ink2.width);
+  g_assert_cmpint (logical.width, ==, logical2.width);
+
+  g_object_unref (layout);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -90,6 +118,7 @@ main (int argc, char *argv[])
 
   g_test_add_func ("/layout/ellipsize/height", test_ellipsize_height);
   g_test_add_func ("/layout/ellipsize/crash", test_ellipsize_crash);
+  g_test_add_func ("/layout/ellipsize/fully", test_ellipsize_fully);
 
   return g_test_run ();
 }
