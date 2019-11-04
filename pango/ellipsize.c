@@ -731,7 +731,7 @@ current_width (EllipsizeState *state)
  * _pango_layout_line_ellipsize:
  * @line: a #PangoLayoutLine
  * @attrs: Attributes being used for itemization/shaping
- * #shape_flags: Flags to use when shaping
+ * @shape_flags: Flags to use when shaping
  *
  * Given a #PangoLayoutLine with the runs still in logical order, ellipsize
  * it according the layout's policy to fit within the set width of the layout.
