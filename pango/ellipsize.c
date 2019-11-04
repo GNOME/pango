@@ -385,8 +385,6 @@ shape_ellipsis (EllipsizeState *state)
   state->ellipsis_width = 0;
   for (i = 0; i < glyphs->num_glyphs; i++)
     state->ellipsis_width += glyphs->glyphs[i].geometry.width;
-
-  g_print ("ellipsis width %d\n", state->ellipsis_width);
 }
 
 /* Helper function to advance a PangoAttrIterator to a particular
