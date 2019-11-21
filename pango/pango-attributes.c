@@ -2084,7 +2084,7 @@ pango_attr_iterator_destroy (PangoAttrIterator *iterator)
  * the attribute whose range starts closest to the current location
  * is used.
  *
- * Return value: (nullable): the current attribute of the given type,
+ * Return value: (nullable) (transfer none): the current attribute of the given type,
  *               or %NULL if no attribute of that type applies to the
  *               current location.
  **/
