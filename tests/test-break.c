@@ -305,6 +305,12 @@ main (int argc, char *argv[])
       if (!strstr (name, "break"))
         continue;
 
+#ifndef HAVE_LIBTHAI
+      /* four.break involves Thai, so only test it when we have libthai */
+      if (strstr (name, "four.break"))
+        continue;
+#endif
+
       path = g_strdup_printf ("/break/%s", name);
       g_test_add_data_func_full (path, g_test_build_filename (G_TEST_DIST, "breaks", name, NULL),
                                  test_break, g_free);
