@@ -43,7 +43,6 @@
 
 #define MAX_FREED_FONTS 256
 
-HDC _pango_win32_hdc;
 gboolean _pango_win32_debug = FALSE;
 
 static void pango_win32_font_dispose    (GObject             *object);
@@ -144,6 +143,7 @@ _pango_win32_font_init (PangoWin32Font *win32font)
 HDC
 pango_win32_get_dc (void)
 {
+  static HDC _pango_win32_hdc = 0;
   if (g_once_init_enter (&_pango_win32_hdc))
     {
       HDC hdc = CreateDC ("DISPLAY", NULL, NULL, NULL);
@@ -478,7 +478,7 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
       info->ink_rect.y = - PANGO_SCALE * gm.gmptGlyphOrigin.y;
       info->ink_rect.height = PANGO_SCALE * gm.gmBlackBoxY;
 
-      GetTextMetrics (_pango_win32_hdc, &tm);
+      GetTextMetrics (pango_win32_get_dc(), &tm);
       info->logical_rect.x = 0;
       info->logical_rect.width = PANGO_SCALE * gm.gmCellIncX;
       info->logical_rect.y = - PANGO_SCALE * tm.tmAscent;
@@ -556,8 +556,8 @@ pango_win32_font_get_metrics (PangoFont     *font,
 	  PangoCoverage *coverage;
 	  TEXTMETRIC tm;
 
-	  SelectObject (_pango_win32_hdc, hfont);
-	  GetTextMetrics (_pango_win32_hdc, &tm);
+	  SelectObject (pango_win32_get_dc(), hfont);
+	  GetTextMetrics (pango_win32_get_dc(), &tm);
 
 	  metrics->ascent = tm.tmAscent * PANGO_SCALE;
 	  metrics->descent = tm.tmDescent * PANGO_SCALE;
