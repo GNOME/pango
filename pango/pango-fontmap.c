@@ -20,6 +20,9 @@
  */
 
 #include "config.h"
+
+#include <gio/gio.h>
+
 #include "pango-fontmap-private.h"
 #include "pango-fontset-private.h"
 #include "pango-impl-utils.h"
@@ -34,7 +37,10 @@ static PangoFontset *pango_font_map_real_load_fontset (PangoFontMap             
 static PangoFontFamily *pango_font_map_real_get_family (PangoFontMap *fontmap,
                                                         const char   *name);
 
-G_DEFINE_ABSTRACT_TYPE (PangoFontMap, pango_font_map, G_TYPE_OBJECT)
+static void pango_font_map_list_model_init (GListModelInterface *iface);
+
+G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFontMap, pango_font_map, G_TYPE_OBJECT,
+                                  G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango_font_map_list_model_init))
 
 static void
 pango_font_map_class_init (PangoFontMapClass *class)
@@ -389,4 +395,50 @@ pango_font_map_get_family (PangoFontMap *fontmap,
   g_return_val_if_fail (PANGO_IS_FONT_MAP (fontmap), NULL);
 
   return PANGO_FONT_MAP_GET_CLASS (fontmap)->get_family (fontmap, name);
+}
+
+static GType
+pango_font_map_get_item_type (GListModel *list)
+{
+  return PANGO_TYPE_FONT_FAMILY;
+}
+
+static guint
+pango_font_map_get_n_items (GListModel *list)
+{
+  PangoFontMap *fontmap = PANGO_FONT_MAP (list);
+  int n_families;
+
+  pango_font_map_list_families (fontmap, NULL, &n_families);
+
+  return (guint)n_families;
+}
+
+static gpointer
+pango_font_map_get_item (GListModel *list,
+                         guint       position)
+{
+  PangoFontMap *fontmap = PANGO_FONT_MAP (list);
+  PangoFontFamily **families;
+  guint n_families;
+  PangoFontFamily *family;
+
+  pango_font_map_list_families (fontmap, &families, &n_families);
+
+  if (position < n_families)
+    family = g_object_ref (families[position]);
+  else
+    family = NULL;
+
+  g_free (families);
+  
+  return family;
+}
+
+static void
+pango_font_map_list_model_init (GListModelInterface *iface)
+{
+  iface->get_item_type = pango_font_map_get_item_type;
+  iface->get_n_items = pango_font_map_get_n_items;
+  iface->get_item = pango_font_map_get_item;
 }
