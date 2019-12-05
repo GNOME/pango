@@ -37,6 +37,8 @@
 #include <math.h>
 #include <string.h>
 
+#include <gio/gio.h>
+
 #include "pango-types.h"
 #include "pango-font-private.h"
 #include "pango-fontmap.h"
@@ -2176,7 +2178,54 @@ pango_font_metrics_get_strikethrough_thickness (PangoFontMetrics *metrics)
  * PangoFontFamily
  */
 
-G_DEFINE_ABSTRACT_TYPE (PangoFontFamily, pango_font_family, G_TYPE_OBJECT)
+static GType
+pango_font_family_get_item_type (GListModel *list)
+{
+  return PANGO_TYPE_FONT_FACE;
+}
+
+static guint
+pango_font_family_get_n_items (GListModel *list)
+{
+  PangoFontFamily *family = PANGO_FONT_FAMILY (list);
+  int n_faces;
+
+  pango_font_family_list_faces (family, NULL, &n_faces);
+
+  return (guint)n_faces;
+}
+
+static gpointer
+pango_font_family_get_item (GListModel *list,
+                            guint       position)
+{
+  PangoFontFamily *family = PANGO_FONT_FAMILY (list);
+  PangoFontFace **faces;
+  int n_faces;
+  PangoFontFace *face;
+
+  pango_font_family_list_faces (family, &faces, &n_faces);
+
+  if (position < n_faces)
+    face = g_object_ref (faces[position]);
+  else
+    face = NULL;
+
+  g_free (faces);
+
+  return face;
+}
+
+static void
+pango_font_family_list_model_init (GListModelInterface *iface)
+{
+  iface->get_item_type = pango_font_family_get_item_type;
+  iface->get_n_items = pango_font_family_get_n_items;
+  iface->get_item = pango_font_family_get_item;
+}
+
+G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFontFamily, pango_font_family, G_TYPE_OBJECT,
+                                  G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango_font_family_list_model_init))
 
 static PangoFontFace *pango_font_family_real_get_face (PangoFontFamily *family,
                                                        const char      *name);
