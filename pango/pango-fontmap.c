@@ -37,9 +37,16 @@ static PangoFontset *pango_font_map_real_load_fontset (PangoFontMap             
 static PangoFontFamily *pango_font_map_real_get_family (PangoFontMap *fontmap,
                                                         const char   *name);
 
+static void pango_font_map_real_changed (PangoFontMap *fontmap);
+
 static void pango_font_map_list_model_init (GListModelInterface *iface);
 
+typedef struct {
+  guint n_families;
+} PangoFontMapPrivate;
+
 G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFontMap, pango_font_map, G_TYPE_OBJECT,
+                                  G_ADD_PRIVATE (PangoFontMap)
                                   G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango_font_map_list_model_init))
 
 static void
@@ -47,6 +54,7 @@ pango_font_map_class_init (PangoFontMapClass *class)
 {
   class->load_fontset = pango_font_map_real_load_fontset;
   class->get_family = pango_font_map_real_get_family;
+  class->changed = pango_font_map_real_changed;
 }
 
 static void
@@ -120,9 +128,13 @@ pango_font_map_list_families (PangoFontMap      *fontmap,
 			      PangoFontFamily ***families,
 			      int               *n_families)
 {
+  PangoFontMapPrivate *priv = pango_font_map_get_instance_private (fontmap);
   g_return_if_fail (fontmap != NULL);
 
   PANGO_FONT_MAP_GET_CLASS (fontmap)->list_families (fontmap, families, n_families);
+  
+  /* keep this value for GListModel::changed */
+  priv->n_families = *n_families;
 }
 
 /**
@@ -327,6 +339,18 @@ pango_font_map_get_serial (PangoFontMap *fontmap)
     return 1;
 }
 
+static void
+pango_font_map_real_changed (PangoFontMap *fontmap)
+{
+  PangoFontMapPrivate *priv = pango_font_map_get_instance_private (fontmap);
+  guint removed, added;
+
+  removed = priv->n_families;
+  added = g_list_model_get_n_items (G_LIST_MODEL (fontmap));
+
+  g_list_model_items_changed (G_LIST_MODEL (fontmap), 0, removed, added);  
+}
+
 /**
  * pango_font_map_changed:
  * @fontmap: a #PangoFontMap
@@ -420,7 +444,7 @@ pango_font_map_get_item (GListModel *list,
 {
   PangoFontMap *fontmap = PANGO_FONT_MAP (list);
   PangoFontFamily **families;
-  guint n_families;
+  int n_families;
   PangoFontFamily *family;
 
   pango_font_map_list_families (fontmap, &families, &n_families);
