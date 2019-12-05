@@ -233,6 +233,8 @@ static PangoFont *pango_fc_font_map_new_font   (PangoFcFontMap    *fontmap,
 static PangoFontFace *pango_fc_font_map_get_face (PangoFontMap *fontmap,
                                                   PangoFont    *font);
 
+static void pango_fc_font_map_changed (PangoFontMap *fontmap);
+
 static guint    pango_fc_font_face_data_hash  (PangoFcFontFaceData *key);
 static gboolean pango_fc_font_face_data_equal (PangoFcFontFaceData *key1,
 					       PangoFcFontFaceData *key2);
@@ -1241,6 +1243,7 @@ pango_fc_font_map_class_init (PangoFcFontMapClass *class)
   fontmap_class->get_family = pango_fc_font_map_get_family;
   fontmap_class->get_face = pango_fc_font_map_get_face;
   fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_FC;
+  fontmap_class->changed = pango_fc_font_map_changed;
 }
 
 
@@ -1975,13 +1978,29 @@ pango_fc_font_map_load_fontset (PangoFontMap                 *fontmap,
 void
 pango_fc_font_map_cache_clear (PangoFcFontMap *fcfontmap)
 {
+  guint removed, added;
+
   if (G_UNLIKELY (fcfontmap->priv->closed))
     return;
 
+  removed = fcfontmap->priv->n_families;
+
   pango_fc_font_map_fini (fcfontmap);
   pango_fc_font_map_init (fcfontmap);
+   
+  ensure_families (fcfontmap);
+
+  added = fcfontmap->priv->n_families;
+
+  g_list_model_items_changed (G_LIST_MODEL (fcfontmap), 0, removed, added);
 
   pango_font_map_changed (PANGO_FONT_MAP (fcfontmap));
+}
+
+static void
+pango_fc_font_map_changed (PangoFontMap *fontmap)
+{
+  /* we emit GListModel::changed in pango_fc_font_map_cache_clear() */
 }
 
 /**
