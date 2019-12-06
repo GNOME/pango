@@ -205,7 +205,9 @@ glib_dep = dependency('glib-2.0', version: glib_req_version,
                       fallback: ['glib', 'libglib_dep'])
 gobject_dep = dependency('gobject-2.0', version: glib_req_version,
                          fallback: ['glib', 'libgobject_dep'])
-pango_deps += [glib_dep, gobject_dep]
+gio_dep = dependency('gio-2.0', version: glib_req_version,
+                         fallback: ['glib', 'libgio_dep'])
+pango_deps += [glib_dep, gobject_dep, gio_dep]
 
 fribidi_dep = dependency('fribidi', version: fribidi_req_version,
                          fallback: ['fribidi', 'libfribidi_dep'],

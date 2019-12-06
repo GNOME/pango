@@ -45,6 +45,8 @@
 #include "config.h"
 #include <math.h>
 
+#include <gio/gio.h>
+
 #include "pango-context.h"
 #include "pango-font-private.h"
 #include "pangofc-fontmap-private.h"
@@ -230,6 +232,8 @@ static PangoFont *pango_fc_font_map_new_font   (PangoFcFontMap    *fontmap,
 
 static PangoFontFace *pango_fc_font_map_get_face (PangoFontMap *fontmap,
                                                   PangoFont    *font);
+
+static void pango_fc_font_map_changed (PangoFontMap *fontmap);
 
 static guint    pango_fc_font_face_data_hash  (PangoFcFontFaceData *key);
 static gboolean pango_fc_font_face_data_equal (PangoFcFontFaceData *key1,
@@ -1119,8 +1123,49 @@ pango_fc_fontset_foreach (PangoFontset           *fontset,
  * PangoFcFontMap
  */
 
+static GType
+pango_fc_font_map_get_item_type (GListModel *list)
+{
+  return PANGO_TYPE_FONT_FAMILY;
+}
+
+static void ensure_families (PangoFcFontMap *fcfontmap);
+
+static guint
+pango_fc_font_map_get_n_items (GListModel *list)
+{
+  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (list);
+
+  ensure_families (fcfontmap);
+
+  return fcfontmap->priv->n_families;
+}
+
+static gpointer
+pango_fc_font_map_get_item (GListModel *list,
+                            guint       position)
+{
+  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (list);
+
+  ensure_families (fcfontmap);
+
+  if (position < fcfontmap->priv->n_families)
+    return g_object_ref (fcfontmap->priv->families[position]);
+
+  return NULL;
+}
+
+static void
+pango_fc_font_map_list_model_init (GListModelInterface *iface)
+{
+  iface->get_item_type = pango_fc_font_map_get_item_type;
+  iface->get_n_items = pango_fc_font_map_get_n_items;
+  iface->get_item = pango_fc_font_map_get_item;
+}
+
 G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFcFontMap, pango_fc_font_map, PANGO_TYPE_FONT_MAP,
-                                  G_ADD_PRIVATE (PangoFcFontMap))
+                                  G_ADD_PRIVATE (PangoFcFontMap)
+                                  G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango_fc_font_map_list_model_init))
 
 static void
 pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
@@ -1198,6 +1243,7 @@ pango_fc_font_map_class_init (PangoFcFontMapClass *class)
   fontmap_class->get_family = pango_fc_font_map_get_family;
   fontmap_class->get_face = pango_fc_font_map_get_face;
   fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_FC;
+  fontmap_class->changed = pango_fc_font_map_changed;
 }
 
 
@@ -1932,13 +1978,29 @@ pango_fc_font_map_load_fontset (PangoFontMap                 *fontmap,
 void
 pango_fc_font_map_cache_clear (PangoFcFontMap *fcfontmap)
 {
+  guint removed, added;
+
   if (G_UNLIKELY (fcfontmap->priv->closed))
     return;
 
+  removed = fcfontmap->priv->n_families;
+
   pango_fc_font_map_fini (fcfontmap);
   pango_fc_font_map_init (fcfontmap);
+   
+  ensure_families (fcfontmap);
+
+  added = fcfontmap->priv->n_families;
+
+  g_list_model_items_changed (G_LIST_MODEL (fcfontmap), 0, removed, added);
 
   pango_font_map_changed (PANGO_FONT_MAP (fcfontmap));
+}
+
+static void
+pango_fc_font_map_changed (PangoFontMap *fontmap)
+{
+  /* we emit GListModel::changed in pango_fc_font_map_cache_clear() */
 }
 
 /**
@@ -2596,7 +2658,48 @@ pango_fc_face_class_init (PangoFcFaceClass *class)
 
 typedef PangoFontFamilyClass PangoFcFamilyClass;
 
-G_DEFINE_TYPE (PangoFcFamily, pango_fc_family, PANGO_TYPE_FONT_FAMILY)
+static GType
+pango_fc_family_get_item_type (GListModel *list)
+{
+  return PANGO_TYPE_FONT_FACE;
+}
+
+static void ensure_faces (PangoFcFamily *family);
+
+static guint
+pango_fc_family_get_n_items (GListModel *list)
+{
+  PangoFcFamily *fcfamily = PANGO_FC_FAMILY (list);
+
+  ensure_faces (fcfamily);
+
+  return (guint)fcfamily->n_faces;
+}
+
+static gpointer
+pango_fc_family_get_item (GListModel *list,
+                          guint       position)
+{
+  PangoFcFamily *fcfamily = PANGO_FC_FAMILY (list);
+
+  ensure_faces (fcfamily);
+
+  if (position < fcfamily->n_faces)
+    return g_object_ref (fcfamily->faces[position]);
+
+  return NULL;
+}
+
+static void
+pango_fc_family_list_model_init (GListModelInterface *iface)
+{
+  iface->get_item_type = pango_fc_family_get_item_type;
+  iface->get_n_items = pango_fc_family_get_n_items;
+  iface->get_item = pango_fc_family_get_item;
+}
+
+G_DEFINE_TYPE_WITH_CODE (PangoFcFamily, pango_fc_family, PANGO_TYPE_FONT_FAMILY,
+                         G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango_fc_family_list_model_init))
 
 static PangoFcFace *
 create_face (PangoFcFamily *fcfamily,
@@ -2736,9 +2839,6 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 			    int              *n_faces)
 {
   PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
-
-  *faces = NULL;
-  *n_faces = 0;
 
   if (G_UNLIKELY (!fcfamily->fontmap))
     return;
