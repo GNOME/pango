@@ -2861,6 +2861,9 @@ pango_fc_family_get_face (PangoFontFamily *family,
 
   ensure_faces (fcfamily);
 
+  if (name == NULL)
+    name = "Regular"; /* This name always exists in fontconfig */
+
   for (i = 0; i < fcfamily->n_faces; i++)
     {
       PangoFontFace *face = PANGO_FONT_FACE (fcfamily->faces[i]);
