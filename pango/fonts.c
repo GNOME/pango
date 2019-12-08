@@ -2295,12 +2295,19 @@ pango_font_family_real_get_face (PangoFontFamily *family,
   pango_font_family_list_faces (family, &faces, &n_faces);
 
   face = NULL;
-  for (i = 0; i < n_faces; i++)
+  if (name == NULL)
     {
-      if (strcmp (name, pango_font_face_get_face_name (faces[i])) == 0)
+      face = faces[0];
+    }
+  else
+    {
+      for (i = 0; i < n_faces; i++)
         {
-          face = faces[i];
-          break;
+          if (strcmp (name, pango_font_face_get_face_name (faces[i])) == 0)
+            {
+              face = faces[i];
+              break;
+            }
         }
     }
 
@@ -2312,11 +2319,14 @@ pango_font_family_real_get_face (PangoFontFamily *family,
 /**
  * pango_font_family_get_face:
  * @family: a #PangoFontFamily
- * @name: the name of a face
+ * @name: (optional): the name of a face. If the name is %NULL,
+ *     the family's default face (fontconfig calls it "Regular")
+ *     will be returned.
  *
  * Gets the #PangoFontFace of @family with the given name.
  *
- * Returns: (transfer none): the #PangoFontFace
+ * Returns: (transfer none) (nullable): the #PangoFontFace,
+ *     or %NULL if no face with the given name exists.
  *
  * Since: 1.46
  */
