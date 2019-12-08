@@ -69,6 +69,8 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
     '-Wold-style-definition',
     '-Wno-int-conversion',
     '-Wno-discarded-qualifiers',
+    '-Werror=implicit',
+    '-Werror=pointer-to-int-cast',
   ]
 
   test_cflags = test_c_only_flags + [
@@ -86,7 +88,6 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
     '-Wlogical-op',
     '-Wno-uninitialized',
     '-Wno-shadow',
-    '-Werror=implicit',
     '-Werror=implicit-fallthrough',
     '-Werror=nonnull',
     '-Werror=init-self',
@@ -99,7 +100,6 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
     '-Werror=write-strings',
     '-Werror=address',
     '-Werror=int-to-pointer-cast',
-    '-Werror=pointer-to-int-cast',
     '-Werror=empty-body',
     '-Werror=write-strings',
     '-Werror=unused-but-set-variable',
