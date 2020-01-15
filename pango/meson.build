@@ -152,11 +152,16 @@ libpango_dep = declare_dependency(
   sources: pango_dep_sources,
 )
 
+pango_pkg_requires = ['gobject-2.0']
+if harfbuzz_dep.type_name() == 'pkgconfig'
+  pango_pkg_requires += 'harfbuzz'
+endif
+
 pkgconfig.generate(libpango,
   name: 'Pango',
   description: 'Internationalized text handling',
   version: meson.project_version(),
-  requires: ['gobject-2.0', 'harfbuzz'],
+  requires: pango_pkg_requires,
   filebase: 'pango',
   subdirs: pango_api_name,
   install_dir: join_paths(pango_libdir, 'pkgconfig'),
