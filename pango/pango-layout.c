@@ -3034,6 +3034,10 @@ ensure_tab_width (PangoLayout *layout)
       PangoAttrIterator *iter;
       PangoFontDescription *font_desc = pango_font_description_copy_static (pango_context_get_font_description (layout->context));
       PangoLanguage *language;
+      PangoShapeFlags shape_flags = PANGO_SHAPE_NONE;
+
+      if (pango_context_get_round_glyph_positions (layout->context))
+        shape_flags |= PANGO_SHAPE_ROUND_POSITIONS;
 
       layout_attrs = pango_layout_get_effective_attributes (layout);
       iter = pango_attr_list_get_iterator (layout_attrs);
@@ -3062,7 +3066,7 @@ ensure_tab_width (PangoLayout *layout)
       pango_attr_list_unref (tmp_attrs);
 
       item = items->data;
-      pango_shape ("        ", 8, &item->analysis, glyphs);
+      pango_shape_with_flags ("        ", 8, "        ", 8, &item->analysis, glyphs, shape_flags);
 
       pango_item_free (item);
       g_list_free (items);
