@@ -1916,6 +1916,82 @@ pango_attr_list_get_attributes (PangoAttrList *list)
   return g_slist_copy_deep (list->attributes, (GCopyFunc)pango_attribute_copy, NULL);
 }
 
+/**
+ * pango_attr_list_equal:
+ * @list: a #PangoAttrList
+ * @other_list: the other #PangoAttrList
+ *
+ * Checks whether @list and @other_list contain the same attributes and
+ * whether those attributes apply to the same ranges. Beware that this
+ * will return wrong values if any list contains duplicates.
+ *
+ * Return value: %TRUE if the lists are equal, %FALSE if they aren't.
+ *
+ * Since: 1.46
+ */
+gboolean
+pango_attr_list_equal (PangoAttrList *list,
+                       PangoAttrList *other_list)
+{
+  GSList *attrs, *other_attrs;
+  GSList *iter = NULL;
+  guint attrs_length = 0;
+  guint64 skip_bitmask = 0;
+
+  if (list == other_list)
+    return TRUE;
+
+  if (list == NULL || other_list == NULL)
+    return FALSE;
+
+  attrs = list->attributes;
+  other_attrs = other_list->attributes;
+
+  for (iter = attrs; iter != NULL; iter = iter->next)
+    {
+      PangoAttribute *attr = iter->data;
+      GSList *other_iter = NULL;
+      gboolean attr_equal = FALSE;
+      guint other_attr_index = 0;
+
+      attrs_length++;
+
+      for (other_iter = other_attrs;
+           other_iter != NULL;
+           other_iter = other_iter->next)
+        {
+          PangoAttribute *other_attr = other_iter->data;
+          guint64 other_attr_bitmask =
+            other_attr_index < 64 ? 1 << other_attr_index : 0;
+
+          if ((skip_bitmask & other_attr_bitmask) != 0)
+            {
+              other_attr_index++;
+              continue;
+            }
+
+          if (attr->start_index == other_attr->start_index &&
+              attr->end_index == other_attr->end_index &&
+              pango_attribute_equal (attr, other_attr))
+            {
+              skip_bitmask |= other_attr_bitmask;
+              attr_equal = TRUE;
+              break;
+            }
+
+          other_attr_index++;
+        }
+
+      if (!attr_equal)
+        return FALSE;
+    }
+
+  if (attrs_length != g_slist_length (other_attrs))
+    return FALSE;
+
+  return TRUE;
+}
+
 G_DEFINE_BOXED_TYPE (PangoAttrIterator,
                      pango_attr_iterator,
                      pango_attr_iterator_copy,
