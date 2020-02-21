@@ -1081,10 +1081,12 @@ pango_default_break (const gchar   *text,
 	  if ((prev_break_type == G_UNICODE_BREAK_ALPHABETIC ||
 	       prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER ||
 	       prev_break_type == G_UNICODE_BREAK_NUMERIC) &&
-	      break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION)
+	      break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION &&
+	      !_pango_is_EastAsianWide (wc))
 	    break_op = BREAK_PROHIBITED;
 
 	  if (prev_break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS &&
+	      !_pango_is_EastAsianWide (prev_wc)&&
 	      (break_type == G_UNICODE_BREAK_ALPHABETIC ||
 	       break_type == G_UNICODE_BREAK_HEBREW_LETTER ||
 	       break_type == G_UNICODE_BREAK_NUMERIC))
@@ -1226,25 +1228,7 @@ pango_default_break (const gchar   *text,
 
 	  /* Rule LB22 */
 	  if (break_type == G_UNICODE_BREAK_INSEPARABLE)
-	    {
-	      if (prev_break_type == G_UNICODE_BREAK_ALPHABETIC ||
-		  prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER)
-		break_op = BREAK_PROHIBITED;
-
-	      if (prev_break_type == G_UNICODE_BREAK_EXCLAMATION)
-		break_op = BREAK_PROHIBITED;
-
-	      if (prev_break_type == G_UNICODE_BREAK_IDEOGRAPHIC ||
-		  prev_break_type == G_UNICODE_BREAK_EMOJI_BASE ||
-		  prev_break_type == G_UNICODE_BREAK_EMOJI_MODIFIER)
-		break_op = BREAK_PROHIBITED;
-
-	      if (prev_break_type == G_UNICODE_BREAK_INSEPARABLE)
-		break_op = BREAK_PROHIBITED;
-
-	      if (prev_break_type == G_UNICODE_BREAK_NUMERIC)
-		break_op = BREAK_PROHIBITED;
-	    }
+	    break_op = BREAK_PROHIBITED;
 
 	  if (break_type == G_UNICODE_BREAK_AFTER ||
 	      break_type == G_UNICODE_BREAK_HYPHEN ||
