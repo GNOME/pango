@@ -6,6 +6,7 @@
 
   <name xml:lang="en">pango</name>
   <shortdesc xml:lang="en">Internationalized text layout and rendering library</shortdesc>
+  <description xml:lang="en">Pango is a library for layout and rendering of text, with an emphasis on internationalization. Pango can be used anywhere that text layout is needed. Pango forms the core of text and font handling for GTK.</description>
   <category rdf:resource="http://api.gnome.org/doap-extensions#core" />
   <programming-language>C</programming-language>
 
