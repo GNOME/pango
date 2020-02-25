@@ -237,9 +237,9 @@ if build_pangoft2
       nsversion: pango_api_version,
       identifier_prefix: 'PangoFc',
       symbol_prefix: 'pango_fc',
-      export_packages: 'pangoft2',
+      export_packages: 'pangofc',
       includes: [ pango_gir[0], 'fontconfig-2.0', ],
-      header: 'pango/pangoft2.h',
+      header: 'pango/pangofc-fontmap.h',
       install: true,
       extra_args: gir_args,
     )
@@ -255,9 +255,9 @@ if build_pangoft2
       nsversion: pango_api_version,
       identifier_prefix: 'PangoOT',
       symbol_prefix: 'pango_ot',
-      export_packages: 'pangoft2',
+      export_packages: 'pangoot',
       includes: [ pangofc_gir[0], 'freetype2-2.0', ],
-      header: 'pango/pangoft2.h',
+      header: 'pango/pango-ot.h',
       install: true,
       extra_args: gir_args,
     )
