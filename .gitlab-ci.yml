@@ -3,42 +3,42 @@ image: registry.gitlab.gnome.org/gnome/gnome-runtime-images/base:latest
 stages:
   - build
 
-gnome-runtime-linux:
-  stage: build
-  before_script:
-    - >
-      dnf install -y \
-        glibc-langpack-en \
-        gcc \
-        gcc-c++ \
-        meson \
-        redhat-rpm-config \
-        glib2-devel \
-        harfbuzz-devel \
-        fribidi-devel \
-        cairo-devel \
-        libthai-devel \
-        gobject-introspection-devel \
-        cairo-gobject-devel \
-        abattis-cantarell-fonts \
-        google-droid-sans-fonts \
-        thai-scalable-waree-fonts \
-        desktop-file-utils \
-        diffutils
-  script:
-    - meson _build
-    - ninja -C _build
-    - meson test -C_build --suite pango
-    - _build/utils/pango-list --verbose > _build/fontlist.txt
-    - _build/tests/test-font -p /pango/font/metrics --verbose
-    - _build/utils/pango-view --no-display --output _build/hello.png utils/HELLO.txt
-  artifacts:
-    name: "%CI_JOB_NAME%-%CI_COMMIT_REF_NAME%"
-    when: always
-    paths:
-      - _build/meson-logs
-      - _build/hello.png
-      - _build/fontlist.txt
+#gnome-runtime-linux:
+#  stage: build
+#  before_script:
+#    - >
+#      dnf install -y \
+#        glibc-langpack-en \
+#        gcc \
+#        gcc-c++ \
+#        meson \
+#        redhat-rpm-config \
+#        glib2-devel \
+#        harfbuzz-devel \
+#        fribidi-devel \
+#        cairo-devel \
+#        libthai-devel \
+#        gobject-introspection-devel \
+#        cairo-gobject-devel \
+#        abattis-cantarell-fonts \
+#        google-droid-sans-fonts \
+#        thai-scalable-waree-fonts \
+#        desktop-file-utils \
+#        diffutils
+#  script:
+#    - meson _build
+#    - ninja -C _build
+#    - meson test -C_build --suite pango
+#    - _build/utils/pango-list --verbose > _build/fontlist.txt
+#    - _build/tests/test-font -p /pango/font/metrics --verbose
+#    - _build/utils/pango-view --no-display --output _build/hello.png utils/HELLO.txt
+#  artifacts:
+#    name: "%CI_JOB_NAME%-%CI_COMMIT_REF_NAME%"
+#    when: always
+#    paths:
+#      - _build/meson-logs
+#      - _build/hello.png
+#      - _build/fontlist.txt
 
 msys2-mingw64:
   stage: build
