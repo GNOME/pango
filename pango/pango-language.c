@@ -66,7 +66,7 @@ pango_language_get_private (PangoLanguage *language)
   if (!language)
     return NULL;
 
-  priv = (PangoLanguagePrivate *) ((char *)language - sizeof (PangoLanguagePrivate));
+  priv = (PangoLanguagePrivate *) ((void *)((char *)language - sizeof (PangoLanguagePrivate)));
 
   if (G_UNLIKELY (priv->magic != PANGO_LANGUAGE_PRIVATE_MAGIC))
     {
@@ -331,7 +331,7 @@ pango_language_from_string (const char *language)
   G_LOCK_DEFINE_STATIC (lang_from_string);
   static GHashTable *hash = NULL; /* MT-safe */
   PangoLanguagePrivate *priv;
-  char *result;
+  void *result;
   int len;
   char *p;
 
@@ -354,7 +354,7 @@ pango_language_from_string (const char *language)
   g_assert (result);
 
   priv = (PangoLanguagePrivate *) result;
-  result += sizeof (*priv);
+  result = ((char *)result) + sizeof (*priv);
 
   pango_language_private_init (priv);
 
@@ -749,7 +749,7 @@ parse_default_languages (void)
 {
   char *p, *p_copy;
   gboolean done = FALSE;
-  GArray *langs;
+  GPtrArray *langs;
 
   p = getenv ("PANGO_LANGUAGE");
 
@@ -761,34 +761,34 @@ parse_default_languages (void)
 
   p_copy = p = g_strdup (p);
 
-  langs = g_array_new (TRUE, FALSE, sizeof (PangoLanguage *));
+  langs = g_ptr_array_new ();
 
   while (!done)
     {
       char *end = strpbrk (p, LANGUAGE_SEPARATORS);
       if (!end)
-	{
-	  end = p + strlen (p);
-	  done = TRUE;
-	}
+        {
+          end = p + strlen (p);
+          done = TRUE;
+        }
       else
         *end = '\0';
 
       /* skip empty languages, and skip the language 'C' */
       if (p != end && !(p + 1 == end && *p == 'C'))
         {
-	  PangoLanguage *l = pango_language_from_string (p);
-	  
-	  g_array_append_val (langs, l);
-	}
+          PangoLanguage *l = pango_language_from_string (p);
+
+          g_ptr_array_add (langs, l);
+        }
 
       if (!done)
-	p = end + 1;
+        p = end + 1;
     }
 
   g_free (p_copy);
 
-  return (PangoLanguage **) g_array_free (langs, FALSE);
+  return (PangoLanguage **) g_ptr_array_free (langs, FALSE);
 }
 
 static PangoLanguage *
