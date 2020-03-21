@@ -150,7 +150,7 @@ typedef struct _PangoAttrIterator PangoAttrIterator;
  * @PANGO_ATTR_ALLOW_BREAKS: whether breaks are allowed (#PangoAttrInt). Since 1.44
  * @PANGO_ATTR_SHOW: how to render invisible characters (#PangoAttrInt). Since 1.44
  * @PANGO_ATTR_INSERT_HYPHENS: whether to insert hyphens at intra-word line breaks (#PangoAttrInt). Since 1.44
- * @PANGO_ATTR_OVERLINE: whether the text has an overline (#PangoAttrInt). Sincd 1.46
+ * @PANGO_ATTR_OVERLINE: whether the text has an overline (#PangoAttrInt). Since 1.46
  * @PANGO_ATTR_OVERLINE_COLOR: overline color (#PangoAttrColor). Since 1.46
  *
  * The #PangoAttrType
