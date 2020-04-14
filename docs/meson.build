@@ -55,7 +55,7 @@ if build_pangoft2
   docdeps += libpangoft2_dep
 endif
 
-if xft_dep.found()
+if xft_dep.found() and fontconfig_dep.found()
   docdeps += libpangoxft_dep
 endif
 
