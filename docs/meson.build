@@ -72,8 +72,7 @@ docpath = join_paths(pango_datadir, 'gtk-doc', 'html')
 gnome.gtkdoc('pango',
              main_xml: 'pango-docs.sgml',
              src_dir: [
-               join_paths(meson.source_root(), 'pango'),
-               join_paths(meson.build_root(), 'pango'),
+               pango_inc,
              ],
              dependencies: docdeps,
              gobject_typesfile: configure_file(input: 'pango.types.in',
