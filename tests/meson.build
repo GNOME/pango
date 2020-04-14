@@ -10,11 +10,10 @@ if host_system == 'windows'
   test_cflags += '-DHAVE_WIN32'
 endif
 
-test_env = [
-  'srcdir=@0@'.format(meson.current_source_dir()),
-  'G_TEST_SRCDIR=@0@'.format(meson.current_source_dir()),
-  'G_TEST_BUILDDIR=@0@'.format(meson.current_build_dir()),
-]
+test_env = environment()
+test_env.set('srcdir', meson.current_source_dir())
+test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
+test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
 
 tests = [
   [ 'test-coverage' ],
@@ -177,5 +176,10 @@ foreach t: tests
                    install: get_option('install-tests'),
                    install_dir: installed_test_bindir)
 
-  test(name, bin, env: test_env)
+  test(name, bin,
+    args: ['-k', '--tap'],
+    env: test_env,
+    suite: 'pango',
+    protocol: 'tap',
+  )
 endforeach
