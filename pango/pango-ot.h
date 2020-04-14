@@ -300,6 +300,11 @@ PangoOTTag *pango_ot_info_list_features  (PangoOTInfo      *info,
 					  guint             script_index,
 					  guint             language_index);
 
+#define PANGO_TYPE_OT_BUFFER (pango_ot_buffer_get_type())
+
+PANGO_DEPRECATED
+GType          pango_ot_buffer_get_type   (void) G_GNUC_CONST;
+
 PANGO_DEPRECATED
 PangoOTBuffer *pango_ot_buffer_new        (PangoFcFont       *font);
 PANGO_DEPRECATED
@@ -377,6 +382,11 @@ PangoLanguage  *pango_ot_tag_to_language   (PangoOTTag     language_tag) G_GNUC_
 
 PANGO_DEPRECATED
 PangoOTTag      pango_ot_tag_from_language (PangoLanguage *language) G_GNUC_CONST;
+
+#define PANGO_TYPE_OT_RULESET_DESCRIPTION (pango_ot_ruleset_description_get_type())
+
+PANGO_DEPRECATED
+GType           pango_ot_ruleset_description_get_type (void) G_GNUC_CONST;
 
 PANGO_DEPRECATED
 guint           pango_ot_ruleset_description_hash  (const PangoOTRulesetDescription *desc) G_GNUC_PURE;

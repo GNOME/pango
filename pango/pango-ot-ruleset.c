@@ -364,6 +364,10 @@ pango_ot_ruleset_description_equal (const PangoOTRulesetDescription *desc1,
   return TRUE;
 }
 
+G_DEFINE_BOXED_TYPE (PangoOTRulesetDescription, pango_ot_ruleset_description,
+                     pango_ot_ruleset_description_copy,
+                     pango_ot_ruleset_description_free)
+
 /**
  * pango_ot_ruleset_description_copy:
  * @desc: ruleset description to copy
