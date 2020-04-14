@@ -6183,7 +6183,6 @@ _pango_layout_get_iter (PangoLayout    *layout,
                         PangoLayoutIter*iter)
 {
   int run_start_index;
-  PangoRectangle logical_rect;
 
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
@@ -6207,11 +6206,25 @@ _pango_layout_get_iter (PangoLayout    *layout,
     iter->run = NULL;
 
   iter->line_extents = NULL;
-  pango_layout_get_extents_internal (layout,
-				     NULL,
-				     &logical_rect,
-				     &iter->line_extents);
-  iter->layout_width = layout->width == -1 ? logical_rect.width : layout->width;
+
+  if (layout->width == -1)
+    {
+      PangoRectangle logical_rect;
+
+      pango_layout_get_extents_internal (layout,
+                                         NULL,
+                                         &logical_rect,
+                                         &iter->line_extents);
+      iter->layout_width = logical_rect.width;
+    }
+  else
+    {
+      pango_layout_get_extents_internal (layout,
+                                         NULL,
+                                         NULL,
+                                         &iter->line_extents);
+      iter->layout_width = layout->width;
+    }
   iter->line_index = 0;
 
   update_run (iter, run_start_index);
