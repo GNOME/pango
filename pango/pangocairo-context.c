@@ -242,7 +242,15 @@ pango_cairo_context_set_font_options (PangoContext               *context,
 
   g_return_if_fail (PANGO_IS_CONTEXT (context));
 
-  info  = get_context_info (context, TRUE);
+  info = get_context_info (context, TRUE);
+
+  if (!info->set_options && !options)
+    return;
+
+  if (info->set_options &&
+      options &&
+      cairo_font_options_equal (info->set_options, options))
+    return;
 
   if (info->set_options || options)
     pango_context_changed (context);
