@@ -1,44 +1,35 @@
-image: registry.gitlab.gnome.org/gnome/gnome-runtime-images/base:latest
-
 stages:
   - build
+  - docs
+  - deploy
 
-#gnome-runtime-linux:
-#  stage: build
-#  before_script:
-#    - >
-#      dnf install -y \
-#        glibc-langpack-en \
-#        gcc \
-#        gcc-c++ \
-#        meson \
-#        redhat-rpm-config \
-#        glib2-devel \
-#        harfbuzz-devel \
-#        fribidi-devel \
-#        cairo-devel \
-#        libthai-devel \
-#        gobject-introspection-devel \
-#        cairo-gobject-devel \
-#        abattis-cantarell-fonts \
-#        google-droid-sans-fonts \
-#        thai-scalable-waree-fonts \
-#        desktop-file-utils \
-#        diffutils
-#  script:
-#    - meson _build
-#    - ninja -C _build
-#    - meson test -C_build --suite pango
-#    - _build/utils/pango-list --verbose > _build/fontlist.txt
-#    - _build/tests/test-font -p /pango/font/metrics --verbose
-#    - _build/utils/pango-view --no-display --output _build/hello.png utils/HELLO.txt
-#  artifacts:
-#    name: "%CI_JOB_NAME%-%CI_COMMIT_REF_NAME%"
-#    when: always
-#    paths:
-#      - _build/meson-logs
-#      - _build/hello.png
-#      - _build/fontlist.txt
+# Common variables
+variables:
+  COMMON_MESON_FLAGS: "--fatal-meson-warnings --werror"
+  MESON_TEST_TIMEOUT_MULTIPLIER: 2
+
+linux-fedora:
+  image: registry.gitlab.gnome.org/gnome/pango/fedora:v1
+  stage: build
+  variables:
+    EXTRA_MESON_FLAGS: "--buildtype=debug --default-library=both"
+  script:
+    - meson ${COMMON_MESON_FLAGS} ${EXTRA_MESON_FLAGS}
+            _build
+    - meson _build
+    - ninja -C _build
+    - .gitlab-ci/run-tests.sh _build
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - "${CI_PROJECT_DIR}/_build/report.xml"
+    name: "gtk-${CI_COMMIT_REF_NAME}"
+    paths:
+      - "${CI_PROJECT_DIR}/_build/meson-logs"
+      - "${CI_PROJECT_DIR}/_build/report.xml"
+      - "${CI_PROJECT_DIR}/_build/hello.png"
+      - "${CI_PROJECT_DIR}/_build/fontlist.txt"
 
 msys2-mingw64:
   stage: build
@@ -59,3 +50,27 @@ msys2-mingw64:
       - _build/meson-logs
       - _build/hello.png
       - _build/fontlist.txt
+
+reference:
+  image: registry.gitlab.gnome.org/gnome/pango/fedora:v1
+  stage: docs
+  variables:
+    EXTRA_MESON_FLAGS: ""
+  script:
+    - meson ${COMMON_MESON_FLAGS} ${EXTRA_MESON_FLAGS} -Dgtk_doc=true _build
+    - ninja -C _build pango-doc
+    - mkdir -p _reference/
+    - mv _build/docs/html/ _reference/
+  artifacts:
+    paths:
+      - _reference
+
+pages:
+  stage: deploy
+  script:
+    - mv _reference/ public/
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
