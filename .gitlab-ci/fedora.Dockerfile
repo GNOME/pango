@@ -9,6 +9,7 @@ RUN dnf -y install \
     clang-analyzer \
     desktop-file-utils \
     diffutils \
+    fontconfig-devel \
     fribidi-devel \
     gcc \
     gcc-c++ \
@@ -27,6 +28,7 @@ RUN dnf -y install \
     itstool \
     lcov \
     libthai-devel \
+    libXft-devel \
     ninja-build \
     python3 \
     python3-jinja2 \
