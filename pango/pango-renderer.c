@@ -227,7 +227,7 @@ draw_underline (PangoRenderer *renderer,
 				     rect->y + 2 * rect->height,
 				     rect->width,
 				     rect->height);
-      /* Fall through */
+      G_GNUC_FALLTHROUGH;
     case PANGO_UNDERLINE_SINGLE:
     case PANGO_UNDERLINE_LOW:
     case PANGO_UNDERLINE_SINGLE_LINE:

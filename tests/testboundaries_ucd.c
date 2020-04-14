@@ -104,7 +104,7 @@ parse_line (gchar *line,
         {
         case 0x00f7: /* DIVISION SIGN: boundary here */
           temp_attr.bits |= bits.bits;
-          /* fall through */
+          G_GNUC_FALLTHROUGH;
 
         case 0x00d7: /* MULTIPLICATION SIGN: no boundary here */
           break;
