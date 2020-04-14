@@ -172,17 +172,19 @@ foreach h: checked_headers
   endif
 endforeach
 
-buildtype = get_option('buildtype')
-if buildtype.startswith('debug')
-  pango_debug_cflags = [ '-DPANGO_ENABLE_DEBUG', ]
-elif buildtype == 'release'
-  pango_debug_cflags = [ '-DG_DISABLE_CAST_CHECKS', ]
+# Use debug/optimization flags to determine whether to enable debug or disable
+# cast checks
+pango_debug_cflags = []
+if get_option('debug')
+  pango_debug_cflags = [ '-DPANGO_ENABLE_DEBUG' ]
+  message('Enabling various debug infrastructure')
+elif get_option('optimization') in ['2', '3', 's']
+  pango_debug_cflags = [ '-DG_DISABLE_CAST_CHECKS' ]
+  message('Disabling cast checks')
   # TODO: We may want a configuration argument to add `G_DISABLE_CHECKS`
   # and `G_DISABLE_ASSERT` from the build, for specific build environments.
   # On the other hand, those who need these symbols can inject them in their
   # build as well.
-else
-  pango_debug_cflags = []
 endif
 
 # Dependencies
