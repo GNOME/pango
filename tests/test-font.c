@@ -133,25 +133,21 @@ test_metrics (void)
 
   metrics = pango_context_get_metrics (context, desc, pango_language_get_default ());
 
-  g_test_message ("%s metrics\n"
-                  "\tascent %d\n"
-                  "\tdescent %d\n"
-                  "\theight %d\n"
-                  "\tchar width %d\n"
-                  "\tdigit width %d\n"
-                  "\tunderline position %d\n"
-                  "\tunderline thickness %d\n"
-                  "\tstrikethrough position %d\n"
-                  "\tstrikethrough thickness %d\n",
-                  str,
-                  pango_font_metrics_get_ascent (metrics),
-                  pango_font_metrics_get_descent (metrics),
-                  pango_font_metrics_get_height (metrics),
-                  pango_font_metrics_get_approximate_char_width (metrics),
-                  pango_font_metrics_get_approximate_digit_width (metrics),
-                  pango_font_metrics_get_underline_position (metrics),
-                  pango_font_metrics_get_underline_thickness (metrics),
-                  pango_font_metrics_get_strikethrough_position (metrics),
+  g_test_message ("%s metrics", str);
+  g_test_message ("\tascent: %d", pango_font_metrics_get_ascent (metrics));
+  g_test_message ("\tdescent: %d", pango_font_metrics_get_descent (metrics));
+  g_test_message ("\theight: %d", pango_font_metrics_get_height (metrics));
+  g_test_message ("\tchar width: %d",
+                  pango_font_metrics_get_approximate_char_width (metrics));
+  g_test_message ("\tdigit width: %d",
+                  pango_font_metrics_get_approximate_digit_width (metrics));
+  g_test_message ("\tunderline position: %d",
+                  pango_font_metrics_get_underline_position (metrics));
+  g_test_message ("\tunderline thickness: %d",
+                  pango_font_metrics_get_underline_thickness (metrics));
+  g_test_message ("\tstrikethrough position: %d",
+                  pango_font_metrics_get_strikethrough_position (metrics));
+  g_test_message ("\tstrikethrough thickness: %d",
                   pango_font_metrics_get_strikethrough_thickness (metrics));
 
   pango_font_metrics_unref (metrics);

@@ -46,27 +46,6 @@ static gunichar current_wc = 0;
 static const char *line_start = NULL;
 static const char *line_end = NULL;
 
-static void fail (const char *format, ...) G_GNUC_PRINTF (1, 2) G_GNUC_NORETURN;
-static void fail (const char *format, ...)
-{
-  char *str;
-  char *line_text;
-
-  va_list args;
-
-  va_start (args, format);
-  str = g_strdup_vprintf (format, args);
-  va_end (args);
-
-  line_text = g_strndup (line_start, line_end - line_start);
-
-  fprintf (stderr, "line %d offset %d char is " CHFORMAT ": %s\n (line is '%s')\n", line, offset, current_wc, str, line_text);
-  g_free (str);
-  g_free (line_text);
-
-  exit (1);
-}
-
 typedef void (* CharForeachFunc) (gunichar      wc,
 				  gunichar      prev_wc,
 				  gunichar      next_wc,
@@ -175,28 +154,36 @@ check_line_char (gunichar      wc,
     {
       if (prev_wc == '\r')
 	{
-	  if (attr->is_line_break)
-	    fail ("line break between \\r and \\n");
+          g_test_message ("Do not line break between \\r and \\n");
+          g_assert_false (attr->is_line_break);
 	}
 
-      if (next_attr && !next_attr->is_line_break)
-	fail ("no line break after \\n");
+      if (next_attr != NULL)
+        {
+          g_test_message ("Line break after \\n");
+          g_assert_true (next_attr->is_line_break);
+	}
     }
 
-  if (attr->is_line_break && prev_wc == 0)
-    fail ("first char in string should not be marked as a line break");
+  if (attr->is_line_break)
+    {
+      g_test_message ("first char in string should not be marked as a line break");
+      g_assert_false (prev_wc == 0);
+    }
 
   if (break_type == G_UNICODE_BREAK_SPACE)
     {
-      if (attr->is_line_break && prev_attr != NULL &&
-	  !attr->is_mandatory_break &&
-	  !(next_wc && g_unichar_break_type (next_wc) == G_UNICODE_BREAK_COMBINING_MARK))
-	fail ("can't break lines before a space unless a mandatory break char precedes it or a combining mark follows; prev char was " CHFORMAT, prev_wc);
+      g_test_message ("can't break lines before a space unless a mandatory break char precedes it or a combining mark follows; prev char was: " CHFORMAT, prev_wc);
+      g_assert_false (attr->is_line_break && prev_attr != NULL &&
+                      !attr->is_mandatory_break &&
+                      !(next_wc && g_unichar_break_type (next_wc) == G_UNICODE_BREAK_COMBINING_MARK));
     }
 
-  if (attr->is_mandatory_break && !attr->is_line_break)
-    fail ("mandatory breaks must also be marked as regular breaks");
-
+  if (attr->is_mandatory_break)
+    {
+      g_test_message ("mandatory breaks must also be marked as regular breaks");
+      g_assert_true (attr->is_line_break);
+    }
 
 
   /* FIXME use the break tables from break.c to automatically
@@ -204,23 +191,23 @@ check_line_char (gunichar      wc,
    * be that hard to do.
    */
 
-  if (break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION &&
-      prev_break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION &&
-      attr->is_line_break &&
-      !attr->is_mandatory_break)
-    fail ("can't break between two open punctuation chars");
+  g_test_message ("can't break between two open punctuation chars");
+  g_assert_false (break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION &&
+                  prev_break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION &&
+                  attr->is_line_break &&
+                  !attr->is_mandatory_break);
 
-  if (break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION &&
-      prev_break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION &&
-      attr->is_line_break &&
-      !attr->is_mandatory_break)
-    fail ("can't break between two close punctuation chars");
+  g_test_message ("can't break between two close punctuation chars");
+  g_assert_false (break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION &&
+                  prev_break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION &&
+                  attr->is_line_break &&
+                  !attr->is_mandatory_break);
 
-  if (break_type == G_UNICODE_BREAK_QUOTATION &&
-      prev_break_type == G_UNICODE_BREAK_ALPHABETIC &&
-      attr->is_line_break &&
-      !attr->is_mandatory_break)
-    fail ("can't break letter-quotemark sequence");
+  g_test_message ("can't break letter-quotemark sequence");
+  g_assert_false (break_type == G_UNICODE_BREAK_QUOTATION &&
+                  prev_break_type == G_UNICODE_BREAK_ALPHABETIC &&
+                  attr->is_line_break &&
+                  !attr->is_mandatory_break);
 }
 
 static void
@@ -290,8 +277,7 @@ check_invariants (const char *text)
   int len;
   PangoLogAttr *attrs;
 
-  if (!g_utf8_validate (text, -1, NULL))
-    fail ("Invalid UTF-8 in test text");
+  g_assert_true (g_utf8_validate (text, -1, NULL));
 
   len = g_utf8_strlen (text, -1);
   attrs = g_new0 (PangoLogAttr, len + 1);
@@ -318,24 +304,20 @@ check_invariants (const char *text)
 static void
 test_boundaries (void)
 {
-  gchar *text;
-  const gchar *filename;
-#if GLIB_CHECK_VERSION(2, 37, 2)
+  const char *filename;
+  GError *error = NULL;
+  char *text;
+
   filename = g_test_get_filename (G_TEST_DIST, "boundaries.utf8", NULL);
-#else
-  filename = SRCDIR "/boundaries.utf8";
-#endif
 
-  g_print ("sample file: %s\n", filename);
+  g_test_message ("sample file: %s\n", filename);
 
-  if (!g_file_get_contents (filename, &text, NULL, NULL))
-    fail ("Couldn't open sample text file");
+  g_file_get_contents (filename, &text, NULL, &error);
+  g_assert_no_error (error);
 
   check_invariants (text);
 
   g_free (text);
-
-  printf ("testboundaries passed\n");
 }
 
 int
@@ -347,4 +329,3 @@ main (int argc, char *argv[])
 
   return g_test_run ();
 }
-

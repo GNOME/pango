@@ -48,12 +48,8 @@ test_file (const gchar *filename, GString *string)
   char *str;
   int start, end;
 
-  if (!g_file_get_contents (filename, &contents, &length, &error))
-    {
-      fprintf (stderr, "%s\n", error->message);
-      g_error_free (error);
-      return;
-    }
+  g_file_get_contents (filename, &contents, &length, &error);
+  g_assert_no_error (error);
 
   ret = pango_parse_markup (contents, length, 0, &attrs, &text, NULL, &error);
   g_free (contents);
@@ -152,7 +148,7 @@ main (int argc, char *argv[])
 
       string = g_string_sized_new (0);
       test_file (argv[1], string);
-      g_print ("%s", string->str);
+      g_test_message ("%s", string->str);
 
       return 0;
     }
