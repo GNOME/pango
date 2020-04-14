@@ -2319,7 +2319,7 @@ pango_font_family_real_get_face (PangoFontFamily *family,
 /**
  * pango_font_family_get_face:
  * @family: a #PangoFontFamily
- * @name: (optional): the name of a face. If the name is %NULL,
+ * @name: (nullable): the name of a face. If the name is %NULL,
  *     the family's default face (fontconfig calls it "Regular")
  *     will be returned.
  *
