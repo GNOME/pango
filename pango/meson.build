@@ -240,7 +240,7 @@ if build_pangoft2
       nsversion: pango_api_version,
       identifier_prefix: 'Pango',
       symbol_prefix: 'pango',
-      export_packages: 'pangoft2',
+      export_packages: 'pangofc',
       includes: [ pango_gir[0], 'fontconfig-2.0', ],
       header: 'pango/pangofc-fontmap.h',
       install: true,
@@ -258,7 +258,7 @@ if build_pangoft2
       nsversion: pango_api_version,
       identifier_prefix: 'Pango',
       symbol_prefix: 'pango',
-      export_packages: 'pangoft2',
+      export_packages: 'pangoot',
       includes: [ pangofc_gir[0], 'freetype2-2.0', ],
       header: 'pango/pango-ot.h',
       install: true,
@@ -295,11 +295,27 @@ if build_pangoft2
   pkgconfig.generate(libpangoft2,
     name: 'Pango FT2 and Pango Fc',
     description: 'Freetype 2.0 and fontconfig font support for Pango',
-    version: meson.project_version(),
     filebase: 'pangoft2',
     subdirs: pango_api_name,
     requires: [ 'pango', freetype2_pc, fontconfig_pc ],
-    install_dir: join_paths(pango_libdir, 'pkgconfig'),
+  )
+
+  # Since we split the introspection data, we also need a split pkg-config
+  # file for Vala
+  pkgconfig.generate(
+    name: 'Pango OT',
+    description: 'OpenType font support for Pango (deprecated)',
+    filebase: 'pangoot',
+    subdirs: pango_api_name,
+    requires: [ 'pangoft2' ],
+  )
+
+  pkgconfig.generate(
+    name: 'Pango FC',
+    description: 'Fontconfig support for Pango',
+    filebase: 'pangofc',
+    subdirs: pango_api_name,
+    requires: [ 'pangoft2' ],
   )
 else
   # For usage as a subproject
