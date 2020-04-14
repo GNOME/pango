@@ -64,7 +64,7 @@ typedef struct _PangoCairoFontMap        PangoCairoFontMap;
  * path of @cr and no filling/stroking done.  This will be set
  * to %TRUE when called from pango_cairo_layout_path() and
  * pango_cairo_layout_line_path() rendering functions.
- * @data: user data passed to pango_cairo_context_set_shape_renderer()
+ * @data: (closure): user data passed to pango_cairo_context_set_shape_renderer()
  *
  * Function type for rendering attributes of type %PANGO_ATTR_SHAPE
  * with Pango's Cairo renderer.

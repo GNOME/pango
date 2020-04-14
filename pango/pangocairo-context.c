@@ -374,7 +374,7 @@ pango_cairo_context_set_shape_renderer (PangoContext                *context,
  * attributes of type %PANGO_ATTR_SHAPE as set by
  * pango_cairo_context_set_shape_renderer(), if any.
  *
- * Return value: (nullable): the shape rendering callback previously
+ * Return value: (transfer none) (nullable): the shape rendering callback previously
  *   set on the context, or %NULL if no shape rendering callback have
  *   been set.
  *
