@@ -160,11 +160,9 @@ endif
 pkgconfig.generate(libpango,
   name: 'Pango',
   description: 'Internationalized text handling',
-  version: meson.project_version(),
   requires: pango_pkg_requires,
   filebase: 'pango',
   subdirs: pango_api_name,
-  install_dir: join_paths(pango_libdir, 'pkgconfig'),
 )
 
 # FreeType
@@ -370,11 +368,9 @@ if xft_dep.found() and fontconfig_dep.found()
   pkgconfig.generate(libpangoxft,
     name: 'Pango Xft',
     description: 'Xft font support for Pango',
-    version: meson.project_version(),
     filebase: 'pangoxft',
     subdirs: pango_api_name,
     requires: [ 'pangoft2', 'xft' ],
-    install_dir: join_paths(pango_libdir, 'pkgconfig'),
   )
 else
   # For usage as a subproject
@@ -431,11 +427,9 @@ if host_system == 'windows'
   pkgconfig.generate(libpangowin32,
     name: 'Pango Win32',
     description: 'Win32 GDI font support for Pango',
-    version: meson.project_version(),
     filebase: 'pangowin32',
     subdirs: pango_api_name,
     requires: 'pango',
-    install_dir: join_paths(pango_libdir, 'pkgconfig'),
   )
 else
   # For usage as a subproject
@@ -547,11 +541,9 @@ if cairo_dep.found()
   pkgconfig.generate(libpangocairo,
     name: 'Pango Cairo',
     description: 'Cairo rendering support for Pango',
-    version: meson.project_version(),
     filebase: 'pangocairo',
     subdirs: pango_api_name,
     requires: pango_cairo_requires,
-    install_dir: join_paths(pango_libdir, 'pkgconfig'),
   )
 else
   # For usage as a subproject
