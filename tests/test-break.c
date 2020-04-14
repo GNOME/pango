@@ -51,12 +51,8 @@ test_file (const gchar *filename, GString *string)
   PangoAttrList *attributes;
   PangoLayout *layout;
 
-  if (!g_file_get_contents (filename, &contents, &length, &error))
-    {
-      fprintf (stderr, "%s\n", error->message);
-      g_error_free (error);
-      return;
-    }
+  g_file_get_contents (filename, &contents, &length, &error);
+  g_assert_no_error (error);
 
   test = contents;
 
@@ -68,12 +64,8 @@ test_file (const gchar *filename, GString *string)
   len = g_utf8_strlen (test, -1) + 1;
   attrs = g_new (PangoLogAttr, len);
 
-  if (!pango_parse_markup (test, -1, 0, &attributes, &text, NULL, &error))
-    {
-      fprintf (stderr, "%s\n", error->message);
-      g_error_free (error);
-      return;
-    }
+  pango_parse_markup (test, -1, 0, &attributes, &text, NULL, &error);
+  g_assert_no_error (error);
 
   layout = pango_layout_new (context);
   pango_layout_set_text (layout, text, length);
@@ -260,7 +252,8 @@ test_break (gconstpointer d)
 
   if (diff && diff[0])
     {
-      g_printerr ("Contents don't match expected contents:\n%s", diff);
+      g_test_message ("Contents don't match expected contents");
+      g_test_message ("%s", diff);
       g_test_fail ();
       g_free (diff);
     }
@@ -291,7 +284,7 @@ main (int argc, char *argv[])
 
       string = g_string_sized_new (0);
       test_file (argv[1], string);
-      printf ("%s", string->str);
+      g_test_message ("%s", string->str);
 
       return 0;
     }

@@ -238,12 +238,8 @@ test_file (const gchar *filename, GString *string)
   PangoWrapMode wrap = PANGO_WRAP_WORD;
   PangoFontDescription *desc;
 
-  if (!g_file_get_contents (filename, &contents, &length, &error))
-    {
-      fprintf (stderr, "%s\n", error->message);
-      g_error_free (error);
-      return;
-    }
+  g_file_get_contents (filename, &contents, &length, &error);
+  g_assert_no_error (error);
 
   p = strchr (contents, '\n');
   g_assert (p);
@@ -319,7 +315,8 @@ test_layout (gconstpointer d)
 
   if (diff && diff[0])
     {
-      g_printerr ("Contents don't match expected contents:\n%s", diff);
+      g_test_message ("Contents don't match expected contents");
+      g_test_message ("%s", diff);
       g_test_fail ();
       g_free (diff);
     }
@@ -350,7 +347,7 @@ main (int argc, char *argv[])
 
       string = g_string_sized_new (0);
       test_file (argv[1], string);
-      g_print ("%s", string->str);
+      g_test_message ("%s", string->str);
 
       return 0;
     }

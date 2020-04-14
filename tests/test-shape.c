@@ -319,7 +319,8 @@ test_shape (gconstpointer d)
 
   if (diff && diff[0])
     {
-      g_printerr ("Contents don't match expected contents:\n%s", diff);
+      g_test_message ("Contents don't match expected contents");
+      g_test_message ("%s", diff);
       g_test_fail ();
       g_free (diff);
     }

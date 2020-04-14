@@ -539,6 +539,7 @@ pkgconfig = import('pkgconfig')
 configure_file(output: 'config.h', configuration: pango_conf)
 
 root_inc = include_directories('.')
+pango_inc = include_directories('pango')
 
 subdir('pango')
 subdir('utils')

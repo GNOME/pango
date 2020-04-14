@@ -8,6 +8,7 @@
 const char *text = "Hamburgerfonts\nวิวิวิวิวิวิ\nبهداد";
 
 int num_iters = 50;
+int num_threads = 5;
 
 GMutex mutex;
 
@@ -65,18 +66,12 @@ thread_func (gpointer data)
   return 0;
 }
 
-int
-main (int argc, char **argv)
+static void
+pangocairo_threads (void)
 {
-  int num_threads = 5;
-  int i;
   GPtrArray *threads = g_ptr_array_new ();
   GPtrArray *surfaces = g_ptr_array_new ();
-
-  if (argc > 1)
-    num_threads = atoi (argv[1]);
-  if (argc > 2)
-    num_iters = atoi (argv[2]);
+  int i;
 
   g_mutex_lock (&mutex);
 
@@ -98,7 +93,7 @@ main (int argc, char **argv)
   for (i = 0; i < num_threads; i++)
     g_thread_join (g_ptr_array_index (threads, i));
 
-  g_ptr_array_free (threads, TRUE);
+  g_ptr_array_unref (threads);
 
   /* Now, draw a reference image and check results. */
   {
@@ -123,10 +118,11 @@ main (int argc, char **argv)
 	unsigned char *data = cairo_image_surface_get_data (surface);
 	if (memcmp (ref_data, data, len))
 	  {
-	    fprintf (stderr, "image for thread %d different from reference image.\n", i);
+	    g_test_message ("image for thread %d different from reference image", i);
 	    cairo_surface_write_to_png (ref_surface, "test-pangocairo-threads-reference.png");
 	    cairo_surface_write_to_png (surface, "test-pangocairo-threads-failed.png");
-	    return 1;
+	    g_test_fail ();
+            break;
 	  }
 	cairo_surface_destroy (surface);
       }
@@ -134,9 +130,23 @@ main (int argc, char **argv)
     cairo_surface_destroy (ref_surface);
   }
 
-  g_ptr_array_free (surfaces, TRUE);
+  g_ptr_array_unref (surfaces);
 
   pango_cairo_font_map_set_default (NULL);
 
-  return 0;
+}
+
+int
+main (int argc, char **argv)
+{
+  g_test_init (&argc, &argv, NULL);
+
+  if (argc > 1)
+    num_threads = atoi (argv[1]);
+  if (argc > 2)
+    num_iters = atoi (argv[2]);
+
+  g_test_add_func ("/pangocairo/threads", pangocairo_threads);
+
+  return g_test_run ();
 }

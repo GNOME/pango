@@ -230,32 +230,28 @@ do_test (const gchar *filename,
 
   error = NULL;
   channel = g_io_channel_new_file (filename, "r", &error);
-  if (!channel)
+  if (g_error_matches (error, G_FILE_ERROR, G_FILE_ERROR_NOENT))
     {
-      if (error->domain == G_FILE_ERROR && error->code == G_FILE_ERROR_NOENT)
-        {
-	  g_print ("%s not found.  Skipping test.\n", filename);
-	  goto done;
-	}
-      else
-        {
-	  g_printerr ("%s: %s\n", filename, error->message);
-	  exit (1);
-	}
+      g_test_skip ("Test file not found");
+      return;
     }
-  g_print ("Testing %s.\n", filename);
+
+  g_assert_no_error (error);
+
+  g_test_message ("Filename: %s", filename);
 
   i = 1;
   for (;;)
     {
       error = NULL;
       status = g_io_channel_read_line (channel, &line, &length, &terminator_pos, &error);
+      g_assert_no_error (error);
 
       switch (status)
         {
           case G_IO_STATUS_ERROR:
-            g_printerr ("%s: %s\n", filename, error->message);
-            exit (1);
+            failed = TRUE;
+            goto done;
 
           case G_IO_STATUS_EOF:
 	    goto done;
@@ -268,11 +264,8 @@ do_test (const gchar *filename,
             break;
         }
 
-      if (! parse_line (line, bits, &string, &expected_attrs, &num_attrs))
-        {
-          g_printerr ("%s: error parsing line %d: %s\n", filename, i, line);
-          exit (1);
-        }
+      g_test_message ("Parsing line: %s", line);
+      g_assert_true (parse_line (line, bits, &string, &expected_attrs, &num_attrs));
       
       if (num_attrs > 0)
         {
@@ -293,11 +286,10 @@ do_test (const gchar *filename,
 		  comments = "";
 		}
 
-              g_printerr ("%s: line %d failed\n"
-                          "   expected: %s\n"
-                          "   returned: %s\n"
-			  "   comments: %s\n\n",
-                          filename, i, line, str, comments);
+              g_test_message ("%s: line %d failed", filename, i);
+              g_test_message ("   expected: %s", line);
+              g_test_message ("   returned: %s", str);
+              g_test_message ("   comments: %s", comments);
 
               g_free (str);
               failed = TRUE;
@@ -316,20 +308,16 @@ done:
   if (error)
     g_error_free (error);
 
-  g_assert (!failed);
+  g_assert_true (!failed);
 }
 
 static void
 test_grapheme_break (void)
 {
-  const gchar *filename;
+  const char *filename;
   AttrBits bits;
 
-#if GLIB_CHECK_VERSION(2, 37, 2)
   filename = g_test_get_filename (G_TEST_DIST, "GraphemeBreakTest.txt", NULL);
-#else
-  filename = SRCDIR "/GraphemeBreakTest.txt";
-#endif
   bits.bits = 0;
   bits.attr.is_cursor_position = 1;
   do_test (filename, bits);
@@ -338,14 +326,10 @@ test_grapheme_break (void)
 static void
 test_emoji_break (void)
 {
-  const gchar *filename;
+  const char *filename;
   AttrBits bits;
 
-#if GLIB_CHECK_VERSION(2, 37, 2)
   filename = g_test_get_filename (G_TEST_DIST, "EmojiBreakTest.txt", NULL);
-#else
-  filename = SRCDIR "/EmojiBreakTest.txt";
-#endif
   bits.bits = 0;
   bits.attr.is_cursor_position = 1;
   do_test (filename, bits);
@@ -354,14 +338,10 @@ test_emoji_break (void)
 static void
 test_char_break (void)
 {
-  const gchar *filename;
+  const char *filename;
   AttrBits bits;
 
-#if GLIB_CHECK_VERSION(2, 37, 2)
   filename = g_test_get_filename (G_TEST_DIST, "CharBreakTest.txt", NULL);
-#else
-  filename = SRCDIR "/CharBreakTest.txt";
-#endif
   bits.bits = 0;
   bits.attr.is_char_break = 1;
   do_test (filename, bits);
@@ -370,14 +350,10 @@ test_char_break (void)
 static void
 test_word_break (void)
 {
-  const gchar *filename;
+  const char *filename;
   AttrBits bits;
 
-#if GLIB_CHECK_VERSION(2, 37, 2)
   filename = g_test_get_filename (G_TEST_DIST, "WordBreakTest.txt", NULL);
-#else
-  filename = SRCDIR "/WordBreakTest.txt";
-#endif
   bits.bits = 0;
   bits.attr.is_word_boundary = 1;
   do_test (filename, bits);
@@ -386,14 +362,10 @@ test_word_break (void)
 static void
 test_sentence_break (void)
 {
-  const gchar *filename;
+  const char *filename;
   AttrBits bits;
 
-#if GLIB_CHECK_VERSION(2, 37, 2)
   filename = g_test_get_filename (G_TEST_DIST, "SentenceBreakTest.txt", NULL);
-#else
-  filename = SRCDIR "/SentenceBreakTest.txt";
-#endif
   bits.bits = 0;
   bits.attr.is_sentence_boundary = 1;
   do_test (filename, bits);
@@ -402,17 +374,15 @@ test_sentence_break (void)
 static void
 test_line_break (void)
 {
-  const gchar *filename;
+  const char *filename;
   AttrBits bits;
 
-#if GLIB_CHECK_VERSION(2, 37, 2)
+
   filename = g_test_get_filename (G_TEST_DIST, "LineBreakTest.txt", NULL);
-#else
-  filename = SRCDIR "/LineBreakTest.txt";
-#endif
   bits.bits = 0;
   bits.attr.is_line_break = 1;
   bits.attr.is_mandatory_break = 1;
+
   do_test (filename, bits);
 }
 

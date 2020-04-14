@@ -55,7 +55,7 @@ if build_pangoft2
   docdeps += libpangoft2_dep
 endif
 
-if xft_dep.found()
+if xft_dep.found() and fontconfig_dep.found()
   docdeps += libpangoxft_dep
 endif
 
@@ -72,8 +72,7 @@ docpath = join_paths(pango_datadir, 'gtk-doc', 'html')
 gnome.gtkdoc('pango',
              main_xml: 'pango-docs.sgml',
              src_dir: [
-               join_paths(meson.source_root(), 'pango'),
-               join_paths(meson.build_root(), 'pango'),
+               pango_inc,
              ],
              dependencies: docdeps,
              gobject_typesfile: configure_file(input: 'pango.types.in',

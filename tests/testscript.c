@@ -60,18 +60,6 @@
 
 #include "pango/pango-script.h"
 
-#undef VERBOSE
-
-#define ASSERT(stmt) G_STMT_START {					\
-    if (stmt) { }							\
-    else								\
-      {									\
-	g_warning ("%s:%d (%s): assertion '%s' failed",			\
-		 __FILE__, __LINE__, G_STRFUNC, #stmt);			\
-	exit (1);							\
-      }									\
-} G_STMT_END
-
 typedef struct
 {
   const char *run_text_escaped;
@@ -170,9 +158,7 @@ test_script_iter (void)
 
   iter = pango_script_iter_new (all->str, -1);
 
-#ifdef VERBOSE
-  g_print ("Total length: %d\n", all->len);
-#endif
+  g_test_message ("Total length: %" G_GSIZE_FORMAT "\n", all->len);
 
   pos = all->str;
   for (i = 0; i < G_N_ELEMENTS(test_data); i++)
@@ -181,16 +167,18 @@ test_script_iter (void)
       gboolean result;
 
       pango_script_iter_get_range (iter, &start, &end, &script);
-#ifdef VERBOSE
-      g_print ("Range: %d-%d: %d\n", start - all->str, end - all->str, script);
-#endif
 
-      ASSERT (start == pos);
-      ASSERT (end == next_pos);
-      ASSERT (script == test_data[i].run_code);
+      g_test_message ("Range: %d-%d: %d\n",
+                      (int) (start - all->str),
+                      (int) (end - all->str),
+                      script);
+
+      g_assert_true (start == pos);
+      g_assert_true (end == next_pos);
+      g_assert_true (script == test_data[i].run_code);
 
       result = pango_script_iter_next (iter);
-      ASSERT (result == (i != G_N_ELEMENTS (test_data) - 1));
+      g_assert_true (result == (i != G_N_ELEMENTS (test_data) - 1));
 
       pos = next_pos;
     }
@@ -204,10 +192,10 @@ test_script_iter (void)
 
   pango_script_iter_get_range (iter, &start, &end, &script);
 
-  ASSERT (start == all->str);
-  ASSERT (end == all->str);
-  ASSERT (script == PANGO_SCRIPT_COMMON);
-  ASSERT (!pango_script_iter_next (iter));
+  g_assert_true (start == all->str);
+  g_assert_true (end == all->str);
+  g_assert_true (script == PANGO_SCRIPT_COMMON);
+  g_assert_true (!pango_script_iter_next (iter));
 
   pango_script_iter_free (iter);
 
