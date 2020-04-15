@@ -679,10 +679,14 @@ pango_layout_get_line_spacing (PangoLayout *layout)
  **/
 void
 pango_layout_set_attributes (PangoLayout   *layout,
-			     PangoAttrList *attrs)
+                             PangoAttrList *attrs)
 {
   PangoAttrList *old_attrs;
+
   g_return_if_fail (layout != NULL);
+
+  if (!attrs && !layout->attrs)
+    return;
 
   old_attrs = layout->attrs;
 
