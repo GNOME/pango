@@ -28,6 +28,15 @@ struct _PangoAttrIterator
   guint end_index;
 };
 
+struct _PangoAttrList
+{
+  guint ref_count;
+  GSList *attributes;
+  GSList *attributes_tail;
+};
+
+void     _pango_attr_list_init         (PangoAttrList     *list);
+void     _pango_attr_list_destroy      (PangoAttrList     *list);
 void     _pango_attr_list_get_iterator (PangoAttrList     *list,
                                         PangoAttrIterator *iterator);
 

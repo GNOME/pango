@@ -3069,7 +3069,7 @@ ensure_tab_width (PangoLayout *layout)
       GList *items;
       PangoAttribute *attr;
       PangoAttrList *layout_attrs;
-      PangoAttrList *tmp_attrs;
+      PangoAttrList tmp_attrs;
       PangoAttrIterator iter;
       PangoFontDescription *font_desc = pango_font_description_copy_static (pango_context_get_font_description (layout->context));
       PangoLanguage *language;
@@ -3078,19 +3078,19 @@ ensure_tab_width (PangoLayout *layout)
       _pango_attr_list_get_iterator (layout_attrs, &iter);
       pango_attr_iterator_get_font (&iter, font_desc, &language, NULL);
 
-      tmp_attrs = pango_attr_list_new ();
+      _pango_attr_list_init (&tmp_attrs);
 
       attr = pango_attr_font_desc_new (font_desc);
       pango_font_description_free (font_desc);
-      pango_attr_list_insert_before (tmp_attrs, attr);
+      pango_attr_list_insert_before (&tmp_attrs, attr);
 
       if (language)
 	{
 	  attr = pango_attr_language_new (language);
-	  pango_attr_list_insert_before (tmp_attrs, attr);
+	  pango_attr_list_insert_before (&tmp_attrs, attr);
 	}
 
-      items = pango_itemize (layout->context, " ", 0, 1, tmp_attrs, NULL);
+      items = pango_itemize (layout->context, " ", 0, 1, &tmp_attrs, NULL);
 
       _pango_attr_iterator_destroy (&iter);
       if (layout_attrs != layout->attrs)
@@ -3098,7 +3098,7 @@ ensure_tab_width (PangoLayout *layout)
 	  pango_attr_list_unref (layout_attrs);
 	  layout_attrs = NULL;
 	}
-      pango_attr_list_unref (tmp_attrs);
+      _pango_attr_list_destroy (&tmp_attrs);
 
       item = items->data;
       pango_shape ("        ", 8, &item->analysis, glyphs);
@@ -3466,18 +3466,18 @@ get_need_hyphen (PangoItem  *item,
   const char *p;
   gboolean prev_space;
   gboolean prev_hyphen;
-  PangoAttrList *attrs;
+  PangoAttrList attrs;
   PangoAttrIterator iter;
   GSList *l;
 
-  attrs = pango_attr_list_new ();
+  _pango_attr_list_init (&attrs);
   for (l = item->analysis.extra_attrs; l; l = l->next)
     {
       PangoAttribute *attr = l->data;
       if (attr->klass->type == PANGO_ATTR_INSERT_HYPHENS)
-        pango_attr_list_change (attrs, pango_attribute_copy (attr));
+        pango_attr_list_change (&attrs, pango_attribute_copy (attr));
     }
-  _pango_attr_list_get_iterator (attrs, &iter);
+  _pango_attr_list_get_iterator (&attrs, &iter);
 
   for (i = 0, p = text + item->offset; i < item->num_chars; i++, p = g_utf8_next_char (p))
     {
@@ -3563,7 +3563,7 @@ get_need_hyphen (PangoItem  *item,
     }
 
   _pango_attr_iterator_destroy (&iter);
-  pango_attr_list_unref (attrs);
+  _pango_attr_list_destroy (&attrs);
 }
 
 static gboolean

@@ -37,13 +37,6 @@
 #include "pango-attributes-private.h"
 #include "pango-impl-utils.h"
 
-struct _PangoAttrList
-{
-  guint ref_count;
-  GSList *attributes;
-  GSList *attributes_tail;
-};
-
 static PangoAttribute *pango_attr_color_new         (const PangoAttrClass *klass,
 						     guint16               red,
 						     guint16               green,
@@ -1313,6 +1306,14 @@ G_DEFINE_BOXED_TYPE (PangoAttrList, pango_attr_list,
                      pango_attr_list_copy,
                      pango_attr_list_unref);
 
+void
+_pango_attr_list_init (PangoAttrList *list)
+{
+  list->ref_count = 1;
+  list->attributes = NULL;
+  list->attributes_tail = NULL;
+}
+
 /**
  * pango_attr_list_new:
  *
@@ -1326,9 +1327,7 @@ pango_attr_list_new (void)
 {
   PangoAttrList *list = g_slice_new (PangoAttrList);
 
-  list->ref_count = 1;
-  list->attributes = NULL;
-  list->attributes_tail = NULL;
+  _pango_attr_list_init (list);
 
   return list;
 }
@@ -1354,6 +1353,23 @@ pango_attr_list_ref (PangoAttrList *list)
   return list;
 }
 
+void
+_pango_attr_list_destroy (PangoAttrList *list)
+{
+  GSList *tmp_list;
+
+  tmp_list = list->attributes;
+  while (tmp_list)
+    {
+      PangoAttribute *attr = tmp_list->data;
+      tmp_list = tmp_list->next;
+
+      attr->klass->destroy (attr);
+    }
+
+  g_slist_free (list->attributes);
+}
+
 /**
  * pango_attr_list_unref:
  * @list: (nullable): a #PangoAttrList, may be %NULL
@@ -1365,8 +1381,6 @@ pango_attr_list_ref (PangoAttrList *list)
 void
 pango_attr_list_unref (PangoAttrList *list)
 {
-  GSList *tmp_list;
-
   if (list == NULL)
     return;
 
@@ -1374,17 +1388,7 @@ pango_attr_list_unref (PangoAttrList *list)
 
   if (g_atomic_int_dec_and_test ((int *) &list->ref_count))
     {
-      tmp_list = list->attributes;
-      while (tmp_list)
-	{
-	  PangoAttribute *attr = tmp_list->data;
-	  tmp_list = tmp_list->next;
-
-	  attr->klass->destroy (attr);
-	}
-
-      g_slist_free (list->attributes);
-
+      _pango_attr_list_destroy (list);
       g_slice_free (PangoAttrList, list);
     }
 }

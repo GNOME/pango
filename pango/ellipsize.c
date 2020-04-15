@@ -25,6 +25,7 @@
 #include "pango-glyph-item.h"
 #include "pango-layout-private.h"
 #include "pango-font-private.h"
+#include "pango-attributes-private.h"
 #include "pango-impl-utils.h"
 
 typedef struct _EllipsizeState EllipsizeState;
@@ -299,7 +300,7 @@ itemize_text (EllipsizeState *state,
 static void
 shape_ellipsis (EllipsizeState *state)
 {
-  PangoAttrList *attrs = pango_attr_list_new ();
+  PangoAttrList attrs;
   GSList *run_attrs;
   PangoItem *item;
   PangoGlyphString *glyphs;
@@ -308,6 +309,8 @@ shape_ellipsis (EllipsizeState *state)
   const char *ellipsis_text;
   int len;
   int i;
+
+  _pango_attr_list_init (&attrs);
 
   /* Create/reset state->ellipsis_run
    */
@@ -333,7 +336,7 @@ shape_ellipsis (EllipsizeState *state)
       attr->start_index = 0;
       attr->end_index = G_MAXINT;
 
-      pango_attr_list_insert (attrs, attr);
+      pango_attr_list_insert (&attrs, attr);
     }
 
   g_slist_free (run_attrs);
@@ -341,7 +344,7 @@ shape_ellipsis (EllipsizeState *state)
   fallback = pango_attr_fallback_new (FALSE);
   fallback->start_index = 0;
   fallback->end_index = G_MAXINT;
-  pango_attr_list_insert (attrs, fallback);
+  pango_attr_list_insert (&attrs, fallback);
 
   /* First try using a specific ellipsis character in the best matching font
    */
@@ -350,7 +353,7 @@ shape_ellipsis (EllipsizeState *state)
   else
     ellipsis_text = "\342\200\246";	/* U+2026: HORIZONTAL ELLIPSIS */
 
-  item = itemize_text (state, ellipsis_text, attrs);
+  item = itemize_text (state, ellipsis_text, &attrs);
 
   /* If that fails we use "..." in the first matching font
    */
@@ -365,10 +368,10 @@ shape_ellipsis (EllipsizeState *state)
       ((PangoAttrInt *)fallback)->value = TRUE;
 
       ellipsis_text = "...";
-      item = itemize_text (state, ellipsis_text, attrs);
+      item = itemize_text (state, ellipsis_text, &attrs);
     }
 
-  pango_attr_list_unref (attrs);
+  _pango_attr_list_destroy (&attrs);
 
   state->ellipsis_run->item = item;
 
