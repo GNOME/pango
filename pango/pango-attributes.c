@@ -34,6 +34,7 @@
 #include <string.h>
 
 #include "pango-attributes.h"
+#include "pango-attributes-private.h"
 #include "pango-impl-utils.h"
 
 struct _PangoAttrList
@@ -41,14 +42,6 @@ struct _PangoAttrList
   guint ref_count;
   GSList *attributes;
   GSList *attributes_tail;
-};
-
-struct _PangoAttrIterator
-{
-  GSList *next_attribute;
-  GList *attribute_stack;
-  guint start_index;
-  guint end_index;
 };
 
 static PangoAttribute *pango_attr_color_new         (const PangoAttrClass *klass,
@@ -1997,6 +1990,20 @@ G_DEFINE_BOXED_TYPE (PangoAttrIterator,
                      pango_attr_iterator_copy,
                      pango_attr_iterator_destroy)
 
+void
+_pango_attr_list_get_iterator (PangoAttrList     *list,
+                               PangoAttrIterator *iterator)
+{
+  iterator->next_attribute = list->attributes;
+  iterator->attribute_stack = NULL;
+
+  iterator->start_index = 0;
+  iterator->end_index = 0;
+
+  if (!pango_attr_iterator_next (iterator))
+    iterator->end_index = G_MAXUINT;
+}
+
 /**
  * pango_attr_list_get_iterator:
  * @list: a #PangoAttrList
@@ -2015,14 +2022,7 @@ pango_attr_list_get_iterator (PangoAttrList  *list)
   g_return_val_if_fail (list != NULL, NULL);
 
   iterator = g_slice_new (PangoAttrIterator);
-  iterator->next_attribute = list->attributes;
-  iterator->attribute_stack = NULL;
-
-  iterator->start_index = 0;
-  iterator->end_index = 0;
-
-  if (!pango_attr_iterator_next (iterator))
-    iterator->end_index = G_MAXUINT;
+  _pango_attr_list_get_iterator (list, iterator);
 
   return iterator;
 }
@@ -2135,6 +2135,12 @@ pango_attr_iterator_copy (PangoAttrIterator *iterator)
   return copy;
 }
 
+void
+_pango_attr_iterator_destroy (PangoAttrIterator *iterator)
+{
+  g_list_free (iterator->attribute_stack);
+}
+
 /**
  * pango_attr_iterator_destroy:
  * @iterator: a #PangoAttrIterator.
@@ -2146,7 +2152,7 @@ pango_attr_iterator_destroy (PangoAttrIterator *iterator)
 {
   g_return_if_fail (iterator != NULL);
 
-  g_list_free (iterator->attribute_stack);
+  _pango_attr_iterator_destroy (iterator);
   g_slice_free (PangoAttrIterator, iterator);
 }
 
