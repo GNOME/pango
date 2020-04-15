@@ -711,7 +711,8 @@ pango_layout_set_attributes (PangoLayout   *layout,
  *
  * Gets the attribute list for the layout, if any.
  *
- * Return value: (transfer none): a #PangoAttrList.
+ * Return value: (transfer none) (nullable): a #PangoAttrList or %NULL
+ *   if none was set.
  **/
 PangoAttrList*
 pango_layout_get_attributes (PangoLayout *layout)
