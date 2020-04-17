@@ -4411,11 +4411,8 @@ pango_layout_check_lines (PangoLayout *layout)
       _pango_attr_iterator_destroy (&iter);
     }
 
-  if (shape_attrs)
-    pango_attr_list_unref (shape_attrs);
-
-  if (attrs)
-    pango_attr_list_unref (attrs);
+  pango_attr_list_unref (shape_attrs);
+  pango_attr_list_unref (attrs);
 }
 
 #pragma GCC diagnostic pop
