@@ -1597,7 +1597,7 @@ tailor_break (const char    *text,
 
   res = break_script (text, length, analysis, attrs, attrs_len);
 
-  if (item_offset >= 0)
+  if (item_offset >= 0 && analysis->extra_attrs)
     res |= break_attrs (text, length, analysis->extra_attrs, item_offset, attrs, attrs_len);
 
   return res;
