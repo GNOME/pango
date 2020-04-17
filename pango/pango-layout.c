@@ -1125,15 +1125,22 @@ pango_layout_set_text (PangoLayout *layout,
   old_text = layout->text;
 
   if (length < 0)
-    layout->text = g_strdup (text);
+    {
+      layout->length = strlen (text);
+      layout->text = g_strndup (text, layout->length);
+    }
   else if (length > 0)
-    /* This is not exactly what we want.  We don't need the padding...
-     */
-    layout->text = g_strndup (text, length);
+    {
+      /* This is not exactly what we want.  We don't need the padding...
+       */
+      layout->length = length;
+      layout->text = g_strndup (text, length);
+    }
   else
-    layout->text = g_malloc0 (1);
-
-  layout->length = strlen (layout->text);
+    {
+      layout->length = 0;
+      layout->text = g_malloc0 (1);
+    }
 
   /* validate it, and replace invalid bytes with -1 */
   start = layout->text;
