@@ -4102,17 +4102,25 @@ pango_layout_get_effective_attributes (PangoLayout *layout)
   if (layout->attrs)
     attrs = pango_attr_list_copy (layout->attrs);
   else
-    attrs = pango_attr_list_new ();
+    attrs = NULL;
 
   if (layout->font_desc)
     {
       PangoAttribute *attr = pango_attr_font_desc_new (layout->font_desc);
+
+      if (!attrs)
+        attrs = pango_attr_list_new ();
+
       pango_attr_list_insert_before (attrs, attr);
     }
 
   if (layout->single_paragraph)
     {
       PangoAttribute *attr = pango_attr_show_new (PANGO_SHOW_LINE_BREAKS);
+
+      if (!attrs)
+        attrs = pango_attr_list_new ();
+
       pango_attr_list_insert_before (attrs, attr);
     }
 
@@ -4250,11 +4258,19 @@ pango_layout_check_lines (PangoLayout *layout)
     pango_layout_set_text (layout, NULL, 0);
 
   attrs = pango_layout_get_effective_attributes (layout);
+  if (attrs)
+    {
+      shape_attrs = pango_attr_list_filter (attrs, affects_break_or_shape, NULL);
+      itemize_attrs = pango_attr_list_filter (attrs, affects_itemization, NULL);
 
-  shape_attrs = pango_attr_list_filter (attrs, affects_break_or_shape, NULL);
-  itemize_attrs = pango_attr_list_filter (attrs, affects_itemization, NULL);
-  if (itemize_attrs)
-    _pango_attr_list_get_iterator (itemize_attrs, &iter);
+      if (itemize_attrs)
+        _pango_attr_list_get_iterator (itemize_attrs, &iter);
+    }
+  else
+    {
+      shape_attrs = NULL;
+      itemize_attrs = NULL;
+    }
 
   layout->log_attrs = g_new (PangoLogAttr, layout->n_chars + 1);
 
