@@ -151,6 +151,9 @@ print_attr_list (PangoAttrList *attrs, GString *string)
 {
   PangoAttrIterator *iter;
 
+  if (!attrs)
+    return;
+
   iter = pango_attr_list_get_iterator (attrs);
   do {
     gint start, end;
