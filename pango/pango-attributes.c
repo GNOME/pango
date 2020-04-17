@@ -1355,18 +1355,19 @@ pango_attr_list_ref (PangoAttrList *list)
 void
 _pango_attr_list_destroy (PangoAttrList *list)
 {
-  GSList *tmp_list;
+  guint i, p;
 
-  tmp_list = list->attributes;
-  while (tmp_list)
+  if (!list->attributes)
+    return;
+
+  for (i = 0, p = list->attributes->len; i < p; i++)
     {
-      PangoAttribute *attr = tmp_list->data;
-      tmp_list = tmp_list->next;
+      PangoAttribute *attr = g_ptr_array_index (list->attributes, i);
 
       attr->klass->destroy (attr);
     }
 
-  g_slist_free (list->attributes);
+  g_ptr_array_free (list->attributes, TRUE);
 }
 
 /**
@@ -1407,26 +1408,15 @@ PangoAttrList *
 pango_attr_list_copy (PangoAttrList *list)
 {
   PangoAttrList *new;
-  GSList *iter;
-  GSList *new_attrs;
 
   if (list == NULL)
     return NULL;
 
   new = pango_attr_list_new ();
+  if (!list->attributes || list->attributes->len == 0)
+    return new;
 
-  iter = list->attributes;
-  new_attrs = NULL;
-  while (iter != NULL)
-    {
-      new_attrs = g_slist_prepend (new_attrs,
-				   pango_attribute_copy (iter->data));
-
-      iter = g_slist_next (iter);
-    }
-
-  /* we're going to reverse the nodes, so head becomes tail */
-  new->attributes = g_slist_reverse (new_attrs);
+  new->attributes = g_ptr_array_copy (list->attributes, (GCopyFunc)pango_attribute_copy, NULL);
 
   return new;
 }
@@ -1436,49 +1426,42 @@ pango_attr_list_insert_internal (PangoAttrList  *list,
 				 PangoAttribute *attr,
 				 gboolean        before)
 {
-  GSList *tmp_list, *prev, *link;
   const guint start_index = attr->start_index;
   PangoAttribute *last_attr;
 
-  if (!list->attributes)
+  if (G_UNLIKELY (!list->attributes))
+    list->attributes = g_ptr_array_new ();
+
+  if (list->attributes->len == 0)
     {
-      list->attributes = g_slist_prepend (NULL, attr);
+      g_ptr_array_add (list->attributes, attr);
       return;
     }
 
-  last_attr = g_slist_last (list->attributes)->data;
+  g_assert (list->attributes->len > 0);
+
+  last_attr = g_ptr_array_index (list->attributes, list->attributes->len - 1);
 
   if (last_attr->start_index < start_index ||
-       (!before && last_attr->start_index == start_index))
+      (!before && last_attr->start_index == start_index))
     {
-      list->attributes = g_slist_append (list->attributes, attr);
+      g_ptr_array_add (list->attributes, attr);
     }
   else
     {
-      prev = NULL;
-      tmp_list = list->attributes;
-      while (1)
-	{
-	  PangoAttribute *tmp_attr = tmp_list->data;
+      guint i, p;
 
-	  if (tmp_attr->start_index > start_index ||
-	      (before && tmp_attr->start_index == start_index))
-	    {
-	      link = g_slist_alloc ();
-	      link->next = tmp_list;
-	      link->data = attr;
+      for (i = 0, p = list->attributes->len; i < p; i++)
+        {
+          PangoAttribute *cur = g_ptr_array_index (list->attributes, i);
 
-	      if (prev)
-		prev->next = link;
-	      else
-		list->attributes = link;
-
-	      break;
-	    }
-
-	  prev = tmp_list;
-	  tmp_list = tmp_list->next;
-	}
+          if (cur->start_index > start_index ||
+              (before && cur->start_index == start_index))
+            {
+              g_ptr_array_insert (list->attributes, i, attr);
+              break;
+            }
+        }
     }
 }
 
@@ -1533,7 +1516,7 @@ pango_attr_list_insert_before (PangoAttrList  *list,
  * and be merged with any adjoining attributes that are identical.
  *
  * This function is slower than pango_attr_list_insert() for
- * creating a attribute list in order (potentially much slower
+ * creating an attribute list in order (potentially much slower
  * for large lists). However, pango_attr_list_insert() is not
  * suitable for continually changing a set of attributes
  * since it never removes or combines existing attributes.
@@ -1542,7 +1525,7 @@ void
 pango_attr_list_change (PangoAttrList  *list,
 			PangoAttribute *attr)
 {
-  GSList *tmp_list, *prev, *link;
+  guint i, p;
   guint start_index = attr->start_index;
   guint end_index = attr->end_index;
 
@@ -1554,168 +1537,119 @@ pango_attr_list_change (PangoAttrList  *list,
       return;
     }
 
-  tmp_list = list->attributes;
-  prev = NULL;
-  while (1)
+  if (!list->attributes || list->attributes->len == 0)
     {
-      PangoAttribute *tmp_attr;
-
-      if (!tmp_list ||
-	  ((PangoAttribute *)tmp_list->data)->start_index > start_index)
-	{
-	  /* We need to insert a new attribute
-	   */
-	  link = g_slist_alloc ();
-	  link->next = tmp_list;
-	  link->data = attr;
-
-	  if (prev)
-	    prev->next = link;
-	  else
-	    list->attributes = link;
-
-	  prev = link;
-	  tmp_list = prev->next;
-	  break;
-	}
-
-      tmp_attr = tmp_list->data;
-
-      if (tmp_attr->klass->type == attr->klass->type &&
-	  tmp_attr->end_index >= start_index)
-	{
-	  /* We overlap with an existing attribute */
-	  if (pango_attribute_equal (tmp_attr, attr))
-	    {
-	      /* We can merge the new attribute with this attribute
-	       */
-	      if (tmp_attr->end_index >= end_index)
-		{
-		  /* We are totally overlapping the previous attribute.
-		   * No action is needed.
-		   */
-		  pango_attribute_destroy (attr);
-		  return;
-		}
-	      tmp_attr->end_index = end_index;
-	      pango_attribute_destroy (attr);
-
-	      attr = tmp_attr;
-
-	      prev = tmp_list;
-	      tmp_list = tmp_list->next;
-
-	      break;
-	    }
-	  else
-	    {
-	      /* Split, truncate, or remove the old attribute
-	       */
-	      if (tmp_attr->end_index > attr->end_index)
-		{
-		  PangoAttribute *end_attr = pango_attribute_copy (tmp_attr);
-
-		  end_attr->start_index = attr->end_index;
-		  pango_attr_list_insert (list, end_attr);
-		}
-
-	      if (tmp_attr->start_index == attr->start_index)
-		{
-		  pango_attribute_destroy (tmp_attr);
-		  tmp_list->data = attr;
-
-		  prev = tmp_list;
-		  tmp_list = tmp_list->next;
-		  break;
-		}
-	      else
-		{
-		  tmp_attr->end_index = attr->start_index;
-		}
-	    }
-	}
-      prev = tmp_list;
-      tmp_list = tmp_list->next;
+      pango_attr_list_insert (list, attr);
+      return;
     }
-  /* At this point, prev points to the list node with attr in it,
-   * tmp_list points to prev->next.
-   */
 
-  g_assert (prev->data == attr);
-  g_assert (prev->next == tmp_list);
+  for (i = 0, p = list->attributes->len; i < p; i++)
+    {
+      PangoAttribute *tmp_attr = g_ptr_array_index (list->attributes, i);
+
+      if (tmp_attr->start_index > start_index)
+        {
+          g_ptr_array_insert (list->attributes, i, attr);
+          break;
+        }
+
+      if (tmp_attr->klass->type != attr->klass->type)
+        continue;
+
+      if (tmp_attr->end_index < start_index)
+        continue; /* This attr does not overlap with the new one */
+
+      g_assert (tmp_attr->end_index >= start_index);
+      g_assert (start_index < tmp_attr->end_index);
+
+      if (pango_attribute_equal (tmp_attr, attr))
+        {
+          /* We can merge the new attribute with this attribute
+           */
+          if (tmp_attr->end_index >= end_index)
+            {
+              /* We are totally overlapping the previous attribute.
+               * No action is needed.
+               */
+              g_ptr_array_remove_index (list->attributes, i);
+              pango_attribute_destroy (attr);
+              return;
+            }
+
+          tmp_attr->end_index = end_index;
+          pango_attribute_destroy (attr);
+
+          attr = tmp_attr;
+          break;
+        }
+      else
+        {
+          /* Split, truncate, or remove the old attribute
+           */
+          if (tmp_attr->end_index > attr->end_index)
+            {
+              PangoAttribute *end_attr = pango_attribute_copy (tmp_attr);
+
+              end_attr->start_index = attr->end_index;
+              pango_attr_list_insert (list, end_attr);
+            }
+
+          if (tmp_attr->start_index == attr->start_index)
+            {
+              pango_attribute_destroy (tmp_attr);
+              g_ptr_array_remove_index (list->attributes, i);
+              break;
+            }
+          else
+            {
+              tmp_attr->end_index = attr->start_index;
+            }
+        }
+    }
 
   /* We now have the range inserted into the list one way or the
-   * other. Fix up the remainder
-   */
-  while (tmp_list)
+   * other. Fix up the remainder */
+  /* Attention: No i = 0 here. */
+  for (i = i + 1, p = list->attributes->len; i < p; i++)
     {
-      PangoAttribute *tmp_attr = tmp_list->data;
+      PangoAttribute *tmp_attr = g_ptr_array_index (list->attributes, i);
 
       if (tmp_attr->start_index > end_index)
-	break;
-      else if (tmp_attr->klass->type == attr->klass->type)
-	{
-	  if (tmp_attr->end_index <= attr->end_index ||
-	      pango_attribute_equal (tmp_attr, attr))
-	    {
-	      /* We can merge the new attribute with this attribute.
-	       */
-	      attr->end_index = MAX (end_index, tmp_attr->end_index);
+        break;
 
-	      pango_attribute_destroy (tmp_attr);
-	      prev->next = tmp_list->next;
+      if (tmp_attr->klass->type != attr->klass->type)
+        continue;
 
-	      g_slist_free_1 (tmp_list);
-	      tmp_list = prev->next;
+      if (tmp_attr->end_index <= attr->end_index ||
+          pango_attribute_equal (tmp_attr, attr))
+        {
+          /* We can merge the new attribute with this attribute. */
+          attr->end_index = MAX (end_index, tmp_attr->end_index);
+          pango_attribute_destroy (tmp_attr);
+          g_ptr_array_remove_index (list->attributes, i);
+          i--;
+          p--;
+          continue;
+        }
+      else
+        {
+          /* Trim the start of this attribute that it begins at the end
+           * of the new attribute. This may involve moving
+           * it in the list to maintain the required non-decreasing
+           * order of start indices
+           */
+          int k, m;
 
-	      continue;
-	    }
-	  else
-	    {
-	      /* Trim the start of this attribute that it begins at the end
-	       * of the new attribute. This may involve moving
-	       * it in the list to maintain the required non-decreasing
-	       * order of start indices
-	       */
-	      GSList *tmp_list2;
-	      GSList *prev2;
+          tmp_attr->start_index = attr->end_index;
 
-	      tmp_attr->start_index = attr->end_index;
+          for (k = i + 1, m = list->attributes->len; k < m; k++)
+            {
+              PangoAttribute *tmp_attr2 = g_ptr_array_index (list->attributes, k);
 
-	      tmp_list2 = tmp_list->next;
-	      prev2 = tmp_list;
-
-	      while (tmp_list2)
-		{
-		  PangoAttribute *tmp_attr2 = tmp_list2->data;
-
-		  if (tmp_attr2->start_index >= tmp_attr->start_index)
-		    break;
-
-		  prev2 = tmp_list2;
-		  tmp_list2 = tmp_list2->next;
-		}
-
-	      /* Now remove and insert before tmp_list2. We'll
-	       * hit this attribute again later, but that's harmless.
-	       */
-	      if (prev2 != tmp_list)
-		{
-		  GSList *old_next = tmp_list->next;
-
-		  prev->next = old_next;
-		  prev2->next = tmp_list;
-		  tmp_list->next = tmp_list2;
-
-		  tmp_list = old_next;
-
-		  continue;
-		}
-	    }
-	}
-
-      prev = tmp_list;
-      tmp_list = tmp_list->next;
+              if (tmp_attr2->start_index >= tmp_attr->start_index)
+                break;
+            }
+        }
     }
 }
 
@@ -1751,52 +1685,41 @@ pango_attr_list_update (PangoAttrList *list,
                         int             remove,
                         int             add)
 {
-  GSList *l, *prev, *next;
+  guint i, p;
 
-   prev = NULL;
-   l = list->attributes;
-   while (l)
+  for (i = 0, p = list->attributes->len; i < p; i++)
     {
-      PangoAttribute *attr = l->data;
-      next = l->next;
+      PangoAttribute *attr = g_ptr_array_index (list->attributes, i);
 
       if (attr->start_index >= pos &&
           attr->end_index < pos + remove)
         {
           pango_attribute_destroy (attr);
-          if (prev == NULL)
-            list->attributes = next;
-          else
-            prev->next = next;
-
-          g_slist_free_1 (l);
+          g_ptr_array_remove_index (list->attributes, i);
+          i--; /* Look at this index again */
+          p--;
+          continue;
         }
-      else
+
+      if (attr->start_index >= pos &&
+          attr->start_index < pos + remove)
         {
-          prev = l;
-
-          if (attr->start_index >= pos &&
-              attr->start_index < pos + remove)
-            {
-              attr->start_index = pos + add;
-            }
-          else if (attr->start_index >= pos + remove)
-            {
-              attr->start_index += add - remove;
-            }
-
-          if (attr->end_index >= pos &&
-              attr->end_index < pos + remove)
-            {
-              attr->end_index = pos;
-            }
-          else if (attr->end_index >= pos + remove)
-            {
-              attr->end_index += add - remove;
-            }
+          attr->start_index = pos + add;
+        }
+      else if (attr->start_index >= pos + remove)
+        {
+          attr->start_index += add - remove;
         }
 
-      l = next;
+      if (attr->end_index >= pos &&
+          attr->end_index < pos + remove)
+        {
+          attr->end_index = pos;
+        }
+      else if (attr->end_index >= pos + remove)
+        {
+          attr->end_index += add - remove;
+        }
     }
 }
 
@@ -1826,7 +1749,7 @@ pango_attr_list_splice (PangoAttrList *list,
 			gint           pos,
 			gint           len)
 {
-  GSList *tmp_list;
+  guint i, p;
   guint upos, ulen;
 
   g_return_if_fail (list != NULL);
@@ -1842,10 +1765,9 @@ pango_attr_list_splice (PangoAttrList *list,
  */
 #define CLAMP_ADD(a,b) (((a) + (b) < (a)) ? G_MAXUINT : (a) + (b))
 
-  tmp_list = list->attributes;
-  while (tmp_list)
+  for (i = 0, p = list->attributes->len; i < p; i++)
     {
-      PangoAttribute *attr = tmp_list->data;
+      PangoAttribute *attr = g_ptr_array_index (list->attributes, i);;
 
       if (attr->start_index <= upos)
 	{
@@ -1861,15 +1783,15 @@ pango_attr_list_splice (PangoAttrList *list,
 	   */
 	  attr->start_index = CLAMP_ADD (attr->start_index, ulen);
 	  attr->end_index = CLAMP_ADD (attr->end_index, ulen);
-	}
-
-      tmp_list = tmp_list->next;
+        }
     }
 
-  tmp_list = other->attributes;
-  while (tmp_list)
+  if (!other->attributes || other->attributes->len == 0)
+    return;
+
+  for (i = 0, p = other->attributes->len; i < p; i++)
     {
-      PangoAttribute *attr = pango_attribute_copy (tmp_list->data);
+      PangoAttribute *attr = pango_attribute_copy (g_ptr_array_index (other->attributes, i));
       attr->start_index = CLAMP_ADD (attr->start_index, upos);
       attr->end_index = CLAMP_ADD (attr->end_index, upos);
 
@@ -1877,8 +1799,6 @@ pango_attr_list_splice (PangoAttrList *list,
        * pango_attr_list_change() will take care of deleting it.
        */
       pango_attr_list_change (list, attr);
-
-      tmp_list = tmp_list->next;
     }
 #undef CLAMP_ADD
 }
@@ -1899,9 +1819,22 @@ pango_attr_list_splice (PangoAttrList *list,
 GSList *
 pango_attr_list_get_attributes (PangoAttrList *list)
 {
+  GSList *result = NULL;
+  guint i, p;
+
   g_return_val_if_fail (list != NULL, NULL);
 
-  return g_slist_copy_deep (list->attributes, (GCopyFunc)pango_attribute_copy, NULL);
+  if (!list->attributes || list->attributes->len == 0)
+    return NULL;
+
+  for (i = 0, p = list->attributes->len; i < p; i++)
+    {
+      PangoAttribute *attr = g_ptr_array_index (list->attributes, i);
+
+      result = g_slist_prepend (result, pango_attribute_copy (attr));
+    }
+
+  return g_slist_reverse (result);
 }
 
 /**
@@ -1921,9 +1854,7 @@ gboolean
 pango_attr_list_equal (PangoAttrList *list,
                        PangoAttrList *other_list)
 {
-  GSList *attrs, *other_attrs;
-  GSList *iter = NULL;
-  guint attrs_length = 0;
+  GPtrArray *attrs, *other_attrs;
   guint64 skip_bitmask = 0;
 
   if (list == other_list)
@@ -1935,28 +1866,21 @@ pango_attr_list_equal (PangoAttrList *list,
   attrs = list->attributes;
   other_attrs = other_list->attributes;
 
-  for (iter = attrs; iter != NULL; iter = iter->next)
+  if (attrs->len != other_attrs->len)
+    return FALSE;
+
+  for (guint i = 0; i < attrs->len; i++)
     {
-      PangoAttribute *attr = iter->data;
-      GSList *other_iter = NULL;
+      PangoAttribute *attr = g_ptr_array_index (attrs, i);
       gboolean attr_equal = FALSE;
-      guint other_attr_index = 0;
 
-      attrs_length++;
-
-      for (other_iter = other_attrs;
-           other_iter != NULL;
-           other_iter = other_iter->next)
+      for (guint other_attr_index = 0; other_attr_index < other_attrs->len; other_attr_index++)
         {
-          PangoAttribute *other_attr = other_iter->data;
-          guint64 other_attr_bitmask =
-            other_attr_index < 64 ? 1 << other_attr_index : 0;
+          PangoAttribute *other_attr = g_ptr_array_index (other_attrs, other_attr_index);
+          guint64 other_attr_bitmask = other_attr_index < 64 ? 1 << other_attr_index : 0;
 
           if ((skip_bitmask & other_attr_bitmask) != 0)
-            {
-              other_attr_index++;
-              continue;
-            }
+            continue;
 
           if (attr->start_index == other_attr->start_index &&
               attr->end_index == other_attr->end_index &&
@@ -1967,15 +1891,11 @@ pango_attr_list_equal (PangoAttrList *list,
               break;
             }
 
-          other_attr_index++;
         }
 
       if (!attr_equal)
         return FALSE;
     }
-
-  if (attrs_length != g_slist_length (other_attrs))
-    return FALSE;
 
   return TRUE;
 }
@@ -1983,7 +1903,7 @@ pango_attr_list_equal (PangoAttrList *list,
 gboolean
 _pango_attr_list_has_attributes (const PangoAttrList *list)
 {
-  return list && (list->attributes != NULL);
+  return list && list->attributes != NULL && list->attributes->len > 0;
 }
 
 G_DEFINE_BOXED_TYPE (PangoAttrIterator,
@@ -1995,9 +1915,11 @@ void
 _pango_attr_list_get_iterator (PangoAttrList     *list,
                                PangoAttrIterator *iterator)
 {
-  iterator->next_attribute = list->attributes;
   iterator->attribute_stack = NULL;
+  iterator->attrs = list->attributes;
+  iterator->n_attrs = iterator->attrs ? iterator->attrs->len : 0;
 
+  iterator->attr_index = 0;
   iterator->start_index = 0;
   iterator->end_index = 0;
 
@@ -2068,7 +1990,7 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
 
   g_return_val_if_fail (iterator != NULL, FALSE);
 
-  if (!iterator->next_attribute &&
+  if (iterator->attr_index >= iterator->n_attrs &&
       (!iterator->attribute_stack || iterator->attribute_stack->len == 0))
     return FALSE;
 
@@ -2093,22 +2015,37 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
         }
     }
 
-  while (iterator->next_attribute &&
-         ((PangoAttribute *)iterator->next_attribute->data)->start_index == iterator->start_index)
+  while (1)
     {
-      if (((PangoAttribute *)iterator->next_attribute->data)->end_index > iterator->start_index)
+      PangoAttribute *attr;
+
+      if (iterator->attr_index >= iterator->n_attrs)
+        break;
+
+      attr = g_ptr_array_index (iterator->attrs, iterator->attr_index);
+
+      if (attr->start_index != iterator->start_index)
+        break;
+
+      if (attr->end_index > iterator->start_index)
         {
           if (G_UNLIKELY (!iterator->attribute_stack))
             iterator->attribute_stack = g_ptr_array_new ();
 
-          g_ptr_array_add (iterator->attribute_stack, iterator->next_attribute->data);
-          iterator->end_index = MIN (iterator->end_index, ((PangoAttribute *)iterator->next_attribute->data)->end_index);
+          g_ptr_array_add (iterator->attribute_stack, attr);
+
+          iterator->end_index = MIN (iterator->end_index, attr->end_index);
         }
-      iterator->next_attribute = iterator->next_attribute->next;
+
+      iterator->attr_index++; /* NEXT! */
     }
 
-  if (iterator->next_attribute)
-    iterator->end_index = MIN (iterator->end_index, ((PangoAttribute *)iterator->next_attribute->data)->start_index);
+  if (iterator->attr_index < iterator->n_attrs)
+      {
+      PangoAttribute *attr = g_ptr_array_index (iterator->attrs, iterator->attr_index);
+
+      iterator->end_index = MIN (iterator->end_index, attr->start_index);
+    }
 
   return TRUE;
 }
@@ -2387,44 +2324,31 @@ pango_attr_list_filter (PangoAttrList       *list,
 
 {
   PangoAttrList *new = NULL;
-  GSList *tmp_list;
-  GSList *prev;
+  guint i, p;
 
   g_return_val_if_fail (list != NULL, NULL);
 
-  tmp_list = list->attributes;
-  prev = NULL;
-  while (tmp_list)
+  if (!list->attributes || list->attributes->len == 0)
+    return NULL;
+
+  for (i = 0, p = list->attributes->len; i < p; i++)
     {
-      GSList *next = tmp_list->next;
-      PangoAttribute *tmp_attr = tmp_list->data;
+      PangoAttribute *tmp_attr = g_ptr_array_index (list->attributes, i);
 
       if ((*func) (tmp_attr, data))
-	{
-	  if (prev)
-	    prev->next = tmp_list->next;
-	  else
-	    list->attributes = tmp_list->next;
+        {
+          g_ptr_array_remove_index (list->attributes, i);
+          i--; /* Need to look at this index again */
+          p--;
 
-	  tmp_list->next = NULL;
+          if (G_UNLIKELY (!new))
+            {
+              new = pango_attr_list_new ();
+              new->attributes = g_ptr_array_new ();
+            }
 
-	  if (!new)
-	    {
-	      new = pango_attr_list_new ();
-	      new->attributes = tmp_list;
-	    }
-	  else
-	    {
-              g_slist_last (new->attributes)->next = tmp_list;
-	    }
-
-	  goto next_attr;
-	}
-
-      prev = tmp_list;
-
-    next_attr:
-      tmp_list = next;
+          g_ptr_array_add (new->attributes, tmp_attr);
+        }
     }
 
   return new;
