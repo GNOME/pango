@@ -32,7 +32,6 @@ struct _PangoAttrList
 {
   guint ref_count;
   GSList *attributes;
-  GSList *attributes_tail;
 };
 
 void     _pango_attr_list_init         (PangoAttrList     *list);

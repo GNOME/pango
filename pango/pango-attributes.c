@@ -1311,7 +1311,6 @@ _pango_attr_list_init (PangoAttrList *list)
 {
   list->ref_count = 1;
   list->attributes = NULL;
-  list->attributes_tail = NULL;
 }
 
 /**
@@ -1427,7 +1426,6 @@ pango_attr_list_copy (PangoAttrList *list)
     }
 
   /* we're going to reverse the nodes, so head becomes tail */
-  new->attributes_tail = new_attrs;
   new->attributes = g_slist_reverse (new_attrs);
 
   return new;
@@ -1439,19 +1437,21 @@ pango_attr_list_insert_internal (PangoAttrList  *list,
 				 gboolean        before)
 {
   GSList *tmp_list, *prev, *link;
-  guint start_index = attr->start_index;
+  const guint start_index = attr->start_index;
+  PangoAttribute *last_attr;
 
   if (!list->attributes)
     {
       list->attributes = g_slist_prepend (NULL, attr);
-      list->attributes_tail = list->attributes;
+      return;
     }
-  else if (((PangoAttribute *)list->attributes_tail->data)->start_index < start_index ||
-	   (!before && ((PangoAttribute *)list->attributes_tail->data)->start_index == start_index))
+
+  last_attr = g_slist_last (list->attributes)->data;
+
+  if (last_attr->start_index < start_index ||
+       (!before && last_attr->start_index == start_index))
     {
-      list->attributes_tail = g_slist_append (list->attributes_tail, attr);
-      list->attributes_tail = list->attributes_tail->next;
-      g_assert (list->attributes_tail);
+      list->attributes = g_slist_append (list->attributes, attr);
     }
   else
     {
@@ -1574,9 +1574,6 @@ pango_attr_list_change (PangoAttrList  *list,
 	  else
 	    list->attributes = link;
 
-	  if (!tmp_list)
-	    list->attributes_tail = link;
-
 	  prev = link;
 	  tmp_list = prev->next;
 	  break;
@@ -1668,9 +1665,6 @@ pango_attr_list_change (PangoAttrList  *list,
 	      pango_attribute_destroy (tmp_attr);
 	      prev->next = tmp_list->next;
 
-	      if (!prev->next)
-		list->attributes_tail = prev;
-
 	      g_slist_free_1 (tmp_list);
 	      tmp_list = prev->next;
 
@@ -1712,9 +1706,6 @@ pango_attr_list_change (PangoAttrList  *list,
 		  prev->next = old_next;
 		  prev2->next = tmp_list;
 		  tmp_list->next = tmp_list2;
-
-		  if (!tmp_list->next)
-		    list->attributes_tail = tmp_list;
 
 		  tmp_list = old_next;
 
@@ -2410,9 +2401,6 @@ pango_attr_list_filter (PangoAttrList       *list,
 
       if ((*func) (tmp_attr, data))
 	{
-	  if (!tmp_list->next)
-	    list->attributes_tail = prev;
-
 	  if (prev)
 	    prev->next = tmp_list->next;
 	  else
@@ -2423,12 +2411,11 @@ pango_attr_list_filter (PangoAttrList       *list,
 	  if (!new)
 	    {
 	      new = pango_attr_list_new ();
-	      new->attributes = new->attributes_tail = tmp_list;
+	      new->attributes = tmp_list;
 	    }
 	  else
 	    {
-	      new->attributes_tail->next = tmp_list;
-	      new->attributes_tail = tmp_list;
+              g_slist_last (new->attributes)->next = tmp_list;
 	    }
 
 	  goto next_attr;
