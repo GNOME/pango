@@ -1989,6 +1989,12 @@ pango_attr_list_equal (PangoAttrList *list,
   return TRUE;
 }
 
+gboolean
+_pango_attr_list_has_attributes (const PangoAttrList *list)
+{
+  return (list->attributes != NULL);
+}
+
 G_DEFINE_BOXED_TYPE (PangoAttrIterator,
                      pango_attr_iterator,
                      pango_attr_iterator_copy,

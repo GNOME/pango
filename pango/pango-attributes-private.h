@@ -37,6 +37,8 @@ struct _PangoAttrList
 
 void     _pango_attr_list_init         (PangoAttrList     *list);
 void     _pango_attr_list_destroy      (PangoAttrList     *list);
+gboolean _pango_attr_list_has_attributes (const PangoAttrList *list);
+
 void     _pango_attr_list_get_iterator (PangoAttrList     *list,
                                         PangoAttrIterator *iterator);
 
