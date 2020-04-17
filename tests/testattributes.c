@@ -358,6 +358,15 @@ test_iter (void)
   PangoAttrIterator *copy;
   gint start, end;
 
+  /* Empty list */
+  list = pango_attr_list_new ();
+  iter = pango_attr_list_get_iterator (list);
+
+  g_assert_false (pango_attr_iterator_next (iter));
+  g_assert_null (pango_attr_iterator_get_attrs (iter));
+  pango_attr_iterator_destroy (iter);
+  pango_attr_list_unref (list);
+
   list = pango_attr_list_new ();
   attr = pango_attr_size_new (10);
   pango_attr_list_insert (list, attr);
