@@ -100,7 +100,7 @@ assert_attributes (GSList     *attrs,
   s = g_string_new ("");
   print_attributes (attrs, s);
   g_assert_cmpstr (s->str, ==, expected);
-  g_string_free (s, FALSE);
+  g_string_free (s, TRUE);
 }
 
 static void
