@@ -1927,9 +1927,8 @@ break_attrs (const char   *text,
 
   _pango_attr_list_get_iterator (&list, &iter);
   do {
-    PangoAttribute *attr;
+    const PangoAttribute *attr = pango_attr_iterator_get (&iter, PANGO_ATTR_ALLOW_BREAKS);
 
-    attr = pango_attr_iterator_get (&iter, PANGO_ATTR_ALLOW_BREAKS);
     if (attr && ((PangoAttrInt*)attr)->value == 0)
       {
         int start, end;
