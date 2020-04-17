@@ -1919,6 +1919,12 @@ break_attrs (const char   *text,
         pango_attr_list_insert (&list, pango_attribute_copy (attr));
     }
 
+  if (!_pango_attr_list_has_attributes (&list))
+    {
+      _pango_attr_list_destroy (&list);
+      return FALSE;
+    }
+
   _pango_attr_list_get_iterator (&list, &iter);
   do {
     PangoAttribute *attr;
