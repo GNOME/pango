@@ -23,7 +23,7 @@
 struct _PangoAttrIterator
 {
   GSList *next_attribute;
-  GList *attribute_stack;
+  GPtrArray *attribute_stack;
   guint start_index;
   guint end_index;
 };

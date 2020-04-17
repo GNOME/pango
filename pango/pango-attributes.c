@@ -2073,43 +2073,46 @@ pango_attr_iterator_range (PangoAttrIterator *iterator,
 gboolean
 pango_attr_iterator_next (PangoAttrIterator *iterator)
 {
-  GList *tmp_list;
+  guint i;
 
   g_return_val_if_fail (iterator != NULL, FALSE);
 
-  if (!iterator->next_attribute && !iterator->attribute_stack)
+  if (!iterator->next_attribute &&
+      (!iterator->attribute_stack || iterator->attribute_stack->len == 0))
     return FALSE;
 
   iterator->start_index = iterator->end_index;
   iterator->end_index = G_MAXUINT;
 
-  tmp_list = iterator->attribute_stack;
-  while (tmp_list)
+  if (iterator->attribute_stack)
     {
-      GList *next = tmp_list->next;
-      PangoAttribute *attr = tmp_list->data;
+      for (i = 0; i < iterator->attribute_stack->len; i++)
+        {
+          const PangoAttribute *attr = g_ptr_array_index (iterator->attribute_stack, i);
 
-      if (attr->end_index == iterator->start_index)
-	{
-	  iterator->attribute_stack = g_list_remove_link (iterator->attribute_stack, tmp_list);
-	  g_list_free_1 (tmp_list);
-	}
-      else
-	{
-	  iterator->end_index = MIN (iterator->end_index, attr->end_index);
-	}
-
-      tmp_list = next;
+          if (attr->end_index == iterator->start_index)
+            {
+              g_ptr_array_remove_index (iterator->attribute_stack, i); /* Can't use index_fast :( */;
+              i--;
+            }
+          else
+            {
+              iterator->end_index = MIN (iterator->end_index, attr->end_index);
+            }
+        }
     }
 
   while (iterator->next_attribute &&
-	 ((PangoAttribute *)iterator->next_attribute->data)->start_index == iterator->start_index)
+         ((PangoAttribute *)iterator->next_attribute->data)->start_index == iterator->start_index)
     {
       if (((PangoAttribute *)iterator->next_attribute->data)->end_index > iterator->start_index)
-	{
-	  iterator->attribute_stack = g_list_prepend (iterator->attribute_stack, iterator->next_attribute->data);
-	  iterator->end_index = MIN (iterator->end_index, ((PangoAttribute *)iterator->next_attribute->data)->end_index);
-	}
+        {
+          if (G_UNLIKELY (!iterator->attribute_stack))
+            iterator->attribute_stack = g_ptr_array_new ();
+
+          g_ptr_array_add (iterator->attribute_stack, iterator->next_attribute->data);
+          iterator->end_index = MIN (iterator->end_index, ((PangoAttribute *)iterator->next_attribute->data)->end_index);
+        }
       iterator->next_attribute = iterator->next_attribute->next;
     }
 
@@ -2140,7 +2143,10 @@ pango_attr_iterator_copy (PangoAttrIterator *iterator)
 
   *copy = *iterator;
 
-  copy->attribute_stack = g_list_copy (iterator->attribute_stack);
+  if (iterator->attribute_stack)
+    copy->attribute_stack = g_ptr_array_copy (iterator->attribute_stack, NULL, NULL);
+  else
+    copy->attribute_stack = NULL;
 
   return copy;
 }
@@ -2148,7 +2154,8 @@ pango_attr_iterator_copy (PangoAttrIterator *iterator)
 void
 _pango_attr_iterator_destroy (PangoAttrIterator *iterator)
 {
-  g_list_free (iterator->attribute_stack);
+  if (iterator->attribute_stack)
+    g_ptr_array_free (iterator->attribute_stack, TRUE);
 }
 
 /**
@@ -2184,19 +2191,19 @@ PangoAttribute *
 pango_attr_iterator_get (PangoAttrIterator *iterator,
 			 PangoAttrType      type)
 {
-  GList *tmp_list;
+  guint i;
 
   g_return_val_if_fail (iterator != NULL, NULL);
 
-  tmp_list = iterator->attribute_stack;
-  while (tmp_list)
+  if (!iterator->attribute_stack)
+    return NULL;
+
+  for (i = 0; i < iterator->attribute_stack->len; i++)
     {
-      PangoAttribute *attr = tmp_list->data;
+      PangoAttribute *attr = g_ptr_array_index (iterator->attribute_stack, i);
 
       if (attr->klass->type == type)
-	return attr;
-
-      tmp_list = tmp_list->next;
+        return attr;
     }
 
   return NULL;
@@ -2228,13 +2235,11 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 			      PangoLanguage        **language,
 			      GSList               **extra_attrs)
 {
-  GList *tmp_list1;
-  GSList *tmp_list2;
-
   PangoFontMask mask = 0;
   gboolean have_language = FALSE;
   gdouble scale = 0;
   gboolean have_scale = FALSE;
+  int i;
 
   g_return_if_fail (iterator != NULL);
   g_return_if_fail (desc != NULL);
@@ -2245,11 +2250,12 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
   if (extra_attrs)
     *extra_attrs = NULL;
 
-  tmp_list1 = iterator->attribute_stack;
-  while (tmp_list1)
+  if (!iterator->attribute_stack)
+    return;
+
+  for (i = iterator->attribute_stack->len - 1; i >= 0; i--)
     {
-      PangoAttribute *attr = tmp_list1->data;
-      tmp_list1 = tmp_list1->next;
+      const PangoAttribute *attr = g_ptr_array_index (iterator->attribute_stack, i);
 
       switch ((int) attr->klass->type)
 	{
@@ -2333,22 +2339,24 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	    {
 	      gboolean found = FALSE;
 
-	      tmp_list2 = *extra_attrs;
 	      /* Hack: special-case FONT_FEATURES.  We don't want them to
 	       * override each other, so we never merge them.  This should
 	       * be fixed when we implement attr-merging. */
 	      if (attr->klass->type != PANGO_ATTR_FONT_FEATURES)
-		while (tmp_list2)
-		  {
-		    PangoAttribute *old_attr = tmp_list2->data;
-		    if (attr->klass->type == old_attr->klass->type)
-		      {
-			found = TRUE;
-			break;
-		      }
+                {
+                  GSList *tmp_list = *extra_attrs;
+                  while (tmp_list)
+                    {
+                      PangoAttribute *old_attr = tmp_list->data;
+                      if (attr->klass->type == old_attr->klass->type)
+                        {
+                          found = TRUE;
+                          break;
+                        }
 
-		    tmp_list2 = tmp_list2->next;
-		  }
+                      tmp_list = tmp_list->next;
+                    }
+                }
 
 	      if (!found)
 		*extra_attrs = g_slist_prepend (*extra_attrs, pango_attribute_copy (attr));
@@ -2453,22 +2461,26 @@ GSList *
 pango_attr_iterator_get_attrs (PangoAttrIterator *iterator)
 {
   GSList *attrs = NULL;
-  GList *tmp_list;
+  int i;
 
-  for (tmp_list = iterator->attribute_stack; tmp_list; tmp_list = tmp_list->next)
+  if (!iterator->attribute_stack ||
+      iterator->attribute_stack->len == 0)
+    return NULL;
+
+  for (i = iterator->attribute_stack->len - 1; i >= 0; i--)
     {
-      PangoAttribute *attr = tmp_list->data;
+      PangoAttribute *attr = g_ptr_array_index (iterator->attribute_stack, i);
       GSList *tmp_list2;
       gboolean found = FALSE;
 
       for (tmp_list2 = attrs; tmp_list2; tmp_list2 = tmp_list2->next)
 	{
 	  PangoAttribute *old_attr = tmp_list2->data;
-	  if (attr->klass->type == old_attr->klass->type)
-	    {
-	      found = TRUE;
-	      break;
-	    }
+          if (attr->klass->type == old_attr->klass->type)
+            {
+              found = TRUE;
+              break;
+            }
 	}
 
       if (!found)
