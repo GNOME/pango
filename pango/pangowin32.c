@@ -43,7 +43,6 @@
 
 #define MAX_FREED_FONTS 256
 
-HDC _pango_win32_hdc;
 gboolean _pango_win32_debug = FALSE;
 
 static void pango_win32_font_dispose    (GObject             *object);
@@ -134,6 +133,35 @@ _pango_win32_font_init (PangoWin32Font *win32font)
   win32font->glyph_info = g_hash_table_new_full (NULL, NULL, NULL, g_free);
 }
 
+static GPrivate display_dc_key = G_PRIVATE_INIT ((GDestroyNotify) DeleteDC);
+
+HDC
+_pango_win32_get_display_dc (void)
+{
+  HDC hdc = g_private_get (&display_dc_key);
+
+  if (hdc == NULL)
+    {
+      hdc = CreateDC ("DISPLAY", NULL, NULL, NULL);
+
+      if (G_UNLIKELY (hdc == NULL))
+	g_warning ("CreateDC() failed");
+
+      g_private_set (&display_dc_key, hdc);
+
+      /* Also do some generic pangowin32 initialisations... this function
+       * is a suitable place for those as it is called from a couple
+       * of class_init functions.
+       */
+#ifdef PANGO_WIN32_DEBUGGING
+      if (getenv ("PANGO_WIN32_DEBUG") != NULL)
+	_pango_win32_debug = TRUE;
+#endif
+    }
+
+  return hdc;
+}
+
 /**
  * pango_win32_get_dc:
  *
@@ -144,22 +172,7 @@ _pango_win32_font_init (PangoWin32Font *win32font)
 HDC
 pango_win32_get_dc (void)
 {
-  if (g_once_init_enter (&_pango_win32_hdc))
-    {
-      HDC hdc = CreateDC ("DISPLAY", NULL, NULL, NULL);
-
-      /* Also do some generic pangowin32 initialisations... this function
-       * is a suitable place for those as it is called from a couple
-       * of class_init functions.
-       */
-#ifdef PANGO_WIN32_DEBUGGING
-      if (getenv ("PANGO_WIN32_DEBUG") != NULL)
-	_pango_win32_debug = TRUE;
-#endif
-      g_once_init_leave (&_pango_win32_hdc, hdc);
-    }
-
-  return _pango_win32_hdc;
+  return _pango_win32_get_display_dc ();
 }
 
 /**
@@ -198,7 +211,7 @@ _pango_win32_font_class_init (PangoWin32FontClass *class)
   class->done_font = pango_win32_font_real_done_font;
   class->get_metrics_factor = pango_win32_font_real_get_metrics_factor;
 
-  pango_win32_get_dc ();
+  _pango_win32_get_display_dc ();
 }
 
 /**
@@ -448,7 +461,7 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
 
   if (!info)
     {
-      HDC hdc = pango_win32_get_dc ();
+      HDC hdc = _pango_win32_get_display_dc ();
 
       info = g_new0 (PangoWin32GlyphInfo, 1);
 
@@ -478,7 +491,7 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
       info->ink_rect.y = - PANGO_SCALE * gm.gmptGlyphOrigin.y;
       info->ink_rect.height = PANGO_SCALE * gm.gmBlackBoxY;
 
-      GetTextMetrics (_pango_win32_hdc, &tm);
+      GetTextMetrics (hdc, &tm);
       info->logical_rect.x = 0;
       info->logical_rect.width = PANGO_SCALE * gm.gmCellIncX;
       info->logical_rect.y = - PANGO_SCALE * tm.tmAscent;
@@ -555,9 +568,10 @@ pango_win32_font_get_metrics (PangoFont     *font,
 	{
 	  PangoCoverage *coverage;
 	  TEXTMETRIC tm;
+	  HDC hdc = _pango_win32_get_display_dc ();
 
-	  SelectObject (_pango_win32_hdc, hfont);
-	  GetTextMetrics (_pango_win32_hdc, &tm);
+	  SelectObject (hdc, hfont);
+	  GetTextMetrics (hdc, &tm);
 
 	  metrics->ascent = tm.tmAscent * PANGO_SCALE;
 	  metrics->descent = tm.tmDescent * PANGO_SCALE;
@@ -1215,7 +1229,7 @@ hfont_reference_table (hb_face_t *face, hb_tag_t tag, void *user_data)
   DWORD size;
 
   /* We have a common DC for our PangoWin32Font, so let's just use it */
-  hdc = pango_win32_get_dc ();
+  hdc = _pango_win32_get_display_dc ();
   hfont = (HFONT) user_data;
 
   /* we want to restore things, just to be safe */
