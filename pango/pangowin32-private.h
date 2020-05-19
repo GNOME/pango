@@ -272,7 +272,9 @@ void            _pango_win32_fontmap_cache_remove   (PangoFontMap   *fontmap,
 _PANGO_EXTERN
 HFONT		_pango_win32_font_get_hfont         (PangoFont          *font);
 
-extern HDC _pango_win32_hdc;
+_PANGO_EXTERN
+HDC             _pango_win32_get_display_dc                 (void);
+
 extern gboolean _pango_win32_debug;
 
 #endif /* __PANGOWIN32_PRIVATE_H__ */

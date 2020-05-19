@@ -199,6 +199,12 @@ pango_win32_inner_enum_proc (LOGFONTW    *lfp,
   return 1;
 }
 
+struct EnumProcData
+{
+  HDC hdc;
+  PangoWin32FontMap *font_map;
+};
+
 static int CALLBACK
 pango_win32_enum_proc (LOGFONTW       *lfp,
                        NEWTEXTMETRICW *metrics,
@@ -206,6 +212,7 @@ pango_win32_enum_proc (LOGFONTW       *lfp,
                        LPARAM          lParam)
 {
   LOGFONTW lf;
+  struct EnumProcData *data = (struct EnumProcData *) lParam;
 
   PING (("%S: %lu %lx", lfp->lfFaceName, fontType, metrics->ntmFlags));
 
@@ -213,9 +220,9 @@ pango_win32_enum_proc (LOGFONTW       *lfp,
     {
       lf = *lfp;
 
-      EnumFontFamiliesExW (_pango_win32_hdc, &lf,
+      EnumFontFamiliesExW (data->hdc, &lf,
                            (FONTENUMPROCW) pango_win32_inner_enum_proc,
-                           lParam, 0);
+                           (LPARAM) data->font_map, 0);
     }
 
   return 1;
@@ -709,6 +716,8 @@ static void
 _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 {
   LOGFONTW logfont;
+  HDC hdc = _pango_win32_get_display_dc ();
+  struct EnumProcData enum_proc_data;
 
   win32fontmap->families =
     g_hash_table_new_full ((GHashFunc) case_insensitive_str_hash,
@@ -730,9 +739,13 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 
   memset (&logfont, 0, sizeof (logfont));
   logfont.lfCharSet = DEFAULT_CHARSET;
-  EnumFontFamiliesExW (_pango_win32_hdc, &logfont,
+
+  enum_proc_data.hdc = hdc;
+  enum_proc_data.font_map = win32fontmap;
+
+  EnumFontFamiliesExW (hdc, &logfont,
                        (FONTENUMPROCW) pango_win32_enum_proc,
-                       (LPARAM) win32fontmap, 0);
+                       (LPARAM) &enum_proc_data, 0);
 
   g_hash_table_foreach (win32fontmap->families, synthesize_foreach, win32fontmap);
 
@@ -744,7 +757,7 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
   create_standard_family (win32fontmap, "Fantasy");
   create_standard_family (win32fontmap, "System-ui");
 
-  win32fontmap->resolution = (PANGO_SCALE / (double) GetDeviceCaps (_pango_win32_hdc, LOGPIXELSY)) * 72.0;
+  win32fontmap->resolution = (PANGO_SCALE / (double) GetDeviceCaps (hdc, LOGPIXELSY)) * 72.0;
 }
 
 static void
@@ -807,7 +820,7 @@ _pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
   fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_WIN32;
   fontmap_class->get_face = pango_win32_font_map_get_face;
 
-  pango_win32_get_dc ();
+  _pango_win32_get_display_dc ();
 }
 
 /**
@@ -1159,6 +1172,7 @@ get_family_nameA (const LOGFONTA *lfp)
 {
   HFONT hfont;
   HFONT oldhfont;
+  HDC hdc;
 
   struct name_header header;
   struct name_record record;
@@ -1189,17 +1203,19 @@ get_family_nameA (const LOGFONTA *lfp)
   if ((hfont = CreateFontIndirect (lfp)) == NULL)
     goto fail0;
 
-  if ((oldhfont = SelectObject (_pango_win32_hdc, hfont)) == NULL)
+  hdc = _pango_win32_get_display_dc ();
+
+  if ((oldhfont = SelectObject (hdc, hfont)) == NULL)
     goto fail1;
 
-  if (!_pango_win32_get_name_header (_pango_win32_hdc, &header))
+  if (!_pango_win32_get_name_header (hdc, &header))
     goto fail2;
 
   PING (("%d name records", header.num_records));
 
   for (i = 0; i < header.num_records; i++)
     {
-      if (!_pango_win32_get_name_record (_pango_win32_hdc, i, &record))
+      if (!_pango_win32_get_name_record (hdc, i, &record))
         goto fail2;
 
       if ((record.name_id != 1 && record.name_id != 16) || record.string_length <= 0)
@@ -1234,11 +1250,11 @@ get_family_nameA (const LOGFONTA *lfp)
   else
     goto fail2;
 
-  if (!_pango_win32_get_name_record (_pango_win32_hdc, name_ix, &record))
+  if (!_pango_win32_get_name_record (hdc, name_ix, &record))
     goto fail2;
 
   string = g_malloc (record.string_length + 1);
-  if (GetFontData (_pango_win32_hdc, NAME,
+  if (GetFontData (hdc, NAME,
                    header.string_storage_offset + record.string_offset,
                    string, record.string_length) != record.string_length)
     goto fail2;
@@ -1264,14 +1280,14 @@ get_family_nameA (const LOGFONTA *lfp)
 
   PING (("%s", name));
 
-  SelectObject (_pango_win32_hdc, oldhfont);
+  SelectObject (hdc, oldhfont);
   DeleteObject (hfont);
 
   return name;
 
  fail2:
   g_free (string);
-  SelectObject (_pango_win32_hdc, oldhfont);
+  SelectObject (hdc, oldhfont);
 
  fail1:
   DeleteObject (hfont);
@@ -1343,6 +1359,7 @@ get_family_nameW (const LOGFONTW *lfp)
 {
   HFONT hfont;
   HFONT oldhfont;
+  HDC hdc;
 
   struct name_header header;
   struct name_record record;
@@ -1373,17 +1390,19 @@ get_family_nameW (const LOGFONTW *lfp)
   if ((hfont = CreateFontIndirectW (lfp)) == NULL)
     goto fail0;
 
-  if ((oldhfont = SelectObject (_pango_win32_hdc, hfont)) == NULL)
+  hdc = _pango_win32_get_display_dc ();
+
+  if ((oldhfont = SelectObject (hdc, hfont)) == NULL)
     goto fail1;
 
-  if (!_pango_win32_get_name_header (_pango_win32_hdc, &header))
+  if (!_pango_win32_get_name_header (hdc, &header))
     goto fail2;
 
   PING (("%d name records", header.num_records));
 
   for (i = 0; i < header.num_records; i++)
     {
-      if (!_pango_win32_get_name_record (_pango_win32_hdc, i, &record))
+      if (!_pango_win32_get_name_record (hdc, i, &record))
         goto fail2;
 
       if ((record.name_id != 1 && record.name_id != 16) || record.string_length <= 0)
@@ -1416,11 +1435,11 @@ get_family_nameW (const LOGFONTW *lfp)
   else
     goto fail2;
 
-  if (!_pango_win32_get_name_record (_pango_win32_hdc, name_ix, &record))
+  if (!_pango_win32_get_name_record (hdc, name_ix, &record))
     goto fail2;
 
   string = g_malloc (record.string_length + 1);
-  if (GetFontData (_pango_win32_hdc, NAME,
+  if (GetFontData (hdc, NAME,
                    header.string_storage_offset + record.string_offset,
                    string, record.string_length) != record.string_length)
     goto fail2;
@@ -1446,14 +1465,14 @@ get_family_nameW (const LOGFONTW *lfp)
 
   PING (("%s", name));
 
-  SelectObject (_pango_win32_hdc, oldhfont);
+  SelectObject (hdc, oldhfont);
   DeleteObject (hfont);
 
   return name;
 
  fail2:
   g_free (string);
-  SelectObject (_pango_win32_hdc, oldhfont);
+  SelectObject (hdc, oldhfont);
 
  fail1:
   DeleteObject (hfont);

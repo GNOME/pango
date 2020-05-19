@@ -121,5 +121,5 @@ static void
 pango_cairo_win32_font_map_init (PangoCairoWin32FontMap *cwfontmap)
 {
   cwfontmap->serial = 1;
-  cwfontmap->dpi = GetDeviceCaps (pango_win32_get_dc (), LOGPIXELSY);
+  cwfontmap->dpi = GetDeviceCaps (_pango_win32_get_display_dc (), LOGPIXELSY);
 }
