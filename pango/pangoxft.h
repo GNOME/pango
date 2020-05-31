@@ -23,6 +23,7 @@
 #ifndef __PANGOXFT_H__
 #define __PANGOXFT_H__
 
+#include <pango/pangofc-fontmap.h>
 #include <pango/pango-context.h>
 #include <pango/pango-ot.h>
 #include <pango/pangofc-font.h>
@@ -84,8 +85,7 @@ typedef struct _PangoXftFont    PangoXftFont;
  *
  * Function type for doing final config tweaking on prepared FcPatterns.
  */
-typedef void (*PangoXftSubstituteFunc) (FcPattern *pattern,
-					gpointer   data);
+typedef PangoFcSubstituteFunc PangoXftSubstituteFunc;
 
 /* Calls for applications
  */

@@ -978,6 +978,7 @@ pango_fc_font_map_config_changed
 pango_fc_font_map_shutdown
 pango_fc_font_map_set_config
 pango_fc_font_map_get_config
+PangoFcSubstituteFunc
 pango_fc_font_description_from_pattern
 PANGO_FC_FONT_FEATURES
 PANGO_FC_GRAVITY

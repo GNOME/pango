@@ -106,6 +106,15 @@ hb_face_t * pango_fc_font_map_get_hb_face (PangoFcFontMap *fcfontmap,
                                            PangoFcFont    *fcfont);
 
 /**
+ * PangoFcSubstituteFunc:
+ * @pattern: the FcPattern to tweak.
+ * @data: user data.
+ *
+ * Function type for doing final config tweaking on prepared FcPatterns.
+ */
+typedef void (*PangoFcSubstituteFunc) (FcPattern *pattern,
+				       gpointer   data);
+/**
  * PANGO_FC_GRAVITY:
  *
  * String representing a fontconfig property name that Pango sets on any
