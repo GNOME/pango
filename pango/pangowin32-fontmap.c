@@ -644,8 +644,9 @@ create_standard_family (PangoWin32FontMap *win32fontmap,
   int i;
   int n_aliases;
   char **aliases;
+  PangoWin32FontMapClass *class = (PangoWin32FontMapClass*) G_OBJECT_GET_CLASS (win32fontmap);
 
-  lookup_aliases (win32fontmap->aliases, standard_family_name, &aliases, &n_aliases);
+  lookup_aliases (class->aliases, standard_family_name, &aliases, &n_aliases);
   for (i = 0; i < n_aliases; i++)
     {
       PangoWin32Family *existing_family = g_hash_table_lookup (win32fontmap->families, aliases[i]);
@@ -712,10 +713,6 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 
   win32fontmap->font_cache = pango_win32_font_cache_new ();
   win32fontmap->freed_fonts = g_queue_new ();
-  win32fontmap->aliases = g_hash_table_new_full ((GHashFunc)alias_hash,
-                                                 (GEqualFunc)alias_equal,
-                                                 (GDestroyNotify)alias_free,
-                                                 NULL);
   win32fontmap->warned_fonts = g_hash_table_new_full (g_str_hash,
                                                       g_str_equal,
                                                       g_free,
@@ -862,7 +859,6 @@ pango_win32_font_map_finalize (GObject *object)
   pango_win32_font_cache_free (win32fontmap->font_cache);
 
   g_hash_table_destroy (win32fontmap->warned_fonts);
-  g_hash_table_destroy (win32fontmap->aliases);
   g_hash_table_destroy (win32fontmap->fonts);
   g_hash_table_destroy (win32fontmap->families);
 
