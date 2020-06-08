@@ -242,7 +242,7 @@ test_break (gconstpointer d)
   gchar *diff;
 
   const char *old_locale = setlocale (LC_ALL, NULL);
-  setlocale (LC_ALL, "en_US.UTF-8");
+  setlocale (LC_ALL, "en_US.utf8");
   if (strstr (setlocale (LC_ALL, NULL), "en_US") == NULL)
     {
       char *msg = g_strdup_printf ("Locale en_US.UTF-8 not available, skipping break %s", filename);
@@ -250,6 +250,9 @@ test_break (gconstpointer d)
       g_free (msg);
       return;
     }
+
+  if (context == NULL)
+    context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
   expected_file = get_expected_filename (filename);
 
@@ -292,8 +295,6 @@ main (int argc, char *argv[])
   gchar *path;
 
   g_test_init (&argc, &argv, NULL);
-
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
   /* allow to easily generate expected output for new test cases */
   if (argc > 1)
