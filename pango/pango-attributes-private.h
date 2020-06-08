@@ -25,7 +25,6 @@ struct _PangoAttrIterator
   GPtrArray *attrs; /* From the list */
   guint n_attrs; /* Copied from the list */
 
-  GSList *next_attribute;
   GPtrArray *attribute_stack;
 
   guint attr_index;
