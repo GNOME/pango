@@ -398,9 +398,8 @@ pango_default_break (const gchar   *text,
                             wc == 0x6DD ||
                             wc == 0x70F ||
                             wc == 0x8E2 ||
-                            wc == 0xD4E ||
                             wc == 0x110BD ||
-                            (wc >= 0x111C2 && wc <= 0x111C3)))
+                            wc == 0x110CD))
               {
                 GB_type = GB_Prepend;
                 break;
@@ -426,6 +425,10 @@ pango_default_break (const gchar   *text,
 	  case G_UNICODE_OTHER_LETTER:
 	    if (makes_hangul_syllable)
 	      GB_type = GB_InHangulSyllable;
+
+	    if (_pango_is_Consonant_Preceding_Repha (wc) ||
+		_pango_is_Consonant_Prefixed (wc))
+	      GB_type = GB_Prepend;
 	    break;
 
 	  case G_UNICODE_MODIFIER_LETTER:
@@ -570,7 +573,7 @@ pango_default_break (const gchar   *text,
 		    WB_type = WB_ExtendFormat; /* Other_Grapheme_Extend */
 		  break;
 		case 0x05:
-		  if (wc == 0x05F3)
+		  if (wc == 0x058A)
 		    WB_type = WB_ALetter; /* ALetter exceptions */
 		  break;
 		}
@@ -617,12 +620,16 @@ pango_default_break (const gchar   *text,
 		    WB_type = WB_MidNumLet; /* MidNumLet */
 		  break;
 		case G_UNICODE_OTHER_PUNCTUATION:
-		  if (wc == 0x0027 || wc == 0x002e || wc == 0x2024 ||
+		  if ((wc >= 0x055a && wc <= 0x055c) ||
+		      wc == 0x055e || wc == 0x05f3)
+		    WB_type = WB_ALetter; /* ALetter */
+		  else if (wc == 0x0027 || wc == 0x002e || wc == 0x2024 ||
 		      wc == 0xfe52 || wc == 0xff07 || wc == 0xff0e)
 		    WB_type = WB_MidNumLet; /* MidNumLet */
-		  else if (wc == 0x00b7 || wc == 0x05f4 || wc == 0x2027 || wc == 0x003a || wc == 0x0387 ||
+		  else if (wc == 0x00b7 || wc == 0x05f4 || wc == 0x2027 ||
+			   wc == 0x003a || wc == 0x0387 || wc == 0x055f ||
 			   wc == 0xfe13 || wc == 0xfe55 || wc == 0xff1a)
-		    WB_type = WB_MidLetter; /* WB_MidLetter */
+		    WB_type = WB_MidLetter; /* MidLetter */
 		  else if (wc == 0x066c ||
 			   wc == 0xfe50 || wc == 0xfe54 || wc == 0xff0c || wc == 0xff1b)
 		    WB_type = WB_MidNum; /* MidNum */
@@ -1074,10 +1081,12 @@ pango_default_break (const gchar   *text,
 	  if ((prev_break_type == G_UNICODE_BREAK_ALPHABETIC ||
 	       prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER ||
 	       prev_break_type == G_UNICODE_BREAK_NUMERIC) &&
-	      break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION)
+	      break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION &&
+	      !_pango_is_EastAsianWide (wc))
 	    break_op = BREAK_PROHIBITED;
 
 	  if (prev_break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS &&
+	      !_pango_is_EastAsianWide (prev_wc)&&
 	      (break_type == G_UNICODE_BREAK_ALPHABETIC ||
 	       break_type == G_UNICODE_BREAK_HEBREW_LETTER ||
 	       break_type == G_UNICODE_BREAK_NUMERIC))
@@ -1219,25 +1228,7 @@ pango_default_break (const gchar   *text,
 
 	  /* Rule LB22 */
 	  if (break_type == G_UNICODE_BREAK_INSEPARABLE)
-	    {
-	      if (prev_break_type == G_UNICODE_BREAK_ALPHABETIC ||
-		  prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER)
-		break_op = BREAK_PROHIBITED;
-
-	      if (prev_break_type == G_UNICODE_BREAK_EXCLAMATION)
-		break_op = BREAK_PROHIBITED;
-
-	      if (prev_break_type == G_UNICODE_BREAK_IDEOGRAPHIC ||
-		  prev_break_type == G_UNICODE_BREAK_EMOJI_BASE ||
-		  prev_break_type == G_UNICODE_BREAK_EMOJI_MODIFIER)
-		break_op = BREAK_PROHIBITED;
-
-	      if (prev_break_type == G_UNICODE_BREAK_INSEPARABLE)
-		break_op = BREAK_PROHIBITED;
-
-	      if (prev_break_type == G_UNICODE_BREAK_NUMERIC)
-		break_op = BREAK_PROHIBITED;
-	    }
+	    break_op = BREAK_PROHIBITED;
 
 	  if (break_type == G_UNICODE_BREAK_AFTER ||
 	      break_type == G_UNICODE_BREAK_HYPHEN ||
