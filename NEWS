@@ -1,3 +1,12 @@
+Overview of changes in 1.45.1
+=============================
+- Undo PangoFontsetSimple deprecation
+- Annotation fixes for various apis
+- Add api to compare attribute lists
+- Update data tables to Unicode 13.0
+- Various test improvements
+- Require GLib 2.60
+
 Overview of changes in 1.45.0
 =============================
 - Some new font enumeration apis:
