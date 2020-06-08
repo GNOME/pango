@@ -23,6 +23,20 @@
 
 #include "pango-ot-private.h"
 
+static PangoOTBuffer *
+pango_ot_buffer_copy (PangoOTBuffer *src)
+{
+  PangoOTBuffer *dst = g_slice_new (PangoOTBuffer);
+
+  dst->buffer = hb_buffer_reference (src->buffer);
+
+  return dst;
+}
+
+G_DEFINE_BOXED_TYPE (PangoOTBuffer, pango_ot_buffer,
+                     pango_ot_buffer_copy,
+                     pango_ot_buffer_destroy)
+
 /**
  * pango_ot_buffer_new
  * @font: a #PangoFcFont

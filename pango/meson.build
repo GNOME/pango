@@ -160,11 +160,9 @@ endif
 pkgconfig.generate(libpango,
   name: 'Pango',
   description: 'Internationalized text handling',
-  version: meson.project_version(),
   requires: pango_pkg_requires,
   filebase: 'pango',
   subdirs: pango_api_name,
-  install_dir: join_paths(pango_libdir, 'pkgconfig'),
 )
 
 # FreeType
@@ -240,8 +238,8 @@ if build_pangoft2
       dependencies: [ libpango_dep, pango_gir_dep ],
       namespace: 'PangoFc',
       nsversion: pango_api_version,
-      identifier_prefix: 'PangoFc',
-      symbol_prefix: 'pango_fc',
+      identifier_prefix: 'Pango',
+      symbol_prefix: 'pango',
       export_packages: 'pangofc',
       includes: [ pango_gir[0], 'fontconfig-2.0', ],
       header: 'pango/pangofc-fontmap.h',
@@ -258,8 +256,8 @@ if build_pangoft2
       dependencies: [ libpango_dep, pango_gir_dep, pangofc_gir_dep ],
       namespace: 'PangoOT',
       nsversion: pango_api_version,
-      identifier_prefix: 'PangoOT',
-      symbol_prefix: 'pango_ot',
+      identifier_prefix: 'Pango',
+      symbol_prefix: 'pango',
       export_packages: 'pangoot',
       includes: [ pangofc_gir[0], 'freetype2-2.0', ],
       header: 'pango/pango-ot.h',
@@ -275,8 +273,8 @@ if build_pangoft2
       dependencies: [ libpango_dep, pango_gir_dep, pangofc_gir_dep, pangoot_gir_dep ],
       namespace: 'PangoFT2',
       nsversion: pango_api_version,
-      identifier_prefix: 'PangoFT2',
-      symbol_prefix: 'pango_ft2',
+      identifier_prefix: 'Pango',
+      symbol_prefix: 'pango',
       export_packages: 'pangoft2',
       includes: [ pangofc_gir[0], 'freetype2-2.0', ],
       header: 'pango/pangoft2.h',
@@ -297,11 +295,27 @@ if build_pangoft2
   pkgconfig.generate(libpangoft2,
     name: 'Pango FT2 and Pango Fc',
     description: 'Freetype 2.0 and fontconfig font support for Pango',
-    version: meson.project_version(),
     filebase: 'pangoft2',
     subdirs: pango_api_name,
     requires: [ 'pango', freetype2_pc, fontconfig_pc ],
-    install_dir: join_paths(pango_libdir, 'pkgconfig'),
+  )
+
+  # Since we split the introspection data, we also need a split pkg-config
+  # file for Vala
+  pkgconfig.generate(
+    name: 'Pango OT',
+    description: 'OpenType font support for Pango (deprecated)',
+    filebase: 'pangoot',
+    subdirs: pango_api_name,
+    requires: [ 'pangoft2' ],
+  )
+
+  pkgconfig.generate(
+    name: 'Pango FC',
+    description: 'Fontconfig support for Pango',
+    filebase: 'pangofc',
+    subdirs: pango_api_name,
+    requires: [ 'pangoft2' ],
   )
 else
   # For usage as a subproject
@@ -349,8 +363,8 @@ if xft_dep.found() and fontconfig_dep.found()
       dependencies: [ libpango_dep, libpangoft2_dep, pango_gir_dep, pangoot_gir_dep, pangoft2_gir_dep ],
       namespace: 'PangoXft',
       nsversion: pango_api_version,
-      identifier_prefix: 'PangoXft',
-      symbol_prefix: 'pango_xft',
+      identifier_prefix: 'Pango',
+      symbol_prefix: 'pango',
       export_packages: 'pangoxft',
       includes: [ pango_gir[0], pangoot_gir[0], pangoft2_gir[0], 'GObject-2.0', 'xft-2.0', 'xlib-2.0' ],
       header: 'pango/pangoxft.h',
@@ -370,11 +384,9 @@ if xft_dep.found() and fontconfig_dep.found()
   pkgconfig.generate(libpangoxft,
     name: 'Pango Xft',
     description: 'Xft font support for Pango',
-    version: meson.project_version(),
     filebase: 'pangoxft',
     subdirs: pango_api_name,
     requires: [ 'pangoft2', 'xft' ],
-    install_dir: join_paths(pango_libdir, 'pkgconfig'),
   )
 else
   # For usage as a subproject
@@ -431,11 +443,9 @@ if host_system == 'windows'
   pkgconfig.generate(libpangowin32,
     name: 'Pango Win32',
     description: 'Win32 GDI font support for Pango',
-    version: meson.project_version(),
     filebase: 'pangowin32',
     subdirs: pango_api_name,
     requires: 'pango',
-    install_dir: join_paths(pango_libdir, 'pkgconfig'),
   )
 else
   # For usage as a subproject
@@ -518,8 +528,8 @@ if cairo_dep.found()
       dependencies: [ pangocairo_deps, pango_gir_dep ],
       namespace: 'PangoCairo',
       nsversion: pango_api_version,
-      identifier_prefix: 'PangoCairo',
-      symbol_prefix: 'pango_cairo',
+      identifier_prefix: 'Pango',
+      symbol_prefix: 'pango',
       export_packages: 'pangocairo',
       includes: [ pango_gir[0], 'GObject-2.0', 'cairo-1.0' ],
       header: 'pango/pangocairo.h',
@@ -547,11 +557,9 @@ if cairo_dep.found()
   pkgconfig.generate(libpangocairo,
     name: 'Pango Cairo',
     description: 'Cairo rendering support for Pango',
-    version: meson.project_version(),
     filebase: 'pangocairo',
     subdirs: pango_api_name,
     requires: pango_cairo_requires,
-    install_dir: join_paths(pango_libdir, 'pkgconfig'),
   )
 else
   # For usage as a subproject

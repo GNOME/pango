@@ -499,13 +499,13 @@ pango_xft_font_real_shutdown (PangoFcFont *fcfont)
 }
 
 /**
- * pango_xft_font_get_font:
+ * pango_xft_font_get_font: (skip)
  * @font: (nullable): a #PangoFont.
  *
- * Returns the XftFont of a font.
+ * Returns the `XftFont` of a font.
  *
- * Return value: (nullable): the XftFont associated to @font, or %NULL
- * if @font is %NULL.
+ * Return value: (nullable): the `XftFont` associated to @font,
+ *   or %NULL if @font is %NULL.
  **/
 XftFont *
 pango_xft_font_get_font (PangoFont *font)
@@ -517,12 +517,12 @@ pango_xft_font_get_font (PangoFont *font)
 }
 
 /**
- * pango_xft_font_get_display:
+ * pango_xft_font_get_display: (skip)
  * @font: a #PangoFont.
  *
- * Returns the X display of the XftFont of a font.
+ * Returns the X display of the `XftFont` of a font.
  *
- * Return value: the X display of the XftFont associated to @font.
+ * Return value: (transfer none): the X display of the XftFont associated to @font.
  **/
 Display *
 pango_xft_font_get_display (PangoFont *font)
@@ -560,16 +560,16 @@ pango_xft_font_get_unknown_glyph (PangoFont *font,
 }
 
 /**
- * pango_xft_font_lock_face:
+ * pango_xft_font_lock_face: (skip)
  * @font: a #PangoFont.
  *
- * Gets the FreeType <type>FT_Face</type> associated with a font,
- * This face will be kept around until you call
- * pango_xft_font_unlock_face().
+ * Gets the FreeType `FT_Face` associated with a font.
+ *
+ * This face will be kept around until you call pango_xft_font_unlock_face().
  *
  * Use pango_fc_font_lock_face() instead.
  *
- * Return value: the FreeType <type>FT_Face</type> associated with @font.
+ * Return value: the FreeType `FT_Face` associated with @font.
  *
  * Since: 1.2
  **/
@@ -582,7 +582,7 @@ pango_xft_font_lock_face (PangoFont *font)
 }
 
 /**
- * pango_xft_font_unlock_face:
+ * pango_xft_font_unlock_face: (skip)
  * @font: a #PangoFont.
  *
  * Releases a font previously obtained with

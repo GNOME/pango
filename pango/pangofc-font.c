@@ -533,14 +533,14 @@ pango_fc_font_real_get_glyph (PangoFcFont *font,
 }
 
 /**
- * pango_fc_font_lock_face:
+ * pango_fc_font_lock_face: (skip)
  * @font: a #PangoFcFont.
  *
- * Gets the FreeType <type>FT_Face</type> associated with a font,
+ * Gets the FreeType `FT_Face` associated with a font,
  * This face will be kept around until you call
  * pango_fc_font_unlock_face().
  *
- * Return value: the FreeType <type>FT_Face</type> associated with @font.
+ * Return value: the FreeType `FT_Face` associated with @font.
  *
  * Since: 1.4
  * Deprecated: 1.44: Use pango_font_get_hb_font() instead

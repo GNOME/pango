@@ -47,7 +47,7 @@ if help2man.found() and not meson.is_cross_build()
     '--no-info',
     '--section=1',
     '--help-option=--help-all',
-    '--name=Pango text viewer',
+    '--name="Pango text viewer"',
   ]
 
   custom_target('pango-view.1',

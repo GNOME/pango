@@ -110,7 +110,7 @@ test_file (const gchar *filename, GString *string)
   gchar *contents;
   gsize  length;
   GError *error = NULL;
- GString *s1, *s2, *s3, *s4, *s5, *s6;
+  GString *s1, *s2, *s3, *s4, *s5, *s6;
   char *test;
   char *text;
   PangoAttrList *attrs;
@@ -237,6 +237,18 @@ test_itemize (gconstpointer d)
   GString *dump;
   gchar *diff;
 
+  const char *old_locale = setlocale (LC_ALL, NULL);
+  setlocale (LC_ALL, "en_US.utf8");
+  if (strstr (setlocale (LC_ALL, NULL), "en_US") == NULL)
+    {
+      char *msg = g_strdup_printf ("Locale en_US.UTF-8 not available, skipping itemization %s", filename);
+      g_test_skip (msg);
+      g_free (msg);
+      return;
+    }
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
   expected_file = get_expected_filename (filename);
 
   dump = g_string_sized_new (0);
@@ -246,11 +258,22 @@ test_itemize (gconstpointer d)
   diff = diff_with_file (expected_file, dump->str, dump->len, &error);
   g_assert_no_error (error);
 
+  setlocale (LC_ALL, old_locale);
+
   if (diff && diff[0])
     {
+      char **lines = g_strsplit (diff, "\n", -1);
+      const char *line;
+      int i = 0;
+
       g_test_message ("Contents don't match expected contents");
-      g_test_message ("%s", diff);
+
+      for (line = lines[0]; line != NULL; line = lines[++i])
+        g_test_message ("%s", line);
+
       g_test_fail ();
+
+      g_strfreev (lines);
       g_free (diff);
     }
 
@@ -266,12 +289,7 @@ main (int argc, char *argv[])
   const gchar *name;
   gchar *path;
 
-  g_setenv ("LC_ALL", "en_US.UTF-8", TRUE);
-  setlocale (LC_ALL, "");
-
   g_test_init (&argc, &argv, NULL);
-
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
   /* allow to easily generate expected output for new test cases */
   if (argc > 1)

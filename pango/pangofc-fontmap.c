@@ -2021,9 +2021,9 @@ pango_fc_font_map_config_changed (PangoFcFontMap *fcfontmap)
 }
 
 /**
- * pango_fc_font_map_set_config:
+ * pango_fc_font_map_set_config: (skip)
  * @fcfontmap: a #PangoFcFontMap
- * @fcconfig: (nullable): a #FcConfig, or %NULL
+ * @fcconfig: (nullable): a `FcConfig`, or %NULL
  *
  * Set the FcConfig for this font map to use.  The default value
  * is %NULL, which causes Fontconfig to use its global "current config".
@@ -2065,12 +2065,14 @@ pango_fc_font_map_set_config (PangoFcFontMap *fcfontmap,
 }
 
 /**
- * pango_fc_font_map_get_config:
+ * pango_fc_font_map_get_config: (skip)
  * @fcfontmap: a #PangoFcFontMap
  *
- * Fetches FcConfig attached to a font map.  See pango_fc_font_map_set_config().
+ * Fetches the `FcConfig` attached to a font map.
  *
- * Returns: (nullable): the #FcConfig object attached to @fcfontmap, which
+ * See also: pango_fc_font_map_set_config()
+ *
+ * Returns: (nullable): the `FcConfig` object attached to @fcfontmap, which
  *          might be %NULL.
  *
  * Since: 1.38
@@ -2247,7 +2249,7 @@ _pango_fc_font_map_fc_to_coverage (FcCharSet *charset)
  * needed for correct operation on the #PangoContext after calling
  * this function.
  *
- * Return value: a new #PangoContext
+ * Return value: (transfer full): a new #PangoContext
  *
  * Since: 1.4
  *
@@ -2940,6 +2942,17 @@ pango_fc_family_init (PangoFcFamily *fcfamily)
   fcfamily->n_faces = -1;
 }
 
+/**
+ * pango_fc_font_map_get_hb_face: (skip)
+ * @fcfontmap: a #PangoFcFontMap
+ * @fcfont: a #PangoFcFont
+ *
+ * Retrieves the `hb_face_t` for the given #PangoFcFont.
+ *
+ * Returns: (transfer none) (nullable): the `hb_face_t` for the given Pango font
+ *
+ * Since: 1.44
+ */
 hb_face_t *
 pango_fc_font_map_get_hb_face (PangoFcFontMap *fcfontmap,
                                PangoFcFont    *fcfont)

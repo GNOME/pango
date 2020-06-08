@@ -159,19 +159,18 @@ set_transform (PangoFT2Font *ft2font)
 }
 
 /**
- * pango_ft2_font_get_face:
+ * pango_ft2_font_get_face: (skip)
  * @font: a #PangoFont
  *
- * Returns the native FreeType2 <type>FT_Face</type> structure used for this #PangoFont.
+ * Returns the native FreeType2 `FT_Face` structure used for this #PangoFont.
  * This may be useful if you want to use FreeType2 functions directly.
  *
  * Use pango_fc_font_lock_face() instead; when you are done with a
  * face from pango_fc_font_lock_face() you must call
  * pango_fc_font_unlock_face().
  *
- * Return value: (nullable): a pointer to a <type>FT_Face</type>
- *               structure, with the size set correctly, or %NULL if
- *               @font is %NULL.
+ * Return value: (nullable): a pointer to a `FT_Face` structure, with the
+ *   size set correctly, or %NULL if @font is %NULL.
  **/
 FT_Face
 pango_ft2_font_get_face (PangoFont *font)
@@ -476,10 +475,10 @@ pango_ft2_font_finalize (GObject *object)
 
 /**
  * pango_ft2_font_get_coverage:
- * @font: a <type>PangoFT2Font</type>.
+ * @font: a Pango FT2 font
  * @language: a language tag.
  *
- * Gets the #PangoCoverage for a <type>PangoFT2Font</type>. Use
+ * Gets the #PangoCoverage for a `PangoFT2Font`. Use
  * pango_font_get_coverage() instead.
  *
  * Return value: (transfer full): a #PangoCoverage.
