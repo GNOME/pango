@@ -404,7 +404,7 @@ pango_default_break (const gchar   *text,
                 GB_type = GB_Prepend;
                 break;
               }
-	    /* fall through */
+            G_GNUC_FALLTHROUGH;
 	  case G_UNICODE_CONTROL:
 	  case G_UNICODE_LINE_SEPARATOR:
 	  case G_UNICODE_PARAGRAPH_SEPARATOR:
@@ -420,7 +420,7 @@ pango_default_break (const gchar   *text,
 		GB_type = GB_ControlCRLF;
 		break;
 	      }
-	    /* fall through */
+            G_GNUC_FALLTHROUGH;
 
 	  case G_UNICODE_OTHER_LETTER:
 	    if (makes_hangul_syllable)
@@ -597,7 +597,7 @@ pango_default_break (const gchar   *text,
 		case G_UNICODE_CONTROL:
 		  if (wc != 0x000D && wc != 0x000A && wc != 0x000B && wc != 0x000C && wc != 0x0085)
 		    break;
-		  /* fall through */
+                  G_GNUC_FALLTHROUGH;
 		case G_UNICODE_LINE_SEPARATOR:
 		case G_UNICODE_PARAGRAPH_SEPARATOR:
 		  WB_type = WB_NewlineCRLF; /* CR, LF, Newline */

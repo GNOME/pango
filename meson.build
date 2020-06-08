@@ -190,7 +190,7 @@ endif
 # Dependencies
 pango_deps = []
 
-glib_req_version = '>= 2.59.2'
+glib_req_version = '>= 2.60'
 fribidi_req_version = '>= 0.19.7'
 libthai_req_version = '>= 0.1.9'
 harfbuzz_req_version = '>= 2.0.0'
