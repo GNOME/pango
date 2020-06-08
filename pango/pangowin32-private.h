@@ -113,7 +113,7 @@ struct _PangoWin32FontMapClass
 			   PangoContext               *context,
 			   PangoWin32Face             *face,
 			   const PangoFontDescription *desc);
-
+  GHashTable *aliases;
 };
 
 struct _PangoWin32Font
