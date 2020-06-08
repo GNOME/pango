@@ -974,14 +974,21 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
 					     int            width,
 					     int            height)
 {
-  int square = height / HEIGHT_SQUARES;
-  int unit_width = (HEIGHT_SQUARES - 1) * square;
-  int width_units = (width + unit_width / 2) / unit_width;
+  int square;
+  int unit_width;
+  int width_units;
   const PangoMatrix identity = PANGO_MATRIX_INIT;
   const PangoMatrix *matrix;
   double dx, dx0, dy0;
   PangoMatrix total;
   int i;
+
+  if (width <= 0 || height <= 0)
+    return;
+
+  square = height / HEIGHT_SQUARES;
+  unit_width = (HEIGHT_SQUARES - 1) * square;
+  width_units = (width + unit_width / 2) / unit_width;
 
   x += (width - width_units * unit_width) / 2;
 
