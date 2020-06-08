@@ -1992,7 +1992,7 @@ pango_attr_list_equal (PangoAttrList *list,
 gboolean
 _pango_attr_list_has_attributes (const PangoAttrList *list)
 {
-  return (list->attributes != NULL);
+  return list && (list->attributes != NULL);
 }
 
 G_DEFINE_BOXED_TYPE (PangoAttrIterator,

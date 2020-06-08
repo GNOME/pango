@@ -685,7 +685,13 @@ pango_layout_set_attributes (PangoLayout   *layout,
 
   g_return_if_fail (layout != NULL);
 
+  /* Both empty */
   if (!attrs && !layout->attrs)
+    return;
+
+  /* Also both empty */
+  if (!_pango_attr_list_has_attributes (layout->attrs) &&
+      !_pango_attr_list_has_attributes (attrs))
     return;
 
   old_attrs = layout->attrs;
