@@ -24,6 +24,7 @@
 #include "pango-break.h"
 #include "pango-script-private.h"
 #include "pango-emoji-private.h"
+#include "pango-attributes-private.h"
 #include "pango-break-table.h"
 #include "pango-impl-utils.h"
 #include <string.h>
@@ -1596,7 +1597,7 @@ tailor_break (const char    *text,
 
   res = break_script (text, length, analysis, attrs, attrs_len);
 
-  if (item_offset >= 0)
+  if (item_offset >= 0 && analysis->extra_attrs)
     res |= break_attrs (text, length, analysis->extra_attrs, item_offset, attrs, attrs_len);
 
   return res;
@@ -1905,31 +1906,36 @@ break_attrs (const char   *text,
              PangoLogAttr *log_attrs,
              int           log_attrs_len)
 {
-  PangoAttrList *list;
-  PangoAttrIterator *iter;
+  PangoAttrList list;
+  PangoAttrIterator iter;
   GSList *l;
 
-  list = pango_attr_list_new ();
+  _pango_attr_list_init (&list);
   for (l = attributes; l; l = l->next)
     {
       PangoAttribute *attr = l->data;
 
       if (attr->klass->type == PANGO_ATTR_ALLOW_BREAKS)
-        pango_attr_list_insert (list, pango_attribute_copy (attr));
+        pango_attr_list_insert (&list, pango_attribute_copy (attr));
     }
 
-  iter = pango_attr_list_get_iterator (list);
-  do {
-    PangoAttribute *attr;
+  if (!_pango_attr_list_has_attributes (&list))
+    {
+      _pango_attr_list_destroy (&list);
+      return FALSE;
+    }
 
-    attr = pango_attr_iterator_get (iter, PANGO_ATTR_ALLOW_BREAKS);
+  _pango_attr_list_get_iterator (&list, &iter);
+  do {
+    const PangoAttribute *attr = pango_attr_iterator_get (&iter, PANGO_ATTR_ALLOW_BREAKS);
+
     if (attr && ((PangoAttrInt*)attr)->value == 0)
       {
         int start, end;
         int start_pos, end_pos;
         int pos;
 
-        pango_attr_iterator_range (iter, &start, &end);
+        pango_attr_iterator_range (&iter, &start, &end);
         if (start < offset)
           start_pos = 0;
         else
@@ -1946,10 +1952,10 @@ break_attrs (const char   *text,
             log_attrs[pos].is_char_break = FALSE;
           }
       }
-  } while (pango_attr_iterator_next (iter));
+  } while (pango_attr_iterator_next (&iter));
 
-  pango_attr_iterator_destroy (iter);
-  pango_attr_list_unref (list);
+  _pango_attr_iterator_destroy (&iter);
+  _pango_attr_list_destroy (&list);
 
   return TRUE;
 }

@@ -78,6 +78,7 @@
 #include <string.h>
 
 #include "pango-layout-private.h"
+#include "pango-attributes-private.h"
 
 
 typedef struct _ItemProperties ItemProperties;
@@ -362,6 +363,11 @@ pango_layout_set_width (PangoLayout *layout,
   if (width != layout->width)
     {
       layout->width = width;
+
+      /* Increasing the width can only decrease the line count */
+      if (layout->line_count == 1 && width > layout->width)
+        return;
+
       layout_changed (layout);
     }
 }
@@ -673,10 +679,20 @@ pango_layout_get_line_spacing (PangoLayout *layout)
  **/
 void
 pango_layout_set_attributes (PangoLayout   *layout,
-			     PangoAttrList *attrs)
+                             PangoAttrList *attrs)
 {
   PangoAttrList *old_attrs;
+
   g_return_if_fail (layout != NULL);
+
+  /* Both empty */
+  if (!attrs && !layout->attrs)
+    return;
+
+  /* Also both empty */
+  if (!_pango_attr_list_has_attributes (layout->attrs) &&
+      !_pango_attr_list_has_attributes (attrs))
+    return;
 
   old_attrs = layout->attrs;
 
@@ -701,7 +717,8 @@ pango_layout_set_attributes (PangoLayout   *layout,
  *
  * Gets the attribute list for the layout, if any.
  *
- * Return value: (transfer none): a #PangoAttrList.
+ * Return value: (transfer none) (nullable): a #PangoAttrList or %NULL
+ *   if none was set.
  **/
 PangoAttrList*
 pango_layout_get_attributes (PangoLayout *layout)
@@ -1114,15 +1131,22 @@ pango_layout_set_text (PangoLayout *layout,
   old_text = layout->text;
 
   if (length < 0)
-    layout->text = g_strdup (text);
+    {
+      layout->length = strlen (text);
+      layout->text = g_strndup (text, layout->length);
+    }
   else if (length > 0)
-    /* This is not exactly what we want.  We don't need the padding...
-     */
-    layout->text = g_strndup (text, length);
+    {
+      /* This is not exactly what we want.  We don't need the padding...
+       */
+      layout->length = length;
+      layout->text = g_strndup (text, length);
+    }
   else
-    layout->text = g_malloc0 (1);
-
-  layout->length = strlen (layout->text);
+    {
+      layout->length = 0;
+      layout->text = g_malloc0 (1);
+    }
 
   /* validate it, and replace invalid bytes with -1 */
   start = layout->text;
@@ -2924,7 +2948,8 @@ pango_layout_get_pixel_size (PangoLayout *layout,
 {
   PangoRectangle logical_rect;
 
-  pango_layout_get_pixel_extents (layout, NULL, &logical_rect);
+  pango_layout_get_extents_internal (layout, NULL, &logical_rect, NULL);
+  pango_extents_to_pixels (&logical_rect, NULL);
 
   if (width)
     *width = logical_rect.width;
@@ -3057,8 +3082,8 @@ ensure_tab_width (PangoLayout *layout)
       GList *items;
       PangoAttribute *attr;
       PangoAttrList *layout_attrs;
-      PangoAttrList *tmp_attrs;
-      PangoAttrIterator *iter;
+      PangoAttrList tmp_attrs;
+      PangoAttrIterator iter;
       PangoFontDescription *font_desc = pango_font_description_copy_static (pango_context_get_font_description (layout->context));
       PangoLanguage *language;
       PangoShapeFlags shape_flags = PANGO_SHAPE_NONE;
@@ -3067,30 +3092,30 @@ ensure_tab_width (PangoLayout *layout)
         shape_flags |= PANGO_SHAPE_ROUND_POSITIONS;
 
       layout_attrs = pango_layout_get_effective_attributes (layout);
-      iter = pango_attr_list_get_iterator (layout_attrs);
-      pango_attr_iterator_get_font (iter, font_desc, &language, NULL);
+      _pango_attr_list_get_iterator (layout_attrs, &iter);
+      pango_attr_iterator_get_font (&iter, font_desc, &language, NULL);
 
-      tmp_attrs = pango_attr_list_new ();
+      _pango_attr_list_init (&tmp_attrs);
 
       attr = pango_attr_font_desc_new (font_desc);
       pango_font_description_free (font_desc);
-      pango_attr_list_insert_before (tmp_attrs, attr);
+      pango_attr_list_insert_before (&tmp_attrs, attr);
 
       if (language)
 	{
 	  attr = pango_attr_language_new (language);
-	  pango_attr_list_insert_before (tmp_attrs, attr);
+	  pango_attr_list_insert_before (&tmp_attrs, attr);
 	}
 
-      items = pango_itemize (layout->context, " ", 0, 1, tmp_attrs, NULL);
+      items = pango_itemize (layout->context, " ", 0, 1, &tmp_attrs, NULL);
 
-      pango_attr_iterator_destroy (iter);
+      _pango_attr_iterator_destroy (&iter);
       if (layout_attrs != layout->attrs)
         {
 	  pango_attr_list_unref (layout_attrs);
 	  layout_attrs = NULL;
 	}
-      pango_attr_list_unref (tmp_attrs);
+      _pango_attr_list_destroy (&tmp_attrs);
 
       item = items->data;
       pango_shape_with_flags ("        ", 8, "        ", 8, &item->analysis, glyphs, shape_flags);
@@ -3458,18 +3483,18 @@ get_need_hyphen (PangoItem  *item,
   const char *p;
   gboolean prev_space;
   gboolean prev_hyphen;
-  PangoAttrList *attrs;
-  PangoAttrIterator *iter;
+  PangoAttrList attrs;
+  PangoAttrIterator iter;
   GSList *l;
 
-  attrs = pango_attr_list_new ();
+  _pango_attr_list_init (&attrs);
   for (l = item->analysis.extra_attrs; l; l = l->next)
     {
       PangoAttribute *attr = l->data;
       if (attr->klass->type == PANGO_ATTR_INSERT_HYPHENS)
-        pango_attr_list_change (attrs, pango_attribute_copy (attr));
+        pango_attr_list_change (&attrs, pango_attribute_copy (attr));
     }
-  iter = pango_attr_list_get_iterator (attrs);
+  _pango_attr_list_get_iterator (&attrs, &iter);
 
   for (i = 0, p = text + item->offset; i < item->num_chars; i++, p = g_utf8_next_char (p))
     {
@@ -3481,15 +3506,15 @@ get_need_hyphen (PangoItem  *item,
 
       pos = p - text;
       do {
-        pango_attr_iterator_range (iter, &start, &end);
+        pango_attr_iterator_range (&iter, &start, &end);
         if (end > pos)
           break;
-      } while (pango_attr_iterator_next (iter));
+      } while (pango_attr_iterator_next (&iter));
 
       if (start <= pos && pos < end)
         {
           PangoAttribute *attr;
-          attr = pango_attr_iterator_get (iter, PANGO_ATTR_INSERT_HYPHENS);
+          attr = pango_attr_iterator_get (&iter, PANGO_ATTR_INSERT_HYPHENS);
           if (attr)
             insert_hyphens = ((PangoAttrInt*)attr)->value;
 
@@ -3554,8 +3579,8 @@ get_need_hyphen (PangoItem  *item,
       prev_hyphen = hyphen;
     }
 
-  pango_attr_iterator_destroy (iter);
-  pango_attr_list_unref (attrs);
+  _pango_attr_iterator_destroy (&iter);
+  _pango_attr_list_destroy (&attrs);
 }
 
 static gboolean
@@ -4087,17 +4112,25 @@ pango_layout_get_effective_attributes (PangoLayout *layout)
   if (layout->attrs)
     attrs = pango_attr_list_copy (layout->attrs);
   else
-    attrs = pango_attr_list_new ();
+    attrs = NULL;
 
   if (layout->font_desc)
     {
       PangoAttribute *attr = pango_attr_font_desc_new (layout->font_desc);
+
+      if (!attrs)
+        attrs = pango_attr_list_new ();
+
       pango_attr_list_insert_before (attrs, attr);
     }
 
   if (layout->single_paragraph)
     {
       PangoAttribute *attr = pango_attr_show_new (PANGO_SHOW_LINE_BREAKS);
+
+      if (!attrs)
+        attrs = pango_attr_list_new ();
+
       pango_attr_list_insert_before (attrs, attr);
     }
 
@@ -4157,20 +4190,20 @@ apply_attributes_to_items (GList         *items,
                            PangoAttrList *attrs)
 {
   GList *l;
-  PangoAttrIterator *iter;
+  PangoAttrIterator iter;
 
   if (!attrs)
     return;
 
-  iter = pango_attr_list_get_iterator (attrs);
+  _pango_attr_list_get_iterator (attrs, &iter);
 
   for (l = items; l; l = l->next)
     {
       PangoItem *item = l->data;
-      pango_item_apply_attrs (item, iter);
+      pango_item_apply_attrs (item, &iter);
     }
 
-  pango_attr_iterator_destroy (iter);
+  _pango_attr_iterator_destroy (&iter);
 }
 
 static void
@@ -4217,7 +4250,7 @@ pango_layout_check_lines (PangoLayout *layout)
   PangoAttrList *attrs;
   PangoAttrList *itemize_attrs;
   PangoAttrList *shape_attrs;
-  PangoAttrIterator *iter;
+  PangoAttrIterator iter;
   PangoDirection prev_base_dir = PANGO_DIRECTION_NEUTRAL, base_dir = PANGO_DIRECTION_NEUTRAL;
   ParaBreakState state;
 
@@ -4235,13 +4268,19 @@ pango_layout_check_lines (PangoLayout *layout)
     pango_layout_set_text (layout, NULL, 0);
 
   attrs = pango_layout_get_effective_attributes (layout);
+  if (attrs)
+    {
+      shape_attrs = pango_attr_list_filter (attrs, affects_break_or_shape, NULL);
+      itemize_attrs = pango_attr_list_filter (attrs, affects_itemization, NULL);
 
-  shape_attrs = pango_attr_list_filter (attrs, affects_break_or_shape, NULL);
-  itemize_attrs = pango_attr_list_filter (attrs, affects_itemization, NULL);
-  if (itemize_attrs)
-    iter = pango_attr_list_get_iterator (itemize_attrs);
+      if (itemize_attrs)
+        _pango_attr_list_get_iterator (itemize_attrs, &iter);
+    }
   else
-    iter = NULL;
+    {
+      shape_attrs = NULL;
+      itemize_attrs = NULL;
+    }
 
   layout->log_attrs = g_new (PangoLogAttr, layout->n_chars + 1);
 
@@ -4319,7 +4358,7 @@ pango_layout_check_lines (PangoLayout *layout)
 						 start - layout->text,
 						 end - start,
 						 itemize_attrs,
-						 iter);
+                                                 itemize_attrs ? &iter : NULL);
 
       apply_attributes_to_items (state.items, shape_attrs);
 
@@ -4376,17 +4415,14 @@ pango_layout_check_lines (PangoLayout *layout)
   apply_attributes_to_runs (layout, attrs);
   layout->lines = g_slist_reverse (layout->lines);
 
-  if (iter)
-    pango_attr_iterator_destroy (iter);
-
   if (itemize_attrs)
-    pango_attr_list_unref (itemize_attrs);
+    {
+      pango_attr_list_unref (itemize_attrs);
+      _pango_attr_iterator_destroy (&iter);
+    }
 
-  if (shape_attrs)
-    pango_attr_list_unref (shape_attrs);
-
-  if (attrs)
-    pango_attr_list_unref (attrs);
+  pango_attr_list_unref (shape_attrs);
+  pango_attr_list_unref (attrs);
 }
 
 #pragma GCC diagnostic pop
@@ -4840,12 +4876,14 @@ pango_layout_get_empty_extents_at_index (PangoLayout    *layout,
        */
       if (layout->attrs)
 	{
-	  PangoAttrIterator *iter = pango_attr_list_get_iterator (layout->attrs);
+          PangoAttrIterator iter;
 	  int start, end;
+
+          _pango_attr_list_get_iterator (layout->attrs, &iter);
 
 	  do
 	    {
-	      pango_attr_iterator_range (iter, &start, &end);
+              pango_attr_iterator_range (&iter, &start, &end);
 
 	      if (start <= index && index < end)
 		{
@@ -4855,7 +4893,7 @@ pango_layout_get_empty_extents_at_index (PangoLayout    *layout,
 		      free_font_desc = TRUE;
 		    }
 
-		  pango_attr_iterator_get_font (iter,
+                  pango_attr_iterator_get_font (&iter,
 						font_desc,
 						NULL,
 						NULL);
@@ -4864,9 +4902,9 @@ pango_layout_get_empty_extents_at_index (PangoLayout    *layout,
 		}
 
 	    }
-	  while (pango_attr_iterator_next (iter));
+          while (pango_attr_iterator_next (&iter));
 
-	  pango_attr_iterator_destroy (iter);
+          _pango_attr_iterator_destroy (&iter);
 	}
 
       font = pango_context_load_font (layout->context, font_desc);
@@ -6182,7 +6220,6 @@ _pango_layout_get_iter (PangoLayout    *layout,
                         PangoLayoutIter*iter)
 {
   int run_start_index;
-  PangoRectangle logical_rect;
 
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
@@ -6206,11 +6243,25 @@ _pango_layout_get_iter (PangoLayout    *layout,
     iter->run = NULL;
 
   iter->line_extents = NULL;
-  pango_layout_get_extents_internal (layout,
-				     NULL,
-				     &logical_rect,
-				     &iter->line_extents);
-  iter->layout_width = layout->width == -1 ? logical_rect.width : layout->width;
+
+  if (layout->width == -1)
+    {
+      PangoRectangle logical_rect;
+
+      pango_layout_get_extents_internal (layout,
+                                         NULL,
+                                         &logical_rect,
+                                         &iter->line_extents);
+      iter->layout_width = logical_rect.width;
+    }
+  else
+    {
+      pango_layout_get_extents_internal (layout,
+                                         NULL,
+                                         NULL,
+                                         &iter->line_extents);
+      iter->layout_width = layout->width;
+    }
   iter->line_index = 0;
 
   update_run (iter, run_start_index);

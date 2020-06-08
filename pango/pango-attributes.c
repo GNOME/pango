@@ -34,22 +34,8 @@
 #include <string.h>
 
 #include "pango-attributes.h"
+#include "pango-attributes-private.h"
 #include "pango-impl-utils.h"
-
-struct _PangoAttrList
-{
-  guint ref_count;
-  GSList *attributes;
-  GSList *attributes_tail;
-};
-
-struct _PangoAttrIterator
-{
-  GSList *next_attribute;
-  GList *attribute_stack;
-  guint start_index;
-  guint end_index;
-};
 
 static PangoAttribute *pango_attr_color_new         (const PangoAttrClass *klass,
 						     guint16               red,
@@ -1320,6 +1306,14 @@ G_DEFINE_BOXED_TYPE (PangoAttrList, pango_attr_list,
                      pango_attr_list_copy,
                      pango_attr_list_unref);
 
+void
+_pango_attr_list_init (PangoAttrList *list)
+{
+  list->ref_count = 1;
+  list->attributes = NULL;
+  list->attributes_tail = NULL;
+}
+
 /**
  * pango_attr_list_new:
  *
@@ -1333,9 +1327,7 @@ pango_attr_list_new (void)
 {
   PangoAttrList *list = g_slice_new (PangoAttrList);
 
-  list->ref_count = 1;
-  list->attributes = NULL;
-  list->attributes_tail = NULL;
+  _pango_attr_list_init (list);
 
   return list;
 }
@@ -1361,6 +1353,23 @@ pango_attr_list_ref (PangoAttrList *list)
   return list;
 }
 
+void
+_pango_attr_list_destroy (PangoAttrList *list)
+{
+  GSList *tmp_list;
+
+  tmp_list = list->attributes;
+  while (tmp_list)
+    {
+      PangoAttribute *attr = tmp_list->data;
+      tmp_list = tmp_list->next;
+
+      attr->klass->destroy (attr);
+    }
+
+  g_slist_free (list->attributes);
+}
+
 /**
  * pango_attr_list_unref:
  * @list: (nullable): a #PangoAttrList, may be %NULL
@@ -1372,8 +1381,6 @@ pango_attr_list_ref (PangoAttrList *list)
 void
 pango_attr_list_unref (PangoAttrList *list)
 {
-  GSList *tmp_list;
-
   if (list == NULL)
     return;
 
@@ -1381,17 +1388,7 @@ pango_attr_list_unref (PangoAttrList *list)
 
   if (g_atomic_int_dec_and_test ((int *) &list->ref_count))
     {
-      tmp_list = list->attributes;
-      while (tmp_list)
-	{
-	  PangoAttribute *attr = tmp_list->data;
-	  tmp_list = tmp_list->next;
-
-	  attr->klass->destroy (attr);
-	}
-
-      g_slist_free (list->attributes);
-
+      _pango_attr_list_destroy (list);
       g_slice_free (PangoAttrList, list);
     }
 }
@@ -1992,10 +1989,30 @@ pango_attr_list_equal (PangoAttrList *list,
   return TRUE;
 }
 
+gboolean
+_pango_attr_list_has_attributes (const PangoAttrList *list)
+{
+  return list && (list->attributes != NULL);
+}
+
 G_DEFINE_BOXED_TYPE (PangoAttrIterator,
                      pango_attr_iterator,
                      pango_attr_iterator_copy,
                      pango_attr_iterator_destroy)
+
+void
+_pango_attr_list_get_iterator (PangoAttrList     *list,
+                               PangoAttrIterator *iterator)
+{
+  iterator->next_attribute = list->attributes;
+  iterator->attribute_stack = NULL;
+
+  iterator->start_index = 0;
+  iterator->end_index = 0;
+
+  if (!pango_attr_iterator_next (iterator))
+    iterator->end_index = G_MAXUINT;
+}
 
 /**
  * pango_attr_list_get_iterator:
@@ -2015,14 +2032,7 @@ pango_attr_list_get_iterator (PangoAttrList  *list)
   g_return_val_if_fail (list != NULL, NULL);
 
   iterator = g_slice_new (PangoAttrIterator);
-  iterator->next_attribute = list->attributes;
-  iterator->attribute_stack = NULL;
-
-  iterator->start_index = 0;
-  iterator->end_index = 0;
-
-  if (!pango_attr_iterator_next (iterator))
-    iterator->end_index = G_MAXUINT;
+  _pango_attr_list_get_iterator (list, iterator);
 
   return iterator;
 }
@@ -2135,6 +2145,12 @@ pango_attr_iterator_copy (PangoAttrIterator *iterator)
   return copy;
 }
 
+void
+_pango_attr_iterator_destroy (PangoAttrIterator *iterator)
+{
+  g_list_free (iterator->attribute_stack);
+}
+
 /**
  * pango_attr_iterator_destroy:
  * @iterator: a #PangoAttrIterator.
@@ -2146,7 +2162,7 @@ pango_attr_iterator_destroy (PangoAttrIterator *iterator)
 {
   g_return_if_fail (iterator != NULL);
 
-  g_list_free (iterator->attribute_stack);
+  _pango_attr_iterator_destroy (iterator);
   g_slice_free (PangoAttrIterator, iterator);
 }
 
