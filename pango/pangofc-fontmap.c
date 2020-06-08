@@ -1328,6 +1328,9 @@ pango_fc_font_map_finalize (GObject *object)
 
   pango_fc_font_map_shutdown (fcfontmap);
 
+  if (fcfontmap->substitute_destroy)
+    fcfontmap->substitute_destroy (fcfontmap->substitute_data);
+
   G_OBJECT_CLASS (pango_fc_font_map_parent_class)->finalize (object);
 }
 
@@ -1788,6 +1791,28 @@ pango_fc_default_substitute (PangoFcFontMap    *fontmap,
     PANGO_FC_FONT_MAP_GET_CLASS (fontmap)->fontset_key_substitute (fontmap, fontsetkey, pattern);
   else if (PANGO_FC_FONT_MAP_GET_CLASS (fontmap)->default_substitute)
     PANGO_FC_FONT_MAP_GET_CLASS (fontmap)->default_substitute (fontmap, pattern);
+}
+
+void
+pango_fc_font_map_set_default_substitute (PangoFcFontMap        *fontmap,
+					  PangoFcSubstituteFunc func,
+					  gpointer              data,
+					  GDestroyNotify        notify)
+{
+  if (fontmap->substitute_destroy)
+    fontmap->substitute_destroy (fontmap->substitute_data);
+
+  fontmap->substitute_func = func;
+  fontmap->substitute_data = data;
+  fontmap->substitute_destroy = notify;
+
+  pango_fc_font_map_substitute_changed (fontmap);
+}
+
+void
+pango_fc_font_map_substitute_changed (PangoFcFontMap *fontmap) {
+  pango_fc_font_map_cache_clear(fontmap);
+  pango_font_map_changed(PANGO_FONT_MAP (fontmap));
 }
 
 static double

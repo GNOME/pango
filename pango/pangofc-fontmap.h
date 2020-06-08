@@ -114,6 +114,43 @@ hb_face_t * pango_fc_font_map_get_hb_face (PangoFcFontMap *fcfontmap,
  */
 typedef void (*PangoFcSubstituteFunc) (FcPattern *pattern,
 				       gpointer   data);
+
+/**
+ * pango_fc_font_map_set_default_substitute:
+ * @fontmap: a #PangoFcFontMap
+ * @func: function to call to to do final config tweaking
+ *        on #FcPattern objects.
+ * @data: data to pass to @func
+ * @notify: function to call when @data is no longer used.
+ *
+ * Sets a function that will be called to do final configuration
+ * substitution on a #FcPattern before it is used to load
+ * the font. This function can be used to do things like set
+ * hinting and antialiasing options.
+ *
+ * Since: 1.46
+ */
+PANGO_AVAILABLE_IN_1_46
+void pango_fc_font_map_set_default_substitute (PangoFcFontMap        *fontmap,
+					       PangoFcSubstituteFunc func,
+					       gpointer              data,
+					       GDestroyNotify        notify);
+
+/**
+ * pango_fc_font_map_substitute_changed:
+ * @fontmap: a #PangoFcFontMap
+ *
+ * Call this function any time the results of the
+ * default substitution function set with
+ * pango_fc_font_map_set_default_substitute() change.
+ * That is, if your substitution function will return different
+ * results for the same input pattern, you must call this function.
+ *
+ * Since: 1.46
+ */
+PANGO_AVAILABLE_IN_1_46
+void pango_fc_font_map_substitute_changed (PangoFcFontMap *fontmap);
+
 /**
  * PANGO_FC_GRAVITY:
  *

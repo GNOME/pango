@@ -101,6 +101,7 @@ PANGO_AVAILABLE_IN_1_2
 void          pango_xft_shutdown_display (Display *display,
 					  int      screen);
 
+#ifndef PANGO_DISABLE_DEPRECATED
 PANGO_AVAILABLE_IN_1_2
 void pango_xft_set_default_substitute (Display                *display,
 				       int                     screen,
@@ -110,6 +111,7 @@ void pango_xft_set_default_substitute (Display                *display,
 PANGO_AVAILABLE_IN_1_2
 void pango_xft_substitute_changed     (Display                *display,
 				       int                     screen);
+#endif
 
 PANGO_AVAILABLE_IN_ALL
 GType pango_xft_font_map_get_type (void) G_GNUC_CONST;

@@ -105,6 +105,8 @@ pango_cairo_fc_font_map_fontset_key_substitute (PangoFcFontMap    *fcfontmap G_G
 {
   FcConfigSubstitute (NULL, pattern, FcMatchPattern);
 
+  if (fcfontmap->substitute_func)
+    fcfontmap->substitute_func (pattern, fcfontmap->substitute_data);
   if (fontkey)
     cairo_ft_font_options_substitute (pango_fc_fontset_key_get_context_key (fontkey),
 				      pattern);
