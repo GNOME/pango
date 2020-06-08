@@ -110,7 +110,7 @@ test_file (const gchar *filename, GString *string)
   gchar *contents;
   gsize  length;
   GError *error = NULL;
- GString *s1, *s2, *s3, *s4, *s5, *s6;
+  GString *s1, *s2, *s3, *s4, *s5, *s6;
   char *test;
   char *text;
   PangoAttrList *attrs;
@@ -237,6 +237,16 @@ test_itemize (gconstpointer d)
   GString *dump;
   gchar *diff;
 
+  const char *old_locale = setlocale (LC_ALL, NULL);
+  setlocale (LC_ALL, "en_US.UTF-8");
+  if (strstr (setlocale (LC_ALL, NULL), "en_US") == NULL)
+    {
+      char *msg = g_strdup_printf ("Locale en_US.UTF-8 not available, skipping itemization %s", filename);
+      g_test_skip (msg);
+      g_free (msg);
+      return;
+    }
+
   expected_file = get_expected_filename (filename);
 
   dump = g_string_sized_new (0);
@@ -256,6 +266,8 @@ test_itemize (gconstpointer d)
 
   g_string_free (dump, TRUE);
   g_free (expected_file);
+
+  setlocale (LC_ALL, old_locale);
 }
 
 int
@@ -265,9 +277,6 @@ main (int argc, char *argv[])
   GError *error = NULL;
   const gchar *name;
   gchar *path;
-
-  g_setenv ("LC_ALL", "en_US.UTF-8", TRUE);
-  setlocale (LC_ALL, "");
 
   g_test_init (&argc, &argv, NULL);
 
