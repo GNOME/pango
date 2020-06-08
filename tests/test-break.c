@@ -260,18 +260,27 @@ test_break (gconstpointer d)
   diff = diff_with_file (expected_file, dump->str, dump->len, &error);
   g_assert_no_error (error);
 
+  setlocale (LC_ALL, old_locale);
+
   if (diff && diff[0])
     {
+      char **lines = g_strsplit (diff, "\n", -1);
+      const char *line;
+      int i = 0;
+
       g_test_message ("Contents don't match expected contents");
-      g_test_message ("%s", diff);
+
+      for (line = lines[0]; line != NULL; line = lines[++i])
+        g_test_message ("%s", line);
+
       g_test_fail ();
+
+      g_strfreev (lines);
       g_free (diff);
     }
 
   g_string_free (dump, TRUE);
   g_free (expected_file);
-
-  setlocale (LC_ALL, old_locale);
 }
 
 int
