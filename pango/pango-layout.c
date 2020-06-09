@@ -3083,17 +3083,22 @@ ensure_tab_width (PangoLayout *layout)
       PangoAttribute *attr;
       PangoAttrList *layout_attrs;
       PangoAttrList tmp_attrs;
-      PangoAttrIterator iter;
       PangoFontDescription *font_desc = pango_font_description_copy_static (pango_context_get_font_description (layout->context));
-      PangoLanguage *language;
+      PangoLanguage *language = NULL;
       PangoShapeFlags shape_flags = PANGO_SHAPE_NONE;
 
       if (pango_context_get_round_glyph_positions (layout->context))
         shape_flags |= PANGO_SHAPE_ROUND_POSITIONS;
 
       layout_attrs = pango_layout_get_effective_attributes (layout);
-      _pango_attr_list_get_iterator (layout_attrs, &iter);
-      pango_attr_iterator_get_font (&iter, font_desc, &language, NULL);
+      if (layout_attrs)
+        {
+          PangoAttrIterator iter;
+
+          _pango_attr_list_get_iterator (layout_attrs, &iter);
+          pango_attr_iterator_get_font (&iter, font_desc, &language, NULL);
+          _pango_attr_iterator_destroy (&iter);
+        }
 
       _pango_attr_list_init (&tmp_attrs);
 
@@ -3102,19 +3107,18 @@ ensure_tab_width (PangoLayout *layout)
       pango_attr_list_insert_before (&tmp_attrs, attr);
 
       if (language)
-	{
-	  attr = pango_attr_language_new (language);
-	  pango_attr_list_insert_before (&tmp_attrs, attr);
-	}
+        {
+          attr = pango_attr_language_new (language);
+          pango_attr_list_insert_before (&tmp_attrs, attr);
+        }
 
       items = pango_itemize (layout->context, " ", 0, 1, &tmp_attrs, NULL);
 
-      _pango_attr_iterator_destroy (&iter);
       if (layout_attrs != layout->attrs)
         {
-	  pango_attr_list_unref (layout_attrs);
-	  layout_attrs = NULL;
-	}
+          pango_attr_list_unref (layout_attrs);
+          layout_attrs = NULL;
+        }
       _pango_attr_list_destroy (&tmp_attrs);
 
       item = items->data;
