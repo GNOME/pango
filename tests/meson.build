@@ -20,6 +20,7 @@ tests = [
   [ 'testboundaries' ],
   [ 'testboundaries_ucd' ],
   [ 'testcolor' ],
+  [ 'testmisc', [ 'testmisc.c' ], [ libpangocairo_dep ] ],
   [ 'testscript' ],
   [ 'test-harfbuzz', [ 'test-harfbuzz.c' ], [ libpangocairo_dep ] ],
   [ 'cxx-test', [ 'cxx-test.cpp' ], [ libpangocairo_dep ] ],
