@@ -23,6 +23,9 @@
 #include <glib.h>
 #include <pango/pangocairo.h>
 
+/* test that we don't crash in shape_tab when the layout
+ * is such that we don't have effective attributes
+ */
 static void
 test_shape_tab_crash (void)
 {
