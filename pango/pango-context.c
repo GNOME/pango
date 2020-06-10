@@ -1566,7 +1566,7 @@ pango_itemize_with_base_dir (PangoContext      *context,
   g_return_val_if_fail (length >= 0, NULL);
   g_return_val_if_fail (length == 0 || text != NULL, NULL);
 
-  if (length == 0)
+  if (length == 0 || g_utf8_strlen (text, length) == 0)
     return NULL;
 
   itemize_state_init (&state, context, text, base_dir, start_index, length,
