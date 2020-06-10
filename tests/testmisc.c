@@ -38,12 +38,26 @@ test_shape_tab_crash (void)
   g_object_unref (context);
 }
 
+/* Test that itemizing a string with 0 characters works
+ */
+static void
+test_itemize_empty_crash (void)
+{
+  PangoContext *context;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  pango_itemize_with_base_dir (context, PANGO_DIRECTION_LTR, "", 0, 1, NULL, NULL);
+
+  g_object_unref (context);
+}
+
 int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
   g_test_add_func ("/layout/shape-tab-crash", test_shape_tab_crash);
+  g_test_add_func ("/layout/itemize-empty-crash", test_itemize_empty_crash);
 
   return g_test_run ();
 }
