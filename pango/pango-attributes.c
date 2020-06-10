@@ -1869,6 +1869,9 @@ pango_attr_list_equal (PangoAttrList *list,
   if (list == NULL || other_list == NULL)
     return FALSE;
 
+  if (list->attributes == NULL || other_list->attributes == NULL)
+    return list->attributes == other_list->attributes;
+
   attrs = list->attributes;
   other_attrs = other_list->attributes;
 
