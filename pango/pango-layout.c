@@ -694,6 +694,10 @@ pango_layout_set_attributes (PangoLayout   *layout,
       !_pango_attr_list_has_attributes (attrs))
     return;
 
+  if (layout->attrs &&
+      pango_attr_list_equal (layout->attrs, attrs))
+    return;
+
   old_attrs = layout->attrs;
 
   /* We always clear lines such that this function can be called
@@ -2089,6 +2093,8 @@ pango_layout_xy_to_index (PangoLayout *layout,
     {
       PangoRectangle line_logical;
       int first_y, last_y;
+
+      g_assert (!ITER_IS_INVALID (&iter));
 
       pango_layout_iter_get_line_extents (&iter, NULL, &line_logical);
       pango_layout_iter_get_line_yrange (&iter, &first_y, &last_y);

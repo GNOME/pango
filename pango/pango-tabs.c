@@ -192,7 +192,8 @@ pango_tab_array_copy (PangoTabArray *src)
 
   copy = pango_tab_array_new (src->size, src->positions_in_pixels);
 
-  memcpy (copy->tabs, src->tabs, sizeof(PangoTab)*src->size);
+  if (copy->tabs)
+    memcpy (copy->tabs, src->tabs, sizeof(PangoTab) * src->size);
 
   return copy;
 }
