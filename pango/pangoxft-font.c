@@ -518,7 +518,7 @@ pango_xft_font_get_font (PangoFont *font)
 
 /**
  * pango_xft_font_get_display: (skip)
- * @font: a #PangoFont.
+ * @font: (type PangoXftFont): a #PangoFont.
  *
  * Returns the X display of the `XftFont` of a font.
  *
@@ -540,7 +540,7 @@ pango_xft_font_get_display (PangoFont *font)
 
 /**
  * pango_xft_font_get_unknown_glyph:
- * @font: a #PangoFont.
+ * @font: (type PangoXftFont): a #PangoFont.
  * @wc: the Unicode character for which a glyph is needed.
  *
  * Returns the index of a glyph suitable for drawing @wc as an
@@ -561,7 +561,7 @@ pango_xft_font_get_unknown_glyph (PangoFont *font,
 
 /**
  * pango_xft_font_lock_face: (skip)
- * @font: a #PangoFont.
+ * @font: (type PangoXftFont): a #PangoFont.
  *
  * Gets the FreeType `FT_Face` associated with a font.
  *
@@ -583,7 +583,7 @@ pango_xft_font_lock_face (PangoFont *font)
 
 /**
  * pango_xft_font_unlock_face: (skip)
- * @font: a #PangoFont.
+ * @font: (type PangoXftFont): a #PangoFont.
  *
  * Releases a font previously obtained with
  * pango_xft_font_lock_face().
@@ -602,7 +602,7 @@ pango_xft_font_unlock_face (PangoFont *font)
 
 /**
  * pango_xft_font_get_glyph:
- * @font: a #PangoFont for the Xft backend
+ * @font: (type PangoXftFont): a #PangoFont for the Xft backend
  * @wc: Unicode codepoint to look up
  *
  * Gets the glyph index for a given Unicode character
@@ -627,7 +627,7 @@ pango_xft_font_get_glyph (PangoFont *font,
 
 /**
  * pango_xft_font_has_char:
- * @font: a #PangoFont for the Xft backend
+ * @font: (type PangoXftFont): a #PangoFont for the Xft backend
  * @wc: Unicode codepoint to look up
  *
  * Determines whether @font has a glyph for the codepoint @wc.
