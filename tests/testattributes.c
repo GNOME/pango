@@ -688,6 +688,142 @@ test_list_equal (void)
   }
 }
 
+static void
+test_insert (void)
+{
+  PangoAttrList *list;
+  PangoAttribute *attr;
+
+  list = pango_attr_list_new ();
+  attr = pango_attr_size_new (10 * PANGO_SCALE);
+  attr->start_index = 10;
+  attr->end_index = 11;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_rise_new (100);
+  attr->start_index = 0;
+  attr->end_index = 200;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_family_new ("Times");
+  attr->start_index = 5;
+  attr->end_index = 15;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_fallback_new (FALSE);
+  attr->start_index = 11;
+  attr->end_index = 100;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_stretch_new (PANGO_STRETCH_CONDENSED);
+  attr->start_index = 30;
+  attr->end_index = 60;
+  pango_attr_list_insert (list, attr);
+
+  assert_attr_list (list, "[0,200]rise=100\n"
+                          "[5,15]family=Times\n"
+                          "[10,11]size=10240\n"
+                          "[11,100]fallback=0\n"
+                          "[30,60]stretch=2\n");
+
+  attr = pango_attr_family_new ("Times");
+  attr->start_index = 10;
+  attr->end_index = 25;
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "[0,200]rise=100\n"
+                          "[5,25]family=Times\n"
+                          "[10,11]size=10240\n"
+                          "[11,100]fallback=0\n"
+                          "[30,60]stretch=2\n");
+
+  attr = pango_attr_family_new ("Futura");
+  attr->start_index = 11;
+  attr->end_index = 25;
+  pango_attr_list_insert (list, attr);
+
+  assert_attr_list (list, "[0,200]rise=100\n"
+                          "[5,25]family=Times\n"
+                          "[10,11]size=10240\n"
+                          "[11,100]fallback=0\n"
+                          "[11,25]family=Futura\n"
+                          "[30,60]stretch=2\n");
+
+  pango_attr_list_unref (list);
+}
+
+static gboolean
+attr_list_merge_filter (PangoAttribute *attribute,
+                        gpointer        list)
+{
+  pango_attr_list_change (list, pango_attribute_copy (attribute));
+  return FALSE;
+}
+
+/* test something that gtk does */
+static void
+test_merge (void)
+{
+  PangoAttrList *list;
+  PangoAttrList *list2;
+  PangoAttribute *attr;
+
+  list = pango_attr_list_new ();
+  attr = pango_attr_size_new (10 * PANGO_SCALE);
+  attr->start_index = 10;
+  attr->end_index = 11;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_rise_new (100);
+  attr->start_index = 0;
+  attr->end_index = 200;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_family_new ("Times");
+  attr->start_index = 5;
+  attr->end_index = 15;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_fallback_new (FALSE);
+  attr->start_index = 11;
+  attr->end_index = 100;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_stretch_new (PANGO_STRETCH_CONDENSED);
+  attr->start_index = 30;
+  attr->end_index = 60;
+  pango_attr_list_insert (list, attr);
+
+  assert_attr_list (list, "[0,200]rise=100\n"
+                          "[5,15]family=Times\n"
+                          "[10,11]size=10240\n"
+                          "[11,100]fallback=0\n"
+                          "[30,60]stretch=2\n");
+
+  list2 = pango_attr_list_new ();
+  attr = pango_attr_size_new (10 * PANGO_SCALE);
+  attr->start_index = 11;
+  attr->end_index = 13;
+  pango_attr_list_insert (list2, attr);
+  attr = pango_attr_size_new (11 * PANGO_SCALE);
+  attr->start_index = 13;
+  attr->end_index = 15;
+  pango_attr_list_insert (list2, attr);
+  attr = pango_attr_size_new (12 * PANGO_SCALE);
+  attr->start_index = 40;
+  attr->end_index = 50;
+  pango_attr_list_insert (list2, attr);
+
+  assert_attr_list (list2, "[11,13]size=10240\n"
+                           "[13,15]size=11264\n"
+                           "[40,50]size=12288\n");
+
+  pango_attr_list_filter (list2, attr_list_merge_filter, list);
+
+  assert_attr_list (list, "[0,200]rise=100\n"
+                          "[5,15]family=Times\n"
+                          "[10,13]size=10240\n"
+                          "[11,100]fallback=0\n"
+                          "[13,15]size=11264\n"
+                          "[30,60]stretch=2\n"
+                          "[40,50]size=12288\n");
+
+  pango_attr_list_unref (list);
+  pango_attr_list_unref (list2);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -705,6 +841,8 @@ main (int argc, char *argv[])
   g_test_add_func ("/attributes/iter/get", test_iter_get);
   g_test_add_func ("/attributes/iter/get_font", test_iter_get_font);
   g_test_add_func ("/attributes/iter/get_attrs", test_iter_get_attrs);
+  g_test_add_func ("/attributes/insert", test_insert);
+  g_test_add_func ("/attributes/merge", test_merge);
 
   return g_test_run ();
 }

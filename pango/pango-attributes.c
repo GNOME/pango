@@ -1531,7 +1531,7 @@ pango_attr_list_change (PangoAttrList  *list,
 
   g_return_if_fail (list != NULL);
 
-  if (start_index == end_index)	/* empty, nothing to do */
+  if (start_index == end_index) /* empty, nothing to do */
     {
       pango_attribute_destroy (attr);
       return;
@@ -1560,7 +1560,7 @@ pango_attr_list_change (PangoAttrList  *list,
         continue; /* This attr does not overlap with the new one */
 
       g_assert (tmp_attr->end_index >= start_index);
-      g_assert (start_index < tmp_attr->end_index);
+      g_assert (start_index <= tmp_attr->end_index);
 
       if (pango_attribute_equal (tmp_attr, attr))
         {
@@ -1571,7 +1571,6 @@ pango_attr_list_change (PangoAttrList  *list,
               /* We are totally overlapping the previous attribute.
                * No action is needed.
                */
-              g_ptr_array_remove_index (list->attributes, i);
               pango_attribute_destroy (attr);
               return;
             }
@@ -1605,6 +1604,13 @@ pango_attr_list_change (PangoAttrList  *list,
               tmp_attr->end_index = attr->start_index;
             }
         }
+    }
+
+  if (i == p)
+    {
+      /* we didn't insert attr yet */
+      pango_attr_list_insert (list, attr);
+      return;
     }
 
   /* We now have the range inserted into the list one way or the
