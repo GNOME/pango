@@ -694,6 +694,10 @@ pango_layout_set_attributes (PangoLayout   *layout,
       !_pango_attr_list_has_attributes (attrs))
     return;
 
+  if (layout->attrs &&
+      pango_attr_list_equal (layout->attrs, attrs))
+    return;
+
   old_attrs = layout->attrs;
 
   /* We always clear lines such that this function can be called
