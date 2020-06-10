@@ -618,6 +618,76 @@ test_list_update (void)
   pango_attr_list_unref (list);
 }
 
+static void
+test_list_equal (void)
+{
+  PangoAttrList *list1, *list2;
+  PangoAttribute *attr;
+
+  list1 = pango_attr_list_new ();
+  list2 = pango_attr_list_new ();
+
+  attr = pango_attr_size_new (10 * PANGO_SCALE);
+  attr->start_index = 0;
+  attr->end_index = 7;
+  pango_attr_list_insert (list1, pango_attribute_copy (attr));
+  pango_attr_list_insert (list2, pango_attribute_copy (attr));
+  pango_attribute_destroy (attr);
+
+  g_assert_true (pango_attr_list_equal (list1, list2));
+
+  attr = pango_attr_stretch_new (PANGO_STRETCH_CONDENSED);
+  attr->start_index = 0;
+  attr->end_index = 1;
+  pango_attr_list_insert (list1, pango_attribute_copy (attr));
+  g_assert_true (!pango_attr_list_equal (list1, list2));
+
+  pango_attr_list_insert (list2, pango_attribute_copy (attr));
+  g_assert_true (pango_attr_list_equal (list1, list2));
+  pango_attribute_destroy (attr);
+
+  attr = pango_attr_size_new (30 * PANGO_SCALE);
+  /* Same range as the first attribute */
+  attr->start_index = 0;
+  attr->end_index = 7;
+  pango_attr_list_insert (list2, pango_attribute_copy (attr));
+  g_assert_true (!pango_attr_list_equal (list1, list2));
+  pango_attr_list_insert (list1, pango_attribute_copy (attr));
+  g_assert_true (pango_attr_list_equal (list1, list2));
+  pango_attribute_destroy (attr);
+
+  pango_attr_list_unref (list1);
+  pango_attr_list_unref (list2);
+
+
+  /* Same range but different order */
+  {
+    PangoAttrList *list1, *list2;
+    PangoAttribute *attr1, *attr2;
+
+    list1 = pango_attr_list_new ();
+    list2 = pango_attr_list_new ();
+
+    attr1 = pango_attr_size_new (10 * PANGO_SCALE);
+    attr2 = pango_attr_stretch_new (PANGO_STRETCH_CONDENSED);
+
+    pango_attr_list_insert (list1, pango_attribute_copy (attr1));
+    pango_attr_list_insert (list1, pango_attribute_copy (attr2));
+
+    pango_attr_list_insert (list2, pango_attribute_copy (attr2));
+    pango_attr_list_insert (list2, pango_attribute_copy (attr1));
+
+    pango_attribute_destroy (attr1);
+    pango_attribute_destroy (attr2);
+
+    g_assert_true (pango_attr_list_equal (list1, list2));
+    g_assert_true (pango_attr_list_equal (list2, list1));
+
+    pango_attr_list_unref (list1);
+    pango_attr_list_unref (list2);
+  }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -630,6 +700,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/attributes/list/splice", test_list_splice);
   g_test_add_func ("/attributes/list/filter", test_list_filter);
   g_test_add_func ("/attributes/list/update", test_list_update);
+  g_test_add_func ("/attributes/list/equal", test_list_equal);
   g_test_add_func ("/attributes/iter/basic", test_iter);
   g_test_add_func ("/attributes/iter/get", test_iter_get);
   g_test_add_func ("/attributes/iter/get_font", test_iter_get_font);
