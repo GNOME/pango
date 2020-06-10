@@ -2090,6 +2090,8 @@ pango_layout_xy_to_index (PangoLayout *layout,
       PangoRectangle line_logical;
       int first_y, last_y;
 
+      g_assert (!ITER_IS_INVALID (&iter));
+
       pango_layout_iter_get_line_extents (&iter, NULL, &line_logical);
       pango_layout_iter_get_line_yrange (&iter, &first_y, &last_y);
 
