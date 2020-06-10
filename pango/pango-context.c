@@ -1006,6 +1006,8 @@ itemize_state_init (ItemizeState      *state,
   state->item = NULL;
 
   state->run_start = text + start_index;
+  state->changed = EMBEDDING_CHANGED | SCRIPT_CHANGED | LANG_CHANGED |
+                   FONT_CHANGED | WIDTH_CHANGED | EMOJI_CHANGED;
 
   /* First, apply the bidirectional algorithm to break
    * the text into directional runs.
@@ -1079,7 +1081,6 @@ itemize_state_init (ItemizeState      *state,
   state->cache = NULL;
   state->base_font = NULL;
 
-  state->changed = EMBEDDING_CHANGED | SCRIPT_CHANGED | LANG_CHANGED | FONT_CHANGED | WIDTH_CHANGED | EMOJI_CHANGED;
 }
 
 static gboolean
