@@ -27,9 +27,15 @@
 
 G_BEGIN_DECLS
 
+#ifdef __GI_SCANNER__
+#define PANGO_CAIRO_TYPE_FC_FONT_MAP    (pango_cairo_fc_font_map_get_type())
+#define PANGO_CAIRO_FC_FONT_MAP(obj)    (G_TYPE_CHECK_INSTANCE_CAST ((obj), PANGO_CAIRO_TYPE_FC_FONT_MAP, PangoCairoFcFontMap))
+#define PANGO_CAIRO_IS_FC_FONT_MAP(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PANGO_CAIRO_TYPE_FC_FONT_MAP))
+#else
 #define PANGO_TYPE_CAIRO_FC_FONT_MAP       (pango_cairo_fc_font_map_get_type ())
 #define PANGO_CAIRO_FC_FONT_MAP(object)    (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_FC_FONT_MAP, PangoCairoFcFontMap))
 #define PANGO_IS_CAIRO_FC_FONT_MAP(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CAIRO_FC_FONT_MAP))
+#endif
 
 typedef struct _PangoCairoFcFontMap PangoCairoFcFontMap;
 

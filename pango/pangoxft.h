@@ -31,8 +31,10 @@
 
 G_BEGIN_DECLS
 
+#ifndef __GI_SCANNER__
+
 /**
- * PANGO_RENDER_TYPE_XFT:
+ * PANGO_RENDER_TYPE_XFT: (skip)
  *
  * A string constant that was used to identify shape engines that work
  * with the Xft backend. See %PANGO_RENDER_TYPE_FC for the replacement.
@@ -41,6 +43,8 @@ G_BEGIN_DECLS
 #define PANGO_RENDER_TYPE_XFT "PangoRenderXft"
 #endif
 
+#endif /* __GI_SCANNER__ */
+
 /**
  * PangoXftFontMap:
  *
@@ -48,9 +52,20 @@ G_BEGIN_DECLS
  * the Xft library as the renderer.  It is used in to create fonts of
  * type #PangoXftFont.
  */
-#define PANGO_TYPE_XFT_FONT_MAP              (pango_xft_font_map_get_type ())
-#define PANGO_XFT_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_XFT_FONT_MAP, PangoXftFontMap))
-#define PANGO_XFT_IS_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_XFT_FONT_MAP))
+
+/* This is a hack needed because PangoXft hijacks the Pango namespace
+ * for the identifiers, but consumers expect these symbols to be under
+ * the PangoXft namespace.
+ */
+#ifdef __GI_SCANNER__
+#define PANGO_XFT_TYPE_FONT_MAP         (pango_xft_font_map_get_type())
+#define PANGO_XFT_FONT_MAP(obj)         (G_TYPE_CHECK_INSTANCE_CAST ((obj), PANGO_XFT_TYPE_FONT_MAP, PangoXftFontMap))
+#define PANGO_XFT_IS_FONT_MAP(obj)      (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PANGO_XFT_TYPE_FONT_MAP))
+#else
+#define PANGO_TYPE_XFT_FONT_MAP         (pango_xft_font_map_get_type ())
+#define PANGO_XFT_FONT_MAP(object)      (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_XFT_FONT_MAP, PangoXftFontMap))
+#define PANGO_XFT_IS_FONT_MAP(object)   (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_XFT_FONT_MAP))
+#endif
 
 typedef struct _PangoXftFontMap      PangoXftFontMap;
 
@@ -99,9 +114,15 @@ void pango_xft_substitute_changed     (Display                *display,
 PANGO_AVAILABLE_IN_ALL
 GType pango_xft_font_map_get_type (void) G_GNUC_CONST;
 
-#define PANGO_XFT_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_XFT_FONT, PangoXftFont))
+#ifdef __GI_SCANNER__
+#define PANGO_XFT_TYPE_FONT              (pango_xft_font_get_type ())
+#define PANGO_XFT_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_XFT_TYPE_FONT, PangoXftFont))
+#define PANGO_XFT_IS_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_XFT_TYPE_FONT))
+#else
 #define PANGO_TYPE_XFT_FONT              (pango_xft_font_get_type ())
+#define PANGO_XFT_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_XFT_FONT, PangoXftFont))
 #define PANGO_XFT_IS_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_XFT_FONT))
+#endif
 
 PANGO_AVAILABLE_IN_ALL
 GType      pango_xft_font_get_type (void) G_GNUC_CONST;

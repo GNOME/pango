@@ -42,9 +42,15 @@
 
 G_BEGIN_DECLS
 
+#ifdef __GI_SCANNER__
+#define PANGO_FC_TYPE_FONT              (pango_fc_font_get_type ())
+#define PANGO_FC_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_FC_TYPE_FONT, PangoFcFont))
+#define PANGO_FC_IS_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_FC_TYPE_FONT))
+#else
 #define PANGO_TYPE_FC_FONT              (pango_fc_font_get_type ())
 #define PANGO_FC_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FC_FONT, PangoFcFont))
 #define PANGO_IS_FC_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FC_FONT))
+#endif
 
 typedef struct _PangoFcFont      PangoFcFont;
 typedef struct _PangoFcFontClass PangoFcFontClass;

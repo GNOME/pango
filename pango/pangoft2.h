@@ -33,9 +33,11 @@
 
 G_BEGIN_DECLS
 
+#ifndef __GI_SCANNER__
+
 #ifndef PANGO_DISABLE_DEPRECATED
 /**
- * PANGO_RENDER_TYPE_FT2:
+ * PANGO_RENDER_TYPE_FT2: (skip)
  *
  * A string constant that was used to identify shape engines that work
  * with the FreeType backend. See %PANGO_RENDER_TYPE_FC for the replacement.
@@ -43,9 +45,17 @@ G_BEGIN_DECLS
 #define PANGO_RENDER_TYPE_FT2 "PangoRenderFT2"
 #endif
 
+#endif /* __GI_SCANNER__ */
+
+#ifdef __GI_SCANNER__
+#define PANGO_FT2_TYPE_FONT_MAP              (pango_ft2_font_map_get_type ())
+#define PANGO_FT2_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_FT2_TYPE_FONT_MAP, PangoFT2FontMap))
+#define PANGO_FT2_IS_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_FT2_TYPE_FONT_MAP))
+#else
 #define PANGO_TYPE_FT2_FONT_MAP              (pango_ft2_font_map_get_type ())
 #define PANGO_FT2_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FT2_FONT_MAP, PangoFT2FontMap))
 #define PANGO_FT2_IS_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FT2_FONT_MAP))
+#endif
 
 typedef struct _PangoFT2FontMap      PangoFT2FontMap;
 
