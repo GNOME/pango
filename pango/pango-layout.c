@@ -689,11 +689,6 @@ pango_layout_set_attributes (PangoLayout   *layout,
   if (!attrs && !layout->attrs)
     return;
 
-  /* Also both empty */
-  if (!_pango_attr_list_has_attributes (layout->attrs) &&
-      !_pango_attr_list_has_attributes (attrs))
-    return;
-
   if (layout->attrs &&
       pango_attr_list_equal (layout->attrs, attrs))
     return;
