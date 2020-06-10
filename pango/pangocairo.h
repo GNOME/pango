@@ -37,9 +37,20 @@ G_BEGIN_DECLS
  * Since: 1.18
  **/
 typedef struct _PangoCairoFont      PangoCairoFont;
-#define PANGO_TYPE_CAIRO_FONT       (pango_cairo_font_get_type ())
-#define PANGO_CAIRO_FONT(object)    (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_FONT, PangoCairoFont))
-#define PANGO_IS_CAIRO_FONT(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CAIRO_FONT))
+
+/* This is a hack because PangoCairo is hijacking the Pango namespace, but
+ * consumers of the PangoCairo API expect these symbols to live under the
+ * PangoCairo namespace.
+ */
+#ifdef __GI_SCANNER__
+#define PANGO_CAIRO_TYPE_FONT           (pango_cairo_font_get_type())
+#define PANGO_CAIRO_FONT(obj)           (G_TYPE_CHECK_INSTANCE_CAST ((obj), PANGO_CAIRO_TYPE_FONT, PangoCairoFont))
+#define PANGO_CAIRO_IS_FONT(obj)        (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PANGO_CAIRO_TYPE_FONT))
+#else
+#define PANGO_TYPE_CAIRO_FONT           (pango_cairo_font_get_type ())
+#define PANGO_CAIRO_FONT(object)        (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_FONT, PangoCairoFont))
+#define PANGO_IS_CAIRO_FONT(object)     (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CAIRO_FONT))
+#endif
 
 /**
  * PangoCairoFontMap:
@@ -51,9 +62,16 @@ typedef struct _PangoCairoFont      PangoCairoFont;
  * Since: 1.10
  **/
 typedef struct _PangoCairoFontMap        PangoCairoFontMap;
+
+#ifdef __GI_SCANNER__
+#define PANGO_CAIRO_TYPE_FONT_MAP       (pango_cairo_font_map_get_type())
+#define PANGO_CAIRO_FONT_MAP(obj)       (G_TYPE_CHECK_INSTANCE_CAST ((obj), PANGO_CAIRO_TYPE_FONT_MAP, PangoCairoFontMap))
+#define PANGO_CAIRO_IS_FONT_MAP(obj)    (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PANGO_CAIRO_TYPE_FONT_MAP))
+#else
 #define PANGO_TYPE_CAIRO_FONT_MAP       (pango_cairo_font_map_get_type ())
 #define PANGO_CAIRO_FONT_MAP(object)    (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_FONT_MAP, PangoCairoFontMap))
 #define PANGO_IS_CAIRO_FONT_MAP(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CAIRO_FONT_MAP))
+#endif
 
 /**
  * PangoCairoShapeRendererFunc:

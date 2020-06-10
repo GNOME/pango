@@ -247,16 +247,29 @@ struct _PangoOTRulesetDescription {
   guint                   n_other_features;
 };
 
-
+#ifdef __GI_SCANNER__
+#define PANGO_OT_TYPE_INFO              (pango_ot_info_get_type ())
+#define PANGO_OT_INFO(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_OT_TYPE_INFO, PangoOTInfo))
+#define PANGO_OT_IS_INFO(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_OT_TYPE_INFO))
+#else
 #define PANGO_TYPE_OT_INFO              (pango_ot_info_get_type ())
 #define PANGO_OT_INFO(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_OT_INFO, PangoOTInfo))
 #define PANGO_IS_OT_INFO(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_OT_INFO))
+#endif
+
 PANGO_DEPRECATED
 GType pango_ot_info_get_type (void) G_GNUC_CONST;
 
+#ifdef __GI_SCANNER__
+#define PANGO_OT_TYPE_RULESET           (pango_ot_ruleset_get_type ())
+#define PANGO_OT_RULESET(object)        (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_OT_TYPE_RULESET, PangoOTRuleset))
+#define PANGO_OT_IS_RULESET(object)     (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_OT_TYPE_RULESET))
+#else
 #define PANGO_TYPE_OT_RULESET           (pango_ot_ruleset_get_type ())
 #define PANGO_OT_RULESET(object)        (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_OT_RULESET, PangoOTRuleset))
 #define PANGO_IS_OT_RULESET(object)     (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_OT_RULESET))
+#endif
+
 PANGO_DEPRECATED
 GType pango_ot_ruleset_get_type (void) G_GNUC_CONST;
 
@@ -300,7 +313,11 @@ PangoOTTag *pango_ot_info_list_features  (PangoOTInfo      *info,
 					  guint             script_index,
 					  guint             language_index);
 
+#ifdef __GI_SCANNER__
+#define PANGO_OT_TYPE_BUFFER (pango_ot_buffer_get_type())
+#else
 #define PANGO_TYPE_OT_BUFFER (pango_ot_buffer_get_type())
+#endif
 
 PANGO_DEPRECATED
 GType          pango_ot_buffer_get_type   (void) G_GNUC_CONST;
@@ -383,7 +400,11 @@ PangoLanguage  *pango_ot_tag_to_language   (PangoOTTag     language_tag) G_GNUC_
 PANGO_DEPRECATED
 PangoOTTag      pango_ot_tag_from_language (PangoLanguage *language) G_GNUC_CONST;
 
+#ifdef __GI_SCANNER__
+#define PANGO_OT_TYPE_RULESET_DESCRIPTION (pango_ot_ruleset_description_get_type())
+#else
 #define PANGO_TYPE_OT_RULESET_DESCRIPTION (pango_ot_ruleset_description_get_type())
+#endif
 
 PANGO_DEPRECATED
 GType           pango_ot_ruleset_description_get_type (void) G_GNUC_CONST;

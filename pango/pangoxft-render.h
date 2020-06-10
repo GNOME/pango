@@ -38,12 +38,21 @@ typedef struct _PangoXftRenderer        PangoXftRenderer;
 typedef struct _PangoXftRendererClass   PangoXftRendererClass;
 typedef struct _PangoXftRendererPrivate PangoXftRendererPrivate;
 
+#ifdef __GI_SCANNER__
+#define PANGO_XFT_TYPE_RENDERER            (pango_xft_renderer_get_type())
+#define PANGO_XFT_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_XFT_TYPE_RENDERER, PangoXftRenderer))
+#define PANGO_XFT_IS_RENDERER(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_XFT_TYPE_RENDERER))
+#define PANGO_XFT_RENDERER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_XFT_TYPE_RENDERER, PangoXftRendererClass))
+#define PANGO_XFT_IS_RENDERER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_XFT_TYPE_RENDERER))
+#define PANGO_XFT_RENDERER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_XFT_TYPE_RENDERER, PangoXftRendererClass))
+#else
 #define PANGO_TYPE_XFT_RENDERER            (pango_xft_renderer_get_type())
 #define PANGO_XFT_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_XFT_RENDERER, PangoXftRenderer))
 #define PANGO_IS_XFT_RENDERER(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_XFT_RENDERER))
 #define PANGO_XFT_RENDERER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_XFT_RENDERER, PangoXftRendererClass))
 #define PANGO_IS_XFT_RENDERER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_XFT_RENDERER))
 #define PANGO_XFT_RENDERER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_XFT_RENDERER, PangoXftRendererClass))
+#endif
 
 /**
  * PangoXftRenderer:
