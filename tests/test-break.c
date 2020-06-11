@@ -70,6 +70,14 @@ test_file (const gchar *filename, GString *string)
   layout = pango_layout_new (context);
   pango_layout_set_text (layout, text, length);
   pango_layout_set_attributes (layout, attributes);
+
+  if (pango_layout_get_unknown_glyphs_count (layout) > 0)
+    {
+      char *msg = g_strdup_printf ("Missing glyphs - skipping %s. Maybe fonts are missing?", filename);
+      g_test_skip (msg);
+      g_free (msg);
+    }
+
   pango_layout_get_log_attrs (layout, &attrs, &len);
 
   s1 = g_string_new ("Breaks: ");
@@ -251,9 +259,6 @@ test_break (gconstpointer d)
       return;
     }
 
-  if (context == NULL)
-    context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-
   expected_file = get_expected_filename (filename);
 
   dump = g_string_sized_new (0);
@@ -295,6 +300,10 @@ main (int argc, char *argv[])
   gchar *path;
 
   g_test_init (&argc, &argv, NULL);
+
+  setlocale (LC_ALL, "");
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
   /* allow to easily generate expected output for new test cases */
   if (argc > 1)
