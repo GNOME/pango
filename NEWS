@@ -1,3 +1,9 @@
+Overview of changes in 1.45.2
+=============================
+- Fix several crashes in gtk2 applications
+- Revert an unintentional introspection API change
+- Include HarfBuzz when igenerating introspection data
+
 Overview of changes in 1.45.1
 =============================
 - Undo PangoFontsetSimple deprecation
