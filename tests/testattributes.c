@@ -627,6 +627,12 @@ test_list_equal (void)
   list1 = pango_attr_list_new ();
   list2 = pango_attr_list_new ();
 
+  g_assert_true (pango_attr_list_equal (NULL, NULL));
+  g_assert_false (pango_attr_list_equal (list1, NULL));
+  g_assert_false (pango_attr_list_equal (NULL, list1));
+  g_assert_true (pango_attr_list_equal (list1, list1));
+  g_assert_true (pango_attr_list_equal (list1, list2));
+
   attr = pango_attr_size_new (10 * PANGO_SCALE);
   attr->start_index = 0;
   attr->end_index = 7;
