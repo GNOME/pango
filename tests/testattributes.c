@@ -99,7 +99,12 @@ assert_attributes (GSList     *attrs,
 
   s = g_string_new ("");
   print_attributes (attrs, s);
-  g_assert_cmpstr (s->str, ==, expected);
+  if (strcmp (s->str, expected) != 0)
+    {
+      g_print ("-----\nattribute list mismatch\nexpected:\n%s-----\nreceived:\n%s-----\n",
+               expected, s->str);
+      g_assert_not_reached ();
+    }
   g_string_free (s, TRUE);
 }
 
@@ -830,6 +835,66 @@ test_merge (void)
   pango_attr_list_unref (list2);
 }
 
+/* reproduce what the links example in gtk4-demo does
+ * with the colored Google link
+ */
+static void
+test_merge2 (void)
+{
+  PangoAttrList *list;
+  PangoAttribute *attr;
+
+  list = pango_attr_list_new ();
+  attr = pango_attr_underline_new (PANGO_UNDERLINE_SINGLE);
+  attr->start_index = 0;
+  attr->end_index = 10;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_foreground_new (0, 0, 0xffff);
+  attr->start_index = 0;
+  attr->end_index = 10;
+  pango_attr_list_insert (list, attr);
+
+  assert_attr_list (list, "[0,10]underline=1\n"
+                          "[0,10]foreground=#00000000ffff\n");
+
+  attr = pango_attr_foreground_new (0xffff, 0, 0);
+  attr->start_index = 2;
+  attr->end_index = 3;
+
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "[0,10]underline=1\n"
+                          "[0,2]foreground=#00000000ffff\n"
+                          "[2,3]foreground=#ffff00000000\n"
+                          "[3,10]foreground=#00000000ffff\n");
+
+  attr = pango_attr_foreground_new (0, 0xffff, 0);
+  attr->start_index = 3;
+  attr->end_index = 4;
+
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "[0,10]underline=1\n"
+                          "[0,2]foreground=#00000000ffff\n"
+                          "[2,3]foreground=#ffff00000000\n"
+                          "[3,4]foreground=#0000ffff0000\n"
+                          "[4,10]foreground=#00000000ffff\n");
+
+  attr = pango_attr_foreground_new (0, 0, 0xffff);
+  attr->start_index = 4;
+  attr->end_index = 5;
+
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "[0,10]underline=1\n"
+                          "[0,2]foreground=#00000000ffff\n"
+                          "[2,3]foreground=#ffff00000000\n"
+                          "[3,4]foreground=#0000ffff0000\n"
+                          "[4,10]foreground=#00000000ffff\n");
+
+  pango_attr_list_unref (list);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -845,6 +910,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/attributes/list/equal", test_list_equal);
   g_test_add_func ("/attributes/list/insert", test_insert);
   g_test_add_func ("/attributes/list/merge", test_merge);
+  g_test_add_func ("/attributes/list/merge2", test_merge2);
   g_test_add_func ("/attributes/iter/basic", test_iter);
   g_test_add_func ("/attributes/iter/get", test_iter_get);
   g_test_add_func ("/attributes/iter/get_font", test_iter_get_font);

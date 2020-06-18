@@ -1523,11 +1523,12 @@ pango_attr_list_insert_before (PangoAttrList  *list,
  **/
 void
 pango_attr_list_change (PangoAttrList  *list,
-			PangoAttribute *attr)
+                        PangoAttribute *attr)
 {
   guint i, p;
   guint start_index = attr->start_index;
   guint end_index = attr->end_index;
+  gboolean inserted;
 
   g_return_if_fail (list != NULL);
 
@@ -1543,6 +1544,7 @@ pango_attr_list_change (PangoAttrList  *list,
       return;
     }
 
+  inserted = FALSE;
   for (i = 0, p = list->attributes->len; i < p; i++)
     {
       PangoAttribute *tmp_attr = g_ptr_array_index (list->attributes, i);
@@ -1550,6 +1552,7 @@ pango_attr_list_change (PangoAttrList  *list,
       if (tmp_attr->start_index > start_index)
         {
           g_ptr_array_insert (list->attributes, i, attr);
+          inserted = TRUE;
           break;
         }
 
@@ -1559,8 +1562,8 @@ pango_attr_list_change (PangoAttrList  *list,
       if (tmp_attr->end_index < start_index)
         continue; /* This attr does not overlap with the new one */
 
+      g_assert (tmp_attr->start_index <= start_index);
       g_assert (tmp_attr->end_index >= start_index);
-      g_assert (start_index <= tmp_attr->end_index);
 
       if (pango_attribute_equal (tmp_attr, attr))
         {
@@ -1579,21 +1582,22 @@ pango_attr_list_change (PangoAttrList  *list,
           pango_attribute_destroy (attr);
 
           attr = tmp_attr;
+          inserted = TRUE;
           break;
         }
       else
         {
           /* Split, truncate, or remove the old attribute
            */
-          if (tmp_attr->end_index > attr->end_index)
+          if (tmp_attr->end_index > end_index)
             {
               PangoAttribute *end_attr = pango_attribute_copy (tmp_attr);
 
-              end_attr->start_index = attr->end_index;
+              end_attr->start_index = end_index;
               pango_attr_list_insert (list, end_attr);
             }
 
-          if (tmp_attr->start_index == attr->start_index)
+          if (tmp_attr->start_index == start_index)
             {
               pango_attribute_destroy (tmp_attr);
               g_ptr_array_remove_index (list->attributes, i);
@@ -1601,12 +1605,12 @@ pango_attr_list_change (PangoAttrList  *list,
             }
           else
             {
-              tmp_attr->end_index = attr->start_index;
+              tmp_attr->end_index = start_index;
             }
         }
     }
 
-  if (i == p)
+  if (!inserted)
     {
       /* we didn't insert attr yet */
       pango_attr_list_insert (list, attr);
