@@ -303,6 +303,41 @@ test_list_splice (void)
   pango_attr_list_unref (base);
 }
 
+/* Test that empty lists work in pango_attr_list_splice */
+static void
+test_list_splice2 (void)
+{
+  PangoAttrList *list;
+  PangoAttrList *other;
+  PangoAttribute *attr;
+
+  list = pango_attr_list_new ();
+  other = pango_attr_list_new ();
+
+  pango_attr_list_splice (list, other, 11, 5);
+
+  g_assert_null (pango_attr_list_get_attributes (list));
+
+  attr = pango_attr_size_new (10);
+  attr->start_index = 0;
+  attr->end_index = -1;
+  pango_attr_list_insert (other, attr);
+
+  pango_attr_list_splice (list, other, 11, 5);
+
+  assert_attr_list (list, "[11,-1]size=10\n");
+
+  pango_attr_list_unref (other);
+  other = pango_attr_list_new ();
+
+  pango_attr_list_splice (list, other, 11, 5);
+
+  assert_attr_list (list, "[11,-1]size=10\n");
+
+  pango_attr_list_unref (other);
+  pango_attr_list_unref (list);
+}
+
 static gboolean
 never_true (PangoAttribute *attribute, gpointer user_data)
 {
@@ -623,6 +658,20 @@ test_list_update (void)
   pango_attr_list_unref (list);
 }
 
+/* Test that empty lists work in pango_attr_list_update */
+static void
+test_list_update2 (void)
+{
+  PangoAttrList *list;
+
+  list = pango_attr_list_new ();
+  pango_attr_list_update (list, 8, 10, 20);
+
+  g_assert_null (pango_attr_list_get_attributes (list));
+
+  pango_attr_list_unref (list);
+}
+
 static void
 test_list_equal (void)
 {
@@ -905,8 +954,10 @@ main (int argc, char *argv[])
   g_test_add_func ("/attributes/list/basic", test_list);
   g_test_add_func ("/attributes/list/change", test_list_change);
   g_test_add_func ("/attributes/list/splice", test_list_splice);
+  g_test_add_func ("/attributes/list/splice2", test_list_splice2);
   g_test_add_func ("/attributes/list/filter", test_list_filter);
   g_test_add_func ("/attributes/list/update", test_list_update);
+  g_test_add_func ("/attributes/list/update2", test_list_update2);
   g_test_add_func ("/attributes/list/equal", test_list_equal);
   g_test_add_func ("/attributes/list/insert", test_insert);
   g_test_add_func ("/attributes/list/merge", test_merge);
