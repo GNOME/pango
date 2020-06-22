@@ -1697,40 +1697,41 @@ pango_attr_list_update (PangoAttrList *list,
 {
   guint i, p;
 
-  for (i = 0, p = list->attributes->len; i < p; i++)
-    {
-      PangoAttribute *attr = g_ptr_array_index (list->attributes, i);
+  if (list->attributes)
+    for (i = 0, p = list->attributes->len; i < p; i++)
+      {
+        PangoAttribute *attr = g_ptr_array_index (list->attributes, i);
 
-      if (attr->start_index >= pos &&
+        if (attr->start_index >= pos &&
           attr->end_index < pos + remove)
-        {
-          pango_attribute_destroy (attr);
-          g_ptr_array_remove_index (list->attributes, i);
-          i--; /* Look at this index again */
-          p--;
-          continue;
-        }
+          {
+            pango_attribute_destroy (attr);
+            g_ptr_array_remove_index (list->attributes, i);
+            i--; /* Look at this index again */
+            p--;
+            continue;
+          }
 
-      if (attr->start_index >= pos &&
-          attr->start_index < pos + remove)
-        {
-          attr->start_index = pos + add;
-        }
-      else if (attr->start_index >= pos + remove)
-        {
-          attr->start_index += add - remove;
-        }
+        if (attr->start_index >= pos &&
+            attr->start_index < pos + remove)
+          {
+            attr->start_index = pos + add;
+          }
+        else if (attr->start_index >= pos + remove)
+          {
+            attr->start_index += add - remove;
+          }
 
-      if (attr->end_index >= pos &&
-          attr->end_index < pos + remove)
-        {
-          attr->end_index = pos;
-        }
-      else if (attr->end_index >= pos + remove)
-        {
-          attr->end_index += add - remove;
-        }
-    }
+        if (attr->end_index >= pos &&
+            attr->end_index < pos + remove)
+          {
+            attr->end_index = pos;
+          }
+        else if (attr->end_index >= pos + remove)
+          {
+            attr->end_index += add - remove;
+          }
+      }
 }
 
 /**
@@ -1775,26 +1776,27 @@ pango_attr_list_splice (PangoAttrList *list,
  */
 #define CLAMP_ADD(a,b) (((a) + (b) < (a)) ? G_MAXUINT : (a) + (b))
 
-  for (i = 0, p = list->attributes->len; i < p; i++)
-    {
-      PangoAttribute *attr = g_ptr_array_index (list->attributes, i);;
+  if (list->attributes)
+    for (i = 0, p = list->attributes->len; i < p; i++)
+      {
+        PangoAttribute *attr = g_ptr_array_index (list->attributes, i);;
 
-      if (attr->start_index <= upos)
-	{
-	  if (attr->end_index > upos)
-	    attr->end_index = CLAMP_ADD (attr->end_index, ulen);
-	}
-      else
-	{
-	  /* This could result in a zero length attribute if it
-	   * gets squashed up against G_MAXUINT, but deleting such
-	   * an element could (in theory) suprise the caller, so
-	   * we don't delete it.
-	   */
-	  attr->start_index = CLAMP_ADD (attr->start_index, ulen);
-	  attr->end_index = CLAMP_ADD (attr->end_index, ulen);
-        }
-    }
+        if (attr->start_index <= upos)
+          {
+            if (attr->end_index > upos)
+              attr->end_index = CLAMP_ADD (attr->end_index, ulen);
+          }
+        else
+          {
+            /* This could result in a zero length attribute if it
+             * gets squashed up against G_MAXUINT, but deleting such
+             * an element could (in theory) suprise the caller, so
+             * we don't delete it.
+             */
+            attr->start_index = CLAMP_ADD (attr->start_index, ulen);
+            attr->end_index = CLAMP_ADD (attr->end_index, ulen);
+         }
+      }
 
   if (!other->attributes || other->attributes->len == 0)
     return;
