@@ -1868,6 +1868,7 @@ pango_attr_list_equal (PangoAttrList *list,
 {
   GPtrArray *attrs, *other_attrs;
   guint64 skip_bitmask = 0;
+  guint i;
 
   if (list == other_list)
     return TRUE;
@@ -1884,12 +1885,13 @@ pango_attr_list_equal (PangoAttrList *list,
   if (attrs->len != other_attrs->len)
     return FALSE;
 
-  for (guint i = 0; i < attrs->len; i++)
+  for (i = 0; i < attrs->len; i++)
     {
       PangoAttribute *attr = g_ptr_array_index (attrs, i);
       gboolean attr_equal = FALSE;
+      guint other_attr_index;
 
-      for (guint other_attr_index = 0; other_attr_index < other_attrs->len; other_attr_index++)
+      for (other_attr_index = 0; other_attr_index < other_attrs->len; other_attr_index++)
         {
           PangoAttribute *other_attr = g_ptr_array_index (other_attrs, other_attr_index);
           guint64 other_attr_bitmask = other_attr_index < 64 ? 1 << other_attr_index : 0;
