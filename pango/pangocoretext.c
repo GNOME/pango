@@ -176,12 +176,16 @@ pango_core_text_font_create_hb_font (PangoFont *font)
 
   if (ctfont->priv->font_ref)
     {
+      const PangoMatrix *matrix;
       hb_font_t *hb_font;
+      double x_scale, y_scale;
       int size;
 
+      matrix = pango_core_text_font_key_get_matrix (ctfont->priv->key);
+      pango_matrix_get_font_scale_factors (matrix, &x_scale, &y_scale);
       size = pango_core_text_font_key_get_size (ctfont->priv->key);
       hb_font = hb_coretext_font_create (ctfont->priv->font_ref);
-      hb_font_set_scale (hb_font, size, size);
+      hb_font_set_scale (hb_font, size / x_scale, size / y_scale);
 
       return hb_font;
     }
