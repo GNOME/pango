@@ -298,6 +298,7 @@ do_test (const gchar *filename,
         }
       g_free (string);
       g_free (expected_attrs);
+      g_free (line);
 
       i++;
     }
