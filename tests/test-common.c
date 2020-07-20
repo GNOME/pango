@@ -125,14 +125,22 @@ print_attribute (PangoAttribute *attr, GString *string)
       g_string_append_printf (string, "%d", ((PangoAttrInt *)attr)->value);
       break;
     case PANGO_ATTR_FONT_DESC:
-      g_string_append_printf (string, "%s", pango_font_description_to_string (((PangoAttrFontDesc *)attr)->desc));
+      {
+        char *text = pango_font_description_to_string (((PangoAttrFontDesc *)attr)->desc);
+        g_string_append_printf (string, "%s", text);
+        g_free (text);
+      }
       break;
     case PANGO_ATTR_FOREGROUND:
     case PANGO_ATTR_BACKGROUND:
     case PANGO_ATTR_UNDERLINE_COLOR:
     case PANGO_ATTR_OVERLINE_COLOR:
     case PANGO_ATTR_STRIKETHROUGH_COLOR:
-      g_string_append_printf (string, "%s", pango_color_to_string (&((PangoAttrColor *)attr)->color));
+      {
+        char *text = pango_color_to_string (&((PangoAttrColor *)attr)->color);
+        g_string_append_printf (string, "%s", text);
+        g_free (text);
+      }
       break;
     case PANGO_ATTR_SHAPE:
       g_string_append_printf (string, "shape");
