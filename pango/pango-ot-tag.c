@@ -49,7 +49,7 @@ pango_ot_tag_from_script (PangoScript script)
   unsigned int count = 1;
   hb_tag_t tags[1];
 
-  hb_ot_tags_from_script_and_language (hb_glib_script_to_script ((GUnicodeScript)script),
+  hb_ot_tags_from_script_and_language ((hb_script_t) g_unicode_script_to_iso15924 ((GUnicodeScript) script),
                                        HB_LANGUAGE_INVALID,
                                        &count,
                                        tags,
@@ -84,7 +84,7 @@ pango_ot_tag_from_script (PangoScript script)
 PangoScript
 pango_ot_tag_to_script (PangoOTTag script_tag)
 {
-  return (PangoScript) hb_glib_script_from_script (hb_ot_tag_to_script ((hb_tag_t) script_tag));
+  return (PangoScript) g_unicode_script_from_iso15924 (hb_ot_tag_to_script ((hb_tag_t) script_tag));
 }
 
 

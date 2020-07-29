@@ -22,12 +22,12 @@
 #ifndef __PANGO_OT_PRIVATE_H__
 #define __PANGO_OT_PRIVATE_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #include <pango/pango-ot.h>
 #include <hb-ot.h>
 #include <hb-ft.h>
-#include <hb-glib.h>
 
 #include "pangofc-private.h"
 
