@@ -1,3 +1,10 @@
+Overview of changes in 1.45.4
+=============================
+- Fix build on Windows
+- Fix a pidgin crash
+- fc: Always reject unsupported font formats
+- coretext: Fix cairo scaling
+
 Overview of changes in 1.45.3
 =============================
 - Fix pango_attr_list_change
