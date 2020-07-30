@@ -54,6 +54,25 @@ test_itemize_empty_crash (void)
   g_object_unref (context);
 }
 
+/* Test that pango_layout_set_text (layout, "short", 200)
+ * does not lead to a crash. (pidgin does this)
+ */
+static void
+test_short_string_crash (void)
+{
+  PangoContext *context;
+  PangoLayout *layout;
+  int width, height;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  layout = pango_layout_new (context);
+  pango_layout_set_text (layout, "short text", 200);
+  pango_layout_get_pixel_size (layout, &width, &height);
+
+  g_object_unref (layout);
+  g_object_unref (context);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -61,6 +80,7 @@ main (int argc, char *argv[])
 
   g_test_add_func ("/layout/shape-tab-crash", test_shape_tab_crash);
   g_test_add_func ("/layout/itemize-empty-crash", test_itemize_empty_crash);
+  g_test_add_func ("/layout/short-string-crash", test_short_string_crash);
 
   return g_test_run ();
 }
