@@ -1149,6 +1149,7 @@ pango_layout_set_text (PangoLayout *layout,
     g_warning ("Invalid UTF-8 string passed to pango_layout_set_text()");
 
   layout->n_chars = pango_utf8_strlen (layout->text, -1);
+  layout->length = strlen (layout->text);
 
   layout_changed (layout);
 
