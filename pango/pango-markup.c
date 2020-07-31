@@ -1199,7 +1199,7 @@ span_parse_color (const char *attr_name,
 		  int line_number,
 		  GError **error)
 {
-  if (!_pango_color_parse_with_alpha (color, alpha, attr_val))
+  if (!pango_color_parse_with_alpha (color, alpha, attr_val))
     {
       g_set_error (error,
 		   G_MARKUP_ERROR,
