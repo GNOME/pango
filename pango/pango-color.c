@@ -210,7 +210,7 @@ hex (const char *spec,
 /* Like pango_color_parse, but allow strings of the form
  * '&num;rgba', '&num;rrggbbaa', '&num;rrrrggggbbbbaaaa',
  * if alpha is not NULL. If no alpha component is found
- * in the string, *alpha is set to 0.
+ * in the string, *alpha is set to 0xffff.
  */
 gboolean
 _pango_color_parse_with_alpha (PangoColor *color,
@@ -220,7 +220,7 @@ _pango_color_parse_with_alpha (PangoColor *color,
   g_return_val_if_fail (spec != NULL, FALSE);
 
   if (alpha)
-    *alpha = 0;
+    *alpha = 0xffff;
 
   if (spec[0] == '#')
     {
@@ -294,6 +294,7 @@ _pango_color_parse_with_alpha (PangoColor *color,
     }
   return TRUE;
 }
+
 /**
  * pango_color_parse:
  * @color: (nullable): a #PangoColor structure in which to store the
