@@ -423,6 +423,7 @@ PangoShowFlags
 pango_attr_show_new
 PangoColor
 pango_color_parse
+pango_color_parse_with_alpha
 pango_color_copy
 pango_color_free
 pango_color_to_string

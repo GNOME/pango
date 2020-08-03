@@ -207,20 +207,40 @@ hex (const char *spec,
 }
 
 
-/* Like pango_color_parse, but allow strings of the form
+/**
+ * pango_color_parse_with_alpha:
+ * @color: (nullable): a #PangoColor structure in which to store the
+ *   result, or %NULL
+ * @alpha: (nullable): return location for alpha, or %NULL
+ * @spec: a string specifying the new color
+ *
+ * Fill in the fields of a color from a string specification. The
+ * string can either one of a large set of standard names. (Taken
+ * from the CSS <ulink url="http://dev.w3.org/csswg/css-color/#named-colors">specification</ulink>), or it can be a hexadecimal
+ * value in the
+ * form '&num;rgb' '&num;rrggbb' '&num;rrrgggbbb' or '&num;rrrrggggbbbb' where
+ * 'r', 'g' and 'b' are hex digits of the red, green, and blue
+ * components of the color, respectively. (White in the four
+ * forms is '&num;fff' '&num;ffffff' '&num;fffffffff' and '&num;ffffffffffff')
+ *
+ * Additionally, parse strings of the form
  * '&num;rgba', '&num;rrggbbaa', '&num;rrrrggggbbbbaaaa',
- * if alpha is not NULL. If no alpha component is found
- * in the string, *alpha is set to 0.
+ * if @alpha is not %NULL, and set @alpha to the value specified
+ * by the hex digits for 'a'. If no alpha component is found
+ * in @spec, @alpha is set to 0xffff (for a solid color).
+ *
+ * Return value: %TRUE if parsing of the specifier succeeded,
+ *   otherwise false.
  */
 gboolean
-_pango_color_parse_with_alpha (PangoColor *color,
-                               guint16    *alpha,
-		               const char *spec)
+pango_color_parse_with_alpha (PangoColor *color,
+                              guint16    *alpha,
+                              const char *spec)
 {
   g_return_val_if_fail (spec != NULL, FALSE);
 
   if (alpha)
-    *alpha = 0;
+    *alpha = 0xffff;
 
   if (spec[0] == '#')
     {
@@ -248,52 +268,53 @@ _pango_color_parse_with_alpha (PangoColor *color,
           has_alpha = TRUE;
           break;
         default:
-	  return FALSE;
+          return FALSE;
         }
 
       if (!hex (spec, len, &r) ||
-	  !hex (spec + len, len, &g) ||
-	  !hex (spec + len * 2, len, &b) ||
+          !hex (spec + len, len, &g) ||
+          !hex (spec + len * 2, len, &b) ||
           (has_alpha && !hex (spec + len * 3, len, &a)))
-	return FALSE;
+        return FALSE;
 
       if (color)
-	{
-	  int bits = len * 4;
-	  r <<= 16 - bits;
-	  g <<= 16 - bits;
-	  b <<= 16 - bits;
-	  while (bits < 16)
-	    {
-	      r |= (r >> bits);
-	      g |= (g >> bits);
-	      b |= (b >> bits);
-	      bits *= 2;
-	    }
-	  color->red   = r;
-	  color->green = g;
-	  color->blue  = b;
-	}
+        {
+          int bits = len * 4;
+          r <<= 16 - bits;
+          g <<= 16 - bits;
+          b <<= 16 - bits;
+          while (bits < 16)
+            {
+              r |= (r >> bits);
+              g |= (g >> bits);
+              b |= (b >> bits);
+              bits *= 2;
+            }
+          color->red   = r;
+          color->green = g;
+          color->blue  = b;
+        }
 
       if (alpha && has_alpha)
         {
-	  int bits = len * 4;
+          int bits = len * 4;
           a <<= 16 - bits;
-	  while (bits < 16)
-	    {
+          while (bits < 16)
+            {
               a |= (a >> bits);
-	      bits *= 2;
-	    }
+              bits *= 2;
+            }
           *alpha = a;
         }
     }
   else
     {
       if (!find_color (spec, color))
-	return FALSE;
+        return FALSE;
     }
   return TRUE;
 }
+
 /**
  * pango_color_parse:
  * @color: (nullable): a #PangoColor structure in which to store the
@@ -316,5 +337,5 @@ gboolean
 pango_color_parse (PangoColor *color,
 		   const char *spec)
 {
-  return _pango_color_parse_with_alpha (color, NULL, spec);
+  return pango_color_parse_with_alpha (color, NULL, spec);
 }

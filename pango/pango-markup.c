@@ -1199,7 +1199,7 @@ span_parse_color (const char *attr_name,
 		  int line_number,
 		  GError **error)
 {
-  if (!_pango_color_parse_with_alpha (color, alpha, attr_val))
+  if (!pango_color_parse_with_alpha (color, alpha, attr_val))
     {
       g_set_error (error,
 		   G_MARKUP_ERROR,
@@ -1622,7 +1622,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	goto error;
 
       add_attribute (tag, pango_attr_foreground_new (color.red, color.green, color.blue));
-      if (alpha != 0)
+      if (alpha != 0xffff)
         add_attribute (tag, pango_attr_foreground_alpha_new (alpha));
     }
 
@@ -1635,7 +1635,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	goto error;
 
       add_attribute (tag, pango_attr_background_new (color.red, color.green, color.blue));
-      if (alpha != 0)
+      if (alpha != 0xffff)
         add_attribute (tag, pango_attr_background_alpha_new (alpha));
     }
 
