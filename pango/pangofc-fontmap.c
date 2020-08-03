@@ -2842,6 +2842,12 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 {
   PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
 
+  if (faces)
+    *faces = NULL;
+
+  if (n_faces)
+    *n_faces = 0;
+
   if (G_UNLIKELY (!fcfamily->fontmap))
     return;
 
