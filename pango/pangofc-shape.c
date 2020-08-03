@@ -29,7 +29,7 @@
 #include "pangohb-private.h"
 #include "pango-impl-utils.h"
 
-#include <hb-glib.h>
+#include <glib.h>
 
 /* cache a single hb_buffer_t */
 static hb_buffer_t *cached_buffer = NULL; /* MT-safe */
@@ -359,7 +359,7 @@ pango_hb_shape (PangoFont           *font,
   /* setup buffer */
 
   hb_buffer_set_direction (hb_buffer, hb_direction);
-  hb_buffer_set_script (hb_buffer, hb_glib_script_to_script (analysis->script));
+  hb_buffer_set_script (hb_buffer, (hb_script_t) g_unicode_script_to_iso15924 (analysis->script));
   hb_buffer_set_language (hb_buffer, hb_language_from_string (pango_language_to_string (analysis->language), -1));
   hb_buffer_set_cluster_level (hb_buffer, HB_BUFFER_CLUSTER_LEVEL_MONOTONE_CHARACTERS);
   hb_buffer_set_flags (hb_buffer, hb_buffer_flags);
