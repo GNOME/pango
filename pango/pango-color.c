@@ -211,7 +211,7 @@ hex (const char *spec,
  * pango_color_parse_with_alpha:
  * @color: (nullable): a #PangoColor structure in which to store the
  *   result, or %NULL
- * @alpha: (nullable): return location for alpha, or %NULL
+ * @alpha: (out) (optional): return location for alpha, or %NULL
  * @spec: a string specifying the new color
  *
  * Fill in the fields of a color from a string specification. The
@@ -231,6 +231,8 @@ hex (const char *spec,
  *
  * Return value: %TRUE if parsing of the specifier succeeded,
  *   otherwise false.
+ *
+ * Since: 1.46
  */
 gboolean
 pango_color_parse_with_alpha (PangoColor *color,
