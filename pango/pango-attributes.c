@@ -1253,7 +1253,7 @@ pango_attr_show_new (PangoShowFlags flags)
  * Return value: (transfer full): the newly allocated #PangoAttribute,
  *               which should be freed with pango_attribute_destroy().
  *
- * Since: 1.45
+ * Since: 1.46
  **/
 PangoAttribute *
 pango_attr_overline_new (PangoOverline overline)
@@ -1281,7 +1281,7 @@ pango_attr_overline_new (PangoOverline overline)
  * Return value: (transfer full): the newly allocated #PangoAttribute,
  *               which should be freed with pango_attribute_destroy().
  *
- * Since: 1.45
+ * Since: 1.46
  **/
 PangoAttribute *
 pango_attr_overline_color_new (guint16 red,
