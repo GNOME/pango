@@ -1,3 +1,7 @@
+Overview of changes in 1.46.0
+=============================
+- Bump version to 1.46
+
 Overview of changes in 1.45.5
 =============================
 - Export pango_color_parse_with_alpha
