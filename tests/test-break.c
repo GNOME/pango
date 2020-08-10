@@ -316,11 +316,26 @@ main (int argc, char *argv[])
   /* allow to easily generate expected output for new test cases */
   if (argc > 1)
     {
-      GString *string;
+      if (strcmp (argv[1], "--help") == 0)
+        {
+          g_print ("test-break uses the following symbols for log attrs\n\n");
+          g_print ("Breaks:                 Words:\n"
+                   " L - mandatory break     b - word boundary\n"
+                   " l - line break          s - word start\n"
+                   " c - char break          e - word end\n"
+                   "\n"
+                   "Whitespace:             Sentences:\n"
+                   " x - expandable space    s - sentence start\n"
+                   " w - whitespace          e - sentence end\n");
+        }
+      else
+        {
+          GString *string;
 
-      string = g_string_sized_new (0);
-      test_file (argv[1], string);
-      g_print ("%s", string->str);
+          string = g_string_sized_new (0);
+          test_file (argv[1], string);
+          g_print ("%s", string->str);
+        }
 
       return 0;
     }
