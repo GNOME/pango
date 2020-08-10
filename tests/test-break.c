@@ -309,8 +309,6 @@ main (int argc, char *argv[])
   const gchar *name;
   gchar *path;
 
-  g_test_init (&argc, &argv, NULL);
-
   setlocale (LC_ALL, "");
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
@@ -322,10 +320,12 @@ main (int argc, char *argv[])
 
       string = g_string_sized_new (0);
       test_file (argv[1], string);
-      g_test_message ("%s", string->str);
+      g_print ("%s", string->str);
 
       return 0;
     }
+
+  g_test_init (&argc, &argv, NULL);
 
   path = g_test_build_filename (G_TEST_DIST, "breaks", NULL);
   dir = g_dir_open (path, 0, &error);
