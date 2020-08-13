@@ -269,7 +269,7 @@ pango_win32_render (HDC               hdc,
   dX = g_new (INT, glyphs->num_glyphs);
 
   /* Render glyphs using one ExtTextOutW() call for each run of glyphs
-   * that have the same y offset. The big majoroty of glyphs will have
+   * that have the same y offset. The big majority of glyphs will have
    * y offset of zero, so in general, the whole glyph string will be
    * rendered by one call to ExtTextOutW().
    *
