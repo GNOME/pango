@@ -839,7 +839,10 @@ filter_fontset_by_format (FcFontSet *fontset)
   for (i = 0; i < fontset->nfont; i++)
     {
       if (pango_fc_is_supported_font_format (fontset->fonts[i]))
-        FcFontSetAdd (result, FcPatternDuplicate (fontset->fonts[i]));
+        {
+          FcPatternReference (fontset->fonts[i]);
+          FcFontSetAdd (result, fontset->fonts[i]);
+        }
     }
 
   return result;
