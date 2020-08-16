@@ -157,6 +157,7 @@ struct _PangoFcFontMapPrivate
   guint closed : 1;
 
   FcConfig *config;
+  FcFontSet *fonts;
 };
 
 struct _PangoFcFontFaceData
@@ -841,18 +842,29 @@ pango_fc_is_supported_font_format (FcPattern* pattern)
   return FALSE;
 }
 
+static FcFontSet *pango_fc_font_map_get_config_fonts (PangoFcFontMap *fcfontmap);
+
 static FcFontSet *
-filter_fontset_by_format (FcFontSet *fontset)
+filter_by_format (FcFontSet **sets, int nsets)
 {
   FcFontSet *result;
-  int i;
+  int set;
 
   result = FcFontSetCreate ();
 
-  for (i = 0; i < fontset->nfont; i++)
+  for (set = 0; set < nsets; set++)
     {
-      if (pango_fc_is_supported_font_format (fontset->fonts[i]))
+      FcFontSet *fontset = sets[set];
+      int i;
+
+      if (!fontset)
+        continue;
+
+      for (i = 0; i < fontset->nfont; i++)
         {
+          if (!pango_fc_is_supported_font_format (fontset->fonts[i]))
+            continue;
+
           FcPatternReference (fontset->fonts[i]);
           FcFontSetAdd (result, fontset->fonts[i]);
         }
@@ -867,34 +879,38 @@ pango_fc_patterns_get_font_pattern (PangoFcPatterns *pats, int i, gboolean *prep
   if (i == 0)
     {
       FcResult result;
-      if (!pats->match && !pats->fontset)
-	pats->match = FcFontMatch (pats->fontmap->priv->config, pats->pattern, &result);
 
-      if (pats->match && pango_fc_is_supported_font_format (pats->match))
-	{
-	  *prepare = FALSE;
-	  return pats->match;
-	}
+      if (!pats->match && !pats->fontset)
+        {
+          FcFontSet *fonts;
+
+          fonts = pango_fc_font_map_get_config_fonts (pats->fontmap);
+
+          pats->match = FcFontSetMatch (pats->fontmap->priv->config,
+                                        &fonts, 1,
+                                        pats->pattern,
+                                        &result);
+        }
+
+      if (pats->match)
+        {
+          *prepare = FALSE;
+          return pats->match;
+        }
     }
 
   if (!pats->fontset)
     {
       FcResult result;
-      FcFontSet *filtered[2] = { NULL, };
-      int i, n = 0;
+      FcFontSet *fonts;
 
-      for (i = 0; i < 2; i++)
-        {
-          FcFontSet *fonts = FcConfigGetFonts (pats->fontmap->priv->config, i);
-          if (fonts)
-            filtered[n++] = filter_fontset_by_format (fonts);
-        }
+      fonts = pango_fc_font_map_get_config_fonts (pats->fontmap);
 
-      pats->fontset = FcFontSetSort (pats->fontmap->priv->config, filtered, n, pats->pattern, FcTrue, NULL, &result);
-
-      for (i = 0; i < n; i++)
-        FcFontSetDestroy (filtered[i]);
-
+      pats->fontset = FcFontSetSort (pats->fontmap->priv->config,
+                                     &fonts, 1,
+                                     pats->pattern,
+                                     FcTrue, NULL,
+                                     &result);
 
       if (pats->match)
         {
@@ -1217,6 +1233,8 @@ pango_fc_font_map_fini (PangoFcFontMap *fcfontmap)
 {
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
   int i;
+
+  g_clear_pointer (&priv->fonts, FcFontSetDestroy);
 
   g_queue_free (priv->fontset_cache);
   priv->fontset_cache = NULL;
@@ -2092,6 +2110,8 @@ pango_fc_font_map_set_config (PangoFcFontMap *fcfontmap,
 
   fcfontmap->priv->config = fcconfig;
 
+  g_clear_pointer (&fcfontmap->priv->fonts, FcFontSetDestroy);
+
   if (oldconfig != fcconfig)
     pango_fc_font_map_config_changed (fcfontmap);
 
@@ -2118,6 +2138,21 @@ pango_fc_font_map_get_config (PangoFcFontMap *fcfontmap)
   g_return_val_if_fail (PANGO_IS_FC_FONT_MAP (fcfontmap), NULL);
 
   return fcfontmap->priv->config;
+}
+
+static FcFontSet *
+pango_fc_font_map_get_config_fonts (PangoFcFontMap *fcfontmap)
+{
+  if (fcfontmap->priv->fonts == NULL)
+    {
+      FcFontSet *sets[2];
+
+      sets[0] = FcConfigGetFonts (fcfontmap->priv->config, 0);
+      sets[1] = FcConfigGetFonts (fcfontmap->priv->config, 1);
+      fcfontmap->priv->fonts = filter_by_format (sets, 2);
+    }
+
+  return fcfontmap->priv->fonts;
 }
 
 static PangoFcFontFaceData *
