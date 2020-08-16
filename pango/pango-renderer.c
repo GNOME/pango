@@ -62,6 +62,7 @@ struct _PangoRendererPrivate
 
   PangoLayoutLine *line;
   LineState *line_state;
+  PangoOverline overline;
 };
 
 static void pango_renderer_finalize                     (GObject          *gobject);
@@ -319,7 +320,7 @@ handle_line_state_change (PangoRenderer  *renderer,
 
       rect->width = state->logical_rect_end - rect->x;
       draw_overline (renderer, state);
-      state->overline = renderer->overline;
+      state->overline = renderer->priv->overline;
       rect->x = state->logical_rect_end;
       rect->width = 0;
     }
@@ -418,14 +419,14 @@ add_overline (PangoRenderer    *renderer,
   new_rect.height = underline_thickness;
   new_rect.y = base_y;
 
-  switch (renderer->overline)
+  switch (renderer->priv->overline)
     {
     case PANGO_OVERLINE_NONE:
       g_assert_not_reached ();
       break;
     case PANGO_OVERLINE_SINGLE:
       new_rect.y -= ascent;
-      if (state->overline == renderer->overline)
+      if (state->overline == renderer->priv->overline)
         {
           new_rect.y = MIN (current_rect->y, new_rect.y);
           new_rect.height = MAX (current_rect->height, new_rect.height);
@@ -435,7 +436,7 @@ add_overline (PangoRenderer    *renderer,
       break;
     }
 
-  if (renderer->overline == state->overline &&
+  if (renderer->priv->overline == state->overline &&
       new_rect.y == current_rect->y &&
       new_rect.height == current_rect->height)
     {
@@ -446,7 +447,7 @@ add_overline (PangoRenderer    *renderer,
       draw_overline (renderer, state);
 
       *current_rect = new_rect;
-      state->overline = renderer->overline;
+      state->overline = renderer->priv->overline;
     }
 }
 
@@ -626,7 +627,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
       else
 	{
 	  if (renderer->underline != PANGO_UNDERLINE_NONE ||
-              renderer->overline != PANGO_OVERLINE_NONE ||
+              renderer->priv->overline != PANGO_OVERLINE_NONE ||
 	      renderer->strikethrough)
 	    {
 	      ink = &ink_rect;
@@ -684,7 +685,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 	}
 
       if (renderer->underline != PANGO_UNDERLINE_NONE ||
-          renderer->overline != PANGO_OVERLINE_NONE ||
+          renderer->priv->overline != PANGO_OVERLINE_NONE ||
 	  renderer->strikethrough)
 	{
 	  metrics = pango_font_get_metrics (run->item->analysis.font,
@@ -695,7 +696,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 			   x + x_off, y - rise,
 			   ink, logical);
 
-	  if (renderer->overline != PANGO_OVERLINE_NONE)
+	  if (renderer->priv->overline != PANGO_OVERLINE_NONE)
 	    add_overline (renderer, &state,metrics,
 			   x + x_off, y - rise,
 			   ink, logical);
@@ -712,7 +713,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 	  state.underline != PANGO_UNDERLINE_NONE)
 	draw_underline (renderer, &state);
 
-      if (renderer->overline == PANGO_OVERLINE_NONE &&
+      if (renderer->priv->overline == PANGO_OVERLINE_NONE &&
 	  state.overline != PANGO_OVERLINE_NONE)
 	draw_overline (renderer, &state);
 
@@ -1449,7 +1450,7 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
   GSList *l;
 
   renderer->underline = PANGO_UNDERLINE_NONE;
-  renderer->overline = PANGO_OVERLINE_NONE;
+  renderer->priv->overline = PANGO_OVERLINE_NONE;
   renderer->strikethrough = FALSE;
 
   for (l = run->item->analysis.extra_attrs; l; l = l->next)
@@ -1463,7 +1464,7 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
 	  break;
 
 	case PANGO_ATTR_OVERLINE:
-	  renderer->overline = ((PangoAttrInt *)attr)->value;
+	  renderer->priv->overline = ((PangoAttrInt *)attr)->value;
 	  break;
 
 	case PANGO_ATTR_STRIKETHROUGH:
