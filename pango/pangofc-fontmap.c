@@ -848,7 +848,10 @@ filter_fontset_by_format (FcFontSet *fontset)
   for (i = 0; i < fontset->nfont; i++)
     {
       if (pango_fc_is_supported_font_format (fontset->fonts[i]))
-        FcFontSetAdd (result, FcPatternDuplicate (fontset->fonts[i]));
+        {
+          FcPatternReference (fontset->fonts[i]);
+          FcFontSetAdd (result, fontset->fonts[i]);
+        }
     }
 
   return result;
@@ -873,16 +876,21 @@ pango_fc_patterns_get_font_pattern (PangoFcPatterns *pats, int i, gboolean *prep
   if (!pats->fontset)
     {
       FcResult result;
-      FcFontSet *fontset;
-      FcFontSet *filtered;
+      FcFontSet *filtered[2] = { NULL, };
+      int i, n = 0;
 
-      fontset = FcFontSort (pats->fontmap->priv->config, pats->pattern, FcFalse, NULL, &result);
-      filtered = filter_fontset_by_format (fontset);
-      FcFontSetDestroy (fontset);
+      for (i = 0; i < 2; i++)
+        {
+          FcFontSet *fonts = FcConfigGetFonts (pats->fontmap->priv->config, i);
+          if (fonts)
+            filtered[n++] = filter_fontset_by_format (fonts);
+        }
 
-      pats->fontset = FcFontSetSort (pats->fontmap->priv->config, &filtered, 1, pats->pattern, FcTrue, NULL, &result);
+      pats->fontset = FcFontSetSort (pats->fontmap->priv->config, filtered, n, pats->pattern, FcTrue, NULL, &result);
 
-      FcFontSetDestroy (filtered);
+      for (i = 0; i < n; i++)
+        FcFontSetDestroy (filtered[i]);
+
 
       if (pats->match)
         {
