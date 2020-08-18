@@ -1206,6 +1206,8 @@ pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 						     (GDestroyNotify)pango_fc_font_face_data_free,
 						     NULL);
   priv->dpi = -1;
+
+  FcInit ();
 }
 
 static void
