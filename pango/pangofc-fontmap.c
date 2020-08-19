@@ -1460,8 +1460,10 @@ ensure_families (PangoFcFontMap *fcfontmap)
                                           NULL);
       FcPattern *pat = FcPatternCreate ();
       GHashTable *temp_family_hash;
+      FcFontSet *fonts;
 
-      fontset = FcFontList (priv->config, pat, os);
+      fonts = pango_fc_font_map_get_config_fonts (fcfontmap);
+      fontset = FcFontSetList (priv->config, &fonts, 1, pat, os);
 
       FcPatternDestroy (pat);
       FcObjectSetDestroy (os);
@@ -1477,9 +1479,6 @@ ensure_families (PangoFcFontMap *fcfontmap)
 	  int spacing;
           int variable;
 	  PangoFcFamily *temp_family;
-
-          if (!pango_fc_is_supported_font_format (fontset->fonts[i]))
-            continue;
 
 	  res = FcPatternGetString (fontset->fonts[i], FC_FAMILY, 0, (FcChar8 **)(void*)&s);
 	  g_assert (res == FcResultMatch);
@@ -2674,6 +2673,7 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
   FcPattern *pattern;
   FcFontSet *fontset;
   FcObjectSet *objectset;
+  FcFontSet *fonts;
 
   *sizes = NULL;
   *n_sizes = 0;
@@ -2687,7 +2687,8 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
   objectset = FcObjectSetCreate ();
   FcObjectSetAdd (objectset, FC_PIXEL_SIZE);
 
-  fontset = FcFontList (fcface->family->fontmap->priv->config, pattern, objectset);
+  fonts = pango_fc_font_map_get_config_fonts (fcface->family->fontmap);
+  fontset = FcFontSetList (fcface->family->fontmap->priv->config, &fonts, 1, pattern, objectset);
 
   if (fontset)
     {
