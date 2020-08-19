@@ -177,6 +177,7 @@ if build_pangoft2
     'pangofc-font.c',
     'pangofc-fontmap.c',
     'pangofc-decoder.c',
+    'pango-trace.c',
   ]
 
   pangoot_headers = [
