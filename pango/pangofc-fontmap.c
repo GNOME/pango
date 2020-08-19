@@ -974,7 +974,7 @@ pango_fc_fontset_load_next_font (PangoFcFontset *fontset)
 
   if (prepare)
     {
-      font_pattern = FcFontRenderPrepare (NULL, pattern, font_pattern);
+      font_pattern = FcFontRenderPrepare (fontset->key->fontmap->priv->config, pattern, font_pattern);
 
       if (G_UNLIKELY (!font_pattern))
 	return NULL;
