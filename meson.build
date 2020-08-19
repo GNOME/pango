@@ -538,6 +538,23 @@ if cairo_dep.found()
   endif
 endif
 
+# libsysprof-capture support
+libsysprof_capture_dep = dependency('sysprof-capture-4',
+  required: get_option('sysprof'),
+  default_options: [
+    'enable_examples=false',
+    'enable_gtk=false',
+    'enable_tests=false',
+    'enable_tools=false',
+    'libsysprof=false',
+    'with_sysprofd=none',
+    'help=false',
+  ],
+  fallback: ['sysprof', 'libsysprof_capture_dep'],
+)
+pango_conf.set('HAVE_SYSPROF', libsysprof_capture_dep.found())
+pango_deps += libsysprof_capture_dep
+
 gnome = import('gnome')
 pkgconfig = import('pkgconfig')
 
