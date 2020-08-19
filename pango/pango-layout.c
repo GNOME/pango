@@ -3609,6 +3609,9 @@ find_hyphen_width (PangoItem *item)
   hb_font_t *hb_font;
   hb_codepoint_t glyph;
 
+  if (!item->analysis.font)
+    return 0;
+
   /* This is not technically correct, since
    * a) we may end up inserting a different hyphen
    * b) we should reshape the entire run
