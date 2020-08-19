@@ -109,6 +109,14 @@
  *   FcCharSetMerge().
  */
 
+/* We call FcInit in a thread and set fc_initialized
+ * when done, and are protected by a mutex. The thread
+ * signals the cond when FcInit is done.
+ */
+static GMutex fc_init_mutex;
+static GCond fc_init_cond;
+static gboolean fc_initialized;
+
 
 typedef struct _PangoFcFontFaceData PangoFcFontFaceData;
 typedef struct _PangoFcFace         PangoFcFace;
@@ -1314,6 +1322,29 @@ G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFcFontMap, pango_fc_font_map, PANGO_TYPE_
                                   G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango_fc_font_map_list_model_init))
 
 static void
+init_in_thread (GTask        *task,
+                gpointer      source_object,
+                gpointer      task_data,
+                GCancellable *cancellable)
+{
+  FcInit ();
+
+  g_mutex_lock (&fc_init_mutex);
+  fc_initialized = TRUE;
+  g_cond_signal (&fc_init_cond);
+  g_mutex_unlock (&fc_init_mutex);
+}
+
+static void
+wait_for_fc_init (void)
+{
+  g_mutex_lock (&fc_init_mutex);
+  while (!fc_initialized)
+    g_cond_wait (&fc_init_cond, &fc_init_mutex);
+  g_mutex_unlock (&fc_init_mutex);
+}
+
+static void
 pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 {
   PangoFcFontMapPrivate *priv;
@@ -1343,6 +1374,16 @@ pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 						     (GDestroyNotify)pango_fc_font_face_data_free,
 						     NULL);
   priv->dpi = -1;
+
+  if (!fc_initialized)
+    {
+      GTask *task;
+
+      task = g_task_new (fcfontmap, NULL, NULL, NULL);
+      g_task_set_name (task, "[pango] FcInit");
+      g_task_run_in_thread (task, init_in_thread);
+      g_object_unref (task);
+    }
 }
 
 static void
@@ -1566,6 +1607,8 @@ ensure_families (PangoFcFontMap *fcfontmap)
   FcFontSet *fontset;
   int i;
   int count;
+
+  wait_for_fc_init ();
 
   if (priv->n_families < 0)
     {
@@ -2233,6 +2276,9 @@ pango_fc_font_map_set_config (PangoFcFontMap *fcfontmap,
 
   if (oldconfig)
     FcConfigDestroy (oldconfig);
+
+  /* No need to wait anymore */
+  fc_initialized = TRUE;
 }
 
 /**
@@ -2253,6 +2299,8 @@ pango_fc_font_map_get_config (PangoFcFontMap *fcfontmap)
 {
   g_return_val_if_fail (PANGO_IS_FC_FONT_MAP (fcfontmap), NULL);
 
+  wait_for_fc_init ();
+
   return fcfontmap->priv->config;
 }
 
@@ -2262,6 +2310,8 @@ pango_fc_font_map_get_config_fonts (PangoFcFontMap *fcfontmap)
   if (fcfontmap->priv->fonts == NULL)
     {
       FcFontSet *sets[2];
+
+      wait_for_fc_init ();
 
       sets[0] = FcConfigGetFonts (fcfontmap->priv->config, 0);
       sets[1] = FcConfigGetFonts (fcfontmap->priv->config, 1);
