@@ -1799,7 +1799,7 @@ pango_font_get_glyph_extents  (PangoFont      *font,
 	}
       if (logical_rect)
 	{
-	  logical_rect->x = logical_rect->y = 0;
+	  logical_rect->x = 0;
 	  logical_rect->y = - PANGO_UNKNOWN_GLYPH_HEIGHT * PANGO_SCALE;
 	  logical_rect->height = PANGO_UNKNOWN_GLYPH_HEIGHT * PANGO_SCALE;
 	  logical_rect->width = PANGO_UNKNOWN_GLYPH_WIDTH * PANGO_SCALE;
