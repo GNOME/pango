@@ -1016,44 +1016,49 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
                                 const PangoFontDescription *description)
 {
   PangoWin32FontMap *win32fontmap = (PangoWin32FontMap *)fontmap;
-  PangoWin32Family *win32family;
+  PangoWin32Face *best_match = NULL;
   PangoFont *result = NULL;
   GSList *tmp_list;
   const char *family;
+  char **families;
+  int i;
 
   g_return_val_if_fail (description != NULL, NULL);
 
   family = pango_font_description_get_family (description);
-  family = family ? family : "";
-  PING (("name=%s", family));
+  families = g_strsplit (family ? family : "", ",", -1);
 
-  win32family = g_hash_table_lookup (win32fontmap->families, family);
-  if (win32family)
+  for (i = 0; families[i] && !best_match; ++i)
     {
-      PangoWin32Face *best_match = NULL;
-
-      PING (("got win32family"));
-      tmp_list = win32family->faces;
-      while (tmp_list)
+      PING (("name=%s", families[i]));
+      PangoWin32Family *win32family = g_hash_table_lookup (win32fontmap->families, families[i]);
+      if (win32family)
         {
-          PangoWin32Face *face = tmp_list->data;
+          PING (("got win32family"));
+          tmp_list = win32family->faces;
+          while (tmp_list)
+            {
+              PangoWin32Face *face = tmp_list->data;
 
-          if (pango_font_description_better_match (description,
-                                                   best_match ? best_match->description : NULL,
-                                                   face->description))
-            best_match = face;
+              if (pango_font_description_better_match (description,
+                                                       best_match ? best_match->description : NULL,
+                                                       face->description))
+                best_match = face;
 
-          tmp_list = tmp_list->next;
+              tmp_list = tmp_list->next;
+            }
         }
-
-      if (best_match)
-        result = PANGO_WIN32_FONT_MAP_GET_CLASS (win32fontmap)->find_font (win32fontmap, context,
-                                                                           best_match,
-                                                                           description);
-      /* TODO: Handle the case that result == NULL. */
-      else
-        PING (("no best match!"));
     }
+  
+  g_strfreev (families);
+
+  if (best_match)
+    result = PANGO_WIN32_FONT_MAP_GET_CLASS (win32fontmap)->find_font (win32fontmap, context,
+                                                                       best_match,
+                                                                       description);
+      /* TODO: Handle the case that result == NULL. */
+  else
+    PING (("no best match!"));
 
   return result;
 }
