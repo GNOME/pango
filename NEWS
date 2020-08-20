@@ -1,3 +1,8 @@
+Overview of changes in 1.46.1
+=============================
+- Revert an unintentional PangoRenderer abi break in 1.46.0
+- Various small fixes
+
 Overview of changes in 1.46.0
 =============================
 - Bump version to 1.46
