@@ -743,8 +743,10 @@ struct _PangoFcPatterns {
   PangoFcFontMap *fontmap;
 
   FcPattern *pattern;
-  FcPattern *match;
-  FcFontSet *fontset;
+
+  FcBool *skips[2];
+  FcCharSet *cs;
+  GPtrArray *matches;
 };
 
 static PangoFcPatterns *
@@ -764,6 +766,10 @@ pango_fc_patterns_new (FcPattern *pat, PangoFcFontMap *fontmap)
   pats->ref_count = 1;
   FcPatternReference (pat);
   pats->pattern = pat;
+
+  pats->matches = g_ptr_array_new_with_free_func ((GDestroyNotify)FcPatternDestroy);
+  pats->skips[0] = pats->skips[1] = NULL;
+  pats->cs = FcCharSetCreate ();
 
   g_hash_table_insert (fontmap->priv->patterns_hash,
 		       pats->pattern, pats);
@@ -801,11 +807,12 @@ pango_fc_patterns_unref (PangoFcPatterns *pats)
   if (pats->pattern)
     FcPatternDestroy (pats->pattern);
 
-  if (pats->match)
-    FcPatternDestroy (pats->match);
+  g_ptr_array_free (pats->matches, TRUE);
 
-  if (pats->fontset)
-    FcFontSetDestroy (pats->fontset);
+  g_free (pats->skips[0]);
+  g_free (pats->skips[1]);
+
+  FcCharSetDestroy (pats->cs);
 
   g_slice_free (PangoFcPatterns, pats);
 }
@@ -843,6 +850,9 @@ filter_fontset_by_format (FcFontSet *fontset)
   FcFontSet *result;
   int i;
 
+  if (fontset == NULL)
+    return NULL;
+
   result = FcFontSetCreate ();
 
   for (i = 0; i < fontset->nfont; i++)
@@ -860,50 +870,35 @@ filter_fontset_by_format (FcFontSet *fontset)
 static FcPattern *
 pango_fc_patterns_get_font_pattern (PangoFcPatterns *pats, int i, gboolean *prepare)
 {
-  if (i == 0)
-    {
-      FcResult result;
-      if (!pats->match && !pats->fontset)
-	pats->match = FcFontMatch (pats->fontmap->priv->config, pats->pattern, &result);
+  FcFontSet *sets[2];
+  int nsets;
+  int j;
+  FcConfig *config = pats->fontmap->priv->config;
 
-      if (pats->match && pango_fc_is_supported_font_format (pats->match))
-	{
-	  *prepare = FALSE;
-	  return pats->match;
-	}
+  sets[0] = filter_fontset_by_format (FcConfigGetFonts (config, 0));
+  sets[1] = filter_fontset_by_format (FcConfigGetFonts (config, 1));
+  nsets = sets[1] ? 2 : (sets[0] ? 1 : 0);
+
+  for (j = 0; j < nsets; j++)
+    {
+      if (!pats->skips[j])
+        pats->skips[j] = g_malloc0 (sizeof(FcBool) * sets[j]->nfont);
     }
 
-  if (!pats->fontset)
+  while (i >= pats->matches->len)
     {
       FcResult result;
-      FcFontSet *filtered[2] = { NULL, };
-      int i, n = 0;
+      FcPattern *best;
 
-      for (i = 0; i < 2; i++)
-        {
-          FcFontSet *fonts = FcConfigGetFonts (pats->fontmap->priv->config, i);
-          if (fonts)
-            filtered[n++] = filter_fontset_by_format (fonts);
-        }
+      best = FcFontSetMatchNext (config, sets, nsets, pats->skips, pats->cs, pats->pattern, &result);
 
-      pats->fontset = FcFontSetSort (pats->fontmap->priv->config, filtered, n, pats->pattern, FcTrue, NULL, &result);
-
-      for (i = 0; i < n; i++)
-        FcFontSetDestroy (filtered[i]);
-
-
-      if (pats->match)
-        {
-          FcPatternDestroy (pats->match);
-          pats->match = NULL;
-        }
+      if (best)
+        g_ptr_array_add (pats->matches, best);
     }
 
-  *prepare = TRUE;
-  if (pats->fontset && i < pats->fontset->nfont)
-    return pats->fontset->fonts[i];
-  else
-    return NULL;
+  *prepare = FALSE;
+
+  return g_ptr_array_index (pats->matches, i);
 }
 
 
