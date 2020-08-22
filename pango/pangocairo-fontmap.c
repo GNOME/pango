@@ -198,8 +198,8 @@ pango_cairo_font_map_get_default (void)
  *
  * Note that since Pango 1.32.6, the default fontmap is per-thread.
  * This function only changes the default fontmap for
- * the current thread.   Default fontmaps of exisiting threads
- * are not changed.  Default fontmaps of any new threads will
+ * the current thread.  Default fontmaps of existing threads
+ * are not changed. Default fontmaps of any new threads will
  * still be created using pango_cairo_font_map_new().
  *
  * A value of %NULL for @fontmap will cause the current default
