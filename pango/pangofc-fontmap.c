@@ -766,6 +766,12 @@ struct _PangoFcPatterns {
   FcPattern *pattern;
   FcPattern *match;
   FcFontSet *fontset;
+
+  char *skip; /* 0: undetermined, 1: skip: 2: include */
+
+  FcCharSet *cs; /* merged charset of the coverage of the
+                  * non-undetermined fonts.
+                  */
 };
 
 static FcFontSet *
@@ -860,7 +866,7 @@ sort_in_thread (GTask        *task,
   fontset = FcFontSetSort (td->config,
                            &td->fonts, 1,
                            td->pattern,
-                           FcTrue,
+                           FcFalse,
                            NULL,
                            &result);
 
@@ -947,6 +953,9 @@ pango_fc_patterns_unref (PangoFcPatterns *pats)
 
   if (pats->fontset)
     FcFontSetDestroy (pats->fontset);
+
+  g_clear_pointer (&pats->skip, g_free);
+  g_clear_pointer (&pats->cs, FcCharSetDestroy);
 
   g_cond_clear (&pats->cond);
   g_mutex_clear (&pats->mutex);
@@ -1066,10 +1075,40 @@ pango_fc_patterns_get_font_pattern (PangoFcPatterns *pats, int i, gboolean *prep
 
   if (fontset)
     {
-      if (i < fontset->nfont)
+      int f, k;
+
+      /* Find the i'th fontset skipping the ones that are
+       * not adding coverage.
+       */
+
+      if (!pats->skip)
+        {
+          pats->skip = g_new0 (char, fontset->nfont);
+          pats->cs = FcCharSetCreate ();
+        }
+
+      for (f = 0, k = 0; f < fontset->nfont && k < i; f++)
+        {
+          if (pats->skip[f] == 0) /* calculate whether to skip */
+            {
+              FcCharSet *fcs;
+              FcBool added = FcFalse;
+
+              FcPatternGetCharSet (fontset->fonts[f], "charset", 0, &fcs);
+
+              FcCharSetMerge (pats->cs, fcs, &added);
+
+              pats->skip[f] = added ? 2 : 1;
+            }
+
+          if (pats->skip[f] == 2) /* don't skip */
+            k++;
+        }
+
+      if (f < fontset->nfont)
         {
           *prepare = TRUE;
-          return fontset->fonts[i];
+          return fontset->fonts[f];
         }
     }
 
