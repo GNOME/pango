@@ -1442,6 +1442,20 @@ wait_for_fc_init (void)
 }
 
 static void
+fc_init_done (GObject      *source_object,
+              GAsyncResult *result,
+              gpointer      data)
+{
+  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (source_object);
+
+  if (fcfontmap->priv->closed)
+    return;
+
+  /* prepare fonts, and trigger coverage calculation */
+  pango_fc_font_map_get_config_fonts (fcfontmap);
+}
+
+static void
 pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 {
   PangoFcFontMapPrivate *priv;
@@ -1476,7 +1490,7 @@ pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
     {
       GTask *task;
 
-      task = g_task_new (fcfontmap, NULL, NULL, NULL);
+      task = g_task_new (fcfontmap, NULL, fc_init_done, NULL);
       g_task_set_name (task, "[pango] FcInit");
       g_task_run_in_thread (task, init_in_thread);
       g_object_unref (task);
