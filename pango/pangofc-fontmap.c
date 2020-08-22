@@ -55,6 +55,7 @@
 #include "pango-enum-types.h"
 #include "pango-coverage-private.h"
 #include "pango-trace-private.h"
+#include "pangofc-coverageorder-private.h"
 #include <hb-ft.h>
 
 
@@ -167,6 +168,9 @@ struct _PangoFcFontMapPrivate
 
   FcConfig *config;
   FcFontSet *fonts;
+
+  CoverageOrder *coverage_order;
+  GCancellable *coverage_cancellable;
 };
 
 struct _PangoFcFontFaceData
@@ -1077,10 +1081,7 @@ pango_fc_patterns_get_font_pattern (PangoFcPatterns *pats, int i, gboolean *prep
     {
       int f, k;
 
-      /* Find the i'th fontset skipping the ones that are
-       * not adding coverage.
-       */
-
+      /* Find the i'th fontset while doing coverage trimming. */
       if (!pats->skip)
         {
           pats->skip = g_new0 (char, fontset->nfont);
@@ -1091,14 +1092,33 @@ pango_fc_patterns_get_font_pattern (PangoFcPatterns *pats, int i, gboolean *prep
         {
           if (pats->skip[f] == 0) /* calculate whether to skip */
             {
-              FcCharSet *fcs;
-              FcBool added = FcFalse;
+              int l;
 
-              FcPatternGetCharSet (fontset->fonts[f], "charset", 0, &fcs);
+              if (pats->fontmap->priv->coverage_order)
+                {
+                  for (l = 0; l < f; l++) /* see if a previous font covers it */
+                    {
+                      if (coverage_order_is_subset (pats->fontmap->priv->coverage_order,
+                                                    fontset->fonts[f],
+                                                    fontset->fonts[l]))
+                        {
+                          pats->skip[f] = 1;
+                          break;
+                        }
+                    }
+                }
 
-              FcCharSetMerge (pats->cs, fcs, &added);
+              if (pats->skip[f] == 0) /* have to do it the hard way */
+                {
+                  FcCharSet *fcs;
+                  FcBool added = FcFalse;
 
-              pats->skip[f] = added ? 2 : 1;
+                  FcPatternGetCharSet (fontset->fonts[f], "charset", 0, &fcs);
+
+                  FcCharSetMerge (pats->cs, fcs, &added);
+
+                  pats->skip[f] = added ? 2 : 1;
+                }
             }
 
           if (pats->skip[f] == 2) /* don't skip */
@@ -1469,6 +1489,12 @@ pango_fc_font_map_fini (PangoFcFontMap *fcfontmap)
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
   int i;
 
+  if (priv->coverage_cancellable)
+    {
+      g_cancellable_cancel (priv->coverage_cancellable);
+      g_clear_object (&priv->coverage_cancellable);
+    }
+  g_clear_pointer (&priv->coverage_order, coverage_order_free);
   g_clear_pointer (&priv->fonts, FcFontSetDestroy);
 
   g_queue_free (priv->fontset_cache);
@@ -2346,6 +2372,7 @@ pango_fc_font_map_set_config (PangoFcFontMap *fcfontmap,
 
   fcfontmap->priv->config = fcconfig;
 
+  g_clear_pointer (&fcfontmap->priv->coverage_order, coverage_order_free);
   g_clear_pointer (&fcfontmap->priv->fonts, FcFontSetDestroy);
 
   if (oldconfig != fcconfig)
@@ -2381,11 +2408,39 @@ pango_fc_font_map_get_config (PangoFcFontMap *fcfontmap)
   return fcfontmap->priv->config;
 }
 
+static void
+compute_coverage_order_in_thread (GTask        *task,
+                                  gpointer      source_object,
+                                  gpointer      task_data,
+                                  GCancellable *cancellable)
+{
+  FcFontSet *fonts = task_data;
+  CoverageOrder *coverage_order;
+  gint64 before = PANGO_TRACE_CURRENT_TIME;
+
+  coverage_order = coverage_order_new (fonts);
+
+  pango_trace_mark (before, "compute_coverage_order", NULL);
+
+  g_task_return_pointer (task, coverage_order, (GDestroyNotify)coverage_order_free);
+}
+
+static void
+coverage_computed (GObject      *source_object,
+                   GAsyncResult *result,
+                   gpointer      data)
+{
+  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (source_object);
+
+  fcfontmap->priv->coverage_order = g_task_propagate_pointer (G_TASK (result), NULL);
+}
+
 static FcFontSet *
 pango_fc_font_map_get_config_fonts (PangoFcFontMap *fcfontmap)
 {
   if (fcfontmap->priv->fonts == NULL)
     {
+      GTask *task;
       FcFontSet *sets[2];
 
       wait_for_fc_init ();
@@ -2393,6 +2448,22 @@ pango_fc_font_map_get_config_fonts (PangoFcFontMap *fcfontmap)
       sets[0] = FcConfigGetFonts (fcfontmap->priv->config, 0);
       sets[1] = FcConfigGetFonts (fcfontmap->priv->config, 1);
       fcfontmap->priv->fonts = filter_by_format (sets, 2);
+
+      g_clear_pointer (&fcfontmap->priv->coverage_order, coverage_order_free);
+
+      if (fcfontmap->priv->coverage_cancellable)
+        {
+          g_cancellable_cancel (fcfontmap->priv->coverage_cancellable);
+          g_clear_object (&fcfontmap->priv->coverage_cancellable);
+        }
+
+      fcfontmap->priv->coverage_cancellable = g_cancellable_new ();
+
+      task = g_task_new (fcfontmap, fcfontmap->priv->coverage_cancellable, coverage_computed, NULL);
+      g_task_set_name (task, "[pango] compute_coverage_order");
+      g_task_set_task_data (task, font_set_copy (fcfontmap->priv->fonts), (GDestroyNotify)FcFontSetDestroy);
+      g_task_run_in_thread (task, compute_coverage_order_in_thread);
+      g_object_unref (task);
     }
 
   return fcfontmap->priv->fonts;

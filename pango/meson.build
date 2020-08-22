@@ -185,6 +185,7 @@ if build_pangoft2
     'pangofc-font.c',
     'pangofc-fontmap.c',
     'pangofc-decoder.c',
+    'pangofc-coverageorder.c',
     'pango-trace.c',
   ]
 
