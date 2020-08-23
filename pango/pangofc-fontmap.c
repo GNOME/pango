@@ -1920,14 +1920,12 @@ pango_fc_fontset_cache (PangoFcFontset *fontset,
     {
       /* Add to cache initially
        */
-#if 1
       if (cache->length == FONTSET_CACHE_SIZE)
 	{
 	  PangoFcFontset *tmp_fontset = g_queue_pop_tail (cache);
 	  tmp_fontset->cache_link = NULL;
 	  g_hash_table_remove (priv->fontset_hash, tmp_fontset->key);
 	}
-#endif
 
       fontset->cache_link = g_list_prepend (NULL, fontset);
     }
