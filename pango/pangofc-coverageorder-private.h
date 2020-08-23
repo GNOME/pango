@@ -34,6 +34,13 @@ void            coverage_order_free      (CoverageOrder *co);
 gboolean        coverage_order_is_subset (CoverageOrder *co,
                                           FcPattern     *p1,
                                           FcPattern     *p2);
+gboolean        coverage_order_save      (CoverageOrder *co,
+                                          FcFontSet     *fonts,
+                                          const char    *filename,
+                                          GError       **error);
+CoverageOrder * coverage_order_load      (FcFontSet     *fonts,
+                                          const char    *filename,
+                                          GError       **error);
 
 G_END_DECLS
 

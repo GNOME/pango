@@ -23,6 +23,7 @@
 
 #include "pangofc-coverageorder-private.h"
 #include <glib.h>
+#include <gio/gio.h>
 
 /* BitMatrix is a simple matrix of bits that can be
  * addressed by their row and column.
@@ -43,14 +44,41 @@ bit_matrix_free (BitMatrix *b)
   g_free (b);
 }
 
+static int
+bit_matrix_get_length (BitMatrix *b)
+{
+  return (b->rows * b->cols) / 8 + 1;
+}
+
+static void
+bit_matrix_get_size (BitMatrix *b,
+                     int       *rows,
+                     int       *cols)
+{
+  *rows = b->rows;
+  *cols = b->cols;
+}
+
+static char *
+bit_matrix_get_bits (BitMatrix *b)
+{
+  return b->bits;
+}
+
 static BitMatrix *
-bit_matrix_new (int rows, int cols)
+bit_matrix_new (int rows, int cols, char *bits)
 {
   BitMatrix *b = g_new (BitMatrix, 1);
+  int len;
 
   b->rows = rows;
   b->cols = cols;
-  b->bits = g_new0 (char, (rows * cols) / 8 + 1);
+  len = (rows * cols) / 8 + 1;
+  b->bits = g_new (char, len);
+  if (bits)
+    memcpy (b->bits, bits, len);
+  else
+    memset (b->bits, 0, len);
 
   return b;
 }
@@ -190,7 +218,7 @@ coverage_order_new (FcFontSet *fonts)
   /* Now compute the full incidence matrix for the
    * remaining charsets.
    */
-  co->order = bit_matrix_new (coverages->len, coverages->len);
+  co->order = bit_matrix_new (coverages->len, coverages->len, NULL);
 
   for (i = 0; i < coverages->len; i++)
     {
@@ -234,6 +262,162 @@ coverage_order_new (FcFontSet *fonts)
 
   g_ptr_array_unref (coverages);
   g_free (idx);
+
+  return co;
+}
+
+gboolean
+coverage_order_save (CoverageOrder  *co,
+                     FcFontSet      *fonts,
+                     const char     *filename,
+                     GError        **error)
+{
+  char *prefix;
+  gsize prefix_len;
+  gsize idx_len;
+  gsize len;
+  char *contents;
+  gboolean retval;
+  guint32 *idx;
+  int i;
+  int rows, cols;
+
+  bit_matrix_get_size (co->order, &rows, &cols);
+
+  prefix = g_strdup_printf ("%d %d\n", rows, fonts->nfont);
+  prefix_len = strlen (prefix);
+
+  idx_len = sizeof (guint32) * fonts->nfont * 2;
+  idx = g_new (guint32, idx_len);
+  for (i = 0; i < fonts->nfont; i++)
+    {
+      FcPattern *p = fonts->fonts[i];
+      idx[2*i] = FcPatternHash (p);
+      idx[2*i+1] = GPOINTER_TO_UINT (g_hash_table_lookup (co->idx, p)) - 1;
+    }
+
+  len = prefix_len + idx_len + bit_matrix_get_length (co->order);
+  contents = malloc (len);
+
+  memcpy (contents, prefix, prefix_len);
+  memcpy (contents + prefix_len, idx, idx_len);
+  memcpy (contents + prefix_len + idx_len, bit_matrix_get_bits (co->order), bit_matrix_get_length (co->order));
+
+  retval = g_file_set_contents (filename, contents, len, error);
+
+  g_free (contents);
+  g_free (prefix);
+  g_free (idx);
+
+  g_debug ("Wrote %ld bytes to %s.", len, filename);
+  if (g_getenv ("EXIT")) exit (0);
+
+  return retval;
+}
+
+CoverageOrder *
+coverage_order_load (FcFontSet   *fonts,
+                     const char  *filename,
+                     GError     **error)
+{
+  CoverageOrder *co = NULL;
+  GMappedFile *file;
+  char *contents;
+  char *prefix;
+  char **parts;
+  int size;
+  int nfont;
+  int prefix_len;
+  int idx_len;
+  guint32 *idx;
+  GHashTable *table;
+  int i;
+
+  file = g_mapped_file_new (filename, FALSE, error);
+  if (!file)
+    return NULL;
+
+  contents = g_mapped_file_get_contents (file);
+
+  prefix = NULL;
+  for (i = 0; i < 100; i++)
+    {
+      if (contents[i] == '\n')
+        prefix = g_strndup (contents, i);
+    }
+
+  if (prefix == NULL)
+    {
+      g_set_error (error,
+                   G_IO_ERROR, G_IO_ERROR_FAILED,
+                   "%s: Didn't find prefix", filename);
+      goto out;
+    }
+
+  parts = g_strsplit (prefix, " ", -1);
+  if (g_strv_length (parts) != 2)
+    {
+      g_set_error (error,
+                   G_IO_ERROR, G_IO_ERROR_FAILED,
+                   "%s: Prefix looks bad", filename);
+      g_free (prefix);
+      g_strfreev (parts);
+      goto out;
+    }
+
+  prefix_len = strlen (prefix) + 1;
+
+  size = (int) g_ascii_strtoll (parts[0], NULL, 10);
+  nfont = (int) g_ascii_strtoll (parts[1], NULL, 10);
+
+  g_strfreev (parts);
+  g_free (prefix);
+
+  if (size <= 0 || nfont <= size)
+    {
+      g_set_error (error,
+                   G_IO_ERROR, G_IO_ERROR_FAILED,
+                   "%s: Numbers don't add up", filename);
+      goto out;
+    }
+
+  if (nfont != fonts->nfont)
+    {
+      g_set_error (error,
+                   G_IO_ERROR, G_IO_ERROR_FAILED,
+                   "%s: Wrong number of fonts", filename);
+      goto out;
+    }
+
+  table = g_hash_table_new (g_direct_hash, g_direct_equal);
+
+  idx_len = sizeof (guint32) * nfont * 2;
+  idx = (guint32 *)(contents + prefix_len);
+
+  for (i = 0; i < fonts->nfont; i++)
+    {
+      FcPattern *p = fonts->fonts[i];
+      guint32 hash = idx[2*i];
+      guint32 index = idx[2*i+1];
+
+      if (hash != FcPatternHash (p))
+        {
+          g_set_error (error,
+                       G_IO_ERROR, G_IO_ERROR_FAILED,
+                       "%s: Fonts changed", filename);
+          g_hash_table_unref (table);
+          goto out;
+        }
+
+      g_hash_table_insert (table, p, GUINT_TO_POINTER (index + 1));
+    }
+
+  co = g_new (CoverageOrder, 1);
+  co->idx = table;
+  co->order = bit_matrix_new (size, size, contents + prefix_len + idx_len);
+
+out:
+  g_mapped_file_unref (file);
 
   return co;
 }

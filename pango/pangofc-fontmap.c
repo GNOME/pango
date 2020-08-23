@@ -2431,8 +2431,33 @@ compute_coverage_order_in_thread (GTask        *task,
   FcFontSet *fonts = task_data;
   CoverageOrder *coverage_order;
   gint64 before = PANGO_TRACE_CURRENT_TIME;
+  char *parentdir;
+  char *filename;
+  GError *error = NULL;
 
-  coverage_order = coverage_order_new (fonts);
+  parentdir = g_build_filename (g_get_user_cache_dir (), "pango", NULL);
+  filename = g_build_filename (parentdir, "coverage.order", NULL);
+
+  coverage_order = coverage_order_load (fonts, filename, &error);
+
+  if (!coverage_order)
+    {
+      if (error && !g_error_matches (error, G_FILE_ERROR, G_FILE_ERROR_NOENT))
+        g_debug ("Failed to load coverage order: %s", error->message);
+      g_clear_error (&error);
+
+      coverage_order = coverage_order_new (fonts);
+
+      if (g_mkdir_with_parents (parentdir, 0700) != 0 ||
+          !coverage_order_save (coverage_order, fonts, filename, &error))
+        {
+          g_debug ("Failed to save coverage order: %s", error->message);
+          g_error_free (error);
+        }
+    }
+
+  g_free (filename);
+  g_free (parentdir);
 
   pango_trace_mark (before, "compute_coverage_order", NULL);
 
