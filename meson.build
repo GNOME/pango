@@ -57,7 +57,7 @@ common_ldflags = []
 if cc.get_id() == 'msvc'
   # Compiler options taken from msvc_recommended_pragmas.h
   # in GLib, based on _Win32_Programming_ by Rector and Newcomer
-  test_cflags = ['-FImsvc_recommended_pragmas', '-utf-8']
+  test_cflags = ['-FImsvc_recommended_pragmas.h', '-utf-8']
   add_project_arguments(cc.get_supported_arguments(test_cflags), language: 'c')
   test_c_only_flags = []
 elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'

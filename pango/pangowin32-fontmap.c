@@ -1030,8 +1030,10 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
 
   for (i = 0; families[i] && !best_match; ++i)
     {
+      PangoWin32Family *win32family;
       PING (("name=%s", families[i]));
-      PangoWin32Family *win32family = g_hash_table_lookup (win32fontmap->families, families[i]);
+
+      win32family = g_hash_table_lookup (win32fontmap->families, families[i]);
       if (win32family)
         {
           PING (("got win32family"));
