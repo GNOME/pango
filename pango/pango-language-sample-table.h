@@ -24,10 +24,14 @@
  * 	http://en.wikipedia.org/wiki/Sample_Font_Displays_In_Other_Languages
  * 	Fetched on 2008-08-19
  *
+ * WP
+ *      Wikipedia, Article about the language
+ *      Fetched on 2020-09-08
+ *
  * GLASS
  * 	Kermit project's "I Can Eat Glass" list, also available in pango-view/
  * 	http://www.columbia.edu/kermit/utf8.html#glass
- * 	Fetched on 2008-08-19
+ * 	Fetched on 2008-08-19, updates on 2020-09-08
  *
  * KERMIT
  * 	Kermit project's Quick-Brown-Fox equivalents for other languages
@@ -143,6 +147,12 @@ LANGUAGE(
 	 "Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich."
 	 /* Twelve boxing fighters drive Viktor over the great. */
 	)
+LANGUAGE(
+         dv     /* Maldivian */,
+         WP,
+         "މާއްދާ 1 – ހުރިހާ އިންސާނުން ވެސް އުފަންވަނީ، ދަރަޖަ އާއި ޙައްޤު ތަކުގައި މިނިވަންކަމާއި ހަމަހަމަކަން ލިބިގެންވާ ބައެއްގެ ގޮތުގައެވެ."
+         /* Beginning of UDHR */
+        )
 LANGUAGE(
 	 el	/* Greek */,
 	 WP-SFD,
@@ -320,6 +330,12 @@ LANGUAGE(
 	 /* I can eat glass and it doesn't hurt me. */
 	)
 LANGUAGE(
+         km     /* Khmer */,
+         GLASS,
+         "ខ្ញុំអាចញុំកញ្ចក់បាន ដោយគ្មានបញ្ហារ"
+	 /* I can eat glass and it doesn't hurt me. */
+        )
+LANGUAGE(
 	 kn	/* Kannada */,
 	 GLASS,
 	 "ನಾನು ಗಾಜನ್ನು ತಿನ್ನಬಲ್ಲೆ ಮತ್ತು ಅದರಿಂದ ನನಗೆ ನೋವಾಗುವುದಿಲ್ಲ."
@@ -342,6 +358,12 @@ LANGUAGE(
 	 WP-PANG,
 	 "Sic surgens, dux, zelotypos quam karus haberis"
 	)
+LANGUAGE(
+         lo     /* Lao */,
+         GLASS,
+         "ຂອ້ຍກິນແກ້ວໄດ້ໂດຍທີ່ມັນບໍ່ໄດ້ເຮັດໃຫ້ຂອ້ຍເຈັບ"
+	 /* I can eat glass and it doesn't hurt me. */
+        )
 LANGUAGE(
 	 lt	/* Lithuanian */,
 	 WP-PANG,
@@ -390,6 +412,12 @@ LANGUAGE(
 	 "Saya boleh makan kaca dan ia tidak mencederakan saya."
 	 /* I can eat glass and it doesn't hurt me. */
 	)
+LANGUAGE(
+         my     /* Burmese */,
+         WP,
+         "ဘာသာပြန်နှင့် စာပေပြုစုရေး ကော်မရှင်"
+         /* Literary and Translation Commission */
+        )
 LANGUAGE(
 	 nap	/* Neapolitan */,
 	 GLASS,
@@ -490,6 +518,11 @@ LANGUAGE(
 	 "Puotsu mangiari u vitru, nun mi fa mali."
 	 /* I can eat glass and it doesn't hurt me. */
 	)
+LANGUAGE(
+         si     /* Sinhalese */,
+         WP,
+         "මනොපුබ්‌බඞ්‌ගමා ධම්‌මා, මනොසෙට්‌ඨා මනොමයා; මනසා චෙ පදුට්‌ඨෙන, භාසති වා කරොති වා; තතො නං දුක්‌ඛමන්‌වෙති, චක්‌කංව වහතො පදං."
+        )
 LANGUAGE(
 	 sk	/* Slovak */,
 	 KERMIT,
