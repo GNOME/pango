@@ -644,6 +644,7 @@ pango_language_matches
 pango_language_includes_script
 pango_language_get_scripts
 pango_language_get_default
+pango_language_get_preferred
 pango_language_get_sample_string
 
 <SUBSECTION Private>

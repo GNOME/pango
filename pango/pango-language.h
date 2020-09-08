@@ -53,6 +53,9 @@ const char    *pango_language_get_sample_string (PangoLanguage *language) G_GNUC
 PANGO_AVAILABLE_IN_1_16
 PangoLanguage *pango_language_get_default (void) G_GNUC_CONST;
 
+PANGO_AVAILABLE_IN_1_48
+PangoLanguage **pango_language_get_preferred (void) G_GNUC_CONST;
+
 PANGO_AVAILABLE_IN_ALL
 gboolean      pango_language_matches  (PangoLanguage *language,
 				       const char *range_list) G_GNUC_PURE;
