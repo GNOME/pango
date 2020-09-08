@@ -73,6 +73,20 @@ test_short_string_crash (void)
   g_object_unref (context);
 }
 
+static void
+test_language_emoji_crash (void)
+{
+  PangoLanguage *lang;
+  const PangoScript *scripts;
+  int num;
+
+  lang = pango_language_from_string ("und-zsye");
+  scripts = pango_language_get_scripts (lang, &num);
+
+  g_assert (num >= 0);
+  g_assert (scripts == NULL || num > 0);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -81,6 +95,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/layout/shape-tab-crash", test_shape_tab_crash);
   g_test_add_func ("/layout/itemize-empty-crash", test_itemize_empty_crash);
   g_test_add_func ("/layout/short-string-crash", test_short_string_crash);
+  g_test_add_func ("/language/emoji-crash", test_language_emoji_crash);
 
   return g_test_run ();
 }
