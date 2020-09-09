@@ -18,3 +18,15 @@ option('sysprof',
        type : 'feature',
        value : 'disabled',
        description : 'include tracing support for sysprof')
+option('libthai',
+       type : 'feature',
+       value : 'auto',
+       description : 'Build with libthai support')
+option('cairo',
+       type : 'feature',
+       value : 'auto',
+       description : 'Build with cairo support')
+option('xft',
+       type : 'feature',
+       value : 'auto',
+       description : 'Build with xft support')

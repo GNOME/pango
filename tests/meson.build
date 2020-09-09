@@ -20,11 +20,7 @@ tests = [
   [ 'testboundaries' ],
   [ 'testboundaries_ucd' ],
   [ 'testcolor' ],
-  [ 'testmisc', [ 'testmisc.c' ], [ libpangocairo_dep ] ],
-  [ 'testscript' ],
-  [ 'test-harfbuzz', [ 'test-harfbuzz.c' ], [ libpangocairo_dep ] ],
-  [ 'cxx-test', [ 'cxx-test.cpp' ], [ libpangocairo_dep ] ],
-  [ 'test-break', [ 'test-break.c', 'test-common.c' ], [libpangocairo_dep ] ],
+  [ 'testscript' ]
 ]
 
 if build_pangoft2
@@ -45,6 +41,10 @@ if cairo_dep.found()
     [ 'test-shape', [ 'test-shape.c', 'test-common.c' ], [ libpangocairo_dep ] ],
     [ 'test-font', [ 'test-font.c' ], [ libpangocairo_dep ] ],
     [ 'testattributes', [ 'testattributes.c', 'test-common.c' ], [ libpangocairo_dep ] ],
+    [ 'testmisc', [ 'testmisc.c' ], [ libpangocairo_dep, glib_dep, harfbuzz_dep ] ],
+    [ 'cxx-test', [ 'cxx-test.cpp' ], [ libpangocairo_dep, gobject_dep, harfbuzz_dep ] ],
+    [ 'test-harfbuzz', [ 'test-harfbuzz.c' ], [ libpangocairo_dep, gobject_dep, harfbuzz_dep ] ],
+    [ 'test-break', [ 'test-break.c', 'test-common.c' ], [libpangocairo_dep, glib_dep, harfbuzz_dep ] ]
   ]
 
   if pango_cairo_backends.contains('png')
