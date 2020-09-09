@@ -216,7 +216,7 @@ fribidi_dep = dependency('fribidi', version: fribidi_req_version,
                          default_options: ['docs=false'])
 pango_deps += fribidi_dep
 
-thai_dep = dependency('libthai', version: libthai_req_version, required: false)
+thai_dep = dependency('libthai', version: libthai_req_version, required: get_option('libthai'))
 if thai_dep.found()
   pango_conf.set('HAVE_LIBTHAI', 1)
   pango_deps += thai_dep
@@ -341,7 +341,7 @@ if build_pangoft2
   pango_deps += freetype_dep
 endif
 
-xft_dep = dependency('xft', version: xft_req_version, required: false)
+xft_dep = dependency('xft', version: xft_req_version, required: get_option('xft'))
 if xft_dep.found() and fontconfig_dep.found() and freetype_dep.found()
   pango_conf.set('HAVE_XFT', 1)
   pango_deps += dependency('xrender', required: false)
@@ -364,7 +364,7 @@ if host_system == 'darwin'
 endif
 
 cairo_found_type = ''
-cairo_dep = dependency('cairo', version: cairo_req_version, required: false)
+cairo_dep = dependency('cairo', version: cairo_req_version, required: get_option('cairo'))
 
 if cairo_dep.found()
   cairo_found_type = cairo_dep.type_name()
@@ -379,7 +379,7 @@ endif
 # in a declarative way
 if not cairo_dep.found()
   cairo_dep = dependency('cairo', version: cairo_req_version,
-                         fallback: ['cairo', 'libcairo_dep'])
+                         fallback: ['cairo', 'libcairo_dep'], required: get_option('cairo'))
   cairo_found_type = cairo_dep.type_name()
 endif
 
