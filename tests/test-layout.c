@@ -238,6 +238,9 @@ test_file (const gchar *filename, GString *string)
   PangoWrapMode wrap = PANGO_WRAP_WORD;
   PangoFontDescription *desc;
 
+  if (context == NULL)
+    context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
   g_file_get_contents (filename, &contents, &length, &error);
   g_assert_no_error (error);
 
@@ -344,9 +347,9 @@ test_layout (gconstpointer d)
 
       g_test_fail ();
       g_strfreev (lines);
-      g_free (diff);
     }
 
+  g_free (diff);
   g_string_free (dump, TRUE);
   g_free (expected_file);
 }

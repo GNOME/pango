@@ -6,6 +6,9 @@ set +e
 srcdir=$( pwd )
 builddir=$1
 
+# Ignore memory leaks lower in dependencies
+export LSAN_OPTIONS=suppressions=$srcdir/lsan.supp
+
 meson test -C ${builddir} \
         --print-errorlogs \
         --suite=pango 
