@@ -1,0 +1,7 @@
+leak:g_quark_init
+leak:libc.so
+leak:libfontconfig.so
+leak:libcairo.so
+leak:libpixman-1.so
+leak:libthai.so
+leak:libdatrie.so
