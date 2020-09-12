@@ -4088,6 +4088,7 @@ process_line (PangoLayout    *layout,
 
 static void
 get_items_log_attrs (const char   *text,
+                     int           start,
                      int           length,
 		     GList        *items,
 		     PangoLogAttr *log_attrs,
@@ -4096,11 +4097,13 @@ get_items_log_attrs (const char   *text,
   int offset = 0;
   GList *l;
 
-  pango_default_break (text, length, NULL, log_attrs, log_attrs_len);
+  pango_default_break (text + start, length, NULL, log_attrs, log_attrs_len);
 
   for (l = items; l; l = l->next)
     {
       PangoItem *item = l->data;
+      g_assert (item->offset <= start + length);
+      g_assert (item->length <= (start + length) - item->offset);
 
       pango_tailor_break (text + item->offset,
                           item->length,
@@ -4371,7 +4374,8 @@ pango_layout_check_lines (PangoLayout *layout)
 
       apply_attributes_to_items (state.items, shape_attrs);
 
-      get_items_log_attrs (start,
+      get_items_log_attrs (layout->text,
+                           start - layout->text,
                            delimiter_index + delim_len,
                            state.items,
 			   layout->log_attrs + start_offset,
