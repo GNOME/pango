@@ -347,9 +347,9 @@ test_layout (gconstpointer d)
 
       g_test_fail ();
       g_strfreev (lines);
-      g_free (diff);
     }
 
+  g_free (diff);
   g_string_free (dump, TRUE);
   g_free (expected_file);
 }
