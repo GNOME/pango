@@ -62,7 +62,6 @@ test_file (const gchar *filename, GString *string)
 
   length = strlen (test);
   len = g_utf8_strlen (test, -1) + 1;
-  attrs = g_new (PangoLogAttr, len);
 
   pango_parse_markup (test, -1, 0, &attributes, &text, NULL, &error);
   g_assert_no_error (error);
@@ -79,6 +78,10 @@ test_file (const gchar *filename, GString *string)
       g_test_skip (msg);
       g_free (msg);
 #endif
+      g_free (contents);
+      g_object_unref (layout);
+      pango_attr_list_unref (attributes);
+      g_free (text);
       return FALSE;
     }
 
@@ -225,6 +228,7 @@ test_file (const gchar *filename, GString *string)
   g_object_unref (layout);
   g_free (attrs);
   g_free (contents);
+  g_free (text);
   pango_attr_list_unref (attributes);
 
   return TRUE;
@@ -255,7 +259,7 @@ test_break (gconstpointer d)
   GString *dump;
   gchar *diff;
 
-  const char *old_locale = setlocale (LC_ALL, NULL);
+  char *old_locale = g_strdup (setlocale (LC_ALL, NULL));
   setlocale (LC_ALL, "en_US.utf8");
   if (strstr (setlocale (LC_ALL, NULL), "en_US") == NULL)
     {
@@ -265,20 +269,26 @@ test_break (gconstpointer d)
       g_test_skip (msg);
       g_free (msg);
 #endif
+      g_free (old_locale);
+      return;
+    }
+
+  dump = g_string_sized_new (0);
+
+  if (!test_file (filename, dump))
+    {
+      g_free (old_locale);
+      g_string_free (dump, TRUE);
       return;
     }
 
   expected_file = get_expected_filename (filename);
 
-  dump = g_string_sized_new (0);
-
-  if (!test_file (filename, dump))
-    return;
-
   diff = diff_with_file (expected_file, dump->str, dump->len, &error);
   g_assert_no_error (error);
 
   setlocale (LC_ALL, old_locale);
+  g_free (old_locale);
 
   if (diff && diff[0])
     {
