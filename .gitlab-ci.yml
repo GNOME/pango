@@ -1,5 +1,6 @@
 stages:
   - build
+  - analysis
   - docs
   - deploy
 
@@ -9,8 +10,9 @@ variables:
   MESON_TEST_TIMEOUT_MULTIPLIER: 2
 
 linux-fedora:
-  image: registry.gitlab.gnome.org/gnome/pango/fedora:v1
+  image: registry.gitlab.gnome.org/gnome/pango/fedora:v2
   stage: build
+  needs: []
   variables:
     EXTRA_MESON_FLAGS: "--buildtype=debug --default-library=both"
   script:
@@ -31,8 +33,32 @@ linux-fedora:
       - "${CI_PROJECT_DIR}/_build/hello.png"
       - "${CI_PROJECT_DIR}/_build/fontlist.txt"
 
+asan-build:
+  image: registry.gitlab.gnome.org/gnome/pango/fedora:v2
+  tags: [ asan ]
+  stage: analysis
+  needs: []
+  variables:
+  script:
+    - CC=clang meson --buildtype=debugoptimized -Db_sanitize=address -Db_lundef=false -Dintrospection=false _build
+    - ninja -C _build
+    - .gitlab-ci/run-tests.sh _build
+  allow_failure: true
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - "${CI_PROJECT_DIR}/_build/report.xml"
+    name: "gtk-${CI_COMMIT_REF_NAME}"
+    paths:
+      - "${CI_PROJECT_DIR}/_build/meson-logs"
+      - "${CI_PROJECT_DIR}/_build/report.xml"
+      - "${CI_PROJECT_DIR}/_build/hello.png"
+      - "${CI_PROJECT_DIR}/_build/fontlist.txt"
+
 msys2-mingw64:
   stage: build
+  needs: []
   tags:
     - win32-ps
   variables:
@@ -54,6 +80,7 @@ msys2-mingw64:
 reference:
   image: registry.gitlab.gnome.org/gnome/pango/fedora:v1
   stage: docs
+  needs: []
   variables:
     EXTRA_MESON_FLAGS: ""
   script:
@@ -67,6 +94,7 @@ reference:
 
 pages:
   stage: deploy
+  needs: ['reference']
   script:
     - mv _reference/ public/
   artifacts:

@@ -26,8 +26,10 @@ RUN dnf -y install \
     harfbuzz-devel \
     hicolor-icon-theme \
     itstool \
+    libasan \
     lcov \
     libthai-devel \
+    libubsan \
     libXft-devel \
     ninja-build \
     python3 \
