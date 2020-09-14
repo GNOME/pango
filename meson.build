@@ -270,16 +270,24 @@ endif
 pango_deps += harfbuzz_dep
 
 # Only use FontConfig fallback when required or requested
-fontconfig_required = (host_system != 'windows' and host_system != 'darwin') or get_option('use_fontconfig')
 
-fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version, required: false)
+fontconfig_option = get_option('fontconfig')
+
+fontconfig_sys_required = (host_system != 'windows' and host_system != 'darwin')
+if fontconfig_sys_required and fontconfig_option.disabled()
+  error('Fontconfig is required on this platform (pass -Dfontconfig=enabled or -Dfontconfig=auto)')
+endif
+
+fontconfig_required = fontconfig_sys_required or fontconfig_option.enabled()
+
+fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version, required: fontconfig_option)
 if fontconfig_dep.found()
   fontconfig_pc = 'fontconfig'
 else
   if cc.get_id() == 'msvc' and cc.has_header('fontconfig/fontconfig.h')
     # Look for the Visual Studio-style import library if FontConfig's .pc file cannot be
     # found on Visual Studio
-    fontconfig_dep = cc.find_library('fontconfig', required: false)
+    fontconfig_dep = cc.find_library('fontconfig', required: fontconfig_option)
     if fontconfig_dep.found()
       fontconfig_lib = '-lfontconfig'
     endif
@@ -312,7 +320,7 @@ message('fontconfig has FcWeightFromOpenTypeDouble: ' + res)
 
 # The first version of freetype with a pkg-config file is 2.1.5
 # We require both fontconfig and freetype if we are to have either.
-freetype_dep = dependency('freetype2', required: false)
+freetype_dep = dependency('freetype2', required: get_option('freetype'))
 
 if freetype_dep.found()
   freetype2_pc = 'freetype2'
@@ -320,7 +328,7 @@ else
   if cc.get_id() == 'msvc' and cc.has_header('ft2build.h')
     foreach ft2_lib: ['freetype', 'freetypemt']
       if not freetype_dep.found()
-        freetype_dep = cc.find_library(ft2_lib, required: false)
+        freetype_dep = cc.find_library(ft2_lib, required: get_option('freetype'))
         if freetype_dep.found()
           freetype2_lib = '-l@0@'.format(ft2_lib)
         endif
@@ -330,7 +338,7 @@ else
 endif
 
 if fontconfig_required and not freetype_dep.found()
-  freetype_dep = dependency('freetype2', required: false,
+  freetype_dep = dependency('freetype2', required: get_option('freetype'),
                             fallback: ['freetype2', 'freetype_dep'])
 endif
 
