@@ -10,10 +10,10 @@ option('install-tests',
        description : 'Install tests',
        type: 'boolean',
        value: 'false')
-option('use_fontconfig',
-       description : 'Force using FontConfig where it is optional, on Windows and macOS.  This is ignored on platforms where it is required',
-       type: 'boolean',
-       value: 'false')
+option('fontconfig',
+       description : 'Build with FontConfig support. Passing \'auto\' or \'disabled\' disables fontconfig where it is optional, i.e. on Windows and macOS. Passing \'disabled\' on platforms where fontconfig is required results in error.',
+       type: 'feature',
+       value: 'auto')
 option('sysprof',
        type : 'feature',
        value : 'disabled',
@@ -30,3 +30,7 @@ option('xft',
        type : 'feature',
        value : 'auto',
        description : 'Build with xft support')
+option('freetype',
+       type : 'feature',
+       value : 'auto',
+       description : 'Build with freetype support')
