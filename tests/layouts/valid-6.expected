@@ -1,0 +1,25 @@
+ 0️⃣ Keycap Digit Zero
+
+--- parameters
+
+wrapped: 0
+ellipsized: 0
+lines: 2
+
+--- attributes
+
+range 0 2147483647
+
+--- lines
+
+i=1, index=0, paragraph-start=1, dir=ltr ' 0️⃣ Keycap Digit Zero
+'
+i=2, index=27, paragraph-start=1, dir=ltr ''
+
+--- runs
+
+i=1, index=0, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, ' '
+i=2, index=1, chars=3, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, '0️⃣'
+i=3, index=8, chars=18, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, ' Keycap Digit Zero'
+i=4, index=26, no run, line end
+i=5, index=27, no run, line end
