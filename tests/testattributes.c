@@ -944,6 +944,94 @@ test_merge2 (void)
   pango_attr_list_unref (list);
 }
 
+/* This only prints rise, size and scale, which are the
+ * only relevant attributes in the test that uses this
+ * function.
+ */
+static void
+print_tags_for_attributes (PangoAttrIterator *iter,
+                           GString           *s)
+{
+  PangoAttribute *attr;
+
+  attr = pango_attr_iterator_get (iter, PANGO_ATTR_RISE);
+  if (attr)
+    g_string_append_printf (s, "[%d, %d]rise=%d\n",
+                            attr->start_index, attr->end_index,
+                            ((PangoAttrInt*)attr)->value);
+
+  attr = pango_attr_iterator_get (iter, PANGO_ATTR_SIZE);
+  if (attr)
+    g_string_append_printf (s, "[%d, %d]size=%d\n",
+                            attr->start_index, attr->end_index,
+                            ((PangoAttrInt*)attr)->value);
+
+  attr = pango_attr_iterator_get (iter, PANGO_ATTR_SCALE);
+  if (attr)
+    g_string_append_printf (s, "[%d, %d]scale=%f\n",
+                            attr->start_index, attr->end_index,
+                            ((PangoAttrFloat*)attr)->value);
+}
+
+static void
+test_iter_epsilon_zero (void)
+{
+  const char *markup = "𝜀<span rise=\"-6000\" size=\"x-small\" font_desc=\"italic\">0</span> = 𝜔<span rise=\"8000\" size=\"smaller\">𝜔<span rise=\"14000\" size=\"smaller\">𝜔<span rise=\"20000\">.<span rise=\"23000\">.<span rise=\"26000\">.</span></span></span></span></span>";
+  PangoAttrList *attributes;
+  PangoAttrIterator *attr;
+  char *text;
+  GError *error = NULL;
+  GString *s;
+
+  s = g_string_new ("");
+
+  pango_parse_markup (markup, -1, 0, &attributes, &text, NULL, &error);
+  g_assert_no_error (error);
+  g_assert_cmpstr (text, ==, "𝜀0 = 𝜔𝜔𝜔...");
+
+  attr = pango_attr_list_get_iterator (attributes);
+  do
+    {
+      int start, end;
+
+      pango_attr_iterator_range (attr, &start, &end);
+
+      g_string_append_printf (s, "range: [%d, %d]\n", start, end);
+
+      print_tags_for_attributes (attr, s);
+    }
+  while (pango_attr_iterator_next (attr));
+
+  g_assert_cmpstr (s->str, ==,
+                   "range: [0, 4]\n"
+                   "range: [4, 5]\n"
+                   "[4, 5]rise=-6000\n"
+                   "[4, 5]scale=0.694444\n"
+                   "range: [5, 12]\n"
+                   "range: [12, 16]\n"
+                   "[12, 23]rise=8000\n"
+                   "[12, 23]scale=0.833333\n"
+                   "range: [16, 20]\n"
+                   "[16, 23]rise=14000\n"
+                   "[16, 23]scale=0.694444\n"
+                   "range: [20, 21]\n"
+                   "[20, 23]rise=20000\n"
+                   "[16, 23]scale=0.694444\n"
+                   "range: [21, 22]\n"
+                   "[21, 23]rise=23000\n"
+                   "[16, 23]scale=0.694444\n"
+                   "range: [22, 23]\n"
+                   "[22, 23]rise=26000\n"
+                   "[16, 23]scale=0.694444\n"
+                   "range: [23, 2147483647]\n");
+
+  g_free (text);
+  pango_attr_list_unref (attributes);
+  pango_attr_iterator_destroy (attr);
+
+  g_string_free (s, TRUE);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -966,6 +1054,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/attributes/iter/get", test_iter_get);
   g_test_add_func ("/attributes/iter/get_font", test_iter_get_font);
   g_test_add_func ("/attributes/iter/get_attrs", test_iter_get_attrs);
+  g_test_add_func ("/attributes/iter/epsilon_zero", test_iter_epsilon_zero);
 
   return g_test_run ();
 }

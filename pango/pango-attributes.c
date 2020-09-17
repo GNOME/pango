@@ -2003,7 +2003,7 @@ pango_attr_iterator_range (PangoAttrIterator *iterator,
 gboolean
 pango_attr_iterator_next (PangoAttrIterator *iterator)
 {
-  guint i;
+  int i;
 
   g_return_val_if_fail (iterator != NULL, FALSE);
 
@@ -2016,19 +2016,14 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
 
   if (iterator->attribute_stack)
     {
-      for (i = 0; i < iterator->attribute_stack->len; i++)
+      for (i = iterator->attribute_stack->len - 1; i>= 0; i--)
         {
           const PangoAttribute *attr = g_ptr_array_index (iterator->attribute_stack, i);
 
           if (attr->end_index == iterator->start_index)
-            {
-              g_ptr_array_remove_index (iterator->attribute_stack, i); /* Can't use index_fast :( */;
-              i--;
-            }
+            g_ptr_array_remove_index (iterator->attribute_stack, i); /* Can't use index_fast :( */
           else
-            {
-              iterator->end_index = MIN (iterator->end_index, attr->end_index);
-            }
+            iterator->end_index = MIN (iterator->end_index, attr->end_index);
         }
     }
 
@@ -2136,14 +2131,14 @@ PangoAttribute *
 pango_attr_iterator_get (PangoAttrIterator *iterator,
 			 PangoAttrType      type)
 {
-  guint i;
+  int i;
 
   g_return_val_if_fail (iterator != NULL, NULL);
 
   if (!iterator->attribute_stack)
     return NULL;
 
-  for (i = 0; i < iterator->attribute_stack->len; i++)
+  for (i = iterator->attribute_stack->len - 1; i>= 0; i--)
     {
       PangoAttribute *attr = g_ptr_array_index (iterator->attribute_stack, i);
 
