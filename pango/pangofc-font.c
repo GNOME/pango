@@ -993,7 +993,7 @@ pango_fc_font_create_hb_font (PangoFont *font)
 
   if (key)
     {
-      FcPattern *pattern = pango_fc_font_key_get_pattern (key);
+      const FcPattern *pattern = pango_fc_font_key_get_pattern (key);
       const char *variations;
       int index;
       unsigned int n_axes;

@@ -66,7 +66,7 @@ pango_language_get_private (PangoLanguage *language)
   if (!language)
     return NULL;
 
-  priv = (PangoLanguagePrivate *) ((char *)language - sizeof (PangoLanguagePrivate));
+  priv = (PangoLanguagePrivate *)(void *)((char *)language - sizeof (PangoLanguagePrivate));
 
   if (G_UNLIKELY (priv->magic != PANGO_LANGUAGE_PRIVATE_MAGIC))
     {
