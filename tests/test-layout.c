@@ -238,6 +238,9 @@ test_file (const gchar *filename, GString *string)
   PangoWrapMode wrap = PANGO_WRAP_WORD;
   PangoFontDescription *desc;
 
+  if (context == NULL)
+    context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
   g_file_get_contents (filename, &contents, &length, &error);
   g_assert_no_error (error);
 
@@ -359,12 +362,12 @@ main (int argc, char *argv[])
   const gchar *name;
   gchar *path;
 
-  g_test_init (&argc, &argv, NULL);
-
   /* allow to easily generate expected output for new test cases */
-  if (argc > 1)
+  if (argc > 1 && argv[1][0] != '-')
     {
       GString *string;
+
+      setlocale (LC_ALL, "en_US.utf8");
 
       string = g_string_sized_new (0);
       test_file (argv[1], string);
@@ -372,6 +375,8 @@ main (int argc, char *argv[])
 
       return 0;
     }
+
+  g_test_init (&argc, &argv, NULL);
 
   path = g_test_build_filename (G_TEST_DIST, "layouts", NULL);
   dir = g_dir_open (path, 0, &error);
