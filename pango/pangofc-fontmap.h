@@ -128,9 +128,9 @@ typedef void (*PangoFcSubstituteFunc) (FcPattern *pattern,
  * the font. This function can be used to do things like set
  * hinting and antialiasing options.
  *
- * Since: 1.46
+ * Since: 1.48
  */
-PANGO_AVAILABLE_IN_1_46
+PANGO_AVAILABLE_IN_1_48
 void pango_fc_font_map_set_default_substitute (PangoFcFontMap        *fontmap,
 					       PangoFcSubstituteFunc func,
 					       gpointer              data,
@@ -146,9 +146,9 @@ void pango_fc_font_map_set_default_substitute (PangoFcFontMap        *fontmap,
  * That is, if your substitution function will return different
  * results for the same input pattern, you must call this function.
  *
- * Since: 1.46
+ * Since: 1.48
  */
-PANGO_AVAILABLE_IN_1_46
+PANGO_AVAILABLE_IN_1_48
 void pango_fc_font_map_substitute_changed (PangoFcFontMap *fontmap);
 
 /**
