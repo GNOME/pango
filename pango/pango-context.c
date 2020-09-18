@@ -1065,6 +1065,9 @@ itemize_state_init (ItemizeState      *state,
   width_iter_init (&state->width_iter, text + start_index, length);
   _pango_emoji_iter_init (&state->emoji_iter, text + start_index, length);
 
+  if (state->emoji_iter.is_emoji)
+    state->width_iter.end = MAX (state->width_iter.end, state->emoji_iter.end);
+
   update_end (state);
 
   if (pango_font_description_get_set_fields (state->font_desc) & PANGO_FONT_MASK_GRAVITY)
@@ -1111,15 +1114,18 @@ itemize_state_next (ItemizeState *state)
 				   &state->script_end, &state->script);
       state->changed |= SCRIPT_CHANGED;
     }
-  if (state->run_end == state->width_iter.end)
-    {
-      width_iter_next (&state->width_iter);
-      state->changed |= WIDTH_CHANGED;
-    }
   if (state->run_end == state->emoji_iter.end)
     {
       _pango_emoji_iter_next (&state->emoji_iter);
       state->changed |= EMOJI_CHANGED;
+
+      if (state->emoji_iter.is_emoji)
+        state->width_iter.end = MAX (state->width_iter.end, state->emoji_iter.end);
+    }
+  if (state->run_end == state->width_iter.end)
+    {
+      width_iter_next (&state->width_iter);
+      state->changed |= WIDTH_CHANGED;
     }
 
   update_end (state);
