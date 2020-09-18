@@ -1,3 +1,14 @@
+Overview of changes in 1.46.2
+=============================
+- Fix pango_win32_font_map_load_font with falback families
+- Fix an assertion in pango_language_get_scripts
+- Fix a crash in get_items_log_attrs
+- Fix attribute iterators with overlapping attributes
+- Fix rendering of Emoji keycap sequences
+- ci: Run the testsuite under asan and fix all reported issues
+- build: Make libthai, cairo, xft, fontconfig, freetype
+  dependencies meson features
+
 Overview of changes in 1.46.1
 =============================
 - Revert an unintentional PangoRenderer abi break in 1.46.0
