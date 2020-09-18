@@ -51,8 +51,8 @@ pangoxft_view_create (const PangoViewer *klass)
 
   XftInit (NULL);
 
-  pango_xft_set_default_substitute (instance->display, instance->screen,
-				    default_substitute, NULL, NULL);
+  pango_fc_font_map_set_default_substitute (PANGO_FC_FONT_MAP (pango_xft_get_font_map (instance->display, instance->screen)),
+				            default_substitute, NULL, NULL);
 
   return instance;
 }
