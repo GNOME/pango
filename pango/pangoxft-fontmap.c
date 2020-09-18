@@ -46,13 +46,6 @@ struct _PangoXftFontMap
   Display *display;
   int screen;
 
-  /* Function to call on prepared patterns to do final
-   * config tweaking.
-   */
-  PangoXftSubstituteFunc substitute_func;
-  gpointer substitute_data;
-  GDestroyNotify substitute_destroy;
-
   PangoRenderer *renderer;
 };
 
@@ -107,9 +100,6 @@ pango_xft_font_map_finalize (GObject *object)
   G_LOCK (fontmaps);
   fontmaps = g_slist_remove (fontmaps, object);
   G_UNLOCK (fontmaps);
-
-  if (xftfontmap->substitute_destroy)
-    xftfontmap->substitute_destroy (xftfontmap->substitute_data);
 
   G_OBJECT_CLASS (pango_xft_font_map_parent_class)->finalize (object);
 }
@@ -297,6 +287,9 @@ pango_xft_shutdown_display (Display *display,
  * the font. This function can be used to do things like set
  * hinting and antialiasing options.
  *
+ * Deprecated: 1.46: Use pango_fc_font_map_set_default_substitute()
+ * instead.
+ *
  * Since: 1.2
  **/
 void
@@ -308,18 +301,8 @@ pango_xft_set_default_substitute (Display                *display,
 {
   PangoXftFontMap *xftfontmap = (PangoXftFontMap *)pango_xft_get_font_map (display, screen);
 
-  xftfontmap->serial++;
-  if (xftfontmap->serial == 0)
-    xftfontmap->serial++;
-
-  if (xftfontmap->substitute_destroy)
-    xftfontmap->substitute_destroy (xftfontmap->substitute_data);
-
-  xftfontmap->substitute_func = func;
-  xftfontmap->substitute_data = data;
-  xftfontmap->substitute_destroy = notify;
-
-  pango_fc_font_map_cache_clear (PANGO_FC_FONT_MAP (xftfontmap));
+  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (xftfontmap);
+  pango_fc_font_map_set_default_substitute(fcfontmap, func, data, notify);
 }
 
 /**
@@ -333,6 +316,9 @@ pango_xft_set_default_substitute (Display                *display,
  * That is, if your substitution function will return different
  * results for the same input pattern, you must call this function.
  *
+ * Deprecated: 1.46: Use pango_fc_font_map_substitute_changed()
+ * instead.
+ *
  * Since: 1.2
  **/
 void
@@ -341,10 +327,7 @@ pango_xft_substitute_changed (Display *display,
 {
   PangoXftFontMap *xftfontmap = (PangoXftFontMap *)pango_xft_get_font_map (display, screen);
 
-  xftfontmap->serial++;
-  if (xftfontmap->serial == 0)
-    xftfontmap->serial++;
-  pango_fc_font_map_cache_clear (PANGO_FC_FONT_MAP (xftfontmap));
+  pango_fc_font_map_substitute_changed(PANGO_FC_FONT_MAP (xftfontmap));
 }
 
 void
@@ -408,8 +391,8 @@ pango_xft_font_map_default_substitute (PangoFcFontMap *fcfontmap,
   double d;
 
   FcConfigSubstitute (NULL, pattern, FcMatchPattern);
-  if (xftfontmap->substitute_func)
-    xftfontmap->substitute_func (pattern, xftfontmap->substitute_data);
+  if (fcfontmap->substitute_func)
+    fcfontmap->substitute_func (pattern, fcfontmap->substitute_data);
   XftDefaultSubstitute (xftfontmap->display, xftfontmap->screen, pattern);
   if (FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &d) == FcResultMatch && d == 0.0)
     {

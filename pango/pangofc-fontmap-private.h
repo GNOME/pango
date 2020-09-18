@@ -94,14 +94,23 @@ struct _PangoFcFontMap
   PangoFontMap parent_instance;
 
   PangoFcFontMapPrivate *priv;
+
+  /* Function to call on prepared patterns to do final
+   * config tweaking.
+   */
+  PangoFcSubstituteFunc substitute_func;
+  gpointer substitute_data;
+  GDestroyNotify substitute_destroy;
 };
 
 /**
  * PangoFcFontMapClass:
  * @default_substitute: (nullable): Substitutes in default
  *  values for unspecified fields in a #FcPattern. This will
- *  be called prior to creating a font for the pattern. May be
- *  %NULL.  Deprecated in favor of @font_key_substitute().
+ *  be called prior to creating a font for the pattern.
+ *  Implementations must call substitute_func if it is
+ *  defined. May be  %NULL. Deprecated in favor of
+ *  @font_key_substitute().
  * @new_font: Creates a new #PangoFcFont for the specified
  *  pattern of the appropriate type for this font map. The
  *  @pattern argument must be passed to the "pattern" property
@@ -127,7 +136,8 @@ struct _PangoFcFontMap
  * @fontset_key_substitute: (nullable): Substitutes in
  *  default values for unspecified fields in a
  *  #FcPattern. This will be called prior to creating a font
- *  for the pattern. May be %NULL.  (Since: 1.24)
+ *  for the pattern. Implementations must call substitute_func
+ *  if it is defined. May be %NULL.  (Since: 1.24)
  * @create_font: (nullable): Creates a new #PangoFcFont for
  *  the specified pattern of the appropriate type for this
  *  font map using information from the font key that is

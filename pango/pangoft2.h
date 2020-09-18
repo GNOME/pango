@@ -28,6 +28,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#include <pango/pangofc-fontmap.h>
 #include <pango/pango-layout.h>
 #include <pango/pangofc-font.h>
 
@@ -66,8 +67,7 @@ typedef struct _PangoFT2FontMap      PangoFT2FontMap;
  *
  * Function type for doing final config tweaking on prepared FcPatterns.
  */
-typedef void (*PangoFT2SubstituteFunc) (FcPattern *pattern,
-					gpointer   data);
+typedef PangoFcSubstituteFunc PangoFT2SubstituteFunc;
 
 /* Calls for applications */
 
@@ -115,6 +115,7 @@ PANGO_AVAILABLE_IN_1_2
 void          pango_ft2_font_map_set_resolution         (PangoFT2FontMap        *fontmap,
 							 double                  dpi_x,
 							 double                  dpi_y);
+#ifndef PANGO_DISABLE_DEPRECATED
 PANGO_AVAILABLE_IN_1_2
 void          pango_ft2_font_map_set_default_substitute (PangoFT2FontMap        *fontmap,
 							 PangoFT2SubstituteFunc  func,
@@ -122,7 +123,6 @@ void          pango_ft2_font_map_set_default_substitute (PangoFT2FontMap        
 							 GDestroyNotify          notify);
 PANGO_AVAILABLE_IN_1_2
 void          pango_ft2_font_map_substitute_changed     (PangoFT2FontMap         *fontmap);
-#ifndef PANGO_DISABLE_DEPRECATED
 PANGO_DEPRECATED_IN_1_22_FOR(pango_font_map_create_context)
 PangoContext *pango_ft2_font_map_create_context         (PangoFT2FontMap         *fontmap);
 #endif

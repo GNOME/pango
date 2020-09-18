@@ -52,13 +52,6 @@ struct _PangoFT2FontMap
   double dpi_x;
   double dpi_y;
 
-  /* Function to call on prepared patterns to do final
-   * config tweaking.
-   */
-  PangoFT2SubstituteFunc substitute_func;
-  gpointer substitute_data;
-  GDestroyNotify substitute_destroy;
-
   PangoRenderer *renderer;
 };
 
@@ -117,9 +110,6 @@ pango_ft2_font_map_finalize (GObject *object)
   if (ft2fontmap->renderer)
     g_object_unref (ft2fontmap->renderer);
 
-  if (ft2fontmap->substitute_destroy)
-    ft2fontmap->substitute_destroy (ft2fontmap->substitute_data);
-
   G_OBJECT_CLASS (pango_ft2_font_map_parent_class)->finalize (object);
 
   FT_Done_FreeType (ft2fontmap->library);
@@ -176,6 +166,9 @@ pango_ft2_font_map_changed (PangoFontMap *fontmap)
  * the font. This function can be used to do things like set
  * hinting and antialiasing options.
  *
+ * Deprecated: 1.46: Use pango_fc_font_map_set_default_substitute()
+ * instead.
+ *
  * Since: 1.2
  **/
 void
@@ -184,18 +177,8 @@ pango_ft2_font_map_set_default_substitute (PangoFT2FontMap        *fontmap,
 					   gpointer                data,
 					   GDestroyNotify          notify)
 {
-  fontmap->serial++;
-  if (fontmap->serial == 0)
-    fontmap->serial++;
-
-  if (fontmap->substitute_destroy)
-    fontmap->substitute_destroy (fontmap->substitute_data);
-
-  fontmap->substitute_func = func;
-  fontmap->substitute_data = data;
-  fontmap->substitute_destroy = notify;
-
-  pango_fc_font_map_cache_clear (PANGO_FC_FONT_MAP (fontmap));
+  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (fontmap);
+  pango_fc_font_map_set_default_substitute(fcfontmap, func, data, notify);
 }
 
 /**
@@ -208,15 +191,15 @@ pango_ft2_font_map_set_default_substitute (PangoFT2FontMap        *fontmap,
  * That is, if your substitution function will return different
  * results for the same input pattern, you must call this function.
  *
+ * Deprecated: 1.46: Use pango_fc_font_map_substitute_changed()
+ * instead.
+ *
  * Since: 1.2
  **/
 void
 pango_ft2_font_map_substitute_changed (PangoFT2FontMap *fontmap)
 {
-  fontmap->serial++;
-  if (fontmap->serial == 0)
-    fontmap->serial++;
-  pango_fc_font_map_cache_clear (PANGO_FC_FONT_MAP (fontmap));
+  pango_fc_font_map_substitute_changed(PANGO_FC_FONT_MAP (fontmap));
 }
 
 /**
@@ -363,8 +346,8 @@ _pango_ft2_font_map_default_substitute (PangoFcFontMap *fcfontmap,
 
   FcConfigSubstitute (NULL, pattern, FcMatchPattern);
 
-  if (ft2fontmap->substitute_func)
-    ft2fontmap->substitute_func (pattern, ft2fontmap->substitute_data);
+  if (fcfontmap->substitute_func)
+    fcfontmap->substitute_func (pattern, fcfontmap->substitute_data);
 
   if (FcPatternGet (pattern, FC_DPI, 0, &v) == FcResultNoMatch)
     FcPatternAddDouble (pattern, FC_DPI, ft2fontmap->dpi_y);
