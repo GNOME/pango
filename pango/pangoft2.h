@@ -116,12 +116,12 @@ void          pango_ft2_font_map_set_resolution         (PangoFT2FontMap        
 							 double                  dpi_x,
 							 double                  dpi_y);
 #ifndef PANGO_DISABLE_DEPRECATED
-PANGO_AVAILABLE_IN_1_2
+PANGO_DEPRECATED_IN_1_48_FOR(pango_fc_font_map_set_default_substitute)
 void          pango_ft2_font_map_set_default_substitute (PangoFT2FontMap        *fontmap,
 							 PangoFT2SubstituteFunc  func,
 							 gpointer                data,
 							 GDestroyNotify          notify);
-PANGO_AVAILABLE_IN_1_2
+PANGO_DEPRECATED_IN_1_48_FOR(pango_fc_font_map_substitute_changed)
 void          pango_ft2_font_map_substitute_changed     (PangoFT2FontMap         *fontmap);
 PANGO_DEPRECATED_IN_1_22_FOR(pango_font_map_create_context)
 PangoContext *pango_ft2_font_map_create_context         (PangoFT2FontMap         *fontmap);
