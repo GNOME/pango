@@ -644,6 +644,7 @@ pango_language_matches
 pango_language_includes_script
 pango_language_get_scripts
 pango_language_get_default
+pango_language_get_preferred
 pango_language_get_sample_string
 
 <SUBSECTION Private>
@@ -1010,6 +1011,7 @@ pango_fc_font_has_char
 pango_fc_font_get_glyph
 pango_fc_font_get_unknown_glyph
 pango_fc_font_kern_glyphs
+pango_fc_font_get_languages
 <SUBSECTION Standard>
 PANGO_FC_FONT
 PANGO_IS_FC_FONT

@@ -791,13 +791,14 @@ parse_default_languages (void)
   return (PangoLanguage **) g_array_free (langs, FALSE);
 }
 
+G_LOCK_DEFINE_STATIC (languages);
+static gboolean initialized = FALSE; /* MT-safe */
+static PangoLanguage * const * languages = NULL; /* MT-safe */
+static GHashTable *hash = NULL; /* MT-safe */
+
 static PangoLanguage *
 _pango_script_get_default_language (PangoScript script)
 {
-  G_LOCK_DEFINE_STATIC (languages);
-  static gboolean initialized = FALSE; /* MT-safe */
-  static PangoLanguage * const * languages = NULL; /* MT-safe */
-  static GHashTable *hash = NULL; /* MT-safe */
   PangoLanguage *result, * const * p;
 
   G_LOCK (languages);
@@ -832,6 +833,33 @@ out:
   G_UNLOCK (languages);
 
   return result;
+}
+
+/**
+ * pango_language_get_preferred:
+ *
+ * Returns the list of languages that the user prefers, as specified
+ * by the PANGO_LANGUAGE or LANGUAGE environment variables, in order
+ * of preference. Note that this list does not necessarily include
+ * the language returned by pango_language_get_default().
+ *
+ * When choosing language-specific resources, such as the sample
+ * text returned by pango_language_get_sample_string(), you should
+ * first try the default language, followed by the languages returned
+ * by this function.
+ *
+ * Returns: (transfer none) (nullable): a %NULL-terminated array of
+ *    PangoLanguage*
+ *
+ * Since: 1.48
+ */
+PangoLanguage **
+pango_language_get_preferred (void)
+{
+  /* We call this just for its side-effect of initializing languages */
+  _pango_script_get_default_language (PANGO_SCRIPT_COMMON);
+
+  return languages;
 }
 
 /**

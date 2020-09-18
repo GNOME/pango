@@ -1035,3 +1035,35 @@ pango_fc_font_create_hb_font (PangoFont *font)
 done:
   return hb_font;
 }
+
+/**
+ * pango_fc_font_get_languages:
+ * @font: a #PangoFcFont
+ *
+ * Returns the languages that are supported by @font.
+ *
+ * This corresponds to the FC_LANG member of the FcPattern.
+ *
+ * The returned array is only valid as long as the font
+ * and its fontmap are valid.
+ *
+ * Returns: (transfer none) (nullable): a %NULL-terminated
+ *    array of PangoLanguage*
+ *
+ * Since: 1.48
+ */
+PangoLanguage **
+pango_fc_font_get_languages (PangoFcFont *font)
+{
+  PangoFcFontMap *fontmap;
+  PangoLanguage **languages;
+
+  fontmap = g_weak_ref_get ((GWeakRef *) &font->fontmap);
+  if (!fontmap)
+    return NULL;
+
+  languages  = _pango_fc_font_map_get_languages (fontmap, font);
+  g_object_unref (fontmap);
+
+  return languages;
+}

@@ -166,8 +166,9 @@ struct _PangoFcFontFaceData
   int id;            /* needed to handle TTC files with multiple faces */
 
   /* Data */
-  FcPattern *pattern;	/* Referenced pattern that owns filename */
+  FcPattern *pattern;  /* Referenced pattern that owns filename */
   PangoCoverage *coverage;
+  PangoLanguage **languages;
 
   hb_face_t *hb_face;
 };
@@ -306,6 +307,8 @@ pango_fc_font_face_data_free (PangoFcFontFaceData *data)
 
   if (data->coverage)
     pango_coverage_unref (data->coverage);
+
+  g_free (data->languages);
 
   hb_face_destroy (data->hb_face);
 
@@ -2245,6 +2248,57 @@ _pango_fc_font_map_fc_to_coverage (FcCharSet *charset)
   return (PangoCoverage *)coverage;
 }
 
+static PangoLanguage **
+_pango_fc_font_map_fc_to_languages (FcLangSet *langset)
+{
+  FcStrSet *strset;
+  FcStrList *list;
+  FcChar8 *s;
+  GArray *langs;
+
+  langs = g_array_new (TRUE, FALSE, sizeof (PangoLanguage *));
+
+  strset = FcLangSetGetLangs (langset);
+  list = FcStrListCreate (strset);
+
+  FcStrListFirst (list);
+  while ((s = FcStrListNext (list)))
+    {
+      PangoLanguage *l = pango_language_from_string ((const char *)s);
+      g_array_append_val (langs, l);
+    }
+
+  FcStrListDone (list);
+  FcStrSetDestroy (strset);
+
+  return (PangoLanguage **) g_array_free (langs, FALSE);
+}
+
+PangoLanguage **
+_pango_fc_font_map_get_languages (PangoFcFontMap *fcfontmap,
+                                  PangoFcFont    *fcfont)
+{
+  PangoFcFontFaceData *data;
+  FcLangSet *langset;
+
+  data = pango_fc_font_map_get_font_face_data (fcfontmap, fcfont->font_pattern);
+  if (G_UNLIKELY (!data))
+    return NULL;
+
+  if (G_UNLIKELY (data->languages == NULL))
+    {
+      /*
+       * Pull the languages out of the pattern, this
+       * doesn't require loading the font
+       */
+      if (FcPatternGetLangSet (fcfont->font_pattern, FC_LANG, 0, &langset) != FcResultMatch)
+        return NULL;
+
+      data->languages = _pango_fc_font_map_fc_to_languages (langset);
+    }
+
+  return data->languages;
+}
 /**
  * pango_fc_font_map_create_context:
  * @fcfontmap: a #PangoFcFontMap
