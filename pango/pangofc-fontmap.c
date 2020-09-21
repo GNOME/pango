@@ -2805,6 +2805,32 @@ create_face (PangoFcFamily *fcfamily,
   return face;
 }
 
+static int
+compare_face (const void *p1, const void *p2)
+{
+  const PangoFcFace *f1 = *(const void **)p1;
+  const PangoFcFace *f2 = *(const void **)p2;
+  int w1, w2;
+  int s1, s2;
+
+  if (FcPatternGetInteger (f1->pattern, FC_WEIGHT, 0, &w1) != FcResultMatch)
+    w1 = FC_WEIGHT_MEDIUM;
+
+  if (FcPatternGetInteger (f1->pattern, FC_SLANT, 0, &s1) != FcResultMatch)
+    s1 = FC_SLANT_ROMAN;
+
+  if (FcPatternGetInteger (f2->pattern, FC_WEIGHT, 0, &w2) != FcResultMatch)
+    w2 = FC_WEIGHT_MEDIUM;
+
+  if (FcPatternGetInteger (f2->pattern, FC_SLANT, 0, &s2) != FcResultMatch)
+    s2 = FC_SLANT_ROMAN;
+
+  if (s1 != s2)
+    return s1 - s2; /* roman < italic < oblique */
+
+  return w1 - w2; /* from light to heavy */
+}
+
 static void
 ensure_faces (PangoFcFamily *fcfamily)
 {
@@ -2913,6 +2939,8 @@ ensure_faces (PangoFcFamily *fcfamily)
 	    faces[num++] = create_face (fcfamily, "Bold Italic", NULL, TRUE);
 
 	  faces = g_renew (PangoFcFace *, faces, num);
+
+          qsort (faces, num, sizeof (PangoFcFace *), compare_face);
 
 	  fcfamily->n_faces = num;
 	  fcfamily->faces = faces;
