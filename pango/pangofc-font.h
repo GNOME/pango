@@ -98,6 +98,9 @@ PANGO_AVAILABLE_IN_1_48
 PangoLanguage **
            pango_fc_font_get_languages     (PangoFcFont      *font);
 
+PANGO_AVAILABLE_IN_1_48
+FcPattern *pango_fc_font_get_pattern       (PangoFcFont      *font);
+
 PANGO_DEPRECATED_FOR(PANGO_GET_UNKNOWN_GLYPH)
 PangoGlyph pango_fc_font_get_unknown_glyph (PangoFcFont      *font,
                                             gunichar          wc);
@@ -109,6 +112,7 @@ PANGO_DEPRECATED_IN_1_44_FOR(pango_font_get_hb_font)
 FT_Face    pango_fc_font_lock_face         (PangoFcFont      *font);
 PANGO_DEPRECATED_IN_1_44_FOR(pango_font_get_hb_font)
 void       pango_fc_font_unlock_face       (PangoFcFont      *font);
+
 
 G_END_DECLS
 #endif /* __PANGO_FC_FONT_H__ */
