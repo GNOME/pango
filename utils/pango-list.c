@@ -9,7 +9,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -26,6 +26,10 @@
 #include <glib/gstdio.h>
 #include <stdlib.h>
 #include <locale.h>
+#include <pango/pangofc-font.h>
+#include <pango/pangofc-fontmap.h>
+#include <hb-ot.h>
+
 
 /* FIXME: This doesn't work if the font has an avar table */
 static float
@@ -39,6 +43,29 @@ denorm_coord (hb_ot_var_axis_info_t *axis, int coord)
     return axis->default_value + r * (axis->max_value - axis->default_value);
 }
 
+static void
+print_name_table_entry (hb_face_t       *face,
+                        hb_ot_name_id_t  name_id,
+                        const char      *label)
+{
+  unsigned int len;
+  unsigned int buflen = 0;
+  char *buf = NULL;
+
+  len = hb_ot_name_get_utf8 (face, name_id, HB_LANGUAGE_INVALID, &buflen, buf);
+  if (len > 0)
+    {
+      buf = g_new (char, len + 1);
+      buflen = len + 1;
+
+      hb_ot_name_get_utf8 (face, name_id, HB_LANGUAGE_INVALID, &buflen, buf);
+
+      g_print ("    %s: %s\n", label, buf);
+
+      g_free (buf);
+    }
+}
+
 int
 main (int    argc,
       char **argv)
@@ -46,10 +73,12 @@ main (int    argc,
   gboolean opt_verbose = FALSE;
   gboolean opt_metrics = FALSE;
   gboolean opt_variations = FALSE;
+  gboolean opt_metadata = FALSE;
   GOptionEntry entries[] = {
     {"verbose", 0, 0, G_OPTION_ARG_NONE,    &opt_verbose, "Print verbose information", NULL },
     {"metrics", 0, 0, G_OPTION_ARG_NONE,    &opt_metrics, "Print font metrics", NULL },
     {"variations", 0, 0, G_OPTION_ARG_NONE,    &opt_variations, "Print font variations", NULL },
+    {"metadata", 0, 0, G_OPTION_ARG_NONE,    &opt_metadata, "Print font metadata", NULL },
     { NULL, }
   };
   GOptionContext *context;
@@ -113,23 +142,45 @@ main (int    argc,
 
       width = 0;
       for (j = 0; j < n_faces; j++)
-	{
-	  const char *face_name = pango_font_face_get_face_name (faces[j]);
-	  gboolean is_synth = pango_font_face_is_synthesized (faces[j]);
-	  const char *synth_str = is_synth ? "*" : "";
+        {
+          const char *face_name = pango_font_face_get_face_name (faces[j]);
+          gboolean is_synth = pango_font_face_is_synthesized (faces[j]);
+          const char *synth_str = is_synth ? "*" : "";
           width = MAX (width, strlen (synth_str) + strlen (face_name));
         }
 
       for (j = 0; j < n_faces; j++)
-	{
-	  const char *face_name = pango_font_face_get_face_name (faces[j]);
-	  gboolean is_synth = pango_font_face_is_synthesized (faces[j]);
-	  const char *synth_str = is_synth ? "*" : "";
-	  PangoFontDescription *desc = pango_font_face_describe (faces[j]);
-	  char *desc_str = pango_font_description_to_string (desc);
+        {
+          const char *face_name = pango_font_face_get_face_name (faces[j]);
+          gboolean is_synth = pango_font_face_is_synthesized (faces[j]);
+          const char *synth_str = is_synth ? "*" : "";
+          PangoFontDescription *desc = pango_font_face_describe (faces[j]);
+          char *desc_str = pango_font_description_to_string (desc);
 
-	  g_print ("  %s%s: %*s%s\n", synth_str, face_name,
+          g_print ("  %s%s: %*s%s\n", synth_str, face_name,
                    width - (int)strlen (face_name) - (int)strlen (synth_str), "", desc_str);
+
+          if (opt_metadata)
+            {
+              PangoFont *font;
+              hb_font_t *hb_font;
+              hb_face_t *hb_face;
+
+              pango_font_description_set_absolute_size (desc, 10 * PANGO_SCALE);
+
+              font = pango_context_load_font (ctx, desc);
+              hb_font = pango_font_get_hb_font (font);
+              hb_face = hb_font_get_face (hb_font);
+
+              print_name_table_entry (hb_face, HB_OT_NAME_ID_COPYRIGHT, "Copyright");
+              print_name_table_entry (hb_face, HB_OT_NAME_ID_VERSION_STRING, "Version");
+              print_name_table_entry (hb_face, HB_OT_NAME_ID_DESCRIPTION, "Description");
+              print_name_table_entry (hb_face, HB_OT_NAME_ID_MANUFACTURER, "Manufacturer");
+              print_name_table_entry (hb_face, HB_OT_NAME_ID_DESIGNER, "Designer");
+              print_name_table_entry (hb_face, HB_OT_NAME_ID_LICENSE, "License");
+
+              g_object_unref (font);
+            }
 
           if (opt_metrics)
             {
@@ -191,11 +242,13 @@ main (int    argc,
                     }
                   g_free (axes);
                 }
+
+              g_object_unref (font);
             }
 
-	  g_free (desc_str);
-	  pango_font_description_free (desc);
-	}
+          g_free (desc_str);
+          pango_font_description_free (desc);
+        }
 
       g_free (faces);
     }
