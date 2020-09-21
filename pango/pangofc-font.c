@@ -1067,3 +1067,19 @@ pango_fc_font_get_languages (PangoFcFont *font)
 
   return languages;
 }
+
+/**
+ * pango_fc_font_get_pattern:
+ * @font: a #PangoFcFont
+ *
+ * Returns the FcPattern that @font is based on.
+ *
+ * Returns: the fontconfig pattern for this font
+ *
+ * Since: 1.48
+ */
+FcPattern *
+pango_fc_font_get_pattern (PangoFcFont *font)
+{
+  return font->font_pattern;
+}

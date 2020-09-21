@@ -1015,6 +1015,7 @@ pango_fc_font_get_glyph
 pango_fc_font_get_unknown_glyph
 pango_fc_font_kern_glyphs
 pango_fc_font_get_languages
+pango_fc_font_get_pattern
 <SUBSECTION Standard>
 PANGO_FC_FONT
 PANGO_IS_FC_FONT
