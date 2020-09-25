@@ -232,9 +232,7 @@ do_test (const gchar *filename,
   channel = g_io_channel_new_file (filename, "r", &error);
   if (g_error_matches (error, G_FILE_ERROR, G_FILE_ERROR_NOENT))
     {
-#if 0
       g_test_skip ("Test file not found");
-#endif
       return;
     }
 
