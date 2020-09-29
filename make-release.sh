@@ -19,7 +19,7 @@ meson dist -C${release_build_dir} --include-subprojects || exit
 meson configure -Dgtk_doc=true ${release_build_dir} || exit
 ninja -C${release_build_dir} pango-doc || exit
 
-tar cf ${release_build_dir}/meson-dist/pango-docs-${version}.tar.xz ${release_build_dir}/docs/
+tar cf ${release_build_dir}/meson-dist/pango-docs-${version}.tar.xz -C${release_build_dir} docs/
 
 echo -e "\n\nPango ${version} release on branch ${branch} in ./${release_build_dir}/:\n"
 
