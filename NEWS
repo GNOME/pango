@@ -1,3 +1,9 @@
+Overview of changes in 1.47.0
+=============================
+- Add pango_language_get_preferred
+- Add pango_fc_font_get_languages
+- Sort faces of a family by slant and weight
+
 Overview of changes in 1.46.2
 =============================
 - Fix pango_win32_font_map_load_font with falback families
