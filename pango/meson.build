@@ -151,6 +151,7 @@ libpango_dep = declare_dependency(
   dependencies: pango_deps,
   sources: pango_dep_sources,
 )
+meson.override_dependency('pango', libpango_dep)
 
 pango_pkg_requires = ['gobject-2.0']
 if harfbuzz_dep.type_name() == 'pkgconfig'
@@ -292,6 +293,7 @@ if build_pangoft2
     dependencies: pango_deps + [ libpango_dep ],
     sources: pangoft2_dep_sources,
   )
+  meson.override_dependency('pangoft2', libpangoft2_dep)
 
   pkgconfig.generate(libpangoft2,
     name: 'Pango FT2 and Pango Fc',
@@ -381,6 +383,7 @@ if xft_dep.found() and fontconfig_dep.found()
     dependencies: pango_deps + [ libpango_dep, libpangoft2_dep ],
     sources: pangoxft_dep_sources,
   )
+  meson.override_dependency('pangoxft', libpangoxft_dep)
 
   pkgconfig.generate(libpangoxft,
     name: 'Pango Xft',
@@ -440,6 +443,7 @@ if host_system == 'windows'
     include_directories: root_inc,
     dependencies: pango_deps + [ libpango_dep ],
   )
+  meson.override_dependency('pangowin32', libpangowin32_dep)
 
   pkgconfig.generate(libpangowin32,
     name: 'Pango Win32',
@@ -546,6 +550,7 @@ if cairo_dep.found()
     dependencies: pango_deps + [ libpango_dep ],
     sources: pangocairo_dep_sources,
   )
+  meson.override_dependency('pangocairo', libpangocairo_dep)
 
   # Create pangocairo.pc according to whether we found Cairo
   # manually
