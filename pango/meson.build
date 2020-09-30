@@ -121,7 +121,8 @@ libpango = library(
 
 pango_dep_sources = [pango_enum_h]
 
-build_gir = get_option('introspection')
+gir = find_program('g-ir-scanner', required : get_option('introspection'))
+build_gir = gir.found() and (not meson.is_cross_build() or get_option('introspection').enabled())
 
 if build_gir
   gir_args = [
