@@ -8,9 +8,10 @@ stages:
 variables:
   COMMON_MESON_FLAGS: "--fatal-meson-warnings --werror"
   MESON_TEST_TIMEOUT_MULTIPLIER: 2
+  FEDORA_IMAGE: registry.gitlab.gnome.org/gnome/pango/fedora:v3
 
 linux-fedora:
-  image: registry.gitlab.gnome.org/gnome/pango/fedora:v2
+  image: $FEDORA_IMAGE
   stage: build
   needs: []
   variables:
@@ -34,7 +35,7 @@ linux-fedora:
       - "${CI_PROJECT_DIR}/_build/fontlist.txt"
 
 asan-build:
-  image: registry.gitlab.gnome.org/gnome/pango/fedora:v2
+  image: $FEDORA_IMAGE
   tags: [ asan ]
   stage: analysis
   needs: []
@@ -78,7 +79,7 @@ msys2-mingw64:
       - _build/fontlist.txt
 
 reference:
-  image: registry.gitlab.gnome.org/gnome/pango/fedora:v1
+  image: $FEDORA_IMAGE
   stage: docs
   needs: []
   variables:
