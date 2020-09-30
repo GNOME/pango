@@ -4,8 +4,9 @@ option('gtk_doc',
        value: false)
 option('introspection',
        description: 'Build the GObject introspection data for Pango',
-       type: 'boolean',
-       value: true)
+       type: 'feature',
+       value: 'auto',
+       yield: true)
 option('install-tests',
        description : 'Install tests',
        type: 'boolean',
