@@ -141,14 +141,13 @@ if get_option('install-tests')
   install_data(installed_test_items_data, install_dir: join_paths(installed_test_bindir, 'itemize'))
 endif
 
-python = import('python3').find_python()
 gen_installed_test = files([ 'gen-installed-test.py' ])
 gen_all_unicode = files([ 'gen-all-unicode.py' ])
 
 custom_target('all-unicode',
               output: 'all-unicode.txt',
               command: [
-                python, gen_all_unicode, '@OUTPUT@'
+                gen_all_unicode, '@OUTPUT@'
               ],
               install: get_option('install-tests'),
               install_dir: installed_test_bindir)
@@ -161,7 +160,7 @@ foreach t: tests
   custom_target(name + '.test',
                 output: name + '.test',
                 command: [
-                  python, gen_installed_test,
+                  gen_installed_test,
                   installed_test_bindir,
                   name,
                   '@OUTDIR@',
