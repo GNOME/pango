@@ -372,7 +372,7 @@ if host_system == 'darwin'
 endif
 
 cairo_found_type = ''
-cairo_dep = dependency('cairo', version: cairo_req_version, required: get_option('cairo'))
+cairo_dep = dependency('cairo', version: cairo_req_version, required: false)
 
 if cairo_dep.found()
   cairo_found_type = cairo_dep.type_name()
