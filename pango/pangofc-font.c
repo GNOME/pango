@@ -1069,7 +1069,7 @@ pango_fc_font_get_languages (PangoFcFont *font)
 }
 
 /**
- * pango_fc_font_get_pattern:
+ * pango_fc_font_get_pattern: (skip)
  * @font: a #PangoFcFont
  *
  * Returns the FcPattern that @font is based on.
