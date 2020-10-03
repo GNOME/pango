@@ -95,7 +95,6 @@ test_breaks_data = [
   'breaks/one',
   'breaks/two',
   'breaks/three',
-  'breaks/four',
 ]
 
 if thai_dep.found()
