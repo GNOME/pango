@@ -269,16 +269,14 @@ endif
 
 pango_deps += harfbuzz_dep
 
-# Only use FontConfig fallback when required or requested
-
+# If option is 'auto' or 'enabled' it is not required to find fontconfig on the
+# system because a fallback is done at the end. Override 'disabled' option on
+# platforms that requires it.
 fontconfig_option = get_option('fontconfig')
-
-fontconfig_sys_required = (host_system != 'windows' and host_system != 'darwin')
-if fontconfig_sys_required and fontconfig_option.disabled()
-  error('Fontconfig is required on this platform (pass -Dfontconfig=enabled or -Dfontconfig=auto)')
+fontconfig_required = host_system not in ['windows', 'darwin']
+if not fontconfig_option.disabled() or fontconfig_required
+  fontconfig_option = false
 endif
-
-fontconfig_required = fontconfig_sys_required or fontconfig_option.enabled()
 
 fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version, required: fontconfig_option)
 if fontconfig_dep.found()
@@ -294,15 +292,19 @@ else
   endif
 endif
 
-if fontconfig_required and not fontconfig_dep.found()
+# Do the fallback now if fontconfig has not been found on the system. Override
+# user option on platforms that always require fontconfig.
+fontconfig_option = fontconfig_required ? true : get_option('fontconfig')
+if not fontconfig_dep.found()
   fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version,
-                              fallback: ['fontconfig', 'fontconfig_dep'])
+                              fallback: ['fontconfig', 'fontconfig_dep'],
+                              required: fontconfig_option)
 endif
 
 if fontconfig_dep.found()
   pango_deps += fontconfig_dep
 
-  if fontconfig_pc == 'fontconfig'
+  if fontconfig_dep.type_name() != 'library'
     if fontconfig_dep.version().version_compare('>=2.12.92')
       pango_conf.set('HAVE_FCWEIGHTFROMOPENTYPEDOUBLE', 1)
     endif
@@ -318,9 +320,17 @@ else
 endif
 message('fontconfig has FcWeightFromOpenTypeDouble: ' + res)
 
+# If option is 'auto' or 'enabled' it is not required to find freetype2 on the
+# system because a fallback is done at the end. Override 'disabled' option on
+# if fontconfig has been found.
+freetype_option = get_option('freetype')
+freetype_required = fontconfig_dep.found()
+if not freetype_option.disabled() or freetype_required
+  freetype_option = false
+endif
+
 # The first version of freetype with a pkg-config file is 2.1.5
-# We require both fontconfig and freetype if we are to have either.
-freetype_dep = dependency('freetype2', required: get_option('freetype'))
+freetype_dep = dependency('freetype2', required: freetype_option)
 
 if freetype_dep.found()
   freetype2_pc = 'freetype2'
@@ -328,7 +338,7 @@ else
   if cc.get_id() == 'msvc' and cc.has_header('ft2build.h')
     foreach ft2_lib: ['freetype', 'freetypemt']
       if not freetype_dep.found()
-        freetype_dep = cc.find_library(ft2_lib, required: get_option('freetype'))
+        freetype_dep = cc.find_library(ft2_lib, required: freetype_option)
         if freetype_dep.found()
           freetype2_lib = '-l@0@'.format(ft2_lib)
         endif
@@ -337,8 +347,10 @@ else
   endif
 endif
 
-if fontconfig_required and not freetype_dep.found()
-  freetype_dep = dependency('freetype2', required: get_option('freetype'),
+# Do the fallback now if freetype2 has not been found on the system.
+freetype_option = freetype_required ? true : get_option('freetype')
+if not freetype_dep.found()
+  freetype_dep = dependency('freetype2', required: freetype_option,
                             fallback: ['freetype2', 'freetype_dep'])
 endif
 
@@ -371,14 +383,21 @@ if host_system == 'darwin'
   pango_deps += dependency('appleframeworks', modules: [ 'CoreFoundation', 'ApplicationServices' ])
 endif
 
+# If option is 'auto' or 'enabled' it is not required to find cairo on the
+# system because a fallback is done at the end.
+cairo_option = get_option('cairo')
+if not cairo_option.disabled()
+  cairo_option = false
+endif
+
 cairo_found_type = ''
-cairo_dep = dependency('cairo', version: cairo_req_version, required: false)
+cairo_dep = dependency('cairo', version: cairo_req_version, required: cairo_option)
 
 if cairo_dep.found()
   cairo_found_type = cairo_dep.type_name()
 else
   if cc.get_id() == 'msvc' and cc.has_header('cairo.h')
-    cairo_dep = cc.find_library('cairo', required: false)
+    cairo_dep = cc.find_library('cairo', required: cairo_option)
     cairo_found_type = 'library'
   endif
 endif
@@ -387,7 +406,8 @@ endif
 # in a declarative way
 if not cairo_dep.found()
   cairo_dep = dependency('cairo', version: cairo_req_version,
-                         fallback: ['cairo', 'libcairo_dep'], required: get_option('cairo'))
+                         fallback: ['cairo', 'libcairo_dep'], required: get_option('cairo'),
+                         default_options: ['freetype=enabled', 'fontconfig=enabled'])
   cairo_found_type = cairo_dep.type_name()
 endif
 
