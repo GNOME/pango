@@ -85,7 +85,8 @@ typedef struct _PangoXftFont    PangoXftFont;
  *
  * Function type for doing final config tweaking on prepared FcPatterns.
  */
-typedef PangoFcSubstituteFunc PangoXftSubstituteFunc;
+typedef void (*PangoXftSubstituteFunc) (FcPattern *pattern,
+				        gpointer   data);
 
 /* Calls for applications
  */
