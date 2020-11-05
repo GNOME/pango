@@ -2979,19 +2979,23 @@ pango_fc_family_get_face (PangoFontFamily *family,
 {
   PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
   int i;
+  const char *style = name;
 
   ensure_faces (fcfamily);
 
-  if (name == NULL)
-    name = "Regular"; /* This name always exists in fontconfig */
+  if (style == NULL)
+    style = "Regular";
 
   for (i = 0; i < fcfamily->n_faces; i++)
     {
       PangoFontFace *face = PANGO_FONT_FACE (fcfamily->faces[i]);
 
-      if (strcmp (name, pango_font_face_get_face_name (face)) == 0)
+      if (strcmp (style, pango_font_face_get_face_name (face)) == 0)
         return face;
     }
+
+  if (name == NULL && fcfamily->n_faces > 0)
+    return PANGO_FONT_FACE (fcfamily->faces[0]);
 
   return NULL;
 }
