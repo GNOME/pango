@@ -232,7 +232,7 @@ test_file (const gchar *filename, GString *string)
               if (i + 1 < glyphs->num_glyphs)
                 p1 = text + item->offset + glyphs->log_clusters[i + 1];
               else
-                p1 = g_utf8_next_char (p);
+                p1 = text + item->offset + item->length;
             }
           append_text (s1, p, p1 - p);
           g_string_append_printf (s2, "[%d]", gi->glyph);
