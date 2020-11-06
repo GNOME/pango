@@ -182,6 +182,7 @@ struct _PangoFcFace
   FcPattern *pattern;
 
   guint fake : 1;
+  guint regular : 1;
 };
 
 struct _PangoFcFamily
@@ -2852,6 +2853,7 @@ ensure_faces (PangoFcFamily *fcfamily)
 	  fcfamily->faces[i++] = create_face (fcfamily, "Bold", NULL, TRUE);
 	  fcfamily->faces[i++] = create_face (fcfamily, "Italic", NULL, TRUE);
 	  fcfamily->faces[i++] = create_face (fcfamily, "Bold Italic", NULL, TRUE);
+          fcfamily->faces[0]->regular = 1;
 	}
       else
 	{
@@ -2865,11 +2867,16 @@ ensure_faces (PangoFcFamily *fcfamily)
 	  gboolean has_face [4] = { FALSE, FALSE, FALSE, FALSE };
 	  PangoFcFace **faces;
 	  gint num = 0;
+          int regular_weight;
+          int regular_idx;
 
 	  fontset = fcfamily->patterns;
 
 	  /* at most we have 3 additional artifical faces */
 	  faces = g_new (PangoFcFace *, fontset->nfont + 3);
+
+          regular_weight = 0;
+          regular_idx = -1;
 
 	  for (i = 0; i < fontset->nfont; i++)
 	    {
@@ -2895,12 +2902,23 @@ ensure_faces (PangoFcFamily *fcfamily)
 	      if (FcPatternGetString (fontset->fonts[i], FC_STYLE, 0, (FcChar8 **)(void*)&font_style) != FcResultMatch)
 		font_style = NULL;
 
+              if (font_style && strcmp (font_style, "Regular") == 0)
+                {
+                  regular_weight = FC_WEIGHT_MEDIUM;
+                  regular_idx = num;
+                }
+
 	      if (weight <= FC_WEIGHT_MEDIUM)
 		{
 		  if (slant == FC_SLANT_ROMAN)
 		    {
 		      has_face[REGULAR] = TRUE;
 		      style = "Regular";
+                      if (weight > regular_weight)
+                        {
+                          regular_weight = weight;
+                          regular_idx = num;
+                        }
 		    }
 		  else
 		    {
@@ -2937,6 +2955,9 @@ ensure_faces (PangoFcFamily *fcfamily)
 	    }
 	  if ((has_face[REGULAR] || has_face[ITALIC] || has_face[BOLD]) && !has_face[BOLD_ITALIC])
 	    faces[num++] = create_face (fcfamily, "Bold Italic", NULL, TRUE);
+
+          if (regular_idx != -1)
+            faces[regular_idx]->regular = 1;
 
 	  faces = g_renew (PangoFcFace *, faces, num);
 
@@ -2979,23 +3000,17 @@ pango_fc_family_get_face (PangoFontFamily *family,
 {
   PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
   int i;
-  const char *style = name;
 
   ensure_faces (fcfamily);
-
-  if (style == NULL)
-    style = "Regular";
 
   for (i = 0; i < fcfamily->n_faces; i++)
     {
       PangoFontFace *face = PANGO_FONT_FACE (fcfamily->faces[i]);
 
-      if (strcmp (style, pango_font_face_get_face_name (face)) == 0)
+      if ((name != NULL && strcmp (name, pango_font_face_get_face_name (face)) == 0) ||
+          (name == NULL && PANGO_FC_FACE (face)->regular))
         return face;
     }
-
-  if (name == NULL && fcfamily->n_faces > 0)
-    return PANGO_FONT_FACE (fcfamily->faces[0]);
 
   return NULL;
 }
