@@ -1,3 +1,11 @@
+Overview of changes in 1.48.0
+=============================
+- docs: Clarify use of PangoAnalysis in shaping
+- fontconfig: Make pango_font_family_get_face more reliable
+- introspection: Fix use of PangoFcSubstituteFunc
+- introspection: Skip fontconfig types
+- build: Use yielding meson feature for introspection
+
 Overview of changes in 1.47.0
 =============================
 - Add pango_language_get_preferred
