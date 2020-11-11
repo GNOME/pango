@@ -413,6 +413,7 @@ if host_system == 'windows'
   pangowin32_deps = pango_deps + [
     libpango_dep,
     cc.find_library('gdi32'),
+    cc.find_library('dwrite'),
   ]
 
   pangowin32_rc = configure_file(

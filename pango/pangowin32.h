@@ -153,6 +153,9 @@ PangoFontDescription *pango_win32_font_description_from_logfontw (const LOGFONTW
 PANGO_AVAILABLE_IN_1_48
 GType                 pango_win32_font_get_type                  (void) G_GNUC_CONST;
 
+PANGO_AVAILABLE_IN_1_48
+PangoLanguage       **pango_win32_font_get_languages             (PangoFont *font);
+
 G_END_DECLS
 
 #endif /* __PANGOWIN32_H__ */

@@ -32,6 +32,8 @@
  */
 #include "config.h"
 
+#include <initguid.h>
+
 #include <string.h>
 #include <stdlib.h>
 #include <glib.h>
@@ -133,7 +135,30 @@ _pango_win32_font_init (PangoWin32Font *win32font)
   win32font->glyph_info = g_hash_table_new_full (NULL, NULL, NULL, g_free);
 }
 
+typedef struct dwrite_init_items
+{
+  IDWriteFactory *factory;
+  IDWriteGdiInterop *gdi_interop;
+  GHashTable *ht_script_language;
+} dwrite_items;
+
+static void
+ShutdownDWrite (dwrite_items *items)
+{
+  if (items->ht_script_language != NULL)
+    g_hash_table_destroy (items->ht_script_language);
+
+  if (items->gdi_interop != NULL)
+    IDWriteGdiInterop_Release (items->gdi_interop);
+
+  if (items->factory != NULL)
+    IDWriteFactory_Release (items->factory);
+
+  g_free (items);
+}
+
 static GPrivate display_dc_key = G_PRIVATE_INIT ((GDestroyNotify) DeleteDC);
+static GPrivate dwrite_items_key = G_PRIVATE_INIT ((GDestroyNotify) ShutdownDWrite);
 
 HDC
 _pango_win32_get_display_dc (void)
@@ -190,6 +215,130 @@ pango_win32_get_debug_flag (void)
   return _pango_win32_debug;
 }
 
+static BOOL CALLBACK
+get_available_scripts_for_locales (wchar_t *locale,
+                                   DWORD    flags,
+                                   LPARAM  *data)
+{
+  GHashTable *ht_script_language = (GHashTable *)data;
+  wchar_t *scripts_w;
+  gchar *scripts_raw;
+  gchar **scripts_array;
+  int sz, i;
+  GSList *locale_list;
+
+  sz = GetLocaleInfoEx (locale, LOCALE_SSCRIPTS, NULL, 0);
+
+  if (sz == 0)
+    return FALSE;
+
+  scripts_w = g_new (wchar_t, sz);
+
+  if (GetLocaleInfoEx (locale, LOCALE_SSCRIPTS, scripts_w, sz) == 0)
+    {
+      g_free (scripts_w);
+      return FALSE;
+    }
+
+  scripts_raw = g_utf16_to_utf8 (scripts_w, -1, NULL, NULL, NULL);
+
+  scripts_array = g_strsplit_set (scripts_raw, ";", -1);
+
+  for (i = 0; scripts_array[i] != NULL; i ++)
+    {
+      if (g_ascii_strcasecmp ("", scripts_array[i]) != 0)
+        {
+          g_hash_table_steal_extended (ht_script_language, scripts_array[i], NULL, (void **)&locale_list);
+          locale_list = g_slist_prepend (locale_list, g_utf16_to_utf8 (locale, -1, NULL, NULL, NULL));
+          g_hash_table_replace (ht_script_language, scripts_array[i], locale_list);
+        }
+    }
+
+  g_free (scripts_w);
+  return TRUE;
+}
+
+static void
+remove_language_list (GSList *list)
+{
+  g_slist_free_full (list, g_free);
+}
+
+static dwrite_items *
+_pango_win32_setup_dwrite (void)
+{
+  dwrite_items *items = NULL;
+  IDWriteGdiInterop *dwrite_gdi = NULL;
+
+  items = g_private_get (&dwrite_items_key);
+
+  if (items == NULL)
+    {
+      gboolean failed = FALSE;
+      items = g_new0 (dwrite_items, 1);
+
+      if (DWriteCreateFactory (DWRITE_FACTORY_TYPE_SHARED,
+                              &IID_IDWriteFactory,
+                              (IUnknown **)&items->factory) != S_OK)
+        {
+          g_warning ("DWrite factory creation failed!");
+          failed = TRUE;
+        }
+      else
+        {
+          if (IDWriteFactory_GetGdiInterop (items->factory,
+                                           &items->gdi_interop) != S_OK)
+            {
+              g_warning ("DWrite GDI interop creation failed!");
+              failed = TRUE;
+            }
+          else
+            {
+              items->ht_script_language = g_hash_table_new_full (g_str_hash,
+                                                                 g_str_equal,
+                                                                 g_free,
+                                                                 remove_language_list);
+
+              if (!EnumSystemLocalesEx (get_available_scripts_for_locales,
+                                        LOCALE_ALL,
+                                        (LPARAM)items->ht_script_language,
+                                        NULL))
+                {
+                  gchar *syserr = g_win32_error_message (GetLastError ());
+
+                  g_warning ("Failed to enumerate system locales, error: %s!", syserr);
+                  g_free (syserr);
+                  failed = TRUE;
+                }
+              else
+                g_private_set (&dwrite_items_key, items);
+            }
+        }
+
+      if (failed)
+        {
+          ShutdownDWrite (items);
+          items = NULL;
+        }
+    }
+
+  return items;
+}
+
+IDWriteGdiInterop *
+_pango_win32_acquire_dwrite_gdi_interop (void)
+{
+  dwrite_items *items = _pango_win32_setup_dwrite ();
+  return items->gdi_interop;
+}
+
+GHashTable *
+_pango_win32_acquire_script_locale_ht (void)
+{
+  dwrite_items *items = _pango_win32_setup_dwrite ();
+  return items->ht_script_language;
+}
+
 static void
 _pango_win32_font_class_init (PangoWin32FontClass *class)
 {
@@ -212,6 +361,7 @@ _pango_win32_font_class_init (PangoWin32FontClass *class)
   class->get_metrics_factor = pango_win32_font_real_get_metrics_factor;
 
   _pango_win32_get_display_dc ();
+  _pango_win32_setup_dwrite ();
 }
 
 /**
@@ -1287,4 +1437,71 @@ pango_win32_font_create_hb_font (PangoFont *font)
 GType pango_win32_font_get_type (void)
 {
   return _pango_win32_font_get_type ();
+}
+
+PangoLanguage **
+pango_win32_font_get_languages (PangoFont *font)
+{
+  PangoWin32Font *win32font = NULL;
+  IDWriteGdiInterop *gdi_interop = NULL;
+  IDWriteFont *dwritefont = NULL;
+  IDWriteLocalizedStrings *dwrite_result_str;
+  gboolean exists = FALSE;
+  LOGFONTW lf = win32font->logfontw;
+  PangoLanguage **langs = NULL;
+  
+  g_return_val_if_fail (font != NULL, NULL);
+  g_return_val_if_fail (PANGO_IS_WIN32_FONT (font), NULL);
+
+  win32font = PANGO_WIN32_FONT (font);
+  gdi_interop = _pango_win32_acquire_dwrite_gdi_interop ();
+
+  if (IDWriteGdiInterop_CreateFontFromLOGFONT (gdi_interop,
+                                              &lf,
+                                              &dwritefont) != S_OK)
+    g_warning ("Faild to create DirectWriteFont from LOGFONTW");
+
+  if (IDWriteFont_GetInformationalStrings (dwritefont,
+                                           DWRITE_INFORMATIONAL_STRING_SUPPORTED_SCRIPT_LANGUAGE_TAG,
+                                          &dwrite_result_str,
+                                          &exists) != S_OK)
+    {
+      gchar *name = g_utf16_to_utf8 (lf.lfFaceName, -1, NULL, NULL, NULL);
+      g_warning ("Failed to get supported languages of font %p (name: %s)", &lf, name);
+      g_free (name);
+    }
+
+  if (exists)
+    {
+      gchar *name = g_utf16_to_utf8 (lf.lfFaceName, -1, NULL, NULL, NULL);
+      guint num_langs = IDWriteLocalizedStrings_GetCount (dwrite_result_str);
+      guint i = 0;
+	  GHashTable *ht_script_language = _pango_win32_acquire_script_locale_ht();
+
+      for (i = 0; i < num_langs; i ++)
+        {
+          guint strlength = 0;
+          wchar_t *str_utf16 = NULL;
+          gchar *str_utf8 = NULL;
+          GSList *langs = NULL;
+          IDWriteLocalizedStrings_GetStringLength (dwrite_result_str, i, &strlength);
+          str_utf16 = g_new0 (wchar_t, strlength + 1);
+          IDWriteLocalizedStrings_GetString (dwrite_result_str, i, str_utf16, strlength + 1);
+          str_utf8 = g_utf16_to_utf8 (str_utf16, -1, NULL, NULL, NULL);
+          langs = g_hash_table_lookup (ht_script_language, str_utf8);
+          if (langs != NULL)
+            {
+               GSList *p;
+
+               for (p = g_slist_reverse (langs); p != NULL; p = p->next)
+                 if (pango_language_from_string (p->data) == NULL)
+                   g_print ("NULL!\n");
+            }
+          g_free (str_utf8);
+          g_free (str_utf16);
+        }
+      g_free (name);
+    }
+
+  return langs;
 }

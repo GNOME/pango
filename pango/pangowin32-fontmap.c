@@ -1588,12 +1588,19 @@ ff_name (int ff, char* num)
     }
 }
 
+/* remove later... */
+extern GHashTable *
+_pango_win32_acquire_script_locale_ht (void);
+
 static void
 pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
                          LOGFONTW          *lfp,
                          gboolean           is_synthetic)
 {
   LOGFONTW *lfp2 = NULL;
+  IDWriteGdiInterop *gdi_interop = _pango_win32_acquire_dwrite_gdi_interop ();
+  IDWriteLocalizedStrings *dwrite_result_str;
+  gboolean exists = FALSE;
   PangoFontDescription *description;
   PangoWin32Family *win32family;
   PangoWin32Face *win32face;
@@ -1645,6 +1652,12 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   PING (("win32face created: %p for %S", win32face, lfp->lfFaceName));
 
   win32face->logfontw = *lfp;
+
+  if (IDWriteGdiInterop_CreateFontFromLOGFONT (gdi_interop,
+                                              &win32face->logfontw,
+                                              &win32face->dwrite_font) != S_OK)
+    g_warning ("Failed to create DirectWriteFont from LOGFONTW");
+
   win32face->description = description;
 
   win32face->coverage = NULL;
@@ -1666,6 +1679,48 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
     win32family->is_monospace = TRUE;
 
   win32family->faces = g_slist_append (win32family->faces, win32face);
+
+  if (IDWriteFont_GetInformationalStrings (win32face->dwrite_font,
+                                           DWRITE_INFORMATIONAL_STRING_SUPPORTED_SCRIPT_LANGUAGE_TAG,
+                                          &dwrite_result_str,
+                                          &exists) != S_OK)
+    {
+      gchar *name = g_utf16_to_utf8 (lfp->lfFaceName, -1, NULL, NULL, NULL);
+      g_warning ("Failed to get supported languages of font %p (name: %s)", lfp, name);
+      g_free (name);
+    }
+
+  if (exists)
+    {
+      gchar *name = g_utf16_to_utf8 (lfp->lfFaceName, -1, NULL, NULL, NULL);
+      guint num_langs = IDWriteLocalizedStrings_GetCount (dwrite_result_str);
+      guint i = 0;
+	  GHashTable *ht_script_language = _pango_win32_acquire_script_locale_ht();
+
+      for (i = 0; i < num_langs; i ++)
+        {
+          guint strlength = 0;
+          wchar_t *str_utf16 = NULL;
+          gchar *str_utf8 = NULL;
+          GSList *langs = NULL;
+          IDWriteLocalizedStrings_GetStringLength (dwrite_result_str, i, &strlength);
+          str_utf16 = g_new0 (wchar_t, strlength + 1);
+          IDWriteLocalizedStrings_GetString (dwrite_result_str, i, str_utf16, strlength + 1);
+          str_utf8 = g_utf16_to_utf8 (str_utf16, -1, NULL, NULL, NULL);
+          langs = g_hash_table_lookup (ht_script_language, str_utf8);
+          if (langs != NULL)
+            {
+               GSList *p;
+
+               for (p = g_slist_reverse (langs); p != NULL; p = p->next)
+                 if (pango_language_from_string (p->data) == NULL)
+                   g_print ("NULL!\n");
+            }
+          g_free (str_utf8);
+          g_free (str_utf16);
+        }
+      g_free (name);
+    }
 
   PING (("name=%s, length(faces)=%d",
         win32family->family_name, g_slist_length (win32family->faces)));
@@ -1763,6 +1818,8 @@ pango_win32_face_finalize (GObject *object)
 
   g_slist_free (win32face->cached_fonts);
 //  g_slist_free_full (win32face->cached_fonts, g_object_unref); // This doesn't work.
+  if (win32face->dwrite_font != NULL)
+    IDWriteFont_Release (win32face->dwrite_font);
 
   G_OBJECT_CLASS (pango_win32_family_parent_class)->finalize (object);
 }

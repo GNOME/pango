@@ -52,6 +52,10 @@
 #define PING(printlist)
 #endif
 
+/* this is a C-compatible counterpart of the DirectWrite headers */
+#define COBJMACROS
+#include "dwrite_c.h"
+
 #include "pangowin32.h"
 #include "pango-font-private.h"
 #include "pango-fontset-private.h"
@@ -152,6 +156,7 @@ struct _PangoWin32Face
 
   gpointer family;
   LOGFONTW logfontw;
+  IDWriteFont *dwrite_font;
   PangoFontDescription *description;
   PangoCoverage *coverage;
   char *face_name;
@@ -273,5 +278,7 @@ _PANGO_EXTERN
 HDC             _pango_win32_get_display_dc                 (void);
 
 extern gboolean _pango_win32_debug;
+
+IDWriteGdiInterop * _pango_win32_acquire_dwrite_gdi_interop (void);
 
 #endif /* __PANGOWIN32_PRIVATE_H__ */
