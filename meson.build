@@ -330,7 +330,10 @@ if not freetype_option.disabled() or freetype_required
 endif
 
 # The first version of freetype with a pkg-config file is 2.1.5
-freetype_dep = dependency('freetype2', required: freetype_option)
+freetype_dep = dependency('freetype2', required: freetype_option, method: 'pkg-config')
+if not freetype_dep.found()
+  freetype_dep = dependency('freetype', required: freetype_option, method: 'cmake')
+endif
 
 if freetype_dep.found()
   freetype2_pc = 'freetype2'
