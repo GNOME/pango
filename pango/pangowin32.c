@@ -676,7 +676,7 @@ pango_win32_font_logfont (PangoFont *font)
   LOGFONTA *lfp;
 
   g_return_val_if_fail (font != NULL, NULL);
-  g_return_val_if_fail (PANGO_WIN32_IS_FONT (font), NULL);
+  g_return_val_if_fail (PANGO_IS_WIN32_FONT (font), NULL);
 
   lfp = g_new (LOGFONTA, 1);
 
@@ -708,7 +708,7 @@ pango_win32_font_logfontw (PangoFont *font)
   LOGFONTW *lfp;
 
   g_return_val_if_fail (font != NULL, NULL);
-  g_return_val_if_fail (PANGO_WIN32_IS_FONT (font), NULL);
+  g_return_val_if_fail (PANGO_IS_WIN32_FONT (font), NULL);
 
   lfp = g_new (LOGFONTW, 1);
   *lfp = win32font->logfontw;
@@ -737,7 +737,7 @@ gboolean
 pango_win32_font_select_font (PangoFont *font,
 			      HDC        hdc)
 {
-  g_return_val_if_fail (PANGO_WIN32_IS_FONT (font), FALSE);
+  g_return_val_if_fail (PANGO_IS_WIN32_FONT (font), FALSE);
 
   return PANGO_WIN32_FONT_GET_CLASS (font)->select_font (font, hdc);
 }
@@ -751,7 +751,7 @@ pango_win32_font_select_font (PangoFont *font,
 void
 pango_win32_font_done_font (PangoFont *font)
 {
-  g_return_if_fail (PANGO_WIN32_IS_FONT (font));
+  g_return_if_fail (PANGO_IS_WIN32_FONT (font));
 
   PANGO_WIN32_FONT_GET_CLASS (font)->done_font (font);
 }
@@ -770,7 +770,7 @@ pango_win32_font_done_font (PangoFont *font)
 double
 pango_win32_font_get_metrics_factor (PangoFont *font)
 {
-  g_return_val_if_fail (PANGO_WIN32_IS_FONT (font), 1.);
+  g_return_val_if_fail (PANGO_IS_WIN32_FONT (font), 1.);
 
   return PANGO_WIN32_FONT_GET_CLASS (font)->get_metrics_factor (font);
 }
@@ -1282,4 +1282,9 @@ pango_win32_font_create_hb_font (PangoFont *font)
   hb_face_destroy (face);
 
   return hb_font;
+}
+
+GType pango_win32_font_get_type (void)
+{
+  return _pango_win32_font_get_type ();
 }

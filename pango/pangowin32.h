@@ -40,6 +40,10 @@ G_BEGIN_DECLS
 #include <windows.h>
 #undef STRICT
 
+#define PANGO_TYPE_WIN32_FONT            (pango_win32_font_get_type ())
+#define PANGO_WIN32_FONT(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_WIN32_FONT, PangoWin32Font))
+#define PANGO_IS_WIN32_FONT(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_WIN32_FONT))
+
 /**
  * PANGO_RENDER_TYPE_WIN32:
  *
@@ -145,6 +149,9 @@ PangoFontDescription *pango_win32_font_description_from_logfont (const LOGFONTA 
 
 PANGO_AVAILABLE_IN_1_16
 PangoFontDescription *pango_win32_font_description_from_logfontw (const LOGFONTW *lfp);
+
+PANGO_AVAILABLE_IN_1_48
+GType                 pango_win32_font_get_type                  (void) G_GNUC_CONST;
 
 G_END_DECLS
 
