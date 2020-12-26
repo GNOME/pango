@@ -164,9 +164,12 @@ test_extents (void)
   PangoGlyphString *glyphs;
   PangoRectangle ink, log;
   PangoContext *context;
+  PangoFontDescription *desc;
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-  pango_context_set_font_description (context, pango_font_description_from_string ("Cantarell 11"));
+  desc = pango_font_description_from_string("Cantarell 11");
+  pango_context_set_font_description (context, desc);
+  pango_font_description_free (desc);
 
   items = pango_itemize (context, str, 0, strlen (str), NULL, NULL);
   glyphs = pango_glyph_string_new ();

@@ -279,6 +279,7 @@ test_itemize (gconstpointer d)
   g_free (diff);
   g_string_free (dump, TRUE);
   g_free (expected_file);
+  g_object_unref (context);
 }
 
 int

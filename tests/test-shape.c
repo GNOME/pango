@@ -361,7 +361,10 @@ main (int argc, char *argv[])
   g_free (path);
 
   if (g_error_matches (error, G_FILE_ERROR, G_FILE_ERROR_NOENT))
-    return 0;
+    {
+      g_error_free(error);
+      return 0;
+    }
 
   g_assert_no_error (error);
   while ((name = g_dir_read_name (dir)) != NULL)
