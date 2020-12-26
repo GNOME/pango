@@ -8,6 +8,8 @@ builddir=$1
 
 # Ignore memory leaks lower in dependencies
 export LSAN_OPTIONS=suppressions=$srcdir/lsan.supp
+# Check leaks of slices
+export G_SLICE=always-malloc
 
 meson test -C ${builddir} \
         --print-errorlogs \
