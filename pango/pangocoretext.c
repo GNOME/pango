@@ -36,7 +36,6 @@
 
 struct _PangoCoreTextFontPrivate
 {
-  PangoCoreTextFace *face;
   gpointer context_key;
 
   CTFontRef font_ref;
@@ -222,15 +221,6 @@ _pango_core_text_font_set_font_map (PangoCoreTextFont    *font,
 
   g_return_if_fail (priv->fontmap == NULL);
   g_weak_ref_set((GWeakRef *) &priv->fontmap, fontmap);
-}
-
-void
-_pango_core_text_font_set_face (PangoCoreTextFont *ctfont,
-                                PangoCoreTextFace *ctface)
-{
-  PangoCoreTextFontPrivate *priv = ctfont->priv;
-
-  priv->face = ctface;
 }
 
 PangoCoreTextFace *
