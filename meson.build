@@ -239,7 +239,9 @@ fontconfig_pc=''
 harfbuzz_lib=''
 fontconfig_lib=''
 
-harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version, required: false)
+harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version, required: false,
+                          fallback: ['harfbuzz', 'libharfbuzz_dep'],
+                          default_options: ['coretext=enabled'])
 if harfbuzz_dep.found()
   harfbuzz_pc = 'harfbuzz'
 else
