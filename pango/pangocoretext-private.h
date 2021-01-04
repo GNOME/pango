@@ -122,8 +122,6 @@ GType                 pango_core_text_font_map_get_type          (void) G_GNUC_C
 
 void                  _pango_core_text_font_set_font_map         (PangoCoreTextFont    *afont,
                                                                   PangoCoreTextFontMap *fontmap);
-void                  _pango_core_text_font_set_face             (PangoCoreTextFont    *afont, 
-                                                                  PangoCoreTextFace    *aface);
 PangoCoreTextFace *   _pango_core_text_font_get_face             (PangoCoreTextFont    *font);
 gpointer              _pango_core_text_font_get_context_key      (PangoCoreTextFont    *afont);
 void                  _pango_core_text_font_set_context_key      (PangoCoreTextFont    *afont,
