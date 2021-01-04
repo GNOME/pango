@@ -152,6 +152,9 @@ PangoGravity          pango_core_text_font_key_get_gravity          (const Pango
 _PANGO_EXTERN
 CTFontDescriptorRef   pango_core_text_font_key_get_ctfontdescriptor (const PangoCoreTextFontKey *key);
 
+PangoCoreTextFace *   pango_core_text_font_map_find_face (PangoCoreTextFontMap       *map,
+                                                          const PangoCoreTextFontKey *key);
+
 G_END_DECLS
 
 #endif /* __PANGOCORETEXT_PRIVATE_H__ */
