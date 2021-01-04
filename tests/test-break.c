@@ -72,12 +72,9 @@ test_file (const gchar *filename, GString *string)
 
   if (pango_layout_get_unknown_glyphs_count (layout) > 0)
     {
-#if 0
-      // See https://github.com/mesonbuild/meson/issues/7515
       char *msg = g_strdup_printf ("Missing glyphs - skipping %s. Maybe fonts are missing?", filename);
       g_test_skip (msg);
       g_free (msg);
-#endif
       g_free (contents);
       g_object_unref (layout);
       pango_attr_list_unref (attributes);
@@ -263,12 +260,9 @@ test_break (gconstpointer d)
   setlocale (LC_ALL, "en_US.utf8");
   if (strstr (setlocale (LC_ALL, NULL), "en_US") == NULL)
     {
-#if 0
-      // See https://github.com/mesonbuild/meson/issues/7515
       char *msg = g_strdup_printf ("Locale en_US.UTF-8 not available, skipping break %s", filename);
       g_test_skip (msg);
       g_free (msg);
-#endif
       g_free (old_locale);
       return;
     }

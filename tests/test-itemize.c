@@ -241,12 +241,9 @@ test_itemize (gconstpointer d)
   setlocale (LC_ALL, "en_US.utf8");
   if (strstr (setlocale (LC_ALL, NULL), "en_US") == NULL)
     {
-#if 0
-      // See https://github.com/mesonbuild/meson/issues/7515
       char *msg = g_strdup_printf ("Locale en_US.UTF-8 not available, skipping itemization %s", filename);
       g_test_skip (msg);
       g_free (msg);
-#endif
       return;
     }
 
