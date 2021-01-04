@@ -238,7 +238,7 @@ _pango_core_text_font_get_face (PangoCoreTextFont *font)
 {
   PangoCoreTextFontPrivate *priv = font->priv;
 
-  return priv->face;
+  return pango_core_text_font_map_find_face (PANGO_CORE_TEXT_FONT_MAP (priv->fontmap), priv->key);
 }
 
 gpointer

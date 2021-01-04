@@ -1859,3 +1859,54 @@ pango_core_text_fontset_foreach (PangoFontset *fontset,
     }
 }
 
+PangoCoreTextFace *
+pango_core_text_font_map_find_face (PangoCoreTextFontMap       *map,
+                                    const PangoCoreTextFontKey *key)
+{
+  CTFontDescriptorRef desc;
+  gboolean synthetic_italic;
+  char *family;
+  char *family_name;
+  char *style_name;
+  PangoWeight weight;
+  CTFontSymbolicTraits traits;
+  PangoCoreTextFamily *font_family;
+  PangoCoreTextFace *result = NULL;
+
+  desc = pango_core_text_font_key_get_ctfontdescriptor (key);
+  synthetic_italic = pango_core_text_font_key_get_synthetic_italic (key);
+
+  family_name = ct_font_descriptor_get_family_name (desc, FALSE);
+  style_name = ct_font_descriptor_get_style_name (desc);
+  weight = ct_font_descriptor_get_weight (desc);
+  traits = ct_font_descriptor_get_traits (desc);
+
+  family = g_utf8_casefold (family_name, -1);
+
+  font_family = g_hash_table_lookup (map->families, family);
+
+  if (font_family)
+    {
+      pango_font_family_list_faces ((PangoFontFamily *)font_family, NULL, NULL);
+
+      for (int i = 0; i < font_family->n_faces; i++)
+        {
+          PangoCoreTextFace *face = (PangoCoreTextFace *)font_family->faces[i];
+
+          if (face->weight == weight &&
+              face->traits == traits &&
+              face->synthetic_italic == synthetic_italic &&
+              strcmp (face->style_name, style_name) == 0)
+            {
+              result = face;
+              break;
+            }
+        }
+    }
+
+  g_free (family);
+  g_free (family_name);
+  g_free (style_name);
+
+  return result;
+}
