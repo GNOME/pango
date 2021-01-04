@@ -41,7 +41,7 @@ RUN dnf -y install \
     thai-scalable-waree-fonts \
  && dnf clean all
 
-RUN pip3 install meson==0.54.3
+RUN pip3 install meson==0.56
 
 ARG HOST_USER_ID=5555
 ENV HOST_USER_ID ${HOST_USER_ID}
