@@ -94,7 +94,6 @@ macos:
     - meson -Dintrospection=disabled
             -Dcpp_std=c++11
             -Dpixman:tests=disabled
-            -Dharfbuzz:coretext=enabled
             _build
     - ninja -C _build
   artifacts:
