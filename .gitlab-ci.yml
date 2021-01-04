@@ -96,10 +96,13 @@ macos:
             -Dpixman:tests=disabled
             _build
     - ninja -C _build
+    - .gitlab-ci/run-tests.sh _build
   artifacts:
     when: always
     paths:
       - "${CI_PROJECT_DIR}/_build/meson-logs"
+      - "${CI_PROJECT_DIR}/_build/hello.png"
+      - "${CI_PROJECT_DIR}/_build/fontlist.txt"
 
 reference:
   image: $FEDORA_IMAGE
