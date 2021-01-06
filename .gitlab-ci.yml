@@ -99,8 +99,7 @@ macos:
     - pip3 install --user ninja
     - export PATH=/Users/gitlabrunner/Library/Python/3.7/bin:$PATH
   script:
-    - meson -Dintrospection=disabled
-            -Dcpp_std=c++11
+    - meson -Dcpp_std=c++11
             -Dpixman:tests=disabled
             _build
     - ninja -C _build
