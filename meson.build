@@ -211,6 +211,11 @@ gio_dep = dependency('gio-2.0', version: glib_req_version,
                          fallback: ['glib', 'libgio_dep'])
 pango_deps += [glib_dep, gobject_dep, gio_dep]
 
+if host_system == 'darwin'
+  subproject('gobject-introspection')
+endif
+gobject_introspection_dep = dependency('gobject-introspection-1.0')
+
 fribidi_dep = dependency('fribidi', version: fribidi_req_version,
                          fallback: ['fribidi', 'libfribidi_dep'],
                          default_options: ['docs=false'])
