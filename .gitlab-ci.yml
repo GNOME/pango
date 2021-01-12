@@ -10,7 +10,14 @@ variables:
   MESON_TEST_TIMEOUT_MULTIPLIER: 2
   FEDORA_IMAGE: registry.gitlab.gnome.org/gnome/pango/fedora:v4
 
+.only-default:
+  only:
+    - branches
+  except:
+    - tags
+
 linux-fedora:
+  extends: .only-default
   image: $FEDORA_IMAGE
   stage: build
   needs: []
@@ -35,6 +42,7 @@ linux-fedora:
       - "${CI_PROJECT_DIR}/_build/fontlist.txt"
 
 asan-build:
+  extends: .only-default
   image: $FEDORA_IMAGE
   tags: [ asan ]
   stage: analysis
@@ -58,6 +66,7 @@ asan-build:
       - "${CI_PROJECT_DIR}/_build/fontlist.txt"
 
 msys2-mingw64:
+  extends: .only-default
   stage: build
   needs: []
   tags:
@@ -79,12 +88,12 @@ msys2-mingw64:
       - "${CI_PROJECT_DIR}/_build/fontlist.txt"
 
 macos:
+  extends: .only-default
+  only:
+    - branches@GNOME/pango
   stage: build
   tags:
     - macos
-  only:
-    - master
-    - merge_requests
   needs: []
   before_script:
     - pip3 install --user meson==0.56
