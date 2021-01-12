@@ -128,7 +128,11 @@ if build_gir
   gir_args = [
     '--quiet',
   ]
-
+  harfbuzz_gobject_dep = dependency('harfbuzz-gobject', version: harfbuzz_req_version, required: false,
+                          fallback: ['harfbuzz', 'libharfbuzz_gobject_dep'])
+  if harfbuzz_gobject_dep.found()
+    pango_deps += harfbuzz_gobject_dep
+  endif
   pango_gir = gnome.generate_gir(
     libpango,
     sources: pango_sources + pango_headers + [ pango_enum_h ],
@@ -137,6 +141,7 @@ if build_gir
     identifier_prefix: 'Pango',
     symbol_prefix: 'pango',
     export_packages: 'pango',
+    dependencies: pango_deps,
     includes: [ 'HarfBuzz-0.0', 'GObject-2.0', 'cairo-1.0', ],
     header: 'pango/pango.h',
     install: true,
