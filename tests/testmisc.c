@@ -51,6 +51,19 @@ test_itemize_empty_crash (void)
   g_object_unref (context);
 }
 
+static void
+test_itemize_utf8 (void)
+{
+  PangoContext *context;
+  GList *result = NULL;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  result = pango_itemize_with_base_dir (context, PANGO_DIRECTION_LTR, "\xc3\xa1\na", 3, 1, NULL, NULL);
+  g_assert (result != NULL);
+
+  g_object_unref (context);
+}
+
 /* Test that pango_layout_set_text (layout, "short", 200)
  * does not lead to a crash. (pidgin does this)
  */
@@ -91,6 +104,7 @@ main (int argc, char *argv[])
 
   g_test_add_func ("/layout/shape-tab-crash", test_shape_tab_crash);
   g_test_add_func ("/layout/itemize-empty-crash", test_itemize_empty_crash);
+  g_test_add_func ("/layout/itemize-utf8", test_itemize_utf8);
   g_test_add_func ("/layout/short-string-crash", test_short_string_crash);
   g_test_add_func ("/language/emoji-crash", test_language_emoji_crash);
 
