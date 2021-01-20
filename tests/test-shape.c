@@ -362,7 +362,7 @@ main (int argc, char *argv[])
 
   if (g_error_matches (error, G_FILE_ERROR, G_FILE_ERROR_NOENT))
     {
-      g_error_free(error);
+      g_error_free (error);
       return 0;
     }
 
