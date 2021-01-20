@@ -101,7 +101,7 @@ pango_cairo_font_map_new (void)
       " fontconfig"
 #endif
       ;
-    g_error ("Unknown $PANGOCAIRO_BACKEND value.\n  Available backends are:%s", backends);
+    g_critical ("Unknown $PANGOCAIRO_BACKEND value.\n  Available backends are:%s", backends);
   }
   return NULL;
 }
