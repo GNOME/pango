@@ -200,6 +200,7 @@ main (int    argc,
       g_free (faces);
     }
   g_free (families);
+  g_object_unref (ctx);
   g_object_unref (fontmap);
 
   return 0;
