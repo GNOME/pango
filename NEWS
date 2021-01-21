@@ -1,3 +1,13 @@
+Overview of changes in 1.48.1
+=============================
+- Require GLib 2.62
+- Require meson 0.55.3
+- ci: Add a MacOS build
+- macos: Implement pango_font_get_face
+- Fix itemization of multi-paragraph layouts
+- Fix a few memory leaks
+- Fix glyph origins in vertical layout
+
 Overview of changes in 1.48.0
 =============================
 - docs: Clarify use of PangoAnalysis in shaping
