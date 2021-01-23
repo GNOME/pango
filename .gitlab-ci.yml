@@ -52,7 +52,6 @@ asan-build:
     - CC=clang meson --buildtype=debugoptimized -Db_sanitize=address -Db_lundef=false -Dintrospection=disabled _build
     - ninja -C _build
     - .gitlab-ci/run-tests.sh _build
-  allow_failure: true
   artifacts:
     when: always
     reports:
