@@ -220,7 +220,7 @@ test_enumerate (void)
   for (i = 0; i < n_faces; i++)
     {
       face = pango_font_family_get_face (families[0], pango_font_face_get_face_name (faces[i]));
-      g_assert_true (face == faces[i]);
+      g_assert_cmpstr (pango_font_face_get_face_name (face), ==, pango_font_face_get_face_name (faces[i]));
     }
 
   desc = pango_font_description_new ();
