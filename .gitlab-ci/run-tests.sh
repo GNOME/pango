@@ -7,7 +7,7 @@ srcdir=$( pwd )
 builddir=$1
 
 # Ignore memory leaks lower in dependencies
-export LSAN_OPTIONS=suppressions=$srcdir/lsan.supp
+export LSAN_OPTIONS=suppressions=$srcdir/lsan.supp:print_suppressions=0
 # Check leaks of slices
 export G_SLICE=always-malloc
 

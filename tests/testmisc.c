@@ -64,6 +64,7 @@ test_itemize_utf8 (void)
   result = pango_itemize_with_base_dir (context, PANGO_DIRECTION_LTR, "\xc3\xa1\na", 3, 1, NULL, NULL);
   g_assert (result != NULL);
 
+  g_list_free_full (result, (GDestroyNotify)pango_item_free);
   g_object_unref (context);
 }
 
