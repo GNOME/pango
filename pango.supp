@@ -1,0 +1,86 @@
+# Pango
+{
+   pango 1
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:realloc
+   obj:/usr/lib*/libfontconfig.so*
+   obj:/usr/lib*/libfontconfig.so*
+   obj:/usr/lib*/libcairo.so*
+   fun:pango_cairo_fc_font_map_fontset_key_substitute
+}
+
+{
+  pango 2
+  Memcheck:Leak
+  fun:realloc
+  obj:/usr/lib*/libfontconfig.so*
+  obj:/usr/lib*/libfontconfig.so*
+  fun:_cairo_ft_font_options_substitute
+}
+
+# Fontconfig
+{
+   FcFontSetList
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:/usr/lib*/libfontconfig.so*
+   obj:/usr/lib*/libfontconfig.so*
+   fun:FcFontSetList
+}
+
+{
+   FcPatternObjectInsertElt
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:FcPatternObjectInsertElt
+}
+
+{
+   FcFontRenderPrepare
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:realloc
+   obj:/usr/lib*/libfontconfig.so*
+   obj:/usr/lib*/libfontconfig.so*
+   fun:FcFontRenderPrepare
+}
+
+{
+   FcDefaultSubstitute
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:realloc
+   obj:/usr/lib*/libfontconfig.so*
+   obj:/usr/lib*/libfontconfig.so*
+   fun:FcDefaultSubstitute
+}
+
+# Pixman
+{
+   pixman_image_composite32
+   Memcheck:Cond
+   obj:/usr/lib*/libpixman-1.so*
+   obj:/usr/lib*/libpixman-1.so*
+   fun:pixman_image_composite32
+}
+
+# GLib
+{
+  glib GQuark
+  Memcheck:Leak
+  match-leak-kinds: definite
+  fun:malloc
+  ...
+  fun:g_quark_*
+}
+{
+  glib GQuark
+  Memcheck:Leak
+  match-leak-kinds: definite
+  fun:malloc
+  ...
+  fun:g_intern_static_string
+}
