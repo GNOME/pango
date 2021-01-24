@@ -1733,7 +1733,10 @@ pango_attr_list_update (PangoAttrList *list,
           }
         else if (attr->end_index >= pos + remove)
           {
-            attr->end_index += add - remove;
+            if (G_MAXUINT - attr->end_index < add - remove)
+              attr->end_index = G_MAXUINT;
+            else
+              attr->end_index += add - remove;
           }
       }
 }
