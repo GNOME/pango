@@ -6,5 +6,5 @@ revision=master
 depth=1
 
 [provide]
-dependency_names = gobject-introspection-1.0
+gobject-introspection-1.0 = girepo_dep
 program_names = g-ir-scanner
