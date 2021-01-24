@@ -97,11 +97,11 @@ print_attribute (PangoAttribute *attr, GString *string)
   switch (attr->klass->type)
     {
     case PANGO_ATTR_LANGUAGE:
-      g_string_append_printf (string, "%s", pango_language_to_string (((PangoAttrLanguage *)attr)->value));
+      g_string_append (string, pango_language_to_string (((PangoAttrLanguage *)attr)->value));
       break;
     case PANGO_ATTR_FAMILY:
     case PANGO_ATTR_FONT_FEATURES:
-      g_string_append_printf (string, "%s", ((PangoAttrString *)attr)->value);
+      g_string_append (string, ((PangoAttrString *)attr)->value);
       break;
     case PANGO_ATTR_STYLE:
     case PANGO_ATTR_WEIGHT:
@@ -127,7 +127,7 @@ print_attribute (PangoAttribute *attr, GString *string)
     case PANGO_ATTR_FONT_DESC:
       {
         char *text = pango_font_description_to_string (((PangoAttrFontDesc *)attr)->desc);
-        g_string_append_printf (string, "%s", text);
+        g_string_append (string, text);
         g_free (text);
       }
       break;
@@ -138,7 +138,7 @@ print_attribute (PangoAttribute *attr, GString *string)
     case PANGO_ATTR_STRIKETHROUGH_COLOR:
       {
         char *text = pango_color_to_string (&((PangoAttrColor *)attr)->color);
-        g_string_append_printf (string, "%s", text);
+        g_string_append (string, text);
         g_free (text);
       }
       break;
@@ -146,7 +146,12 @@ print_attribute (PangoAttribute *attr, GString *string)
       g_string_append_printf (string, "shape");
       break;
     case PANGO_ATTR_SCALE:
-      g_string_append_printf (string,"%f", ((PangoAttrFloat *)attr)->value);
+      {
+        char val[20];
+
+        g_ascii_formatd (val, 20, "%f", ((PangoAttrFloat *)attr)->value);
+        g_string_append (string, val);
+      }
       break;
     default:
       g_assert_not_reached ();
