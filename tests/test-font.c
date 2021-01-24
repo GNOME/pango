@@ -245,7 +245,6 @@ test_enumerate (void)
   g_free (faces);
   g_free (families); 
   g_object_unref (context);
-  g_object_unref (fontmap);
 }
 
 int
