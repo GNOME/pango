@@ -1697,6 +1697,10 @@ pango_attr_list_update (PangoAttrList *list,
 {
   guint i, p;
 
+  g_return_if_fail (pos >= 0);
+  g_return_if_fail (remove >= 0);
+  g_return_if_fail (add >= 0);
+
   if (list->attributes)
     for (i = 0, p = list->attributes->len; i < p; i++)
       {
@@ -1729,7 +1733,10 @@ pango_attr_list_update (PangoAttrList *list,
           }
         else if (attr->end_index >= pos + remove)
           {
-            attr->end_index += add - remove;
+            if (G_MAXUINT - attr->end_index < add - remove)
+              attr->end_index = G_MAXUINT;
+            else
+              attr->end_index += add - remove;
           }
       }
 }
