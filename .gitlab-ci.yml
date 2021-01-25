@@ -95,6 +95,7 @@ macos:
     - macos
   needs: []
   before_script:
+    - bash .gitlab-ci/show-execution-environment.sh
     - pip3 install --user meson==0.56
     - pip3 install --user ninja
     - export PATH=/Users/gitlabrunner/Library/Python/3.7/bin:$PATH
