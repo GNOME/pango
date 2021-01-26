@@ -1,3 +1,11 @@
+Overview of changes in 1.48.2
+=============================
+- Fix memory leaks reported by asan
+- Avoid overflow in pango_attr_list_update
+- Add a valgrind suppression file
+- Make tests more robust
+- Fix pango_font_describe for Emoji fonts
+
 Overview of changes in 1.48.1
 =============================
 - Require GLib 2.62
