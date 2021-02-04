@@ -51,9 +51,9 @@
  * pango_markup_parser_new().
  *
  * A simple example of a marked-up string might be:
- * |[
+ * ```
  * <span foreground="blue" size="x-large">Blue text</span> is <i>cool</i>!
- * ]|
+ * ```
  *
  * Pango uses #GMarkup to parse this language, which means that XML
  * features such as numeric character entities such as `&#169;` for
@@ -790,7 +790,7 @@ pango_markup_parser_new_internal (char       accel_marker,
 
 /**
  * pango_parse_markup:
- * @markup_text: markup to parse (see <link linkend="PangoMarkupFormat">markup format</link>)
+ * @markup_text: markup to parse (see the Pango Markup docs)
  * @length: length of @markup_text, or -1 if nul-terminated
  * @accel_marker: character that precedes an accelerator, or 0 for none
  * @attr_list: (out) (allow-none): address of return location for a #PangoAttrList, or %NULL
@@ -798,8 +798,7 @@ pango_markup_parser_new_internal (char       accel_marker,
  * @accel_char: (out) (allow-none): address of return location for accelerator char, or %NULL
  * @error: address of return location for errors, or %NULL
  *
- * Parses marked-up text (see
- * <link linkend="PangoMarkupFormat">markup format</link>) to create
+ * Parses marked-up text (see the Pango Markup docs) to create
  * a plain-text string and an attribute list.
  *
  * If @accel_marker is nonzero, the given character will mark the
@@ -872,8 +871,7 @@ pango_parse_markup (const char                 *markup_text,
  * pango_markup_parser_new:
  * @accel_marker: character that precedes an accelerator, or 0 for none
  *
- * Parses marked-up text (see
- * <link linkend="PangoMarkupFormat">markup format</link>) to create
+ * Parses marked-up text (see the Pango Markp docs) to create
  * a plain-text string and an attribute list.
  *
  * If @accel_marker is nonzero, the given character will mark the

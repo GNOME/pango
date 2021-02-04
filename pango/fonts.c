@@ -1857,7 +1857,7 @@ pango_font_get_metrics (PangoFont        *font,
  *
  * Gets the font map for which the font was created.
  *
- * Note that the font maintains a <firstterm>weak</firstterm> reference
+ * Note that the font maintains a *weak* reference
  * to the font map, so if all references to font map are dropped, the font
  * map will be finalized even if there are fonts created with the font
  * map that are still alive.  In that case this function will return %NULL.
@@ -2101,7 +2101,7 @@ pango_font_metrics_get_approximate_digit_width (PangoFontMetrics *metrics)
  * @metrics: a #PangoFontMetrics structure
  *
  * Gets the suggested position to draw the underline.
- * The value returned is the distance <emphasis>above</emphasis> the
+ * The value returned is the distance *above* the
  * baseline of the top of the underline. Since most fonts have
  * underline positions beneath the baseline, this value is typically
  * negative.
@@ -2141,7 +2141,7 @@ pango_font_metrics_get_underline_thickness (PangoFontMetrics *metrics)
  * @metrics: a #PangoFontMetrics structure
  *
  * Gets the suggested position to draw the strikethrough.
- * The value returned is the distance <emphasis>above</emphasis> the
+ * The value returned is the distance *above* the
  * baseline of the top of the strikethrough.
  *
  * Return value: the suggested strikethrough position, in Pango units.

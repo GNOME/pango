@@ -42,10 +42,10 @@ typedef struct _PangoMatrix    PangoMatrix;
  * coordinates and device coordinates. The transformation
  * is given by
  *
- * <programlisting>
+ * ```
  * x_device = x_user * matrix->xx + y_user * matrix->xy + matrix->x0;
  * y_device = x_user * matrix->yx + y_user * matrix->yy + matrix->y0;
- * </programlisting>
+ * ```
  *
  * Since: 1.6
  **/
@@ -72,10 +72,10 @@ struct _PangoMatrix
  * Constant that can be used to initialize a PangoMatrix to
  * the identity transform.
  *
- * <informalexample><programlisting>
+ * ```
  * PangoMatrix matrix = PANGO_MATRIX_INIT;
- * pango_matrix_rotate (&amp;matrix, 45.);
- * </programlisting></informalexample>
+ * pango_matrix_rotate (&matrix, 45.);
+ * ```
  *
  * Since: 1.6
  **/

@@ -39,7 +39,7 @@
  * @title:PangoEngineLang
  * @stability:Unstable
  *
- * The <firstterm>language engines</firstterm> are rendering-system independent
+ * The *language engines* are rendering-system independent
  * engines that determine line, word, and character breaks for character strings.
  * These engines are used in pango_break().
  *
@@ -51,7 +51,7 @@
  * @title:PangoEngineShape
  * @stability:Unstable
  *
- * The <firstterm>shape engines</firstterm> are rendering-system dependent
+ * The *shape engines* are rendering-system dependent
  * engines that convert character strings into glyph strings.
  * These engines are used in pango_shape().
  *

@@ -406,9 +406,9 @@ pango_layout_get_width (PangoLayout    *layout)
  * this value if the layout contains multiple paragraphs of text.
  * The default value of -1 means that first line of each paragraph is ellipsized.
  * This behavior may be changed in the future to act per layout instead of per
- * paragraph.  File a bug against pango at <ulink
- * url="http://bugzilla.gnome.org/">http://bugzilla.gnome.org/</ulink> if your
- * code relies on this behavior.
+ * paragraph.  File a bug against pango at
+ * [https://gitlab.gnome.org/gnome/pango](https://gitlab.gnome.org/gnome/pango)
+ * if your code relies on this behavior.
  *
  * Height setting only has effect if a positive width is set on
  * @layout and ellipsization mode of @layout is not %PANGO_ELLIPSIZE_NONE.
@@ -1242,8 +1242,7 @@ pango_layout_set_markup (PangoLayout *layout,
 /**
  * pango_layout_set_markup_with_accel:
  * @layout: a #PangoLayout
- * @markup: marked-up text
- * (see <link linkend="PangoMarkupFormat">markup format</link>)
+ * @markup: marked-up text (see the Pango Markup docs)
  * @length: length of marked-up text in bytes, or -1 if @markup is
  *          null-terminated
  * @accel_marker: marker for accelerators in the text
@@ -1251,8 +1250,7 @@ pango_layout_set_markup (PangoLayout *layout,
  *                    for first located accelerator, or %NULL
  *
  * Sets the layout text and attribute list from marked-up text (see
- * <link linkend="PangoMarkupFormat">markup format</link>). Replaces
- * the current text and attribute list.
+ * the Pango Markup docs). Replaces the current text and attribute list.
  *
  * If @accel_marker is nonzero, the given character will mark the
  * character following it as an accelerator. For example, @accel_marker
@@ -1569,7 +1567,7 @@ pango_layout_get_lines_readonly (PangoLayout *layout)
  * pango_layout_get_line:
  * @layout: a #PangoLayout
  * @line: the index of a line, which must be between 0 and
- *        <literal>pango_layout_get_line_count(layout) - 1</literal>, inclusive.
+ *        `pango_layout_get_line_count(layout) - 1`, inclusive.
  *
  * Retrieves a particular line from a #PangoLayout.
  *
@@ -1611,7 +1609,7 @@ pango_layout_get_line (PangoLayout *layout,
  * pango_layout_get_line_readonly:
  * @layout: a #PangoLayout
  * @line: the index of a line, which must be between 0 and
- *        <literal>pango_layout_get_line_count(layout) - 1</literal>, inclusive.
+ *        `pango_layout_get_line_count(layout) - 1`, inclusive.
  *
  * Retrieves a particular line from a #PangoLayout.
  *
@@ -2154,10 +2152,10 @@ pango_layout_xy_to_index (PangoLayout *layout,
  *
  * Converts from an index within a #PangoLayout to the onscreen position
  * corresponding to the grapheme at that index, which is represented
- * as rectangle.  Note that <literal>pos->x</literal> is always the leading
- * edge of the grapheme and <literal>pos->x + pos->width</literal> the trailing
+ * as rectangle.  Note that `pos->x` is always the leading
+ * edge of the grapheme and `pos->x + pos->width` the trailing
  * edge of the grapheme. If the directionality of the grapheme is right-to-left,
- * then <literal>pos->width</literal> will be negative.
+ * then `pos->width` will be negative.
  **/
 void
 pango_layout_index_to_pos (PangoLayout    *layout,
@@ -4713,24 +4711,24 @@ pango_layout_line_get_width (PangoLayoutLine *line)
 
 /**
  * pango_layout_line_get_x_ranges:
- * @line:        a #PangoLayoutLine
+ * @line: a #PangoLayoutLine
  * @start_index: Start byte index of the logical range. If this value
- *               is less than the start index for the line, then
- *               the first range will extend all the way to the leading
- *               edge of the layout. Otherwise it will start at the
- *               leading edge of the first character.
+ *     is less than the start index for the line, then
+ *     the first range will extend all the way to the leading
+ *     edge of the layout. Otherwise it will start at the
+ *     leading edge of the first character.
  * @end_index:   Ending byte index of the logical range. If this value
- *               is greater than the end index for the line, then
- *               the last range will extend all the way to the trailing
- *               edge of the layout. Otherwise, it will end at the
- *               trailing edge of the last character.
+ *     is greater than the end index for the line, then
+ *     the last range will extend all the way to the trailing
+ *     edge of the layout. Otherwise, it will end at the
+ *     trailing edge of the last character.
  * @ranges: (out) (array length=n_ranges) (transfer full):
- *               location to store a pointer to an array of ranges.
- *               The array will be of length <literal>2*n_ranges</literal>,
- *               with each range starting at <literal>(*ranges)[2*n]</literal>
- *               and of width <literal>(*ranges)[2*n + 1] - (*ranges)[2*n]</literal>.
- *               This array must be freed with g_free(). The coordinates are relative
- *               to the layout and are in Pango units.
+ *     location to store a pointer to an array of ranges.
+ *     The array will be of length `2*n_ranges`,
+ *     with each range starting at `(*ranges)[2*n]`
+ *     and of width `(*ranges)[2*n + 1] - (*ranges)[2*n]`.
+ *     This array must be freed with g_free(). The coordinates
+ *     are relative to the layout and are in Pango units.
  * @n_ranges: The number of ranges stored in @ranges.
  *
  * Gets a list of visual ranges corresponding to a given logical range.

@@ -119,10 +119,9 @@ pango_tab_array_new (gint initial_size,
  * @first_position: position of first tab stop
  * @...: additional alignment/position pairs
  *
- * This is a convenience function that creates a #PangoTabArray
- * and allows you to specify the alignment and position of each
- * tab stop. You <emphasis>must</emphasis> provide an alignment
- * and position for @size tab stops.
+ * This is a convenience function that creates a #PangoTabArray and allows
+ * you to specify the alignment and position of each tab stop. You **must**
+ * provide an alignment and position for @size tab stops.
  *
  * Return value: the newly allocated #PangoTabArray, which should
  *               be freed with pango_tab_array_free().

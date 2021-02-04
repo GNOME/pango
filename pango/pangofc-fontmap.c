@@ -23,18 +23,10 @@
  * SECTION:pangofc-fontmap
  * @short_description:Base fontmap class for Fontconfig-based backends
  * @title:PangoFcFontMap
- * @see_also:
- * <variablelist><varlistentry>
- * <term>#PangoFcFont</term>
- * <listitem>The base class for fonts; creating a new
- * Fontconfig-based backend involves deriving from both
- * #PangoFcFontMap and #PangoFcFont.</listitem>
- * </varlistentry></variablelist>
+ * @see_also: #PangoFcFont
  *
  * PangoFcFontMap is a base class for font map implementations using the
- * Fontconfig and FreeType libraries. It is used in the
- * <link linkend="pango-Xft-Fonts-and-Rendering">Xft</link> and
- * <link linkend="pango-FreeType-Fonts-and-Rendering">FreeType</link>
+ * Fontconfig and FreeType libraries. It is used in the Xft and FreeType
  * backends shipped with Pango, but can also be used when creating
  * new backends. Any backend deriving from this base class will
  * take advantage of the wide range of shapers implemented using

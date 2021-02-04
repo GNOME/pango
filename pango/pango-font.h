@@ -582,7 +582,7 @@ PangoFontFamily *     pango_font_face_get_family     (PangoFontFace  *face);
  * To create an implementation of a #PangoFont,
  * the rendering-system specific code should allocate
  * a larger structure that contains a nested
- * #PangoFont, fill in the <structfield>klass</structfield> member of
+ * #PangoFont, fill in the `klass` member of
  * the nested #PangoFont with a pointer to
  * a appropriate #PangoFontClass, then call
  * pango_font_init() on the structure.

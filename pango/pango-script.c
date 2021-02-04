@@ -59,8 +59,8 @@
  * @title:Scripts and Languages
  *
  * The functions in this section are used to identify the writing
- * system, or <firstterm>script</firstterm> of individual characters
- * and of ranges within a larger text string.
+ * system, or *script* of individual characters and of ranges within
+ * a larger text string.
  */
 #include "config.h"
 #include <stdlib.h>

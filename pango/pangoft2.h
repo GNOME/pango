@@ -62,7 +62,7 @@ typedef struct _PangoFT2FontMap      PangoFT2FontMap;
 
 /**
  * PangoFT2SubstituteFunc:
- * @pattern: the <type>FcPattern</type> to tweak.
+ * @pattern: the FcPattern to tweak.
  * @data: user data.
  *
  * Function type for doing final config tweaking on prepared FcPatterns.

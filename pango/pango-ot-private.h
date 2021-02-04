@@ -40,7 +40,7 @@ typedef struct _PangoOTInfoClass PangoOTInfoClass;
  *
  * The #PangoOTInfo struct contains the various
  * tables associated with an OpenType font. It contains only private fields and
- * should only be accessed via the <function>pango_ot_info_*</function> functions
+ * should only be accessed via the pango_ot_info_… functions
  * which are documented below. To obtain a #PangoOTInfo,
  * use pango_ot_info_get().
  */
@@ -76,7 +76,7 @@ struct _PangoOTRulesetClass
  * The #PangoOTBuffer structure is used to store strings of glyphs associated
  * with a #PangoFcFont, suitable for OpenType layout processing.  It contains
  * only private fields and should only be accessed via the
- * <function>pango_ot_buffer_*</function> functions which are documented below.
+ * pango_ot_buffer_… functions which are documented below.
  * To obtain a #PangoOTBuffer, use pango_ot_buffer_new().
  */
 struct _PangoOTBuffer

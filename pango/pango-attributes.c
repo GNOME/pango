@@ -2167,7 +2167,7 @@ pango_attr_iterator_get (PangoAttrIterator *iterator,
  *        pango_font_description_set_family_static() using values from
  *        an attribute in the #PangoAttrList associated with the iterator,
  *        so if you plan to keep it around, you must call:
- *        <literal>pango_font_description_set_family (desc, pango_font_description_get_family (desc))</literal>.
+ *        pango_font_description_set_family (desc, pango_font_description_get_family (desc)).
  * @language: (allow-none): if non-%NULL, location to store language tag for item, or %NULL
  *            if none is found.
  * @extra_attrs: (allow-none) (element-type Pango.Attribute) (transfer full): if non-%NULL,

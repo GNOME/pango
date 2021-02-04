@@ -25,7 +25,7 @@
  * @title:Version Checking
  *
  * The capital-letter macros defined here can be used to check the version of Pango
- * at compile-time, and to <firstterm>encode</firstterm> Pango versions into integers.
+ * at compile-time, and to *encode* Pango versions into integers.
  *
  * The functions can be used to check the version of the linked Pango library at run-time.
  */
@@ -905,7 +905,7 @@ pango_find_base_dir (const gchar *text,
  *
  * Checks @ch to see if it is a character that should not be
  * normally rendered on the screen.  This includes all Unicode characters
- * with "ZERO WIDTH" in their name, as well as <firstterm>bidi</firstterm> formatting characters, and
+ * with "ZERO WIDTH" in their name, as well as *bidi* formatting characters, and
  * a few other ones.  This is totally different from g_unichar_iszerowidth()
  * and is at best misnamed.
  *

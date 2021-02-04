@@ -76,7 +76,7 @@ pango_ot_info_finalizer (void *object)
 
 /**
  * pango_ot_info_get:
- * @face: a <type>FT_Face</type>.
+ * @face: a FT_Face
  *
  * Returns the #PangoOTInfo structure for the given FreeType font face.
  *

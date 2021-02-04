@@ -156,16 +156,15 @@ typedef struct _PangoScriptIter PangoScriptIter;
  * @PANGO_SCRIPT_OLD_HUNGARIAN:        Old Hungarian. Since: 1.40
  * @PANGO_SCRIPT_SIGNWRITING:          Signwriting. Since: 1.40
  *
- * The #PangoScript enumeration identifies different writing
+ * The `PangoScript` enumeration identifies different writing
  * systems. The values correspond to the names as defined in the
- * Unicode standard. See <ulink
- * url="http://www.unicode.org/reports/tr24/">Unicode Standard Annex
- * #24: Script names</ulink>.
+ * Unicode standard. See
+ * [Unicode Standard Annex 24: Script names](http://www.unicode.org/reports/tr24/)
  *
  * Note that this enumeration is deprecated and will not be updated
  * to include values in newer versions of the Unicode standard.
- * Applications should use the GUnicodeScript enumeration instead,
- * whose values are interchangeable with PangoScript.
+ * Applications should use the `GUnicodeScript` enumeration instead,
+ * whose values are interchangeable with `PangoScript`.
  */
 typedef enum {                         /* ISO 15924 code */
       PANGO_SCRIPT_INVALID_CODE = -1,

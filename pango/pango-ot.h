@@ -42,7 +42,7 @@ G_BEGIN_DECLS
  *
  * The #PangoOTTag typedef is used to represent TrueType and OpenType
  * four letter tags inside Pango. Use PANGO_OT_TAG_MAKE()
- * or PANGO_OT_TAG_MAKE_FROM_STRING() macros to create <type>PangoOTTag</type>s manually.
+ * or PANGO_OT_TAG_MAKE_FROM_STRING() macros to create PangoOTTags manually.
  */
 typedef guint32 PangoOTTag;
 
@@ -54,7 +54,7 @@ typedef guint32 PangoOTTag;
  * @c4: Fourth character.
  *
  * Creates a #PangoOTTag from four characters.  This is similar and
- * compatible with the <function>FT_MAKE_TAG()</function> macro from FreeType.
+ * compatible with the FT_MAKE_TAG() macro from FreeType.
  */
 /**
  * PANGO_OT_TAG_MAKE_FROM_STRING:
@@ -84,9 +84,9 @@ typedef struct _PangoOTRulesetDescription PangoOTRulesetDescription;
  * @PANGO_OT_TABLE_GSUB: The GSUB table.
  * @PANGO_OT_TABLE_GPOS: The GPOS table.
  *
- * The <type>PangoOTTableType</type> enumeration values are used to
+ * The PangoOTTableType enumeration values are used to
  * identify the various OpenType tables in the
- * <function>pango_ot_info_*</function> functions.
+ * pango_ot_info_… functions.
  */
 typedef enum
 {

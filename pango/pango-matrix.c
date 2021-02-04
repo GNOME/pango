@@ -273,10 +273,10 @@ pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
  * components of the transformation are ignored. The calculation of
  * the returned vector is as follows:
  *
- * <programlisting>
+ * ```
  * dx2 = dx1 * xx + dy1 * xy;
  * dy2 = dx1 * yx + dy1 * yy;
- * </programlisting>
+ * ```
  *
  * Affine transformations are position invariant, so the same vector
  * always transforms to the same vector. If (@x1,@y1) transforms

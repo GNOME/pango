@@ -289,7 +289,7 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
  * @fontmap: a #PangoFontMap
  *
  * Returns the render ID for shape engines for this fontmap.
- * See the <structfield>render_type</structfield> field of
+ * See the `render_type` field of
  * #PangoEngineInfo.
   *
  * Return value: the ID string for shape engines for

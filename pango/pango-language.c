@@ -151,13 +151,12 @@ G_DEFINE_BOXED_TYPE (PangoLanguage, pango_language,
  *
  * Return the Unix-style locale string for the language currently in
  * effect. On Unix systems, this is the return value from
- * <literal>setlocale(LC_CTYPE, NULL)</literal>, and the user can
- * affect this through the environment variables LC_ALL, LC_CTYPE or
- * LANG (checked in that order). The locale strings typically is in
- * the form lang_COUNTRY, where lang is an ISO-639 language code, and
- * COUNTRY is an ISO-3166 country code. For instance, sv_FI for
- * Swedish as written in Finland or pt_BR for Portuguese as written in
- * Brazil.
+ * `setlocale (LC_CTYPE, NULL)`, and the user can affect this through
+ * the environment variables LC_ALL, LC_CTYPE or LANG (checked
+ * in that order). The locale strings typically is in the form lang_COUNTRY,
+ * where lang is an ISO-639 language code, and COUNTRY is an ISO-3166 country
+ * code. For instance, sv_FI for Swedish as written in Finland or pt_BR for
+ * Portuguese as written in Brazil.
  *
  * On Windows, the C library doesn't use any such environment
  * variables, and setting them won't affect the behavior of functions
@@ -256,7 +255,7 @@ _pango_get_lc_ctype (void)
  * Note that this can change over the life of an application.
  *
  * On Unix systems, this is the return value is derived from
- * <literal>setlocale(LC_CTYPE, NULL)</literal>, and the user can
+ * `setlocale (LC_CTYPE, NULL)`, and the user can
  * affect this through the environment variables LC_ALL, LC_CTYPE or
  * LANG (checked in that order). The locale string typically is in
  * the form lang_COUNTRY, where lang is an ISO-639 language code, and
@@ -274,10 +273,10 @@ _pango_get_lc_ctype (void)
  * variables, and does return a Unix-style locale string based on
  * either said environment variables or the thread's current locale.
  *
- * Your application should call <literal>setlocale(LC_ALL, "");</literal>
- * for the user settings to take effect.  Gtk+ does this in its initialization
+ * Your application should call `setlocale(LC_ALL, "")` for the user
+ * settings to take effect. GTK does this in its initialization
  * functions automatically (by calling gtk_set_locale()).
- * See <literal>man setlocale</literal> for more details.
+ * See the setlocale manpage for more details.
  *
  * Return value: (transfer none): the default language as a
  *               #PangoLanguage, must not be freed.
@@ -578,9 +577,10 @@ static const LangInfo lang_texts[] = {
  * "The quick brown fox..." is returned.  This can be detected by
  * comparing the returned pointer value to that returned for (non-existent)
  * language code "xx".  That is, compare to:
- * <informalexample><programlisting>
+ *
+ * ```
  * pango_language_get_sample_string (pango_language_from_string ("xx"))
- * </programlisting></informalexample>
+ * ```
  *
  * Return value: the sample string. This value is owned by Pango
  *   and should not be freed.
@@ -870,8 +870,7 @@ pango_language_get_preferred (void)
  * representative of that script. This will usually be the
  * most widely spoken or used language written in that script:
  * for instance, the sample language for %PANGO_SCRIPT_CYRILLIC
- * is <literal>ru</literal> (Russian), the sample language
- * for %PANGO_SCRIPT_ARABIC is <literal>ar</literal>.
+ * is ru (Russian), the sample language for %PANGO_SCRIPT_ARABIC is ar.
  *
  * For some
  * scripts, no sample language will be returned because there
@@ -891,7 +890,7 @@ pango_language_get_preferred (void)
  * is tested using pango_language_includes_script().  This can
  * be used to control Pango's font selection for non-primary
  * languages.  For example, a PANGO_LANGUAGE enviroment variable
- * set to "en:fa" makes Pango choose fonts suitable for Persian (fa) 
+ * set to "en:fa" makes Pango choose fonts suitable for Persian (fa)
  * instead of Arabic (ar) when a segment of Arabic text is found
  * in an otherwise non-Arabic text.  The same trick can be used to
  * choose a default language for %PANGO_SCRIPT_HAN when setting
