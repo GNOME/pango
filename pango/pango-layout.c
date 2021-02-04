@@ -44,15 +44,14 @@
  * character positions within the layout's text, and the physical
  * position of the resulting glyphs can be made.
  *
- * There are also a number of parameters to adjust the formatting
- * of a #PangoLayout, which are illustrated in <xref linkend="parameters"/>.
- * It is possible, as well, to ignore the 2-D setup, and simply
- * treat the results of a #PangoLayout as a list of lines.
+ * There are a number of parameters to adjust the formatting of a
+ * PangoLayout. The following image shows adjustable parameters
+ * (on the left) and font metrics (on the right):
  *
- * <figure id="parameters">
- * <title>Adjustable parameters (on the left) and font metrics (on the right) for a PangoLayout</title>
- * <graphic fileref="layout.png" format="PNG"></graphic>
- * </figure>
+ * ![Pango Layout Parameters](layout.png)
+ *
+ * It is possible, as well, to ignore the 2-D setup,
+ * and simply treat the results of a PangoLayout as a list of lines.
  *
  * The #PangoLayout structure is opaque, and has no user-visible
  * fields.
