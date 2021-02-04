@@ -727,7 +727,7 @@ pango_module_register
 </SECTION>
 
 <SECTION>
-<FILE>pango-renderer</FILE>
+<FILE>pangorenderer</FILE>
 PangoRenderer
 PangoRenderPart
 PANGO_TYPE_RENDER_PART

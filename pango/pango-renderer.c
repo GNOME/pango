@@ -19,6 +19,18 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/**
+ * SECTION:pangorenderer
+ * @short_description:Rendering driver base class
+ * @title:PangoRenderer
+ *
+ * #PangoRenderer is a base class that contains the necessary logic for
+ * rendering a #PangoLayout or #PangoGlyphString. By subclassing
+ * #PangoRenderer and overriding operations such as @draw_glyphs and
+ * @draw_rectangle, renderers for particular font backends and
+ * destinations can be created.
+ */
+
 #include "config.h"
 #include <stdlib.h>
 

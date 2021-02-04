@@ -42,7 +42,7 @@
     <xi:include href="xml/pangocontext.xml"/>
     <xi:include href="xml/tab-stops.xml"/>
     <xi:include href="xml/pangocoverage.xml"/>
-    <xi:include href="xml/pango-renderer.xml"/>
+    <xi:include href="xml/pangorenderer.xml"/>
     <xi:include href="xml/pangofc-fontmap.xml"/>
     <xi:include href="xml/pangofc-font.xml"/>
     <xi:include href="xml/pangofc-decoder.xml"/>
