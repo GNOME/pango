@@ -20,7 +20,7 @@
  */
 
 /**
- * SECTION:engines
+ * SECTION:pangoengine
  * @short_description:Language-specific and rendering-system-specific processing
  * @title:Engines
  *

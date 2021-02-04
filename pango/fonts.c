@@ -20,7 +20,7 @@
  */
 
 /**
- * SECTION:fonts
+ * SECTION:pangofont
  * @short_description:Structures representing abstract fonts
  * @title: Fonts
  *

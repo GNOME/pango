@@ -45,7 +45,7 @@
 #include "pango-emoji-private.h"
 
 /**
- * SECTION:context
+ * SECTION:pangocontext
  * @title:Contexts
  * @short_description: Global context object
  *

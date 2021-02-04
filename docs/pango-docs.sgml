@@ -18,7 +18,7 @@
   <chapter id="pango">
     <title>Basic Pango Interfaces</title>
     <xi:include href="xml/main.xml"/>
-    <xi:include href="xml/fonts.xml"/>
+    <xi:include href="xml/pangofont.xml"/>
     <xi:include href="xml/glyphs.xml"/>
     <xi:include href="xml/text-attributes.xml"/>
     <xi:include href="xml/markup.xml"/>
@@ -39,9 +39,9 @@
 
   <chapter id="lowlevel">
     <title>Low Level Functionality</title>
-    <xi:include href="xml/context.xml"/>
+    <xi:include href="xml/pangocontext.xml"/>
     <xi:include href="xml/tab-stops.xml"/>
-    <xi:include href="xml/coverage-maps.xml"/>
+    <xi:include href="xml/pangocoverage.xml"/>
     <xi:include href="xml/pango-renderer.xml"/>
     <xi:include href="xml/pangofc-fontmap.xml"/>
     <xi:include href="xml/pangofc-font.xml"/>
@@ -53,7 +53,7 @@
   <chapter id="deprecated">
     <title>Deprecated APIs</title>
     <xi:include href="xml/opentype.xml"/>
-    <xi:include href="xml/engines.xml"/>
+    <xi:include href="xml/pangoengine.xml"/>
     <xi:include href="xml/pango-engine-lang.xml"/>
     <xi:include href="xml/pango-engine-shape.xml"/>
     <xi:include href="xml/modules.xml"/>

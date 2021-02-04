@@ -20,7 +20,7 @@
  */
 
 /**
- * SECTION:coverage-maps
+ * SECTION:pangocoverage
  * @short_description:Unicode character range coverage storage
  * @title:Coverage Maps
  *

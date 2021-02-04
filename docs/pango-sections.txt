@@ -42,7 +42,7 @@ pango_item_get_type
 
 <SECTION>
 <TITLE>Contexts</TITLE>
-<FILE>context</FILE>
+<FILE>pangocontext</FILE>
 PangoContext
 pango_context_new
 pango_context_changed
@@ -161,7 +161,7 @@ pango_matrix_get_type
 
 <SECTION>
 <TITLE>Coverage Maps</TITLE>
-<FILE>coverage-maps</FILE>
+<FILE>pangocoverage</FILE>
 PangoCoverageLevel
 PANGO_TYPE_COVERAGE_LEVEL
 PangoCoverage
@@ -191,7 +191,7 @@ PangoCoveragePrivate
 
 <SECTION>
 <TITLE>Fonts</TITLE>
-<FILE>fonts</FILE>
+<FILE>pangofont</FILE>
 PangoFontDescription
 PangoStyle
 PangoWeight
@@ -656,7 +656,7 @@ pango_language_get_type
 
 <SECTION>
 <TITLE>Engines</TITLE>
-<FILE>engines</FILE>
+<FILE>pangoengine</FILE>
 PangoEngineInfo
 PangoEngineScriptInfo
 PangoEngine
