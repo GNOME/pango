@@ -22,7 +22,7 @@
     <xi:include href="xml/glyphs.xml"/>
     <xi:include href="xml/text-attributes.xml"/>
     <xi:include href="xml/markup.xml"/>
-    <xi:include href="xml/layout.xml"/>
+    <xi:include href="xml/pangolayout.xml"/>
     <xi:include href="xml/scripts.xml"/>
     <xi:include href="xml/bidi.xml"/>
     <xi:include href="xml/vertical.xml"/>

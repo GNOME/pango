@@ -20,7 +20,7 @@
  */
 
 /**
- * SECTION:layout
+ * SECTION:pangolayout
  * @short_description:High-level layout driver objects
  * @title:Layout Objects
  *
@@ -31,10 +31,6 @@
  * high-level driver for formatting entire paragraphs of text
  * at once. This includes paragraph-level functionality such as
  * line-breaking, justification, alignment and ellipsization.
- */
-
-/**
- * PangoLayout:
  *
  * The #PangoLayout structure represents an entire paragraph
  * of text. It is initialized with a #PangoContext, UTF-8 string
@@ -52,9 +48,12 @@
  *
  * It is possible, as well, to ignore the 2-D setup,
  * and simply treat the results of a PangoLayout as a list of lines.
+ */
+
+/**
+ * PangoLayout:
  *
- * The #PangoLayout structure is opaque, and has no user-visible
- * fields.
+ * The #PangoLayout structure is opaque, and has no user-visible fields.
  */
 
 /**

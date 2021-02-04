@@ -497,7 +497,7 @@ pango_tab_array_get_type
 
 <SECTION>
 <TITLE>Layout Objects</TITLE>
-<FILE>layout</FILE>
+<FILE>pangolayout</FILE>
 PangoLayout
 PangoLayoutIter
 pango_layout_new
