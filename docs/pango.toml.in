@@ -1,6 +1,6 @@
 [library]
 namespace = "Pango"
-version = "1.0"
+version = "@PANGO_VERSION@"
 browse_url = "https://gitlab.gnome.org/GNOME/pango/"
 repository_url = "https://gitlab.gnome.org/GNOME/pango.git"
 website_url = "https://www.pango.org"
