@@ -97,7 +97,6 @@ macos:
   before_script:
     - pip3 install --user meson==0.56
     - pip3 install --user ninja
-    - export PATH=/Users/gitlabrunner/Library/Python/3.7/bin:$PATH
   script:
     - meson -Dintrospection=disabled
             -Dcpp_std=c++11
