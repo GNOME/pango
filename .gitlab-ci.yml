@@ -86,9 +86,7 @@ msys2-mingw64:
       - "${CI_PROJECT_DIR}/_build/hello.png"
       - "${CI_PROJECT_DIR}/_build/fontlist.txt"
 
-# FIXME: Temporarily disabled while the macOS runner is offline
-# See https://gitlab.gnome.org/Infrastructure/GitLab/-/issues/495
-.macos:
+macos:
   extends: .only-default
   only:
     - branches@GNOME/pango
@@ -99,7 +97,6 @@ msys2-mingw64:
   before_script:
     - pip3 install --user meson==0.56
     - pip3 install --user ninja
-    - export PATH=/Users/gitlabrunner/Library/Python/3.7/bin:$PATH
   script:
     - meson -Dintrospection=disabled
             -Dcpp_std=c++11
