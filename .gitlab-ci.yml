@@ -86,9 +86,7 @@ msys2-mingw64:
       - "${CI_PROJECT_DIR}/_build/hello.png"
       - "${CI_PROJECT_DIR}/_build/fontlist.txt"
 
-# FIXME: Temporarily disabled while the macOS runner is offline
-# See https://gitlab.gnome.org/Infrastructure/GitLab/-/issues/495
-.macos:
+macos:
   extends: .only-default
   only:
     - branches@GNOME/pango
