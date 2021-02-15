@@ -45,7 +45,7 @@ typedef struct _PangoRectangle PangoRectangle;
 /**
  * PangoGlyph:
  *
- * A #PangoGlyph represents a single glyph in the output form of a string.
+ * A `PangoGlyph` represents a single glyph in the output form of a string.
  */
 typedef guint32 PangoGlyph;
 
@@ -130,9 +130,9 @@ double pango_units_to_double (int i) G_GNUC_CONST;
  * @width: width of the rectangle.
  * @height: height of the rectangle.
  *
- * The #PangoRectangle structure represents a rectangle. It is frequently
+ * The `PangoRectangle` structure represents a rectangle. It is frequently
  * used to represent the logical or ink extents of a single glyph or section
- * of text. (See, for instance, pango_font_get_glyph_extents())
+ * of text. (See, for instance, [method@Pango.Font.get_glyph_extents].)
  *
  */
 struct _PangoRectangle
