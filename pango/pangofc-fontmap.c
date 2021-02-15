@@ -25,7 +25,7 @@
  * @title:PangoFcFontMap
  * @see_also: #PangoFcFont
  *
- * PangoFcFontMap is a base class for font map implementations using the
+ * `PangoFcFontMap` is a base class for font map implementations using the
  * Fontconfig and FreeType libraries. It is used in the Xft and FreeType
  * backends shipped with Pango, but can also be used when creating
  * new backends. Any backend deriving from this base class will
@@ -506,7 +506,7 @@ pango_fc_fontset_key_copy (const PangoFcFontsetKey *old)
  * Returns: the language
  *
  * Since: 1.24
- **/
+ */
 PangoLanguage *
 pango_fc_fontset_key_get_language (const PangoFcFontsetKey *key)
 {
@@ -522,7 +522,7 @@ pango_fc_fontset_key_get_language (const PangoFcFontsetKey *key)
  * Returns: the font description, which is owned by @key and should not be modified.
  *
  * Since: 1.24
- **/
+ */
 const PangoFontDescription *
 pango_fc_fontset_key_get_description (const PangoFcFontsetKey *key)
 {
@@ -538,9 +538,9 @@ pango_fc_fontset_key_get_description (const PangoFcFontsetKey *key)
  * Returns: the matrix, which is owned by @key and should not be modified.
  *
  * Since: 1.24
- **/
+ */
 const PangoMatrix *
-pango_fc_fontset_key_get_matrix      (const PangoFcFontsetKey *key)
+pango_fc_fontset_key_get_matrix (const PangoFcFontsetKey *key)
 {
   return &key->matrix;
 }
@@ -549,15 +549,15 @@ pango_fc_fontset_key_get_matrix      (const PangoFcFontsetKey *key)
  * pango_fc_fontset_key_get_absolute_size:
  * @key: the fontset key
  *
- * Gets the absolute font size of @key in Pango units.  This is adjusted
- * for both resolution and transformation matrix.
+ * Gets the absolute font size of @key in Pango units.
+ * This is adjusted for both resolution and transformation matrix.
  *
  * Returns: the pixel size of @key.
  *
  * Since: 1.24
- **/
+ */
 double
-pango_fc_fontset_key_get_absolute_size   (const PangoFcFontsetKey *key)
+pango_fc_fontset_key_get_absolute_size (const PangoFcFontsetKey *key)
 {
   return key->pixelsize;
 }
@@ -571,9 +571,9 @@ pango_fc_fontset_key_get_absolute_size   (const PangoFcFontsetKey *key)
  * Returns: the resolution of @key
  *
  * Since: 1.24
- **/
+ */
 double
-pango_fc_fontset_key_get_resolution  (const PangoFcFontsetKey *key)
+pango_fc_fontset_key_get_resolution (const PangoFcFontsetKey *key)
 {
   return key->resolution;
 }
@@ -587,7 +587,7 @@ pango_fc_fontset_key_get_resolution  (const PangoFcFontsetKey *key)
  * Returns: the context key, which is owned by @key and should not be modified.
  *
  * Since: 1.24
- **/
+ */
 gpointer
 pango_fc_fontset_key_get_context_key (const PangoFcFontsetKey *key)
 {
@@ -694,7 +694,7 @@ pango_fc_font_key_init (PangoFcFontKey    *key,
  * Returns: the pattern, which is owned by @key and should not be modified.
  *
  * Since: 1.24
- **/
+ */
 const FcPattern *
 pango_fc_font_key_get_pattern (const PangoFcFontKey *key)
 {
@@ -710,7 +710,7 @@ pango_fc_font_key_get_pattern (const PangoFcFontKey *key)
  * Returns: the matrix, which is owned by @key and should not be modified.
  *
  * Since: 1.24
- **/
+ */
 const PangoMatrix *
 pango_fc_font_key_get_matrix (const PangoFcFontKey *key)
 {
@@ -726,7 +726,7 @@ pango_fc_font_key_get_matrix (const PangoFcFontKey *key)
  * Returns: the context key, which is owned by @key and should not be modified.
  *
  * Since: 1.24
- **/
+ */
 gpointer
 pango_fc_font_key_get_context_key (const PangoFcFontKey *key)
 {
@@ -1475,21 +1475,21 @@ pango_fc_font_map_class_init (PangoFcFontMapClass *class)
 
 /**
  * pango_fc_font_map_add_decoder_find_func:
- * @fcfontmap: The #PangoFcFontMap to add this method to.
- * @findfunc: The #PangoFcDecoderFindFunc callback function
+ * @fcfontmap: The `PangoFcFontMap` to add this method to.
+ * @findfunc: The `PangoFcDecoderFindFunc` callback function
  * @user_data: User data.
- * @dnotify: A #GDestroyNotify callback that will be called when the
- *  fontmap is finalized and the decoder is released.
+ * @dnotify: A `GDestroyNotify` callback that will be called when the
+ *   fontmap is finalized and the decoder is released.
  *
- * This function saves a callback method in the #PangoFcFontMap that
- * will be called whenever new fonts are created.  If the
- * function returns a #PangoFcDecoder, that decoder will be used to
- * determine both coverage via a #FcCharSet and a one-to-one mapping of
- * characters to glyphs.  This will allow applications to have
- * application-specific encodings for various fonts.
+ * This function saves a callback method in the `PangoFcFontMap` that
+ * will be called whenever new fonts are created. If the function returns
+ * a `PangoFcDecoder`, that decoder will be used to determine both coverage
+ * via a `FcCharSet` and a one-to-one mapping of characters to glyphs. This
+ * will allow applications to have application-specific encodings for various
+ * fonts.
  *
  * Since: 1.6
- **/
+ */
 void
 pango_fc_font_map_add_decoder_find_func (PangoFcFontMap        *fcfontmap,
 					 PangoFcDecoderFindFunc findfunc,
@@ -1514,20 +1514,20 @@ pango_fc_font_map_add_decoder_find_func (PangoFcFontMap        *fcfontmap,
 
 /**
  * pango_fc_font_map_find_decoder:
- * @fcfontmap: The #PangoFcFontMap to use.
- * @pattern: The #FcPattern to find the decoder for.
+ * @fcfontmap: The `PangoFcFontMap` to use.
+ * @pattern: The `FcPattern` to find the decoder for.
  *
- * Finds the decoder to use for @pattern.  Decoders can be added to
- * a font map using pango_fc_font_map_add_decoder_find_func().
+ * Finds the decoder to use for @pattern. Decoders can be added to
+ * a font map using [method@PangoFc.FontMap.add_decoder_find_func].
  *
- * Returns: (transfer full) (nullable): a newly created #PangoFcDecoder
+ * Returns: (transfer full) (nullable): a newly created `PangoFcDecoder`
  *   object or %NULL if no decoder is set for @pattern.
  *
  * Since: 1.26
- **/
+ */
 PangoFcDecoder *
-pango_fc_font_map_find_decoder  (PangoFcFontMap *fcfontmap,
-				 FcPattern      *pattern)
+pango_fc_font_map_find_decoder (PangoFcFontMap *fcfontmap,
+                                FcPattern      *pattern)
 {
   GSList *l;
 
@@ -2214,7 +2214,7 @@ pango_fc_font_map_load_fontset (PangoFontMap                 *fontmap,
 
 /**
  * pango_fc_font_map_cache_clear:
- * @fcfontmap: a #PangoFcFontMap
+ * @fcfontmap: a `PangoFcFontMap`
  *
  * Clear all cached information and fontsets for this font map;
  * this should be called whenever there is a change in the
@@ -2223,7 +2223,7 @@ pango_fc_font_map_load_fontset (PangoFontMap                 *fontmap,
  * configuration.
  *
  * Since: 1.4
- **/
+ */
 void
 pango_fc_font_map_cache_clear (PangoFcFontMap *fcfontmap)
 {
@@ -2254,15 +2254,15 @@ pango_fc_font_map_changed (PangoFontMap *fontmap)
 
 /**
  * pango_fc_font_map_config_changed:
- * @fcfontmap: a #PangoFcFontMap
+ * @fcfontmap: a `PangoFcFontMap`
  *
- * Informs font map that the fontconfig configuration (ie, FcConfig object)
- * used by this font map has changed.  This currently calls
- * pango_fc_font_map_cache_clear() which ensures that list of fonts, etc
- * will be regenerated using the updated configuration.
+ * Informs font map that the fontconfig configuration (i.e., FcConfig
+ * object) used by this font map has changed. This currently calls
+ * [method@PangoFc.FontMap.cache_clear] which ensures that list of fonts,
+ * etc will be regenerated using the updated configuration.
  *
  * Since: 1.38
- **/
+ */
 void
 pango_fc_font_map_config_changed (PangoFcFontMap *fcfontmap)
 {
@@ -2271,26 +2271,26 @@ pango_fc_font_map_config_changed (PangoFcFontMap *fcfontmap)
 
 /**
  * pango_fc_font_map_set_config: (skip)
- * @fcfontmap: a #PangoFcFontMap
+ * @fcfontmap: a `PangoFcFontMap`
  * @fcconfig: (nullable): a `FcConfig`, or %NULL
  *
- * Set the FcConfig for this font map to use.  The default value
+ * Set the FcConfig for this font map to use. The default value
  * is %NULL, which causes Fontconfig to use its global "current config".
  * You can create a new FcConfig object and use this API to attach it
  * to a font map.
  *
  * This is particularly useful for example, if you want to use application
- * fonts with Pango.  For that, you would create a fresh FcConfig, add your
+ * fonts with Pango. For that, you would create a fresh FcConfig, add your
  * app fonts to it, and attach it to a new Pango font map.
  *
  * If @fcconfig is different from the previous config attached to the font map,
  * pango_fc_font_map_config_changed() is called.
  *
  * This function acquires a reference to the FcConfig object; the caller
- * does NOT need to retain a reference.
+ * does **not** need to retain a reference.
  *
  * Since: 1.38
- **/
+ */
 void
 pango_fc_font_map_set_config (PangoFcFontMap *fcfontmap,
                               FcConfig       *fcconfig)
@@ -2320,17 +2320,17 @@ pango_fc_font_map_set_config (PangoFcFontMap *fcfontmap,
 
 /**
  * pango_fc_font_map_get_config: (skip)
- * @fcfontmap: a #PangoFcFontMap
+ * @fcfontmap: a `PangoFcFontMap`
  *
  * Fetches the `FcConfig` attached to a font map.
  *
- * See also: pango_fc_font_map_set_config()
+ * See also: [method@PangoFc.FontMap.set_config].
  *
- * Returns: (nullable): the `FcConfig` object attached to @fcfontmap, which
- *          might be %NULL.
+ * Returns: (nullable): the `FcConfig` object attached to
+ *   @fcfontmap, which might be %NULL.
  *
  * Since: 1.38
- **/
+ */
 FcConfig *
 pango_fc_font_map_get_config (PangoFcFontMap *fcfontmap)
 {
@@ -2494,13 +2494,13 @@ _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
 
 /**
  * _pango_fc_font_map_fc_to_coverage:
- * @charset: #FcCharSet to convert to a #PangoCoverage object.
+ * @charset: `FcCharSet` to convert to a `PangoCoverage` object.
  *
- * Convert the given #FcCharSet into a new #PangoCoverage object.  The
- * caller is responsible for freeing the newly created object.
+ * Convert the given `FcCharSet` into a new `PangoCoverage` object.
+ * The caller is responsible for freeing the newly created object.
  *
  * Since: 1.6
- **/
+ */
 PangoCoverage  *
 _pango_fc_font_map_fc_to_coverage (FcCharSet *charset)
 {
@@ -2563,22 +2563,24 @@ _pango_fc_font_map_get_languages (PangoFcFontMap *fcfontmap,
 
   return data->languages;
 }
+
 /**
  * pango_fc_font_map_create_context:
- * @fcfontmap: a #PangoFcFontMap
+ * @fcfontmap: a `PangoFcFontMap`
  *
- * Creates a new context for this fontmap. This function is intended
- * only for backend implementations deriving from #PangoFcFontMap;
- * it is possible that a backend will store additional information
- * needed for correct operation on the #PangoContext after calling
- * this function.
+ * Creates a new context for this fontmap.
  *
- * Return value: (transfer full): a new #PangoContext
+ * This function is intended only for backend implementations deriving
+ * from `PangoFcFontMap`; it is possible that a backend will store
+ * additional information needed for correct operation on the `PangoContext`
+ * after calling this function.
+ *
+ * Return value: (transfer full): a new `PangoContext`
  *
  * Since: 1.4
  *
  * Deprecated: 1.22: Use pango_font_map_create_context() instead.
- **/
+ */
 PangoContext *
 pango_fc_font_map_create_context (PangoFcFontMap *fcfontmap)
 {
@@ -2600,17 +2602,17 @@ shutdown_font (gpointer        key,
 
 /**
  * pango_fc_font_map_shutdown:
- * @fcfontmap: a #PangoFcFontMap
+ * @fcfontmap: a `PangoFcFontMap`
  *
  * Clears all cached information for the fontmap and marks
  * all fonts open for the fontmap as dead. (See the shutdown()
- * virtual function of #PangoFcFont.) This function might be used
+ * virtual function of `PangoFcFont`.) This function might be used
  * by a backend when the underlying windowing system for the font
  * map exits. This function is only intended to be called
- * only for backend implementations deriving from #PangoFcFontMap.
+ * only for backend implementations deriving from `PangoFcFontMap`.
  *
  * Since: 1.4
- **/
+ */
 void
 pango_fc_font_map_shutdown (PangoFcFontMap *fcfontmap)
 {
@@ -2696,21 +2698,21 @@ pango_fc_convert_width_to_pango (int fc_stretch)
 
 /**
  * pango_fc_font_description_from_pattern:
- * @pattern: a #FcPattern
+ * @pattern: a `FcPattern`
  * @include_size: if %TRUE, the pattern will include the size from
  *   the @pattern; otherwise the resulting pattern will be unsized.
  *   (only %FC_SIZE is examined, not %FC_PIXEL_SIZE)
  *
- * Creates a #PangoFontDescription that matches the specified
+ * Creates a `PangoFontDescription` that matches the specified
  * Fontconfig pattern as closely as possible. Many possible Fontconfig
  * pattern values, such as %FC_RASTERIZER or %FC_DPI, don't make sense in
- * the context of #PangoFontDescription, so will be ignored.
+ * the context of `PangoFontDescription`, so will be ignored.
  *
- * Return value: a new #PangoFontDescription. Free with
- *  pango_font_description_free().
+ * Return value: a new `PangoFontDescription`. Free with
+ *   pango_font_description_free().
  *
  * Since: 1.4
- **/
+ */
 PangoFontDescription *
 pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_size)
 {
@@ -3339,12 +3341,13 @@ pango_fc_family_init (PangoFcFamily *fcfamily)
 
 /**
  * pango_fc_font_map_get_hb_face: (skip)
- * @fcfontmap: a #PangoFcFontMap
- * @fcfont: a #PangoFcFont
+ * @fcfontmap: a `PangoFcFontMap`
+ * @fcfont: a `PangoFcFont`
  *
- * Retrieves the `hb_face_t` for the given #PangoFcFont.
+ * Retrieves the `hb_face_t` for the given `PangoFcFont`.
  *
- * Returns: (transfer none) (nullable): the `hb_face_t` for the given Pango font
+ * Returns: (transfer none) (nullable): the `hb_face_t`
+ *   for the given font
  *
  * Since: 1.44
  */
