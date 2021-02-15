@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -24,8 +24,8 @@
  * @short_description:Structures for storing tab stops
  * @title:Tab Stops
  *
- * Functions in this section are used to deal with #PangoTabArray objects
- * that can be used to set tab stop positions in a #PangoLayout.
+ * Functions in this section are used to deal with `PangoTabArray` objects
+ * that can be used to set tab stop positions in a `PangoLayout`.
  */
 #include "config.h"
 #include "pango-tabs.h"
@@ -36,18 +36,18 @@ typedef struct _PangoTab PangoTab;
 
 struct _PangoTab
 {
-  gint location;	        /* Offset in pixels of this tab stop
-				 * from the left margin of the text.
-				 */
+  gint location;                /* Offset in pixels of this tab stop
+                                 * from the left margin of the text.
+                                 */
   PangoTabAlign alignment;      /* Where the tab stop appears relative
-				 * to the text.
-				 */
+                                 * to the text.
+                                 */
 };
 
 /**
  * PangoTabArray:
  *
- * A #PangoTabArray struct contains an array
+ * A `PangoTabArray` struct contains an array
  * of tab stops. Each tab stop has an alignment and a position.
  */
 struct _PangoTabArray
@@ -78,12 +78,12 @@ init_tabs (PangoTabArray *array, gint start, gint end)
  * pixel units if @positions_in_pixels is %TRUE, otherwise in Pango
  * units. All stops are initially at position 0.
  *
- * Return value: the newly allocated #PangoTabArray, which should
- *               be freed with pango_tab_array_free().
- **/
+ * Return value: the newly allocated `PangoTabArray`, which should
+ *   be freed with [method@Pango.TabArray.free].
+ */
 PangoTabArray*
-pango_tab_array_new (gint initial_size,
-		     gboolean positions_in_pixels)
+pango_tab_array_new (gint     initial_size,
+                     gboolean positions_in_pixels)
 {
   PangoTabArray *array;
 
@@ -119,19 +119,20 @@ pango_tab_array_new (gint initial_size,
  * @first_position: position of first tab stop
  * @...: additional alignment/position pairs
  *
- * This is a convenience function that creates a #PangoTabArray and allows
- * you to specify the alignment and position of each tab stop. You **must**
- * provide an alignment and position for @size tab stops.
+ * This is a convenience function that creates a `PangoTabArray`
+ * and allows you to specify the alignment and position of each
+ * tab stop. You **must** provide an alignment and position for
+ * @size tab stops.
  *
- * Return value: the newly allocated #PangoTabArray, which should
- *               be freed with pango_tab_array_free().
- **/
+ * Return value: the newly allocated `PangoTabArray`, which should
+ *   be freed with [method@Pango.TabArray.free].
+ */
 PangoTabArray  *
 pango_tab_array_new_with_positions (gint           size,
-				    gboolean       positions_in_pixels,
-				    PangoTabAlign  first_alignment,
-				    gint           first_position,
-				    ...)
+                                    gboolean       positions_in_pixels,
+                                    PangoTabAlign  first_alignment,
+                                    gint           first_position,
+                                    ...)
 {
   PangoTabArray *array;
   va_list args;
@@ -175,13 +176,13 @@ G_DEFINE_BOXED_TYPE (PangoTabArray, pango_tab_array,
 
 /**
  * pango_tab_array_copy:
- * @src: #PangoTabArray to copy
+ * @src: `PangoTabArray` to copy
  *
- * Copies a #PangoTabArray
+ * Copies a `PangoTabArray`.
  *
- * Return value: the newly allocated #PangoTabArray, which should
- *               be freed with pango_tab_array_free().
- **/
+ * Return value: the newly allocated `PangoTabArray`, which should
+ *   be freed with [method@Pango.TabArray.free].
+ */
 PangoTabArray*
 pango_tab_array_copy (PangoTabArray *src)
 {
@@ -199,13 +200,12 @@ pango_tab_array_copy (PangoTabArray *src)
 
 /**
  * pango_tab_array_free:
- * @tab_array: a #PangoTabArray
+ * @tab_array: a `PangoTabArray`
  *
  * Frees a tab array and associated resources.
- *
- **/
+ */
 void
-pango_tab_array_free   (PangoTabArray *tab_array)
+pango_tab_array_free (PangoTabArray *tab_array)
 {
   g_return_if_fail (tab_array != NULL);
 
@@ -216,12 +216,12 @@ pango_tab_array_free   (PangoTabArray *tab_array)
 
 /**
  * pango_tab_array_get_size:
- * @tab_array: a #PangoTabArray
+ * @tab_array: a `PangoTabArray`
  *
  * Gets the number of tab stops in @tab_array.
  *
  * Return value: the number of tab stops in the array.
- **/
+ */
 gint
 pango_tab_array_get_size (PangoTabArray *tab_array)
 {
@@ -232,16 +232,15 @@ pango_tab_array_get_size (PangoTabArray *tab_array)
 
 /**
  * pango_tab_array_resize:
- * @tab_array: a #PangoTabArray
+ * @tab_array: a `PangoTabArray`
  * @new_size: new size of the array
  *
- * Resizes a tab array. You must subsequently initialize any tabs that
- * were added as a result of growing the array.
- *
- **/
+ * Resizes a tab array. You must subsequently initialize any tabs
+ * that were added as a result of growing the array.
+ */
 void
 pango_tab_array_resize (PangoTabArray *tab_array,
-			gint           new_size)
+                        gint           new_size)
 {
   if (new_size > tab_array->allocated)
     {
@@ -249,13 +248,13 @@ pango_tab_array_resize (PangoTabArray *tab_array,
 
       /* Ratchet allocated size up above the index. */
       if (tab_array->allocated == 0)
-	tab_array->allocated = 2;
+        tab_array->allocated = 2;
 
       while (new_size > tab_array->allocated)
-	tab_array->allocated = tab_array->allocated * 2;
+        tab_array->allocated = tab_array->allocated * 2;
 
       tab_array->tabs = g_renew (PangoTab, tab_array->tabs,
-				 tab_array->allocated);
+                                 tab_array->allocated);
 
       init_tabs (tab_array, current_end, tab_array->allocated);
     }
@@ -265,21 +264,20 @@ pango_tab_array_resize (PangoTabArray *tab_array,
 
 /**
  * pango_tab_array_set_tab:
- * @tab_array: a #PangoTabArray
+ * @tab_array: a `PangoTabArray`
  * @tab_index: the index of a tab stop
  * @alignment: tab alignment
  * @location: tab location in Pango units
  *
  * Sets the alignment and location of a tab stop.
- * @alignment must always be #PANGO_TAB_LEFT in the current
+ * @alignment must always be %PANGO_TAB_LEFT in the current
  * implementation.
- *
- **/
+ */
 void
-pango_tab_array_set_tab  (PangoTabArray *tab_array,
-			  gint           tab_index,
-			  PangoTabAlign  alignment,
-			  gint           location)
+pango_tab_array_set_tab (PangoTabArray *tab_array,
+                         gint           tab_index,
+                         PangoTabAlign  alignment,
+                         gint           location)
 {
   g_return_if_fail (tab_array != NULL);
   g_return_if_fail (tab_index >= 0);
@@ -295,19 +293,18 @@ pango_tab_array_set_tab  (PangoTabArray *tab_array,
 
 /**
  * pango_tab_array_get_tab:
- * @tab_array: a #PangoTabArray
+ * @tab_array: a `PangoTabArray`
  * @tab_index: tab stop index
  * @alignment: (out) (allow-none): location to store alignment, or %NULL
  * @location: (out) (allow-none): location to store tab position, or %NULL
  *
  * Gets the alignment and position of a tab stop.
- *
- **/
+ */
 void
-pango_tab_array_get_tab  (PangoTabArray *tab_array,
-			  gint           tab_index,
-			  PangoTabAlign *alignment,
-			  gint          *location)
+pango_tab_array_get_tab (PangoTabArray *tab_array,
+                         gint           tab_index,
+                         PangoTabAlign *alignment,
+                         gint          *location)
 {
   g_return_if_fail (tab_array != NULL);
   g_return_if_fail (tab_index < tab_array->size);
@@ -322,21 +319,20 @@ pango_tab_array_get_tab  (PangoTabArray *tab_array,
 
 /**
  * pango_tab_array_get_tabs:
- * @tab_array: a #PangoTabArray
+ * @tab_array: a `PangoTabArray`
  * @alignments: (out) (allow-none): location to store an array of tab
  *   stop alignments, or %NULL
  * @locations: (out) (allow-none) (array): location to store an array
  *   of tab positions, or %NULL
  *
  * If non-%NULL, @alignments and @locations are filled with allocated
- * arrays of length pango_tab_array_get_size(). You must free the
+ * arrays of length [method@Pango.TabArray.get_size]. You must free the
  * returned array.
- *
- **/
+ */
 void
 pango_tab_array_get_tabs (PangoTabArray *tab_array,
-			  PangoTabAlign **alignments,
-			  gint          **locations)
+                          PangoTabAlign **alignments,
+                          gint          **locations)
 {
   gint i;
 
@@ -352,9 +348,9 @@ pango_tab_array_get_tabs (PangoTabArray *tab_array,
   while (i < tab_array->size)
     {
       if (alignments)
-	(*alignments)[i] = tab_array->tabs[i].alignment;
+        (*alignments)[i] = tab_array->tabs[i].alignment;
       if (locations)
-	(*locations)[i] = tab_array->tabs[i].location;
+        (*locations)[i] = tab_array->tabs[i].location;
 
       ++i;
     }
@@ -362,13 +358,13 @@ pango_tab_array_get_tabs (PangoTabArray *tab_array,
 
 /**
  * pango_tab_array_get_positions_in_pixels:
- * @tab_array: a #PangoTabArray
+ * @tab_array: a `PangoTabArray`
  *
- * Returns %TRUE if the tab positions are in pixels, %FALSE if they are
- * in Pango units.
+ * Returns %TRUE if the tab positions are in pixels,
+ * %FALSE if they are in Pango units.
  *
  * Return value: whether positions are in pixels.
- **/
+ */
 gboolean
 pango_tab_array_get_positions_in_pixels (PangoTabArray *tab_array)
 {
