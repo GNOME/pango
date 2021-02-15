@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -27,11 +27,11 @@
 /**
  * pango_item_new:
  *
- * Creates a new #PangoItem structure initialized to default values.
+ * Creates a new `PangoItem` structure initialized to default values.
  *
- * Return value: the newly allocated #PangoItem, which should
- *               be freed with pango_item_free().
- **/
+ * Return value: the newly allocated `PangoItem`, which should
+ *   be freed with [method@Pango.Item.free].
+ */
 PangoItem *
 pango_item_new (void)
 {
@@ -42,14 +42,14 @@ pango_item_new (void)
 
 /**
  * pango_item_copy:
- * @item: (nullable): a #PangoItem, may be %NULL
+ * @item: (nullable): a `PangoItem`, may be %NULL
  *
- * Copy an existing #PangoItem structure.
+ * Copy an existing `PangoItem` structure.
  *
- * Return value: (nullable): the newly allocated #PangoItem, which
- *               should be freed with pango_item_free(), or %NULL if
- *               @item was %NULL.
- **/
+ * Return value: (nullable): the newly allocated `PangoItem`, which
+ *   should be freed with [method@Pango.Item.free], or %NULL if
+ *   @item was %NULL.
+ */
 PangoItem *
 pango_item_copy (PangoItem *item)
 {
@@ -58,7 +58,7 @@ pango_item_copy (PangoItem *item)
 
   if (item == NULL)
     return NULL;
-  
+
   result = g_slice_new (PangoItem);
 
   result->offset = item->offset;
@@ -84,9 +84,9 @@ pango_item_copy (PangoItem *item)
 
 /**
  * pango_item_free:
- * @item: (nullable): a #PangoItem, may be %NULL
+ * @item: (nullable): a `PangoItem`, may be %NULL
  *
- * Free a #PangoItem and all associated memory.
+ * Free a `PangoItem` and all associated memory.
  **/
 void
 pango_item_free (PangoItem *item)
@@ -112,28 +112,31 @@ G_DEFINE_BOXED_TYPE (PangoItem, pango_item,
 
 /**
  * pango_item_split:
- * @orig: a #PangoItem
- * @split_index: byte index of position to split item, relative to the start of the item
+ * @orig: a `PangoItem`
+ * @split_index: byte index of position to split item, relative to the
+ *   start of the item
  * @split_offset: number of chars between start of @orig and @split_index
  *
  * Modifies @orig to cover only the text after @split_index, and
  * returns a new item that covers the text before @split_index that
- * used to be in @orig. You can think of @split_index as the length of
- * the returned item. @split_index may not be 0, and it may not be
- * greater than or equal to the length of @orig (that is, there must
- * be at least one byte assigned to each item, you can't create a
- * zero-length item). @split_offset is the length of the first item in
- * chars, and must be provided because the text used to generate the
- * item isn't available, so pango_item_split() can't count the char
- * length of the split items itself.
+ * used to be in @orig.
+ *
+ * You can think of @split_index as the length of the returned item.
+ * @split_index may not be 0, and it may not be greater than or equal
+ * to the length of @orig (that is, there must be at least one byte
+ * assigned to each item, you can't create a zero-length item).
+ * @split_offset is the length of the first item in chars, and must be
+ * provided because the text used to generate the item isn't available,
+ * so `pango_item_split()` can't count the char length of the split items
+ * itself.
  *
  * Return value: new item representing text before @split_index, which
- *               should be freed with pango_item_free().
- **/
+ *   should be freed with [method@Pango.Item.free].
+ */
 PangoItem*
-pango_item_split (PangoItem  *orig,
-		  int         split_index,
-		  int         split_offset)
+pango_item_split (PangoItem *orig,
+                  int        split_index,
+                  int        split_offset)
 {
   PangoItem *new_item;
 
@@ -169,14 +172,15 @@ compare_attr (gconstpointer p1, gconstpointer p2)
 
 /**
  * pango_item_apply_attrs:
- * @item: a #PangoItem
- * @iter: a #PangoAttrIterator
+ * @item: a `PangoItem`
+ * @iter: a `PangoAttrIterator`
  *
- * Add attributes to a PangoItem. The idea is that you have
- * attributes that don't affect itemization, such as font features,
- * so you filter them out using pango_attr_list_filter(), itemize
- * your text, then reapply the attributes to the resulting items
- * using this function.
+ * Add attributes to a `PangoItem`.
+ *
+ * The idea is that you have attributes that don't affect itemization,
+ * such as font features, so you filter them out using
+ * [method@Pango.AttrList.filter], itemize your text, then reapply the
+ * attributes to the resulting items using this function.
  *
  * The @iter should be positioned before the range of the item,
  * and will be advanced past it. This function is meant to be called

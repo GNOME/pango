@@ -66,13 +66,13 @@ typedef struct _PangoItem PangoItem;
  * @lang_engine: unused
  * @font: the font for this segment.
  * @level: the bidirectional level for this segment.
- * @gravity: the glyph orientation for this segment (A #PangoGravity).
+ * @gravity: the glyph orientation for this segment (A `PangoGravity`).
  * @flags: boolean flags for this segment (Since: 1.16).
- * @script: the detected script for this segment (A #PangoScript) (Since: 1.18).
+ * @script: the detected script for this segment (A `PangoScript`) (Since: 1.18).
  * @language: the detected language for this segment.
  * @extra_attrs: extra attributes for this segment.
  *
- * The #PangoAnalysis structure stores information about
+ * The `PangoAnalysis` structure stores information about
  * the properties of a segment of text.
  */
 struct _PangoAnalysis
@@ -98,7 +98,10 @@ struct _PangoAnalysis
  * @num_chars: number of Unicode characters in the item.
  * @analysis: analysis results for the item.
  *
- * The #PangoItem structure stores information about a segment of text.
+ * The `PangoItem` structure stores information about a segment of text.
+ *
+ * You typically obtain `PangoItems` by itemizing a piece of text
+ * with [func@itemize].
  */
 struct _PangoItem
 {
