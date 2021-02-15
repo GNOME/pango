@@ -1041,15 +1041,15 @@ _pango_cairo_do_error_underline (cairo_t *cr,
 /**
  * pango_cairo_show_glyph_string:
  * @cr: a Cairo context
- * @font: a #PangoFont from a #PangoCairoFontMap
- * @glyphs: a #PangoGlyphString
+ * @font: a `PangoFont` from a `PangoCairoFontMap`
+ * @glyphs: a `PangoGlyphString`
  *
  * Draws the glyphs in @glyphs in the specified cairo context.
  * The origin of the glyphs (the left edge of the baseline) will
  * be drawn at the current point of the cairo context.
  *
  * Since: 1.10
- **/
+ */
 void
 pango_cairo_show_glyph_string (cairo_t          *cr,
 			       PangoFont        *font,
@@ -1066,12 +1066,12 @@ pango_cairo_show_glyph_string (cairo_t          *cr,
  * pango_cairo_show_glyph_item:
  * @cr: a Cairo context
  * @text: the UTF-8 text that @glyph_item refers to
- * @glyph_item: a #PangoGlyphItem
+ * @glyph_item: a `PangoGlyphItem`
  *
  * Draws the glyphs in @glyph_item in the specified cairo context,
  * embedding the text associated with the glyphs in the output if the
  * output format supports it (PDF for example), otherwise it acts
- * similar to pango_cairo_show_glyph_string().
+ * similar to [func@show_glyph_string].
  *
  * The origin of the glyphs (the left edge of the baseline) will
  * be drawn at the current point of the cairo context.
@@ -1080,7 +1080,7 @@ pango_cairo_show_glyph_string (cairo_t          *cr,
  * indexed by `glyph_item->item->offset`.
  *
  * Since: 1.22
- **/
+ */
 void
 pango_cairo_show_glyph_item (cairo_t          *cr,
 			     const char       *text,
@@ -1096,14 +1096,14 @@ pango_cairo_show_glyph_item (cairo_t          *cr,
 /**
  * pango_cairo_show_layout_line:
  * @cr: a Cairo context
- * @line: a #PangoLayoutLine
+ * @line: a `PangoLayoutLine`
  *
- * Draws a #PangoLayoutLine in the specified cairo context.
+ * Draws a `PangoLayoutLine` in the specified cairo context.
  * The origin of the glyphs (the left edge of the line) will
  * be drawn at the current point of the cairo context.
  *
  * Since: 1.10
- **/
+ */
 void
 pango_cairo_show_layout_line (cairo_t          *cr,
 			      PangoLayoutLine  *line)
@@ -1119,12 +1119,12 @@ pango_cairo_show_layout_line (cairo_t          *cr,
  * @cr: a Cairo context
  * @layout: a Pango layout
  *
- * Draws a #PangoLayout in the specified cairo context.
- * The top-left corner of the #PangoLayout will be drawn
+ * Draws a `PangoLayout` in the specified cairo context.
+ * The top-left corner of the `PangoLayout` will be drawn
  * at the current point of the cairo context.
  *
  * Since: 1.10
- **/
+ */
 void
 pango_cairo_show_layout (cairo_t     *cr,
 			 PangoLayout *layout)
@@ -1145,12 +1145,12 @@ pango_cairo_show_layout (cairo_t     *cr,
  *
  * Draw a squiggly line in the specified cairo context that approximately
  * covers the given rectangle in the style of an underline used to indicate a
- * spelling error.  (The width of the underline is rounded to an integer
+ * spelling error. (The width of the underline is rounded to an integer
  * number of up/down segments and the resulting rectangle is centered in the
  * original rectangle)
  *
  * Since: 1.14
- **/
+ */
 void
 pango_cairo_show_error_underline (cairo_t *cr,
 				  double  x,
@@ -1167,15 +1167,15 @@ pango_cairo_show_error_underline (cairo_t *cr,
 /**
  * pango_cairo_glyph_string_path:
  * @cr: a Cairo context
- * @font: a #PangoFont from a #PangoCairoFontMap
- * @glyphs: a #PangoGlyphString
+ * @font: a `PangoFont` from a `PangoCairoFontMap`
+ * @glyphs: a `PangoGlyphString`
  *
  * Adds the glyphs in @glyphs to the current path in the specified
  * cairo context. The origin of the glyphs (the left edge of the baseline)
  * will be at the current point of the cairo context.
  *
  * Since: 1.10
- **/
+ */
 void
 pango_cairo_glyph_string_path (cairo_t          *cr,
 			       PangoFont        *font,
@@ -1190,14 +1190,14 @@ pango_cairo_glyph_string_path (cairo_t          *cr,
 /**
  * pango_cairo_layout_line_path:
  * @cr: a Cairo context
- * @line: a #PangoLayoutLine
+ * @line: a `PangoLayoutLine`
  *
- * Adds the text in #PangoLayoutLine to the current path in the
- * specified cairo context.  The origin of the glyphs (the left edge
+ * Adds the text in `PangoLayoutLine` to the current path in the
+ * specified cairo context. The origin of the glyphs (the left edge
  * of the line) will be at the current point of the cairo context.
  *
  * Since: 1.10
- **/
+ */
 void
 pango_cairo_layout_line_path (cairo_t          *cr,
 			      PangoLayoutLine  *line)
@@ -1213,12 +1213,12 @@ pango_cairo_layout_line_path (cairo_t          *cr,
  * @cr: a Cairo context
  * @layout: a Pango layout
  *
- * Adds the text in a #PangoLayout to the current path in the
- * specified cairo context.  The top-left corner of the #PangoLayout
+ * Adds the text in a `PangoLayout` to the current path in the
+ * specified cairo context. The top-left corner of the `PangoLayout`
  * will be at the current point of the cairo context.
  *
  * Since: 1.10
- **/
+ */
 void
 pango_cairo_layout_path (cairo_t     *cr,
 			 PangoLayout *layout)
@@ -1239,12 +1239,12 @@ pango_cairo_layout_path (cairo_t     *cr,
  *
  * Add a squiggly line to the current path in the specified cairo context that
  * approximately covers the given rectangle in the style of an underline used
- * to indicate a spelling error.  (The width of the underline is rounded to an
+ * to indicate a spelling error. (The width of the underline is rounded to an
  * integer number of up/down segments and the resulting rectangle is centered
  * in the original rectangle)
  *
  * Since: 1.14
- **/
+ */
 void
 pango_cairo_error_underline_path (cairo_t *cr,
 				  double   x,
