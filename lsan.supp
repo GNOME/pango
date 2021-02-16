@@ -4,3 +4,4 @@ leak:libcairo.so
 leak:libpixman-1.so
 leak:libthai.so
 leak:libdatrie.so
+leak:libxml2.so
