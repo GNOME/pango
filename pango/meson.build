@@ -54,10 +54,11 @@ pango_headers = [
   'pango-tabs.h',
   'pango-types.h',
   'pango-utils.h',
-  'pango-version-macros.h',
 ]
 
-install_headers(pango_headers, subdir: pango_api_path)
+pango_installed_headers = pango_headers + [ 'pango-version-macros.h' ]
+
+install_headers(pango_installed_headers, subdir: pango_api_path)
 
 # Features header
 pango_features_conf = configuration_data()
