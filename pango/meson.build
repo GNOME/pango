@@ -67,7 +67,7 @@ pango_features_conf.set('PANGO_VERSION_MICRO', pango_micro_version)
 pango_features_conf.set('PANGO_API_VERSION', pango_api_version)
 pango_features_conf.set('PANGO_CURRENT_MINUS_AGE', '0')
 
-configure_file(
+pango_features_h = configure_file(
   input: 'pango-features.h.meson',
   output: 'pango-features.h',
   configuration: pango_features_conf,
@@ -135,7 +135,7 @@ if build_gir
   endif
   pango_gir = gnome.generate_gir(
     libpango,
-    sources: pango_sources + pango_headers + [ pango_enum_h ],
+    sources: pango_sources + pango_headers + [ pango_enum_h, pango_features_h ],
     namespace: 'Pango',
     nsversion: pango_api_version,
     identifier_prefix: 'Pango',
