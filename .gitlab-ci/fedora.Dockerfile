@@ -1,4 +1,4 @@
-FROM fedora:31
+FROM fedora:33
 
 RUN dnf -y install \
     abattis-cantarell-fonts \
@@ -34,8 +34,11 @@ RUN dnf -y install \
     ninja-build \
     python3 \
     python3-jinja2 \
+    python3-markdown \
     python3-pip \
     python3-pygments \
+    python3-toml \
+    python3-typogrify \
     python3-wheel \
     redhat-rpm-config \
     thai-scalable-waree-fonts \
