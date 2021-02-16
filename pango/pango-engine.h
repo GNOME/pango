@@ -30,6 +30,11 @@
 
 G_BEGIN_DECLS
 
+/* All of this is deprecated and entirely useless for bindings.
+ * Leave it out of the gir file.
+ */
+#ifndef __GI_SCANNER__
+
 #ifndef PANGO_DISABLE_DEPRECATED
 
 /**
@@ -286,11 +291,6 @@ struct _PangoEngineInfo
   PangoEngineScriptInfo *scripts;
   gint n_scripts;
 };
-
-/* We should to ignore these unprefixed symbols when going through
- * this header with the introspection scanner
- */
-#ifndef __GI_SCANNER__
 
 /**
  * script_engine_list: (skip)
