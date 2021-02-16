@@ -267,16 +267,17 @@ typedef enum {
  *
  * Since: 1.24
  */
+#define PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING 0
+
 /**
- * PANGO_ATTR_INDEX_TO_TEXT_END:
+ * PANGO_ATTR_INDEX_TO_TEXT_END: (value 4294967295)
  *
  * This value can be used to set the end_index member of a #PangoAttribute
  * such that the attribute covers to the end of the text.
  *
  * Since: 1.24
  */
-#define PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING	0
-#define PANGO_ATTR_INDEX_TO_TEXT_END		G_MAXUINT
+#define PANGO_ATTR_INDEX_TO_TEXT_END (G_MAXUINT + 0)
 
 /**
  * PangoAttribute:
