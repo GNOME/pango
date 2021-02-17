@@ -1,0 +1,5 @@
+[wrap-git]
+directory=fontconfig
+url=https://gitlab.freedesktop.org/tpm/fontconfig.git
+depth=1
+revision=meson-fix-subproject-build
