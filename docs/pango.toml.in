@@ -57,6 +57,7 @@ base_url = "https://gitlab.gnome.org/GNOME/pango/-/blob/master/"
 content_files = [
   "pango_rendering.md",
   "pango_markup.md",
+  "pango_fonts.md",
 ]
 
 content_images = [
