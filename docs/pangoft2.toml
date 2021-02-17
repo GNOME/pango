@@ -1,0 +1,33 @@
+[library]
+namespace = "PangoFT2"
+version = "1.0"
+browse_url = "https://gitlab.gnome.org/GNOME/pango/"
+repository_url = "https://gitlab.gnome.org/GNOME/pango.git"
+website_url = "https://www.pango.org"
+authors = "Owen Taylor, Behdad Esfahbod"
+logo_url = "pango-name.png"
+license = "GPL-2.1-or-later"
+description = "Freetype support for Pango"
+dependencies = [ "Pango-1.0", "freetype2-2.0" ]
+
+  [dependencies."Pango-1.0"]
+  name = "Pango"
+  description = "A library for layout out and rendering of text"
+  docs_url = "https://developer.gnome.org/pango/stable"
+
+  [dependencies."freetype2-2.0"]
+  name = "Freetype"
+  description = "A font loading and rendering library"
+  docs_url = "https://www.freetype.org"
+
+[theme]
+name = "basic"
+
+[source-location]
+base_url = "https://gitlab.gnome.org/GNOME/pango/-/blob/master/"
+
+[extra]
+
+content_images = [
+  "pango-name.png"
+]
