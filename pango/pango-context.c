@@ -19,18 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:main
- * @title:Rendering
- * @short_description:Functions to run the rendering pipeline
- *
- * The Pango rendering pipeline takes a string of
- * Unicode characters and converts it into glyphs.
- * The functions described in this section accomplish
- * various steps of this process.
- *
- * ![](pipeline.png)
- */
 #include "config.h"
 #include <string.h>
 #include <stdlib.h>

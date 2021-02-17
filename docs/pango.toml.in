@@ -54,6 +54,9 @@ name = "basic"
 base_url = "https://gitlab.gnome.org/GNOME/pango/-/blob/master/"
 
 [extra]
+content_files = [
+  "pango_rendering.md",
+]
 
 content_images = [
   "pango-name.png",

@@ -1,6 +1,7 @@
 gidocgen = find_program('gi-docgen', required: get_option('gtk_doc'))
 
 pango_content_files = [
+  'pango_rendering.md',
   'pango-name.png',
   'layout.png',
   'pipeline.png',
