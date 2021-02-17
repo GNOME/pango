@@ -4,6 +4,7 @@ pango_content_files = [
   'pango_rendering.md',
   'pango_markup.md',
   'pango_fonts.md',
+  'pango_bidi.md',
   'pango-name.png',
   'layout.png',
   'pipeline.png',

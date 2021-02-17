@@ -19,24 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:bidi
- * @short_description:Types and functions for bidirectional text
- * @title:Bidirectional Text
- * @see_also:
- * pango_context_get_base_dir(),
- * pango_context_set_base_dir(),
- * pango_itemize_with_base_dir()
- *
- * Pango supports bidirectional text (like Arabic and Hebrew) automatically.
- * Some applications however, need some help to correctly handle bidirectional text.
- *
- * The #PangoDirection type can be used with pango_context_set_base_dir() to
- * instruct Pango about direction of text, though in most cases Pango detects
- * that correctly and automatically.  The rest of the facilities in this section
- * are used internally by Pango already, and are provided to help applications
- * that need more direct control over bidirectional setting of text.
- */
 #include "config.h"
 
 #include <string.h>
