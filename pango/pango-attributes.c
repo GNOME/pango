@@ -19,17 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:text-attributes
- * @short_description:Font and other attributes for annotating text
- * @title:Attributes
- *
- * Attributed text is used in a number of places in Pango. It
- * is used as the input to the itemization process and also when
- * creating a #PangoLayout. The data types and functions in
- * this section are used to represent and manipulate sets
- * of attributes applied to a portion of text.
- */
 #include "config.h"
 #include <string.h>
 
