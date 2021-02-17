@@ -88,6 +88,7 @@ endif
 
 if cairo_dep.found()
   pangocairo_content_files = [
+    'pango_cairo.md',
     'pango-name.png',
     'rotated-text.png',
   ]
