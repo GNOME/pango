@@ -1769,6 +1769,7 @@ pango_attr_list_splice (PangoAttrList *list,
 {
   guint i, p;
   guint upos, ulen;
+  guint end;
 
   g_return_if_fail (list != NULL);
   g_return_if_fail (other != NULL);
@@ -1782,6 +1783,8 @@ pango_attr_list_splice (PangoAttrList *list,
  * isn't defined in the C standard for signed integers
  */
 #define CLAMP_ADD(a,b) (((a) + (b) < (a)) ? G_MAXUINT : (a) + (b))
+
+  end = CLAMP_ADD (upos, ulen);
 
   if (list->attributes)
     for (i = 0, p = list->attributes->len; i < p; i++)
@@ -1811,8 +1814,8 @@ pango_attr_list_splice (PangoAttrList *list,
   for (i = 0, p = other->attributes->len; i < p; i++)
     {
       PangoAttribute *attr = pango_attribute_copy (g_ptr_array_index (other->attributes, i));
-      attr->start_index = CLAMP_ADD (attr->start_index, upos);
-      attr->end_index = CLAMP_ADD (attr->end_index, upos);
+      attr->start_index = MIN (CLAMP_ADD (attr->start_index, upos), end);
+      attr->end_index = MIN (CLAMP_ADD (attr->end_index, upos), end);
 
       /* Same as above, the attribute could be squashed to zero-length; here
        * pango_attr_list_change() will take care of deleting it.
