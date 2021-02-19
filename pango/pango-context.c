@@ -33,23 +33,16 @@
 #include "pango-emoji-private.h"
 
 /**
- * SECTION:pangocontext
- * @title:Contexts
- * @short_description: Global context object
- *
- * The `PangoContext` structure stores global information
- * influencing Pango's operation, such as the fontmap used
- * to look up fonts, and default values such as the default
- * language, default gravity, or default font.
- *
- * To obtain a `PangoContext`, use [method@Pango.FontMap.create_context].
- */
-
-/**
  * PangoContext:
  *
- * The `PangoContext` structure stores global information
- * used to control the itemization process.
+ * A `PangoContext` stores global information used to control the
+ * itemization process.
+ *
+ * The information stored by `PangoContext includes the fontmap used
+ * to look up fonts, and default values such as the default language,
+ * default gravity, or default font.
+ *
+ * To obtain a `PangoContext`, use [method@Pango.FontMap.create_context].
  */
 struct _PangoContext
 {
@@ -175,11 +168,13 @@ update_resolved_gravity (PangoContext *context)
  * matrix. (No matrix set is the same as setting the identity matrix.)
  *
  * Sets the transformation matrix that will be applied when rendering
- * with this context. Note that reported metrics are in the user space
- * coordinates before the application of the matrix, not device-space
- * coordinates after the application of the matrix. So, they don't scale
- * with the matrix, though they may change slightly for different
- * matrices, depending on how the text is fit to the pixel grid.
+ * with this context.
+ *
+ * Note that reported metrics are in the user space coordinates before
+ * the application of the matrix, not device-space coordinates after the
+ * application of the matrix. So, they don't scale with the matrix, though
+ * they may change slightly for different matrices, depending on how the
+ * text is fit to the pixel grid.
  *
  * Since: 1.6
  */
@@ -207,7 +202,9 @@ pango_context_set_matrix (PangoContext      *context,
  * @context: a `PangoContext`
  *
  * Gets the transformation matrix that will be applied when
- * rendering with this context. See [method@Pango.Context.set_matrix].
+ * rendering with this context.
+ *
+ * See [method@Pango.Context.set_matrix].
  *
  * Return value: (nullable): the matrix, or %NULL if no matrix has
  *   been set (which is the same as the identity matrix). The returned
@@ -466,6 +463,7 @@ pango_context_set_base_dir (PangoContext   *context,
  * @context: a `PangoContext`
  *
  * Retrieves the base direction for the context.
+ *
  * See [method@Pango.Context.set_base_dir].
  *
  * Return value: the base direction for the context.
@@ -508,6 +506,7 @@ pango_context_set_base_gravity (PangoContext *context,
  * @context: a `PangoContext`
  *
  * Retrieves the base gravity for the context.
+ *
  * See [method@Pango.Context.set_base_gravity].
  *
  * Return value: the base gravity for the context.
@@ -575,8 +574,9 @@ pango_context_set_gravity_hint (PangoContext     *context,
  * pango_context_get_gravity_hint:
  * @context: a `PangoContext`
  *
- * Retrieves the gravity hint for the context. See
- * [method@Pango.Context.set_gravity_hint] for details.
+ * Retrieves the gravity hint for the context.
+ *
+ * See [method@Pango.Context.set_gravity_hint] for details.
  *
  * Return value: the gravity hint for the context.
  *
@@ -1543,9 +1543,11 @@ itemize_state_finish (ItemizeState *state)
  * @attrs: the set of attributes that apply to @text.
  * @cached_iter: (allow-none): Cached attribute iterator, or %NULL
  *
- * Like [func@itemize], but the base direction to use when computing
- * bidirectional levels (see [method@Pango.Context.set_base_dir]),
- * is specified explicitly rather than gotten from the `PangoContext`.
+ * Like `pango_itemize()`, but with an explicitly specified base direction.
+ *
+ * The base direction is used when computing bidirectional levels.
+ * (see [method@Pango.Context.set_base_dir]). [func@itemize] gets the
+ * base direction from the `PangoContext`.
  *
  * Return value: (transfer full) (element-type Pango.Item): a `GList` of
  *   [struct@Pango.Item] structures. The items should be freed using
@@ -1620,9 +1622,11 @@ itemize_with_font (PangoContext               *context,
  * @cached_iter: (allow-none): Cached attribute iterator, or %NULL
  *
  * Breaks a piece of text into segments with consistent directional
- * level and font. Each byte of @text will be contained in exactly one
- * of the items in the returned list; the generated list of items will
- * be in logical order (the start offsets of the items are ascending).
+ * level and font.
+ *
+ * Each byte of @text will be contained in exactly one of the items in the
+ * returned list; the generated list of items will be in logical order (the
+ * start offsets of the items are ascending).
  *
  * @cached_iter should be an iterator over @attrs currently positioned
  * at a range before or containing @start_index; @cached_iter will be
