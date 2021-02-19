@@ -19,14 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:tab-stops
- * @short_description:Structures for storing tab stops
- * @title:Tab Stops
- *
- * Functions in this section are used to deal with `PangoTabArray` objects
- * that can be used to set tab stop positions in a `PangoLayout`.
- */
 #include "config.h"
 #include "pango-tabs.h"
 #include "pango-impl-utils.h"
@@ -47,8 +39,10 @@ struct _PangoTab
 /**
  * PangoTabArray:
  *
- * A `PangoTabArray` struct contains an array
- * of tab stops. Each tab stop has an alignment and a position.
+ * A `PangoTabArray` contains an array of tab stops.
+ *
+ * `PangoTabArray` can be used to set tab stops in a `PangoLayout`.
+ * Each tab stop has an alignment and a position.
  */
 struct _PangoTabArray
 {
@@ -74,9 +68,10 @@ init_tabs (PangoTabArray *array, gint start, gint end)
  * @initial_size: Initial number of tab stops to allocate, can be 0
  * @positions_in_pixels: whether positions are in pixel units
  *
- * Creates an array of @initial_size tab stops. Tab stops are specified in
- * pixel units if @positions_in_pixels is %TRUE, otherwise in Pango
- * units. All stops are initially at position 0.
+ * Creates an array of @initial_size tab stops.
+ *
+ * Tab stops are specified in pixel units if @positions_in_pixels is %TRUE,
+ * otherwise in Pango units. All stops are initially at position 0.
  *
  * Return value: the newly allocated `PangoTabArray`, which should
  *   be freed with [method@Pango.TabArray.free].
@@ -95,8 +90,7 @@ pango_tab_array_new (gint     initial_size,
    * optimization.
    */
   array = g_slice_new (PangoTabArray);
-  array->size = initial_size;
-  array->allocated = initial_size;
+  array->size = initial_size; array->allocated = initial_size;
 
   if (array->allocated > 0)
     {
@@ -119,10 +113,10 @@ pango_tab_array_new (gint     initial_size,
  * @first_position: position of first tab stop
  * @...: additional alignment/position pairs
  *
- * This is a convenience function that creates a `PangoTabArray`
- * and allows you to specify the alignment and position of each
- * tab stop. You **must** provide an alignment and position for
- * @size tab stops.
+ * Creates * a `PangoTabArray` and allows you to specify the alignment
+ * and position of each tab stop.
+ *
+ * You **must** provide an alignment and position for @size tab stops.
  *
  * Return value: the newly allocated `PangoTabArray`, which should
  *   be freed with [method@Pango.TabArray.free].
@@ -235,7 +229,9 @@ pango_tab_array_get_size (PangoTabArray *tab_array)
  * @tab_array: a `PangoTabArray`
  * @new_size: new size of the array
  *
- * Resizes a tab array. You must subsequently initialize any tabs
+ * Resizes a tab array.
+ *
+ * You must subsequently initialize any tabs
  * that were added as a result of growing the array.
  */
 void
@@ -270,6 +266,7 @@ pango_tab_array_resize (PangoTabArray *tab_array,
  * @location: tab location in Pango units
  *
  * Sets the alignment and location of a tab stop.
+ *
  * @alignment must always be %PANGO_TAB_LEFT in the current
  * implementation.
  */
@@ -326,8 +323,10 @@ pango_tab_array_get_tab (PangoTabArray *tab_array,
  *   of tab positions, or %NULL
  *
  * If non-%NULL, @alignments and @locations are filled with allocated
- * arrays of length [method@Pango.TabArray.get_size]. You must free the
- * returned array.
+ * arrays.
+ *
+ * The arrays are of length [method@Pango.TabArray.get_size].
+ * You must free the returned array.
  */
 void
 pango_tab_array_get_tabs (PangoTabArray *tab_array,
