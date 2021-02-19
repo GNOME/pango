@@ -29,7 +29,7 @@ G_BEGIN_DECLS
 /**
  * PangoScriptIter:
  *
- * A #PangoScriptIter is used to iterate through a string
+ * A `PangoScriptIter` is used to iterate through a string
  * and identify ranges in different scripts.
  **/
 typedef struct _PangoScriptIter PangoScriptIter;
@@ -157,8 +157,9 @@ typedef struct _PangoScriptIter PangoScriptIter;
  * @PANGO_SCRIPT_SIGNWRITING:          Signwriting. Since: 1.40
  *
  * The `PangoScript` enumeration identifies different writing
- * systems. The values correspond to the names as defined in the
- * Unicode standard. See
+ * systems.
+ *
+ * The values correspond to the names as defined in the Unicode standard. See
  * [Unicode Standard Annex 24: Script names](http://www.unicode.org/reports/tr24/)
  *
  * Note that this enumeration is deprecated and will not be updated
