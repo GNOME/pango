@@ -20,25 +20,24 @@
  */
 
 /**
- * SECTION:pangolayout
- * @short_description:High-level layout driver objects
- * @title:Layout Objects
+ * PangoLayout:
+ *
+ * A `PangoLayout` structure represents an entire paragraph of text.
  *
  * While complete access to the layout capabilities of Pango is provided
  * using the detailed interfaces for itemization and shaping, using
  * that functionality directly involves writing a fairly large amount
- * of code. The objects and functions in this section provide a
- * high-level driver for formatting entire paragraphs of text
- * at once. This includes paragraph-level functionality such as
- * line breaking, justification, alignment and ellipsization.
+ * of code. `PangoLayout` provides a high-level driver for formatting
+ * entire paragraphs of text at once. This includes paragraph-level
+ * functionality such as line breaking, justification, alignment and
+ * ellipsization.
  *
- * The `PangoLayout` structure represents an entire paragraph
- * of text. It is initialized with a `PangoContext`, UTF-8 string
- * and set of attributes for that string. Once that is done, the
- * set of formatted lines can be extracted from the object,
- * the layout can be rendered, and conversion between logical
- * character positions within the layout's text, and the physical
- * position of the resulting glyphs can be made.
+ * A `PangoLayout is initialized with a `PangoContext`, UTF-8 string
+ * and set of attributes for that string. Once that is done, the set of
+ * formatted lines can be extracted from the object, the layout can be
+ * rendered, and conversion between logical character positions within
+ * the layout's text, and the physical position of the resulting glyphs
+ * can be made.
  *
  * There are a number of parameters to adjust the formatting of a
  * `PangoLayout`. The following image shows adjustable parameters
@@ -51,17 +50,12 @@
  */
 
 /**
- * PangoLayout:
- *
- * The `PangoLayout` structure is opaque, and has no user-visible fields.
- */
-
-/**
  * PangoLayoutIter:
  *
- * A `PangoLayoutIter` structure can be used to iterate over the visual
- * extents of a [class@Pango.Layout]. To obtain a `PangoLayoutIter`, use
- * pango_layout_get_iter().
+ * A `PangoLayoutIter` can be used to iterate over the visual
+ * extents of a `PangoLayout`.
+ *
+ * To obtain a `PangoLayoutIter`, use [method@Pango.Layout.get_iter].
  *
  * The `PangoLayoutIter` structure is opaque, and has no user-visible fields.
  */
@@ -285,9 +279,10 @@ pango_layout_new (PangoContext *context)
  * pango_layout_copy:
  * @src: a `PangoLayout`
  *
- * Does a deep copy-by-value of the @src layout. The attribute list,
- * tab array, and text from the original layout are all copied by
- * value.
+ * Creates a deep copy-by-value of the layout.
+ *
+ * The attribute list, tab array, and text from the original layout
+ * are all copied by value.
  *
  * Return value: (transfer full): the newly allocated `PangoLayout`,
  *   with a reference count of one, which should be freed
@@ -345,7 +340,9 @@ pango_layout_get_context (PangoLayout *layout)
  *   wrapping or ellipsization should be performed.
  *
  * Sets the width to which the lines of the `PangoLayout` should wrap or
- * ellipsized. The default value is -1: no width set.
+ * ellipsized.
+ *
+ * The default value is -1: no width set.
  */
 void
 pango_layout_set_width (PangoLayout *layout,
@@ -390,6 +387,7 @@ pango_layout_get_width (PangoLayout    *layout)
  *   or desired number of lines if negative.
  *
  * Sets the height to which the `PangoLayout` should be ellipsized at.
+ *
  * There are two different behaviors, based on whether @height is positive
  * or negative.
  *
@@ -442,6 +440,7 @@ pango_layout_set_height (PangoLayout *layout,
  * @layout: a `PangoLayout`
  *
  * Gets the height of layout used for ellipsization.
+ *
  * See [method@Pango.Layout.set_height] for details.
  *
  * Return value: the height, in Pango units if positive,
@@ -461,9 +460,11 @@ pango_layout_get_height (PangoLayout *layout)
  * @layout: a `PangoLayout`
  * @wrap: the wrap mode
  *
- * Sets the wrap mode; the wrap mode only has effect if a width
- * is set on the layout with [method@Pango.Layout.set_width].
- * To turn off wrapping, set the width to -1.
+ * Sets the wrap mode.
+ *
+ * The wrap mode only has effect if a width is set on the layout
+ * with [method@Pango.Layout.set_width]. To turn off wrapping,
+ * set the width to -1.
  */
 void
 pango_layout_set_wrap (PangoLayout   *layout,
@@ -556,8 +557,9 @@ pango_layout_set_indent (PangoLayout *layout,
  * pango_layout_get_indent:
  * @layout: a `PangoLayout`
  *
- * Gets the paragraph indent width in Pango units. A negative value
- * indicates a hanging indentation.
+ * Gets the paragraph indent width in Pango units.
+ *
+ * A negative value indicates a hanging indentation.
  *
  * Return value: the indent in Pango units.
  */
@@ -574,8 +576,9 @@ pango_layout_get_indent (PangoLayout *layout)
  * @spacing: the amount of spacing
  *
  * Sets the amount of spacing in Pango unit between
- * the lines of the layout. When placing lines with
- * spacing, Pango arranges things so that
+ * the lines of the layout.
+ *
+ * When placing lines with spacing, Pango arranges things so that
  *
  * line2.top = line1.bottom + spacing
  *
@@ -619,8 +622,8 @@ pango_layout_get_spacing (PangoLayout *layout)
  * @factor: the new line spacing factor
  *
  * Sets a factor for line spacing.
- * Typical values are: 0, 1, 1.5, 2.
- * The default values is 0.
+ *
+ * Typical values are: 0, 1, 1.5, 2. The default values is 0.
  *
  * If @factor is non-zero, lines are placed so that
  *
@@ -651,8 +654,9 @@ pango_layout_set_line_spacing (PangoLayout *layout,
  * pango_layout_get_line_spacing:
  * @layout: a `PangoLayout`
  *
- * Gets the value that has been set with
- * [method@Pango.Layout.set_line_spacing].
+ * Gets the line spacing factor of @layout.
+ *
+ * See [method@Pango.Layout.set_line_spacing].
  *
  * Since: 1.44
  */
@@ -726,8 +730,9 @@ pango_layout_get_attributes (PangoLayout *layout)
  * @desc: (allow-none): the new `PangoFontDescription`, or %NULL
  *   to unset the current font description
  *
- * Sets the default font description for the layout. If no font
- * description is set on the layout, the font description from
+ * Sets the default font description for the layout.
+ *
+ * If no font description is set on the layout, the font description from
  * the layout's context is used.
  */
 void
@@ -776,10 +781,11 @@ pango_layout_get_font_description (PangoLayout *layout)
  * @justify: whether the lines in the layout should be justified.
  *
  * Sets whether each complete line should be stretched to fill the
- * entire width of the layout. This stretching is typically done by
- * adding whitespace, but for some scripts (such as Arabic), the
- * justification may be done in more complex ways, like extending
- * the characters.
+ * entire width of the layout.
+ *
+ * Stretching is typically done by adding whitespace, but for some scripts
+ * (such as Arabic), the justification may be done in more complex ways,
+ * like extending the characters.
  *
  * Note that this setting is not implemented and so is ignored in
  * Pango older than 1.18.
@@ -821,14 +827,14 @@ pango_layout_get_justify (PangoLayout *layout)
  * @auto_dir: if %TRUE, compute the bidirectional base direction
  *   from the layout's contents.
  *
- * Sets whether to calculate the bidirectional base direction
- * for the layout according to the contents of the layout;
- * when this flag is on (the default), then paragraphs in
-   @layout that begin with strong right-to-left characters
- * (Arabic and Hebrew principally), will have right-to-left
- * layout, paragraphs with letters from other scripts will
- * have left-to-right layout. Paragraphs with only neutral
- * characters get their direction from the surrounding paragraphs.
+ * Sets whether to calculate the base direction
+ * for the layout according to its contents.
+ *
+ * When this flag is on (the default), then paragraphs in @layout that
+ * begin with strong right-to-left characters (Arabic and Hebrew principally),
+ * will have right-to-left layout, paragraphs with letters from other scripts
+ * will have left-to-right layout. Paragraphs with only neutral characters
+ * get their direction from the surrounding paragraphs.
  *
  * When %FALSE, the choice between left-to-right and right-to-left
  * layout is done according to the base direction of the layout's
@@ -859,8 +865,9 @@ pango_layout_set_auto_dir (PangoLayout *layout,
  * pango_layout_get_auto_dir:
  * @layout: a `PangoLayout`
  *
- * Gets whether to calculate the bidirectional base direction
- * for the layout according to the contents of the layout.
+ * Gets whether to calculate the base direction for the layout
+ * according to its contents.
+ *
  * See [method@Pango.Layout.set_auto_dir].
  *
  * Return value: %TRUE if the bidirectional base direction
@@ -919,8 +926,9 @@ pango_layout_get_alignment (PangoLayout *layout)
  * @layout: a `PangoLayout`
  * @tabs: (allow-none): a `PangoTabArray`, or %NULL
  *
- * Sets the tabs to use for @layout, overriding the default tabs
- * (by default, tabs are every 8 spaces). If @tabs is %NULL, the
+ * Sets the tabs to use for @layout, overriding the default tabs.
+ *
+ * By default, tabs are every 8 spaces. If @tabs is %NULL, the
  * default tabs are reinstated. @tabs is copied into the layout;
  * you must free your copy of @tabs yourself.
  */
@@ -972,6 +980,8 @@ pango_layout_get_tabs (PangoLayout *layout)
  * @layout: a `PangoLayout`
  * @setting: new setting
  *
+ * Sets the single paragraph mode of @layout.
+ *
  * If @setting is %TRUE, do not treat newlines and similar characters
  * as paragraph separators; instead, keep all text in a single paragraph,
  * and display a glyph for paragraph separator characters. Used when
@@ -996,7 +1006,9 @@ pango_layout_set_single_paragraph_mode (PangoLayout *layout,
  * pango_layout_get_single_paragraph_mode:
  * @layout: a `PangoLayout`
  *
- * Obtains the value set by [method@Pango.Layout.set_single_paragraph_mode].
+ * Obtains whether @layout is in single paragraph mode.
+ *
+ * See [method@Pango.Layout.set_single_paragraph_mode].
  *
  * Return value: %TRUE if the layout does not break paragraphs at
  * paragraph separator characters, %FALSE otherwise.
@@ -1015,6 +1027,7 @@ pango_layout_get_single_paragraph_mode (PangoLayout *layout)
  * @ellipsize: the new ellipsization mode for @layout
  *
  * Sets the type of ellipsization being performed for @layout.
+ *
  * Depending on the ellipsization mode @ellipsize text is
  * removed from the start, middle, or end of text so they
  * fit within the width and height of layout set with
@@ -1048,6 +1061,7 @@ pango_layout_set_ellipsize (PangoLayout        *layout,
  * @layout: a `PangoLayout`
  *
  * Gets the type of ellipsization being performed for @layout.
+ *
  * See [method@Pango.Layout.set_ellipsize].
  *
  * Use [method@Pango.Layout.is_ellipsized] to query whether any
@@ -1223,7 +1237,12 @@ pango_layout_get_character_count (PangoLayout *layout)
  * @length: length of marked-up text in bytes, or -1 if @markup is
  *   null-terminated
  *
- * Same as [method@Pango.Layout.set_markup_with_accel],
+ * Sets the layout text and attribute list from marked-up text.
+ *
+ * See [Pango Markup](pango_markup.html)).
+ * Replaces the current text and attribute list.
+ *
+ * This is the Same as [method@Pango.Layout.set_markup_with_accel],
  * but the markup text isn't scanned for accelerators.
  */
 void
@@ -1244,9 +1263,10 @@ pango_layout_set_markup (PangoLayout *layout,
  * @accel_char: (out caller-allocates) (allow-none): return location
  *   for first located accelerator, or %NULL
  *
- * Sets the layout text and attribute list from marked-up text (see
- * [Pango Markup](pango_markup.html)). Replaces the current text
- * and attribute list.
+ * Sets the layout text and attribute list from marked-up text.
+ *
+ * See [Pango Markup](pango_markup.html)).
+ * Replaces the current text and attribute list.
  *
  * If @accel_marker is nonzero, the given character will mark the
  * character following it as an accelerator. For example, @accel_marker
@@ -1292,9 +1312,7 @@ pango_layout_set_markup_with_accel (PangoLayout *layout,
  * pango_layout_get_unknown_glyphs_count:
  * @layout: a `PangoLayout`
  *
- * Counts the number unknown glyphs in @layout. That is, zero if
- * glyphs for all characters in the layout text were found, or more
- * than zero otherwise.
+ * Counts the number of unknown glyphs in @layout.
  *
  * This function can be used to determine if there are any fonts
  * available to render all characters in a certain string, or when
@@ -1371,9 +1389,10 @@ layout_changed (PangoLayout *layout)
  * @layout: a `PangoLayout`
  *
  * Forces recomputation of any state in the `PangoLayout` that
- * might depend on the layout's context. This function should
- * be called if you make changes to the context subsequent
- * to creating the layout.
+ * might depend on the layout's context.
+ *
+ * This function should be called if you make changes to the context
+ * subsequent to creating the layout.
  */
 void
 pango_layout_context_changed (PangoLayout *layout)
@@ -1388,12 +1407,13 @@ pango_layout_context_changed (PangoLayout *layout)
  * pango_layout_get_serial:
  * @layout: a `PangoLayout`
  *
- * Returns the current serial number of @layout. The serial number is
- * initialized to an small number larger than zero when a new layout
- * is created and is increased whenever the layout is changed using any
- * of the setter functions, or the `PangoContext` it uses has changed.
- * The serial may wrap, but will never have the value 0. Since it
- * can wrap, never compare it with "less than", always use "not equals".
+ * Returns the current serial number of @layout.
+ *
+ * The serial number is initialized to an small number larger than zero
+ * when a new layout is created and is increased whenever the layout is
+ * changed using any of the setter functions, or the `PangoContext` it
+ * uses has changed. The serial may wrap, but will never have the value 0.
+ * Since it can wrap, never compare it with "less than", always use "not equals".
  *
  * This can be used to automatically detect changes to a `PangoLayout`,
  * and is useful for example to decide whether a layout needs redrawing.
@@ -1804,7 +1824,8 @@ pango_layout_index_to_line_and_extents (PangoLayout     *layout,
  *   (%PANGO_SCALE units per device unit), or %NULL
  *
  * Converts from byte @index_ within the @layout to line and X position.
- * (X position is measured from the left edge of the line)
+ *
+ * The X position is measured from the left edge of the line.
  */
 void
 pango_layout_index_to_line_x (PangoLayout *layout,
@@ -1869,10 +1890,12 @@ pango_layout_index_to_line_x (PangoLayout *layout,
  *   the cursor should be displayed.
  *
  * Computes a new cursor position from an old position and a count of
- * positions to move visually. If @direction is positive, then the new
- * strong cursor position will be one position to the right of the old
- * cursor position. If @direction is negative, then the new strong cursor
- * position will be one position to the left of the old cursor position.
+ * positions to move visually.
+ *
+ * If @direction is positive, then the new strong cursor position will be
+ * one position to the right of the old cursor position. If @direction is
+ * negative, then the new strong cursor position will be one position to
+ * the left of the old cursor position.
  *
  * In the presence of bidirectional text, the correspondence between
  * logical and visual order will depend on the direction of the current
@@ -2042,7 +2065,9 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
  *   of the grapheme.
  *
  * Converts from X and Y position within a layout to the byte index to the
- * character at that logical position. If the Y position is not inside the
+ * character at that logical position.
+ *
+ * If the Y position is not inside the
  * layout, the closest position is chosen (the position will be clamped
  * inside the layout). If the X position is not within the layout, then
  * the start or the end of the line is chosen as described for
@@ -2142,11 +2167,12 @@ pango_layout_xy_to_index (PangoLayout *layout,
  * @pos: (out): rectangle in which to store the position of the grapheme
  *
  * Converts from an index within a `PangoLayout` to the onscreen position
- * corresponding to the grapheme at that index, which is represented
- * as rectangle. Note that `pos->x` is always the leading edge of the
- * grapheme and `pos->x + pos->width` the trailing edge of the grapheme.
- * If the directionality of the grapheme is right-to-left, then `pos->width`
- * will be negative.
+ * corresponding to the grapheme at that index.
+ *
+ * The return value is represented as rectangle. Note that `pos->x` is
+ * always the leading edge of the grapheme and `pos->x + pos->width` the
+ * trailing edge of the grapheme. If the directionality of the grapheme
+ * is right-to-left, then `pos->width` will be negative.
  */
 void
 pango_layout_index_to_pos (PangoLayout    *layout,
@@ -2401,12 +2427,13 @@ pango_layout_get_direction (PangoLayout *layout,
  *   position (may be %NULL)
  *
  * Given an index within a layout, determines the positions that of the
- * strong and weak cursors if the insertion point is at that index. The
- * position of each cursor is stored as a zero-width rectangle. The strong
- * cursor location is the location where characters of the directionality
- * equal to the base direction of the layout are inserted. The weak cursor
- * location is the location where characters of the directionality opposite
- * to the base direction of the layout are inserted.
+ * strong and weak cursors if the insertion point is at that index.
+ *
+ * The position of each cursor is stored as a zero-width rectangle.
+ * The strong cursor location is the location where characters of the
+ * directionality equal to the base direction of the layout are inserted.
+ * The weak cursor location is the location where characters of the
+ * directionality opposite to the base direction of the layout are inserted.
  */
 void
 pango_layout_get_cursor_pos (PangoLayout    *layout,
@@ -2896,8 +2923,9 @@ pango_layout_get_pixel_extents (PangoLayout    *layout,
  * @height: (out) (allow-none): location to store the logical height, or %NULL
  *
  * Determines the logical width and height of a `PangoLayout` in Pango
- * units (device units scaled by %PANGO_SCALE). This is simply a
- * convenience function around [method@Pango.Layout.get_extents].
+ * units.
+ *
+ * This is simply a convenience function around [method@Pango.Layout.get_extents].
  */
 void
 pango_layout_get_size (PangoLayout *layout,
@@ -2921,8 +2949,10 @@ pango_layout_get_size (PangoLayout *layout,
  * @height: (out) (allow-none): location to store the logical height, or %NULL
  *
  * Determines the logical width and height of a `PangoLayout` in device
- * units. ([method@Pango.Layout.get_size] returns the width and height
- * scaled by %PANGO_SCALE.) This is simply a convenience function around
+ * units.
+ *
+ * [method@Pango.Layout.get_size] returns the width and height
+ * scaled by %PANGO_SCALE. This is simply a convenience function around
  * [method@Pango.Layout.get_pixel_extents].
  */
 void
