@@ -38,9 +38,10 @@ typedef struct _PangoMatrix    PangoMatrix;
  * @x0: x translation
  * @y0: y translation
  *
- * A structure specifying a transformation between user-space
- * coordinates and device coordinates. The transformation
- * is given by
+ * A `PangoMatrix` specifies a transformation between user-space
+ * and device coordinates.
+ *
+ * The transformation is given by
  *
  * ```
  * x_device = x_user * matrix->xx + y_user * matrix->xy + matrix->x0;
@@ -48,7 +49,7 @@ typedef struct _PangoMatrix    PangoMatrix;
  * ```
  *
  * Since: 1.6
- **/
+ */
 struct _PangoMatrix
 {
   double xx;
