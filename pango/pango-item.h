@@ -34,7 +34,8 @@ typedef struct _PangoItem PangoItem;
  * PANGO_ANALYSIS_FLAG_CENTERED_BASELINE:
  *
  * Whether the segment should be shifted to center around the baseline.
- * Used in vertical writing directions mostly.
+ *
+ * This is mainly used in vertical writing directions.
  *
  * Since: 1.16
  */
@@ -43,8 +44,7 @@ typedef struct _PangoItem PangoItem;
 /**
  * PANGO_ANALYSIS_FLAG_IS_ELLIPSIS:
  *
- * This flag is used to mark runs that hold ellipsized text,
- * in an ellipsized layout.
+ * Whether this run holds ellipsized text.
  *
  * Since: 1.36.7
  */
@@ -53,8 +53,7 @@ typedef struct _PangoItem PangoItem;
 /**
  * PANGO_ANALYSIS_FLAG_NEED_HYPHEN:
  *
- * This flag tells Pango to add a hyphen at the end of the
- * run during shaping.
+ * Whether to add a hyphen at the end of the run during shaping.
  *
  * Since: 1.44
  */
