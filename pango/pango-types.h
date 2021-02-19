@@ -56,11 +56,11 @@ typedef guint32 PangoGlyph;
 /**
  * PANGO_SCALE:
  *
- * The %PANGO_SCALE macro represents the scale between dimensions used
- * for Pango distances and device units. (The definition of device
- * units is dependent on the output device; it will typically be pixels
- * for a screen, and points for a printer.) %PANGO_SCALE is currently
- * 1024, but this may be changed in the future.
+ * The scale between dimensions used for Pango distances and device units.
+ *
+ * The definition of device units is dependent on the output device; it will
+ * typically be pixels for a screen, and points for a printer. %PANGO_SCALE is
+ * currently 1024, but this may be changed in the future.
  *
  * When setting font sizes, device units are always considered to be
  * points (as in "12 point font"), rather than pixels.
@@ -132,10 +132,11 @@ double pango_units_to_double (int i) G_GNUC_CONST;
  * @width: width of the rectangle.
  * @height: height of the rectangle.
  *
- * The `PangoRectangle` structure represents a rectangle. It is frequently
- * used to represent the logical or ink extents of a single glyph or section
- * of text. (See, for instance, [method@Pango.Font.get_glyph_extents].)
+ * The `PangoRectangle` structure represents a rectangle.
  *
+ * `PangoRectangle` is frequently used to represent the logical or ink
+ * extents of a single glyph or section of text. (See, for instance,
+ * [method@Pango.Font.get_glyph_extents].)
  */
 struct _PangoRectangle
 {
