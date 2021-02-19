@@ -19,16 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:pangocoverage
- * @short_description:Unicode character range coverage storage
- * @title:Coverage Maps
- *
- * It is often necessary in Pango to determine if a particular font can
- * represent a particular character, and also how well it can represent
- * that character. The #PangoCoverage is a data structure that is used
- * to represent that information.
- */
 #include "config.h"
 #include <string.h>
 
@@ -117,9 +107,9 @@ pango_coverage_class_init (PangoCoverageClass *class)
 /**
  * pango_coverage_new:
  *
- * Create a new #PangoCoverage
+ * Create a new `PangoCoverage`
  *
- * Return value: the newly allocated #PangoCoverage,
+ * Return value: the newly allocated `PangoCoverage`,
  *               initialized to %PANGO_COVERAGE_NONE
  *               with a reference count of one, which
  *               should be freed with pango_coverage_unref().
@@ -132,12 +122,11 @@ pango_coverage_new (void)
 
 /**
  * pango_coverage_copy:
- * @coverage: a #PangoCoverage
+ * @coverage: a `PangoCoverage`
  *
- * Copy an existing #PangoCoverage. (This function may now be unnecessary
- * since we refcount the structure. File a bug if you use it.)
+ * Copy an existing `PangoCoverage`.
  *
- * Return value: (transfer full): the newly allocated #PangoCoverage,
+ * Return value: (transfer full): the newly allocated `PangoCoverage`,
  *               with a reference count of one, which should be freed
  *               with pango_coverage_unref().
  **/
@@ -149,9 +138,9 @@ pango_coverage_copy (PangoCoverage *coverage)
 
 /**
  * pango_coverage_ref:
- * @coverage: (not nullable): a #PangoCoverage
+ * @coverage: (not nullable): a `PangoCoverage`
  *
- * Increase the reference count on the #PangoCoverage by one
+ * Increase the reference count on the `PangoCoverage` by one.
  *
  * Return value: (transfer full): @coverage
  **/
@@ -163,9 +152,10 @@ pango_coverage_ref (PangoCoverage *coverage)
 
 /**
  * pango_coverage_unref:
- * @coverage: (transfer full) (not nullable): a #PangoCoverage
+ * @coverage: (transfer full) (not nullable): a `PangoCoverage`
  *
- * Decrease the reference count on the #PangoCoverage by one.
+ * Decrease the reference count on the `PangoCoverage` by one.
+ *
  * If the result is zero, free the coverage and all associated memory.
  **/
 void
@@ -176,10 +166,10 @@ pango_coverage_unref (PangoCoverage *coverage)
 
 /**
  * pango_coverage_get:
- * @coverage: a #PangoCoverage
+ * @coverage: a `PangoCoverage`
  * @index_: the index to check
  *
- * Determine whether a particular index is covered by @coverage
+ * Determine whether a particular index is covered by @coverage.
  *
  * Return value: the coverage level of @coverage for character @index_.
  **/
@@ -192,7 +182,7 @@ pango_coverage_get (PangoCoverage *coverage,
 
 /**
  * pango_coverage_set:
- * @coverage: a #PangoCoverage
+ * @coverage: a `PangoCoverage`
  * @index_: the index to modify
  * @level: the new level for @index_
  *
@@ -208,8 +198,8 @@ pango_coverage_set (PangoCoverage     *coverage,
 
 /**
  * pango_coverage_max:
- * @coverage: a #PangoCoverage
- * @other: another #PangoCoverage
+ * @coverage: a `PangoCoverage`
+ * @other: another `PangoCoverage`
  *
  * Set the coverage for each index in @coverage to be the max (better)
  * value of the current coverage for the index and the coverage for
@@ -225,12 +215,12 @@ pango_coverage_max (PangoCoverage *coverage,
 
 /**
  * pango_coverage_to_bytes:
- * @coverage: a #PangoCoverage
+ * @coverage: a `PangoCoverage`
  * @bytes: (out) (array length=n_bytes) (element-type guint8):
  *   location to store result (must be freed with g_free())
  * @n_bytes: (out): location to store size of result
  *
- * Convert a #PangoCoverage structure into a flat binary format
+ * Convert a `PangoCoverage` structure into a flat binary format.
  *
  * Deprecated: 1.44: This returns %NULL
  **/
@@ -246,14 +236,14 @@ pango_coverage_to_bytes (PangoCoverage  *coverage,
 /**
  * pango_coverage_from_bytes:
  * @bytes: (array length=n_bytes) (element-type guint8): binary data
- *   representing a #PangoCoverage
+ *   representing a `PangoCoverage`
  * @n_bytes: the size of @bytes in bytes
  *
  * Convert data generated from pango_coverage_to_bytes() back
- * to a #PangoCoverage
+ * to a `PangoCoverage`.
  *
  * Return value: (transfer full) (nullable): a newly allocated
- *               #PangoCoverage, or %NULL if the data was invalid.
+ *               `PangoCoverage`, or %NULL if the data was invalid.
  *
  * Deprecated: 1.44: This returns %NULL
  **/
