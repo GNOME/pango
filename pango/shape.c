@@ -19,16 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:glyphs
- * @short_description:Structures for storing information about glyphs
- * @title:Glyphs
- *
- * pango_shape() produces a string of glyphs which
- * can be measured or drawn to the screen. The following
- * structures are used to store information about
- * glyphs.
- */
 #include "config.h"
 
 #include "pango-impl-utils.h"
@@ -40,23 +30,25 @@
 
 /**
  * pango_shape:
- * @text:      the text to process
- * @length:    the length (in bytes) of @text
- * @analysis:  #PangoAnalysis structure from pango_itemize()
- * @glyphs:    glyph string in which to store results
+ * @text: the text to process
+ * @length: the length (in bytes) of @text
+ * @analysis: `PangoAnalysis` structure from [func@itemize]
+ * @glyphs: glyph string in which to store results
  *
- * Given a segment of text and the corresponding #PangoAnalysis structure
- * returned from pango_itemize(), convert the characters into glyphs. You
- * may also pass in only a substring of the item from pango_itemize().
+ * Convert the characters in @text into glyphs.
  *
- * It is recommended that you use pango_shape_full() instead, since
+ * Given a segment of text and the corresponding `PangoAnalysis` structure
+ * returned from [func@itemize], convert the characters into glyphs. You
+ * may also pass in only a substring of the item from [func@itemize].
+ *
+ * It is recommended that you use [func@shape_full] instead, since
  * that API allows for shaping interaction happening across text item
  * boundaries.
  *
  * Note that the extra attributes in the @analyis that is returned from
- * pango_itemize() have indices that are relative to the entire paragraph,
+ * [func@itemize] have indices that are relative to the entire paragraph,
  * so you need to subtract the item offset from their indices before
- * calling pango_shape().
+ * calling [func@shape].
  */
 void
 pango_shape (const gchar         *text,
@@ -69,28 +61,29 @@ pango_shape (const gchar         *text,
 
 /**
  * pango_shape_full:
- * @item_text:        valid UTF-8 text to shape.
- * @item_length:      the length (in bytes) of @item_text. -1 means nul-terminated text.
+ * @item_text: valid UTF-8 text to shape.
+ * @item_length: the length (in bytes) of @item_text. -1 means nul-terminated text.
  * @paragraph_text: (allow-none): text of the paragraph (see details).  May be %NULL.
  * @paragraph_length: the length (in bytes) of @paragraph_text. -1 means nul-terminated text.
- * @analysis:  #PangoAnalysis structure from pango_itemize().
- * @glyphs:    glyph string in which to store results.
+ * @analysis: `PangoAnalysis` structure from [func@itemize].
+ * @glyphs: glyph string in which to store results.
  *
- * Given a segment of text and the corresponding
- * #PangoAnalysis structure returned from pango_itemize(),
- * convert the characters into glyphs. You may also pass
- * in only a substring of the item from pango_itemize().
+ * Convert the characters in @text into glyphs.
  *
- * This is similar to pango_shape(), except it also can optionally take
+ * Given a segment of text and the corresponding `PangoAnalysis` structure
+ * returned from [func@itemize], convert the characters into glyphs. You may
+ * also pass in only a substring of the item from [func@itemize].
+ *
+ * This is similar to [func@shape], except it also can optionally take
  * the full paragraph text as input, which will then be used to perform
- * certain cross-item shaping interactions.  If you have access to the broader
+ * certain cross-item shaping interactions. If you have access to the broader
  * text of which @item_text is part of, provide the broader text as
- * @paragraph_text.  If @paragraph_text is %NULL, item text is used instead.
+ * @paragraph_text. If @paragraph_text is %NULL, item text is used instead.
  *
  * Note that the extra attributes in the @analyis that is returned from
- * pango_itemize() have indices that are relative to the entire paragraph,
+ * [func@itemize] have indices that are relative to the entire paragraph,
  * so you do not pass the full paragraph text as @paragraph_text, you need
- * to subtract the item offset from their indices before calling pango_shape_full().
+ * to subtract the item offset from their indices before calling [func@shape_full].
  *
  * Since: 1.32
  */
@@ -167,23 +160,24 @@ fallback_shape (const char          *text,
  *     May be %NULL.
  * @paragraph_length: the length (in bytes) of @paragraph_text.
  *     -1 means nul-terminated text.
- * @analysis:  #PangoAnalysis structure from pango_itemize()
+ * @analysis:  `PangoAnalysis` structure from [func@itemize]
  * @glyphs: glyph string in which to store results
  * @flags: flags influencing the shaping process
  *
- * Given a segment of text and the corresponding
- * #PangoAnalysis structure returned from pango_itemize(),
- * convert the characters into glyphs. You may also pass
- * in only a substring of the item from pango_itemize().
+ * Convert the characters in @text into glyphs.
  *
- * This is similar to pango_shape_full(), except it also takes
- * flags that can influence the shaping process.
+ * Given a segment of text and the corresponding `PangoAnalysis` structure
+ * returned from [func@itemize], convert the characters into glyphs. You may
+ * also pass in only a substring of the item from [func@itemize].
+ *
+ * This is similar to [func@shape_full], except it also takes flags that can
+ * influence the shaping process.
  *
  * Note that the extra attributes in the @analyis that is returned from
- * pango_itemize() have indices that are relative to the entire paragraph,
+ * [func@itemize] have indices that are relative to the entire paragraph,
  * so you do not pass the full paragraph text as @paragraph_text, you need
  * to subtract the item offset from their indices before calling
- * pango_shape_with_flags().
+ * [func@shape_with_flags].
  *
  * Since: 1.44
  */
