@@ -19,18 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:pangorenderer
- * @short_description:Rendering driver base class
- * @title:PangoRenderer
- *
- * `PangoRenderer` is a base class that contains the necessary logic for
- * rendering a `PangoLayout` or `PangoGlyphString`. By subclassing
- * `PangoRenderer` and overriding operations such as @draw_glyphs and
- * @draw_rectangle, renderers for particular font backends and
- * destinations can be created.
- */
-
 #include "config.h"
 #include <stdlib.h>
 
@@ -815,7 +803,9 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
  *
  * Draws the glyphs in @glyph_item with the specified `PangoRenderer`,
  * embedding the text associated with the glyphs in the output if the
- * output format supports it (PDF for example).
+ * output format supports it.
+ *
+ * This is useful for rendering text in PDF.
  *
  * Note that @text is the start of the text for layout, which is then
  * indexed by `glyph_item->item->offset`.
@@ -1016,9 +1006,10 @@ pango_renderer_default_draw_rectangle (PangoRenderer  *renderer,
  *
  * Draw a squiggly line that approximately covers the given rectangle
  * in the style of an underline used to indicate a spelling error.
- * (The width of the underline is rounded to an integer number
+ *
+ * The width of the underline is rounded to an integer number
  * of up/down segments and the resulting rectangle is centered
- * in the original rectangle)
+ * in the original rectangle.
  *
  * This should be called while @renderer is already active.
  * Use [method@Pango.Renderer.activate] to activate a renderer.
@@ -1262,6 +1253,7 @@ pango_renderer_activate (PangoRenderer *renderer)
  * @renderer: a `PangoRenderer`
  *
  * Cleans up after rendering operations on @renderer.
+ *
  * See docs for [method@Pango.Renderer.activate].
  *
  * Since: 1.8
@@ -1287,6 +1279,7 @@ pango_renderer_deactivate (PangoRenderer *renderer)
  * @color: (allow-none): the new color or %NULL to unset the current color
  *
  * Sets the color for part of the rendering.
+ *
  * Also see [method@Pango.Renderer.set_alpha].
  *
  * Since: 1.8
@@ -1352,6 +1345,7 @@ pango_renderer_get_color (PangoRenderer   *renderer,
  * @alpha: an alpha value between 1 and 65536, or 0 to unset the alpha
  *
  * Sets the alpha for part of the rendering.
+ *
  * Note that the alpha may only be used if a color is
  * specified for @part as well.
  *
@@ -1404,9 +1398,11 @@ pango_renderer_get_alpha (PangoRenderer   *renderer,
  * @part: the part for which rendering has changed.
  *
  * Informs Pango that the way that the rendering is done
- * for @part has changed in a way that would prevent multiple
- * pieces being joined together into one drawing call. For
- * instance, if a subclass of `PangoRenderer` was to add a stipple
+ * for @part has changed.
+ *
+ * This should be called if the rendering changes in a way that would
+ * prevent multiple pieces being joined together into one drawing call.
+ * For instance, if a subclass of `PangoRenderer` was to add a stipple
  * option for drawing underlines, it needs to call
  *
  * ```
@@ -1566,7 +1562,9 @@ pango_renderer_set_matrix (PangoRenderer     *renderer,
  * @renderer: a `PangoRenderer`
  *
  * Gets the transformation matrix that will be applied when
- * rendering. See [method@Pango.Renderer.set_matrix].
+ * rendering.
+ *
+ * See [method@Pango.Renderer.set_matrix].
  *
  * Return value: (nullable): the matrix, or %NULL if no matrix has
  *   been set (which is the same as the identity matrix). The returned
@@ -1587,6 +1585,7 @@ pango_renderer_get_matrix (PangoRenderer *renderer)
  * @renderer: a `PangoRenderer`
  *
  * Gets the layout currently being rendered using @renderer.
+ *
  * Calling this function only makes sense from inside a subclass's
  * methods, like in its draw_shape vfunc, for example.
  *
@@ -1612,6 +1611,7 @@ pango_renderer_get_layout (PangoRenderer *renderer)
  * @renderer: a `PangoRenderer`
  *
  * Gets the layout line currently being rendered using @renderer.
+ *
  * Calling this function only makes sense from inside a subclass's
  * methods, like in its draw_shape vfunc, for example.
  *
