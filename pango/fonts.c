@@ -96,7 +96,9 @@ pango_font_description_new (void)
  * @desc: a `PangoFontDescription`.
  * @family: a string representing the family name.
  *
- * Sets the family name field of a font description. The family
+ * Sets the family name field of a font description.
+ *
+ * The family
  * name represents a family of related font styles, and will
  * resolve to a particular `PangoFontFamily`. In some uses of
  * `PangoFontDescription`, it is also possible to use a comma
@@ -118,7 +120,9 @@ pango_font_description_set_family (PangoFontDescription *desc,
  * @desc: a `PangoFontDescription`
  * @family: a string representing the family name
  *
- * Like [method@Pango.FontDescription.set_family], except that no
+ * Sets the family name field of a font description, without copying the string.
+ *
+ * This is like [method@Pango.FontDescription.set_family], except that no
  * copy of @family is made. The caller must make sure that the
  * string passed in stays around until @desc has been freed or the
  * name is set again. This function can be used if @family is a static
@@ -155,6 +159,7 @@ pango_font_description_set_family_static (PangoFontDescription *desc,
  * @desc: a `PangoFontDescription`.
  *
  * Gets the family name field of a font description.
+ *
  * See [method@Pango.FontDescription.set_family].
  *
  * Return value: (nullable): the family name field for the font
@@ -200,6 +205,7 @@ pango_font_description_set_style (PangoFontDescription *desc,
  * @desc: a `PangoFontDescription`
  *
  * Gets the style field of a `PangoFontDescription`.
+ *
  * See [method@Pango.FontDescription.set_style].
  *
  * Return value: the style field for the font description.
@@ -219,8 +225,9 @@ pango_font_description_get_style (const PangoFontDescription *desc)
  * @desc: a `PangoFontDescription`
  * @variant: the variant type for the font description.
  *
- * Sets the variant field of a font description. The
- * [enum@Pango.Variant] can either be %PANGO_VARIANT_NORMAL
+ * Sets the variant field of a font description.
+ *
+ * The [enum@Pango.Variant] can either be %PANGO_VARIANT_NORMAL
  * or %PANGO_VARIANT_SMALL_CAPS.
  */
 void
@@ -238,6 +245,7 @@ pango_font_description_set_variant (PangoFontDescription *desc,
  * @desc: a `PangoFontDescription`.
  *
  * Gets the variant field of a `PangoFontDescription`.
+ *
  * See [method@Pango.FontDescription.set_variant].
  *
  * Return value: the variant field for the font description.
@@ -257,7 +265,9 @@ pango_font_description_get_variant (const PangoFontDescription *desc)
  * @desc: a `PangoFontDescription`
  * @weight: the weight for the font description.
  *
- * Sets the weight field of a font description. The weight field
+ * Sets the weight field of a font description.
+ *
+ * The weight field
  * specifies how bold or light the font should be. In addition
  * to the values of the [enum@Pango.Weight] enumeration, other
  * intermediate numeric values are possible.
@@ -277,6 +287,7 @@ pango_font_description_set_weight (PangoFontDescription *desc,
  * @desc: a `PangoFontDescription`
  *
  * Gets the weight field of a font description.
+ *
  * See [method@Pango.FontDescription.set_weight].
  *
  * Return value: the weight field for the font description.
@@ -296,8 +307,9 @@ pango_font_description_get_weight (const PangoFontDescription *desc)
  * @desc: a `PangoFontDescription`
  * @stretch: the stretch for the font description
  *
- * Sets the stretch field of a font description. The
- * [enum@Pango.Stretch] field specifies how narrow or
+ * Sets the stretch field of a font description.
+ *
+ * The [enum@Pango.Stretch] field specifies how narrow or
  * wide the font should be.
  */
 void
@@ -315,6 +327,7 @@ pango_font_description_set_stretch (PangoFontDescription *desc,
  * @desc: a `PangoFontDescription`.
  *
  * Gets the stretch field of a font description.
+ *
  * See [method@Pango.FontDescription.set_stretch].
  *
  * Return value: the stretch field for the font description.
@@ -342,6 +355,7 @@ pango_font_description_get_stretch (const PangoFontDescription *desc)
  *   a particular size in device units.
  *
  * Sets the size field of a font description in fractional points.
+ *
  * This is mutually exclusive with
  * [method@Pango.FontDescription.set_absolute_size].
  */
@@ -362,6 +376,7 @@ pango_font_description_set_size (PangoFontDescription *desc,
  * @desc: a `PangoFontDescription`
  *
  * Gets the size field of a font description.
+ *
  * See [method@Pango.FontDescription.set_size].
  *
  * Return value: the size field for the font description in points
@@ -388,6 +403,7 @@ pango_font_description_get_size (const PangoFontDescription *desc)
  *   a @size value of 10 * PANGO_SCALE gives a 10 pixel font.
  *
  * Sets the size field of a font description, in device units.
+ *
  * This is mutually exclusive with [method@Pango.FontDescription.set_size]
  * which sets the font size in points.
  *
@@ -410,7 +426,9 @@ pango_font_description_set_absolute_size (PangoFontDescription *desc,
  * @desc: a `PangoFontDescription`
  *
  * Determines whether the size of the font is in points (not absolute)
- * or device units (absolute). See [method@Pango.FontDescription.set_size]
+ * or device units (absolute).
+ *
+ * See [method@Pango.FontDescription.set_size]
  * and [method@Pango.FontDescription.set_absolute_size].
  *
  * Return value: whether the size for the font description is in
@@ -433,7 +451,9 @@ pango_font_description_get_size_is_absolute (const PangoFontDescription *desc)
  * @desc: a `PangoFontDescription`
  * @gravity: the gravity for the font description.
  *
- * Sets the gravity field of a font description. The gravity field
+ * Sets the gravity field of a font description.
+ *
+ * The gravity field
  * specifies how the glyphs should be rotated. If @gravity is
  * %PANGO_GRAVITY_AUTO, this actually unsets the gravity mask on
  * the font description.
@@ -464,6 +484,7 @@ pango_font_description_set_gravity (PangoFontDescription *desc,
  * @desc: a `PangoFontDescription`
  *
  * Gets the gravity field of a font description.
+ *
  * See [method@Pango.FontDescription.set_gravity].
  *
  * Return value: the gravity field for the font description.
@@ -485,8 +506,10 @@ pango_font_description_get_gravity (const PangoFontDescription *desc)
  * @desc: a `PangoFontDescription`
  * @variations: a string representing the variations
  *
- * Like [method@Pango.FontDescription.set_variations], except that
- * no copy of @variations is made. The caller must make sure that
+ * Sets the variations field of a font description.
+ *
+ * This is like [method@Pango.FontDescription.set_variations], except
+ * that no copy of @variations is made. The caller must make sure that
  * the string passed in stays around until @desc has been freed
  * or the name is set again. This function can be used if
  * @variations is a static string such as a C string literal,
@@ -525,9 +548,10 @@ pango_font_description_set_variations_static (PangoFontDescription *desc,
  * @desc: a `PangoFontDescription`.
  * @variations: a string representing the variations
  *
- * Sets the variations field of a font description. OpenType
- * font variations allow to select a font instance by specifying
- * values for a number of axes, such as width or weight.
+ * Sets the variations field of a font description.
+ *
+ * OpenType font variations allow to select a font instance by
+ * specifying values for a number of axes, such as width or weight.
  *
  * The format of the variations string is
  *
@@ -558,6 +582,7 @@ pango_font_description_set_variations (PangoFontDescription *desc,
  * @desc: a `PangoFontDescription`
  *
  * Gets the variations field of a font description.
+ *
  * See [method@Pango.FontDescription.set_variations].
  *
  * Return value: (nullable): the variations field for the font
@@ -597,6 +622,7 @@ pango_font_description_get_set_fields (const PangoFontDescription *desc)
  * @to_unset: bitmask of fields in the @desc to unset.
  *
  * Unsets some of the fields in a `PangoFontDescription`.
+ *
  * The unset fields will get back to their default values.
  */
 void
@@ -625,7 +651,9 @@ pango_font_description_unset_fields (PangoFontDescription *desc,
  *   are already exist.
  *
  * Merges the fields that are set in @desc_to_merge into the fields in
- * @desc. If @replace_existing is %FALSE, only fields in @desc that
+ * @desc.
+ *
+ * If @replace_existing is %FALSE, only fields in @desc that
  * are not already set are affected. If %TRUE, then fields that are
  * already set will be replaced as well.
  *
@@ -670,7 +698,10 @@ pango_font_description_merge (PangoFontDescription       *desc,
  *   corresponding values from @desc_to_merge, even if they
  *   are already exist.
  *
- * Like [method@Pango.FontDescription.merge], but only a shallow copy
+ * Merges the fields that are set in @desc_to_merge into the fields in
+ * @desc, without copying allocated fields.
+ *
+ * This is like [method@Pango.FontDescription.merge], but only a shallow copy
  * is made of the family name and other allocated fields. @desc can only
  * be used until @desc_to_merge is modified or freed. This is meant to
  * be used when the merged font description is only needed temporarily.
@@ -812,8 +843,11 @@ pango_font_description_copy (const PangoFontDescription *desc)
  * pango_font_description_copy_static:
  * @desc: (nullable): a `PangoFontDescription`, may be %NULL
  *
- * Like [method@Pango.FontDescription.copy], but only a shallow copy
- * is made of the family name and other allocated fields. The result
+ * Make a copy of a `PangoFontDescription`, but don't duplicate
+ * allocated fields.
+ *
+ * This is like [method@Pango.FontDescription.copy], but only a shallow
+ * copy is made of the family name and other allocated fields. The result
  * can only be used until @desc is modified or freed. This is meant
  * to be used when the copy is only needed temporarily.
  *
@@ -898,9 +932,10 @@ case_insensitive_hash (const char *key)
  * pango_font_description_hash:
  * @desc: a `PangoFontDescription`
  *
- * Computes a hash of a `PangoFontDescription` structure suitable
- * to be used, for example, as an argument to g_hash_table_new().
- * The hash value is independent of @desc->mask.
+ * Computes a hash of a `PangoFontDescription` structure.
+ *
+ * This is suitable to be used, for example, as an argument
+ * to g_hash_table_new(). The hash value is independent of @desc->mask.
  *
  * Return value: the hash value.
  */
@@ -1212,8 +1247,9 @@ parse_variations (const char  *word,
  * pango_font_description_from_string:
  * @str: string representation of a font description.
  *
- * Creates a new font description from a string representation in the
- * form
+ * Creates a new font description from a string representation.
+ *
+ * The string must have the form
  *
  *     "\[FAMILY-LIST] \[STYLE-OPTIONS] \[SIZE] \[VARIATIONS]",
  *
@@ -1560,8 +1596,10 @@ parse_field (const char *what,
  * @style: (out): a `PangoStyle` to store the result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  *
- * Parses a font style. The allowed values are "normal",
- * "italic" and "oblique", case variations being
+ * Parses a font style.
+ *
+ * The allowed values are "normal", "italic" and "oblique", case
+ * variations being
  * ignored.
  *
  * Return value: %TRUE if @str was successfully parsed.
@@ -1580,9 +1618,10 @@ pango_parse_style (const char *str,
  * @variant: (out): a `PangoVariant` to store the result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  *
- * Parses a font variant. The allowed values are "normal"
- * and "smallcaps" or "small_caps", case variations being
- * ignored.
+ * Parses a font variant.
+ *
+ * The allowed values are "normal" and "smallcaps" or "small_caps",
+ * case variations being ignored.
  *
  * Return value: %TRUE if @str was successfully parsed.
  */
@@ -1600,7 +1639,9 @@ pango_parse_variant (const char   *str,
  * @weight: (out): a `PangoWeight` to store the result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  *
- * Parses a font weight. The allowed values are "heavy",
+ * Parses a font weight.
+ *
+ * The allowed values are "heavy",
  * "ultrabold", "bold", "normal", "light", "ultraleight"
  * and integers. Case variations are ignored.
  *
@@ -1620,7 +1661,9 @@ pango_parse_weight (const char  *str,
  * @stretch: (out): a `PangoStretch` to store the result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  *
- * Parses a font stretch. The allowed values are
+ * Parses a font stretch.
+ *
+ * The allowed values are
  * "ultra_condensed", "extra_condensed", "condensed",
  * "semi_condensed", "normal", "semi_expanded", "expanded",
  * "extra_expanded" and "ultra_expanded". Case variations are
@@ -1676,6 +1719,7 @@ pango_font_init (PangoFont *font G_GNUC_UNUSED)
  * @font: a `PangoFont`
  *
  * Returns a description of the font, with font size set in points.
+ *
  * Use [method@Pango.Font.describe_with_absolute_size] if you want
  * the font size in device units.
  *
@@ -1694,8 +1738,9 @@ pango_font_describe (PangoFont *font)
  * @font: a `PangoFont`
  *
  * Returns a description of the font, with absolute font size set
- * (in device units). Use [method@Pango.Font.describe] if you want
- * the font size in points.
+ * in device units.
+ *
+ * Use [method@Pango.Font.describe] if you want the font size in points.
  *
  * Return value: a newly-allocated `PangoFontDescription` object.
  *
@@ -1763,8 +1808,9 @@ pango_font_find_shaper (PangoFont     *font,
  * @logical_rect: (out) (allow-none): rectangle used to store the logical extents of
  *            the glyph or %NULL to indicate that the result is not needed.
  *
- * Gets the logical and ink extents of a glyph within a font. The
- * coordinate system for each rectangle has its origin at the
+ * Gets the logical and ink extents of a glyph within a font.
+ *
+ * The coordinate system for each rectangle has its origin at the
  * base line and horizontal origin of the character with increasing
  * coordinates extending to the right and down. The macros PANGO_ASCENT(),
  * PANGO_DESCENT(), PANGO_LBEARING(), and PANGO_RBEARING() can be used to convert
@@ -2245,9 +2291,11 @@ pango_font_family_init (PangoFontFamily *family G_GNUC_UNUSED)
  * pango_font_family_get_name:
  * @family: a `PangoFontFamily`
  *
- * Gets the name of the family. The name is unique among all
- * fonts for the font backend and can be used in a `PangoFontDescription`
- * to specify that a face from this family is desired.
+ * Gets the name of the family.
+ *
+ * The name is unique among all fonts for the font backend and can
+ * be used in a `PangoFontDescription` to specify that a face from
+ * this family is desired.
  *
  * Return value: the name of the family. This string is owned
  *   by the family object and must not be modified or freed.
@@ -2269,8 +2317,9 @@ pango_font_family_get_name (PangoFontFamily  *family)
  *   longer needed.
  * @n_faces: (out): location to store number of elements in @faces.
  *
- * Lists the different font faces that make up @family. The faces
- * in a family share a common design, but differ in slant, weight,
+ * Lists the different font faces that make up @family.
+ *
+ * The faces in a family share a common design, but differ in slant, weight,
  * width and other aspects.
  */
 void
@@ -2344,7 +2393,9 @@ pango_font_family_get_face (PangoFontFamily *family,
  * @family: a `PangoFontFamily`
  *
  * A monospace font is a font designed for text display where the the
- * characters form a regular grid. For Western languages this would
+ * characters form a regular grid.
+ *
+ * For Western languages this would
  * mean that the advance width of all characters are the same, but
  * this categorization also includes Asian fonts which include
  * double-width characters: characters that occupy two grid cells.
@@ -2556,6 +2607,7 @@ pango_font_has_char (PangoFont *font,
  * @num_features: (inout): the number of used items in @features
  *
  * Obtain the OpenType features that are provided by the font.
+ *
  * These are passed to the rendering system, together with features
  * that have been explicitly set via attributes.
  *

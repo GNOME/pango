@@ -33,20 +33,25 @@ G_BEGIN_DECLS
 /**
  * PangoFontDescription:
  *
- * The `PangoFontDescription` structure represents the description
- * of an ideal font. These structures are used both to list
- * what fonts are available on the system and also for specifying
- * the characteristics of a font to load.
+ * A `PangoFontDescription` describes a font in an implementation-independent
+ * manner.
+ *
+ * `PangoFontDescription` structures are used both to list what fonts are
+ * available on the system and also for specifying the characteristics of
+ * a font to load.
  */
 typedef struct _PangoFontDescription PangoFontDescription;
+
 /**
  * PangoFontMetrics:
  *
  * A `PangoFontMetrics` structure holds the overall metric information
- * for a font (possibly restricted to a script). The fields of this
- * structure are private to implementations of a font backend. See
- * the documentation of the corresponding getters for documentation
- * of their meaning.
+ * for a font.
+ *
+ * The information in a `PangoFontMetrics` structure may be restricted
+ * to a script. The fields of this structure are private to implementations
+ * of a font backend. See the documentation of the corresponding getters
+ * for documentation of their meaning.
  */
 typedef struct _PangoFontMetrics PangoFontMetrics;
 
@@ -92,8 +97,10 @@ typedef enum {
  * @PANGO_WEIGHT_HEAVY: the heavy weight (= 900)
  * @PANGO_WEIGHT_ULTRAHEAVY: the ultraheavy weight (= 1000; Since: 1.24)
  *
- * An enumeration specifying the weight (boldness) of a font. This is a numerical
- * value ranging from 100 to 1000, but there are some predefined values:
+ * An enumeration specifying the weight (boldness) of a font.
+ *
+ * This is a numerical value ranging from 100 to 1000, but there
+ * are some predefined values.
  */
 typedef enum {
   PANGO_WEIGHT_THIN = 100,
@@ -148,8 +155,8 @@ typedef enum {
  * @PANGO_FONT_MASK_GRAVITY: the font gravity is specified (Since: 1.16.)
  * @PANGO_FONT_MASK_VARIATIONS: OpenType font variations are specified (Since: 1.42)
  *
- * The bits in a `PangoFontMask` correspond to fields in a
- * [struct@Pango.FontDescription] that have been set.
+ * The bits in a `PangoFontMask` correspond to the set fields in a
+ * `PangoFontDescription`.
  */
 typedef enum {
   PANGO_FONT_MASK_FAMILY  = 1 << 0,
@@ -379,9 +386,11 @@ typedef struct _PangoFontFamilyClass PangoFontFamilyClass;
 /**
  * PangoFontFamily:
  *
- * The `PangoFontFamily` structure is used to represent a family of related
- * font faces. The faces in a family share a common design, but differ in
- * slant, weight, width and other aspects.
+ * A `PangoFontFamily` is used to represent a family of related
+ * font faces.
+ *
+ * The font faces in a family share a common design, but differ in
+ * slant, weight, width or other aspects.
  */
 struct _PangoFontFamily
 {
@@ -450,8 +459,8 @@ typedef struct _PangoFontFaceClass   PangoFontFaceClass;
 /**
  * PangoFontFace:
  *
- * The `PangoFontFace` structure is used to represent a group of fonts with
- * the same family, slant, weight, width, but varying sizes.
+ * A `PangoFontFace` is used to represent a group of fonts with
+ * the same family, slant, weight, and width, but varying sizes.
  */
 struct _PangoFontFace
 {
@@ -516,8 +525,8 @@ PangoFontFamily *     pango_font_face_get_family     (PangoFontFace  *face);
 /**
  * PangoFont:
  *
- * The `PangoFont` structure is used to represent a font in a
- * rendering-system-independent matter.
+ * A `PangoFont` is used to represent a font in a
+ * rendering-system-independent manner.
  */
 struct _PangoFont
 {
@@ -595,31 +604,32 @@ hb_font_t *           pango_font_get_hb_font       (PangoFont        *font);
 /**
  * PANGO_GLYPH_EMPTY:
  *
- * The %PANGO_GLYPH_EMPTY macro represents a `PangoGlyph` value that has a
- *  special meaning, which is a zero-width empty glyph. This is useful for
- * example in shaper modules, to use as the glyph for various zero-width
- * Unicode characters (those passing [func@is_zero_width]).
+ * A `PangoGlyph` value that indicates a zero-width empty glpyh.
+ *
+ * This is useful for example in shaper modules, to use as the glyph for
+ * various zero-width Unicode characters (those passing [func@is_zero_width]).
  */
 
 /**
  * PANGO_GLYPH_INVALID_INPUT:
  *
- * The %PANGO_GLYPH_INVALID_INPUT macro represents a `PangoGlyph` value that
- * has a special meaning of invalid input. `PangoLayout` produces one such glyph
- * per invalid input UTF-8 byte and such a glyph is rendered as a crossed
- * box.
+ * A `PangoGlyph` value for invalid input.
+ *
+ * `PangoLayout` produces one such glyph per invalid input UTF-8 byte and such
+ * a glyph is rendered as a crossed box.
  *
  * Note that this value is defined such that it has the %PANGO_GLYPH_UNKNOWN_FLAG
- * on.
+ * set.
  *
  * Since: 1.20
  */
 /**
  * PANGO_GLYPH_UNKNOWN_FLAG:
  *
- * The %PANGO_GLYPH_UNKNOWN_FLAG macro is a flag value that can be added to
- * a `gunichar` value of a valid Unicode character, to produce a `PangoGlyph`
- * value, representing an unknown-character glyph for the respective `gunichar`.
+ * Flag used in `PangoGlyph` to turn a `gunichar` value of a valid Unicode
+ * character into an unknown-character glyph for that `gunichar`.
+ *
+ * Such unknown-character glyphs may be rendered as a 'hex box'.
  */
 /**
  * PANGO_GET_UNKNOWN_GLYPH:
@@ -636,9 +646,11 @@ hb_font_t *           pango_font_get_hb_font       (PangoFont        *font);
 #define PANGO_GLYPH_UNKNOWN_FLAG    ((PangoGlyph)0x10000000)
 #define PANGO_GET_UNKNOWN_GLYPH(wc) ((PangoGlyph)(wc)|PANGO_GLYPH_UNKNOWN_FLAG)
 
+#ifndef __GI_SCANNER__
 #ifndef PANGO_DISABLE_DEPRECATED
 #define PANGO_UNKNOWN_GLYPH_WIDTH  10
 #define PANGO_UNKNOWN_GLYPH_HEIGHT 14
+#endif
 #endif
 
 G_END_DECLS
