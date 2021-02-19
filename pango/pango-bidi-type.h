@@ -52,7 +52,7 @@ G_BEGIN_DECLS
  * @PANGO_BIDI_TYPE_WS: Whitespace
  * @PANGO_BIDI_TYPE_ON: Other Neutrals
  *
- * The #PangoBidiType type represents the bidirectional character
+ * `PangoBidiType` represents the bidirectional character
  * type of a Unicode character as specified by the
  * <ulink url="http://www.unicode.org/reports/tr9/">Unicode bidirectional algorithm</ulink>.
  *
