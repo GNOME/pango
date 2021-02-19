@@ -602,13 +602,15 @@ pango_markup_parser_new_internal (char       accel_marker,
  * @markup_text: markup to parse (see the Pango Markup docs)
  * @length: length of @markup_text, or -1 if nul-terminated
  * @accel_marker: character that precedes an accelerator, or 0 for none
- * @attr_list: (out) (allow-none): address of return location for a #PangoAttrList, or %NULL
+ * @attr_list: (out) (allow-none): address of return location for a `PangoAttrList`, or %NULL
  * @text: (out) (allow-none): address of return location for text with tags stripped, or %NULL
  * @accel_char: (out) (allow-none): address of return location for accelerator char, or %NULL
  * @error: address of return location for errors, or %NULL
  *
- * Parses marked-up text (see the Pango Markup docs) to create
- * a plain-text string and an attribute list.
+ * Parses marked-up text to create a plain-text string and an attribute list.
+ *
+ * See the [Pango Markup](pango_markup.html) docs for details about the
+ * supported markup.
  *
  * If @accel_marker is nonzero, the given character will mark the
  * character following it as an accelerator. For example, @accel_marker
@@ -618,7 +620,7 @@ pango_markup_parser_new_internal (char       accel_marker,
  * Two @accel_marker characters following each other produce a single
  * literal @accel_marker character.
  *
- * To parse a stream of pango markup incrementally, use pango_markup_parser_new().
+ * To parse a stream of pango markup incrementally, use [func@markup_parser_new].
  *
  * If any error happens, none of the output arguments are touched except
  * for @error.
@@ -680,27 +682,30 @@ pango_parse_markup (const char                 *markup_text,
  * pango_markup_parser_new:
  * @accel_marker: character that precedes an accelerator, or 0 for none
  *
- * Parses marked-up text (see the Pango Markp docs) to create
- * a plain-text string and an attribute list.
+ * Incrementally parses marked-up text to create a plain-text string
+ * and an attribute list.
+ *
+ * See the [Pango Markup](pango_markup.html) docs for details about the
+ * supported markup.
  *
  * If @accel_marker is nonzero, the given character will mark the
  * character following it as an accelerator. For example, @accel_marker
  * might be an ampersand or underscore. All characters marked
  * as an accelerator will receive a %PANGO_UNDERLINE_LOW attribute,
  * and the first character so marked will be returned in @accel_char,
- * when calling finish(). Two @accel_marker characters following each
- * other produce a single literal @accel_marker character.
+ * when calling [func@markup_parser_finish]. Two @accel_marker characters
+ * following each other produce a single literal @accel_marker character.
  *
  * To feed markup to the parser, use g_markup_parse_context_parse()
- * on the returned #GMarkupParseContext. When done with feeding markup
- * to the parser, use pango_markup_parser_finish() to get the data out
+ * on the returned `GMarkupParseContext`. When done with feeding markup
+ * to the parser, use [func@markup_parser_finish] to get the data out
  * of it, and then use g_markup_parse_context_free() to free it.
  *
- * This function is designed for applications that read pango markup
- * from streams. To simply parse a string containing pango markup,
- * the simpler pango_parse_markup() API is recommended instead.
+ * This function is designed for applications that read Pango markup
+ * from streams. To simply parse a string containing Pango markup,
+ * the [func@parse_markup] API is recommended instead.
  *
- * Return value: (transfer none): a #GMarkupParseContext that should be
+ * Return value: (transfer none): a `GMarkupParseContext` that should be
  * destroyed with g_markup_parse_context_free().
  *
  * Since: 1.31.0
@@ -720,14 +725,16 @@ pango_markup_parser_new (gunichar               accel_marker)
 
 /**
  * pango_markup_parser_finish:
- * @context: A valid parse context that was returned from pango_markup_parser_new()
- * @attr_list: (out) (allow-none): address of return location for a #PangoAttrList, or %NULL
+ * @context: A valid parse context that was returned from [func@markup_parser_new]
+ * @attr_list: (out) (allow-none): address of return location for a `PangoAttrList`, or %NULL
  * @text: (out) (allow-none): address of return location for text with tags stripped, or %NULL
  * @accel_char: (out) (allow-none): address of return location for accelerator char, or %NULL
  * @error: address of return location for errors, or %NULL
  *
- * After feeding a pango markup parser some data with g_markup_parse_context_parse(),
- * use this function to get the list of pango attributes and text out of the
+ * Finishes parsing markup.
+ *
+ * After feeding a Pango markup parser some data with g_markup_parse_context_parse(),
+ * use this function to get the list of attributes and text out of the
  * markup. This function will not free @context, use g_markup_parse_context_free()
  * to do so.
  *
