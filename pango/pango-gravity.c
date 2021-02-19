@@ -27,13 +27,12 @@
 
 /**
  * pango_gravity_to_rotation:
- * @gravity: gravity to query
+ * @gravity: gravity to query, should not be %PANGO_GRAVITY_AUTO
  *
  * Converts a #PangoGravity value to its natural rotation in radians.
- * @gravity should not be %PANGO_GRAVITY_AUTO.
  *
- * Note that pango_matrix_rotate() takes angle in degrees, not radians.
- * So, to call pango_matrix_rotate() with the output of this function
+ * Note that [method@Pango.Matrix.rotate] takes angle in degrees, not radians.
+ * So, to call [method@Pango.Matrix,rotate] with the output of this function
  * you should multiply it by (180. / G_PI).
  *
  * Return value: the rotation value corresponding to @gravity.
@@ -62,10 +61,10 @@ pango_gravity_to_rotation (PangoGravity gravity)
 
 /**
  * pango_gravity_get_for_matrix:
- * @matrix: (nullable): a #PangoMatrix
+ * @matrix: (nullable): a `PangoMatrix`
  *
  * Finds the gravity that best matches the rotation component
- * in a #PangoMatrix.
+ * in a `PangoMatrix`.
  *
  * Return value: the gravity of @matrix, which will never be
  * %PANGO_GRAVITY_AUTO, or %PANGO_GRAVITY_SOUTH if @matrix is %NULL
@@ -237,8 +236,9 @@ get_script_properties (PangoScript script)
  * @base_gravity: base gravity of the paragraph
  * @hint: orientation hint
  *
- * Based on the script, base gravity, and hint, returns actual gravity
- * to use in laying out a single #PangoItem.
+ * Returns the gravity to use in laying out a `PangoItem`.
+ *
+ * The gravity is determined based on the script, base gravity, and hint.
  *
  * If @base_gravity is %PANGO_GRAVITY_AUTO, it is first replaced with the
  * preferred gravity of @script.  To get the preferred gravity of a script,
@@ -270,13 +270,15 @@ pango_gravity_get_for_script (PangoScript      script,
  * @base_gravity: base gravity of the paragraph
  * @hint: orientation hint
  *
- * Based on the script, East Asian width, base gravity, and hint,
- * returns actual gravity to use in laying out a single character
- * or #PangoItem.
+ * Returns the gravity to use in laying out a single character
+ * or `PangoItem`.
  *
- * This function is similar to pango_gravity_get_for_script() except
+ * The gravity is determined based on the script, East Asian width,
+ * base gravity, and hint,
+ *
+ * This function is similar to [func@gravity_get_for_script] except
  * that this function makes a distinction between narrow/half-width and
- * wide/full-width characters also.  Wide/full-width characters always
+ * wide/full-width characters also. Wide/full-width characters always
  * stand *upright*, that is, they always take the base gravity,
  * whereas narrow/full-width characters are always rotated in vertical
  * context.
