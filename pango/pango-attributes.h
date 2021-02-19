@@ -100,28 +100,29 @@ typedef struct _PangoAttrFontFeatures PangoAttrFontFeatures;
 /**
  * PangoAttrIterator:
  *
- * The `PangoAttrIterator` structure is used to represent an
- * iterator through a [struct@Pango.AttrList]. A new iterator
- * is created with [method@Pango.AttrList.get_iterator]. Once
- * the iterator is created, it can be advanced through the style
- * changes in the text using [method@Pango.AttrIterator.next].
- * At each style change, the range of the current style segment
- * and the attributes currently in effect can be queried.
+ * A `PangoAttrIterator` is used to iterate through a `PangoAttrList`.
+ *
+ * A new iterator is created with [method@Pango.AttrList.get_iterator].
+ * Once the iterator is created, it can be advanced through the style
+ * changes in the text using [method@Pango.AttrIterator.next]. At each
+ * style change, the range of the current style segment and the attributes
+ * currently in effect can be queried.
  */
 
 /**
  * PangoAttrList:
  *
- * The `PangoAttrList` structure represents a list of attributes
- * that apply to a section of text. The attributes are, in general,
- * allowed to overlap in an arbitrary fashion, however, if the
- * attributes are manipulated only through [method@Pango.AttrList.change],
- * the overlap between properties will meet stricter criteria.
+ * A `PangoAttrList` represents a list of attributes that apply to a section
+ * of text.
  *
- * Since the `PangoAttrList` structure is stored as a linear list,
- * it is not suitable for storing attributes for large amounts
- * of text. In general, you should not use a single `PangoAttrList`
- * for more than one paragraph of text.
+ * The attributes in a `PangoAttrList` are, in general, allowed to overlap in
+ * an arbitrary fashion. However, if the attributes are manipulated only through
+ * [method@Pango.AttrList.change], the overlap between properties will meet
+ * stricter criteria.
+ *
+ * Since the `PangoAttrList` structure is stored as a linear list, it is not
+ * suitable for storing attributes for large amounts of text. In general, you
+ * should not use a single `PangoAttrList` for more than one paragraph of text.
  */
 typedef struct _PangoAttrList     PangoAttrList;
 typedef struct _PangoAttrIterator PangoAttrIterator;
@@ -262,9 +263,8 @@ typedef enum {
 /**
  * PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING:
  *
- * This value can be used to set the start_index member of a
- * `PangoAttribute` such that the attribute covers from the
- * beginning of the text.
+ * Value for @start_index in `PangoAttribute` that indicates
+ * the beginning of the text.
  *
  * Since: 1.24
  */
@@ -273,9 +273,8 @@ typedef enum {
 /**
  * PANGO_ATTR_INDEX_TO_TEXT_END: (value 4294967295)
  *
- * This value can be used to set the end_index member of a
- * `PangoAttribute` such that the attribute covers to the
- * end of the text.
+ * Value for @end_index in `PangoAttribute` that indicates
+ * the end of the text.
  *
  * Since: 1.24
  */
@@ -338,9 +337,10 @@ typedef gpointer (*PangoAttrDataCopyFunc) (gconstpointer user_data);
  *   (see [method@Pango.Attribute.equal])
  *
  * The `PangoAttrClass` structure stores the type and operations for
- * a particular type of attribute. The functions in this structure should
- * not be called directly. Instead, one should use the wrapper functions
- * provided for `PangoAttribute`.
+ * a particular type of attribute.
+ *
+ * The functions in this structure should not be called directly. Instead,
+ * one should use the wrapper functions provided for `PangoAttribute`.
  */
 struct _PangoAttrClass
 {

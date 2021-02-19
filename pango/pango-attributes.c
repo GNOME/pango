@@ -47,8 +47,9 @@ static GHashTable *name_map = NULL; /* MT-safe */
  * pango_attr_type_register:
  * @name: an identifier for the type
  *
- * Allocate a new attribute type ID. The attribute type name can be accessed
- * later by using [func@attr_type_get_name].
+ * Allocate a new attribute type ID.
+ *
+ * The attribute type name can be accessed later by using [func@attr_type_get_name].
  *
  * Return value: the new type ID.
  */
@@ -79,8 +80,10 @@ pango_attr_type_register (const gchar *name)
  * pango_attr_type_get_name:
  * @type: an attribute type ID to fetch the name for
  *
- * Fetches the attribute type name passed in when registering the type using
- * [func@attr_type_register].
+ * Fetches the attribute type name.
+ *
+ * The attribute type name is the string passed in when registering the type
+ * using [func@attr_type_register].
  *
  * The returned value is an interned string (see g_intern_string() for what
  * that means) that should not be modified or freed.
@@ -681,9 +684,10 @@ pango_attr_font_desc_equal (const PangoAttribute *attr1,
  * pango_attr_font_desc_new:
  * @desc: the font description
  *
- * Create a new font description attribute. This attribute
- * allows setting family, style, weight, variant, stretch,
- * and size simultaneously.
+ * Create a new font description attribute.
+ *
+ * This attribute allows setting family, style, weight, variant,
+ * stretch, and size simultaneously.
  *
  * Return value: (transfer full): the newly allocated `PangoAttribute`,
  *   which should be freed with [method@Pango.Attribute.destroy].
@@ -734,8 +738,9 @@ pango_attr_underline_new (PangoUnderline underline)
  * @green: the green value
  * @blue: the blue value
  *
- * Create a new underline color attribute. This attribute
- * modifies the color of underlines. If not set, underlines
+ * Create a new underline color attribute.
+ *
+ * This attribute modifies the color of underlines. If not set, underlines
  * will use the foreground color.
  *
  * Return value: (transfer full): the newly allocated `PangoAttribute`,
@@ -786,9 +791,10 @@ pango_attr_strikethrough_new (gboolean strikethrough)
  * @green: the green value
  * @blue: the blue value
  *
- * Create a new strikethrough color attribute. This attribute
- * modifies the color of strikethrough lines. If not set, strikethrough
- * lines will use the foreground color.
+ * Create a new strikethrough color attribute.
+ *
+ * This attribute modifies the color of strikethrough lines. If not set,
+ * strikethrough lines will use the foreground color.
  *
  * Return value: (transfer full): the newly allocated `PangoAttribute`,
  *   which should be freed with [method@Pango.Attribute.destroy].
@@ -837,8 +843,10 @@ pango_attr_rise_new (int rise)
  * pango_attr_scale_new:
  * @scale_factor: factor to scale the font
  *
- * Create a new font size scale attribute. The base font for the
- * affected text will have its size multiplied by @scale_factor.
+ * Create a new font size scale attribute.
+ *
+ * The base font for the affected text will have its size multiplied
+ * by @scale_factor.
  *
  * Return value: (transfer full): the newly allocated `PangoAttribute`,
  *   which should be freed with [method@Pango.Attribute.destroy].
@@ -965,6 +973,8 @@ pango_attr_shape_equal (const PangoAttribute *attr1,
  * @destroy_func: (allow-none): function to free @data when the
  *   attribute is freed, or %NULL
  *
+ * Creates a new shape attribute.
+ *
  * Like pango_attr_shape_new(), but a user data pointer is also
  * provided; this pointer can be accessed when later rendering the glyph.
  *
@@ -1008,10 +1018,11 @@ pango_attr_shape_new_with_data (const PangoRectangle  *ink_rect,
  * @ink_rect: ink rectangle to assign to each character
  * @logical_rect: logical rectangle to assign to each character
  *
- * Create a new shape attribute. A shape is used to impose a
- * particular ink and logical rectangle on the result of shaping a
- * particular glyph. This might be used, for instance, for
- * embedding a picture or a widget inside a `PangoLayout`.
+ * Create a new shape attribute.
+ *
+ * A shape is used to impose a particular ink and logical rectangle
+ * on the result of shaping a particular glyph. This might be used,
+ * for instance, for embedding a picture or a widget inside a `PangoLayout`.
  *
  * Return value: (transfer full): the newly allocated `PangoAttribute`,
  *   which should be freed with [method@Pango.Attribute.destroy].
@@ -1260,8 +1271,9 @@ pango_attr_overline_new (PangoOverline overline)
  * @green: the green value
  * @blue: the blue value
  *
- * Create a new overline color attribute. This attribute
- * modifies the color of overlines. If not set, overlines
+ * Create a new overline color attribute.
+ *
+ * This attribute modifies the color of overlines. If not set, overlines
  * will use the foreground color.
  *
  * Return value: (transfer full): the newly allocated `PangoAttribute`,
