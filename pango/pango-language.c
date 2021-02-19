@@ -252,7 +252,6 @@ _pango_get_lc_ctype (void)
  * pango_language_get_default:
  *
  * Returns the `PangoLanguage` for the current locale of the process.
- * Note that this can change over the life of an application.
  *
  * On Unix systems, this is the return value is derived from
  * `setlocale (LC_CTYPE, NULL)`, and the user can
@@ -277,6 +276,8 @@ _pango_get_lc_ctype (void)
  * settings to take effect. GTK does this in its initialization
  * functions automatically (by calling gtk_set_locale()).
  * See the setlocale() manpage for more details.
+ *
+ * Note that the default language can change over the life of an application.
  *
  * Return value: (transfer none): the default language as a
  *               `PangoLanguage`, must not be freed.
@@ -307,10 +308,11 @@ pango_language_get_default (void)
  * pango_language_from_string:
  * @language: (allow-none): a string representing a language tag, or %NULL
  *
- * Take a RFC-3066 format language tag as a string and convert it to a
- * `PangoLanguage` pointer that can be efficiently copied (copy the
- * pointer) and compared with other language tags (compare the
- * pointer.)
+ * Convert a language tag to a `PangoLanguage`.
+ *
+ * The language tag must be in a RFC-3066 format. `PangoLanguage` pointers
+ * can be efficiently copied (copy the pointer) and compared with other
+ * language tags (compare the pointer.)
  *
  * This function first canonicalizes the string by converting it to
  * lowercase, mapping '_' to '-', and stripping all characters other
@@ -393,7 +395,9 @@ const char *
  *   canonicalized as by [func@language_from_string]
  *
  * Checks if a language tag matches one of the elements in a list of
- * language ranges. A language tag is considered to match a range
+ * language ranges.
+ *
+ * A language tag is considered to match a range
  * in the list if the range is '*', the range is exactly the tag,
  * or the range is a prefix of the tag, and the character after it
  * in the tag is '-'.
@@ -619,6 +623,7 @@ pango_language_get_sample_string (PangoLanguage *language)
  *   return number of scripts, or %NULL
  *
  * Determines the scripts used to to write @language.
+ *
  * If nothing is known about the language tag @language,
  * or if @language is %NULL, then %NULL is returned.
  * The list of scripts returned starts with the script that the
@@ -836,10 +841,11 @@ out:
 /**
  * pango_language_get_preferred:
  *
- * Returns the list of languages that the user prefers, as specified
- * by the `PANGO_LANGUAGE` or `LANGUAGE` environment variables, in order
- * of preference. Note that this list does not necessarily include
- * the language returned by [func@language_get_default].
+ * Returns the list of languages that the user prefers.
+ *
+ * The list is specified by the `PANGO_LANGUAGE` or `LANGUAGE` environment
+ * variables, in order of preference. Note that this list does not necessarily
+ * include the language returned by [func@language_get_default].
  *
  * When choosing language-specific resources, such as the sample
  * text returned by [func@language_get_sample_string], you should
@@ -864,12 +870,11 @@ pango_language_get_preferred (void)
  * pango_script_get_sample_language:
  * @script: a `PangoScript`
  *
- * Given a script, finds a language tag that is reasonably
- * representative of that script. This will usually be the
- * most widely spoken or used language written in that script:
- * for instance, the sample language for %PANGO_SCRIPT_CYRILLIC
- * is ru (Russian), the sample language for %PANGO_SCRIPT_ARABIC
- * is ar.
+ * Finds a language tag that is reasonably representative of @script.
+ *
+ * The language will usually be the most widely spoken or used language written
+ * in that script: for instance, the sample language for %PANGO_SCRIPT_CYRILLIC
+ * is ru (Russian), the sample language for %PANGO_SCRIPT_ARABIC is ar.
  *
  * For some scripts, no sample language will be returned because
  * there is no language that is sufficiently representative. The
