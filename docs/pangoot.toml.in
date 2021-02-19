@@ -17,6 +17,7 @@ dependencies = [ "Pango-1.0" ]
 
 [theme]
 name = "basic"
+show_index_summary = true
 
 [source-location]
 base_url = "https://gitlab.gnome.org/GNOME/pango/-/blob/master/"
