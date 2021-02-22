@@ -19,19 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:pangofc-font
- * @short_description:Base font class for Fontconfig-based backends
- * @title:PangoFcFont
- * @see_also: #PangoFcFontMap
- *
- * `PangoFcFont` is a base class for font implementation using the
- * Fontconfig and FreeType libraries. It is used in the Xft and
- * FreeType backends shipped with Pango, but can also be used when
- * creating new backends. Any backend deriving from this base class
- * will take advantage of the wide range of shapers implemented using
- * FreeType that come with Pango.
- */
 #include "config.h"
 
 #include "pangofc-font-private.h"
@@ -542,7 +529,8 @@ pango_fc_font_real_get_glyph (PangoFcFont *font,
  * pango_fc_font_lock_face: (skip)
  * @font: a `PangoFcFont`.
  *
- * Gets the FreeType `FT_Face` associated with a font,
+ * Gets the FreeType `FT_Face` associated with a font.
+ *
  * This face will be kept around until you call
  * [method@PangoFc.Font.unlock_face].
  *
@@ -613,8 +601,10 @@ pango_fc_font_has_char (PangoFcFont *font,
  * @wc: Unicode character to look up
  *
  * Gets the glyph index for a given Unicode character
- * for @font. If you only want to determine whether the
- * font has the glyph, use [method@PangoFc.Font.has_char].
+ * for @font.
+ *
+ * If you only want to determine whether the font has
+ * the glyph, use [method@PangoFc.Font.has_char].
  *
  * Return value: the glyph index, or 0, if the Unicode
  *   character doesn't exist in the font.
@@ -716,6 +706,7 @@ _pango_fc_font_get_decoder (PangoFcFont *font)
  * @decoder: a `PangoFcDecoder` to set for this font
  *
  * This sets a custom decoder for this font.
+ *
  * Any previous decoder will be released before this one is set.
  *
  * Since: 1.6
@@ -761,9 +752,10 @@ _pango_fc_font_set_font_key (PangoFcFont    *fcfont,
  * @logical_rect: (out) (optional): location to store logical extents
  *   of the glyph or %NULL
  *
- * Gets the extents of a single glyph from a font. The extents are in
- * user space; that is, they are not transformed by any matrix in effect
- * for the font.
+ * Gets the extents of a single glyph from a font.
+ *
+ * The extents are in user space; that is, they are not transformed
+ * by any matrix in effect for the font.
  *
  * Long term, this functionality probably belongs in the default
  * implementation of the get_glyph_extents() virtual function.

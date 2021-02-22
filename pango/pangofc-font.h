@@ -60,13 +60,14 @@ typedef struct _PangoFcFontClass PangoFcFontClass;
 /**
  * PangoFcFont:
  *
- * #PangoFcFont is a base class for font implementations
- * using the Fontconfig and FreeType libraries and is used in
- * conjunction with #PangoFcFontMap. When deriving from this
- * class, you need to implement all of its virtual functions
- * other than shutdown() along with the get_glyph_extents()
- * virtual function from #PangoFont.
- **/
+ * `PangoFcFont` is a base class for font implementations
+ * using the Fontconfig and FreeType libraries.
+ *
+ * It is used in onjunction with [class@PangoFc.FontMap].
+ * When deriving from this class, you need to implement all
+ * of its virtual functions other than shutdown() along with
+ * the get_glyph_extents() virtual function from `PangoFont`.
+ */
 struct _PangoFcFont
 {
   PangoFont parent_instance;

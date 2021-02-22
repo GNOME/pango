@@ -69,10 +69,11 @@ pango_fc_font_map_get_config (PangoFcFontMap *fcfontmap);
 
 /**
  * PangoFcDecoderFindFunc:
- * @pattern: a fully resolved #FcPattern specifying the font on the system
- * @user_data: user data passed to pango_fc_font_map_add_decoder_find_func()
+ * @pattern: a fully resolved `FcPattern` specifying the font on the system
+ * @user_data: user data passed to
+ *   [method@PangoFc.FontMap.add_decoder_find_func]
  *
- * Callback function passed to pango_fc_font_map_add_decoder_find_func().
+ * Callback function passed to [method@PangoFc.FontMap.add_decoder_find_func].
  *
  * Return value: a new reference to a custom decoder for this pattern,
  *  or %NULL if the default decoder handling should be used.
@@ -110,22 +111,24 @@ hb_face_t * pango_fc_font_map_get_hb_face (PangoFcFontMap *fcfontmap,
  * @pattern: the FcPattern to tweak.
  * @data: user data.
  *
- * Function type for doing final config tweaking on prepared FcPatterns.
+ * Function type for doing final config tweaking on prepared `FcPattern`s.
  */
 typedef void (*PangoFcSubstituteFunc) (FcPattern *pattern,
 				       gpointer   data);
 
 /**
  * pango_fc_font_map_set_default_substitute:
- * @fontmap: a #PangoFcFontMap
+ * @fontmap: a `PangoFcFontMap`
  * @func: function to call to to do final config tweaking
- *        on #FcPattern objects.
+ *        on `FcPattern` objects.
  * @data: data to pass to @func
  * @notify: function to call when @data is no longer used.
  *
  * Sets a function that will be called to do final configuration
- * substitution on a #FcPattern before it is used to load
- * the font. This function can be used to do things like set
+ * substitution on a `FcPattern` before it is used to load
+ * the font.
+ *
+ * This function can be used to do things like set
  * hinting and antialiasing options.
  *
  * Since: 1.48
@@ -138,11 +141,12 @@ void pango_fc_font_map_set_default_substitute (PangoFcFontMap        *fontmap,
 
 /**
  * pango_fc_font_map_substitute_changed:
- * @fontmap: a #PangoFcFontMap
+ * @fontmap: a `PangoFcFontMap`
  *
- * Call this function any time the results of the
- * default substitution function set with
- * pango_fc_font_map_set_default_substitute() change.
+ * Call this function any time the results of the default
+ * substitution function set with
+ * [method@PangoFc.FontMap.set_default_substitute] change.
+ *
  * That is, if your substitution function will return different
  * results for the same input pattern, you must call this function.
  *
@@ -154,13 +158,15 @@ void pango_fc_font_map_substitute_changed (PangoFcFontMap *fontmap);
 /**
  * PANGO_FC_GRAVITY:
  *
- * String representing a fontconfig property name that Pango sets on any
- * fontconfig pattern it passes to fontconfig if a #PangoGravity other
- * than %PANGO_GRAVITY_SOUTH is desired.
+ * Fontconfig property that Pango sets on any
+ * fontconfig pattern it passes to fontconfig
+ * if a `PangoGravity` other than %PANGO_GRAVITY_SOUTH
+ * is desired.
  *
- * The property will have a #PangoGravity value as a string, like "east".
- * This can be used to write fontconfig configuration rules to choose
- * different fonts for horizontal and vertical writing directions.
+ * The property will have a `PangoGravity` value as a string,
+ * like "east". This can be used to write fontconfig configuration
+ * rules to choose different fonts for horizontal and vertical
+ * writing directions.
  *
  * Since: 1.20
  */
@@ -169,13 +175,13 @@ void pango_fc_font_map_substitute_changed (PangoFcFontMap *fontmap);
 /**
  * PANGO_FC_VERSION:
  *
- * String representing a fontconfig property name that Pango sets on any
+ * Fontconfig property that Pango sets on any
  * fontconfig pattern it passes to fontconfig.
  *
  * The property will have an integer value equal to what
- * pango_version() returns.
- * This can be used to write fontconfig configuration rules that only affect
- * certain pango versions (or only pango-using applications, or only
+ * [func@Pango.version] returns. This can be used to write
+ * fontconfig configuration rules that only affect certain
+ * pango versions (or only pango-using applications, or only
  * non-pango-using applications).
  *
  * Since: 1.20
@@ -185,15 +191,16 @@ void pango_fc_font_map_substitute_changed (PangoFcFontMap *fontmap);
 /**
  * PANGO_FC_PRGNAME:
  *
- * String representing a fontconfig property name that Pango sets on any
+ * Fontconfig property that Pango sets on any
  * fontconfig pattern it passes to fontconfig.
  *
  * The property will have a string equal to what
- * g_get_prgname() returns.
- * This can be used to write fontconfig configuration rules that only affect
+ * g_get_prgname() returns. This can be used to write
+ * fontconfig configuration rules that only affect
  * certain applications.
  *
- * This is equivalent to FC_PRGNAME in versions of fontconfig that have that.
+ * This is equivalent to FC_PRGNAME in versions of
+ * fontconfig that have that.
  *
  * Since: 1.24
  */
@@ -202,14 +209,16 @@ void pango_fc_font_map_substitute_changed (PangoFcFontMap *fontmap);
 /**
  * PANGO_FC_FONT_FEATURES:
  *
- * String representing a fontconfig property name that Pango reads from font
- * patterns to populate list of OpenType features to be enabled for the font
- * by default.
+ * Fontconfig property that Pango reads from font
+ * patterns to populate list of OpenType features
+ * to be enabled for the font by default.
  *
- * The property will have a number of string elements, each of which is the
- * OpenType feature tag of one feature to enable.
+ * The property will have a number of string elements,
+ * each of which is the OpenType feature tag of one feature
+ * to enable.
  *
- * This is equivalent to FC_FONT_FEATURES in versions of fontconfig that have that.
+ * This is equivalent to FC_FONT_FEATURES in versions of
+ * fontconfig that have that.
  *
  * Since: 1.34
  */
@@ -218,11 +227,13 @@ void pango_fc_font_map_substitute_changed (PangoFcFontMap *fontmap);
 /**
  * PANGO_FC_FONT_VARIATIONS:
  *
- * String representing a fontconfig property name that Pango reads from font
- * patterns to populate list of OpenType font variations to be used for a font.
+ * Fontconfig property that Pango reads from font
+ * patterns to populate list of OpenType font variations
+ * to be used for a font.
  *
- * The property will have a string elements, each of which a comma-separated
- * list of OpenType axis setting of the form AXIS=VALUE.
+ * The property will have a string elements, each of which
+ * a comma-separated list of OpenType axis setting of the
+ * form AXIS=VALUE.
  */
 #define PANGO_FC_FONT_VARIATIONS "fontvariations"
 
