@@ -2652,7 +2652,7 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
   objectset = FcObjectSetCreate ();
   FcObjectSetAdd (objectset, FC_PIXEL_SIZE);
 
-  fontset = FcFontList (NULL, pattern, objectset);
+  fontset = FcFontList (fcface->family->fontmap->priv->config, pattern, objectset);
 
   if (fontset)
     {
