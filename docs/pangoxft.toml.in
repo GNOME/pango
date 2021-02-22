@@ -28,6 +28,9 @@ show_index_summary = true
 base_url = "https://gitlab.gnome.org/GNOME/pango/-/blob/master/"
 
 [extra]
+content_files = [
+  "pango_xft.md"
+]
 
 content_images = [
   "pango-name.png"
