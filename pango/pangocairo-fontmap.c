@@ -47,9 +47,10 @@ pango_cairo_font_map_default_init (PangoCairoFontMapIface *iface)
 /**
  * pango_cairo_font_map_new:
  *
- * Creates a new `PangoCairoFontMap` object; a fontmap is used
- * to cache information about available fonts, and holds
- * certain global parameters such as the resolution.
+ * Creates a new `PangoCairoFontMap` object.
+ *
+ * A fontmap is used to cache information about available fonts,
+ * and holds certain global parameters such as the resolution.
  * In most cases, you can use `func@font_map_get_default]
  * instead.
  *
@@ -225,7 +226,9 @@ pango_cairo_font_map_set_default (PangoCairoFontMap *fontmap)
  * @dpi: the resolution in "dots per inch". (Physical inches aren't actually
  *   involved; the terminology is conventional.)
  *
- * Sets the resolution for the fontmap. This is a scale factor between
+ * Sets the resolution for the fontmap.
+ *
+ * This is a scale factor between
  * points specified in a `PangoFontDescription` and Cairo units. The
  * default value is 96, meaning that a 10 point font will be 13
  * units high. (10 * 96. / 72. = 13.3).
@@ -246,6 +249,7 @@ pango_cairo_font_map_set_resolution (PangoCairoFontMap *fontmap,
  * @fontmap: a `PangoCairoFontMap`
  *
  * Gets the resolution for the fontmap.
+ *
  * See [method@PangoCairo.FontMap.set_resolution].
  *
  * Return value: the resolution in "dots per inch"

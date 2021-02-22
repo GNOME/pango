@@ -162,8 +162,10 @@ _pango_cairo_update_context (cairo_t      *cr,
  *
  * Updates a `PangoContext` previously created for use with Cairo to
  * match the current transformation and target surface of a Cairo
- * context. If any layouts have been created for the context,
- * it's necessary to call pango_layout_context_changed() on those
+ * context.
+ *
+ * If any layouts have been created for the context,
+ * it's necessary to call [method@Pango.Layout.context_changed] on those
  * layouts.
  *
  * Since: 1.10
@@ -185,7 +187,9 @@ pango_cairo_update_context (cairo_t      *cr,
  *   involved; the terminology is conventional.) A 0 or negative value
  *   means to use the resolution from the font map.
  *
- * Sets the resolution for the context. This is a scale factor between
+ * Sets the resolution for the context.
+ *
+ * This is a scale factor between
  * points specified in a `PangoFontDescription` and Cairo units. The
  * default value is 96, meaning that a 10 point font will be 13
  * units high. (10 * 96. / 72. = 13.3).
@@ -230,6 +234,7 @@ pango_cairo_context_get_resolution (PangoContext *context)
  *   any previously set options. A copy is made.
  *
  * Sets the font options used when rendering text with this context.
+ *
  * These options override any options that [func@update_context]
  * derives from the target surface.
  *
@@ -282,7 +287,9 @@ pango_cairo_context_set_font_options (PangoContext               *context,
  * @context: a `PangoContext`, from a pangocairo font map
  *
  * Retrieves any font rendering options previously set with
- * [method@PangoCairo.Context.set_font_options]. This function
+ * [method@PangoCairo.Context.set_font_options].
+ *
+ * This function
  * does not report options that are derived from the target
  * surface by [func@update_context].
  *
@@ -346,8 +353,9 @@ _pango_cairo_context_get_merged_font_options (PangoContext *context)
  *           context is freed to release @data, or %NULL.
  *
  * Sets callback function for context to use for rendering attributes
- * of type %PANGO_ATTR_SHAPE.  See `PangoCairoShapeRendererFunc` for
- * details.
+ * of type %PANGO_ATTR_SHAPE.
+ *
+ * See `PangoCairoShapeRendererFunc` for details.
  *
  * Since: 1.18
  */
@@ -377,8 +385,9 @@ pango_cairo_context_set_shape_renderer (PangoContext                *context,
  * @data: Pointer to #gpointer to return user data
  *
  * Sets callback function for context to use for rendering attributes
- * of type %PANGO_ATTR_SHAPE.  See `PangoCairoShapeRendererFunc` for
- * details.
+ * of type %PANGO_ATTR_SHAPE.
+ *
+ * See `PangoCairoShapeRendererFunc` for details.
  *
  * Retrieves callback function and associated user data for rendering
  * attributes of type %PANGO_ATTR_SHAPE as set by
@@ -419,8 +428,10 @@ pango_cairo_context_get_shape_renderer (PangoContext *context,
  * @cr: a Cairo context
  *
  * Creates a context object set up to match the current transformation
- * and target surface of the Cairo context. This context can then be
- * used to create a layout using pango_layout_new().
+ * and target surface of the Cairo context.
+ *
+ * This context can then be
+ * used to create a layout using [ctor@Pango.Layout.new].
  *
  * This function is a convenience function that creates a context using
  * the default font map, then updates it to @cr. If you just need to
@@ -452,9 +463,11 @@ pango_cairo_create_context (cairo_t *cr)
  * @cr: a Cairo context
  *
  * Creates a layout object set up to match the current transformation
- * and target surface of the Cairo context. This layout can then be
+ * and target surface of the Cairo context.
+ *
+ * This layout can then be
  * used for text measurement with functions like
- * pango_layout_get_size() or drawing with functions like
+ * [method@Pango.Layout.get_size] or drawing with functions like
  * [func@show_layout]. If you change the transformation or target
  * surface for @cr, you need to call [func@update_layout].
  *

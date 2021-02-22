@@ -30,9 +30,11 @@ G_BEGIN_DECLS
 /**
  * PangoCairoFont:
  *
- * #PangoCairoFont is an interface exported by fonts for
- * use with Cairo. The actual type of the font will depend
- * on the particular font technology Cairo was compiled to use.
+ * `PangoCairoFont` is an interface exported by fonts for
+ * use with Cairo.
+ *
+ * The actual type of the font will depend on the particular
+ * font technology Cairo was compiled to use.
  *
  * Since: 1.18
  **/
@@ -55,9 +57,11 @@ typedef struct _PangoCairoFont      PangoCairoFont;
 /**
  * PangoCairoFontMap:
  *
- * #PangoCairoFontMap is an interface exported by font maps for
- * use with Cairo. The actual type of the font map will depend
- * on the particular font technology Cairo was compiled to use.
+ * `PangoCairoFontMap` is an interface exported by font maps for
+ * use with Cairo.
+ *
+ * The actual type of the font map will depend on the particular
+ * font technology Cairo was compiled to use.
  *
  * Since: 1.10
  **/
