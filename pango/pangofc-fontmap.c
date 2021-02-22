@@ -978,7 +978,7 @@ pango_fc_fontset_load_next_font (PangoFcFontset *fontset)
 
   if (prepare)
     {
-      font_pattern = FcFontRenderPrepare (NULL, pattern, font_pattern);
+      font_pattern = FcFontRenderPrepare (fontset->key->fontmap->priv->config, pattern, font_pattern);
 
       if (G_UNLIKELY (!font_pattern))
 	return NULL;
@@ -2652,7 +2652,7 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
   objectset = FcObjectSetCreate ();
   FcObjectSetAdd (objectset, FC_PIXEL_SIZE);
 
-  fontset = FcFontList (NULL, pattern, objectset);
+  fontset = FcFontList (fcface->family->fontmap->priv->config, pattern, objectset);
 
   if (fontset)
     {
