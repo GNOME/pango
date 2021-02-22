@@ -22,14 +22,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:win32-fonts
- * @short_description:Font handling and rendering on Windows
- * @title:Win32 Fonts and Rendering
- *
- * The macros and functions in this section are used to access fonts natively on
- * Win32 systems and to render text in conjunction with Win32 APIs.
- */
 #include "config.h"
 
 #include <string.h>
