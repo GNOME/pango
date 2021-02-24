@@ -816,9 +816,9 @@ thread_data_free (gpointer data)
   ThreadData *td = data;
 
   g_clear_pointer (&td->fonts, FcFontSetDestroy);
-  FcPatternDestroy (td->pattern);
-  FcConfigDestroy (td->config);
-  pango_fc_patterns_unref (td->patterns);
+  g_clear_pointer (&td->pattern, FcPatternDestroy);
+  g_clear_pointer (&td->config, FcConfigDestroy);
+  g_clear_pointer (&td->patterns, pango_fc_patterns_unref);
   g_free (td);
 }
 
@@ -887,6 +887,9 @@ pango_fc_patterns_new (FcPattern *pat, PangoFcFontMap *fontmap)
 
   pats->fontmap = fontmap;
 
+  g_object_add_weak_pointer (G_OBJECT (fontmap),
+                             (gpointer *)&pats->fontmap);
+
   pats->ref_count = 1;
   FcPatternReference (pat);
   pats->pattern = pat;
@@ -932,21 +935,22 @@ pango_fc_patterns_unref (PangoFcPatterns *pats)
   if (pats->ref_count)
     return;
 
-  /* Only remove from fontmap hash if we are in it.  This is not necessarily
-   * the case after a cache_clear() call. */
-  if (pats->fontmap->priv->patterns_hash &&
-      pats == g_hash_table_lookup (pats->fontmap->priv->patterns_hash, pats->pattern))
-    g_hash_table_remove (pats->fontmap->priv->patterns_hash,
-			 pats->pattern);
+  if (pats->fontmap)
+    {
+      g_object_remove_weak_pointer (G_OBJECT (pats->fontmap),
+                                    (gpointer *)&pats->fontmap);
 
-  if (pats->pattern)
-    FcPatternDestroy (pats->pattern);
+      /* Only remove from fontmap hash if we are in it.  This is not necessarily
+       * the case after a cache_clear() call. */
+      if (pats->fontmap->priv->patterns_hash &&
+          pats == g_hash_table_lookup (pats->fontmap->priv->patterns_hash, pats->pattern))
+        g_hash_table_remove (pats->fontmap->priv->patterns_hash,
+                             pats->pattern);
+    }
 
-  if (pats->match)
-    FcPatternDestroy (pats->match);
-
-  if (pats->fontset)
-    FcFontSetDestroy (pats->fontset);
+  g_clear_pointer (&pats->pattern, FcPatternDestroy);
+  g_clear_pointer (&pats->match, FcPatternDestroy);
+  g_clear_pointer (&pats->fontset, FcFontSetDestroy);
 
   g_cond_clear (&pats->cond);
   g_mutex_clear (&pats->mutex);
