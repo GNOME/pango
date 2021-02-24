@@ -800,6 +800,10 @@ static ThreadData *
 thread_data_new (PangoFcPatterns *patterns)
 {
   ThreadData *td;
+  PangoFcFontMap *fontmap = patterns->fontmap;
+
+  /* We don't want the fontmap dying on us */
+  g_object_ref (fontmap);
 
   td = g_new (ThreadData, 1);
   td->patterns = pango_fc_patterns_ref (patterns);
@@ -814,12 +818,15 @@ static void
 thread_data_free (gpointer data)
 {
   ThreadData *td = data;
+  PangoFcFontMap *fontmap = td->patterns->fontmap;
 
   g_clear_pointer (&td->fonts, FcFontSetDestroy);
   FcPatternDestroy (td->pattern);
   FcConfigDestroy (td->config);
   pango_fc_patterns_unref (td->patterns);
   g_free (td);
+
+  g_object_unref (fontmap);
 }
 
 static void
