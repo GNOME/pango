@@ -239,9 +239,7 @@ fontconfig_pc=''
 harfbuzz_lib=''
 fontconfig_lib=''
 
-harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version, required: false,
-                          fallback: ['harfbuzz', 'libharfbuzz_dep'],
-                          default_options: ['coretext=enabled'])
+harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version, required: false)
 if harfbuzz_dep.found()
   harfbuzz_pc = 'harfbuzz'
 else
@@ -262,7 +260,8 @@ endif
 # when finding dependencies via CMake files is fixed.
 if not harfbuzz_dep.found()
   harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version,
-                            fallback: ['harfbuzz', 'libharfbuzz_dep'])
+                            fallback: ['harfbuzz', 'libharfbuzz_dep'],
+                            default_options: ['coretext=enabled'])
 endif
 
 if not harfbuzz_dep.found()
