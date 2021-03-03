@@ -325,14 +325,47 @@ test_list_splice2 (void)
 
   pango_attr_list_splice (list, other, 11, 5);
 
-  assert_attr_list (list, "[11,-1]size=10\n");
+  assert_attr_list (list, "[11,16]size=10\n");
 
   pango_attr_list_unref (other);
   other = pango_attr_list_new ();
 
   pango_attr_list_splice (list, other, 11, 5);
 
-  assert_attr_list (list, "[11,-1]size=10\n");
+  assert_attr_list (list, "[11,21]size=10\n");
+
+  pango_attr_list_unref (other);
+  pango_attr_list_unref (list);
+}
+
+/* Test that attributes in other aren't leaking out in pango_attr_list_splice */
+static void
+test_list_splice3 (void)
+{
+  PangoAttrList *list;
+  PangoAttrList *other;
+  PangoAttribute *attr;
+
+  list = pango_attr_list_new ();
+  other = pango_attr_list_new ();
+
+  attr = pango_attr_variant_new (PANGO_VARIANT_SMALL_CAPS);
+  attr->start_index = 10;
+  attr->end_index = 30;
+  pango_attr_list_insert (list, attr);
+
+  attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
+  attr->start_index = PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING;
+  attr->end_index = PANGO_ATTR_INDEX_TO_TEXT_END;
+  pango_attr_list_insert (other, attr);
+
+  assert_attr_list (list, "[10,30]variant=1\n");
+  assert_attr_list (other, "[0,-1]weight=700\n");
+
+  pango_attr_list_splice (list, other, 20, 5);
+
+  assert_attr_list (list, "[10,35]variant=1\n"
+                          "[20,25]weight=700\n");
 
   pango_attr_list_unref (other);
   pango_attr_list_unref (list);
@@ -1043,6 +1076,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/attributes/list/change", test_list_change);
   g_test_add_func ("/attributes/list/splice", test_list_splice);
   g_test_add_func ("/attributes/list/splice2", test_list_splice2);
+  g_test_add_func ("/attributes/list/splice3", test_list_splice3);
   g_test_add_func ("/attributes/list/filter", test_list_filter);
   g_test_add_func ("/attributes/list/update", test_list_update);
   g_test_add_func ("/attributes/list/update2", test_list_update2);
