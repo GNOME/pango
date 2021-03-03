@@ -47,11 +47,12 @@ test_file (const gchar *filename, GString *string)
   gboolean ret;
   char *str;
   int start, end;
+  gunichar accel = 0;
 
   g_file_get_contents (filename, &contents, &length, &error);
   g_assert_no_error (error);
 
-  ret = pango_parse_markup (contents, length, 0, &attrs, &text, NULL, &error);
+  ret = pango_parse_markup (contents, length, '_', &attrs, &text, &accel, &error);
   g_free (contents);
 
   if (ret)
@@ -74,6 +75,12 @@ test_file (const gchar *filename, GString *string)
       pango_attr_list_unref (attrs);
       pango_font_description_free (desc);
       g_free (text);
+
+      if (accel)
+        {
+          g_string_append (string, "\n\n---\n\n");
+          g_string_append_unichar (string, accel);
+        }
     }
   else
     {
