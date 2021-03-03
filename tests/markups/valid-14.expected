@@ -1,0 +1,24 @@
+abc def _x_
+
+
+---
+
+range 0 1
+[0,1]underline=3
+range 1 4
+range 4 5
+[4,5]underline=3
+range 5 2147483647
+
+
+---
+
+[0:1] (null) Normal
+[1:4] (null) Normal
+[4:5] (null) Normal
+[5:2147483647] (null) Normal
+
+
+---
+
+a
