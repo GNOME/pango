@@ -91,6 +91,9 @@ test_markups_data = [
   'markups/valid-10',
   'markups/valid-11',
   'markups/valid-12',
+  'markups/valid-13',
+  'markups/valid-14',
+  'markups/valid-15',
 ]
 
 test_breaks_data = [

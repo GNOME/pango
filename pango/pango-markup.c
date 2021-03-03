@@ -677,8 +677,21 @@ text_handler           (GMarkupParseContext *context G_GNUC_UNUSED,
 		  /* The underline should go underneath the char
 		   * we're setting as the next range_start
 		   */
-		  uline_index = md->index;
-		  uline_len = g_utf8_next_char (p) - p;
+                  if (md->attr_list != NULL)
+                    {
+                      /* Add the underline indicating the accelerator */
+                      PangoAttribute *attr;
+
+                      attr = pango_attr_underline_new (PANGO_UNDERLINE_LOW);
+
+                      uline_index = md->index;
+                      uline_len = g_utf8_next_char (p) - p;
+
+                      attr->start_index = uline_index;
+                      attr->end_index = uline_index + uline_len;
+
+                      pango_attr_list_change (md->attr_list, attr);
+                    }
 
 		  /* set next range_start to include this char */
 		  range_start = p;
@@ -693,35 +706,12 @@ text_handler           (GMarkupParseContext *context G_GNUC_UNUSED,
 	    }
 
 	  p = g_utf8_next_char (p);
-	}
+        }
 
-      if (range_end)
-	{
-	  g_string_append_len (md->text,
-			       range_start,
-			       range_end - range_start);
-	  md->index += range_end - range_start;
-	}
-      else
-	{
-	  g_string_append_len (md->text,
-			       range_start,
-			       end - range_start);
-	  md->index += end - range_start;
-	}
-
-      if (md->attr_list != NULL && uline_index >= 0)
-	{
-	  /* Add the underline indicating the accelerator */
-	  PangoAttribute *attr;
-
-	  attr = pango_attr_underline_new (PANGO_UNDERLINE_LOW);
-
-	  attr->start_index = uline_index;
-	  attr->end_index = uline_index + uline_len;
-
-	  pango_attr_list_change (md->attr_list, attr);
-	}
+      g_string_append_len (md->text,
+                           range_start,
+                           end - range_start);
+                           md->index += end - range_start;
     }
 }
 

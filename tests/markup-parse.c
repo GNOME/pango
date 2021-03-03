@@ -47,11 +47,12 @@ test_file (const gchar *filename, GString *string)
   gboolean ret;
   char *str;
   int start, end;
+  gunichar accel = 0;
 
   g_file_get_contents (filename, &contents, &length, &error);
   g_assert_no_error (error);
 
-  ret = pango_parse_markup (contents, length, 0, &attrs, &text, NULL, &error);
+  ret = pango_parse_markup (contents, length, '_', &attrs, &text, &accel, &error);
   g_free (contents);
 
   if (ret)
@@ -74,6 +75,12 @@ test_file (const gchar *filename, GString *string)
       pango_attr_list_unref (attrs);
       pango_font_description_free (desc);
       g_free (text);
+
+      if (accel)
+        {
+          g_string_append (string, "\n\n---\n\n");
+          g_string_append_unichar (string, accel);
+        }
     }
   else
     {
@@ -139,19 +146,19 @@ main (int argc, char *argv[])
   g_setenv ("LC_ALL", "C", TRUE);
   setlocale (LC_ALL, "");
 
-  g_test_init (&argc, &argv, NULL);
-
   /* allow to easily generate expected output for new test cases */
-  if (argc > 1)
+  if (argc > 1 && argv[1][0] != '-')
     {
       GString *string;
 
       string = g_string_sized_new (0);
       test_file (argv[1], string);
-      g_test_message ("%s", string->str);
+      g_print ("%s", string->str);
 
       return 0;
     }
+
+  g_test_init (&argc, &argv, NULL);
 
   path = g_test_build_filename (G_TEST_DIST, "markups", NULL);
   dir = g_dir_open (path, 0, &error);

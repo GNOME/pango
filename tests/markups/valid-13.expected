@@ -1,0 +1,21 @@
+abc def
+
+
+---
+
+range 0 4
+range 4 5
+[4,5]underline=3
+range 5 2147483647
+
+
+---
+
+[0:4] (null) Normal
+[4:5] (null) Normal
+[5:2147483647] (null) Normal
+
+
+---
+
+d
