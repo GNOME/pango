@@ -146,19 +146,19 @@ main (int argc, char *argv[])
   g_setenv ("LC_ALL", "C", TRUE);
   setlocale (LC_ALL, "");
 
-  g_test_init (&argc, &argv, NULL);
-
   /* allow to easily generate expected output for new test cases */
-  if (argc > 1)
+  if (argc > 1 && argv[1][0] != '-')
     {
       GString *string;
 
       string = g_string_sized_new (0);
       test_file (argv[1], string);
-      g_test_message ("%s", string->str);
+      g_print ("%s", string->str);
 
       return 0;
     }
+
+  g_test_init (&argc, &argv, NULL);
 
   path = g_test_build_filename (G_TEST_DIST, "markups", NULL);
   dir = g_dir_open (path, 0, &error);
