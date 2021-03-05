@@ -164,7 +164,7 @@ typedef struct _PangoAttrIterator PangoAttrIterator;
  * The `PangoAttrType` distinguishes between different types of attributes.
  *
  * Along with the predefined values, it is possible to allocate additional
- * values for custom attributes using [func@attr_type_register]. The predefined
+ * values for custom attributes using [type_func@attr_type_register]. The predefined
  * values are given below. The type of structure used to store the attribute is
  * listed in parentheses after the description.
  */
@@ -442,7 +442,7 @@ struct _PangoAttrSize
  * @attr: the common portion of the attribute
  * @ink_rect: the ink rectangle to restrict to
  * @logical_rect: the logical rectangle to restrict to
- * @data: user data set (see [func@attr_shape_new_with_data])
+ * @data: user data set (see [type_func@Pango.AttrShape.new_with_data])
  * @copy_func: copy function for the user data
  * @destroy_func: destroy function for the user data
  *

@@ -1418,7 +1418,7 @@ append_field (GString *str, const char *what, const FieldMap *map, int n_element
  *
  * Creates a string representation of a font description.
  *
- * See [method@Pango.FontDescription.from_string] for a description
+ * See [type_func@Pango.FontDescription.from_string] for a description
  * of the format of the string representation. The family list in
  * the string description will only have a terminating comma if
  * the last word of the list is a valid style option.

@@ -53,7 +53,7 @@ typedef struct _PangoFcDecoderClass PangoFcDecoderClass;
  *
  * It's the interface that is used to define a custom encoding for a font.
  * These objects are created in your code from a function callback that was
- * originally registered with [method@PangoFc.FcFontMap.add_decoder_find_func].
+ * originally registered with [method@PangoFc.FontMap.add_decoder_find_func].
  * Pango requires information about the supported charset for a font as well
  * as the individual character to glyph conversions. Pango gets that
  * information via the #get_charset and #get_glyph callbacks into your

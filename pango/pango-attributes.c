@@ -49,7 +49,7 @@ static GHashTable *name_map = NULL; /* MT-safe */
  *
  * Allocate a new attribute type ID.
  *
- * The attribute type name can be accessed later by using [func@attr_type_get_name].
+ * The attribute type name can be accessed later by using [type_func@Pango.AttrType.get_name].
  *
  * Return value: the new type ID.
  */
@@ -83,7 +83,7 @@ pango_attr_type_register (const gchar *name)
  * Fetches the attribute type name.
  *
  * The attribute type name is the string passed in when registering the type
- * using [func@attr_type_register].
+ * using [type_func@attr_type_register].
  *
  * The returned value is an interned string (see g_intern_string() for what
  * that means) that should not be modified or freed.

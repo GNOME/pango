@@ -209,7 +209,7 @@ pango_cairo_context_set_resolution (PangoContext *context,
  * @context: a `PangoContext`, from a pangocairo font map
  *
  * Gets the resolution for the context.
- * See [method@PangoCairo.Context.set_resolution]
+ * See [func@PangoCairo.context_set_resolution]
  *
  * Return value: the resolution in "dots per inch". A negative value will
  *   be returned if no resolution has previously been set.
@@ -287,7 +287,7 @@ pango_cairo_context_set_font_options (PangoContext               *context,
  * @context: a `PangoContext`, from a pangocairo font map
  *
  * Retrieves any font rendering options previously set with
- * [method@PangoCairo.Context.set_font_options].
+ * [func@PangoCairo.context_set_font_options].
  *
  * This function
  * does not report options that are derived from the target
@@ -391,7 +391,7 @@ pango_cairo_context_set_shape_renderer (PangoContext                *context,
  *
  * Retrieves callback function and associated user data for rendering
  * attributes of type %PANGO_ATTR_SHAPE as set by
- * [method@PangoCairo.Context.set_shape_renderer], if any.
+ * [func@PangoCairo.context_set_shape_renderer], if any.
  *
  * Return value: (transfer none) (nullable): the shape rendering callback
  *   previously set on the context, or %NULL if no shape rendering callback

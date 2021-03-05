@@ -12,7 +12,7 @@ to instruct Pango about direction of text, though in most cases Pango detects
 that correctly and automatically. For application that need more direct
 control over bidirectional setting of text, Pango provides APIs such as
 [func@unichar_direction], [func@find_base_dir], [func@get_mirror_char]
-or [func@bidi_type_for_unichar].
+or [type_func@Pango.BidiType.for_unichar].
 
 # Vertical Text
 
@@ -43,7 +43,7 @@ of the context can be accessed using [method@Pango.Context.get_base_gravity] and
 *resolved* gravity of it using [method@Pango.Context.get_gravity]. The resolved
 gravity is the same as the base gravity for the most part, except that if the base
 gravity is set to `PANGO_GRAVITY_AUTO`, the resolved gravity will depend on the
-current matrix set on context, and is derived using [func@gravity_get_for_matrix].
+current matrix set on context, and is derived using [type_func@Pango.Gravity.get_for_matrix].
 
 The next thing an application may want to set on the context is the *gravity hint*.
 A [enum@Pango.GravityHint] instructs how different scripts should react to the set

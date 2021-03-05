@@ -68,7 +68,7 @@ pango_font_map_init (PangoFontMap *fontmap G_GNUC_UNUSED)
  *
  * Creates a `PangoContext` connected to @fontmap.
  *
- * This is equivalent to [method@Pango.Context.new] followed by
+ * This is equivalent to [ctor@Pango.Context.new] followed by
  * [method@Pango.Context.set_font_map].
  *
  * If you are using Pango as part of a higher-level system,

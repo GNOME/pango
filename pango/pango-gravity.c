@@ -276,7 +276,7 @@ pango_gravity_get_for_script (PangoScript      script,
  * The gravity is determined based on the script, East Asian width,
  * base gravity, and hint,
  *
- * This function is similar to [func@gravity_get_for_script] except
+ * This function is similar to [type_func@Pango.Gravity.get_for_script] except
  * that this function makes a distinction between narrow/half-width and
  * wide/full-width characters also. Wide/full-width characters always
  * stand *upright*, that is, they always take the base gravity,

@@ -318,7 +318,7 @@ pango_language_get_default (void)
  * lowercase, mapping '_' to '-', and stripping all characters other
  * than letters and '-'.
  *
- * Use [func@language_get_default] if you want to get the `PangoLanguage`
+ * Use [type_func@Pango.Language.get_default] if you want to get the `PangoLanguage`
  * for the current locale of the process.
  *
  * Return value: (transfer none) (nullable): an opaque pointer to a
@@ -387,12 +387,12 @@ const char *
 
 /**
  * pango_language_matches:
- * @language: (nullable): a language tag (see [func@language_from_string]),
+ * @language: (nullable): a language tag (see [type_func@Pango.Language.from_string]),
  *   %NULL is allowed and matches nothing but '*'
  * @range_list: a list of language ranges, separated by ';', ':',
  *   ',', or space characters.
  *   Each element must either be '*', or a RFC 3066 language range
- *   canonicalized as by [func@language_from_string]
+ *   canonicalized as by [type_func@Pango.Language.from_string]
  *
  * Checks if a language tag matches one of the elements in a list of
  * language ranges.
@@ -574,7 +574,7 @@ static const LangInfo lang_texts[] = {
  * as sample text in a font selection dialog.
  *
  * If @language is %NULL, the default language as found by
- * [func@language_get_default] is used.
+ * [type_func@Pango.Language.get_default] is used.
  *
  * If Pango does not have a sample string for @language, the classic
  * "The quick brown fox..." is returned.  This can be detected by
@@ -639,7 +639,7 @@ pango_language_get_sample_string (PangoLanguage *language)
  * though, except that it is positive if the return value is not
  * %NULL, and it is a small number.
  *
- * The [func@language_includes_script] function uses this function
+ * The [method@Pango.Language.includes_script] function uses this function
  * internally.
  *
  * Note: while the return value is declared as `PangoScript`, the
@@ -704,7 +704,7 @@ pango_language_get_scripts (PangoLanguage *language,
  * a particular section of text. It probably is not useful
  * for applications in most circumstances.
  *
- * This function uses [func@language_get_scripts] internally.
+ * This function uses [method@Pango.Language.get_scripts] internally.
  *
  * Return value: %TRUE if @script is one of the scripts used
  *   to write @language or if nothing is known about @language
@@ -845,10 +845,10 @@ out:
  *
  * The list is specified by the `PANGO_LANGUAGE` or `LANGUAGE` environment
  * variables, in order of preference. Note that this list does not necessarily
- * include the language returned by [func@language_get_default].
+ * include the language returned by [type_func@Pango.Language.get_default].
  *
  * When choosing language-specific resources, such as the sample
- * text returned by [func@language_get_sample_string], you should
+ * text returned by [method@Pango.Language.get_sample_string], you should
  * first try the default language, followed by the languages returned
  * by this function.
  *
@@ -890,7 +890,7 @@ pango_language_get_preferred (void)
  * separated by colons or other separators. This function
  * will return the first language in the parsed list that Pango
  * believes may use @script for writing. This last predicate
- * is tested using [func@language_includes_script]. This can
+ * is tested using [method@Pango.Language.includes_script]. This can
  * be used to control Pango's font selection for non-primary
  * languages. For example, a `PANGO_LANGUAGE` enviroment variable
  * set to "en:fa" makes Pango choose fonts suitable for Persian (fa)

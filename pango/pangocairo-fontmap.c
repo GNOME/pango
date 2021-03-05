@@ -51,7 +51,7 @@ pango_cairo_font_map_default_init (PangoCairoFontMapIface *iface)
  *
  * A fontmap is used to cache information about available fonts,
  * and holds certain global parameters such as the resolution.
- * In most cases, you can use `func@font_map_get_default]
+ * In most cases, you can use `func@PangoCairo.font_map_get_default]
  * instead.
  *
  * Note that the type of the returned object will depend
@@ -114,8 +114,8 @@ pango_cairo_font_map_new (void)
  * Creates a new `PangoCairoFontMap` object of the type suitable
  * to be used with cairo font backend of type @fonttype.
  *
- * In most cases one should simply use [func@font_map_new], or
- * in fact in most of those cases, just use [func@font_map_get_default].
+ * In most cases one should simply use [type_func@PangoCairo.FontMap.new], or
+ * in fact in most of those cases, just use [func@PangoCairo.FontMap.get_default].
  *
  * Return value: (transfer full) (nullable): the newly allocated
  *   `PangoFontMap` of suitable type which should be freed with
@@ -201,11 +201,11 @@ pango_cairo_font_map_get_default (void)
  * This function only changes the default fontmap for
  * the current thread. Default fontmaps of existing threads
  * are not changed. Default fontmaps of any new threads will
- * still be created using [func@font_map_new].
+ * still be created using [type_func@PangoCairo.FontMap.new].
  *
  * A value of %NULL for @fontmap will cause the current default
  * font map to be released and a new default font map to be created
- * on demand, using [func@font_map_new].
+ * on demand, using [type_func@PangoCairo.FontMap.new].
  *
  * Since: 1.22
  */
