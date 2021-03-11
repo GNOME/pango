@@ -129,8 +129,19 @@ if build_gir
   gir_args = [
     '--quiet',
   ]
-  harfbuzz_gobject_dep = dependency('harfbuzz-gobject', version: harfbuzz_req_version, required: false,
-                          fallback: ['harfbuzz', 'libharfbuzz_gobject_dep'])
+  harfbuzz_gobject_dep = dependency('harfbuzz-gobject', version: harfbuzz_req_version, required: false)
+
+  if not harfbuzz_gobject_dep.found() and cc.get_argument_syntax() == 'msvc'
+    # The CMake build files for HarfBuzz (which is used for MSVC builds) do not
+    # generate pkg-config files, so look for harfbuzz-gobject.lib
+    harfbuzz_gobject_dep = cc.find_library('harfbuzz-gobject', has_headers: ['hb-gobject.h'], required: false)
+  endif
+
+  if not harfbuzz_gobject_dep.found()
+    harfbuzz_gobject_dep = dependency('harfbuzz-gobject', version: harfbuzz_req_version, required: false,
+                            fallback: ['harfbuzz', 'libharfbuzz_gobject_dep'])
+  endif
+
   if harfbuzz_gobject_dep.found()
     pango_deps += harfbuzz_gobject_dep
   endif
