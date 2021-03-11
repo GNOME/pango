@@ -9,11 +9,13 @@ logo_url = "pango-name.png"
 license = "GPL-2.1-or-later"
 description = "Fontconfig support for Pango"
 dependencies = [ "Pango-1.0", "fontconfig-2.0" ]
+devhelp = true
+search_index = true
 
   [dependencies."Pango-1.0"]
   name = "Pango"
   description = "A library for layout out and rendering of text"
-  docs_url = "https://developer.gnome.org/pango/stable"
+  docs_url = "../Pango/"
 
   [dependencies."fontconfig-2.0"]
   name = "Fontconfig"

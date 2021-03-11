@@ -11,6 +11,8 @@ description = "Internationalized text layout and rendering"
 dependencies = [ "GObject-2.0", "HarfBuzz-0.0", "PangoCairo-1.0",
                  "PangoFc-1.0", "PangoFT2-1.0", "PangoOT-1.0",
                  "PangoXft-1.0" ]
+devhelp = true
+search_index = true
 
   [dependencies."GObject-2.0"]
   name = "GObject"
@@ -25,27 +27,27 @@ dependencies = [ "GObject-2.0", "HarfBuzz-0.0", "PangoCairo-1.0",
   [dependencies."PangoCairo-1.0"]
   name = "PangoCairo"
   description = "Cairo support for Pango"
-  docs_url = "https://developer.gnome.org/pango/stable" # fixme
+  docs_url = "../PangoCairo/"
 
   [dependencies."PangoFc-1.0"]
   name = "PangoFc"
   description = "Fontconfig support for Pango"
-  docs_url = "https://developer.gnome.org/pango/stable" # fixme
+  docs_url = "../PangoFc/"
 
   [dependencies."PangoFT2-1.0"]
   name = "PangoFT2"
   description = "Freetype support for Pango"
-  docs_url = "https://developer.gnome.org/pango/stable" # fixme
+  docs_url = "../PangoFT2/"
 
   [dependencies."PangoOT-1.0"]
   name = "PangoOT"
   description = "OpenType support for Pango"
-  docs_url = "https://developer.gnome.org/pango/stable" # fixme
+  docs_url = "../PangoOT/"
 
   [dependencies."PangoXft-1.0"]
   name = "PangoXft"
   description = "Xft support for Pango"
-  docs_url = "https://developer.gnome.org/pango/stable" # fixme
+  docs_url = "../PangoXft/"
 
 [theme]
 name = "basic"
