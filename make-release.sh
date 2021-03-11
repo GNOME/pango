@@ -9,15 +9,13 @@ if [ -d ${release_build_dir} ]; then
   exit 1
 fi
 
-# we include gtk-doc since we need the gtk-doc-for-gtk4 branch
-meson setup ${release_build_dir} || exit
-
 # make the release tarball
+meson setup ${release_build_dir} || exit
 meson dist -C${release_build_dir} || exit
 
 # now build the docs
 meson configure -Dgtk_doc=true ${release_build_dir} || exit
-ninja -C${release_build_dir} pango-doc || exit
+ninja -C${release_build_dir} || exit
 
 tar cf ${release_build_dir}/meson-dist/pango-docs-${version}.tar.xz -C${release_build_dir} docs/
 
