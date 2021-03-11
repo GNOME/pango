@@ -54,12 +54,12 @@ typedef struct _PangoFontsetClass   PangoFontsetClass;
 
 /**
  * PangoFontsetForeachFunc:
- * @fontset: a #PangoFontset
+ * @fontset: a `PangoFontset`
  * @font: a font from @fontset
  * @user_data: callback data
  *
- * A callback function used by pango_fontset_foreach() when enumerating
- * the fonts in a fontset.
+ * Callback used by pango_fontset_foreach() when enumerating
+ * fonts in a fontset.
  *
  * Returns: if %TRUE, stop iteration and return immediately.
  *
@@ -72,12 +72,12 @@ typedef gboolean (*PangoFontsetForeachFunc) (PangoFontset  *fontset,
 /**
  * PangoFontset:
  *
- * A #PangoFontset represents a set of #PangoFont to use
- * when rendering text. It is the result of resolving a
- * #PangoFontDescription against a particular #PangoContext.
- * It has operations for finding the component font for
- * a particular Unicode character, and for finding a composite
- * set of metrics for the entire fontset.
+ * A `PangoFontset` represents a set of `PangoFont` to use when rendering text.
+ *
+ * A `PAngoFontset` is the result of resolving a `PangoFontDescription`
+ * against a particular `PangoContext`. It has operations for finding the
+ * component font for a particular Unicode character, and for finding a
+ * composite set of metrics for the entire fontset.
  */
 struct _PangoFontset
 {
@@ -130,10 +130,11 @@ struct _PangoFontsetClass
 /**
  * PangoFontsetSimple:
  *
- * #PangoFontsetSimple is a implementation of the abstract
- * #PangoFontset base class in terms of an array of fonts,
- * which the creator provides when constructing the
- * #PangoFontsetSimple.
+ * `PangoFontsetSimple` is a implementation of the abstract
+ * `PangoFontset` base class as an array of fonts.
+ *
+ * When creating a `PangoFontsetSimple`, you have to provide
+ * the array of fonts that make up the fontset.
  */
 #define PANGO_TYPE_FONTSET_SIMPLE       (pango_fontset_simple_get_type ())
 #define PANGO_FONTSET_SIMPLE(object)    (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONTSET_SIMPLE, PangoFontsetSimple))

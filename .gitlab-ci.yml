@@ -119,9 +119,14 @@ reference:
     EXTRA_MESON_FLAGS: ""
   script:
     - meson ${COMMON_MESON_FLAGS} ${EXTRA_MESON_FLAGS} -Dgtk_doc=true _build
-    - ninja -C _build pango-doc
+    - ninja -C _build
     - mkdir -p _reference/
-    - mv _build/docs/html/ _reference/
+    - mv _build/docs/Pango/ _reference/
+    - mv _build/docs/PangoCairo/ _reference/
+    - mv _build/docs/PangoFc/ _reference/
+    - mv _build/docs/PangoFT2/ _reference/
+    - mv _build/docs/PangoOT/ _reference/
+    - mv _build/docs/PangoXft/ _reference/
   artifacts:
     paths:
       - _reference

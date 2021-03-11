@@ -48,13 +48,14 @@ typedef struct _PangoFcDecoderClass PangoFcDecoderClass;
 /**
  * PangoFcDecoder:
  *
- * #PangoFcDecoder is a virtual base class that implementations will
- * inherit from.  It's the interface that is used to define a custom
- * encoding for a font.  These objects are created in your code from a
- * function callback that was originally registered with
- * pango_fc_font_map_add_decoder_find_func().  Pango requires
- * information about the supported charset for a font as well as the
- * individual character to glyph conversions.  Pango gets that
+ * `PangoFcDecoder` is a virtual base class that implementations will
+ * inherit from.
+ *
+ * It's the interface that is used to define a custom encoding for a font.
+ * These objects are created in your code from a function callback that was
+ * originally registered with [method@PangoFc.FontMap.add_decoder_find_func].
+ * Pango requires information about the supported charset for a font as well
+ * as the individual character to glyph conversions. Pango gets that
  * information via the #get_charset and #get_glyph callbacks into your
  * object implementation.
  *
@@ -68,16 +69,16 @@ struct _PangoFcDecoder
 
 /**
  * PangoFcDecoderClass:
- * @get_charset: This returns an #FcCharset given a #PangoFcFont that
+ * @get_charset: This returns an `FcCharset` given a `PangoFcFont` that
  *  includes a list of supported characters in the font.  The
  *  #FcCharSet that is returned should be an internal reference to your
  *  code.  Pango will not free this structure.  It is important that
  *  you make this callback fast because this callback is called
  *  separately for each character to determine Unicode coverage.
- * @get_glyph: This returns a single #PangoGlyph for a given Unicode
+ * @get_glyph: This returns a single `PangoGlyph` for a given Unicode
  *  code point.
  *
- * Class structure for #PangoFcDecoder.
+ * Class structure for `PangoFcDecoder`.
  *
  * Since: 1.6
  **/

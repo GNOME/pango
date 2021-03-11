@@ -65,12 +65,15 @@ typedef enum
  *    the Renderer; may be %NULL, which should be treated the
  *    same as the identity matrix.
  *
- * #PangoRenderer is a base class for objects that are used to
- * render Pango objects such as #PangoGlyphString and
- * #PangoLayout.
+ * `PangoRenderer` is a base class for objects that can render text
+ * provided as `PangoGlyphString` or `PangoLayout`.
+ *
+ * By subclassing `PangoRenderer` and overriding operations such as
+ * @draw_glyphs and @draw_rectangle, renderers for particular font
+ * backends and destinations can be created.
  *
  * Since: 1.8
- **/
+ */
 struct _PangoRenderer
 {
   /*< private >*/

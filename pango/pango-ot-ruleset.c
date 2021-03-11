@@ -120,29 +120,23 @@ pango_ot_ruleset_new (PangoOTInfo *info)
  * script, language, or feature indices manually.
  *
  * In excess to what pango_ot_ruleset_new() does, this function will:
- * <itemizedlist>
- *   <listitem>
- *   Find the #PangoOTTag script and language tags associated with
+ *
+ * * Find the #PangoOTTag script and language tags associated with
  *   @script and @language using pango_ot_tag_from_script() and
  *   pango_ot_tag_from_language(),
- *   </listitem>
- *   <listitem>
- *   For each of table types %PANGO_OT_TABLE_GSUB and %PANGO_OT_TABLE_GPOS,
+ *
+ * * For each of table types %PANGO_OT_TABLE_GSUB and %PANGO_OT_TABLE_GPOS,
  *   find the script index of the script tag found and the language
  *   system index of the language tag found in that script system, using
  *   pango_ot_info_find_script() and pango_ot_info_find_language(),
- *   </listitem>
- *   <listitem>
- *   For found language-systems, if they have required feature
+ *
+ * * For found language-systems, if they have required feature
  *   index, add that feature to the ruleset using
  *   pango_ot_ruleset_add_feature(),
- *   </listitem>
- *   <listitem>
- *   Remember found script and language indices for both table types,
+ *
+ * * Remember found script and language indices for both table types,
  *   and use them in future pango_ot_ruleset_maybe_add_feature() and
  *   pango_ot_ruleset_maybe_add_features().
- *   </listitem>
- * </itemizedlist>
  *
  * Because of the way return values of pango_ot_info_find_script() and
  * pango_ot_info_find_language() are ignored, this function automatically

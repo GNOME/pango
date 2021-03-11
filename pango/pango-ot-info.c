@@ -19,18 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:opentype
- * @short_description:Obtaining information from OpenType tables
- * @title:OpenType Font Handling
- * @stability:Unstable
- *
- * Functions and macros in this section are used to implement
- * the OpenType Layout features and algorithms.
- *
- * They have been superseded by the harfbuzz library, and should
- * not be used anymore.
- */
 #include "config.h"
 
 #include "pango-ot-private.h"
@@ -76,7 +64,7 @@ pango_ot_info_finalizer (void *object)
 
 /**
  * pango_ot_info_get:
- * @face: a <type>FT_Face</type>.
+ * @face: a FT_Face
  *
  * Returns the #PangoOTInfo structure for the given FreeType font face.
  *

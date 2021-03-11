@@ -19,24 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:pangofc-font
- * @short_description:Base font class for Fontconfig-based backends
- * @title:PangoFcFont
- * @see_also:
- * <variablelist><varlistentry><term>#PangoFcFontMap</term> <listitem>The base class for font maps; creating a new
- * Fontconfig-based backend involves deriving from both
- * #PangoFcFontMap and #PangoFcFont.</listitem></varlistentry></variablelist>
- *
- * #PangoFcFont is a base class for font implementation using the
- * Fontconfig and FreeType libraries. It is used in the
- * <link linkend="pango-Xft-Fonts-and-Rendering">Xft</link> and
- * <link linkend="pango-FreeType-Fonts-and-Rendering">FreeType</link>
- * backends shipped with Pango, but can also be used when creating
- * new backends. Any backend deriving from this base class will
- * take advantage of the wide range of shapers implemented using
- * FreeType that come with Pango.
- */
 #include "config.h"
 
 #include "pangofc-font-private.h"
@@ -116,12 +98,23 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   font_class->create_hb_font = pango_fc_font_create_hb_font;
   font_class->get_features = pango_fc_font_get_features;
 
+  /**
+   * PangoFcFont:pattern:
+   *
+   * The fontconfig pattern for this font.
+   */
   g_object_class_install_property (object_class, PROP_PATTERN,
 				   g_param_spec_pointer ("pattern",
 							 "Pattern",
 							 "The fontconfig pattern for this font",
 							 G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 							 G_PARAM_STATIC_STRINGS));
+
+  /**
+   * PangoFcFont:fontmap:
+   *
+   * The PangoFc font map this font is associated with.
+   */
   g_object_class_install_property (object_class, PROP_FONTMAP,
 				   g_param_spec_object ("fontmap",
 							"Font Map",
@@ -534,17 +527,18 @@ pango_fc_font_real_get_glyph (PangoFcFont *font,
 
 /**
  * pango_fc_font_lock_face: (skip)
- * @font: a #PangoFcFont.
+ * @font: a `PangoFcFont`.
  *
- * Gets the FreeType `FT_Face` associated with a font,
+ * Gets the FreeType `FT_Face` associated with a font.
+ *
  * This face will be kept around until you call
- * pango_fc_font_unlock_face().
+ * [method@PangoFc.Font.unlock_face].
  *
  * Return value: the FreeType `FT_Face` associated with @font.
  *
  * Since: 1.4
  * Deprecated: 1.44: Use pango_font_get_hb_font() instead
- **/
+ */
 FT_Face
 pango_fc_font_lock_face (PangoFcFont *font)
 {
@@ -555,14 +549,14 @@ pango_fc_font_lock_face (PangoFcFont *font)
 
 /**
  * pango_fc_font_unlock_face:
- * @font: a #PangoFcFont.
+ * @font: a `PangoFcFont`.
  *
  * Releases a font previously obtained with
- * pango_fc_font_lock_face().
+ * [method@PangoFc.Font.lock_face].
  *
  * Since: 1.4
  * Deprecated: 1.44: Use pango_font_get_hb_font() instead
- **/
+ */
 void
 pango_fc_font_unlock_face (PangoFcFont *font)
 {
@@ -582,7 +576,7 @@ pango_fc_font_unlock_face (PangoFcFont *font)
  *
  * Since: 1.4
  * Deprecated: 1.44: Use pango_font_has_char()
- **/
+ */
 gboolean
 pango_fc_font_has_char (PangoFcFont *font,
 			gunichar     wc)
@@ -607,14 +601,16 @@ pango_fc_font_has_char (PangoFcFont *font,
  * @wc: Unicode character to look up
  *
  * Gets the glyph index for a given Unicode character
- * for @font. If you only want to determine
- * whether the font has the glyph, use pango_fc_font_has_char().
+ * for @font.
+ *
+ * If you only want to determine whether the font has
+ * the glyph, use [method@PangoFc.Font.has_char].
  *
  * Return value: the glyph index, or 0, if the Unicode
  *   character doesn't exist in the font.
  *
  * Since: 1.4
- **/
+ */
 PangoGlyph
 pango_fc_font_get_glyph (PangoFcFont *font,
 			 gunichar     wc)
@@ -647,7 +643,7 @@ pango_fc_font_get_glyph (PangoFcFont *font,
  * Return value: a glyph index into @font.
  *
  * Since: 1.4
- **/
+ */
 PangoGlyph
 pango_fc_font_get_unknown_glyph (PangoFcFont *font,
 				 gunichar     wc)
@@ -670,17 +666,16 @@ _pango_fc_font_shutdown (PangoFcFont *font)
 /**
  * pango_fc_font_kern_glyphs:
  * @font: a #PangoFcFont
- * @glyphs: a #PangoGlyphString
+ * @glyphs: a `PangoGlyphString`
  *
  * This function used to adjust each adjacent pair of glyphs
  * in @glyphs according to kerning information in @font.
  *
  * Since 1.44, it does nothing.
  *
- *
  * Since: 1.4
  * Deprecated: 1.32
- **/
+ */
 void
 pango_fc_font_kern_glyphs (PangoFcFont      *font,
 			   PangoGlyphString *glyphs)
@@ -689,15 +684,14 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
 
 /**
  * _pango_fc_font_get_decoder:
- * @font: a #PangoFcFont
+ * @font: a `PangoFcFont`
  *
  * This will return any custom decoder set on this font.
  *
  * Return value: The custom decoder
  *
  * Since: 1.6
- **/
-
+ */
 PangoFcDecoder *
 _pango_fc_font_get_decoder (PangoFcFont *font)
 {
@@ -708,15 +702,15 @@ _pango_fc_font_get_decoder (PangoFcFont *font)
 
 /**
  * _pango_fc_font_set_decoder:
- * @font: a #PangoFcFont
- * @decoder: a #PangoFcDecoder to set for this font
+ * @font: a `PangoFcFont`
+ * @decoder: a `PangoFcDecoder` to set for this font
  *
- * This sets a custom decoder for this font.  Any previous decoder
- * will be released before this one is set.
+ * This sets a custom decoder for this font.
+ *
+ * Any previous decoder will be released before this one is set.
  *
  * Since: 1.6
- **/
-
+ */
 void
 _pango_fc_font_set_decoder (PangoFcFont    *font,
 			    PangoFcDecoder *decoder)
@@ -751,16 +745,17 @@ _pango_fc_font_set_font_key (PangoFcFont    *fcfont,
 
 /**
  * pango_fc_font_get_raw_extents:
- * @fcfont: a #PangoFcFont
+ * @fcfont: a `PangoFcFont`
  * @glyph: the glyph index to load
  * @ink_rect: (out) (optional): location to store ink extents of the
  *   glyph, or %NULL
  * @logical_rect: (out) (optional): location to store logical extents
  *   of the glyph or %NULL
  *
- * Gets the extents of a single glyph from a font. The extents are in
- * user space; that is, they are not transformed by any matrix in effect
- * for the font.
+ * Gets the extents of a single glyph from a font.
+ *
+ * The extents are in user space; that is, they are not transformed
+ * by any matrix in effect for the font.
  *
  * Long term, this functionality probably belongs in the default
  * implementation of the get_glyph_extents() virtual function.
@@ -769,7 +764,7 @@ _pango_fc_font_set_font_key (PangoFcFont    *fcfont,
  * caching functionality similar to pango_ft2_font_set_glyph_info().
  *
  * Since: 1.6
- **/
+ */
 void
 pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
 			       PangoGlyph      glyph,
@@ -1038,7 +1033,7 @@ done:
 
 /**
  * pango_fc_font_get_languages:
- * @font: a #PangoFcFont
+ * @font: a `PangoFcFont`
  *
  * Returns the languages that are supported by @font.
  *
@@ -1048,7 +1043,7 @@ done:
  * and its fontmap are valid.
  *
  * Returns: (transfer none) (nullable): a %NULL-terminated
- *    array of PangoLanguage*
+ *    array of `PangoLanguage`*
  *
  * Since: 1.48
  */
@@ -1070,7 +1065,7 @@ pango_fc_font_get_languages (PangoFcFont *font)
 
 /**
  * pango_fc_font_get_pattern: (skip)
- * @font: a #PangoFcFont
+ * @font: a `PangoFcFont`
  *
  * Returns the FcPattern that @font is based on.
  *

@@ -828,14 +828,14 @@ pango_xft_render_transformed (XftDraw          *draw,
 
 /**
  * pango_xft_render:
- * @draw:    the <type>XftDraw</type> object.
+ * @draw:    the XftDraw object.
  * @color:   the color in which to draw the string
  * @font:    the font in which to draw the string
  * @glyphs:  the glyph string to draw
  * @x:       the x position of start of string (in pixels)
  * @y:       the y position of baseline (in pixels)
  *
- * Renders a #PangoGlyphString onto an <type>XftDraw</type> object wrapping an X drawable.
+ * Renders a #PangoGlyphString onto an XftDraw object wrapping an X drawable.
  */
 void
 pango_xft_render (XftDraw          *draw,
@@ -864,7 +864,7 @@ pango_xft_render (XftDraw          *draw,
  * @x:            the x position of start of string (in pixels)
  * @y:            the y position of baseline (in pixels)
  *
- * Renders a #PangoGlyphString onto an Xrender <type>Picture</type> object.
+ * Renders a #PangoGlyphString onto an Xrender Picture object.
  */
 void
 pango_xft_picture_render (Display          *display,

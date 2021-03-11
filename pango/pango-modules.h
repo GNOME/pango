@@ -26,6 +26,11 @@
 
 G_BEGIN_DECLS
 
+/* All of this is deprecated and entirely useless for bindings.
+ * Leave it out of the gir file.
+ */
+#ifndef __GI_SCANNER__
+
 #ifndef PANGO_DISABLE_DEPRECATED
 
 typedef struct _PangoMap PangoMap;
@@ -71,6 +76,8 @@ PANGO_DEPRECATED_IN_1_38
 void           pango_module_register (PangoIncludedModule *module);
 
 #endif /* PANGO_DISABLE_DEPRECATED */
+
+#endif /* __GI_SCANNER__ */
 
 G_END_DECLS
 

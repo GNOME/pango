@@ -40,7 +40,7 @@ typedef struct _PangoFT2FontMapClass PangoFT2FontMapClass;
 /**
  * PangoFT2FontMap:
  *
- * The #PangoFT2FontMap is the #PangoFontMap implementation for FreeType fonts.
+ * The `PangoFT2FontMap` is the `PangoFontMap` implementation for FreeType fonts.
  */
 struct _PangoFT2FontMap
 {
@@ -118,11 +118,12 @@ pango_ft2_font_map_finalize (GObject *object)
 /**
  * pango_ft2_font_map_new:
  *
- * Create a new #PangoFT2FontMap object; a fontmap is used
- * to cache information about available fonts, and holds
- * certain global parameters such as the resolution and
+ * Create a new `PangoFT2FontMap` object.
+ *
+ * A fontmap is used to cache information about available fonts,
+ * and holds certain global parameters such as the resolution and
  * the default substitute function (see
- * pango_ft2_font_map_set_default_substitute()).
+ * [method@PangoFT2.FontMap.set_default_substitute]).
  *
  * Return value: the newly created fontmap object. Unref
  * with g_object_unref() when you are finished with it.
@@ -155,18 +156,20 @@ pango_ft2_font_map_changed (PangoFontMap *fontmap)
 
 /**
  * pango_ft2_font_map_set_default_substitute:
- * @fontmap: a #PangoFT2FontMap
+ * @fontmap: a `PangoFT2FontMap`
  * @func: function to call to to do final config tweaking
  *        on #FcPattern objects.
  * @data: data to pass to @func
  * @notify: function to call when @data is no longer used.
  *
  * Sets a function that will be called to do final configuration
- * substitution on a #FcPattern before it is used to load
- * the font. This function can be used to do things like set
+ * substitution on a `FcPattern` before it is used to load
+ * the font.
+ *
+ * This function can be used to do things like set
  * hinting and antialiasing options.
  *
- * Deprecated: 1.46: Use pango_fc_font_map_set_default_substitute()
+ * Deprecated: 1.46: Use [method@PangoFc.FontMap.set_default_substitute]
  * instead.
  *
  * Since: 1.2
@@ -183,15 +186,16 @@ pango_ft2_font_map_set_default_substitute (PangoFT2FontMap        *fontmap,
 
 /**
  * pango_ft2_font_map_substitute_changed:
- * @fontmap: a #PangoFT2FontMap
+ * @fontmap: a `PangoFT2FontMap`
  *
  * Call this function any time the results of the
  * default substitution function set with
  * pango_ft2_font_map_set_default_substitute() change.
+ *
  * That is, if your substitution function will return different
  * results for the same input pattern, you must call this function.
  *
- * Deprecated: 1.46: Use pango_fc_font_map_substitute_changed()
+ * Deprecated: 1.46: Use [method@PangoFc.FontMap.substitute_changed]
  * instead.
  *
  * Since: 1.2
@@ -204,7 +208,7 @@ pango_ft2_font_map_substitute_changed (PangoFT2FontMap *fontmap)
 
 /**
  * pango_ft2_font_map_set_resolution:
- * @fontmap: a #PangoFT2FontMap
+ * @fontmap: a `PangoFT2FontMap`
  * @dpi_x: dots per inch in the X direction
  * @dpi_y: dots per inch in the Y direction
  *
@@ -227,16 +231,16 @@ pango_ft2_font_map_set_resolution (PangoFT2FontMap *fontmap,
 
 /**
  * pango_ft2_font_map_create_context: (skip)
- * @fontmap: a #PangoFT2FontMap
+ * @fontmap: a `PangoFT2FontMap`
  *
- * Create a #PangoContext for the given fontmap.
+ * Create a `PangoContext` for the given fontmap.
  *
  * Return value: (transfer full): the newly created context; free with
  *     g_object_unref().
  *
  * Since: 1.2
  *
- * Deprecated: 1.22: Use pango_font_map_create_context() instead.
+ * Deprecated: 1.22: Use [method@Pango.FontMap.create_context] instead.
  **/
 PangoContext *
 pango_ft2_font_map_create_context (PangoFT2FontMap *fontmap)
@@ -251,13 +255,13 @@ pango_ft2_font_map_create_context (PangoFT2FontMap *fontmap)
  * @dpi_x:  the horizontal DPI of the target device
  * @dpi_y:  the vertical DPI of the target device
  *
- * Retrieves a #PangoContext for the default PangoFT2 fontmap
+ * Retrieves a `PangoContext` for the default PangoFT2 fontmap
  * (see pango_ft2_font_map_for_display()) and sets the resolution
  * for the default fontmap to @dpi_x by @dpi_y.
  *
- * Return value: (transfer full): the new #PangoContext
+ * Return value: (transfer full): the new `PangoContext`
  *
- * Deprecated: 1.22: Use pango_font_map_create_context() instead.
+ * Deprecated: 1.22: Use [method@Pango.FontMap.create_context] instead.
  **/
 G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 PangoContext *
@@ -275,13 +279,15 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 /**
  * pango_ft2_font_map_for_display: (skip)
  *
- * Returns a #PangoFT2FontMap. This font map is cached and should
+ * Returns a `PangoFT2FontMap`.
+ *
+ * This font map is cached and should
  * not be freed. If the font map is no longer needed, it can
  * be released with pango_ft2_shutdown_display(). Use of the
  * global PangoFT2 fontmap is deprecated; use pango_ft2_font_map_new()
  * instead.
  *
- * Return value: (transfer none): a #PangoFT2FontMap.
+ * Return value: (transfer none): a `PangoFT2FontMap`.
  **/
 PangoFontMap *
 pango_ft2_font_map_for_display (void)
@@ -322,7 +328,7 @@ _pango_ft2_font_map_get_library (PangoFontMap *fontmap)
 
 /**
  * _pango_ft2_font_map_get_renderer:
- * @fontmap: a #PangoFT2FontMap
+ * @fontmap: a `PangoFT2FontMap`
  *
  * Gets the singleton PangoFT2Renderer for this fontmap.
  *

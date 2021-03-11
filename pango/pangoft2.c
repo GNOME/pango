@@ -20,14 +20,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:freetype-fonts
- * @short_description:Font handling and rendering with FreeType
- * @title:FreeType Fonts and Rendering
- *
- * The macros and functions in this section are used to access fonts and render
- * text to bitmaps using the FreeType 2 library.
- */
 #include "config.h"
 
 #include <string.h>

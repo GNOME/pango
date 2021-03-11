@@ -20,17 +20,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:pango-renderer
- * @short_description:Rendering driver base class
- * @title:PangoRenderer
- *
- * #PangoRenderer is a base class that contains the necessary logic for
- * rendering a #PangoLayout or #PangoLayoutLine. By subclassing
- * #PangoRenderer and overriding operations such as @draw_glyphs and
- * @draw_rectangle, renderers for particular font backends and
- * destinations can be created.
- */
 #include "config.h"
 #include <math.h>
 
@@ -589,7 +578,7 @@ pango_ft2_renderer_draw_trapezoid (PangoRenderer   *renderer,
 
 /**
  * pango_ft2_render_layout_subpixel:
- * @bitmap:    a <type>FT_Bitmap</type> to render the layout onto
+ * @bitmap:    a FT_Bitmap to render the layout onto
  * @layout:    a #PangoLayout
  * @x:         the X position of the left of the layout (in Pango units)
  * @y:         the Y position of the top of the layout (in Pango units)
@@ -626,7 +615,7 @@ pango_ft2_render_layout_subpixel (FT_Bitmap   *bitmap,
 
 /**
  * pango_ft2_render_layout:
- * @bitmap:    a <type>FT_Bitmap</type> to render the layout onto
+ * @bitmap:    a FT_Bitmap to render the layout onto
  * @layout:    a #PangoLayout
  * @x:         the X position of the left of the layout (in pixels)
  * @y:         the Y position of the top of the layout (in pixels)
@@ -644,7 +633,7 @@ pango_ft2_render_layout (FT_Bitmap   *bitmap,
 
 /**
  * pango_ft2_render_layout_line_subpixel:
- * @bitmap:    a <type>FT_Bitmap</type> to render the line onto
+ * @bitmap:    a FT_Bitmap to render the line onto
  * @line:      a #PangoLayoutLine
  * @x:         the x position of start of string (in Pango units)
  * @y:         the y position of baseline (in Pango units)
@@ -681,7 +670,7 @@ pango_ft2_render_layout_line_subpixel (FT_Bitmap       *bitmap,
 
 /**
  * pango_ft2_render_layout_line:
- * @bitmap:    a <type>FT_Bitmap</type> to render the line onto
+ * @bitmap:    a FT_Bitmap to render the line onto
  * @line:      a #PangoLayoutLine
  * @x:         the x position of start of string (in pixels)
  * @y:         the y position of baseline (in pixels)

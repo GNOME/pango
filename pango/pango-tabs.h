@@ -32,7 +32,7 @@ typedef struct _PangoTabArray PangoTabArray;
  * PangoTabAlign:
  * @PANGO_TAB_LEFT: the tab stop appears to the left of the text.
  *
- * A #PangoTabAlign specifies where a tab stop appears relative to the text.
+ * `PangoTabAlign` specifies where a tab stop appears relative to the text.
  */
 typedef enum
 {
@@ -47,11 +47,6 @@ typedef enum
    */
 } PangoTabAlign;
 
-/**
- * PANGO_TYPE_TAB_ARRAY:
- *
- * The #GObject type for #PangoTabArray.
- */
 #define PANGO_TYPE_TAB_ARRAY (pango_tab_array_get_type ())
 
 PANGO_AVAILABLE_IN_ALL

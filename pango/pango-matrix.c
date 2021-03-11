@@ -32,16 +32,16 @@ G_DEFINE_BOXED_TYPE (PangoMatrix, pango_matrix,
 
 /**
  * pango_matrix_copy:
- * @matrix: (nullable): a #PangoMatrix, may be %NULL
+ * @matrix: (nullable): a `PangoMatrix`, may be %NULL
  *
- * Copies a #PangoMatrix.
+ * Copies a `PangoMatrix`.
  *
- * Return value: (nullable): the newly allocated #PangoMatrix, which
- *               should be freed with pango_matrix_free(), or %NULL if
- *               @matrix was %NULL.
+ * Return value: (nullable): the newly allocated `PangoMatrix`, which
+ *   should be freed with [method@Pango.Matrix.free], or %NULL if
+ *   @matrix was %NULL.
  *
  * Since: 1.6
- **/
+ */
 PangoMatrix *
 pango_matrix_copy (const PangoMatrix *matrix)
 {
@@ -59,12 +59,12 @@ pango_matrix_copy (const PangoMatrix *matrix)
 
 /**
  * pango_matrix_free:
- * @matrix: (nullable): a #PangoMatrix, may be %NULL
+ * @matrix: (nullable): a `PangoMatrix`, may be %NULL
  *
- * Free a #PangoMatrix created with pango_matrix_copy().
+ * Free a `PangoMatrix`.
  *
  * Since: 1.6
- **/
+ */
 void
 pango_matrix_free (PangoMatrix *matrix)
 {
@@ -76,7 +76,7 @@ pango_matrix_free (PangoMatrix *matrix)
 
 /**
  * pango_matrix_translate:
- * @matrix: a #PangoMatrix
+ * @matrix: a `PangoMatrix`
  * @tx: amount to translate in the X direction
  * @ty: amount to translate in the Y direction
  *
@@ -85,7 +85,7 @@ pango_matrix_free (PangoMatrix *matrix)
  * then applying the original transformation.
  *
  * Since: 1.6
- **/
+ */
 void
 pango_matrix_translate (PangoMatrix *matrix,
 			double       tx,
@@ -99,7 +99,7 @@ pango_matrix_translate (PangoMatrix *matrix,
 
 /**
  * pango_matrix_scale:
- * @matrix: a #PangoMatrix
+ * @matrix: a `PangoMatrix`
  * @scale_x: amount to scale by in X direction
  * @scale_y: amount to scale by in Y direction
  *
@@ -109,7 +109,7 @@ pango_matrix_translate (PangoMatrix *matrix,
  * transformation.
  *
  * Since: 1.6
- **/
+ */
 void
 pango_matrix_scale (PangoMatrix *matrix,
 		    double       scale_x,
@@ -125,7 +125,7 @@ pango_matrix_scale (PangoMatrix *matrix,
 
 /**
  * pango_matrix_rotate:
- * @matrix: a #PangoMatrix
+ * @matrix: a `PangoMatrix`
  * @degrees: degrees to rotate counter-clockwise
  *
  * Changes the transformation represented by @matrix to be the
@@ -133,7 +133,7 @@ pango_matrix_scale (PangoMatrix *matrix,
  * counter-clockwise then applying the original transformation.
  *
  * Since: 1.6
- **/
+ */
 void
 pango_matrix_rotate (PangoMatrix *matrix,
 		     double       degrees)
@@ -159,15 +159,15 @@ pango_matrix_rotate (PangoMatrix *matrix,
 
 /**
  * pango_matrix_concat:
- * @matrix: a #PangoMatrix
- * @new_matrix: a #PangoMatrix
+ * @matrix: a `PangoMatrix`
+ * @new_matrix: a `PangoMatrix`
  *
  * Changes the transformation represented by @matrix to be the
  * transformation given by first applying transformation
  * given by @new_matrix then applying the original transformation.
  *
  * Since: 1.6
- **/
+ */
 void
 pango_matrix_concat (PangoMatrix       *matrix,
 		     const PangoMatrix *new_matrix)
@@ -188,18 +188,19 @@ pango_matrix_concat (PangoMatrix       *matrix,
 
 /**
  * pango_matrix_get_font_scale_factor:
- * @matrix: (allow-none): a #PangoMatrix, may be %NULL
+ * @matrix: (allow-none): a `PangoMatrix`, may be %NULL
  *
  * Returns the scale factor of a matrix on the height of the font.
+ *
  * That is, the scale factor in the direction perpendicular to the
  * vector that the X coordinate is mapped to.  If the scale in the X
- * coordinate is needed as well, use pango_matrix_get_font_scale_factors().
+ * coordinate is needed as well, use [method@Pango.Matrix.get_font_scale_factors].
  *
  * Return value: the scale factor of @matrix on the height of the font,
- * or 1.0 if @matrix is %NULL.
+ *   or 1.0 if @matrix is %NULL.
  *
  * Since: 1.12
- **/
+ */
 double
 pango_matrix_get_font_scale_factor (const PangoMatrix *matrix)
 {
@@ -210,11 +211,12 @@ pango_matrix_get_font_scale_factor (const PangoMatrix *matrix)
 
 /**
  * pango_matrix_get_font_scale_factors:
- * @matrix: (nullable): a #PangoMatrix, or %NULL
+ * @matrix: (nullable): a `PangoMatrix`, or %NULL
  * @xscale: (out) (allow-none): output scale factor in the x direction, or %NULL
  * @yscale: (out) (allow-none): output scale factor perpendicular to the x direction, or %NULL
  *
  * Calculates the scale factor of a matrix on the width and height of the font.
+ *
  * That is, @xscale is the scale factor in the direction of the X coordinate,
  * and @yscale is the scale factor in the direction perpendicular to the
  * vector that the X coordinate is mapped to.
@@ -264,19 +266,20 @@ pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
 
 /**
  * pango_matrix_transform_distance:
- * @matrix: (nullable): a #PangoMatrix, or %NULL
+ * @matrix: (nullable): a `PangoMatrix`, or %NULL
  * @dx: (inout): in/out X component of a distance vector
  * @dy: (inout): in/out Y component of a distance vector
  *
- * Transforms the distance vector (@dx,@dy) by @matrix. This is
- * similar to pango_matrix_transform_point() except that the translation
- * components of the transformation are ignored. The calculation of
- * the returned vector is as follows:
+ * Transforms the distance vector (@dx,@dy) by @matrix.
  *
- * <programlisting>
+ * This is similar to [method@Pango.Matrix.transform_point],
+ * except that the translation components of the transformation
+ * are ignored. The calculation of the returned vector is as follows:
+ *
+ * ```
  * dx2 = dx1 * xx + dy1 * xy;
  * dy2 = dx1 * yx + dy1 * yy;
- * </programlisting>
+ * ```
  *
  * Affine transformations are position invariant, so the same vector
  * always transforms to the same vector. If (@x1,@y1) transforms
@@ -284,7 +287,7 @@ pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
  * (@x1+@dx2,@y1+@dy2) for all values of @x1 and @x2.
  *
  * Since: 1.16
- **/
+ */
 void
 pango_matrix_transform_distance (const PangoMatrix *matrix,
 				 double            *dx,
@@ -304,7 +307,7 @@ pango_matrix_transform_distance (const PangoMatrix *matrix,
 
 /**
  * pango_matrix_transform_point:
- * @matrix: (nullable): a #PangoMatrix, or %NULL
+ * @matrix: (nullable): a `PangoMatrix`, or %NULL
  * @x: (inout): in/out X position
  * @y: (inout): in/out Y position
  *
@@ -328,18 +331,18 @@ pango_matrix_transform_point (const PangoMatrix *matrix,
 
 /**
  * pango_matrix_transform_rectangle:
- * @matrix: (nullable): a #PangoMatrix, or %NULL
+ * @matrix: (nullable): a `PangoMatrix`, or %NULL
  * @rect: (inout) (allow-none): in/out bounding box in Pango units, or %NULL
  *
  * First transforms @rect using @matrix, then calculates the bounding box
- * of the transformed rectangle.  The rectangle should be in Pango units.
+ * of the transformed rectangle.
  *
  * This function is useful for example when you want to draw a rotated
  * @PangoLayout to an image buffer, and want to know how large the image
  * should be and how much you should shift the layout when rendering.
  *
  * If you have a rectangle in device units (pixels), use
- * pango_matrix_transform_pixel_rectangle().
+ * [method@Pango.Matrix.transform_pixel_rectangle].
  *
  * If you have the rectangle in Pango units and want to convert to
  * transformed pixel bounding box, it is more accurate to transform it first
@@ -351,7 +354,7 @@ pango_matrix_transform_point (const PangoMatrix *matrix,
  * example).
  *
  * Since: 1.16
- **/
+ */
 void
 pango_matrix_transform_rectangle (const PangoMatrix *matrix,
 				  PangoRectangle    *rect)
@@ -408,23 +411,22 @@ pango_matrix_transform_rectangle (const PangoMatrix *matrix,
 
 /**
  * pango_matrix_transform_pixel_rectangle:
- * @matrix: (nullable): a #PangoMatrix, or %NULL
+ * @matrix: (nullable): a `PangoMatrix`, or %NULL
  * @rect: (inout) (allow-none): in/out bounding box in device units, or %NULL
  *
  * First transforms the @rect using @matrix, then calculates the bounding box
- * of the transformed rectangle.  The rectangle should be in device units
- * (pixels).
+ * of the transformed rectangle.
  *
  * This function is useful for example when you want to draw a rotated
  * @PangoLayout to an image buffer, and want to know how large the image
  * should be and how much you should shift the layout when rendering.
  *
- * For better accuracy, you should use pango_matrix_transform_rectangle() on
- * original rectangle in Pango units and convert to pixels afterward
- * using pango_extents_to_pixels()'s first argument.
+ * For better accuracy, you should use [method@Pango.Matrix.transform_rectangle]
+ * on original rectangle in Pango units and convert to pixels afterward
+ * using [func@extents_to_pixels]'s first argument.
  *
  * Since: 1.16
- **/
+ */
 void
 pango_matrix_transform_pixel_rectangle (const PangoMatrix *matrix,
 					PangoRectangle    *rect)

@@ -31,8 +31,10 @@ G_BEGIN_DECLS
 
 typedef struct _PangoLogAttr PangoLogAttr;
 
+#ifndef __GI_SCANNER__
 typedef struct _PangoEngineLang PangoEngineLang;
 typedef struct _PangoEngineShape PangoEngineShape;
+#endif
 
 typedef struct _PangoFont    PangoFont;
 typedef struct _PangoFontMap PangoFontMap;
@@ -45,7 +47,7 @@ typedef struct _PangoRectangle PangoRectangle;
 /**
  * PangoGlyph:
  *
- * A #PangoGlyph represents a single glyph in the output form of a string.
+ * A `PangoGlyph` represents a single glyph in the output form of a string.
  */
 typedef guint32 PangoGlyph;
 
@@ -54,11 +56,11 @@ typedef guint32 PangoGlyph;
 /**
  * PANGO_SCALE:
  *
- * The %PANGO_SCALE macro represents the scale between dimensions used
- * for Pango distances and device units. (The definition of device
- * units is dependent on the output device; it will typically be pixels
- * for a screen, and points for a printer.) %PANGO_SCALE is currently
- * 1024, but this may be changed in the future.
+ * The scale between dimensions used for Pango distances and device units.
+ *
+ * The definition of device units is dependent on the output device; it will
+ * typically be pixels for a screen, and points for a printer. %PANGO_SCALE is
+ * currently 1024, but this may be changed in the future.
  *
  * When setting font sizes, device units are always considered to be
  * points (as in "12 point font"), rather than pixels.
@@ -130,10 +132,11 @@ double pango_units_to_double (int i) G_GNUC_CONST;
  * @width: width of the rectangle.
  * @height: height of the rectangle.
  *
- * The #PangoRectangle structure represents a rectangle. It is frequently
- * used to represent the logical or ink extents of a single glyph or section
- * of text. (See, for instance, pango_font_get_glyph_extents())
+ * The `PangoRectangle` structure represents a rectangle.
  *
+ * `PangoRectangle` is frequently used to represent the logical or ink
+ * extents of a single glyph or section of text. (See, for instance,
+ * [method@Pango.Font.get_glyph_extents].)
  */
 struct _PangoRectangle
 {
@@ -149,7 +152,7 @@ struct _PangoRectangle
  * PANGO_ASCENT:
  * @rect: a #PangoRectangle
  *
- * Extracts the <firstterm>ascent</firstterm> from a #PangoRectangle
+ * Extracts the *ascent* from a #PangoRectangle
  * representing glyph extents. The ascent is the distance from the
  * baseline to the highest point of the character. This is positive if the
  * glyph ascends above the baseline.
@@ -158,7 +161,7 @@ struct _PangoRectangle
  * PANGO_DESCENT:
  * @rect: a #PangoRectangle
  *
- * Extracts the <firstterm>descent</firstterm> from a #PangoRectangle
+ * Extracts the *descent* from a #PangoRectangle
  * representing glyph extents. The descent is the distance from the
  * baseline to the lowest point of the character. This is positive if the
  * glyph descends below the baseline.
@@ -167,7 +170,7 @@ struct _PangoRectangle
  * PANGO_LBEARING:
  * @rect: a #PangoRectangle
  *
- * Extracts the <firstterm>left bearing</firstterm> from a #PangoRectangle
+ * Extracts the *left bearing* from a #PangoRectangle
  * representing glyph extents. The left bearing is the distance from the
  * horizontal origin to the farthest left point of the character.
  * This is positive for characters drawn completely to the right of the
@@ -177,7 +180,7 @@ struct _PangoRectangle
  * PANGO_RBEARING:
  * @rect: a #PangoRectangle
  *
- * Extracts the <firstterm>right bearing</firstterm> from a #PangoRectangle
+ * Extracts the *right bearing* from a #PangoRectangle
  * representing glyph extents. The right bearing is the distance from the
  * horizontal origin to the farthest right point of the character.
  * This is positive except for characters drawn completely to the left of the

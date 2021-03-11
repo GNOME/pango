@@ -19,24 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:bidi
- * @short_description:Types and functions for bidirectional text
- * @title:Bidirectional Text
- * @see_also:
- * pango_context_get_base_dir(),
- * pango_context_set_base_dir(),
- * pango_itemize_with_base_dir()
- *
- * Pango supports bidirectional text (like Arabic and Hebrew) automatically.
- * Some applications however, need some help to correctly handle bidirectional text.
- *
- * The #PangoDirection type can be used with pango_context_set_base_dir() to
- * instruct Pango about direction of text, though in most cases Pango detects
- * that correctly and automatically.  The rest of the facilities in this section
- * are used internally by Pango already, and are provided to help applications
- * that need more direct control over bidirectional setting of text.
- */
 #include "config.h"
 
 #include <string.h>
@@ -56,11 +38,11 @@
  * pango_bidi_type_for_unichar:
  * @ch: a Unicode character
  *
- * Determines the normative bidirectional character type of a
- * character, as specified in the Unicode Character Database.
+ * Determines the bidirectional type of a character.
  *
- * A simplified version of this function is available as
- * pango_unichar_direction().
+ * The bidirectional type is specified in the Unicode Character Database.
+ *
+ * A simplified version of this function is available as [func@unichar_direction].
  *
  * Return value: the bidirectional character type, as used in the
  * Unicode bidirectional algorithm.
@@ -114,8 +96,10 @@ pango_bidi_type_for_unichar (gunichar ch)
  *             if @text is nul-terminated and the length should be calculated.
  * @pbase_dir: input base direction, and output resolved direction.
  *
- * This will return the bidirectional embedding levels of the input paragraph
- * as defined by the Unicode Bidirectional Algorithm available at:
+ * Return the bidirectional embedding levels of the input paragraph.
+ *
+ * The bidirectional embedding levels are defined by the Unicode Bidirectional
+ * Algorithm available at:
  *
  *   http://www.unicode.org/reports/tr9/
  *
@@ -123,7 +107,7 @@ pango_bidi_type_for_unichar (gunichar ch)
  * characters in the text will determine the final resolved direction.
  *
  * Return value: a newly allocated array of embedding levels, one item per
- *               character (not byte), that should be freed using g_free.
+ *   character (not byte), that should be freed using g_free().
  *
  * Since: 1.4
  */
@@ -282,14 +266,15 @@ resolved:
  * pango_unichar_direction:
  * @ch: a Unicode character
  *
- * Determines the inherent direction of a character; either
- * %PANGO_DIRECTION_LTR, %PANGO_DIRECTION_RTL, or
- * %PANGO_DIRECTION_NEUTRAL.
+ * Determines the inherent direction of a character.
+ *
+ * The inherent direction is either %PANGO_DIRECTION_LTR, %PANGO_DIRECTION_RTL,
+ * or %PANGO_DIRECTION_NEUTRAL.
  *
  * This function is useful to categorize characters into left-to-right
- * letters, right-to-left letters, and everything else.  If full
- * Unicode bidirectional type of a character is needed,
- * pango_bidi_type_for_unichar() can be used instead.
+ * letters, right-to-left letters, and everything else. If full Unicode
+ * bidirectional type of a character is needed, [type_func@Pango.BidiType.for_unichar]
+ * can be used instead.
  *
  * Return value: the direction of the character.
  */
@@ -316,9 +301,9 @@ pango_unichar_direction (gunichar ch)
  * @ch: a Unicode character
  * @mirrored_ch: location to store the mirrored character
  *
- * If @ch has the Unicode mirrored property and there is another Unicode
- * character that typically has a glyph that is the mirror image of @ch's
- * glyph, puts that character in the address pointed to by @mirrored_ch.
+ * Returns the mirrored character of a Unicode character.
+ *
+ * Mirror characters are determined by the Unicode mirrored property.
  *
  * Use g_unichar_get_mirror_char() instead; the docs for that function
  * provide full details.
@@ -327,8 +312,8 @@ pango_unichar_direction (gunichar ch)
  * filled in, %FALSE otherwise
  **/
 gboolean
-pango_get_mirror_char (gunichar        ch,
-		       gunichar       *mirrored_ch)
+pango_get_mirror_char (gunichar  ch,
+		       gunichar *mirrored_ch)
 {
   return g_unichar_get_mirror_char (ch, mirrored_ch);
 }

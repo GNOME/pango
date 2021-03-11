@@ -28,10 +28,10 @@
 /**
  * pango_glyph_string_new:
  *
- * Create a new #PangoGlyphString.
+ * Create a new `PangoGlyphString`.
  *
- * Return value: the newly allocated #PangoGlyphString, which
- *               should be freed with pango_glyph_string_free().
+ * Return value: the newly allocated `PangoGlyphString`, which
+ *               should be freed with [method@Pango.GlyphString.free].
  */
 PangoGlyphString *
 pango_glyph_string_new (void)
@@ -48,7 +48,7 @@ pango_glyph_string_new (void)
 
 /**
  * pango_glyph_string_set_size:
- * @string:    a #PangoGlyphString.
+ * @string:    a `PangoGlyphString`.
  * @new_len:   the new length of the string.
  *
  * Resize a glyph string to the given length.
@@ -97,12 +97,12 @@ G_DEFINE_BOXED_TYPE (PangoGlyphString, pango_glyph_string,
 
 /**
  * pango_glyph_string_copy:
- * @string: (nullable): a #PangoGlyphString, may be %NULL
+ * @string: (nullable): a `PangoGlyphString`, may be %NULL
  *
  * Copy a glyph string and associated storage.
  *
- * Return value: (nullable): the newly allocated #PangoGlyphString,
- *               which should be freed with pango_glyph_string_free(),
+ * Return value: (nullable): the newly allocated `PangoGlyphString`,
+ *               which should be freed with [method@Pango.GlyphString.free],
  *               or %NULL if @string was %NULL.
  */
 PangoGlyphString *
@@ -127,7 +127,7 @@ pango_glyph_string_copy (PangoGlyphString *string)
 
 /**
  * pango_glyph_string_free:
- * @string: (nullable): a #PangoGlyphString, may be %NULL
+ * @string: (nullable): a `PangoGlyphString`, may be %NULL
  *
  * Free a glyph string and associated storage.
  */
@@ -144,11 +144,11 @@ pango_glyph_string_free (PangoGlyphString *string)
 
 /**
  * pango_glyph_string_extents_range:
- * @glyphs:   a #PangoGlyphString
+ * @glyphs:   a `PangoGlyphString`
  * @start:    start index
  * @end:      end index (the range is the set of bytes with
 	      indices such that start <= index < end)
- * @font:     a #PangoFont
+ * @font:     a `PangoFont`
  * @ink_rect: (out caller-allocates) (optional): rectangle used to
  *            store the extents of the glyph string range as drawn or
  *            %NULL to indicate that the result is not needed.
@@ -156,11 +156,12 @@ pango_glyph_string_free (PangoGlyphString *string)
  *            store the logical extents of the glyph string range or
  *            %NULL to indicate that the result is not needed.
  *
- * Computes the extents of a sub-portion of a glyph string. The extents are
- * relative to the start of the glyph string range (the origin of their
- * coordinate system is at the start of the range, not at the start of the entire
- * glyph string).
- **/
+ * Computes the extents of a sub-portion of a glyph string.
+ *
+ * The extents are relative to the start of the glyph string range
+ * (the origin of their coordinate system is at the start of the range,
+ * not at the start of the entire glyph string).
+ */
 void
 pango_glyph_string_extents_range (PangoGlyphString *glyphs,
 				  int               start,
@@ -261,16 +262,17 @@ pango_glyph_string_extents_range (PangoGlyphString *glyphs,
 
 /**
  * pango_glyph_string_extents:
- * @glyphs:   a #PangoGlyphString
- * @font:     a #PangoFont
+ * @glyphs:   a `PangoGlyphString`
+ * @font:     a `PangoFont`
  * @ink_rect: (out) (allow-none): rectangle used to store the extents of the glyph string
  *            as drawn or %NULL to indicate that the result is not needed.
  * @logical_rect: (out) (allow-none): rectangle used to store the logical extents of the
  *            glyph string or %NULL to indicate that the result is not needed.
  *
- * Compute the logical and ink extents of a glyph string. See the documentation
- * for pango_font_get_glyph_extents() for details about the interpretation
- * of the rectangles.
+ * Compute the logical and ink extents of a glyph string.
+ *
+ * See the documentation for [method@Pango.Font.get_glyph_extents] for details
+ * about the interpretation of the rectangles.
  *
  * Examples of logical (red) and ink (green) rects:
  *
@@ -288,12 +290,14 @@ pango_glyph_string_extents (PangoGlyphString *glyphs,
 
 /**
  * pango_glyph_string_get_width:
- * @glyphs:   a #PangoGlyphString
+ * @glyphs:  a `PangoGlyphString`
  *
- * Computes the logical width of the glyph string as can also be computed
- * using pango_glyph_string_extents().  However, since this only computes the
- * width, it's much faster.  This is in fact only a convenience function that
- * computes the sum of geometry.width for each glyph in the @glyphs.
+ * Computes the logical width of the glyph string.
+ *
+ * This can also be computed using [method@Pango.GlyphString.extents].
+ * However, since this only computes the width, it's much faster. This
+ * is in fact only a convenience function that computes the sum of
+ * @geometry.width for each glyph in the @glyphs.
  *
  * Return value: the logical width of the glyph string.
  *
@@ -313,7 +317,7 @@ pango_glyph_string_get_width (PangoGlyphString *glyphs)
 
 /**
  * pango_glyph_string_get_logical_widths:
- * @glyphs: a #PangoGlyphString
+ * @glyphs: a `PangoGlyphString`
  * @text: the text corresponding to the glyphs
  * @length: the length of @text, in bytes
  * @embedding_level: the embedding level of the string
@@ -322,13 +326,14 @@ pango_glyph_string_get_width (PangoGlyphString *glyphs)
  *                  length) unless text has NUL bytes) to be filled in
  *                  with the resulting character widths.
  *
- * Given a #PangoGlyphString resulting from pango_shape() and the corresponding
- * text, determine the screen width corresponding to each character. When
- * multiple characters compose a single cluster, the width of the entire
- * cluster is divided equally among the characters.
+ * Given a `PangoGlyphString` and corresponding text, determine the width
+ * corresponding to each character.
  *
- * See also pango_glyph_item_get_logical_widths().
- **/
+ * When multiple characters compose a single cluster, the width of the
+ * entire cluster is divided equally among the characters.
+ *
+ * See also [method@Pango.GlyphItem.get_logical_widths].
+ */
 void
 pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
 				       const char       *text,
@@ -358,18 +363,20 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
 
 /**
  * pango_glyph_string_index_to_x:
- * @glyphs:    the glyphs return from pango_shape()
+ * @glyphs:    the glyphs return from [func@shape]
  * @text:      the text for the run
  * @length:    the number of bytes (not characters) in @text.
- * @analysis:  the analysis information return from pango_itemize()
+ * @analysis:  the analysis information return from [func@itemize]
  * @index_:    the byte index within @text
  * @trailing:  whether we should compute the result for the beginning (%FALSE)
  *             or end (%TRUE) of the character.
  * @x_pos:     (out): location to store result
  *
- * Converts from character position to x position. (X position
- * is measured from the left edge of the run). Character positions
- * are computed by dividing up each cluster into equal portions.
+ * Converts from character position to x position.
+ *
+ * The X position is measured from the left edge of the run.
+ * Character positions are computed by dividing up each cluster
+ * into equal portions.
  */
 
 void
@@ -486,21 +493,22 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
 
 /**
  * pango_glyph_string_x_to_index:
- * @glyphs:    the glyphs returned from pango_shape()
+ * @glyphs:    the glyphs returned from [func@shape]
  * @text:      the text for the run
  * @length:    the number of bytes (not characters) in text.
- * @analysis:  the analysis information return from pango_itemize()
+ * @analysis:  the analysis information return from [func@itemize]
  * @x_pos:     the x offset (in Pango units)
  * @index_:    (out): location to store calculated byte index within @text
  * @trailing:  (out): location to store a boolean indicating
  *             whether the user clicked on the leading or trailing
  *             edge of the character.
  *
- * Convert from x offset to character position. Character positions
- * are computed by dividing up each cluster into equal portions.
- * In scripts where positioning within a cluster is not allowed
- * (such as Thai), the returned value may not be a valid cursor
- * position; the caller must combine the result with the logical
+ * Convert from x offset to character position.
+ *
+ * Character positions are computed by dividing up each cluster into
+ * equal portions. In scripts where positioning within a cluster is
+ * not allowed (such as Thai), the returned value may not be a valid
+ * cursor position; the caller must combine the result with the logical
  * attributes for the text to compute the valid cursor position.
  */
 void

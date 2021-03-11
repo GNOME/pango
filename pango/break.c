@@ -147,8 +147,9 @@ typedef enum
  * @attrs: logical attributes to fill in
  * @attrs_len: size of the array passed as @attrs
  *
- * This is the default break algorithm. It applies Unicode
- * rules without language-specific tailoring, therefore
+ * This is the default break algorithm.
+ *
+ * It applies Unicode rules without language-specific tailoring, therefore
  * the @analyis argument is unused and can be %NULL.
  *
  * See pango_tailor_break() for language-specific breaks.
@@ -1612,8 +1613,9 @@ tailor_break (const char    *text,
  *             information in
  * @attrs_len: size of the array passed as @attrs
  *
- * Determines possible line, word, and character breaks
- * for a string of Unicode text with a single analysis.
+ * Determines possible line, word, and character breaks for a string of
+ * Unicode text with a single analysis.
+ *
  * For most purposes you may want to use pango_get_log_attrs().
  *
  * Deprecated: 1.44: Use pango_default_break() and pango_tailor_break()
@@ -1641,17 +1643,18 @@ pango_break (const gchar   *text,
  * @next_paragraph_start: (out): return location for start of next
  *   paragraph
  *
- * Locates a paragraph boundary in @text. A boundary is caused by
- * delimiter characters, such as a newline, carriage return, carriage
- * return-newline pair, or Unicode paragraph separator character.  The
- * index of the run of delimiters is returned in
- * @paragraph_delimiter_index. The index of the start of the paragraph
- * (index after all delimiters) is stored in @next_paragraph_start.
+ * Locates a paragraph boundary in @text.
+ *
+ * A boundary is caused by delimiter characters, such as a newline, carriage
+ * return, carriage return-newline pair, or Unicode paragraph separator character.
+ * The index of the run of delimiters is returned in @paragraph_delimiter_index.
+ * The index of the start of the paragrap (index after all delimiters) is stored
+ * in @next_paragraph_start.
  *
  * If no delimiters are found, both @paragraph_delimiter_index and
  * @next_paragraph_start are filled with the length of @text (an index one
  * off the end).
- **/
+ */
 void
 pango_find_paragraph_boundary (const gchar *text,
 			       gint         length,
@@ -1736,16 +1739,16 @@ pango_find_paragraph_boundary (const gchar *text,
  * pango_tailor_break:
  * @text: text to process. Must be valid UTF-8
  * @length: length in bytes of @text
- * @analysis:  #PangoAnalysis structure from pango_itemize() for @text
+ * @analysis: `PangoAnalysis` structure from [func@itemize] for @text
  * @offset: Byte offset of @text from the beginning of the
  *     paragraph, or -1 to ignore attributes from @analysis
- * @log_attrs: (array length=log_attrs_len): array with one #PangoLogAttr
+ * @log_attrs: (array length=log_attrs_len): array with one `PangoLogAttr`
  *   per character in @text, plus one extra, to be filled in
  * @log_attrs_len: length of @log_attrs array
  *
- * Apply language-specific tailoring to the breaks in
- * @log_attrs, which are assumed to have been produced
- * by pango_default_break().
+ * Apply language-specific tailoring to the breaks in @log_attrs.
+ *
+ * The line breaks are assumed to have been produced by [func@default_break].
  *
  * If @offset is not -1, it is used to apply attributes
  * from @analysis that are relevant to line breaking.
@@ -1805,17 +1808,17 @@ tailor_segment (const char      *range_start,
  * @length: length in bytes of @text
  * @level: embedding level, or -1 if unknown
  * @language: language tag
- * @log_attrs: (array length=attrs_len): array with one #PangoLogAttr
+ * @log_attrs: (array length=attrs_len): array with one `PangoLogAttr`
  *   per character in @text, plus one extra, to be filled in
  * @attrs_len: length of @log_attrs array
  *
- * Computes a #PangoLogAttr for each character in @text. The @log_attrs
- * array must have one #PangoLogAttr for each position in @text; if
- * @text contains N characters, it has N+1 positions, including the
- * last position at the end of the text. @text should be an entire
- * paragraph; logical attributes can't be computed without context
- * (for example you need to see spaces on either side of a word to know
- * the word is a word).
+ * Computes a `PangoLogAttr` for each character in @text.
+ *
+ * The @log_attrs array must have one `PangoLogAttr` for each position in @text;
+ * if @text contains N characters, it has N+1 positions, including the last
+ * position at the end of the text. @text should be an entire paragraph; logical
+ * attributes can't be computed without context (for example you need to see
+ * spaces on either side of a word to know the word is a word).
  */
 void
 pango_get_log_attrs (const char    *text,

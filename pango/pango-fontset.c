@@ -49,14 +49,14 @@ pango_fontset_class_init (PangoFontsetClass *class)
 
 /**
  * pango_fontset_get_font:
- * @fontset: a #PangoFontset
+ * @fontset: a `PangoFontset`
  * @wc: a Unicode character
  *
- * Returns the font in the fontset that contains the best glyph for the
- * Unicode character @wc.
+ * Returns the font in the fontset that contains the best glyph for a
+ * Unicode character.
  *
- * Return value: (transfer full): a #PangoFont. The caller must call
- *          g_object_unref when finished with the font.
+ * Return value: (transfer full): a `PangoFont`. The caller must call
+ *          g_object_unref() when finished with the font.
  **/
 PangoFont *
 pango_fontset_get_font (PangoFontset  *fontset,
@@ -87,12 +87,14 @@ pango_fontset_get_metrics (PangoFontset  *fontset)
 
 /**
  * pango_fontset_foreach:
- * @fontset: a #PangoFontset
+ * @fontset: a `PangoFontset`
  * @func: (closure data) (scope call): Callback function
  * @data: (closure): data to pass to the callback function
  *
  * Iterates through all the fonts in a fontset, calling @func for
- * each one. If @func returns %TRUE, that stops the iteration.
+ * each one.
+ *
+ * If @func returns %TRUE, that stops the iteration.
  *
  * Since: 1.4
  **/
@@ -232,11 +234,11 @@ struct _PangoFontsetSimpleClass
 
 /**
  * pango_fontset_simple_new:
- * @language: a #PangoLanguage tag
+ * @language: a `PangoLanguage` tag
  *
- * Creates a new #PangoFontsetSimple for the given language.
+ * Creates a new `PangoFontsetSimple` for the given language.
  *
- * Return value: the newly allocated #PangoFontsetSimple, which should
+ * Return value: the newly allocated `PangoFontsetSimple`, which should
  *               be freed with g_object_unref().
  **/
 PangoFontsetSimple *
@@ -301,8 +303,8 @@ pango_fontset_simple_finalize (GObject *object)
 
 /**
  * pango_fontset_simple_append:
- * @fontset: a #PangoFontsetSimple.
- * @font: a #PangoFont.
+ * @fontset: a `PangoFontsetSimple`.
+ * @font: a `PangoFont`.
  *
  * Adds a font to the fontset.
  **/
@@ -316,7 +318,7 @@ pango_fontset_simple_append (PangoFontsetSimple *fontset,
 
 /**
  * pango_fontset_simple_size:
- * @fontset: a #PangoFontsetSimple.
+ * @fontset: a `PangoFontsetSimple`.
  *
  * Returns the number of fonts in the fontset.
  *

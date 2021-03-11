@@ -32,8 +32,13 @@ G_BEGIN_DECLS
 /**
  * PangoCoverage:
  *
- * The #PangoCoverage structure represents a map from Unicode characters
- * to #PangoCoverageLevel. It is an opaque structure with no public fields.
+ * A #PangoCoverage structure is a map from Unicode characters
+ * to #PangoCoverageLevel values.
+ *
+ * It is often necessary in Pango to determine if a particular font can
+ * represent a particular character, and also how well it can represent
+ * that character. The #PangoCoverage is a data structure that is used to
+ * represent that information. It is an opaque structure with no public fields.
  */
 typedef struct _PangoCoverage PangoCoverage;
 
@@ -49,8 +54,8 @@ typedef struct _PangoCoverage PangoCoverage;
  * the current script.
  * @PANGO_COVERAGE_EXACT: The character is represented as the correct graphical form.
  *
- * Used to indicate how well a font can represent a particular Unicode
- * character point for a particular script.
+ * `PangoCoverageLevel` is used to indicate how well a font can represent
+ * a particular Unicode character for a particular script.
  *
  * Since 1.44, only %PANGO_COVERAGE_NONE and %PANGO_COVERAGE_EXACT
  * will be returned.

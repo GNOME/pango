@@ -19,14 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:pangofc-decoder
- * @short_description:Custom font encoding handling
- * @title:PangoFcDecoder
- *
- * PangoFcDecoder represents a decoder that an application provides
- * for handling a font that is encoded in a custom way.
- */
 #include "config.h"
 #include "pangofc-decoder.h"
 
@@ -44,15 +36,17 @@ pango_fc_decoder_class_init (PangoFcDecoderClass *klass G_GNUC_UNUSED)
 
 /**
  * pango_fc_decoder_get_charset:
- * @decoder: a #PangoFcDecoder
- * @fcfont: the #PangoFcFont to query.
+ * @decoder: a `PangoFcDecoder`
+ * @fcfont: the `PangoFcFont` to query.
  *
- * Generates an #FcCharSet of supported characters for the fcfont
- * given.  The returned #FcCharSet will be a reference to an
- * internal value stored by the #PangoFcDecoder and must not
+ * Generates an `FcCharSet` of supported characters for the @fcfont
+ * given.
+ *
+ * The returned `FcCharSet` will be a reference to an
+ * internal value stored by the `PangoFcDecoder` and must not
  * be modified or freed.
  *
- * Returns: (transfer none): the #FcCharset for @fcfont; must not
+ * Returns: (transfer none): the `FcCharset` for @fcfont; must not
  *   be modified or freed.
  *
  * Since: 1.6
@@ -68,12 +62,14 @@ pango_fc_decoder_get_charset (PangoFcDecoder *decoder,
 
 /**
  * pango_fc_decoder_get_glyph:
- * @decoder: a #PangoFcDecoder
- * @fcfont: a #PangoFcFont to query.
- * @wc: the Unicode code point to convert to a single #PangoGlyph.
+ * @decoder: a `PangoFcDecoder`
+ * @fcfont: a `PangoFcFont` to query.
+ * @wc: the Unicode code point to convert to a single `PangoGlyph`.
  *
- * Generates a #PangoGlyph for the given Unicode point using the
- * custom decoder. For complex scripts where there can be multiple
+ * Generates a `PangoGlyph` for the given Unicode point using the
+ * custom decoder.
+ *
+ * For complex scripts where there can be multiple
  * glyphs for a single character, the decoder will return whatever
  * glyph is most convenient for it. (Usually whatever glyph is directly
  * in the fonts character map table.)

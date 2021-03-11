@@ -57,17 +57,11 @@ typedef struct _PangoContext PangoContext;
 /**
  * PangoFontMap:
  *
- * The #PangoFontMap represents the set of fonts available for a
- * particular rendering system. This is a virtual object with
- * implementations being specific to particular rendering systems.  To
- * create an implementation of a #PangoFontMap, the rendering-system
- * specific code should allocate a larger structure that contains a nested
- * #PangoFontMap, fill in the <structfield>klass</structfield> member of the nested #PangoFontMap with a
- * pointer to a appropriate #PangoFontMapClass, then call
- * pango_font_map_init() on the structure.
+ * A `PangoFontMap` represents the set of fonts available for a
+ * particular rendering system.
  *
- * The #PangoFontMap structure contains one member which the implementation
- * fills in.
+ * This is a virtual object with implementations being specific to
+ * particular rendering systems.
  */
 struct _PangoFontMap
 {

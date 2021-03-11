@@ -19,24 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:pango-version
- * @short_description:Tools for checking Pango version at compile- and run-time.
- * @title:Version Checking
- *
- * The capital-letter macros defined here can be used to check the version of Pango
- * at compile-time, and to <firstterm>encode</firstterm> Pango versions into integers.
- *
- * The functions can be used to check the version of the linked Pango library at run-time.
- */
-/**
- * SECTION:utils
- * @short_description:Various convenience and utility functions
- * @title: Miscellaneous Utilities
- *
- * The functions and utilities in this section are mostly used from Pango
- * backends and modules, but may be useful for other purposes too.
- */
 #include "config.h"
 #include <errno.h>
 #include <string.h>
@@ -70,15 +52,13 @@
 /**
  * pango_version:
  *
- * This is similar to the macro %PANGO_VERSION except that
- * it returns the encoded version of Pango available at run-time,
- * as opposed to the version available at compile-time.
+ * Returns the encoded version of Pango available at run-time.
  *
- * A version number can be encoded into an integer using
- * PANGO_VERSION_ENCODE().
+ * This is similar to the macro %PANGO_VERSION except that the macro
+ * returns the encoded version available at compile-time. A version
+ * number can be encoded into an integer using PANGO_VERSION_ENCODE().
  *
- * Returns: The encoded version of Pango library
- *   available at run time.
+ * Returns: The encoded version of Pango library available at run time.
  *
  * Since: 1.16
  **/
@@ -91,14 +71,14 @@ pango_version (void)
 /**
  * pango_version_string:
  *
- * This is similar to the macro %PANGO_VERSION_STRING except that
- * it returns the version of Pango available at run-time, as opposed to
- * the version available at compile-time.
+ * Returns the version of Pango available at run-time.
  *
- * Returns: A string containing the version of Pango library
- *   available at run time.
- *   The returned string is owned by Pango and should not be modified
- *   or freed.
+ * This is similar to the macro %PANGO_VERSION_STRING except that the
+ * macro returns the version available at compile-time.
+ *
+ * Returns: A string containing the version of Pango library available
+ *   at run time. The returned string is owned by Pango and should not
+ *   be modified or freed.
  *
  * Since: 1.16
  **/
@@ -115,11 +95,13 @@ pango_version_string (void)
  * @required_micro: the required major version.
  *
  * Checks that the Pango library in use is compatible with the
- * given version. Generally you would pass in the constants
- * %PANGO_VERSION_MAJOR, %PANGO_VERSION_MINOR, %PANGO_VERSION_MICRO
- * as the three arguments to this function; that produces
- * a check that the library in use at run-time is compatible with
- * the version of Pango the application or module was compiled against.
+ * given version.
+ *
+ * Generally you would pass in the constants %PANGO_VERSION_MAJOR,
+ * %PANGO_VERSION_MINOR, %PANGO_VERSION_MICRO as the three arguments
+ * to this function; that produces a check that the library in use at
+ * run-time is compatible with the version of Pango the application or
+ * module was compiled against.
  *
  * Compatibility is defined by two things: first the version
  * of the running library is newer than the version
@@ -258,17 +240,18 @@ pango_split_file_list (const char *str)
  * @stream: a stdio stream
  * @str: #GString buffer into which to write the result
  *
- * Reads an entire line from a file into a buffer. Lines may
- * be delimited with '\n', '\r', '\n\r', or '\r\n'. The delimiter
+ * Reads an entire line from a file into a buffer.
+ *
+ * Lines may be delimited with '\n', '\r', '\n\r', or '\r\n'. The delimiter
  * is not written into the buffer. Text after a '#' character is treated as
  * a comment and skipped. '\' can be used to escape a # character.
  * '\' proceeding a line delimiter combines adjacent lines. A '\' proceeding
  * any other character is ignored and written into the output buffer
  * unmodified.
  *
- * Return value: 0 if the stream was already at an %EOF character, otherwise
- *               the number of lines read (this is useful for maintaining
- *               a line number counter which doesn't combine lines with '\')
+ * Return value: 0 if the stream was already at an %EOF character,
+ *   otherwise the number of lines read (this is useful for maintaining
+ *   a line number counter which doesn't combine lines with '\')
  *
  * Deprecated: 1.38
  **/
@@ -394,9 +377,10 @@ pango_skip_space (const char **pos)
  * @pos: (inout): in/out string position
  * @out: a #GString into which to write the result
  *
- * Scans a word into a #GString buffer. A word consists
- * of [A-Za-z_] followed by zero or more [A-Za-z_0-9]
- * Leading white space is skipped.
+ * Scans a word into a #GString buffer.
+ *
+ * A word consists of [A-Za-z_] followed by zero or more
+ * [A-Za-z_0-9]. Leading white space is skipped.
  *
  * Return value: %FALSE if a parse error occurred.
  *
@@ -438,9 +422,10 @@ pango_scan_word (const char **pos, GString *out)
  * @pos: (inout): in/out string position
  * @out: a #GString into which to write the result
  *
- * Scans a string into a #GString buffer. The string may either
- * be a sequence of non-white-space characters, or a quoted
- * string with '"'. Instead a quoted string, '\"' represents
+ * Scans a string into a #GString buffer.
+ *
+ * The string may either be a sequence of non-white-space characters,
+ * or a quoted string with '"'. Instead a quoted string, '\"' represents
  * a literal quote. Leading white space outside of quotes is skipped.
  *
  * Return value: %FALSE if a parse error occurred.
@@ -531,6 +516,7 @@ pango_scan_string (const char **pos, GString *out)
  * @out: (out): an int into which to write the result
  *
  * Scans an integer.
+ *
  * Leading white space is skipped.
  *
  * Return value: %FALSE if a parse error occurred.
@@ -842,6 +828,7 @@ pango_parse_flags (GType        type,
  * @n_families: (out): will be set to the length of the @families array.
  *
  * Look up all user defined aliases for the alias @fontname.
+ *
  * The resulting font family names will be stored in @families,
  * and the number of families in @n_families.
  *
@@ -903,11 +890,11 @@ pango_find_base_dir (const gchar *text,
  * pango_is_zero_width:
  * @ch: a Unicode character
  *
- * Checks @ch to see if it is a character that should not be
- * normally rendered on the screen.  This includes all Unicode characters
- * with "ZERO WIDTH" in their name, as well as <firstterm>bidi</firstterm> formatting characters, and
- * a few other ones.  This is totally different from g_unichar_iszerowidth()
- * and is at best misnamed.
+ * Checks if a character that should not be normally rendered.
+ *
+ * This includes all Unicode characters with "ZERO WIDTH" in their name,
+ * as well as *bidi* formatting characters, and a few other ones.  This is
+ * totally different from g_unichar_iszerowidth() and is at best misnamed.
  *
  * Return value: %TRUE if @ch is a zero-width character, %FALSE otherwise
  *
@@ -957,10 +944,10 @@ pango_is_zero_width (gunichar ch)
  * @thickness: (inout): pointer to the thickness of a line, in Pango units
  * @position: (inout): corresponding position
  *
- * Quantizes the thickness and position of a line, typically an
- * underline or strikethrough, to whole device pixels, that is integer
- * multiples of %PANGO_SCALE. The purpose of this function is to avoid
- * such lines looking blurry.
+ * Quantizes the thickness and position of a line to whole device pixels.
+ *
+ * This is typically used for underline or strikethrough. The purpose of
+ * this function is to avoid such lines looking blurry.
  *
  * Care is taken to make sure @thickness is at least one pixel when this
  * function returns, but returned @position may become zero as a result
@@ -994,8 +981,10 @@ pango_quantize_line_geometry (int *thickness,
  * pango_units_from_double:
  * @d: double floating-point value
  *
- * Converts a floating-point number to Pango units: multiplies
- * it by %PANGO_SCALE and rounds to nearest integer.
+ * Converts a floating-point number to Pango units.
+ *
+ * The conversion is done by multiplying @d by %PANGO_SCALE and
+ * rounding the result to nearest integer.
  *
  * Return value: the value in Pango units.
  *
@@ -1011,8 +1000,9 @@ pango_units_from_double (double d)
  * pango_units_to_double:
  * @i: value in Pango units
  *
- * Converts a number in Pango units to floating-point: divides
- * it by %PANGO_SCALE.
+ * Converts a number in Pango units to floating-point.
+ *
+ * The conversion is done by dividing @i by %PANGO_SCALE.
  *
  * Return value: the double value.
  *
@@ -1029,19 +1019,21 @@ pango_units_to_double (int i)
  * @inclusive: (allow-none): rectangle to round to pixels inclusively, or %NULL.
  * @nearest: (allow-none): rectangle to round to nearest pixels, or %NULL.
  *
- * Converts extents from Pango units to device units, dividing by the
- * %PANGO_SCALE factor and performing rounding.
+ * Converts extents from Pango units to device units.
  *
- * The @inclusive rectangle is converted by flooring the x/y coordinates and extending
- * width/height, such that the final rectangle completely includes the original
- * rectangle.
+ * The conversion is done by dividing by the %PANGO_SCALE factor and
+ * performing rounding.
+ *
+ * The @inclusive rectangle is converted by flooring the x/y coordinates
+ * and extending width/height, such that the final rectangle completely
+ * includes the original rectangle.
  *
  * The @nearest rectangle is converted by rounding the coordinates
  * of the rectangle to the nearest device unit (pixel).
  *
  * The rule to which argument to use is: if you want the resulting device-space
- * rectangle to completely contain the original rectangle, pass it in as @inclusive.
- * If you want two touching-but-not-overlapping rectangles stay
+ * rectangle to completely contain the original rectangle, pass it in as
+ * @inclusive. If you want two touching-but-not-overlapping rectangles stay
  * touching-but-not-overlapping after rounding to device units, pass them in
  * as @nearest.
  *

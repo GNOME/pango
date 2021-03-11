@@ -34,7 +34,8 @@ typedef struct _PangoItem PangoItem;
  * PANGO_ANALYSIS_FLAG_CENTERED_BASELINE:
  *
  * Whether the segment should be shifted to center around the baseline.
- * Used in vertical writing directions mostly.
+ *
+ * This is mainly used in vertical writing directions.
  *
  * Since: 1.16
  */
@@ -43,8 +44,7 @@ typedef struct _PangoItem PangoItem;
 /**
  * PANGO_ANALYSIS_FLAG_IS_ELLIPSIS:
  *
- * This flag is used to mark runs that hold ellipsized text,
- * in an ellipsized layout.
+ * Whether this run holds ellipsized text.
  *
  * Since: 1.36.7
  */
@@ -53,8 +53,7 @@ typedef struct _PangoItem PangoItem;
 /**
  * PANGO_ANALYSIS_FLAG_NEED_HYPHEN:
  *
- * This flag tells Pango to add a hyphen at the end of the
- * run during shaping.
+ * Whether to add a hyphen at the end of the run during shaping.
  *
  * Since: 1.44
  */
@@ -66,19 +65,24 @@ typedef struct _PangoItem PangoItem;
  * @lang_engine: unused
  * @font: the font for this segment.
  * @level: the bidirectional level for this segment.
- * @gravity: the glyph orientation for this segment (A #PangoGravity).
+ * @gravity: the glyph orientation for this segment (A `PangoGravity`).
  * @flags: boolean flags for this segment (Since: 1.16).
- * @script: the detected script for this segment (A #PangoScript) (Since: 1.18).
+ * @script: the detected script for this segment (A `PangoScript`) (Since: 1.18).
  * @language: the detected language for this segment.
  * @extra_attrs: extra attributes for this segment.
  *
- * The #PangoAnalysis structure stores information about
+ * The `PangoAnalysis` structure stores information about
  * the properties of a segment of text.
  */
 struct _PangoAnalysis
 {
+#ifndef __GI_SCANNER__
   PangoEngineShape *shape_engine;
   PangoEngineLang  *lang_engine;
+#else
+  gpointer shape_engine;
+  gpointer lang_engine;
+#endif
   PangoFont *font;
 
   guint8 level;
@@ -98,7 +102,10 @@ struct _PangoAnalysis
  * @num_chars: number of Unicode characters in the item.
  * @analysis: analysis results for the item.
  *
- * The #PangoItem structure stores information about a segment of text.
+ * The `PangoItem` structure stores information about a segment of text.
+ *
+ * You typically obtain `PangoItems` by itemizing a piece of text
+ * with [func@itemize].
  */
 struct _PangoItem
 {

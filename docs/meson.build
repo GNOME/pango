@@ -1,97 +1,163 @@
-subdir('xml')
+gidocgen = find_program('gi-docgen', required: get_option('gtk_doc'))
 
-version_xml_conf = configuration_data()
-version_xml_conf.set('PANGO_VERSION', meson.project_version())
-configure_file(input: 'version.xml.in',
-               output: 'version.xml',
-               configuration: version_xml_conf)
-
-private_headers = [
-  'pangocairo-private.h',
-  'pangocairo-fc-private.h',
-  'pangocairo-fc.h',
-  'pangocairo-win32.h',
-  'pangocairo-atsui.h',
-  'pango-coverage-private.h',
-  'pango-color-table.h',
-  'pango-emoji-private.h',
-  'pango-font-private.h',
-  'pango-fontmap-private.h',
-  'pango-fontset-private.h',
-  'pango-impl-utils.h',
-  'pango-glyph-item-private.h',
-  'pango-layout-private.h',
-  'pango-script-table.h',
-  'pango-script-private.h',
-  'pango-utils-private.h',
-  'pangofc-private.h',
-  'pangofc-fontmap-private.h',
-  'pangoft2-private.h',
-  'pangowin32-private.h',
-  'pangoatsui-private.h',
-  'pangoxft-private.h',
-  'pango-ot-private.h',
-  'pango-script-lang-table.h',
-  'pango-language-sample-table.h',
-  'pangocoretext-private.h',
-]
-
-content_files = [
-  'pango_markup.sgml',
-  'version.xml',
-]
-
-html_images = [
+pango_content_files = [
+  'pango_rendering.md',
+  'pango_markup.md',
+  'pango_fonts.md',
+  'pango_bidi.md',
+  'pango-name.png',
   'layout.png',
   'pipeline.png',
-  'rotated-text.png',
   'rects1.png',
   'rects2.png',
+  'rects3.png',
 ]
 
-docdeps = [ libpango_dep ]
+doc_conf = configuration_data()
+doc_conf.set('PANGO_VERSION', meson.project_version())
+
+pango_toml = configure_file(input: 'pango.toml.in',
+                            output: 'pango.toml',
+                            configuration: doc_conf)
+
+custom_target('pango-doc',
+  input: pango_gir[0],
+  output: 'Pango',
+  command: [
+    gidocgen,
+    'generate',
+    '--quiet',
+    '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
+    '--config', pango_toml,
+    '--output-dir=@OUTPUT@',
+    '--no-namespace-dir',
+    '--content-dir=@0@'.format(meson.current_source_dir()),
+    '@INPUT@',
+  ],
+  depend_files: [ pango_toml, pango_content_files],
+  build_by_default: true,
+)
 
 if build_pangoft2
-  docdeps += libpangoft2_dep
+  pangoft2_toml = configure_file(input: 'pangoft2.toml.in',
+                                 output: 'pangoft2.toml',
+                                 configuration: doc_conf)
+
+  custom_target('pangoft-doc',
+    input: pangoft2_gir[0],
+    output: 'PangoFT2',
+    command: [
+      gidocgen,
+      'generate',
+      '--quiet',
+      '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
+      '--config', pangoft2_toml,
+      '--output-dir=@OUTPUT@',
+      '--no-namespace-dir',
+      '--content-dir=@0@'.format(meson.current_source_dir()),
+      '@INPUT@',
+    ],
+    depend_files: [ pangoft2_toml, 'pango-name.png' ],
+    build_by_default: true,
+  )
 endif
 
 if xft_dep.found() and fontconfig_dep.found()
-  docdeps += libpangoxft_dep
+  pangoxft_toml = configure_file(input: 'pangoxft.toml.in',
+                                 output: 'pangoxft.toml',
+                                 configuration: doc_conf)
+
+  custom_target('pangoxft-doc',
+    input: pangoxft_gir[0],
+    output: 'PangoXft',
+    command: [
+      gidocgen,
+      'generate',
+      '--quiet',
+      '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
+      '--config', pangoxft_toml,
+      '--output-dir=@OUTPUT@',
+      '--no-namespace-dir',
+      '--content-dir=@0@'.format(meson.current_source_dir()),
+      '@INPUT@',
+    ],
+    depend_files: [ pangoxft_toml, 'pango-name.png' ],
+    build_by_default: true,
+  )
 endif
 
 if cairo_dep.found()
-  docdeps += libpangocairo_dep
+  pangocairo_content_files = [
+    'pango_cairo.md',
+    'pango-name.png',
+    'rotated-text.png',
+  ]
+
+  pangocairo_toml = configure_file(input: 'pangocairo.toml.in',
+                                   output: 'pangocairo.toml',
+                                   configuration: doc_conf)
+
+  custom_target('pangocairo-doc',
+    input: pangocairo_gir[0],
+    output: 'PangoCairo',
+    command: [
+      gidocgen,
+      'generate',
+      '--quiet',
+      '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
+      '--config', pangocairo_toml,
+      '--output-dir=@OUTPUT@',
+      '--no-namespace-dir',
+      '--content-dir=@0@'.format(meson.current_source_dir()),
+      '@INPUT@',
+    ],
+    depend_files: [ pangocairo_toml, pangocairo_content_files ],
+    build_by_default: true,
+  )
 endif
 
-glib_prefix = dependency('glib-2.0').get_pkgconfig_variable('prefix')
-glib_docpath = join_paths(glib_prefix, 'share', 'gtk-doc', 'html')
-cairo_prefix = dependency('cairo').get_pkgconfig_variable('prefix')
-cairo_docpath = join_paths(cairo_prefix, 'share', 'gtk-doc', 'html')
-docpath = join_paths(pango_datadir, 'gtk-doc', 'html')
+pangoot_toml = configure_file(input: 'pangoot.toml.in',
+                              output: 'pangoot.toml',
+                              configuration: doc_conf)
 
-gnome.gtkdoc('pango',
-             main_xml: 'pango-docs.sgml',
-             src_dir: [
-               pango_inc,
-             ],
-             dependencies: docdeps,
-             gobject_typesfile: configure_file(input: 'pango.types.in',
-                                               output: 'pango.types',
-                                               configuration: pango_conf),
-             scan_args: [
-               '--deprecated-guards=PANGO_DISABLE_DEPRECATED',
-               '--ignore-decorators=_PANGO_EXTERN',
-               '--ignore-headers=' + ' '.join(private_headers),
-             ],
-             mkdb_args: [
-               '--sgml-mode',
-               '--output-format=xml',
-             ],
-             fixxref_args: [
-               '--html-dir=@0@'.format(docpath),
-               '--extra-dir=@0@'.format(join_paths(glib_docpath, 'glib')),
-               '--extra-dir=@0@'.format(join_paths(glib_docpath, 'gobject')),
-               '--extra-dir=@0@'.format(join_paths(cairo_docpath, 'cairo')),
-             ],
-             html_assets: html_images,
-             install: true)
+custom_target('pangoot-doc',
+  input: pangoot_gir[0],
+  output: 'PangoOT',
+  command: [
+    gidocgen,
+    'generate',
+    '--quiet',
+    '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
+    '--config', pangoot_toml,
+    '--output-dir=@OUTPUT@',
+    '--no-namespace-dir',
+    '--content-dir=@0@'.format(meson.current_source_dir()),
+    '@INPUT@',
+  ],
+  depend_files: [ pangoot_toml, 'pango-name.png' ],
+  build_by_default: true,
+)
+
+if fontconfig_dep.found()
+  pangofc_toml = configure_file(input: 'pangofc.toml.in',
+                                output: 'pangofc.toml',
+                                configuration: doc_conf)
+
+  custom_target('pangofc-doc',
+    input: pangofc_gir[0],
+    output: 'PangoFc',
+    command: [
+      gidocgen,
+      'generate',
+      '--quiet',
+      '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
+      '--config', pangofc_toml,
+      '--output-dir=@OUTPUT@',
+      '--no-namespace-dir',
+      '--content-dir=@0@'.format(meson.current_source_dir()),
+      '@INPUT@',
+    ],
+    depend_files: [ pangofc_toml, 'pango-name.png' ],
+    build_by_default: true,
+  )
+endif

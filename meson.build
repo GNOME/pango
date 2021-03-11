@@ -585,6 +585,10 @@ libsysprof_capture_dep = dependency('sysprof-capture-4',
 pango_conf.set('HAVE_SYSPROF', libsysprof_capture_dep.found())
 pango_deps += libsysprof_capture_dep
 
+gidocgen_dep = dependency('gi-docgen', version: '>= 2021.1',
+                          fallback: ['gi-docgen', 'dummy_dep'],
+                          required: get_option('gtk_doc'))
+
 gnome = import('gnome')
 pkgconfig = import('pkgconfig')
 

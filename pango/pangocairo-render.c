@@ -19,139 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/**
- * SECTION:pangocairo
- * @short_description:Font handling and rendering with Cairo
- * @title:Cairo Fonts and Rendering
- *
- * The <ulink url="http://cairographics.org">Cairo library</ulink> is a
- * vector graphics library with a powerful rendering model. It has such
- * features as anti-aliased primitives, alpha-compositing, and
- * gradients. Multiple backends for Cairo are available, to allow
- * rendering to images, to PDF files, and to the screen on X and on other
- * windowing systems. The functions in this section allow using Pango
- * to render to Cairo surfaces.
- *
- * Using Pango with Cairo is straightforward. A #PangoContext created
- * with pango_cairo_font_map_create_context() can be used on any
- * Cairo context (cairo_t), but needs to be updated to match the
- * current transformation matrix and target surface of the Cairo context
- * using pango_cairo_update_context(). The convenience functions
- * pango_cairo_create_layout() and pango_cairo_update_layout() handle
- * the common case where the program doesn't need to manipulate the
- * properties of the #PangoContext.
- *
- * When you get the metrics of a layout or of a piece of a layout using
- * functions such as pango_layout_get_extents(), the reported metrics
- * are in user-space coordinates. If a piece of text is 10 units long,
- * and you call cairo_scale (cr, 2.0), it still is more-or-less 10
- * units long. However, the results will be affected by hinting
- * (that is, the process of adjusting the text to look good on the
- * pixel grid), so you shouldn't assume they are completely independent
- * of the current transformation matrix. Note that the basic metrics
- * functions in Pango report results in integer Pango units. To get
- * to the floating point units used in Cairo divide by %PANGO_SCALE.
- *
- * ## Using Pango with Cairo ## {#rotated-example}
- *
- * |[<!-- language="C" -->
- * #include <math.h>
- * #include <pango/pangocairo.h>
- *
- * static void
- * draw_text (cairo_t *cr)
- * {
- * #define RADIUS 150
- * #define N_WORDS 10
- * #define FONT "Sans Bold 27"
- *
- *   PangoLayout *layout;
- *   PangoFontDescription *desc;
- *   int i;
- *
- *   /&ast; Center coordinates on the middle of the region we are drawing
- *    &ast;/
- *   cairo_translate (cr, RADIUS, RADIUS);
- *
- *   /&ast; Create a PangoLayout, set the font and text &ast;/
- *   layout = pango_cairo_create_layout (cr);
- *
- *   pango_layout_set_text (layout, "Text", -1);
- *   desc = pango_font_description_from_string (FONT);
- *   pango_layout_set_font_description (layout, desc);
- *   pango_font_description_free (desc);
- *
- *   /&ast; Draw the layout N_WORDS times in a circle &ast;/
- *   for (i = 0; i &lt; N_WORDS; i++)
- *     {
- *       int width, height;
- *       double angle = (360. * i) / N_WORDS;
- *       double red;
- *
- *       cairo_save (cr);
- *
- *       /&ast; Gradient from red at angle == 60 to blue at angle == 240 &ast;/
- *       red   = (1 + cos ((angle - 60) * G_PI / 180.)) / 2;
- *       cairo_set_source_rgb (cr, red, 0, 1.0 - red);
- *
- *       cairo_rotate (cr, angle * G_PI / 180.);
- *
- *       /&ast; Inform Pango to re-layout the text with the new transformation &ast;/
- *       pango_cairo_update_layout (cr, layout);
- *
- *       pango_layout_get_size (layout, &amp;width, &amp;height);
- *       cairo_move_to (cr, - ((double)width / PANGO_SCALE) / 2, - RADIUS);
- *       pango_cairo_show_layout (cr, layout);
- *
- *       cairo_restore (cr);
- *     }
- *
- *   /&ast; free the layout object &ast;/
- *   g_object_unref (layout);
- * }
- *
- * int main (int argc, char **argv)
- * {
- *   cairo_t *cr;
- *   char *filename;
- *   cairo_status_t status;
- *   cairo_surface_t *surface;
- *
- *   if (argc != 2)
- *     {
- *       g_printerr ("Usage: cairosimple OUTPUT_FILENAME\n");
- *       return 1;
- *     }
- *
- *      filename = argv[1];
- *
- *   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
- *                                         2 * RADIUS, 2 * RADIUS);
- *   cr = cairo_create (surface);
- *
- *   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
- *   cairo_paint (cr);
- *   draw_text (cr);
- *   cairo_destroy (cr);
- *
- *   status = cairo_surface_write_to_png (surface, filename);
- *   cairo_surface_destroy (surface);
- *
- *   if (status != CAIRO_STATUS_SUCCESS)
- *     {
- *       g_printerr ("Could not save png to '%s'\n", filename);
- *       return 1;
- *     }
- *
- *   return 0;
- * }
- * ]|
- *
- * Once you build and run the example code above, you should see the
- * following result:
- *
- * ![Output of rotated-example](rotated-text.png)
- */
 #include "config.h"
 
 #include <math.h>
@@ -1174,15 +1041,16 @@ _pango_cairo_do_error_underline (cairo_t *cr,
 /**
  * pango_cairo_show_glyph_string:
  * @cr: a Cairo context
- * @font: a #PangoFont from a #PangoCairoFontMap
- * @glyphs: a #PangoGlyphString
+ * @font: a `PangoFont` from a `PangoCairoFontMap`
+ * @glyphs: a `PangoGlyphString`
  *
  * Draws the glyphs in @glyphs in the specified cairo context.
+ *
  * The origin of the glyphs (the left edge of the baseline) will
  * be drawn at the current point of the cairo context.
  *
  * Since: 1.10
- **/
+ */
 void
 pango_cairo_show_glyph_string (cairo_t          *cr,
 			       PangoFont        *font,
@@ -1199,21 +1067,22 @@ pango_cairo_show_glyph_string (cairo_t          *cr,
  * pango_cairo_show_glyph_item:
  * @cr: a Cairo context
  * @text: the UTF-8 text that @glyph_item refers to
- * @glyph_item: a #PangoGlyphItem
+ * @glyph_item: a `PangoGlyphItem`
  *
  * Draws the glyphs in @glyph_item in the specified cairo context,
+ *
  * embedding the text associated with the glyphs in the output if the
  * output format supports it (PDF for example), otherwise it acts
- * similar to pango_cairo_show_glyph_string().
+ * similar to [func@show_glyph_string].
  *
  * The origin of the glyphs (the left edge of the baseline) will
  * be drawn at the current point of the cairo context.
  *
  * Note that @text is the start of the text for layout, which is then
- * indexed by <literal>@glyph_item->item->offset</literal>.
+ * indexed by `glyph_item->item->offset`.
  *
  * Since: 1.22
- **/
+ */
 void
 pango_cairo_show_glyph_item (cairo_t          *cr,
 			     const char       *text,
@@ -1229,14 +1098,15 @@ pango_cairo_show_glyph_item (cairo_t          *cr,
 /**
  * pango_cairo_show_layout_line:
  * @cr: a Cairo context
- * @line: a #PangoLayoutLine
+ * @line: a `PangoLayoutLine`
  *
- * Draws a #PangoLayoutLine in the specified cairo context.
+ * Draws a `PangoLayoutLine` in the specified cairo context.
+ *
  * The origin of the glyphs (the left edge of the line) will
  * be drawn at the current point of the cairo context.
  *
  * Since: 1.10
- **/
+ */
 void
 pango_cairo_show_layout_line (cairo_t          *cr,
 			      PangoLayoutLine  *line)
@@ -1252,12 +1122,13 @@ pango_cairo_show_layout_line (cairo_t          *cr,
  * @cr: a Cairo context
  * @layout: a Pango layout
  *
- * Draws a #PangoLayout in the specified cairo context.
- * The top-left corner of the #PangoLayout will be drawn
+ * Draws a `PangoLayout` in the specified cairo context.
+ *
+ * The top-left corner of the `PangoLayout` will be drawn
  * at the current point of the cairo context.
  *
  * Since: 1.10
- **/
+ */
 void
 pango_cairo_show_layout (cairo_t     *cr,
 			 PangoLayout *layout)
@@ -1278,12 +1149,14 @@ pango_cairo_show_layout (cairo_t     *cr,
  *
  * Draw a squiggly line in the specified cairo context that approximately
  * covers the given rectangle in the style of an underline used to indicate a
- * spelling error.  (The width of the underline is rounded to an integer
+ * spelling error.
+ *
+ * The width of the underline is rounded to an integer
  * number of up/down segments and the resulting rectangle is centered in the
- * original rectangle)
+ * original rectangle.
  *
  * Since: 1.14
- **/
+ */
 void
 pango_cairo_show_error_underline (cairo_t *cr,
 				  double  x,
@@ -1300,15 +1173,17 @@ pango_cairo_show_error_underline (cairo_t *cr,
 /**
  * pango_cairo_glyph_string_path:
  * @cr: a Cairo context
- * @font: a #PangoFont from a #PangoCairoFontMap
- * @glyphs: a #PangoGlyphString
+ * @font: a `PangoFont` from a `PangoCairoFontMap`
+ * @glyphs: a `PangoGlyphString`
  *
  * Adds the glyphs in @glyphs to the current path in the specified
- * cairo context. The origin of the glyphs (the left edge of the baseline)
+ * cairo context.
+ *
+ * The origin of the glyphs (the left edge of the baseline)
  * will be at the current point of the cairo context.
  *
  * Since: 1.10
- **/
+ */
 void
 pango_cairo_glyph_string_path (cairo_t          *cr,
 			       PangoFont        *font,
@@ -1323,14 +1198,16 @@ pango_cairo_glyph_string_path (cairo_t          *cr,
 /**
  * pango_cairo_layout_line_path:
  * @cr: a Cairo context
- * @line: a #PangoLayoutLine
+ * @line: a `PangoLayoutLine`
  *
- * Adds the text in #PangoLayoutLine to the current path in the
- * specified cairo context.  The origin of the glyphs (the left edge
+ * Adds the text in `PangoLayoutLine` to the current path in the
+ * specified cairo context.
+ *
+ * The origin of the glyphs (the left edge
  * of the line) will be at the current point of the cairo context.
  *
  * Since: 1.10
- **/
+ */
 void
 pango_cairo_layout_line_path (cairo_t          *cr,
 			      PangoLayoutLine  *line)
@@ -1346,12 +1223,14 @@ pango_cairo_layout_line_path (cairo_t          *cr,
  * @cr: a Cairo context
  * @layout: a Pango layout
  *
- * Adds the text in a #PangoLayout to the current path in the
- * specified cairo context.  The top-left corner of the #PangoLayout
+ * Adds the text in a `PangoLayout` to the current path in the
+ * specified cairo context.
+ *
+ * The top-left corner of the `PangoLayout`
  * will be at the current point of the cairo context.
  *
  * Since: 1.10
- **/
+ */
 void
 pango_cairo_layout_path (cairo_t     *cr,
 			 PangoLayout *layout)
@@ -1372,12 +1251,14 @@ pango_cairo_layout_path (cairo_t     *cr,
  *
  * Add a squiggly line to the current path in the specified cairo context that
  * approximately covers the given rectangle in the style of an underline used
- * to indicate a spelling error.  (The width of the underline is rounded to an
+ * to indicate a spelling error.
+ *
+ * The width of the underline is rounded to an
  * integer number of up/down segments and the resulting rectangle is centered
- * in the original rectangle)
+ * in the original rectangle.
  *
  * Since: 1.14
- **/
+ */
 void
 pango_cairo_error_underline_path (cairo_t *cr,
 				  double   x,
