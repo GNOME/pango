@@ -2,5 +2,5 @@
 directory=gi-docgen
 url=https://gitlab.gnome.org/ebassi/gi-docgen.git
 push-url=ssh://git@gitlab.gnome.org:ebassi/gi-docgen.git
-revision=master
+revision=main
 depth=1
