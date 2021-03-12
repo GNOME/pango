@@ -16,6 +16,8 @@ pango_content_files = [
 doc_conf = configuration_data()
 doc_conf.set('PANGO_VERSION', meson.project_version())
 
+docs_dir = pango_datadir / 'doc/pango/reference'
+
 pango_toml = configure_file(input: 'pango.toml.in',
                             output: 'pango.toml',
                             configuration: doc_conf)
@@ -36,6 +38,8 @@ custom_target('pango-doc',
   ],
   depend_files: [ pango_toml, pango_content_files],
   build_by_default: true,
+  install: true,
+  install_dir: docs_dir,
 )
 
 if build_pangoft2
@@ -59,6 +63,8 @@ if build_pangoft2
     ],
     depend_files: [ pangoft2_toml, 'pango-name.png' ],
     build_by_default: true,
+    install: true,
+    install_dir: docs_dir,
   )
 endif
 
@@ -83,6 +89,8 @@ if xft_dep.found() and fontconfig_dep.found()
     ],
     depend_files: [ pangoxft_toml, 'pango-name.png' ],
     build_by_default: true,
+    install: true,
+    install_dir: docs_dir,
   )
 endif
 
@@ -113,6 +121,8 @@ if cairo_dep.found()
     ],
     depend_files: [ pangocairo_toml, pangocairo_content_files ],
     build_by_default: true,
+    install: true,
+    install_dir: docs_dir,
   )
 endif
 
@@ -136,6 +146,8 @@ custom_target('pangoot-doc',
   ],
   depend_files: [ pangoot_toml, 'pango-name.png' ],
   build_by_default: true,
+  install: true,
+  install_dir: docs_dir,
 )
 
 if fontconfig_dep.found()
@@ -159,5 +171,7 @@ if fontconfig_dep.found()
     ],
     depend_files: [ pangofc_toml, 'pango-name.png' ],
     build_by_default: true,
+    install: true,
+    install_dir: docs_dir,
   )
 endif
