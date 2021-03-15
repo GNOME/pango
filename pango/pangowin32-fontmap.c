@@ -467,7 +467,7 @@ static const char * const builtin_aliases[] = {
  "mono = \"dejavu sans mono,courier new,lucida console,courier monothai,mingliu,simsun,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
   "monospace = \"dejavu sans mono,courier new,lucida console,courier monothai,mingliu,simsun,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
   "emoji = \"segoe ui emoji,segoe ui symbol,segoe ui\"",
-  "cursive = \"commic sans ms\"",
+  "cursive = \"comic sans ms\"",
   "fantasy = \"gabriola,impact\"",
   "system-ui = \"yu gothic ui,segoe ui,meiryo\"",
 };
