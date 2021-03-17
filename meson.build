@@ -606,3 +606,7 @@ subdir('tools')
 if get_option('gtk_doc')
   subdir('docs')
 endif
+
+if not meson.is_subproject()
+  meson.add_dist_script('build-aux/meson/dist-docs.py')
+endif
