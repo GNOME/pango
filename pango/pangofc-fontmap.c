@@ -1530,7 +1530,6 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   int slant;
   double weight;
   PangoGravity gravity;
-  FcBool vertical;
   char **families;
   int i;
   int width;
@@ -1541,7 +1540,6 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   width = pango_fc_convert_width_to_fc (pango_font_description_get_stretch (description));
 
   gravity = pango_font_description_get_gravity (description);
-  vertical = PANGO_GRAVITY_IS_VERTICAL (gravity) ? FcTrue : FcFalse;
 
   /* The reason for passing in FC_SIZE as well as FC_PIXEL_SIZE is
    * to work around a bug in libgnomeprint where it doesn't look
@@ -1550,13 +1548,14 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
    * Putting FC_SIZE in here slightly reduces the efficiency
    * of caching of patterns and fonts when working with multiple different
    * dpi values.
+   *
+   * Do not pass FC_VERTICAL_LAYOUT true as HarfBuzz shaping assumes false.
    */
   pattern = FcPatternBuild (NULL,
 			    PANGO_FC_VERSION, FcTypeInteger, pango_version(),
 			    FC_WEIGHT, FcTypeDouble, weight,
 			    FC_SLANT,  FcTypeInteger, slant,
 			    FC_WIDTH,  FcTypeInteger, width,
-			    FC_VERTICAL_LAYOUT,  FcTypeBool, vertical,
 #ifdef FC_VARIABLE
 			    FC_VARIABLE,  FcTypeBool, FcDontCare,
 #endif
