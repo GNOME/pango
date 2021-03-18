@@ -63,6 +63,8 @@ struct _PangoContext
 
   PangoFontMap *font_map;
 
+  PangoFontMetrics *metrics;
+
   gboolean round_glyph_positions;
 };
 
@@ -120,6 +122,9 @@ pango_context_finalize (GObject *object)
   pango_font_description_free (context->font_desc);
   if (context->matrix)
     pango_matrix_free (context->matrix);
+
+  if (context->metrics)
+    pango_font_metrics_unref (context->metrics);
 
   G_OBJECT_CLASS (pango_context_parent_class)->finalize (object);
 }
@@ -1783,6 +1788,11 @@ pango_context_get_metrics (PangoContext               *context,
   if (!language)
     language = context->language;
 
+  if (desc == context->font_desc &&
+      language == context->language &&
+      context->metrics != NULL)
+    return pango_font_metrics_ref (context->metrics);
+
   current_fonts = pango_font_map_load_fontset (context->font_map, context, desc, language);
   metrics = get_base_metrics (current_fonts);
 
@@ -1797,6 +1807,10 @@ pango_context_get_metrics (PangoContext               *context,
 
   g_object_unref (current_fonts);
 
+  if (desc == context->font_desc &&
+      language == context->language)
+    context->metrics = pango_font_metrics_ref (metrics);
+
   return metrics;
 }
 
@@ -1806,6 +1820,8 @@ context_changed (PangoContext *context)
   context->serial++;
   if (context->serial == 0)
     context->serial++;
+
+  g_clear_pointer (&context->metrics, pango_font_metrics_unref);
 }
 
 /**
