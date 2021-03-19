@@ -1745,7 +1745,7 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
     *n_families = priv->n_families;
 
   if (families)
-    *families = g_memdup (priv->families, priv->n_families * sizeof (PangoFontFamily *));
+    *families = g_memdup2 (priv->families, priv->n_families * sizeof (PangoFontFamily *));
 }
 
 static PangoFontFamily *
@@ -3262,7 +3262,7 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
     *n_faces = fcfamily->n_faces;
 
   if (faces)
-    *faces = g_memdup (fcfamily->faces, fcfamily->n_faces * sizeof (PangoFontFace *));
+    *faces = g_memdup2 (fcfamily->faces, fcfamily->n_faces * sizeof (PangoFontFace *));
 }
 
 static PangoFontFace *

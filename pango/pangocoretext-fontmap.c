@@ -703,7 +703,7 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
     *n_faces = ctfamily->n_faces;
 
   if (faces)
-    *faces = g_memdup (ctfamily->faces, ctfamily->n_faces * sizeof (PangoFontFace *));
+    *faces = g_memdup2 (ctfamily->faces, ctfamily->n_faces * sizeof (PangoFontFace *));
 }
 
 static const char *
