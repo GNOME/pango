@@ -6186,8 +6186,8 @@ pango_layout_iter_copy (PangoLayoutIter *iter)
   new->line_extents = NULL;
   if (iter->line_extents != NULL)
     {
-      new->line_extents = g_memdup (iter->line_extents,
-                                    iter->layout->line_count * sizeof (Extents));
+      new->line_extents = g_memdup2 (iter->line_extents,
+                                     iter->layout->line_count * sizeof (Extents));
 
     }
   new->line_index = iter->line_index;

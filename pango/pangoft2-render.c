@@ -25,6 +25,7 @@
 
 #include "pango-font-private.h"
 #include "pangoft2-private.h"
+#include "pango-impl-utils.h"
 
 /* for compatibility with older freetype versions */
 #ifndef FT_LOAD_TARGET_MONO
@@ -227,8 +228,8 @@ pango_ft2_font_render_glyph (PangoFont *font,
 			ft_render_mode_mono : ft_render_mode_normal));
 
       rendered->bitmap = face->glyph->bitmap;
-      rendered->bitmap.buffer = g_memdup (face->glyph->bitmap.buffer,
-					  face->glyph->bitmap.rows * face->glyph->bitmap.pitch);
+      rendered->bitmap.buffer = g_memdup2 (face->glyph->bitmap.buffer,
+                                           face->glyph->bitmap.rows * face->glyph->bitmap.pitch);
       rendered->bitmap_left = face->glyph->bitmap_left;
       rendered->bitmap_top = face->glyph->bitmap_top;
 
