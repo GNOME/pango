@@ -42,6 +42,17 @@ A simple example of a marked-up string might be:
 <span foreground="blue" size="x-large">Blue text</span> is <i>cool</i>!"
 ```
 
+![Markup example](blue-text.png)
+
+A more elaborate example of using markup to color combining marks in
+Arabic text:
+
+```
+<span foreground="purple">ا</span><span foreground="red">َ</span>ل<span foreground="blue">ْ</span>ع<span foreground="red">َ</span>ر<span foreground="red">َ</span>ب<span foreground="red">ِ</span>ي<span foreground="green">ّ</span><span foreground="red">َ</span>ة<span foreground="blue">ُ</span>
+```
+
+![Markup example](arabic-markup.png)
+
 Pango uses GMarkup to parse this language, which means that XML features
 such as numeric character entities such as `&#169;` for © can be used too.
 
