@@ -69,5 +69,7 @@ content_images = [
   "layout.png",
   "pipeline.png",
   "rects1.png",
-  "rects2.png"
+  "rects2.png",
+  "arabic-markup.png",
+  "blue-text.png"
 ]
