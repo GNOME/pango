@@ -106,7 +106,7 @@
  */
 static GMutex fc_init_mutex;
 static GCond fc_init_cond;
-static gboolean fc_initialized;
+static int fc_initialized = 0;
 
 
 typedef struct _PangoFcFontFaceData PangoFcFontFaceData;
@@ -1357,8 +1357,28 @@ init_in_thread (GTask        *task,
   pango_trace_mark (before, "FcInit", NULL);
 
   g_mutex_lock (&fc_init_mutex);
-  fc_initialized = TRUE;
-  g_cond_signal (&fc_init_cond);
+  fc_initialized = 2;
+  g_cond_broadcast (&fc_init_cond);
+  g_mutex_unlock (&fc_init_mutex);
+}
+
+static void
+start_init_in_thread (PangoFcFontMap *fcfontmap)
+{
+  g_mutex_lock (&fc_init_mutex);
+
+  if (fc_initialized == 0)
+    {
+      GTask *task;
+
+      fc_initialized = 1;
+
+      task = g_task_new (fcfontmap, NULL, NULL, NULL);
+      g_task_set_name (task, "[pango] FcInit");
+      g_task_run_in_thread (task, init_in_thread);
+      g_object_unref (task);
+    }
+
   g_mutex_unlock (&fc_init_mutex);
 }
 
@@ -1369,7 +1389,7 @@ wait_for_fc_init (void)
   gboolean waited = FALSE;
 
   g_mutex_lock (&fc_init_mutex);
-  while (!fc_initialized)
+  while (fc_initialized < 2)
     {
       waited = TRUE;
       g_cond_wait (&fc_init_cond, &fc_init_mutex);
@@ -1411,15 +1431,7 @@ pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 						     NULL);
   priv->dpi = -1;
 
-  if (!fc_initialized)
-    {
-      GTask *task;
-
-      task = g_task_new (fcfontmap, NULL, NULL, NULL);
-      g_task_set_name (task, "[pango] FcInit");
-      g_task_run_in_thread (task, init_in_thread);
-      g_object_unref (task);
-    }
+  start_init_in_thread (fcfontmap);
 }
 
 static void
