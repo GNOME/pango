@@ -10,14 +10,10 @@ if [ -d ${release_build_dir} ]; then
 fi
 
 # make the release tarball
-meson setup --force-fallback-for gi-docgen ${release_build_dir} || exit
+meson setup -Dgtk_doc=true --force-fallback-for gi-docgen ${release_build_dir} || exit
+meson compile -C${release_build_dir} || exit
 meson dist -C${release_build_dir} --include-subprojects || exit
 
-# now build the docs
-meson configure -Dgtk_doc=true ${release_build_dir} || exit
-ninja -C${release_build_dir} || exit
-
-tar cf ${release_build_dir}/meson-dist/pango-docs-${version}.tar.xz -C${release_build_dir} docs/
 
 echo -e "\n\nPango ${version} release on branch ${branch} in ./${release_build_dir}/:\n"
 
