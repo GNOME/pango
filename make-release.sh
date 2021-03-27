@@ -9,6 +9,9 @@ if [ -d ${release_build_dir} ]; then
   exit 1
 fi
 
+# make sure included subprojects are current
+meson subprojects update gi-docgen
+
 # make the release tarball
 meson setup -Dgtk_doc=true --force-fallback-for gi-docgen ${release_build_dir} || exit
 meson compile -C${release_build_dir} || exit
