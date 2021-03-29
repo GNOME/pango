@@ -502,9 +502,7 @@ pango_default_break (const gchar   *text,
 	else if (GB_type == GB_InHangulSyllable)
 	  is_grapheme_boundary = FALSE; /* Rules GB6, GB7, GB8 */
 	else if (GB_type == GB_Extend)
-          {
-	    is_grapheme_boundary = FALSE; /* Rule GB9 */
-          }
+	  is_grapheme_boundary = FALSE; /* Rule GB9 */
         else if (GB_type == GB_ZWJ)
 	  is_grapheme_boundary = FALSE; /* Rule GB9 */
 	else if (GB_type == GB_SpacingMark)
@@ -641,14 +639,12 @@ pango_default_break (const gchar   *text,
 		  if (wc >= 0x24B6 && wc <= 0x24E9) /* Other_Alphabetic */
 		    goto Alphabetic;
 
-		  if (G_UNLIKELY(wc >=0x1F1E6 && wc <=0x1F1FF))
+		  if (G_UNLIKELY(wc >= 0x1F1E6 && wc <= 0x1F1FF))
 		    {
-			  if (prev_WB_type == WB_RI_Odd)
-			   WB_type = WB_RI_Even;
-			  else if (prev_WB_type == WB_RI_Even)
-			   WB_type = WB_RI_Odd;
-			  else
-			   WB_type = WB_RI_Odd;
+                      if (prev_WB_type == WB_RI_Odd)
+                        WB_type = WB_RI_Even;
+                      else
+                        WB_type = WB_RI_Odd;
 		    }
 
 		  break;
@@ -1563,7 +1559,6 @@ pango_default_break (const gchar   *text,
 
   attrs[i].is_line_break = TRUE;  /* Rule LB3 */
   attrs[0].is_line_break = FALSE; /* Rule LB2 */
-
 }
 
 static gboolean
