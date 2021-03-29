@@ -273,8 +273,8 @@ resolved:
  *
  * This function is useful to categorize characters into left-to-right
  * letters, right-to-left letters, and everything else. If full Unicode
- * bidirectional type of a character is needed, [type_func@Pango.BidiType.for_unichar]
- * can be used instead.
+ * bidirectional type of a character is needed,
+ * [type_func@Pango.BidiType.for_unichar] can be used instead.
  *
  * Return value: the direction of the character.
  */
@@ -305,12 +305,12 @@ pango_unichar_direction (gunichar ch)
  *
  * Mirror characters are determined by the Unicode mirrored property.
  *
- * Use g_unichar_get_mirror_char() instead; the docs for that function
- * provide full details.
- *
  * Return value: %TRUE if @ch has a mirrored character and @mirrored_ch is
  * filled in, %FALSE otherwise
- **/
+ *
+ * Deprecated: Use g_unichar_get_mirror_char() instead; the docs for that function
+ * provide full details.
+ */
 gboolean
 pango_get_mirror_char (gunichar  ch,
 		       gunichar *mirrored_ch)
