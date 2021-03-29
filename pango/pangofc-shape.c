@@ -151,18 +151,10 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
 {
   PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
 
-  if ((context->show_flags & PANGO_SHOW_IGNORABLES) != 0)
+  if (context->show_flags != 0)
     {
-      if (pango_get_ignorable (unicode))
-        {
-          *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
-          return TRUE;
-        }
-    }
-
-  if ((context->show_flags & PANGO_SHOW_SPACES) != 0)
-    {
-      if (g_unichar_type (unicode) == G_UNICODE_SPACE_SEPARATOR)
+      if ((context->show_flags & PANGO_SHOW_SPACES) != 0 &&
+          g_unichar_type (unicode) == G_UNICODE_SPACE_SEPARATOR)
         {
           /* Replace 0x20 by visible space, since we
            * don't draw a hex box for 0x20
@@ -173,11 +165,16 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
             *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
           return TRUE;
         }
-    }
 
-  if ((context->show_flags & PANGO_SHOW_LINE_BREAKS) != 0)
-    {
-      if (unicode == 0x2028)
+      if ((context->show_flags & PANGO_SHOW_IGNORABLES) != 0 &&
+          pango_get_ignorable (unicode))
+        {
+          *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
+          return TRUE;
+        }
+
+      if ((context->show_flags & PANGO_SHOW_LINE_BREAKS) != 0 &&
+          unicode == 0x2028)
         {
           /* Always mark LS as unknown. If it ends up
            * at the line end, PangoLayout takes care of
