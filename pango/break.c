@@ -362,11 +362,14 @@ pango_default_break (const gchar   *text,
         case G_UNICODE_PARAGRAPH_SEPARATOR:
           attrs[i].is_white = TRUE;
           break;
-        default:
+        case G_UNICODE_CONTROL:
           if (wc == '\t' || wc == '\n' || wc == '\r' || wc == '\f')
             attrs[i].is_white = TRUE;
           else
             attrs[i].is_white = FALSE;
+          break;
+        default:
+          attrs[i].is_white = FALSE;
           break;
         }
 
