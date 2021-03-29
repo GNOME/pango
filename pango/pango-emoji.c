@@ -158,14 +158,16 @@ static inline unsigned char
 _pango_EmojiSegmentationCategory (gunichar codepoint)
 {
   /* Specific ones first. */
+  if (('a' <= codepoint && codepoint <= 'z') ||
+      ('A' <= codepoint && codepoint <= 'Z') ||
+      codepoint == ' ')
+    return kMaxEmojiScannerCategory;
+
+  if ('0' <= codepoint && codepoint <= '9')
+    return KEYCAP_BASE;
+
   switch (codepoint)
     {
-    case 'a' ... 'z':
-    case 'A' ... 'Z':
-    case ' ':
-      return kMaxEmojiScannerCategory;
-    case '0' ... '9':
-      return KEYCAP_BASE;
     case kCombiningEnclosingKeycapCharacter:
       return COMBINING_ENCLOSING_KEYCAP;
     case kCombiningEnclosingCircleBackslashCharacter:
@@ -178,13 +180,14 @@ _pango_EmojiSegmentationCategory (gunichar codepoint)
       return VS16;
     case 0x1F3F4:
       return TAG_BASE;
-    case 0xE0030 ... 0xE0039:
-    case 0xE0061 ... 0xE007A:
-      return TAG_SEQUENCE;
     case 0xE007F:
       return TAG_TERM;
     default: ;
     }
+
+  if ((0xE0030 <= codepoint && codepoint <= 0xE0039) ||
+      (0xE0061 <= codepoint && codepoint <= 0xE007A))
+    return TAG_SEQUENCE;
 
   if (_pango_Is_Emoji_Modifier_Base (codepoint))
     return EMOJI_MODIFIER_BASE;
