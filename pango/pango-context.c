@@ -910,6 +910,9 @@ width_iter_is_upright (gunichar ch)
   int st = 0;
   int ed = max;
 
+  if (ch < upright[0][0])
+    return FALSE;
+
   while (st <= ed)
     {
       int mid = (st + ed) / 2;
@@ -926,7 +929,7 @@ width_iter_is_upright (gunichar ch)
 }
 
 static void
-width_iter_next(PangoWidthIter* iter)
+width_iter_next (PangoWidthIter *iter)
 {
   gboolean met_joiner = FALSE;
   iter->start = iter->end;
@@ -958,9 +961,9 @@ width_iter_next(PangoWidthIter* iter)
         }
 
       /* for variation selector, tag and emoji modifier. */
-      if (G_UNLIKELY(ch == 0xFE0EU || ch == 0xFE0FU
-                    || (ch >= 0xE0020 && ch <= 0xE007F)
-                    || (ch >= 0x1F3FB && ch <= 0x1F3FF)))
+      if (G_UNLIKELY (ch == 0xFE0EU || ch == 0xFE0FU ||
+                      (ch >= 0xE0020 && ch <= 0xE007F) ||
+                      (ch >= 0x1F3FB && ch <= 0x1F3FF)))
         {
           iter->end = g_utf8_next_char (iter->end);
           continue;
@@ -968,6 +971,7 @@ width_iter_next(PangoWidthIter* iter)
 
       if (width_iter_is_upright (ch) != iter->upright)
         break;
+
       iter->end = g_utf8_next_char (iter->end);
     }
 }
@@ -1000,7 +1004,6 @@ itemize_state_init (ItemizeState               *state,
                     PangoAttrIterator          *cached_iter,
                     const PangoFontDescription *desc)
 {
-
   state->context = context;
   state->text = text;
   state->end = text + start_index + length;
@@ -1576,7 +1579,7 @@ pango_itemize_with_base_dir (PangoContext      *context,
   g_return_val_if_fail (length >= 0, NULL);
   g_return_val_if_fail (length == 0 || text != NULL, NULL);
 
-  if (length == 0 || g_utf8_strlen (text + start_index, length) == 0)
+  if (length == 0 || g_utf8_get_char (text + start_index) == '\0')
     return NULL;
 
   itemize_state_init (&state, context, text, base_dir, start_index, length,

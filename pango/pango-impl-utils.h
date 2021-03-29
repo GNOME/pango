@@ -163,6 +163,9 @@ pango_get_ignorable (gunichar ch)
 
   for (i = 0; i < G_N_ELEMENTS (ignorables); i++)
     {
+      if (ch < ignorables[i].ch)
+        return NULL;
+
       if (ch == ignorables[i].ch)
         return ignorables[i].nick;
     }
