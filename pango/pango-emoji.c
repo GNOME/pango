@@ -52,40 +52,37 @@
 #include "pango-emoji-private.h"
 #include "pango-emoji-table.h"
 
-
-static int
-interval_compare (const void *key, const void *elt)
+static inline gboolean
+bsearch_interval (gunichar              c,
+                  const struct Interval table[],
+                  guint                 n)
 {
-  gunichar c = GPOINTER_TO_UINT (key);
-  struct Interval *interval = (struct Interval *)elt;
+  guint lower = 0;
+  guint upper = n - 1;
 
-  if (c < interval->start)
-    return -1;
-  if (c > interval->end)
-    return +1;
+  while (lower <= upper)
+    {
+      int mid = (lower + upper) / 2;
 
-  return 0;
+      if (c < table[mid].start)
+        upper = mid - 1;
+      else if (c > table[mid].end)
+        lower = mid + 1;
+      else
+        return TRUE;
+    }
+
+  return FALSE;
 }
 
 #define DEFINE_pango_Is_(name) \
-static gboolean \
+static inline gboolean \
 _pango_Is_##name (gunichar ch) \
 { \
-  /* bsearch() is declared attribute(nonnull(1)) so we can't validly search \
-   * for a NULL key */ \
-  /* \
-  if (G_UNLIKELY (ch == 0)) \
-    return FALSE; \
-   */ \
- \
-  if (bsearch (GUINT_TO_POINTER (ch), \
-               _pango_##name##_table, \
-               G_N_ELEMENTS (_pango_##name##_table), \
-               sizeof _pango_##name##_table[0], \
-	       interval_compare)) \
-    return TRUE; \
- \
-  return FALSE; \
+  return ch >= _pango_##name##_table[0].start && \
+         bsearch_interval (ch, \
+                           _pango_##name##_table, \
+                           G_N_ELEMENTS (_pango_##name##_table)); \
 }
 
 DEFINE_pango_Is_(Emoji)
@@ -106,36 +103,36 @@ _pango_Is_Emoji_Extended_Pictographic (gunichar ch)
 	return _pango_Is_Extended_Pictographic (ch);
 }
 
-static gboolean
+static inline gboolean
 _pango_Is_Emoji_Text_Default (gunichar ch)
 {
   return _pango_Is_Emoji (ch) && !_pango_Is_Emoji_Presentation (ch);
 }
 
-static gboolean
+static inline gboolean
 _pango_Is_Emoji_Emoji_Default (gunichar ch)
 {
   return _pango_Is_Emoji_Presentation (ch);
 }
 
-static gboolean
+static inline gboolean
 _pango_Is_Emoji_Keycap_Base (gunichar ch)
 {
   return (ch >= '0' && ch <= '9') || ch == '#' || ch == '*';
 }
 
-static gboolean
+static inline gboolean
 _pango_Is_Regional_Indicator (gunichar ch)
 {
   return (ch >= 0x1F1E6 && ch <= 0x1F1FF);
 }
 
 
-const gunichar kCombiningEnclosingCircleBackslashCharacter = 0x20E0;
-const gunichar kCombiningEnclosingKeycapCharacter = 0x20E3;
-const gunichar kVariationSelector15Character = 0xFE0E;
-const gunichar kVariationSelector16Character = 0xFE0F;
-const gunichar kZeroWidthJoinerCharacter = 0x200D;
+#define kCombiningEnclosingCircleBackslashCharacter 0x20E0
+#define kCombiningEnclosingKeycapCharacter 0x20E3
+#define kVariationSelector15Character 0xFE0E
+#define kVariationSelector16Character 0xFE0F
+#define kZeroWidthJoinerCharacter 0x200D
 
 enum PangoEmojiScannerCategory {
   EMOJI = 0,
@@ -157,42 +154,48 @@ enum PangoEmojiScannerCategory {
   kMaxEmojiScannerCategory = 16
 };
 
-static unsigned char
+static inline unsigned char
 _pango_EmojiSegmentationCategory (gunichar codepoint)
 {
   /* Specific ones first. */
-  if (codepoint == kCombiningEnclosingKeycapCharacter)
-    return COMBINING_ENCLOSING_KEYCAP;
-  if (codepoint == kCombiningEnclosingCircleBackslashCharacter)
-    return COMBINING_ENCLOSING_CIRCLE_BACKSLASH;
-  if (codepoint == kZeroWidthJoinerCharacter)
-    return ZWJ;
-  if (codepoint == kVariationSelector15Character)
-    return VS15;
-  if (codepoint == kVariationSelector16Character)
-    return VS16;
-  if (codepoint == 0x1F3F4)
-    return TAG_BASE;
-  if ((codepoint >= 0xE0030 && codepoint <= 0xE0039) ||
-      (codepoint >= 0xE0061 && codepoint <= 0xE007A))
-    return TAG_SEQUENCE;
-  if (codepoint == 0xE007F)
-    return TAG_TERM;
+  switch (codepoint)
+    {
+    case 'a' ... 'z':
+    case 'A' ... 'Z':
+    case '0' ... '9':
+      return kMaxEmojiScannerCategory;
+    case kCombiningEnclosingKeycapCharacter:
+      return COMBINING_ENCLOSING_KEYCAP;
+    case kCombiningEnclosingCircleBackslashCharacter:
+      return COMBINING_ENCLOSING_CIRCLE_BACKSLASH;
+    case kZeroWidthJoinerCharacter:
+      return ZWJ;
+    case kVariationSelector15Character:
+      return VS15;
+    case kVariationSelector16Character:
+      return VS16;
+    case 0x1F3F4:
+      return TAG_BASE;
+    case 0xE0030 ... 0xE0039:
+    case 0xE0061 ... 0xE007A:
+      return TAG_SEQUENCE;
+    case 0xE007F:
+      return TAG_TERM;
+    default: ;
+    }
+
   if (_pango_Is_Emoji_Modifier_Base (codepoint))
     return EMOJI_MODIFIER_BASE;
-  if (_pango_Is_Emoji_Modifier (codepoint))
+  else if (_pango_Is_Emoji_Modifier (codepoint))
     return EMOJI_MODIFIER;
-  if (_pango_Is_Regional_Indicator (codepoint))
+  else if (_pango_Is_Regional_Indicator (codepoint))
     return REGIONAL_INDICATOR;
-  if (_pango_Is_Emoji_Keycap_Base (codepoint))
+  else if (_pango_Is_Emoji_Keycap_Base (codepoint))
     return KEYCAP_BASE;
-
-  if (_pango_Is_Emoji_Emoji_Default (codepoint))
+  else if (_pango_Is_Emoji_Emoji_Default (codepoint))
     return EMOJI_EMOJI_PRESENTATION;
-  if (_pango_Is_Emoji_Text_Default (codepoint))
+  else if (_pango_Is_Emoji (codepoint))
     return EMOJI_TEXT_PRESENTATION;
-  if (_pango_Is_Emoji (codepoint))
-    return EMOJI;
 
   /* Ragel state machine will interpret unknown category as "any". */
   return kMaxEmojiScannerCategory;
