@@ -136,6 +136,13 @@ underline_color
 : The color of underlines; an RGB color specification such as '#00FF00' or a color
   name such as 'red'.
 
+overline
+: One of 'none' or 'single'. Overline support was added in Pango 1.46/
+
+overline_color
+: The color of overlines; an RGB color specification such as '#00FF00' or a color
+  name such as 'red'. Overline support was added in Pango 1.46/
+
 rise
 : Vertical displacement, in Pango units. Can be negative for subscript, positive
   for superscript.
@@ -164,6 +171,19 @@ gravity
 
 gravity_hint
 : One of 'natural', 'strong', 'line'.
+
+show
+: Specifies what special characters to show visibly. The value can be 'none'
+  or a combination of 'spaces', 'line-breaks' and 'ignorables', combined with '|'.
+  Support for showing special characters was added in Pango 1.44.
+
+insert_hyphens
+: 'true' or 'false' to indicate whether hyphens should be inserted when breaking
+  lines in the middle of words. Available since Pango 1.44.
+
+allow_breaks
+: 'true' or 'false' to indicate whether breaking lines is allowed. Available
+  since Pango 1.44.
 
 ## Convenience Tags
 
