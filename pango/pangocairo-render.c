@@ -809,6 +809,89 @@ pango_cairo_renderer_draw_shape (PangoRenderer  *renderer,
 }
 
 static void
+pango_cairo_renderer_draw_line (PangoRenderer        *renderer,
+                                PangoRenderPart       part,
+                                PangoRenderLineStyle  style,
+                                int                   x,
+                                int                   y,
+                                int                   width,
+                                int                   height)
+{
+  PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
+
+  if (!crenderer->do_path)
+    {
+      cairo_save (crenderer->cr);
+
+      set_color (crenderer, part);
+    }
+
+  switch (style)
+    {
+    case PANGO_RENDER_LINE_SOLID:
+      cairo_rectangle (crenderer->cr,
+                       crenderer->x_offset + (double)x / PANGO_SCALE,
+                       crenderer->y_offset + (double)y / PANGO_SCALE,
+                       (double)width / PANGO_SCALE,
+                       (double)height / PANGO_SCALE);
+      break;
+
+    case PANGO_RENDER_LINE_DOTTED:
+      {
+        double radius;
+        double xc, yc;
+        double xend;
+
+        radius = MIN (width, height) / (2.0 * PANGO_SCALE);
+        xc = crenderer->x_offset + (double)x / PANGO_SCALE + radius;
+        yc = crenderer->y_offset + (double)y / PANGO_SCALE + radius;
+        xend = xc + (double)width / PANGO_SCALE;
+
+        while (xc + radius <= xend)
+          {
+            cairo_new_sub_path (crenderer->cr);
+            cairo_arc (crenderer->cr, xc, yc, radius, 0, 2 * M_PI);
+            cairo_close_path (crenderer->cr);
+            xc += 3 * radius;
+          }
+      }
+      break;
+
+    case PANGO_RENDER_LINE_DASHED:
+      {
+        double xr, yr;
+        double w, h;
+        double d;
+        double xend;
+
+        xr = crenderer->x_offset + (double)x / PANGO_SCALE;
+        yr = crenderer->y_offset + (double)y / PANGO_SCALE;
+        xend = xr + (double)width / PANGO_SCALE;
+
+        h = MIN (width, height) / (double) PANGO_SCALE;
+        w = 5 * h;
+        d = 9 * h;
+
+        while (xr <= xend)
+          {
+            cairo_rectangle (crenderer->cr, xr, yr, MIN (w, xend - xr), h);
+            xr += d;
+          }
+      }
+      break;
+
+    default:
+      g_assert_not_reached ();
+    }
+
+  if (!crenderer->do_path)
+    {
+      cairo_fill (crenderer->cr);
+      cairo_restore (crenderer->cr);
+    }
+}
+
+static void
 pango_cairo_renderer_init (PangoCairoRenderer *renderer G_GNUC_UNUSED)
 {
 }
@@ -824,6 +907,7 @@ pango_cairo_renderer_class_init (PangoCairoRendererClass *klass)
   renderer_class->draw_trapezoid = pango_cairo_renderer_draw_trapezoid;
   renderer_class->draw_error_underline = pango_cairo_renderer_draw_error_underline;
   renderer_class->draw_shape = pango_cairo_renderer_draw_shape;
+  renderer_class->draw_line = pango_cairo_renderer_draw_line;
 }
 
 static PangoCairoRenderer *cached_renderer = NULL; /* MT-safe */

@@ -5953,13 +5953,23 @@ pango_layout_get_item_properties (PangoItem      *item,
               break;
             case PANGO_UNDERLINE_SINGLE:
             case PANGO_UNDERLINE_SINGLE_LINE:
+            case PANGO_UNDERLINE_SINGLE_DOTTED:
+            case PANGO_UNDERLINE_SINGLE_LINE_DOTTED:
+            case PANGO_UNDERLINE_SINGLE_DASHED:
+            case PANGO_UNDERLINE_SINGLE_LINE_DASHED:
               properties->uline_single = TRUE;
               break;
             case PANGO_UNDERLINE_DOUBLE:
             case PANGO_UNDERLINE_DOUBLE_LINE:
+            case PANGO_UNDERLINE_DOUBLE_DOTTED:
+            case PANGO_UNDERLINE_DOUBLE_LINE_DOTTED:
+            case PANGO_UNDERLINE_DOUBLE_DASHED:
+            case PANGO_UNDERLINE_DOUBLE_LINE_DASHED:
               properties->uline_double = TRUE;
               break;
             case PANGO_UNDERLINE_LOW:
+            case PANGO_UNDERLINE_LOW_DOTTED:
+            case PANGO_UNDERLINE_LOW_DASHED:
               properties->uline_low = TRUE;
               break;
             case PANGO_UNDERLINE_ERROR:
@@ -5976,6 +5986,8 @@ pango_layout_get_item_properties (PangoItem      *item,
           switch (((PangoAttrInt *)attr)->value)
             {
             case PANGO_OVERLINE_SINGLE:
+            case PANGO_OVERLINE_SINGLE_DASHED:
+            case PANGO_OVERLINE_SINGLE_DOTTED:
               properties->oline_single = TRUE;
               break;
             default:

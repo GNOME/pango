@@ -228,6 +228,22 @@ typedef enum
  * @PANGO_UNDERLINE_ERROR_LINE: Like @PANGO_UNDERLINE_ERROR, but
  *     drawn continuously across multiple runs. This type
  *     of underlining is available since Pango 1.46.
+ * @PANGO_UNDERLINE_SINGLE_DOTTED: a single, dotted underline. Since Pango 1.50.
+ * @PANGO_UNDERLINE_DOUBLE_DOTTED: a double, dotted underline. Since Pango 1.50.
+ * @PANGO_UNDERLINE_LOW_DOTTED: a single, dotted underline in the same
+ *     position as for @PANGO_UNDERLINE_LOW. Since Pango 1.50.
+ * @PANGO_UNDERLINE_SINGLE_LINE_DOTTED: a single, dotted underline, drawn
+ *     continuously across multiple runs. Since Pango 1.50.
+ * @PANGO_UNDERLINE_DOUBLE_LINE_DOTTED: a double, dotted underline, drawn
+ *     continuously across multiple runs. Since Pango 1.50.
+ * @PANGO_UNDERLINE_SINGLE_DASHED: a single, dashed underline. Since Pango 1.50.
+ * @PANGO_UNDERLINE_DOUBLE_DASHED: a double, dashed underline. Since Pango 1.50.
+ * @PANGO_UNDERLINE_LOW_DASHED: a single, dashed underline in the same
+ *     position as for @PANGO_UNDERLINE_LOW. Since Pango 1.50.
+ * @PANGO_UNDERLINE_SINGLE_LINE_DASHED: a single, dashed underline, drawn
+ *     continuously across multiple runs. Since Pango 1.50.
+ * @PANGO_UNDERLINE_DOUBLE_LINE_DASHED: a double, dashed underline, drawn
+ *     continuously across multiple runs. Since Pango 1.50.
  *
  * The `PangoUnderline` enumeration is used to specify whether text
  * should be underlined, and if so, the type of underlining.
@@ -240,7 +256,19 @@ typedef enum {
   PANGO_UNDERLINE_ERROR,
   PANGO_UNDERLINE_SINGLE_LINE,
   PANGO_UNDERLINE_DOUBLE_LINE,
-  PANGO_UNDERLINE_ERROR_LINE
+  PANGO_UNDERLINE_ERROR_LINE,
+
+  PANGO_UNDERLINE_SINGLE_DOTTED,
+  PANGO_UNDERLINE_DOUBLE_DOTTED,
+  PANGO_UNDERLINE_LOW_DOTTED,
+  PANGO_UNDERLINE_SINGLE_LINE_DOTTED,
+  PANGO_UNDERLINE_DOUBLE_LINE_DOTTED,
+
+  PANGO_UNDERLINE_SINGLE_DASHED,
+  PANGO_UNDERLINE_DOUBLE_DASHED,
+  PANGO_UNDERLINE_LOW_DASHED,
+  PANGO_UNDERLINE_SINGLE_LINE_DASHED,
+  PANGO_UNDERLINE_DOUBLE_LINE_DASHED,
 } PangoUnderline;
 
 
@@ -249,6 +277,8 @@ typedef enum {
  * @PANGO_OVERLINE_NONE: no overline should be drawn
  * @PANGO_OVERLINE_SINGLE: Draw a single line above the ink
  *     extents of the text being underlined.
+ * @PANGO_OVERLINE_SINGLE_DOTTED: A single, dotted line. Since Pango 1.50
+ * @PANGO_OVERLINE_SINGLE_DASHED: A single, dashed line. Since Pango 1.50
  *
  * The `PangoOverline` enumeration is used to specify whether text
  * should be overlined, and if so, the type of line.
@@ -257,7 +287,9 @@ typedef enum {
  */
 typedef enum {
   PANGO_OVERLINE_NONE,
-  PANGO_OVERLINE_SINGLE
+  PANGO_OVERLINE_SINGLE,
+  PANGO_OVERLINE_SINGLE_DOTTED,
+  PANGO_OVERLINE_SINGLE_DASHED
 } PangoOverline;
 
 /**
