@@ -60,21 +60,6 @@ typedef enum
 } PangoRenderPart;
 
 /**
- * PangoRenderLineStyle:
- * @PANGO_RENDER_LINE_SOLID: A solid line
- * @PANGO_RENDER_LINE_DASHED: A dashed line
- * @PANGO_RENDER_LINE_DOTTED: A dotted line
- *
- * The line style passed to the draw_line() vfunc.
- */
-typedef enum
-{
-  PANGO_RENDER_LINE_SOLID,
-  PANGO_RENDER_LINE_DASHED,
-  PANGO_RENDER_LINE_DOTTED
-} PangoRenderLineStyle;
-
-/**
  * PangoRenderer:
  * @matrix: (nullable): the current transformation matrix for
  *    the Renderer; may be %NULL, which should be treated the
@@ -123,7 +108,6 @@ struct _PangoRenderer
  * @end: Do renderer-specific cleanup after drawing
  * @prepare_run: updates the renderer for a new run
  * @draw_glyph_item: draws a #PangoGlyphItem
- * @draw_line: draws a line. Available since Pango 1.50
  *
  * Class structure for #PangoRenderer.
  *
@@ -202,17 +186,10 @@ struct _PangoRendererClass
                                 int               x,
                                 int               y);
 
-  void (*draw_line)            (PangoRenderer        *renderer,
-                                PangoRenderPart       part,
-                                PangoRenderLineStyle  style,
-                                int                   x,
-                                int                   y,
-                                int                   width,
-                                int                   height);
-
   /*< private >*/
 
   /* Padding for future expansion */
+  void (*_pango_reserved2) (void);
   void (*_pango_reserved3) (void);
   void (*_pango_reserved4) (void);
 };
@@ -270,15 +247,6 @@ void pango_renderer_draw_glyph           (PangoRenderer    *renderer,
                                           PangoGlyph        glyph,
                                           double            x,
                                           double            y);
-
-PANGO_AVAILABLE_IN_1_50
-void pango_renderer_draw_line            (PangoRenderer        *renderer,
-                                          PangoRenderPart       part,
-                                          PangoRenderLineStyle  style,
-                                          int                   x,
-                                          int                   y,
-                                          int                   width,
-                                          int                   height);
 
 PANGO_AVAILABLE_IN_1_8
 void pango_renderer_activate             (PangoRenderer    *renderer);

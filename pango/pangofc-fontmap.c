@@ -1372,6 +1372,7 @@ start_init_in_thread (PangoFcFontMap *fcfontmap)
       GTask *task;
 
       fc_initialized = 1;
+
       task = g_task_new (fcfontmap, NULL, NULL, NULL);
       g_task_set_name (task, "[pango] FcInit");
       g_task_run_in_thread (task, init_in_thread);
@@ -2332,7 +2333,7 @@ pango_fc_font_map_set_config (PangoFcFontMap *fcfontmap,
     FcConfigDestroy (oldconfig);
 
   /* No need to wait anymore */
-  fc_initialized = 2;
+  fc_initialized = TRUE;
 }
 
 /**
