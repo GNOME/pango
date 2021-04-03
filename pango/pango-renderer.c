@@ -157,6 +157,9 @@ pango_renderer_finalize (GObject *gobject)
  *
  * Draws @layout with the specified `PangoRenderer`.
  *
+ * This is equivalent to drawing the lines of the layout, at their
+ * respective positions relative to @x, @y.
+ *
  * Since: 1.8
  */
 void
@@ -558,6 +561,10 @@ draw_shaped_glyphs (PangoRenderer    *renderer,
  *
  * Draws @line with the specified `PangoRenderer`.
  *
+ * This draws the glyph items that make up the line, as well as
+ * shapes, backgrounds and lines that are specified by the attributes
+ * of those items.
+ *
  * Since: 1.8
  */
 void
@@ -806,6 +813,11 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
  * output format supports it.
  *
  * This is useful for rendering text in PDF.
+ *
+ * Note that this method does not handle attributes in @glyph_item.
+ * If you want colors, shapes and lines handled automatically according
+ * to those attributes, you need to use pango_renderer_draw_layout_line()
+ * or pango_renderer_draw_layout().
  *
  * Note that @text is the start of the text for layout, which is then
  * indexed by `glyph_item->item->offset`.
