@@ -214,7 +214,10 @@ typedef enum
  *     single characters, such as for keyboard accelerators.
  *     %PANGO_UNDERLINE_SINGLE should be used for extended
  *     portions of text.
- * @PANGO_UNDERLINE_ERROR: a wavy underline should be drawn below.
+ * @PANGO_UNDERLINE_ERROR: an underline indicating an error should
+ *     be drawn below. The exact style of rendering is up to the
+ *     `PangoRenderer` in use, but typical styles include wavy
+ *     or dotted lines.
  *     This underline is typically used to indicate an error such
  *     as a possible mispelling; in some cases a contrasting color
  *     may automatically be used. This type of underlining is
