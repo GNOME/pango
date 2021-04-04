@@ -356,11 +356,6 @@ pango_layout_set_width (PangoLayout *layout,
   if (width != layout->width)
     {
       layout->width = width;
-
-      /* Increasing the width can only decrease the line count */
-      if (layout->line_count == 1 && width > layout->width)
-        return;
-
       layout_changed (layout);
     }
 }
