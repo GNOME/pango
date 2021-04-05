@@ -51,7 +51,7 @@ G_BEGIN_DECLS
  *   so all chars are in some sentence; @is_sentence_boundary denotes
  *   the boundaries there. The second way doesn't assign
  *   between-sentence spaces, etc. to any sentence, so
- * @is_sentence_start/@is_sentence_end mark the boundaries of those sentences.
+ *   @is_sentence_start/@is_sentence_end mark the boundaries of those sentences.
  * @is_sentence_start: is first character in a sentence
  * @is_sentence_end: is first char after a sentence.
  *   Note that in degenerate cases, you could have both @is_sentence_start
