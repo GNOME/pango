@@ -820,10 +820,7 @@ pango_win32_font_finalize (GObject *object)
   PangoWin32FontCache *cache = pango_win32_font_map_get_font_cache (win32font->fontmap);
   PangoWin32Font *fontmap;
 
-  if (G_UNLIKELY (!cache))
-    return;
-
-  if (win32font->hfont != NULL)
+  if (cache != NULL && win32font->hfont != NULL)
     pango_win32_font_cache_unload (cache, win32font->hfont);
 
   g_slist_foreach (win32font->metrics_by_lang, (GFunc)free_metrics_info, NULL);
