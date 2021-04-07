@@ -275,6 +275,10 @@ HFONT		_pango_win32_font_get_hfont         (PangoFont          *font);
 _PANGO_EXTERN
 HDC             _pango_win32_get_display_dc                 (void);
 
+_PANGO_EXTERN
+gpointer        _pango_win32_copy_cmap (gpointer cmap,
+                                        guint16 cmap_format);
+
 extern gboolean _pango_win32_debug;
 
 #endif /* __PANGOWIN32_PRIVATE_H__ */
