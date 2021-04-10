@@ -32,7 +32,7 @@
  * functionality such as line breaking, justification, alignment and
  * ellipsization.
  *
- * A `PangoLayout is initialized with a `PangoContext`, UTF-8 string
+ * A `PangoLayout` is initialized with a `PangoContext`, UTF-8 string
  * and set of attributes for that string. Once that is done, the set of
  * formatted lines can be extracted from the object, the layout can be
  * rendered, and conversion between logical character positions within
