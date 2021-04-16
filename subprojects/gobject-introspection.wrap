@@ -5,6 +5,6 @@ push-url=ssh://git@gitlab.gnome.org:GNOME/gobject-introspection.git
 revision=master
 depth=1
 
-[provides]
+[provide]
 dependency_names = gobject-introspection-1.0
 program_names = g-ir-scanner
