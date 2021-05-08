@@ -3611,6 +3611,9 @@ break_needs_hyphen (PangoLayout    *layout,
   if (state->log_widths_offset + pos == 0)
     return FALSE;
 
+  if (layout->log_attrs[state->start_offset + pos].is_line_break)
+    return FALSE;
+
   if (state->need_hyphen[state->log_widths_offset + pos - 1])
     return TRUE;
 
