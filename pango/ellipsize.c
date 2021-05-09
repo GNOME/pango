@@ -634,7 +634,8 @@ remove_one_span (EllipsizeState *state)
  * of the gap
  */
 static void
-fixup_ellipsis_run (EllipsizeState *state)
+fixup_ellipsis_run (EllipsizeState *state,
+                    int             extra_width)
 {
   PangoGlyphString *glyphs = state->ellipsis_run->glyphs;
   PangoItem *item = state->ellipsis_run->item;
@@ -649,6 +650,8 @@ fixup_ellipsis_run (EllipsizeState *state)
     }
 
   glyphs->glyphs[0].attr.is_cluster_start = TRUE;
+
+  glyphs->glyphs[glyphs->num_glyphs - 1].geometry.width += extra_width;
 
   /* Fix up the item to point to the entire elided text */
   item->offset = state->gap_start_iter.run_iter.start_index;
@@ -765,7 +768,7 @@ _pango_layout_line_ellipsize (PangoLayoutLine *line,
 	break;
     }
 
-  fixup_ellipsis_run (&state);
+  fixup_ellipsis_run (&state, MAX (goal_width - current_width (&state), 0));
 
   g_slist_free (line->runs);
   line->runs = get_run_list (&state);
