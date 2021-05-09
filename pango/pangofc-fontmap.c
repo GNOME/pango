@@ -820,11 +820,8 @@ thread_data_free (gpointer data)
   g_object_unref (fontmap);
 }
 
-static void
-match_in_thread (GTask        *task,
-                 gpointer      source_object,
-                 gpointer      task_data,
-                 GCancellable *cancellable)
+static gpointer
+match_in_thread (gpointer task_data)
 {
   ThreadData *td = task_data;
   FcResult result;
@@ -842,13 +839,14 @@ match_in_thread (GTask        *task,
   td->patterns->match = match;
   g_cond_signal (&td->patterns->cond);
   g_mutex_unlock (&td->patterns->mutex);
+
+  thread_data_free (td);
+
+  return NULL;
 }
 
-static void
-sort_in_thread (GTask        *task,
-                gpointer      source_object,
-                gpointer      task_data,
-                GCancellable *cancellable)
+static gpointer
+sort_in_thread (gpointer task_data)
 {
   ThreadData *td = task_data;
   FcResult result;
@@ -868,13 +866,17 @@ sort_in_thread (GTask        *task,
   td->patterns->fontset = fontset;
   g_cond_signal (&td->patterns->cond);
   g_mutex_unlock (&td->patterns->mutex);
+
+  thread_data_free (td);
+
+  return NULL;
 }
 
 static PangoFcPatterns *
 pango_fc_patterns_new (FcPattern *pat, PangoFcFontMap *fontmap)
 {
   PangoFcPatterns *pats;
-  GTask *task;
+  GThread *thread;
 
   pat = uniquify_pattern (fontmap, pat);
   pats = g_hash_table_lookup (fontmap->priv->patterns_hash, pat);
@@ -892,17 +894,11 @@ pango_fc_patterns_new (FcPattern *pat, PangoFcFontMap *fontmap)
   g_mutex_init (&pats->mutex);
   g_cond_init (&pats->cond);
 
-  task = g_task_new (NULL, NULL, NULL, NULL);
-  g_task_set_name (task, "[pango] FcFontSetMatch");
-  g_task_set_task_data (task, thread_data_new (pats), thread_data_free);
-  g_task_run_in_thread (task, match_in_thread);
-  g_object_unref (task);
+  thread = g_thread_new ("[pango] FcFontSetMatch", match_in_thread, thread_data_new (pats));
+  g_thread_unref (thread);
 
-  task = g_task_new (NULL, NULL, NULL, NULL);
-  g_task_set_name (task, "[pango] FcFontSetSort");
-  g_task_set_task_data (task, thread_data_new (pats), thread_data_free);
-  g_task_run_in_thread (task, sort_in_thread);
-  g_object_unref (task);
+  thread = g_thread_new ("[pango] FcFontSetSort", sort_in_thread, thread_data_new (pats));
+  g_thread_unref (thread);
 
   g_hash_table_insert (fontmap->priv->patterns_hash,
                        pats->pattern, pats);
@@ -1344,11 +1340,8 @@ G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFcFontMap, pango_fc_font_map, PANGO_TYPE_
                                   G_ADD_PRIVATE (PangoFcFontMap)
                                   G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango_fc_font_map_list_model_init))
 
-static void
-init_in_thread (GTask        *task,
-                gpointer      source_object,
-                gpointer      task_data,
-                GCancellable *cancellable)
+static gpointer
+init_in_thread (gpointer task_data)
 {
   gint64 before = PANGO_TRACE_CURRENT_TIME;
 
@@ -1360,6 +1353,8 @@ init_in_thread (GTask        *task,
   fc_initialized = 2;
   g_cond_broadcast (&fc_init_cond);
   g_mutex_unlock (&fc_init_mutex);
+
+  return NULL;
 }
 
 static void
@@ -1369,13 +1364,11 @@ start_init_in_thread (PangoFcFontMap *fcfontmap)
 
   if (fc_initialized == 0)
     {
-      GTask *task;
+      GThread *thread;
 
       fc_initialized = 1;
-      task = g_task_new (fcfontmap, NULL, NULL, NULL);
-      g_task_set_name (task, "[pango] FcInit");
-      g_task_run_in_thread (task, init_in_thread);
-      g_object_unref (task);
+      thread = g_thread_new ("[pango] FcInit", init_in_thread, NULL);
+      g_thread_unref (thread);
     }
 
   g_mutex_unlock (&fc_init_mutex);
