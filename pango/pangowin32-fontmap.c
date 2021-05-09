@@ -1794,7 +1794,8 @@ pango_win32_face_list_sizes (PangoFontFace  *face,
    * for scalable fonts it's simple, and currently we only have such
    * see : pango_win32_enum_proc(), TRUETYPE_FONTTYPE
    */
-  *sizes = NULL;
+  if (sizes)
+    *sizes = NULL;
   *n_sizes = 0;
 }
 

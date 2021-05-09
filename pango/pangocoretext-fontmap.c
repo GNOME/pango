@@ -529,7 +529,8 @@ pango_core_text_face_list_sizes (PangoFontFace  *face,
                                  int            *n_sizes)
 {
   *n_sizes = 0;
-  *sizes = NULL;
+  if (sizes)
+    *sizes = NULL;
 }
 
 G_DEFINE_TYPE (PangoCoreTextFace, pango_core_text_face, PANGO_TYPE_FONT_FACE);
