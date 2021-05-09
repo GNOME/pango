@@ -5213,8 +5213,15 @@ pango_layout_line_get_extents_and_height (PangoLayoutLine *line,
       tmp_list = tmp_list->next;
     }
 
-  if (logical_rect && !line->runs)
-    pango_layout_line_get_empty_extents (line, logical_rect);
+  if (!line->runs)
+    {
+      PangoRectangle r, *rect;
+
+      rect = logical_rect ? logical_rect : &r;
+      pango_layout_line_get_empty_extents (line, rect);
+      if (height)
+        *height = rect->height;
+    }
 
   if (caching)
     {
