@@ -4982,7 +4982,7 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
   gboolean has_underline;
   gboolean has_overline;
 
-  if (G_UNLIKELY (!run_ink && !run_logical))
+  if (G_UNLIKELY (!run_ink && !run_logical && !height))
     return;
 
   pango_layout_get_item_properties (run->item, &properties);
@@ -5107,7 +5107,7 @@ pango_layout_line_get_extents_and_height (PangoLayoutLine *line,
 
   g_return_if_fail (LINE_IS_VALID (line));
 
-  if (G_UNLIKELY (!ink_rect && !logical_rect))
+  if (G_UNLIKELY (!ink_rect && !logical_rect && !height))
     return;
 
   switch (private->cache_status)

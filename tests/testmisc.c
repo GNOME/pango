@@ -101,6 +101,26 @@ test_language_emoji_crash (void)
   g_assert (scripts == NULL || num > 0);
 }
 
+static void
+test_line_height (void)
+{
+  PangoContext *context;
+  PangoLayout *layout;
+  PangoLayoutLine *line;
+  int height = 0;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  layout = pango_layout_new (context);
+  pango_layout_set_text (layout, "one\ttwo", -1);
+  line = pango_layout_get_line_readonly (layout, 0);
+  pango_layout_line_get_height (line, &height);
+
+  g_assert_cmpint (height, >, 0);
+
+  g_object_unref (layout);
+  g_object_unref (context);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -111,6 +131,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/layout/itemize-utf8", test_itemize_utf8);
   g_test_add_func ("/layout/short-string-crash", test_short_string_crash);
   g_test_add_func ("/language/emoji-crash", test_language_emoji_crash);
+  g_test_add_func ("/layout/line-height", test_line_height);
 
   return g_test_run ();
 }
