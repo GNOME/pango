@@ -2904,7 +2904,8 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
   FcObjectSet *objectset;
   FcFontSet *fonts;
 
-  *sizes = NULL;
+  if (sizes)
+    *sizes = NULL;
   *n_sizes = 0;
   if (G_UNLIKELY (!fcface->family || !fcface->family->fontmap))
     return;
