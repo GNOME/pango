@@ -240,7 +240,74 @@ test_enumerate (void)
   g_object_unref (font);
   pango_font_description_free (desc);
   g_free (faces);
-  g_free (families); 
+  g_free (families);
+  g_object_unref (context);
+}
+
+static void
+test_roundtrip_plain (void)
+{
+  PangoFontMap *fontmap;
+  PangoContext *context;
+  PangoFontDescription *desc, *desc2;
+  PangoFont *font;
+
+#ifdef HAVE_CARBON
+  /* We probably don't have the right fonts */
+  g_test_skip ("Skipping font-dependent tests on OS X");
+  return;
+#endif
+
+  fontmap = pango_cairo_font_map_get_default ();
+  context = pango_font_map_create_context (fontmap);
+
+  desc = pango_font_description_from_string ("Cantarell 11");
+
+  font = pango_context_load_font (context, desc);
+  desc2 = pango_font_describe (font);
+
+  g_assert (pango_font_description_equal (desc2, desc));
+
+  pango_font_description_free (desc2);
+  g_object_unref (font);
+  pango_font_description_free (desc);
+  g_object_unref (context);
+}
+
+static void
+test_roundtrip_emoji (void)
+{
+  PangoFontMap *fontmap;
+  PangoContext *context;
+  PangoFontDescription *desc, *desc2;
+  PangoFont *font;
+
+#ifdef HAVE_CARBON
+  /* We probably don't have the right fonts */
+  g_test_skip ("Skipping font-dependent tests on OS X");
+  return;
+#endif
+
+  fontmap = pango_cairo_font_map_get_default ();
+  context = pango_font_map_create_context (fontmap);
+
+  /* This is how pango_itemize creates the emoji font desc */
+  desc = pango_font_description_from_string ("Cantarell 11");
+  pango_font_description_set_family_static (desc, "emoji");
+
+  font = pango_context_load_font (context, desc);
+  desc2 = pango_font_describe (font);
+
+  /* We can't expect the family name to match, since we go in with
+   * a generic family
+   */
+  pango_font_description_unset_fields (desc, PANGO_FONT_MASK_FAMILY);
+  pango_font_description_unset_fields (desc2, PANGO_FONT_MASK_FAMILY);
+  g_assert (pango_font_description_equal (desc2, desc));
+
+  pango_font_description_free (desc2);
+  g_object_unref (font);
+  pango_font_description_free (desc);
   g_object_unref (context);
   g_object_unref (fontmap);
 }
@@ -261,6 +328,8 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/fontdescription/variation", test_variation);
   g_test_add_func ("/pango/font/extents", test_extents);
   g_test_add_func ("/pango/font/enumerate", test_enumerate);
+  g_test_add_func ("/pango/font/roundtrip/plain", test_roundtrip_plain);
+  g_test_add_func ("/pango/font/roundtrip/emoji", test_roundtrip_emoji);
 
   return g_test_run ();
 }

@@ -1614,7 +1614,6 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   int slant;
   double weight;
   PangoGravity gravity;
-  FcBool vertical;
   char **families;
   int i;
   int width;
@@ -1625,7 +1624,6 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   width = pango_fc_convert_width_to_fc (pango_font_description_get_stretch (description));
 
   gravity = pango_font_description_get_gravity (description);
-  vertical = PANGO_GRAVITY_IS_VERTICAL (gravity) ? FcTrue : FcFalse;
 
   /* The reason for passing in FC_SIZE as well as FC_PIXEL_SIZE is
    * to work around a bug in libgnomeprint where it doesn't look
@@ -1634,13 +1632,14 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
    * Putting FC_SIZE in here slightly reduces the efficiency
    * of caching of patterns and fonts when working with multiple different
    * dpi values.
+   *
+   * Do not pass FC_VERTICAL_LAYOUT true as HarfBuzz shaping assumes false.
    */
   pattern = FcPatternBuild (NULL,
 			    PANGO_FC_VERSION, FcTypeInteger, pango_version(),
 			    FC_WEIGHT, FcTypeDouble, weight,
 			    FC_SLANT,  FcTypeInteger, slant,
 			    FC_WIDTH,  FcTypeInteger, width,
-			    FC_VERTICAL_LAYOUT,  FcTypeBool, vertical,
 #ifdef FC_VARIABLE
 			    FC_VARIABLE,  FcTypeBool, FcDontCare,
 #endif
@@ -2439,7 +2438,24 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
   pango_font_description_set_variant (desc, PANGO_VARIANT_NORMAL);
 
   if (include_size && FcPatternGetDouble (pattern, FC_SIZE, 0, &size) == FcResultMatch)
-    pango_font_description_set_size (desc, size * PANGO_SCALE);
+    {
+      FcMatrix *fc_matrix;
+      double scale_factor = 1;
+
+      if (FcPatternGetMatrix (pattern, FC_MATRIX, 0, &fc_matrix) == FcResultMatch)
+        {
+          PangoMatrix mat = PANGO_MATRIX_INIT;
+
+          mat.xx = fc_matrix->xx;
+          mat.xy = fc_matrix->xy;
+          mat.yx = fc_matrix->yx;
+          mat.yy = fc_matrix->yy;
+
+          scale_factor = pango_matrix_get_font_scale_factor (&mat);
+        }
+
+      pango_font_description_set_size (desc, scale_factor * size * PANGO_SCALE);
+    }
 
   /* gravity is a bit different.  we don't want to set it if it was not set on
    * the pattern */

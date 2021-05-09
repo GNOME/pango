@@ -185,8 +185,6 @@ test_file (const gchar *filename, GString *string)
   pango_attr_list_unref (itemize_attrs);
   pango_attr_list_unref (shape_attrs);
 
-  pango_attr_list_unref (attrs);
-
   for (l = items; l; l = l->next)
     {
       PangoItem *item = l->data;
@@ -281,6 +279,8 @@ test_file (const gchar *filename, GString *string)
   g_list_free_full (items, (GDestroyNotify)pango_item_free);
   g_free (contents);
   g_free (text);
+
+  pango_attr_list_unref (attrs);
 }
 
 static gchar *
