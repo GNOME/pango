@@ -662,7 +662,7 @@ pango_language_get_scripts (PangoLanguage *language,
 						 script_for_lang,
 						 pango_script_for_lang);
 
-  if (!script_for_lang)
+  if (!script_for_lang || script_for_lang->scripts[0] == 0)
     {
       if (num_scripts)
 	*num_scripts = 0;

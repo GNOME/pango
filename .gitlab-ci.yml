@@ -1,4 +1,4 @@
-image: registry.gitlab.gnome.org/gnome/gnome-runtime-images/base:latest
+image: registry.fedoraproject.org/fedora:32
 
 stages:
   - build
@@ -6,11 +6,13 @@ stages:
 gnome-runtime-linux:
   stage: build
   before_script:
+    - dnf update -y
     - >
       dnf install -y \
         glibc-langpack-en \
         gcc \
         gcc-c++ \
+        diffutils \
         meson \
         redhat-rpm-config \
         glib2-devel \

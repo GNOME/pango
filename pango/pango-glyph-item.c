@@ -751,7 +751,16 @@ pango_glyph_item_letter_space (PangoGlyphItem *glyph_item,
        have_cluster = pango_glyph_item_iter_next_cluster (&iter))
     {
       if (!log_attrs[iter.start_char].is_cursor_position)
-        continue;
+        {
+          if (glyphs[iter.start_glyph].geometry.width == 0)
+            {
+              if (iter.start_glyph < iter.end_glyph) /* LTR */
+                glyphs[iter.start_glyph].geometry.x_offset -= space_right;
+              else
+                glyphs[iter.start_glyph].geometry.x_offset += space_left;
+            }
+          continue;
+        }
 
       if (iter.start_glyph < iter.end_glyph) /* LTR */
 	{

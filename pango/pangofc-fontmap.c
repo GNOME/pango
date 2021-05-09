@@ -808,8 +808,15 @@ pango_fc_patterns_get_pattern (PangoFcPatterns *pats)
 }
 
 static gboolean
-pango_fc_is_supported_font_format (const char *fontformat)
+pango_fc_is_supported_font_format (FcPattern* pattern)
 {
+  FcResult res;
+  const char *fontformat;
+
+  res = FcPatternGetString (pattern, FC_FONTFORMAT, 0, (FcChar8 **)(void*)&fontformat);
+  if (res != FcResultMatch)
+    return FALSE;
+
   /* harfbuzz supports only SFNT fonts. */
   /* FIXME: "CFF" is used for both CFF in OpenType and bare CFF files, but
    * HarfBuzz does not support the later and FontConfig does not seem
@@ -831,12 +838,11 @@ filter_fontset_by_format (FcFontSet *fontset)
 
   for (i = 0; i < fontset->nfont; i++)
     {
-      FcResult res;
-      const char *s;
-
-      res = FcPatternGetString (fontset->fonts[i], FC_FONTFORMAT, 0, (FcChar8 **)(void*)&s);
-      if (res == FcResultMatch && pango_fc_is_supported_font_format (s))
-        FcFontSetAdd (result, FcPatternDuplicate (fontset->fonts[i]));
+      if (pango_fc_is_supported_font_format (fontset->fonts[i]))
+        {
+          FcPatternReference (fontset->fonts[i]);
+          FcFontSetAdd (result, fontset->fonts[i]);
+        }
     }
 
   return result;
@@ -851,34 +857,37 @@ pango_fc_patterns_get_font_pattern (PangoFcPatterns *pats, int i, gboolean *prep
       if (!pats->match && !pats->fontset)
 	pats->match = FcFontMatch (pats->fontmap->priv->config, pats->pattern, &result);
 
-      if (pats->match)
+      if (pats->match && pango_fc_is_supported_font_format (pats->match))
 	{
 	  *prepare = FALSE;
 	  return pats->match;
 	}
     }
-  else
+
+  if (!pats->fontset)
     {
-      if (!pats->fontset)
+      FcResult result;
+      FcFontSet *filtered[2] = { NULL, };
+      int i, n = 0;
+
+      for (i = 0; i < 2; i++)
         {
-	  FcResult result;
-          FcFontSet *fontset;
-          FcFontSet *filtered;
+          FcFontSet *fonts = FcConfigGetFonts (pats->fontmap->priv->config, i);
+          if (fonts)
+            filtered[n++] = filter_fontset_by_format (fonts);
+        }
 
-	  fontset = FcFontSort (pats->fontmap->priv->config, pats->pattern, FcFalse, NULL, &result);
-          filtered = filter_fontset_by_format (fontset);
-          FcFontSetDestroy (fontset);
+      pats->fontset = FcFontSetSort (pats->fontmap->priv->config, filtered, n, pats->pattern, FcTrue, NULL, &result);
 
-          pats->fontset = FcFontSetSort (pats->fontmap->priv->config, &filtered, 1, pats->pattern, FcTrue, NULL, &result);
+      for (i = 0; i < n; i++)
+        FcFontSetDestroy (filtered[i]);
 
-          FcFontSetDestroy (filtered);
 
-	  if (pats->match)
-	    {
-	      FcPatternDestroy (pats->match);
-	      pats->match = NULL;
-	    }
-	}
+      if (pats->match)
+        {
+          FcPatternDestroy (pats->match);
+          pats->match = NULL;
+        }
     }
 
   *prepare = TRUE;
@@ -1404,8 +1413,7 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
           int variable;
 	  PangoFcFamily *temp_family;
 
-	  res = FcPatternGetString (fontset->fonts[i], FC_FONTFORMAT, 0, (FcChar8 **)(void*)&s);
-          if (res != FcResultMatch || !pango_fc_is_supported_font_format (s))
+          if (!pango_fc_is_supported_font_format (fontset->fonts[i]))
             continue;
 
 	  res = FcPatternGetString (fontset->fonts[i], FC_FAMILY, 0, (FcChar8 **)(void*)&s);
@@ -1522,7 +1530,6 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   int slant;
   double weight;
   PangoGravity gravity;
-  FcBool vertical;
   char **families;
   int i;
   int width;
@@ -1533,7 +1540,6 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   width = pango_fc_convert_width_to_fc (pango_font_description_get_stretch (description));
 
   gravity = pango_font_description_get_gravity (description);
-  vertical = PANGO_GRAVITY_IS_VERTICAL (gravity) ? FcTrue : FcFalse;
 
   /* The reason for passing in FC_SIZE as well as FC_PIXEL_SIZE is
    * to work around a bug in libgnomeprint where it doesn't look
@@ -1542,13 +1548,14 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
    * Putting FC_SIZE in here slightly reduces the efficiency
    * of caching of patterns and fonts when working with multiple different
    * dpi values.
+   *
+   * Do not pass FC_VERTICAL_LAYOUT true as HarfBuzz shaping assumes false.
    */
   pattern = FcPatternBuild (NULL,
 			    PANGO_FC_VERSION, FcTypeInteger, pango_version(),
 			    FC_WEIGHT, FcTypeDouble, weight,
 			    FC_SLANT,  FcTypeInteger, slant,
 			    FC_WIDTH,  FcTypeInteger, width,
-			    FC_VERTICAL_LAYOUT,  FcTypeBool, vertical,
 #ifdef FC_VARIABLE
 			    FC_VARIABLE,  FcTypeBool, FcDontCare,
 #endif
@@ -2311,7 +2318,24 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
   pango_font_description_set_variant (desc, PANGO_VARIANT_NORMAL);
 
   if (include_size && FcPatternGetDouble (pattern, FC_SIZE, 0, &size) == FcResultMatch)
-    pango_font_description_set_size (desc, size * PANGO_SCALE);
+    {
+      FcMatrix *fc_matrix;
+      double scale_factor = 1;
+
+      if (FcPatternGetMatrix (pattern, FC_MATRIX, 0, &fc_matrix) == FcResultMatch)
+        {
+          PangoMatrix mat = PANGO_MATRIX_INIT;
+
+          mat.xx = fc_matrix->xx;
+          mat.xy = fc_matrix->xy;
+          mat.yx = fc_matrix->yx;
+          mat.yy = fc_matrix->yy;
+
+          scale_factor = pango_matrix_get_font_scale_factor (&mat);
+        }
+
+      pango_font_description_set_size (desc, scale_factor * size * PANGO_SCALE);
+    }
 
   /* gravity is a bit different.  we don't want to set it if it was not set on
    * the pattern */
@@ -2548,6 +2572,32 @@ create_face (PangoFcFamily *fcfamily,
   return face;
 }
 
+static int
+compare_face (const void *p1, const void *p2)
+{
+  const PangoFcFace *f1 = *(const void **)p1;
+  const PangoFcFace *f2 = *(const void **)p2;
+  int w1, w2;
+  int s1, s2;
+
+  if (FcPatternGetInteger (f1->pattern, FC_WEIGHT, 0, &w1) != FcResultMatch)
+    w1 = FC_WEIGHT_MEDIUM;
+
+  if (FcPatternGetInteger (f1->pattern, FC_SLANT, 0, &s1) != FcResultMatch)
+    s1 = FC_SLANT_ROMAN;
+
+  if (FcPatternGetInteger (f2->pattern, FC_WEIGHT, 0, &w2) != FcResultMatch)
+    w2 = FC_WEIGHT_MEDIUM;
+
+  if (FcPatternGetInteger (f2->pattern, FC_SLANT, 0, &s2) != FcResultMatch)
+    s2 = FC_SLANT_ROMAN;
+
+  if (s1 != s2)
+    return s1 - s2; /* roman < italic < oblique */
+
+  return w1 - w2; /* from light to heavy */
+}
+
 static void
 pango_fc_family_list_faces (PangoFontFamily  *family,
 			    PangoFontFace  ***faces,
@@ -2666,6 +2716,8 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 	    faces[num++] = create_face (fcfamily, "Bold Italic", NULL, TRUE);
 
 	  faces = g_renew (PangoFcFace *, faces, num);
+
+          qsort (faces, num, sizeof (PangoFcFace *), compare_face);
 
 	  fcfamily->n_faces = num;
 	  fcfamily->faces = faces;

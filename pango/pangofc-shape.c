@@ -409,8 +409,8 @@ pango_hb_shape (PangoFont           *font,
     for (i = 0; i < num_glyphs; i++)
       {
         /* 90 degrees rotation counter-clockwise. */
-	infos[i].geometry.width    =   hb_position->y_advance;
-	infos[i].geometry.x_offset =   hb_position->y_offset;
+	infos[i].geometry.width    = - hb_position->y_advance;
+	infos[i].geometry.x_offset = - hb_position->y_offset;
 	infos[i].geometry.y_offset = - hb_position->x_offset;
 	hb_position++;
       }
