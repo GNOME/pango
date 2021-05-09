@@ -1413,10 +1413,10 @@ itemize_state_update_for_new_run (ItemizeState *state)
     {
       gboolean is_emoji = state->emoji_iter.is_emoji;
       if (is_emoji && !state->emoji_font_desc)
-      {
-        state->emoji_font_desc = pango_font_description_copy_static (state->font_desc);
-        pango_font_description_set_family_static (state->emoji_font_desc, "emoji");
-      }
+        {
+          state->emoji_font_desc = pango_font_description_copy_static (state->font_desc);
+          pango_font_description_set_family_static (state->emoji_font_desc, "emoji");
+        }
       state->current_fonts = pango_font_map_load_fontset (state->context->font_map,
                                                           state->context,
                                                           is_emoji ? state->emoji_font_desc : state->font_desc,
