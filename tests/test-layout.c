@@ -368,7 +368,7 @@ main (int argc, char *argv[])
 
       string = g_string_sized_new (0);
       test_file (argv[1], string);
-      g_test_message ("%s", string->str);
+      g_print ("%s", string->str);
 
       return 0;
     }
