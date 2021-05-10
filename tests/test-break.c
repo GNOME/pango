@@ -322,7 +322,7 @@ main (int argc, char *argv[])
   /* allow to easily generate expected output for new test cases */
   if (argc > 1)
     {
-      if (strcmp (argv[1], "--help") == 0)
+      if (strcmp (argv[1], "--legend") == 0)
         {
           g_print ("test-break uses the following symbols for log attrs\n\n");
           g_print ("Breaks:                 Words:\n"
@@ -331,8 +331,9 @@ main (int argc, char *argv[])
                    " c - char break          e - word end\n"
                    "\n"
                    "Whitespace:             Sentences:\n"
-                   " x - expandable space    s - sentence start\n"
-                   " w - whitespace          e - sentence end\n");
+                   " x - expandable space    b - sentence boundary\n"
+                   " w - whitespace          s - sentence start\n"
+                   "                         e - sentence end\n");
         }
       else
         {
