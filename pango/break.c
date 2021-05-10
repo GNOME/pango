@@ -306,7 +306,6 @@ pango_default_break (const gchar   *text,
       /* Emoji extended pictographics */
       gboolean is_Extended_Pictographic;
 
-
       wc = next_wc;
       break_type = next_break_type;
 
@@ -932,7 +931,20 @@ pango_default_break (const gchar   *text,
 		      prev_prev_SB_type == SB_ATerm_Close_Sp) &&
 		     IS_OTHER_TERM(prev_SB_type) &&
 		     SB_type == SB_Lower)
-	      attrs[prev_SB_i].is_sentence_boundary = FALSE;
+              {
+	        attrs[prev_SB_i].is_sentence_boundary = FALSE;
+	        attrs[prev_SB_i].is_sentence_start = FALSE;
+	        attrs[prev_SB_i].is_sentence_end = FALSE;
+                last_sentence_start = -1;
+                for (int j = prev_SB_i - 1; j >= 0; j--)
+                  {
+                    if (attrs[j].is_sentence_boundary)
+                      {
+                        last_sentence_start = j;
+                        break;
+                      }
+                  }
+              }
 	    else if ((prev_SB_type == SB_ATerm ||
 		      prev_SB_type == SB_ATerm_Close_Sp ||
 		      prev_SB_type == SB_STerm ||
@@ -1537,8 +1549,9 @@ pango_default_break (const gchar   *text,
 	/* meets space character, move sentence start */
 	if (last_sentence_start != -1 &&
 	    last_sentence_start == i - 1 &&
-	    attrs[i - 1].is_white)
+	    attrs[i - 1].is_white) {
 	    last_sentence_start++;
+          }
 
       }
 
