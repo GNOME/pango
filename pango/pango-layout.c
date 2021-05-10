@@ -3511,6 +3511,8 @@ get_need_hyphen (PangoItem  *item,
     }
   _pango_attr_list_get_iterator (&attrs, &iter);
 
+  prev_space = prev_hyphen = TRUE;
+
   for (i = 0, p = text + item->offset; i < item->num_chars; i++, p = g_utf8_next_char (p))
     {
       gunichar wc = g_utf8_get_char (p);
@@ -3581,9 +3583,7 @@ get_need_hyphen (PangoItem  *item,
       else
         hyphen = FALSE;
 
-      if (i == 0)
-        need_hyphen[i] = FALSE;
-      else if (prev_space || space)
+      if (prev_space || space)
         need_hyphen[i] = FALSE;
       else if (prev_hyphen || hyphen)
         need_hyphen[i] = FALSE;
@@ -3593,6 +3593,8 @@ get_need_hyphen (PangoItem  *item,
       prev_space = space;
       prev_hyphen = hyphen;
     }
+
+  need_hyphen[item->num_chars - 1] = FALSE;
 
   _pango_attr_iterator_destroy (&iter);
   _pango_attr_list_destroy (&attrs);
@@ -3606,7 +3608,7 @@ break_needs_hyphen (PangoLayout    *layout,
   if (state->log_widths_offset + pos == 0)
     return FALSE;
 
-  if (layout->log_attrs[state->start_offset + pos].is_line_break)
+  if (layout->log_attrs[state->start_offset + pos].is_word_boundary)
     return FALSE;
 
   if (state->need_hyphen[state->log_widths_offset + pos - 1])
