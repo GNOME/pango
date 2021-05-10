@@ -80,3 +80,10 @@ if cairo_dep.found()
                           ])
 
 endif
+
+pango_segmentation = executable('pango-segmentation',
+                                'pango-segmentation.c',
+                                dependencies: [ libpango_dep, libpangocairo_dep ],
+                                include_directories: [ root_inc ],
+                                install: false,
+                                )
