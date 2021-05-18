@@ -1,3 +1,16 @@
+Overview of changes in 1.48.5
+=============================
+- Only initialize fontconfig once
+- Add missing deprecation notices
+- Add some missing apis to the markup docs
+- Speed up Emoji classification
+- win32: Fix msvc build
+- Fix hangs and memory leaks
+- Don't insert hyphens at word boundaries
+- Handle empty lines better
+- Avoid width fluctuations with ellipsized text
+- Add a utility to show text segmentation
+
 Overview of changes in 1.48.4
 =============================
 - Include docs in the dist tarball
