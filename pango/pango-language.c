@@ -279,8 +279,7 @@ _pango_get_lc_ctype (void)
  *
  * Note that the default language can change over the life of an application.
  *
- * Return value: (transfer none): the default language as a
- *               `PangoLanguage`, must not be freed.
+ * Return value: (transfer none): the default language as a `PangoLanguage`
  *
  * Since: 1.16
  **/
@@ -318,12 +317,11 @@ pango_language_get_default (void)
  * lowercase, mapping '_' to '-', and stripping all characters other
  * than letters and '-'.
  *
- * Use [type_func@Pango.Language.get_default] if you want to get the `PangoLanguage`
- * for the current locale of the process.
+ * Use [type_func@Pango.Language.get_default] if you want to get the
+ * `PangoLanguage` for the current locale of the process.
  *
  * Return value: (transfer none) (nullable): an opaque pointer to a
- *   `PangoLanguage` structure, or %NULL if @language was %NULL. The
- *   returned pointer will be valid forever after, and should not be freed.
+ *   `PangoLanguage` structure, or %NULL if @language was %NULL
  */
 PangoLanguage *
 pango_language_from_string (const char *language)
@@ -376,8 +374,7 @@ out:
  *
  * Gets the RFC-3066 format string representing the given language tag.
  *
- * Returns: a string representing the language tag. This is owned by
- *   Pango and should not be freed.
+ * Returns (transfer none): a string representing the language tag
  */
 const char *
 (pango_language_to_string) (PangoLanguage *language)
@@ -397,12 +394,11 @@ const char *
  * Checks if a language tag matches one of the elements in a list of
  * language ranges.
  *
- * A language tag is considered to match a range
- * in the list if the range is '*', the range is exactly the tag,
- * or the range is a prefix of the tag, and the character after it
- * in the tag is '-'.
+ * A language tag is considered to match a range in the list if the
+ * range is '*', the range is exactly the tag, or the range is a prefix
+ * of the tag, and the character after it in the tag is '-'.
  *
- * Return value: %TRUE if a match was found.
+ * Return value: %TRUE if a match was found
  */
 gboolean
 pango_language_matches (PangoLanguage *language,
@@ -585,8 +581,7 @@ static const LangInfo lang_texts[] = {
  * pango_language_get_sample_string (pango_language_from_string ("xx"))
  * ```
  *
- * Return value: the sample string. This value is owned by Pango
- *   and should not be freed.
+ * Return value: (transfer none): the sample string
  */
 const char *
 pango_language_get_sample_string (PangoLanguage *language)
@@ -618,9 +613,9 @@ pango_language_get_sample_string (PangoLanguage *language)
 
 /**
  * pango_language_get_scripts:
- * @language: (nullable): a `PangoLanguage`, or %NULL
+ * @language: (nullable): a `PangoLanguage`
  * @num_scripts: (out caller-allocates) (optional): location to
- *   return number of scripts, or %NULL
+ *   return number of scripts
  *
  * Determines the scripts used to to write @language.
  *
@@ -639,19 +634,18 @@ pango_language_get_sample_string (PangoLanguage *language)
  * though, except that it is positive if the return value is not
  * %NULL, and it is a small number.
  *
- * The [method@Pango.Language.includes_script] function uses this function
- * internally.
+ * The [method@Pango.Language.includes_script] function uses this
+ * function internally.
  *
  * Note: while the return value is declared as `PangoScript`, the
  * returned values are from the `GUnicodeScript` enumeration, which
  * may have more values. Callers need to handle unknown values.
  *
- * Return value: (array length=num_scripts) (nullable): An array of
- *   `PangoScript` values, with the number of entries in the array
- *   stored in @num_scripts, or %NULL if Pango does not have any
- *   information about this particular language tag (also the case
- *   if @language is %NULL). The returned array is owned by Pango
- *   and should not be modified or freed.
+ * Return value: (transfer none) (array length=num_scripts) (nullable):
+ *   An array of `PangoScript` values, with the number of entries in
+ *   the array stored in @num_scripts, or %NULL if Pango does not have
+ *   any information about this particular language tag (also the case
+ *   if @language is %NULL).
  *
  * Since: 1.22
  */
@@ -694,10 +688,11 @@ pango_language_get_scripts (PangoLanguage *language,
  * @script: a `PangoScript`
  *
  * Determines if @script is one of the scripts used to
- * write @language. The returned value is conservative;
- * if nothing is known about the language tag @language,
- * %TRUE will be returned, since, as far as Pango knows,
- * @script might be used to write @language.
+ * write @language.
+ *
+ * The returned value is conservative; if nothing is known about
+ * the language tag @language, %TRUE will be returned, since, as
+ * far as Pango knows, @script might be used to write @language.
  *
  * This routine is used in Pango's itemization process when
  * determining if a supplied language tag is relevant to
@@ -843,17 +838,18 @@ out:
  *
  * Returns the list of languages that the user prefers.
  *
- * The list is specified by the `PANGO_LANGUAGE` or `LANGUAGE` environment
- * variables, in order of preference. Note that this list does not necessarily
- * include the language returned by [type_func@Pango.Language.get_default].
+ * The list is specified by the `PANGO_LANGUAGE` or `LANGUAGE`
+ * environment variables, in order of preference. Note that this
+ * list does not necessarily include the language returned by
+ * [type_func@Pango.Language.get_default].
  *
  * When choosing language-specific resources, such as the sample
- * text returned by [method@Pango.Language.get_sample_string], you should
- * first try the default language, followed by the languages returned
- * by this function.
+ * text returned by [method@Pango.Language.get_sample_string],
+ * you should first try the default language, followed by the
+ * languages returned by this function.
  *
- * Returns: (transfer none) (nullable): a %NULL-terminated array of
- *   `PangoLanguage`*
+ * Returns: (transfer none) (nullable): a %NULL-terminated array
+ *   of `PangoLanguage`*
  *
  * Since: 1.48
  */
@@ -872,9 +868,10 @@ pango_language_get_preferred (void)
  *
  * Finds a language tag that is reasonably representative of @script.
  *
- * The language will usually be the most widely spoken or used language written
- * in that script: for instance, the sample language for %PANGO_SCRIPT_CYRILLIC
- * is ru (Russian), the sample language for %PANGO_SCRIPT_ARABIC is ar.
+ * The language will usually be the most widely spoken or used language
+ * written in that script: for instance, the sample language for
+ * %PANGO_SCRIPT_CYRILLIC is ru (Russian), the sample language for
+ * %PANGO_SCRIPT_ARABIC is ar.
  *
  * For some scripts, no sample language will be returned because
  * there is no language that is sufficiently representative. The
@@ -900,7 +897,7 @@ pango_language_get_preferred (void)
  * context language is not feasible.
  *
  * Return value: (nullable): a `PangoLanguage` that is representative
- * of the script, or %NULL if no such language exists.
+ *   of the script
  *
  * Since: 1.4
  */

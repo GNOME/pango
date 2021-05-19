@@ -153,7 +153,7 @@ pango_renderer_finalize (GObject *gobject)
  * @x: X position of left edge of baseline, in user space coordinates
  *   in Pango units.
  * @y: Y position of left edge of baseline, in user space coordinates
- *    in Pango units.
+ *   in Pango units.
  *
  * Draws @layout with the specified `PangoRenderer`.
  *
@@ -557,7 +557,7 @@ draw_shaped_glyphs (PangoRenderer    *renderer,
  * @x: X position of left edge of baseline, in user space coordinates
  *   in Pango units.
  * @y: Y position of left edge of baseline, in user space coordinates
- *    in Pango units.
+ *   in Pango units.
  *
  * Draws @line with the specified `PangoRenderer`.
  *
@@ -750,7 +750,7 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
  * @x: X position of left edge of baseline, in user space coordinates
  *   in Pango units.
  * @y: Y position of left edge of baseline, in user space coordinates
- *    in Pango units.
+ *   in Pango units.
  *
  * Draws the glyphs in @glyphs with the specified `PangoRenderer`.
  *
@@ -806,7 +806,7 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
  * @x: X position of left edge of baseline, in user space coordinates
  *   in Pango units.
  * @y: Y position of left edge of baseline, in user space coordinates
- *    in Pango units.
+ *   in Pango units.
  *
  * Draws the glyphs in @glyph_item with the specified `PangoRenderer`,
  * embedding the text associated with the glyphs in the output if the
@@ -1206,7 +1206,7 @@ pango_renderer_draw_trapezoid (PangoRenderer   *renderer,
 /**
  * pango_renderer_draw_glyph:
  * @renderer: a `PangoRenderer`
- * @font: a #PangoFont
+ * @font: a `PangoFont`
  * @glyph: the glyph index of a single glyph
  * @x: X coordinate of left edge of baseline of glyph
  * @y: Y coordinate of left edge of baseline of glyph
@@ -1237,16 +1237,17 @@ pango_renderer_draw_glyph (PangoRenderer *renderer,
  * @renderer: a `PangoRenderer`
  *
  * Does initial setup before rendering operations on @renderer.
- * 
+ *
  * [method@Pango.Renderer.deactivate] should be called when done drawing.
  * Calls such as [method@Pango.Renderer.draw_layout] automatically
- * activate the layout before drawing on it. Calls to
- * `pango_renderer_activate()` and `pango_renderer_deactivate()`
- * can be nested and the renderer will only be initialized and
- * deinitialized once.
+ * activate the layout before drawing on it.
+ *
+ * Calls to [method@Pango.Renderer.activate] and
+ * [method@Pango.Renderer.deactivate] can be nested and the
+ * renderer will only be initialized and deinitialized once.
  *
  * Since: 1.8
- **/
+ */
 void
 pango_renderer_activate (PangoRenderer *renderer)
 {
@@ -1552,7 +1553,7 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
 /**
  * pango_renderer_set_matrix:
  * @renderer: a `PangoRenderer`
- * @matrix: (nullable): a `PangoMatrix`, or %NULL to unset any existing matrix.
+ * @matrix: (nullable): a `PangoMatrix`, or %NULL to unset any existing matrix
  *  (No matrix set is the same as setting the identity matrix.)
  *
  * Sets the transformation matrix that will be applied when rendering.

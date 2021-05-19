@@ -49,9 +49,9 @@ G_BEGIN_DECLS
 /**
  * PangoXftFontMap:
  *
- * #PangoXftFontMap is an implementation of #PangoFcFontMap suitable for
+ * `PangoXftFontMap` is an implementation of `PangoFcFontMap` suitable for
  * the Xft library as the renderer.  It is used in to create fonts of
- * type #PangoXftFont.
+ * type `PangoXftFont`.
  */
 
 /* This is a hack needed because PangoXft hijacks the Pango namespace
@@ -73,8 +73,8 @@ typedef struct _PangoXftFontMap      PangoXftFontMap;
 /**
  * PangoXftFont:
  *
- * #PangoXftFont is an implementation of #PangoFcFont using the Xft
- * library for rendering.  It is used in conjunction with #PangoXftFontMap.
+ * `PangoXftFont` is an implementation of `PangoFcFont` using the Xft
+ * library for rendering.  It is used in conjunction with `PangoXftFontMap`.
  */
 typedef struct _PangoXftFont    PangoXftFont;
 

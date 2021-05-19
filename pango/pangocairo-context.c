@@ -164,9 +164,8 @@ _pango_cairo_update_context (cairo_t      *cr,
  * match the current transformation and target surface of a Cairo
  * context.
  *
- * If any layouts have been created for the context,
- * it's necessary to call [method@Pango.Layout.context_changed] on those
- * layouts.
+ * If any layouts have been created for the context, it's necessary
+ * to call [method@Pango.Layout.context_changed] on those layouts.
  *
  * Since: 1.10
  */
@@ -189,10 +188,9 @@ pango_cairo_update_context (cairo_t      *cr,
  *
  * Sets the resolution for the context.
  *
- * This is a scale factor between
- * points specified in a `PangoFontDescription` and Cairo units. The
- * default value is 96, meaning that a 10 point font will be 13
- * units high. (10 * 96. / 72. = 13.3).
+ * This is a scale factor between points specified in a `PangoFontDescription`
+ * and Cairo units. The default value is 96, meaning that a 10 point font will
+ * be 13 units high. (10 * 96. / 72. = 13.3).
  *
  * Since: 1.10
  */
@@ -209,6 +207,7 @@ pango_cairo_context_set_resolution (PangoContext *context,
  * @context: a `PangoContext`, from a pangocairo font map
  *
  * Gets the resolution for the context.
+ *
  * See [func@PangoCairo.context_set_resolution]
  *
  * Return value: the resolution in "dots per inch". A negative value will
@@ -289,9 +288,8 @@ pango_cairo_context_set_font_options (PangoContext               *context,
  * Retrieves any font rendering options previously set with
  * [func@PangoCairo.context_set_font_options].
  *
- * This function
- * does not report options that are derived from the target
- * surface by [func@update_context].
+ * This function does not report options that are derived from
+ * the target surface by [func@update_context].
  *
  * Return value: (nullable): the font options previously set on the
  *   context, or %NULL if no options have been set. This value is
@@ -347,10 +345,10 @@ _pango_cairo_context_get_merged_font_options (PangoContext *context)
  * pango_cairo_context_set_shape_renderer:
  * @context: a `PangoContext`, from a pangocairo font map
  * @func: (nullable): Callback function for rendering attributes of
- *        type %PANGO_ATTR_SHAPE, or %NULL to disable shape rendering.
- * @data: User data that will be passed to @func.
- * @dnotify: Callback that will be called when the
- *           context is freed to release @data, or %NULL.
+ *   type %PANGO_ATTR_SHAPE, or %NULL to disable shape rendering.
+ * @data: (nullable): User data that will be passed to @func.
+ * @dnotify: (nullable): Callback that will be called when the
+ *   context is freed to release @data
  *
  * Sets callback function for context to use for rendering attributes
  * of type %PANGO_ATTR_SHAPE.
@@ -382,7 +380,7 @@ pango_cairo_context_set_shape_renderer (PangoContext                *context,
 /**
  * pango_cairo_context_get_shape_renderer: (skip)
  * @context: a `PangoContext`, from a pangocairo font map
- * @data: Pointer to #gpointer to return user data
+ * @data: Pointer to `gpointer` to return user data
  *
  * Sets callback function for context to use for rendering attributes
  * of type %PANGO_ATTR_SHAPE.
@@ -438,8 +436,7 @@ pango_cairo_context_get_shape_renderer (PangoContext *context,
  * create a layout for use with @cr and do not need to access `PangoContext`
  * directly, you can use [func@create_layout] instead.
  *
- * Return value: (transfer full): the newly created `PangoContext`.
- *   Free with g_object_unref().
+ * Return value: (transfer full): the newly created `PangoContext`
  *
  * Since: 1.22
  */
@@ -465,9 +462,8 @@ pango_cairo_create_context (cairo_t *cr)
  * Creates a layout object set up to match the current transformation
  * and target surface of the Cairo context.
  *
- * This layout can then be
- * used for text measurement with functions like
- * [method@Pango.Layout.get_size] or drawing with functions like
+ * This layout can then be used for text measurement with functions
+ * like [method@Pango.Layout.get_size] or drawing with functions like
  * [func@show_layout]. If you change the transformation or target
  * surface for @cr, you need to call [func@update_layout].
  *
@@ -476,8 +472,7 @@ pango_cairo_create_context (cairo_t *cr)
  * `PangoContext` object for each layout. This might matter in an
  * application that was laying out large amounts of text.
  *
- * Return value: (transfer full): the newly created `PangoLayout`.
- *   Free with g_object_unref().
+ * Return value: (transfer full): the newly created `PangoLayout`
  *
  * Since: 1.10
  */

@@ -33,11 +33,6 @@ G_BEGIN_DECLS
  * PangoFontset
  */
 
-/**
- * PANGO_TYPE_FONTSET:
- *
- * The #GObject type for #PangoFontset.
- */
 #define PANGO_TYPE_FONTSET              (pango_fontset_get_type ())
 #define PANGO_FONTSET(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONTSET, PangoFontset))
 #define PANGO_IS_FONTSET(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONTSET))
@@ -86,7 +81,7 @@ struct _PangoFontset
 
 /**
  * PangoFontsetClass:
- * @parent_class: parent #GObjectClass.
+ * @parent_class: parent `GObjectClass`
  * @get_font: a function to get the font in the fontset that contains the
  * best glyph for the given Unicode character; see pango_fontset_get_font().
  * @get_metrics: a function to get overall metric information for the fonts
@@ -95,8 +90,8 @@ struct _PangoFontset
  * @foreach: a function to loop over the fonts in the fontset. See
  * pango_fontset_foreach().
  *
- * The #PangoFontsetClass structure holds the virtual functions for
- * a particular #PangoFontset implementation.
+ * The `PangoFontsetClass` structure holds the virtual functions for
+ * a particular `PangoFontset` implementation.
  */
 struct _PangoFontsetClass
 {
@@ -122,11 +117,6 @@ struct _PangoFontsetClass
   void (*_pango_reserved4) (void);
 };
 
-/**
- * PANGO_TYPE_FONTSET_SIMPLE:
- *
- * The #GObject type for #PangoFontsetSimple.
- */
 /**
  * PangoFontsetSimple:
  *

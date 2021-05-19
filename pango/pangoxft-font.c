@@ -108,15 +108,15 @@ _pango_xft_font_new (PangoXftFontMap *xftfontmap,
 
 /**
  * _pango_xft_font_get_mini_font:
- * @xfont: a #PangoXftFont
+ * @xfont: a `PangoXftFont`
  *
  * Gets the font used for drawing the digits in the
  * missing-character hex squares
  *
- * Return value: the #PangoFont used for the digits; this
+ * Return value: the `PangoFont` used for the digits; this
  *  value is associated with the main font and will be freed
  *  along with the main font.
- **/
+ */
 PangoFont *
 _pango_xft_font_get_mini_font (PangoXftFont *xfont)
 {
@@ -470,13 +470,13 @@ pango_xft_font_real_shutdown (PangoFcFont *fcfont)
 
 /**
  * pango_xft_font_get_font: (skip)
- * @font: (nullable): a #PangoFont.
+ * @font: (nullable): a `PangoFont`
  *
  * Returns the `XftFont` of a font.
  *
  * Return value: (nullable): the `XftFont` associated to @font,
  *   or %NULL if @font is %NULL.
- **/
+ */
 XftFont *
 pango_xft_font_get_font (PangoFont *font)
 {
@@ -488,7 +488,7 @@ pango_xft_font_get_font (PangoFont *font)
 
 /**
  * pango_xft_font_get_display: (skip)
- * @font: (type PangoXftFont): a #PangoFont.
+ * @font: (type PangoXftFont): a `PangoFont`
  *
  * Returns the X display of the `XftFont` of a font.
  *
@@ -510,7 +510,7 @@ pango_xft_font_get_display (PangoFont *font)
 
 /**
  * pango_xft_font_get_unknown_glyph:
- * @font: (type PangoXftFont): a #PangoFont.
+ * @font: (type PangoXftFont): a `PangoFont`
  * @wc: the Unicode character for which a glyph is needed.
  *
  * Returns the index of a glyph suitable for drawing @wc as an
@@ -531,7 +531,7 @@ pango_xft_font_get_unknown_glyph (PangoFont *font,
 
 /**
  * pango_xft_font_lock_face: (skip)
- * @font: (type PangoXftFont): a #PangoFont.
+ * @font: (type PangoXftFont): a `PangoFont`
  *
  * Gets the FreeType `FT_Face` associated with a font.
  *
@@ -553,7 +553,7 @@ pango_xft_font_lock_face (PangoFont *font)
 
 /**
  * pango_xft_font_unlock_face: (skip)
- * @font: (type PangoXftFont): a #PangoFont.
+ * @font: (type PangoXftFont): a `PangoFont`
  *
  * Releases a font previously obtained with
  * pango_xft_font_lock_face().
@@ -572,12 +572,14 @@ pango_xft_font_unlock_face (PangoFont *font)
 
 /**
  * pango_xft_font_get_glyph:
- * @font: (type PangoXftFont): a #PangoFont for the Xft backend
+ * @font: (type PangoXftFont): a `PangoFont` for the Xft backend
  * @wc: Unicode codepoint to look up
  *
  * Gets the glyph index for a given Unicode character
- * for @font. If you only want to determine
- * whether the font has the glyph, use pango_xft_font_has_char().
+ * for @font.
+ *
+ * If you only want to determine whether the font has
+ * the glyph, use pango_xft_font_has_char().
  *
  * Use pango_fc_font_get_glyph() instead.
  *
@@ -597,7 +599,7 @@ pango_xft_font_get_glyph (PangoFont *font,
 
 /**
  * pango_xft_font_has_char:
- * @font: (type PangoXftFont): a #PangoFont for the Xft backend
+ * @font: (type PangoXftFont): a `PangoFont` for the Xft backend
  * @wc: Unicode codepoint to look up
  *
  * Determines whether @font has a glyph for the codepoint @wc.

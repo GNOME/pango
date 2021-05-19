@@ -91,9 +91,9 @@ pango_bidi_type_for_unichar (gunichar ch)
 
 /**
  * pango_log2vis_get_embedding_levels:
- * @text:      the text to itemize.
- * @length:    the number of bytes (not characters) to process, or -1
- *             if @text is nul-terminated and the length should be calculated.
+ * @text: the text to itemize.
+ * @length: the number of bytes (not characters) to process, or -1
+ *   if @text is nul-terminated and the length should be calculated.
  * @pbase_dir: input base direction, and output resolved direction.
  *
  * Return the bidirectional embedding levels of the input paragraph.

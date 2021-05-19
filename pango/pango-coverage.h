@@ -32,30 +32,34 @@ G_BEGIN_DECLS
 /**
  * PangoCoverage:
  *
- * A #PangoCoverage structure is a map from Unicode characters
- * to #PangoCoverageLevel values.
+ * A `PangoCoverage` structure is a map from Unicode characters
+ * to [enum@Pango.CoverageLevel] values.
  *
- * It is often necessary in Pango to determine if a particular font can
- * represent a particular character, and also how well it can represent
- * that character. The #PangoCoverage is a data structure that is used to
- * represent that information. It is an opaque structure with no public fields.
+ * It is often necessary in Pango to determine if a particular
+ * font can represent a particular character, and also how well
+ * it can represent that character. The `PangoCoverage` is a data
+ * structure that is used to represent that information. It is an
+ * opaque structure with no public fields.
  */
 typedef struct _PangoCoverage PangoCoverage;
 
 /**
  * PangoCoverageLevel:
- * @PANGO_COVERAGE_NONE: The character is not representable with the font.
- * @PANGO_COVERAGE_FALLBACK: The character is represented in a way that may be
- * comprehensible but is not the correct graphical form.
- * For instance, a Hangul character represented as a
- * a sequence of Jamos, or a Latin transliteration of a Cyrillic word.
- * @PANGO_COVERAGE_APPROXIMATE: The character is represented as basically the correct
- * graphical form, but with a stylistic variant inappropriate for
- * the current script.
- * @PANGO_COVERAGE_EXACT: The character is represented as the correct graphical form.
+ * @PANGO_COVERAGE_NONE: The character is not representable with
+ *   the font.
+ * @PANGO_COVERAGE_FALLBACK: The character is represented in a
+ *   way that may be comprehensible but is not the correct
+ *   graphical form. For instance, a Hangul character represented
+ *   as a a sequence of Jamos, or a Latin transliteration of a
+ *   Cyrillic word.
+ * @PANGO_COVERAGE_APPROXIMATE: The character is represented as
+ *   basically the correct graphical form, but with a stylistic
+ *   variant inappropriate for the current script.
+ * @PANGO_COVERAGE_EXACT: The character is represented as the
+ *   correct graphical form.
  *
- * `PangoCoverageLevel` is used to indicate how well a font can represent
- * a particular Unicode character for a particular script.
+ * `PangoCoverageLevel` is used to indicate how well a font can
+ * represent a particular Unicode character for a particular script.
  *
  * Since 1.44, only %PANGO_COVERAGE_NONE and %PANGO_COVERAGE_EXACT
  * will be returned.

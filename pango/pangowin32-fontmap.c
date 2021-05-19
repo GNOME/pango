@@ -816,11 +816,13 @@ _pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
 /**
  * pango_win32_font_map_for_display:
  *
- * Returns a PangoWin32FontMap. Font maps are cached and should
- * not be freed. If the font map is no longer needed, it can
- * be released with pango_win32_shutdown_display().
+ * Returns a `PangoWin32FontMap`.
  *
- * Return value: a #PangoFontMap.
+ * Font maps are cached and should not be freed. If
+ * the font map is no longer needed, it can be released
+ * with [func@Pango.win32_shutdown_display].
+ *
+ * Return value: a `PangoFontMap`
  **/
 PangoFontMap *
 pango_win32_font_map_for_display (void)
@@ -1296,18 +1298,18 @@ get_family_nameA (const LOGFONTA *lfp)
  * pango_win32_font_description_from_logfont:
  * @lfp: a LOGFONTA
  *
- * Creates a #PangoFontDescription that matches the specified LOGFONTA.
+ * Creates a `PangoFontDescription` that matches the specified LOGFONTA.
  *
  * The face name, italicness and weight fields in the LOGFONTA are used
- * to set up the resulting #PangoFontDescription. If the face name in
+ * to set up the resulting `PangoFontDescription`. If the face name in
  * the LOGFONTA contains non-ASCII characters the font is temporarily
  * loaded (using CreateFontIndirect()) and an ASCII (usually English)
  * name for it is looked up from the font name tables in the font
  * data. If that doesn't work, the face name is converted from the
  * system codepage to UTF-8 and that is used.
  *
- * Return value: the newly allocated #PangoFontDescription, which
- *  should be freed using pango_font_description_free()
+ * Return value: the newly allocated `PangoFontDescription`, which
+ *  should be freed using [method@Pango.FontDescription.free]
  *
  * Since: 1.12
  */
@@ -1481,18 +1483,18 @@ get_family_nameW (const LOGFONTW *lfp)
  * pango_win32_font_description_from_logfontw:
  * @lfp: a LOGFONTW
  *
- * Creates a #PangoFontDescription that matches the specified LOGFONTW.
+ * Creates a `PangoFontDescription` that matches the specified LOGFONTW.
  *
  * The face name, italicness and weight fields in the LOGFONTW are used
- * to set up the resulting #PangoFontDescription. If the face name in
+ * to set up the resulting `PangoFontDescription`. If the face name in
  * the LOGFONTW contains non-ASCII characters the font is temporarily
  * loaded (using CreateFontIndirect()) and an ASCII (usually English)
  * name for it is looked up from the font name tables in the font
  * data. If that doesn't work, the face name is converted from UTF-16
  * to UTF-8 and that is used.
  *
- * Return value: the newly allocated #PangoFontDescription, which
- *  should be freed using pango_font_description_free()
+ * Return value: the newly allocated `PangoFontDescription`, which
+ *  should be freed using [method@Pango.FontDescription.free]
  *
  * Since: 1.16
  */
@@ -1801,12 +1803,12 @@ pango_win32_face_list_sizes (PangoFontFace  *face,
 
 /**
  * pango_win32_font_map_get_font_cache:
- * @font_map: a PangoWin32FontMap
+ * @font_map: a `PangoWin32FontMap`
  *
  * Obtains the font cache associated with the given font map.
  *
- * Return value: the #PangoWin32FontCache of @font_map.
- **/
+ * Return value: the `PangoWin32FontCache` of @font_map.
+ */
 PangoWin32FontCache *
 pango_win32_font_map_get_font_cache (PangoFontMap *font_map)
 {

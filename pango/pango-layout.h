@@ -104,7 +104,7 @@ typedef enum {
  * @start_index: start of line as byte index into layout->text
  * @length: length of line in bytes
  * @runs: (nullable) (element-type Pango.LayoutRun): list of runs in the
- *        line, from left to right
+ *   line, from left to right
  * @is_paragraph_start: #TRUE if this is the first line of the paragraph
  * @resolved_dir: #Resolved PangoDirection of line
  *

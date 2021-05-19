@@ -55,9 +55,8 @@ pango_fontset_class_init (PangoFontsetClass *class)
  * Returns the font in the fontset that contains the best glyph for a
  * Unicode character.
  *
- * Return value: (transfer full): a `PangoFont`. The caller must call
- *          g_object_unref() when finished with the font.
- **/
+ * Return value: (transfer full): a `PangoFont`
+ */
 PangoFont *
 pango_fontset_get_font (PangoFontset  *fontset,
 			guint          wc)
@@ -70,13 +69,12 @@ pango_fontset_get_font (PangoFontset  *fontset,
 
 /**
  * pango_fontset_get_metrics:
- * @fontset: a #PangoFontset
+ * @fontset: a `PangoFontset`
  *
  * Get overall metric information for the fonts in the fontset.
  *
- * Return value: a #PangoFontMetrics object. The caller must call pango_font_metrics_unref()
- *   when finished using the object.
- **/
+ * Return value: a `PangoFontMetrics` object
+ */
 PangoFontMetrics *
 pango_fontset_get_metrics (PangoFontset  *fontset)
 {
@@ -97,7 +95,7 @@ pango_fontset_get_metrics (PangoFontset  *fontset)
  * If @func returns %TRUE, that stops the iteration.
  *
  * Since: 1.4
- **/
+ */
 void
 pango_fontset_foreach (PangoFontset           *fontset,
 		       PangoFontsetForeachFunc func,
@@ -238,9 +236,8 @@ struct _PangoFontsetSimpleClass
  *
  * Creates a new `PangoFontsetSimple` for the given language.
  *
- * Return value: the newly allocated `PangoFontsetSimple`, which should
- *               be freed with g_object_unref().
- **/
+ * Return value: the newly allocated `PangoFontsetSimple`
+ */
 PangoFontsetSimple *
 pango_fontset_simple_new (PangoLanguage *language)
 {
@@ -307,7 +304,7 @@ pango_fontset_simple_finalize (GObject *object)
  * @font: a `PangoFont`.
  *
  * Adds a font to the fontset.
- **/
+ */
 void
 pango_fontset_simple_append (PangoFontsetSimple *fontset,
 			     PangoFont          *font)
@@ -322,8 +319,8 @@ pango_fontset_simple_append (PangoFontsetSimple *fontset,
  *
  * Returns the number of fonts in the fontset.
  *
- * Return value: the size of @fontset.
- **/
+ * Return value: the size of @fontset
+ */
 int
 pango_fontset_simple_size (PangoFontsetSimple *fontset)
 {

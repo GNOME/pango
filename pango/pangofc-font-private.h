@@ -32,7 +32,7 @@ G_BEGIN_DECLS
  *
  * A string constant used to identify shape engines that work
  * with the fontconfig based backends. See the @engine_type field
- * of #PangoEngineInfo.
+ * of `PangoEngineInfo`.
  **/
 #define PANGO_RENDER_TYPE_FC "PangoRenderFc"
 
@@ -46,7 +46,7 @@ G_BEGIN_DECLS
  *  the reference count for the face by one.
  * @unlock_face: Decreases the reference count for the
  *  FT_Face of the font by one. When the count is zero,
- *  the #PangoFcFont subclass is allowed to free the
+ *  the `PangoFcFont` subclass is allowed to free the
  *  FT_Face.
  * @has_char: Return %TRUE if the the font contains a glyph
  *   corresponding to the specified character.
@@ -59,7 +59,7 @@ G_BEGIN_DECLS
  *   shutdown code that needs to be done when
  *   pango_fc_font_map_shutdown is called.  May be %NULL.
  *
- * Class structure for #PangoFcFont.
+ * Class structure for `PangoFcFont`.
  **/
 struct _PangoFcFontClass
 {

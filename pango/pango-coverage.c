@@ -109,11 +109,10 @@ pango_coverage_class_init (PangoCoverageClass *class)
  *
  * Create a new `PangoCoverage`
  *
- * Return value: the newly allocated `PangoCoverage`,
- *               initialized to %PANGO_COVERAGE_NONE
- *               with a reference count of one, which
- *               should be freed with pango_coverage_unref().
- **/
+ * Return value: the newly allocated `PangoCoverage`, initialized
+ *   to %PANGO_COVERAGE_NONE with a reference count of one, which
+ *   should be freed with [method@Pango.Coverage.unref].
+ */
 PangoCoverage *
 pango_coverage_new (void)
 {
@@ -127,9 +126,9 @@ pango_coverage_new (void)
  * Copy an existing `PangoCoverage`.
  *
  * Return value: (transfer full): the newly allocated `PangoCoverage`,
- *               with a reference count of one, which should be freed
- *               with pango_coverage_unref().
- **/
+ *   with a reference count of one, which should be freed with
+ *   [method@Pango.Coverage.unref].
+ */
 PangoCoverage *
 pango_coverage_copy (PangoCoverage *coverage)
 {
@@ -143,7 +142,7 @@ pango_coverage_copy (PangoCoverage *coverage)
  * Increase the reference count on the `PangoCoverage` by one.
  *
  * Return value: (transfer full): @coverage
- **/
+ */
 PangoCoverage *
 pango_coverage_ref (PangoCoverage *coverage)
 {
@@ -157,7 +156,7 @@ pango_coverage_ref (PangoCoverage *coverage)
  * Decrease the reference count on the `PangoCoverage` by one.
  *
  * If the result is zero, free the coverage and all associated memory.
- **/
+ */
 void
 pango_coverage_unref (PangoCoverage *coverage)
 {
@@ -172,7 +171,7 @@ pango_coverage_unref (PangoCoverage *coverage)
  * Determine whether a particular index is covered by @coverage.
  *
  * Return value: the coverage level of @coverage for character @index_.
- **/
+ */
 PangoCoverageLevel
 pango_coverage_get (PangoCoverage *coverage,
 		    int            index)
@@ -187,7 +186,7 @@ pango_coverage_get (PangoCoverage *coverage,
  * @level: the new level for @index_
  *
  * Modify a particular index within @coverage
- **/
+ */
 void
 pango_coverage_set (PangoCoverage     *coverage,
 		    int                index,
@@ -206,7 +205,7 @@ pango_coverage_set (PangoCoverage     *coverage,
  * the corresponding index in @other.
  *
  * Deprecated: 1.44: This function does nothing
- **/
+ */
 void
 pango_coverage_max (PangoCoverage *coverage,
 		    PangoCoverage *other)
@@ -223,7 +222,7 @@ pango_coverage_max (PangoCoverage *coverage,
  * Convert a `PangoCoverage` structure into a flat binary format.
  *
  * Deprecated: 1.44: This returns %NULL
- **/
+ */
 void
 pango_coverage_to_bytes (PangoCoverage  *coverage,
 			 guchar        **bytes,
@@ -243,10 +242,10 @@ pango_coverage_to_bytes (PangoCoverage  *coverage,
  * to a `PangoCoverage`.
  *
  * Return value: (transfer full) (nullable): a newly allocated
- *               `PangoCoverage`, or %NULL if the data was invalid.
+ *   `PangoCoverage`, or %NULL if the data was invalid.
  *
  * Deprecated: 1.44: This returns %NULL
- **/
+ */
 PangoCoverage *
 pango_coverage_from_bytes (guchar *bytes,
 			   int     n_bytes)

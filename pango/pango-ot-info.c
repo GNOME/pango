@@ -64,15 +64,15 @@ pango_ot_info_finalizer (void *object)
 
 /**
  * pango_ot_info_get:
- * @face: a FT_Face
+ * @face: a `FT_Face`
  *
- * Returns the #PangoOTInfo structure for the given FreeType font face.
+ * Returns the `PangoOTInfo` structure for the given FreeType font face.
  *
- * Return value: (transfer none): the #PangoOTInfo for @face. This object
- *   will have the same lifetime as @face.
+ * Return value: (transfer none): the `PangoOTInfo` for @face.
+ *   This object will have the same lifetime as @face.
  *
  * Since: 1.2
- **/
+ */
 PangoOTInfo *
 pango_ot_info_get (FT_Face face)
 {
@@ -110,24 +110,24 @@ get_hb_table_type (PangoOTTableType table_type)
 
 /**
  * pango_ot_info_find_script:
- * @info: a #PangoOTInfo.
- * @table_type: the table type to obtain information about.
- * @script_tag: the tag of the script to find.
- * @script_index: (out) (optional): location to store the index of the
- *   script, or %NULL.
+ * @info: a `PangoOTInfo`
+ * @table_type: the table type to obtain information about
+ * @script_tag: the tag of the script to find
+ * @script_index: (out) (optional): location to store the index of the script
  *
- * Finds the index of a script.  If not found, tries to find the 'DFLT'
- * and then 'dflt' scripts and return the index of that in @script_index.
- * If none of those is found either, %PANGO_OT_NO_SCRIPT is placed in
- * @script_index.
+ * Finds the index of a script.
+ *
+ * If not found, tries to find the 'DFLT' and then 'dflt' scripts and
+ * return the index of that in @script_index. If none of those is found
+ * either, %PANGO_OT_NO_SCRIPT is placed in @script_index.
  *
  * All other functions taking an input script_index parameter know
  * how to handle %PANGO_OT_NO_SCRIPT, so one can ignore the return
  * value of this function completely and proceed, to enjoy the automatic
  * fallback to the 'DFLT'/'dflt' script.
  *
- * Return value: %TRUE if the script was found.
- **/
+ * Return value: %TRUE if the script was found
+ */
 gboolean
 pango_ot_info_find_script (PangoOTInfo      *info,
 			   PangoOTTableType  table_type,
@@ -143,26 +143,26 @@ pango_ot_info_find_script (PangoOTInfo      *info,
 
 /**
  * pango_ot_info_find_language:
- * @info: a #PangoOTInfo.
- * @table_type: the table type to obtain information about.
- * @script_index: the index of the script whose languages are searched.
- * @language_tag: the tag of the language to find.
- * @language_index: (out) (optional): location to store the index of
- *   the language, or %NULL.
+ * @info: a `PangoOTInfo`
+ * @table_type: the table type to obtain information about
+ * @script_index: the index of the script whose languages are searched
+ * @language_tag: the tag of the language to find
+ * @language_index: (out) (optional): location to store the index of the language
  * @required_feature_index: (out) (optional): location to store the
- *    required feature index of the language, or %NULL.
+ *   required feature index of the language
  *
  * Finds the index of a language and its required feature index.
- * If the language is not found, sets @language_index to
- * PANGO_OT_DEFAULT_LANGUAGE and the required feature of the default language
- * system is returned in required_feature_index.  For best compatibility with
- * some fonts, also searches the language system tag 'dflt' before falling
- * back to the default language system, but that is transparent to the user.
- * The user can simply ignore the return value of this function to
- * automatically fall back to the default language system.
  *
- * Return value: %TRUE if the language was found.
- **/
+ * If the language is not found, sets @language_index to %PANGO_OT_DEFAULT_LANGUAGE
+ * and the required feature of the default language system is returned in
+ * required_feature_index. For best compatibility with some fonts, also
+ * searches the language system tag 'dflt' before falling back to the default
+ * language system, but that is transparent to the user. The user can simply
+ * ignore the return value of this function to automatically fall back to the
+ * default language system.
+ *
+ * Return value: %TRUE if the language was found
+ */
 gboolean
 pango_ot_info_find_language (PangoOTInfo      *info,
 			     PangoOTTableType  table_type,
@@ -194,27 +194,29 @@ pango_ot_info_find_language (PangoOTInfo      *info,
 
 /**
  * pango_ot_info_find_feature:
- * @info: a #PangoOTInfo.
- * @table_type: the table type to obtain information about.
- * @feature_tag: the tag of the feature to find.
- * @script_index: the index of the script.
+ * @info: a `PangoOTInfo`
+ * @table_type: the table type to obtain information about
+ * @feature_tag: the tag of the feature to find
+ * @script_index: the index of the script
  * @language_index: the index of the language whose features are searched,
- *     or %PANGO_OT_DEFAULT_LANGUAGE to use the default language of the script.
+ *   or %PANGO_OT_DEFAULT_LANGUAGE to use the default language of the script
  * @feature_index: (out) (optional): location to store the index of
- *   the feature, or %NULL.
+ *   the feature
  *
- * Finds the index of a feature.  If the feature is not found, sets
- * @feature_index to PANGO_OT_NO_FEATURE, which is safe to pass to
- * pango_ot_ruleset_add_feature() and similar functions.
+ * Finds the index of a feature.
  *
- * In the future, this may set @feature_index to an special value that if used
- * in pango_ot_ruleset_add_feature() will ask Pango to synthesize the
- * requested feature based on Unicode properties and data.  However, this
- * function will still return %FALSE in those cases.  So, users may want to
+ * If the feature is not found, sets @feature_index to PANGO_OT_NO_FEATURE,
+ * which is safe to pass to [method@PangoOT.Ruleset.add_feature] and similar
+ * functions.
+ *
+ * In the future, this may set @feature_index to an special value that if
+ * used in [method@PangoOT.Ruleset.add_feature] will ask Pango to synthesize
+ * the requested feature based on Unicode properties and data. However, this
+ * function will still return %FALSE in those cases. So, users may want to
  * ignore the return value of this function in certain cases.
  *
- * Return value: %TRUE if the feature was found.
- **/
+ * Return value: %TRUE if the feature was found
+ */
 gboolean
 pango_ot_info_find_feature  (PangoOTInfo      *info,
 			     PangoOTTableType  table_type,
@@ -234,14 +236,14 @@ pango_ot_info_find_feature  (PangoOTInfo      *info,
 
 /**
  * pango_ot_info_list_scripts:
- * @info: a #PangoOTInfo.
- * @table_type: the table type to obtain information about.
+ * @info: a `PangoOTInfo`
+ * @table_type: the table type to obtain information about
  *
  * Obtains the list of available scripts.
  *
- * Return value: a newly-allocated zero-terminated array containing the tags of the
- *   available scripts.  Should be freed using g_free().
- **/
+ * Return value: a newly-allocated zero-terminated
+ *   array containing the tags of the available scripts
+ */
 PangoOTTag *
 pango_ot_info_list_scripts (PangoOTInfo      *info,
 			    PangoOTTableType  table_type)
@@ -260,16 +262,16 @@ pango_ot_info_list_scripts (PangoOTInfo      *info,
 
 /**
  * pango_ot_info_list_languages:
- * @info: a #PangoOTInfo.
- * @table_type: the table type to obtain information about.
- * @script_index: the index of the script to list languages for.
- * @language_tag: unused parameter.
+ * @info: a `PangoOTInfo`
+ * @table_type: the table type to obtain information about
+ * @script_index: the index of the script to list languages for
+ * @language_tag: unused parameter
  *
  * Obtains the list of available languages for a given script.
  *
- * Return value: a newly-allocated zero-terminated array containing the tags of the
- *   available languages.  Should be freed using g_free().
- **/
+ * Return value: a newly-allocated zero-terminated
+ *   array containing the tags of the available languages
+ */
 PangoOTTag *
 pango_ot_info_list_languages (PangoOTInfo      *info,
 			      PangoOTTableType  table_type,
@@ -290,19 +292,19 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
 
 /**
  * pango_ot_info_list_features:
- * @info: a #PangoOTInfo.
- * @table_type: the table type to obtain information about.
- * @tag: unused parameter.
- * @script_index: the index of the script to obtain information about.
+ * @info: a `PangoOTInfo`
+ * @table_type: the table type to obtain information about
+ * @tag: unused parameter
+ * @script_index: the index of the script to obtain information about
  * @language_index: the index of the language to list features for, or
- *     %PANGO_OT_DEFAULT_LANGUAGE, to list features for the default
- *     language of the script.
+ *   %PANGO_OT_DEFAULT_LANGUAGE, to list features for the default
+ *   language of the script
  *
  * Obtains the list of features for the given language of the given script.
  *
- * Return value: a newly-allocated zero-terminated array containing the tags of the
- * available features.  Should be freed using g_free().
- **/
+ * Return value: a newly-allocated zero-terminated
+ *   array containing the tags of the available features
+ */
 PangoOTTag *
 pango_ot_info_list_features  (PangoOTInfo      *info,
 			      PangoOTTableType  table_type,
