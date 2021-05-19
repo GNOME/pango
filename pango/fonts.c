@@ -644,7 +644,7 @@ pango_font_description_unset_fields (PangoFontDescription *desc,
 /**
  * pango_font_description_merge:
  * @desc: a `PangoFontDescription`
- * @desc_to_merge: (allow-none): the `PangoFontDescription` to merge from,
+ * @desc_to_merge: (nullable): the `PangoFontDescription` to merge from,
  *   or %NULL
  * @replace_existing: if %TRUE, replace fields in @desc with the
  *   corresponding values from @desc_to_merge, even if they
@@ -766,7 +766,7 @@ compute_distance (const PangoFontDescription *a,
 /**
  * pango_font_description_better_match:
  * @desc: a `PangoFontDescription`
- * @old_match: (allow-none): a `PangoFontDescription`, or %NULL
+ * @old_match: (nullable): a `PangoFontDescription`, or %NULL
  * @new_match: a `PangoFontDescription`
  *
  * Determines if the style attributes of @new_match are a closer match
@@ -984,7 +984,7 @@ pango_font_description_free (PangoFontDescription *desc)
 
 /**
  * pango_font_descriptions_free:
- * @descs: (allow-none) (array length=n_descs) (transfer full): a pointer
+ * @descs: (nullable) (array length=n_descs) (transfer full): a pointer
  *   to an array of `PangoFontDescription`, may be %NULL
  * @n_descs: number of font descriptions in @descs
  *
@@ -1803,9 +1803,9 @@ pango_font_find_shaper (PangoFont     *font,
  * pango_font_get_glyph_extents:
  * @font: (nullable): a `PangoFont`
  * @glyph: the glyph index
- * @ink_rect: (out) (allow-none): rectangle used to store the extents of the glyph
+ * @ink_rect: (out) (optional): rectangle used to store the extents of the glyph
  *            as drawn or %NULL to indicate that the result is not needed.
- * @logical_rect: (out) (allow-none): rectangle used to store the logical extents of
+ * @logical_rect: (out) (optional): rectangle used to store the logical extents of
  *            the glyph or %NULL to indicate that the result is not needed.
  *
  * Gets the logical and ink extents of a glyph within a font.
@@ -1851,7 +1851,7 @@ pango_font_get_glyph_extents  (PangoFont      *font,
 /**
  * pango_font_get_metrics:
  * @font: (nullable): a `PangoFont`
- * @language: (allow-none): language tag used to determine which script
+ * @language: (nullable): language tag used to determine which script
  *   to get the metrics for, or %NULL to indicate to get the metrics for
  *   the entire font.
  *
@@ -2311,7 +2311,7 @@ pango_font_family_get_name (PangoFontFamily  *family)
 /**
  * pango_font_family_list_faces:
  * @family: a `PangoFontFamily`
- * @faces: (out) (allow-none) (array length=n_faces) (transfer container):
+ * @faces: (out) (optional) (array length=n_faces) (transfer container):
  *   location to store an array of pointers to `PangoFontFace` objects,
  *   or %NULL. This array should be freed with g_free() when it is no
  *   longer needed.

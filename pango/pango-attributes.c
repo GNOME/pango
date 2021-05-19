@@ -968,9 +968,9 @@ pango_attr_shape_equal (const PangoAttribute *attr1,
  * @ink_rect: ink rectangle to assign to each character
  * @logical_rect: logical rectangle to assign to each character
  * @data: user data pointer
- * @copy_func: (allow-none): function to copy @data when the
+ * @copy_func: (nullable): function to copy @data when the
  *   attribute is copied. If %NULL, @data is simply copied as a pointer.
- * @destroy_func: (allow-none): function to free @data when the
+ * @destroy_func: (nullable): function to free @data when the
  *   attribute is freed, or %NULL
  *
  * Creates a new shape attribute.
@@ -2167,9 +2167,9 @@ pango_attr_iterator_get (PangoAttrIterator *iterator,
  *   an attribute in the `PangoAttrList` associated with the iterator,
  *   so if you plan to keep it around, you must call:
  *   pango_font_description_set_family (desc, pango_font_description_get_family (desc)).
- * @language: (allow-none): if non-%NULL, location to store language tag
+ * @language: (out) (optional): if non-%NULL, location to store language tag
  *   for item, or %NULL if none is found.
- * @extra_attrs: (allow-none) (element-type Pango.Attribute) (transfer full):
+ * @extra_attrs: (out) (optional) (element-type Pango.Attribute) (transfer full):
  *   if non-%NULL, location in which to store a list of non-font attributes
  *   at the the current position; only the highest priority value of each
  *   attribute will be added to this list. In order to free this value, you

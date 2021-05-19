@@ -306,7 +306,7 @@ pango_language_get_default (void)
 
 /**
  * pango_language_from_string:
- * @language: (allow-none): a string representing a language tag, or %NULL
+ * @language: (nullable): a string representing a language tag, or %NULL
  *
  * Convert a language tag to a `PangoLanguage`.
  *
@@ -618,8 +618,8 @@ pango_language_get_sample_string (PangoLanguage *language)
 
 /**
  * pango_language_get_scripts:
- * @language: (allow-none): a `PangoLanguage`, or %NULL
- * @num_scripts: (out caller-allocates) (allow-none): location to
+ * @language: (nullable): a `PangoLanguage`, or %NULL
+ * @num_scripts: (out caller-allocates) (optional): location to
  *   return number of scripts, or %NULL
  *
  * Determines the scripts used to to write @language.

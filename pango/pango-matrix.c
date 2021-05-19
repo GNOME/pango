@@ -188,7 +188,7 @@ pango_matrix_concat (PangoMatrix       *matrix,
 
 /**
  * pango_matrix_get_font_scale_factor:
- * @matrix: (allow-none): a `PangoMatrix`, may be %NULL
+ * @matrix: (nullable): a `PangoMatrix`, may be %NULL
  *
  * Returns the scale factor of a matrix on the height of the font.
  *
@@ -212,8 +212,8 @@ pango_matrix_get_font_scale_factor (const PangoMatrix *matrix)
 /**
  * pango_matrix_get_font_scale_factors:
  * @matrix: (nullable): a `PangoMatrix`, or %NULL
- * @xscale: (out) (allow-none): output scale factor in the x direction, or %NULL
- * @yscale: (out) (allow-none): output scale factor perpendicular to the x direction, or %NULL
+ * @xscale: (out) (optional): output scale factor in the x direction, or %NULL
+ * @yscale: (out) (optional): output scale factor perpendicular to the x direction, or %NULL
  *
  * Calculates the scale factor of a matrix on the width and height of the font.
  *
@@ -332,7 +332,7 @@ pango_matrix_transform_point (const PangoMatrix *matrix,
 /**
  * pango_matrix_transform_rectangle:
  * @matrix: (nullable): a `PangoMatrix`, or %NULL
- * @rect: (inout) (allow-none): in/out bounding box in Pango units, or %NULL
+ * @rect: (inout) (optional): in/out bounding box in Pango units, or %NULL
  *
  * First transforms @rect using @matrix, then calculates the bounding box
  * of the transformed rectangle.
@@ -412,7 +412,7 @@ pango_matrix_transform_rectangle (const PangoMatrix *matrix,
 /**
  * pango_matrix_transform_pixel_rectangle:
  * @matrix: (nullable): a `PangoMatrix`, or %NULL
- * @rect: (inout) (allow-none): in/out bounding box in device units, or %NULL
+ * @rect: (inout) (optional): in/out bounding box in device units, or %NULL
  *
  * First transforms the @rect using @matrix, then calculates the bounding box
  * of the transformed rectangle.

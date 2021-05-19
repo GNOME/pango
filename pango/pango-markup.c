@@ -602,9 +602,9 @@ pango_markup_parser_new_internal (char       accel_marker,
  * @markup_text: markup to parse (see the Pango Markup docs)
  * @length: length of @markup_text, or -1 if nul-terminated
  * @accel_marker: character that precedes an accelerator, or 0 for none
- * @attr_list: (out) (allow-none): address of return location for a `PangoAttrList`, or %NULL
- * @text: (out) (allow-none): address of return location for text with tags stripped, or %NULL
- * @accel_char: (out) (allow-none): address of return location for accelerator char, or %NULL
+ * @attr_list: (out) (optional): address of return location for a `PangoAttrList`, or %NULL
+ * @text: (out) (optional): address of return location for text with tags stripped, or %NULL
+ * @accel_char: (out) (optional): address of return location for accelerator char, or %NULL
  * @error: address of return location for errors, or %NULL
  *
  * Parses marked-up text to create a plain-text string and an attribute list.
@@ -726,9 +726,9 @@ pango_markup_parser_new (gunichar               accel_marker)
 /**
  * pango_markup_parser_finish:
  * @context: A valid parse context that was returned from [func@markup_parser_new]
- * @attr_list: (out) (allow-none): address of return location for a `PangoAttrList`, or %NULL
- * @text: (out) (allow-none): address of return location for text with tags stripped, or %NULL
- * @accel_char: (out) (allow-none): address of return location for accelerator char, or %NULL
+ * @attr_list: (out) (optional): address of return location for a `PangoAttrList`, or %NULL
+ * @text: (out) (optional): address of return location for text with tags stripped, or %NULL
+ * @accel_char: (out) (optional): address of return location for accelerator char, or %NULL
  * @error: address of return location for errors, or %NULL
  *
  * Finishes parsing markup.

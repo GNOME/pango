@@ -801,7 +801,7 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
 /**
  * pango_renderer_draw_glyph_item:
  * @renderer: a `PangoRenderer`
- * @text: (allow-none): the UTF-8 text that @glyph_item refers to, or %NULL
+ * @text: (nullable): the UTF-8 text that @glyph_item refers to, or %NULL
  * @glyph_item: a `PangoGlyphItem`
  * @x: X position of left edge of baseline, in user space coordinates
  *   in Pango units.
@@ -1288,7 +1288,7 @@ pango_renderer_deactivate (PangoRenderer *renderer)
  * pango_renderer_set_color:
  * @renderer: a `PangoRenderer`
  * @part: the part to change the color of
- * @color: (allow-none): the new color or %NULL to unset the current color
+ * @color: (nullable): the new color or %NULL to unset the current color
  *
  * Sets the color for part of the rendering.
  *
@@ -1552,7 +1552,7 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
 /**
  * pango_renderer_set_matrix:
  * @renderer: a `PangoRenderer`
- * @matrix: (allow-none): a `PangoMatrix`, or %NULL to unset any existing matrix.
+ * @matrix: (nullable): a `PangoMatrix`, or %NULL to unset any existing matrix.
  *  (No matrix set is the same as setting the identity matrix.)
  *
  * Sets the transformation matrix that will be applied when rendering.

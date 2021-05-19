@@ -169,7 +169,7 @@ update_resolved_gravity (PangoContext *context)
 /**
  * pango_context_set_matrix:
  * @context: a `PangoContext`
- * @matrix: (allow-none): a `PangoMatrix`, or %NULL to unset any existing
+ * @matrix: (nullable): a `PangoMatrix`, or %NULL to unset any existing
  * matrix. (No matrix set is the same as setting the identity matrix.)
  *
  * Sets the transformation matrix that will be applied when rendering
@@ -1549,7 +1549,7 @@ itemize_state_finish (ItemizeState *state)
  * @length: the number of bytes (not characters) to process
  *   after @start_index. This must be >= 0.
  * @attrs: the set of attributes that apply to @text.
- * @cached_iter: (allow-none): Cached attribute iterator, or %NULL
+ * @cached_iter: (nullable): Cached attribute iterator, or %NULL
  *
  * Like `pango_itemize()`, but with an explicitly specified base direction.
  *
@@ -1627,7 +1627,7 @@ itemize_with_font (PangoContext               *context,
  * @length: the number of bytes (not characters) to process
  *   after @start_index. This must be >= 0.
  * @attrs: the set of attributes that apply to @text.
- * @cached_iter: (allow-none): Cached attribute iterator, or %NULL
+ * @cached_iter: (nullable): Cached attribute iterator, or %NULL
  *
  * Breaks a piece of text into segments with consistent directional
  * level and font.
@@ -1749,9 +1749,9 @@ update_metrics_from_items (PangoFontMetrics *metrics,
 /**
  * pango_context_get_metrics:
  * @context: a `PangoContext`
- * @desc: (allow-none): a `PangoFontDescription` structure. %NULL means that the
+ * @desc: (nullable): a `PangoFontDescription` structure. %NULL means that the
  *   font description from the context will be used.
- * @language: (allow-none): language tag used to determine which script to get
+ * @language: (nullable): language tag used to determine which script to get
  *   the metrics for. %NULL means that the language tag from the context
  *   will be used. If no language tag is set on the context, metrics
  *   for the default language (as determined by [type_func@Pango.Language.get_default]

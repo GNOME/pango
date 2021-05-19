@@ -673,10 +673,10 @@ parse_int (const char *word,
 /**
  * pango_parse_enum:
  * @type: enum type to parse, eg. %PANGO_TYPE_ELLIPSIZE_MODE.
- * @str: (allow-none): string to parse.  May be %NULL.
- * @value: (out) (allow-none): integer to store the result in, or %NULL.
+ * @str: (nullable): string to parse.  May be %NULL.
+ * @value: (out) (optional): integer to store the result in, or %NULL.
  * @warn: if %TRUE, issue a g_warning() on bad input.
- * @possible_values: (out) (allow-none): place to store list of possible values on failure, or %NULL.
+ * @possible_values: (out) (optional): place to store list of possible values on failure, or %NULL.
  *
  * Parses an enum type and stores the result in @value.
  *
@@ -1016,8 +1016,8 @@ pango_units_to_double (int i)
 
 /**
  * pango_extents_to_pixels:
- * @inclusive: (allow-none): rectangle to round to pixels inclusively, or %NULL.
- * @nearest: (allow-none): rectangle to round to nearest pixels, or %NULL.
+ * @inclusive: (nullable): rectangle to round to pixels inclusively, or %NULL.
+ * @nearest: (nullable): rectangle to round to nearest pixels, or %NULL.
  *
  * Converts extents from Pango units to device units.
  *
