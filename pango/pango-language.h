@@ -31,11 +31,6 @@ G_BEGIN_DECLS
 
 typedef struct _PangoLanguage PangoLanguage;
 
-/**
- * PANGO_TYPE_LANGUAGE:
- *
- * The #GObject type for #PangoLanguage.
- */
 #define PANGO_TYPE_LANGUAGE (pango_language_get_type ())
 
 PANGO_AVAILABLE_IN_ALL

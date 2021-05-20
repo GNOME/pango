@@ -60,17 +60,12 @@ struct _PangoMatrix
   double y0;
 };
 
-/**
- * PANGO_TYPE_MATRIX:
- *
- * The GObject type for #PangoMatrix
- **/
 #define PANGO_TYPE_MATRIX (pango_matrix_get_type ())
 
 /**
  * PANGO_MATRIX_INIT:
  *
- * Constant that can be used to initialize a PangoMatrix to
+ * Constant that can be used to initialize a `PangoMatrix` to
  * the identity transform.
  *
  * ```

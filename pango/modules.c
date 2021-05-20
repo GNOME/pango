@@ -45,8 +45,8 @@ pango_find_map (PangoLanguage *language G_GNUC_UNUSED,
 
 /**
  * pango_map_get_engine: (skip)
- * @map: a #PangoMap
- * @script: a #PangoScript
+ * @map: a `PangoMap`
+ * @script: a `PangoScript`
  *
  * Do not use.  Does not do anything.
  *
@@ -63,8 +63,8 @@ pango_map_get_engine (PangoMap   *map G_GNUC_UNUSED,
 
 /**
  * pango_map_get_engines: (skip)
- * @map: a #PangoMap
- * @script: a #PangoScript
+ * @map: a `PangoMap`
+ * @script: a `PangoScript`
  * @exact_engines: (nullable): location to store list of engines that exactly
  *  handle this script.
  * @fallback_engines: (nullable): location to store list of engines that
@@ -89,7 +89,7 @@ pango_map_get_engines (PangoMap     *map G_GNUC_UNUSED,
 
 /**
  * pango_module_register: (skip)
- * @module: a #PangoIncludedModule
+ * @module: a `PangoIncludedModule`
  *
  * Do not use.  Does not do anything.
  *

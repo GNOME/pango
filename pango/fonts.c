@@ -183,7 +183,7 @@ pango_font_description_get_family (const PangoFontDescription *desc)
  *
  * The [enum@Pango.Style] enumeration describes whether the font is
  * slanted and the manner in which it is slanted; it can be either
- * #PANGO_STYLE_NORMAL, #PANGO_STYLE_ITALIC, or #PANGO_STYLE_OBLIQUE.
+ * %PANGO_STYLE_NORMAL, %PANGO_STYLE_ITALIC, or %PANGO_STYLE_OBLIQUE.
  *
  * Most fonts will either have a italic style or an oblique style,
  * but not both, and font matching in Pango will match italic
@@ -644,7 +644,7 @@ pango_font_description_unset_fields (PangoFontDescription *desc,
 /**
  * pango_font_description_merge:
  * @desc: a `PangoFontDescription`
- * @desc_to_merge: (allow-none): the `PangoFontDescription` to merge from,
+ * @desc_to_merge: (nullable): the `PangoFontDescription` to merge from,
  *   or %NULL
  * @replace_existing: if %TRUE, replace fields in @desc with the
  *   corresponding values from @desc_to_merge, even if they
@@ -766,7 +766,7 @@ compute_distance (const PangoFontDescription *a,
 /**
  * pango_font_description_better_match:
  * @desc: a `PangoFontDescription`
- * @old_match: (allow-none): a `PangoFontDescription`, or %NULL
+ * @old_match: (nullable): a `PangoFontDescription`, or %NULL
  * @new_match: a `PangoFontDescription`
  *
  * Determines if the style attributes of @new_match are a closer match
@@ -984,7 +984,7 @@ pango_font_description_free (PangoFontDescription *desc)
 
 /**
  * pango_font_descriptions_free:
- * @descs: (allow-none) (array length=n_descs) (transfer full): a pointer
+ * @descs: (nullable) (array length=n_descs) (transfer full): a pointer
  *   to an array of `PangoFontDescription`, may be %NULL
  * @n_descs: number of font descriptions in @descs
  *
@@ -1803,10 +1803,8 @@ pango_font_find_shaper (PangoFont     *font,
  * pango_font_get_glyph_extents:
  * @font: (nullable): a `PangoFont`
  * @glyph: the glyph index
- * @ink_rect: (out) (allow-none): rectangle used to store the extents of the glyph
- *            as drawn or %NULL to indicate that the result is not needed.
- * @logical_rect: (out) (allow-none): rectangle used to store the logical extents of
- *            the glyph or %NULL to indicate that the result is not needed.
+ * @ink_rect: (out) (optional): rectangle used to store the extents of the glyph as drawn
+ * @logical_rect: (out) (optional): rectangle used to store the logical extents of the glyph
  *
  * Gets the logical and ink extents of a glyph within a font.
  *
@@ -1851,7 +1849,7 @@ pango_font_get_glyph_extents  (PangoFont      *font,
 /**
  * pango_font_get_metrics:
  * @font: (nullable): a `PangoFont`
- * @language: (allow-none): language tag used to determine which script
+ * @language: (nullable): language tag used to determine which script
  *   to get the metrics for, or %NULL to indicate to get the metrics for
  *   the entire font.
  *
@@ -1893,21 +1891,22 @@ pango_font_get_metrics (PangoFont     *font,
 
 /**
  * pango_font_get_font_map:
- * @font: (nullable): a `PangoFont`, or %NULL
+ * @font: (nullable): a `PangoFont`
  *
  * Gets the font map for which the font was created.
  *
- * Note that the font maintains a *weak* reference to the font map, so if
- * all references to font map are dropped, the font map will be finalized
- * even if there are fonts created with the font map that are still alive.
+ * Note that the font maintains a *weak* reference to
+ * the font map, so if all references to font map are
+ * dropped, the font map will be finalized even if there
+ * are fonts created with the font map that are still alive.
  * In that case this function will return %NULL.
  *
- * It is the responsibility of the user to ensure that the font map is kept
- * alive. In most uses this is not an issue as a #PangoContext holds
- * a reference to the font map.
+ * It is the responsibility of the user to ensure that the
+ * font map is kept alive. In most uses this is not an issue
+ * as a `PangoContext` holds a reference to the font map.
  *
- * Return value: (transfer none) (nullable): the `PangoFontMap` for the
- *   font, or %NULL if @font is %NULL.
+ * Return value: (transfer none) (nullable): the `PangoFontMap`
+ *   for the font
  *
  * Since: 1.10
  */
@@ -1947,11 +1946,12 @@ pango_font_get_face (PangoFont *font)
  *
  * Get a `hb_font_t` object backing this font.
  *
- * Note that the objects returned by this function are cached and immutable.
- * If you need to make changes to the `hb_font_t`, use hb_font_create_sub_font().
+ * Note that the objects returned by this function are cached
+ * and immutable. If you need to make changes to the `hb_font_t`,
+ * use hb_font_create_sub_font().
  *
- * Returns: (transfer none) (nullable): the `hb_font_t` object backing the
- *   font, or %NULL if the font does not have one
+ * Returns: (transfer none) (nullable): the `hb_font_t` object
+ *   backing the font
  *
  * Since: 1.44
  */
@@ -2311,7 +2311,7 @@ pango_font_family_get_name (PangoFontFamily  *family)
 /**
  * pango_font_family_list_faces:
  * @family: a `PangoFontFamily`
- * @faces: (out) (allow-none) (array length=n_faces) (transfer container):
+ * @faces: (out) (optional) (array length=n_faces) (transfer container):
  *   location to store an array of pointers to `PangoFontFace` objects,
  *   or %NULL. This array should be freed with g_free() when it is no
  *   longer needed.
@@ -2369,13 +2369,13 @@ pango_font_family_real_get_face (PangoFontFamily *family,
  * pango_font_family_get_face:
  * @family: a `PangoFontFamily`
  * @name: (nullable): the name of a face. If the name is %NULL,
- *     the family's default face (fontconfig calls it "Regular")
- *     will be returned.
+ *   the family's default face (fontconfig calls it "Regular")
+ *   will be returned.
  *
  * Gets the `PangoFontFace` of @family with the given name.
  *
  * Returns: (transfer none) (nullable): the `PangoFontFace`,
- *     or %NULL if no face with the given name exists.
+ *   or %NULL if no face with the given name exists.
  *
  * Since: 1.46
  */
@@ -2526,8 +2526,8 @@ pango_font_face_get_face_name (PangoFontFace *face)
  * pango_font_face_list_sizes:
  * @face: a `PangoFontFace`.
  * @sizes: (out) (array length=n_sizes) (nullable) (optional):
- *         location to store a pointer to an array of int. This array
- *         should be freed with g_free().
+ *   location to store a pointer to an array of int. This array
+ *   should be freed with g_free().
  * @n_sizes: location to store the number of elements in @sizes
  *
  * List the available sizes for a font.

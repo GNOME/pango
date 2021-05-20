@@ -38,7 +38,7 @@ typedef struct _CacheEntry CacheEntry;
 /**
  * PangoWin32FontCache:
  *
- * A #PangoWin32FontCache caches HFONTs by their LOGFONT descriptions.
+ * A `PangoWin32FontCache` caches HFONTs by their LOGFONT descriptions.
  */
 struct _PangoWin32FontCache
 {
@@ -72,11 +72,13 @@ free_cache_entry (LOGFONTW            *logfont,
 
 /**
  * pango_win32_font_cache_free:
- * @cache: a #PangoWin32FontCache
+ * @cache: a `PangoWin32FontCache`
  *
- * Frees a #PangoWin32FontCache and all associated memory. All fonts loaded
- * through this font cache will be freed along with the cache.
- **/
+ * Frees a `PangoWin32FontCache` and all associated memory.
+ *
+ * All fonts loaded through this font cache will be freed
+ * along with the cache.
+ */
 void
 pango_win32_font_cache_free (PangoWin32FontCache *cache)
 {
@@ -178,7 +180,7 @@ cache_entry_unref (PangoWin32FontCache *cache,
 
 /**
  * pango_win32_font_cache_load:
- * @cache: a #PangoWin32FontCache
+ * @cache: a `PangoWin32FontCache`
  * @logfont: a pointer to a LOGFONTA structure describing the font to load.
  *
  * Creates a HFONT from a LOGFONTA. The
@@ -186,9 +188,9 @@ cache_entry_unref (PangoWin32FontCache *cache,
  * stored
  *
  * Return value: (nullable): The font structure, or %NULL if the font
- * could not be loaded. In order to free this structure, you must call
- * pango_win32_font_cache_unload().
- **/
+ *   could not be loaded. In order to free this structure, you must call
+ *   [method@Pango.Win32FontCache.unload].
+ */
 HFONT
 pango_win32_font_cache_load (PangoWin32FontCache *cache,
 			     const LOGFONTA      *lfp)
@@ -208,7 +210,7 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
 
 /**
  * pango_win32_font_cache_loadw:
- * @cache: a #PangoWin32FontCache
+ * @cache: a `PangoWin32FontCache`
  * @logfont: a pointer to a LOGFONTW structure describing the font to load.
  *
  * Creates a HFONT from a LOGFONTW. The
@@ -216,11 +218,11 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
  * stored
  *
  * Return value: (nullable): The font structure, or %NULL if the font
- * could not be loaded. In order to free this structure, you must call
- * pango_win32_font_cache_unload().
+ *   could not be loaded. In order to free this structure, you must call
+ *   [method@Pango.Win32FontCache.unload].
  *
  * Since: 1.16
- **/
+ */
 HFONT
 pango_win32_font_cache_loadw (PangoWin32FontCache *cache,
 			      const LOGFONTW      *lfp)
@@ -412,11 +414,12 @@ pango_win32_font_cache_loadw (PangoWin32FontCache *cache,
 
 /**
  * pango_win32_font_cache_unload:
- * @cache: a #PangoWin32FontCache
+ * @cache: a `PangoWin32FontCache`
  * @hfont: the HFONT to unload
  *
- * Frees a font structure previously loaded with pango_win32_font_cache_load().
- **/
+ * Frees a font structure previously loaded with
+ * [method@Pango.Win32FontCache.load].
+ */
 void
 pango_win32_font_cache_unload (PangoWin32FontCache *cache,
 			       HFONT		    hfont)

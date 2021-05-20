@@ -119,11 +119,6 @@ void                      pango_context_set_round_glyph_positions (PangoContext 
 PANGO_AVAILABLE_IN_1_44
 gboolean                  pango_context_get_round_glyph_positions (PangoContext *context);
 
-
-/* Break a string of Unicode characters into segments with
- * consistent shaping/language engine and bidrectional level.
- * Returns a #GList of #PangoItem's
- */
 PANGO_AVAILABLE_IN_ALL
 GList *pango_itemize                (PangoContext      *context,
 				     const char        *text,

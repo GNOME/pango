@@ -705,14 +705,14 @@ release_renderer (PangoRenderer *renderer)
 
 /**
  * pango_xft_render_layout:
- * @draw:      an #XftDraw
- * @color:     the foreground color in which to draw the layout
- *             (may be overridden by color attributes)
- * @layout:    a #PangoLayout
- * @x:         the X position of the left of the layout (in Pango units)
- * @y:         the Y position of the top of the layout (in Pango units)
+ * @draw: an XftDraw
+ * @color: the foreground color in which to draw the layout
+ *   (may be overridden by color attributes)
+ * @layout: a `PangoLayout`
+ * @x: the X position of the left of the layout (in Pango units)
+ * @y: the Y position of the top of the layout (in Pango units)
  *
- * Render a #PangoLayout onto a #XftDraw
+ * Render a `PangoLayout` onto a XftDraw
  *
  * Since: 1.8
  */
@@ -742,14 +742,14 @@ pango_xft_render_layout (XftDraw     *draw,
 
 /**
  * pango_xft_render_layout_line:
- * @draw:      an #XftDraw
- * @color:     the foreground color in which to draw the layout line
- *             (may be overridden by color attributes)
- * @line:      a #PangoLayoutLine
- * @x:         the x position of start of string (in Pango units)
- * @y:         the y position of baseline (in Pango units)
+ * @draw: an XftDraw
+ * @color: the foreground color in which to draw the layout line
+ *   (may be overridden by color attributes)
+ * @line: a `PangoLayoutLine`
+ * @x: the x position of start of string (in Pango units)
+ * @y: the y position of baseline (in Pango units)
  *
- * Render a #PangoLayoutLine onto a #XftDraw
+ * Render a `PangoLayoutLine` onto a XftDraw
  *
  * Since: 1.8
  */
@@ -779,22 +779,23 @@ pango_xft_render_layout_line (XftDraw         *draw,
 
 /**
  * pango_xft_render_transformed:
- * @draw:    an #XftDraw
- * @color:   the color in which to draw the glyphs
- * @font:    the font in which to draw the string
- * @matrix:  (nullable): a #PangoMatrix, or %NULL to use an identity
- *           transformation
- * @glyphs:  the glyph string to draw
- * @x:       the x position of the start of the string (in Pango
- *           units in user space coordinates)
- * @y:       the y position of the baseline (in Pango units
- *           in user space coordinates)
+ * @draw: an XftDraw
+ * @color: the color in which to draw the glyphs
+ * @font: the font in which to draw the string
+ * @matrix: (nullable): a `PangoMatrix`
+ * @glyphs: the glyph string to draw
+ * @x: the x position of the start of the string (in Pango
+ *   units in user space coordinates)
+ * @y: the y position of the baseline (in Pango units
+ *   in user space coordinates)
  *
- * Renders a #PangoGlyphString onto a #XftDraw, possibly
+ * Renders a `PangoGlyphString` onto a XftDraw, possibly
  * transforming the layed-out coordinates through a transformation
- * matrix. Note that the transformation matrix for @font is not
+ * matrix.
+ *
+ * Note that the transformation matrix for @font is not
  * changed, so to produce correct rendering results, the @font
- * must have been loaded using a #PangoContext with an identical
+ * must have been loaded using a `PangoContext` with an identical
  * transformation matrix to that passed in to this function.
  *
  * Since: 1.8
@@ -828,14 +829,14 @@ pango_xft_render_transformed (XftDraw          *draw,
 
 /**
  * pango_xft_render:
- * @draw:    the XftDraw object.
- * @color:   the color in which to draw the string
- * @font:    the font in which to draw the string
- * @glyphs:  the glyph string to draw
- * @x:       the x position of start of string (in pixels)
- * @y:       the y position of baseline (in pixels)
+ * @draw: the XftDraw object.
+ * @color: the color in which to draw the string
+ * @font: the font in which to draw the string
+ * @glyphs: the glyph string to draw
+ * @x: the x position of start of string (in pixels)
+ * @y: the y position of baseline (in pixels)
  *
- * Renders a #PangoGlyphString onto an XftDraw object wrapping an X drawable.
+ * Renders a `PangoGlyphString` onto an XftDraw object wrapping an X drawable.
  */
 void
 pango_xft_render (XftDraw          *draw,
@@ -856,15 +857,15 @@ pango_xft_render (XftDraw          *draw,
 
 /**
  * pango_xft_picture_render:
- * @display:      an X display
- * @src_picture:  the source picture to draw the string with
+ * @display: an X display
+ * @src_picture: the source picture to draw the string with
  * @dest_picture: the destination picture to draw the string onto
- * @font:         the font in which to draw the string
- * @glyphs:       the glyph string to draw
- * @x:            the x position of start of string (in pixels)
- * @y:            the y position of baseline (in pixels)
+ * @font: the font in which to draw the string
+ * @glyphs: the glyph string to draw
+ * @x: the x position of start of string (in pixels)
+ * @y: the y position of baseline (in pixels)
  *
- * Renders a #PangoGlyphString onto an Xrender Picture object.
+ * Renders a `PangoGlyphString` onto an Xrender Picture object.
  */
 void
 pango_xft_picture_render (Display          *display,
@@ -900,17 +901,18 @@ pango_xft_picture_render (Display          *display,
 /**
  * pango_xft_renderer_new:
  * @display: an X display
- * @screen:   the index of the screen for @display to which rendering will be done
+ * @screen: the index of the screen for @display to which rendering will be done
  *
- * Create a new #PangoXftRenderer to allow rendering Pango objects
- * with the Xft library. You must call pango_xft_renderer_set_draw() before
+ * Create a new `PangoXftRenderer` to allow rendering Pango objects
+ * with the Xft library.
+ *
+ * You must call pango_xft_renderer_set_draw() before
  * using the renderer.
  *
- * Return value: the newly created #PangoXftRenderer, which should
- *               be freed with g_object_unref().
+ * Return value: the newly created `PangoXftRenderer`
  *
  * Since: 1.8
- **/
+ */
 PangoRenderer *
 pango_xft_renderer_new (Display *display,
 			int      screen)
@@ -927,14 +929,14 @@ pango_xft_renderer_new (Display *display,
 
 /**
  * pango_xft_renderer_set_draw:
- * @xftrenderer: a #PangoXftRenderer
- * @draw: a #XftDraw
+ * @xftrenderer: a `PangoXftRenderer`
+ * @draw: a XftDraw
  *
- * Sets the #XftDraw object that the renderer is drawing to.
+ * Sets the XftDraw object that the renderer is drawing to.
  * The renderer must not be currently active.
  *
  * Since: 1.8
- **/
+ */
 void
 pango_xft_renderer_set_draw (PangoXftRenderer *xftrenderer,
 			     XftDraw          *draw)
@@ -946,13 +948,13 @@ pango_xft_renderer_set_draw (PangoXftRenderer *xftrenderer,
 
 /**
  * pango_xft_renderer_set_default_color:
- * @xftrenderer: a #XftRenderer
+ * @xftrenderer: a XftRenderer
  * @default_color: the default foreground color
  *
- * Sets the default foreground color for a #XftRenderer.
+ * Sets the default foreground color for a XftRenderer.
  *
  * Since: 1.8
- **/
+ */
 void
 pango_xft_renderer_set_default_color (PangoXftRenderer *xftrenderer,
 				      PangoColor       *default_color)

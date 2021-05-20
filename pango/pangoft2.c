@@ -152,18 +152,21 @@ set_transform (PangoFT2Font *ft2font)
 
 /**
  * pango_ft2_font_get_face: (skip)
- * @font: a #PangoFont
+ * @font: a `PangoFont`
  *
- * Returns the native FreeType2 `FT_Face` structure used for this #PangoFont.
- * This may be useful if you want to use FreeType2 functions directly.
+ * Returns the native FreeType2 `FT_Face` structure
+ * used for this `PangoFont`.
  *
- * Use pango_fc_font_lock_face() instead; when you are done with a
- * face from pango_fc_font_lock_face() you must call
- * pango_fc_font_unlock_face().
+ * This may be useful if you want to use FreeType2
+ * functions directly.
  *
- * Return value: (nullable): a pointer to a `FT_Face` structure, with the
- *   size set correctly, or %NULL if @font is %NULL.
- **/
+ * Use [method@PangoFc.Font.lock_face] instead; when you are
+ * done with a face from [method@PangoFc.Font.lock_face], you
+ * must call [method@PangoFc.Font.unlock_face].
+ *
+ * Return value: (nullable): a pointer to a `FT_Face` structure,
+ *   with the size set correctly
+ */
 FT_Face
 pango_ft2_font_get_face (PangoFont *font)
 {
@@ -378,17 +381,17 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
 
 /**
  * pango_ft2_font_get_kerning:
- * @font: a #PangoFont
- * @left: the left #PangoGlyph
- * @right: the right #PangoGlyph
+ * @font: a `PangoFont`
+ * @left: the left `PangoGlyph`
+ * @right: the right `PangoGlyph`
  *
  * Retrieves kerning information for a combination of two glyphs.
  *
  * Use pango_fc_font_kern_glyphs() instead.
  *
- * Return value: The amount of kerning (in Pango units) to apply for
- * the given combination of glyphs.
- **/
+ * Return value: The amount of kerning (in Pango units) to
+ *   apply for the given combination of glyphs.
+ */
 int
 pango_ft2_font_get_kerning (PangoFont *font,
 			    PangoGlyph left,
@@ -470,11 +473,12 @@ pango_ft2_font_finalize (GObject *object)
  * @font: a Pango FT2 font
  * @language: a language tag.
  *
- * Gets the #PangoCoverage for a `PangoFT2Font`. Use
- * pango_font_get_coverage() instead.
+ * Gets the `PangoCoverage` for a `PangoFT2Font`.
  *
- * Return value: (transfer full): a #PangoCoverage.
- **/
+ * Use [method@Pango.Font.get_coverage] instead.
+ *
+ * Return value: (transfer full): a `PangoCoverage`
+ */
 PangoCoverage *
 pango_ft2_font_get_coverage (PangoFont     *font,
 			     PangoLanguage *language)
@@ -486,17 +490,18 @@ pango_ft2_font_get_coverage (PangoFont     *font,
 
 /**
  * pango_ft2_get_unknown_glyph:
- * @font: a #PangoFont
+ * @font: a `PangoFont`
  *
- * Return the index of a glyph suitable for drawing unknown characters with
- * @font, or %PANGO_GLYPH_EMPTY if no suitable glyph found.
+ * Return the index of a glyph suitable for drawing unknown
+ * characters with @font, or %PANGO_GLYPH_EMPTY if no suitable
+ * glyph found.
  *
- * If you want to draw an unknown-box for a character that is not covered
- * by the font,
- * use PANGO_GET_UNKNOWN_GLYPH() instead.
+ * If you want to draw an unknown-box for a character that
+ * is not covered by the font, use PANGO_GET_UNKNOWN_GLYPH()
+ * instead.
  *
  * Return value: a glyph index into @font, or %PANGO_GLYPH_EMPTY
- **/
+ */
 PangoGlyph
 pango_ft2_get_unknown_glyph (PangoFont *font)
 {

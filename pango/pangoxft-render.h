@@ -57,7 +57,7 @@ typedef struct _PangoXftRendererPrivate PangoXftRendererPrivate;
 /**
  * PangoXftRenderer:
  *
- * #PangoXftRenderer is a subclass of #PangoRenderer used for rendering
+ * `PangoXftRenderer` is a subclass of `PangoRenderer` used for rendering
  * with Pango's Xft backend. It can be used directly, or it can be
  * further subclassed to modify exactly how drawing of individual
  * elements occurs.
@@ -84,7 +84,7 @@ struct _PangoXftRenderer
  *   the current foreground color and other foreground
  *   attributes
  *
- * The class structure for #PangoXftRenderer
+ * The class structure for `PangoXftRenderer`
  *
  * Since: 1.8
  */

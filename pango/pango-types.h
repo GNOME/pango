@@ -150,41 +150,49 @@ struct _PangoRectangle
  */
 /**
  * PANGO_ASCENT:
- * @rect: a #PangoRectangle
+ * @rect: a `PangoRectangle`
  *
- * Extracts the *ascent* from a #PangoRectangle
- * representing glyph extents. The ascent is the distance from the
- * baseline to the highest point of the character. This is positive if the
+ * Extracts the *ascent* from a `PangoRectangle`
+ * representing glyph extents.
+ *
+ * The ascent is the distance from the baseline to the
+ * highest point of the character. This is positive if the
  * glyph ascends above the baseline.
  */
 /**
  * PANGO_DESCENT:
- * @rect: a #PangoRectangle
+ * @rect: a `PangoRectangle`
  *
- * Extracts the *descent* from a #PangoRectangle
- * representing glyph extents. The descent is the distance from the
- * baseline to the lowest point of the character. This is positive if the
+ * Extracts the *descent* from a `PangoRectangle`
+ * representing glyph extents.
+ *
+ * The descent is the distance from the baseline to the
+ * lowest point of the character. This is positive if the
  * glyph descends below the baseline.
  */
 /**
  * PANGO_LBEARING:
- * @rect: a #PangoRectangle
+ * @rect: a `PangoRectangle`
  *
- * Extracts the *left bearing* from a #PangoRectangle
- * representing glyph extents. The left bearing is the distance from the
- * horizontal origin to the farthest left point of the character.
- * This is positive for characters drawn completely to the right of the
- * glyph origin.
+ * Extracts the *left bearing* from a `PangoRectangle`
+ * representing glyph extents.
+ *
+ * The left bearing is the distance from the horizontal
+ * origin to the farthest left point of the character.
+ * This is positive for characters drawn completely to
+ * the right of the glyph origin.
  */
 /**
  * PANGO_RBEARING:
- * @rect: a #PangoRectangle
+ * @rect: a `PangoRectangle`
  *
- * Extracts the *right bearing* from a #PangoRectangle
- * representing glyph extents. The right bearing is the distance from the
- * horizontal origin to the farthest right point of the character.
- * This is positive except for characters drawn completely to the left of the
- * horizontal origin.
+ * Extracts the *right bearing* from a `PangoRectangle`
+ * representing glyph extents.
+ *
+ * The right bearing is the distance from the horizontal
+ * origin to the farthest right point of the character.
+ * This is positive except for characters drawn completely
+ * to the left of the horizontal origin.
  */
 #define PANGO_ASCENT(rect) (-(rect).y)
 #define PANGO_DESCENT(rect) ((rect).y + (rect).height)

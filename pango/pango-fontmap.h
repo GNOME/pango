@@ -27,23 +27,6 @@
 
 G_BEGIN_DECLS
 
-/**
- * PANGO_TYPE_FONT_MAP:
- *
- * The #GObject type for #PangoFontMap.
- */
-/**
- * PANGO_FONT_MAP:
- * @object: a #GObject.
- *
- * Casts a #GObject to a #PangoFontMap.
- */
-/**
- * PANGO_IS_FONT_MAP:
- * @object: a #GObject.
- *
- * Returns: %TRUE if @object is a #PangoFontMap.
- */
 #define PANGO_TYPE_FONT_MAP              (pango_font_map_get_type ())
 #define PANGO_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONT_MAP, PangoFontMap))
 #define PANGO_IS_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONT_MAP))
@@ -70,7 +53,7 @@ struct _PangoFontMap
 
 /**
  * PangoFontMapClass:
- * @parent_class: parent #GObjectClass.
+ * @parent_class: parent `GObjectClass`
  * @load_font: a function to load a font with a given description. See
  * pango_font_map_load_font().
  * @list_families: A function to list available font families. See
@@ -83,8 +66,8 @@ struct _PangoFontMap
  * See pango_font_map_get_serial().
  * @changed: See pango_font_map_changed()
  *
- * The #PangoFontMapClass structure holds the virtual functions for
- * a particular #PangoFontMap implementation.
+ * The `PangoFontMapClass` structure holds the virtual functions for
+ * a particular `PangoFontMap` implementation.
  */
 struct _PangoFontMapClass
 {

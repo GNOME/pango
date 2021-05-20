@@ -45,7 +45,7 @@ typedef struct _PangoIncludedModule PangoIncludedModule;
  * @exit: a function to finalize the module.
  * @create: a function to create an engine, given the engine name.
  *
- * The #PangoIncludedModule structure for a statically linked module
+ * The `PangoIncludedModule` structure for a statically linked module
  * contains the functions that would otherwise be loaded from a dynamically
  * loaded module.
  *

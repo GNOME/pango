@@ -243,7 +243,7 @@ line_iter_prev_cluster (EllipsizeState *state,
  * - Starts a grapheme - checked here
  *
  * In the future we'd also like to add a check for cursive connectivity here.
- * This should be an addition to #PangoGlyphVisAttr
+ * This should be an addition to `PangoGlyphVisAttr`
  *
  */
 
@@ -735,11 +735,11 @@ current_width (EllipsizeState *state)
 
 /**
  * _pango_layout_line_ellipsize:
- * @line: a #PangoLayoutLine
+ * @line: a `PangoLayoutLine`
  * @attrs: Attributes being used for itemization/shaping
  * @shape_flags: Flags to use when shaping
  *
- * Given a #PangoLayoutLine with the runs still in logical order, ellipsize
+ * Given a `PangoLayoutLine` with the runs still in logical order, ellipsize
  * it according the layout's policy to fit within the set width of the layout.
  *
  * Return value: whether the line had to be ellipsized

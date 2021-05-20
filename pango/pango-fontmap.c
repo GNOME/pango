@@ -118,8 +118,9 @@ pango_font_map_load_font  (PangoFontMap               *fontmap,
 /**
  * pango_font_map_list_families:
  * @fontmap: a `PangoFontMap`
- * @families: (out) (array length=n_families) (transfer container): location to store a pointer to an array of `PangoFontFamily` *.
- *            This array should be freed with g_free().
+ * @families: (out) (array length=n_families) (transfer container): location to
+ *   store a pointer to an array of `PangoFontFamily` *.
+ *   This array should be freed with g_free().
  * @n_families: (out): location to store the number of elements in @families
  *
  * List all families for a fontmap.
@@ -291,10 +292,10 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
  * @fontmap: a `PangoFontMap`
  *
  * Returns the render ID for shape engines for this fontmap.
- * See the `render_type` field of #PangoEngineInfo.
+ * See the `render_type` field of `PangoEngineInfo`.
   *
- * Return value: the ID string for shape engines for this fontmap.
- *   Owned by Pango, should not be modified or freed.
+ * Return value (transfer none): the ID string for shape engines
+ *   for this fontmap
  *
  * Since: 1.4
  * Deprecated: 1.38

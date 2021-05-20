@@ -119,10 +119,9 @@ typedef void (*PangoFcSubstituteFunc) (FcPattern *pattern,
 /**
  * pango_fc_font_map_set_default_substitute:
  * @fontmap: a `PangoFcFontMap`
- * @func: function to call to to do final config tweaking
- *        on `FcPattern` objects.
+ * @func: function to call to to do final config tweaking on `FcPattern` objects
  * @data: data to pass to @func
- * @notify: function to call when @data is no longer used.
+ * @notify: function to call when @data is no longer used
  *
  * Sets a function that will be called to do final configuration
  * substitution on a `FcPattern` before it is used to load

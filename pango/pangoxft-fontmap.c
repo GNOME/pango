@@ -203,11 +203,11 @@ register_display (Display *display)
  * @display: an X display
  * @screen: the screen number of a screen within @display
  *
- * Returns the #PangoXftFontMap for the given display and screen.
+ * Returns the `PangoXftFontMap` for the given display and screen.
  * The fontmap is owned by Pango and will be valid until
  * the display is closed.
  *
- * Return value: (transfer none): a #PangoFontMap object, owned by Pango.
+ * Return value: (transfer none): a `PangoFontMap` object, owned by Pango.
  *
  * Since: 1.2
  **/
@@ -348,10 +348,10 @@ _pango_xft_font_map_get_info (PangoFontMap *fontmap,
  * @display: an X display.
  * @screen: an X screen.
  *
- * Retrieves a #PangoContext appropriate for rendering with
+ * Retrieves a `PangoContext` appropriate for rendering with
  * Xft fonts on the given screen of the given display.
  *
- * Return value: the new #PangoContext.
+ * Return value: the new `PangoContext`.
  *
  * Deprecated: 1.22: Use pango_xft_get_font_map() followed by
  * pango_font_map_create_context() instead.
@@ -367,9 +367,9 @@ pango_xft_get_context (Display *display,
 
 /**
  * _pango_xft_font_map_get_renderer:
- * @fontmap: a #PangoXftFontMap
+ * @fontmap: a `PangoXftFontMap`
  *
- * Gets the singleton #PangoXFTRenderer for this fontmap.
+ * Gets the singleton `PangoXFTRenderer` for this fontmap.
  *
  * Return value: the renderer.
  **/

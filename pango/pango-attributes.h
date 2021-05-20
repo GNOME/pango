@@ -209,28 +209,28 @@ typedef enum
  * @PANGO_UNDERLINE_SINGLE: a single underline should be drawn
  * @PANGO_UNDERLINE_DOUBLE: a double underline should be drawn
  * @PANGO_UNDERLINE_LOW: a single underline should be drawn at a
- *     position beneath the ink extents of the text being
- *     underlined. This should be used only for underlining
- *     single characters, such as for keyboard accelerators.
- *     %PANGO_UNDERLINE_SINGLE should be used for extended
- *     portions of text.
+ *   position beneath the ink extents of the text being
+ *   underlined. This should be used only for underlining
+ *   single characters, such as for keyboard accelerators.
+ *   %PANGO_UNDERLINE_SINGLE should be used for extended
+ *   portions of text.
  * @PANGO_UNDERLINE_ERROR: an underline indicating an error should
- *     be drawn below. The exact style of rendering is up to the
- *     `PangoRenderer` in use, but typical styles include wavy
- *     or dotted lines.
- *     This underline is typically used to indicate an error such
- *     as a possible mispelling; in some cases a contrasting color
- *     may automatically be used. This type of underlining is
- *     available since Pango 1.4.
+ *   be drawn below. The exact style of rendering is up to the
+ *   `PangoRenderer` in use, but typical styles include wavy
+ *   or dotted lines.
+ *   This underline is typically used to indicate an error such
+ *   as a possible mispelling; in some cases a contrasting color
+ *   may automatically be used. This type of underlining is
+ *   available since Pango 1.4.
  * @PANGO_UNDERLINE_SINGLE_LINE: Like @PANGO_UNDERLINE_SINGLE, but
- *     drawn continuously across multiple runs. This type
- *     of underlining is available since Pango 1.46.
+ *   drawn continuously across multiple runs. This type
+ *   of underlining is available since Pango 1.46.
  * @PANGO_UNDERLINE_DOUBLE_LINE: Like @PANGO_UNDERLINE_DOUBLE, but
- *     drawn continuously across multiple runs. This type
- *     of underlining is available since Pango 1.46.
+ *   drawn continuously across multiple runs. This type
+ *   of underlining is available since Pango 1.46.
  * @PANGO_UNDERLINE_ERROR_LINE: Like @PANGO_UNDERLINE_ERROR, but
- *     drawn continuously across multiple runs. This type
- *     of underlining is available since Pango 1.46.
+ *   drawn continuously across multiple runs. This type
+ *   of underlining is available since Pango 1.46.
  *
  * The `PangoUnderline` enumeration is used to specify whether text
  * should be underlined, and if so, the type of underlining.
@@ -251,7 +251,7 @@ typedef enum {
  * PangoOverline:
  * @PANGO_OVERLINE_NONE: no overline should be drawn
  * @PANGO_OVERLINE_SINGLE: Draw a single line above the ink
- *     extents of the text being underlined.
+ *   extents of the text being underlined.
  *
  * The `PangoOverline` enumeration is used to specify whether text
  * should be overlined, and if so, the type of line.
@@ -596,7 +596,7 @@ PangoAttribute *pango_attr_overline_color_new   (guint16       red,
  * @PANGO_SHOW_SPACES: Render spaces, tabs and newlines visibly
  * @PANGO_SHOW_LINE_BREAKS: Render line breaks visibly
  * @PANGO_SHOW_IGNORABLES: Render default-ignorable Unicode
- *      characters visibly
+ *   characters visibly
  *
  * These flags affect how Pango treats characters that are normally
  * not visible in the output.

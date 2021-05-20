@@ -49,7 +49,8 @@ static GHashTable *name_map = NULL; /* MT-safe */
  *
  * Allocate a new attribute type ID.
  *
- * The attribute type name can be accessed later by using [type_func@Pango.AttrType.get_name].
+ * The attribute type name can be accessed later
+ * by using [type_func@Pango.AttrType.get_name].
  *
  * Return value: the new type ID.
  */
@@ -82,14 +83,17 @@ pango_attr_type_register (const gchar *name)
  *
  * Fetches the attribute type name.
  *
- * The attribute type name is the string passed in when registering the type
- * using [type_func@attr_type_register].
+ * The attribute type name is the string passed in
+ * when registering the type using
+ * [type_func@attr_type_register].
  *
- * The returned value is an interned string (see g_intern_string() for what
- * that means) that should not be modified or freed.
+ * The returned value is an interned string (see
+ * g_intern_string() for what that means) that should
+ * not be modified or freed.
  *
- * Return value: (nullable): the type ID name (which may be %NULL), or
- *   %NULL if @type is a built-in Pango attribute type or invalid.
+ * Return value: (nullable): the type ID name (which
+ *   may be %NULL), or %NULL if @type is a built-in Pango
+ *   attribute type or invalid.
  *
  * Since: 1.22
  */
@@ -138,8 +142,9 @@ pango_attribute_init (PangoAttribute       *attr,
  *
  * Make a copy of an attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy].
  */
 PangoAttribute *
 pango_attribute_copy (const PangoAttribute *attr)
@@ -178,11 +183,13 @@ G_DEFINE_BOXED_TYPE (PangoAttribute, pango_attribute,
  * @attr1: a `PangoAttribute`
  * @attr2: another `PangoAttribute`
  *
- * Compare two attributes for equality. This compares only the
- * actual value of the two attributes and not the ranges that the
- * attributes apply to.
+ * Compare two attributes for equality.
  *
- * Return value: %TRUE if the two attributes have the same value.
+ * This compares only the actual value of the two
+ * attributes and not the ranges that the attributes
+ * apply to.
+ *
+ * Return value: %TRUE if the two attributes have the same value
  */
 gboolean
 pango_attribute_equal (const PangoAttribute *attr1,
@@ -232,12 +239,13 @@ pango_attr_string_new (const PangoAttrClass *klass,
 
 /**
  * pango_attr_family_new:
- * @family: the family or comma separated list of families
+ * @family: the family or comma-separated list of families
  *
  * Create a new font family attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
 pango_attr_family_new (const char *family)
@@ -281,8 +289,9 @@ pango_attr_language_equal (const PangoAttribute *attr1,
  *
  * Create a new language tag attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
 pango_attr_language_new (PangoLanguage *language)
@@ -357,8 +366,9 @@ pango_attr_color_new (const PangoAttrClass *klass,
  *
  * Create a new foreground color attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
 pango_attr_foreground_new (guint16 red,
@@ -383,8 +393,9 @@ pango_attr_foreground_new (guint16 red,
  *
  * Create a new background color attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
 pango_attr_background_new (guint16 red,
@@ -533,12 +544,13 @@ pango_attr_size_new_internal (int size,
 
 /**
  * pango_attr_size_new:
- * @size: the font size, in %PANGO_SCALEths of a point.
+ * @size: the font size, in %PANGO_SCALE-ths of a point
  *
  * Create a new font-size attribute in fractional points.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
 pango_attr_size_new (int size)
@@ -548,12 +560,13 @@ pango_attr_size_new (int size)
 
 /**
  * pango_attr_size_new_absolute:
- * @size: the font size, in %PANGO_SCALEths of a device unit.
+ * @size: the font size, in %PANGO_SCALE-ths of a device unit
  *
  * Create a new font-size attribute in device units.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  *
  * Since: 1.8
  */
@@ -569,8 +582,9 @@ pango_attr_size_new_absolute (int size)
  *
  * Create a new font slant style attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
 pango_attr_style_new (PangoStyle style)
@@ -591,8 +605,9 @@ pango_attr_style_new (PangoStyle style)
  *
  * Create a new font weight attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
 pango_attr_weight_new (PangoWeight weight)
@@ -635,8 +650,9 @@ pango_attr_variant_new (PangoVariant variant)
  *
  * Create a new font stretch attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
 pango_attr_stretch_new (PangoStretch  stretch)
@@ -689,8 +705,9 @@ pango_attr_font_desc_equal (const PangoAttribute *attr1,
  * This attribute allows setting family, style, weight, variant,
  * stretch, and size simultaneously.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
 pango_attr_font_desc_new (const PangoFontDescription *desc)
@@ -712,12 +729,13 @@ pango_attr_font_desc_new (const PangoFontDescription *desc)
 
 /**
  * pango_attr_underline_new:
- * @underline: the underline style.
+ * @underline: the underline style
  *
  * Create a new underline-style attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
 pango_attr_underline_new (PangoUnderline underline)
@@ -740,11 +758,12 @@ pango_attr_underline_new (PangoUnderline underline)
  *
  * Create a new underline color attribute.
  *
- * This attribute modifies the color of underlines. If not set, underlines
- * will use the foreground color.
+ * This attribute modifies the color of underlines.
+ * If not set, underlines will use the foreground color.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  *
  * Since: 1.8
  */
@@ -765,12 +784,13 @@ pango_attr_underline_color_new (guint16 red,
 
 /**
  * pango_attr_strikethrough_new:
- * @strikethrough: %TRUE if the text should be struck-through.
+ * @strikethrough: %TRUE if the text should be struck-through
  *
  * Create a new strike-through attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
 pango_attr_strikethrough_new (gboolean strikethrough)
@@ -793,11 +813,12 @@ pango_attr_strikethrough_new (gboolean strikethrough)
  *
  * Create a new strikethrough color attribute.
  *
- * This attribute modifies the color of strikethrough lines. If not set,
- * strikethrough lines will use the foreground color.
+ * This attribute modifies the color of strikethrough lines.
+ * If not set, strikethrough lines will use the foreground color.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  *
  * Since: 1.8
  */
@@ -823,8 +844,9 @@ pango_attr_strikethrough_color_new (guint16 red,
  *
  * Create a new baseline displacement attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
 pango_attr_rise_new (int rise)
@@ -845,11 +867,12 @@ pango_attr_rise_new (int rise)
  *
  * Create a new font size scale attribute.
  *
- * The base font for the affected text will have its size multiplied
- * by @scale_factor.
+ * The base font for the affected text will have
+ * its size multiplied by @scale_factor.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute*
 pango_attr_scale_new (double scale_factor)
@@ -867,17 +890,18 @@ pango_attr_scale_new (double scale_factor)
 /**
  * pango_attr_fallback_new:
  * @enable_fallback: %TRUE if we should fall back on other fonts
- *   for characters the active font is missing.
+ *   for characters the active font is missing
  *
  * Create a new font fallback attribute.
  *
- * If fallback is disabled, characters will only be used from the
- * closest matching font on the system. No fallback will be done to
- * other fonts on the system that might contain the characters in the
- * text.
+ * If fallback is disabled, characters will only be
+ * used from the closest matching font on the system.
+ * No fallback will be done to other fonts on the system
+ * that might contain the characters in the text.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  *
  * Since: 1.4
  */
@@ -896,13 +920,14 @@ pango_attr_fallback_new (gboolean enable_fallback)
 
 /**
  * pango_attr_letter_spacing_new:
- * @letter_spacing: amount of extra space to add between graphemes
- *   of the text, in Pango units.
+ * @letter_spacing: amount of extra space to add between
+ *   graphemes of the text, in Pango units
  *
  * Create a new letter-spacing attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  *
  * Since: 1.6
  */
@@ -968,18 +993,21 @@ pango_attr_shape_equal (const PangoAttribute *attr1,
  * @ink_rect: ink rectangle to assign to each character
  * @logical_rect: logical rectangle to assign to each character
  * @data: user data pointer
- * @copy_func: (allow-none): function to copy @data when the
- *   attribute is copied. If %NULL, @data is simply copied as a pointer.
- * @destroy_func: (allow-none): function to free @data when the
- *   attribute is freed, or %NULL
+ * @copy_func: (nullable): function to copy @data when the
+ *   attribute is copied. If %NULL, @data is simply copied
+ *   as a pointer
+ * @destroy_func: (nullable): function to free @data when the
+ *   attribute is freed
  *
  * Creates a new shape attribute.
  *
- * Like pango_attr_shape_new(), but a user data pointer is also
- * provided; this pointer can be accessed when later rendering the glyph.
+ * Like [ctor@Pango.AttrShape.new], but a user data pointer
+ * is also provided; this pointer can be accessed when later
+ * rendering the glyph.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  *
  * Since: 1.8
  */
@@ -1020,12 +1048,14 @@ pango_attr_shape_new_with_data (const PangoRectangle  *ink_rect,
  *
  * Create a new shape attribute.
  *
- * A shape is used to impose a particular ink and logical rectangle
- * on the result of shaping a particular glyph. This might be used,
- * for instance, for embedding a picture or a widget inside a `PangoLayout`.
+ * A shape is used to impose a particular ink and logical
+ * rectangle on the result of shaping a particular glyph.
+ * This might be used, for instance, for embedding a picture
+ * or a widget inside a `PangoLayout`.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
 pango_attr_shape_new (const PangoRectangle *ink_rect,
@@ -1040,12 +1070,13 @@ pango_attr_shape_new (const PangoRectangle *ink_rect,
 
 /**
  * pango_attr_gravity_new:
- * @gravity: the gravity value; should not be %PANGO_GRAVITY_AUTO.
+ * @gravity: the gravity value; should not be %PANGO_GRAVITY_AUTO
  *
  * Create a new gravity attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  *
  * Since: 1.16
  */
@@ -1066,12 +1097,13 @@ pango_attr_gravity_new (PangoGravity gravity)
 
 /**
  * pango_attr_gravity_hint_new:
- * @hint: the gravity hint value.
+ * @hint: the gravity hint value
  *
  * Create a new gravity hint attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  *
  * Since: 1.16
  */
@@ -1094,8 +1126,9 @@ pango_attr_gravity_hint_new (PangoGravityHint hint)
  *
  * Create a new font features tag attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  *
  * Since: 1.38
  */
@@ -1120,8 +1153,9 @@ pango_attr_font_features_new (const gchar *features)
  *
  * Create a new foreground alpha attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  *
  * Since: 1.38
  */
@@ -1144,8 +1178,9 @@ pango_attr_foreground_alpha_new (guint16 alpha)
  *
  * Create a new background alpha attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  *
  * Since: 1.38
  */
@@ -1171,8 +1206,9 @@ pango_attr_background_alpha_new (guint16 alpha)
  * If breaks are disabled, the range will be kept in a
  * single run, as far as possible.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  *
  * Since: 1.44
  */
@@ -1195,11 +1231,13 @@ pango_attr_allow_breaks_new (gboolean allow_breaks)
  *
  * Create a new insert-hyphens attribute.
  *
- * Pango will insert hyphens when breaking lines in the middle
- * of a word. This attribute can be used to suppress the hyphen.
+ * Pango will insert hyphens when breaking lines in
+ * the middle of a word. This attribute can be used
+ * to suppress the hyphen.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  *
  * Since: 1.44
  */
@@ -1223,8 +1261,9 @@ pango_attr_insert_hyphens_new (gboolean insert_hyphens)
  * Create a new attribute that influences how invisible
  * characters are rendered.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  *
  * Since: 1.44
  **/
@@ -1247,8 +1286,9 @@ pango_attr_show_new (PangoShowFlags flags)
  *
  * Create a new overline-style attribute.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  *
  * Since: 1.46
  */
@@ -1273,11 +1313,12 @@ pango_attr_overline_new (PangoOverline overline)
  *
  * Create a new overline color attribute.
  *
- * This attribute modifies the color of overlines. If not set, overlines
- * will use the foreground color.
+ * This attribute modifies the color of overlines.
+ * If not set, overlines will use the foreground color.
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
  *
  * Since: 1.46
  */
@@ -1314,10 +1355,12 @@ _pango_attr_list_init (PangoAttrList *list)
 /**
  * pango_attr_list_new:
  *
- * Create a new empty attribute list with a reference count of one.
+ * Create a new empty attribute list with a reference
+ * count of one.
  *
- * Return value: (transfer full): the newly allocated `PangoAttrList`,
- *   which should be freed with [method@Pango.AttrList.unref].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttrList`, which should be freed with
+ *   [method@Pango.AttrList.unref]
  */
 PangoAttrList *
 pango_attr_list_new (void)
@@ -1331,9 +1374,10 @@ pango_attr_list_new (void)
 
 /**
  * pango_attr_list_ref:
- * @list: (nullable): a `PangoAttrList`, may be %NULL
+ * @list: (nullable): a `PangoAttrList`
  *
- * Increase the reference count of the given attribute list by one.
+ * Increase the reference count of the given attribute
+ * list by one.
  *
  * Return value: The attribute list passed in
  *
@@ -1370,11 +1414,13 @@ _pango_attr_list_destroy (PangoAttrList *list)
 
 /**
  * pango_attr_list_unref:
- * @list: (nullable): a `PangoAttrList`, may be %NULL
+ * @list: (nullable): a `PangoAttrList`
  *
- * Decrease the reference count of the given attribute list by one.
- * If the result is zero, free the attribute list and the attributes
- * it contains.
+ * Decrease the reference count of the given attribute
+ * list by one.
+ *
+ * If the result is zero, free the attribute list
+ * and the attributes it contains.
  */
 void
 pango_attr_list_unref (PangoAttrList *list)
@@ -1393,13 +1439,14 @@ pango_attr_list_unref (PangoAttrList *list)
 
 /**
  * pango_attr_list_copy:
- * @list: (nullable): a `PangoAttrList`, may be %NULL
+ * @list: (nullable): a `PangoAttrList`
  *
  * Copy @list and return an identical new list.
  *
- * Return value: (nullable): the newly allocated `PangoAttrList`,
- *   with a reference count of one, which should be freed with
- *   [method@Pango.AttrList.unref]. Returns %NULL if @list was %NULL.
+ * Return value: (nullable): the newly allocated
+ *   `PangoAttrList`, with a reference count of one,
+ *   which should be freed with [method@Pango.AttrList.unref].
+ *   Returns %NULL if @list was %NULL.
  */
 PangoAttrList *
 pango_attr_list_copy (PangoAttrList *list)
@@ -1465,8 +1512,7 @@ pango_attr_list_insert_internal (PangoAttrList  *list,
 /**
  * pango_attr_list_insert:
  * @list: a `PangoAttrList`
- * @attr: (transfer full): the attribute to insert. Ownership of this
- *   value is assumed by the list.
+ * @attr: (transfer full): the attribute to insert
  *
  * Insert the given attribute into the `PangoAttrList`.
  *
@@ -1486,8 +1532,7 @@ pango_attr_list_insert (PangoAttrList  *list,
 /**
  * pango_attr_list_insert_before:
  * @list: a `PangoAttrList`
- * @attr: (transfer full): the attribute to insert. Ownership of this
- *   value is assumed by the list.
+ * @attr: (transfer full): the attribute to insert
  *
  * Insert the given attribute into the `PangoAttrList`.
  *
@@ -1507,18 +1552,19 @@ pango_attr_list_insert_before (PangoAttrList  *list,
 /**
  * pango_attr_list_change:
  * @list: a `PangoAttrList`
- * @attr: (transfer full): the attribute to insert. Ownership of this
- *   value is assumed by the list.
+ * @attr: (transfer full): the attribute to insert
  *
  * Insert the given attribute into the `PangoAttrList`.
  *
- * It will replace any attributes of the same type on that segment
- * and be merged with any adjoining attributes that are identical.
+ * It will replace any attributes of the same type
+ * on that segment and be merged with any adjoining
+ * attributes that are identical.
  *
- * This function is slower than [method@Pango.AttrList.insert] for
- * creating an attribute list in order (potentially much slower for
- * large lists). However, [method@Pango.AttrList.insert] is not
- * suitable for continually changing a set of attributes since it
+ * This function is slower than [method@Pango.AttrList.insert]
+ * for creating an attribute list in order (potentially
+ * much slower for large lists). However,
+ * [method@Pango.AttrList.insert] is not suitable for
+ * continually changing a set of attributes since it
  * never removes or combines existing attributes.
  */
 void
@@ -1748,8 +1794,9 @@ pango_attr_list_update (PangoAttrList *list,
  *   must be specified since the attributes in @other may only
  *   be present at some subsection of this range)
  *
- * This function opens up a hole in @list, fills it in with attributes
- * from the left, and then merges @other on top of the hole.
+ * This function opens up a hole in @list, fills it
+ * in with attributes from the left, and then merges
+ * @other on top of the hole.
  *
  * This operation is equivalent to stretching every attribute
  * that applies at position @pos in @list by an amount @len,
@@ -1831,9 +1878,9 @@ pango_attr_list_splice (PangoAttrList *list,
  * Gets a list of all attributes in @list.
  *
  * Return value: (element-type Pango.Attribute) (transfer full):
- *   a list of all attributes in @list. To free this value, call
- *   [mehod@Pango.Attribute.destroy] on each value and g_slist_free()
- *   on the list.
+ *   a list of all attributes in @list. To free this value,
+ *   call [mehod@Pango.Attribute.destroy] on each value and
+ *   g_slist_free() on the list.
  *
  * Since: 1.44
  */
@@ -1863,11 +1910,15 @@ pango_attr_list_get_attributes (PangoAttrList *list)
  * @list: a `PangoAttrList`
  * @other_list: the other `PangoAttrList`
  *
- * Checks whether @list and @other_list contain the same attributes and
- * whether those attributes apply to the same ranges. Beware that this
- * will return wrong values if any list contains duplicates.
+ * Checks whether @list and @other_list contain the same
+ * attributes and whether those attributes apply to the
+ * same ranges.
  *
- * Return value: %TRUE if the lists are equal, %FALSE if they aren't.
+ * Beware that this will return wrong values if any list
+ * contains duplicates.
+ *
+ * Return value: %TRUE if the lists are equal, %FALSE if
+ *   they aren't
  *
  * Since: 1.46
  */
@@ -1958,11 +2009,13 @@ _pango_attr_list_get_iterator (PangoAttrList     *list,
  * @list: a `PangoAttrList`
  *
  * Create a iterator initialized to the beginning of the list.
+ *
  * @list must not be modified until this iterator is freed.
  *
- * Return value: (transfer full): the newly allocated `PangoAttrIterator`,
- *   which should be freed with [method@Pango.AttrIterator.destroy].
- **/
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttrIterator`, which should be freed with
+ *   [method@Pango.AttrIterator.destroy]
+ */
 PangoAttrIterator *
 pango_attr_list_get_iterator (PangoAttrList  *list)
 {
@@ -1978,13 +2031,14 @@ pango_attr_list_get_iterator (PangoAttrList  *list)
 
 /**
  * pango_attr_iterator_range:
- * @iterator: a #PangoAttrIterator
+ * @iterator: a PangoAttrIterator
  * @start: (out): location to store the start of the range
  * @end: (out): location to store the end of the range
  *
- * Get the range of the current segment. Note that the
- * stored return values are signed, not unsigned like
- * the values in `PangoAttribute`. To deal with this API
+ * Get the range of the current segment.
+ *
+ * Note that the stored return values are signed, not unsigned
+ * like the values in `PangoAttribute`. To deal with this API
  * oversight, stored return values that wouldn't fit into
  * a signed integer are clamped to %G_MAXINT.
  */
@@ -2007,8 +2061,8 @@ pango_attr_iterator_range (PangoAttrIterator *iterator,
  *
  * Advance the iterator until the next change of style.
  *
- * Return value: %FALSE if the iterator is at the end of the list,
- *   otherwise %TRUE
+ * Return value: %FALSE if the iterator is at the end
+ *   of the list, otherwise %TRUE
  */
 gboolean
 pango_attr_iterator_next (PangoAttrIterator *iterator)
@@ -2078,8 +2132,9 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
  *
  * Copy a `PangoAttrIterator`.
  *
- * Return value: (transfer full): the newly allocated `PangoAttrIterator`,
- *   which should be freed with [method@Pango.AttrIterator.destroy].
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttrIterator`, which should be freed with
+ *   [method@Pango.AttrIterator.destroy]
  */
 PangoAttrIterator *
 pango_attr_iterator_copy (PangoAttrIterator *iterator)
@@ -2127,14 +2182,16 @@ pango_attr_iterator_destroy (PangoAttrIterator *iterator)
  * @iterator: a `PangoAttrIterator`
  * @type: the type of attribute to find
  *
- * Find the current attribute of a particular type at the iterator
- * location. When multiple attributes of the same type overlap,
- * the attribute whose range starts closest to the current location
- * is used.
+ * Find the current attribute of a particular type
+ * at the iterator location.
  *
- * Return value: (nullable) (transfer none): the current attribute of
- *   the given type, or %NULL if no attribute of that type applies to
- *   the current location.
+ * When multiple attributes of the same type overlap,
+ * the attribute whose range starts closest to the
+ * current location is used.
+ *
+ * Return value: (nullable) (transfer none): the current
+ *   attribute of the given type, or %NULL if no attribute
+ *   of that type applies to the current location.
  */
 PangoAttribute *
 pango_attr_iterator_get (PangoAttrIterator *iterator,
@@ -2161,21 +2218,24 @@ pango_attr_iterator_get (PangoAttrIterator *iterator,
 /**
  * pango_attr_iterator_get_font:
  * @iterator: a `PangoAttrIterator`
- * @desc: a `PangoFontDescription` to fill in with the current values.
- *   The family name in this structure will be set using
- *   [method@Pango.FontDescription.set_family_static] using values from
- *   an attribute in the `PangoAttrList` associated with the iterator,
- *   so if you plan to keep it around, you must call:
- *   pango_font_description_set_family (desc, pango_font_description_get_family (desc)).
- * @language: (allow-none): if non-%NULL, location to store language tag
+ * @desc: a `PangoFontDescription` to fill in with the current
+ *   values. The family name in this structure will be set using
+ *   [method@Pango.FontDescription.set_family_static] using
+ *   values from an attribute in the `PangoAttrList` associated
+ *   with the iterator, so if you plan to keep it around, you
+ *   must call:
+ *   `pango_font_description_set_family (desc, pango_font_description_get_family (desc))`.
+ * @language: (out) (optional): location to store language tag
  *   for item, or %NULL if none is found.
- * @extra_attrs: (allow-none) (element-type Pango.Attribute) (transfer full):
- *   if non-%NULL, location in which to store a list of non-font attributes
- *   at the the current position; only the highest priority value of each
- *   attribute will be added to this list. In order to free this value, you
- *   must call [method@Pango.Attribute.destroy] on each member.
+ * @extra_attrs: (out) (optional) (element-type Pango.Attribute) (transfer full):
+ *   location in which to store a list of non-font attributes
+ *   at the the current position; only the highest priority
+ *   value of each attribute will be added to this list. In
+ *   order to free this value, you must call
+ *   [method@Pango.Attribute.destroy] on each member.
  *
- * Get the font and other attributes at the current iterator position.
+ * Get the font and other attributes at the current
+ * iterator position.
  */
 void
 pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
@@ -2324,15 +2384,17 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 /**
  * pango_attr_list_filter:
  * @list: a `PangoAttrList`
- * @func: (scope call) (closure data): callback function; returns %TRUE
- *        if an attribute should be filtered out.
+ * @func: (scope call) (closure data): callback function;
+ *   returns %TRUE if an attribute should be filtered out
  * @data: (closure): Data to be passed to @func
  *
- * Given a `PangoAttrList` and callback function, removes any elements
- * of @list for which @func returns %TRUE and inserts them into a new list.
+ * Given a `PangoAttrList` and callback function, removes
+ * any elements of @list for which @func returns %TRUE and
+ * inserts them into a new list.
  *
- * Return value: (transfer full) (nullable): the new `PangoAttrList` or
- *  %NULL if no attributes of the given types were found.
+ * Return value: (transfer full) (nullable): the new
+ *   `PangoAttrList` or %NULL if no attributes of the
+ *   given types were found
  *
  * Since: 1.2
  */
@@ -2381,9 +2443,9 @@ pango_attr_list_filter (PangoAttrList       *list,
  * iterator.
  *
  * Return value: (element-type Pango.Attribute) (transfer full):
- *   a list of all attributes for the current range. To free this value,
- *   call [method@Pango.Attribute.destroy] on each value and g_slist_free()
- *   on the list.
+ *   a list of all attributes for the current range. To free
+ *   this value, call [method@Pango.Attribute.destroy] on each
+ *   value and g_slist_free() on the list.
  *
  * Since: 1.2
  */

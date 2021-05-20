@@ -266,7 +266,7 @@ _pango_core_text_font_set_ctfont (PangoCoreTextFont *font,
 
 /**
  * pango_core_text_font_get_ctfont:
- * @font: A #PangoCoreTextFont
+ * @font: A `PangoCoreTextFont`
  *
  * Returns the CTFontRef of a font.
  *

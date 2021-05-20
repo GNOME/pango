@@ -25,7 +25,7 @@
 
 /**
  * pango_ot_tag_from_script:
- * @script: A #PangoScript
+ * @script: A `PangoScript`
  *
  * Finds the OpenType script tag corresponding to @script.
  *
@@ -34,11 +34,11 @@
  * 'DFLT' script tag that is also defined as
  * %PANGO_OT_TAG_DEFAULT_SCRIPT.
  *
- * Note that multiple #PangoScript values may map to the same
+ * Note that multiple `PangoScript` values may map to the same
  * OpenType script tag.  In particular, %PANGO_SCRIPT_HIRAGANA
  * and %PANGO_SCRIPT_KATAKANA both map to the OT tag 'kana'.
  *
- * Return value: #PangoOTTag corresponding to @script or
+ * Return value: `PangoOTTag` corresponding to @script or
  * %PANGO_OT_TAG_DEFAULT_SCRIPT if none found.
  *
  * Since: 1.18
@@ -62,21 +62,21 @@ pango_ot_tag_from_script (PangoScript script)
 
 /**
  * pango_ot_tag_to_script:
- * @script_tag: A #PangoOTTag OpenType script tag
+ * @script_tag: A `PangoOTTag` OpenType script tag
  *
- * Finds the #PangoScript corresponding to @script_tag.
+ * Finds the `PangoScript` corresponding to @script_tag.
  *
  * The 'DFLT' script tag is mapped to %PANGO_SCRIPT_COMMON.
  *
  * Note that an OpenType script tag may correspond to multiple
- * #PangoScript values.  In such cases, the #PangoScript value
+ * `PangoScript` values.  In such cases, the `PangoScript` value
  * with the smallest value is returned.
  * In particular, %PANGO_SCRIPT_HIRAGANA
  * and %PANGO_SCRIPT_KATAKANA both map to the OT tag 'kana'.
  * This function will return %PANGO_SCRIPT_HIRAGANA for
  * 'kana'.
  *
- * Return value: #PangoScript corresponding to @script_tag or
+ * Return value: `PangoScript` corresponding to @script_tag or
  * %PANGO_SCRIPT_UNKNOWN if none found.
  *
  * Since: 1.18
@@ -90,11 +90,11 @@ pango_ot_tag_to_script (PangoOTTag script_tag)
 
 /**
  * pango_ot_tag_from_language:
- * @language: (nullable): A #PangoLanguage, or %NULL
+ * @language: (nullable): A `PangoLanguage`
  *
  * Finds the OpenType language-system tag best describing @language.
  *
- * Return value: #PangoOTTag best matching @language or
+ * Return value: `PangoOTTag` best matching @language or
  * %PANGO_OT_TAG_DEFAULT_LANGUAGE if none found or if @language
  * is %NULL.
  *
@@ -119,12 +119,12 @@ pango_ot_tag_from_language (PangoLanguage *language)
 
 /**
  * pango_ot_tag_to_language:
- * @language_tag: A #PangoOTTag OpenType language-system tag
+ * @language_tag: A `PangoOTTag` OpenType language-system tag
  *
- * Finds a #PangoLanguage corresponding to @language_tag.
+ * Finds a `PangoLanguage` corresponding to @language_tag.
  *
- * Return value: #PangoLanguage best matching @language_tag or
- * #PangoLanguage corresponding to the string "xx" if none found.
+ * Return value: `PangoLanguage` best matching @language_tag or
+ * `PangoLanguage` corresponding to the string "xx" if none found.
  *
  * Since: 1.18
  **/

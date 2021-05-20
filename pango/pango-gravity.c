@@ -29,7 +29,7 @@
  * pango_gravity_to_rotation:
  * @gravity: gravity to query, should not be %PANGO_GRAVITY_AUTO
  *
- * Converts a #PangoGravity value to its natural rotation in radians.
+ * Converts a `PangoGravity` value to its natural rotation in radians.
  *
  * Note that [method@Pango.Matrix.rotate] takes angle in degrees, not radians.
  * So, to call [method@Pango.Matrix,rotate] with the output of this function
@@ -232,7 +232,7 @@ get_script_properties (PangoScript script)
 
 /**
  * pango_gravity_get_for_script:
- * @script: #PangoScript to query
+ * @script: `PangoScript` to query
  * @base_gravity: base gravity of the paragraph
  * @hint: orientation hint
  *
@@ -245,7 +245,7 @@ get_script_properties (PangoScript script)
  * pass %PANGO_GRAVITY_AUTO and %PANGO_GRAVITY_HINT_STRONG in.
  *
  * Return value: resolved gravity suitable to use for a run of text
- * with @script.
+ * with @script
  *
  * Since: 1.16
  */
@@ -265,7 +265,7 @@ pango_gravity_get_for_script (PangoScript      script,
 
 /**
  * pango_gravity_get_for_script_and_width:
- * @script: #PangoScript to query
+ * @script: `PangoScript` to query
  * @wide: %TRUE for wide characters as returned by g_unichar_iswide()
  * @base_gravity: base gravity of the paragraph
  * @hint: orientation hint

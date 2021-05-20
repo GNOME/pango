@@ -49,11 +49,6 @@ struct _PangoGlyphItem
   PangoGlyphString *glyphs;
 };
 
-/**
- * PANGO_TYPE_GLYPH_ITEM:
- *
- * The #GObject type for #PangoGlyphItem.
- */
 #define PANGO_TYPE_GLYPH_ITEM (pango_glyph_item_get_type ())
 
 PANGO_AVAILABLE_IN_ALL
@@ -144,13 +139,6 @@ struct _PangoGlyphItemIter
   int end_char;
 };
 
-/**
- * PANGO_TYPE_GLYPH_ITEM_ITER:
- *
- * The #GObject type for #PangoGlyphItemIter.
- *
- * Since: 1.22
- */
 #define PANGO_TYPE_GLYPH_ITEM_ITER (pango_glyph_item_iter_get_type ())
 
 PANGO_AVAILABLE_IN_1_22

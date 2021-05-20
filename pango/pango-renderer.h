@@ -44,7 +44,7 @@ typedef struct _PangoRendererPrivate PangoRendererPrivate;
  * @PANGO_RENDER_PART_STRIKETHROUGH: strikethrough lines
  * @PANGO_RENDER_PART_OVERLINE: overlines
  *
- * #PangoRenderPart defines different items to render for such
+ * `PangoRenderPart` defines different items to render for such
  * purposes as setting colors.
  *
  * Since: 1.8
@@ -62,8 +62,8 @@ typedef enum
 /**
  * PangoRenderer:
  * @matrix: (nullable): the current transformation matrix for
- *    the Renderer; may be %NULL, which should be treated the
- *    same as the identity matrix.
+ *   the Renderer; may be %NULL, which should be treated the
+ *   same as the identity matrix.
  *
  * `PangoRenderer` is a base class for objects that can render text
  * provided as `PangoGlyphString` or `PangoLayout`.
@@ -92,12 +92,12 @@ struct _PangoRenderer
 
 /**
  * PangoRendererClass:
- * @draw_glyphs: draws a #PangoGlyphString
+ * @draw_glyphs: draws a `PangoGlyphString`
  * @draw_rectangle: draws a rectangle
  * @draw_error_underline: draws a squiggly line that approximately
  * covers the given rectangle in the style of an underline used to
  * indicate a spelling error.
- * @draw_shape: draw content for a glyph shaped with #PangoAttrShape.
+ * @draw_shape: draw content for a glyph shaped with `PangoAttrShape`
  *   @x, @y are the coordinates of the left edge of the baseline,
  *   in user coordinates.
  * @draw_trapezoid: draws a trapezoidal filled area
@@ -107,9 +107,9 @@ struct _PangoRenderer
  * @begin: Do renderer-specific initialization before drawing
  * @end: Do renderer-specific cleanup after drawing
  * @prepare_run: updates the renderer for a new run
- * @draw_glyph_item: draws a #PangoGlyphItem
+ * @draw_glyph_item: draws a `PangoGlyphItem`
  *
- * Class structure for #PangoRenderer.
+ * Class structure for `PangoRenderer`.
  *
  * The following vfuncs take user space coordinates in Pango units
  * and have default implementations:

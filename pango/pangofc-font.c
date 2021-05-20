@@ -567,7 +567,7 @@ pango_fc_font_unlock_face (PangoFcFont *font)
 
 /**
  * pango_fc_font_has_char:
- * @font: a #PangoFcFont
+ * @font: a `PangoFcFont`
  * @wc: Unicode codepoint to look up
  *
  * Determines whether @font has a glyph for the codepoint @wc.
@@ -575,7 +575,7 @@ pango_fc_font_unlock_face (PangoFcFont *font)
  * Return value: %TRUE if @font has the requested codepoint.
  *
  * Since: 1.4
- * Deprecated: 1.44: Use pango_font_has_char()
+ * Deprecated: 1.44: Use [method@Pango.Font.has_char]
  */
 gboolean
 pango_fc_font_has_char (PangoFcFont *font,
@@ -597,7 +597,7 @@ pango_fc_font_has_char (PangoFcFont *font,
 
 /**
  * pango_fc_font_get_glyph:
- * @font: a #PangoFcFont
+ * @font: a `PangoFcFont`
  * @wc: Unicode character to look up
  *
  * Gets the glyph index for a given Unicode character
@@ -632,11 +632,11 @@ pango_fc_font_get_glyph (PangoFcFont *font,
 
 /**
  * pango_fc_font_get_unknown_glyph:
- * @font: a #PangoFcFont
+ * @font: a `PangoFcFont`
  * @wc: the Unicode character for which a glyph is needed.
  *
- * Returns the index of a glyph suitable for drawing @wc as an
- * unknown character.
+ * Returns the index of a glyph suitable for drawing @wc
+ * as an unknown character.
  *
  * Use PANGO_GET_UNKNOWN_GLYPH() instead.
  *
@@ -665,7 +665,7 @@ _pango_fc_font_shutdown (PangoFcFont *font)
 
 /**
  * pango_fc_font_kern_glyphs:
- * @font: a #PangoFcFont
+ * @font: a `PangoFcFont`
  * @glyphs: a `PangoGlyphString`
  *
  * This function used to adjust each adjacent pair of glyphs
@@ -1043,7 +1043,7 @@ done:
  * and its fontmap are valid.
  *
  * Returns: (transfer none) (nullable): a %NULL-terminated
- *    array of `PangoLanguage`*
+ *   array of `PangoLanguage`*
  *
  * Since: 1.48
  */

@@ -49,19 +49,19 @@ in the gtk-doc / gnome-doc style. For instance:
 
 /**
  * pango_layout_get_line:
- * @layout: a #PangoLayout
+ * @layout: a `PangoLayout`
  * @line: the index of a line, which must be between 0 and
- *        pango_layout_get_line_count(layout) - 1, inclusive.
+ *   `pango_layout_get_line_count(layout) - 1`, inclusive.
  * 
- * Retrieves a particular line from a #PangoLayout (or @layout.)
+ * Retrieves a particular line from a `PangoLayout` (or @layout.)
  * 
- * Return value: the requested #PangoLayoutLine, or %NULL if the
- *               index is out of range. This layout line can
- *               be ref'ed and retained, but will become invalid
- *               if changes are made to the #PangoLayout.
+ * Return value: the requested `PangoLayoutLine`, or %NULL
+ *   if the index is out of range. This layout line can
+ *   be ref'ed and retained, but will become invalid
+ *   if changes are made to the `PangoLayout`.
  *
  * Since: 1.6
- **/
+ */
 PangoLayoutLine *
 pango_layout_get_line (PangoLayout *layout,
 		       int          line)

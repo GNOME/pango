@@ -61,13 +61,13 @@ typedef enum {
 /**
  * PangoGravityHint:
  * @PANGO_GRAVITY_HINT_NATURAL: scripts will take their natural gravity based
- * on the base gravity and the script.  This is the default.
+ *   on the base gravity and the script.  This is the default.
  * @PANGO_GRAVITY_HINT_STRONG: always use the base gravity set, regardless of
- * the script.
+ *   the script.
  * @PANGO_GRAVITY_HINT_LINE: for scripts not in their natural direction (eg.
- * Latin in East gravity), choose per-script gravity such that every script
- * respects the line progression.  This means, Latin and Arabic will take
- * opposite gravities and both flow top-to-bottom for example.
+ *   Latin in East gravity), choose per-script gravity such that every script
+ *   respects the line progression. This means, Latin and Arabic will take
+ *   opposite gravities and both flow top-to-bottom for example.
  *
  * `PangoGravityHint` defines how horizontal scripts should behave in a
  * vertical context.
@@ -77,7 +77,7 @@ typedef enum {
  * See also [enum@Pango.Gravity]
  *
  * Since: 1.16
- **/
+ */
 typedef enum {
   PANGO_GRAVITY_HINT_NATURAL,
   PANGO_GRAVITY_HINT_STRONG,
@@ -86,29 +86,30 @@ typedef enum {
 
 /**
  * PANGO_GRAVITY_IS_VERTICAL:
- * @gravity: the #PangoGravity to check
+ * @gravity: the `PangoGravity` to check
  *
- * Whether a #PangoGravity represents vertical writing directions.
+ * Whether a `PangoGravity` represents vertical writing directions.
  *
  * Returns: %TRUE if @gravity is %PANGO_GRAVITY_EAST or %PANGO_GRAVITY_WEST,
- *          %FALSE otherwise.
+ *   %FALSE otherwise.
  *
  * Since: 1.16
- **/
+ */
 #define PANGO_GRAVITY_IS_VERTICAL(gravity) \
 	((gravity) == PANGO_GRAVITY_EAST || (gravity) == PANGO_GRAVITY_WEST)
 
 /**
  * PANGO_GRAVITY_IS_IMPROPER:
- * @gravity: the #PangoGravity to check
+ * @gravity: the `PangoGravity` to check
  *
- * Whether a #PangoGravity represents a gravity that results in reversal of text direction.
+ * Whether a `PangoGravity` represents a gravity that results in reversal
+ * of text direction.
  *
  * Returns: %TRUE if @gravity is %PANGO_GRAVITY_WEST or %PANGO_GRAVITY_NORTH,
- *          %FALSE otherwise.
+ *   %FALSE otherwise.
  *
  * Since: 1.32
- **/
+ */
 #define PANGO_GRAVITY_IS_IMPROPER(gravity) \
 	((gravity) == PANGO_GRAVITY_WEST || (gravity) == PANGO_GRAVITY_NORTH)
 

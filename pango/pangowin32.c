@@ -100,13 +100,13 @@ _pango_win32_font_get_hfont (PangoFont *font)
 /**
  * pango_win32_get_context:
  *
- * Retrieves a #PangoContext appropriate for rendering with Windows fonts.
+ * Retrieves a `PangoContext` appropriate for rendering with Windows fonts.
  *
- * Return value: the new #PangoContext
+ * Return value: the new `PangoContext`
  *
- * Deprecated: 1.22: Use pango_win32_font_map_for_display() followed by
- * pango_font_map_create_context() instead.
- **/
+ * Deprecated: 1.22: Use [func@Pango.Win32FontMap.for_display] followed by
+ * [method@Pango.FontMap.create_context] instead.
+ */
 PangoContext *
 pango_win32_get_context (void)
 {
@@ -214,7 +214,7 @@ _pango_win32_font_class_init (PangoWin32FontClass *class)
  * @x:       the x position of start of string (in pixels)
  * @y:       the y position of baseline (in pixels)
  *
- * Render a #PangoGlyphString onto a Windows DC
+ * Render a `PangoGlyphString` onto a Windows DC
  */
 void
 pango_win32_render (HDC               hdc,
@@ -370,23 +370,24 @@ pango_win32_render (HDC               hdc,
 
 /**
  * pango_win32_render_transformed:
- * @hdc:     a windows device context
- * @matrix:  (nullable): a #PangoMatrix, or %NULL to use an identity
- *           transformation
- * @font:    the font in which to draw the string
- * @glyphs:  the glyph string to draw
- * @x:       the x position of the start of the string (in Pango
- *           units in user space coordinates)
- * @y:       the y position of the baseline (in Pango units
- *           in user space coordinates)
+ * @hdc: a windows device context
+ * @matrix: (nullable): a `PangoMatrix`
+ * @font: the font in which to draw the string
+ * @glyphs: the glyph string to draw
+ * @x: the x position of the start of the string (in Pango
+ *   units in user space coordinates)
+ * @y: the y position of the baseline (in Pango units
+ *   in user space coordinates)
  *
- * Renders a #PangoGlyphString onto a windows DC, possibly
+ * Renders a `PangoGlyphString` onto a windows DC, possibly
  * transforming the layed-out coordinates through a transformation
- * matrix. Note that the transformation matrix for @font is not
+ * matrix.
+ *
+ * Note that the transformation matrix for @font is not
  * changed, so to produce correct rendering results, the @font
- * must have been loaded using a #PangoContext with an identical
+ * must have been loaded using a `PangoContext` with an identical
  * transformation matrix to that passed in to this function.
- **/
+ */
 void
 pango_win32_render_transformed (HDC                hdc,
 				const PangoMatrix *matrix,
@@ -648,7 +649,7 @@ pango_win32_font_real_get_metrics_factor (PangoFont *font)
 
 /**
  * pango_win32_font_logfont:
- * @font: a #PangoFont which must be from the Win32 backend
+ * @font: a `PangoFont` which must be from the Win32 backend
  *
  * Determine the LOGFONTA struct for the specified font. Note that
  * Pango internally uses LOGFONTW structs, so if converting the UTF-16
@@ -659,8 +660,8 @@ pango_win32_font_real_get_metrics_factor (PangoFont *font)
  * to come across fonts with odd names.
  *
  * Return value: A newly allocated LOGFONTA struct. It must be
- * freed with g_free().
- **/
+ *   freed with g_free().
+ */
 LOGFONTA *
 pango_win32_font_logfont (PangoFont *font)
 {
@@ -684,12 +685,12 @@ pango_win32_font_logfont (PangoFont *font)
 
 /**
  * pango_win32_font_logfontw:
- * @font: a #PangoFont which must be from the Win32 backend
- * 
+ * @font: a `PangoFont` which must be from the Win32 backend
+ *
  * Determine the LOGFONTW struct for the specified font.
- * 
+ *
  * Return value: A newly allocated LOGFONTW struct. It must be
- * freed with g_free().
+ *   freed with g_free().
  *
  * Since: 1.16
  **/
@@ -710,21 +711,22 @@ pango_win32_font_logfontw (PangoFont *font)
 
 /**
  * pango_win32_font_select_font:
- * @font: a #PangoFont from the Win32 backend
+ * @font: a `PangoFont` from the Win32 backend
  * @hdc: a windows device context
  *
  * Selects the font into the specified DC and changes the mapping mode
  * and world transformation of the DC appropriately for the font.
+ *
  * You may want to surround the use of this function with calls
- * to SaveDC() and RestoreDC(). Call pango_win32_font_done_font() when
+ * to SaveDC() and RestoreDC(). Call [method@Pango.Win32Font.done_font[ when
  * you are done using the DC to release allocated resources.
  *
- * See pango_win32_font_get_metrics_factor() for information about
+ * See [method@Pango.Win32Font.get_metrics_factor] for information about
  * converting from the coordinate space used by this function
  * into Pango units.
  *
  * Return value: %TRUE if the operation succeeded.
- **/
+ */
 gboolean
 pango_win32_font_select_font (PangoFont *font,
 			      HDC        hdc)
@@ -736,10 +738,10 @@ pango_win32_font_select_font (PangoFont *font,
 
 /**
  * pango_win32_font_done_font:
- * @font: a #PangoFont from the win32 backend
+ * @font: a `PangoFont` from the win32 backend
  *
- * Releases any resources allocated by pango_win32_font_done_font()
- **/
+ * Releases any resources allocated by [method@Pango.Win32Font.select_font].
+ */
 void
 pango_win32_font_done_font (PangoFont *font)
 {
@@ -750,15 +752,15 @@ pango_win32_font_done_font (PangoFont *font)
 
 /**
  * pango_win32_font_get_metrics_factor:
- * @font: a #PangoFont from the win32 backend
+ * @font: a `PangoFont` from the win32 backend
  *
  * Returns the scale factor from logical units in the coordinate
- * space used by pango_win32_font_select_font() to Pango units
- * in user space.
+ * space used by [method@Pango.Win32Font.select_font] to Pango
+ * units in user space.
  *
  * Return value: factor to multiply logical units by to get Pango
- *               units.
- **/
+ *   units.
+ */
 double
 pango_win32_font_get_metrics_factor (PangoFont *font)
 {
@@ -893,8 +895,8 @@ pango_win32_font_get_coverage (PangoFont     *font,
 
 /**
  * pango_win32_get_unknown_glyph:
- * @font: a #PangoFont
- * @wc: the Unicode character for which a glyph is needed.
+ * @font: a `PangoFont`
+ * @wc: the Unicode character for which a glyph is needed
  *
  * Returns the index of a glyph suitable for drawing @wc as an
  * unknown character.
@@ -902,7 +904,7 @@ pango_win32_font_get_coverage (PangoFont     *font,
  * Use PANGO_GET_UNKNOWN_GLYPH() instead.
  *
  * Return value: a glyph index into @font
- **/
+ */
 PangoGlyph
 pango_win32_get_unknown_glyph (PangoFont *font,
 			       gunichar   wc)
@@ -912,14 +914,15 @@ pango_win32_get_unknown_glyph (PangoFont *font,
 
 /**
  * pango_win32_render_layout_line:
- * @hdc:       DC to use for drawing
- * @line:      a #PangoLayoutLine
- * @x:         the x position of start of string (in pixels)
- * @y:         the y position of baseline (in pixels)
+ * @hdc: DC to use for drawing
+ * @line: a `PangoLayoutLine`
+ * @x: the x position of start of string (in pixels)
+ * @y: the y position of baseline (in pixels)
  *
- * Render a #PangoLayoutLine onto a device context. For underlining to
- * work property the text alignment of the DC should have TA_BASELINE
- * and TA_LEFT.
+ * Render a `PangoLayoutLine` onto a device context.
+ *
+ * For underlining to work property the text alignment
+ * of the DC should have TA_BASELINE and TA_LEFT.
  */
 void
 pango_win32_render_layout_line (HDC              hdc,
@@ -1068,12 +1071,12 @@ pango_win32_render_layout_line (HDC              hdc,
 
 /**
  * pango_win32_render_layout:
- * @hdc:       HDC to use for drawing
- * @layout:    a #PangoLayout
- * @x:         the X position of the left of the layout (in pixels)
- * @y:         the Y position of the top of the layout (in pixels)
+ * @hdc: HDC to use for drawing
+ * @layout: a `PangoLayout`
+ * @x: the X position of the left of the layout (in pixels)
+ * @y: the Y position of the top of the layout (in pixels)
  *
- * Render a #PangoLayoutLine onto an X drawable
+ * Render a `PangoLayoutLine` onto an HDC.
  */
 void
 pango_win32_render_layout (HDC          hdc,
@@ -1174,14 +1177,14 @@ pango_win32_get_item_properties (PangoItem      *item,
 
 /**
  * pango_win32_font_get_glyph_index:
- * @font: a #PangoFont.
- * @wc: a Unicode character.
+ * @font: a `PangoFont`
+ * @wc: a Unicode character
  *
  * Obtains the index of the glyph for @wc in @font, or 0, if not
  * covered.
  *
  * Return value: the glyph index for @wc.
- **/
+ */
 gint
 pango_win32_font_get_glyph_index (PangoFont *font,
 				  gunichar   wc)

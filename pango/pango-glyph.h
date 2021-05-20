@@ -109,9 +109,9 @@ struct _PangoGlyphInfo
  * PangoGlyphString:
  * @num_glyphs: number of the glyphs in this glyph string.
  * @glyphs: (array length=num_glyphs): array of glyph information
- *          for the glyph string.
+ *   for the glyph string.
  * @log_clusters: logical cluster info, indexed by the byte index
- *                within the text corresponding to the glyph string.
+ *   within the text corresponding to the glyph string.
  *
  * A `PangoGlyphString` is used to store strings of glyphs with geometry
  * and visual attribute information.
@@ -129,11 +129,6 @@ struct _PangoGlyphString {
   gint space;
 };
 
-/**
- * PANGO_TYPE_GLYPH_STRING:
- *
- * The #GObject type for #PangoGlyphString.
- */
 #define PANGO_TYPE_GLYPH_STRING (pango_glyph_string_get_type ())
 
 PANGO_AVAILABLE_IN_ALL
@@ -207,13 +202,13 @@ void pango_shape_full (const char          *item_text,
  * PangoShapeFlags:
  * @PANGO_SHAPE_NONE: Default value.
  * @PANGO_SHAPE_ROUND_POSITIONS: Round glyph positions
- *     and widths to whole device units. This option should
- *     be set if the target renderer can't do subpixel
- *     positioning of glyphs.
+ *   and widths to whole device units. This option should
+ *   be set if the target renderer can't do subpixel
+ *   positioning of glyphs.
  *
  * Flags influencing the shaping process.
  *
- * `PangoShapeFlags` can be passed to pango_shape_with_flags().
+ * `PangoShapeFlags` can be passed to [func@Pango.shape_with_flags].
  */
 typedef enum {
   PANGO_SHAPE_NONE            = 0,
