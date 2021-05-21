@@ -215,16 +215,13 @@ struct _PangoOTFeatureMap
  * PangoOTRulesetDescription:
  * @script: a `PangoScript`
  * @language: a `PangoLanguage`
- * @static_gsub_features: (nullable): static map of GSUB features,
- * or %NULL.
+ * @static_gsub_features: (nullable): static map of GSUB features
  * @n_static_gsub_features: length of @static_gsub_features, or 0.
- * @static_gpos_features: (nullable): static map of GPOS features,
- * or %NULL.
+ * @static_gpos_features: (nullable): static map of GPOS features
  * @n_static_gpos_features: length of @static_gpos_features, or 0.
  * @other_features: (nullable): map of extra features to add to both
- * GSUB and GPOS, or %NULL.  Unlike the static maps, this pointer
- * need not live beyond the life of function calls taking this
- * struct.
+ *   GSUB and GPOS. Unlike the static maps, this pointer need not
+ *   live beyond the life of function calls taking this struct.
  * @n_other_features: length of @other_features, or 0.
  *
  * The `PangoOTRuleset` structure holds all the information needed

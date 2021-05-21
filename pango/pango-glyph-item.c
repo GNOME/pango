@@ -138,9 +138,7 @@ pango_glyph_item_split (PangoGlyphItem *orig,
  *
  * Make a deep copy of an existing `PangoGlyphItem` structure.
  *
- * Return value: (nullable): the newly allocated `PangoGlyphItem`,
- *   which should be freed with pango_glyph_item_free(), or %NULL
- *   if @orig was %NULL.
+ * Return value: (nullable): the newly allocated `PangoGlyphItem`
  *
  * Since: 1.20
  */
@@ -193,9 +191,7 @@ G_DEFINE_BOXED_TYPE (PangoGlyphItem, pango_glyph_item,
  *
  * Make a shallow copy of an existing `PangoGlyphItemIter` structure.
  *
- * Return value: (nullable): the newly allocated `PangoGlyphItemIter`,
- *   which should be freed with pango_glyph_item_iter_free(), or %NULL
- *   if @orig was %NULL.
+ * Return value: (nullable): the newly allocated `PangoGlyphItemIter`
  *
  * Since: 1.22
  */

@@ -1549,7 +1549,7 @@ itemize_state_finish (ItemizeState *state)
  * @length: the number of bytes (not characters) to process
  *   after @start_index. This must be >= 0.
  * @attrs: the set of attributes that apply to @text.
- * @cached_iter: (nullable): Cached attribute iterator, or %NULL
+ * @cached_iter: (nullable): Cached attribute iterator
  *
  * Like `pango_itemize()`, but with an explicitly specified base direction.
  *
@@ -1627,7 +1627,7 @@ itemize_with_font (PangoContext               *context,
  * @length: the number of bytes (not characters) to process
  *   after @start_index. This must be >= 0.
  * @attrs: the set of attributes that apply to @text.
- * @cached_iter: (nullable): Cached attribute iterator, or %NULL
+ * @cached_iter: (nullable): Cached attribute iterator
  *
  * Breaks a piece of text into segments with consistent directional
  * level and font.

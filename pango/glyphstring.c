@@ -102,8 +102,6 @@ G_DEFINE_BOXED_TYPE (PangoGlyphString, pango_glyph_string,
  * Copy a glyph string and associated storage.
  *
  * Return value: (nullable): the newly allocated `PangoGlyphString`
- *   which should be freed with [method@Pango.GlyphString.free],
- *   or %NULL if @string was %NULL.
  */
 PangoGlyphString *
 pango_glyph_string_copy (PangoGlyphString *string)

@@ -42,13 +42,11 @@ pango_item_new (void)
 
 /**
  * pango_item_copy:
- * @item: (nullable): a `PangoItem`, may be %NULL
+ * @item: (nullable): a `PangoItem`
  *
  * Copy an existing `PangoItem` structure.
  *
- * Return value: (nullable): the newly allocated `PangoItem`, which
- *   should be freed with [method@Pango.Item.free], or %NULL if
- *   @item was %NULL.
+ * Return value: (nullable): the newly allocated `PangoItem`
  */
 PangoItem *
 pango_item_copy (PangoItem *item)

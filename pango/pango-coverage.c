@@ -238,11 +238,10 @@ pango_coverage_to_bytes (PangoCoverage  *coverage,
  *   representing a `PangoCoverage`
  * @n_bytes: the size of @bytes in bytes
  *
- * Convert data generated from pango_coverage_to_bytes() back
- * to a `PangoCoverage`.
+ * Convert data generated from pango_coverage_to_bytes()
+ * back to a `PangoCoverage`.
  *
- * Return value: (transfer full) (nullable): a newly allocated
- *   `PangoCoverage`, or %NULL if the data was invalid.
+ * Return value: (transfer full) (nullable): a newly allocated `PangoCoverage`
  *
  * Deprecated: 1.44: This returns %NULL
  */

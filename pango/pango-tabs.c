@@ -292,8 +292,8 @@ pango_tab_array_set_tab (PangoTabArray *tab_array,
  * pango_tab_array_get_tab:
  * @tab_array: a `PangoTabArray`
  * @tab_index: tab stop index
- * @alignment: (out) (optional): location to store alignment, or %NULL
- * @location: (out) (optional): location to store tab position, or %NULL
+ * @alignment: (out) (optional): location to store alignment
+ * @location: (out) (optional): location to store tab position
  *
  * Gets the alignment and position of a tab stop.
  */
@@ -318,9 +318,9 @@ pango_tab_array_get_tab (PangoTabArray *tab_array,
  * pango_tab_array_get_tabs:
  * @tab_array: a `PangoTabArray`
  * @alignments: (out) (optional): location to store an array of tab
- *   stop alignments, or %NULL
+ *   stop alignments
  * @locations: (out) (optional) (array): location to store an array
- *   of tab positions, or %NULL
+ *   of tab positions
  *
  * If non-%NULL, @alignments and @locations are filled with allocated
  * arrays.

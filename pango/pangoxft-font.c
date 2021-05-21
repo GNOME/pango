@@ -474,8 +474,7 @@ pango_xft_font_real_shutdown (PangoFcFont *fcfont)
  *
  * Returns the `XftFont` of a font.
  *
- * Return value: (nullable): the `XftFont` associated to @font,
- *   or %NULL if @font is %NULL.
+ * Return value: (nullable): the `XftFont` associated to @font
  */
 XftFont *
 pango_xft_font_get_font (PangoFont *font)
