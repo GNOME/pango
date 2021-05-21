@@ -305,7 +305,7 @@ pango_language_get_default (void)
 
 /**
  * pango_language_from_string:
- * @language: (nullable): a string representing a language tag, or %NULL
+ * @language: (nullable): a string representing a language tag
  *
  * Convert a language tag to a `PangoLanguage`.
  *
@@ -320,8 +320,7 @@ pango_language_get_default (void)
  * Use [type_func@Pango.Language.get_default] if you want to get the
  * `PangoLanguage` for the current locale of the process.
  *
- * Return value: (transfer none) (nullable): an opaque pointer to a
- *   `PangoLanguage` structure, or %NULL if @language was %NULL
+ * Return value: (transfer none) (nullable): a `PangoLanguage`
  */
 PangoLanguage *
 pango_language_from_string (const char *language)
@@ -559,7 +558,7 @@ static const LangInfo lang_texts[] = {
 
 /**
  * pango_language_get_sample_string:
- * @language: (nullable): a `PangoLanguage`, or %NULL
+ * @language: (nullable): a `PangoLanguage`
  *
  * Get a string that is representative of the characters needed to
  * render a particular language.
@@ -684,7 +683,7 @@ pango_language_get_scripts (PangoLanguage *language,
 
 /**
  * pango_language_includes_script:
- * @language: (nullable): a `PangoLanguage`, or %NULL
+ * @language: (nullable): a `PangoLanguage`
  * @script: a `PangoScript`
  *
  * Determines if @script is one of the scripts used to

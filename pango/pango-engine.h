@@ -370,8 +370,8 @@ prefix ## _register_type (GTypeModule *module)				  \
  * PANGO_ENGINE_LANG_DEFINE_TYPE:
  * @name: Name of the the type to register (for example:, ArabicEngineFc)
  * @prefix: Prefix for symbols that will be defined (for example:, arabic_engine_fc)
- * @class_init: (nullable): Class initialization function for the new type, or %NULL
- * @instance_init: (nullable): Instance initialization function for the new type, or %NULL
+ * @class_init: (nullable): Class initialization function for the new type
+ * @instance_init: (nullable): Instance initialization function for the new type
  *
  * Outputs the necessary code for GObject type registration for a
  * `PangoEngineLang` class defined in a module. Two static symbols
@@ -401,8 +401,8 @@ prefix ## _register_type (GTypeModule *module)				  \
  * PANGO_ENGINE_SHAPE_DEFINE_TYPE:
  * @name: Name of the the type to register (for example:, ArabicEngineFc)
  * @prefix: Prefix for symbols that will be defined (for example:, arabic_engine_fc)
- * @class_init: (nullable): Class initialization function for the new type, or %NULL
- * @instance_init: (nullable): Instance initialization function for the new type, or %NULL
+ * @class_init: (nullable): Class initialization function for the new type
+ * @instance_init: (nullable): Instance initialization function for the new type
  *
  * Outputs the necessary code for GObject type registration for a
  * `PangoEngineShape` class defined in a module. Two static symbols

@@ -801,12 +801,12 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
 /**
  * pango_renderer_draw_glyph_item:
  * @renderer: a `PangoRenderer`
- * @text: (nullable): the UTF-8 text that @glyph_item refers to, or %NULL
+ * @text: (nullable): the UTF-8 text that @glyph_item refers to
  * @glyph_item: a `PangoGlyphItem`
  * @x: X position of left edge of baseline, in user space coordinates
- *   in Pango units.
+ *   in Pango units
  * @y: Y position of left edge of baseline, in user space coordinates
- *   in Pango units.
+ *   in Pango units
  *
  * Draws the glyphs in @glyph_item with the specified `PangoRenderer`,
  * embedding the text associated with the glyphs in the output if the

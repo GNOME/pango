@@ -137,14 +137,14 @@ done:
 
 /**
  * pango_cairo_font_get_scaled_font:
- * @font: a `PangoFont` from a `PangoCairoFontMap`
+ * @font: (nullable): a `PangoFont` from a `PangoCairoFontMap`
  *
  * Gets the `cairo_scaled_font_t` used by @font.
  * The scaled font can be referenced and kept using
  * cairo_scaled_font_reference().
  *
  * Return value: (transfer none) (nullable): the `cairo_scaled_font_t`
- *   used by @font, or %NULL if @font is %NULL.
+ *   used by @font
  *
  * Since: 1.18
  */

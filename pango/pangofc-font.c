@@ -748,9 +748,9 @@ _pango_fc_font_set_font_key (PangoFcFont    *fcfont,
  * @fcfont: a `PangoFcFont`
  * @glyph: the glyph index to load
  * @ink_rect: (out) (optional): location to store ink extents of the
- *   glyph, or %NULL
+ *   glyph
  * @logical_rect: (out) (optional): location to store logical extents
- *   of the glyph or %NULL
+ *   of the glyph
  *
  * Gets the extents of a single glyph from a font.
  *

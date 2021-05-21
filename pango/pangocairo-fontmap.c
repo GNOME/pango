@@ -189,7 +189,7 @@ pango_cairo_font_map_get_default (void)
 
 /**
  * pango_cairo_font_map_set_default:
- * @fontmap: (nullable): The new default font map, or %NULL
+ * @fontmap: (nullable): The new default font map
  *
  * Sets a default `PangoCairoFontMap` to use with Cairo.
  *

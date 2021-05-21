@@ -32,13 +32,11 @@ G_DEFINE_BOXED_TYPE (PangoMatrix, pango_matrix,
 
 /**
  * pango_matrix_copy:
- * @matrix: (nullable): a `PangoMatrix`, may be %NULL
+ * @matrix: (nullable): a `PangoMatrix`
  *
  * Copies a `PangoMatrix`.
  *
- * Return value: (nullable): the newly allocated `PangoMatrix`, which
- *   should be freed with [method@Pango.Matrix.free], or %NULL if
- *   @matrix was %NULL.
+ * Return value: (nullable): the newly allocated `PangoMatrix`
  *
  * Since: 1.6
  */
@@ -211,9 +209,9 @@ pango_matrix_get_font_scale_factor (const PangoMatrix *matrix)
 
 /**
  * pango_matrix_get_font_scale_factors:
- * @matrix: (nullable): a `PangoMatrix`, or %NULL
- * @xscale: (out) (optional): output scale factor in the x direction, or %NULL
- * @yscale: (out) (optional): output scale factor perpendicular to the x direction, or %NULL
+ * @matrix: (nullable): a `PangoMatrix`
+ * @xscale: (out) (optional): output scale factor in the x direction
+ * @yscale: (out) (optional): output scale factor perpendicular to the x direction
  *
  * Calculates the scale factor of a matrix on the width and height of the font.
  *
@@ -266,7 +264,7 @@ pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
 
 /**
  * pango_matrix_transform_distance:
- * @matrix: (nullable): a `PangoMatrix`, or %NULL
+ * @matrix: (nullable): a `PangoMatrix`
  * @dx: (inout): in/out X component of a distance vector
  * @dy: (inout): in/out Y component of a distance vector
  *
@@ -307,7 +305,7 @@ pango_matrix_transform_distance (const PangoMatrix *matrix,
 
 /**
  * pango_matrix_transform_point:
- * @matrix: (nullable): a `PangoMatrix`, or %NULL
+ * @matrix: (nullable): a `PangoMatrix`
  * @x: (inout): in/out X position
  * @y: (inout): in/out Y position
  *
@@ -331,8 +329,8 @@ pango_matrix_transform_point (const PangoMatrix *matrix,
 
 /**
  * pango_matrix_transform_rectangle:
- * @matrix: (nullable): a `PangoMatrix`, or %NULL
- * @rect: (inout) (optional): in/out bounding box in Pango units, or %NULL
+ * @matrix: (nullable): a `PangoMatrix`
+ * @rect: (inout) (optional): in/out bounding box in Pango units
  *
  * First transforms @rect using @matrix, then calculates the bounding box
  * of the transformed rectangle.
@@ -411,8 +409,8 @@ pango_matrix_transform_rectangle (const PangoMatrix *matrix,
 
 /**
  * pango_matrix_transform_pixel_rectangle:
- * @matrix: (nullable): a `PangoMatrix`, or %NULL
- * @rect: (inout) (optional): in/out bounding box in device units, or %NULL
+ * @matrix: (nullable): a `PangoMatrix`
+ * @rect: (inout) (optional): in/out bounding box in device units
  *
  * First transforms the @rect using @matrix, then calculates the bounding box
  * of the transformed rectangle.

@@ -753,8 +753,6 @@ pango_layout_set_font_description (PangoLayout                *layout,
  * Return value: (transfer none) (nullable): a pointer to the
  *   layout's font description, or %NULL if the font description
  *   from the layout's context is inherited.
- *   This value is owned by the layout and must not be modified
- *   or freed.
  *
  * Since: 1.8
  */
@@ -5240,9 +5238,9 @@ pango_layout_line_get_extents_and_height (PangoLayoutLine *line,
  * pango_layout_line_get_extents:
  * @line: a `PangoLayoutLine`
  * @ink_rect: (out) (optional): rectangle used to store the extents of
- *   the glyph string as drawn, or %NULL
+ *   the glyph string as drawn
  * @logical_rect: (out) (optional): rectangle used to store the logical
- *   extents of the glyph string, or %NULL
+ *   extents of the glyph string
  *
  * Computes the logical and ink extents of a layout line.
  *
