@@ -151,14 +151,18 @@ show_segmentation (const char *input,
 int
 main (int argc, char *argv[])
 {
-  setlocale (LC_ALL, "");
   char *opt_kind = "grapheme";
+  gboolean opt_version = FALSE;
   GOptionEntry entries[] = {
     { "kind", 0, 0, G_OPTION_ARG_STRING, &opt_kind, "Kind of boundary (grapheme/word/line/sentence)", "KIND" },
+    { "version", 0, 0, G_OPTION_ARG_NONE, &opt_version, "Show version" },
     { NULL, },
   };
   GOptionContext *context;
   GError *error = NULL;
+
+  g_set_prgname ("pango-segmentation");
+  setlocale (LC_ALL, "");
 
   context = g_option_context_new ("TEXT");
   g_option_context_add_main_entries (context, entries, NULL);
@@ -170,9 +174,15 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  if (opt_version)
+    {
+      g_print ("%s (%s) %s\n", g_get_prgname (), PACKAGE_NAME, PACKAGE_VERSION);
+      exit (0);
+    }
+
   if (argc < 2)
     {
-      g_printerr ("Usage: pango-segmentation [OPTIONS…] TEXT");
+      g_printerr ("Usage: pango-segmentation [OPTIONS…] TEXT\n");
       exit (1);
     }
 
