@@ -65,7 +65,7 @@ pango_color_copy (const PangoColor *src)
  * pango_color_free:
  * @color: (nullable): an allocated `PangoColor`
  *
- * Frees a color allocated by [ctor@Pango.copy].
+ * Frees a color allocated by [method@Pango.Color.copy].
  */
 void
 pango_color_free (PangoColor *color)

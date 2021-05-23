@@ -1001,7 +1001,7 @@ pango_attr_shape_equal (const PangoAttribute *attr1,
  *
  * Creates a new shape attribute.
  *
- * Like [ctor@Pango.AttrShape.new], but a user data pointer
+ * Like [func@Pango.AttrShape.new], but a user data pointer
  * is also provided; this pointer can be accessed when later
  * rendering the glyph.
  *
