@@ -121,6 +121,31 @@ test_line_height (void)
   g_object_unref (context);
 }
 
+static void
+test_attr_list_update (void)
+{
+  PangoAttribute *weight_attr;
+  PangoAttrList *list;
+
+  weight_attr = pango_attr_weight_new (700);
+  weight_attr->start_index = 4;
+  weight_attr->end_index = 6;
+
+  list = pango_attr_list_new();
+  pango_attr_list_insert (list, weight_attr);
+
+  g_assert_cmpuint (weight_attr->start_index, ==, 4);
+  g_assert_cmpuint (weight_attr->end_index, ==, 6);
+
+  // Delete 1 byte at position 2
+  pango_attr_list_update (list, 2, 1, 0);
+
+  g_assert_cmpuint (weight_attr->start_index, ==, 3);
+  g_assert_cmpuint (weight_attr->end_index, ==, 5);
+
+  pango_attr_list_unref (list);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -132,6 +157,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/layout/short-string-crash", test_short_string_crash);
   g_test_add_func ("/language/emoji-crash", test_language_emoji_crash);
   g_test_add_func ("/layout/line-height", test_line_height);
+  g_test_add_func ("/attr-list/update", test_attr_list_update);
 
   return g_test_run ();
 }
