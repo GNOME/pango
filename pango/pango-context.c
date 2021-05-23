@@ -38,7 +38,7 @@
  * A `PangoContext` stores global information used to control the
  * itemization process.
  *
- * The information stored by `PangoContext includes the fontmap used
+ * The information stored by `PangoContext` includes the fontmap used
  * to look up fonts, and default values such as the default language,
  * default gravity, or default font.
  *
