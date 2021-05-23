@@ -79,11 +79,11 @@ if cairo_dep.found()
                            '-DPACKAGE_VERSION="@0@"'.format(meson.project_version()),
                           ])
 
-endif
+  pango_segmentation = executable('pango-segmentation',
+                                  'pango-segmentation.c',
+                                  dependencies: [ libpango_dep, libpangocairo_dep ],
+                                  include_directories: [ root_inc ],
+                                  install: false,
+                                  )
 
-pango_segmentation = executable('pango-segmentation',
-                                'pango-segmentation.c',
-                                dependencies: [ libpango_dep, libpangocairo_dep ],
-                                include_directories: [ root_inc ],
-                                install: false,
-                                )
+endif
