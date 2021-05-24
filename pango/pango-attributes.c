@@ -1760,28 +1760,34 @@ pango_attr_list_update (PangoAttrList *list,
             continue;
           }
 
-        if (attr->start_index >= pos &&
-            attr->start_index < pos + remove)
+        if (attr->start_index != PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING)
           {
-            attr->start_index = pos + add;
-          }
-        else if (attr->start_index >= pos + remove)
-          {
-            attr->start_index += add - remove;
+            if (attr->start_index >= pos &&
+                attr->start_index < pos + remove)
+              {
+                attr->start_index = pos + add;
+              }
+            else if (attr->start_index >= pos + remove)
+              {
+                attr->start_index += add - remove;
+              }
           }
 
-        if (attr->end_index >= pos &&
-            attr->end_index < pos + remove)
+        if (attr->end_index != PANGO_ATTR_INDEX_TO_TEXT_END)
           {
-            attr->end_index = pos;
-          }
-        else if (attr->end_index >= pos + remove)
-          {
-            if (add > remove &&
-                G_MAXUINT - attr->end_index < add - remove)
-              attr->end_index = G_MAXUINT;
-            else
-              attr->end_index += add - remove;
+            if (attr->end_index >= pos &&
+                attr->end_index < pos + remove)
+              {
+                attr->end_index = pos;
+              }
+            else if (attr->end_index >= pos + remove)
+              {
+                if (add > remove &&
+                    G_MAXUINT - attr->end_index < add - remove)
+                  attr->end_index = G_MAXUINT;
+                else
+                  attr->end_index += add - remove;
+              }
           }
       }
 }
