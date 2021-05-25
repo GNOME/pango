@@ -42,7 +42,7 @@ or by parsing a string such as
 
     Helvetica Bold 12pt
 
-with [type_func@Pango.FontDescription.from_string].
+with [func@Pango.FontDescription.from_string].
 
 # Glyphs
 

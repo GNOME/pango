@@ -114,7 +114,7 @@ pango_cairo_font_map_new (void)
  * Creates a new `PangoCairoFontMap` object of the type suitable
  * to be used with cairo font backend of type @fonttype.
  *
- * In most cases one should simply use [type_func@PangoCairo.FontMap.new], or
+ * In most cases one should simply use [func@PangoCairo.FontMap.new], or
  * in fact in most of those cases, just use [func@PangoCairo.FontMap.get_default].
  *
  * Return value: (transfer full) (nullable): the newly allocated
@@ -201,11 +201,11 @@ pango_cairo_font_map_get_default (void)
  * This function only changes the default fontmap for
  * the current thread. Default fontmaps of existing threads
  * are not changed. Default fontmaps of any new threads will
- * still be created using [type_func@PangoCairo.FontMap.new].
+ * still be created using [func@PangoCairo.FontMap.new].
  *
  * A value of %NULL for @fontmap will cause the current default
  * font map to be released and a new default font map to be created
- * on demand, using [type_func@PangoCairo.FontMap.new].
+ * on demand, using [func@PangoCairo.FontMap.new].
  *
  * Since: 1.22
  */

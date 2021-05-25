@@ -370,7 +370,7 @@ G_DEFINE_BOXED_TYPE (PangoOTRulesetDescription, pango_ot_ruleset_description,
  * Creates a copy of @desc, which should be freed with
  * [method@PangoOT.RulesetDescription.free].
  *
- * Primarily used internally by [type_func@PangoOT.Ruleset.get_for_description]
+ * Primarily used internally by [func@PangoOT.Ruleset.get_for_description]
  * to cache rulesets for ruleset descriptions.
  *
  * Return value: the newly allocated `PangoOTRulesetDescription`
