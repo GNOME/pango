@@ -403,7 +403,7 @@ pango_context_get_font_description (PangoContext *context)
  * Sets the global language tag for the context.
  *
  * The default language for the locale of the running process
- * can be found using [type_func@Pango.Language.get_default].
+ * can be found using [func@Pango.Language.get_default].
  */
 void
 pango_context_set_language (PangoContext  *context,
@@ -534,7 +534,7 @@ pango_context_get_base_gravity (PangoContext *context)
  *
  * This is similar to [method@Pango.Context.get_base_gravity],
  * except for when the base gravity is %PANGO_GRAVITY_AUTO for
- * which [type_func@Pango.Gravity.get_for_matrix] is used to return the
+ * which [func@Pango.Gravity.get_for_matrix] is used to return the
  * gravity from the current context matrix.
  *
  * Return value: the resolved gravity for the context.
@@ -1754,7 +1754,7 @@ update_metrics_from_items (PangoFontMetrics *metrics,
  * @language: (nullable): language tag used to determine which script to get
  *   the metrics for. %NULL means that the language tag from the context
  *   will be used. If no language tag is set on the context, metrics
- *   for the default language (as determined by [type_func@Pango.Language.get_default]
+ *   for the default language (as determined by [func@Pango.Language.get_default]
  *   will be returned.
  *
  * Get overall metric information for a particular font description.

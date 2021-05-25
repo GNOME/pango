@@ -274,7 +274,7 @@ resolved:
  * This function is useful to categorize characters into left-to-right
  * letters, right-to-left letters, and everything else. If full Unicode
  * bidirectional type of a character is needed,
- * [type_func@Pango.BidiType.for_unichar] can be used instead.
+ * [func@Pango.BidiType.for_unichar] can be used instead.
  *
  * Return value: the direction of the character.
  */

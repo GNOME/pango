@@ -317,7 +317,7 @@ pango_language_get_default (void)
  * lowercase, mapping '_' to '-', and stripping all characters other
  * than letters and '-'.
  *
- * Use [type_func@Pango.Language.get_default] if you want to get the
+ * Use [func@Pango.Language.get_default] if you want to get the
  * `PangoLanguage` for the current locale of the process.
  *
  * Return value: (transfer none) (nullable): a `PangoLanguage`
@@ -383,12 +383,12 @@ const char *
 
 /**
  * pango_language_matches:
- * @language: (nullable): a language tag (see [type_func@Pango.Language.from_string]),
+ * @language: (nullable): a language tag (see [func@Pango.Language.from_string]),
  *   %NULL is allowed and matches nothing but '*'
  * @range_list: a list of language ranges, separated by ';', ':',
  *   ',', or space characters.
  *   Each element must either be '*', or a RFC 3066 language range
- *   canonicalized as by [type_func@Pango.Language.from_string]
+ *   canonicalized as by [func@Pango.Language.from_string]
  *
  * Checks if a language tag matches one of the elements in a list of
  * language ranges.
@@ -569,7 +569,7 @@ static const LangInfo lang_texts[] = {
  * as sample text in a font selection dialog.
  *
  * If @language is %NULL, the default language as found by
- * [type_func@Pango.Language.get_default] is used.
+ * [func@Pango.Language.get_default] is used.
  *
  * If Pango does not have a sample string for @language, the classic
  * "The quick brown fox..." is returned.  This can be detected by
@@ -840,7 +840,7 @@ out:
  * The list is specified by the `PANGO_LANGUAGE` or `LANGUAGE`
  * environment variables, in order of preference. Note that this
  * list does not necessarily include the language returned by
- * [type_func@Pango.Language.get_default].
+ * [func@Pango.Language.get_default].
  *
  * When choosing language-specific resources, such as the sample
  * text returned by [method@Pango.Language.get_sample_string],
