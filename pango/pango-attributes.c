@@ -1647,6 +1647,7 @@ pango_attr_list_change (PangoAttrList  *list,
             {
               pango_attribute_destroy (tmp_attr);
               g_ptr_array_remove_index (list->attributes, i);
+              i--;
               break;
             }
           else
@@ -1660,7 +1661,11 @@ pango_attr_list_change (PangoAttrList  *list,
     {
       /* we didn't insert attr yet */
       pango_attr_list_insert (list, attr);
-      return;
+      
+      if (i == p)
+        {
+          return;
+        }
     }
 
   /* We now have the range inserted into the list one way or the
