@@ -54,7 +54,7 @@ G_BEGIN_DECLS
  *
  * `PangoBidiType` represents the bidirectional character
  * type of a Unicode character as specified by the
- * <ulink url="http://www.unicode.org/reports/tr9/">Unicode bidirectional algorithm</ulink>.
+ * [Unicode bidirectional algorithm](http://www.unicode.org/reports/tr9/).
  *
  * Since: 1.22
  * Deprecated: 1.44: Use fribidi for this information
