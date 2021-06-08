@@ -1122,9 +1122,13 @@ pango_attr_gravity_hint_new (PangoGravityHint hint)
 
 /**
  * pango_attr_font_features_new:
- * @features: a string with OpenType font features, in CSS syntax
+ * @features: a string with OpenType font features, with the syntax of the [CSS
+ * font-feature-settings property](https://www.w3.org/TR/css-fonts-4/#font-rend-desc)
  *
  * Create a new font features tag attribute.
+ *
+ * You can use this attribute to select OpenType font features like small-caps,
+ * alternative glyphs, ligatures, etc. for fonts that support them.
  *
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
