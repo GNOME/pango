@@ -841,6 +841,65 @@ test_insert (void)
   pango_attr_list_unref (list);
 }
 
+static void
+test_insert2 (void)
+{
+  PangoAttrList *list;
+  PangoAttribute *attr;
+
+  list = pango_attr_list_new ();
+  attr = pango_attr_size_new (10 * PANGO_SCALE);
+  attr->start_index = 10;
+  attr->end_index = 11;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_rise_new (100);
+  attr->start_index = 0;
+  attr->end_index = 200;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_family_new ("Times");
+  attr->start_index = 5;
+  attr->end_index = 15;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_family_new ("Times");
+  attr->start_index = 20;
+  attr->end_index = 30;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_family_new ("Futura");
+  attr->start_index = 30;
+  attr->end_index = 40;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_fallback_new (FALSE);
+  attr->start_index = 11;
+  attr->end_index = 100;
+  pango_attr_list_insert (list, attr);
+  attr = pango_attr_stretch_new (PANGO_STRETCH_CONDENSED);
+  attr->start_index = 30;
+  attr->end_index = 60;
+  pango_attr_list_insert (list, attr);
+
+  assert_attr_list (list, "[0,200]rise=100\n"
+                          "[5,15]family=Times\n"
+                          "[10,11]size=10240\n"
+                          "[11,100]fallback=0\n"
+                          "[20,30]family=Times\n"
+                          "[30,40]family=Futura\n"
+                          "[30,60]stretch=2\n");
+
+  attr = pango_attr_family_new ("Times");
+  attr->start_index = 10;
+  attr->end_index = 35;
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "[0,200]rise=100\n"
+                          "[5,35]family=Times\n"
+                          "[10,11]size=10240\n"
+                          "[11,100]fallback=0\n"
+                          "[35,40]family=Futura\n"
+                          "[30,60]stretch=2\n");
+
+  pango_attr_list_unref (list);
+}
+
 static gboolean
 attr_list_merge_filter (PangoAttribute *attribute,
                         gpointer        list)
@@ -1082,6 +1141,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/attributes/list/update2", test_list_update2);
   g_test_add_func ("/attributes/list/equal", test_list_equal);
   g_test_add_func ("/attributes/list/insert", test_insert);
+  g_test_add_func ("/attributes/list/insert2", test_insert2);
   g_test_add_func ("/attributes/list/merge", test_merge);
   g_test_add_func ("/attributes/list/merge2", test_merge2);
   g_test_add_func ("/attributes/iter/basic", test_iter);
