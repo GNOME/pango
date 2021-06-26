@@ -35,6 +35,7 @@ endif
 if cairo_dep.found()
   test_cflags += '-DHAVE_CAIRO'
   tests += [
+    [ 'testcontext', [ 'testcontext.c' ], [ libpangocairo_dep ] ],
     [ 'testiter', [ 'testiter.c' ], [ libpangocairo_dep ] ],
     [ 'test-ellipsize', [ 'test-ellipsize.c' ], [ libpangocairo_dep ] ],
     [ 'markup-parse', [ 'markup-parse.c' , 'test-common.c' ], [ libpangocairo_dep ] ],
