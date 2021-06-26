@@ -133,7 +133,7 @@ assert_attr_iterator (PangoAttrIterator *iter,
 static void
 test_list (void)
 {
-  PangoAttrList *list;
+  PangoAttrList *list, *list2;
   PangoAttribute *attr;
 
   list = pango_attr_list_new ();
@@ -144,6 +144,12 @@ test_list (void)
   pango_attr_list_insert (list, attr);
   attr = pango_attr_size_new (30);
   pango_attr_list_insert (list, attr);
+
+  list2 = attributes_from_string ("[0,-1]size=10\n"
+                                  "[0,-1]size=20\n"
+                                  "[0,-1]size=30\n");
+  g_assert_true (pango_attr_list_equal (list, list2));
+  pango_attr_list_unref (list2);
 
   assert_attr_list (list, "[0,-1]size=10\n"
                           "[0,-1]size=20\n"
@@ -179,24 +185,9 @@ test_list_change (void)
   PangoAttrList *list;
   PangoAttribute *attr;
 
-  list = pango_attr_list_new ();
-
-  attr = pango_attr_size_new (10);
-  attr->start_index = 0;
-  attr->end_index = 10;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_size_new (20);
-  attr->start_index = 20;
-  attr->end_index = 30;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
-  attr->start_index = 0;
-  attr->end_index = 30;
-  pango_attr_list_insert (list, attr);
-
-  assert_attr_list (list, "[0,10]size=10\n"
-                          "[0,30]weight=700\n"
-                          "[20,30]size=20\n");
+  list = attributes_from_string ("[0,10]size=10\n"
+                                 "[0,30]weight=700\n"
+                                 "[20,30]size=20\n");
 
   /* simple insertion with pango_attr_list_change */
   attr = pango_attr_variant_new (PANGO_VARIANT_SMALL_CAPS);
@@ -244,25 +235,10 @@ test_list_splice (void)
   PangoAttrList *base;
   PangoAttrList *list;
   PangoAttrList *other;
-  PangoAttribute *attr;
 
-  base = pango_attr_list_new ();
-  attr = pango_attr_size_new (10);
-  attr->start_index = 0;
-  attr->end_index = -1;
-  pango_attr_list_insert (base, attr);
-  attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
-  attr->start_index = 10;
-  attr->end_index = 15;
-  pango_attr_list_insert (base, attr);
-  attr = pango_attr_variant_new (PANGO_VARIANT_SMALL_CAPS);
-  attr->start_index = 20;
-  attr->end_index = 30;
-  pango_attr_list_insert (base, attr);
-
-  assert_attr_list (base, "[0,-1]size=10\n"
-                          "[10,15]weight=700\n"
-                          "[20,30]variant=1\n");
+  base = attributes_from_string ("[0,-1]size=10\n"
+                                 "[10,15]weight=700\n"
+                                 "[20,30]variant=1\n");
 
   /* splice in an empty list */
   list = pango_attr_list_copy (base);
@@ -278,15 +254,9 @@ test_list_splice (void)
 
   /* splice in some attributes */
   list = pango_attr_list_copy (base);
-  other = pango_attr_list_new ();
-  attr = pango_attr_size_new (20);
-  attr->start_index = 0;
-  attr->end_index = 3;
-  pango_attr_list_insert (other, attr);
-  attr = pango_attr_stretch_new (PANGO_STRETCH_CONDENSED);
-  attr->start_index = 2;
-  attr->end_index = 4;
-  pango_attr_list_insert (other, attr);
+
+  other = attributes_from_string ("[0,3]size=20\n"
+                                  "[2,4]stretch=2\n");
 
   pango_attr_list_splice (list, other, 11, 5);
 
@@ -344,23 +314,9 @@ test_list_splice3 (void)
 {
   PangoAttrList *list;
   PangoAttrList *other;
-  PangoAttribute *attr;
 
-  list = pango_attr_list_new ();
-  other = pango_attr_list_new ();
-
-  attr = pango_attr_variant_new (PANGO_VARIANT_SMALL_CAPS);
-  attr->start_index = 10;
-  attr->end_index = 30;
-  pango_attr_list_insert (list, attr);
-
-  attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
-  attr->start_index = PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING;
-  attr->end_index = PANGO_ATTR_INDEX_TO_TEXT_END;
-  pango_attr_list_insert (other, attr);
-
-  assert_attr_list (list, "[10,30]variant=1\n");
-  assert_attr_list (other, "[0,-1]weight=700\n");
+  list = attributes_from_string ("[10,30]variant=1\n");
+  other = attributes_from_string ("[0,-1]weight=700\n");
 
   pango_attr_list_splice (list, other, 20, 5);
 
@@ -391,22 +347,10 @@ test_list_filter (void)
 {
   PangoAttrList *list;
   PangoAttrList *out;
-  PangoAttribute *attr;
 
-  list = pango_attr_list_new ();
-  attr = pango_attr_size_new (10);
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_stretch_new (PANGO_STRETCH_CONDENSED);
-  attr->start_index = 10;
-  attr->end_index = 20;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
-  attr->start_index = 20;
-  pango_attr_list_insert (list, attr);
-
-  assert_attr_list (list, "[0,-1]size=10\n"
-                          "[10,20]stretch=2\n"
-                          "[20,-1]weight=700\n");
+  list = attributes_from_string ("[0,-1]size=10\n"
+                                 "[10,20]stretch=2\n"
+                                 "[20,-1]weight=700\n");
 
   out = pango_attr_list_filter (list, never_true, NULL);
   g_assert_null (out);
@@ -651,35 +595,12 @@ static void
 test_list_update (void)
 {
   PangoAttrList *list;
-  PangoAttribute *attr;
 
-  list = pango_attr_list_new ();
-  attr = pango_attr_size_new (10 * PANGO_SCALE);
-  attr->start_index = 10;
-  attr->end_index = 11;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_rise_new (100);
-  attr->start_index = 0;
-  attr->end_index = 200;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_family_new ("Times");
-  attr->start_index = 5;
-  attr->end_index = 15;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_fallback_new (FALSE);
-  attr->start_index = 11;
-  attr->end_index = 100;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_stretch_new (PANGO_STRETCH_CONDENSED);
-  attr->start_index = 30;
-  attr->end_index = 60;
-  pango_attr_list_insert (list, attr);
-
-  assert_attr_list (list, "[0,200]rise=100\n"
-                          "[5,15]family=Times\n"
-                          "[10,11]size=10240\n"
-                          "[11,100]fallback=0\n"
-                          "[30,60]stretch=2\n");
+  list = attributes_from_string ("[0,200]rise=100\n"
+                                 "[5,15]family=Times\n"
+                                 "[10,11]size=10240\n"
+                                 "[11,100]fallback=0\n"
+                                 "[30,60]stretch=2\n");
 
   pango_attr_list_update (list, 8, 10, 20);
 
@@ -787,33 +708,11 @@ test_insert (void)
   PangoAttrList *list;
   PangoAttribute *attr;
 
-  list = pango_attr_list_new ();
-  attr = pango_attr_size_new (10 * PANGO_SCALE);
-  attr->start_index = 10;
-  attr->end_index = 11;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_rise_new (100);
-  attr->start_index = 0;
-  attr->end_index = 200;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_family_new ("Times");
-  attr->start_index = 5;
-  attr->end_index = 15;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_fallback_new (FALSE);
-  attr->start_index = 11;
-  attr->end_index = 100;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_stretch_new (PANGO_STRETCH_CONDENSED);
-  attr->start_index = 30;
-  attr->end_index = 60;
-  pango_attr_list_insert (list, attr);
-
-  assert_attr_list (list, "[0,200]rise=100\n"
-                          "[5,15]family=Times\n"
-                          "[10,11]size=10240\n"
-                          "[11,100]fallback=0\n"
-                          "[30,60]stretch=2\n");
+  list = attributes_from_string ("[0,200]rise=100\n"
+                                 "[5,15]family=Times\n"
+                                 "[10,11]size=10240\n"
+                                 "[11,100]fallback=0\n"
+                                 "[30,60]stretch=2\n");
 
   attr = pango_attr_family_new ("Times");
   attr->start_index = 10;
@@ -847,43 +746,13 @@ test_insert2 (void)
   PangoAttrList *list;
   PangoAttribute *attr;
 
-  list = pango_attr_list_new ();
-  attr = pango_attr_size_new (10 * PANGO_SCALE);
-  attr->start_index = 10;
-  attr->end_index = 11;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_rise_new (100);
-  attr->start_index = 0;
-  attr->end_index = 200;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_family_new ("Times");
-  attr->start_index = 5;
-  attr->end_index = 15;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_family_new ("Times");
-  attr->start_index = 20;
-  attr->end_index = 30;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_family_new ("Futura");
-  attr->start_index = 30;
-  attr->end_index = 40;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_fallback_new (FALSE);
-  attr->start_index = 11;
-  attr->end_index = 100;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_stretch_new (PANGO_STRETCH_CONDENSED);
-  attr->start_index = 30;
-  attr->end_index = 60;
-  pango_attr_list_insert (list, attr);
-
-  assert_attr_list (list, "[0,200]rise=100\n"
-                          "[5,15]family=Times\n"
-                          "[10,11]size=10240\n"
-                          "[11,100]fallback=0\n"
-                          "[20,30]family=Times\n"
-                          "[30,40]family=Futura\n"
-                          "[30,60]stretch=2\n");
+  list = attributes_from_string ("[0,200]rise=100\n"
+                                 "[5,15]family=Times\n"
+                                 "[10,11]size=10240\n"
+                                 "[11,100]fallback=0\n"
+                                 "[20,30]family=Times\n"
+                                 "[30,40]family=Futura\n"
+                                 "[30,60]stretch=2\n");
 
   attr = pango_attr_family_new ("Times");
   attr->start_index = 10;
@@ -914,53 +783,16 @@ test_merge (void)
 {
   PangoAttrList *list;
   PangoAttrList *list2;
-  PangoAttribute *attr;
 
-  list = pango_attr_list_new ();
-  attr = pango_attr_size_new (10 * PANGO_SCALE);
-  attr->start_index = 10;
-  attr->end_index = 11;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_rise_new (100);
-  attr->start_index = 0;
-  attr->end_index = 200;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_family_new ("Times");
-  attr->start_index = 5;
-  attr->end_index = 15;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_fallback_new (FALSE);
-  attr->start_index = 11;
-  attr->end_index = 100;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_stretch_new (PANGO_STRETCH_CONDENSED);
-  attr->start_index = 30;
-  attr->end_index = 60;
-  pango_attr_list_insert (list, attr);
+  list = attributes_from_string ("[0,200]rise=100\n"
+                                 "[5,15]family=Times\n"
+                                 "[10,11]size=10240\n"
+                                 "[11,100]fallback=0\n"
+                                 "[30,60]stretch=2\n");
 
-  assert_attr_list (list, "[0,200]rise=100\n"
-                          "[5,15]family=Times\n"
-                          "[10,11]size=10240\n"
-                          "[11,100]fallback=0\n"
-                          "[30,60]stretch=2\n");
-
-  list2 = pango_attr_list_new ();
-  attr = pango_attr_size_new (10 * PANGO_SCALE);
-  attr->start_index = 11;
-  attr->end_index = 13;
-  pango_attr_list_insert (list2, attr);
-  attr = pango_attr_size_new (11 * PANGO_SCALE);
-  attr->start_index = 13;
-  attr->end_index = 15;
-  pango_attr_list_insert (list2, attr);
-  attr = pango_attr_size_new (12 * PANGO_SCALE);
-  attr->start_index = 40;
-  attr->end_index = 50;
-  pango_attr_list_insert (list2, attr);
-
-  assert_attr_list (list2, "[11,13]size=10240\n"
-                           "[13,15]size=11264\n"
-                           "[40,50]size=12288\n");
+  list2 = attributes_from_string ("[11,13]size=10240\n"
+                                  "[13,15]size=11264\n"
+                                  "[40,50]size=12288\n");
 
   pango_attr_list_filter (list2, attr_list_merge_filter, list);
 
@@ -985,18 +817,8 @@ test_merge2 (void)
   PangoAttrList *list;
   PangoAttribute *attr;
 
-  list = pango_attr_list_new ();
-  attr = pango_attr_underline_new (PANGO_UNDERLINE_SINGLE);
-  attr->start_index = 0;
-  attr->end_index = 10;
-  pango_attr_list_insert (list, attr);
-  attr = pango_attr_foreground_new (0, 0, 0xffff);
-  attr->start_index = 0;
-  attr->end_index = 10;
-  pango_attr_list_insert (list, attr);
-
-  assert_attr_list (list, "[0,10]underline=1\n"
-                          "[0,10]foreground=#00000000ffff\n");
+  list = attributes_from_string ("[0,10]underline=1\n"
+                                 "[0,10]foreground=#00000000ffff\n");
 
   attr = pango_attr_foreground_new (0xffff, 0, 0);
   attr->start_index = 2;

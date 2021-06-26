@@ -201,6 +201,204 @@ print_attributes (GSList *attrs, GString *string)
     }
 }
 
+static PangoAttribute *
+attribute_from_string (const char *string)
+{
+  char *s, *p;
+  PangoAttribute *attr;
+  long start, end;
+  GEnumClass *class;
+  int i;
+  PangoColor color;
+
+  s = string;
+  g_assert (*s == '[');
+
+  s++;
+  start = strtol (s, &p, 10);
+  g_assert (p > s);
+  g_assert (*p == ',');
+  s = p + 1;
+
+  g_assert (start >= 0);
+
+  end = strtol (s, &p, 10);
+  g_assert (p > s);
+  g_assert (*p == ']');
+  s = p + 1;
+
+  if (end == -1)
+    end = G_MAXUINT;
+
+  g_assert (start >= 0);
+  g_assert (end >= 0);
+
+  class = g_type_class_ref (pango_attr_type_get_type ());
+
+  for (i = 0; i < class->n_values; i++)
+    {
+      if (g_str_has_prefix (s, class->values[i].value_nick))
+        break;
+    }
+
+  g_assert (i < class->n_values);
+
+  s += strlen (class->values[i].value_nick);
+  g_assert (*s == '=');
+  s++;
+
+  switch (class->values[i].value)
+    {
+    case PANGO_ATTR_LANGUAGE:
+      attr = pango_attr_language_new (pango_language_from_string (s));
+      break;
+    case PANGO_ATTR_FAMILY:
+      attr = pango_attr_family_new (s);
+      break;
+    case PANGO_ATTR_FONT_FEATURES:
+      attr = pango_attr_font_features_new (s);
+      break;
+    case PANGO_ATTR_STYLE:
+      attr = pango_attr_style_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_WEIGHT:
+      attr = pango_attr_weight_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_VARIANT:
+      attr = pango_attr_variant_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_STRETCH:
+      attr = pango_attr_stretch_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_SIZE:
+      attr = pango_attr_size_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_ABSOLUTE_SIZE:
+      attr = pango_attr_size_new_absolute (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_UNDERLINE:
+      attr = pango_attr_underline_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_OVERLINE:
+      attr = pango_attr_overline_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_STRIKETHROUGH:
+      attr = pango_attr_strikethrough_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_RISE:
+      attr = pango_attr_rise_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_FALLBACK:
+      attr = pango_attr_fallback_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_LETTER_SPACING:
+      attr = pango_attr_letter_spacing_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_GRAVITY:
+      attr = pango_attr_gravity_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_GRAVITY_HINT:
+      attr = pango_attr_gravity_hint_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_FOREGROUND_ALPHA:
+      attr = pango_attr_foreground_alpha_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_BACKGROUND_ALPHA:
+      attr = pango_attr_background_alpha_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_ALLOW_BREAKS:
+      attr = pango_attr_allow_breaks_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_INSERT_HYPHENS:
+      attr = pango_attr_insert_hyphens_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_SHOW:
+      attr = pango_attr_show_new (strtol (s, &p, 10));
+      break;
+    case PANGO_ATTR_FONT_DESC:
+      {
+        PangoFontDescription *desc = pango_font_description_from_string (s);
+        attr = pango_attr_font_desc_new (desc);
+        pango_font_description_free (desc);
+      }
+      break;
+    case PANGO_ATTR_FOREGROUND:
+      {
+        pango_color_parse (&color, s);
+        attr = pango_attr_foreground_new (color.red, color.green, color.blue);
+      }
+      break;
+    case PANGO_ATTR_BACKGROUND:
+      {
+        pango_color_parse (&color, s);
+        attr = pango_attr_background_new (color.red, color.green, color.blue);
+      }
+      break;
+    case PANGO_ATTR_UNDERLINE_COLOR:
+      {
+        pango_color_parse (&color, s);
+        attr = pango_attr_underline_color_new (color.red, color.green, color.blue);
+      }
+      break;
+    case PANGO_ATTR_OVERLINE_COLOR:
+      {
+        pango_color_parse (&color, s);
+        attr = pango_attr_overline_color_new (color.red, color.green, color.blue);
+      }
+      break;
+    case PANGO_ATTR_STRIKETHROUGH_COLOR:
+      {
+        pango_color_parse (&color, s);
+        attr = pango_attr_strikethrough_color_new (color.red, color.green, color.blue);
+      }
+      break;
+    case PANGO_ATTR_SHAPE:
+      {
+        PangoRectangle rect = { 0, };
+        attr = pango_attr_shape_new (&rect, &rect);
+      }
+      break;
+    case PANGO_ATTR_SCALE:
+      attr = pango_attr_scale_new (strtod (s, &p));
+      break;
+    default:
+      g_assert_not_reached ();
+      break;
+    }
+
+  g_type_class_unref (class);
+
+  attr->start_index = start;
+  attr->end_index = end;
+
+  return attr;
+}
+
+PangoAttrList *
+attributes_from_string (const char *string)
+{
+  PangoAttrList *attrs;
+  char **lines;
+
+  attrs = pango_attr_list_new ();
+
+  lines = g_strsplit (string, "\n", 0);
+  for (int i = 0; lines[i]; i++)
+    {
+      PangoAttribute *attr;
+
+      if (lines[i][0] == '\0')
+        continue;
+
+      attr = attribute_from_string (lines[i]);
+      g_assert (attr);
+      pango_attr_list_insert (attrs, attr);
+    }
+  g_strfreev (lines);
+
+  return attrs;
+}
+
 const char *
 get_script_name (GUnicodeScript s)
 {
