@@ -1229,11 +1229,16 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	CHECK_ATTRIBUTE (underline);
 	CHECK_ATTRIBUTE (underline_color);
 	break;
-      default:
+      case 'r':
 	CHECK_ATTRIBUTE (rise);
+        break;
+      case 'v':
 	CHECK_ATTRIBUTE (variant);
+        break;
+      case 'w':
 	CHECK_ATTRIBUTE (weight);
 	break;
+      default:;
       }
 
       if (!found)
