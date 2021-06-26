@@ -1646,6 +1646,7 @@ markup_parse_func (MarkupData            *md G_GNUC_UNUSED,
 		   GError               **error G_GNUC_UNUSED)
 {
   /* We don't do anything with this tag at the moment. */
+  CHECK_NO_ATTRS("markup");
 
   return TRUE;
 }
