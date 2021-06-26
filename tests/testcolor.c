@@ -122,12 +122,42 @@ test_color (void)
     test_one_color (spec);
 }
 
+static void
+test_color_copy (void)
+{
+  PangoColor orig = { 0, 200, 5000 };
+  PangoColor *copy;
+
+  copy = pango_color_copy (&orig);
+
+  g_assert_cmpint (orig.red, ==, copy->red);
+  g_assert_cmpint (orig.green, ==, copy->green);
+  g_assert_cmpint (orig.blue, ==, copy->blue);
+
+  pango_color_free (copy);
+}
+
+static void
+test_color_serialize (void)
+{
+  PangoColor orig = { 0, 200, 5000 };
+  char *string;
+
+  string = pango_color_to_string (&orig);
+
+  g_assert_cmpstr (string, ==, "#000000c81388");
+
+  g_free (string);
+}
+
 int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
   g_test_add_func ("/color/parse", test_color);
+  g_test_add_func ("/color/copy", test_color_copy);
+  g_test_add_func ("/color/serialize", test_color_serialize);
 
   return g_test_run ();
 }
