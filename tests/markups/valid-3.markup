@@ -6,6 +6,7 @@
       strikethrough="true"
       strikethrough_color="blue"
       fallback="false"
+      allow_breaks="true"
       lang="de"
       gravity="south"
       gravity_hint="strong">Lots of attrs</span>

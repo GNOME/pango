@@ -3,9 +3,9 @@
       background="#f0f0f0"
       underline="double"
       underline_color="red"
-      strikethrough="true"
+      strikethrough="t"
       strikethrough_color="blue"
-      fallback="false"
+      fallback="f"
       lang="de"
       gravity="south"
       gravity_hint="strong">Lots <span font="bold">of</span> attrs</span>

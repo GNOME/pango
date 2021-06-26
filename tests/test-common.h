@@ -6,6 +6,10 @@ char * diff_with_file (const char  *file,
                        gssize       len,
                        GError     **error);
 
+gboolean file_has_prefix (const char  *file,
+                          const char  *str,
+                          GError     **error);
+
 void print_attribute (PangoAttribute *attr,
                       GString        *string);
 

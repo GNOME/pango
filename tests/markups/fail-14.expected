@@ -1,0 +1,1 @@
+ERROR: 'moon' is not a valid value for the 'gravity' attribute on <span> tag, line 1; valid values are south/east/north/west/auto

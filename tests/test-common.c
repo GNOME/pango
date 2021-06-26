@@ -81,6 +81,25 @@ done:
   return diff;
 }
 
+gboolean
+file_has_prefix (const char  *filename,
+                 const char  *str,
+                 GError     **error)
+{
+  char *contents;
+  gsize len;
+  gboolean ret;
+
+  if (!g_file_get_contents (filename, &contents, &len, error))
+    return FALSE;
+
+  ret = g_str_has_prefix (contents, str);
+
+  g_free (contents);
+
+  return ret;
+}
+
 void
 print_attribute (PangoAttribute *attr, GString *string)
 {

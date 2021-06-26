@@ -53,7 +53,6 @@ test_file (const gchar *filename, GString *string)
   g_assert_no_error (error);
 
   ret = pango_parse_markup (contents, length, '_', &attrs, &text, &accel, &error);
-  g_free (contents);
 
   if (ret)
     {
@@ -81,12 +80,18 @@ test_file (const gchar *filename, GString *string)
           g_string_append (string, "\n\n---\n\n");
           g_string_append_unichar (string, accel);
         }
+
+      /* Check that all optional arguments can be NULL */
+      ret = pango_parse_markup (contents, length, '_', NULL, NULL, NULL, NULL);
+      g_assert_true (ret);
     }
   else
     {
       g_string_append_printf (string, "ERROR: %s", error->message);
       g_error_free (error);
     }
+
+  g_free (contents);
 }
 
 static gchar *
@@ -135,6 +140,119 @@ test_parse (gconstpointer d)
   g_free (expected_file);
 }
 
+static void
+test_file_incrementally (const gchar *filename, GString *string)
+{
+  gchar *contents;
+  gsize  length;
+  GError *error = NULL;
+  gchar *text;
+  PangoAttrList *attrs;
+  PangoAttrIterator *iter;
+  PangoFontDescription *desc;
+  PangoLanguage *lang;
+  gboolean ret;
+  char *str;
+  int start, end;
+  gunichar accel = 0;
+  GMarkupParseContext *ctx;
+
+  g_file_get_contents (filename, &contents, &length, &error);
+  g_assert_no_error (error);
+
+  ctx = pango_markup_parser_new ('_');
+
+  ret = TRUE;
+  for (int i = 0; i < length; i++)
+    {
+      ret = g_markup_parse_context_parse (ctx, &contents[i], 1, &error);
+      if (!ret)
+        break;
+    }
+
+  g_free (contents);
+
+  if (ret)
+    {
+      pango_markup_parser_finish (ctx, &attrs, &text, &accel, &error);
+
+      g_assert_no_error (error);
+      g_string_append (string, text);
+      g_string_append (string, "\n\n---\n\n");
+      print_attr_list (attrs, string);
+      g_string_append (string, "\n\n---\n\n");
+      desc = pango_font_description_new ();
+      iter = pango_attr_list_get_iterator (attrs);
+      do {
+        pango_attr_iterator_range (iter, &start, &end);
+        pango_attr_iterator_get_font (iter, desc, &lang, NULL);
+        str = pango_font_description_to_string (desc);
+        g_string_append_printf (string, "[%d:%d] %s %s\n", start, end, (char *)lang, str);
+        g_free (str);
+      } while (pango_attr_iterator_next (iter));
+      pango_attr_iterator_destroy (iter);
+      pango_attr_list_unref (attrs);
+      pango_font_description_free (desc);
+      g_free (text);
+
+      if (accel)
+        {
+          g_string_append (string, "\n\n---\n\n");
+          g_string_append_unichar (string, accel);
+        }
+    }
+  else
+    {
+      g_string_append_printf (string, "ERROR: %s", error->message);
+      g_error_free (error);
+    }
+
+  g_markup_parse_context_free (ctx);
+}
+
+static void
+test_parse_incrementally (gconstpointer d)
+{
+  const gchar *filename = d;
+  gchar *expected_file;
+  GError *error = NULL;
+  GString *string;
+  char *diff;
+  gboolean ret;
+
+  expected_file = get_expected_filename (filename);
+
+  string = g_string_sized_new (0);
+
+  test_file_incrementally (filename, string);
+
+  /* incremental parsing can affect line numbers,
+   * so avoid comparing the exact error strings
+   */
+  if (g_str_has_prefix (string->str, "ERROR:"))
+    {
+      ret = file_has_prefix (expected_file, "ERROR:", &error);
+      g_assert_no_error (error);
+      g_assert_true (ret);
+    }
+  else
+    {
+      diff = diff_with_file (expected_file, string->str, string->len, &error);
+      g_assert_no_error (error);
+
+      if (diff && diff[0])
+        {
+          g_test_message ("Resulting output doesn't match reference:\n%s", diff);
+          g_test_fail ();
+        }
+      g_free (diff);
+    }
+
+  g_string_free (string, TRUE);
+
+  g_free (expected_file);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -172,6 +290,11 @@ main (int argc, char *argv[])
       path = g_strdup_printf ("/markup/parse/%s", name);
       g_test_add_data_func_full (path, g_test_build_filename (G_TEST_DIST, "markups", name, NULL),
                                  test_parse, g_free);
+      g_free (path);
+
+      path = g_strdup_printf ("/markup/parse-incrementally/%s", name);
+      g_test_add_data_func_full (path, g_test_build_filename (G_TEST_DIST, "markups", name, NULL),
+                                 test_parse_incrementally, g_free);
       g_free (path);
     }
   g_dir_close (dir);
