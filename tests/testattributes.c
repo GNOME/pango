@@ -92,6 +92,25 @@ test_attributes_equal (void)
 }
 
 static void
+test_attributes_register (void)
+{
+  PangoAttrType type;
+  GEnumClass *class;
+
+  type = pango_attr_type_register ("my-attribute");
+  g_assert_cmpstr (pango_attr_type_get_name (type), ==, "my-attribute");
+
+  class = g_type_class_ref (PANGO_TYPE_ATTR_TYPE);
+  for (int i = 0; i < class->n_values; i++)
+    {
+      g_assert_cmpint (type, !=, class->values[i].value);
+      g_assert_null (pango_attr_type_get_name (class->values[i].value));
+    }
+
+  g_type_class_unref (class);
+}
+
+static void
 assert_attributes (GSList     *attrs,
                    const char *expected)
 {
@@ -188,6 +207,16 @@ test_list_change (void)
   list = attributes_from_string ("[0,10]size=10\n"
                                  "[0,30]weight=700\n"
                                  "[20,30]size=20\n");
+
+  /* no-op */
+  attr = pango_attr_variant_new (PANGO_VARIANT_SMALL_CAPS);
+  attr->start_index = 10;
+  attr->end_index = 10;
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "[0,10]size=10\n"
+                          "[0,30]weight=700\n"
+                          "[20,30]size=20\n");
 
   /* simple insertion with pango_attr_list_change */
   attr = pango_attr_variant_new (PANGO_VARIANT_SMALL_CAPS);
@@ -485,6 +514,10 @@ test_iter_get_font (void)
   attr->start_index = 10;
   attr->end_index = 30;
   pango_attr_list_insert (list, attr);
+  attr = pango_attr_size_new_absolute (10 * PANGO_SCALE);
+  attr->start_index = 10;
+  attr->end_index = 20;
+  pango_attr_list_insert (list, attr);
   attr = pango_attr_language_new (pango_language_from_string ("ja-JP"));
   attr->start_index = 10;
   attr->end_index = 20;
@@ -509,7 +542,7 @@ test_iter_get_font (void)
   pango_attr_iterator_next (iter);
   desc = pango_font_description_new ();
   pango_attr_iterator_get_font (iter, desc, &lang, &attrs);
-  desc2 = pango_font_description_from_string ("Times Condensed 10");
+  desc2 = pango_font_description_from_string ("Times Condensed 10px");
   g_assert_true (pango_font_description_equal (desc, desc2));
   g_assert_nonnull (lang);
   g_assert_cmpstr (pango_language_to_string (lang), ==, "ja-jp");
@@ -626,6 +659,20 @@ test_list_update2 (void)
   pango_attr_list_unref (list);
 }
 
+/* test overflow */
+static void
+test_list_update3 (void)
+{
+  PangoAttrList *list;
+
+  list = attributes_from_string ("[5,4294967285]family=Times\n");
+
+  pango_attr_list_update (list, 8, 10, 30);
+
+  assert_attr_list (list, "[5,-1]family=Times\n");
+
+  pango_attr_list_unref (list);
+}
 static void
 test_list_equal (void)
 {
@@ -953,6 +1000,7 @@ main (int argc, char *argv[])
 
   g_test_add_func ("/attributes/basic", test_attributes_basic);
   g_test_add_func ("/attributes/equal", test_attributes_equal);
+  g_test_add_func ("/attributes/register", test_attributes_register);
   g_test_add_func ("/attributes/list/basic", test_list);
   g_test_add_func ("/attributes/list/change", test_list_change);
   g_test_add_func ("/attributes/list/splice", test_list_splice);
@@ -961,6 +1009,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/attributes/list/filter", test_list_filter);
   g_test_add_func ("/attributes/list/update", test_list_update);
   g_test_add_func ("/attributes/list/update2", test_list_update2);
+  g_test_add_func ("/attributes/list/update3", test_list_update3);
   g_test_add_func ("/attributes/list/equal", test_list_equal);
   g_test_add_func ("/attributes/list/insert", test_insert);
   g_test_add_func ("/attributes/list/insert2", test_insert2);
