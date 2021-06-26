@@ -584,17 +584,10 @@ pango_markup_parser_new_internal (char       accel_marker,
 					0, md,
                                         (GDestroyNotify)destroy_markup_data);
 
-  if (!g_markup_parse_context_parse (context,
-                                     "<markup>",
-                                     -1,
-                                     error))
-    goto error;
+  if (!g_markup_parse_context_parse (context, "<markup>", -1, error))
+    g_clear_pointer (&context, g_markup_parse_context_free);
 
   return context;
-
- error:
-  g_markup_parse_context_free (context);
-  return NULL;
 }
 
 /**
@@ -654,8 +647,6 @@ pango_parse_markup (const char                 *markup_text,
   context = pango_markup_parser_new_internal (accel_marker,
                                               error,
                                               (attr_list != NULL));
-  if (context == NULL)
-    goto out;
 
   if (!g_markup_parse_context_parse (context,
                                      markup_text,
@@ -711,16 +702,9 @@ pango_parse_markup (const char                 *markup_text,
  * Since: 1.31.0
  **/
 GMarkupParseContext *
-pango_markup_parser_new (gunichar               accel_marker)
+pango_markup_parser_new (gunichar accel_marker)
 {
-  GError *error = NULL;
-  GMarkupParseContext *context;
-  context = pango_markup_parser_new_internal (accel_marker, &error, TRUE);
-
-  if (context == NULL)
-    g_critical ("Had error when making markup parser: %s\n", error->message);
-
-  return context;
+  return pango_markup_parser_new_internal (accel_marker, NULL, TRUE);
 }
 
 /**
