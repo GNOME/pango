@@ -156,6 +156,29 @@ test_attr_list_update (void)
   pango_attr_list_unref (list);
 }
 
+static void
+test_version_info (void)
+{
+  char *str;
+
+  g_assert_null (pango_version_check (1, 0, 0));
+  g_assert_null (pango_version_check (PANGO_VERSION_MAJOR, PANGO_VERSION_MINOR, PANGO_VERSION_MICRO));
+  g_assert_nonnull (pango_version_check (2, 0, 0));
+
+  str = g_strdup_printf ("%d.%d.%d", PANGO_VERSION_MAJOR, PANGO_VERSION_MINOR, PANGO_VERSION_MICRO);
+  g_assert_cmpstr (str, ==, pango_version_string ());
+  g_free (str);
+}
+
+static void
+test_is_zero_width (void)
+{
+  g_assert_true (pango_is_zero_width (0x00ad));
+  g_assert_true (pango_is_zero_width (0x034f));
+  g_assert_false (pango_is_zero_width ('a'));
+  g_assert_false (pango_is_zero_width ('c'));
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -168,6 +191,8 @@ main (int argc, char *argv[])
   g_test_add_func ("/language/emoji-crash", test_language_emoji_crash);
   g_test_add_func ("/layout/line-height", test_line_height);
   g_test_add_func ("/attr-list/update", test_attr_list_update);
+  g_test_add_func ("/version-info", test_version_info);
+  g_test_add_func ("/is-zerowidth", test_is_zero_width);
 
   return g_test_run ();
 }
