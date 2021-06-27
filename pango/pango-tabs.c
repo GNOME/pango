@@ -113,7 +113,7 @@ pango_tab_array_new (gint     initial_size,
  * @first_position: position of first tab stop
  * @...: additional alignment/position pairs
  *
- * Creates * a `PangoTabArray` and allows you to specify the alignment
+ * Creates a `PangoTabArray` and allows you to specify the alignment
  * and position of each tab stop.
  *
  * You **must** provide an alignment and position for @size tab stops.
