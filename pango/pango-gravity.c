@@ -195,7 +195,7 @@ const PangoScriptProperties script_properties[] =
       {LTR, NONE, S, FALSE},	/* Tfng */
       {LTR, NONE, S, FALSE},	/* Sylo */
       {LTR, NONE, S, FALSE},	/* Xpeo */
-      {LTR, NONE, S, FALSE},	/* Khar */
+      {RTL, NONE, S, FALSE},	/* Khar */
 
       /* Unicode-5.0 additions */
       {LTR, NONE, S, FALSE},	/* Zzzz */
