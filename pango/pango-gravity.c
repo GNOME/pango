@@ -203,7 +203,118 @@ const PangoScriptProperties script_properties[] =
       {LTR, NONE, S, FALSE},	/* Xsux */
       {RTL, NONE, S, FALSE},	/* Phnx */
       {LTR, NONE, S, FALSE},	/* Phag */
-      {RTL, NONE, S, FALSE}	/* Nkoo */
+      {RTL, NONE, S, FALSE},    /* Nkoo */
+
+      /* Unicode-5.1 additions */
+      {LTR, NONE, S, FALSE},	/* Kali */
+      {LTR, NONE, S, FALSE},	/* Lepc */
+      {LTR, NONE, S, FALSE},	/* Rjng */
+      {LTR, NONE, S, FALSE},	/* Sund */
+      {LTR, NONE, S, FALSE},	/* Saur */
+      {LTR, NONE, S, FALSE},	/* Cham */
+      {LTR, NONE, S, FALSE},	/* Olck */
+      {LTR, NONE, S, FALSE},	/* Vaii */
+      {LTR, NONE, S, FALSE},	/* Cari */
+      {LTR, NONE, S, FALSE},	/* Lyci */
+      {RTL, NONE, S, FALSE},	/* Lydi */
+
+      /* Unicode-5.2 additions */
+      {RTL, NONE, S, FALSE},	/* Avst */
+      {LTR, NONE, S, FALSE},	/* Bamu */
+      {LTR, NONE, S, FALSE},	/* Egyp */
+      {RTL, NONE, S, FALSE},	/* Armi */
+      {RTL, NONE, S, FALSE},	/* Phli */
+      {RTL, NONE, S, FALSE},	/* Prti */
+      {LTR, NONE, S, FALSE},	/* Java */
+      {LTR, NONE, S, FALSE},	/* Kthi */
+      {LTR, NONE, S, FALSE},	/* Lisu */
+      {LTR, NONE, S, FALSE},	/* Mtei */
+      {RTL, NONE, S, FALSE},	/* Sarb */
+      {RTL, NONE, S, FALSE},	/* Orkh */
+      {RTL, TTB,  S, FALSE},	/* Samr */
+      {LTR, NONE, S, FALSE},	/* Lana */
+      {LTR, NONE, S, FALSE},	/* Tavt */
+
+      /* Unicode-6.0 additions */
+      {LTR, NONE, S, FALSE},	/* Batk */
+      {LTR, NONE, S, FALSE},	/* Brah */
+      {RTL, NONE, S, FALSE},	/* Mand */
+
+      /* Unicode-6.1 additions */
+      {LTR, NONE, S, FALSE},	/* Cakm */
+      {RTL, NONE, S, FALSE},	/* Merc */
+      {RTL, NONE, S, FALSE},	/* Mero */
+      {LTR, NONE, S, FALSE},	/* Plrd */
+      {LTR, NONE, S, FALSE},	/* Shrd */
+      {LTR, NONE, S, FALSE},	/* Sora */
+      {LTR, NONE, S, FALSE},	/* Takr */
+
+      /* Unicode-7.0 additions */
+      {LTR, NONE, S, FALSE},	/* Bass */
+      {LTR, NONE, S, FALSE},	/* Aghb */
+      {LTR, NONE, S, FALSE},	/* Dupl */
+      {LTR, NONE, S, FALSE},	/* Elba */
+      {LTR, NONE, S, FALSE},	/* Gran */
+      {LTR, NONE, S, FALSE},	/* Khoj */
+      {LTR, NONE, S, FALSE},	/* Sind */
+      {LTR, NONE, S, FALSE},	/* Lina */
+      {LTR, NONE, S, FALSE},	/* Mahj */
+      {RTL, NONE, S, FALSE},	/* Mani */
+      {RTL, NONE, S, FALSE},	/* Mend */
+      {LTR, NONE, S, FALSE},	/* Modi */
+      {LTR, NONE, S, FALSE},	/* Mroo */
+      {RTL, NONE, S, FALSE},	/* Nbat */
+      {RTL, NONE, S, FALSE},	/* Narb */
+      {LTR, NONE, S, FALSE},	/* Perm */
+      {LTR, NONE, S, FALSE},	/* Hmng */
+      {RTL, NONE, S, FALSE},	/* Palm */
+      {LTR, NONE, S, FALSE},	/* Pauc */
+      {RTL, NONE, S, FALSE},	/* Phlp */
+      {LTR, NONE, S, FALSE},	/* Sidd */
+      {LTR, NONE, S, FALSE},	/* Tirh */
+      {LTR, NONE, S, FALSE},	/* Wara */
+
+      /* Unicode-8.0 additions */
+      {LTR, NONE, S, FALSE},	/* Ahom */
+      {LTR, NONE, S, FALSE},	/* Hluw */
+      {RTL, NONE, S, FALSE},	/* Hatr */
+      {LTR, NONE, S, FALSE},	/* Hung */
+      {LTR, NONE, S, FALSE},	/* Sgnw */
+
+      /* Unicode-9.0 additions */
+      {RTL, NONE, S, FALSE},	/* Adlm */
+      {LTR, NONE, S, FALSE},	/* Bhks */
+      {LTR, NONE, S, FALSE},	/* Marc */
+      {LTR, NONE, S, FALSE},	/* Newa */
+      {LTR, NONE, S, FALSE},	/* Osge */
+      {LTR, NONE, S, FALSE},	/* Tang */
+
+      /* Unicode-10.0 additions */
+      {LTR, NONE, S, FALSE},	/* Gonm */
+      {LTR, NONE, S, FALSE},	/* Nshu */
+      {LTR, NONE, S, FALSE},	/* Soyo */
+      {LTR, NONE, S, FALSE},	/* Zanb */
+
+      /* Unicode-11.0 additions */
+      {LTR, NONE, S, FALSE},	/* Dogr */
+      {LTR, NONE, S, FALSE},	/* Gong */
+      {RTL, NONE, S, FALSE},	/* Rohg */
+      {LTR, NONE, S, FALSE},	/* Maka */
+      {LTR, NONE, S, FALSE},	/* Medf */
+      {RTL, NONE, S, FALSE},	/* Sogo */
+      {RTL, NONE, S, FALSE},	/* Sogd */
+
+      /* Unicode-12.0 additions */
+      {RTL, NONE, S, FALSE},	/* Elym */
+      {LTR, NONE, S, FALSE},	/* Nand */
+      {LTR, NONE, S, FALSE},	/* Rohg */
+      {LTR, NONE, S, FALSE},	/* Wcho */
+
+      /* Unicode-13.0 additions */
+      {RTL, NONE, S, FALSE},	/* Chrs */
+      {LTR, NONE, S, FALSE},	/* Diak */
+      {LTR, NONE, S, FALSE},	/* Kits */
+      {RTL, NONE, S, FALSE},	/* Yezi */
 };
 
 #undef NONE
