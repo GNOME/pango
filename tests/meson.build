@@ -24,6 +24,7 @@ tests = [
   [ 'testcolor' ],
   [ 'testscript' ],
   [ 'testlanguage' ],
+  [ 'testmatrix' ],
 ]
 
 if build_pangoft2
