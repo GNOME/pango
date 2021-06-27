@@ -51,6 +51,10 @@ G_BEGIN_DECLS
  * @PANGO_BIDI_TYPE_S: Segment Separator
  * @PANGO_BIDI_TYPE_WS: Whitespace
  * @PANGO_BIDI_TYPE_ON: Other Neutrals
+ * @PANGO_BIDI_TYPE_LRI: Left-to-Right isolate. Since 1.48.6
+ * @PANGO_BIDI_TYPE_RLI: Right-to-Left isolate. Since 1.48.6
+ * @PANGO_BIDI_TYPE_FSI: First strong isolate. Since 1.48.6
+ * @PANGO_BIDI_TYPE_PDI: Pop directional isolate. Since 1.48.6
  *
  * `PangoBidiType` represents the bidirectional character
  * type of a Unicode character as specified by the
@@ -83,7 +87,13 @@ typedef enum {
   PANGO_BIDI_TYPE_B,
   PANGO_BIDI_TYPE_S,
   PANGO_BIDI_TYPE_WS,
-  PANGO_BIDI_TYPE_ON
+  PANGO_BIDI_TYPE_ON,
+
+  /* Explicit formatting */
+  PANGO_BIDI_TYPE_LRI,
+  PANGO_BIDI_TYPE_RLI,
+  PANGO_BIDI_TYPE_FSI,
+  PANGO_BIDI_TYPE_PDI
 } PangoBidiType;
 
 PANGO_DEPRECATED_IN_1_44

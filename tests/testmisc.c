@@ -258,8 +258,11 @@ test_bidi_type_for_unichar (void)
   g_assert_true (pango_bidi_type_for_unichar (0x000b) == PANGO_BIDI_TYPE_S);
   g_assert_true (pango_bidi_type_for_unichar (' ') == PANGO_BIDI_TYPE_WS);
   g_assert_true (pango_bidi_type_for_unichar ('!') == PANGO_BIDI_TYPE_ON);
-  /* this should be FSI */
-  g_assert_true (pango_bidi_type_for_unichar (0x2026) == PANGO_BIDI_TYPE_ON);
+  /* these are new */
+  g_assert_true (pango_bidi_type_for_unichar (0x2066) == PANGO_BIDI_TYPE_LRI);
+  g_assert_true (pango_bidi_type_for_unichar (0x2067) == PANGO_BIDI_TYPE_RLI);
+  g_assert_true (pango_bidi_type_for_unichar (0x2068) == PANGO_BIDI_TYPE_FSI);
+  g_assert_true (pango_bidi_type_for_unichar (0x2069) == PANGO_BIDI_TYPE_PDI);
 }
 
 static void
