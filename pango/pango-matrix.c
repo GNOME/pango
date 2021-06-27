@@ -461,17 +461,18 @@ pango_matrix_transform_pixel_rectangle (const PangoMatrix *matrix,
   min_x = max_x = quad_x[0];
   min_y = max_y = quad_y[0];
 
-  for (i=1; i < 4; i++) {
+  for (i=1; i < 4; i++)
+    {
       if (quad_x[i] < min_x)
-	  min_x = quad_x[i];
+        min_x = quad_x[i];
       else if (quad_x[i] > max_x)
-	  max_x = quad_x[i];
+        max_x = quad_x[i];
 
       if (quad_y[i] < min_y)
-	  min_y = quad_y[i];
+        min_y = quad_y[i];
       else if (quad_y[i] > max_y)
-	  max_y = quad_y[i];
-  }
+        max_y = quad_y[i];
+    }
 
   rect->x      = floor (min_x);
   rect->y      = floor (min_y);
