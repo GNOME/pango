@@ -22,7 +22,8 @@ tests = [
   [ 'testboundaries' ],
   [ 'testboundaries_ucd' ],
   [ 'testcolor' ],
-  [ 'testscript' ]
+  [ 'testscript' ],
+  [ 'testlanguage' ],
 ]
 
 if build_pangoft2
