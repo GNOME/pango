@@ -179,6 +179,60 @@ test_is_zero_width (void)
   g_assert_false (pango_is_zero_width ('c'));
 }
 
+static void
+test_gravity_to_rotation (void)
+{
+  g_assert_true (pango_gravity_to_rotation (PANGO_GRAVITY_SOUTH) == 0);
+  g_assert_true (pango_gravity_to_rotation (PANGO_GRAVITY_NORTH) == G_PI);
+  g_assert_true (pango_gravity_to_rotation (PANGO_GRAVITY_EAST) == -G_PI_2);
+  g_assert_true (pango_gravity_to_rotation (PANGO_GRAVITY_WEST) == G_PI_2);
+}
+
+static void
+test_gravity_from_matrix (void)
+{
+  PangoMatrix m = PANGO_MATRIX_INIT;
+
+  g_assert_true (pango_gravity_get_for_matrix (&m) == PANGO_GRAVITY_SOUTH);
+
+  pango_matrix_rotate (&m, 90);
+  g_assert_true (pango_gravity_get_for_matrix (&m) == PANGO_GRAVITY_WEST);
+
+  pango_matrix_rotate (&m, 90);
+  g_assert_true (pango_gravity_get_for_matrix (&m) == PANGO_GRAVITY_NORTH);
+
+  pango_matrix_rotate (&m, 90);
+  g_assert_true (pango_gravity_get_for_matrix (&m) == PANGO_GRAVITY_EAST);
+}
+
+static void
+test_gravity_for_script (void)
+{
+  struct {
+    PangoScript script;
+    PangoGravity gravity;
+    PangoGravity gravity_natural;
+    PangoGravity gravity_line;
+  } tests[] = {
+    { PANGO_SCRIPT_ARABIC, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_NORTH },
+    { PANGO_SCRIPT_BOPOMOFO, PANGO_GRAVITY_EAST, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_SOUTH },
+    { PANGO_SCRIPT_LATIN, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_SOUTH },
+    { PANGO_SCRIPT_HANGUL, PANGO_GRAVITY_EAST, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_SOUTH },
+    { PANGO_SCRIPT_MONGOLIAN, PANGO_GRAVITY_WEST, PANGO_GRAVITY_SOUTH },
+    { PANGO_SCRIPT_OGHAM, PANGO_GRAVITY_WEST, PANGO_GRAVITY_NORTH, PANGO_GRAVITY_SOUTH },
+    { PANGO_SCRIPT_TIBETAN, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_SOUTH },
+  };
+
+  for (int i = 0; i < G_N_ELEMENTS (tests); i++)
+    {
+      g_assert_true (pango_gravity_get_for_script (tests[i].script, PANGO_GRAVITY_AUTO, PANGO_GRAVITY_HINT_STRONG) == tests[i].gravity);
+
+      g_assert_true (pango_gravity_get_for_script_and_width (tests[i].script, FALSE, PANGO_GRAVITY_EAST, PANGO_GRAVITY_HINT_NATURAL) == tests[i].gravity_natural);
+      g_assert_true (pango_gravity_get_for_script_and_width (tests[i].script, FALSE, PANGO_GRAVITY_EAST, PANGO_GRAVITY_HINT_STRONG) == PANGO_GRAVITY_EAST);
+      g_assert_true (pango_gravity_get_for_script_and_width (tests[i].script, FALSE, PANGO_GRAVITY_EAST, PANGO_GRAVITY_HINT_LINE) == tests[i].gravity_line);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -193,6 +247,9 @@ main (int argc, char *argv[])
   g_test_add_func ("/attr-list/update", test_attr_list_update);
   g_test_add_func ("/version-info", test_version_info);
   g_test_add_func ("/is-zerowidth", test_is_zero_width);
+  g_test_add_func ("/gravity/to-rotation", test_gravity_to_rotation);
+  g_test_add_func ("/gravity/from-matrix", test_gravity_from_matrix);
+  g_test_add_func ("/gravity/for-script", test_gravity_for_script);
 
   return g_test_run ();
 }
