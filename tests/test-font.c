@@ -23,6 +23,7 @@
 #include <string.h>
 #include <locale.h>
 
+#include <gio/gio.h>
 #include <pango/pangocairo.h>
 
 static PangoContext *context;
@@ -314,6 +315,73 @@ test_roundtrip_emoji (void)
   g_object_unref (context);
 }
 
+static void
+test_font_models (void)
+{
+  PangoFontMap *map = pango_cairo_font_map_get_default ();
+
+  g_assert_true (g_list_model_get_item_type (G_LIST_MODEL (map)) == PANGO_TYPE_FONT_FAMILY);
+
+  for (guint i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (map)); i++)
+    {
+      GObject *obj = g_list_model_get_item (G_LIST_MODEL (map), i);
+
+      g_assert_true (PANGO_IS_FONT_FAMILY (obj));
+
+      g_assert_true (g_list_model_get_item_type (G_LIST_MODEL (obj)) == PANGO_TYPE_FONT_FACE);
+
+      if (g_ascii_strcasecmp (pango_font_family_get_name (PANGO_FONT_FAMILY (obj)), "monospace") == 0)
+        {
+          g_assert_true (pango_font_family_is_monospace (PANGO_FONT_FAMILY (obj)));
+        }
+
+      for (guint j = 0; j < g_list_model_get_n_items (G_LIST_MODEL (obj)); j++)
+        {
+          GObject *obj2 = g_list_model_get_item (G_LIST_MODEL (obj), j);
+          int *sizes;
+          int n_sizes;
+
+          g_assert_true (PANGO_IS_FONT_FACE (obj2));
+
+          g_assert_true (pango_font_face_get_family (PANGO_FONT_FACE (obj2)) == (PangoFontFamily *)obj);
+
+          pango_font_face_list_sizes (PANGO_FONT_FACE (obj2), &sizes, &n_sizes);
+          /* no more bitmap fonts */
+          g_assert_null (sizes);
+          g_assert_cmpint (n_sizes, ==, 0);
+
+          g_object_unref (obj2);
+        }
+
+      g_object_unref (obj);
+    }
+}
+
+static void
+test_glyph_extents (void)
+{
+  PangoRectangle ink, logical;
+
+  pango_font_get_glyph_extents (NULL, 0, &ink, &logical);
+  g_assert_cmpint (ink.height, ==, (PANGO_UNKNOWN_GLYPH_HEIGHT - 2) * PANGO_SCALE);
+  g_assert_cmpint (ink.width, ==, (PANGO_UNKNOWN_GLYPH_WIDTH - 2) * PANGO_SCALE);
+  g_assert_cmpint (logical.height, ==, PANGO_UNKNOWN_GLYPH_HEIGHT * PANGO_SCALE);
+  g_assert_cmpint (logical.width, ==, PANGO_UNKNOWN_GLYPH_WIDTH * PANGO_SCALE);
+}
+
+static void
+test_font_metrics (void)
+{
+  PangoFontMetrics *metrics;
+
+  metrics = pango_font_get_metrics (NULL, NULL);
+
+  g_assert_cmpint (metrics->approximate_char_width, ==, PANGO_SCALE * PANGO_UNKNOWN_GLYPH_WIDTH);
+  g_assert_cmpint (metrics->approximate_digit_width, ==, PANGO_SCALE * PANGO_UNKNOWN_GLYPH_WIDTH);
+
+  pango_font_metrics_unref (metrics);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -332,6 +400,9 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/font/enumerate", test_enumerate);
   g_test_add_func ("/pango/font/roundtrip/plain", test_roundtrip_plain);
   g_test_add_func ("/pango/font/roundtrip/emoji", test_roundtrip_emoji);
+  g_test_add_func ("/pango/font/models", test_font_models);
+  g_test_add_func ("/pango/font/glyph-extents", test_glyph_extents);
+  g_test_add_func ("/pango/font/font-metrics", test_font_metrics);
 
   return g_test_run ();
 }

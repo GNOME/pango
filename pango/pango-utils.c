@@ -127,6 +127,8 @@ pango_version_check (int required_major,
   gint pango_effective_micro = 100 * PANGO_VERSION_MINOR + PANGO_VERSION_MICRO;
   gint required_effective_micro = 100 * required_minor + required_micro;
 
+  if (required_major > PANGO_VERSION_MAJOR)
+    return "Pango version too old (major mismatch)";
   if (required_major < PANGO_VERSION_MAJOR)
     return "Pango version too new (major mismatch)";
   if (required_effective_micro < pango_effective_micro - PANGO_BINARY_AGE)

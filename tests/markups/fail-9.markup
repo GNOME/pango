@@ -1,0 +1,11 @@
+<span font="Sans Italic 12"
+      foreground="#00ff00"
+      background="#f0f0f0"
+      underline="double"
+      underline_color="red"
+      strikethrough="x"
+      strikethrough_color="blue"
+      fallback="false"
+      lang="de"
+      gravity="south"
+      gravity_hint="strong">Lots of attrs</span>

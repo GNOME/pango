@@ -1,0 +1,1 @@
+ERROR: Value of 'insert_hyphens' attribute on <span> tag line 1 should have one of 'true/yes/t/y' or 'false/no/f/n': 'blue' is not valid

@@ -1,0 +1,1 @@
+ERROR: Value of 'strikethrough' attribute on <span> tag line 11 should have one of 'true/yes/t/y' or 'false/no/f/n': 'x' is not valid

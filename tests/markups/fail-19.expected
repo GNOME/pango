@@ -1,0 +1,1 @@
+ERROR: Value of 'size' attribute on <span> tag on line 1 could not be parsed; should be an integer no more than 2147483647, or a string such as 'small', not '20px'

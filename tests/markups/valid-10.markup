@@ -3,9 +3,9 @@
       background="#f0f0f0"
       underline="double"
       underline_color="red"
-      strikethrough="true"
+      strikethrough="yes"
       strikethrough_color="blue"
-      fallback="false"
+      fallback="no"
       lang="de"
       gravity="south"
       gravity_hint="strong">Lots of attrs</span>

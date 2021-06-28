@@ -156,6 +156,148 @@ test_attr_list_update (void)
   pango_attr_list_unref (list);
 }
 
+static void
+test_version_info (void)
+{
+  char *str;
+
+  g_assert_null (pango_version_check (1, 0, 0));
+  g_assert_null (pango_version_check (PANGO_VERSION_MAJOR, PANGO_VERSION_MINOR, PANGO_VERSION_MICRO));
+  g_assert_nonnull (pango_version_check (2, 0, 0));
+
+  str = g_strdup_printf ("%d.%d.%d", PANGO_VERSION_MAJOR, PANGO_VERSION_MINOR, PANGO_VERSION_MICRO);
+  g_assert_cmpstr (str, ==, pango_version_string ());
+  g_free (str);
+}
+
+static void
+test_is_zero_width (void)
+{
+  g_assert_true (pango_is_zero_width (0x00ad));
+  g_assert_true (pango_is_zero_width (0x034f));
+  g_assert_false (pango_is_zero_width ('a'));
+  g_assert_false (pango_is_zero_width ('c'));
+}
+
+static void
+test_gravity_to_rotation (void)
+{
+  g_assert_true (pango_gravity_to_rotation (PANGO_GRAVITY_SOUTH) == 0);
+  g_assert_true (pango_gravity_to_rotation (PANGO_GRAVITY_NORTH) == G_PI);
+  g_assert_true (pango_gravity_to_rotation (PANGO_GRAVITY_EAST) == -G_PI_2);
+  g_assert_true (pango_gravity_to_rotation (PANGO_GRAVITY_WEST) == G_PI_2);
+}
+
+static void
+test_gravity_from_matrix (void)
+{
+  PangoMatrix m = PANGO_MATRIX_INIT;
+
+  g_assert_true (pango_gravity_get_for_matrix (&m) == PANGO_GRAVITY_SOUTH);
+
+  pango_matrix_rotate (&m, 90);
+  g_assert_true (pango_gravity_get_for_matrix (&m) == PANGO_GRAVITY_WEST);
+
+  pango_matrix_rotate (&m, 90);
+  g_assert_true (pango_gravity_get_for_matrix (&m) == PANGO_GRAVITY_NORTH);
+
+  pango_matrix_rotate (&m, 90);
+  g_assert_true (pango_gravity_get_for_matrix (&m) == PANGO_GRAVITY_EAST);
+}
+
+static void
+test_gravity_for_script (void)
+{
+  struct {
+    PangoScript script;
+    PangoGravity gravity;
+    PangoGravity gravity_natural;
+    PangoGravity gravity_line;
+  } tests[] = {
+    { PANGO_SCRIPT_ARABIC, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_NORTH },
+    { PANGO_SCRIPT_BOPOMOFO, PANGO_GRAVITY_EAST, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_SOUTH },
+    { PANGO_SCRIPT_LATIN, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_SOUTH },
+    { PANGO_SCRIPT_HANGUL, PANGO_GRAVITY_EAST, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_SOUTH },
+    { PANGO_SCRIPT_MONGOLIAN, PANGO_GRAVITY_WEST, PANGO_GRAVITY_SOUTH },
+    { PANGO_SCRIPT_OGHAM, PANGO_GRAVITY_WEST, PANGO_GRAVITY_NORTH, PANGO_GRAVITY_SOUTH },
+    { PANGO_SCRIPT_TIBETAN, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_SOUTH },
+  };
+
+  for (int i = 0; i < G_N_ELEMENTS (tests); i++)
+    {
+      g_assert_true (pango_gravity_get_for_script (tests[i].script, PANGO_GRAVITY_AUTO, PANGO_GRAVITY_HINT_STRONG) == tests[i].gravity);
+
+      g_assert_true (pango_gravity_get_for_script_and_width (tests[i].script, FALSE, PANGO_GRAVITY_EAST, PANGO_GRAVITY_HINT_NATURAL) == tests[i].gravity_natural);
+      g_assert_true (pango_gravity_get_for_script_and_width (tests[i].script, FALSE, PANGO_GRAVITY_EAST, PANGO_GRAVITY_HINT_STRONG) == PANGO_GRAVITY_EAST);
+      g_assert_true (pango_gravity_get_for_script_and_width (tests[i].script, FALSE, PANGO_GRAVITY_EAST, PANGO_GRAVITY_HINT_LINE) == tests[i].gravity_line);
+    }
+}
+
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+
+static void
+test_bidi_type_for_unichar (void)
+{
+  /* one representative from each class we support */
+  g_assert_true (pango_bidi_type_for_unichar ('a') == PANGO_BIDI_TYPE_L);
+  g_assert_true (pango_bidi_type_for_unichar (0x202a) == PANGO_BIDI_TYPE_LRE);
+  g_assert_true (pango_bidi_type_for_unichar (0x202d) == PANGO_BIDI_TYPE_LRO);
+  g_assert_true (pango_bidi_type_for_unichar (0x05d0) == PANGO_BIDI_TYPE_R);
+  g_assert_true (pango_bidi_type_for_unichar (0x0627) == PANGO_BIDI_TYPE_AL);
+  g_assert_true (pango_bidi_type_for_unichar (0x202b) == PANGO_BIDI_TYPE_RLE);
+  g_assert_true (pango_bidi_type_for_unichar (0x202e) == PANGO_BIDI_TYPE_RLO);
+  g_assert_true (pango_bidi_type_for_unichar (0x202c) == PANGO_BIDI_TYPE_PDF);
+  g_assert_true (pango_bidi_type_for_unichar ('0') == PANGO_BIDI_TYPE_EN);
+  g_assert_true (pango_bidi_type_for_unichar ('+') == PANGO_BIDI_TYPE_ES);
+  g_assert_true (pango_bidi_type_for_unichar ('#') == PANGO_BIDI_TYPE_ET);
+  g_assert_true (pango_bidi_type_for_unichar (0x601) == PANGO_BIDI_TYPE_AN);
+  g_assert_true (pango_bidi_type_for_unichar (',') == PANGO_BIDI_TYPE_CS);
+  g_assert_true (pango_bidi_type_for_unichar (0x0301) == PANGO_BIDI_TYPE_NSM);
+  g_assert_true (pango_bidi_type_for_unichar (0x200d) == PANGO_BIDI_TYPE_BN);
+  g_assert_true (pango_bidi_type_for_unichar (0x2029) == PANGO_BIDI_TYPE_B);
+  g_assert_true (pango_bidi_type_for_unichar (0x000b) == PANGO_BIDI_TYPE_S);
+  g_assert_true (pango_bidi_type_for_unichar (' ') == PANGO_BIDI_TYPE_WS);
+  g_assert_true (pango_bidi_type_for_unichar ('!') == PANGO_BIDI_TYPE_ON);
+  /* these are new */
+  g_assert_true (pango_bidi_type_for_unichar (0x2066) == PANGO_BIDI_TYPE_LRI);
+  g_assert_true (pango_bidi_type_for_unichar (0x2067) == PANGO_BIDI_TYPE_RLI);
+  g_assert_true (pango_bidi_type_for_unichar (0x2068) == PANGO_BIDI_TYPE_FSI);
+  g_assert_true (pango_bidi_type_for_unichar (0x2069) == PANGO_BIDI_TYPE_PDI);
+}
+
+static void
+test_bidi_mirror_char (void)
+{
+  /* just some samples */
+  struct {
+    gunichar a;
+    gunichar b;
+  } tests[] = {
+    { '(', ')' },
+    { '<', '>' },
+    { '[', ']' },
+    { '{', '}' },
+    { 0x00ab, 0x00bb },
+    { 0x2045, 0x2046 },
+    { 0x226e, 0x226f },
+  };
+
+  for (int i = 0; i < G_N_ELEMENTS (tests); i++)
+    {
+      gboolean ret;
+      gunichar ch;
+
+      ret = pango_get_mirror_char (tests[i].a, &ch);
+      g_assert_true (ret);
+      g_assert_true (ch == tests[i].b);
+      ret = pango_get_mirror_char (tests[i].b, &ch);
+      g_assert_true (ret);
+      g_assert_true (ch == tests[i].a);
+    }
+}
+
+G_GNUC_END_IGNORE_DEPRECATIONS
+
 int
 main (int argc, char *argv[])
 {
@@ -168,6 +310,13 @@ main (int argc, char *argv[])
   g_test_add_func ("/language/emoji-crash", test_language_emoji_crash);
   g_test_add_func ("/layout/line-height", test_line_height);
   g_test_add_func ("/attr-list/update", test_attr_list_update);
+  g_test_add_func ("/version-info", test_version_info);
+  g_test_add_func ("/is-zerowidth", test_is_zero_width);
+  g_test_add_func ("/gravity/to-rotation", test_gravity_to_rotation);
+  g_test_add_func ("/gravity/from-matrix", test_gravity_from_matrix);
+  g_test_add_func ("/gravity/for-script", test_gravity_for_script);
+  g_test_add_func ("/bidi/type-for-unichar", test_bidi_type_for_unichar);
+  g_test_add_func ("/bidi/mirror-char", test_bidi_mirror_char);
 
   return g_test_run ();
 }

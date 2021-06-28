@@ -79,10 +79,11 @@ pango_bidi_type_for_unichar (gunichar ch)
     case FRIBIDI_TYPE_SS:   return PANGO_BIDI_TYPE_S;
     case FRIBIDI_TYPE_WS:   return PANGO_BIDI_TYPE_WS;
     case FRIBIDI_TYPE_ON:   return PANGO_BIDI_TYPE_ON;
+    case FRIBIDI_TYPE_LRI:  return PANGO_BIDI_TYPE_LRI;
+    case FRIBIDI_TYPE_RLI:  return PANGO_BIDI_TYPE_RLI;
+    case FRIBIDI_TYPE_FSI:  return PANGO_BIDI_TYPE_FSI;
+    case FRIBIDI_TYPE_PDI:  return PANGO_BIDI_TYPE_PDI;
     default:
-      /* TODO
-       * This function has not been updated for latest FriBidi.
-       * Should add new types and / or deprecate this function. */
       return PANGO_BIDI_TYPE_ON;
     }
 }

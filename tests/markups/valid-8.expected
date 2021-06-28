@@ -2,35 +2,84 @@ Text
 Text
 Text
 Text
+Text
+Text
+Text
+Text
+Text
 
 
 ---
 
 range 0 4
+[0,4]scale=0.578704
+[0,4]variant=0
+[0,4]stretch=0
 [0,4]foreground=#00000000ffff
 [0,4]foreground-alpha=65535
 range 4 5
 range 5 9
+[5,9]scale=0.694444
+[5,9]variant=1
+[5,9]stretch=1
 [5,9]foreground=#00000000ffff
 [5,9]foreground-alpha=32767
 range 9 10
 range 10 14
+[10,14]scale=0.833333
+[10,14]stretch=2
 [10,14]background=#00000000ffff
 [10,14]background-alpha=1
 range 14 15
 range 15 19
+[15,19]scale=1.000000
+[15,19]stretch=3
 [15,19]background=#00000000ffff
 [15,19]background-alpha=21626
-range 19 2147483647
+range 19 20
+range 20 24
+[20,24]scale=1.200000
+[20,24]stretch=4
+[20,24]background=#00000000ffff
+[20,24]background-alpha=21626
+range 24 25
+range 25 29
+[25,29]scale=1.440000
+[25,29]stretch=5
+[25,29]background=#00000000ffff
+[25,29]background-alpha=43690
+range 29 30
+range 30 34
+[30,34]scale=1.728000
+[30,34]stretch=6
+range 34 35
+range 35 39
+[35,39]scale=1.728000
+[35,39]stretch=7
+range 39 40
+range 40 44
+[40,44]scale=1.728000
+[40,44]stretch=8
+range 44 2147483647
 
 
 ---
 
-[0:4] (null) Normal
-[4:5] (null) Normal
-[5:9] (null) Normal
-[9:10] (null) Normal
-[10:14] (null) Normal
-[14:15] (null) Normal
-[15:19] (null) Normal
-[19:2147483647] (null) Normal
+[0:4] (null) Ultra-Condensed 0
+[4:5] (null) Ultra-Condensed 0
+[5:9] (null) Extra-Condensed Small-Caps 0
+[9:10] (null) Extra-Condensed Small-Caps 0
+[10:14] (null) Condensed Small-Caps 0
+[14:15] (null) Condensed Small-Caps 0
+[15:19] (null) Semi-Condensed Small-Caps 0
+[19:20] (null) Semi-Condensed Small-Caps 0
+[20:24] (null) Small-Caps 0
+[24:25] (null) Small-Caps 0
+[25:29] (null) Semi-Expanded Small-Caps 0
+[29:30] (null) Semi-Expanded Small-Caps 0
+[30:34] (null) Expanded Small-Caps 0
+[34:35] (null) Expanded Small-Caps 0
+[35:39] (null) Extra-Expanded Small-Caps 0
+[39:40] (null) Extra-Expanded Small-Caps 0
+[40:44] (null) Ultra-Expanded Small-Caps 0
+[44:2147483647] (null) Ultra-Expanded Small-Caps 0

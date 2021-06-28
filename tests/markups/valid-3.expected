@@ -15,6 +15,7 @@ range 0 13
 [0,13]strikethrough-color=#00000000ffff
 [0,13]fallback=0
 [0,13]language=de
+[0,13]allow-breaks=1
 range 13 2147483647
 
 
