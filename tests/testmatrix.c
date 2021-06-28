@@ -160,9 +160,9 @@ test_matrix_transform_rect (void)
   pango_matrix_transform_rectangle (&m, &rect);
 
   g_assert_cmpfloat_with_epsilon (rect.x, 0, 0.5);
-  g_assert_cmpfloat_with_epsilon (rect.y, - M_SQRT2  / 2 * PANGO_SCALE, 0.5);
-  g_assert_cmpfloat_with_epsilon (rect.width, M_SQRT2 * PANGO_SCALE, 0.5);
-  g_assert_cmpfloat_with_epsilon (rect.height, M_SQRT2 * PANGO_SCALE, 0.5);
+  g_assert_cmpfloat_with_epsilon (rect.y, - G_SQRT2  / 2 * PANGO_SCALE, 0.5);
+  g_assert_cmpfloat_with_epsilon (rect.width, G_SQRT2 * PANGO_SCALE, 0.5);
+  g_assert_cmpfloat_with_epsilon (rect.height, G_SQRT2 * PANGO_SCALE, 0.5);
 }
 
 static void
