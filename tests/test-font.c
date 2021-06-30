@@ -346,9 +346,7 @@ test_font_models (void)
           g_assert_true (pango_font_face_get_family (PANGO_FONT_FACE (obj2)) == (PangoFontFamily *)obj);
 
           pango_font_face_list_sizes (PANGO_FONT_FACE (obj2), &sizes, &n_sizes);
-          /* no more bitmap fonts */
-          g_assert_null (sizes);
-          g_assert_cmpint (n_sizes, ==, 0);
+          g_assert_true ((sizes == NULL) == (n_sizes == 0));
 
           g_object_unref (obj2);
         }
