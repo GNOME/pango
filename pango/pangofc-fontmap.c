@@ -2337,7 +2337,8 @@ pango_fc_font_map_set_config (PangoFcFontMap *fcfontmap,
  * See also: [method@PangoFc.FontMap.set_config].
  *
  * Returns: (nullable): the `FcConfig` object attached to
- *   @fcfontmap, which might be %NULL.
+ *   @fcfontmap, which might be %NULL. The return value is
+ *   owned by Pango and should not be freed.
  *
  * Since: 1.38
  */
