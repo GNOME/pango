@@ -2323,9 +2323,6 @@ pango_fc_font_map_set_config (PangoFcFontMap *fcfontmap,
 
   if (oldconfig)
     FcConfigDestroy (oldconfig);
-
-  /* No need to wait anymore */
-  fc_initialized = 2;
 }
 
 /**
