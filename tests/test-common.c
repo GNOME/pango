@@ -225,7 +225,7 @@ attribute_from_string (const char *string)
 {
   char *s, *p;
   PangoAttribute *attr;
-  long start, end;
+  long long start, end;
   GEnumClass *class;
   int i;
   PangoColor color;
@@ -234,14 +234,14 @@ attribute_from_string (const char *string)
   g_assert (*s == '[');
 
   s++;
-  start = strtol (s, &p, 10);
+  start = strtoll (s, &p, 10);
   g_assert (p > s);
   g_assert (*p == ',');
   s = p + 1;
 
   g_assert (start >= 0);
 
-  end = strtol (s, &p, 10);
+  end = strtoll (s, &p, 10);
   g_assert (p > s);
   g_assert (*p == ']');
   s = p + 1;

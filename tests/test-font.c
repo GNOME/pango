@@ -347,6 +347,7 @@ test_font_models (void)
 
           pango_font_face_list_sizes (PANGO_FONT_FACE (obj2), &sizes, &n_sizes);
           g_assert_true ((sizes == NULL) == (n_sizes == 0));
+          g_free (sizes);
 
           g_object_unref (obj2);
         }
