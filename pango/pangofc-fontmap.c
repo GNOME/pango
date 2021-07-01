@@ -917,14 +917,9 @@ pango_fc_patterns_ref (PangoFcPatterns *pats)
 }
 
 static void
-pango_fc_patterns_unref (PangoFcPatterns *pats)
+free_patterns (gpointer data)
 {
-  g_return_if_fail (pats->ref_count > 0);
-
-  pats->ref_count--;
-
-  if (pats->ref_count)
-    return;
+  PangoFcPatterns *pats = data;
 
   /* Only remove from fontmap hash if we are in it.  This is not necessarily
    * the case after a cache_clear() call. */
@@ -944,7 +939,19 @@ pango_fc_patterns_unref (PangoFcPatterns *pats)
 
   g_cond_clear (&pats->cond);
   g_mutex_clear (&pats->mutex);
+}
 
+static void
+pango_fc_patterns_unref (PangoFcPatterns *pats)
+{
+  g_return_if_fail (pats->ref_count > 0);
+
+  pats->ref_count--;
+
+  if (pats->ref_count)
+    return;
+
+  free_patterns (pats);
   g_slice_free (PangoFcPatterns, pats);
 }
 
