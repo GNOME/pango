@@ -1,3 +1,13 @@
+Overview of changes in 1.48.6
+=============================
+- Avoid attribute index overflow
+- Add a new pango-segmentation utility
+- Documentation cleanups and fixes
+- Update script property data for gravity
+- Bring back careful glyph position rounding
+- Add a few missing bidi types
+- Add more tests
+
 Overview of changes in 1.48.5
 =============================
 - Only initialize fontconfig once
