@@ -84,3 +84,13 @@
   ...
   fun:g_intern_static_string
 }
+
+# libthai
+{
+  libthai ThBrk
+  Memcheck:Leak
+  match-leak-kinds: definite
+  fun:malloc
+  ...
+  fun:th_brk_new
+}
