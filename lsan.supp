@@ -5,3 +5,4 @@ leak:libpixman-1.so
 leak:libthai.so
 leak:libdatrie.so
 leak:libxml2.so
+leak:hb_font_funcs_create
