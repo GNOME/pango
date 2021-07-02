@@ -100,13 +100,24 @@
  *   FcCharSetMerge().
  */
 
+typedef enum {
+  /* Initial state; Fontconfig is not initialized yet */
+  DEFAULT_CONFIG_NOT_INITIALIZED,
+
+  /* We have a thread doing Fontconfig initialization in the background */
+  DEFAULT_CONFIG_INITIALIZING,
+
+  /* FcInit() finished and its default configuration is loaded */
+  DEFAULT_CONFIG_INITIALIZED
+} DefaultConfig;
+
 /* We call FcInit in a thread and set fc_initialized
  * when done, and are protected by a mutex. The thread
  * signals the cond when FcInit is done.
  */
 static GMutex fc_init_mutex;
 static GCond fc_init_cond;
-static int fc_initialized = 0;
+static DefaultConfig fc_initialized = DEFAULT_CONFIG_NOT_INITIALIZED;
 
 
 typedef struct _PangoFcFontFaceData PangoFcFontFaceData;
@@ -1342,7 +1353,7 @@ init_in_thread (gpointer task_data)
   pango_trace_mark (before, "FcInit", NULL);
 
   g_mutex_lock (&fc_init_mutex);
-  fc_initialized = 2;
+  fc_initialized = DEFAULT_CONFIG_INITIALIZED;
   g_cond_broadcast (&fc_init_cond);
   g_mutex_unlock (&fc_init_mutex);
 
@@ -1354,11 +1365,11 @@ start_init_in_thread (PangoFcFontMap *fcfontmap)
 {
   g_mutex_lock (&fc_init_mutex);
 
-  if (fc_initialized == 0)
+  if (fc_initialized == DEFAULT_CONFIG_NOT_INITIALIZED)
     {
       GThread *thread;
 
-      fc_initialized = 1;
+      fc_initialized = DEFAULT_CONFIG_INITIALIZING;
       thread = g_thread_new ("[pango] FcInit", init_in_thread, NULL);
       g_thread_unref (thread);
     }
@@ -1373,7 +1384,7 @@ wait_for_fc_init (void)
   gboolean waited = FALSE;
 
   g_mutex_lock (&fc_init_mutex);
-  while (fc_initialized < 2)
+  while (fc_initialized < DEFAULT_CONFIG_INITIALIZED)
     {
       waited = TRUE;
       g_cond_wait (&fc_init_cond, &fc_init_mutex);
