@@ -743,8 +743,6 @@ pango_fc_font_key_get_variations (const PangoFcFontKey *key)
  */
 
 struct _PangoFcPatterns {
-  guint ref_count;
-
   PangoFcFontMap *fontmap;
 
   /* match and fontset are initialized in a thread,
@@ -883,11 +881,10 @@ pango_fc_patterns_new (FcPattern *pat, PangoFcFontMap *fontmap)
   if (pats)
     return pango_fc_patterns_ref (pats);
 
-  pats = g_slice_new0 (PangoFcPatterns);
+  pats = g_atomic_rc_box_new0 (PangoFcPatterns);
 
   pats->fontmap = fontmap;
 
-  pats->ref_count = 1;
   FcPatternReference (pat);
   pats->pattern = pat;
 
@@ -909,11 +906,7 @@ pango_fc_patterns_new (FcPattern *pat, PangoFcFontMap *fontmap)
 static PangoFcPatterns *
 pango_fc_patterns_ref (PangoFcPatterns *pats)
 {
-  g_return_val_if_fail (pats->ref_count > 0, NULL);
-
-  pats->ref_count++;
-
-  return pats;
+  return g_atomic_rc_box_acquire (pats);
 }
 
 static void
@@ -944,15 +937,7 @@ free_patterns (gpointer data)
 static void
 pango_fc_patterns_unref (PangoFcPatterns *pats)
 {
-  g_return_if_fail (pats->ref_count > 0);
-
-  pats->ref_count--;
-
-  if (pats->ref_count)
-    return;
-
-  free_patterns (pats);
-  g_slice_free (PangoFcPatterns, pats);
+  g_atomic_rc_box_release_full (pats, free_patterns);
 }
 
 static FcPattern *
