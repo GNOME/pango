@@ -1,3 +1,8 @@
+Overview of changes in 1.48.7
+=============================
+- Fix a thread-safety issue in fontmap initialization
+- Small documentation improvements
+
 Overview of changes in 1.48.6
 =============================
 - Avoid attribute index overflow
