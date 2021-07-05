@@ -282,18 +282,22 @@ draw_strikethrough (PangoRenderer *renderer,
                     LineState     *state)
 {
   PangoRectangle *rect = &state->strikethrough_rect;
-  gboolean strikethrough = state->strikethrough;
   int num_glyphs = state->strikethrough_glyphs;
 
-  state->strikethrough = FALSE;
-
-  if (strikethrough)
+  if (state->strikethrough)
     pango_renderer_draw_rectangle (renderer,
                                    PANGO_RENDER_PART_STRIKETHROUGH,
                                    rect->x,
                                    rect->y / num_glyphs,
                                    rect->width,
                                    rect->height / num_glyphs);
+
+  state->strikethrough = FALSE;
+  state->strikethrough_glyphs = 0;
+  rect->x += rect->width;
+  rect->width = 0;
+  rect->y = 0;
+  rect->height = 0;
 }
 
 static void
@@ -336,8 +340,6 @@ handle_line_state_change (PangoRenderer  *renderer,
       rect->width = state->logical_rect_end - rect->x;
       draw_strikethrough (renderer, state);
       state->strikethrough = renderer->strikethrough;
-      rect->x = state->logical_rect_end;
-      rect->width = 0;
     }
 }
 
@@ -484,7 +486,6 @@ add_strikethrough (PangoRenderer    *renderer,
     }
   else
     {
-      draw_strikethrough (renderer, state);
       *current_rect = new_rect;
       state->strikethrough = TRUE;
       state->strikethrough_glyphs = num_glyphs;
