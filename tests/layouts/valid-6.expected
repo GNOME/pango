@@ -10,6 +10,10 @@ lines: 2
 
 range 0 2147483647
 
+--- directions
+
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+
 --- lines
 
 i=1, index=0, paragraph-start=1, dir=ltr ' 0️⃣ Keycap Digit Zero

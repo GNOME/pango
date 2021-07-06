@@ -15,6 +15,10 @@ range 22 41
 [22,41]underline=1
 range 41 2147483647
 
+--- directions
+
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+
 --- lines
 
 i=1, index=0, paragraph-start=1, dir=ltr 'This is a test of the automatic emergency brake!

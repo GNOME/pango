@@ -178,6 +178,19 @@ dump_runs (PangoLayout *layout, GString *string)
 }
 
 static void
+dump_directions (PangoLayout *layout, GString *string)
+{
+  const char *text, *p;
+
+  text = pango_layout_get_text (layout);
+  for (p = text; *p; p = g_utf8_next_char (p))
+    {
+      g_string_append_printf (string, "%d ", pango_layout_get_direction (layout, p - text));
+    }
+  g_string_append (string, "\n");
+}
+
+static void
 parse_params (const gchar        *str,
               gint               *width,
               gint               *ellipsize_at,
@@ -266,16 +279,23 @@ test_file (const gchar *filename, GString *string)
   pango_layout_set_wrap (layout, wrap);
 
   g_string_append (string, pango_layout_get_text (layout));
+
   g_string_append (string, "\n--- parameters\n\n");
   g_string_append_printf (string, "wrapped: %d\n", pango_layout_is_wrapped (layout));
   g_string_append_printf (string, "ellipsized: %d\n", pango_layout_is_ellipsized (layout));
   g_string_append_printf (string, "lines: %d\n", pango_layout_get_line_count (layout));
   if (width != 0)
     g_string_append_printf (string, "width: %d\n", pango_layout_get_width (layout));
+
   g_string_append (string, "\n--- attributes\n\n");
   print_attr_list (pango_layout_get_attributes (layout), string);
+
+  g_string_append (string, "\n--- directions\n\n");
+  dump_directions (layout, string);
+
   g_string_append (string, "\n--- lines\n\n");
   dump_lines (layout, string);
+
   g_string_append (string, "\n--- runs\n\n");
   dump_runs (layout, string);
 
