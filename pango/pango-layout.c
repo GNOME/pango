@@ -1895,9 +1895,9 @@ pango_layout_index_to_line_x (PangoLayout *layout,
  * of a run.
  *
  * Motion here is in cursor positions, not in characters, so a single
- * call to [method@Pango.Layout.move_cursor_visually] may move the cursor over
- * multiple characters when multiple characters combine to form a single
- * grapheme.
+ * call to [method@Pango.Layout.move_cursor_visually] may move the cursor
+ * over multiple characters when multiple characters combine to form a
+ * single grapheme.
  */
 void
 pango_layout_move_cursor_visually (PangoLayout *layout,
@@ -2377,8 +2377,6 @@ pango_layout_line_get_char_direction (PangoLayoutLine *layout_line,
 
       run_list = run_list->next;
     }
-
-  g_assert_not_reached ();
 
   return PANGO_DIRECTION_LTR;
 }
