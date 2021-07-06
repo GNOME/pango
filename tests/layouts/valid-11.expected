@@ -1,0 +1,53 @@
+double low error
+
+--- parameters
+
+wrapped: 0
+ellipsized: 0
+lines: 2
+width: 225280
+
+--- attributes
+
+range 0 6
+[0,6]underline=2
+[0,6]overline=1
+range 6 7
+range 7 10
+[7,10]underline=3
+[7,10]strikethrough=1
+range 10 11
+range 11 16
+[11,16]underline=4
+[11,16]rise=1024
+range 16 2147483647
+
+--- directions
+
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+
+--- cursor positions
+
+0(0) 1(0) 2(0) 3(0) 4(0) 5(0) 6(0) 7(0) 8(0) 9(0) 10(0) 11(0) 12(0) 13(0) 14(0) 15(0) 15(1) 17(0) 
+
+--- lines
+
+i=1, index=0, paragraph-start=1, dir=ltr 'double low error
+'
+i=2, index=17, paragraph-start=1, dir=ltr ''
+
+--- runs
+
+i=1, index=0, chars=6, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'double'
+[0,6]underline=2
+[0,6]overline=1
+i=2, index=6, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, ' '
+i=3, index=7, chars=3, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'low'
+[7,10]underline=3
+[7,10]strikethrough=1
+i=4, index=10, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, ' '
+i=5, index=11, chars=5, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'error'
+[11,16]rise=1024
+[11,16]underline=4
+i=6, index=16, no run, line end
+i=7, index=17, no run, line end

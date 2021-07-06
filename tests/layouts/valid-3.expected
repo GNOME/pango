@@ -10,6 +10,14 @@ lines: 2
 
 range 0 2147483647
 
+--- directions
+
+0 0 0 0 0 0 0 
+
+--- cursor positions
+
+0(0) 1(0) 2(0) 3(0) 10(0) 10(1) 12(0) 
+
 --- lines
 
 i=1, index=0, paragraph-start=1, dir=ltr 'ABC😀️D
