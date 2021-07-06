@@ -1,0 +1,37 @@
+Hello שלום Γειά σας
+
+--- parameters
+
+wrapped: 1
+ellipsized: 0
+lines: 3
+width: 102400
+
+--- attributes
+
+range 0 2147483647
+
+--- directions
+
+0 0 0 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0 0 0 
+
+--- cursor positions
+
+0(0) 1(0) 2(0) 3(0) 4(0) 5(0) 6(0) 12(0) 10(0) 8(0) 14(0) 14(1) 17(0) 19(0) 21(0) 23(0) 24(0) 26(0) 28(0) 28(1) 31(0) 
+
+--- lines
+
+i=1, index=0, paragraph-start=1, dir=ltr 'Hello שלום '
+i=2, index=15, paragraph-start=0, dir=ltr 'Γειά σας
+'
+i=3, index=31, paragraph-start=1, dir=ltr ''
+
+--- runs
+
+i=1, index=0, chars=6, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'Hello '
+i=2, index=12, chars=4, level=1, gravity=south, flags=0, font=OMITTED, script=hebrew, language=he, 'שלום'
+i=3, index=14, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=hebrew, language=he, ' '
+i=4, index=15, no run, line end
+i=5, index=15, chars=8, level=0, gravity=south, flags=0, font=OMITTED, script=greek, language=el, 'Γειά σας'
+i=6, index=30, no run, line end
+i=7, index=31, no run, line end

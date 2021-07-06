@@ -1,0 +1,49 @@
+Hello שלום Γειά σας
+
+--- parameters
+
+wrapped: 1
+ellipsized: 0
+lines: 5
+width: 102400
+
+--- attributes
+
+range 0 30
+[0,30]letter-spacing=8888
+range 30 2147483647
+
+--- directions
+
+0 0 0 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0 0 0 
+
+--- cursor positions
+
+0(0) 1(0) 2(0) 3(0) 4(0) 5(0) 5(1) 12(0) 10(0) 8(0) 14(0) 14(1) 17(0) 19(0) 21(0) 23(0) 23(1) 26(0) 28(0) 28(1) 31(0) 
+
+--- lines
+
+i=1, index=0, paragraph-start=1, dir=ltr 'Hello שלו'
+i=2, index=12, paragraph-start=0, dir=ltr 'ם '
+i=3, index=15, paragraph-start=0, dir=ltr 'Γειά '
+i=4, index=24, paragraph-start=0, dir=ltr 'σας
+'
+i=5, index=31, paragraph-start=1, dir=ltr ''
+
+--- runs
+
+i=1, index=0, chars=6, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'Hello '
+[0,30]letter-spacing=8888
+i=2, index=6, no run, line end
+i=3, index=12, chars=4, level=1, gravity=south, flags=0, font=OMITTED, script=hebrew, language=he, 'שלום'
+[0,30]letter-spacing=8888
+i=4, index=14, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=hebrew, language=he, ' '
+[0,30]letter-spacing=8888
+i=5, index=15, no run, line end
+i=6, index=15, chars=5, level=0, gravity=south, flags=0, font=OMITTED, script=greek, language=el, 'Γειά '
+[0,30]letter-spacing=8888
+i=7, index=24, no run, line end
+i=8, index=24, chars=3, level=0, gravity=south, flags=0, font=OMITTED, script=greek, language=el, 'σας'
+[0,30]letter-spacing=8888
+i=9, index=30, no run, line end
+i=10, index=31, no run, line end
