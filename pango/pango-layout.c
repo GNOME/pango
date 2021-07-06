@@ -955,7 +955,7 @@ pango_layout_set_tabs (PangoLayout   *layout,
  *
  * The return value should be freed with [method@Pango.TabArray.free].
  *
- * Return value: (nullable): a copy of the tabs for this layout
+ * Return value: (transfer full) (nullable): a copy of the tabs for this layout
  */
 PangoTabArray*
 pango_layout_get_tabs (PangoLayout *layout)
