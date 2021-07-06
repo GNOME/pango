@@ -22,6 +22,7 @@
 #include "config.h"
 #include <glib.h>
 #include <pango/pangocairo.h>
+#include <pango/pango-ot.h>
 
 /* test that we don't crash in shape_tab when the layout
  * is such that we don't have effective attributes
@@ -236,64 +237,19 @@ test_gravity_for_script (void)
 G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 
 static void
-test_bidi_type_for_unichar (void)
+test_language_to_tag (void)
 {
-  /* one representative from each class we support */
-  g_assert_true (pango_bidi_type_for_unichar ('a') == PANGO_BIDI_TYPE_L);
-  g_assert_true (pango_bidi_type_for_unichar (0x202a) == PANGO_BIDI_TYPE_LRE);
-  g_assert_true (pango_bidi_type_for_unichar (0x202d) == PANGO_BIDI_TYPE_LRO);
-  g_assert_true (pango_bidi_type_for_unichar (0x05d0) == PANGO_BIDI_TYPE_R);
-  g_assert_true (pango_bidi_type_for_unichar (0x0627) == PANGO_BIDI_TYPE_AL);
-  g_assert_true (pango_bidi_type_for_unichar (0x202b) == PANGO_BIDI_TYPE_RLE);
-  g_assert_true (pango_bidi_type_for_unichar (0x202e) == PANGO_BIDI_TYPE_RLO);
-  g_assert_true (pango_bidi_type_for_unichar (0x202c) == PANGO_BIDI_TYPE_PDF);
-  g_assert_true (pango_bidi_type_for_unichar ('0') == PANGO_BIDI_TYPE_EN);
-  g_assert_true (pango_bidi_type_for_unichar ('+') == PANGO_BIDI_TYPE_ES);
-  g_assert_true (pango_bidi_type_for_unichar ('#') == PANGO_BIDI_TYPE_ET);
-  g_assert_true (pango_bidi_type_for_unichar (0x601) == PANGO_BIDI_TYPE_AN);
-  g_assert_true (pango_bidi_type_for_unichar (',') == PANGO_BIDI_TYPE_CS);
-  g_assert_true (pango_bidi_type_for_unichar (0x0301) == PANGO_BIDI_TYPE_NSM);
-  g_assert_true (pango_bidi_type_for_unichar (0x200d) == PANGO_BIDI_TYPE_BN);
-  g_assert_true (pango_bidi_type_for_unichar (0x2029) == PANGO_BIDI_TYPE_B);
-  g_assert_true (pango_bidi_type_for_unichar (0x000b) == PANGO_BIDI_TYPE_S);
-  g_assert_true (pango_bidi_type_for_unichar (' ') == PANGO_BIDI_TYPE_WS);
-  g_assert_true (pango_bidi_type_for_unichar ('!') == PANGO_BIDI_TYPE_ON);
-  /* these are new */
-  g_assert_true (pango_bidi_type_for_unichar (0x2066) == PANGO_BIDI_TYPE_LRI);
-  g_assert_true (pango_bidi_type_for_unichar (0x2067) == PANGO_BIDI_TYPE_RLI);
-  g_assert_true (pango_bidi_type_for_unichar (0x2068) == PANGO_BIDI_TYPE_FSI);
-  g_assert_true (pango_bidi_type_for_unichar (0x2069) == PANGO_BIDI_TYPE_PDI);
-}
+  PangoLanguage *lang;
+  PangoOTTag tag;
+  PangoLanguage *lang2;
 
-static void
-test_bidi_mirror_char (void)
-{
-  /* just some samples */
-  struct {
-    gunichar a;
-    gunichar b;
-  } tests[] = {
-    { '(', ')' },
-    { '<', '>' },
-    { '[', ']' },
-    { '{', '}' },
-    { 0x00ab, 0x00bb },
-    { 0x2045, 0x2046 },
-    { 0x226e, 0x226f },
-  };
+  lang = pango_language_from_string ("de");
 
-  for (int i = 0; i < G_N_ELEMENTS (tests); i++)
-    {
-      gboolean ret;
-      gunichar ch;
+  tag = pango_ot_tag_from_language (lang);
 
-      ret = pango_get_mirror_char (tests[i].a, &ch);
-      g_assert_true (ret);
-      g_assert_true (ch == tests[i].b);
-      ret = pango_get_mirror_char (tests[i].b, &ch);
-      g_assert_true (ret);
-      g_assert_true (ch == tests[i].a);
-    }
+  lang2 = pango_ot_tag_to_language (tag);
+
+  g_assert_true (lang2 == lang);
 }
 
 G_GNUC_END_IGNORE_DEPRECATIONS
@@ -351,9 +307,8 @@ main (int argc, char *argv[])
   g_test_add_func ("/gravity/to-rotation", test_gravity_to_rotation);
   g_test_add_func ("/gravity/from-matrix", test_gravity_from_matrix);
   g_test_add_func ("/gravity/for-script", test_gravity_for_script);
-  g_test_add_func ("/bidi/type-for-unichar", test_bidi_type_for_unichar);
-  g_test_add_func ("/bidi/mirror-char", test_bidi_mirror_char);
   g_test_add_func ("/layout/fallback-shape", test_fallback_shape);
+  g_test_add_func ("/language/to-tag", test_language_to_tag);
 
   return g_test_run ();
 }
