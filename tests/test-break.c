@@ -41,7 +41,9 @@ test_file (const gchar *filename, GString *string)
   gsize  length;
   GError *error = NULL;
   PangoLogAttr *attrs;
+  const PangoLogAttr *attrs2;
   int len;
+  int len2;
   char *p;
   int i;
   GString *s1, *s2, *s3, *s4;
@@ -83,6 +85,10 @@ test_file (const gchar *filename, GString *string)
     }
 
   pango_layout_get_log_attrs (layout, &attrs, &len);
+  attrs2 = pango_layout_get_log_attrs_readonly (layout, &len2);
+
+  g_assert_cmpint (len, ==, len2);
+  g_assert_true (memcmp (attrs, attrs2, sizeof (PangoLogAttr) * len) == 0);
 
   s1 = g_string_new ("Breaks: ");
   s2 = g_string_new ("Whitespace: ");
