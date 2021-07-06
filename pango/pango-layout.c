@@ -868,7 +868,7 @@ pango_layout_set_auto_dir (PangoLayout *layout,
 gboolean
 pango_layout_get_auto_dir (PangoLayout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), FALSE);
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), TRUE);
 
   return layout->auto_dir;
 }
