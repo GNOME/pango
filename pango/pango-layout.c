@@ -779,6 +779,8 @@ pango_layout_get_font_description (PangoLayout *layout)
  *
  * Note that this setting is not implemented and so is ignored in
  * Pango older than 1.18.
+ *
+ * The default value is %FALSE.
  */
 void
 pango_layout_set_justify (PangoLayout *layout,
@@ -880,6 +882,8 @@ pango_layout_get_auto_dir (PangoLayout *layout)
  *
  * Sets the alignment for the layout: how partial lines are
  * positioned within the horizontal space available.
+ *
+ * The default alignment is %PANGO_ALIGN_LEFT.
  */
 void
 pango_layout_set_alignment (PangoLayout   *layout,
@@ -975,6 +979,8 @@ pango_layout_get_tabs (PangoLayout *layout)
  * as paragraph separators; instead, keep all text in a single paragraph,
  * and display a glyph for paragraph separator characters. Used when
  * you want to allow editing of newlines on a single text line.
+ *
+ * The default value is %FALSE.
  */
 void
 pango_layout_set_single_paragraph_mode (PangoLayout *layout,
@@ -1026,6 +1032,8 @@ pango_layout_get_single_paragraph_mode (PangoLayout *layout)
  * force it to be layed out in multiple paragraphs, then whether
  * each paragraph is ellipsized separately or the entire layout
  * is ellipsized as a whole depends on the set height of the layout.
+ *
+ * The default value is %PANGO_ELLIPSIZE_NONE.
  *
  * See [method@Pango.Layout.set_height] for details.
  *
