@@ -390,7 +390,7 @@ pango_layout_get_width (PangoLayout    *layout)
  * If @height is negative, it will be the (negative of) maximum number of lines
  * per paragraph. That is, the total number of lines shown may well be more than
  * this value if the layout contains multiple paragraphs of text.
- * The default value of -1 means that first line of each paragraph is ellipsized.
+ * The default value of -1 means that the first line of each paragraph is ellipsized.
  * This behavior may be changed in the future to act per layout instead of per
  * paragraph. File a bug against pango at
  * [https://gitlab.gnome.org/gnome/pango](https://gitlab.gnome.org/gnome/pango)
@@ -565,7 +565,7 @@ pango_layout_get_indent (PangoLayout *layout)
  * @layout: a `PangoLayout`
  * @spacing: the amount of spacing
  *
- * Sets the amount of spacing in Pango unit between
+ * Sets the amount of spacing in Pango units between
  * the lines of the layout.
  *
  * When placing lines with spacing, Pango arranges things so that
