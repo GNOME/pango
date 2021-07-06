@@ -201,6 +201,7 @@ pango_layout_init (PangoLayout *layout)
   layout->alignment = PANGO_ALIGN_LEFT;
   layout->justify = FALSE;
   layout->auto_dir = TRUE;
+  layout->single_paragraph = FALSE;
 
   layout->log_attrs = NULL;
   layout->lines = NULL;
