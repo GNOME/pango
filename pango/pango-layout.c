@@ -4309,7 +4309,7 @@ pango_layout_check_lines (PangoLayout *layout)
       itemize_attrs = NULL;
     }
 
-  layout->log_attrs = g_new (PangoLogAttr, layout->n_chars + 1);
+  layout->log_attrs = g_new0 (PangoLogAttr, layout->n_chars + 1);
 
   start_offset = 0;
   start = layout->text;
