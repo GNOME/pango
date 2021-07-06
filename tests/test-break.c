@@ -342,6 +342,8 @@ main (int argc, char *argv[])
           string = g_string_sized_new (0);
           test_file (argv[1], string);
           g_print ("%s", string->str);
+
+          g_string_free (string, TRUE);
         }
 
       return 0;
