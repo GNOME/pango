@@ -565,7 +565,7 @@ pango_layout_get_indent (PangoLayout *layout)
  * @layout: a `PangoLayout`
  * @spacing: the amount of spacing
  *
- * Sets the amount of spacing in Pango unit between
+ * Sets the amount of spacing in Pango units between
  * the lines of the layout.
  *
  * When placing lines with spacing, Pango arranges things so that
