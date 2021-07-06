@@ -76,7 +76,10 @@ test_file (const gchar *filename, GString *string)
   if (pango_layout_get_unknown_glyphs_count (layout) > 0)
     {
       char *msg = g_strdup_printf ("Missing glyphs - skipping %s. Maybe fonts are missing?", filename);
-      g_test_skip (msg);
+      if (g_test_initialized())
+        g_test_skip (msg);
+      else
+        g_warning ("%s", msg);
       g_free (msg);
       g_free (contents);
       g_object_unref (layout);
@@ -328,8 +331,6 @@ main (int argc, char *argv[])
   const gchar *name;
   gchar *path;
 
-  g_test_init (&argc, &argv, NULL);
-
   setlocale (LC_ALL, "");
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
@@ -349,8 +350,9 @@ main (int argc, char *argv[])
                    " x - expandable space    b - sentence boundary\n"
                    " w - whitespace          s - sentence start\n"
                    "                         e - sentence end\n");
+          return 0;
         }
-      else
+      else if (argv[1][0] != '-')
         {
           GString *string;
 
@@ -359,10 +361,12 @@ main (int argc, char *argv[])
           g_print ("%s", string->str);
 
           g_string_free (string, TRUE);
-        }
 
-      return 0;
+          return 0;
+        }
     }
+
+  g_test_init (&argc, &argv, NULL);
 
   path = g_test_build_filename (G_TEST_DIST, "breaks", NULL);
   dir = g_dir_open (path, 0, &error);
