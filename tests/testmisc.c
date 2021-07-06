@@ -298,6 +298,42 @@ test_bidi_mirror_char (void)
 
 G_GNUC_END_IGNORE_DEPRECATIONS
 
+static void
+test_fallback_shape (void)
+{
+  PangoContext *context;
+  const char *text;
+  GList *items, *l;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
+  text = "Some text to sha​pe ﺄﻧﺍ ﻕﺍﺩﺭ ﻊﻟﻯ ﺄﻜﻟ ﺎﻟﺰﺟﺎﺟ ﻭ ﻩﺫﺍ ﻻ ﻱﺆﻠﻤﻨﻳ";
+  items = pango_itemize (context, text, 0, strlen (text), NULL, NULL);
+  for (l = items; l; l = l->next)
+    {
+      PangoItem *item = l->data;
+      PangoGlyphString *glyphs;
+
+      /* We want to test fallback shaping, which happens when we don't have a font */
+      g_clear_object (&item->analysis.font);
+
+      glyphs = pango_glyph_string_new ();
+      pango_shape_full (text + item->offset, item->length, NULL, 0, &item->analysis, glyphs);
+
+      for (int i = 0; i < glyphs->num_glyphs; i++)
+        {
+          PangoGlyph glyph = glyphs->glyphs[i].glyph;
+          g_assert_true (glyph == PANGO_GLYPH_EMPTY || (glyph & PANGO_GLYPH_UNKNOWN_FLAG));
+        }
+
+      pango_glyph_string_free (glyphs);
+    }
+
+  g_list_free_full (items, (GDestroyNotify)pango_item_free);
+
+  g_object_unref (context);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -317,6 +353,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/gravity/for-script", test_gravity_for_script);
   g_test_add_func ("/bidi/type-for-unichar", test_bidi_type_for_unichar);
   g_test_add_func ("/bidi/mirror-char", test_bidi_mirror_char);
+  g_test_add_func ("/layout/fallback-shape", test_fallback_shape);
 
   return g_test_run ();
 }
