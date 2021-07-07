@@ -278,7 +278,7 @@ test_glyphitem_iter (void)
     {
       PangoGlyphItemIter iter;
       gboolean have_cluster;
-
+      PangoGlyphItemIter *iter2;
 
       for (have_cluster = direction ?
 	     pango_glyph_item_iter_init_start (&iter, run, text) :
@@ -289,9 +289,18 @@ test_glyphitem_iter (void)
 	     pango_glyph_item_iter_prev_cluster (&iter))
       {
         verbose ("start index %d end index %d\n", iter.start_index, iter.end_index);
-        g_assert (iter.start_index < iter.end_index);
-        g_assert (iter.start_index + 2 >= iter.end_index);
-        g_assert (iter.start_char + 1 == iter.end_char);
+        g_assert_true (iter.start_index < iter.end_index);
+        g_assert_true (iter.start_index + 2 >= iter.end_index);
+        g_assert_true (iter.start_char + 1 == iter.end_char);
+
+        iter2 = pango_glyph_item_iter_copy (&iter);
+        g_assert_true (iter2->start_glyph == iter.start_glyph);
+        g_assert_true (iter2->start_index == iter.start_index);
+        g_assert_true (iter2->start_char == iter.start_char);
+        g_assert_true (iter2->end_glyph == iter.end_glyph);
+        g_assert_true (iter2->end_index == iter.end_index);
+        g_assert_true (iter2->end_char == iter.end_char);
+        pango_glyph_item_iter_free (iter2);
       }
     }
   }
