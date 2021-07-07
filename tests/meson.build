@@ -18,6 +18,7 @@ test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
 test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
 
 tests = [
+  [ 'test-bidi' ],
   [ 'test-coverage' ],
   [ 'testboundaries' ],
   [ 'testboundaries_ucd' ],
@@ -47,7 +48,7 @@ if cairo_dep.found()
     [ 'test-shape', [ 'test-shape.c', 'test-common.c' ], [ libpangocairo_dep ] ],
     [ 'test-font', [ 'test-font.c' ], [ libpangocairo_dep ] ],
     [ 'testattributes', [ 'testattributes.c', 'test-common.c' ], [ libpangocairo_dep ] ],
-    [ 'testmisc', [ 'testmisc.c' ], [ libpangocairo_dep, glib_dep, harfbuzz_dep ] ],
+    [ 'testmisc', [ 'testmisc.c' ], [ libpangocairo_dep, libpangoft2_dep, glib_dep, harfbuzz_dep ] ],
     [ 'cxx-test', [ 'cxx-test.cpp' ], [ libpangocairo_dep, gobject_dep, harfbuzz_dep ] ],
     [ 'test-harfbuzz', [ 'test-harfbuzz.c' ], [ libpangocairo_dep, gobject_dep, harfbuzz_dep ] ],
     [ 'test-break', [ 'test-break.c', 'test-common.c' ], [libpangocairo_dep, glib_dep, harfbuzz_dep ] ]

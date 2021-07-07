@@ -201,6 +201,7 @@ pango_layout_init (PangoLayout *layout)
   layout->alignment = PANGO_ALIGN_LEFT;
   layout->justify = FALSE;
   layout->auto_dir = TRUE;
+  layout->single_paragraph = FALSE;
 
   layout->log_attrs = NULL;
   layout->lines = NULL;
@@ -390,7 +391,7 @@ pango_layout_get_width (PangoLayout    *layout)
  * If @height is negative, it will be the (negative of) maximum number of lines
  * per paragraph. That is, the total number of lines shown may well be more than
  * this value if the layout contains multiple paragraphs of text.
- * The default value of -1 means that first line of each paragraph is ellipsized.
+ * The default value of -1 means that the first line of each paragraph is ellipsized.
  * This behavior may be changed in the future to act per layout instead of per
  * paragraph. File a bug against pango at
  * [https://gitlab.gnome.org/gnome/pango](https://gitlab.gnome.org/gnome/pango)
@@ -565,7 +566,7 @@ pango_layout_get_indent (PangoLayout *layout)
  * @layout: a `PangoLayout`
  * @spacing: the amount of spacing
  *
- * Sets the amount of spacing in Pango unit between
+ * Sets the amount of spacing in Pango units between
  * the lines of the layout.
  *
  * When placing lines with spacing, Pango arranges things so that
@@ -778,6 +779,8 @@ pango_layout_get_font_description (PangoLayout *layout)
  *
  * Note that this setting is not implemented and so is ignored in
  * Pango older than 1.18.
+ *
+ * The default value is %FALSE.
  */
 void
 pango_layout_set_justify (PangoLayout *layout,
@@ -867,7 +870,7 @@ pango_layout_set_auto_dir (PangoLayout *layout,
 gboolean
 pango_layout_get_auto_dir (PangoLayout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), FALSE);
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), TRUE);
 
   return layout->auto_dir;
 }
@@ -879,6 +882,8 @@ pango_layout_get_auto_dir (PangoLayout *layout)
  *
  * Sets the alignment for the layout: how partial lines are
  * positioned within the horizontal space available.
+ *
+ * The default alignment is %PANGO_ALIGN_LEFT.
  */
 void
 pango_layout_set_alignment (PangoLayout   *layout,
@@ -950,7 +955,7 @@ pango_layout_set_tabs (PangoLayout   *layout,
  *
  * The return value should be freed with [method@Pango.TabArray.free].
  *
- * Return value: (nullable): a copy of the tabs for this layout
+ * Return value: (transfer full) (nullable): a copy of the tabs for this layout
  */
 PangoTabArray*
 pango_layout_get_tabs (PangoLayout *layout)
@@ -974,6 +979,8 @@ pango_layout_get_tabs (PangoLayout *layout)
  * as paragraph separators; instead, keep all text in a single paragraph,
  * and display a glyph for paragraph separator characters. Used when
  * you want to allow editing of newlines on a single text line.
+ *
+ * The default value is %FALSE.
  */
 void
 pango_layout_set_single_paragraph_mode (PangoLayout *layout,
@@ -1025,6 +1032,8 @@ pango_layout_get_single_paragraph_mode (PangoLayout *layout)
  * force it to be layed out in multiple paragraphs, then whether
  * each paragraph is ellipsized separately or the entire layout
  * is ellipsized as a whole depends on the set height of the layout.
+ *
+ * The default value is %PANGO_ELLIPSIZE_NONE.
  *
  * See [method@Pango.Layout.set_height] for details.
  *
@@ -1895,9 +1904,9 @@ pango_layout_index_to_line_x (PangoLayout *layout,
  * of a run.
  *
  * Motion here is in cursor positions, not in characters, so a single
- * call to [method@Pango.Layout.move_cursor_visually] may move the cursor over
- * multiple characters when multiple characters combine to form a single
- * grapheme.
+ * call to [method@Pango.Layout.move_cursor_visually] may move the cursor
+ * over multiple characters when multiple characters combine to form a
+ * single grapheme.
  */
 void
 pango_layout_move_cursor_visually (PangoLayout *layout,
@@ -2377,8 +2386,6 @@ pango_layout_line_get_char_direction (PangoLayoutLine *layout_line,
 
       run_list = run_list->next;
     }
-
-  g_assert_not_reached ();
 
   return PANGO_DIRECTION_LTR;
 }
@@ -4302,7 +4309,7 @@ pango_layout_check_lines (PangoLayout *layout)
       itemize_attrs = NULL;
     }
 
-  layout->log_attrs = g_new (PangoLogAttr, layout->n_chars + 1);
+  layout->log_attrs = g_new0 (PangoLogAttr, layout->n_chars + 1);
 
   start_offset = 0;
   start = layout->text;

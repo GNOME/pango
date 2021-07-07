@@ -41,7 +41,9 @@ test_file (const gchar *filename, GString *string)
   gsize  length;
   GError *error = NULL;
   PangoLogAttr *attrs;
+  const PangoLogAttr *attrs2;
   int len;
+  int len2;
   char *p;
   int i;
   GString *s1, *s2, *s3, *s4;
@@ -50,6 +52,7 @@ test_file (const gchar *filename, GString *string)
   char *text;
   PangoAttrList *attributes;
   PangoLayout *layout;
+  PangoLayout *layout2;
 
   g_file_get_contents (filename, &contents, &length, &error);
   g_assert_no_error (error);
@@ -73,7 +76,10 @@ test_file (const gchar *filename, GString *string)
   if (pango_layout_get_unknown_glyphs_count (layout) > 0)
     {
       char *msg = g_strdup_printf ("Missing glyphs - skipping %s. Maybe fonts are missing?", filename);
-      g_test_skip (msg);
+      if (g_test_initialized())
+        g_test_skip (msg);
+      else
+        g_warning ("%s", msg);
       g_free (msg);
       g_free (contents);
       g_object_unref (layout);
@@ -83,6 +89,18 @@ test_file (const gchar *filename, GString *string)
     }
 
   pango_layout_get_log_attrs (layout, &attrs, &len);
+  attrs2 = pango_layout_get_log_attrs_readonly (layout, &len2);
+
+  g_assert_cmpint (len, ==, len2);
+  g_assert_true (memcmp (attrs, attrs2, sizeof (PangoLogAttr) * len) == 0);
+
+  layout2 = pango_layout_copy (layout);
+  attrs2 = pango_layout_get_log_attrs_readonly (layout2, &len2);
+
+  g_assert_cmpint (len, ==, len2);
+  g_assert_true (memcmp (attrs, attrs2, sizeof (PangoLogAttr) * len) == 0);
+
+  g_object_unref (layout2);
 
   s1 = g_string_new ("Breaks: ");
   s2 = g_string_new ("Whitespace: ");
@@ -313,8 +331,6 @@ main (int argc, char *argv[])
   const gchar *name;
   gchar *path;
 
-  g_test_init (&argc, &argv, NULL);
-
   setlocale (LC_ALL, "");
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
@@ -334,18 +350,23 @@ main (int argc, char *argv[])
                    " x - expandable space    b - sentence boundary\n"
                    " w - whitespace          s - sentence start\n"
                    "                         e - sentence end\n");
+          return 0;
         }
-      else
+      else if (argv[1][0] != '-')
         {
           GString *string;
 
           string = g_string_sized_new (0);
           test_file (argv[1], string);
           g_print ("%s", string->str);
-        }
 
-      return 0;
+          g_string_free (string, TRUE);
+
+          return 0;
+        }
     }
+
+  g_test_init (&argc, &argv, NULL);
 
   path = g_test_build_filename (G_TEST_DIST, "breaks", NULL);
   dir = g_dir_open (path, 0, &error);

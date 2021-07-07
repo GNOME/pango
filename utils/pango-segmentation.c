@@ -83,17 +83,6 @@ show_segmentation (const char *input,
   pango_layout_set_text (layout, text, length);
   pango_layout_set_attributes (layout, attributes);
 
-  if (pango_layout_get_unknown_glyphs_count (layout) > 0)
-    {
-      char *msg = g_strdup_printf ("Missing glyphs - skipping. Maybe fonts are missing?");
-      g_test_skip (msg);
-      g_free (msg);
-      g_object_unref (layout);
-      pango_attr_list_unref (attributes);
-      g_free (text);
-      return FALSE;
-    }
-
   pango_layout_get_log_attrs (layout, &attrs, &len);
 
   for (i = 0, p = text; i < len; i++, p = g_utf8_next_char (p))

@@ -143,6 +143,7 @@ test_script_iter (void)
   };
 
   PangoScriptIter *iter;
+  PangoScriptIter *iter2;
   GString *all = g_string_new (FALSE);
   char *pos;
   const char *start;
@@ -157,6 +158,8 @@ test_script_iter (void)
     }
 
   iter = pango_script_iter_new (all->str, -1);
+
+  iter2 = g_boxed_copy (pango_script_iter_get_type (), iter);
 
   g_test_message ("Total length: %" G_GSIZE_FORMAT "\n", all->len);
 
@@ -182,6 +185,13 @@ test_script_iter (void)
 
       pos = next_pos;
     }
+
+  /* Check that copying the iter worked */
+  pango_script_iter_get_range (iter2, &start, &end, &script);
+  g_assert_true (start == all->str);
+  g_assert_true (end == all->str + strlen (test_data[0].run_text));
+  g_assert_true (script == test_data[0].run_code);
+  pango_script_iter_free (iter2);
 
   pango_script_iter_free (iter);
 

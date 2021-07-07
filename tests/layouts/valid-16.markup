@@ -1,0 +1,2 @@
+wrap=word-char,ellipsize=end,width=150,height=-2
+Lets see if this text is long enough to wrap due to height limitations. It might, or it might not.
