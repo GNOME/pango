@@ -31,9 +31,12 @@ static PangoContext *context;
 static void
 test_parse (void)
 {
+  PangoFontDescription **descs;
   PangoFontDescription *desc;
 
-  desc = pango_font_description_from_string ("Cantarell 14");
+  descs = g_new (PangoFontDescription *, 2);
+
+  descs[0] = desc = pango_font_description_from_string ("Cantarell 14");
 
   g_assert_cmpstr (pango_font_description_get_family (desc), ==, "Cantarell");
   g_assert (!pango_font_description_get_size_is_absolute (desc));
@@ -45,9 +48,7 @@ test_parse (void)
   g_assert_cmpint (pango_font_description_get_gravity (desc), ==, PANGO_GRAVITY_SOUTH);
   g_assert_cmpint (pango_font_description_get_set_fields (desc), ==, PANGO_FONT_MASK_FAMILY | PANGO_FONT_MASK_STYLE | PANGO_FONT_MASK_VARIANT | PANGO_FONT_MASK_WEIGHT | PANGO_FONT_MASK_STRETCH | PANGO_FONT_MASK_SIZE);
 
-  pango_font_description_free (desc); 
-
-  desc = pango_font_description_from_string ("Sans Bold Italic Condensed 22.5px");
+  descs[1] = desc = pango_font_description_from_string ("Sans Bold Italic Condensed 22.5px");
 
   g_assert_cmpstr (pango_font_description_get_family (desc), ==, "Sans");
   g_assert (pango_font_description_get_size_is_absolute (desc)); 
@@ -58,25 +59,25 @@ test_parse (void)
   g_assert_cmpint (pango_font_description_get_stretch (desc), ==, PANGO_STRETCH_CONDENSED); 
   g_assert_cmpint (pango_font_description_get_gravity (desc), ==, PANGO_GRAVITY_SOUTH);  g_assert_cmpint (pango_font_description_get_set_fields (desc), ==, PANGO_FONT_MASK_FAMILY | PANGO_FONT_MASK_STYLE | PANGO_FONT_MASK_VARIANT | PANGO_FONT_MASK_WEIGHT | PANGO_FONT_MASK_STRETCH | PANGO_FONT_MASK_SIZE);
 
-  pango_font_description_free (desc); 
+  pango_font_descriptions_free (descs, 2);
 }
 
 static void
 test_roundtrip (void)
 {
   PangoFontDescription *desc;
- gchar *str;
+  char *str;
 
   desc = pango_font_description_from_string ("Cantarell 14");
   str = pango_font_description_to_string (desc);
   g_assert_cmpstr (str, ==, "Cantarell 14");
-  pango_font_description_free (desc); 
+  pango_font_description_free (desc);
   g_free (str);
 
   desc = pango_font_description_from_string ("Sans Bold Italic Condensed 22.5px");
   str = pango_font_description_to_string (desc);
   g_assert_cmpstr (str, ==, "Sans Bold Italic Condensed 22.5px");
-  pango_font_description_free (desc); 
+  pango_font_description_free (desc);
   g_free (str);
 }
 
@@ -319,6 +320,10 @@ static void
 test_font_models (void)
 {
   PangoFontMap *map = pango_cairo_font_map_get_default ();
+  gboolean monospace_found = FALSE;
+  int n_families = 0;
+  int n_variable_families = 0;
+  int n_monospace_families = 0;
 
   g_assert_true (g_list_model_get_item_type (G_LIST_MODEL (map)) == PANGO_TYPE_FONT_FAMILY);
 
@@ -335,6 +340,14 @@ test_font_models (void)
           g_assert_true (pango_font_family_is_monospace (PANGO_FONT_FAMILY (obj)));
         }
 
+      n_families++;
+
+      if (pango_font_family_is_variable (PANGO_FONT_FAMILY (obj)))
+        n_variable_families++;
+
+      if (pango_font_family_is_monospace (PANGO_FONT_FAMILY (obj)))
+        n_monospace_families++;
+
       for (guint j = 0; j < g_list_model_get_n_items (G_LIST_MODEL (obj)); j++)
         {
           GObject *obj2 = g_list_model_get_item (G_LIST_MODEL (obj), j);
@@ -349,11 +362,24 @@ test_font_models (void)
           g_assert_true ((sizes == NULL) == (n_sizes == 0));
           g_free (sizes);
 
+          if (pango_font_family_is_monospace (PANGO_FONT_FAMILY (obj)))
+            {
+              if (pango_font_face_is_synthesized (PANGO_FONT_FACE (obj2)))
+                {
+                  monospace_found = TRUE;
+                }
+            }
+
           g_object_unref (obj2);
         }
 
       g_object_unref (obj);
     }
+
+  g_assert_true (monospace_found);
+
+  g_print ("# %d font families, %d monospace, %d variable\n",
+           n_families, n_monospace_families, n_variable_families);
 }
 
 static void
@@ -381,6 +407,59 @@ test_font_metrics (void)
   pango_font_metrics_unref (metrics);
 }
 
+static void
+test_to_filename (void)
+{
+  PangoFontDescription *desc;
+  char *str;
+
+  desc = pango_font_description_from_string ("Futura Medium Italic 14");
+  str = pango_font_description_to_filename (desc);
+
+  g_assert_nonnull (strstr (str, "futura"));
+  g_assert_nonnull (strstr (str, "medium"));
+  g_assert_nonnull (strstr (str, "italic"));
+
+  g_free (str);
+
+  pango_font_description_free (desc);
+}
+
+static void
+test_set_gravity (void)
+{
+  PangoFontDescription *desc;
+
+  desc = pango_font_description_from_string ("Futura Medium Italic 14");
+  pango_font_description_set_gravity (desc, PANGO_GRAVITY_SOUTH);
+  g_assert_true (pango_font_description_get_set_fields (desc) & PANGO_FONT_MASK_GRAVITY);
+
+  pango_font_description_set_gravity (desc, PANGO_GRAVITY_AUTO);
+  g_assert_false (pango_font_description_get_set_fields (desc) & PANGO_FONT_MASK_GRAVITY);
+
+  pango_font_description_free (desc);
+}
+
+static void
+test_match (void)
+{
+  PangoFontDescription *desc;
+  PangoFontDescription *desc1;
+  PangoFontDescription *desc2;
+
+  desc = pango_font_description_from_string ("Futura Medium Italic 14");
+  desc1 = pango_font_description_from_string ("Futura Bold 16");
+  pango_font_description_set_style (desc1, PANGO_STYLE_OBLIQUE);
+  desc2 = pango_font_description_from_string ("Futura Medium 16");
+  pango_font_description_set_style (desc2, PANGO_STYLE_ITALIC);
+
+  g_assert_true (pango_font_description_better_match (desc, desc1, desc2));
+
+  pango_font_description_free (desc);
+  pango_font_description_free (desc1);
+  pango_font_description_free (desc2);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -395,6 +474,9 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/fontdescription/parse", test_parse);
   g_test_add_func ("/pango/fontdescription/roundtrip", test_roundtrip);
   g_test_add_func ("/pango/fontdescription/variation", test_variation);
+  g_test_add_func ("/pango/fontdescription/to-filename", test_to_filename);
+  g_test_add_func ("/pango/fontdescription/set-gravity", test_set_gravity);
+  g_test_add_func ("/pango/fontdescription/match", test_match);
   g_test_add_func ("/pango/font/extents", test_extents);
   g_test_add_func ("/pango/font/enumerate", test_enumerate);
   g_test_add_func ("/pango/font/roundtrip/plain", test_roundtrip_plain);
