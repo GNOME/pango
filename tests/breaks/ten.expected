@@ -1,0 +1,5 @@
+Text:         i ක්[0x200d]ක  [ ]  a[0x200c] a்  [0x0a] 
+Breaks:     c  c           c    lc         c  c       c
+Whitespace:                x                  w       w
+Words:      bs             be   bs            be      b
+Sentences:  bs                                e       b
