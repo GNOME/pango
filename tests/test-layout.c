@@ -545,6 +545,13 @@ test_file (const char *filename, GString *string)
           prev_index = run->item->offset;
           next_index = run->item->offset + run->item->length;
 
+          {
+            PangoGlyphItem *run2 = pango_glyph_item_copy (run);
+            g_assert_cmpint (run2->item->offset, ==, run->item->offset);
+            g_assert_cmpint (run2->item->length, ==, run->item->length);
+            pango_glyph_item_free (run2);
+          }
+
           pango_layout_line_get_x_ranges (line, prev_index, next_index, &ranges, &n_ranges);
 
           /* The index is within the run, so the x should be in one of the ranges */
@@ -580,6 +587,7 @@ test_file (const char *filename, GString *string)
       PangoRectangle line_ink, line_logical;
       int baseline;
       PangoLayoutLine *line;
+      PangoLayoutRun *run;
 
       line = pango_layout_iter_get_line (iter);
 
@@ -601,6 +609,28 @@ test_file (const char *filename, GString *string)
       if (pango_layout_iter_at_last_line (iter))
         {
           g_assert_cmpint (line->start_index + line->length, <=, strlen (pango_layout_get_text (layout)));
+        }
+
+      run = pango_layout_iter_get_run (iter);
+
+      if (run)
+        {
+          const char *text;
+          int *widths;
+          int *widths2;
+
+          text = pango_layout_get_text (layout);
+
+          widths = g_new (int, run->item->num_chars);
+          pango_glyph_item_get_logical_widths (run, text, widths);
+
+          widths2 = g_new (int, run->item->num_chars);
+          pango_glyph_string_get_logical_widths (run->glyphs, text + run->item->offset, run->item->length, run->item->analysis.level, widths2);
+
+          g_assert_true (memcmp (widths, widths2, sizeof (int) * run->item->num_chars) == 0);
+
+          g_free (widths);
+          g_free (widths2);
         }
     }
   while (pango_layout_iter_next_line (iter));
