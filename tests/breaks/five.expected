@@ -1,0 +1,6 @@
+Text:         H e r e  [ ]  i s  [ ]  s o m e  [ ]  t e x t  [ ]  w i t h  [ ]  b r e a k  -  a f f e c t i n g  [ ]  a t t r i b u t e s  . [0x0a] 
+Breaks:     c  c c c c    lc c c    lc c c c c    lc c c c c    lc                                                                                 c
+Whitespace:          x         x             x             x             x                                     x                            w      w
+Words:      bs       be   bs   be   bs       be   bs       be   bs       be   bs         be bs                 be   bs                   be b      b
+Sentences:  bs                                                                                                                              e      b
+Graphemes:  b  b b b b    b  b b    b  b b b b    b  b b b b    b  b b b b    b  b b b b b  b  b b b b b b b b b    b  b b b b b b b b b b  b      b

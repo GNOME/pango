@@ -409,6 +409,12 @@ pango_default_break (const gchar   *text,
                 GB_type = GB_Prepend;
                 break;
               }
+            /* Tag chars */
+            if (wc >= 0xE0020 && wc <= 0xE00FF)
+              {
+                GB_type = GB_Extend;
+                break;
+              }
             G_GNUC_FALLTHROUGH;
 	  case G_UNICODE_CONTROL:
 	  case G_UNICODE_LINE_SEPARATOR:
@@ -473,6 +479,7 @@ pango_default_break (const gchar   *text,
             break;
 
           case G_UNICODE_MODIFIER_SYMBOL:
+            /* Fitzpatrick modifiers */
             if (wc >= 0x1F3FB && wc <= 0x1F3FF)
               GB_type = GB_Extend;
             break;

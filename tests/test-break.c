@@ -46,7 +46,7 @@ test_file (const gchar *filename, GString *string)
   int len2;
   char *p;
   int i;
-  GString *s1, *s2, *s3, *s4;
+  GString *s1, *s2, *s3, *s4, *s5;
   int m;
   char *test;
   char *text;
@@ -73,6 +73,7 @@ test_file (const gchar *filename, GString *string)
   pango_layout_set_text (layout, text, length);
   pango_layout_set_attributes (layout, attributes);
 
+#if 0
   if (pango_layout_get_unknown_glyphs_count (layout) > 0)
     {
       char *msg = g_strdup_printf ("Missing glyphs - skipping %s. Maybe fonts are missing?", filename);
@@ -87,6 +88,7 @@ test_file (const gchar *filename, GString *string)
       g_free (text);
       return FALSE;
     }
+#endif
 
   pango_layout_get_log_attrs (layout, &attrs, &len);
   attrs2 = pango_layout_get_log_attrs_readonly (layout, &len2);
@@ -106,15 +108,17 @@ test_file (const gchar *filename, GString *string)
   s2 = g_string_new ("Whitespace: ");
   s3 = g_string_new ("Words:");
   s4 = g_string_new ("Sentences:");
+  s5 = g_string_new ("Graphemes:");
 
   g_string_append (string, "Text: ");
 
-  m = MAX (MAX (s1->len, s2->len), MAX (s3->len, s4->len));
+  m = MAX (MAX (MAX (s1->len, s2->len), MAX (s3->len, s4->len)), s5->len);
 
   g_string_append_printf (s1, "%*s", (int)(m - s1->len), "");
   g_string_append_printf (s2, "%*s", (int)(m - s2->len), "");
   g_string_append_printf (s3, "%*s", (int)(m - s3->len), "");
   g_string_append_printf (s4, "%*s", (int)(m - s4->len), "");
+  g_string_append_printf (s5, "%*s", (int)(m - s5->len), "");
   g_string_append_printf (string, "%*s", (int)(m - strlen ("Text: ")), "");
 
   for (i = 0, p = text; i < len; i++, p = g_utf8_next_char (p))
@@ -124,6 +128,7 @@ test_file (const gchar *filename, GString *string)
       int w = 0;
       int o = 0;
       int s = 0;
+      int g = 0;
 
       if (log.is_mandatory_break)
         {
@@ -183,14 +188,20 @@ test_file (const gchar *filename, GString *string)
           g_string_append (s4, "e");
           s++;
         }
+      if (log.is_cursor_position)
+        {
+          g_string_append (s5, "b");
+          g++;
+        }
 
-      m = MAX (MAX (b, w), MAX (o, s));
+      m = MAX (MAX (MAX (b, w), MAX (o, s)), g);
 
       g_string_append_printf (string, "%*s", m, "");
       g_string_append_printf (s1, "%*s", m - b, "");
       g_string_append_printf (s2, "%*s", m - w, "");
       g_string_append_printf (s3, "%*s", m - o, "");
       g_string_append_printf (s4, "%*s", m - s, "");
+      g_string_append_printf (s5, "%*s", m - g, "");
 
       if (i < len - 1)
         {
@@ -202,6 +213,7 @@ test_file (const gchar *filename, GString *string)
               g_string_append (s2, "   ");
               g_string_append (s3, "   ");
               g_string_append (s4, "   ");
+              g_string_append (s5, "   ");
             }
           else if (g_unichar_isgraph (ch) &&
                    !(g_unichar_type (ch) == G_UNICODE_LINE_SEPARATOR ||
@@ -212,6 +224,7 @@ test_file (const gchar *filename, GString *string)
               g_string_append (s2, " ");
               g_string_append (s3, " ");
               g_string_append (s4, " ");
+              g_string_append (s5, " ");
             }
           else
             {
@@ -221,6 +234,7 @@ test_file (const gchar *filename, GString *string)
               g_string_append_printf (s2, "%*s", (int)strlen (str), "");
               g_string_append_printf (s3, "%*s", (int)strlen (str), "");
               g_string_append_printf (s4, "%*s", (int)strlen (str), "");
+              g_string_append_printf (s5, "%*s", (int)strlen (str), "");
               g_free (str);
             }
         }
@@ -234,11 +248,14 @@ test_file (const gchar *filename, GString *string)
   g_string_append (string, "\n");
   g_string_append_len (string, s4->str, s4->len);
   g_string_append (string, "\n");
+  g_string_append_len (string, s5->str, s5->len);
+  g_string_append (string, "\n");
 
   g_string_free (s1, TRUE);
   g_string_free (s2, TRUE);
   g_string_free (s3, TRUE);
   g_string_free (s4, TRUE);
+  g_string_free (s5, TRUE);
 
   g_object_unref (layout);
   g_free (attrs);
@@ -341,8 +358,8 @@ main (int argc, char *argv[])
       if (strcmp (argv[1], "--legend") == 0)
         {
           g_print ("test-break uses the following symbols for log attrs\n\n");
-          g_print ("Breaks:                 Words:\n"
-                   " L - mandatory break     b - word boundary\n"
+          g_print ("Breaks:                 Words:                  Graphemes:\n"
+                   " L - mandatory break     b - word boundary       b - grapheme boundary\n"
                    " l - line break          s - word start\n"
                    " c - char break          e - word end\n"
                    "\n"

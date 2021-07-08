@@ -3,3 +3,4 @@ Breaks:     c  c c c    lc c c c         Lc c c c    lc c c c         c c c c c 
 Whitespace:        x           w                x                               w       w
 Words:      bs     be   bs     be        bs     be   bs                         be      b
 Sentences:  bs                 e         bs                                     e       b
+Graphemes:  b  b b b    b  b b b         b  b b b    b  b b b         b b b b b b       b

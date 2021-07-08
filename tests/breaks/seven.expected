@@ -1,0 +1,6 @@
+Text:         나  는  [ ]  유  리  를  [ ]  먹  을  [ ]  수  [ ]  있  어  요  . [ ]  그  래  도  [ ]  아  프  지  [ ]  않  아  요  [0x0a] 
+Breaks:     c  lc c    lc lc lc c    lc lc c    lc c    lc lc lc c  c   lc lc lc c    lc lc lc c    lc lc lc c       c
+Whitespace:       x             x          x       x                x            x             x             w       w
+Words:      bs    be   bs       be   bs    be   bs be   bs       be b   bs       be   bs       be   bs       be      b
+Sentences:  bs                                                      e   bs                                   e       b
+Graphemes:  b  b  b    b  b  b  b    b  b  b    b  b    b  b  b  b  b   b  b  b  b    b  b  b  b    b  b  b  b       b
