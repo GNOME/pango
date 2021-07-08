@@ -1,0 +1,46 @@
+ a⃠ 😊︎ 😊️ 🇩🇪 ✊ ✋🏾 0 # 🏴󠁵󠁳󠁣󠁡󠁿 ©
+
+--- parameters
+
+wrapped: 0
+ellipsized: 0
+lines: 2
+
+--- attributes
+
+range 0 2147483647
+
+--- directions
+
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+
+--- cursor positions
+
+0(0) 1(0) 5(0) 6(0) 13(0) 14(0) 21(0) 22(0) 30(0) 31(0) 34(0) 35(0) 42(0) 43(0) 44(0) 45(0) 46(0) 47(0) 51(0) 55(0) 59(0) 63(0) 67(0) 71(0) 72(0) 72(1) 75(0) 
+
+--- lines
+
+i=1, index=0, paragraph-start=1, dir=ltr ' a⃠ 😊︎ 😊️ 🇩🇪 ✊ ✋🏾 0 # 🏴󠁵󠁳󠁣󠁡󠁿 ©
+'
+i=2, index=75, paragraph-start=1, dir=ltr ''
+
+--- runs
+
+i=1, index=0, chars=2, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, ' a'
+i=2, index=2, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, '⃠'
+i=3, index=5, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, ' '
+i=4, index=6, chars=2, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, '😊︎'
+i=5, index=13, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, ' '
+i=6, index=14, chars=2, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, '😊️'
+i=7, index=21, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, ' '
+i=8, index=22, chars=2, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, '🇩🇪'
+i=9, index=30, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, ' '
+i=10, index=31, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, '✊'
+i=11, index=34, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, ' '
+i=12, index=35, chars=2, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, '✋🏾'
+i=13, index=42, chars=5, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, ' 0 # '
+i=14, index=47, chars=6, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, '🏴󠁵󠁳󠁣󠁡󠁿'
+i=15, index=71, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, ' '
+i=16, index=72, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, '©'
+i=17, index=74, no run, line end
+i=18, index=75, no run, line end
