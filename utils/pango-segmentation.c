@@ -141,19 +141,23 @@ int
 main (int argc, char *argv[])
 {
   char *opt_kind = "grapheme";
+  char *opt_text = NULL;
   gboolean opt_version = FALSE;
   GOptionEntry entries[] = {
     { "kind", 0, 0, G_OPTION_ARG_STRING, &opt_kind, "Kind of boundary (grapheme/word/line/sentence)", "KIND" },
+    { "text", 0, 0, G_OPTION_ARG_STRING, &opt_text, "Text to display", "STRING" },
     { "version", 0, 0, G_OPTION_ARG_NONE, &opt_version, "Show version" },
     { NULL, },
   };
   GOptionContext *context;
   GError *error = NULL;
+  char *text;
+  gsize len;
 
   g_set_prgname ("pango-segmentation");
   setlocale (LC_ALL, "");
 
-  context = g_option_context_new ("TEXT");
+  context = g_option_context_new ("[FILE]");
   g_option_context_add_main_entries (context, entries, NULL);
   g_option_context_set_description (context,
       "Show text segmentation as determined by Pango.");
@@ -169,13 +173,25 @@ main (int argc, char *argv[])
       exit (0);
     }
 
-  if (argc < 2)
+  if (opt_text)
     {
-      g_printerr ("Usage: pango-segmentation [OPTIONS…] TEXT\n");
+      text = opt_text;
+    }
+  else if (argc > 1)
+    {
+      if (!g_file_get_contents (argv[1], &text, &len, &error))
+        {
+          g_printerr ("%s\n", error->message);
+          exit (1);
+        }
+    }
+  else
+    {
+      g_printerr ("Usage: pango-segmentation [OPTIONS…] FILE\n");
       exit (1);
     }
 
-  show_segmentation (argv[1], kind_from_string (opt_kind));
+  show_segmentation (text, kind_from_string (opt_kind));
 
   return 0;
 }
