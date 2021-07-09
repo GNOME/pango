@@ -178,6 +178,17 @@ test_is_zero_width (void)
   g_assert_true (pango_is_zero_width (0x034f));
   g_assert_false (pango_is_zero_width ('a'));
   g_assert_false (pango_is_zero_width ('c'));
+
+  g_assert_true (pango_is_zero_width (0x2066));
+  g_assert_true (pango_is_zero_width (0x2067));
+  g_assert_true (pango_is_zero_width (0x2068));
+  g_assert_true (pango_is_zero_width (0x2069));
+
+  g_assert_true (pango_is_zero_width (0x202a));
+  g_assert_true (pango_is_zero_width (0x202b));
+  g_assert_true (pango_is_zero_width (0x202c));
+  g_assert_true (pango_is_zero_width (0x202d));
+  g_assert_true (pango_is_zero_width (0x202e));
 }
 
 static void
