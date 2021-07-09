@@ -177,9 +177,9 @@ static void pango_layout_get_item_properties (PangoItem      *item,
                                               ItemProperties *properties);
 
 static void pango_layout_get_empty_extents_and_height_at_index (PangoLayout    *layout,
-                                                     int             index,
-                                                     PangoRectangle *logical_rect,
-                                                     int            *height);
+                                                                int             index,
+                                                                PangoRectangle *logical_rect,
+                                                                int            *height);
 
 static void pango_layout_finalize    (GObject          *object);
 
