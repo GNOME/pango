@@ -678,7 +678,7 @@ create_standard_family (PangoWin32FontMap *win32fontmap,
 
               new_face->has_cmap = old_face->has_cmap;
               new_face->cmap_format = old_face->cmap_format;
-              new_face->cmap = old_face->cmap;
+              new_face->cmap = _pango_win32_copy_cmap (old_face->cmap, old_face->cmap_format);
 
               new_face->cached_fonts = NULL;
 
@@ -1761,7 +1761,7 @@ pango_win32_face_finalize (GObject *object)
 
   g_free (win32face->face_name);
 
-  //g_free (win32face->cmap); // Err, cmap does not have lifecycle management currently :(
+  g_free (win32face->cmap);
 
   g_slist_free (win32face->cached_fonts);
 //  g_slist_free_full (win32face->cached_fonts, g_object_unref); // This doesn't work.
