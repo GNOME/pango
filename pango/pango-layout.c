@@ -456,6 +456,8 @@ pango_layout_get_height (PangoLayout *layout)
  * The wrap mode only has effect if a width is set on the layout
  * with [method@Pango.Layout.set_width]. To turn off wrapping,
  * set the width to -1.
+ *
+ * The default value is %PANGO_WRAP_WORD.
  */
 void
 pango_layout_set_wrap (PangoLayout   *layout,
@@ -530,6 +532,8 @@ pango_layout_is_wrapped (PangoLayout *layout)
  *
  * The indent setting is ignored if layout alignment is set to
  * %PANGO_ALIGN_CENTER.
+ *
+ * The default value is 0.
  */
 void
 pango_layout_set_indent (PangoLayout *layout,
@@ -573,11 +577,12 @@ pango_layout_get_indent (PangoLayout *layout)
  *
  *     line2.top = line1.bottom + spacing
  *
- * Note: Since 1.44, Pango defaults to using the line height
- * (as determined by the font) for placing lines. The @spacing
- * set with this function is only taken into account when the
- * line height factor is set to zero with
- * [method@Pango.Layout.set_line_spacing].
+ * The default value is 0.
+ *
+ * Note: Since 1.44, Pango is using the line height (as determined
+ * by the font) for placing lines when the line height factor is set
+ * to a non-zero value with [method@Pango.Layout.set_line_spacing].
+ * In that case, the @spacing set with this function is ignored.
  */
 void
 pango_layout_set_spacing (PangoLayout *layout,
@@ -624,7 +629,7 @@ pango_layout_get_spacing (PangoLayout *layout)
  * (as determined by the font(s)). In this case, the spacing
  * set with [method@Pango.Layout.set_spacing] is ignored.
  *
- * If @factor is zero, spacing is applied as before.
+ * If @factor is zero (the default), spacing is applied as before.
  *
  * Since: 1.44
  */
