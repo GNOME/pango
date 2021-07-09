@@ -22,6 +22,7 @@
 #include <glib.h>
 #include <pango/pangocairo.h>
 #include <string.h>
+#include <stdlib.h>
 #include <locale.h>
 
 #ifndef G_OS_WIN32
