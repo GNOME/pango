@@ -258,6 +258,27 @@ test_list_change (void)
   pango_attr_list_unref (list);
 }
 
+/* See https://gitlab.gnome.org/GNOME/pango/-/issues/564 */
+static void
+test_list_change2 (void)
+{
+  PangoAttrList *list;
+  PangoAttribute *attr;
+
+  list = attributes_from_string ("[6,11]weight=700\n"
+                                 "[18,23]weight=700\n");
+
+  /* insertion with joining */
+  attr = pango_attr_weight_new (700);
+  attr->start_index = 0;
+  attr->end_index = 29;
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "[0,29]weight=700\n");
+
+  pango_attr_list_unref (list);
+}
+
 static void
 test_list_splice (void)
 {
@@ -1003,6 +1024,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/attributes/register", test_attributes_register);
   g_test_add_func ("/attributes/list/basic", test_list);
   g_test_add_func ("/attributes/list/change", test_list_change);
+  g_test_add_func ("/attributes/list/change2", test_list_change2);
   g_test_add_func ("/attributes/list/splice", test_list_splice);
   g_test_add_func ("/attributes/list/splice2", test_list_splice2);
   g_test_add_func ("/attributes/list/splice3", test_list_splice3);
