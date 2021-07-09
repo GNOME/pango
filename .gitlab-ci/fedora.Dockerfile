@@ -31,6 +31,7 @@ RUN dnf -y install \
     libthai-devel \
     libubsan \
     libXft-devel \
+    llvm \
     ninja-build \
     python3 \
     python3-jinja2 \
