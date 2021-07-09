@@ -220,7 +220,9 @@ print_attributes (GSList *attrs, GString *string)
     }
 }
 
-static PangoAttribute *
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+
+PangoAttribute *
 attribute_from_string (const char *string)
 {
   char *s, *p;
@@ -229,6 +231,7 @@ attribute_from_string (const char *string)
   GEnumClass *class;
   int i;
   PangoColor color;
+  int val;
 
   s = string;
   g_assert (*s == '[');
@@ -278,16 +281,32 @@ attribute_from_string (const char *string)
       attr = pango_attr_font_features_new (s);
       break;
     case PANGO_ATTR_STYLE:
-      attr = pango_attr_style_new (strtol (s, &p, 10));
+      {
+        if (!pango_parse_enum (PANGO_TYPE_STYLE, s, &val, FALSE, NULL))
+          val = strtol (s, &p, 10);
+      attr = pango_attr_style_new (val);
+      }
       break;
     case PANGO_ATTR_WEIGHT:
-      attr = pango_attr_weight_new (strtol (s, &p, 10));
+      {
+        if (!pango_parse_enum (PANGO_TYPE_WEIGHT, s, &val, FALSE, NULL))
+          val = strtol (s, &p, 10);
+        attr = pango_attr_weight_new (val);
+      }
       break;
     case PANGO_ATTR_VARIANT:
-      attr = pango_attr_variant_new (strtol (s, &p, 10));
+      {
+        if (!pango_parse_enum (PANGO_TYPE_VARIANT, s, &val, FALSE, NULL))
+          val = strtol (s, &p, 10);
+        attr = pango_attr_variant_new (val);
+      }
       break;
     case PANGO_ATTR_STRETCH:
-      attr = pango_attr_stretch_new (strtol (s, &p, 10));
+      {
+        if (!pango_parse_enum (PANGO_TYPE_STRETCH, s, &val, FALSE, NULL))
+          val = strtol (s, &p, 10);
+        attr = pango_attr_stretch_new (val);
+      }
       break;
     case PANGO_ATTR_SIZE:
       attr = pango_attr_size_new (strtol (s, &p, 10));
@@ -296,10 +315,18 @@ attribute_from_string (const char *string)
       attr = pango_attr_size_new_absolute (strtol (s, &p, 10));
       break;
     case PANGO_ATTR_UNDERLINE:
-      attr = pango_attr_underline_new (strtol (s, &p, 10));
+      {
+        if (!pango_parse_enum (PANGO_TYPE_UNDERLINE, s, &val, FALSE, NULL))
+          val = strtol (s, &p, 10);
+        attr = pango_attr_underline_new (val);
+      }
       break;
     case PANGO_ATTR_OVERLINE:
-      attr = pango_attr_overline_new (strtol (s, &p, 10));
+      {
+        if (!pango_parse_enum (PANGO_TYPE_OVERLINE, s, &val, FALSE, NULL))
+          val = strtol (s, &p, 10);
+        attr = pango_attr_overline_new (val);
+      }
       break;
     case PANGO_ATTR_STRIKETHROUGH:
       attr = pango_attr_strikethrough_new (strtol (s, &p, 10));
@@ -314,10 +341,18 @@ attribute_from_string (const char *string)
       attr = pango_attr_letter_spacing_new (strtol (s, &p, 10));
       break;
     case PANGO_ATTR_GRAVITY:
-      attr = pango_attr_gravity_new (strtol (s, &p, 10));
+      {
+        if (!pango_parse_enum (PANGO_TYPE_GRAVITY, s, &val, FALSE, NULL))
+          val = strtol (s, &p, 10);
+        attr = pango_attr_gravity_new (val);
+      }
       break;
     case PANGO_ATTR_GRAVITY_HINT:
-      attr = pango_attr_gravity_hint_new (strtol (s, &p, 10));
+      {
+        if (!pango_parse_enum (PANGO_TYPE_GRAVITY_HINT, s, &val, FALSE, NULL))
+          val = strtol (s, &p, 10);
+        attr = pango_attr_gravity_hint_new (val);
+      }
       break;
     case PANGO_ATTR_FOREGROUND_ALPHA:
       attr = pango_attr_foreground_alpha_new (strtol (s, &p, 10));
@@ -392,6 +427,8 @@ attribute_from_string (const char *string)
 
   return attr;
 }
+
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 PangoAttrList *
 attributes_from_string (const char *string)
