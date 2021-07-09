@@ -619,7 +619,6 @@ lookup_aliases (GHashTable   *aliases_ht,
 {
   struct PangoAlias alias_key;
   struct PangoAlias *alias;
-  static gsize aliases_inited = 0;
 
   alias_key.alias = g_ascii_strdown (fontname, -1);
   alias = g_hash_table_lookup (aliases_ht, &alias_key);
