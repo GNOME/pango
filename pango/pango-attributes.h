@@ -699,6 +699,25 @@ gboolean              pango_markup_parser_finish (GMarkupParseContext   *context
                                                   gunichar              *accel_char,
                                                   GError               **error);
 
+PANGO_AVAILABLE_IN_1_50
+PangoAttrString       *pango_attribute_as_string        (PangoAttribute *attr);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrLanguage     *pango_attribute_as_language      (PangoAttribute *attr);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrInt          *pango_attribute_as_int           (PangoAttribute *attr);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrSize         *pango_attribute_as_size          (PangoAttribute *attr);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrFloat        *pango_attribute_as_float         (PangoAttribute *attr);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrColor        *pango_attribute_as_color         (PangoAttribute *attr);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrFontDesc     *pango_attribute_as_font_desc     (PangoAttribute *attr);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrShape        *pango_attribute_as_shape         (PangoAttribute *attr);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrFontFeatures *pango_attribute_as_font_features (PangoAttribute *attr);
+
 G_END_DECLS
 
 #endif /* __PANGO_ATTRIBUTES_H__ */
