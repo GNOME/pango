@@ -2538,9 +2538,9 @@ _pango_fc_font_map_fc_to_languages (FcLangSet *langset)
   FcStrSet *strset;
   FcStrList *list;
   FcChar8 *s;
-  GArray *langs;
+  GPtrArray *langs;
 
-  langs = g_array_new (TRUE, FALSE, sizeof (PangoLanguage *));
+  langs = g_ptr_array_new ();
 
   strset = FcLangSetGetLangs (langset);
   list = FcStrListCreate (strset);
@@ -2549,13 +2549,15 @@ _pango_fc_font_map_fc_to_languages (FcLangSet *langset)
   while ((s = FcStrListNext (list)))
     {
       PangoLanguage *l = pango_language_from_string ((const char *)s);
-      g_array_append_val (langs, l);
+      g_ptr_array_add (langs, l);
     }
 
   FcStrListDone (list);
   FcStrSetDestroy (strset);
 
-  return (PangoLanguage **) g_array_free (langs, FALSE);
+  g_ptr_array_add (langs, NULL);
+
+  return (PangoLanguage **) g_ptr_array_free (langs, FALSE);
 }
 
 PangoLanguage **
