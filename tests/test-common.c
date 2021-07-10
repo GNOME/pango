@@ -225,7 +225,8 @@ G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 PangoAttribute *
 attribute_from_string (const char *string)
 {
-  char *s, *p;
+  const char *s;
+  char *p;
   PangoAttribute *attr;
   long long start, end;
   GEnumClass *class;
