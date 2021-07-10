@@ -3389,9 +3389,6 @@ pango_fc_font_map_get_hb_face (PangoFcFontMap *fcfontmap,
     {
       hb_blob_t *blob;
 
-      if (!hb_version_atleast (2, 0, 0))
-        g_error ("Harfbuzz version too old (%s)\n", hb_version_string ());
-
       blob = hb_blob_create_from_file (data->filename);
       data->hb_face = hb_face_create (blob, data->id);
       hb_blob_destroy (blob);
