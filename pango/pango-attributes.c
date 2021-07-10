@@ -1661,14 +1661,12 @@ pango_attr_list_change (PangoAttrList  *list,
     }
 
   if (!inserted)
-    {
-      /* we didn't insert attr yet */
-      pango_attr_list_insert (list, attr);
-      return;
-    }
+    /* we didn't insert attr yet */
+    pango_attr_list_insert (list, attr);
 
   /* We now have the range inserted into the list one way or the
-   * other. Fix up the remainder */
+   * other. Fix up the remainder
+   */
   /* Attention: No i = 0 here. */
   for (i = i + 1, p = list->attributes->len; i < p; i++)
     {
@@ -1694,9 +1692,8 @@ pango_attr_list_change (PangoAttrList  *list,
       else
         {
           /* Trim the start of this attribute that it begins at the end
-           * of the new attribute. This may involve moving
-           * it in the list to maintain the required non-decreasing
-           * order of start indices
+           * of the new attribute. This may involve moving it in the list
+           * to maintain the required non-decreasing order of start indices.
            */
           int k, m;
 
