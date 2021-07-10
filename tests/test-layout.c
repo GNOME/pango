@@ -461,17 +461,18 @@ test_file (const char *filename, GString *string)
   /* Some checks on extents - we have to be careful here, since we
    * don't want to depend on font metrics.
    */
+  pango_layout_get_size (layout, &width, &height);
   pango_layout_get_extents (layout, &ink_rect, &logical_rect);
+  g_assert_cmpint (width, ==, logical_rect.width);
+  g_assert_cmpint (height, ==, logical_rect.height);
+
   pango_extents_to_pixels (&ink_rect, NULL);
   pango_extents_to_pixels (&logical_rect, NULL);
   pango_layout_get_pixel_extents (layout, &ink_rect1, &logical_rect1);
-  pango_layout_get_size (layout, &width, &height);
   pango_layout_get_pixel_size (layout, &width1, &height1);
 
   assert_rectangle_equal (&ink_rect, &ink_rect1);
   assert_rectangle_equal (&logical_rect, &logical_rect1);
-  g_assert_cmpint (PANGO_PIXELS (width), ==, logical_rect.width);
-  g_assert_cmpint (PANGO_PIXELS (height), ==, logical_rect.height);
   g_assert_cmpint (width1, ==, logical_rect1.width);
   g_assert_cmpint (height1, ==, logical_rect1.height);
 
