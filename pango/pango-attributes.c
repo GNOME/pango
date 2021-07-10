@@ -2496,3 +2496,257 @@ pango_attr_iterator_get_attrs (PangoAttrIterator *iterator)
 
   return attrs;
 }
+
+
+/**
+ * pango_attribute_as_int:
+ * @attr: A `PangoAttribute` such as weight
+ *
+ * Returns the attribute cast to `PangoAttrInt`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrInt`,
+ *   or %NULL if it's not an integer attribute
+ *
+ * Since: 1.50
+ */
+PangoAttrInt *
+pango_attribute_as_int (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_STYLE:
+    case PANGO_ATTR_WEIGHT:
+    case PANGO_ATTR_VARIANT:
+    case PANGO_ATTR_STRETCH:
+    case PANGO_ATTR_UNDERLINE:
+    case PANGO_ATTR_STRIKETHROUGH:
+    case PANGO_ATTR_RISE:
+    case PANGO_ATTR_FALLBACK:
+    case PANGO_ATTR_LETTER_SPACING:
+    case PANGO_ATTR_GRAVITY:
+    case PANGO_ATTR_GRAVITY_HINT:
+    case PANGO_ATTR_FOREGROUND_ALPHA:
+    case PANGO_ATTR_BACKGROUND_ALPHA:
+    case PANGO_ATTR_ALLOW_BREAKS:
+    case PANGO_ATTR_SHOW:
+    case PANGO_ATTR_INSERT_HYPHENS:
+    case PANGO_ATTR_OVERLINE:
+      return (PangoAttrInt *)attr;
+
+    default:
+      return NULL;
+    }
+}
+
+/**
+ * pango_attribute_as_float:
+ * @attr: A `PangoAttribute` such as scale
+ *
+ * Returns the attribute cast to `PangoAttrFloat`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrFloat`,
+ *   or %NULL if it's not a floating point attribute
+ *
+ * Since: 1.50
+ */
+PangoAttrFloat *
+pango_attribute_as_float (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_SCALE:
+      return (PangoAttrFloat *)attr;
+
+    default:
+      return NULL;
+    }
+}
+
+/**
+ * pango_attribute_as_string:
+ * @attr: A `PangoAttribute` such as family
+ *
+ * Returns the attribute cast to `PangoAttrString`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrString`,
+ *   or %NULL if it's not a string attribute
+ */
+PangoAttrString *
+pango_attribute_as_string (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_FAMILY:
+      return (PangoAttrString *)attr;
+
+    default:
+      return NULL;
+    }
+}
+
+/**
+ * pango_attribute_as_size:
+ * @attr: A `PangoAttribute` representing a size
+ *
+ * Returns the attribute cast to `PangoAttrSize`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrSize`,
+ *   or NULL if it's not a size attribute
+ *
+ * Since: 1.50
+ */
+PangoAttrSize *
+pango_attribute_as_size (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_SIZE:
+    case PANGO_ATTR_ABSOLUTE_SIZE:
+      return (PangoAttrSize *)attr;
+
+    default:
+      return NULL;
+    }
+}
+
+/**
+ * pango_attribute_as_color:
+ * @attr: A `PangoAttribute` such as foreground
+ *
+ * Returns the attribute cast to `PangoAttrColor`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrColor`,
+ *   or %NULL if it's not a color attribute
+ *
+ * Since: 1.50
+ */
+PangoAttrColor *
+pango_attribute_as_color (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_FOREGROUND:
+    case PANGO_ATTR_BACKGROUND:
+    case PANGO_ATTR_UNDERLINE_COLOR:
+    case PANGO_ATTR_STRIKETHROUGH_COLOR:
+    case PANGO_ATTR_OVERLINE_COLOR:
+      return (PangoAttrColor *)attr;
+
+    default:
+      return NULL;
+    }
+}
+
+/**
+ * pango_attribute_as_font_desc:
+ * @attr: A `PangoAttribute` representing a font description
+ *
+ * Returns the attribute cast to `PangoAttrFontDesc`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrFontDesc`,
+ *   or %NULL if it's not a font description attribute
+ *
+ * Since: 1.50
+ */
+PangoAttrFontDesc *
+pango_attribute_as_font_desc (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_FONT_DESC:
+      return (PangoAttrFontDesc *)attr;
+
+    default:
+      return NULL;
+    }
+}
+
+/**
+ * pango_attribute_as_font_features:
+ * @attr: A `PangoAttribute` representing font features
+ *
+ * Returns the attribute cast to `PangoAttrFontFeatures`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrFontFeatures`,
+ *   or %NULL if it's not a font features attribute
+ *
+ * Since: 1.50
+ */
+PangoAttrFontFeatures *
+pango_attribute_as_font_features (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_FONT_FEATURES:
+      return (PangoAttrFontFeatures *)attr;
+
+    default:
+      return NULL;
+    }
+}
+
+/**
+ * pango_attribute_as_language:
+ * @attr: A `PangoAttribute` representing a language
+ *
+ * Returns the attribute cast to `PangoAttrLanguage`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrLanguage`,
+ *   or %NULL if it's not a language attribute
+ *
+ * Since: 1.50
+ */
+PangoAttrLanguage *
+pango_attribute_as_language (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_LANGUAGE:
+      return (PangoAttrLanguage *)attr;
+
+    default:
+      return NULL;
+    }
+}
+
+/**
+ * pango_attribute_as_shape:
+ * @attr: A `PangoAttribute` representing a shape
+ *
+ * Returns the attribute cast to `PangoAttrShape`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrShape`,
+ *   or %NULL if it's not a shape attribute
+ *
+ * Since: 1.50
+ */
+PangoAttrShape *
+pango_attribute_as_shape (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_SHAPE:
+      return (PangoAttrShape *)attr;
+
+    default:
+      return NULL;
+    }
+}
