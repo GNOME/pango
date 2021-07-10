@@ -363,7 +363,7 @@ test_file (const char *filename, GString *string)
   char *p;
   LayoutParams params;
   PangoFontDescription *desc;
-  PangoFontDescription *desc2;
+  const PangoFontDescription *desc2;
   guint serial;
   PangoRectangle ink_rect, logical_rect;
   PangoRectangle ink_rect1, logical_rect1;
