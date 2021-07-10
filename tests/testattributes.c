@@ -120,7 +120,7 @@ assert_attributes (GSList     *attrs,
   print_attributes (attrs, s);
   if (strcmp (s->str, expected) != 0)
     {
-      g_print ("-----\nattribute list mismatch\nexpected:\n%s-----\nreceived:\n%s-----\n",
+      g_print ("-----\nattribute list mismatch\nexpected:\n%s\n-----\nreceived:\n%s\n-----\n",
                expected, s->str);
       g_assert_not_reached ();
     }
@@ -131,11 +131,21 @@ static void
 assert_attr_list (PangoAttrList *list,
                   const char    *expected)
 {
-  GSList *attrs;
+  PangoAttrList *list2;
 
-  attrs = pango_attr_list_get_attributes (list);
-  assert_attributes (attrs, expected);
-  g_slist_free_full (attrs, (GDestroyNotify)pango_attribute_destroy);
+  list2 = attributes_from_string (expected);
+  if (!pango_attr_list_equal (list, list2))
+    {
+      GString *s = g_string_new ("");
+
+      print_attr_list (list, s);
+      g_print ("-----\nattribute list mismatch\nexpected:\n%s-----\nreceived:\n%s-----\n",
+               expected, s->str);
+      g_string_free (s, TRUE);
+      g_assert_not_reached ();
+    }
+
+  pango_attr_list_unref (list2);
 }
 
 static void
@@ -253,14 +263,249 @@ test_list_change2 (void)
   PangoAttrList *list;
   PangoAttribute *attr;
 
-  list = attributes_from_string ("[6,11]weight=700\n"
-                                 "[18,23]weight=700\n");
+  list = attributes_from_string ("[0,3]style=italic\n"
+                                 "[3,4]style=normal\n"
+                                 "[4,18]style=italic\n");
 
   /* insertion with joining */
-  attr = attribute_from_string ("[0,29]weight=700");
+  attr = attribute_from_string ("[0,18]style=normal");
   pango_attr_list_change (list, attr);
 
-  assert_attr_list (list, "[0,29]weight=700\n");
+  assert_attr_list (list, "[0,18]style=normal\n");
+
+  pango_attr_list_unref (list);
+}
+
+static void
+test_list_change3 (void)
+{
+  PangoAttrList *list;
+  PangoAttribute *attr;
+
+  list = attributes_from_string ("[0,3]style=italic\n"
+                                 "[3,4]style=normal\n"
+                                 "[4,18]style=italic\n");
+
+  /* insertion with joining */
+  attr = attribute_from_string ("[1,1]style=normal");
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "[0,3]style=italic\n"
+                          "[3,4]style=normal\n"
+                          "[4,18]style=italic\n");
+
+  pango_attr_list_unref (list);
+}
+
+static void
+test_list_change4 (void)
+{
+  PangoAttrList *list;
+  PangoAttribute *attr;
+
+  list = pango_attr_list_new ();
+
+  /* insertion with joining */
+  attr = attribute_from_string ("[0,10]style=normal");
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "[0,10]style=normal");
+
+  pango_attr_list_unref (list);
+}
+
+static void
+test_list_change5 (void)
+{
+  PangoAttrList *list;
+  PangoAttribute *attr;
+
+  list = attributes_from_string ("[0,3]weight=800\n"
+                                 "[2,4]style=normal\n"
+                                 "[10,20]style=normal\n"
+                                 "[15,18]fallback=false\n");
+
+  /* insertion with joining */
+  attr = attribute_from_string ("[5,15]style=italic");
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "[0,3]weight=800\n"
+                          "[2,4]style=normal\n"
+                          "[5,15]style=italic\n"
+                          "[15,20]style=normal\n"
+                          "[15,18]fallback=false");
+
+  pango_attr_list_unref (list);
+}
+
+static void
+test_list_change6 (void)
+{
+  PangoAttrList *list;
+  PangoAttribute *attr;
+
+  list = attributes_from_string ("[0,3]weight=800\n"
+                                 "[2,4]style=normal\n"
+                                 "[10,20]style=normal\n"
+                                 "[15,18]fallback=false\n");
+
+  /* insertion with joining */
+  attr = attribute_from_string ("[3,10]style=normal");
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "[0,3]weight=800\n"
+                          "[2,20]style=normal\n"
+                          "[15,18]fallback=false");
+
+  pango_attr_list_unref (list);
+}
+
+static void
+test_list_change7 (void)
+{
+  PangoAttrList *list;
+  PangoAttribute *attr;
+
+  list = attributes_from_string ("[0,3]weight=800\n"
+                                 "[2,4]style=normal\n"
+                                 "[10,20]style=normal\n"
+                                 "[15,18]fallback=false\n");
+
+  /* insertion with joining */
+  attr = attribute_from_string ("[3,4]style=normal");
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "[0,3]weight=800\n"
+                          "[2,4]style=normal\n"
+                          "[10,20]style=normal\n"
+                          "[15,18]fallback=false");
+
+  pango_attr_list_unref (list);
+}
+
+static void
+test_list_change8 (void)
+{
+  PangoAttrList *list;
+  PangoAttribute *attr;
+
+  list = attributes_from_string ("[0,3]weight=800\n"
+                                 "[2,4]style=normal\n"
+                                 "[10,20]style=normal\n"
+                                 "[15,18]fallback=false\n");
+
+  /* insertion with joining */
+  attr = attribute_from_string ("[3,11]style=italic");
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "[0,3]weight=800\n"
+                          "[2,3]style=normal\n"
+                          "[3,11]style=italic\n"
+                          "[11,20]style=normal\n"
+                          "[15,18]fallback=false");
+
+  pango_attr_list_unref (list);
+}
+
+static void
+test_list_change9 (void)
+{
+  PangoAttrList *list;
+  PangoAttribute *attr;
+
+  list = attributes_from_string ("[0,3]weight=800\n"
+                                 "[2,4]style=normal\n"
+                                 "[10,20]style=normal\n"
+                                 "[15,18]fallback=false\n");
+
+  /* insertion with joining */
+  attr = attribute_from_string ("[2,3]style=italic");
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "[0,3]weight=800\n"
+                          "[2,3]style=italic\n"
+                          "[3,4]style=normal\n"
+                          "[10,20]style=normal\n"
+                          "[15,18]fallback=false");
+
+  pango_attr_list_unref (list);
+}
+
+static void
+test_list_change10 (void)
+{
+  PangoAttrList *list;
+  PangoAttribute *attr;
+
+  list = attributes_from_string ("[0,3]weight=800\n"
+                                 "[2,4]style=normal\n"
+                                 "[10,20]style=normal\n"
+                                 "[15,18]fallback=false\n");
+
+  /* insertion with joining */
+  attr = attribute_from_string ("[3,4]style=italic");
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "[0,3]weight=800\n"
+                          "[2,3]style=normal\n"
+                          "[3,4]style=italic\n"
+                          "[10,20]style=normal\n"
+                          "[15,18]fallback=false");
+
+  pango_attr_list_unref (list);
+}
+
+static void
+test_list_change11 (void)
+{
+  PangoAttrList *list;
+  PangoAttribute *attr;
+
+  list = attributes_from_string ("[0,3]weight=800\n"
+                                 "[2,4]style=normal\n"
+                                 "[3,5]fallback=false\n"
+                                 "[10,20]style=italic\n"
+                                 "[15,18]fallback=false\n"
+                                 "[22,30]style=italic\n");
+
+  /* insertion with joining */
+  attr = attribute_from_string ("[3,22]style=italic");
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "[0,3]weight=800\n"
+                          "[2,3]style=normal\n"
+                          "[3,30]style=italic\n"
+                          "[3,5]fallback=false\n"
+                          "[15,18]fallback=false\n");
+
+  pango_attr_list_unref (list);
+}
+
+static void
+test_list_change12 (void)
+{
+  PangoAttrList *list;
+  PangoAttribute *attr;
+
+  list = attributes_from_string ("[0,3]weight=800\n"
+                                 "[2,4]style=normal\n"
+                                 "[3,5]fallback=false\n"
+                                 "[10,20]style=normal\n"
+                                 "[15,18]fallback=false\n"
+                                 "[20,30]style=oblique\n"
+                                 "[21,22]fallback=false");
+
+  /* insertion with joining */
+  attr = attribute_from_string ("[3,22]style=italic");
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "[0,3]weight=800\n"
+                          "[2,3]style=normal\n"
+                          "[3,22]style=italic\n"
+                          "[3,5]fallback=false\n"
+                          "[15,18]fallback=false\n"
+                          "[21,22]fallback=false\n"
+                          "[22,30]style=oblique");
 
   pango_attr_list_unref (list);
 }
@@ -968,6 +1213,16 @@ main (int argc, char *argv[])
   g_test_add_func ("/attributes/list/basic", test_list);
   g_test_add_func ("/attributes/list/change", test_list_change);
   g_test_add_func ("/attributes/list/change2", test_list_change2);
+  g_test_add_func ("/attributes/list/change3", test_list_change3);
+  g_test_add_func ("/attributes/list/change4", test_list_change4);
+  g_test_add_func ("/attributes/list/change5", test_list_change5);
+  g_test_add_func ("/attributes/list/change6", test_list_change6);
+  g_test_add_func ("/attributes/list/change7", test_list_change7);
+  g_test_add_func ("/attributes/list/change8", test_list_change8);
+  g_test_add_func ("/attributes/list/change9", test_list_change9);
+  g_test_add_func ("/attributes/list/change10", test_list_change10);
+  g_test_add_func ("/attributes/list/change11", test_list_change11);
+  g_test_add_func ("/attributes/list/change12", test_list_change12);
   g_test_add_func ("/attributes/list/splice", test_list_splice);
   g_test_add_func ("/attributes/list/splice2", test_list_splice2);
   g_test_add_func ("/attributes/list/splice3", test_list_splice3);
