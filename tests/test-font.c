@@ -463,7 +463,6 @@ test_match (void)
 int
 main (int argc, char *argv[])
 {
-  g_setenv ("LC_ALL", "C", TRUE);
   setlocale (LC_ALL, "");
 
   g_test_init (&argc, &argv, NULL);

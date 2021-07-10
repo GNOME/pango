@@ -292,7 +292,7 @@ test_break (gconstpointer d)
   gchar *diff;
 
   char *old_locale = g_strdup (setlocale (LC_ALL, NULL));
-  setlocale (LC_ALL, "en_US.utf8");
+  setlocale (LC_ALL, "en_US.UTF-8");
   if (strstr (setlocale (LC_ALL, NULL), "en_US") == NULL)
     {
       char *msg = g_strdup_printf ("Locale en_US.UTF-8 not available, skipping break %s", filename);
