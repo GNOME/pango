@@ -104,12 +104,6 @@ _pango_Is_Emoji_Extended_Pictographic (gunichar ch)
 }
 
 static inline gboolean
-_pango_Is_Emoji_Text_Default (gunichar ch)
-{
-  return _pango_Is_Emoji (ch) && !_pango_Is_Emoji_Presentation (ch);
-}
-
-static inline gboolean
 _pango_Is_Emoji_Emoji_Default (gunichar ch)
 {
   return _pango_Is_Emoji_Presentation (ch);

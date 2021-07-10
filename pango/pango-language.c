@@ -347,11 +347,11 @@ pango_language_from_string (const char *language)
     }
 
   len = strlen (language);
-  result = g_malloc0 (sizeof (PangoLanguagePrivate) + len + 1);
-  g_assert (result);
+  priv = g_malloc0 (sizeof (PangoLanguagePrivate) + len + 1);
+  g_assert (priv);
 
-  priv = (PangoLanguagePrivate *) result;
-  result += sizeof (*priv);
+  result = (char *)priv;
+  result += sizeof (PangoLanguagePrivate);
 
   pango_language_private_init (priv);
 
@@ -746,7 +746,7 @@ parse_default_languages (void)
 {
   char *p, *p_copy;
   gboolean done = FALSE;
-  GArray *langs;
+  GPtrArray *langs;
 
   p = getenv ("PANGO_LANGUAGE");
 
@@ -758,7 +758,7 @@ parse_default_languages (void)
 
   p_copy = p = g_strdup (p);
 
-  langs = g_array_new (TRUE, FALSE, sizeof (PangoLanguage *));
+  langs = g_ptr_array_new ();
 
   while (!done)
     {
@@ -776,16 +776,18 @@ parse_default_languages (void)
         {
 	  PangoLanguage *l = pango_language_from_string (p);
 	  
-	  g_array_append_val (langs, l);
+	  g_ptr_array_add (langs, l);
 	}
 
       if (!done)
 	p = end + 1;
     }
 
+  g_ptr_array_add (langs, NULL);
+
   g_free (p_copy);
 
-  return (PangoLanguage **) g_array_free (langs, FALSE);
+  return (PangoLanguage **) g_ptr_array_free (langs, FALSE);
 }
 
 G_LOCK_DEFINE_STATIC (languages);
@@ -858,7 +860,7 @@ pango_language_get_preferred (void)
   /* We call this just for its side-effect of initializing languages */
   _pango_script_get_default_language (PANGO_SCRIPT_COMMON);
 
-  return languages;
+  return (PangoLanguage **) languages;
 }
 
 /**

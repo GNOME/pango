@@ -34,6 +34,7 @@
 
 static PangoContext *context;
 
+static gboolean opt_show_font;
 
 static const gchar *
 enum_value_nick (GType type, gint value)
@@ -160,7 +161,7 @@ dump_runs (PangoLayout *layout, GString *string)
                                   i, index, item->num_chars, item->analysis.level,
                                   gravity_name (item->analysis.gravity),
                                   item->analysis.flags,
-                                  "OMITTED", /* for some reason, this fails on build.gnome.org, so leave it out */
+                                  opt_show_font ? font : "OMITTED", /* for some reason, this fails on build.gnome.org, so leave it out */
                                   script_name (item->analysis.script),
                                   pango_language_to_string (item->analysis.language),
                                   char_str);
@@ -362,7 +363,7 @@ test_file (const char *filename, GString *string)
   char *p;
   LayoutParams params;
   PangoFontDescription *desc;
-  PangoFontDescription *desc2;
+  const PangoFontDescription *desc2;
   guint serial;
   PangoRectangle ink_rect, logical_rect;
   PangoRectangle ink_rect1, logical_rect1;
@@ -753,6 +754,9 @@ main (int argc, char *argv[])
   GError *error = NULL;
   const gchar *name;
   gchar *path;
+
+  if (g_getenv ("PANGO_TEST_SHOW_FONT"))
+    opt_show_font = TRUE;
 
   /* allow to easily generate expected output for new test cases */
   if (argc > 1 && argv[1][0] != '-')
