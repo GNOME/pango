@@ -236,18 +236,43 @@ test_itemize (gconstpointer d)
   GError *error = NULL;
   GString *dump;
   gchar *diff;
+  PangoFontFamily **families;
+  int n_families;
+  gboolean found_cantarell;
 
-  const char *old_locale = setlocale (LC_ALL, NULL);
-  setlocale (LC_ALL, "en_US.utf8");
+  char *old_locale = g_strdup (setlocale (LC_ALL, NULL));
+  setlocale (LC_ALL, "en_US.UTF-8");
   if (strstr (setlocale (LC_ALL, NULL), "en_US") == NULL)
     {
       char *msg = g_strdup_printf ("Locale en_US.UTF-8 not available, skipping itemization %s", filename);
       g_test_skip (msg);
       g_free (msg);
+      g_free (old_locale);
       return;
     }
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
+  found_cantarell = FALSE;
+  pango_context_list_families (context, &families, &n_families);
+  for (int i = 0; i < n_families; i++)
+    {
+      if (strcmp (pango_font_family_get_name (families[i]), "Cantarell") == 0)
+        {
+          found_cantarell = TRUE;
+          break;
+        }
+    }
+  g_free (families);
+
+  if (!found_cantarell)
+    {
+      char *msg = g_strdup_printf ("Cantarell font not available, skipping itemization %s", filename);
+      g_test_skip (msg);
+      g_free (msg);
+      g_free (old_locale);
+      return;
+    }
 
   expected_file = get_expected_filename (filename);
 
@@ -259,6 +284,7 @@ test_itemize (gconstpointer d)
   g_assert_no_error (error);
 
   setlocale (LC_ALL, old_locale);
+  g_free (old_locale);
 
   if (diff && diff[0])
     {

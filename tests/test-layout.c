@@ -461,17 +461,18 @@ test_file (const char *filename, GString *string)
   /* Some checks on extents - we have to be careful here, since we
    * don't want to depend on font metrics.
    */
+  pango_layout_get_size (layout, &width, &height);
   pango_layout_get_extents (layout, &ink_rect, &logical_rect);
+  g_assert_cmpint (width, ==, logical_rect.width);
+  g_assert_cmpint (height, ==, logical_rect.height);
+
   pango_extents_to_pixels (&ink_rect, NULL);
   pango_extents_to_pixels (&logical_rect, NULL);
   pango_layout_get_pixel_extents (layout, &ink_rect1, &logical_rect1);
-  pango_layout_get_size (layout, &width, &height);
   pango_layout_get_pixel_size (layout, &width1, &height1);
 
   assert_rectangle_equal (&ink_rect, &ink_rect1);
   assert_rectangle_equal (&logical_rect, &logical_rect1);
-  g_assert_cmpint (PANGO_PIXELS (width), ==, logical_rect.width);
-  g_assert_cmpint (PANGO_PIXELS (height), ==, logical_rect.height);
   g_assert_cmpint (width1, ==, logical_rect1.width);
   g_assert_cmpint (height1, ==, logical_rect1.height);
 
@@ -702,19 +703,44 @@ test_layout (gconstpointer d)
   GError *error = NULL;
   GString *dump;
   gchar *diff;
+  PangoFontFamily **families;
+  int n_families;
+  gboolean found_cantarell;
 
-  const char *old_locale = setlocale (LC_ALL, NULL);
-  setlocale (LC_ALL, "en_US.utf8");
+  char *old_locale = g_strdup (setlocale (LC_ALL, NULL));
+  setlocale (LC_ALL, "en_US.UTF-8");
   if (strstr (setlocale (LC_ALL, NULL), "en_US") == NULL)
     {
       char *msg = g_strdup_printf ("Locale en_US.UTF-8 not available, skipping layout %s", filename);
       g_test_skip (msg);
       g_free (msg);
+      g_free (old_locale);
       return;
     }
 
   if (context == NULL)
     context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
+  found_cantarell = FALSE;
+  pango_context_list_families (context, &families, &n_families);
+  for (int i = 0; i < n_families; i++)
+    {
+      if (strcmp (pango_font_family_get_name (families[i]), "Cantarell") == 0)
+        {
+          found_cantarell = TRUE;
+          break;
+        }
+    }
+  g_free (families);
+
+  if (!found_cantarell)
+    {
+      char *msg = g_strdup_printf ("Cantarell font not available, skipping itemization %s", filename);
+      g_test_skip (msg);
+      g_free (msg);
+      g_free (old_locale);
+      return;
+    }
 
   expected_file = get_expected_filename (filename);
 
@@ -726,6 +752,7 @@ test_layout (gconstpointer d)
   g_assert_no_error (error);
 
   setlocale (LC_ALL, old_locale);
+  g_free (old_locale);
 
   if (diff && diff[0])
     {
@@ -755,6 +782,8 @@ main (int argc, char *argv[])
   const gchar *name;
   gchar *path;
 
+  setlocale (LC_ALL, "");
+
   if (g_getenv ("PANGO_TEST_SHOW_FONT"))
     opt_show_font = TRUE;
 
@@ -762,8 +791,6 @@ main (int argc, char *argv[])
   if (argc > 1 && argv[1][0] != '-')
     {
       GString *string;
-
-      setlocale (LC_ALL, "en_US.utf8");
 
       string = g_string_sized_new (0);
       test_file (argv[1], string);
