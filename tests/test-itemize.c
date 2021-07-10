@@ -237,13 +237,14 @@ test_itemize (gconstpointer d)
   GString *dump;
   gchar *diff;
 
-  const char *old_locale = setlocale (LC_ALL, NULL);
-  setlocale (LC_ALL, "en_US.utf8");
+  char *old_locale = g_strdup (setlocale (LC_ALL, NULL));
+  setlocale (LC_ALL, "en_US.UTF-8");
   if (strstr (setlocale (LC_ALL, NULL), "en_US") == NULL)
     {
       char *msg = g_strdup_printf ("Locale en_US.UTF-8 not available, skipping itemization %s", filename);
       g_test_skip (msg);
       g_free (msg);
+      g_free (old_locale);
       return;
     }
 
@@ -259,6 +260,7 @@ test_itemize (gconstpointer d)
   g_assert_no_error (error);
 
   setlocale (LC_ALL, old_locale);
+  g_free (old_locale);
 
   if (diff && diff[0])
     {

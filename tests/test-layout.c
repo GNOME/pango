@@ -703,13 +703,14 @@ test_layout (gconstpointer d)
   GString *dump;
   gchar *diff;
 
-  const char *old_locale = setlocale (LC_ALL, NULL);
-  setlocale (LC_ALL, "en_US.utf8");
+  char *old_locale = g_strdup (setlocale (LC_ALL, NULL));
+  setlocale (LC_ALL, "en_US.UTF-8");
   if (strstr (setlocale (LC_ALL, NULL), "en_US") == NULL)
     {
       char *msg = g_strdup_printf ("Locale en_US.UTF-8 not available, skipping layout %s", filename);
       g_test_skip (msg);
       g_free (msg);
+      g_free (old_locale);
       return;
     }
 
@@ -726,6 +727,7 @@ test_layout (gconstpointer d)
   g_assert_no_error (error);
 
   setlocale (LC_ALL, old_locale);
+  g_free (old_locale);
 
   if (diff && diff[0])
     {
@@ -755,6 +757,8 @@ main (int argc, char *argv[])
   const gchar *name;
   gchar *path;
 
+  setlocale (LC_ALL, "");
+
   if (g_getenv ("PANGO_TEST_SHOW_FONT"))
     opt_show_font = TRUE;
 
@@ -762,8 +766,6 @@ main (int argc, char *argv[])
   if (argc > 1 && argv[1][0] != '-')
     {
       GString *string;
-
-      setlocale (LC_ALL, "en_US.utf8");
 
       string = g_string_sized_new (0);
       test_file (argv[1], string);
