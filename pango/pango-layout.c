@@ -4517,6 +4517,71 @@ G_DEFINE_BOXED_TYPE (PangoLayoutLine, pango_layout_line,
                      pango_layout_line_unref);
 
 /**
+ * pango_layout_line_get_start_index:
+ * @line: a `PangoLayoutLine`
+ *
+ * Returns the start index of the line, as byte index
+ * into the text of the layout.
+ *
+ * Returns: the start index of the line
+ *
+ * Since: 1.50
+ */
+int
+pango_layout_line_get_start_index (PangoLayoutLine *line)
+{
+  return line->start_index;
+}
+
+/**
+ * pango_layout_line_get_length:
+ * @line: a `PangoLayoutLine`
+ *
+ * Returns the length of the line, in bytes.
+ *
+ * Returns: the length of the line
+ *
+ * Since: 1.50
+ */
+int
+pango_layout_line_get_length (PangoLayoutLine *line)
+{
+  return line->length;
+}
+
+/**
+ * pango_layout_line_is_paragraph_start:
+ * @line: a `PangoLayoutLine`
+ *
+ * Returns whether this is the first line of the paragraph.
+ *
+ * Returns: %TRUE if this is the first line
+ *
+ * Since: 1.50
+ */
+gboolean
+pango_layout_line_is_paragraph_start (PangoLayoutLine *line)
+{
+  return line->is_paragraph_start;
+}
+
+/**
+ * pango_layout_line_get_resolved_direction:
+ * @line: a `PangoLayoutLine`
+ *
+ * Returns the resolved direction of the line.
+ *
+ * Returns: the resolved direction of the line
+ *
+ * Since: 1.50
+ */
+PangoDirection
+pango_layout_line_get_resolved_direction (PangoLayoutLine *line)
+{
+  return (PangoDirection) line->resolved_dir;
+}
+
+/**
  * pango_layout_line_x_to_index:
  * @line: a `PangoLayoutLine`
  * @x_pos: the X offset (in Pango units) from the left edge of the line.

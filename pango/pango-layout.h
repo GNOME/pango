@@ -347,6 +347,15 @@ PangoLayoutLine *pango_layout_line_ref   (PangoLayoutLine *line);
 PANGO_AVAILABLE_IN_ALL
 void             pango_layout_line_unref (PangoLayoutLine *line);
 
+PANGO_AVAILABLE_IN_1_50
+int      pango_layout_line_get_start_index (PangoLayoutLine *line);
+PANGO_AVAILABLE_IN_1_50
+int      pango_layout_line_get_length      (PangoLayoutLine *line);
+PANGO_AVAILABLE_IN_1_50
+gboolean pango_layout_line_is_paragraph_start (PangoLayoutLine *line);
+PANGO_AVAILABLE_IN_1_50
+PangoDirection pango_layout_line_get_resolved_direction (PangoLayoutLine *line);
+
 PANGO_AVAILABLE_IN_ALL
 gboolean pango_layout_line_x_to_index   (PangoLayoutLine  *line,
 					 int               x_pos,
