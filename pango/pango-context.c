@@ -629,6 +629,7 @@ typedef struct {
 
 typedef struct {
   PangoFont *font;
+  int position; /* position of the font in the fontset */
 } FontElement;
 
 static void
@@ -677,7 +678,8 @@ retry:
 static gboolean
 font_cache_get (FontCache   *cache,
                 gunichar     wc,
-                PangoFont  **font)
+                PangoFont  **font,
+                int         *position)
 {
   FontElement *element;
 
@@ -685,7 +687,7 @@ font_cache_get (FontCache   *cache,
   if (element)
     {
       *font = element->font;
-
+      *position = element->position;
       return TRUE;
     }
   else
@@ -693,12 +695,14 @@ font_cache_get (FontCache   *cache,
 }
 
 static void
-font_cache_insert (FontCache   *cache,
-                   gunichar           wc,
-                   PangoFont         *font)
+font_cache_insert (FontCache *cache,
+                   gunichar   wc,
+                   PangoFont *font,
+                   int        position)
 {
   FontElement *element = g_slice_new (FontElement);
   element->font = font ? g_object_ref (font) : NULL;
+  element->position = position;
 
   g_hash_table_insert (cache->hash, GUINT_TO_POINTER (wc), element);
 }
@@ -779,6 +783,9 @@ struct _ItemizeState
   FontCache *cache;
   PangoFont *base_font;
   gboolean enable_fallback;
+
+  const char *first_space; /* first of a sequence of spaces we've seen */
+  int font_position; /* position of the current font in the fontset */
 };
 
 static void
@@ -1089,7 +1096,8 @@ itemize_state_init (ItemizeState               *state,
   state->current_fonts = NULL;
   state->cache = NULL;
   state->base_font = NULL;
-
+  state->first_space = NULL;
+  state->font_position = 0xffff;
 }
 
 static gboolean
@@ -1170,18 +1178,33 @@ itemize_state_fill_font (ItemizeState *state,
 static void
 itemize_state_add_character (ItemizeState *state,
                              PangoFont    *font,
+                             int           font_position,
                              gboolean      force_break,
-                             const char   *pos)
+                             const char   *pos,
+                             gboolean      is_space)
 {
+  const char *first_space = state->first_space;
+  int n_spaces = 0;
+
+  if (is_space)
+    {
+      if (state->first_space == NULL)
+        state->first_space = pos;
+    }
+  else
+    state->first_space = NULL;
+
   if (state->item)
     {
       if (!state->item->analysis.font && font)
         {
           itemize_state_fill_font (state, font);
+          state->font_position = font_position;
         }
       else if (state->item->analysis.font && !font)
         {
           font = state->item->analysis.font;
+          font_position = state->font_position;
         }
 
       if (!force_break &&
@@ -1191,17 +1214,33 @@ itemize_state_add_character (ItemizeState *state,
           return;
         }
 
+      /* Font is changing, we are about to end the current item.
+       * If it ended in a sequence of spaces (but wasn't only spaces),
+       * check if we should move those spaces to the new item (since
+       * the font is less "fallback".
+       *
+       * See https://gitlab.gnome.org/GNOME/pango/-/issues/249
+       */
+      if (state->text + state->item->offset < first_space &&
+          font_position < state->font_position)
+        {
+          n_spaces = g_utf8_strlen (first_space, pos - first_space);
+          state->item->num_chars -= n_spaces;
+          pos = first_space;
+        }
+
       state->item->length = (pos - state->text) - state->item->offset;
     }
 
   state->item = pango_item_new ();
   state->item->offset = pos - state->text;
   state->item->length = 0;
-  state->item->num_chars = 1;
+  state->item->num_chars = n_spaces + 1;
 
   if (font)
     g_object_ref (font);
   state->item->analysis.font = font;
+  state->font_position = font_position;
 
   state->item->analysis.level = state->embedding;
   state->item->analysis.gravity = state->resolved_gravity;
@@ -1259,6 +1298,7 @@ typedef struct {
   PangoLanguage *lang;
   gunichar wc;
   PangoFont *font;
+  int position;
 } GetFontInfo;
 
 static gboolean
@@ -1283,6 +1323,8 @@ get_font_foreach (PangoFontset *fontset,
       return TRUE;
     }
 
+  info->position++;
+
   return FALSE;
 }
 
@@ -1299,18 +1341,20 @@ get_base_font (ItemizeState *state)
 static gboolean
 get_font (ItemizeState  *state,
           gunichar       wc,
-          PangoFont    **font)
+          PangoFont    **font,
+          int           *position)
 {
   GetFontInfo info;
 
   /* We'd need a separate cache when fallback is disabled, but since lookup
    * with fallback disabled is faster anyways, we just skip caching */
-  if (state->enable_fallback && font_cache_get (state->cache, wc, font))
+  if (state->enable_fallback && font_cache_get (state->cache, wc, font, position))
     return TRUE;
 
   info.lang = state->derived_lang;
   info.wc = wc;
   info.font = NULL;
+  info.position = 0;
 
   if (state->enable_fallback)
     pango_fontset_foreach (state->current_fonts, get_font_foreach, &info);
@@ -1318,10 +1362,11 @@ get_font (ItemizeState  *state,
     get_font_foreach (NULL, get_base_font (state), &info);
 
   *font = info.font;
+  *position = info.position;
 
   /* skip caching if fallback disabled (see above) */
   if (state->enable_fallback)
-    font_cache_insert (state->cache, wc, *font);
+    font_cache_insert (state->cache, wc, *font, *position);
 
   return TRUE;
 }
@@ -1436,6 +1481,7 @@ itemize_state_process_run (ItemizeState *state)
 {
   const char *p;
   gboolean last_was_forced_break = FALSE;
+  gboolean is_space;
 
   /* Only one character has type G_UNICODE_LINE_SEPARATOR in Unicode 4.0;
    * update this if that changes. */
@@ -1453,6 +1499,7 @@ itemize_state_process_run (ItemizeState *state)
       gunichar wc = g_utf8_get_char (p);
       gboolean is_forced_break = (wc == '\t' || wc == LINE_SEPARATOR);
       PangoFont *font;
+      int font_position;
       GUnicodeType type;
 
       /* We don't want space characters to affect font selection; in general,
@@ -1466,6 +1513,10 @@ itemize_state_process_run (ItemizeState *state)
        * See bug #781123.
        *
        * Finally, don't change fonts for line or paragraph separators.
+       *
+       * Note that we want spaces to use the 'better' font, comparing
+       * the font that is used before and after the space. This is handled
+       * in itemize_state_add_character().
        */
       type = g_unichar_type (wc);
       if (G_UNLIKELY (type == G_UNICODE_CONTROL ||
@@ -1478,15 +1529,19 @@ itemize_state_process_run (ItemizeState *state)
                       (wc >= 0xe0100u && wc <= 0xe01efu)))
         {
           font = NULL;
+          font_position = 0xffff;
+          is_space = TRUE;
         }
       else
         {
-          get_font (state, wc, &font);
+          get_font (state, wc, &font, &font_position);
+          is_space = FALSE;
         }
 
-      itemize_state_add_character (state, font,
+      itemize_state_add_character (state, font, font_position,
                                    is_forced_break || last_was_forced_break,
-                                   p);
+                                   p,
+                                   is_space);
 
       last_was_forced_break = is_forced_break;
     }
@@ -1496,8 +1551,9 @@ itemize_state_process_run (ItemizeState *state)
   if (!state->item->analysis.font)
     {
       PangoFont *font;
+      int position;
 
-      if (G_UNLIKELY (!get_font (state, ' ', &font)))
+      if (G_UNLIKELY (!get_font (state, ' ', &font, &position)))
         {
           /* If no font was found, warn once per fontmap/script pair */
           PangoFontMap *fontmap = state->context->font_map;
