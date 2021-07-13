@@ -294,12 +294,16 @@ markup_data_close_tag (MarkupData *md)
 
       if (ot->has_base_font_size)
 	{
-	  /* Create a font using the absolute point size
-	   * as the base size to be scaled from
-	   */
-	  a = pango_attr_size_new (scale_factor (ot->scale_level,
-						 1.0) *
-				   ot->base_font_size);
+          /* Create a font using the absolute point size as the base size
+           * to be scaled from.
+           * We need to use a local variable to ensure that the compiler won't
+           * implicitly cast it to integer while the result is kept in registers,
+           * leading to a wrong approximation in i386 (with 387 FPU)
+           */
+          volatile double size;
+
+          size = scale_factor (ot->scale_level, 1.0) * ot->base_font_size;
+          a = pango_attr_size_new (size);
 	}
       else
 	{

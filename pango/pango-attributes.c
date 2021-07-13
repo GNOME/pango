@@ -2382,10 +2382,16 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 
   if (have_scale)
     {
+      /* We need to use a local variable to ensure that the compiler won't
+       * implicitly cast it to integer while the result is kept in registers,
+       * leading to a wrong approximation in i386 (with 387 FPU)
+       */
+      volatile double size = scale * pango_font_description_get_size (desc);
+
       if (pango_font_description_get_size_is_absolute (desc))
-        pango_font_description_set_absolute_size (desc, scale * pango_font_description_get_size (desc));
+        pango_font_description_set_absolute_size (desc, size);
       else
-        pango_font_description_set_size (desc, scale * pango_font_description_get_size (desc));
+        pango_font_description_set_size (desc, size);
     }
 }
 
