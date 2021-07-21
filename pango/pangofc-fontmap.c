@@ -2789,6 +2789,7 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
     {
       FcMatrix *fc_matrix;
       double scale_factor = 1;
+      volatile double scaled_size;
 
       if (FcPatternGetMatrix (pattern, FC_MATRIX, 0, &fc_matrix) == FcResultMatch)
         {
@@ -2802,7 +2803,12 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
           scale_factor = pango_matrix_get_font_scale_factor (&mat);
         }
 
-      pango_font_description_set_size (desc, scale_factor * size * PANGO_SCALE);
+      /* We need to use a local variable to ensure that the compiler won't
+       * implicitly cast it to integer while the result is kept in registers,
+       * leading to a wrong approximation in i386 (with 387 FPU)
+       */
+      scaled_size = scale_factor * size * PANGO_SCALE;
+      pango_font_description_set_size (desc, scaled_size);
     }
 
   /* gravity is a bit different.  we don't want to set it if it was not set on
