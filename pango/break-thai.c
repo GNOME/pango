@@ -27,8 +27,10 @@
 #include <thai/thwchar.h>
 #include <thai/thbrk.h>
 
-#ifndef HAVE_TH_BRK_FIND_BREAKS
-G_LOCK_DEFINE_STATIC (th_brk);
+G_LOCK_DEFINE_STATIC (thai_brk);
+
+#ifdef HAVE_TH_BRK_FIND_BREAKS
+static ThBrk *thai_brk = NULL;
 #endif
 
 /*
@@ -79,13 +81,15 @@ break_thai (const char          *text,
 
   /* find line break positions */
 
+  G_LOCK (thai_brk);
 #ifdef HAVE_TH_BRK_FIND_BREAKS
-  len = th_brk_find_breaks(NULL, tis_text, brk_pnts, cnt);
+  if (thai_brk == NULL)
+    thai_brk = th_brk_new(NULL);
+  len = th_brk_find_breaks(thai_brk, tis_text, brk_pnts, cnt);
 #else
-  G_LOCK (th_brk);
   len = th_brk (tis_text, brk_pnts, cnt);
-  G_UNLOCK (th_brk);
 #endif
+  G_UNLOCK (thai_brk);
 
   for (cnt = 0; cnt < len; cnt++)
     if (attrs[brk_pnts[cnt]].is_char_break)
