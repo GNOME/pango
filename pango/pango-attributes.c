@@ -2479,15 +2479,16 @@ pango_attr_iterator_get_attrs (PangoAttrIterator *iterator)
       GSList *tmp_list2;
       gboolean found = FALSE;
 
-      for (tmp_list2 = attrs; tmp_list2; tmp_list2 = tmp_list2->next)
-        {
-          PangoAttribute *old_attr = tmp_list2->data;
-          if (attr->klass->type == old_attr->klass->type)
-            {
-              found = TRUE;
-              break;
-            }
-        }
+      if (attr->klass->type != PANGO_ATTR_FONT_DESC)
+        for (tmp_list2 = attrs; tmp_list2; tmp_list2 = tmp_list2->next)
+          {
+            PangoAttribute *old_attr = tmp_list2->data;
+            if (attr->klass->type == old_attr->klass->type)
+              {
+                found = TRUE;
+                break;
+              }
+           }
 
       if (!found)
         attrs = g_slist_prepend (attrs, pango_attribute_copy (attr));

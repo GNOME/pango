@@ -16,6 +16,7 @@ range 0 5
 [0,13]fallback=0
 [0,13]language=de
 range 5 7
+[0,13]font-desc=Sans Italic 12 @wdth=100,wght=200
 [0,13]foreground=#0000ffff0000
 [0,13]background=#f0f0f0f0f0f0
 [0,13]underline=2
