@@ -1103,268 +1103,231 @@ pango_default_break (const gchar   *text,
 	  /* add the line break rules in reverse order to override
 	     the lower priority rules. */
 
-	  /* Rule LB30 */
-	  if ((prev_break_type == G_UNICODE_BREAK_ALPHABETIC ||
-	       prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER ||
-	       prev_break_type == G_UNICODE_BREAK_NUMERIC) &&
-	      break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION &&
-	      !_pango_is_EastAsianWide (wc))
-	    break_op = BREAK_PROHIBITED;
+          /* Rule LB30 */
+          if ((prev_break_type == G_UNICODE_BREAK_ALPHABETIC ||
+               prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER ||
+               prev_break_type == G_UNICODE_BREAK_NUMERIC) &&
+              break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION &&
+              !_pango_is_EastAsianWide (wc))
+            break_op = BREAK_PROHIBITED;
+          else if (prev_break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS &&
+                   !_pango_is_EastAsianWide (prev_wc) &&
+                   (break_type == G_UNICODE_BREAK_ALPHABETIC ||
+                    break_type == G_UNICODE_BREAK_HEBREW_LETTER ||
+                    break_type == G_UNICODE_BREAK_NUMERIC))
+            break_op = BREAK_PROHIBITED;
+          /* Rule LB30a */
+          else if (prev_LB_type == LB_RI_Odd && LB_type == LB_RI_Even)
+            break_op = BREAK_PROHIBITED;
+          /* Rule LB30b */
+          else if (prev_break_type == G_UNICODE_BREAK_EMOJI_BASE &&
+                   break_type == G_UNICODE_BREAK_EMOJI_MODIFIER)
+            break_op = BREAK_PROHIBITED;
+          /* Rule LB29 */
+          else if (prev_break_type == G_UNICODE_BREAK_INFIX_SEPARATOR &&
+                   (break_type == G_UNICODE_BREAK_ALPHABETIC ||
+                    break_type == G_UNICODE_BREAK_HEBREW_LETTER))
+            break_op = BREAK_PROHIBITED;
+          /* Rule LB28 */
+          else if ((prev_break_type == G_UNICODE_BREAK_ALPHABETIC ||
+                    prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER) &&
+                   (break_type == G_UNICODE_BREAK_ALPHABETIC ||
+                    break_type == G_UNICODE_BREAK_HEBREW_LETTER))
+            break_op = BREAK_PROHIBITED;
+          /* Rule LB27 */
+          else if ((prev_break_type == G_UNICODE_BREAK_HANGUL_L_JAMO ||
+                    prev_break_type == G_UNICODE_BREAK_HANGUL_V_JAMO ||
+                    prev_break_type == G_UNICODE_BREAK_HANGUL_T_JAMO ||
+                    prev_break_type == G_UNICODE_BREAK_HANGUL_LV_SYLLABLE ||
+                    prev_break_type == G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE) &&
+                   (break_type == G_UNICODE_BREAK_INSEPARABLE ||
+                    break_type == G_UNICODE_BREAK_POSTFIX))
+            break_op = BREAK_PROHIBITED;
+          else if (prev_break_type == G_UNICODE_BREAK_PREFIX &&
+                   (break_type == G_UNICODE_BREAK_HANGUL_L_JAMO ||
+                    break_type == G_UNICODE_BREAK_HANGUL_V_JAMO ||
+                    break_type == G_UNICODE_BREAK_HANGUL_T_JAMO ||
+                    break_type == G_UNICODE_BREAK_HANGUL_LV_SYLLABLE ||
+                    break_type == G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE))
+            break_op = BREAK_PROHIBITED;
+          /* Rule LB26 */
+          else if (prev_break_type == G_UNICODE_BREAK_HANGUL_L_JAMO &&
+                   (break_type == G_UNICODE_BREAK_HANGUL_L_JAMO ||
+                    break_type == G_UNICODE_BREAK_HANGUL_V_JAMO ||
+                    break_type == G_UNICODE_BREAK_HANGUL_LV_SYLLABLE ||
+                    break_type == G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE))
+            break_op = BREAK_PROHIBITED;
+          else if ((prev_break_type == G_UNICODE_BREAK_HANGUL_V_JAMO ||
+                    prev_break_type == G_UNICODE_BREAK_HANGUL_LV_SYLLABLE) &&
+                   (break_type == G_UNICODE_BREAK_HANGUL_V_JAMO ||
+                    break_type == G_UNICODE_BREAK_HANGUL_T_JAMO))
+            break_op = BREAK_PROHIBITED;
+          else if ((prev_break_type == G_UNICODE_BREAK_HANGUL_T_JAMO ||
+                    prev_break_type == G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE) &&
+                   break_type == G_UNICODE_BREAK_HANGUL_T_JAMO)
+            break_op = BREAK_PROHIBITED;
+          /* Rule LB25 with Example 7 of Customization */
+          else if ((prev_break_type == G_UNICODE_BREAK_PREFIX ||
+                    prev_break_type == G_UNICODE_BREAK_POSTFIX) &&
+                   break_type == G_UNICODE_BREAK_NUMERIC)
+            break_op = BREAK_PROHIBITED;
+          else if ((prev_break_type == G_UNICODE_BREAK_PREFIX ||
+                    prev_break_type == G_UNICODE_BREAK_POSTFIX) &&
+                   (break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION ||
+                    break_type == G_UNICODE_BREAK_HYPHEN) &&
+                   next_break_type == G_UNICODE_BREAK_NUMERIC)
+            break_op = BREAK_PROHIBITED;
+          else if ((prev_break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION ||
+                    prev_break_type == G_UNICODE_BREAK_HYPHEN) &&
+                   break_type == G_UNICODE_BREAK_NUMERIC)
+            break_op = BREAK_PROHIBITED;
+          else if (prev_break_type == G_UNICODE_BREAK_NUMERIC &&
+                   (break_type == G_UNICODE_BREAK_NUMERIC ||
+                    break_type == G_UNICODE_BREAK_SYMBOL ||
+                    break_type == G_UNICODE_BREAK_INFIX_SEPARATOR))
+            break_op = BREAK_PROHIBITED;
+          else if (prev_LB_type == LB_Numeric &&
+                   (break_type == G_UNICODE_BREAK_NUMERIC ||
+                    break_type == G_UNICODE_BREAK_SYMBOL ||
+                    break_type == G_UNICODE_BREAK_INFIX_SEPARATOR ||
+                    break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION ||
+                    break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS))
+            break_op = BREAK_PROHIBITED;
+          else if ((prev_LB_type == LB_Numeric ||
+                    prev_LB_type == LB_Numeric_Close) &&
+                   (break_type == G_UNICODE_BREAK_POSTFIX ||
+                    break_type == G_UNICODE_BREAK_PREFIX))
+            break_op = BREAK_PROHIBITED;
+          /* Rule LB24 */
+          else if ((prev_break_type == G_UNICODE_BREAK_PREFIX ||
+                    prev_break_type == G_UNICODE_BREAK_POSTFIX) &&
+                   (break_type == G_UNICODE_BREAK_ALPHABETIC ||
+                    break_type == G_UNICODE_BREAK_HEBREW_LETTER))
+            break_op = BREAK_PROHIBITED;
+          else if ((prev_break_type == G_UNICODE_BREAK_ALPHABETIC ||
+                    prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER) &&
+                   (break_type == G_UNICODE_BREAK_PREFIX ||
+                    break_type == G_UNICODE_BREAK_POSTFIX))
+            break_op = BREAK_PROHIBITED;
+          /* Rule LB23 */
+          else if ((prev_break_type == G_UNICODE_BREAK_ALPHABETIC ||
+                    prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER) &&
+                   break_type == G_UNICODE_BREAK_NUMERIC)
+            break_op = BREAK_PROHIBITED;
+          else if (prev_break_type == G_UNICODE_BREAK_NUMERIC &&
+                   (break_type == G_UNICODE_BREAK_ALPHABETIC ||
+                    break_type == G_UNICODE_BREAK_HEBREW_LETTER))
+            break_op = BREAK_PROHIBITED;
+          /* Rule LB23a */
+          else if (prev_break_type == G_UNICODE_BREAK_PREFIX &&
+                   (break_type == G_UNICODE_BREAK_IDEOGRAPHIC ||
+                    break_type == G_UNICODE_BREAK_EMOJI_BASE ||
+                    break_type == G_UNICODE_BREAK_EMOJI_MODIFIER))
+            break_op = BREAK_PROHIBITED;
+          else if ((prev_break_type == G_UNICODE_BREAK_IDEOGRAPHIC ||
+                    prev_break_type == G_UNICODE_BREAK_EMOJI_BASE ||
+                    prev_break_type == G_UNICODE_BREAK_EMOJI_MODIFIER) &&
+                   break_type == G_UNICODE_BREAK_POSTFIX)
+            break_op = BREAK_PROHIBITED;
+          /* Rule LB22 */
+          else if (break_type == G_UNICODE_BREAK_INSEPARABLE)
+            break_op = BREAK_PROHIBITED;
+          else if (break_type == G_UNICODE_BREAK_AFTER ||
+                   break_type == G_UNICODE_BREAK_HYPHEN ||
+                   break_type == G_UNICODE_BREAK_NON_STARTER ||
+                   prev_break_type == G_UNICODE_BREAK_BEFORE)
+            break_op = BREAK_PROHIBITED; /* Rule LB21 */
+          else if (prev_prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER &&
+                   (prev_break_type == G_UNICODE_BREAK_HYPHEN ||
+                    prev_break_type == G_UNICODE_BREAK_AFTER))
+            break_op = BREAK_PROHIBITED; /* Rule LB21a */
+          else if (prev_break_type == G_UNICODE_BREAK_SYMBOL &&
+                   break_type == G_UNICODE_BREAK_HEBREW_LETTER)
+            break_op = BREAK_PROHIBITED; /* Rule LB21b */
 
-	  if (prev_break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS &&
-	      !_pango_is_EastAsianWide (prev_wc)&&
-	      (break_type == G_UNICODE_BREAK_ALPHABETIC ||
-	       break_type == G_UNICODE_BREAK_HEBREW_LETTER ||
-	       break_type == G_UNICODE_BREAK_NUMERIC))
-	    break_op = BREAK_PROHIBITED;
+          if (prev_break_type == G_UNICODE_BREAK_CONTINGENT ||
+              break_type == G_UNICODE_BREAK_CONTINGENT)
+            break_op = BREAK_ALLOWED; /* Rule LB20 */
 
-	  /* Rule LB30a */
-	  if (prev_LB_type == LB_RI_Odd && LB_type == LB_RI_Even)
-	    break_op = BREAK_PROHIBITED;
+          if (prev_break_type == G_UNICODE_BREAK_QUOTATION ||
+              break_type == G_UNICODE_BREAK_QUOTATION)
+            break_op = BREAK_PROHIBITED; /* Rule LB19 */
 
-	  /* Rule LB30b */
-	  if (prev_break_type == G_UNICODE_BREAK_EMOJI_BASE &&
-	      break_type == G_UNICODE_BREAK_EMOJI_MODIFIER)
-	    break_op = BREAK_PROHIBITED;
+          /* handle related rules for Space as state machine here,
+           * and override the pair table result.
+           */
+          if (prev_break_type == G_UNICODE_BREAK_SPACE) /* Rule LB18 */
+            break_op = BREAK_ALLOWED;
 
-	  /* Rule LB29 */
-	  if (prev_break_type == G_UNICODE_BREAK_INFIX_SEPARATOR &&
-	      (break_type == G_UNICODE_BREAK_ALPHABETIC ||
-	       break_type == G_UNICODE_BREAK_HEBREW_LETTER))
-	    break_op = BREAK_PROHIBITED;
+          if (row_break_type == G_UNICODE_BREAK_BEFORE_AND_AFTER &&
+              break_type == G_UNICODE_BREAK_BEFORE_AND_AFTER)
+            break_op = BREAK_PROHIBITED; /* Rule LB17 */
+          else if ((row_break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION ||
+                    row_break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS) &&
+                   break_type == G_UNICODE_BREAK_NON_STARTER)
+            break_op = BREAK_PROHIBITED; /* Rule LB16 */
+          else if (row_break_type == G_UNICODE_BREAK_QUOTATION &&
+                   break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION)
+            break_op = BREAK_PROHIBITED; /* Rule LB15 */
+          else if (row_break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION)
+            break_op = BREAK_PROHIBITED; /* Rule LB14 */
+          /* Rule LB13 with Example 7 of Customization */
+          else if (break_type == G_UNICODE_BREAK_EXCLAMATION)
+            break_op = BREAK_PROHIBITED;
+          else if (prev_break_type != G_UNICODE_BREAK_NUMERIC &&
+                   (break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION ||
+                    break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS ||
+                    break_type == G_UNICODE_BREAK_INFIX_SEPARATOR ||
+                    break_type == G_UNICODE_BREAK_SYMBOL))
+            break_op = BREAK_PROHIBITED;
+          else if (prev_break_type == G_UNICODE_BREAK_NON_BREAKING_GLUE)
+            break_op = BREAK_PROHIBITED; /* Rule LB12 */
+          else if (break_type == G_UNICODE_BREAK_NON_BREAKING_GLUE &&
+                   (prev_break_type != G_UNICODE_BREAK_SPACE &&
+                    prev_break_type != G_UNICODE_BREAK_AFTER &&
+                    prev_break_type != G_UNICODE_BREAK_HYPHEN))
+            break_op = BREAK_PROHIBITED; /* Rule LB12a */
+          else if (prev_break_type == G_UNICODE_BREAK_WORD_JOINER ||
+                   break_type == G_UNICODE_BREAK_WORD_JOINER)
+            break_op = BREAK_PROHIBITED; /* Rule LB11 */
+          /* Rule LB9 */
+          else if (break_type == G_UNICODE_BREAK_COMBINING_MARK ||
+                   break_type == G_UNICODE_BREAK_ZERO_WIDTH_JOINER)
+            {
+              if (!(prev_break_type == G_UNICODE_BREAK_MANDATORY ||
+                    prev_break_type == G_UNICODE_BREAK_CARRIAGE_RETURN ||
+                    prev_break_type == G_UNICODE_BREAK_LINE_FEED ||
+                    prev_break_type == G_UNICODE_BREAK_NEXT_LINE ||
+                    prev_break_type == G_UNICODE_BREAK_SPACE ||
+                    prev_break_type == G_UNICODE_BREAK_ZERO_WIDTH_SPACE))
+                break_op = BREAK_PROHIBITED;
+            }
 
-	  /* Rule LB28 */
-	  if ((prev_break_type == G_UNICODE_BREAK_ALPHABETIC ||
-	       prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER) &&
-	      (break_type == G_UNICODE_BREAK_ALPHABETIC ||
-	       break_type == G_UNICODE_BREAK_HEBREW_LETTER))
-	    break_op = BREAK_PROHIBITED;
+          if (row_break_type == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
+            break_op = BREAK_ALLOWED; /* Rule LB8 */
 
-	  /* Rule LB27 */
-	  if ((prev_break_type == G_UNICODE_BREAK_HANGUL_L_JAMO ||
-	       prev_break_type == G_UNICODE_BREAK_HANGUL_V_JAMO ||
-	       prev_break_type == G_UNICODE_BREAK_HANGUL_T_JAMO ||
-	       prev_break_type == G_UNICODE_BREAK_HANGUL_LV_SYLLABLE ||
-	       prev_break_type == G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE) &&
-	      (break_type == G_UNICODE_BREAK_INSEPARABLE ||
-	       break_type == G_UNICODE_BREAK_POSTFIX))
-	    break_op = BREAK_PROHIBITED;
+          if (prev_wc == 0x200D)
+            break_op = BREAK_PROHIBITED; /* Rule LB8a */
+          else if (break_type == G_UNICODE_BREAK_SPACE ||
+                   break_type == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
+            break_op = BREAK_PROHIBITED; /* Rule LB7 */
+          /* Rule LB6 */
+          else if (break_type == G_UNICODE_BREAK_MANDATORY ||
+                   break_type == G_UNICODE_BREAK_CARRIAGE_RETURN ||
+                   break_type == G_UNICODE_BREAK_LINE_FEED ||
+                   break_type == G_UNICODE_BREAK_NEXT_LINE)
+            break_op = BREAK_PROHIBITED;
 
-	  if (prev_break_type == G_UNICODE_BREAK_PREFIX &&
-	      (break_type == G_UNICODE_BREAK_HANGUL_L_JAMO ||
-	       break_type == G_UNICODE_BREAK_HANGUL_V_JAMO ||
-	       break_type == G_UNICODE_BREAK_HANGUL_T_JAMO ||
-	       break_type == G_UNICODE_BREAK_HANGUL_LV_SYLLABLE ||
-	       break_type == G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE))
-	    break_op = BREAK_PROHIBITED;
-
-	  /* Rule LB26 */
-	  if (prev_break_type == G_UNICODE_BREAK_HANGUL_L_JAMO &&
-	      (break_type == G_UNICODE_BREAK_HANGUL_L_JAMO ||
-	       break_type == G_UNICODE_BREAK_HANGUL_V_JAMO ||
-	       break_type == G_UNICODE_BREAK_HANGUL_LV_SYLLABLE ||
-	       break_type == G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE))
-	    break_op = BREAK_PROHIBITED;
-
-	  if ((prev_break_type == G_UNICODE_BREAK_HANGUL_V_JAMO ||
-	       prev_break_type == G_UNICODE_BREAK_HANGUL_LV_SYLLABLE) &&
-	      (break_type == G_UNICODE_BREAK_HANGUL_V_JAMO ||
-	       break_type == G_UNICODE_BREAK_HANGUL_T_JAMO))
-	    break_op = BREAK_PROHIBITED;
-
-	  if ((prev_break_type == G_UNICODE_BREAK_HANGUL_T_JAMO ||
-	       prev_break_type == G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE) &&
-	      break_type == G_UNICODE_BREAK_HANGUL_T_JAMO)
-	    break_op = BREAK_PROHIBITED;
-
-	  /* Rule LB25 with Example 7 of Customization */
-	  if ((prev_break_type == G_UNICODE_BREAK_PREFIX ||
-	       prev_break_type == G_UNICODE_BREAK_POSTFIX) &&
-	      break_type == G_UNICODE_BREAK_NUMERIC)
-	    break_op = BREAK_PROHIBITED;
-
-	  if ((prev_break_type == G_UNICODE_BREAK_PREFIX ||
-	       prev_break_type == G_UNICODE_BREAK_POSTFIX) &&
-	      (break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION ||
-	       break_type == G_UNICODE_BREAK_HYPHEN) &&
-	      next_break_type == G_UNICODE_BREAK_NUMERIC)
-	    break_op = BREAK_PROHIBITED;
-
-	  if ((prev_break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION ||
-	       prev_break_type == G_UNICODE_BREAK_HYPHEN) &&
-	      break_type == G_UNICODE_BREAK_NUMERIC)
-	    break_op = BREAK_PROHIBITED;
-
-	  if (prev_break_type == G_UNICODE_BREAK_NUMERIC &&
-	      (break_type == G_UNICODE_BREAK_NUMERIC ||
-	       break_type == G_UNICODE_BREAK_SYMBOL ||
-	       break_type == G_UNICODE_BREAK_INFIX_SEPARATOR))
-	    break_op = BREAK_PROHIBITED;
-
-	  if (prev_LB_type == LB_Numeric &&
-	      (break_type == G_UNICODE_BREAK_NUMERIC ||
-	       break_type == G_UNICODE_BREAK_SYMBOL ||
-	       break_type == G_UNICODE_BREAK_INFIX_SEPARATOR ||
-	       break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION ||
-	       break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS))
-	    break_op = BREAK_PROHIBITED;
-
-	  if ((prev_LB_type == LB_Numeric ||
-	       prev_LB_type == LB_Numeric_Close) &&
-	      (break_type == G_UNICODE_BREAK_POSTFIX ||
-	       break_type == G_UNICODE_BREAK_PREFIX))
-	    break_op = BREAK_PROHIBITED;
-
-	  /* Rule LB24 */
-	  if ((prev_break_type == G_UNICODE_BREAK_PREFIX ||
-	       prev_break_type == G_UNICODE_BREAK_POSTFIX) &&
-	      (break_type == G_UNICODE_BREAK_ALPHABETIC ||
-	       break_type == G_UNICODE_BREAK_HEBREW_LETTER))
-	    break_op = BREAK_PROHIBITED;
-
-	  if ((prev_break_type == G_UNICODE_BREAK_ALPHABETIC ||
-	       prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER) &&
-	      (break_type == G_UNICODE_BREAK_PREFIX ||
-	       break_type == G_UNICODE_BREAK_POSTFIX))
-	    break_op = BREAK_PROHIBITED;
-
-	  /* Rule LB23 */
-	  if ((prev_break_type == G_UNICODE_BREAK_ALPHABETIC ||
-	       prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER) &&
-	      break_type == G_UNICODE_BREAK_NUMERIC)
-	    break_op = BREAK_PROHIBITED;
-
-	  if (prev_break_type == G_UNICODE_BREAK_NUMERIC &&
-	      (break_type == G_UNICODE_BREAK_ALPHABETIC ||
-	       break_type == G_UNICODE_BREAK_HEBREW_LETTER))
-	    break_op = BREAK_PROHIBITED;
-
-	  /* Rule LB23a */
-	  if (prev_break_type == G_UNICODE_BREAK_PREFIX &&
-	      (break_type == G_UNICODE_BREAK_IDEOGRAPHIC ||
-	       break_type == G_UNICODE_BREAK_EMOJI_BASE ||
-	       break_type == G_UNICODE_BREAK_EMOJI_MODIFIER))
-	    break_op = BREAK_PROHIBITED;
-
-	  if ((prev_break_type == G_UNICODE_BREAK_IDEOGRAPHIC ||
-	       prev_break_type == G_UNICODE_BREAK_EMOJI_BASE ||
-	       prev_break_type == G_UNICODE_BREAK_EMOJI_MODIFIER) &&
-	      break_type == G_UNICODE_BREAK_POSTFIX)
-	    break_op = BREAK_PROHIBITED;
-
-	  /* Rule LB22 */
-	  if (break_type == G_UNICODE_BREAK_INSEPARABLE)
-	    break_op = BREAK_PROHIBITED;
-
-	  if (break_type == G_UNICODE_BREAK_AFTER ||
-	      break_type == G_UNICODE_BREAK_HYPHEN ||
-	      break_type == G_UNICODE_BREAK_NON_STARTER ||
-	      prev_break_type == G_UNICODE_BREAK_BEFORE)
-	    break_op = BREAK_PROHIBITED; /* Rule LB21 */
-
-	  if (prev_prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER &&
-	      (prev_break_type == G_UNICODE_BREAK_HYPHEN ||
-	       prev_break_type == G_UNICODE_BREAK_AFTER))
-	    break_op = BREAK_PROHIBITED; /* Rule LB21a */
-
-	  if (prev_break_type == G_UNICODE_BREAK_SYMBOL &&
-	      break_type == G_UNICODE_BREAK_HEBREW_LETTER)
-	    break_op = BREAK_PROHIBITED; /* Rule LB21b */
-
-	  if (prev_break_type == G_UNICODE_BREAK_CONTINGENT ||
-	      break_type == G_UNICODE_BREAK_CONTINGENT)
-	    break_op = BREAK_ALLOWED; /* Rule LB20 */
-
-	  if (prev_break_type == G_UNICODE_BREAK_QUOTATION ||
-	      break_type == G_UNICODE_BREAK_QUOTATION)
-	    break_op = BREAK_PROHIBITED; /* Rule LB19 */
-
-	  /* handle related rules for Space as state machine here,
-	     and override the pair table result. */
-	  if (prev_break_type == G_UNICODE_BREAK_SPACE) /* Rule LB18 */
-	    break_op = BREAK_ALLOWED;
-
-	  if (row_break_type == G_UNICODE_BREAK_BEFORE_AND_AFTER &&
-	      break_type == G_UNICODE_BREAK_BEFORE_AND_AFTER)
-	    break_op = BREAK_PROHIBITED; /* Rule LB17 */
-
-	  if ((row_break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION ||
-	       row_break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS) &&
-	      break_type == G_UNICODE_BREAK_NON_STARTER)
-	    break_op = BREAK_PROHIBITED; /* Rule LB16 */
-
-	  if (row_break_type == G_UNICODE_BREAK_QUOTATION &&
-	      break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION)
-	    break_op = BREAK_PROHIBITED; /* Rule LB15 */
-
-	  if (row_break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION)
-	    break_op = BREAK_PROHIBITED; /* Rule LB14 */
-
-	  /* Rule LB13 with Example 7 of Customization */
-	  if (break_type == G_UNICODE_BREAK_EXCLAMATION)
-	    break_op = BREAK_PROHIBITED;
-
-	  if (prev_break_type != G_UNICODE_BREAK_NUMERIC &&
-	      (break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION ||
-	       break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS ||
-	       break_type == G_UNICODE_BREAK_INFIX_SEPARATOR ||
-	       break_type == G_UNICODE_BREAK_SYMBOL))
-	    break_op = BREAK_PROHIBITED;
-
-	  if (prev_break_type == G_UNICODE_BREAK_NON_BREAKING_GLUE)
-	    break_op = BREAK_PROHIBITED; /* Rule LB12 */
-
-	  if (break_type == G_UNICODE_BREAK_NON_BREAKING_GLUE &&
-	      (prev_break_type != G_UNICODE_BREAK_SPACE &&
-	       prev_break_type != G_UNICODE_BREAK_AFTER &&
-	       prev_break_type != G_UNICODE_BREAK_HYPHEN))
-	    break_op = BREAK_PROHIBITED; /* Rule LB12a */
-
-	  if (prev_break_type == G_UNICODE_BREAK_WORD_JOINER ||
-	      break_type == G_UNICODE_BREAK_WORD_JOINER)
-	    break_op = BREAK_PROHIBITED; /* Rule LB11 */
-
-
-	  /* Rule LB9 */
-	  if (break_type == G_UNICODE_BREAK_COMBINING_MARK ||
-              break_type == G_UNICODE_BREAK_ZERO_WIDTH_JOINER)
-	    {
-	      if (!(prev_break_type == G_UNICODE_BREAK_MANDATORY ||
-		    prev_break_type == G_UNICODE_BREAK_CARRIAGE_RETURN ||
-		    prev_break_type == G_UNICODE_BREAK_LINE_FEED ||
-		    prev_break_type == G_UNICODE_BREAK_NEXT_LINE ||
-		    prev_break_type == G_UNICODE_BREAK_SPACE ||
-		    prev_break_type == G_UNICODE_BREAK_ZERO_WIDTH_SPACE))
-		break_op = BREAK_PROHIBITED;
-	    }
-
-	  if (row_break_type == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
-	    break_op = BREAK_ALLOWED; /* Rule LB8 */
-
-	  if (prev_wc == 0x200D)
-	    break_op = BREAK_PROHIBITED; /* Rule LB8a */
-
-	  if (break_type == G_UNICODE_BREAK_SPACE ||
-	      break_type == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
-	    break_op = BREAK_PROHIBITED; /* Rule LB7 */
-
-	  /* Rule LB6 */
-	  if (break_type == G_UNICODE_BREAK_MANDATORY ||
-	      break_type == G_UNICODE_BREAK_CARRIAGE_RETURN ||
-	      break_type == G_UNICODE_BREAK_LINE_FEED ||
-	      break_type == G_UNICODE_BREAK_NEXT_LINE)
-	    break_op = BREAK_PROHIBITED;
-
-	  /* Rules LB4 and LB5 */
-	  if (prev_break_type == G_UNICODE_BREAK_MANDATORY ||
-	      (prev_break_type == G_UNICODE_BREAK_CARRIAGE_RETURN &&
-	       wc != '\n') ||
-	      prev_break_type == G_UNICODE_BREAK_LINE_FEED ||
-	      prev_break_type == G_UNICODE_BREAK_NEXT_LINE)
-	    {
-	      attrs[i].is_mandatory_break = TRUE;
-	      break_op = BREAK_ALLOWED;
-	    }
+          /* Rules LB4 and LB5 */
+          if (prev_break_type == G_UNICODE_BREAK_MANDATORY ||
+              (prev_break_type == G_UNICODE_BREAK_CARRIAGE_RETURN &&
+               wc != '\n') ||
+              prev_break_type == G_UNICODE_BREAK_LINE_FEED ||
+              prev_break_type == G_UNICODE_BREAK_NEXT_LINE)
+            {
+              attrs[i].is_mandatory_break = TRUE;
+              break_op = BREAK_ALLOWED;
+            }
 
 	  switch (break_op)
 	    {
