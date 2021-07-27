@@ -717,48 +717,50 @@ pango_default_break (const gchar   *text,
 	    else if (WB_type == WB_ExtendFormat)
 	      is_word_boundary = FALSE; /* Rules WB4? */
 	    else if ((prev_WB_type == WB_ALetter  ||
-                  prev_WB_type == WB_Hebrew_Letter ||
-                  prev_WB_type == WB_Numeric) &&
-                 (WB_type == WB_ALetter  ||
-                  WB_type == WB_Hebrew_Letter ||
-                  WB_type == WB_Numeric))
+                      prev_WB_type == WB_Hebrew_Letter ||
+                      prev_WB_type == WB_Numeric) &&
+                     (WB_type == WB_ALetter  ||
+                      WB_type == WB_Hebrew_Letter ||
+                      WB_type == WB_Numeric))
 	      is_word_boundary = FALSE; /* Rules WB5, WB8, WB9, WB10 */
 	    else if (prev_WB_type == WB_Katakana && WB_type == WB_Katakana)
 	      is_word_boundary = FALSE; /* Rule WB13 */
 	    else if ((prev_WB_type == WB_ALetter ||
-                  prev_WB_type == WB_Hebrew_Letter ||
-                  prev_WB_type == WB_Numeric ||
-                  prev_WB_type == WB_Katakana ||
-                  prev_WB_type == WB_ExtendNumLet) &&
-                 WB_type == WB_ExtendNumLet)
+                      prev_WB_type == WB_Hebrew_Letter ||
+                      prev_WB_type == WB_Numeric ||
+                      prev_WB_type == WB_Katakana ||
+                      prev_WB_type == WB_ExtendNumLet) &&
+                     WB_type == WB_ExtendNumLet)
 	      is_word_boundary = FALSE; /* Rule WB13a */
 	    else if (prev_WB_type == WB_ExtendNumLet &&
-                 (WB_type == WB_ALetter ||
-                  WB_type == WB_Hebrew_Letter ||
-                  WB_type == WB_Numeric ||
-                  WB_type == WB_Katakana))
+                     (WB_type == WB_ALetter ||
+                      WB_type == WB_Hebrew_Letter ||
+                      WB_type == WB_Numeric ||
+                      WB_type == WB_Katakana))
 	      is_word_boundary = FALSE; /* Rule WB13b */
 	    else if (((prev_prev_WB_type == WB_ALetter ||
-                   prev_prev_WB_type == WB_Hebrew_Letter) &&
-                  (WB_type == WB_ALetter ||
-                   WB_type == WB_Hebrew_Letter)) &&
+                       prev_prev_WB_type == WB_Hebrew_Letter) &&
+                      (WB_type == WB_ALetter ||
+                       WB_type == WB_Hebrew_Letter)) &&
 		     (prev_WB_type == WB_MidLetter ||
-              prev_WB_type == WB_MidNumLet ||
-              prev_wc == 0x0027))
+                      prev_WB_type == WB_MidNumLet ||
+                      prev_wc == 0x0027))
 	      {
 		attrs[prev_WB_i].is_word_boundary = FALSE; /* Rule WB6 */
 		is_word_boundary = FALSE; /* Rule WB7 */
 	      }
 	    else if (prev_WB_type == WB_Hebrew_Letter && wc == 0x0027)
-          is_word_boundary = FALSE; /* Rule WB7a */
+              is_word_boundary = FALSE; /* Rule WB7a */
 	    else if (prev_prev_WB_type == WB_Hebrew_Letter && prev_wc == 0x0022 &&
-                 WB_type == WB_Hebrew_Letter) {
-          attrs[prev_WB_i].is_word_boundary = FALSE; /* Rule WB7b */
-          is_word_boundary = FALSE; /* Rule WB7c */
-        }
+                     WB_type == WB_Hebrew_Letter)
+              {
+                attrs[prev_WB_i].is_word_boundary = FALSE; /* Rule WB7b */
+                is_word_boundary = FALSE; /* Rule WB7c */
+              }
 	    else if ((prev_prev_WB_type == WB_Numeric && WB_type == WB_Numeric) &&
-                 (prev_WB_type == WB_MidNum || prev_WB_type == WB_MidNumLet ||
-                  prev_wc == 0x0027))
+                     (prev_WB_type == WB_MidNum ||
+                      prev_WB_type == WB_MidNumLet ||
+                      prev_wc == 0x0027))
 	      {
 		is_word_boundary = FALSE; /* Rule WB11 */
 		attrs[prev_WB_i].is_word_boundary = FALSE; /* Rule WB12 */
@@ -1007,8 +1009,9 @@ pango_default_break (const gchar   *text,
 
       break_op = BREAK_ALREADY_HANDLED;
 
-      row_break_type = prev_break_type == G_UNICODE_BREAK_SPACE ?
-	prev_prev_break_type : prev_break_type;
+      row_break_type = prev_break_type == G_UNICODE_BREAK_SPACE
+                       ? prev_prev_break_type
+                       : prev_break_type;
       g_assert (row_break_type != G_UNICODE_BREAK_SPACE);
 
       attrs[i].is_char_break = FALSE;
