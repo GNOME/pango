@@ -358,24 +358,26 @@ pango_default_break (const gchar   *text,
       switch (type)
         {
         case G_UNICODE_SPACE_SEPARATOR:
+          /* Just few spaces have variable width. So explicitly mark them.
+           */
+          attrs[i].is_white = TRUE;
+          attrs[i].is_expandable_space = (wc == ' ' || wc == 0x00A0);
+          break;
         case G_UNICODE_LINE_SEPARATOR:
         case G_UNICODE_PARAGRAPH_SEPARATOR:
           attrs[i].is_white = TRUE;
+          attrs[i].is_expandable_space = FALSE;
           break;
         case G_UNICODE_CONTROL:
-          if (wc == '\t' || wc == '\n' || wc == '\r' || wc == '\f')
-            attrs[i].is_white = TRUE;
-          else
-            attrs[i].is_white = FALSE;
+          attrs[i].is_white = (wc == '\t' || wc == '\n' || wc == '\r' || wc == '\f');
+          attrs[i].is_expandable_space = FALSE;
           break;
         default:
           attrs[i].is_white = FALSE;
+          attrs[i].is_expandable_space = FALSE;
           break;
         }
 
-      /* Just few spaces have variable width. So explicitly mark them.
-       */
-      attrs[i].is_expandable_space = (0x0020 == wc || 0x00A0 == wc);
       is_Extended_Pictographic =
 	_pango_Is_Emoji_Extended_Pictographic (wc);
 
