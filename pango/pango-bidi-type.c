@@ -29,6 +29,7 @@
 
 #include "pango-bidi-type.h"
 #include "pango-utils.h"
+#include "pango-utils-private.h"
 
 #if FRIBIDI_MAJOR_VERSION >= 1
 #define USE_FRIBIDI_EX_API
@@ -117,8 +118,29 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
 				    int             length,
 				    PangoDirection *pbase_dir)
 {
-  glong n_chars, i;
-  guint8 *embedding_levels_list;
+  int n_chars;
+  guint8 *embedding_levels;
+
+  if (length < 0)
+    length = strlen (text);
+
+  n_chars = (int)g_utf8_strlen (text, length);
+
+  embedding_levels = g_new (guint8, n_chars);
+
+  log2vis_get_embedding_levels (text, length, n_chars, pbase_dir, embedding_levels);
+
+  return embedding_levels;
+}
+
+void
+log2vis_get_embedding_levels (const gchar    *text,
+                              int             length,
+                              int             n_chars,
+                              PangoDirection *pbase_dir,
+                              guint8         *embedding_levels)
+{
+  glong i;
   const gchar *p;
   FriBidiParType fribidi_base_dir;
   FriBidiCharType *bidi_types;
@@ -152,18 +174,15 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
       break;
     }
 
-  if (length < 0)
-    length = strlen (text);
+  g_assert (length >= 0);
+  g_assert (n_chars >= 0);
 
-  n_chars = g_utf8_strlen (text, length);
-
-  bidi_types = g_new (FriBidiCharType, n_chars);
+  bidi_types = g_alloca (sizeof (FriBidiCharType) * n_chars);
 #ifdef USE_FRIBIDI_EX_API
-  bracket_types = g_new (FriBidiBracketType, n_chars);
+  bracket_types = g_alloca (sizeof (FriBidiBracketType) * n_chars);
 #endif
-  embedding_levels_list = g_new (guint8, n_chars);
 
-  for (i = 0, p = text; p < text + length; p = g_utf8_next_char(p), i++)
+  for (i = 0, p = text; p < text + length; p = g_utf8_next_char (p), i++)
     {
       gunichar ch = g_utf8_get_char (p);
       FriBidiCharType char_type = fribidi_get_bidi_type (ch);
@@ -210,7 +229,7 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
       {
         /* all LTR */
 	fribidi_base_dir = FRIBIDI_PAR_LTR;
-	memset (embedding_levels_list, 0, n_chars);
+	memset (embedding_levels, 0, n_chars);
 	goto resolved;
       }
     /* The case that all resolved levels will be RTL is much more complex.
@@ -230,7 +249,7 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
       {
         /* all RTL */
 	fribidi_base_dir = FRIBIDI_PAR_RTL;
-	memset (embedding_levels_list, 1, n_chars);
+	memset (embedding_levels, 1, n_chars);
 	goto resolved;
       }
 
@@ -238,29 +257,22 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
 #ifdef USE_FRIBIDI_EX_API
   max_level = fribidi_get_par_embedding_levels_ex (bidi_types, bracket_types, n_chars,
 						   &fribidi_base_dir,
-						   (FriBidiLevel*)embedding_levels_list);
+						   (FriBidiLevel*)embedding_levels);
 #else
   max_level = fribidi_get_par_embedding_levels (bidi_types, n_chars,
 						&fribidi_base_dir,
-						(FriBidiLevel*)embedding_levels_list);
+						(FriBidiLevel*)embedding_levels);
 #endif
 
   if (G_UNLIKELY(max_level == 0))
     {
       /* fribidi_get_par_embedding_levels() failed. */
-      memset (embedding_levels_list, 0, length);
+      memset (embedding_levels, 0, length);
     }
 
 resolved:
-  g_free (bidi_types);
-
-#ifdef USE_FRIBIDI_EX_API
-  g_free (bracket_types);
-#endif
 
   *pbase_dir = (fribidi_base_dir == FRIBIDI_PAR_LTR) ?  PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL;
-
-  return embedding_levels_list;
 }
 
 /**

@@ -1862,6 +1862,9 @@ pango_get_log_attrs (const char    *text,
   g_return_if_fail (length == 0 || text != NULL);
   g_return_if_fail (log_attrs != NULL);
 
+  if (length < 0)
+    length = strlen (text);
+
   analysis.level = level;
 
   pango_default_break (text, length, &analysis, log_attrs, attrs_len);

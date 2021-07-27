@@ -100,11 +100,10 @@ _pango_script_iter_init (PangoScriptIter *iter,
 	                 const char      *text,
 			 int              length)
 {
+  g_assert (length >= 0);
+
   iter->text_start = text;
-  if (length >= 0)
-    iter->text_end = text + length;
-  else
-    iter->text_end = text + strlen (text);
+  iter->text_end = text + length;
 
   iter->script_start = text;
   iter->script_end = text;
@@ -140,6 +139,8 @@ PangoScriptIter *
 pango_script_iter_new (const char *text,
 		       int         length)
 {
+  if (length < 0)
+    length = strlen (text);
   return _pango_script_iter_init (g_slice_new (PangoScriptIter), text, length);
 }
 

@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -41,14 +41,16 @@ struct _PangoEmojiIter
   gboolean is_emoji;
 
   unsigned char *types;
+  unsigned  char types_[256];
   unsigned int n_chars;
   unsigned int cursor;
 };
 
 PangoEmojiIter *
 _pango_emoji_iter_init (PangoEmojiIter *iter,
-			const char     *text,
-			int             length);
+                        const char     *text,
+                        int             length,
+                        int             n_chars);
 
 gboolean
 _pango_emoji_iter_next (PangoEmojiIter *iter);
