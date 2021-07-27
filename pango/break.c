@@ -307,6 +307,8 @@ pango_default_break (const gchar   *text,
       /* Emoji extended pictographics */
       gboolean is_Extended_Pictographic;
 
+      gboolean can_break;
+
       wc = next_wc;
       break_type = next_break_type;
 
@@ -1018,6 +1020,11 @@ pango_default_break (const gchar   *text,
       attrs[i].is_line_break = FALSE;
       attrs[i].is_mandatory_break = FALSE;
 
+      /* If it's not a grapheme boundary, it's typically not a
+       * line break either
+       */
+      can_break = attrs[i].is_cursor_position;
+
       /* Rule LB1:
 	 assign a line breaking class to each code point of the input. */
       switch (break_type)
@@ -1031,7 +1038,10 @@ pango_default_break (const gchar   *text,
 	case G_UNICODE_BREAK_COMPLEX_CONTEXT:
 	  if (type == G_UNICODE_NON_SPACING_MARK ||
 	      type == G_UNICODE_SPACING_MARK)
-	    break_type = G_UNICODE_BREAK_COMBINING_MARK;
+            {
+	      break_type = G_UNICODE_BREAK_COMBINING_MARK;
+              can_break = TRUE;
+            }
 	  else
 	    break_type = G_UNICODE_BREAK_ALPHABETIC;
 	  break;
@@ -1040,21 +1050,23 @@ pango_default_break (const gchar   *text,
 	  break_type = G_UNICODE_BREAK_NON_STARTER;
 	  break;
 
+	case G_UNICODE_BREAK_COMBINING_MARK:
+	case G_UNICODE_BREAK_ZERO_WIDTH_JOINER:
+	case G_UNICODE_BREAK_HANGUL_L_JAMO:
+	case G_UNICODE_BREAK_HANGUL_V_JAMO:
+	case G_UNICODE_BREAK_HANGUL_T_JAMO:
+	case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
+	case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
+	case G_UNICODE_BREAK_EMOJI_MODIFIER:
+	case G_UNICODE_BREAK_REGIONAL_INDICATOR:
+          can_break = TRUE;
+          break;
+
 	default:
 	  ;
 	}
 
-      /* If it's not a grapheme boundary, it's not a line break either */
-      if (attrs[i].is_cursor_position ||
-	  break_type == G_UNICODE_BREAK_COMBINING_MARK ||
-	  break_type == G_UNICODE_BREAK_ZERO_WIDTH_JOINER ||
-	  break_type == G_UNICODE_BREAK_HANGUL_L_JAMO ||
-	  break_type == G_UNICODE_BREAK_HANGUL_V_JAMO ||
-	  break_type == G_UNICODE_BREAK_HANGUL_T_JAMO ||
-	  break_type == G_UNICODE_BREAK_HANGUL_LV_SYLLABLE ||
-	  break_type == G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE ||
-	  break_type == G_UNICODE_BREAK_EMOJI_MODIFIER ||
-	  break_type == G_UNICODE_BREAK_REGIONAL_INDICATOR)
+      if (can_break)
 	{
 	  LineBreakType LB_type;
 
@@ -1306,22 +1318,19 @@ pango_default_break (const gchar   *text,
           if (row_break_type == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
             break_op = BREAK_ALLOWED; /* Rule LB8 */
 
-          if (prev_wc == 0x200D)
-            break_op = BREAK_PROHIBITED; /* Rule LB8a */
-          else if (break_type == G_UNICODE_BREAK_SPACE ||
-                   break_type == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
-            break_op = BREAK_PROHIBITED; /* Rule LB7 */
-          /* Rule LB6 */
-          else if (break_type == G_UNICODE_BREAK_MANDATORY ||
-                   break_type == G_UNICODE_BREAK_CARRIAGE_RETURN ||
-                   break_type == G_UNICODE_BREAK_LINE_FEED ||
-                   break_type == G_UNICODE_BREAK_NEXT_LINE)
-            break_op = BREAK_PROHIBITED;
+          if (prev_break_type == G_UNICODE_BREAK_ZERO_WIDTH_JOINER ||
+              break_type == G_UNICODE_BREAK_SPACE ||
+              break_type == G_UNICODE_BREAK_ZERO_WIDTH_SPACE ||
+              break_type == G_UNICODE_BREAK_MANDATORY ||
+              break_type == G_UNICODE_BREAK_CARRIAGE_RETURN ||
+              break_type == G_UNICODE_BREAK_LINE_FEED ||
+              break_type == G_UNICODE_BREAK_NEXT_LINE)
+            break_op = BREAK_PROHIBITED; /* Rule LB6, LB7, LB8a */
 
           /* Rules LB4 and LB5 */
           if (prev_break_type == G_UNICODE_BREAK_MANDATORY ||
               (prev_break_type == G_UNICODE_BREAK_CARRIAGE_RETURN &&
-               wc != '\n') ||
+               break_type != G_UNICODE_BREAK_LINE_FEED) ||
               prev_break_type == G_UNICODE_BREAK_LINE_FEED ||
               prev_break_type == G_UNICODE_BREAK_NEXT_LINE)
             {
@@ -1375,39 +1384,36 @@ pango_default_break (const gchar   *text,
 	  /* else don't change the prev_LB_type for Rule LB9 */
 	}
 
-      if (break_type != G_UNICODE_BREAK_SPACE)
-	{
-	  /* Rule LB9 */
-	  if (break_type == G_UNICODE_BREAK_COMBINING_MARK ||
-	      break_type == G_UNICODE_BREAK_ZERO_WIDTH_JOINER)
-	    {
-	      if (i == 0 /* start of text */ ||
-		  prev_break_type == G_UNICODE_BREAK_MANDATORY ||
-		  prev_break_type == G_UNICODE_BREAK_CARRIAGE_RETURN ||
-		  prev_break_type == G_UNICODE_BREAK_LINE_FEED ||
-		  prev_break_type == G_UNICODE_BREAK_NEXT_LINE ||
-		  prev_break_type == G_UNICODE_BREAK_SPACE ||
-		  prev_break_type == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
-		prev_break_type = G_UNICODE_BREAK_ALPHABETIC; /* Rule LB10 */
-	      /* else don't change the prev_break_type for Rule LB9 */
-	    }
-	  else
-	    {
-	      prev_prev_break_type = prev_break_type;
-	      prev_break_type = break_type;
-	    }
+      if (break_type == G_UNICODE_BREAK_SPACE)
+        {
+          if (prev_break_type != G_UNICODE_BREAK_SPACE)
+            {
+              prev_prev_break_type = prev_break_type;
+              prev_break_type = break_type;
+            }
+          /* else don't change the prev_break_type */
+        }
+      else if (break_type == G_UNICODE_BREAK_COMBINING_MARK || /* Rule LB9 */
+               break_type == G_UNICODE_BREAK_ZERO_WIDTH_JOINER)
+        {
+          if (i == 0 /* start of text */ ||
+              prev_break_type == G_UNICODE_BREAK_MANDATORY ||
+              prev_break_type == G_UNICODE_BREAK_CARRIAGE_RETURN ||
+              prev_break_type == G_UNICODE_BREAK_LINE_FEED ||
+              prev_break_type == G_UNICODE_BREAK_NEXT_LINE ||
+              prev_break_type == G_UNICODE_BREAK_SPACE ||
+              prev_break_type == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
+            prev_break_type = G_UNICODE_BREAK_ALPHABETIC; /* Rule LB10 */
+              /* else don't change the prev_break_type for Rule LB9 */
 
-	  prev_jamo = jamo;
-	}
+          prev_jamo = jamo;
+        }
       else
-	{
-	  if (prev_break_type != G_UNICODE_BREAK_SPACE)
-	    {
-	      prev_prev_break_type = prev_break_type;
-	      prev_break_type = break_type;
-	    }
-	  /* else don't change the prev_break_type */
-	}
+        {
+          prev_prev_break_type = prev_break_type;
+          prev_break_type = break_type;
+          prev_jamo = jamo;
+        }
 
       /* ---- Word breaks ---- */
 
