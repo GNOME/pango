@@ -1103,88 +1103,8 @@ pango_default_break (const gchar   *text,
 	  /* add the line break rules in reverse order to override
 	     the lower priority rules. */
 
-          /* Rule LB30 */
-          if ((prev_break_type == G_UNICODE_BREAK_ALPHABETIC ||
-               prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER ||
-               prev_break_type == G_UNICODE_BREAK_NUMERIC) &&
-              break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION &&
-              !_pango_is_EastAsianWide (wc))
-            break_op = BREAK_PROHIBITED;
-          else if (prev_break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS &&
-                   !_pango_is_EastAsianWide (prev_wc) &&
-                   (break_type == G_UNICODE_BREAK_ALPHABETIC ||
-                    break_type == G_UNICODE_BREAK_HEBREW_LETTER ||
-                    break_type == G_UNICODE_BREAK_NUMERIC))
-            break_op = BREAK_PROHIBITED;
           /* Rule LB30a */
-          else if (prev_LB_type == LB_RI_Odd && LB_type == LB_RI_Even)
-            break_op = BREAK_PROHIBITED;
-          /* Rule LB30b */
-          else if (prev_break_type == G_UNICODE_BREAK_EMOJI_BASE &&
-                   break_type == G_UNICODE_BREAK_EMOJI_MODIFIER)
-            break_op = BREAK_PROHIBITED;
-          /* Rule LB29 */
-          else if (prev_break_type == G_UNICODE_BREAK_INFIX_SEPARATOR &&
-                   (break_type == G_UNICODE_BREAK_ALPHABETIC ||
-                    break_type == G_UNICODE_BREAK_HEBREW_LETTER))
-            break_op = BREAK_PROHIBITED;
-          /* Rule LB28 */
-          else if ((prev_break_type == G_UNICODE_BREAK_ALPHABETIC ||
-                    prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER) &&
-                   (break_type == G_UNICODE_BREAK_ALPHABETIC ||
-                    break_type == G_UNICODE_BREAK_HEBREW_LETTER))
-            break_op = BREAK_PROHIBITED;
-          /* Rule LB27 */
-          else if ((prev_break_type == G_UNICODE_BREAK_HANGUL_L_JAMO ||
-                    prev_break_type == G_UNICODE_BREAK_HANGUL_V_JAMO ||
-                    prev_break_type == G_UNICODE_BREAK_HANGUL_T_JAMO ||
-                    prev_break_type == G_UNICODE_BREAK_HANGUL_LV_SYLLABLE ||
-                    prev_break_type == G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE) &&
-                   (break_type == G_UNICODE_BREAK_INSEPARABLE ||
-                    break_type == G_UNICODE_BREAK_POSTFIX))
-            break_op = BREAK_PROHIBITED;
-          else if (prev_break_type == G_UNICODE_BREAK_PREFIX &&
-                   (break_type == G_UNICODE_BREAK_HANGUL_L_JAMO ||
-                    break_type == G_UNICODE_BREAK_HANGUL_V_JAMO ||
-                    break_type == G_UNICODE_BREAK_HANGUL_T_JAMO ||
-                    break_type == G_UNICODE_BREAK_HANGUL_LV_SYLLABLE ||
-                    break_type == G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE))
-            break_op = BREAK_PROHIBITED;
-          /* Rule LB26 */
-          else if (prev_break_type == G_UNICODE_BREAK_HANGUL_L_JAMO &&
-                   (break_type == G_UNICODE_BREAK_HANGUL_L_JAMO ||
-                    break_type == G_UNICODE_BREAK_HANGUL_V_JAMO ||
-                    break_type == G_UNICODE_BREAK_HANGUL_LV_SYLLABLE ||
-                    break_type == G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE))
-            break_op = BREAK_PROHIBITED;
-          else if ((prev_break_type == G_UNICODE_BREAK_HANGUL_V_JAMO ||
-                    prev_break_type == G_UNICODE_BREAK_HANGUL_LV_SYLLABLE) &&
-                   (break_type == G_UNICODE_BREAK_HANGUL_V_JAMO ||
-                    break_type == G_UNICODE_BREAK_HANGUL_T_JAMO))
-            break_op = BREAK_PROHIBITED;
-          else if ((prev_break_type == G_UNICODE_BREAK_HANGUL_T_JAMO ||
-                    prev_break_type == G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE) &&
-                   break_type == G_UNICODE_BREAK_HANGUL_T_JAMO)
-            break_op = BREAK_PROHIBITED;
-          /* Rule LB25 with Example 7 of Customization */
-          else if ((prev_break_type == G_UNICODE_BREAK_PREFIX ||
-                    prev_break_type == G_UNICODE_BREAK_POSTFIX) &&
-                   break_type == G_UNICODE_BREAK_NUMERIC)
-            break_op = BREAK_PROHIBITED;
-          else if ((prev_break_type == G_UNICODE_BREAK_PREFIX ||
-                    prev_break_type == G_UNICODE_BREAK_POSTFIX) &&
-                   (break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION ||
-                    break_type == G_UNICODE_BREAK_HYPHEN) &&
-                   next_break_type == G_UNICODE_BREAK_NUMERIC)
-            break_op = BREAK_PROHIBITED;
-          else if ((prev_break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION ||
-                    prev_break_type == G_UNICODE_BREAK_HYPHEN) &&
-                   break_type == G_UNICODE_BREAK_NUMERIC)
-            break_op = BREAK_PROHIBITED;
-          else if (prev_break_type == G_UNICODE_BREAK_NUMERIC &&
-                   (break_type == G_UNICODE_BREAK_NUMERIC ||
-                    break_type == G_UNICODE_BREAK_SYMBOL ||
-                    break_type == G_UNICODE_BREAK_INFIX_SEPARATOR))
+          if (prev_LB_type == LB_RI_Odd && LB_type == LB_RI_Even)
             break_op = BREAK_PROHIBITED;
           else if (prev_LB_type == LB_Numeric &&
                    (break_type == G_UNICODE_BREAK_NUMERIC ||
@@ -1198,52 +1118,136 @@ pango_default_break (const gchar   *text,
                    (break_type == G_UNICODE_BREAK_POSTFIX ||
                     break_type == G_UNICODE_BREAK_PREFIX))
             break_op = BREAK_PROHIBITED;
-          /* Rule LB24 */
-          else if ((prev_break_type == G_UNICODE_BREAK_PREFIX ||
-                    prev_break_type == G_UNICODE_BREAK_POSTFIX) &&
-                   (break_type == G_UNICODE_BREAK_ALPHABETIC ||
-                    break_type == G_UNICODE_BREAK_HEBREW_LETTER))
-            break_op = BREAK_PROHIBITED;
-          else if ((prev_break_type == G_UNICODE_BREAK_ALPHABETIC ||
-                    prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER) &&
-                   (break_type == G_UNICODE_BREAK_PREFIX ||
-                    break_type == G_UNICODE_BREAK_POSTFIX))
-            break_op = BREAK_PROHIBITED;
-          /* Rule LB23 */
-          else if ((prev_break_type == G_UNICODE_BREAK_ALPHABETIC ||
-                    prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER) &&
-                   break_type == G_UNICODE_BREAK_NUMERIC)
-            break_op = BREAK_PROHIBITED;
-          else if (prev_break_type == G_UNICODE_BREAK_NUMERIC &&
-                   (break_type == G_UNICODE_BREAK_ALPHABETIC ||
-                    break_type == G_UNICODE_BREAK_HEBREW_LETTER))
-            break_op = BREAK_PROHIBITED;
-          /* Rule LB23a */
-          else if (prev_break_type == G_UNICODE_BREAK_PREFIX &&
-                   (break_type == G_UNICODE_BREAK_IDEOGRAPHIC ||
-                    break_type == G_UNICODE_BREAK_EMOJI_BASE ||
-                    break_type == G_UNICODE_BREAK_EMOJI_MODIFIER))
-            break_op = BREAK_PROHIBITED;
-          else if ((prev_break_type == G_UNICODE_BREAK_IDEOGRAPHIC ||
-                    prev_break_type == G_UNICODE_BREAK_EMOJI_BASE ||
-                    prev_break_type == G_UNICODE_BREAK_EMOJI_MODIFIER) &&
-                   break_type == G_UNICODE_BREAK_POSTFIX)
-            break_op = BREAK_PROHIBITED;
-          /* Rule LB22 */
-          else if (break_type == G_UNICODE_BREAK_INSEPARABLE)
-            break_op = BREAK_PROHIBITED;
-          else if (break_type == G_UNICODE_BREAK_AFTER ||
+          /* Rule LB21, LB22 */
+          else if (break_type == G_UNICODE_BREAK_INSEPARABLE ||
                    break_type == G_UNICODE_BREAK_HYPHEN ||
-                   break_type == G_UNICODE_BREAK_NON_STARTER ||
-                   prev_break_type == G_UNICODE_BREAK_BEFORE)
-            break_op = BREAK_PROHIBITED; /* Rule LB21 */
+                   break_type == G_UNICODE_BREAK_AFTER ||
+                   break_type == G_UNICODE_BREAK_NON_STARTER)
+            break_op = BREAK_PROHIBITED;
+          /* Rule LB21a */
           else if (prev_prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER &&
                    (prev_break_type == G_UNICODE_BREAK_HYPHEN ||
                     prev_break_type == G_UNICODE_BREAK_AFTER))
-            break_op = BREAK_PROHIBITED; /* Rule LB21a */
-          else if (prev_break_type == G_UNICODE_BREAK_SYMBOL &&
-                   break_type == G_UNICODE_BREAK_HEBREW_LETTER)
-            break_op = BREAK_PROHIBITED; /* Rule LB21b */
+            break_op = BREAK_PROHIBITED;
+          else
+            {
+#define BREAK_TYPE_PAIR(pb, b) ((((guint64)pb) << 32) | ((guint64)b))
+
+              switch (BREAK_TYPE_PAIR (prev_break_type, break_type))
+                {
+                /* Rule LB30 */
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_ALPHABETIC, G_UNICODE_BREAK_OPEN_PUNCTUATION):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HEBREW_LETTER, G_UNICODE_BREAK_OPEN_PUNCTUATION):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_NUMERIC, G_UNICODE_BREAK_OPEN_PUNCTUATION):
+                  if (!_pango_is_EastAsianWide (wc))
+                    break_op = BREAK_PROHIBITED;
+                  break;
+
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_CLOSE_PARANTHESIS, G_UNICODE_BREAK_ALPHABETIC):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_CLOSE_PARANTHESIS, G_UNICODE_BREAK_HEBREW_LETTER):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_CLOSE_PARANTHESIS, G_UNICODE_BREAK_NUMERIC):
+                  if (!_pango_is_EastAsianWide (prev_wc))
+                    break_op = BREAK_PROHIBITED;
+                  break;
+
+                /* Rule LB30b */
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_EMOJI_BASE, G_UNICODE_BREAK_EMOJI_MODIFIER):
+                /* Rule LB29 */
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_INFIX_SEPARATOR, G_UNICODE_BREAK_ALPHABETIC):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_INFIX_SEPARATOR, G_UNICODE_BREAK_HEBREW_LETTER):
+                /* Rule LB28 */
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_ALPHABETIC, G_UNICODE_BREAK_ALPHABETIC):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_ALPHABETIC, G_UNICODE_BREAK_HEBREW_LETTER):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HEBREW_LETTER, G_UNICODE_BREAK_ALPHABETIC):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HEBREW_LETTER, G_UNICODE_BREAK_HEBREW_LETTER):
+
+                /* Rule LB27 */
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_L_JAMO, G_UNICODE_BREAK_INSEPARABLE):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_V_JAMO, G_UNICODE_BREAK_INSEPARABLE):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_T_JAMO, G_UNICODE_BREAK_INSEPARABLE):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_LV_SYLLABLE, G_UNICODE_BREAK_INSEPARABLE):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE, G_UNICODE_BREAK_INSEPARABLE):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_L_JAMO, G_UNICODE_BREAK_POSTFIX):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_V_JAMO, G_UNICODE_BREAK_POSTFIX):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_T_JAMO, G_UNICODE_BREAK_POSTFIX):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_LV_SYLLABLE, G_UNICODE_BREAK_POSTFIX):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE, G_UNICODE_BREAK_POSTFIX):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_PREFIX, G_UNICODE_BREAK_HANGUL_L_JAMO):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_PREFIX, G_UNICODE_BREAK_HANGUL_V_JAMO):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_PREFIX, G_UNICODE_BREAK_HANGUL_T_JAMO):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_PREFIX, G_UNICODE_BREAK_HANGUL_LV_SYLLABLE):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_PREFIX, G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE):
+
+                /* Rule LB26 */
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_L_JAMO, G_UNICODE_BREAK_HANGUL_L_JAMO):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_L_JAMO, G_UNICODE_BREAK_HANGUL_V_JAMO):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_L_JAMO, G_UNICODE_BREAK_HANGUL_LV_SYLLABLE):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_L_JAMO, G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE):
+
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_V_JAMO, G_UNICODE_BREAK_HANGUL_V_JAMO):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_V_JAMO, G_UNICODE_BREAK_HANGUL_T_JAMO):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_LV_SYLLABLE, G_UNICODE_BREAK_HANGUL_V_JAMO):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_LV_SYLLABLE, G_UNICODE_BREAK_HANGUL_T_JAMO):
+
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_T_JAMO, G_UNICODE_BREAK_HANGUL_T_JAMO):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE, G_UNICODE_BREAK_HANGUL_T_JAMO):
+
+                /* Rule LB25 with Example 7 of Customization */
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_PREFIX, G_UNICODE_BREAK_NUMERIC):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_POSTFIX, G_UNICODE_BREAK_NUMERIC):
+
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_OPEN_PUNCTUATION, G_UNICODE_BREAK_NUMERIC):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HYPHEN, G_UNICODE_BREAK_NUMERIC):
+
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_NUMERIC, G_UNICODE_BREAK_NUMERIC):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_NUMERIC, G_UNICODE_BREAK_SYMBOL):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_NUMERIC, G_UNICODE_BREAK_INFIX_SEPARATOR):
+
+                /* Rule LB24 */
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_PREFIX, G_UNICODE_BREAK_ALPHABETIC):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_PREFIX, G_UNICODE_BREAK_HEBREW_LETTER):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_POSTFIX, G_UNICODE_BREAK_ALPHABETIC):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_POSTFIX, G_UNICODE_BREAK_HEBREW_LETTER):
+
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_ALPHABETIC, G_UNICODE_BREAK_PREFIX):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_ALPHABETIC, G_UNICODE_BREAK_POSTFIX):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HEBREW_LETTER, G_UNICODE_BREAK_PREFIX):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HEBREW_LETTER, G_UNICODE_BREAK_POSTFIX):
+
+                /* Rule LB23 */
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_ALPHABETIC, G_UNICODE_BREAK_NUMERIC):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_HEBREW_LETTER, G_UNICODE_BREAK_NUMERIC):
+
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_NUMERIC, G_UNICODE_BREAK_ALPHABETIC):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_NUMERIC, G_UNICODE_BREAK_HEBREW_LETTER):
+
+                /* Rule LB23a */
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_PREFIX, G_UNICODE_BREAK_IDEOGRAPHIC):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_PREFIX, G_UNICODE_BREAK_EMOJI_BASE):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_PREFIX, G_UNICODE_BREAK_EMOJI_MODIFIER):
+
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_IDEOGRAPHIC, G_UNICODE_BREAK_POSTFIX):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_EMOJI_BASE, G_UNICODE_BREAK_POSTFIX):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_EMOJI_MODIFIER, G_UNICODE_BREAK_POSTFIX):
+
+                /* Rule LB21b */
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_SYMBOL, G_UNICODE_BREAK_HEBREW_LETTER):
+
+                  break_op = BREAK_PROHIBITED;
+                  break;
+
+                /* Rule LB25 with Example 7 of Customization */
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_PREFIX, G_UNICODE_BREAK_OPEN_PUNCTUATION):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_PREFIX, G_UNICODE_BREAK_HYPHEN):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_POSTFIX, G_UNICODE_BREAK_OPEN_PUNCTUATION):
+                case BREAK_TYPE_PAIR (G_UNICODE_BREAK_POSTFIX, G_UNICODE_BREAK_HYPHEN):
+                  if (next_break_type == G_UNICODE_BREAK_NUMERIC)
+                    break_op = BREAK_PROHIBITED;
+                  break;
+
+                default: ;
+                }
+             }
 
           if (prev_break_type == G_UNICODE_BREAK_CONTINGENT ||
               break_type == G_UNICODE_BREAK_CONTINGENT)
@@ -1259,29 +1263,42 @@ pango_default_break (const gchar   *text,
           if (prev_break_type == G_UNICODE_BREAK_SPACE) /* Rule LB18 */
             break_op = BREAK_ALLOWED;
 
-          if (row_break_type == G_UNICODE_BREAK_BEFORE_AND_AFTER &&
-              break_type == G_UNICODE_BREAK_BEFORE_AND_AFTER)
-            break_op = BREAK_PROHIBITED; /* Rule LB17 */
-          else if ((row_break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION ||
-                    row_break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS) &&
-                   break_type == G_UNICODE_BREAK_NON_STARTER)
-            break_op = BREAK_PROHIBITED; /* Rule LB16 */
-          else if (row_break_type == G_UNICODE_BREAK_QUOTATION &&
-                   break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION)
-            break_op = BREAK_PROHIBITED; /* Rule LB15 */
-          else if (row_break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION)
-            break_op = BREAK_PROHIBITED; /* Rule LB14 */
+          switch (row_break_type)
+            {
+            case G_UNICODE_BREAK_BEFORE_AND_AFTER:
+              if (break_type == G_UNICODE_BREAK_BEFORE_AND_AFTER)
+                break_op = BREAK_PROHIBITED; /* Rule LB17 */
+              break;
+
+            case G_UNICODE_BREAK_CLOSE_PUNCTUATION:
+            case G_UNICODE_BREAK_CLOSE_PARANTHESIS:
+              if (break_type == G_UNICODE_BREAK_NON_STARTER)
+                break_op = BREAK_PROHIBITED; /* Rule LB16 */
+              break;
+
+            case G_UNICODE_BREAK_QUOTATION:
+              if (break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION)
+                break_op = BREAK_PROHIBITED; /* Rule LB15 */
+              break;
+
+            case G_UNICODE_BREAK_OPEN_PUNCTUATION: /* Rule LB14 */
+              break_op = BREAK_PROHIBITED;
+              break;
+
+            default: ;
+            }
+
+          if (break_type == G_UNICODE_BREAK_EXCLAMATION)
           /* Rule LB13 with Example 7 of Customization */
-          else if (break_type == G_UNICODE_BREAK_EXCLAMATION)
             break_op = BREAK_PROHIBITED;
+          else if (prev_break_type == G_UNICODE_BREAK_NON_BREAKING_GLUE)
+            break_op = BREAK_PROHIBITED; /* Rule LB12 */
           else if (prev_break_type != G_UNICODE_BREAK_NUMERIC &&
                    (break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION ||
                     break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS ||
                     break_type == G_UNICODE_BREAK_INFIX_SEPARATOR ||
                     break_type == G_UNICODE_BREAK_SYMBOL))
             break_op = BREAK_PROHIBITED;
-          else if (prev_break_type == G_UNICODE_BREAK_NON_BREAKING_GLUE)
-            break_op = BREAK_PROHIBITED; /* Rule LB12 */
           else if (break_type == G_UNICODE_BREAK_NON_BREAKING_GLUE &&
                    (prev_break_type != G_UNICODE_BREAK_SPACE &&
                     prev_break_type != G_UNICODE_BREAK_AFTER &&
@@ -1306,13 +1323,12 @@ pango_default_break (const gchar   *text,
           if (row_break_type == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
             break_op = BREAK_ALLOWED; /* Rule LB8 */
 
-          if (prev_wc == 0x200D)
+          if (prev_break_type == G_UNICODE_BREAK_ZERO_WIDTH_JOINER)
             break_op = BREAK_PROHIBITED; /* Rule LB8a */
+          /* LB7, LB6 */
           else if (break_type == G_UNICODE_BREAK_SPACE ||
-                   break_type == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
-            break_op = BREAK_PROHIBITED; /* Rule LB7 */
-          /* Rule LB6 */
-          else if (break_type == G_UNICODE_BREAK_MANDATORY ||
+                   break_type == G_UNICODE_BREAK_ZERO_WIDTH_SPACE ||
+                   break_type == G_UNICODE_BREAK_MANDATORY ||
                    break_type == G_UNICODE_BREAK_CARRIAGE_RETURN ||
                    break_type == G_UNICODE_BREAK_LINE_FEED ||
                    break_type == G_UNICODE_BREAK_NEXT_LINE)
@@ -1321,7 +1337,7 @@ pango_default_break (const gchar   *text,
           /* Rules LB4 and LB5 */
           if (prev_break_type == G_UNICODE_BREAK_MANDATORY ||
               (prev_break_type == G_UNICODE_BREAK_CARRIAGE_RETURN &&
-               wc != '\n') ||
+               break_type != G_UNICODE_BREAK_LINE_FEED) ||
               prev_break_type == G_UNICODE_BREAK_LINE_FEED ||
               prev_break_type == G_UNICODE_BREAK_NEXT_LINE)
             {
