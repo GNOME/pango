@@ -138,6 +138,37 @@ typedef enum
   WordNumbers
 } WordType;
 
+static inline void
+get_unichar_data (gunichar           wc,
+                  GUnicodeType      *type,
+                  GUnicodeBreakType *break_type,
+                  PangoScript       *script,
+                  gboolean          *extended_pictographic)
+{
+  static struct {
+    gunichar wc;
+    GUnicodeType type;
+    GUnicodeBreakType break_type;
+    PangoScript script;
+    gboolean extended_pictographic;
+  } cache[256] = { 0, }, *p;
+
+  p = &cache[wc & 0xff];
+
+  if (G_UNLIKELY (p->wc != wc))
+    {
+      p->wc = wc;
+      p->type = g_unichar_type (wc);
+      p->break_type = g_unichar_break_type (wc);
+      p->script = (PangoScript)g_unichar_get_script (wc);
+      p->extended_pictographic = _pango_Is_Emoji_Extended_Pictographic (wc);
+    }
+
+  *type = p->type;
+  *break_type = p->break_type;
+  *script = p->script;
+  *extended_pictographic = p->extended_pictographic;
+}
 
 /**
  * pango_default_break:
@@ -182,9 +213,13 @@ pango_default_break (const gchar   *text,
 
   JamoType prev_jamo;
 
+  GUnicodeType next_type;
   GUnicodeBreakType next_break_type;
   GUnicodeBreakType prev_break_type;
   GUnicodeBreakType prev_prev_break_type;
+
+  PangoScript next_script;
+  gboolean next_Extended_Pictographic;
 
   /* See Grapheme_Cluster_Break Property Values table of UAX#29 */
   typedef enum
@@ -256,6 +291,7 @@ pango_default_break (const gchar   *text,
     LB_RI_Odd,
     LB_RI_Even,
   } LineBreakType;
+  LineBreakType LB_type;
   LineBreakType prev_LB_type = LB_Other;
 
   WordType current_word_type = WordNone;
@@ -286,8 +322,7 @@ pango_default_break (const gchar   *text,
   else
     next_wc = g_utf8_get_char (next);
 
-  next_break_type = g_unichar_break_type (next_wc);
-  next_break_type = BREAK_TYPE_SAFE (next_break_type);
+  get_unichar_data (next_wc, &next_type, &next_break_type, &next_script, &next_Extended_Pictographic);
 
   for (i = 0; !done ; i++)
     {
@@ -298,6 +333,8 @@ pango_default_break (const gchar   *text,
       BreakOpportunity break_op;
       JamoType jamo;
       gboolean makes_hangul_syllable;
+
+      PangoScript script;
 
       /* UAX#29 boundaries */
       gboolean is_grapheme_boundary;
@@ -310,7 +347,10 @@ pango_default_break (const gchar   *text,
       gboolean can_break;
 
       wc = next_wc;
+      type = next_type;
       break_type = next_break_type;
+      script = next_script;
+      is_Extended_Pictographic = next_Extended_Pictographic;
 
       if (almost_done)
 	{
@@ -319,6 +359,7 @@ pango_default_break (const gchar   *text,
 	   * may not increment next
 	   */
 	  next_wc = 0;
+          next_type = 0;
 	  next_break_type = G_UNICODE_BREAK_UNKNOWN;
 	  done = TRUE;
 	}
@@ -338,11 +379,9 @@ pango_default_break (const gchar   *text,
 	  else
 	    next_wc = g_utf8_get_char (next);
 
-	  next_break_type = g_unichar_break_type (next_wc);
-	  next_break_type = BREAK_TYPE_SAFE (next_break_type);
+          get_unichar_data (next_wc, &next_type, &next_break_type, &next_script, &next_Extended_Pictographic);
 	}
 
-      type = g_unichar_type (wc);
       jamo = JAMO_TYPE (break_type);
 
       /* Determine wheter this forms a Hangul syllable with prev. */
@@ -379,9 +418,6 @@ pango_default_break (const gchar   *text,
           attrs[i].is_expandable_space = FALSE;
           break;
         }
-
-      is_Extended_Pictographic =
-	_pango_Is_Emoji_Extended_Pictographic (wc);
 
 
       /* ---- UAX#29 Grapheme Boundaries ---- */
@@ -558,10 +594,7 @@ pango_default_break (const gchar   *text,
 	if (is_grapheme_boundary ||
 	    G_UNLIKELY(wc >=0x1F1E6 && wc <=0x1F1FF)) /* Rules WB3 and WB4 */
 	  {
-	    PangoScript script;
 	    WordBreakType WB_type;
-
-	    script = (PangoScript)g_unichar_get_script (wc);
 
 	    /* Find the WordBreakType of wc */
 	    WB_type = WB_Other;
@@ -1025,8 +1058,10 @@ pango_default_break (const gchar   *text,
        */
       can_break = attrs[i].is_cursor_position;
 
-      /* Rule LB1:
-	 assign a line breaking class to each code point of the input. */
+      LB_type = LB_Other;
+
+      /* Rule LB1: assign a line breaking class to each code point of the input. */
+      /* Also determine if we can break */
       switch (break_type)
 	{
 	case G_UNICODE_BREAK_AMBIGUOUS:
@@ -1058,8 +1093,25 @@ pango_default_break (const gchar   *text,
 	case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
 	case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
 	case G_UNICODE_BREAK_EMOJI_MODIFIER:
-	case G_UNICODE_BREAK_REGIONAL_INDICATOR:
           can_break = TRUE;
+          break;
+
+        case G_UNICODE_BREAK_REGIONAL_INDICATOR:
+          can_break = TRUE;
+          if (prev_LB_type == LB_RI_Odd)
+            LB_type = LB_RI_Even;
+          else
+            LB_type = LB_RI_Odd;
+          break;
+
+        case G_UNICODE_BREAK_NUMERIC:
+          LB_type = LB_Numeric;
+          break;
+
+        case G_UNICODE_BREAK_CLOSE_PUNCTUATION:
+        case G_UNICODE_BREAK_CLOSE_PARANTHESIS:
+          if (prev_LB_type == LB_Numeric)
+            LB_type = LB_Numeric_Close;
           break;
 
 	default:
@@ -1068,40 +1120,6 @@ pango_default_break (const gchar   *text,
 
       if (can_break)
 	{
-	  LineBreakType LB_type;
-
-	  /* Find the LineBreakType of wc */
-	  LB_type = LB_Other;
-
-	  if (break_type == G_UNICODE_BREAK_NUMERIC)
-	    LB_type = LB_Numeric;
-
-	  if (break_type == G_UNICODE_BREAK_SYMBOL ||
-	      break_type == G_UNICODE_BREAK_INFIX_SEPARATOR)
-	    {
-	      if (!(prev_LB_type == LB_Numeric))
-		LB_type = LB_Other;
-	    }
-
-	  if (break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION ||
-	      break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS)
-	    {
-	      if (prev_LB_type == LB_Numeric)
-		LB_type = LB_Numeric_Close;
-	      else
-		LB_type = LB_Other;
-	    }
-
-	  if (break_type == G_UNICODE_BREAK_REGIONAL_INDICATOR)
-	    {
-	      if (prev_LB_type == LB_RI_Odd)
-		LB_type = LB_RI_Even;
-	      else if (prev_LB_type == LB_RI_Even)
-		LB_type = LB_RI_Odd;
-	      else
-		LB_type = LB_RI_Odd;
-	    }
-
 	  attrs[i].is_line_break = TRUE; /* Rule LB31 */
 	  /* Unicode doesn't specify char wrap;
 	     we wrap around all chars currently. */
