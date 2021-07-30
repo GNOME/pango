@@ -177,10 +177,21 @@ log2vis_get_embedding_levels (const gchar    *text,
   g_assert (length >= 0);
   g_assert (n_chars >= 0);
 
-  bidi_types = g_alloca (sizeof (FriBidiCharType) * n_chars);
+  if (n_chars < 4096)
+    {
+      bidi_types = g_alloca (sizeof (FriBidiCharType) * n_chars);
 #ifdef USE_FRIBIDI_EX_API
-  bracket_types = g_alloca (sizeof (FriBidiBracketType) * n_chars);
+      bracket_types = g_alloca (sizeof (FriBidiBracketType) * n_chars);
 #endif
+    }
+  else
+    {
+      g_print ("n_chars is %d\n", n_chars);
+      bidi_types = g_new (FriBidiCharType, n_chars);
+#ifdef USE_FRIBIDI_EX_API
+      bracket_types = g_new (FriBidiBracketType, n_chars);
+#endif
+    }
 
   for (i = 0, p = text; p < text + length; p = g_utf8_next_char (p), i++)
     {
@@ -271,6 +282,14 @@ log2vis_get_embedding_levels (const gchar    *text,
     }
 
 resolved:
+
+  if (n_chars >= 4096)
+    {
+      g_free (bidi_types);
+#ifdef USE_FRIBIDI_EX_API
+      g_free (bracket_types);
+#endif
+    }
 
   *pbase_dir = (fribidi_base_dir == FRIBIDI_PAR_LTR) ?  PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL;
 }
