@@ -71,6 +71,10 @@ static void                  pango_fc_font_get_features (PangoFont        *font,
                                                          guint            *num_features);
 static hb_font_t *           pango_fc_font_create_hb_font (PangoFont        *font);
 static PangoLanguage **     _pango_fc_font_get_languages  (PangoFont        *font);
+static gboolean             _pango_fc_font_is_hinted      (PangoFont        *font);
+static void                 _pango_fc_font_get_scale_factors (PangoFont     *font,
+                                                              double        *x_scale,
+                                                              double        *y_scale);
 
 #define PANGO_FC_FONT_LOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->lock_face (font))
 #define PANGO_FC_FONT_UNLOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->unlock_face (font))
@@ -104,6 +108,8 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT);
 
   pclass->get_languages = _pango_fc_font_get_languages;
+  pclass->is_hinted = _pango_fc_font_is_hinted;
+  pclass->get_scale_factors = _pango_fc_font_get_scale_factors;
 
   /**
    * PangoFcFont:pattern:
@@ -1092,4 +1098,22 @@ FcPattern *
 pango_fc_font_get_pattern (PangoFcFont *font)
 {
   return font->font_pattern;
+}
+
+gboolean
+_pango_fc_font_is_hinted (PangoFont *font)
+{
+  PangoFcFont *fcfont = PANGO_FC_FONT (font);
+
+  return fcfont->is_hinted;
+}
+
+void
+_pango_fc_font_get_scale_factors (PangoFont *font,
+                                  double    *x_scale,
+                                  double    *y_scale)
+{
+  PangoFcFont *fcfont = PANGO_FC_FONT (font);
+
+  pango_matrix_get_font_scale_factors (&fcfont->matrix, x_scale, y_scale);
 }

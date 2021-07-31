@@ -1713,16 +1713,33 @@ pango_font_default_get_languages (PangoFont *font)
   return NULL;
 }
 
+static gboolean
+pango_font_default_is_hinted (PangoFont *font)
+{
+  return FALSE;
+}
+
+static void
+pango_font_default_get_scale_factors (PangoFont *font,
+                                      double    *x_scale,
+                                      double    *y_scale)
+{
+  *x_scale = *y_scale = 1.0;
+}
+
 static void
 pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
+  PangoFontClassPrivate *pclass;
 
   object_class->finalize = pango_font_finalize;
 
   pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT);
 
   pclass->get_languages = pango_font_default_get_languages;
+  pclass->is_hinted = pango_font_default_is_hinted;
+  pclass->get_scale_factors = pango_font_default_get_scale_factors;
 }
 
 static void
@@ -2666,4 +2683,18 @@ pango_font_get_languages (PangoFont *font)
   PangoFontClassPrivate *pclass = PANGO_FONT_GET_CLASS_PRIVATE (font);
 
   return pclass->get_languages (font);
+}
+
+gboolean
+pango_font_is_hinted (PangoFont *font)
+{
+  return PANGO_FONT_GET_CLASS_PRIVATE (font)->is_hinted (font);
+}
+
+void
+pango_font_get_scale_factors (PangoFont *font,
+                              double    *x_scale,
+                              double    *y_scale)
+{
+  PANGO_FONT_GET_CLASS_PRIVATE (font)->get_scale_factors (font, x_scale, y_scale);
 }
