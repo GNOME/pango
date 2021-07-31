@@ -33,6 +33,10 @@ G_BEGIN_DECLS
 PANGO_AVAILABLE_IN_ALL
 PangoFontMetrics *pango_font_metrics_new (void);
 
+typedef struct {
+  PangoLanguage ** (* get_languages) (PangoFont *font);
+} PangoFontClassPrivate;
+
 G_END_DECLS
 
 #endif /* __PANGO_FONT_PRIVATE_H__ */

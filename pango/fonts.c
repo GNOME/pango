@@ -1688,7 +1688,13 @@ typedef struct {
   hb_font_t *hb_font;
 } PangoFontPrivate;
 
-G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (PangoFont, pango_font, G_TYPE_OBJECT)
+#define PANGO_FONT_GET_CLASS_PRIVATE(font) ((PangoFontClassPrivate *) \
+   g_type_class_get_private ((GTypeClass *) PANGO_FONT_GET_CLASS (font), \
+                            PANGO_TYPE_FONT))
+
+G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFont, pango_font, G_TYPE_OBJECT,
+                                  G_ADD_PRIVATE (PangoFont)
+                                  g_type_add_class_private (g_define_type_id, sizeof (PangoFontClassPrivate)))
 
 static void
 pango_font_finalize (GObject *object)
@@ -1701,12 +1707,22 @@ pango_font_finalize (GObject *object)
   G_OBJECT_CLASS (pango_font_parent_class)->finalize (object);
 }
 
+static PangoLanguage **
+pango_font_default_get_languages (PangoFont *font)
+{
+  return NULL;
+}
+
 static void
 pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
 
   object_class->finalize = pango_font_finalize;
+
+  pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT);
+
+  pclass->get_languages = pango_font_default_get_languages;
 }
 
 static void
@@ -2624,4 +2640,30 @@ pango_font_get_features (PangoFont    *font,
 {
   if (PANGO_FONT_GET_CLASS (font)->get_features)
     PANGO_FONT_GET_CLASS (font)->get_features (font, features, len, num_features);
+}
+
+/**
+ * pango_font_get_languages:
+ * @font: a `PangoFont`
+ *
+ * Returns the languages that are supported by @font.
+ *
+ * If the font backend does not provide this information,
+ * %NULL is returned. For the fontconfig backend, this
+ * corresponds to the FC_LANG member of the FcPattern.
+ *
+ * The returned array is only valid as long as the font
+ * and its fontmap are valid.
+ *
+ * Returns: (transfer none) (nullable): a %NULL-terminated
+ *   array of `PangoLanguage`*
+ *
+ * Since: 1.50
+ */
+PangoLanguage **
+pango_font_get_languages (PangoFont *font)
+{
+  PangoFontClassPrivate *pclass = PANGO_FONT_GET_CLASS_PRIVATE (font);
+
+  return pclass->get_languages (font);
 }
