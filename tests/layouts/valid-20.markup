@@ -1,0 +1,2 @@
+# exercise gravity handling
+<span gravity='east' gravity_hint='strong'>abc</span><span gravity='south'>def</span>

@@ -1031,6 +1031,11 @@ itemize_state_init (ItemizeState               *state,
   state->embedding_end = text + start_index;
   update_embedding_end (state);
 
+  state->gravity = PANGO_GRAVITY_AUTO;
+  state->centered_baseline = PANGO_GRAVITY_IS_VERTICAL (state->context->resolved_gravity);
+  state->gravity_hint = state->context->gravity_hint;
+  state->resolved_gravity = PANGO_GRAVITY_AUTO;
+
   /* Initialize the attribute iterator
    */
   if (cached_iter)
@@ -1088,10 +1093,6 @@ itemize_state_init (ItemizeState               *state,
   else
     state->font_desc_gravity = PANGO_GRAVITY_AUTO;
 
-  state->gravity = PANGO_GRAVITY_AUTO;
-  state->centered_baseline = PANGO_GRAVITY_IS_VERTICAL (state->context->resolved_gravity);
-  state->gravity_hint = state->context->gravity_hint;
-  state->resolved_gravity = PANGO_GRAVITY_AUTO;
   state->derived_lang = NULL;
   state->current_fonts = NULL;
   state->cache = NULL;
