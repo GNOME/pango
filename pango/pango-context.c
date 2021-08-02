@@ -872,8 +872,11 @@ update_end (ItemizeState *state)
     state->run_end = state->attr_end;
   if (state->script_end < state->run_end)
     state->run_end = state->script_end;
-  if (state->width_iter.end < state->run_end)
-    state->run_end = state->width_iter.end;
+  if (PANGO_GRAVITY_IS_VERTICAL (state->resolved_gravity))
+    {
+      if (state->width_iter.end < state->run_end)
+        state->run_end = state->width_iter.end;
+    }
   if (state->emoji_iter.end < state->run_end)
     state->run_end = state->emoji_iter.end;
 }
@@ -1001,6 +1004,38 @@ width_iter_fini (PangoWidthIter* iter)
 }
 
 static void
+itemize_state_update_resolved_gravity (ItemizeState *state)
+{
+  if (state->changed & (FONT_CHANGED | SCRIPT_CHANGED | WIDTH_CHANGED))
+    {
+      /* Font-desc gravity overrides everything */
+      if (state->font_desc_gravity != PANGO_GRAVITY_AUTO)
+        {
+          state->resolved_gravity = state->font_desc_gravity;
+        }
+      else
+        {
+          PangoGravity gravity = state->gravity;
+          PangoGravityHint gravity_hint = state->gravity_hint;
+
+          if (G_LIKELY (gravity == PANGO_GRAVITY_AUTO))
+            gravity = state->context->resolved_gravity;
+
+          state->resolved_gravity = pango_gravity_get_for_script_and_width (state->script,
+                                                                            state->width_iter.upright,
+                                                                            gravity,
+                                                                            gravity_hint);
+        }
+
+      if (state->font_desc_gravity != state->resolved_gravity)
+        {
+          pango_font_description_set_gravity (state->font_desc, state->resolved_gravity);
+          state->changed |= FONT_CHANGED;
+        }
+    }
+}
+
+static void
 itemize_state_init (ItemizeState               *state,
                     PangoContext               *context,
                     const char                 *text,
@@ -1086,12 +1121,13 @@ itemize_state_init (ItemizeState               *state,
   if (state->emoji_iter.is_emoji)
     state->width_iter.end = MAX (state->width_iter.end, state->emoji_iter.end);
 
-  update_end (state);
-
   if (pango_font_description_get_set_fields (state->font_desc) & PANGO_FONT_MASK_GRAVITY)
     state->font_desc_gravity = pango_font_description_get_gravity (state->font_desc);
   else
     state->font_desc_gravity = PANGO_GRAVITY_AUTO;
+
+  itemize_state_update_resolved_gravity (state);
+  update_end (state);
 
   state->derived_lang = NULL;
   state->current_fonts = NULL;
@@ -1143,6 +1179,8 @@ itemize_state_next (ItemizeState *state)
       state->changed |= WIDTH_CHANGED;
     }
 
+  /* Update resolved gravity before updating end */
+  itemize_state_update_resolved_gravity (state);
   update_end (state);
 
   return TRUE;
@@ -1404,36 +1442,6 @@ compute_derived_language (PangoLanguage *lang,
 static void
 itemize_state_update_for_new_run (ItemizeState *state)
 {
-  /* This block should be moved to update_attr_iterator, but I'm too lazy to
-   * do it right now */
-  if (state->changed & (FONT_CHANGED | SCRIPT_CHANGED | WIDTH_CHANGED))
-    {
-      /* Font-desc gravity overrides everything */
-      if (state->font_desc_gravity != PANGO_GRAVITY_AUTO)
-        {
-          state->resolved_gravity = state->font_desc_gravity;
-        }
-      else
-        {
-          PangoGravity gravity = state->gravity;
-          PangoGravityHint gravity_hint = state->gravity_hint;
-
-          if (G_LIKELY (gravity == PANGO_GRAVITY_AUTO))
-            gravity = state->context->resolved_gravity;
-
-          state->resolved_gravity = pango_gravity_get_for_script_and_width (state->script,
-                                                                            state->width_iter.upright,
-                                                                            gravity,
-                                                                            gravity_hint);
-        }
-
-      if (state->font_desc_gravity != state->resolved_gravity)
-        {
-          pango_font_description_set_gravity (state->font_desc, state->resolved_gravity);
-          state->changed |= FONT_CHANGED;
-        }
-    }
-
   if (state->changed & (SCRIPT_CHANGED | LANG_CHANGED))
     {
       PangoLanguage *old_derived_lang = state->derived_lang;
