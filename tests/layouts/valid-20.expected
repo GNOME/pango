@@ -1,0 +1,40 @@
+abcdef
+
+--- parameters
+
+wrapped: 0
+ellipsized: 0
+lines: 2
+
+--- attributes
+
+range 0 3
+[0,3]gravity=1
+[0,3]gravity-hint=1
+range 3 6
+[3,6]gravity=0
+range 6 2147483647
+
+--- directions
+
+0 0 0 0 0 0 0 
+
+--- cursor positions
+
+0(0) 1(0) 2(0) 3(0) 4(0) 5(0) 5(1) 7(0) 
+
+--- lines
+
+i=1, index=0, paragraph-start=1, dir=ltr 'abcdef
+'
+i=2, index=7, paragraph-start=1, dir=ltr ''
+
+--- runs
+
+i=1, index=0, chars=3, level=0, gravity=east, flags=0, font=OMITTED, script=latin, language=en-us, 'abc'
+[0,3]gravity=1
+[0,3]gravity-hint=1
+i=2, index=3, chars=3, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'def'
+[3,6]gravity=0
+i=3, index=6, no run, line end
+i=4, index=7, no run, line end

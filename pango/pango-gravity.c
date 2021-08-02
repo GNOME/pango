@@ -362,16 +362,13 @@ get_script_properties (PangoScript script)
  */
 PangoGravity
 pango_gravity_get_for_script (PangoScript      script,
-			      PangoGravity     base_gravity,
-			      PangoGravityHint hint)
+                              PangoGravity     base_gravity,
+                              PangoGravityHint hint)
 {
   PangoScriptProperties props = get_script_properties (script);
 
-  if (G_UNLIKELY (base_gravity == PANGO_GRAVITY_AUTO))
-    base_gravity = props.preferred_gravity;
-
   return pango_gravity_get_for_script_and_width (script, props.wide,
-						 base_gravity, hint);
+                                                 base_gravity, hint);
 }
 
 /**
@@ -403,14 +400,13 @@ pango_gravity_get_for_script (PangoScript      script,
  * Since: 1.26
  */
 PangoGravity
-pango_gravity_get_for_script_and_width (PangoScript        script,
-					gboolean           wide,
-					PangoGravity       base_gravity,
-					PangoGravityHint   hint)
+pango_gravity_get_for_script_and_width (PangoScript      script,
+                                        gboolean         wide,
+                                        PangoGravity     base_gravity,
+                                        PangoGravityHint hint)
 {
   PangoScriptProperties props = get_script_properties (script);
   gboolean vertical;
-
 
   if (G_UNLIKELY (base_gravity == PANGO_GRAVITY_AUTO))
     base_gravity = props.preferred_gravity;
