@@ -33,6 +33,22 @@ G_BEGIN_DECLS
 PANGO_AVAILABLE_IN_ALL
 PangoFontMetrics *pango_font_metrics_new (void);
 
+typedef struct {
+  PangoLanguage ** (* get_languages) (PangoFont *font);
+
+  gboolean         (* is_hinted) (PangoFont *font);
+
+  void             (* get_scale_factors) (PangoFont *font,
+                                          double    *x_scale,
+                                          double    *y_scale);
+
+} PangoFontClassPrivate;
+
+gboolean pango_font_is_hinted         (PangoFont *font);
+void     pango_font_get_scale_factors (PangoFont *font,
+                                       double    *x_scale,
+                                       double    *y_scale);
+
 G_END_DECLS
 
 #endif /* __PANGO_FONT_PRIVATE_H__ */

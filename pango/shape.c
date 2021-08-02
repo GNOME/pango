@@ -25,6 +25,7 @@
 #include "pango-glyph.h"
 
 #include "pangohb-private.h"
+#include "pango-font-private.h"
 
 #include <string.h>
 
@@ -150,32 +151,6 @@ fallback_shape (const char          *text,
   if (analysis->level & 1)
     pango_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
 }
-
-/* FIXME: This is very ugly. We are out of room for vfuncs, so we can't
- * easily add api to get is_hinted and the matrix from the PangoFcFont.
- *
- * Keep in sync with pangofc-font.h!
- */
-struct _PangoFcFont
-{
-  PangoFont parent_instance;
-
-  gpointer font_pattern;          /* fully resolved pattern */
-  PangoFontMap *fontmap;            /* associated map */
-  gpointer priv;                    /* used internally */
-  PangoMatrix matrix;               /* used internally */
-  PangoFontDescription *description;
-
-  GSList *metrics_by_lang;
-
-  guint is_hinted : 1;
-  guint is_transformed : 1;
-};
-typedef struct _PangoFcFont PangoFcFont;
-
-#define PANGO_IS_FC_FONT(obj) \
-  g_type_is_a (((GTypeInstance*)obj)->g_class->g_type, \
-               g_type_from_name ("PangoFcFont"))
 
 /**
  * pango_shape_with_flags:
@@ -320,31 +295,29 @@ pango_shape_with_flags (const gchar         *item_text,
 
   if (flags & PANGO_SHAPE_ROUND_POSITIONS)
     {
-      if (PANGO_IS_FC_FONT (analysis->font))
+      if (pango_font_is_hinted (analysis->font))
         {
-          PangoFcFont *fc_font = (PangoFcFont *)analysis->font;
-          if (fc_font->is_hinted)
+          double x_scale_inv, y_scale_inv;
+          double x_scale, y_scale;
+
+          pango_font_get_scale_factors (analysis->font, &x_scale_inv, &y_scale_inv);
+
+          if (PANGO_GRAVITY_IS_IMPROPER (analysis->gravity))
             {
-              double x_scale_inv, y_scale_inv;
-              double x_scale, y_scale;
+              x_scale_inv = -x_scale_inv;
+              y_scale_inv = -y_scale_inv;
+            }
 
-              x_scale_inv = y_scale_inv = 1.0;
-              pango_matrix_get_font_scale_factors (&fc_font->matrix, &x_scale_inv, &y_scale_inv);
-              if (PANGO_GRAVITY_IS_IMPROPER (analysis->gravity))
-                {
-                  x_scale_inv = -x_scale_inv;
-                  y_scale_inv = -y_scale_inv;
-                }
-              x_scale = 1. / x_scale_inv;
-              y_scale = 1. / y_scale_inv;
+          x_scale = 1.0 / x_scale_inv;
+          y_scale = 1.0 / y_scale_inv;
 
-              if (x_scale == 1.0 && y_scale == 1.0)
-                {
-                  for (i = 0; i < glyphs->num_glyphs; i++)
-                    glyphs->glyphs[i].geometry.width = PANGO_UNITS_ROUND (glyphs->glyphs[i].geometry.width);
-                }
-              else
-                {
+          if (x_scale == 1.0 && y_scale == 1.0)
+            {
+              for (i = 0; i < glyphs->num_glyphs; i++)
+                glyphs->glyphs[i].geometry.width = PANGO_UNITS_ROUND (glyphs->glyphs[i].geometry.width);
+            }
+          else
+            {
     #if 0
                   if (PANGO_GRAVITY_IS_VERTICAL (analysis->gravity))
                     {
@@ -357,16 +330,15 @@ pango_shape_with_flags (const gchar         *item_text,
     #define HINT(value, scale_inv, scale) (PANGO_UNITS_ROUND ((int) ((value) * scale)) * scale_inv)
     #define HINT_X(value) HINT ((value), x_scale, x_scale_inv)
     #define HINT_Y(value) HINT ((value), y_scale, y_scale_inv)
-                  for (i = 0; i < glyphs->num_glyphs; i++)
-                    {
-                      glyphs->glyphs[i].geometry.width    = HINT_X (glyphs->glyphs[i].geometry.width);
-                      glyphs->glyphs[i].geometry.x_offset = HINT_X (glyphs->glyphs[i].geometry.x_offset);
-                      glyphs->glyphs[i].geometry.y_offset = HINT_Y (glyphs->glyphs[i].geometry.y_offset);
-                    }
+              for (i = 0; i < glyphs->num_glyphs; i++)
+                {
+                  glyphs->glyphs[i].geometry.width    = HINT_X (glyphs->glyphs[i].geometry.width);
+                  glyphs->glyphs[i].geometry.x_offset = HINT_X (glyphs->glyphs[i].geometry.x_offset);
+                  glyphs->glyphs[i].geometry.y_offset = HINT_Y (glyphs->glyphs[i].geometry.y_offset);
+                }
     #undef HINT_Y
     #undef HINT_X
     #undef HINT
-                }
             }
         }
     }

@@ -95,7 +95,8 @@ gboolean   pango_fc_font_has_char          (PangoFcFont      *font,
 PANGO_AVAILABLE_IN_1_4
 guint      pango_fc_font_get_glyph         (PangoFcFont      *font,
                                             gunichar          wc);
-PANGO_AVAILABLE_IN_1_48
+
+PANGO_DEPRECATED_IN_1_50_FOR(pango_font_get_language)
 PangoLanguage **
            pango_fc_font_get_languages     (PangoFcFont      *font);
 

@@ -79,7 +79,7 @@ struct _PangoGlyphGeometry
  * A `PangoGlyphVisAttr` structure communicates information between
  * the shaping and rendering phases.
  *
- * Currently, it contains only cluster start information. yMore attributes
+ * Currently, it contains only cluster start information. More attributes
  * may be added in the future.
  */
 struct _PangoGlyphVisAttr
