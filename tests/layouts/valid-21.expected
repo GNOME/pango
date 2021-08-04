@@ -1,0 +1,36 @@
+有一位住在石室裏的詩人叫施氏，abc, 愛吃獅子，決心要吃十隻獅子。
+
+--- parameters
+
+wrapped: 0
+ellipsized: 0
+lines: 2
+
+--- attributes
+
+range 0 2147483647
+
+--- directions
+
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+
+--- cursor positions
+
+0(0) 3(0) 6(0) 9(0) 12(0) 15(0) 18(0) 21(0) 24(0) 27(0) 30(0) 33(0) 36(0) 39(0) 42(0) 45(0) 46(0) 47(0) 48(0) 49(0) 50(0) 53(0) 56(0) 59(0) 62(0) 65(0) 68(0) 71(0) 74(0) 77(0) 80(0) 83(0) 86(0) 89(0) 89(1) 93(0) 
+
+--- lines
+
+i=1, index=0, paragraph-start=1, dir=ltr '有一位住在石室裏的詩人叫施氏，abc, 愛吃獅子，決心要吃十隻獅子。
+'
+i=2, index=93, paragraph-start=1, dir=ltr ''
+
+--- runs
+
+i=1, index=0, chars=14, level=0, gravity=east, flags=1, font=OMITTED, script=han, language=xx, '有一位住在石室裏的詩人叫施氏'
+i=2, index=42, chars=1, level=0, gravity=east, flags=1, font=OMITTED, script=han, language=xx, '，'
+i=3, index=45, chars=5, level=0, gravity=south, flags=1, font=OMITTED, script=latin, language=en-us, 'abc, '
+i=4, index=50, chars=4, level=0, gravity=east, flags=1, font=OMITTED, script=han, language=xx, '愛吃獅子'
+i=5, index=62, chars=1, level=0, gravity=east, flags=1, font=OMITTED, script=han, language=xx, '，'
+i=6, index=65, chars=9, level=0, gravity=east, flags=1, font=OMITTED, script=han, language=xx, '決心要吃十隻獅子。'
+i=7, index=92, no run, line end
+i=8, index=93, no run, line end

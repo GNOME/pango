@@ -5,7 +5,7 @@
 wrapped: 0
 ellipsized: 1
 lines: 2
-width: 166912
+width: 161792
 
 --- attributes
 
@@ -29,11 +29,10 @@ i=2, index=38, paragraph-start=1, dir=ltr ''
 
 i=1, index=0, chars=1, level=0, gravity=south, flags=2, font=OMITTED, script=common, language=en-us, '你'
 [0,2147483647]fallback=1
-i=2, index=3, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=han, language=xx, '好'
-i=3, index=6, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=han, language=xx, ' '
-i=4, index=7, chars=6, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'Hello '
-i=5, index=19, chars=4, level=1, gravity=south, flags=0, font=OMITTED, script=hebrew, language=he, 'שלום'
-i=6, index=21, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=hebrew, language=he, ' '
-i=7, index=22, chars=8, level=0, gravity=south, flags=0, font=OMITTED, script=greek, language=el, 'Γειά σας'
-i=8, index=37, no run, line end
-i=9, index=38, no run, line end
+i=2, index=3, chars=2, level=0, gravity=south, flags=0, font=OMITTED, script=han, language=xx, '好 '
+i=3, index=7, chars=6, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'Hello '
+i=4, index=19, chars=4, level=1, gravity=south, flags=0, font=OMITTED, script=hebrew, language=he, 'שלום'
+i=5, index=21, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=hebrew, language=he, ' '
+i=6, index=22, chars=8, level=0, gravity=south, flags=0, font=OMITTED, script=greek, language=el, 'Γειά σας'
+i=7, index=37, no run, line end
+i=8, index=38, no run, line end

@@ -221,6 +221,7 @@ typedef struct {
   gboolean auto_dir;
   gboolean single_paragraph;
   PangoTabArray *tabs;
+  PangoGravity gravity;
 } LayoutParams;
 
 static void
@@ -238,6 +239,7 @@ init_params (LayoutParams *params)
   params->auto_dir = TRUE;
   params->single_paragraph = FALSE;
   params->tabs = NULL;
+  params->gravity = PANGO_GRAVITY_AUTO;
 }
 
 static void
@@ -325,6 +327,16 @@ parse_params (const char   *str,
               pango_tab_array_set_tab (params->tabs, j, PANGO_TAB_LEFT, tab);
             }
           g_strfreev (str3);
+        }
+      else if (strcmp (str2[0], "gravity") == 0)
+        {
+          eclass = g_type_class_ref (PANGO_TYPE_GRAVITY);
+          ev = g_enum_get_value_by_name (eclass, str2[1]);
+          if (!ev)
+            ev = g_enum_get_value_by_nick (eclass, str2[1]);
+          if (ev)
+            params->gravity = ev->value;
+          g_type_class_unref (eclass);
         }
 
       g_strfreev (str2);
@@ -424,6 +436,8 @@ test_file (const char *filename, GString *string)
   assert_layout_changed (layout);
 
   parse_params (contents, &params);
+
+  pango_context_set_base_gravity (context, params.gravity);
 
   pango_layout_set_width (layout, params.width > 0 ? params.width * PANGO_SCALE : -1);
   pango_layout_set_height (layout, params.height > 0 ? params.height * PANGO_SCALE : params.height);
