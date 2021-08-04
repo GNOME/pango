@@ -1083,6 +1083,9 @@ itemize_state_init (ItemizeState               *state,
   width_iter_init (&state->width_iter, text + start_index, length);
   _pango_emoji_iter_init (&state->emoji_iter, text + start_index, length);
 
+  if (!PANGO_GRAVITY_IS_VERTICAL (state->context->resolved_gravity))
+    state->width_iter.end = state->end;
+  else
   if (state->emoji_iter.is_emoji)
     state->width_iter.end = MAX (state->width_iter.end, state->emoji_iter.end);
 
