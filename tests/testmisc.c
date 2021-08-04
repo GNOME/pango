@@ -301,6 +301,70 @@ test_fallback_shape (void)
   g_object_unref (context);
 }
 
+/* https://bugzilla.gnome.org/show_bug.cgi?id=547303 */
+static void
+test_get_cursor_crash (void)
+{
+  PangoContext *context;
+  PangoLayout *layout;
+  int i;
+
+  char *string = "foo\n\rbar\r\nbaz\n\nqux\n\n..";
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
+  layout = pango_layout_new (context);
+
+  pango_layout_set_text (layout, string, -1);
+
+  for (i = 0; string[i]; i++)
+    {
+      PangoRectangle rectA, rectB;
+
+      pango_layout_get_cursor_pos (layout, i, &rectA, &rectB);
+      g_assert_cmpint (rectA.x, ==, rectB.x);
+    }
+
+  g_object_unref (layout);
+  g_object_unref (context);
+}
+
+/* Test that get_cursor returns split cursors in the
+ * expected situations. In particular, this was broken
+ * at the end of the string here.
+ */
+static void
+test_get_cursor (void)
+{
+  const char *text = "abאב";
+  PangoContext *context;
+  PangoLayout *layout;
+  PangoRectangle strong, weak;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
+  layout = pango_layout_new (context);
+  pango_layout_set_text (layout, text, -1);
+
+  pango_layout_get_cursor_pos (layout, 0, &strong, &weak);
+  g_assert_cmpint (strong.x, ==, weak.x);
+
+  pango_layout_get_cursor_pos (layout, 1, &strong, &weak);
+  g_assert_cmpint (strong.x, ==, weak.x);
+
+  pango_layout_get_cursor_pos (layout, 2, &strong, &weak);
+  g_assert_cmpint (strong.x, !=, weak.x);
+
+  pango_layout_get_cursor_pos (layout, 4, &strong, &weak);
+  g_assert_cmpint (strong.x, ==, weak.x);
+
+  pango_layout_get_cursor_pos (layout, 6, &strong, &weak);
+  g_assert_cmpint (strong.x, !=, weak.x);
+
+  g_object_unref (layout);
+  g_object_unref (context);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -320,6 +384,8 @@ main (int argc, char *argv[])
   g_test_add_func ("/gravity/for-script", test_gravity_for_script);
   g_test_add_func ("/layout/fallback-shape", test_fallback_shape);
   g_test_add_func ("/language/to-tag", test_language_to_tag);
+  g_test_add_func ("/bidi/get-cursor-crash", test_get_cursor_crash);
+  g_test_add_func ("/bidi/get-cursor", test_get_cursor);
 
   return g_test_run ();
 }
