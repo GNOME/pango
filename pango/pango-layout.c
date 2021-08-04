@@ -2466,14 +2466,6 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
       else
         x1_trailing = line_rect.width;
     }
-  else if (index >= layout_line->start_index + layout_line->length)
-    {
-      dir1 = layout_line->resolved_dir;
-      if (layout_line->resolved_dir == PANGO_DIRECTION_LTR)
-        x1_trailing = line_rect.width;
-      else
-        x1_trailing = 0;
-    }
   else
     {
       gint prev_index = g_utf8_prev_char (layout->text + index) - layout->text;
