@@ -1,6 +1,1 @@
-Text:         我  能  吞  下  玻  璃  而  不  傷  身  體  [0x0a] 
-Breaks:     c  lc lc lc lc lc lc lc lc lc lc c       c
-Whitespace:                                  w       w
-Words:      bs b  b  b  b  b  b  b  b  b  b  be      b
-Sentences:  bs                               e       b
-Graphemes:  b  b  b  b  b  b  b  b  b  b  b  b       b
+Bail out! ERROR:../tests/test-break.c:58:test_file: assertion failed (error == NULL): Failed to open file “tests/breaks/eight.break”: No such file or directory (g-file-error-quark, 4)
