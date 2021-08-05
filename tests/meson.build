@@ -19,7 +19,6 @@ test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
 test_env.set('LC_ALL', 'en_US.UTF-8')
 
 tests = [
-  [ 'test-bidi' ],
   [ 'test-coverage' ],
   [ 'testboundaries' ],
   [ 'testboundaries_ucd' ],
@@ -40,6 +39,7 @@ endif
 if cairo_dep.found()
   test_cflags += '-DHAVE_CAIRO'
   tests += [
+    [ 'test-bidi', [ 'test-bidi.c' ], [ libpangocairo_dep ] ],
     [ 'testcontext', [ 'testcontext.c' ], [ libpangocairo_dep ] ],
     [ 'testiter', [ 'testiter.c' ], [ libpangocairo_dep ] ],
     [ 'test-ellipsize', [ 'test-ellipsize.c' ], [ libpangocairo_dep ] ],
