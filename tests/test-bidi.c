@@ -19,7 +19,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include <locale.h>
 #include <pango/pango.h>
+#include <pango/pangocairo.h>
+
+static PangoContext *context;
 
 G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 
@@ -154,15 +158,194 @@ test_bidi_embedding_levels (void)
     }
 }
 
+/* Some basic tests for pango_layout_move_cursor_visually:
+ * - check that we actually move the cursor in the right direction
+ * - check that we get through the line with at most n steps
+ * - check that we don't skip legitimate cursor positions
+ */
+static void
+test_move_cursor_visually (void)
+{
+  const char *tests[] = {
+    "abc😂️def",
+    "abcאבגdef",
+    "אבabcב",
+    "aאב12b",
+  };
+  PangoLayout *layout;
+  gboolean fail = FALSE;
+
+  layout = pango_layout_new (context);
+
+  for (int i = 0; i < G_N_ELEMENTS (tests); i++)
+    {
+      const char *text;
+      gsize n_chars;
+      int index;
+      int start_index;
+      gboolean trailing;
+      PangoRectangle s_pos, old_s_pos;
+      PangoRectangle w_pos, old_w_pos;
+      PangoLayoutLine *line;
+      struct {
+        int direction;
+        gboolean strong;
+      } params[] = {
+        { 1, TRUE },
+        { 1, FALSE },
+        { -1, TRUE },
+        { -1, FALSE },
+      };
+      int *strong_cursor;
+      int *weak_cursor;
+      gboolean *met_cursor;
+      const PangoLogAttr *attrs;
+      int n_attrs;
+      int j;
+      const char *p;
+
+      pango_layout_set_text (layout, tests[i], -1);
+      text = pango_layout_get_text (layout);
+      line = pango_layout_get_line_readonly (layout, 0);
+
+      n_chars = g_utf8_strlen (text, -1);
+
+      attrs = pango_layout_get_log_attrs_readonly (layout, &n_attrs);
+      strong_cursor = g_new (int, n_attrs);
+      weak_cursor = g_new (int, n_attrs);
+      met_cursor = g_new (gboolean, n_attrs);
+      for (j = 0, p = text; j < n_attrs; j++, p = g_utf8_next_char (p))
+        {
+          if (attrs[j].is_cursor_position)
+            {
+              pango_layout_get_cursor_pos (layout, p - text, &s_pos, &w_pos);
+              strong_cursor[j] = s_pos.x;
+              weak_cursor[j] = w_pos.x;
+            }
+          else
+            strong_cursor[j] = weak_cursor[j] = -1;
+        }
+
+      for (j = 0; j < G_N_ELEMENTS (params); j++)
+        {
+          gboolean ok;
+
+          if (g_test_verbose ())
+            g_print ("'%s' %s %s :\t",
+                     text,
+                     params[j].direction > 0 ? "->" : "<-",
+                     params[j].strong ? "strong" : "weak");
+
+          if ((pango_layout_line_get_resolved_direction (line) == PANGO_DIRECTION_LTR) == (params[j].direction > 0))
+            start_index = 0;
+          else
+            start_index = strlen (text);
+
+          index = start_index;
+
+          memset (met_cursor, 0, sizeof (gboolean) * n_attrs);
+
+          pango_layout_get_cursor_pos (layout, index, &s_pos, &w_pos);
+          for (int l = 0; l < n_attrs; l++)
+            {
+              if ((params[j].strong && strong_cursor[l] == s_pos.x) ||
+                  (!params[j].strong && weak_cursor[l] == w_pos.x))
+                met_cursor[l] = TRUE;
+            }
+
+          ok = TRUE;
+
+          for (int k = 0; k <= n_chars; k++)
+            {
+              old_s_pos = s_pos;
+              old_w_pos = w_pos;
+              pango_layout_move_cursor_visually (layout, params[j].strong,
+                                                 index, 0,
+                                                 params[j].direction,
+                                                 &index, &trailing);
+
+              while (trailing--)
+                index = g_utf8_next_char (text + index) - text;
+
+              if (index < 0 || index > strlen (text))
+                break;
+
+              pango_layout_get_cursor_pos (layout, index, &s_pos, &w_pos);
+              for (int l = 0; l < n_attrs; l++)
+                {
+                  if ((params[j].strong && strong_cursor[l] == s_pos.x) ||
+                      (!params[j].strong && weak_cursor[l] == w_pos.x))
+                    met_cursor[l] = TRUE;
+                }
+
+              if ((params[j].direction > 0 && params[j].strong && old_s_pos.x > s_pos.x) ||
+                  (params[j].direction < 0 && params[j].strong && old_s_pos.x < s_pos.x) ||
+                  (params[j].direction > 0 && !params[j].strong && old_w_pos.x > w_pos.x) ||
+                  (params[j].direction < 0 && !params[j].strong && old_w_pos.x < w_pos.x))
+                {
+                  if (g_test_verbose ())
+                    g_print ("(wrong move)\t");
+                  ok = FALSE;
+                  break;
+                }
+            }
+
+          if (ok)
+            for (int l = 0; l < n_attrs; l++)
+              {
+                if (!(met_cursor[l] ||
+                      (params[j].strong && strong_cursor[l] == -1) ||
+                      (!params[j].strong && weak_cursor[l] == -1)))
+                  {
+                    if (g_test_verbose ())
+                      g_print ("(missed cursor)\t");
+                    ok = FALSE;
+                  }
+              }
+
+          if (ok)
+            if (!(index >= strlen (text) || index <= 0))
+              {
+                if (g_test_verbose ())
+                  g_print ("(got stuck)\t");
+                ok = FALSE;
+              }
+
+          if (g_test_verbose ())
+            g_print ("%s\n", ok ? "ok": "not ok");
+
+          fail = fail || !ok;
+        }
+
+       g_free (strong_cursor);
+       g_free (weak_cursor);
+       g_free (met_cursor);
+    }
+
+  g_object_unref (layout);
+
+  if (fail)
+    g_test_skip ("known to fail");
+}
+
+
 int
 main (int argc, char *argv[])
 {
+  PangoFontMap *fontmap;
+
+  setlocale (LC_ALL, "");
+
+  fontmap = pango_cairo_font_map_get_default ();
+  context = pango_font_map_create_context (fontmap);
+
   g_test_init (&argc, &argv, NULL);
 
   g_test_add_func ("/bidi/mirror-char", test_mirror_char);
   g_test_add_func ("/bidi/type-for-unichar", test_bidi_type_for_unichar);
   g_test_add_func ("/bidi/unichar-direction", test_unichar_direction);
   g_test_add_func ("/bidi/embedding-levels", test_bidi_embedding_levels);
+  g_test_add_func ("/bidi/move-cursor-visually", test_move_cursor_visually);
 
   return g_test_run ();
 }

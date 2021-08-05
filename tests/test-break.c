@@ -219,7 +219,9 @@ test_file (const gchar *filename, GString *string)
                    !(g_unichar_type (ch) == G_UNICODE_LINE_SEPARATOR ||
                      g_unichar_type (ch) == G_UNICODE_PARAGRAPH_SEPARATOR))
             {
+              g_string_append_unichar (string, 0x2066); // LRI
               g_string_append_unichar (string, ch);
+              g_string_append_unichar (string, 0x2069); // PDI
               g_string_append (s1, " ");
               g_string_append (s2, " ");
               g_string_append (s3, " ");
