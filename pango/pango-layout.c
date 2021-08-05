@@ -2376,9 +2376,9 @@ pango_layout_line_get_log2vis_map (PangoLayoutLine *line,
   return result;
 }
 
-static PangoDirection
-pango_layout_line_get_char_direction (PangoLayoutLine *layout_line,
-                                      int              index)
+static int
+pango_layout_line_get_char_level (PangoLayoutLine *layout_line,
+                                  int              index)
 {
   GSList *run_list;
 
@@ -2388,12 +2388,21 @@ pango_layout_line_get_char_direction (PangoLayoutLine *layout_line,
       PangoLayoutRun *run = run_list->data;
 
       if (run->item->offset <= index && run->item->offset + run->item->length > index)
-        return run->item->analysis.level % 2 ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR;
+        return run->item->analysis.level;
 
       run_list = run_list->next;
     }
 
-  return PANGO_DIRECTION_LTR;
+  return 0;
+}
+
+static PangoDirection
+pango_layout_line_get_char_direction (PangoLayoutLine *layout_line,
+                                      int              index)
+{
+   return pango_layout_line_get_char_level (layout_line, index) % 2
+          ? PANGO_DIRECTION_RTL
+          : PANGO_DIRECTION_LTR;
 }
 
 /**
@@ -2443,7 +2452,8 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
                              PangoRectangle *strong_pos,
                              PangoRectangle *weak_pos)
 {
-  PangoDirection dir1;
+  PangoDirection dir1, dir2;
+  int level1, level2;
   PangoRectangle line_rect;
   PangoLayoutLine *layout_line = NULL; /* Quiet GCC */
   int x1_trailing;
@@ -2461,6 +2471,7 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
   if (index == layout_line->start_index)
     {
       dir1 = layout_line->resolved_dir;
+      level1 = dir1 == PANGO_DIRECTION_LTR ? 0 : 1;
       if (layout_line->resolved_dir == PANGO_DIRECTION_LTR)
         x1_trailing = 0;
       else
@@ -2469,13 +2480,16 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
   else
     {
       gint prev_index = g_utf8_prev_char (layout->text + index) - layout->text;
-      dir1 = pango_layout_line_get_char_direction (layout_line, prev_index);
+      level1 = pango_layout_line_get_char_level (layout_line, prev_index);
+      dir1 = level1 % 2 ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR;
       pango_layout_line_index_to_x (layout_line, prev_index, TRUE, &x1_trailing);
     }
 
   /* Examine the leading edge of the character after the cursor */
   if (index >= layout_line->start_index + layout_line->length)
     {
+      dir2 = layout_line->resolved_dir;
+      level2 = dir2 == PANGO_DIRECTION_LTR ? 0 : 1;
       if (layout_line->resolved_dir == PANGO_DIRECTION_LTR)
         x2 = line_rect.width;
       else
@@ -2484,13 +2498,16 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
   else
     {
       pango_layout_line_index_to_x (layout_line, index, FALSE, &x2);
+      level2 = pango_layout_line_get_char_level (layout_line, index);
+      dir2 = level2 % 2 ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR;
     }
 
   if (strong_pos)
     {
       strong_pos->x = line_rect.x;
 
-      if (dir1 == layout_line->resolved_dir)
+      if (dir1 == layout_line->resolved_dir &&
+          (dir2 != dir1 || level1 < level2))
         strong_pos->x += x1_trailing;
       else
         strong_pos->x += x2;
@@ -2504,7 +2521,8 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
     {
       weak_pos->x = line_rect.x;
 
-      if (dir1 == layout_line->resolved_dir)
+      if (dir1 == layout_line->resolved_dir &&
+          (dir2 != dir1 || level1 < level2))
         weak_pos->x += x2;
       else
         weak_pos->x += x1_trailing;
