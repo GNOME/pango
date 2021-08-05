@@ -158,19 +158,21 @@ test_bidi_embedding_levels (void)
     }
 }
 
-/* Some basic tests for pango_layout_move_cursor_visually:
+/* Some basic tests for pango_layout_move_cursor_visually inside
+ * a single PangoLayoutLine:
  * - check that we actually move the cursor in the right direction
  * - check that we get through the line with at most n steps
  * - check that we don't skip legitimate cursor positions
  */
 static void
-test_move_cursor_visually (void)
+test_move_cursor_line (void)
 {
   const char *tests[] = {
     "abc😂️def",
     "abcאבגdef",
     "אבabcב",
     "aאב12b",
+    "pa­ra­graph", // soft hyphens
   };
   PangoLayout *layout;
   gboolean fail = FALSE;
@@ -205,6 +207,7 @@ test_move_cursor_visually (void)
       const char *p;
 
       pango_layout_set_text (layout, tests[i], -1);
+
       text = pango_layout_get_text (layout);
       line = pango_layout_get_line_readonly (layout, 0);
 
@@ -267,7 +270,10 @@ test_move_cursor_visually (void)
               while (trailing--)
                 index = g_utf8_next_char (text + index) - text;
 
-              if (index < 0 || index > strlen (text))
+              g_assert (index == -1 || index == G_MAXINT ||
+                        (0 <= index && index <= strlen (tests[i])));
+
+              if (index == -1 || index == G_MAXINT)
                 break;
 
               pango_layout_get_cursor_pos (layout, index, &s_pos, &w_pos);
@@ -278,10 +284,10 @@ test_move_cursor_visually (void)
                     met_cursor[l] = TRUE;
                 }
 
-              if ((params[j].direction > 0 && params[j].strong && old_s_pos.x > s_pos.x) ||
-                  (params[j].direction < 0 && params[j].strong && old_s_pos.x < s_pos.x) ||
-                  (params[j].direction > 0 && !params[j].strong && old_w_pos.x > w_pos.x) ||
-                  (params[j].direction < 0 && !params[j].strong && old_w_pos.x < w_pos.x))
+              if ((params[j].direction > 0 && params[j].strong && old_s_pos.x >= s_pos.x) ||
+                  (params[j].direction < 0 && params[j].strong && old_s_pos.x <= s_pos.x) ||
+                  (params[j].direction > 0 && !params[j].strong && old_w_pos.x >= w_pos.x) ||
+                  (params[j].direction < 0 && !params[j].strong && old_w_pos.x <= w_pos.x))
                 {
                   if (g_test_verbose ())
                     g_print ("(wrong move)\t");
@@ -328,7 +334,6 @@ test_move_cursor_visually (void)
     g_test_skip ("known to fail");
 }
 
-
 int
 main (int argc, char *argv[])
 {
@@ -345,7 +350,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/bidi/type-for-unichar", test_bidi_type_for_unichar);
   g_test_add_func ("/bidi/unichar-direction", test_unichar_direction);
   g_test_add_func ("/bidi/embedding-levels", test_bidi_embedding_levels);
-  g_test_add_func ("/bidi/move-cursor-visually", test_move_cursor_visually);
+  g_test_add_func ("/bidi/move-cursor-line", test_move_cursor_line);
 
   return g_test_run ();
 }
