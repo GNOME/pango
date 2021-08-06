@@ -194,7 +194,10 @@ dump_directions (PangoLayout *layout, GString *string)
 static void
 dump_cursor_positions (PangoLayout *layout, GString *string)
 {
+  const char *text;
   int index, trailing;
+
+  text = pango_layout_get_text (layout);
 
   index = 0;
   trailing = 0;
@@ -202,7 +205,11 @@ dump_cursor_positions (PangoLayout *layout, GString *string)
   while (index < G_MAXINT)
     {
       g_string_append_printf (string, "%d(%d) ", index, trailing);
-      pango_layout_move_cursor_visually (layout, TRUE, index, trailing, 1, &index, &trailing);
+
+      while (trailing--)
+        index = g_utf8_next_char (text + index) - text;
+
+      pango_layout_move_cursor_visually (layout, TRUE, index, 0, 1, &index, &trailing);
     }
 
   g_string_append (string, "\n");
