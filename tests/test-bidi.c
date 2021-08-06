@@ -331,7 +331,7 @@ test_move_cursor_line (void)
   g_object_unref (layout);
 
   if (fail)
-    g_test_skip ("known to fail");
+    g_test_fail ();
 }
 
 int

@@ -164,10 +164,6 @@ static void              pango_layout_line_postprocess (PangoLayoutLine *line,
                                                         ParaBreakState  *state,
                                                         gboolean         wrapped);
 
-static int *pango_layout_line_get_log2vis_map (PangoLayoutLine  *line,
-                                               gboolean          strong);
-static int *pango_layout_line_get_vis2log_map (PangoLayoutLine  *line,
-                                               gboolean          strong);
 static void pango_layout_line_leaked (PangoLayoutLine *line);
 
 /* doesn't leak line */
@@ -1873,6 +1869,59 @@ pango_layout_index_to_line_x (PangoLayout *layout,
     }
 }
 
+typedef struct {
+  int x;
+  int pos;
+} CursorPos;
+
+static int
+compare_cursor (gconstpointer v1,
+                gconstpointer v2)
+{
+  const CursorPos *c1 = v1;
+  const CursorPos *c2 = v2;
+
+  return c1->x - c2->x;
+}
+
+static void
+pango_layout_line_get_cursors (PangoLayoutLine *line,
+                               gboolean         strong,
+                               GArray          *cursors)
+{
+  PangoLayout *layout = line->layout;
+  const char *start, *end;
+  int start_offset;
+  int j;
+  const char *p;
+  PangoRectangle pos;
+
+  g_assert (g_array_get_element_size (cursors) == sizeof (CursorPos));
+  g_assert (cursors->len == 0);
+
+  start = layout->text + line->start_index;
+  end = start + line->length;
+  start_offset = g_utf8_pointer_to_offset (layout->text, start);
+
+  for (j = start_offset, p = start; p <= end; j++, p = g_utf8_next_char (p))
+    {
+      if (layout->log_attrs[j].is_cursor_position)
+        {
+          CursorPos cursor;
+
+          pango_layout_get_cursor_pos (layout, p - layout->text,
+                                       strong ? &pos : NULL,
+                                       strong ? NULL : &pos);
+
+          cursor.x = pos.x;
+          cursor.pos = p - layout->text;
+          g_array_append_val (cursors, cursor);
+        }
+    }
+
+  g_array_sort (cursors, compare_cursor);
+}
+
 /**
  * pango_layout_move_cursor_visually:
  * @layout: a `PangoLayout`
@@ -1926,17 +1975,18 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
   PangoLayoutLine *line = NULL;
   PangoLayoutLine *prev_line;
   PangoLayoutLine *next_line;
-
-  int *log2vis_map;
-  int *vis2log_map;
+  GArray *cursors;
   int n_vis;
-  int vis_pos, vis_pos_old, log_pos;
+  int vis_pos;
   int start_offset;
   gboolean off_start = FALSE;
   gboolean off_end = FALSE;
+  PangoRectangle pos;
+  int j;
 
   g_return_if_fail (layout != NULL);
   g_return_if_fail (old_index >= 0 && old_index <= layout->length);
+  g_return_if_fail (old_trailing >= 0);
   g_return_if_fail (old_index < layout->length || old_trailing == 0);
   g_return_if_fail (new_index != NULL);
   g_return_if_fail (new_trailing != NULL);
@@ -1946,39 +1996,52 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
   pango_layout_check_lines (layout);
 
   /* Find the line the old cursor is on */
-  line = pango_layout_index_to_line (layout, old_index,
-                                     NULL, &prev_line, &next_line);
-
-  start_offset = g_utf8_pointer_to_offset (layout->text, layout->text + line->start_index);
+  line = pango_layout_index_to_line (layout, old_index, NULL, &prev_line, &next_line);
 
   while (old_trailing--)
     old_index = g_utf8_next_char (layout->text + old_index) - layout->text;
 
-  log2vis_map = pango_layout_line_get_log2vis_map (line, strong);
   n_vis = pango_utf8_strlen (layout->text + line->start_index, line->length);
 
   /* Clamp old_index to fit on the line */
   if (old_index > (line->start_index + line->length))
     old_index = line->start_index + line->length;
 
-  vis_pos = log2vis_map[old_index - line->start_index];
+  cursors = g_array_new (FALSE, FALSE, sizeof (CursorPos));
+  pango_layout_line_get_cursors (line, strong, cursors);
 
-  g_free (log2vis_map);
+  pango_layout_get_cursor_pos (layout, old_index, strong ? &pos : NULL, strong ? NULL : &pos);
+
+  vis_pos = -1;
+  for (j = 0; j < cursors->len; j++)
+    {
+      CursorPos *cursor = &g_array_index (cursors, CursorPos, j);
+      if (cursor->x == pos.x)
+        {
+          vis_pos = j;
+
+          /* If moving left, we pick the leftmost match, otherwise
+           * the rightmost one. Without this, we can get stuck
+           */
+          if (direction < 0)
+            break;
+        }
+    }
 
   /* Handling movement between lines */
-  if (vis_pos == 0 && direction < 0)
+  if (line->resolved_dir == PANGO_DIRECTION_LTR)
     {
-      if (line->resolved_dir == PANGO_DIRECTION_LTR)
+      if (old_index == line->start_index && direction < 0)
         off_start = TRUE;
-      else
+      if (old_index == line->start_index + line->length && direction > 0)
         off_end = TRUE;
     }
-  else if (vis_pos == n_vis && direction > 0)
+  else
     {
-      if (line->resolved_dir == PANGO_DIRECTION_LTR)
-        off_end = TRUE;
-      else
+      if (old_index == line->start_index + line->length && direction < 0)
         off_start = TRUE;
+      if (old_index == line->start_index && direction > 0)
+        off_end = TRUE;
     }
 
   if (off_start || off_end)
@@ -1994,6 +2057,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
             {
               *new_index = -1;
               *new_trailing = 0;
+              g_array_unref (cursors);
               return;
             }
           line = prev_line;
@@ -2005,22 +2069,25 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
             {
               *new_index = G_MAXINT;
               *new_trailing = 0;
+              g_array_unref (cursors);
               return;
             }
           line = next_line;
           paragraph_boundary = (line->start_index != old_index);
         }
 
-      n_vis = pango_utf8_strlen (layout->text + line->start_index, line->length);
-      start_offset = g_utf8_pointer_to_offset (layout->text, layout->text + line->start_index);
+      g_array_set_size (cursors, 0);
+      pango_layout_line_get_cursors (line, strong, cursors);
 
-      if (vis_pos == 0 && direction < 0)
+      n_vis = pango_utf8_strlen (layout->text + line->start_index, line->length);
+
+      if (off_start && direction < 0)
         {
           vis_pos = n_vis;
           if (paragraph_boundary)
             vis_pos++;
         }
-      else /* (vis_pos == n_vis && direction > 0) */
+      else if (off_end && direction > 0)
         {
           vis_pos = 0;
           if (paragraph_boundary)
@@ -2028,36 +2095,34 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
         }
     }
 
-  vis2log_map = pango_layout_line_get_vis2log_map (line, strong);
+  if (direction < 0)
+    vis_pos--;
+  else
+    vis_pos++;
 
-  vis_pos_old = vis_pos + direction;
-  log_pos = g_utf8_pointer_to_offset (layout->text + line->start_index,
-                                      layout->text + line->start_index + vis2log_map[vis_pos_old]);
-  do
-    {
-      vis_pos += direction;
-      log_pos += g_utf8_pointer_to_offset (layout->text + line->start_index + vis2log_map[vis_pos_old],
-                                           layout->text + line->start_index + vis2log_map[vis_pos]);
-      vis_pos_old = vis_pos;
-    }
-  while (vis_pos > 0 && vis_pos < n_vis &&
-         !layout->log_attrs[start_offset + log_pos].is_cursor_position);
-
-  *new_index = line->start_index + vis2log_map[vis_pos];
-  g_free (vis2log_map);
+  if (0 <= vis_pos && vis_pos < cursors->len)
+    *new_index = g_array_index (cursors, CursorPos, vis_pos).pos;
+  else if (vis_pos >= cursors->len - 1)
+    *new_index = line->start_index + line->length;
 
   *new_trailing = 0;
 
   if (*new_index == line->start_index + line->length && line->length > 0)
     {
+      int log_pos;
+
+      start_offset = g_utf8_pointer_to_offset (layout->text, layout->text + line->start_index);
+      log_pos = start_offset + pango_utf8_strlen (layout->text + line->start_index, line->length);
       do
         {
           log_pos--;
           *new_index = g_utf8_prev_char (layout->text + *new_index) - layout->text;
           (*new_trailing)++;
         }
-      while (log_pos > 0 && !layout->log_attrs[start_offset + log_pos].is_cursor_position);
+      while (log_pos > start_offset && !layout->log_attrs[log_pos].is_cursor_position);
     }
+
+  g_array_unref (cursors);
 }
 
 /**
@@ -2245,135 +2310,6 @@ pango_layout_index_to_pos (PangoLayout    *layout,
     }
 
   _pango_layout_iter_destroy (&iter);
-}
-
-static void
-pango_layout_line_get_range (PangoLayoutLine *line,
-                             char           **start,
-                             char           **end)
-{
-  char *p;
-
-  p = line->layout->text + line->start_index;
-
-  if (start)
-    *start = p;
-  if (end)
-    *end = p + line->length;
-}
-
-static int *
-pango_layout_line_get_vis2log_map (PangoLayoutLine *line,
-                                   gboolean         strong)
-{
-  PangoLayout *layout = line->layout;
-  PangoDirection prev_dir;
-  PangoDirection cursor_dir;
-  GSList *tmp_list;
-  gchar *start, *end;
-  int *result;
-  int pos;
-  int n_chars;
-
-  pango_layout_line_get_range (line, &start, &end);
-  n_chars = pango_utf8_strlen (start, end - start);
-
-  result = g_new (int, n_chars + 1);
-
-  if (strong)
-    cursor_dir = line->resolved_dir;
-  else
-    cursor_dir = (line->resolved_dir == PANGO_DIRECTION_LTR) ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR;
-
-  /* Handle the first visual position
-   */
-  if (line->resolved_dir == cursor_dir)
-    result[0] = line->resolved_dir == PANGO_DIRECTION_LTR ? 0 : end - start;
-
-  prev_dir = line->resolved_dir;
-  pos = 0;
-  tmp_list = line->runs;
-  while (tmp_list)
-    {
-      PangoLayoutRun *run = tmp_list->data;
-      int run_n_chars = run->item->num_chars;
-      PangoDirection run_dir = (run->item->analysis.level % 2) ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR;
-      char *p = layout->text + run->item->offset;
-      int i;
-
-      /* pos is the visual position at the start of the run */
-      /* p is the logical byte index at the start of the run */
-
-      if (run_dir == PANGO_DIRECTION_LTR)
-        {
-          if ((cursor_dir == PANGO_DIRECTION_LTR) ||
-              (prev_dir == run_dir))
-            result[pos] = p - start;
-
-          p = g_utf8_next_char (p);
-
-          for (i = 1; i < run_n_chars; i++)
-            {
-              result[pos + i] = p - start;
-              p = g_utf8_next_char (p);
-            }
-
-          if (cursor_dir == PANGO_DIRECTION_LTR)
-            result[pos + run_n_chars] = p - start;
-        }
-      else
-        {
-          if (cursor_dir == PANGO_DIRECTION_RTL)
-            result[pos + run_n_chars] = p - start;
-
-          p = g_utf8_next_char (p);
-
-          for (i = 1; i < run_n_chars; i++)
-            {
-              result[pos + run_n_chars - i] = p - start;
-              p = g_utf8_next_char (p);
-            }
-
-          if ((cursor_dir == PANGO_DIRECTION_RTL) ||
-              (prev_dir == run_dir))
-            result[pos] = p - start;
-        }
-
-      pos += run_n_chars;
-      prev_dir = run_dir;
-      tmp_list = tmp_list->next;
-    }
-
-  /* And the last visual position
-   */
-  if ((cursor_dir == line->resolved_dir) || (prev_dir == line->resolved_dir))
-    result[pos] = line->resolved_dir == PANGO_DIRECTION_LTR ? end - start : 0;
-
-  return result;
-}
-
-static int *
-pango_layout_line_get_log2vis_map (PangoLayoutLine *line,
-                                   gboolean         strong)
-{
-  gchar *start, *end;
-  int *reverse_map;
-  int *result;
-  int i;
-  int n_chars;
-
-  pango_layout_line_get_range (line, &start, &end);
-  n_chars = pango_utf8_strlen (start, end - start);
-  result = g_new0 (int, end - start + 1);
-
-  reverse_map = pango_layout_line_get_vis2log_map (line, strong);
-
-  for (i=0; i <= n_chars; i++)
-    result[reverse_map[i]] = i;
-
-  g_free (reverse_map);
-
-  return result;
 }
 
 static int
