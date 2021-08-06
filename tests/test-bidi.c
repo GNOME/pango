@@ -334,6 +334,68 @@ test_move_cursor_line (void)
     g_test_fail ();
 }
 
+static void
+test_move_cursor_para (void)
+{
+  struct {
+    const char *text;
+    int width;
+  } tests[] = {
+    { "This paragraph should ac­tual­ly have multiple lines, unlike all the other wannabe äöü pa­ra­graph tests in this ugh test-case. Grow some lines!\n", 188 },
+    { "你好 Hello שלום Γειά σας", 40 },
+    { "你好 Hello שלום Γειά σας", 60 },
+    { "你好 Hello שלום Γειά σας", 80 },
+    { "line 1 line 2 line 3\nline 4\r\nline 5", -1 }, // various separators
+  };
+  PangoLayout *layout;
+  PangoRectangle pos, old_pos;
+  int index;
+  int trailing;
+  const char *text;
+
+  layout = pango_layout_new (context);
+
+  for (int i = 0; i < G_N_ELEMENTS (tests); i++)
+    {
+      pango_layout_set_text (layout, tests[i].text, -1);
+      text = pango_layout_get_text (layout);
+      if (tests[i].width > 0)
+        pango_layout_set_width (layout, tests[i].width * PANGO_SCALE);
+      else
+        pango_layout_set_width (layout, -1);
+
+      index = 0;
+      pango_layout_get_cursor_pos (layout, index, &pos, NULL);
+
+      while (index < G_MAXINT)
+        {
+          old_pos = pos;
+
+          pango_layout_move_cursor_visually (layout, TRUE,
+                                             index, 0,
+                                             1,
+                                             &index, &trailing);
+          while (trailing--)
+            index = g_utf8_next_char (text + index) - text;
+
+          g_assert (index == -1 || index == G_MAXINT ||
+                    (0 <= index && index <= strlen (tests[i].text)));
+
+          if (index == -1 || index == G_MAXINT)
+            break;
+
+          if (index >= strlen (tests[i].text) - 1)
+            break;
+
+          pango_layout_get_cursor_pos (layout, index, &pos, NULL);
+          g_assert_true (pos.y > old_pos.y ||
+                         (pos.y == old_pos.y && pos.x > old_pos.x));
+        }
+    }
+
+  g_object_unref (layout);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -351,6 +413,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/bidi/unichar-direction", test_unichar_direction);
   g_test_add_func ("/bidi/embedding-levels", test_bidi_embedding_levels);
   g_test_add_func ("/bidi/move-cursor-line", test_move_cursor_line);
+  g_test_add_func ("/bidi/move-cursor-para", test_move_cursor_para);
 
   return g_test_run ();
 }
