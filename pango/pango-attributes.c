@@ -1341,6 +1341,58 @@ pango_attr_overline_color_new (guint16 red,
   return pango_attr_color_new (&klass, red, green, blue);
 }
 
+/**
+ * pango_attr_line_height_new:
+ * @factor: the scaling factor to apply to the logical height
+ *
+ * Modify the height of logical line extents by a factor.
+ *
+ * This affects the values returned by
+ * [method@Pango.LayoutLine.get_extents],
+ * [method@Pango.LayoutLine.get_pixel_extents] and
+ * [method@Pango.LayoutIter.get_line_extents].
+ *
+ *
+ * Since: 1.50
+ */
+PangoAttribute *
+pango_attr_line_height_new (double factor)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_LINE_HEIGHT,
+    pango_attr_float_copy,
+    pango_attr_float_destroy,
+    pango_attr_float_equal
+  };
+
+  return pango_attr_float_new (&klass, factor);
+}
+
+/**
+ * pango_attr_line_height_new_absolute:
+ * @height: the line height, in %PANGO_SCALE-ths of a point
+ *
+ * Override the height of logical line extents to be @height.
+ *
+ * This affects the values returned by
+ * [method@Pango.LayoutLine.get_extents],
+ * [method@Pango.LayoutLine.get_pixel_extents] and
+ * [method@Pango.LayoutIter.get_line_extents].
+ *
+ * Since: 1.50
+ */
+PangoAttribute *
+pango_attr_line_height_new_absolute (int height)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_ABSOLUTE_LINE_HEIGHT,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal
+  };
+
+  return pango_attr_int_new (&klass, height);
+}
 /*
  * Attribute List
  */
@@ -2559,6 +2611,7 @@ pango_attribute_as_float (PangoAttribute *attr)
   switch (attr->klass->type)
     {
     case PANGO_ATTR_SCALE:
+    case PANGO_ATTR_LINE_HEIGHT:
       return (PangoAttrFloat *)attr;
 
     default:

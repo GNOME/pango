@@ -977,6 +977,29 @@ span_parse_int (const char *attr_name,
 }
 
 static gboolean
+span_parse_float (const char  *attr_name,
+                  const char  *attr_val,
+                  double      *val,
+                  int          line_number,
+                  GError     **error)
+{
+  *val = g_ascii_strtod (attr_val, NULL);
+  if (errno != 0)
+    {
+      g_set_error (error,
+                   G_MARKUP_ERROR,
+                   G_MARKUP_ERROR_INVALID_CONTENT,
+                   _("Value of '%s' attribute on <span> tag "
+                     "on line %d could not be parsed; "
+                     "should be a number, not '%s'"),
+                   attr_name, line_number, attr_val);
+      return FALSE;
+    }
+
+  return TRUE;
+}
+
+static gboolean
 span_parse_boolean (const char *attr_name,
 		    const char *attr_val,
 		    gboolean *val,
@@ -1200,6 +1223,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   const char *allow_breaks = NULL;
   const char *insert_hyphens = NULL;
   const char *show = NULL;
+  const char *line_height = NULL;
 
   g_markup_parse_context_get_position (context,
 				       &line_number, &char_number);
@@ -1278,6 +1302,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
       case 'l':
 	CHECK_ATTRIBUTE (lang);
 	CHECK_ATTRIBUTE (letter_spacing);
+        CHECK_ATTRIBUTE (line_height);
 	break;
       case 'o':
 	CHECK_ATTRIBUTE (overline);
@@ -1637,6 +1662,19 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	goto error;
 
       add_attribute (tag, pango_attr_letter_spacing_new (n));
+    }
+
+  if (G_UNLIKELY (line_height))
+    {
+      double f = 0;
+
+      if (!span_parse_float ("line_height", line_height, &f, line_number, error))
+        goto error;
+
+      if (f > 1024.0 && strchr (line_height, ".") == 0)
+        add_attribute (tag, pango_attr_line_height_new_absolute ((int)f));
+      else
+        add_attribute (tag, pango_attr_line_height_new (f));
     }
 
   if (G_UNLIKELY (lang))

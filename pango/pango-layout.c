@@ -638,6 +638,9 @@ pango_layout_get_spacing (PangoLayout *layout)
  *
  * If @factor is zero (the default), spacing is applied as before.
  *
+ * Note: for semantics that are closer to the CSS line-height
+ * property, see [func@Pango.attr_line_height_new].
+ *
  * Since: 1.44
  */
 void
