@@ -23,59 +23,14 @@
 #define __PANGO_ATTRIBUTES_H__
 
 #include <pango/pango-font.h>
+#include <pango/pango-color.h>
 #include <glib-object.h>
 
 G_BEGIN_DECLS
 
-/* PangoColor */
-
-typedef struct _PangoColor PangoColor;
-
-/**
- * PangoColor:
- * @red: value of red component
- * @green: value of green component
- * @blue: value of blue component
- *
- * The `PangoColor` structure is used to
- * represent a color in an uncalibrated RGB color-space.
- */
-struct _PangoColor
-{
-  guint16 red;
-  guint16 green;
-  guint16 blue;
-};
-
-/**
- * PANGO_TYPE_COLOR:
- *
- * The `GObject` type for `PangoColor`.
- */
-#define PANGO_TYPE_COLOR pango_color_get_type ()
-PANGO_AVAILABLE_IN_ALL
-GType       pango_color_get_type (void) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
 GType       pango_attribute_get_type    (void) G_GNUC_CONST;
-
-PANGO_AVAILABLE_IN_ALL
-PangoColor *pango_color_copy     (const PangoColor *src);
-PANGO_AVAILABLE_IN_ALL
-void        pango_color_free     (PangoColor       *color);
-PANGO_AVAILABLE_IN_ALL
-gboolean    pango_color_parse    (PangoColor       *color,
-                                  const char       *spec);
-PANGO_AVAILABLE_IN_1_46
-gboolean    pango_color_parse_with_alpha
-                                 (PangoColor       *color,
-                                  guint16          *alpha,
-                                  const char       *spec);
-PANGO_AVAILABLE_IN_1_16
-gchar      *pango_color_to_string(const PangoColor *color);
-
-
-/* Attributes */
 
 typedef struct _PangoAttribute    PangoAttribute;
 typedef struct _PangoAttrClass    PangoAttrClass;

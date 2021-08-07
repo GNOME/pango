@@ -34,6 +34,7 @@ pango_headers = [
   'pango-attributes.h',
   'pango-bidi-type.h',
   'pango-break.h',
+  'pango-color.h',
   'pango-context.h',
   'pango-coverage.h',
   'pango-direction.h',
