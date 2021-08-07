@@ -78,6 +78,7 @@
 #include "pango-impl-utils.h"
 #include "pango-glyph-item.h"
 #include <string.h>
+#include <math.h>
 
 #include "pango-layout-private.h"
 #include "pango-attributes-private.h"
@@ -107,6 +108,8 @@ struct _ItemProperties
   gboolean        shape_set;
   PangoRectangle *shape_ink_rect;
   PangoRectangle *shape_logical_rect;
+  double line_height;
+  int    absolute_line_height;
 };
 
 typedef struct _PangoLayoutLinePrivate PangoLayoutLinePrivate;
@@ -587,9 +590,12 @@ pango_layout_get_indent (PangoLayout *layout)
  * The default value is 0.
  *
  * Note: Since 1.44, Pango is using the line height (as determined
- * by the font) for placing lines when the line height factor is set
+ * by the font) for placing lines when the line spacing factor is set
  * to a non-zero value with [method@Pango.Layout.set_line_spacing].
  * In that case, the @spacing set with this function is ignored.
+ *
+ * Note: for semantics that are closer to the CSS line-height
+ * property, see [func@Pango.attr_line_height_new].
  */
 void
 pango_layout_set_spacing (PangoLayout *layout,
@@ -4152,6 +4158,8 @@ affects_itemization (PangoAttribute *attr,
     case PANGO_ATTR_LETTER_SPACING:
     case PANGO_ATTR_SHAPE:
     case PANGO_ATTR_RISE:
+    case PANGO_ATTR_LINE_HEIGHT:
+    case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
       return TRUE;
     default:
       return FALSE;
@@ -5107,7 +5115,18 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
       if (!metrics)
         metrics = pango_font_get_metrics (run->item->analysis.font,
                                           run->item->analysis.language);
+
       *height = pango_font_metrics_get_height (metrics);
+    }
+
+  if (properties.absolute_line_height != 0 || properties.line_height != 0.0)
+    {
+      int line_height, leading;
+
+      line_height = MAX (properties.absolute_line_height, ceilf (properties.line_height * run_logical->height));
+      leading = line_height - run_logical->height;
+      run_logical->y -= leading / 2;
+      run_logical->height += leading;
     }
 
   if (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
@@ -5988,6 +6007,8 @@ pango_layout_get_item_properties (PangoItem      *item,
   properties->shape_set = FALSE;
   properties->shape_ink_rect = NULL;
   properties->shape_logical_rect = NULL;
+  properties->line_height = 0.0;
+  properties->absolute_line_height = 0;
 
   while (tmp_list)
     {
@@ -6049,6 +6070,14 @@ pango_layout_get_item_properties (PangoItem      *item,
           properties->shape_set = TRUE;
           properties->shape_logical_rect = &((PangoAttrShape *)attr)->logical_rect;
           properties->shape_ink_rect = &((PangoAttrShape *)attr)->ink_rect;
+          break;
+
+        case PANGO_ATTR_LINE_HEIGHT:
+          properties->line_height = ((PangoAttrFloat *)attr)->value;
+          break;
+
+        case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
+          properties->absolute_line_height = ((PangoAttrInt *)attr)->value;
           break;
 
         default:
