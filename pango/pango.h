@@ -40,6 +40,7 @@
 #include <pango/pango-item.h>
 #include <pango/pango-layout.h>
 #include <pango/pango-matrix.h>
+#include <pango/pango-markup.h>
 #include <pango/pango-renderer.h>
 #include <pango/pango-script.h>
 #include <pango/pango-tabs.h>

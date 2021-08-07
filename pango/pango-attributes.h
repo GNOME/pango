@@ -689,25 +689,6 @@ void               pango_attr_iterator_get_font (PangoAttrIterator     *iterator
 PANGO_AVAILABLE_IN_1_2
 GSList *          pango_attr_iterator_get_attrs (PangoAttrIterator     *iterator);
 
-
-PANGO_AVAILABLE_IN_ALL
-gboolean pango_parse_markup (const char                 *markup_text,
-			     int                         length,
-			     gunichar                    accel_marker,
-			     PangoAttrList             **attr_list,
-			     char                      **text,
-			     gunichar                   *accel_char,
-			     GError                    **error);
-
-PANGO_AVAILABLE_IN_1_32
-GMarkupParseContext * pango_markup_parser_new (gunichar               accel_marker);
-PANGO_AVAILABLE_IN_1_32
-gboolean              pango_markup_parser_finish (GMarkupParseContext   *context,
-                                                  PangoAttrList        **attr_list,
-                                                  char                 **text,
-                                                  gunichar              *accel_char,
-                                                  GError               **error);
-
 PANGO_AVAILABLE_IN_1_50
 PangoAttrString       *pango_attribute_as_string        (PangoAttribute *attr);
 PANGO_AVAILABLE_IN_1_50

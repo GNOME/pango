@@ -48,6 +48,7 @@ pango_headers = [
   'pango-language.h',
   'pango-layout.h',
   'pango-matrix.h',
+  'pango-markup.h',
   'pango-modules.h',
   'pango-renderer.h',
   'pango-script.h',
