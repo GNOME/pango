@@ -1928,7 +1928,7 @@ pango_layout_line_get_cursors (PangoLayoutLine *line,
  * @strong: whether the moving cursor is the strong cursor or the
  *   weak cursor. The strong cursor is the cursor corresponding
  *   to text insertion in the base direction for the layout.
- * @old_index: the byte index of the grapheme for the old index
+ * @old_index: the byte index of the current cursor position
  * @old_trailing: if 0, the cursor was at the leading edge of the
  *   grapheme indicated by @old_index, if > 0, the cursor
  *   was at the trailing edge.
@@ -1945,13 +1945,12 @@ pango_layout_line_get_cursors (PangoLayoutLine *line,
  *   end of the preceding line. @new_index is always on the line where
  *   the cursor should be displayed.
  *
- * Computes a new cursor position from an old position and a count of
- * positions to move visually.
+ * Computes a new cursor position from an old position and a direction.
  *
- * If @direction is positive, then the new strong cursor position will be
- * one position to the right of the old cursor position. If @direction is
- * negative, then the new strong cursor position will be one position to
- * the left of the old cursor position.
+ * If @direction is positive, then the new position will cause the strong
+ * or weak cursor to be displayed one position to right of where it was
+ * with the old cursor position. If @direction is negative, it will be
+ * moved to the left.
  *
  * In the presence of bidirectional text, the correspondence between
  * logical and visual order will depend on the direction of the current
