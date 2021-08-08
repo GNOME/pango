@@ -861,10 +861,28 @@ big_parse_func      (MarkupData            *md G_GNUC_UNUSED,
 }
 
 static gboolean
+parse_percentage (const char *input,
+                  double     *val)
+{
+  double v;
+  char *end;
+
+  v = g_ascii_strtod (input, &end);
+  if (errno == 0 && strcmp (end, "%") == 0 && v > 0)
+    {
+      *val = v;
+      return TRUE;
+    }
+
+  return FALSE;
+}
+
+static gboolean
 parse_absolute_size (OpenTag               *tag,
-		     const char            *size)
+                     const char            *size)
 {
   SizeLevel level = Medium;
+  double val;
   double factor;
 
   if (strcmp (size, "xx-small") == 0)
@@ -881,6 +899,11 @@ parse_absolute_size (OpenTag               *tag,
     level = XLarge;
   else if (strcmp (size, "xx-large") == 0)
     level = XXLarge;
+  else if (parse_percentage (size, &val))
+    {
+      factor = val / 100.0;
+      goto done;
+    }
   else
     return FALSE;
 
@@ -888,6 +911,8 @@ parse_absolute_size (OpenTag               *tag,
    * but not to sizes created by any other tags
    */
   factor = scale_factor (level, 1.0);
+
+done:
   add_attribute (tag, pango_attr_scale_new (factor));
   if (tag)
     open_tag_set_absolute_font_scale (tag, factor);
