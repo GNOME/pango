@@ -29,9 +29,9 @@ G_BEGIN_DECLS
 /**
  * PangoGravity:
  * @PANGO_GRAVITY_SOUTH: Glyphs stand upright (default) <img align="right" valign="center" src="m-south.png">
- * @PANGO_GRAVITY_EAST: Glyphs are rotated 90 degrees clockwise. <img align="right" valign="center" src="m-east.png">
+ * @PANGO_GRAVITY_EAST: Glyphs are rotated 90 degrees counter-clockwise. <img align="right" valign="center" src="m-east.png">
  * @PANGO_GRAVITY_NORTH: Glyphs are upside-down. <img align="right" valign="cener" src="m-north.png">
- * @PANGO_GRAVITY_WEST: Glyphs are rotated 90 degrees counter-clockwise. <img align="right" valign="center" src="m-west.png">
+ * @PANGO_GRAVITY_WEST: Glyphs are rotated 90 degrees clockwise. <img align="right" valign="center" src="m-west.png">
  * @PANGO_GRAVITY_AUTO: Gravity is resolved from the context matrix
  *
  * `PangoGravity` represents the orientation of glyphs in a segment
