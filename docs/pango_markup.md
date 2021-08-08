@@ -146,8 +146,9 @@ overline_color
   name such as 'red'. Overline support was added in Pango 1.46/
 
 rise
-: Vertical displacement, in Pango units. Can be negative for subscript, positive
-  for superscript.
+: Vertical displacement, in Pango units or in points (e.g. '5pt'). Can be
+  negative for subscript, positive for superscript.
+  Support for specifying rise in points was added in Pango 1.50.
 
 strikethrough
 : 'true' or 'false' whether to strike through the text.

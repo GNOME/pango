@@ -1589,8 +1589,17 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
     {
       gint n = 0;
 
-      if (!span_parse_int ("rise", rise, &n, line_number, error))
-	goto error;
+      if (!parse_length (rise, &n))
+        {
+          g_set_error (error,
+                       G_MARKUP_ERROR,
+                       G_MARKUP_ERROR_INVALID_CONTENT,
+                       _("Value of 'rise' attribute on <span> tag on line %d "
+                         "could not be parsed; should be an integer, or a "
+                         "string such as '5.5pt', not '%s'"),
+                       line_number, rise);
+          goto error;
+        }
 
       add_attribute (tag, pango_attr_rise_new (n));
     }
