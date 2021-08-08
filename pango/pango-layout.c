@@ -5286,8 +5286,13 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
  * @line: a `PangoLayoutLine`
  * @height: (out) (optional): return location for the line height
  *
- * Computes the height of the line, i.e. the distance between
- * this and the previous lines baseline.
+ * Computes the height of the line, as the maximum of the heights
+ * of fonts used in this line.
+ *
+ * Note that the actual baseline-to-baseline distance between lines
+ * of text is influenced by other factors, such as
+ * [method@Pango.Layout.set_spacing] and
+ * [method@Pango.Layout.set_line_spacing].
  *
  * Since: 1.44
  */

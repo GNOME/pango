@@ -2115,8 +2115,8 @@ pango_font_metrics_get_descent (PangoFontMetrics *metrics)
  *
  * Gets the line height from a font metrics structure.
  *
- * The line height is the distance between successive baselines
- * in wrapped text.
+ * The line height is the recommended distance between successive
+ * baselines in wrapped text using this font.
  *
  * If the line height is not available, 0 is returned.
  *
