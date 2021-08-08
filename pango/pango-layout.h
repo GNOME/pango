@@ -54,6 +54,9 @@ typedef PangoGlyphItem PangoLayoutRun;
  *
  * If the `PangoLayout` is set to justify using [method@Pango.Layout.set_justify],
  * this only has effect for partial lines.
+ *
+ * See [method@Pango.Layout.set_auto_dir] for how text direction affects
+ * the interpretation of `PangoAlignment values.
  */
 typedef enum {
   PANGO_ALIGN_LEFT,
