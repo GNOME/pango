@@ -77,11 +77,15 @@ face
 
 font_size
 size
-: Font size in 1024ths of a point, or one of the absolute sizes 'xx-small',
-  'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large', or one of the
-  relative sizes 'smaller' or 'larger'. If you want to specify a absolute size,
-  it's usually easier to take advantage of the ability to specify a partial font
-  description using 'font'; you can use font='12.5' rather than size='12800'.
+: Font size in 1024ths of a point, or in points (e.g. '12.5pt'), or one of the
+  absolute sizes 'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large',
+  'xx-large', or a percentage (e.g. '200%'), or one of the relative sizes 'smaller'
+  or 'larger'.
+  If you want to specify a absolute size, it's usually easier to take advantage
+  of the ability to specify a partial font description using 'font'; you can use
+  font='12.5' rather than size='12800' or size='12.5pt'.
+  Support for specifying font sizes in points or as percentages was added in
+  Pango 1.50.
 
 font_style
 style
@@ -144,8 +148,9 @@ overline_color
   name such as 'red'. Overline support was added in Pango 1.46/
 
 rise
-: Vertical displacement, in Pango units. Can be negative for subscript, positive
-  for superscript.
+: Vertical displacement, in Pango units or in points (e.g. '5pt'). Can be
+  negative for subscript, positive for superscript.
+  Support for specifying rise in points was added in Pango 1.50.
 
 strikethrough
 : 'true' or 'false' whether to strike through the text.

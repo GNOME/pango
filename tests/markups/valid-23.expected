@@ -1,0 +1,18 @@
+test test
+
+
+---
+
+range 0 5
+[0,9]font-desc=Cantarell 11
+range 5 9
+[0,9]font-desc=Cantarell 11
+[5,9]scale=2.000000
+range 9 2147483647
+
+
+---
+
+[0:5] (null) Cantarell 11
+[5:9] (null) Cantarell 22
+[9:2147483647] (null) Cantarell 22
