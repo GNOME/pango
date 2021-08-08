@@ -39,7 +39,7 @@ string into the string text plus a [struct@Pango.AttrList] using either of
 A simple example of a marked-up string might be:
 
 ```
-<span foreground="blue" size="x-large">Blue text</span> is <i>cool</i>!"
+<span foreground="blue" size="x-large">Blue text</span> is <i>cool</i>!
 ```
 
 ![Markup example](blue-text.png)
@@ -56,7 +56,7 @@ Arabic text:
 Pango uses GMarkup to parse this language, which means that XML features
 such as numeric character entities such as `&#169;` for © can be used too.
 
-The root tag of a marked-up document is `<markup>`, but pango_parse_markup()
+The root tag of a marked-up document is `<markup>`, but [func@Pango.parse_markup]
 allows you to omit this tag, so you will most likely never need to use it.
 The most general markup tag is `<span>`, then there are some convenience
 tags.
@@ -66,7 +66,7 @@ tags.
 font
 font_desc
 : A font description string, such as "Sans Italic 12". See
-  pango_font_description_from_string() for a description of the format of
+  [func@Pango.FontDescription.from_string] for a description of the format of
   the string representation. Note that any other span attributes will override
   this description. So if you have "Sans Italic" and also a style="normal"
   attribute, you will get Sans normal, not italic.
@@ -141,11 +141,11 @@ underline_color
   name such as 'red'.
 
 overline
-: One of 'none' or 'single'. Overline support was added in Pango 1.46/
+: One of 'none' or 'single'. Overline support was added in Pango 1.46.
 
 overline_color
 : The color of overlines; an RGB color specification such as '#00FF00' or a color
-  name such as 'red'. Overline support was added in Pango 1.46/
+  name such as 'red'. Overline support was added in Pango 1.46.
 
 rise
 : Vertical displacement, in Pango units or in points (e.g. '5pt'). Can be
