@@ -78,4 +78,9 @@ content_images = [
   "align-left-justify.png",
   "align-center-justify.png",
   "align-right-justify.png",
+  "vertical.png",
+  "m-south.png",
+  "m-west.png",
+  "m-north.png",
+  "m-east.png",
 ]

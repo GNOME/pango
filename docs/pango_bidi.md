@@ -29,6 +29,9 @@ in place. This has the huge advantage that most algorithms working on a
 in the X direction and stack in the Y direction holds even for vertical text
 layouts.
 
+Here is an example for some English text rendered with gravity west, rotated
+90 degrees: ![vertical english](vertical.png)
+
 Applications should only need to set base gravity on [class@Pango.Context] in use,
 and let Pango decide the gravity assigned to each run of text. This automatically
 handles text with mixed scripts. A very common use is to set the context base
