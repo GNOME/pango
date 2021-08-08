@@ -20,7 +20,10 @@ Pango is not only capable of vertical text layout, it can handle mixed vertical
 and non-vertical text correctly. This section describes the types used for setting
 vertical text parameters.
 
- <img alt="gravity west, rotated 90 degrees" align="right" valign="top" src="vertical.png">
+<picture>
+  <source srcset="vertical-dark.png" media="(prefers-color-scheme: dark)">
+  <img alt="gravity west, rotated 90 degrees" align="right" valign="top" src="vertical-light.png">
+</picture>
 The way this is implemented is through the concept of *gravity*. Gravity tells glyphs which way is down, so the gravity of normal Latin text is south. A gravity value of east means that glyphs will be rotated ninety degrees
 counterclockwise. So, to render vertical text one needs
 to set the gravity and rotate the layout using the matrix machinery already

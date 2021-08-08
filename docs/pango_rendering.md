@@ -8,7 +8,10 @@ The Pango rendering pipeline takes a string of Unicode characters, converts them
 it into glyphs, and renders them on some output medium. This section describes the
 various stages of this pipeline and the APIs that implement them.
 
-![Pango Rendering Pipeline](pipeline.png)
+<picture>
+  <source srcset="pipeline-dark.png" media="(prefers-color-scheme: dark)">
+  <img alt="Pango Rendering Pipeline" src="pipeline-light.png">
+</picture>
 
 Itemization
 : breaks a piece of text into segments with consistent direction and shaping
