@@ -20,17 +20,16 @@ Pango is not only capable of vertical text layout, it can handle mixed vertical
 and non-vertical text correctly. This section describes the types used for setting
 vertical text parameters.
 
-The way this is implemented is through the concept of *gravity*. Gravity of
-normal Latin text is south. A gravity value of east means that glyphs will be
-rotated ninety degrees counterclockwise. So, to render vertical text one needs
+ <img alt="gravity west, rotated 90 degrees" align="right" valign="top" src="vertical.png">
+The way this is implemented is through the concept of *gravity*. Gravity tells glyphs which way is down, so the gravity of normal Latin text is south. A gravity value of east means that glyphs will be rotated ninety degrees
+counterclockwise. So, to render vertical text one needs
 to set the gravity and rotate the layout using the matrix machinery already
 in place. This has the huge advantage that most algorithms working on a
 [class@Pango.Layout] do not need any change as the assumption that lines run
 in the X direction and stack in the Y direction holds even for vertical text
 layouts.
 
-Here is an example for some English text rendered with gravity west, rotated
-90 degrees: ![vertical english](vertical.png)
+Here is an example for some English text rendered with gravity west, rotated 90 degrees:
 
 Applications should only need to set base gravity on [class@Pango.Context] in use,
 and let Pango decide the gravity assigned to each run of text. This automatically
