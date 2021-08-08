@@ -11,6 +11,19 @@ pango_content_files = [
   'rects1.png',
   'rects2.png',
   'rects3.png',
+  'arabic-markup.png',
+  'blue-text.png',
+  'align-left.png',
+  'align-center.png',
+  'align-right.png',
+  'align-left-justify.png',
+  'align-center-justify.png',
+  'align-right-justify.png',
+  'vertical.png',
+  'm-south.png',
+  'm-west.png',
+  'm-north.png',
+  'm-east.png',
 ]
 
 doc_conf = configuration_data()
