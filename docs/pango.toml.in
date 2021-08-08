@@ -71,5 +71,11 @@ content_images = [
   "rects1.png",
   "rects2.png",
   "arabic-markup.png",
-  "blue-text.png"
+  "blue-text.png",
+  "align-left.png",
+  "align-center.png",
+  "align-right.png",
+  "align-left-justify.png",
+  "align-center-justify.png",
+  "align-right-justify.png",
 ]
