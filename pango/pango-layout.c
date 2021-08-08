@@ -45,6 +45,16 @@
  *
  * ![Pango Layout Parameters](layout.png)
  *
+ * The following images demonstrate the effect of alignment and
+ * justification on the layout of text:
+ *
+ * | | |
+ * | --- | --- |
+ * | ![align=left](align-left.png) | ![align=left, justify](align-left-justify.png) |
+ * | ![align=center](align-center.png) | ![align=center, justify](align-center-justify.png) |
+ * | ![align=right](align-right.png) | ![align=right, justify](align-right-justify.png) |
+ *
+ *
  * It is possible, as well, to ignore the 2-D setup,
  * and simply treat the results of a `PangoLayout` as a list of lines.
  */
