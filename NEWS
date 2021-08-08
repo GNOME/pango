@@ -2,6 +2,16 @@ Overview of changes
 ===================
 
 * Rename git `master` branch to `main` (#579)
+* Bump version to 1.49
+* Fix threadsafety issues with Thai
+* Fix a rounding problem on i386
+* Fix font choice for ellipsis (#575)
+* New api: pango_font_get_languages
+* New api: Introspection helpers for attributes (#476)
+* Ignore width in horizontal context when itemizing (#503)
+* markup: Allow specifying size and rise in points (#67)
+* markup: Allow specifying size as percentage (#23)
+* Rewrite pango_layout_move_cursor_visually (#157, #585, #587)
 
 Overview of changes in 1.48.7
 =============================
