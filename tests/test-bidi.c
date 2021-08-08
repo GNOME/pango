@@ -158,19 +158,21 @@ test_bidi_embedding_levels (void)
     }
 }
 
-/* Some basic tests for pango_layout_move_cursor_visually:
+/* Some basic tests for pango_layout_move_cursor_visually inside
+ * a single PangoLayoutLine:
  * - check that we actually move the cursor in the right direction
  * - check that we get through the line with at most n steps
  * - check that we don't skip legitimate cursor positions
  */
 static void
-test_move_cursor_visually (void)
+test_move_cursor_line (void)
 {
   const char *tests[] = {
     "abc😂️def",
     "abcאבגdef",
     "אבabcב",
     "aאב12b",
+    "pa­ra­graph", // soft hyphens
   };
   PangoLayout *layout;
   gboolean fail = FALSE;
@@ -205,6 +207,7 @@ test_move_cursor_visually (void)
       const char *p;
 
       pango_layout_set_text (layout, tests[i], -1);
+
       text = pango_layout_get_text (layout);
       line = pango_layout_get_line_readonly (layout, 0);
 
@@ -267,7 +270,10 @@ test_move_cursor_visually (void)
               while (trailing--)
                 index = g_utf8_next_char (text + index) - text;
 
-              if (index < 0 || index > strlen (text))
+              g_assert (index == -1 || index == G_MAXINT ||
+                        (0 <= index && index <= strlen (tests[i])));
+
+              if (index == -1 || index == G_MAXINT)
                 break;
 
               pango_layout_get_cursor_pos (layout, index, &s_pos, &w_pos);
@@ -278,10 +284,10 @@ test_move_cursor_visually (void)
                     met_cursor[l] = TRUE;
                 }
 
-              if ((params[j].direction > 0 && params[j].strong && old_s_pos.x > s_pos.x) ||
-                  (params[j].direction < 0 && params[j].strong && old_s_pos.x < s_pos.x) ||
-                  (params[j].direction > 0 && !params[j].strong && old_w_pos.x > w_pos.x) ||
-                  (params[j].direction < 0 && !params[j].strong && old_w_pos.x < w_pos.x))
+              if ((params[j].direction > 0 && params[j].strong && old_s_pos.x >= s_pos.x) ||
+                  (params[j].direction < 0 && params[j].strong && old_s_pos.x <= s_pos.x) ||
+                  (params[j].direction > 0 && !params[j].strong && old_w_pos.x >= w_pos.x) ||
+                  (params[j].direction < 0 && !params[j].strong && old_w_pos.x <= w_pos.x))
                 {
                   if (g_test_verbose ())
                     g_print ("(wrong move)\t");
@@ -325,9 +331,70 @@ test_move_cursor_visually (void)
   g_object_unref (layout);
 
   if (fail)
-    g_test_skip ("known to fail");
+    g_test_fail ();
 }
 
+static void
+test_move_cursor_para (void)
+{
+  struct {
+    const char *text;
+    int width;
+  } tests[] = {
+    { "This paragraph should ac­tual­ly have multiple lines, unlike all the other wannabe äöü pa­ra­graph tests in this ugh test-case. Grow some lines!\n", 188 },
+    { "你好 Hello שלום Γειά σας", 40 },
+    { "你好 Hello שלום Γειά σας", 60 },
+    { "你好 Hello שלום Γειά σας", 80 },
+    { "line 1 line 2 line 3\nline 4\r\nline 5", -1 }, // various separators
+  };
+  PangoLayout *layout;
+  PangoRectangle pos, old_pos;
+  int index;
+  int trailing;
+  const char *text;
+
+  layout = pango_layout_new (context);
+
+  for (int i = 0; i < G_N_ELEMENTS (tests); i++)
+    {
+      pango_layout_set_text (layout, tests[i].text, -1);
+      text = pango_layout_get_text (layout);
+      if (tests[i].width > 0)
+        pango_layout_set_width (layout, tests[i].width * PANGO_SCALE);
+      else
+        pango_layout_set_width (layout, -1);
+
+      index = 0;
+      pango_layout_get_cursor_pos (layout, index, &pos, NULL);
+
+      while (index < G_MAXINT)
+        {
+          old_pos = pos;
+
+          pango_layout_move_cursor_visually (layout, TRUE,
+                                             index, 0,
+                                             1,
+                                             &index, &trailing);
+          while (trailing--)
+            index = g_utf8_next_char (text + index) - text;
+
+          g_assert (index == -1 || index == G_MAXINT ||
+                    (0 <= index && index <= strlen (tests[i].text)));
+
+          if (index == -1 || index == G_MAXINT)
+            break;
+
+          if (index >= strlen (tests[i].text) - 1)
+            break;
+
+          pango_layout_get_cursor_pos (layout, index, &pos, NULL);
+          g_assert_true (pos.y > old_pos.y ||
+                         (pos.y == old_pos.y && pos.x > old_pos.x));
+        }
+    }
+
+  g_object_unref (layout);
+}
 
 int
 main (int argc, char *argv[])
@@ -345,7 +412,8 @@ main (int argc, char *argv[])
   g_test_add_func ("/bidi/type-for-unichar", test_bidi_type_for_unichar);
   g_test_add_func ("/bidi/unichar-direction", test_unichar_direction);
   g_test_add_func ("/bidi/embedding-levels", test_bidi_embedding_levels);
-  g_test_add_func ("/bidi/move-cursor-visually", test_move_cursor_visually);
+  g_test_add_func ("/bidi/move-cursor-line", test_move_cursor_line);
+  g_test_add_func ("/bidi/move-cursor-para", test_move_cursor_para);
 
   return g_test_run ();
 }
