@@ -1109,6 +1109,35 @@ span_parse_flags (const char  *attr_name,
 }
 
 static gboolean
+parse_length (const char *attr_val,
+              int        *result)
+{
+  const char *attr;
+  int n;
+
+  attr = attr_val;
+  if (_pango_scan_int (&attr, &n) && *attr == '\0')
+    {
+      *result = n;
+      return TRUE;
+    }
+  else
+    {
+      double val;
+      char *end;
+
+      val = g_ascii_strtod (attr_val, &end);
+      if (errno == 0 && strcmp (end, "pt") == 0)
+        {
+          *result = val * PANGO_SCALE;
+          return TRUE;
+        }
+    }
+
+  return FALSE;
+}
+
+static gboolean
 span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 		     OpenTag               *tag,
 		     const gchar          **names,
@@ -1280,27 +1309,14 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 
   if (G_UNLIKELY (size))
     {
-      if (g_ascii_isdigit (*size))
-	{
-	  const char *end;
-	  gint n;
+      int n;
 
-	  if ((end = size, !_pango_scan_int (&end, &n)) || *end != '\0' || n < 0)
-	    {
-	      g_set_error (error,
-			   G_MARKUP_ERROR,
-			   G_MARKUP_ERROR_INVALID_CONTENT,
-			   _("Value of 'size' attribute on <span> tag on line %d "
-			     "could not be parsed; should be an integer no more than %d,"
-			     " or a string such as 'small', not '%s'"),
-			   line_number, INT_MAX, size);
-	      goto error;
-	    }
-
-	  add_attribute (tag, pango_attr_size_new (n));
-	  if (tag)
-	    open_tag_set_absolute_font_size (tag, n);
-	}
+      if (parse_length (size, &n) && n > 0)
+        {
+          add_attribute (tag, pango_attr_size_new (n));
+          if (tag)
+            open_tag_set_absolute_font_size (tag, n);
+        }
       else if (strcmp (size, "smaller") == 0)
 	{
 	  if (tag)
