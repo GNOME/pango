@@ -14,6 +14,20 @@ control over bidirectional setting of text, Pango provides APIs such as
 [func@unichar_direction], [func@find_base_dir], [func@get_mirror_char]
 or [func@Pango.BidiType.for_unichar].
 
+Here is an example for mixed-direction text (shown in logical order):
+
+<picture>
+  <source srcset="bidi-input-dark.png" media="(prefers-color-scheme: dark)">
+  <img alt="mixed-direction text, logical order" src="bidi-input-light.png">
+</picture>
+
+Pango reorders the text according to the direction of the runs:
+
+<picture>
+  <source srcset="bidi-annotate-dark.png" media="(prefers-color-scheme: dark)">
+  <img alt="mixed-direction text, visual order" src="bidi-annotate-light.png">
+</picture>
+
 # Vertical Text
 
 Pango is not only capable of vertical text layout, it can handle mixed vertical

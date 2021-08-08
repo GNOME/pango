@@ -26,6 +26,10 @@ pango_content_files = [
   'm-west.png',
   'm-north.png',
   'm-east.png',
+  'bidi-input-light.png',
+  'bidi-input-dark.png',
+  'bidi-annotate-light.png',
+  'bidi-annotate-dark.png',
 ]
 
 doc_conf = configuration_data()
