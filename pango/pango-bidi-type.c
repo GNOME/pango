@@ -309,7 +309,7 @@ pango_unichar_direction (gunichar ch)
  * Return value: %TRUE if @ch has a mirrored character and @mirrored_ch is
  * filled in, %FALSE otherwise
  *
- * Deprecated: Use g_unichar_get_mirror_char() instead; the docs for that function
+ * Deprecated: 1.30: Use g_unichar_get_mirror_char() instead; the docs for that function
  * provide full details.
  */
 gboolean
