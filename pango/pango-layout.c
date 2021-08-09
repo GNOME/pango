@@ -2001,9 +2001,8 @@ pango_layout_line_get_cursors (PangoLayoutLine *line,
  * of a run.
  *
  * Motion here is in cursor positions, not in characters, so a single
- * call to [method@Pango.Layout.move_cursor_visually] may move the cursor
- * over multiple characters when multiple characters combine to form a
- * single grapheme.
+ * call to this function may move the cursor over multiple characters
+ * when multiple characters combine to form a single grapheme.
  */
 void
 pango_layout_move_cursor_visually (PangoLayout *layout,
