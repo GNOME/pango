@@ -107,7 +107,7 @@ PANGO_DEPRECATED_IN_1_44
 PangoDirection pango_find_base_dir          (const gchar *text,
 					     gint         length);
 
-PANGO_DEPRECATED_FOR(g_unichar_get_mirror_char)
+PANGO_DEPRECATED_IN_1_30_FOR(g_unichar_get_mirror_char)
 gboolean       pango_get_mirror_char        (gunichar     ch,
 					     gunichar    *mirrored_ch);
 #endif
