@@ -346,6 +346,7 @@ test_move_cursor_para (void)
     { "你好 Hello שלום Γειά σας", 60 },
     { "你好 Hello שלום Γειά σας", 80 },
     { "line 1 line 2 line 3\nline 4\r\nline 5", -1 }, // various separators
+    { "some text, some more text,\n\n even more text", 60 },
   };
   PangoLayout *layout;
   PangoRectangle pos, old_pos;
@@ -395,9 +396,12 @@ test_move_cursor_para (void)
           pango_layout_line_get_extents (line, NULL, &ext);
 
           pango_layout_get_cursor_pos (layout, index, &pos, NULL);
+
           // assert that we are either moving to the right
           // or jumping to the next line
           g_assert_true (pos.y > ext.y + ext.height || pos.x > old_pos.x);
+          // no invisible cursors, please
+          g_assert_true (pos.height > 1024);
         }
     }
 
