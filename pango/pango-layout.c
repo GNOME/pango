@@ -43,7 +43,10 @@
  * `PangoLayout`. The following image shows adjustable parameters
  * (on the left) and font metrics (on the right):
  *
- * ![Pango Layout Parameters](layout.png)
+ * <picture>
+ *   <source srcset="layout-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img alt="Pango Layout Parameters" src="layout-light.png">
+ * </picture>
  *
  * The following images demonstrate the effect of alignment and
  * justification on the layout of text:
