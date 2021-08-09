@@ -2001,9 +2001,8 @@ pango_layout_line_get_cursors (PangoLayoutLine *line,
  * of a run.
  *
  * Motion here is in cursor positions, not in characters, so a single
- * call to [method@Pango.Layout.move_cursor_visually] may move the cursor
- * over multiple characters when multiple characters combine to form a
- * single grapheme.
+ * call to this function may move the cursor over multiple characters
+ * when multiple characters combine to form a single grapheme.
  */
 void
 pango_layout_move_cursor_visually (PangoLayout *layout,
@@ -2432,11 +2431,25 @@ pango_layout_get_direction (PangoLayout *layout,
  * Given an index within a layout, determines the positions that of the
  * strong and weak cursors if the insertion point is at that index.
  *
- * The position of each cursor is stored as a zero-width rectangle.
+ * The position of each cursor is stored as a zero-width rectangle
+ * with the height of the run extents.
+ *
  * The strong cursor location is the location where characters of the
  * directionality equal to the base direction of the layout are inserted.
  * The weak cursor location is the location where characters of the
  * directionality opposite to the base direction of the layout are inserted.
+ *
+ * The following example shows text with both a strong and a weak cursor.
+ *
+ * <picture>
+ *   <source srcset="split-cursor-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img alt="strong and weak cursors" src="split-cursor-light.png">
+ * </picture>
+ *
+ * The strong cursor has a little arrow pointing to the right, the weak
+ * cursor to the left. Typing a 'c' in this situation will insert the
+ * character after the 'b', and typing another Hebrew character, like 'ג',
+ * will insert it at the end.
  */
 void
 pango_layout_get_cursor_pos (PangoLayout    *layout,

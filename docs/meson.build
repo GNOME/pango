@@ -31,6 +31,9 @@ pango_content_files = [
   'bidi-input-dark.png',
   'bidi-annotate-light.png',
   'bidi-annotate-dark.png',
+  'split-cursor.png',
+  'split-cursor-light.png',
+  'split-cursor-dark.png'
 ]
 
 doc_conf = configuration_data()

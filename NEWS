@@ -12,6 +12,8 @@ Overview of changes
 * markup: Allow specifying size and rise in points (#67)
 * markup: Allow specifying size as percentage (#23)
 * Rewrite pango_layout_move_cursor_visually (#157, #585, #587)
+* Add a line-height attribute and make logical
+  line extents respect it
 
 Overview of changes in 1.48.7
 =============================
