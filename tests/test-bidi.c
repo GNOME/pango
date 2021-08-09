@@ -347,6 +347,7 @@ test_move_cursor_para (void)
     { "你好 Hello שלום Γειά σας", 80 },
     { "line 1 line 2 line 3\nline 4\r\nline 5", -1 }, // various separators
     { "some text, some more text,\n\n even more text", 60 },
+    { "long word", 40 },
   };
   PangoLayout *layout;
   PangoRectangle pos, old_pos;
@@ -356,6 +357,7 @@ test_move_cursor_para (void)
   int line_no;
   PangoLayoutLine *line;
   PangoRectangle ext;
+  PangoLayoutIter *iter;
 
   layout = pango_layout_new (context);
 
@@ -375,6 +377,14 @@ test_move_cursor_para (void)
         {
           old_pos = pos;
 
+          pango_layout_index_to_line_x (layout, index, FALSE, &line_no, NULL);
+          line = pango_layout_get_line (layout, line_no);
+          iter = pango_layout_get_iter (layout);
+          while (pango_layout_iter_get_line (iter) != line)
+            pango_layout_iter_next_line (iter);
+          pango_layout_iter_get_line_extents (iter, NULL, &ext);
+          pango_layout_iter_free (iter);
+
           pango_layout_move_cursor_visually (layout, TRUE,
                                              index, 0,
                                              1,
@@ -391,15 +401,49 @@ test_move_cursor_para (void)
           if (index >= strlen (tests[i].text) - 1)
             break;
 
-          pango_layout_index_to_line_x (layout, index, FALSE, &line_no, NULL);
-          line = pango_layout_get_line (layout, line_no);
-          pango_layout_line_get_extents (line, NULL, &ext);
-
           pango_layout_get_cursor_pos (layout, index, &pos, NULL);
 
           // assert that we are either moving to the right
           // or jumping to the next line
-          g_assert_true (pos.y > ext.y + ext.height || pos.x > old_pos.x);
+          g_assert_true (pos.y >= ext.y + ext.height || pos.x > old_pos.x);
+          // no invisible cursors, please
+          g_assert_true (pos.height > 1024);
+        }
+
+      /* and now backwards */
+      index = strlen (text);
+      pango_layout_get_cursor_pos (layout, index, &pos, NULL);
+
+      while (index > -1)
+        {
+          old_pos = pos;
+
+          pango_layout_index_to_line_x (layout, index, FALSE, &line_no, NULL);
+          line = pango_layout_get_line (layout, line_no);
+          iter = pango_layout_get_iter (layout);
+          while (pango_layout_iter_get_line (iter) != line)
+            pango_layout_iter_next_line (iter);
+          pango_layout_iter_get_line_extents (iter, NULL, &ext);
+          pango_layout_iter_free (iter);
+
+          pango_layout_move_cursor_visually (layout, TRUE,
+                                             index, 0,
+                                             -1,
+                                             &index, &trailing);
+          while (trailing--)
+            index = g_utf8_next_char (text + index) - text;
+
+          g_assert (index == -1 || index == G_MAXINT ||
+                    (0 <= index && index <= strlen (tests[i].text)));
+
+          if (index == -1 || index == G_MAXINT)
+            break;
+
+          pango_layout_get_cursor_pos (layout, index, &pos, NULL);
+
+          // assert that we are either moving to the left
+          // or jumping to the previous line
+          g_assert_true (pos.y < ext.y || pos.x < old_pos.x);
           // no invisible cursors, please
           g_assert_true (pos.height > 1024);
         }
