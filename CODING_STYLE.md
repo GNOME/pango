@@ -9,29 +9,34 @@ In brief overview:
    get a separate indentation level, so the total indent for an
    enclosed block is 4 characters.
 
+
+    ```c
     if (x < foo (y, z))
       haha = bar[4] + 5;
     else
       {
-	while (z)
-	  {
-	    haha += foo (z, z);
-	    z--;
-	  }
-	return abc (haha);
+        while (z)
+          {
+            haha += foo (z, z);
+            z--;
+          }
+        return abc (haha);
       }
+    ```
 
  - Spaces should be present between function name and argument block,
    and after commas.
 
-     foo (z, z)
+         foo (z, z)
 
  - In pointer types, the '*' is grouped with the variable name,
    not with the base type. 
 
-    int *a;
+        int *a;
 
-   NOT: 'int* a'.
+    Not:
+
+        int* a;
 
    In cases where there is no variable name, for instance, return
    values, there should be a single space between the base type 
@@ -47,6 +52,7 @@ Documentation comments
 All public API functions should have inline documentation headers
 in the gtk-doc / gnome-doc style. For instance:
 
+```c
 /**
  * pango_layout_get_line:
  * @layout: a `PangoLayout`
@@ -66,34 +72,44 @@ PangoLayoutLine *
 pango_layout_get_line (PangoLayout *layout,
 		       int          line)
 [...]
-
+```
 
 Choosing Function Names
 =======================
 
 - Don't abbreviate in unexpected ways:
 
-    pango_layout_get_line_count ()
+  ```c
+  pango_layout_get_line_count ();
+  ```
 
   Not:
 
-    pango_layout_ln_cnt ()
+  ```c
+  pango_layout_ln_cnt ();
+  ```
 
 - function that retrieve a value in a side-effect free fashion, should
   include "get" in the name.
 
-    int pango_layout_get_line_count (PangoLayout *layout)
+  ```c
+  int pango_layout_get_line_count (PangoLayout *layout);
+  ```
 
-  not 
+  Not: 
 
-    pango_layout_line_count ()
+  ```c
+  pango_layout_line_count ();
+  ```
 
 
 - functions that set a single parameter in a side-effect free fashion
   should include "set" in the name, for instance:
 
+  ```c
   void pango_layout_set_width (PangoLayout    *layout,
-			       int             width);
+                               int             width);
+  ```
 
 Other comments
 ==============
@@ -103,7 +119,9 @@ Other comments
 
   If width is unsigned and 10, then:
 
-   int new_width = MAX (width - 15, 1);
+  ```c
+  int new_width = MAX (width - 15, 1);
+  ```
 
   produces 4294967291, not 1.
 
