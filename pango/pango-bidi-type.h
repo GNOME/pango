@@ -57,7 +57,9 @@ G_BEGIN_DECLS
  * @PANGO_BIDI_TYPE_PDI: Pop directional isolate. Since 1.48.6
  *
  * `PangoBidiType` represents the bidirectional character
- * type of a Unicode character as specified by the
+ * type of a Unicode character.
+ *
+ * The values in this enumeration are specified by the
  * [Unicode bidirectional algorithm](http://www.unicode.org/reports/tr9/).
  *
  * Since: 1.22
