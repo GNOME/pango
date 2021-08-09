@@ -1037,19 +1037,35 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
       win32family = g_hash_table_lookup (win32fontmap->families, families[i]);
       if (win32family)
         {
+          PangoFontDescription *new_desc;
+          PangoFontDescription *best_desc = NULL;
+
           PING (("got win32family"));
           tmp_list = win32family->faces;
+
           while (tmp_list)
             {
               PangoWin32Face *face = tmp_list->data;
+              new_desc = pango_font_face_describe (PANGO_FONT_FACE (face));
+              pango_font_description_set_gravity (new_desc,
+                                                  pango_font_description_get_gravity (description));
 
               if (pango_font_description_better_match (description,
-                                                       best_match ? best_match->description : NULL,
-                                                       face->description))
-                best_match = face;
+                                                       best_desc,
+                                                       new_desc))
+                {
+                  pango_font_description_free (best_desc);
+                  best_desc = new_desc;
+                  best_match = face;
+                }
+              else
+                pango_font_description_free (new_desc);
 
               tmp_list = tmp_list->next;
             }
+
+          if (best_desc != NULL)
+            pango_font_description_free (best_desc);
         }
     }
   
