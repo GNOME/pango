@@ -22,7 +22,10 @@
 #include "config.h"
 #include <glib.h>
 #include <pango/pangocairo.h>
+
+#ifdef HAVE_CAIRO_FREETYPE
 #include <pango/pango-ot.h>
+#endif
 
 /* test that we don't crash in shape_tab when the layout
  * is such that we don't have effective attributes
@@ -245,6 +248,7 @@ test_gravity_for_script (void)
     }
 }
 
+#ifdef HAVE_CAIRO_FREETYPE
 G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 
 static void
@@ -264,6 +268,7 @@ test_language_to_tag (void)
 }
 
 G_GNUC_END_IGNORE_DEPRECATIONS
+#endif
 
 static void
 test_fallback_shape (void)
@@ -383,7 +388,9 @@ main (int argc, char *argv[])
   g_test_add_func ("/gravity/from-matrix", test_gravity_from_matrix);
   g_test_add_func ("/gravity/for-script", test_gravity_for_script);
   g_test_add_func ("/layout/fallback-shape", test_fallback_shape);
+#ifdef HAVE_CAIRO_FREETYPE
   g_test_add_func ("/language/to-tag", test_language_to_tag);
+#endif
   g_test_add_func ("/bidi/get-cursor-crash", test_get_cursor_crash);
   g_test_add_func ("/bidi/get-cursor", test_get_cursor);
 
