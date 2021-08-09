@@ -160,6 +160,7 @@ typedef struct _PangoAttrIterator PangoAttrIterator;
  * @PANGO_ATTR_INSERT_HYPHENS: whether to insert hyphens at intra-word line breaks ([struct@Pango.AttrInt]). Since 1.44
  * @PANGO_ATTR_OVERLINE: whether the text has an overline ([struct@Pango.AttrInt]). Since 1.46
  * @PANGO_ATTR_OVERLINE_COLOR: overline color ([struct@Pango.AttrColor]). Since 1.46
+ * @PANGO_ATTR_LINE_HEIGHT: line height factor ([struct@Pango.AttrFloat]). Since: 1.50
  *
  * The `PangoAttrType` distinguishes between different types of attributes.
  *
@@ -201,6 +202,8 @@ typedef enum
   PANGO_ATTR_INSERT_HYPHENS,	/* PangoAttrInt */
   PANGO_ATTR_OVERLINE,		/* PangoAttrInt */
   PANGO_ATTR_OVERLINE_COLOR,	/* PangoAttrColor */
+  PANGO_ATTR_LINE_HEIGHT,	/* PangoAttrFloat */
+  PANGO_ATTR_ABSOLUTE_LINE_HEIGHT, /* PangoAttrInt */
 } PangoAttrType;
 
 /**
@@ -610,6 +613,11 @@ typedef enum {
 
 PANGO_AVAILABLE_IN_1_44
 PangoAttribute *pango_attr_show_new              (PangoShowFlags flags);
+
+PANGO_AVAILABLE_IN_1_50
+PangoAttribute *pango_attr_line_height_new (double factor);
+PANGO_AVAILABLE_IN_1_50
+PangoAttribute *pango_attr_line_height_new_absolute (int height);
 
 PANGO_AVAILABLE_IN_ALL
 GType              pango_attr_list_get_type      (void) G_GNUC_CONST;

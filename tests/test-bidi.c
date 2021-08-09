@@ -352,6 +352,9 @@ test_move_cursor_para (void)
   int index;
   int trailing;
   const char *text;
+  int line_no;
+  PangoLayoutLine *line;
+  PangoRectangle ext;
 
   layout = pango_layout_new (context);
 
@@ -387,9 +390,14 @@ test_move_cursor_para (void)
           if (index >= strlen (tests[i].text) - 1)
             break;
 
+          pango_layout_index_to_line_x (layout, index, FALSE, &line_no, NULL);
+          line = pango_layout_get_line (layout, line_no);
+          pango_layout_line_get_extents (line, NULL, &ext);
+
           pango_layout_get_cursor_pos (layout, index, &pos, NULL);
-          g_assert_true (pos.y > old_pos.y ||
-                         (pos.y == old_pos.y && pos.x > old_pos.x));
+          // assert that we are either moving to the right
+          // or jumping to the next line
+          g_assert_true (pos.y > ext.y + ext.height || pos.x > old_pos.x);
         }
     }
 

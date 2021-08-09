@@ -78,6 +78,7 @@
 #include "pango-impl-utils.h"
 #include "pango-glyph-item.h"
 #include <string.h>
+#include <math.h>
 
 #include "pango-layout-private.h"
 #include "pango-attributes-private.h"
@@ -107,6 +108,8 @@ struct _ItemProperties
   gboolean        shape_set;
   PangoRectangle *shape_ink_rect;
   PangoRectangle *shape_logical_rect;
+  double line_height;
+  int    absolute_line_height;
 };
 
 typedef struct _PangoLayoutLinePrivate PangoLayoutLinePrivate;
@@ -177,7 +180,8 @@ static void              pango_layout_line_postprocess (PangoLayoutLine *line,
 static void pango_layout_line_leaked (PangoLayoutLine *line);
 
 /* doesn't leak line */
-static PangoLayoutLine* _pango_layout_iter_get_line (PangoLayoutIter *iter);
+static PangoLayoutLine * _pango_layout_iter_get_line (PangoLayoutIter *iter);
+static PangoLayoutRun *  _pango_layout_iter_get_run  (PangoLayoutIter *iter);
 
 static void pango_layout_get_item_properties (PangoItem      *item,
                                               ItemProperties *properties);
@@ -587,9 +591,12 @@ pango_layout_get_indent (PangoLayout *layout)
  * The default value is 0.
  *
  * Note: Since 1.44, Pango is using the line height (as determined
- * by the font) for placing lines when the line height factor is set
+ * by the font) for placing lines when the line spacing factor is set
  * to a non-zero value with [method@Pango.Layout.set_line_spacing].
  * In that case, the @spacing set with this function is ignored.
+ *
+ * Note: for semantics that are closer to the CSS line-height
+ * property, see [func@Pango.attr_line_height_new].
  */
 void
 pango_layout_set_spacing (PangoLayout *layout,
@@ -637,6 +644,9 @@ pango_layout_get_spacing (PangoLayout *layout)
  * set with [method@Pango.Layout.set_spacing] is ignored.
  *
  * If @factor is zero (the default), spacing is applied as before.
+ *
+ * Note: for semantics that are closer to the CSS line-height
+ * property, see [func@Pango.attr_line_height_new].
  *
  * Since: 1.44
  */
@@ -1793,7 +1803,8 @@ pango_layout_index_to_line (PangoLayout      *layout,
 static PangoLayoutLine *
 pango_layout_index_to_line_and_extents (PangoLayout     *layout,
                                         int              index,
-                                        PangoRectangle  *line_rect)
+                                        PangoRectangle  *line_rect,
+                                        PangoRectangle  *run_rect)
 {
   PangoLayoutIter iter;
   PangoLayoutLine *line = NULL;
@@ -1813,7 +1824,26 @@ pango_layout_index_to_line_and_extents (PangoLayout     *layout,
         pango_layout_iter_get_line_extents (&iter, NULL, line_rect);
 
         if (line->start_index + line->length > index)
-          break;
+          {
+            if (run_rect)
+              {
+                while (TRUE)
+                  {
+                    PangoLayoutRun *run = _pango_layout_iter_get_run (&iter);
+
+                    if (run->item->offset <= index && index < run->item->offset + run->item->length)
+                      {
+                        pango_layout_iter_get_run_extents (&iter, NULL, run_rect);
+                        break;
+                      }
+
+                    if (!pango_layout_iter_next_run (&iter))
+                      break;
+                  }
+              }
+
+            break;
+          }
 
         if (!pango_layout_iter_next_line (&iter))
           break; /* Use end of last line */
@@ -2291,10 +2321,24 @@ pango_layout_index_to_pos (PangoLayout    *layout,
 
           layout_line = tmp_line;
 
-          pango_layout_iter_get_line_extents (&iter, NULL, &logical_rect);
-
           if (layout_line->start_index + layout_line->length > index)
-            break;
+            {
+              while (TRUE)
+                {
+                  PangoLayoutRun *run = _pango_layout_iter_get_run (&iter);
+
+                  if (run->item->offset <= index && index < run->item->offset + run->item->length)
+                    {
+                      pango_layout_iter_get_run_extents (&iter, NULL, &logical_rect);
+                      break;
+                    }
+
+                  if (!pango_layout_iter_next_run (&iter))
+                    break;
+                }
+
+              break;
+            }
 
           if (!pango_layout_iter_next_line (&iter))
             {
@@ -2367,7 +2411,7 @@ pango_layout_get_direction (PangoLayout *layout,
 {
   PangoLayoutLine *line;
 
-  line = pango_layout_index_to_line_and_extents (layout, index, NULL);
+  line = pango_layout_index_to_line_and_extents (layout, index, NULL, NULL);
 
   if (line)
     return pango_layout_line_get_char_direction (line, index);
@@ -2400,6 +2444,7 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
   PangoDirection dir1, dir2;
   int level1, level2;
   PangoRectangle line_rect;
+  PangoRectangle run_rect;
   PangoLayoutLine *layout_line = NULL; /* Quiet GCC */
   int x1_trailing;
   int x2;
@@ -2408,7 +2453,7 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
   g_return_if_fail (index >= 0 && index <= layout->length);
 
   layout_line = pango_layout_index_to_line_and_extents (layout, index,
-                                                        &line_rect);
+                                                        &line_rect, &run_rect);
 
   g_assert (index >= layout_line->start_index);
 
@@ -2457,9 +2502,9 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
       else
         strong_pos->x += x2;
 
-      strong_pos->y = line_rect.y;
+      strong_pos->y = run_rect.y;
       strong_pos->width = 0;
-      strong_pos->height = line_rect.height;
+      strong_pos->height = run_rect.height;
     }
 
   if (weak_pos)
@@ -2472,9 +2517,9 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
       else
         weak_pos->x += x1_trailing;
 
-      weak_pos->y = line_rect.y;
+      weak_pos->y = run_rect.y;
       weak_pos->width = 0;
-      weak_pos->height = line_rect.height;
+      weak_pos->height = run_rect.height;
     }
 }
 
@@ -4149,6 +4194,8 @@ affects_itemization (PangoAttribute *attr,
     case PANGO_ATTR_LETTER_SPACING:
     case PANGO_ATTR_SHAPE:
     case PANGO_ATTR_RISE:
+    case PANGO_ATTR_LINE_HEIGHT:
+    case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
       return TRUE;
     default:
       return FALSE;
@@ -5011,6 +5058,7 @@ static void
 pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
                                          PangoRectangle *run_ink,
                                          PangoRectangle *run_logical,
+                                         PangoRectangle *line_logical,
                                          int            *height)
 {
   PangoRectangle logical;
@@ -5019,7 +5067,7 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
   gboolean has_underline;
   gboolean has_overline;
 
-  if (G_UNLIKELY (!run_ink && !run_logical && !height))
+  if (G_UNLIKELY (!run_ink && !run_logical && !line_logical && !height))
     return;
 
   pango_layout_get_item_properties (run->item, &properties);
@@ -5032,6 +5080,9 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
     run_logical = &logical;
 
   if (!run_logical && (has_underline || has_overline || properties.strikethrough))
+    run_logical = &logical;
+
+  if (!run_logical && line_logical)
     run_logical = &logical;
 
   if (properties.shape_set)
@@ -5104,6 +5155,7 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
       if (!metrics)
         metrics = pango_font_get_metrics (run->item->analysis.font,
                                           run->item->analysis.language);
+
       *height = pango_font_metrics_get_height (metrics);
     }
 
@@ -5125,6 +5177,21 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
 
       if (run_logical)
         run_logical->y -= properties.rise;
+    }
+
+  if (line_logical)
+    {
+      *line_logical = *run_logical;
+
+      if (properties.absolute_line_height != 0 || properties.line_height != 0.0)
+        {
+          int line_height, leading;
+
+          line_height = MAX (properties.absolute_line_height, ceilf (properties.line_height * line_logical->height));
+          leading = line_height - line_logical->height;
+          line_logical->y -= leading / 2;
+          line_logical->height += leading;
+        }
     }
 
   if (metrics)
@@ -5206,6 +5273,7 @@ pango_layout_line_get_extents_and_height (PangoLayoutLine *line,
 
       pango_layout_run_get_extents_and_height (run,
                                                ink_rect ? &run_ink : NULL,
+                                               NULL,
                                                &run_logical,
                                                height ? &run_height : NULL);
 
@@ -5985,6 +6053,8 @@ pango_layout_get_item_properties (PangoItem      *item,
   properties->shape_set = FALSE;
   properties->shape_ink_rect = NULL;
   properties->shape_logical_rect = NULL;
+  properties->line_height = 0.0;
+  properties->absolute_line_height = 0;
 
   while (tmp_list)
     {
@@ -6046,6 +6116,14 @@ pango_layout_get_item_properties (PangoItem      *item,
           properties->shape_set = TRUE;
           properties->shape_logical_rect = &((PangoAttrShape *)attr)->logical_rect;
           properties->shape_ink_rect = &((PangoAttrShape *)attr)->ink_rect;
+          break;
+
+        case PANGO_ATTR_LINE_HEIGHT:
+          properties->line_height = ((PangoAttrFloat *)attr)->value;
+          break;
+
+        case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
+          properties->absolute_line_height = ((PangoAttrInt *)attr)->value;
           break;
 
         default:
@@ -6444,6 +6522,12 @@ static PangoLayoutLine*
 _pango_layout_iter_get_line (PangoLayoutIter *iter)
 {
   return iter->line;
+}
+
+static PangoLayoutRun *
+_pango_layout_iter_get_run (PangoLayoutIter *iter)
+{
+  return iter->run;
 }
 
 /**
@@ -6907,7 +6991,7 @@ pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
 
   if (iter->run)
     {
-      pango_layout_run_get_extents_and_height (iter->run, ink_rect, logical_rect, NULL);
+      pango_layout_run_get_extents_and_height (iter->run, ink_rect, logical_rect, NULL, NULL);
 
       if (ink_rect)
         {

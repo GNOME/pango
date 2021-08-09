@@ -190,6 +190,12 @@ allow_breaks
 : 'true' or 'false' to indicate whether breaking lines is allowed. Available
   since Pango 1.44.
 
+line_height
+: Overrides the line height. The value can be either a factor (< 1024) that is
+  used to scale up the logical extents of runs or an absolute value (in 1024th
+  of a point).
+  Available since Pango 1.50.
+
 ## Convenience Tags
 
 `<b>`
