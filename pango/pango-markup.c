@@ -1671,7 +1671,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
       if (!span_parse_float ("line_height", line_height, &f, line_number, error))
         goto error;
 
-      if (f > 1024.0 && strchr (line_height, ".") == 0)
+      if (f > 1024.0 && strchr (line_height, '.') == 0)
         add_attribute (tag, pango_attr_line_height_new_absolute ((int)f));
       else
         add_attribute (tag, pango_attr_line_height_new (f));
