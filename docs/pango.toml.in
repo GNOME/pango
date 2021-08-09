@@ -90,4 +90,6 @@ content_images = [
   "bidi-input-dark.png",
   "bidi-annotate-light.png",
   "bidi-annotate-dark.png",
+  "split-cursor-light.png",
+  "split-cursor-dark.png",
 ]
