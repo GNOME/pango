@@ -1820,25 +1820,30 @@ pango_layout_index_to_line_and_extents (PangoLayout     *layout,
         PangoLayoutLine *tmp_line = _pango_layout_iter_get_line (&iter);
 
         if (tmp_line->start_index > index)
-            break; /* index was in paragraph delimiters */
+          break; /* index was in paragraph delimiters */
 
         line = tmp_line;
 
         pango_layout_iter_get_line_extents (&iter, NULL, line_rect);
 
-        if (line->start_index + line->length > index)
+        if (!iter.line_list_link->next ||
+            ((PangoLayoutLine *)iter.line_list_link->next->data)->start_index > index)
           {
             if (run_rect)
               {
+                *run_rect = *line_rect;
+
                 while (TRUE)
                   {
                     PangoLayoutRun *run = _pango_layout_iter_get_run (&iter);
 
+                     if (!run)
+                       break;
+
+                    pango_layout_iter_get_run_extents (&iter, NULL, run_rect);
+
                     if (run->item->offset <= index && index < run->item->offset + run->item->length)
-                      {
-                        pango_layout_iter_get_run_extents (&iter, NULL, run_rect);
-                        break;
-                      }
+                      break;
 
                     if (!pango_layout_iter_next_run (&iter))
                       break;
@@ -1933,6 +1938,8 @@ pango_layout_line_get_cursors (PangoLayoutLine *line,
                                GArray          *cursors)
 {
   PangoLayout *layout = line->layout;
+  int line_no;
+  PangoLayoutLine *line2;
   const char *start, *end;
   int start_offset;
   int j;
@@ -1946,7 +1953,12 @@ pango_layout_line_get_cursors (PangoLayoutLine *line,
   end = start + line->length;
   start_offset = g_utf8_pointer_to_offset (layout->text, start);
 
-  for (j = start_offset, p = start; p <= end; j++, p = g_utf8_next_char (p))
+  pango_layout_index_to_line_x (layout, line->start_index + line->length, 0, &line_no, NULL);
+  line2 = pango_layout_get_line (layout, line_no);
+  if (line2 == line)
+    end++;
+
+  for (j = start_offset, p = start; p < end; j++, p = g_utf8_next_char (p))
     {
       if (layout->log_attrs[j].is_cursor_position)
         {
@@ -2042,8 +2054,6 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
   while (old_trailing--)
     old_index = g_utf8_next_char (layout->text + old_index) - layout->text;
 
-  n_vis = pango_utf8_strlen (layout->text + line->start_index, line->length);
-
   /* Clamp old_index to fit on the line */
   if (old_index > (line->start_index + line->length))
     old_index = line->start_index + line->length;
@@ -2067,6 +2077,15 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
           if (direction < 0)
             break;
         }
+    }
+
+  if (vis_pos == -1 &&
+      old_index == line->start_index + line->length)
+    {
+      if (line->resolved_dir == PANGO_DIRECTION_LTR)
+        vis_pos = cursors->len;
+      else
+        vis_pos = 0;
     }
 
   /* Handling movement between lines */
@@ -2120,7 +2139,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
       g_array_set_size (cursors, 0);
       pango_layout_line_get_cursors (line, strong, cursors);
 
-      n_vis = pango_utf8_strlen (layout->text + line->start_index, line->length);
+      n_vis = cursors->len;
 
       if (off_start && direction < 0)
         {
@@ -2329,11 +2348,10 @@ pango_layout_index_to_pos (PangoLayout    *layout,
                 {
                   PangoLayoutRun *run = _pango_layout_iter_get_run (&iter);
 
+                  pango_layout_iter_get_run_extents (&iter, NULL, &logical_rect);
+
                   if (run->item->offset <= index && index < run->item->offset + run->item->length)
-                    {
-                      pango_layout_iter_get_run_extents (&iter, NULL, &logical_rect);
-                      break;
-                    }
+                    break;
 
                   if (!pango_layout_iter_next_run (&iter))
                     break;
@@ -2459,8 +2477,8 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
 {
   PangoDirection dir1, dir2;
   int level1, level2;
-  PangoRectangle line_rect;
-  PangoRectangle run_rect;
+  PangoRectangle line_rect = { 666, };
+  PangoRectangle run_rect = { 666, };
   PangoLayoutLine *layout_line = NULL; /* Quiet GCC */
   int x1_trailing;
   int x2;
