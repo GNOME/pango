@@ -341,5 +341,17 @@ pango_shape_with_flags (const gchar         *item_text,
     #undef HINT
             }
         }
+      else
+        {
+          for (i = 0; i < glyphs->num_glyphs; i++)
+            {
+              glyphs->glyphs[i].geometry.width =
+                PANGO_UNITS_ROUND (glyphs->glyphs[i].geometry.width);
+              glyphs->glyphs[i].geometry.x_offset =
+                PANGO_UNITS_ROUND (glyphs->glyphs[i].geometry.x_offset);
+              glyphs->glyphs[i].geometry.y_offset =
+                PANGO_UNITS_ROUND (glyphs->glyphs[i].geometry.y_offset);
+            }
+        }
     }
 }
