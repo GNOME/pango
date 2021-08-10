@@ -479,8 +479,8 @@ test_file (const char *filename, GString *string)
 
   g_assert_cmpint (pango_layout_get_character_count (layout), ==, g_utf8_strlen (pango_layout_get_text (layout), -1));
 
-  /* Some checks on extents - we have to be careful here, since we
-   * don't want to depend on font metrics.
+  /* Some checks on extents - we have to be careful here,
+   * since we don't want to depend on font metrics.
    */
   pango_layout_get_size (layout, &width, &height);
   pango_layout_get_extents (layout, &ink_rect, &logical_rect);
@@ -501,14 +501,11 @@ test_file (const char *filename, GString *string)
   for (l = lines; l; l = l->next)
     {
       PangoLayoutLine *line = l->data;
-      int line_height, line_width;
+      int line_width;
       int line_x;
       PangoRectangle line_ink, line_logical;
       PangoRectangle line_ink1, line_logical1;
       gboolean done;
-
-      pango_layout_line_get_height (line, &line_height);
-      g_assert_cmpint (line_height, <=, height);
 
       pango_layout_line_get_extents (line, &line_ink, &line_logical);
       line_x = line_logical.x;
@@ -535,7 +532,7 @@ test_file (const char *filename, GString *string)
       while (!done && pango_layout_iter_get_line_readonly (iter) == line)
         {
           int prev_index, index, next_index;
-          int x, index2, trailing;
+          int x;
           int *ranges;
           int n_ranges;
           gboolean found_range;
@@ -548,19 +545,8 @@ test_file (const char *filename, GString *string)
             done = TRUE;
 
           pango_layout_line_index_to_x (line, index, 0, &x);
-          pango_layout_line_x_to_index (line, x, &index2, &trailing);
-
-#if 0
-          /* FIXME: why doesn't this hold true? */
-          g_assert_cmpint (index2, ==, index);
-          g_assert_cmpint (trailing, ==, 0);
-#endif
-
           g_assert_cmpint (0, <=, x);
           g_assert_cmpint (x, <=, line_width);
-
-          g_assert_cmpint (line->start_index, <=, index2);
-          g_assert_cmpint (index2, <=, line->start_index + line->length);
 
           if (!run)
             break;
