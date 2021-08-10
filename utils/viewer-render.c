@@ -54,6 +54,7 @@ int opt_indent = 0;
 int opt_spacing = 0;
 double opt_line_spacing = -1.0;
 gboolean opt_justify = 0;
+gboolean opt_justify_last_line = 0;
 int opt_runs = 1;
 PangoAlignment opt_align = PANGO_ALIGN_LEFT;
 PangoEllipsizeMode opt_ellipsize = PANGO_ELLIPSIZE_NONE;
@@ -110,6 +111,7 @@ make_layout(PangoContext *context,
   pango_layout_set_auto_dir (layout, opt_auto_dir);
   pango_layout_set_ellipsize (layout, opt_ellipsize);
   pango_layout_set_justify (layout, opt_justify);
+  pango_layout_set_justify_last_line (layout, opt_justify_last_line);
   pango_layout_set_single_paragraph_mode (layout, opt_single_par);
   pango_layout_set_wrap (layout, opt_wrap);
 
@@ -811,8 +813,10 @@ parse_options (int argc, char *argv[])
      "Spacing in points between lines",			            "points"},
     {"line-spacing",	0, 0, G_OPTION_ARG_DOUBLE,		        &opt_line_spacing,
      "Spread factor for line height",			            "factor"},
-    {"justify",		0, 0, G_OPTION_ARG_NONE,			&opt_justify,
-     "Align paragraph lines to be justified",			    	NULL},
+    {"justify",         0, 0, G_OPTION_ARG_NONE,                        &opt_justify,
+     "Stretch paragraph lines to be justified",                         NULL},
+    {"justify-last-line", 0, 0, G_OPTION_ARG_NONE,                      &opt_justify_last_line,
+     "Justify the last line of the paragraph",                          NULL},
     {"language",	0, 0, G_OPTION_ARG_STRING,			&opt_language,
      "Language to use for font selection",			    "en_US/etc"},
     {"margin",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_margin,
