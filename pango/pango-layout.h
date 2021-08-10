@@ -223,9 +223,14 @@ PANGO_AVAILABLE_IN_1_44
 float          pango_layout_get_line_spacing     (PangoLayout                *layout);
 PANGO_AVAILABLE_IN_ALL
 void           pango_layout_set_justify          (PangoLayout                *layout,
-						  gboolean                    justify);
+                                                  gboolean                    justify);
 PANGO_AVAILABLE_IN_ALL
 gboolean       pango_layout_get_justify          (PangoLayout                *layout);
+PANGO_AVAILABLE_IN_1_50
+void           pango_layout_set_justify_last_line (PangoLayout                *layout,
+                                                   gboolean                    justify);
+PANGO_AVAILABLE_IN_1_50
+gboolean       pango_layout_get_justify_last_line (PangoLayout                *layout);
 PANGO_AVAILABLE_IN_1_4
 void           pango_layout_set_auto_dir         (PangoLayout                *layout,
 						  gboolean                    auto_dir);

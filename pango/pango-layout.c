@@ -214,6 +214,7 @@ pango_layout_init (PangoLayout *layout)
 
   layout->alignment = PANGO_ALIGN_LEFT;
   layout->justify = FALSE;
+  layout->justify_last_line = FALSE;
   layout->auto_dir = TRUE;
   layout->single_paragraph = FALSE;
 
@@ -805,6 +806,8 @@ pango_layout_get_font_description (PangoLayout *layout)
  * Note that this setting is not implemented and so is ignored in
  * Pango older than 1.18.
  *
+ * Also see [method@Pango.Layout.set_justify_last_line].
+ *
  * The default value is %FALSE.
  */
 void
@@ -817,7 +820,9 @@ pango_layout_set_justify (PangoLayout *layout,
     {
       layout->justify = justify;
 
-      if (layout->is_ellipsized || layout->is_wrapped)
+      if (layout->is_ellipsized ||
+          layout->is_wrapped ||
+          layout->justify_last_line)
         layout_changed (layout);
     }
 }
@@ -836,6 +841,54 @@ pango_layout_get_justify (PangoLayout *layout)
 {
   g_return_val_if_fail (layout != NULL, FALSE);
   return layout->justify;
+}
+
+/**
+ * pango_layout_set_justify_last_line:
+ * @layout: a `PangoLayout`
+ * @justify: whether the last line in the layout should be justified
+ *
+ * Sets whether the last line should be stretched to fill the
+ * entire width of the layout.
+ *
+ * This only has an effect if [method@Pango.Layout.set_justify] has
+ * been called as well.
+ *
+ * The default value is %FALSE.
+ *
+ * Since: 1.50
+ */
+void
+pango_layout_set_justify_last_line (PangoLayout *layout,
+                                    gboolean     justify)
+{
+  g_return_if_fail (layout != NULL);
+
+  if (justify != layout->justify_last_line)
+    {
+      layout->justify_last_line = justify;
+
+      if (layout->justify)
+        layout_changed (layout);
+    }
+}
+
+/**
+ * pango_layout_get_justify_last_line:
+ * @layout: a `PangoLayout`
+ *
+ * Gets whether the last line should be stretched
+ * to fill the entire width of the layout.
+ *
+ * Return value: the justify value
+ *
+ * Since: 1.50
+ */
+gboolean
+pango_layout_get_justify_last_line (PangoLayout *layout)
+{
+  g_return_val_if_fail (layout != NULL, FALSE);
+  return layout->justify_last_line;
 }
 
 /**
@@ -6055,7 +6108,7 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
 
   /* Distribute extra space between words if justifying and line was wrapped
    */
-  if (line->layout->justify && (wrapped || ellipsized))
+  if (line->layout->justify && (wrapped || ellipsized || line->layout->justify_last_line))
     {
       /* if we ellipsized, we don't have remaining_width set */
       if (state->remaining_width < 0)
