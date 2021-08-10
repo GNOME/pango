@@ -370,6 +370,54 @@ test_get_cursor (void)
   g_object_unref (context);
 }
 
+static void
+test_index_to_x (void)
+{
+  PangoContext *context;
+  const char *tests[] = {
+    "ac­ual­ly", // soft hyphen
+    "ac​ual​ly", // zero-width space
+  };
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
+  for (int i = 0; i < G_N_ELEMENTS (tests); i++)
+    {
+      PangoLayout *layout;
+      const char *text;
+      const char *p;
+
+      layout = pango_layout_new (context);
+      pango_layout_set_text (layout, tests[i], -1);
+      text = pango_layout_get_text (layout);
+
+      for (p = text; *p; p = g_utf8_next_char (p))
+        {
+          int index = p - text;
+          int l;
+          PangoLayoutLine *line;
+          int x;
+          int index2, trailing;
+          gunichar ch;
+
+          ch = g_utf8_get_char (p);
+
+          pango_layout_index_to_line_x (layout, index, FALSE, &l, NULL);
+          line = pango_layout_get_line (layout, l);
+          g_assert_nonnull (line);
+
+          pango_layout_line_index_to_x (line, index, 0, &x);
+          pango_layout_line_x_to_index (line, x, &index2, &trailing);
+          if (!pango_is_zero_width (ch))
+            g_assert_cmpint (index, ==, index2);
+        }
+
+      g_object_unref (layout);
+    }
+
+  g_object_unref (context);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -382,8 +430,8 @@ main (int argc, char *argv[])
   g_test_add_func ("/language/emoji-crash", test_language_emoji_crash);
   g_test_add_func ("/layout/line-height", test_line_height);
   g_test_add_func ("/attr-list/update", test_attr_list_update);
-  g_test_add_func ("/version-info", test_version_info);
-  g_test_add_func ("/is-zerowidth", test_is_zero_width);
+  g_test_add_func ("/misc/version-info", test_version_info);
+  g_test_add_func ("/misc/is-zerowidth", test_is_zero_width);
   g_test_add_func ("/gravity/to-rotation", test_gravity_to_rotation);
   g_test_add_func ("/gravity/from-matrix", test_gravity_from_matrix);
   g_test_add_func ("/gravity/for-script", test_gravity_for_script);
@@ -393,6 +441,7 @@ main (int argc, char *argv[])
 #endif
   g_test_add_func ("/bidi/get-cursor-crash", test_get_cursor_crash);
   g_test_add_func ("/bidi/get-cursor", test_get_cursor);
+  g_test_add_func ("/layout/index-to-x", test_index_to_x);
 
   return g_test_run ();
 }
