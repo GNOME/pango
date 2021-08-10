@@ -58,6 +58,7 @@ struct _PangoLayout
   float line_spacing;           /* factor to apply to line height */
 
   guint justify : 1;
+  guint justify_last_line : 1;
   guint alignment : 2;
   guint single_paragraph : 1;
   guint auto_dir : 1;
