@@ -161,6 +161,7 @@ typedef struct _PangoAttrIterator PangoAttrIterator;
  * @PANGO_ATTR_OVERLINE: whether the text has an overline ([struct@Pango.AttrInt]). Since 1.46
  * @PANGO_ATTR_OVERLINE_COLOR: overline color ([struct@Pango.AttrColor]). Since 1.46
  * @PANGO_ATTR_LINE_HEIGHT: line height factor ([struct@Pango.AttrFloat]). Since: 1.50
+ * @PANGO_ATTR_ABSOLUTE_LINE_HEIGHT: line height ([struct@Pango.AttrInt]). Since: 1.50
  *
  * The `PangoAttrType` distinguishes between different types of attributes.
  *
