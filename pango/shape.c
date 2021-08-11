@@ -295,7 +295,7 @@ pango_shape_with_flags (const gchar         *item_text,
 
   if (flags & PANGO_SHAPE_ROUND_POSITIONS)
     {
-      if (pango_font_is_hinted (analysis->font))
+      if (analysis->font && pango_font_is_hinted (analysis->font))
         {
           double x_scale_inv, y_scale_inv;
           double x_scale, y_scale;
