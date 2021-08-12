@@ -1,7 +1,11 @@
-Overview of changes
-===================
+Overview of changes in 1.48.8
+=============================
 
 * Rename git `master` branch to `main` (#579)
+* Fix threadsafety issues with Thai
+* Fix a rounding problem on i386
+* Fix font choice for ellipsis (#575)
+* Fix a crash if no fonts are found (#592)
 
 Overview of changes in 1.48.7
 =============================
