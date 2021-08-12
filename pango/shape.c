@@ -174,8 +174,9 @@ struct _PangoFcFont
 typedef struct _PangoFcFont PangoFcFont;
 
 #define PANGO_IS_FC_FONT(obj) \
-  g_type_is_a (((GTypeInstance*)obj)->g_class->g_type, \
-               g_type_from_name ("PangoFcFont"))
+  ((obj) != NULL && \
+   g_type_is_a (((GTypeInstance*)(obj))->g_class->g_type, \
+                g_type_from_name ("PangoFcFont")))
 
 /**
  * pango_shape_with_flags:
