@@ -167,20 +167,20 @@ void pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
 
 PANGO_AVAILABLE_IN_ALL
 void pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
-				    char             *text,
-				    int               length,
-				    PangoAnalysis    *analysis,
-				    int               index_,
-				    gboolean          trailing,
-				    int              *x_pos);
+                                    const char       *text,
+                                    int               length,
+                                    PangoAnalysis    *analysis,
+                                    int               index_,
+                                    gboolean          trailing,
+                                    int              *x_pos);
 PANGO_AVAILABLE_IN_ALL
 void pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
-				    char             *text,
-				    int               length,
-				    PangoAnalysis    *analysis,
-				    int               x_pos,
-				    int              *index_,
-				    int              *trailing);
+                                    const char       *text,
+                                    int               length,
+                                    PangoAnalysis    *analysis,
+                                    int               x_pos,
+                                    int              *index_,
+                                    int              *trailing);
 
 /* Turn a string of characters into a string of glyphs
  */
