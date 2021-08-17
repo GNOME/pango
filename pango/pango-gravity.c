@@ -278,6 +278,7 @@ const PangoScriptProperties script_properties[] =
       {LTR, NONE, S, FALSE},	/* Ahom */
       {LTR, NONE, S, FALSE},	/* Hluw */
       {RTL, NONE, S, FALSE},	/* Hatr */
+      {LTR, NONE, S, FALSE},    /* Mult */
       {LTR, NONE, S, FALSE},	/* Hung */
       {LTR, NONE, S, FALSE},	/* Sgnw */
 
