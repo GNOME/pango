@@ -30,10 +30,6 @@
 #include "pango-bidi-type.h"
 #include "pango-utils.h"
 
-#if FRIBIDI_MAJOR_VERSION >= 1
-#define USE_FRIBIDI_EX_API
-#endif
-
 /**
  * pango_bidi_type_for_unichar:
  * @ch: a Unicode character
@@ -122,9 +118,7 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
   const gchar *p;
   FriBidiParType fribidi_base_dir;
   FriBidiCharType *bidi_types;
-#ifdef USE_FRIBIDI_EX_API
   FriBidiBracketType *bracket_types;
-#endif
   FriBidiLevel max_level;
   FriBidiCharType ored_types = 0;
   FriBidiCharType anded_strongs = FRIBIDI_TYPE_RLE;
@@ -158,9 +152,7 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
   n_chars = g_utf8_strlen (text, length);
 
   bidi_types = g_new (FriBidiCharType, n_chars);
-#ifdef USE_FRIBIDI_EX_API
   bracket_types = g_new (FriBidiBracketType, n_chars);
-#endif
   embedding_levels_list = g_new (guint8, n_chars);
 
   for (i = 0, p = text; p < text + length; p = g_utf8_next_char(p), i++)
@@ -175,12 +167,10 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
       ored_types |= char_type;
       if (FRIBIDI_IS_STRONG (char_type))
         anded_strongs &= char_type;
-#ifdef USE_FRIBIDI_EX_API
       if (G_UNLIKELY(bidi_types[i] == FRIBIDI_TYPE_ON))
         bracket_types[i] = fribidi_get_bracket (ch);
       else
         bracket_types[i] = FRIBIDI_NO_BRACKET;
-#endif
     }
 
     /* Short-circuit (malloc-expensive) FriBidi call for unidirectional
@@ -190,9 +180,6 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
      * https://bugzilla.gnome.org/show_bug.cgi?id=590183
      */
 
-#ifndef FRIBIDI_IS_ISOLATE
-#define FRIBIDI_IS_ISOLATE(x) 0
-#endif
     /* The case that all resolved levels will be ltr.
      * No isolates, all strongs be LTR, there should be no Arabic numbers
      * (or letters for that matter), and one of the following:
@@ -235,15 +222,9 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
       }
 
 
-#ifdef USE_FRIBIDI_EX_API
   max_level = fribidi_get_par_embedding_levels_ex (bidi_types, bracket_types, n_chars,
 						   &fribidi_base_dir,
 						   (FriBidiLevel*)embedding_levels_list);
-#else
-  max_level = fribidi_get_par_embedding_levels (bidi_types, n_chars,
-						&fribidi_base_dir,
-						(FriBidiLevel*)embedding_levels_list);
-#endif
 
   if (G_UNLIKELY(max_level == 0))
     {
@@ -253,10 +234,7 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
 
 resolved:
   g_free (bidi_types);
-
-#ifdef USE_FRIBIDI_EX_API
   g_free (bracket_types);
-#endif
 
   *pbase_dir = (fribidi_base_dir == FRIBIDI_PAR_LTR) ?  PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL;
 
