@@ -1574,7 +1574,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	  g_set_error (error,
 		       G_MARKUP_ERROR,
 		       G_MARKUP_ERROR_INVALID_CONTENT,
-		       _("'%s' is not a valid value for the 'stretch' "
+		       _("'%s' is not a valid value for the 'gravity' "
 			 "attribute on <span> tag, line %d; valid "
 			 "values are for example 'south', 'east', "
 			 "'north', 'west'"),
