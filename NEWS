@@ -1,6 +1,11 @@
+Overview of changes in 1.48.9
+=============================
+* Require fribidi 1.0.6
+* Clean up fribidi api usage
+* Fix a bug in the gravity data table (#597)
+
 Overview of changes in 1.48.8
 =============================
-
 * Rename git `master` branch to `main` (#579)
 * Fix threadsafety issues with Thai
 * Fix a rounding problem on i386
