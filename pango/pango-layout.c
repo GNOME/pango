@@ -2374,7 +2374,8 @@ pango_layout_index_to_pos (PangoLayout    *layout,
                            int             index,
                            PangoRectangle *pos)
 {
-  PangoRectangle logical_rect;
+  PangoRectangle line_logical_rect;
+  PangoRectangle run_logical_rect;
   PangoLayoutIter iter;
   PangoLayoutLine *layout_line = NULL;
   int x_pos;
@@ -2404,6 +2405,8 @@ pango_layout_index_to_pos (PangoLayout    *layout,
               break;
             }
 
+          pango_layout_iter_get_line_extents (&iter, NULL, &line_logical_rect);
+
           layout_line = tmp_line;
 
           if (layout_line->start_index + layout_line->length > index)
@@ -2412,7 +2415,7 @@ pango_layout_index_to_pos (PangoLayout    *layout,
                 {
                   PangoLayoutRun *run = _pango_layout_iter_get_run (&iter);
 
-                  pango_layout_iter_get_run_extents (&iter, NULL, &logical_rect);
+                  pango_layout_iter_get_run_extents (&iter, NULL, &run_logical_rect);
 
                   if (run->item->offset <= index && index < run->item->offset + run->item->length)
                     break;
@@ -2431,16 +2434,16 @@ pango_layout_index_to_pos (PangoLayout    *layout,
             }
         }
 
-      pos->y = logical_rect.y;
-      pos->height = logical_rect.height;
+      pos->y = run_logical_rect.y;
+      pos->height = run_logical_rect.height;
 
       pango_layout_line_index_to_x (layout_line, index, 0, &x_pos);
-      pos->x = logical_rect.x + x_pos;
+      pos->x = line_logical_rect.x + x_pos;
 
       if (index < layout_line->start_index + layout_line->length)
         {
           pango_layout_line_index_to_x (layout_line, index, 1, &x_pos);
-          pos->width = (logical_rect.x + x_pos) - pos->x;
+          pos->width = (line_logical_rect.x + x_pos) - pos->x;
         }
       else
         pos->width = 0;
