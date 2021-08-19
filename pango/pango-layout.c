@@ -806,9 +806,13 @@ pango_layout_get_font_description (PangoLayout *layout)
  * Note that this setting is not implemented and so is ignored in
  * Pango older than 1.18.
  *
- * Also see [method@Pango.Layout.set_justify_last_line].
+ * Note that tabs and justification conflict with each other:
+ * Justification will move content away from its tab-aligned
+ * positions.
  *
  * The default value is %FALSE.
+ *
+ * Also see [method@Pango.Layout.set_justify_last_line].
  */
 void
 pango_layout_set_justify (PangoLayout *layout,
@@ -1000,9 +1004,16 @@ pango_layout_get_alignment (PangoLayout *layout)
  *
  * Sets the tabs to use for @layout, overriding the default tabs.
  *
+ * `PangoLayout` will place content at the next tab position
+ * whenever it meets a Tab character (U+0009).
+ *
  * By default, tabs are every 8 spaces. If @tabs is %NULL, the
  * default tabs are reinstated. @tabs is copied into the layout;
  * you must free your copy of @tabs yourself.
+ *
+ * Note that tabs and justification conflict with each other:
+ * Justification will move content away from its tab-aligned
+ * positions.
  */
 void
 pango_layout_set_tabs (PangoLayout   *layout,
