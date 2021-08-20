@@ -28,7 +28,6 @@
 #include "pango-impl-utils.h"
 #include "pango-glyph.h"
 
-#include "pangohb-private.h"
 #include "pango-font-private.h"
 
 /* {{{ Harfbuzz shaping */
@@ -319,14 +318,14 @@ find_show_flags (const PangoAnalysis *analysis)
 }
 
 /* }}}} */
-void
-pango_hb_shape (PangoFont           *font,
-                const char          *item_text,
-                unsigned int         item_length,
+static void
+pango_hb_shape (const char          *item_text,
+                int                  item_length,
+                const char          *paragraph_text,
+                int                  paragraph_length,
                 const PangoAnalysis *analysis,
                 PangoGlyphString    *glyphs,
-                const char          *paragraph_text,
-                unsigned int         paragraph_length)
+                PangoShapeFlags      flags)
 {
   PangoHbShapeContext context = { 0, };
   hb_buffer_flags_t hb_buffer_flags;
@@ -343,11 +342,11 @@ pango_hb_shape (PangoFont           *font,
   unsigned int num_features = 0;
   PangoGlyphInfo *infos;
 
-  g_return_if_fail (font != NULL);
   g_return_if_fail (analysis != NULL);
+  g_return_if_fail (analysis->font != NULL);
 
   context.show_flags = find_show_flags (analysis);
-  hb_font = pango_font_get_hb_font_for_context (font, &context);
+  hb_font = pango_font_get_hb_font_for_context (analysis->font, &context);
   hb_buffer = acquire_buffer (&free_buffer);
 
   hb_direction = PANGO_GRAVITY_IS_VERTICAL (analysis->gravity) ? HB_DIRECTION_TTB : HB_DIRECTION_LTR;
@@ -386,7 +385,7 @@ pango_hb_shape (PangoFont           *font,
         hb_buffer_add (hb_buffer, '-', item_offset + item_length - last_char_len);
     }
 
-  pango_font_get_features (font, features, G_N_ELEMENTS (features), &num_features);
+  pango_font_get_features (analysis->font, features, G_N_ELEMENTS (features), &num_features);
   apply_extra_attributes (analysis->extra_attrs, features, G_N_ELEMENTS (features), &num_features);
 
   hb_shape (hb_font, hb_buffer, features, num_features);
@@ -594,9 +593,9 @@ pango_shape_full (const char          *item_text,
  * Since: 1.44
  */
 void
-pango_shape_with_flags (const char         *item_text,
-                        int                 item_length,
-                        const char         *paragraph_text,
+pango_shape_with_flags (const char          *item_text,
+                        int                  item_length,
+                        const char          *paragraph_text,
                         int                  paragraph_length,
                         const PangoAnalysis *analysis,
                         PangoGlyphString    *glyphs,
@@ -623,10 +622,11 @@ pango_shape_with_flags (const char         *item_text,
 
   if (analysis->font)
     {
-      pango_hb_shape (analysis->font,
-                      item_text, item_length,
-                      analysis, glyphs,
-                      paragraph_text, paragraph_length);
+      pango_hb_shape (item_text, item_length,
+                      paragraph_text, paragraph_length,
+                      analysis,
+                      glyphs,
+                      flags);
 
       if (G_UNLIKELY (glyphs->num_glyphs == 0))
         {
