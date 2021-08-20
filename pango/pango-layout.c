@@ -2425,7 +2425,8 @@ pango_layout_index_to_pos (PangoLayout    *layout,
                  }
                while (pango_layout_iter_next_run (&iter));
 
-              break;
+              if (layout_line->start_index + layout_line->length > index)
+                break;
             }
 
           if (!pango_layout_iter_next_line (&iter))
