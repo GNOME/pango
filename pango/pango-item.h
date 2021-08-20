@@ -131,9 +131,12 @@ PANGO_AVAILABLE_IN_ALL
 PangoItem *             pango_item_split             (PangoItem         *orig,
                                                       int                split_index,
                                                       int                split_offset);
+
 PANGO_AVAILABLE_IN_1_44
 void                    pango_item_apply_attrs       (PangoItem         *item,
                                                       PangoAttrIterator *iter);
+
+/* Itemization */
 
 PANGO_AVAILABLE_IN_ALL
 GList *                 pango_itemize                (PangoContext      *context,

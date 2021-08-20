@@ -3,6 +3,7 @@ pango_sources = [
   'ellipsize.c',
   'fonts.c',
   'glyphstring.c',
+  'itemize.c',
   'modules.c',
   'pango-attributes.c',
   'pango-bidi-type.c',

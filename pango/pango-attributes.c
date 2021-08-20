@@ -2549,6 +2549,28 @@ pango_attr_iterator_get_attrs (PangoAttrIterator *iterator)
   return attrs;
 }
 
+gboolean
+pango_attr_iterator_advance (PangoAttrIterator *iterator,
+                             int                index)
+{
+  int start_range, end_range;
+
+  pango_attr_iterator_range (iterator, &start_range, &end_range);
+
+  while (index >= end_range)
+    {
+      if (!pango_attr_iterator_next (iterator))
+        return FALSE;
+      pango_attr_iterator_range (iterator, &start_range, &end_range);
+    }
+
+  if (start_range > index)
+    g_warning ("pango_attr_iterator_advance(): iterator had already "
+               "moved beyond the index");
+
+  return TRUE;
+}
+
 
 /**
  * pango_attribute_as_int:
