@@ -69,6 +69,7 @@ test_attributes_basic (void)
   test_copy (pango_attr_allow_breaks_new (FALSE));
   test_copy (pango_attr_show_new (PANGO_SHOW_SPACES));
   test_copy (pango_attr_insert_hyphens_new (FALSE));
+  test_copy (pango_attr_text_transform_new (PANGO_TEXT_TRANSFORM_UPPERCASE));
 }
 
 static void

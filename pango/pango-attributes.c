@@ -1411,6 +1411,32 @@ pango_attr_line_height_new_absolute (int height)
 
   return pango_attr_int_new (&klass, height);
 }
+
+/**
+ * pango_attr_text_transform_new:
+ * @transform: `PangoTextTransform` to apply
+ *
+ * Create a new attribute that influences how characters
+ * are transformed during shaping.
+ *
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
+ *
+ * Since: 1.50
+ */
+PangoAttribute *
+pango_attr_text_transform_new (PangoTextTransform transform)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_TEXT_TRANSFORM,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal
+  };
+
+  return pango_attr_int_new (&klass, transform);
+}
 /* }}} */
 /* {{{ Binding helpers */
 

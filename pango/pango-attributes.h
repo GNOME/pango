@@ -120,6 +120,7 @@ typedef enum
   PANGO_ATTR_OVERLINE_COLOR,    /* PangoAttrColor */
   PANGO_ATTR_LINE_HEIGHT,       /* PangoAttrFloat */
   PANGO_ATTR_ABSOLUTE_LINE_HEIGHT, /* PangoAttrInt */
+  PANGO_ATTR_TEXT_TRANSFORM,    /* PangoAttrInt */
 } PangoAttrType;
 
 /**
@@ -201,6 +202,25 @@ typedef enum {
   PANGO_SHOW_LINE_BREAKS = 1 << 1,
   PANGO_SHOW_IGNORABLES  = 1 << 2
 } PangoShowFlags;
+
+/**
+ * PangoTextTransform:
+ * @PANGO_TEXT_TRANSFORM_NONE: Leave text unchanged
+ * @PANGO_TEXT_TRANSFORM_LOWERCASE: Display letters and numbers as lowercase
+ * @PANGO_TEXT_TRANSFORM_UPPERCASE: Display letters and numbers as uppercase
+ * @PANGO_TEXT_TRANSFORM_CAPITALIZE: Display the first character of a word
+ *   in titlecase
+ *
+ * An enumeration that affects how Pango treats characters during shaping.
+ *
+ * Since: 1.50
+ */
+typedef enum {
+  PANGO_TEXT_TRANSFORM_NONE,
+  PANGO_TEXT_TRANSFORM_LOWERCASE,
+  PANGO_TEXT_TRANSFORM_UPPERCASE,
+  PANGO_TEXT_TRANSFORM_CAPITALIZE,
+} PangoTextTransform;
 
 /**
  * PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING:
@@ -532,6 +552,8 @@ PANGO_AVAILABLE_IN_1_50
 PangoAttribute *        pango_attr_line_height_new              (double                       factor);
 PANGO_AVAILABLE_IN_1_50
 PangoAttribute *        pango_attr_line_height_new_absolute     (int                          height);
+PANGO_AVAILABLE_IN_1_50
+PangoAttribute *        pango_attr_text_transform_new           (PangoTextTransform transform);
 
 PANGO_AVAILABLE_IN_1_50
 PangoAttrString       * pango_attribute_as_string               (PangoAttribute              *attr);

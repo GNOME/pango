@@ -1226,6 +1226,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   const char *insert_hyphens = NULL;
   const char *show = NULL;
   const char *line_height = NULL;
+  const char *text_transform = NULL;
 
   g_markup_parse_context_get_position (context,
 				       &line_number, &char_number);
@@ -1294,6 +1295,9 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	CHECK_ATTRIBUTE (strikethrough_color);
 	CHECK_ATTRIBUTE (style);
 	break;
+      case 't':
+        CHECK_ATTRIBUTE (text_transform);
+        break;
       case 'g':
 	CHECK_ATTRIBUTE (gravity);
 	CHECK_ATTRIBUTE (gravity_hint);
@@ -1635,6 +1639,16 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	goto error;
 
       add_attribute (tag, pango_attr_show_new (flags));
+    }
+
+  if (G_UNLIKELY (text_transform))
+    {
+      PangoTextTransform tf;
+
+      if (!span_parse_enum ("text_transform", text_transform, PANGO_TYPE_TEXT_TRANSFORM, (int*)(void*)&tf, line_number, error))
+	goto error;
+
+      add_attribute (tag, pango_attr_text_transform_new (tf));
     }
 
   if (G_UNLIKELY (rise))
