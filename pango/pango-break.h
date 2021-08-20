@@ -101,12 +101,6 @@ void pango_break (const gchar   *text,
 		  int            attrs_len);
 
 PANGO_AVAILABLE_IN_ALL
-void pango_find_paragraph_boundary (const gchar *text,
-				    gint         length,
-				    gint        *paragraph_delimiter_index,
-				    gint        *next_paragraph_start);
-
-PANGO_AVAILABLE_IN_ALL
 void pango_get_log_attrs (const char    *text,
 			  int            length,
 			  int            level,

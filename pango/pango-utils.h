@@ -99,6 +99,12 @@ guint8 * pango_log2vis_get_embedding_levels (const gchar    *text,
 PANGO_AVAILABLE_IN_1_10
 gboolean pango_is_zero_width (gunichar ch) G_GNUC_CONST;
 
+PANGO_AVAILABLE_IN_ALL
+void     pango_find_paragraph_boundary (const char *text,
+                                        int         length,
+                                        int        *paragraph_delimiter_index,
+                                        int        *next_paragraph_start);
+
 /* Pango version checking */
 
 /* Encode a Pango version as an integer */
