@@ -224,8 +224,6 @@ void pango_shape_with_flags (const char          *item_text,
                              PangoGlyphString    *glyphs,
                              PangoShapeFlags      flags);
 
-PANGO_AVAILABLE_IN_ALL
-GList *pango_reorder_items (GList *logical_items);
 
 G_END_DECLS
 

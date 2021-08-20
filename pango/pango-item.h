@@ -136,6 +136,9 @@ PANGO_AVAILABLE_IN_1_44
 void                    pango_item_apply_attrs       (PangoItem         *item,
                                                       PangoAttrIterator *iter);
 
+PANGO_AVAILABLE_IN_ALL
+GList *                 pango_reorder_items          (GList             *items);
+
 /* Itemization */
 
 PANGO_AVAILABLE_IN_ALL
@@ -154,6 +157,7 @@ GList *                 pango_itemize_with_base_dir  (PangoContext      *context
                                                       int                length,
                                                       PangoAttrList     *attrs,
                                                       PangoAttrIterator *cached_iter);
+
 
 G_END_DECLS
 

@@ -20,7 +20,7 @@
  */
 
 #include "config.h"
-#include "pango-glyph.h"
+#include "pango-item.h"
 
 /*
  * NB: The contents of the file implement the exact same algorithm
@@ -31,7 +31,7 @@ static GList *reorder_items_recurse (GList *items, int n_items);
 
 /**
  * pango_reorder_items:
- * @logical_items: (element-type Pango.Item): a `GList` of `PangoItem`
+ * @items: (element-type Pango.Item): a `GList` of `PangoItem`
  *   in logical order.
  *
  * Reorder items from logical order to visual order.
@@ -47,13 +47,14 @@ static GList *reorder_items_recurse (GList *items, int n_items);
  *   of `PangoItem` structures in visual order.
  */
 GList *
-pango_reorder_items (GList *logical_items)
+pango_reorder_items (GList *items)
 {
-  return reorder_items_recurse (logical_items, g_list_length (logical_items));
+  return reorder_items_recurse (items, g_list_length (items));
 }
 
 static GList *
-reorder_items_recurse (GList *items, int n_items)
+reorder_items_recurse (GList *items,
+                       int    n_items)
 {
   GList *tmp_list, *level_start_node;
   int i, level_start_i;
