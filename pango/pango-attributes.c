@@ -26,19 +26,8 @@
 #include "pango-attributes-private.h"
 #include "pango-impl-utils.h"
 
-static PangoAttribute *pango_attr_color_new         (const PangoAttrClass *klass,
-                                                     guint16               red,
-                                                     guint16               green,
-                                                     guint16               blue);
-static PangoAttribute *pango_attr_string_new        (const PangoAttrClass *klass,
-                                                     const char           *str);
-static PangoAttribute *pango_attr_int_new           (const PangoAttrClass *klass,
-                                                     int                   value);
-static PangoAttribute *pango_attr_float_new         (const PangoAttrClass *klass,
-                                                     double                value);
-static PangoAttribute *pango_attr_size_new_internal (int                   size,
-                                                     gboolean              absolute);
 
+/* {{{ Generic attribute code */
 
 G_LOCK_DEFINE_STATIC (attr_type);
 static GHashTable *name_map = NULL; /* MT-safe */
@@ -204,6 +193,12 @@ pango_attribute_equal (const PangoAttribute *attr1,
   return attr1->klass->equal (attr1, attr2);
 }
 
+/* }}} */
+/* {{{ Attribute types */
+/* {{{ String attribute */
+static PangoAttribute *pango_attr_string_new (const PangoAttrClass *klass,
+                                              const char           *str);
+
 static PangoAttribute *
 pango_attr_string_copy (const PangoAttribute *attr)
 {
@@ -236,32 +231,8 @@ pango_attr_string_new (const PangoAttrClass *klass,
 
   return (PangoAttribute *)result;
 }
-
-/**
- * pango_attr_family_new:
- * @family: the family or comma-separated list of families
- *
- * Create a new font family attribute.
- *
- * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
- */
-PangoAttribute *
-pango_attr_family_new (const char *family)
-{
-  static const PangoAttrClass klass = {
-    PANGO_ATTR_FAMILY,
-    pango_attr_string_copy,
-    pango_attr_string_destroy,
-    pango_attr_string_equal
-  };
-
-  g_return_val_if_fail (family != NULL, NULL);
-
-  return pango_attr_string_new (&klass, family);
-}
-
+ /* }}} */
+/* {{{ Language attribute */
 static PangoAttribute *
 pango_attr_language_copy (const PangoAttribute *attr)
 {
@@ -282,35 +253,12 @@ pango_attr_language_equal (const PangoAttribute *attr1,
 {
   return ((PangoAttrLanguage *)attr1)->value == ((PangoAttrLanguage *)attr2)->value;
 }
-
-/**
- * pango_attr_language_new:
- * @language: language tag
- *
- * Create a new language tag attribute.
- *
- * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
- */
-PangoAttribute *
-pango_attr_language_new (PangoLanguage *language)
-{
-  PangoAttrLanguage *result;
-
-  static const PangoAttrClass klass = {
-    PANGO_ATTR_LANGUAGE,
-    pango_attr_language_copy,
-    pango_attr_language_destroy,
-    pango_attr_language_equal
-  };
-
-  result = g_slice_new (PangoAttrLanguage);
-  pango_attribute_init (&result->attr, &klass);
-  result->value = language;
-
-  return (PangoAttribute *)result;
-}
+/* }}}} */
+/* {{{ Color attribute */
+static PangoAttribute *pango_attr_color_new (const PangoAttrClass *klass,
+                                             guint16               red,
+                                             guint16               green,
+                                             guint16               blue);
 
 static PangoAttribute *
 pango_attr_color_copy (const PangoAttribute *attr)
@@ -354,6 +302,280 @@ pango_attr_color_new (const PangoAttrClass *klass,
   result->color.red = red;
   result->color.green = green;
   result->color.blue = blue;
+
+  return (PangoAttribute *)result;
+}
+/* }}}} */
+/* {{{ Integer attribute */
+static PangoAttribute *pango_attr_int_new (const PangoAttrClass *klass,
+                                           int                   value);
+
+static PangoAttribute *
+pango_attr_int_copy (const PangoAttribute *attr)
+{
+  const PangoAttrInt *int_attr = (PangoAttrInt *)attr;
+
+  return pango_attr_int_new (attr->klass, int_attr->value);
+}
+
+static void
+pango_attr_int_destroy (PangoAttribute *attr)
+{
+  PangoAttrInt *iattr = (PangoAttrInt *)attr;
+
+  g_slice_free (PangoAttrInt, iattr);
+}
+
+static gboolean
+pango_attr_int_equal (const PangoAttribute *attr1,
+                      const PangoAttribute *attr2)
+{
+  const PangoAttrInt *int_attr1 = (const PangoAttrInt *)attr1;
+  const PangoAttrInt *int_attr2 = (const PangoAttrInt *)attr2;
+
+  return (int_attr1->value == int_attr2->value);
+}
+
+static PangoAttribute *
+pango_attr_int_new (const PangoAttrClass *klass,
+                    int                   value)
+{
+  PangoAttrInt *result = g_slice_new (PangoAttrInt);
+  pango_attribute_init (&result->attr, klass);
+  result->value = value;
+
+  return (PangoAttribute *)result;
+}
+/* }}} */
+/* {{{ Float attribute */
+static PangoAttribute *pango_attr_float_new (const PangoAttrClass *klass,
+                                             double                value);
+
+static PangoAttribute *
+pango_attr_float_copy (const PangoAttribute *attr)
+{
+  const PangoAttrFloat *float_attr = (PangoAttrFloat *)attr;
+
+  return pango_attr_float_new (attr->klass, float_attr->value);
+}
+
+static void
+pango_attr_float_destroy (PangoAttribute *attr)
+{
+  PangoAttrFloat *fattr = (PangoAttrFloat *)attr;
+
+  g_slice_free (PangoAttrFloat, fattr);
+}
+
+static gboolean
+pango_attr_float_equal (const PangoAttribute *attr1,
+                        const PangoAttribute *attr2)
+{
+  const PangoAttrFloat *float_attr1 = (const PangoAttrFloat *)attr1;
+  const PangoAttrFloat *float_attr2 = (const PangoAttrFloat *)attr2;
+
+  return (float_attr1->value == float_attr2->value);
+}
+
+static PangoAttribute *
+pango_attr_float_new  (const PangoAttrClass *klass,
+                       double                value)
+{
+  PangoAttrFloat *result = g_slice_new (PangoAttrFloat);
+  pango_attribute_init (&result->attr, klass);
+  result->value = value;
+
+  return (PangoAttribute *)result;
+}
+/* }}} */
+/* {{{ Size attribute */
+static PangoAttribute *pango_attr_size_new_internal (int      size,
+                                                     gboolean absolute);
+
+static PangoAttribute *
+pango_attr_size_copy (const PangoAttribute *attr)
+{
+  const PangoAttrSize *size_attr = (PangoAttrSize *)attr;
+
+  if (attr->klass->type == PANGO_ATTR_ABSOLUTE_SIZE)
+    return pango_attr_size_new_absolute (size_attr->size);
+  else
+    return pango_attr_size_new (size_attr->size);
+}
+
+static void
+pango_attr_size_destroy (PangoAttribute *attr)
+{
+  PangoAttrSize *sattr = (PangoAttrSize *)attr;
+
+  g_slice_free (PangoAttrSize, sattr);
+}
+
+static gboolean
+pango_attr_size_equal (const PangoAttribute *attr1,
+                       const PangoAttribute *attr2)
+{
+  const PangoAttrSize *size_attr1 = (const PangoAttrSize *)attr1;
+  const PangoAttrSize *size_attr2 = (const PangoAttrSize *)attr2;
+
+  return size_attr1->size == size_attr2->size;
+}
+
+static PangoAttribute *
+pango_attr_size_new_internal (int size,
+                              gboolean absolute)
+{
+  PangoAttrSize *result;
+
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_SIZE,
+    pango_attr_size_copy,
+    pango_attr_size_destroy,
+    pango_attr_size_equal
+  };
+  static const PangoAttrClass absolute_klass = {
+    PANGO_ATTR_ABSOLUTE_SIZE,
+    pango_attr_size_copy,
+    pango_attr_size_destroy,
+    pango_attr_size_equal
+  };
+
+  result = g_slice_new (PangoAttrSize);
+  pango_attribute_init (&result->attr, absolute ? &absolute_klass : &klass);
+  result->size = size;
+  result->absolute = absolute;
+
+  return (PangoAttribute *)result;
+}
+/* }}} */
+/* {{{ Font description attribute */
+static PangoAttribute *
+pango_attr_font_desc_copy (const PangoAttribute *attr)
+{
+  const PangoAttrFontDesc *desc_attr = (const PangoAttrFontDesc *)attr;
+
+  return pango_attr_font_desc_new (desc_attr->desc);
+}
+
+static void
+pango_attr_font_desc_destroy (PangoAttribute *attr)
+{
+  PangoAttrFontDesc *desc_attr = (PangoAttrFontDesc *)attr;
+
+  pango_font_description_free (desc_attr->desc);
+  g_slice_free (PangoAttrFontDesc, desc_attr);
+}
+
+static gboolean
+pango_attr_font_desc_equal (const PangoAttribute *attr1,
+                            const PangoAttribute *attr2)
+{
+  const PangoAttrFontDesc *desc_attr1 = (const PangoAttrFontDesc *)attr1;
+  const PangoAttrFontDesc *desc_attr2 = (const PangoAttrFontDesc *)attr2;
+
+  return pango_font_description_get_set_fields (desc_attr1->desc) ==
+         pango_font_description_get_set_fields (desc_attr2->desc) &&
+         pango_font_description_equal (desc_attr1->desc, desc_attr2->desc);
+}
+/* }}} */
+/* {{{ Shape attribute */
+static PangoAttribute *
+pango_attr_shape_copy (const PangoAttribute *attr)
+{
+  const PangoAttrShape *shape_attr = (PangoAttrShape *)attr;
+  gpointer data;
+
+  if (shape_attr->copy_func)
+    data = shape_attr->copy_func (shape_attr->data);
+  else
+    data = shape_attr->data;
+
+  return pango_attr_shape_new_with_data (&shape_attr->ink_rect, &shape_attr->logical_rect,
+                                         data, shape_attr->copy_func, shape_attr->destroy_func);
+}
+
+static void
+pango_attr_shape_destroy (PangoAttribute *attr)
+{
+  PangoAttrShape *shape_attr = (PangoAttrShape *)attr;
+
+  if (shape_attr->destroy_func)
+    shape_attr->destroy_func (shape_attr->data);
+
+  g_slice_free (PangoAttrShape, shape_attr);
+}
+
+static gboolean
+pango_attr_shape_equal (const PangoAttribute *attr1,
+                        const PangoAttribute *attr2)
+{
+  const PangoAttrShape *shape_attr1 = (const PangoAttrShape *)attr1;
+  const PangoAttrShape *shape_attr2 = (const PangoAttrShape *)attr2;
+
+  return (shape_attr1->logical_rect.x == shape_attr2->logical_rect.x &&
+          shape_attr1->logical_rect.y == shape_attr2->logical_rect.y &&
+          shape_attr1->logical_rect.width == shape_attr2->logical_rect.width &&
+          shape_attr1->logical_rect.height == shape_attr2->logical_rect.height &&
+          shape_attr1->ink_rect.x == shape_attr2->ink_rect.x &&
+          shape_attr1->ink_rect.y == shape_attr2->ink_rect.y &&
+          shape_attr1->ink_rect.width == shape_attr2->ink_rect.width &&
+          shape_attr1->ink_rect.height == shape_attr2->ink_rect.height &&
+          shape_attr1->data == shape_attr2->data);
+}
+/* }}} */
+/* }}} */
+/* {{{ Public API */
+
+/**
+ * pango_attr_family_new:
+ * @family: the family or comma-separated list of families
+ *
+ * Create a new font family attribute.
+ *
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
+ */
+PangoAttribute *
+pango_attr_family_new (const char *family)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_FAMILY,
+    pango_attr_string_copy,
+    pango_attr_string_destroy,
+    pango_attr_string_equal
+  };
+
+  g_return_val_if_fail (family != NULL, NULL);
+
+  return pango_attr_string_new (&klass, family);
+}
+
+/**
+ * pango_attr_language_new:
+ * @language: language tag
+ *
+ * Create a new language tag attribute.
+ *
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
+ */
+PangoAttribute *
+pango_attr_language_new (PangoLanguage *language)
+{
+  PangoAttrLanguage *result;
+
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_LANGUAGE,
+    pango_attr_language_copy,
+    pango_attr_language_destroy,
+    pango_attr_language_equal
+  };
+
+  result = g_slice_new (PangoAttrLanguage);
+  pango_attribute_init (&result->attr, &klass);
+  result->value = language;
 
   return (PangoAttribute *)result;
 }
@@ -410,136 +632,6 @@ pango_attr_background_new (guint16 red,
   };
 
   return pango_attr_color_new (&klass, red, green, blue);
-}
-
-static PangoAttribute *
-pango_attr_int_copy (const PangoAttribute *attr)
-{
-  const PangoAttrInt *int_attr = (PangoAttrInt *)attr;
-
-  return pango_attr_int_new (attr->klass, int_attr->value);
-}
-
-static void
-pango_attr_int_destroy (PangoAttribute *attr)
-{
-  PangoAttrInt *iattr = (PangoAttrInt *)attr;
-
-  g_slice_free (PangoAttrInt, iattr);
-}
-
-static gboolean
-pango_attr_int_equal (const PangoAttribute *attr1,
-                      const PangoAttribute *attr2)
-{
-  const PangoAttrInt *int_attr1 = (const PangoAttrInt *)attr1;
-  const PangoAttrInt *int_attr2 = (const PangoAttrInt *)attr2;
-
-  return (int_attr1->value == int_attr2->value);
-}
-
-static PangoAttribute *
-pango_attr_int_new (const PangoAttrClass *klass,
-                    int                   value)
-{
-  PangoAttrInt *result = g_slice_new (PangoAttrInt);
-  pango_attribute_init (&result->attr, klass);
-  result->value = value;
-
-  return (PangoAttribute *)result;
-}
-
-static PangoAttribute *
-pango_attr_float_copy (const PangoAttribute *attr)
-{
-  const PangoAttrFloat *float_attr = (PangoAttrFloat *)attr;
-
-  return pango_attr_float_new (attr->klass, float_attr->value);
-}
-
-static void
-pango_attr_float_destroy (PangoAttribute *attr)
-{
-  PangoAttrFloat *fattr = (PangoAttrFloat *)attr;
-
-  g_slice_free (PangoAttrFloat, fattr);
-}
-
-static gboolean
-pango_attr_float_equal (const PangoAttribute *attr1,
-                        const PangoAttribute *attr2)
-{
-  const PangoAttrFloat *float_attr1 = (const PangoAttrFloat *)attr1;
-  const PangoAttrFloat *float_attr2 = (const PangoAttrFloat *)attr2;
-
-  return (float_attr1->value == float_attr2->value);
-}
-
-static PangoAttribute*
-pango_attr_float_new  (const PangoAttrClass *klass,
-                       double                value)
-{
-  PangoAttrFloat *result = g_slice_new (PangoAttrFloat);
-  pango_attribute_init (&result->attr, klass);
-  result->value = value;
-
-  return (PangoAttribute *)result;
-}
-
-static PangoAttribute *
-pango_attr_size_copy (const PangoAttribute *attr)
-{
-  const PangoAttrSize *size_attr = (PangoAttrSize *)attr;
-
-  if (attr->klass->type == PANGO_ATTR_ABSOLUTE_SIZE)
-    return pango_attr_size_new_absolute (size_attr->size);
-  else
-    return pango_attr_size_new (size_attr->size);
-}
-
-static void
-pango_attr_size_destroy (PangoAttribute *attr)
-{
-  PangoAttrSize *sattr = (PangoAttrSize *)attr;
-
-  g_slice_free (PangoAttrSize, sattr);
-}
-
-static gboolean
-pango_attr_size_equal (const PangoAttribute *attr1,
-                       const PangoAttribute *attr2)
-{
-  const PangoAttrSize *size_attr1 = (const PangoAttrSize *)attr1;
-  const PangoAttrSize *size_attr2 = (const PangoAttrSize *)attr2;
-
-  return size_attr1->size == size_attr2->size;
-}
-
-static PangoAttribute *
-pango_attr_size_new_internal (int size,
-                              gboolean absolute)
-{
-  PangoAttrSize *result;
-
-  static const PangoAttrClass klass = {
-    PANGO_ATTR_SIZE,
-    pango_attr_size_copy,
-    pango_attr_size_destroy,
-    pango_attr_size_equal
-  };
-  static const PangoAttrClass absolute_klass = {
-    PANGO_ATTR_ABSOLUTE_SIZE,
-    pango_attr_size_copy,
-    pango_attr_size_destroy,
-    pango_attr_size_equal
-  };
-
-  result = g_slice_new (PangoAttrSize);
-  pango_attribute_init (&result->attr, absolute ? &absolute_klass : &klass);
-  result->size = size;
-  result->absolute = absolute;
-
-  return (PangoAttribute *)result;
 }
 
 /**
@@ -667,35 +759,6 @@ pango_attr_stretch_new (PangoStretch  stretch)
   return pango_attr_int_new (&klass, (int)stretch);
 }
 
-static PangoAttribute *
-pango_attr_font_desc_copy (const PangoAttribute *attr)
-{
-  const PangoAttrFontDesc *desc_attr = (const PangoAttrFontDesc *)attr;
-
-  return pango_attr_font_desc_new (desc_attr->desc);
-}
-
-static void
-pango_attr_font_desc_destroy (PangoAttribute *attr)
-{
-  PangoAttrFontDesc *desc_attr = (PangoAttrFontDesc *)attr;
-
-  pango_font_description_free (desc_attr->desc);
-  g_slice_free (PangoAttrFontDesc, desc_attr);
-}
-
-static gboolean
-pango_attr_font_desc_equal (const PangoAttribute *attr1,
-                            const PangoAttribute *attr2)
-{
-  const PangoAttrFontDesc *desc_attr1 = (const PangoAttrFontDesc *)attr1;
-  const PangoAttrFontDesc *desc_attr2 = (const PangoAttrFontDesc *)attr2;
-
-  return pango_font_description_get_set_fields (desc_attr1->desc) ==
-         pango_font_description_get_set_fields (desc_attr2->desc) &&
-         pango_font_description_equal (desc_attr1->desc, desc_attr2->desc);
-}
-
 /**
  * pango_attr_font_desc_new:
  * @desc: the font description
@@ -725,7 +788,6 @@ pango_attr_font_desc_new (const PangoFontDescription *desc)
 
   return (PangoAttribute *)result;
 }
-
 
 /**
  * pango_attr_underline_new:
@@ -942,50 +1004,6 @@ pango_attr_letter_spacing_new (int letter_spacing)
   };
 
   return pango_attr_int_new (&klass, letter_spacing);
-}
-
-static PangoAttribute *
-pango_attr_shape_copy (const PangoAttribute *attr)
-{
-  const PangoAttrShape *shape_attr = (PangoAttrShape *)attr;
-  gpointer data;
-
-  if (shape_attr->copy_func)
-    data = shape_attr->copy_func (shape_attr->data);
-  else
-    data = shape_attr->data;
-
-  return pango_attr_shape_new_with_data (&shape_attr->ink_rect, &shape_attr->logical_rect,
-                                         data, shape_attr->copy_func, shape_attr->destroy_func);
-}
-
-static void
-pango_attr_shape_destroy (PangoAttribute *attr)
-{
-  PangoAttrShape *shape_attr = (PangoAttrShape *)attr;
-
-  if (shape_attr->destroy_func)
-    shape_attr->destroy_func (shape_attr->data);
-
-  g_slice_free (PangoAttrShape, shape_attr);
-}
-
-static gboolean
-pango_attr_shape_equal (const PangoAttribute *attr1,
-                        const PangoAttribute *attr2)
-{
-  const PangoAttrShape *shape_attr1 = (const PangoAttrShape *)attr1;
-  const PangoAttrShape *shape_attr2 = (const PangoAttrShape *)attr2;
-
-  return (shape_attr1->logical_rect.x == shape_attr2->logical_rect.x &&
-          shape_attr1->logical_rect.y == shape_attr2->logical_rect.y &&
-          shape_attr1->logical_rect.width == shape_attr2->logical_rect.width &&
-          shape_attr1->logical_rect.height == shape_attr2->logical_rect.height &&
-          shape_attr1->ink_rect.x == shape_attr2->ink_rect.x &&
-          shape_attr1->ink_rect.y == shape_attr2->ink_rect.y &&
-          shape_attr1->ink_rect.width == shape_attr2->ink_rect.width &&
-          shape_attr1->ink_rect.height == shape_attr2->ink_rect.height &&
-          shape_attr1->data == shape_attr2->data);
 }
 
 /**
@@ -1393,9 +1411,265 @@ pango_attr_line_height_new_absolute (int height)
 
   return pango_attr_int_new (&klass, height);
 }
-/*
- * Attribute List
+/* }}} */
+/* {{{ Binding helpers */
+
+/**
+ * pango_attribute_as_int:
+ * @attr: A `PangoAttribute` such as weight
+ *
+ * Returns the attribute cast to `PangoAttrInt`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrInt`,
+ *   or %NULL if it's not an integer attribute
+ *
+ * Since: 1.50
  */
+PangoAttrInt *
+pango_attribute_as_int (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_STYLE:
+    case PANGO_ATTR_WEIGHT:
+    case PANGO_ATTR_VARIANT:
+    case PANGO_ATTR_STRETCH:
+    case PANGO_ATTR_UNDERLINE:
+    case PANGO_ATTR_STRIKETHROUGH:
+    case PANGO_ATTR_RISE:
+    case PANGO_ATTR_FALLBACK:
+    case PANGO_ATTR_LETTER_SPACING:
+    case PANGO_ATTR_GRAVITY:
+    case PANGO_ATTR_GRAVITY_HINT:
+    case PANGO_ATTR_FOREGROUND_ALPHA:
+    case PANGO_ATTR_BACKGROUND_ALPHA:
+    case PANGO_ATTR_ALLOW_BREAKS:
+    case PANGO_ATTR_SHOW:
+    case PANGO_ATTR_INSERT_HYPHENS:
+    case PANGO_ATTR_OVERLINE:
+      return (PangoAttrInt *)attr;
+
+    default:
+      return NULL;
+    }
+}
+
+/**
+ * pango_attribute_as_float:
+ * @attr: A `PangoAttribute` such as scale
+ *
+ * Returns the attribute cast to `PangoAttrFloat`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrFloat`,
+ *   or %NULL if it's not a floating point attribute
+ *
+ * Since: 1.50
+ */
+PangoAttrFloat *
+pango_attribute_as_float (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_SCALE:
+    case PANGO_ATTR_LINE_HEIGHT:
+      return (PangoAttrFloat *)attr;
+
+    default:
+      return NULL;
+    }
+}
+
+/**
+ * pango_attribute_as_string:
+ * @attr: A `PangoAttribute` such as family
+ *
+ * Returns the attribute cast to `PangoAttrString`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrString`,
+ *   or %NULL if it's not a string attribute
+ */
+PangoAttrString *
+pango_attribute_as_string (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_FAMILY:
+      return (PangoAttrString *)attr;
+
+    default:
+      return NULL;
+    }
+}
+
+/**
+ * pango_attribute_as_size:
+ * @attr: A `PangoAttribute` representing a size
+ *
+ * Returns the attribute cast to `PangoAttrSize`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrSize`,
+ *   or NULL if it's not a size attribute
+ *
+ * Since: 1.50
+ */
+PangoAttrSize *
+pango_attribute_as_size (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_SIZE:
+    case PANGO_ATTR_ABSOLUTE_SIZE:
+      return (PangoAttrSize *)attr;
+
+    default:
+      return NULL;
+    }
+}
+
+/**
+ * pango_attribute_as_color:
+ * @attr: A `PangoAttribute` such as foreground
+ *
+ * Returns the attribute cast to `PangoAttrColor`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrColor`,
+ *   or %NULL if it's not a color attribute
+ *
+ * Since: 1.50
+ */
+PangoAttrColor *
+pango_attribute_as_color (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_FOREGROUND:
+    case PANGO_ATTR_BACKGROUND:
+    case PANGO_ATTR_UNDERLINE_COLOR:
+    case PANGO_ATTR_STRIKETHROUGH_COLOR:
+    case PANGO_ATTR_OVERLINE_COLOR:
+      return (PangoAttrColor *)attr;
+
+    default:
+      return NULL;
+    }
+}
+
+/**
+ * pango_attribute_as_font_desc:
+ * @attr: A `PangoAttribute` representing a font description
+ *
+ * Returns the attribute cast to `PangoAttrFontDesc`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrFontDesc`,
+ *   or %NULL if it's not a font description attribute
+ *
+ * Since: 1.50
+ */
+PangoAttrFontDesc *
+pango_attribute_as_font_desc (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_FONT_DESC:
+      return (PangoAttrFontDesc *)attr;
+
+    default:
+      return NULL;
+    }
+}
+
+/**
+ * pango_attribute_as_font_features:
+ * @attr: A `PangoAttribute` representing font features
+ *
+ * Returns the attribute cast to `PangoAttrFontFeatures`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrFontFeatures`,
+ *   or %NULL if it's not a font features attribute
+ *
+ * Since: 1.50
+ */
+PangoAttrFontFeatures *
+pango_attribute_as_font_features (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_FONT_FEATURES:
+      return (PangoAttrFontFeatures *)attr;
+
+    default:
+      return NULL;
+    }
+}
+
+/**
+ * pango_attribute_as_language:
+ * @attr: A `PangoAttribute` representing a language
+ *
+ * Returns the attribute cast to `PangoAttrLanguage`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrLanguage`,
+ *   or %NULL if it's not a language attribute
+ *
+ * Since: 1.50
+ */
+PangoAttrLanguage *
+pango_attribute_as_language (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_LANGUAGE:
+      return (PangoAttrLanguage *)attr;
+
+    default:
+      return NULL;
+    }
+}
+
+/**
+ * pango_attribute_as_shape:
+ * @attr: A `PangoAttribute` representing a shape
+ *
+ * Returns the attribute cast to `PangoAttrShape`.
+ *
+ * This is mainly useful for language bindings.
+ *
+ * Returns: (nullable) (transfer none): The attribute as `PangoAttrShape`,
+ *   or %NULL if it's not a shape attribute
+ *
+ * Since: 1.50
+ */
+PangoAttrShape *
+pango_attribute_as_shape (PangoAttribute *attr)
+{
+  switch (attr->klass->type)
+    {
+    case PANGO_ATTR_SHAPE:
+      return (PangoAttrShape *)attr;
+
+    default:
+      return NULL;
+    }
+}
+
+/* }}} */
+/* {{{ Attribute List */
 
 G_DEFINE_BOXED_TYPE (PangoAttrList, pango_attr_list,
                      pango_attr_list_copy,
@@ -2043,6 +2317,63 @@ _pango_attr_list_has_attributes (const PangoAttrList *list)
   return list && list->attributes != NULL && list->attributes->len > 0;
 }
 
+/**
+ * pango_attr_list_filter:
+ * @list: a `PangoAttrList`
+ * @func: (scope call) (closure data): callback function;
+ *   returns %TRUE if an attribute should be filtered out
+ * @data: (closure): Data to be passed to @func
+ *
+ * Given a `PangoAttrList` and callback function, removes
+ * any elements of @list for which @func returns %TRUE and
+ * inserts them into a new list.
+ *
+ * Return value: (transfer full) (nullable): the new
+ *   `PangoAttrList` or %NULL if no attributes of the
+ *   given types were found
+ *
+ * Since: 1.2
+ */
+PangoAttrList *
+pango_attr_list_filter (PangoAttrList       *list,
+                        PangoAttrFilterFunc  func,
+                        gpointer             data)
+
+{
+  PangoAttrList *new = NULL;
+  guint i, p;
+
+  g_return_val_if_fail (list != NULL, NULL);
+
+  if (!list->attributes || list->attributes->len == 0)
+    return NULL;
+
+  for (i = 0, p = list->attributes->len; i < p; i++)
+    {
+      PangoAttribute *tmp_attr = g_ptr_array_index (list->attributes, i);
+
+      if ((*func) (tmp_attr, data))
+        {
+          g_ptr_array_remove_index (list->attributes, i);
+          i--; /* Need to look at this index again */
+          p--;
+
+          if (G_UNLIKELY (!new))
+            {
+              new = pango_attr_list_new ();
+              new->attributes = g_ptr_array_new ();
+            }
+
+          g_ptr_array_add (new->attributes, tmp_attr);
+        }
+    }
+
+  return new;
+}
+
+/* }}} */
+/* {{{ Attribute Iterator */
+
 G_DEFINE_BOXED_TYPE (PangoAttrIterator,
                      pango_attr_iterator,
                      pango_attr_iterator_copy,
@@ -2448,60 +2779,6 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 }
 
 /**
- * pango_attr_list_filter:
- * @list: a `PangoAttrList`
- * @func: (scope call) (closure data): callback function;
- *   returns %TRUE if an attribute should be filtered out
- * @data: (closure): Data to be passed to @func
- *
- * Given a `PangoAttrList` and callback function, removes
- * any elements of @list for which @func returns %TRUE and
- * inserts them into a new list.
- *
- * Return value: (transfer full) (nullable): the new
- *   `PangoAttrList` or %NULL if no attributes of the
- *   given types were found
- *
- * Since: 1.2
- */
-PangoAttrList *
-pango_attr_list_filter (PangoAttrList       *list,
-                        PangoAttrFilterFunc  func,
-                        gpointer             data)
-
-{
-  PangoAttrList *new = NULL;
-  guint i, p;
-
-  g_return_val_if_fail (list != NULL, NULL);
-
-  if (!list->attributes || list->attributes->len == 0)
-    return NULL;
-
-  for (i = 0, p = list->attributes->len; i < p; i++)
-    {
-      PangoAttribute *tmp_attr = g_ptr_array_index (list->attributes, i);
-
-      if ((*func) (tmp_attr, data))
-        {
-          g_ptr_array_remove_index (list->attributes, i);
-          i--; /* Need to look at this index again */
-          p--;
-
-          if (G_UNLIKELY (!new))
-            {
-              new = pango_attr_list_new ();
-              new->attributes = g_ptr_array_new ();
-            }
-
-          g_ptr_array_add (new->attributes, tmp_attr);
-        }
-    }
-
-  return new;
-}
-
-/**
  * pango_attr_iterator_get_attrs:
  * @iterator: a `PangoAttrIterator`
  *
@@ -2570,258 +2847,6 @@ pango_attr_iterator_advance (PangoAttrIterator *iterator,
 
   return TRUE;
 }
+/* }}} */
 
-
-/**
- * pango_attribute_as_int:
- * @attr: A `PangoAttribute` such as weight
- *
- * Returns the attribute cast to `PangoAttrInt`.
- *
- * This is mainly useful for language bindings.
- *
- * Returns: (nullable) (transfer none): The attribute as `PangoAttrInt`,
- *   or %NULL if it's not an integer attribute
- *
- * Since: 1.50
- */
-PangoAttrInt *
-pango_attribute_as_int (PangoAttribute *attr)
-{
-  switch (attr->klass->type)
-    {
-    case PANGO_ATTR_STYLE:
-    case PANGO_ATTR_WEIGHT:
-    case PANGO_ATTR_VARIANT:
-    case PANGO_ATTR_STRETCH:
-    case PANGO_ATTR_UNDERLINE:
-    case PANGO_ATTR_STRIKETHROUGH:
-    case PANGO_ATTR_RISE:
-    case PANGO_ATTR_FALLBACK:
-    case PANGO_ATTR_LETTER_SPACING:
-    case PANGO_ATTR_GRAVITY:
-    case PANGO_ATTR_GRAVITY_HINT:
-    case PANGO_ATTR_FOREGROUND_ALPHA:
-    case PANGO_ATTR_BACKGROUND_ALPHA:
-    case PANGO_ATTR_ALLOW_BREAKS:
-    case PANGO_ATTR_SHOW:
-    case PANGO_ATTR_INSERT_HYPHENS:
-    case PANGO_ATTR_OVERLINE:
-      return (PangoAttrInt *)attr;
-
-    default:
-      return NULL;
-    }
-}
-
-/**
- * pango_attribute_as_float:
- * @attr: A `PangoAttribute` such as scale
- *
- * Returns the attribute cast to `PangoAttrFloat`.
- *
- * This is mainly useful for language bindings.
- *
- * Returns: (nullable) (transfer none): The attribute as `PangoAttrFloat`,
- *   or %NULL if it's not a floating point attribute
- *
- * Since: 1.50
- */
-PangoAttrFloat *
-pango_attribute_as_float (PangoAttribute *attr)
-{
-  switch (attr->klass->type)
-    {
-    case PANGO_ATTR_SCALE:
-    case PANGO_ATTR_LINE_HEIGHT:
-      return (PangoAttrFloat *)attr;
-
-    default:
-      return NULL;
-    }
-}
-
-/**
- * pango_attribute_as_string:
- * @attr: A `PangoAttribute` such as family
- *
- * Returns the attribute cast to `PangoAttrString`.
- *
- * This is mainly useful for language bindings.
- *
- * Returns: (nullable) (transfer none): The attribute as `PangoAttrString`,
- *   or %NULL if it's not a string attribute
- */
-PangoAttrString *
-pango_attribute_as_string (PangoAttribute *attr)
-{
-  switch (attr->klass->type)
-    {
-    case PANGO_ATTR_FAMILY:
-      return (PangoAttrString *)attr;
-
-    default:
-      return NULL;
-    }
-}
-
-/**
- * pango_attribute_as_size:
- * @attr: A `PangoAttribute` representing a size
- *
- * Returns the attribute cast to `PangoAttrSize`.
- *
- * This is mainly useful for language bindings.
- *
- * Returns: (nullable) (transfer none): The attribute as `PangoAttrSize`,
- *   or NULL if it's not a size attribute
- *
- * Since: 1.50
- */
-PangoAttrSize *
-pango_attribute_as_size (PangoAttribute *attr)
-{
-  switch (attr->klass->type)
-    {
-    case PANGO_ATTR_SIZE:
-    case PANGO_ATTR_ABSOLUTE_SIZE:
-      return (PangoAttrSize *)attr;
-
-    default:
-      return NULL;
-    }
-}
-
-/**
- * pango_attribute_as_color:
- * @attr: A `PangoAttribute` such as foreground
- *
- * Returns the attribute cast to `PangoAttrColor`.
- *
- * This is mainly useful for language bindings.
- *
- * Returns: (nullable) (transfer none): The attribute as `PangoAttrColor`,
- *   or %NULL if it's not a color attribute
- *
- * Since: 1.50
- */
-PangoAttrColor *
-pango_attribute_as_color (PangoAttribute *attr)
-{
-  switch (attr->klass->type)
-    {
-    case PANGO_ATTR_FOREGROUND:
-    case PANGO_ATTR_BACKGROUND:
-    case PANGO_ATTR_UNDERLINE_COLOR:
-    case PANGO_ATTR_STRIKETHROUGH_COLOR:
-    case PANGO_ATTR_OVERLINE_COLOR:
-      return (PangoAttrColor *)attr;
-
-    default:
-      return NULL;
-    }
-}
-
-/**
- * pango_attribute_as_font_desc:
- * @attr: A `PangoAttribute` representing a font description
- *
- * Returns the attribute cast to `PangoAttrFontDesc`.
- *
- * This is mainly useful for language bindings.
- *
- * Returns: (nullable) (transfer none): The attribute as `PangoAttrFontDesc`,
- *   or %NULL if it's not a font description attribute
- *
- * Since: 1.50
- */
-PangoAttrFontDesc *
-pango_attribute_as_font_desc (PangoAttribute *attr)
-{
-  switch (attr->klass->type)
-    {
-    case PANGO_ATTR_FONT_DESC:
-      return (PangoAttrFontDesc *)attr;
-
-    default:
-      return NULL;
-    }
-}
-
-/**
- * pango_attribute_as_font_features:
- * @attr: A `PangoAttribute` representing font features
- *
- * Returns the attribute cast to `PangoAttrFontFeatures`.
- *
- * This is mainly useful for language bindings.
- *
- * Returns: (nullable) (transfer none): The attribute as `PangoAttrFontFeatures`,
- *   or %NULL if it's not a font features attribute
- *
- * Since: 1.50
- */
-PangoAttrFontFeatures *
-pango_attribute_as_font_features (PangoAttribute *attr)
-{
-  switch (attr->klass->type)
-    {
-    case PANGO_ATTR_FONT_FEATURES:
-      return (PangoAttrFontFeatures *)attr;
-
-    default:
-      return NULL;
-    }
-}
-
-/**
- * pango_attribute_as_language:
- * @attr: A `PangoAttribute` representing a language
- *
- * Returns the attribute cast to `PangoAttrLanguage`.
- *
- * This is mainly useful for language bindings.
- *
- * Returns: (nullable) (transfer none): The attribute as `PangoAttrLanguage`,
- *   or %NULL if it's not a language attribute
- *
- * Since: 1.50
- */
-PangoAttrLanguage *
-pango_attribute_as_language (PangoAttribute *attr)
-{
-  switch (attr->klass->type)
-    {
-    case PANGO_ATTR_LANGUAGE:
-      return (PangoAttrLanguage *)attr;
-
-    default:
-      return NULL;
-    }
-}
-
-/**
- * pango_attribute_as_shape:
- * @attr: A `PangoAttribute` representing a shape
- *
- * Returns the attribute cast to `PangoAttrShape`.
- *
- * This is mainly useful for language bindings.
- *
- * Returns: (nullable) (transfer none): The attribute as `PangoAttrShape`,
- *   or %NULL if it's not a shape attribute
- *
- * Since: 1.50
- */
-PangoAttrShape *
-pango_attribute_as_shape (PangoAttribute *attr)
-{
-  switch (attr->klass->type)
-    {
-    case PANGO_ATTR_SHAPE:
-      return (PangoAttrShape *)attr;
-
-    default:
-      return NULL;
-    }
-}
+/* vim:set foldmethod=marker expandtab: */
