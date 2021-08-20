@@ -2394,10 +2394,10 @@ pango_layout_index_to_pos (PangoLayout    *layout,
 
           if (tmp_line->start_index > index)
             {
-              /* index is in the paragraph delim&iters, move to
+              /* index is in the paragraph delimiters, move to
                * end of previous line
                *
-               * This shouldn’t occur in the first loop &iteration as the first
+               * This shouldn’t occur in the first loop iteration as the first
                * line’s start_index should always be 0.
                */
               g_assert (layout_line != NULL);
@@ -2409,20 +2409,21 @@ pango_layout_index_to_pos (PangoLayout    *layout,
 
           layout_line = tmp_line;
 
-          if (layout_line->start_index + layout_line->length > index)
+          if (layout_line->start_index + layout_line->length >= index)
             {
-              while (TRUE)
+              do
                 {
                   PangoLayoutRun *run = _pango_layout_iter_get_run (&iter);
 
                   pango_layout_iter_get_run_extents (&iter, NULL, &run_logical_rect);
 
-                  if (run->item->offset <= index && index < run->item->offset + run->item->length)
+                  if (!run)
                     break;
 
-                  if (!pango_layout_iter_next_run (&iter))
+                  if (run->item->offset <= index && index < run->item->offset + run->item->length)
                     break;
-                }
+                 }
+               while (pango_layout_iter_next_run (&iter));
 
               break;
             }
