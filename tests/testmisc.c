@@ -418,6 +418,77 @@ test_index_to_x (void)
   g_object_unref (context);
 }
 
+static gboolean
+pango_rectangle_contains (const PangoRectangle *r1,
+                          const PangoRectangle *r2)
+{
+  return r2->x >= r1->x &&
+         r2->y >= r1->y &&
+         r2->x + r2->width <= r1->x + r1->width &&
+         r2->y + r2->height <= r1->y + r1->height;
+}
+
+static void
+test_extents (void)
+{
+  PangoContext *context;
+  const char *tests[] = {
+    "Some long text that has multiple lines that are wrapped by Pango."
+  };
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
+  for (int i = 0; i < G_N_ELEMENTS (tests); i++)
+    {
+      PangoLayout *layout;
+      PangoLayoutIter *iter;
+      PangoRectangle layout_extents;
+      PangoRectangle line_extents;
+      PangoRectangle run_extents;
+      PangoRectangle cluster_extents;
+      PangoRectangle char_extents;
+      PangoRectangle pos;
+
+      layout = pango_layout_new (context);
+      pango_layout_set_text (layout, tests[i], -1);
+      pango_layout_set_width (layout, 60 * PANGO_SCALE);
+
+      pango_layout_get_extents (layout, NULL, &layout_extents);
+
+      iter = pango_layout_get_iter (layout);
+
+      do
+        {
+          pango_layout_iter_get_line_extents (iter, NULL, &line_extents);
+          pango_layout_iter_get_run_extents (iter, NULL, &run_extents);
+          pango_layout_iter_get_cluster_extents (iter, NULL, &cluster_extents);
+          pango_layout_iter_get_char_extents (iter, &char_extents);
+
+          pango_layout_index_to_pos (layout,
+                                     pango_layout_iter_get_index (iter),
+                                     &pos);
+          if (pos.width < 0)
+            {
+              pos.x += pos.width;
+              pos.width = - pos.width;
+            }
+
+          g_assert_true (pango_rectangle_contains (&layout_extents, &line_extents));
+          g_assert_true (pango_rectangle_contains (&line_extents, &run_extents));
+          g_assert_true (pango_rectangle_contains (&run_extents, &cluster_extents));
+          g_assert_true (pango_rectangle_contains (&cluster_extents, &char_extents));
+
+          g_assert_true (pango_rectangle_contains (&line_extents, &pos));
+        }
+      while (pango_layout_iter_next_char (iter));
+
+      pango_layout_iter_free (iter);
+      g_object_unref (layout);
+    }
+
+  g_object_unref (context);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -442,6 +513,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/bidi/get-cursor-crash", test_get_cursor_crash);
   g_test_add_func ("/bidi/get-cursor", test_get_cursor);
   g_test_add_func ("/layout/index-to-x", test_index_to_x);
+  g_test_add_func ("/layout/extents", test_extents);
 
   return g_test_run ();
 }
