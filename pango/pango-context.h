@@ -22,6 +22,7 @@
 #ifndef __PANGO_CONTEXT_H__
 #define __PANGO_CONTEXT_H__
 
+#include <pango/pango-types.h>
 #include <pango/pango-font.h>
 #include <pango/pango-fontmap.h>
 #include <pango/pango-attributes.h>
@@ -33,7 +34,6 @@ G_BEGIN_DECLS
  * to handle scripts
  */
 
-/* PangoContext typedefed in pango-fontmap.h */
 typedef struct _PangoContextClass PangoContextClass;
 
 #define PANGO_TYPE_CONTEXT              (pango_context_get_type ())
@@ -118,22 +118,6 @@ void                      pango_context_set_round_glyph_positions (PangoContext 
                                                                    gboolean      round_positions);
 PANGO_AVAILABLE_IN_1_44
 gboolean                  pango_context_get_round_glyph_positions (PangoContext *context);
-
-PANGO_AVAILABLE_IN_ALL
-GList *pango_itemize                (PangoContext      *context,
-				     const char        *text,
-				     int                start_index,
-				     int                length,
-				     PangoAttrList     *attrs,
-				     PangoAttrIterator *cached_iter);
-PANGO_AVAILABLE_IN_1_4
-GList *pango_itemize_with_base_dir  (PangoContext      *context,
-				     PangoDirection     base_dir,
-				     const char        *text,
-				     int                start_index,
-				     int                length,
-				     PangoAttrList     *attrs,
-				     PangoAttrIterator *cached_iter);
 
 G_END_DECLS
 

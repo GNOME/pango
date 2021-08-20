@@ -41,6 +41,7 @@ typedef struct _PangoFontMap PangoFontMap;
 
 typedef struct _PangoRectangle PangoRectangle;
 
+typedef struct _PangoContext PangoContext;
 
 
 /* A index of a glyph into a font. Rendering system dependent */
