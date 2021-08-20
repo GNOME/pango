@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -120,83 +120,72 @@ struct _PangoGlyphInfo
  * which simplifies memory management.
  */
 struct _PangoGlyphString {
-  gint num_glyphs;
+  int num_glyphs;
 
   PangoGlyphInfo *glyphs;
-  gint *log_clusters;
+  int *log_clusters;
 
   /*< private >*/
-  gint space;
+  int space;
 };
 
 #define PANGO_TYPE_GLYPH_STRING (pango_glyph_string_get_type ())
 
 PANGO_AVAILABLE_IN_ALL
-PangoGlyphString *pango_glyph_string_new      (void);
+GType                   pango_glyph_string_get_type             (void) G_GNUC_CONST;
+
 PANGO_AVAILABLE_IN_ALL
-void              pango_glyph_string_set_size (PangoGlyphString *string,
-					       gint              new_len);
+PangoGlyphString *      pango_glyph_string_new                  (void);
 PANGO_AVAILABLE_IN_ALL
-GType             pango_glyph_string_get_type (void) G_GNUC_CONST;
+void                    pango_glyph_string_set_size             (PangoGlyphString    *string,
+                                                                 int                  new_len);
+
 PANGO_AVAILABLE_IN_ALL
-PangoGlyphString *pango_glyph_string_copy     (PangoGlyphString *string);
+PangoGlyphString *      pango_glyph_string_copy                 (PangoGlyphString    *string);
 PANGO_AVAILABLE_IN_ALL
-void              pango_glyph_string_free     (PangoGlyphString *string);
+void                    pango_glyph_string_free                 (PangoGlyphString    *string);
+
 PANGO_AVAILABLE_IN_ALL
-void              pango_glyph_string_extents  (PangoGlyphString *glyphs,
-					       PangoFont        *font,
-					       PangoRectangle   *ink_rect,
-					       PangoRectangle   *logical_rect);
+void                    pango_glyph_string_extents              (PangoGlyphString    *glyphs,
+                                                                 PangoFont           *font,
+                                                                 PangoRectangle      *ink_rect,
+                                                                 PangoRectangle      *logical_rect);
 PANGO_AVAILABLE_IN_1_14
-int               pango_glyph_string_get_width(PangoGlyphString *glyphs);
+int                     pango_glyph_string_get_width            (PangoGlyphString    *glyphs);
 
 PANGO_AVAILABLE_IN_ALL
-void              pango_glyph_string_extents_range  (PangoGlyphString *glyphs,
-						     int               start,
-						     int               end,
-						     PangoFont        *font,
-						     PangoRectangle   *ink_rect,
-						     PangoRectangle   *logical_rect);
+void                    pango_glyph_string_extents_range        (PangoGlyphString    *glyphs,
+                                                                 int                  start,
+                                                                 int                  end,
+                                                                 PangoFont           *font,
+                                                                 PangoRectangle      *ink_rect,
+                                                                 PangoRectangle      *logical_rect);
 
 PANGO_AVAILABLE_IN_ALL
-void pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
-					    const char       *text,
-					    int               length,
-					    int               embedding_level,
-					    int              *logical_widths);
+void                    pango_glyph_string_get_logical_widths   (PangoGlyphString    *glyphs,
+                                                                 const char          *text,
+                                                                 int                  length,
+                                                                 int                  embedding_level,
+                                                                 int                 *logical_widths);
 
 PANGO_AVAILABLE_IN_ALL
-void pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
-                                    const char       *text,
-                                    int               length,
-                                    PangoAnalysis    *analysis,
-                                    int               index_,
-                                    gboolean          trailing,
-                                    int              *x_pos);
+void                    pango_glyph_string_index_to_x           (PangoGlyphString    *glyphs,
+                                                                 const char          *text,
+                                                                 int                  length,
+                                                                 PangoAnalysis       *analysis,
+                                                                 int                  index_,
+                                                                 gboolean             trailing,
+                                                                 int                 *x_pos);
 PANGO_AVAILABLE_IN_ALL
-void pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
-                                    const char       *text,
-                                    int               length,
-                                    PangoAnalysis    *analysis,
-                                    int               x_pos,
-                                    int              *index_,
-                                    int              *trailing);
+void                    pango_glyph_string_x_to_index           (PangoGlyphString    *glyphs,
+                                                                 const char          *text,
+                                                                 int                  length,
+                                                                 PangoAnalysis       *analysis,
+                                                                 int                  x_pos,
+                                                                 int                 *index_,
+                                                                 int                 *trailing);
 
-/* Turn a string of characters into a string of glyphs
- */
-PANGO_AVAILABLE_IN_ALL
-void pango_shape (const char          *text,
-                  int                  length,
-                  const PangoAnalysis *analysis,
-                  PangoGlyphString    *glyphs);
-
-PANGO_AVAILABLE_IN_1_32
-void pango_shape_full (const char          *item_text,
-                       int                  item_length,
-                       const char          *paragraph_text,
-                       int                  paragraph_length,
-                       const PangoAnalysis *analysis,
-                       PangoGlyphString    *glyphs);
+/* Shaping */
 
 /**
  * PangoShapeFlags:
@@ -215,14 +204,28 @@ typedef enum {
   PANGO_SHAPE_ROUND_POSITIONS = 1 << 0,
 } PangoShapeFlags;
 
+PANGO_AVAILABLE_IN_ALL
+void                    pango_shape                             (const char          *text,
+                                                                 int                  length,
+                                                                 const PangoAnalysis *analysis,
+                                                                 PangoGlyphString    *glyphs);
+
+PANGO_AVAILABLE_IN_1_32
+void                    pango_shape_full                        (const char          *item_text,
+                                                                 int                  item_length,
+                                                                 const char          *paragraph_text,
+                                                                 int                  paragraph_length,
+                                                                 const PangoAnalysis *analysis,
+                                                                 PangoGlyphString    *glyphs);
+
 PANGO_AVAILABLE_IN_1_44
-void pango_shape_with_flags (const char          *item_text,
-                             int                  item_length,
-                             const char          *paragraph_text,
-                             int                  paragraph_length,
-                             const PangoAnalysis *analysis,
-                             PangoGlyphString    *glyphs,
-                             PangoShapeFlags      flags);
+void                    pango_shape_with_flags                  (const char          *item_text,
+                                                                 int                  item_length,
+                                                                 const char          *paragraph_text,
+                                                                 int                  paragraph_length,
+                                                                 const PangoAnalysis *analysis,
+                                                                 PangoGlyphString    *glyphs,
+                                                                 PangoShapeFlags      flags);
 
 
 G_END_DECLS
