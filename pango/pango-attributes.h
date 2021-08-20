@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -29,58 +29,18 @@
 G_BEGIN_DECLS
 
 
-PANGO_AVAILABLE_IN_ALL
-GType       pango_attribute_get_type    (void) G_GNUC_CONST;
+typedef struct _PangoAttribute        PangoAttribute;
+typedef struct _PangoAttrClass        PangoAttrClass;
 
-typedef struct _PangoAttribute    PangoAttribute;
-typedef struct _PangoAttrClass    PangoAttrClass;
-
-typedef struct _PangoAttrString   PangoAttrString;
-typedef struct _PangoAttrLanguage PangoAttrLanguage;
-typedef struct _PangoAttrInt      PangoAttrInt;
-typedef struct _PangoAttrSize     PangoAttrSize;
-typedef struct _PangoAttrFloat    PangoAttrFloat;
-typedef struct _PangoAttrColor    PangoAttrColor;
-typedef struct _PangoAttrFontDesc PangoAttrFontDesc;
-typedef struct _PangoAttrShape    PangoAttrShape;
+typedef struct _PangoAttrString       PangoAttrString;
+typedef struct _PangoAttrLanguage     PangoAttrLanguage;
+typedef struct _PangoAttrInt          PangoAttrInt;
+typedef struct _PangoAttrSize         PangoAttrSize;
+typedef struct _PangoAttrFloat        PangoAttrFloat;
+typedef struct _PangoAttrColor        PangoAttrColor;
+typedef struct _PangoAttrFontDesc     PangoAttrFontDesc;
+typedef struct _PangoAttrShape        PangoAttrShape;
 typedef struct _PangoAttrFontFeatures PangoAttrFontFeatures;
-
-/**
- * PANGO_TYPE_ATTR_LIST:
- *
- * The `GObject` type for `PangoAttrList`.
- */
-#define PANGO_TYPE_ATTR_LIST pango_attr_list_get_type ()
-
-/**
- * PangoAttrIterator:
- *
- * A `PangoAttrIterator` is used to iterate through a `PangoAttrList`.
- *
- * A new iterator is created with [method@Pango.AttrList.get_iterator].
- * Once the iterator is created, it can be advanced through the style
- * changes in the text using [method@Pango.AttrIterator.next]. At each
- * style change, the range of the current style segment and the attributes
- * currently in effect can be queried.
- */
-
-/**
- * PangoAttrList:
- *
- * A `PangoAttrList` represents a list of attributes that apply to a section
- * of text.
- *
- * The attributes in a `PangoAttrList` are, in general, allowed to overlap in
- * an arbitrary fashion. However, if the attributes are manipulated only through
- * [method@Pango.AttrList.change], the overlap between properties will meet
- * stricter criteria.
- *
- * Since the `PangoAttrList` structure is stored as a linear list, it is not
- * suitable for storing attributes for large amounts of text. In general, you
- * should not use a single `PangoAttrList` for more than one paragraph of text.
- */
-typedef struct _PangoAttrList     PangoAttrList;
-typedef struct _PangoAttrIterator PangoAttrIterator;
 
 /**
  * PangoAttrType:
@@ -128,37 +88,37 @@ typedef struct _PangoAttrIterator PangoAttrIterator;
 typedef enum
 {
   PANGO_ATTR_INVALID,           /* 0 is an invalid attribute type */
-  PANGO_ATTR_LANGUAGE,		/* PangoAttrLanguage */
-  PANGO_ATTR_FAMILY,		/* PangoAttrString */
-  PANGO_ATTR_STYLE,		/* PangoAttrInt */
-  PANGO_ATTR_WEIGHT,		/* PangoAttrInt */
-  PANGO_ATTR_VARIANT,		/* PangoAttrInt */
-  PANGO_ATTR_STRETCH,		/* PangoAttrInt */
-  PANGO_ATTR_SIZE,		/* PangoAttrSize */
-  PANGO_ATTR_FONT_DESC,		/* PangoAttrFontDesc */
-  PANGO_ATTR_FOREGROUND,	/* PangoAttrColor */
-  PANGO_ATTR_BACKGROUND,	/* PangoAttrColor */
-  PANGO_ATTR_UNDERLINE,		/* PangoAttrInt */
-  PANGO_ATTR_STRIKETHROUGH,	/* PangoAttrInt */
-  PANGO_ATTR_RISE,		/* PangoAttrInt */
-  PANGO_ATTR_SHAPE,		/* PangoAttrShape */
+  PANGO_ATTR_LANGUAGE,          /* PangoAttrLanguage */
+  PANGO_ATTR_FAMILY,            /* PangoAttrString */
+  PANGO_ATTR_STYLE,             /* PangoAttrInt */
+  PANGO_ATTR_WEIGHT,            /* PangoAttrInt */
+  PANGO_ATTR_VARIANT,           /* PangoAttrInt */
+  PANGO_ATTR_STRETCH,           /* PangoAttrInt */
+  PANGO_ATTR_SIZE,              /* PangoAttrSize */
+  PANGO_ATTR_FONT_DESC,         /* PangoAttrFontDesc */
+  PANGO_ATTR_FOREGROUND,        /* PangoAttrColor */
+  PANGO_ATTR_BACKGROUND,        /* PangoAttrColor */
+  PANGO_ATTR_UNDERLINE,         /* PangoAttrInt */
+  PANGO_ATTR_STRIKETHROUGH,     /* PangoAttrInt */
+  PANGO_ATTR_RISE,              /* PangoAttrInt */
+  PANGO_ATTR_SHAPE,             /* PangoAttrShape */
   PANGO_ATTR_SCALE,             /* PangoAttrFloat */
   PANGO_ATTR_FALLBACK,          /* PangoAttrInt */
   PANGO_ATTR_LETTER_SPACING,    /* PangoAttrInt */
-  PANGO_ATTR_UNDERLINE_COLOR,	/* PangoAttrColor */
+  PANGO_ATTR_UNDERLINE_COLOR,   /* PangoAttrColor */
   PANGO_ATTR_STRIKETHROUGH_COLOR,/* PangoAttrColor */
-  PANGO_ATTR_ABSOLUTE_SIZE,	/* PangoAttrSize */
-  PANGO_ATTR_GRAVITY,		/* PangoAttrInt */
-  PANGO_ATTR_GRAVITY_HINT,	/* PangoAttrInt */
-  PANGO_ATTR_FONT_FEATURES,	/* PangoAttrString */
-  PANGO_ATTR_FOREGROUND_ALPHA,	/* PangoAttrInt */
-  PANGO_ATTR_BACKGROUND_ALPHA,	/* PangoAttrInt */
-  PANGO_ATTR_ALLOW_BREAKS,	/* PangoAttrInt */
-  PANGO_ATTR_SHOW,		/* PangoAttrInt */
-  PANGO_ATTR_INSERT_HYPHENS,	/* PangoAttrInt */
-  PANGO_ATTR_OVERLINE,		/* PangoAttrInt */
-  PANGO_ATTR_OVERLINE_COLOR,	/* PangoAttrColor */
-  PANGO_ATTR_LINE_HEIGHT,	/* PangoAttrFloat */
+  PANGO_ATTR_ABSOLUTE_SIZE,     /* PangoAttrSize */
+  PANGO_ATTR_GRAVITY,           /* PangoAttrInt */
+  PANGO_ATTR_GRAVITY_HINT,      /* PangoAttrInt */
+  PANGO_ATTR_FONT_FEATURES,     /* PangoAttrString */
+  PANGO_ATTR_FOREGROUND_ALPHA,  /* PangoAttrInt */
+  PANGO_ATTR_BACKGROUND_ALPHA,  /* PangoAttrInt */
+  PANGO_ATTR_ALLOW_BREAKS,      /* PangoAttrInt */
+  PANGO_ATTR_SHOW,              /* PangoAttrInt */
+  PANGO_ATTR_INSERT_HYPHENS,    /* PangoAttrInt */
+  PANGO_ATTR_OVERLINE,          /* PangoAttrInt */
+  PANGO_ATTR_OVERLINE_COLOR,    /* PangoAttrColor */
+  PANGO_ATTR_LINE_HEIGHT,       /* PangoAttrFloat */
   PANGO_ATTR_ABSOLUTE_LINE_HEIGHT, /* PangoAttrInt */
 } PangoAttrType;
 
@@ -223,6 +183,26 @@ typedef enum {
 } PangoOverline;
 
 /**
+ * PangoShowFlags:
+ * @PANGO_SHOW_NONE: No special treatment for invisible characters
+ * @PANGO_SHOW_SPACES: Render spaces, tabs and newlines visibly
+ * @PANGO_SHOW_LINE_BREAKS: Render line breaks visibly
+ * @PANGO_SHOW_IGNORABLES: Render default-ignorable Unicode
+ *   characters visibly
+ *
+ * These flags affect how Pango treats characters that are normally
+ * not visible in the output.
+ *
+ * Since: 1.44
+ */
+typedef enum {
+  PANGO_SHOW_NONE        = 0,
+  PANGO_SHOW_SPACES      = 1 << 0,
+  PANGO_SHOW_LINE_BREAKS = 1 << 1,
+  PANGO_SHOW_IGNORABLES  = 1 << 2
+} PangoShowFlags;
+
+/**
  * PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING:
  *
  * Value for @start_index in `PangoAttribute` that indicates
@@ -247,7 +227,7 @@ typedef enum {
  * @klass: the class structure holding information about the type of the attribute
  * @start_index: the start index of the range (in bytes).
  * @end_index: end index of the range (in bytes). The character at this index
- * is not included in the range.
+ *   is not included in the range.
  *
  * The `PangoAttribute` structure represents the common portions of all
  * attributes.
@@ -261,8 +241,8 @@ typedef enum {
 struct _PangoAttribute
 {
   const PangoAttrClass *klass;
-  guint start_index;	/* in bytes */
-  guint end_index;	/* in bytes. The character at this index is not included */
+  guint start_index;
+  guint end_index;
 };
 
 /**
@@ -276,7 +256,7 @@ struct _PangoAttribute
  *   filtering, %FALSE otherwise.
  */
 typedef gboolean (*PangoAttrFilterFunc) (PangoAttribute *attribute,
-					 gpointer        user_data);
+                                         gpointer        user_data);
 
 /**
  * PangoAttrDataCopyFunc:
@@ -453,215 +433,229 @@ struct _PangoAttrFontFeatures
 };
 
 PANGO_AVAILABLE_IN_ALL
-PangoAttrType         pango_attr_type_register (const gchar        *name);
+GType                   pango_attribute_get_type                (void) G_GNUC_CONST;
+
+PANGO_AVAILABLE_IN_ALL
+PangoAttrType           pango_attr_type_register                (const char                 *name);
 PANGO_AVAILABLE_IN_1_22
-const char *          pango_attr_type_get_name (PangoAttrType       type) G_GNUC_CONST;
-
+const char *            pango_attr_type_get_name                (PangoAttrType               type) G_GNUC_CONST;
 PANGO_AVAILABLE_IN_1_20
-void             pango_attribute_init        (PangoAttribute       *attr,
-					      const PangoAttrClass *klass);
+void                    pango_attribute_init                    (PangoAttribute             *attr,
+                                                                 const PangoAttrClass       *klass);
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute * pango_attribute_copy        (const PangoAttribute *attr);
+PangoAttribute *        pango_attribute_copy                    (const PangoAttribute       *attr);
 PANGO_AVAILABLE_IN_ALL
-void             pango_attribute_destroy     (PangoAttribute       *attr);
+void                    pango_attribute_destroy                 (PangoAttribute             *attr);
 PANGO_AVAILABLE_IN_ALL
-gboolean         pango_attribute_equal       (const PangoAttribute *attr1,
-					      const PangoAttribute *attr2) G_GNUC_PURE;
+gboolean                pango_attribute_equal                   (const PangoAttribute       *attr1,
+                                                                 const PangoAttribute       *attr2) G_GNUC_PURE;
 
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *pango_attr_language_new      (PangoLanguage              *language);
+PangoAttribute *        pango_attr_language_new                 (PangoLanguage              *language);
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *pango_attr_family_new        (const char                 *family);
+PangoAttribute *        pango_attr_family_new                   (const char                 *family);
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *pango_attr_foreground_new    (guint16                     red,
-					      guint16                     green,
-					      guint16                     blue);
+PangoAttribute *        pango_attr_foreground_new               (guint16                     red,
+                                                                 guint16                     green,
+                                                                 guint16                     blue);
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *pango_attr_background_new    (guint16                     red,
-					      guint16                     green,
-					      guint16                     blue);
+PangoAttribute *        pango_attr_background_new               (guint16                     red,
+                                                                 guint16                     green,
+                                                                 guint16                     blue);
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *pango_attr_size_new          (int                         size);
+PangoAttribute *        pango_attr_size_new                     (int                         size);
 PANGO_AVAILABLE_IN_1_8
-PangoAttribute *pango_attr_size_new_absolute (int                         size);
+PangoAttribute *        pango_attr_size_new_absolute            (int                         size);
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *pango_attr_style_new         (PangoStyle                  style);
+PangoAttribute *        pango_attr_style_new                    (PangoStyle                  style);
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *pango_attr_weight_new        (PangoWeight                 weight);
+PangoAttribute *        pango_attr_weight_new                   (PangoWeight                 weight);
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *pango_attr_variant_new       (PangoVariant                variant);
+PangoAttribute *        pango_attr_variant_new                  (PangoVariant                variant);
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *pango_attr_stretch_new       (PangoStretch                stretch);
+PangoAttribute *        pango_attr_stretch_new                  (PangoStretch                stretch);
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *pango_attr_font_desc_new     (const PangoFontDescription *desc);
+PangoAttribute *        pango_attr_font_desc_new                (const PangoFontDescription *desc);
 
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *pango_attr_underline_new           (PangoUnderline underline);
+PangoAttribute *        pango_attr_underline_new                (PangoUnderline              underline);
 PANGO_AVAILABLE_IN_1_8
-PangoAttribute *pango_attr_underline_color_new     (guint16        red,
-						    guint16        green,
-						    guint16        blue);
+PangoAttribute *        pango_attr_underline_color_new          (guint16                     red,
+                                                                 guint16                     green,
+                                                                 guint16                     blue);
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *pango_attr_strikethrough_new       (gboolean       strikethrough);
+PangoAttribute *        pango_attr_strikethrough_new            (gboolean                    strikethrough);
 PANGO_AVAILABLE_IN_1_8
-PangoAttribute *pango_attr_strikethrough_color_new (guint16        red,
-						    guint16        green,
-						    guint16        blue);
-
+PangoAttribute *        pango_attr_strikethrough_color_new      (guint16                     red,
+                                                                 guint16                     green,
+                                                                 guint16                     blue);
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *pango_attr_rise_new          (int                         rise);
+PangoAttribute *        pango_attr_rise_new                     (int                         rise);
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *pango_attr_scale_new         (double                      scale_factor);
+PangoAttribute *        pango_attr_scale_new                    (double                      scale_factor);
 PANGO_AVAILABLE_IN_1_4
-PangoAttribute *pango_attr_fallback_new      (gboolean                    enable_fallback);
+PangoAttribute *        pango_attr_fallback_new                 (gboolean                    enable_fallback);
 PANGO_AVAILABLE_IN_1_6
-PangoAttribute *pango_attr_letter_spacing_new (int                        letter_spacing);
-
+PangoAttribute *        pango_attr_letter_spacing_new           (int                         letter_spacing);
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *pango_attr_shape_new           (const PangoRectangle       *ink_rect,
-						const PangoRectangle       *logical_rect);
+PangoAttribute *        pango_attr_shape_new                    (const PangoRectangle        *ink_rect,
+                                                                 const PangoRectangle        *logical_rect);
 PANGO_AVAILABLE_IN_1_8
-PangoAttribute *pango_attr_shape_new_with_data (const PangoRectangle       *ink_rect,
-						const PangoRectangle       *logical_rect,
-						gpointer                    data,
-						PangoAttrDataCopyFunc       copy_func,
-						GDestroyNotify              destroy_func);
-
+PangoAttribute *        pango_attr_shape_new_with_data          (const PangoRectangle        *ink_rect,
+                                                                 const PangoRectangle        *logical_rect,
+                                                                 gpointer                     data,
+                                                                 PangoAttrDataCopyFunc        copy_func,
+                                                                 GDestroyNotify               destroy_func);
 PANGO_AVAILABLE_IN_1_16
-PangoAttribute *pango_attr_gravity_new      (PangoGravity     gravity);
+PangoAttribute *        pango_attr_gravity_new                  (PangoGravity                 gravity);
 PANGO_AVAILABLE_IN_1_16
-PangoAttribute *pango_attr_gravity_hint_new (PangoGravityHint hint);
+PangoAttribute *        pango_attr_gravity_hint_new             (PangoGravityHint             hint);
 PANGO_AVAILABLE_IN_1_38
-PangoAttribute *pango_attr_font_features_new (const gchar *features);
+PangoAttribute *        pango_attr_font_features_new            (const char                  *features);
 PANGO_AVAILABLE_IN_1_38
-PangoAttribute *pango_attr_foreground_alpha_new (guint16 alpha);
+PangoAttribute *        pango_attr_foreground_alpha_new         (guint16                      alpha);
 PANGO_AVAILABLE_IN_1_38
-PangoAttribute *pango_attr_background_alpha_new (guint16 alpha);
+PangoAttribute *        pango_attr_background_alpha_new         (guint16                      alpha);
 PANGO_AVAILABLE_IN_1_44
-PangoAttribute *pango_attr_allow_breaks_new     (gboolean allow_breaks);
+PangoAttribute *        pango_attr_allow_breaks_new             (gboolean                     allow_breaks);
 PANGO_AVAILABLE_IN_1_44
-PangoAttribute *pango_attr_insert_hyphens_new   (gboolean insert_hyphens);
+PangoAttribute *        pango_attr_insert_hyphens_new           (gboolean                     insert_hyphens);
+PANGO_AVAILABLE_IN_1_46
+PangoAttribute *        pango_attr_overline_new                 (PangoOverline                overline);
+PANGO_AVAILABLE_IN_1_46
+PangoAttribute *        pango_attr_overline_color_new           (guint16                      red,
+                                                                 guint16                      green,
+                                                                 guint16                      blue);
+PANGO_AVAILABLE_IN_1_44
+PangoAttribute *        pango_attr_show_new                     (PangoShowFlags               flags);
+PANGO_AVAILABLE_IN_1_50
+PangoAttribute *        pango_attr_line_height_new              (double                       factor);
+PANGO_AVAILABLE_IN_1_50
+PangoAttribute *        pango_attr_line_height_new_absolute     (int                          height);
 
-PANGO_AVAILABLE_IN_1_46
-PangoAttribute *pango_attr_overline_new         (PangoOverline overline);
-PANGO_AVAILABLE_IN_1_46
-PangoAttribute *pango_attr_overline_color_new   (guint16       red,
-						 guint16       green,
-						 guint16       blue);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrString       * pango_attribute_as_string               (PangoAttribute              *attr);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrLanguage     * pango_attribute_as_language             (PangoAttribute              *attr);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrInt          * pango_attribute_as_int                  (PangoAttribute              *attr);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrSize         * pango_attribute_as_size                 (PangoAttribute              *attr);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrFloat        * pango_attribute_as_float                (PangoAttribute              *attr);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrColor        * pango_attribute_as_color                (PangoAttribute              *attr);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrFontDesc     * pango_attribute_as_font_desc            (PangoAttribute              *attr);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrShape        * pango_attribute_as_shape                (PangoAttribute              *attr);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrFontFeatures * pango_attribute_as_font_features        (PangoAttribute              *attr);
+
+/* Attribute lists */
+
+typedef struct _PangoAttrList     PangoAttrList;
+typedef struct _PangoAttrIterator PangoAttrIterator;
+
+#define PANGO_TYPE_ATTR_LIST pango_attr_list_get_type ()
 
 /**
- * PangoShowFlags:
- * @PANGO_SHOW_NONE: No special treatment for invisible characters
- * @PANGO_SHOW_SPACES: Render spaces, tabs and newlines visibly
- * @PANGO_SHOW_LINE_BREAKS: Render line breaks visibly
- * @PANGO_SHOW_IGNORABLES: Render default-ignorable Unicode
- *   characters visibly
+ * PangoAttrIterator:
  *
- * These flags affect how Pango treats characters that are normally
- * not visible in the output.
+ * A `PangoAttrIterator` is used to iterate through a `PangoAttrList`.
+ *
+ * A new iterator is created with [method@Pango.AttrList.get_iterator].
+ * Once the iterator is created, it can be advanced through the style
+ * changes in the text using [method@Pango.AttrIterator.next]. At each
+ * style change, the range of the current style segment and the attributes
+ * currently in effect can be queried.
  */
-typedef enum {
-  PANGO_SHOW_NONE        = 0,
-  PANGO_SHOW_SPACES      = 1 << 0,
-  PANGO_SHOW_LINE_BREAKS = 1 << 1,
-  PANGO_SHOW_IGNORABLES  = 1 << 2
-} PangoShowFlags;
 
-PANGO_AVAILABLE_IN_1_44
-PangoAttribute *pango_attr_show_new              (PangoShowFlags flags);
-
-PANGO_AVAILABLE_IN_1_50
-PangoAttribute *pango_attr_line_height_new (double factor);
-PANGO_AVAILABLE_IN_1_50
-PangoAttribute *pango_attr_line_height_new_absolute (int height);
+/**
+ * PangoAttrList:
+ *
+ * A `PangoAttrList` represents a list of attributes that apply to a section
+ * of text.
+ *
+ * The attributes in a `PangoAttrList` are, in general, allowed to overlap in
+ * an arbitrary fashion. However, if the attributes are manipulated only through
+ * [method@Pango.AttrList.change], the overlap between properties will meet
+ * stricter criteria.
+ *
+ * Since the `PangoAttrList` structure is stored as a linear list, it is not
+ * suitable for storing attributes for large amounts of text. In general, you
+ * should not use a single `PangoAttrList` for more than one paragraph of text.
+ */
 
 PANGO_AVAILABLE_IN_ALL
-GType              pango_attr_list_get_type      (void) G_GNUC_CONST;
+GType                   pango_attr_list_get_type        (void) G_GNUC_CONST;
+
 PANGO_AVAILABLE_IN_ALL
-PangoAttrList *    pango_attr_list_new           (void);
+PangoAttrList *         pango_attr_list_new             (void);
 PANGO_AVAILABLE_IN_1_10
-PangoAttrList *    pango_attr_list_ref           (PangoAttrList  *list);
+PangoAttrList *         pango_attr_list_ref             (PangoAttrList         *list);
 PANGO_AVAILABLE_IN_ALL
-void               pango_attr_list_unref         (PangoAttrList  *list);
+void                    pango_attr_list_unref           (PangoAttrList         *list);
 PANGO_AVAILABLE_IN_ALL
-PangoAttrList *    pango_attr_list_copy          (PangoAttrList  *list);
+PangoAttrList *         pango_attr_list_copy            (PangoAttrList         *list);
 PANGO_AVAILABLE_IN_ALL
-void               pango_attr_list_insert        (PangoAttrList  *list,
-						  PangoAttribute *attr);
+void                    pango_attr_list_insert          (PangoAttrList         *list,
+                                                         PangoAttribute        *attr);
 PANGO_AVAILABLE_IN_ALL
-void               pango_attr_list_insert_before (PangoAttrList  *list,
-						  PangoAttribute *attr);
+void                    pango_attr_list_insert_before   (PangoAttrList         *list,
+                                                         PangoAttribute        *attr);
 PANGO_AVAILABLE_IN_ALL
-void               pango_attr_list_change        (PangoAttrList  *list,
-						  PangoAttribute *attr);
+void                    pango_attr_list_change          (PangoAttrList         *list,
+                                                         PangoAttribute        *attr);
 PANGO_AVAILABLE_IN_ALL
-void               pango_attr_list_splice        (PangoAttrList  *list,
-						  PangoAttrList  *other,
-						  gint            pos,
-						  gint            len);
+void                    pango_attr_list_splice          (PangoAttrList         *list,
+                                                         PangoAttrList         *other,
+                                                         int                    pos,
+                                                         int                    len);
 PANGO_AVAILABLE_IN_1_44
-void               pango_attr_list_update        (PangoAttrList  *list,
-                                                  int             pos,
-                                                  int             remove,
-                                                  int             add);
+void                    pango_attr_list_update          (PangoAttrList         *list,
+                                                         int                    pos,
+                                                         int                    remove,
+                                                         int                    add);
 
 PANGO_AVAILABLE_IN_1_2
-PangoAttrList *pango_attr_list_filter (PangoAttrList       *list,
-				       PangoAttrFilterFunc  func,
-				       gpointer             data);
+PangoAttrList *         pango_attr_list_filter          (PangoAttrList         *list,
+                                                         PangoAttrFilterFunc    func,
+                                                         gpointer               data);
 
 PANGO_AVAILABLE_IN_1_44
-GSList        *pango_attr_list_get_attributes    (PangoAttrList *list);
+GSList *                pango_attr_list_get_attributes  (PangoAttrList         *list);
 
 PANGO_AVAILABLE_IN_1_46
-gboolean       pango_attr_list_equal             (PangoAttrList *list,
-                                                  PangoAttrList *other_list);
+gboolean                pango_attr_list_equal           (PangoAttrList         *list,
+                                                         PangoAttrList         *other_list);
 
 PANGO_AVAILABLE_IN_1_44
-GType              pango_attr_iterator_get_type  (void) G_GNUC_CONST;
+GType                   pango_attr_iterator_get_type    (void) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
-PangoAttrIterator *pango_attr_list_get_iterator  (PangoAttrList  *list);
+PangoAttrIterator *     pango_attr_list_get_iterator    (PangoAttrList         *list);
 
 PANGO_AVAILABLE_IN_ALL
-void               pango_attr_iterator_range    (PangoAttrIterator     *iterator,
-						 gint                  *start,
-						 gint                  *end);
+void                    pango_attr_iterator_range       (PangoAttrIterator     *iterator,
+                                                         int                   *start,
+                                                         int                   *end);
 PANGO_AVAILABLE_IN_ALL
-gboolean           pango_attr_iterator_next     (PangoAttrIterator     *iterator);
+gboolean                pango_attr_iterator_next        (PangoAttrIterator     *iterator);
 PANGO_AVAILABLE_IN_ALL
-PangoAttrIterator *pango_attr_iterator_copy     (PangoAttrIterator     *iterator);
+PangoAttrIterator *     pango_attr_iterator_copy        (PangoAttrIterator     *iterator);
 PANGO_AVAILABLE_IN_ALL
-void               pango_attr_iterator_destroy  (PangoAttrIterator     *iterator);
+void                    pango_attr_iterator_destroy     (PangoAttrIterator     *iterator);
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *   pango_attr_iterator_get      (PangoAttrIterator     *iterator,
-						 PangoAttrType          type);
+PangoAttribute *        pango_attr_iterator_get         (PangoAttrIterator     *iterator,
+                                                         PangoAttrType          type);
 PANGO_AVAILABLE_IN_ALL
-void               pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
-						 PangoFontDescription  *desc,
-						 PangoLanguage        **language,
-						 GSList               **extra_attrs);
+void                    pango_attr_iterator_get_font    (PangoAttrIterator     *iterator,
+                                                         PangoFontDescription  *desc,
+                                                         PangoLanguage        **language,
+                                                         GSList               **extra_attrs);
 PANGO_AVAILABLE_IN_1_2
-GSList *          pango_attr_iterator_get_attrs (PangoAttrIterator     *iterator);
-
-PANGO_AVAILABLE_IN_1_50
-PangoAttrString       *pango_attribute_as_string        (PangoAttribute *attr);
-PANGO_AVAILABLE_IN_1_50
-PangoAttrLanguage     *pango_attribute_as_language      (PangoAttribute *attr);
-PANGO_AVAILABLE_IN_1_50
-PangoAttrInt          *pango_attribute_as_int           (PangoAttribute *attr);
-PANGO_AVAILABLE_IN_1_50
-PangoAttrSize         *pango_attribute_as_size          (PangoAttribute *attr);
-PANGO_AVAILABLE_IN_1_50
-PangoAttrFloat        *pango_attribute_as_float         (PangoAttribute *attr);
-PANGO_AVAILABLE_IN_1_50
-PangoAttrColor        *pango_attribute_as_color         (PangoAttribute *attr);
-PANGO_AVAILABLE_IN_1_50
-PangoAttrFontDesc     *pango_attribute_as_font_desc     (PangoAttribute *attr);
-PANGO_AVAILABLE_IN_1_50
-PangoAttrShape        *pango_attribute_as_shape         (PangoAttribute *attr);
-PANGO_AVAILABLE_IN_1_50
-PangoAttrFontFeatures *pango_attribute_as_font_features (PangoAttribute *attr);
+GSList *                pango_attr_iterator_get_attrs   (PangoAttrIterator     *iterator);
 
 G_END_DECLS
 
