@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <errno.h>
 
+#include "pango-markup.h"
+
 #include "pango-attributes.h"
 #include "pango-font.h"
 #include "pango-enum-types.h"

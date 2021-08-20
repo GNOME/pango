@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -22,6 +22,7 @@
 #ifndef __PANGO_CONTEXT_H__
 #define __PANGO_CONTEXT_H__
 
+#include <pango/pango-types.h>
 #include <pango/pango-font.h>
 #include <pango/pango-fontmap.h>
 #include <pango/pango-attributes.h>
@@ -29,11 +30,6 @@
 
 G_BEGIN_DECLS
 
-/* Sort of like a GC - application set information about how
- * to handle scripts
- */
-
-/* PangoContext typedefed in pango-fontmap.h */
 typedef struct _PangoContextClass PangoContextClass;
 
 #define PANGO_TYPE_CONTEXT              (pango_context_get_type ())
@@ -44,96 +40,76 @@ typedef struct _PangoContextClass PangoContextClass;
 #define PANGO_CONTEXT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_CONTEXT, PangoContextClass))
 
 
-/* The PangoContext and PangoContextClass structs are private; if you
- * need to create a subclass of these, file a bug.
- */
+PANGO_AVAILABLE_IN_ALL
+GType                   pango_context_get_type                  (void) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
-GType         pango_context_get_type      (void) G_GNUC_CONST;
-
-PANGO_AVAILABLE_IN_ALL
-PangoContext *pango_context_new           (void);
+PangoContext *          pango_context_new                       (void);
 PANGO_AVAILABLE_IN_1_32
-void          pango_context_changed       (PangoContext                 *context);
+void                    pango_context_changed                   (PangoContext                 *context);
 PANGO_AVAILABLE_IN_ALL
-void          pango_context_set_font_map  (PangoContext                 *context,
-					   PangoFontMap                 *font_map);
+void                    pango_context_set_font_map              (PangoContext                 *context,
+                                                                 PangoFontMap                 *font_map);
 PANGO_AVAILABLE_IN_1_6
-PangoFontMap *pango_context_get_font_map  (PangoContext                 *context);
+PangoFontMap *          pango_context_get_font_map              (PangoContext                 *context);
 PANGO_AVAILABLE_IN_1_32
-guint         pango_context_get_serial    (PangoContext                 *context);
+guint                   pango_context_get_serial                (PangoContext                 *context);
 PANGO_AVAILABLE_IN_ALL
-void          pango_context_list_families (PangoContext                 *context,
-					   PangoFontFamily            ***families,
-					   int                          *n_families);
+void                    pango_context_list_families             (PangoContext                 *context,
+                                                                 PangoFontFamily            ***families,
+                                                                 int                          *n_families);
 PANGO_AVAILABLE_IN_ALL
-PangoFont *   pango_context_load_font     (PangoContext                 *context,
-					   const PangoFontDescription   *desc);
+PangoFont *             pango_context_load_font                 (PangoContext                 *context,
+                                                                 const PangoFontDescription   *desc);
 PANGO_AVAILABLE_IN_ALL
-PangoFontset *pango_context_load_fontset  (PangoContext                 *context,
-					   const PangoFontDescription   *desc,
-					   PangoLanguage                *language);
+PangoFontset *          pango_context_load_fontset              (PangoContext                 *context,
+                                                                 const PangoFontDescription   *desc,
+                                                                 PangoLanguage                *language);
 
 PANGO_AVAILABLE_IN_ALL
-PangoFontMetrics *pango_context_get_metrics   (PangoContext                 *context,
-					       const PangoFontDescription   *desc,
-					       PangoLanguage                *language);
+PangoFontMetrics *      pango_context_get_metrics               (PangoContext                 *context,
+                                                                 const PangoFontDescription   *desc,
+                                                                 PangoLanguage                *language);
 
 PANGO_AVAILABLE_IN_ALL
-void                      pango_context_set_font_description (PangoContext               *context,
-							      const PangoFontDescription *desc);
+void                    pango_context_set_font_description      (PangoContext                 *context,
+                                                                 const PangoFontDescription   *desc);
 PANGO_AVAILABLE_IN_ALL
-PangoFontDescription *    pango_context_get_font_description (PangoContext               *context);
+PangoFontDescription *  pango_context_get_font_description      (PangoContext                 *context);
 PANGO_AVAILABLE_IN_ALL
-PangoLanguage            *pango_context_get_language         (PangoContext               *context);
+PangoLanguage *         pango_context_get_language              (PangoContext                 *context);
 PANGO_AVAILABLE_IN_ALL
-void                      pango_context_set_language         (PangoContext               *context,
-							      PangoLanguage              *language);
+void                    pango_context_set_language              (PangoContext                 *context,
+                                                                 PangoLanguage                *language);
 PANGO_AVAILABLE_IN_ALL
-void                      pango_context_set_base_dir         (PangoContext               *context,
-							      PangoDirection              direction);
+void                    pango_context_set_base_dir              (PangoContext                 *context,
+                                                                 PangoDirection                direction);
 PANGO_AVAILABLE_IN_ALL
-PangoDirection            pango_context_get_base_dir         (PangoContext               *context);
+PangoDirection          pango_context_get_base_dir              (PangoContext                 *context);
 PANGO_AVAILABLE_IN_1_16
-void                      pango_context_set_base_gravity     (PangoContext               *context,
-							      PangoGravity                gravity);
+void                    pango_context_set_base_gravity          (PangoContext                 *context,
+                                                                 PangoGravity                  gravity);
 PANGO_AVAILABLE_IN_1_16
-PangoGravity              pango_context_get_base_gravity     (PangoContext               *context);
+PangoGravity            pango_context_get_base_gravity          (PangoContext                 *context);
 PANGO_AVAILABLE_IN_1_16
-PangoGravity              pango_context_get_gravity          (PangoContext               *context);
+PangoGravity            pango_context_get_gravity               (PangoContext                 *context);
 PANGO_AVAILABLE_IN_1_16
-void                      pango_context_set_gravity_hint     (PangoContext               *context,
-							      PangoGravityHint            hint);
+void                    pango_context_set_gravity_hint          (PangoContext                 *context,
+                                                                 PangoGravityHint              hint);
 PANGO_AVAILABLE_IN_1_16
-PangoGravityHint          pango_context_get_gravity_hint     (PangoContext               *context);
+PangoGravityHint        pango_context_get_gravity_hint          (PangoContext                 *context);
 
 PANGO_AVAILABLE_IN_1_6
-void                      pango_context_set_matrix           (PangoContext      *context,
-						              const PangoMatrix *matrix);
+void                    pango_context_set_matrix                (PangoContext                 *context,
+                                                                 const PangoMatrix            *matrix);
 PANGO_AVAILABLE_IN_1_6
-const PangoMatrix *       pango_context_get_matrix           (PangoContext      *context);
+const PangoMatrix *     pango_context_get_matrix                (PangoContext                 *context);
 
 PANGO_AVAILABLE_IN_1_44
-void                      pango_context_set_round_glyph_positions (PangoContext *context,
-                                                                   gboolean      round_positions);
+void                    pango_context_set_round_glyph_positions (PangoContext                 *context,
+                                                                 gboolean                      round_positions);
 PANGO_AVAILABLE_IN_1_44
-gboolean                  pango_context_get_round_glyph_positions (PangoContext *context);
-
-PANGO_AVAILABLE_IN_ALL
-GList *pango_itemize                (PangoContext      *context,
-				     const char        *text,
-				     int                start_index,
-				     int                length,
-				     PangoAttrList     *attrs,
-				     PangoAttrIterator *cached_iter);
-PANGO_AVAILABLE_IN_1_4
-GList *pango_itemize_with_base_dir  (PangoContext      *context,
-				     PangoDirection     base_dir,
-				     const char        *text,
-				     int                start_index,
-				     int                length,
-				     PangoAttrList     *attrs,
-				     PangoAttrIterator *cached_iter);
+gboolean                pango_context_get_round_glyph_positions (PangoContext                 *context);
 
 G_END_DECLS
 

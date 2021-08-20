@@ -46,6 +46,8 @@ void     _pango_attr_list_get_iterator (PangoAttrList     *list,
                                         PangoAttrIterator *iterator);
 
 void     _pango_attr_iterator_destroy  (PangoAttrIterator *iterator);
+gboolean  pango_attr_iterator_advance  (PangoAttrIterator *iterator,
+                                        int                index);
 
 
 #endif

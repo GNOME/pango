@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -118,21 +118,46 @@ struct _PangoItem
 #define PANGO_TYPE_ITEM (pango_item_get_type ())
 
 PANGO_AVAILABLE_IN_ALL
-GType pango_item_get_type (void) G_GNUC_CONST;
+GType                   pango_item_get_type          (void) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
-PangoItem *pango_item_new   (void);
+PangoItem *             pango_item_new               (void);
 PANGO_AVAILABLE_IN_ALL
-PangoItem *pango_item_copy  (PangoItem  *item);
+PangoItem *             pango_item_copy              (PangoItem         *item);
 PANGO_AVAILABLE_IN_ALL
-void       pango_item_free  (PangoItem  *item);
+void                    pango_item_free              (PangoItem         *item);
+
 PANGO_AVAILABLE_IN_ALL
-PangoItem *pango_item_split (PangoItem  *orig,
-			     int         split_index,
-			     int         split_offset);
+PangoItem *             pango_item_split             (PangoItem         *orig,
+                                                      int                split_index,
+                                                      int                split_offset);
+
 PANGO_AVAILABLE_IN_1_44
-void       pango_item_apply_attrs (PangoItem         *item,
-                                   PangoAttrIterator *iter);
+void                    pango_item_apply_attrs       (PangoItem         *item,
+                                                      PangoAttrIterator *iter);
+
+PANGO_AVAILABLE_IN_ALL
+GList *                 pango_reorder_items          (GList             *items);
+
+/* Itemization */
+
+PANGO_AVAILABLE_IN_ALL
+GList *                 pango_itemize                (PangoContext      *context,
+                                                      const char        *text,
+                                                      int                start_index,
+                                                      int                length,
+                                                      PangoAttrList     *attrs,
+                                                      PangoAttrIterator *cached_iter);
+
+PANGO_AVAILABLE_IN_1_4
+GList *                 pango_itemize_with_base_dir  (PangoContext      *context,
+                                                      PangoDirection     base_dir,
+                                                      const char        *text,
+                                                      int                start_index,
+                                                      int                length,
+                                                      PangoAttrList     *attrs,
+                                                      PangoAttrIterator *cached_iter);
+
 
 G_END_DECLS
 

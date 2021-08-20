@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -25,44 +25,45 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pango/pango-types.h>
 #include <pango/pango-version-macros.h>
+#include <pango/pango-script.h>
 
 G_BEGIN_DECLS
-
-typedef struct _PangoLanguage PangoLanguage;
 
 #define PANGO_TYPE_LANGUAGE (pango_language_get_type ())
 
 PANGO_AVAILABLE_IN_ALL
-GType          pango_language_get_type    (void) G_GNUC_CONST;
-PANGO_AVAILABLE_IN_ALL
-PangoLanguage *pango_language_from_string (const char *language);
+GType                   pango_language_get_type                 (void) G_GNUC_CONST;
+
+PANGO_AVAILABLE_IN_1_16
+PangoLanguage *         pango_language_get_default              (void) G_GNUC_CONST;
+
+PANGO_AVAILABLE_IN_1_48
+PangoLanguage **        pango_language_get_preferred            (void) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
-const char    *pango_language_to_string   (PangoLanguage *language) G_GNUC_CONST;
+PangoLanguage *         pango_language_from_string              (const char     *language);
+
+PANGO_AVAILABLE_IN_ALL
+const char *            pango_language_to_string                (PangoLanguage  *language) G_GNUC_CONST;
+
 /* For back compat.  Will have to keep indefinitely. */
 #define pango_language_to_string(language) ((const char *)language)
 
 PANGO_AVAILABLE_IN_ALL
-const char    *pango_language_get_sample_string (PangoLanguage *language) G_GNUC_CONST;
-PANGO_AVAILABLE_IN_1_16
-PangoLanguage *pango_language_get_default (void) G_GNUC_CONST;
-
-PANGO_AVAILABLE_IN_1_48
-PangoLanguage **pango_language_get_preferred (void) G_GNUC_CONST;
+const char *            pango_language_get_sample_string        (PangoLanguage  *language) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
-gboolean      pango_language_matches  (PangoLanguage *language,
-				       const char *range_list) G_GNUC_PURE;
-
-#include <pango/pango-script.h>
+gboolean                pango_language_matches                  (PangoLanguage  *language,
+                                                                 const char     *range_list) G_GNUC_PURE;
 
 PANGO_AVAILABLE_IN_1_4
-gboolean		    pango_language_includes_script (PangoLanguage *language,
-							    PangoScript    script) G_GNUC_PURE;
+gboolean                pango_language_includes_script          (PangoLanguage  *language,
+                                                                 PangoScript     script) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_1_22
-const PangoScript          *pango_language_get_scripts	   (PangoLanguage *language,
-							    int           *num_scripts);
+const PangoScript *     pango_language_get_scripts              (PangoLanguage  *language,
+                                                                 int            *num_scripts);
 
 G_END_DECLS
 

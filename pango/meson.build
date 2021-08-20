@@ -3,6 +3,7 @@ pango_sources = [
   'ellipsize.c',
   'fonts.c',
   'glyphstring.c',
+  'itemize.c',
   'modules.c',
   'pango-attributes.c',
   'pango-bidi-type.c',
@@ -26,7 +27,6 @@ pango_sources = [
   'pango-utils.c',
   'reorder-items.c',
   'shape.c',
-  'pangofc-shape.c',
 ]
 
 pango_headers = [
@@ -34,6 +34,7 @@ pango_headers = [
   'pango-attributes.h',
   'pango-bidi-type.h',
   'pango-break.h',
+  'pango-color.h',
   'pango-context.h',
   'pango-coverage.h',
   'pango-direction.h',
@@ -48,6 +49,7 @@ pango_headers = [
   'pango-language.h',
   'pango-layout.h',
   'pango-matrix.h',
+  'pango-markup.h',
   'pango-modules.h',
   'pango-renderer.h',
   'pango-script.h',

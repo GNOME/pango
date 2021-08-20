@@ -30,7 +30,6 @@
 #include <string.h>
 
 #define PARAGRAPH_SEPARATOR 0x2029
-#define PARAGRAPH_SEPARATOR_STRING "\xE2\x80\xA9"
 
 /* See http://www.unicode.org/unicode/reports/tr14/ if you hope
  * to understand the line breaking code.
@@ -1652,110 +1651,6 @@ pango_break (const gchar   *text,
 
   pango_default_break (text, length, analysis, attrs, attrs_len);
   tailor_break        (text, length, analysis, -1, attrs, attrs_len);
-}
-
-/**
- * pango_find_paragraph_boundary:
- * @text: UTF-8 text
- * @length: length of @text in bytes, or -1 if nul-terminated
- * @paragraph_delimiter_index: (out): return location for index of
- *   delimiter
- * @next_paragraph_start: (out): return location for start of next
- *   paragraph
- *
- * Locates a paragraph boundary in @text.
- *
- * A boundary is caused by delimiter characters, such as
- * a newline, carriage return, carriage return-newline pair,
- * or Unicode paragraph separator character.
- *
- * The index of the run of delimiters is returned in
- * @paragraph_delimiter_index. The index of the start
- * of the paragrap (index after all delimiters) is stored
- * in @next_paragraph_start.
- *
- * If no delimiters are found, both @paragraph_delimiter_index
- * and @next_paragraph_start are filled with the length of @text
- * (an index one off the end).
- */
-void
-pango_find_paragraph_boundary (const gchar *text,
-			       gint         length,
-			       gint        *paragraph_delimiter_index,
-			       gint        *next_paragraph_start)
-{
-  const gchar *p = text;
-  const gchar *end;
-  const gchar *start = NULL;
-  const gchar *delimiter = NULL;
-
-  /* Only one character has type G_UNICODE_PARAGRAPH_SEPARATOR in
-   * Unicode 5.0; update the following code if that changes.
-   */
-
-  /* prev_sep is the first byte of the previous separator.  Since
-   * the valid separators are \r, \n, and PARAGRAPH_SEPARATOR, the
-   * first byte is enough to identify it.
-   */
-  gchar prev_sep;
-
-
-  if (length < 0)
-    length = strlen (text);
-
-  end = text + length;
-
-  if (paragraph_delimiter_index)
-    *paragraph_delimiter_index = length;
-
-  if (next_paragraph_start)
-    *next_paragraph_start = length;
-
-  if (length == 0)
-    return;
-
-  prev_sep = 0;
-
-  while (p < end)
-    {
-      if (prev_sep == '\n' ||
-	  prev_sep == PARAGRAPH_SEPARATOR_STRING[0])
-	{
-	  g_assert (delimiter);
-	  start = p;
-	  break;
-	}
-      else if (prev_sep == '\r')
-	{
-	  /* don't break between \r and \n */
-	  if (*p != '\n')
-	    {
-	      g_assert (delimiter);
-	      start = p;
-	      break;
-	    }
-	}
-
-      if (*p == '\n' ||
-	   *p == '\r' ||
-	   !strncmp(p, PARAGRAPH_SEPARATOR_STRING,
-		    strlen(PARAGRAPH_SEPARATOR_STRING)))
-	{
-	  if (delimiter == NULL)
-	    delimiter = p;
-	  prev_sep = *p;
-	}
-      else
-	prev_sep = 0;
-
-      p = g_utf8_next_char (p);
-    }
-
-  if (delimiter && paragraph_delimiter_index)
-    *paragraph_delimiter_index = delimiter - text;
-
-  if (start && next_paragraph_start)
-    *next_paragraph_start = start - text;
 }
 
 /**

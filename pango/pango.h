@@ -25,6 +25,7 @@
 #include <pango/pango-attributes.h>
 #include <pango/pango-bidi-type.h>
 #include <pango/pango-break.h>
+#include <pango/pango-color.h>
 #include <pango/pango-context.h>
 #include <pango/pango-coverage.h>
 #include <pango/pango-direction.h>
@@ -38,8 +39,10 @@
 #include <pango/pango-glyph-item.h>
 #include <pango/pango-gravity.h>
 #include <pango/pango-item.h>
+#include <pango/pango-language.h>
 #include <pango/pango-layout.h>
 #include <pango/pango-matrix.h>
+#include <pango/pango-markup.h>
 #include <pango/pango-renderer.h>
 #include <pango/pango-script.h>
 #include <pango/pango-tabs.h>
