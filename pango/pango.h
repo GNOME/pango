@@ -39,6 +39,7 @@
 #include <pango/pango-glyph-item.h>
 #include <pango/pango-gravity.h>
 #include <pango/pango-item.h>
+#include <pango/pango-language.h>
 #include <pango/pango-layout.h>
 #include <pango/pango-matrix.h>
 #include <pango/pango-markup.h>
