@@ -279,6 +279,10 @@ _pango_get_lc_ctype (void)
  *
  * Note that the default language can change over the life of an application.
  *
+ * Also note that this function will not do the right thing if you
+ * use per-thread locales with uselocale(). In that case, you should
+ * just call pango_language_from_string() yourself.
+ *
  * Return value: (transfer none): the default language as a `PangoLanguage`
  *
  * Since: 1.16
