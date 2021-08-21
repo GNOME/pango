@@ -756,23 +756,23 @@ pango_shape_internal (const char          *item_text,
  * pango_shape:
  * @text: the text to process
  * @length: the length (in bytes) of @text
- * @analysis: `PangoAnalysis` structure from [func@itemize]
+ * @analysis: `PangoAnalysis` structure from [func@Pango.itemize]
  * @glyphs: glyph string in which to store results
  *
  * Convert the characters in @text into glyphs.
  *
  * Given a segment of text and the corresponding `PangoAnalysis` structure
- * returned from [func@itemize], convert the characters into glyphs. You
- * may also pass in only a substring of the item from [func@itemize].
+ * returned from [func@Pango.itemize], convert the characters into glyphs. You
+ * may also pass in only a substring of the item from [func@Pango.itemize].
  *
- * It is recommended that you use [func@shape_full] instead, since
+ * It is recommended that you use [func@Pango.shape_full] instead, since
  * that API allows for shaping interaction happening across text item
  * boundaries.
  *
  * Note that the extra attributes in the @analyis that is returned from
- * [func@itemize] have indices that are relative to the entire paragraph,
+ * [func@Pango.itemize] have indices that are relative to the entire paragraph,
  * so you need to subtract the item offset from their indices before
- * calling [func@shape].
+ * calling [func@Pango.shape].
  */
 void
 pango_shape (const char          *text,
@@ -787,27 +787,28 @@ pango_shape (const char          *text,
  * pango_shape_full:
  * @item_text: valid UTF-8 text to shape.
  * @item_length: the length (in bytes) of @item_text. -1 means nul-terminated text.
- * @paragraph_text: (nullable): text of the paragraph (see details).  May be %NULL.
+ * @paragraph_text: (nullable): text of the paragraph (see details).
  * @paragraph_length: the length (in bytes) of @paragraph_text. -1 means nul-terminated text.
- * @analysis: `PangoAnalysis` structure from [func@itemize].
+ * @analysis: `PangoAnalysis` structure from [func@Pango.itemize].
  * @glyphs: glyph string in which to store results.
  *
  * Convert the characters in @text into glyphs.
  *
  * Given a segment of text and the corresponding `PangoAnalysis` structure
- * returned from [func@itemize], convert the characters into glyphs. You may
- * also pass in only a substring of the item from [func@itemize].
+ * returned from [func@Pango.itemize], convert the characters into glyphs.
+ * You may also pass in only a substring of the item from [func@Pango.itemize].
  *
- * This is similar to [func@shape], except it also can optionally take
+ * This is similar to [func@Pango.shape], except it also can optionally take
  * the full paragraph text as input, which will then be used to perform
  * certain cross-item shaping interactions. If you have access to the broader
  * text of which @item_text is part of, provide the broader text as
  * @paragraph_text. If @paragraph_text is %NULL, item text is used instead.
  *
  * Note that the extra attributes in the @analyis that is returned from
- * [func@itemize] have indices that are relative to the entire paragraph,
+ * [func@Pango.itemize] have indices that are relative to the entire paragraph,
  * so you do not pass the full paragraph text as @paragraph_text, you need
- * to subtract the item offset from their indices before calling [func@shape_full].
+ * to subtract the item offset from their indices before calling
+ * [func@Pango.shape_full].
  *
  * Since: 1.32
  */
@@ -832,27 +833,26 @@ pango_shape_full (const char          *item_text,
  * @item_length: the length (in bytes) of @item_text.
  *     -1 means nul-terminated text.
  * @paragraph_text: (nullable): text of the paragraph (see details).
- *     May be %NULL.
  * @paragraph_length: the length (in bytes) of @paragraph_text.
  *     -1 means nul-terminated text.
- * @analysis:  `PangoAnalysis` structure from [func@itemize]
+ * @analysis:  `PangoAnalysis` structure from [func@Pango.itemize]
  * @glyphs: glyph string in which to store results
  * @flags: flags influencing the shaping process
  *
  * Convert the characters in @text into glyphs.
  *
  * Given a segment of text and the corresponding `PangoAnalysis` structure
- * returned from [func@itemize], convert the characters into glyphs. You may
- * also pass in only a substring of the item from [func@itemize].
+ * returned from [func@Pango.itemize], convert the characters into glyphs.
+ * You may also pass in only a substring of the item from [func@Pango.itemize].
  *
- * This is similar to [func@shape_full], except it also takes flags that can
- * influence the shaping process.
+ * This is similar to [func@Pango.shape_full], except it also takes flags
+ * that can influence the shaping process.
  *
  * Note that the extra attributes in the @analyis that is returned from
- * [func@itemize] have indices that are relative to the entire paragraph,
+ * [func@Pango.itemize] have indices that are relative to the entire paragraph,
  * so you do not pass the full paragraph text as @paragraph_text, you need
  * to subtract the item offset from their indices before calling
- * [func@shape_with_flags].
+ * [func@Pango.shape_with_flags].
  *
  * Since: 1.44
  */
@@ -875,7 +875,6 @@ pango_shape_with_flags (const char          *item_text,
  * pango_shape_item:
  * @item: `PangoItem` to shape
  * @paragraph_text: (nullable): text of the paragraph (see details).
- *     May be %NULL.
  * @paragraph_length: the length (in bytes) of @paragraph_text.
  *     -1 means nul-terminated text.
  * @log_attrs: (nullable): array of `PangoLogAttr` for @item
@@ -884,15 +883,16 @@ pango_shape_with_flags (const char          *item_text,
  *
  * Convert the characters in @item into glyphs.
  *
- * This is similar to [func@shape_with_flags], except it takes a `PangoItem`
- * instead of separate @item_text and @analysis arguments. It also takes
- * @log_attrs, which may be used in implementing text transforms.
+ * This is similar to [func@Pango.shape_with_flags], except it takes a
+ * `PangoItem` instead of separate @item_text and @analysis arguments.
+ * It also takes @log_attrs, which may be used in implementing text
+ * transforms.
  *
  * Note that the extra attributes in the @analyis that is returned from
- * [func@itemize] have indices that are relative to the entire paragraph,
+ * [func@Pango.itemize] have indices that are relative to the entire paragraph,
  * so you do not pass the full paragraph text as @paragraph_text, you need
  * to subtract the item offset from their indices before calling
- * [func@shape_with_flags].
+ * [func@Pango.shape_with_flags].
  *
  * Since: 1.50
  */
@@ -909,6 +909,7 @@ pango_shape_item (PangoItem        *item,
                         &item->analysis, log_attrs,
                         glyphs, flags);
 }
+
 /* }}} */
 
 /* vim:set foldmethod=marker expandtab: */
