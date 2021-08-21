@@ -142,6 +142,7 @@ print_attribute (PangoAttribute *attr, GString *string)
     case PANGO_ATTR_ALLOW_BREAKS:
     case PANGO_ATTR_INSERT_HYPHENS:
     case PANGO_ATTR_SHOW:
+    case PANGO_ATTR_TEXT_TRANSFORM:
       g_string_append_printf (string, "%d", ((PangoAttrInt *)attr)->value);
       break;
     case PANGO_ATTR_FONT_DESC:
