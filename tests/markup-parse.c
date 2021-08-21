@@ -261,7 +261,7 @@ main (int argc, char *argv[])
   const gchar *name;
   gchar *path;
 
-  g_setenv ("LC_ALL", "C", TRUE);
+  g_setenv ("LC_ALL", "en_US.UTF8", TRUE);
   setlocale (LC_ALL, "");
 
   /* allow to easily generate expected output for new test cases */

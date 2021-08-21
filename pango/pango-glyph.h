@@ -228,6 +228,15 @@ void                    pango_shape_with_flags                  (const char     
                                                                  PangoShapeFlags      flags);
 
 
+PANGO_AVAILABLE_IN_1_50
+void                    pango_shape_item                        (PangoItem           *item,
+                                                                 const char          *paragraph_text,
+                                                                 int                  paragraph_length,
+                                                                 PangoLogAttr        *log_attrs,
+                                                                 PangoGlyphString    *glyphs,
+                                                                 PangoShapeFlags      flags);
+
+
 G_END_DECLS
 
 #endif /* __PANGO_GLYPH_H__ */

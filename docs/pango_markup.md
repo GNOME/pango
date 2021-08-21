@@ -196,6 +196,11 @@ line_height
   of a point).
   Available since Pango 1.50.
 
+text_transform
+: Specifies how characters are transformed during shaping. The values can be
+  'none', 'lowercase', 'uppercase' or 'capitalize'. Support for text transformation
+  was added in Pango 1.50.
+
 ## Convenience Tags
 
 `<b>`

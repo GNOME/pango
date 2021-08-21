@@ -1,0 +1,19 @@
+straße up, up and away
+
+
+---
+
+range 0 7
+[0,7]text-transform=2
+range 7 8
+range 8 23
+[8,23]text-transform=3
+range 23 2147483647
+
+
+---
+
+[0:7] (null) Normal
+[7:8] (null) Normal
+[8:23] (null) Normal
+[23:2147483647] (null) Normal

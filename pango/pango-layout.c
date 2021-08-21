@@ -3540,10 +3540,11 @@ shape_run (PangoLayoutLine *line,
                             state->properties.shape_ink_rect, state->properties.shape_logical_rect,
                             glyphs);
       else
-        pango_shape_with_flags (layout->text + item->offset, item->length,
-                                layout->text, layout->length,
-                                &item->analysis, glyphs,
-                                shape_flags);
+        pango_shape_item (item,
+                          layout->text, layout->length,
+                          layout->log_attrs + state->start_offset,
+                          glyphs,
+                          shape_flags);
 
       if (state->properties.letter_spacing)
         {
@@ -4317,6 +4318,7 @@ affects_break_or_shape (PangoAttribute *attr,
     case PANGO_ATTR_INSERT_HYPHENS:
     case PANGO_ATTR_FONT_FEATURES:
     case PANGO_ATTR_SHOW:
+    case PANGO_ATTR_TEXT_TRANSFORM:
       return TRUE;
     default:
       return FALSE;
