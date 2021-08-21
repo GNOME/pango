@@ -276,12 +276,17 @@ guint    pango_layout_get_serial      (PangoLayout    *layout);
 
 PANGO_AVAILABLE_IN_ALL
 void     pango_layout_get_log_attrs (PangoLayout    *layout,
-				     PangoLogAttr  **attrs,
-				     gint           *n_attrs);
+                                     PangoLogAttr  **attrs,
+                                     gint           *n_attrs);
 
 PANGO_AVAILABLE_IN_1_30
 const PangoLogAttr *pango_layout_get_log_attrs_readonly (PangoLayout *layout,
-							 gint        *n_attrs);
+                                                         gint        *n_attrs);
+
+PANGO_AVAILABLE_IN_1_50
+void     pango_layout_set_log_attrs (PangoLayout        *layout,
+                                     const PangoLogAttr *attrs,
+                                     int                 n_attrs);
 
 PANGO_AVAILABLE_IN_ALL
 void     pango_layout_index_to_pos         (PangoLayout    *layout,

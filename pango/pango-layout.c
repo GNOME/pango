@@ -324,6 +324,13 @@ pango_layout_copy (PangoLayout *src)
   /* Dupped */
   layout->text = g_strdup (src->text);
 
+  if (src->log_attrs)
+    {
+      layout->n_chars = src->n_chars;
+      layout->log_attrs = g_new (PangoLogAttr, src->n_chars + 1);
+      memcpy (layout->log_attrs, src->log_attrs, sizeof (PangoLogAttr) * (src->n_chars + 1));
+    }
+
   /* Value fields */
   memcpy (&layout->copy_begin, &src->copy_begin,
           G_STRUCT_OFFSET (PangoLayout, copy_end) - G_STRUCT_OFFSET (PangoLayout, copy_begin));
@@ -1559,6 +1566,38 @@ pango_layout_get_log_attrs (PangoLayout   *layout,
 
   if (n_attrs)
     *n_attrs = layout->n_chars + 1;
+}
+
+/**
+ * pango_layout_set_log_attrs:
+ * @layout: a `PangoLayout`
+ * @attrs: `PangoLogAttr` array to use
+ * @n_attrs: length of @attrs
+ *
+ * Sets logical attributes to use instead of the default ones.
+ *
+ * The expected use of this function is to call
+ * [method@Pango.Layout.get_log_attrs], tweak the attributes,
+ * and then call this function.
+ *
+ * Note that `PangoLayout` clears its logical attributes when
+ * either the text of attributes of @layout change, so tweaks
+ * will have to be re-applied after such a change.
+ *
+ * Since: 1.50
+ */
+void
+pango_layout_set_log_attrs (PangoLayout        *layout,
+                            const PangoLogAttr *attrs,
+                            int                 n_attrs)
+{
+  g_return_if_fail (layout->n_chars + 1 == n_attrs);
+
+  if (!layout->log_attrs)
+    layout->log_attrs = g_new (PangoLogAttr, layout->n_chars + 1);
+  memcpy (layout->log_attrs, attrs, sizeof (PangoLogAttr) * (layout->n_chars + 1));
+
+  layout_changed (layout);
 }
 
 /**
