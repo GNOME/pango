@@ -284,7 +284,7 @@ draw_strikethrough (PangoRenderer *renderer,
   PangoRectangle *rect = &state->strikethrough_rect;
   int num_glyphs = state->strikethrough_glyphs;
 
-  if (state->strikethrough)
+  if (state->strikethrough && num_glyphs > 0)
     pango_renderer_draw_rectangle (renderer,
                                    PANGO_RENDER_PART_STRIKETHROUGH,
                                    rect->x,
