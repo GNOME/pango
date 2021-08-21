@@ -1591,7 +1591,14 @@ pango_layout_set_log_attrs (PangoLayout        *layout,
                             const PangoLogAttr *attrs,
                             int                 n_attrs)
 {
-  g_return_if_fail (layout->n_chars + 1 == n_attrs);
+  GError *error = NULL;
+
+  if (!pango_validate_log_attrs (layout->text, layout->length, attrs, n_attrs, &error))
+    {
+      g_warning ("pango_layout_set_log_attrs: %s", error->message);
+      g_error_free (error);
+      return;
+    }
 
   if (!layout->log_attrs)
     layout->log_attrs = g_new (PangoLogAttr, layout->n_chars + 1);
