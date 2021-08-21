@@ -29,6 +29,8 @@
 #include "pango-impl-utils.h"
 #include <string.h>
 
+/* {{{ Unicode line breaking and segmentation */
+
 #define PARAGRAPH_SEPARATOR 0x2029
 
 /* See http://www.unicode.org/unicode/reports/tr14/ if you hope
@@ -1584,205 +1586,9 @@ pango_default_break (const gchar   *text,
   attrs[0].is_line_break = FALSE; /* Rule LB2 */
 }
 
-static gboolean
-break_script (const char          *item_text,
-	      unsigned int         item_length,
-	      const PangoAnalysis *analysis,
-	      PangoLogAttr        *attrs,
-	      int                  attrs_len);
-
-static gboolean
-break_attrs (const char   *text,
-	     int           length,
-             GSList       *attributes,
-             int           item_offset,
-             PangoLogAttr *attrs,
-             int           attrs_len);
-
-static gboolean
-tailor_break (const char    *text,
-	      int            length,
-	      PangoAnalysis *analysis,
-              int            item_offset,
-	      PangoLogAttr  *attrs,
-	      int            attrs_len)
-{
-  gboolean res;
-
-  if (length < 0)
-    length = strlen (text);
-  else if (text == NULL)
-    text = "";
-
-  res = break_script (text, length, analysis, attrs, attrs_len);
-
-  if (item_offset >= 0 && analysis->extra_attrs)
-    res |= break_attrs (text, length, analysis->extra_attrs, item_offset, attrs, attrs_len);
-
-  return res;
-}
-
-/**
- * pango_break:
- * @text: the text to process. Must be valid UTF-8
- * @length: length of @text in bytes (may be -1 if @text is nul-terminated)
- * @analysis: `PangoAnalysis` structure for @text
- * @attrs: (array length=attrs_len): an array to store character information in
- * @attrs_len: size of the array passed as @attrs
- *
- * Determines possible line, word, and character breaks
- * for a string of Unicode text with a single analysis.
- *
- * For most purposes you may want to use
- * [func@Pango.get_log_attrs].
- *
- * Deprecated: 1.44: Use [func@Pango.default_break] and
- *   [func@Pango.tailor_break]
- */
-void
-pango_break (const gchar   *text,
-	     gint           length,
-	     PangoAnalysis *analysis,
-	     PangoLogAttr  *attrs,
-	     int            attrs_len)
-{
-  g_return_if_fail (analysis != NULL);
-  g_return_if_fail (attrs != NULL);
-
-  pango_default_break (text, length, analysis, attrs, attrs_len);
-  tailor_break        (text, length, analysis, -1, attrs, attrs_len);
-}
-
-/**
- * pango_tailor_break:
- * @text: text to process. Must be valid UTF-8
- * @length: length in bytes of @text
- * @analysis: `PangoAnalysis` for @text
- * @offset: Byte offset of @text from the beginning of the
- *   paragraph, or -1 to ignore attributes from @analysis
- * @log_attrs: (array length=log_attrs_len): array with one `PangoLogAttr`
- *   per character in @text, plus one extra, to be filled in
- * @log_attrs_len: length of @log_attrs array
- *
- * Apply language-specific tailoring to the breaks
- * in @log_attrs.
- *
- * The line breaks are assumed to have been produced
- * by [func@Pango.default_break].
- *
- * If @offset is not -1, it is used to apply attributes
- * from @analysis that are relevant to line breaking.
- *
- * Since: 1.44
- */
-void
-pango_tailor_break (const char    *text,
-                    int            length,
-                    PangoAnalysis *analysis,
-                    int            offset,
-                    PangoLogAttr  *log_attrs,
-                    int            log_attrs_len)
-{
-  PangoLogAttr *start = log_attrs;
-  PangoLogAttr attr_before = *start;
-
-  if (tailor_break (text, length, analysis, offset, log_attrs, log_attrs_len))
-    {
-      /* if tailored, we enforce some of the attrs from before
-       * tailoring at the boundary
-       */
-
-     start->backspace_deletes_character  = attr_before.backspace_deletes_character;
-
-     start->is_line_break      |= attr_before.is_line_break;
-     start->is_mandatory_break |= attr_before.is_mandatory_break;
-     start->is_cursor_position |= attr_before.is_cursor_position;
-    }
-}
-
-static int
-tailor_segment (const char      *range_start,
-		const char      *range_end,
-		int              chars_broken,
-		PangoAnalysis   *analysis,
-		PangoLogAttr    *log_attrs)
-{
-  int chars_in_range;
-  PangoLogAttr *start = log_attrs + chars_broken;
-
-  chars_in_range = pango_utf8_strlen (range_start, range_end - range_start);
-
-  pango_tailor_break (range_start,
-                      range_end - range_start,
-                      analysis,
-                      -1,
-                      start,
-                      chars_in_range + 1);
-
-  return chars_in_range;
-}
-
-/**
- * pango_get_log_attrs:
- * @text: text to process. Must be valid UTF-8
- * @length: length in bytes of @text
- * @level: embedding level, or -1 if unknown
- * @language: language tag
- * @log_attrs: (array length=attrs_len): array with one `PangoLogAttr`
- *   per character in @text, plus one extra, to be filled in
- * @attrs_len: length of @log_attrs array
- *
- * Computes a `PangoLogAttr` for each character in @text.
- *
- * The @log_attrs array must have one `PangoLogAttr` for
- * each position in @text; if @text contains N characters,
- * it has N+1 positions, including the last position at the
- * end of the text. @text should be an entire paragraph;
- * logical attributes can't be computed without context
- * (for example you need to see spaces on either side of
- * a word to know the word is a word).
- */
-void
-pango_get_log_attrs (const char    *text,
-		     int            length,
-		     int            level,
-		     PangoLanguage *language,
-		     PangoLogAttr  *log_attrs,
-		     int            attrs_len)
-{
-  int chars_broken;
-  PangoAnalysis analysis = { NULL };
-  PangoScriptIter iter;
-
-  g_return_if_fail (length == 0 || text != NULL);
-  g_return_if_fail (log_attrs != NULL);
-
-  analysis.level = level;
-  analysis.language = language;
-
-  pango_default_break (text, length, &analysis, log_attrs, attrs_len);
-
-  chars_broken = 0;
-
-  _pango_script_iter_init (&iter, text, length);
-  do
-    {
-      const char *run_start, *run_end;
-      PangoScript script;
-
-      pango_script_iter_get_range (&iter, &run_start, &run_end, &script);
-      analysis.script = script;
-
-      chars_broken += tailor_segment (run_start, run_end, chars_broken, &analysis, log_attrs);
-    }
-  while (pango_script_iter_next (&iter));
-  _pango_script_iter_fini (&iter);
-
-  if (chars_broken + 1 > attrs_len)
-    g_warning ("pango_get_log_attrs: attrs_len should have been at least %d, but was %d.  Expect corrupted memory.",
-	       chars_broken + 1,
-	       attrs_len);
-}
+/* }}} */
+/* {{{ Tailoring */
+/* {{{ Script-specific tailoring */
 
 #include "break-arabic.c"
 #include "break-indic.c"
@@ -1823,6 +1629,9 @@ break_script (const char          *item_text,
 
   return TRUE;
 }
+
+/* }}} */
+/* {{{ Attribute-based tailoring */
 
 static gboolean
 break_attrs (const char   *text,
@@ -1885,3 +1694,183 @@ break_attrs (const char   *text,
 
   return TRUE;
 }
+
+/* }}} */
+
+static gboolean
+tailor_break (const char    *text,
+	      int            length,
+	      PangoAnalysis *analysis,
+              int            item_offset,
+	      PangoLogAttr  *attrs,
+	      int            attrs_len)
+{
+  gboolean res;
+
+  if (length < 0)
+    length = strlen (text);
+  else if (text == NULL)
+    text = "";
+
+  res = break_script (text, length, analysis, attrs, attrs_len);
+
+  if (item_offset >= 0 && analysis->extra_attrs)
+    res |= break_attrs (text, length, analysis->extra_attrs, item_offset, attrs, attrs_len);
+
+  return res;
+}
+
+/* }}} */
+/* {{{ Public API */
+
+/**
+ * pango_break:
+ * @text: the text to process. Must be valid UTF-8
+ * @length: length of @text in bytes (may be -1 if @text is nul-terminated)
+ * @analysis: `PangoAnalysis` structure for @text
+ * @attrs: (array length=attrs_len): an array to store character information in
+ * @attrs_len: size of the array passed as @attrs
+ *
+ * Determines possible line, word, and character breaks
+ * for a string of Unicode text with a single analysis.
+ *
+ * For most purposes you may want to use
+ * [func@Pango.get_log_attrs].
+ *
+ * Deprecated: 1.44: Use [func@Pango.default_break] and
+ *   [func@Pango.tailor_break]
+ */
+void
+pango_break (const gchar   *text,
+             gint           length,
+             PangoAnalysis *analysis,
+             PangoLogAttr  *attrs,
+             int            attrs_len)
+{
+  g_return_if_fail (analysis != NULL);
+  g_return_if_fail (attrs != NULL);
+
+  pango_default_break (text, length, analysis, attrs, attrs_len);
+  tailor_break (text, length, analysis, -1, attrs, attrs_len);
+}
+
+/**
+ * pango_tailor_break:
+ * @text: text to process. Must be valid UTF-8
+ * @length: length in bytes of @text
+ * @analysis: `PangoAnalysis` for @text
+ * @offset: Byte offset of @text from the beginning of the
+ *   paragraph, or -1 to ignore attributes from @analysis
+ * @log_attrs: (array length=log_attrs_len): array with one `PangoLogAttr`
+ *   per character in @text, plus one extra, to be filled in
+ * @log_attrs_len: length of @log_attrs array
+ *
+ * Apply language-specific tailoring to the breaks
+ * in @log_attrs.
+ *
+ * The line breaks are assumed to have been produced
+ * by [func@Pango.default_break].
+ *
+ * If @offset is not -1, it is used to apply attributes
+ * from @analysis that are relevant to line breaking.
+ *
+ * Since: 1.44
+ */
+void
+pango_tailor_break (const char    *text,
+                    int            length,
+                    PangoAnalysis *analysis,
+                    int            offset,
+                    PangoLogAttr  *log_attrs,
+                    int            log_attrs_len)
+{
+  PangoLogAttr *start = log_attrs;
+  PangoLogAttr attr_before = *start;
+
+  if (tailor_break (text, length, analysis, offset, log_attrs, log_attrs_len))
+    {
+      /* if tailored, we enforce some of the attrs from before
+       * tailoring at the boundary
+       */
+
+     start->backspace_deletes_character  = attr_before.backspace_deletes_character;
+
+     start->is_line_break      |= attr_before.is_line_break;
+     start->is_mandatory_break |= attr_before.is_mandatory_break;
+     start->is_cursor_position |= attr_before.is_cursor_position;
+    }
+}
+
+/**
+ * pango_get_log_attrs:
+ * @text: text to process. Must be valid UTF-8
+ * @length: length in bytes of @text
+ * @level: embedding level, or -1 if unknown
+ * @language: language tag
+ * @log_attrs: (array length=attrs_len): array with one `PangoLogAttr`
+ *   per character in @text, plus one extra, to be filled in
+ * @attrs_len: length of @log_attrs array
+ *
+ * Computes a `PangoLogAttr` for each character in @text.
+ *
+ * The @log_attrs array must have one `PangoLogAttr` for
+ * each position in @text; if @text contains N characters,
+ * it has N+1 positions, including the last position at the
+ * end of the text. @text should be an entire paragraph;
+ * logical attributes can't be computed without context
+ * (for example you need to see spaces on either side of
+ * a word to know the word is a word).
+ */
+void
+pango_get_log_attrs (const char    *text,
+                     int            length,
+                     int            level,
+                     PangoLanguage *language,
+                     PangoLogAttr  *log_attrs,
+                     int            attrs_len)
+{
+  int chars_broken;
+  PangoAnalysis analysis = { NULL };
+  PangoScriptIter iter;
+
+  g_return_if_fail (length == 0 || text != NULL);
+  g_return_if_fail (log_attrs != NULL);
+
+  analysis.level = level;
+  analysis.language = language;
+
+  pango_default_break (text, length, &analysis, log_attrs, attrs_len);
+
+  chars_broken = 0;
+
+  _pango_script_iter_init (&iter, text, length);
+  do
+    {
+      const char *run_start, *run_end;
+      PangoScript script;
+      int chars_in_range;
+
+      pango_script_iter_get_range (&iter, &run_start, &run_end, &script);
+      analysis.script = script;
+
+      chars_in_range = pango_utf8_strlen (run_start, run_end - run_start);
+
+      pango_tailor_break (run_start,
+                          run_end - run_start,
+                          &analysis,
+                          -1,
+                          log_attrs + chars_broken,
+                          chars_in_range + 1);
+
+      chars_broken += chars_in_range;
+    }
+  while (pango_script_iter_next (&iter));
+  _pango_script_iter_fini (&iter);
+
+  if (chars_broken + 1 > attrs_len)
+    g_warning ("pango_get_log_attrs: attrs_len should have been at least %d, but was %d.  Expect corrupted memory.",
+               chars_broken + 1,
+               attrs_len);
+}
+
+/* }}} */
