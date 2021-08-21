@@ -30,7 +30,6 @@
 #include "config.h"
 #include <pango/pangocairo.h>
 #include "test-common.h"
-#include "validate-log-attrs.h"
 
 
 static PangoContext *context;

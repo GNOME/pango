@@ -137,6 +137,28 @@ void                    pango_attr_break        (const char    *text,
                                                  PangoLogAttr  *attrs,
                                                  int            attrs_len);
 
+#define PANGO_VALIDATE_ERROR (pango_validate_error_quark ())
+
+typedef enum
+{
+  PANGO_VALIDATE_ERROR_FAILED,
+  PANGO_VALIDATE_ERROR_BREAK,
+  PANGO_VALIDATE_ERROR_GRAPHEME,
+  PANGO_VALIDATE_ERROR_WORD,
+  PANGO_VALIDATE_ERROR_SENTENCE,
+  PANGO_VALIDATE_ERROR_SPACE
+} PangoValidateError;
+
+PANGO_AVAILABLE_IN_1_50
+GQuark                 pango_validate_error_quark (void);
+
+PANGO_AVAILABLE_IN_1_50
+gboolean               pango_validate_log_attrs (const char          *text,
+                                                 int                  length,
+                                                 const PangoLogAttr  *log_attrs,
+                                                 int                  attrs_len,
+                                                 GError             **error);
+
 G_END_DECLS
 
 #endif /* __PANGO_BREAK_H__ */
