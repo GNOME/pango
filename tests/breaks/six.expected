@@ -1,1 +1,0 @@
-Bail out! ERROR:../tests/test-break.c:58:test_file: assertion failed (error == NULL): Failed to open file “tests/breaks/six.break”: No such file or directory (g-file-error-quark, 4)
