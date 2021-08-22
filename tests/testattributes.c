@@ -116,15 +116,6 @@ test_attributes_register (void)
   g_type_class_unref (class);
 }
 
-#define g_assert_as(x, y) \
-  if (x == NULL) \
-    { \
-      GString *s = g_string_new (""); \
-      print_attribute (y, s); \
-      g_print ("failed to convert: %s\n", s->str); \
-      g_string_free (s, TRUE); \
-    }
-
 static void
 test_binding (PangoAttribute *attr)
 {
@@ -140,31 +131,31 @@ test_binding (PangoAttribute *attr)
   switch (attr_base[attr->klass->type])
     {
     case INT:
-      g_assert_as (pango_attribute_as_int (attr), attr);
+      g_assert_nonnull (pango_attribute_as_int (attr));
       break;
     case LANGUAGE:
-      g_assert_as (pango_attribute_as_language (attr), attr);
+      g_assert_nonnull (pango_attribute_as_language (attr));
       break;
     case STRING:
-      g_assert_as (pango_attribute_as_string (attr), attr);
+      g_assert_nonnull (pango_attribute_as_string (attr));
       break;
     case SIZE:
-      g_assert_as (pango_attribute_as_size (attr), attr);
+      g_assert_nonnull (pango_attribute_as_size (attr));
       break;
     case FONT_DESC:
-      g_assert_as (pango_attribute_as_font_desc (attr), attr);
+      g_assert_nonnull (pango_attribute_as_font_desc (attr));
       break;
     case COLOR:
-      g_assert_as (pango_attribute_as_color (attr), attr);
+      g_assert_nonnull (pango_attribute_as_color (attr));
       break;
     case SHAPE:
-      g_assert_as (pango_attribute_as_shape (attr), attr);
+      g_assert_nonnull (pango_attribute_as_shape (attr));
       break;
     case FLOAT:
-      g_assert_as (pango_attribute_as_float (attr), attr);
+      g_assert_nonnull (pango_attribute_as_float (attr));
       break;
     case FONT_FEATURES:
-      g_assert_as (pango_attribute_as_font_features (attr), attr);
+      g_assert_nonnull (pango_attribute_as_font_features (attr));
       break;
     default:
       g_assert_not_reached ();
