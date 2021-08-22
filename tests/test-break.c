@@ -106,8 +106,8 @@ test_file (const gchar *filename, GString *string)
 
   s1 = g_string_new ("Breaks: ");
   s2 = g_string_new ("Whitespace: ");
-  s3 = g_string_new ("Words:");
-  s4 = g_string_new ("Sentences:");
+  s3 = g_string_new ("Sentences:");
+  s4 = g_string_new ("Words:");
   s5 = g_string_new ("Graphemes:");
 
   g_string_append (string, "Text: ");
@@ -157,37 +157,38 @@ test_file (const gchar *filename, GString *string)
           w++;
         }
 
-      if (log.is_word_boundary)
-        {
-          g_string_append (s3, "b");
-          o++;
-        }
-      if (log.is_word_start)
-        {
-          g_string_append (s3, "s");
-          o++;
-        }
-      if (log.is_word_end)
-        {
-          g_string_append (s3, "e");
-          o++;
-        }
-
       if (log.is_sentence_boundary)
         {
-          g_string_append (s4, "b");
+          g_string_append (s3, "b");
           s++;
         }
       if (log.is_sentence_start)
         {
-          g_string_append (s4, "s");
+          g_string_append (s3, "s");
           s++;
         }
       if (log.is_sentence_end)
         {
-          g_string_append (s4, "e");
+          g_string_append (s3, "e");
           s++;
         }
+
+      if (log.is_word_boundary)
+        {
+          g_string_append (s4, "b");
+          o++;
+        }
+      if (log.is_word_start)
+        {
+          g_string_append (s4, "s");
+          o++;
+        }
+      if (log.is_word_end)
+        {
+          g_string_append (s4, "e");
+          o++;
+        }
+
       if (log.is_cursor_position)
         {
           g_string_append (s5, "b");
@@ -199,8 +200,8 @@ test_file (const gchar *filename, GString *string)
       g_string_append_printf (string, "%*s", m, "");
       g_string_append_printf (s1, "%*s", m - b, "");
       g_string_append_printf (s2, "%*s", m - w, "");
-      g_string_append_printf (s3, "%*s", m - o, "");
-      g_string_append_printf (s4, "%*s", m - s, "");
+      g_string_append_printf (s3, "%*s", m - s, "");
+      g_string_append_printf (s4, "%*s", m - o, "");
       g_string_append_printf (s5, "%*s", m - g, "");
 
       if (i < len - 1)
