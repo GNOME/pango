@@ -2641,7 +2641,8 @@ direction_simple (PangoDirection d)
       return -1;
     case PANGO_DIRECTION_NEUTRAL :
       return 0;
-    /* no default, compiler should complain if a new values is added */
+    default:
+      break;
     }
   /* not reached */
   return 0;
@@ -3661,7 +3662,7 @@ get_need_hyphen (PangoItem  *item,
             }
         }
 
-      switch (g_unichar_type (wc))
+      switch ((int)g_unichar_type (wc))
         {
         case G_UNICODE_SPACE_SEPARATOR:
         case G_UNICODE_LINE_SEPARATOR:
@@ -4200,6 +4201,9 @@ process_line (PangoLayout    *layout,
            * justification */
           wrapped = TRUE;
           goto done;
+
+        default:
+          break;
         }
     }
 
@@ -4278,7 +4282,7 @@ static gboolean
 affects_itemization (PangoAttribute *attr,
                      gpointer        data)
 {
-  switch (attr->klass->type)
+  switch ((int)attr->klass->type)
     {
     /* These affect font selection */
     case PANGO_ATTR_LANGUAGE:
@@ -4310,7 +4314,7 @@ static gboolean
 affects_break_or_shape (PangoAttribute *attr,
                         gpointer        data)
 {
-  switch (attr->klass->type)
+  switch ((int)attr->klass->type)
     {
     /* Affects breaks */
     case PANGO_ATTR_ALLOW_BREAKS:
@@ -5322,30 +5326,27 @@ pango_layout_line_get_extents_and_height (PangoLayoutLine *line,
   switch (private->cache_status)
     {
     case CACHED:
-      {
-        if (ink_rect)
-          *ink_rect = private->ink_rect;
-        if (logical_rect)
-          *logical_rect = private->logical_rect;
-        if (height)
-          *height = private->height;
-        return;
-      }
+      if (ink_rect)
+        *ink_rect = private->ink_rect;
+      if (logical_rect)
+        *logical_rect = private->logical_rect;
+      if (height)
+        *height = private->height;
+      return;
+
     case NOT_CACHED:
-      {
-        caching = TRUE;
-        if (!ink_rect)
-          ink_rect = &private->ink_rect;
-        if (!logical_rect)
-          logical_rect = &private->logical_rect;
-        if (!height)
-          height = &private->height;
-        break;
-      }
+      caching = TRUE;
+      if (!ink_rect)
+        ink_rect = &private->ink_rect;
+      if (!logical_rect)
+        logical_rect = &private->logical_rect;
+      if (!height)
+        height = &private->height;
+      break;
+
     case LEAKED:
-      {
-        break;
-      }
+    default:
+      break;
     }
 
   if (ink_rect)
