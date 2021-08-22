@@ -1729,6 +1729,8 @@ tailor_break (const char    *text,
  * and can be %NULL.
  *
  * See [func@Pango.tailor_break] for language-specific breaks.
+ *
+ * See [func@Pango.attr_break] for attribute-based customization.
  */
 void
 pango_default_break (const char    *text,
@@ -1754,8 +1756,8 @@ pango_default_break (const char    *text,
  * For most purposes you may want to use
  * [func@Pango.get_log_attrs].
  *
- * Deprecated: 1.44: Use [func@Pango.default_break] and
- *   [func@Pango.tailor_break]
+ * Deprecated: 1.44: Use [func@Pango.default_break],
+ *   [func@Pango.tailor_break] and func@Pango.attr_break].
  */
 void
 pango_break (const char    *text,
@@ -1790,6 +1792,10 @@ pango_break (const char    *text,
  * If @offset is not -1, it is used to apply attributes
  * from @analysis that are relevant to line breaking.
  *
+ * Note that it is better to pass -1 for @offset and
+ * use [func@Pango.attr_break] to apply attributes to
+ * the whole paragraph.
+ *
  * Since: 1.44
  */
 void
@@ -1815,6 +1821,38 @@ pango_tailor_break (const char    *text,
      start->is_mandatory_break |= attr_before.is_mandatory_break;
      start->is_cursor_position |= attr_before.is_cursor_position;
     }
+}
+
+/**
+ * pango_attr_break:
+ * @text: text to break. Must be valid UTF-8
+ * @length: length of text in bytes (may be -1 if @text is nul-terminated)
+ * @attr_list: `PangoAttrList` to apply
+ * @offset: Byte offset of @text from the beginning of the paragraph
+ * @attrs: (array length=attrs_len): array with one `PangoLogAttr`
+ *   per character in @text, plus one extra, to be filled in
+ * @attrs_len: length of @attrs array
+ *
+ * Apply customization from attributes to the breaks in @attrs.
+ *
+ * The line breaks are assumed to have been produced
+ * by [func@Pango.default_break] and [func@Pango.tailor_break].
+ *
+ * Since: 1.50
+ */
+void
+pango_attr_break (const char    *text,
+                  int            length,
+                  PangoAttrList *attr_list,
+                  int            offset,
+                  PangoLogAttr  *attrs,
+                  int            attrs_len)
+{
+  GSList *attributes;
+
+  attributes = pango_attr_list_get_attributes (attr_list);
+  break_attrs (text, length, attributes, offset, attrs, attrs_len);
+  g_slist_free_full (attributes, (GDestroyNotify)pango_attribute_destroy);
 }
 
 /**
