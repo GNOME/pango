@@ -157,6 +157,7 @@ test_binding (PangoAttribute *attr)
     case FONT_FEATURES:
       g_assert_nonnull (pango_attribute_as_font_features (attr));
       break;
+    case INVALID:
     default:
       g_assert_not_reached ();
     }

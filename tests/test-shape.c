@@ -57,7 +57,7 @@ static gboolean
 affects_itemization (PangoAttribute *attr,
                      gpointer        data)
 {
-  switch (attr->klass->type)
+  switch ((int)attr->klass->type)
     {
     /* These affect font selection */
     case PANGO_ATTR_LANGUAGE:
@@ -89,11 +89,12 @@ static gboolean
 affects_break_or_shape (PangoAttribute *attr,
                         gpointer        data)
 {
-  switch (attr->klass->type)
+  switch ((int)attr->klass->type)
     {
     /* Affects breaks */
     case PANGO_ATTR_ALLOW_BREAKS:
     /* Affects shaping */
+    case PANGO_ATTR_INSERT_HYPHENS:
     case PANGO_ATTR_FONT_FEATURES:
     case PANGO_ATTR_SHOW:
       return TRUE;
