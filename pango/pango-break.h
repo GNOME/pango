@@ -105,7 +105,7 @@ void                    pango_get_log_attrs     (const char    *text,
                                                  int            length,
                                                  int            level,
                                                  PangoLanguage *language,
-                                                 PangoLogAttr  *log_attrs,
+                                                 PangoLogAttr  *attrs,
                                                  int            attrs_len);
 
 PANGO_AVAILABLE_IN_ALL
@@ -120,8 +120,9 @@ void                    pango_tailor_break      (const char    *text,
                                                  int            length,
                                                  PangoAnalysis *analysis,
                                                  int            offset,
-                                                 PangoLogAttr  *log_attrs,
-                                                 int            log_attrs_len);
+                                                 PangoLogAttr  *attrs,
+                                                 int            attrs_len);
+
 
 G_END_DECLS
 
