@@ -1475,6 +1475,8 @@ pango_attribute_as_int (PangoAttribute *attr)
     case PANGO_ATTR_SHOW:
     case PANGO_ATTR_INSERT_HYPHENS:
     case PANGO_ATTR_OVERLINE:
+    case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
+    case PANGO_ATTR_TEXT_TRANSFORM:
       return (PangoAttrInt *)attr;
 
     default:
