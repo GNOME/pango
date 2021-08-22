@@ -250,6 +250,8 @@ draw_underline (PangoRenderer *renderer,
                                            rect->width,
                                            3 * rect->height);
       break;
+    default:
+      break;
     }
 }
 
@@ -273,6 +275,8 @@ draw_overline (PangoRenderer *renderer,
                                      rect->y,
                                      rect->width,
                                      rect->height);
+      break;
+    default:
       break;
     }
 }
@@ -388,6 +392,8 @@ add_underline (PangoRenderer    *renderer,
           current_rect->height = new_rect.height;
         }
       break;
+    default:
+      break;
     }
 
   if (renderer->underline == state->underline &&
@@ -438,6 +444,8 @@ add_overline (PangoRenderer    *renderer,
           current_rect->y = new_rect.y;
           current_rect->height = new_rect.height;
         }
+      break;
+    default:
       break;
     }
 
