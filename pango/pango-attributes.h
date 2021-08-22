@@ -67,7 +67,7 @@ typedef struct _PangoAttrFontFeatures PangoAttrFontFeatures;
  * @PANGO_ATTR_ABSOLUTE_SIZE: font size in pixels scaled by %PANGO_SCALE ([struct@Pango.AttrInt])
  * @PANGO_ATTR_GRAVITY: base text gravity ([struct@Pango.AttrInt])
  * @PANGO_ATTR_GRAVITY_HINT: gravity hint ([struct@Pango.AttrInt])
- * @PANGO_ATTR_FONT_FEATURES: OpenType font features ([struct@Pango.AttrString]). Since 1.38
+ * @PANGO_ATTR_FONT_FEATURES: OpenType font features ([struct@Pango.AttrFontFeatures]). Since 1.38
  * @PANGO_ATTR_FOREGROUND_ALPHA: foreground alpha ([struct@Pango.AttrInt]). Since 1.38
  * @PANGO_ATTR_BACKGROUND_ALPHA: background alpha ([struct@Pango.AttrInt]). Since 1.38
  * @PANGO_ATTR_ALLOW_BREAKS: whether breaks are allowed ([struct@Pango.AttrInt]). Since 1.44
@@ -110,7 +110,7 @@ typedef enum
   PANGO_ATTR_ABSOLUTE_SIZE,     /* PangoAttrSize */
   PANGO_ATTR_GRAVITY,           /* PangoAttrInt */
   PANGO_ATTR_GRAVITY_HINT,      /* PangoAttrInt */
-  PANGO_ATTR_FONT_FEATURES,     /* PangoAttrString */
+  PANGO_ATTR_FONT_FEATURES,     /* PangoAttrFontFeatures */
   PANGO_ATTR_FOREGROUND_ALPHA,  /* PangoAttrInt */
   PANGO_ATTR_BACKGROUND_ALPHA,  /* PangoAttrInt */
   PANGO_ATTR_ALLOW_BREAKS,      /* PangoAttrInt */
