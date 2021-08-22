@@ -1,8 +1,8 @@
-Overview of changes
-===================
-
+Overview of changes in 1.49.0
+=============================
 * Rename git `master` branch to `main` (#579)
 * Bump version to 1.49
+* Require fribidi 1.0.6
 * Fix threadsafety issues with Thai
 * Fix a rounding problem on i386
 * Fix font choice for ellipsis (#575)
@@ -12,8 +12,14 @@ Overview of changes
 * markup: Allow specifying size and rise in points (#67)
 * markup: Allow specifying size as percentage (#23)
 * Rewrite pango_layout_move_cursor_visually (#157, #585, #587)
-* Add a line-height attribute and make logical
-  line extents respect it
+* Add a line-height attribute and make logical line extents respect it
+* Add pango_justify_last_line (#74)
+* Add pango_shape_item
+* Add a text-transform attribute and implement it
+* Clean up fribidi api usage
+* Fix a bug in the gravity data table (#597)
+* pango-view: Improve the --annotate option
+* Fix a possible crash in rendering strikethroughs (#599)
 
 Overview of changes in 1.48.7
 =============================
