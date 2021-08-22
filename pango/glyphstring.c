@@ -391,7 +391,7 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
   int cluster_chars = 0;
   int cluster_offset = 0;
 
-  char *p;
+  const char *p;
 
   g_return_if_fail (glyphs != NULL);
   g_return_if_fail (length >= 0);
@@ -520,7 +520,7 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
   int end_index = -1;
 
   int cluster_chars = 0;
-  char *p;
+  const char *p;
 
   gboolean found = FALSE;
 
@@ -616,7 +616,7 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 	{
 	  if (index)
 	    {
-	      char *p = text + start_index;
+	      const char *p = text + start_index;
 	      int i = 0;
 
 	      while (i + 1 <= cp)
@@ -635,7 +635,7 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 	{
 	  if (index)
 	    {
-	      char *p = text + start_index;
+	      const char *p = text + start_index;
 	      int i = 0;
 
 	      while (i + 1 < cp)
