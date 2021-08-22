@@ -77,6 +77,8 @@ typedef struct _PangoAttrFontFeatures PangoAttrFontFeatures;
  * @PANGO_ATTR_OVERLINE_COLOR: overline color ([struct@Pango.AttrColor]). Since 1.46
  * @PANGO_ATTR_LINE_HEIGHT: line height factor ([struct@Pango.AttrFloat]). Since: 1.50
  * @PANGO_ATTR_ABSOLUTE_LINE_HEIGHT: line height ([struct@Pango.AttrInt]). Since: 1.50
+ * @PANGO_ATTR_WORD: override segmentation to classify the range of the attribute as a single word ([struct@Pango.AttrInt]). Since 1.50
+ * @PANGO_ATTR_SENTENCE: override segmentation to classify the range of the attribute as a single sentence ([struct@Pango.AttrInt]). Since 1.50
  *
  * The `PangoAttrType` distinguishes between different types of attributes.
  *
@@ -121,6 +123,8 @@ typedef enum
   PANGO_ATTR_LINE_HEIGHT,       /* PangoAttrFloat */
   PANGO_ATTR_ABSOLUTE_LINE_HEIGHT, /* PangoAttrInt */
   PANGO_ATTR_TEXT_TRANSFORM,    /* PangoAttrInt */
+  PANGO_ATTR_WORD,              /* PangoAttrInt */
+  PANGO_ATTR_SENTENCE,          /* PangoAttrInt */
 } PangoAttrType;
 
 /**
@@ -538,6 +542,12 @@ PANGO_AVAILABLE_IN_1_38
 PangoAttribute *        pango_attr_background_alpha_new         (guint16                      alpha);
 PANGO_AVAILABLE_IN_1_44
 PangoAttribute *        pango_attr_allow_breaks_new             (gboolean                     allow_breaks);
+
+PANGO_AVAILABLE_IN_1_50
+PangoAttribute *        pango_attr_word_new                     (void);
+PANGO_AVAILABLE_IN_1_50
+PangoAttribute *        pango_attr_sentence_new                 (void);
+
 PANGO_AVAILABLE_IN_1_44
 PangoAttribute *        pango_attr_insert_hyphens_new           (gboolean                     insert_hyphens);
 PANGO_AVAILABLE_IN_1_46

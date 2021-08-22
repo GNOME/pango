@@ -1303,6 +1303,60 @@ pango_attr_show_new (PangoShowFlags flags)
 }
 
 /**
+ * pango_attr_word_new:
+ *
+ * Marks the range of the attribute as a single word.
+ *
+ * Note that this may require adjustments to word and
+ * sentence classification around the range.
+ *
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
+ *
+ * Since: 1.50
+ */
+PangoAttribute *
+pango_attr_word_new (void)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_WORD,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal,
+  };
+
+  return pango_attr_int_new (&klass, 0);
+}
+
+/**
+ * pango_attr_sentence_new:
+ *
+ * Marks the range of the attribute as a single sentence.
+ *
+ * Note that this may require adjustments to word and
+ * sentence classification around the range.
+ *
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
+ *
+ * Since: 1.50
+ */
+PangoAttribute *
+pango_attr_sentence_new (void)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_SENTENCE,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal,
+  };
+
+  return pango_attr_int_new (&klass, 0);
+}
+
+/**
  * pango_attr_overline_new:
  * @overline: the overline style
  *
@@ -1477,6 +1531,8 @@ pango_attribute_as_int (PangoAttribute *attr)
     case PANGO_ATTR_OVERLINE:
     case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
     case PANGO_ATTR_TEXT_TRANSFORM:
+    case PANGO_ATTR_WORD:
+    case PANGO_ATTR_SENTENCE:
       return (PangoAttrInt *)attr;
 
     default:

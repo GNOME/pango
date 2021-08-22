@@ -201,6 +201,12 @@ text_transform
   'none', 'lowercase', 'uppercase' or 'capitalize'. Support for text transformation
   was added in Pango 1.50.
 
+segment
+: Overrides word or sentence boundaries. The value can be 'word' or 'sentence',
+  to indicate that the span should be treated as a single word or sentence.
+  Overlapping segments will be split to allow this, and line breaks will be
+  adjusted accordingly. Available since Pango 1.50.
+
 ## Convenience Tags
 
 `<b>`
