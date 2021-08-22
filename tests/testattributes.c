@@ -66,10 +66,15 @@ test_attributes_basic (void)
   test_copy (pango_attr_shape_new (&rect, &rect));
   test_copy (pango_attr_gravity_new (PANGO_GRAVITY_SOUTH));
   test_copy (pango_attr_gravity_hint_new (PANGO_GRAVITY_HINT_STRONG));
+  test_copy (pango_attr_font_features_new ("csc=1"));
+  test_copy (pango_attr_foreground_alpha_new (8000));
+  test_copy (pango_attr_background_alpha_new (8000));
   test_copy (pango_attr_allow_breaks_new (FALSE));
   test_copy (pango_attr_show_new (PANGO_SHOW_SPACES));
   test_copy (pango_attr_insert_hyphens_new (FALSE));
   test_copy (pango_attr_text_transform_new (PANGO_TEXT_TRANSFORM_UPPERCASE));
+  test_copy (pango_attr_line_height_new (1.5));
+  test_copy (pango_attr_line_height_new_absolute (3000));
 }
 
 static void
@@ -109,6 +114,107 @@ test_attributes_register (void)
     }
 
   g_type_class_unref (class);
+}
+
+#define g_assert_as(x, y) \
+  if (x == NULL) \
+    { \
+      GString *s = g_string_new (""); \
+      print_attribute (y, s); \
+      g_print ("failed to convert: %s\n", s->str); \
+      g_string_free (s, TRUE); \
+    }
+
+static void
+test_binding (PangoAttribute *attr)
+{
+  enum {
+    INVALID, INT, LANGUAGE, STRING, SIZE, FONT_DESC, COLOR, SHAPE, FLOAT, FONT_FEATURES,
+  } attr_base[] = {
+    INVALID, LANGUAGE, STRING, INT, INT, INT, INT, SIZE, FONT_DESC, COLOR,
+    COLOR, INT, INT, INT, SHAPE, FLOAT, INT, INT, COLOR, COLOR, SIZE,
+    INT, INT, FONT_FEATURES, INT, INT, INT, INT, INT, INT, COLOR, FLOAT,
+    INT, INT, INT, INT
+  };
+
+  switch (attr_base[attr->klass->type])
+    {
+    case INT:
+      g_assert_as (pango_attribute_as_int (attr), attr);
+      break;
+    case LANGUAGE:
+      g_assert_as (pango_attribute_as_language (attr), attr);
+      break;
+    case STRING:
+      g_assert_as (pango_attribute_as_string (attr), attr);
+      break;
+    case SIZE:
+      g_assert_as (pango_attribute_as_size (attr), attr);
+      break;
+    case FONT_DESC:
+      g_assert_as (pango_attribute_as_font_desc (attr), attr);
+      break;
+    case COLOR:
+      g_assert_as (pango_attribute_as_color (attr), attr);
+      break;
+    case SHAPE:
+      g_assert_as (pango_attribute_as_shape (attr), attr);
+      break;
+    case FLOAT:
+      g_assert_as (pango_attribute_as_float (attr), attr);
+      break;
+    case FONT_FEATURES:
+      g_assert_as (pango_attribute_as_font_features (attr), attr);
+      break;
+    default:
+      g_assert_not_reached ();
+    }
+
+  pango_attribute_destroy (attr);
+}
+
+static void
+test_binding_helpers (void)
+{
+  PangoFontDescription *desc;
+  PangoRectangle rect = { 0, 0, 10, 10 };
+
+  test_binding (pango_attr_language_new (pango_language_from_string ("ja-JP")));
+  test_binding (pango_attr_family_new ("Times"));
+  test_binding (pango_attr_foreground_new (100, 200, 300));
+  test_binding (pango_attr_background_new (100, 200, 300));
+  test_binding (pango_attr_size_new (1024));
+  test_binding (pango_attr_size_new_absolute (1024));
+  test_binding (pango_attr_style_new (PANGO_STYLE_ITALIC));
+  test_binding (pango_attr_weight_new (PANGO_WEIGHT_ULTRALIGHT));
+  test_binding (pango_attr_variant_new (PANGO_VARIANT_SMALL_CAPS));
+  test_binding (pango_attr_stretch_new (PANGO_STRETCH_SEMI_EXPANDED));
+  desc = pango_font_description_from_string ("Computer Modern 12");
+  test_binding (pango_attr_font_desc_new (desc));
+  pango_font_description_free (desc);
+  test_binding (pango_attr_underline_new (PANGO_UNDERLINE_LOW));
+  test_binding (pango_attr_underline_new (PANGO_UNDERLINE_ERROR_LINE));
+  test_binding (pango_attr_underline_color_new (100, 200, 300));
+  test_binding (pango_attr_overline_new (PANGO_OVERLINE_SINGLE));
+  test_binding (pango_attr_overline_color_new (100, 200, 300));
+  test_binding (pango_attr_strikethrough_new (TRUE));
+  test_binding (pango_attr_strikethrough_color_new (100, 200, 300));
+  test_binding (pango_attr_rise_new (256));
+  test_binding (pango_attr_scale_new (2.56));
+  test_binding (pango_attr_fallback_new (FALSE));
+  test_binding (pango_attr_letter_spacing_new (1024));
+  test_binding (pango_attr_shape_new (&rect, &rect));
+  test_binding (pango_attr_gravity_new (PANGO_GRAVITY_SOUTH));
+  test_binding (pango_attr_gravity_hint_new (PANGO_GRAVITY_HINT_STRONG));
+  test_binding (pango_attr_font_features_new ("csc=1"));
+  test_binding (pango_attr_foreground_alpha_new (8000));
+  test_binding (pango_attr_background_alpha_new (8000));
+  test_binding (pango_attr_allow_breaks_new (FALSE));
+  test_binding (pango_attr_show_new (PANGO_SHOW_SPACES));
+  test_binding (pango_attr_insert_hyphens_new (FALSE));
+  test_binding (pango_attr_text_transform_new (PANGO_TEXT_TRANSFORM_UPPERCASE));
+  test_binding (pango_attr_line_height_new (1.5));
+  test_binding (pango_attr_line_height_new_absolute (3000));
 }
 
 static void
@@ -1211,6 +1317,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/attributes/basic", test_attributes_basic);
   g_test_add_func ("/attributes/equal", test_attributes_equal);
   g_test_add_func ("/attributes/register", test_attributes_register);
+  g_test_add_func ("/attributes/binding-helpers", test_binding_helpers);
   g_test_add_func ("/attributes/list/basic", test_list);
   g_test_add_func ("/attributes/list/change", test_list_change);
   g_test_add_func ("/attributes/list/change2", test_list_change2);
