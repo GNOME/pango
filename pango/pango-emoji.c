@@ -205,7 +205,10 @@ typedef gboolean bool;
 enum { false = FALSE, true = TRUE };
 typedef unsigned char *emoji_text_iter_t;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch-default"
 #include "emoji_presentation_scanner.c"
+#pragma GCC diagnostic pop
 
 
 PangoEmojiIter *
