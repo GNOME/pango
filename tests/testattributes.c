@@ -1,5 +1,5 @@
 /* Pango
- * testiter.c: Test pango attributes
+ * testattributes.c: Test pango attributes
  *
  * Copyright (C) 2015 Red Hat, Inc.
  *
