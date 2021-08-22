@@ -378,6 +378,9 @@ start_element_handler  (GMarkupParseContext *context,
       if (strcmp ("u", element_name) == 0)
 	parse_func = u_parse_func;
       break;
+
+    default:
+      break;
     }
 
   if (parse_func == NULL)

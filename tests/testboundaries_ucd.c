@@ -263,6 +263,9 @@ do_test (const gchar *filename,
           case G_IO_STATUS_NORMAL:
             line[terminator_pos] = '\0';
             break;
+
+          default:
+            break;
         }
 
       g_test_message ("Parsing line: %s", line);
@@ -276,7 +279,7 @@ do_test (const gchar *filename,
           if (! attrs_equal (attrs, expected_attrs, num_attrs, bits))
             {
               gchar *str = make_test_string (string, attrs, bits);
-              gchar *comments = strchr (line, '#');
+              char *comments = strchr (line, '#');
               if (comments) /* don't print the # comment in the error message.  print it separately */
 	        {
 		  *comments = '\0';
@@ -284,7 +287,7 @@ do_test (const gchar *filename,
 		}
 	      else
 	        {
-		  comments = "";
+		  comments = (char *)"";
 		}
 
               g_test_message ("%s: line %d failed", filename, i);

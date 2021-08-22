@@ -314,7 +314,7 @@ test_get_cursor_crash (void)
   PangoLayout *layout;
   int i;
 
-  char *string = "foo\n\rbar\r\nbaz\n\nqux\n\n..";
+  const char *string = "foo\n\rbar\r\nbaz\n\nqux\n\n..";
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 

@@ -79,6 +79,7 @@ pango_bidi_type_for_unichar (gunichar ch)
     case FRIBIDI_TYPE_RLI:  return PANGO_BIDI_TYPE_RLI;
     case FRIBIDI_TYPE_FSI:  return PANGO_BIDI_TYPE_FSI;
     case FRIBIDI_TYPE_PDI:  return PANGO_BIDI_TYPE_PDI;
+    case _FRIBIDI_TYPE_SENTINEL:
     default:
       return PANGO_BIDI_TYPE_ON;
     }

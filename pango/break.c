@@ -356,7 +356,7 @@ pango_default_break (const gchar   *text,
 	  makes_hangul_syllable = (prev_end == this_start) || (prev_end + 1 == this_start);
 	}
 
-      switch (type)
+      switch ((int)type)
         {
         case G_UNICODE_SPACE_SEPARATOR:
         case G_UNICODE_LINE_SEPARATOR:
@@ -387,7 +387,7 @@ pango_default_break (const gchar   *text,
 
         /* Find the GraphemeBreakType of wc */
 	GB_type = GB_Other;
-	switch ((int) type)
+	switch ((int)type)
 	  {
 	  case G_UNICODE_FORMAT:
 	    if (G_UNLIKELY (wc == 0x200C))
@@ -471,8 +471,6 @@ pango_default_break (const gchar   *text,
               {
                 if (prev_GB_type == GB_RI_Odd)
                   GB_type = GB_RI_Even;
-                else if (prev_GB_type == GB_RI_Even)
-                  GB_type = GB_RI_Odd;
                 else
                   GB_type = GB_RI_Odd;
                 break;
@@ -483,6 +481,9 @@ pango_default_break (const gchar   *text,
             /* Fitzpatrick modifiers */
             if (wc >= 0x1F3FB && wc <= 0x1F3FF)
               GB_type = GB_Extend;
+            break;
+
+          default:
             break;
 	  }
 
@@ -587,6 +588,8 @@ pango_default_break (const gchar   *text,
 		  if (wc == 0x058A)
 		    WB_type = WB_ALetter; /* ALetter exceptions */
 		  break;
+                default:
+                  break;
 		}
 
 	    if (WB_type == WB_Other)
@@ -600,6 +603,8 @@ pango_default_break (const gchar   *text,
 		  if (wc != 0x003A && wc != 0xFE13 && wc != 0x002E)
 		    WB_type = WB_MidNum; /* MidNum */
 		  break;
+                default:
+                  break;
 		}
 
 	    if (WB_type == WB_Other)
@@ -683,6 +688,8 @@ pango_default_break (const gchar   *text,
 		  if (break_type != G_UNICODE_BREAK_COMPLEX_CONTEXT && script != PANGO_SCRIPT_HIRAGANA)
 		    WB_type = WB_ALetter; /* ALetter */
 		  break;
+                default:
+                  break;
 		}
 
 	    if (WB_type == WB_Other)
@@ -870,6 +877,9 @@ pango_default_break (const gchar   *text,
 		    SB_type = SB_STerm;
 
 		  break;
+
+                default:
+                  break;
 		}
 
 	    if (SB_type == SB_Other)
@@ -1016,7 +1026,7 @@ pango_default_break (const gchar   *text,
 
       /* Rule LB1:
 	 assign a line breaking class to each code point of the input. */
-      switch (break_type)
+      switch ((int)break_type)
 	{
 	case G_UNICODE_BREAK_AMBIGUOUS:
 	case G_UNICODE_BREAK_SURROGATE:
@@ -1037,7 +1047,7 @@ pango_default_break (const gchar   *text,
 	  break;
 
 	default:
-	  ;
+          break;
 	}
 
       /* If it's not a grapheme boundary, it's not a line break either */
@@ -1080,8 +1090,6 @@ pango_default_break (const gchar   *text,
 	    {
 	      if (prev_LB_type == LB_RI_Odd)
 		LB_type = LB_RI_Even;
-	      else if (prev_LB_type == LB_RI_Even)
-		LB_type = LB_RI_Odd;
 	      else
 		LB_type = LB_RI_Odd;
 	    }

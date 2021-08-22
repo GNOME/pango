@@ -160,7 +160,7 @@ test_metrics (void)
 static void
 test_extents (void)
 {
-  char *str = "Composer";
+  const char *str = "Composer";
   GList *items;
   PangoItem *item;
   PangoGlyphString *glyphs;
