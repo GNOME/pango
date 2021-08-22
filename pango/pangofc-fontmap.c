@@ -1649,6 +1649,8 @@ is_alias_family (const char *family_name)
       return (g_ascii_strcasecmp (family_name, "sans") == 0 ||
 	      g_ascii_strcasecmp (family_name, "serif") == 0 ||
 	      g_ascii_strcasecmp (family_name, "system-ui") == 0);
+    default:
+      return FALSE;
     }
 
   return FALSE;
