@@ -77,6 +77,22 @@ test_layouts_data = [
   'layouts/valid-3',
   'layouts/valid-4',
   'layouts/valid-5',
+  'layouts/valid-6',
+  'layouts/valid-7',
+  'layouts/valid-8',
+  'layouts/valid-9',
+  'layouts/valid-10',
+  'layouts/valid-11',
+  'layouts/valid-12',
+  'layouts/valid-13',
+  'layouts/valid-14',
+  'layouts/valid-15',
+  'layouts/valid-16',
+  'layouts/valid-17',
+  'layouts/valid-18',
+  'layouts/valid-19',
+  'layouts/valid-20',
+  'layouts/valid-21',
 ]
 
 test_markups_data = [
@@ -97,7 +113,6 @@ test_markups_data = [
   'markups/fail-15',
   'markups/fail-16',
   'markups/fail-17',
-  'markups/fail-19',
   'markups/fail-20',
   'markups/fail-21',
   'markups/fail-22',
@@ -137,12 +152,20 @@ test_markups_data = [
   'markups/valid-17',
   'markups/valid-18',
   'markups/valid-19',
+  'markups/valid-20',
+  'markups/valid-21',
+  'markups/valid-22',
+  'markups/valid-23',
+  'markups/valid-24',
 ]
 
 test_breaks_data = [
   'breaks/one',
   'breaks/two',
   'breaks/three',
+  'breaks/nine',
+  'breaks/ten',
+  'breaks/eleven',
 ]
 
 if thai_dep.found()
@@ -151,6 +174,7 @@ endif
 
 test_items_data = [
   'itemize/one',
+  'itemize/two',
 ]
 
 installed_test_layouts_data = []
