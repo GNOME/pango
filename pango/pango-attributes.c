@@ -1456,7 +1456,7 @@ pango_attr_text_transform_new (PangoTextTransform transform)
 PangoAttrInt *
 pango_attribute_as_int (PangoAttribute *attr)
 {
-  switch (attr->klass->type)
+  switch ((int)attr->klass->type)
     {
     case PANGO_ATTR_STYLE:
     case PANGO_ATTR_WEIGHT:
@@ -1500,7 +1500,7 @@ pango_attribute_as_int (PangoAttribute *attr)
 PangoAttrFloat *
 pango_attribute_as_float (PangoAttribute *attr)
 {
-  switch (attr->klass->type)
+  switch ((int)attr->klass->type)
     {
     case PANGO_ATTR_SCALE:
     case PANGO_ATTR_LINE_HEIGHT:
@@ -1525,7 +1525,7 @@ pango_attribute_as_float (PangoAttribute *attr)
 PangoAttrString *
 pango_attribute_as_string (PangoAttribute *attr)
 {
-  switch (attr->klass->type)
+  switch ((int)attr->klass->type)
     {
     case PANGO_ATTR_FAMILY:
       return (PangoAttrString *)attr;
@@ -1551,7 +1551,7 @@ pango_attribute_as_string (PangoAttribute *attr)
 PangoAttrSize *
 pango_attribute_as_size (PangoAttribute *attr)
 {
-  switch (attr->klass->type)
+  switch ((int)attr->klass->type)
     {
     case PANGO_ATTR_SIZE:
     case PANGO_ATTR_ABSOLUTE_SIZE:
@@ -1578,7 +1578,7 @@ pango_attribute_as_size (PangoAttribute *attr)
 PangoAttrColor *
 pango_attribute_as_color (PangoAttribute *attr)
 {
-  switch (attr->klass->type)
+  switch ((int)attr->klass->type)
     {
     case PANGO_ATTR_FOREGROUND:
     case PANGO_ATTR_BACKGROUND:
@@ -1608,7 +1608,7 @@ pango_attribute_as_color (PangoAttribute *attr)
 PangoAttrFontDesc *
 pango_attribute_as_font_desc (PangoAttribute *attr)
 {
-  switch (attr->klass->type)
+  switch ((int)attr->klass->type)
     {
     case PANGO_ATTR_FONT_DESC:
       return (PangoAttrFontDesc *)attr;
@@ -1634,7 +1634,7 @@ pango_attribute_as_font_desc (PangoAttribute *attr)
 PangoAttrFontFeatures *
 pango_attribute_as_font_features (PangoAttribute *attr)
 {
-  switch (attr->klass->type)
+  switch ((int)attr->klass->type)
     {
     case PANGO_ATTR_FONT_FEATURES:
       return (PangoAttrFontFeatures *)attr;
@@ -1660,7 +1660,7 @@ pango_attribute_as_font_features (PangoAttribute *attr)
 PangoAttrLanguage *
 pango_attribute_as_language (PangoAttribute *attr)
 {
-  switch (attr->klass->type)
+  switch ((int)attr->klass->type)
     {
     case PANGO_ATTR_LANGUAGE:
       return (PangoAttrLanguage *)attr;
@@ -1686,7 +1686,7 @@ pango_attribute_as_language (PangoAttribute *attr)
 PangoAttrShape *
 pango_attribute_as_shape (PangoAttribute *attr)
 {
-  switch (attr->klass->type)
+  switch ((int)attr->klass->type)
     {
     case PANGO_ATTR_SHAPE:
       return (PangoAttrShape *)attr;
