@@ -251,8 +251,6 @@ test_itemize (gconstpointer d)
       return;
     }
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-
   found_cantarell = FALSE;
   pango_context_list_families (context, &families, &n_families);
   for (int i = 0; i < n_families; i++)
@@ -305,7 +303,6 @@ test_itemize (gconstpointer d)
   g_free (diff);
   g_string_free (dump, TRUE);
   g_free (expected_file);
-  g_object_unref (context);
 }
 
 int
@@ -317,6 +314,9 @@ main (int argc, char *argv[])
   gchar *path;
 
   g_test_init (&argc, &argv, NULL);
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  pango_context_set_language (context, pango_language_from_string ("en-us"));
 
   /* allow to easily generate expected output for new test cases */
   if (argc > 1)
