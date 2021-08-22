@@ -4304,6 +4304,7 @@ affects_itemization (PangoAttribute *attr,
     case PANGO_ATTR_RISE:
     case PANGO_ATTR_LINE_HEIGHT:
     case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
+    case PANGO_ATTR_TEXT_TRANSFORM:
       return TRUE;
     default:
       return FALSE;
@@ -4322,7 +4323,6 @@ affects_break_or_shape (PangoAttribute *attr,
     case PANGO_ATTR_INSERT_HYPHENS:
     case PANGO_ATTR_FONT_FEATURES:
     case PANGO_ATTR_SHOW:
-    case PANGO_ATTR_TEXT_TRANSFORM:
       return TRUE;
     default:
       return FALSE;
