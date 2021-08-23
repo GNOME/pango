@@ -52,6 +52,14 @@ typedef struct _PangoFontDescription PangoFontDescription;
  * to a script. The fields of this structure are private to implementations
  * of a font backend. See the documentation of the corresponding getters
  * for documentation of their meaning.
+ *
+ * For an overview of the most important metrics, see:
+ *
+ * <picture>
+ *   <source srcset="fontmetrics-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img alt="Font metrics" src="fontmetrics-light.png">
+ * </picture>
+
  */
 typedef struct _PangoFontMetrics PangoFontMetrics;
 
