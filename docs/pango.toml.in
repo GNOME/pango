@@ -92,4 +92,6 @@ content_images = [
   "bidi-annotate-dark.png",
   "split-cursor-light.png",
   "split-cursor-dark.png",
+  "fontmetrics-light.png",
+  "fontmetrics-dark.png",
 ]
