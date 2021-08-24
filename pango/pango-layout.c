@@ -247,6 +247,7 @@ pango_layout_finalize (GObject *object)
   layout = PANGO_LAYOUT (object);
 
   pango_layout_clear_lines (layout);
+  g_free (layout->log_attrs);
 
   if (layout->context)
     g_object_unref (layout->context);
@@ -718,6 +719,7 @@ pango_layout_set_attributes (PangoLayout   *layout,
   if (layout->attrs)
     pango_attr_list_ref (layout->attrs);
 
+  g_clear_pointer (&layout->log_attrs, g_free);
   layout_changed (layout);
 
   if (old_attrs)
@@ -1270,6 +1272,7 @@ pango_layout_set_text (PangoLayout *layout,
   layout->n_chars = pango_utf8_strlen (layout->text, -1);
   layout->length = strlen (layout->text);
 
+  g_clear_pointer (&layout->log_attrs, g_free);
   layout_changed (layout);
 
   g_free (old_text);
@@ -1471,6 +1474,7 @@ layout_changed (PangoLayout *layout)
   layout->serial++;
   if (layout->serial == 0)
     layout->serial++;
+
   pango_layout_clear_lines (layout);
 }
 
@@ -3120,12 +3124,6 @@ pango_layout_clear_lines (PangoLayout *layout)
       g_slist_free (layout->lines);
       layout->lines = NULL;
       layout->line_count = 0;
-
-      /* This could be handled separately, since we don't need to
-       * recompute log_attrs on a width change, but this is easiest
-       */
-      g_free (layout->log_attrs);
-      layout->log_attrs = NULL;
     }
 
   layout->unknown_glyphs_count = -1;
@@ -4397,13 +4395,12 @@ pango_layout_check_lines (PangoLayout *layout)
   PangoAttrIterator iter;
   PangoDirection prev_base_dir = PANGO_DIRECTION_NEUTRAL, base_dir = PANGO_DIRECTION_NEUTRAL;
   ParaBreakState state;
+  gboolean need_log_attrs;
 
   check_context_changed (layout);
 
   if (G_LIKELY (layout->lines))
     return;
-
-  g_assert (!layout->log_attrs);
 
   /* For simplicity, we make sure at this point that layout->text
    * is non-NULL even if it is zero length
@@ -4426,7 +4423,15 @@ pango_layout_check_lines (PangoLayout *layout)
       itemize_attrs = NULL;
     }
 
-  layout->log_attrs = g_new0 (PangoLogAttr, layout->n_chars + 1);
+  if (!layout->log_attrs)
+    {
+      layout->log_attrs = g_new0 (PangoLogAttr, layout->n_chars + 1);
+      need_log_attrs = TRUE;
+    }
+  else
+    {
+      need_log_attrs = FALSE;
+    }
 
   start_offset = 0;
   start = layout->text;
@@ -4507,12 +4512,13 @@ pango_layout_check_lines (PangoLayout *layout)
 
       apply_attributes_to_items (state.items, shape_attrs);
 
-      get_items_log_attrs (layout->text,
-                           start - layout->text,
-                           delimiter_index + delim_len,
-                           state.items,
-                           layout->log_attrs + start_offset,
-                           layout->n_chars + 1 - start_offset);
+      if (need_log_attrs)
+        get_items_log_attrs (layout->text,
+                             start - layout->text,
+                             delimiter_index + delim_len,
+                             state.items,
+                             layout->log_attrs + start_offset,
+                             layout->n_chars + 1 - start_offset);
 
       state.base_dir = base_dir;
       state.line_of_par = 1;
