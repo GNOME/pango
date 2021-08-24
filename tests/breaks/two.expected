@@ -1,7 +1,7 @@
-Text:         ⁦g⁩ ⁦o⁩ ⁦r⁩ ⁦i⁩ ⁦l⁩ ⁦·⁩ ⁦l⁩ ⁦e⁩ ⁦s⁩  [0x0a] 
-Breaks:     c  c c c c c c c c c       c
-Whitespace:                    w       w
-Sentences:  bs                 e       b
-Words:      bs         e s     be      b
-Graphemes:  b  b b b b b b b b b       b
-Hyphens:       i i i i   i i i          
+Text:         ⁦g⁩ ⁦o⁩ ⁦r⁩ ⁦i⁩ ⁦l⁩ ⁦·⁩ ⁦l⁩ ⁦e⁩ ⁦s⁩  [0x0a]  
+Breaks:     c  c c c c c c c c c       lc
+Whitespace:                    w       w 
+Sentences:  bs                 e       b 
+Words:      bs         e s     be      b 
+Graphemes:  b  b b b b b b b b b       b 
+Hyphens:       i i i i   i i i           

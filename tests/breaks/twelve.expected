@@ -1,7 +1,7 @@
-Text:         ⁦t⁩ ⁦h⁩ ⁦e⁩  [ ]  ⁦f⁩ ⁦i⁩ ⁦l⁩ ⁦e⁩  [ ]  ⁦/⁩ ⁦p⁩ ⁦a⁩ ⁦t⁩ ⁦h⁩ ⁦/⁩   ⁦t⁩ ⁦o⁩ ⁦/⁩  ⁦m⁩ ⁦y⁩ ⁦/⁩   ⁦h⁩ ⁦o⁩ ⁦m⁩ ⁦e⁩  [ ]  ⁦i⁩ ⁦s⁩  [ ]  ⁦c⁩ ⁦u⁩ ⁦r⁩ ⁦s⁩ ⁦e⁩ ⁦d⁩  ⁦.⁩ [0x0a] 
-Breaks:     c  c c c    lc c c c c    lc c c c c c lc  c c lc c c lc  c c c c    lc c c    lc c c c c c c  c      c
-Whitespace:        x             x                                          x         x                    w      w
-Sentences:  bs                                                                                             e      b
-Words:      bs     be   bs       be   bs           bse     bs     bse       be   bs   be   bs           be b      b
-Graphemes:  b  b b b    b  b b b b    b  b b b b b b   b b b  b b b   b b b b    b  b b    b  b b b b b b  b      b
-Hyphens:       i i         i i i           i i i       i      i       i i i         i         i i i i i            
+Text:         ⁦t⁩ ⁦h⁩ ⁦e⁩  [ ]  ⁦f⁩ ⁦i⁩ ⁦l⁩ ⁦e⁩  [ ]  ⁦/⁩ ⁦p⁩ ⁦a⁩ ⁦t⁩ ⁦h⁩ ⁦/⁩   ⁦t⁩ ⁦o⁩ ⁦/⁩  ⁦m⁩ ⁦y⁩ ⁦/⁩   ⁦h⁩ ⁦o⁩ ⁦m⁩ ⁦e⁩  [ ]  ⁦i⁩ ⁦s⁩  [ ]  ⁦c⁩ ⁦u⁩ ⁦r⁩ ⁦s⁩ ⁦e⁩ ⁦d⁩  ⁦.⁩ [0x0a]  
+Breaks:     c  c c c    lc c c c c    lc c c c c c lc  c c lc c c lc  c c c c    lc c c    lc c c c c c c  c      lc
+Whitespace:        x             x                                          x         x                    w      w 
+Sentences:  bs                                                                                             e      b 
+Words:      bs     be   bs       be   bs           bse     bs     bse       be   bs   be   bs           be b      b 
+Graphemes:  b  b b b    b  b b b b    b  b b b b b b   b b b  b b b   b b b b    b  b b    b  b b b b b b  b      b 
+Hyphens:       i i         i i i           i i i       i      i       i i i         i         i i i i i             

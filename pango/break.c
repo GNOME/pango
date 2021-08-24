@@ -1642,14 +1642,15 @@ default_break (const char    *text,
 
   i--;
 
-  attrs[i].is_cursor_position = TRUE;  /* Rule GB2 */
   attrs[0].is_cursor_position = TRUE;  /* Rule GB1 */
+  attrs[i].is_cursor_position = TRUE;  /* Rule GB2 */
 
-  attrs[i].is_word_boundary = TRUE;  /* Rule WB2 */
   attrs[0].is_word_boundary = TRUE;  /* Rule WB1 */
+  attrs[i].is_word_boundary = TRUE;  /* Rule WB2 */
 
-  attrs[i].is_line_break = TRUE;  /* Rule LB3 */
   attrs[0].is_line_break = FALSE; /* Rule LB2 */
+  attrs[i].is_line_break = TRUE;  /* Rule LB3 */
+  attrs[i].is_mandatory_break = TRUE;  /* Rule LB3 */
 }
 
 /* }}} */
@@ -2161,7 +2162,13 @@ pango_default_break (const char    *text,
                      PangoLogAttr  *attrs,
                      int            attrs_len G_GNUC_UNUSED)
 {
+  PangoLogAttr before = *attrs;
+
   default_break (text, length, analysis, attrs, attrs_len);
+
+  attrs->is_line_break      |= before.is_line_break;
+  attrs->is_mandatory_break |= before.is_mandatory_break;
+  attrs->is_cursor_position |= before.is_cursor_position;
 }
 
 /**
@@ -2270,10 +2277,24 @@ pango_attr_break (const char    *text,
                   PangoLogAttr  *attrs,
                   int            attrs_len)
 {
+  PangoLogAttr *start = attrs;
+  PangoLogAttr attr_before = *start;
   GSList *attributes;
 
   attributes = pango_attr_list_get_attributes (attr_list);
-  break_attrs (text, length, attributes, offset, attrs, attrs_len);
+  if (break_attrs (text, length, attributes, offset, attrs, attrs_len))
+    {
+      /* if tailored, we enforce some of the attrs from before
+       * tailoring at the boundary
+       */
+
+      start->backspace_deletes_character  = attr_before.backspace_deletes_character;
+
+      start->is_line_break      |= attr_before.is_line_break;
+      start->is_mandatory_break |= attr_before.is_mandatory_break;
+      start->is_cursor_position |= attr_before.is_cursor_position;
+    }
+
   g_slist_free_full (attributes, (GDestroyNotify)pango_attribute_destroy);
 }
 
