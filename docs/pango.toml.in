@@ -94,4 +94,6 @@ content_images = [
   "split-cursor-dark.png",
   "fontmetrics-light.png",
   "fontmetrics-dark.png",
+  "caret-metrics-light.png",
+  "caret-metrics-dark.png",
 ]

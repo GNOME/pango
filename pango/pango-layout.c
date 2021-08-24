@@ -2660,7 +2660,10 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
  * font metric information about caret slope and offset to the positions
  * it returns.
  *
- * TOOD: Image here
+ * <picture>
+ *   <source srcset="caret-metrics-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img alt="Caret metrics" src="caret-metrics-light.png">
+ * </picture>
  *
  * Since: 1.50
  */
