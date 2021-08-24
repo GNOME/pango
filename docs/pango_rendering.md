@@ -15,18 +15,19 @@ various stages of this pipeline and the APIs that implement them.
 
 Itemization
 : breaks a piece of text into segments with consistent direction and shaping
-  properies. Among other things, this determines which font to use for each
+  properties. Among other things, this determines which font to use for each
   character. Use [func@Pango.itemize] or [func@Pango.itemize_with_base_dir]
   to itemize text.
 
 Shaping
 : converts characters into glyphs. Use [func@Pango.shape],
-  [func@Pango.shape_full] or [func@Pango.shape_with_flags] to shape text.
+  [func@Pango.shape_full] or [func@Pango.shape_item] to shape text.
 
 Line Breaking
 : determines where line breaks should be inserted into a sequence of glyphs.
-  The function [func@Pango.break] determines possible line breaks. The actual
-  line breaking is done by [class@Pango.Layout].
+  The functions [func@Pango.default_break], [func@Pango.tailor_break] and
+  [func@Pango.attr_break] determine possible line breaks. The actual line
+  breaking is done by [class@Pango.Layout].
 
 Justification
 : adjusts inter-word spacing to form lines of even length. This is done by

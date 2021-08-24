@@ -139,29 +139,12 @@ typedef enum
   WordNumbers
 } WordType;
 
-
-/**
- * pango_default_break:
- * @text: text to break. Must be valid UTF-8
- * @length: length of text in bytes (may be -1 if @text is nul-terminated)
- * @analysis: (nullable): a `PangoAnalysis` structure for the @text
- * @attrs: logical attributes to fill in
- * @attrs_len: size of the array passed as @attrs
- *
- * This is the default break algorithm.
- *
- * It applies Unicode rules without language-specific
- * tailoring, therefore the @analyis argument is unused
- * and can be %NULL.
- *
- * See [func@Pango.tailor_break] for language-specific breaks.
- */
-void
-pango_default_break (const gchar   *text,
-		     gint           length,
-		     PangoAnalysis *analysis G_GNUC_UNUSED,
-		     PangoLogAttr  *attrs,
-		     int            attrs_len G_GNUC_UNUSED)
+static void
+default_break (const char    *text,
+               int            length,
+               PangoAnalysis *analysis G_GNUC_UNUSED,
+               PangoLogAttr  *attrs,
+               int            attrs_len G_GNUC_UNUSED)
 {
   /* The rationale for all this is in section 5.15 of the Unicode 3.0 book,
    * the line breaking stuff is also in TR14 on unicode.org
@@ -1639,7 +1622,7 @@ break_script (const char          *item_text,
 }
 
 /* }}} */
-/* {{{ Attribute-based tailoring */
+/* {{{ Attribute-based customization */
 
 static gboolean
 break_attrs (const char   *text,
@@ -1707,11 +1690,11 @@ break_attrs (const char   *text,
 
 static gboolean
 tailor_break (const char    *text,
-	      int            length,
-	      PangoAnalysis *analysis,
+              int            length,
+              PangoAnalysis *analysis,
               int            item_offset,
-	      PangoLogAttr  *attrs,
-	      int            attrs_len)
+              PangoLogAttr  *attrs,
+              int            attrs_len)
 {
   gboolean res;
 
@@ -1732,6 +1715,34 @@ tailor_break (const char    *text,
 /* {{{ Public API */
 
 /**
+ * pango_default_break:
+ * @text: text to break. Must be valid UTF-8
+ * @length: length of text in bytes (may be -1 if @text is nul-terminated)
+ * @analysis: (nullable): a `PangoAnalysis` structure for the @text
+ * @attrs: logical attributes to fill in
+ * @attrs_len: size of the array passed as @attrs
+ *
+ * This is the default break algorithm.
+ *
+ * It applies Unicode rules without language-specific
+ * tailoring, therefore the @analyis argument is unused
+ * and can be %NULL.
+ *
+ * See [func@Pango.tailor_break] for language-specific breaks.
+ *
+ * See [func@Pango.attr_break] for attribute-based customization.
+ */
+void
+pango_default_break (const char    *text,
+                     int            length,
+                     PangoAnalysis *analysis G_GNUC_UNUSED,
+                     PangoLogAttr  *attrs,
+                     int            attrs_len G_GNUC_UNUSED)
+{
+  default_break (text, length, analysis, attrs, attrs_len);
+}
+
+/**
  * pango_break:
  * @text: the text to process. Must be valid UTF-8
  * @length: length of @text in bytes (may be -1 if @text is nul-terminated)
@@ -1745,11 +1756,11 @@ tailor_break (const char    *text,
  * For most purposes you may want to use
  * [func@Pango.get_log_attrs].
  *
- * Deprecated: 1.44: Use [func@Pango.default_break] and
- *   [func@Pango.tailor_break]
+ * Deprecated: 1.44: Use [func@Pango.default_break],
+ *   [func@Pango.tailor_break] and func@Pango.attr_break].
  */
 void
-pango_break (const gchar   *text,
+pango_break (const char    *text,
              gint           length,
              PangoAnalysis *analysis,
              PangoLogAttr  *attrs,
@@ -1758,7 +1769,7 @@ pango_break (const gchar   *text,
   g_return_if_fail (analysis != NULL);
   g_return_if_fail (attrs != NULL);
 
-  pango_default_break (text, length, analysis, attrs, attrs_len);
+  default_break (text, length, analysis, attrs, attrs_len);
   tailor_break (text, length, analysis, -1, attrs, attrs_len);
 }
 
@@ -1769,18 +1780,21 @@ pango_break (const gchar   *text,
  * @analysis: `PangoAnalysis` for @text
  * @offset: Byte offset of @text from the beginning of the
  *   paragraph, or -1 to ignore attributes from @analysis
- * @log_attrs: (array length=log_attrs_len): array with one `PangoLogAttr`
+ * @attrs: (array length=attrs_len): array with one `PangoLogAttr`
  *   per character in @text, plus one extra, to be filled in
- * @log_attrs_len: length of @log_attrs array
+ * @attrs_len: length of @attrs array
  *
- * Apply language-specific tailoring to the breaks
- * in @log_attrs.
+ * Apply language-specific tailoring to the breaks in @attrs.
  *
  * The line breaks are assumed to have been produced
  * by [func@Pango.default_break].
  *
  * If @offset is not -1, it is used to apply attributes
  * from @analysis that are relevant to line breaking.
+ *
+ * Note that it is better to pass -1 for @offset and
+ * use [func@Pango.attr_break] to apply attributes to
+ * the whole paragraph.
  *
  * Since: 1.44
  */
@@ -1789,13 +1803,13 @@ pango_tailor_break (const char    *text,
                     int            length,
                     PangoAnalysis *analysis,
                     int            offset,
-                    PangoLogAttr  *log_attrs,
-                    int            log_attrs_len)
+                    PangoLogAttr  *attrs,
+                    int            attrs_len)
 {
-  PangoLogAttr *start = log_attrs;
+  PangoLogAttr *start = attrs;
   PangoLogAttr attr_before = *start;
 
-  if (tailor_break (text, length, analysis, offset, log_attrs, log_attrs_len))
+  if (tailor_break (text, length, analysis, offset, attrs, attrs_len))
     {
       /* if tailored, we enforce some of the attrs from before
        * tailoring at the boundary
@@ -1810,18 +1824,50 @@ pango_tailor_break (const char    *text,
 }
 
 /**
+ * pango_attr_break:
+ * @text: text to break. Must be valid UTF-8
+ * @length: length of text in bytes (may be -1 if @text is nul-terminated)
+ * @attr_list: `PangoAttrList` to apply
+ * @offset: Byte offset of @text from the beginning of the paragraph
+ * @attrs: (array length=attrs_len): array with one `PangoLogAttr`
+ *   per character in @text, plus one extra, to be filled in
+ * @attrs_len: length of @attrs array
+ *
+ * Apply customization from attributes to the breaks in @attrs.
+ *
+ * The line breaks are assumed to have been produced
+ * by [func@Pango.default_break] and [func@Pango.tailor_break].
+ *
+ * Since: 1.50
+ */
+void
+pango_attr_break (const char    *text,
+                  int            length,
+                  PangoAttrList *attr_list,
+                  int            offset,
+                  PangoLogAttr  *attrs,
+                  int            attrs_len)
+{
+  GSList *attributes;
+
+  attributes = pango_attr_list_get_attributes (attr_list);
+  break_attrs (text, length, attributes, offset, attrs, attrs_len);
+  g_slist_free_full (attributes, (GDestroyNotify)pango_attribute_destroy);
+}
+
+/**
  * pango_get_log_attrs:
  * @text: text to process. Must be valid UTF-8
  * @length: length in bytes of @text
  * @level: embedding level, or -1 if unknown
  * @language: language tag
- * @log_attrs: (array length=attrs_len): array with one `PangoLogAttr`
+ * @attrs: (array length=attrs_len): array with one `PangoLogAttr`
  *   per character in @text, plus one extra, to be filled in
- * @attrs_len: length of @log_attrs array
+ * @attrs_len: length of @attrs array
  *
  * Computes a `PangoLogAttr` for each character in @text.
  *
- * The @log_attrs array must have one `PangoLogAttr` for
+ * The @attrs array must have one `PangoLogAttr` for
  * each position in @text; if @text contains N characters,
  * it has N+1 positions, including the last position at the
  * end of the text. @text should be an entire paragraph;
@@ -1834,7 +1880,7 @@ pango_get_log_attrs (const char    *text,
                      int            length,
                      int            level,
                      PangoLanguage *language,
-                     PangoLogAttr  *log_attrs,
+                     PangoLogAttr  *attrs,
                      int            attrs_len)
 {
   int chars_broken;
@@ -1842,12 +1888,12 @@ pango_get_log_attrs (const char    *text,
   PangoScriptIter iter;
 
   g_return_if_fail (length == 0 || text != NULL);
-  g_return_if_fail (log_attrs != NULL);
+  g_return_if_fail (attrs != NULL);
 
   analysis.level = level;
   analysis.language = language;
 
-  pango_default_break (text, length, &analysis, log_attrs, attrs_len);
+  pango_default_break (text, length, &analysis, attrs, attrs_len);
 
   chars_broken = 0;
 
@@ -1867,7 +1913,7 @@ pango_get_log_attrs (const char    *text,
                           run_end - run_start,
                           &analysis,
                           -1,
-                          log_attrs + chars_broken,
+                          attrs + chars_broken,
                           chars_in_range + 1);
 
       chars_broken += chars_in_range;
@@ -1881,4 +1927,6 @@ pango_get_log_attrs (const char    *text,
                attrs_len);
 }
 
-/* }}} */
+ /* }}} */
+
+/* vim:set foldmethod=marker expandtab: */

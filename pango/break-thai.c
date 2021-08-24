@@ -92,15 +92,27 @@ break_thai (const char          *text,
   G_UNLOCK (thai_brk);
 
   for (cnt = 0; cnt < len; cnt++)
-    if (attrs[brk_pnts[cnt]].is_char_break)
     {
-      /* Only allow additional line breaks if line-breaking is NOT
-       * prohibited. (The alternative would be to set is_char_break to
-       * TRUE as well.  NOT setting it will break invariants that any
-       * line break opportunity is also a char break opportunity. */
-      attrs[brk_pnts[cnt]].is_line_break = TRUE;
-      attrs[brk_pnts[cnt]].is_word_start = TRUE;
-      attrs[brk_pnts[cnt]].is_word_end = TRUE;
+      if (!attrs[brk_pnts[cnt]].is_line_break)
+        {
+          /* Insert line breaks where there wasn't one.
+           * Satisfy invariants by marking it as char break too.
+           */
+          attrs[brk_pnts[cnt]].is_char_break = TRUE;
+          attrs[brk_pnts[cnt]].is_line_break = TRUE;
+        }
+      if (!(attrs[brk_pnts[cnt]].is_word_start ||
+            attrs[brk_pnts[cnt]].is_word_end))
+        {
+          /* If we find a break in the middle of a sequence
+           * of characters, end and start a word. We must
+           * be careful only to do that if default_break
+           * did not already find a word start or end,
+           * otherwise we mess up the sequence.
+           */
+          attrs[brk_pnts[cnt]].is_word_start = TRUE;
+          attrs[brk_pnts[cnt]].is_word_end = TRUE;
+        }
     }
 
   if (brk_pnts != brk_stack)
