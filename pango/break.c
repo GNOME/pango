@@ -939,11 +939,11 @@ default_break (const char    *text,
 		     SB_type == SB_Lower)
               {
 	        attrs[prev_SB_i].is_sentence_boundary = FALSE;
-	        attrs[prev_SB_i].is_sentence_start = FALSE;
 	        attrs[prev_SB_i].is_sentence_end = FALSE;
                 last_sentence_start = -1;
                 for (int j = prev_SB_i - 1; j >= 0; j--)
                   {
+                    attrs[j].is_sentence_end = FALSE;
                     if (attrs[j].is_sentence_boundary)
                       {
                         last_sentence_start = j;
@@ -1541,7 +1541,7 @@ default_break (const char    *text,
 
 	/* meets sentence end, mark both sentence start and end */
 	if (last_sentence_start != -1 && is_sentence_boundary) {
-	  if (last_non_space != -1) {
+	  if (last_non_space >= last_sentence_start) {
 	    attrs[last_sentence_start].is_sentence_start = TRUE;
 	    attrs[last_non_space].is_sentence_end = TRUE;
 	  }
