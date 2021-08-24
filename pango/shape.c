@@ -392,17 +392,17 @@ pango_hb_shape (const char          *item_text,
   hb_buffer_set_flags (hb_buffer, hb_buffer_flags);
   hb_buffer_set_invisible_glyph (hb_buffer, PANGO_GLYPH_EMPTY);
 
+  /* Add pre-context */
+  hb_buffer_add_utf8 (hb_buffer, paragraph_text, item_offset, item_offset, 0);
+
   if (transform == PANGO_TEXT_TRANSFORM_NONE)
     {
-      hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_offset, item_length);
+      hb_buffer_add_utf8 (hb_buffer, paragraph_text, item_offset + item_length, item_offset, item_length);
     }
   else
     {
       const char *p;
       int i;
-
-      /* Add pre-context */
-      hb_buffer_add_utf8 (hb_buffer, paragraph_text, item_offset, item_offset, 0);
 
       /* Transform the item text according to text transform.
        * Note: we assume text transforms won't cross font boundaries
@@ -447,11 +447,10 @@ pango_hb_shape (const char          *item_text,
           else
             hb_buffer_add (hb_buffer, ch, index);
         }
-
-      /* Add post-context */
-      hb_buffer_add_utf8 (hb_buffer, paragraph_text + item_offset + item_length, paragraph_length - (item_offset + item_length),
-                          item_offset + item_length, 0);
     }
+
+  /* Add post-context */
+  hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_offset + item_length, 0);
 
   if (analysis->flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN)
     {
