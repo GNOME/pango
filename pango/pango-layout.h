@@ -298,6 +298,13 @@ void     pango_layout_get_cursor_pos       (PangoLayout    *layout,
 					    int             index_,
 					    PangoRectangle *strong_pos,
 					    PangoRectangle *weak_pos);
+
+PANGO_AVAILABLE_IN_1_50
+void     pango_layout_get_caret_pos        (PangoLayout    *layout,
+                                            int             index_,
+                                            PangoRectangle *strong_pos,
+                                            PangoRectangle *weak_pos);
+
 PANGO_AVAILABLE_IN_ALL
 void     pango_layout_move_cursor_visually (PangoLayout    *layout,
 					    gboolean        strong,
