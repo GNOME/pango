@@ -1721,14 +1721,8 @@ break_attrs (const char   *text,
 
       if (attr->klass->type == PANGO_ATTR_ALLOW_BREAKS)
         pango_attr_list_insert (&list, pango_attribute_copy (attr));
-      if (attr->klass->type == PANGO_ATTR_INSERT_HYPHENS)
+      else if (attr->klass->type == PANGO_ATTR_INSERT_HYPHENS)
         pango_attr_list_insert (&hyphens, pango_attribute_copy (attr));
-    }
-
-  if (!_pango_attr_list_has_attributes (&list))
-    {
-      _pango_attr_list_destroy (&list);
-      return FALSE;
     }
 
   _pango_attr_list_get_iterator (&list, &iter);
@@ -1789,6 +1783,8 @@ break_attrs (const char   *text,
           }
       }
   } while (pango_attr_iterator_next (&iter));
+
+  _pango_attr_iterator_destroy (&iter);
 
   _pango_attr_list_destroy (&list);
   _pango_attr_list_destroy (&hyphens);

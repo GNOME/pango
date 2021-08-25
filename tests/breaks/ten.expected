@@ -1,6 +1,7 @@
-Text:         ⁦i⁩ ⁦ක⁩⁦්⁩[0x200d]⁦ක⁩  [ ]  ⁦a⁩[0x200c] ⁦a⁩⁦்⁩  [0x0a] 
-Breaks:     c  c           c    lc         c  c       c
-Whitespace:                x                  w       w
-Sentences:  bs                                e       b
-Words:      bs             be   bs            be      b
-Graphemes:  b  b           b    b          b  b       b
+Text:         ⁦i⁩ ⁦ක⁩ ⁦්⁩ [0x200d] ⁦ක⁩  [ ]  ⁦a⁩ [0x200c] ⁦a⁩ ⁦்⁩  [0x0a] 
+Breaks:     c  c              c    lc          c   c       c
+Whitespace:                   x                    w       w
+Sentences:  bs                                     e       b
+Words:      bs                be   bs              be      b
+Graphemes:  b  b              b    b           b   b       b
+Hyphens:       i i i        i         i        i i          
