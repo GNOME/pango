@@ -25,6 +25,8 @@
 #include "pango-font.h"
 #include "pango-impl-utils.h"
 
+#include <hb-ot.h>
+
 /**
  * pango_glyph_string_new:
  *
@@ -390,6 +392,8 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
 
   int cluster_chars = 0;
   int cluster_offset = 0;
+  int start_glyph_pos = -1;
+  int end_glyph_pos = -1;
 
   const char *p;
 
@@ -406,51 +410,74 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
       return;
     }
 
+  start_glyph_pos = -1;
+  end_glyph_pos = -1;
+
   /* Calculate the starting and ending character positions
    * and x positions for the cluster
    */
   if (analysis->level % 2) /* Right to left */
     {
       for (i = glyphs->num_glyphs - 1; i >= 0; i--)
-	width += glyphs->glyphs[i].geometry.width;
+        width += glyphs->glyphs[i].geometry.width;
 
       for (i = glyphs->num_glyphs - 1; i >= 0; i--)
-	{
-	  if (glyphs->log_clusters[i] > index)
-	    {
-	      end_index = glyphs->log_clusters[i];
-	      end_xpos = width;
-	      break;
-	    }
+        {
+          if (glyphs->log_clusters[i] > index)
+            {
+              end_index = glyphs->log_clusters[i];
+              end_xpos = width;
+              break;
+            }
 
-	  if (glyphs->log_clusters[i] != start_index)
-	    {
-	      start_index = glyphs->log_clusters[i];
-	      start_xpos = width;
-	    }
+          if (glyphs->log_clusters[i] != start_index)
+            {
+              start_index = glyphs->log_clusters[i];
+              start_xpos = width;
+            }
 
-	  width -= glyphs->glyphs[i].geometry.width;
-	}
+          width -= glyphs->glyphs[i].geometry.width;
+        }
+
+      for (i = glyphs->num_glyphs - 1; i >= 0; i--)
+        {
+          if (glyphs->log_clusters[i] == start_index)
+            {
+              if (end_glyph_pos < 0)
+                end_glyph_pos = i;
+              start_glyph_pos = i;
+            }
+        }
     }
   else /* Left to right */
     {
       for (i = 0; i < glyphs->num_glyphs; i++)
-	{
-	  if (glyphs->log_clusters[i] > index)
-	    {
-	      end_index = glyphs->log_clusters[i];
-	      end_xpos = width;
-	      break;
-	    }
+        {
+          if (glyphs->log_clusters[i] > index)
+            {
+              end_index = glyphs->log_clusters[i];
+              end_xpos = width;
+              break;
+            }
 
-	  if (glyphs->log_clusters[i] != start_index)
-	    {
-	      start_index = glyphs->log_clusters[i];
-	      start_xpos = width;
-	    }
+          if (glyphs->log_clusters[i] != start_index)
+            {
+              start_index = glyphs->log_clusters[i];
+              start_xpos = width;
+            }
 
-	  width += glyphs->glyphs[i].geometry.width;
-	}
+          width += glyphs->glyphs[i].geometry.width;
+        }
+
+      for (i = 0; i < glyphs->num_glyphs; i++)
+        {
+          if (glyphs->log_clusters[i] == start_index)
+            {
+              if (start_glyph_pos < 0)
+                start_glyph_pos = i;
+              end_glyph_pos = i;
+            }
+        }
     }
 
   if (end_index == -1)
@@ -461,13 +488,13 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
 
   /* Calculate offset of character within cluster */
 
-  p = text + start_index;
-  while (p < text + end_index)
+  for (p = text + start_index;
+       p < text + end_index;
+       p = g_utf8_next_char (p))
     {
       if (p < text + index)
-	cluster_offset++;
+        cluster_offset++;
       cluster_chars++;
-      p = g_utf8_next_char (p);
     }
 
   if (trailing)
@@ -479,8 +506,34 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
       return;
     }
 
+  /* Try to get a ligature caret position for the glyph
+   * from the font.
+   *
+   * If start_glyph_pos != end_glyph_pos, we are dealing
+   * with an m-n situation, where LigatureCaretList is
+   * not going to help. Just give up and do the simple thing.
+   */
+  if (cluster_offset > 0 && cluster_offset < cluster_chars &&
+      start_glyph_pos == end_glyph_pos)
+    {
+      hb_font_t *hb_font;
+      hb_position_t caret;
+      unsigned int caret_count = 1;
+
+      hb_font = pango_font_get_hb_font (analysis->font);
+      hb_ot_layout_get_ligature_carets (hb_font,
+                                        (analysis->level % 2) ? HB_DIRECTION_RTL : HB_DIRECTION_LTR,
+                                        glyphs->glyphs[start_glyph_pos].glyph,
+                                        cluster_offset - 1, &caret_count, &caret);
+      if (caret_count > 0)
+        {
+          *x_pos = start_xpos + caret;
+          return;
+        }
+    }
+
   *x_pos = ((cluster_chars - cluster_offset) * start_xpos +
-	    cluster_offset * end_xpos) / cluster_chars;
+            cluster_offset * end_xpos) / cluster_chars;
 }
 
 /**
