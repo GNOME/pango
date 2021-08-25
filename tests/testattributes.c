@@ -75,6 +75,8 @@ test_attributes_basic (void)
   test_copy (pango_attr_text_transform_new (PANGO_TEXT_TRANSFORM_UPPERCASE));
   test_copy (pango_attr_line_height_new (1.5));
   test_copy (pango_attr_line_height_new_absolute (3000));
+  test_copy (pango_attr_word_new ());
+  test_copy (pango_attr_sentence_new ());
 }
 
 static void
@@ -125,7 +127,7 @@ test_binding (PangoAttribute *attr)
     INVALID, LANGUAGE, STRING, INT, INT, INT, INT, SIZE, FONT_DESC, COLOR,
     COLOR, INT, INT, INT, SHAPE, FLOAT, INT, INT, COLOR, COLOR, SIZE,
     INT, INT, FONT_FEATURES, INT, INT, INT, INT, INT, INT, COLOR, FLOAT,
-    INT, INT, INT, INT
+    INT, INT, INT, INT, INT, INT
   };
 
   switch (attr_base[attr->klass->type])
@@ -207,6 +209,8 @@ test_binding_helpers (void)
   test_binding (pango_attr_text_transform_new (PANGO_TEXT_TRANSFORM_UPPERCASE));
   test_binding (pango_attr_line_height_new (1.5));
   test_binding (pango_attr_line_height_new_absolute (3000));
+  test_binding (pango_attr_word_new ());
+  test_binding (pango_attr_sentence_new ());
 }
 
 static void
@@ -1213,8 +1217,8 @@ test_merge2 (void)
   pango_attr_list_unref (list);
 }
 
-/* This only prints rise, size and scale, which are the
- * only relevant attributes in the test that uses this
+/* This only prints rise, size, scale, allow_breaks and line_break,
+ * which are the only relevant attributes in the tests that use this
  * function.
  */
 static void
@@ -1240,6 +1244,12 @@ print_tags_for_attributes (PangoAttrIterator *iter,
     g_string_append_printf (s, "[%d, %d]scale=%f\n",
                             attr->start_index, attr->end_index,
                             ((PangoAttrFloat*)attr)->value);
+
+  attr = pango_attr_iterator_get (iter, PANGO_ATTR_ALLOW_BREAKS);
+  if (attr)
+    g_string_append_printf (s, "[%d, %d]allow_breaks=%d\n",
+                            attr->start_index, attr->end_index,
+                            ((PangoAttrInt*)attr)->value);
 }
 
 static void

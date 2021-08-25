@@ -4323,6 +4323,8 @@ affects_break_or_shape (PangoAttribute *attr,
     {
     /* Affects breaks */
     case PANGO_ATTR_ALLOW_BREAKS:
+    case PANGO_ATTR_WORD:
+    case PANGO_ATTR_SENTENCE:
     /* Affects shaping */
     case PANGO_ATTR_INSERT_HYPHENS:
     case PANGO_ATTR_FONT_FEATURES:

@@ -1,0 +1,2 @@
+# test line break attributes
+the file <span segment='word'>/path/</span><span segment='word'>to/</span><span segment='word'>my/</span>home is cursed.

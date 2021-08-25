@@ -1230,6 +1230,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   const char *show = NULL;
   const char *line_height = NULL;
   const char *text_transform = NULL;
+  const char *segment = NULL;
 
   g_markup_parse_context_get_position (context,
 				       &line_number, &char_number);
@@ -1297,6 +1298,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	CHECK_ATTRIBUTE (strikethrough);
 	CHECK_ATTRIBUTE (strikethrough_color);
 	CHECK_ATTRIBUTE (style);
+	CHECK_ATTRIBUTE (segment);
 	break;
       case 't':
         CHECK_ATTRIBUTE (text_transform);
@@ -1712,7 +1714,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
       gboolean b = FALSE;
 
       if (!span_parse_boolean ("allow_breaks", allow_breaks, &b, line_number, error))
-	goto error;
+        goto error;
 
       add_attribute (tag, pango_attr_allow_breaks_new (b));
     }
@@ -1725,6 +1727,25 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	goto error;
 
       add_attribute (tag, pango_attr_insert_hyphens_new (b));
+    }
+
+  if (G_UNLIKELY (segment))
+    {
+      if (strcmp (segment, "word") == 0)
+        add_attribute (tag, pango_attr_word_new ());
+      else if (strcmp (segment, "sentence") == 0)
+        add_attribute (tag, pango_attr_sentence_new ());
+      else
+        {
+          g_set_error (error,
+                       G_MARKUP_ERROR,
+                       G_MARKUP_ERROR_INVALID_CONTENT,
+                       _("Value of 'segment' attribute on <span> tag on line %d "
+                         "could not be parsed; should be one of 'word' or "
+                         "'sentence', not '%s'"),
+                       line_number, segment);
+          goto error;
+        }
     }
 
   return TRUE;

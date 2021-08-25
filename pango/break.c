@@ -1699,64 +1699,325 @@ break_script (const char          *item_text,
 /* }}} */
 /* {{{ Attribute-based customization */
 
-static gboolean
-break_attrs (const char   *text,
-             int           length,
-             GSList       *attributes,
-             int           offset,
-             PangoLogAttr *log_attrs,
-             int           log_attrs_len)
+/* We allow customizing log attrs in two ways:
+ *
+ * - You can directly remove breaks from a range, using allow_breaks=false.
+ *   We preserve the non-tailorable rules from UAX #14, so mandatory breaks
+ *   and breaks after ZWS remain. We also preserve break opportunities after
+ *   hyphens and visible word dividers.
+ *
+ * - You can tweak the segmentation by marking ranges as word or sentence.
+ *   When doing so, we split adjacent segments to preserve alternating
+ *   starts and ends. We add a line break opportunity before each word that
+ *   is created in this way, and we remove line break opportunities inside
+ *   the word in the same way as for a range marked as allow_breaks=false,
+ *   except that we don't remove char break opportunities.
+ *
+ *   Note that UAX #14 does not guarantee that words fall neatly into
+ *   sentences, so we don't do extra work to enforce that.
+ */
+
+static void
+remove_breaks_from_range (const char   *text,
+                          int           start,
+                          PangoLogAttr *log_attrs,
+                          int           start_pos,
+                          int           end_pos)
 {
-  PangoAttrList list;
-  PangoAttrList hyphens;
-  PangoAttrIterator iter;
-  GSList *l;
+  int pos;
+  const char *p;
+  gunichar ch;
+  int bt;
+  gboolean after_zws;
+  gboolean after_hyphen;
 
-  _pango_attr_list_init (&list);
-  _pango_attr_list_init (&hyphens);
-
-  for (l = attributes; l; l = l->next)
+  /* Assume our range doesn't start after a hyphen or in a zws sequence */
+  after_zws = FALSE;
+  after_hyphen = FALSE;
+  for (pos = start_pos + 1, p = g_utf8_next_char (text + start);
+       pos < end_pos;
+       pos++, p = g_utf8_next_char (p))
     {
-      PangoAttribute *attr = l->data;
+      /* Mandatory breaks aren't tailorable */
+      if (!log_attrs[pos].is_mandatory_break)
+        log_attrs[pos].is_line_break = FALSE;
 
-      if (attr->klass->type == PANGO_ATTR_ALLOW_BREAKS)
-        pango_attr_list_insert (&list, pango_attribute_copy (attr));
-      else if (attr->klass->type == PANGO_ATTR_INSERT_HYPHENS)
-        pango_attr_list_insert (&hyphens, pango_attribute_copy (attr));
+      ch = g_utf8_get_char (p);
+      bt = g_unichar_break_type (ch);
+
+      /* Hyphens and visible word dividers */
+      if (after_hyphen)
+        log_attrs[pos].is_line_break = TRUE;
+
+      after_hyphen = ch == 0x00ad || /* Soft Hyphen */
+         ch == 0x05A0 || ch == 0x2010 || /* Breaking Hyphens */
+         ch == 0x2012 || ch == 0x2013 ||
+         ch == 0x05BE || ch == 0x0F0B || /* Visible word dividers */
+         ch == 0x1361 || ch == 0x17D8 ||
+         ch == 0x17DA || ch == 0x2027 ||
+         ch == 0x007C;
+
+      /* ZWS sequence */
+      if (after_zws && bt != G_UNICODE_BREAK_SPACE)
+        log_attrs[pos].is_line_break = TRUE;
+
+      after_zws = bt == G_UNICODE_BREAK_ZERO_WIDTH_SPACE ||
+                  (bt == G_UNICODE_BREAK_SPACE && after_zws);
     }
+}
 
-  _pango_attr_list_get_iterator (&list, &iter);
-  do {
-    const PangoAttribute *attr = pango_attr_iterator_get (&iter, PANGO_ATTR_ALLOW_BREAKS);
+static gboolean
+handle_allow_breaks (const char    *text,
+                     int            length,
+                     PangoAttrList *attrs,
+                     int            offset,
+                     PangoLogAttr  *log_attrs,
+                     int            log_attrs_len)
+{
+  PangoAttrIterator iter;
+  gboolean tailored = FALSE;
 
-    if (attr && ((PangoAttrInt*)attr)->value == 0)
-      {
-        int start, end;
-        int start_pos, end_pos;
-        int pos;
+  _pango_attr_list_get_iterator (attrs, &iter);
 
-        pango_attr_iterator_range (&iter, &start, &end);
-        if (start < offset)
-          start_pos = 0;
-        else
-          start_pos = g_utf8_pointer_to_offset (text, text + start - offset);
-        if (end >= offset + length)
-          end_pos = log_attrs_len;
-        else
-          end_pos = g_utf8_pointer_to_offset (text, text + end - offset);
+  do
+    {
+      const PangoAttribute *attr = pango_attr_iterator_get (&iter, PANGO_ATTR_ALLOW_BREAKS);
 
-        for (pos = start_pos + 1; pos < end_pos; pos++)
-          {
-            log_attrs[pos].is_mandatory_break = FALSE;
-            log_attrs[pos].is_line_break = FALSE;
+      if (!attr)
+        continue;
+
+      if (!((PangoAttrInt*)attr)->value)
+        {
+          int start, end;
+          int start_pos, end_pos;
+          int pos;
+
+          start = attr->start_index;
+          end = attr->end_index;
+          if (start < offset)
+            start_pos = 0;
+          else
+            start_pos = g_utf8_pointer_to_offset (text, text + start - offset);
+          if (end >= offset + length)
+            end_pos = log_attrs_len;
+          else
+            end_pos = g_utf8_pointer_to_offset (text, text + end - offset);
+
+          for (pos = start_pos + 1; pos < end_pos; pos++)
             log_attrs[pos].is_char_break = FALSE;
-          }
-      }
-  } while (pango_attr_iterator_next (&iter));
+
+          remove_breaks_from_range (text, MAX (start - offset, 0), log_attrs, start_pos, end_pos);
+
+          tailored = TRUE;
+        }
+    }
+  while (pango_attr_iterator_next (&iter));
 
   _pango_attr_iterator_destroy (&iter);
 
-  _pango_attr_list_get_iterator (&hyphens, &iter);
+  return tailored;
+}
+
+
+static gboolean
+handle_words (const char    *text,
+              int            length,
+              PangoAttrList *attrs,
+              int            offset,
+              PangoLogAttr  *log_attrs,
+              int            log_attrs_len)
+{
+  PangoAttrIterator iter;
+  gboolean tailored = FALSE;
+
+  _pango_attr_list_get_iterator (attrs, &iter);
+
+  do
+    {
+      const PangoAttribute *attr = pango_attr_iterator_get (&iter, PANGO_ATTR_WORD);
+      int start, end;
+      int start_pos, end_pos;
+      int pos;
+
+      if (!attr)
+        continue;
+
+      start = attr->start_index;
+      end = attr->end_index;
+      if (start < offset)
+        start_pos = 0;
+      else
+        start_pos = g_utf8_pointer_to_offset (text, text + start - offset);
+      if (end >= offset + length)
+        end_pos = log_attrs_len;
+      else
+        end_pos = g_utf8_pointer_to_offset (text, text + end - offset);
+
+      for (pos = start_pos + 1; pos < end_pos; pos++)
+        {
+          log_attrs[pos].is_word_start = FALSE;
+          log_attrs[pos].is_word_end = FALSE;
+          log_attrs[pos].is_word_boundary = FALSE;
+        }
+
+      remove_breaks_from_range (text, MAX (start - offset, 0), log_attrs,
+                                start_pos, end_pos);
+
+      if (start >= offset)
+        {
+          gboolean in_word = FALSE;
+          for (pos = start_pos - 1; pos >= 0; pos--)
+            {
+              if (log_attrs[pos].is_word_end)
+                break;
+              if (log_attrs[pos].is_word_start)
+                {
+                  in_word = TRUE;
+                  break;
+                }
+            }
+          log_attrs[start_pos].is_word_start = TRUE;
+          log_attrs[start_pos].is_word_end = in_word;
+          log_attrs[start_pos].is_word_boundary = TRUE;
+
+          /* Allow line breaks before words */
+          log_attrs[start_pos].is_line_break = TRUE;
+
+          tailored = TRUE;
+        }
+
+      if (end < offset + length)
+        {
+          gboolean in_word = FALSE;
+          for (pos = end_pos + 1; pos < log_attrs_len; pos++)
+            {
+              if (log_attrs[pos].is_word_start)
+                break;
+              if (log_attrs[pos].is_word_end)
+                {
+                  in_word = TRUE;
+                  break;
+                }
+            }
+          log_attrs[end_pos].is_word_start = in_word;
+          log_attrs[end_pos].is_word_end = TRUE;
+          log_attrs[end_pos].is_word_boundary = TRUE;
+
+          /* Allow line breaks before words */
+          if (in_word)
+            log_attrs[end_pos].is_line_break = TRUE;
+
+          tailored = TRUE;
+        }
+    }
+  while (pango_attr_iterator_next (&iter));
+
+  _pango_attr_iterator_destroy (&iter);
+
+  return tailored;
+}
+
+static gboolean
+handle_sentences (const char    *text,
+                  int            length,
+                  PangoAttrList *attrs,
+                  int            offset,
+                  PangoLogAttr  *log_attrs,
+                  int            log_attrs_len)
+{
+  PangoAttrIterator iter;
+  gboolean tailored = FALSE;
+
+  _pango_attr_list_get_iterator (attrs, &iter);
+
+  do
+    {
+      const PangoAttribute *attr = pango_attr_iterator_get (&iter, PANGO_ATTR_SENTENCE);
+      int start, end;
+      int start_pos, end_pos;
+      int pos;
+
+      if (!attr)
+        continue;
+
+      start = attr->start_index;
+      end = attr->end_index;
+      if (start < offset)
+        start_pos = 0;
+      else
+        start_pos = g_utf8_pointer_to_offset (text, text + start - offset);
+      if (end >= offset + length)
+        end_pos = log_attrs_len;
+      else
+        end_pos = g_utf8_pointer_to_offset (text, text + end - offset);
+
+      for (pos = start_pos + 1; pos < end_pos; pos++)
+        {
+          log_attrs[pos].is_sentence_start = FALSE;
+          log_attrs[pos].is_sentence_end = FALSE;
+          log_attrs[pos].is_sentence_boundary = FALSE;
+
+          tailored = TRUE;
+        }
+      if (start >= offset)
+        {
+          gboolean in_sentence = FALSE;
+          for (pos = start_pos - 1; pos >= 0; pos--)
+            {
+              if (log_attrs[pos].is_sentence_end)
+                break;
+              if (log_attrs[pos].is_sentence_start)
+                {
+                  in_sentence = TRUE;
+                  break;
+                }
+            }
+          log_attrs[start_pos].is_sentence_start = TRUE;
+          log_attrs[start_pos].is_sentence_end = in_sentence;
+          log_attrs[start_pos].is_sentence_boundary = TRUE;
+
+          tailored = TRUE;
+        }
+      if (end < offset + length)
+        {
+          gboolean in_sentence = FALSE;
+          for (pos = end_pos + 1; end_pos < log_attrs_len; pos++)
+            {
+              if (log_attrs[pos].is_sentence_start)
+                break;
+              if (log_attrs[pos].is_sentence_end)
+                {
+                  in_sentence = TRUE;
+                  break;
+                }
+            }
+          log_attrs[end_pos].is_sentence_start = in_sentence;
+          log_attrs[end_pos].is_sentence_end = TRUE;
+          log_attrs[end_pos].is_sentence_boundary = TRUE;
+
+          tailored = TRUE;
+        }
+    }
+  while (pango_attr_iterator_next (&iter));
+
+  _pango_attr_iterator_destroy (&iter);
+
+  return tailored;
+}
+
+static gboolean
+handle_hyphens (const char    *text,
+                int            length,
+                PangoAttrList *attrs,
+                int            offset,
+                PangoLogAttr  *log_attrs,
+                int            log_attrs_len)
+{
+  PangoAttrIterator iter;
+  gboolean tailored = FALSE;
+
+  _pango_attr_list_get_iterator (attrs, &iter);
+
   do {
     const PangoAttribute *attr = pango_attr_iterator_get (&iter, PANGO_ATTR_INSERT_HYPHENS);
 
@@ -1779,17 +2040,72 @@ break_attrs (const char   *text,
         for (pos = start_pos + 1; pos < end_pos; pos++)
           {
             if (!log_attrs[pos].break_removes_preceding)
-              log_attrs[pos].break_inserts_hyphen = FALSE;
+              {
+                log_attrs[pos].break_inserts_hyphen = FALSE;
+
+                tailored = TRUE;
+              }
           }
       }
   } while (pango_attr_iterator_next (&iter));
 
   _pango_attr_iterator_destroy (&iter);
 
-  _pango_attr_list_destroy (&list);
+  return tailored;
+}
+
+static gboolean
+break_attrs (const char   *text,
+             int           length,
+             GSList       *attributes,
+             int           offset,
+             PangoLogAttr *log_attrs,
+             int           log_attrs_len)
+{
+  PangoAttrList allow_breaks;
+  PangoAttrList words;
+  PangoAttrList sentences;
+  PangoAttrList hyphens;
+  GSList *l;
+  gboolean tailored = FALSE;
+
+  _pango_attr_list_init (&allow_breaks);
+  _pango_attr_list_init (&words);
+  _pango_attr_list_init (&sentences);
+  _pango_attr_list_init (&hyphens);
+
+  for (l = attributes; l; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+
+      if (attr->klass->type == PANGO_ATTR_ALLOW_BREAKS)
+        pango_attr_list_insert (&allow_breaks, pango_attribute_copy (attr));
+      else if (attr->klass->type == PANGO_ATTR_WORD)
+        pango_attr_list_insert (&words, pango_attribute_copy (attr));
+      else if (attr->klass->type == PANGO_ATTR_SENTENCE)
+        pango_attr_list_insert (&sentences, pango_attribute_copy (attr));
+      else if (attr->klass->type == PANGO_ATTR_INSERT_HYPHENS)
+        pango_attr_list_insert (&hyphens, pango_attribute_copy (attr));
+    }
+
+  tailored |= handle_allow_breaks (text, length, &allow_breaks, offset,
+                                   log_attrs, log_attrs_len);
+
+  tailored |= handle_words (text, length, &words, offset,
+                            log_attrs, log_attrs_len);
+
+  tailored |= handle_sentences (text, length, &words, offset,
+                                log_attrs, log_attrs_len);
+
+  tailored |= handle_hyphens (text, length, &hyphens, offset,
+                              log_attrs, log_attrs_len);
+
+  _pango_attr_list_destroy (&allow_breaks);
+  _pango_attr_list_destroy (&words);
+  _pango_attr_list_destroy (&sentences);
   _pango_attr_list_destroy (&hyphens);
 
-  return TRUE;
+  return tailored;
 }
 
 /* }}} */
@@ -2033,6 +2349,6 @@ pango_get_log_attrs (const char    *text,
                attrs_len);
 }
 
- /* }}} */
+/* }}} */
 
 /* vim:set foldmethod=marker expandtab: */
