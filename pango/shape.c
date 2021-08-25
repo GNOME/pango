@@ -344,6 +344,7 @@ pango_hb_shape (const char          *item_text,
                 int                  paragraph_length,
                 const PangoAnalysis *analysis,
                 PangoLogAttr        *log_attrs,
+                int                  num_chars,
                 PangoGlyphString    *glyphs,
                 PangoShapeFlags      flags)
 {
@@ -362,6 +363,7 @@ pango_hb_shape (const char          *item_text,
   unsigned int num_features = 0;
   PangoGlyphInfo *infos;
   PangoTextTransform transform;
+  int hyphen_index;
 
   g_return_if_fail (analysis != NULL);
   g_return_if_fail (analysis->font != NULL);
@@ -392,22 +394,35 @@ pango_hb_shape (const char          *item_text,
   hb_buffer_set_flags (hb_buffer, hb_buffer_flags);
   hb_buffer_set_invisible_glyph (hb_buffer, PANGO_GLYPH_EMPTY);
 
+  if (analysis->flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN)
+    {
+      const char *p = paragraph_text + item_offset + item_length;
+      int last_char_len = p - g_utf8_prev_char (p);
+
+      hyphen_index = item_offset + item_length - last_char_len;
+
+      if (log_attrs[num_chars].break_removes_preceding)
+        item_length -= last_char_len;
+    }
+
+  /* Add pre-context */
+  hb_buffer_add_utf8 (hb_buffer, paragraph_text, item_offset, item_offset, 0);
+
   if (transform == PANGO_TEXT_TRANSFORM_NONE)
     {
-      hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_offset, item_length);
+      hb_buffer_add_utf8 (hb_buffer, paragraph_text, item_offset + item_length, item_offset, item_length);
     }
   else
     {
       const char *p;
       int i;
 
-      /* Add pre-context */
-      hb_buffer_add_utf8 (hb_buffer, paragraph_text, item_offset, item_offset, 0);
-
       /* Transform the item text according to text transform.
        * Note: we assume text transforms won't cross font boundaries
        */
-      for (p = paragraph_text + item_offset, i = 0; p < paragraph_text + item_offset + item_length; p = g_utf8_next_char (p), i++)
+      for (p = paragraph_text + item_offset, i = 0;
+           p < paragraph_text + item_offset + item_length;
+           p = g_utf8_next_char (p), i++)
         {
           int index = p - paragraph_text;
           gunichar ch = g_utf8_get_char (p);
@@ -447,26 +462,23 @@ pango_hb_shape (const char          *item_text,
           else
             hb_buffer_add (hb_buffer, ch, index);
         }
-
-      /* Add post-context */
-      hb_buffer_add_utf8 (hb_buffer, paragraph_text + item_offset + item_length, paragraph_length - (item_offset + item_length),
-                          item_offset + item_length, 0);
     }
+
+  /* Add post-context */
+  hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_offset + item_length, 0);
 
   if (analysis->flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN)
     {
       /* Insert either a Unicode or ASCII hyphen. We may
        * want to look for script-specific hyphens here.
        */
-      const char *p = paragraph_text + item_offset + item_length;
-      int last_char_len = p - g_utf8_prev_char (p);
       hb_codepoint_t glyph;
 
       /* Note: We rely on hb_buffer_add clearing existing post-context */
       if (hb_font_get_nominal_glyph (hb_font, 0x2010, &glyph))
-        hb_buffer_add (hb_buffer, 0x2010, item_offset + item_length - last_char_len);
+        hb_buffer_add (hb_buffer, 0x2010, hyphen_index);
       else if (hb_font_get_nominal_glyph (hb_font, '-', &glyph))
-        hb_buffer_add (hb_buffer, '-', item_offset + item_length - last_char_len);
+        hb_buffer_add (hb_buffer, '-', hyphen_index);
     }
 
   pango_font_get_features (analysis->font, features, G_N_ELEMENTS (features), &num_features);
@@ -579,6 +591,7 @@ pango_shape_internal (const char          *item_text,
                       int                  paragraph_length,
                       const PangoAnalysis *analysis,
                       PangoLogAttr        *log_attrs,
+                      int                  num_chars,
                       PangoGlyphString    *glyphs,
                       PangoShapeFlags      flags)
 {
@@ -606,9 +619,8 @@ pango_shape_internal (const char          *item_text,
       pango_hb_shape (item_text, item_length,
                       paragraph_text, paragraph_length,
                       analysis,
-                      log_attrs,
-                      glyphs,
-                      flags);
+                      log_attrs, num_chars,
+                      glyphs, flags);
 
       if (G_UNLIKELY (glyphs->num_glyphs == 0))
         {
@@ -867,7 +879,7 @@ pango_shape_with_flags (const char          *item_text,
 {
   pango_shape_internal (item_text, item_length,
                         paragraph_text, paragraph_length,
-                        analysis, NULL,
+                        analysis, NULL, 0,
                         glyphs, flags);
 }
 
@@ -906,7 +918,8 @@ pango_shape_item (PangoItem        *item,
 {
   pango_shape_internal (paragraph_text + item->offset, item->length,
                         paragraph_text, paragraph_length,
-                        &item->analysis, log_attrs,
+                        &item->analysis,
+                        log_attrs, item->num_chars,
                         glyphs, flags);
 }
 

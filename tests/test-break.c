@@ -46,7 +46,7 @@ test_file (const gchar *filename, GString *string)
   int len2;
   char *p;
   int i;
-  GString *s1, *s2, *s3, *s4, *s5;
+  GString *s1, *s2, *s3, *s4, *s5, *s6;
   int m;
   char *test;
   char *text;
@@ -109,6 +109,7 @@ test_file (const gchar *filename, GString *string)
   s3 = g_string_new ("Sentences:");
   s4 = g_string_new ("Words:");
   s5 = g_string_new ("Graphemes:");
+  s6 = g_string_new ("Hyphens:");
 
   g_string_append (string, "Text: ");
 
@@ -119,6 +120,7 @@ test_file (const gchar *filename, GString *string)
   g_string_append_printf (s3, "%*s", (int)(m - s3->len), "");
   g_string_append_printf (s4, "%*s", (int)(m - s4->len), "");
   g_string_append_printf (s5, "%*s", (int)(m - s5->len), "");
+  g_string_append_printf (s6, "%*s", (int)(m - s6->len), "");
   g_string_append_printf (string, "%*s", (int)(m - strlen ("Text: ")), "");
 
   for (i = 0, p = text; i < len; i++, p = g_utf8_next_char (p))
@@ -129,6 +131,7 @@ test_file (const gchar *filename, GString *string)
       int o = 0;
       int s = 0;
       int g = 0;
+      int h = 0;
 
       if (log.is_mandatory_break)
         {
@@ -195,7 +198,18 @@ test_file (const gchar *filename, GString *string)
           g++;
         }
 
-      m = MAX (MAX (MAX (b, w), MAX (o, s)), g);
+      if (log.break_removes_preceding)
+        {
+          g_string_append (s6, "r");
+          h++;
+        }
+      if (log.break_inserts_hyphen)
+        {
+          g_string_append (s6, "i");
+          h++;
+        }
+
+      m = MAX (MAX (MAX (b, w), MAX (o, s)), MAX (g, h));
 
       g_string_append_printf (string, "%*s", m, "");
       g_string_append_printf (s1, "%*s", m - b, "");
@@ -203,6 +217,7 @@ test_file (const gchar *filename, GString *string)
       g_string_append_printf (s3, "%*s", m - s, "");
       g_string_append_printf (s4, "%*s", m - o, "");
       g_string_append_printf (s5, "%*s", m - g, "");
+      g_string_append_printf (s6, "%*s", m - h, "");
 
       if (i < len - 1)
         {
@@ -215,6 +230,7 @@ test_file (const gchar *filename, GString *string)
               g_string_append (s3, "   ");
               g_string_append (s4, "   ");
               g_string_append (s5, "   ");
+              g_string_append (s6, "   ");
             }
           else if (g_unichar_isgraph (ch) &&
                    !(g_unichar_type (ch) == G_UNICODE_LINE_SEPARATOR ||
@@ -228,6 +244,7 @@ test_file (const gchar *filename, GString *string)
               g_string_append (s3, " ");
               g_string_append (s4, " ");
               g_string_append (s5, " ");
+              g_string_append (s6, " ");
             }
           else
             {
@@ -238,6 +255,7 @@ test_file (const gchar *filename, GString *string)
               g_string_append_printf (s3, "%*s", (int)strlen (str), "");
               g_string_append_printf (s4, "%*s", (int)strlen (str), "");
               g_string_append_printf (s5, "%*s", (int)strlen (str), "");
+              g_string_append_printf (s6, "%*s", (int)strlen (str), "");
               g_free (str);
             }
         }
@@ -253,12 +271,15 @@ test_file (const gchar *filename, GString *string)
   g_string_append (string, "\n");
   g_string_append_len (string, s5->str, s5->len);
   g_string_append (string, "\n");
+  g_string_append_len (string, s6->str, s6->len);
+  g_string_append (string, "\n");
 
   g_string_free (s1, TRUE);
   g_string_free (s2, TRUE);
   g_string_free (s3, TRUE);
   g_string_free (s4, TRUE);
   g_string_free (s5, TRUE);
+  g_string_free (s6, TRUE);
 
   g_object_unref (layout);
   g_free (attrs);
@@ -366,9 +387,9 @@ main (int argc, char *argv[])
                    " l - line break          s - word start\n"
                    " c - char break          e - word end\n"
                    "\n"
-                   "Whitespace:             Sentences:\n"
-                   " x - expandable space    b - sentence boundary\n"
-                   " w - whitespace          s - sentence start\n"
+                   "Whitespace:             Sentences:\n            Hyphens"
+                   " x - expandable space    b - sentence boundary   i - insert hyphen\n"
+                   " w - whitespace          s - sentence start      r - remove preceding\n"
                    "                         e - sentence end\n");
           return 0;
         }

@@ -44,7 +44,7 @@ typedef struct {
   ScriptInfo scripts[MAX_SCRIPTS];
 } LangInfo;
 
-static const char *get_script_name (PangoScript script)
+static const char *get_script_name (GUnicodeScript script)
 {
   static GEnumClass *class = NULL;
   GEnumValue *value;

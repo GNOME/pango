@@ -72,6 +72,10 @@ G_BEGIN_DECLS
  *   This flag is particularly useful when selecting text word-by-word. This flag
  *   implements Unicode's [Word Boundaries](http://www.unicode.org/reports/tr29/)
  *   semantics. (Since: 1.22)
+ * @break_inserts_hyphen: when breaking lines before this char, insert a hyphen.
+ *   Since: 1.50
+ * @break_removes_preceding: when breaking lines before this char, remove the
+ *   preceding char. Since 1.50
  *
  * The `PangoLogAttr` structure stores information about the attributes of a
  * single character.
@@ -91,6 +95,8 @@ struct _PangoLogAttr
   guint backspace_deletes_character : 1;
   guint is_expandable_space         : 1;
   guint is_word_boundary            : 1;
+  guint break_inserts_hyphen        : 1;
+  guint break_removes_preceding     : 1;
 };
 
 PANGO_DEPRECATED_IN_1_44

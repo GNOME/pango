@@ -249,6 +249,8 @@ default_break (const char    *text,
   gint last_sentence_start = -1;
   gint last_non_space = -1;
 
+  gboolean prev_space_or_hyphen;
+
   gboolean almost_done = FALSE;
   gboolean done = FALSE;
 
@@ -261,6 +263,7 @@ default_break (const char    *text,
   prev_prev_break_type = G_UNICODE_BREAK_UNKNOWN;
   prev_wc = 0;
   prev_jamo = NO_JAMO;
+  prev_space_or_hyphen = FALSE;
 
   if (length == 0 || *text == '\0')
     {
@@ -290,6 +293,8 @@ default_break (const char    *text,
 
       /* Emoji extended pictographics */
       gboolean is_Extended_Pictographic;
+
+      PangoScript script;
 
       wc = next_wc;
       break_type = next_break_type;
@@ -533,16 +538,15 @@ default_break (const char    *text,
 	prev_GB_type = GB_type;
       }
 
+      script = (PangoScript)g_unichar_get_script (wc);
+
       /* ---- UAX#29 Word Boundaries ---- */
       {
 	is_word_boundary = FALSE;
 	if (is_grapheme_boundary ||
 	    G_UNLIKELY(wc >=0x1F1E6 && wc <=0x1F1FF)) /* Rules WB3 and WB4 */
 	  {
-	    PangoScript script;
 	    WordBreakType WB_type;
-
-	    script = (PangoScript)g_unichar_get_script (wc);
 
 	    /* Find the WordBreakType of wc */
 	    WB_type = WB_Other;
@@ -1552,7 +1556,78 @@ default_break (const char    *text,
 	    attrs[i - 1].is_white) {
 	    last_sentence_start++;
           }
+      }
 
+      /* --- Hyphens --- */
+
+      {
+        gboolean insert_hyphens;
+        gboolean space_or_hyphen = FALSE;
+
+        attrs[i].break_inserts_hyphen = FALSE;
+        attrs[i].break_removes_preceding = FALSE;
+
+        switch ((int)script)
+          {
+          case PANGO_SCRIPT_COMMON:
+          case PANGO_SCRIPT_HAN:
+          case PANGO_SCRIPT_HANGUL:
+          case PANGO_SCRIPT_HIRAGANA:
+          case PANGO_SCRIPT_KATAKANA:
+            insert_hyphens = FALSE;
+            break;
+          default:
+            insert_hyphens = TRUE;
+            break;
+          }
+
+        switch ((int)type)
+          {
+          case G_UNICODE_SPACE_SEPARATOR:
+          case G_UNICODE_LINE_SEPARATOR:
+          case G_UNICODE_PARAGRAPH_SEPARATOR:
+            space_or_hyphen = TRUE;
+            break;
+          case G_UNICODE_CONTROL:
+            if (wc == '\t' || wc == '\n' || wc == '\r' || wc == '\f')
+              space_or_hyphen = TRUE;
+            break;
+          default:
+            break;
+          }
+
+        if (!space_or_hyphen)
+          {
+            if (wc == '-'    || /* Hyphen-minus */
+                wc == 0x058a || /* Armenian hyphen */
+                wc == 0x1400 || /* Canadian syllabics hyphen */
+                wc == 0x1806 || /* Mongolian todo hyphen */
+                wc == 0x2010 || /* Hyphen */
+                wc == 0x2e17 || /* Double oblique hyphen */
+                wc == 0x2e40 || /* Double hyphen */
+                wc == 0x30a0 || /* Katakana-Hiragana double hyphen */
+                wc == 0xfe63 || /* Small hyphen-minus */
+                wc == 0xff0d)   /* Fullwidth hyphen-minus */
+              space_or_hyphen = TRUE;
+          }
+
+        if (attrs[i].is_word_boundary)
+          attrs[i].break_inserts_hyphen = FALSE;
+        else if (prev_space_or_hyphen)
+          attrs[i].break_inserts_hyphen = FALSE;
+        else if (space_or_hyphen)
+          attrs[i].break_inserts_hyphen = FALSE;
+        else
+          attrs[i].break_inserts_hyphen = insert_hyphens;
+
+        if (prev_wc == 0x007C ||   /* Vertical Line */
+            prev_wc == 0x2027)     /* Hyphenation point */
+          {
+            attrs[i].break_inserts_hyphen = TRUE;
+            attrs[i].break_removes_preceding = TRUE;
+          }
+
+        prev_space_or_hyphen = space_or_hyphen;
       }
 
       prev_wc = wc;
@@ -1633,22 +1708,21 @@ break_attrs (const char   *text,
              int           log_attrs_len)
 {
   PangoAttrList list;
+  PangoAttrList hyphens;
   PangoAttrIterator iter;
   GSList *l;
 
   _pango_attr_list_init (&list);
+  _pango_attr_list_init (&hyphens);
+
   for (l = attributes; l; l = l->next)
     {
       PangoAttribute *attr = l->data;
 
       if (attr->klass->type == PANGO_ATTR_ALLOW_BREAKS)
         pango_attr_list_insert (&list, pango_attribute_copy (attr));
-    }
-
-  if (!_pango_attr_list_has_attributes (&list))
-    {
-      _pango_attr_list_destroy (&list);
-      return FALSE;
+      else if (attr->klass->type == PANGO_ATTR_INSERT_HYPHENS)
+        pango_attr_list_insert (&hyphens, pango_attribute_copy (attr));
     }
 
   _pango_attr_list_get_iterator (&list, &iter);
@@ -1681,7 +1755,39 @@ break_attrs (const char   *text,
   } while (pango_attr_iterator_next (&iter));
 
   _pango_attr_iterator_destroy (&iter);
+
+  _pango_attr_list_get_iterator (&hyphens, &iter);
+  do {
+    const PangoAttribute *attr = pango_attr_iterator_get (&iter, PANGO_ATTR_INSERT_HYPHENS);
+
+    if (attr && ((PangoAttrInt*)attr)->value == 0)
+      {
+        int start, end;
+        int start_pos, end_pos;
+        int pos;
+
+        pango_attr_iterator_range (&iter, &start, &end);
+        if (start < offset)
+          start_pos = 0;
+        else
+          start_pos = g_utf8_pointer_to_offset (text, text + start - offset);
+        if (end >= offset + length)
+          end_pos = log_attrs_len;
+        else
+          end_pos = g_utf8_pointer_to_offset (text, text + end - offset);
+
+        for (pos = start_pos + 1; pos < end_pos; pos++)
+          {
+            if (!log_attrs[pos].break_removes_preceding)
+              log_attrs[pos].break_inserts_hyphen = FALSE;
+          }
+      }
+  } while (pango_attr_iterator_next (&iter));
+
+  _pango_attr_iterator_destroy (&iter);
+
   _pango_attr_list_destroy (&list);
+  _pango_attr_list_destroy (&hyphens);
 
   return TRUE;
 }
