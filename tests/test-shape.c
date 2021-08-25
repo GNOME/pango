@@ -137,7 +137,7 @@ test_file (const gchar *filename, GString *string)
   PangoAttrList *shape_attrs;
   GList *items, *l;
   GString *s1, *s2, *s3, *s4, *s5, *s6, *s7;
-  char *p, *p1;
+  char *p1;
   const char *sep = "";
 
   if (!g_file_get_contents (filename, &contents, &length, &error))
@@ -152,11 +152,6 @@ test_file (const gchar *filename, GString *string)
   /* Skip initial comments */
   while (test[0] == '#')
     test = strchr (test, '\n') + 1;
-
-  p = strchr (test, '\n');
-  *p = '\0';
-
-  test  = p + 1;
 
   if (!pango_parse_markup (test, -1, 0, &attrs, &text, NULL, &error))
     {
