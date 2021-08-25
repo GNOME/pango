@@ -190,7 +190,8 @@ test_file (const gchar *filename, GString *string)
       int i;
 
       glyphs = pango_glyph_string_new ();
-      pango_shape_full (text + item->offset, item->length, text, length, &item->analysis, glyphs);
+      /* FIXME: get log attrs */
+      pango_shape_item (item, text, length, NULL, glyphs, 0);
 
       glyph_item.item = item;
       glyph_item.glyphs = glyphs;
@@ -206,6 +207,7 @@ test_file (const gchar *filename, GString *string)
       sep = "|";
 
       g_string_append_printf (s6, "%d(%d)", item->num_chars, item->length);
+      g_string_append (s5, rtl ? "<" : ">");
 
       for (i = 0; i < glyphs->num_glyphs; i++)
         {
@@ -229,12 +231,14 @@ test_file (const gchar *filename, GString *string)
                 p1 = text + item->offset + item->length;
             }
           append_text (s1, p, p1 - p);
-          g_string_append_printf (s2, "[%d]", gi->glyph);
+          if (gi->glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+            g_string_append_printf (s2, "(%d)", gi->glyph & ~PANGO_GLYPH_UNKNOWN_FLAG);
+          else
+            g_string_append_printf (s2, "[%d]", gi->glyph);
           g_string_append_printf (s4, "%d ", gi->geometry.width);
           g_string_append_printf (s7, "%d,%d ", gi->geometry.x_offset, gi->geometry.y_offset);
           if (gi->attr.is_cluster_start)
             g_string_append_printf (s3, "%d ", item->offset + glyphs->log_clusters[i]);
-          g_string_append (s5, rtl ? "<" : ">");
           len = 0;
           len = MAX (len, g_utf8_strlen (s1->str, s1->len));
           len = MAX (len, g_utf8_strlen (s2->str, s2->len));
@@ -250,6 +254,17 @@ test_file (const gchar *filename, GString *string)
           g_string_append_printf (s5, "%*s", len - (int)g_utf8_strlen (s5->str, s5->len), "");
           g_string_append_printf (s6, "%*s", len - (int)g_utf8_strlen (s6->str, s6->len), "");
           g_string_append_printf (s7, "%*s", len - (int)g_utf8_strlen (s7->str, s7->len), "");
+
+          if (gi->attr.is_cluster_start && i + 1 < glyphs->num_glyphs)
+            {
+              g_string_append (s1, " ");
+              g_string_append (s2, "|");
+              g_string_append (s3, "|");
+              g_string_append (s4, "|");
+              g_string_append (s5, " ");
+              g_string_append (s6, " ");
+              g_string_append (s7, "|");
+            }
         }
 
       pango_glyph_string_free (glyphs);
@@ -258,11 +273,11 @@ test_file (const gchar *filename, GString *string)
   g_string_append_printf (string, "%s\n", test);
   g_string_append_printf (string, "%s\n", s6->str);
   g_string_append_printf (string, "%s\n", s1->str);
+  g_string_append_printf (string, "%s\n", s5->str);
+  g_string_append_printf (string, "%s\n", s3->str);
   g_string_append_printf (string, "%s\n", s2->str);
   g_string_append_printf (string, "%s\n", s4->str);
   g_string_append_printf (string, "%s\n", s7->str);
-  g_string_append_printf (string, "%s\n", s3->str);
-  g_string_append_printf (string, "%s\n", s5->str);
 
   g_string_free (s1, TRUE);
   g_string_free (s2, TRUE);
