@@ -1559,9 +1559,13 @@ default_break (const char    *text,
       }
 
       /* --- Hyphens --- */
+
       {
         gboolean insert_hyphens;
         gboolean space_or_hyphen = FALSE;
+
+        attrs[i].break_inserts_hyphen = FALSE;
+        attrs[i].break_removes_preceding = FALSE;
 
         switch ((int)script)
           {
@@ -1599,7 +1603,6 @@ default_break (const char    *text,
                 wc == 0x1400 || /* Canadian syllabics hyphen */
                 wc == 0x1806 || /* Mongolian todo hyphen */
                 wc == 0x2010 || /* Hyphen */
-                wc == 0x2027 || /* Hyphenation point */
                 wc == 0x2e17 || /* Double oblique hyphen */
                 wc == 0x2e40 || /* Double hyphen */
                 wc == 0x30a0 || /* Katakana-Hiragana double hyphen */
@@ -1616,6 +1619,13 @@ default_break (const char    *text,
           attrs[i].break_inserts_hyphen = FALSE;
         else
           attrs[i].break_inserts_hyphen = insert_hyphens;
+
+        if (prev_wc == 0x007C ||   /* Vertical Line */
+            prev_wc == 0x2027)     /* Hyphenation point */
+          {
+            attrs[i].break_inserts_hyphen = TRUE;
+            attrs[i].break_removes_preceding = TRUE;
+          }
 
         prev_space_or_hyphen = space_or_hyphen;
       }
@@ -1774,7 +1784,8 @@ break_attrs (const char   *text,
 
         for (pos = start_pos + 1; pos < end_pos; pos++)
           {
-            log_attrs[pos].break_inserts_hyphen = FALSE;
+            if (!log_attrs[pos].break_removes_preceding)
+              log_attrs[pos].break_inserts_hyphen = FALSE;
           }
       }
   } while (pango_attr_iterator_next (&iter));

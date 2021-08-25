@@ -3601,7 +3601,8 @@ break_needs_hyphen (PangoLayout    *layout,
                     ParaBreakState *state,
                     int             pos)
 {
-  return layout->log_attrs[state->start_offset + pos].break_inserts_hyphen;
+  return layout->log_attrs[state->start_offset + pos].break_inserts_hyphen ||
+         layout->log_attrs[state->start_offset + pos].break_removes_preceding;
 }
 
 static int
@@ -3627,23 +3628,56 @@ find_hyphen_width (PangoItem *item)
 }
 
 static int
+find_char_width (PangoItem *item,
+                 gunichar   wc)
+{
+  hb_font_t *hb_font;
+  hb_codepoint_t glyph;
+
+  if (!item->analysis.font)
+    return 0;
+
+  hb_font = pango_font_get_hb_font (item->analysis.font);
+  if (hb_font_get_nominal_glyph (hb_font, wc, &glyph))
+    return hb_font_get_glyph_h_advance (hb_font, glyph);
+
+  return 0;
+}
+
+static inline void
+ensure_hyphen_width (ParaBreakState *state)
+{
+  if (state->hyphen_width < 0)
+    {
+      PangoItem *item = state->items->data;
+      state->hyphen_width = find_hyphen_width (item);
+    }
+}
+
+static int
 find_break_extra_width (PangoLayout    *layout,
                         ParaBreakState *state,
                         int             pos)
 {
   /* Check whether to insert a hyphen */
-  if (break_needs_hyphen (layout, state, pos))
+  if (layout->log_attrs[state->start_offset + pos].break_inserts_hyphen)
     {
-      if (state->hyphen_width < 0)
+      ensure_hyphen_width (state);
+
+      if (layout->log_attrs[state->start_offset + pos].break_removes_preceding)
         {
           PangoItem *item = state->items->data;
-          state->hyphen_width = find_hyphen_width (item);
-        }
+          gunichar wc;
 
-      return state->hyphen_width;
+          wc = g_utf8_get_char (g_utf8_offset_to_pointer (layout->text, state->start_offset + pos - 1));
+
+          return state->hyphen_width - find_char_width (item, wc);
+        }
+      else
+        return state->hyphen_width;
     }
-  else
-    return 0;
+
+  return 0;
 }
 
 #if 0
