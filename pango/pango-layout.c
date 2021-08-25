@@ -83,6 +83,8 @@
 #include <string.h>
 #include <math.h>
 
+#include <hb-ot.h>
+
 #include "pango-layout-private.h"
 #include "pango-attributes-private.h"
 
@@ -2458,22 +2460,36 @@ pango_layout_index_to_pos (PangoLayout    *layout,
   _pango_layout_iter_destroy (&iter);
 }
 
-static int
-pango_layout_line_get_char_level (PangoLayoutLine *layout_line,
-                                  int              index)
+static PangoLayoutRun *
+pango_layout_line_get_run (PangoLayoutLine *line,
+                           int              index)
 {
   GSList *run_list;
 
-  run_list = layout_line->runs;
+  run_list = line->runs;
   while (run_list)
     {
       PangoLayoutRun *run = run_list->data;
 
       if (run->item->offset <= index && run->item->offset + run->item->length > index)
-        return run->item->analysis.level;
+        return run;
 
       run_list = run_list->next;
     }
+
+  return  NULL;
+}
+
+static int
+pango_layout_line_get_char_level (PangoLayoutLine *line,
+                                  int              index)
+{
+  PangoLayoutRun *run;
+
+  run = pango_layout_line_get_run (line, index);
+
+  if (run)
+    return run->item->analysis.level;
 
   return 0;
 }
@@ -2627,6 +2643,83 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
       weak_pos->y = run_rect.y;
       weak_pos->width = 0;
       weak_pos->height = run_rect.height;
+    }
+}
+
+/**
+ * pango_layout_get_caret_pos:
+ * @layout: a `PangoLayout`
+ * @index_: the byte index of the cursor
+ * @strong_pos: (out) (optional): location to store the strong cursor position
+ * @weak_pos: (out) (optional): location to store the weak cursor position
+ *
+ * Given an index within a layout, determines the positions that of the
+ * strong and weak cursors if the insertion point is at that index.
+ *
+ * This is a variant of [method@Pango.Layout.get_cursor_pos] that applies
+ * font metric information about caret slope and offset to the positions
+ * it returns.
+ *
+ * <picture>
+ *   <source srcset="caret-metrics-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img alt="Caret metrics" src="caret-metrics-light.png">
+ * </picture>
+ *
+ * Since: 1.50
+ */
+void
+pango_layout_get_caret_pos (PangoLayout    *layout,
+                            int             index,
+                            PangoRectangle *strong_pos,
+                            PangoRectangle *weak_pos)
+{
+  PangoLayoutLine *line;
+  PangoLayoutRun *run;
+  hb_font_t *hb_font;
+  hb_position_t caret_offset, caret_run, caret_rise, descender;
+
+  pango_layout_get_cursor_pos (layout, index, strong_pos, weak_pos);
+
+  /* FIXME: not very efficient to re-iterate here */
+  line = pango_layout_index_to_line_and_extents (layout, index, NULL, NULL);
+  run = pango_layout_line_get_run (line, index);
+  if (!run)
+    run = pango_layout_line_get_run (line, index - 1);
+
+  if (!run)
+    return;
+
+  hb_font = pango_font_get_hb_font (run->item->analysis.font);
+
+  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_HORIZONTAL_CARET_RISE, &caret_rise) &&
+      hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_HORIZONTAL_CARET_RUN, &caret_run) &&
+      hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_HORIZONTAL_CARET_OFFSET, &caret_offset) &&
+      hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_HORIZONTAL_DESCENDER, &descender))
+    {
+      double slope_inv;
+
+      if (strong_pos)
+        strong_pos->x += caret_offset;
+
+      if (weak_pos)
+        weak_pos->x += caret_offset;
+
+      if (caret_rise == 0)
+        return;
+
+      slope_inv = caret_run / (double) caret_rise;
+
+      if (strong_pos)
+        {
+          strong_pos->x += descender * slope_inv;
+          strong_pos->width = strong_pos->height * slope_inv;
+        }
+
+      if (weak_pos)
+        {
+          weak_pos->x += descender * slope_inv;
+          weak_pos->width = weak_pos->height * slope_inv;
+        }
     }
 }
 

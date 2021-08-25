@@ -36,6 +36,8 @@ pango_content_files = [
   'split-cursor-dark.png',
   'fontmetrics-light.png',
   'fontmetrics-dark.png',
+  'caret-metrics-light.png',
+  'caret-metrics-dark.png',
 ]
 
 doc_conf = configuration_data()
