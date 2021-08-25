@@ -3671,7 +3671,8 @@ insert_run (PangoLayoutLine *line,
 
   run->item = run_item;
 
-  if (last_run && state->log_widths_offset == 0)
+  if (last_run && state->log_widths_offset == 0 &&
+      !(run_item->analysis.flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN))
     run->glyphs = state->glyphs;
   else
     run->glyphs = shape_run (line, state, run_item);
@@ -5716,8 +5717,47 @@ zero_line_final_space (PangoLayoutLine *line,
 {
   PangoLayout *layout = line->layout;
   PangoItem *item = run->item;
-  PangoGlyphString *glyphs = run->glyphs;
-  int glyph = item->analysis.level % 2 ? 0 : glyphs->num_glyphs - 1;
+  PangoGlyphString *glyphs;
+  int glyph;
+  int line_chars;
+
+  line_chars = 0;
+  for (GSList *l = line->runs; l; l = l->next)
+    {
+      PangoLayoutRun *r = l->data;
+
+      if (r)
+        line_chars += r->item->num_chars;
+    }
+
+  if (layout->log_attrs[state->line_start_offset + line_chars].break_inserts_hyphen &&
+      !(item->analysis.flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN))
+    {
+      int width;
+      int start_offset;
+
+      /* The last run fit onto the line without breaking it, but it still needs a hyphen */
+
+      width = pango_glyph_string_get_width (run->glyphs);
+
+      /* Ugly, shape_run uses state->start_offset, so temporarily rewind things
+       * to the state before the run was inserted. Otherwise, we end up passing
+       * the wrong log attrs to the shaping machinery.
+       */
+      start_offset = state->start_offset;
+      state->start_offset = state->line_start_offset + line_chars - item->num_chars;
+
+      pango_glyph_string_free (run->glyphs);
+      item->analysis.flags |= PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
+      run->glyphs = shape_run (line, state, item);
+
+      state->start_offset = start_offset;
+
+      state->remaining_width += pango_glyph_string_get_width (run->glyphs) - width;
+    }
+
+  glyphs = run->glyphs;
+  glyph = item->analysis.level % 2 ? 0 : glyphs->num_glyphs - 1;
 
   if (glyphs->glyphs[glyph].glyph == PANGO_GET_UNKNOWN_GLYPH (0x2028))
     return; /* this LS is visible */
@@ -5725,7 +5765,6 @@ zero_line_final_space (PangoLayoutLine *line,
   /* if the final char of line forms a cluster, and it's
    * a whitespace char, zero its glyph's width as it's been wrapped
    */
-
   if (glyphs->num_glyphs < 1 || state->start_offset == 0 ||
       !layout->log_attrs[state->start_offset - 1].is_white)
     return;
