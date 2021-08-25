@@ -157,7 +157,8 @@ enum {
   ANNOTATE_RUN_EXTENTS       =  32,
   ANNOTATE_CLUSTER_EXTENTS   =  64,
   ANNOTATE_CHAR_EXTENTS      = 128,
-  ANNOTATE_LAST              = 256,
+  ANNOTATE_CARET_POSITIONS   = 256,
+  ANNOTATE_LAST              = 512,
 };
 
 static void
@@ -405,6 +406,53 @@ render_callback (PangoLayout *layout,
           pango_layout_iter_free (iter);
           cairo_restore (cr);
         }
+
+      if (annotate & ANNOTATE_CARET_POSITIONS)
+        {
+          /* draw the caret positions in purple */
+          cairo_save (cr);
+          cairo_set_source_rgba (cr, 1.0, 0.0, 1.0, 0.5);
+
+          iter = pango_layout_get_iter (layout);
+          do
+            {
+              PangoRectangle rect;
+              PangoLayoutRun *run;
+              const char *text, *start, *end, *p;
+
+              pango_layout_iter_get_run_extents (iter, NULL, &rect);
+              run = pango_layout_iter_get_run_readonly (iter);
+
+              if (!run)
+                continue;
+
+              text = pango_layout_get_text (layout);
+              start =text + run->item->offset;
+              end = start + run->item->length;
+              for (p = start; p < end; p = g_utf8_next_char (p))
+                {
+                  int x, y;
+
+                  pango_glyph_string_index_to_x (run->glyphs,
+                                                 text + run->item->offset,
+                                                 run->item->length,
+                                                 &run->item->analysis,
+                                                 p - start,
+                                                 FALSE,
+                                                 &x);
+                  x += rect.x;
+                  y = pango_layout_iter_get_baseline (iter);
+
+                  cairo_arc (cr, x / PANGO_SCALE, y / PANGO_SCALE, 3.0, 0, 2*G_PI);
+                  cairo_close_path (cr);
+                  cairo_fill (cr);
+                }
+            }
+          while (pango_layout_iter_next_run (iter));
+          pango_layout_iter_free (iter);
+
+          cairo_restore (cr);
+        }
     }
 
   cairo_move_to (cr, 0, 0);
@@ -559,7 +607,9 @@ pangocairo_view_get_option_group (const PangoViewer *klass G_GNUC_UNUSED)
      "\t\t\t\t\t\t\t  16 - line extents\n"
      "\t\t\t\t\t\t\t  32 - run extents\n"
      "\t\t\t\t\t\t\t  64 - cluster extents\n"
-     "\t\t\t\t\t\t\t 128 - char extents", "FLAGS"},
+     "\t\t\t\t\t\t\t 128 - char extents\n"
+     "\t\t\t\t\t\t\t 256 - caret positions",
+     "FLAGS"},
     {NULL}
   };
   GOptionGroup *group;
