@@ -418,7 +418,9 @@ render_callback (PangoLayout *layout,
             {
               PangoRectangle rect;
               PangoLayoutRun *run;
-              const char *text, *start, *end, *p;
+              const char *text, *start, *p;
+              int x, y;
+              gboolean trailing;
 
               pango_layout_iter_get_run_extents (iter, NULL, &rect);
               run = pango_layout_iter_get_run_readonly (iter);
@@ -427,25 +429,31 @@ render_callback (PangoLayout *layout,
                 continue;
 
               text = pango_layout_get_text (layout);
-              start =text + run->item->offset;
-              end = start + run->item->length;
-              for (p = start; p < end; p = g_utf8_next_char (p))
-                {
-                  int x, y;
+              start = text + run->item->offset;
 
+              y = pango_layout_iter_get_baseline (iter);
+
+              trailing = FALSE;
+              p = start;
+              for (int i = 0; i <= run->item->num_chars; i++)
+                {
                   pango_glyph_string_index_to_x (run->glyphs,
                                                  text + run->item->offset,
                                                  run->item->length,
                                                  &run->item->analysis,
                                                  p - start,
-                                                 FALSE,
+                                                 trailing,
                                                  &x);
                   x += rect.x;
-                  y = pango_layout_iter_get_baseline (iter);
 
                   cairo_arc (cr, x / PANGO_SCALE, y / PANGO_SCALE, 3.0, 0, 2*G_PI);
                   cairo_close_path (cr);
                   cairo_fill (cr);
+
+                  if (i < run->item->num_chars)
+                    p = g_utf8_next_char (p);
+                  else
+                    trailing = TRUE;
                 }
             }
           while (pango_layout_iter_next_run (iter));
