@@ -1867,11 +1867,14 @@ handle_words (const char    *text,
       if (start >= offset)
         {
           gboolean in_word = FALSE;
-          for (pos = start_pos - 1; pos >= 0; pos--)
+          for (pos = start_pos; pos >= 0; pos--)
             {
               if (log_attrs[pos].is_word_end)
-                break;
-              if (log_attrs[pos].is_word_start)
+                {
+                  in_word = pos == start_pos;
+                  break;
+                }
+              if (pos < start_pos && log_attrs[pos].is_word_start)
                 {
                   in_word = TRUE;
                   break;
@@ -1882,7 +1885,8 @@ handle_words (const char    *text,
           log_attrs[start_pos].is_word_boundary = TRUE;
 
           /* Allow line breaks before words */
-          log_attrs[start_pos].is_line_break = TRUE;
+          if (start_pos > 0)
+            log_attrs[start_pos].is_line_break = TRUE;
 
           tailored = TRUE;
         }
@@ -1890,11 +1894,14 @@ handle_words (const char    *text,
       if (end < offset + length)
         {
           gboolean in_word = FALSE;
-          for (pos = end_pos + 1; pos < log_attrs_len; pos++)
+          for (pos = end_pos; pos < log_attrs_len; pos++)
             {
               if (log_attrs[pos].is_word_start)
-                break;
-              if (log_attrs[pos].is_word_end)
+                {
+                  in_word = pos == end_pos;
+                  break;
+                }
+              if (pos > end_pos && log_attrs[pos].is_word_end)
                 {
                   in_word = TRUE;
                   break;
