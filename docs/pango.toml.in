@@ -98,4 +98,6 @@ content_images = [
   "caret-metrics-dark.png",
   "cursor-positions-light.png",
   "cursor-positions-dark.png",
+  "glyphstring-positions-light.png",
+  "glyphstring-positions-dark.png",
 ]

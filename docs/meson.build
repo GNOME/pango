@@ -40,6 +40,8 @@ pango_content_files = [
   'caret-metrics-dark.png',
   'cursor-positions-light.png',
   'cursor-positions-dark.png',
+  'glyphstring-positions-light.png',
+  'glyphstring-positions-dark.png',
 ]
 
 doc_conf = configuration_data()
