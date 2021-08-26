@@ -8,7 +8,10 @@
    version="1.1"
    id="svg122363"
    inkscape:version="1.1 (c68e22c387, 2021-05-23)"
-   sodipodi:docname="cursor-positions2.svg"
+   sodipodi:docname="glyphstring-positions.svg"
+   inkscape:export-filename="/var/home/mclasen/cursor-positions2-light.png"
+   inkscape:export-xdpi="225.31"
+   inkscape:export-ydpi="225.31"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -111,12 +114,5 @@
          id="tspan86335-7"
          x="40.889793"
          y="141.745">o</tspan></text>
-    <rect
-       style="vector-effect:non-scaling-stroke;fill:#000000;fill-opacity:0.28;stroke:#000000;stroke-width:0.000677452;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;-inkscape-stroke:hairline"
-       id="rect121833-0-4"
-       width="0.60000002"
-       height="22.777336"
-       x="65.532852"
-       y="123.71571" />
   </g>
 </svg>

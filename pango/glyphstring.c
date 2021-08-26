@@ -370,8 +370,15 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
  * Converts from character position to x position.
  *
  * The X position is measured from the left edge of the run.
- * Character positions are computed by dividing up each cluster
- * into equal portions.
+ * Character positions are obtained using font metrics for ligatures
+ * where available, and computed by dividing up each cluster
+ * into equal portions, otherwise.
+ *
+ * <picture>
+ *   <source srcset="glyphstring-positions-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img alt="Glyph positions" src="glyphstring-positions-light.png">
+ * </picture>
+
  */
 void
 pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
