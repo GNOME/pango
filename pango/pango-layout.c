@@ -2541,6 +2541,11 @@ pango_layout_get_direction (PangoLayout *layout,
  * The position of each cursor is stored as a zero-width rectangle
  * with the height of the run extents.
  *
+ * <picture>
+ *   <source srcset="cursor-positions-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img alt="Cursor positions" src="cursor-positions-light.png">
+ * </picture>
+ *
  * The strong cursor location is the location where characters of the
  * directionality equal to the base direction of the layout are inserted.
  * The weak cursor location is the location where characters of the
@@ -2550,7 +2555,7 @@ pango_layout_get_direction (PangoLayout *layout,
  *
  * <picture>
  *   <source srcset="split-cursor-dark.png" media="(prefers-color-scheme: dark)">
- *   <img alt="strong and weak cursors" src="split-cursor-light.png">
+ *   <img alt="Strong and weak cursors" src="split-cursor-light.png">
  * </picture>
  *
  * The strong cursor has a little arrow pointing to the right, the weak
