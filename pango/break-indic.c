@@ -94,10 +94,13 @@
 static void
 not_cursor_position (PangoLogAttr *attr)
 {
-  attr->is_cursor_position = FALSE;
-  attr->is_char_break = FALSE;
-  attr->is_line_break = FALSE;
-  attr->is_mandatory_break = FALSE;
+  if (!attr->is_mandatory_break)
+    {
+      attr->is_cursor_position = FALSE;
+      attr->is_char_break = FALSE;
+      attr->is_line_break = FALSE;
+      attr->is_mandatory_break = FALSE;
+    }
 }
 
 static void

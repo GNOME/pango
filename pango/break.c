@@ -939,11 +939,11 @@ default_break (const char    *text,
 		     SB_type == SB_Lower)
               {
 	        attrs[prev_SB_i].is_sentence_boundary = FALSE;
-	        attrs[prev_SB_i].is_sentence_start = FALSE;
 	        attrs[prev_SB_i].is_sentence_end = FALSE;
                 last_sentence_start = -1;
                 for (int j = prev_SB_i - 1; j >= 0; j--)
                   {
+                    attrs[j].is_sentence_end = FALSE;
                     if (attrs[j].is_sentence_boundary)
                       {
                         last_sentence_start = j;
@@ -1541,7 +1541,7 @@ default_break (const char    *text,
 
 	/* meets sentence end, mark both sentence start and end */
 	if (last_sentence_start != -1 && is_sentence_boundary) {
-	  if (last_non_space != -1) {
+	  if (last_non_space >= last_sentence_start) {
 	    attrs[last_sentence_start].is_sentence_start = TRUE;
 	    attrs[last_non_space].is_sentence_end = TRUE;
 	  }
@@ -1642,14 +1642,15 @@ default_break (const char    *text,
 
   i--;
 
-  attrs[i].is_cursor_position = TRUE;  /* Rule GB2 */
   attrs[0].is_cursor_position = TRUE;  /* Rule GB1 */
+  attrs[i].is_cursor_position = TRUE;  /* Rule GB2 */
 
-  attrs[i].is_word_boundary = TRUE;  /* Rule WB2 */
   attrs[0].is_word_boundary = TRUE;  /* Rule WB1 */
+  attrs[i].is_word_boundary = TRUE;  /* Rule WB2 */
 
-  attrs[i].is_line_break = TRUE;  /* Rule LB3 */
   attrs[0].is_line_break = FALSE; /* Rule LB2 */
+  attrs[i].is_line_break = TRUE;  /* Rule LB3 */
+  attrs[i].is_mandatory_break = TRUE;  /* Rule LB3 */
 }
 
 /* }}} */
@@ -1866,11 +1867,14 @@ handle_words (const char    *text,
       if (start >= offset)
         {
           gboolean in_word = FALSE;
-          for (pos = start_pos - 1; pos >= 0; pos--)
+          for (pos = start_pos; pos >= 0; pos--)
             {
               if (log_attrs[pos].is_word_end)
-                break;
-              if (log_attrs[pos].is_word_start)
+                {
+                  in_word = pos == start_pos;
+                  break;
+                }
+              if (pos < start_pos && log_attrs[pos].is_word_start)
                 {
                   in_word = TRUE;
                   break;
@@ -1881,7 +1885,8 @@ handle_words (const char    *text,
           log_attrs[start_pos].is_word_boundary = TRUE;
 
           /* Allow line breaks before words */
-          log_attrs[start_pos].is_line_break = TRUE;
+          if (start_pos > 0)
+            log_attrs[start_pos].is_line_break = TRUE;
 
           tailored = TRUE;
         }
@@ -1889,11 +1894,14 @@ handle_words (const char    *text,
       if (end < offset + length)
         {
           gboolean in_word = FALSE;
-          for (pos = end_pos + 1; pos < log_attrs_len; pos++)
+          for (pos = end_pos; pos < log_attrs_len; pos++)
             {
               if (log_attrs[pos].is_word_start)
-                break;
-              if (log_attrs[pos].is_word_end)
+                {
+                  in_word = pos == end_pos;
+                  break;
+                }
+              if (pos > end_pos && log_attrs[pos].is_word_end)
                 {
                   in_word = TRUE;
                   break;
@@ -2161,7 +2169,13 @@ pango_default_break (const char    *text,
                      PangoLogAttr  *attrs,
                      int            attrs_len G_GNUC_UNUSED)
 {
+  PangoLogAttr before = *attrs;
+
   default_break (text, length, analysis, attrs, attrs_len);
+
+  attrs->is_line_break      |= before.is_line_break;
+  attrs->is_mandatory_break |= before.is_mandatory_break;
+  attrs->is_cursor_position |= before.is_cursor_position;
 }
 
 /**
@@ -2270,10 +2284,24 @@ pango_attr_break (const char    *text,
                   PangoLogAttr  *attrs,
                   int            attrs_len)
 {
+  PangoLogAttr *start = attrs;
+  PangoLogAttr attr_before = *start;
   GSList *attributes;
 
   attributes = pango_attr_list_get_attributes (attr_list);
-  break_attrs (text, length, attributes, offset, attrs, attrs_len);
+  if (break_attrs (text, length, attributes, offset, attrs, attrs_len))
+    {
+      /* if tailored, we enforce some of the attrs from before
+       * tailoring at the boundary
+       */
+
+      start->backspace_deletes_character  = attr_before.backspace_deletes_character;
+
+      start->is_line_break      |= attr_before.is_line_break;
+      start->is_mandatory_break |= attr_before.is_mandatory_break;
+      start->is_cursor_position |= attr_before.is_cursor_position;
+    }
+
   g_slist_free_full (attributes, (GDestroyNotify)pango_attribute_destroy);
 }
 

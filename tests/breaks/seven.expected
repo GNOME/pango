@@ -1,0 +1,7 @@
+Text:         ⁦b⁩ ⁦l⁩ ⁦a⁩  [0x0a]  ⁦b⁩ ⁦l⁩ ⁦a⁩  [0x0a]  
+Breaks:     c  c c c       Lc c c c       Lc
+Whitespace:        w              w       w 
+Sentences:  bs     e       bs     e       b 
+Words:      bs     be      bs     be      b 
+Graphemes:  b  b b b       b  b b b       b 
+Hyphens:       i i            i i           
