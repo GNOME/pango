@@ -30,6 +30,7 @@
 #include "config.h"
 #include <pango/pangocairo.h>
 #include "test-common.h"
+#include "validate-log-attrs.h"
 
 
 static PangoContext *context;
@@ -95,6 +96,11 @@ test_file (const gchar *filename, GString *string)
 
   g_assert_cmpint (len, ==, len2);
   g_assert_true (memcmp (attrs, attrs2, sizeof (PangoLogAttr) * len) == 0);
+  if (!pango_validate_log_attrs (text, length, attrs, len, &error))
+    {
+      g_warning ("%s: Log attrs invalid: %s", filename, error->message);
+      g_assert_not_reached ();
+    }
 
   layout2 = pango_layout_copy (layout);
   attrs2 = pango_layout_get_log_attrs_readonly (layout2, &len2);
