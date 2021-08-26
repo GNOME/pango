@@ -1,3 +1,13 @@
+Overview of changes
+===================
+* Only recompute log attrs when needed
+* Fix conformance issues in Thai linebreaking
+* Add pango_attr_break to support customizing line and word breaks
+* Add pango_layout_get_caret_pos to support sloped carets
+* Improve hyphenation support
+* pango-viewer: Visualize caret positions
+* Improve caret positioning for ligatures
+
 Overview of changes in 1.49.0
 =============================
 * Rename git `master` branch to `main` (#579)
