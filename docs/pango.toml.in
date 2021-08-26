@@ -96,4 +96,6 @@ content_images = [
   "fontmetrics-dark.png",
   "caret-metrics-light.png",
   "caret-metrics-dark.png",
+  "cursor-positions-light.png",
+  "cursor-positions-dark.png",
 ]
