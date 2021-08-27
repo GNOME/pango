@@ -103,7 +103,6 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   font_class->get_font_map = pango_fc_font_get_font_map;
   font_class->get_features = pango_fc_font_get_features;
   font_class->create_hb_font = pango_fc_font_create_hb_font;
-  font_class->get_features = pango_fc_font_get_features;
 
   pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT);
 
@@ -472,7 +471,6 @@ pango_fc_font_get_metrics (PangoFont     *font,
           /* Compute derived metrics */
           PangoLayout *layout;
           PangoRectangle extents;
-          const char *sample_str = pango_language_get_sample_string (language);
           PangoFontDescription *desc = pango_font_describe_with_absolute_size (font);
           gulong sample_str_width;
 

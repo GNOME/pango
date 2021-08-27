@@ -155,7 +155,7 @@ struct _PangoFcFontMapPrivate
 
   GHashTable *font_face_data_hash; /* Maps font file name/id -> data */
 
-  /* List of all families availible */
+  /* List of all families available */
   PangoFcFamily **families;
   int n_families;		/* -1 == uninitialized */
 
