@@ -149,16 +149,17 @@ pangocairo_view_destroy_surface (gpointer instance,
 }
 
 enum {
-  ANNOTATE_GRAVITY_ROOF      =   1,
-  ANNOTATE_BLOCK_PROGRESSION =   2,
-  ANNOTATE_BASELINES         =   4,
-  ANNOTATE_LAYOUT_EXTENTS    =   8,
-  ANNOTATE_LINE_EXTENTS      =  16,
-  ANNOTATE_RUN_EXTENTS       =  32,
-  ANNOTATE_CLUSTER_EXTENTS   =  64,
-  ANNOTATE_CHAR_EXTENTS      = 128,
-  ANNOTATE_CARET_POSITIONS   = 256,
-  ANNOTATE_LAST              = 512,
+  ANNOTATE_GRAVITY_ROOF      =    1,
+  ANNOTATE_BLOCK_PROGRESSION =    2,
+  ANNOTATE_BASELINES         =    4,
+  ANNOTATE_LAYOUT_EXTENTS    =    8,
+  ANNOTATE_LINE_EXTENTS      =   16,
+  ANNOTATE_RUN_EXTENTS       =   32,
+  ANNOTATE_CLUSTER_EXTENTS   =   64,
+  ANNOTATE_CHAR_EXTENTS      =  128,
+  ANNOTATE_GLYPH_EXTENTS     =  256,
+  ANNOTATE_CARET_POSITIONS   =  512,
+  ANNOTATE_LAST              = 1024,
 };
 
 static void
@@ -407,6 +408,62 @@ render_callback (PangoLayout *layout,
           cairo_restore (cr);
         }
 
+      if (annotate & ANNOTATE_GLYPH_EXTENTS)
+        {
+          /* draw the glyph_extents in blue */
+          cairo_save (cr);
+          cairo_set_source_rgba (cr, 0.0, 0.0, 1.0, 0.5);
+
+          iter = pango_layout_get_iter (layout);
+          do
+            {
+              PangoLayoutRun *run;
+              PangoRectangle rect;
+              int x_pos, y_pos;
+
+              run = pango_layout_iter_get_run (iter);
+              if (!run)
+                continue;
+
+              pango_layout_iter_get_run_extents (iter, NULL, &rect);
+
+              x_pos = rect.x;
+              y_pos = rect.y + pango_layout_iter_get_baseline (iter);
+
+              for (int i = 0; i < run->glyphs->num_glyphs; i++)
+                {
+                  PangoRectangle extents;
+
+                  pango_font_get_glyph_extents (run->item->analysis.font,
+                                                run->glyphs->glyphs[i].glyph,
+                                                &extents, NULL);
+
+                  rect.x = x_pos + run->glyphs->glyphs[i].geometry.x_offset + extents.x;
+                  rect.y = y_pos + run->glyphs->glyphs[i].geometry.y_offset + extents.y;
+                  rect.width = extents.width;
+                  rect.height = extents.height;
+
+                  cairo_rectangle (cr,
+                                   (double)rect.x / PANGO_SCALE - lw / 2,
+                                   (double)rect.y / PANGO_SCALE - lw / 2,
+                                   (double)rect.width / PANGO_SCALE + lw,
+                                   (double)rect.height / PANGO_SCALE + lw);
+                  cairo_stroke (cr);
+
+                  cairo_arc (cr,
+                             (double) (x_pos + run->glyphs->glyphs[i].geometry.x_offset) / PANGO_SCALE,
+                             (double) (y_pos + run->glyphs->glyphs[i].geometry.y_offset) / PANGO_SCALE,
+                             3.0, 0, 2*G_PI);
+                  cairo_fill (cr);
+
+                  x_pos += run->glyphs->glyphs[i].geometry.width;
+                }
+            }
+          while (pango_layout_iter_next_run (iter));
+          pango_layout_iter_free (iter);
+          cairo_restore (cr);
+        }
+
       if (annotate & ANNOTATE_CARET_POSITIONS)
         {
           const PangoLogAttr *attrs;
@@ -634,7 +691,8 @@ pangocairo_view_get_option_group (const PangoViewer *klass G_GNUC_UNUSED)
      "\t\t\t\t\t\t\t  32 - run extents\n"
      "\t\t\t\t\t\t\t  64 - cluster extents\n"
      "\t\t\t\t\t\t\t 128 - char extents\n"
-     "\t\t\t\t\t\t\t 256 - caret positions",
+     "\t\t\t\t\t\t\t 256 - glyph extents\n"
+     "\t\t\t\t\t\t\t 512 - caret positions",
      "FLAGS"},
     {NULL}
   };
