@@ -218,6 +218,18 @@ test_file (const gchar *filename, GString *string)
           int len;
           PangoGlyphInfo *gi = &glyphs->glyphs[i];
 
+
+          if (gi->attr.is_cluster_start && i > 0)
+            {
+              g_string_append (s1, " ");
+              g_string_append (s2, "|");
+              g_string_append (s3, "|");
+              g_string_append (s4, "|");
+              g_string_append (s5, " ");
+              g_string_append (s6, " ");
+              g_string_append (s7, "|");
+            }
+
           char *p;
           p = text + item->offset + glyphs->log_clusters[i];
           if (rtl)
@@ -258,17 +270,6 @@ test_file (const gchar *filename, GString *string)
           g_string_append_printf (s5, "%*s", len - (int)g_utf8_strlen (s5->str, s5->len), "");
           g_string_append_printf (s6, "%*s", len - (int)g_utf8_strlen (s6->str, s6->len), "");
           g_string_append_printf (s7, "%*s", len - (int)g_utf8_strlen (s7->str, s7->len), "");
-
-          if (gi->attr.is_cluster_start && i + 1 < glyphs->num_glyphs)
-            {
-              g_string_append (s1, " ");
-              g_string_append (s2, "|");
-              g_string_append (s3, "|");
-              g_string_append (s4, "|");
-              g_string_append (s5, " ");
-              g_string_append (s6, " ");
-              g_string_append (s7, "|");
-            }
         }
 
       pango_glyph_string_free (glyphs);
