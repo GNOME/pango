@@ -538,9 +538,12 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
             *x_pos = end_xpos + caret;
           else
             *x_pos = start_xpos + caret;
+          *x_pos += glyphs->glyphs[glyph_pos].geometry.x_offset;
           return;
         }
     }
+
+fallback:
 
   *x_pos = ((cluster_chars - cluster_offset) * start_xpos +
             cluster_offset * end_xpos) / cluster_chars;
