@@ -34,6 +34,8 @@
 
 static PangoContext *context;
 
+gboolean opt_hex_chars;
+
 static void
 append_text (GString    *s,
              const char *text,
@@ -46,7 +48,9 @@ append_text (GString    *s,
       gunichar ch = g_utf8_get_char (p);
       if (ch == ' ')
         g_string_append (s, "[ ]");
-      if (ch == 0x0A || ch == 0x2028 || !g_unichar_isprint (ch))
+      else if (opt_hex_chars)
+        g_string_append_printf (s, "[%#04x]", ch);
+      else if (ch == 0x0A || ch == 0x2028 || !g_unichar_isprint (ch))
         g_string_append_printf (s, "[%#04x]", ch);
       else
         g_string_append_unichar (s, ch);
@@ -347,6 +351,21 @@ main (int argc, char *argv[])
   GError *error = NULL;
   const gchar *name;
   gchar *path;
+  GOptionContext *option_context;
+  GOptionEntry entries[] = {
+    { "hex-chars", '0', 0, G_OPTION_ARG_NONE, &opt_hex_chars, "Print all chars in hex", NULL },
+    { NULL, 0 },
+  };
+
+  option_context = g_option_context_new ("");
+  g_option_context_add_main_entries (option_context, entries, NULL);
+  g_option_context_set_ignore_unknown_options (option_context, TRUE);
+  if (!g_option_context_parse (option_context, &argc, &argv, &error))
+    {
+      g_error ("failed to parse options: %s", error->message);
+      return 1;
+    }
+  g_option_context_free (option_context);
 
   setlocale (LC_ALL, "");
 
