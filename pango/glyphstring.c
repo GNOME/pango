@@ -534,7 +534,10 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
                                         cluster_offset - 1, &caret_count, &caret);
       if (caret_count > 0)
         {
-          *x_pos = start_xpos + caret;
+          if (analysis->level % 2) /* Right to left */
+            *x_pos = end_xpos + caret;
+          else
+            *x_pos = start_xpos + caret;
           return;
         }
     }
