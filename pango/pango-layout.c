@@ -2718,12 +2718,16 @@ pango_layout_get_caret_pos (PangoLayout    *layout,
         {
           strong_pos->x += descender * slope_inv;
           strong_pos->width = strong_pos->height * slope_inv;
+          if (slope_inv < 0)
+            strong_pos->x -= strong_pos->width;
         }
 
       if (weak_pos)
         {
           weak_pos->x += descender * slope_inv;
           weak_pos->width = weak_pos->height * slope_inv;
+          if (slope_inv < 0)
+            weak_pos->x -= weak_pos->width;
         }
     }
 }
