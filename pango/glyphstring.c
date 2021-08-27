@@ -520,17 +520,46 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
    * with an m-n situation, where LigatureCaretList is
    * not going to help. Just give up and do the simple thing.
    */
-  if (cluster_offset > 0 && cluster_offset < cluster_chars &&
-      start_glyph_pos == end_glyph_pos)
+  if (cluster_offset > 0 && cluster_offset < cluster_chars)
     {
       hb_font_t *hb_font;
       hb_position_t caret;
       unsigned int caret_count = 1;
+      int glyph_pos;
 
       hb_font = pango_font_get_hb_font (analysis->font);
+
+      if (start_glyph_pos == end_glyph_pos)
+        glyph_pos = start_glyph_pos;
+      else
+        {
+          hb_face_t *hb_face;
+
+          hb_face = hb_font_get_face (hb_font);
+
+          glyph_pos = -1;
+          for (i = start_glyph_pos; i <= end_glyph_pos; i++)
+            {
+              if (hb_ot_layout_get_glyph_class (hb_face, glyphs->glyphs[i].glyph) != HB_OT_LAYOUT_GLYPH_CLASS_MARK)
+                {
+                  if (glyph_pos != -1)
+                    {
+                      /* multiple non-mark glyphs in cluster, giving up */
+                      goto fallback;
+                    }
+                  glyph_pos = i;
+                }
+            }
+          if (glyph_pos == -1)
+            {
+              /* no non-mark glyph in a multi-glyph cluster, giving up */
+              goto fallback;
+            }
+        }
+
       hb_ot_layout_get_ligature_carets (hb_font,
                                         (analysis->level % 2) ? HB_DIRECTION_RTL : HB_DIRECTION_LTR,
-                                        glyphs->glyphs[start_glyph_pos].glyph,
+                                        glyphs->glyphs[glyph_pos].glyph,
                                         cluster_offset - 1, &caret_count, &caret);
       if (caret_count > 0)
         {
