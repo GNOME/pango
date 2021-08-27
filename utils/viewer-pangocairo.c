@@ -409,9 +409,15 @@ render_callback (PangoLayout *layout,
 
       if (annotate & ANNOTATE_CARET_POSITIONS)
         {
+          const PangoLogAttr *attrs;
+          int n_attrs;
+          int offset;
+
           /* draw the caret positions in purple */
           cairo_save (cr);
           cairo_set_source_rgba (cr, 1.0, 0.0, 1.0, 0.5);
+
+          attrs = pango_layout_get_log_attrs_readonly (layout, &n_attrs);
 
           iter = pango_layout_get_iter (layout);
           do
@@ -431,24 +437,29 @@ render_callback (PangoLayout *layout,
               text = pango_layout_get_text (layout);
               start = text + run->item->offset;
 
+              offset = g_utf8_strlen (text, start - text);
+
               y = pango_layout_iter_get_baseline (iter);
 
               trailing = FALSE;
               p = start;
               for (int i = 0; i <= run->item->num_chars; i++)
                 {
-                  pango_glyph_string_index_to_x (run->glyphs,
-                                                 text + run->item->offset,
-                                                 run->item->length,
-                                                 &run->item->analysis,
-                                                 p - start,
-                                                 trailing,
-                                                 &x);
-                  x += rect.x;
+                  if (attrs[offset + i].is_cursor_position)
+                    {
+                      pango_glyph_string_index_to_x (run->glyphs,
+                                                     text + run->item->offset,
+                                                     run->item->length,
+                                                     &run->item->analysis,
+                                                     p - start,
+                                                     trailing,
+                                                     &x);
+                      x += rect.x;
 
-                  cairo_arc (cr, x / PANGO_SCALE, y / PANGO_SCALE, 3.0, 0, 2*G_PI);
-                  cairo_close_path (cr);
-                  cairo_fill (cr);
+                      cairo_arc (cr, x / PANGO_SCALE, y / PANGO_SCALE, 3.0, 0, 2*G_PI);
+                      cairo_close_path (cr);
+                      cairo_fill (cr);
+                   }
 
                   if (i < run->item->num_chars)
                     p = g_utf8_next_char (p);
