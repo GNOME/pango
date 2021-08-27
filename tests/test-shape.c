@@ -34,6 +34,8 @@
 
 static PangoContext *context;
 
+gboolean opt_hex_chars;
+
 static void
 append_text (GString    *s,
              const char *text,
@@ -46,7 +48,9 @@ append_text (GString    *s,
       gunichar ch = g_utf8_get_char (p);
       if (ch == ' ')
         g_string_append (s, "[ ]");
-      if (ch == 0x0A || ch == 0x2028 || !g_unichar_isprint (ch))
+      else if (opt_hex_chars)
+        g_string_append_printf (s, "[%#04x]", ch);
+      else if (ch == 0x0A || ch == 0x2028 || !g_unichar_isprint (ch))
         g_string_append_printf (s, "[%#04x]", ch);
       else
         g_string_append_unichar (s, ch);
@@ -214,6 +218,18 @@ test_file (const gchar *filename, GString *string)
           int len;
           PangoGlyphInfo *gi = &glyphs->glyphs[i];
 
+
+          if (gi->attr.is_cluster_start && i > 0)
+            {
+              g_string_append (s1, " ");
+              g_string_append (s2, "|");
+              g_string_append (s3, "|");
+              g_string_append (s4, "|");
+              g_string_append (s5, " ");
+              g_string_append (s6, " ");
+              g_string_append (s7, "|");
+            }
+
           char *p;
           p = text + item->offset + glyphs->log_clusters[i];
           if (rtl)
@@ -254,17 +270,6 @@ test_file (const gchar *filename, GString *string)
           g_string_append_printf (s5, "%*s", len - (int)g_utf8_strlen (s5->str, s5->len), "");
           g_string_append_printf (s6, "%*s", len - (int)g_utf8_strlen (s6->str, s6->len), "");
           g_string_append_printf (s7, "%*s", len - (int)g_utf8_strlen (s7->str, s7->len), "");
-
-          if (gi->attr.is_cluster_start && i + 1 < glyphs->num_glyphs)
-            {
-              g_string_append (s1, " ");
-              g_string_append (s2, "|");
-              g_string_append (s3, "|");
-              g_string_append (s4, "|");
-              g_string_append (s5, " ");
-              g_string_append (s6, " ");
-              g_string_append (s7, "|");
-            }
         }
 
       pango_glyph_string_free (glyphs);
@@ -347,6 +352,21 @@ main (int argc, char *argv[])
   GError *error = NULL;
   const gchar *name;
   gchar *path;
+  GOptionContext *option_context;
+  GOptionEntry entries[] = {
+    { "hex-chars", '0', 0, G_OPTION_ARG_NONE, &opt_hex_chars, "Print all chars in hex", NULL },
+    { NULL, 0 },
+  };
+
+  option_context = g_option_context_new ("");
+  g_option_context_add_main_entries (option_context, entries, NULL);
+  g_option_context_set_ignore_unknown_options (option_context, TRUE);
+  if (!g_option_context_parse (option_context, &argc, &argv, &error))
+    {
+      g_error ("failed to parse options: %s", error->message);
+      return 1;
+    }
+  g_option_context_free (option_context);
 
   setlocale (LC_ALL, "");
 
