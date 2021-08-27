@@ -456,9 +456,16 @@ render_callback (PangoLayout *layout,
                                                      &x);
                       x += rect.x;
 
+                      cairo_set_source_rgba (cr, 1.0, 0.0, 1.0, 0.5);
                       cairo_arc (cr, x / PANGO_SCALE, y / PANGO_SCALE, 3.0, 0, 2*G_PI);
                       cairo_close_path (cr);
                       cairo_fill (cr);
+
+                      char *s = g_strdup_printf ("%d", i + trailing);
+                      cairo_set_source_rgb (cr, 0, 0, 0);
+                      cairo_move_to (cr, x / PANGO_SCALE - 5, y / PANGO_SCALE + 15);
+                      cairo_show_text (cr, s);
+                      g_free (s);
                    }
 
                   if (i < run->item->num_chars)
