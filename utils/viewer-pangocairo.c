@@ -534,6 +534,25 @@ render_callback (PangoLayout *layout,
           while (pango_layout_iter_next_run (iter));
           pango_layout_iter_free (iter);
 
+          const char *text = pango_layout_get_text (layout);
+          int length = g_utf8_strlen (text, -1);
+          for (int i = 0; i <= length; i++)
+            {
+              PangoRectangle rect;
+              pango_layout_get_caret_pos (layout, i, &rect, NULL);
+
+              cairo_move_to (cr,
+                             (double)rect.x / PANGO_SCALE - lw / 2
+                              + (double)rect.width / PANGO_SCALE + lw,
+                             (double)rect.y / PANGO_SCALE - lw / 2);
+              cairo_line_to (cr,
+                             (double)rect.x / PANGO_SCALE - lw / 2,
+                             (double)rect.y / PANGO_SCALE - lw / 2
+                              + (double)rect.height / PANGO_SCALE + lw);
+              cairo_stroke (cr);
+
+            }
+
           cairo_restore (cr);
         }
     }
