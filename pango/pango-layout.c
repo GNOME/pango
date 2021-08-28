@@ -4869,12 +4869,20 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
           int grapheme_end_offset;
           int pos;
           int char_index;
+          int attr_offset;
 
-          pango_glyph_string_x_to_index (run->glyphs,
-                                         layout->text + run->item->offset, run->item->length,
-                                         &run->item->analysis,
-                                         x_pos - start_pos,
-                                         &pos, &char_trailing);
+          /* Note: we simply assert here, since our items are all internally
+           * created. If that ever changes, we need to add a fallback here.
+           */
+          g_assert (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET);
+          attr_offset = ((PangoItemPrivate *)run->item)->char_offset;
+
+          pango_glyph_string_x_to_index_full (run->glyphs,
+                                              layout->text + run->item->offset, run->item->length,
+                                              &run->item->analysis,
+                                              layout->log_attrs + attr_offset,
+                                              x_pos - start_pos,
+                                              &pos, &char_trailing);
 
           char_index = run->item->offset + pos;
 
