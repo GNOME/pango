@@ -21,7 +21,7 @@
 
 #include "config.h"
 #include "pango-attributes.h"
-#include "pango-item.h"
+#include "pango-item-private.h"
 #include "pango-impl-utils.h"
 
 /**
@@ -35,9 +35,11 @@
 PangoItem *
 pango_item_new (void)
 {
-  PangoItem *result = g_slice_new0 (PangoItem);
+  PangoItemPrivate *result = g_slice_new0 (PangoItemPrivate);
 
-  return result;
+  result->analysis.flags |= PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET;
+
+  return (PangoItem *)result;
 }
 
 /**
@@ -57,11 +59,13 @@ pango_item_copy (PangoItem *item)
   if (item == NULL)
     return NULL;
 
-  result = g_slice_new (PangoItem);
+  result = pango_item_new ();
 
   result->offset = item->offset;
   result->length = item->length;
   result->num_chars = item->num_chars;
+  if (item->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET)
+    ((PangoItemPrivate *)result)->char_offset = ((PangoItemPrivate *)item)->char_offset;
 
   result->analysis = item->analysis;
   if (result->analysis.font)
@@ -101,7 +105,10 @@ pango_item_free (PangoItem *item)
   if (item->analysis.font)
     g_object_unref (item->analysis.font);
 
-  g_slice_free (PangoItem, item);
+  if (item->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET)
+    g_slice_free (PangoItemPrivate, (PangoItemPrivate *)item);
+  else
+    g_slice_free (PangoItem, item);
 }
 
 G_DEFINE_BOXED_TYPE (PangoItem, pango_item,
@@ -151,6 +158,8 @@ pango_item_split (PangoItem *orig,
   orig->offset += split_index;
   orig->length -= split_index;
   orig->num_chars -= split_offset;
+  if (orig->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET)
+    ((PangoItemPrivate *)orig)->char_offset += split_offset;
 
   return new_item;
 }

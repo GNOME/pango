@@ -32,6 +32,7 @@
 #include "pango-script-private.h"
 #include "pango-emoji-private.h"
 #include "pango-attributes-private.h"
+#include "pango-item-private.h"
 
 
 /* {{{ Font cache */
@@ -1033,6 +1034,8 @@ pango_itemize_with_font (PangoContext               *context,
                          const PangoFontDescription *desc)
 {
   ItemizeState state;
+  GList *items;
+  int char_offset;
 
   if (length == 0 || g_utf8_get_char (text + start_index) == '\0')
     return NULL;
@@ -1046,7 +1049,18 @@ pango_itemize_with_font (PangoContext               *context,
 
   itemize_state_finish (&state);
 
-  return g_list_reverse (state.result);
+  items = g_list_reverse (state.result);
+
+  /* Compute the char offset for each item */
+  char_offset = 0;
+  for (GList *l = items; l; l = l->next)
+    {
+      PangoItemPrivate *item = l->data;
+      item->char_offset = char_offset;
+      char_offset += item->num_chars;
+    }
+
+  return items;
 }
 
 /**
