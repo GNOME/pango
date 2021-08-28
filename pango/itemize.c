@@ -32,6 +32,7 @@
 #include "pango-script-private.h"
 #include "pango-emoji-private.h"
 #include "pango-attributes-private.h"
+#include "pango-item-private.h"
 
 
 /* {{{ Font cache */
@@ -700,7 +701,7 @@ itemize_state_add_character (ItemizeState *state,
         break;
     }
 
-  state->item->analysis.flags = state->centered_baseline ? PANGO_ANALYSIS_FLAG_CENTERED_BASELINE : 0;
+  state->item->analysis.flags |= state->centered_baseline ? PANGO_ANALYSIS_FLAG_CENTERED_BASELINE : 0;
 
   state->item->analysis.script = state->script;
   state->item->analysis.language = state->derived_lang;
@@ -1021,21 +1022,26 @@ itemize_state_finish (ItemizeState *state)
 /* }}} */
 /* {{{ Public API */
 
-/* Like pango_itemize, but takes a font description */
+/* Like pango_itemize_with_base_dir, but takes a font description */
 GList *
 pango_itemize_with_font (PangoContext               *context,
+                         PangoDirection              base_dir,
                          const char                 *text,
                          int                         start_index,
                          int                         length,
+                         PangoAttrList              *attrs,
+                         PangoAttrIterator          *cached_iter,
                          const PangoFontDescription *desc)
 {
   ItemizeState state;
+  GList *items;
+  int char_offset;
 
-  if (length == 0)
+  if (length == 0 || g_utf8_get_char (text + start_index) == '\0')
     return NULL;
 
-  itemize_state_init (&state, context, text, context->base_dir, start_index, length,
-                      NULL, NULL, desc);
+  itemize_state_init (&state, context, text, base_dir, start_index, length,
+                      attrs, cached_iter, desc);
 
   do
     itemize_state_process_run (&state);
@@ -1043,7 +1049,18 @@ pango_itemize_with_font (PangoContext               *context,
 
   itemize_state_finish (&state);
 
-  return g_list_reverse (state.result);
+  items = g_list_reverse (state.result);
+
+  /* Compute the char offset for each item */
+  char_offset = 0;
+  for (GList *l = items; l; l = l->next)
+    {
+      PangoItemPrivate *item = l->data;
+      item->char_offset = char_offset;
+      char_offset += item->num_chars;
+    }
+
+  return items;
 }
 
 /**
@@ -1079,26 +1096,15 @@ pango_itemize_with_base_dir (PangoContext      *context,
                              PangoAttrList     *attrs,
                              PangoAttrIterator *cached_iter)
 {
-  ItemizeState state;
-
   g_return_val_if_fail (context != NULL, NULL);
   g_return_val_if_fail (start_index >= 0, NULL);
   g_return_val_if_fail (length >= 0, NULL);
   g_return_val_if_fail (length == 0 || text != NULL, NULL);
 
-  if (length == 0 || g_utf8_get_char (text + start_index) == '\0')
-    return NULL;
-
-  itemize_state_init (&state, context, text, base_dir, start_index, length,
-                      attrs, cached_iter, NULL);
-
-  do
-    itemize_state_process_run (&state);
-  while (itemize_state_next (&state));
-
-  itemize_state_finish (&state);
-
-  return g_list_reverse (state.result);
+  return pango_itemize_with_font (context, base_dir,
+                                  text, start_index, length,
+                                  attrs, cached_iter,
+                                  NULL);
 }
 
 /**
@@ -1142,8 +1148,10 @@ pango_itemize (PangoContext      *context,
   g_return_val_if_fail (length >= 0, NULL);
   g_return_val_if_fail (length == 0 || text != NULL, NULL);
 
-  return pango_itemize_with_base_dir (context, context->base_dir,
-                                      text, start_index, length, attrs, cached_iter);
+  return pango_itemize_with_font (context, context->base_dir,
+                                  text, start_index, length,
+                                  attrs, cached_iter,
+                                  NULL);
 }
 
 /* }}} */

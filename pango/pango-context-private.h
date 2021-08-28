@@ -51,9 +51,12 @@ struct _PangoContext
 };
 
 GList *         pango_itemize_with_font (PangoContext               *context,
+                                         PangoDirection              base_dir,
                                          const char                 *text,
                                          int                         start_index,
                                          int                         length,
+                                         PangoAttrList              *attrs,
+                                         PangoAttrIterator          *cached_iter,
                                          const PangoFontDescription *desc);
 
 

@@ -76,7 +76,7 @@
 #include "config.h"
 #include "pango-glyph.h"                /* For pango_shape() */
 #include "pango-break.h"
-#include "pango-item.h"
+#include "pango-item-private.h"
 #include "pango-engine.h"
 #include "pango-impl-utils.h"
 #include "pango-glyph-item.h"
@@ -5932,18 +5932,11 @@ justify_clusters (PangoLayoutLine *line,
 
           dir = run->item->analysis.level % 2 == 0 ? +1 : -1;
 
-          /* We need character offset of the start of the run.  We don't have this.
-           * Compute by counting from the beginning of the line.  The naming is
-           * confusing.  Note that:
-           *
-           * run->item->offset        is byte offset of start of run in layout->text.
-           * state->line_start_index  is byte offset of start of line in layout->text.
-           * state->line_start_offset is character offset of start of line in layout->text.
+          /* Note: we simply assert here, since our items are all internally
+           * created. If that ever changes, we need to add a fallback here.
            */
-          g_assert (run->item->offset >= state->line_start_index);
-          offset = state->line_start_offset
-                 + pango_utf8_strlen (text + state->line_start_index,
-                                      run->item->offset - state->line_start_index);
+          g_assert (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET);
+          offset = ((PangoItemPrivate *)run->item)->char_offset;
 
           for (have_cluster = dir > 0 ?
                  pango_glyph_item_iter_init_start (&cluster_iter, run, text) :
@@ -6077,18 +6070,11 @@ justify_words (PangoLayoutLine *line,
           gboolean have_cluster;
           int offset;
 
-          /* We need character offset of the start of the run.  We don't have this.
-           * Compute by counting from the beginning of the line.  The naming is
-           * confusing.  Note that:
-           *
-           * run->item->offset        is byte offset of start of run in layout->text.
-           * state->line_start_index  is byte offset of start of line in layout->text.
-           * state->line_start_offset is character offset of start of line in layout->text.
+          /* Note: we simply assert here, since our items are all internally
+           * created. If that ever changes, we need to add a fallback here.
            */
-          g_assert (run->item->offset >= state->line_start_index);
-          offset = state->line_start_offset
-                 + pango_utf8_strlen (text + state->line_start_index,
-                                      run->item->offset - state->line_start_index);
+          g_assert (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET);
+          offset = ((PangoItemPrivate *)run->item)->char_offset;
 
           for (have_cluster = pango_glyph_item_iter_init_start (&cluster_iter, run, text);
                have_cluster;

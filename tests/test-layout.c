@@ -127,6 +127,10 @@ dump_lines (PangoLayout *layout, GString *string)
   pango_layout_iter_free (iter);
 }
 
+#define ANALYSIS_FLAGS (PANGO_ANALYSIS_FLAG_CENTERED_BASELINE | \
+                        PANGO_ANALYSIS_FLAG_IS_ELLIPSIS | \
+                        PANGO_ANALYSIS_FLAG_NEED_HYPHEN)
+
 static void
 dump_runs (PangoLayout *layout, GString *string)
 {
@@ -160,7 +164,7 @@ dump_runs (PangoLayout *layout, GString *string)
           g_string_append_printf (string, "i=%d, index=%d, chars=%d, level=%d, gravity=%s, flags=%d, font=%s, script=%s, language=%s, '%s'\n",
                                   i, index, item->num_chars, item->analysis.level,
                                   gravity_name (item->analysis.gravity),
-                                  item->analysis.flags,
+                                  item->analysis.flags & ANALYSIS_FLAGS,
                                   opt_show_font ? font : "OMITTED", /* for some reason, this fails on build.gnome.org, so leave it out */
                                   script_name (item->analysis.script),
                                   pango_language_to_string (item->analysis.language),

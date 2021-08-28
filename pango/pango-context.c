@@ -712,7 +712,10 @@ pango_context_get_metrics (PangoContext               *context,
 
   sample_str = pango_language_get_sample_string (language);
   text_len = strlen (sample_str);
-  items = pango_itemize_with_font (context, sample_str, 0, text_len, desc);
+  items = pango_itemize_with_font (context, context->base_dir,
+                                   sample_str, 0, text_len,
+                                   NULL, NULL,
+                                   desc);
 
   update_metrics_from_items (metrics, language, sample_str, text_len, items);
 
