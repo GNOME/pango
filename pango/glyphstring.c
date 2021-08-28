@@ -413,8 +413,7 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
  * This variant of [method@Pango.GlyphString.index_to_x] additionally
  * accepts a `PangoLogAttr` array. The grapheme boundary information
  * in it can be used to disambiguate positioning inside some complex
- * clusters. [method@Pango.GlyphString.index_to_x] will compute this
- * information if it needs it.
+ * clusters.
  *
  * Since: 1.50
  */
@@ -536,16 +535,7 @@ pango_glyph_string_index_to_x_full (PangoGlyphString *glyphs,
    * To come up with accurate answers here, we need to know grapheme
    * boundaries.
    */
-  if (attrs == NULL &&
-      g_utf8_next_char (text + start_index) != text + end_index)
-    {
-      int attrs_len = g_utf8_strlen (text, length) + 1;
-
-      attrs = g_new0 (PangoLogAttr, attrs_len + 1);
-      pango_default_break (text, length, analysis, attrs, attrs_len);
-    }
-
-  for (p = text + start_index, i = g_utf8_pointer_to_offset (text, text + start_index);
+  for (p = text + start_index, i = attrs ? g_utf8_pointer_to_offset (text, text + start_index) : 0;
        p < text + end_index;
        p = g_utf8_next_char (p), i++)
     {
@@ -553,9 +543,7 @@ pango_glyph_string_index_to_x_full (PangoGlyphString *glyphs,
         continue;
 
       if (p < text + index)
-        {
-          cluster_offset++;
-        }
+        cluster_offset++;
       cluster_chars++;
     }
 
