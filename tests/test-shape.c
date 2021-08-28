@@ -33,7 +33,7 @@
 #include <pango/pangocairo.h>
 #include "test-common.h"
 
-
+static PangoHbFontMap *fontmap;
 static PangoContext *context;
 
 gboolean opt_hex_chars;
@@ -196,6 +196,9 @@ test_file (const gchar *filename, GString *string)
       gboolean rtl = item->analysis.level % 2;
       PangoGlyphItem glyph_item;
       int i;
+
+      g_assert_nonnull (item->analysis.font);
+      g_assert_true (strcmp (G_OBJECT_TYPE_NAME (item->analysis.font), "PangoHbFont") == 0);
 
       glyphs = pango_glyph_string_new ();
       /* FIXME: get log attrs */
@@ -410,7 +413,12 @@ main (int argc, char *argv[])
 
   g_test_init (&argc, &argv, NULL);
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_hb_font_map_new ();
+  path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
+  pango_hb_font_map_add_file (fontmap, path);
+  g_free (path);
+
+  context = pango_font_map_create_context (PANGO_FONT_MAP (fontmap));
 
   /* allow to easily generate expected output for new test cases */
   if (argc > 1)
