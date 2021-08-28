@@ -102,11 +102,6 @@ pango_cairo_core_text_font_create_base_metrics_for_context (PangoCairoFont *font
 {
   PangoCoreTextFont *cfont = (PangoCoreTextFont *) font;
   PangoFontMetrics *metrics;
-  PangoFontDescription *font_desc;
-  PangoLayout *layout;
-  PangoRectangle extents;
-  PangoLanguage *language = pango_context_get_language (context);
-  const char *sample_str = pango_language_get_sample_string (language);
   CTFontRef ctfont;
 
   metrics = pango_font_metrics_new ();

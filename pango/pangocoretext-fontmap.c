@@ -849,7 +849,7 @@ get_scaled_size (PangoCoreTextFontMap       *fontmap,
                  const PangoFontDescription *desc)
 {
   double size = pango_font_description_get_size (desc);
-  PangoMatrix *matrix = pango_context_get_matrix (context);
+  const PangoMatrix *matrix = pango_context_get_matrix (context);
   double scale_factor = pango_matrix_get_font_scale_factor (matrix);
   
   if (!pango_font_description_get_size_is_absolute(desc))
@@ -1422,7 +1422,7 @@ pango_core_text_font_map_load_fontset (PangoFontMap               *fontmap,
   /* Cannot use pango_core_text_fontset_key_free() here */
   pango_font_description_free (key.desc);
 
-  return g_object_ref (fontset);
+  return g_object_ref (PANGO_FONTSET (fontset));
 }
 
 static void
