@@ -3601,6 +3601,7 @@ struct _ParaBreakState
   int start_offset;             /* Character offset of first item in state->items in layout->text */
   ItemProperties properties;    /* Properties for the first item in state->items */
   int *log_widths;              /* Logical widths for first item in state->items.. */
+  int num_log_widths;           /* Length of log_widths */
   int log_widths_offset;        /* Offset into log_widths to the point corresponding
                                  * to the remaining portion of the first item */
 
@@ -3691,8 +3692,6 @@ insert_run (PangoLayoutLine *line,
       if (state->log_widths_offset > 0)
         pango_glyph_string_free (state->glyphs);
       state->glyphs = NULL;
-      g_free (state->log_widths);
-      state->log_widths = NULL;
     }
 
   line->runs = g_slist_prepend (line->runs, run);
@@ -3843,7 +3842,6 @@ process_item (PangoLayout     *layout,
       pango_layout_get_item_properties (item, &state->properties);
       state->glyphs = shape_run (line, state, item);
 
-      state->log_widths = NULL;
       state->log_widths_offset = 0;
 
       processing_new_item = TRUE;
@@ -3898,7 +3896,11 @@ process_item (PangoLayout     *layout,
       if (processing_new_item)
         {
           PangoGlyphItem glyph_item = {item, state->glyphs};
-          state->log_widths = g_new (int, item->num_chars);
+          if (item->num_chars > state->num_log_widths)
+            {
+              state->log_widths = g_renew (int, state->log_widths, item->num_chars);
+              state->num_log_widths = item->num_chars;
+            }
           pango_glyph_item_get_logical_widths (&glyph_item, layout->text, state->log_widths);
         }
 
@@ -3998,8 +4000,6 @@ process_item (PangoLayout     *layout,
         {
           pango_glyph_string_free (state->glyphs);
           state->glyphs = NULL;
-          g_free (state->log_widths);
-          state->log_widths = NULL;
 
           return BREAK_NONE_FIT;
         }
@@ -4475,6 +4475,9 @@ pango_layout_check_lines (PangoLayout *layout)
       state.line_height = layout->line_spacing == 0.0 ? logical.height : layout->line_spacing * height;
     }
 
+  state.log_widths = NULL;
+  state.num_log_widths = 0;
+
   do
     {
       int delim_len;
@@ -4546,7 +4549,6 @@ pango_layout_check_lines (PangoLayout *layout)
       state.line_start_index = start - layout->text;
 
       state.glyphs = NULL;
-      state.log_widths = NULL;
 
       /* for deterministic bug hunting's sake set everything! */
       state.line_width = -1;
@@ -4581,6 +4583,8 @@ pango_layout_check_lines (PangoLayout *layout)
       start = end + delim_len;
     }
   while (!done);
+
+  g_free (state.log_widths);
 
   apply_attributes_to_runs (layout, attrs);
   layout->lines = g_slist_reverse (layout->lines);
