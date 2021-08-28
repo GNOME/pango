@@ -849,7 +849,7 @@ get_scaled_size (PangoCoreTextFontMap       *fontmap,
                  const PangoFontDescription *desc)
 {
   double size = pango_font_description_get_size (desc);
-  PangoMatrix *matrix = pango_context_get_matrix (context);
+  const PangoMatrix *matrix = pango_context_get_matrix (context);
   double scale_factor = pango_matrix_get_font_scale_factor (matrix);
   
   if (!pango_font_description_get_size_is_absolute(desc))
