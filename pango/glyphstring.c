@@ -404,6 +404,9 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
 
   const char *p;
 
+  int attrs_len;
+  PangoLogAttr *attrs = NULL;
+
   g_return_if_fail (glyphs != NULL);
   g_return_if_fail (length >= 0);
   g_return_if_fail (length == 0 || text != NULL);
@@ -495,10 +498,20 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
 
   /* Calculate offset of character within cluster */
 
-  for (p = text + start_index;
-       p < text + end_index;
-       p = g_utf8_next_char (p))
+  if (g_utf8_next_char (text + start_index) != text + end_index)
     {
+      /* FIXME: should allow log attrs to be passed in */
+      attrs_len = g_utf8_strlen (text, length) + 1;
+      attrs = g_new0 (PangoLogAttr, attrs_len + 1);
+      pango_default_break (text, length, analysis, attrs, attrs_len);
+    }
+
+  for (p = text + start_index, i = g_utf8_pointer_to_offset (text, text + start_index);
+       p < text + end_index;
+       p = g_utf8_next_char (p), i++)
+    {
+      if (!attrs[i].is_cursor_position)
+        continue;
       if (p < text + index)
         cluster_offset++;
       cluster_chars++;
@@ -526,6 +539,7 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
       hb_position_t caret;
       unsigned int caret_count = 1;
       int glyph_pos;
+      int num_carets;
 
       hb_font = pango_font_get_hb_font (analysis->font);
 
@@ -544,7 +558,7 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
                 {
                   if (glyph_pos != -1)
                     {
-                      /* multiple non-mark glyphs in cluster, giving up */
+                      g_print ("multiple non-mark glyphs in cluster, giving up\n");
                       goto fallback;
                     }
                   glyph_pos = i;
@@ -552,24 +566,29 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
             }
           if (glyph_pos == -1)
             {
-              /* no non-mark glyph in a multi-glyph cluster, giving up */
+              g_print ("no non-mark glyph in a multi-glyph cluster, giving up\n");
               goto fallback;
             }
         }
 
-      hb_ot_layout_get_ligature_carets (hb_font,
-                                        (analysis->level % 2) ? HB_DIRECTION_RTL : HB_DIRECTION_LTR,
-                                        glyphs->glyphs[glyph_pos].glyph,
-                                        cluster_offset - 1, &caret_count, &caret);
-      if (caret_count > 0)
+      num_carets = hb_ot_layout_get_ligature_carets (hb_font,
+                                                     (analysis->level % 2) ? HB_DIRECTION_RTL : HB_DIRECTION_LTR,
+                                                      glyphs->glyphs[glyph_pos].glyph,
+                                                      cluster_offset - 1, &caret_count, &caret);
+      if (caret_count == 0)
         {
-          if (analysis->level % 2) /* Right to left */
-            *x_pos = end_xpos + caret;
-          else
-            *x_pos = start_xpos + caret;
-          *x_pos += glyphs->glyphs[glyph_pos].geometry.x_offset;
-          return;
+          g_print ("no ligature caret information found for glyph %d, caret %d / %d. font has %d ligature carets\n", glyphs->glyphs[glyph_pos].glyph, cluster_offset - 1, cluster_chars, num_carets);
+          goto fallback;
         }
+
+      g_print ("using ligature caret information for glyph %d, caret %d / %d. font has %d ligature carets\n", glyphs->glyphs[glyph_pos].glyph, cluster_offset - 1, cluster_chars, num_carets);
+
+      if (analysis->level % 2) /* Right to left */
+        *x_pos = end_xpos + caret;
+      else
+        *x_pos = start_xpos + caret;
+      *x_pos += glyphs->glyphs[glyph_pos].geometry.x_offset;
+      return;
     }
 
 fallback:
