@@ -313,13 +313,11 @@ main (int argc, char *argv[])
   const gchar *name;
   gchar *path;
 
-  g_test_init (&argc, &argv, NULL);
-
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
   pango_context_set_language (context, pango_language_from_string ("en-us"));
 
   /* allow to easily generate expected output for new test cases */
-  if (argc > 1)
+  if (argc > 1 && argv[1][0] != '-')
     {
       GString *string;
 
@@ -329,6 +327,8 @@ main (int argc, char *argv[])
 
       return 0;
     }
+
+  g_test_init (&argc, &argv, NULL);
 
   path = g_test_build_filename (G_TEST_DIST, "itemize", NULL);
   dir = g_dir_open (path, 0, &error);
