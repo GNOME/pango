@@ -378,7 +378,6 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
  *   <source srcset="glyphstring-positions-dark.png" media="(prefers-color-scheme: dark)">
  *   <img alt="Glyph positions" src="glyphstring-positions-light.png">
  * </picture>
-
  */
 void
 pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
@@ -388,6 +387,46 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
                                int               index,
                                gboolean          trailing,
                                int              *x_pos)
+{
+  pango_glyph_string_index_to_x_full (glyphs,
+                                      text, length,
+                                      analysis,
+                                      NULL,
+                                      index, trailing,
+                                      x_pos);
+}
+
+/**
+ * pango_glyph_string_index_to_x_full:
+ * @glyphs: the glyphs return from [func@shape]
+ * @text: the text for the run
+ * @length: the number of bytes (not characters) in @text.
+ * @analysis: the analysis information return from [func@itemize]
+ * @attrs: (nullable): `PangoLogAttr` array for @text
+ * @index_: the byte index within @text
+ * @trailing: whether we should compute the result for the beginning (%FALSE)
+ *   or end (%TRUE) of the character.
+ * @x_pos: (out): location to store result
+ *
+ * Converts from character position to x position.
+ *
+ * This variant of [method@Pango.GlyphString.index_to_x] additionally
+ * accepts a `PangoLogAttr` array. The grapheme boundary information
+ * in it can be used to disambiguate positioning inside some complex
+ * clusters. [method@Pango.GlyphString.index_to_x] will compute this
+ * information if it needs it.
+ *
+ * Since: 1.50
+ */
+void
+pango_glyph_string_index_to_x_full (PangoGlyphString *glyphs,
+                                    const char       *text,
+                                    int               length,
+                                    PangoAnalysis    *analysis,
+                                    PangoLogAttr     *attrs,
+                                    int               index,
+                                    gboolean          trailing,
+                                    int              *x_pos)
 {
   int i;
   int start_xpos = 0;
@@ -403,9 +442,6 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
   int end_glyph_pos = -1;
 
   const char *p;
-
-  int attrs_len;
-  PangoLogAttr *attrs = NULL;
 
   g_return_if_fail (glyphs != NULL);
   g_return_if_fail (length >= 0);
@@ -496,12 +532,15 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
       end_xpos = (analysis->level % 2) ? 0 : width;
     }
 
-  /* Calculate offset of character within cluster */
-
-  if (g_utf8_next_char (text + start_index) != text + end_index)
+  /* Calculate offset of character within cluster.
+   * To come up with accurate answers here, we need to know grapheme
+   * boundaries.
+   */
+  if (attrs == NULL &&
+      g_utf8_next_char (text + start_index) != text + end_index)
     {
-      /* FIXME: should allow log attrs to be passed in */
-      attrs_len = g_utf8_strlen (text, length) + 1;
+      int attrs_len = g_utf8_strlen (text, length) + 1;
+
       attrs = g_new0 (PangoLogAttr, attrs_len + 1);
       pango_default_break (text, length, analysis, attrs, attrs_len);
     }
@@ -510,10 +549,13 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
        p < text + end_index;
        p = g_utf8_next_char (p), i++)
     {
-      if (!attrs[i].is_cursor_position)
+      if (attrs && !attrs[i].is_cursor_position)
         continue;
+
       if (p < text + index)
-        cluster_offset++;
+        {
+          cluster_offset++;
+        }
       cluster_chars++;
     }
 
@@ -521,17 +563,14 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
     cluster_offset += 1;
 
   if (G_UNLIKELY (!cluster_chars)) /* pedantic */
-    {
+     {
       *x_pos = start_xpos;
       return;
     }
 
-  /* Try to get a ligature caret position for the glyph
-   * from the font.
-   *
-   * If start_glyph_pos != end_glyph_pos, we are dealing
-   * with an m-n situation, where LigatureCaretList is
-   * not going to help. Just give up and do the simple thing.
+  /* Try to get a ligature caret position for the glyph from the font.
+   * This only makes sense if the cluster contains a single spacing
+   * glyph, so we need to check that all but one of them are marks.
    */
   if (cluster_offset > 0 && cluster_offset < cluster_chars)
     {
@@ -558,7 +597,7 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
                 {
                   if (glyph_pos != -1)
                     {
-                      g_print ("multiple non-mark glyphs in cluster, giving up\n");
+                      /* multiple non-mark glyphs in cluster, giving up */
                       goto fallback;
                     }
                   glyph_pos = i;
@@ -566,7 +605,7 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
             }
           if (glyph_pos == -1)
             {
-              g_print ("no non-mark glyph in a multi-glyph cluster, giving up\n");
+              /* no non-mark glyph in a multi-glyph cluster, giving up */
               goto fallback;
             }
         }
@@ -575,13 +614,11 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
                                                      (analysis->level % 2) ? HB_DIRECTION_RTL : HB_DIRECTION_LTR,
                                                       glyphs->glyphs[glyph_pos].glyph,
                                                       cluster_offset - 1, &caret_count, &caret);
-      if (caret_count == 0)
+      if (caret_count == 0 || num_carets == 0)
         {
-          g_print ("no ligature caret information found for glyph %d, caret %d / %d. font has %d ligature carets\n", glyphs->glyphs[glyph_pos].glyph, cluster_offset - 1, cluster_chars, num_carets);
+          /* no ligature caret information found for this glyph */
           goto fallback;
         }
-
-      g_print ("using ligature caret information for glyph %d, caret %d / %d. font has %d ligature carets\n", glyphs->glyphs[glyph_pos].glyph, cluster_offset - 1, cluster_chars, num_carets);
 
       if (analysis->level % 2) /* Right to left */
         *x_pos = end_xpos + caret;
