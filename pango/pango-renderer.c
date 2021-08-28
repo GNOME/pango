@@ -362,8 +362,8 @@ add_underline (PangoRenderer    *renderer,
   int underline_thickness = pango_font_metrics_get_underline_thickness (metrics);
   int underline_position = pango_font_metrics_get_underline_position (metrics);
 
-  new_rect.x = base_x + logical_rect->x;
-  new_rect.width = logical_rect->width;
+  new_rect.x = base_x + ink_rect->x;
+  new_rect.width = ink_rect->width;
   new_rect.height = underline_thickness;
   new_rect.y = base_y;
 
@@ -425,8 +425,8 @@ add_overline (PangoRenderer    *renderer,
   int underline_thickness = pango_font_metrics_get_underline_thickness (metrics);
   int ascent = pango_font_metrics_get_ascent (metrics);
 
-  new_rect.x = base_x + logical_rect->x;
-  new_rect.width = logical_rect->width;
+  new_rect.x = base_x + ink_rect->x;
+  new_rect.width = ink_rect->width;
   new_rect.height = underline_thickness;
   new_rect.y = base_y;
 
@@ -480,8 +480,8 @@ add_strikethrough (PangoRenderer    *renderer,
   int strikethrough_thickness = pango_font_metrics_get_strikethrough_thickness (metrics);
   int strikethrough_position = pango_font_metrics_get_strikethrough_position (metrics);
 
-  new_rect.x = base_x + logical_rect->x;
-  new_rect.width = logical_rect->width;
+  new_rect.x = base_x + ink_rect->x;
+  new_rect.width = ink_rect->width;
   new_rect.y = (base_y - strikethrough_position) * num_glyphs;
   new_rect.height = strikethrough_thickness * num_glyphs;
 
