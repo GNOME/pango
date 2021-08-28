@@ -159,7 +159,8 @@ enum {
   ANNOTATE_CHAR_EXTENTS      =  128,
   ANNOTATE_GLYPH_EXTENTS     =  256,
   ANNOTATE_CARET_POSITIONS   =  512,
-  ANNOTATE_LAST              = 1024,
+  ANNOTATE_CARET_SLOPE       = 1024,
+  ANNOTATE_LAST              = 2048,
 };
 
 static void
@@ -533,11 +534,24 @@ render_callback (PangoLayout *layout,
             }
           while (pango_layout_iter_next_run (iter));
           pango_layout_iter_free (iter);
+          cairo_restore (cr);
+        }
 
+      if (annotate & ANNOTATE_CARET_SLOPE)
+        {
           const char *text = pango_layout_get_text (layout);
           int length = g_utf8_strlen (text, -1);
+          const PangoLogAttr *attrs;
+          int n_attrs;
           const char *p;
           int i;
+
+          /* draw the caret slop in gray */
+          cairo_save (cr);
+          cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.5);
+
+          attrs = pango_layout_get_log_attrs_readonly (layout, &n_attrs);
+
           for (i = 0, p = text; i <= length; i++, p = g_utf8_next_char (p))
             {
               PangoRectangle rect;
@@ -546,7 +560,6 @@ render_callback (PangoLayout *layout,
                 continue;
 
               pango_layout_get_caret_pos (layout, p - text, &rect, NULL);
-              g_print ("draw caret pos at %d\n", i);
 
               cairo_move_to (cr,
                              (double)rect.x / PANGO_SCALE - lw / 2
@@ -557,7 +570,6 @@ render_callback (PangoLayout *layout,
                              (double)rect.y / PANGO_SCALE - lw / 2
                               + (double)rect.height / PANGO_SCALE + lw);
               cairo_stroke (cr);
-
             }
 
           cairo_restore (cr);
@@ -709,16 +721,17 @@ pangocairo_view_get_option_group (const PangoViewer *klass G_GNUC_UNUSED)
   {
     {"annotate", 0, 0, G_OPTION_ARG_INT, &opt_annotate,
      "Annotate the output\n"
-     "\t\t\t\t\t\t\t   1 - gravity\n"
-     "\t\t\t\t\t\t\t   2 - block progression\n"
-     "\t\t\t\t\t\t\t   4 - baselines\n"
-     "\t\t\t\t\t\t\t   8 - layout extents\n"
-     "\t\t\t\t\t\t\t  16 - line extents\n"
-     "\t\t\t\t\t\t\t  32 - run extents\n"
-     "\t\t\t\t\t\t\t  64 - cluster extents\n"
-     "\t\t\t\t\t\t\t 128 - char extents\n"
-     "\t\t\t\t\t\t\t 256 - glyph extents\n"
-     "\t\t\t\t\t\t\t 512 - caret positions",
+     "\t\t\t\t\t\t\t    1 - gravity\n"
+     "\t\t\t\t\t\t\t    2 - block progression\n"
+     "\t\t\t\t\t\t\t    4 - baselines\n"
+     "\t\t\t\t\t\t\t    8 - layout extents\n"
+     "\t\t\t\t\t\t\t   16 - line extents\n"
+     "\t\t\t\t\t\t\t   32 - run extents\n"
+     "\t\t\t\t\t\t\t   64 - cluster extents\n"
+     "\t\t\t\t\t\t\t  128 - char extents\n"
+     "\t\t\t\t\t\t\t  256 - glyph extents\n"
+     "\t\t\t\t\t\t\t  512 - caret positions\n"
+     "\t\t\t\t\t\t\t 1024 - caret slope\n",
      "FLAGS"},
     {NULL}
   };
