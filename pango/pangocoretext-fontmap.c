@@ -1422,7 +1422,7 @@ pango_core_text_font_map_load_fontset (PangoFontMap               *fontmap,
   /* Cannot use pango_core_text_fontset_key_free() here */
   pango_font_description_free (key.desc);
 
-  return g_object_ref (fontset);
+  return g_object_ref (PANGO_FONTSET (fontset));
 }
 
 static void
