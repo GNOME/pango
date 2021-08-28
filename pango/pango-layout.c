@@ -1788,6 +1788,8 @@ pango_layout_line_index_to_x (PangoLayoutLine *line,
       if (run->item->offset <= index && run->item->offset + run->item->length > index)
         {
           int offset = g_utf8_pointer_to_offset (layout->text, layout->text + index);
+          int attr_offset;
+
           if (trailing)
             {
               while (index < line->start_index + line->length &&
@@ -1806,14 +1808,20 @@ pango_layout_line_index_to_x (PangoLayoutLine *line,
                   offset--;
                   index = g_utf8_prev_char (layout->text + index) - layout->text;
                 }
-
             }
 
-          pango_glyph_string_index_to_x (run->glyphs,
-                                         layout->text + run->item->offset,
-                                         run->item->length,
-                                         &run->item->analysis,
-                                         index - run->item->offset, trailing, x_pos);
+          /* Note: we simply assert here, since our items are all internally
+           * created. If that ever changes, we need to add a fallback here.
+           */
+          g_assert (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET);
+          attr_offset = ((PangoItemPrivate *)run->item)->char_offset;
+
+          pango_glyph_string_index_to_x_full (run->glyphs,
+                                              layout->text + run->item->offset,
+                                              run->item->length,
+                                              &run->item->analysis,
+                                              layout->log_attrs + attr_offset,
+                                              index - run->item->offset, trailing, x_pos);
           if (x_pos)
             *x_pos += width;
 
@@ -5039,6 +5047,7 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
               int run_start_index = MAX (start_index, run->item->offset);
               int run_end_index = MIN (end_index, run->item->offset + run->item->length);
               int run_start_x, run_end_x;
+              int attr_offset;
 
               g_assert (run_end_index > 0);
 
@@ -5046,18 +5055,26 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
 
               run_end_index = g_utf8_prev_char (line->layout->text + run_end_index) - line->layout->text;
 
-              pango_glyph_string_index_to_x (run->glyphs,
-                                             line->layout->text + run->item->offset,
-                                             run->item->length,
-                                             &run->item->analysis,
-                                             run_start_index - run->item->offset, FALSE,
-                                             &run_start_x);
-              pango_glyph_string_index_to_x (run->glyphs,
-                                             line->layout->text + run->item->offset,
-                                             run->item->length,
-                                             &run->item->analysis,
-                                             run_end_index - run->item->offset, TRUE,
-                                             &run_end_x);
+              /* Note: we simply assert here, since our items are all internally
+               * created. If that ever changes, we need to add a fallback here.
+               */
+              g_assert (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET);
+              attr_offset = ((PangoItemPrivate *)run->item)->char_offset;
+
+              pango_glyph_string_index_to_x_full (run->glyphs,
+                                                  line->layout->text + run->item->offset,
+                                                  run->item->length,
+                                                  &run->item->analysis,
+                                                  line->layout->log_attrs + attr_offset,
+                                                  run_start_index - run->item->offset, FALSE,
+                                                  &run_start_x);
+              pango_glyph_string_index_to_x_full (run->glyphs,
+                                                  line->layout->text + run->item->offset,
+                                                  run->item->length,
+                                                  &run->item->analysis,
+                                                  line->layout->log_attrs + attr_offset,
+                                                  run_end_index - run->item->offset, TRUE,
+                                                  &run_end_x);
 
               (*ranges)[2*range_count] = x_offset + accumulated_width + MIN (run_start_x, run_end_x);
               (*ranges)[2*range_count + 1] = x_offset + accumulated_width + MAX (run_start_x, run_end_x);
