@@ -536,10 +536,17 @@ render_callback (PangoLayout *layout,
 
           const char *text = pango_layout_get_text (layout);
           int length = g_utf8_strlen (text, -1);
-          for (int i = 0; i <= length; i++)
+          const char *p;
+          int i;
+          for (i = 0, p = text; i <= length; i++, p = g_utf8_next_char (p))
             {
               PangoRectangle rect;
-              pango_layout_get_caret_pos (layout, i, &rect, NULL);
+
+              if (!attrs[i].is_cursor_position)
+                continue;
+
+              pango_layout_get_caret_pos (layout, p - text, &rect, NULL);
+              g_print ("draw caret pos at %d\n", i);
 
               cairo_move_to (cr,
                              (double)rect.x / PANGO_SCALE - lw / 2
