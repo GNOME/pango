@@ -190,14 +190,6 @@ void                    pango_glyph_string_index_to_x           (PangoGlyphStrin
                                                                  int                  index_,
                                                                  gboolean             trailing,
                                                                  int                 *x_pos);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_glyph_string_x_to_index           (PangoGlyphString    *glyphs,
-                                                                 const char          *text,
-                                                                 int                  length,
-                                                                 PangoAnalysis       *analysis,
-                                                                 int                  x_pos,
-                                                                 int                 *index_,
-                                                                 int                 *trailing);
 
 PANGO_AVAILABLE_IN_1_50
 void                    pango_glyph_string_index_to_x_full      (PangoGlyphString    *glyphs,
@@ -208,6 +200,25 @@ void                    pango_glyph_string_index_to_x_full      (PangoGlyphStrin
                                                                  int                  index_,
                                                                  gboolean             trailing,
                                                                  int                 *x_pos);
+
+PANGO_AVAILABLE_IN_ALL
+void                    pango_glyph_string_x_to_index           (PangoGlyphString    *glyphs,
+                                                                 const char          *text,
+                                                                 int                  length,
+                                                                 PangoAnalysis       *analysis,
+                                                                 int                  x_pos,
+                                                                 int                 *index_,
+                                                                 int                 *trailing);
+
+PANGO_AVAILABLE_IN_1_50
+void                    pango_glyph_string_x_to_index_full      (PangoGlyphString    *glyphs,
+                                                                 const char          *text,
+                                                                 int                  length,
+                                                                 PangoAnalysis       *analysis,
+                                                                 PangoLogAttr        *attrs,
+                                                                 int                  x_pos,
+                                                                 int                 *index_,
+                                                                 int                 *trailing);
 
 /* Shaping */
 

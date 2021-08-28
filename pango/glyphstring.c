@@ -650,6 +650,44 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
                                int              *index,
                                gboolean         *trailing)
 {
+  pango_glyph_string_x_to_index_full (glyphs,
+                                      text, length,
+                                      analysis, NULL,
+                                      x_pos,
+                                      index, trailing);
+}
+
+/**
+ * pango_glyph_string_x_to_index_full:
+ * @glyphs: the glyphs returned from [func@shape]
+ * @text: the text for the run
+ * @length: the number of bytes (not characters) in text.
+ * @analysis: the analysis information return from [func@itemize]
+ * @attrs: (nullable): `PangoLogAttr` array for @text
+ * @x_pos: the x offset (in Pango units)
+ * @index_: (out): location to store calculated byte index within @text
+ * @trailing: (out): location to store a boolean indicating whether the
+ *   user clicked on the leading or trailing edge of the character
+ *
+ * Convert from x offset to character position.
+ *
+ * This variant of [method@Pango.GlyphString.x_to_index] additionally
+ * accepts a `PangoLogAttr` array. The grapheme boundary information
+ * in it can be used to disambiguate positioning inside some complex
+ * clusters.
+ *
+ * Since: 1.50
+ */
+void
+pango_glyph_string_x_to_index_full (PangoGlyphString *glyphs,
+                                    const char       *text,
+                                    int               length,
+                                    PangoAnalysis    *analysis,
+                                    PangoLogAttr     *attrs,
+                                    int               x_pos,
+                                    int              *index,
+                                    gboolean         *trailing)
+{
   int i;
   int start_xpos = 0;
   int end_xpos = 0;
@@ -658,8 +696,16 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
   int start_index = -1;
   int end_index = -1;
 
+  int start_glyph_pos = 0;
+  int end_glyph_pos = 0;
+
   int cluster_chars = 0;
   const char *p;
+
+  int start_offset;
+
+  hb_position_t caret[16];
+  unsigned int caret_count = 16;
 
   gboolean found = FALSE;
 
@@ -670,55 +716,59 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
   if (analysis->level % 2) /* Right to left */
     {
       for (i = glyphs->num_glyphs - 1; i >= 0; i--)
-	width += glyphs->glyphs[i].geometry.width;
+        width += glyphs->glyphs[i].geometry.width;
 
       for (i = glyphs->num_glyphs - 1; i >= 0; i--)
-	{
-	  if (glyphs->log_clusters[i] != start_index)
-	    {
-	      if (found)
-		{
-		  end_index = glyphs->log_clusters[i];
-		  end_xpos = width;
-		  break;
-		}
-	      else
-		{
-		  start_index = glyphs->log_clusters[i];
-		  start_xpos = width;
-		}
-	    }
+        {
+          if (glyphs->log_clusters[i] != start_index)
+            {
+              if (found)
+                {
+                  end_index = glyphs->log_clusters[i];
+                  end_xpos = width;
+                  end_glyph_pos = i;
+                  break;
+                }
+              else
+                {
+                  start_index = glyphs->log_clusters[i];
+                  start_xpos = width;
+                  start_glyph_pos = i;
+                }
+            }
 
-	  width -= glyphs->glyphs[i].geometry.width;
+          width -= glyphs->glyphs[i].geometry.width;
 
-	  if (width <= x_pos && x_pos < width + glyphs->glyphs[i].geometry.width)
-	    found = TRUE;
-	}
+          if (width <= x_pos && x_pos < width + glyphs->glyphs[i].geometry.width)
+            found = TRUE;
+        }
     }
   else /* Left to right */
     {
       for (i = 0; i < glyphs->num_glyphs; i++)
-	{
-	  if (glyphs->log_clusters[i] != start_index)
-	    {
-	      if (found)
-		{
-		  end_index = glyphs->log_clusters[i];
-		  end_xpos = width;
-		  break;
-		}
-	      else
-		{
-		  start_index = glyphs->log_clusters[i];
-		  start_xpos = width;
-		}
-	    }
+        {
+          if (glyphs->log_clusters[i] != start_index)
+            {
+              if (found)
+                {
+                  end_index = glyphs->log_clusters[i];
+                  end_xpos = width;
+                  end_glyph_pos = i;
+                  break;
+                }
+              else
+                {
+                  start_index = glyphs->log_clusters[i];
+                  start_xpos = width;
+                  start_glyph_pos = i;
+                }
+            }
 
-	  if (width <= x_pos && x_pos < width + glyphs->glyphs[i].geometry.width)
-	    found = TRUE;
+          if (width <= x_pos && x_pos < width + glyphs->glyphs[i].geometry.width)
+            found = TRUE;
 
-	  width += glyphs->glyphs[i].geometry.width;
-	}
+          width += glyphs->glyphs[i].geometry.width;
+        }
     }
 
   if (end_index == -1)
@@ -727,70 +777,142 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
       end_xpos = (analysis->level % 2) ? 0 : width;
     }
 
-  /* Calculate number of chars within cluster */
-  p = text + start_index;
-  while (p < text + end_index)
-    {
-      p = g_utf8_next_char (p);
-      cluster_chars++;
-    }
-
   if (start_xpos == end_xpos)
     {
       if (index)
-	*index = start_index;
+        *index = start_index;
       if (trailing)
-	*trailing = FALSE;
+        *trailing = FALSE;
+      return;
     }
-  else
+
+  /* at this point:
+   * cluster goes from start_index to end_index in characters
+   * from start_glyph_pos to end_glyph_pos in glyphs
+   * from start_xpos to end_xpos in coordinates
+   */
+
+  /* Calculate number of chars within cluster
+   * To come up with accurate answers here, we need to know grapheme
+   * boundaries.
+   */
+  start_offset = attrs ? g_utf8_pointer_to_offset (text, text + start_index) : 0;
+  for (p = text + start_index, i = start_offset;
+       p < text + end_index;
+       p = g_utf8_next_char (p), i++)
     {
-      double cp = ((double)(x_pos - start_xpos) * cluster_chars) / (end_xpos - start_xpos);
+      if (attrs && !attrs[i].is_cursor_position)
+        continue;
 
-      /* LTR and right-to-left have to be handled separately
-       * here because of the edge condition when we are exactly
-       * at a pixel boundary; end_xpos goes with the next
-       * character for LTR, with the previous character for RTL.
-       */
-      if (start_xpos < end_xpos) /* Left-to-right */
-	{
-	  if (index)
-	    {
-	      const char *p = text + start_index;
-	      int i = 0;
+      cluster_chars++;
+    }
 
-	      while (i + 1 <= cp)
-		{
-		  p = g_utf8_next_char (p);
-		  i++;
-		}
+  if (G_UNLIKELY (!cluster_chars))
+    {
+      if (index)
+        *index = start_index;
+      if (trailing)
+        *trailing = FALSE;
+      return;
+    }
 
-	      *index = (p - text);
-	    }
+  if (cluster_chars > 1)
+    {
+      hb_font_t *hb_font = pango_font_get_hb_font (analysis->font);
+      int glyph_pos = -1;
 
-	  if (trailing)
-	    *trailing = (cp - (int)cp >= 0.5) ? TRUE : FALSE;
-	}
-      else /* Right-to-left */
-	{
-	  if (index)
-	    {
-	      const char *p = text + start_index;
-	      int i = 0;
+      if (start_glyph_pos == end_glyph_pos)
+        glyph_pos = start_glyph_pos;
+      else
+        {
+          hb_face_t *hb_face = hb_font_get_face (hb_font);
 
-	      while (i + 1 < cp)
-		{
-		  p = g_utf8_next_char (p);
-		  i++;
-		}
+          for (i = start_glyph_pos; i <= end_glyph_pos; i++)
+            {
+              if (hb_ot_layout_get_glyph_class (hb_face, glyphs->glyphs[i].glyph) != HB_OT_LAYOUT_GLYPH_CLASS_MARK)
+                {
+                  if (glyph_pos != -1)
+                    {
+                      /* multiple non-mark glyphs in cluster, giving up */
+                      goto fallback;
+                    }
+                  glyph_pos = i;
+                }
+            }
+          if (glyph_pos == -1)
+            {
+              /* no non-mark glyph in a multi-glyph cluster, giving up */
+              goto fallback;
+            }
+        }
 
-	      *index = (p - text);
-	    }
+      hb_ot_layout_get_ligature_carets (hb_font,
+                                        (analysis->level % 2) ? HB_DIRECTION_RTL : HB_DIRECTION_LTR,
+                                        glyphs->glyphs[glyph_pos].glyph,
+                                        0, &caret_count, caret);
 
-	  if (trailing)
-	    {
-	      double cp_flip = cluster_chars - cp;
-	      *trailing = (cp_flip - (int)cp_flip >= 0.5) ? FALSE : TRUE;
-	    }
-	}
+      if (caret_count == cluster_chars)
+        goto pick;
+    }
+
+fallback:
+  for (i = 0; i <= cluster_chars; i++)
+    caret[i] = start_xpos + i * (end_xpos - start_xpos) / cluster_chars;
+
+pick:
+  /* LTR and right-to-left have to be handled separately
+   * here because of the edge condition when we are exactly
+   * at a pixel boundary; end_xpos goes with the next
+   * character for LTR, with the previous character for RTL.
+   */
+  if (start_xpos < end_xpos) /* Left-to-right */
+    {
+      if (index)
+        {
+          const char *p = text + start_index;
+          int i = 0;
+
+          while (x_pos > caret[i])
+            {
+              p = g_utf8_next_char (p);
+              if (!attrs || attrs[start_offset + i].is_cursor_position)
+                i++;
+            }
+
+          *index = (p - text);
+        }
+
+      if (trailing)
+        {
+          if (i == 0)
+            *trailing = FALSE;
+          else
+            *trailing = caret[i] - x_pos < x_pos - caret[i - 1];
+        }
+    }
+  else /* Right-to-left */
+    {
+      if (index)
+        {
+          const char *p = text + start_index;
+          int i = 0;
+
+          while (x_pos > caret[i])
+           {
+              p = g_utf8_next_char (p);
+              if (!attrs || attrs[start_offset + i].is_cursor_position)
+                i++;
+           }
+
+          *index = (p - text);
+        }
+
+      if (trailing)
+        {
+          if (i == 0)
+            *trailing = TRUE;
+          else
+            *trailing = caret[i] - x_pos > x_pos - caret[i - 1];
+        }
     }
 }
