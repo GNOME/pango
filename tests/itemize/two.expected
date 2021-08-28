@@ -1,6 +1,7 @@
 <span font="Cantarell 11">one <span font_features="tnum=0">tw<u>o</u> <span font_features="dlig=1">two</span> </span>th<b>r</b>ee</span>
 
 Items:  one tw                    |o                                          | two th                                              |r                |ee          
+Chars:  6(0)                      |1(6)                                       |7(7)                                                 |1(14)            |2(15)       
 Font:   Cantarell 11              |Cantarell 11                               |Cantarell 11                                         |Cantarell Bold 11|Cantarell 11
 Script: latin                     |latin                                      |latin                                                |latin            |latin       
 Lang:   en-us                     |en-us                                      |en-us                                                |en-us            |en-us       
