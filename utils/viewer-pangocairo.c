@@ -475,6 +475,7 @@ render_callback (PangoLayout *layout,
           const PangoLogAttr *attrs;
           int n_attrs;
           int offset;
+          int num = 0;
 
           /* draw the caret positions in purple */
           cairo_save (cr);
@@ -524,7 +525,7 @@ render_callback (PangoLayout *layout,
                       cairo_close_path (cr);
                       cairo_fill (cr);
 
-                      char *s = g_strdup_printf ("%d", i + trailing);
+                      char *s = g_strdup_printf ("%d", num);
                       cairo_set_source_rgb (cr, 0, 0, 0);
                       cairo_move_to (cr, x / PANGO_SCALE - 5, y / PANGO_SCALE + 15);
                       cairo_show_text (cr, s);
@@ -532,9 +533,13 @@ render_callback (PangoLayout *layout,
                    }
 
                   if (i < run->item->num_chars)
-                    p = g_utf8_next_char (p);
+                    {
+                      num++;
+                      p = g_utf8_next_char (p);
+                    }
                   else
                     trailing = TRUE;
+
                 }
             }
           while (pango_layout_iter_next_run (iter));
