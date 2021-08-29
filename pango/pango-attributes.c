@@ -924,6 +924,30 @@ pango_attr_rise_new (int rise)
 }
 
 /**
+ * pango_attr_baseline_shift_new:
+ * @shift: either a `PangoBaselineShift` enumeration value or an absolute value (> 1024)
+ *   in Pango units, relative to the baseline of the previous run.
+ *   Positive values displace the text upwards.
+ *
+ * Create a new baseline displacement attribute.
+ *
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
+ */
+PangoAttribute *
+pango_attr_baseline_shift_new (int rise)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_BASELINE_SHIFT,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal
+  };
+
+  return pango_attr_int_new (&klass, (int)rise);
+}
+/**
  * pango_attr_scale_new:
  * @scale_factor: factor to scale the font
  *
@@ -1533,6 +1557,7 @@ pango_attribute_as_int (PangoAttribute *attr)
     case PANGO_ATTR_TEXT_TRANSFORM:
     case PANGO_ATTR_WORD:
     case PANGO_ATTR_SENTENCE:
+    case PANGO_ATTR_BASELINE_SHIFT:
       return (PangoAttrInt *)attr;
 
     default:

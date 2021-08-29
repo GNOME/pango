@@ -92,7 +92,7 @@
 typedef struct _ItemProperties ItemProperties;
 typedef struct _ParaBreakState ParaBreakState;
 
-/* Note that rise, letter_spacing, shape are constant across items,
+/* Note that letter_spacing and shape are constant across items,
  * since we pass them into itemization.
  *
  * uline and strikethrough can vary across an item, so we collect
@@ -108,7 +108,6 @@ struct _ItemProperties
   guint uline_error    : 1;
   guint strikethrough  : 1;
   guint oline_single   : 1;
-  gint            rise;
   gint            letter_spacing;
   gboolean        shape_set;
   PangoRectangle *shape_ink_rect;
@@ -3621,6 +3620,8 @@ struct _ParaBreakState
   int remaining_width;          /* Amount of space remaining on line; < 0 is infinite */
 
   int hyphen_width;             /* How much space a hyphen will take */
+
+  GList *baseline_shifts;
 };
 
 static gboolean
@@ -4324,6 +4325,7 @@ affects_itemization (PangoAttribute *attr,
     case PANGO_ATTR_LETTER_SPACING:
     case PANGO_ATTR_SHAPE:
     case PANGO_ATTR_RISE:
+    case PANGO_ATTR_BASELINE_SHIFT:
     case PANGO_ATTR_LINE_HEIGHT:
     case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
     case PANGO_ATTR_TEXT_TRANSFORM:
@@ -4485,6 +4487,7 @@ pango_layout_check_lines (PangoLayout *layout)
 
   state.log_widths = NULL;
   state.num_log_widths = 0;
+  state.baseline_shifts = NULL;
 
   do
     {
@@ -4593,6 +4596,7 @@ pango_layout_check_lines (PangoLayout *layout)
   while (!done);
 
   g_free (state.log_widths);
+  g_list_free_full (state.baseline_shifts, g_free);
 
   apply_attributes_to_runs (layout, attrs);
   layout->lines = g_slist_reverse (layout->lines);
@@ -5220,6 +5224,7 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
   PangoFontMetrics *metrics = NULL;
   gboolean has_underline;
   gboolean has_overline;
+  int y_offset;
 
   if (G_UNLIKELY (!run_ink && !run_logical && !line_logical && !height))
     return;
@@ -5313,6 +5318,8 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
       *height = pango_font_metrics_get_height (metrics);
     }
 
+  y_offset = run->y_offset;
+
   if (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
     {
       gboolean is_hinted = (run_logical->y & run_logical->height & (PANGO_SCALE - 1)) == 0;
@@ -5321,17 +5328,14 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
       if (is_hinted)
         adjustment = PANGO_UNITS_ROUND (adjustment);
 
-      properties.rise += adjustment;
+      y_offset += adjustment;
     }
 
-  if (properties.rise != 0)
-    {
-      if (run_ink)
-        run_ink->y -= properties.rise;
+  if (run_ink)
+    run_ink->y -= y_offset;
 
-      if (run_logical)
-        run_logical->y -= properties.rise;
-    }
+  if (run_logical)
+    run_logical->y -= y_offset;
 
   if (line_logical)
     {
@@ -6147,6 +6151,129 @@ justify_words (PangoLayoutLine *line,
   state->remaining_width -= added_so_far;
 }
 
+typedef struct {
+  PangoAttribute *attr;
+  int shift;
+} BaselineItem;
+
+static void
+collect_shifts (ParaBreakState *state,
+                PangoItem      *item,
+                PangoItem      *prev,
+                int            *start_shift,
+                int            *end_shift)
+{
+  *start_shift = 0;
+  *end_shift = 0;
+
+  for (GSList *l = item->analysis.extra_attrs; l; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+
+      if (attr->klass->type == PANGO_ATTR_RISE)
+        {
+          int value = ((PangoAttrInt *)attr)->value;
+
+          *start_shift += value;
+          *end_shift -= value;
+        }
+      else if (attr->klass->type == PANGO_ATTR_BASELINE_SHIFT)
+        {
+          if (attr->start_index == item->offset)
+            {
+              BaselineItem *entry;
+              int value;
+
+              entry = g_new0 (BaselineItem, 1);
+              entry->attr = attr;
+
+              value = ((PangoAttrInt *)attr)->value;
+
+              if (value > 1024 || value < -1024)
+                {
+                  entry->shift = value;
+                }
+              else
+                {
+                  int superscript_shift = 0;
+                  int subscript_shift = 0;
+                  hb_font_t *hb_font;
+
+
+                  if (prev)
+                    {
+                      hb_font = pango_font_get_hb_font (prev->analysis.font);
+                      hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_SUPERSCRIPT_EM_Y_OFFSET, &superscript_shift);
+                      hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_SUBSCRIPT_EM_Y_OFFSET, &subscript_shift);
+                    }
+
+                  if (superscript_shift == 0)
+                    superscript_shift = 5000;
+                  if (subscript_shift == 0)
+                    subscript_shift = 5000;
+
+                  switch (value)
+                    {
+                    case PANGO_BASELINE_SHIFT_NONE:
+                      entry->shift = 0;
+                      break;
+                    case PANGO_BASELINE_SHIFT_SUPERSCRIPT:
+                      entry->shift = superscript_shift;
+                      break;
+                    case PANGO_BASELINE_SHIFT_SUBSCRIPT:
+                      entry->shift = -subscript_shift;
+                      break;
+                    default:
+                      g_assert_not_reached ();
+                    }
+                }
+
+               *start_shift += entry->shift;
+               state->baseline_shifts = g_list_prepend (state->baseline_shifts, entry);
+            }
+          if (attr->end_index == item->offset + item->length)
+            {
+              BaselineItem *entry = state->baseline_shifts->data;
+
+              if (attr->start_index == entry->attr->start_index &&
+                  attr->end_index == entry->attr->end_index &&
+                  ((PangoAttrInt *)attr)->value == ((PangoAttrInt *)entry->attr)->value)
+                *end_shift -= entry->shift;
+              else
+                g_warning ("Baseline attributes mismatch\n");
+
+              state->baseline_shifts = g_list_remove (state->baseline_shifts, entry);
+              g_free (entry);
+            }
+        }
+    }
+}
+
+static void
+apply_baseline_shifts (PangoLayoutLine *line,
+                       ParaBreakState  *state)
+{
+  int y_offset = 0;
+  PangoItem *prev = NULL;
+
+  for (GSList *l = line->runs; l; l = l->next)
+    {
+      PangoLayoutRun *run = l->data;
+      PangoItem *item = run->item;
+      int start_y_offset, end_y_offset;
+
+      collect_shifts (state, item, prev, &start_y_offset, &end_y_offset);
+
+      y_offset += start_y_offset;
+
+      run->y_offset = y_offset;
+
+      y_offset += end_y_offset;
+
+      prev = item;
+    }
+}
+
 static void
 pango_layout_line_postprocess (PangoLayoutLine *line,
                                ParaBreakState  *state,
@@ -6166,6 +6293,8 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
   /* Reverse the runs
    */
   line->runs = g_slist_reverse (line->runs);
+
+  apply_baseline_shifts (line, state);
 
   /* Ellipsize the line if necessary
    */
@@ -6224,7 +6353,6 @@ pango_layout_get_item_properties (PangoItem      *item,
   properties->oline_single = FALSE;
   properties->strikethrough = FALSE;
   properties->letter_spacing = 0;
-  properties->rise = 0;
   properties->shape_set = FALSE;
   properties->shape_ink_rect = NULL;
   properties->shape_logical_rect = NULL;
@@ -6277,10 +6405,6 @@ pango_layout_get_item_properties (PangoItem      *item,
 
         case PANGO_ATTR_STRIKETHROUGH:
           properties->strikethrough = ((PangoAttrInt *)attr)->value;
-          break;
-
-        case PANGO_ATTR_RISE:
-          properties->rise = ((PangoAttrInt *)attr)->value;
           break;
 
         case PANGO_ATTR_LETTER_SPACING:
@@ -7110,8 +7234,6 @@ pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
                                        PangoRectangle  *ink_rect,
                                        PangoRectangle  *logical_rect)
 {
-  ItemProperties properties;
-
   if (ITER_IS_INVALID (iter))
     return;
 
@@ -7124,8 +7246,6 @@ pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
       return;
     }
 
-  pango_layout_get_item_properties (iter->run->item, &properties);
-
   pango_glyph_string_extents_range (iter->run->glyphs,
                                     iter->cluster_start,
                                     iter->next_cluster_glyph,
@@ -7136,7 +7256,7 @@ pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
   if (ink_rect)
     {
       ink_rect->x += iter->cluster_x;
-      ink_rect->y -= properties.rise;
+      ink_rect->y -= iter->run->y_offset;
       offset_y (iter, &ink_rect->y);
     }
 
@@ -7144,7 +7264,7 @@ pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
     {
       g_assert (logical_rect->width == iter->cluster_width);
       logical_rect->x += iter->cluster_x;
-      logical_rect->y -= properties.rise;
+      logical_rect->y -= iter->run->y_offset;
       offset_y (iter, &logical_rect->y);
     }
 }
@@ -7325,17 +7445,13 @@ pango_layout_iter_get_baseline (PangoLayoutIter *iter)
 int
 pango_layout_iter_get_run_baseline (PangoLayoutIter *iter)
 {
-  ItemProperties properties;
-
   if (ITER_IS_INVALID (iter))
     return 0;
 
   if (!iter->run)
     return iter->line_extents[iter->line_index].baseline;
 
-  pango_layout_get_item_properties (iter->run->item, &properties);
-
-  return iter->line_extents[iter->line_index].baseline - properties.rise;
+  return iter->line_extents[iter->line_index].baseline - iter->run->y_offset;
 }
 
 /**

@@ -77,6 +77,7 @@ affects_itemization (PangoAttribute *attr,
     case PANGO_ATTR_LETTER_SPACING:
     case PANGO_ATTR_SHAPE:
     case PANGO_ATTR_RISE:
+    case PANGO_ATTR_BASELINE_SHIFT:
     case PANGO_ATTR_LINE_HEIGHT:
     case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
     case PANGO_ATTR_TEXT_TRANSFORM:

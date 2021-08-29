@@ -502,13 +502,9 @@ add_strikethrough (PangoRenderer    *renderer,
 
 static void
 get_item_properties (PangoItem       *item,
-                     gint            *rise,
                      PangoAttrShape **shape_attr)
 {
   GSList *l;
-
-  if (rise)
-    *rise = 0;
 
   if (shape_attr)
     *shape_attr = NULL;
@@ -522,11 +518,6 @@ get_item_properties (PangoItem       *item,
         case PANGO_ATTR_SHAPE:
           if (shape_attr)
             *shape_attr = (PangoAttrShape *)attr;
-          break;
-
-        case PANGO_ATTR_RISE:
-          if (rise)
-            *rise = ((PangoAttrInt *)attr)->value;
           break;
 
         default:
@@ -589,6 +580,7 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
   gboolean got_overall = FALSE;
   PangoRectangle overall_rect;
   const char *text;
+  int y_off;
 
   g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
 
@@ -616,7 +608,6 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
   for (l = line->runs; l; l = l->next)
     {
       PangoFontMetrics *metrics;
-      gint rise;
       PangoLayoutRun *run = l->data;
       PangoAttrShape *shape_attr;
       PangoRectangle ink_rect, *ink = NULL;
@@ -627,7 +618,7 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
 
       pango_renderer_prepare_run (renderer, run);
 
-      get_item_properties (run->item, &rise, &shape_attr);
+      get_item_properties (run->item, &shape_attr);
 
       if (shape_attr)
         {
@@ -660,6 +651,8 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
 
       state.logical_rect_end = x + x_off + glyph_string_width;
 
+      y_off = run->y_offset;
+
       if (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
         {
           gboolean is_hinted = ((logical_rect.y | logical_rect.height) & (PANGO_SCALE - 1)) == 0;
@@ -668,7 +661,7 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
           if (is_hinted)
             adjustment = PANGO_UNITS_ROUND (adjustment);
 
-          rise += adjustment;
+          y_off += adjustment;
         }
 
 
@@ -690,14 +683,14 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
 
       if (shape_attr)
         {
-          draw_shaped_glyphs (renderer, run->glyphs, shape_attr, x + x_off, y - rise);
+          draw_shaped_glyphs (renderer, run->glyphs, shape_attr, x + x_off, y - y_off);
         }
       else
         {
           pango_renderer_draw_glyph_item (renderer,
                                           text,
                                           run,
-                                          x + x_off, y - rise);
+                                          x + x_off, y - y_off);
         }
 
       if (renderer->underline != PANGO_UNDERLINE_NONE ||
@@ -709,17 +702,17 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
 
           if (renderer->underline != PANGO_UNDERLINE_NONE)
             add_underline (renderer, &state,metrics,
-                           x + x_off, y - rise,
+                           x + x_off, y - y_off,
                            ink, logical);
 
           if (renderer->priv->overline != PANGO_OVERLINE_NONE)
             add_overline (renderer, &state,metrics,
-                           x + x_off, y - rise,
+                           x + x_off, y - y_off,
                            ink, logical);
 
           if (renderer->strikethrough)
             add_strikethrough (renderer, &state, metrics,
-                               x + x_off, y - rise,
+                               x + x_off, y - y_off,
                                ink, logical, run->glyphs->num_glyphs);
 
           pango_font_metrics_unref (metrics);

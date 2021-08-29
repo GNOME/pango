@@ -79,6 +79,7 @@ typedef struct _PangoAttrFontFeatures PangoAttrFontFeatures;
  * @PANGO_ATTR_ABSOLUTE_LINE_HEIGHT: line height ([struct@Pango.AttrInt]). Since: 1.50
  * @PANGO_ATTR_WORD: override segmentation to classify the range of the attribute as a single word ([struct@Pango.AttrInt]). Since 1.50
  * @PANGO_ATTR_SENTENCE: override segmentation to classify the range of the attribute as a single sentence ([struct@Pango.AttrInt]). Since 1.50
+ * @PANGO_ATTR_BASELINE_SHIFT: baseline displacement ([struct@Pango.AttrSize]). Since 1.50
  *
  * The `PangoAttrType` distinguishes between different types of attributes.
  *
@@ -125,6 +126,7 @@ typedef enum
   PANGO_ATTR_TEXT_TRANSFORM,    /* PangoAttrInt */
   PANGO_ATTR_WORD,              /* PangoAttrInt */
   PANGO_ATTR_SENTENCE,          /* PangoAttrInt */
+  PANGO_ATTR_BASELINE_SHIFT,    /* PangoAttrSize */
 } PangoAttrType;
 
 /**
@@ -225,6 +227,23 @@ typedef enum {
   PANGO_TEXT_TRANSFORM_UPPERCASE,
   PANGO_TEXT_TRANSFORM_CAPITALIZE,
 } PangoTextTransform;
+
+/**
+ * PangoBaselineShift:
+ * @PANGO_BASELINE_SHIFT_SUPERSCRIPT: Shift the baseline to the superscript position,
+ *   relative to the previous run
+ * @PANGO_BASELINE_SHIFT_SUBSCRIPT: Shift the baseline to the subscript position,
+ *   relative to the previous run
+ *
+ * An enumeration that affects baseline shifts between runs.
+ *
+ * Since: 1.50
+ */
+typedef enum {
+  PANGO_BASELINE_SHIFT_NONE,
+  PANGO_BASELINE_SHIFT_SUPERSCRIPT,
+  PANGO_BASELINE_SHIFT_SUBSCRIPT,
+} PangoBaselineShift;
 
 /**
  * PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING:
@@ -515,6 +534,8 @@ PangoAttribute *        pango_attr_strikethrough_color_new      (guint16        
                                                                  guint16                     blue);
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_rise_new                     (int                         rise);
+PANGO_AVAILABLE_IN_1_50
+PangoAttribute *        pango_attr_baseline_shift_new           (int                         shift);
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_scale_new                    (double                      scale_factor);
 PANGO_AVAILABLE_IN_1_4
