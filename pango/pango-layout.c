@@ -7093,6 +7093,8 @@ pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
                                        PangoRectangle  *ink_rect,
                                        PangoRectangle  *logical_rect)
 {
+  ItemProperties properties;
+
   if (ITER_IS_INVALID (iter))
     return;
 
@@ -7105,6 +7107,8 @@ pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
       return;
     }
 
+  pango_layout_get_item_properties (iter->run->item, &properties);
+
   pango_glyph_string_extents_range (iter->run->glyphs,
                                     iter->cluster_start,
                                     iter->next_cluster_glyph,
@@ -7115,6 +7119,7 @@ pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
   if (ink_rect)
     {
       ink_rect->x += iter->cluster_x;
+      ink_rect->y -= properties.rise;
       offset_y (iter, &ink_rect->y);
     }
 
@@ -7122,6 +7127,7 @@ pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
     {
       g_assert (logical_rect->width == iter->cluster_width);
       logical_rect->x += iter->cluster_x;
+      logical_rect->y -= properties.rise;
       offset_y (iter, &logical_rect->y);
     }
 }
