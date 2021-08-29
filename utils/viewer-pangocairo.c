@@ -346,7 +346,12 @@ render_callback (PangoLayout *layout,
           iter = pango_layout_get_iter (layout);
           do
             {
+              PangoLayoutRun *run;
               PangoRectangle rect;
+
+              run = pango_layout_iter_get_run (iter);
+              if (!run)
+                continue;
 
               pango_layout_iter_get_run_extents (iter, NULL, &rect);
               cairo_rectangle (cr,
