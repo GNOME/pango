@@ -947,6 +947,20 @@ pango_attr_baseline_shift_new (int rise)
 
   return pango_attr_int_new (&klass, (int)rise);
 }
+
+PangoAttribute *
+pango_attr_font_scale_new (PangoFontScale scale)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_FONT_SCALE,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal
+  };
+
+  return pango_attr_int_new (&klass, (int)scale);
+}
+
 /**
  * pango_attr_scale_new:
  * @scale_factor: factor to scale the font
@@ -1558,6 +1572,7 @@ pango_attribute_as_int (PangoAttribute *attr)
     case PANGO_ATTR_WORD:
     case PANGO_ATTR_SENTENCE:
     case PANGO_ATTR_BASELINE_SHIFT:
+    case PANGO_ATTR_FONT_SCALE:
       return (PangoAttrInt *)attr;
 
     default:
@@ -2847,10 +2862,14 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
             {
               gboolean found = FALSE;
 
-              /* Hack: special-case FONT_FEATURES.  We don't want them to
-               * override each other, so we never merge them.  This should
-               * be fixed when we implement attr-merging. */
-              if (attr->klass->type != PANGO_ATTR_FONT_FEATURES)
+              /* Hack: special-case FONT_FEATURES, BASELINE_SHIFT and FONT_SCALE.
+               * We don't want these to accumulate, not override each other,
+               * so we never merge them.
+               * This needs to be handled more systematically.
+               */
+              if (attr->klass->type != PANGO_ATTR_FONT_FEATURES &&
+                  attr->klass->type != PANGO_ATTR_BASELINE_SHIFT &&
+                  attr->klass->type != PANGO_ATTR_FONT_SCALE)
                 {
                   GSList *tmp_list = *extra_attrs;
                   while (tmp_list)
@@ -2917,7 +2936,9 @@ pango_attr_iterator_get_attrs (PangoAttrIterator *iterator)
       GSList *tmp_list2;
       gboolean found = FALSE;
 
-      if (attr->klass->type != PANGO_ATTR_FONT_DESC)
+      if (attr->klass->type != PANGO_ATTR_FONT_DESC &&
+          attr->klass->type != PANGO_ATTR_BASELINE_SHIFT &&
+          attr->klass->type != PANGO_ATTR_FONT_SCALE)
         for (tmp_list2 = attrs; tmp_list2; tmp_list2 = tmp_list2->next)
           {
             PangoAttribute *old_attr = tmp_list2->data;

@@ -73,6 +73,7 @@ affects_itemization (PangoAttribute *attr,
     case PANGO_ATTR_ABSOLUTE_SIZE:
     case PANGO_ATTR_GRAVITY:
     case PANGO_ATTR_GRAVITY_HINT:
+    case PANGO_ATTR_FONT_SCALE:
     /* These are part of ItemProperties, so need to break runs */
     case PANGO_ATTR_LETTER_SPACING:
     case PANGO_ATTR_SHAPE:

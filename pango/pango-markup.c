@@ -1232,6 +1232,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   const char *line_height = NULL;
   const char *text_transform = NULL;
   const char *segment = NULL;
+  const char *font_scale = NULL;
 
   g_markup_parse_context_get_position (context,
 				       &line_number, &char_number);
@@ -1286,6 +1287,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	CHECK_ATTRIBUTE2(style, "font_style");
 	CHECK_ATTRIBUTE2(variant, "font_variant");
 	CHECK_ATTRIBUTE2(weight, "font_weight");
+	CHECK_ATTRIBUTE(font_scale);
 
 	CHECK_ATTRIBUTE (foreground);
 	CHECK_ATTRIBUTE2(foreground, "fgcolor");
@@ -1697,6 +1699,16 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
           goto error;
         }
 
+    }
+
+  if (G_UNLIKELY (font_scale))
+    {
+      PangoFontScale scale;
+
+      if (!span_parse_enum ("font_scale", font_scale, PANGO_TYPE_FONT_SCALE, (int*)(void*)&scale, line_number, error))
+	goto error;
+
+      add_attribute (tag, pango_attr_font_scale_new (scale));
     }
 
   if (G_UNLIKELY (letter_spacing))
