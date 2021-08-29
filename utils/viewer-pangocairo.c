@@ -562,13 +562,11 @@ render_callback (PangoLayout *layout,
               pango_layout_get_caret_pos (layout, p - text, &rect, NULL);
 
               cairo_move_to (cr,
-                             (double)rect.x / PANGO_SCALE - lw / 2
-                              + (double)rect.width / PANGO_SCALE + lw,
+                             (double)rect.x / PANGO_SCALE + (double)rect.width / PANGO_SCALE - lw / 2,
                              (double)rect.y / PANGO_SCALE - lw / 2);
               cairo_line_to (cr,
                              (double)rect.x / PANGO_SCALE - lw / 2,
-                             (double)rect.y / PANGO_SCALE - lw / 2
-                              + (double)rect.height / PANGO_SCALE + lw);
+                             (double)rect.y / PANGO_SCALE + (double)rect.height / PANGO_SCALE - lw / 2);
               cairo_stroke (cr);
             }
 
