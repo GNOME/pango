@@ -1833,8 +1833,6 @@ s_parse_func        (MarkupData            *md G_GNUC_UNUSED,
   return TRUE;
 }
 
-#define SUPERSUB_RISE 5000
-
 static gboolean
 sub_parse_func      (MarkupData            *md G_GNUC_UNUSED,
 		     OpenTag               *tag,
@@ -1845,14 +1843,8 @@ sub_parse_func      (MarkupData            *md G_GNUC_UNUSED,
 {
   CHECK_NO_ATTRS("sub");
 
-  /* Shrink font, and set a negative rise */
-  if (tag)
-    {
-      tag->scale_level_delta -= 1;
-      tag->scale_level -= 1;
-    }
-
-  add_attribute (tag, pango_attr_rise_new (-SUPERSUB_RISE));
+  add_attribute (tag, pango_attr_font_scale_new (PANGO_FONT_SCALE_SUBSCRIPT));
+  add_attribute (tag, pango_attr_baseline_shift_new (PANGO_BASELINE_SHIFT_SUBSCRIPT));
 
   return TRUE;
 }
@@ -1867,14 +1859,8 @@ sup_parse_func      (MarkupData            *md G_GNUC_UNUSED,
 {
   CHECK_NO_ATTRS("sup");
 
-  /* Shrink font, and set a positive rise */
-  if (tag)
-    {
-      tag->scale_level_delta -= 1;
-      tag->scale_level -= 1;
-    }
-
-  add_attribute (tag, pango_attr_rise_new (SUPERSUB_RISE));
+  add_attribute (tag, pango_attr_font_scale_new (PANGO_FONT_SCALE_SUPERSCRIPT));
+  add_attribute (tag, pango_attr_baseline_shift_new (PANGO_BASELINE_SHIFT_SUPERSCRIPT));
 
   return TRUE;
 }
