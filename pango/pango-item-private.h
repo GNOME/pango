@@ -59,7 +59,7 @@ struct _PangoItemPrivate
   int num_chars;
   PangoAnalysis analysis;
   int char_offset;
-}
+};
 
 #endif
 

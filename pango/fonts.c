@@ -1727,6 +1727,16 @@ pango_font_default_get_scale_factors (PangoFont *font,
   *x_scale = *y_scale = 1.0;
 }
 
+static gboolean
+pango_font_default_has_char (PangoFont *font,
+                             gunichar   wc)
+{
+  PangoCoverage *coverage = pango_font_get_coverage (font, pango_language_get_default ());
+  PangoCoverageLevel result = pango_coverage_get (coverage, wc);
+  pango_coverage_unref (coverage);
+  return result != PANGO_COVERAGE_NONE;
+}
+
 static void
 pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
 {
@@ -1740,6 +1750,7 @@ pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
   pclass->get_languages = pango_font_default_get_languages;
   pclass->is_hinted = pango_font_default_is_hinted;
   pclass->get_scale_factors = pango_font_default_get_scale_factors;
+  pclass->has_char = pango_font_default_has_char;
 }
 
 static void
@@ -2626,10 +2637,9 @@ gboolean
 pango_font_has_char (PangoFont *font,
                      gunichar   wc)
 {
-  PangoCoverage *coverage = pango_font_get_coverage (font, pango_language_get_default ());
-  PangoCoverageLevel result = pango_coverage_get (coverage, wc);
-  pango_coverage_unref (coverage);
-  return result != PANGO_COVERAGE_NONE;
+  PangoFontClassPrivate *pclass = PANGO_FONT_GET_CLASS_PRIVATE (font);
+
+  return pclass->has_char (font, wc);
 }
 
 /**

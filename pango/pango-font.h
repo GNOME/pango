@@ -664,6 +664,8 @@ PangoLanguage **      pango_font_get_languages     (PangoFont        *font);
 #endif
 #endif
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFont, g_object_unref)
+
 G_END_DECLS
 
 #endif /* __PANGO_FONT_H__ */

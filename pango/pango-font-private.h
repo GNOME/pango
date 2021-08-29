@@ -42,6 +42,8 @@ typedef struct {
                                           double    *x_scale,
                                           double    *y_scale);
 
+  gboolean         (* has_char) (PangoFont *font,
+                                 gunichar   wc);
 } PangoFontClassPrivate;
 
 gboolean pango_font_is_hinted         (PangoFont *font);

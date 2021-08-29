@@ -124,6 +124,9 @@ PANGO_AVAILABLE_IN_1_46
 PangoFontFamily *pango_font_map_get_family (PangoFontMap                 *fontmap,
                                             const char                   *name);
 
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFontMap, g_object_unref)
+
 G_END_DECLS
 
 #endif /* __PANGO_FONTMAP_H__ */
