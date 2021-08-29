@@ -33,8 +33,12 @@ G_BEGIN_DECLS
  * PangoGlyphItem:
  * @item: corresponding `PangoItem`
  * @glyphs: corresponding `PangoGlyphString`
- * @baseline: shift of the baseline, relative to the
- *   containing lines baseline. Positive values shift upwards
+ * @y_offset: shift of the baseline, relative to the baseline
+ *   of the containing line. Positive values shift upwards
+ * @start_x_offset: horizontal displacement to apply before the
+ *   glyph item. Positive values shift right
+ * @end_x_offset: horizontal displacement to apply after th
+ *   glyph item. Positive values shift right
  *
  * A `PangoGlyphItem` is a pair of a `PangoItem` and the glyphs
  * resulting from shaping the items text.
@@ -50,6 +54,8 @@ struct _PangoGlyphItem
   PangoItem *item;
   PangoGlyphString *glyphs;
   int y_offset;
+  int start_x_offset;
+  int end_x_offset;
 };
 
 #define PANGO_TYPE_GLYPH_ITEM (pango_glyph_item_get_type ())

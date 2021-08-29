@@ -112,11 +112,12 @@ struct _PangoLayoutIter
   Extents *line_extents;
   int line_index;
 
-  /* X position of the current run */
+  /* Position of the current run */
   int run_x;
 
-  /* Width of the current run */
+  /* Width and end offset of the current run */
   int run_width;
+  int end_x_offset;
 
   /* this run is left-to-right */
   gboolean ltr;

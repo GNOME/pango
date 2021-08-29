@@ -130,6 +130,8 @@ pango_glyph_item_split (PangoGlyphItem *orig,
   pango_glyph_string_set_size (orig->glyphs, orig->glyphs->num_glyphs - num_glyphs);
 
   new->y_offset = orig->y_offset;
+  new->start_x_offset = orig->start_x_offset;
+  new->end_x_offset = -orig->start_x_offset;
 
   return new;
 }
@@ -157,6 +159,8 @@ pango_glyph_item_copy  (PangoGlyphItem *orig)
   result->item = pango_item_copy (orig->item);
   result->glyphs = pango_glyph_string_copy (orig->glyphs);
   result->y_offset = orig->y_offset;
+  result->start_x_offset = orig->start_x_offset;
+  result->end_x_offset = orig->end_x_offset;
 
   return result;
 }

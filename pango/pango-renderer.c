@@ -580,7 +580,6 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
   gboolean got_overall = FALSE;
   PangoRectangle overall_rect;
   const char *text;
-  int y_off;
 
   g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
 
@@ -612,6 +611,7 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
       PangoAttrShape *shape_attr;
       PangoRectangle ink_rect, *ink = NULL;
       PangoRectangle logical_rect, *logical = NULL;
+      int y_off;
 
       if (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
         logical = &logical_rect;
@@ -651,6 +651,7 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
 
       state.logical_rect_end = x + x_off + glyph_string_width;
 
+      x_off += run->start_x_offset;
       y_off = run->y_offset;
 
       if (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
@@ -730,6 +731,7 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
         draw_strikethrough (renderer, &state);
 
       x_off += glyph_string_width;
+      x_off += run->end_x_offset;
     }
 
   /* Finish off any remaining underlines

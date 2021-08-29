@@ -6154,18 +6154,23 @@ justify_words (PangoLayoutLine *line,
 
 typedef struct {
   PangoAttribute *attr;
-  int shift;
+  int x_offset;
+  int y_offset;
 } BaselineItem;
 
 static void
-collect_shifts (ParaBreakState *state,
-                PangoItem      *item,
-                PangoItem      *prev,
-                int            *start_shift,
-                int            *end_shift)
+collect_baseline_shift (ParaBreakState *state,
+                        PangoItem      *item,
+                        PangoItem      *prev,
+                        int            *start_x_offset,
+                        int            *start_y_offset,
+                        int            *end_x_offset,
+                        int            *end_y_offset)
 {
-  *start_shift = 0;
-  *end_shift = 0;
+  *start_x_offset = 0;
+  *start_y_offset = 0;
+  *end_x_offset = 0;
+  *end_y_offset = 0;
 
   for (GSList *l = item->analysis.extra_attrs; l; l = l->next)
     {
@@ -6175,8 +6180,8 @@ collect_shifts (ParaBreakState *state,
         {
           int value = ((PangoAttrInt *)attr)->value;
 
-          *start_shift += value;
-          *end_shift -= value;
+          *start_y_offset += value;
+          *end_y_offset -= value;
         }
       else if (attr->klass->type == PANGO_ATTR_BASELINE_SHIFT)
         {
@@ -6187,51 +6192,60 @@ collect_shifts (ParaBreakState *state,
 
               entry = g_new0 (BaselineItem, 1);
               entry->attr = attr;
+              state->baseline_shifts = g_list_prepend (state->baseline_shifts, entry);
 
               value = ((PangoAttrInt *)attr)->value;
 
               if (value > 1024 || value < -1024)
                 {
-                  entry->shift = value;
+                  entry->y_offset = value;
+                  /* FIXME: compute an x_offset from value to italic angle */
                 }
               else
                 {
-                  int superscript_shift = 0;
-                  int subscript_shift = 0;
-                  hb_font_t *hb_font;
+                  int superscript_x_offset = 0;
+                  int superscript_y_offset = 0;
+                  int subscript_x_offset = 0;
+                  int subscript_y_offset = 0;
 
 
                   if (prev)
                     {
-                      hb_font = pango_font_get_hb_font (prev->analysis.font);
-                      hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_SUPERSCRIPT_EM_Y_OFFSET, &superscript_shift);
-                      hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_SUBSCRIPT_EM_Y_OFFSET, &subscript_shift);
+                      hb_font_t *hb_font = pango_font_get_hb_font (prev->analysis.font);
+                      hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_SUPERSCRIPT_EM_Y_OFFSET, &superscript_y_offset);
+                      hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_SUPERSCRIPT_EM_X_OFFSET, &superscript_x_offset);
+                      hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_SUBSCRIPT_EM_Y_OFFSET, &subscript_y_offset);
+                      hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_SUBSCRIPT_EM_X_OFFSET, &subscript_x_offset);
                     }
 
-                  if (superscript_shift == 0)
-                    superscript_shift = 5000;
-                  if (subscript_shift == 0)
-                    subscript_shift = 5000;
+                  if (superscript_y_offset == 0)
+                    superscript_y_offset = 5000;
+                  if (subscript_y_offset == 0)
+                    subscript_y_offset = 5000;
 
                   switch (value)
                     {
                     case PANGO_BASELINE_SHIFT_NONE:
-                      entry->shift = 0;
+                      entry->x_offset = 0;
+                      entry->y_offset = 0;
                       break;
                     case PANGO_BASELINE_SHIFT_SUPERSCRIPT:
-                      entry->shift = superscript_shift;
+                      entry->x_offset = superscript_x_offset;
+                      entry->y_offset = superscript_y_offset;
                       break;
                     case PANGO_BASELINE_SHIFT_SUBSCRIPT:
-                      entry->shift = -subscript_shift;
+                      entry->x_offset = subscript_x_offset;
+                      entry->y_offset = -subscript_y_offset;
                       break;
                     default:
                       g_assert_not_reached ();
                     }
                 }
 
-               *start_shift += entry->shift;
-               state->baseline_shifts = g_list_prepend (state->baseline_shifts, entry);
+              *start_x_offset += entry->x_offset;
+              *start_y_offset += entry->y_offset;
             }
+
           if (attr->end_index == item->offset + item->length)
             {
               BaselineItem *entry = state->baseline_shifts->data;
@@ -6239,7 +6253,10 @@ collect_shifts (ParaBreakState *state,
               if (attr->start_index == entry->attr->start_index &&
                   attr->end_index == entry->attr->end_index &&
                   ((PangoAttrInt *)attr)->value == ((PangoAttrInt *)entry->attr)->value)
-                *end_shift -= entry->shift;
+                {
+                  *end_x_offset -= entry->x_offset;
+                  *end_y_offset -= entry->y_offset;
+                }
               else
                 g_warning ("Baseline attributes mismatch\n");
 
@@ -6251,7 +6268,7 @@ collect_shifts (ParaBreakState *state,
 }
 
 static void
-apply_baseline_shifts (PangoLayoutLine *line,
+apply_baseline_shift (PangoLayoutLine *line,
                        ParaBreakState  *state)
 {
   int y_offset = 0;
@@ -6261,13 +6278,16 @@ apply_baseline_shifts (PangoLayoutLine *line,
     {
       PangoLayoutRun *run = l->data;
       PangoItem *item = run->item;
+      int start_x_offset, end_x_offset;
       int start_y_offset, end_y_offset;
 
-      collect_shifts (state, item, prev, &start_y_offset, &end_y_offset);
+      collect_baseline_shift (state, item, prev, &start_x_offset, &start_y_offset, &end_x_offset, &end_y_offset);
 
       y_offset += start_y_offset;
 
       run->y_offset = y_offset;
+      run->start_x_offset = start_x_offset;
+      run->end_x_offset = end_x_offset;
 
       y_offset += end_y_offset;
 
@@ -6295,7 +6315,7 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
    */
   line->runs = g_slist_reverse (line->runs);
 
-  apply_baseline_shifts (line, state);
+  apply_baseline_shift (line, state);
 
   /* Ellipsize the line if necessary
    */
@@ -6543,16 +6563,22 @@ update_run (PangoLayoutIter *iter,
   if (iter->run_list_link == iter->line->runs)
     iter->run_x = line_ext->logical_rect.x;
   else
-    iter->run_x += iter->run_width;
+    {
+      iter->run_x += iter->end_x_offset + iter->run_width;
+      if (iter->run)
+        iter->run_x += iter->run->start_x_offset;
+    }
 
   if (iter->run)
     {
       iter->run_width = pango_glyph_string_get_width (iter->run->glyphs);
+      iter->end_x_offset = iter->run->end_x_offset;
     }
   else
     {
       /* The empty run at the end of a line */
       iter->run_width = 0;
+      iter->end_x_offset = 0;
     }
 
   if (iter->run)
@@ -7256,7 +7282,7 @@ pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
 
   if (ink_rect)
     {
-      ink_rect->x += iter->cluster_x;
+      ink_rect->x += iter->cluster_x + iter->run->start_x_offset;
       ink_rect->y -= iter->run->y_offset;
       offset_y (iter, &ink_rect->y);
     }
@@ -7264,7 +7290,7 @@ pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
   if (logical_rect)
     {
       g_assert (logical_rect->width == iter->cluster_width);
-      logical_rect->x += iter->cluster_x;
+      logical_rect->x += iter->cluster_x + iter->run->start_x_offset;
       logical_rect->y -= iter->run->y_offset;
       offset_y (iter, &logical_rect->y);
     }
