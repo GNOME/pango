@@ -434,7 +434,8 @@ render_callback (PangoLayout *layout,
               pango_layout_iter_get_run_extents (iter, NULL, &rect);
 
               x_pos = rect.x;
-              y_pos = rect.y + pango_layout_iter_get_baseline (iter);
+              /* FIXME: need a run baseline */
+              y_pos = pango_layout_iter_get_baseline (iter);
 
               for (int i = 0; i < run->glyphs->num_glyphs; i++)
                 {
