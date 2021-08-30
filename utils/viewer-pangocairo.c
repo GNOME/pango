@@ -580,7 +580,7 @@ render_callback (PangoLayout *layout,
           const char *p;
           int i;
 
-          /* draw the caret slop in gray */
+          /* draw the caret slope in gray */
           cairo_save (cr);
           cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.5);
 
