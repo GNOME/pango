@@ -466,6 +466,8 @@ void pango_layout_iter_get_layout_extents  (PangoLayoutIter *iter,
 					    PangoRectangle  *logical_rect);
 PANGO_AVAILABLE_IN_ALL
 int  pango_layout_iter_get_baseline        (PangoLayoutIter *iter);
+PANGO_AVAILABLE_IN_1_50
+int  pango_layout_iter_get_run_baseline    (PangoLayoutIter *iter);
 
 G_END_DECLS
 
