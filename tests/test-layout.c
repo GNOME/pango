@@ -617,8 +617,23 @@ main (int argc, char *argv[])
   GError *error = NULL;
   const gchar *name;
   gchar *path;
+  GOptionContext *option_context;
+  GOptionEntry entries[] = {
+    { "show-fonts", '0', 0, G_OPTION_ARG_NONE, &opt_show_font, "Print font names in dumps", NULL },
+    { NULL, 0 },
+  };
 
   setlocale (LC_ALL, "");
+
+  option_context = g_option_context_new ("");
+  g_option_context_add_main_entries (option_context, entries, NULL);
+  g_option_context_set_ignore_unknown_options (option_context, TRUE);
+  if (!g_option_context_parse (option_context, &argc, &argv, &error))
+    {
+      g_error ("failed to parse options: %s", error->message);
+      return 1;
+    }
+  g_option_context_free (option_context);
 
   if (g_getenv ("PANGO_TEST_SHOW_FONT"))
     opt_show_font = TRUE;
