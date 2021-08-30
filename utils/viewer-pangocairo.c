@@ -163,6 +163,29 @@ enum {
   ANNOTATE_LAST              = 2048,
 };
 
+static struct {
+  int value;
+  const char *name;
+  const char *short_name;
+} annotate_options[] = {
+  { ANNOTATE_GRAVITY_ROOF,      "gravity-roof",      "gravity" },
+  { ANNOTATE_BLOCK_PROGRESSION, "block-progression", "progression" },
+  { ANNOTATE_BASELINES,         "baselines",         "baselines" },
+  { ANNOTATE_LAYOUT_EXTENTS,    "layout-extents",    "layout" },
+  { ANNOTATE_LINE_EXTENTS,      "line-extents",      "line" },
+  { ANNOTATE_RUN_EXTENTS,       "run-extents",       "run" },
+  { ANNOTATE_CLUSTER_EXTENTS,   "cluster-extents",   "cluster" },
+  { ANNOTATE_CHAR_EXTENTS,      "char-extents",      "char" },
+  { ANNOTATE_GLYPH_EXTENTS,     "glyph-extents",     "glyph" },
+  { ANNOTATE_CARET_POSITIONS,   "caret-positions",   "caret" },
+  { ANNOTATE_CARET_SLOPE,       "caret-slope",       "slope" },
+};
+
+static const char *annotate_arg_help =
+     "Annotate the output. Comma-separated list of\n"
+     "\t\t\t\t\t\t     gravity, progression, baselines, layout, line,\n"
+     "\t\t\t\t\t\t     run, cluster, char, glyph, care, slope\n";
+
 static void
 render_callback (PangoLayout *layout,
                  int          x,
@@ -722,25 +745,56 @@ pangocairo_view_display (gpointer instance,
 					   state);
 }
 
+static gboolean
+parse_annotate_arg (const char  *option_name,
+                    const char  *value,
+                    gpointer     data,
+                    GError     **error)
+{
+  guint64 num;
+
+  if (!g_ascii_string_to_unsigned (value, 10, 0, ANNOTATE_LAST - 1, &num, NULL))
+    {
+      char **parts;
+      int i, j;
+
+      parts = g_strsplit (value, ",", 0);
+      num = 0;
+      for (i = 0; parts[i]; i++)
+        {
+          for (j = 0; j < G_N_ELEMENTS (annotate_options); j++)
+            {
+              if (strcmp (parts[i], annotate_options[j].name) == 0 ||
+                  strcmp (parts[i], annotate_options[j].short_name) == 0)
+                {
+                  num |= annotate_options[j].value;
+                  break;
+                }
+            }
+
+          if (j == G_N_ELEMENTS (annotate_options))
+            {
+              g_set_error (error,
+                           G_OPTION_ERROR, G_OPTION_ERROR_FAILED,
+                           "%s is not an allowed value for %s. "
+                           "See --help-cairo", parts[i], option_name);
+              return FALSE;
+            }
+        }
+
+      g_strfreev (parts);
+    }
+
+  opt_annotate = num;
+  return TRUE;
+}
+
 static GOptionGroup *
 pangocairo_view_get_option_group (const PangoViewer *klass G_GNUC_UNUSED)
 {
   GOptionEntry entries[] =
   {
-    {"annotate", 0, 0, G_OPTION_ARG_INT, &opt_annotate,
-     "Annotate the output\n"
-     "\t\t\t\t\t\t\t    1 - gravity\n"
-     "\t\t\t\t\t\t\t    2 - block progression\n"
-     "\t\t\t\t\t\t\t    4 - baselines\n"
-     "\t\t\t\t\t\t\t    8 - layout extents\n"
-     "\t\t\t\t\t\t\t   16 - line extents\n"
-     "\t\t\t\t\t\t\t   32 - run extents\n"
-     "\t\t\t\t\t\t\t   64 - cluster extents\n"
-     "\t\t\t\t\t\t\t  128 - char extents\n"
-     "\t\t\t\t\t\t\t  256 - glyph extents\n"
-     "\t\t\t\t\t\t\t  512 - caret positions\n"
-     "\t\t\t\t\t\t\t 1024 - caret slope\n",
-     "FLAGS"},
+    {"annotate", 0, 0, G_OPTION_ARG_CALLBACK, parse_annotate_arg, annotate_arg_help, "FLAGS"},
     {NULL}
   };
   GOptionGroup *group;
