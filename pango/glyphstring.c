@@ -378,7 +378,6 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
  *   <source srcset="glyphstring-positions-dark.png" media="(prefers-color-scheme: dark)">
  *   <img alt="Glyph positions" src="glyphstring-positions-light.png">
  * </picture>
-
  */
 void
 pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
@@ -388,6 +387,45 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
                                int               index,
                                gboolean          trailing,
                                int              *x_pos)
+{
+  pango_glyph_string_index_to_x_full (glyphs,
+                                      text, length,
+                                      analysis,
+                                      NULL,
+                                      index, trailing,
+                                      x_pos);
+}
+
+/**
+ * pango_glyph_string_index_to_x_full:
+ * @glyphs: the glyphs return from [func@shape]
+ * @text: the text for the run
+ * @length: the number of bytes (not characters) in @text.
+ * @analysis: the analysis information return from [func@itemize]
+ * @attrs: (nullable): `PangoLogAttr` array for @text
+ * @index_: the byte index within @text
+ * @trailing: whether we should compute the result for the beginning (%FALSE)
+ *   or end (%TRUE) of the character.
+ * @x_pos: (out): location to store result
+ *
+ * Converts from character position to x position.
+ *
+ * This variant of [method@Pango.GlyphString.index_to_x] additionally
+ * accepts a `PangoLogAttr` array. The grapheme boundary information
+ * in it can be used to disambiguate positioning inside some complex
+ * clusters.
+ *
+ * Since: 1.50
+ */
+void
+pango_glyph_string_index_to_x_full (PangoGlyphString *glyphs,
+                                    const char       *text,
+                                    int               length,
+                                    PangoAnalysis    *analysis,
+                                    PangoLogAttr     *attrs,
+                                    int               index,
+                                    gboolean          trailing,
+                                    int              *x_pos)
 {
   int i;
   int start_xpos = 0;
@@ -493,12 +531,17 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
       end_xpos = (analysis->level % 2) ? 0 : width;
     }
 
-  /* Calculate offset of character within cluster */
-
-  for (p = text + start_index;
+  /* Calculate offset of character within cluster.
+   * To come up with accurate answers here, we need to know grapheme
+   * boundaries.
+   */
+  for (p = text + start_index, i = attrs ? g_utf8_pointer_to_offset (text, text + start_index) : 0;
        p < text + end_index;
-       p = g_utf8_next_char (p))
+       p = g_utf8_next_char (p), i++)
     {
+      if (attrs && !attrs[i].is_cursor_position)
+        continue;
+
       if (p < text + index)
         cluster_offset++;
       cluster_chars++;
@@ -508,17 +551,14 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
     cluster_offset += 1;
 
   if (G_UNLIKELY (!cluster_chars)) /* pedantic */
-    {
+     {
       *x_pos = start_xpos;
       return;
     }
 
-  /* Try to get a ligature caret position for the glyph
-   * from the font.
-   *
-   * If start_glyph_pos != end_glyph_pos, we are dealing
-   * with an m-n situation, where LigatureCaretList is
-   * not going to help. Just give up and do the simple thing.
+  /* Try to get a ligature caret position for the glyph from the font.
+   * This only makes sense if the cluster contains a single spacing
+   * glyph, so we need to check that all but one of them are marks.
    */
   if (cluster_offset > 0 && cluster_offset < cluster_chars)
     {
@@ -526,6 +566,7 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
       hb_position_t caret;
       unsigned int caret_count = 1;
       int glyph_pos;
+      int num_carets;
 
       hb_font = pango_font_get_hb_font (analysis->font);
 
@@ -557,19 +598,22 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
             }
         }
 
-      hb_ot_layout_get_ligature_carets (hb_font,
-                                        (analysis->level % 2) ? HB_DIRECTION_RTL : HB_DIRECTION_LTR,
-                                        glyphs->glyphs[glyph_pos].glyph,
-                                        cluster_offset - 1, &caret_count, &caret);
-      if (caret_count > 0)
+      num_carets = hb_ot_layout_get_ligature_carets (hb_font,
+                                                     (analysis->level % 2) ? HB_DIRECTION_RTL : HB_DIRECTION_LTR,
+                                                      glyphs->glyphs[glyph_pos].glyph,
+                                                      cluster_offset - 1, &caret_count, &caret);
+      if (caret_count == 0 || num_carets == 0)
         {
-          if (analysis->level % 2) /* Right to left */
-            *x_pos = end_xpos + caret;
-          else
-            *x_pos = start_xpos + caret;
-          *x_pos += glyphs->glyphs[glyph_pos].geometry.x_offset;
-          return;
+          /* no ligature caret information found for this glyph */
+          goto fallback;
         }
+
+      if (analysis->level % 2) /* Right to left */
+        *x_pos = end_xpos + caret;
+      else
+        *x_pos = start_xpos + caret;
+      *x_pos += glyphs->glyphs[glyph_pos].geometry.x_offset;
+      return;
     }
 
 fallback:

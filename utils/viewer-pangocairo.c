@@ -534,13 +534,14 @@ render_callback (PangoLayout *layout,
                 {
                   if (attrs[offset + i].is_cursor_position)
                     {
-                      pango_glyph_string_index_to_x (run->glyphs,
-                                                     text + run->item->offset,
-                                                     run->item->length,
-                                                     &run->item->analysis,
-                                                     p - start,
-                                                     trailing,
-                                                     &x);
+                      pango_glyph_string_index_to_x_full (run->glyphs,
+                                                          text + run->item->offset,
+                                                          run->item->length,
+                                                          &run->item->analysis,
+                                                          (PangoLogAttr *)attrs + offset,
+                                                          p - start,
+                                                          trailing,
+                                                          &x);
                       x += rect.x;
 
                       cairo_set_source_rgba (cr, 1.0, 0.0, 1.0, 0.5);
