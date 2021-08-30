@@ -64,10 +64,13 @@ pango_core_text_font_describe (PangoFont *font)
   PangoCoreTextFont *ctfont = (PangoCoreTextFont *)font;
   PangoCoreTextFontPrivate *priv = ctfont->priv;
   CTFontDescriptorRef ctfontdesc;
+  PangoFontDescription *desc;
 
-  ctfontdesc = pango_core_text_font_key_get_ctfontdescriptor (priv->key);
+  ctfontdesc = CTFontCopyFontDescriptor (priv->font_ref);
+  desc = _pango_core_text_font_description_from_ct_font_descriptor (ctfontdesc);
+  CFRelease (ctfontdesc);
 
-  return _pango_core_text_font_description_from_ct_font_descriptor (ctfontdesc);
+  return desc;
 }
 
 static PangoCoverage *
