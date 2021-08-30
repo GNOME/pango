@@ -35,6 +35,8 @@
 
 static PangoContext *context;
 
+static gboolean opt_hex_chars;
+
 static gboolean
 test_file (const gchar *filename, GString *string)
 {
@@ -99,7 +101,7 @@ test_file (const gchar *filename, GString *string)
   if (!pango_validate_log_attrs (text, length, attrs, len, &error))
     {
       g_warning ("%s: Log attrs invalid: %s", filename, error->message);
-      g_assert_not_reached ();
+//      g_assert_not_reached ();
     }
 
   layout2 = pango_layout_copy (layout);
@@ -238,7 +240,8 @@ test_file (const gchar *filename, GString *string)
               g_string_append (s5, "   ");
               g_string_append (s6, "   ");
             }
-          else if (g_unichar_isgraph (ch) &&
+          else if (!opt_hex_chars &&
+                   g_unichar_isgraph (ch) &&
                    !(g_unichar_type (ch) == G_UNICODE_LINE_SEPARATOR ||
                      g_unichar_type (ch) == G_UNICODE_PARAGRAPH_SEPARATOR))
             {
@@ -377,40 +380,54 @@ main (int argc, char *argv[])
   GError *error = NULL;
   const gchar *name;
   gchar *path;
+  gboolean opt_legend = 0;
+  GOptionContext *option_context;
+  GOptionEntry entries[] = {
+    { "hex-chars", 0, 0, G_OPTION_ARG_NONE, &opt_hex_chars, "Print all chars in hex", NULL },
+    { "legend", 0, 0, G_OPTION_ARG_NONE, &opt_legend, "Explain the output", NULL },
+    { NULL, 0 },
+  };
+
+  option_context = g_option_context_new ("");
+  g_option_context_add_main_entries (option_context, entries, NULL);
+  g_option_context_set_ignore_unknown_options (option_context, TRUE);
+  if (!g_option_context_parse (option_context, &argc, &argv, &error))
+    {
+      g_error ("failed to parse options: %s", error->message);
+      return 1;
+    }
+  g_option_context_free (option_context);
 
   setlocale (LC_ALL, "");
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
-  /* allow to easily generate expected output for new test cases */
-  if (argc > 1)
+  if (opt_legend)
     {
-      if (strcmp (argv[1], "--legend") == 0)
-        {
-          g_print ("test-break uses the following symbols for log attrs\n\n");
-          g_print ("Breaks:                 Words:                  Graphemes:\n"
-                   " L - mandatory break     b - word boundary       b - grapheme boundary\n"
-                   " l - line break          s - word start\n"
-                   " c - char break          e - word end\n"
-                   "\n"
-                   "Whitespace:             Sentences:\n            Hyphens"
-                   " x - expandable space    b - sentence boundary   i - insert hyphen\n"
-                   " w - whitespace          s - sentence start      r - remove preceding\n"
-                   "                         e - sentence end\n");
-          return 0;
-        }
-      else if (argv[1][0] != '-')
-        {
-          GString *string;
+      g_print ("test-break uses the following symbols for log attrs\n\n");
+      g_print ("Breaks:                 Words:                  Graphemes:\n"
+               " L - mandatory break     b - word boundary       b - grapheme boundary\n"
+               " l - line break          s - word start\n"
+               " c - char break          e - word end\n"
+               "\n"
+               "Whitespace:             Sentences:              Hyphens:\n"
+               " x - expandable space    b - sentence boundary   i - insert hyphen\n"
+               " w - whitespace          s - sentence start      r - remove preceding\n"
+               "                         e - sentence end\n");
+      return 0;
+    }
 
-          string = g_string_sized_new (0);
-          test_file (argv[1], string);
-          g_print ("%s", string->str);
+  if (argc > 1 && argv[1][0] != '-')
+    {
+      GString *string;
 
-          g_string_free (string, TRUE);
+      string = g_string_sized_new (0);
+      test_file (argv[1], string);
+      g_print ("%s", string->str);
 
-          return 0;
-        }
+      g_string_free (string, TRUE);
+
+      return 0;
     }
 
   g_test_init (&argc, &argv, NULL);

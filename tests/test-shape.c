@@ -23,6 +23,8 @@
 #include <string.h>
 #include <locale.h>
 
+#include <hb-ot.h>
+
 #ifndef G_OS_WIN32
 #include <unistd.h>
 #endif
@@ -140,7 +142,7 @@ test_file (const gchar *filename, GString *string)
   PangoAttrList *itemize_attrs;
   PangoAttrList *shape_attrs;
   GList *items, *l;
-  GString *s1, *s2, *s3, *s4, *s5, *s6, *s7;
+  GString *s1, *s2, *s3, *s4, *s5, *s6, *s7, *s8;
   char *p1;
   const char *sep = "";
 
@@ -171,6 +173,7 @@ test_file (const gchar *filename, GString *string)
   s5 = g_string_new ("Direction: ");
   s6 = g_string_new ("Item:      ");
   s7 = g_string_new ("Offset:    ");
+  s8 = g_string_new ("Class:     ");
 
   length = strlen (text);
   if (text[length - 1] == '\n')
@@ -208,6 +211,7 @@ test_file (const gchar *filename, GString *string)
       g_string_append (s5, sep);
       g_string_append (s6, sep);
       g_string_append (s7, sep);
+      g_string_append (s8, sep);
       sep = "|";
 
       g_string_append_printf (s6, "%d(%d)", item->num_chars, item->length);
@@ -228,6 +232,7 @@ test_file (const gchar *filename, GString *string)
               g_string_append (s5, " ");
               g_string_append (s6, " ");
               g_string_append (s7, "|");
+              g_string_append (s8, "|");
             }
 
           char *p;
@@ -237,7 +242,7 @@ test_file (const gchar *filename, GString *string)
               if (i > 0)
                 p1 = text + item->offset + glyphs->log_clusters[i - 1];
               else
-                p1 = g_utf8_next_char (p);
+                p1 = text + item->offset + item->length;
             }
           else
             {
@@ -255,6 +260,26 @@ test_file (const gchar *filename, GString *string)
           g_string_append_printf (s7, "%d,%d ", gi->geometry.x_offset, gi->geometry.y_offset);
           if (gi->attr.is_cluster_start)
             g_string_append_printf (s3, "%d ", item->offset + glyphs->log_clusters[i]);
+          switch (hb_ot_layout_get_glyph_class (hb_font_get_face (pango_font_get_hb_font (item->analysis.font)), gi->glyph))
+            {
+            case HB_OT_LAYOUT_GLYPH_CLASS_UNCLASSIFIED:
+              g_string_append (s8, "u");
+              break;
+            case HB_OT_LAYOUT_GLYPH_CLASS_BASE_GLYPH:
+              g_string_append (s8, "b");
+              break;
+            case HB_OT_LAYOUT_GLYPH_CLASS_LIGATURE:
+              g_string_append (s8, "l");
+              break;
+            case HB_OT_LAYOUT_GLYPH_CLASS_MARK:
+              g_string_append (s8, "m");
+              break;
+            case HB_OT_LAYOUT_GLYPH_CLASS_COMPONENT:
+              g_string_append (s8, "c");
+              break;
+            default:
+              g_assert_not_reached ();
+            }
           len = 0;
           len = MAX (len, g_utf8_strlen (s1->str, s1->len));
           len = MAX (len, g_utf8_strlen (s2->str, s2->len));
@@ -263,6 +288,7 @@ test_file (const gchar *filename, GString *string)
           len = MAX (len, g_utf8_strlen (s5->str, s5->len));
           len = MAX (len, g_utf8_strlen (s6->str, s6->len));
           len = MAX (len, g_utf8_strlen (s7->str, s7->len));
+          len = MAX (len, g_utf8_strlen (s8->str, s8->len));
           g_string_append_printf (s1, "%*s", len - (int)g_utf8_strlen (s1->str, s1->len), "");
           g_string_append_printf (s4, "%*s", len - (int)g_utf8_strlen (s4->str, s4->len), "");
           g_string_append_printf (s2, "%*s", len - (int)g_utf8_strlen (s2->str, s2->len), "");
@@ -270,6 +296,7 @@ test_file (const gchar *filename, GString *string)
           g_string_append_printf (s5, "%*s", len - (int)g_utf8_strlen (s5->str, s5->len), "");
           g_string_append_printf (s6, "%*s", len - (int)g_utf8_strlen (s6->str, s6->len), "");
           g_string_append_printf (s7, "%*s", len - (int)g_utf8_strlen (s7->str, s7->len), "");
+          g_string_append_printf (s8, "%*s", len - (int)g_utf8_strlen (s8->str, s8->len), "");
         }
 
       pango_glyph_string_free (glyphs);
@@ -281,6 +308,7 @@ test_file (const gchar *filename, GString *string)
   g_string_append_printf (string, "%s\n", s5->str);
   g_string_append_printf (string, "%s\n", s3->str);
   g_string_append_printf (string, "%s\n", s2->str);
+  g_string_append_printf (string, "%s\n", s8->str);
   g_string_append_printf (string, "%s\n", s4->str);
   g_string_append_printf (string, "%s\n", s7->str);
 
@@ -291,6 +319,7 @@ test_file (const gchar *filename, GString *string)
   g_string_free (s5, TRUE);
   g_string_free (s6, TRUE);
   g_string_free (s7, TRUE);
+  g_string_free (s8, TRUE);
 
   g_list_free_full (items, (GDestroyNotify)pango_item_free);
   g_free (contents);
