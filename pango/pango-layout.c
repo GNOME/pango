@@ -7305,6 +7305,22 @@ pango_layout_iter_get_baseline (PangoLayoutIter *iter)
   return iter->line_extents[iter->line_index].baseline;
 }
 
+int
+pango_layout_iter_get_run_baseline (PangoLayoutIter *iter)
+{
+  ItemProperties properties;
+
+  if (ITER_IS_INVALID (iter))
+    return 0;
+
+  if (!iter->run)
+    return iter->line_extents[iter->line_index].baseline;
+
+  pango_layout_get_item_properties (iter->run->item, &properties);
+
+  return iter->line_extents[iter->line_index].baseline - properties.rise;
+}
+
 /**
  * pango_layout_iter_get_layout_extents:
  * @iter: a `PangoLayoutIter`
