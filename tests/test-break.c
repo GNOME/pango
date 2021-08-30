@@ -410,7 +410,7 @@ main (int argc, char *argv[])
                " l - line break          s - word start\n"
                " c - char break          e - word end\n"
                "\n"
-               "Whitespace:             Sentences:\n            Hyphens"
+               "Whitespace:             Sentences:              Hyphens:\n"
                " x - expandable space    b - sentence boundary   i - insert hyphen\n"
                " w - whitespace          s - sentence start      r - remove preceding\n"
                "                         e - sentence end\n");
