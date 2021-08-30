@@ -184,7 +184,7 @@ static struct {
 static const char *annotate_arg_help =
      "Annotate the output. Comma-separated list of\n"
      "\t\t\t\t\t\t     gravity, progression, baselines, layout, line,\n"
-     "\t\t\t\t\t\t     run, cluster, char, glyph, care, slope\n";
+     "\t\t\t\t\t\t     run, cluster, char, glyph, caret, slope\n";
 
 static void
 render_callback (PangoLayout *layout,
