@@ -1737,6 +1737,14 @@ pango_font_default_has_char (PangoFont *font,
   return result != PANGO_COVERAGE_NONE;
 }
 
+static PangoFontFace *
+pango_font_default_get_face (PangoFont *font)
+{
+  PangoFontMap *map = pango_font_get_font_map (font);
+
+  return PANGO_FONT_MAP_GET_CLASS (map)->get_face (map,font);
+}
+
 static void
 pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
 {
@@ -1751,6 +1759,7 @@ pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
   pclass->is_hinted = pango_font_default_is_hinted;
   pclass->get_scale_factors = pango_font_default_get_scale_factors;
   pclass->has_char = pango_font_default_has_char;
+  pclass->get_face = pango_font_default_get_face;
 }
 
 static void
@@ -1979,9 +1988,9 @@ pango_font_get_font_map (PangoFont *font)
 PangoFontFace *
 pango_font_get_face (PangoFont *font)
 {
-  PangoFontMap *map = pango_font_get_font_map (font);
+  PangoFontClassPrivate *pclass = PANGO_FONT_GET_CLASS_PRIVATE (font);
 
-  return PANGO_FONT_MAP_GET_CLASS (map)->get_face (map,font);
+  return pclass->get_face (font);
 }
 
 /**
