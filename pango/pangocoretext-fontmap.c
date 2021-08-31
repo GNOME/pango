@@ -407,6 +407,8 @@ _pango_core_text_font_description_from_ct_font_descriptor (CTFontDescriptorRef d
   char *family_name;
   char *style_name;
   PangoFontDescription *font_desc;
+  CFNumberRef cf_number;
+  CGFloat pointsize;
 
   font_desc = pango_font_description_new ();
 
@@ -418,6 +420,11 @@ _pango_core_text_font_description_from_ct_font_descriptor (CTFontDescriptorRef d
   family_name = ct_font_descriptor_get_family_name (desc, FALSE);
   pango_font_description_set_family (font_desc, family_name);
   g_free (family_name);
+
+  /* Size (if we have one) */
+  cf_number = CTFontDescriptorCopyAttribute (desc, kCTFontSizeAttribute);
+  if (cf_number != NULL && CFNumberGetValue (cf_number, kCFNumberCGFloatType, &pointsize))
+    pango_font_description_set_size (font_desc, (pointsize / (96./72.)) * 1024);
 
   /* Weight */
   pango_font_description_set_weight (font_desc,

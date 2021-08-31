@@ -258,20 +258,19 @@ test_roundtrip_plain (void)
   PangoFont *font;
 
 #ifdef HAVE_CARBON
-  /* We probably don't have the right fonts */
-  g_test_skip ("Skipping font-dependent tests on OS X");
-  return;
+  desc = pango_font_description_from_string ("Helvetica 11");
+#else
+  desc = pango_font_description_from_string ("Cantarell 11");
 #endif
 
   fontmap = pango_cairo_font_map_get_default ();
   context = pango_font_map_create_context (fontmap);
 
-  desc = pango_font_description_from_string ("Cantarell 11");
 
   font = pango_context_load_font (context, desc);
   desc2 = pango_font_describe (font);
 
-  g_assert (pango_font_description_equal (desc2, desc));
+  g_assert_true (pango_font_description_equal (desc2, desc));
 
   pango_font_description_free (desc2);
   g_object_unref (font);
@@ -286,12 +285,6 @@ test_roundtrip_emoji (void)
   PangoContext *context;
   PangoFontDescription *desc, *desc2;
   PangoFont *font;
-
-#ifdef HAVE_CARBON
-  /* We probably don't have the right fonts */
-  g_test_skip ("Skipping font-dependent tests on OS X");
-  return;
-#endif
 
   fontmap = pango_cairo_font_map_get_default ();
   context = pango_font_map_create_context (fontmap);
@@ -308,7 +301,7 @@ test_roundtrip_emoji (void)
    */
   pango_font_description_unset_fields (desc, PANGO_FONT_MASK_FAMILY);
   pango_font_description_unset_fields (desc2, PANGO_FONT_MASK_FAMILY);
-  g_assert (pango_font_description_equal (desc2, desc));
+  g_assert_true (pango_font_description_equal (desc2, desc));
 
   pango_font_description_free (desc2);
   g_object_unref (font);
