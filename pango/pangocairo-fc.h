@@ -42,6 +42,9 @@ typedef struct _PangoCairoFcFontMap PangoCairoFcFontMap;
 PANGO_AVAILABLE_IN_ALL
 GType pango_cairo_fc_font_map_get_type (void) G_GNUC_CONST;
 
+PANGO_AVAILABLE_IN_1_50
+cairo_scaled_font_t * pango_cairo_hb_font_get_scaled_font (PangoFont *font);
+
 G_END_DECLS
 
 #endif /* __PANGOCAIRO_FC_H__ */

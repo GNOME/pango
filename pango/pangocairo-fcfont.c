@@ -32,8 +32,10 @@
 #include "pangocairo-fc-private.h"
 #include "pangofc-private.h"
 #include "pango-impl-utils.h"
+#include "pango-hbfont-private.h"
+#include "pango-hbface-private.h"
 
-#include <hb-ot.h>
+#include <hb-ft.h>
 #include <freetype/ftmm.h>
 
 #define PANGO_TYPE_CAIRO_FC_FONT           (pango_cairo_fc_font_get_type ())

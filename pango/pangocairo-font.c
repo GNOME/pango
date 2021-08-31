@@ -29,6 +29,17 @@
 #include "pango-font-private.h"
 #include "pango-font-metrics-private.h"
 #include "pango-impl-utils.h"
+#include "pango-hbfont-private.h"
+#include "pango-hbface-private.h"
+#include "pangocairo-fc.h"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wundef"
+#include <cairo-ft.h>
+#pragma GCC diagnostic pop
+
+#include <hb-ft.h>
+#include <freetype/ftmm.h>
 
 #define PANGO_CAIRO_FONT_PRIVATE(font)		\
   ((PangoCairoFontPrivate *)			\
@@ -61,6 +72,61 @@ _pango_cairo_font_private_scaled_font_data_destroy (PangoCairoFontPrivateScaledF
     }
 }
 
+static FT_Library ft_library;
+
+static cairo_font_face_t *
+create_font_face_for_hb_font (PangoHbFont *font)
+{
+  hb_blob_t *blob;
+  const char *blob_data;
+  unsigned int blob_length;
+  FT_Face ft_face;
+  hb_font_t *hb_font;
+  unsigned int num_coords;
+  const int *coords;
+  cairo_font_face_t *cairo_face;
+  static const cairo_user_data_key_t key;
+  FT_Error error;
+
+  if (g_once_init_enter (&ft_library))
+    {
+      FT_Library library;
+      FT_Init_FreeType (&library);
+      g_once_init_leave (&ft_library, library);
+    }
+
+  blob = hb_face_reference_blob (hb_font_get_face (pango_font_get_hb_font (PANGO_FONT (font))));
+  blob_data = hb_blob_get_data (blob, &blob_length);
+  hb_blob_destroy (blob);
+
+  if ((error = FT_New_Memory_Face (ft_library,
+                                   (const FT_Byte *) blob_data,
+                                   blob_length,
+                                   hb_face_get_index (font->face->face),
+                                   &ft_face)) != 0)
+    g_error ("FT_New_Memory_Face failed: %d %s", error, FT_Error_String (error));
+
+  hb_font = pango_font_get_hb_font (PANGO_FONT (font));
+  coords = hb_font_get_var_coords_normalized (hb_font, &num_coords);
+  if (num_coords > 0)
+    {
+      FT_Fixed *ft_coords = (FT_Fixed *) g_alloca (num_coords * sizeof (FT_Fixed));
+
+      for (unsigned int i = 0; i < num_coords; i++)
+        ft_coords[i] = coords[i] << 2;
+
+      FT_Set_Var_Blend_Coordinates (ft_face, num_coords, ft_coords);
+    }
+
+  cairo_face = cairo_ft_font_face_create_for_ft_face (ft_face, FT_LOAD_NO_HINTING | FT_LOAD_COLOR);
+  if (font->face->embolden)
+    cairo_ft_font_face_set_synthesize (cairo_face, CAIRO_FT_SYNTHESIZE_BOLD);
+  cairo_font_face_set_user_data (cairo_face, &key,
+                                 ft_face, (cairo_destroy_func_t) FT_Done_Face);
+
+  return cairo_face;
+}
+
 cairo_scaled_font_t *
 _pango_cairo_font_private_get_scaled_font (PangoCairoFontPrivate *cf_priv)
 {
@@ -77,7 +143,11 @@ _pango_cairo_font_private_get_scaled_font (PangoCairoFontPrivate *cf_priv)
       return NULL;
     }
 
-  font_face = (* PANGO_CAIRO_FONT_GET_IFACE (cf_priv->cfont)->create_font_face) (cf_priv->cfont);
+  if (PANGO_IS_CAIRO_FONT (cf_priv->cfont))
+    font_face = (* PANGO_CAIRO_FONT_GET_IFACE (cf_priv->cfont)->create_font_face) (cf_priv->cfont);
+  else
+    font_face = create_font_face_for_hb_font (PANGO_HB_FONT (cf_priv->cfont));
+
   if (G_UNLIKELY (font_face == NULL))
     goto done;
 
@@ -162,6 +232,19 @@ pango_cairo_font_get_scaled_font (PangoCairoFont *cfont)
   return _pango_cairo_font_private_get_scaled_font (cf_priv);
 }
 
+cairo_scaled_font_t *
+_pango_font_get_scaled_font (PangoFont *font)
+{
+  PangoCairoFontPrivate *cf_priv;
+
+  cf_priv = _pango_font_get_cairo_font_private (font);
+
+  if (G_UNLIKELY (!cf_priv))
+    return NULL;
+
+  return _pango_cairo_font_private_get_scaled_font (cf_priv);
+}
+
 /**
  * _pango_cairo_font_install:
  * @font: a `PangoCairoFont`
@@ -176,7 +259,9 @@ gboolean
 _pango_cairo_font_install (PangoFont *font,
 			   cairo_t   *cr)
 {
-  cairo_scaled_font_t *scaled_font = pango_cairo_font_get_scaled_font ((PangoCairoFont *)font);
+  cairo_scaled_font_t *scaled_font;
+
+  scaled_font = _pango_font_get_scaled_font (font);
 
   if (G_UNLIKELY (scaled_font == NULL || cairo_scaled_font_status (scaled_font) != CAIRO_STATUS_SUCCESS))
     return FALSE;
@@ -512,8 +597,7 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
   pango_font_description_free (desc);
   cairo_font_options_destroy (font_options);
 
-
-  scaled_mini_font = pango_cairo_font_get_scaled_font ((PangoCairoFont *) mini_font);
+  scaled_mini_font = _pango_font_get_scaled_font (mini_font);
   if (G_UNLIKELY (scaled_mini_font == NULL || cairo_scaled_font_status (scaled_mini_font) != CAIRO_STATUS_SUCCESS))
     return NULL;
 
@@ -538,7 +622,7 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
   pad = MIN (pad, mini_size);
 
   hbi = g_slice_new (PangoCairoFontHexBoxInfo);
-  hbi->font = (PangoCairoFont *) mini_font;
+  hbi->font = mini_font;
   hbi->rows = rows;
 
   hbi->digit_width  = width;
@@ -591,10 +675,71 @@ _pango_cairo_font_hex_box_info_destroy (PangoCairoFontHexBoxInfo *hbi)
     }
 }
 
-PangoCairoFontHexBoxInfo *
-_pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
+static void
+free_cairo_font_private (gpointer data)
 {
-  PangoCairoFontPrivate *cf_priv = PANGO_CAIRO_FONT_PRIVATE (cfont);
+  PangoCairoFontPrivate *cf_priv = data;
+  _pango_cairo_font_private_finalize (cf_priv);
+  g_free (data);
+}
+
+PangoCairoFontPrivate *
+_pango_font_get_cairo_font_private (PangoFont *font)
+{
+  PangoCairoFontPrivate *cf_priv;
+
+  if (PANGO_IS_CAIRO_FONT (font))
+    return PANGO_CAIRO_FONT_PRIVATE (font);
+
+  cf_priv = g_object_get_data (G_OBJECT (font), "pango-hb-font-cairo_private");
+  if (!cf_priv)
+    {
+      PangoHbFont *hbfont = PANGO_HB_FONT (font);
+      cairo_font_options_t *font_options;
+      cairo_matrix_t font_matrix;
+      int size;
+
+      if (hbfont->face->matrix)
+        cairo_matrix_init (&font_matrix,
+                           hbfont->face->matrix->xx,
+                           - hbfont->face->matrix->yx,
+                           - hbfont->face->matrix->xy,
+                           hbfont->face->matrix->yy,
+                           0., 0.);
+      else
+        cairo_matrix_init (&font_matrix, 1., 0., 0., 1., 0., 0.);
+
+      size = hbfont->size * hbfont->dpi / 72.;
+
+      cairo_matrix_scale (&font_matrix,
+                          hbfont->face->x_scale * size / (double)PANGO_SCALE,
+                          hbfont->face->y_scale * size / (double)PANGO_SCALE);
+
+      font_options = cairo_font_options_create ();
+      cairo_font_options_set_hint_style (font_options, CAIRO_HINT_STYLE_NONE);
+      cairo_font_options_set_hint_metrics (font_options, CAIRO_HINT_METRICS_OFF);
+
+      cf_priv = g_new0 (PangoCairoFontPrivate, 1);
+      _pango_cairo_font_private_initialize (cf_priv,
+                                            (PangoCairoFont *)font,
+                                            hbfont->gravity,
+                                            font_options,
+                                            &hbfont->matrix,
+                                            &font_matrix);
+
+      cairo_font_options_destroy (font_options);
+
+      g_object_set_data_full (G_OBJECT (font), "pango-hb-font-cairo_private",
+                              cf_priv, free_cairo_font_private);
+    }
+
+  return cf_priv;
+}
+
+PangoCairoFontHexBoxInfo *
+_pango_cairo_font_get_hex_box_info (PangoFont *font)
+{
+  PangoCairoFontPrivate *cf_priv = _pango_font_get_cairo_font_private (font);
 
   return _pango_cairo_font_private_get_hex_box_info (cf_priv);
 }
@@ -610,7 +755,7 @@ _pango_cairo_font_private_initialize (PangoCairoFontPrivate      *cf_priv,
   cairo_matrix_t gravity_matrix;
 
   cf_priv->cfont = cfont;
-  cf_priv->gravity = gravity;
+  cf_priv->gravity = gravity != PANGO_GRAVITY_AUTO ? gravity : PANGO_GRAVITY_SOUTH;
 
   cf_priv->data = _pango_cairo_font_private_scaled_font_data_create (); 
 

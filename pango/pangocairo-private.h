@@ -48,22 +48,9 @@ struct _PangoCairoFontMapIface
 
 typedef struct _PangoCairoFontIface                  PangoCairoFontIface;
 typedef struct _PangoCairoFontPrivate                PangoCairoFontPrivate;
-typedef struct _PangoCairoFontHexBoxInfo             PangoCairoFontHexBoxInfo;
+typedef struct _HexBoxInfo                           PangoCairoFontHexBoxInfo;
 typedef struct _PangoCairoFontPrivateScaledFontData  PangoCairoFontPrivateScaledFontData;
 typedef struct _PangoCairoFontGlyphExtentsCacheEntry PangoCairoFontGlyphExtentsCacheEntry;
-
-struct _PangoCairoFontHexBoxInfo
-{
-  PangoCairoFont *font;
-  int rows;
-  double digit_width;
-  double digit_height;
-  double pad_x;
-  double pad_y;
-  double line_width;
-  double box_descent;
-  double box_height;
-};
 
 struct _PangoCairoFontPrivateScaledFontData
 {
@@ -105,7 +92,9 @@ gboolean _pango_cairo_font_install (PangoFont *font,
 				    cairo_t   *cr);
 PangoFontMetrics * _pango_cairo_font_get_metrics (PangoFont     *font,
 						  PangoLanguage *language);
-PangoCairoFontHexBoxInfo *_pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont);
+PangoCairoFontHexBoxInfo *_pango_cairo_font_get_hex_box_info (PangoFont *font);
+PangoCairoFontPrivate    *_pango_font_get_cairo_font_private (PangoFont *font);
+cairo_scaled_font_t      *_pango_font_get_scaled_font        (PangoFont *font);
 
 void _pango_cairo_font_private_initialize (PangoCairoFontPrivate      *cf_priv,
 					   PangoCairoFont             *font,

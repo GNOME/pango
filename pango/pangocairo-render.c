@@ -27,6 +27,7 @@
 #include "pangocairo-private.h"
 #include "pango-glyph-item.h"
 #include "pango-impl-utils.h"
+#include "pango-hbfont-private.h"
 
 typedef struct _PangoCairoRendererClass PangoCairoRendererClass;
 
@@ -249,7 +250,10 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
   ch = gi->glyph & ~PANGO_GLYPH_UNKNOWN_FLAG;
   invalid_input = G_UNLIKELY (gi->glyph == PANGO_GLYPH_INVALID_INPUT || ch > 0x10FFFF);
 
-  hbi = _pango_cairo_font_get_hex_box_info ((PangoCairoFont *)font);
+  if (PANGO_IS_HB_FONT (font))
+    hbi = PANGO_HB_FONT (font)->hex_box_info;
+  else
+    hbi = _pango_cairo_font_get_hex_box_info (font);
   if (!hbi || !_pango_cairo_font_install ((PangoFont *)(hbi->font), crenderer->cr))
     {
       _pango_cairo_renderer_draw_box_glyph (crenderer, gi, cx, cy, invalid_input);
