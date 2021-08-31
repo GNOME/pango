@@ -664,6 +664,8 @@ PangoLanguage **      pango_font_get_languages     (PangoFont        *font);
 #endif
 #endif
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFontFamily, g_object_unref)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFontFace, g_object_unref)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFont, g_object_unref)
 
 G_END_DECLS
