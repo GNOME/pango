@@ -142,7 +142,7 @@ test_file (const gchar *filename, GString *string)
   PangoAttrList *itemize_attrs;
   PangoAttrList *shape_attrs;
   GList *items, *l;
-  GString *s1, *s2, *s3, *s4, *s5, *s6, *s7, *s8;
+  GString *s1, *s2, *s3, *s4, *s5, *s6, *s7, *s8, *s9;
   char *p1;
   const char *sep = "";
 
@@ -174,6 +174,7 @@ test_file (const gchar *filename, GString *string)
   s6 = g_string_new ("Item:      ");
   s7 = g_string_new ("Offset:    ");
   s8 = g_string_new ("Class:     ");
+  s9 = g_string_new ("Color:     ");
 
   length = strlen (text);
   if (text[length - 1] == '\n')
@@ -212,6 +213,7 @@ test_file (const gchar *filename, GString *string)
       g_string_append (s6, sep);
       g_string_append (s7, sep);
       g_string_append (s8, sep);
+      g_string_append (s9, sep);
       sep = "|";
 
       g_string_append_printf (s6, "%d(%d)", item->num_chars, item->length);
@@ -233,6 +235,7 @@ test_file (const gchar *filename, GString *string)
               g_string_append (s6, " ");
               g_string_append (s7, "|");
               g_string_append (s8, "|");
+              g_string_append (s9, "|");
             }
 
           char *p;
@@ -280,6 +283,8 @@ test_file (const gchar *filename, GString *string)
             default:
               g_assert_not_reached ();
             }
+          if (gi->attr.is_color)
+            g_string_append_printf (s9, "c");
           len = 0;
           len = MAX (len, g_utf8_strlen (s1->str, s1->len));
           len = MAX (len, g_utf8_strlen (s2->str, s2->len));
@@ -289,14 +294,16 @@ test_file (const gchar *filename, GString *string)
           len = MAX (len, g_utf8_strlen (s6->str, s6->len));
           len = MAX (len, g_utf8_strlen (s7->str, s7->len));
           len = MAX (len, g_utf8_strlen (s8->str, s8->len));
+          len = MAX (len, g_utf8_strlen (s9->str, s9->len));
           g_string_append_printf (s1, "%*s", len - (int)g_utf8_strlen (s1->str, s1->len), "");
-          g_string_append_printf (s4, "%*s", len - (int)g_utf8_strlen (s4->str, s4->len), "");
           g_string_append_printf (s2, "%*s", len - (int)g_utf8_strlen (s2->str, s2->len), "");
           g_string_append_printf (s3, "%*s", len - (int)g_utf8_strlen (s3->str, s3->len), "");
+          g_string_append_printf (s4, "%*s", len - (int)g_utf8_strlen (s4->str, s4->len), "");
           g_string_append_printf (s5, "%*s", len - (int)g_utf8_strlen (s5->str, s5->len), "");
           g_string_append_printf (s6, "%*s", len - (int)g_utf8_strlen (s6->str, s6->len), "");
           g_string_append_printf (s7, "%*s", len - (int)g_utf8_strlen (s7->str, s7->len), "");
           g_string_append_printf (s8, "%*s", len - (int)g_utf8_strlen (s8->str, s8->len), "");
+          g_string_append_printf (s9, "%*s", len - (int)g_utf8_strlen (s9->str, s9->len), "");
         }
 
       pango_glyph_string_free (glyphs);
@@ -309,6 +316,7 @@ test_file (const gchar *filename, GString *string)
   g_string_append_printf (string, "%s\n", s3->str);
   g_string_append_printf (string, "%s\n", s2->str);
   g_string_append_printf (string, "%s\n", s8->str);
+  g_string_append_printf (string, "%s\n", s9->str);
   g_string_append_printf (string, "%s\n", s4->str);
   g_string_append_printf (string, "%s\n", s7->str);
 
@@ -320,6 +328,7 @@ test_file (const gchar *filename, GString *string)
   g_string_free (s6, TRUE);
   g_string_free (s7, TRUE);
   g_string_free (s8, TRUE);
+  g_string_free (s9, TRUE);
 
   g_list_free_full (items, (GDestroyNotify)pango_item_free);
   g_free (contents);

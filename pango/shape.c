@@ -30,6 +30,8 @@
 
 #include "pango-font-private.h"
 
+#include <hb-ot.h>
+
 /* {{{ Harfbuzz shaping */
 /* {{{{ Buffer handling */
 
@@ -335,6 +337,45 @@ find_text_transform (const PangoAnalysis *analysis)
   return PANGO_TEXT_TRANSFORM_NONE;
 }
 
+static gboolean
+glyph_has_color (hb_font_t      *font,
+                 hb_codepoint_t  glyph)
+{
+  hb_face_t *face;
+  hb_blob_t *blob;
+
+  face = hb_font_get_face (font);
+
+  if (hb_ot_color_glyph_get_layers (face, glyph, 0, NULL, NULL) > 0)
+    return TRUE;
+
+  if (hb_ot_color_has_png (face))
+    {
+      blob = hb_ot_color_glyph_reference_png (font, glyph);
+      if (blob)
+        {
+          guint length = hb_blob_get_length (blob);
+          hb_blob_destroy (blob);
+          if (length > 0)
+            return TRUE;
+        }
+    }
+
+  if (hb_ot_color_has_svg (face))
+    {
+      blob = hb_ot_color_glyph_reference_svg (face, glyph);
+      if (blob)
+        {
+          guint length = hb_blob_get_length (blob);
+          hb_blob_destroy (blob);
+          if (length > 0)
+            return TRUE;
+        }
+    }
+
+  return FALSE;
+}
+
 /* }}}} */
 
 static void
@@ -495,11 +536,13 @@ pango_hb_shape (const char          *item_text,
   pango_glyph_string_set_size (glyphs, num_glyphs);
   infos = glyphs->glyphs;
   last_cluster = -1;
+
   for (i = 0; i < num_glyphs; i++)
     {
       infos[i].glyph = hb_glyph->codepoint;
       glyphs->log_clusters[i] = hb_glyph->cluster - item_offset;
       infos[i].attr.is_cluster_start = glyphs->log_clusters[i] != last_cluster;
+      infos[i].attr.is_color = glyph_has_color (hb_font, hb_glyph->codepoint);
       hb_glyph++;
       last_cluster = glyphs->log_clusters[i];
     }

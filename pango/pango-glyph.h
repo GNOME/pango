@@ -89,16 +89,18 @@ struct _PangoGlyphGeometry
  *   are always ordered in logical order, since visual order is meaningless;
  *   that is, in Arabic text, accent glyphs follow the glyphs for the
  *   base character.)
+ * @is_color: set if the the font will render this glyph with color. Since 1.50
  *
  * A `PangoGlyphVisAttr` structure communicates information between
  * the shaping and rendering phases.
  *
- * Currently, it contains only cluster start information. More attributes
- * may be added in the future.
+ * Currently, it contains cluster start and color information.
+ * More attributes may be added in the future.
  */
 struct _PangoGlyphVisAttr
 {
   guint is_cluster_start : 1;
+  guint is_color         : 1;
 };
 
 /* A single glyph
