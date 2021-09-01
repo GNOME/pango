@@ -100,4 +100,6 @@ content_images = [
   "cursor-positions-dark.png",
   "glyphstring-positions-light.png",
   "glyphstring-positions-dark.png",
+  "baseline-shift-light.png",
+  "baseline-shift-dark.png",
 ]

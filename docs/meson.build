@@ -42,6 +42,8 @@ pango_content_files = [
   'cursor-positions-dark.png',
   'glyphstring-positions-light.png',
   'glyphstring-positions-dark.png',
+  'baseline-shift-light.png',
+  'baseline-shift-dark.png',
 ]
 
 doc_conf = configuration_data()
