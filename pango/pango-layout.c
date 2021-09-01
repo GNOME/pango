@@ -6248,20 +6248,26 @@ collect_baseline_shift (ParaBreakState *state,
 
           if (attr->end_index == item->offset + item->length)
             {
-              BaselineItem *entry = state->baseline_shifts->data;
+              GList *t;
 
-              if (attr->start_index == entry->attr->start_index &&
-                  attr->end_index == entry->attr->end_index &&
-                  ((PangoAttrInt *)attr)->value == ((PangoAttrInt *)entry->attr)->value)
+              for (t = state->baseline_shifts; t; t = t->next)
                 {
-                  *end_x_offset -= entry->x_offset;
-                  *end_y_offset -= entry->y_offset;
-                }
-              else
-                g_warning ("Baseline attributes mismatch\n");
+                  BaselineItem *entry = t->data;
 
-              state->baseline_shifts = g_list_remove (state->baseline_shifts, entry);
-              g_free (entry);
+                  if (attr->start_index == entry->attr->start_index &&
+                      attr->end_index == entry->attr->end_index &&
+                      ((PangoAttrInt *)attr)->value == ((PangoAttrInt *)entry->attr)->value)
+                    {
+                      *end_x_offset -= entry->x_offset;
+                      *end_y_offset -= entry->y_offset;
+                    }
+
+                  state->baseline_shifts = g_list_remove (state->baseline_shifts, entry);
+                  g_free (entry);
+                  break;
+                }
+              if (t == NULL)
+                g_warning ("Baseline attributes mismatch\n");
             }
         }
     }
