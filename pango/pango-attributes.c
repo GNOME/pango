@@ -931,9 +931,19 @@ pango_attr_rise_new (int rise)
  *
  * Create a new baseline displacement attribute.
  *
+ * The effect of this attribute is to shift the baseline of a run,
+ * relative to the run of preceding run.
+ *
+ * <picture>
+ *   <source srcset="baseline-shift-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img alt="Baseline Shift" src="baseline-shift-light.png">
+ * </picture>
+
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
+ *
+ * Since: 1.50
  */
 PangoAttribute *
 pango_attr_baseline_shift_new (int rise)
@@ -948,6 +958,23 @@ pango_attr_baseline_shift_new (int rise)
   return pango_attr_int_new (&klass, (int)rise);
 }
 
+/**
+ * pango_attr_font_scale_new:
+ * @scale: a `PangoFontScale` value, which indicates font size change relative
+ *   to the size of the previous run.
+ *
+ *
+ * Create a new font scale attribute.
+ *
+ * The effect of this attribute is to change the font size of a run,
+ * relative to the size of preceding run.
+ *
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
+ *
+ * Since: 1.50
+ */
 PangoAttribute *
 pango_attr_font_scale_new (PangoFontScale scale)
 {
