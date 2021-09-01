@@ -34,6 +34,7 @@
 #include "pango-attributes-private.h"
 #include "pango-item-private.h"
 
+#include <hb-ot.h>
 
 /* {{{ Font cache */
 
@@ -1019,6 +1020,169 @@ itemize_state_finish (ItemizeState *state)
   if (state->base_font)
     g_object_unref (state->base_font);
 }
+
+/* }}} */
+/* {{{ Post-processing */
+
+typedef struct {
+  PangoAttribute *attr;
+  double scale;
+} ScaleItem;
+
+static gboolean
+collect_font_scale (PangoContext  *context,
+                    GList        **stack,
+                    PangoItem     *item,
+                    PangoItem     *prev,
+                    double        *scale)
+{
+  gboolean retval = FALSE;
+  GList *l;
+
+  for (GSList *l = item->analysis.extra_attrs; l; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+
+      if (attr->klass->type == PANGO_ATTR_FONT_SCALE)
+        {
+          if (attr->start_index == item->offset)
+            {
+              ScaleItem *entry;
+              hb_font_t *hb_font;
+              int y_scale;
+              hb_position_t y_size;
+
+              entry = g_new (ScaleItem, 1);
+              entry->attr = attr;
+              *stack = g_list_prepend (*stack, entry);
+
+              hb_font = pango_font_get_hb_font (prev->analysis.font);
+              hb_font_get_scale (hb_font, NULL, &y_scale);
+
+              switch (((PangoAttrInt *)attr)->value)
+                {
+                case PANGO_FONT_SCALE_NONE:
+                  break;
+                case PANGO_FONT_SCALE_SUPERSCRIPT:
+                  if (hb_ot_metrics_get_position (hb_font,
+                                                  HB_OT_METRICS_TAG_SUPERSCRIPT_EM_Y_SIZE,
+                                                  &y_size))
+                    entry->scale = y_size / (double) y_scale;
+                  else
+                    entry->scale = 1 / 1.2;
+                  break;
+                case PANGO_FONT_SCALE_SUBSCRIPT:
+                  if (hb_ot_metrics_get_position (hb_font,
+                                                  HB_OT_METRICS_TAG_SUBSCRIPT_EM_Y_SIZE,
+                                                  &y_size))
+                    entry->scale = y_size / (double) y_scale;
+                  else
+                    entry->scale = 1 / 1.2;
+                  break;
+                default:
+                  g_assert_not_reached ();
+                }
+            }
+        }
+     }
+
+   *scale = 1.0;
+
+   for (l = *stack; l; l = l->next)
+     {
+       ScaleItem *entry = l->data;
+       *scale *= entry->scale;
+       retval = TRUE;
+     }
+
+   l = *stack;
+   while (l)
+     {
+       ScaleItem *entry = l->data;
+       GList *next = l->next;
+
+       if (entry->attr->end_index == item->offset + item->length)
+         {
+           *stack = g_list_delete_link (*stack, l);
+           g_free (entry);
+         }
+
+       l = next;
+    }
+
+  return retval;
+}
+
+static void
+apply_scale_to_item (PangoContext *context,
+                     PangoItem    *item,
+                     double        scale)
+{
+  PangoFontDescription *desc;
+  double size;
+
+  desc = pango_font_describe (item->analysis.font);
+  size = scale * pango_font_description_get_size (desc);
+
+  if (pango_font_description_get_size_is_absolute (desc))
+    pango_font_description_set_absolute_size (desc, size);
+  else
+    pango_font_description_set_size (desc, size);
+
+  g_object_unref (item->analysis.font);
+  item->analysis.font = pango_font_map_load_font (context->font_map, context, desc);
+
+  pango_font_description_free (desc);
+}
+
+static void
+apply_font_scale (PangoContext *context,
+                  GList        *items)
+{
+  PangoItem *prev;
+  GList *stack = NULL;
+
+  for (GList *l = items; l; l = l->next)
+    {
+      PangoItem *item = l->data;
+      double scale;
+
+      if (collect_font_scale (context, &stack, item, prev, &scale))
+        apply_scale_to_item (context, item, scale);
+
+      prev = item;
+    }
+
+  if (stack != NULL)
+    {
+      g_warning ("Leftover font scales");
+      g_list_free_full (stack, g_free);
+    }
+}
+
+static GList *
+post_process_items (PangoContext *context,
+                    GList        *items)
+{
+  items = g_list_reverse (items);
+
+  /* Compute the char offset for each item */
+  {
+    int char_offset = 0;
+    for (GList *l = items; l; l = l->next)
+      {
+        PangoItemPrivate *item = l->data;
+        item->char_offset = char_offset;
+        char_offset += item->num_chars;
+      }
+  }
+
+  /* apply font-scale */
+  apply_font_scale (context, items);
+
+  return items;
+}
+
 /* }}} */
 /* {{{ Public API */
 
@@ -1034,8 +1198,6 @@ pango_itemize_with_font (PangoContext               *context,
                          const PangoFontDescription *desc)
 {
   ItemizeState state;
-  GList *items;
-  int char_offset;
 
   if (length == 0 || g_utf8_get_char (text + start_index) == '\0')
     return NULL;
@@ -1049,18 +1211,7 @@ pango_itemize_with_font (PangoContext               *context,
 
   itemize_state_finish (&state);
 
-  items = g_list_reverse (state.result);
-
-  /* Compute the char offset for each item */
-  char_offset = 0;
-  for (GList *l = items; l; l = l->next)
-    {
-      PangoItemPrivate *item = l->data;
-      item->char_offset = char_offset;
-      char_offset += item->num_chars;
-    }
-
-  return items;
+  return post_process_items (context, state.result);
 }
 
 /**
@@ -1154,6 +1305,6 @@ pango_itemize (PangoContext      *context,
                                   NULL);
 }
 
-/* }}} */
+ /* }}} */
 
 /* vim:set foldmethod=marker expandtab: */

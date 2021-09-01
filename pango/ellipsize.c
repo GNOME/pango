@@ -316,9 +316,8 @@ shape_ellipsis (EllipsizeState *state)
    */
   if (!state->ellipsis_run)
     {
-      state->ellipsis_run = g_slice_new (PangoGlyphItem);
+      state->ellipsis_run = g_slice_new0 (PangoGlyphItem);
       state->ellipsis_run->glyphs = pango_glyph_string_new ();
-      state->ellipsis_run->item = NULL;
     }
 
   if (state->ellipsis_run->item)

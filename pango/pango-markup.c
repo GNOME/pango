@@ -1217,6 +1217,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   const char *strikethrough = NULL;
   const char *strikethrough_color = NULL;
   const char *rise = NULL;
+  const char *baseline_shift = NULL;
   const char *letter_spacing = NULL;
   const char *lang = NULL;
   const char *fallback = NULL;
@@ -1231,6 +1232,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   const char *line_height = NULL;
   const char *text_transform = NULL;
   const char *segment = NULL;
+  const char *font_scale = NULL;
 
   g_markup_parse_context_get_position (context,
 				       &line_number, &char_number);
@@ -1268,6 +1270,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	CHECK_ATTRIBUTE2(background, "bgcolor");
         CHECK_ATTRIBUTE (background_alpha);
         CHECK_ATTRIBUTE2(background_alpha, "bgalpha");
+        CHECK_ATTRIBUTE(baseline_shift);
         break;
       case 'c':
 	CHECK_ATTRIBUTE2(foreground, "color");
@@ -1284,6 +1287,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	CHECK_ATTRIBUTE2(style, "font_style");
 	CHECK_ATTRIBUTE2(variant, "font_variant");
 	CHECK_ATTRIBUTE2(weight, "font_weight");
+	CHECK_ATTRIBUTE(font_scale);
 
 	CHECK_ATTRIBUTE (foreground);
 	CHECK_ATTRIBUTE2(foreground, "fgcolor");
@@ -1675,6 +1679,38 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
       add_attribute (tag, pango_attr_rise_new (n));
     }
 
+  if (G_UNLIKELY (baseline_shift))
+    {
+      gint shift = 0;
+
+      if (span_parse_enum ("baseline_shift", baseline_shift, PANGO_TYPE_BASELINE_SHIFT, (int*)(void*)&shift, line_number, NULL))
+        add_attribute (tag, pango_attr_baseline_shift_new (shift));
+      else if (parse_length (baseline_shift, &shift) && (shift > 1024 || shift < -1024))
+        add_attribute (tag, pango_attr_baseline_shift_new (shift));
+      else
+        {
+          g_set_error (error,
+                       G_MARKUP_ERROR,
+                       G_MARKUP_ERROR_INVALID_CONTENT,
+                       _("Value of 'baseline_shift' attribute on <span> tag on line %d "
+                         "could not be parsed; should be 'superscript' or 'subscript' or "
+                         "an integer, or a string such as '5.5pt', not '%s'"),
+                       line_number, baseline_shift);
+          goto error;
+        }
+
+    }
+
+  if (G_UNLIKELY (font_scale))
+    {
+      PangoFontScale scale;
+
+      if (!span_parse_enum ("font_scale", font_scale, PANGO_TYPE_FONT_SCALE, (int*)(void*)&scale, line_number, error))
+	goto error;
+
+      add_attribute (tag, pango_attr_font_scale_new (scale));
+    }
+
   if (G_UNLIKELY (letter_spacing))
     {
       gint n = 0;
@@ -1797,8 +1833,6 @@ s_parse_func        (MarkupData            *md G_GNUC_UNUSED,
   return TRUE;
 }
 
-#define SUPERSUB_RISE 5000
-
 static gboolean
 sub_parse_func      (MarkupData            *md G_GNUC_UNUSED,
 		     OpenTag               *tag,
@@ -1809,14 +1843,8 @@ sub_parse_func      (MarkupData            *md G_GNUC_UNUSED,
 {
   CHECK_NO_ATTRS("sub");
 
-  /* Shrink font, and set a negative rise */
-  if (tag)
-    {
-      tag->scale_level_delta -= 1;
-      tag->scale_level -= 1;
-    }
-
-  add_attribute (tag, pango_attr_rise_new (-SUPERSUB_RISE));
+  add_attribute (tag, pango_attr_font_scale_new (PANGO_FONT_SCALE_SUBSCRIPT));
+  add_attribute (tag, pango_attr_baseline_shift_new (PANGO_BASELINE_SHIFT_SUBSCRIPT));
 
   return TRUE;
 }
@@ -1831,14 +1859,8 @@ sup_parse_func      (MarkupData            *md G_GNUC_UNUSED,
 {
   CHECK_NO_ATTRS("sup");
 
-  /* Shrink font, and set a positive rise */
-  if (tag)
-    {
-      tag->scale_level_delta -= 1;
-      tag->scale_level -= 1;
-    }
-
-  add_attribute (tag, pango_attr_rise_new (SUPERSUB_RISE));
+  add_attribute (tag, pango_attr_font_scale_new (PANGO_FONT_SCALE_SUPERSCRIPT));
+  add_attribute (tag, pango_attr_baseline_shift_new (PANGO_BASELINE_SHIFT_SUPERSCRIPT));
 
   return TRUE;
 }
