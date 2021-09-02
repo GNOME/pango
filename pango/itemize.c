@@ -1056,15 +1056,21 @@ collect_font_scale (PangoContext  *context,
               entry->attr = attr;
               *stack = g_list_prepend (*stack, entry);
 
-              hb_font = pango_font_get_hb_font (prev->analysis.font);
-              hb_font_get_scale (hb_font, NULL, &y_scale);
+              if (prev)
+                {
+                  hb_font = pango_font_get_hb_font (prev->analysis.font);
+                  hb_font_get_scale (hb_font, NULL, &y_scale);
+                }
+              else
+                hb_font = NULL;
 
               switch (((PangoAttrInt *)attr)->value)
                 {
                 case PANGO_FONT_SCALE_NONE:
                   break;
                 case PANGO_FONT_SCALE_SUPERSCRIPT:
-                  if (hb_ot_metrics_get_position (hb_font,
+                  if (hb_font &&
+                      hb_ot_metrics_get_position (hb_font,
                                                   HB_OT_METRICS_TAG_SUPERSCRIPT_EM_Y_SIZE,
                                                   &y_size))
                     entry->scale = y_size / (double) y_scale;
@@ -1072,7 +1078,8 @@ collect_font_scale (PangoContext  *context,
                     entry->scale = 1 / 1.2;
                   break;
                 case PANGO_FONT_SCALE_SUBSCRIPT:
-                  if (hb_ot_metrics_get_position (hb_font,
+                  if (hb_font &&
+                      hb_ot_metrics_get_position (hb_font,
                                                   HB_OT_METRICS_TAG_SUBSCRIPT_EM_Y_SIZE,
                                                   &y_size))
                     entry->scale = y_size / (double) y_scale;
@@ -1139,7 +1146,7 @@ static void
 apply_font_scale (PangoContext *context,
                   GList        *items)
 {
-  PangoItem *prev;
+  PangoItem *prev = NULL;
   GList *stack = NULL;
 
   for (GList *l = items; l; l = l->next)
