@@ -1,13 +1,23 @@
-Overview of changes
-===================
+Overview of changes in 1.49.1
+=============================
 * Only recompute log attrs when needed
-& Validate log attrs
+* Validate log attrs
 * Fix conformance issues in Thai and Indic linebreaking
 * Add pango_attr_break to support customizing line and word breaks
+* Add font-dependent baseline shifts and sizing for super- and subscripts
 * Improve hyphenation support
-* pango-viewer: Visualize caret positions
+* pango-view: Visualize caret positions and slopes
+* pango-view: Show glyph rects
+* pango-view: Make --annotate easier to use
 * Add pango_layout_get_caret_pos to support sloped carets
 * Improve caret positioning for ligatures
+* Better under- and overline placement
+* layout: Allocate a bit less
+* layout: Fix cluster extents with rise
+* Add pango_layout_iter_get_run_baseline
+* Add pango_glyph_string_index_to_x_full
+* coretext: Set size on font descriptions
+* Add color information to PangoGlyphVisAttr
 
 Overview of changes in 1.49.0
 =============================
