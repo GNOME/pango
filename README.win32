@@ -8,14 +8,21 @@ its main use nowadays is on other platforms than Win32.
 
 To build Pango for Win32:
 
-You need to have gcc (mingw) or Visual Studio 2008~2017, along with
-Python 3.4.x+ and Meson 0.43.0.  If building the introspection files,
-you will also need to ensure that the Python release series and
-build architecture (i.e. Win32 (x86)/x64 (amd64/x86-64) matches the
-Python release series and build architecture that was used to build
-GObject-Introspection.  The Python interpreter executable directory
-must be in your PATH.  The Ninja build utility must also be in your
-PATH, unless using the Visual Studio IDE as noted below.
+You need to have gcc (mingw-w64) or Visual Studio 2015 or later, along with
+Python 3.6.x+ and Meson 0.55.3 at the time of writing.  If building
+the introspection files, you will also need to ensure that the Python
+release series and build architecture (i.e. Win32 (x86)/
+x64 (amd64/x86-64) matches the Python release series and build
+architecture that was used to build GObject-Introspection.
+The Python interpreter executable directory must be in your PATH.
+The Ninja build utility must also be in your PATH, unless using the
+Visual Studio IDE as noted below.  Cross-compiling Pango for ARM64/aarch64
+with Visual Studio 2017 or later is also supported, provided if a cross
+compilation file for Meson is properly setup for such builds (please refer
+to the Meson documentation for further instructions).  Support for
+introspection for ARM64 builds is currently not supported, due to the lack
+of an official build of Python for ARM64 Windows, and introspection builds
+are currently not supported for any cross-builds.
 
 You will also need the following libraries installed with their headers
 and import libraries, and their DLLs, if applicable, needs to be found in
@@ -27,9 +34,9 @@ only their headers/import libraries are needed on Visual Studio:
 -Fribidi
 -Cairo* (With Win32 support built in, and optionally FreeType and FontConfig
          support for building PangoFT2.)
+-HarfBuzz* (GLib support required, and FreeType2 if building PangoFT2)
 -FreeType* (Optional, needed for PangoFT2)
 -FontConfig* (Optional, needed for PangoFT2)
--HarfBuzz* (Optional, GLib and FreeType support required if used, needed for PangoFT2)
 
 Please see meson.build to see what versions are needed for these dependencies.
 
@@ -40,29 +47,22 @@ Follow the following steps to build Pango:
 (With MinGW, please adjust the paths accordingly, in a MSYS/MSYS2 bash prompt)
 PATH=/devel/dist/glib-2.8.0/bin:$PATH ACLOCAL_FLAGS="-I /devel/dist/glib-2.8.0/share/aclocal" PKG_CONFIG_PATH=/devel/dist/glib-2.8.0/lib/pkgconfig:$PKG_CONFIG_PATH CC='gcc -mtune=pentium3' CPPFLAGS='-I/opt/gnu/include' LDFLAGS='-L/opt/gnu/lib' CFLAGS=-O meson $(PATH_TO_SRC) --buildtype=$(buildtype) --prefix=$(PREFIX)
 
-(With Visual Studio, set the INCLUDE, LIB, PATH and PKG_CONFIG_PATH envvars as
+(With Visual Studio, set the INCLUDE, LIB, PATH and envvars as
 needed before running the following in a Visual Studio command prompt)
-python $(PATH_TO_meson.py) $(PATH_TO_SRC) --buildtype=$(buildtype) --prefix=$(PREFIX)
+meson $(PATH_TO_SRC) --buildtype=$(buildtype) --prefix=$(PREFIX) [--pkg-config-path=...]
 
-For Visual Studio builds, building using the Visual Studio IDE is also supported
-with Visual Studio 2010, 2015 and 2017.  Append --backend=vs to the Meson
-configuration command above to use this support.
+For Visual Studio builds, support for building using the Visual Studio IDE
+is also supported to some extent.  Append --backend=vs to the Meson
+configuration command above to use this support.  Note that this support
+may not work as well as the builds that are carried out by Ninja, and
+issues in regards to building with Meson using Visual Studio with the IDE (i.e.
+msbuild) should be reported to the Meson project.
 
 2) Build Pango by running Ninja, or by opening and building the generated
-   Visual Studio 2010/2015/2017 solution file.
+   Visual Studio solution file.
 	
 3) Run tests and/or install the build using the "test" and "install" targets
    or sub-projects respectively.
-
-4) If building with Visual Studio 2008, you will need to do the run the following
-   lines in the Visual Studio or SDK command prompt after building and installing.
-   From the build directory:
-   for /f %a in (*.dll.manifest) do if exist $(PREFIX)\bin\%~na /manifest %a /outputresource:$(PREFIX)\bin\%~na;2
-   for /f %a in (*.exe.manifest) do if exist $(PREFIX)\bin\%~na /manifest %a /outputresource:$(PREFIX)\bin\%~na;1
-   for /f %a in (*.exe.manifest) do if exist $(PREFIX)\libexec\installed-tests\pango\%~na /manifest %a /outputresource:$(PREFIX)\libexec\installed-tests\pango\%~na;1
-   
-   So that the security manifests that are generated can be embedded into the built
-   DLLs and EXEs so that they can be usable.
 
 See the following GNOME Live! page for a more detailed description of building
 Pango's dependencies with Visual Studio:
