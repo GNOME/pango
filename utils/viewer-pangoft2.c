@@ -34,6 +34,11 @@ static void
 substitute_func (FcPattern *pattern,
 		 gpointer   data G_GNUC_UNUSED)
 {
+  if (opt_antialias != ANTIALIAS_DEFAULT)
+    {
+      FcPatternDel (pattern, FC_ANTIALIAS);
+      FcPatternAddBool (pattern, FC_ANTIALIAS, opt_antialias != ANTIALIAS_NONE);
+    }
   if (opt_hinting != HINT_DEFAULT)
     {
       FcPatternDel (pattern, FC_HINTING);
