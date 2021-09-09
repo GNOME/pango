@@ -405,7 +405,7 @@ if xft_dep.found() and fontconfig_dep.found() and freetype_dep.found()
 endif
 
 if host_system == 'darwin'
-  has_core_text = cc.links('''#include <Carbon/Carbon.h>
+  has_core_text = cc.links('''#include <CoreText/CoreText.h>
                               int main (void) {
                                 CTGetCoreTextVersion ();
                                 return 0;
@@ -481,15 +481,14 @@ if ['pkgconfig', 'internal'].contains(cairo_found_type)
       endforeach
     endif
     if dep.found()
-      if b[0] == 'cairo-ft'
-        if build_pangoft2
-          pango_conf.set(b[2], 1)
-          pango_font_backends += b[3]
-        endif
-      else
-        pango_conf.set(b[2], 1)
-        pango_font_backends += b[3]
+      if b[0] == 'cairo-ft' and not build_pangoft2
+        continue
       endif
+      if b[0] == 'cairo-quartz' and not pango_conf.has('HAVE_CORE_TEXT')
+        continue
+      endif
+      pango_conf.set(b[2], 1)
+      pango_font_backends += b[3]
     endif
   endforeach
 
@@ -538,8 +537,12 @@ elif cairo_found_type == 'library'
   foreach header : cairo_headers
     if cc.has_header('cairo-@0@.h'.format(header))
       pango_conf.set('HAVE_CAIRO_@0@'.format(header.underscorify().to_upper()), 1)
-      if header == 'win32' or header == 'quartz'
+      if header == 'win32'
         pango_font_backends += header
+      elif header == 'quartz'
+        if pango_conf.has('HAVE_CORE_TEXT')
+          pango_font_backends += header
+        endif
       else
         pango_cairo_backends += header
       endif
