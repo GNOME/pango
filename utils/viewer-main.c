@@ -84,10 +84,10 @@ main (int    argc,
 	  else
 	    {
 	      int fd;
-	      const gchar *convert_argv[4] = {"convert", "-", "%s"};
+	      const gchar *convert_argv[5] = {"gm", "convert", "-", "%s"};
 	      GError *error;
 
-	      convert_argv[2] = opt_output;
+	      convert_argv[3] = opt_output;
 
 	      if (!g_spawn_async_with_pipes (NULL, (gchar **)(void*)convert_argv, NULL,
 					     G_SPAWN_DO_NOT_REAP_CHILD |
@@ -95,7 +95,7 @@ main (int    argc,
 					     G_SPAWN_STDOUT_TO_DEV_NULL |
 					     G_SPAWN_STDERR_TO_DEV_NULL,
 					     NULL, NULL, &pid, &fd, NULL, NULL, &error))
-		fail ("When running ImageMagick 'convert' command: %s\n", error->message);
+		fail ("When running GraphicsMagick 'gm convert' command: %s\n", error->message);
 	      stream = fdopen (fd, "wb");
 	    }
 	  view->write (instance, surface, stream, width, height);
@@ -144,13 +144,13 @@ no_display:
 	{
 	  int fd;
 	  FILE *stream;
-	  const gchar *display_argv[5] = {"display", "-title", "%s", "-"};
+	  const gchar *display_argv[6] = {"gm", "display", "-title", "%s", "-"};
 	  GError *error = NULL;
 	  GPid pid;
 
 	  if (!view->write)
 	    fail ("%s viewer backend does not support displaying or writing", view->name);
-	  display_argv[2] = title;
+	  display_argv[3] = title;
 
 	  if (!g_spawn_async_with_pipes (NULL, (gchar **)(void*)display_argv, NULL,
 					 G_SPAWN_DO_NOT_REAP_CHILD |
@@ -158,7 +158,7 @@ no_display:
 					 G_SPAWN_STDOUT_TO_DEV_NULL |
 					 G_SPAWN_STDERR_TO_DEV_NULL,
 					 NULL, NULL, &pid, &fd, NULL, NULL, &error))
-	    fail ("When running ImageMagick 'display' command: %s\n", error->message);
+	    fail ("When running GraphicsMagick 'gm display' command: %s\n", error->message);
 	  stream = fdopen (fd, "wb");
 	  view->write (instance, surface, stream, width, height);
 	  fclose (stream);
