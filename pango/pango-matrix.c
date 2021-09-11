@@ -263,6 +263,40 @@ pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
 }
 
 /**
+ * pango_matrix_get_slant_ratio:
+ * @matrix: a `PangoMatrix`
+ *
+ * Gets the slant ratio of a matrix.
+ *
+ * For a simple shear matrix in the form:
+ *
+ *     1 λ
+ *     0 1
+ *
+ * this is simply λ.
+ *
+ * Returns: the slant ratio of @matrix
+ *
+ * Since: 1.50
+ */
+double
+pango_matrix_get_slant_ratio (const PangoMatrix *matrix)
+{
+  double x0, y0;
+  double x1, y1;
+
+  x0 = 0;
+  y0 = 1;
+  pango_matrix_transform_distance (matrix, &x0, &y0);
+
+  x1 = 1;
+  y1 = 0;
+  pango_matrix_transform_distance (matrix, &x1, &y1);
+
+  return (x0 * x1 + y0 * y1) / (x0 * x0 + y0 * y0);
+}
+
+/**
  * pango_matrix_transform_distance:
  * @matrix: (nullable): a `PangoMatrix`
  * @dx: (inout): in/out X component of a distance vector

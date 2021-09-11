@@ -21,6 +21,7 @@
 
 #include <glib.h>
 #include <pango/pango.h>
+#include <math.h>
 
 #define matrix_equal(m1, m2) \
   (G_APPROX_VALUE ((m1)->xx, (m2)->xx, 0.0001) && \
@@ -185,6 +186,30 @@ test_matrix_transform_pixel_rect (void)
   g_assert_cmpfloat_with_epsilon (rect.height, 2, 0.1);
 }
 
+static void
+test_matrix_slant_ratio (void)
+{
+  PangoMatrix m = (PangoMatrix) { 1, 0, 0.2, 1, 0, 0 };
+  PangoMatrix m2 = (PangoMatrix) { 1, 0.4, 0, 1, 0, 0 };
+  double r;
+
+  r = pango_matrix_get_slant_ratio (&m);
+  g_assert_cmphex (r, ==, 0.2);
+
+  pango_matrix_rotate (&m, 45);
+
+  r = pango_matrix_get_slant_ratio (&m);
+  g_assert_cmphex (r, ==, 0.2);
+
+  pango_matrix_scale (&m, 2, 3);
+
+  r = pango_matrix_get_slant_ratio (&m);
+  g_assert_cmphex (r, ==, 0.2);
+
+  r = pango_matrix_get_slant_ratio (&m2);
+  g_assert_cmphex (r, ==, 0.4);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -199,6 +224,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/matrix/transform-distance", test_matrix_transform_distance);
   g_test_add_func ("/matrix/transform-rect", test_matrix_transform_rect);
   g_test_add_func ("/matrix/transform-pixel-rect", test_matrix_transform_pixel_rect);
+  g_test_add_func ("/matrix/slant-ratio", test_matrix_slant_ratio);
 
   return g_test_run ();
 }
