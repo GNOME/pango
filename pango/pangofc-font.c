@@ -964,10 +964,12 @@ pango_fc_font_create_hb_font (PangoFont *font)
   double x_scale, y_scale;
   double pixel_size;
   double point_size;
+  double slant G_GNUC_UNUSED;
 
   x_scale_inv = y_scale_inv = 1.0;
   pixel_size = 1.0;
   point_size = 1.0;
+  slant = 0.0;
 
   key = _pango_fc_font_get_font_key (fc_font);
   if (key)
@@ -988,11 +990,12 @@ pango_fc_font_create_hb_font (PangoFont *font)
         FcMatrixMultiply (&fc_matrix, &fc_matrix, fc_matrix_val);
 
       font_matrix.xx = fc_matrix.xx;
-      font_matrix.yx = fc_matrix.yx;
+      font_matrix.yx = - fc_matrix.yx;
       font_matrix.xy = fc_matrix.xy;
-      font_matrix.yy = fc_matrix.yy;
+      font_matrix.yy = - fc_matrix.yy;
 
       pango_matrix_get_font_scale_factors (&font_matrix, &x, &y);
+      slant = pango_matrix_get_slant_ratio (&font_matrix);
 
       x_scale_inv /= x;
       y_scale_inv /= y;
@@ -1003,6 +1006,7 @@ pango_fc_font_create_hb_font (PangoFont *font)
           x_scale_inv = -x_scale_inv;
           y_scale_inv = -y_scale_inv;
         }
+
       get_font_size (key, &pixel_size, &point_size);
     }
 
@@ -1016,6 +1020,10 @@ pango_fc_font_create_hb_font (PangoFont *font)
                      pixel_size * PANGO_SCALE * x_scale,
                      pixel_size * PANGO_SCALE * y_scale);
   hb_font_set_ptem (hb_font, point_size);
+
+#if HB_VERSION_ATLEAST (3, 3, 0)
+  hb_font_set_synthetic_slant (hb_font, slant);
+#endif
 
   if (key)
     {
