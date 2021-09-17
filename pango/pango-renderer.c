@@ -575,7 +575,7 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
 {
   int x_off = 0;
   int glyph_string_width;
-  LineState state;
+  LineState state = { 0, };
   GSList *l;
   gboolean got_overall = FALSE;
   PangoRectangle overall_rect;
