@@ -2387,8 +2387,8 @@ pango_layout_index_to_pos (PangoLayout    *layout,
                            int             index,
                            PangoRectangle *pos)
 {
-  PangoRectangle line_logical_rect;
-  PangoRectangle run_logical_rect;
+  PangoRectangle line_logical_rect = { 0, };
+  PangoRectangle run_logical_rect = { 0, };
   PangoLayoutIter iter;
   PangoLayoutLine *layout_line = NULL;
   int x_pos;
@@ -4480,8 +4480,8 @@ pango_layout_check_lines (PangoLayout *layout)
   state.line_height = -1;
   if (layout->height >= 0)
     {
-      PangoRectangle logical;
-      int height;
+      PangoRectangle logical = { 0, };
+      int height = 0;
       pango_layout_get_empty_extents_and_height_at_index (layout, 0, &logical, &height);
       state.line_height = layout->line_spacing == 0.0 ? logical.height : layout->line_spacing * height;
     }
