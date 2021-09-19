@@ -139,7 +139,7 @@ main (int    argc,
 	}
 no_display:
 
-      /* If failed to display natively, call ImageMagick */
+      /* If failed to display natively, call GraphicsMagick */
       if (opt_display)
 	{
 	  int fd;
