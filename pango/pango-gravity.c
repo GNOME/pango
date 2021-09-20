@@ -316,6 +316,12 @@ const PangoScriptProperties script_properties[] =
       {LTR, NONE, S, FALSE},	/* Diak */
       {LTR, NONE, S, FALSE},	/* Kits */
       {RTL, NONE, S, FALSE},	/* Yezi */
+
+      {LTR, NONE, S, FALSE},    /* Cpmn */
+      {RTL, NONE, S, FALSE},    /* Ougr */
+      {LTR, NONE, S, FALSE},    /* Tnsa */
+      {LTR, NONE, S, FALSE},    /* Toto */
+      {LTR, NONE, S, FALSE},    /* Vith */
 };
 
 #undef NONE
