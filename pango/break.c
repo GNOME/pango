@@ -1118,6 +1118,11 @@ default_break (const char    *text,
 	      break_type == G_UNICODE_BREAK_EMOJI_MODIFIER)
 	    break_op = BREAK_PROHIBITED;
 
+	  if ((_pango_Is_Emoji_Extended_Pictographic (prev_wc) &&
+	       g_unichar_type (prev_wc) == G_UNICODE_UNASSIGNED) &&
+	      break_type == G_UNICODE_BREAK_EMOJI_MODIFIER)
+	    break_op = BREAK_PROHIBITED;
+
 	  /* Rule LB29 */
 	  if (prev_break_type == G_UNICODE_BREAK_INFIX_SEPARATOR &&
 	      (break_type == G_UNICODE_BREAK_ALPHABETIC ||
@@ -1137,8 +1142,7 @@ default_break (const char    *text,
 	       prev_break_type == G_UNICODE_BREAK_HANGUL_T_JAMO ||
 	       prev_break_type == G_UNICODE_BREAK_HANGUL_LV_SYLLABLE ||
 	       prev_break_type == G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE) &&
-	      (break_type == G_UNICODE_BREAK_INSEPARABLE ||
-	       break_type == G_UNICODE_BREAK_POSTFIX))
+	      break_type == G_UNICODE_BREAK_POSTFIX)
 	    break_op = BREAK_PROHIBITED;
 
 	  if (prev_break_type == G_UNICODE_BREAK_PREFIX &&
