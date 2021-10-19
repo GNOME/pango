@@ -5122,6 +5122,8 @@ pango_layout_get_empty_extents_and_height_at_index (PangoLayout    *layout,
       PangoFont *font;
       PangoFontDescription *font_desc = NULL;
       gboolean free_font_desc = FALSE;
+      double line_height_factor = 0.0;
+      int absolute_line_height = 0;
 
       font_desc = pango_context_get_font_description (layout->context);
 
@@ -5147,6 +5149,8 @@ pango_layout_get_empty_extents_and_height_at_index (PangoLayout    *layout,
 
               if (start <= index && index < end)
                 {
+                  PangoAttribute *attr;
+
                   if (!free_font_desc)
                     {
                       font_desc = pango_font_description_copy_static (font_desc);
@@ -5157,6 +5161,14 @@ pango_layout_get_empty_extents_and_height_at_index (PangoLayout    *layout,
                                                 font_desc,
                                                 NULL,
                                                 NULL);
+
+                  attr = pango_attr_iterator_get (&iter, PANGO_ATTR_LINE_HEIGHT);
+                  if (attr)
+                    line_height_factor = ((PangoAttrFloat *)attr)->value;
+
+                  attr = pango_attr_iterator_get (&iter, PANGO_ATTR_ABSOLUTE_LINE_HEIGHT);
+                  if (attr)
+                    absolute_line_height = ((PangoAttrInt *)attr)->value;
 
                   break;
                 }
@@ -5183,6 +5195,17 @@ pango_layout_get_empty_extents_and_height_at_index (PangoLayout    *layout,
                 *height = pango_font_metrics_get_height (metrics);
 
               pango_font_metrics_unref (metrics);
+
+              if (absolute_line_height != 0 || line_height_factor != 0.0)
+                {
+                  int line_height, leading;
+
+                  line_height = MAX (absolute_line_height, ceilf (line_height_factor * logical_rect->height));
+
+                  leading = line_height - logical_rect->height;
+                  logical_rect->y -= leading / 2;
+                  logical_rect->height += leading;
+                }
             }
           else
             {
@@ -5347,6 +5370,7 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
           int line_height, leading;
 
           line_height = MAX (properties.absolute_line_height, ceilf (properties.line_height * line_logical->height));
+
           leading = line_height - line_logical->height;
           line_logical->y -= leading / 2;
           line_logical->height += leading;
