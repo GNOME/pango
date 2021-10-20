@@ -273,7 +273,7 @@ do_test (const gchar *filename,
       
       if (num_attrs > 0)
         {
-          PangoLogAttr *attrs = g_new (PangoLogAttr, num_attrs);
+          PangoLogAttr *attrs = g_new0 (PangoLogAttr, num_attrs);
           pango_get_log_attrs (string, -1, 0, pango_language_from_string ("C"), attrs, num_attrs);
 
           if (! attrs_equal (attrs, expected_attrs, num_attrs, bits))
