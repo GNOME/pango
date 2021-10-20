@@ -193,6 +193,7 @@ static void pango_layout_get_item_properties (PangoItem      *item,
 static void pango_layout_get_empty_extents_and_height_at_index (PangoLayout    *layout,
                                                                 int             index,
                                                                 PangoRectangle *logical_rect,
+                                                                gboolean        apply_line_height,
                                                                 int            *height);
 
 static void pango_layout_finalize    (GObject          *object);
@@ -1908,16 +1909,14 @@ pango_layout_index_to_line_and_extents (PangoLayout     *layout,
           {
             if (run_rect)
               {
-                *run_rect = *line_rect;
-
                 while (TRUE)
                   {
                     PangoLayoutRun *run = _pango_layout_iter_get_run (&iter);
 
-                     if (!run)
-                       break;
-
                     pango_layout_iter_get_run_extents (&iter, NULL, run_rect);
+
+                    if (!run)
+                      break;
 
                     if (run->item->offset <= index && index < run->item->offset + run->item->length)
                       break;
@@ -4482,7 +4481,7 @@ pango_layout_check_lines (PangoLayout *layout)
     {
       PangoRectangle logical = { 0, };
       int height = 0;
-      pango_layout_get_empty_extents_and_height_at_index (layout, 0, &logical, &height);
+      pango_layout_get_empty_extents_and_height_at_index (layout, 0, &logical, TRUE, &height);
       state.line_height = layout->line_spacing == 0.0 ? logical.height : layout->line_spacing * height;
     }
 
@@ -5115,6 +5114,7 @@ static void
 pango_layout_get_empty_extents_and_height_at_index (PangoLayout    *layout,
                                                     int             index,
                                                     PangoRectangle *logical_rect,
+                                                    gboolean        apply_line_height,
                                                     int             *height)
 {
   if (logical_rect)
@@ -5122,6 +5122,8 @@ pango_layout_get_empty_extents_and_height_at_index (PangoLayout    *layout,
       PangoFont *font;
       PangoFontDescription *font_desc = NULL;
       gboolean free_font_desc = FALSE;
+      double line_height_factor = 0.0;
+      int absolute_line_height = 0;
 
       font_desc = pango_context_get_font_description (layout->context);
 
@@ -5147,6 +5149,8 @@ pango_layout_get_empty_extents_and_height_at_index (PangoLayout    *layout,
 
               if (start <= index && index < end)
                 {
+                  PangoAttribute *attr;
+
                   if (!free_font_desc)
                     {
                       font_desc = pango_font_description_copy_static (font_desc);
@@ -5157,6 +5161,14 @@ pango_layout_get_empty_extents_and_height_at_index (PangoLayout    *layout,
                                                 font_desc,
                                                 NULL,
                                                 NULL);
+
+                  attr = pango_attr_iterator_get (&iter, PANGO_ATTR_LINE_HEIGHT);
+                  if (attr)
+                    line_height_factor = ((PangoAttrFloat *)attr)->value;
+
+                  attr = pango_attr_iterator_get (&iter, PANGO_ATTR_ABSOLUTE_LINE_HEIGHT);
+                  if (attr)
+                    absolute_line_height = ((PangoAttrInt *)attr)->value;
 
                   break;
                 }
@@ -5183,6 +5195,18 @@ pango_layout_get_empty_extents_and_height_at_index (PangoLayout    *layout,
                 *height = pango_font_metrics_get_height (metrics);
 
               pango_font_metrics_unref (metrics);
+
+              if (apply_line_height &&
+                  (absolute_line_height != 0 || line_height_factor != 0.0))
+                {
+                  int line_height, leading;
+
+                  line_height = MAX (absolute_line_height, ceilf (line_height_factor * logical_rect->height));
+
+                  leading = line_height - logical_rect->height;
+                  logical_rect->y -= leading / 2;
+                  logical_rect->height += leading;
+                }
             }
           else
             {
@@ -5203,14 +5227,6 @@ pango_layout_get_empty_extents_and_height_at_index (PangoLayout    *layout,
       logical_rect->x = 0;
       logical_rect->width = 0;
     }
-}
-
-static void
-pango_layout_line_get_empty_extents_and_height (PangoLayoutLine *line,
-                                                PangoRectangle  *logical_rect,
-                                                int             *height)
-{
-  pango_layout_get_empty_extents_and_height_at_index (line->layout, line->start_index, logical_rect, height);
 }
 
 static void
@@ -5347,6 +5363,7 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
           int line_height, leading;
 
           line_height = MAX (properties.absolute_line_height, ceilf (properties.line_height * line_logical->height));
+
           leading = line_height - line_logical->height;
           line_logical->y -= leading / 2;
           line_logical->height += leading;
@@ -5479,7 +5496,7 @@ pango_layout_line_get_extents_and_height (PangoLayoutLine *line,
       PangoRectangle r, *rect;
 
       rect = logical_rect ? logical_rect : &r;
-      pango_layout_line_get_empty_extents_and_height (line, rect, height);
+      pango_layout_get_empty_extents_and_height_at_index (line->layout, line->start_index, rect, TRUE, height);
     }
 
   if (caching)
@@ -7341,18 +7358,35 @@ pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
     }
   else
     {
-      /* The empty run at the end of a line */
+      if (iter->line->runs)
+        {
+          /* The empty run at the end of a non-empty line */
+          PangoLayoutRun *run = g_slist_last (iter->line->runs)->data;
+          pango_layout_run_get_extents_and_height (run, ink_rect, logical_rect, NULL, NULL);
+        }
+      else
+        {
+          PangoRectangle r;
 
-      pango_layout_iter_get_line_extents (iter, ink_rect, logical_rect);
+          pango_layout_get_empty_extents_and_height_at_index (iter->layout, 0, &r, FALSE, NULL);
+
+          if (ink_rect)
+            *ink_rect = r;
+
+          if (logical_rect)
+            *logical_rect = r;
+        }
 
       if (ink_rect)
         {
+          offset_y (iter, &ink_rect->y);
           ink_rect->x = iter->run_x;
           ink_rect->width = 0;
         }
 
       if (logical_rect)
         {
+          offset_y (iter, &logical_rect->y);
           logical_rect->x = iter->run_x;
           logical_rect->width = 0;
         }

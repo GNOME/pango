@@ -76,8 +76,20 @@ pango_cairo_fc_font_create_base_metrics_for_context (PangoCairoFont *cfont,
 						     PangoContext   *context)
 {
   PangoFcFont *fcfont = (PangoFcFont *) (cfont);
+  PangoFontMetrics *metrics;
+  const cairo_font_options_t *options;
 
-  return pango_fc_font_create_base_metrics_for_context (fcfont, context);
+  metrics = pango_fc_font_create_base_metrics_for_context (fcfont, context);
+
+  options = pango_cairo_context_get_font_options (context);
+  if (cairo_font_options_get_hint_metrics (options) == CAIRO_HINT_METRICS_ON)
+    {
+      metrics->ascent = PANGO_PIXELS_CEIL (metrics->ascent) * PANGO_SCALE;
+      metrics->descent = PANGO_PIXELS_CEIL (metrics->descent) * PANGO_SCALE;
+      metrics->height = PANGO_PIXELS_CEIL (metrics->height) * PANGO_SCALE;
+    }
+
+  return metrics;
 }
 
 static void
