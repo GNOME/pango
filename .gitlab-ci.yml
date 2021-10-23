@@ -88,6 +88,7 @@ msys2-mingw64:
 
 macos:
   extends: .only-default
+  allow_failure: true
   only:
     - branches@GNOME/pango
   stage: build
