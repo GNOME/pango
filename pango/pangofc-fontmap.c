@@ -3167,7 +3167,7 @@ ensure_faces (PangoFcFamily *fcfamily)
 
 	  fontset = fcfamily->patterns;
 
-	  /* at most we have 3 additional artifical faces */
+	  /* at most we have 3 additional artificial faces */
 	  faces = g_new (PangoFcFace *, fontset->nfont + 3);
 
           regular_weight = 0;
