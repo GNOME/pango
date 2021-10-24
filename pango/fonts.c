@@ -2329,9 +2329,23 @@ G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFontFamily, pango_font_family, G_TYPE_OBJ
 static PangoFontFace *pango_font_family_real_get_face (PangoFontFamily *family,
                                                        const char      *name);
 
+static gboolean
+pango_font_family_default_is_monospace (PangoFontFamily *family)
+{
+  return FALSE;
+}
+
+static gboolean
+pango_font_family_default_is_variable (PangoFontFamily *family)
+{
+  return FALSE;
+}
+
 static void
 pango_font_family_class_init (PangoFontFamilyClass *class G_GNUC_UNUSED)
 {
+  class->is_monospace = pango_font_family_default_is_monospace;
+  class->is_variable = pango_font_family_default_is_variable;
   class->get_face = pango_font_family_real_get_face;
 }
 
@@ -2469,10 +2483,7 @@ pango_font_family_is_monospace (PangoFontFamily  *family)
 {
   g_return_val_if_fail (PANGO_IS_FONT_FAMILY (family), FALSE);
 
-  if (PANGO_FONT_FAMILY_GET_CLASS (family)->is_monospace)
-    return PANGO_FONT_FAMILY_GET_CLASS (family)->is_monospace (family);
-  else
-    return FALSE;
+  return PANGO_FONT_FAMILY_GET_CLASS (family)->is_monospace (family);
 }
 
 /**
@@ -2491,10 +2502,7 @@ pango_font_family_is_variable (PangoFontFamily  *family)
 {
   g_return_val_if_fail (PANGO_IS_FONT_FAMILY (family), FALSE);
 
-  if (PANGO_FONT_FAMILY_GET_CLASS (family)->is_variable)
-    return PANGO_FONT_FAMILY_GET_CLASS (family)->is_variable (family);
-  else
-    return FALSE;
+  return PANGO_FONT_FAMILY_GET_CLASS (family)->is_variable (family);
 }
 
 /*
