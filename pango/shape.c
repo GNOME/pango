@@ -33,7 +33,7 @@
 #include <hb-ot.h>
 
 /* {{{ Harfbuzz shaping */
-/* {{{{ Buffer handling */
+/* {{{ Buffer handling */
 
 static hb_buffer_t *cached_buffer = NULL; /* MT-safe */
 G_LOCK_DEFINE_STATIC (cached_buffer);
@@ -73,8 +73,8 @@ release_buffer (hb_buffer_t *buffer,
     hb_buffer_destroy (buffer);
 }
 
-/* }}}} */
-/* {{{{ Use PangoFont with Harfbuzz */
+/* }}} */
+/* {{{ Use PangoFont with Harfbuzz */
 
 typedef struct
 {
@@ -235,8 +235,8 @@ pango_font_get_hb_font_for_context (PangoFont           *font,
   return hb_font;
 }
 
-/* }}}} */
-/* {{{{ Utilities */
+/* }}} */
+/* {{{ Utilities */
 
 static void
 apply_extra_attributes (GSList       *attrs,
@@ -376,7 +376,7 @@ glyph_has_color (hb_font_t      *font,
   return FALSE;
 }
 
-/* }}}} */
+/* }}} */
 
 static void
 pango_hb_shape (const char          *item_text,
