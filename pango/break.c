@@ -1664,6 +1664,7 @@ default_break (const char    *text,
 #include "break-arabic.c"
 #include "break-indic.c"
 #include "break-thai.c"
+#include "break-latin.c"
 
 static gboolean
 break_script (const char          *item_text,
@@ -1694,6 +1695,11 @@ break_script (const char          *item_text,
     case PANGO_SCRIPT_THAI:
       break_thai (item_text, item_length, analysis, attrs, attrs_len);
       break;
+
+    case PANGO_SCRIPT_LATIN:
+      break_latin (item_text, item_length, analysis, attrs, attrs_len);
+      break;
+
     default:
       return FALSE;
     }
