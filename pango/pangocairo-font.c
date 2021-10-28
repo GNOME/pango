@@ -784,41 +784,40 @@ struct _PangoCairoFontGlyphExtentsCacheEntry
 static gboolean
 _pango_cairo_font_private_glyph_extents_cache_init (PangoCairoFontPrivate *cf_priv)
 {
-  PangoCairoFont *cfont = cf_priv->cfont;
-  PangoFontMetrics *metrics = _pango_cairo_font_get_metrics (PANGO_FONT (cfont), NULL);
+  cairo_scaled_font_t *scaled_font = _pango_cairo_font_private_get_scaled_font (cf_priv);
+  cairo_font_extents_t font_extents;
+
+  if (G_UNLIKELY (scaled_font == NULL || cairo_scaled_font_status (scaled_font) != CAIRO_STATUS_SUCCESS))
+    return FALSE;
+
+  cairo_scaled_font_extents (scaled_font, &font_extents);
 
   cf_priv->font_extents.x = 0;
   cf_priv->font_extents.width = 0;
-  cf_priv->font_extents.height = metrics->ascent + metrics->descent;
-
+  cf_priv->font_extents.height = pango_units_from_double (font_extents.ascent + font_extents.descent);
   switch (cf_priv->gravity)
     {
       default:
       case PANGO_GRAVITY_AUTO:
       case PANGO_GRAVITY_SOUTH:
-       cf_priv->font_extents.y = - metrics->ascent;
-       break;
+	cf_priv->font_extents.y = - pango_units_from_double (font_extents.ascent);
+	break;
       case PANGO_GRAVITY_NORTH:
-       cf_priv->font_extents.y = - metrics->descent;
-       break;
+	cf_priv->font_extents.y = - pango_units_from_double (font_extents.descent);
+	break;
       case PANGO_GRAVITY_EAST:
       case PANGO_GRAVITY_WEST:
-       {
-         int ascent = (metrics->ascent + metrics->descent) / 2;
-         if (cf_priv->is_hinted)
-           ascent = PANGO_UNITS_ROUND (ascent);
-         cf_priv->font_extents.y = - ascent;
-       }
+	{
+	  int ascent = pango_units_from_double (font_extents.ascent + font_extents.descent) / 2;
+	  if (cf_priv->is_hinted)
+	    ascent = PANGO_UNITS_ROUND (ascent);
+	  cf_priv->font_extents.y = - ascent;
+	}
     }
 
-  pango_font_metrics_unref (metrics);
-
-  if (!cf_priv->glyph_extents_cache)
-    {
-      cf_priv->glyph_extents_cache = g_new0 (PangoCairoFontGlyphExtentsCacheEntry, GLYPH_CACHE_NUM_ENTRIES);
-      /* Make sure all cache entries are invalid initially */
-      cf_priv->glyph_extents_cache[0].glyph = 1; /* glyph 1 cannot happen in bucket 0 */
-    }
+  cf_priv->glyph_extents_cache = g_new0 (PangoCairoFontGlyphExtentsCacheEntry, GLYPH_CACHE_NUM_ENTRIES);
+  /* Make sure all cache entries are invalid initially */
+  cf_priv->glyph_extents_cache[0].glyph = 1; /* glyph 1 cannot happen in bucket 0 */
 
   return TRUE;
 }
