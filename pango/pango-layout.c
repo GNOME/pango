@@ -7509,6 +7509,12 @@ pango_layout_iter_get_baseline (PangoLayoutIter *iter)
   return iter->line_extents[iter->line_index].baseline;
 }
 
+/**
+ * pango_layout_iter_get_run_baseline
+ * @iter: a `PangoLayoutIter`
+ * 
+ * Since: 1.50
+ */
 int
 pango_layout_iter_get_run_baseline (PangoLayoutIter *iter)
 {

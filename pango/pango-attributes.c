@@ -1644,6 +1644,8 @@ pango_attribute_as_float (PangoAttribute *attr)
  *
  * Returns: (nullable) (transfer none): The attribute as `PangoAttrString`,
  *   or %NULL if it's not a string attribute
+ *
+ * Since: 1.50
  */
 PangoAttrString *
 pango_attribute_as_string (PangoAttribute *attr)

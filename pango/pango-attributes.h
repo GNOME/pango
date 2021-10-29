@@ -247,6 +247,13 @@ typedef enum {
   PANGO_BASELINE_SHIFT_SUBSCRIPT,
 } PangoBaselineShift;
 
+/**
+ * PangoFontScale:
+ * @PANGO_FONT_SCALE_SUPERSCRIPT: 
+ * @PANGO_FONT_SCALE_SUBSCRIPT: 
+ *
+ * Since: 1.50
+ */
 typedef enum {
   PANGO_FONT_SCALE_NONE,
   PANGO_FONT_SCALE_SUPERSCRIPT,
