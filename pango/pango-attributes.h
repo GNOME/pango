@@ -232,6 +232,7 @@ typedef enum {
 
 /**
  * PangoBaselineShift:
+ * @PANGO_BASELINE_SHIFT_NONE: Leave the baseline unchanged
  * @PANGO_BASELINE_SHIFT_SUPERSCRIPT: Shift the baseline to the superscript position,
  *   relative to the previous run
  * @PANGO_BASELINE_SHIFT_SUBSCRIPT: Shift the baseline to the subscript position,
@@ -249,8 +250,12 @@ typedef enum {
 
 /**
  * PangoFontScale:
- * @PANGO_FONT_SCALE_SUPERSCRIPT: 
- * @PANGO_FONT_SCALE_SUBSCRIPT: 
+ * @PANGO_FONT_SCALE_NONE: Leave the font size unchanged
+ * @PANGO_FONT_SCALE_SUPERSCRIPT: Change the font to a size suitable for superscripts
+ * @PANGO_FONT_SCALE_SUBSCRIPT: Change the font to a size suitable for subscripts
+ *
+ * An enumeration that affects font sizes for superscript
+ * and subscript positioning.
  *
  * Since: 1.50
  */
