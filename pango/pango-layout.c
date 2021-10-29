@@ -7509,6 +7509,20 @@ pango_layout_iter_get_baseline (PangoLayoutIter *iter)
   return iter->line_extents[iter->line_index].baseline;
 }
 
+/**
+ * pango_layout_iter_get_run_baseline:
+ * @iter: a `PangoLayoutIter`
+ * 
+ * Gets the Y position of the current run's baseline, in layout
+ * coordinates.
+ *
+ * Layout coordinates have the origin at the top left of the entire layout.
+ *
+ * The run baseline can be different from the line baseline, for
+ * example due to superscript or subscript positioning.
+ *
+ * Since: 1.50
+ */
 int
 pango_layout_iter_get_run_baseline (PangoLayoutIter *iter)
 {
