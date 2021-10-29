@@ -34,6 +34,7 @@ pango_sources = [
   'serializer.c',
   'json/gtkjsonparser.c',
   'json/gtkjsonprinter.c',
+  'pango-hbface.c',
 ]
 
 pango_headers = [
@@ -64,6 +65,7 @@ pango_headers = [
   'pango-tabs.h',
   'pango-types.h',
   'pango-utils.h',
+  'pango-hbface.h',
 ]
 
 pango_installed_headers = pango_headers + [ 'pango-version-macros.h' ]
