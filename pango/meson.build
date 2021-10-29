@@ -35,6 +35,7 @@ pango_sources = [
   'json/gtkjsonparser.c',
   'json/gtkjsonprinter.c',
   'pango-hbface.c',
+  'pango-hbfamily.c',
 ]
 
 pango_headers = [
