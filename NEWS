@@ -1,3 +1,11 @@
+Overview of changes in 1.49.2
+=============================
+* Update Unicode data to Unicode 14
+* Fix underlining of spaces
+* Round font metrics when appropriate
+* Fix some corner cases of cursor positioning
+* Handle Catalan middle-dot in text segmentation
+
 Overview of changes in 1.49.1
 =============================
 * Only recompute log attrs when needed
