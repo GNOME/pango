@@ -44,6 +44,7 @@ pango_sources = [
   'pango-hbface.c',
   'pango-hbfamily.c',
   'pango-generic-family.c',
+  'pango-hbfont.c',
 ]
 
 pango_headers = [
@@ -82,6 +83,7 @@ pango_headers = [
   'pango-types.h',
   'pango-utils.h',
   'pango-hbface.h',
+  'pango-hbfont.h',
 ]
 
 pango_gir_includes = [
