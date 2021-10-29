@@ -119,6 +119,27 @@ pango_coverage_new (void)
   return g_object_new (PANGO_TYPE_COVERAGE, NULL);
 }
 
+/*< private>
+ * pango_coverage_new_for_hb_face:
+ * @hb_face: a `hb_face_t`
+ *
+ * Creates a new `PangoCoverage` for the given @hb_face.
+ *
+ * Returns: the newly allocated `PangoCoverage`
+ */
+PangoCoverage *
+pango_coverage_new_for_hb_face (hb_face_t *hb_face)
+{
+  PangoCoverage *coverage;
+
+  coverage = g_object_new (PANGO_TYPE_COVERAGE, NULL);
+
+  coverage->chars = hb_set_create ();
+  hb_face_collect_unicodes (hb_face, coverage->chars);
+
+  return coverage;
+}
+
 /**
  * pango_coverage_copy:
  * @coverage: a `PangoCoverage`
