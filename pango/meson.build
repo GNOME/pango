@@ -41,6 +41,7 @@ pango_sources = [
   'pango-line-breaker.c',
   'pango-lines.c',
   'pango-line-iter.c',
+  'pango-hbface.c',
 ]
 
 pango_headers = [
@@ -77,6 +78,7 @@ pango_headers = [
   'pango-tabs.h',
   'pango-types.h',
   'pango-utils.h',
+  'pango-hbface.h',
 ]
 
 pango_gir_includes = [
