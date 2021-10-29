@@ -42,6 +42,7 @@ pango_sources = [
   'pango-lines.c',
   'pango-line-iter.c',
   'pango-hbface.c',
+  'pango-hbfamily.c',
 ]
 
 pango_headers = [
