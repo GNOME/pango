@@ -56,6 +56,8 @@ struct _PangoCoverageClass
   PangoCoverage *    (* copy) (PangoCoverage      *coverage);
 };
 
+PangoCoverage *pango_coverage_new_for_hb_face (hb_face_t *hb_face);
+
 G_END_DECLS
 
 #endif /* __PANGO_COVERAGE_PRIVATE_H__ */
