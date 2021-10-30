@@ -125,9 +125,6 @@ test_line_height (void)
   g_object_unref (context);
 }
 
-#if 0
-/* These tests fail since I had to revert 20ec670e124e446107
- */
 static void
 test_line_height2 (void)
 {
@@ -255,7 +252,6 @@ test_cursor_height2 (void)
   g_object_unref (layout);
   g_object_unref (context);
 }
-#endif
 
 static void
 test_attr_list_update (void)
@@ -713,11 +709,11 @@ main (int argc, char *argv[])
   g_test_add_func ("/layout/short-string-crash", test_short_string_crash);
   g_test_add_func ("/language/emoji-crash", test_language_emoji_crash);
   g_test_add_func ("/layout/line-height", test_line_height);
-  //g_test_add_func ("/layout/line-height2", test_line_height2);
-  //g_test_add_func ("/layout/line-height3", test_line_height3);
-  //g_test_add_func ("/layout/run-height", test_run_height);
-  //g_test_add_func ("/layout/cursor-height", test_cursor_height);
-  //g_test_add_func ("/layout/cursor-height2", test_cursor_height2);
+  g_test_add_func ("/layout/line-height2", test_line_height2);
+  g_test_add_func ("/layout/line-height3", test_line_height3);
+  g_test_add_func ("/layout/run-height", test_run_height);
+  g_test_add_func ("/layout/cursor-height", test_cursor_height);
+  g_test_add_func ("/layout/cursor-height2", test_cursor_height2);
   g_test_add_func ("/attr-list/update", test_attr_list_update);
   g_test_add_func ("/misc/version-info", test_version_info);
   g_test_add_func ("/misc/is-zerowidth", test_is_zero_width);
