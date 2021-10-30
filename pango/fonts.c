@@ -2699,8 +2699,7 @@ pango_font_get_features (PangoFont    *font,
  * The returned array is only valid as long as the font
  * and its fontmap are valid.
  *
- * Returns: (transfer none) (nullable): a %NULL-terminated
- *   array of `PangoLanguage`*
+ * Returns: (transfer none) (nullable) (array zero-terminated=1) (element-type PangoLanguage): an array of `PangoLanguage`
  *
  * Since: 1.50
  */
