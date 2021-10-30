@@ -800,19 +800,19 @@ _pango_cairo_font_private_glyph_extents_cache_init (PangoCairoFontPrivate *cf_pr
       default:
       case PANGO_GRAVITY_AUTO:
       case PANGO_GRAVITY_SOUTH:
-	cf_priv->font_extents.y = - pango_units_from_double (font_extents.ascent);
-	break;
+        cf_priv->font_extents.y = - pango_units_from_double (font_extents.ascent);
+        break;
       case PANGO_GRAVITY_NORTH:
-	cf_priv->font_extents.y = - pango_units_from_double (font_extents.descent);
-	break;
+        cf_priv->font_extents.y = - pango_units_from_double (font_extents.descent);
+        break;
       case PANGO_GRAVITY_EAST:
       case PANGO_GRAVITY_WEST:
-	{
-	  int ascent = pango_units_from_double (font_extents.ascent + font_extents.descent) / 2;
-	  if (cf_priv->is_hinted)
-	    ascent = PANGO_UNITS_ROUND (ascent);
-	  cf_priv->font_extents.y = - ascent;
-	}
+        {
+          int ascent = pango_units_from_double (font_extents.ascent + font_extents.descent) / 2;
+          if (cf_priv->is_hinted)
+            ascent = PANGO_UNITS_ROUND (ascent);
+          cf_priv->font_extents.y = - ascent;
+        }
     }
 
   cf_priv->glyph_extents_cache = g_new0 (PangoCairoFontGlyphExtentsCacheEntry, GLYPH_CACHE_NUM_ENTRIES);
@@ -904,6 +904,23 @@ _pango_cairo_font_private_get_glyph_extents (PangoCairoFontPrivate *cf_priv,
   if (logical_rect)
     {
       *logical_rect = cf_priv->font_extents;
-      logical_rect->width = entry->width;
+      switch (cf_priv->gravity)
+        {
+        case PANGO_GRAVITY_SOUTH:
+          logical_rect->width = entry->width;
+          break;
+        case PANGO_GRAVITY_EAST:
+          logical_rect->width = cf_priv->font_extents.height;
+          break;
+        case PANGO_GRAVITY_NORTH:
+          logical_rect->width = entry->width;
+          break;
+        case PANGO_GRAVITY_WEST:
+          logical_rect->width = - cf_priv->font_extents.height;
+          break;
+        case PANGO_GRAVITY_AUTO:
+        default:
+          g_assert_not_reached ();
+        }
     }
 }
