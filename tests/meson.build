@@ -50,6 +50,7 @@ if cairo_dep.found()
     tests += [
       [ 'testmisc', [ 'testmisc.c' ] ],
       [ 'testserialize', [ 'testserialize.c' ] ],
+      [ 'testhbfont', [ 'testhbfont.c' ] ],
     ]
 
     if host_system != 'darwin'
