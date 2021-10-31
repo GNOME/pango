@@ -934,12 +934,14 @@ _pango_cairo_font_private_get_glyph_extents (PangoCairoFontPrivate *cf_priv,
           break;
         case PANGO_GRAVITY_EAST:
           logical_rect->width = cf_priv->font_extents.height;
+          logical_rect->x = - logical_rect->width;
           break;
         case PANGO_GRAVITY_NORTH:
           logical_rect->width = entry->width;
           break;
         case PANGO_GRAVITY_WEST:
           logical_rect->width = - cf_priv->font_extents.height;
+          logical_rect->x = - logical_rect->width;
           break;
         case PANGO_GRAVITY_AUTO:
         default:
