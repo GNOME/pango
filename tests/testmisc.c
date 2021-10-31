@@ -698,6 +698,44 @@ test_gravity_metrics (void)
   g_object_unref (context);
 }
 
+static void
+test_transform_rectangle (void)
+{
+  PangoMatrix matrix = PANGO_MATRIX_INIT;
+  PangoRectangle rect;
+  PangoRectangle rect2;
+
+  rect = rect2 = (PangoRectangle) { 10 * PANGO_SCALE, 20 * PANGO_SCALE, 30 * PANGO_SCALE, 40 * PANGO_SCALE };
+  pango_matrix_transform_rectangle (&matrix, &rect2);
+
+  g_assert_cmpint (rect2.x, ==, rect.x);
+  g_assert_cmpint (rect2.y, ==, rect.y);
+  g_assert_cmpint (rect2.width, ==, rect.width);
+  g_assert_cmpint (rect2.height, ==, rect.height);
+
+  matrix = (PangoMatrix) PANGO_MATRIX_INIT;
+  pango_matrix_translate (&matrix, 10, 20);
+
+  pango_matrix_transform_rectangle (&matrix, &rect2);
+
+  g_assert_cmpint (rect2.x, ==, rect.x + 10 * PANGO_SCALE);
+  g_assert_cmpint (rect2.y, ==, rect.y + 20 * PANGO_SCALE);
+  g_assert_cmpint (rect2.width, ==, rect.width);
+  g_assert_cmpint (rect2.height, ==, rect.height);
+
+  rect2 = rect;
+
+  matrix = (PangoMatrix) PANGO_MATRIX_INIT;
+  pango_matrix_rotate (&matrix, -90);
+
+  pango_matrix_transform_rectangle (&matrix, &rect2);
+
+  g_assert_cmpint (rect2.x, ==, - (rect.y + rect.height));
+  g_assert_cmpint (rect2.y, ==, rect.x);
+  g_assert_cmpint (rect2.width, ==, rect.height);
+  g_assert_cmpint (rect2.height, ==, rect.width);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -730,6 +768,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/layout/extents", test_extents);
   g_test_add_func ("/layout/empty-line-height", test_empty_line_height);
   g_test_add_func ("/layout/gravity-metrics", test_gravity_metrics);
+  g_test_add_func ("/matrix/transform-rectangle", test_transform_rectangle);
 
   return g_test_run ();
 }
