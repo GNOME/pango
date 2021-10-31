@@ -57,6 +57,7 @@ if cairo_dep.found()
     tests += [
       [ 'testmisc', [ 'testmisc.c' ], [ libpangocairo_dep, libpangoft2_dep, glib_dep, harfbuzz_dep ] ],
       [ 'testserialize', [ 'testserialize.c' ], [ libpangocairo_dep, libpangoft2_dep ] ],
+      [ 'testhbfont', [ 'testhbfont.c' ], [ libpangocairo_dep, libpangoft2_dep, glib_dep, harfbuzz_dep ] ],
     ]
 
     if host_system != 'darwin'
