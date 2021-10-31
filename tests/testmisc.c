@@ -661,6 +661,47 @@ test_empty_line_height (void)
   g_object_unref (context);
 }
 
+static void
+test_gravity_metrics (void)
+{
+  PangoFontMap *map;
+  PangoContext *context;
+  PangoFontDescription *desc;
+  PangoFont *font;
+  PangoGlyph glyph;
+  PangoGravity gravity;
+  PangoRectangle ink[4];
+  PangoRectangle log[4];
+
+  map = pango_cairo_font_map_get_default ();
+  context = pango_font_map_create_context (map);
+
+  desc = pango_font_description_from_string ("Cantarell 64");
+
+  glyph = 1; /* A */
+
+  for (gravity = PANGO_GRAVITY_SOUTH; gravity <= PANGO_GRAVITY_WEST; gravity++)
+    {
+      pango_font_description_set_gravity (desc, gravity);
+      font = pango_font_map_load_font (map, context, desc);
+      pango_font_get_glyph_extents (font, glyph, &ink[gravity], &log[gravity]);
+      g_object_unref (font);
+    }
+
+  g_assert_cmpint (ink[PANGO_GRAVITY_EAST].width, ==, ink[PANGO_GRAVITY_SOUTH].height);
+  g_assert_cmpint (ink[PANGO_GRAVITY_EAST].height, ==, ink[PANGO_GRAVITY_SOUTH].width);
+  g_assert_cmpint (ink[PANGO_GRAVITY_NORTH].width, ==, ink[PANGO_GRAVITY_SOUTH].width);
+  g_assert_cmpint (ink[PANGO_GRAVITY_NORTH].height, ==, ink[PANGO_GRAVITY_SOUTH].height);
+  g_assert_cmpint (ink[PANGO_GRAVITY_WEST].width, ==, ink[PANGO_GRAVITY_SOUTH].height);
+  g_assert_cmpint (ink[PANGO_GRAVITY_WEST].height, ==, ink[PANGO_GRAVITY_SOUTH].width);
+
+  g_assert_cmpint (log[PANGO_GRAVITY_SOUTH].width, ==, - log[PANGO_GRAVITY_NORTH].width);
+  g_assert_cmpint (log[PANGO_GRAVITY_EAST].width, ==, - log[PANGO_GRAVITY_WEST].width);
+
+  pango_font_description_free (desc);
+  g_object_unref (context);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -692,6 +733,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/layout/index-to-x", test_index_to_x);
   g_test_add_func ("/layout/extents", test_extents);
   g_test_add_func ("/layout/empty-line-height", test_empty_line_height);
+  g_test_add_func ("/layout/gravity-metrics", test_gravity_metrics);
 
   return g_test_run ();
 }
