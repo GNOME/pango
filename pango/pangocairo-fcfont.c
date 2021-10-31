@@ -75,14 +75,13 @@ static PangoFontMetrics *
 pango_cairo_fc_font_create_base_metrics_for_context (PangoCairoFont *cfont,
 						     PangoContext   *context)
 {
-  PangoFcFont *fcfont = (PangoFcFont *) (cfont);
+  PangoCairoFcFont *cffont = (PangoCairoFcFont *) cfont;
+  PangoFcFont *fcfont = (PangoFcFont *) cfont;
   PangoFontMetrics *metrics;
-  const cairo_font_options_t *options;
 
   metrics = pango_fc_font_create_base_metrics_for_context (fcfont, context);
 
-  options = pango_cairo_context_get_font_options (context);
-  if (cairo_font_options_get_hint_metrics (options) == CAIRO_HINT_METRICS_ON)
+  if (_pango_cairo_font_private_is_metrics_hinted (&cffont->cf_priv))
     {
       metrics->ascent = PANGO_PIXELS_CEIL (metrics->ascent) * PANGO_SCALE;
       metrics->descent = PANGO_PIXELS_CEIL (metrics->descent) * PANGO_SCALE;
