@@ -703,6 +703,56 @@ test_gravity_metrics (void)
 }
 
 static void
+test_gravity_metrics2 (void)
+{
+  PangoHbFontMap *map;
+  PangoContext *context;
+  PangoFontDescription *desc;
+  PangoFont *font;
+  PangoGlyph glyph;
+  PangoGravity gravity;
+  PangoRectangle ink[4];
+  PangoRectangle log[4];
+  char *path;
+
+  map = pango_hb_font_map_new ();
+  path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
+  pango_hb_font_map_add_file (map, path);
+  g_free (path);
+
+  context = pango_font_map_create_context (PANGO_FONT_MAP (map));
+
+  desc = pango_font_description_from_string ("Cantarell 64");
+
+  glyph = 1; /* A */
+
+  for (gravity = PANGO_GRAVITY_SOUTH; gravity <= PANGO_GRAVITY_WEST; gravity++)
+    {
+      pango_font_description_set_gravity (desc, gravity);
+      font = pango_font_map_load_font (PANGO_FONT_MAP (map), context, desc);
+      pango_font_get_glyph_extents (font, glyph, &ink[gravity], &log[gravity]);
+      g_object_unref (font);
+    }
+
+  g_assert_cmpint (ink[PANGO_GRAVITY_EAST].width, ==, ink[PANGO_GRAVITY_SOUTH].height);
+  g_assert_cmpint (ink[PANGO_GRAVITY_EAST].height, ==, ink[PANGO_GRAVITY_SOUTH].width);
+  g_assert_cmpint (ink[PANGO_GRAVITY_NORTH].width, ==, ink[PANGO_GRAVITY_SOUTH].width);
+  g_assert_cmpint (ink[PANGO_GRAVITY_NORTH].height, ==, ink[PANGO_GRAVITY_SOUTH].height);
+  g_assert_cmpint (ink[PANGO_GRAVITY_WEST].width, ==, ink[PANGO_GRAVITY_SOUTH].height);
+  g_assert_cmpint (ink[PANGO_GRAVITY_WEST].height, ==, ink[PANGO_GRAVITY_SOUTH].width);
+
+  /* Seems that harfbuzz has some off-by-one differences in advance width
+   * when fonts differ by a scale of -1.
+   */
+  g_assert_cmpint (log[PANGO_GRAVITY_SOUTH].width + log[PANGO_GRAVITY_NORTH].width, <=, 1);
+  g_assert_cmpint (log[PANGO_GRAVITY_EAST].width, ==, log[PANGO_GRAVITY_WEST].width);
+
+  pango_font_description_free (desc);
+  g_object_unref (context);
+  g_object_unref (map);
+}
+
+static void
 test_transform_rectangle (void)
 {
   PangoMatrix matrix = PANGO_MATRIX_INIT;
@@ -823,6 +873,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/layout/empty-line-height", test_empty_line_height);
   g_test_add_func ("/layout/gravity-metrics", test_gravity_metrics);
   g_test_add_func ("/layout/wrap-char", test_wrap_char);
+  g_test_add_func ("/layout/gravity-metrics2", test_gravity_metrics2);
   g_test_add_func ("/matrix/transform-rectangle", test_transform_rectangle);
   g_test_add_func ("/itemize/small-caps-crash", test_small_caps_crash);
 
