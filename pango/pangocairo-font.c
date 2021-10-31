@@ -693,7 +693,7 @@ get_space_extents (PangoCairoFontPrivate *cf_priv,
       cairo_text_extents_t extents;
 
       c[0] = hexdigits[i];
-      cairo_scaled_font_text_extents (cf_priv->scaled_font, c, &extents);
+      cairo_scaled_font_text_extents (_pango_cairo_font_private_get_scaled_font (cf_priv), c, &extents);
       hex_width += extents.width;
     }
   width = pango_units_from_double (hex_width / 16);
