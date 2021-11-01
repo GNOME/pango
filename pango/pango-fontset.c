@@ -301,9 +301,11 @@ pango_fontset_simple_finalize (GObject *object)
 /**
  * pango_fontset_simple_append:
  * @fontset: a `PangoFontsetSimple`.
- * @font: a `PangoFont`.
+ * @font: (transfer full): a `PangoFont`.
  *
  * Adds a font to the fontset.
+ *
+ * The fontset takes ownership of @font.
  */
 void
 pango_fontset_simple_append (PangoFontsetSimple *fontset,
