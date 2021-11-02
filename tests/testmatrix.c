@@ -191,6 +191,7 @@ test_matrix_slant_ratio (void)
 {
   PangoMatrix m = (PangoMatrix) { 1, 0, 0.2, 1, 0, 0 };
   PangoMatrix m2 = (PangoMatrix) { 1, 0.4, 0, 1, 0, 0 };
+  PangoMatrix m3 = (PangoMatrix) { 1, 0.3, 0, 2, 0, 0 };
   double r;
 
   r = pango_matrix_get_slant_ratio (&m);
@@ -208,6 +209,9 @@ test_matrix_slant_ratio (void)
 
   r = pango_matrix_get_slant_ratio (&m2);
   g_assert_cmphex (r, ==, 0.4);
+
+  r = pango_matrix_get_slant_ratio (&m3);
+  g_assert_cmphex (r, ==, 0.67);
 }
 
 int

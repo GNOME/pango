@@ -209,11 +209,13 @@ if build_pangoft2
     'pangofc-font.h',
     'pangofc-fontmap.h',
     'pangofc-decoder.h',
+    'pangofc-hbfontmap.h',
   ]
 
   pangofc_public_sources = [
     'pangofc-font.c',
     'pangofc-fontmap.c',
+    'pangofc-hbfontmap.c',
     'pangofc-language-set.c',
     'pangofc-decoder.c',
     'pango-trace.c',
