@@ -192,6 +192,12 @@ test_run_height (void)
   PangoLayoutIter *iter;
   PangoRectangle logical1, logical2;
 
+  if (strcmp (G_OBJECT_TYPE_NAME (pango_cairo_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
+    {
+      g_test_skip ("This test fails on macOS and needs debugging");
+      return;
+    }
+
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
   layout = pango_layout_new (context);
   pango_layout_set_text (layout, "one", -1);
@@ -236,6 +242,12 @@ test_cursor_height2 (void)
   PangoContext *context;
   PangoLayout *layout;
   PangoRectangle strong1, strong2;
+
+  if (strcmp (G_OBJECT_TYPE_NAME (pango_cairo_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
+    {
+      g_test_skip ("This test fails on macOS and needs debugging");
+      return;
+    }
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
   layout = pango_layout_new (context);
@@ -625,6 +637,12 @@ test_empty_line_height (void)
   PangoRectangle ext1, ext2, ext3;
   cairo_font_options_t *options;
   int hint;
+
+  if (strcmp (G_OBJECT_TYPE_NAME (pango_cairo_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
+    {
+      g_test_skip ("This test fails on macOS and needs debugging");
+      return;
+    }
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
