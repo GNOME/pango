@@ -137,6 +137,7 @@ static struct {
 } ignorables[] = {
   { 0x00ad, "SHY"   }, /* SOFT HYPHEN */
   { 0x034f, "CGJ"   }, /* COMBINING GRAPHEME JOINER */
+  { 0x061c, "ALM"   }, /* ARABIC LETTER MARK */
   { 0x200b, "ZWS"   }, /* ZERO WIDTH SPACE */
   { 0x200c, "ZWNJ"  }, /* ZERO WIDTH NON-JOINER */
   { 0x200d, "ZWJ"   }, /* ZERO WIDTH JOINER */
@@ -153,6 +154,10 @@ static struct {
   { 0x2061, "FA"    }, /* FUNCTION APPLICATION */
   { 0x2062, "IT"    }, /* INVISIBLE TIMES */
   { 0x2063, "IS"    }, /* INVISIBLE SEPARATOR */
+  { 0x2066, "LRI"   }, /* LEFT-TO-RIGHT ISOLATE */
+  { 0x2067, "RLI"   }, /* RIGHT-TO-LEFT ISOLATE */
+  { 0x2068, "FSI"   }, /* FIRST STRONG ISOLATE */
+  { 0x2069, "PDI"   }, /* POP DIRECTIONAL ISOLATE */
   { 0xfeff, "ZWNBS" }, /* ZERO WIDTH NO-BREAK SPACE */
 };
 
