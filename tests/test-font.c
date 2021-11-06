@@ -279,6 +279,46 @@ test_roundtrip_plain (void)
 }
 
 static void
+test_roundtrip_small_caps (void)
+{
+  PangoFontMap *fontmap;
+  PangoContext *context;
+  PangoFontDescription *desc, *desc2;
+  PangoFont *font;
+  hb_feature_t features[32];
+  guint num = 0;
+
+  if (strcmp (G_OBJECT_TYPE_NAME (pango_cairo_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
+    {
+      g_test_skip ("Small Caps support needs to be added to PangoCoreTextFontMap");
+      return;
+    }
+
+  desc = pango_font_description_from_string ("Cantarell Small-Caps 11");
+
+  g_assert_true (pango_font_description_get_variant (desc) == PANGO_VARIANT_SMALL_CAPS);
+
+  fontmap = pango_cairo_font_map_get_default ();
+  context = pango_font_map_create_context (fontmap);
+
+  font = pango_context_load_font (context, desc);
+  desc2 = pango_font_describe (font);
+
+  pango_font_get_features (font, features, G_N_ELEMENTS (features), &num);
+  g_assert_true (num == 1);
+  g_assert_true (features[0].tag == HB_TAG ('s', 'm', 'c', 'p'));
+  g_assert_true (features[0].value == 1);
+  g_assert_true (pango_font_description_get_variant (desc2) == PANGO_VARIANT_SMALL_CAPS);
+
+  g_assert_true (pango_font_description_equal (desc2, desc));
+
+  pango_font_description_free (desc2);
+  g_object_unref (font);
+  pango_font_description_free (desc);
+  g_object_unref (context);
+}
+
+static void
 test_roundtrip_emoji (void)
 {
   PangoFontMap *fontmap;
@@ -472,6 +512,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/font/extents", test_extents);
   g_test_add_func ("/pango/font/enumerate", test_enumerate);
   g_test_add_func ("/pango/font/roundtrip/plain", test_roundtrip_plain);
+  g_test_add_func ("/pango/font/roundtrip/small-caps", test_roundtrip_small_caps);
   g_test_add_func ("/pango/font/roundtrip/emoji", test_roundtrip_emoji);
   g_test_add_func ("/pango/font/models", test_font_models);
   g_test_add_func ("/pango/font/glyph-extents", test_glyph_extents);
