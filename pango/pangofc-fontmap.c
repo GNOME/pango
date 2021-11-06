@@ -1854,6 +1854,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   int slant;
   double weight;
   PangoGravity gravity;
+  PangoVariant variant;
   char **families;
   int i;
   int width;
@@ -1864,6 +1865,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   width = pango_fc_convert_width_to_fc (pango_font_description_get_stretch (description));
 
   gravity = pango_font_description_get_gravity (description);
+  variant = pango_font_description_get_variant (description);
 
   /* The reason for passing in FC_SIZE as well as FC_PIXEL_SIZE is
    * to work around a bug in libgnomeprint where it doesn't look
@@ -1912,6 +1914,9 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
 
   if (prgname)
     FcPatternAddString (pattern, PANGO_FC_PRGNAME, (FcChar8*) prgname);
+
+  if (variant == PANGO_VARIANT_SMALL_CAPS)
+    FcPatternAddString (pattern, PANGO_FC_FONT_FEATURES, (FcChar8*) "smcp=1");
 
   return pattern;
 }
@@ -2786,6 +2791,22 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
   pango_font_description_set_stretch (desc, stretch);
 
   pango_font_description_set_variant (desc, PANGO_VARIANT_NORMAL);
+
+  for (int i = 0; i < 32; i++)
+    {
+      const char *s;
+
+      if (FcPatternGetString (pattern, PANGO_FC_FONT_FEATURES, i, (FcChar8 **)&s) == FcResultMatch)
+        {
+          if (strcmp (s, "smcp=1") == 0)
+            {
+              pango_font_description_set_variant (desc, PANGO_VARIANT_SMALL_CAPS);
+              break;
+            }
+        }
+      else
+        break;
+    }
 
   if (include_size && FcPatternGetDouble (pattern, FC_SIZE, 0, &size) == FcResultMatch)
     {
