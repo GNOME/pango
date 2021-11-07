@@ -1024,6 +1024,8 @@ itemize_state_finish (ItemizeState *state)
 /* }}} */
 /* {{{ Post-processing */
 
+ /* {{{ Handling font scale */
+
 typedef struct {
   PangoAttribute *attr;
   double scale;
@@ -1048,43 +1050,61 @@ collect_font_scale (PangoContext  *context,
           if (attr->start_index == item->offset)
             {
               ScaleItem *entry;
-              hb_font_t *hb_font;
               int y_scale;
               hb_position_t y_size;
+              hb_position_t cap_height;
+              hb_position_t x_height;
 
               entry = g_new (ScaleItem, 1);
               entry->attr = attr;
               *stack = g_list_prepend (*stack, entry);
-
-              if (prev)
-                {
-                  hb_font = pango_font_get_hb_font (prev->analysis.font);
-                  hb_font_get_scale (hb_font, NULL, &y_scale);
-                }
-              else
-                hb_font = NULL;
 
               switch (((PangoAttrInt *)attr)->value)
                 {
                 case PANGO_FONT_SCALE_NONE:
                   break;
                 case PANGO_FONT_SCALE_SUPERSCRIPT:
-                  if (hb_font &&
-                      hb_ot_metrics_get_position (hb_font,
+                  if (prev &&
+                      hb_ot_metrics_get_position (pango_font_get_hb_font (prev->analysis.font),
                                                   HB_OT_METRICS_TAG_SUPERSCRIPT_EM_Y_SIZE,
                                                   &y_size))
-                    entry->scale = y_size / (double) y_scale;
+                    {
+                      hb_font_get_scale (pango_font_get_hb_font (prev->analysis.font), NULL, &y_scale);
+                      entry->scale = y_size / (double) y_scale;
+                    }
                   else
-                    entry->scale = 1 / 1.2;
+                    {
+                      entry->scale = 1 / 1.2;
+                    }
                   break;
                 case PANGO_FONT_SCALE_SUBSCRIPT:
-                  if (hb_font &&
-                      hb_ot_metrics_get_position (hb_font,
+                  if (prev &&
+                      hb_ot_metrics_get_position (pango_font_get_hb_font (prev->analysis.font),
                                                   HB_OT_METRICS_TAG_SUBSCRIPT_EM_Y_SIZE,
                                                   &y_size))
-                    entry->scale = y_size / (double) y_scale;
+                    {
+                      hb_font_get_scale (pango_font_get_hb_font (prev->analysis.font), NULL, &y_scale);
+                      entry->scale = y_size / (double) y_scale;
+                    }
                   else
-                    entry->scale = 1 / 1.2;
+                    {
+                      entry->scale = 1 / 1.2;
+                    }
+                  break;
+                case PANGO_FONT_SCALE_SMALL_CAPS:
+                  if (hb_ot_metrics_get_position (pango_font_get_hb_font (item->analysis.font),
+                                                  HB_OT_METRICS_TAG_CAP_HEIGHT,
+                                                  &cap_height) &&
+                      hb_ot_metrics_get_position (pango_font_get_hb_font (item->analysis.font),
+                                                  HB_OT_METRICS_TAG_X_HEIGHT,
+                                                  &x_height))
+                    {
+                      entry->scale = x_height / (double) cap_height;
+                    }
+                  else
+                    {
+                      entry->scale = 0.8;
+                    }
                   break;
                 default:
                   g_assert_not_reached ();
@@ -1166,6 +1186,8 @@ apply_font_scale (PangoContext *context,
       g_list_free_full (stack, g_free);
     }
 }
+
+/* }}} */
 
 static GList *
 post_process_items (PangoContext *context,
