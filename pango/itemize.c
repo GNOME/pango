@@ -1193,9 +1193,187 @@ apply_font_scale (PangoContext *context,
 }
 
 /* }}} */
+/* {{{ Handling Small Caps */
+
+static gboolean
+feature_is_requested (hb_feature_t *features,
+                      guint         num_features,
+                      hb_tag_t      tag)
+{
+  for (guint i = 0; i < num_features; i++)
+    {
+      if (features[i].tag == tag)
+        return features[i].value != 0;
+    }
+
+  return FALSE;
+}
+
+
+static gboolean
+feature_is_supported (hb_font_t           *font,
+                      const PangoAnalysis *analysis,
+                      hb_tag_t             table,
+                      hb_tag_t             feature)
+{
+  hb_face_t *face = hb_font_get_face (font);
+  hb_script_t script;
+  hb_language_t language;
+  guint script_count = HB_OT_MAX_TAGS_PER_SCRIPT;
+  hb_tag_t script_tags[HB_OT_MAX_TAGS_PER_SCRIPT];
+  hb_tag_t chosen_script;
+  guint language_count = HB_OT_MAX_TAGS_PER_LANGUAGE;
+  hb_tag_t language_tags[HB_OT_MAX_TAGS_PER_LANGUAGE];
+  guint script_index, language_index;
+  guint feature_index;
+
+  script = g_unicode_script_to_iso15924 (analysis->script);
+  language = hb_language_from_string (pango_language_to_string (analysis->language), -1);
+
+  hb_ot_tags_from_script_and_language (script, language,
+                                       &script_count, script_tags,
+                                       &language_count, language_tags);
+  hb_ot_layout_table_select_script (face, table,
+                                    script_count, script_tags,
+                                    &script_index,
+                                    &chosen_script);
+  hb_ot_layout_script_select_language (face, table,
+                                       script_index,
+                                       language_count, language_tags,
+                                       &language_index);
+
+  return hb_ot_layout_language_find_feature (face, table,
+                                             script_index, language_index,
+                                             feature,
+                                             &feature_index);
+}
+
+static gboolean
+small_caps_is_requested (PangoItem *item)
+{
+  hb_feature_t features[32];
+  unsigned int num_features = 0;
+
+  pango_analysis_collect_features (&item->analysis,
+                                   features, G_N_ELEMENTS (features),
+                                   &num_features);
+
+  return feature_is_requested (features, num_features, HB_TAG ('s', 'm', 'c', 'p'));
+}
+
+static gboolean
+small_caps_is_supported (PangoItem *item)
+{
+  hb_font_t *font = pango_font_get_hb_font (item->analysis.font);
+
+  return feature_is_supported (font, &item->analysis, HB_OT_TAG_GSUB, HB_TAG ('s', 'm', 'c', 'p'));
+}
+
+static void
+split_item_for_small_caps (const char *text,
+                           GList      *list_item)
+{
+  PangoItem *item = list_item->data;
+  const char *start, *end;
+  const char *p, *p0;
+  gunichar wc;
+
+  start = text + item->offset;
+  end = start + item->length;
+
+  char *s = g_strndup (start, end - start);
+  g_free (s);
+
+  p = start;
+  while (p < end)
+    {
+      p0 = p;
+      wc = g_utf8_get_char (p);
+      while (p < end && (g_unichar_islower (wc) || consider_as_space (wc)))
+        {
+          p = g_utf8_next_char (p);
+          wc = g_utf8_get_char (p);
+        }
+
+      if (p0 < p)
+        {
+          PangoItem *new_item;
+          PangoAttribute *attr;
+
+          /* p0 .. p is a lowercase segment */
+          if (p < end)
+            {
+              new_item = pango_item_split (item, p - p0, g_utf8_strlen (p, p - p0));
+              list_item->data = new_item;
+              list_item = g_list_insert_before (list_item, list_item->next, item);
+              list_item = list_item->next;
+            }
+          else
+            {
+              new_item = item;
+            }
+
+          attr = pango_attr_text_transform_new (PANGO_TEXT_TRANSFORM_UPPERCASE);
+          attr->start_index = new_item->offset;
+          attr->end_index = new_item->offset + new_item->length;
+          new_item->analysis.extra_attrs = g_slist_prepend (new_item->analysis.extra_attrs, attr);
+
+          attr = pango_attr_font_scale_new (PANGO_FONT_SCALE_SMALL_CAPS);
+          attr->start_index = new_item->offset;
+          attr->end_index = new_item->offset + new_item->length;
+          new_item->analysis.extra_attrs = g_slist_prepend (new_item->analysis.extra_attrs, attr);
+        }
+
+      p0 = p;
+      wc = g_utf8_get_char (p);
+      while (p < end && (!g_unichar_islower (wc) || consider_as_space (wc)))
+        {
+          p = g_utf8_next_char (p);
+          wc = g_utf8_get_char (p);
+        }
+
+      if (p0 < p && p < end)
+        {
+          PangoItem *new_item;
+
+          /* p0 .. p is a uppercase segment */
+          new_item = pango_item_split (item, p - p0, g_utf8_strlen (p, p - p0));
+          list_item->data = new_item;
+          list_item = g_list_insert_before (list_item, list_item->next, item);
+          list_item = list_item->next;
+        }
+    }
+}
+
+static void
+handle_small_caps_for_item (const char *text,
+                            GList      *l)
+{
+  PangoItem *item = l->data;
+
+  if (small_caps_is_requested (item) &&
+      !small_caps_is_supported (item))
+    split_item_for_small_caps (text, l);
+}
+
+static void
+handle_small_caps (const char *text,
+                   GList      *items)
+{
+  GList *next;
+
+  for (GList *l = items; l; l = next)
+    {
+      next = l->next;
+      handle_small_caps_for_item (text, l);
+    }
+}
+
+/* }}} */
 
 static GList *
 post_process_items (PangoContext *context,
+                    const char   *text,
                     GList        *items)
 {
   items = g_list_reverse (items);
@@ -1210,6 +1388,8 @@ post_process_items (PangoContext *context,
         char_offset += item->num_chars;
       }
   }
+
+  handle_small_caps (text, items);
 
   /* apply font-scale */
   apply_font_scale (context, items);
@@ -1245,7 +1425,7 @@ pango_itemize_with_font (PangoContext               *context,
 
   itemize_state_finish (&state);
 
-  return post_process_items (context, state.result);
+  return post_process_items (context, text, state.result);
 }
 
 /**
