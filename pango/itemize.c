@@ -1461,7 +1461,7 @@ post_process_items (PangoContext *context,
 }
 
 /* }}} */
-/* {{{ Public API */
+/* {{{ Private API */
 
 /* Like pango_itemize_with_base_dir, but takes a font description */
 GList *
@@ -1490,6 +1490,9 @@ pango_itemize_with_font (PangoContext               *context,
 
   return post_process_items (context, text, state.result);
 }
+
+/* }}} */
+/* {{{ Public API */
 
 /**
  * pango_itemize_with_base_dir:
