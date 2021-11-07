@@ -902,6 +902,36 @@ itemize_state_update_for_new_run (ItemizeState *state)
     }
 }
 
+/* We don't want space characters to affect font selection; in general,
+* it's always wrong to select a font just to render a space.
+* We assume that all fonts have the ASCII space, and for other space
+* characters if they don't, HarfBuzz will compatibility-decompose them
+* to ASCII space...
+* See bugs #355987 and #701652.
+*
+* We don't want to change fonts just for variation selectors.
+* See bug #781123.
+*
+* Finally, don't change fonts for line or paragraph separators.
+*
+* Note that we want spaces to use the 'better' font, comparing
+* the font that is used before and after the space. This is handled
+* in itemize_state_add_character().
+*/
+static gboolean
+consider_as_space (gunichar wc)
+{
+  GUnicodeType type = g_unichar_type (wc);
+  return type == G_UNICODE_CONTROL ||
+         type == G_UNICODE_FORMAT ||
+         type == G_UNICODE_SURROGATE ||
+         type == G_UNICODE_LINE_SEPARATOR ||
+         type == G_UNICODE_PARAGRAPH_SEPARATOR ||
+         (type == G_UNICODE_SPACE_SEPARATOR && wc != 0x1680u /* OGHAM SPACE MARK */) ||
+         (wc >= 0xfe00u && wc <= 0xfe0fu) ||
+         (wc >= 0xe0100u && wc <= 0xe01efu);
+}
+
 static void
 itemize_state_process_run (ItemizeState *state)
 {
@@ -926,33 +956,8 @@ itemize_state_process_run (ItemizeState *state)
       gboolean is_forced_break = (wc == '\t' || wc == LINE_SEPARATOR);
       PangoFont *font;
       int font_position;
-      GUnicodeType type;
 
-      /* We don't want space characters to affect font selection; in general,
-       * it's always wrong to select a font just to render a space.
-       * We assume that all fonts have the ASCII space, and for other space
-       * characters if they don't, HarfBuzz will compatibility-decompose them
-       * to ASCII space...
-       * See bugs #355987 and #701652.
-       *
-       * We don't want to change fonts just for variation selectors.
-       * See bug #781123.
-       *
-       * Finally, don't change fonts for line or paragraph separators.
-       *
-       * Note that we want spaces to use the 'better' font, comparing
-       * the font that is used before and after the space. This is handled
-       * in itemize_state_add_character().
-       */
-      type = g_unichar_type (wc);
-      if (G_UNLIKELY (type == G_UNICODE_CONTROL ||
-                      type == G_UNICODE_FORMAT ||
-                      type == G_UNICODE_SURROGATE ||
-                      type == G_UNICODE_LINE_SEPARATOR ||
-                      type == G_UNICODE_PARAGRAPH_SEPARATOR ||
-                      (type == G_UNICODE_SPACE_SEPARATOR && wc != 0x1680u /* OGHAM SPACE MARK */) ||
-                      (wc >= 0xfe00u && wc <= 0xfe0fu) ||
-                      (wc >= 0xe0100u && wc <= 0xe01efu)))
+      if (consider_as_space (wc))
         {
           font = NULL;
           font_position = 0xffff;
