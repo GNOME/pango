@@ -68,10 +68,20 @@ G_STATIC_ASSERT (offsetof (PangoItem, length) == offsetof (PangoItemPrivate, len
 G_STATIC_ASSERT (offsetof (PangoItem, num_chars) == offsetof (PangoItemPrivate, num_chars));
 G_STATIC_ASSERT (offsetof (PangoItem, analysis) == offsetof (PangoItemPrivate, analysis));
 
-void               pango_analysis_collect_features    (const PangoAnalysis *analysis,
-                                                       hb_feature_t        *features,
-                                                       guint                length,
-                                                       guint               *num_features);
+void               pango_analysis_collect_features    (const PangoAnalysis        *analysis,
+                                                       hb_feature_t               *features,
+                                                       guint                       length,
+                                                       guint                      *num_features);
+
+GList *            pango_itemize_with_font            (PangoContext               *context,
+                                                       PangoDirection              base_dir,
+                                                       const char                 *text,
+                                                       int                         start_index,
+                                                       int                         length,
+                                                       PangoAttrList              *attrs,
+                                                       PangoAttrIterator          *cached_iter,
+                                                       const PangoFontDescription *desc);
+
 
 G_END_DECLS
 
