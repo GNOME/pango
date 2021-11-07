@@ -244,16 +244,17 @@ static PangoTextTransform
 find_text_transform (const PangoAnalysis *analysis)
 {
   GSList *l;
+  PangoTextTransform transform = PANGO_TEXT_TRANSFORM_NONE;
 
   for (l = analysis->extra_attrs; l; l = l->next)
     {
       PangoAttribute *attr = l->data;
 
       if (attr->klass->type == PANGO_ATTR_TEXT_TRANSFORM)
-        return (PangoTextTransform) ((PangoAttrInt*)attr)->value;
+        transform = (PangoTextTransform) ((PangoAttrInt*)attr)->value;
     }
 
-  return PANGO_TEXT_TRANSFORM_NONE;
+  return transform;
 }
 
 static gboolean
