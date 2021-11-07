@@ -22,6 +22,7 @@
 #define __PANGO_ITEM_PRIVATE_H__
 
 #include <pango/pango-item.h>
+#include <pango/pango-break.h>
 
 G_BEGIN_DECLS
 
@@ -81,6 +82,11 @@ GList *            pango_itemize_with_font            (PangoContext             
                                                        PangoAttrList              *attrs,
                                                        PangoAttrIterator          *cached_iter,
                                                        const PangoFontDescription *desc);
+
+GList *            pango_itemize_post_process_items   (PangoContext               *context,
+                                                       const char                 *text,
+                                                       PangoLogAttr               *log_attrs,
+                                                       GList                      *items);
 
 
 G_END_DECLS

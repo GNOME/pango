@@ -1435,26 +1435,30 @@ handle_variants (const char *text,
 /* }}} */
 
 static GList *
+reorder_items (PangoContext *context,
+               GList        *items)
+{
+  int char_offset = 0;
+
+  items = g_list_reverse (items);
+
+  /* Also cmpute the char offset for each item here */
+  for (GList *l = items; l; l = l->next)
+    {
+      PangoItemPrivate *item = l->data;
+      item->char_offset = char_offset;
+      char_offset += item->num_chars;
+    }
+
+  return items;
+}
+
+static GList *
 post_process_items (PangoContext *context,
                     const char   *text,
                     GList        *items)
 {
-  items = g_list_reverse (items);
-
-  /* Compute the char offset for each item */
-  {
-    int char_offset = 0;
-    for (GList *l = items; l; l = l->next)
-      {
-        PangoItemPrivate *item = l->data;
-        item->char_offset = char_offset;
-        char_offset += item->num_chars;
-      }
-  }
-
   handle_variants (text, items);
-
-  /* apply font-scale */
   apply_font_scale (context, items);
 
   return items;
@@ -1488,7 +1492,16 @@ pango_itemize_with_font (PangoContext               *context,
 
   itemize_state_finish (&state);
 
-  return post_process_items (context, text, state.result);
+  return reorder_items (context, state.result);
+}
+
+GList *
+pango_itemize_post_process_items (PangoContext *context,
+                                  const char   *text,
+                                  PangoLogAttr *log_attrs,
+                                  GList        *items)
+{
+  return post_process_items (context, text, items);
 }
 
 /* }}} */
@@ -1527,15 +1540,19 @@ pango_itemize_with_base_dir (PangoContext      *context,
                              PangoAttrList     *attrs,
                              PangoAttrIterator *cached_iter)
 {
+  GList *items;
+
   g_return_val_if_fail (context != NULL, NULL);
   g_return_val_if_fail (start_index >= 0, NULL);
   g_return_val_if_fail (length >= 0, NULL);
   g_return_val_if_fail (length == 0 || text != NULL, NULL);
 
-  return pango_itemize_with_font (context, base_dir,
-                                  text, start_index, length,
-                                  attrs, cached_iter,
-                                  NULL);
+  items = pango_itemize_with_font (context, base_dir,
+                                   text, start_index, length,
+                                   attrs, cached_iter,
+                                   NULL);
+
+  return pango_itemize_post_process_items (context, text, NULL, items);
 }
 
 /**
@@ -1579,10 +1596,9 @@ pango_itemize (PangoContext      *context,
   g_return_val_if_fail (length >= 0, NULL);
   g_return_val_if_fail (length == 0 || text != NULL, NULL);
 
-  return pango_itemize_with_font (context, context->base_dir,
-                                  text, start_index, length,
-                                  attrs, cached_iter,
-                                  NULL);
+  return pango_itemize_with_base_dir (context, context->base_dir,
+                                      text, start_index, length,
+                                      attrs, cached_iter);
 }
 
  /* }}} */

@@ -4534,13 +4534,14 @@ pango_layout_check_lines (PangoLayout *layout)
       g_assert (delim_len >= 0);
 
       state.attrs = itemize_attrs;
-      state.items = pango_itemize_with_base_dir (layout->context,
-                                                 base_dir,
-                                                 layout->text,
-                                                 start - layout->text,
-                                                 end - start,
-                                                 itemize_attrs,
-                                                 itemize_attrs ? &iter : NULL);
+      state.items = pango_itemize_with_font (layout->context,
+                                             base_dir,
+                                             layout->text,
+                                             start - layout->text,
+                                             end - start,
+                                             itemize_attrs,
+                                             itemize_attrs ? &iter : NULL,
+                                             NULL);
 
       apply_attributes_to_items (state.items, shape_attrs);
 
@@ -4552,6 +4553,11 @@ pango_layout_check_lines (PangoLayout *layout)
                              shape_attrs,
                              layout->log_attrs + start_offset,
                              layout->n_chars + 1 - start_offset);
+
+      state.items = pango_itemize_post_process_items (layout->context,
+                                                      layout->text,
+                                                      layout->log_attrs + start_offset,
+                                                      state.items);
 
       state.base_dir = base_dir;
       state.line_of_par = 1;
