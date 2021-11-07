@@ -1193,29 +1193,14 @@ apply_font_scale (PangoContext *context,
 }
 
 /* }}} */
-/* {{{ Handling Small Caps */
+/* {{{ Handling Casing variants */
 
 static gboolean
-feature_is_requested (hb_feature_t *features,
-                      guint         num_features,
-                      hb_tag_t      tag)
+all_features_supported (PangoItem *item,
+                        hb_tag_t  *features,
+                        guint      n_features)
 {
-  for (guint i = 0; i < num_features; i++)
-    {
-      if (features[i].tag == tag)
-        return features[i].value != 0;
-    }
-
-  return FALSE;
-}
-
-
-static gboolean
-feature_is_supported (hb_font_t           *font,
-                      const PangoAnalysis *analysis,
-                      hb_tag_t             table,
-                      hb_tag_t             feature)
-{
+  hb_font_t *font = pango_font_get_hb_font (item->analysis.font);
   hb_face_t *face = hb_font_get_face (font);
   hb_script_t script;
   hb_language_t language;
@@ -1225,64 +1210,119 @@ feature_is_supported (hb_font_t           *font,
   guint language_count = HB_OT_MAX_TAGS_PER_LANGUAGE;
   hb_tag_t language_tags[HB_OT_MAX_TAGS_PER_LANGUAGE];
   guint script_index, language_index;
-  guint feature_index;
+  guint index;
 
-  script = g_unicode_script_to_iso15924 (analysis->script);
-  language = hb_language_from_string (pango_language_to_string (analysis->language), -1);
+  script = g_unicode_script_to_iso15924 (item->analysis.script);
+  language = hb_language_from_string (pango_language_to_string (item->analysis.language), -1);
 
   hb_ot_tags_from_script_and_language (script, language,
                                        &script_count, script_tags,
                                        &language_count, language_tags);
-  hb_ot_layout_table_select_script (face, table,
+  hb_ot_layout_table_select_script (face, HB_OT_TAG_GSUB,
                                     script_count, script_tags,
                                     &script_index,
                                     &chosen_script);
-  hb_ot_layout_script_select_language (face, table,
+  hb_ot_layout_script_select_language (face, HB_OT_TAG_GSUB,
                                        script_index,
                                        language_count, language_tags,
                                        &language_index);
 
-  return hb_ot_layout_language_find_feature (face, table,
-                                             script_index, language_index,
-                                             feature,
-                                             &feature_index);
+  for (int i = 0; i < n_features; i++)
+    {
+      if (!hb_ot_layout_language_find_feature (face, HB_OT_TAG_GSUB,
+                                               script_index, language_index,
+                                               features[i],
+                                               &index))
+        return FALSE;
+    }
+
+  return TRUE;
 }
 
 static gboolean
-small_caps_is_requested (PangoItem *item)
+variant_supported (PangoItem    *item,
+                   PangoVariant  variant)
 {
-  hb_feature_t features[32];
-  unsigned int num_features = 0;
+  hb_tag_t features[2];
+  guint num_features = 0;
 
-  pango_analysis_collect_features (&item->analysis,
-                                   features, G_N_ELEMENTS (features),
-                                   &num_features);
+  switch (variant)
+    {
+    case PANGO_VARIANT_NORMAL:
+    case PANGO_VARIANT_TITLE_CAPS:
+      return TRUE;
+    case PANGO_VARIANT_SMALL_CAPS:
+      features[num_features++] = HB_TAG ('s', 'm', 'c', 'p');
+      break;
+    case PANGO_VARIANT_ALL_SMALL_CAPS:
+      features[num_features++] = HB_TAG ('s', 'm', 'c', 'p');
+      features[num_features++] = HB_TAG ('c', '2', 's', 'c');
+      break;
+    case PANGO_VARIANT_PETITE_CAPS:
+      features[num_features++] = HB_TAG ('p', 'c', 'a', 'p');
+      break;
+    case PANGO_VARIANT_ALL_PETITE_CAPS:
+      features[num_features++] = HB_TAG ('p', 'c', 'a', 'p');
+      features[num_features++] = HB_TAG ('c', '2', 'p', 'c');
+      break;
+    case PANGO_VARIANT_UNICASE:
+      features[num_features++] = HB_TAG ('u', 'n', 'i', 'c');
+      break;
+    default:
+      g_assert_not_reached ();
+    }
 
-  return feature_is_requested (features, num_features, HB_TAG ('s', 'm', 'c', 'p'));
+  return all_features_supported (item, features, num_features);
 }
 
-static gboolean
-small_caps_is_supported (PangoItem *item)
+static PangoVariant
+get_font_variant (PangoItem *item)
 {
-  hb_font_t *font = pango_font_get_hb_font (item->analysis.font);
+  PangoFontDescription *desc;
+  PangoVariant variant;
 
-  return feature_is_supported (font, &item->analysis, HB_OT_TAG_GSUB, HB_TAG ('s', 'm', 'c', 'p'));
+  desc = pango_font_describe (item->analysis.font);
+  variant = pango_font_description_get_variant (desc);
+  pango_font_description_free (desc);
+
+  return variant;
 }
 
 static void
-split_item_for_small_caps (const char *text,
-                           GList      *list_item)
+split_item_for_variant (const char   *text,
+                        GList        *list_item,
+                        PangoVariant  variant)
 {
   PangoItem *item = list_item->data;
   const char *start, *end;
   const char *p, *p0;
   gunichar wc;
+  PangoTextTransform transform = PANGO_TEXT_TRANSFORM_NONE;
+  PangoFontScale lowercase_scale = PANGO_FONT_SCALE_NONE;
+  PangoFontScale uppercase_scale = PANGO_FONT_SCALE_NONE;
+
+  switch (variant)
+    {
+    case PANGO_VARIANT_ALL_SMALL_CAPS:
+    case PANGO_VARIANT_ALL_PETITE_CAPS:
+      uppercase_scale = PANGO_FONT_SCALE_SMALL_CAPS;
+      G_GNUC_FALLTHROUGH;
+    case PANGO_VARIANT_SMALL_CAPS:
+    case PANGO_VARIANT_PETITE_CAPS:
+      transform = PANGO_TEXT_TRANSFORM_UPPERCASE;
+      lowercase_scale = PANGO_FONT_SCALE_SMALL_CAPS;
+      break;
+    case PANGO_VARIANT_UNICASE:
+      uppercase_scale = PANGO_FONT_SCALE_SMALL_CAPS;
+      break;
+    case PANGO_VARIANT_NORMAL:
+    case PANGO_VARIANT_TITLE_CAPS:
+    default:
+      g_assert_not_reached ();
+    }
 
   start = text + item->offset;
   end = start + item->length;
-
-  char *s = g_strndup (start, end - start);
-  g_free (s);
 
   p = start;
   while (p < end)
@@ -1313,15 +1353,21 @@ split_item_for_small_caps (const char *text,
               new_item = item;
             }
 
-          attr = pango_attr_text_transform_new (PANGO_TEXT_TRANSFORM_UPPERCASE);
-          attr->start_index = new_item->offset;
-          attr->end_index = new_item->offset + new_item->length;
-          new_item->analysis.extra_attrs = g_slist_prepend (new_item->analysis.extra_attrs, attr);
+          if (transform != PANGO_TEXT_TRANSFORM_NONE)
+            {
+              attr = pango_attr_text_transform_new (transform);
+              attr->start_index = new_item->offset;
+              attr->end_index = new_item->offset + new_item->length;
+              new_item->analysis.extra_attrs = g_slist_prepend (new_item->analysis.extra_attrs, attr);
+            }
 
-          attr = pango_attr_font_scale_new (PANGO_FONT_SCALE_SMALL_CAPS);
-          attr->start_index = new_item->offset;
-          attr->end_index = new_item->offset + new_item->length;
-          new_item->analysis.extra_attrs = g_slist_prepend (new_item->analysis.extra_attrs, attr);
+          if (lowercase_scale != PANGO_FONT_SCALE_NONE)
+            {
+              attr = pango_attr_font_scale_new (lowercase_scale);
+              attr->start_index = new_item->offset;
+              attr->end_index = new_item->offset + new_item->length;
+              new_item->analysis.extra_attrs = g_slist_prepend (new_item->analysis.extra_attrs, attr);
+            }
         }
 
       p0 = p;
@@ -1332,40 +1378,57 @@ split_item_for_small_caps (const char *text,
           wc = g_utf8_get_char (p);
         }
 
-      if (p0 < p && p < end)
+      if (p0 < p)
         {
           PangoItem *new_item;
+          PangoAttribute *attr;
 
           /* p0 .. p is a uppercase segment */
-          new_item = pango_item_split (item, p - p0, g_utf8_strlen (p, p - p0));
-          list_item->data = new_item;
-          list_item = g_list_insert_before (list_item, list_item->next, item);
-          list_item = list_item->next;
+          if (p < end)
+            {
+              new_item = pango_item_split (item, p - p0, g_utf8_strlen (p, p - p0));
+              list_item->data = new_item;
+              list_item = g_list_insert_before (list_item, list_item->next, item);
+              list_item = list_item->next;
+            }
+          else
+            {
+              new_item = item;
+            }
+
+          if (uppercase_scale != PANGO_FONT_SCALE_NONE)
+            {
+              attr = pango_attr_font_scale_new (uppercase_scale);
+              attr->start_index = new_item->offset;
+              attr->end_index = new_item->offset + new_item->length;
+              new_item->analysis.extra_attrs = g_slist_prepend (new_item->analysis.extra_attrs, attr);
+            }
         }
     }
 }
 
 static void
-handle_small_caps_for_item (const char *text,
-                            GList      *l)
+handle_variants_for_item (const char *text,
+                          GList      *l)
 {
   PangoItem *item = l->data;
+  PangoVariant variant;
 
-  if (small_caps_is_requested (item) &&
-      !small_caps_is_supported (item))
-    split_item_for_small_caps (text, l);
+  variant = get_font_variant (item);
+  if (!variant_supported (item, variant))
+    split_item_for_variant (text, l, variant);
 }
 
 static void
-handle_small_caps (const char *text,
-                   GList      *items)
+handle_variants (const char *text,
+                 GList      *items)
 {
   GList *next;
 
   for (GList *l = items; l; l = next)
     {
       next = l->next;
-      handle_small_caps_for_item (text, l);
+      handle_variants_for_item (text, l);
     }
 }
 
@@ -1389,7 +1452,7 @@ post_process_items (PangoContext *context,
       }
   }
 
-  handle_small_caps (text, items);
+  handle_variants (text, items);
 
   /* apply font-scale */
   apply_font_scale (context, items);
