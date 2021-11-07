@@ -231,3 +231,71 @@ pango_item_apply_attrs (PangoItem         *item,
 
   item->analysis.extra_attrs = g_slist_concat (item->analysis.extra_attrs, attrs);
 }
+
+void
+pango_analysis_collect_features (const PangoAnalysis *analysis,
+                                 hb_feature_t        *features,
+                                 guint                length,
+                                 guint               *num_features)
+{
+  GSList *l;
+
+  pango_font_get_features (analysis->font, features, length, num_features);
+
+  for (l = analysis->extra_attrs; l && *num_features < length; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+      if (attr->klass->type == PANGO_ATTR_FONT_FEATURES)
+        {
+          PangoAttrFontFeatures *fattr = (PangoAttrFontFeatures *) attr;
+          const gchar *feat;
+          const gchar *end;
+          int len;
+
+          feat = fattr->features;
+
+          while (feat != NULL && *num_features < length)
+            {
+              end = strchr (feat, ',');
+              if (end)
+                len = end - feat;
+              else
+                len = -1;
+              if (hb_feature_from_string (feat, len, &features[*num_features]))
+                {
+                  features[*num_features].start = attr->start_index;
+                  features[*num_features].end = attr->end_index;
+                  (*num_features)++;
+                }
+
+              if (end == NULL)
+                break;
+
+              feat = end + 1;
+            }
+        }
+    }
+
+  /* Turn off ligatures when letterspacing */
+  for (l = analysis->extra_attrs; l && *num_features < length; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+      if (attr->klass->type == PANGO_ATTR_LETTER_SPACING)
+        {
+          hb_tag_t tags[] = {
+            HB_TAG('l','i','g','a'),
+            HB_TAG('c','l','i','g'),
+            HB_TAG('d','l','i','g'),
+          };
+          int i;
+          for (i = 0; i < G_N_ELEMENTS (tags); i++)
+            {
+              features[*num_features].tag = tags[i];
+              features[*num_features].value = 0;
+              features[*num_features].start = attr->start_index;
+              features[*num_features].end = attr->end_index;
+              (*num_features)++;
+            }
+        }
+    }
+}

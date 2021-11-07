@@ -68,6 +68,11 @@ G_STATIC_ASSERT (offsetof (PangoItem, length) == offsetof (PangoItemPrivate, len
 G_STATIC_ASSERT (offsetof (PangoItem, num_chars) == offsetof (PangoItemPrivate, num_chars));
 G_STATIC_ASSERT (offsetof (PangoItem, analysis) == offsetof (PangoItemPrivate, analysis));
 
+void               pango_analysis_collect_features    (const PangoAnalysis *analysis,
+                                                       hb_feature_t        *features,
+                                                       guint                length,
+                                                       guint               *num_features);
+
 G_END_DECLS
 
 #endif /* __PANGO_ITEM_PRIVATE_H__ */
