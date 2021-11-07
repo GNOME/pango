@@ -1288,10 +1288,34 @@ get_font_variant (PangoItem *item)
   return variant;
 }
 
+static PangoTextTransform
+find_text_transform (const PangoAnalysis *analysis)
+{
+  GSList *l;
+  PangoTextTransform transform = PANGO_TEXT_TRANSFORM_NONE;
+
+  for (l = analysis->extra_attrs; l; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+
+      if (attr->klass->type == PANGO_ATTR_TEXT_TRANSFORM)
+        transform = (PangoTextTransform) ((PangoAttrInt*)attr)->value;
+    }
+
+  return transform;
+}
+
+/* Split list_item into upper- and lowercase runs, and
+ * add font scale and text transform attributes to make
+ * them be appear according to variant. The log_attrs are
+ * needed for taking text transforms into account when
+ * determining the case of characters int he run.
+ */
 static void
 split_item_for_variant (const char   *text,
-                        GList        *list_item,
-                        PangoVariant  variant)
+                        PangoLogAttr *log_attrs,
+                        PangoVariant  variant,
+                        GList        *list_item)
 {
   PangoItem *item = list_item->data;
   const char *start, *end;
@@ -1300,6 +1324,9 @@ split_item_for_variant (const char   *text,
   PangoTextTransform transform = PANGO_TEXT_TRANSFORM_NONE;
   PangoFontScale lowercase_scale = PANGO_FONT_SCALE_NONE;
   PangoFontScale uppercase_scale = PANGO_FONT_SCALE_NONE;
+  PangoTextTransform item_transform;
+  gboolean is_word_start;
+  int offset;
 
   switch (variant)
     {
@@ -1321,18 +1348,28 @@ split_item_for_variant (const char   *text,
       g_assert_not_reached ();
     }
 
+  item_transform = find_text_transform (&item->analysis);
+
   start = text + item->offset;
   end = start + item->length;
+  offset = ((PangoItemPrivate *)item)->char_offset;
 
   p = start;
   while (p < end)
     {
       p0 = p;
       wc = g_utf8_get_char (p);
-      while (p < end && (g_unichar_islower (wc) || consider_as_space (wc)))
+      is_word_start = log_attrs && log_attrs[offset].is_word_start;
+      while (p < end && (item_transform == PANGO_TEXT_TRANSFORM_LOWERCASE ||
+                         consider_as_space (wc) ||
+                         (g_unichar_islower (wc) &&
+                          !(item_transform == PANGO_TEXT_TRANSFORM_UPPERCASE ||
+                            (item_transform == PANGO_TEXT_TRANSFORM_CAPITALIZE && is_word_start)))))
         {
           p = g_utf8_next_char (p);
           wc = g_utf8_get_char (p);
+          offset++;
+          is_word_start = log_attrs && log_attrs[offset].is_word_start;
         }
 
       if (p0 < p)
@@ -1358,7 +1395,7 @@ split_item_for_variant (const char   *text,
               attr = pango_attr_text_transform_new (transform);
               attr->start_index = new_item->offset;
               attr->end_index = new_item->offset + new_item->length;
-              new_item->analysis.extra_attrs = g_slist_prepend (new_item->analysis.extra_attrs, attr);
+              new_item->analysis.extra_attrs = g_slist_append (new_item->analysis.extra_attrs, attr);
             }
 
           if (lowercase_scale != PANGO_FONT_SCALE_NONE)
@@ -1366,16 +1403,22 @@ split_item_for_variant (const char   *text,
               attr = pango_attr_font_scale_new (lowercase_scale);
               attr->start_index = new_item->offset;
               attr->end_index = new_item->offset + new_item->length;
-              new_item->analysis.extra_attrs = g_slist_prepend (new_item->analysis.extra_attrs, attr);
+              new_item->analysis.extra_attrs = g_slist_append (new_item->analysis.extra_attrs, attr);
             }
         }
 
       p0 = p;
       wc = g_utf8_get_char (p);
-      while (p < end && (!g_unichar_islower (wc) || consider_as_space (wc)))
+      is_word_start = log_attrs && log_attrs[offset].is_word_start;
+      while (p < end && (item_transform == PANGO_TEXT_TRANSFORM_UPPERCASE ||
+                         consider_as_space (wc) ||
+                         !(item_transform == PANGO_TEXT_TRANSFORM_LOWERCASE || g_unichar_islower (wc)) ||
+                         (item_transform == PANGO_TEXT_TRANSFORM_CAPITALIZE && is_word_start)))
         {
           p = g_utf8_next_char (p);
           wc = g_utf8_get_char (p);
+          offset++;
+          is_word_start = log_attrs && log_attrs[offset].is_word_start;
         }
 
       if (p0 < p)
@@ -1401,34 +1444,36 @@ split_item_for_variant (const char   *text,
               attr = pango_attr_font_scale_new (uppercase_scale);
               attr->start_index = new_item->offset;
               attr->end_index = new_item->offset + new_item->length;
-              new_item->analysis.extra_attrs = g_slist_prepend (new_item->analysis.extra_attrs, attr);
+              new_item->analysis.extra_attrs = g_slist_append (new_item->analysis.extra_attrs, attr);
             }
         }
     }
 }
 
 static void
-handle_variants_for_item (const char *text,
-                          GList      *l)
+handle_variants_for_item (const char   *text,
+                          PangoLogAttr *log_attrs,
+                          GList        *l)
 {
   PangoItem *item = l->data;
   PangoVariant variant;
 
   variant = get_font_variant (item);
   if (!variant_supported (item, variant))
-    split_item_for_variant (text, l, variant);
+    split_item_for_variant (text, log_attrs, variant, l);
 }
 
 static void
-handle_variants (const char *text,
-                 GList      *items)
+handle_variants (const char   *text,
+                 PangoLogAttr *log_attrs,
+                 GList        *items)
 {
   GList *next;
 
   for (GList *l = items; l; l = next)
     {
       next = l->next;
-      handle_variants_for_item (text, l);
+      handle_variants_for_item (text, log_attrs, l);
     }
 }
 
@@ -1456,9 +1501,10 @@ reorder_items (PangoContext *context,
 static GList *
 post_process_items (PangoContext *context,
                     const char   *text,
+                    PangoLogAttr *log_attrs,
                     GList        *items)
 {
-  handle_variants (text, items);
+  handle_variants (text, log_attrs, items);
   apply_font_scale (context, items);
 
   return items;
@@ -1467,7 +1513,12 @@ post_process_items (PangoContext *context,
 /* }}} */
 /* {{{ Private API */
 
-/* Like pango_itemize_with_base_dir, but takes a font description */
+/* Like pango_itemize_with_base_dir, but takes a font description.
+ * In contrast to pango_itemize_with_base_dir, this function does
+ * not call pango_itemize_post_process_items, so you need to do that
+ * separately, after applying attributes that affect segmentation and
+ * computing the log attrs.
+ */
 GList *
 pango_itemize_with_font (PangoContext               *context,
                          PangoDirection              base_dir,
@@ -1495,13 +1546,15 @@ pango_itemize_with_font (PangoContext               *context,
   return reorder_items (context, state.result);
 }
 
+/* Apply post-processing steps that may require log attrs.
+ */
 GList *
 pango_itemize_post_process_items (PangoContext *context,
                                   const char   *text,
                                   PangoLogAttr *log_attrs,
                                   GList        *items)
 {
-  return post_process_items (context, text, items);
+  return post_process_items (context, text, log_attrs, items);
 }
 
 /* }}} */
@@ -1601,6 +1654,6 @@ pango_itemize (PangoContext      *context,
                                       attrs, cached_iter);
 }
 
- /* }}} */
+ /* }}} */ 
 
 /* vim:set foldmethod=marker expandtab: */
