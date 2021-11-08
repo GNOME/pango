@@ -1270,7 +1270,8 @@ parse_variations (const char  *word,
  * "Normal", "Roman", "Oblique", "Italic".
  *
  * The following words are understood as variants:
- * "Small-Caps".
+ * "Small-Caps", "All-Small-Caps", "Petite-Caps", "All-Petite-Caps",
+ * "Unicase", "Title-Caps".
  *
  * The following words are understood as weights:
  * "Thin", "Ultra-Light", "Extra-Light", "Light", "Semi-Light",
