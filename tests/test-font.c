@@ -294,27 +294,65 @@ test_roundtrip_small_caps (void)
       return;
     }
 
-  desc = pango_font_description_from_string ("Cantarell Small-Caps 11");
-
-  g_assert_true (pango_font_description_get_variant (desc) == PANGO_VARIANT_SMALL_CAPS);
-
   fontmap = pango_cairo_font_map_get_default ();
   context = pango_font_map_create_context (fontmap);
+
+  desc = pango_font_description_from_string ("Cantarell Small-Caps 11");
+  g_assert_true (pango_font_description_get_variant (desc) == PANGO_VARIANT_SMALL_CAPS);
 
   font = pango_context_load_font (context, desc);
   desc2 = pango_font_describe (font);
 
+  num = 0;
   pango_font_get_features (font, features, G_N_ELEMENTS (features), &num);
   g_assert_true (num == 1);
   g_assert_true (features[0].tag == HB_TAG ('s', 'm', 'c', 'p'));
   g_assert_true (features[0].value == 1);
   g_assert_true (pango_font_description_get_variant (desc2) == PANGO_VARIANT_SMALL_CAPS);
-
   g_assert_true (pango_font_description_equal (desc2, desc));
 
   pango_font_description_free (desc2);
   g_object_unref (font);
   pango_font_description_free (desc);
+
+  desc = pango_font_description_from_string ("Cantarell All-Small-Caps 11");
+  g_assert_true (pango_font_description_get_variant (desc) == PANGO_VARIANT_ALL_SMALL_CAPS);
+
+  font = pango_context_load_font (context, desc);
+  desc2 = pango_font_describe (font);
+
+  num = 0;
+  pango_font_get_features (font, features, G_N_ELEMENTS (features), &num);
+  g_assert_true (num == 2);
+  g_assert_true (features[0].tag == HB_TAG ('s', 'm', 'c', 'p'));
+  g_assert_true (features[0].value == 1);
+  g_assert_true (features[1].tag == HB_TAG ('c', '2', 's', 'c'));
+  g_assert_true (features[1].value == 1);
+  g_assert_true (pango_font_description_get_variant (desc2) == PANGO_VARIANT_ALL_SMALL_CAPS);
+  g_assert_true (pango_font_description_equal (desc2, desc));
+
+  pango_font_description_free (desc2);
+  g_object_unref (font);
+  pango_font_description_free (desc);
+
+  desc = pango_font_description_from_string ("Cantarell Unicase 11");
+  g_assert_true (pango_font_description_get_variant (desc) == PANGO_VARIANT_UNICASE);
+
+  font = pango_context_load_font (context, desc);
+  desc2 = pango_font_describe (font);
+
+  num = 0;
+  pango_font_get_features (font, features, G_N_ELEMENTS (features), &num);
+  g_assert_true (num == 1);
+  g_assert_true (features[0].tag == HB_TAG ('u', 'n', 'i', 'c'));
+  g_assert_true (features[0].value == 1);
+  g_assert_true (pango_font_description_get_variant (desc2) == PANGO_VARIANT_UNICASE);
+  g_assert_true (pango_font_description_equal (desc2, desc));
+
+  pango_font_description_free (desc2);
+  g_object_unref (font);
+  pango_font_description_free (desc);
+
   g_object_unref (context);
 }
 

@@ -50,16 +50,6 @@ struct _PangoContext
   gboolean round_glyph_positions;
 };
 
-GList *         pango_itemize_with_font (PangoContext               *context,
-                                         PangoDirection              base_dir,
-                                         const char                 *text,
-                                         int                         start_index,
-                                         int                         length,
-                                         PangoAttrList              *attrs,
-                                         PangoAttrIterator          *cached_iter,
-                                         const PangoFontDescription *desc);
-
-
 G_END_DECLS
 
 #endif /* __PANGO_CONTEXT_PRIVATE_H__ */

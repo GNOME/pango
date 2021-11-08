@@ -1019,7 +1019,12 @@ static const FieldMap style_map[] = {
 
 static const FieldMap variant_map[] = {
   { PANGO_VARIANT_NORMAL, "" },
-  { PANGO_VARIANT_SMALL_CAPS, "Small-Caps" }
+  { PANGO_VARIANT_SMALL_CAPS, "Small-Caps" },
+  { PANGO_VARIANT_ALL_SMALL_CAPS, "All-Small-Caps" },
+  { PANGO_VARIANT_PETITE_CAPS, "Petite-Caps" },
+  { PANGO_VARIANT_ALL_PETITE_CAPS, "All-Petite-Caps" },
+  { PANGO_VARIANT_UNICASE, "Unicase" },
+  { PANGO_VARIANT_TITLE_CAPS, "Title-Caps" }
 };
 
 static const FieldMap weight_map[] = {
