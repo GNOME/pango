@@ -1,3 +1,11 @@
+Overview of changes in 1.49.3
+=============================
+* Fix hinting of glyph metrics
+* Fix logical glyph extents in vertical gravities
+* Visualize more default-ignorable glyphs
+* Fix advance widths in transformed contexts
+* Implement Small Caps and other casing variations
+
 Overview of changes in 1.49.2
 =============================
 * Update Unicode data to Unicode 14
