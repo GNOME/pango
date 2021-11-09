@@ -233,6 +233,9 @@ void pango_fc_font_map_substitute_changed (PangoFcFontMap *fontmap);
  * The property will have a string elements, each of which
  * a comma-separated list of OpenType axis setting of the
  * form AXIS=VALUE.
+ *
+ * This is equivalent to FC_FONT_VARIATIONS in versions of
+ * fontconfig that have that.
  */
 #define PANGO_FC_FONT_VARIATIONS "fontvariations"
 

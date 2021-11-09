@@ -849,7 +849,7 @@ pango_fc_font_get_features (PangoFont    *font,
       char *s;
       while (*num_features < len &&
              FcResultMatch == FcPatternGetString (fc_font->font_pattern,
-                                                  PANGO_FC_FONT_FEATURES,
+                                                  FC_FONT_FEATURES,
                                                   *num_features,
                                                   (FcChar8 **) &s))
         {
@@ -1024,7 +1024,7 @@ pango_fc_font_create_hb_font (PangoFont *font)
           hb_ot_var_named_instance_get_design_coords (hb_face, instance, &n_axes, coords);
         }
 
-      if (FcPatternGetString (pattern, PANGO_FC_FONT_VARIATIONS, 0, (FcChar8 **)&variations) == FcResultMatch)
+      if (FcPatternGetString (pattern, FC_FONT_VARIATIONS, 0, (FcChar8 **)&variations) == FcResultMatch)
         parse_variations (variations, axes, n_axes, coords);
 
       variations = pango_fc_font_key_get_variations (key);
