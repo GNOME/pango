@@ -881,29 +881,25 @@ pango_fc_font_key_get_gravity (PangoFcFontKey *key)
   return gravity;
 }
 
-static double
-get_font_size (PangoFcFontKey *key)
+static void
+get_font_size (PangoFcFontKey *key,
+               double         *pixel_size,
+               double         *point_size)
 {
   const FcPattern *pattern;
-  double size;
   double dpi;
 
   pattern = pango_fc_font_key_get_pattern (key);
-  if (FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size) == FcResultMatch)
-    return size;
+  if (FcPatternGetDouble (pattern, FC_SIZE, 0, point_size) != FcResultMatch)
+    *point_size = 13.;
 
-  /* Just in case FC_PIXEL_SIZE got unset between pango_fc_make_pattern()
-   * and here.  That would be very weird.
-   */
+  if (FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, pixel_size) != FcResultMatch)
+    {
+      if (FcPatternGetDouble (pattern, FC_DPI, 0, &dpi) != FcResultMatch)
+        dpi = 72.;
 
-  if (FcPatternGetDouble (pattern, FC_DPI, 0, &dpi) != FcResultMatch)
-    dpi = 72;
-
-  if (FcPatternGetDouble (pattern, FC_SIZE, 0, &size) == FcResultMatch)
-    return size * dpi / 72.;
-
-  /* Whatever */
-  return 18.;
+      *pixel_size = *point_size * dpi / 72.;
+    }
 }
 
 static void
@@ -946,10 +942,12 @@ pango_fc_font_create_hb_font (PangoFont *font)
   hb_font_t *hb_font;
   double x_scale_inv, y_scale_inv;
   double x_scale, y_scale;
-  double size;
+  double pixel_size;
+  double point_size;
 
   x_scale_inv = y_scale_inv = 1.0;
-  size = 1.0;
+  pixel_size = 1.0;
+  point_size = 1.0;
 
   key = _pango_fc_font_get_font_key (fc_font);
   if (key)
@@ -984,7 +982,7 @@ pango_fc_font_create_hb_font (PangoFont *font)
           x_scale_inv = -x_scale_inv;
           y_scale_inv = -y_scale_inv;
         }
-      size = get_font_size (key);
+      get_font_size (key, &pixel_size, &point_size);
     }
 
   x_scale = 1. / x_scale_inv;
@@ -994,8 +992,9 @@ pango_fc_font_create_hb_font (PangoFont *font)
 
   hb_font = hb_font_create (hb_face);
   hb_font_set_scale (hb_font,
-                     size * PANGO_SCALE * x_scale,
-                     size * PANGO_SCALE * y_scale);
+                     pixel_size * PANGO_SCALE * x_scale,
+                     pixel_size * PANGO_SCALE * y_scale);
+  hb_font_set_ptem (hb_font, point_size);
 
   if (key)
     {
