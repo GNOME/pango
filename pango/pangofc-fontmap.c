@@ -1669,9 +1669,7 @@ ensure_families (PangoFcFontMap *fcfontmap)
   if (priv->n_families < 0)
     {
       FcObjectSet *os = FcObjectSetBuild (FC_FAMILY, FC_SPACING, FC_STYLE, FC_WEIGHT, FC_WIDTH, FC_SLANT,
-#ifdef FC_VARIABLE
                                           FC_VARIABLE,
-#endif
                                           FC_FONTFORMAT,
                                           NULL);
       FcPattern *pat = FcPatternCreate ();
@@ -1715,9 +1713,7 @@ ensure_families (PangoFcFontMap *fcfontmap)
 	  if (temp_family)
 	    {
               variable = FALSE;
-#ifdef FC_VARIABLE
               variable = FcPatternGetBool (fontset->fonts[i], FC_VARIABLE, 0, &variable);
-#endif
               if (variable)
                 temp_family->variable = TRUE;
 
@@ -1791,11 +1787,7 @@ pango_fc_font_map_get_family (PangoFontMap *fontmap,
 static double
 pango_fc_convert_weight_to_fc (PangoWeight pango_weight)
 {
-#ifdef HAVE_FCWEIGHTFROMOPENTYPEDOUBLE
   return FcWeightFromOpenTypeDouble (pango_weight);
-#else
-  return FcWeightFromOpenType (pango_weight);
-#endif
 }
 
 static int
@@ -1882,16 +1874,14 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
 			    FC_WEIGHT, FcTypeDouble, weight,
 			    FC_SLANT,  FcTypeInteger, slant,
 			    FC_WIDTH,  FcTypeInteger, width,
-#ifdef FC_VARIABLE
 			    FC_VARIABLE,  FcTypeBool, FcDontCare,
-#endif
 			    FC_DPI, FcTypeDouble, dpi,
 			    FC_SIZE,  FcTypeDouble,  pixel_size * (72. / 1024. / dpi),
 			    FC_PIXEL_SIZE,  FcTypeDouble,  pixel_size / 1024.,
 			    NULL);
 
   if (variations)
-    FcPatternAddString (pattern, PANGO_FC_FONT_VARIATIONS, (FcChar8*) variations);
+    FcPatternAddString (pattern, FC_FONT_VARIATIONS, (FcChar8*) variations);
 
   if (pango_font_description_get_family (description))
     {
@@ -1918,24 +1908,24 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   switch (variant)
     {
     case PANGO_VARIANT_SMALL_CAPS:
-      FcPatternAddString (pattern, PANGO_FC_FONT_FEATURES, (FcChar8*) "smcp=1");
+      FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "smcp=1");
       break;
     case PANGO_VARIANT_ALL_SMALL_CAPS:
-      FcPatternAddString (pattern, PANGO_FC_FONT_FEATURES, (FcChar8*) "smcp=1");
-      FcPatternAddString (pattern, PANGO_FC_FONT_FEATURES, (FcChar8*) "c2sc=1");
+      FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "smcp=1");
+      FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "c2sc=1");
       break;
     case PANGO_VARIANT_PETITE_CAPS:
-      FcPatternAddString (pattern, PANGO_FC_FONT_FEATURES, (FcChar8*) "pcap=1");
+      FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "pcap=1");
       break;
     case PANGO_VARIANT_ALL_PETITE_CAPS:
-      FcPatternAddString (pattern, PANGO_FC_FONT_FEATURES, (FcChar8*) "pcap=1");
-      FcPatternAddString (pattern, PANGO_FC_FONT_FEATURES, (FcChar8*) "c2pc=1");
+      FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "pcap=1");
+      FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "c2pc=1");
       break;
     case PANGO_VARIANT_UNICASE:
-      FcPatternAddString (pattern, PANGO_FC_FONT_FEATURES, (FcChar8*) "unic=1");
+      FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "unic=1");
       break;
     case PANGO_VARIANT_TITLE_CAPS:
-      FcPatternAddString (pattern, PANGO_FC_FONT_FEATURES, (FcChar8*) "titl=1");
+      FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "titl=1");
       break;
     case PANGO_VARIANT_NORMAL:
       break;
@@ -2702,11 +2692,7 @@ pango_fc_font_map_shutdown (PangoFcFontMap *fcfontmap)
 static PangoWeight
 pango_fc_convert_weight_to_pango (double fc_weight)
 {
-#ifdef HAVE_FCWEIGHTFROMOPENTYPEDOUBLE
   return FcWeightToOpenTypeDouble (fc_weight);
-#else
-  return FcWeightToOpenType (fc_weight);
-#endif
 }
 
 static PangoStyle
@@ -2824,7 +2810,7 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
     {
       const char *s;
 
-      if (FcPatternGetString (pattern, PANGO_FC_FONT_FEATURES, i, (FcChar8 **)&s) == FcResultMatch)
+      if (FcPatternGetString (pattern, FC_FONT_FEATURES, i, (FcChar8 **)&s) == FcResultMatch)
         {
           if (strcmp (s, "smcp=1") == 0)
             {
@@ -2905,7 +2891,7 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
       pango_font_description_set_gravity (desc, gravity);
     }
 
-  if (include_size && FcPatternGetString (pattern, PANGO_FC_FONT_VARIATIONS, 0, (FcChar8 **)&s) == FcResultMatch)
+  if (include_size && FcPatternGetString (pattern, FC_FONT_VARIATIONS, 0, (FcChar8 **)&s) == FcResultMatch)
     {
       if (s && *s)
         pango_font_description_set_variations (desc, (char *)s);
@@ -3266,7 +3252,6 @@ ensure_faces (PangoFcFamily *fcfamily)
 	      if (FcPatternGetInteger(fontset->fonts[i], FC_SLANT, 0, &slant) != FcResultMatch)
 		slant = FC_SLANT_ROMAN;
 
-#ifdef FC_VARIABLE
               {
                 gboolean variable;
                 if (FcPatternGetBool(fontset->fonts[i], FC_VARIABLE, 0, &variable) != FcResultMatch)
@@ -3274,7 +3259,6 @@ ensure_faces (PangoFcFamily *fcfamily)
                 if (variable) /* skip the variable face */
                   continue;
               }
-#endif
 
 	      if (FcPatternGetString (fontset->fonts[i], FC_STYLE, 0, (FcChar8 **)(void*)&font_style) != FcResultMatch)
 		font_style = NULL;
