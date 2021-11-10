@@ -158,9 +158,9 @@ baseline_shift
   or 'subscript'. Available since 1.50.
 
 font_scale:
-: Font size change. The possible values are 'superscript' or 'subscript'. This is
-  similar to the font_size values 'smaller' or 'larger', but uses font metrics to
-  find the new size. Available since 1.50.
+: Font size change. The possible values are 'superscript', 'subscript' or 'small-caps'.
+  This is similar to the font_size values 'smaller' or 'larger', but uses font metrics
+  to find the new size. Available since 1.50.
 
 strikethrough
 : 'true' or 'false' whether to strike through the text.
