@@ -3606,7 +3606,8 @@ struct _ParaBreakState
   PangoGlyphString *glyphs;     /* Glyphs for the first item in state->items */
   int start_offset;             /* Character offset of first item in state->items in layout->text */
   ItemProperties properties;    /* Properties for the first item in state->items */
-  int *log_widths;              /* Logical widths for first item in state->items.. */
+  int *log_widths;              /* Logical widths for first item in state->items */
+  int *clusters;                /* Cluster information for the first item in state->items */
   int num_log_widths;           /* Length of log_widths */
   int log_widths_offset;        /* Offset into log_widths to the point corresponding
                                  * to the remaining portion of the first item */
@@ -3732,7 +3733,11 @@ find_hyphen_width (PangoItem *item)
   hb_font = pango_font_get_hb_font (item->analysis.font);
   if (hb_font_get_nominal_glyph (hb_font, 0x2010, &glyph) ||
       hb_font_get_nominal_glyph (hb_font, '-', &glyph))
-    return hb_font_get_glyph_h_advance (hb_font, glyph);
+    {
+      PangoRectangle logical;
+      pango_font_get_glyph_extents (item->analysis.font, glyph, NULL, &logical);
+      return logical.width;
+    }
 
   return 0;
 }
@@ -3749,7 +3754,11 @@ find_char_width (PangoItem *item,
 
   hb_font = pango_font_get_hb_font (item->analysis.font);
   if (hb_font_get_nominal_glyph (hb_font, wc, &glyph))
-    return hb_font_get_glyph_h_advance (hb_font, glyph);
+    {
+      PangoRectangle logical;
+      pango_font_get_glyph_extents (item->analysis.font, glyph, NULL, &logical);
+      return logical.width;
+    }
 
   return 0;
 }
@@ -3769,6 +3778,23 @@ find_break_extra_width (PangoLayout    *layout,
                         ParaBreakState *state,
                         int             pos)
 {
+  int extra_width = 0;
+  PangoItem *item = state->items->data;
+  gunichar wc;
+
+  if (pos > 0 && state->clusters[state->log_widths_offset + pos - 1] > 0)
+    {
+      for (int k = pos - 1; k >= 0; k--)
+        {
+          wc = g_utf8_get_char (g_utf8_offset_to_pointer (layout->text, state->start_offset + k));
+
+          extra_width += find_char_width (item, wc) - state->log_widths[state->log_widths_offset + k];
+
+          if (state->clusters[state->log_widths_offset + pos] == 1)
+            break;
+        }
+    }
+
   /* Check whether to insert a hyphen */
   if (layout->log_attrs[state->start_offset + pos].break_inserts_hyphen)
     {
@@ -3781,13 +3807,13 @@ find_break_extra_width (PangoLayout    *layout,
 
           wc = g_utf8_get_char (g_utf8_offset_to_pointer (layout->text, state->start_offset + pos - 1));
 
-          return state->hyphen_width - find_char_width (item, wc);
+          extra_width += state->hyphen_width - find_char_width (item, wc);
         }
       else
-        return state->hyphen_width;
+        extra_width += state->hyphen_width;
     }
 
-  return 0;
+  return extra_width;
 }
 
 #if 0
@@ -3798,7 +3824,7 @@ debug (const char *where, PangoLayoutLine *line, ParaBreakState *state)
 {
   int line_width = pango_layout_line_get_width (line);
 
-  g_debug ("rem %d + line %d = %d               %s",
+  g_print ("rem %d + line %d = %d               %s\n",
            state->remaining_width,
            line_width,
            state->remaining_width + line_width,
@@ -3908,9 +3934,10 @@ process_item (PangoLayout     *layout,
           if (item->num_chars > state->num_log_widths)
             {
               state->log_widths = g_renew (int, state->log_widths, item->num_chars);
+              state->clusters = g_renew (int, state->clusters, item->num_chars);
               state->num_log_widths = item->num_chars;
             }
-          pango_glyph_item_get_logical_widths (&glyph_item, layout->text, state->log_widths);
+          pango_glyph_item_get_logical_widths_and_clusters (&glyph_item, layout->text, state->log_widths, state->clusters);
         }
 
     retry_break:
@@ -3943,9 +3970,9 @@ process_item (PangoLayout     *layout,
        * the cluster here.  But should be fine in practice. */
       if (break_num_chars > 0 && break_num_chars < item->num_chars &&
           layout->log_attrs[state->start_offset + break_num_chars - 1].is_white)
-      {
+        {
           break_width -= state->log_widths[state->log_widths_offset + break_num_chars - 1];
-      }
+        }
 
       if (layout->wrap == PANGO_WRAP_WORD_CHAR && force_fit && break_width + break_extra_width > state->remaining_width && !retrying_with_char_breaks)
         {
@@ -3968,7 +3995,10 @@ process_item (PangoLayout     *layout,
           if (break_num_chars == item->num_chars)
             {
               if (break_needs_hyphen (layout, state, break_num_chars))
-                item->analysis.flags |= PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
+                {
+                  state->remaining_width -= break_extra_width;
+                  item->analysis.flags |= PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
+                }
               insert_run (line, state, item, TRUE);
 
               return BREAK_ALL_FIT;
@@ -4483,6 +4513,7 @@ pango_layout_check_lines (PangoLayout *layout)
     }
 
   state.log_widths = NULL;
+  state.clusters = NULL;
   state.num_log_widths = 0;
   state.baseline_shifts = NULL;
 
@@ -4599,6 +4630,7 @@ pango_layout_check_lines (PangoLayout *layout)
   while (!done);
 
   g_free (state.log_widths);
+  g_free (state.clusters);
   g_list_free_full (state.baseline_shifts, g_free);
 
   apply_attributes_to_runs (layout, attrs);
