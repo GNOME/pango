@@ -754,6 +754,31 @@ test_transform_rectangle (void)
   g_assert_cmpint (rect2.height, ==, rect.width);
 }
 
+static void
+test_wrap_char (void)
+{
+  PangoContext *context;
+  PangoLayout *layout;
+  int w, h, w0, h0;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  layout = pango_layout_new (context);
+  pango_layout_set_text (layout, "Rows can have suffix widgets", -1);
+  pango_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
+
+  pango_layout_set_width (layout, 0);
+  pango_layout_get_size (layout, &w0, &h0);
+
+  pango_layout_set_width (layout, w0);
+  pango_layout_get_size (layout, &w, &h);
+
+  g_assert_cmpint (w0, ==, w);
+  g_assert_cmpint (h0, >=, h);
+
+  g_object_unref (layout);
+  g_object_unref (context);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -786,6 +811,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/layout/extents", test_extents);
   g_test_add_func ("/layout/empty-line-height", test_empty_line_height);
   g_test_add_func ("/layout/gravity-metrics", test_gravity_metrics);
+  g_test_add_func ("/layout/wrap-char", test_wrap_char);
   g_test_add_func ("/matrix/transform-rectangle", test_transform_rectangle);
 
   return g_test_run ();

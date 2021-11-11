@@ -3792,7 +3792,8 @@ find_break_extra_width (PangoLayout    *layout,
 
 #if 0
 # define DEBUG debug
-void
+static int pango_layout_line_get_width (PangoLayoutLine *line);
+static void
 debug (const char *where, PangoLayoutLine *line, ParaBreakState *state)
 {
   int line_width = pango_layout_line_get_width (line);
@@ -3919,10 +3920,10 @@ process_item (PangoLayout     *layout,
       extra_width = 0;
       for (num_chars = 0; num_chars < item->num_chars; num_chars++)
         {
+          extra_width = find_break_extra_width (layout, state, num_chars);
+
           if (width + extra_width > state->remaining_width && break_num_chars < item->num_chars)
-            {
-              break;
-            }
+            break;
 
           /* If there are no previous runs we have to take care to grab at least one char. */
           if (can_break_at (layout, state->start_offset + num_chars, retrying_with_char_breaks) &&
@@ -3931,11 +3932,7 @@ process_item (PangoLayout     *layout,
               break_num_chars = num_chars;
               break_width = width;
               break_extra_width = extra_width;
-
-              extra_width = find_break_extra_width (layout, state, num_chars);
             }
-          else
-            extra_width = 0;
 
           width += state->log_widths[state->log_widths_offset + num_chars];
         }
