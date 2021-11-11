@@ -35,6 +35,7 @@
 gboolean opt_display = TRUE;
 int opt_dpi = 96;
 gboolean opt_pixels = FALSE;
+gboolean opt_pango_units = FALSE;
 const char *opt_font = "";
 gboolean opt_header = FALSE;
 const char *opt_output = NULL;
@@ -120,19 +121,37 @@ make_layout(PangoContext *context,
     pango_font_description_set_size (font_description, size * PANGO_SCALE);
 
   if (opt_width > 0)
-    pango_layout_set_width (layout, (opt_width * opt_dpi * PANGO_SCALE + 36) / 72);
+    {
+      if (opt_pango_units)
+        pango_layout_set_width (layout, opt_width);
+      else
+        pango_layout_set_width (layout, (opt_width * opt_dpi * PANGO_SCALE + 36) / 72);
+    }
 
   if (opt_height > 0)
-    pango_layout_set_height (layout, (opt_height * opt_dpi * PANGO_SCALE + 36) / 72);
+    {
+      if (opt_pango_units)
+        pango_layout_set_width (layout, opt_height);
+      else
+        pango_layout_set_height (layout, (opt_height * opt_dpi * PANGO_SCALE + 36) / 72);
+    }
   else
     pango_layout_set_height (layout, opt_height);
 
   if (opt_indent != 0)
-    pango_layout_set_indent (layout, (opt_indent * opt_dpi * PANGO_SCALE + 36) / 72);
+    {
+      if (opt_pango_units)
+        pango_layout_set_indent (layout, opt_indent);
+      else
+        pango_layout_set_indent (layout, (opt_indent * opt_dpi * PANGO_SCALE + 36) / 72);
+    }
 
   if (opt_spacing != 0)
     {
-      pango_layout_set_spacing (layout, (opt_spacing * opt_dpi * PANGO_SCALE + 36) / 72);
+      if (opt_pango_units)
+        pango_layout_set_spacing (layout, opt_spacing);
+      else
+        pango_layout_set_spacing (layout, (opt_spacing * opt_dpi * PANGO_SCALE + 36) / 72);
       pango_layout_set_line_spacing (layout, 0.0);
     }
   if (opt_line_spacing >= 0.0)
@@ -360,6 +379,9 @@ do_output (PangoContext     *context,
 
   pango_context_set_matrix (context, orig_matrix);
   pango_matrix_free (orig_matrix);
+  int w, h;
+  pango_layout_get_size (layout, &w, &h);
+  g_print ("layout %d %d\n", w, h);
   g_object_unref (layout);
 }
 
@@ -829,6 +851,8 @@ parse_options (int argc, char *argv[])
      "Deprecated",		      "file"},
     {"pixels",		0, 0, G_OPTION_ARG_NONE,			&opt_pixels,
      "Use pixel units instead of points (sets dpi to 72)",		NULL},
+    {"pango-units",	0, 0, G_OPTION_ARG_NONE,			&opt_pango_units,
+     "Use Pango units instead of points",		                NULL},
     {"rtl",		0, 0, G_OPTION_ARG_NONE,			&opt_rtl,
      "Set base direction to right-to-left",				NULL},
     {"rotate",		0, 0, G_OPTION_ARG_DOUBLE,			&opt_rotate,
