@@ -85,6 +85,11 @@ void 	  pango_glyph_item_get_logical_widths (PangoGlyphItem *glyph_item,
 					       const char     *text,
 					       int            *logical_widths);
 
+void      pango_glyph_item_get_logical_widths_and_clusters (PangoGlyphItem *glyph_item,
+                                                            const char     *text,
+                                                            int            *logical_widths,
+                                                            int            *clusters);
+
 
 /**
  * PangoGlyphItemIter:

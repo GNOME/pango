@@ -860,3 +860,51 @@ pango_glyph_item_get_logical_widths (PangoGlyphItem *glyph_item,
 	}
     }
 }
+
+void
+pango_glyph_item_get_logical_widths_and_clusters (PangoGlyphItem *glyph_item,
+                                                  const char     *text,
+                                                  int            *logical_widths,
+                                                  int            *clusters)
+{
+  PangoGlyphItemIter iter;
+  gboolean has_cluster;
+  int dir;
+
+  dir = glyph_item->item->analysis.level % 2 == 0 ? +1 : -1;
+  for (has_cluster = pango_glyph_item_iter_init_start (&iter, glyph_item, text);
+       has_cluster;
+       has_cluster = pango_glyph_item_iter_next_cluster (&iter))
+    {
+      int glyph_index, char_index, num_chars, cluster_width = 0, char_width;
+
+      for (glyph_index  = iter.start_glyph;
+	   glyph_index != iter.end_glyph;
+	   glyph_index += dir)
+        {
+	  cluster_width += glyph_item->glyphs->glyphs[glyph_index].geometry.width;
+	}
+
+      num_chars = iter.end_char - iter.start_char;
+      if (num_chars == 1)
+        {
+          logical_widths[char_index] = cluster_width;
+          clusters[char_index] = 0;
+        }
+      else if (num_chars > 0) /* pedantic */
+        {
+	  char_width = cluster_width / num_chars;
+
+	  for (char_index = iter.start_char;
+	       char_index < iter.end_char;
+	       char_index++)
+	    {
+	      logical_widths[char_index] = char_width;
+              clusters[char_index] = char_index - iter.start_char + 1;
+	    }
+
+	  /* add any residues to the first char */
+	  logical_widths[iter.start_char] += cluster_width - (char_width * num_chars);
+	}
+    }
+}
