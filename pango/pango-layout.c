@@ -3766,7 +3766,7 @@ find_break_extra_width (PangoLayout    *layout,
       else
         return state->hyphen_width;
     }
-  else if (state->start_offset + pos > 0 &&
+  else if (pos > 0 &&
            layout->log_attrs[state->start_offset + pos - 1].is_white)
     {
       return - state->log_widths[state->log_widths_offset + pos - 1];
