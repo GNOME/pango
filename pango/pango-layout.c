@@ -3752,7 +3752,11 @@ find_break_extra_width (PangoLayout    *layout,
                         ParaBreakState *state,
                         int             pos)
 {
-  /* Check whether to insert a hyphen */
+  /* Check whether to insert a hyphen,
+   * or whether we are breaking after one of those
+   * characters that turn into a hyphen,
+   * or after a space.
+  */
   if (layout->log_attrs[state->start_offset + pos].break_inserts_hyphen)
     {
       ensure_hyphen_width (state);
@@ -3761,6 +3765,11 @@ find_break_extra_width (PangoLayout    *layout,
         return state->hyphen_width - state->log_widths[state->log_widths_offset + pos - 1];
       else
         return state->hyphen_width;
+    }
+  else if (state->start_offset + pos > 0 &&
+           layout->log_attrs[state->start_offset + pos - 1].is_white)
+    {
+      return - state->log_widths[state->log_widths_offset + pos - 1];
     }
 
   return 0;
@@ -3977,6 +3986,11 @@ process_item (PangoLayout     *layout,
               insert_run (line, state, new_item, FALSE);
 
               break_width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
+
+              if (state->start_offset + break_num_chars > 0 &&
+                  layout->log_attrs[state->start_offset + break_num_chars - 1].is_white)
+                break_width -= state->log_widths[state->log_widths_offset + break_num_chars - 1];
+
               if (break_width > state->remaining_width &&
                   !break_disabled[break_num_chars] &&
                   break_num_chars > 1)
