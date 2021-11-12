@@ -3904,10 +3904,6 @@ process_item (PangoLayout     *layout,
 
     retry_break:
 
-      /* See how much of the item we can stuff in the line. */
-      width = 0;
-      extra_width = 0;
-
       /* break_extra_width gets normally set from find_break_extra_width inside
        * the loop, and that takes a space before the break into account. The
        * one case that is not covered by that is if we end up going all the way
@@ -3916,7 +3912,23 @@ process_item (PangoLayout     *layout,
        * initialize it here, taking space-before-break into account.
        */
       if (layout->log_attrs[state->start_offset + break_num_chars - 1].is_white)
-        break_extra_width = - state->log_widths[state->log_widths_offset + break_num_chars - 1];
+        {
+          break_extra_width = - state->log_widths[state->log_widths_offset + break_num_chars - 1];
+
+          /* check one more time if the whole item fits after removing the space */
+          if (width + break_extra_width <= state->remaining_width && !no_break_at_end)
+            {
+              state->remaining_width -= width + break_extra_width;
+              state->remaining_width = MAX (state->remaining_width, 0);
+              insert_run (line, state, item, TRUE);
+
+              return BREAK_ALL_FIT;
+            }
+        }
+
+      /* See how much of the item we can stuff in the line. */
+      width = 0;
+      extra_width = 0;
 
       for (num_chars = 0; num_chars < item->num_chars; num_chars++)
         {
