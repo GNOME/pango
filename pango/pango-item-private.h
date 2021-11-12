@@ -88,6 +88,10 @@ GList *            pango_itemize_post_process_items   (PangoContext             
                                                        PangoLogAttr               *log_attrs,
                                                        GList                      *items);
 
+void               pango_item_unsplit                 (PangoItem *orig,
+                                                       int        split_index,
+                                                       int        split_offset);
+
 
 G_END_DECLS
 
