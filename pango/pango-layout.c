@@ -3941,6 +3941,8 @@ process_item (PangoLayout     *layout,
 
       if (force_fit || break_width + break_extra_width <= state->remaining_width)       /* Successfully broke the item */
         {
+          int remaining = state->remaining_width;
+
           if (state->remaining_width >= 0)
             {
               state->remaining_width -= break_width;
@@ -3971,7 +3973,7 @@ process_item (PangoLayout     *layout,
                 new_item->analysis.flags |= PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
 
               /* Add the width back, to the line, reshape, subtract the new width */
-              state->remaining_width += break_width;
+              state->remaining_width = remaining;
               insert_run (line, state, new_item, FALSE);
 
               break_width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
