@@ -3943,9 +3943,9 @@ process_item (PangoLayout     *layout,
        * the cluster here.  But should be fine in practice. */
       if (break_num_chars > 0 && break_num_chars < item->num_chars &&
           layout->log_attrs[state->start_offset + break_num_chars - 1].is_white)
-      {
+        {
           break_width -= state->log_widths[state->log_widths_offset + break_num_chars - 1];
-      }
+        }
 
       if (layout->wrap == PANGO_WRAP_WORD_CHAR && force_fit && break_width + break_extra_width > state->remaining_width && !retrying_with_char_breaks)
         {
