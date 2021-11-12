@@ -116,6 +116,7 @@ typedef struct
 /* This map is based on empirical data from analyzing a large collection of
  * fonts and comparing the opentype value with the value that OSX returns.
  * see: https://bugzilla.gnome.org/show_bug.cgi?id=766148
+ * FIXME: This need recalibrating, values outside these bounds do occur!
  */
 
 static const PangoCTWeight ct_weight_map[] = {
@@ -315,6 +316,7 @@ ct_font_descriptor_get_weight (CTFontDescriptorRef desc)
   CFNumberRef cf_number;
   CGFloat value;
   PangoWeight weight = PANGO_WEIGHT_NORMAL;
+  guint i;
 
   dict = CTFontDescriptorCopyAttribute (desc, kCTFontTraitsAttribute);
   cf_number = (CFNumberRef)CFDictionaryGetValue (dict,
@@ -322,14 +324,13 @@ ct_font_descriptor_get_weight (CTFontDescriptorRef desc)
 
   if (cf_number != NULL && CFNumberGetValue (cf_number, kCFNumberCGFloatType, &value))
     {
-    if (value < ct_weight_min || value > ct_weight_max)
+    if (!(value >= ct_weight_min && value <= ct_weight_max))
       {
-        /* This is really an error */
-        weight = PANGO_WEIGHT_NORMAL;
+        i = value > ct_weight_max ? G_N_ELEMENTS (ct_weight_map) - 1 : 0;
+        weight = ct_weight_map[i].ct_weight;
       }
     else
       {
-        guint i;
         for (i = 1; value > ct_weight_map[i].ct_weight; ++i)
           ;
 
