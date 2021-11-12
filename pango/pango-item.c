@@ -138,7 +138,7 @@ G_DEFINE_BOXED_TYPE (PangoItem, pango_item,
  * Return value: new item representing text before @split_index, which
  *   should be freed with [method@Pango.Item.free].
  */
-PangoItem*
+PangoItem *
 pango_item_split (PangoItem *orig,
                   int        split_index,
                   int        split_offset)
@@ -162,6 +162,31 @@ pango_item_split (PangoItem *orig,
     ((PangoItemPrivate *)orig)->char_offset += split_offset;
 
   return new_item;
+}
+
+/*< private >
+ * pango_item_unsplit:
+ * @orig: the item to unsplit
+ * @split_index: value passed to pango_item_split()
+ * @split_offset: value passed to pango_item_split()
+ *
+ * Undoes the effect of a pango_item_split() call with
+ * the same arguments.
+ *
+ * You are expected to free the new item that was returned
+ * by pango_item_split() yourself.
+ */
+void
+pango_item_unsplit (PangoItem *orig,
+                    int        split_index,
+                    int        split_offset)
+{
+  orig->offset -= split_index;
+  orig->length += split_index;
+  orig->num_chars += split_offset;
+
+  if (orig->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET)
+    ((PangoItemPrivate *)orig)->char_offset -= split_offset;
 }
 
 static int

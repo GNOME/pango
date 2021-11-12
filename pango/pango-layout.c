@@ -3525,6 +3525,29 @@ shape_tab (PangoLayoutLine  *line,
     }
 }
 
+#define DISABLE_BREAKPOINT_FLAG (1 << 16)
+
+static inline void
+disable_breakpoint (PangoLayout *layout,
+                    int          offset)
+{
+  layout->log_attrs[offset].reserved |= DISABLE_BREAKPOINT_FLAG;
+}
+
+static inline gboolean
+breakpoint_is_disabled (PangoLayout *layout,
+                        int          offset)
+{
+  return (layout->log_attrs[offset].reserved & DISABLE_BREAKPOINT_FLAG) != 0;
+}
+
+static void
+clear_breakpoint_flags (PangoLayout *layout)
+{
+  for (int i = 0; i < layout->n_chars + 1; i++)
+    layout->log_attrs[i].reserved = 0;
+}
+
 static inline gboolean
 can_break_at (PangoLayout *layout,
               gint         offset,
@@ -3542,6 +3565,8 @@ can_break_at (PangoLayout *layout,
 
   if (offset == layout->n_chars)
     return TRUE;
+  else if (breakpoint_is_disabled (layout, offset))
+    return FALSE;
   else if (wrap == PANGO_WRAP_WORD)
     return layout->log_attrs[offset].is_line_break;
   else if (wrap == PANGO_WRAP_CHAR)
@@ -3943,9 +3968,9 @@ process_item (PangoLayout     *layout,
        * the cluster here.  But should be fine in practice. */
       if (break_num_chars > 0 && break_num_chars < item->num_chars &&
           layout->log_attrs[state->start_offset + break_num_chars - 1].is_white)
-      {
+        {
           break_width -= state->log_widths[state->log_widths_offset + break_num_chars - 1];
-      }
+        }
 
       if (layout->wrap == PANGO_WRAP_WORD_CHAR && force_fit && break_width + break_extra_width > state->remaining_width && !retrying_with_char_breaks)
         {
@@ -3990,7 +4015,28 @@ process_item (PangoLayout     *layout,
               /* Add the width back, to the line, reshape, subtract the new width */
               state->remaining_width += break_width;
               insert_run (line, state, new_item, FALSE);
+
               break_width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
+              if (break_width > state->remaining_width &&
+                  !breakpoint_is_disabled (layout, break_num_chars) &&
+                  break_num_chars > 1)
+                {
+                  /* Unsplit the item, disable the breakpoint, try again */
+
+                  uninsert_run (line);
+                  pango_item_free (new_item);
+                  pango_item_unsplit (item, length, break_num_chars);
+
+                  disable_breakpoint (layout, break_num_chars);
+
+                  num_chars = item->num_chars;
+                  width = orig_width;
+                  break_num_chars = num_chars;
+                  break_width = width;
+
+                  goto retry_break;
+                }
+
               state->remaining_width -= break_width;
 
               state->log_widths_offset += break_num_chars;
@@ -4597,6 +4643,8 @@ pango_layout_check_lines (PangoLayout *layout)
       start = end + delim_len;
     }
   while (!done);
+
+  clear_breakpoint_flags (layout);
 
   g_free (state.log_widths);
   g_list_free_full (state.baseline_shifts, g_free);
