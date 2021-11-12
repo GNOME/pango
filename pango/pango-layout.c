@@ -3965,7 +3965,8 @@ process_item (PangoLayout     *layout,
       /* If there's a space at the end of the line, include that also.
        * The logic here should match zero_line_final_space().
        * XXX Currently it doesn't quite match the logic there.  We don't check
-       * the cluster here.  But should be fine in practice. */
+       * the cluster here. But should be fine in practice.
+       */
       if (break_num_chars > 0 && break_num_chars < item->num_chars &&
           layout->log_attrs[state->start_offset + break_num_chars - 1].is_white)
         {
