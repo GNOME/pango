@@ -232,6 +232,7 @@ harfbuzz_req_version = '>= 2.6.0'
 fontconfig_req_version = '>= 2.13.0'
 xft_req_version = '>= 2.0.0'
 cairo_req_version = '>= 1.12.10'
+json_glib_version = '>= 1.6.0'
 
 # libm
 mathlib_dep = cc.find_library('m', required: false)
@@ -250,6 +251,9 @@ fribidi_dep = dependency('fribidi', version: fribidi_req_version,
                          fallback: ['fribidi', 'libfribidi_dep'],
                          default_options: ['docs=false'])
 pango_deps += fribidi_dep
+
+json_glib_dep = dependency('json-glib-1.0', version: json_glib_version)
+pango_deps += json_glib_dep
 
 thai_dep = dependency('libthai', version: libthai_req_version, required: get_option('libthai'))
 if thai_dep.found()

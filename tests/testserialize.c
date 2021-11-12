@@ -21,6 +21,7 @@
 #include "config.h"
 #include <glib.h>
 #include <pango/pangocairo.h>
+#include <gio/gio.h>
 
 static void
 test_serialize_attr_list (void)
@@ -122,6 +123,168 @@ test_serialize_tab_array (void)
     }
 }
 
+static void
+test_serialize_layout_minimal (void)
+{
+  const char *test =
+    "{\n"
+    "  \"text\" : \"Almost nothing\"\n"
+    "}";
+
+  PangoContext *context;
+  GBytes *bytes;
+  PangoLayout *layout;
+  GError *error = NULL;
+  GBytes *out_bytes;
+  const char *str;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
+  bytes = g_bytes_new_static (test, -1);
+
+  layout = pango_layout_deserialize (context, bytes, &error);
+  g_assert_no_error (error);
+  g_assert_true (PANGO_IS_LAYOUT (layout));
+  g_assert_cmpstr (pango_layout_get_text (layout), ==, "Almost nothing");
+  g_assert_null (pango_layout_get_attributes (layout));
+  g_assert_null (pango_layout_get_tabs (layout));
+  g_assert_null (pango_layout_get_font_description (layout));
+  g_assert_cmpint (pango_layout_get_alignment (layout), ==, PANGO_ALIGN_LEFT);
+  g_assert_cmpint (pango_layout_get_width (layout), ==, -1);
+
+  out_bytes = pango_layout_serialize (layout);
+  str = g_bytes_get_data (out_bytes, NULL);
+
+  g_assert_cmpstr (str, ==, test);
+
+  g_bytes_unref (out_bytes);
+
+  g_object_unref (layout);
+  g_bytes_unref (bytes);
+  g_object_unref (context);
+}
+
+static void
+test_serialize_layout_valid (void)
+{
+  const char *test =
+    "{\n"
+    "  \"text\" : \"Some fun with layouts!\",\n"
+    "  \"attributes\" : [\n"
+    "    {\n"
+    "      \"end\" : 4,\n"
+    "      \"type\" : \"foreground\",\n"
+    "      \"value\" : \"#ffff00000000\"\n"
+    "    },\n"
+    "    {\n"
+    "      \"start\" : 5,\n"
+    "      \"end\" : 8,\n"
+    "      \"type\" : \"foreground\",\n"
+    "      \"value\" : \"#000080800000\"\n"
+    "    },\n"
+    "    {\n"
+    "      \"start\" : 14,\n"
+    "      \"type\" : \"foreground\",\n"
+    "      \"value\" : \"#ffff0000ffff\"\n"
+    "    }\n"
+    "  ],\n"
+    "  \"font\" : \"Sans Bold 32\",\n"
+    "  \"tabs\" : {\n"
+    "    \"positions-in-pixels\" : true,\n"
+    "    \"positions\" : [\n"
+    "      0,\n"
+    "      50,\n"
+    "      100\n"
+    "    ]\n"
+    "  },\n"
+    "  \"alignment\" : \"center\",\n"
+    "  \"width\" : 350000,\n"
+    "  \"line-spacing\" : 1.5\n"
+    "}";
+
+  PangoContext *context;
+  GBytes *bytes;
+  PangoLayout *layout;
+  PangoTabArray *tabs;
+  GError *error = NULL;
+  GBytes *out_bytes;
+  const char *str;
+  char *s;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
+  bytes = g_bytes_new_static (test, -1);
+
+  layout = pango_layout_deserialize (context, bytes, &error);
+  g_assert_no_error (error);
+  g_assert_true (PANGO_IS_LAYOUT (layout));
+  g_assert_cmpstr (pango_layout_get_text (layout), ==, "Some fun with layouts!");
+  g_assert_nonnull (pango_layout_get_attributes (layout));
+  tabs = pango_layout_get_tabs (layout);
+  g_assert_nonnull (tabs);
+  pango_tab_array_free (tabs);
+  s = pango_font_description_to_string (pango_layout_get_font_description (layout));
+  g_assert_cmpstr (s, ==, "Sans Bold 32");
+  g_free (s);
+  g_assert_cmpint (pango_layout_get_alignment (layout), ==, PANGO_ALIGN_CENTER);
+  g_assert_cmpint (pango_layout_get_width (layout), ==, 350000);
+  g_assert_cmpfloat_with_epsilon (pango_layout_get_line_spacing (layout), 1.5, 0.0001);
+
+  out_bytes = pango_layout_serialize (layout);
+  str = g_bytes_get_data (out_bytes, NULL);
+
+  g_assert_cmpstr (str, ==, test);
+
+  g_bytes_unref (out_bytes);
+
+  g_object_unref (layout);
+  g_bytes_unref (bytes);
+  g_object_unref (context);
+}
+
+static void
+test_serialize_layout_invalid (void)
+{
+  const char *test1 =
+    "{\n"
+    "  \"attributes\" : [\n"
+    "    {\n"
+    "      \"type\" : \"caramba\"\n"
+    "    }\n"
+    "  ]\n"
+    "}";
+
+  const char *test2 =
+    "{\n"
+    "  \"attributes\" : [\n"
+    "    {\n"
+    "      \"type\" : \"weight\"\n"
+    "    }\n"
+    "  ]\n"
+    "}";
+
+  PangoContext *context;
+  GBytes *bytes;
+  PangoLayout *layout;
+  GError *error = NULL;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
+  bytes = g_bytes_new_static (test1, -1);
+  layout = pango_layout_deserialize (context, bytes, &error);
+  g_assert_null (layout);
+  g_assert_error (error, PANGO_LAYOUT_SERIALIZE_ERROR, PANGO_LAYOUT_SERIALIZE_INVALID_VALUE);
+  g_bytes_unref (bytes);
+  g_clear_error (&error);
+
+  bytes = g_bytes_new_static (test2, -1);
+  layout = pango_layout_deserialize (context, bytes, &error);
+  g_assert_null (layout);
+  g_assert_error (error, PANGO_LAYOUT_SERIALIZE_ERROR, PANGO_LAYOUT_SERIALIZE_MISSING_VALUE);
+  g_bytes_unref (bytes);
+
+  g_object_unref (context);
+}
 int
 main (int argc, char *argv[])
 {
@@ -129,6 +292,9 @@ main (int argc, char *argv[])
 
   g_test_add_func ("/serialize/attr-list", test_serialize_attr_list);
   g_test_add_func ("/serialize/tab-array", test_serialize_tab_array);
+  g_test_add_func ("/serialize/layout/minimal", test_serialize_layout_minimal);
+  g_test_add_func ("/serialize/layout/valid", test_serialize_layout_valid);
+  g_test_add_func ("/serialize/layout/invalid", test_serialize_layout_invalid);
 
   return g_test_run ();
 }

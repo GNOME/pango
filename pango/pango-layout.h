@@ -351,6 +351,31 @@ GSList *         pango_layout_get_lines            (PangoLayout    *layout);
 PANGO_AVAILABLE_IN_1_16
 GSList *         pango_layout_get_lines_readonly   (PangoLayout    *layout);
 
+#define PANGO_LAYOUT_SERIALIZE_ERROR (pango_layout_serialize_error_quark ())
+
+typedef enum {
+  PANGO_LAYOUT_SERIALIZE_INVALID,
+  PANGO_LAYOUT_SERIALIZE_INVALID_SYNTAX,
+  PANGO_LAYOUT_SERIALIZE_INVALID_VALUE,
+  PANGO_LAYOUT_SERIALIZE_MISSING_VALUE,
+} PangoLayoutSerializeError;
+
+PANGO_AVAILABLE_IN_1_50
+GQuark          pango_layout_serialize_error_quark (void);
+
+PANGO_AVAILABLE_IN_1_50
+GBytes *        pango_layout_serialize             (PangoLayout    *layout);
+
+PANGO_AVAILABLE_IN_1_50
+PangoLayout *   pango_layout_deserialize           (PangoContext   *context,
+                                                    GBytes         *bytes,
+                                                    GError        **error);
+
+PANGO_AVAILABLE_IN_1_50
+gboolean        pango_layout_write_to_file          (PangoLayout   *layout,
+                                                     const char    *filename,
+                                                     GError       **error);
+
 
 #define PANGO_TYPE_LAYOUT_LINE (pango_layout_line_get_type ())
 
