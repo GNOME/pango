@@ -3907,6 +3907,17 @@ process_item (PangoLayout     *layout,
       /* See how much of the item we can stuff in the line. */
       width = 0;
       extra_width = 0;
+
+      /* break_extra_width gets normally set from find_break_extra_width inside
+       * the loop, and that takes a space before the break into account. The
+       * one case that is not covered by that is if we end up going all the way
+       * through the loop without ever entering the can_break_at case, and come
+       * out at the other end with the break_extra_width value untouched. So
+       * initialize it here, taking space-before-break into account.
+       */
+      if (layout->log_attrs[state->start_offset + break_num_chars - 1].is_white)
+        break_extra_width = - state->log_widths[state->log_widths_offset + break_num_chars - 1];
+
       for (num_chars = 0; num_chars < item->num_chars; num_chars++)
         {
           extra_width = find_break_extra_width (layout, state, num_chars);
@@ -3925,17 +3936,6 @@ process_item (PangoLayout     *layout,
             }
 
           width += state->log_widths[state->log_widths_offset + num_chars];
-        }
-
-      /* If there's a space at the end of the line, include that also.
-       * The logic here should match zero_line_final_space().
-       * XXX Currently it doesn't quite match the logic there.  We don't check
-       * the cluster here. But should be fine in practice.
-       */
-      if (break_num_chars > 0 && break_num_chars < item->num_chars &&
-          layout->log_attrs[state->start_offset + break_num_chars - 1].is_white)
-        {
-          break_width -= state->log_widths[state->log_widths_offset + break_num_chars - 1];
         }
 
       if (layout->wrap == PANGO_WRAP_WORD_CHAR && force_fit && break_width + break_extra_width > state->remaining_width && !retrying_with_char_breaks)
