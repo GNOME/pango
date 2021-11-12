@@ -3525,29 +3525,6 @@ shape_tab (PangoLayoutLine  *line,
     }
 }
 
-#define DISABLE_BREAKPOINT_FLAG (1 << 16)
-
-static inline void
-disable_breakpoint (PangoLayout *layout,
-                    int          offset)
-{
-  layout->log_attrs[offset].reserved |= DISABLE_BREAKPOINT_FLAG;
-}
-
-static inline gboolean
-breakpoint_is_disabled (PangoLayout *layout,
-                        int          offset)
-{
-  return (layout->log_attrs[offset].reserved & DISABLE_BREAKPOINT_FLAG) != 0;
-}
-
-static void
-clear_breakpoint_flags (PangoLayout *layout)
-{
-  for (int i = 0; i < layout->n_chars + 1; i++)
-    layout->log_attrs[i].reserved = 0;
-}
-
 static inline gboolean
 can_break_at (PangoLayout *layout,
               gint         offset,
@@ -3565,8 +3542,6 @@ can_break_at (PangoLayout *layout,
 
   if (offset == layout->n_chars)
     return TRUE;
-  else if (breakpoint_is_disabled (layout, offset))
-    return FALSE;
   else if (wrap == PANGO_WRAP_WORD)
     return layout->log_attrs[offset].is_line_break;
   else if (wrap == PANGO_WRAP_CHAR)
@@ -3762,23 +3737,6 @@ find_hyphen_width (PangoItem *item)
   return 0;
 }
 
-static int
-find_char_width (PangoItem *item,
-                 gunichar   wc)
-{
-  hb_font_t *hb_font;
-  hb_codepoint_t glyph;
-
-  if (!item->analysis.font)
-    return 0;
-
-  hb_font = pango_font_get_hb_font (item->analysis.font);
-  if (hb_font_get_nominal_glyph (hb_font, wc, &glyph))
-    return hb_font_get_glyph_h_advance (hb_font, glyph);
-
-  return 0;
-}
-
 static inline void
 ensure_hyphen_width (ParaBreakState *state)
 {
@@ -3794,22 +3752,24 @@ find_break_extra_width (PangoLayout    *layout,
                         ParaBreakState *state,
                         int             pos)
 {
-  /* Check whether to insert a hyphen */
+  /* Check whether to insert a hyphen,
+   * or whether we are breaking after one of those
+   * characters that turn into a hyphen,
+   * or after a space.
+  */
   if (layout->log_attrs[state->start_offset + pos].break_inserts_hyphen)
     {
       ensure_hyphen_width (state);
 
       if (layout->log_attrs[state->start_offset + pos].break_removes_preceding)
-        {
-          PangoItem *item = state->items->data;
-          gunichar wc;
-
-          wc = g_utf8_get_char (g_utf8_offset_to_pointer (layout->text, state->start_offset + pos - 1));
-
-          return state->hyphen_width - find_char_width (item, wc);
-        }
+        return state->hyphen_width - state->log_widths[state->log_widths_offset + pos - 1];
       else
         return state->hyphen_width;
+    }
+  else if (pos > 0 &&
+           layout->log_attrs[state->start_offset + pos - 1].is_white)
+    {
+      return - state->log_widths[state->log_widths_offset + pos - 1];
     }
 
   return 0;
@@ -3926,6 +3886,7 @@ process_item (PangoLayout     *layout,
       int orig_width = width;
       int break_extra_width = 0;
       gboolean retrying_with_char_breaks = FALSE;
+      gboolean *break_disabled;
 
       if (processing_new_item)
         {
@@ -3938,11 +3899,37 @@ process_item (PangoLayout     *layout,
           pango_glyph_item_get_logical_widths (&glyph_item, layout->text, state->log_widths);
         }
 
+      break_disabled = g_alloca (sizeof (gboolean) * (item->num_chars + 1));
+      memset (break_disabled, 0, sizeof (gboolean) * (item->num_chars + 1));
+
     retry_break:
+
+      /* break_extra_width gets normally set from find_break_extra_width inside
+       * the loop, and that takes a space before the break into account. The
+       * one case that is not covered by that is if we end up going all the way
+       * through the loop without ever entering the can_break_at case, and come
+       * out at the other end with the break_extra_width value untouched. So
+       * initialize it here, taking space-before-break into account.
+       */
+      if (layout->log_attrs[state->start_offset + break_num_chars - 1].is_white)
+        {
+          break_extra_width = - state->log_widths[state->log_widths_offset + break_num_chars - 1];
+
+          /* check one more time if the whole item fits after removing the space */
+          if (width + break_extra_width <= state->remaining_width && !no_break_at_end)
+            {
+              state->remaining_width -= width + break_extra_width;
+              state->remaining_width = MAX (state->remaining_width, 0);
+              insert_run (line, state, item, TRUE);
+
+              return BREAK_ALL_FIT;
+            }
+        }
 
       /* See how much of the item we can stuff in the line. */
       width = 0;
       extra_width = 0;
+
       for (num_chars = 0; num_chars < item->num_chars; num_chars++)
         {
           extra_width = find_break_extra_width (layout, state, num_chars);
@@ -3951,7 +3938,8 @@ process_item (PangoLayout     *layout,
             break;
 
           /* If there are no previous runs we have to take care to grab at least one char. */
-          if (can_break_at (layout, state->start_offset + num_chars, retrying_with_char_breaks) &&
+          if (!break_disabled[num_chars] &&
+              can_break_at (layout, state->start_offset + num_chars, retrying_with_char_breaks) &&
               (num_chars > 0 || line->runs))
             {
               break_num_chars = num_chars;
@@ -3960,17 +3948,6 @@ process_item (PangoLayout     *layout,
             }
 
           width += state->log_widths[state->log_widths_offset + num_chars];
-        }
-
-      /* If there's a space at the end of the line, include that also.
-       * The logic here should match zero_line_final_space().
-       * XXX Currently it doesn't quite match the logic there.  We don't check
-       * the cluster here. But should be fine in practice.
-       */
-      if (break_num_chars > 0 && break_num_chars < item->num_chars &&
-          layout->log_attrs[state->start_offset + break_num_chars - 1].is_white)
-        {
-          break_width -= state->log_widths[state->log_widths_offset + break_num_chars - 1];
         }
 
       if (layout->wrap == PANGO_WRAP_WORD_CHAR && force_fit && break_width + break_extra_width > state->remaining_width && !retrying_with_char_breaks)
@@ -3985,6 +3962,8 @@ process_item (PangoLayout     *layout,
 
       if (force_fit || break_width + break_extra_width <= state->remaining_width)       /* Successfully broke the item */
         {
+          int remaining = state->remaining_width;
+
           if (state->remaining_width >= 0)
             {
               state->remaining_width -= break_width;
@@ -4013,13 +3992,19 @@ process_item (PangoLayout     *layout,
 
               if (break_needs_hyphen (layout, state, break_num_chars))
                 new_item->analysis.flags |= PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
+
               /* Add the width back, to the line, reshape, subtract the new width */
-              state->remaining_width += break_width;
+              state->remaining_width = remaining;
               insert_run (line, state, new_item, FALSE);
 
               break_width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
+
+              if (state->start_offset + break_num_chars > 0 &&
+                  layout->log_attrs[state->start_offset + break_num_chars - 1].is_white)
+                break_width -= state->log_widths[state->log_widths_offset + break_num_chars - 1];
+
               if (break_width > state->remaining_width &&
-                  !breakpoint_is_disabled (layout, break_num_chars) &&
+                  !break_disabled[break_num_chars] &&
                   break_num_chars > 1)
                 {
                   /* Unsplit the item, disable the breakpoint, try again */
@@ -4028,7 +4013,7 @@ process_item (PangoLayout     *layout,
                   pango_item_free (new_item);
                   pango_item_unsplit (item, length, break_num_chars);
 
-                  disable_breakpoint (layout, break_num_chars);
+                  break_disabled[break_num_chars] = TRUE;
 
                   num_chars = item->num_chars;
                   width = orig_width;
@@ -4644,8 +4629,6 @@ pango_layout_check_lines (PangoLayout *layout)
       start = end + delim_len;
     }
   while (!done);
-
-  clear_breakpoint_flags (layout);
 
   g_free (state.log_widths);
   g_list_free_full (state.baseline_shifts, g_free);
