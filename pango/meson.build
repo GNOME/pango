@@ -27,6 +27,7 @@ pango_sources = [
   'pango-utils.c',
   'reorder-items.c',
   'shape.c',
+  'serializer.c',
 ]
 
 pango_headers = [

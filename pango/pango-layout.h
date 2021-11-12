@@ -351,6 +351,11 @@ GSList *         pango_layout_get_lines            (PangoLayout    *layout);
 PANGO_AVAILABLE_IN_1_16
 GSList *         pango_layout_get_lines_readonly   (PangoLayout    *layout);
 
+PANGO_AVAILABLE_IN_1_50
+GBytes *        pango_layout_serialize             (PangoLayout    *layout);
+PANGO_AVAILABLE_IN_1_50
+PangoLayout *   pango_layout_deserialize           (PangoContext   *context,
+                                                    GBytes         *bytes);
 
 #define PANGO_TYPE_LAYOUT_LINE (pango_layout_line_get_type ())
 
