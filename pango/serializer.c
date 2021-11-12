@@ -19,6 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include "config.h"
+
 #include <pango/pango-layout.h>
 #include <pango/pango-layout-private.h>
 #include <pango/pango-enum-types.h>
@@ -37,11 +39,17 @@ printer_init (Printer *self)
 }
 
 #define IDENT_LEVEL 2 /* Spaces per level */
+static int
+get_indent (Printer *self)
+{
+  return self->indentation_level * IDENT_LEVEL;
+}
+
 static void
 _indent (Printer *self)
 {
   if (self->indentation_level > 0)
-    g_string_append_printf (self->str, "%*s", self->indentation_level * IDENT_LEVEL, " ");
+    g_string_append_printf (self->str, "%*s", get_indent (self), " ");
 }
 #undef IDENT_LEVEL
 
@@ -116,11 +124,9 @@ append_string_param (Printer    *p,
                      const char *value)
 {
   _indent (p);
-  g_string_append (p->str, param_name);
-  g_string_append (p->str, ": ");
+  g_string_append_printf (p->str, "%s: ", param_name);
   print_string (p->str, value, TRUE);
-  g_string_append_c (p->str, ';');
-  g_string_append_c (p->str, '\n');
+  g_string_append (p->str, ";\n");
 }
 
 static void
@@ -129,11 +135,9 @@ append_simple_string (Printer    *p,
                       const char *value)
 {
   _indent (p);
-  g_string_append (p->str, param_name);
-  g_string_append (p->str, ": ");
-  g_string_append (p->str, value ? "true" : "false");
-  g_string_append_c (p->str, ';');
-  g_string_append_c (p->str, '\n');
+  g_string_append_printf (p->str, "%s: ", param_name);
+  g_string_append (p->str, value);
+  g_string_append (p->str, ";\n");
 }
 
 static void
@@ -162,6 +166,7 @@ append_enum_param (Printer    *p,
     }
   else
     {
+      
       char *v = g_strdup_printf ("%d", value);
       append_simple_string (p, param_name, v);
       g_free (v);
@@ -175,9 +180,8 @@ append_int_param (Printer    *p,
                   const char *param_name,
                   int         value)
 {
-  char *v = g_strdup_printf ("%d", value);
-  append_simple_string (p, param_name, v);
-  g_free (v);
+  _indent (p);
+  g_string_append_printf (p->str, "%s: %d;\n", param_name, value);
 }
 
 static void
@@ -191,13 +195,6 @@ append_float_param (Printer    *p,
 }
 
 static void
-append_attributes (Printer       *p,
-                   const char    *param_name,
-                   PangoAttrList *attrs)
-{
-}
-
-static void
 append_font_description (Printer              *p,
                          const char           *param_name,
                          PangoFontDescription *desc)
@@ -207,35 +204,164 @@ append_font_description (Printer              *p,
   g_free (value);
 }
 
+static const char *
+get_attr_value_nick (PangoAttrType attr_type)
+{
+  GEnumClass *enum_class;
+  GEnumValue *enum_value;
+
+  enum_class = g_type_class_ref (pango_attr_type_get_type ());
+  enum_value = g_enum_get_value (enum_class, attr_type);
+  g_type_class_unref (enum_class);
+
+  return enum_value->value_nick;
+}
+
+static void
+attr_print (GString        *str,
+            PangoAttribute *attr)
+{
+  PangoAttrString *string;
+  PangoAttrLanguage *lang;
+  PangoAttrInt *integer;
+  PangoAttrFloat *flt;
+  PangoAttrFontDesc *font;
+  PangoAttrColor *color;
+  PangoAttrShape *shape;
+  PangoAttrSize *size;
+  PangoAttrFontFeatures *features;
+
+  g_string_append_printf (str, "%u %u ", attr->start_index, attr->end_index);
+
+  g_string_append (str, get_attr_value_nick (attr->klass->type));
+
+  if ((string = pango_attribute_as_string (attr)) != NULL)
+    g_string_append_printf (str, " %s", string->value);
+  else if ((lang = pango_attribute_as_language (attr)) != NULL)
+    g_string_append_printf (str, " %s", pango_language_to_string (lang->value));
+  else if ((integer = pango_attribute_as_int (attr)) != NULL)
+    g_string_append_printf (str, " %d", integer->value);
+  else if ((flt = pango_attribute_as_float (attr)) != NULL)
+    {
+      char buf[20];
+      g_ascii_formatd (buf, 20, " %f", flt->value);
+      g_string_append_printf (str, " %s", buf);
+    }
+  else if ((font = pango_attribute_as_font_desc (attr)) != NULL)
+    {
+      char *s = pango_font_description_to_string (font->desc);
+      g_string_append_printf (str, " \"%s\"", s);
+      g_free (s);
+    }
+  else if ((color = pango_attribute_as_color (attr)) != NULL)
+    {
+      char *s = pango_color_to_string (&color->color);
+      g_string_append_printf (str, " %s", s);
+      g_free (s);
+    }
+  else if ((shape = pango_attribute_as_shape (attr)) != NULL)
+    g_string_append (str, "shape"); /* FIXME */
+  else if ((size = pango_attribute_as_size (attr)) != NULL)
+    g_string_append_printf (str, " %d", size->size);
+  else if ((features = pango_attribute_as_font_features (attr)) != NULL)
+    g_string_append_printf (str, " \"%s\"", features->features);
+  else
+    g_assert_not_reached ();
+}
+
+static void
+append_attributes (Printer       *p,
+                   const char    *param_name,
+                   PangoAttrList *attrs)
+{
+  GSList *attributes;
+  GString *s;
+
+  s = g_string_new ("");
+
+  attributes = pango_attr_list_get_attributes (attrs);
+  for (GSList *l = attributes; l; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+      attr_print (s, attr);
+      if (l->next)
+        g_string_append_printf (s, ",\n%*s", (int)(get_indent (p) + strlen (param_name) + 2), "");
+    }
+
+  g_slist_free_full (attributes, (GDestroyNotify)pango_attribute_destroy);
+
+  append_simple_string (p, param_name, s->str);
+  g_string_free (s, TRUE);
+}
+
 static void
 append_tab_array (Printer       *p,
                   const char    *param_name,
                   PangoTabArray *tabs)
 {
+  int *locations;
+  GString *s;
+  const char *unit;
+
+  if (pango_tab_array_get_positions_in_pixels (tabs))
+    unit = "px";
+  else
+    unit = "";
+
+  pango_tab_array_get_tabs (tabs, NULL, &locations);
+
+  s = g_string_new ("");
+  for (int i = 0; i < pango_tab_array_get_size (tabs); i++)
+    {
+      if (s->len > 0)
+        g_string_append_c (s, ' ');
+      g_string_append_printf (s, "%d%s", locations[i], unit);
+    }
+
+  append_simple_string (p, "positions", s->str);
+
+  g_string_free (s, TRUE);
+  g_free (locations);
 }
 
 static void
 layout_print (Printer     *p,
               PangoLayout *layout)
 {
-  start_node (p, "PangoLayout");
+  start_node (p, "layout");
 
-  append_string_param (p, "text", layout->text);
-  append_attributes (p, "attributes", layout->attrs);
-  append_font_description (p, "font", layout->font_desc);
-  append_tab_array (p, "tabs", layout->tabs);
-  append_bool_param (p, "justify", layout->justify);
-  append_bool_param (p, "justify-last-line", layout->justify_last_line);
-  append_bool_param (p, "single-paragraph", layout->single_paragraph);
-  append_bool_param (p, "autodir", layout->auto_dir);
-  append_enum_param (p, "alignment", PANGO_TYPE_ALIGNMENT, layout->alignment);
-  append_enum_param (p, "wrap", PANGO_TYPE_WRAP_MODE, layout->wrap);
-  append_enum_param (p, "ellipsize", PANGO_TYPE_ELLIPSIZE_MODE, layout->wrap);
-  append_int_param (p, "width", layout->width);
-  append_int_param (p, "height", layout->width);
-  append_int_param (p, "indent", layout->indent);
-  append_int_param (p, "spacing", layout->spacing);
-  append_float_param (p, "line_spacing", layout->line_spacing);
+  if (layout->text)
+    append_string_param (p, "text", layout->text);
+  if (layout->attrs)
+    append_attributes (p, "attributes", layout->attrs);
+  if (layout->font_desc)
+    append_font_description (p, "font", layout->font_desc);
+  if (layout->tabs)
+    append_tab_array (p, "tabs", layout->tabs);
+  if (layout->justify)
+    append_bool_param (p, "justify", layout->justify);
+  if (layout->justify_last_line)
+    append_bool_param (p, "justify-last-line", layout->justify_last_line);
+  if (layout->single_paragraph)
+    append_bool_param (p, "single-paragraph", layout->single_paragraph);
+  if (!layout->auto_dir)
+    append_bool_param (p, "auto-dir", layout->auto_dir);
+  if (layout->alignment != PANGO_ALIGN_LEFT)
+    append_enum_param (p, "alignment", PANGO_TYPE_ALIGNMENT, layout->alignment);
+  if (layout->wrap != PANGO_WRAP_WORD)
+    append_enum_param (p, "wrap", PANGO_TYPE_WRAP_MODE, layout->wrap);
+  if (layout->ellipsize != PANGO_ELLIPSIZE_NONE)
+    append_enum_param (p, "ellipsize", PANGO_TYPE_ELLIPSIZE_MODE, layout->ellipsize);
+  if (layout->width != -1)
+    append_int_param (p, "width", layout->width);
+  if (layout->height != -1)
+    append_int_param (p, "height", layout->height);
+  if (layout->indent != 0)
+    append_int_param (p, "indent", layout->indent);
+  if (layout->spacing != 0)
+    append_int_param (p, "spacing", layout->spacing);
+  if (layout->line_spacing != 0.)
+    append_float_param (p, "line_spacing", layout->line_spacing);
 
   end_node (p);
 }
@@ -265,7 +391,6 @@ pango_layout_serialize (PangoLayout *layout)
   Printer p;
 
   printer_init (&p);
-
   layout_print (&p, layout);
 
   return g_string_free_to_bytes (p.str);
