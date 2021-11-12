@@ -120,7 +120,7 @@ make_layout(PangoContext *context,
   if (size > 0)
     pango_font_description_set_size (font_description, size * PANGO_SCALE);
 
-  if (opt_width > 0)
+  if (opt_width >= 0)
     {
       if (opt_pango_units)
         pango_layout_set_width (layout, opt_width);
@@ -128,7 +128,7 @@ make_layout(PangoContext *context,
         pango_layout_set_width (layout, (opt_width * opt_dpi * PANGO_SCALE + 36) / 72);
     }
 
-  if (opt_height > 0)
+  if (opt_height >= 0)
     {
       if (opt_pango_units)
         pango_layout_set_width (layout, opt_height);
