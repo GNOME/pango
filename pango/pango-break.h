@@ -97,6 +97,8 @@ struct _PangoLogAttr
   guint is_word_boundary            : 1;
   guint break_inserts_hyphen        : 1;
   guint break_removes_preceding     : 1;
+
+  guint reserved                    : 17;
 };
 
 PANGO_DEPRECATED_IN_1_44
