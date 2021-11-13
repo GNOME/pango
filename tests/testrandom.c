@@ -140,7 +140,8 @@ test_wrap_char (gconstpointer data)
 
       for (i = 1; i < G_N_ELEMENTS (sizes); i++)
         {
-          if (sizes[i].set_width < min.width)
+          if (sizes[i-1].set_width < min.width ||
+              sizes[i].set_width < min.width)
             continue;
 
           g_assert_cmpint (sizes[i-1].set_width, <=, sizes[i].set_width);
