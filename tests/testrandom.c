@@ -33,7 +33,7 @@ static gsize n_rtl_words;
 static const char *
 random_word (PangoDirection dir)
 {
-  switch (dir)
+  switch ((int)dir)
     {
       case PANGO_DIRECTION_LTR:
         return ltr_words[g_test_rand_int_range (0, n_ltr_words)];
