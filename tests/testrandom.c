@@ -143,6 +143,7 @@ test_wrap_char (gconstpointer data)
             continue;
 
           g_assert_cmpint (sizes[i-1].set_width, <=, sizes[i].set_width);
+          g_assert_cmpint (sizes[i].width, <=, sizes[i].set_width);
           g_assert_cmpint (sizes[i-1].width, <=, sizes[i].width);
           g_assert_cmpint (sizes[i-1].height, >=, sizes[i].height);
         }
