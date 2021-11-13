@@ -213,94 +213,16 @@ append_font_description (Printer              *p,
   g_free (value);
 }
 
-static const char *
-get_attr_value_nick (PangoAttrType attr_type)
-{
-  GEnumClass *enum_class;
-  GEnumValue *enum_value;
-
-  enum_class = g_type_class_ref (pango_attr_type_get_type ());
-  enum_value = g_enum_get_value (enum_class, attr_type);
-  g_type_class_unref (enum_class);
-
-  return enum_value->value_nick;
-}
-
-static void
-attr_print (GString        *str,
-            PangoAttribute *attr)
-{
-  PangoAttrString *string;
-  PangoAttrLanguage *lang;
-  PangoAttrInt *integer;
-  PangoAttrFloat *flt;
-  PangoAttrFontDesc *font;
-  PangoAttrColor *color;
-  PangoAttrShape *shape;
-  PangoAttrSize *size;
-  PangoAttrFontFeatures *features;
-
-  g_string_append_printf (str, "%u %u ", attr->start_index, attr->end_index);
-
-  g_string_append (str, get_attr_value_nick (attr->klass->type));
-
-  if ((string = pango_attribute_as_string (attr)) != NULL)
-    g_string_append_printf (str, " %s", string->value);
-  else if ((lang = pango_attribute_as_language (attr)) != NULL)
-    g_string_append_printf (str, " %s", pango_language_to_string (lang->value));
-  else if ((integer = pango_attribute_as_int (attr)) != NULL)
-    g_string_append_printf (str, " %d", integer->value);
-  else if ((flt = pango_attribute_as_float (attr)) != NULL)
-    {
-      char buf[20];
-      g_ascii_formatd (buf, 20, " %f", flt->value);
-      g_string_append_printf (str, " %s", buf);
-    }
-  else if ((font = pango_attribute_as_font_desc (attr)) != NULL)
-    {
-      char *s = pango_font_description_to_string (font->desc);
-      g_string_append_printf (str, " \"%s\"", s);
-      g_free (s);
-    }
-  else if ((color = pango_attribute_as_color (attr)) != NULL)
-    {
-      char *s = pango_color_to_string (&color->color);
-      g_string_append_printf (str, " %s", s);
-      g_free (s);
-    }
-  else if ((shape = pango_attribute_as_shape (attr)) != NULL)
-    g_string_append (str, "shape"); /* FIXME */
-  else if ((size = pango_attribute_as_size (attr)) != NULL)
-    g_string_append_printf (str, " %d", size->size);
-  else if ((features = pango_attribute_as_font_features (attr)) != NULL)
-    g_string_append_printf (str, " \"%s\"", features->features);
-  else
-    g_assert_not_reached ();
-}
-
 static void
 append_attributes (Printer       *p,
                    const char    *param_name,
                    PangoAttrList *attrs)
 {
-  GSList *attributes;
-  GString *s;
+  char *str;
 
-  s = g_string_new ("");
-
-  attributes = pango_attr_list_get_attributes (attrs);
-  for (GSList *l = attributes; l; l = l->next)
-    {
-      PangoAttribute *attr = l->data;
-      attr_print (s, attr);
-      if (l->next)
-        g_string_append_printf (s, ",\n%*s", (int)(get_indent (p) + strlen (param_name) + 2), "");
-    }
-
-  g_slist_free_full (attributes, (GDestroyNotify)pango_attribute_destroy);
-
-  append_simple_string (p, param_name, s->str);
-  g_string_free (s, TRUE);
+  str = pango_attr_list_to_string (attrs);
+  append_string_param (p, param_name, str);
+  g_free (str);
 }
 
 static void
@@ -462,6 +384,22 @@ parse_text (GtkCssParser *parser,
 }
 
 static gboolean
+parse_attributes (GtkCssParser *parser,
+                  gpointer      out_data)
+{
+  char *string;
+  PangoAttrList *attrs;
+
+  string = gtk_css_parser_consume_string (parser);
+  attrs = pango_attr_list_from_string (string);
+  g_free (string);
+
+  *(PangoAttrList **)out_data = attrs;
+
+  return attrs != NULL;
+}
+
+static gboolean
 parse_font (GtkCssParser *parser,
             gpointer      out_data)
 {
@@ -567,6 +505,7 @@ parse_layout (GtkCssParser *parser)
   double line_spacing = 0.;
   const Declaration declarations[] = {
     { "text", parse_text, g_free, &text },
+    { "attributes", parse_attributes, (GDestroyNotify)pango_attr_list_unref, &attrs },
     { "font", parse_font, (GDestroyNotify)pango_font_description_free, &desc },
     { "alignment", parse_alignment, NULL, &align },
     { "wrap", parse_wrap, NULL, &wrap },
