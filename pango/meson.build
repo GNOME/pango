@@ -1,3 +1,35 @@
+# Maths functions might be implemented in libm
+libm = cc.find_library('m', required: false)
+
+glib_req = glib_req_version
+confinc = root_inc
+os_unix   = false
+os_win32  = false
+
+if host_machine.system() == 'windows'
+  os_win32 = true
+else
+  os_unix = true
+endif
+
+if os_unix
+  giounix_dep  = dependency('gio-unix-2.0', version: glib_req, required: false,
+                            fallback : ['glib', 'libgio_dep'])
+endif
+if os_win32
+  giowin32_dep = dependency('gio-windows-2.0', version: glib_req, required: win32_enabled,
+                            fallback : ['glib', 'libgio_dep'])
+endif
+
+if os_win32
+  platform_gio_dep = giowin32_dep
+endif
+if os_unix
+  platform_gio_dep = giounix_dep
+endif
+
+subdir('css')
+
 pango_sources = [
   'break.c',
   'ellipsize.c',
@@ -117,7 +149,7 @@ libpango = library(
   soversion: pango_soversion,
   darwin_versions : pango_osxversion,
   install: true,
-  dependencies: pango_deps,
+  dependencies: [pango_deps, libgtk_css_dep],
   include_directories: [ root_inc, pango_inc ],
   c_args: common_cflags + pango_debug_cflags + pango_cflags,
   link_args: common_ldflags,
