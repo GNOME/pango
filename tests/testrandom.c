@@ -93,10 +93,10 @@ layout_check_size (PangoLayout *layout,
 }
 
 static void
-test_wrap_char (gconstpointer data)
+test_random (PangoDirection dir,
+             PangoWrapMode  wrap)
 {
 #define N_SENTENCES 20
-  PangoDirection dir = GPOINTER_TO_UINT (data);
   PangoFontDescription *desc;
   PangoContext *context;
   PangoLayout *layout;
@@ -118,7 +118,7 @@ test_wrap_char (gconstpointer data)
       if (g_test_verbose ())
         g_print ("%s\n", sentence);
       g_free (sentence);
-      pango_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
+      pango_layout_set_wrap (layout, wrap);
 
       layout_check_size (layout, -1, &max);
       layout_check_size (layout, 0, &min);
@@ -174,6 +174,27 @@ test_wrap_char (gconstpointer data)
 
   g_object_unref (layout);
   g_object_unref (context);
+}
+
+static void
+test_wrap_word_char (gconstpointer data)
+{
+  PangoDirection dir = GPOINTER_TO_UINT (data);
+  test_random (dir, PANGO_WRAP_WORD_CHAR);
+}
+
+static void
+test_wrap_char (gconstpointer data)
+{
+  PangoDirection dir = GPOINTER_TO_UINT (data);
+  test_random (dir, PANGO_WRAP_CHAR);
+}
+
+static void
+test_wrap_word (gconstpointer data)
+{
+  PangoDirection dir = GPOINTER_TO_UINT (data);
+  test_random (dir, PANGO_WRAP_WORD);
 }
 
 static gboolean
@@ -280,9 +301,15 @@ main (int argc, char *argv[])
   rtl_words = init_rtl_words ();
   n_rtl_words = g_strv_length (rtl_words);
 
+  g_test_add_data_func ("/layout/ltr/wrap-word-char", GUINT_TO_POINTER (PANGO_DIRECTION_LTR), test_wrap_word_char);
+  g_test_add_data_func ("/layout/rtl/wrap-word-char", GUINT_TO_POINTER (PANGO_DIRECTION_RTL), test_wrap_word_char);
+  g_test_add_data_func ("/layout/any/wrap-word-char", GUINT_TO_POINTER (PANGO_DIRECTION_NEUTRAL), test_wrap_word_char);
   g_test_add_data_func ("/layout/ltr/wrap-char", GUINT_TO_POINTER (PANGO_DIRECTION_LTR), test_wrap_char);
   g_test_add_data_func ("/layout/rtl/wrap-char", GUINT_TO_POINTER (PANGO_DIRECTION_RTL), test_wrap_char);
   g_test_add_data_func ("/layout/any/wrap-char", GUINT_TO_POINTER (PANGO_DIRECTION_NEUTRAL), test_wrap_char);
+  g_test_add_data_func ("/layout/ltr/wrap-word", GUINT_TO_POINTER (PANGO_DIRECTION_LTR), test_wrap_word);
+  g_test_add_data_func ("/layout/rtl/wrap-word", GUINT_TO_POINTER (PANGO_DIRECTION_RTL), test_wrap_word);
+  g_test_add_data_func ("/layout/any/wrap-word", GUINT_TO_POINTER (PANGO_DIRECTION_NEUTRAL), test_wrap_word);
 
   result = g_test_run ();
 
