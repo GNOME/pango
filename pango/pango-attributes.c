@@ -2524,6 +2524,478 @@ pango_attr_list_filter (PangoAttrList       *list,
   return new;
 }
 
+/* {{{ PangoAttrList serialization */
+
+/* We serialize attribute lists to strings. The format
+ * is a comma-separated list of the attributes in the order
+ * in which they are in the list, with each attribute having
+ * this format:
+ *
+ * START END NICK VALUE
+ *
+ * Values that can contain a comma, such as font descriptions
+ * are quoted with "".
+ */
+
+static const char *
+get_attr_value_nick (PangoAttrType attr_type)
+{
+  GEnumClass *enum_class;
+  GEnumValue *enum_value;
+
+  enum_class = g_type_class_ref (pango_attr_type_get_type ());
+  enum_value = g_enum_get_value (enum_class, attr_type);
+  g_type_class_unref (enum_class);
+
+  return enum_value->value_nick;
+}
+
+static void
+attr_print (GString        *str,
+            PangoAttribute *attr)
+{
+  PangoAttrString *string;
+  PangoAttrLanguage *lang;
+  PangoAttrInt *integer;
+  PangoAttrFloat *flt;
+  PangoAttrFontDesc *font;
+  PangoAttrColor *color;
+  PangoAttrShape *shape;
+  PangoAttrSize *size;
+  PangoAttrFontFeatures *features;
+
+  g_string_append_printf (str, "%u %u ", attr->start_index, attr->end_index);
+
+  g_string_append (str, get_attr_value_nick (attr->klass->type));
+
+  if ((string = pango_attribute_as_string (attr)) != NULL)
+    g_string_append_printf (str, " %s", string->value);
+  else if ((lang = pango_attribute_as_language (attr)) != NULL)
+    g_string_append_printf (str, " %s", pango_language_to_string (lang->value));
+  else if ((integer = pango_attribute_as_int (attr)) != NULL)
+    g_string_append_printf (str, " %d", integer->value);
+  else if ((flt = pango_attribute_as_float (attr)) != NULL)
+    {
+      char buf[20];
+      g_ascii_formatd (buf, 20, " %f", flt->value);
+      g_string_append_printf (str, " %s", buf);
+    }
+  else if ((font = pango_attribute_as_font_desc (attr)) != NULL)
+    {
+      char *s = pango_font_description_to_string (font->desc);
+      g_string_append_printf (str, " \"%s\"", s);
+      g_free (s);
+    }
+  else if ((color = pango_attribute_as_color (attr)) != NULL)
+    {
+      char *s = pango_color_to_string (&color->color);
+      g_string_append_printf (str, " %s", s);
+      g_free (s);
+    }
+  else if ((shape = pango_attribute_as_shape (attr)) != NULL)
+    g_string_append (str, "shape"); /* FIXME */
+  else if ((size = pango_attribute_as_size (attr)) != NULL)
+    g_string_append_printf (str, " %d", size->size);
+  else if ((features = pango_attribute_as_font_features (attr)) != NULL)
+    g_string_append_printf (str, " \"%s\"", features->features);
+  else
+    g_assert_not_reached ();
+}
+
+/* }}} */
+
+/**
+ * pango_attr_list_to_string:
+ * @list: a `PangoAttrList`
+ *
+ * Serializes a `PangoAttrList` to a string.
+ *
+ * No guarantees are made about the format of the string,
+ * it may change between Pango versions.
+ *
+ * The intended use of this function is testing and
+ * debugging. The format is not meant as a permanent
+ * storage format.
+ *
+ * Returns: (transfer full): a newly allocated string
+ * Since: 1.50
+ */
+char *
+pango_attr_list_to_string (PangoAttrList *list)
+{
+  GString *s;
+
+  s = g_string_new ("");
+
+  if (list->attributes)
+    for (int i = 0; i < list->attributes->len; i++)
+      {
+        PangoAttribute *attr = g_ptr_array_index (list->attributes, i);
+
+        if (i > 0)
+          g_string_append (s, ",\n");
+        attr_print (s, attr);
+      }
+
+  return g_string_free (s, FALSE);
+}
+
+static PangoAttrType
+get_attr_type_by_nick (const char *nick)
+{
+  GEnumClass *enum_class;
+  GEnumValue *enum_value;
+
+  enum_class = g_type_class_ref (pango_attr_type_get_type ());
+  enum_value = g_enum_get_value_by_nick (enum_class, nick);
+  g_type_class_unref (enum_class);
+
+  if (enum_value)
+    return (PangoAttrType) enum_value->value;
+
+  return PANGO_ATTR_INVALID;
+}
+
+static const char *
+skip_whitespace (const char *p)
+{
+  while (g_ascii_isspace (*p))
+    p++;
+  return p;
+}
+
+static const char *
+next_whitespace (const char *p)
+{
+  while (*p && !g_ascii_isspace (*p))
+    p++;
+  return p;
+}
+
+static const char *
+next_comma (const char *p)
+{
+  while (*p && *p != ',')
+    p++;
+  return p;
+}
+
+static gboolean
+is_valid_end_char (char c)
+{
+  return c == ',' || g_ascii_isspace (c) || c == '\0';
+}
+
+/**
+ * pango_attr_list_from_string:
+ * @text: a string
+ *
+ * Deserializes a `PangoAttrList` from a string.
+ *
+ * This is the counterpart to [func@Pango.AttrList.to_string].
+ * See that functions for details about the format.
+ *
+ * Returns: (transfer full) (nullable): a new `PangoAttrList`
+ * Since: 1.50
+ */
+PangoAttrList *
+pango_attr_list_from_string (const char *text)
+{
+  PangoAttrList *list;
+  const char *p;
+
+  g_return_val_if_fail (text != NULL, NULL);
+
+  list = pango_attr_list_new ();
+
+  if (*text == '\0')
+    return list;
+
+  list->attributes = g_ptr_array_new ();
+
+  p = skip_whitespace (text);
+  while (*p)
+    {
+      char *endp;
+      gint64 start_index;
+      gint64 end_index;
+      char *str;
+      PangoAttrType type;
+      PangoAttribute *attr;
+      PangoLanguage *lang;
+      gint64 integer;
+      PangoFontDescription *desc;
+      PangoColor color;
+      double num;
+
+      start_index = g_ascii_strtoll (p, &endp, 10);
+      if (*endp != ' ')
+        goto fail;
+
+      p = skip_whitespace (endp);
+      if (!*p)
+        goto fail;
+
+      end_index = g_ascii_strtoll (p, &endp, 10);
+      if (*endp != ' ')
+        goto fail;
+
+      p = skip_whitespace (endp);
+
+      endp = (char *)next_whitespace (p);
+      str = g_strndup (p, endp - p);
+      type = get_attr_type_by_nick (str);
+      g_free (str);
+
+      p = skip_whitespace (endp);
+      if (*p == '\0')
+        goto fail;
+
+#define INT_ATTR(name,type) \
+          integer = g_ascii_strtoll (p, &endp, 10); \
+          if (!is_valid_end_char (*endp)) goto fail; \
+          attr = pango_attr_##name##_new ((type)integer);
+
+#define ENUM_ATTR(name,type, min, max) \
+          integer = g_ascii_strtoll (p, &endp, 10); \
+          if (!is_valid_end_char (*endp)) goto fail; \
+          attr = pango_attr_##name##_new ((type)CLAMP(integer,min,max));
+
+#define FLOAT_ATTR(name) \
+          num = g_ascii_strtod (p, &endp); \
+          if (!is_valid_end_char (*endp)) goto fail; \
+          attr = pango_attr_##name##_new ((float)num);
+
+#define COLOR_ATTR(name) \
+          endp = (char *)next_comma (p); \
+          if (!is_valid_end_char (*endp)) goto fail; \
+          str = g_strndup (p, endp - p); \
+          if (!pango_color_parse (&color, str)) \
+            { \
+              g_free (str); \
+              goto fail; \
+            } \
+          attr = pango_attr_##name##_new (color.red, color.green, color.blue); \
+          g_free (str);
+
+      switch (type)
+        {
+        case PANGO_ATTR_INVALID:
+          pango_attr_list_unref (list);
+          return NULL;
+
+        case PANGO_ATTR_LANGUAGE:
+          endp = (char *)next_comma (p);
+          if (!is_valid_end_char (*endp)) goto fail;
+          str = g_strndup (p, endp - p);
+          lang = pango_language_from_string (str);
+          attr = pango_attr_language_new (lang);
+          g_free (str);
+          break;
+
+        case PANGO_ATTR_FAMILY:
+          endp = (char *)next_comma (p);
+          if (!is_valid_end_char (*endp)) goto fail;
+          str = g_strndup (p, endp - p);
+          attr = pango_attr_family_new (str);
+          g_free (str);
+          break;
+
+        case PANGO_ATTR_STYLE:
+          INT_ATTR(style, PangoStyle);
+          break;
+
+        case PANGO_ATTR_WEIGHT:
+          INT_ATTR(weight, PangoWeight);
+          break;
+
+        case PANGO_ATTR_VARIANT:
+          INT_ATTR(variant, PangoVariant);
+          break;
+
+        case PANGO_ATTR_STRETCH:
+          INT_ATTR(stretch, PangoStretch);
+          break;
+
+        case PANGO_ATTR_SIZE:
+          INT_ATTR(size, int);
+          break;
+
+        case PANGO_ATTR_FONT_DESC:
+          p++;
+          endp = strchr (p, '"');
+          if (!endp) goto fail;
+          str = g_strndup (p, endp - p);
+          desc = pango_font_description_from_string (str);
+          attr = pango_attr_font_desc_new (desc);
+          pango_font_description_free (desc);
+          g_free (str);
+          endp++;
+          break;
+
+        case PANGO_ATTR_FOREGROUND:
+          COLOR_ATTR(foreground);
+          break;
+
+        case PANGO_ATTR_BACKGROUND:
+          COLOR_ATTR(background);
+          break;
+
+        case PANGO_ATTR_UNDERLINE:
+          ENUM_ATTR(underline, PangoUnderline, PANGO_UNDERLINE_NONE, PANGO_UNDERLINE_ERROR_LINE);
+          break;
+
+        case PANGO_ATTR_STRIKETHROUGH:
+          INT_ATTR(strikethrough, gboolean);
+          break;
+
+        case PANGO_ATTR_RISE:
+          INT_ATTR(rise, int);
+          break;
+
+        case PANGO_ATTR_SHAPE:
+          endp = (char *)next_comma (p);
+          p = skip_whitespace (endp);
+          continue; /* FIXME */
+
+        case PANGO_ATTR_SCALE:
+
+          FLOAT_ATTR(scale);
+          break;
+
+        case PANGO_ATTR_FALLBACK:
+          INT_ATTR(fallback, gboolean);
+          break;
+
+        case PANGO_ATTR_LETTER_SPACING:
+          INT_ATTR(letter_spacing, int);
+          break;
+
+        case PANGO_ATTR_UNDERLINE_COLOR:
+          COLOR_ATTR(underline_color);
+          break;
+
+        case PANGO_ATTR_STRIKETHROUGH_COLOR:
+          COLOR_ATTR(strikethrough_color);
+          break;
+
+        case PANGO_ATTR_ABSOLUTE_SIZE:
+          integer = g_ascii_strtoll (p, &endp, 10);
+          if (!is_valid_end_char (*endp)) goto fail;
+          attr = pango_attr_size_new_absolute (integer);
+          break;
+
+        case PANGO_ATTR_GRAVITY:
+          ENUM_ATTR(gravity, PangoGravity, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_WEST);
+          break;
+
+        case PANGO_ATTR_FONT_FEATURES:
+          p++;
+          endp = strchr (p, '"');
+          if (!endp) goto fail;
+          str = g_strndup (p, endp - p);
+          attr = pango_attr_font_features_new (str);
+          g_free (str);
+          endp++;
+          break;
+
+        case PANGO_ATTR_GRAVITY_HINT:
+          ENUM_ATTR(gravity_hint, PangoGravityHint, PANGO_GRAVITY_HINT_NATURAL, PANGO_GRAVITY_HINT_LINE);
+          break;
+
+        case PANGO_ATTR_FOREGROUND_ALPHA:
+          INT_ATTR(foreground_alpha, int);
+          break;
+
+        case PANGO_ATTR_BACKGROUND_ALPHA:
+          INT_ATTR(background_alpha, int);
+          break;
+
+        case PANGO_ATTR_ALLOW_BREAKS:
+          INT_ATTR(allow_breaks, gboolean);
+          break;
+
+        case PANGO_ATTR_SHOW:
+          INT_ATTR(show, PangoShowFlags);
+          break;
+
+        case PANGO_ATTR_INSERT_HYPHENS:
+          INT_ATTR(insert_hyphens, gboolean);
+          break;
+
+        case PANGO_ATTR_OVERLINE:
+          ENUM_ATTR(overline, PangoOverline, PANGO_OVERLINE_NONE, PANGO_OVERLINE_SINGLE);
+          break;
+
+        case PANGO_ATTR_OVERLINE_COLOR:
+          COLOR_ATTR(overline_color);
+          break;
+
+        case PANGO_ATTR_LINE_HEIGHT:
+          FLOAT_ATTR(line_height);
+          break;
+
+        case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
+          integer = g_ascii_strtoll (p, &endp, 10);
+          if (!is_valid_end_char (*endp)) goto fail;
+          attr = pango_attr_line_height_new_absolute (integer);
+          break;
+
+        case PANGO_ATTR_TEXT_TRANSFORM:
+          ENUM_ATTR(text_transform, PangoTextTransform, PANGO_TEXT_TRANSFORM_NONE, PANGO_TEXT_TRANSFORM_CAPITALIZE);
+          break;
+
+        case PANGO_ATTR_WORD:
+          integer = g_ascii_strtoll (p, &endp, 10);
+          if (!is_valid_end_char (*endp)) goto fail;
+          attr = pango_attr_word_new ();
+          break;
+
+        case PANGO_ATTR_SENTENCE:
+          integer = g_ascii_strtoll (p, &endp, 10);
+          if (!is_valid_end_char (*endp)) goto fail;
+          attr = pango_attr_sentence_new ();
+          break;
+
+        case PANGO_ATTR_BASELINE_SHIFT:
+          INT_ATTR(baseline_shift, int);
+          break;
+
+        case PANGO_ATTR_FONT_SCALE:
+          ENUM_ATTR(font_scale, PangoFontScale, PANGO_FONT_SCALE_NONE, PANGO_FONT_SCALE_SMALL_CAPS);
+          break;
+
+        default:
+          g_assert_not_reached ();
+        }
+
+      attr->start_index = start_index;
+      attr->end_index = end_index;
+      g_ptr_array_add (list->attributes, attr);
+
+      p = endp;
+      if (*p)
+        {
+          gboolean had_comma = *p == ',';
+
+          if (had_comma)
+            p++;
+          p = skip_whitespace (p);
+          if (*p == '\0' && had_comma)
+            goto fail; /* trailing comma */
+        }
+    }
+
+  goto success;
+
+fail:
+  pango_attr_list_unref (list);
+  list = NULL;
+
+success:
+  return list;
+}
+
 /* }}} */
 /* {{{ Attribute Iterator */
 
