@@ -779,6 +779,29 @@ test_wrap_char (void)
   g_object_unref (context);
 }
 
+/* Test the crash with Small Caps in itemization from #627 */
+static void
+test_small_caps_crash (void)
+{
+  PangoContext *context;
+  PangoLayout *layout;
+  PangoFontDescription *desc;
+  int w, h;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  layout = pango_layout_new (context);
+  desc = pango_font_description_from_string ("Cantarell Small-Caps 11");
+  pango_layout_set_font_description (layout, desc);
+
+  pango_layout_set_text (layout, "Pere Ràfols Soler\nEqualiser, LV2\nAudio: 1, 1\nMidi: 0, 0\nControls: 53, 2\nCV: 0, 0", -1);
+
+  pango_layout_get_size (layout, &w, &h);
+
+  pango_font_description_free (desc);
+  g_object_unref (layout);
+  g_object_unref (context);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -813,6 +836,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/layout/gravity-metrics", test_gravity_metrics);
   g_test_add_func ("/layout/wrap-char", test_wrap_char);
   g_test_add_func ("/matrix/transform-rectangle", test_transform_rectangle);
+  g_test_add_func ("/itemize/small-caps-crash", test_small_caps_crash);
 
   return g_test_run ();
 }

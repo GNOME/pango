@@ -1380,7 +1380,7 @@ split_item_for_variant (const char   *text,
           /* p0 .. p is a lowercase segment */
           if (p < end)
             {
-              new_item = pango_item_split (item, p - p0, g_utf8_strlen (p, p - p0));
+              new_item = pango_item_split (item, p - p0, g_utf8_strlen (p0, p - p0));
               list_item->data = new_item;
               list_item = g_list_insert_before (list_item, list_item->next, item);
               list_item = list_item->next;
@@ -1429,7 +1429,7 @@ split_item_for_variant (const char   *text,
           /* p0 .. p is a uppercase segment */
           if (p < end)
             {
-              new_item = pango_item_split (item, p - p0, g_utf8_strlen (p, p - p0));
+              new_item = pango_item_split (item, p - p0, g_utf8_strlen (p0, p - p0));
               list_item->data = new_item;
               list_item = g_list_insert_before (list_item, list_item->next, item);
               list_item = list_item->next;
