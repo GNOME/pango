@@ -3974,9 +3974,8 @@ process_item (PangoLayout     *layout,
       if (layout->wrap == PANGO_WRAP_WORD_CHAR && force_fit && break_width + break_extra_width > state->remaining_width && !retrying_with_char_breaks)
         {
           retrying_with_char_breaks = TRUE;
-          num_chars = item->num_chars;
           width = orig_width;
-          break_num_chars = num_chars;
+          break_num_chars = item->num_chars;
           break_width = width;
           goto retry_break;
         }
@@ -4036,9 +4035,8 @@ process_item (PangoLayout     *layout,
 
                   break_disabled[break_num_chars] = TRUE;
 
-                  num_chars = item->num_chars;
                   width = orig_width;
-                  break_num_chars = num_chars;
+                  break_num_chars = item->num_chars;
                   break_width = width;
 
                   goto retry_break;
@@ -4262,8 +4260,9 @@ process_line (PangoLayout    *layout,
         case BREAK_LINE_SEPARATOR:
           state->items = g_list_delete_link (state->items, state->items);
           state->start_offset += old_num_chars;
-          /* A line-separate is just a forced break.  Set wrapped, so we do
-           * justification */
+          /* A line-separator is just a forced break.
+           * Set wrapped, so we do justification
+           */
           wrapped = TRUE;
           goto done;
 
