@@ -115,7 +115,8 @@ test_wrap_char (gconstpointer data)
     {
       sentence = create_random_sentence (dir);
       pango_layout_set_text (layout, sentence, -1);
-      g_print ("%s\n", sentence);
+      if (g_test_verbose ())
+        g_print ("%s\n", sentence);
       g_free (sentence);
       pango_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
 
@@ -143,7 +144,17 @@ test_wrap_char (gconstpointer data)
             continue;
 
           g_assert_cmpint (sizes[i-1].set_width, <=, sizes[i].set_width);
+
           g_assert_cmpint (sizes[i].width, <=, sizes[i].set_width);
+
+          if (g_test_verbose ())
+            {
+              if (sizes[i-1].width > sizes[i].width)
+                {
+                  g_print ("min %d\n", min.width);
+                  g_print ("%d %d\n", sizes[i-1].set_width, sizes[i].set_width);
+                }
+            }
           g_assert_cmpint (sizes[i-1].width, <=, sizes[i].width);
           g_assert_cmpint (sizes[i-1].height, >=, sizes[i].height);
         }
