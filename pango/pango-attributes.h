@@ -707,6 +707,11 @@ PANGO_AVAILABLE_IN_1_46
 gboolean                pango_attr_list_equal           (PangoAttrList         *list,
                                                          PangoAttrList         *other_list);
 
+PANGO_AVAILABLE_IN_1_50
+char *                  pango_attr_list_to_string       (PangoAttrList         *list);
+PANGO_AVAILABLE_IN_1_50
+PangoAttrList *         pango_attr_list_from_string     (const char            *text);
+
 PANGO_AVAILABLE_IN_1_44
 GType                   pango_attr_iterator_get_type    (void) G_GNUC_CONST;
 
