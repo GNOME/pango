@@ -788,6 +788,12 @@ test_small_caps_crash (void)
   PangoFontDescription *desc;
   int w, h;
 
+  if (strcmp (G_OBJECT_TYPE_NAME (pango_cairo_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
+    {
+      g_test_skip ("This test needs a fontmap that supports Small-Caps");
+      return;
+    }
+
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
   layout = pango_layout_new (context);
   desc = pango_font_description_from_string ("Cantarell Small-Caps 11");
