@@ -3872,13 +3872,24 @@ process_item (PangoLayout     *layout,
   if ((width <= state->remaining_width || (item->num_chars == 1 && !line->runs)) &&
       !no_break_at_end)
     {
-      state->remaining_width -= width;
-      state->remaining_width = MAX (state->remaining_width, 0);
-      insert_run (line, state, item, TRUE);
+      insert_run (line, state, item, FALSE);
+      width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
 
-      return BREAK_ALL_FIT;
+      if (width <= state->remaining_width || (item->num_chars == 1 && !line->runs))
+        {
+          state->remaining_width -= width;
+          state->remaining_width = MAX (state->remaining_width, 0);
+
+          pango_glyph_string_free (state->glyphs);
+          state->glyphs = NULL;
+
+          return BREAK_ALL_FIT;
+        }
+
+      /* if it doesn't fit after shaping, revert and proceed to break the item */
+      uninsert_run (line);
     }
-  else
+
     {
       int num_chars = item->num_chars;
       int break_num_chars = num_chars;
@@ -3918,11 +3929,21 @@ process_item (PangoLayout     *layout,
           /* check one more time if the whole item fits after removing the space */
           if (width + break_extra_width <= state->remaining_width && !no_break_at_end)
             {
-              state->remaining_width -= width + break_extra_width;
-              state->remaining_width = MAX (state->remaining_width, 0);
-              insert_run (line, state, item, TRUE);
+              insert_run (line, state, item, FALSE);
+              width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
 
-              return BREAK_ALL_FIT;
+              if (width + break_extra_width <= state->remaining_width)
+                {
+                  state->remaining_width -= width + break_extra_width;
+                  state->remaining_width = MAX (state->remaining_width, 0);
+
+                  pango_glyph_string_free (state->glyphs);
+                  state->glyphs = NULL;
+
+                  return BREAK_ALL_FIT;
+                }
+
+              uninsert_run (line);
             }
         }
 
