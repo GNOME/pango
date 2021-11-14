@@ -371,3 +371,104 @@ pango_tab_array_get_positions_in_pixels (PangoTabArray *tab_array)
 
   return tab_array->positions_in_pixels;
 }
+
+/**
+ * pango_tab_array_to_string:
+ * @tab_array: a `PangoTabArray`
+ *
+ * Serializes a `PangoTabArray` to a string.
+ *
+ * No guarantees are made about the format of the string,
+ * it may change between Pango versions.
+ *
+ * The intended use of this function is testing and
+ * debugging. The format is not meant as a permanent
+ * storage format.
+ *
+ * Returns: (transfer full): a newly allocated string
+ * Since: 1.50
+ */
+char *
+pango_tab_array_to_string (PangoTabArray *tab_array)
+{
+  GString *s;
+
+  s = g_string_new ("");
+
+  for (int i = 0; i < tab_array->size; i++)
+    {
+      if (i > 0)
+        g_string_append_c (s, ' ');
+      g_string_append_printf (s, "%d", tab_array->tabs[i].location);
+      if (tab_array->positions_in_pixels)
+        g_string_append (s, "px");
+    }
+
+  return g_string_free (s, FALSE);
+}
+
+static const char *
+skip_whitespace (const char *p)
+{
+  while (g_ascii_isspace (*p))
+    p++;
+  return p;
+}
+
+/**
+ * pango_tab_array_from_string:
+ * @text: a string
+ *
+ * Deserializes a `PangoTabArray` from a string.
+ *
+ * This is the counterpart to [func@Pango.TabArray.to_string].
+ * See that functions for details about the format.
+ *
+ * Returns: (transfer full) (nullable): a new `PangoTabArray`
+ * Since: 1.50
+ */
+PangoTabArray *
+pango_tab_array_from_string (const char *text)
+{
+  PangoTabArray *array;
+  gboolean pixels;
+  const char *p;
+  int i;
+
+  pixels = strstr (text, "px") != NULL;
+
+  array = pango_tab_array_new (0, pixels);
+
+  p = skip_whitespace (text);
+
+  i = 0;
+  while (*p)
+    {
+      char *endp;
+      gint64 pos;
+
+      pos = g_ascii_strtoll (p, &endp, 10);
+      if ((pixels && *endp != 'p') ||
+          (!pixels && !g_ascii_isspace (*endp) && *endp != '\0')) goto fail;
+
+      pango_tab_array_set_tab (array, i, PANGO_TAB_LEFT, pos);
+      i++;
+
+      p = (const char *)endp;
+      if (pixels)
+        {
+          if (p[0] != 'p' || p[1] != 'x') goto fail;
+          p += 2;
+        }
+      p = skip_whitespace (p);
+    }
+
+  goto success;
+
+fail:
+  pango_tab_array_free (array);
+  array = NULL;
+
+success:
+  return array;
+}
