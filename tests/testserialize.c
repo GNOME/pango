@@ -75,12 +75,60 @@ test_serialize_attr_list (void)
     }
 }
 
+static void
+test_serialize_tab_array (void)
+{
+  const char *valid[] = {
+    "0 10 100 200 400",
+    "0px 10px 100px 200px 400px",
+    "  0    10   ",
+    "20 10",
+    ""
+  };
+  const char *roundtripped[] = {
+    "0 10 100 200 400",
+    "0px 10px 100px 200px 400px",
+    "0 10",
+    "20 10",
+    ""
+  };
+  const char *invalid[] = {
+    "not a tabarray",
+    "-10\n-20",
+    "10ps 20pu",
+    "10, 20",
+    "10 20px 30",
+  };
+
+  for (int i = 0; i < G_N_ELEMENTS (valid); i++)
+    {
+      PangoTabArray *tabs;
+      char *str;
+
+      tabs = pango_tab_array_from_string (valid[i]);
+      g_assert_nonnull (tabs);
+      str = pango_tab_array_to_string (tabs);
+      g_assert_cmpstr (str, ==, roundtripped[i]);
+      g_free (str);
+      pango_tab_array_free (tabs);
+    }
+
+  for (int i = 0; i < G_N_ELEMENTS (invalid); i++)
+    {
+      PangoTabArray *tabs;
+
+      tabs = pango_tab_array_from_string (invalid[i]);
+      g_assert_null (tabs);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
   g_test_add_func ("/serialize/attr-list", test_serialize_attr_list);
+  g_test_add_func ("/serialize/tab-array", test_serialize_tab_array);
 
   return g_test_run ();
 }
