@@ -3951,16 +3951,22 @@ process_item (PangoLayout     *layout,
         {
           extra_width = find_break_extra_width (layout, state, num_chars);
 
-          if (width + extra_width > state->remaining_width && break_num_chars < item->num_chars)
-            break;
+          if (MIN (width + extra_width, width) > state->remaining_width && break_num_chars < item->num_chars)
+            {
+              break;
+            }
 
           /* If there are no previous runs we have to take care to grab at least one char. */
           if (can_break_at (layout, state->start_offset + num_chars, retrying_with_char_breaks) &&
               (num_chars > 0 || line->runs))
             {
-              break_num_chars = num_chars;
-              break_width = width;
-              break_extra_width = extra_width;
+              if (width + extra_width <= state->remaining_width ||
+                  break_num_chars >= last_break_char)
+                {
+                  break_num_chars = num_chars;
+                  break_width = width;
+                  break_extra_width = extra_width;
+                }
             }
 
           width += state->log_widths[state->log_widths_offset + num_chars];
