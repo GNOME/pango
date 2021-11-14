@@ -76,12 +76,46 @@ test_roundtrip (void)
   g_object_unref (context);
 }
 
+static void
+test_attr_list_deserialize (void)
+{
+  PangoAttrList *attrs;
+  const char *text = "0 10 foreground red, 5 15 weight 6, 0 200 font-desc \"Sans Small-Caps 10\"";
+  const char *text2 = "  0   10   foreground  red,\n 5 15 weight 6\n\n \n \n";
+
+  attrs = pango_attr_list_from_string (text2);
+  g_assert_nonnull (attrs);
+  pango_attr_list_unref (attrs);
+
+  attrs = pango_attr_list_from_string (text);
+  g_assert_nonnull (attrs);
+  pango_attr_list_unref (attrs);
+
+  for (int i = 1; i < strlen (text); i++)
+    {
+      char *str = g_strndup (text, i);
+
+      attrs = pango_attr_list_from_string (str);
+
+      if (text[i] == ',')
+        {
+          g_assert_nonnull (attrs);
+          pango_attr_list_unref (attrs);
+        }
+      else
+       g_assert_null (attrs);
+
+      g_free (str);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
   g_test_add_func ("/layout/roundtrip", test_roundtrip);
+  g_test_add_func ("/attrlist/serialize", test_attr_list_deserialize);
 
   return g_test_run ();
 }
