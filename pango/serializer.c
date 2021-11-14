@@ -230,29 +230,11 @@ append_tab_array (Printer       *p,
                   const char    *param_name,
                   PangoTabArray *tabs)
 {
-  int *locations;
-  GString *s;
-  const char *unit;
+  char *str;
 
-  if (pango_tab_array_get_positions_in_pixels (tabs))
-    unit = "px";
-  else
-    unit = "";
-
-  pango_tab_array_get_tabs (tabs, NULL, &locations);
-
-  s = g_string_new ("");
-  for (int i = 0; i < pango_tab_array_get_size (tabs); i++)
-    {
-      if (s->len > 0)
-        g_string_append_c (s, ' ');
-      g_string_append_printf (s, "%d%s", locations[i], unit);
-    }
-
-  append_simple_string (p, "positions", s->str);
-
-  g_string_free (s, TRUE);
-  g_free (locations);
+  str = pango_tab_array_to_string (tabs);
+  append_string_param (p, param_name, str);
+  g_free (str);
 }
 
 static void
@@ -400,6 +382,22 @@ parse_attributes (GtkCssParser *parser,
 }
 
 static gboolean
+parse_tabs (GtkCssParser *parser,
+            gpointer      out_data)
+{
+  char *string;
+  PangoTabArray *tabs;
+
+  string = gtk_css_parser_consume_string (parser);
+  tabs = pango_tab_array_from_string (string);
+  g_free (string);
+
+  *(PangoTabArray **)out_data = tabs;
+
+  return tabs != NULL;
+}
+
+static gboolean
 parse_font (GtkCssParser *parser,
             gpointer      out_data)
 {
@@ -507,6 +505,7 @@ parse_layout (GtkCssParser *parser)
     { "text", parse_text, g_free, &text },
     { "attributes", parse_attributes, (GDestroyNotify)pango_attr_list_unref, &attrs },
     { "font", parse_font, (GDestroyNotify)pango_font_description_free, &desc },
+    { "tabs", parse_tabs, (GDestroyNotify)pango_tab_array_free, &tabs },
     { "alignment", parse_alignment, NULL, &align },
     { "wrap", parse_wrap, NULL, &wrap },
     { "ellipsize", parse_ellipsize, NULL, &ellipsize },
