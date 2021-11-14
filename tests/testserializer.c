@@ -77,7 +77,7 @@ test_roundtrip (void)
 }
 
 static void
-test_attr_list_deserialize (void)
+test_attr_list_serialize (void)
 {
   PangoAttrList *attrs;
   const char *text = "0 10 foreground red, 5 15 weight 6, 0 200 font-desc \"Sans Small-Caps 10\"";
@@ -109,13 +109,36 @@ test_attr_list_deserialize (void)
     }
 }
 
+static void
+test_tab_array_serialize (void)
+{
+  const char *text[] = {
+    "0 10 100 200 400",
+    "0px 10px 100px 200px 400px",
+  };
+
+  for (int i = 0; i < G_N_ELEMENTS (text); i++)
+    {
+      PangoTabArray *tabs;
+      char *str;
+
+      tabs = pango_tab_array_from_string (text[i]);
+      g_assert_nonnull (tabs);
+      str = pango_tab_array_to_string (tabs);
+      g_assert_cmpstr (str, ==, text[i]);
+      g_free (str);
+      pango_tab_array_free (tabs);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  g_test_add_func ("/layout/roundtrip", test_roundtrip);
-  g_test_add_func ("/attrlist/serialize", test_attr_list_deserialize);
+  g_test_add_func ("/serialize/layout", test_roundtrip);
+  g_test_add_func ("/serialize/attributes", test_attr_list_serialize);
+  g_test_add_func ("/serialize/tabs", test_tab_array_serialize);
 
   return g_test_run ();
 }
