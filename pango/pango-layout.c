@@ -3880,13 +3880,13 @@ process_item (PangoLayout     *layout,
     }
   else
     {
-      int num_chars = item->num_chars;
-      int break_num_chars = num_chars;
+      int num_chars;
+      int break_num_chars = item->num_chars;
       int break_width = width;
       int orig_width = width;
       int break_extra_width = 0;
       gboolean retrying_with_char_breaks = FALSE;
-      gboolean *break_disabled;
+      int last_break_char = item->num_chars;
 
       if (processing_new_item)
         {
@@ -3898,9 +3898,6 @@ process_item (PangoLayout     *layout,
             }
           pango_glyph_item_get_logical_widths (&glyph_item, layout->text, state->log_widths);
         }
-
-      break_disabled = g_alloca (sizeof (gboolean) * (item->num_chars + 1));
-      memset (break_disabled, 0, sizeof (gboolean) * (item->num_chars + 1));
 
     retry_break:
 
@@ -3929,7 +3926,7 @@ process_item (PangoLayout     *layout,
       /* See how much of the item we can stuff in the line. */
       width = 0;
 
-      for (num_chars = 0; num_chars < item->num_chars; num_chars++)
+      for (num_chars = 0; num_chars < last_break_char; num_chars++)
         {
           extra_width = find_break_extra_width (layout, state, num_chars);
 
@@ -3937,8 +3934,7 @@ process_item (PangoLayout     *layout,
             break;
 
           /* If there are no previous runs we have to take care to grab at least one char. */
-          if (!break_disabled[num_chars] &&
-              can_break_at (layout, state->start_offset + num_chars, retrying_with_char_breaks) &&
+          if (can_break_at (layout, state->start_offset + num_chars, retrying_with_char_breaks) &&
               (num_chars > 0 || line->runs))
             {
               break_num_chars = num_chars;
@@ -3952,9 +3948,9 @@ process_item (PangoLayout     *layout,
       if (layout->wrap == PANGO_WRAP_WORD_CHAR && force_fit && break_width + break_extra_width > state->remaining_width && !retrying_with_char_breaks)
         {
           retrying_with_char_breaks = TRUE;
-          num_chars = item->num_chars;
+          last_break_char = item->num_chars;
+          break_num_chars = item->num_chars;
           width = orig_width;
-          break_num_chars = num_chars;
           break_width = width;
           goto retry_break;
         }
@@ -4003,7 +3999,7 @@ process_item (PangoLayout     *layout,
                 break_width -= state->log_widths[state->log_widths_offset + break_num_chars - 1];
 
               if (break_width > state->remaining_width &&
-                  !break_disabled[break_num_chars] &&
+                  break_num_chars < last_break_char &&
                   break_num_chars > 1)
                 {
                   /* Unsplit the item, disable the breakpoint, try again */
@@ -4012,11 +4008,8 @@ process_item (PangoLayout     *layout,
                   pango_item_free (new_item);
                   pango_item_unsplit (item, length, break_num_chars);
 
-                  break_disabled[break_num_chars] = TRUE;
-
-                  num_chars = item->num_chars;
+                  last_break_char = break_num_chars;
                   width = orig_width;
-                  break_num_chars = num_chars;
                   break_width = width;
 
                   goto retry_break;
