@@ -3928,7 +3928,6 @@ process_item (PangoLayout     *layout,
 
       /* See how much of the item we can stuff in the line. */
       width = 0;
-      extra_width = 0;
 
       for (num_chars = 0; num_chars < item->num_chars; num_chars++)
         {
