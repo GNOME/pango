@@ -3897,7 +3897,7 @@ process_item (PangoLayout     *layout,
       int orig_width = width;
       int break_extra_width = 0;
       gboolean retrying_with_char_breaks = FALSE;
-      int last_break_char = item->num_chars;
+      gboolean *break_disabled;
 
       if (processing_new_item)
         {
@@ -3909,6 +3909,9 @@ process_item (PangoLayout     *layout,
             }
           pango_glyph_item_get_logical_widths (&glyph_item, layout->text, state->log_widths);
         }
+
+      break_disabled = g_alloca (sizeof (gboolean) * (item->num_chars + 1));
+      memset (break_disabled, 0, sizeof (gboolean) * (item->num_chars + 1));
 
     retry_break:
 
@@ -3947,21 +3950,33 @@ process_item (PangoLayout     *layout,
       /* See how much of the item we can stuff in the line. */
       width = 0;
 
-      for (num_chars = 0; num_chars < last_break_char; num_chars++)
+      for (num_chars = 0; num_chars < item->num_chars; num_chars++)
         {
           extra_width = find_break_extra_width (layout, state, num_chars);
 
-          if (MIN (width + extra_width, width) > state->remaining_width && break_num_chars < item->num_chars)
+          /* We don't want to walk the entire item if we can help it, but
+           * we need to keep going at least until we've found a breakpoint
+           * that 'works' (as in, doesn't overflow the budget we have),
+           * and there is no hope of finding a better one.
+           *
+           * We rely on the fact that MIN(width + extra_width, width) is
+           * monotonically increasing.
+           */
+          if (MIN (width + extra_width, width) > state->remaining_width &&
+              break_width + break_extra_width <= state->remaining_width &&
+              break_num_chars < item->num_chars)
             {
               break;
             }
 
           /* If there are no previous runs we have to take care to grab at least one char. */
-          if (can_break_at (layout, state->start_offset + num_chars, retrying_with_char_breaks) &&
+          if (!break_disabled[num_chars] &&
+              can_break_at (layout, state->start_offset + num_chars, retrying_with_char_breaks) &&
               (num_chars > 0 || line->runs))
             {
-              if (width + extra_width <= state->remaining_width ||
-                  break_num_chars >= last_break_char)
+              /* If we had a breakpoint already, we only want to replace it with a better one. */
+              if (break_num_chars == item->num_chars ||
+                  width + extra_width <= MAX (break_width + break_extra_width, state->remaining_width))
                 {
                   break_num_chars = num_chars;
                   break_width = width;
@@ -3975,7 +3990,6 @@ process_item (PangoLayout     *layout,
       if (layout->wrap == PANGO_WRAP_WORD_CHAR && force_fit && break_width + break_extra_width > state->remaining_width && !retrying_with_char_breaks)
         {
           retrying_with_char_breaks = TRUE;
-          last_break_char = item->num_chars;
           break_num_chars = item->num_chars;
           width = orig_width;
           break_width = width;
@@ -4026,8 +4040,7 @@ process_item (PangoLayout     *layout,
                 break_width -= state->log_widths[state->log_widths_offset + break_num_chars - 1];
 
               if (break_width > state->remaining_width &&
-                  break_num_chars < last_break_char &&
-                  break_num_chars > 1)
+                  !break_disabled[break_num_chars])
                 {
                   /* Unsplit the item, disable the breakpoint, try again */
 
@@ -4035,9 +4048,10 @@ process_item (PangoLayout     *layout,
                   pango_item_free (new_item);
                   pango_item_unsplit (item, length, break_num_chars);
 
-                  last_break_char = break_num_chars;
+                  break_disabled[break_num_chars] = TRUE;
                   width = orig_width;
                   break_width = width;
+                  break_num_chars = item->num_chars;
 
                   goto retry_break;
                 }
