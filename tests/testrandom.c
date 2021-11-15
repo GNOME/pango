@@ -33,12 +33,17 @@ static gsize n_rtl_words;
 static const char *
 random_word (PangoDirection dir)
 {
-  switch ((int)dir)
+  switch (dir)
     {
       case PANGO_DIRECTION_LTR:
         return ltr_words[g_test_rand_int_range (0, n_ltr_words)];
       case PANGO_DIRECTION_RTL:
         return rtl_words[g_test_rand_int_range (0, n_rtl_words)];
+      case PANGO_DIRECTION_TTB_LTR:
+      case PANGO_DIRECTION_TTB_RTL:
+      case PANGO_DIRECTION_WEAK_LTR:
+      case PANGO_DIRECTION_WEAK_RTL:
+      case PANGO_DIRECTION_NEUTRAL:
       default:
         return random_word (g_test_rand_bit () ? PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL);
     }
@@ -50,7 +55,7 @@ create_random_sentence (PangoDirection dir)
   GString *string = g_string_new (NULL);
   gsize i, n_words;
 
-  n_words = g_test_rand_int_range (3, 15);
+  n_words = g_test_rand_int_range (0, 15);
   for (i = 0; i < n_words; i++)
     {
       if (i > 0)
@@ -62,7 +67,9 @@ create_random_sentence (PangoDirection dir)
       g_string_append (string, random_word (dir));
     }
 
-  g_string_append_c (string, "!.?"[g_test_rand_int_range(0, 3)]);
+  i = g_test_rand_int_range(0, 4);
+  if (i > 0)
+    g_string_append_c (string, "!.?"[i - 1]);
 
   return g_string_free (string, FALSE);
 }
@@ -126,7 +133,7 @@ test_wrap_char (gconstpointer data)
 
       for (i = 0; i < G_N_ELEMENTS (sizes); i++)
         {
-          layout_check_size (layout, min.width / 2 + g_test_rand_int_range (0, max.width), &sizes[i]);
+          layout_check_size (layout, g_test_rand_int_range (0, min.width + max.width + 1), &sizes[i]);
         }
 
       g_qsort_with_data (sizes, G_N_ELEMENTS (sizes), sizeof (Size), compare_size, NULL);
@@ -139,12 +146,15 @@ test_wrap_char (gconstpointer data)
 
       for (i = 1; i < G_N_ELEMENTS (sizes); i++)
         {
+          g_assert_cmpint (sizes[i-1].set_width, <=, sizes[i].set_width);
           if (sizes[i-1].set_width < min.width || sizes[i].set_width < min.width)
             continue;
-          g_assert_cmpint (sizes[i-1].set_width, <=, sizes[i].set_width);
           g_assert_cmpint (sizes[i-1].width, <=, sizes[i].width);
           g_assert_cmpint (sizes[i-1].height, >=, sizes[i].height);
-          if (sizes[i-1].width == sizes[i].width)
+          if (sizes[i-1].width == sizes[i].width &&
+              /* need to make sure we're over the min size, otherwise "ll W"
+               * might be broken to "l- l W" or not depending on set width */
+              sizes[i-1].set_width >= min.width)
             g_assert_cmpint (sizes[i-1].height, ==, sizes[i].height);
         }
 
