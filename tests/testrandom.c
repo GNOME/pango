@@ -138,17 +138,12 @@ test_wrap_char (gconstpointer data)
 
       g_qsort_with_data (sizes, G_N_ELEMENTS (sizes), sizeof (Size), compare_size, NULL);
 
-      if (sizes[0].set_width >= min.width)
-        {
-          g_assert_cmpint (sizes[0].width, >=, min.width);
-          g_assert_cmpint (sizes[0].height, <=, min.height);
-        }
+      g_assert_cmpint (sizes[0].width, >=, min.width);
+      g_assert_cmpint (sizes[0].height, <=, min.height);
 
       for (i = 1; i < G_N_ELEMENTS (sizes); i++)
         {
           g_assert_cmpint (sizes[i-1].set_width, <=, sizes[i].set_width);
-          if (sizes[i-1].set_width < min.width || sizes[i].set_width < min.width)
-            continue;
           g_assert_cmpint (sizes[i-1].width, <=, sizes[i].width);
           g_assert_cmpint (sizes[i-1].height, >=, sizes[i].height);
           if (sizes[i-1].width == sizes[i].width &&
