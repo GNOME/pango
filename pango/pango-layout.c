@@ -3872,16 +3872,27 @@ process_item (PangoLayout     *layout,
   if ((width <= state->remaining_width || (item->num_chars == 1 && !line->runs)) &&
       !no_break_at_end)
     {
-      state->remaining_width -= width;
-      state->remaining_width = MAX (state->remaining_width, 0);
-      insert_run (line, state, item, TRUE);
+      insert_run (line, state, item, FALSE);
+      width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
 
-      return BREAK_ALL_FIT;
+      if (width <= state->remaining_width || (item->num_chars == 1 && !line->runs))
+        {
+          state->remaining_width -= width;
+          state->remaining_width = MAX (state->remaining_width, 0);
+
+          pango_glyph_string_free (state->glyphs);
+          state->glyphs = NULL;
+
+          return BREAK_ALL_FIT;
+        }
+
+      /* if it doesn't fit after shaping, revert and proceed to break the item */
+      uninsert_run (line);
     }
-  else
+
     {
-      int num_chars = item->num_chars;
-      int break_num_chars = num_chars;
+      int num_chars;
+      int break_num_chars = item->num_chars;
       int break_width = width;
       int orig_width = width;
       int break_extra_width = 0;
@@ -3918,33 +3929,62 @@ process_item (PangoLayout     *layout,
           /* check one more time if the whole item fits after removing the space */
           if (width + break_extra_width <= state->remaining_width && !no_break_at_end)
             {
-              state->remaining_width -= width + break_extra_width;
-              state->remaining_width = MAX (state->remaining_width, 0);
-              insert_run (line, state, item, TRUE);
+              insert_run (line, state, item, FALSE);
+              width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
 
-              return BREAK_ALL_FIT;
+              if (width + break_extra_width <= state->remaining_width)
+                {
+                  state->remaining_width -= width + break_extra_width;
+                  state->remaining_width = MAX (state->remaining_width, 0);
+
+                  pango_glyph_string_free (state->glyphs);
+                  state->glyphs = NULL;
+
+                  return BREAK_ALL_FIT;
+                }
+
+              uninsert_run (line);
             }
         }
 
       /* See how much of the item we can stuff in the line. */
       width = 0;
-      extra_width = 0;
 
       for (num_chars = 0; num_chars < item->num_chars; num_chars++)
         {
           extra_width = find_break_extra_width (layout, state, num_chars);
 
-          if (width + extra_width > state->remaining_width && break_num_chars < item->num_chars)
-            break;
+          /* We don't want to walk the entire item if we can help it, but
+           * we need to keep going at least until we've found a breakpoint
+           * that 'works' (as in, it doesn't overflow the budget we have,
+           * or there is no hope of finding a better one).
+           *
+           * We rely on the fact that MIN(width + extra_width, width) is
+           * monotonically increasing.
+           */
+          if (MIN (width + extra_width, width) > state->remaining_width &&
+              break_num_chars < item->num_chars &&
+              (break_width + break_extra_width <= state->remaining_width ||
+               MIN (width + extra_width, width) > break_width + break_extra_width))
+            {
+              break;
+            }
 
           /* If there are no previous runs we have to take care to grab at least one char. */
           if (!break_disabled[num_chars] &&
               can_break_at (layout, state->start_offset + num_chars, retrying_with_char_breaks) &&
               (num_chars > 0 || line->runs))
             {
-              break_num_chars = num_chars;
-              break_width = width;
-              break_extra_width = extra_width;
+              /* If we had a breakpoint already, we only want to replace it with a better one. */
+              if (width + extra_width <= state->remaining_width ||
+                  width + extra_width < break_width + break_extra_width ||
+                  (width + extra_width == break_width + break_extra_width &&
+                   num_chars > break_num_chars))
+                {
+                  break_num_chars = num_chars;
+                  break_width = width;
+                  break_extra_width = extra_width;
+                }
             }
 
           width += state->log_widths[state->log_widths_offset + num_chars];
@@ -3953,9 +3993,8 @@ process_item (PangoLayout     *layout,
       if (layout->wrap == PANGO_WRAP_WORD_CHAR && force_fit && break_width + break_extra_width > state->remaining_width && !retrying_with_char_breaks)
         {
           retrying_with_char_breaks = TRUE;
-          num_chars = item->num_chars;
+          break_num_chars = item->num_chars;
           width = orig_width;
-          break_num_chars = num_chars;
           break_width = width;
           goto retry_break;
         }
@@ -3992,6 +4031,8 @@ process_item (PangoLayout     *layout,
 
               if (break_needs_hyphen (layout, state, break_num_chars))
                 new_item->analysis.flags |= PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
+              else
+                new_item->analysis.flags &= ~PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
 
               /* Add the width back, to the line, reshape, subtract the new width */
               state->remaining_width = remaining;
@@ -3999,26 +4040,25 @@ process_item (PangoLayout     *layout,
 
               break_width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
 
-              if (state->start_offset + break_num_chars > 0 &&
-                  layout->log_attrs[state->start_offset + break_num_chars - 1].is_white)
-                break_width -= state->log_widths[state->log_widths_offset + break_num_chars - 1];
+              /* After the shaping, break_width includes a possible hyphen.
+               * We subtract break_extra_width to account for that.
+               */
+              if (new_item->analysis.flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN)
+                break_width -= break_extra_width;
 
-              if (break_width > state->remaining_width &&
-                  !break_disabled[break_num_chars] &&
-                  break_num_chars > 1)
+              if (break_width + break_extra_width > state->remaining_width &&
+                  !break_disabled[break_num_chars])
                 {
-                  /* Unsplit the item, disable the breakpoint, try again */
-
+                  /* Unsplit the item, disable the breakpoint, try find a better one.
+                   *
+                   * If we can't find a different breakpoint that works better, we'll
+                   * end up here again, with break_disabled being set, and take the break
+                   */
                   uninsert_run (line);
                   pango_item_free (new_item);
                   pango_item_unsplit (item, length, break_num_chars);
 
                   break_disabled[break_num_chars] = TRUE;
-
-                  num_chars = item->num_chars;
-                  width = orig_width;
-                  break_num_chars = num_chars;
-                  break_width = width;
 
                   goto retry_break;
                 }
