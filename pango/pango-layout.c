@@ -3956,15 +3956,16 @@ process_item (PangoLayout     *layout,
 
           /* We don't want to walk the entire item if we can help it, but
            * we need to keep going at least until we've found a breakpoint
-           * that 'works' (as in, doesn't overflow the budget we have),
-           * and there is no hope of finding a better one.
+           * that 'works' (as in, it doesn't overflow the budget we have,
+           * or there is no hope of finding a better one).
            *
            * We rely on the fact that MIN(width + extra_width, width) is
            * monotonically increasing.
            */
           if (MIN (width + extra_width, width) > state->remaining_width &&
-              break_width + break_extra_width <= state->remaining_width &&
-              break_num_chars < item->num_chars)
+              break_num_chars < item->num_chars &&
+              (break_width + break_extra_width <= state->remaining_width ||
+               MIN (width + extra_width, width) > break_width + break_extra_width))
             {
               break;
             }
@@ -3975,8 +3976,10 @@ process_item (PangoLayout     *layout,
               (num_chars > 0 || line->runs))
             {
               /* If we had a breakpoint already, we only want to replace it with a better one. */
-              if (break_num_chars == item->num_chars ||
-                  width + extra_width <= MAX (break_width + break_extra_width, state->remaining_width))
+              if (width + extra_width <= state->remaining_width ||
+                  width + extra_width < break_width + break_extra_width ||
+                  (width + extra_width == break_width + break_extra_width &&
+                   num_chars > break_num_chars))
                 {
                   break_num_chars = num_chars;
                   break_width = width;
@@ -4028,6 +4031,8 @@ process_item (PangoLayout     *layout,
 
               if (break_needs_hyphen (layout, state, break_num_chars))
                 new_item->analysis.flags |= PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
+              else
+                new_item->analysis.flags &= ~PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
 
               /* Add the width back, to the line, reshape, subtract the new width */
               state->remaining_width = remaining;
@@ -4035,23 +4040,25 @@ process_item (PangoLayout     *layout,
 
               break_width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
 
-              if (state->start_offset + break_num_chars > 0 &&
-                  layout->log_attrs[state->start_offset + break_num_chars - 1].is_white)
-                break_width -= state->log_widths[state->log_widths_offset + break_num_chars - 1];
+              /* After the shaping, break_width includes a possible hyphen.
+               * We subtract break_extra_width to account for that.
+               */
+              if (new_item->analysis.flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN)
+                break_width -= break_extra_width;
 
-              if (break_width > state->remaining_width &&
+              if (break_width + break_extra_width > state->remaining_width &&
                   !break_disabled[break_num_chars])
                 {
-                  /* Unsplit the item, disable the breakpoint, try again */
-
+                  /* Unsplit the item, disable the breakpoint, try find a better one.
+                   *
+                   * If we can't find a different breakpoint that works better, we'll
+                   * end up here again, with break_disabled being set, and take the break
+                   */
                   uninsert_run (line);
                   pango_item_free (new_item);
                   pango_item_unsplit (item, length, break_num_chars);
 
                   break_disabled[break_num_chars] = TRUE;
-                  width = orig_width;
-                  break_width = width;
-                  break_num_chars = item->num_chars;
 
                   goto retry_break;
                 }
