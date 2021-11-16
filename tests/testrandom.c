@@ -269,6 +269,7 @@ init_ltr_words (void)
 
   file = g_file_new_for_path ("/usr/share/dict/words");
   bytes = g_file_load_bytes (file, NULL, NULL, NULL);
+  g_object_unref (file);
   if (bytes)
     {
       result = g_strsplit (g_bytes_get_data (bytes, NULL), "\n", -1);
