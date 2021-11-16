@@ -379,9 +379,6 @@ do_output (PangoContext     *context,
 
   pango_context_set_matrix (context, orig_matrix);
   pango_matrix_free (orig_matrix);
-  int w, h;
-  pango_layout_get_size (layout, &w, &h);
-  g_print ("layout %d %d\n", w, h);
   g_object_unref (layout);
 }
 
