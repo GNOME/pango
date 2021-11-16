@@ -6003,7 +6003,6 @@ zero_line_final_space (PangoLayoutLine *line,
     }
 
   g_debug ("zero line final space: collapsing the space");
-  state->remaining_width += glyphs->glyphs[glyph].geometry.width;
   glyphs->glyphs[glyph].geometry.width = 0;
   glyphs->glyphs[glyph].glyph = PANGO_GLYPH_EMPTY;
 }
