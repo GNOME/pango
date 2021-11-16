@@ -235,9 +235,11 @@ load_hunspell_words (const char  *language)
   bytes = g_file_load_bytes (file, NULL, NULL, NULL);
   g_object_unref (file);
   if (bytes == NULL)
-    return FALSE;
+    return NULL;;
 
   words = g_strsplit (g_bytes_get_data (bytes, NULL), "\n", -1);
+  g_bytes_unref (bytes);
+
   if (words == NULL || words[0] == NULL)
     {
       g_free (words);
