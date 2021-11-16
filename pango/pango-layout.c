@@ -4039,8 +4039,11 @@ retry_break:
 
               new_break_width = pango_glyph_string_get_width (glyphs);
 
-              if (new_item->analysis.flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN)
-                new_break_width -= extra_width;
+              if (num_chars > 0 &&
+                  layout->log_attrs[state->start_offset + num_chars - 1].is_white)
+                extra_width = - state->log_widths[state->log_widths_offset + num_chars - 1];
+              else
+                extra_width = 0;
 
               g_debug ("measured breakpoint %d: %d", num_chars, new_break_width);
 
