@@ -10,7 +10,7 @@ width: 102400
 --- attributes
 
 range 0 30
-[0,30]letter-spacing=8888
+0 30 letter-spacing 8888
 range 30 2147483647
 
 --- directions
@@ -33,17 +33,17 @@ i=5, index=31, paragraph-start=1, dir=ltr ''
 --- runs
 
 i=1, index=0, chars=6, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'Hello '
-[0,30]letter-spacing=8888
+0 30 letter-spacing 8888
 i=2, index=6, no run, line end
 i=3, index=12, chars=4, level=1, gravity=south, flags=0, font=OMITTED, script=hebrew, language=he, 'שלום'
-[0,30]letter-spacing=8888
+0 30 letter-spacing 8888
 i=4, index=14, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=hebrew, language=he, ' '
-[0,30]letter-spacing=8888
+0 30 letter-spacing 8888
 i=5, index=15, no run, line end
 i=6, index=15, chars=5, level=0, gravity=south, flags=0, font=OMITTED, script=greek, language=el, 'Γειά '
-[0,30]letter-spacing=8888
+0 30 letter-spacing 8888
 i=7, index=24, no run, line end
 i=8, index=24, chars=3, level=0, gravity=south, flags=0, font=OMITTED, script=greek, language=el, 'σας'
-[0,30]letter-spacing=8888
+0 30 letter-spacing 8888
 i=9, index=30, no run, line end
 i=10, index=31, no run, line end

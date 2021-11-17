@@ -32,6 +32,6 @@ i=1, index=0, chars=25, level=0, gravity=south, flags=0, font=OMITTED, script=la
 i=2, index=25, no run, line end
 i=3, index=25, chars=20, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'long enough to wrap '
 i=4, index=45, chars=53, level=0, gravity=south, flags=2, font=OMITTED, script=common, language=en-us, 'due to height limitations. It might, or it might not.'
-[0,2147483647]fallback=0
+0 2147483647 fallback false
 i=5, index=98, no run, line end
 i=6, index=99, no run, line end

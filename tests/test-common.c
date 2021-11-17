@@ -104,58 +104,14 @@ file_has_prefix (const char  *filename,
 void
 print_attribute (PangoAttribute *attr, GString *string)
 {
-  GEnumClass *class;
-  GEnumValue *value;
-  PangoAttrString *str;
-  PangoAttrLanguage *lang;
-  PangoAttrInt *integer;
-  PangoAttrFloat *flt;
-  PangoAttrFontDesc *font;
-  PangoAttrColor *color;
-  PangoAttrShape *shape;
-  PangoAttrSize *size;
-  PangoAttrFontFeatures *features;
+  PangoAttrList *l = pango_attr_list_new ();
+  char *s;
 
-  g_string_append_printf (string, "[%d,%d]", attr->start_index, attr->end_index);
-
-  class = g_type_class_ref (pango_attr_type_get_type ());
-  value = g_enum_get_value (class, attr->klass->type);
-  g_string_append_printf (string, "%s=", value->value_nick);
-  g_type_class_unref (class);
-
-  if ((str = pango_attribute_as_string (attr)) != NULL)
-    g_string_append (string, str->value);
-  else if ((lang = pango_attribute_as_language (attr)) != NULL)
-    g_string_append (string, pango_language_to_string (lang->value));
-  else if ((integer = pango_attribute_as_int (attr)) != NULL)
-    g_string_append_printf (string, "%d", integer->value);
-  else if ((flt = pango_attribute_as_float (attr)) != NULL)
-    {
-        char val[20];
-
-        g_ascii_formatd (val, 20, "%f", flt->value);
-        g_string_append (string, val);
-     }
-  else if ((font = pango_attribute_as_font_desc (attr)) != NULL)
-    {
-      char *text = pango_font_description_to_string (font->desc);
-      g_string_append (string, text);
-      g_free (text);
-    }
-  else if ((color = pango_attribute_as_color (attr)) != NULL)
-    {
-      char *text = pango_color_to_string (&color->color);
-      g_string_append (string, text);
-      g_free (text);
-    }
-  else if ((shape = pango_attribute_as_shape (attr)) != NULL)
-    g_string_append_printf (string, "shape");
-  else if ((size = pango_attribute_as_size (attr)) != NULL)
-    g_string_append_printf (string, "%d", size->size);
-  else if ((features = pango_attribute_as_font_features (attr)) != NULL)
-    g_string_append_printf (string, "%s", features->features);
-  else
-    g_assert_not_reached ();
+  pango_attr_list_insert (l, pango_attribute_copy (attr));
+  s = pango_attr_list_to_string (l);
+  g_string_append (string, s);
+  g_free (s);
+  pango_attr_list_unref (l);
 }
 
 void

@@ -12,8 +12,8 @@ indent: 51200
 
 range 0 22
 range 22 41
-[22,41]foreground=#00000000ffff
-[22,41]underline=1
+22 41 foreground #00000000ffff
+22 41 underline single
 range 41 2147483647
 
 --- directions
@@ -34,10 +34,10 @@ i=2, index=49, paragraph-start=1, dir=ltr ''
 
 i=1, index=0, chars=12, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'This is a te'
 i=2, index=12, chars=26, level=0, gravity=south, flags=2, font=OMITTED, script=common, language=en-us, 'st of the automatic emerge'
-[0,2147483647]fallback=0
+0 2147483647 fallback false
 i=3, index=38, chars=3, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'ncy'
-[22,41]foreground=#00000000ffff
-[22,41]underline=1
+22 41 foreground #00000000ffff
+22 41 underline single
 i=4, index=41, chars=7, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, ' brake!'
 i=5, index=48, no run, line end
 i=6, index=49, no run, line end

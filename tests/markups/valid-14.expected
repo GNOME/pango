@@ -4,10 +4,10 @@ abc def _x_
 ---
 
 range 0 1
-[0,1]underline=3
+0 1 underline low
 range 1 4
 range 4 5
-[4,5]underline=3
+4 5 underline low
 range 5 2147483647
 
 

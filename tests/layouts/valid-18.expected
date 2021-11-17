@@ -9,7 +9,7 @@ lines: 3
 --- attributes
 
 range 0 57
-[0,57]show=7
+0 57 show 7
 range 57 2147483647
 
 --- directions
@@ -30,11 +30,11 @@ i=3, index=58, paragraph-start=1, dir=ltr ''
 --- runs
 
 i=1, index=0, chars=16, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'some line breaks'
-[0,57]show=7
+0 57 show 7
 i=2, index=16, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, ' '
-[0,57]show=7
+0 57 show 7
 i=3, index=19, no run, line end
 i=4, index=19, chars=32, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'and mis­ce­llaneous ig﻿nora‌bles'
-[0,57]show=7
+0 57 show 7
 i=5, index=57, no run, line end
 i=6, index=58, no run, line end

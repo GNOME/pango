@@ -26,10 +26,10 @@ i=1, index=0, paragraph-start=1, dir=ltr 'a       b       c       d e     f   
 --- runs
 
 i=1, index=0, chars=25, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'a       b       c       d'
-[0,-1]show=2
+0 4294967295 show 2
 i=2, index=25, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, ' '
-[0,-1]show=2
+0 4294967295 show 2
 i=3, index=28, chars=24, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'e     f       g       h
 '
-[0,-1]show=2
+0 4294967295 show 2
 i=4, index=52, no run, line end

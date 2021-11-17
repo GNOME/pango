@@ -9,10 +9,10 @@ lines: 2
 --- attributes
 
 range 0 3
-[0,3]gravity=1
-[0,3]gravity-hint=1
+0 3 gravity east
+0 3 gravity-hint strong
 range 3 6
-[3,6]gravity=0
+3 6 gravity south
 range 6 2147483647
 
 --- directions
@@ -32,9 +32,9 @@ i=2, index=7, paragraph-start=1, dir=ltr ''
 --- runs
 
 i=1, index=0, chars=3, level=0, gravity=east, flags=0, font=OMITTED, script=latin, language=en-us, 'abc'
-[0,3]gravity=1
-[0,3]gravity-hint=1
+0 3 gravity east
+0 3 gravity-hint strong
 i=2, index=3, chars=3, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'def'
-[3,6]gravity=0
+3 6 gravity south
 i=3, index=6, no run, line end
 i=4, index=7, no run, line end

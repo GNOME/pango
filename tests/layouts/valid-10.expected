@@ -32,6 +32,6 @@ i=2, index=12, chars=4, level=1, gravity=south, flags=0, font=OMITTED, script=he
 i=3, index=14, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=hebrew, language=he, ' '
 i=4, index=15, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=greek, language=el, 'Γ'
 i=5, index=17, chars=7, level=0, gravity=south, flags=2, font=OMITTED, script=common, language=en-us, 'ειά σας'
-[0,2147483647]fallback=0
+0 2147483647 fallback false
 i=6, index=30, no run, line end
 i=7, index=31, no run, line end
