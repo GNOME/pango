@@ -331,10 +331,11 @@ pango_fc_font_get_coverage (PangoFont     *font,
  */
 static void
 get_face_metrics (PangoFcFont      *fcfont,
-		  PangoFontMetrics *metrics)
+                  PangoFontMetrics *metrics)
 {
   hb_font_t *hb_font = pango_font_get_hb_font (PANGO_FONT (fcfont));
   hb_font_extents_t extents;
+  hb_position_t position;
 
   FcMatrix *fc_matrix;
   gboolean have_transform = FALSE;
@@ -342,10 +343,10 @@ get_face_metrics (PangoFcFont      *fcfont,
   hb_font_get_extents_for_direction (hb_font, HB_DIRECTION_LTR, &extents);
 
   if  (FcPatternGetMatrix (fcfont->font_pattern,
-			   FC_MATRIX, 0, &fc_matrix) == FcResultMatch)
+                           FC_MATRIX, 0, &fc_matrix) == FcResultMatch)
     {
       have_transform = (fc_matrix->xx != 1 || fc_matrix->xy != 0 ||
-			fc_matrix->yx != 0 || fc_matrix->yy != 1);
+                        fc_matrix->yx != 0 || fc_matrix->yy != 1);
     }
 
   if (have_transform)
@@ -366,10 +367,6 @@ get_face_metrics (PangoFcFont      *fcfont,
   metrics->strikethrough_thickness = PANGO_SCALE;
   metrics->strikethrough_position = metrics->ascent / 2;
 
-  /* FIXME: use the right hb version */
-#if HB_VERSION_ATLEAST(2,5,4)
-  hb_position_t position;
-
   if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_UNDERLINE_SIZE, &position))
     metrics->underline_thickness = position;
 
@@ -381,7 +378,6 @@ get_face_metrics (PangoFcFont      *fcfont,
 
   if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_STRIKEOUT_OFFSET, &position))
     metrics->strikethrough_position = position;
-#endif
 }
 
 PangoFontMetrics *
