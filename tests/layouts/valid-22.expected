@@ -10,45 +10,45 @@ lines: 2
 
 range 0 1
 range 1 2
-[1,2]font-desc=Italic
-[1,2]font-scale=2
-[1,2]baseline-shift=2
+1 2 font-desc "Italic"
+1 2 font-scale subscript
+1 2 baseline-shift subscript
 range 2 6
 range 6 7
-[6,11]font-scale=1
-[6,11]baseline-shift=1
+6 11 font-scale superscript
+6 11 baseline-shift superscript
 range 7 8
-[6,11]font-scale=1
-[6,11]baseline-shift=1
-[7,11]font-scale=1
-[7,11]baseline-shift=1
+6 11 font-scale superscript
+6 11 baseline-shift superscript
+7 11 font-scale superscript
+7 11 baseline-shift superscript
 range 8 9
-[6,11]font-scale=1
-[6,11]baseline-shift=1
-[7,11]font-scale=1
-[7,11]baseline-shift=1
-[8,11]font-scale=1
-[8,11]baseline-shift=1
+6 11 font-scale superscript
+6 11 baseline-shift superscript
+7 11 font-scale superscript
+7 11 baseline-shift superscript
+8 11 font-scale superscript
+8 11 baseline-shift superscript
 range 9 10
-[6,11]font-scale=1
-[6,11]baseline-shift=1
-[7,11]font-scale=1
-[7,11]baseline-shift=1
-[8,11]font-scale=1
-[8,11]baseline-shift=1
-[9,11]font-scale=1
-[9,11]baseline-shift=1
+6 11 font-scale superscript
+6 11 baseline-shift superscript
+7 11 font-scale superscript
+7 11 baseline-shift superscript
+8 11 font-scale superscript
+8 11 baseline-shift superscript
+9 11 font-scale superscript
+9 11 baseline-shift superscript
 range 10 11
-[6,11]font-scale=1
-[6,11]baseline-shift=1
-[7,11]font-scale=1
-[7,11]baseline-shift=1
-[8,11]font-scale=1
-[8,11]baseline-shift=1
-[9,11]font-scale=1
-[9,11]baseline-shift=1
-[10,11]font-scale=1
-[10,11]baseline-shift=1
+6 11 font-scale superscript
+6 11 baseline-shift superscript
+7 11 font-scale superscript
+7 11 baseline-shift superscript
+8 11 font-scale superscript
+8 11 baseline-shift superscript
+9 11 font-scale superscript
+9 11 baseline-shift superscript
+10 11 font-scale superscript
+10 11 baseline-shift superscript
 range 11 2147483647
 
 --- directions
@@ -69,43 +69,43 @@ i=2, index=12, paragraph-start=1, dir=ltr ''
 
 i=1, index=0, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'e'
 i=2, index=1, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, '0'
-[1,2]font-scale=2
-[1,2]baseline-shift=2
+1 2 font-scale subscript
+1 2 baseline-shift subscript
 i=3, index=2, chars=4, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, ' = o'
 i=4, index=6, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'o'
-[6,11]font-scale=1
-[6,11]baseline-shift=1
+6 11 font-scale superscript
+6 11 baseline-shift superscript
 i=5, index=7, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'o'
-[6,11]font-scale=1
-[6,11]baseline-shift=1
-[7,11]font-scale=1
-[7,11]baseline-shift=1
+6 11 font-scale superscript
+6 11 baseline-shift superscript
+7 11 font-scale superscript
+7 11 baseline-shift superscript
 i=6, index=8, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, '.'
-[6,11]font-scale=1
-[6,11]baseline-shift=1
-[7,11]font-scale=1
-[7,11]baseline-shift=1
-[8,11]font-scale=1
-[8,11]baseline-shift=1
+6 11 font-scale superscript
+6 11 baseline-shift superscript
+7 11 font-scale superscript
+7 11 baseline-shift superscript
+8 11 font-scale superscript
+8 11 baseline-shift superscript
 i=7, index=9, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, '.'
-[6,11]font-scale=1
-[6,11]baseline-shift=1
-[7,11]font-scale=1
-[7,11]baseline-shift=1
-[8,11]font-scale=1
-[8,11]baseline-shift=1
-[9,11]font-scale=1
-[9,11]baseline-shift=1
+6 11 font-scale superscript
+6 11 baseline-shift superscript
+7 11 font-scale superscript
+7 11 baseline-shift superscript
+8 11 font-scale superscript
+8 11 baseline-shift superscript
+9 11 font-scale superscript
+9 11 baseline-shift superscript
 i=8, index=10, chars=1, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, '.'
-[6,11]font-scale=1
-[6,11]baseline-shift=1
-[7,11]font-scale=1
-[7,11]baseline-shift=1
-[8,11]font-scale=1
-[8,11]baseline-shift=1
-[9,11]font-scale=1
-[9,11]baseline-shift=1
-[10,11]font-scale=1
-[10,11]baseline-shift=1
+6 11 font-scale superscript
+6 11 baseline-shift superscript
+7 11 font-scale superscript
+7 11 baseline-shift superscript
+8 11 font-scale superscript
+8 11 baseline-shift superscript
+9 11 font-scale superscript
+9 11 baseline-shift superscript
+10 11 font-scale superscript
+10 11 baseline-shift superscript
 i=9, index=11, no run, line end
 i=10, index=12, no run, line end

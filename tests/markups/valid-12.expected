@@ -8,19 +8,19 @@ error-line
 ---
 
 range 0 8
-[0,8]overline=1
+0 8 overline single
 range 8 9
 range 9 23
-[9,23]overline-color=#ffff00000000
+9 23 overline-color #ffff00000000
 range 23 24
 range 24 35
-[24,35]underline=5
+24 35 underline single-line
 range 35 36
 range 36 47
-[36,47]underline=6
+36 47 underline double-line
 range 47 48
 range 48 58
-[48,58]underline=7
+48 58 underline error-line
 range 58 2147483647
 
 

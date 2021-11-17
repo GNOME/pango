@@ -4,7 +4,7 @@ test
 ---
 
 range 0 4
-[0,4]rise=-5000
+0 4 rise -5000
 range 4 2147483647
 
 

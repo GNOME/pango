@@ -87,6 +87,10 @@ void            pango_tab_array_get_tabs            (PangoTabArray *tab_array,
 PANGO_AVAILABLE_IN_ALL
 gboolean        pango_tab_array_get_positions_in_pixels (PangoTabArray *tab_array);
 
+PANGO_AVAILABLE_IN_1_50
+char *          pango_tab_array_to_string           (PangoTabArray *tab_array);
+PANGO_AVAILABLE_IN_1_50
+PangoTabArray * pango_tab_array_from_string         (const char    *text);
 
 G_END_DECLS
 
