@@ -1,0 +1,13 @@
+{
+  "text" : "A test with multiple paragraphs and with no-break attributes, which might trigger a crash.\nIf it doesn't the fix has worked.\n",
+  "attributes" : [
+    {
+      "start" : 21,
+      "end" : 31,
+      "type" : "font-features",
+      "value" : "tnum=1"
+    }
+  ],
+  "font" : "Cantarell 11",
+  "width" : 194560
+}

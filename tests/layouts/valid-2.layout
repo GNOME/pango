@@ -1,0 +1,18 @@
+{
+  "text" : "test the blue drink after dinner\n",
+  "attributes" : [
+    {
+      "start" : 9,
+      "end" : 13,
+      "type" : "style",
+      "value" : "italic"
+    },
+    {
+      "start" : 20,
+      "end" : 25,
+      "type" : "underline",
+      "value" : "single"
+    }
+  ],
+  "font" : "Cantarell 11"
+}

@@ -1,2 +1,0 @@
-width=220,wrap=char
-<span underline='double' overline='single'>double</span> <span underline='low' strikethrough='true'>low</span> <span underline='error' rise='1024'>error</span>

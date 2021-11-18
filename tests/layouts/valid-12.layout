@@ -1,0 +1,15 @@
+{
+  "text" : "a       b       c       d e     f       g       h\n",
+  "attributes" : [],
+  "font" : "Cantarell 11",
+  "tabs" : {
+    "positions-in-pixels" : true,
+    "positions" : [
+      0,
+      50,
+      100,
+      150,
+      200
+    ]
+  }
+}

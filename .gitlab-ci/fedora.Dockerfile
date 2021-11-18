@@ -26,6 +26,7 @@ RUN dnf -y install \
     harfbuzz-devel \
     hicolor-icon-theme \
     itstool \
+    json-glib-devel \
     libasan \
     lcov \
     libthai-devel \

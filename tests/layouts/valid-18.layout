@@ -1,0 +1,11 @@
+{
+  "text" : "some line breaks and mis­ce­llaneous ig﻿nora‌bles\n",
+  "attributes" : [
+    {
+      "end" : 57,
+      "type" : "show",
+      "value" : 7
+    }
+  ],
+  "font" : "Cantarell 11"
+}

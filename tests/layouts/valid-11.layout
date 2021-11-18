@@ -1,0 +1,42 @@
+{
+  "text" : "double low error\n",
+  "attributes" : [
+    {
+      "end" : 6,
+      "type" : "underline",
+      "value" : "double"
+    },
+    {
+      "end" : 6,
+      "type" : "overline",
+      "value" : "single"
+    },
+    {
+      "start" : 7,
+      "end" : 10,
+      "type" : "underline",
+      "value" : "low"
+    },
+    {
+      "start" : 7,
+      "end" : 10,
+      "type" : "strikethrough",
+      "value" : true
+    },
+    {
+      "start" : 11,
+      "end" : 16,
+      "type" : "underline",
+      "value" : "error"
+    },
+    {
+      "start" : 11,
+      "end" : 16,
+      "type" : "rise",
+      "value" : 1024
+    }
+  ],
+  "font" : "Cantarell 11",
+  "wrap" : "char",
+  "width" : 225280
+}

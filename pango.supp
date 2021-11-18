@@ -19,6 +19,14 @@
   fun:_cairo_ft_font_options_substitute
 }
 
+{
+  pango 3
+  Memcheck:Leak
+  fun:calloc
+  ...
+  fun:pango_language_from_string
+}
+
 # Fontconfig
 {
    FcFontSetList
@@ -83,6 +91,13 @@
   fun:malloc
   ...
   fun:g_intern_static_string
+}
+{
+  glib GThread
+  Memcheck:Leak
+  fun:calloc
+  ...
+  fun:g_thread_new_internal
 }
 
 # libthai

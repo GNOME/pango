@@ -1,0 +1,22 @@
+{
+  "text" : "abcdef\n",
+  "attributes" : [
+    {
+      "end" : 3,
+      "type" : "gravity",
+      "value" : "east"
+    },
+    {
+      "end" : 3,
+      "type" : "gravity-hint",
+      "value" : "strong"
+    },
+    {
+      "start" : 3,
+      "end" : 6,
+      "type" : "gravity",
+      "value" : "south"
+    }
+  ],
+  "font" : "Cantarell 11"
+}

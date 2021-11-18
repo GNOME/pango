@@ -2802,7 +2802,7 @@ pango_attr_list_from_string (const char *text)
 
       p = endp + strspn (endp, " ");
 
-      endp = (char *)strpbrk (p, " ");
+      endp = (char *)p + strcspn (p, " ");
       attr_type = get_attr_type_by_nick (p, endp - p);
 
       p = endp + strspn (endp, " ");
@@ -2929,8 +2929,7 @@ pango_attr_list_from_string (const char *text)
           break;
 
         case PANGO_ATTR_SHAPE:
-          endp = (char *)strpbrk (p, ",\n");
-          p = endp  + strspn (endp, " ");
+          endp = (char *)p + strcspn (p, ",\n");
           continue; /* FIXME */
 
         case PANGO_ATTR_SCALE:
