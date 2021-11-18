@@ -219,176 +219,14 @@ dump_cursor_positions (PangoLayout *layout, GString *string)
   g_string_append (string, "\n");
 }
 
-typedef struct {
-  int width;
-  int height;
-  int indent;
-  int spacing;
-  float line_spacing;
-  PangoEllipsizeMode ellipsize;
-  PangoWrapMode wrap;
-  PangoAlignment alignment;
-  gboolean justify;
-  gboolean auto_dir;
-  gboolean single_paragraph;
-  PangoTabArray *tabs;
-  PangoGravity gravity;
-} LayoutParams;
-
-static void
-init_params (LayoutParams *params)
-{
-  params->width = -1;
-  params->height = -1;
-  params->indent = 0;
-  params->spacing = 0;
-  params->line_spacing = 0.0;
-  params->ellipsize = PANGO_ELLIPSIZE_NONE;
-  params->wrap = PANGO_WRAP_WORD;
-  params->alignment = PANGO_ALIGN_LEFT;
-  params->justify = FALSE;
-  params->auto_dir = TRUE;
-  params->single_paragraph = FALSE;
-  params->tabs = NULL;
-  params->gravity = PANGO_GRAVITY_AUTO;
-}
-
-static void
-parse_params (const char   *str,
-              LayoutParams *params)
-{
-  char **strings;
-  int i;
-  GEnumClass *eclass;
-  GEnumValue *ev;
-
-  strings = g_strsplit (str, ",", -1);
-  for (i = 0; strings[i]; i++)
-    {
-      char **str2 = g_strsplit (strings[i], "=", -1);
-      if (strcmp (str2[0], "width") == 0)
-        {
-          params->width = (int) g_ascii_strtoll (str2[1], NULL, 10);
-        }
-      else if (strcmp (str2[0], "height") == 0)
-        {
-          params->height = (int) g_ascii_strtoll (str2[1], NULL, 10);
-        }
-      else if (strcmp (str2[0], "indent") == 0)
-        {
-          params->indent = (int) g_ascii_strtoll (str2[1], NULL, 10);
-        }
-      else if (strcmp (str2[0], "spacing") == 0)
-        {
-          params->spacing = (int) g_ascii_strtoll (str2[1], NULL, 10);
-        }
-      else if (strcmp (str2[0], "line_spacing") == 0)
-        {
-          params->line_spacing = (float) g_ascii_strtod (str2[1], NULL);
-        }
-      else if (strcmp (str2[0], "ellipsize") == 0)
-        {
-          eclass = g_type_class_ref (PANGO_TYPE_ELLIPSIZE_MODE);
-          ev = g_enum_get_value_by_name (eclass, str2[1]);
-          if (!ev)
-            ev = g_enum_get_value_by_nick (eclass, str2[1]);
-          if (ev)
-            params->ellipsize = ev->value;
-          g_type_class_unref (eclass);
-        }
-      else if (strcmp (str2[0], "wrap") == 0)
-        {
-          eclass = g_type_class_ref (PANGO_TYPE_WRAP_MODE);
-          ev = g_enum_get_value_by_name (eclass, str2[1]);
-          if (!ev)
-            ev = g_enum_get_value_by_nick (eclass, str2[1]);
-          if (ev)
-            params->wrap = ev->value;
-          g_type_class_unref (eclass);
-        }
-      else if (strcmp (str2[0], "alignment") == 0)
-        {
-          eclass = g_type_class_ref (PANGO_TYPE_ALIGNMENT);
-          ev = g_enum_get_value_by_name (eclass, str2[1]);
-          if (!ev)
-            ev = g_enum_get_value_by_nick (eclass, str2[1]);
-          if (ev)
-            params->alignment = ev->value;
-          g_type_class_unref (eclass);
-        }
-      else if (strcmp (str2[0], "justify") == 0)
-        {
-          params->justify = g_str_equal (str2[1], "true");
-        }
-      else if (strcmp (str2[0], "auto_dir") == 0)
-        {
-          params->auto_dir = g_str_equal (str2[1], "true");
-        }
-      else if (strcmp (str2[0], "single_paragraph") == 0)
-        {
-          params->single_paragraph = g_str_equal (str2[1], "true");
-        }
-      else if (strcmp (str2[0], "tabs") == 0)
-        {
-          char **str3 = g_strsplit (strings[i], " ", -1);
-          params->tabs = pango_tab_array_new (g_strv_length (str3), TRUE);
-          for (int j = 0; str3[j]; j++)
-            {
-              int tab = (int) g_ascii_strtoll (str3[j], NULL, 10);
-              pango_tab_array_set_tab (params->tabs, j, PANGO_TAB_LEFT, tab);
-            }
-          g_strfreev (str3);
-        }
-      else if (strcmp (str2[0], "gravity") == 0)
-        {
-          eclass = g_type_class_ref (PANGO_TYPE_GRAVITY);
-          ev = g_enum_get_value_by_name (eclass, str2[1]);
-          if (!ev)
-            ev = g_enum_get_value_by_nick (eclass, str2[1]);
-          if (ev)
-            params->gravity = ev->value;
-          g_type_class_unref (eclass);
-        }
-
-      g_strfreev (str2);
-    }
-  g_strfreev (strings);
-}
-
-#define assert_layout_changed(layout) \
-  g_assert_cmpuint (pango_layout_get_serial (layout), !=, serial); \
-  serial = pango_layout_get_serial (layout);
-
-#define assert_rectangle_equal(r1, r2) \
-  g_assert_true((r1)->x == (r2)->x && \
-                (r1)->y == (r2)->y && \
-                (r1)->width == (r2)->width && \
-                (r1)->height == (r2)->height)
-
-#define assert_rectangle_contained(r1, r2) \
-  g_assert_true ((r1)->x >= (r2)->x && \
-                 (r1)->y >= (r2)->y && \
-                 (r1)->x + (r1)->width <= (r2)->x + (r2)->width && \
-                 (r1)->y + (r1)->height <= (r2)->y + (r2)->height)
-
-#define assert_rectangle_size_contained(r1, r2) \
-  g_assert_true ((r1)->width <= (r2)->width && \
-                 (r1)->height <= (r2)->height)
-
 static void
 test_file (const char *filename, GString *string)
 {
   char *contents;
-  char *markup;
   gsize  length;
+  GBytes *bytes;
   GError *error = NULL;
   PangoLayout *layout;
-  char *p;
-  LayoutParams params;
-  PangoFontDescription *desc;
-  const PangoFontDescription *desc2;
-  guint serial;
-  PangoTabArray *tabs;
 
   if (context == NULL)
     context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
@@ -396,85 +234,12 @@ test_file (const char *filename, GString *string)
   g_file_get_contents (filename, &contents, &length, &error);
   g_assert_no_error (error);
 
-  p = strchr (contents, '\n');
-  g_assert (p);
-  markup = p + 1;
-  *p = '\0';
-  length = strlen (markup);
+  bytes = g_bytes_new_take (contents, length);
 
-  init_params (&params);
+  layout = pango_layout_deserialize (context, bytes, &error);
+  g_assert_no_error (error);
 
-  layout = pango_layout_new (context);
-
-  serial = pango_layout_get_serial (layout);
-  g_assert_cmpuint (serial, !=, 0);
-
-  /* Check initial values */
-  g_assert_cmpint (pango_layout_get_width (layout), ==, params.width);
-  g_assert_cmpint (pango_layout_get_height (layout), ==, params.height);
-  g_assert_cmpint (pango_layout_get_indent (layout), ==, params.indent);
-  g_assert_cmpint (pango_layout_get_spacing (layout), ==, params.spacing);
-  g_assert_cmpfloat (pango_layout_get_line_spacing (layout), ==, params.line_spacing);
-  g_assert_cmpint (pango_layout_get_ellipsize (layout), ==, params.ellipsize);
-  g_assert_cmpint (pango_layout_get_wrap (layout), ==, params.wrap);
-  g_assert_cmpint (pango_layout_get_alignment (layout), ==, params.alignment);
-  g_assert_cmpint (pango_layout_get_justify (layout), ==, params.justify);
-  g_assert_cmpint (pango_layout_get_auto_dir (layout), ==, params.auto_dir);
-  g_assert_cmpint (pango_layout_get_single_paragraph_mode (layout), ==, params.single_paragraph);
-
-  g_assert_cmpstr (pango_layout_get_text (layout), ==, "");
-  g_assert_null (pango_layout_get_attributes (layout));
-  g_assert_null (pango_layout_get_tabs (layout));
-  g_assert_null (pango_layout_get_font_description (layout));
-  g_assert_cmpint (pango_layout_is_ellipsized (layout), ==, FALSE);
-  g_assert_cmpint (pango_layout_is_wrapped (layout), ==, FALSE);
-
-  desc = pango_font_description_from_string ("Cantarell 11");
-  pango_layout_set_font_description (layout, desc);
-  desc2 = pango_layout_get_font_description (layout);
-  g_assert_true (pango_font_description_equal (desc, desc2));
-  pango_font_description_free (desc);
-  assert_layout_changed (layout);
-
-  pango_layout_set_markup (layout, markup, length);
-  assert_layout_changed (layout);
-
-  parse_params (contents, &params);
-
-  pango_context_set_base_gravity (context, params.gravity);
-
-  pango_layout_set_width (layout, params.width > 0 ? params.width * PANGO_SCALE : -1);
-  pango_layout_set_height (layout, params.height > 0 ? params.height * PANGO_SCALE : params.height);
-  pango_layout_set_indent (layout, params.indent * PANGO_SCALE);
-  pango_layout_set_spacing (layout, params.spacing * PANGO_SCALE);
-  pango_layout_set_line_spacing (layout, params.line_spacing);
-  pango_layout_set_ellipsize (layout, params.ellipsize);
-  pango_layout_set_wrap (layout, params.wrap);
-  pango_layout_set_alignment (layout, params.alignment);
-  pango_layout_set_justify (layout, params.justify);
-  pango_layout_set_auto_dir (layout, params.auto_dir);
-  pango_layout_set_single_paragraph_mode (layout, params.single_paragraph);
-  pango_layout_set_tabs (layout, params.tabs);
-
-  /* Check the values we set */
-  g_assert_cmpint (pango_layout_get_width (layout), ==, params.width > 0 ? params.width * PANGO_SCALE : -1);
-  g_assert_cmpint (pango_layout_get_height (layout), ==, params.height > 0 ? params.height * PANGO_SCALE : params.height);
-  g_assert_cmpint (pango_layout_get_indent (layout), ==, params.indent * PANGO_SCALE);
-  g_assert_cmpint (pango_layout_get_spacing (layout), ==, params.spacing * PANGO_SCALE);
-  g_assert_cmpfloat (pango_layout_get_line_spacing (layout), ==, params.line_spacing);
-  g_assert_cmpint (pango_layout_get_ellipsize (layout), ==, params.ellipsize);
-  g_assert_cmpint (pango_layout_get_wrap (layout), ==, params.wrap);
-  g_assert_cmpint (pango_layout_get_alignment (layout), ==, params.alignment);
-  g_assert_cmpint (pango_layout_get_justify (layout), ==, params.justify);
-  g_assert_cmpint (pango_layout_get_auto_dir (layout), ==, params.auto_dir);
-  g_assert_cmpint (pango_layout_get_single_paragraph_mode (layout), ==, params.single_paragraph);
-
-  tabs = pango_layout_get_tabs (layout);
-  g_assert_true ((tabs == NULL) == (params.tabs == NULL));
-  if (tabs)
-    pango_tab_array_free (tabs);
-
-  g_assert_cmpint (pango_layout_get_character_count (layout), ==, g_utf8_strlen (pango_layout_get_text (layout), -1));
+  g_bytes_unref (bytes);
 
   /* generate the dumps */
   g_string_append (string, pango_layout_get_text (layout));
@@ -484,13 +249,11 @@ test_file (const char *filename, GString *string)
   g_string_append_printf (string, "wrapped: %d\n", pango_layout_is_wrapped (layout));
   g_string_append_printf (string, "ellipsized: %d\n", pango_layout_is_ellipsized (layout));
   g_string_append_printf (string, "lines: %d\n", pango_layout_get_line_count (layout));
-  if (params.width > 0)
+  if (pango_layout_get_width (layout) > 0)
     g_string_append_printf (string, "width: %d\n", pango_layout_get_width (layout));
-
-  if (params.height > 0)
+  if (pango_layout_get_height (layout) > 0)
     g_string_append_printf (string, "height: %d\n", pango_layout_get_height (layout));
-
-  if (params.indent != 0)
+  if (pango_layout_get_indent (layout) != 0)
     g_string_append_printf (string, "indent: %d\n", pango_layout_get_indent (layout));
 
   g_string_append (string, "\n--- attributes\n\n");
@@ -509,19 +272,15 @@ test_file (const char *filename, GString *string)
   dump_runs (layout, string);
 
   g_object_unref (layout);
-  g_free (contents);
-
-  if (params.tabs)
-    pango_tab_array_free (params.tabs);
 }
 
 static gchar *
-get_expected_filename (const gchar *filename)
+get_expected_filename (const char *filename)
 {
-  gchar *f, *p, *expected;
+  char *f, *p, *expected;
 
   f = g_strdup (filename);
-  p = strstr (f, ".markup");
+  p = strstr (f, ".layout");
   if (p)
     *p = 0;
   expected = g_strconcat (f, ".expected", NULL);
@@ -534,11 +293,11 @@ get_expected_filename (const gchar *filename)
 static void
 test_layout (gconstpointer d)
 {
-  const gchar *filename = d;
-  gchar *expected_file;
+  const char *filename = d;
+  char *expected_file;
   GError *error = NULL;
   GString *dump;
-  gchar *diff;
+  char *diff;
   PangoFontFamily **families;
   int n_families;
   gboolean found_cantarell;
@@ -616,7 +375,7 @@ main (int argc, char *argv[])
   GDir *dir;
   GError *error = NULL;
   const gchar *name;
-  gchar *path;
+  char *path;
   GOptionContext *option_context;
   GOptionEntry entries[] = {
     { "show-fonts", '0', 0, G_OPTION_ARG_NONE, &opt_show_font, "Print font names in dumps", NULL },
@@ -659,7 +418,7 @@ main (int argc, char *argv[])
   g_assert_no_error (error);
   while ((name = g_dir_read_name (dir)) != NULL)
     {
-      if (!strstr (name, "markup"))
+      if (!g_str_has_suffix (name, ".layout"))
         continue;
 
       path = g_strdup_printf ("/layout/%s", name);

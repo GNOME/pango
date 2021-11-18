@@ -1,0 +1,84 @@
+{
+  "text" : "e0 = ooo...\n",
+  "attributes" : [
+    {
+      "start" : 1,
+      "end" : 2,
+      "type" : "font-desc",
+      "value" : "Italic"
+    },
+    {
+      "start" : 1,
+      "end" : 2,
+      "type" : "font-scale",
+      "value" : "subscript"
+    },
+    {
+      "start" : 1,
+      "end" : 2,
+      "type" : "baseline-shift",
+      "value" : "subscript"
+    },
+    {
+      "start" : 6,
+      "end" : 11,
+      "type" : "font-scale",
+      "value" : "superscript"
+    },
+    {
+      "start" : 6,
+      "end" : 11,
+      "type" : "baseline-shift",
+      "value" : "superscript"
+    },
+    {
+      "start" : 7,
+      "end" : 11,
+      "type" : "font-scale",
+      "value" : "superscript"
+    },
+    {
+      "start" : 7,
+      "end" : 11,
+      "type" : "baseline-shift",
+      "value" : "superscript"
+    },
+    {
+      "start" : 8,
+      "end" : 11,
+      "type" : "font-scale",
+      "value" : "superscript"
+    },
+    {
+      "start" : 8,
+      "end" : 11,
+      "type" : "baseline-shift",
+      "value" : "superscript"
+    },
+    {
+      "start" : 9,
+      "end" : 11,
+      "type" : "font-scale",
+      "value" : "superscript"
+    },
+    {
+      "start" : 9,
+      "end" : 11,
+      "type" : "baseline-shift",
+      "value" : "superscript"
+    },
+    {
+      "start" : 10,
+      "end" : 11,
+      "type" : "font-scale",
+      "value" : "superscript"
+    },
+    {
+      "start" : 10,
+      "end" : 11,
+      "type" : "baseline-shift",
+      "value" : "superscript"
+    }
+  ],
+  "font" : "Cantarell 11"
+}

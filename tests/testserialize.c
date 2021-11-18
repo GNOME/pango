@@ -245,43 +245,66 @@ test_serialize_layout_valid (void)
 static void
 test_serialize_layout_invalid (void)
 {
-  const char *test1 =
-    "{\n"
-    "  \"attributes\" : [\n"
-    "    {\n"
-    "      \"type\" : \"caramba\"\n"
-    "    }\n"
-    "  ]\n"
-    "}";
-
-  const char *test2 =
-    "{\n"
-    "  \"attributes\" : [\n"
-    "    {\n"
-    "      \"type\" : \"weight\"\n"
-    "    }\n"
-    "  ]\n"
-    "}";
+  struct {
+    const char *json;
+    int expected_error;
+  } test[] = {
+    {
+      "{\n"
+      "  \"attributes\" : [\n"
+      "    {\n"
+      "      \"type\" : \"caramba\"\n"
+      "    }\n"
+      "  ]\n"
+      "}",
+      PANGO_LAYOUT_SERIALIZE_INVALID_VALUE
+    },
+    {
+      "{\n"
+      "  \"attributes\" : [\n"
+      "    {\n"
+      "      \"type\" : \"weight\"\n"
+      "    }\n"
+      "  ]\n"
+      "}",
+      PANGO_LAYOUT_SERIALIZE_MISSING_VALUE
+    },
+    {
+      "{\n"
+      "  \"attributes\" : [\n"
+      "    {\n"
+      "      \"type\" : \"alignment\",\n"
+      "      \"value\" : \"nonsense\"\n"
+      "    }\n"
+      "  ]\n"
+      "}",
+      PANGO_LAYOUT_SERIALIZE_INVALID_VALUE
+    },
+    {
+      "{\n"
+      "  \"alignment\" : \"nonsense\"\n"
+      "}",
+      PANGO_LAYOUT_SERIALIZE_INVALID_VALUE
+    }
+  };
 
   PangoContext *context;
-  GBytes *bytes;
-  PangoLayout *layout;
-  GError *error = NULL;
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
-  bytes = g_bytes_new_static (test1, -1);
-  layout = pango_layout_deserialize (context, bytes, &error);
-  g_assert_null (layout);
-  g_assert_error (error, PANGO_LAYOUT_SERIALIZE_ERROR, PANGO_LAYOUT_SERIALIZE_INVALID_VALUE);
-  g_bytes_unref (bytes);
-  g_clear_error (&error);
+  for (int i = 0; i < G_N_ELEMENTS (test); i++)
+    {
+      GBytes *bytes;
+      PangoLayout *layout;
+      GError *error = NULL;
 
-  bytes = g_bytes_new_static (test2, -1);
-  layout = pango_layout_deserialize (context, bytes, &error);
-  g_assert_null (layout);
-  g_assert_error (error, PANGO_LAYOUT_SERIALIZE_ERROR, PANGO_LAYOUT_SERIALIZE_MISSING_VALUE);
-  g_bytes_unref (bytes);
+       bytes = g_bytes_new_static (test[i].json, -1);
+       layout = pango_layout_deserialize (context, bytes, &error);
+       g_assert_null (layout);
+       g_assert_error (error, PANGO_LAYOUT_SERIALIZE_ERROR, test[i].expected_error);
+       g_bytes_unref (bytes);
+       g_clear_error (&error);
+    }
 
   g_object_unref (context);
 }

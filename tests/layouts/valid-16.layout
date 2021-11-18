@@ -1,0 +1,9 @@
+{
+  "text" : "Lets see if this text is long enough to wrap due to height limitations. It might, or it might not.\n",
+  "attributes" : [],
+  "font" : "Cantarell 11",
+  "wrap" : "word-char",
+  "ellipsize" : "end",
+  "width" : 153600,
+  "height" : -2
+}

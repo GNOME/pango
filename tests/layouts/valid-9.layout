@@ -1,0 +1,12 @@
+{
+  "text" : "Hello שלום Γειά σας\n",
+  "attributes" : [
+    {
+      "end" : 30,
+      "type" : "letter-spacing",
+      "value" : 8888
+    }
+  ],
+  "font" : "Cantarell 11",
+  "width" : 102400
+}

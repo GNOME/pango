@@ -1,0 +1,20 @@
+{
+  "text" : "This is a test of the automatic emergency brake!\n",
+  "attributes" : [
+    {
+      "start" : 22,
+      "end" : 41,
+      "type" : "foreground",
+      "value" : "#00000000ffff"
+    },
+    {
+      "start" : 22,
+      "end" : 41,
+      "type" : "underline",
+      "value" : "single"
+    }
+  ],
+  "font" : "Cantarell 11",
+  "ellipsize" : "end",
+  "width" : 225280
+}
