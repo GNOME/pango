@@ -3777,8 +3777,10 @@ debug (const char *where, PangoLayoutLine *line, ParaBreakState *state)
            state->remaining_width + line_width,
            where);
 }
+# define DEBUG1(...) g_debug (__VA_ARGS__)
 #else
 # define DEBUG(where, line, state) do { } while (0)
+# define DEBUG1(...) do { } while (0)
 #endif
 
 static inline void
@@ -3869,9 +3871,9 @@ process_item (PangoLayout     *layout,
   PangoFontMetrics *metrics;
   int safe_distance;
 
-  g_debug ("process item '%.*s'. Remaining width %d",
-           item->length, layout->text + item->offset,
-           state->remaining_width);
+  DEBUG1 ("process item '%.*s'. Remaining width %d",
+          item->length, layout->text + item->offset,
+          state->remaining_width);
 
   /* We don't want to shape more than necessary, so we keep the results
    * of shaping a new item in state->glyphs, state->log_widths. Once
@@ -3913,7 +3915,7 @@ process_item (PangoLayout     *layout,
     {
       insert_run (line, state, item, NULL, TRUE);
 
-      g_debug ("no wrapping, all-fit");
+      DEBUG1 ("no wrapping, all-fit");
       return BREAK_ALL_FIT;
     }
 
@@ -3931,7 +3933,7 @@ process_item (PangoLayout     *layout,
   if ((width <= state->remaining_width || (item->num_chars == 1 && !line->runs)) &&
       !no_break_at_end)
     {
-      g_debug ("%d <= %d", width, state->remaining_width);
+      DEBUG1 ("%d <= %d", width, state->remaining_width);
       insert_run (line, state, item, NULL, FALSE);
 
       width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
@@ -3945,9 +3947,9 @@ process_item (PangoLayout     *layout,
           pango_glyph_string_free (state->glyphs);
           state->glyphs = NULL;
 
-          g_debug ("early accept '%.*s', all-fit, remaining %d",
-                   item->length, layout->text + item->offset,
-                   state->remaining_width);
+          DEBUG1 ("early accept '%.*s', all-fit, remaining %d",
+                  item->length, layout->text + item->offset,
+                  state->remaining_width);
           return BREAK_ALL_FIT;
         }
 
@@ -3996,8 +3998,8 @@ retry_break:
       if (MIN (width + extra_width, width) > state->remaining_width + safe_distance &&
           break_num_chars < item->num_chars)
         {
-          g_debug ("at %d, MIN(%d, %d + %d) > %d + MARGIN, breaking at %d",
-                   num_chars, width, extra_width, width, state->remaining_width, break_num_chars);
+          DEBUG1 ("at %d, MIN(%d, %d + %d) > %d + MARGIN, breaking at %d",
+                  num_chars, width, extra_width, width, state->remaining_width, break_num_chars);
           break;
         }
 
@@ -4005,11 +4007,11 @@ retry_break:
       if (can_break_at (layout, state->start_offset + num_chars, wrap) &&
           (num_chars > 0 || line->runs))
         {
-          g_debug ("possible breakpoint: %d", num_chars);
+          DEBUG1 ("possible breakpoint: %d", num_chars);
           if (num_chars == 0 ||
               width + extra_width < state->remaining_width - safe_distance)
             {
-              g_debug ("trivial accept");
+              DEBUG1 ("trivial accept");
               break_num_chars = num_chars;
               break_width = width;
               break_extra_width = extra_width;
@@ -4045,7 +4047,7 @@ retry_break:
               else
                 extra_width = 0;
 
-              g_debug ("measured breakpoint %d: %d", num_chars, new_break_width);
+              DEBUG1 ("measured breakpoint %d: %d", num_chars, new_break_width);
 
               if (new_item != item)
                 {
@@ -4057,9 +4059,9 @@ retry_break:
                   new_break_width + extra_width <= state->remaining_width ||
                   new_break_width + extra_width <= break_width + break_extra_width)
                 {
-                  g_debug ("accept breakpoint %d: %d + %d <= %d + %d",
-                           num_chars, new_break_width, extra_width, break_width, break_extra_width);
-                  g_debug ("replace bp %d by %d", break_num_chars, num_chars);
+                  DEBUG1 ("accept breakpoint %d: %d + %d <= %d + %d",
+                          num_chars, new_break_width, extra_width, break_width, break_extra_width);
+                  DEBUG1 ("replace bp %d by %d", break_num_chars, num_chars);
                   break_num_chars = num_chars;
                   break_width = new_break_width;
                   break_extra_width = extra_width;
@@ -4070,13 +4072,13 @@ retry_break:
                 }
               else
                 {
-                  g_debug ("ignore breakpoint %d", num_chars);
+                  DEBUG1 ("ignore breakpoint %d", num_chars);
                   pango_glyph_string_free (glyphs);
                 }
             }
         }
 
-      g_debug ("bp now %d", break_num_chars);
+      DEBUG1 ("bp now %d", break_num_chars);
       if (num_chars < item->num_chars)
         width += state->log_widths[state->log_widths_offset + num_chars];
     }
@@ -4084,7 +4086,7 @@ retry_break:
    if (wrap == PANGO_WRAP_WORD_CHAR && force_fit && break_width + break_extra_width > state->remaining_width)
     {
       /* Try again, with looser conditions */
-      g_debug ("does not fit, try again with wrap-char");
+      DEBUG1 ("does not fit, try again with wrap-char");
       wrap = PANGO_WRAP_CHAR;
       break_num_chars = item->num_chars;
       break_width = orig_width;
@@ -4113,9 +4115,9 @@ retry_break:
           if (break_glyphs)
             pango_glyph_string_free (break_glyphs);
 
-          g_debug ("all-fit '%.*s', remaining %d",
-                   item->length, layout->text + item->offset,
-                   state->remaining_width);
+          DEBUG1 ("all-fit '%.*s', remaining %d",
+                  item->length, layout->text + item->offset,
+                  state->remaining_width);
           return BREAK_ALL_FIT;
         }
       else if (break_num_chars == 0)
@@ -4123,7 +4125,7 @@ retry_break:
           if (break_glyphs)
             pango_glyph_string_free (break_glyphs);
 
-          g_debug ("empty-fit, remaining %d", state->remaining_width);
+          DEBUG1 ("empty-fit, remaining %d", state->remaining_width);
           return BREAK_EMPTY_FIT;
         }
       else
@@ -4141,9 +4143,9 @@ retry_break:
           /* Shaped items should never be broken */
           g_assert (!shape_set);
 
-          g_debug ("some-fit '%.*s', remaining %d",
-                   new_item->length, layout->text + new_item->offset,
-                   state->remaining_width);
+          DEBUG1 ("some-fit '%.*s', remaining %d",
+                  new_item->length, layout->text + new_item->offset,
+                  state->remaining_width);
           return BREAK_SOME_FIT;
         }
     }
@@ -4155,7 +4157,7 @@ retry_break:
       if (break_glyphs)
         pango_glyph_string_free (break_glyphs);
 
-      g_debug ("none-fit, remaining %d", state->remaining_width);
+      DEBUG1 ("none-fit, remaining %d", state->remaining_width);
       return BREAK_NONE_FIT;
     }
 }
@@ -4370,7 +4372,7 @@ process_line (PangoLayout    *layout,
 
  done:
   pango_layout_line_postprocess (line, state, wrapped);
-  g_debug ("line %d done. remaining %d", state->line_of_par, state->remaining_width);
+  DEBUG1 ("line %d done. remaining %d", state->line_of_par, state->remaining_width);
   add_line (line, state);
   state->line_of_par++;
   state->line_start_index += line->length;
@@ -4636,7 +4638,7 @@ pango_layout_check_lines (PangoLayout *layout)
   state.num_log_widths = 0;
   state.baseline_shifts = NULL;
 
-  g_debug ("START layout");
+  DEBUG1 ("START layout");
   do
     {
       int delim_len;
@@ -4766,7 +4768,7 @@ pango_layout_check_lines (PangoLayout *layout)
 
   int w, h;
   pango_layout_get_size (layout, &w, &h);
-  g_debug ("DONE %d %d", w, h);
+  DEBUG1 ("DONE %d %d", w, h);
 }
 
 #pragma GCC diagnostic pop
@@ -5980,7 +5982,7 @@ zero_line_final_space (PangoLayoutLine *line,
 
   if (glyphs->glyphs[glyph].glyph == PANGO_GET_UNKNOWN_GLYPH (0x2028))
     {
-      g_debug ("zero final space: visible space");
+      DEBUG1 ("zero final space: visible space");
       return; /* this LS is visible */
     }
 
@@ -5990,7 +5992,7 @@ zero_line_final_space (PangoLayoutLine *line,
   if (glyphs->num_glyphs < 1 || state->start_offset == 0 ||
       !layout->log_attrs[state->start_offset - 1].is_white)
     {
-      g_debug ("zero final space: not whitespace");
+      DEBUG1 ("zero final space: not whitespace");
       return;
     }
 
@@ -5998,11 +6000,11 @@ zero_line_final_space (PangoLayoutLine *line,
       glyphs->log_clusters[glyph] == glyphs->log_clusters[glyph + (item->analysis.level % 2 ? 1 : -1)])
     {
 
-      g_debug ("zero final space: its a cluster");
+      DEBUG1 ("zero final space: its a cluster");
       return;
     }
 
-  g_debug ("zero line final space: collapsing the space");
+  DEBUG1 ("zero line final space: collapsing the space");
   glyphs->glyphs[glyph].geometry.width = 0;
   glyphs->glyphs[glyph].glyph = PANGO_GLYPH_EMPTY;
 }
@@ -6502,7 +6504,7 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
 {
   gboolean ellipsized = FALSE;
   
-  g_debug ("postprocessing line, %s", wrapped ? "wrapped" : "not wrapped");
+  DEBUG1 ("postprocessing line, %s", wrapped ? "wrapped" : "not wrapped");
 
   add_missing_hyphen (line, state, line->runs->data);
   DEBUG ("after hyphen addition", line, state);
