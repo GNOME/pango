@@ -252,7 +252,8 @@ fribidi_dep = dependency('fribidi', version: fribidi_req_version,
                          default_options: ['docs=false'])
 pango_deps += fribidi_dep
 
-json_glib_dep = dependency('json-glib-1.0', version: json_glib_version)
+json_glib_dep = dependency('json-glib-1.0', version: json_glib_version,
+                           fallback: ['json-glib', 'json_glib_dep'])
 pango_deps += json_glib_dep
 
 thai_dep = dependency('libthai', version: libthai_req_version, required: get_option('libthai'))
