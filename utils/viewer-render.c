@@ -77,6 +77,8 @@ guint16 opt_fg_alpha = 65535;
 gboolean opt_bg_set = FALSE;
 PangoColor opt_bg_color = {65535, 65535, 65535};
 guint16 opt_bg_alpha = 65535;
+gboolean opt_serialized = FALSE;
+const char *file_arg;
 
 /* Text (or markup) to render */
 static char *text;
@@ -102,6 +104,23 @@ make_layout(PangoContext *context,
   static PangoFontDescription *font_description;
   PangoAlignment align;
   PangoLayout *layout;
+
+  if (opt_serialized)
+    {
+      char *text;
+      gsize len;
+      GBytes *bytes;
+      GError *error = NULL;
+
+      if (!g_file_get_contents (file_arg, &text, &len, &error))
+        fail ("%s\n", error->message);
+      bytes = g_bytes_new_take (text, size);
+      layout = pango_layout_deserialize (context, bytes, &error);
+      if (!layout)
+        fail ("%s\n", error->message);
+      g_bytes_unref (bytes);
+      return layout;
+    }
 
   layout = pango_layout_new (context);
   if (opt_markup)
@@ -868,6 +887,8 @@ parse_options (int argc, char *argv[])
      "Width in points to which to wrap lines or ellipsize",	    "points"},
     {"wrap",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_wrap,
      "Text wrapping mode (needs a width to be set)",   "word/char/word-char"},
+    {"serialized",       0, 0, G_OPTION_ARG_NONE,                        &opt_serialized,
+     "Create layout from a serialized file",                            NULL},
     {NULL}
   };
   GError *error = NULL;
@@ -911,6 +932,12 @@ parse_options (int argc, char *argv[])
       exit (1);
     }
 
+  if (opt_serialized && argc != 2)
+    {
+      g_printerr ("Usage: %s [OPTION...] FILE\n", g_get_prgname ());
+      exit (1);
+    }
+
   /* set up the backend */
   if (!opt_viewer)
     {
@@ -921,7 +948,13 @@ parse_options (int argc, char *argv[])
 
   /* Get the text
    */
-  if (opt_text)
+  if (opt_serialized)
+    {
+      file_arg = argv[1];
+      text = g_strdup ("");
+      len = 0;
+    }
+  else if (opt_text)
     {
       text = g_strdup (opt_text);
       len = strlen (text);
