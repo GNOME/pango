@@ -28,7 +28,7 @@ i=3, index=17, paragraph-start=1, dir=ltr ''
 
 --- runs
 
-i=1, index=0, chars=13, level=0, gravity=south, flags=4, font=OMITTED, script=latin, language=en-us, 'some|bla|bla|'
+i=1, index=0, chars=13, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'some|bla|bla|'
 i=2, index=13, no run, line end
 i=3, index=13, chars=3, level=0, gravity=south, flags=0, font=OMITTED, script=latin, language=en-us, 'bla'
 i=4, index=16, no run, line end
