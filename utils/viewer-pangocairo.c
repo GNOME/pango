@@ -424,7 +424,7 @@ render_callback (PangoLayout *layout,
             {
               PangoRectangle rect;
 
-              pango_layout_iter_get_cluster_extents (iter, NULL, &rect);
+              pango_layout_iter_get_char_extents (iter, &rect);
               cairo_rectangle (cr,
                                (double)rect.x / PANGO_SCALE - lw / 2,
                                (double)rect.y / PANGO_SCALE - lw / 2,

@@ -1391,7 +1391,7 @@ pango_attr_word_new (void)
     pango_attr_int_equal,
   };
 
-  return pango_attr_int_new (&klass, 0);
+  return pango_attr_int_new (&klass, 1);
 }
 
 /**
@@ -1418,7 +1418,7 @@ pango_attr_sentence_new (void)
     pango_attr_int_equal,
   };
 
-  return pango_attr_int_new (&klass, 0);
+  return pango_attr_int_new (&klass, 1);
 }
 
 /**
