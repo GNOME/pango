@@ -1624,8 +1624,7 @@ default_break (const char    *text,
         else
           attrs[i].break_inserts_hyphen = insert_hyphens;
 
-        if (prev_wc == 0x007C ||   /* Vertical Line */
-            prev_wc == 0x2027)     /* Hyphenation point */
+        if (prev_wc == 0x2027)     /* Hyphenation point */
           {
             attrs[i].break_inserts_hyphen = TRUE;
             attrs[i].break_removes_preceding = TRUE;

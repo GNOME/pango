@@ -402,13 +402,16 @@ if build_pangoft2
   pango_deps += freetype_dep
 endif
 
+build_pangoxft = false
 xft_dep = dependency('xft', version: xft_req_version, required: get_option('xft'))
 if xft_dep.found() and fontconfig_dep.found() and freetype_dep.found()
   pango_conf.set('HAVE_XFT', 1)
   pango_deps += dependency('xrender', required: false)
   pango_deps += xft_dep
+  build_pangoxft = true
 endif
 
+has_core_text = false
 if host_system == 'darwin'
   has_core_text = cc.links('''#include <CoreText/CoreText.h>
                               int main (void) {
@@ -653,3 +656,25 @@ endif
 if not meson.is_subproject()
   meson.add_dist_script('build-aux/meson/dist-docs.py')
 endif
+
+summary('Font backends', pango_font_backends)
+
+summary('Cairo support', cairo_dep.found(), section: 'Features')
+summary('Fontconfig support', fontconfig_dep.found(), section: 'Features')
+summary('Freetype support', freetype_dep.found(), section: 'Features')
+summary('Thai support', thai_dep.found(), section: 'Features')
+summary('Sysprof support', libsysprof_capture_dep.found(), section: 'Features')
+
+summary('Compiler', cc.get_id(), section: 'Toolchain')
+summary('Linker', cc.get_linker_id(), section: 'Toolchain')
+
+summary('Debugging', get_option('debug'), section: 'Build')
+summary('Optimization', get_option('optimization'), section: 'Build')
+summary('Introspection', get_option('introspection').enabled(), section: 'Build')
+summary('Documentation', get_option('gtk_doc'), section: 'Build')
+summary('Install tests', get_option('install-tests'), section: 'Build')
+
+summary('prefix', pango_prefix, section: 'Directories')
+summary('includedir', pango_includedir, section: 'Directories')
+summary('libdir', pango_libdir, section: 'Directories')
+summary('datadir', pango_datadir, section: 'Directories')
