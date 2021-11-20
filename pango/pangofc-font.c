@@ -322,6 +322,8 @@ pango_fc_font_get_coverage (PangoFont     *font,
   return coverage;
 }
 
+static PangoGravity pango_fc_font_key_get_gravity (PangoFcFontKey *key);
+
 /* For Xft, it would be slightly more efficient to simply to
  * call Xft, and also more robust against changes in Xft.
  * But for now, we simply use the same code for all backends.
@@ -336,6 +338,8 @@ get_face_metrics (PangoFcFont      *fcfont,
   hb_font_t *hb_font = pango_font_get_hb_font (PANGO_FONT (fcfont));
   hb_font_extents_t extents;
   hb_position_t position;
+  PangoFcFontKey *key = _pango_fc_font_get_font_key (fcfont);
+  PangoGravity gravity;
 
   FcMatrix *fc_matrix;
   gboolean have_transform = FALSE;
@@ -360,6 +364,14 @@ get_face_metrics (PangoFcFont      *fcfont,
       metrics->descent = - extents.descender;
       metrics->ascent = extents.ascender;
       metrics->height = extents.ascender - extents.descender + extents.line_gap;
+    }
+
+  gravity = pango_fc_font_key_get_gravity (key);
+  if (PANGO_GRAVITY_IS_IMPROPER (gravity))
+    {
+      metrics->descent = - metrics->descent;
+      metrics->ascent = - metrics->ascent;
+      metrics->height = - metrics->height;
     }
 
   metrics->underline_thickness = PANGO_SCALE;
@@ -978,6 +990,7 @@ pango_fc_font_create_hb_font (PangoFont *font)
           x_scale_inv = -x_scale_inv;
           y_scale_inv = -y_scale_inv;
         }
+
       get_font_size (key, &pixel_size, &point_size);
     }
 
