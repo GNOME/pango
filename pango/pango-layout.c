@@ -4107,7 +4107,8 @@ retry_break:
 
       if (break_num_chars == item->num_chars)
         {
-          if (break_needs_hyphen (layout, state, break_num_chars))
+          if (can_break_at (layout, state->start_offset + break_num_chars, wrap) &&
+              break_needs_hyphen (layout, state, break_num_chars))
             item->analysis.flags |= PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
 
           insert_run (line, state, item, NULL, TRUE);
