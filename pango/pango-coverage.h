@@ -101,6 +101,8 @@ PANGO_DEPRECATED_IN_1_44
 PangoCoverage *pango_coverage_from_bytes (guchar         *bytes,
 					  int             n_bytes);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoCoverage, pango_coverage_unref)
+
 G_END_DECLS
 
 #endif /* __PANGO_COVERAGE_H__ */
