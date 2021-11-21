@@ -170,6 +170,8 @@ default_break (const char    *text,
   GUnicodeBreakType prev_break_type;
   GUnicodeBreakType prev_prev_break_type;
 
+  PangoScript prev_script;
+
   /* See Grapheme_Cluster_Break Property Values table of UAX#29 */
   typedef enum
   {
@@ -262,6 +264,7 @@ default_break (const char    *text,
   prev_break_type = G_UNICODE_BREAK_UNKNOWN;
   prev_prev_break_type = G_UNICODE_BREAK_UNKNOWN;
   prev_wc = 0;
+  prev_script = PANGO_SCRIPT_COMMON;
   prev_jamo = NO_JAMO;
   prev_space_or_hyphen = FALSE;
 
@@ -539,7 +542,6 @@ default_break (const char    *text,
       }
 
       script = (PangoScript)g_unichar_get_script (wc);
-
       /* ---- UAX#29 Word Boundaries ---- */
       {
 	is_word_boundary = FALSE;
@@ -1571,9 +1573,11 @@ default_break (const char    *text,
         attrs[i].break_inserts_hyphen = FALSE;
         attrs[i].break_removes_preceding = FALSE;
 
-        switch ((int)script)
+        switch ((int)prev_script)
           {
           case PANGO_SCRIPT_COMMON:
+            insert_hyphens = prev_wc == 0x00ad;
+            break;
           case PANGO_SCRIPT_HAN:
           case PANGO_SCRIPT_HANGUL:
           case PANGO_SCRIPT_HIRAGANA:
@@ -1634,6 +1638,7 @@ default_break (const char    *text,
       }
 
       prev_wc = wc;
+      prev_script = script;
 
       /* wc might not be a valid Unicode base character, but really all we
        * need to know is the last non-combining character */
