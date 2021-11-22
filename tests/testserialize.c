@@ -142,7 +142,7 @@ test_serialize_layout_minimal (void)
 
   bytes = g_bytes_new_static (test, -1);
 
-  layout = pango_layout_deserialize (context, bytes, &error);
+  layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_DEFAULT, &error);
   g_assert_no_error (error);
   g_assert_true (PANGO_IS_LAYOUT (layout));
   g_assert_cmpstr (pango_layout_get_text (layout), ==, "Almost nothing");
@@ -152,7 +152,7 @@ test_serialize_layout_minimal (void)
   g_assert_cmpint (pango_layout_get_alignment (layout), ==, PANGO_ALIGN_LEFT);
   g_assert_cmpint (pango_layout_get_width (layout), ==, -1);
 
-  out_bytes = pango_layout_serialize (layout);
+  out_bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_DEFAULT);
   str = g_bytes_get_data (out_bytes, NULL);
 
   g_assert_cmpstr (str, ==, test);
@@ -215,7 +215,7 @@ test_serialize_layout_valid (void)
 
   bytes = g_bytes_new_static (test, -1);
 
-  layout = pango_layout_deserialize (context, bytes, &error);
+  layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_DEFAULT, &error);
   g_assert_no_error (error);
   g_assert_true (PANGO_IS_LAYOUT (layout));
   g_assert_cmpstr (pango_layout_get_text (layout), ==, "Some fun with layouts!");
@@ -230,7 +230,7 @@ test_serialize_layout_valid (void)
   g_assert_cmpint (pango_layout_get_width (layout), ==, 350000);
   g_assert_cmpfloat_with_epsilon (pango_layout_get_line_spacing (layout), 1.5, 0.0001);
 
-  out_bytes = pango_layout_serialize (layout);
+  out_bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_DEFAULT);
   str = g_bytes_get_data (out_bytes, NULL);
 
   g_assert_cmpstr (str, ==, test);
@@ -299,7 +299,7 @@ test_serialize_layout_invalid (void)
       GError *error = NULL;
 
        bytes = g_bytes_new_static (test[i].json, -1);
-       layout = pango_layout_deserialize (context, bytes, &error);
+       layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_DEFAULT, &error);
        g_assert_null (layout);
        g_assert_error (error, PANGO_LAYOUT_DESERIALIZE_ERROR, test[i].expected_error);
        g_bytes_unref (bytes);

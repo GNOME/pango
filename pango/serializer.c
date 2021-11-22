@@ -830,6 +830,7 @@ fail:
 /**
  * pango_layout_serialize:
  * @layout: a `PangoLayout`
+ * @flags: `PangoLayoutSerializeFlags`
  *
  * Serializes the @layout for later deserialization via [method@Pango.Layout.deserialize].
  *
@@ -845,12 +846,15 @@ fail:
  * Since: 1.50
  */
 GBytes *
-pango_layout_serialize (PangoLayout *layout)
+pango_layout_serialize (PangoLayout               *layout,
+                        PangoLayoutSerializeFlags  flags)
 {
   JsonGenerator *generator;
   JsonNode *node;
   char *data;
   gsize size;
+
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
 
   node = layout_to_json (layout);
 
@@ -870,6 +874,7 @@ pango_layout_serialize (PangoLayout *layout)
 /**
  * pango_layout_write_to_file:
  * @layout: a `PangoLayout`
+ * @flags: `PangoLayoutSerializeFlags`
  * @filename: (type filename): the file to save it to
  * @error: Return location for a potential error
  *
@@ -886,9 +891,10 @@ pango_layout_serialize (PangoLayout *layout)
  * Since: 1.50
  */
 gboolean
-pango_layout_write_to_file (PangoLayout  *layout,
-                            const char   *filename,
-                            GError      **error)
+pango_layout_write_to_file (PangoLayout                *layout,
+                            PangoLayoutSerializeFlags   flags,
+                            const char                 *filename,
+                            GError                    **error)
 {
   GBytes *bytes;
   gboolean result;
@@ -897,7 +903,7 @@ pango_layout_write_to_file (PangoLayout  *layout,
   g_return_val_if_fail (filename != NULL, FALSE);
   g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
-  bytes = pango_layout_serialize (layout);
+  bytes = pango_layout_serialize (layout, flags);
   result = g_file_set_contents (filename,
                                 g_bytes_get_data (bytes, NULL),
                                 g_bytes_get_size (bytes),
@@ -911,6 +917,7 @@ pango_layout_write_to_file (PangoLayout  *layout,
 /**
  * pango_layout_deserialize:
  * @context: a `PangoContext`
+ * @flags: `PangoLayoutDeserializeFlags`
  * @bytes: the bytes containing the data
  * @error: return location for an error
  *
@@ -923,13 +930,16 @@ pango_layout_write_to_file (PangoLayout  *layout,
  * Since: 1.50
  */
 PangoLayout *
-pango_layout_deserialize (PangoContext  *context,
-                          GBytes        *bytes,
-                          GError       **error)
+pango_layout_deserialize (PangoContext                 *context,
+                          GBytes                       *bytes,
+                          PangoLayoutDeserializeFlags   flags,
+                          GError                      **error)
 {
   JsonParser *parser;
   JsonNode *node;
   PangoLayout *layout;
+
+  g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
 
   parser = json_parser_new_immutable ();
   if (!json_parser_load_from_data (parser,

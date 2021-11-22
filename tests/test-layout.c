@@ -236,7 +236,7 @@ test_file (const char *filename, GString *string)
 
   bytes = g_bytes_new_take (contents, length);
 
-  layout = pango_layout_deserialize (context, bytes, &error);
+  layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_DEFAULT, &error);
   g_assert_no_error (error);
 
   g_bytes_unref (bytes);

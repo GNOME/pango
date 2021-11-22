@@ -115,7 +115,7 @@ make_layout(PangoContext *context,
       if (!g_file_get_contents (file_arg, &text, &len, &error))
         fail ("%s\n", error->message);
       bytes = g_bytes_new_take (text, size);
-      layout = pango_layout_deserialize (context, bytes, &error);
+      layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_DEFAULT, &error);
       if (!layout)
         fail ("%s\n", error->message);
       g_bytes_unref (bytes);

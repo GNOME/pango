@@ -351,8 +351,28 @@ GSList *         pango_layout_get_lines            (PangoLayout    *layout);
 PANGO_AVAILABLE_IN_1_16
 GSList *         pango_layout_get_lines_readonly   (PangoLayout    *layout);
 
+/**
+ * PangoLayoutSerializeFlags:
+ * @PANGO_LAYOUT_SERIALIZE_DEFAULT: Default behavior
+ *
+ * Flags that influence the behavior of [method@Pango.Layout.serialize].
+ *
+ * New members may be added to this enumeration over time.
+ */
+typedef enum {
+  PANGO_LAYOUT_SERIALIZE_DEFAULT = 0,
+} PangoLayoutSerializeFlags;
+
 PANGO_AVAILABLE_IN_1_50
-GBytes *        pango_layout_serialize             (PangoLayout    *layout);
+GBytes *        pango_layout_serialize             (PangoLayout                *layout,
+                                                    PangoLayoutSerializeFlags   flags);
+
+PANGO_AVAILABLE_IN_1_50
+gboolean        pango_layout_write_to_file         (PangoLayout                 *layout,
+                                                    PangoLayoutSerializeFlags   flags,
+
+                                                    const char                  *filename,
+                                                    GError                     **error);
 
 #define PANGO_LAYOUT_DESERIALIZE_ERROR (pango_layout_deserialize_error_quark ())
 
@@ -379,15 +399,23 @@ typedef enum {
 PANGO_AVAILABLE_IN_1_50
 GQuark          pango_layout_deserialize_error_quark (void);
 
+/**
+ * PangoLayoutDeserializeFlags:
+ * @PANGO_LAYOUT_DESERIALIZE_DEFAULT: Default behavior
+ *
+ * Flags that influence the behavior of [method@Pango.Layout.deserialize].
+ *
+ * New members may be added to this enumeration over time.
+ */
+typedef enum {
+  PANGO_LAYOUT_DESERIALIZE_DEFAULT = 0,
+} PangoLayoutDeserializeFlags;
+
 PANGO_AVAILABLE_IN_1_50
 PangoLayout *   pango_layout_deserialize           (PangoContext                 *context,
                                                     GBytes                       *bytes,
+                                                    PangoLayoutDeserializeFlags   flags,
                                                     GError                      **error);
-
-PANGO_AVAILABLE_IN_1_50
-gboolean        pango_layout_write_to_file          (PangoLayout   *layout,
-                                                     const char    *filename,
-                                                     GError       **error);
 
 
 #define PANGO_TYPE_LAYOUT_LINE (pango_layout_line_get_type ())
