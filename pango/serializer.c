@@ -178,9 +178,17 @@ add_attr_list (JsonBuilder   *builder,
 {
   GSList *attributes, *l;
 
-  json_builder_begin_array (builder);
+  if (!attrs)
+    return;
 
   attributes = pango_attr_list_get_attributes (attrs);
+
+  if (!attributes)
+    return;
+
+  json_builder_set_member_name (builder, "attributes");
+  json_builder_begin_array (builder);
+
   for (l = attributes; l; l = l->next)
     {
       PangoAttribute *attr = l->data;
@@ -195,6 +203,11 @@ static void
 add_tab_array (JsonBuilder   *builder,
                PangoTabArray *tabs)
 {
+  if (!tabs || pango_tab_array_get_size (tabs) == 0)
+    return;
+
+  json_builder_set_member_name (builder, "tabs");
+
   json_builder_begin_object (builder);
 
   json_builder_set_member_name (builder, "positions-in-pixels");
@@ -266,11 +279,7 @@ layout_to_json (PangoLayout               *layout,
   json_builder_set_member_name (builder, "text");
   json_builder_add_string_value (builder, layout->text);
 
-  if (layout->attrs)
-    {
-      json_builder_set_member_name (builder, "attributes");
-      add_attr_list (builder, layout->attrs);
-    }
+  add_attr_list (builder, layout->attrs);
 
   if (layout->font_desc)
     {
@@ -280,11 +289,7 @@ layout_to_json (PangoLayout               *layout,
       g_free (str);
     }
 
-  if (layout->tabs)
-    {
-      json_builder_set_member_name (builder, "tabs");
-      add_tab_array (builder, layout->tabs);
-    }
+  add_tab_array (builder, layout->tabs);
 
   if (layout->justify)
     {
