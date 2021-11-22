@@ -229,12 +229,21 @@ static void
 add_context (JsonBuilder  *builder,
              PangoContext *context)
 {
+  char *str;
+  const PangoMatrix *matrix;
+  PangoMatrix identity = PANGO_MATRIX_INIT;
+
   json_builder_begin_object (builder);
 
   /* Note: since we don't create the context when deserializing,
    * we don't strip out default values here to ensure that the
    * context gets updated as expected.
    */
+
+  str = pango_font_description_to_string (context->font_desc);
+  json_builder_set_member_name (builder, "font");
+  json_builder_add_string_value (builder, str);
+  g_free (str);
 
   if (context->set_language)
     {
@@ -254,7 +263,19 @@ add_context (JsonBuilder  *builder,
   json_builder_set_member_name (builder, "round-glyph-positions");
   json_builder_add_boolean_value (builder, context->round_glyph_positions);
 
-  /* FIXME transform */
+  json_builder_set_member_name (builder, "transform");
+  matrix = pango_context_get_matrix (context);
+  if (!matrix)
+    matrix = &identity;
+
+  json_builder_begin_array (builder);
+  json_builder_add_double_value (builder, matrix->xx);
+  json_builder_add_double_value (builder, matrix->xy);
+  json_builder_add_double_value (builder, matrix->yx);
+  json_builder_add_double_value (builder, matrix->yy);
+  json_builder_add_double_value (builder, matrix->x0);
+  json_builder_add_double_value (builder, matrix->y0);
+  json_builder_end_array (builder);
 
   json_builder_end_object (builder);
 }
@@ -636,6 +657,8 @@ json_to_attr_list (JsonReader  *reader,
 {
   PangoAttrList *attributes;
 
+  attributes = pango_attr_list_new ();
+
   if (!json_reader_is_array (reader))
     {
       g_set_error (error,
@@ -644,8 +667,6 @@ json_to_attr_list (JsonReader  *reader,
                    "\"attributes\" must be a Json array");
       goto fail;
     }
-
-  attributes = pango_attr_list_new ();
 
   for (int i = 0; i < json_reader_count_elements (reader); i++)
     {
@@ -726,6 +747,16 @@ apply_json_to_context (JsonReader    *reader,
     }
   json_reader_end_member (reader);
 
+  if (json_reader_read_member (reader, "font"))
+    {
+      PangoFontDescription *desc;
+
+      desc = pango_font_description_from_string (json_reader_get_string_value (reader));
+      pango_context_set_font_description (context, desc);
+      pango_font_description_free (desc);
+    }
+  json_reader_end_member (reader);
+
   if (json_reader_read_member (reader, "base-gravity"))
     {
       PangoGravity gravity = get_enum_value (PANGO_TYPE_GRAVITY,
@@ -768,6 +799,33 @@ apply_json_to_context (JsonReader    *reader,
   if (json_reader_read_member (reader, "round-glyph-positions"))
     {
       pango_context_set_round_glyph_positions (context, json_reader_get_boolean_value (reader));
+    }
+  json_reader_end_member (reader);
+
+  if (json_reader_read_member (reader, "transform"))
+    {
+      PangoMatrix m;
+
+      json_reader_read_element (reader, 0);
+      m.xx = json_reader_get_double_value (reader);
+      json_reader_end_element (reader);
+      json_reader_read_element (reader, 1);
+      m.xy = json_reader_get_double_value (reader);
+      json_reader_end_element (reader);
+      json_reader_read_element (reader, 2);
+      m.yx = json_reader_get_double_value (reader);
+      json_reader_end_element (reader);
+      json_reader_read_element (reader, 3);
+      m.yy = json_reader_get_double_value (reader);
+      json_reader_end_element (reader);
+      json_reader_read_element (reader, 4);
+      m.x0 = json_reader_get_double_value (reader);
+      json_reader_end_element (reader);
+      json_reader_read_element (reader, 5);
+      m.y0 = json_reader_get_double_value (reader);
+      json_reader_end_element (reader);
+
+      pango_context_set_matrix (context, &m);
     }
   json_reader_end_member (reader);
 

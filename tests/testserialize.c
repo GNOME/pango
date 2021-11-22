@@ -247,12 +247,12 @@ test_serialize_layout_context (void)
 {
   const char *test =
     "{\n"
-    "  \"text\" : \"Some fun with layouts!\",\n"
     "  \"context\" : {\n"
     "    \"base-gravity\" : \"east\",\n"
     "    \"language\" : \"de-de\",\n"
     "    \"round-glyph-positions\" : \"false\"\n"
-    "  }\n"
+    "  },\n"
+    "  \"text\" : \"Some fun with layouts!\"\n"
     "}";
 
   PangoContext *context;
