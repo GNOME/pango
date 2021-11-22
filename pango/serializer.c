@@ -29,7 +29,7 @@
 
 /* {{{ Error handling */
 
-G_DEFINE_QUARK(pango-layout-serialize-error-quark, pango_layout_serialize_error)
+G_DEFINE_QUARK(pango-layout-deserialize-error-quark, pango_layout_deserialize_error)
 
 /* }}} */
 /* {{{ Serialization */
@@ -368,7 +368,8 @@ json_to_attribute (JsonReader  *reader,
   if (!json_reader_is_object (reader))
     {
       g_set_error (error,
-                   PANGO_LAYOUT_SERIALIZE_ERROR, PANGO_LAYOUT_SERIALIZE_INVALID_SYNTAX,
+                   PANGO_LAYOUT_DESERIALIZE_ERROR,
+                   PANGO_LAYOUT_DESERIALIZE_INVALID_SYNTAX,
                    "Attribute must be a Json object");
       return NULL;
     }
@@ -387,7 +388,8 @@ json_to_attribute (JsonReader  *reader,
       if (type == -1 || type == PANGO_ATTR_INVALID)
         {
           g_set_error (error,
-                       PANGO_LAYOUT_SERIALIZE_ERROR, PANGO_LAYOUT_SERIALIZE_INVALID_VALUE,
+                       PANGO_LAYOUT_DESERIALIZE_ERROR,
+                       PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
                        "Attribute \"type\" invalid: %s",
                        json_reader_get_string_value (reader));
           return NULL;
@@ -397,7 +399,8 @@ json_to_attribute (JsonReader  *reader,
   else
     {
       g_set_error (error,
-                   PANGO_LAYOUT_SERIALIZE_ERROR, PANGO_LAYOUT_SERIALIZE_MISSING_VALUE,
+                   PANGO_LAYOUT_DESERIALIZE_ERROR,
+                   PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE,
                    "Attribute \"type\" missing");
       json_reader_end_member (reader);
       return NULL;
@@ -406,7 +409,8 @@ json_to_attribute (JsonReader  *reader,
   if (!json_reader_read_member (reader, "value"))
     {
       g_set_error (error,
-                   PANGO_LAYOUT_SERIALIZE_ERROR, PANGO_LAYOUT_SERIALIZE_MISSING_VALUE,
+                   PANGO_LAYOUT_DESERIALIZE_ERROR,
+                   PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE,
                    "Attribute \"value\" missing");
       json_reader_end_member (reader);
       return NULL;
@@ -556,7 +560,8 @@ json_to_attr_list (JsonReader  *reader,
   if (!json_reader_is_array (reader))
     {
       g_set_error (error,
-                   PANGO_LAYOUT_SERIALIZE_ERROR, PANGO_LAYOUT_SERIALIZE_INVALID_SYNTAX,
+                   PANGO_LAYOUT_DESERIALIZE_ERROR,
+                   PANGO_LAYOUT_DESERIALIZE_INVALID_SYNTAX,
                    "\"attributes\" must be a Json array");
       goto fail;
     }
@@ -600,8 +605,8 @@ json_to_tab_array (JsonReader  *reader,
       if (!json_reader_is_array (reader))
         {
           g_set_error (error,
-                       PANGO_LAYOUT_SERIALIZE_ERROR,
-                       PANGO_LAYOUT_SERIALIZE_INVALID_SYNTAX,
+                       PANGO_LAYOUT_DESERIALIZE_ERROR,
+                       PANGO_LAYOUT_DESERIALIZE_INVALID_SYNTAX,
                        "Tab \"positions\"  must be a Json array");
           goto fail;
         }
@@ -640,8 +645,8 @@ json_to_layout (PangoContext *context,
   if (!json_reader_is_object (reader))
     {
       g_set_error (error,
-                   PANGO_LAYOUT_SERIALIZE_ERROR,
-                   PANGO_LAYOUT_SERIALIZE_INVALID_SYNTAX,
+                   PANGO_LAYOUT_DESERIALIZE_ERROR,
+                   PANGO_LAYOUT_DESERIALIZE_INVALID_SYNTAX,
                    "Layout must be a Json object");
       goto fail;
     }
@@ -672,8 +677,8 @@ json_to_layout (PangoContext *context,
       if (!desc)
         {
           g_set_error (error,
-                       PANGO_LAYOUT_SERIALIZE_ERROR,
-                       PANGO_LAYOUT_SERIALIZE_INVALID_VALUE,
+                       PANGO_LAYOUT_DESERIALIZE_ERROR,
+                       PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
                        "Could not parse \"font\" value: %s",
                        json_reader_get_string_value (reader));
           goto fail;
@@ -721,8 +726,8 @@ json_to_layout (PangoContext *context,
       if (align == -1)
         {
           g_set_error (error,
-                       PANGO_LAYOUT_SERIALIZE_ERROR,
-                       PANGO_LAYOUT_SERIALIZE_INVALID_VALUE,
+                       PANGO_LAYOUT_DESERIALIZE_ERROR,
+                       PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
                        "Could not parse \"alignment\" value: %s",
                        json_reader_get_string_value (reader));
           goto fail;
@@ -742,8 +747,8 @@ json_to_layout (PangoContext *context,
       if (wrap == -1)
         {
           g_set_error (error,
-                       PANGO_LAYOUT_SERIALIZE_ERROR,
-                       PANGO_LAYOUT_SERIALIZE_INVALID_VALUE,
+                       PANGO_LAYOUT_DESERIALIZE_ERROR,
+                       PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
                        "Could not parse \"wrap\" value: %s",
                        json_reader_get_string_value (reader));
           goto fail;
@@ -763,8 +768,8 @@ json_to_layout (PangoContext *context,
       if (ellipsize == -1)
         {
           g_set_error (error,
-                       PANGO_LAYOUT_SERIALIZE_ERROR,
-                       PANGO_LAYOUT_SERIALIZE_INVALID_VALUE,
+                       PANGO_LAYOUT_DESERIALIZE_ERROR,
+                       PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
                        "Could not parse \"ellipsize\" value: %s",
                        json_reader_get_string_value (reader));
           goto fail;

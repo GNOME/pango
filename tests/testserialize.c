@@ -257,7 +257,7 @@ test_serialize_layout_invalid (void)
       "    }\n"
       "  ]\n"
       "}",
-      PANGO_LAYOUT_SERIALIZE_INVALID_VALUE
+      PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE
     },
     {
       "{\n"
@@ -267,7 +267,7 @@ test_serialize_layout_invalid (void)
       "    }\n"
       "  ]\n"
       "}",
-      PANGO_LAYOUT_SERIALIZE_MISSING_VALUE
+      PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE
     },
     {
       "{\n"
@@ -278,13 +278,13 @@ test_serialize_layout_invalid (void)
       "    }\n"
       "  ]\n"
       "}",
-      PANGO_LAYOUT_SERIALIZE_INVALID_VALUE
+      PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE
     },
     {
       "{\n"
       "  \"alignment\" : \"nonsense\"\n"
       "}",
-      PANGO_LAYOUT_SERIALIZE_INVALID_VALUE
+      PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE
     }
   };
 
@@ -301,7 +301,7 @@ test_serialize_layout_invalid (void)
        bytes = g_bytes_new_static (test[i].json, -1);
        layout = pango_layout_deserialize (context, bytes, &error);
        g_assert_null (layout);
-       g_assert_error (error, PANGO_LAYOUT_SERIALIZE_ERROR, test[i].expected_error);
+       g_assert_error (error, PANGO_LAYOUT_DESERIALIZE_ERROR, test[i].expected_error);
        g_bytes_unref (bytes);
        g_clear_error (&error);
     }
