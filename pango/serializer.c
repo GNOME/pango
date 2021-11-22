@@ -328,9 +328,10 @@ layout_to_json (PangoLayout *layout)
 /* {{{ Deserialization */
 
 static int
-get_enum_value (GType       type,
-                const char *str,
-                gboolean    allow_extra)
+get_enum_value (GType        type,
+                const char  *str,
+                gboolean     allow_extra,
+                GError     **error)
 {
   GEnumClass *enum_class;
   GEnumValue *enum_value;
@@ -351,6 +352,13 @@ get_enum_value (GType       type,
         return value;
     }
 
+  g_set_error (error,
+               PANGO_LAYOUT_DESERIALIZE_ERROR,
+               PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
+               "Could not parse enum value of type %s: %s",
+               g_type_name (type),
+               str);
+
   return -1;
 }
 
@@ -364,6 +372,7 @@ json_to_attribute (JsonReader  *reader,
   guint end = PANGO_ATTR_INDEX_TO_TEXT_END;
   PangoFontDescription *desc;
   PangoColor color;
+  int value;
 
   if (!json_reader_is_object (reader))
     {
@@ -384,17 +393,9 @@ json_to_attribute (JsonReader  *reader,
 
   if (json_reader_read_member (reader, "type"))
     {
-      type = get_enum_value (PANGO_TYPE_ATTR_TYPE, json_reader_get_string_value (reader), FALSE);
-      if (type == -1 || type == PANGO_ATTR_INVALID)
-        {
-          g_set_error (error,
-                       PANGO_LAYOUT_DESERIALIZE_ERROR,
-                       PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
-                       "Attribute \"type\" invalid: %s",
-                       json_reader_get_string_value (reader));
-          return NULL;
-        }
-      json_reader_end_member (reader);
+      type = get_enum_value (PANGO_TYPE_ATTR_TYPE, json_reader_get_string_value (reader), FALSE, error);
+      if (type == -1)
+        return NULL;
     }
   else
     {
@@ -402,9 +403,9 @@ json_to_attribute (JsonReader  *reader,
                    PANGO_LAYOUT_DESERIALIZE_ERROR,
                    PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE,
                    "Attribute \"type\" missing");
-      json_reader_end_member (reader);
       return NULL;
     }
+  json_reader_end_member (reader);
 
   if (!json_reader_read_member (reader, "value"))
     {
@@ -412,7 +413,6 @@ json_to_attribute (JsonReader  *reader,
                    PANGO_LAYOUT_DESERIALIZE_ERROR,
                    PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE,
                    "Attribute \"value\" missing");
-      json_reader_end_member (reader);
       return NULL;
     }
 
@@ -429,16 +429,27 @@ json_to_attribute (JsonReader  *reader,
       attr = pango_attr_family_new (json_reader_get_string_value (reader));
       break;
     case PANGO_ATTR_STYLE:
-      attr = pango_attr_style_new (get_enum_value (PANGO_TYPE_STYLE, json_reader_get_string_value (reader), FALSE));
+      value = get_enum_value (PANGO_TYPE_STYLE, json_reader_get_string_value (reader), FALSE, error);
+      if (value == -1)
+        return NULL;
+      attr = pango_attr_style_new ((PangoStyle)value);
       break;
     case PANGO_ATTR_WEIGHT:
-      attr = pango_attr_weight_new (get_enum_value (PANGO_TYPE_WEIGHT, json_reader_get_string_value (reader), TRUE));
+      value = get_enum_value (PANGO_TYPE_WEIGHT, json_reader_get_string_value (reader), TRUE, error);
+      if (value == -1)
+        return NULL;
+      attr = pango_attr_weight_new (value);
       break;
     case PANGO_ATTR_VARIANT:
-      attr = pango_attr_variant_new (get_enum_value (PANGO_TYPE_VARIANT, json_reader_get_string_value (reader), FALSE));
+      value = get_enum_value (PANGO_TYPE_VARIANT, json_reader_get_string_value (reader), FALSE, error);
+      if (value == -1)
+        return NULL;
+      attr = pango_attr_variant_new ((PangoVariant)value);
       break;
     case PANGO_ATTR_STRETCH:
-      attr = pango_attr_stretch_new (get_enum_value (PANGO_TYPE_STRETCH, json_reader_get_string_value (reader), FALSE));
+      value = get_enum_value (PANGO_TYPE_STRETCH, json_reader_get_string_value (reader), FALSE, error);
+      if (value == -1)
+      attr = pango_attr_stretch_new ((PangoStretch)value);
       break;
     case PANGO_ATTR_SIZE:
       attr = pango_attr_size_new (json_reader_get_int_value (reader));
@@ -457,7 +468,10 @@ json_to_attribute (JsonReader  *reader,
       attr = pango_attr_background_new (color.red, color.green, color.blue);
       break;
     case PANGO_ATTR_UNDERLINE:
-      attr = pango_attr_underline_new (get_enum_value (PANGO_TYPE_UNDERLINE, json_reader_get_string_value (reader), FALSE));
+      value = get_enum_value (PANGO_TYPE_UNDERLINE, json_reader_get_string_value (reader), FALSE, error);
+      if (value == -1)
+        return NULL;
+      attr = pango_attr_underline_new ((PangoUnderline)value);
       break;
     case PANGO_ATTR_STRIKETHROUGH:
       attr = pango_attr_strikethrough_new (json_reader_get_boolean_value (reader));
@@ -490,10 +504,16 @@ json_to_attribute (JsonReader  *reader,
       attr = pango_attr_size_new_absolute (json_reader_get_int_value (reader));
       break;
     case PANGO_ATTR_GRAVITY:
-      attr = pango_attr_gravity_new (get_enum_value (PANGO_TYPE_GRAVITY, json_reader_get_string_value (reader), FALSE));
+      value = get_enum_value (PANGO_TYPE_GRAVITY, json_reader_get_string_value (reader), FALSE, error);
+      if (value == -1)
+        return NULL;
+      attr = pango_attr_gravity_new ((PangoGravity)value);
       break;
     case PANGO_ATTR_GRAVITY_HINT:
-      attr = pango_attr_gravity_hint_new (get_enum_value (PANGO_TYPE_GRAVITY_HINT, json_reader_get_string_value (reader), FALSE));
+      value = get_enum_value (PANGO_TYPE_GRAVITY_HINT, json_reader_get_string_value (reader), FALSE, error);
+      if (value == -1)
+        return NULL;
+      attr = pango_attr_gravity_hint_new ((PangoGravityHint)value);
       break;
     case PANGO_ATTR_FONT_FEATURES:
       attr = pango_attr_font_features_new (json_reader_get_string_value (reader));
@@ -514,7 +534,10 @@ json_to_attribute (JsonReader  *reader,
       attr = pango_attr_insert_hyphens_new (json_reader_get_boolean_value (reader));
       break;
     case PANGO_ATTR_OVERLINE:
-      attr = pango_attr_overline_new (get_enum_value (PANGO_TYPE_OVERLINE, json_reader_get_string_value (reader), FALSE));
+      value = get_enum_value (PANGO_TYPE_OVERLINE, json_reader_get_string_value (reader), FALSE, error);
+      if (value == -1)
+        return NULL;
+      attr = pango_attr_overline_new ((PangoOverline)value);
       break;
     case PANGO_ATTR_OVERLINE_COLOR:
       pango_color_parse (&color, json_reader_get_string_value (reader));
@@ -527,7 +550,10 @@ json_to_attribute (JsonReader  *reader,
       attr = pango_attr_line_height_new_absolute (json_reader_get_int_value (reader));
       break;
     case PANGO_ATTR_TEXT_TRANSFORM:
-      attr = pango_attr_text_transform_new (get_enum_value (PANGO_TYPE_TEXT_TRANSFORM, json_reader_get_string_value (reader), FALSE));
+      value = get_enum_value (PANGO_TYPE_TEXT_TRANSFORM, json_reader_get_string_value (reader), FALSE, error);
+      if (value == -1)
+        return NULL;
+      attr = pango_attr_text_transform_new ((PangoTextTransform)value);
       break;
     case PANGO_ATTR_WORD:
       attr = pango_attr_word_new ();
@@ -536,10 +562,16 @@ json_to_attribute (JsonReader  *reader,
       attr = pango_attr_sentence_new ();
       break;
     case PANGO_ATTR_BASELINE_SHIFT:
-      attr = pango_attr_baseline_shift_new (get_enum_value (PANGO_TYPE_BASELINE_SHIFT, json_reader_get_string_value (reader), TRUE));
+      value = get_enum_value (PANGO_TYPE_BASELINE_SHIFT, json_reader_get_string_value (reader), TRUE, error);
+      if (value == -1)
+        return NULL;
+      attr = pango_attr_baseline_shift_new (value);
       break;
     case PANGO_ATTR_FONT_SCALE:
-      attr = pango_attr_font_scale_new (get_enum_value (PANGO_TYPE_BASELINE_SHIFT, json_reader_get_string_value (reader), FALSE));
+      value = get_enum_value (PANGO_TYPE_FONT_SCALE, json_reader_get_string_value (reader), FALSE, error);
+      if (value == -1)
+        return NULL;
+      attr = pango_attr_font_scale_new ((PangoFontScale)value);
       break;
     }
 
@@ -722,16 +754,10 @@ json_to_layout (PangoContext *context,
     {
       PangoAlignment align = get_enum_value (PANGO_TYPE_ALIGNMENT,
                                              json_reader_get_string_value (reader),
-                                             FALSE);
+                                             FALSE,
+                                             error);
       if (align == -1)
-        {
-          g_set_error (error,
-                       PANGO_LAYOUT_DESERIALIZE_ERROR,
-                       PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
-                       "Could not parse \"alignment\" value: %s",
-                       json_reader_get_string_value (reader));
-          goto fail;
-        }
+        goto fail;
 
       pango_layout_set_alignment (layout, align);
     }
@@ -742,17 +768,11 @@ json_to_layout (PangoContext *context,
     {
       PangoWrapMode wrap = get_enum_value (PANGO_TYPE_WRAP_MODE,
                                            json_reader_get_string_value (reader),
-                                           FALSE);
+                                           FALSE,
+                                           error);
 
       if (wrap == -1)
-        {
-          g_set_error (error,
-                       PANGO_LAYOUT_DESERIALIZE_ERROR,
-                       PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
-                       "Could not parse \"wrap\" value: %s",
-                       json_reader_get_string_value (reader));
-          goto fail;
-        }
+        goto fail;
 
       pango_layout_set_wrap (layout, wrap);
     }
@@ -763,17 +783,11 @@ json_to_layout (PangoContext *context,
     {
       PangoEllipsizeMode ellipsize = get_enum_value (PANGO_TYPE_ELLIPSIZE_MODE,
                                                      json_reader_get_string_value (reader),
-                                                     FALSE);
+                                                     FALSE,
+                                                     error);
 
       if (ellipsize == -1)
-        {
-          g_set_error (error,
-                       PANGO_LAYOUT_DESERIALIZE_ERROR,
-                       PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
-                       "Could not parse \"ellipsize\" value: %s",
-                       json_reader_get_string_value (reader));
-          goto fail;
-        }
+        goto fail;
 
       pango_layout_set_ellipsize (layout, ellipsize);
     }
