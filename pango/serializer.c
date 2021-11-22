@@ -23,6 +23,7 @@
 
 #include <pango/pango-layout.h>
 #include <pango/pango-layout-private.h>
+#include <pango/pango-context-private.h>
 #include <pango/pango-enum-types.h>
 
 #include <json-glib/json-glib.h>
@@ -211,8 +212,43 @@ add_tab_array (JsonBuilder   *builder,
   json_builder_end_object (builder);
 }
 
+static void
+add_context (JsonBuilder  *builder,
+             PangoContext *context)
+{
+  json_builder_begin_object (builder);
+
+  /* Note: since we don't create the context when deserializing,
+   * we don't strip out default values here to ensure that the
+   * context gets updated as expected.
+   */
+
+  if (context->set_language)
+    {
+      json_builder_set_member_name (builder, "language");
+      json_builder_add_string_value (builder, pango_language_to_string (context->set_language));
+    }
+
+  json_builder_set_member_name (builder, "base-gravity");
+  add_enum_value (builder, PANGO_TYPE_GRAVITY, context->base_gravity, FALSE);
+
+  json_builder_set_member_name (builder, "gravity-hint");
+  add_enum_value (builder, PANGO_TYPE_GRAVITY_HINT, context->gravity_hint, FALSE);
+
+  json_builder_set_member_name (builder, "direction");
+  add_enum_value (builder, PANGO_TYPE_DIRECTION, context->base_dir, FALSE);
+
+  json_builder_set_member_name (builder, "round-glyph-positions");
+  json_builder_add_boolean_value (builder, context->round_glyph_positions);
+
+  /* FIXME transform */
+
+  json_builder_end_object (builder);
+}
+
 static JsonNode *
-layout_to_json (PangoLayout *layout)
+layout_to_json (PangoLayout               *layout,
+                PangoLayoutSerializeFlags  flags)
 {
   JsonBuilder *builder;
   JsonNode *root;
@@ -220,6 +256,12 @@ layout_to_json (PangoLayout *layout)
   builder = json_builder_new_immutable ();
 
   json_builder_begin_object (builder);
+
+  if (flags & PANGO_LAYOUT_SERIALIZE_CONTEXT)
+    {
+      json_builder_set_member_name (builder, "context");
+      add_context (builder, layout->context);
+    }
 
   json_builder_set_member_name (builder, "text");
   json_builder_add_string_value (builder, layout->text);
@@ -663,15 +705,78 @@ fail:
   return NULL;
 }
 
+static gboolean
+apply_json_to_context (JsonReader    *reader,
+                       PangoContext  *context,
+                       GError       **error)
+{
+  if (json_reader_read_member (reader, "language"))
+    {
+      const char *value;
+      PangoLanguage *language;
+
+      value = json_reader_get_string_value (reader);
+      language = pango_language_from_string (value);
+      pango_context_set_language (context, language);
+    }
+  json_reader_end_member (reader);
+
+  if (json_reader_read_member (reader, "base-gravity"))
+    {
+      PangoGravity gravity = get_enum_value (PANGO_TYPE_GRAVITY,
+                                             json_reader_get_string_value (reader),
+                                             FALSE,
+                                             error);
+      if (gravity == -1)
+        return FALSE;
+
+      pango_context_set_base_gravity (context, gravity);
+    }
+  json_reader_end_member (reader);
+
+  if (json_reader_read_member (reader, "gravity-hint"))
+    {
+      PangoGravityHint gravity_hint = get_enum_value (PANGO_TYPE_GRAVITY_HINT,
+                                                      json_reader_get_string_value (reader),
+                                                      FALSE,
+                                                      error);
+      if (gravity_hint == -1)
+        return FALSE;
+
+      pango_context_set_gravity_hint (context, gravity_hint);
+    }
+  json_reader_end_member (reader);
+
+  if (json_reader_read_member (reader, "base-dir"))
+    {
+      PangoDirection direction = get_enum_value (PANGO_TYPE_DIRECTION,
+                                                 json_reader_get_string_value (reader),
+                                                 FALSE,
+                                                 error);
+      if (direction == -1)
+        return FALSE;
+
+      pango_context_set_base_dir (context, direction);
+    }
+  json_reader_end_member (reader);
+
+  if (json_reader_read_member (reader, "round-glyph-positions"))
+    {
+      pango_context_set_round_glyph_positions (context, json_reader_get_boolean_value (reader));
+    }
+  json_reader_end_member (reader);
+
+  return TRUE;
+}
+
 static PangoLayout *
-json_to_layout (PangoContext *context,
-                JsonNode     *node,
-                GError      **error)
+json_to_layout (PangoContext                 *context,
+                JsonNode                     *node,
+                PangoLayoutDeserializeFlags   flags,
+                GError                      **error)
 {
   JsonReader *reader;
   PangoLayout *layout;
-
-  layout = pango_layout_new (context);
 
   reader = json_reader_new (node);
   if (!json_reader_is_object (reader))
@@ -682,6 +787,18 @@ json_to_layout (PangoContext *context,
                    "Layout must be a Json object");
       goto fail;
     }
+
+  if (flags & PANGO_LAYOUT_DESERIALIZE_CONTEXT)
+    {
+      if (json_reader_read_member (reader, "context"))
+        {
+          if (!apply_json_to_context (reader, context, error))
+            goto fail;
+        }
+      json_reader_end_member (reader);
+    }
+
+  layout = pango_layout_new (context);
 
   if (json_reader_read_member (reader, "text"))
     pango_layout_set_text (layout, json_reader_get_string_value (reader), -1);
@@ -711,7 +828,8 @@ json_to_layout (PangoContext *context,
           g_set_error (error,
                        PANGO_LAYOUT_DESERIALIZE_ERROR,
                        PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
-                       "Could not parse \"font\" value: %s",
+                       "Could not parse \"%s\" value: %s",
+                       "font",
                        json_reader_get_string_value (reader));
           goto fail;
         }
@@ -820,7 +938,8 @@ json_to_layout (PangoContext *context,
 
 fail:
   g_object_unref (reader);
-  g_object_unref (layout);
+  if (layout)
+    g_object_unref (layout);
   return NULL;
 }
 
@@ -856,7 +975,7 @@ pango_layout_serialize (PangoLayout               *layout,
 
   g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
 
-  node = layout_to_json (layout);
+  node = layout_to_json (layout, flags);
 
   generator = json_generator_new ();
   json_generator_set_pretty (generator, TRUE);
@@ -952,7 +1071,7 @@ pango_layout_deserialize (PangoContext                 *context,
     }
 
   node = json_parser_get_root (parser);
-  layout = json_to_layout (context, node, error);
+  layout = json_to_layout (context, node, flags, error);
 
   g_object_unref (parser);
 

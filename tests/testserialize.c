@@ -243,6 +243,42 @@ test_serialize_layout_valid (void)
 }
 
 static void
+test_serialize_layout_context (void)
+{
+  const char *test =
+    "{\n"
+    "  \"text\" : \"Some fun with layouts!\",\n"
+    "  \"context\" : {\n"
+    "    \"base-gravity\" : \"east\",\n"
+    "    \"language\" : \"de-de\",\n"
+    "    \"round-glyph-positions\" : \"false\"\n"
+    "  }\n"
+    "}";
+
+  PangoContext *context;
+  GBytes *bytes;
+  PangoLayout *layout;
+  GError *error = NULL;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
+  bytes = g_bytes_new_static (test, -1);
+
+  layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_CONTEXT, &error);
+  g_assert_no_error (error);
+  g_assert_true (PANGO_IS_LAYOUT (layout));
+  g_assert_cmpstr (pango_layout_get_text (layout), ==, "Some fun with layouts!");
+
+  g_assert_cmpint (pango_context_get_base_gravity (context), ==, PANGO_GRAVITY_EAST);
+  g_assert_true (pango_context_get_language (context) == pango_language_from_string ("de-de"));
+  g_assert_false (pango_context_get_round_glyph_positions (context));
+
+  g_object_unref (layout);
+  g_bytes_unref (bytes);
+  g_object_unref (context);
+}
+
+static void
 test_serialize_layout_invalid (void)
 {
   struct {
@@ -285,6 +321,14 @@ test_serialize_layout_invalid (void)
       "  \"alignment\" : \"nonsense\"\n"
       "}",
       PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE
+    },
+    {
+      "{\n"
+      "  \"attributes\" : {\n"
+      "    \"name\" : \"This is wrong\"\n"
+      "  }\n"
+      "}",
+      PANGO_LAYOUT_DESERIALIZE_INVALID_SYNTAX
     }
   };
 
@@ -317,6 +361,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/serialize/tab-array", test_serialize_tab_array);
   g_test_add_func ("/serialize/layout/minimal", test_serialize_layout_minimal);
   g_test_add_func ("/serialize/layout/valid", test_serialize_layout_valid);
+  g_test_add_func ("/serialize/layout/context", test_serialize_layout_context);
   g_test_add_func ("/serialize/layout/invalid", test_serialize_layout_invalid);
 
   return g_test_run ();

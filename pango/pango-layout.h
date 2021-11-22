@@ -354,6 +354,7 @@ GSList *         pango_layout_get_lines_readonly   (PangoLayout    *layout);
 /**
  * PangoLayoutSerializeFlags:
  * @PANGO_LAYOUT_SERIALIZE_DEFAULT: Default behavior
+ * @PANGO_LAYOUT_SERIALIZE_CONTEXT: Include context information
  *
  * Flags that influence the behavior of [method@Pango.Layout.serialize].
  *
@@ -361,6 +362,7 @@ GSList *         pango_layout_get_lines_readonly   (PangoLayout    *layout);
  */
 typedef enum {
   PANGO_LAYOUT_SERIALIZE_DEFAULT = 0,
+  PANGO_LAYOUT_SERIALIZE_CONTEXT = 1 << 0,
 } PangoLayoutSerializeFlags;
 
 PANGO_AVAILABLE_IN_1_50
@@ -402,6 +404,8 @@ GQuark          pango_layout_deserialize_error_quark (void);
 /**
  * PangoLayoutDeserializeFlags:
  * @PANGO_LAYOUT_DESERIALIZE_DEFAULT: Default behavior
+ * @PANGO_LAYOUT_DESERIALIZE_CONTEXT: Apply context information
+ *   from the serialization to the `PangoContext`
  *
  * Flags that influence the behavior of [method@Pango.Layout.deserialize].
  *
@@ -409,6 +413,7 @@ GQuark          pango_layout_deserialize_error_quark (void);
  */
 typedef enum {
   PANGO_LAYOUT_DESERIALIZE_DEFAULT = 0,
+  PANGO_LAYOUT_DESERIALIZE_CONTEXT = 1 << 0,
 } PangoLayoutDeserializeFlags;
 
 PANGO_AVAILABLE_IN_1_50
