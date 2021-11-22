@@ -817,13 +817,13 @@ _pango_cairo_font_private_glyph_extents_cache_init (PangoCairoFontPrivate *cf_pr
   if (cf_priv->is_hinted)
     {
       if (cf_priv->font_extents.y < 0)
-        cf_priv->font_extents.y = PANGO_UNITS_ROUND (cf_priv->font_extents.y - PANGO_SCALE/2);
+        cf_priv->font_extents.y = PANGO_UNITS_FLOOR (cf_priv->font_extents.y);
       else
-        cf_priv->font_extents.y = PANGO_UNITS_ROUND (cf_priv->font_extents.y + PANGO_SCALE/2);
+        cf_priv->font_extents.y = PANGO_UNITS_CEIL (cf_priv->font_extents.y);
       if (cf_priv->font_extents.height < 0)
-        cf_priv->font_extents.height = PANGO_UNITS_ROUND (cf_priv->font_extents.height - PANGO_SCALE/2);
+        cf_priv->font_extents.height = PANGO_UNITS_FLOOR (cf_priv->font_extents.height);
       else
-        cf_priv->font_extents.height = PANGO_UNITS_ROUND (cf_priv->font_extents.height + PANGO_SCALE/2);
+        cf_priv->font_extents.height = PANGO_UNITS_CEIL (cf_priv->font_extents.height);
     }
 
   if (PANGO_GRAVITY_IS_IMPROPER (cf_priv->gravity))
