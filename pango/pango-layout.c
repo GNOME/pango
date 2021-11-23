@@ -3930,15 +3930,29 @@ process_item (PangoLayout     *layout,
         width += state->log_widths[state->log_widths_offset + i];
     }
 
-  if ((width <= state->remaining_width || (item->num_chars == 1 && !line->runs)) &&
+  if (!no_break_at_end &&
+      can_break_at (layout, state->start_offset + item->num_chars, wrap))
+    {
+      if (processing_new_item)
+        {
+          compute_log_widths (layout, state);
+          processing_new_item = FALSE;
+        }
+
+      extra_width = find_break_extra_width (layout, state, item->num_chars);
+    }
+  else
+    extra_width = 0;
+
+  if ((width + extra_width <= state->remaining_width || (item->num_chars == 1 && !line->runs)) &&
       !no_break_at_end)
     {
-      DEBUG1 ("%d <= %d", width, state->remaining_width);
+      DEBUG1 ("%d + %d <= %d", width, extra_width, state->remaining_width);
       insert_run (line, state, item, NULL, FALSE);
 
       width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
 
-      if (width <= state->remaining_width || (item->num_chars == 1 && !line->runs))
+      if (width + extra_width <= state->remaining_width || (item->num_chars == 1 && !line->runs))
         {
           state->remaining_width -= width;
           state->remaining_width = MAX (state->remaining_width, 0);
@@ -4007,7 +4021,7 @@ retry_break:
       if (can_break_at (layout, state->start_offset + num_chars, wrap) &&
           (num_chars > 0 || line->runs))
         {
-          DEBUG1 ("possible breakpoint: %d", num_chars);
+          DEBUG1 ("possible breakpoint: %d, extra_width %d", num_chars, extra_width);
           if (num_chars == 0 ||
               width + extra_width < state->remaining_width - safe_distance)
             {
@@ -4044,10 +4058,13 @@ retry_break:
               if (num_chars > 0 &&
                   layout->log_attrs[state->start_offset + num_chars - 1].is_white)
                 extra_width = - state->log_widths[state->log_widths_offset + num_chars - 1];
+              else if (item == new_item &&
+                       break_needs_hyphen (layout, state, num_chars))
+                extra_width = state->hyphen_width;
               else
                 extra_width = 0;
 
-              DEBUG1 ("measured breakpoint %d: %d", num_chars, new_break_width);
+              DEBUG1 ("measured breakpoint %d: %d, extra %d", num_chars, new_break_width, extra_width);
 
               if (new_item != item)
                 {
@@ -4107,7 +4124,8 @@ retry_break:
 
       if (break_num_chars == item->num_chars)
         {
-          if (break_needs_hyphen (layout, state, break_num_chars))
+          if (can_break_at (layout, state->start_offset + break_num_chars, wrap) &&
+              break_needs_hyphen (layout, state, break_num_chars))
             item->analysis.flags |= PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
 
           insert_run (line, state, item, NULL, TRUE);
@@ -5946,6 +5964,7 @@ add_missing_hyphen (PangoLayoutLine *line,
       int width;
       int start_offset;
 
+      DEBUG1("add a missing hyphen");
       /* The last run fit onto the line without breaking it, but it still needs a hyphen */
 
       width = pango_glyph_string_get_width (run->glyphs);

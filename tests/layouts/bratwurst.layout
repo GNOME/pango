@@ -1,0 +1,21 @@
+{
+  "text" : "Bratwurst",
+  "attributes" : [
+    {
+      "start" : 4,
+      "type" : "style",
+      "value" : "italic"
+    }
+  ],
+  "font" : "Sans Bold 32",
+  "tabs" : {
+    "positions-in-pixels" : true,
+    "positions" : [
+      0,
+      50,
+      100
+    ]
+  },
+  "width" : 102400,
+  "line-spacing" : 1.2999999523162842
+}

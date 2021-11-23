@@ -92,6 +92,9 @@ char *          pango_tab_array_to_string           (PangoTabArray *tab_array);
 PANGO_AVAILABLE_IN_1_50
 PangoTabArray * pango_tab_array_from_string         (const char    *text);
 
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoTabArray, pango_tab_array_free)
+
 G_END_DECLS
 
 #endif /* __PANGO_TABS_H__ */

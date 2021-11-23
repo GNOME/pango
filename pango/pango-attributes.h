@@ -739,6 +739,10 @@ void                    pango_attr_iterator_get_font    (PangoAttrIterator     *
 PANGO_AVAILABLE_IN_1_2
 GSList *                pango_attr_iterator_get_attrs   (PangoAttrIterator     *iterator);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoAttribute, pango_attribute_destroy)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoAttrList, pango_attr_list_unref)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoAttrIterator, pango_attr_iterator_destroy)
+
 G_END_DECLS
 
 #endif /* __PANGO_ATTRIBUTES_H__ */
