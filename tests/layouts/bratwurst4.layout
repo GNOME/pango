@@ -16,24 +16,19 @@
     ]
   },
   "comment" : [
-    "A case with a single word made up of two items,",
-    "expected to produce a single overlong line."
+    "A single word with a soft hyphen,",
+    "expected to be broken at the soft",
+    "hyphen and still produce overlong",
+    "lines."
   ],
-  "text" : "Bratwurst",
-  "attributes" : [
-    {
-      "start" : 4,
-      "type" : "style",
-      "value" : "italic"
-    }
-  ],
+  "text" : "Brat­wurst",
   "font" : "Cantarell Bold 32",
   "width" : 87040,
   "output" : {
-    "is-wrapped" : false,
+    "is-wrapped" : true,
     "is-ellipsized" : false,
-    "width" : 202752,
-    "height" : 53248,
+    "width" : 115712,
+    "height" : 106496,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -60,6 +55,12 @@
         "break-inserts-hyphen" : true
       },
       {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "line-break" : true,
         "char-break" : true,
         "cursor-position" : true,
         "break-inserts-hyphen" : true
@@ -99,20 +100,20 @@
     "lines" : [
       {
         "start-index" : 0,
-        "length" : 9,
+        "length" : 6,
         "paragraph-start" : true,
         "direction" : "ltr",
         "runs" : [
           {
             "offset" : 0,
-            "length" : 4,
-            "text" : "Brat",
+            "length" : 6,
+            "text" : "Brat­",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
             "font" : "Cantarell Bold 32",
-            "flags" : 0,
+            "flags" : 4,
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
@@ -140,18 +141,37 @@
                 "width" : 16384,
                 "is-cluster-start" : true,
                 "log-cluster" : 3
+              },
+              {
+                "glyph" : 268435455,
+                "width" : 0,
+                "is-cluster-start" : true,
+                "log-cluster" : 4
+              },
+              {
+                "glyph" : 1081,
+                "width" : 18432,
+                "log-cluster" : 4
               }
             ]
-          },
+          }
+        ]
+      },
+      {
+        "start-index" : 6,
+        "length" : 5,
+        "paragraph-start" : false,
+        "direction" : "ltr",
+        "runs" : [
           {
-            "offset" : 4,
+            "offset" : 6,
             "length" : 5,
             "text" : "wurst",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell Bold Oblique 32",
+            "font" : "Cantarell Bold 32",
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,

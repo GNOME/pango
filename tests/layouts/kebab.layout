@@ -16,24 +16,18 @@
     ]
   },
   "comment" : [
-    "A case with a single word made up of two items,",
-    "expected to produce a single overlong line."
+    "Two words, expected to be broken",
+    "between words, collapsing the space",
+    "and still produce two overlong lines."
   ],
-  "text" : "Bratwurst",
-  "attributes" : [
-    {
-      "start" : 4,
-      "type" : "style",
-      "value" : "italic"
-    }
-  ],
+  "text" : "Döner Kebab",
   "font" : "Cantarell Bold 32",
   "width" : 87040,
   "output" : {
-    "is-wrapped" : false,
+    "is-wrapped" : true,
     "is-ellipsized" : false,
-    "width" : 202752,
-    "height" : 53248,
+    "width" : 126976,
+    "height" : 106496,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -63,6 +57,21 @@
         "char-break" : true,
         "cursor-position" : true,
         "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "expandable-space" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "word-boundary" : true
       },
       {
         "char-break" : true,
@@ -99,14 +108,14 @@
     "lines" : [
       {
         "start-index" : 0,
-        "length" : 9,
+        "length" : 7,
         "paragraph-start" : true,
         "direction" : "ltr",
         "runs" : [
           {
             "offset" : 0,
-            "length" : 4,
-            "text" : "Brat",
+            "length" : 7,
+            "text" : "Döner ",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
@@ -118,72 +127,92 @@
             "end-x-offset" : 0,
             "glyphs" : [
               {
-                "glyph" : 29,
-                "width" : 28672,
+                "glyph" : 37,
+                "width" : 31744,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
+              },
+              {
+                "glyph" : 381,
+                "width" : 25600,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              },
+              {
+                "glyph" : 360,
+                "width" : 25600,
+                "is-cluster-start" : true,
+                "log-cluster" : 3
+              },
+              {
+                "glyph" : 287,
+                "width" : 23552,
+                "is-cluster-start" : true,
+                "log-cluster" : 4
               },
               {
                 "glyph" : 409,
                 "width" : 18432,
                 "is-cluster-start" : true,
-                "log-cluster" : 1
+                "log-cluster" : 5
               },
               {
-                "glyph" : 244,
-                "width" : 23552,
+                "glyph" : 268435455,
+                "width" : 0,
                 "is-cluster-start" : true,
-                "log-cluster" : 2
-              },
-              {
-                "glyph" : 430,
-                "width" : 16384,
-                "is-cluster-start" : true,
-                "log-cluster" : 3
+                "log-cluster" : 6
               }
             ]
-          },
+          }
+        ]
+      },
+      {
+        "start-index" : 7,
+        "length" : 5,
+        "paragraph-start" : false,
+        "direction" : "ltr",
+        "runs" : [
           {
-            "offset" : 4,
+            "offset" : 7,
             "length" : 5,
-            "text" : "wurst",
+            "text" : "Kebab",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell Bold Oblique 32",
+            "font" : "Cantarell Bold 32",
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
             "glyphs" : [
               {
-                "glyph" : 467,
-                "width" : 35840,
+                "glyph" : 100,
+                "width" : 28672,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               },
               {
-                "glyph" : 438,
-                "width" : 24576,
+                "glyph" : 287,
+                "width" : 23552,
                 "is-cluster-start" : true,
                 "log-cluster" : 1
               },
               {
-                "glyph" : 409,
-                "width" : 18432,
+                "glyph" : 272,
+                "width" : 25600,
                 "is-cluster-start" : true,
                 "log-cluster" : 2
               },
               {
-                "glyph" : 417,
-                "width" : 20480,
+                "glyph" : 244,
+                "width" : 23552,
                 "is-cluster-start" : true,
                 "log-cluster" : 3
               },
               {
-                "glyph" : 430,
-                "width" : 16384,
+                "glyph" : 272,
+                "width" : 25600,
                 "is-cluster-start" : true,
                 "log-cluster" : 4
               }

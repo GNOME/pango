@@ -16,24 +16,18 @@
     ]
   },
   "comment" : [
-    "A case with a single word made up of two items,",
-    "expected to produce a single overlong line."
+    "A single word with word-char wrapping,",
+    "expected to be broken to fit the line width."
   ],
   "text" : "Bratwurst",
-  "attributes" : [
-    {
-      "start" : 4,
-      "type" : "style",
-      "value" : "italic"
-    }
-  ],
   "font" : "Cantarell Bold 32",
+  "wrap" : "word-char",
   "width" : 87040,
   "output" : {
-    "is-wrapped" : false,
+    "is-wrapped" : true,
     "is-ellipsized" : false,
-    "width" : 202752,
-    "height" : 53248,
+    "width" : 78848,
+    "height" : 212992,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -99,20 +93,20 @@
     "lines" : [
       {
         "start-index" : 0,
-        "length" : 9,
+        "length" : 2,
         "paragraph-start" : true,
         "direction" : "ltr",
         "runs" : [
           {
             "offset" : 0,
-            "length" : 4,
-            "text" : "Brat",
+            "length" : 2,
+            "text" : "Br",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
             "font" : "Cantarell Bold 32",
-            "flags" : 0,
+            "flags" : 4,
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
@@ -130,29 +124,71 @@
                 "log-cluster" : 1
               },
               {
+                "glyph" : 1081,
+                "width" : 18432,
+                "log-cluster" : 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "start-index" : 2,
+        "length" : 2,
+        "paragraph-start" : false,
+        "direction" : "ltr",
+        "runs" : [
+          {
+            "offset" : 2,
+            "length" : 2,
+            "text" : "at",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : "Cantarell Bold 32",
+            "flags" : 4,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
                 "glyph" : 244,
                 "width" : 23552,
                 "is-cluster-start" : true,
-                "log-cluster" : 2
+                "log-cluster" : 0
               },
               {
                 "glyph" : 430,
                 "width" : 16384,
                 "is-cluster-start" : true,
-                "log-cluster" : 3
+                "log-cluster" : 1
+              },
+              {
+                "glyph" : 1081,
+                "width" : 18432,
+                "log-cluster" : 1
               }
             ]
-          },
+          }
+        ]
+      },
+      {
+        "start-index" : 4,
+        "length" : 2,
+        "paragraph-start" : false,
+        "direction" : "ltr",
+        "runs" : [
           {
             "offset" : 4,
-            "length" : 5,
-            "text" : "wurst",
+            "length" : 2,
+            "text" : "wu",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell Bold Oblique 32",
-            "flags" : 0,
+            "font" : "Cantarell Bold 32",
+            "flags" : 4,
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
@@ -170,22 +206,51 @@
                 "log-cluster" : 1
               },
               {
+                "glyph" : 1081,
+                "width" : 18432,
+                "log-cluster" : 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "start-index" : 6,
+        "length" : 3,
+        "paragraph-start" : false,
+        "direction" : "ltr",
+        "runs" : [
+          {
+            "offset" : 6,
+            "length" : 3,
+            "text" : "rst",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : "Cantarell Bold 32",
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
                 "glyph" : 409,
                 "width" : 18432,
                 "is-cluster-start" : true,
-                "log-cluster" : 2
+                "log-cluster" : 0
               },
               {
                 "glyph" : 417,
                 "width" : 20480,
                 "is-cluster-start" : true,
-                "log-cluster" : 3
+                "log-cluster" : 1
               },
               {
                 "glyph" : 430,
                 "width" : 16384,
                 "is-cluster-start" : true,
-                "log-cluster" : 4
+                "log-cluster" : 2
               }
             ]
           }

@@ -16,24 +16,19 @@
     ]
   },
   "comment" : [
-    "A case with a single word made up of two items,",
-    "expected to produce a single overlong line."
+    "A ligature that is expected to be borken",
+    "to produce two fitting lines."
   ],
-  "text" : "Bratwurst",
-  "attributes" : [
-    {
-      "start" : 4,
-      "type" : "style",
-      "value" : "italic"
-    }
-  ],
-  "font" : "Cantarell Bold 32",
-  "width" : 87040,
+  "text" : "effigy",
+  "font" : "DejaVu Sans 32",
+  "wrap" : "char",
+  "width" : 81920,
+  "height" : 2048,
   "output" : {
-    "is-wrapped" : false,
+    "is-wrapped" : true,
     "is-ellipsized" : false,
-    "width" : 202752,
-    "height" : 53248,
+    "width" : 71680,
+    "height" : 102400,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -43,21 +38,6 @@
         "sentence-start" : true,
         "backspace-deletes-character" : true,
         "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
       },
       {
         "char-break" : true,
@@ -99,93 +79,82 @@
     "lines" : [
       {
         "start-index" : 0,
-        "length" : 9,
+        "length" : 3,
         "paragraph-start" : true,
         "direction" : "ltr",
         "runs" : [
           {
             "offset" : 0,
-            "length" : 4,
-            "text" : "Brat",
+            "length" : 3,
+            "text" : "eff",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell Bold 32",
-            "flags" : 0,
+            "font" : "DejaVu Sans 32",
+            "flags" : 4,
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
             "glyphs" : [
               {
-                "glyph" : 29,
-                "width" : 28672,
+                "glyph" : 72,
+                "width" : 26624,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               },
               {
-                "glyph" : 409,
-                "width" : 18432,
+                "glyph" : 5041,
+                "width" : 29696,
                 "is-cluster-start" : true,
                 "log-cluster" : 1
               },
               {
-                "glyph" : 244,
-                "width" : 23552,
-                "is-cluster-start" : true,
-                "log-cluster" : 2
-              },
-              {
-                "glyph" : 430,
-                "width" : 16384,
-                "is-cluster-start" : true,
-                "log-cluster" : 3
+                "glyph" : 2803,
+                "width" : 15360,
+                "log-cluster" : 1
               }
             ]
-          },
+          }
+        ]
+      },
+      {
+        "start-index" : 3,
+        "length" : 3,
+        "paragraph-start" : false,
+        "direction" : "ltr",
+        "runs" : [
           {
-            "offset" : 4,
-            "length" : 5,
-            "text" : "wurst",
+            "offset" : 3,
+            "length" : 3,
+            "text" : "igy",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell Bold Oblique 32",
+            "font" : "DejaVu Sans 32",
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
             "glyphs" : [
               {
-                "glyph" : 467,
-                "width" : 35840,
+                "glyph" : 76,
+                "width" : 12288,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               },
               {
-                "glyph" : 438,
-                "width" : 24576,
+                "glyph" : 74,
+                "width" : 27648,
                 "is-cluster-start" : true,
                 "log-cluster" : 1
               },
               {
-                "glyph" : 409,
-                "width" : 18432,
+                "glyph" : 92,
+                "width" : 25600,
                 "is-cluster-start" : true,
                 "log-cluster" : 2
-              },
-              {
-                "glyph" : 417,
-                "width" : 20480,
-                "is-cluster-start" : true,
-                "log-cluster" : 3
-              },
-              {
-                "glyph" : 430,
-                "width" : 16384,
-                "is-cluster-start" : true,
-                "log-cluster" : 4
               }
             ]
           }

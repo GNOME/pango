@@ -16,17 +16,10 @@
     ]
   },
   "comment" : [
-    "A case with a single word made up of two items,",
-    "expected to produce a single overlong line."
+    "A single word, expected to produce a single",
+    "overlong line."
   ],
   "text" : "Bratwurst",
-  "attributes" : [
-    {
-      "start" : 4,
-      "type" : "style",
-      "value" : "italic"
-    }
-  ],
   "font" : "Cantarell Bold 32",
   "width" : 87040,
   "output" : {
@@ -105,8 +98,8 @@
         "runs" : [
           {
             "offset" : 0,
-            "length" : 4,
-            "text" : "Brat",
+            "length" : 9,
+            "text" : "Bratwurst",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
@@ -140,52 +133,36 @@
                 "width" : 16384,
                 "is-cluster-start" : true,
                 "log-cluster" : 3
-              }
-            ]
-          },
-          {
-            "offset" : 4,
-            "length" : 5,
-            "text" : "wurst",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "latin",
-            "font" : "Cantarell Bold Oblique 32",
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
+              },
               {
                 "glyph" : 467,
                 "width" : 35840,
                 "is-cluster-start" : true,
-                "log-cluster" : 0
+                "log-cluster" : 4
               },
               {
                 "glyph" : 438,
                 "width" : 24576,
                 "is-cluster-start" : true,
-                "log-cluster" : 1
+                "log-cluster" : 5
               },
               {
                 "glyph" : 409,
                 "width" : 18432,
                 "is-cluster-start" : true,
-                "log-cluster" : 2
+                "log-cluster" : 6
               },
               {
                 "glyph" : 417,
                 "width" : 20480,
                 "is-cluster-start" : true,
-                "log-cluster" : 3
+                "log-cluster" : 7
               },
               {
                 "glyph" : 430,
                 "width" : 16384,
                 "is-cluster-start" : true,
-                "log-cluster" : 4
+                "log-cluster" : 8
               }
             ]
           }
