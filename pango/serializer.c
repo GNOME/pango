@@ -25,7 +25,9 @@
 #include <pango/pango-layout-private.h>
 #include <pango/pango-context-private.h>
 #include <pango/pango-enum-types.h>
+#include <pango/pango-font-private.h>
 
+#include <hb-ot.h>
 #include <json-glib/json-glib.h>
 
 /* {{{ Error handling */
@@ -257,7 +259,7 @@ add_context (JsonBuilder  *builder,
   json_builder_set_member_name (builder, "gravity-hint");
   add_enum_value (builder, PANGO_TYPE_GRAVITY_HINT, context->gravity_hint, FALSE);
 
-  json_builder_set_member_name (builder, "direction");
+  json_builder_set_member_name (builder, "base-dir");
   add_enum_value (builder, PANGO_TYPE_DIRECTION, context->base_dir, FALSE);
 
   json_builder_set_member_name (builder, "round-glyph-positions");
@@ -275,6 +277,379 @@ add_context (JsonBuilder  *builder,
   json_builder_add_double_value (builder, matrix->yy);
   json_builder_add_double_value (builder, matrix->x0);
   json_builder_add_double_value (builder, matrix->y0);
+  json_builder_end_array (builder);
+
+  json_builder_end_object (builder);
+}
+
+static void
+add_log_attrs (JsonBuilder *builder,
+               PangoLayout *layout)
+{
+  const PangoLogAttr *log_attrs;
+  int n_attrs;
+
+  json_builder_set_member_name (builder, "log-attrs");
+  json_builder_begin_array (builder);
+
+  log_attrs = pango_layout_get_log_attrs_readonly (layout, &n_attrs);
+  for (int i = 0; i < n_attrs; i++)
+    {
+      json_builder_begin_object (builder);
+      if (log_attrs[i].is_line_break)
+        {
+          json_builder_set_member_name (builder, "line-break");
+          json_builder_add_boolean_value (builder, TRUE);
+        }
+      if (log_attrs[i].is_mandatory_break)
+        {
+          json_builder_set_member_name (builder, "mandatory-break");
+          json_builder_add_boolean_value (builder, TRUE);
+        }
+      if (log_attrs[i].is_char_break)
+        {
+          json_builder_set_member_name (builder, "char-break");
+          json_builder_add_boolean_value (builder, TRUE);
+        }
+      if (log_attrs[i].is_white)
+        {
+          json_builder_set_member_name (builder, "white");
+          json_builder_add_boolean_value (builder, TRUE);
+        }
+      if (log_attrs[i].is_cursor_position)
+        {
+          json_builder_set_member_name (builder, "cursor-position");
+          json_builder_add_boolean_value (builder, TRUE);
+        }
+      if (log_attrs[i].is_word_start)
+        {
+          json_builder_set_member_name (builder, "word-start");
+          json_builder_add_boolean_value (builder, TRUE);
+        }
+      if (log_attrs[i].is_word_end)
+        {
+          json_builder_set_member_name (builder, "word-end");
+          json_builder_add_boolean_value (builder, TRUE);
+        }
+      if (log_attrs[i].is_sentence_boundary)
+        {
+          json_builder_set_member_name (builder, "sentence-boundary");
+          json_builder_add_boolean_value (builder, TRUE);
+        }
+      if (log_attrs[i].is_sentence_start)
+        {
+          json_builder_set_member_name (builder, "sentence-start");
+          json_builder_add_boolean_value (builder, TRUE);
+        }
+      if (log_attrs[i].is_sentence_end)
+        {
+          json_builder_set_member_name (builder, "sentence-end");
+          json_builder_add_boolean_value (builder, TRUE);
+        }
+      if (log_attrs[i].backspace_deletes_character)
+        {
+          json_builder_set_member_name (builder, "backspace-deletes-character");
+          json_builder_add_boolean_value (builder, TRUE);
+        }
+      if (log_attrs[i].is_expandable_space)
+        {
+          json_builder_set_member_name (builder, "expandable-space");
+          json_builder_add_boolean_value (builder, TRUE);
+        }
+      if (log_attrs[i].is_word_boundary)
+        {
+          json_builder_set_member_name (builder, "word-boundary");
+          json_builder_add_boolean_value (builder, TRUE);
+        }
+      if (log_attrs[i].break_inserts_hyphen)
+        {
+          json_builder_set_member_name (builder, "break-inserts-hyphen");
+          json_builder_add_boolean_value (builder, TRUE);
+        }
+      if (log_attrs[i].break_removes_preceding)
+        {
+          json_builder_set_member_name (builder, "break-removes_preceding");
+          json_builder_add_boolean_value (builder, TRUE);
+        }
+      json_builder_end_object (builder);
+    }
+
+  json_builder_end_array (builder);
+}
+
+static void
+add_font (JsonBuilder *builder,
+          PangoFont   *font)
+{
+  PangoFontDescription *desc;
+  char *str;
+  hb_font_t *hb_font;
+  hb_face_t *face;
+  hb_blob_t *blob;
+  const char *data;
+  guint length;
+  const int *coords;
+  hb_feature_t features[32];
+  PangoMatrix matrix;
+
+  json_builder_begin_object (builder);
+
+  json_builder_set_member_name (builder, "description");
+
+  desc = pango_font_describe (font);
+  str = pango_font_description_to_string (desc);
+  json_builder_add_string_value (builder, str);
+  g_free (str);
+  pango_font_description_free (desc);
+
+  hb_font = pango_font_get_hb_font (font);
+  face = hb_font_get_face (hb_font);
+  blob = hb_face_reference_blob (face);
+
+  data = hb_blob_get_data (blob, &length);
+  str = g_compute_checksum_for_data (G_CHECKSUM_SHA256, (const guchar *)data, length);
+
+  json_builder_set_member_name (builder, "checksum");
+  json_builder_add_string_value (builder, str);
+
+  g_free (str);
+  hb_blob_destroy (blob);
+
+  coords = hb_font_get_var_coords_normalized (hb_font, &length);
+  if (length > 0)
+    {
+      guint count;
+      hb_ot_var_axis_info_t *axes;
+
+      count = hb_ot_var_get_axis_count (face);
+      g_assert (count == length);
+
+      axes = g_alloca (count * sizeof (hb_ot_var_axis_info_t));
+      hb_ot_var_get_axis_infos (face, 0, &count, axes);
+
+      json_builder_set_member_name (builder, "variations");
+      json_builder_begin_object (builder);
+
+      for (int i = 0; i < length; i++)
+        {
+          char buf[5] = { 0, };
+
+          hb_tag_to_string (axes[i].tag, buf);
+          json_builder_set_member_name (builder, buf);
+          json_builder_add_int_value (builder, coords[i]);
+        }
+
+      json_builder_end_object (builder);
+    }
+
+  length = 0;
+  pango_font_get_features (font, features, G_N_ELEMENTS (features), &length);
+  if (length > 0)
+    {
+      json_builder_set_member_name (builder, "features");
+      json_builder_begin_object (builder);
+
+      for (int i = 0; i < length; i++)
+        {
+          char buf[5] = { 0, };
+
+          hb_tag_to_string (features[i].tag, buf);
+          json_builder_set_member_name (builder, buf);
+          json_builder_add_int_value (builder, features[i].value);
+        }
+
+      json_builder_end_object (builder);
+    }
+
+  pango_font_get_matrix (font, &matrix);
+  if (memcmp (&matrix, &(PangoMatrix)PANGO_MATRIX_INIT, sizeof (PangoMatrix)) != 0)
+    {
+      json_builder_set_member_name (builder, "matrix");
+      json_builder_begin_array (builder);
+      json_builder_add_double_value (builder, matrix.xx);
+      json_builder_add_double_value (builder, matrix.xy);
+      json_builder_add_double_value (builder, matrix.yx);
+      json_builder_add_double_value (builder, matrix.yy);
+      json_builder_add_double_value (builder, matrix.x0);
+      json_builder_add_double_value (builder, matrix.y0);
+      json_builder_end_array (builder);
+    }
+
+  json_builder_end_object (builder);
+}
+
+#define ANALYSIS_FLAGS (PANGO_ANALYSIS_FLAG_CENTERED_BASELINE | \
+                        PANGO_ANALYSIS_FLAG_IS_ELLIPSIS | \
+                        PANGO_ANALYSIS_FLAG_NEED_HYPHEN)
+
+static void
+add_run (JsonBuilder    *builder,
+         PangoLayout    *layout,
+         PangoLayoutRun *run)
+{
+  json_builder_begin_object (builder);
+  char *str;
+
+  json_builder_set_member_name (builder, "offset");
+  json_builder_add_int_value (builder, run->item->offset);
+
+  json_builder_set_member_name (builder, "length");
+  json_builder_add_int_value (builder, run->item->length);
+
+  str = g_strndup (layout->text + run->item->offset, run->item->length);
+  json_builder_set_member_name (builder, "text");
+  json_builder_add_string_value (builder, str);
+  g_free (str);
+
+  json_builder_set_member_name (builder, "bidi-level");
+  json_builder_add_int_value (builder, run->item->analysis.level);
+
+  json_builder_set_member_name (builder, "gravity");
+  add_enum_value (builder, PANGO_TYPE_GRAVITY, run->item->analysis.gravity, FALSE);
+
+  json_builder_set_member_name (builder, "language");
+  json_builder_add_string_value (builder, pango_language_to_string (run->item->analysis.language));
+
+  json_builder_set_member_name (builder, "script");
+  add_enum_value (builder, PANGO_TYPE_SCRIPT, run->item->analysis.script, FALSE);
+
+  json_builder_set_member_name (builder, "font");
+  add_font (builder, run->item->analysis.font);
+
+  json_builder_set_member_name (builder, "flags");
+  json_builder_add_int_value (builder, run->item->analysis.flags & ANALYSIS_FLAGS);
+
+  if (run->item->analysis.extra_attrs)
+    {
+      GSList *l;
+
+      json_builder_set_member_name (builder, "extra-attributes");
+
+      json_builder_begin_array (builder);
+      for (l = run->item->analysis.extra_attrs; l; l = l->next)
+        {
+          PangoAttribute *attr = l->data;
+          add_attribute (builder, attr);
+        }
+      json_builder_end_array (builder);
+    }
+
+  json_builder_set_member_name (builder, "y-offset");
+  json_builder_add_int_value (builder, run->y_offset);
+
+  json_builder_set_member_name (builder, "start-x-offset");
+  json_builder_add_int_value (builder, run->start_x_offset);
+
+  json_builder_set_member_name (builder, "end-x-offset");
+  json_builder_add_int_value (builder, run->end_x_offset);
+
+  json_builder_set_member_name (builder, "glyphs");
+  json_builder_begin_array (builder);
+  for (int i = 0; i < run->glyphs->num_glyphs; i++)
+    {
+      json_builder_begin_object (builder);
+
+      json_builder_set_member_name (builder, "glyph");
+      json_builder_add_int_value (builder, run->glyphs->glyphs[i].glyph);
+
+      json_builder_set_member_name (builder, "width");
+      json_builder_add_int_value (builder, run->glyphs->glyphs[i].geometry.width);
+
+      if (run->glyphs->glyphs[i].geometry.x_offset != 0)
+        {
+          json_builder_set_member_name (builder, "x-offset");
+          json_builder_add_int_value (builder, run->glyphs->glyphs[i].geometry.x_offset);
+        }
+
+      if (run->glyphs->glyphs[i].geometry.y_offset != 0)
+        {
+          json_builder_set_member_name (builder, "y-offset");
+          json_builder_add_int_value (builder, run->glyphs->glyphs[i].geometry.y_offset);
+        }
+
+      if (run->glyphs->glyphs[i].attr.is_cluster_start)
+        {
+          json_builder_set_member_name (builder, "is-cluster-start");
+          json_builder_add_boolean_value (builder, TRUE);
+        }
+
+      if (run->glyphs->glyphs[i].attr.is_color)
+        {
+          json_builder_set_member_name (builder, "is-color");
+          json_builder_add_boolean_value (builder, TRUE);
+        }
+
+      json_builder_set_member_name (builder, "log-cluster");
+      json_builder_add_int_value (builder, run->glyphs->log_clusters[i]);
+
+      json_builder_end_object (builder);
+    }
+
+  json_builder_end_array (builder);
+
+  json_builder_end_object (builder);
+}
+
+#undef ANALYSIS_FLAGS
+
+static void
+add_line (JsonBuilder     *builder,
+          PangoLayoutLine *line)
+{
+  json_builder_begin_object (builder);
+
+  json_builder_set_member_name (builder, "start-index");
+  json_builder_add_int_value (builder, line->start_index);
+
+  json_builder_set_member_name (builder, "length");
+  json_builder_add_int_value (builder, line->length);
+
+  json_builder_set_member_name (builder, "paragraph-start");
+  json_builder_add_boolean_value (builder, line->is_paragraph_start);
+
+  json_builder_set_member_name (builder, "direction");
+  add_enum_value (builder, PANGO_TYPE_DIRECTION, line->resolved_dir, FALSE);
+
+  json_builder_set_member_name (builder, "runs");
+  json_builder_begin_array (builder);
+  for (GSList *l = line->runs; l; l = l->next)
+    {
+      PangoLayoutRun *run = l->data;
+      add_run (builder, line->layout, run);
+    }
+  json_builder_end_array (builder);
+
+  json_builder_end_object (builder);
+}
+
+static void
+add_output (JsonBuilder *builder,
+            PangoLayout *layout)
+{
+  int width, height;
+
+  json_builder_begin_object (builder);
+
+  json_builder_set_member_name (builder, "is-wrapped");
+  json_builder_add_boolean_value (builder, pango_layout_is_wrapped (layout));
+
+  json_builder_set_member_name (builder, "is-ellipsized");
+  json_builder_add_boolean_value (builder, pango_layout_is_ellipsized (layout));
+
+  pango_layout_get_size (layout, &width, &height);
+  json_builder_set_member_name (builder, "width");
+  json_builder_add_int_value (builder, width);
+  json_builder_set_member_name (builder, "height");
+  json_builder_add_int_value (builder, height);
+
+  add_log_attrs (builder, layout);
+  json_builder_set_member_name (builder, "lines");
+  json_builder_begin_array (builder);
+  for (GSList *l = layout->lines; l; l = l->next)
+    {
+      PangoLayoutLine *line = l->data;
+      add_line (builder, line);
+    }
   json_builder_end_array (builder);
 
   json_builder_end_object (builder);
@@ -382,6 +757,12 @@ layout_to_json (PangoLayout               *layout,
     {
       json_builder_set_member_name (builder, "line-spacing");
       json_builder_add_double_value (builder, layout->line_spacing);
+    }
+
+  if (flags & PANGO_LAYOUT_SERIALIZE_OUTPUT)
+    {
+      json_builder_set_member_name (builder, "output");
+      add_output (builder, layout);
     }
 
   json_builder_end_object (builder);

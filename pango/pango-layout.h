@@ -355,6 +355,7 @@ GSList *         pango_layout_get_lines_readonly   (PangoLayout    *layout);
  * PangoLayoutSerializeFlags:
  * @PANGO_LAYOUT_SERIALIZE_DEFAULT: Default behavior
  * @PANGO_LAYOUT_SERIALIZE_CONTEXT: Include context information
+ * @PANGO_LAYOUT_SERIALIZE_OUTPUT: Include information about the formatted output
  *
  * Flags that influence the behavior of [method@Pango.Layout.serialize].
  *
@@ -363,6 +364,7 @@ GSList *         pango_layout_get_lines_readonly   (PangoLayout    *layout);
 typedef enum {
   PANGO_LAYOUT_SERIALIZE_DEFAULT = 0,
   PANGO_LAYOUT_SERIALIZE_CONTEXT = 1 << 0,
+  PANGO_LAYOUT_SERIALIZE_OUTPUT = 1 << 1,
 } PangoLayoutSerializeFlags;
 
 PANGO_AVAILABLE_IN_1_50
