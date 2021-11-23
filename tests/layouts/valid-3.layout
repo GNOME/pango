@@ -1,5 +1,181 @@
 {
+  "context" : {
+    "font" : "serif 12",
+    "language" : "en-us",
+    "base-gravity" : "south",
+    "gravity-hint" : "natural",
+    "base-dir" : "weak-ltr",
+    "round-glyph-positions" : true,
+    "transform" : [
+      1.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ]
+  },
   "text" : "ABC😀️D\n",
-  "attributes" : [],
-  "font" : "Cantarell 11"
+  "font" : "Cantarell 11",
+  "output" : {
+    "is-wrapped" : false,
+    "is-ellipsized" : false,
+    "width" : 53248,
+    "height" : 38912,
+    "log-attrs" : [
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "sentence-boundary" : true,
+        "sentence-start" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "word-boundary" : true
+      },
+      {      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "word-boundary" : true
+      },
+      {
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "sentence-end" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "mandatory-break" : true,
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "sentence-boundary" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      }
+    ],
+    "lines" : [
+      {
+        "start-index" : 0,
+        "length" : 11,
+        "paragraph-start" : true,
+        "direction" : "ltr",
+        "runs" : [
+          {
+            "offset" : 0,
+            "length" : 3,
+            "text" : "ABC",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : "Cantarell 11",
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 1,
+                "width" : 9216,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 29,
+                "width" : 9216,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              },
+              {
+                "glyph" : 30,
+                "width" : 9216,
+                "is-cluster-start" : true,
+                "log-cluster" : 2
+              }
+            ]
+          },
+          {
+            "offset" : 3,
+            "length" : 7,
+            "text" : "😀️",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : "DejaVu Sans 11",
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 5857,
+                "width" : 15360,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 268435455,
+                "width" : 0,
+                "is-cluster-start" : true,
+                "log-cluster" : 4
+              }
+            ]
+          },
+          {
+            "offset" : 10,
+            "length" : 1,
+            "text" : "D",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : "Cantarell 11",
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 37,
+                "width" : 10240,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "start-index" : 12,
+        "length" : 0,
+        "paragraph-start" : true,
+        "direction" : "ltr",
+        "runs" : []
+      }
+    ]
+  }
 }

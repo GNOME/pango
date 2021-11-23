@@ -6,6 +6,10 @@ char * diff_with_file (const char  *file,
                        gssize       len,
                        GError     **error);
 
+char * diff_bytes (GBytes  *b1,
+                   GBytes  *b2,
+                   GError **error);
+
 gboolean file_has_prefix (const char  *file,
                           const char  *str,
                           GError     **error);
