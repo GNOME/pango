@@ -661,6 +661,7 @@ layout_to_json (PangoLayout               *layout,
 {
   JsonBuilder *builder;
   JsonNode *root;
+  const char *str;
 
   builder = json_builder_new_immutable ();
 
@@ -670,6 +671,25 @@ layout_to_json (PangoLayout               *layout,
     {
       json_builder_set_member_name (builder, "context");
       add_context (builder, layout->context);
+    }
+
+  str = (const char *) g_object_get_data (G_OBJECT (layout), "comment");
+  if (str)
+    {
+      json_builder_set_member_name (builder, "comment");
+      if (strstr (str, "\n") != NULL)
+        {
+          char **strs = g_strsplit (str, "\n", -1);
+
+          json_builder_begin_array (builder);
+          for (int i = 0; strs[i]; i++)
+            json_builder_add_string_value (builder, strs[i]);
+          json_builder_end_array (builder);
+
+          g_strfreev (strs);
+        }
+      else
+        json_builder_add_string_value (builder, str);
     }
 
   json_builder_set_member_name (builder, "text");
@@ -1243,6 +1263,33 @@ json_to_layout (PangoContext                 *context,
     }
 
   layout = pango_layout_new (context);
+
+  if (json_reader_read_member (reader, "comment"))
+    {
+      if (json_reader_is_array (reader))
+        {
+          GString *s;
+
+          s = g_string_new ("");
+          for (int i = 0; i < json_reader_count_elements (reader); i++)
+            {
+              json_reader_read_element (reader, i);
+              if (s->len > 0)
+                g_string_append_c (s, '\n');
+              g_string_append (s, json_reader_get_string_value (reader));
+              json_reader_end_element (reader);
+            }
+
+          g_object_set_data_full (G_OBJECT (layout), "comment",
+                                  g_string_free (s, FALSE),
+                                  g_free);
+        }
+      else
+        g_object_set_data_full (G_OBJECT (layout), "comment",
+                                g_strdup (json_reader_get_string_value (reader)),
+                                g_free);
+    }
+  json_reader_end_member (reader);
 
   if (json_reader_read_member (reader, "text"))
     pango_layout_set_text (layout, json_reader_get_string_value (reader), -1);
