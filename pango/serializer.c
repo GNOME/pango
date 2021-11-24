@@ -805,8 +805,8 @@ fail:
   return NULL;
 }
 
- /* }}} */
- /* {{{ Public API */
+/* }}} */
+/* {{{ Public API */
 
 /**
  * pango_layout_serialize:
@@ -814,7 +814,7 @@ fail:
  *
  * Serializes the @layout for later deserialization via [method@Pango.Layout.deserialize].
  *
- * There are no guarantees about the format of the output accross different
+ * There are no guarantees about the format of the output across different
  * versions of Pango and [method@Pango.Layout.deserialize] will reject data
  * that it cannot parse.
  *
