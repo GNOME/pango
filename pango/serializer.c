@@ -793,6 +793,20 @@ layout_to_json (PangoLayout               *layout,
   return root;
 }
 
+static JsonNode *
+font_to_json (PangoFont *font)
+{
+  JsonBuilder *builder;
+  JsonNode *root;
+
+  builder = json_builder_new_immutable ();
+  add_font (builder, font);
+  root = json_builder_get_root (builder);
+  g_object_unref (builder);
+
+  return root;
+}
+
 /* }}} */
 /* {{{ Deserialization */
 
@@ -1567,6 +1581,47 @@ pango_layout_deserialize (PangoContext                 *context,
   g_object_unref (parser);
 
   return layout;
+}
+
+/**
+ * pango_font_serialize:
+ * @font: a `PangoFont`
+ *
+ * Serializes the @font in a way that can be uniquely identified.
+ *
+ * There are no guarantees about the format of the output across different
+ * versions of Pango.
+ *
+ * The intended use of this function is testing, benchmarking and debugging.
+ * The format is not meant as a permanent storage format.
+ *
+ * Returns: a `GBytes` containing the serialized form of @font
+ *
+ * Since: 1.50
+ */
+GBytes *
+pango_font_serialize (PangoFont *font)
+{
+  JsonGenerator *generator;
+  JsonNode *node;
+  char *data;
+  gsize size;
+
+  g_return_val_if_fail (PANGO_IS_FONT (font), NULL);
+
+  node = font_to_json (font);
+
+  generator = json_generator_new ();
+  json_generator_set_pretty (generator, TRUE);
+  json_generator_set_indent (generator, 2);
+
+  json_generator_set_root (generator, node);
+  data = json_generator_to_data (generator, &size);
+
+  json_node_free (node);
+  g_object_unref (generator);
+
+  return g_bytes_new_take (data, size);
 }
 
 /* }}} */
