@@ -1,0 +1,4 @@
+The fonts in this directory are available to test-layout tests.
+emoji-subset.ttf is a subset of Noto Color Emoji that is just
+big enough to provide the Emoji that are present in our test
+cases.

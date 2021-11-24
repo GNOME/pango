@@ -23,6 +23,7 @@
   "output" : {
     "is-wrapped" : false,
     "is-ellipsized" : true,
+    "unknown-glyphs" : 0,
     "width" : 102400,
     "height" : 38912,
     "log-attrs" : [
@@ -178,7 +179,21 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell 11",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
@@ -230,7 +245,18 @@
             "gravity" : "south",
             "language" : "he",
             "script" : "hebrew",
-            "font" : "DejaVu Sans 11",
+            "font" : {
+              "description" : "DejaVu Sans 11",
+              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
@@ -250,13 +276,13 @@
               },
               {
                 "glyph" : 1331,
-                "width" : 8192,
+                "width" : 9216,
                 "is-cluster-start" : true,
                 "log-cluster" : 2
               },
               {
                 "glyph" : 1344,
-                "width" : 10240,
+                "width" : 11264,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               }
@@ -270,15 +296,29 @@
             "gravity" : "south",
             "language" : "he",
             "script" : "hebrew",
-            "font" : "DejaVu Sans 11",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
             "glyphs" : [
               {
-                "glyph" : 3,
-                "width" : 5120,
+                "glyph" : 1109,
+                "width" : 3072,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               }
@@ -292,7 +332,21 @@
             "gravity" : "south",
             "language" : "el",
             "script" : "greek",
-            "font" : "Cantarell 11",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
@@ -314,7 +368,21 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "common",
-            "font" : "Cantarell 11",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 2,
             "extra-attributes" : [
               {

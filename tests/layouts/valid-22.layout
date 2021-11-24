@@ -100,6 +100,7 @@
   "output" : {
     "is-wrapped" : false,
     "is-ellipsized" : false,
+    "unknown-glyphs" : 0,
     "width" : 49152,
     "height" : 41090,
     "log-attrs" : [
@@ -204,7 +205,21 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell 11",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
@@ -226,7 +241,21 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell Oblique 7.1484375",
+            "font" : {
+              "description" : "Cantarell 7.1484375",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "extra-attributes" : [
               {
@@ -262,7 +291,21 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell 11",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
@@ -302,7 +345,21 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell 7.1484375",
+            "font" : {
+              "description" : "Cantarell 7.1484375",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "extra-attributes" : [
               {
@@ -338,7 +395,21 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell 4.646484375",
+            "font" : {
+              "description" : "Cantarell 4.646484375",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "extra-attributes" : [
               {
@@ -386,7 +457,21 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell 3.0205078125",
+            "font" : {
+              "description" : "Cantarell 3.0205078125",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "extra-attributes" : [
               {
@@ -446,7 +531,21 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell 1.962890625",
+            "font" : {
+              "description" : "Cantarell 1.962890625",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "extra-attributes" : [
               {
@@ -518,7 +617,21 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell 1.2763671875",
+            "font" : {
+              "description" : "Cantarell 1.2763671875",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "extra-attributes" : [
               {

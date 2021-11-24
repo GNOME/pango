@@ -27,7 +27,8 @@
   "output" : {
     "is-wrapped" : true,
     "is-ellipsized" : false,
-    "width" : 71680,
+    "unknown-glyphs" : 0,
+    "width" : 73728,
     "height" : 102400,
     "log-attrs" : [
       {
@@ -91,7 +92,18 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "DejaVu Sans 32",
+            "font" : {
+              "description" : "DejaVu Sans 32",
+              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 4,
             "y-offset" : 0,
             "start-x-offset" : 0,
@@ -105,13 +117,13 @@
               },
               {
                 "glyph" : 5041,
-                "width" : 29696,
+                "width" : 30720,
                 "is-cluster-start" : true,
                 "log-cluster" : 1
               },
               {
                 "glyph" : 2803,
-                "width" : 15360,
+                "width" : 16384,
                 "log-cluster" : 1
               }
             ]
@@ -132,7 +144,18 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "DejaVu Sans 32",
+            "font" : {
+              "description" : "DejaVu Sans 32",
+              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,

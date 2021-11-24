@@ -20,8 +20,9 @@
   "output" : {
     "is-wrapped" : false,
     "is-ellipsized" : false,
-    "width" : 250880,
-    "height" : 43008,
+    "unknown-glyphs" : 7,
+    "width" : 252928,
+    "height" : 38912,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -206,7 +207,21 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell 11",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
@@ -246,7 +261,18 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "DejaVu Sans 11",
+            "font" : {
+              "description" : "DejaVu Sans 11",
+              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
@@ -254,7 +280,7 @@
             "glyphs" : [
               {
                 "glyph" : 5867,
-                "width" : 15360,
+                "width" : 16384,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               },
@@ -280,7 +306,18 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "DejaVu Sans 11",
+            "font" : {
+              "description" : "DejaVu Sans 11",
+              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
@@ -288,7 +325,7 @@
             "glyphs" : [
               {
                 "glyph" : 5867,
-                "width" : 15360,
+                "width" : 16384,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               },
@@ -308,7 +345,21 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell 11",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
@@ -330,7 +381,18 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Raqq 11",
+            "font" : {
+              "description" : "DejaVu Sans 11",
+              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
@@ -358,7 +420,21 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell 11",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
@@ -380,7 +456,18 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Raqq 11",
+            "font" : {
+              "description" : "DejaVu Sans 11",
+              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
@@ -402,7 +489,21 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell 11",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
@@ -424,7 +525,18 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Raqq 11",
+            "font" : {
+              "description" : "DejaVu Sans 11",
+              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
@@ -452,7 +564,21 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell 11",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
@@ -498,7 +624,18 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Raqq 11",
+            "font" : {
+              "description" : "DejaVu Sans 11",
+              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
@@ -550,7 +687,21 @@
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
-            "font" : "Cantarell 11",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
             "flags" : 0,
             "y-offset" : 0,
             "start-x-offset" : 0,
