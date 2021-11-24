@@ -34,8 +34,6 @@
 
 static PangoContext *context;
 
-static gboolean opt_show_font;
-
 static GBytes *
 test_bytes (GBytes *orig)
 {
@@ -147,7 +145,6 @@ main (int argc, char *argv[])
   char *path;
   GOptionContext *option_context;
   GOptionEntry entries[] = {
-    { "show-fonts", '0', 0, G_OPTION_ARG_NONE, &opt_show_font, "Print font names in dumps", NULL },
     { NULL, 0 },
   };
 
@@ -162,9 +159,6 @@ main (int argc, char *argv[])
       return 1;
     }
   g_option_context_free (option_context);
-
-  if (g_getenv ("PANGO_TEST_SHOW_FONT"))
-    opt_show_font = TRUE;
 
   /* allow to easily generate expected output for new test cases */
   if (argc > 1 && argv[1][0] != '-')
