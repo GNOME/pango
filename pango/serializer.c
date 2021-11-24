@@ -636,6 +636,9 @@ add_output (JsonBuilder *builder,
   json_builder_set_member_name (builder, "is-ellipsized");
   json_builder_add_boolean_value (builder, pango_layout_is_ellipsized (layout));
 
+  json_builder_set_member_name (builder, "unknown-glyphs");
+  json_builder_add_int_value (builder, pango_layout_get_unknown_glyphs_count (layout));
+
   pango_layout_get_size (layout, &width, &height);
   json_builder_set_member_name (builder, "width");
   json_builder_add_int_value (builder, width);
