@@ -45,12 +45,17 @@ typedef struct {
   gboolean         (* has_char) (PangoFont *font,
                                  gunichar   wc);
   PangoFontFace *  (* get_face) (PangoFont *font);
+  void             (* get_matrix) (PangoFont   *font,
+                                   PangoMatrix *matrix);
 } PangoFontClassPrivate;
 
 gboolean pango_font_is_hinted         (PangoFont *font);
 void     pango_font_get_scale_factors (PangoFont *font,
                                        double    *x_scale,
                                        double    *y_scale);
+void     pango_font_get_matrix        (PangoFont   *font,
+                                       PangoMatrix *matrix);
+
 
 G_END_DECLS
 

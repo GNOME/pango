@@ -75,6 +75,8 @@ static gboolean             _pango_fc_font_is_hinted      (PangoFont        *fon
 static void                 _pango_fc_font_get_scale_factors (PangoFont     *font,
                                                               double        *x_scale,
                                                               double        *y_scale);
+static void                 pango_fc_font_get_matrix      (PangoFont        *font,
+                                                           PangoMatrix      *matrix);
 
 #define PANGO_FC_FONT_LOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->lock_face (font))
 #define PANGO_FC_FONT_UNLOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->unlock_face (font))
@@ -109,6 +111,7 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   pclass->get_languages = _pango_fc_font_get_languages;
   pclass->is_hinted = _pango_fc_font_is_hinted;
   pclass->get_scale_factors = _pango_fc_font_get_scale_factors;
+  pclass->get_matrix = pango_fc_font_get_matrix;
 
   /**
    * PangoFcFont:pattern:
@@ -1109,4 +1112,23 @@ _pango_fc_font_get_scale_factors (PangoFont *font,
   PangoFcFont *fcfont = PANGO_FC_FONT (font);
 
   pango_matrix_get_font_scale_factors (&fcfont->matrix, x_scale, y_scale);
+}
+
+static void
+pango_fc_font_get_matrix (PangoFont   *font,
+                          PangoMatrix *matrix)
+{
+  PangoFcFont *fcfont = PANGO_FC_FONT (font);
+  FcMatrix fc_matrix, *fc_matrix_val;
+
+  FcMatrixInit (&fc_matrix);
+  for (int i = 0; FcPatternGetMatrix (fcfont->font_pattern, FC_MATRIX, i, &fc_matrix_val) == FcResultMatch; i++)
+    FcMatrixMultiply (&fc_matrix, &fc_matrix, fc_matrix_val);
+
+  matrix->xx = fc_matrix.xx;
+  matrix->xy = - fc_matrix.xy;
+  matrix->yx = - fc_matrix.yx;
+  matrix->yy = fc_matrix.yy;
+  matrix->x0 = 0.;
+  matrix->y0 = 0.;
 }
