@@ -77,7 +77,7 @@ test_layout (gconstpointer d)
   g_object_unref (layout);
   g_object_unref (context);
 
-  diff = diff_bytes (bytes, orig, &error);
+  diff = diff_bytes (orig, bytes, &error);
   g_assert_no_error (error);
 
   g_bytes_unref (bytes);
