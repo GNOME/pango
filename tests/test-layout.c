@@ -29,6 +29,7 @@
 
 #include "config.h"
 #include <pango/pangocairo.h>
+#include <pango/pangocairo-fc.h>
 #include <pango/pangofc-fontmap.h>
 #include "test-common.h"
 
@@ -45,6 +46,12 @@ test_layout (gconstpointer d)
   GBytes *orig;
   PangoContext *context;
   PangoLayout *layout;
+
+  if (!PANGO_IS_FC_FONT_MAP (pango_cairo_font_map_get_default ()))
+    {
+      g_test_skip ("Not an fc fontmap. Skipping...");
+      return;
+    }
 
   char *old_locale = g_strdup (setlocale (LC_ALL, NULL));
   setlocale (LC_ALL, "en_US.UTF-8");
@@ -104,6 +111,8 @@ install_fonts (const char *dir)
   PangoFontMap *map;
   char *conf;
 
+  map = g_object_new (PANGO_TYPE_CAIRO_FC_FONT_MAP, NULL);
+
   config = FcConfigCreate ();
 
   conf = g_strdup_printf ("<?xml version=\"1.0\"?>\n"
@@ -118,9 +127,12 @@ install_fonts (const char *dir)
   g_free (conf);
 
   FcConfigAppFontAddDir (config, (const FcChar8 *) dir);
-  map = pango_cairo_font_map_get_default ();
   pango_fc_font_map_set_config (PANGO_FC_FONT_MAP (map), config);
   FcConfigDestroy (config);
+
+  pango_cairo_font_map_set_default (PANGO_CAIRO_FONT_MAP (map));
+
+  g_object_unref (map);
 }
 
 int
