@@ -19,6 +19,7 @@
  */
 
 #include "config.h"
+
 #include <glib.h>
 #include <pango/pangocairo.h>
 #include <gio/gio.h>
@@ -129,7 +130,7 @@ test_serialize_layout_minimal (void)
   const char *test =
     "{\n"
     "  \"text\" : \"Almost nothing\"\n"
-    "}";
+    "}\n";
 
   PangoContext *context;
   GBytes *bytes;
@@ -142,7 +143,7 @@ test_serialize_layout_minimal (void)
 
   bytes = g_bytes_new_static (test, -1);
 
-  layout = pango_layout_deserialize (context, bytes, &error);
+  layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_DEFAULT, &error);
   g_assert_no_error (error);
   g_assert_true (PANGO_IS_LAYOUT (layout));
   g_assert_cmpstr (pango_layout_get_text (layout), ==, "Almost nothing");
@@ -152,7 +153,7 @@ test_serialize_layout_minimal (void)
   g_assert_cmpint (pango_layout_get_alignment (layout), ==, PANGO_ALIGN_LEFT);
   g_assert_cmpint (pango_layout_get_width (layout), ==, -1);
 
-  out_bytes = pango_layout_serialize (layout);
+  out_bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_DEFAULT);
   str = g_bytes_get_data (out_bytes, NULL);
 
   g_assert_cmpstr (str, ==, test);
@@ -200,7 +201,7 @@ test_serialize_layout_valid (void)
     "  \"alignment\" : \"center\",\n"
     "  \"width\" : 350000,\n"
     "  \"line-spacing\" : 1.5\n"
-    "}";
+    "}\n";
 
   PangoContext *context;
   GBytes *bytes;
@@ -208,14 +209,13 @@ test_serialize_layout_valid (void)
   PangoTabArray *tabs;
   GError *error = NULL;
   GBytes *out_bytes;
-  const char *str;
   char *s;
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
   bytes = g_bytes_new_static (test, -1);
 
-  layout = pango_layout_deserialize (context, bytes, &error);
+  layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_DEFAULT, &error);
   g_assert_no_error (error);
   g_assert_true (PANGO_IS_LAYOUT (layout));
   g_assert_cmpstr (pango_layout_get_text (layout), ==, "Some fun with layouts!");
@@ -230,12 +230,47 @@ test_serialize_layout_valid (void)
   g_assert_cmpint (pango_layout_get_width (layout), ==, 350000);
   g_assert_cmpfloat_with_epsilon (pango_layout_get_line_spacing (layout), 1.5, 0.0001);
 
-  out_bytes = pango_layout_serialize (layout);
-  str = g_bytes_get_data (out_bytes, NULL);
+  out_bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_DEFAULT);
 
-  g_assert_cmpstr (str, ==, test);
+  g_assert_cmpstr (g_bytes_get_data (out_bytes, NULL), ==, g_bytes_get_data (bytes, NULL));
 
   g_bytes_unref (out_bytes);
+  g_bytes_unref (bytes);
+
+  g_object_unref (layout);
+  g_object_unref (context);
+}
+
+static void
+test_serialize_layout_context (void)
+{
+  const char *test =
+    "{\n"
+    "  \"context\" : {\n"
+    "    \"base-gravity\" : \"east\",\n"
+    "    \"language\" : \"de-de\",\n"
+    "    \"round-glyph-positions\" : \"false\"\n"
+    "  },\n"
+    "  \"text\" : \"Some fun with layouts!\"\n"
+    "}\n";
+
+  PangoContext *context;
+  GBytes *bytes;
+  PangoLayout *layout;
+  GError *error = NULL;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
+  bytes = g_bytes_new_static (test, -1);
+
+  layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_CONTEXT, &error);
+  g_assert_no_error (error);
+  g_assert_true (PANGO_IS_LAYOUT (layout));
+  g_assert_cmpstr (pango_layout_get_text (layout), ==, "Some fun with layouts!");
+
+  g_assert_cmpint (pango_context_get_base_gravity (context), ==, PANGO_GRAVITY_EAST);
+  g_assert_true (pango_context_get_language (context) == pango_language_from_string ("de-de"));
+  g_assert_false (pango_context_get_round_glyph_positions (context));
 
   g_object_unref (layout);
   g_bytes_unref (bytes);
@@ -256,8 +291,8 @@ test_serialize_layout_invalid (void)
       "      \"type\" : \"caramba\"\n"
       "    }\n"
       "  ]\n"
-      "}",
-      PANGO_LAYOUT_SERIALIZE_INVALID_VALUE
+      "}\n",
+      PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE
     },
     {
       "{\n"
@@ -266,8 +301,8 @@ test_serialize_layout_invalid (void)
       "      \"type\" : \"weight\"\n"
       "    }\n"
       "  ]\n"
-      "}",
-      PANGO_LAYOUT_SERIALIZE_MISSING_VALUE
+      "}\n",
+      PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE
     },
     {
       "{\n"
@@ -277,14 +312,22 @@ test_serialize_layout_invalid (void)
       "      \"value\" : \"nonsense\"\n"
       "    }\n"
       "  ]\n"
-      "}",
-      PANGO_LAYOUT_SERIALIZE_INVALID_VALUE
+      "}\n",
+      PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE
     },
     {
       "{\n"
       "  \"alignment\" : \"nonsense\"\n"
-      "}",
-      PANGO_LAYOUT_SERIALIZE_INVALID_VALUE
+      "}\n",
+      PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE
+    },
+    {
+      "{\n"
+      "  \"attributes\" : {\n"
+      "    \"name\" : \"This is wrong\"\n"
+      "  }\n"
+      "}\n",
+      PANGO_LAYOUT_DESERIALIZE_INVALID_SYNTAX
     }
   };
 
@@ -299,9 +342,9 @@ test_serialize_layout_invalid (void)
       GError *error = NULL;
 
        bytes = g_bytes_new_static (test[i].json, -1);
-       layout = pango_layout_deserialize (context, bytes, &error);
+       layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_DEFAULT, &error);
        g_assert_null (layout);
-       g_assert_error (error, PANGO_LAYOUT_SERIALIZE_ERROR, test[i].expected_error);
+       g_assert_error (error, PANGO_LAYOUT_DESERIALIZE_ERROR, test[i].expected_error);
        g_bytes_unref (bytes);
        g_clear_error (&error);
     }
@@ -317,6 +360,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/serialize/tab-array", test_serialize_tab_array);
   g_test_add_func ("/serialize/layout/minimal", test_serialize_layout_minimal);
   g_test_add_func ("/serialize/layout/valid", test_serialize_layout_valid);
+  g_test_add_func ("/serialize/layout/context", test_serialize_layout_context);
   g_test_add_func ("/serialize/layout/invalid", test_serialize_layout_invalid);
 
   return g_test_run ();

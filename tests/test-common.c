@@ -82,6 +82,70 @@ done:
   return diff;
 }
 
+char *
+diff_bytes (GBytes  *b1,
+            GBytes  *b2,
+            GError **error)
+{
+  const char *command[] = { "diff", "-u", "-i", NULL, NULL, NULL };
+  char *diff, *tmpfile, *tmpfile2;
+  int fd;
+  const char *text;
+  gsize len;
+
+  /* write the text buffer to a temporary file */
+  fd = g_file_open_tmp (NULL, &tmpfile, error);
+  if (fd < 0)
+    return NULL;
+
+  text = (const char *) g_bytes_get_data (b1, &len);
+  if (write (fd, text, len) != (int) len)
+    {
+      close (fd);
+      g_set_error (error,
+                   G_FILE_ERROR, G_FILE_ERROR_FAILED,
+                   "Could not write data to temporary file '%s'", tmpfile);
+      goto done;
+    }
+  close (fd);
+
+  fd = g_file_open_tmp (NULL, &tmpfile2, error);
+  if (fd < 0)
+    return NULL;
+
+  text = (const char *) g_bytes_get_data (b2, &len);
+  if (write (fd, text, len) != (int) len)
+    {
+      close (fd);
+      g_set_error (error,
+                   G_FILE_ERROR, G_FILE_ERROR_FAILED,
+                   "Could not write data to temporary file '%s'", tmpfile2);
+      goto done;
+    }
+  close (fd);
+
+  command[3] = tmpfile;
+  command[4] = tmpfile2;
+
+  /* run diff command */
+  g_spawn_sync (NULL,
+                (char **) command,
+                NULL,
+                G_SPAWN_SEARCH_PATH,
+                NULL, NULL,
+                &diff,
+                NULL, NULL,
+                error);
+
+done:
+  unlink (tmpfile);
+  g_free (tmpfile);
+  unlink (tmpfile2);
+  g_free (tmpfile2);
+
+  return diff;
+}
+
 gboolean
 file_has_prefix (const char  *filename,
                  const char  *str,

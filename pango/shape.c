@@ -102,10 +102,12 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
            * don't draw a hex box for 0x20
            */
           if (unicode == 0x20)
-            *glyph = PANGO_GET_UNKNOWN_GLYPH (0x2423);
+            unicode = 0x2423;
           else
-            *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
-          return TRUE;
+            {
+              *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
+              return TRUE;
+            }
         }
 
       if ((context->show_flags & PANGO_SHOW_IGNORABLES) != 0 &&

@@ -15,32 +15,19 @@
       0.0
     ]
   },
-  "text" : "abcdef\n",
-  "attributes" : [
-    {
-      "end" : 3,
-      "type" : "gravity",
-      "value" : "east"
-    },
-    {
-      "end" : 3,
-      "type" : "gravity-hint",
-      "value" : "strong"
-    },
-    {
-      "start" : 3,
-      "end" : 6,
-      "type" : "gravity",
-      "value" : "south"
-    }
+  "comment" : [
+    "A single word, expected to produce a single",
+    "overlong line."
   ],
-  "font" : "Cantarell 11",
+  "text" : "Bratwurst",
+  "font" : "Cantarell Bold 32",
+  "width" : 87040,
   "output" : {
     "is-wrapped" : false,
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
-    "width" : 76800,
-    "height" : 44032,
+    "width" : 202752,
+    "height" : 53248,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -78,11 +65,18 @@
       },
       {
         "char-break" : true,
-        "white" : true,
         "cursor-position" : true,
-        "word-end" : true,
-        "sentence-end" : true,
-        "word-boundary" : true
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
       },
       {
         "line-break" : true,
@@ -90,97 +84,32 @@
         "char-break" : true,
         "white" : true,
         "cursor-position" : true,
+        "word-end" : true,
         "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
+        "sentence-end" : true,
         "word-boundary" : true
       }
     ],
     "lines" : [
       {
         "start-index" : 0,
-        "length" : 6,
+        "length" : 9,
         "paragraph-start" : true,
         "direction" : "ltr",
         "runs" : [
           {
             "offset" : 0,
-            "length" : 3,
-            "text" : "abc",
-            "bidi-level" : 0,
-            "gravity" : "east",
-            "language" : "en-us",
-            "script" : "latin",
-            "font" : {
-              "description" : "Cantarell Rotated-Left 11",
-              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-              "variations" : {
-                "wght" : 0
-              },
-              "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
-              ]
-            },
-            "flags" : 0,
-            "extra-attributes" : [
-              {
-                "end" : 3,
-                "type" : "gravity",
-                "value" : "east"
-              },
-              {
-                "end" : 3,
-                "type" : "gravity-hint",
-                "value" : "strong"
-              }
-            ],
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 244,
-                "width" : 18432,
-                "x-offset" : 33196,
-                "y-offset" : 3844,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              },
-              {
-                "glyph" : 272,
-                "width" : 18432,
-                "x-offset" : 33196,
-                "y-offset" : 4280,
-                "is-cluster-start" : true,
-                "log-cluster" : 1
-              },
-              {
-                "glyph" : 273,
-                "width" : 18432,
-                "x-offset" : 33196,
-                "y-offset" : 3506,
-                "is-cluster-start" : true,
-                "log-cluster" : 2
-              }
-            ]
-          },
-          {
-            "offset" : 3,
-            "length" : 3,
-            "text" : "def",
+            "length" : 9,
+            "text" : "Bratwurst",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
             "font" : {
-              "description" : "Cantarell 11",
+              "description" : "Cantarell Bold 32",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
               "variations" : {
-                "wght" : 0
+                "wght" : 8374
               },
               "matrix" : [
                 1.0,
@@ -192,46 +121,67 @@
               ]
             },
             "flags" : 0,
-            "extra-attributes" : [
-              {
-                "start" : 3,
-                "end" : 6,
-                "type" : "gravity",
-                "value" : "south"
-              }
-            ],
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
             "glyphs" : [
               {
-                "glyph" : 280,
-                "width" : 8192,
+                "glyph" : 29,
+                "width" : 28672,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               },
               {
-                "glyph" : 287,
-                "width" : 8192,
+                "glyph" : 409,
+                "width" : 18432,
                 "is-cluster-start" : true,
                 "log-cluster" : 1
               },
               {
-                "glyph" : 311,
-                "width" : 5120,
+                "glyph" : 244,
+                "width" : 23552,
                 "is-cluster-start" : true,
                 "log-cluster" : 2
+              },
+              {
+                "glyph" : 430,
+                "width" : 16384,
+                "is-cluster-start" : true,
+                "log-cluster" : 3
+              },
+              {
+                "glyph" : 467,
+                "width" : 35840,
+                "is-cluster-start" : true,
+                "log-cluster" : 4
+              },
+              {
+                "glyph" : 438,
+                "width" : 24576,
+                "is-cluster-start" : true,
+                "log-cluster" : 5
+              },
+              {
+                "glyph" : 409,
+                "width" : 18432,
+                "is-cluster-start" : true,
+                "log-cluster" : 6
+              },
+              {
+                "glyph" : 417,
+                "width" : 20480,
+                "is-cluster-start" : true,
+                "log-cluster" : 7
+              },
+              {
+                "glyph" : 430,
+                "width" : 16384,
+                "is-cluster-start" : true,
+                "log-cluster" : 8
               }
             ]
           }
         ]
-      },
-      {
-        "start-index" : 7,
-        "length" : 0,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : []
       }
     ]
   }

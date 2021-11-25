@@ -44,17 +44,27 @@ if cairo_dep.found()
     [ 'testiter', [ 'testiter.c' ], [ libpangocairo_dep ] ],
     [ 'test-ellipsize', [ 'test-ellipsize.c' ], [ libpangocairo_dep ] ],
     [ 'markup-parse', [ 'markup-parse.c' , 'test-common.c' ], [ libpangocairo_dep ] ],
-    [ 'test-layout', [ 'test-layout.c', 'test-common.c' ], [ libpangocairo_dep ] ],
     [ 'test-itemize', [ 'test-itemize.c', 'test-common.c' ], [ libpangocairo_dep ] ],
     [ 'test-shape', [ 'test-shape.c', 'test-common.c' ], [ libpangocairo_dep ] ],
     [ 'test-font', [ 'test-font.c' ], [ libpangocairo_dep ] ],
     [ 'testattributes', [ 'testattributes.c', 'test-common.c' ], [ libpangocairo_dep ] ],
-    [ 'testmisc', [ 'testmisc.c' ], [ libpangocairo_dep, libpangoft2_dep, glib_dep, harfbuzz_dep ] ],
     [ 'cxx-test', [ 'cxx-test.cpp' ], [ libpangocairo_dep, gobject_dep, harfbuzz_dep ] ],
     [ 'test-harfbuzz', [ 'test-harfbuzz.c' ], [ libpangocairo_dep, gobject_dep, harfbuzz_dep ] ],
     [ 'test-break', [ 'test-break.c', 'test-common.c', 'validate-log-attrs.c' ], [libpangocairo_dep, glib_dep, harfbuzz_dep ] ],
     [ 'testserialize', [ 'testserialize.c' ], [ libpangocairo_dep ] ],
   ]
+
+  if build_pangoft2
+    tests += [
+      [ 'testmisc', [ 'testmisc.c' ], [ libpangocairo_dep, libpangoft2_dep, glib_dep, harfbuzz_dep ] ],
+    ]
+
+    if host_system != 'darwin'
+      tests += [
+        [ 'test-layout', [ 'test-layout.c', 'test-common.c' ], [ libpangocairo_dep, libpangoft2_dep ] ],
+      ]
+    endif
+  endif
 
   if host_system != 'darwin'
     tests += [

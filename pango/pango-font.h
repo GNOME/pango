@@ -634,6 +634,9 @@ hb_font_t *           pango_font_get_hb_font       (PangoFont        *font);
 PANGO_AVAILABLE_IN_1_50
 PangoLanguage **      pango_font_get_languages     (PangoFont        *font);
 
+PANGO_AVAILABLE_IN_1_50
+GBytes *              pango_font_serialize         (PangoFont        *font);
+
 /**
  * PANGO_GLYPH_EMPTY:
  *

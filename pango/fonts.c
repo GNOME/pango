@@ -1752,6 +1752,13 @@ pango_font_default_get_face (PangoFont *font)
 }
 
 static void
+pango_font_default_get_matrix (PangoFont   *font,
+                               PangoMatrix *matrix)
+{
+  *matrix = (PangoMatrix) PANGO_MATRIX_INIT;
+}
+
+static void
 pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
@@ -1766,6 +1773,7 @@ pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
   pclass->get_scale_factors = pango_font_default_get_scale_factors;
   pclass->has_char = pango_font_default_has_char;
   pclass->get_face = pango_font_default_get_face;
+  pclass->get_matrix = pango_font_default_get_matrix;
 }
 
 static void
@@ -2715,6 +2723,15 @@ pango_font_get_languages (PangoFont *font)
   PangoFontClassPrivate *pclass = PANGO_FONT_GET_CLASS_PRIVATE (font);
 
   return pclass->get_languages (font);
+}
+
+void
+pango_font_get_matrix (PangoFont   *font,
+                       PangoMatrix *matrix)
+{
+  PangoFontClassPrivate *pclass = PANGO_FONT_GET_CLASS_PRIVATE (font);
+
+  pclass->get_matrix (font, matrix);
 }
 
 gboolean
