@@ -15,47 +15,21 @@
       0.0
     ]
   },
-  "text" : " a⃠ 😊︎ 😊️ 🇩🇪 ✊ ✋🏾 0 # 🏴󠁵󠁳󠁣󠁡󠁿 ©\n",
+  "text" : "😊︎ 😊️ 🇩🇪 ✊ ✋🏾 0 # 🏴󠁵󠁳󠁣󠁡󠁿 ©\n",
   "font" : "Cantarell 11",
   "output" : {
     "is-wrapped" : false,
     "is-ellipsized" : false,
-    "unknown-glyphs" : 7,
-    "width" : 252928,
-    "height" : 38912,
+    "unknown-glyphs" : 0,
+    "width" : 649216,
+    "height" : 150528,
     "log-attrs" : [
       {
         "char-break" : true,
-        "white" : true,
         "cursor-position" : true,
         "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
         "sentence-start" : true,
-        "word-boundary" : true
-      },
-      {
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
+        "backspace-deletes-character" : true,
         "word-boundary" : true
       },
       {      },
@@ -195,72 +169,18 @@
     "lines" : [
       {
         "start-index" : 0,
-        "length" : 74,
+        "length" : 68,
         "paragraph-start" : true,
         "direction" : "ltr",
         "runs" : [
           {
             "offset" : 0,
-            "length" : 6,
-            "text" : " a⃠ ",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "latin",
-            "font" : {
-              "description" : "Cantarell 11",
-              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-              "variations" : {
-                "wght" : 0
-              },
-              "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
-              ]
-            },
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              },
-              {
-                "glyph" : 244,
-                "width" : 8192,
-                "is-cluster-start" : true,
-                "log-cluster" : 1
-              },
-              {
-                "glyph" : 268443872,
-                "width" : 17408,
-                "is-cluster-start" : true,
-                "log-cluster" : 2
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 5
-              }
-            ]
-          },
-          {
-            "offset" : 6,
             "length" : 8,
             "text" : "😊︎ ",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "common",
             "font" : {
               "description" : "DejaVu Sans 11",
               "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
@@ -299,13 +219,13 @@
             ]
           },
           {
-            "offset" : 14,
+            "offset" : 8,
             "length" : 7,
             "text" : "😊️",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "common",
             "font" : {
               "description" : "DejaVu Sans 11",
               "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
@@ -338,13 +258,13 @@
             ]
           },
           {
-            "offset" : 21,
+            "offset" : 15,
             "length" : 1,
             "text" : " ",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "common",
             "font" : {
               "description" : "Cantarell 11",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
@@ -374,16 +294,16 @@
             ]
           },
           {
-            "offset" : 22,
+            "offset" : 16,
             "length" : 8,
             "text" : "🇩🇪",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "common",
             "font" : {
-              "description" : "DejaVu Sans 11",
-              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "description" : "Noto Color Emoji 11",
+              "checksum" : "cc2ce7351378d5dfa4fce6fd8619e5dcf73693d0089e9223c54e3926cdb8a531",
               "matrix" : [
                 1.0,
                 -0.0,
@@ -399,27 +319,22 @@
             "end-x-offset" : 0,
             "glyphs" : [
               {
-                "glyph" : 268562921,
-                "width" : 23552,
+                "glyph" : 20,
+                "width" : 139264,
                 "is-cluster-start" : true,
+                "is-color" : true,
                 "log-cluster" : 0
-              },
-              {
-                "glyph" : 268562922,
-                "width" : 23552,
-                "is-cluster-start" : true,
-                "log-cluster" : 4
               }
             ]
           },
           {
-            "offset" : 30,
+            "offset" : 24,
             "length" : 1,
             "text" : " ",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "common",
             "font" : {
               "description" : "Cantarell 11",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
@@ -449,16 +364,16 @@
             ]
           },
           {
-            "offset" : 31,
+            "offset" : 25,
             "length" : 3,
             "text" : "✊",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "common",
             "font" : {
-              "description" : "DejaVu Sans 11",
-              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "description" : "Noto Color Emoji 11",
+              "checksum" : "cc2ce7351378d5dfa4fce6fd8619e5dcf73693d0089e9223c54e3926cdb8a531",
               "matrix" : [
                 1.0,
                 -0.0,
@@ -474,21 +389,22 @@
             "end-x-offset" : 0,
             "glyphs" : [
               {
-                "glyph" : 268445450,
-                "width" : 17408,
+                "glyph" : 5,
+                "width" : 139264,
                 "is-cluster-start" : true,
+                "is-color" : true,
                 "log-cluster" : 0
               }
             ]
           },
           {
-            "offset" : 34,
+            "offset" : 28,
             "length" : 1,
             "text" : " ",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "common",
             "font" : {
               "description" : "Cantarell 11",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
@@ -518,16 +434,16 @@
             ]
           },
           {
-            "offset" : 35,
+            "offset" : 29,
             "length" : 7,
             "text" : "✋🏾",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "common",
             "font" : {
-              "description" : "DejaVu Sans 11",
-              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "description" : "Noto Color Emoji 11",
+              "checksum" : "cc2ce7351378d5dfa4fce6fd8619e5dcf73693d0089e9223c54e3926cdb8a531",
               "matrix" : [
                 1.0,
                 -0.0,
@@ -543,27 +459,22 @@
             "end-x-offset" : 0,
             "glyphs" : [
               {
-                "glyph" : 268445451,
-                "width" : 17408,
+                "glyph" : 19,
+                "width" : 139264,
                 "is-cluster-start" : true,
+                "is-color" : true,
                 "log-cluster" : 0
-              },
-              {
-                "glyph" : 268563454,
-                "width" : 23552,
-                "is-cluster-start" : true,
-                "log-cluster" : 3
               }
             ]
           },
           {
-            "offset" : 42,
+            "offset" : 36,
             "length" : 5,
             "text" : " 0 # ",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "common",
             "font" : {
               "description" : "Cantarell 11",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
@@ -617,16 +528,16 @@
             ]
           },
           {
-            "offset" : 47,
+            "offset" : 41,
             "length" : 24,
             "text" : "🏴󠁵󠁳󠁣󠁡󠁿",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "common",
             "font" : {
-              "description" : "DejaVu Sans 11",
-              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "description" : "Noto Color Emoji 11",
+              "checksum" : "cc2ce7351378d5dfa4fce6fd8619e5dcf73693d0089e9223c54e3926cdb8a531",
               "matrix" : [
                 1.0,
                 -0.0,
@@ -642,51 +553,22 @@
             "end-x-offset" : 0,
             "glyphs" : [
               {
-                "glyph" : 268563444,
-                "width" : 23552,
+                "glyph" : 22,
+                "width" : 139264,
                 "is-cluster-start" : true,
+                "is-color" : true,
                 "log-cluster" : 0
-              },
-              {
-                "glyph" : 268435455,
-                "width" : 0,
-                "is-cluster-start" : true,
-                "log-cluster" : 4
-              },
-              {
-                "glyph" : 268435455,
-                "width" : 0,
-                "is-cluster-start" : true,
-                "log-cluster" : 8
-              },
-              {
-                "glyph" : 268435455,
-                "width" : 0,
-                "is-cluster-start" : true,
-                "log-cluster" : 12
-              },
-              {
-                "glyph" : 268435455,
-                "width" : 0,
-                "is-cluster-start" : true,
-                "log-cluster" : 16
-              },
-              {
-                "glyph" : 268435455,
-                "width" : 0,
-                "is-cluster-start" : true,
-                "log-cluster" : 20
               }
             ]
           },
           {
-            "offset" : 71,
+            "offset" : 65,
             "length" : 3,
             "text" : " ©",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "common",
             "font" : {
               "description" : "Cantarell 11",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
@@ -724,7 +606,7 @@
         ]
       },
       {
-        "start-index" : 75,
+        "start-index" : 69,
         "length" : 0,
         "paragraph-start" : true,
         "direction" : "ltr",

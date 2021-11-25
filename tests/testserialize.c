@@ -19,6 +19,7 @@
  */
 
 #include "config.h"
+
 #include <glib.h>
 #include <pango/pangocairo.h>
 #include <gio/gio.h>
@@ -129,7 +130,7 @@ test_serialize_layout_minimal (void)
   const char *test =
     "{\n"
     "  \"text\" : \"Almost nothing\"\n"
-    "}";
+    "}\n";
 
   PangoContext *context;
   GBytes *bytes;
@@ -200,7 +201,7 @@ test_serialize_layout_valid (void)
     "  \"alignment\" : \"center\",\n"
     "  \"width\" : 350000,\n"
     "  \"line-spacing\" : 1.5\n"
-    "}";
+    "}\n";
 
   PangoContext *context;
   GBytes *bytes;
@@ -208,7 +209,6 @@ test_serialize_layout_valid (void)
   PangoTabArray *tabs;
   GError *error = NULL;
   GBytes *out_bytes;
-  const char *str;
   char *s;
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
@@ -231,14 +231,13 @@ test_serialize_layout_valid (void)
   g_assert_cmpfloat_with_epsilon (pango_layout_get_line_spacing (layout), 1.5, 0.0001);
 
   out_bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_DEFAULT);
-  str = g_bytes_get_data (out_bytes, NULL);
 
-  g_assert_cmpstr (str, ==, test);
+  g_assert_cmpstr (g_bytes_get_data (out_bytes, NULL), ==, g_bytes_get_data (bytes, NULL));
 
   g_bytes_unref (out_bytes);
+  g_bytes_unref (bytes);
 
   g_object_unref (layout);
-  g_bytes_unref (bytes);
   g_object_unref (context);
 }
 
@@ -253,7 +252,7 @@ test_serialize_layout_context (void)
     "    \"round-glyph-positions\" : \"false\"\n"
     "  },\n"
     "  \"text\" : \"Some fun with layouts!\"\n"
-    "}";
+    "}\n";
 
   PangoContext *context;
   GBytes *bytes;
@@ -292,7 +291,7 @@ test_serialize_layout_invalid (void)
       "      \"type\" : \"caramba\"\n"
       "    }\n"
       "  ]\n"
-      "}",
+      "}\n",
       PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE
     },
     {
@@ -302,7 +301,7 @@ test_serialize_layout_invalid (void)
       "      \"type\" : \"weight\"\n"
       "    }\n"
       "  ]\n"
-      "}",
+      "}\n",
       PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE
     },
     {
@@ -313,13 +312,13 @@ test_serialize_layout_invalid (void)
       "      \"value\" : \"nonsense\"\n"
       "    }\n"
       "  ]\n"
-      "}",
+      "}\n",
       PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE
     },
     {
       "{\n"
       "  \"alignment\" : \"nonsense\"\n"
-      "}",
+      "}\n",
       PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE
     },
     {
@@ -327,7 +326,7 @@ test_serialize_layout_invalid (void)
       "  \"attributes\" : {\n"
       "    \"name\" : \"This is wrong\"\n"
       "  }\n"
-      "}",
+      "}\n",
       PANGO_LAYOUT_DESERIALIZE_INVALID_SYNTAX
     }
   };

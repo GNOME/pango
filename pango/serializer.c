@@ -1478,6 +1478,7 @@ pango_layout_serialize (PangoLayout               *layout,
 {
   JsonGenerator *generator;
   JsonNode *node;
+  GString *str;
   char *data;
   gsize size;
 
@@ -1490,7 +1491,10 @@ pango_layout_serialize (PangoLayout               *layout,
   json_generator_set_indent (generator, 2);
 
   json_generator_set_root (generator, node);
-  data = json_generator_to_data (generator, &size);
+  str = g_string_new ("");
+  g_string_append_c (json_generator_to_gstring (generator, str), '\n');
+  size = str->len;
+  data = g_string_free (str, FALSE);
 
   json_node_free (node);
   g_object_unref (generator);
