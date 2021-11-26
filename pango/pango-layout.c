@@ -3501,6 +3501,7 @@ shape_tab (PangoLayoutLine  *line,
   glyphs->glyphs[0].geometry.x_offset = 0;
   glyphs->glyphs[0].geometry.y_offset = 0;
   glyphs->glyphs[0].attr.is_cluster_start = 1;
+  glyphs->glyphs[0].attr.is_color = 0;
 
   glyphs->log_clusters[0] = 0;
 
