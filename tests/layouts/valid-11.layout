@@ -15,7 +15,7 @@
       0.0
     ]
   },
-  "text" : "double low error\n",
+  "text" : "double low error",
   "attributes" : [
     {
       "end" : 6,
@@ -60,7 +60,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
     "width" : 109568,
-    "height" : 38912,
+    "height" : 20480,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -157,21 +157,14 @@
         "break-inserts-hyphen" : true
       },
       {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "sentence-end" : true,
-        "word-boundary" : true
-      },
-      {
         "line-break" : true,
         "mandatory-break" : true,
         "char-break" : true,
         "white" : true,
         "cursor-position" : true,
+        "word-end" : true,
         "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
+        "sentence-end" : true,
         "word-boundary" : true
       }
     ],
@@ -469,13 +462,6 @@
             ]
           }
         ]
-      },
-      {
-        "start-index" : 17,
-        "length" : 0,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : []
       }
     ]
   }

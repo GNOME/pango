@@ -15,7 +15,8 @@
       0.0
     ]
   },
-  "text" : "Lets see if this text is long enough to wrap due to height limitations. It might, or it might not.\n",
+  "comment" : "",
+  "text" : "Lets see if this text is long enough to wrap due to height limitations. It might, or it might not.",
   "font" : "Cantarell 11",
   "ellipsize" : "end",
   "width" : 153600,
@@ -25,7 +26,7 @@
     "is-ellipsized" : true,
     "unknown-glyphs" : 0,
     "width" : 153600,
-    "height" : 36864,
+    "height" : 38912,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -621,20 +622,13 @@
         "word-boundary" : true
       },
       {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "sentence-end" : true,
-        "word-boundary" : true
-      },
-      {
         "line-break" : true,
         "mandatory-break" : true,
         "char-break" : true,
         "white" : true,
         "cursor-position" : true,
         "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
+        "sentence-end" : true,
         "word-boundary" : true
       }
     ],
