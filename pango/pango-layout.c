@@ -3750,7 +3750,7 @@ find_break_extra_width (PangoLayout    *layout,
     {
       ensure_hyphen_width (state);
 
-      if (layout->log_attrs[state->start_offset + pos].break_removes_preceding)
+      if (layout->log_attrs[state->start_offset + pos].break_removes_preceding && pos > 0)
         return state->hyphen_width - state->log_widths[state->log_widths_offset + pos - 1];
       else
         return state->hyphen_width;
