@@ -15,7 +15,8 @@
       0.0
     ]
   },
-  "text" : "abcdef\n",
+  "comment" : "",
+  "text" : "abcdef",
   "attributes" : [
     {
       "end" : 3,
@@ -39,8 +40,8 @@
     "is-wrapped" : false,
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
-    "width" : 76800,
-    "height" : 44032,
+    "width" : 79872,
+    "height" : 25600,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -77,21 +78,14 @@
         "break-inserts-hyphen" : true
       },
       {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "sentence-end" : true,
-        "word-boundary" : true
-      },
-      {
         "line-break" : true,
         "mandatory-break" : true,
         "char-break" : true,
         "white" : true,
         "cursor-position" : true,
+        "word-end" : true,
         "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
+        "sentence-end" : true,
         "word-boundary" : true
       }
     ],
@@ -144,24 +138,24 @@
             "glyphs" : [
               {
                 "glyph" : 244,
-                "width" : 18432,
-                "x-offset" : 33196,
+                "width" : 19456,
+                "x-offset" : 34220,
                 "y-offset" : 3844,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               },
               {
                 "glyph" : 272,
-                "width" : 18432,
-                "x-offset" : 33196,
+                "width" : 19456,
+                "x-offset" : 34220,
                 "y-offset" : 4280,
                 "is-cluster-start" : true,
                 "log-cluster" : 1
               },
               {
                 "glyph" : 273,
-                "width" : 18432,
-                "x-offset" : 33196,
+                "width" : 19456,
+                "x-offset" : 34220,
                 "y-offset" : 3506,
                 "is-cluster-start" : true,
                 "log-cluster" : 2
@@ -225,13 +219,6 @@
             ]
           }
         ]
-      },
-      {
-        "start-index" : 7,
-        "length" : 0,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : []
       }
     ]
   }

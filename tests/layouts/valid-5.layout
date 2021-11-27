@@ -15,7 +15,7 @@
       0.0
     ]
   },
-  "text" : "A test with multiple paragraphs and with no-break attributes, which might trigger a crash.\nIf it doesn't the fix has worked.\n",
+  "text" : "A test with multiple paragraphs and with no-break attributes, which might trigger a crash.\nIf it doesn't the fix has worked.",
   "attributes" : [
     {
       "start" : 21,
@@ -31,7 +31,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
     "width" : 194560,
-    "height" : 130048,
+    "height" : 116736,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -766,20 +766,13 @@
         "word-boundary" : true
       },
       {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "sentence-end" : true,
-        "word-boundary" : true
-      },
-      {
         "line-break" : true,
         "mandatory-break" : true,
         "char-break" : true,
         "white" : true,
         "cursor-position" : true,
         "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
+        "sentence-end" : true,
         "word-boundary" : true
       }
     ],
@@ -1775,13 +1768,6 @@
             ]
           }
         ]
-      },
-      {
-        "start-index" : 125,
-        "length" : 0,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : []
       }
     ]
   }

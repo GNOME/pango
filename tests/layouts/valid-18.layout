@@ -15,7 +15,8 @@
       0.0
     ]
   },
-  "text" : "some line breaks and mis­ce­llaneous ig﻿nora‌bles\n",
+  "comment" : "Miscellaneous ignorables",
+  "text" : "some line breaks and mis­ce­llaneous ig﻿nora‌bles",
   "attributes" : [
     {
       "end" : 57,
@@ -29,7 +30,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 5,
     "width" : 302080,
-    "height" : 56320,
+    "height" : 38912,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -311,21 +312,14 @@
         "break-inserts-hyphen" : true
       },
       {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "sentence-end" : true,
-        "word-boundary" : true
-      },
-      {
         "line-break" : true,
         "mandatory-break" : true,
         "char-break" : true,
         "white" : true,
         "cursor-position" : true,
+        "word-end" : true,
         "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
+        "sentence-end" : true,
         "word-boundary" : true
       }
     ],
@@ -750,13 +744,6 @@
             ]
           }
         ]
-      },
-      {
-        "start-index" : 58,
-        "length" : 0,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : []
       }
     ]
   }

@@ -15,14 +15,15 @@
       0.0
     ]
   },
-  "text" : " 0️⃣ Keycap Digit Zero\n",
+  "comment" : "A keycap sequence",
+  "text" : " 0️⃣ Keycap Digit Zero",
   "font" : "Cantarell 11",
   "output" : {
     "is-wrapped" : false,
     "is-ellipsized" : false,
-    "unknown-glyphs" : 1,
-    "width" : 151552,
-    "height" : 38912,
+    "unknown-glyphs" : 0,
+    "width" : 142336,
+    "height" : 19456,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -151,21 +152,14 @@
         "break-inserts-hyphen" : true
       },
       {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "sentence-end" : true,
-        "word-boundary" : true
-      },
-      {
         "line-break" : true,
         "mandatory-break" : true,
         "char-break" : true,
         "white" : true,
         "cursor-position" : true,
+        "word-end" : true,
         "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
+        "sentence-end" : true,
         "word-boundary" : true
       }
     ],
@@ -221,13 +215,13 @@
             "language" : "en-us",
             "script" : "latin",
             "font" : {
-              "description" : "DejaVu Sans 11",
-              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "description" : "Noto Color Emoji 11",
+              "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47",
               "matrix" : [
-                1.0,
+                0.13455956135321101,
                 -0.0,
                 -0.0,
-                1.0,
+                0.13455956135321101,
                 0.0,
                 0.0
               ]
@@ -239,21 +233,10 @@
             "glyphs" : [
               {
                 "glyph" : 19,
-                "width" : 10240,
+                "width" : 18432,
                 "is-cluster-start" : true,
+                "is-color" : true,
                 "log-cluster" : 0
-              },
-              {
-                "glyph" : 268435455,
-                "width" : 0,
-                "is-cluster-start" : true,
-                "log-cluster" : 1
-              },
-              {
-                "glyph" : 268443875,
-                "width" : 17408,
-                "is-cluster-start" : true,
-                "log-cluster" : 4
               }
             ]
           },
@@ -396,13 +379,6 @@
             ]
           }
         ]
-      },
-      {
-        "start-index" : 27,
-        "length" : 0,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : []
       }
     ]
   }

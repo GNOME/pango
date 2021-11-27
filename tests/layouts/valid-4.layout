@@ -15,7 +15,7 @@
       0.0
     ]
   },
-  "text" : "This paragraph should ac­tual­ly have multiple lines, unlike all the other wannabe äöü pa­ra­graph tests in this ugh test-case. Grow some lines!\n",
+  "text" : "This paragraph should ac­tual­ly have multiple lines, unlike all the other wannabe äöü pa­ra­graph tests in this ugh test-case. Grow some lines!",
   "font" : "Cantarell 11",
   "width" : 198656,
   "output" : {
@@ -23,7 +23,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
     "width" : 197632,
-    "height" : 111616,
+    "height" : 97280,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -866,20 +866,13 @@
         "word-boundary" : true
       },
       {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "sentence-end" : true,
-        "word-boundary" : true
-      },
-      {
         "line-break" : true,
         "mandatory-break" : true,
         "char-break" : true,
         "white" : true,
         "cursor-position" : true,
         "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
+        "sentence-end" : true,
         "word-boundary" : true
       }
     ],
@@ -1947,13 +1940,6 @@
             ]
           }
         ]
-      },
-      {
-        "start-index" : 152,
-        "length" : 0,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : []
       }
     ]
   }

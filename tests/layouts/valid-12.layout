@@ -15,7 +15,8 @@
       0.0
     ]
   },
-  "text" : "a       b       c       d e     f       g       h\n",
+  "comment" : "Testing tabs",
+  "text" : "a\tb\tc\td e\tf\tg\th",
   "font" : "Cantarell 11",
   "tabs" : {
     "positions-in-pixels" : true,
@@ -31,8 +32,8 @@
     "is-wrapped" : true,
     "is-ellipsized" : false,
     "unknown-glyphs" : 1,
-    "width" : 113664,
-    "height" : 56320,
+    "width" : 179200,
+    "height" : 38912,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -48,50 +49,14 @@
         "white" : true,
         "cursor-position" : true,
         "word-end" : true,
-        "expandable-space" : true,
         "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
       },
       {
         "line-break" : true,
         "char-break" : true,
         "cursor-position" : true,
         "word-start" : true,
+        "backspace-deletes-character" : true,
         "word-boundary" : true
       },
       {
@@ -99,50 +64,14 @@
         "white" : true,
         "cursor-position" : true,
         "word-end" : true,
-        "expandable-space" : true,
         "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
       },
       {
         "line-break" : true,
         "char-break" : true,
         "cursor-position" : true,
         "word-start" : true,
+        "backspace-deletes-character" : true,
         "word-boundary" : true
       },
       {
@@ -150,50 +79,14 @@
         "white" : true,
         "cursor-position" : true,
         "word-end" : true,
-        "expandable-space" : true,
         "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
       },
       {
         "line-break" : true,
         "char-break" : true,
         "cursor-position" : true,
         "word-start" : true,
+        "backspace-deletes-character" : true,
         "word-boundary" : true
       },
       {
@@ -220,38 +113,14 @@
         "white" : true,
         "cursor-position" : true,
         "word-end" : true,
-        "expandable-space" : true,
         "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
       },
       {
         "line-break" : true,
         "char-break" : true,
         "cursor-position" : true,
         "word-start" : true,
+        "backspace-deletes-character" : true,
         "word-boundary" : true
       },
       {
@@ -259,50 +128,14 @@
         "white" : true,
         "cursor-position" : true,
         "word-end" : true,
-        "expandable-space" : true,
         "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
       },
       {
         "line-break" : true,
         "char-break" : true,
         "cursor-position" : true,
         "word-start" : true,
+        "backspace-deletes-character" : true,
         "word-boundary" : true
       },
       {
@@ -310,58 +143,14 @@
         "white" : true,
         "cursor-position" : true,
         "word-end" : true,
-        "expandable-space" : true,
         "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
       },
       {
         "line-break" : true,
         "char-break" : true,
         "cursor-position" : true,
         "word-start" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "sentence-end" : true,
+        "backspace-deletes-character" : true,
         "word-boundary" : true
       },
       {
@@ -370,22 +159,23 @@
         "char-break" : true,
         "white" : true,
         "cursor-position" : true,
+        "word-end" : true,
         "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
+        "sentence-end" : true,
         "word-boundary" : true
       }
     ],
     "lines" : [
       {
         "start-index" : 0,
-        "length" : 28,
+        "length" : 10,
         "paragraph-start" : true,
         "direction" : "ltr",
         "runs" : [
           {
             "offset" : 0,
-            "length" : 25,
-            "text" : "a       b       c       d",
+            "length" : 1,
+            "text" : "a",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
@@ -415,155 +205,227 @@
                 "width" : 8192,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 1
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 2
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 3
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 4
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 5
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 6
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 7
-              },
-              {
-                "glyph" : 272,
-                "width" : 8192,
-                "is-cluster-start" : true,
-                "log-cluster" : 8
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 9
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 10
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 11
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 12
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 13
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 14
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 15
-              },
-              {
-                "glyph" : 273,
-                "width" : 7168,
-                "is-cluster-start" : true,
-                "log-cluster" : 16
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 17
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 18
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 19
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 20
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 21
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 22
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 23
-              },
-              {
-                "glyph" : 280,
-                "width" : 8192,
-                "is-cluster-start" : true,
-                "log-cluster" : 24
               }
             ]
           },
           {
-            "offset" : 25,
+            "offset" : 1,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 43008,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 2,
+            "length" : 1,
+            "text" : "b",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 272,
+                "width" : 8192,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 3,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 43008,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 4,
+            "length" : 1,
+            "text" : "c",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 273,
+                "width" : 7168,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 5,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 44032,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 6,
+            "length" : 1,
+            "text" : "d",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 280,
+                "width" : 8192,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 7,
             "length" : 3,
             "text" : " ",
             "bidi-level" : 0,
@@ -601,15 +463,15 @@
         ]
       },
       {
-        "start-index" : 28,
-        "length" : 23,
+        "start-index" : 10,
+        "length" : 7,
         "paragraph-start" : false,
         "direction" : "ltr",
         "runs" : [
           {
-            "offset" : 28,
-            "length" : 23,
-            "text" : "e     f       g       h",
+            "offset" : 10,
+            "length" : 1,
+            "text" : "e",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
@@ -639,149 +501,226 @@
                 "width" : 8192,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 11,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
               },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
               {
-                "glyph" : 1109,
-                "width" : 3072,
+                "glyph" : 268435455,
+                "width" : 43008,
                 "is-cluster-start" : true,
-                "log-cluster" : 1
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 12,
+            "length" : 1,
+            "text" : "f",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
               },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 2
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 3
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 4
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 5
-              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
               {
                 "glyph" : 311,
                 "width" : 5120,
                 "is-cluster-start" : true,
-                "log-cluster" : 6
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 13,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
               },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
               {
-                "glyph" : 1109,
-                "width" : 3072,
+                "glyph" : 268435455,
+                "width" : 46080,
                 "is-cluster-start" : true,
-                "log-cluster" : 7
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 14,
+            "length" : 1,
+            "text" : "g",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
               },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 8
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 9
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 10
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 11
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 12
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 13
-              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
               {
                 "glyph" : 312,
                 "width" : 8192,
                 "is-cluster-start" : true,
-                "log-cluster" : 14
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 15,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
               },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
               {
-                "glyph" : 1109,
-                "width" : 3072,
+                "glyph" : 268435455,
+                "width" : 43008,
                 "is-cluster-start" : true,
-                "log-cluster" : 15
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 16,
+            "length" : 1,
+            "text" : "h",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 11",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
               },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 16
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 17
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 18
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 19
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 20
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 21
-              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
               {
                 "glyph" : 319,
                 "width" : 8192,
                 "is-cluster-start" : true,
-                "log-cluster" : 22
+                "log-cluster" : 0
               }
             ]
           }
         ]
-      },
-      {
-        "start-index" : 52,
-        "length" : 0,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : []
       }
     ]
   }

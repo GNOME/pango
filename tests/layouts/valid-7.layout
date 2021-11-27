@@ -15,7 +15,7 @@
       0.0
     ]
   },
-  "text" : "This is a test of the automatic emergency brake!\n",
+  "text" : "This is a test of the automatic emergency brake!",
   "attributes" : [
     {
       "start" : 22,
@@ -39,7 +39,7 @@
     "is-ellipsized" : true,
     "unknown-glyphs" : 0,
     "width" : 153600,
-    "height" : 37888,
+    "height" : 19456,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -327,20 +327,13 @@
         "word-boundary" : true
       },
       {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "sentence-end" : true,
-        "word-boundary" : true
-      },
-      {
         "line-break" : true,
         "mandatory-break" : true,
         "char-break" : true,
         "white" : true,
         "cursor-position" : true,
         "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
+        "sentence-end" : true,
         "word-boundary" : true
       }
     ],
@@ -631,13 +624,6 @@
             ]
           }
         ]
-      },
-      {
-        "start-index" : 49,
-        "length" : 0,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : []
       }
     ]
   }

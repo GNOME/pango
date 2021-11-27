@@ -15,7 +15,8 @@
       0.0
     ]
   },
-  "text" : "e0 = ooo...\n",
+  "comment" : "",
+  "text" : "e0 = ooo...",
   "attributes" : [
     {
       "start" : 1,
@@ -102,7 +103,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
     "width" : 49152,
-    "height" : 41090,
+    "height" : 22658,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -173,20 +174,13 @@
         "word-boundary" : true
       },
       {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "sentence-end" : true,
-        "word-boundary" : true
-      },
-      {
         "line-break" : true,
         "mandatory-break" : true,
         "char-break" : true,
         "white" : true,
         "cursor-position" : true,
         "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
+        "sentence-end" : true,
         "word-boundary" : true
       }
     ],
@@ -708,13 +702,6 @@
             ]
           }
         ]
-      },
-      {
-        "start-index" : 12,
-        "length" : 0,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : []
       }
     ]
   }

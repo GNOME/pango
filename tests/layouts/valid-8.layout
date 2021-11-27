@@ -15,7 +15,8 @@
       0.0
     ]
   },
-  "text" : "Hello שלום Γειά σας\n",
+  "comment" : "",
+  "text" : "Hello שלום Γειά σας",
   "font" : "Cantarell 11",
   "auto-dir" : false,
   "alignment" : "center",
@@ -25,7 +26,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
     "width" : 134144,
-    "height" : 90112,
+    "height" : 19456,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -146,21 +147,14 @@
         "break-inserts-hyphen" : true
       },
       {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "sentence-end" : true,
-        "word-boundary" : true
-      },
-      {
         "line-break" : true,
         "mandatory-break" : true,
         "char-break" : true,
         "white" : true,
         "cursor-position" : true,
+        "word-end" : true,
         "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
+        "sentence-end" : true,
         "word-boundary" : true
       }
     ],
@@ -403,13 +397,6 @@
             ]
           }
         ]
-      },
-      {
-        "start-index" : 31,
-        "length" : 0,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : []
       }
     ]
   }

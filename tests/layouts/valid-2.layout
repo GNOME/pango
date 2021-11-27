@@ -15,7 +15,8 @@
       0.0
     ]
   },
-  "text" : "test the blue drink after dinner\n",
+  "comment" : "",
+  "text" : "test the blue drink after dinner",
   "attributes" : [
     {
       "start" : 9,
@@ -36,7 +37,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
     "width" : 200704,
-    "height" : 37888,
+    "height" : 19456,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -228,21 +229,14 @@
         "break-inserts-hyphen" : true
       },
       {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "sentence-end" : true,
-        "word-boundary" : true
-      },
-      {
         "line-break" : true,
         "mandatory-break" : true,
         "char-break" : true,
         "white" : true,
         "cursor-position" : true,
+        "word-end" : true,
         "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
+        "sentence-end" : true,
         "word-boundary" : true
       }
     ],
@@ -604,13 +598,6 @@
             ]
           }
         ]
-      },
-      {
-        "start-index" : 33,
-        "length" : 0,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : []
       }
     ]
   }
