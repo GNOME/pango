@@ -546,7 +546,7 @@ pango_font_description_set_variations_static (PangoFontDescription *desc,
 /**
  * pango_font_description_set_variations:
  * @desc: a `PangoFontDescription`.
- * @variations: a string representing the variations
+ * @variations: (nullable): a string representing the variations
  *
  * Sets the variations field of a font description.
  *
@@ -1492,7 +1492,8 @@ pango_font_description_to_string (const PangoFontDescription *desc)
         g_string_append (result, "px");
     }
 
-  if (desc->variations && desc->mask & PANGO_FONT_MASK_VARIATIONS)
+  if ((desc->variations && desc->mask & PANGO_FONT_MASK_VARIATIONS) &&
+      desc->variations[0] != '\0')
     {
       g_string_append (result, " @");
       g_string_append (result, desc->variations);
