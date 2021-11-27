@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <pango/pangocairo.h>
+#include <pango/pangocairo-fc.h>
 #include <gio/gio.h>
 
 static void
@@ -122,6 +123,43 @@ test_serialize_tab_array (void)
       tabs = pango_tab_array_from_string (invalid[i]);
       g_assert_null (tabs);
     }
+}
+
+static void
+test_serialize_font (void)
+{
+  PangoContext *context;
+  PangoFontDescription *desc;
+  PangoFont *font;
+  GBytes *bytes;
+  const char *expected =
+    "{\n"
+    "  \"description\" : \"Cantarell 20 @wght=600\",\n"
+    "  \"checksum\" : \"5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2\",\n"
+    "  \"variations\" : {\n"
+    "    \"wght\" : 5583\n"
+    "  },\n"
+    "  \"matrix\" : [\n"
+    "    1.0,\n"
+    "    -0.0,\n"
+    "    -0.0,\n"
+    "    1.0,\n"
+    "    0.0,\n"
+    "    0.0\n"
+    "  ]\n"
+    "}";
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  desc = pango_font_description_from_string ("Cantarell Italic 20 @wght=600");
+  font = pango_context_load_font (context, desc);
+
+  bytes = pango_font_serialize (font);
+  g_assert_cmpstr (g_bytes_get_data (bytes, NULL), ==, expected);
+  g_bytes_unref (bytes);
+
+  g_object_unref (font);
+  pango_font_description_free (desc);
+  g_object_unref (context);
 }
 
 static void
@@ -351,13 +389,53 @@ test_serialize_layout_invalid (void)
 
   g_object_unref (context);
 }
+
+static void
+install_fonts (void)
+{
+  char *dir;
+  FcConfig *config;
+  PangoFontMap *map;
+  char *path;
+  gsize len;
+  char *conf;
+
+  dir = g_test_build_filename (G_TEST_DIST, "fonts", NULL);
+
+  map = g_object_new (PANGO_TYPE_CAIRO_FC_FONT_MAP, NULL);
+
+  config = FcConfigCreate ();
+
+  path = g_test_build_filename (G_TEST_DIST, "fonts/fonts.conf", NULL);
+  g_file_get_contents (path, &conf, &len, NULL);
+
+  if (!FcConfigParseAndLoadFromMemory (config, (const FcChar8 *) conf, TRUE))
+    g_error ("Failed to parse fontconfig configuration");
+
+  g_free (conf);
+  g_free (path);
+
+  FcConfigAppFontAddDir (config, (const FcChar8 *) dir);
+  pango_fc_font_map_set_config (PANGO_FC_FONT_MAP (map), config);
+  FcConfigDestroy (config);
+
+  pango_cairo_font_map_set_default (PANGO_CAIRO_FONT_MAP (map));
+
+  g_object_unref (map);
+
+  g_free (dir);
+}
+
 int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
+  install_fonts ();
+
   g_test_add_func ("/serialize/attr-list", test_serialize_attr_list);
   g_test_add_func ("/serialize/tab-array", test_serialize_tab_array);
+  g_test_add_func ("/serialize/font", test_serialize_font);
   g_test_add_func ("/serialize/layout/minimal", test_serialize_layout_minimal);
   g_test_add_func ("/serialize/layout/valid", test_serialize_layout_valid);
   g_test_add_func ("/serialize/layout/context", test_serialize_layout_context);

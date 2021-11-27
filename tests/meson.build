@@ -51,12 +51,12 @@ if cairo_dep.found()
     [ 'cxx-test', [ 'cxx-test.cpp' ], [ libpangocairo_dep, gobject_dep, harfbuzz_dep ] ],
     [ 'test-harfbuzz', [ 'test-harfbuzz.c' ], [ libpangocairo_dep, gobject_dep, harfbuzz_dep ] ],
     [ 'test-break', [ 'test-break.c', 'test-common.c', 'validate-log-attrs.c' ], [libpangocairo_dep, glib_dep, harfbuzz_dep ] ],
-    [ 'testserialize', [ 'testserialize.c' ], [ libpangocairo_dep ] ],
   ]
 
   if build_pangoft2
     tests += [
       [ 'testmisc', [ 'testmisc.c' ], [ libpangocairo_dep, libpangoft2_dep, glib_dep, harfbuzz_dep ] ],
+      [ 'testserialize', [ 'testserialize.c' ], [ libpangocairo_dep, libpangoft2_dep ] ],
     ]
 
     if host_system != 'darwin'
