@@ -109,22 +109,22 @@ install_fonts (const char *dir)
 {
   FcConfig *config;
   PangoFontMap *map;
+  char *path;
+  gsize len;
   char *conf;
 
   map = g_object_new (PANGO_TYPE_CAIRO_FC_FONT_MAP, NULL);
 
   config = FcConfigCreate ();
 
-  conf = g_strdup_printf ("<?xml version=\"1.0\"?>\n"
-                          "<!DOCTYPE fontconfig SYSTEM \"urn:fontconfig:fonts.dtd\">\n"
-                          "<fontconfig>\n"
-                          "  <cachedir>%s/cache</cachedir>\n"
-                          "</fontconfig>", dir);
+  path = g_test_build_filename (G_TEST_DIST, "fonts/fonts.conf", NULL);
+  g_file_get_contents (path, &conf, &len, NULL);
 
   if (!FcConfigParseAndLoadFromMemory (config, (const FcChar8 *) conf, TRUE))
     g_error ("Failed to parse fontconfig configuration");
 
   g_free (conf);
+  g_free (path);
 
   FcConfigAppFontAddDir (config, (const FcChar8 *) dir);
   pango_fc_font_map_set_config (PANGO_FC_FONT_MAP (map), config);
@@ -150,7 +150,6 @@ main (int argc, char *argv[])
   };
 
   setlocale (LC_ALL, "");
-
   option_context = g_option_context_new ("");
   g_option_context_add_main_entries (option_context, entries, NULL);
   g_option_context_set_ignore_unknown_options (option_context, TRUE);
