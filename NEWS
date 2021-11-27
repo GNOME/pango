@@ -1,3 +1,17 @@
+Overview of changes in 1.49.4, 27-11-2021
+=========================================
+* Require fontconfig 2.13
+* Require harfbuzz 2.6
+* Many fixes to line breaking accuracy
+* coretext: Correctly clamp text weights at min/max values
+* Add serialization api for PangoLayout, PangoFont and PangoAttrList
+* Require json-glib
+* tests: Use serialized layouts for test cases
+* tests: Include fonts in git
+* pango-view: Accept serialized layouts
+* Fix a rounding problem with font metrics
+* Fix visible space display using ␣
+
 Overview of changes in 1.49.3
 =============================
 * Fix hinting of glyph metrics
