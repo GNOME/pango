@@ -1017,7 +1017,8 @@ pango_layout_get_alignment (PangoLayout *layout)
  *
  * Note that tabs and justification conflict with each other:
  * Justification will move content away from its tab-aligned
- * positions.
+ * positions. The same is true for alignments other than
+ * %PANGO_ALIGN_LEFT.
  */
 void
 pango_layout_set_tabs (PangoLayout   *layout,
