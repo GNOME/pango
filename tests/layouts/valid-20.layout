@@ -15,7 +15,7 @@
       0.0
     ]
   },
-  "comment" : "",
+  "comment" : "mixed gravity fun",
   "text" : "abcdef",
   "attributes" : [
     {
@@ -139,7 +139,7 @@
               {
                 "glyph" : 244,
                 "width" : 19456,
-                "x-offset" : 34220,
+                "x-offset" : 14764,
                 "y-offset" : 3844,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
@@ -147,7 +147,7 @@
               {
                 "glyph" : 272,
                 "width" : 19456,
-                "x-offset" : 34220,
+                "x-offset" : 14764,
                 "y-offset" : 4280,
                 "is-cluster-start" : true,
                 "log-cluster" : 1
@@ -155,7 +155,7 @@
               {
                 "glyph" : 273,
                 "width" : 19456,
-                "x-offset" : 34220,
+                "x-offset" : 14764,
                 "y-offset" : 3506,
                 "is-cluster-start" : true,
                 "log-cluster" : 2
