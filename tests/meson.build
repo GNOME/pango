@@ -88,28 +88,35 @@ installed_test_data = [
   'CharBreakTest.txt',
 ]
 
-test_layouts_data = [
-  'layouts/valid-1',
-  'layouts/valid-2',
-  'layouts/valid-3',
-  'layouts/valid-4',
-  'layouts/valid-5',
-  'layouts/valid-6',
-  'layouts/valid-7',
-  'layouts/valid-8',
-  'layouts/valid-9',
-  'layouts/valid-10',
-  'layouts/valid-11',
-  'layouts/valid-12',
-  'layouts/valid-13',
-  'layouts/valid-14',
-  'layouts/valid-15',
-  'layouts/valid-16',
-  'layouts/valid-17',
-  'layouts/valid-18',
-  'layouts/valid-19',
-  'layouts/valid-20',
-  'layouts/valid-21',
+installed_test_layouts_data = [
+  'layouts/bratwurst2.layout',
+  'layouts/bratwurst3.layout',
+  'layouts/bratwurst4.layout',
+  'layouts/bratwurst.layout',
+  'layouts/effigy.layout',
+  'layouts/kebab.layout',
+  'layouts/valid-1.layout',
+  'layouts/valid-2.layout',
+  'layouts/valid-3.layout',
+  'layouts/valid-4.layout',
+  'layouts/valid-5.layout',
+  'layouts/valid-6.layout',
+  'layouts/valid-7.layout',
+  'layouts/valid-8.layout',
+  'layouts/valid-9.layout',
+  'layouts/valid-10.layout',
+  'layouts/valid-11.layout',
+  'layouts/valid-12.layout',
+  'layouts/valid-13.layout',
+  'layouts/valid-14.layout',
+  'layouts/valid-15.layout',
+  'layouts/valid-16.layout',
+  'layouts/valid-17.layout',
+  'layouts/valid-18.layout',
+  'layouts/valid-19.layout',
+  'layouts/valid-20.layout',
+  'layouts/valid-21.layout',
+  'layouts/valid-22.layout',
 ]
 
 test_markups_data = [
@@ -193,12 +200,6 @@ test_items_data = [
   'itemize/one',
   'itemize/two',
 ]
-
-installed_test_layouts_data = []
-foreach d: test_layouts_data
-  installed_test_layouts_data += d + '.markup'
-  installed_test_layouts_data += d + '.expected'
-endforeach
 
 installed_test_markups_data = []
 foreach d: test_markups_data
