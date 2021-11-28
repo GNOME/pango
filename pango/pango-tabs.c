@@ -278,7 +278,6 @@ pango_tab_array_set_tab (PangoTabArray *tab_array,
 {
   g_return_if_fail (tab_array != NULL);
   g_return_if_fail (tab_index >= 0);
-  g_return_if_fail (alignment == PANGO_TAB_LEFT);
   g_return_if_fail (location >= 0);
 
   if (tab_index >= tab_array->size)
@@ -399,6 +398,14 @@ pango_tab_array_to_string (PangoTabArray *tab_array)
     {
       if (i > 0)
         g_string_append_c (s, ' ');
+
+      if (tab_array->tabs[i].alignment == PANGO_TAB_RIGHT)
+        g_string_append (s, "right:");
+      else if (tab_array->tabs[i].alignment == PANGO_TAB_CENTER)
+        g_string_append (s, "center:");
+      else if (tab_array->tabs[i].alignment == PANGO_TAB_DECIMAL)
+        g_string_append (s, "decimal:");
+
       g_string_append_printf (s, "%d", tab_array->tabs[i].location);
       if (tab_array->positions_in_pixels)
         g_string_append (s, "px");
@@ -446,13 +453,39 @@ pango_tab_array_from_string (const char *text)
     {
       char *endp;
       gint64 pos;
+      PangoTabAlign align;
+
+      if (g_str_has_prefix (p, "left:"))
+        {
+          align = PANGO_TAB_LEFT;
+          p += strlen ("left:");
+        }
+      else if (g_str_has_prefix (p, "right:"))
+        {
+          align = PANGO_TAB_RIGHT;
+          p += strlen ("right:");
+        }
+      else if (g_str_has_prefix (p, "center:"))
+        {
+          align = PANGO_TAB_CENTER;
+          p += strlen ("center:");
+        }
+      else if (g_str_has_prefix (p, "decimal:"))
+        {
+          align = PANGO_TAB_DECIMAL;
+          p += strlen ("decimal:");
+        }
+      else
+        {
+          align = PANGO_TAB_LEFT;
+        }
 
       pos = g_ascii_strtoll (p, &endp, 10);
       if (pos < 0 ||
           (pixels && *endp != 'p') ||
           (!pixels && !g_ascii_isspace (*endp) && *endp != '\0')) goto fail;
 
-      pango_tab_array_set_tab (array, i, PANGO_TAB_LEFT, pos);
+      pango_tab_array_set_tab (array, i, align, pos);
       i++;
 
       p = (const char *)endp;
