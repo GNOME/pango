@@ -21,11 +21,26 @@
   "tabs" : {
     "positions-in-pixels" : true,
     "positions" : [
-      0,
-      50,
-      100,
-      150,
-      200
+      {
+        "position" : 0,
+        "alignment" : "left"
+      },
+      {
+        "position" : 50,
+        "alignment" : "left"
+      },
+      {
+        "position" : 100,
+        "alignment" : "left"
+      },
+      {
+        "position" : 150,
+        "alignment" : "left"
+      },
+      {
+        "position" : 200,
+        "alignment" : "left"
+      }
     ]
   },
   "single-paragraph" : true,

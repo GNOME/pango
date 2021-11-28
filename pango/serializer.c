@@ -218,9 +218,15 @@ add_tab_array (JsonBuilder   *builder,
   json_builder_begin_array (builder);
   for (int i = 0; i < pango_tab_array_get_size (tabs); i++)
     {
+      PangoTabAlign align;
       int pos;
-      pango_tab_array_get_tab (tabs, i, NULL, &pos);
+      pango_tab_array_get_tab (tabs, i, &align, &pos);
+      json_builder_begin_object (builder);
+      json_builder_set_member_name (builder, "position");
       json_builder_add_int_value (builder, pos);
+      json_builder_set_member_name (builder, "alignment");
+      add_enum_value (builder, PANGO_TYPE_TAB_ALIGN, align, FALSE);
+      json_builder_end_object (builder);
     }
   json_builder_end_array (builder);
 
@@ -1133,9 +1139,31 @@ json_to_tab_array (JsonReader  *reader,
       for (int i = 0; i < json_reader_count_elements (reader); i++)
         {
           int pos;
+          PangoTabAlign align;
+
           json_reader_read_element (reader, i);
-          pos = json_reader_get_int_value (reader);
-          pango_tab_array_set_tab (tabs, i, PANGO_TAB_LEFT, pos);
+          if (json_reader_is_object (reader))
+            {
+              json_reader_read_member (reader, "position");
+              pos = json_reader_get_int_value (reader);
+              json_reader_end_member (reader);
+              json_reader_read_member (reader, "alignment");
+
+              align = get_enum_value (PANGO_TYPE_TAB_ALIGN,
+                                      json_reader_get_string_value (reader),
+                                      FALSE,
+                                      error);
+              if (align == -1)
+                goto fail;
+              json_reader_end_member (reader);
+            }
+          else
+            {
+              pos = json_reader_get_int_value (reader);
+              align = PANGO_TAB_LEFT;
+            }
+
+          pango_tab_array_set_tab (tabs, i, align, pos);
           json_reader_end_element (reader);
         }
     }

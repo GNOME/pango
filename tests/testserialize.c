@@ -86,6 +86,7 @@ test_serialize_tab_array (void)
     "0px 10px 100px 200px 400px",
     "  0    10   ",
     "20 10",
+    "left:10px right:20px center:30px decimal:40px",
     ""
   };
   const char *roundtripped[] = {
@@ -93,6 +94,7 @@ test_serialize_tab_array (void)
     "0px 10px 100px 200px 400px",
     "0 10",
     "20 10",
+    "10px right:20px center:30px decimal:40px",
     ""
   };
   const char *invalid[] = {
@@ -231,9 +233,18 @@ test_serialize_layout_valid (void)
     "  \"tabs\" : {\n"
     "    \"positions-in-pixels\" : true,\n"
     "    \"positions\" : [\n"
-    "      0,\n"
-    "      50,\n"
-    "      100\n"
+    "      {\n"
+    "        \"position\" : 0,\n"
+    "        \"alignment\" : \"left\"\n"
+    "      },\n"
+    "      {\n"
+    "        \"position\" : 50,\n"
+    "        \"alignment\" : \"center\"\n"
+    "      },\n"
+    "      {\n"
+    "        \"position\" : 100,\n"
+    "        \"alignment\" : \"right\"\n"
+    "      }\n"
     "    ]\n"
     "  },\n"
     "  \"alignment\" : \"center\",\n"
