@@ -111,9 +111,12 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
         }
 
       if ((context->show_flags & PANGO_SHOW_IGNORABLES) != 0 &&
-          pango_get_ignorable (unicode))
+          pango_is_default_ignorable (unicode))
         {
-          *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
+          if (pango_get_ignorable (unicode))
+            *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
+          else
+            *glyph = PANGO_GLYPH_EMPTY;
           return TRUE;
         }
 
