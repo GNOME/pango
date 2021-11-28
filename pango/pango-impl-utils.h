@@ -128,8 +128,46 @@ pango_glyph_string_reverse_range (PangoGlyphString *glyphs,
     }
 }
 
-/* The cairo hexbox drawing code assumes
- * that these nicks are 1-6 ASCII chars
+static inline gboolean
+pango_is_default_ignorable (gunichar ch)
+{
+  int plane = ch >> 16;
+
+  if (G_LIKELY (plane == 0))
+    {
+      int page = ch >> 8;
+      switch (page)
+        {
+        case 0x00: return ch == 0x00ad;
+        case 0x03: return ch == 0x034f;
+        case 0x06: return ch == 0x061c;
+        case 0x17: return (0x17b4 <= ch && ch <= 0x17b5);
+        case 0x18: return (0x180b <= ch && ch <= 0x180e);
+        case 0x20: return (0x200b <= ch && ch <= 0x200f) ||
+                          (0x202a <= ch && ch <= 0x202e) ||
+                          (0x2060 <= ch && ch <= 0x206f);
+        case 0xfe: return (0xfe00 <= ch && ch <= 0xfe0f) || ch == 0xfeff;
+        case 0xff: return (0xfff0 <= ch && ch <= 0xfff8);
+        default: return FALSE;
+      }
+    }
+  else
+    {
+      /* Other planes */
+      switch (plane)
+        {
+        case 0x01: return (0x1d173 <= ch && ch <= 0x1d17a);
+        case 0x0e: return (0xe0000 <= ch && ch <= 0xe0fff);
+        default: return FALSE;
+        }
+    }
+}
+
+/* These are the default ignorables that we render as hexboxes
+ * with nicks if PANGO_SHOW_IGNORABLES is used.
+ *
+ * The cairo hexbox drawing code assumes that these nicks are
+ * 1-6 ASCII chars
  */
 static struct {
   gunichar ch;
