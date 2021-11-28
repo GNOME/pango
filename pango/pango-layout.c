@@ -5664,7 +5664,7 @@ pango_layout_line_get_extents_and_height (PangoLayoutLine *line,
         }
 
       if (height)
-        *height = MAX (*height, run_height);
+        *height = MAX (*height, abs (run_height));
 
       x_pos += run_logical.width;
       tmp_list = tmp_list->next;

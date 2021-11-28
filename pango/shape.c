@@ -169,7 +169,10 @@ pango_hb_font_get_glyph_v_advance (hb_font_t      *font,
 
   pango_font_get_glyph_extents (context->font, glyph, NULL, &logical);
 
-  return logical.height;
+  if (hb_font_get_glyph_v_advance (context->parent, glyph) < 0)
+    return - logical.height;
+  else
+    return logical.height;
 }
 
 static hb_bool_t
