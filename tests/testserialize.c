@@ -91,17 +91,17 @@ test_serialize_tab_array (void)
     ""
   };
   const char *roundtripped[] = {
-    "0 10 100 200 400",
-    "0px 10px 100px 200px 400px",
-    "0 10",
-    "20 10",
-    "10px right:20px center:30px decimal:40px",
+    "0\n10\n100\n200\n400",
+    "0px\n10px\n100px\n200px\n400px",
+    "0\n10",
+    "20\n10",
+    "10px\nright:20px\ncenter:30px\ndecimal:40px",
     "decimal:10240:94",
     ""
   };
   const char *invalid[] = {
     "not a tabarray",
-    "-10\n-20",
+    "-10:-20",
     "10ps 20pu",
     "10, 20",
     "10 20px 30",

@@ -395,7 +395,7 @@ pango_tab_array_to_string (PangoTabArray *tab_array)
   for (int i = 0; i < tab_array->size; i++)
     {
       if (i > 0)
-        g_string_append_c (s, ' ');
+        g_string_append_c (s, '\n');
 
       if (tab_array->tabs[i].alignment == PANGO_TAB_RIGHT)
         g_string_append (s, "right:");
