@@ -82,6 +82,7 @@
 #include "pango-glyph-item.h"
 #include <string.h>
 #include <math.h>
+#include <locale.h>
 
 #include <hb-ot.h>
 
@@ -225,6 +226,7 @@ pango_layout_init (PangoLayout *layout)
   layout->line_count = 0;
 
   layout->tab_width = -1;
+  layout->decimal = 0;
   layout->unknown_glyphs_count = -1;
 
   layout->wrap = PANGO_WRAP_WORD;
@@ -1017,7 +1019,8 @@ pango_layout_get_alignment (PangoLayout *layout)
  *
  * Note that tabs and justification conflict with each other:
  * Justification will move content away from its tab-aligned
- * positions.
+ * positions. The same is true for alignments other than
+ * %PANGO_ALIGN_LEFT.
  */
 void
 pango_layout_set_tabs (PangoLayout   *layout,
@@ -3261,6 +3264,7 @@ pango_layout_line_leaked (PangoLayoutLine *line)
  *****************/
 
 static void shape_tab (PangoLayoutLine  *line,
+                       ParaBreakState   *state,
                        PangoItem        *item,
                        PangoGlyphString *glyphs);
 
@@ -3366,54 +3370,58 @@ ensure_tab_width (PangoLayout *layout)
     }
 }
 
-/* For now we only need the tab position, we assume
- * all tabs are left-aligned.
- */
-static int
-get_tab_pos (PangoLayout *layout,
-             int          index,
-             gboolean    *is_default)
+static void
+get_tab_pos (PangoLayoutLine *line,
+             int              index,
+             int             *tab_pos,
+             PangoTabAlign   *alignment,
+             gunichar        *decimal,
+             gboolean        *is_default)
 {
-  gint n_tabs;
+  PangoLayout *layout = line->layout;
+  int n_tabs;
   gboolean in_pixels;
+  int offset = 0;
+
+  if (layout->alignment != PANGO_ALIGN_CENTER)
+    {
+      if (line->is_paragraph_start && layout->indent >= 0)
+        offset = layout->indent;
+      else if (!line->is_paragraph_start && layout->indent < 0)
+        offset = - layout->indent;
+    }
 
   if (layout->tabs)
     {
       n_tabs = pango_tab_array_get_size (layout->tabs);
       in_pixels = pango_tab_array_get_positions_in_pixels (layout->tabs);
-      if (is_default)
-        *is_default = FALSE;
+      *is_default = FALSE;
     }
   else
     {
       n_tabs = 0;
       in_pixels = FALSE;
-      if (is_default)
-        *is_default = TRUE;
+      *is_default = TRUE;
     }
 
   if (index < n_tabs)
     {
-      gint pos = 0;
-
-      pango_tab_array_get_tab (layout->tabs, index, NULL, &pos);
+      pango_tab_array_get_tab (layout->tabs, index, alignment, tab_pos);
 
       if (in_pixels)
-        return pos * PANGO_SCALE;
-      else
-        return pos;
-    }
+        *tab_pos *= PANGO_SCALE;
 
-  if (n_tabs > 0)
+      *decimal = pango_tab_array_get_decimal_point (layout->tabs, index);
+    }
+  else if (n_tabs > 0)
     {
-      /* Extrapolate tab position, repeating the last tab gap to
-       * infinity.
-       */
+      /* Extrapolate tab position, repeating the last tab gap to infinity. */
       int last_pos = 0;
       int next_to_last_pos = 0;
       int tab_width;
 
-      pango_tab_array_get_tab (layout->tabs, n_tabs - 1, NULL, &last_pos);
+      pango_tab_array_get_tab (layout->tabs, n_tabs - 1, alignment, &last_pos);
+      *decimal = pango_tab_array_get_decimal_point (layout->tabs, n_tabs - 1);
 
       if (n_tabs > 1)
         pango_tab_array_get_tab (layout->tabs, n_tabs - 2, NULL, &next_to_last_pos);
@@ -3427,22 +3435,21 @@ get_tab_pos (PangoLayout *layout,
         }
 
       if (last_pos > next_to_last_pos)
-        {
-          tab_width = last_pos - next_to_last_pos;
-        }
+        tab_width = last_pos - next_to_last_pos;
       else
-        {
-          tab_width = layout->tab_width;
-        }
+        tab_width = layout->tab_width;
 
-      return last_pos + tab_width * (index - n_tabs + 1);
+      *tab_pos = last_pos + tab_width * (index - n_tabs + 1);
     }
   else
     {
-      /* No tab array set, so use default tab width
-       */
-      return layout->tab_width * index;
+      /* No tab array set, so use default tab width */
+      *tab_pos = layout->tab_width * index;
+      *alignment = PANGO_TAB_LEFT;
+      *decimal = 0;
     }
+
+  *tab_pos -= offset;
 }
 
 static int
@@ -3459,7 +3466,7 @@ line_width (PangoLayoutLine *line)
     {
       PangoLayoutRun *run = l->data;
 
-      for (i=0; i < run->glyphs->num_glyphs; i++)
+      for (i = 0; i < run->glyphs->num_glyphs; i++)
         width += run->glyphs->glyphs[i].geometry.width;
     }
 
@@ -3483,14 +3490,33 @@ showing_space (const PangoAnalysis *analysis)
   return FALSE;
 }
 
+static void break_state_set_last_tab (ParaBreakState   *state,
+                                      PangoGlyphString *glyphs,
+                                      int               width,
+                                      int               tab_pos,
+                                      PangoTabAlign     tab_align,
+                                      gunichar          tab_decimal);
+
+static void
+ensure_decimal (PangoLayout *layout)
+{
+  if (layout->decimal == 0)
+    layout->decimal = g_utf8_get_char (localeconv ()->decimal_point);
+}
+
 static void
 shape_tab (PangoLayoutLine  *line,
+           ParaBreakState   *state,
            PangoItem        *item,
            PangoGlyphString *glyphs)
 {
   int i, space_width;
+  int current_width;
+  int tab_pos;
+  PangoTabAlign tab_align;
+  gunichar tab_decimal;
 
-  int current_width = line_width (line);
+  current_width = line_width (line);
 
   pango_glyph_string_set_size (glyphs, 1);
 
@@ -3498,6 +3524,7 @@ shape_tab (PangoLayoutLine  *line,
     glyphs->glyphs[0].glyph = PANGO_GET_UNKNOWN_GLYPH ('\t');
   else
     glyphs->glyphs[0].glyph = PANGO_GLYPH_EMPTY;
+
   glyphs->glyphs[0].geometry.x_offset = 0;
   glyphs->glyphs[0].geometry.y_offset = 0;
   glyphs->glyphs[0].attr.is_cluster_start = 1;
@@ -3508,15 +3535,17 @@ shape_tab (PangoLayoutLine  *line,
   ensure_tab_width (line->layout);
   space_width = line->layout->tab_width / 8;
 
-  for (i=0;;i++)
+  for (i = 0; ; i++)
     {
       gboolean is_default;
-      int tab_pos = get_tab_pos (line->layout, i, &is_default);
+
+      get_tab_pos (line, i, &tab_pos, &tab_align, &tab_decimal, &is_default);
+
       /* Make sure there is at least a space-width of space between
-       * tab-aligned text and the text before it.  However, only do
+       * tab-aligned text and the text before it. However, only do
        * this if no tab array is set on the layout, ie. using default
-       * tab positions.  If use has set tab positions, respect it to
-       * the pixel.
+       * tab positions. If the user has set tab positions, respect it
+       * to the pixel.
        */
       if (tab_pos >= current_width + (is_default ? space_width : 1))
         {
@@ -3524,6 +3553,14 @@ shape_tab (PangoLayoutLine  *line,
           break;
         }
     }
+
+  if (tab_decimal == 0)
+    {
+      ensure_decimal (line->layout);
+      tab_decimal = line->layout->decimal;
+    }
+
+  break_state_set_last_tab (state, glyphs, current_width, tab_pos, tab_align, tab_decimal);
 }
 
 static inline gboolean
@@ -3607,11 +3644,68 @@ struct _ParaBreakState
   int hyphen_width;             /* How much space a hyphen will take */
 
   GList *baseline_shifts;
+
+  PangoGlyphString *last_tab;
+  int last_tab_width;
+  int last_tab_pos;
+  PangoTabAlign last_tab_align;
+  gunichar last_tab_decimal;
 };
+
+static void
+break_state_set_last_tab (ParaBreakState   *state,
+                          PangoGlyphString *glyphs,
+                          int               width,
+                          int               tab_pos,
+                          PangoTabAlign     tab_align,
+                          gunichar          tab_decimal)
+{
+
+  state->last_tab = glyphs;
+  state->last_tab_width = width;
+  state->last_tab_pos = tab_pos;
+  state->last_tab_align = tab_align;
+  state->last_tab_decimal = tab_decimal;
+}
 
 static gboolean
 should_ellipsize_current_line (PangoLayout    *layout,
                                ParaBreakState *state);
+
+static void
+get_decimal_prefix_width (PangoItem        *item,
+                          PangoGlyphString *glyphs,
+                          const char       *text,
+                          gunichar          decimal,
+                          int              *width,
+                          gboolean         *found)
+{
+  PangoGlyphItem glyph_item = { item, glyphs, 0, 0, 0 };
+  int *log_widths;
+  int i;
+  const char *p;
+
+  log_widths = g_new (int, item->num_chars);
+
+  pango_glyph_item_get_logical_widths (&glyph_item, text, log_widths);
+
+  *width = 0;
+  *found = FALSE;
+
+  for (i = 0, p = text + item->offset; i < item->num_chars; i++, p = g_utf8_next_char (p))
+    {
+      if (g_utf8_get_char (p) == decimal)
+        {
+          *width += log_widths[i] / 2;
+          *found = TRUE;
+          break;
+        }
+
+      *width += log_widths[i];
+    }
+
+  g_free (log_widths);
+}
 
 static PangoGlyphString *
 shape_run (PangoLayoutLine *line,
@@ -3622,7 +3716,7 @@ shape_run (PangoLayoutLine *line,
   PangoGlyphString *glyphs = pango_glyph_string_new ();
 
   if (layout->text[item->offset] == '\t')
-    shape_tab (line, item, glyphs);
+    shape_tab (line, state, item, glyphs);
   else
     {
       PangoShapeFlags shape_flags = PANGO_SHAPE_NONE;
@@ -3660,6 +3754,33 @@ shape_run (PangoLayoutLine *line,
           glyphs->glyphs[0].geometry.x_offset += space_left;
           glyphs->glyphs[glyphs->num_glyphs - 1].geometry.width += space_right;
         }
+
+      if (state->last_tab != NULL)
+        {
+          int w;
+
+          g_assert (state->last_tab->num_glyphs == 1);
+
+          /* Update the width of the current tab to position this run properly */
+
+          w = state->last_tab_pos - state->last_tab_width;
+
+          if (state->last_tab_align == PANGO_TAB_RIGHT)
+            w -= pango_glyph_string_get_width (glyphs);
+          else if (state->last_tab_align == PANGO_TAB_CENTER)
+            w -= pango_glyph_string_get_width (glyphs) / 2;
+          else if (state->last_tab_align == PANGO_TAB_DECIMAL)
+            {
+              int width;
+              gboolean found;
+
+              get_decimal_prefix_width (item, glyphs, layout->text, state->last_tab_decimal, &width, &found);
+
+              w -= width;
+            }
+
+          state->last_tab->glyphs[0].geometry.width = MAX (w, 0);
+        }
     }
 
   return glyphs;
@@ -3680,19 +3801,45 @@ insert_run (PangoLayoutLine  *line,
     run->glyphs = glyphs;
   else if (last_run && state->log_widths_offset == 0 &&
            !(run_item->analysis.flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN))
-    run->glyphs = state->glyphs;
+    {
+      run->glyphs = state->glyphs;
+      state->glyphs = NULL;
+    }
   else
     run->glyphs = shape_run (line, state, run_item);
 
-  if (last_run)
+  if (last_run && state->glyphs)
     {
-      if (state->log_widths_offset > 0)
-        pango_glyph_string_free (state->glyphs);
+      pango_glyph_string_free (state->glyphs);
       state->glyphs = NULL;
     }
 
   line->runs = g_slist_prepend (line->runs, run);
   line->length += run_item->length;
+
+  if (state->last_tab && run->glyphs != state->last_tab)
+    {
+      /* Adjust the tab position so placing further runs will continue to
+       * maintain the tab placement. In the case of decimal tabs, we are
+       * done once we've placed the run with the decimal point.
+       */
+
+      if (state->last_tab_align == PANGO_TAB_RIGHT)
+        state->last_tab_width += pango_glyph_string_get_width (run->glyphs);
+      else if (state->last_tab_align == PANGO_TAB_CENTER)
+        state->last_tab_width += pango_glyph_string_get_width (run->glyphs) / 2;
+      else if (state->last_tab_align == PANGO_TAB_DECIMAL)
+        {
+          int width;
+          gboolean found;
+
+          get_decimal_prefix_width (run->item, run->glyphs, line->layout->text, state->last_tab_decimal, &width, &found);
+
+          state->last_tab_width += width;
+          if (found)
+            state->last_tab = NULL;
+        }
+    }
 }
 
 static gboolean
@@ -3798,6 +3945,20 @@ compute_log_widths (PangoLayout    *layout,
     }
 
   pango_glyph_item_get_logical_widths (&glyph_item, layout->text, state->log_widths);
+}
+
+/* If last_tab is set, we've added a tab and remaining_width has been updated to
+ * account for its origin width, which is last_tab_pos - last_tab_width. shape_run
+ * updates the tab width, so we need to consider the delta when comparing
+ * against remaining_width.
+ */
+static int
+tab_width_change (ParaBreakState *state)
+{
+  if (state->last_tab)
+    return state->last_tab->glyphs[0].geometry.width - (state->last_tab_pos - state->last_tab_width);
+
+  return 0;
 }
 
 /* Tries to insert as much as possible of the item at the head of
@@ -3915,7 +4076,6 @@ process_item (PangoLayout     *layout,
   if (state->remaining_width < 0 && !no_break_at_end)  /* Wrapping off */
     {
       insert_run (line, state, item, NULL, TRUE);
-
       DEBUG1 ("no wrapping, all-fit");
       return BREAK_ALL_FIT;
     }
@@ -3929,6 +4089,16 @@ process_item (PangoLayout     *layout,
       width = 0;
       for (i = 0; i < item->num_chars; i++)
         width += state->log_widths[state->log_widths_offset + i];
+    }
+
+  if (layout->text[item->offset] == '\t')
+    {
+      insert_run (line, state, item, NULL, TRUE);
+      state->remaining_width -= width;
+      state->remaining_width = MAX (state->remaining_width, 0);
+
+      DEBUG1 ("tab run, all-fit");
+      return BREAK_ALL_FIT;
     }
 
   if (!no_break_at_end &&
@@ -3945,22 +4115,23 @@ process_item (PangoLayout     *layout,
   else
     extra_width = 0;
 
-  if ((width + extra_width <= state->remaining_width || (item->num_chars == 1 && !line->runs)) &&
+  if ((width + extra_width <= state->remaining_width || (item->num_chars == 1 && !line->runs) ||
+      (state->last_tab && state->last_tab_align != PANGO_TAB_LEFT)) &&
       !no_break_at_end)
     {
-      DEBUG1 ("%d + %d <= %d", width, extra_width, state->remaining_width);
-      insert_run (line, state, item, NULL, FALSE);
+      PangoGlyphString *glyphs;
 
-      width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
+      DEBUG1 ("%d + %d <= %d", width, extra_width, state->remaining_width);
+      glyphs = shape_run (line, state, item);
+
+      width = pango_glyph_string_get_width (glyphs) + tab_width_change (state);
 
       if (width + extra_width <= state->remaining_width || (item->num_chars == 1 && !line->runs))
         {
+          insert_run (line, state, item, glyphs, TRUE);
+
           state->remaining_width -= width;
           state->remaining_width = MAX (state->remaining_width, 0);
-
-          /* We passed last_run == FALSE to insert_run, so it did not do this */
-          pango_glyph_string_free (state->glyphs);
-          state->glyphs = NULL;
 
           DEBUG1 ("early accept '%.*s', all-fit, remaining %d",
                   item->length, layout->text + item->offset,
@@ -3968,8 +4139,8 @@ process_item (PangoLayout     *layout,
           return BREAK_ALL_FIT;
         }
 
-      /* if it doesn't fit after shaping, revert and proceed to break the item */
-      uninsert_run (line);
+      /* if it doesn't fit after shaping, discard and proceed to break the item */
+      pango_glyph_string_free (glyphs);
     }
 
   /*** From here on, we look for a way to break item ***/
@@ -4054,7 +4225,7 @@ retry_break:
 
               glyphs = shape_run (line, state, new_item);
 
-              new_break_width = pango_glyph_string_get_width (glyphs);
+              new_break_width = pango_glyph_string_get_width (glyphs) + tab_width_change (state);
 
               if (num_chars > 0 &&
                   layout->log_attrs[state->start_offset + num_chars - 1].is_white)
@@ -4315,6 +4486,10 @@ process_line (PangoLayout    *layout,
     state->remaining_width = -1;
   else
     state->remaining_width = state->line_width;
+
+  state->last_tab = NULL;
+  state->last_tab_align = PANGO_TAB_LEFT;
+
   DEBUG ("starting to fill line", line, state);
 
   while (state->items)

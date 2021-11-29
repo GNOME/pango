@@ -28,12 +28,9 @@ typedef struct _PangoTab PangoTab;
 
 struct _PangoTab
 {
-  gint location;                /* Offset in pixels of this tab stop
-                                 * from the left margin of the text.
-                                 */
-  PangoTabAlign alignment;      /* Where the tab stop appears relative
-                                 * to the text.
-                                 */
+  int location;
+  PangoTabAlign alignment;
+  gunichar decimal_point;
 };
 
 /**
@@ -42,7 +39,8 @@ struct _PangoTab
  * A `PangoTabArray` contains an array of tab stops.
  *
  * `PangoTabArray` can be used to set tab stops in a `PangoLayout`.
- * Each tab stop has an alignment and a position.
+ * Each tab stop has an alignment, a position, and optionally
+ * a character to use as decimal point.
  */
 struct _PangoTabArray
 {
@@ -59,6 +57,7 @@ init_tabs (PangoTabArray *array, gint start, gint end)
     {
       array->tabs[start].location = 0;
       array->tabs[start].alignment = PANGO_TAB_LEFT;
+      array->tabs[start].decimal_point = 0;
       ++start;
     }
 }
@@ -141,6 +140,7 @@ pango_tab_array_new_with_positions (gint           size,
 
   array->tabs[0].alignment = first_alignment;
   array->tabs[0].location = first_position;
+  array->tabs[0].decimal_point = 0;
 
   if (size == 1)
     return array;
@@ -155,6 +155,7 @@ pango_tab_array_new_with_positions (gint           size,
 
       array->tabs[i].alignment = align;
       array->tabs[i].location = pos;
+      array->tabs[i].decimal_point = 0;
 
       ++i;
     }
@@ -266,9 +267,6 @@ pango_tab_array_resize (PangoTabArray *tab_array,
  * @location: tab location in Pango units
  *
  * Sets the alignment and location of a tab stop.
- *
- * @alignment must always be %PANGO_TAB_LEFT in the current
- * implementation.
  */
 void
 pango_tab_array_set_tab (PangoTabArray *tab_array,
@@ -278,7 +276,6 @@ pango_tab_array_set_tab (PangoTabArray *tab_array,
 {
   g_return_if_fail (tab_array != NULL);
   g_return_if_fail (tab_index >= 0);
-  g_return_if_fail (alignment == PANGO_TAB_LEFT);
   g_return_if_fail (location >= 0);
 
   if (tab_index >= tab_array->size)
@@ -398,10 +395,21 @@ pango_tab_array_to_string (PangoTabArray *tab_array)
   for (int i = 0; i < tab_array->size; i++)
     {
       if (i > 0)
-        g_string_append_c (s, ' ');
+        g_string_append_c (s, '\n');
+
+      if (tab_array->tabs[i].alignment == PANGO_TAB_RIGHT)
+        g_string_append (s, "right:");
+      else if (tab_array->tabs[i].alignment == PANGO_TAB_CENTER)
+        g_string_append (s, "center:");
+      else if (tab_array->tabs[i].alignment == PANGO_TAB_DECIMAL)
+        g_string_append (s, "decimal:");
+
       g_string_append_printf (s, "%d", tab_array->tabs[i].location);
       if (tab_array->positions_in_pixels)
         g_string_append (s, "px");
+
+      if (tab_array->tabs[i].decimal_point != 0)
+        g_string_append_printf (s, ":%d", tab_array->tabs[i].decimal_point);
     }
 
   return g_string_free (s, FALSE);
@@ -446,14 +454,39 @@ pango_tab_array_from_string (const char *text)
     {
       char *endp;
       gint64 pos;
+      PangoTabAlign align;
+
+      if (g_str_has_prefix (p, "left:"))
+        {
+          align = PANGO_TAB_LEFT;
+          p += strlen ("left:");
+        }
+      else if (g_str_has_prefix (p, "right:"))
+        {
+          align = PANGO_TAB_RIGHT;
+          p += strlen ("right:");
+        }
+      else if (g_str_has_prefix (p, "center:"))
+        {
+          align = PANGO_TAB_CENTER;
+          p += strlen ("center:");
+        }
+      else if (g_str_has_prefix (p, "decimal:"))
+        {
+          align = PANGO_TAB_DECIMAL;
+          p += strlen ("decimal:");
+        }
+      else
+        {
+          align = PANGO_TAB_LEFT;
+        }
 
       pos = g_ascii_strtoll (p, &endp, 10);
       if (pos < 0 ||
           (pixels && *endp != 'p') ||
-          (!pixels && !g_ascii_isspace (*endp) && *endp != '\0')) goto fail;
+          (!pixels && !g_ascii_isspace (*endp) && *endp != ':' && *endp != '\0')) goto fail;
 
-      pango_tab_array_set_tab (array, i, PANGO_TAB_LEFT, pos);
-      i++;
+      pango_tab_array_set_tab (array, i, align, pos);
 
       p = (const char *)endp;
       if (pixels)
@@ -461,7 +494,23 @@ pango_tab_array_from_string (const char *text)
           if (p[0] != 'p' || p[1] != 'x') goto fail;
           p += 2;
         }
+
+      if (p[0] == ':')
+        {
+          gunichar ch;
+
+          p++;
+          ch = g_ascii_strtoll (p, &endp, 10);
+          if (!g_ascii_isspace (*endp) && *endp != '\0') goto fail;
+
+          pango_tab_array_set_decimal_point (array, i, ch);
+
+          p = (const char *)endp;
+        }
+
       p = skip_whitespace (p);
+
+      i++;
     }
 
   goto success;
@@ -472,4 +521,58 @@ fail:
 
 success:
   return array;
+}
+
+/**
+ * pango_tab_array_set_decimal_point:
+ * @tab_array: a `PangoTabArray`
+ * @tab_index: the index of a tab stop
+ * @decimal_point: the decimal point to use
+ *
+ * Sets the decimal point to use.
+ *
+ * This is only relevant for %PANGO_TAB_DECIMAL.
+ *
+ * By default, Pango uses the decimal point according
+ * to the current locale.
+ *
+ * Since: 1.50
+ */
+void
+pango_tab_array_set_decimal_point (PangoTabArray *tab_array,
+                                   int            tab_index,
+                                   gunichar       decimal_point)
+{
+  g_return_if_fail (tab_array != NULL);
+  g_return_if_fail (tab_index >= 0);
+
+  if (tab_index >= tab_array->size)
+    pango_tab_array_resize (tab_array, tab_index + 1);
+
+  tab_array->tabs[tab_index].decimal_point = decimal_point;
+}
+
+/**
+ * pango_tab_array_get_decimal_point:
+ * @tab_array: a `PangoTabArray`
+ * @tab_index: the index of a tab stop
+ *
+ * Gets the decimal point to use.
+ *
+ * This is only relevant for %PANGO_TAB_DECIMAL.
+ *
+ * The default value of 0 means that Pango will use the
+ * decimal point according to the current locale.
+ *
+ * Since: 1.50
+ */
+gunichar
+pango_tab_array_get_decimal_point (PangoTabArray *tab_array,
+                                   int            tab_index)
+{
+  g_return_val_if_fail (tab_array != NULL, 0);
+  g_return_val_if_fail (tab_index < tab_array->size, 0);
+  g_return_val_if_fail (tab_index >= 0, 0);
+
+  return tab_array->tabs[tab_index].decimal_point;
 }

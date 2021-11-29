@@ -117,7 +117,7 @@ install_fonts (const char *dir)
 
   config = FcConfigCreate ();
 
-  path = g_test_build_filename (G_TEST_DIST, "fonts/fonts.conf", NULL);
+  path = g_build_filename (dir, "fonts.conf", NULL);
   g_file_get_contents (path, &conf, &len, NULL);
 
   if (!FcConfigParseAndLoadFromMemory (config, (const FcChar8 *) conf, TRUE))
@@ -161,7 +161,10 @@ main (int argc, char *argv[])
   g_option_context_free (option_context);
 
   if (opt_fonts)
-    install_fonts (opt_fonts);
+    {
+      install_fonts (opt_fonts);
+      g_free (opt_fonts);
+    }
 
   /* allow to easily generate expected output for new test cases */
   if (argc > 1 && argv[1][0] != '-')

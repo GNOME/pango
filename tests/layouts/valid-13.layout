@@ -21,11 +21,31 @@
   "tabs" : {
     "positions-in-pixels" : true,
     "positions" : [
-      0,
-      50,
-      100,
-      150,
-      200
+      {
+        "position" : 0,
+        "alignment" : "left",
+        "decimal-point" : 0
+      },
+      {
+        "position" : 50,
+        "alignment" : "left",
+        "decimal-point" : 0
+      },
+      {
+        "position" : 100,
+        "alignment" : "left",
+        "decimal-point" : 0
+      },
+      {
+        "position" : 150,
+        "alignment" : "left",
+        "decimal-point" : 0
+      },
+      {
+        "position" : 200,
+        "alignment" : "left",
+        "decimal-point" : 0
+      }
     ]
   },
   "single-paragraph" : true,
