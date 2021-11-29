@@ -74,6 +74,7 @@ struct _PangoLayout
   PangoRectangle logical_rect;
   PangoRectangle ink_rect;
   int tab_width;		/* Cached width of a tab. -1 == not yet calculated */
+  gunichar decimal;
 
   int copy_end;
 

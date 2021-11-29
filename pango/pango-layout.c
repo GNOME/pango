@@ -82,6 +82,7 @@
 #include "pango-glyph-item.h"
 #include <string.h>
 #include <math.h>
+#include <locale.h>
 
 #include <hb-ot.h>
 
@@ -225,6 +226,7 @@ pango_layout_init (PangoLayout *layout)
   layout->line_count = 0;
 
   layout->tab_width = -1;
+  layout->decimal = 0;
   layout->unknown_glyphs_count = -1;
 
   layout->wrap = PANGO_WRAP_WORD;
@@ -3373,6 +3375,7 @@ get_tab_pos (PangoLayoutLine *line,
              int              index,
              int             *tab_pos,
              PangoTabAlign   *alignment,
+             gunichar        *decimal,
              gboolean        *is_default)
 {
   PangoLayout *layout = line->layout;
@@ -3407,6 +3410,8 @@ get_tab_pos (PangoLayoutLine *line,
 
       if (in_pixels)
         *tab_pos *= PANGO_SCALE;
+
+      *decimal = pango_tab_array_get_decimal_point (layout->tabs, index);
     }
   else if (n_tabs > 0)
     {
@@ -3416,6 +3421,7 @@ get_tab_pos (PangoLayoutLine *line,
       int tab_width;
 
       pango_tab_array_get_tab (layout->tabs, n_tabs - 1, alignment, &last_pos);
+      *decimal = pango_tab_array_get_decimal_point (layout->tabs, n_tabs - 1);
 
       if (n_tabs > 1)
         pango_tab_array_get_tab (layout->tabs, n_tabs - 2, NULL, &next_to_last_pos);
@@ -3439,6 +3445,8 @@ get_tab_pos (PangoLayoutLine *line,
     {
       /* No tab array set, so use default tab width */
       *tab_pos = layout->tab_width * index;
+      *alignment = PANGO_TAB_LEFT;
+      *decimal = 0;
     }
 
   *tab_pos -= offset;
@@ -3486,7 +3494,15 @@ static void break_state_set_last_tab (ParaBreakState   *state,
                                       PangoGlyphString *glyphs,
                                       int               width,
                                       int               tab_pos,
-                                      PangoTabAlign     tab_align);
+                                      PangoTabAlign     tab_align,
+                                      gunichar          tab_decimal);
+
+static void
+ensure_decimal (PangoLayout *layout)
+{
+  if (layout->decimal == 0)
+    layout->decimal = g_utf8_get_char (localeconv ()->decimal_point);
+}
 
 static void
 shape_tab (PangoLayoutLine  *line,
@@ -3498,6 +3514,7 @@ shape_tab (PangoLayoutLine  *line,
   int current_width;
   int tab_pos;
   PangoTabAlign tab_align;
+  gunichar tab_decimal;
 
   current_width = line_width (line);
 
@@ -3522,7 +3539,7 @@ shape_tab (PangoLayoutLine  *line,
     {
       gboolean is_default;
 
-      get_tab_pos (line, i, &tab_pos, &tab_align, &is_default);
+      get_tab_pos (line, i, &tab_pos, &tab_align, &tab_decimal, &is_default);
 
       /* Make sure there is at least a space-width of space between
        * tab-aligned text and the text before it. However, only do
@@ -3533,13 +3550,17 @@ shape_tab (PangoLayoutLine  *line,
       if (tab_pos >= current_width + (is_default ? space_width : 1))
         {
           glyphs->glyphs[0].geometry.width = tab_pos - current_width;
-          g_debug ("shape_tab: tab %d, align %d, width %d\n",
-                   i, tab_align, glyphs->glyphs[0].geometry.width);
           break;
         }
     }
 
-  break_state_set_last_tab (state, glyphs, current_width, tab_pos, tab_align);
+  if (tab_decimal == 0)
+    {
+      ensure_decimal (line->layout);
+      tab_decimal = line->layout->decimal;
+    }
+
+  break_state_set_last_tab (state, glyphs, current_width, tab_pos, tab_align, tab_decimal);
 }
 
 static inline gboolean
@@ -3628,6 +3649,7 @@ struct _ParaBreakState
   int last_tab_width;
   int last_tab_pos;
   PangoTabAlign last_tab_align;
+  gunichar last_tab_decimal;
 };
 
 static void
@@ -3635,13 +3657,15 @@ break_state_set_last_tab (ParaBreakState   *state,
                           PangoGlyphString *glyphs,
                           int               width,
                           int               tab_pos,
-                          PangoTabAlign     tab_align)
+                          PangoTabAlign     tab_align,
+                          gunichar          tab_decimal)
 {
 
   state->last_tab = glyphs;
   state->last_tab_width = width;
   state->last_tab_pos = tab_pos;
   state->last_tab_align = tab_align;
+  state->last_tab_decimal = tab_decimal;
 }
 
 static gboolean
@@ -3652,6 +3676,7 @@ static void
 get_decimal_prefix_width (PangoItem        *item,
                           PangoGlyphString *glyphs,
                           const char       *text,
+                          gunichar          decimal,
                           int              *width,
                           gboolean         *found)
 {
@@ -3669,7 +3694,7 @@ get_decimal_prefix_width (PangoItem        *item,
 
   for (i = 0, p = text + item->offset; i < item->num_chars; i++, p = g_utf8_next_char (p))
     {
-      if (g_utf8_get_char (p) == '.')
+      if (g_utf8_get_char (p) == decimal)
         {
           *width += log_widths[i] / 2;
           *found = TRUE;
@@ -3749,7 +3774,7 @@ shape_run (PangoLayoutLine *line,
               int width;
               gboolean found;
 
-              get_decimal_prefix_width (item, glyphs, layout->text, &width, &found);
+              get_decimal_prefix_width (item, glyphs, layout->text, state->last_tab_decimal, &width, &found);
 
               w -= width;
             }
@@ -3808,7 +3833,7 @@ insert_run (PangoLayoutLine  *line,
           int width;
           gboolean found;
 
-          get_decimal_prefix_width (run->item, run->glyphs, line->layout->text, &width, &found);
+          get_decimal_prefix_width (run->item, run->glyphs, line->layout->text, state->last_tab_decimal, &width, &found);
 
           state->last_tab_width += width;
           if (found)
@@ -3922,6 +3947,11 @@ compute_log_widths (PangoLayout    *layout,
   pango_glyph_item_get_logical_widths (&glyph_item, layout->text, state->log_widths);
 }
 
+/* If last_tab is set, we've added a tab and remaining_width has been updated to
+ * account for its origin width, which is last_tab_pos - last_tab_width. shape_run
+ * updates the tab width, so we need to consider the delta when comparing
+ * against remaining_width.
+ */
 static int
 tab_width_change (ParaBreakState *state)
 {

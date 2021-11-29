@@ -226,6 +226,8 @@ add_tab_array (JsonBuilder   *builder,
       json_builder_add_int_value (builder, pos);
       json_builder_set_member_name (builder, "alignment");
       add_enum_value (builder, PANGO_TYPE_TAB_ALIGN, align, FALSE);
+      json_builder_set_member_name (builder, "decimal-point");
+      json_builder_add_int_value (builder, pango_tab_array_get_decimal_point (tabs, i));
       json_builder_end_object (builder);
     }
   json_builder_end_array (builder);
@@ -1139,7 +1141,8 @@ json_to_tab_array (JsonReader  *reader,
       for (int i = 0; i < json_reader_count_elements (reader); i++)
         {
           int pos;
-          PangoTabAlign align;
+          PangoTabAlign align = PANGO_TAB_LEFT;
+          gunichar ch = 0;
 
           json_reader_read_element (reader, i);
           if (json_reader_is_object (reader))
@@ -1156,14 +1159,17 @@ json_to_tab_array (JsonReader  *reader,
               if (align == -1)
                 goto fail;
               json_reader_end_member (reader);
+              json_reader_read_member (reader, "decimal-point");
+              ch = json_reader_get_int_value (reader);
+              json_reader_end_member (reader);
             }
           else
             {
               pos = json_reader_get_int_value (reader);
-              align = PANGO_TAB_LEFT;
             }
 
           pango_tab_array_set_tab (tabs, i, align, pos);
+          pango_tab_array_set_decimal_point (tabs, i, ch);
           json_reader_end_element (reader);
         }
     }

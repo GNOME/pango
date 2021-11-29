@@ -23,23 +23,28 @@
     "positions" : [
       {
         "position" : 0,
-        "alignment" : "left"
+        "alignment" : "left",
+        "decimal-point" : 0
       },
       {
         "position" : 50,
-        "alignment" : "left"
+        "alignment" : "left",
+        "decimal-point" : 0
       },
       {
         "position" : 100,
-        "alignment" : "left"
+        "alignment" : "left",
+        "decimal-point" : 0
       },
       {
         "position" : 150,
-        "alignment" : "left"
+        "alignment" : "left",
+        "decimal-point" : 0
       },
       {
         "position" : 200,
-        "alignment" : "left"
+        "alignment" : "left",
+        "decimal-point" : 0
       }
     ]
   },
