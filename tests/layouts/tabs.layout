@@ -1,0 +1,1836 @@
+{
+  "context" : {
+    "font" : "serif 12",
+    "base-gravity" : "south",
+    "gravity-hint" : "natural",
+    "base-dir" : "weak-ltr",
+    "round-glyph-positions" : true,
+    "transform" : [
+      1.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ]
+  },
+  "text" : "\t0.1\t100.5\tso\tmore\tso\n\t0.02\t20.25\tand\tand\tand\n\t0.003\t1.9\tmore\tso\tmore",
+  "font" : "Cantarell 14 @wght=400",
+  "tabs" : {
+    "positions-in-pixels" : true,
+    "positions" : [
+      {
+        "position" : 50,
+        "alignment" : "decimal",
+        "decimal-point" : 0
+      },
+      {
+        "position" : 150,
+        "alignment" : "decimal",
+        "decimal-point" : 0
+      },
+      {
+        "position" : 250,
+        "alignment" : "left",
+        "decimal-point" : 0
+      },
+      {
+        "position" : 350,
+        "alignment" : "center",
+        "decimal-point" : 0
+      },
+      {
+        "position" : 450,
+        "alignment" : "right",
+        "decimal-point" : 0
+      }
+    ]
+  },
+  "width" : 460800,
+  "output" : {
+    "is-wrapped" : false,
+    "is-ellipsized" : false,
+    "unknown-glyphs" : 0,
+    "width" : 460800,
+    "height" : 73728,
+    "log-attrs" : [
+      {
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "sentence-boundary" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "sentence-start" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-end" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true
+      },
+      {
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "sentence-end" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "sentence-boundary" : true,
+        "sentence-start" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-end" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true
+      },
+      {
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "sentence-end" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "mandatory-break" : true,
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "sentence-boundary" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "sentence-start" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-end" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true
+      },
+      {
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "sentence-end" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "sentence-boundary" : true,
+        "sentence-start" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-end" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true
+      },
+      {
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "sentence-end" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "mandatory-break" : true,
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "sentence-boundary" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "sentence-start" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-end" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true
+      },
+      {
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "sentence-end" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "sentence-boundary" : true,
+        "sentence-start" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-end" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true
+      },
+      {
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "word-boundary" : true
+      },
+      {
+        "line-break" : true,
+        "char-break" : true,
+        "cursor-position" : true,
+        "word-start" : true,
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "char-break" : true,
+        "cursor-position" : true,
+        "break-inserts-hyphen" : true
+      },
+      {
+        "line-break" : true,
+        "mandatory-break" : true,
+        "char-break" : true,
+        "white" : true,
+        "cursor-position" : true,
+        "word-end" : true,
+        "sentence-boundary" : true,
+        "sentence-end" : true,
+        "word-boundary" : true
+      }
+    ],
+    "lines" : [
+      {
+        "start-index" : 0,
+        "length" : 21,
+        "paragraph-start" : true,
+        "direction" : "ltr",
+        "runs" : [
+          {
+            "offset" : 0,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 37376,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 1,
+            "length" : 3,
+            "text" : "0.1",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 964,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 1058,
+                "width" : 5120,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              },
+              {
+                "glyph" : 965,
+                "width" : 8192,
+                "is-cluster-start" : true,
+                "log-cluster" : 2
+              }
+            ]
+          },
+          {
+            "offset" : 4,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 58368,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 5,
+            "length" : 5,
+            "text" : "100.5",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 965,
+                "width" : 8192,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 964,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              },
+              {
+                "glyph" : 964,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 2
+              },
+              {
+                "glyph" : 1058,
+                "width" : 5120,
+                "is-cluster-start" : true,
+                "log-cluster" : 3
+              },
+              {
+                "glyph" : 969,
+                "width" : 10240,
+                "is-cluster-start" : true,
+                "log-cluster" : 4
+              }
+            ]
+          },
+          {
+            "offset" : 10,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 89600,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 11,
+            "length" : 2,
+            "text" : "so",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 417,
+                "width" : 9216,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 370,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              }
+            ]
+          },
+          {
+            "offset" : 13,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 58880,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 14,
+            "length" : 4,
+            "text" : "more",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 358,
+                "width" : 17408,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 370,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              },
+              {
+                "glyph" : 409,
+                "width" : 7168,
+                "is-cluster-start" : true,
+                "log-cluster" : 2
+              },
+              {
+                "glyph" : 287,
+                "width" : 10240,
+                "is-cluster-start" : true,
+                "log-cluster" : 3
+              }
+            ]
+          },
+          {
+            "offset" : 18,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 58880,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 19,
+            "length" : 2,
+            "text" : "so",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 417,
+                "width" : 9216,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 370,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "start-index" : 22,
+        "length" : 23,
+        "paragraph-start" : true,
+        "direction" : "ltr",
+        "runs" : [
+          {
+            "offset" : 22,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 37376,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 23,
+            "length" : 4,
+            "text" : "0.02",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 964,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 1058,
+                "width" : 5120,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              },
+              {
+                "glyph" : 964,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 2
+              },
+              {
+                "glyph" : 966,
+                "width" : 10240,
+                "is-cluster-start" : true,
+                "log-cluster" : 3
+              }
+            ]
+          },
+          {
+            "offset" : 27,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 54272,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 28,
+            "length" : 5,
+            "text" : "20.25",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 966,
+                "width" : 10240,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 964,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              },
+              {
+                "glyph" : 1058,
+                "width" : 5120,
+                "is-cluster-start" : true,
+                "log-cluster" : 2
+              },
+              {
+                "glyph" : 966,
+                "width" : 10240,
+                "is-cluster-start" : true,
+                "log-cluster" : 3
+              },
+              {
+                "glyph" : 969,
+                "width" : 10240,
+                "is-cluster-start" : true,
+                "log-cluster" : 4
+              }
+            ]
+          },
+          {
+            "offset" : 33,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 79360,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 34,
+            "length" : 3,
+            "text" : "and",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 244,
+                "width" : 10240,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 360,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              },
+              {
+                "glyph" : 280,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 2
+              }
+            ]
+          },
+          {
+            "offset" : 37,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 53248,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 38,
+            "length" : 3,
+            "text" : "and",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 244,
+                "width" : 10240,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 360,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              },
+              {
+                "glyph" : 280,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 2
+              }
+            ]
+          },
+          {
+            "offset" : 41,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 53248,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 42,
+            "length" : 3,
+            "text" : "and",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 244,
+                "width" : 10240,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 360,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              },
+              {
+                "glyph" : 280,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "start-index" : 46,
+        "length" : 23,
+        "paragraph-start" : true,
+        "direction" : "ltr",
+        "runs" : [
+          {
+            "offset" : 46,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 37376,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 47,
+            "length" : 5,
+            "text" : "0.003",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 964,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 1058,
+                "width" : 5120,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              },
+              {
+                "glyph" : 964,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 2
+              },
+              {
+                "glyph" : 964,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 3
+              },
+              {
+                "glyph" : 967,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 4
+              }
+            ]
+          },
+          {
+            "offset" : 52,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 55296,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 53,
+            "length" : 3,
+            "text" : "1.9",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 965,
+                "width" : 8192,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 1058,
+                "width" : 5120,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              },
+              {
+                "glyph" : 973,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 2
+              }
+            ]
+          },
+          {
+            "offset" : 56,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 88576,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 57,
+            "length" : 4,
+            "text" : "more",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 358,
+                "width" : 17408,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 370,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              },
+              {
+                "glyph" : 409,
+                "width" : 7168,
+                "is-cluster-start" : true,
+                "log-cluster" : 2
+              },
+              {
+                "glyph" : 287,
+                "width" : 10240,
+                "is-cluster-start" : true,
+                "log-cluster" : 3
+              }
+            ]
+          },
+          {
+            "offset" : 61,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 46080,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 62,
+            "length" : 2,
+            "text" : "so",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 417,
+                "width" : 9216,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 370,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              }
+            ]
+          },
+          {
+            "offset" : 64,
+            "length" : 1,
+            "text" : "\t",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 268435455,
+                "width" : 46080,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 65,
+            "length" : 4,
+            "text" : "more",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Cantarell 14 @wght=400",
+              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "variations" : {
+                "wght" : 0
+              },
+              "matrix" : [
+                1.0,
+                -0.0,
+                -0.0,
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 358,
+                "width" : 17408,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 370,
+                "width" : 11264,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              },
+              {
+                "glyph" : 409,
+                "width" : 7168,
+                "is-cluster-start" : true,
+                "log-cluster" : 2
+              },
+              {
+                "glyph" : 287,
+                "width" : 10240,
+                "is-cluster-start" : true,
+                "log-cluster" : 3
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

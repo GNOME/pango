@@ -95,6 +95,7 @@ installed_test_layouts_data = [
   'layouts/bratwurst.layout',
   'layouts/effigy.layout',
   'layouts/kebab.layout',
+  'layouts/tabs.layout',
   'layouts/valid-1.layout',
   'layouts/valid-2.layout',
   'layouts/valid-3.layout',
