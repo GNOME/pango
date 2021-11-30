@@ -28,6 +28,8 @@ pango_sources = [
   'reorder-items.c',
   'shape.c',
   'serializer.c',
+  'json/gtkjsonparser.c',
+  'json/gtkjsonprinter.c',
 ]
 
 pango_headers = [
