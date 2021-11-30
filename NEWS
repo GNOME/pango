@@ -1,3 +1,11 @@
+Overview of changes
+===================
+* Fix glyph placement in gravity east
+* Fix line heights in improper gravities
+* Only shown selected ignorables with nicks
+* Support tab alignments other than left
+* Support custom decimal points on decimal tabs
+
 Overview of changes in 1.49.4, 27-11-2021
 =========================================
 * Require fontconfig 2.13
