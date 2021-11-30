@@ -60,6 +60,9 @@ gboolean                gtk_json_parser_start_object            (GtkJsonParser  
 gboolean                gtk_json_parser_start_array             (GtkJsonParser          *self);
 gboolean                gtk_json_parser_end                     (GtkJsonParser          *self);
 
+void                    gtk_json_parser_set_error               (GtkJsonParser          *self,
+                                                                 GError                 *error);
+
 
 G_END_DECLS
 

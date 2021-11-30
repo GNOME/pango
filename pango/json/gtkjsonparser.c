@@ -1129,3 +1129,12 @@ gtk_json_parser_end (GtkJsonParser *self)
   return TRUE;
 }
 
+void
+gtk_json_parser_set_error (GtkJsonParser *self,
+                           GError        *error)
+{
+  if (self->error)
+    g_error_free (error);
+  else
+    self->error = error;
+}
