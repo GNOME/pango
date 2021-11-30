@@ -627,12 +627,10 @@ gstring_write (GtkJsonPrinter *printer,
 /* }}} */
 /* {{{ Deserialization */
 
-static gboolean
+static int
 parser_get_enum_value (GtkJsonParser  *parser,
                        GType           type,
-                       gboolean        allow_extra,
-                       int            *value,
-                       GError        **error)
+                       gboolean        allow_extra)
 {
   GEnumClass *enum_class;
   GEnumValue *enum_value;
@@ -644,8 +642,7 @@ parser_get_enum_value (GtkJsonParser  *parser,
   if (enum_value)
     {
       g_free (str);
-      *value = enum_value->value;
-      return TRUE;
+      return enum_value->value;
     }
 
   if (allow_extra)
@@ -657,53 +654,64 @@ parser_get_enum_value (GtkJsonParser  *parser,
       if (*endp == '\0')
         {
           g_free (str);
-          *value = (int)v;
-          return TRUE;
+          return (int)v;
         }
     }
 
-  g_set_error (error,
-               PANGO_LAYOUT_DESERIALIZE_ERROR,
-               PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
-               "Could not parse enum value of type %s: %s",
-               g_type_name (type),
-               str);
+  gtk_json_parser_set_error (parser,
+      g_error_new (PANGO_LAYOUT_DESERIALIZE_ERROR,
+                   PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
+                   "Could not parse enum value of type %s: %s",
+                   g_type_name (type),
+                   str));
 
   g_free (str);
 
-  return FALSE;
+  return 0;
 }
 
-static gboolean
-parser_get_font_description (GtkJsonParser         *parser,
-                             PangoFontDescription **desc,
-                             GError               **error)
+static PangoFontDescription *
+parser_get_font_description (GtkJsonParser *parser)
 {
   char *str = gtk_json_parser_get_string (parser);
-  *desc = pango_font_description_from_string (str);
+  PangoFontDescription *desc = pango_font_description_from_string (str);
 
-  if (!*desc)
-    g_set_error (error,
-                 PANGO_LAYOUT_DESERIALIZE_ERROR,
-                 PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
-                 "Failed to parse font: %s", str);
-
+  if (!desc)
+    gtk_json_parser_set_error (parser,
+        g_error_new (PANGO_LAYOUT_DESERIALIZE_ERROR,
+                     PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
+                     "Failed to parse font: %s", str));
   g_free (str);
 
-  return *desc != NULL;
+  return desc;
+}
+
+static void
+parser_get_color (GtkJsonParser *parser,
+                  PangoColor    *color)
+{
+  char *str = gtk_json_parser_get_string (parser);
+  if (!pango_color_parse (color, str))
+    {
+      gtk_json_parser_set_error (parser,
+          g_error_new (PANGO_LAYOUT_DESERIALIZE_ERROR,
+                       PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
+                       "Failed to parse color: %s", str));
+      color->red = color->green = color->blue = 0;
+    }
+
+  g_free (str);
 }
 
 static PangoAttribute *
-attr_for_type (GtkJsonParser  *parser,
-               PangoAttrType   type,
-               int             start,
-               int             end,
-               GError        **error)
+attr_for_type (GtkJsonParser *parser,
+               PangoAttrType  type,
+               int            start,
+               int            end)
 {
   PangoAttribute *attr;
   PangoFontDescription *desc;
   PangoColor color;
-  int value;
   char *str;
 
   switch (type)
@@ -712,10 +720,10 @@ attr_for_type (GtkJsonParser  *parser,
       g_assert_not_reached ();
 
     case PANGO_ATTR_INVALID:
-      g_set_error (error,
-                   PANGO_LAYOUT_DESERIALIZE_ERROR,
-                   PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
-                   "Missing attribute type");
+      gtk_json_parser_set_error (parser,
+          g_error_new (PANGO_LAYOUT_DESERIALIZE_ERROR,
+                       PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
+                       "Missing attribute type"));
       return NULL;
 
     case PANGO_ATTR_LANGUAGE:
@@ -731,27 +739,19 @@ attr_for_type (GtkJsonParser  *parser,
       break;
 
     case PANGO_ATTR_STYLE:
-      if (!parser_get_enum_value (parser, PANGO_TYPE_STYLE, FALSE, &value, error))
-        return NULL;
-      attr = pango_attr_style_new ((PangoStyle)value);
+      attr = pango_attr_style_new ((PangoStyle)parser_get_enum_value (parser, PANGO_TYPE_STYLE, FALSE));
       break;
 
     case PANGO_ATTR_WEIGHT:
-      if (!parser_get_enum_value (parser, PANGO_TYPE_WEIGHT, FALSE, &value, error))
-        return NULL;
-      attr = pango_attr_weight_new (value);
+      attr = pango_attr_weight_new (parser_get_enum_value (parser, PANGO_TYPE_WEIGHT, TRUE));
       break;
 
     case PANGO_ATTR_VARIANT:
-      if (!parser_get_enum_value (parser, PANGO_TYPE_VARIANT, FALSE, &value, error))
-        return NULL;
-      attr = pango_attr_variant_new ((PangoVariant)value);
+      attr = pango_attr_variant_new ((PangoVariant)parser_get_enum_value (parser, PANGO_TYPE_VARIANT, FALSE));
       break;
 
     case PANGO_ATTR_STRETCH:
-      if (!parser_get_enum_value (parser, PANGO_TYPE_STRETCH, FALSE, &value, error))
-        return NULL;
-      attr = pango_attr_stretch_new ((PangoStretch)value);
+      attr = pango_attr_stretch_new ((PangoStretch)parser_get_enum_value (parser, PANGO_TYPE_STRETCH, FALSE));
       break;
 
     case PANGO_ATTR_SIZE:
@@ -759,31 +759,23 @@ attr_for_type (GtkJsonParser  *parser,
       break;
 
     case PANGO_ATTR_FONT_DESC:
-      str = gtk_json_parser_get_string (parser);
-      desc = pango_font_description_from_string (str);
+      desc = parser_get_font_description (parser);
       attr = pango_attr_font_desc_new (desc);
       pango_font_description_free (desc);
-      g_free (str);
       break;
 
     case PANGO_ATTR_FOREGROUND:
-      str = gtk_json_parser_get_string (parser);
-      pango_color_parse (&color, str);
+      parser_get_color (parser, &color);
       attr = pango_attr_foreground_new (color.red, color.green, color.blue);
-      g_free (str);
       break;
 
     case PANGO_ATTR_BACKGROUND:
-      str = gtk_json_parser_get_string (parser);
-      pango_color_parse (&color, str);
+      parser_get_color (parser, &color);
       attr = pango_attr_background_new (color.red, color.green, color.blue);
-      g_free (str);
       break;
 
     case PANGO_ATTR_UNDERLINE:
-      if (!parser_get_enum_value (parser, PANGO_TYPE_UNDERLINE, FALSE, &value, error))
-        return NULL;
-      attr = pango_attr_underline_new ((PangoUnderline)value);
+      attr = pango_attr_underline_new ((PangoUnderline)parser_get_enum_value (parser, PANGO_TYPE_UNDERLINE, FALSE));
       break;
 
     case PANGO_ATTR_STRIKETHROUGH:
@@ -812,17 +804,13 @@ attr_for_type (GtkJsonParser  *parser,
       break;
 
     case PANGO_ATTR_UNDERLINE_COLOR:
-      str = gtk_json_parser_get_string (parser);
-      pango_color_parse (&color, str);
+      parser_get_color (parser, &color);
       attr = pango_attr_underline_color_new (color.red, color.green, color.blue);
-      g_free (str);
       break;
 
     case PANGO_ATTR_STRIKETHROUGH_COLOR:
-      str = gtk_json_parser_get_string (parser);
-      pango_color_parse (&color, str);
+      parser_get_color (parser, &color);
       attr = pango_attr_strikethrough_color_new (color.red, color.green, color.blue);
-      g_free (str);
       break;
 
     case PANGO_ATTR_ABSOLUTE_SIZE:
@@ -830,15 +818,11 @@ attr_for_type (GtkJsonParser  *parser,
       break;
 
     case PANGO_ATTR_GRAVITY:
-      if (!parser_get_enum_value (parser, PANGO_TYPE_GRAVITY, FALSE, &value, error))
-        return NULL;
-      attr = pango_attr_gravity_new ((PangoGravity)value);
+      attr = pango_attr_gravity_new ((PangoGravity)parser_get_enum_value (parser, PANGO_TYPE_GRAVITY, FALSE));
       break;
 
     case PANGO_ATTR_GRAVITY_HINT:
-      if (!parser_get_enum_value (parser, PANGO_TYPE_GRAVITY_HINT, FALSE, &value, error))
-        return NULL;
-      attr = pango_attr_gravity_hint_new ((PangoGravityHint)value);
+      attr = pango_attr_gravity_hint_new ((PangoGravityHint)parser_get_enum_value (parser, PANGO_TYPE_GRAVITY_HINT, FALSE));
       break;
 
     case PANGO_ATTR_FONT_FEATURES:
@@ -868,16 +852,12 @@ attr_for_type (GtkJsonParser  *parser,
       break;
 
     case PANGO_ATTR_OVERLINE:
-      if (!parser_get_enum_value (parser, PANGO_TYPE_OVERLINE, FALSE, &value, error))
-        return NULL;
-      attr = pango_attr_overline_new ((PangoOverline)value);
+      attr = pango_attr_overline_new ((PangoOverline)parser_get_enum_value (parser, PANGO_TYPE_OVERLINE, FALSE));
       break;
 
     case PANGO_ATTR_OVERLINE_COLOR:
-      str = gtk_json_parser_get_string (parser);
-      pango_color_parse (&color, str);
+      parser_get_color (parser, &color);
       attr = pango_attr_overline_color_new (color.red, color.green, color.blue);
-      g_free (str);
       break;
 
     case PANGO_ATTR_LINE_HEIGHT:
@@ -889,9 +869,7 @@ attr_for_type (GtkJsonParser  *parser,
       break;
 
     case PANGO_ATTR_TEXT_TRANSFORM:
-      if (!parser_get_enum_value (parser, PANGO_TYPE_TEXT_TRANSFORM, FALSE, &value, error))
-        return NULL;
-      attr = pango_attr_text_transform_new ((PangoTextTransform)value);
+      attr = pango_attr_text_transform_new ((PangoTextTransform)parser_get_enum_value (parser, PANGO_TYPE_TEXT_TRANSFORM, FALSE));
       break;
 
     case PANGO_ATTR_WORD:
@@ -903,15 +881,11 @@ attr_for_type (GtkJsonParser  *parser,
       break;
 
     case PANGO_ATTR_BASELINE_SHIFT:
-      if (!parser_get_enum_value (parser, PANGO_TYPE_BASELINE_SHIFT, FALSE, &value, error))
-        return NULL;
-      attr = pango_attr_baseline_shift_new (value);
+      attr = pango_attr_baseline_shift_new (parser_get_enum_value (parser, PANGO_TYPE_BASELINE_SHIFT, FALSE));
       break;
 
     case PANGO_ATTR_FONT_SCALE:
-      if (!parser_get_enum_value (parser, PANGO_TYPE_FONT_SCALE, FALSE, &value, error))
-        return NULL;
-      attr = pango_attr_font_scale_new ((PangoFontScale)value);
+      attr = pango_attr_font_scale_new ((PangoFontScale)parser_get_enum_value (parser, PANGO_TYPE_FONT_SCALE, FALSE));
       break;
     }
 
@@ -939,24 +913,17 @@ static const char *attr_members[] = {
 };
 
 static PangoAttribute *
-json_to_attribute (GtkJsonParser  *parser,
-                   GError        **error)
+json_to_attribute (GtkJsonParser *parser)
 {
   PangoAttribute *attr = NULL;
   PangoAttrType type = PANGO_ATTR_INVALID;
   guint start = PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING;
   guint end = PANGO_ATTR_INDEX_TO_TEXT_END;
 
-  if (!gtk_json_parser_start_object (parser))
-    {
-      g_propagate_error (error, g_error_copy (gtk_json_parser_get_error (parser)));
-      return NULL;
-    }
+  gtk_json_parser_start_object (parser);
 
   do
     {
-      int value;
-
       switch (gtk_json_parser_select_member (parser, attr_members))
         {
         case ATTR_START:
@@ -968,13 +935,11 @@ json_to_attribute (GtkJsonParser  *parser,
           break;
 
         case ATTR_TYPE:
-          if (!parser_get_enum_value (parser, PANGO_TYPE_ATTR_TYPE, FALSE, &value, error))
-            return NULL;
-          type = value;
+          type = parser_get_enum_value (parser, PANGO_TYPE_ATTR_TYPE, FALSE);
           break;
 
         case ATTR_VALUE:
-          attr = attr_for_type (parser, type, start, end, error);
+          attr = attr_for_type (parser, type, start, end);
           break;
 
         default:
@@ -988,31 +953,21 @@ json_to_attribute (GtkJsonParser  *parser,
   return attr;
 }
 
-static gboolean
-json_parser_fill_attr_list (GtkJsonParser  *parser,
-                            PangoAttrList  *attributes,
-                            GError        **error)
+static void
+json_parser_fill_attr_list (GtkJsonParser *parser,
+                            PangoAttrList *attributes)
 {
-  if (!gtk_json_parser_start_array (parser))
-    {
-      g_propagate_error (error, g_error_copy (gtk_json_parser_get_error (parser)));
-      return FALSE;
-    }
+  gtk_json_parser_start_array (parser);
 
   do
     {
-      PangoAttribute *attr = json_to_attribute (parser, error);
-
-      if (!attr)
-        return FALSE;
-
-      pango_attr_list_insert (attributes, attr);
+      PangoAttribute *attr = json_to_attribute (parser);
+      if (attr)
+        pango_attr_list_insert (attributes, attr);
     }
   while (gtk_json_parser_next (parser));
 
   gtk_json_parser_end (parser);
-
-  return TRUE;
 }
 
 enum {
@@ -1028,18 +983,13 @@ static const char *tab_members[] = {
   NULL,
 };
 
-static gboolean
-json_parser_fill_tabs (GtkJsonParser  *parser,
-                       PangoTabArray  *tabs,
-                       GError        **error)
+static void
+json_parser_fill_tabs (GtkJsonParser *parser,
+                       PangoTabArray *tabs)
 {
   int index;
 
-  if (!gtk_json_parser_start_array (parser))
-    {
-      g_propagate_error (error, g_error_copy (gtk_json_parser_get_error (parser)));
-      return FALSE;
-    }
+  gtk_json_parser_start_array (parser);
 
   index = 0;
   do
@@ -1053,17 +1003,13 @@ json_parser_fill_tabs (GtkJsonParser  *parser,
           gtk_json_parser_start_object (parser);
           do
             {
-              int value;
-
               switch (gtk_json_parser_select_member (parser, tab_members))
                 {
                 case TAB_POSITION:
                   pos = gtk_json_parser_get_int (parser);
                   break;
                 case TAB_ALIGNMENT:
-                  if (!parser_get_enum_value (parser, PANGO_TYPE_TAB_ALIGN, FALSE, &value, error))
-                    return FALSE;
-                  align = value;
+                  align = parser_get_enum_value (parser, PANGO_TYPE_TAB_ALIGN, FALSE);
                   break;
                 case TAB_DECIMAL_POINT:
                   ch = gtk_json_parser_get_int (parser);
@@ -1088,8 +1034,6 @@ json_parser_fill_tabs (GtkJsonParser  *parser,
   while (gtk_json_parser_next (parser));
 
   gtk_json_parser_end (parser);
-
-  return TRUE;
 }
 
 enum {
@@ -1103,16 +1047,11 @@ static const char *tabs_members[] = {
   NULL
 };
 
-static gboolean
-json_parser_fill_tab_array (GtkJsonParser  *parser,
-                            PangoTabArray  *tabs,
-                            GError        **error)
+static void
+json_parser_fill_tab_array (GtkJsonParser *parser,
+                            PangoTabArray *tabs)
 {
-  if (!gtk_json_parser_start_object (parser))
-    {
-      g_propagate_error (error, g_error_copy (gtk_json_parser_get_error (parser)));
-      return FALSE;
-    }
+  gtk_json_parser_start_object (parser);
 
   do
     {
@@ -1122,8 +1061,7 @@ json_parser_fill_tab_array (GtkJsonParser  *parser,
           pango_tab_array_set_positions_in_pixels (tabs, gtk_json_parser_get_boolean (parser));
           break;
         case TABS_POSITIONS:
-          if (!json_parser_fill_tabs (parser, tabs, error))
-            return FALSE;
+          json_parser_fill_tabs (parser, tabs);
           break;
         default:
           g_assert_not_reached ();
@@ -1132,8 +1070,6 @@ json_parser_fill_tab_array (GtkJsonParser  *parser,
   while (gtk_json_parser_next (parser));
 
   gtk_json_parser_end (parser);
-
-  return TRUE;
 }
 
 enum {
@@ -1157,21 +1093,15 @@ static const char *context_members[] = {
   NULL,
 };
 
-static gboolean
-json_parser_fill_context (GtkJsonParser  *parser,
-                          PangoContext   *context,
-                          GError        **error)
+static void
+json_parser_fill_context (GtkJsonParser *parser,
+                          PangoContext  *context)
 {
-  if (!gtk_json_parser_start_object (parser))
-    {
-      g_propagate_error (error, g_error_copy (gtk_json_parser_get_error (parser)));
-      return FALSE;
-    }
+  gtk_json_parser_start_object (parser);
 
   do
     {
       char *str;
-      int value;
 
       switch (gtk_json_parser_select_member (parser, context_members))
         {
@@ -1184,32 +1114,22 @@ json_parser_fill_context (GtkJsonParser  *parser,
 
         case CONTEXT_FONT:
           {
-            PangoFontDescription *desc;
-
-            if (!parser_get_font_description (parser, &desc, error))
-              return FALSE;
-
+            PangoFontDescription *desc = parser_get_font_description (parser);
             pango_context_set_font_description (context, desc);
             pango_font_description_free (desc);
           }
           break;
 
         case CONTEXT_BASE_GRAVITY:
-          if (!parser_get_enum_value (parser, PANGO_TYPE_GRAVITY, FALSE, &value, error))
-            return FALSE;
-          pango_context_set_base_gravity (context, (PangoGravity)value);
+          pango_context_set_base_gravity (context, (PangoGravity)parser_get_enum_value (parser, PANGO_TYPE_GRAVITY, FALSE));
           break;
 
         case CONTEXT_GRAVITY_HINT:
-          if (!parser_get_enum_value (parser, PANGO_TYPE_GRAVITY_HINT, FALSE, &value, error))
-            return FALSE;
-          pango_context_set_gravity_hint (context, (PangoGravityHint)value);
+          pango_context_set_gravity_hint (context, (PangoGravityHint)parser_get_enum_value (parser, PANGO_TYPE_GRAVITY_HINT, FALSE));
           break;
 
         case CONTEXT_BASE_DIR:
-          if (!parser_get_enum_value (parser, PANGO_TYPE_DIRECTION, FALSE, &value, error))
-            return FALSE;
-          pango_context_set_base_dir (context, (PangoDirection)value);
+          pango_context_set_base_dir (context, (PangoDirection)parser_get_enum_value (parser, PANGO_TYPE_DIRECTION, FALSE));
           break;
 
         case CONTEXT_ROUND_GLYPH_POSITIONS:
@@ -1245,8 +1165,6 @@ json_parser_fill_context (GtkJsonParser  *parser,
   while (gtk_json_parser_next (parser));
 
   gtk_json_parser_end (parser);
-
-  return TRUE;
 }
 
 enum {
@@ -1294,31 +1212,22 @@ static const char *layout_members[] = {
   NULL
 };
 
-static gboolean
-json_parser_fill_layout (GtkJsonParser                *parser,
-                         PangoLayout                  *layout,
-                         PangoLayoutDeserializeFlags   flags,
-                         GError                      **error)
+static void
+json_parser_fill_layout (GtkJsonParser               *parser,
+                         PangoLayout                 *layout,
+                         PangoLayoutDeserializeFlags  flags)
 {
-  if (!gtk_json_parser_start_object (parser))
-    {
-      g_propagate_error (error, g_error_copy (gtk_json_parser_get_error (parser)));
-      return FALSE;
-    }
+  gtk_json_parser_start_object (parser);
 
   do
     {
       char *str;
-      int value;
 
       switch (gtk_json_parser_select_member (parser, layout_members))
         {
         case LAYOUT_CONTEXT:
           if (flags & PANGO_LAYOUT_DESERIALIZE_CONTEXT)
-            {
-              if (!json_parser_fill_context (parser, pango_layout_get_context (layout), error))
-                return FALSE;
-            }
+            json_parser_fill_context (parser, pango_layout_get_context (layout));
           break;
 
         case LAYOUT_COMMENT:
@@ -1336,13 +1245,7 @@ json_parser_fill_layout (GtkJsonParser                *parser,
         case LAYOUT_ATTRIBUTES:
           {
             PangoAttrList *attributes = pango_attr_list_new ();
-
-            if (!json_parser_fill_attr_list (parser, attributes, error))
-              {
-                pango_attr_list_unref (attributes);
-                return FALSE;
-              }
-
+            json_parser_fill_attr_list (parser, attributes);
             pango_layout_set_attributes (layout, attributes);
             pango_attr_list_unref (attributes);
           }
@@ -1350,11 +1253,7 @@ json_parser_fill_layout (GtkJsonParser                *parser,
 
         case LAYOUT_FONT:
           {
-            PangoFontDescription *desc;
-
-            if (!parser_get_font_description (parser, &desc, error))
-              return FALSE;
-
+            PangoFontDescription *desc = parser_get_font_description (parser);;
             pango_layout_set_font_description (layout, desc);
             pango_font_description_free (desc);
           }
@@ -1363,13 +1262,7 @@ json_parser_fill_layout (GtkJsonParser                *parser,
         case LAYOUT_TABS:
           {
             PangoTabArray *tabs = pango_tab_array_new (0, FALSE);
-
-            if (!json_parser_fill_tab_array (parser, tabs, error))
-              {
-                pango_tab_array_free (tabs);
-                return FALSE;
-              }
-
+            json_parser_fill_tab_array (parser, tabs);
             pango_layout_set_tabs (layout, tabs);
             pango_tab_array_free (tabs);
           }
@@ -1392,21 +1285,15 @@ json_parser_fill_layout (GtkJsonParser                *parser,
           break;
 
         case LAYOUT_ALIGNMENT:
-          if (!parser_get_enum_value (parser, PANGO_TYPE_ALIGNMENT, FALSE, &value, error))
-            return FALSE;
-          pango_layout_set_alignment (layout, (PangoAlignment)value);
+          pango_layout_set_alignment (layout, (PangoAlignment)parser_get_enum_value (parser, PANGO_TYPE_ALIGNMENT, FALSE));
           break;
 
         case LAYOUT_WRAP:
-          if (!parser_get_enum_value (parser, PANGO_TYPE_WRAP_MODE, FALSE, &value, error))
-            return FALSE;
-          pango_layout_set_wrap (layout, (PangoWrapMode)value);
+          pango_layout_set_wrap (layout, (PangoWrapMode)parser_get_enum_value (parser, PANGO_TYPE_WRAP_MODE, FALSE));
           break;
 
         case LAYOUT_ELLIPSIZE:
-          if (!parser_get_enum_value (parser, PANGO_TYPE_ELLIPSIZE_MODE, FALSE, &value, error))
-            return FALSE;
-          pango_layout_set_ellipsize (layout, (PangoEllipsizeMode)value);
+          pango_layout_set_ellipsize (layout, (PangoEllipsizeMode)parser_get_enum_value (parser, PANGO_TYPE_ELLIPSIZE_MODE, FALSE));
           break;
 
         case LAYOUT_WIDTH:
@@ -1439,8 +1326,6 @@ json_parser_fill_layout (GtkJsonParser                *parser,
   while (gtk_json_parser_next (parser));
 
   gtk_json_parser_end (parser);
-
-  return TRUE;
 }
 
 /* }}} */
@@ -1560,11 +1445,12 @@ pango_layout_deserialize (PangoContext                 *context,
   layout = pango_layout_new (context);
 
   parser = gtk_json_parser_new_for_bytes (bytes);
-  if (!json_parser_fill_layout (parser, layout, flags, error))
+  json_parser_fill_layout (parser, layout, flags);
+
+  if (gtk_json_parser_get_error (parser))
     {
-      gtk_json_parser_free (parser);
-      g_object_unref (layout);
-      return NULL;
+      g_propagate_error (error, g_error_copy (gtk_json_parser_get_error (parser)));
+      g_clear_object (&layout);
     }
 
   gtk_json_parser_free (parser);
