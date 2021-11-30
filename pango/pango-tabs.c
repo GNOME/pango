@@ -370,6 +370,25 @@ pango_tab_array_get_positions_in_pixels (PangoTabArray *tab_array)
 }
 
 /**
+ * pango_tab_array_set_positions_in_pixels:
+ * @tab_array: a `PangoTabArray`
+ * @positions_in_pixels: whether positions are in pixels
+ *
+ * Sets whether positions in this array are specified in
+ * pixels.
+ *
+ * Since: 1.50
+ */
+void
+pango_tab_array_set_positions_in_pixels (PangoTabArray *tab_array,
+                                         gboolean       positions_in_pixels)
+{
+  g_return_if_fail (tab_array != NULL);
+
+  tab_array->positions_in_pixels = positions_in_pixels;
+}
+
+/**
  * pango_tab_array_to_string:
  * @tab_array: a `PangoTabArray`
  *
