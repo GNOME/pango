@@ -7,12 +7,12 @@
     "base-dir" : "weak-ltr",
     "round-glyph-positions" : true,
     "transform" : [
-      1.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
     ]
   },
   "comment" : "Emoji",
@@ -23,7 +23,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
     "width" : 167936,
-    "height" : 19456,
+    "height" : 167936,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -33,7 +33,7 @@
         "backspace-deletes-character" : true,
         "word-boundary" : true
       },
-      {      },
+      {},
       {
         "char-break" : true,
         "white" : true,
@@ -47,7 +47,7 @@
         "cursor-position" : true,
         "word-boundary" : true
       },
-      {      },
+      {},
       {
         "char-break" : true,
         "white" : true,
@@ -61,7 +61,7 @@
         "cursor-position" : true,
         "word-boundary" : true
       },
-      {      },
+      {},
       {
         "char-break" : true,
         "white" : true,
@@ -88,7 +88,7 @@
         "cursor-position" : true,
         "word-boundary" : true
       },
-      {      },
+      {},
       {
         "char-break" : true,
         "white" : true,
@@ -130,11 +130,11 @@
         "cursor-position" : true,
         "word-boundary" : true
       },
-      {      },
-      {      },
-      {      },
-      {      },
-      {      },
+      {},
+      {},
+      {},
+      {},
+      {},
       {
         "char-break" : true,
         "white" : true,
@@ -179,12 +179,12 @@
               "description" : "DejaVu Sans 11",
               "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -225,11 +225,11 @@
               "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47",
               "matrix" : [
                 0.13455956135321101,
-                -0.0,
-                -0.0,
+                -0,
+                -0,
                 0.13455956135321101,
-                0.0,
-                0.0
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -267,12 +267,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -301,11 +301,11 @@
               "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47",
               "matrix" : [
                 0.13455956135321101,
-                -0.0,
-                -0.0,
+                -0,
+                -0,
                 0.13455956135321101,
-                0.0,
-                0.0
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -337,12 +337,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -371,11 +371,11 @@
               "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47",
               "matrix" : [
                 0.13455956135321101,
-                -0.0,
-                -0.0,
+                -0,
+                -0,
                 0.13455956135321101,
-                0.0,
-                0.0
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -407,12 +407,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -441,11 +441,11 @@
               "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47",
               "matrix" : [
                 0.13455956135321101,
-                -0.0,
-                -0.0,
+                -0,
+                -0,
                 0.13455956135321101,
-                0.0,
-                0.0
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -477,12 +477,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -535,11 +535,11 @@
               "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47",
               "matrix" : [
                 0.13455956135321101,
-                -0.0,
-                -0.0,
+                -0,
+                -0,
                 0.13455956135321101,
-                0.0,
-                0.0
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -583,12 +583,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,

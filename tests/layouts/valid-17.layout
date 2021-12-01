@@ -7,12 +7,12 @@
     "base-dir" : "weak-ltr",
     "round-glyph-positions" : true,
     "transform" : [
-      1.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
     ]
   },
   "comment" : "Hyphenation point should get replaced with a hyphen",
@@ -25,7 +25,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
     "width" : 96976,
-    "height" : 38912,
+    "height" : 96976,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -63,7 +63,7 @@
         "word-start" : true,
         "backspace-deletes-character" : true,
         "break-inserts-hyphen" : true,
-        "break-removes_preceding" : true
+        "break-removes-preceding" : true
       },
       {
         "char-break" : true,
@@ -87,7 +87,7 @@
         "word-start" : true,
         "backspace-deletes-character" : true,
         "break-inserts-hyphen" : true,
-        "break-removes_preceding" : true
+        "break-removes-preceding" : true
       },
       {
         "char-break" : true,
@@ -111,7 +111,7 @@
         "word-start" : true,
         "backspace-deletes-character" : true,
         "break-inserts-hyphen" : true,
-        "break-removes_preceding" : true
+        "break-removes-preceding" : true
       },
       {
         "char-break" : true,
@@ -157,12 +157,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -211,12 +211,12 @@
               "description" : "DejaVu Sans 11",
               "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -248,12 +248,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -296,12 +296,12 @@
               "description" : "DejaVu Sans 11",
               "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -333,12 +333,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -381,12 +381,12 @@
               "description" : "DejaVu Sans 11",
               "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 4,
@@ -426,12 +426,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,

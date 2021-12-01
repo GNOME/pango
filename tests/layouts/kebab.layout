@@ -7,19 +7,15 @@
     "base-dir" : "weak-ltr",
     "round-glyph-positions" : true,
     "transform" : [
-      1.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
     ]
   },
-  "comment" : [
-    "Two words, expected to be broken",
-    "between words, collapsing the space",
-    "and still produce two overlong lines."
-  ],
+  "comment" : "Two words, expected to be broken\nbetween words, collapsing the space\nand still produce two overlong lines.",
   "text" : "Döner Kebab",
   "font" : "Cantarell Bold 32",
   "width" : 87040,
@@ -28,7 +24,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
     "width" : 126976,
-    "height" : 106496,
+    "height" : 126976,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -128,12 +124,12 @@
                 "wght" : 8374
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -202,12 +198,12 @@
                 "wght" : 8374
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,

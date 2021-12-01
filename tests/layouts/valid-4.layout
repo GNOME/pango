@@ -7,12 +7,12 @@
     "base-dir" : "weak-ltr",
     "round-glyph-positions" : true,
     "transform" : [
-      1.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
     ]
   },
   "text" : "This paragraph should ac­tual­ly have multiple lines, unlike all the other wannabe äöü pa­ra­graph tests in this ugh test-case. Grow some lines!",
@@ -23,7 +23,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
     "width" : 197632,
-    "height" : 97280,
+    "height" : 197632,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -898,12 +898,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 4,
@@ -1121,12 +1121,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -1345,12 +1345,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 4,
@@ -1562,12 +1562,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -1792,12 +1792,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,

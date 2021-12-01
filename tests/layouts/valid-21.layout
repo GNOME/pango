@@ -7,12 +7,12 @@
     "base-dir" : "weak-ltr",
     "round-glyph-positions" : true,
     "transform" : [
-      1.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
     ]
   },
   "comment" : "Visible and nickless ignorables",
@@ -29,7 +29,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 1,
     "width" : 45056,
-    "height" : 19456,
+    "height" : 45056,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -39,7 +39,7 @@
         "backspace-deletes-character" : true,
         "word-boundary" : true
       },
-      {      },
+      {},
       {
         "char-break" : true,
         "white" : true,
@@ -82,11 +82,11 @@
               "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47",
               "matrix" : [
                 0.13455956135321101,
-                -0.0,
-                -0.0,
+                -0,
+                -0,
                 0.13455956135321101,
-                0.0,
-                0.0
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -130,12 +130,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,

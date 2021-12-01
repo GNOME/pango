@@ -7,18 +7,15 @@
     "base-dir" : "weak-ltr",
     "round-glyph-positions" : true,
     "transform" : [
-      1.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
     ]
   },
-  "comment" : [
-    "A single word with word-char wrapping,",
-    "expected to be broken to fit the line width."
-  ],
+  "comment" : "A single word with word-char wrapping,\nexpected to be broken to fit the line width.",
   "text" : "Bratwurst",
   "font" : "Cantarell Bold 32",
   "wrap" : "word-char",
@@ -28,7 +25,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
     "width" : 78848,
-    "height" : 212992,
+    "height" : 78848,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -113,12 +110,12 @@
                 "wght" : 8374
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 4,
@@ -168,12 +165,12 @@
                 "wght" : 8374
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 4,
@@ -223,12 +220,12 @@
                 "wght" : 8374
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 4,
@@ -278,12 +275,12 @@
                 "wght" : 8374
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,

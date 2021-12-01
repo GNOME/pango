@@ -7,12 +7,12 @@
     "base-dir" : "weak-ltr",
     "round-glyph-positions" : true,
     "transform" : [
-      1.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
     ]
   },
   "text" : "This is a test of the automatic emergency brake!",
@@ -39,7 +39,7 @@
     "is-ellipsized" : true,
     "unknown-glyphs" : 0,
     "width" : 153600,
-    "height" : 19456,
+    "height" : 153600,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -359,12 +359,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -461,12 +461,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 2,
@@ -504,12 +504,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -566,12 +566,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,

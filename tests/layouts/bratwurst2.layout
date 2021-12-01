@@ -7,18 +7,15 @@
     "base-dir" : "weak-ltr",
     "round-glyph-positions" : true,
     "transform" : [
-      1.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
     ]
   },
-  "comment" : [
-    "A single word, expected to produce a single",
-    "overlong line."
-  ],
+  "comment" : "A single word, expected to produce a single\noverlong line.",
   "text" : "Bratwurst",
   "font" : "Cantarell Bold 32",
   "width" : 87040,
@@ -27,7 +24,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
     "width" : 202752,
-    "height" : 53248,
+    "height" : 202752,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -112,12 +109,12 @@
                 "wght" : 8374
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,

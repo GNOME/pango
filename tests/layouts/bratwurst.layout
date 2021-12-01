@@ -7,18 +7,15 @@
     "base-dir" : "weak-ltr",
     "round-glyph-positions" : true,
     "transform" : [
-      1.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
     ]
   },
-  "comment" : [
-    "A case with a single word made up of two items,",
-    "expected to produce a single overlong line."
-  ],
+  "comment" : "A case with a single word made up of two items,\nexpected to produce a single overlong line.",
   "text" : "Bratwurst",
   "attributes" : [
     {
@@ -34,7 +31,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
     "width" : 202752,
-    "height" : 53248,
+    "height" : 202752,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -119,12 +116,12 @@
                 "wght" : 8374
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -173,12 +170,12 @@
                 "wght" : 8374
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
