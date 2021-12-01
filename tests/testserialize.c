@@ -144,12 +144,12 @@ test_serialize_font (void)
     "    \"wght\" : 5583\n"
     "  },\n"
     "  \"matrix\" : [\n"
-    "    1.0,\n"
-    "    -0.0,\n"
-    "    -0.0,\n"
-    "    1.0,\n"
-    "    0.0,\n"
-    "    0.0\n"
+    "    1,\n"
+    "    -0,\n"
+    "    -0,\n"
+    "    1,\n"
+    "    0,\n"
+    "    0\n"
     "  ]\n"
     "}";
 
@@ -183,7 +183,7 @@ test_serialize_layout_minimal (void)
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
-  bytes = g_bytes_new_static (test, -1);
+  bytes = g_bytes_new_static (test, strlen (test) + 1);
 
   layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_DEFAULT, &error);
   g_assert_no_error (error);
@@ -267,7 +267,7 @@ test_serialize_layout_valid (void)
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
-  bytes = g_bytes_new_static (test, -1);
+  bytes = g_bytes_new_static (test, strlen (test) + 1);
 
   layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_DEFAULT, &error);
   g_assert_no_error (error);
@@ -286,6 +286,13 @@ test_serialize_layout_valid (void)
 
   out_bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_DEFAULT);
 
+  if (strcmp (g_bytes_get_data (out_bytes, NULL), g_bytes_get_data (bytes, NULL)) != 0)
+    {
+      g_print ("expected:\n%s\ngot:\n%s\n",
+               (char *)g_bytes_get_data (bytes, NULL),
+               (char *)g_bytes_get_data (out_bytes, NULL));
+    }
+
   g_assert_cmpstr (g_bytes_get_data (out_bytes, NULL), ==, g_bytes_get_data (bytes, NULL));
 
   g_bytes_unref (out_bytes);
@@ -303,7 +310,7 @@ test_serialize_layout_context (void)
     "  \"context\" : {\n"
     "    \"base-gravity\" : \"east\",\n"
     "    \"language\" : \"de-de\",\n"
-    "    \"round-glyph-positions\" : \"false\"\n"
+    "    \"round-glyph-positions\" : false\n"
     "  },\n"
     "  \"text\" : \"Some fun with layouts!\"\n"
     "}\n";
@@ -315,7 +322,7 @@ test_serialize_layout_context (void)
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
-  bytes = g_bytes_new_static (test, -1);
+  bytes = g_bytes_new_static (test, strlen (test) + 1);
 
   layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_CONTEXT, &error);
   g_assert_no_error (error);
@@ -381,7 +388,7 @@ test_serialize_layout_invalid (void)
       "    \"name\" : \"This is wrong\"\n"
       "  }\n"
       "}\n",
-      PANGO_LAYOUT_DESERIALIZE_INVALID_SYNTAX
+      0,
     }
   };
 
@@ -395,10 +402,13 @@ test_serialize_layout_invalid (void)
       PangoLayout *layout;
       GError *error = NULL;
 
-       bytes = g_bytes_new_static (test[i].json, -1);
+       bytes = g_bytes_new_static (test[i].json, strlen (test[i].json) + 1);
        layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_DEFAULT, &error);
        g_assert_null (layout);
-       g_assert_error (error, PANGO_LAYOUT_DESERIALIZE_ERROR, test[i].expected_error);
+       if (test[i].expected_error)
+         g_assert_error (error, PANGO_LAYOUT_DESERIALIZE_ERROR, test[i].expected_error);
+       else
+         g_assert_nonnull (error);
        g_bytes_unref (bytes);
        g_clear_error (&error);
     }
