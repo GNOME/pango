@@ -90,7 +90,7 @@ add_attribute (GtkJsonPrinter *printer,
   if (attr->start_index != PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING)
     gtk_json_printer_add_integer (printer, "start", (int)attr->start_index);
   if (attr->end_index != PANGO_ATTR_INDEX_TO_TEXT_END)
-    gtk_json_printer_add_integer (printer, "end", (int)attr->start_index);
+    gtk_json_printer_add_integer (printer, "end", (int)attr->end_index);
   add_enum_value (printer, "type", PANGO_TYPE_ATTR_TYPE, attr->klass->type, FALSE);
 
   switch (attr->klass->type)
@@ -198,7 +198,7 @@ add_tab_array (GtkJsonPrinter *printer,
 
   gtk_json_printer_start_object (printer, "tabs");
 
-  gtk_json_printer_add_boolean (printer, "position-in-pixels", pango_tab_array_get_positions_in_pixels (tabs));
+  gtk_json_printer_add_boolean (printer, "positions-in-pixels", pango_tab_array_get_positions_in_pixels (tabs));
   gtk_json_printer_start_array (printer, "positions");
   for (int i = 0; i < pango_tab_array_get_size (tabs); i++)
     {
@@ -419,7 +419,7 @@ add_run (GtkJsonPrinter *printer,
   gtk_json_printer_add_integer (printer, "length", run->item->length);
 
   str = g_strndup (layout->text + run->item->offset, run->item->length);
-  gtk_json_printer_add_string (printer, "text ", str);
+  gtk_json_printer_add_string (printer, "text", str);
   g_free (str);
 
   gtk_json_printer_add_integer (printer, "bidi-level", run->item->analysis.level);
@@ -544,21 +544,7 @@ layout_to_json (GtkJsonPrinter            *printer,
 
   str = (const char *) g_object_get_data (G_OBJECT (layout), "comment");
   if (str)
-    {
-      if (strstr (str, "\n") != NULL)
-        {
-          char **strs = g_strsplit (str, "\n", -1);
-
-          gtk_json_printer_start_array (printer, "comment");
-          for (int i = 0; strs[i]; i++)
-            gtk_json_printer_add_string (printer, NULL, strs[i]);
-          gtk_json_printer_end (printer);
-
-          g_strfreev (strs);
-        }
-      else
-        gtk_json_printer_add_string (printer, "comment", str);
-    }
+    gtk_json_printer_add_string (printer, "comment", str);
 
   gtk_json_printer_add_string (printer, "text", layout->text);
 
@@ -892,8 +878,6 @@ attr_for_type (GtkJsonParser *parser,
   attr->start_index = start;
   attr->end_index = end;
 
-  gtk_json_parser_end (parser);
-
   return attr;
 }
 
@@ -943,10 +927,16 @@ json_to_attribute (GtkJsonParser *parser)
           break;
 
         default:
-          g_assert_not_reached ();
+          break;
         }
     }
   while (gtk_json_parser_next (parser));
+
+  if (!attr && !gtk_json_parser_get_error (parser))
+    gtk_json_parser_set_error (parser,
+        g_error_new (PANGO_LAYOUT_DESERIALIZE_ERROR,
+                     PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE,
+                     "Attribute missing \"value\""));
 
   gtk_json_parser_end (parser);
 
@@ -1008,14 +998,17 @@ json_parser_fill_tabs (GtkJsonParser *parser,
                 case TAB_POSITION:
                   pos = gtk_json_parser_get_int (parser);
                   break;
+
                 case TAB_ALIGNMENT:
                   align = parser_get_enum_value (parser, PANGO_TYPE_TAB_ALIGN, FALSE);
                   break;
+
                 case TAB_DECIMAL_POINT:
                   ch = gtk_json_parser_get_int (parser);
                   break;
+
                 default:
-                  g_assert_not_reached ();
+                  break;
                 }
             }
           while (gtk_json_parser_next (parser));
@@ -1028,8 +1021,6 @@ json_parser_fill_tabs (GtkJsonParser *parser,
       pango_tab_array_set_tab (tabs, index, align, pos);
       pango_tab_array_set_decimal_point (tabs, index, ch);
       index++;
-
-      gtk_json_parser_end (parser);
     }
   while (gtk_json_parser_next (parser));
 
@@ -1060,11 +1051,13 @@ json_parser_fill_tab_array (GtkJsonParser *parser,
         case TABS_POSITIONS_IN_PIXELS:
           pango_tab_array_set_positions_in_pixels (tabs, gtk_json_parser_get_boolean (parser));
           break;
+
         case TABS_POSITIONS:
           json_parser_fill_tabs (parser, tabs);
           break;
+
         default:
-          g_assert_not_reached ();
+          break;
         }
     }
   while (gtk_json_parser_next (parser));
@@ -1158,8 +1151,8 @@ json_parser_fill_context (GtkJsonParser *parser,
           }
           break;
 
-          default:
-            g_assert_not_reached ();
+        default:
+          break;
         }
     }
   while (gtk_json_parser_next (parser));
@@ -1233,7 +1226,6 @@ json_parser_fill_layout (GtkJsonParser               *parser,
         case LAYOUT_COMMENT:
           str = gtk_json_parser_get_string (parser);
           g_object_set_data_full (G_OBJECT (layout), "comment", str, g_free);
-          g_free (str);
           break;
 
         case LAYOUT_TEXT:
@@ -1320,7 +1312,7 @@ json_parser_fill_layout (GtkJsonParser               *parser,
           break;
 
         default:
-          g_assert_not_reached ();
+          break;
         }
     }
   while (gtk_json_parser_next (parser));
@@ -1366,6 +1358,8 @@ pango_layout_serialize (PangoLayout               *layout,
   gtk_json_printer_set_flags (printer, GTK_JSON_PRINTER_PRETTY);
   layout_to_json (printer, layout, flags);
   gtk_json_printer_free (printer);
+
+  g_string_append_c (str, '\n');
 
   size = str->len;
   data = g_string_free (str, FALSE);
