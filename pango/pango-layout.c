@@ -110,6 +110,7 @@ struct _ItemProperties
   guint uline_error    : 1;
   guint strikethrough  : 1;
   guint oline_single   : 1;
+  guint showing_space  : 1;
   gint            letter_spacing;
   gboolean        shape_set;
   PangoRectangle *shape_ink_rect;
@@ -3269,6 +3270,7 @@ pango_layout_line_leaked (PangoLayoutLine *line)
 
 static void shape_tab (PangoLayoutLine  *line,
                        LastTabState     *tab_state,
+                       ItemProperties   *properties,
                        int               current_width,
                        PangoItem        *item,
                        PangoGlyphString *glyphs);
@@ -3457,23 +3459,6 @@ get_tab_pos (PangoLayoutLine *line,
   *tab_pos -= offset;
 }
 
-static gboolean
-showing_space (const PangoAnalysis *analysis)
-{
-  GSList *l;
-
-  for (l = analysis->extra_attrs; l; l = l->next)
-    {
-      PangoAttribute *attr = l->data;
-
-      if (attr->klass->type == PANGO_ATTR_SHOW &&
-          (((PangoAttrInt*)attr)->value & PANGO_SHOW_SPACES) != 0)
-        return TRUE;
-    }
-
-  return FALSE;
-}
-
 static void
 ensure_decimal (PangoLayout *layout)
 {
@@ -3493,6 +3478,7 @@ struct _LastTabState {
 static void
 shape_tab (PangoLayoutLine  *line,
            LastTabState     *tab_state,
+           ItemProperties   *properties,
            int               current_width,
            PangoItem        *item,
            PangoGlyphString *glyphs)
@@ -3504,7 +3490,7 @@ shape_tab (PangoLayoutLine  *line,
 
   pango_glyph_string_set_size (glyphs, 1);
 
-  if (showing_space (&item->analysis))
+  if (properties->showing_space)
     glyphs->glyphs[0].glyph = PANGO_GET_UNKNOWN_GLYPH ('\t');
   else
     glyphs->glyphs[0].glyph = PANGO_GLYPH_EMPTY;
@@ -3685,7 +3671,7 @@ shape_run (PangoLayoutLine *line,
   PangoGlyphString *glyphs = pango_glyph_string_new ();
 
   if (layout->text[item->offset] == '\t')
-    shape_tab (line, &state->last_tab, state->line_width - state->remaining_width, item, glyphs);
+    shape_tab (line, &state->last_tab, &state->properties, state->line_width - state->remaining_width, item, glyphs);
   else
     {
       PangoShapeFlags shape_flags = PANGO_SHAPE_NONE;
@@ -3788,6 +3774,8 @@ insert_run (PangoLayoutLine  *line,
 
   if (state->last_tab.glyphs && run->glyphs != state->last_tab.glyphs)
     {
+      gboolean found_decimal = FALSE;
+
       /* Adjust the tab position so placing further runs will continue to
        * maintain the tab placement. In the case of decimal tabs, we are
        * done once we've placed the run with the decimal point.
@@ -3800,14 +3788,16 @@ insert_run (PangoLayoutLine  *line,
       else if (state->last_tab.align == PANGO_TAB_DECIMAL)
         {
           int width;
-          gboolean found;
 
-          get_decimal_prefix_width (run->item, run->glyphs, line->layout->text, state->last_tab.decimal, &width, &found);
+          get_decimal_prefix_width (run->item, run->glyphs, line->layout->text, state->last_tab.decimal, &width, &found_decimal);
 
           state->last_tab.width += width;
-          if (found)
-            state->last_tab.glyphs = NULL;
         }
+
+      state->last_tab.glyphs->glyphs[0].geometry.width = MAX (state->last_tab.pos - state->last_tab.width, 0);
+
+      if (found_decimal)
+        state->last_tab.glyphs = NULL;
     }
 }
 
@@ -6735,6 +6725,7 @@ pango_layout_get_item_properties (PangoItem      *item,
   properties->uline_error = FALSE;
   properties->oline_single = FALSE;
   properties->strikethrough = FALSE;
+  properties->showing_space = FALSE;
   properties->letter_spacing = 0;
   properties->shape_set = FALSE;
   properties->shape_ink_rect = NULL;
@@ -6806,6 +6797,10 @@ pango_layout_get_item_properties (PangoItem      *item,
 
         case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
           properties->absolute_line_height = ((PangoAttrInt *)attr)->value;
+          break;
+
+        case PANGO_ATTR_SHOW:
+          properties->showing_space = (((PangoAttrInt *)attr)->value & PANGO_SHOW_SPACES) != 0;
           break;
 
         default:
