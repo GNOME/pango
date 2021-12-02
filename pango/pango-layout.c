@@ -1032,10 +1032,13 @@ pango_layout_set_tabs (PangoLayout   *layout,
 
   if (tabs != layout->tabs)
     {
-      if (layout->tabs)
-        pango_tab_array_free (layout->tabs);
+      g_clear_pointer (&layout->tabs, pango_tab_array_free);
 
-      layout->tabs = tabs ? pango_tab_array_copy (tabs) : NULL;
+      if (tabs)
+        {
+          layout->tabs = pango_tab_array_copy (tabs);
+          pango_tab_array_sort (layout->tabs);
+        }
 
       layout_changed (layout);
     }
