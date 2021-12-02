@@ -576,3 +576,28 @@ pango_tab_array_get_decimal_point (PangoTabArray *tab_array,
 
   return tab_array->tabs[tab_index].decimal_point;
 }
+
+static int
+compare_tabs (const void *p1, const void *p2)
+{
+  const PangoTab *t1 = p1;
+  const PangoTab *t2 = p2;
+
+  return t1->location - t2->location;
+}
+
+/**
+ * pango_tab_array_sort:
+ * @tab_array: a `PangoTabArray`
+ *
+ * Utility function to ensure that the tab stops are in increasing order.
+ *
+ * Since: 1.50
+ */
+void
+pango_tab_array_sort (PangoTabArray *tab_array)
+{
+  g_return_if_fail (tab_array != NULL);
+
+  qsort (tab_array->tabs, tab_array->size, sizeof (PangoTab), compare_tabs);
+}

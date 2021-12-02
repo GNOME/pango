@@ -106,6 +106,9 @@ PANGO_AVAILABLE_IN_1_50
 gunichar        pango_tab_array_get_decimal_point   (PangoTabArray *tab_array,
                                                      int            tab_index);
 
+PANGO_AVAILABLE_IN_1_50
+void            pango_tab_array_sort                (PangoTabArray *tab_array);
+
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoTabArray, pango_tab_array_free)
 
 G_END_DECLS
