@@ -3269,6 +3269,7 @@ pango_layout_line_leaked (PangoLayoutLine *line)
 
 static void shape_tab (PangoLayoutLine  *line,
                        LastTabState     *tab_state,
+                       int               current_width,
                        PangoItem        *item,
                        PangoGlyphString *glyphs);
 
@@ -3456,27 +3457,6 @@ get_tab_pos (PangoLayoutLine *line,
   *tab_pos -= offset;
 }
 
-static int
-line_width (PangoLayoutLine *line)
-{
-  GSList *l;
-  int i;
-  int width = 0;
-
-  /* Compute the width of the line currently - inefficient, but easier
-   * than keeping the current width of the line up to date everywhere
-   */
-  for (l = line->runs; l; l = l->next)
-    {
-      PangoLayoutRun *run = l->data;
-
-      for (i = 0; i < run->glyphs->num_glyphs; i++)
-        width += run->glyphs->glyphs[i].geometry.width;
-    }
-
-  return width;
-}
-
 static gboolean
 showing_space (const PangoAnalysis *analysis)
 {
@@ -3513,16 +3493,14 @@ struct _LastTabState {
 static void
 shape_tab (PangoLayoutLine  *line,
            LastTabState     *tab_state,
+           int               current_width,
            PangoItem        *item,
            PangoGlyphString *glyphs)
 {
   int i, space_width;
-  int current_width;
   int tab_pos;
   PangoTabAlign tab_align;
   gunichar tab_decimal;
-
-  current_width = line_width (line);
 
   pango_glyph_string_set_size (glyphs, 1);
 
@@ -3707,7 +3685,7 @@ shape_run (PangoLayoutLine *line,
   PangoGlyphString *glyphs = pango_glyph_string_new ();
 
   if (layout->text[item->offset] == '\t')
-    shape_tab (line, &state->last_tab, item, glyphs);
+    shape_tab (line, &state->last_tab, state->line_width - state->remaining_width, item, glyphs);
   else
     {
       PangoShapeFlags shape_flags = PANGO_SHAPE_NONE;
