@@ -3541,7 +3541,7 @@ shape_tab (PangoLayoutLine  *line,
   ensure_tab_width (line->layout);
   space_width = line->layout->tab_width / 8;
 
-  for (i = 0; ; i++)
+  for (i = tab_state->index; ; i++)
     {
       gboolean is_default;
 
