@@ -637,6 +637,11 @@ PangoLanguage **      pango_font_get_languages     (PangoFont        *font);
 PANGO_AVAILABLE_IN_1_50
 GBytes *              pango_font_serialize         (PangoFont        *font);
 
+PANGO_AVAILABLE_IN_1_50
+PangoFont *           pango_font_deserialize       (PangoContext     *context,
+                                                    GBytes           *bytes,
+                                                    GError          **error);
+
 /**
  * PANGO_GLYPH_EMPTY:
  *

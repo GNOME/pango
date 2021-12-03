@@ -135,7 +135,10 @@ test_serialize_font (void)
   PangoContext *context;
   PangoFontDescription *desc;
   PangoFont *font;
+  PangoFont *font2;
   GBytes *bytes;
+  GBytes *bytes2;
+  GError *error = NULL;
   const char *expected =
     "{\n"
     "  \"description\" : \"Cantarell 20 @wght=600\",\n"
@@ -159,10 +162,20 @@ test_serialize_font (void)
 
   bytes = pango_font_serialize (font);
   g_assert_cmpstr (g_bytes_get_data (bytes, NULL), ==, expected);
-  g_bytes_unref (bytes);
+
+  font2 = pango_font_deserialize (context, bytes, &error);
+  g_assert_no_error (error);
+  g_assert_nonnull (font2);
+
+  bytes2 = pango_font_serialize (font2);
+  g_assert_true (g_bytes_equal (bytes2, bytes));
 
   g_object_unref (font);
+  g_object_unref (font2);
   pango_font_description_free (desc);
+
+  g_bytes_unref (bytes);
+  g_bytes_unref (bytes2);
   g_object_unref (context);
 }
 

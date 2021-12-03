@@ -1320,6 +1320,51 @@ json_parser_fill_layout (GtkJsonParser               *parser,
   gtk_json_parser_end (parser);
 }
 
+enum {
+  FONT_DESCRIPTION,
+  FONT_CHECKSUM,
+  FONT_VARIATIONS,
+  FONT_FEATURES,
+  FONT_MATRIX
+};
+
+static const char *font_members[] = {
+  "description",
+  "checksum",
+  "variations",
+  "features",
+  "matrix",
+  NULL
+};
+
+static PangoFont *
+json_parser_load_font (GtkJsonParser  *parser,
+                       PangoContext   *context,
+                       GError        **error)
+{
+  PangoFont *font = NULL;
+
+  gtk_json_parser_start_object (parser);
+
+  switch (gtk_json_parser_select_member (parser, font_members))
+    {
+    case FONT_DESCRIPTION:
+      {
+        PangoFontDescription *desc = parser_get_font_description (parser);
+        font = pango_context_load_font (context, desc);
+        pango_font_description_free (desc);
+      }
+      break;
+
+    default:
+      break;
+    }
+
+  gtk_json_parser_end (parser);
+
+  return font;
+}
+
 /* }}} */
 /* {{{ Public API */
 
@@ -1421,6 +1466,10 @@ pango_layout_write_to_file (PangoLayout                *layout,
  *
  * For a discussion of the supported format, see that function.
  *
+ * Note: to verify that the returned layout is identical to
+ * the one that was serialized, you can compare @bytes to the
+ * result of serializing the layout again.
+ *
  * Returns: (nullable) (transfer full): a new `PangoLayout`
  *
  * Since: 1.50
@@ -1489,6 +1538,41 @@ pango_font_serialize (PangoFont *font)
   data = g_string_free (str, FALSE);
 
   return g_bytes_new_take (data, size);
+}
+
+/**
+ * pango_font_deserialize:
+ * @context: a `PangoContext`
+ * @bytes: the bytes containing the data
+ * @error: return location for an error
+ *
+ * Loads data previously created via [method@Pango.Font.serialize].
+ *
+ * For a discussion of the supported format, see that function.
+ *
+ * Note: to verify that the returned font is identical to
+ * the one that was serialized, you can compare @bytes to the
+ * result of serializing the font again.
+ *
+ * Returns: (nullable) (transfer full): a new `PangoFont`
+ *
+ * Since: 1.50
+ */
+PangoFont *
+pango_font_deserialize (PangoContext  *context,
+                        GBytes        *bytes,
+                        GError       **error)
+{
+  PangoFont *font;
+  GtkJsonParser *parser;
+
+  g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
+
+  parser = gtk_json_parser_new_for_bytes (bytes);
+  font = json_parser_load_font (parser, context, error);
+  gtk_json_parser_free (parser);
+
+  return font;
 }
 
 /* }}} */
