@@ -708,7 +708,7 @@ attr_for_type (GtkJsonParser *parser,
     case PANGO_ATTR_INVALID:
       gtk_json_parser_set_error (parser,
           g_error_new (PANGO_LAYOUT_DESERIALIZE_ERROR,
-                       PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
+                       PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE,
                        "Missing attribute type"));
       return NULL;
 
