@@ -382,20 +382,16 @@ gboolean        pango_layout_write_to_file         (PangoLayout                 
 
 /**
  * PangoLayoutDeserializeError:
- * @PANGO_LAYOUT_SERIALIZE_INVALID: Unspecified error
- * @PANGO_LAYOUT_SERIALIZE_INVALID_SYNTAX: The serialized data had
- *   the wrong structure (e.g. a member was expected to be a JSon object,
- *   but was an array)
- * @PANGO_LAYOUT_SERIALIZE_INVALID_VALUE: A JSon value could not be
+ * @PANGO_LAYOUT_DESERIALIZE_INVALID: Unspecified error
+ * @PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE: A JSon value could not be
  *   interpreted
- * @PANGO_LAYOUT_SERIALIZE_MISSING_VALUE: A required JSon member was
+ * @PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE: A required JSon member was
  *   not found
  *
  * Errors that can be returned by [func@Pango.Layout.deserialize].
  */
 typedef enum {
   PANGO_LAYOUT_DESERIALIZE_INVALID,
-  PANGO_LAYOUT_DESERIALIZE_INVALID_SYNTAX,
   PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
   PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE,
 } PangoLayoutDeserializeError;

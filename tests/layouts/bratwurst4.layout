@@ -7,20 +7,15 @@
     "base-dir" : "weak-ltr",
     "round-glyph-positions" : true,
     "transform" : [
-      1.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
     ]
   },
-  "comment" : [
-    "A single word with a soft hyphen,",
-    "expected to be broken at the soft",
-    "hyphen and still produce overlong",
-    "lines."
-  ],
+  "comment" : "A single word with a soft hyphen,\nexpected to be broken at the soft\nhyphen and still produce overlong\nlines.",
   "text" : "Brat­wurst",
   "font" : "Cantarell Bold 32",
   "width" : 87040,
@@ -29,7 +24,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
     "width" : 115712,
-    "height" : 106496,
+    "height" : 115712,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -120,12 +115,12 @@
                 "wght" : 8374
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 4,
@@ -193,12 +188,12 @@
                 "wght" : 8374
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,

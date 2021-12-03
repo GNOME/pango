@@ -7,12 +7,12 @@
     "base-dir" : "weak-ltr",
     "round-glyph-positions" : true,
     "transform" : [
-      1.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
     ]
   },
   "comment" : "Emoji",
@@ -23,7 +23,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
     "width" : 56320,
-    "height" : 19456,
+    "height" : 56320,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -51,7 +51,7 @@
         "word-end" : true,
         "word-boundary" : true
       },
-      {      },
+      {},
       {
         "line-break" : true,
         "char-break" : true,
@@ -93,12 +93,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -139,11 +139,11 @@
               "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47",
               "matrix" : [
                 0.13455956135321101,
-                -0.0,
-                -0.0,
+                -0,
+                -0,
                 0.13455956135321101,
-                0.0,
-                0.0
+                0,
+                0
               ]
             },
             "flags" : 0,
@@ -181,12 +181,12 @@
                 "wght" : 0
               },
               "matrix" : [
-                1.0,
-                -0.0,
-                -0.0,
-                1.0,
-                0.0,
-                0.0
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
               ]
             },
             "flags" : 0,
