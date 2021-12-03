@@ -405,7 +405,7 @@ GQuark          pango_layout_deserialize_error_quark (void);
  * @PANGO_LAYOUT_DESERIALIZE_CONTEXT: Apply context information
  *   from the serialization to the `PangoContext`
  *
- * Flags that influence the behavior of [method@Pango.Layout.deserialize].
+ * Flags that influence the behavior of [func@Pango.Layout.deserialize].
  *
  * New members may be added to this enumeration over time.
  */

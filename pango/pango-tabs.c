@@ -448,7 +448,7 @@ skip_whitespace (const char *p)
  *
  * Deserializes a `PangoTabArray` from a string.
  *
- * This is the counterpart to [func@Pango.TabArray.to_string].
+ * This is the counterpart to [method@Pango.TabArray.to_string].
  * See that functions for details about the format.
  *
  * Returns: (transfer full) (nullable): a new `PangoTabArray`

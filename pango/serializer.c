@@ -1373,10 +1373,10 @@ json_parser_load_font (GtkJsonParser  *parser,
  * @layout: a `PangoLayout`
  * @flags: `PangoLayoutSerializeFlags`
  *
- * Serializes the @layout for later deserialization via [method@Pango.Layout.deserialize].
+ * Serializes the @layout for later deserialization via [func@Pango.Layout.deserialize].
  *
  * There are no guarantees about the format of the output across different
- * versions of Pango and [method@Pango.Layout.deserialize] will reject data
+ * versions of Pango and [func@Pango.Layout.deserialize] will reject data
  * that it cannot parse.
  *
  * The intended use of this function is testing, benchmarking and debugging.

@@ -2752,7 +2752,7 @@ is_valid_end_char (char c)
  *
  * Deserializes a `PangoAttrList` from a string.
  *
- * This is the counterpart to [func@Pango.AttrList.to_string].
+ * This is the counterpart to [method@Pango.AttrList.to_string].
  * See that functions for details about the format.
  *
  * Returns: (transfer full) (nullable): a new `PangoAttrList`
