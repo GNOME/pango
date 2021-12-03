@@ -702,6 +702,8 @@ gtk_json_parser_free (GtkJsonParser *self)
   if (self == NULL)
     return;
 
+  g_clear_error (&self->error);
+
   g_bytes_unref (self->bytes);
 
   if (self->blocks != self->blocks_preallocated)
