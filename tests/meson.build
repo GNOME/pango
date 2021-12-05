@@ -118,6 +118,7 @@ installed_test_layouts_data = [
   'layouts/valid-20.layout',
   'layouts/valid-21.layout',
   'layouts/valid-22.layout',
+  'layouts/tab-crash.layout',
 ]
 
 test_markups_data = [

@@ -3775,6 +3775,7 @@ insert_run (PangoLayoutLine  *line,
   if (state->last_tab.glyphs && run->glyphs != state->last_tab.glyphs)
     {
       gboolean found_decimal = FALSE;
+      int width;
 
       /* Adjust the tab position so placing further runs will continue to
        * maintain the tab placement. In the case of decimal tabs, we are
@@ -3794,9 +3795,10 @@ insert_run (PangoLayoutLine  *line,
           state->last_tab.width += width;
         }
 
-      state->last_tab.glyphs->glyphs[0].geometry.width = MAX (state->last_tab.pos - state->last_tab.width, 0);
+      width = MAX (state->last_tab.pos - state->last_tab.width, 0);
+      state->last_tab.glyphs->glyphs[0].geometry.width = width;
 
-      if (found_decimal)
+      if (found_decimal || width == 0)
         state->last_tab.glyphs = NULL;
     }
 }
@@ -4494,7 +4496,21 @@ process_line (PangoLayout    *layout,
         case BREAK_NONE_FIT:
           /* Back up over unused runs to run where there is a break */
           while (line->runs && line->runs != break_link)
-            state->items = g_list_prepend (state->items, uninsert_run (line));
+            {
+              PangoLayoutRun *run = line->runs->data;
+
+              /* If we uninsert the current tab run,
+               * we need to reset the tab state
+               */
+              if (run->glyphs == state->last_tab.glyphs)
+                {
+                  state->last_tab.glyphs = NULL;
+                  state->last_tab.index = 0;
+                  state->last_tab.align = PANGO_TAB_LEFT;
+                }
+
+              state->items = g_list_prepend (state->items, uninsert_run (line));
+            }
 
           state->start_offset = break_start_offset;
           state->remaining_width = break_remaining_width;
