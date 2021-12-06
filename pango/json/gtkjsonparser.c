@@ -42,9 +42,12 @@ struct _GtkJsonParser
 {
   GBytes *bytes;
   const guchar *reader; /* current read head, pointing as far as we've read */
+  const guchar *start; /* pointer at start of data, after optional BOM */
   const guchar *end; /* pointer after end of data we're reading */
 
   GError *error; /* if an error has happened, it's stored here. Errors aren't recoverable. */
+  const guchar *error_start; /* start of error location */
+  const guchar *error_end; /* end of error location */
 
   GtkJsonBlock *block; /* current block */
   GtkJsonBlock *blocks; /* blocks array */
@@ -54,16 +57,17 @@ struct _GtkJsonParser
 
 typedef enum {
   WHITESPACE     = (1 << 4),
-  STRING_ELEMENT = (1 << 5),
-  STRING_MARKER  = (1 << 6),
+  NEWLINE        = (1 << 5),
+  STRING_ELEMENT = (1 << 6),
+  STRING_MARKER  = (1 << 7),
 } JsonCharacterType;
 
 #define JSON_CHARACTER_NODE_MASK ((1 << 4) - 1)
 
 static const guchar json_character_table[256] = {
   ['\t'] = WHITESPACE,
-  ['\r'] = WHITESPACE,
-  ['\n'] = WHITESPACE,
+  ['\r'] = WHITESPACE | NEWLINE,
+  ['\n'] = WHITESPACE | NEWLINE,
   [' ']  = WHITESPACE | STRING_ELEMENT,
   ['!']  = STRING_ELEMENT,
   ['"']  = GTK_JSON_STRING | STRING_MARKER,
@@ -178,6 +182,21 @@ json_skip_characters (const guchar      *start,
 }
 
 static const guchar *
+json_skip_characters_until (const guchar      *start,
+                            const guchar      *end,
+                            JsonCharacterType  type)
+{
+  const guchar *s;
+
+  for (s = start; s < end; s++)
+    {
+      if (json_character_table[*s] & type)
+        break;
+    }
+  return s;
+}
+
+static const guchar *
 json_find_character (const guchar      *start,
                      JsonCharacterType  type)
 {
@@ -191,14 +210,45 @@ json_find_character (const guchar      *start,
   return s;
 }
 
+GQuark
+gtk_json_error_quark (void)
+{
+  return g_quark_from_static_string ("gtk-json-error-quark");
+}
+
 static void
-gtk_json_parser_value_error (GtkJsonParser *self,
-                             const char  *format,
-                             ...) G_GNUC_PRINTF(2, 3);
+gtk_json_parser_take_error (GtkJsonParser *self,
+                            const guchar  *start_location,
+                            const guchar  *end_location,
+                            GError        *error)
+{
+  g_assert (start_location <= end_location);
+  g_assert (self->start <= start_location);
+  g_assert (end_location <= self->end);
+
+  if (self->error)
+    {
+      g_error_free (error);
+      return;
+    }
+
+  self->error = error;
+  self->error_start = start_location;
+  self->error_end = end_location;
+}
+
 static void
-gtk_json_parser_value_error (GtkJsonParser *self,
-                             const char  *format,
-                             ...)
+gtk_json_parser_syntax_error_at (GtkJsonParser *self,
+                                 const guchar  *error_start,
+                                 const guchar  *error_end,
+                                 const char    *format,
+                                 ...) G_GNUC_PRINTF(4, 5);
+static void
+gtk_json_parser_syntax_error_at (GtkJsonParser *self,
+                                 const guchar  *error_start,
+                                 const guchar  *error_end,
+                                 const char    *format,
+                                 ...)
 {
   va_list args;
 
@@ -206,37 +256,144 @@ gtk_json_parser_value_error (GtkJsonParser *self,
     return;
 
   va_start (args, format);
-  self->error = g_error_new_valist (G_FILE_ERROR,
-                                    G_FILE_ERROR_FAILED,
-                                    format, args);
+  gtk_json_parser_take_error (self,
+                              error_start,
+                              error_end,
+                              g_error_new_valist (GTK_JSON_ERROR,
+                                                  GTK_JSON_ERROR_SYNTAX,
+                                                  format, args));
   va_end (args);
 }
 
 static void
 gtk_json_parser_syntax_error (GtkJsonParser *self,
-                              const char  *format,
+                              const char    *format,
                               ...) G_GNUC_PRINTF(2, 3);
 static void
 gtk_json_parser_syntax_error (GtkJsonParser *self,
-                              const char  *format,
+                              const char    *format,
                               ...)
 {
   va_list args;
+  const guchar *error_end;
 
   if (self->error)
     return;
 
   va_start (args, format);
-  self->error = g_error_new_valist (G_FILE_ERROR,
-                                    G_FILE_ERROR_FAILED,
-                                    format, args);
+  for (error_end = self->reader;
+       error_end < self->end && g_ascii_isalnum (*error_end);
+       error_end++)
+    ;
+  if (error_end == self->reader &&
+      g_utf8_get_char_validated ((const char *) error_end, self->end - error_end) < (gunichar) -2)
+    {
+      error_end = (const guchar *) g_utf8_next_char (error_end);
+    }
+
+  gtk_json_parser_take_error (self,
+                              self->reader,
+                              error_end,
+                              g_error_new_valist (GTK_JSON_ERROR,
+                                                  GTK_JSON_ERROR_SYNTAX,
+                                                  format, args));
+  va_end (args);
+}
+
+static void
+gtk_json_parser_type_error (GtkJsonParser *self,
+                            const char    *format,
+                            ...) G_GNUC_PRINTF(2, 3);
+static void
+gtk_json_parser_type_error (GtkJsonParser *self,
+                            const char    *format,
+                            ...)
+{
+  const guchar *start_location;
+  va_list args;
+
+  if (self->error)
+    return;
+
+  if (self->block->value)
+    start_location = self->block->value;
+  else if (self->block != self->blocks)
+    start_location = self->block[-1].value;
+  else
+    start_location = self->start;
+
+  va_start (args, format);
+  gtk_json_parser_take_error (self,
+                              start_location,
+                              self->reader,
+                              g_error_new_valist (GTK_JSON_ERROR,
+                                                  GTK_JSON_ERROR_TYPE,
+                                                  format, args));
+  va_end (args);
+}
+
+void
+gtk_json_parser_value_error (GtkJsonParser *self,
+                             const char    *format,
+                             ...)
+{
+  const guchar *start_location;
+  va_list args;
+
+  if (self->error)
+    return;
+
+  if (self->block->value)
+    start_location = self->block->value;
+  else if (self->block != self->blocks)
+    start_location = self->block[-1].value;
+  else
+    start_location = self->start;
+
+  va_start (args, format);
+  gtk_json_parser_take_error (self,
+                              start_location,
+                              self->reader,
+                              g_error_new_valist (GTK_JSON_ERROR,
+                                                  GTK_JSON_ERROR_VALUE,
+                                                  format, args));
+  va_end (args);
+}
+
+void
+gtk_json_parser_schema_error (GtkJsonParser *self,
+                              const char    *format,
+                              ...)
+{
+  const guchar *start_location;
+  va_list args;
+
+  if (self->error)
+    return;
+
+  if (self->block->member_name)
+    start_location = self->block->member_name;
+  if (self->block->value)
+    start_location = self->block->value;
+  else if (self->block != self->blocks)
+    start_location = self->block[-1].value;
+  else
+    start_location = self->start;
+
+  va_start (args, format);
+  gtk_json_parser_take_error (self,
+                              start_location,
+                              self->reader,
+                              g_error_new_valist (GTK_JSON_ERROR,
+                                                  GTK_JSON_ERROR_SCHEMA,
+                                                  format, args));
   va_end (args);
 }
 
 static gboolean
 gtk_json_parser_is_eof (GtkJsonParser *self)
 {
-  return self->reader >= self->end || *self->reader == '\0';
+  return self->reader >= self->end;
 }
 
 static gsize
@@ -245,6 +402,18 @@ gtk_json_parser_remaining (GtkJsonParser *self)
   g_return_val_if_fail (self->reader <= self->end, 0);
 
   return self->end - self->reader;
+}
+
+static void
+gtk_json_parser_skip_bom (GtkJsonParser *self)
+{
+  if (gtk_json_parser_remaining (self) < 3)
+    return;
+
+  if (self->reader[0] == 0xEF &&
+      self->reader[1] == 0xBB &&
+      self->reader[2] == 0xBF)
+    self->reader += 3;
 }
 
 static void
@@ -375,6 +544,58 @@ gtk_json_unescape_char (const guchar *json_escape,
     }
 }
                    
+typedef struct _JsonStringIter JsonStringIter;
+struct _JsonStringIter
+{
+  char buf[6];
+  const guchar *s;
+  const guchar *next;
+};
+
+static gsize
+json_string_iter_next (JsonStringIter *iter)
+{
+  gsize len;
+
+  iter->s = iter->next;
+  iter->next = json_find_character (iter->s, STRING_MARKER);
+  if (iter->next != iter->s)
+    return iter->next - iter->s;
+  if (*iter->next == '"')
+    return 0;
+  iter->next += gtk_json_unescape_char (iter->next, iter->buf, &len);
+  iter->s = (const guchar *) iter->buf;
+  return len;
+}
+
+/* The escaped string MUST be valid json, so it must begin
+ * with " and end with " and must not contain any invalid
+ * escape codes.
+ * This function is meant to be fast
+ */
+static gsize
+json_string_iter_init (JsonStringIter *iter,
+                       const guchar   *string)
+{
+  g_assert (*string == '"');
+
+  iter->next = string + 1;
+
+  return json_string_iter_next (iter);
+}
+
+static gboolean
+json_string_iter_has_next (JsonStringIter *iter)
+{
+  return *iter->next != '"';
+}
+
+static const char *
+json_string_iter_get (JsonStringIter *iter)
+{
+  return (const char *) iter->s;
+}
+
 /* The escaped string MUST be valid json, so it must begin
  * with " and end with " and must not contain any invalid
  * escape codes.
@@ -383,44 +604,37 @@ gtk_json_unescape_char (const guchar *json_escape,
 static char *
 gtk_json_unescape_string (const guchar *escaped)
 {
-  char buf[6];
-  gsize buf_size;
+  JsonStringIter iter;
   GString *string;
-  const guchar *last, *s;
+  gsize len;
 
+  len = json_string_iter_init (&iter, escaped);
   string = NULL;
 
-  g_assert (*escaped == '"');
-  last = escaped + 1;
-  for (s = json_find_character (last, STRING_MARKER);
-       *s != '"';
-       s = json_find_character (last, STRING_MARKER))
-    {
-      g_assert (*s == '\\');
-      if (string == NULL)
-        string = g_string_new (NULL);
-      g_string_append_len (string, (const char *) last, s - last);
-      last = s + gtk_json_unescape_char (s, buf, &buf_size);
-      g_string_append_len (string, buf, buf_size);
-    }
+  if (!json_string_iter_has_next (&iter))
+    return g_strndup (json_string_iter_get (&iter), len);
 
-  if (string)
+  string = g_string_new (NULL);
+
+  do
     {
-      g_string_append_len (string, (const char *) last, s - last);
-      return g_string_free (string, FALSE);
+      g_string_append_len (string, json_string_iter_get (&iter), len);
     }
-  else
-    {
-      return g_strndup ((const char *) last, s - last);
-    }
+  while ((len = json_string_iter_next (&iter)));
+  
+  return g_string_free (string, FALSE);
 }
 
 static gboolean
 gtk_json_parser_parse_string (GtkJsonParser *self)
 {
+  const guchar *start;
+
+  start = self->reader;
+
   if (!gtk_json_parser_try_char (self, '"'))
     {
-      gtk_json_parser_syntax_error (self, "Not a string");
+      gtk_json_parser_type_error (self, "Not a string");
       return FALSE;
     }
 
@@ -430,7 +644,12 @@ gtk_json_parser_parse_string (GtkJsonParser *self)
     {
       if (*self->reader < 0x20)
         {
-          gtk_json_parser_syntax_error (self, "Disallowed control character in string literal");
+          if (*self->reader == '\r' || *self->reader == '\n')
+            gtk_json_parser_syntax_error (self, "Newlines in strings are not allowed");
+          else if (*self->reader == '\t')
+            gtk_json_parser_syntax_error (self, "Tabs not allowed in strings");
+          else
+            gtk_json_parser_syntax_error (self, "Disallowed control character in string literal");
           return FALSE;
         }
       else if (*self->reader > 127)
@@ -451,9 +670,11 @@ gtk_json_parser_parse_string (GtkJsonParser *self)
       else if (*self->reader == '\\')
         {
           if (gtk_json_parser_remaining (self) < 2)
-            goto end;
-          self->reader++;
-          switch (*self->reader)
+            {
+              self->reader = self->end;
+              goto end;
+            }
+          switch (self->reader[1])
             {
             case '"':
             case '\\':
@@ -467,83 +688,127 @@ gtk_json_parser_parse_string (GtkJsonParser *self)
 
             case 'u':
               /* lots of work necessary to validate the unicode escapes here */
-              if (gtk_json_parser_remaining (self) < 5 ||
-                  !g_ascii_isxdigit (self->reader[1]) ||
+              if (gtk_json_parser_remaining (self) < 6 ||
                   !g_ascii_isxdigit (self->reader[2]) ||
                   !g_ascii_isxdigit (self->reader[3]) ||
-                  !g_ascii_isxdigit (self->reader[4]))
+                  !g_ascii_isxdigit (self->reader[4]) ||
+                  !g_ascii_isxdigit (self->reader[5]))
                 {
-                  gtk_json_parser_syntax_error (self, "Invalid Unicode escape sequence");
+                  const guchar *end;
+                  for (end = self->reader + 2;
+                       end < self->reader + 6 && end < self->end;
+                       end++)
+                    {
+                      if (!g_ascii_isxdigit (*end))
+                        break;
+                    }
+                  gtk_json_parser_syntax_error_at (self, self->reader, end, "Invalid Unicode escape sequence");
                   return FALSE;
                 }
               else
                 {
-                  gunichar unichar = (g_ascii_xdigit_value (self->reader[1]) << 12) |
-                                     (g_ascii_xdigit_value (self->reader[2]) <<  8) |
-                                     (g_ascii_xdigit_value (self->reader[3]) <<  4) |
-                                     (g_ascii_xdigit_value (self->reader[4]));
+                  gsize escape_size = 6;
+                  gunichar unichar = (g_ascii_xdigit_value (self->reader[2]) << 12) |
+                                     (g_ascii_xdigit_value (self->reader[3]) <<  8) |
+                                     (g_ascii_xdigit_value (self->reader[4]) <<  4) |
+                                     (g_ascii_xdigit_value (self->reader[5]));
 
-                  self->reader += 4;
                   /* resolve UTF-16 surrogates for Unicode characters not in the BMP,
                    * as per ECMA 404, § 9, "String"
                    */
                   if (g_unichar_type (unichar) == G_UNICODE_SURROGATE)
                     {
-                      if (gtk_json_parser_remaining (self) >= 7 &&
-                          self->reader[1] == '\\' &&
-                          self->reader[2] == 'u' &&
-                          g_ascii_isxdigit (self->reader[3]) &&
-                          g_ascii_isxdigit (self->reader[4]) &&
-                          g_ascii_isxdigit (self->reader[5]) &&
-                          g_ascii_isxdigit (self->reader[6]))
+                      if (gtk_json_parser_remaining (self) >= 12 &&
+                          self->reader[6] == '\\' &&
+                          self->reader[7] == 'u' &&
+                          g_ascii_isxdigit (self->reader[8]) &&
+                          g_ascii_isxdigit (self->reader[9]) &&
+                          g_ascii_isxdigit (self->reader[10]) &&
+                          g_ascii_isxdigit (self->reader[11]))
                         {
                           unichar = decode_utf16_surrogate_pair (unichar,
-                                                                 (g_ascii_xdigit_value (self->reader[3]) << 12) |
-                                                                 (g_ascii_xdigit_value (self->reader[4]) <<  8) |
-                                                                 (g_ascii_xdigit_value (self->reader[5]) <<  4) |
-                                                                 (g_ascii_xdigit_value (self->reader[6])));
-                          self->reader += 6;
+                                                                 (g_ascii_xdigit_value (self->reader[8]) << 12) |
+                                                                 (g_ascii_xdigit_value (self->reader[9]) <<  8) |
+                                                                 (g_ascii_xdigit_value (self->reader[10]) <<  4) |
+                                                                 (g_ascii_xdigit_value (self->reader[11])));
+                          escape_size += 6;
                         }
                       else
                         {
                           unichar = 0;
                         }
-                    }
 
-                  if (unichar == 0)
-                    {
-                      gtk_json_parser_syntax_error (self, "Invalid UTF-16 surrogate pair");
-                      return FALSE;
+                      if (unichar == 0)
+                        {
+                          gtk_json_parser_syntax_error_at (self, self->reader, self->reader + escape_size, "Invalid UTF-16 surrogate pair");
+                          return FALSE;
+                        }
+
+                      self->reader += escape_size - 2;
                     }
                 }
               break;
             default:
-              gtk_json_parser_syntax_error (self, "Unknown escape sequence");
+              if (g_utf8_get_char_validated ((const char *) self->reader + 1, self->end - self->reader - 1) < (gunichar) -2)
+                gtk_json_parser_syntax_error_at (self, self->reader, (const guchar *) g_utf8_next_char (self->reader + 1), "Unknown escape sequence");
+              else
+                gtk_json_parser_syntax_error_at (self, self->reader, self->reader + 1, "Unknown escape sequence");
               return FALSE;
             }
-          self->reader++;
+          self->reader += 2;
         }
 
       self->reader = json_skip_characters (self->reader, self->end, STRING_ELEMENT);
     }
 
 end:
-  gtk_json_parser_syntax_error (self, "Unterminated string literal");
+  gtk_json_parser_syntax_error_at (self, start, self->reader, "Unterminated string literal");
   return FALSE;
 }
 
 static gboolean
 gtk_json_parser_parse_number (GtkJsonParser *self)
 {
+  const guchar *start = self->reader;
+  gboolean have_sign;
+
   /* sign */
-  gtk_json_parser_try_char (self, '-');
+  have_sign = gtk_json_parser_try_char (self, '-');
 
   /* integer part */
-  if (!gtk_json_parser_try_char (self, '0'))
+  if (gtk_json_parser_try_char (self, '0'))
+    {
+      /* Technically, "01" in the JSON grammar would be 2 numbers:
+       * "0" followed by "1".
+       * Practically, nobody understands that it's 2 numbers, so we
+       * special-purpose an error message for it, because 2 numbers
+       * can never follow each other.
+       */
+      if (!gtk_json_parser_is_eof (self) &&
+          g_ascii_isdigit (*self->reader))
+        {
+          do
+            {
+              self->reader++;
+            }
+          while (!gtk_json_parser_is_eof (self) &&
+                 g_ascii_isdigit (*self->reader));
+          
+          gtk_json_parser_syntax_error_at (self, start, self->reader, "Numbers may not start with leading 0s");
+          return FALSE;
+        }
+    }
+  else
     {
       if (gtk_json_parser_is_eof (self) ||
           !g_ascii_isdigit (*self->reader))
-        goto out;
+        {
+          if (have_sign)
+            gtk_json_parser_syntax_error_at (self, start, self->reader, "Expected a number after '-' character");
+          else
+            gtk_json_parser_type_error (self, "Not a number");
+          return FALSE;
+        }
 
       self->reader++;
 
@@ -552,29 +817,41 @@ gtk_json_parser_parse_number (GtkJsonParser *self)
     }
 
   /* fractional part */
-  if (gtk_json_parser_remaining (self) >= 2 && *self->reader == '.' && g_ascii_isdigit (self->reader[1]))
+  if (gtk_json_parser_try_char (self, '.'))
     {
-      self->reader += 2;
+      if (!g_ascii_isdigit (*self->reader))
+        {
+          gtk_json_parser_syntax_error_at (self, start, self->reader, "Expected a digit after '.'");
+          return FALSE;
+        }
 
-      while (!gtk_json_parser_is_eof (self) && g_ascii_isdigit (*self->reader))
-        self->reader++;
+      do
+        {
+          self->reader++;
+        }
+      while (!gtk_json_parser_is_eof (self) && g_ascii_isdigit (*self->reader));
     }
 
   /* exponent */
-  if (gtk_json_parser_remaining (self) >= 2 && (self->reader[0] == 'e' || self->reader[0] == 'E') &&
-      (g_ascii_isdigit (self->reader[1]) ||
-       (gtk_json_parser_remaining (self) >= 3 && (self->reader[1] == '+' || self->reader[1] == '-') && g_ascii_isdigit (self->reader[2]))))
+  if (gtk_json_parser_try_char (self, 'e') ||
+      gtk_json_parser_try_char (self, 'E'))
     {
-      self->reader += 2;
+      if (!gtk_json_parser_try_char (self, '-'))
+        gtk_json_parser_try_char (self, '+');
 
-      while (!gtk_json_parser_is_eof (self) && g_ascii_isdigit (*self->reader))
-        self->reader++;
+      if (!g_ascii_isdigit (*self->reader))
+        {
+          gtk_json_parser_syntax_error_at (self, start, self->reader, "Expected a digit in exponent");
+          return FALSE;
+        }
+
+      do
+        {
+          self->reader++;
+        }
+      while (!gtk_json_parser_is_eof (self) && g_ascii_isdigit (*self->reader));
     }
   return TRUE;
-
-out:
-  gtk_json_parser_syntax_error (self, "Not a valid number");
-  return FALSE;
 }
 
 static gboolean
@@ -614,7 +891,19 @@ gtk_json_parser_parse_value (GtkJsonParser *self)
       break;
   }
 
-  gtk_json_parser_syntax_error (self, "Expected a value");
+  if (gtk_json_parser_remaining (self) >= 2 &&
+      (self->block->value[0] == '.' || self->block->value[0] == '+') &&
+      g_ascii_isdigit (self->block->value[1]))
+    {
+      const guchar *end = self->block->value + 3;
+      while (end < self->end && g_ascii_isalnum (*end))
+        end++;
+      gtk_json_parser_syntax_error_at (self, self->block->value, end, "Numbers may not start with '%c'", *self->block->value);
+    }
+  else if (*self->reader == 0)
+    gtk_json_parser_syntax_error (self, "Unexpected nul byte in document");
+  else
+    gtk_json_parser_syntax_error (self, "Expected a value");
   return FALSE;
 }
 
@@ -689,9 +978,9 @@ gtk_json_parser_new_for_bytes (GBytes *bytes)
   self->block = self->blocks;
   self->block->type = GTK_JSON_BLOCK_TOPLEVEL;
 
-  gtk_json_parser_skip_whitespace (self);
-  self->block->value = self->reader;
-  gtk_json_parser_parse_value (self);
+  gtk_json_parser_skip_bom (self);
+  self->start = self->reader;
+  gtk_json_parser_rewind (self);
 
   return self;
 }
@@ -701,8 +990,6 @@ gtk_json_parser_free (GtkJsonParser *self)
 {
   if (self == NULL)
     return;
-
-  g_clear_error (&self->error);
 
   g_bytes_unref (self->bytes);
 
@@ -715,24 +1002,40 @@ gtk_json_parser_free (GtkJsonParser *self)
 static gboolean
 gtk_json_parser_skip_block (GtkJsonParser *self)
 {
+  gsize depth;
+
   if (self->reader != self->block->value)
     return TRUE;
 
-  if (*self->reader == '{')
+  depth = gtk_json_parser_get_depth (self);
+  while (TRUE)
     {
-      return gtk_json_parser_start_object (self) &&
-             gtk_json_parser_end (self);
+      if (*self->reader == '{')
+        {
+          if (!gtk_json_parser_start_object (self))
+            return FALSE;
+        }
+      else if (*self->reader == '[')
+        {
+          if (!gtk_json_parser_start_array (self))
+            return FALSE;
+        }
+    
+      while (self->reader != self->block->value)
+        {
+          /* This should never be reentrant to this function or we might
+           * loop causing stack overflow */
+          if (!gtk_json_parser_next (self))
+            {
+              if (!gtk_json_parser_end (self))
+                return FALSE;
+              if (depth >= gtk_json_parser_get_depth (self))
+                return TRUE;
+            }
+        }
     }
-  else if (*self->reader == '[')
-    {
-      return gtk_json_parser_start_array (self) &&
-             gtk_json_parser_end (self);
-    }
-  else
-    {
-      g_assert_not_reached ();
-      return FALSE;
-    }
+
+  return TRUE;
 }
 
 gboolean
@@ -757,14 +1060,14 @@ gtk_json_parser_next (GtkJsonParser *self)
       if (gtk_json_parser_is_eof (self))
         {
           self->block->value = NULL;
-          if (gtk_json_parser_remaining (self))
-            {
-              gtk_json_parser_syntax_error (self, "Unexpected nul byte in document");
-            }
+        }
+      else if (*self->reader == 0)
+        {
+          gtk_json_parser_syntax_error (self, "Unexpected nul byte in document");
         }
       else
         {
-          gtk_json_parser_syntax_error (self, "Data at end of document");
+          gtk_json_parser_syntax_error_at (self, self->reader, self->end, "Data at end of document");
         }
       return FALSE;
 
@@ -772,7 +1075,10 @@ gtk_json_parser_next (GtkJsonParser *self)
       gtk_json_parser_skip_whitespace (self);
       if (gtk_json_parser_is_eof (self))
         {
-          gtk_json_parser_syntax_error (self, "Unexpected end of document");
+          gtk_json_parser_syntax_error_at (self,
+                                           self->block[-1].value,
+                                           self->reader,
+                                           "Unterminated object");
           self->block->member_name = NULL;
           self->block->value = NULL;
         }
@@ -788,6 +1094,11 @@ gtk_json_parser_next (GtkJsonParser *self)
           return FALSE;
         }
       gtk_json_parser_skip_whitespace (self);
+      if (!gtk_json_parser_has_char (self, '"'))
+        {
+          gtk_json_parser_syntax_error (self, "Expected a string for object member name");
+          return FALSE;
+        }
       self->block->member_name = self->reader;
 
       if (!gtk_json_parser_parse_string (self))
@@ -809,7 +1120,10 @@ gtk_json_parser_next (GtkJsonParser *self)
       gtk_json_parser_skip_whitespace (self);
       if (gtk_json_parser_is_eof (self))
         {
-          gtk_json_parser_syntax_error (self, "Unexpected end of document");
+          gtk_json_parser_syntax_error_at (self,
+                                           self->block[-1].value,
+                                           self->reader,
+                                           "Unterminated array");
           self->block->member_name = NULL;
           self->block->value = NULL;
         }
@@ -839,6 +1153,52 @@ gtk_json_parser_next (GtkJsonParser *self)
   return TRUE;
 }
 
+void
+gtk_json_parser_rewind (GtkJsonParser *self)
+{
+  if (self->error)
+    return;
+
+  switch (self->block->type)
+    {
+    case GTK_JSON_BLOCK_OBJECT:
+      gtk_json_parser_pop_block (self);
+      self->reader = self->block->value;
+      gtk_json_parser_start_object (self);
+      break;
+
+    case GTK_JSON_BLOCK_ARRAY:
+      gtk_json_parser_pop_block (self);
+      self->reader = self->block->value;
+      gtk_json_parser_start_array (self);
+      break;
+
+    case GTK_JSON_BLOCK_TOPLEVEL:
+      self->reader = self->start;
+      gtk_json_parser_skip_whitespace (self);
+      if (gtk_json_parser_is_eof (self))
+        {
+          gtk_json_parser_syntax_error_at (self, self->start, self->reader, "Empty document");
+        }
+      else
+        {
+          self->block->value = self->reader;
+          gtk_json_parser_parse_value (self);
+        }
+      break;
+
+    default:
+      g_assert_not_reached ();
+      return;
+    }
+}
+
+gsize
+gtk_json_parser_get_depth (GtkJsonParser *self)
+{
+  return self->block - self->blocks;
+}
+
 GtkJsonNode
 gtk_json_parser_get_node (GtkJsonParser *self)
 {
@@ -857,43 +1217,214 @@ gtk_json_parser_get_error (GtkJsonParser *self)
   return self->error;
 }
 
+void
+gtk_json_parser_get_error_offset (GtkJsonParser *self,
+                                  gsize         *start,
+                                  gsize         *end)
+{
+  const guchar *data;
+
+  if (self->error == NULL)
+    {
+      if (start)
+        *start = 0;
+      if (end)
+        *end = 0;
+      return;
+    }
+
+  data = g_bytes_get_data (self->bytes, NULL);
+  if (start)
+    *start = self->error_start - data;
+  if (end)
+    *end = self->error_end - data;
+}
+
+void
+gtk_json_parser_get_error_location (GtkJsonParser *self,
+                                    gsize         *start_line,
+                                    gsize         *start_line_bytes,
+                                    gsize         *end_line,
+                                    gsize         *end_line_bytes)
+{
+  const guchar *s, *line_start;
+  gsize lines;
+
+  if (self->error == NULL)
+    {
+      if (start_line)
+        *start_line = 0;
+      if (start_line_bytes)
+        *start_line_bytes = 0;
+      if (end_line)
+        *end_line = 0;
+      if (end_line_bytes)
+        *end_line_bytes = 0;
+      return;
+    }
+
+  line_start = self->start;
+  lines = 0;
+
+  for (s = json_skip_characters_until (line_start, self->error_start, NEWLINE);
+       s < self->error_start;
+       s = json_skip_characters_until  (line_start, self->error_start, NEWLINE))
+    {
+      if (s[0] == '\r' && s + 1 < self->error_start && s[1] == '\n')
+        s++;
+      lines++;
+      line_start = s + 1;
+    }
+
+  if (start_line)
+    *start_line = lines;
+  if (start_line_bytes)
+    *start_line_bytes = s - line_start;
+
+  if (end_line == NULL && end_line_bytes == NULL)
+    return;
+
+  for (s = json_skip_characters_until (s, self->error_end, NEWLINE);
+       s < self->error_end;
+       s = json_skip_characters_until (line_start, self->error_end, NEWLINE))
+    {
+      if (s[0] == '\r' && s + 1 < self->error_start && s[1] == '\n')
+        s++;
+      lines++;
+      line_start = s + 1;
+    }
+
+  if (end_line)
+    *end_line = lines;
+  if (end_line_bytes)
+    *end_line_bytes = s - line_start;
+}
+
+static gboolean
+gtk_json_parser_supports_member (GtkJsonParser *self)
+{
+  if (self->error)
+    return FALSE;
+
+  if (self->block->type != GTK_JSON_BLOCK_OBJECT)
+    return FALSE;
+
+  if (self->block->member_name == NULL)
+    return FALSE;
+
+  return TRUE;
+}
+
 char *
 gtk_json_parser_get_member_name (GtkJsonParser *self)
 {
-  if (self->error)
-    return NULL;
-
-  if (self->block->type != GTK_JSON_BLOCK_OBJECT)
-    return NULL;
-
-  if (self->block->member_name == NULL)
+  if (!gtk_json_parser_supports_member (self))
     return NULL;
 
   return gtk_json_unescape_string (self->block->member_name);
+}
+
+gboolean
+gtk_json_parser_has_member (GtkJsonParser *self,
+                            const char    *name)
+{
+  JsonStringIter iter;
+  gsize found, len;
+
+  if (!gtk_json_parser_supports_member (self))
+    return FALSE;
+
+  found = 0;
+
+  for (len = json_string_iter_init (&iter, self->block->member_name);
+       len > 0;
+       len = json_string_iter_next (&iter))
+    {
+      const char *s = json_string_iter_get (&iter);
+
+      if (strncmp (name + found, s, len) != 0)
+        return FALSE;
+
+      found += len;
+    }
+
+  return TRUE;
+}
+
+gboolean
+gtk_json_parser_find_member (GtkJsonParser *self,
+                             const char    *name)
+{
+  if (!gtk_json_parser_supports_member (self))
+    {
+      while (gtk_json_parser_next (self));
+      return FALSE;
+    }
+
+  gtk_json_parser_rewind (self);
+
+  do
+    {
+      if (gtk_json_parser_has_member (self, name))
+        return TRUE;
+    }
+  while (gtk_json_parser_next (self));
+
+  return FALSE;
 }
 
 gssize
 gtk_json_parser_select_member (GtkJsonParser      *self,
                                const char * const *options)
 {
-  char *member_name;
-  gssize i;
+  JsonStringIter iter;
+  gssize i, j;
+  gsize found, len;
 
-  member_name = gtk_json_parser_get_member_name (self);
-  if (member_name == NULL)
+  if (!gtk_json_parser_supports_member (self))
     return -1;
 
-  for (i = 0; options[i]; i++)
+  if (options[0] == NULL)
+    return -1;
+
+  found = 0;
+  i = 0;
+
+  for (len = json_string_iter_init (&iter, self->block->member_name);
+       len > 0;
+       len = json_string_iter_next (&iter))
     {
-      if (strcmp (member_name, options[i]) == 0)
-        break;
+      const char *s = json_string_iter_get (&iter);
+
+      if (strncmp (options[i] + found, s, len) != 0)
+        {
+          for (j = i + 1; options[j]; j++)
+            {
+              if (strncmp (options[j], options[i], found) == 0 &&
+                  strncmp (options[j] + found, s, len) == 0)
+                {
+                  i = j;
+                  break;
+                }
+            }
+          if (j != i)
+            return -1;
+        }
+      found += len;
     }
-  if (options[i] == NULL)
-    i = -1;
 
-  g_free (member_name);
+  if (options[i][found] == 0)
+    return i;
 
-  return i;
+  for (j = i + 1; options[j]; i++)
+    {
+      if (strncmp (options[j], options[i], found) != 0)
+        continue;
+      if (options[j][found] == 0)
+        return j;
+    }
+
+  return -1;
 }
 
 gboolean
@@ -910,7 +1441,7 @@ gtk_json_parser_get_boolean (GtkJsonParser *self)
   else if (*self->block->value == 'f')
     return FALSE;
 
-  gtk_json_parser_value_error (self, "Expected a boolean value");
+  gtk_json_parser_type_error (self, "Expected a boolean value");
   return FALSE;
 }
 
@@ -927,7 +1458,7 @@ gtk_json_parser_get_number (GtkJsonParser *self)
 
   if (!strchr ("-0123456789", *self->block->value))
     {
-      gtk_json_parser_value_error (self, "Expected a number");
+      gtk_json_parser_type_error (self, "Expected a number");
       return 0;
     }
 
@@ -942,49 +1473,6 @@ gtk_json_parser_get_number (GtkJsonParser *self)
   else
     {
       result = g_ascii_strtod ((const char *) self->block->value, NULL);
-    }
-
-  if (errno)
-    {
-      if (errno == ERANGE)
-        gtk_json_parser_value_error (self, "Number out of range");
-      else
-        gtk_json_parser_value_error (self, "%s", g_strerror (errno));
-
-      return 0;
-    }
-
-  return result;
-}
-
-int
-gtk_json_parser_get_int (GtkJsonParser *self)
-{
-  int result;
-
-  if (self->error)
-    return 0;
-
-  if (self->block->value == NULL)
-    return 0;
-
-  if (!strchr ("-0123456789", *self->block->value))
-    {
-      gtk_json_parser_value_error (self, "Expected a number");
-      return 0;
-    }
-
-  errno = 0;
-  if (gtk_json_parser_remaining (self) == 0)
-    {
-      /* need terminated string here */
-      char *s = g_strndup ((const char *) self->block->value, self->reader - self->block->value);
-      result = g_ascii_strtod (s, NULL);
-      g_free (s);
-    }
-  else
-    {
-      result = (int) g_ascii_strtoll ((const char *) self->block->value, NULL, 10);
     }
 
   if (errno)
@@ -1016,7 +1504,7 @@ gtk_json_parser_get_string (GtkJsonParser *self)
 
   if (*self->block->value != '"')
     {
-      gtk_json_parser_value_error (self, "Expected a string");
+      gtk_json_parser_type_error (self, "Expected a string");
       return g_strdup ("");
     }
 
@@ -1031,7 +1519,7 @@ gtk_json_parser_start_object (GtkJsonParser *self)
 
   if (!gtk_json_parser_try_char (self, '{'))
     {
-      gtk_json_parser_value_error (self, "Expected an object");
+      gtk_json_parser_type_error (self, "Expected an object");
       return FALSE;
     }
 
@@ -1040,11 +1528,20 @@ gtk_json_parser_start_object (GtkJsonParser *self)
   gtk_json_parser_skip_whitespace (self);
   if (gtk_json_parser_is_eof (self))
     {
-      gtk_json_parser_syntax_error (self, "Unexpected end of document");
+      gtk_json_parser_syntax_error_at (self,
+                                       self->block[-1].value,
+                                       self->reader,
+                                       "Unterminated object");
       return FALSE;
     }
   if (gtk_json_parser_has_char (self, '}'))
     return TRUE;
+
+  if (!gtk_json_parser_has_char (self, '"'))
+    {
+      gtk_json_parser_syntax_error (self, "Expected a string for object member name");
+      return FALSE;
+    }
   self->block->member_name = self->reader;
 
   if (!gtk_json_parser_parse_string (self))
@@ -1072,7 +1569,7 @@ gtk_json_parser_start_array (GtkJsonParser *self)
 
   if (!gtk_json_parser_try_char (self, '['))
     {
-      gtk_json_parser_value_error (self, "Expected an array");
+      gtk_json_parser_type_error (self, "Expected an array");
       return FALSE;
     }
 
@@ -1080,7 +1577,10 @@ gtk_json_parser_start_array (GtkJsonParser *self)
   gtk_json_parser_skip_whitespace (self);
   if (gtk_json_parser_is_eof (self))
     {
-      gtk_json_parser_syntax_error (self, "Unexpected end of document");
+      gtk_json_parser_syntax_error_at (self,
+                                       self->block[-1].value,
+                                       self->reader,
+                                       "Unterminated array");
       return FALSE;
     }
   if (gtk_json_parser_has_char (self, ']'))
@@ -1131,12 +1631,3 @@ gtk_json_parser_end (GtkJsonParser *self)
   return TRUE;
 }
 
-void
-gtk_json_parser_set_error (GtkJsonParser *self,
-                           GError        *error)
-{
-  if (self->error)
-    g_error_free (error);
-  else
-    self->error = error;
-}

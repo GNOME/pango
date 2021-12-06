@@ -644,12 +644,10 @@ parser_get_enum_value (GtkJsonParser  *parser,
         }
     }
 
-  gtk_json_parser_set_error (parser,
-      g_error_new (PANGO_LAYOUT_DESERIALIZE_ERROR,
-                   PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
-                   "Could not parse enum value of type %s: %s",
-                   g_type_name (type),
-                   str));
+  gtk_json_parser_value_error (parser,
+                               "Could not parse enum value of type %s: %s",
+                               g_type_name (type),
+                               str);
 
   g_free (str);
 
@@ -663,10 +661,8 @@ parser_get_font_description (GtkJsonParser *parser)
   PangoFontDescription *desc = pango_font_description_from_string (str);
 
   if (!desc)
-    gtk_json_parser_set_error (parser,
-        g_error_new (PANGO_LAYOUT_DESERIALIZE_ERROR,
-                     PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
-                     "Failed to parse font: %s", str));
+    gtk_json_parser_value_error (parser,
+                                 "Failed to parse font: %s", str);
   g_free (str);
 
   return desc;
@@ -679,10 +675,8 @@ parser_get_color (GtkJsonParser *parser,
   char *str = gtk_json_parser_get_string (parser);
   if (!pango_color_parse (color, str))
     {
-      gtk_json_parser_set_error (parser,
-          g_error_new (PANGO_LAYOUT_DESERIALIZE_ERROR,
-                       PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
-                       "Failed to parse color: %s", str));
+      gtk_json_parser_value_error (parser,
+                                   "Failed to parse color: %s", str);
       color->red = color->green = color->blue = 0;
     }
 
@@ -706,10 +700,7 @@ attr_for_type (GtkJsonParser *parser,
       g_assert_not_reached ();
 
     case PANGO_ATTR_INVALID:
-      gtk_json_parser_set_error (parser,
-          g_error_new (PANGO_LAYOUT_DESERIALIZE_ERROR,
-                       PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE,
-                       "Missing attribute type"));
+      gtk_json_parser_schema_error (parser, "Missing attribute type");
       return NULL;
 
     case PANGO_ATTR_LANGUAGE:
@@ -741,7 +732,7 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_SIZE:
-      attr = pango_attr_size_new (gtk_json_parser_get_int (parser));
+      attr = pango_attr_size_new ((int)gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_FONT_DESC:
@@ -769,7 +760,7 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_RISE:
-      attr = pango_attr_rise_new (gtk_json_parser_get_int (parser));
+      attr = pango_attr_rise_new ((int)gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_SHAPE:
@@ -786,7 +777,7 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_LETTER_SPACING:
-      attr = pango_attr_letter_spacing_new (gtk_json_parser_get_int (parser));
+      attr = pango_attr_letter_spacing_new ((int)gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_UNDERLINE_COLOR:
@@ -800,7 +791,7 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_ABSOLUTE_SIZE:
-      attr = pango_attr_size_new_absolute (gtk_json_parser_get_int (parser));
+      attr = pango_attr_size_new_absolute ((int)gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_GRAVITY:
@@ -818,11 +809,11 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_FOREGROUND_ALPHA:
-      attr = pango_attr_foreground_alpha_new (gtk_json_parser_get_int (parser));
+      attr = pango_attr_foreground_alpha_new ((int)gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_BACKGROUND_ALPHA:
-      attr = pango_attr_background_alpha_new (gtk_json_parser_get_int (parser));
+      attr = pango_attr_background_alpha_new ((int)gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_ALLOW_BREAKS:
@@ -830,11 +821,11 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_SHOW:
-      attr = pango_attr_show_new (gtk_json_parser_get_int (parser));
+      attr = pango_attr_show_new ((int)gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_INSERT_HYPHENS:
-      attr = pango_attr_insert_hyphens_new (gtk_json_parser_get_int (parser));
+      attr = pango_attr_insert_hyphens_new ((int)gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_OVERLINE:
@@ -851,7 +842,7 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
-      attr = pango_attr_line_height_new_absolute (gtk_json_parser_get_int (parser));
+      attr = pango_attr_line_height_new_absolute ((int)gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_TEXT_TRANSFORM:
@@ -911,11 +902,11 @@ json_to_attribute (GtkJsonParser *parser)
       switch (gtk_json_parser_select_member (parser, attr_members))
         {
         case ATTR_START:
-          start = gtk_json_parser_get_int (parser);
+          start = (int)gtk_json_parser_get_number (parser);
           break;
 
         case ATTR_END:
-          end = gtk_json_parser_get_int (parser);
+          end = (int)gtk_json_parser_get_number (parser);
           break;
 
         case ATTR_TYPE:
@@ -933,10 +924,7 @@ json_to_attribute (GtkJsonParser *parser)
   while (gtk_json_parser_next (parser));
 
   if (!attr && !gtk_json_parser_get_error (parser))
-    gtk_json_parser_set_error (parser,
-        g_error_new (PANGO_LAYOUT_DESERIALIZE_ERROR,
-                     PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE,
-                     "Attribute missing \"value\""));
+    gtk_json_parser_schema_error (parser, "Attribute missing \"value\"");
 
   gtk_json_parser_end (parser);
 
@@ -996,7 +984,7 @@ json_parser_fill_tabs (GtkJsonParser *parser,
               switch (gtk_json_parser_select_member (parser, tab_members))
                 {
                 case TAB_POSITION:
-                  pos = gtk_json_parser_get_int (parser);
+                  pos = (int) gtk_json_parser_get_number (parser);
                   break;
 
                 case TAB_ALIGNMENT:
@@ -1004,7 +992,7 @@ json_parser_fill_tabs (GtkJsonParser *parser,
                   break;
 
                 case TAB_DECIMAL_POINT:
-                  ch = gtk_json_parser_get_int (parser);
+                  ch = (int) gtk_json_parser_get_number (parser);
                   break;
 
                 default:
@@ -1016,7 +1004,7 @@ json_parser_fill_tabs (GtkJsonParser *parser,
           gtk_json_parser_end (parser);
         }
       else
-        pos = gtk_json_parser_get_int (parser);
+        pos = (int) gtk_json_parser_get_number (parser);
 
       pango_tab_array_set_tab (tabs, index, align, pos);
       pango_tab_array_set_decimal_point (tabs, index, ch);
@@ -1289,19 +1277,19 @@ json_parser_fill_layout (GtkJsonParser               *parser,
           break;
 
         case LAYOUT_WIDTH:
-          pango_layout_set_width (layout, gtk_json_parser_get_int (parser));
+          pango_layout_set_width (layout, (int) gtk_json_parser_get_number (parser));
           break;
 
         case LAYOUT_HEIGHT:
-          pango_layout_set_height (layout, gtk_json_parser_get_int (parser));
+          pango_layout_set_height (layout, (int) gtk_json_parser_get_number (parser));
           break;
 
         case LAYOUT_INDENT:
-          pango_layout_set_indent (layout, gtk_json_parser_get_int (parser));
+          pango_layout_set_indent (layout, (int) gtk_json_parser_get_number (parser));
           break;
 
         case LAYOUT_SPACING:
-          pango_layout_set_spacing (layout, gtk_json_parser_get_int (parser));
+          pango_layout_set_spacing (layout, (int) gtk_json_parser_get_number (parser));
           break;
 
         case LAYOUT_LINE_SPACING:
@@ -1482,6 +1470,7 @@ pango_layout_deserialize (PangoContext                 *context,
 {
   PangoLayout *layout;
   GtkJsonParser *parser;
+  const GError *parser_error;
 
   g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
 
@@ -1490,9 +1479,25 @@ pango_layout_deserialize (PangoContext                 *context,
   parser = gtk_json_parser_new_for_bytes (bytes);
   json_parser_fill_layout (parser, layout, flags);
 
-  if (gtk_json_parser_get_error (parser))
+  parser_error = gtk_json_parser_get_error (parser);
+
+  if (parser_error)
     {
-      g_propagate_error (error, g_error_copy (gtk_json_parser_get_error (parser)));
+      gsize start, end;
+      int code;
+
+      gtk_json_parser_get_error_offset (parser, &start, &end);
+
+      if (g_error_matches (parser_error, GTK_JSON_ERROR, GTK_JSON_ERROR_VALUE))
+        code = PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE;
+      else if (g_error_matches (parser_error, GTK_JSON_ERROR, GTK_JSON_ERROR_SCHEMA))
+        code = PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE;
+      else
+        code = PANGO_LAYOUT_DESERIALIZE_INVALID;
+
+      g_set_error (error, PANGO_LAYOUT_DESERIALIZE_ERROR, code,
+                   "%ld:%ld: %s", start, end, parser_error->message);
+
       g_clear_object (&layout);
     }
 
