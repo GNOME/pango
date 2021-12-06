@@ -35,7 +35,18 @@ typedef enum {
   GTK_JSON_ARRAY
 } GtkJsonNode;
 
+typedef enum {
+  GTK_JSON_ERROR_FAILED,
+  GTK_JSON_ERROR_SYNTAX,
+  GTK_JSON_ERROR_TYPE,
+  GTK_JSON_ERROR_VALUE,
+  GTK_JSON_ERROR_SCHEMA,
+} GtkJsonError;
+
 typedef struct _GtkJsonParser GtkJsonParser;
+
+#define GTK_JSON_ERROR (gtk_json_error_quark ())
+GQuark                  gtk_json_error_quark                    (void);
 
 GtkJsonParser *         gtk_json_parser_new_for_bytes           (GBytes                 *bytes);
 GtkJsonParser *         gtk_json_parser_new_for_string          (const char             *string,
@@ -44,9 +55,14 @@ GtkJsonParser *         gtk_json_parser_new_for_string          (const char     
 void                    gtk_json_parser_free                    (GtkJsonParser          *self);
 
 gboolean                gtk_json_parser_next                    (GtkJsonParser          *self);
+void                    gtk_json_parser_rewind                  (GtkJsonParser          *self);
+gsize                   gtk_json_parser_get_depth               (GtkJsonParser          *self);
 GtkJsonNode             gtk_json_parser_get_node                (GtkJsonParser          *self);
-const GError *          gtk_json_parser_get_error               (GtkJsonParser          *self) G_GNUC_PURE;
 char *                  gtk_json_parser_get_member_name         (GtkJsonParser          *self);
+gboolean                gtk_json_parser_has_member              (GtkJsonParser          *self,
+                                                                 const char             *name);
+gboolean                gtk_json_parser_find_member             (GtkJsonParser          *self,
+                                                                 const char             *name);
 gssize                  gtk_json_parser_select_member           (GtkJsonParser          *self,
                                                                  const char * const     *options);
 
@@ -60,9 +76,21 @@ gboolean                gtk_json_parser_start_object            (GtkJsonParser  
 gboolean                gtk_json_parser_start_array             (GtkJsonParser          *self);
 gboolean                gtk_json_parser_end                     (GtkJsonParser          *self);
 
-void                    gtk_json_parser_set_error               (GtkJsonParser          *self,
-                                                                 GError                 *error);
-
+const GError *          gtk_json_parser_get_error               (GtkJsonParser          *self) G_GNUC_PURE;
+void                    gtk_json_parser_get_error_offset        (GtkJsonParser          *self,
+                                                                 gsize                  *start,
+                                                                 gsize                  *end);
+void                    gtk_json_parser_get_error_location      (GtkJsonParser          *self,
+                                                                 gsize                  *start_line,
+                                                                 gsize                  *start_line_bytes,
+                                                                 gsize                  *end_line,
+                                                                 gsize                  *end_line_bytes);
+void                    gtk_json_parser_value_error             (GtkJsonParser          *self,
+                                                                 const char             *format,
+                                                                 ...) G_GNUC_PRINTF(2, 3);
+void                    gtk_json_parser_schema_error            (GtkJsonParser          *self,
+                                                                 const char             *format,
+                                                                 ...) G_GNUC_PRINTF(2, 3);
 
 G_END_DECLS
 
