@@ -996,6 +996,8 @@ gtk_json_parser_free (GtkJsonParser *self)
   if (self->blocks != self->blocks_preallocated)
     g_free (self->blocks);
 
+  g_clear_error (&self->error);
+
   g_slice_free (GtkJsonParser, self);
 }
 
