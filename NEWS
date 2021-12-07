@@ -1,3 +1,8 @@
+Overview of changes
+===================
+* Fix a crash in tab handling
+* Fix tab positioning without line wrapping
+
 Overview of changes in 1.50.0, 02-12-2021
 =========================================
 * Fix glyph placement in gravity east
