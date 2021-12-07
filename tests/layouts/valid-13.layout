@@ -53,8 +53,8 @@
     "is-wrapped" : false,
     "is-ellipsized" : false,
     "unknown-glyphs" : 1,
-    "width" : 386048,
-    "height" : 386048,
+    "width" : 315392,
+    "height" : 315392,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -271,7 +271,7 @@
             "glyphs" : [
               {
                 "glyph" : 268435455,
-                "width" : 51200,
+                "width" : 43008,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               }
@@ -355,7 +355,7 @@
             "glyphs" : [
               {
                 "glyph" : 268435455,
-                "width" : 51200,
+                "width" : 43008,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               }
@@ -439,7 +439,7 @@
             "glyphs" : [
               {
                 "glyph" : 268435455,
-                "width" : 51200,
+                "width" : 44032,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               }
@@ -607,7 +607,7 @@
             "glyphs" : [
               {
                 "glyph" : 268435455,
-                "width" : 51200,
+                "width" : 17408,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               }
@@ -691,7 +691,7 @@
             "glyphs" : [
               {
                 "glyph" : 268435455,
-                "width" : 51200,
+                "width" : 46080,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               }
@@ -775,7 +775,7 @@
             "glyphs" : [
               {
                 "glyph" : 268435455,
-                "width" : 51200,
+                "width" : 43008,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               }
