@@ -96,6 +96,7 @@ installed_test_layouts_data = [
   'layouts/effigy.layout',
   'layouts/kebab.layout',
   'layouts/tabs.layout',
+  'layouts/tabs-nowrap.layout',
   'layouts/valid-1.layout',
   'layouts/valid-2.layout',
   'layouts/valid-3.layout',

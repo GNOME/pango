@@ -3662,6 +3662,31 @@ get_decimal_prefix_width (PangoItem        *item,
   g_free (log_widths);
 }
 
+static int
+line_width (ParaBreakState  *state,
+            PangoLayoutLine *line)
+{
+  GSList *l;
+  int i;
+  int width = 0;
+
+  if (state->remaining_width > -1)
+    return state->line_width - state->remaining_width;
+
+  /* Compute the width of the line currently - inefficient, but easier
+   * than keeping the current width of the line up to date everywhere
+   */
+  for (l = line->runs; l; l = l->next)
+    {
+      PangoLayoutRun *run = l->data;
+
+      for (i = 0; i < run->glyphs->num_glyphs; i++)
+        width += run->glyphs->glyphs[i].geometry.width;
+    }
+
+  return width;
+}
+
 static PangoGlyphString *
 shape_run (PangoLayoutLine *line,
            ParaBreakState  *state,
@@ -3671,7 +3696,7 @@ shape_run (PangoLayoutLine *line,
   PangoGlyphString *glyphs = pango_glyph_string_new ();
 
   if (layout->text[item->offset] == '\t')
-    shape_tab (line, &state->last_tab, &state->properties, state->line_width - state->remaining_width, item, glyphs);
+    shape_tab (line, &state->last_tab, &state->properties, line_width (state, line), item, glyphs);
   else
     {
       PangoShapeFlags shape_flags = PANGO_SHAPE_NONE;
