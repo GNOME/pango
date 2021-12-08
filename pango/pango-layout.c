@@ -3387,8 +3387,8 @@ get_tab_pos (PangoLayoutLine *line,
 {
   PangoLayout *layout = line->layout;
   int n_tabs;
-  gboolean in_pixels;
   int offset = 0;
+  int tab_unit = 1;
 
   if (layout->alignment != PANGO_ALIGN_CENTER)
     {
@@ -3401,13 +3401,15 @@ get_tab_pos (PangoLayoutLine *line,
   if (layout->tabs)
     {
       n_tabs = pango_tab_array_get_size (layout->tabs);
-      in_pixels = pango_tab_array_get_positions_in_pixels (layout->tabs);
+      if (pango_tab_array_get_positions_in_pixels (layout->tabs))
+        tab_unit = PANGO_SCALE;
+      else if (pango_tab_array_get_positions_in_spaces (layout->tabs))
+        tab_unit = line->layout->tab_width / 8;
       *is_default = FALSE;
     }
   else
     {
       n_tabs = 0;
-      in_pixels = FALSE;
       *is_default = TRUE;
     }
 
@@ -3415,9 +3417,7 @@ get_tab_pos (PangoLayoutLine *line,
     {
       pango_tab_array_get_tab (layout->tabs, index, alignment, tab_pos);
 
-      if (in_pixels)
-        *tab_pos *= PANGO_SCALE;
-
+      *tab_pos *= tab_unit;
       *decimal = pango_tab_array_get_decimal_point (layout->tabs, index);
     }
   else if (n_tabs > 0)
@@ -3435,11 +3435,8 @@ get_tab_pos (PangoLayoutLine *line,
       else
         next_to_last_pos = 0;
 
-      if (in_pixels)
-        {
-          next_to_last_pos *= PANGO_SCALE;
-          last_pos *= PANGO_SCALE;
-        }
+      next_to_last_pos *= tab_unit;
+      last_pos *= tab_unit;
 
       if (last_pos > next_to_last_pos)
         tab_width = last_pos - next_to_last_pos;
