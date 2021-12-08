@@ -97,6 +97,13 @@ PANGO_AVAILABLE_IN_1_50
 void            pango_tab_array_set_positions_in_pixels (PangoTabArray *tab_array,
                                                          gboolean       positions_in_pixels);
 
+PANGO_AVAILABLE_IN_1_52
+gboolean        pango_tab_array_get_positions_in_spaces (PangoTabArray *tab_array);
+
+PANGO_AVAILABLE_IN_1_52
+void            pango_tab_array_set_positions_in_spaces (PangoTabArray *tab_array,
+                                                         gboolean       positions_in_spaces);
+
 PANGO_AVAILABLE_IN_1_50
 char *          pango_tab_array_to_string           (PangoTabArray *tab_array);
 PANGO_AVAILABLE_IN_1_50

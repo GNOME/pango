@@ -34,6 +34,12 @@ struct _PangoTab
   gunichar decimal_point;
 };
 
+typedef enum {
+  TAB_POSITIONS_DEFAULT,
+  TAB_POSITIONS_PIXELS,
+  TAB_POSITIONS_SPACES
+} TabPositions;
+
 /**
  * PangoTabArray:
  *
@@ -47,7 +53,7 @@ struct _PangoTabArray
 {
   gint size;
   gint allocated;
-  gboolean positions_in_pixels;
+  TabPositions positions;
   PangoTab *tabs;
 };
 
@@ -91,6 +97,7 @@ pango_tab_array_new (gint     initial_size,
    */
   array = g_slice_new (PangoTabArray);
   array->size = initial_size; array->allocated = initial_size;
+  array->positions = TAB_POSITIONS_DEFAULT;
 
   if (array->allocated > 0)
     {
@@ -100,7 +107,8 @@ pango_tab_array_new (gint     initial_size,
   else
     array->tabs = NULL;
 
-  array->positions_in_pixels = positions_in_pixels;
+  if (positions_in_pixels)
+    array->positions = TAB_POSITIONS_PIXELS;
 
   return array;
 }
@@ -186,7 +194,8 @@ pango_tab_array_copy (PangoTabArray *src)
 
   g_return_val_if_fail (src != NULL, NULL);
 
-  copy = pango_tab_array_new (src->size, src->positions_in_pixels);
+  copy = pango_tab_array_new (src->size, FALSE);
+  copy->positions = src->positions;
 
   if (copy->tabs)
     memcpy (copy->tabs, src->tabs, sizeof(PangoTab) * src->size);
@@ -358,7 +367,9 @@ pango_tab_array_get_tabs (PangoTabArray *tab_array,
  * @tab_array: a `PangoTabArray`
  *
  * Returns %TRUE if the tab positions are in pixels,
- * %FALSE if they are in Pango units.
+ * %FALSE if they are not.
+ *
+ * Also see [method@Pango.TabArray.get_positions_in_spaces].
  *
  * Return value: whether positions are in pixels.
  */
@@ -367,7 +378,7 @@ pango_tab_array_get_positions_in_pixels (PangoTabArray *tab_array)
 {
   g_return_val_if_fail (tab_array != NULL, FALSE);
 
-  return tab_array->positions_in_pixels;
+  return tab_array->positions == TAB_POSITIONS_PIXELS;
 }
 
 /**
@@ -375,8 +386,7 @@ pango_tab_array_get_positions_in_pixels (PangoTabArray *tab_array)
  * @tab_array: a `PangoTabArray`
  * @positions_in_pixels: whether positions are in pixels
  *
- * Sets whether positions in this array are specified in
- * pixels.
+ * Sets whether positions in this array are specified in pixels.
  *
  * Since: 1.50
  */
@@ -386,7 +396,52 @@ pango_tab_array_set_positions_in_pixels (PangoTabArray *tab_array,
 {
   g_return_if_fail (tab_array != NULL);
 
-  tab_array->positions_in_pixels = positions_in_pixels;
+  if (positions_in_pixels)
+    tab_array->positions = TAB_POSITIONS_PIXELS;
+  else
+    tab_array->positions = TAB_POSITIONS_DEFAULT;
+}
+
+/**
+ * pango_tab_array_get_positions_in_spaces:
+ * @tab_array: a `PangoTabArray`
+ *
+ * Returns %TRUE if the tab positions are in spaces,
+ * %FALSE if they are in not.
+ *
+ * Also see [method@Pango.TabArray.get_positions_in_pixels].
+ *
+ * Return value: whether positions are in spaces.
+ *
+ * Since: 1.52
+ */
+gboolean
+pango_tab_array_get_positions_in_spaces (PangoTabArray *tab_array)
+{
+  g_return_val_if_fail (tab_array != NULL, FALSE);
+
+  return tab_array->positions == TAB_POSITIONS_SPACES;
+}
+
+/**
+ * pango_tab_array_set_positions_in_spaces:
+ * @tab_array: a `PangoTabArray`
+ * @positions_in_spaces: whether positions are in spaces
+ *
+ * Sets whether positions in this array are specified in spaces.
+ *
+ * Since: 1.52
+ */
+void
+pango_tab_array_set_positions_in_spaces (PangoTabArray *tab_array,
+                                         gboolean       positions_in_spaces)
+{
+  g_return_if_fail (tab_array != NULL);
+
+  if (positions_in_spaces)
+    tab_array->positions = TAB_POSITIONS_SPACES;
+  else
+    tab_array->positions = TAB_POSITIONS_DEFAULT;
 }
 
 /**
@@ -425,8 +480,19 @@ pango_tab_array_to_string (PangoTabArray *tab_array)
         g_string_append (s, "decimal:");
 
       g_string_append_printf (s, "%d", tab_array->tabs[i].location);
-      if (tab_array->positions_in_pixels)
-        g_string_append (s, "px");
+      switch (tab_array->positions)
+        {
+        case TAB_POSITIONS_DEFAULT:
+          break;
+        case TAB_POSITIONS_PIXELS:
+          g_string_append (s, "px");
+          break;
+        case TAB_POSITIONS_SPACES:
+          g_string_append (s, "sp");
+          break;
+        default:
+          g_assert_not_reached ();
+        }
 
       if (tab_array->tabs[i].decimal_point != 0)
         g_string_append_printf (s, ":%d", tab_array->tabs[i].decimal_point);
@@ -458,14 +524,18 @@ skip_whitespace (const char *p)
 PangoTabArray *
 pango_tab_array_from_string (const char *text)
 {
-  PangoTabArray *array;
-  gboolean pixels;
+  PangoTabArray *tabs;
   const char *p;
   int i;
 
-  pixels = strstr (text, "px") != NULL;
+  tabs = pango_tab_array_new (0, FALSE);
 
-  array = pango_tab_array_new (0, pixels);
+  if (strstr (text, "px") != NULL)
+    tabs->positions = TAB_POSITIONS_PIXELS;
+  else if (strstr (text, "sp") != NULL)
+    tabs->positions = TAB_POSITIONS_SPACES;
+  else
+    tabs->positions = TAB_POSITIONS_DEFAULT;
 
   p = skip_whitespace (text);
 
@@ -503,16 +573,31 @@ pango_tab_array_from_string (const char *text)
 
       pos = g_ascii_strtoll (p, &endp, 10);
       if (pos < 0 ||
-          (pixels && *endp != 'p') ||
-          (!pixels && !g_ascii_isspace (*endp) && *endp != ':' && *endp != '\0')) goto fail;
+          (tabs->positions == TAB_POSITIONS_PIXELS && *endp != 'p') ||
+          (tabs->positions == TAB_POSITIONS_SPACES && *endp != 's') ||
+          (tabs->positions == TAB_POSITIONS_DEFAULT && !g_ascii_isspace (*endp) &&
+                                                       *endp != ':' && *endp != '\0'))
+         goto fail;
 
-      pango_tab_array_set_tab (array, i, align, pos);
+      pango_tab_array_set_tab (tabs, i, align, pos);
 
       p = (const char *)endp;
-      if (pixels)
+      switch (tabs->positions)
         {
-          if (p[0] != 'p' || p[1] != 'x') goto fail;
+        case TAB_POSITIONS_DEFAULT:
+          break;
+        case TAB_POSITIONS_PIXELS:
+          if (p[0] != 'p' || p[1] != 'x')
+            goto fail;
           p += 2;
+          break;
+        case TAB_POSITIONS_SPACES:
+          if (p[0] != 's' || p[1] != 'p')
+            goto fail;
+          p += 2;
+          break;
+        default:
+          g_assert_not_reached ();
         }
 
       if (p[0] == ':')
@@ -523,7 +608,7 @@ pango_tab_array_from_string (const char *text)
           ch = g_ascii_strtoll (p, &endp, 10);
           if (!g_ascii_isspace (*endp) && *endp != '\0') goto fail;
 
-          pango_tab_array_set_decimal_point (array, i, ch);
+          pango_tab_array_set_decimal_point (tabs, i, ch);
 
           p = (const char *)endp;
         }
@@ -533,14 +618,11 @@ pango_tab_array_from_string (const char *text)
       i++;
     }
 
-  goto success;
+  return tabs;
 
 fail:
-  pango_tab_array_free (array);
-  array = NULL;
-
-success:
-  return array;
+  pango_tab_array_free (tabs);
+  return NULL;
 }
 
 /**
