@@ -198,7 +198,11 @@ add_tab_array (GtkJsonPrinter *printer,
 
   gtk_json_printer_start_object (printer, "tabs");
 
-  gtk_json_printer_add_boolean (printer, "positions-in-pixels", pango_tab_array_get_positions_in_pixels (tabs));
+  if (pango_tab_array_get_positions_in_pixels (tabs))
+    gtk_json_printer_add_string (printer, "positions-in", "pixels");
+  else if (pango_tab_array_get_positions_in_spaces (tabs))
+    gtk_json_printer_add_string (printer, "positions-in", "spaces");
+
   gtk_json_printer_start_array (printer, "positions");
   for (int i = 0; i < pango_tab_array_get_size (tabs); i++)
     {
@@ -1016,12 +1020,12 @@ json_parser_fill_tabs (GtkJsonParser *parser,
 }
 
 enum {
-  TABS_POSITIONS_IN_PIXELS,
+  TABS_POSITIONS_IN,
   TABS_POSITIONS
 };
 
 static const char *tabs_members[] = {
-  "positions-in-pixels",
+  "positions-in",
   "positions",
   NULL
 };
@@ -1036,8 +1040,15 @@ json_parser_fill_tab_array (GtkJsonParser *parser,
     {
       switch (gtk_json_parser_select_member (parser, tabs_members))
         {
-        case TABS_POSITIONS_IN_PIXELS:
-          pango_tab_array_set_positions_in_pixels (tabs, gtk_json_parser_get_boolean (parser));
+        case TABS_POSITIONS_IN:
+          {
+            char *str = gtk_json_parser_get_string (parser);
+            if (strcmp (str, "pixels") == 0)
+              pango_tab_array_set_positions_in_pixels (tabs, TRUE);
+            else if (strcmp (str, "spaces") == 0)
+              pango_tab_array_set_positions_in_spaces (tabs, TRUE);
+            g_free (str);
+          }
           break;
 
         case TABS_POSITIONS:
