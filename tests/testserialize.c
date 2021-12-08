@@ -88,7 +88,8 @@ test_serialize_tab_array (void)
     "20 10",
     "left:10px right:20px center:30px decimal:40px",
     "decimal:10240:94",
-    ""
+    "",
+    "1sp 5sp 10sp"
   };
   const char *roundtripped[] = {
     "0\n10\n100\n200\n400",
@@ -97,7 +98,8 @@ test_serialize_tab_array (void)
     "20\n10",
     "10px\nright:20px\ncenter:30px\ndecimal:40px",
     "decimal:10240:94",
-    ""
+    "",
+    "1sp\n5sp\n10sp"
   };
   const char *invalid[] = {
     "not a tabarray",
@@ -105,6 +107,8 @@ test_serialize_tab_array (void)
     "10ps 20pu",
     "10, 20",
     "10 20px 30",
+    "10 20sp 30",
+    "10sp 20sp 30px",
   };
 
   for (int i = 0; i < G_N_ELEMENTS (valid); i++)
@@ -246,7 +250,7 @@ test_serialize_layout_valid (void)
     "  ],\n"
     "  \"font\" : \"Sans Bold 32\",\n"
     "  \"tabs\" : {\n"
-    "    \"positions-in-pixels\" : true,\n"
+    "    \"positions-in\" : \"pixels\",\n"
     "    \"positions\" : [\n"
     "      {\n"
     "        \"position\" : 0,\n"
