@@ -25,37 +25,35 @@
 
 static void
 break_latin (const char          *text,
-	    int                  len,
-	    const PangoAnalysis *analysis G_GNUC_UNUSED,
-	    PangoLogAttr        *attrs,
-	    int                  attrs_len G_GNUC_UNUSED)
+             int                  length,
+             const PangoAnalysis *analysis,
+             PangoLogAttr        *attrs,
+             int                  attrs_len G_GNUC_UNUSED)
 {
+  int i;
+  const char *p, *next;
+  gunichar wc, prev_wc;
 
-    if (analysis && analysis->language &&
-        g_ascii_strncasecmp (pango_language_to_string (analysis->language), "ca-", 3) != 0)
-        return;
+  if (!analysis || !analysis->language ||
+      g_ascii_strncasecmp (pango_language_to_string (analysis->language), "ca-", 3) != 0)
+    return;
 
-    const gchar *next;
-    gunichar wc;
-    gunichar prev_wc = 0;
-
-    next = text;
-    for (int i = 0; i < len; i++)
+  for (p = text, i = 0, prev_wc = 0;
+       p < text + length;
+       p = next, i++, prev_wc = wc)
     {
-        wc = g_utf8_get_char (next);
-        next = g_utf8_next_char (next);
+      wc = g_utf8_get_char (p);
+      next = g_utf8_next_char (p);
 
-        /* Catalan middle dot does not break words */
-        if (wc == 0x00b7)
+      /* Catalan middle dot does not break words */
+      if (wc == 0x00b7)
         {
-            gunichar middle_next = g_utf8_get_char (next);
-            if (g_unichar_tolower (middle_next) == 'l' && g_unichar_tolower (prev_wc) == 'l')
+          gunichar middle_next = g_utf8_get_char (next);
+          if (g_unichar_tolower (middle_next) == 'l' && g_unichar_tolower (prev_wc) == 'l')
             {
               attrs[i].is_word_end = FALSE;
               attrs[i+1].is_word_start = FALSE;
             }
         }
-        prev_wc = wc;
     }
 }
-
