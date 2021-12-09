@@ -36,48 +36,233 @@
 G_DEFINE_QUARK(pango-layout-deserialize-error-quark, pango_layout_deserialize_error)
 
 /* }}} */
-/* {{{ Serialization */
+/* {{{ Enum names */
 
-static GType
-get_enum_type (PangoAttrType attr_type)
+static const char *style_names[] = {
+  "normal",
+  "oblique",
+  "italic",
+  NULL
+};
+
+static const char *variant_names[] = {
+  "normal",
+  "small-caps",
+  "all-small-caps",
+  "petite-caps",
+  "all-petite-caps",
+  "unicase",
+  "titlecase",
+  NULL
+};
+
+static const char *stretch_names[] = {
+  "ultra-condensed",
+  "extra-condensed",
+  "condensed",
+  "semi-condensed",
+  "normal",
+  "semi-expanded",
+  "expanded",
+  "extra-expanded",
+  "ultra-expanded",
+  NULL
+};
+
+static const char *underline_names[] = {
+  "none",
+  "single",
+  "double",
+  "low",
+  "error",
+  "single-line",
+  "double-line",
+  "error-line",
+  NULL
+};
+
+static const char *overline_names[] = {
+  "none",
+  "single",
+  NULL
+};
+
+static const char *gravity_names[] = {
+  "south",
+  "east",
+  "north",
+  "west",
+  "auto",
+  NULL
+};
+
+static const char *gravity_hint_names[] = {
+  "natural",
+  "strong",
+  "line",
+  NULL
+};
+
+static const char *text_transform_names[] = {
+  "none",
+  "lowercase",
+  "uppercase",
+  "capitalize",
+  NULL
+};
+
+static const char *baseline_shift_names[] = {
+  "none",
+  "superscript",
+  "subscript",
+  NULL
+};
+
+static const char *font_scale_names[] = {
+  "none",
+  "superscript",
+  "subscript",
+  "small-caps",
+  NULL
+};
+
+static const char *weight_names[] = {
+  "thin",
+  "ultralight",
+  "light",
+  "semilight",
+  "book",
+  "normal",
+  "medium",
+  "semibold",
+  "bold",
+  "ultrabold",
+  "heavy",
+  "ultraheavy",
+  NULL
+};
+
+static int named_weights[] = { 100, 200, 300, 350, 380, 400, 500, 600, 700, 800, 900, 1000 };
+
+static int
+get_weight (int pos)
 {
-  switch ((int)attr_type)
-    {
-    case PANGO_ATTR_STYLE: return PANGO_TYPE_STYLE;
-    case PANGO_ATTR_WEIGHT: return PANGO_TYPE_WEIGHT;
-    case PANGO_ATTR_VARIANT: return PANGO_TYPE_VARIANT;
-    case PANGO_ATTR_STRETCH: return PANGO_TYPE_STRETCH;
-    case PANGO_ATTR_GRAVITY: return PANGO_TYPE_GRAVITY;
-    case PANGO_ATTR_GRAVITY_HINT: return PANGO_TYPE_GRAVITY_HINT;
-    case PANGO_ATTR_UNDERLINE: return PANGO_TYPE_UNDERLINE;
-    case PANGO_ATTR_OVERLINE: return PANGO_TYPE_OVERLINE;
-    case PANGO_ATTR_BASELINE_SHIFT: return PANGO_TYPE_BASELINE_SHIFT;
-    case PANGO_ATTR_FONT_SCALE: return PANGO_TYPE_FONT_SCALE;
-    case PANGO_ATTR_TEXT_TRANSFORM: return PANGO_TYPE_TEXT_TRANSFORM;
-    default: return G_TYPE_INVALID;
-    }
+  return named_weights[pos];
 }
 
-static void
-add_enum_value (GtkJsonPrinter *printer,
-                const char     *member,
-                GType           type,
-                int             value,
-                gboolean        allow_extra)
+static const char *
+get_weight_name (int weight)
+{
+  for (int i = 0; i < G_N_ELEMENTS (named_weights); i++)
+    {
+      if (named_weights[i] == weight)
+        return weight_names[i];
+    }
+
+  return NULL;
+}
+
+static const char *attr_type_names[] = {
+  "invalid",
+  "language",
+  "family",
+  "style",
+  "weight",
+  "variant",
+  "stretch",
+  "size",
+  "font-desc",
+  "foreground",
+  "background",
+  "underline",
+  "strikethrough",
+  "rise",
+  "shape",
+  "scale",
+  "fallback",
+  "letter-spacing",
+  "underline-color",
+  "strikethrough-color",
+  "absolute-size",
+  "gravity",
+  "gravity-hint",
+  "font-features",
+  "foreground-alpha",
+  "background-alpha",
+  "allow-breaks",
+  "show",
+  "insert-hyphens",
+  "overline",
+  "overline-color",
+  "line-height",
+  "absolute-line-height",
+  "text-transform",
+  "word",
+  "sentence",
+  "baseline-shift",
+  "font-scale",
+  NULL
+};
+
+static const char *
+get_script_name (PangoScript script)
 {
   GEnumClass *enum_class;
   GEnumValue *enum_value;
 
-  enum_class = g_type_class_ref (type);
-  enum_value = g_enum_get_value (enum_class, value);
+  enum_class = g_type_class_ref (PANGO_TYPE_SCRIPT);
+  enum_value = g_enum_get_value (enum_class, script);
+  g_type_class_unref (enum_class);
 
   if (enum_value)
-    gtk_json_printer_add_string (printer, member, enum_value->value_nick);
-  else if (allow_extra)
-    gtk_json_printer_add_integer (printer, member, value);
-  else
-    gtk_json_printer_add_string (printer, member, "ERROR");
+    return enum_value->value_nick;
+
+  return NULL;
 }
+
+static const char *tab_align_names[] = {
+  "left",
+  "right",
+  "center",
+  "decimal",
+  NULL
+};
+
+static const char *direction_names[] = {
+  "ltr",
+  "rtl",
+  "ttb-ltr",
+  "ttb-rtl",
+  "weak-ltr",
+  "weak-rtl",
+  "neutral",
+  NULL
+};
+
+static const char *alignment_names[] = {
+  "left",
+  "center",
+  "right",
+  NULL
+};
+
+static const char *wrap_names[] = {
+  "word",
+  "char",
+  "word-char",
+  NULL
+};
+
+static const char *ellipsize_names[] = {
+  "none",
+  "start",
+  "middle",
+  "end",
+  NULL
+};
+
+/* }}} */
+/* {{{ Serialization */
 
 static void
 add_attribute (GtkJsonPrinter *printer,
@@ -91,7 +276,7 @@ add_attribute (GtkJsonPrinter *printer,
     gtk_json_printer_add_integer (printer, "start", (int)attr->start_index);
   if (attr->end_index != PANGO_ATTR_INDEX_TO_TEXT_END)
     gtk_json_printer_add_integer (printer, "end", (int)attr->end_index);
-  add_enum_value (printer, "type", PANGO_TYPE_ATTR_TYPE, attr->klass->type, FALSE);
+  gtk_json_printer_add_string (printer, "type", attr_type_names[attr->klass->type]);
 
   switch (attr->klass->type)
     {
@@ -106,20 +291,56 @@ add_attribute (GtkJsonPrinter *printer,
       gtk_json_printer_add_string (printer, "value", ((PangoAttrString*)attr)->value);
       break;
     case PANGO_ATTR_STYLE:
+      gtk_json_printer_add_string (printer, "value", style_names[((PangoAttrInt*)attr)->value]);
+      break;
+
     case PANGO_ATTR_VARIANT:
+      gtk_json_printer_add_string (printer, "value", variant_names[((PangoAttrInt*)attr)->value]);
+      break;
+
     case PANGO_ATTR_STRETCH:
+      gtk_json_printer_add_string (printer, "value", stretch_names[((PangoAttrInt*)attr)->value]);
+      break;
+
     case PANGO_ATTR_UNDERLINE:
+      gtk_json_printer_add_string (printer, "value", underline_names[((PangoAttrInt*)attr)->value]);
+      break;
+
     case PANGO_ATTR_OVERLINE:
+      gtk_json_printer_add_string (printer, "value", overline_names[((PangoAttrInt*)attr)->value]);
+      break;
+
     case PANGO_ATTR_GRAVITY:
+      gtk_json_printer_add_string (printer, "value", gravity_names[((PangoAttrInt*)attr)->value]);
+      break;
+
     case PANGO_ATTR_GRAVITY_HINT:
+      gtk_json_printer_add_string (printer, "value", gravity_hint_names[((PangoAttrInt*)attr)->value]);
+      break;
+
     case PANGO_ATTR_TEXT_TRANSFORM:
+      gtk_json_printer_add_string (printer, "value", text_transform_names[((PangoAttrInt*)attr)->value]);
+      break;
+
     case PANGO_ATTR_FONT_SCALE:
-      add_enum_value (printer, "value", get_enum_type (attr->klass->type), ((PangoAttrInt*)attr)->value, FALSE);
+      gtk_json_printer_add_string (printer, "value", font_scale_names[((PangoAttrInt*)attr)->value]);
       break;
+
     case PANGO_ATTR_WEIGHT:
-    case PANGO_ATTR_BASELINE_SHIFT:
-      add_enum_value (printer, "value", get_enum_type (attr->klass->type), ((PangoAttrInt*)attr)->value, TRUE);
+      {
+        const char *name = get_weight_name (((PangoAttrInt*)attr)->value);
+        if (name)
+          gtk_json_printer_add_string (printer, "value", name);
+        else
+          gtk_json_printer_add_integer (printer, "value", ((PangoAttrInt*)attr)->value);
+      }
       break;
+
+    case PANGO_ATTR_BASELINE_SHIFT:
+      gtk_json_printer_add_string (printer, "value", baseline_shift_names[((PangoAttrInt*)attr)->value]);
+      break;
+
+
     case PANGO_ATTR_SIZE:
     case PANGO_ATTR_RISE:
     case PANGO_ATTR_LETTER_SPACING:
@@ -132,11 +353,13 @@ add_attribute (GtkJsonPrinter *printer,
     case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
       gtk_json_printer_add_integer (printer, "value", ((PangoAttrInt*)attr)->value);
       break;
+
     case PANGO_ATTR_FONT_DESC:
       str = pango_font_description_to_string (((PangoAttrFontDesc*)attr)->desc);
       gtk_json_printer_add_string (printer, "value", str);
       g_free (str);
       break;
+
     case PANGO_ATTR_FOREGROUND:
     case PANGO_ATTR_BACKGROUND:
     case PANGO_ATTR_UNDERLINE_COLOR:
@@ -146,15 +369,18 @@ add_attribute (GtkJsonPrinter *printer,
       gtk_json_printer_add_string (printer, "value", str);
       g_free (str);
       break;
+
     case PANGO_ATTR_STRIKETHROUGH:
     case PANGO_ATTR_FALLBACK:
     case PANGO_ATTR_ALLOW_BREAKS:
     case PANGO_ATTR_INSERT_HYPHENS:
       gtk_json_printer_add_boolean (printer, "value", ((PangoAttrInt*)attr)->value != 0);
       break;
+
     case PANGO_ATTR_SHAPE:
       gtk_json_printer_add_string (printer, "value", "shape");
       break;
+
     case PANGO_ATTR_SCALE:
     case PANGO_ATTR_LINE_HEIGHT:
       gtk_json_printer_add_number (printer, "value", ((PangoAttrFloat*)attr)->value);
@@ -207,7 +433,7 @@ add_tab_array (GtkJsonPrinter *printer,
       pango_tab_array_get_tab (tabs, i, &align, &pos);
       gtk_json_printer_start_object (printer, NULL);
       gtk_json_printer_add_integer (printer, "position", pos);
-      add_enum_value (printer, "alignment", PANGO_TYPE_TAB_ALIGN, align, FALSE);
+      gtk_json_printer_add_string (printer, "alignment", tab_align_names[align]);
       gtk_json_printer_add_integer (printer, "decimal-point", pango_tab_array_get_decimal_point (tabs, i));
       gtk_json_printer_end (printer);
     }
@@ -238,9 +464,9 @@ add_context (GtkJsonPrinter *printer,
   if (context->set_language)
     gtk_json_printer_add_string (printer, "language", pango_language_to_string (context->set_language));
 
-  add_enum_value (printer, "base-gravity", PANGO_TYPE_GRAVITY, context->base_gravity, FALSE);
-  add_enum_value (printer, "gravity-hint", PANGO_TYPE_GRAVITY_HINT, context->gravity_hint, FALSE);
-  add_enum_value (printer, "base-dir", PANGO_TYPE_DIRECTION, context->base_dir, FALSE);
+  gtk_json_printer_add_string (printer, "base-gravity", gravity_names[context->base_gravity]);
+  gtk_json_printer_add_string (printer, "gravity-hint", gravity_hint_names[context->gravity_hint]);
+  gtk_json_printer_add_string (printer, "base-dir", direction_names[context->base_dir]);
   gtk_json_printer_add_boolean (printer, "round-glyph-positions", context->round_glyph_positions);
 
   matrix = pango_context_get_matrix (context);
@@ -423,9 +649,9 @@ add_run (GtkJsonPrinter *printer,
   g_free (str);
 
   gtk_json_printer_add_integer (printer, "bidi-level", run->item->analysis.level);
-  add_enum_value (printer, "gravity", PANGO_TYPE_GRAVITY, run->item->analysis.gravity, FALSE);
+  gtk_json_printer_add_string (printer, "gravity", gravity_names[run->item->analysis.gravity]);
   gtk_json_printer_add_string (printer, "language", pango_language_to_string (run->item->analysis.language));
-  add_enum_value (printer, "script", PANGO_TYPE_SCRIPT, run->item->analysis.script, FALSE);
+  gtk_json_printer_add_string (printer, "script", get_script_name (run->item->analysis.script));
 
   add_font (printer, "font", run->item->analysis.font);
 
@@ -489,7 +715,7 @@ add_line (GtkJsonPrinter  *printer,
   gtk_json_printer_add_integer (printer, "start-index", line->start_index);
   gtk_json_printer_add_integer (printer, "length", line->length);
   gtk_json_printer_add_boolean (printer, "paragraph-start", line->is_paragraph_start);
-  add_enum_value (printer, "direction", PANGO_TYPE_DIRECTION, line->resolved_dir, FALSE);
+  gtk_json_printer_add_string (printer, "direction", direction_names[line->resolved_dir]);
 
   gtk_json_printer_start_array (printer, "runs");
   for (GSList *l = line->runs; l; l = l->next)
@@ -572,13 +798,13 @@ layout_to_json (GtkJsonPrinter            *printer,
     gtk_json_printer_add_boolean (printer, "auto-dir", FALSE);
 
   if (layout->alignment != PANGO_ALIGN_LEFT)
-    add_enum_value (printer, "alignment", PANGO_TYPE_ALIGNMENT, layout->alignment, FALSE);
+    gtk_json_printer_add_string (printer, "alignment", alignment_names[layout->alignment]);
 
   if (layout->wrap != PANGO_WRAP_WORD)
-    add_enum_value (printer, "wrap", PANGO_TYPE_WRAP_MODE, layout->wrap, FALSE);
+    gtk_json_printer_add_string (printer, "wrap", wrap_names[layout->wrap]);
 
   if (layout->ellipsize != PANGO_ELLIPSIZE_NONE)
-    add_enum_value (printer, "ellipsize", PANGO_TYPE_ELLIPSIZE_MODE, layout->ellipsize, FALSE);
+    gtk_json_printer_add_string (printer, "ellipsize", ellipsize_names[layout->ellipsize]);
 
   if (layout->width != -1)
     gtk_json_printer_add_integer (printer, "width", layout->width);
@@ -614,44 +840,28 @@ gstring_write (GtkJsonPrinter *printer,
 /* {{{ Deserialization */
 
 static int
-parser_get_enum_value (GtkJsonParser  *parser,
-                       GType           type,
-                       gboolean        allow_extra)
+parser_select_string (GtkJsonParser  *parser,
+                      const char    **options)
 {
-  GEnumClass *enum_class;
-  GEnumValue *enum_value;
-  char *str = gtk_json_parser_get_string (parser);
+  int value;
 
-  enum_class = g_type_class_ref (type);
-  enum_value = g_enum_get_value_by_nick (enum_class, str);
-
-  if (enum_value)
+  value = gtk_json_parser_select_string (parser, options);
+  if (value == -1)
     {
+      char *str = gtk_json_parser_get_string (parser);
+      char *opts = g_strjoinv (", ", (char **)options);
+
+      gtk_json_parser_value_error (parser,
+                                   "Failed to parse string: %s, valid options are: %s",
+                                   str, opts);
+
+      g_free (opts);
       g_free (str);
-      return enum_value->value;
+
+      value = 0;
     }
 
-  if (allow_extra)
-    {
-      gint64 v;
-      char *endp;
-
-      v = g_ascii_strtoll (str, &endp, 10);
-      if (*endp == '\0')
-        {
-          g_free (str);
-          return (int)v;
-        }
-    }
-
-  gtk_json_parser_value_error (parser,
-                               "Could not parse enum value of type %s: %s",
-                               g_type_name (type),
-                               str);
-
-  g_free (str);
-
-  return 0;
+  return value;
 }
 
 static PangoFontDescription *
@@ -716,23 +926,26 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_STYLE:
-      attr = pango_attr_style_new ((PangoStyle)parser_get_enum_value (parser, PANGO_TYPE_STYLE, FALSE));
+      attr = pango_attr_style_new ((PangoStyle) parser_select_string (parser, style_names));
       break;
 
     case PANGO_ATTR_WEIGHT:
-      attr = pango_attr_weight_new (parser_get_enum_value (parser, PANGO_TYPE_WEIGHT, TRUE));
+      if (gtk_json_parser_get_node (parser) == GTK_JSON_STRING)
+        attr = pango_attr_weight_new (get_weight (parser_select_string (parser, weight_names)));
+      else
+        attr = pango_attr_weight_new ((int) gtk_json_parser_get_int (parser));
       break;
 
     case PANGO_ATTR_VARIANT:
-      attr = pango_attr_variant_new ((PangoVariant)parser_get_enum_value (parser, PANGO_TYPE_VARIANT, FALSE));
+      attr = pango_attr_variant_new ((PangoVariant) parser_select_string (parser, variant_names));
       break;
 
     case PANGO_ATTR_STRETCH:
-      attr = pango_attr_stretch_new ((PangoStretch)parser_get_enum_value (parser, PANGO_TYPE_STRETCH, FALSE));
+      attr = pango_attr_stretch_new ((PangoStretch) parser_select_string (parser, stretch_names));
       break;
 
     case PANGO_ATTR_SIZE:
-      attr = pango_attr_size_new ((int)gtk_json_parser_get_number (parser));
+      attr = pango_attr_size_new ((int) gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_FONT_DESC:
@@ -752,7 +965,7 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_UNDERLINE:
-      attr = pango_attr_underline_new ((PangoUnderline)parser_get_enum_value (parser, PANGO_TYPE_UNDERLINE, FALSE));
+      attr = pango_attr_underline_new ((PangoUnderline) parser_select_string (parser, underline_names));
       break;
 
     case PANGO_ATTR_STRIKETHROUGH:
@@ -760,7 +973,7 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_RISE:
-      attr = pango_attr_rise_new ((int)gtk_json_parser_get_number (parser));
+      attr = pango_attr_rise_new ((int) gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_SHAPE:
@@ -777,7 +990,7 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_LETTER_SPACING:
-      attr = pango_attr_letter_spacing_new ((int)gtk_json_parser_get_number (parser));
+      attr = pango_attr_letter_spacing_new ((int) gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_UNDERLINE_COLOR:
@@ -791,15 +1004,15 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_ABSOLUTE_SIZE:
-      attr = pango_attr_size_new_absolute ((int)gtk_json_parser_get_number (parser));
+      attr = pango_attr_size_new_absolute ((int) gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_GRAVITY:
-      attr = pango_attr_gravity_new ((PangoGravity)parser_get_enum_value (parser, PANGO_TYPE_GRAVITY, FALSE));
+      attr = pango_attr_gravity_new ((PangoGravity) parser_select_string (parser, gravity_names));
       break;
 
     case PANGO_ATTR_GRAVITY_HINT:
-      attr = pango_attr_gravity_hint_new ((PangoGravityHint)parser_get_enum_value (parser, PANGO_TYPE_GRAVITY_HINT, FALSE));
+      attr = pango_attr_gravity_hint_new ((PangoGravityHint) parser_select_string (parser, gravity_hint_names));
       break;
 
     case PANGO_ATTR_FONT_FEATURES:
@@ -809,11 +1022,11 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_FOREGROUND_ALPHA:
-      attr = pango_attr_foreground_alpha_new ((int)gtk_json_parser_get_number (parser));
+      attr = pango_attr_foreground_alpha_new ((int) gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_BACKGROUND_ALPHA:
-      attr = pango_attr_background_alpha_new ((int)gtk_json_parser_get_number (parser));
+      attr = pango_attr_background_alpha_new ((int) gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_ALLOW_BREAKS:
@@ -821,15 +1034,15 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_SHOW:
-      attr = pango_attr_show_new ((int)gtk_json_parser_get_number (parser));
+      attr = pango_attr_show_new ((int) gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_INSERT_HYPHENS:
-      attr = pango_attr_insert_hyphens_new ((int)gtk_json_parser_get_number (parser));
+      attr = pango_attr_insert_hyphens_new ((int) gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_OVERLINE:
-      attr = pango_attr_overline_new ((PangoOverline)parser_get_enum_value (parser, PANGO_TYPE_OVERLINE, FALSE));
+      attr = pango_attr_overline_new ((PangoOverline) parser_select_string (parser, overline_names));
       break;
 
     case PANGO_ATTR_OVERLINE_COLOR:
@@ -842,11 +1055,11 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
-      attr = pango_attr_line_height_new_absolute ((int)gtk_json_parser_get_number (parser));
+      attr = pango_attr_line_height_new_absolute ((int) gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_TEXT_TRANSFORM:
-      attr = pango_attr_text_transform_new ((PangoTextTransform)parser_get_enum_value (parser, PANGO_TYPE_TEXT_TRANSFORM, FALSE));
+      attr = pango_attr_text_transform_new ((PangoTextTransform) parser_select_string (parser, text_transform_names));
       break;
 
     case PANGO_ATTR_WORD:
@@ -858,11 +1071,11 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_BASELINE_SHIFT:
-      attr = pango_attr_baseline_shift_new (parser_get_enum_value (parser, PANGO_TYPE_BASELINE_SHIFT, FALSE));
+      attr = pango_attr_baseline_shift_new (parser_select_string (parser, baseline_shift_names));
       break;
 
     case PANGO_ATTR_FONT_SCALE:
-      attr = pango_attr_font_scale_new ((PangoFontScale)parser_get_enum_value (parser, PANGO_TYPE_FONT_SCALE, FALSE));
+      attr = pango_attr_font_scale_new ((PangoFontScale) parser_select_string (parser, font_scale_names));
       break;
     }
 
@@ -910,7 +1123,7 @@ json_to_attribute (GtkJsonParser *parser)
           break;
 
         case ATTR_TYPE:
-          type = parser_get_enum_value (parser, PANGO_TYPE_ATTR_TYPE, FALSE);
+          type = parser_select_string (parser, attr_type_names);
           break;
 
         case ATTR_VALUE:
@@ -961,6 +1174,7 @@ static const char *tab_members[] = {
   NULL,
 };
 
+
 static void
 json_parser_fill_tabs (GtkJsonParser *parser,
                        PangoTabArray *tabs)
@@ -988,7 +1202,7 @@ json_parser_fill_tabs (GtkJsonParser *parser,
                   break;
 
                 case TAB_ALIGNMENT:
-                  align = parser_get_enum_value (parser, PANGO_TYPE_TAB_ALIGN, FALSE);
+                  align = (PangoTabAlign) parser_select_string (parser, tab_align_names);
                   break;
 
                 case TAB_DECIMAL_POINT:
@@ -1102,15 +1316,15 @@ json_parser_fill_context (GtkJsonParser *parser,
           break;
 
         case CONTEXT_BASE_GRAVITY:
-          pango_context_set_base_gravity (context, (PangoGravity)parser_get_enum_value (parser, PANGO_TYPE_GRAVITY, FALSE));
+          pango_context_set_base_gravity (context, (PangoGravity) parser_select_string (parser, gravity_names));
           break;
 
         case CONTEXT_GRAVITY_HINT:
-          pango_context_set_gravity_hint (context, (PangoGravityHint)parser_get_enum_value (parser, PANGO_TYPE_GRAVITY_HINT, FALSE));
+          pango_context_set_gravity_hint (context, (PangoGravityHint) parser_select_string (parser, gravity_hint_names));
           break;
 
         case CONTEXT_BASE_DIR:
-          pango_context_set_base_dir (context, (PangoDirection)parser_get_enum_value (parser, PANGO_TYPE_DIRECTION, FALSE));
+          pango_context_set_base_dir (context, (PangoDirection) parser_select_string (parser, direction_names));
           break;
 
         case CONTEXT_ROUND_GLYPH_POSITIONS:
@@ -1265,15 +1479,15 @@ json_parser_fill_layout (GtkJsonParser               *parser,
           break;
 
         case LAYOUT_ALIGNMENT:
-          pango_layout_set_alignment (layout, (PangoAlignment)parser_get_enum_value (parser, PANGO_TYPE_ALIGNMENT, FALSE));
+          pango_layout_set_alignment (layout, (PangoAlignment) parser_select_string (parser, alignment_names));
           break;
 
         case LAYOUT_WRAP:
-          pango_layout_set_wrap (layout, (PangoWrapMode)parser_get_enum_value (parser, PANGO_TYPE_WRAP_MODE, FALSE));
+          pango_layout_set_wrap (layout, (PangoWrapMode) parser_select_string (parser, wrap_names));
           break;
 
         case LAYOUT_ELLIPSIZE:
-          pango_layout_set_ellipsize (layout, (PangoEllipsizeMode)parser_get_enum_value (parser, PANGO_TYPE_ELLIPSIZE_MODE, FALSE));
+          pango_layout_set_ellipsize (layout, (PangoEllipsizeMode) parser_select_string (parser, ellipsize_names));
           break;
 
         case LAYOUT_WIDTH:
