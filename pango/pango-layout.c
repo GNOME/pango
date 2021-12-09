@@ -4496,12 +4496,14 @@ process_line (PangoLayout    *layout,
       switch (result)
         {
         case BREAK_ALL_FIT:
-          if (can_break_in (layout, state->start_offset, old_num_chars, first_item_in_line))
+          if (layout->text[item->offset] != '\t' &&
+              can_break_in (layout, state->start_offset, old_num_chars, first_item_in_line))
             {
               have_break = TRUE;
               break_remaining_width = old_remaining_width;
               break_start_offset = state->start_offset;
               break_link = line->runs->next;
+              DEBUG1 ("all-fit, have break");
             }
 
           state->items = g_list_delete_link (state->items, state->items);
