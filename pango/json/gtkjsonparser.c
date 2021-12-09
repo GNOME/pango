@@ -1610,7 +1610,7 @@ gtk_json_parser_select_string (GtkJsonParser      *self,
       return -1;
     }
 
-  return json_string_iter_run_select (self->block->member_name, options);
+  return json_string_iter_run_select (self->block->value, options);
 }
 
 gboolean
