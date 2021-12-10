@@ -78,18 +78,26 @@ test_tabs_resize (void)
 
   pango_tab_array_set_tab (tabs, 0, PANGO_TAB_LEFT, 10);
 
-  g_assert_true (pango_tab_array_get_size (tabs) == 1);
+  g_assert_cmpint (pango_tab_array_get_size (tabs), ==, 1);
 
   pango_tab_array_resize (tabs, 2);
-  g_assert_true (pango_tab_array_get_size (tabs) == 2);
+  g_assert_cmpint (pango_tab_array_get_size (tabs), ==, 2);
 
-  pango_tab_array_set_tab (tabs, 1, PANGO_TAB_LEFT, 20);
+  pango_tab_array_set_tab (tabs, 1, PANGO_TAB_RIGHT, 20);
+  pango_tab_array_set_tab (tabs, 2, PANGO_TAB_CENTER, 30);
+  pango_tab_array_set_tab (tabs, 3, PANGO_TAB_DECIMAL, 40);
+
+  g_assert_cmpint (pango_tab_array_get_size (tabs), ==, 4);
 
   pango_tab_array_get_tabs (tabs, &alignments, &locations);
-  g_assert_true (alignments[0] == PANGO_TAB_LEFT);
-  g_assert_true (alignments[1] == PANGO_TAB_LEFT);
-  g_assert_true (locations[0] == 10);
-  g_assert_true (locations[1] == 20);
+  g_assert_cmpint (alignments[0], ==, PANGO_TAB_LEFT);
+  g_assert_cmpint (alignments[1], ==, PANGO_TAB_RIGHT);
+  g_assert_cmpint (alignments[2], ==, PANGO_TAB_CENTER);
+  g_assert_cmpint (alignments[3], ==, PANGO_TAB_DECIMAL);
+  g_assert_cmpint (locations[0], ==, 10);
+  g_assert_cmpint (locations[1], ==, 20);
+  g_assert_cmpint (locations[2], ==, 30);
+  g_assert_cmpint (locations[3], ==, 40);
 
   g_free (alignments);
   g_free (locations);
