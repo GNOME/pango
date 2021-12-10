@@ -68,6 +68,9 @@ pango_item_copy (PangoItem *item)
     ((PangoItemPrivate *)result)->char_offset = ((PangoItemPrivate *)item)->char_offset;
 
   result->analysis = item->analysis;
+  if (result->analysis.lang_engine)
+    g_object_ref (result->analysis.lang_engine);
+
   if (result->analysis.font)
     g_object_ref (result->analysis.font);
 
@@ -101,6 +104,9 @@ pango_item_free (PangoItem *item)
       g_slist_foreach (item->analysis.extra_attrs, (GFunc)pango_attribute_destroy, NULL);
       g_slist_free (item->analysis.extra_attrs);
     }
+
+  if (item->analysis.lang_engine)
+    g_object_unref (item->analysis.lang_engine);
 
   if (item->analysis.font)
     g_object_unref (item->analysis.font);

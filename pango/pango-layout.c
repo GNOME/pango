@@ -5518,10 +5518,7 @@ pango_layout_get_empty_extents_and_height_at_index (PangoLayout    *layout,
                       free_font_desc = TRUE;
                     }
 
-                  pango_attr_iterator_get_font (&iter,
-                                                font_desc,
-                                                NULL,
-                                                NULL);
+                  pango_attr_iterator_get_font (&iter, font_desc, NULL, NULL);
 
                   attr = pango_attr_iterator_get (&iter, PANGO_ATTR_LINE_HEIGHT);
                   if (attr)
@@ -5689,11 +5686,25 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
 
   if (height)
     {
-      if (!metrics)
-        metrics = pango_font_get_metrics (run->item->analysis.font,
-                                          run->item->analysis.language);
+      if (pango_analysis_get_size_font (&run->item->analysis))
+        {
+          PangoFontMetrics *height_metrics;
 
-      *height = pango_font_metrics_get_height (metrics);
+          height_metrics = pango_font_get_metrics (pango_analysis_get_size_font (&run->item->analysis),
+                                                   run->item->analysis.language);
+
+          *height = pango_font_metrics_get_height (height_metrics);
+
+          pango_font_metrics_unref (height_metrics);
+        }
+      else
+        {
+          if (!metrics)
+            metrics = pango_font_get_metrics (run->item->analysis.font,
+                                              run->item->analysis.language);
+
+          *height = pango_font_metrics_get_height (metrics);
+        }
     }
 
   y_offset = run->y_offset;
