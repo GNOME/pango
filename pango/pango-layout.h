@@ -360,6 +360,8 @@ GSList *         pango_layout_get_lines_readonly   (PangoLayout    *layout);
  * Flags that influence the behavior of [method@Pango.Layout.serialize].
  *
  * New members may be added to this enumeration over time.
+ *
+ * Since: 1.50
  */
 typedef enum {
   PANGO_LAYOUT_SERIALIZE_DEFAULT = 0,
@@ -389,6 +391,8 @@ gboolean        pango_layout_write_to_file         (PangoLayout                 
  *   not found
  *
  * Errors that can be returned by [func@Pango.Layout.deserialize].
+ *
+ * Since: 1.50
  */
 typedef enum {
   PANGO_LAYOUT_DESERIALIZE_INVALID,
@@ -408,6 +412,8 @@ GQuark          pango_layout_deserialize_error_quark (void);
  * Flags that influence the behavior of [func@Pango.Layout.deserialize].
  *
  * New members may be added to this enumeration over time.
+ *
+ * Since: 1.50
  */
 typedef enum {
   PANGO_LAYOUT_DESERIALIZE_DEFAULT = 0,
