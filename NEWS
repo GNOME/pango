@@ -1,5 +1,5 @@
-Overview of changes
-===================
+Overview of changes in 1.50.1, 10-12-2021
+=========================================
 * Fix a crash in tab handling
 * Fix tab positioning without line wrapping
 * Fix an assertion failure found by fuzzing
