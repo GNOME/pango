@@ -35,9 +35,9 @@ typedef struct _PangoTabArray PangoTabArray;
  *   until the available space is filled
  * @PANGO_TAB_CENTER: the text is centered at the tab stop position
  *   until the available space is filled
- * @PANGO_TAB_DECIMAL: text before the first '.' appears to the left of the
- *   tab stop position (until the available space is filled), the rest to
- *   the right
+ * @PANGO_TAB_DECIMAL: text before the first occurrence of the decimal point
+ *   character appears to the left of the tab stop position (until the available
+ *   space is filled), the rest to the right
  *
  * `PangoTabAlign` specifies where the text appears relative to the tab stop
  * position.
