@@ -253,7 +253,7 @@ typedef enum {
  * @PANGO_FONT_SCALE_NONE: Leave the font size unchanged
  * @PANGO_FONT_SCALE_SUPERSCRIPT: Change the font to a size suitable for superscripts
  * @PANGO_FONT_SCALE_SUBSCRIPT: Change the font to a size suitable for subscripts
- * @PANGO_FONT_SCALE_SMALL_CAPS: Change the font to a size suitable for Small Caps. Since: 1.50
+ * @PANGO_FONT_SCALE_SMALL_CAPS: Change the font to a size suitable for Small Caps
  *
  * An enumeration that affects font sizes for superscript
  * and subscript positioning and for (emulated) Small Caps.
