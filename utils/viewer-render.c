@@ -107,14 +107,14 @@ make_layout(PangoContext *context,
 
   if (opt_serialized)
     {
-      char *text;
+      char *data;
       gsize len;
       GBytes *bytes;
       GError *error = NULL;
 
-      if (!g_file_get_contents (file_arg, &text, &len, &error))
+      if (!g_file_get_contents (file_arg, &data, &len, &error))
         fail ("%s\n", error->message);
-      bytes = g_bytes_new_take (text, size);
+      bytes = g_bytes_new_take (data, len);
       layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_CONTEXT, &error);
       if (!layout)
         fail ("%s\n", error->message);
