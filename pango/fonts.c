@@ -1627,7 +1627,8 @@ pango_parse_style (const char *str,
  *
  * Parses a font variant.
  *
- * The allowed values are "normal" and "smallcaps" or "small_caps",
+ * The allowed values are "normal", "small-caps", "all-small-caps",
+ * "petite-caps", "all-petite-caps", "unicase" and "title-caps",
  * case variations being ignored.
  *
  * Return value: %TRUE if @str was successfully parsed.

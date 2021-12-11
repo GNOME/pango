@@ -98,7 +98,9 @@ weight
 
 font_variant
 variant
-: One of 'normal' or 'smallcaps'.
+: One of 'normal', 'small-caps', 'all-small-caps', 'petite-caps', 'all-petite-caps',
+  'unicase', 'title-caps'. Values other than 'normal' and 'small-caps' are available
+  since 1.50.
 
 font_stretch
 stretch
