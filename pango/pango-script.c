@@ -66,13 +66,15 @@
  *
  * Looks up the script for a particular character.
  *
- * The script of a character is defined by Unicode Standard Annex \#24.
+ * The script of a character is defined by
+ * [Unicode Standard Annex 24: Script names](http://www.unicode.org/reports/tr24/).
+ *
  * No check is made for @ch being a valid Unicode character; if you pass
  * in invalid character, the result is undefined.
  *
  * Note that while the return type of this function is declared
  * as `PangoScript`, as of Pango 1.18, this function simply returns
- * the return value of g_unichar_get_script(). Callers must be
+ * the return value of [func@GLib.unichar_get_script]. Callers must be
  * prepared to handle unknown values.
  *
  * Return value: the `PangoScript` for the character.
@@ -120,7 +122,7 @@ _pango_script_iter_init (PangoScriptIter *iter,
 /**
  * pango_script_iter_new:
  * @text: a UTF-8 string
- * @length: length of @text, or -1 if @text is nul-terminated.
+ * @length: length of @text, or -1 if @text is nul-terminated
  *
  * Create a new `PangoScriptIter`, used to break a string of
  * Unicode text into runs by Unicode script.
@@ -177,12 +179,13 @@ pango_script_iter_free (PangoScriptIter *iter)
  * @script: (out) (optional): location to store script for range
  *
  * Gets information about the range to which @iter currently points.
+ *
  * The range is the set of locations p where *start <= p < *end.
  * (That is, it doesn't include the character stored at *end)
  *
  * Note that while the type of the @script argument is declared
  * as `PangoScript`, as of Pango 1.18, this function simply returns
- * GUnicodeScript values. Callers must be prepared to handle unknown
+ * `GUnicodeScript` values. Callers must be prepared to handle unknown
  * values.
  *
  * Since: 1.4

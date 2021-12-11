@@ -1575,12 +1575,12 @@ pango_itemize_post_process_items (PangoContext *context,
  * Like `pango_itemize()`, but with an explicitly specified base direction.
  *
  * The base direction is used when computing bidirectional levels.
- * (see [method@Pango.Context.set_base_dir]). [func@itemize] gets the
- * base direction from the `PangoContext`.
+ * [func@itemize] gets the base direction from the `PangoContext`
+ * (see [method@Pango.Context.set_base_dir]).
  *
  * Return value: (transfer full) (element-type Pango.Item): a `GList` of
  *   [struct@Pango.Item] structures. The items should be freed using
- *   [method@Pango.Item.free] probably in combination with g_list_free_full().
+ *   [method@Pango.Item.free] probably in combination with [func@GLib.List.free_full].
  *
  * Since: 1.4
  */
@@ -1634,7 +1634,7 @@ pango_itemize_with_base_dir (PangoContext      *context,
  *
  * Return value: (transfer full) (element-type Pango.Item): a `GList` of
  *   [struct@Pango.Item] structures. The items should be freed using
- *   [method@Pango.Item.free] probably in combination with g_list_free_full().
+ *   [method@Pango.Item.free] in combination with [func@GLib.List.free_full].
  */
 GList *
 pango_itemize (PangoContext      *context,
@@ -1654,6 +1654,6 @@ pango_itemize (PangoContext      *context,
                                       attrs, cached_iter);
 }
 
- /* }}} */ 
+/* }}} */
 
 /* vim:set foldmethod=marker expandtab: */

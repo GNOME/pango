@@ -549,9 +549,11 @@ success:
  * @tab_index: the index of a tab stop
  * @decimal_point: the decimal point to use
  *
- * Sets the decimal point to use.
+ * Sets the Unicode character to use as decimal point.
  *
- * This is only relevant for %PANGO_TAB_DECIMAL.
+ * This is only relevant for tabs with %PANGO_TAB_DECIMAL alignment,
+ * which align content at the first occurrence of the decimal point
+ * character.
  *
  * By default, Pango uses the decimal point according
  * to the current locale.
@@ -577,9 +579,11 @@ pango_tab_array_set_decimal_point (PangoTabArray *tab_array,
  * @tab_array: a `PangoTabArray`
  * @tab_index: the index of a tab stop
  *
- * Gets the decimal point to use.
+ * Gets the Unicode character to use as decimal point.
  *
- * This is only relevant for %PANGO_TAB_DECIMAL.
+ * This is only relevant for tabs with %PANGO_TAB_DECIMAL alignment,
+ * which align content at the first occurrence of the decimal point
+ * character.
  *
  * The default value of 0 means that Pango will use the
  * decimal point according to the current locale.

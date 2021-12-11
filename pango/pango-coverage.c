@@ -238,7 +238,7 @@ pango_coverage_to_bytes (PangoCoverage  *coverage,
  *   representing a `PangoCoverage`
  * @n_bytes: the size of @bytes in bytes
  *
- * Convert data generated from pango_coverage_to_bytes()
+ * Convert data generated from [method@Pango.Coverage.to_bytes]
  * back to a `PangoCoverage`.
  *
  * Return value: (transfer full) (nullable): a newly allocated `PangoCoverage`

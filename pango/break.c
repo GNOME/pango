@@ -2168,8 +2168,8 @@ tailor_break (const char    *text,
  *
  * This is the default break algorithm.
  *
- * It applies Unicode rules without language-specific
- * tailoring, therefore the @analyis argument is unused
+ * It applies rules from the [Unicode Line Breaking Algorithm](http://www.unicode.org/unicode/reports/tr14/)
+ * without language-specific tailoring, therefore the @analyis argument is unused
  * and can be %NULL.
  *
  * See [func@Pango.tailor_break] for language-specific breaks.
@@ -2203,11 +2203,10 @@ pango_default_break (const char    *text,
  * Determines possible line, word, and character breaks
  * for a string of Unicode text with a single analysis.
  *
- * For most purposes you may want to use
- * [func@Pango.get_log_attrs].
+ * For most purposes you may want to use [func@Pango.get_log_attrs].
  *
  * Deprecated: 1.44: Use [func@Pango.default_break],
- *   [func@Pango.tailor_break] and func@Pango.attr_break].
+ *   [func@Pango.tailor_break] and [func@Pango.attr_break].
  */
 void
 pango_break (const char    *text,
@@ -2236,15 +2235,13 @@ pango_break (const char    *text,
  *
  * Apply language-specific tailoring to the breaks in @attrs.
  *
- * The line breaks are assumed to have been produced
- * by [func@Pango.default_break].
+ * The line breaks are assumed to have been produced by [func@Pango.default_break].
  *
- * If @offset is not -1, it is used to apply attributes
- * from @analysis that are relevant to line breaking.
+ * If @offset is not -1, it is used to apply attributes from @analysis that are
+ * relevant to line breaking.
  *
- * Note that it is better to pass -1 for @offset and
- * use [func@Pango.attr_break] to apply attributes to
- * the whole paragraph.
+ * Note that it is better to pass -1 for @offset and use [func@Pango.attr_break]
+ * to apply attributes to the whole paragraph.
  *
  * Since: 1.44
  */

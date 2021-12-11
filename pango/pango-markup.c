@@ -601,7 +601,7 @@ pango_markup_parser_new_internal (char       accel_marker,
 
 /**
  * pango_parse_markup:
- * @markup_text: markup to parse (see the Pango Markup docs)
+ * @markup_text: markup to parse (see the [Pango Markup](pango_markup.html) docs)
  * @length: length of @markup_text, or -1 if nul-terminated
  * @accel_marker: character that precedes an accelerator, or 0 for none
  * @attr_list: (out) (optional): address of return location for a `PangoAttrList`
@@ -696,17 +696,17 @@ pango_parse_markup (const char                 *markup_text,
  * when calling [func@markup_parser_finish]. Two @accel_marker characters
  * following each other produce a single literal @accel_marker character.
  *
- * To feed markup to the parser, use g_markup_parse_context_parse()
- * on the returned `GMarkupParseContext`. When done with feeding markup
+ * To feed markup to the parser, use [method@GLib.MarkupParseContext.parse]
+ * on the returned [struct@GLib.MarkupParseContext]. When done with feeding markup
  * to the parser, use [func@markup_parser_finish] to get the data out
- * of it, and then use g_markup_parse_context_free() to free it.
+ * of it, and then use [method@GLib.MarkupParseContext.free] to free it.
  *
  * This function is designed for applications that read Pango markup
  * from streams. To simply parse a string containing Pango markup,
- * the [func@parse_markup] API is recommended instead.
+ * the [func@Pango.parse_markup] API is recommended instead.
  *
  * Return value: (transfer none): a `GMarkupParseContext` that should be
- * destroyed with g_markup_parse_context_free().
+ * destroyed with [method@GLib.MarkupParseContext.free].
  *
  * Since: 1.31.0
  **/
@@ -726,9 +726,9 @@ pango_markup_parser_new (gunichar accel_marker)
  *
  * Finishes parsing markup.
  *
- * After feeding a Pango markup parser some data with g_markup_parse_context_parse(),
+ * After feeding a Pango markup parser some data with [method@GLib.MarkupParseContext.parse],
  * use this function to get the list of attributes and text out of the
- * markup. This function will not free @context, use g_markup_parse_context_free()
+ * markup. This function will not free @context, use [method@GLib.MarkupParseContext.free]
  * to do so.
  *
  * Return value: %FALSE if @error is set, otherwise %TRUE

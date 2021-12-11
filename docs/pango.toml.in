@@ -6,7 +6,7 @@ repository_url = "https://gitlab.gnome.org/GNOME/pango.git"
 website_url = "https://www.pango.org"
 authors = "Owen Taylor, Behdad Esfahbod"
 logo_url = "pango-name.png"
-license = "GPL-2.1-or-later"
+license = "LGPL-2.1-or-later"
 description = "Internationalized text layout and rendering"
 dependencies = [ "GObject-2.0", "HarfBuzz-0.0", "PangoCairo-1.0",
                  "PangoFc-1.0", "PangoFT2-1.0", "PangoOT-1.0",
@@ -72,6 +72,7 @@ content_images = [
   "pipeline-dark.png",
   "rects1.png",
   "rects2.png",
+  "rects3.png",
   "arabic-markup.png",
   "blue-text.png",
   "align-left.png",
@@ -103,3 +104,5 @@ content_images = [
   "baseline-shift-light.png",
   "baseline-shift-dark.png",
 ]
+
+urlmap_file = "urlmap.js"

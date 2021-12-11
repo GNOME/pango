@@ -1621,8 +1621,10 @@ pango_layout_serialize (PangoLayout               *layout,
  * @filename: (type filename): the file to save it to
  * @error: Return location for a potential error
  *
- * This function is equivalent to calling [method@Pango.Layout.serialize]
- * followed by g_file_set_contents().
+ * A convenience method to serialize a layout to a file.
+ *
+ * It is equivalent to calling [method@Pango.Layout.serialize]
+ * followed by [func@GLib.file_set_contents].
  *
  * See those two functions for details on the arguments.
  *
@@ -1731,6 +1733,8 @@ pango_layout_deserialize (PangoContext                 *context,
  *
  * The intended use of this function is testing, benchmarking and debugging.
  * The format is not meant as a permanent storage format.
+ *
+ * To recreate a font from its serialized form, use [func@Pango.Font.deserialize].
  *
  * Returns: a `GBytes` containing the serialized form of @font
  *

@@ -6,7 +6,7 @@ repository_url = "https://gitlab.gnome.org/GNOME/pango.git"
 website_url = "https://www.pango.org"
 authors = "Owen Taylor, Behdad Esfahbod"
 logo_url = "pango-name.png"
-license = "GPL-2.1-or-later"
+license = "LGPL-2.1-or-later"
 description = "OpenType support for Pango"
 dependencies = [ "Pango-1.0" ]
 devhelp = true
@@ -29,3 +29,5 @@ base_url = "https://gitlab.gnome.org/GNOME/pango/-/blob/main/"
 content_images = [
   "pango-name.png"
 ]
+
+urlmap_file = "urlmap.js"

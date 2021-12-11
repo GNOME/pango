@@ -897,8 +897,9 @@ pango_find_base_dir (const gchar *text,
  * Checks if a character that should not be normally rendered.
  *
  * This includes all Unicode characters with "ZERO WIDTH" in their name,
- * as well as *bidi* formatting characters, and a few other ones.  This is
- * totally different from g_unichar_iszerowidth() and is at best misnamed.
+ * as well as *bidi* formatting characters, and a few other ones.
+ *
+ * This is totally different from [func@GLib.unichar_iszerowidth] and is at best misnamed.
  *
  * Return value: %TRUE if @ch is a zero-width character, %FALSE otherwise
  *
