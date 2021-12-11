@@ -96,16 +96,14 @@ pango_bidi_type_for_unichar (gunichar ch)
  *
  * Return the bidirectional embedding levels of the input paragraph.
  *
- * The bidirectional embedding levels are defined by the Unicode Bidirectional
- * Algorithm available at:
- *
- *   http://www.unicode.org/reports/tr9/
+ * The bidirectional embedding levels are defined by the [Unicode Bidirectional
+ * Algorithm](http://www.unicode.org/reports/tr9/).
  *
  * If the input base direction is a weak direction, the direction of the
  * characters in the text will determine the final resolved direction.
  *
  * Return value: a newly allocated array of embedding levels, one item per
- *   character (not byte), that should be freed using g_free().
+ *   character (not byte), that should be freed using [func@GLib.free].
  *
  * Since: 1.4
  */
@@ -248,13 +246,13 @@ resolved:
  *
  * Determines the inherent direction of a character.
  *
- * The inherent direction is either %PANGO_DIRECTION_LTR, %PANGO_DIRECTION_RTL,
- * or %PANGO_DIRECTION_NEUTRAL.
+ * The inherent direction is either `PANGO_DIRECTION_LTR`, `PANGO_DIRECTION_RTL`,
+ * or `PANGO_DIRECTION_NEUTRAL`.
  *
  * This function is useful to categorize characters into left-to-right
  * letters, right-to-left letters, and everything else. If full Unicode
- * bidirectional type of a character is needed,
- * [func@Pango.BidiType.for_unichar] can be used instead.
+ * bidirectional type of a character is needed, [func@Pango.BidiType.for_unichar]
+ * can be used instead.
  *
  * Return value: the direction of the character.
  */
@@ -288,8 +286,8 @@ pango_unichar_direction (gunichar ch)
  * Return value: %TRUE if @ch has a mirrored character and @mirrored_ch is
  * filled in, %FALSE otherwise
  *
- * Deprecated: 1.30: Use g_unichar_get_mirror_char() instead; the docs for that function
- * provide full details.
+ * Deprecated: 1.30: Use [func@GLib.unichar_get_mirror_char] instead;
+ *   the docs for that function provide full details.
  */
 gboolean
 pango_get_mirror_char (gunichar  ch,

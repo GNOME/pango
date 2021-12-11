@@ -562,7 +562,8 @@ pango_font_description_set_variations_static (PangoFontDescription *desc,
  * and values are clamped to their allowed range.
  *
  * Pango does not currently have a way to find supported axes of
- * a font. Both harfbuzz or freetype have API for this.
+ * a font. Both harfbuzz and freetype have API for this. See
+ * for example [hb_ot_var_get_axis_infos](https://harfbuzz.github.io/harfbuzz-hb-ot-var.html#hb-ot-var-get-axis-infos).
  *
  * Since: 1.42
  */
@@ -2017,7 +2018,7 @@ pango_font_get_face (PangoFont *font)
  *
  * Note that the objects returned by this function are cached
  * and immutable. If you need to make changes to the `hb_font_t`,
- * use hb_font_create_sub_font().
+ * use [hb_font_create_sub_font()](https://harfbuzz.github.io/harfbuzz-hb-font.html#hb-font-create-sub-font).
  *
  * Returns: (transfer none) (nullable): the `hb_font_t` object
  *   backing the font
@@ -2089,6 +2090,7 @@ pango_font_metrics_ref (PangoFontMetrics *metrics)
  * @metrics: (nullable): a `PangoFontMetrics` structure, may be %NULL
  *
  * Decrease the reference count of a font metrics structure by one.
+ *
  * If the result is zero, frees the structure and any associated memory.
  */
 void
@@ -2509,6 +2511,9 @@ pango_font_family_is_monospace (PangoFontFamily  *family)
  * A variable font is a font which has axes that can be modified to
  * produce different faces.
  *
+ * Such axes are also known as _variations_; see
+ * [method@Pango.FontDescription.set_variations] for more information.
+ *
  * Return value: %TRUE if the family is variable
  *
  * Since: 1.44
@@ -2541,8 +2546,10 @@ pango_font_face_init (PangoFontFace *face G_GNUC_UNUSED)
  * pango_font_face_describe:
  * @face: a `PangoFontFace`
  *
- * Returns the family, style, variant, weight and stretch of
- * a `PangoFontFace`. The size field of the resulting font description
+ * Returns a font description that matches the face.
+ *
+ * The resulting font description will have the family, style,
+ * variant, weight and stretch of the face, but its size field
  * will be unset.
  *
  * Return value: a newly-created `PangoFontDescription` structure
@@ -2561,11 +2568,13 @@ pango_font_face_describe (PangoFontFace *face)
  * pango_font_face_is_synthesized:
  * @face: a `PangoFontFace`
  *
- * Returns whether a `PangoFontFace` is synthesized by the underlying
- * font rendering engine from another face, perhaps by shearing, emboldening,
- * or lightening it.
+ * Returns whether a `PangoFontFace` is synthesized.
  *
- * Return value: whether @face is synthesized.
+ * This will be the case if the underlying font rendering engine
+ * creates this face from another face, by shearing, emboldening,
+ * lightening or modifying it in some other way.
+ *
+ * Return value: whether @face is synthesized
  *
  * Since: 1.18
  */
@@ -2584,9 +2593,11 @@ pango_font_face_is_synthesized (PangoFontFace  *face)
  * pango_font_face_get_face_name:
  * @face: a `PangoFontFace`.
  *
- * Gets a name representing the style of this face among the
- * different faces in the `PangoFontFamily` for the face. The
- * name is suitable for displaying to users.
+ * Gets a name representing the style of this face.
+ *
+ * The name identifies the face among the different faces
+ * in the `PangoFontFamily` for the face. It is suitable
+ * for displaying to users.
  *
  * Return value: the face name for the face. This string is
  *   owned by the face object and must not be modified or freed.

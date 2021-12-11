@@ -84,23 +84,21 @@ typedef enum {
  *   replaced by smaller variants of the capital characters.
  * @PANGO_VARIANT_ALL_SMALL_CAPS: A font with all characters
  *   replaced by smaller variants of the capital characters.
- *   Since: 1.50
  * @PANGO_VARIANT_PETITE_CAPS: A font with the lower case characters
  *   replaced by smaller variants of the capital characters.
  *   Petite Caps can be even smaller than Small Caps.
- *   Since: 1.50
  * @PANGO_VARIANT_ALL_PETITE_CAPS: A font with all characters
  *   replaced by smaller variants of the capital characters.
  *   Petite Caps can be even smaller than Small Caps.
- *   Since: 1.50
  * @PANGO_VARIANT_UNICASE: A font with the upper case characters
  *   replaced by smaller variants of the capital letters.
- *   Since: 1.50
  * @PANGO_VARIANT_TITLE_CAPS: A font with capital letters that
  *   are more suitable for all-uppercase titles.
- *   Since: 1.50
  *
  * An enumeration specifying capitalization variant of the font.
+ *
+ * Values other than `PANGO_VARIANT_NORMAL` and `PANGO_VARIANT_SMALL_CAPS` are
+ * available since 1.50.
  */
 typedef enum {
   PANGO_VARIANT_NORMAL,
@@ -114,23 +112,23 @@ typedef enum {
 
 /**
  * PangoWeight:
- * @PANGO_WEIGHT_THIN: the thin weight (= 100; Since: 1.24)
+ * @PANGO_WEIGHT_THIN: the thin weight (= 100) Since: 1.24
  * @PANGO_WEIGHT_ULTRALIGHT: the ultralight weight (= 200)
  * @PANGO_WEIGHT_LIGHT: the light weight (= 300)
- * @PANGO_WEIGHT_SEMILIGHT: the semilight weight (= 350; Since: 1.36.7)
- * @PANGO_WEIGHT_BOOK: the book weight (= 380; Since: 1.24)
+ * @PANGO_WEIGHT_SEMILIGHT: the semilight weight (= 350) Since: 1.36.7
+ * @PANGO_WEIGHT_BOOK: the book weight (= 380) Since: 1.24)
  * @PANGO_WEIGHT_NORMAL: the default weight (= 400)
- * @PANGO_WEIGHT_MEDIUM: the normal weight (= 500; Since: 1.24)
+ * @PANGO_WEIGHT_MEDIUM: the normal weight (= 500) Since: 1.24
  * @PANGO_WEIGHT_SEMIBOLD: the semibold weight (= 600)
  * @PANGO_WEIGHT_BOLD: the bold weight (= 700)
  * @PANGO_WEIGHT_ULTRABOLD: the ultrabold weight (= 800)
  * @PANGO_WEIGHT_HEAVY: the heavy weight (= 900)
- * @PANGO_WEIGHT_ULTRAHEAVY: the ultraheavy weight (= 1000; Since: 1.24)
+ * @PANGO_WEIGHT_ULTRAHEAVY: the ultraheavy weight (= 1000) Since: 1.24
  *
  * An enumeration specifying the weight (boldness) of a font.
  *
- * This is a numerical value ranging from 100 to 1000, but there
- * are some predefined values.
+ * Weight is specified as a numeric value ranging from 100 to 1000.
+ * This enumeration simply provides some common, predefined values.
  */
 typedef enum {
   PANGO_WEIGHT_THIN = 100,

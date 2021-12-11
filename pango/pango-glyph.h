@@ -40,12 +40,14 @@ typedef struct _PangoGlyphString PangoGlyphString;
  * The `PangoGlyphUnit` type is used to store dimensions within
  * Pango.
  *
- * Dimensions are stored in 1/%PANGO_SCALE of a device unit.
+ * Dimensions are stored in 1/PANGO_SCALE of a device unit.
  * (A device unit might be a pixel for screen display, or
- * a point on a printer.) %PANGO_SCALE is currently 1024, and
+ * a point on a printer.) PANGO_SCALE is currently 1024, and
  * may change in the future (unlikely though), but you should not
- * depend on its exact value. The PANGO_PIXELS() macro can be used
- * to convert from glyph units into device units with correct rounding.
+ * depend on its exact value.
+ *
+ * The PANGO_PIXELS() macro can be used to convert from glyph units
+ * into device units with correct rounding.
  */
 typedef gint32 PangoGlyphUnit;
 
@@ -68,10 +70,10 @@ typedef gint32 PangoGlyphUnit;
  * The information in this struct is intended for rendering the glyphs,
  * as follows:
  *
- * 1. Render the current glyph at (x + x_offset, y + y_offset),
- *    where (x, y) is the current point
- * 2. Advance the current point to (x + xoffset, y)
- * 3. Render the next glyph...
+ * 1. Assume the current point is (x, y)
+ * 2. Render the current glyph at (x + x_offset, y + y_offset),
+ * 3. Advance the current point to (x + width, y)
+ * 4. Render the next glyph
  */
 struct _PangoGlyphGeometry
 {
@@ -85,10 +87,6 @@ struct _PangoGlyphGeometry
 /**
  * PangoGlyphVisAttr:
  * @is_cluster_start: set for the first logical glyph in each cluster.
- *   (Clusters are stored in visual order, within the cluster, glyphs
- *   are always ordered in logical order, since visual order is meaningless;
- *   that is, in Arabic text, accent glyphs follow the glyphs for the
- *   base character.)
  * @is_color: set if the the font will render this glyph with color. Since 1.50
  *
  * A `PangoGlyphVisAttr` structure communicates information between
@@ -96,6 +94,11 @@ struct _PangoGlyphGeometry
  *
  * Currently, it contains cluster start and color information.
  * More attributes may be added in the future.
+ *
+ * Clusters are stored in visual order, within the cluster, glyphs
+ * are always ordered in logical order, since visual order is meaningless;
+ * that is, in Arabic text, accent glyphs follow the glyphs for the
+ * base character.
  */
 struct _PangoGlyphVisAttr
 {
@@ -123,11 +126,10 @@ struct _PangoGlyphInfo
 
 /**
  * PangoGlyphString:
- * @num_glyphs: number of the glyphs in this glyph string.
+ * @num_glyphs: number of glyphs in this glyph string
  * @glyphs: (array length=num_glyphs): array of glyph information
- *   for the glyph string.
  * @log_clusters: logical cluster info, indexed by the byte index
- *   within the text corresponding to the glyph string.
+ *   within the text corresponding to the glyph string
  *
  * A `PangoGlyphString` is used to store strings of glyphs with geometry
  * and visual attribute information.
@@ -215,11 +217,9 @@ void                    pango_glyph_string_index_to_x_full      (PangoGlyphStrin
 
 /**
  * PangoShapeFlags:
- * @PANGO_SHAPE_NONE: Default value.
- * @PANGO_SHAPE_ROUND_POSITIONS: Round glyph positions
- *   and widths to whole device units. This option should
- *   be set if the target renderer can't do subpixel
- *   positioning of glyphs.
+ * @PANGO_SHAPE_NONE: Default value
+ * @PANGO_SHAPE_ROUND_POSITIONS: Round glyph positions and widths to whole device units
+ *   This option should be set if the target renderer can't do subpixel positioning of glyphs
  *
  * Flags influencing the shaping process.
  *
