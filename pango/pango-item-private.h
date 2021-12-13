@@ -40,7 +40,7 @@ G_BEGIN_DECLS
 
 typedef struct _PangoItemPrivate PangoItemPrivate;
 
-#ifdef __x86_64__
+#if defined(__x86_64__) && !defined(__ILP32__)
 
 struct _PangoItemPrivate
 {
