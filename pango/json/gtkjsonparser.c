@@ -22,6 +22,7 @@
 
 #include "gtkjsonparserprivate.h"
 #include <stdlib.h>
+#include <errno.h>
 
 typedef struct _GtkJsonBlock GtkJsonBlock;
 
