@@ -23,7 +23,7 @@
   "output" : {
     "is-wrapped" : false,
     "is-ellipsized" : true,
-    "unknown-glyphs" : 1,
+    "unknown-glyphs" : 0,
     "width" : 161792,
     "height" : 161792,
     "log-attrs" : [
@@ -189,8 +189,8 @@
         "runs" : [
           {
             "offset" : 0,
-            "length" : 3,
-            "text" : "你",
+            "length" : 6,
+            "text" : "你好",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
@@ -241,9 +241,9 @@
             ]
           },
           {
-            "offset" : 3,
-            "length" : 4,
-            "text" : "好 ",
+            "offset" : 6,
+            "length" : 1,
+            "text" : " ",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "xx",
@@ -266,16 +266,10 @@
             "end-x-offset" : 0,
             "glyphs" : [
               {
-                "glyph" : 1,
+                "glyph" : 0,
                 "width" : 15360,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
-              },
-              {
-                "glyph" : 268435488,
-                "width" : 0,
-                "is-cluster-start" : true,
-                "log-cluster" : 3
               }
             ]
           },
