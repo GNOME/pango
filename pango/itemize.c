@@ -507,8 +507,7 @@ itemize_state_init (ItemizeState               *state,
 
   if (!PANGO_GRAVITY_IS_VERTICAL (state->context->resolved_gravity))
     state->width_iter.end = state->end;
-  else
-  if (state->emoji_iter.is_emoji)
+  else if (state->emoji_iter.is_emoji)
     state->width_iter.end = MAX (state->width_iter.end, state->emoji_iter.end);
 
   update_end (state);
@@ -903,27 +902,32 @@ itemize_state_update_for_new_run (ItemizeState *state)
 }
 
 /* We don't want space characters to affect font selection; in general,
-* it's always wrong to select a font just to render a space.
-* We assume that all fonts have the ASCII space, and for other space
-* characters if they don't, HarfBuzz will compatibility-decompose them
-* to ASCII space...
-* See bugs #355987 and #701652.
-*
-* We don't want to change fonts just for variation selectors.
-* See bug #781123.
-*
-* Finally, don't change fonts for line or paragraph separators.
-*
-* Note that we want spaces to use the 'better' font, comparing
-* the font that is used before and after the space. This is handled
-* in itemize_state_add_character().
-*/
+ * it's always wrong to select a font just to render a space.
+ *
+ * We assume that all fonts have the ASCII space, and for other space
+ * characters if they don't, HarfBuzz will compatibility-decompose them
+ * to ASCII space...
+ * See bugs #355987 and #701652.
+ *
+ * We don't want to change fonts just for variation selectors.
+ * See bug #781123.
+ *
+ * We don't want to change fonts for default ignorables such as Cf chars.
+ * Note that Cf chars in the Arabic block are visible and need to have
+ * a font, so we exclude.
+ *
+ * Finally, don't change fonts for line or paragraph separators.
+ *
+ * Note that we want spaces to use the 'better' font, comparing
+ * the font that is used before and after the space. This is handled
+ * in itemize_state_add_character().
+ */
 static gboolean
 consider_as_space (gunichar wc)
 {
   GUnicodeType type = g_unichar_type (wc);
   return type == G_UNICODE_CONTROL ||
-         type == G_UNICODE_FORMAT ||
+         (type == G_UNICODE_FORMAT && !((wc >= 0x600 && wc <= 0x06ff) || wc == 0x70f || wc == 0x8e2)) ||
          type == G_UNICODE_SURROGATE ||
          type == G_UNICODE_LINE_SEPARATOR ||
          type == G_UNICODE_PARAGRAPH_SEPARATOR ||

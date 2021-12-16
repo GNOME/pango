@@ -121,6 +121,7 @@ installed_test_layouts_data = [
   'layouts/valid-22.layout',
   'layouts/tab-crash.layout',
   'layouts/tab-assert.layout',
+  'layouts/arabic-format.layout',
 ]
 
 test_markups_data = [
