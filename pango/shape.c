@@ -137,10 +137,18 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
   if (hb_font_get_nominal_glyph (context->parent, unicode, glyph))
     return TRUE;
 
+  /* HarfBuzz knows how to synthesize spaces, so never replace them
+   * with unknown glyphs, but we do need to tell HarfBuzz that the
+   * font does not have a glyph.
+   */
+  if (g_unichar_type (unicode) == G_UNICODE_SPACE_SEPARATOR)
+    return FALSE;
+
   *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
 
   /* We draw our own invalid-Unicode shape, so prevent HarfBuzz
-   * from using REPLACEMENT CHARACTER. */
+   * from using REPLACEMENT CHARACTER.
+   */
   if (unicode > 0x10FFFF)
     return TRUE;
 
