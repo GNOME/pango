@@ -1,3 +1,10 @@
+Overview of changes in 1.50.2, 10-16-2021
+=========================================
+* Fix a problem with font fallback for Arabic
+* Fix handling of fonts without a space glyph
+* Various documentation improvements
+* Fix build issues
+
 Overview of changes in 1.50.1, 10-12-2021
 =========================================
 * Fix a crash in tab handling
