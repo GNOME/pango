@@ -1,4 +1,4 @@
-FROM fedora:33
+FROM fedora:34
 
 RUN dnf -y install \
     abattis-cantarell-fonts \
@@ -32,6 +32,7 @@ RUN dnf -y install \
     libubsan \
     libXft-devel \
     llvm \
+    meson \
     ninja-build \
     python3 \
     python3-jinja2 \
@@ -44,8 +45,6 @@ RUN dnf -y install \
     redhat-rpm-config \
     thai-scalable-waree-fonts \
  && dnf clean all
-
-RUN pip3 install meson==0.56
 
 ARG HOST_USER_ID=5555
 ENV HOST_USER_ID ${HOST_USER_ID}
