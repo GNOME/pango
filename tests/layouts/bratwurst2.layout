@@ -23,8 +23,8 @@
     "is-wrapped" : false,
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
-    "width" : 202752,
-    "height" : 202752,
+    "width" : 200704,
+    "height" : 200704,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -130,7 +130,7 @@
               },
               {
                 "glyph" : 409,
-                "width" : 18432,
+                "width" : 17408,
                 "is-cluster-start" : true,
                 "log-cluster" : 1
               },
@@ -160,7 +160,7 @@
               },
               {
                 "glyph" : 409,
-                "width" : 18432,
+                "width" : 17408,
                 "is-cluster-start" : true,
                 "log-cluster" : 6
               },

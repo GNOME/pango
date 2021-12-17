@@ -40,8 +40,8 @@
     "is-wrapped" : false,
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
-    "width" : 79872,
-    "height" : 79872,
+    "width" : 67584,
+    "height" : 67584,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -138,7 +138,7 @@
             "glyphs" : [
               {
                 "glyph" : 244,
-                "width" : 19456,
+                "width" : 15360,
                 "x-offset" : 14764,
                 "y-offset" : 3844,
                 "is-cluster-start" : true,
@@ -146,7 +146,7 @@
               },
               {
                 "glyph" : 272,
-                "width" : 19456,
+                "width" : 15360,
                 "x-offset" : 14764,
                 "y-offset" : 4280,
                 "is-cluster-start" : true,
@@ -154,7 +154,7 @@
               },
               {
                 "glyph" : 273,
-                "width" : 19456,
+                "width" : 15360,
                 "x-offset" : 14764,
                 "y-offset" : 3506,
                 "is-cluster-start" : true,

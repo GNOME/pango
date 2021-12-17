@@ -270,13 +270,13 @@
               },
               {
                 "glyph" : 1331,
-                "width" : 9216,
+                "width" : 8192,
                 "is-cluster-start" : true,
                 "log-cluster" : 2
               },
               {
                 "glyph" : 1344,
-                "width" : 11264,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               }
@@ -391,7 +391,7 @@
             "glyphs" : [
               {
                 "glyph" : 1062,
-                "width" : 17408,
+                "width" : 19456,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               }

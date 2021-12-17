@@ -303,14 +303,14 @@
               },
               {
                 "glyph" : 1331,
-                "width" : 18104,
+                "width" : 17080,
                 "x-offset" : 4444,
                 "is-cluster-start" : true,
                 "log-cluster" : 2
               },
               {
                 "glyph" : 1344,
-                "width" : 20152,
+                "width" : 19128,
                 "x-offset" : 4444,
                 "is-cluster-start" : true,
                 "log-cluster" : 0

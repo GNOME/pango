@@ -2,36 +2,28 @@
   "context" : {
     "font" : "serif 12",
     "language" : "en-us",
-    "base-gravity" : "south",
-    "gravity-hint" : "natural",
-    "base-dir" : "weak-ltr",
+    "base-gravity" : "east",
+    "gravity-hint" : "strong",
+    "base-dir" : "ltr",
     "round-glyph-positions" : true,
     "transform" : [
+      -1.8369701987210297e-16,
+      -1,
       1,
-      0,
-      0,
-      1,
+      -1.8369701987210297e-16,
       0,
       0
     ]
   },
-  "comment" : "A case with a single word made up of two items,\nexpected to produce a single overlong line.",
-  "text" : "Bratwurst",
-  "attributes" : [
-    {
-      "start" : 4,
-      "type" : "style",
-      "value" : "italic"
-    }
-  ],
-  "font" : "Cantarell Bold 32",
-  "width" : 87040,
+  "text" : "ABC日本語ABC",
+  "font" : "Noto Sans CJK JP 24",
+  "wrap" : "word-char",
   "output" : {
     "is-wrapped" : false,
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
-    "width" : 200704,
-    "height" : 200704,
+    "width" : 294912,
+    "height" : 294912,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -53,24 +45,31 @@
         "break-inserts-hyphen" : true
       },
       {
+        "line-break" : true,
         "char-break" : true,
         "cursor-position" : true,
-        "break-inserts-hyphen" : true
+        "word-boundary" : true
       },
       {
+        "line-break" : true,
         "char-break" : true,
         "cursor-position" : true,
-        "break-inserts-hyphen" : true
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
       },
       {
+        "line-break" : true,
         "char-break" : true,
         "cursor-position" : true,
-        "break-inserts-hyphen" : true
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
       },
       {
+        "line-break" : true,
         "char-break" : true,
         "cursor-position" : true,
-        "break-inserts-hyphen" : true
+        "backspace-deletes-character" : true,
+        "word-boundary" : true
       },
       {
         "char-break" : true,
@@ -97,24 +96,21 @@
     "lines" : [
       {
         "start-index" : 0,
-        "length" : 9,
+        "length" : 15,
         "paragraph-start" : true,
         "direction" : "ltr",
         "runs" : [
           {
             "offset" : 0,
-            "length" : 4,
-            "text" : "Brat",
+            "length" : 3,
+            "text" : "ABC",
             "bidi-level" : 0,
-            "gravity" : "south",
+            "gravity" : "east",
             "language" : "en-us",
             "script" : "latin",
             "font" : {
-              "description" : "Cantarell Bold 32",
-              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-              "variations" : {
-                "wght" : 8374
-              },
+              "description" : "Noto Sans CJK JP Rotated-Left 24",
+              "checksum" : "3b50ae56f1fb5637c82d785945531f718f40b78a26bea3d137e58808bd774399",
               "matrix" : [
                 1,
                 -0,
@@ -124,51 +120,48 @@
                 0
               ]
             },
-            "flags" : 0,
+            "flags" : 1,
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
             "glyphs" : [
               {
-                "glyph" : 29,
-                "width" : 28672,
+                "glyph" : 1,
+                "width" : 32768,
+                "x-offset" : 28835,
+                "y-offset" : 9945,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               },
               {
-                "glyph" : 409,
-                "width" : 17408,
+                "glyph" : 2,
+                "width" : 32768,
+                "x-offset" : 28835,
+                "y-offset" : 10764,
                 "is-cluster-start" : true,
                 "log-cluster" : 1
               },
               {
-                "glyph" : 244,
-                "width" : 23552,
+                "glyph" : 3,
+                "width" : 32768,
+                "x-offset" : 28835,
+                "y-offset" : 10452,
                 "is-cluster-start" : true,
                 "log-cluster" : 2
-              },
-              {
-                "glyph" : 430,
-                "width" : 16384,
-                "is-cluster-start" : true,
-                "log-cluster" : 3
               }
             ]
           },
           {
-            "offset" : 4,
-            "length" : 5,
-            "text" : "wurst",
+            "offset" : 3,
+            "length" : 9,
+            "text" : "日本語",
             "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "latin",
+            "gravity" : "east",
+            "language" : "xx",
+            "script" : "han",
             "font" : {
-              "description" : "Cantarell Bold 32",
-              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-              "variations" : {
-                "wght" : 8374
-              },
+              "description" : "Noto Sans CJK JP Rotated-Left 24",
+              "checksum" : "3b50ae56f1fb5637c82d785945531f718f40b78a26bea3d137e58808bd774399",
               "matrix" : [
                 1,
                 -0,
@@ -178,40 +171,85 @@
                 0
               ]
             },
-            "flags" : 0,
+            "flags" : 1,
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
             "glyphs" : [
               {
-                "glyph" : 467,
-                "width" : 35840,
+                "glyph" : 4,
+                "width" : 32768,
+                "x-offset" : 28835,
+                "y-offset" : 16383,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               },
               {
-                "glyph" : 438,
-                "width" : 24576,
-                "is-cluster-start" : true,
-                "log-cluster" : 1
-              },
-              {
-                "glyph" : 409,
-                "width" : 17408,
-                "is-cluster-start" : true,
-                "log-cluster" : 2
-              },
-              {
-                "glyph" : 417,
-                "width" : 20480,
+                "glyph" : 5,
+                "width" : 32768,
+                "x-offset" : 28835,
+                "y-offset" : 16383,
                 "is-cluster-start" : true,
                 "log-cluster" : 3
               },
               {
-                "glyph" : 430,
-                "width" : 16384,
+                "glyph" : 7,
+                "width" : 32768,
+                "x-offset" : 28835,
+                "y-offset" : 16383,
                 "is-cluster-start" : true,
-                "log-cluster" : 4
+                "log-cluster" : 6
+              }
+            ]
+          },
+          {
+            "offset" : 12,
+            "length" : 3,
+            "text" : "ABC",
+            "bidi-level" : 0,
+            "gravity" : "east",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "Noto Sans CJK JP Rotated-Left 24",
+              "checksum" : "3b50ae56f1fb5637c82d785945531f718f40b78a26bea3d137e58808bd774399",
+              "matrix" : [
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
+              ]
+            },
+            "flags" : 1,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
+              {
+                "glyph" : 1,
+                "width" : 32768,
+                "x-offset" : 28835,
+                "y-offset" : 9945,
+                "is-cluster-start" : true,
+                "log-cluster" : 0
+              },
+              {
+                "glyph" : 2,
+                "width" : 32768,
+                "x-offset" : 28835,
+                "y-offset" : 10764,
+                "is-cluster-start" : true,
+                "log-cluster" : 1
+              },
+              {
+                "glyph" : 3,
+                "width" : 32768,
+                "x-offset" : 28835,
+                "y-offset" : 10452,
+                "is-cluster-start" : true,
+                "log-cluster" : 2
               }
             ]
           }
