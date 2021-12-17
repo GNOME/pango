@@ -159,31 +159,31 @@ if cairo_dep.found()
   )
 endif
 
-pangoot_toml = configure_file(input: 'pangoot.toml.in',
-                              output: 'pangoot.toml',
-                              configuration: doc_conf)
-
-custom_target('pangoot-doc',
-  input: pangoot_gir[0],
-  output: 'PangoOT',
-  command: [
-    gidocgen,
-    'generate',
-    '--quiet',
-    '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
-    '--config', pangoot_toml,
-    '--output-dir=@OUTPUT@',
-    '--no-namespace-dir',
-    '--content-dir=@0@'.format(meson.current_source_dir()),
-    '@INPUT@',
-  ],
-  depend_files: [ pangoot_toml, 'pango-name.png' ],
-  build_by_default: true,
-  install: true,
-  install_dir: docs_dir,
-)
-
 if fontconfig_dep.found()
+  pangoot_toml = configure_file(input: 'pangoot.toml.in',
+                                output: 'pangoot.toml',
+                                configuration: doc_conf)
+
+  custom_target('pangoot-doc',
+    input: pangoot_gir[0],
+    output: 'PangoOT',
+    command: [
+      gidocgen,
+      'generate',
+      '--quiet',
+      '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
+      '--config', pangoot_toml,
+      '--output-dir=@OUTPUT@',
+      '--no-namespace-dir',
+      '--content-dir=@0@'.format(meson.current_source_dir()),
+      '@INPUT@',
+    ],
+    depend_files: [ pangoot_toml, 'pango-name.png' ],
+    build_by_default: true,
+    install: true,
+    install_dir: docs_dir,
+  )
+
   pangofc_toml = configure_file(input: 'pangofc.toml.in',
                                 output: 'pangofc.toml',
                                 configuration: doc_conf)
