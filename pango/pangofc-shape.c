@@ -207,11 +207,16 @@ pango_hb_font_get_glyph_h_advance (hb_font_t      *font,
                                    void           *user_data G_GNUC_UNUSED)
 {
   PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
-  PangoRectangle logical;
 
-  pango_font_get_glyph_extents (context->font, glyph, NULL, &logical);
+  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+    {
+      PangoRectangle logical;
 
-  return logical.width;
+      pango_font_get_glyph_extents (context->font, glyph, NULL, &logical);
+      return logical.width;
+    }
+
+  return hb_font_get_glyph_h_advance (context->parent, glyph);
 }
 
 static hb_position_t
@@ -221,11 +226,16 @@ pango_hb_font_get_glyph_v_advance (hb_font_t      *font,
                                    void           *user_data G_GNUC_UNUSED)
 {
   PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
-  PangoRectangle logical;
 
-  pango_font_get_glyph_extents (context->font, glyph, NULL, &logical);
+  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+    {
+      PangoRectangle logical;
 
-  return logical.height;
+      pango_font_get_glyph_extents (context->font, glyph, NULL, &logical);
+      return logical.height;
+    }
+
+  return hb_font_get_glyph_v_advance (context->parent, glyph);
 }
 
 static hb_bool_t
@@ -236,16 +246,22 @@ pango_hb_font_get_glyph_extents (hb_font_t          *font,
                                  void               *user_data G_GNUC_UNUSED)
 {
   PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
-  PangoRectangle ink;
 
-  pango_font_get_glyph_extents (context->font, glyph, &ink, NULL);
+  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+    {
+      PangoRectangle ink;
 
-  extents->x_bearing = ink.x;
-  extents->y_bearing = ink.y;
-  extents->width     = ink.width;
-  extents->height    = ink.height;
+      pango_font_get_glyph_extents (context->font, glyph, &ink, NULL);
 
-  return TRUE;
+      extents->x_bearing = ink.x;
+      extents->y_bearing = ink.y;
+      extents->width     = ink.width;
+      extents->height    = ink.height;
+
+      return TRUE;
+    }
+
+  return hb_font_get_glyph_extents (context->parent, glyph, extents);
 }
 
 static hb_font_t *
