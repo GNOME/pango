@@ -137,12 +137,24 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
   if (hb_font_get_nominal_glyph (context->parent, unicode, glyph))
     return TRUE;
 
-  /* HarfBuzz knows how to synthesize spaces, so never replace them
-   * with unknown glyphs, but we do need to tell HarfBuzz that the
-   * font does not have a glyph.
+  /* HarfBuzz knows how to synthesize other spaces from 0x20, so never
+   * replace them with unknown glyphs, just tell HarfBuzz that we don't
+   * have a glyph.
+   *
+   * For 0x20, on the other hand, we need to pretend that we have a glyph
+   * and rely on our glyph extents code to provide a reasonable width for
+   * PANGO_GET_UNKNOWN_WIDTH (0x20).
    */
   if (g_unichar_type (unicode) == G_UNICODE_SPACE_SEPARATOR)
-    return FALSE;
+    {
+      if (unicode == 0x20)
+        {
+          *glyph = PANGO_GET_UNKNOWN_GLYPH (0x20);
+          return TRUE;
+        }
+
+      return FALSE;
+    }
 
   *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
 
