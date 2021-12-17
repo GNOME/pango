@@ -78,6 +78,7 @@ gboolean opt_bg_set = FALSE;
 PangoColor opt_bg_color = {65535, 65535, 65535};
 guint16 opt_bg_alpha = 65535;
 gboolean opt_serialized = FALSE;
+const char *opt_serialized_output;
 const char *file_arg;
 
 /* Text (or markup) to render */
@@ -119,7 +120,7 @@ make_layout(PangoContext *context,
       if (!layout)
         fail ("%s\n", error->message);
       g_bytes_unref (bytes);
-      return layout;
+      goto out;
     }
 
   layout = pango_layout_new (context);
@@ -190,6 +191,18 @@ make_layout(PangoContext *context,
   pango_layout_set_font_description (layout, font_description);
 
   pango_font_description_free (font_description);
+
+out:
+  if (opt_serialized_output)
+    {
+      GError *error = NULL;
+
+      if (!pango_layout_write_to_file (layout,
+                                       PANGO_LAYOUT_SERIALIZE_CONTEXT|PANGO_LAYOUT_SERIALIZE_OUTPUT,
+                                       opt_serialized_output,
+                                       &error))
+        fail ("%s\n", error->message);
+    }
 
   return layout;
 }
@@ -888,7 +901,9 @@ parse_options (int argc, char *argv[])
     {"wrap",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_wrap,
      "Text wrapping mode (needs a width to be set)",   "word/char/word-char"},
     {"serialized",       0, 0, G_OPTION_ARG_NONE,                        &opt_serialized,
-     "Create layout from a serialized file",                            NULL},
+     "Create layout from a serialized file",                            "FILE"},
+    {"serialize-to",     0, 0, G_OPTION_ARG_FILENAME,                  &opt_serialized_output,
+     "Serialize result to a file",                                      "FILE"},
     {NULL}
   };
   GError *error = NULL;
