@@ -373,6 +373,11 @@ do_output (PangoContext     *context,
   pango_context_set_gravity_hint (context, opt_gravity_hint);
 
   layout = make_layout (context, text, -1);
+  if (opt_serialized && supports_matrix)
+    {
+      const PangoMatrix *context_matrix = pango_context_get_matrix (pango_layout_get_context (layout));
+      matrix = context_matrix ? *context_matrix : (PangoMatrix) PANGO_MATRIX_INIT;
+    }
 
   set_transform (context, transform_cb, cb_context, cb_data, &matrix);
 
