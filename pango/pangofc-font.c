@@ -1117,8 +1117,9 @@ _pango_fc_font_get_scale_factors (PangoFont *font,
                                   double    *y_scale)
 {
   PangoFcFont *fcfont = PANGO_FC_FONT (font);
+  PangoFcFontPrivate *priv = fcfont->priv;
 
-  pango_matrix_get_font_scale_factors (&fcfont->matrix, x_scale, y_scale);
+  pango_matrix_get_font_scale_factors (pango_fc_font_key_get_matrix (priv->key), x_scale, y_scale);
 }
 
 static void
