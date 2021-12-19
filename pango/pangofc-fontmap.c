@@ -2013,7 +2013,6 @@ pango_fc_font_map_new_font (PangoFcFontMap    *fcfontmap,
   if (!fcfont)
     return NULL;
 
-  fcfont->matrix = key.matrix;
   /* In case the backend didn't set the fontmap */
   if (!fcfont->fontmap)
     g_object_set (fcfont,

@@ -2738,6 +2738,12 @@ pango_font_get_languages (PangoFont *font)
   return pclass->get_languages (font);
 }
 
+/*< private >
+ * pango_font_get_matrix:
+ * @font: a `PangoFont`
+ *
+ * Gets the matrix for the transformation from 'font space' to 'user space'.
+ */
 void
 pango_font_get_matrix (PangoFont   *font,
                        PangoMatrix *matrix)
@@ -2747,12 +2753,31 @@ pango_font_get_matrix (PangoFont   *font,
   pclass->get_matrix (font, matrix);
 }
 
+/*< private >
+ * pango_font_is_hinted:
+ * @font: a `PangoFont`
+ *
+ * Gets whether this font is hinted.
+ *
+ * Returns: %TRUE if @font is hinted
+ */
 gboolean
 pango_font_is_hinted (PangoFont *font)
 {
   return PANGO_FONT_GET_CLASS_PRIVATE (font)->is_hinted (font);
 }
 
+/*< private >
+ * pango_font_get_scale_factors:
+ * @font: a `PangoFont`
+ * @x_scale: return location for X scale
+ * @y_scale: return location for Y scale
+ *
+ * Gets the font scale factors of the ctm for this font.
+ *
+ * The ctm is the matrix set on the context that this font was
+ * loaded for.
+ */
 void
 pango_font_get_scale_factors (PangoFont *font,
                               double    *x_scale,
