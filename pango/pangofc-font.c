@@ -959,25 +959,26 @@ pango_fc_font_create_hb_font (PangoFont *font)
   if (key)
     {
       const FcPattern *pattern = pango_fc_font_key_get_pattern (key);
-      const PangoMatrix *matrix;
-      PangoMatrix matrix2;
+      const PangoMatrix *ctm;
+      PangoMatrix font_matrix;
       PangoGravity gravity;
       FcMatrix fc_matrix, *fc_matrix_val;
       double x, y;
       int i;
 
-      matrix = pango_fc_font_key_get_matrix (key);
-      pango_matrix_get_font_scale_factors (matrix, &x_scale_inv, &y_scale_inv);
+      ctm = pango_fc_font_key_get_matrix (key);
+      pango_matrix_get_font_scale_factors (ctm, &x_scale_inv, &y_scale_inv);
 
       FcMatrixInit (&fc_matrix);
       for (i = 0; FcPatternGetMatrix (pattern, FC_MATRIX, i, &fc_matrix_val) == FcResultMatch; i++)
         FcMatrixMultiply (&fc_matrix, &fc_matrix, fc_matrix_val);
 
-      matrix2.xx = fc_matrix.xx;
-      matrix2.yx = fc_matrix.yx;
-      matrix2.xy = fc_matrix.xy;
-      matrix2.yy = fc_matrix.yy;
-      pango_matrix_get_font_scale_factors (&matrix2, &x, &y);
+      font_matrix.xx = fc_matrix.xx;
+      font_matrix.yx = fc_matrix.yx;
+      font_matrix.xy = fc_matrix.xy;
+      font_matrix.yy = fc_matrix.yy;
+
+      pango_matrix_get_font_scale_factors (&font_matrix, &x, &y);
 
       x_scale_inv /= x;
       y_scale_inv /= y;
