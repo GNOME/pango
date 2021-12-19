@@ -324,3 +324,44 @@ pango_analysis_collect_features (const PangoAnalysis *analysis,
         }
     }
 }
+
+/*< private >
+ * pango_analysis_set_size_font:
+ * @analysis: a `PangoAnalysis`
+ * @font: a `PangoFont`
+ *
+ * Sets the font to use for determining the line height.
+ *
+ * This is used when scaling fonts for emulated Small Caps,
+ * to preserve the original line height.
+ */
+void
+pango_analysis_set_size_font (PangoAnalysis *analysis,
+                              PangoFont     *font)
+{
+  PangoAnalysisPrivate *priv = (PangoAnalysisPrivate *)analysis;
+
+  if (priv->size_font)
+    g_object_unref (priv->size_font);
+  priv->size_font = font;
+  if (priv->size_font)
+    g_object_ref (priv->size_font);
+}
+
+/*< private >
+ * pango_analysis_get_size_font:
+ * @analysis: a `PangoAnalysis`
+ *
+ * Gets the font to use for determining line height.
+ *
+ * If this returns `NULL`, use analysis->font.
+ *
+ * Returns: (nullable) (transfer none): the font
+ */
+PangoFont *
+pango_analysis_get_size_font (const PangoAnalysis *analysis)
+{
+  PangoAnalysisPrivate *priv = (PangoAnalysisPrivate *)analysis;
+
+  return priv->size_font;
+}
