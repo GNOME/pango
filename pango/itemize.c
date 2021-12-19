@@ -1045,7 +1045,8 @@ collect_font_scale (PangoContext  *context,
                     GList        **stack,
                     PangoItem     *item,
                     PangoItem     *prev,
-                    double        *scale)
+                    double        *scale,
+                    gboolean      *is_small_caps)
 {
   gboolean retval = FALSE;
   GList *l;
@@ -1123,11 +1124,14 @@ collect_font_scale (PangoContext  *context,
      }
 
    *scale = 1.0;
+   *is_small_caps = TRUE;
 
    for (l = *stack; l; l = l->next)
      {
        ScaleItem *entry = l->data;
        *scale *= entry->scale;
+       if (((PangoAttrInt *)entry->attr)->value != PANGO_FONT_SCALE_SMALL_CAPS)
+         *is_small_caps = FALSE;
        retval = TRUE;
      }
 
@@ -1152,10 +1156,14 @@ collect_font_scale (PangoContext  *context,
 static void
 apply_scale_to_item (PangoContext *context,
                      PangoItem    *item,
-                     double        scale)
+                     double        scale,
+                     gboolean      is_small_caps)
 {
   PangoFontDescription *desc;
   double size;
+
+  if (is_small_caps)
+    pango_analysis_set_size_font (&item->analysis, item->analysis.font);
 
   desc = pango_font_describe (item->analysis.font);
   size = scale * pango_font_description_get_size (desc);
@@ -1182,9 +1190,10 @@ apply_font_scale (PangoContext *context,
     {
       PangoItem *item = l->data;
       double scale;
+      gboolean is_small_caps;
 
-      if (collect_font_scale (context, &stack, item, prev, &scale))
-        apply_scale_to_item (context, item, scale);
+      if (collect_font_scale (context, &stack, item, prev, &scale, &is_small_caps))
+        apply_scale_to_item (context, item, scale, is_small_caps);
 
       prev = item;
     }

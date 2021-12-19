@@ -68,6 +68,9 @@ pango_item_copy (PangoItem *item)
     ((PangoItemPrivate *)result)->char_offset = ((PangoItemPrivate *)item)->char_offset;
 
   result->analysis = item->analysis;
+  if (result->analysis.lang_engine)
+    g_object_ref (result->analysis.lang_engine);
+
   if (result->analysis.font)
     g_object_ref (result->analysis.font);
 
@@ -101,6 +104,9 @@ pango_item_free (PangoItem *item)
       g_slist_foreach (item->analysis.extra_attrs, (GFunc)pango_attribute_destroy, NULL);
       g_slist_free (item->analysis.extra_attrs);
     }
+
+  if (item->analysis.lang_engine)
+    g_object_unref (item->analysis.lang_engine);
 
   if (item->analysis.font)
     g_object_unref (item->analysis.font);
@@ -323,4 +329,45 @@ pango_analysis_collect_features (const PangoAnalysis *analysis,
             }
         }
     }
+}
+
+/*< private >
+ * pango_analysis_set_size_font:
+ * @analysis: a `PangoAnalysis`
+ * @font: a `PangoFont`
+ *
+ * Sets the font to use for determining the line height.
+ *
+ * This is used when scaling fonts for emulated Small Caps,
+ * to preserve the original line height.
+ */
+void
+pango_analysis_set_size_font (PangoAnalysis *analysis,
+                              PangoFont     *font)
+{
+  PangoAnalysisPrivate *priv = (PangoAnalysisPrivate *)analysis;
+
+  if (priv->size_font)
+    g_object_unref (priv->size_font);
+  priv->size_font = font;
+  if (priv->size_font)
+    g_object_ref (priv->size_font);
+}
+
+/*< private >
+ * pango_analysis_get_size_font:
+ * @analysis: a `PangoAnalysis`
+ *
+ * Gets the font to use for determining line height.
+ *
+ * If this returns `NULL`, use analysis->font.
+ *
+ * Returns: (nullable) (transfer none): the font
+ */
+PangoFont *
+pango_analysis_get_size_font (const PangoAnalysis *analysis)
+{
+  PangoAnalysisPrivate *priv = (PangoAnalysisPrivate *)analysis;
+
+  return priv->size_font;
 }

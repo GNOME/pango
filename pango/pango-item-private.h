@@ -38,6 +38,24 @@ G_BEGIN_DECLS
 
 #define PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET (1 << 7)
 
+typedef struct _PangoAnalysisPrivate PangoAnalysisPrivate;
+
+struct _PangoAnalysisPrivate
+{
+  gpointer reserved;
+  PangoFont *size_font;
+  PangoFont *font;
+
+  guint8 level;
+  guint8 gravity;
+  guint8 flags;
+
+  guint8 script;
+  PangoLanguage *language;
+
+  GSList *extra_attrs;
+};
+
 typedef struct _PangoItemPrivate PangoItemPrivate;
 
 #if defined(__x86_64__) && !defined(__ILP32__)
@@ -73,6 +91,10 @@ void               pango_analysis_collect_features    (const PangoAnalysis      
                                                        hb_feature_t               *features,
                                                        guint                       length,
                                                        guint                      *num_features);
+
+void               pango_analysis_set_size_font       (PangoAnalysis              *analysis,
+                                                       PangoFont                  *font);
+PangoFont *        pango_analysis_get_size_font       (const PangoAnalysis        *analysis);
 
 GList *            pango_itemize_with_font            (PangoContext               *context,
                                                        PangoDirection              base_dir,

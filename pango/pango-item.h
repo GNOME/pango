@@ -61,8 +61,8 @@ typedef struct _PangoItem PangoItem;
 
 /**
  * PangoAnalysis:
- * @shape_engine: unused
- * @lang_engine: unused
+ * @shape_engine: unused, reserved
+ * @lang_engine: unused, reserved
  * @font: the font for this segment.
  * @level: the bidirectional level for this segment.
  * @gravity: the glyph orientation for this segment (A `PangoGravity`).
