@@ -1,3 +1,10 @@
+Overview of changes
+===================
+* pango-view: Add --serialize-to option for easy bug reporting
+* Revert a transformation change that broke metrics for vertical text
+* Handle fonts without space glyph (such as icon fonts) better
+* Fix some corner cases of line width accounting
+
 Overview of changes in 1.50.2, 10-16-2021
 =========================================
 * Fix a problem with font fallback for Arabic
