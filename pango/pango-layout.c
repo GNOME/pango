@@ -4234,7 +4234,7 @@ retry_break:
 
               if (break_num_chars == item->num_chars ||
                   new_break_width + extra_width <= state->remaining_width ||
-                  new_break_width + extra_width <= break_width + break_extra_width)
+                  new_break_width + extra_width < break_width + break_extra_width)
                 {
                   DEBUG1 ("accept breakpoint %d: %d + %d <= %d + %d",
                           num_chars, new_break_width, extra_width, break_width, break_extra_width);
