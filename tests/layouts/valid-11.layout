@@ -60,7 +60,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
     "width" : 109568,
-    "height" : 109568,
+    "height" : 20480,
     "log-attrs" : [
       {
         "char-break" : true,
