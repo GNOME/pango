@@ -3999,7 +3999,8 @@ process_item (PangoLayout     *layout,
               PangoLayoutLine *line,
               ParaBreakState  *state,
               gboolean         force_fit,
-              gboolean         no_break_at_end)
+              gboolean         no_break_at_end,
+              gboolean         is_last_item)
 {
   PangoItem *item = state->items->data;
   gboolean shape_set = FALSE;
@@ -4214,9 +4215,10 @@ retry_break:
               new_break_width = pango_glyph_string_get_width (glyphs) + tab_width_change (state);
 
               if (num_chars > 0 &&
+                  (item != new_item || !is_last_item) && /* We don't collapse space at the very end */
                   layout->log_attrs[state->start_offset + num_chars - 1].is_white)
                 extra_width = - state->log_widths[state->log_widths_offset + num_chars - 1];
-              else if (item == new_item &&
+              else if (item == new_item && !is_last_item &&
                        break_needs_hyphen (layout, state, num_chars))
                 extra_width = state->hyphen_width;
               else
@@ -4232,7 +4234,7 @@ retry_break:
 
               if (break_num_chars == item->num_chars ||
                   new_break_width + extra_width <= state->remaining_width ||
-                  new_break_width + extra_width <= break_width + break_extra_width)
+                  new_break_width + extra_width < break_width + break_extra_width)
                 {
                   DEBUG1 ("accept breakpoint %d: %d + %d <= %d + %d",
                           num_chars, new_break_width, extra_width, break_width, break_extra_width);
@@ -4486,18 +4488,20 @@ process_line (PangoLayout    *layout,
       int old_num_chars;
       int old_remaining_width;
       gboolean first_item_in_line;
+      gboolean last_item_in_line;
 
       old_num_chars = item->num_chars;
       old_remaining_width = state->remaining_width;
-      first_item_in_line = line->runs != NULL;
+      first_item_in_line = line->runs == NULL;
+      last_item_in_line = state->items->next == NULL;
 
-      result = process_item (layout, line, state, !have_break, FALSE);
+      result = process_item (layout, line, state, !have_break, FALSE, last_item_in_line);
 
       switch (result)
         {
         case BREAK_ALL_FIT:
           if (layout->text[item->offset] != '\t' &&
-              can_break_in (layout, state->start_offset, old_num_chars, first_item_in_line))
+              can_break_in (layout, state->start_offset, old_num_chars, !first_item_in_line))
             {
               have_break = TRUE;
               break_remaining_width = old_remaining_width;
@@ -4541,12 +4545,13 @@ process_line (PangoLayout    *layout,
 
           state->start_offset = break_start_offset;
           state->remaining_width = break_remaining_width;
+          last_item_in_line = state->items->next == NULL;
 
           /* Reshape run to break */
           item = state->items->data;
 
           old_num_chars = item->num_chars;
-          result = process_item (layout, line, state, TRUE, TRUE);
+          result = process_item (layout, line, state, TRUE, TRUE, last_item_in_line);
           g_assert (result == BREAK_SOME_FIT || result == BREAK_EMPTY_FIT);
 
           state->start_offset += old_num_chars - item->num_chars;
@@ -4557,8 +4562,7 @@ process_line (PangoLayout    *layout,
         case BREAK_LINE_SEPARATOR:
           state->items = g_list_delete_link (state->items, state->items);
           state->start_offset += old_num_chars;
-          /* A line-separate is just a forced break.  Set wrapped, so we do
-           * justification */
+          /* A line-separate is just a forced break.  Set wrapped, so we do justification */
           wrapped = TRUE;
           goto done;
 

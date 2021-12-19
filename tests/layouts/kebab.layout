@@ -24,7 +24,7 @@
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
     "width" : 126976,
-    "height" : 126976,
+    "height" : 106496,
     "log-attrs" : [
       {
         "char-break" : true,

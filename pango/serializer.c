@@ -742,7 +742,7 @@ add_output (GtkJsonPrinter *printer,
 
   pango_layout_get_size (layout, &width, &height);
   gtk_json_printer_add_integer (printer, "width", width);
-  gtk_json_printer_add_integer (printer, "height", width);
+  gtk_json_printer_add_integer (printer, "height", height);
 
   add_log_attrs (printer, layout);
   gtk_json_printer_start_array (printer, "lines");
