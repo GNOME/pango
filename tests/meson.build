@@ -123,6 +123,7 @@ installed_test_layouts_data = [
   'layouts/tab-assert.layout',
   'layouts/arabic-format.layout',
   'layouts/no-space.layout',
+  'layouts/aaa.layout',
 ]
 
 test_markups_data = [
