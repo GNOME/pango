@@ -28,6 +28,7 @@
 #include "pango-layout.h"
 #include "pango-impl-utils.h"
 
+#include <math.h>
 #include <hb-ot.h>
 
 enum {
@@ -939,6 +940,8 @@ parse_variations (const char            *variations,
     }
 }
 
+#define DEG_TO_RAD(x) ((x) / 180.f * G_PI)
+
 static hb_font_t *
 pango_fc_font_create_hb_font (PangoFont *font)
 {
@@ -950,10 +953,12 @@ pango_fc_font_create_hb_font (PangoFont *font)
   double x_scale, y_scale;
   double pixel_size;
   double point_size;
+  double slant;
 
   x_scale_inv = y_scale_inv = 1.0;
   pixel_size = 1.0;
   point_size = 1.0;
+  slant = 0.0;
 
   key = _pango_fc_font_get_font_key (fc_font);
   if (key)
@@ -963,7 +968,7 @@ pango_fc_font_create_hb_font (PangoFont *font)
       PangoMatrix font_matrix;
       PangoGravity gravity;
       FcMatrix fc_matrix, *fc_matrix_val;
-      double x, y;
+      double sx, sy, x, y, a, dx, dy;
       int i;
 
       ctm = pango_fc_font_key_get_matrix (key);
@@ -974,14 +979,18 @@ pango_fc_font_create_hb_font (PangoFont *font)
         FcMatrixMultiply (&fc_matrix, &fc_matrix, fc_matrix_val);
 
       font_matrix.xx = fc_matrix.xx;
-      font_matrix.yx = fc_matrix.yx;
       font_matrix.xy = fc_matrix.xy;
+      font_matrix.yx = fc_matrix.yx;
       font_matrix.yy = fc_matrix.yy;
+      font_matrix.x0 = 0;
+      font_matrix.y0 = 0;
 
-      pango_matrix_get_font_scale_factors (&font_matrix, &x, &y);
+      pango_matrix_decompose (&font_matrix, &sx, &sy, &x, &y, &a, &dx, &dy);
 
       x_scale_inv /= x;
       y_scale_inv /= y;
+
+      slant = sy;
 
       gravity = pango_fc_font_key_get_gravity (key);
       if (PANGO_GRAVITY_IS_IMPROPER (gravity))
@@ -1002,6 +1011,8 @@ pango_fc_font_create_hb_font (PangoFont *font)
                      pixel_size * PANGO_SCALE * x_scale,
                      pixel_size * PANGO_SCALE * y_scale);
   hb_font_set_ptem (hb_font, point_size);
+
+  hb_font_set_synthetic_slant (hb_font, slant);
 
   if (key)
     {
