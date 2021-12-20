@@ -262,6 +262,92 @@ pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
     *yscale = minor;
 }
 
+#define DEG_TO_RAD(x) ((x) / 180. * G_PI)
+#define RAD_TO_DEG(x) ((x) * 180. / G_PI)
+
+/**
+ * pango_matrix_decompose:
+ * @matrix: a `PangoMatrix`
+ * @skew_x: (out): Skew ratio in the X direction
+ * @skew_y: (out): Skew ratio in the Y direction
+ * @scale_x: (out): Scale factor in the X direction
+ * @scale_y: (out): Scale factor in the Y direction
+ * @angle: (out): Rotation angle in radians
+ * @dx: (out): Translation in the X direction
+ * @dy: (out): Translation in the Y direction
+ *
+ * Decompose a matrix into shear, scale, rotation and translation.
+ *
+ * Since: 1.50
+ */
+void
+pango_matrix_decompose (const PangoMatrix *matrix,
+                        double            *skew_x,
+                        double            *skew_y,
+                        double            *scale_x,
+                        double            *scale_y,
+                        double            *angle,
+                        double            *dx,
+                        double            *dy)
+{
+  PangoMatrix m = matrix ? *matrix : (PangoMatrix) PANGO_MATRIX_INIT;
+  double a = m.xx;
+  double b = m.xy;
+  double c = m.yx;
+  double d = m.yy;
+  double e = m.x0;
+  double f = m.y0;
+
+  *dx = e;
+  *dy = f;
+
+#define sign(x) ((x) < 0 ? -1 : 1)
+
+  double det = a*d - b*c;
+
+  if (det != 0)
+    {
+      /* prefer a decomposition without rotation */
+      if (b == 0)
+        goto ab;
+      else
+        goto cd;
+    }
+
+  if (a != 0 || b != 0)
+    {
+ab:
+      double r = sqrt (a*a + b*b);
+
+      *angle = sign (b) * acos (a / r);
+      *scale_x = r;
+      *scale_y = det / r;
+      *skew_x = (a*c + b*d) / (r*r);
+      *skew_y = 0;
+    }
+  else if (c != 0 || d != 0)
+    {
+cd:
+      double s = sqrt (c*c + d*d);
+
+      *angle = G_PI/2 - sign (d) * acos (-c / s);
+      *scale_x = det / s;
+      *scale_y = s;
+      *skew_x = 0;
+      *skew_y = (a*c + b*d) / (s*s);
+    }
+  else
+    {
+      *angle = 0;
+      *scale_x = 0;
+      *scale_y = 0;
+      *skew_x = 0;
+      *skew_y = 0;
+    }
+
+#undef sign
+}
+
 /**
  * pango_matrix_transform_distance:
  * @matrix: (nullable): a `PangoMatrix`
