@@ -20,6 +20,7 @@
  */
 
 #include <glib.h>
+#include <math.h>
 #include <pango/pango.h>
 
 #define matrix_equal(m1, m2) \
@@ -185,6 +186,27 @@ test_matrix_transform_pixel_rect (void)
   g_assert_cmpfloat_with_epsilon (rect.height, 2, 0.1);
 }
 
+#define DEG_TO_RAD(x) ((x) / 180. * G_PI)
+
+static void
+test_matrix_decompose (void)
+{
+  PangoMatrix m;
+  double skew_x, skew_y, scale_x, scale_y, angle, dx, dy;
+
+  m = (PangoMatrix) { 1, 0, tan (DEG_TO_RAD (20)), 1, 0, 0 };
+
+  pango_matrix_decompose (&m, &skew_x, &skew_y, &scale_x, &scale_y, &angle, &dx, &dy);
+
+  g_assert_cmpfloat (skew_x, ==, 20);
+  g_assert_cmpfloat (skew_y, ==, 0);
+  g_assert_cmpfloat (scale_x, ==, 1);
+  g_assert_cmpfloat (scale_y, ==, 1);
+  g_assert_cmpfloat (angle, ==, 0);
+  g_assert_cmpfloat (dx, ==, 0);
+  g_assert_cmpfloat (dy, ==, 0);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -199,6 +221,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/matrix/transform-distance", test_matrix_transform_distance);
   g_test_add_func ("/matrix/transform-rect", test_matrix_transform_rect);
   g_test_add_func ("/matrix/transform-pixel-rect", test_matrix_transform_pixel_rect);
+  g_test_add_func ("/matrix/decompose", test_matrix_decompose);
 
   return g_test_run ();
 }
