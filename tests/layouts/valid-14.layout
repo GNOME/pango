@@ -235,7 +235,7 @@
               },
               {
                 "glyph" : 1058,
-                "width" : 6144,
+                "width" : 14336,
                 "log-cluster" : 0
               }
             ]
@@ -267,7 +267,7 @@
             "glyphs" : [
               {
                 "glyph" : 268435488,
-                "width" : 15360,
+                "width" : 7168,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               }
