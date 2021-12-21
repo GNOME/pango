@@ -77,6 +77,7 @@ static void                 _pango_fc_font_get_scale_factors (PangoFont     *fon
                                                               double        *y_scale);
 static void                 pango_fc_font_get_matrix      (PangoFont        *font,
                                                            PangoMatrix      *matrix);
+static int                  pango_fc_font_get_absolute_size (PangoFont        *font);
 
 #define PANGO_FC_FONT_LOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->lock_face (font))
 #define PANGO_FC_FONT_UNLOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->unlock_face (font))
@@ -112,6 +113,7 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   pclass->is_hinted = _pango_fc_font_is_hinted;
   pclass->get_scale_factors = _pango_fc_font_get_scale_factors;
   pclass->get_matrix = pango_fc_font_get_matrix;
+  pclass->get_absolute_size = pango_fc_font_get_absolute_size;
 
   /**
    * PangoFcFont:pattern:
@@ -298,6 +300,18 @@ pango_fc_font_describe_absolute (PangoFont *font)
     pango_font_description_set_absolute_size (desc, size * PANGO_SCALE);
 
   return desc;
+}
+
+static int
+pango_fc_font_get_absolute_size (PangoFont *font)
+{
+  PangoFcFont *fcfont = (PangoFcFont *)font;
+  double size;
+
+  if (FcPatternGetDouble (fcfont->font_pattern, FC_PIXEL_SIZE, 0, &size) == FcResultMatch)
+    return (int) (size * PANGO_SCALE);
+
+  return 0;
 }
 
 static PangoCoverage *
