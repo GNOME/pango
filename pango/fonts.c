@@ -1761,6 +1761,19 @@ pango_font_default_get_matrix (PangoFont   *font,
   *matrix = (PangoMatrix) PANGO_MATRIX_INIT;
 }
 
+static int
+pango_font_default_get_absolute_size (PangoFont *font)
+{
+  PangoFontDescription *desc;
+  int size;
+
+  desc = pango_font_describe_with_absolute_size (font);
+  size = pango_font_description_get_size (desc);
+  pango_font_description_free (desc);
+
+  return size;
+}
+
 static void
 pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
 {
@@ -1777,6 +1790,7 @@ pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
   pclass->has_char = pango_font_default_has_char;
   pclass->get_face = pango_font_default_get_face;
   pclass->get_matrix = pango_font_default_get_matrix;
+  pclass->get_absolute_size = pango_font_default_get_absolute_size;
 }
 
 static void

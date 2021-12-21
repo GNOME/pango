@@ -47,6 +47,7 @@ typedef struct {
   PangoFontFace *  (* get_face) (PangoFont *font);
   void             (* get_matrix) (PangoFont   *font,
                                    PangoMatrix *matrix);
+  int              (* get_absolute_size) (PangoFont *font);
 } PangoFontClassPrivate;
 
 gboolean pango_font_is_hinted         (PangoFont *font);
@@ -55,7 +56,12 @@ void     pango_font_get_scale_factors (PangoFont *font,
                                        double    *y_scale);
 void     pango_font_get_matrix        (PangoFont   *font,
                                        PangoMatrix *matrix);
-
+static inline int pango_font_get_absolute_size (PangoFont *font)
+{
+  GTypeClass *klass = (GTypeClass *) PANGO_FONT_GET_CLASS (font);
+  PangoFontClassPrivate *priv = g_type_class_get_private (klass, PANGO_TYPE_FONT);
+  return priv->get_absolute_size (font);
+}
 
 G_END_DECLS
 
