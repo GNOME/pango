@@ -671,50 +671,15 @@ _pango_cairo_font_private_is_metrics_hinted (PangoCairoFontPrivate *cf_priv)
   return cf_priv->is_hinted;
 }
 
+
 static void
 get_space_extents (PangoCairoFontPrivate *cf_priv,
                    PangoRectangle        *ink_rect,
                    PangoRectangle        *logical_rect)
 {
-  cairo_scaled_font_t *scaled_font;
-  const char hexdigits[] = "0123456789ABCDEF";
-  char c[2] = {0, 0};
-  int i;
-  double hex_width;
-  int width;
-  int n_chars;
+  /* See https://docs.microsoft.com/en-us/typography/develop/character-design-standards/whitespace */
 
-  /* we don't render missing spaces as hex boxes,
-   * so come up with some width to use. For lack
-   * of anything better, use average hex digit width.
-   */
-
-  scaled_font = _pango_cairo_font_private_get_scaled_font (cf_priv);
-  hex_width = 0;
-  n_chars = 0;
-  for (i = 0 ; i < 16 ; i++)
-    {
-      cairo_text_extents_t extents;
-
-      c[0] = hexdigits[i];
-      cairo_scaled_font_text_extents (scaled_font, c, &extents);
-      if (extents.width > 0)
-        {
-          hex_width += extents.width;
-          n_chars++;
-        }
-    }
-
-  if (n_chars == 0)
-    {
-      cairo_font_extents_t extents;
-
-      cairo_scaled_font_extents (scaled_font, &extents);
-      hex_width += extents.max_x_advance;
-      n_chars++;
-    }
-
-  width = pango_units_from_double (hex_width / n_chars);
+  int width = pango_font_get_absolute_size (PANGO_FONT (cf_priv->cfont)) / 2;
 
   if (ink_rect)
     {
@@ -934,7 +899,7 @@ _pango_cairo_font_private_get_glyph_extents (PangoCairoFontPrivate *cf_priv,
     }
   else if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
     {
-      _pango_cairo_font_private_get_glyph_extents_missing(cf_priv, glyph, ink_rect, logical_rect);
+      _pango_cairo_font_private_get_glyph_extents_missing (cf_priv, glyph, ink_rect, logical_rect);
       return;
     }
 
