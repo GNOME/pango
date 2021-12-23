@@ -21,7 +21,7 @@
     "is-wrapped" : false,
     "is-ellipsized" : false,
     "unknown-glyphs" : 4,
-    "width" : 130048,
+    "width" : 89088,
     "height" : 45056,
     "log-attrs" : [
       {
@@ -105,13 +105,13 @@
             "glyphs" : [
               {
                 "glyph" : 268435488,
-                "width" : 21504,
+                "width" : 11264,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               },
               {
                 "glyph" : 268435488,
-                "width" : 21504,
+                "width" : 11264,
                 "is-cluster-start" : true,
                 "log-cluster" : 1
               },
@@ -123,13 +123,13 @@
               },
               {
                 "glyph" : 268435488,
-                "width" : 21504,
+                "width" : 11264,
                 "is-cluster-start" : true,
                 "log-cluster" : 5
               },
               {
                 "glyph" : 268435488,
-                "width" : 21504,
+                "width" : 11264,
                 "is-cluster-start" : true,
                 "log-cluster" : 6
               }

@@ -679,7 +679,7 @@ get_space_extents (PangoCairoFontPrivate *cf_priv,
 {
   /* See https://docs.microsoft.com/en-us/typography/develop/character-design-standards/whitespace */
 
-  int width = pango_font_get_absolute_size (PANGO_FONT (cf_priv->cfont)) / 2;
+  int width = pango_font_get_absolute_size (PANGO_FONT (cf_priv->cfont)) / 4;
 
   if (ink_rect)
     {
