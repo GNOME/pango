@@ -27,7 +27,7 @@
 
 #include "pango-types.h"
 #include "pango-font-private.h"
-#include "pango-fontset-simple.h"
+#include "pango-fontset-simple-private.h"
 #include "pango-impl-utils.h"
 
 /* {{{ PangoFontset implementation */
@@ -36,19 +36,6 @@
 #define PANGO_IS_FONTSET_SIMPLE_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_FONTSET_SIMPLE))
 #define PANGO_FONTSET_SIMPLE_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONTSET_SIMPLE, PangoFontsetSimpleClass))
 
-
-struct _PangoFontsetSimple
-{
-  PangoFontset parent_instance;
-
-  GPtrArray *fonts;
-  PangoLanguage *language;
-};
-
-struct _PangoFontsetSimpleClass
-{
-  PangoFontsetClass parent_class;
-};
 
 G_DEFINE_TYPE (PangoFontsetSimple, pango_fontset_simple, PANGO_TYPE_FONTSET);
 
