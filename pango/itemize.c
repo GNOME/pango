@@ -772,7 +772,8 @@ get_font (ItemizeState  *state,
   GetFontInfo info;
 
   /* We'd need a separate cache when fallback is disabled, but since lookup
-   * with fallback disabled is faster anyways, we just skip caching */
+   * with fallback disabled is faster anyways, we just skip caching
+   */
   if (state->enable_fallback && font_cache_get (state->cache, wc, font, position))
     return TRUE;
 
@@ -783,8 +784,9 @@ get_font (ItemizeState  *state,
 
   if (state->enable_fallback)
     pango_fontset_foreach (state->current_fonts, get_font_foreach, &info);
-  else
-    get_font_foreach (NULL, get_base_font (state), &info);
+
+  if (!info.font)
+    info.font = get_base_font (state);
 
   *font = info.font;
   *position = info.position;
