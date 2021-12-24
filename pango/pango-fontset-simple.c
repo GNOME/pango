@@ -42,7 +42,6 @@ struct _PangoFontsetSimple
   PangoFontset parent_instance;
 
   GPtrArray *fonts;
-  GPtrArray *coverages;
   PangoLanguage *language;
 };
 
@@ -56,8 +55,7 @@ G_DEFINE_TYPE (PangoFontsetSimple, pango_fontset_simple, PANGO_TYPE_FONTSET);
 static void
 pango_fontset_simple_init (PangoFontsetSimple *fontset)
 {
-  fontset->fonts = g_ptr_array_new ();
-  fontset->coverages = g_ptr_array_new ();
+  fontset->fonts = g_ptr_array_new_with_free_func (g_object_unref);
   fontset->language = NULL;
 }
 
@@ -65,82 +63,47 @@ static void
 pango_fontset_simple_finalize (GObject *object)
 {
   PangoFontsetSimple *fontset = PANGO_FONTSET_SIMPLE (object);
-  PangoCoverage *coverage;
-  unsigned int i;
-
-  for (i = 0; i < fontset->fonts->len; i++)
-    g_object_unref (g_ptr_array_index(fontset->fonts, i));
 
   g_ptr_array_free (fontset->fonts, TRUE);
-
-  for (i = 0; i < fontset->coverages->len; i++)
-    {
-      coverage = g_ptr_array_index (fontset->coverages, i);
-      if (coverage)
-        pango_coverage_unref (coverage);
-    }
-
-  g_ptr_array_free (fontset->coverages, TRUE);
 
   G_OBJECT_CLASS (pango_fontset_simple_parent_class)->finalize (object);
 }
 
 static PangoFont *
-pango_fontset_simple_get_font (PangoFontset  *fontset,
-                               guint          wc)
+pango_fontset_simple_get_font (PangoFontset *fontset,
+                               guint         wc)
 {
   PangoFontsetSimple *simple = PANGO_FONTSET_SIMPLE (fontset);
-  PangoCoverageLevel best_level = PANGO_COVERAGE_NONE;
-  PangoCoverageLevel level;
-  PangoFont *font;
-  PangoCoverage *coverage;
-  int result = -1;
   unsigned int i;
 
   for (i = 0; i < simple->fonts->len; i++)
     {
-      coverage = g_ptr_array_index (simple->coverages, i);
+      PangoFont *font = g_ptr_array_index (simple->fonts, i);
 
-      if (coverage == NULL)
-        {
-          font = g_ptr_array_index (simple->fonts, i);
-
-          coverage = pango_font_get_coverage (font, simple->language);
-          g_ptr_array_index (simple->coverages, i) = coverage;
-        }
-
-      level = pango_coverage_get (coverage, wc);
-
-      if (result == -1 || level > best_level)
-        {
-          result = i;
-          best_level = level;
-          if (level == PANGO_COVERAGE_EXACT)
-            break;
-        }
+      if (pango_font_has_char (font, wc))
+        return g_object_ref (font);
     }
 
-  if (G_UNLIKELY (result == -1))
-    return NULL;
-
-  font = g_ptr_array_index(simple->fonts, result);
-  return g_object_ref (font);
+  return NULL;
 }
 
 static PangoFontMetrics *
-pango_fontset_simple_get_metrics (PangoFontset  *fontset)
+pango_fontset_simple_get_metrics (PangoFontset *fontset)
 {
   PangoFontsetSimple *simple = PANGO_FONTSET_SIMPLE (fontset);
 
   if (simple->fonts->len == 1)
-    return pango_font_get_metrics (PANGO_FONT (g_ptr_array_index(simple->fonts, 0)),
-                                   simple->language);
+    {
+      PangoFont *font = g_ptr_array_index (simple->fonts, 0);
+
+      return pango_font_get_metrics (font, simple->language);
+    }
 
   return PANGO_FONTSET_CLASS (pango_fontset_simple_parent_class)->get_metrics (fontset);
 }
 
 static PangoLanguage *
-pango_fontset_simple_get_language (PangoFontset  *fontset)
+pango_fontset_simple_get_language (PangoFontset *fontset)
 {
   PangoFontsetSimple *simple = PANGO_FONTSET_SIMPLE (fontset);
 
@@ -157,9 +120,9 @@ pango_fontset_simple_foreach (PangoFontset            *fontset,
 
   for (i = 0; i < simple->fonts->len; i++)
     {
-      if ((*func) (fontset,
-                   g_ptr_array_index (simple->fonts, i),
-                   data))
+      PangoFont *font = g_ptr_array_index (simple->fonts, i);
+
+      if ((*func) (fontset, font, data))
         return;
     }
 }
@@ -214,7 +177,6 @@ pango_fontset_simple_append (PangoFontsetSimple *fontset,
                              PangoFont          *font)
 {
   g_ptr_array_add (fontset->fonts, font);
-  g_ptr_array_add (fontset->coverages, NULL);
 }
 
 /**
