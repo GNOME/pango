@@ -24,6 +24,7 @@
 #include "config.h"
 
 #include "pango-fontmap.h"
+#include "pango-fontset.h"
 #include "pangocoretext-private.h"
 #include "pango-impl-utils.h"
 

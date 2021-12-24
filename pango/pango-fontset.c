@@ -27,7 +27,7 @@
 
 #include "pango-types.h"
 #include "pango-font-private.h"
-#include "pango-fontset-private.h"
+#include "pango-fontset.h"
 #include "pango-impl-utils.h"
 
 static PangoFontMetrics *pango_fontset_real_get_metrics (PangoFontset *fontset);
