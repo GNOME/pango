@@ -53,23 +53,24 @@ typedef struct _PangoFontsetClass   PangoFontsetClass;
  * @font: a font from @fontset
  * @user_data: callback data
  *
- * Callback used by pango_fontset_foreach() when enumerating
- * fonts in a fontset.
+ * Callback used when enumerating fonts in a fontset.
+ *
+ * See [method@Pango.Fontset.foreach].
  *
  * Returns: if %TRUE, stop iteration and return immediately.
  *
  * Since: 1.4
- **/
+ */
 typedef gboolean (*PangoFontsetForeachFunc) (PangoFontset  *fontset,
-					     PangoFont     *font,
-					     gpointer       user_data);
+                                             PangoFont     *font,
+                                             gpointer       user_data);
 
 /**
  * PangoFontset:
  *
  * A `PangoFontset` represents a set of `PangoFont` to use when rendering text.
  *
- * A `PAngoFontset` is the result of resolving a `PangoFontDescription`
+ * A `PangoFontset` is the result of resolving a `PangoFontDescription`
  * against a particular `PangoContext`. It has operations for finding the
  * component font for a particular Unicode character, and for finding a
  * composite set of metrics for the entire fontset.
@@ -83,12 +84,12 @@ struct _PangoFontset
  * PangoFontsetClass:
  * @parent_class: parent `GObjectClass`
  * @get_font: a function to get the font in the fontset that contains the
- * best glyph for the given Unicode character; see pango_fontset_get_font().
+ *   best glyph for the given Unicode character; see [method@Pango.Fontset.get_font]
  * @get_metrics: a function to get overall metric information for the fonts
- * in the fontset; see pango_fontset_get_metrics().
+ *   in the fontset; see [method@Pango.Fontset.get_metrics]
  * @get_language: a function to get the language of the fontset.
  * @foreach: a function to loop over the fonts in the fontset. See
- * pango_fontset_foreach().
+ *   [method@Pango.Fontset.foreach]
  *
  * The `PangoFontsetClass` structure holds the virtual functions for
  * a particular `PangoFontset` implementation.
@@ -117,45 +118,15 @@ struct _PangoFontsetClass
   void (*_pango_reserved4) (void);
 };
 
-/**
- * PangoFontsetSimple:
- *
- * `PangoFontsetSimple` is a implementation of the abstract
- * `PangoFontset` base class as an array of fonts.
- *
- * When creating a `PangoFontsetSimple`, you have to provide
- * the array of fonts that make up the fontset.
- */
-#define PANGO_TYPE_FONTSET_SIMPLE       (pango_fontset_simple_get_type ())
-#define PANGO_FONTSET_SIMPLE(object)    (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONTSET_SIMPLE, PangoFontsetSimple))
-#define PANGO_IS_FONTSET_SIMPLE(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONTSET_SIMPLE))
-
-typedef struct _PangoFontsetSimple  PangoFontsetSimple;
-typedef struct _PangoFontsetSimpleClass  PangoFontsetSimpleClass;
-
-
 PANGO_AVAILABLE_IN_ALL
-GType pango_fontset_simple_get_type (void) G_GNUC_CONST;
-
+PangoFont *             pango_fontset_get_font          (PangoFontset                   *fontset,
+                                                         guint                           wc);
 PANGO_AVAILABLE_IN_ALL
-PangoFontsetSimple * pango_fontset_simple_new    (PangoLanguage      *language);
-PANGO_AVAILABLE_IN_ALL
-void                 pango_fontset_simple_append (PangoFontsetSimple *fontset,
-                                                  PangoFont          *font);
-PANGO_AVAILABLE_IN_ALL
-int                  pango_fontset_simple_size   (PangoFontsetSimple *fontset);
-
-
-PANGO_AVAILABLE_IN_ALL
-PangoFont *       pango_fontset_get_font    (PangoFontset           *fontset,
-					     guint                   wc);
-PANGO_AVAILABLE_IN_ALL
-PangoFontMetrics *pango_fontset_get_metrics (PangoFontset           *fontset);
+PangoFontMetrics *      pango_fontset_get_metrics       (PangoFontset                   *fontset);
 PANGO_AVAILABLE_IN_1_4
-void              pango_fontset_foreach     (PangoFontset           *fontset,
-					     PangoFontsetForeachFunc func,
-					     gpointer                data);
-
+void                    pango_fontset_foreach           (PangoFontset                   *fontset,
+                                                         PangoFontsetForeachFunc         func,
+                                                         gpointer                        data);
 
 
 G_END_DECLS
