@@ -21,6 +21,8 @@ pango_sources = [
   'pango-gravity.c',
   'pango-item.c',
   'pango-language.c',
+  'pango-language-set.c',
+  'pango-language-set-simple.c',
   'pango-layout.c',
   'pango-markup.c',
   'pango-matrix.c',
