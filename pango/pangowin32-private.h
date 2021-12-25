@@ -54,7 +54,7 @@
 
 #include "pangowin32.h"
 #include "pango-font-private.h"
-#include "pango-fontset-private.h"
+#include "pango-fontset.h"
 #include "pango-fontmap-private.h"
 
 #define PANGO_TYPE_WIN32_FONT_MAP             (_pango_win32_font_map_get_type ())

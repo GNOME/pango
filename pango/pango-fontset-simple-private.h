@@ -1,7 +1,7 @@
 /* Pango
- * pango-fontset.h: Font set handling
+ * pango-fontset-simple-private.h: Font handling
  *
- * Copyright (C) 2001 Red Hat Software
+ * Copyright (C) 2000 Red Hat Software
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,17 +19,26 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __PANGO_FONTSET_PRIVATE_H__
-#define __PANGO_FONTSET_PRIVATE_H__
+#ifndef __PANGO_FONTSET_SIMPLE_PRIVATE_H__
+#define __PANGO_FONTSET_SIMPLE_PRIVATE_H__
 
-#include <pango/pango-types.h>
-#include <pango/pango-fontset.h>
-#include <pango/pango-coverage.h>
-
-#include <glib-object.h>
+#include <pango/pango-fontset-simple.h>
 
 G_BEGIN_DECLS
 
+struct _PangoFontsetSimple
+{
+  PangoFontset parent_instance;
+
+  GPtrArray *fonts;
+  PangoLanguage *language;
+};
+
+struct _PangoFontsetSimpleClass
+{
+  PangoFontsetClass parent_class;
+};
+
 G_END_DECLS
 
-#endif /* __PANGO_FONTSET_PRIVATE_H__ */
+#endif /* __PANGO_FONTSET_SIMPLE_PRIVATE_H__ */

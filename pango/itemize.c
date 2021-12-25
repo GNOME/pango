@@ -27,7 +27,7 @@
 #include "pango-impl-utils.h"
 
 #include "pango-font-private.h"
-#include "pango-fontset-private.h"
+#include "pango-fontset.h"
 #include "pango-fontmap-private.h"
 #include "pango-script-private.h"
 #include "pango-emoji-private.h"
