@@ -42,9 +42,9 @@ void pango_trace_mark (gint64       begin_time,
 #ifndef HAVE_SYSPROF
 /* Optimise the whole call out */
 #if defined(G_HAVE_ISO_VARARGS)
-#define g_trace_mark(b, n, m, ...)
+#define pango_trace_mark(b, n, m, ...)
 #elif defined(G_HAVE_GNUC_VARARGS)
-#define g_trace_mark(b, n, m...)
+#define pango_trace_mark(b, n, m...)
 #else
 /* no varargs macro support; the call will have to be optimised out by the compiler */
 #endif
