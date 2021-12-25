@@ -835,7 +835,9 @@ match_in_thread (gpointer task_data)
   ThreadData *td = task_data;
   FcResult result;
   FcPattern *match;
-  gint64 before = PANGO_TRACE_CURRENT_TIME;
+  gint64 before G_GNUC_UNUSED;
+
+  before = PANGO_TRACE_CURRENT_TIME;
 
   match = FcFontSetMatch (td->config,
                           &td->fonts, 1,
@@ -860,7 +862,9 @@ sort_in_thread (gpointer task_data)
   ThreadData *td = task_data;
   FcResult result;
   FcFontSet *fontset;
-  gint64 before = PANGO_TRACE_CURRENT_TIME;
+  gint64 before G_GNUC_UNUSED;
+
+  before = PANGO_TRACE_CURRENT_TIME;
 
   fontset = FcFontSetSort (td->config,
                            &td->fonts, 1,
@@ -1023,8 +1027,10 @@ pango_fc_patterns_get_font_pattern (PangoFcPatterns *pats, int i, gboolean *prep
 
   if (i == 0)
     {
-      gint64 before = PANGO_TRACE_CURRENT_TIME;
+      gint64 before G_GNUC_UNUSED;
       gboolean waited = FALSE;
+
+      before = PANGO_TRACE_CURRENT_TIME;
 
       g_mutex_lock (&pats->mutex);
 
@@ -1050,8 +1056,10 @@ pango_fc_patterns_get_font_pattern (PangoFcPatterns *pats, int i, gboolean *prep
     }
   else
     {
-      gint64 before = PANGO_TRACE_CURRENT_TIME;
+      gint64 before G_GNUC_UNUSED;
       gboolean waited = FALSE;
+
+      before = PANGO_TRACE_CURRENT_TIME;
 
       g_mutex_lock (&pats->mutex);
 
@@ -1354,7 +1362,9 @@ G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFcFontMap, pango_fc_font_map, PANGO_TYPE_
 static gpointer
 init_in_thread (gpointer task_data)
 {
-  gint64 before = PANGO_TRACE_CURRENT_TIME;
+  gint64 before G_GNUC_UNUSED;
+
+  before = PANGO_TRACE_CURRENT_TIME;
 
   FcInit ();
 
@@ -1388,8 +1398,10 @@ start_init_in_thread (PangoFcFontMap *fcfontmap)
 static void
 wait_for_fc_init (void)
 {
-  gint64 before = PANGO_TRACE_CURRENT_TIME;
+  gint64 before G_GNUC_UNUSED;
   gboolean waited = FALSE;
+
+  before = PANGO_TRACE_CURRENT_TIME;
 
   g_mutex_lock (&fc_init_mutex);
   while (fc_initialized < DEFAULT_CONFIG_INITIALIZED)

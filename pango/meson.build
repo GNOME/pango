@@ -46,6 +46,7 @@ pango_headers = [
   'pango-font.h',
   'pango-fontmap.h',
   'pango-fontset.h',
+  'pango-fontset-simple.h',
   'pango-glyph.h',
   'pango-glyph-item.h',
   'pango-gravity.h',
