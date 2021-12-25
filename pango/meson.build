@@ -25,6 +25,7 @@ pango_sources = [
   'pango-renderer.c',
   'pango-script.c',
   'pango-tabs.c',
+  'pango-trace.c',
   'pango-utils.c',
   'reorder-items.c',
   'shape.c',
