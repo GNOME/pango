@@ -126,6 +126,19 @@ installed_test_layouts_data = [
   'layouts/aaa.layout',
 ]
 
+installed_test_fonts_data = [
+  'fonts/amiri-06dd.ttf',
+  'fonts/Cantarell-VF.otf',
+  'fonts/DejaVuSansMono.ttf',
+  'fonts/DejaVuSans.ttf',
+  'fonts/droid-sans-subset.ttf',
+  'fonts/emoji-subset.ttf',
+  'fonts/fa-regular-f2db.ttf',
+  'fonts/fa-solid-f2db.ttf',
+  'fonts/fonts.conf',
+  'fonts/noto-sans-cjk.ttf',
+]
+
 test_markups_data = [
   'markups/fail-1',
   'markups/fail-2',
@@ -231,6 +244,7 @@ installed_test_bindir = join_paths(pango_libexecdir, 'installed-tests', 'pango')
 
 if get_option('install-tests')
   install_data(installed_test_data, install_dir: installed_test_bindir)
+  install_data(installed_test_fonts_data, install_dir: join_paths(installed_test_bindir, 'fonts'))
   install_data(installed_test_layouts_data, install_dir: join_paths(installed_test_bindir, 'layouts'))
   install_data(installed_test_markups_data, install_dir: join_paths(installed_test_bindir, 'markups'))
   install_data(installed_test_breaks_data, install_dir: join_paths(installed_test_bindir, 'breaks'))
