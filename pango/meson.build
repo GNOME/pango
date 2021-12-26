@@ -214,6 +214,7 @@ if build_pangoft2
   pangofc_public_sources = [
     'pangofc-font.c',
     'pangofc-fontmap.c',
+    'pangofc-language-set.c',
     'pangofc-decoder.c',
     'pango-trace.c',
   ]
