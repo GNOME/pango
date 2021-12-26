@@ -26,6 +26,7 @@
 #include <pango/pango-context-private.h>
 #include <pango/pango-enum-types.h>
 #include <pango/pango-font-private.h>
+#include <pango/pango-hbface.h>
 
 #include <hb-ot.h>
 #include "pango/json/gtkjsonparserprivate.h"
@@ -549,6 +550,9 @@ add_font (GtkJsonPrinter *printer,
   const int *coords;
   hb_feature_t features[32];
   PangoMatrix matrix;
+  unsigned int index;
+  int instance_id;
+  gboolean embolden;
 
   gtk_json_printer_start_object (printer, member);
 
@@ -566,6 +570,30 @@ add_font (GtkJsonPrinter *printer,
   str = g_compute_checksum_for_data (G_CHECKSUM_SHA256, (const guchar *)data, length);
 
   gtk_json_printer_add_string (printer, "checksum", str);
+
+  if (PANGO_IS_HB_FACE (pango_font_get_face (font)))
+    {
+      PangoHbFace *hbface = PANGO_HB_FACE (pango_font_get_face (font));
+
+      index = pango_hb_face_get_face_index (hbface);
+      instance_id = pango_hb_face_get_instance_id (hbface);
+      embolden = pango_hb_face_get_embolden (hbface);
+    }
+  else
+    {
+      index = hb_face_get_index (face);
+      instance_id = (index >> 16) - 1;
+      index = index & 0xffff;
+      embolden = FALSE;
+    }
+
+  if (index != 0)
+    gtk_json_printer_add_integer (printer, "index", index);
+  if (instance_id != -1)
+    gtk_json_printer_add_integer (printer, "instance-id", instance_id);
+
+  if (embolden)
+    gtk_json_printer_add_boolean (printer, "embolden", embolden);
 
   g_free (str);
   hb_blob_destroy (blob);

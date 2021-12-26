@@ -112,6 +112,7 @@
             "font" : {
               "description" : "Cantarell Bold 32",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "instance-id" : 3,
               "variations" : {
                 "wght" : 8374
               },
@@ -166,6 +167,7 @@
             "font" : {
               "description" : "Cantarell Bold 32",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+              "instance-id" : 3,
               "variations" : {
                 "wght" : 8374
               },
