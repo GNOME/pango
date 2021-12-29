@@ -506,11 +506,8 @@ struct _PangoFontFaceClass
   gboolean               (*is_synthesized) (PangoFontFace *face);
   PangoFontFamily *      (*get_family)     (PangoFontFace *face);
 
-  /*< private >*/
-
-  /* Padding for future expansion */
-  void (*_pango_reserved3) (void);
-  void (*_pango_reserved4) (void);
+  gboolean               (*is_monospace)   (PangoFontFace *face);
+  gboolean               (*is_variable)    (PangoFontFace *face);
 };
 
 #endif /* PANGO_DISABLE_DEPRECATED */
@@ -531,6 +528,11 @@ gboolean              pango_font_face_is_synthesized (PangoFontFace  *face) G_GN
 
 PANGO_AVAILABLE_IN_1_46
 PangoFontFamily *     pango_font_face_get_family     (PangoFontFace  *face);
+
+PANGO_AVAILABLE_IN_1_52
+gboolean              pango_font_face_is_monospace   (PangoFontFace  *face);
+PANGO_AVAILABLE_IN_1_52
+gboolean              pango_font_face_is_variable    (PangoFontFace  *face);
 
 
 /*

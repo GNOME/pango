@@ -2520,17 +2520,23 @@ pango_font_family_get_face (PangoFontFamily *family,
  * A monospace font is a font designed for text display where the the
  * characters form a regular grid.
  *
- * For Western languages this would
- * mean that the advance width of all characters are the same, but
- * this categorization also includes Asian fonts which include
- * double-width characters: characters that occupy two grid cells.
- * g_unichar_iswide() returns a result that indicates whether a
- * character is typically double-width in a monospace font.
+ * For Western languages this would mean that the advance width of all
+ * characters are the same, but this categorization also includes Asian
+ * fonts which include double-width characters: characters that occupy
+ * two grid cells. [function@GLib.unichar_iswide] returns a result that
+ * indicates whether a character is typically double-width in a monospace
+ * font.
  *
  * The best way to find out the grid-cell size is to call
  * [method@Pango.FontMetrics.get_approximate_digit_width], since the
  * results of [method@Pango.FontMetrics.get_approximate_char_width] may
  * be affected by double-width characters.
+ *
+ * Note that a font family can in principle contain a mixture of
+ * monospace and non-monospace faces (although well-behaved families
+ * won't). Use [method@Pango.FontFace.is_monospace] to examine individual
+ * faces. This function will return `TRUE` as long as the family contains
+ * any monospace faces.
  *
  * Return value: %TRUE if the family is monospace.
  *
@@ -2554,6 +2560,12 @@ pango_font_family_is_monospace (PangoFontFamily  *family)
  * Such axes are also known as _variations_; see
  * [method@Pango.FontDescription.set_variations] for more information.
  *
+ * Note that a font family can in principle contain a mixture of
+ * variable and non-variable faces, and even variable and non-variable
+ * versions of the same face. Use [method@Pango.FontFace.is_variable]
+ * to examine individual faces. This function will return `TRUE` as
+ * long as the family contains any variable faces.
+ *
  * Return value: %TRUE if the family is variable
  *
  * Since: 1.44
@@ -2572,9 +2584,23 @@ pango_font_family_is_variable (PangoFontFamily  *family)
 
 G_DEFINE_ABSTRACT_TYPE (PangoFontFace, pango_font_face, G_TYPE_OBJECT)
 
+static gboolean
+pango_font_face_default_is_monospace (PangoFontFace *face)
+{
+  return pango_font_family_is_monospace (pango_font_face_get_family (face));
+}
+
+static gboolean
+pango_font_face_default_is_variable (PangoFontFace *face)
+{
+  return pango_font_family_is_variable (pango_font_face_get_family (face));
+}
+
 static void
 pango_font_face_class_init (PangoFontFaceClass *class G_GNUC_UNUSED)
 {
+  class->is_monospace = pango_font_face_default_is_monospace;
+  class->is_variable = pango_font_face_default_is_variable;
 }
 
 static void
@@ -2704,6 +2730,48 @@ pango_font_face_get_family (PangoFontFace *face)
   g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);
 
   return PANGO_FONT_FACE_GET_CLASS (face)->get_family (face);
+}
+
+/**
+ * pango_font_face_is_monospace:
+ * @face: a `PangoFontFace`
+ *
+ * A monospace font is a font designed for text display where the the
+ * characters form a regular grid.
+ *
+ * See [method@Pango.FontFamily.is_monospace] for more details.
+ *
+ * Returns: `TRUE` if @face is monospace
+ *
+ * Since: 1.52
+ */
+gboolean
+pango_font_face_is_monospace (PangoFontFace *face)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), FALSE);
+
+  return PANGO_FONT_FACE_GET_CLASS (face)->is_monospace (face);
+}
+
+/**
+ * pango_font_face_is_variable:
+ * @face: a `PangoFontFace`
+ *
+ * A variable font is a font which has axes that can be modified
+ * to produce variations.
+ *
+ * See [method@Pango.FontFamily.is_variable] for more details.
+ *
+ * Returns: `TRUE` if @face is variable
+ *
+ * Since: 1.52
+ */
+gboolean
+pango_font_face_is_variable (PangoFontFace *face)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), FALSE);
+
+  return PANGO_FONT_FACE_GET_CLASS (face)->is_variable (face);
 }
 
 /**

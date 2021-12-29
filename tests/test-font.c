@@ -455,6 +455,15 @@ test_font_models (void)
 
           g_assert_true (pango_font_face_get_family (PANGO_FONT_FACE (obj2)) == (PangoFontFamily *)obj);
 
+          if (g_ascii_strcasecmp (pango_font_family_get_name (PANGO_FONT_FAMILY (obj)), "monospace") == 0)
+            g_assert_true (pango_font_face_is_monospace (PANGO_FONT_FACE (obj2)));
+
+          if (pango_font_face_is_monospace (PANGO_FONT_FACE (obj2)))
+            g_assert_true (pango_font_family_is_monospace (PANGO_FONT_FAMILY (obj)));
+
+          if (pango_font_face_is_variable (PANGO_FONT_FACE (obj2)))
+            g_assert_true (pango_font_family_is_variable (PANGO_FONT_FAMILY (obj)));
+
           pango_font_face_list_sizes (PANGO_FONT_FACE (obj2), &sizes, &n_sizes);
           g_assert_true ((sizes == NULL) == (n_sizes == 0));
           g_free (sizes);
@@ -462,9 +471,7 @@ test_font_models (void)
           if (pango_font_family_is_monospace (PANGO_FONT_FAMILY (obj)))
             {
               if (pango_font_face_is_synthesized (PANGO_FONT_FACE (obj2)))
-                {
-                  monospace_found = TRUE;
-                }
+                monospace_found = TRUE;
             }
 
           g_object_unref (obj2);
