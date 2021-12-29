@@ -545,6 +545,7 @@ if cairo_dep.found()
       'pangocoretext-fontmap.c',
       'pangocairo-coretextfont.c',
       'pangocairo-coretextfontmap.c',
+      'pangocoretext-hbfontmap.c',
     ]
   endif
 
