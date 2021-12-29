@@ -740,9 +740,18 @@ pango_font_description_merge_static (PangoFontDescription       *desc,
   desc->mask |= new_mask;
 }
 
-static gint
-compute_distance (const PangoFontDescription *a,
-                  const PangoFontDescription *b)
+gboolean
+pango_font_description_is_similar (const PangoFontDescription *a,
+                                   const PangoFontDescription *b)
+{
+  return a->variant == b->variant &&
+         a->stretch == b->stretch &&
+         a->gravity == b->gravity;
+}
+
+int
+pango_font_description_compute_distance (const PangoFontDescription *a,
+                                         const PangoFontDescription *b)
 {
   if (a->style == b->style)
     {
@@ -787,12 +796,10 @@ pango_font_description_better_match (const PangoFontDescription *desc,
   g_return_val_if_fail (desc != NULL, G_MAXINT);
   g_return_val_if_fail (new_match != NULL, G_MAXINT);
 
-  if (new_match->variant == desc->variant &&
-      new_match->stretch == desc->stretch &&
-      new_match->gravity == desc->gravity)
+  if (pango_font_description_is_similar (new_match, desc))
     {
-      int old_distance = old_match ? compute_distance (desc, old_match) : G_MAXINT;
-      int new_distance = compute_distance (desc, new_match);
+      int old_distance = old_match ? pango_font_description_compute_distance (desc, old_match) : G_MAXINT;
+      int new_distance = pango_font_description_compute_distance (desc, new_match);
 
       if (new_distance < old_distance)
         return TRUE;
