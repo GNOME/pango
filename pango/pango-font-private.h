@@ -88,6 +88,12 @@ static inline int pango_font_get_absolute_size (PangoFont *font)
   return PANGO_FONT_GET_CLASS (font)->get_absolute_size (font);
 }
 
+gboolean pango_font_description_is_similar       (const PangoFontDescription *a,
+                                                  const PangoFontDescription *b);
+
+int      pango_font_description_compute_distance (const PangoFontDescription *a,
+                                                  const PangoFontDescription *b);
+
 G_END_DECLS
 
 #endif /* __PANGO_FONT_PRIVATE_H__ */
