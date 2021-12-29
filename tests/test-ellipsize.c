@@ -43,14 +43,14 @@ test_ellipsize_height (void)
 
   pango_layout_set_text (layout, "some text that should be ellipsized", -1);
   g_assert_cmpint (pango_layout_get_line_count (layout), ==, 1);
-  pango_layout_get_pixel_size (layout, NULL, &height1);
+  pango_layout_get_size (layout, NULL, &height1);
 
   pango_layout_set_width (layout, 100 * PANGO_SCALE);
   pango_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
 
   g_assert_cmpint (pango_layout_get_line_count (layout), ==, 1);
   g_assert_cmpint (pango_layout_is_ellipsized (layout), ==, 1);
-  pango_layout_get_pixel_size (layout, NULL, &height2);
+  pango_layout_get_size (layout, NULL, &height2);
 
   g_assert_cmpint (height1, ==, height2);
 
