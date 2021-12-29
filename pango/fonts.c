@@ -2420,6 +2420,12 @@ pango_font_family_get_name (PangoFontFamily  *family)
  *
  * The faces in a family share a common design, but differ in slant, weight,
  * width and other aspects.
+ *
+ * Note that the returned faces are not in any particular order, and
+ * multiple faces may have the same name or characteristics.
+ *
+ * `PangoFontFamily` also implemented the [iface@Gio.ListModel] interface
+ * for enumerating faces.
  */
 void
 pango_font_family_list_faces (PangoFontFamily  *family,
@@ -2609,9 +2615,9 @@ pango_font_face_is_synthesized (PangoFontFace  *face)
  *
  * Gets a name representing the style of this face.
  *
- * The name identifies the face among the different faces
- * in the `PangoFontFamily` for the face. It is suitable
- * for displaying to users.
+ * Note that a font family may contain multiple faces
+ * with the same name (e.g. a variable and a non-variable
+ * face for the same style).
  *
  * Return value: the face name for the face. This string is
  *   owned by the face object and must not be modified or freed.
