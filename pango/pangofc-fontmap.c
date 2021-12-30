@@ -248,6 +248,10 @@ static PangoFontFace *pango_fc_font_map_get_face (PangoFontMap *fontmap,
 
 static void pango_fc_font_map_changed (PangoFontMap *fontmap);
 
+
+PangoLanguage **_pango_fc_font_map_get_languages (PangoFcFontMap *fcfontmap,
+                                                  PangoFcFace    *fcface);
+
 static guint    pango_fc_font_face_data_hash  (PangoFcFontFaceData *key);
 static gboolean pango_fc_font_face_data_equal (PangoFcFontFaceData *key1,
 					       PangoFcFontFaceData *key2);
@@ -1683,6 +1687,7 @@ ensure_families (PangoFcFontMap *fcfontmap)
       FcObjectSet *os = FcObjectSetBuild (FC_FAMILY, FC_SPACING, FC_STYLE, FC_WEIGHT, FC_WIDTH, FC_SLANT,
                                           FC_VARIABLE,
                                           FC_FONTFORMAT,
+                                          FC_FILE, FC_INDEX, FC_LANG,
                                           NULL);
       FcPattern *pat = FcPatternCreate ();
       GHashTable *temp_family_hash;
@@ -2052,9 +2057,10 @@ pango_fc_font_map_get_face (PangoFontMap *fontmap,
   family = pango_font_map_get_family (fontmap, s);
 
   res = FcPatternGetString (fcfont->font_pattern, FC_STYLE, 0, (FcChar8 **)(void*)&s);
-  g_assert (res == FcResultMatch);
+  if (res == FcResultMatch)
+    return pango_font_family_get_face (family, s);
 
-  return pango_font_family_get_face (family, s);
+  return PANGO_FONT_FACE (PANGO_FC_FAMILY (family)->faces[0]);
 }
 
 static void
@@ -2593,14 +2599,18 @@ _pango_fc_font_map_fc_to_languages (FcLangSet *langset)
   return (PangoLanguage **) g_ptr_array_free (langs, FALSE);
 }
 
+
 PangoLanguage **
 _pango_fc_font_map_get_languages (PangoFcFontMap *fcfontmap,
-                                  PangoFcFont    *fcfont)
+                                  PangoFcFace    *fcface)
 {
   PangoFcFontFaceData *data;
   FcLangSet *langset;
 
-  data = pango_fc_font_map_get_font_face_data (fcfontmap, fcfont->font_pattern);
+  if (!fcface->pattern)
+    return NULL;
+
+  data = pango_fc_font_map_get_font_face_data (fcfontmap, fcface->pattern);
   if (G_UNLIKELY (!data))
     return NULL;
 
@@ -2610,7 +2620,7 @@ _pango_fc_font_map_get_languages (PangoFcFontMap *fcfontmap,
        * Pull the languages out of the pattern, this
        * doesn't require loading the font
        */
-      if (FcPatternGetLangSet (fcfont->font_pattern, FC_LANG, 0, &langset) != FcResultMatch)
+      if (FcPatternGetLangSet (fcface->pattern, FC_LANG, 0, &langset) != FcResultMatch)
         return NULL;
 
       data->languages = _pango_fc_font_map_fc_to_languages (langset);
@@ -3099,10 +3109,38 @@ pango_fc_face_init (PangoFcFace *self)
 {
 }
 
+static gboolean
+pango_fc_face_supports_language (PangoFontFace *face,
+                                 PangoLanguage *language)
+{
+  PangoFcFace *fcface = PANGO_FC_FACE (face);
+  FcLangSet *langs;
+
+  if (!fcface->pattern)
+    return TRUE;
+
+  if (FcPatternGetLangSet (fcface->pattern, FC_LANG, 0, &langs) != FcResultMatch)
+    return TRUE;
+
+  return FcLangSetHasLang (langs, (FcChar8 *) pango_language_to_string (language)) != FcLangDifferentLang;
+}
+
+static PangoLanguage **
+pango_fc_face_get_languages (PangoFontFace *face)
+{
+  PangoFcFace *fcface = PANGO_FC_FACE (face);
+
+  if (!fcface->family->fontmap)
+    return NULL;
+
+  return _pango_fc_font_map_get_languages (fcface->family->fontmap, fcface);
+}
+
 static void
 pango_fc_face_class_init (PangoFcFaceClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
+  PangoFontFaceClassPrivate *pclass;
 
   object_class->finalize = pango_fc_face_finalize;
 
@@ -3111,6 +3149,11 @@ pango_fc_face_class_init (PangoFcFaceClass *class)
   class->list_sizes = pango_fc_face_list_sizes;
   class->is_synthesized = pango_fc_face_is_synthesized;
   class->get_family = pango_fc_face_get_family;
+
+  pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT_FACE);
+
+  pclass->supports_language = pango_fc_face_supports_language;
+  pclass->get_languages = pango_fc_face_get_languages;
 }
 
 

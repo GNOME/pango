@@ -534,6 +534,14 @@ gboolean              pango_font_face_is_monospace   (PangoFontFace  *face);
 PANGO_AVAILABLE_IN_1_52
 gboolean              pango_font_face_is_variable    (PangoFontFace  *face);
 
+PANGO_AVAILABLE_IN_1_52
+gboolean              pango_font_face_supports_language (PangoFontFace *face,
+                                                         PangoLanguage *language);
+
+PANGO_AVAILABLE_IN_1_52
+PangoLanguage **      pango_font_face_get_languages     (PangoFontFace *face);
+
+
 
 /*
  * PangoFont

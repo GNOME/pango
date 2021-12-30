@@ -34,8 +34,16 @@ PANGO_AVAILABLE_IN_ALL
 PangoFontMetrics *pango_font_metrics_new (void);
 
 typedef struct {
-  PangoLanguage ** (* get_languages) (PangoFont *font);
+  gboolean         (* supports_language)        (PangoFontFace *face,
+                                                 PangoLanguage *language);
+  PangoLanguage ** (* get_languages)            (PangoFontFace *face);
+} PangoFontFaceClassPrivate;
 
+#define PANGO_FONT_FACE_GET_CLASS_PRIVATE(font) ((PangoFontFaceClassPrivate *) \
+   g_type_class_get_private ((GTypeClass *) PANGO_FONT_FACE_GET_CLASS (font), PANGO_TYPE_FONT_FACE))
+
+
+typedef struct {
   gboolean         (* is_hinted) (PangoFont *font);
 
   void             (* get_scale_factors) (PangoFont *font,
@@ -49,6 +57,10 @@ typedef struct {
                                    PangoMatrix *matrix);
   int              (* get_absolute_size) (PangoFont *font);
 } PangoFontClassPrivate;
+
+#define PANGO_FONT_GET_CLASS_PRIVATE(font) ((PangoFontClassPrivate *) \
+   g_type_class_get_private ((GTypeClass *) PANGO_FONT_GET_CLASS (font), PANGO_TYPE_FONT))
+
 
 gboolean pango_font_is_hinted         (PangoFont *font);
 void     pango_font_get_scale_factors (PangoFont *font,

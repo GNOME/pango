@@ -70,7 +70,6 @@ static void                  pango_fc_font_get_features (PangoFont        *font,
                                                          guint             len,
                                                          guint            *num_features);
 static hb_font_t *           pango_fc_font_create_hb_font (PangoFont        *font);
-static PangoLanguage **     _pango_fc_font_get_languages  (PangoFont        *font);
 static gboolean             _pango_fc_font_is_hinted      (PangoFont        *font);
 static void                 _pango_fc_font_get_scale_factors (PangoFont     *font,
                                                               double        *x_scale,
@@ -109,7 +108,6 @@ pango_fc_font_class_init (PangoFcFontClass *class)
 
   pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT);
 
-  pclass->get_languages = _pango_fc_font_get_languages;
   pclass->is_hinted = _pango_fc_font_is_hinted;
   pclass->get_scale_factors = _pango_fc_font_get_scale_factors;
   pclass->get_matrix = pango_fc_font_get_matrix;
@@ -1091,23 +1089,6 @@ PangoLanguage **
 pango_fc_font_get_languages (PangoFcFont *font)
 {
   return pango_font_get_languages (PANGO_FONT (font));
-}
-
-static PangoLanguage **
-_pango_fc_font_get_languages (PangoFont *font)
-{
-  PangoFcFont * fcfont = PANGO_FC_FONT (font);
-  PangoFcFontMap *fontmap;
-  PangoLanguage **languages;
-
-  fontmap = g_weak_ref_get ((GWeakRef *) &fcfont->fontmap);
-  if (!fontmap)
-    return NULL;
-
-  languages  = _pango_fc_font_map_get_languages (fontmap, fcfont);
-  g_object_unref (fontmap);
-
-  return languages;
 }
 
 /**

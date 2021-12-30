@@ -564,6 +564,42 @@ test_match (void)
   pango_font_description_free (desc2);
 }
 
+static void
+test_font_languages (void)
+{
+  PangoFontMap *fontmap;
+  PangoContext *context;
+  PangoFontDescription *desc;
+  PangoFont *font;
+  PangoFontFace *face;
+  PangoLanguage **languages;
+
+#ifdef HAVE_CARBON
+  desc = pango_font_description_from_string ("Helvetica 11");
+#else
+  desc = pango_font_description_from_string ("Cantarell 11");
+#endif
+
+  fontmap = pango_cairo_font_map_get_default ();
+  context = pango_font_map_create_context (fontmap);
+
+  font = pango_context_load_font (context, desc);
+
+  languages = pango_font_get_languages (font);
+  g_assert_nonnull (languages);
+  g_assert_nonnull (languages[0]);
+
+  face = pango_font_get_face (font);
+  languages = pango_font_face_get_languages (face);
+  g_assert_nonnull (languages);
+  g_assert_nonnull (languages[0]);
+  g_assert_true (pango_font_face_supports_language (face, languages[0]));
+
+  g_object_unref (font);
+  pango_font_description_free (desc);
+  g_object_unref (context);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -589,6 +625,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/font/models", test_font_models);
   g_test_add_func ("/pango/font/glyph-extents", test_glyph_extents);
   g_test_add_func ("/pango/font/font-metrics", test_font_metrics);
+  g_test_add_func ("/pango/font/languages", test_font_languages);
 
   return g_test_run ();
 }

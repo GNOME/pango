@@ -1704,10 +1704,6 @@ typedef struct {
   hb_font_t *hb_font;
 } PangoFontPrivate;
 
-#define PANGO_FONT_GET_CLASS_PRIVATE(font) ((PangoFontClassPrivate *) \
-   g_type_class_get_private ((GTypeClass *) PANGO_FONT_GET_CLASS (font), \
-                            PANGO_TYPE_FONT))
-
 G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFont, pango_font, G_TYPE_OBJECT,
                                   G_ADD_PRIVATE (PangoFont)
                                   g_type_add_class_private (g_define_type_id, sizeof (PangoFontClassPrivate)))
@@ -1721,12 +1717,6 @@ pango_font_finalize (GObject *object)
   hb_font_destroy (priv->hb_font);
 
   G_OBJECT_CLASS (pango_font_parent_class)->finalize (object);
-}
-
-static PangoLanguage **
-pango_font_default_get_languages (PangoFont *font)
-{
-  return NULL;
 }
 
 static gboolean
@@ -1791,7 +1781,6 @@ pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
 
   pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT);
 
-  pclass->get_languages = pango_font_default_get_languages;
   pclass->is_hinted = pango_font_default_is_hinted;
   pclass->get_scale_factors = pango_font_default_get_scale_factors;
   pclass->has_char = pango_font_default_has_char;
@@ -2582,7 +2571,8 @@ pango_font_family_is_variable (PangoFontFamily  *family)
  * PangoFontFace
  */
 
-G_DEFINE_ABSTRACT_TYPE (PangoFontFace, pango_font_face, G_TYPE_OBJECT)
+G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFontFace, pango_font_face, G_TYPE_OBJECT,
+                                  g_type_add_class_private (g_define_type_id, sizeof (PangoFontFaceClassPrivate)))
 
 static gboolean
 pango_font_face_default_is_monospace (PangoFontFace *face)
@@ -2596,11 +2586,31 @@ pango_font_face_default_is_variable (PangoFontFace *face)
   return pango_font_family_is_variable (pango_font_face_get_family (face));
 }
 
+static gboolean
+pango_font_face_default_supports_language (PangoFontFace *face,
+                                           PangoLanguage *language)
+{
+  return TRUE;
+}
+
+static PangoLanguage **
+pango_font_face_default_get_languages (PangoFontFace *face)
+{
+  return NULL;
+}
+
 static void
 pango_font_face_class_init (PangoFontFaceClass *class G_GNUC_UNUSED)
 {
+  PangoFontFaceClassPrivate *pclass;
+
   class->is_monospace = pango_font_face_default_is_monospace;
   class->is_variable = pango_font_face_default_is_variable;
+
+  pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT_FACE);
+
+  pclass->get_languages = pango_font_face_default_get_languages;
+  pclass->supports_language = pango_font_face_default_supports_language;
 }
 
 static void
@@ -2775,6 +2785,56 @@ pango_font_face_is_variable (PangoFontFace *face)
 }
 
 /**
+ * pango_font_face_supports_language:
+ * @face: a `PangoFontFace`
+ * @language: a `PangoLanguage`
+ *
+ * Returns whether @face has all the glyphs necessary to write @language.
+ *
+ * Returns: `TRUE` if @face supports @language
+ *
+ * Since: 1.52
+ */
+gboolean
+pango_font_face_supports_language (PangoFontFace *face,
+                                   PangoLanguage *language)
+{
+  PangoFontFaceClassPrivate *pclass = PANGO_FONT_FACE_GET_CLASS_PRIVATE (face);
+
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), FALSE);
+
+  return pclass->supports_language (face, language);
+}
+
+/**
+ * pango_font_face_get_languages:
+ * @face: a `PangoFontFace`
+ *
+ * Returns the languages that are supported by @face.
+ *
+ * If the font backend does not provide this information,
+ * %NULL is returned. For the fontconfig backend, this
+ * corresponds to the FC_LANG member of the FcPattern.
+ *
+ * The returned array is only valid as long as the face
+ * and its fontmap are valid.
+ *
+ * Returns: (transfer none) (nullable) (array zero-terminated=1) (element-type PangoLanguage):
+ *   an array of `PangoLanguage`
+ *
+ * Since: 1.52
+ */
+PangoLanguage **
+pango_font_face_get_languages (PangoFontFace *face)
+{
+  PangoFontFaceClassPrivate *pclass = PANGO_FONT_FACE_GET_CLASS_PRIVATE (face);
+
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), FALSE);
+
+  return pclass->get_languages (face);
+}
+
+/**
  * pango_font_has_char:
  * @font: a `PangoFont`
  * @wc: a Unicode character
@@ -2790,6 +2850,8 @@ pango_font_has_char (PangoFont *font,
                      gunichar   wc)
 {
   PangoFontClassPrivate *pclass = PANGO_FONT_GET_CLASS_PRIVATE (font);
+
+  g_return_val_if_fail (PANGO_IS_FONT (font), FALSE);
 
   return pclass->has_char (font, wc);
 }
@@ -2841,9 +2903,7 @@ pango_font_get_features (PangoFont    *font,
 PangoLanguage **
 pango_font_get_languages (PangoFont *font)
 {
-  PangoFontClassPrivate *pclass = PANGO_FONT_GET_CLASS_PRIVATE (font);
-
-  return pclass->get_languages (font);
+  return pango_font_face_get_languages (pango_font_get_face (font));
 }
 
 /*< private >
