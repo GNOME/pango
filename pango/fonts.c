@@ -2687,7 +2687,7 @@ pango_font_face_get_family (PangoFontFace *face)
  *
  * Returns whether the font provides a glyph for this character.
  *
- * Returns %TRUE if @font can render @wc
+ * Returns: `TRUE` if @font can render @wc
  *
  * Since: 1.44
  */
