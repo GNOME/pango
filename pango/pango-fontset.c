@@ -57,8 +57,8 @@ pango_fontset_class_init (PangoFontsetClass *class)
  * Return value: (transfer full): a `PangoFont`
  */
 PangoFont *
-pango_fontset_get_font (PangoFontset  *fontset,
-                        guint          wc)
+pango_fontset_get_font (PangoFontset *fontset,
+                        guint         wc)
 {
 
   g_return_val_if_fail (PANGO_IS_FONTSET (fontset), NULL);
@@ -80,6 +80,24 @@ pango_fontset_get_metrics (PangoFontset *fontset)
   g_return_val_if_fail (PANGO_IS_FONTSET (fontset), NULL);
 
   return PANGO_FONTSET_GET_CLASS (fontset)->get_metrics (fontset);
+}
+
+/**
+ * pango_fontset_get_language:
+ * @fontset: a `PangoFontset`
+ *
+ * Gets the language that the fontset was created for.
+ *
+ * Returns: the language that @fontset was created for
+ *
+ * Since: 1.52
+ */
+PangoLanguage *
+pango_fontset_get_language (PangoFontset *fontset)
+{
+  g_return_val_if_fail (PANGO_IS_FONTSET (fontset), NULL);
+
+  return PANGO_FONTSET_GET_CLASS (fontset)->get_language (fontset);
 }
 
 /**
@@ -112,7 +130,7 @@ get_first_metrics_foreach (PangoFontset  *fontset,
                            gpointer       data)
 {
   PangoFontMetrics *fontset_metrics = data;
-  PangoLanguage *language = PANGO_FONTSET_GET_CLASS (fontset)->get_language (fontset);
+  PangoLanguage *language = pango_fontset_get_language (fontset);
   PangoFontMetrics *font_metrics = pango_font_get_metrics (font, language);
   guint save_ref_count;
 
@@ -140,7 +158,7 @@ pango_fontset_real_get_metrics (PangoFontset  *fontset)
   PangoFont *font;
   PangoLanguage *language;
 
-  language = PANGO_FONTSET_GET_CLASS (fontset)->get_language (fontset);
+  language = pango_fontset_get_language (fontset);
   sample_str = pango_language_get_sample_string (language);
 
   count = 0;

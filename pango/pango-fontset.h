@@ -82,6 +82,8 @@ PANGO_AVAILABLE_IN_1_4
 void                    pango_fontset_foreach           (PangoFontset                   *fontset,
                                                          PangoFontsetForeachFunc         func,
                                                          gpointer                        data);
+PANGO_AVAILABLE_IN_ALL
+PangoLanguage *         pango_fontset_get_language      (PangoFontset                   *fontset);
 
 
 G_END_DECLS
