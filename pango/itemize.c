@@ -720,8 +720,6 @@ itemize_state_add_character (ItemizeState *state,
 }
 
 typedef struct {
-  PangoLanguage *lang;
-  gunichar wc;
   PangoFont *font;
   int position;
 } GetFontInfo;
@@ -733,20 +731,8 @@ get_font_foreach (PangoFontset *fontset,
 {
   GetFontInfo *info = data;
 
-  if (G_UNLIKELY (!font))
-    return FALSE;
-
-  if (pango_font_has_char (font, info->wc))
-    {
-      info->font = font;
-      return TRUE;
-    }
-
-  if (!fontset)
-    {
-      info->font = font;
-      return TRUE;
-    }
+  if (font == info->font)
+    return TRUE;
 
   info->position++;
 
@@ -777,13 +763,16 @@ get_font (ItemizeState  *state,
   if (state->enable_fallback && font_cache_get (state->cache, wc, font, position))
     return TRUE;
 
-  info.lang = state->derived_lang;
-  info.wc = wc;
   info.font = NULL;
   info.position = 0;
 
   if (state->enable_fallback)
-    pango_fontset_foreach (state->current_fonts, get_font_foreach, &info);
+    {
+      info.font = pango_fontset_get_font (state->current_fonts, wc);
+      if (info.font)
+        g_object_unref (info.font);
+      pango_fontset_foreach (state->current_fonts, get_font_foreach, &info);
+    }
 
   if (!info.font)
     info.font = get_base_font (state);
