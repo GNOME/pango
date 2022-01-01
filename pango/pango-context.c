@@ -549,7 +549,7 @@ get_first_metrics_foreach (PangoFontset  *fontset,
                            gpointer       data)
 {
   PangoFontMetrics *fontset_metrics = data;
-  PangoLanguage *language = PANGO_FONTSET_GET_CLASS (fontset)->get_language (fontset);
+  PangoLanguage *language = pango_fontset_get_language (fontset);
   PangoFontMetrics *font_metrics = pango_font_get_metrics (font, language);
   guint save_ref_count;
 
