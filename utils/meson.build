@@ -67,7 +67,8 @@ if cairo_dep.found()
   pango_list_deps = [
     pango_deps,
     libpango_dep,
-    libpangocairo_dep
+    libpangocairo_dep,
+    libpangoft2_dep
   ]
 
   pango_list = executable('pango-list', pango_list_sources,
