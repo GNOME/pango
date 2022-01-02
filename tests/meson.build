@@ -124,6 +124,7 @@ installed_test_layouts_data = [
   'layouts/arabic-format.layout',
   'layouts/no-space.layout',
   'layouts/aaa.layout',
+  'layouts/letterspacing.layout',
 ]
 
 installed_test_fonts_data = [
