@@ -121,6 +121,8 @@ double pango_matrix_get_font_scale_factor (const PangoMatrix *matrix) G_GNUC_PUR
 PANGO_AVAILABLE_IN_1_38
 void pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
 					  double *xscale, double *yscale);
+PANGO_AVAILABLE_IN_1_50
+double pango_matrix_get_slant_ratio (const PangoMatrix *matrix) G_GNUC_PURE;
 
 
 G_END_DECLS
