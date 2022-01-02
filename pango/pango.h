@@ -44,6 +44,7 @@
 #include <pango/pango-gravity.h>
 #include <pango/pango-hbface.h>
 #include <pango/pango-hbfont.h>
+#include <pango/pango-hbfontmap.h>
 #include <pango/pango-item.h>
 #include <pango/pango-language.h>
 #include <pango/pango-layout.h>
