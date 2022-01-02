@@ -124,6 +124,11 @@ pango_font_map_load_font  (PangoFontMap               *fontmap,
  * @n_families: (out): location to store the number of elements in @families
  *
  * List all families for a fontmap.
+ *
+ * Note that the returned families are not in any particular order.
+ *
+ * `PangoFontMap` also implemented the [iface@Gio.ListModel] interface
+ * for enumerating families.
  */
 void
 pango_font_map_list_families (PangoFontMap      *fontmap,
