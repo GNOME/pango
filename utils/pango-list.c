@@ -22,10 +22,41 @@
 
 #include "config.h"
 #include <pango/pangocairo.h>
+#include <pango/pangofc-hbfontmap.h>
+#include <pango/pangofc-font.h>
+#include <pango/pango-hbface-private.h>
 #include <hb-ot.h>
 #include <glib/gstdio.h>
 #include <stdlib.h>
 #include <locale.h>
+
+
+#if HB_VERSION_ATLEAST (3, 3, 0)
+static void
+get_axes_and_values (hb_font_t             *font,
+                     unsigned int           n_axes,
+                     hb_ot_var_axis_info_t *axes,
+                     float                 *coords)
+{
+  const float *dcoords;
+  unsigned int length = n_axes;
+
+  hb_ot_var_get_axis_infos (hb_font_get_face (font), 0, &length, axes);
+
+  dcoords = hb_font_get_var_coords_design (font, &length);
+  if (dcoords)
+    memcpy (coords, dcoords, sizeof (float) * length);
+  else
+    {
+      for (int i = 0; i < n_axes; i++)
+        {
+          hb_ot_var_axis_info_t *axis = &axes[i];
+          coords[axis->axis_index] = axis->default_value;
+        }
+    }
+}
+
+#else
 
 /* FIXME: This doesn't work if the font has an avar table */
 static float
@@ -38,6 +69,31 @@ denorm_coord (hb_ot_var_axis_info_t *axis, int coord)
   else
     return axis->default_value + r * (axis->max_value - axis->default_value);
 }
+
+static void
+get_axes_and_values (hb_font_t             *font,
+                     unsigned int           n_axes,
+                     hb_ot_var_axis_info_t *axes,
+                     float                 *coords)
+{
+  const int *ncoords;
+  unsigned int length = n_axes;
+
+  hb_ot_var_get_axis_infos (hb_font_get_face (font), 0, &length, axes);
+
+  ncoords = hb_font_get_var_coords_normalized (font, &length);
+
+  for (int i = 0; i < n_axes; i++)
+    {
+      hb_ot_var_axis_info_t *axis = &axes[i];
+      int idx = axis->axis_index;
+      if (ncoords)
+        coords[idx] = denorm_coord (axis, ncoords[idx]);
+      else
+        coords[idx] = axis->default_value;
+    }
+}
+#endif
 
 int
 main (int    argc,
@@ -60,6 +116,9 @@ main (int    argc,
   int i, j;
   int width;
   GError *error = NULL;
+  hb_ot_var_axis_info_t axes[100];
+  float coords[100];
+  unsigned int n_axes;
 
   g_set_prgname ("pango-list");
   setlocale (LC_ALL, "");
@@ -83,7 +142,6 @@ main (int    argc,
       exit (0);
     }
 
-  /* Use PangoCairo to get default fontmap so it works on every platform. */
   fontmap = pango_cairo_font_map_get_default ();
   ctx = pango_font_map_create_context (fontmap);
 
@@ -122,27 +180,35 @@ main (int    argc,
 	  const char *face_name = pango_font_face_get_face_name (face);
 	  gboolean is_synth = pango_font_face_is_synthesized (face);
 	  const char *synth_str = is_synth ? "*" : "";
-          width = MAX (width, strlen (synth_str) + strlen (face_name));
+          gboolean is_variable = pango_font_face_is_variable (face);
+	  const char *variable_str = is_variable ? "@" : "";
+          width = MAX (width, strlen (synth_str) + strlen (variable_str) + strlen (face_name));
           g_object_unref (face);
         }
 
       for (j = 0; j < g_list_model_get_n_items (G_LIST_MODEL (family)); j++)
-	{
+        {
           PangoFontFace *face = g_list_model_get_item (G_LIST_MODEL (family), j);
-	  const char *face_name = pango_font_face_get_face_name (face);
-	  gboolean is_synth = pango_font_face_is_synthesized (face);
-	  const char *synth_str = is_synth ? "*" : "";
-	  PangoFontDescription *desc = pango_font_face_describe (face);
-	  char *desc_str = pango_font_description_to_string (desc);
+          const char *face_name = pango_font_face_get_face_name (face);
+          gboolean is_synth = pango_font_face_is_synthesized (face);
+          const char *synth_str = is_synth ? "*" : "";
+          gboolean is_variable = pango_font_face_is_variable (face);
+          const char *variable_str = is_variable ? "@" : "";
+          PangoFontDescription *desc;
+          char *desc_str;
 
-	  g_print ("  %s%s: %*s%s\n", synth_str, face_name,
-                   width - (int)strlen (face_name) - (int)strlen (synth_str), "", desc_str);
+          desc = pango_font_face_describe (face);
+          desc_str = pango_font_description_to_string (desc);
+
+          g_print ("  %s%s%s: %*s%s\n", synth_str, variable_str, face_name,
+                   width - (int)strlen (face_name) - (int)strlen (synth_str) - (int)strlen (variable_str), "", desc_str);
+
+          pango_font_description_set_absolute_size (desc, 10 * PANGO_SCALE);
 
           if (opt_metrics)
             {
               PangoFontMetrics *metrics;
 
-              pango_font_description_set_absolute_size (desc, 10 * PANGO_SCALE);
               metrics = pango_context_get_metrics (ctx, desc, pango_language_from_string ("en-us"));
               g_print ("    (a %d d %d h %d cw %d dw %d u %d %d s %d %d)\n",
                        pango_font_metrics_get_ascent (metrics),
@@ -162,41 +228,83 @@ main (int    argc,
             {
               PangoFont *font;
               hb_font_t *hb_font;
-              const int *coords;
-              unsigned int length;
+              int instance_id = -1;
 
-              pango_font_description_set_absolute_size (desc, 10 * PANGO_SCALE);
+              /* set variations here, to make the fontmap prefer the variable family
+               * over a non-variable one.
+               */
+              pango_font_description_set_variations (desc, "@");
 
               font = pango_context_load_font (ctx, desc);
               hb_font = pango_font_get_hb_font (font);
-              coords = hb_font_get_var_coords_normalized (hb_font, &length);
-              if (coords)
+              if (PANGO_IS_HB_FONT (font))
                 {
-                  hb_face_t *hb_face = hb_font_get_face (hb_font);
-                  hb_ot_var_axis_info_t *axes;
-                  unsigned int n_axes;
-                  int i;
+                  PangoHbFace *hbface = (PangoHbFace *)face;
+                  instance_id = hbface->instance_id;
+                }
+              else if (PANGO_IS_FC_FONT (font))
+                {
+                  int index;
+                  FcPattern *pattern = pango_fc_font_get_pattern (PANGO_FC_FONT (font));
+                  FcPatternGetInteger (pattern, FC_INDEX, 0, (int *)&index);
+                  instance_id = (index >> 16) - 1;
+                }
 
-                  axes = g_new (hb_ot_var_axis_info_t, length);
-                  n_axes = length;
+              if (pango_font_face_is_variable (face))
+                {
+                  if (instance_id >= 0)
+                    g_print ("    Instance %d\n", instance_id);
+                  else if (instance_id == -1)
+                    g_print ("    Default Instance\n");
+                }
 
-                  hb_ot_var_get_axis_infos (hb_face, 0, &n_axes, axes);
+              n_axes = hb_ot_var_get_axis_count (hb_font_get_face (hb_font));
+              get_axes_and_values (hb_font, n_axes, axes, coords);
 
-                  for (i = 0; i < length; i++)
+              for (int i = 0; i < n_axes; i++)
+                {
+                  char name[20];
+                  unsigned int namelen = 20;
+
+                  hb_ot_name_get_utf8 (hb_font_get_face (hb_font), axes[i].name_id, HB_LANGUAGE_INVALID, &namelen, name);
+
+                  g_print ("    %s: %g (%g - %g, %g)\n",
+                           name,
+                           coords[axes[i].axis_index],
+                           axes[i].min_value,
+                           axes[i].max_value,
+                           axes[i].default_value);
+                }
+
+              g_object_unref (font);
+            }
+
+          if (opt_verbose)
+            {
+              if (PANGO_IS_HB_FACE (face))
+                {
+                  PangoHbFace *hbface = (PangoHbFace *)face;
+
+                  if (hbface->file)
+                    g_print ("    %d %s\n", hbface->index, hbface->file);
+                }
+              else
+                {
+                  PangoFont *font;
+
+                  font = pango_context_load_font (ctx, desc);
+                  if (PANGO_IS_FC_FONT (font))
                     {
-                      char name[20];
-                      unsigned int namelen = 20;
+                      FcPattern *pattern;
+                      const char *file;
+                      int index;
 
-                      hb_ot_name_get_utf8 (hb_face, axes[i].name_id, HB_LANGUAGE_INVALID, &namelen, name);
-
-                      g_print ("    %s: %g (%g - %g, %g)\n",
-                               name,
-                               denorm_coord (&axes[i], coords[i]),
-                               axes[i].min_value,
-                               axes[i].max_value,
-                               axes[i].default_value);
+                      pattern = pango_fc_font_get_pattern (PANGO_FC_FONT (font));
+                      FcPatternGetString (pattern, FC_FILE, 0, (FcChar8 **)&file);
+                      FcPatternGetInteger (pattern, FC_INDEX, 0, &index);
+                      g_print ("    %d %s\n", index, file);
                     }
-                  g_free (axes);
+                  g_object_unref (font);
                 }
             }
 
