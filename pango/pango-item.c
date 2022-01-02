@@ -317,6 +317,7 @@ pango_analysis_collect_features (const PangoAnalysis *analysis,
             HB_TAG('l','i','g','a'),
             HB_TAG('c','l','i','g'),
             HB_TAG('d','l','i','g'),
+            HB_TAG('h','l','i','g'),
           };
           int i;
           for (i = 0; i < G_N_ELEMENTS (tags); i++)
