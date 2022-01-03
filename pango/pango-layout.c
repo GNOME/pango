@@ -88,6 +88,7 @@
 
 #include "pango-layout-private.h"
 #include "pango-attributes-private.h"
+#include "pango-font-private.h"
 
 
 typedef struct _ItemProperties ItemProperties;
@@ -2716,6 +2717,7 @@ pango_layout_get_caret_pos (PangoLayout    *layout,
       hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_HORIZONTAL_DESCENDER, &descender))
     {
       double slope_inv;
+      int x_scale, y_scale;
 
       if (strong_pos)
         strong_pos->x += caret_offset;
@@ -2726,7 +2728,8 @@ pango_layout_get_caret_pos (PangoLayout    *layout,
       if (caret_rise == 0)
         return;
 
-      slope_inv = caret_run / (double) caret_rise;
+      hb_font_get_scale (hb_font, &x_scale, &y_scale);
+      slope_inv = (caret_run * y_scale) / (double) (caret_rise * x_scale);
 
       if (strong_pos)
         {
