@@ -226,7 +226,7 @@ gtk_json_printer_escape_string (GtkJsonPrinter *self,
             g_string_append (string, "\\t");
             break;
           default:
-            if ((int) *str < 0x20)
+            if ((int) *str < 0x20 || (int) *str >= 0x80)
               {
                 if ((guint) *str < 0x20 || gtk_json_printer_has_flag (self, GTK_JSON_PRINTER_ASCII))
                   g_string_append_printf (string, "\\u%04x", g_utf8_get_char (str));
