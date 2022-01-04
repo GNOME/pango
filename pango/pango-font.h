@@ -179,6 +179,7 @@ typedef enum {
  * @PANGO_FONT_MASK_SIZE: the font size is specified.
  * @PANGO_FONT_MASK_GRAVITY: the font gravity is specified (Since: 1.16.)
  * @PANGO_FONT_MASK_VARIATIONS: OpenType font variations are specified (Since: 1.42)
+ * @PANGO_FONT_MASK_FACEID: the face ID is specified (Since: 1.52)
  *
  * The bits in a `PangoFontMask` correspond to the set fields in a
  * `PangoFontDescription`.
@@ -192,6 +193,7 @@ typedef enum {
   PANGO_FONT_MASK_SIZE    = 1 << 5,
   PANGO_FONT_MASK_GRAVITY = 1 << 6,
   PANGO_FONT_MASK_VARIATIONS = 1 << 7,
+  PANGO_FONT_MASK_FACEID   = 1 << 8,
 } PangoFontMask;
 
 /* CSS scale factors (1.2 factor between each size) */
@@ -315,6 +317,15 @@ void                 pango_font_description_set_variations    (PangoFontDescript
                                                                const char                 *variations);
 PANGO_AVAILABLE_IN_1_42
 const char          *pango_font_description_get_variations    (const PangoFontDescription *desc) G_GNUC_PURE;
+
+PANGO_AVAILABLE_IN_1_52
+void                 pango_font_description_set_faceid         (PangoFontDescription     *desc,
+                                                                const char               *faceid);
+PANGO_AVAILABLE_IN_ALL
+void                 pango_font_description_set_faceid_static  (PangoFontDescription *desc,
+                                                                const char           *faceid);
+PANGO_AVAILABLE_IN_1_52
+const char *         pango_font_description_get_faceid         (const PangoFontDescription *desc) G_GNUC_PURE;
 
 PANGO_AVAILABLE_IN_ALL
 PangoFontMask pango_font_description_get_set_fields (const PangoFontDescription *desc) G_GNUC_PURE;
