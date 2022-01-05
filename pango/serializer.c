@@ -260,6 +260,23 @@ static const char *ellipsize_names[] = {
 /* }}} */
 /* {{{ Serialization */
 
+static char *
+font_description_to_string (PangoFontDescription *desc)
+{
+  PangoFontDescription *copy;
+  char *s;
+
+  /* Leave out the faceid for now, since it would make serialization
+   * backend-dependent.
+   */
+  copy = pango_font_description_copy_static (desc);
+  pango_font_description_unset_fields (copy, PANGO_FONT_MASK_FACEID);
+  s = pango_font_description_to_string (copy);
+  pango_font_description_free (copy);
+
+  return s;
+}
+
 static void
 add_attribute (GtkJsonPrinter *printer,
                PangoAttribute *attr)
@@ -353,7 +370,7 @@ add_attribute (GtkJsonPrinter *printer,
       break;
 
     case PANGO_ATTR_FONT_DESC:
-      str = pango_font_description_to_string (((PangoAttrFontDesc*)attr)->desc);
+      str = font_description_to_string (((PangoAttrFontDesc*)attr)->desc);
       gtk_json_printer_add_string (printer, "value", str);
       g_free (str);
       break;
@@ -455,7 +472,7 @@ add_context (GtkJsonPrinter *printer,
    * context gets updated as expected.
    */
 
-  str = pango_font_description_to_string (context->font_desc);
+  str = font_description_to_string (context->font_desc);
   gtk_json_printer_add_string (printer, "font", str);
   g_free (str);
 
@@ -548,7 +565,7 @@ add_font (GtkJsonPrinter *printer,
   gtk_json_printer_start_object (printer, member);
 
   desc = pango_font_describe (font);
-  str = pango_font_description_to_string (desc);
+  str = font_description_to_string (desc);
   gtk_json_printer_add_string (printer, "description", str);
   g_free (str);
   pango_font_description_free (desc);
