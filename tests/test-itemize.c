@@ -170,6 +170,8 @@ test_file (const gchar *filename, GString *string)
       GSList *a;
 
       desc = pango_font_describe (item->analysis.font);
+      /* Leave out faceid for now to avoid backend-dependent test output */
+      pango_font_description_unset_fields (desc, PANGO_FONT_MASK_FACEID);
       font = pango_font_description_to_string (desc);
 
       if (l != items)
