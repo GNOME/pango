@@ -4091,6 +4091,8 @@ process_item (PangoLayout     *layout,
       return BREAK_ALL_FIT;
     }
 
+  wrap = layout->wrap;
+
   if (!no_break_at_end &&
       can_break_at (layout, state->start_offset + item->num_chars, wrap))
     {
@@ -4774,7 +4776,8 @@ pango_layout_check_lines (PangoLayout *layout)
   PangoAttrList *itemize_attrs;
   PangoAttrList *shape_attrs;
   PangoAttrIterator iter;
-  PangoDirection prev_base_dir = PANGO_DIRECTION_NEUTRAL, base_dir = PANGO_DIRECTION_NEUTRAL;
+  PangoDirection prev_base_dir = PANGO_DIRECTION_NEUTRAL;
+  PangoDirection base_dir = PANGO_DIRECTION_NEUTRAL;
   ParaBreakState state;
   gboolean need_log_attrs;
 
