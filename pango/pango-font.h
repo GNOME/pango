@@ -83,22 +83,19 @@ typedef enum {
  * @PANGO_VARIANT_SMALL_CAPS: A font with the lower case characters
  *   replaced by smaller variants of the capital characters.
  * @PANGO_VARIANT_ALL_SMALL_CAPS: A font with all characters
- *   replaced by smaller variants of the capital characters.
+ *   replaced by smaller variants of the capital characters. Since: 1.50
  * @PANGO_VARIANT_PETITE_CAPS: A font with the lower case characters
  *   replaced by smaller variants of the capital characters.
- *   Petite Caps can be even smaller than Small Caps.
+ *   Petite Caps can be even smaller than Small Caps. Since: 1.50
  * @PANGO_VARIANT_ALL_PETITE_CAPS: A font with all characters
  *   replaced by smaller variants of the capital characters.
- *   Petite Caps can be even smaller than Small Caps.
+ *   Petite Caps can be even smaller than Small Caps. Since: 1.50
  * @PANGO_VARIANT_UNICASE: A font with the upper case characters
- *   replaced by smaller variants of the capital letters.
+ *   replaced by smaller variants of the capital letters. Since: 1.50
  * @PANGO_VARIANT_TITLE_CAPS: A font with capital letters that
- *   are more suitable for all-uppercase titles.
+ *   are more suitable for all-uppercase titles. Since: 1.50
  *
  * An enumeration specifying capitalization variant of the font.
- *
- * Values other than `PANGO_VARIANT_NORMAL` and `PANGO_VARIANT_SMALL_CAPS` are
- * available since 1.50.
  */
 typedef enum {
   PANGO_VARIANT_NORMAL,

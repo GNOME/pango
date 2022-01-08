@@ -32,18 +32,15 @@ typedef struct _PangoTabArray PangoTabArray;
  * PangoTabAlign:
  * @PANGO_TAB_LEFT: the text appears to the right of the tab stop position
  * @PANGO_TAB_RIGHT: the text appears to the left of the tab stop position
- *   until the available space is filled
+ *   until the available space is filled. Since: 1.50
  * @PANGO_TAB_CENTER: the text is centered at the tab stop position
- *   until the available space is filled
+ *   until the available space is filled. Since: 1.50
  * @PANGO_TAB_DECIMAL: text before the first occurrence of the decimal point
  *   character appears to the left of the tab stop position (until the available
- *   space is filled), the rest to the right
+ *   space is filled), the rest to the right. Since: 1.50
  *
  * `PangoTabAlign` specifies where the text appears relative to the tab stop
  * position.
- *
- * Support for tab alignments other than %PANGO_TAB_LEFT was added
- * in Pango 1.50.
  */
 typedef enum
 {
