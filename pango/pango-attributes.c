@@ -1810,7 +1810,7 @@ pango_attr_list_update (PangoAttrList *list,
  * that applies at position @pos in @list by an amount @len,
  * and then calling [method@Pango.AttrList.change] with a copy
  * of each attribute in @other in sequence (offset in position
- * by @pos).
+ * by @pos, and limited in lengh to @len).
  *
  * This operation proves useful for, for instance, inserting
  * a pre-edit string in the middle of an edit buffer.
