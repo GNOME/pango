@@ -1202,6 +1202,23 @@ test_iter_epsilon_zero (void)
   g_string_free (s, TRUE);
 }
 
+static void
+test_gnumeric_splice (void)
+{
+  PangoAttrList *list, *list2;
+
+  list = pango_attr_list_from_string ("0 -1 font-desc \"Sans 10\"\n");
+  list2 = pango_attr_list_from_string ("1 2 weight bold\n");
+
+  pango_attr_list_splice (list, list2, 0, 0);
+
+  assert_attr_list (list, "0 4294967295 font-desc \"Sans 10\"\n"
+                          "1 2 weight bold\n");
+
+  pango_attr_list_unref (list);
+  pango_attr_list_unref (list2);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1240,6 +1257,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/attributes/iter/get_font", test_iter_get_font);
   g_test_add_func ("/attributes/iter/get_attrs", test_iter_get_attrs);
   g_test_add_func ("/attributes/iter/epsilon_zero", test_iter_epsilon_zero);
+  g_test_add_func ("/attributes/gnumeric-splice", test_gnumeric_splice);
 
   return g_test_run ();
 }

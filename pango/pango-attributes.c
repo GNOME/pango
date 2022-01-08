@@ -1810,10 +1810,16 @@ pango_attr_list_update (PangoAttrList *list,
  * that applies at position @pos in @list by an amount @len,
  * and then calling [method@Pango.AttrList.change] with a copy
  * of each attribute in @other in sequence (offset in position
- * by @pos, and limited in lengh to @len).
+ * by @pos, and limited in length to @len).
  *
  * This operation proves useful for, for instance, inserting
  * a pre-edit string in the middle of an edit buffer.
+ *
+ * For backwards compatibility, the function behaves differently
+ * when @len is 0. In this case, the attributes from @other are
+ * not imited to @len, and are just overlayed on top of @list.
+ *
+ * This mode is useful for merging two lists of attributes together.
  */
 void
 pango_attr_list_splice (PangoAttrList *list,
@@ -1868,8 +1874,16 @@ pango_attr_list_splice (PangoAttrList *list,
   for (i = 0, p = other->attributes->len; i < p; i++)
     {
       PangoAttribute *attr = pango_attribute_copy (g_ptr_array_index (other->attributes, i));
-      attr->start_index = MIN (CLAMP_ADD (attr->start_index, upos), end);
-      attr->end_index = MIN (CLAMP_ADD (attr->end_index, upos), end);
+      if (ulen > 0)
+        {
+          attr->start_index = MIN (CLAMP_ADD (attr->start_index, upos), end);
+          attr->end_index = MIN (CLAMP_ADD (attr->end_index, upos), end);
+        }
+      else
+        {
+          attr->start_index = CLAMP_ADD (attr->start_index, upos);
+          attr->end_index = CLAMP_ADD (attr->end_index, upos);
+        }
 
       /* Same as above, the attribute could be squashed to zero-length; here
        * pango_attr_list_change() will take care of deleting it.
