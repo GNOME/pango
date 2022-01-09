@@ -21,7 +21,11 @@
 
 #include "config.h"
 #include <glib.h>
+#include <gio/gio.h>
 #include <pango/pangocairo.h>
+#include <pango/pangofc-hbfontmap.h>
+#include <pango/pangofc-fontmap.h>
+#include <pango/pangofc-font.h>
 
 #include <hb-ot.h>
 
@@ -429,6 +433,399 @@ test_hbfont_load (void)
   g_object_unref (map);
 }
 
+/* Test font -> description -> font roundtrips with variations */
+static void
+test_hbfont_load_variation (void)
+{
+  PangoHbFontMap *map;
+  PangoContext *context;
+  char *path;
+  PangoFontDescription *desc;
+  PangoHbFace *face_fat, *face_wild;
+  char *s;
+  PangoFont *font;
+  hb_variation_t v;
+  hb_font_t *hb_font;
+  const float *coords;
+  unsigned int length;
+
+  /* Make a Cat family, with the two faces Fat and Wild */
+  map = pango_hb_font_map_new ();
+  context = pango_font_map_create_context (PANGO_FONT_MAP (map));
+
+  path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
+  desc = pango_font_description_new ();
+  pango_font_description_set_family (desc, "Cat");
+  face_fat = pango_hb_face_new_from_file (path, 0, -1, "Fat", desc);
+  pango_font_description_free (desc);
+  g_free (path);
+
+  pango_hb_font_map_add_face (map, face_fat);
+
+  desc = pango_font_description_new ();
+  pango_font_description_set_family (desc, "Cat");
+  v.tag = HB_OT_TAG_VAR_AXIS_WEIGHT;
+  v.value = 624.;
+  face_wild = pango_hb_face_new_instance (face_fat, &v, 1, "Wild", desc);
+  pango_font_description_free (desc);
+
+  pango_hb_font_map_add_face (map, face_wild);
+
+  desc = pango_font_face_describe (PANGO_FONT_FACE (face_wild));
+
+  g_assert_cmpstr (pango_font_description_get_variations (desc), ==, "wght=624");
+
+  pango_font_description_set_size (desc, 12 * PANGO_SCALE);
+
+  s = pango_font_description_to_string (desc);
+  g_assert_cmpstr (s, ==, "Cat 12 @faceid=hb:Cantarell-Regular:0:-1:0:1:1:0:wght_624,wght=624");
+  g_free (s);
+
+  font = pango_font_map_load_font (PANGO_FONT_MAP (map), context, desc);
+  g_assert_true (pango_font_get_face (font) == PANGO_FONT_FACE (face_wild));
+
+  hb_font = pango_font_get_hb_font (font);
+  coords = hb_font_get_var_coords_design (hb_font, &length);
+  g_assert_cmpint (length, ==, 1);
+  g_assert_cmphex (coords[0], ==, 624.);
+
+  g_object_unref (font);
+
+  pango_font_description_free (desc);
+
+  g_object_unref (context);
+  g_object_unref (map);
+}
+
+/* Verify that pango_fontmap_load_fontset produces a non-empty result
+ * even if the language isn't covered - our itemization code relies
+ * on this.
+ */
+static gboolean
+get_font (PangoFontset *fontset,
+          PangoFont    *font,
+          gpointer      data)
+{
+  gboolean *found = data;
+
+  *found = TRUE;
+
+  return TRUE;
+}
+
+static void
+test_hbfontmap_language (void)
+{
+  PangoFontMap *map;
+  PangoContext *context;
+  PangoFontDescription *desc;
+  PangoFontset *fonts;
+  gboolean found;
+
+  map = PANGO_FONT_MAP (pango_fc_hb_font_map_new ());
+  context = pango_font_map_create_context (map);
+  desc = pango_font_description_from_string ("serif 11");
+
+  /* zz isn't assigned, so there should not be any fonts claiming to support
+   * this language. We are expecting to get a nonempty fontset regardless.
+   */
+  fonts = pango_font_map_load_fontset (map, context, desc, pango_language_from_string ("zz"));
+  g_assert_true (PANGO_IS_FONTSET (fonts));
+
+  found = FALSE;
+  pango_fontset_foreach (fonts, get_font, &found);
+  g_assert_true (found);
+
+  g_object_unref (fonts);
+  pango_font_description_free (desc);
+}
+
+static const char *
+get_font_file (PangoFont *font)
+{
+  if (PANGO_IS_HB_FONT (font))
+    {
+      PangoFontFace *face = pango_font_get_face (font);
+
+      return pango_hb_face_get_file (PANGO_HB_FACE (face));
+    }
+  else if (PANGO_IS_FC_FONT (font))
+    {
+      FcPattern *pattern = pango_fc_font_get_pattern (PANGO_FC_FONT (font));
+       const char *file;
+
+      FcPatternGetString (pattern, FC_FILE, 0, (FcChar8 **)&file);
+
+      return file;
+    }
+  else
+    return "Unknown";
+}
+
+typedef struct
+{
+  FcConfig *config;
+  PangoFontMap *fcfontmap;
+  PangoFontMap *hbfontmap;
+} FontMapCompareFixture;
+
+static void
+fontmap_compare_fixture_set_up (FontMapCompareFixture *fixture,
+                                gconstpointer          data)
+{
+  char *path, *conf;
+  FcConfig *config;
+  PangoFontMap *fcfontmap, *hbfontmap;
+
+  path = g_test_build_filename (G_TEST_DIST, "fonts", NULL);
+  if (!g_path_is_absolute (path))
+    {
+      char *dir = g_build_filename (g_get_current_dir (), path, NULL);
+      g_free (path);
+      path = dir;
+    }
+
+  config = FcConfigCreate ();
+
+  conf = g_build_filename (path, "fonts.conf", NULL);
+  if (!FcConfigParseAndLoad (config, (const FcChar8 *) conf, TRUE))
+    g_error ("Failed to parse fontconfig configuration from %s", conf);
+
+  FcConfigAppFontAddDir (config, (const FcChar8 *) path);
+
+  fcfontmap = pango_cairo_font_map_new_for_font_type (CAIRO_FONT_TYPE_FT);
+  pango_fc_font_map_set_config (PANGO_FC_FONT_MAP (fcfontmap), config);
+
+  hbfontmap = PANGO_FONT_MAP (pango_fc_hb_font_map_new ());
+  pango_fc_hb_font_map_set_config (PANGO_FC_HB_FONT_MAP (hbfontmap), config);
+
+  g_free (conf);
+  g_free (path);
+
+  fixture->config = config;
+  fixture->fcfontmap = fcfontmap;
+  fixture->hbfontmap = hbfontmap;
+}
+
+static void
+fontmap_compare_fixture_tear_down (FontMapCompareFixture *fixture,
+                                   gconstpointer          data)
+{
+  g_object_unref (fixture->hbfontmap);
+  g_object_unref (fixture->fcfontmap);
+  FcConfigDestroy (fixture->config);
+}
+
+/* Check that we have the same families (we know
+ * generics are different, so skip those)
+ */
+
+static int
+compare_family_name (gconstpointer a,
+                     gconstpointer b)
+{
+  return g_ascii_strcasecmp (*(const char **)a, *(const char **)b);
+}
+
+static gboolean
+is_generic_family (PangoFontFamily *fam)
+{
+  const char *name = pango_font_family_get_name (fam);
+
+  if (strcmp (G_OBJECT_TYPE_NAME (fam), "PangoGenericFamily") == 0)
+    return TRUE;
+
+  return g_strv_contains ((const char *[]){ "Sans", "Serif", "Monospace", "System-ui", NULL}, name);
+}
+
+static const char * const *
+collect_nongeneric_families (PangoFontMap *map)
+{
+  GPtrArray *array = g_ptr_array_new ();
+
+  for (int i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (map)); i++)
+    {
+      PangoFontFamily *fam = g_list_model_get_item (G_LIST_MODEL (map), i);
+
+      if (!is_generic_family (fam))
+        g_ptr_array_add (array, (gpointer)pango_font_family_get_name (fam));
+
+      g_object_unref (fam);
+    }
+
+  g_ptr_array_sort (array, compare_family_name);
+
+  g_ptr_array_add (array, NULL);
+
+  return (const char * const *)g_ptr_array_free (array, FALSE);
+}
+
+static void
+test_hbfontmap_compare_families (FontMapCompareFixture *fixture,
+                                 gconstpointer          data)
+{
+  const char * const *fcfamilies;
+  const char * const *hbfamilies;
+
+  fcfamilies = collect_nongeneric_families (fixture->fcfontmap);
+  hbfamilies = collect_nongeneric_families (fixture->hbfontmap);
+  g_assert_true (g_strv_equal (fcfamilies, hbfamilies));
+  g_free ((gpointer)fcfamilies);
+  g_free ((gpointer)hbfamilies);
+}
+
+static gboolean
+languages_equal (PangoLanguage **l1,
+                 PangoLanguage **l2)
+{
+  int i;
+
+  if (!l1 || !l2)
+    return l1 == l2;
+
+  for (i = 0; l1[i] && l2[i]; i++)
+    if (l1[i] != l2[i])
+      return FALSE;
+
+  if (l1[i] || l2[i])
+    return FALSE;
+
+  return TRUE;
+}
+
+static void
+test_hbfontmap_compare_languages (FontMapCompareFixture *fixture,
+                                  gconstpointer          data)
+{
+  const char *family_name = data;
+  PangoContext *context;
+  PangoFontDescription *description;
+  PangoFont *fcfont, *hbfont;
+  PangoLanguage **fclanguages;
+  PangoLanguage **hblanguages;
+
+  context = pango_font_map_create_context (fixture->fcfontmap);
+
+  description = pango_font_description_new ();
+  pango_font_description_set_family (description, family_name);
+  pango_font_description_set_size (description, 12 * PANGO_SCALE);
+
+  fcfont = pango_font_map_load_font (fixture->fcfontmap, context, description);
+  hbfont = pango_font_map_load_font (fixture->hbfontmap, context, description);
+
+  fclanguages = pango_font_get_languages (fcfont);
+  hblanguages = pango_font_get_languages (hbfont);
+
+  g_assert_nonnull (fclanguages);
+  g_assert_nonnull (hblanguages);
+  g_assert_true (languages_equal (fclanguages, hblanguages));
+
+  g_object_unref (hbfont);
+  g_object_unref (fcfont);
+
+  pango_font_description_free (description);
+
+  g_object_unref (context);
+}
+
+/* Compare the faces we get. We already know that hbfontmap adds
+ * the variable font as an extra family, so skip those.
+ */
+static int
+compare_face_name (gconstpointer a,
+                     gconstpointer b)
+{
+  return strcmp (*(const char **)a, *(const char **)b);
+}
+
+static const char * const *
+collect_nonvariable_faces (PangoFontFamily *fam)
+{
+  GPtrArray *array = g_ptr_array_new ();
+
+  for (int i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (fam)); i++)
+    {
+      PangoFontFace *face = g_list_model_get_item (G_LIST_MODEL (fam), i);
+      const char *name = pango_font_face_get_face_name (face);
+
+      if (!pango_font_face_is_variable (face))
+        g_ptr_array_add (array, (gpointer)name);
+
+      g_object_unref (face);
+    }
+
+  g_ptr_array_sort (array, compare_face_name);
+
+  g_ptr_array_add (array, NULL);
+
+  return (const char * const *)g_ptr_array_free (array, FALSE);
+}
+
+static void
+test_hbfontmap_compare_faces (FontMapCompareFixture *fixture,
+                              gconstpointer          data)
+{
+  const char *family_name = data;
+  PangoFontFamily *fcfamily, *hbfamily;
+  const char * const *fcfaces;
+  const char * const *hbfaces;
+
+  fcfamily = pango_font_map_get_family (fixture->fcfontmap, family_name);
+  hbfamily = pango_font_map_get_family (fixture->hbfontmap, family_name);
+
+  fcfaces = collect_nonvariable_faces (fcfamily);
+  hbfaces = collect_nonvariable_faces (hbfamily);
+  if (!g_strv_equal (fcfaces, hbfaces))
+    g_print ("%s\n%s\n", g_strjoinv (", ", (char **)fcfaces), g_strjoinv (", ", (char **)hbfaces));
+  g_assert_true (g_strv_equal (fcfaces, hbfaces));
+  g_free ((gpointer)fcfaces);
+  g_free ((gpointer)hbfaces);
+}
+
+static void
+test_hbfontmap_compare_match (FontMapCompareFixture *fixture,
+                              gconstpointer          data)
+{
+  PangoContext *context;
+  const char *tests[] = {
+    "Amiri Bold 12",
+    "Cantarell 12",
+    "Sans 11",
+    "sans-serif 11",
+    "emoji 12",
+    "emoji 12",
+    "Cantarell Italic 11",
+    "Sans Bold 11",
+  };
+
+  context = pango_font_map_create_context (fixture->fcfontmap);
+  pango_context_set_language (context, pango_language_from_string ("en"));
+
+
+  for (int i = 0; i < G_N_ELEMENTS (tests); i++)
+    {
+      PangoFontDescription *description;
+      PangoFont *fcfont, *hbfont;
+
+      description = pango_font_description_from_string (tests[i]);
+
+      fcfont = pango_font_map_load_font (fixture->fcfontmap, context, description);
+      hbfont = pango_font_map_load_font (fixture->hbfontmap, context, description);
+
+      if (strcmp (get_font_file (fcfont), get_font_file (hbfont)) != 0)
+        g_print ("test %s\n", tests[i]);
+
+      g_assert_cmpstr (get_font_file (fcfont), ==, get_font_file (hbfont));
+
+      g_object_unref (hbfont);
+      g_object_unref (fcfont);
+
+      pango_font_description_free (description);
+    }
+
+  g_object_unref (context);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -441,6 +838,32 @@ main (int argc, char *argv[])
   g_test_add_func ("/hbfont/describe/variation", test_hbfont_describe_variation);
   g_test_add_func ("/hbfont/faceid", test_hbfont_faceid);
   g_test_add_func ("/hbfont/load", test_hbfont_load);
+  g_test_add_func ("/hbfont/load/variation", test_hbfont_load_variation);
+  g_test_add_func ("/hbfontmap/language", test_hbfontmap_language);
+  g_test_add ("/hbfontmap/families", FontMapCompareFixture, NULL,
+                                     fontmap_compare_fixture_set_up,
+                                     test_hbfontmap_compare_families,
+                                     fontmap_compare_fixture_tear_down);
+  g_test_add ("/hbfontmap/faces/Amiri", FontMapCompareFixture, "Amiri",
+                                        fontmap_compare_fixture_set_up,
+                                        test_hbfontmap_compare_faces,
+                                        fontmap_compare_fixture_tear_down);
+  g_test_add ("/hbfontmap/faces/Cantarell", FontMapCompareFixture, "Cantarell",
+                                            fontmap_compare_fixture_set_up,
+                                            test_hbfontmap_compare_faces,
+                                            fontmap_compare_fixture_tear_down);
+  g_test_add ("/hbfontmap/languages/Amiri", FontMapCompareFixture, "Amiri",
+                                            fontmap_compare_fixture_set_up,
+                                            test_hbfontmap_compare_languages,
+                                            fontmap_compare_fixture_tear_down);
+  g_test_add ("/hbfontmap/languages/Cantarell", FontMapCompareFixture, "Cantarell",
+                                                fontmap_compare_fixture_set_up,
+                                                test_hbfontmap_compare_languages,
+                                                fontmap_compare_fixture_tear_down);
+  g_test_add ("/hbfontmap/compare/match", FontMapCompareFixture, NULL,
+                                          fontmap_compare_fixture_set_up,
+                                          test_hbfontmap_compare_match,
+                                          fontmap_compare_fixture_tear_down);
 
   return g_test_run ();
 }
