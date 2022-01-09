@@ -36,6 +36,7 @@ pango_sources = [
   'json/gtkjsonprinter.c',
   'pango-hbface.c',
   'pango-hbfamily.c',
+  'pango-generic-family.c',
 ]
 
 pango_headers = [
@@ -52,6 +53,7 @@ pango_headers = [
   'pango-fontmap.h',
   'pango-fontset.h',
   'pango-fontset-simple.h',
+  'pango-generic-family.h',
   'pango-glyph.h',
   'pango-glyph-item.h',
   'pango-gravity.h',

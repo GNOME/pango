@@ -36,6 +36,7 @@
 #include <pango/pango-fontmap.h>
 #include <pango/pango-fontset.h>
 #include <pango/pango-fontset-simple.h>
+#include <pango/pango-generic-family.h>
 #include <pango/pango-glyph.h>
 #include <pango/pango-glyph-item.h>
 #include <pango/pango-gravity.h>
