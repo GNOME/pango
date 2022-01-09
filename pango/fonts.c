@@ -2374,11 +2374,24 @@ pango_font_family_default_is_variable (PangoFontFamily *family)
 }
 
 static void
+pango_font_family_default_list_faces (PangoFontFamily   *family,
+                                      PangoFontFace   ***faces,
+                                      int               *n_faces)
+{
+  if (faces)
+    *faces = NULL;
+
+  if (n_faces)
+    *n_faces = 0;
+}
+
+static void
 pango_font_family_class_init (PangoFontFamilyClass *class G_GNUC_UNUSED)
 {
   class->is_monospace = pango_font_family_default_is_monospace;
   class->is_variable = pango_font_family_default_is_variable;
   class->get_face = pango_font_family_real_get_face;
+  class->list_faces = pango_font_family_default_list_faces;
 }
 
 static void
