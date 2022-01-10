@@ -28,33 +28,6 @@
 
 G_BEGIN_DECLS
 
-PANGO_DEPRECATED
-char **  pango_split_file_list (const char *str);
-
-PANGO_DEPRECATED
-char    *pango_trim_string     (const char *str);
-PANGO_DEPRECATED
-gint     pango_read_line      (FILE        *stream,
-			       GString     *str);
-PANGO_DEPRECATED
-gboolean pango_skip_space     (const char **pos);
-PANGO_DEPRECATED
-gboolean pango_scan_word      (const char **pos,
-			       GString     *out);
-PANGO_DEPRECATED
-gboolean pango_scan_string    (const char **pos,
-			       GString     *out);
-PANGO_DEPRECATED
-gboolean pango_scan_int       (const char **pos,
-			       int         *out);
-
-PANGO_DEPRECATED
-gboolean pango_parse_enum     (GType       type,
-			       const char *str,
-			       int        *value,
-			       gboolean    warn,
-			       char      **possible_values);
-
 /* Functions for parsing textual representations
  * of PangoFontDescription fields. They return TRUE if the input string
  * contains a valid value, which then has been assigned to the corresponding

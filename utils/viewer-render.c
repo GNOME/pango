@@ -420,35 +420,78 @@ do_output (PangoContext     *context,
 }
 
 static gboolean
-parse_enum (GType       type,
-	    int        *value,
-	    const char *name,
-	    const char *arg,
-	    gpointer    data G_GNUC_UNUSED,
-	    GError **error)
+parse_int (const char *word,
+           int        *out)
 {
-  char *possible_values = NULL;
-  gboolean ret;
+  char *end;
+  long val;
+  int i;
 
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-  ret = pango_parse_enum (type,
-			  arg,
-			  value,
-			  FALSE,
-			  &possible_values);
-G_GNUC_END_IGNORE_DEPRECATIONS
+  if (word == NULL)
+    return FALSE;
 
-  if (!ret && error)
+  val = strtol (word, &end, 10);
+  i = val;
+
+  if (end != word && *end == '\0' && val >= 0 && val == i)
     {
-      g_set_error(error,
-		  G_OPTION_ERROR,
-		  G_OPTION_ERROR_BAD_VALUE,
-		  "Argument for %s must be one of %s",
-		  name,
-		  possible_values);
+      if (out)
+        *out = i;
+
+      return TRUE;
     }
 
-  g_free (possible_values);
+  return FALSE;
+}
+
+static gboolean
+parse_enum (GType       type,
+            int        *value,
+            const char *name,
+            const char *arg,
+            gpointer    data G_GNUC_UNUSED,
+            GError **error)
+{
+  GEnumClass *class = NULL;
+  gboolean ret = TRUE;
+  GEnumValue *v = NULL;
+
+  class = g_type_class_ref (type);
+
+  if (G_LIKELY (arg))
+    v = g_enum_get_value_by_nick (class, arg);
+
+  if (v)
+    {
+      if (G_LIKELY (value))
+        *value = v->value;
+    }
+  else if (!parse_int (arg, value))
+    {
+      ret = FALSE;
+      int i;
+      GString *s = g_string_new (NULL);
+
+      for (i = 0, v = g_enum_get_value (class, i);
+           v;
+           i++  , v = g_enum_get_value (class, i))
+        {
+          if (i)
+            g_string_append_c (s, '/');
+          g_string_append (s, v->value_nick);
+        }
+
+      g_set_error(error,
+                  G_OPTION_ERROR,
+                  G_OPTION_ERROR_BAD_VALUE,
+                  "Argument for %s must be one of %s",
+                  name,
+                  s->str);
+
+      g_string_free (s, TRUE);
+    }
+
+  g_type_class_unref (class);
 
   return ret;
 }
