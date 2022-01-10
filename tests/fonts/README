@@ -3,6 +3,7 @@ test-layout tests.
 
 Cantarell-VF.otf: Cantarell
 DejaVSans.ttf: DejaVu Sans
+DejaVSans-Bold.ttf: DejaVu Sans Bold
 DejaVSansMono.ttf: DejaVu Sans Mono
 emoji-subset.ttf: subset of Noto Color Emoji
 droid-sans-subset.ttf: subset of Droid Sans Japanese
