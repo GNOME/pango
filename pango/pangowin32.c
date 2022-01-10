@@ -97,22 +97,6 @@ _pango_win32_font_get_hfont (PangoFont *font)
   return win32font->hfont;
 }
 
-/**
- * pango_win32_get_context:
- *
- * Retrieves a `PangoContext` appropriate for rendering with Windows fonts.
- *
- * Return value: the new `PangoContext`
- *
- * Deprecated: 1.22: Use [func@Pango.Win32FontMap.for_display] followed by
- * [method@Pango.FontMap.create_context] instead.
- */
-PangoContext *
-pango_win32_get_context (void)
-{
-  return pango_font_map_create_context (pango_win32_font_map_for_display ());
-}
-
 G_DEFINE_TYPE (PangoWin32Font, _pango_win32_font, PANGO_TYPE_FONT)
 
 static void
@@ -152,19 +136,6 @@ _pango_win32_get_display_dc (void)
     }
 
   return hdc;
-}
-
-/**
- * pango_win32_get_dc:
- *
- * Obtains a handle to the Windows device context that is used by Pango.
- *
- * Return value: A handle to the Windows device context that is used by Pango.
- **/
-HDC
-pango_win32_get_dc (void)
-{
-  return _pango_win32_get_display_dc ();
 }
 
 /**
@@ -894,25 +865,6 @@ pango_win32_font_get_coverage (PangoFont     *font,
 /* Utility functions */
 
 /**
- * pango_win32_get_unknown_glyph:
- * @font: a `PangoFont`
- * @wc: the Unicode character for which a glyph is needed
- *
- * Returns the index of a glyph suitable for drawing @wc as an
- * unknown character.
- *
- * Use PANGO_GET_UNKNOWN_GLYPH() instead.
- *
- * Return value: a glyph index into @font
- */
-PangoGlyph
-pango_win32_get_unknown_glyph (PangoFont *font,
-			       gunichar   wc)
-{
-  return PANGO_GET_UNKNOWN_GLYPH (wc);
-}
-
-/**
  * pango_win32_render_layout_line:
  * @hdc: DC to use for drawing
  * @line: a `PangoLayoutLine`
@@ -1173,28 +1125,6 @@ pango_win32_get_item_properties (PangoItem      *item,
 	}
       tmp_list = tmp_list->next;
     }
-}
-
-/**
- * pango_win32_font_get_glyph_index:
- * @font: a `PangoFont`
- * @wc: a Unicode character
- *
- * Obtains the index of the glyph for @wc in @font, or 0, if not
- * covered.
- *
- * Return value: the glyph index for @wc.
- */
-gint
-pango_win32_font_get_glyph_index (PangoFont *font,
-				  gunichar   wc)
-{
-  hb_font_t *hb_font = pango_font_get_hb_font (font);
-  hb_codepoint_t glyph = 0;
-
-  hb_font_get_nominal_glyph (hb_font, wc, &glyph);
-
-  return glyph;
 }
 
 /*

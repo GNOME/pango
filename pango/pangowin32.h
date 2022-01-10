@@ -39,10 +39,6 @@ G_BEGIN_DECLS
 
 /* Calls for applications
  */
-#ifndef PANGO_DISABLE_DEPRECATED
-PANGO_DEPRECATED_FOR(pango_font_map_create_context)
-PangoContext * pango_win32_get_context        (void);
-#endif
 
 PANGO_AVAILABLE_IN_ALL
 void           pango_win32_render             (HDC               hdc,
@@ -69,33 +65,6 @@ void           pango_win32_render_transformed (HDC         hdc,
 					       int                x,
 					       int                y);
 
-#ifndef PANGO_DISABLE_DEPRECATED
-
-/* For shape engines
- */
-
-PANGO_DEPRECATED_FOR(PANGO_GET_UNKNOWN_GLYPH)
-PangoGlyph     pango_win32_get_unknown_glyph  (PangoFont        *font,
-					       gunichar          wc);
-PANGO_DEPRECATED
-gint	      pango_win32_font_get_glyph_index(PangoFont        *font,
-					       gunichar          wc);
-
-PANGO_DEPRECATED
-HDC            pango_win32_get_dc             (void);
-
-PANGO_DEPRECATED
-gboolean       pango_win32_get_debug_flag     (void);
-
-PANGO_DEPRECATED
-gboolean pango_win32_font_select_font        (PangoFont *font,
-					      HDC        hdc);
-PANGO_DEPRECATED
-void     pango_win32_font_done_font          (PangoFont *font);
-PANGO_DEPRECATED
-double   pango_win32_font_get_metrics_factor (PangoFont *font);
-
-#endif
 
 /* API for libraries that want to use PangoWin32 mixed with classic
  * Win32 fonts.
