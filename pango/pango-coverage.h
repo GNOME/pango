@@ -76,9 +76,9 @@ GType pango_coverage_get_type (void) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
 PangoCoverage *    pango_coverage_new     (void);
-PANGO_AVAILABLE_IN_ALL
+PANGO_DEPRECATED_IN_1_52_FOR(g_object_ref)
 PangoCoverage *    pango_coverage_ref     (PangoCoverage      *coverage);
-PANGO_AVAILABLE_IN_ALL
+PANGO_DEPRECATED_IN_1_52_FOR(g_object_unref)
 void               pango_coverage_unref   (PangoCoverage      *coverage);
 PANGO_AVAILABLE_IN_ALL
 PangoCoverage *    pango_coverage_copy    (PangoCoverage      *coverage);
@@ -101,7 +101,7 @@ PANGO_DEPRECATED_IN_1_44
 PangoCoverage *pango_coverage_from_bytes (guchar         *bytes,
 					  int             n_bytes);
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoCoverage, pango_coverage_unref)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoCoverage, g_object_unref)
 
 G_END_DECLS
 

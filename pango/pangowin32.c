@@ -596,7 +596,7 @@ pango_win32_font_get_metrics (PangoFont     *font,
 	  else
 	    metrics->approximate_digit_width = metrics->approximate_char_width;
 
-	  pango_coverage_unref (coverage);
+	  g_object_unref (coverage);
 
 	  /* FIXME: Should get the real values from the TrueType font file */
 	  metrics->underline_position = -2 * PANGO_SCALE;
@@ -885,10 +885,10 @@ pango_win32_font_get_coverage (PangoFont     *font,
       while (hb_set_next(chars, &ch))
         pango_coverage_set (coverage, ch, PANGO_COVERAGE_EXACT);
 
-      win32face->coverage = pango_coverage_ref (coverage);
+      win32face->coverage = g_object_ref (coverage);
     }
 
-  return pango_coverage_ref (win32face->coverage);
+  return g_object_ref (win32face->coverage);
 }
 
 /* Utility functions */

@@ -53,7 +53,7 @@ pango_core_text_font_finalize (GObject *object)
     }
 
   if (priv->coverage)
-    pango_coverage_unref (priv->coverage);
+    g_object_unref (priv->coverage);
 
   G_OBJECT_CLASS (pango_core_text_font_parent_class)->finalize (object);
 }
@@ -152,7 +152,7 @@ pango_core_text_font_get_coverage (PangoFont     *font,
       priv->coverage = ct_font_descriptor_get_coverage (ctfontdesc);
     }
 
-  return pango_coverage_ref (priv->coverage);
+  return g_object_ref (priv->coverage);
 }
 
 static PangoFontMap *
@@ -253,7 +253,7 @@ _pango_core_text_font_set_font_key (PangoCoreTextFont    *font,
 
   if (priv->coverage)
     {
-      pango_coverage_unref (priv->coverage);
+      g_object_unref (priv->coverage);
       priv->coverage = NULL;
     }
 }

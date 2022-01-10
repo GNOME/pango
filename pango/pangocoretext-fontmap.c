@@ -1775,7 +1775,7 @@ pango_core_text_fontset_finalize (GObject *object)
     {
       PangoCoverage *coverage = g_ptr_array_index (ctfontset->coverages, i);
       if (coverage)
-        pango_coverage_unref (coverage);
+        g_object_unref (coverage);
     }
   g_ptr_array_free (ctfontset->coverages, TRUE);
 

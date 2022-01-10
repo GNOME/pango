@@ -44,7 +44,7 @@ test_coverage_basic (void)
   for (i = 0; i < 100; i++)
     g_assert_cmpint (pango_coverage_get (coverage, i), ==, PANGO_COVERAGE_NONE);
 
-  pango_coverage_unref (coverage);
+  g_object_unref (coverage);
 }
 
 static void
@@ -67,8 +67,8 @@ test_coverage_copy (void)
   for (i = 0; i < 100; i++)
     g_assert_cmpint (pango_coverage_get (coverage2, i), ==, PANGO_COVERAGE_EXACT);
 
-  pango_coverage_unref (coverage);
-  pango_coverage_unref (coverage2);
+  g_object_unref (coverage);
+  g_object_unref (coverage2);
 }
 
 int

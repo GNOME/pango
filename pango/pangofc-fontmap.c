@@ -318,7 +318,7 @@ pango_fc_font_face_data_free (PangoFcFontFaceData *data)
   FcPatternDestroy (data->pattern);
 
   if (data->coverage)
-    pango_coverage_unref (data->coverage);
+    g_object_unref (data->coverage);
 
   g_free (data->languages);
 
@@ -1227,7 +1227,7 @@ pango_fc_fontset_finalize (GObject *object)
     {
       PangoCoverage *coverage = g_ptr_array_index (fontset->coverages, i);
       if (coverage)
-	pango_coverage_unref (coverage);
+	g_object_unref (coverage);
     }
   g_ptr_array_free (fontset->coverages, TRUE);
 
@@ -2541,7 +2541,7 @@ _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
       data->coverage = _pango_fc_font_map_fc_to_coverage (charset);
     }
 
-  return pango_coverage_ref (data->coverage);
+  return g_object_ref (data->coverage);
 }
 
 /**

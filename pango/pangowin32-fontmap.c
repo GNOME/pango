@@ -1772,7 +1772,7 @@ pango_win32_face_finalize (GObject *object)
   pango_font_description_free (win32face->description);
 
   if (win32face->coverage != NULL)
-    pango_coverage_unref (win32face->coverage);
+    g_object_unref (win32face->coverage);
 
   g_free (win32face->face_name);
 
