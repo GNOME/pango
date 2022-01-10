@@ -25,7 +25,6 @@
 #include <glib-object.h>
 
 #include <pango/pango-version-macros.h>
-#include <pango/pango-language.h>
 
 G_BEGIN_DECLS
 
@@ -322,6 +321,8 @@ PANGO_AVAILABLE_IN_1_4
 gboolean         pango_script_iter_next      (PangoScriptIter     *iter);
 PANGO_AVAILABLE_IN_1_4
 void             pango_script_iter_free      (PangoScriptIter     *iter);
+
+#include <pango/pango-language.h>
 
 PANGO_AVAILABLE_IN_1_4
 PangoLanguage *pango_script_get_sample_language (PangoScript    script) G_GNUC_PURE;

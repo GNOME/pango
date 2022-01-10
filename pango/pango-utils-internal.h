@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <glib.h>
 #include <pango/pango-font.h>
+#include <pango/pango-direction.h>
 
 G_BEGIN_DECLS
 
@@ -43,6 +44,8 @@ gboolean pango_parse_flags              (GType       type,
 
 char    *_pango_trim_string             (const char *str);
 
+PangoDirection  pango_find_base_dir     (const char *text,
+                                         int         length);
 
 G_END_DECLS
 

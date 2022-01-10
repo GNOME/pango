@@ -23,7 +23,6 @@
 #define __PANGO_H__
 
 #include <pango/pango-attributes.h>
-#include <pango/pango-bidi-type.h>
 #include <pango/pango-break.h>
 #include <pango/pango-color.h>
 #include <pango/pango-context.h>

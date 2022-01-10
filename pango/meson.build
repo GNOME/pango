@@ -34,7 +34,6 @@ pango_sources = [
 pango_headers = [
   'pango.h',
   'pango-attributes.h',
-  'pango-bidi-type.h',
   'pango-break.h',
   'pango-color.h',
   'pango-context.h',

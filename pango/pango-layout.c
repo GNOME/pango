@@ -88,6 +88,7 @@
 #include "pango-layout-private.h"
 #include "pango-attributes-private.h"
 #include "pango-font-private.h"
+#include "pango-utils-internal.h"
 
 
 typedef struct _ItemProperties ItemProperties;
