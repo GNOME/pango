@@ -1864,26 +1864,6 @@ pango_font_get_coverage (PangoFont     *font,
 }
 
 /**
- * pango_font_find_shaper:
- * @font: a `PangoFont`
- * @language: the language tag
- * @ch: a Unicode character.
- *
- * Finds the best matching shaper for a font for a particular
- * language tag and character point.
- *
- * Return value: (transfer none): the best matching shaper.
- * Deprecated: Shape engines are no longer used
- */
-PangoEngineShape *
-pango_font_find_shaper (PangoFont     *font,
-                        PangoLanguage *language,
-                        guint32        ch)
-{
-  return NULL;
-}
-
-/**
  * pango_font_get_glyph_extents:
  * @font: (nullable): a `PangoFont`
  * @glyph: the glyph index

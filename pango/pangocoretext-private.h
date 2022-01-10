@@ -30,14 +30,6 @@
 
 G_BEGIN_DECLS
 
-/**
- * PANGO_RENDER_TYPE_CORE_TEXT:
- *
- * A string constant identifying the CoreText renderer. The associated quark (see
- * g_quark_from_string()) is used to identify the renderer in pango_find_map().
- */
-#define PANGO_RENDER_TYPE_CORE_TEXT "PangoRenderCoreText"
-
 #define PANGO_CORE_TEXT_FONT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_CORE_TEXT_FONT, PangoCoreTextFontClass))
 #define PANGO_IS_CORE_TEXT_FONT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_CORE_TEXT_FONT))
 #define PANGO_CORE_TEXT_FONT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_CORE_TEXT_FONT, PangoCoreTextFontClass))

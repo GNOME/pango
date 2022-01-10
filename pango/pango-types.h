@@ -31,12 +31,8 @@ G_BEGIN_DECLS
 
 typedef struct _PangoLogAttr PangoLogAttr;
 
-#ifndef __GI_SCANNER__
-typedef struct _PangoEngineLang PangoEngineLang;
-typedef struct _PangoEngineShape PangoEngineShape;
-#endif
-
 typedef struct _PangoFont    PangoFont;
+
 typedef struct _PangoFontMap PangoFontMap;
 
 typedef struct _PangoRectangle PangoRectangle;

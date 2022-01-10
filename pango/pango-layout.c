@@ -77,7 +77,6 @@
 #include "pango-glyph.h"                /* For pango_shape() */
 #include "pango-break.h"
 #include "pango-item-private.h"
-#include "pango-engine.h"
 #include "pango-impl-utils.h"
 #include "pango-glyph-item.h"
 #include <string.h>

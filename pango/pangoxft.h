@@ -32,20 +32,6 @@
 
 G_BEGIN_DECLS
 
-#ifndef __GI_SCANNER__
-
-/**
- * PANGO_RENDER_TYPE_XFT: (skip)
- *
- * A string constant that was used to identify shape engines that work
- * with the Xft backend. See %PANGO_RENDER_TYPE_FC for the replacement.
- */
-#ifndef PANGO_DISABLE_DEPRECATED
-#define PANGO_RENDER_TYPE_XFT "PangoRenderXft"
-#endif
-
-#endif /* __GI_SCANNER__ */
-
 /**
  * PangoXftFontMap:
  *
