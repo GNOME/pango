@@ -2193,36 +2193,6 @@ pango_default_break (const char    *text,
 }
 
 /**
- * pango_break:
- * @text: the text to process. Must be valid UTF-8
- * @length: length of @text in bytes (may be -1 if @text is nul-terminated)
- * @analysis: `PangoAnalysis` structure for @text
- * @attrs: (array length=attrs_len): an array to store character information in
- * @attrs_len: size of the array passed as @attrs
- *
- * Determines possible line, word, and character breaks
- * for a string of Unicode text with a single analysis.
- *
- * For most purposes you may want to use [func@Pango.get_log_attrs].
- *
- * Deprecated: 1.44: Use [func@Pango.default_break],
- *   [func@Pango.tailor_break] and [func@Pango.attr_break].
- */
-void
-pango_break (const char    *text,
-             gint           length,
-             PangoAnalysis *analysis,
-             PangoLogAttr  *attrs,
-             int            attrs_len)
-{
-  g_return_if_fail (analysis != NULL);
-  g_return_if_fail (attrs != NULL);
-
-  default_break (text, length, analysis, attrs, attrs_len);
-  tailor_break (text, length, analysis, -1, attrs, attrs_len);
-}
-
-/**
  * pango_tailor_break:
  * @text: text to process. Must be valid UTF-8
  * @length: length in bytes of @text

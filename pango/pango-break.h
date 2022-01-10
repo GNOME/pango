@@ -101,13 +101,6 @@ struct _PangoLogAttr
   guint reserved                    : 17;
 };
 
-PANGO_DEPRECATED_IN_1_44
-void                    pango_break             (const char    *text,
-                                                 int            length,
-                                                 PangoAnalysis *analysis,
-                                                 PangoLogAttr  *attrs,
-                                                 int            attrs_len);
-
 PANGO_AVAILABLE_IN_ALL
 void                    pango_get_log_attrs     (const char    *text,
                                                  int            length,
