@@ -47,7 +47,7 @@ test_layout (gconstpointer d)
   PangoContext *context;
   PangoLayout *layout;
 
-  if (!PANGO_IS_FC_FONT_MAP (pango_cairo_font_map_get_default ()))
+  if (!PANGO_FC_IS_FONT_MAP (pango_cairo_font_map_get_default ()))
     {
       g_test_skip ("Not an fc fontmap. Skipping...");
       return;

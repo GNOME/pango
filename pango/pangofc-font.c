@@ -556,20 +556,6 @@ pango_fc_font_real_get_glyph (PangoFcFont *font,
   return glyph;
 }
 
-/**
- * pango_fc_font_lock_face: (skip)
- * @font: a `PangoFcFont`.
- *
- * Gets the FreeType `FT_Face` associated with a font.
- *
- * This face will be kept around until you call
- * [method@PangoFc.Font.unlock_face].
- *
- * Return value: the FreeType `FT_Face` associated with @font.
- *
- * Since: 1.4
- * Deprecated: 1.44: Use pango_font_get_hb_font() instead
- */
 FT_Face
 pango_fc_font_lock_face (PangoFcFont *font)
 {
@@ -578,52 +564,12 @@ pango_fc_font_lock_face (PangoFcFont *font)
   return PANGO_FC_FONT_LOCK_FACE (font);
 }
 
-/**
- * pango_fc_font_unlock_face:
- * @font: a `PangoFcFont`.
- *
- * Releases a font previously obtained with
- * [method@PangoFc.Font.lock_face].
- *
- * Since: 1.4
- * Deprecated: 1.44: Use pango_font_get_hb_font() instead
- */
 void
 pango_fc_font_unlock_face (PangoFcFont *font)
 {
   g_return_if_fail (PANGO_IS_FC_FONT (font));
 
   PANGO_FC_FONT_UNLOCK_FACE (font);
-}
-
-/**
- * pango_fc_font_has_char:
- * @font: a `PangoFcFont`
- * @wc: Unicode codepoint to look up
- *
- * Determines whether @font has a glyph for the codepoint @wc.
- *
- * Return value: %TRUE if @font has the requested codepoint.
- *
- * Since: 1.4
- * Deprecated: 1.44: Use [method@Pango.Font.has_char]
- */
-gboolean
-pango_fc_font_has_char (PangoFcFont *font,
-			gunichar     wc)
-{
-  PangoFcFontPrivate *priv = font->priv;
-  FcCharSet *charset;
-
-  g_return_val_if_fail (PANGO_IS_FC_FONT (font), FALSE);
-
-  if (priv->decoder)
-    {
-      charset = pango_fc_decoder_get_charset (priv->decoder, font);
-      return FcCharSetHasChar (charset, wc);
-    }
-
-  return PANGO_FC_FONT_GET_CLASS (font)->has_char (font, wc);
 }
 
 /**
@@ -660,31 +606,6 @@ pango_fc_font_get_glyph (PangoFcFont *font,
   return PANGO_FC_FONT_GET_CLASS (font)->get_glyph (font, wc);
 }
 
-
-/**
- * pango_fc_font_get_unknown_glyph:
- * @font: a `PangoFcFont`
- * @wc: the Unicode character for which a glyph is needed.
- *
- * Returns the index of a glyph suitable for drawing @wc
- * as an unknown character.
- *
- * Use PANGO_GET_UNKNOWN_GLYPH() instead.
- *
- * Return value: a glyph index into @font.
- *
- * Since: 1.4
- */
-PangoGlyph
-pango_fc_font_get_unknown_glyph (PangoFcFont *font,
-				 gunichar     wc)
-{
-  if (font && PANGO_FC_FONT_GET_CLASS (font)->get_unknown_glyph)
-    return PANGO_FC_FONT_GET_CLASS (font)->get_unknown_glyph (font, wc);
-
-  return PANGO_GET_UNKNOWN_GLYPH (wc);
-}
-
 void
 _pango_fc_font_shutdown (PangoFcFont *font)
 {
@@ -692,25 +613,6 @@ _pango_fc_font_shutdown (PangoFcFont *font)
 
   if (PANGO_FC_FONT_GET_CLASS (font)->shutdown)
     PANGO_FC_FONT_GET_CLASS (font)->shutdown (font);
-}
-
-/**
- * pango_fc_font_kern_glyphs:
- * @font: a `PangoFcFont`
- * @glyphs: a `PangoGlyphString`
- *
- * This function used to adjust each adjacent pair of glyphs
- * in @glyphs according to kerning information in @font.
- *
- * Since 1.44, it does nothing.
- *
- * Since: 1.4
- * Deprecated: 1.32
- */
-void
-pango_fc_font_kern_glyphs (PangoFcFont      *font,
-			   PangoGlyphString *glyphs)
-{
 }
 
 /**
@@ -1068,29 +970,6 @@ pango_fc_font_create_hb_font (PangoFont *font)
 
 done:
   return hb_font;
-}
-
-/**
- * pango_fc_font_get_languages:
- * @font: a `PangoFcFont`
- *
- * Returns the languages that are supported by @font.
- *
- * This corresponds to the FC_LANG member of the FcPattern.
- *
- * The returned array is only valid as long as the font
- * and its fontmap are valid.
- *
- * Returns: (transfer none) (nullable): a %NULL-terminated
- *   array of `PangoLanguage`*
- *
- * Since: 1.48
- * Deprecated: 1.50: Use pango_font_get_language()
- */
-PangoLanguage **
-pango_fc_font_get_languages (PangoFcFont *font)
-{
-  return pango_font_get_languages (PANGO_FONT (font));
 }
 
 static PangoLanguage **
