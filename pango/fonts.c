@@ -2462,7 +2462,7 @@ pango_font_family_real_get_face (PangoFontFamily *family,
   pango_font_family_list_faces (family, &faces, &n_faces);
 
   face = NULL;
-  if (name == NULL)
+  if (name == NULL && n_faces > 0)
     {
       face = faces[0];
     }
