@@ -355,6 +355,97 @@ alias_free (struct PangoAlias *alias)
   g_slice_free (struct PangoAlias, alias);
 }
 
+static gboolean
+pango_skip_space (const char **pos)
+{
+  const char *p = *pos;
+
+  while (g_ascii_isspace (*p))
+    p++;
+
+  *pos = p;
+
+  return !(*p == '\0');
+}
+
+static gboolean
+pango_scan_string (const char **pos, GString *out)
+{
+  const char *p = *pos;
+
+  while (g_ascii_isspace (*p))
+    p++;
+
+  if (G_UNLIKELY (!*p))
+    return FALSE;
+  else if (*p == '"')
+    {
+      gboolean quoted = FALSE;
+      g_string_truncate (out, 0);
+
+      p++;
+
+      while (TRUE)
+        {
+          if (quoted)
+            {
+              int c = *p;
+
+              switch (c)
+                {
+                case '\0':
+                  return FALSE;
+                case 'n':
+                  c = '\n';
+                  break;
+                case 't':
+                  c = '\t';
+                  break;
+                default:
+                  break;
+                }
+
+              quoted = FALSE;
+              g_string_append_c (out, c);
+            }
+          else
+            {
+              switch (*p)
+                {
+                case '\0':
+                  return FALSE;
+                case '\\':
+                  quoted = TRUE;
+                  break;
+                case '"':
+                  p++;
+                  goto done;
+                default:
+                  g_string_append_c (out, *p);
+                  break;
+                }
+            }
+          p++;
+        }
+    done:
+      ;
+    }
+  else
+    {
+      g_string_truncate (out, 0);
+
+      while (*p && !g_ascii_isspace (*p))
+        {
+          g_string_append_c (out, *p);
+          p++;
+        }
+    }
+
+  *pos = p;
+
+  return TRUE;
+}
+
 static void
 handle_alias_line (GString    *line_buffer,
                    char       **errstring,
