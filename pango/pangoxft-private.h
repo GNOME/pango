@@ -56,6 +56,8 @@ PangoRenderer *_pango_xft_font_map_get_renderer (PangoXftFontMap *xftfontmap);
 
 PangoFont *_pango_xft_font_get_mini_font (PangoXftFont *xfont);
 
+XftFont *  pango_xft_font_get_font       (PangoFont *font);
+
 G_END_DECLS
 
 #endif /* __PANGOXFT_PRIVATE_H__ */

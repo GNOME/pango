@@ -27,6 +27,8 @@
 #include "pangoxft-private.h"
 #include "pangofc-private.h"
 
+#define PANGO_TYPE_XFT_FONT PANGO_XFT_TYPE_FONT
+
 #define PANGO_XFT_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_XFT_FONT, PangoXftFontClass))
 #define PANGO_XFT_IS_FONT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_XFT_FONT))
 #define PANGO_XFT_FONT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_XFT_FONT, PangoXftFontClass))
@@ -468,14 +470,6 @@ pango_xft_font_real_shutdown (PangoFcFont *fcfont)
     }
 }
 
-/**
- * pango_xft_font_get_font: (skip)
- * @font: (nullable): a `PangoFont`
- *
- * Returns the `XftFont` of a font.
- *
- * Return value: (nullable): the `XftFont` associated to @font
- */
 XftFont *
 pango_xft_font_get_font (PangoFont *font)
 {
@@ -485,135 +479,3 @@ pango_xft_font_get_font (PangoFont *font)
   return xft_font_get_font (font);
 }
 
-/**
- * pango_xft_font_get_display: (skip)
- * @font: (type PangoXftFont): a `PangoFont`
- *
- * Returns the X display of the `XftFont` of a font.
- *
- * Return value: (transfer none): the X display of the XftFont associated to @font.
- **/
-Display *
-pango_xft_font_get_display (PangoFont *font)
-{
-  PangoFcFont *fcfont;
-  Display *display;
-
-  g_return_val_if_fail (PANGO_XFT_IS_FONT (font), NULL);
-
-  fcfont = PANGO_FC_FONT (font);
-  _pango_xft_font_map_get_info (fcfont->fontmap, &display, NULL);
-
-  return display;
-}
-
-/**
- * pango_xft_font_get_unknown_glyph:
- * @font: (type PangoXftFont): a `PangoFont`
- * @wc: the Unicode character for which a glyph is needed.
- *
- * Returns the index of a glyph suitable for drawing @wc as an
- * unknown character.
- *
- * Use PANGO_GET_UNKNOWN_GLYPH() instead.
- *
- * Return value: a glyph index into @font.
- **/
-PangoGlyph
-pango_xft_font_get_unknown_glyph (PangoFont *font,
-				  gunichar   wc)
-{
-  g_return_val_if_fail (PANGO_XFT_IS_FONT (font), PANGO_GLYPH_EMPTY);
-
-  return PANGO_GET_UNKNOWN_GLYPH (wc);
-}
-
-/**
- * pango_xft_font_lock_face: (skip)
- * @font: (type PangoXftFont): a `PangoFont`
- *
- * Gets the FreeType `FT_Face` associated with a font.
- *
- * This face will be kept around until you call pango_xft_font_unlock_face().
- *
- * Use pango_fc_font_lock_face() instead.
- *
- * Return value: the FreeType `FT_Face` associated with @font.
- *
- * Since: 1.2
- **/
-FT_Face
-pango_xft_font_lock_face (PangoFont *font)
-{
-  g_return_val_if_fail (PANGO_XFT_IS_FONT (font), NULL);
-
-  return pango_fc_font_lock_face (PANGO_FC_FONT (font));
-}
-
-/**
- * pango_xft_font_unlock_face: (skip)
- * @font: (type PangoXftFont): a `PangoFont`
- *
- * Releases a font previously obtained with
- * pango_xft_font_lock_face().
- *
- * Use pango_fc_font_unlock_face() instead.
- *
- * Since: 1.2
- **/
-void
-pango_xft_font_unlock_face (PangoFont *font)
-{
-  g_return_if_fail (PANGO_XFT_IS_FONT (font));
-
-  pango_fc_font_unlock_face (PANGO_FC_FONT (font));
-}
-
-/**
- * pango_xft_font_get_glyph:
- * @font: (type PangoXftFont): a `PangoFont` for the Xft backend
- * @wc: Unicode codepoint to look up
- *
- * Gets the glyph index for a given Unicode character
- * for @font.
- *
- * If you only want to determine whether the font has
- * the glyph, use pango_xft_font_has_char().
- *
- * Use pango_fc_font_get_glyph() instead.
- *
- * Return value: the glyph index, or 0, if the Unicode
- *  character does not exist in the font.
- *
- * Since: 1.2
- **/
-guint
-pango_xft_font_get_glyph (PangoFont *font,
-			  gunichar   wc)
-{
-  g_return_val_if_fail (PANGO_XFT_IS_FONT (font), 0);
-
-  return pango_fc_font_get_glyph (PANGO_FC_FONT (font), wc);
-}
-
-/**
- * pango_xft_font_has_char:
- * @font: (type PangoXftFont): a `PangoFont` for the Xft backend
- * @wc: Unicode codepoint to look up
- *
- * Determines whether @font has a glyph for the codepoint @wc.
- *
- * Use pango_fc_font_has_char() instead.
- *
- * Return value: %TRUE if @font has the requested codepoint.
- *
- * Since: 1.2
- **/
-gboolean
-pango_xft_font_has_char (PangoFont *font,
-			 gunichar   wc)
-{
-  g_return_val_if_fail (PANGO_XFT_IS_FONT (font), 0);
-
-  return pango_fc_font_has_char (PANGO_FC_FONT (font), wc);
-}

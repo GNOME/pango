@@ -273,63 +273,6 @@ pango_xft_shutdown_display (Display *display,
     }
 }
 
-/**
- * pango_xft_set_default_substitute:
- * @display: an X Display
- * @screen: the screen number of a screen within @display
- * @func: function to call to to do final config tweaking
- *        on #FcPattern objects.
- * @data: data to pass to @func
- * @notify: function to call when @data is no longer used.
- *
- * Sets a function that will be called to do final configuration
- * substitution on a #FcPattern before it is used to load
- * the font. This function can be used to do things like set
- * hinting and antialiasing options.
- *
- * Deprecated: 1.46: Use pango_fc_font_map_set_default_substitute()
- * instead.
- *
- * Since: 1.2
- **/
-void
-pango_xft_set_default_substitute (Display                *display,
-				  int                     screen,
-				  PangoXftSubstituteFunc  func,
-				  gpointer                data,
-				  GDestroyNotify          notify)
-{
-  PangoXftFontMap *xftfontmap = (PangoXftFontMap *)pango_xft_get_font_map (display, screen);
-
-  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (xftfontmap);
-  pango_fc_font_map_set_default_substitute(fcfontmap, func, data, notify);
-}
-
-/**
- * pango_xft_substitute_changed:
- * @display: an X Display
- * @screen: the screen number of a screen within @display
- *
- * Call this function any time the results of the
- * default substitution function set with
- * pango_xft_set_default_substitute() change.
- * That is, if your substitution function will return different
- * results for the same input pattern, you must call this function.
- *
- * Deprecated: 1.46: Use pango_fc_font_map_substitute_changed()
- * instead.
- *
- * Since: 1.2
- **/
-void
-pango_xft_substitute_changed (Display *display,
-			      int      screen)
-{
-  PangoXftFontMap *xftfontmap = (PangoXftFontMap *)pango_xft_get_font_map (display, screen);
-
-  pango_fc_font_map_substitute_changed(PANGO_FC_FONT_MAP (xftfontmap));
-}
-
 void
 _pango_xft_font_map_get_info (PangoFontMap *fontmap,
 			      Display     **display,
@@ -341,28 +284,6 @@ _pango_xft_font_map_get_info (PangoFontMap *fontmap,
     *display = xftfontmap->display;
   if (screen)
     *screen = xftfontmap->screen;
-}
-
-/**
- * pango_xft_get_context: (skip)
- * @display: an X display.
- * @screen: an X screen.
- *
- * Retrieves a `PangoContext` appropriate for rendering with
- * Xft fonts on the given screen of the given display.
- *
- * Return value: the new `PangoContext`.
- *
- * Deprecated: 1.22: Use pango_xft_get_font_map() followed by
- * pango_font_map_create_context() instead.
- **/
-PangoContext *
-pango_xft_get_context (Display *display,
-		       int      screen)
-{
-  g_return_val_if_fail (display != NULL, NULL);
-
-  return pango_font_map_create_context (pango_xft_get_font_map (display, screen));
 }
 
 /**
