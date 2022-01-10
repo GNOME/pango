@@ -1742,7 +1742,7 @@ pango_font_default_has_char (PangoFont *font,
 {
   PangoCoverage *coverage = pango_font_get_coverage (font, pango_language_get_default ());
   PangoCoverageLevel result = pango_coverage_get (coverage, wc);
-  pango_coverage_unref (coverage);
+  g_object_unref (coverage);
   return result != PANGO_COVERAGE_NONE;
 }
 

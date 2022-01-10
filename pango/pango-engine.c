@@ -61,7 +61,7 @@ pango_engine_shape_real_covers (PangoEngineShape *engine G_GNUC_UNUSED,
   PangoCoverage *coverage = pango_font_get_coverage (font, language);
   PangoCoverageLevel result = pango_coverage_get (coverage, wc);
 
-  pango_coverage_unref (coverage);
+  g_object_unref (coverage);
 
   return result;
 }
