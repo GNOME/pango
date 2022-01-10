@@ -31,9 +31,6 @@ tests = [
 
 if build_pangoft2
   test_cflags += '-DHAVE_FREETYPE'
-  tests += [
-    [ 'test-ot-tags', [ 'test-ot-tags.c' ], [ libpangoft2_dep ] ],
-  ]
 endif
 
 if cairo_dep.found()
