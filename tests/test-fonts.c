@@ -103,7 +103,7 @@ test_fontset (gconstpointer d)
   char *s;
   GBytes *orig;
 
-  if (!PANGO_IS_FC_FONT_MAP (pango_cairo_font_map_get_default ()))
+  if (strcmp (G_OBJECT_TYPE_NAME (pango_cairo_font_map_get_default ()), "PangoFcFontMap") != 0)
     {
       g_test_skip ("Not an fc fontmap. Skipping...");
       return;

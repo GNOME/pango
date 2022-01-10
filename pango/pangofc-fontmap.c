@@ -1525,7 +1525,7 @@ pango_fc_font_map_add_decoder_find_func (PangoFcFontMap        *fcfontmap,
   PangoFcFontMapPrivate *priv;
   PangoFcFindFuncInfo *info;
 
-  g_return_if_fail (PANGO_IS_FC_FONT_MAP (fcfontmap));
+  g_return_if_fail (PANGO_FC_IS_FONT_MAP (fcfontmap));
 
   priv = fcfontmap->priv;
 
@@ -1559,7 +1559,7 @@ pango_fc_font_map_find_decoder (PangoFcFontMap *fcfontmap,
 {
   GSList *l;
 
-  g_return_val_if_fail (PANGO_IS_FC_FONT_MAP (fcfontmap), NULL);
+  g_return_val_if_fail (PANGO_FC_IS_FONT_MAP (fcfontmap), NULL);
   g_return_val_if_fail (pattern != NULL, NULL);
 
   for (l = fcfontmap->priv->findfuncs; l && l->data; l = l->next)
@@ -2350,7 +2350,7 @@ pango_fc_font_map_set_config (PangoFcFontMap *fcfontmap,
 {
   FcConfig *oldconfig;
 
-  g_return_if_fail (PANGO_IS_FC_FONT_MAP (fcfontmap));
+  g_return_if_fail (PANGO_FC_IS_FONT_MAP (fcfontmap));
 
   oldconfig = fcfontmap->priv->config;
 
@@ -2385,7 +2385,7 @@ pango_fc_font_map_set_config (PangoFcFontMap *fcfontmap,
 FcConfig *
 pango_fc_font_map_get_config (PangoFcFontMap *fcfontmap)
 {
-  g_return_val_if_fail (PANGO_IS_FC_FONT_MAP (fcfontmap), NULL);
+  g_return_val_if_fail (PANGO_FC_IS_FONT_MAP (fcfontmap), NULL);
 
   wait_for_fc_init ();
 
@@ -2616,31 +2616,6 @@ _pango_fc_font_map_get_languages (PangoFcFontMap *fcfontmap,
     }
 
   return data->languages;
-}
-
-/**
- * pango_fc_font_map_create_context:
- * @fcfontmap: a `PangoFcFontMap`
- *
- * Creates a new context for this fontmap.
- *
- * This function is intended only for backend implementations deriving
- * from `PangoFcFontMap`; it is possible that a backend will store
- * additional information needed for correct operation on the `PangoContext`
- * after calling this function.
- *
- * Return value: (transfer full): a new `PangoContext`
- *
- * Since: 1.4
- *
- * Deprecated: 1.22: Use pango_font_map_create_context() instead.
- */
-PangoContext *
-pango_fc_font_map_create_context (PangoFcFontMap *fcfontmap)
-{
-  g_return_val_if_fail (PANGO_IS_FC_FONT_MAP (fcfontmap), NULL);
-
-  return pango_font_map_create_context (PANGO_FONT_MAP (fcfontmap));
 }
 
 static void

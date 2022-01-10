@@ -35,15 +35,10 @@ G_BEGIN_DECLS
  * PangoFcFontMap
  */
 
-#ifdef __GI_SCANNER__
 #define PANGO_FC_TYPE_FONT_MAP              (pango_fc_font_map_get_type ())
+#define PANGO_TYPE_FC_FONT_MAP              PANGO_FC_TYPE_FONT_MAP
 #define PANGO_FC_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_FC_TYPE_FONT_MAP, PangoFcFontMap))
 #define PANGO_FC_IS_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_FC_TYPE_FONT_MAP))
-#else
-#define PANGO_TYPE_FC_FONT_MAP              (pango_fc_font_map_get_type ())
-#define PANGO_FC_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FC_FONT_MAP, PangoFcFontMap))
-#define PANGO_IS_FC_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FC_FONT_MAP))
-#endif
 
 typedef struct _PangoFcFontMap        PangoFcFontMap;
 typedef struct _PangoFcFontMapClass   PangoFcFontMapClass;
@@ -94,10 +89,6 @@ PANGO_AVAILABLE_IN_1_4
 PangoFontDescription *pango_fc_font_description_from_pattern (FcPattern *pattern,
 							      gboolean   include_size);
 
-#ifndef PANGO_DISABLE_DEPRECATED
-PANGO_DEPRECATED_IN_1_22_FOR(pango_font_map_create_context)
-PangoContext * pango_fc_font_map_create_context (PangoFcFontMap *fcfontmap);
-#endif
 PANGO_AVAILABLE_IN_1_4
 void           pango_fc_font_map_shutdown       (PangoFcFontMap *fcfontmap);
 
