@@ -193,17 +193,6 @@ if build_pangoft2
     'pango-trace.c',
   ]
 
-  pangoot_headers = [
-    'pango-ot.h',
-  ]
-
-  pangoot_public_sources = [
-    'pango-ot-buffer.c',
-    'pango-ot-info.c',
-    'pango-ot-ruleset.c',
-    'pango-ot-tag.c',
-  ]
-
   pangoft2_headers = [
     'pangoft2.h',
   ]
@@ -214,7 +203,7 @@ if build_pangoft2
     'pangoft2.c',
   ]
 
-  pangoft2_sources = pangofc_public_sources + pangoot_public_sources + pangoft2_public_sources
+  pangoft2_sources = pangofc_public_sources + pangoft2_public_sources
 
   if host_system == 'windows'
     pangoft2_rc = configure_file(
@@ -226,7 +215,7 @@ if build_pangoft2
     pangoft2_sources += pangoft2_res
   endif
 
-  install_headers(pangoft2_headers + pangofc_headers + pangoot_headers, subdir: pango_api_path)
+  install_headers(pangoft2_headers + pangofc_headers, subdir: pango_api_path)
 
   libpangoft2 = library(
     'pangoft2-@0@'.format(pango_api_version),
@@ -263,28 +252,10 @@ if build_pangoft2
     pangofc_gir_dep = declare_dependency(sources: pangofc_gir)
     pangoft2_dep_sources += pangofc_gir
 
-    # Deprecated API, still needed for PangoXft
-    pangoot_gir = gnome.generate_gir(
-      libpangoft2,
-      sources: pangoot_headers + pangoot_public_sources,
-      dependencies: [ libpango_dep, pango_gir_dep, pangofc_gir_dep ],
-      namespace: 'PangoOT',
-      nsversion: pango_api_version,
-      identifier_prefix: 'PangoOT',
-      symbol_prefix: 'pango_ot',
-      export_packages: 'pangoot',
-      includes: [ pangofc_gir[0], 'freetype2-2.0', ],
-      header: 'pango/pango-ot.h',
-      install: true,
-      extra_args: gir_args,
-    )
-    pangoot_gir_dep = declare_dependency(sources: pangoot_gir)
-    pangoft2_dep_sources += pangoot_gir
-
     pangoft2_gir = gnome.generate_gir(
       libpangoft2,
       sources: pangoft2_headers + pangoft2_public_sources,
-      dependencies: [ libpango_dep, pango_gir_dep, pangofc_gir_dep, pangoot_gir_dep ],
+      dependencies: [ libpango_dep, pango_gir_dep, pangofc_gir_dep ],
       namespace: 'PangoFT2',
       nsversion: pango_api_version,
       identifier_prefix: 'PangoFT2',
@@ -313,16 +284,6 @@ if build_pangoft2
     filebase: 'pangoft2',
     subdirs: pango_api_name,
     requires: [ 'pango', freetype2_pc, fontconfig_pc ],
-  )
-
-  # Since we split the introspection data, we also need a split pkg-config
-  # file for Vala
-  pkgconfig.generate(
-    name: 'Pango OT',
-    description: 'OpenType font support for Pango (deprecated)',
-    filebase: 'pangoot',
-    subdirs: pango_api_name,
-    requires: [ 'pangoft2' ],
   )
 
   pkgconfig.generate(
