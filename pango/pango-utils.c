@@ -320,49 +320,6 @@ pango_parse_flags (GType        type,
   return ret;
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
-/**
- * pango_find_base_dir:
- * @text: the text to process. Must be valid UTF-8
- * @length: length of @text in bytes (may be -1 if @text is nul-terminated)
- *
- * Searches a string the first character that has a strong
- * direction, according to the Unicode bidirectional algorithm.
- *
- * Return value: The direction corresponding to the first strong character.
- *   If no such character is found, then %PANGO_DIRECTION_NEUTRAL is returned.
- *
- * Since: 1.4
- */
-PangoDirection
-pango_find_base_dir (const gchar *text,
-		     gint         length)
-{
-  PangoDirection dir = PANGO_DIRECTION_NEUTRAL;
-  const gchar *p;
-
-  g_return_val_if_fail (text != NULL || length == 0, PANGO_DIRECTION_NEUTRAL);
-
-  p = text;
-  while ((length < 0 || p < text + length) && *p)
-    {
-      gunichar wc = g_utf8_get_char (p);
-
-      dir = pango_unichar_direction (wc);
-
-      if (dir != PANGO_DIRECTION_NEUTRAL)
-	break;
-
-      p = g_utf8_next_char (p);
-    }
-
-  return dir;
-}
-
-#pragma GCC diagnostic pop
-
 /**
  * pango_is_zero_width:
  * @ch: a Unicode character

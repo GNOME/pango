@@ -228,11 +228,11 @@ void pango_extents_to_pixels (PangoRectangle *inclusive,
 			      PangoRectangle *nearest);
 
 
+#include <pango/pango-direction.h>
 #include <pango/pango-gravity.h>
 #include <pango/pango-language.h>
 #include <pango/pango-matrix.h>
 #include <pango/pango-script.h>
-#include <pango/pango-bidi-type.h>
 
 
 G_END_DECLS

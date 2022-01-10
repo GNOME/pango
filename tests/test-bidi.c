@@ -25,91 +25,6 @@
 
 static PangoContext *context;
 
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-
-static void
-test_mirror_char (void)
-{
-  /* just some samples */
-  struct {
-    gunichar a;
-    gunichar b;
-  } tests[] = {
-    { '(', ')' },
-    { '<', '>' },
-    { '[', ']' },
-    { '{', '}' },
-    { 0x00ab, 0x00bb },
-    { 0x2045, 0x2046 },
-    { 0x226e, 0x226f },
-  };
-
-  for (int i = 0; i < G_N_ELEMENTS (tests); i++)
-    {
-      gboolean ret;
-      gunichar ch;
-
-      ret = pango_get_mirror_char (tests[i].a, &ch);
-      g_assert_true (ret);
-      g_assert_true (ch == tests[i].b);
-      ret = pango_get_mirror_char (tests[i].b, &ch);
-      g_assert_true (ret);
-      g_assert_true (ch == tests[i].a);
-    }
-}
-
-static void
-test_bidi_type_for_unichar (void)
-{
-  /* one representative from each class we support */
-  g_assert_true (pango_bidi_type_for_unichar ('a') == PANGO_BIDI_TYPE_L);
-  g_assert_true (pango_bidi_type_for_unichar (0x202a) == PANGO_BIDI_TYPE_LRE);
-  g_assert_true (pango_bidi_type_for_unichar (0x202d) == PANGO_BIDI_TYPE_LRO);
-  g_assert_true (pango_bidi_type_for_unichar (0x05d0) == PANGO_BIDI_TYPE_R);
-  g_assert_true (pango_bidi_type_for_unichar (0x0627) == PANGO_BIDI_TYPE_AL);
-  g_assert_true (pango_bidi_type_for_unichar (0x202b) == PANGO_BIDI_TYPE_RLE);
-  g_assert_true (pango_bidi_type_for_unichar (0x202e) == PANGO_BIDI_TYPE_RLO);
-  g_assert_true (pango_bidi_type_for_unichar (0x202c) == PANGO_BIDI_TYPE_PDF);
-  g_assert_true (pango_bidi_type_for_unichar ('0') == PANGO_BIDI_TYPE_EN);
-  g_assert_true (pango_bidi_type_for_unichar ('+') == PANGO_BIDI_TYPE_ES);
-  g_assert_true (pango_bidi_type_for_unichar ('#') == PANGO_BIDI_TYPE_ET);
-  g_assert_true (pango_bidi_type_for_unichar (0x601) == PANGO_BIDI_TYPE_AN);
-  g_assert_true (pango_bidi_type_for_unichar (',') == PANGO_BIDI_TYPE_CS);
-  g_assert_true (pango_bidi_type_for_unichar (0x0301) == PANGO_BIDI_TYPE_NSM);
-  g_assert_true (pango_bidi_type_for_unichar (0x200d) == PANGO_BIDI_TYPE_BN);
-  g_assert_true (pango_bidi_type_for_unichar (0x2029) == PANGO_BIDI_TYPE_B);
-  g_assert_true (pango_bidi_type_for_unichar (0x000b) == PANGO_BIDI_TYPE_S);
-  g_assert_true (pango_bidi_type_for_unichar (' ') == PANGO_BIDI_TYPE_WS);
-  g_assert_true (pango_bidi_type_for_unichar ('!') == PANGO_BIDI_TYPE_ON);
-  /* these are new */
-  g_assert_true (pango_bidi_type_for_unichar (0x2066) == PANGO_BIDI_TYPE_LRI);
-  g_assert_true (pango_bidi_type_for_unichar (0x2067) == PANGO_BIDI_TYPE_RLI);
-  g_assert_true (pango_bidi_type_for_unichar (0x2068) == PANGO_BIDI_TYPE_FSI);
-  g_assert_true (pango_bidi_type_for_unichar (0x2069) == PANGO_BIDI_TYPE_PDI);
-}
-
-static void
-test_unichar_direction (void)
-{
-  struct {
-    gunichar ch;
-    PangoDirection dir;
-  } tests[] = {
-    { 'a', PANGO_DIRECTION_LTR },
-    { '0', PANGO_DIRECTION_NEUTRAL },
-    { '.', PANGO_DIRECTION_NEUTRAL },
-    { '(', PANGO_DIRECTION_NEUTRAL },
-    { 0x05d0, PANGO_DIRECTION_RTL },
-  };
-
-  for (int i = 0; i < G_N_ELEMENTS (tests); i++)
-    {
-      g_assert_true (pango_unichar_direction (tests[i].ch) == tests[i].dir);
-    }
-}
-
-G_GNUC_END_IGNORE_DEPRECATIONS
-
 static void
 test_bidi_embedding_levels (void)
 {
@@ -465,9 +380,6 @@ main (int argc, char *argv[])
 
   g_test_init (&argc, &argv, NULL);
 
-  g_test_add_func ("/bidi/mirror-char", test_mirror_char);
-  g_test_add_func ("/bidi/type-for-unichar", test_bidi_type_for_unichar);
-  g_test_add_func ("/bidi/unichar-direction", test_unichar_direction);
   g_test_add_func ("/bidi/embedding-levels", test_bidi_embedding_levels);
   g_test_add_func ("/bidi/move-cursor-line", test_move_cursor_line);
   g_test_add_func ("/bidi/move-cursor-para", test_move_cursor_para);

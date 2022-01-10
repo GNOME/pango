@@ -25,65 +25,8 @@
 
 #include <fribidi.h>
 
-#undef PANGO_DISABLE_DEPRECATED
-
-#include "pango-bidi-type.h"
 #include "pango-utils.h"
-
-/**
- * pango_bidi_type_for_unichar:
- * @ch: a Unicode character
- *
- * Determines the bidirectional type of a character.
- *
- * The bidirectional type is specified in the Unicode Character Database.
- *
- * A simplified version of this function is available as [func@unichar_direction].
- *
- * Return value: the bidirectional character type, as used in the
- * Unicode bidirectional algorithm.
- *
- * Since: 1.22
- */
-PangoBidiType
-pango_bidi_type_for_unichar (gunichar ch)
-{
-  FriBidiCharType fribidi_ch_type;
-
-  G_STATIC_ASSERT (sizeof (FriBidiChar) == sizeof (gunichar));
-
-  fribidi_ch_type = fribidi_get_bidi_type (ch);
-
-  switch (fribidi_ch_type)
-    {
-    case FRIBIDI_TYPE_LTR:  return PANGO_BIDI_TYPE_L;
-    case FRIBIDI_TYPE_LRE:  return PANGO_BIDI_TYPE_LRE;
-    case FRIBIDI_TYPE_LRO:  return PANGO_BIDI_TYPE_LRO;
-    case FRIBIDI_TYPE_RTL:  return PANGO_BIDI_TYPE_R;
-    case FRIBIDI_TYPE_AL:   return PANGO_BIDI_TYPE_AL;
-    case FRIBIDI_TYPE_RLE:  return PANGO_BIDI_TYPE_RLE;
-    case FRIBIDI_TYPE_RLO:  return PANGO_BIDI_TYPE_RLO;
-    case FRIBIDI_TYPE_PDF:  return PANGO_BIDI_TYPE_PDF;
-    case FRIBIDI_TYPE_EN:   return PANGO_BIDI_TYPE_EN;
-    case FRIBIDI_TYPE_ES:   return PANGO_BIDI_TYPE_ES;
-    case FRIBIDI_TYPE_ET:   return PANGO_BIDI_TYPE_ET;
-    case FRIBIDI_TYPE_AN:   return PANGO_BIDI_TYPE_AN;
-    case FRIBIDI_TYPE_CS:   return PANGO_BIDI_TYPE_CS;
-    case FRIBIDI_TYPE_NSM:  return PANGO_BIDI_TYPE_NSM;
-    case FRIBIDI_TYPE_BN:   return PANGO_BIDI_TYPE_BN;
-    case FRIBIDI_TYPE_BS:   return PANGO_BIDI_TYPE_B;
-    case FRIBIDI_TYPE_SS:   return PANGO_BIDI_TYPE_S;
-    case FRIBIDI_TYPE_WS:   return PANGO_BIDI_TYPE_WS;
-    case FRIBIDI_TYPE_ON:   return PANGO_BIDI_TYPE_ON;
-    case FRIBIDI_TYPE_LRI:  return PANGO_BIDI_TYPE_LRI;
-    case FRIBIDI_TYPE_RLI:  return PANGO_BIDI_TYPE_RLI;
-    case FRIBIDI_TYPE_FSI:  return PANGO_BIDI_TYPE_FSI;
-    case FRIBIDI_TYPE_PDI:  return PANGO_BIDI_TYPE_PDI;
-    case _FRIBIDI_TYPE_SENTINEL:
-    default:
-      return PANGO_BIDI_TYPE_ON;
-    }
-}
+#include "pango-utils-internal.h"
 
 /* Some bidi-related functions */
 
@@ -240,23 +183,7 @@ resolved:
   return embedding_levels_list;
 }
 
-/**
- * pango_unichar_direction:
- * @ch: a Unicode character
- *
- * Determines the inherent direction of a character.
- *
- * The inherent direction is either `PANGO_DIRECTION_LTR`, `PANGO_DIRECTION_RTL`,
- * or `PANGO_DIRECTION_NEUTRAL`.
- *
- * This function is useful to categorize characters into left-to-right
- * letters, right-to-left letters, and everything else. If full Unicode
- * bidirectional type of a character is needed, [func@Pango.BidiType.for_unichar]
- * can be used instead.
- *
- * Return value: the direction of the character.
- */
-PangoDirection
+static PangoDirection
 pango_unichar_direction (gunichar ch)
 {
   FriBidiCharType fribidi_ch_type;
@@ -273,26 +200,28 @@ pango_unichar_direction (gunichar ch)
     return PANGO_DIRECTION_LTR;
 }
 
-
-/**
- * pango_get_mirror_char:
- * @ch: a Unicode character
- * @mirrored_ch: location to store the mirrored character
- *
- * Returns the mirrored character of a Unicode character.
- *
- * Mirror characters are determined by the Unicode mirrored property.
- *
- * Return value: %TRUE if @ch has a mirrored character and @mirrored_ch is
- * filled in, %FALSE otherwise
- *
- * Deprecated: 1.30: Use [func@GLib.unichar_get_mirror_char] instead;
- *   the docs for that function provide full details.
- */
-gboolean
-pango_get_mirror_char (gunichar  ch,
-		       gunichar *mirrored_ch)
+PangoDirection
+pango_find_base_dir (const gchar *text,
+                     gint         length)
 {
-  return g_unichar_get_mirror_char (ch, mirrored_ch);
-}
+  PangoDirection dir = PANGO_DIRECTION_NEUTRAL;
+  const gchar *p;
 
+  g_return_val_if_fail (text != NULL || length == 0, PANGO_DIRECTION_NEUTRAL);
+
+  p = text;
+  while ((length < 0 || p < text + length) && *p)
+    {
+      gunichar wc = g_utf8_get_char (p);
+
+
+      dir = pango_unichar_direction (wc);
+
+      if (dir != PANGO_DIRECTION_NEUTRAL)
+        break;
+
+      p = g_utf8_next_char (p);
+    }
+
+  return dir;
+}
