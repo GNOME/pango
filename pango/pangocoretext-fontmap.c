@@ -1541,7 +1541,6 @@ pango_core_text_font_map_class_init (PangoCoreTextFontMapClass *class)
   fontmap_class->load_font = pango_core_text_font_map_load_font;
   fontmap_class->list_families = pango_core_text_font_map_list_families;
   fontmap_class->load_fontset = pango_core_text_font_map_load_fontset;
-  fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_CORE_TEXT;
   fontmap_class->get_serial = pango_core_text_font_map_get_serial;
   fontmap_class->changed = pango_core_text_font_map_changed;
   fontmap_class->get_face = pango_core_text_font_map_get_face;

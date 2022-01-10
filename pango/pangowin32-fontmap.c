@@ -802,7 +802,6 @@ _pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
   /* we now need a load_fontset implementation for the Win32 backend */
   fontmap_class->load_fontset = pango_win32_font_map_load_fontset;
   fontmap_class->list_families = pango_win32_font_map_list_families;
-  fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_WIN32;
   fontmap_class->get_face = pango_win32_font_map_get_face;
   class->aliases = g_hash_table_new_full ((GHashFunc)alias_hash,
                                           (GEqualFunc)alias_equal,

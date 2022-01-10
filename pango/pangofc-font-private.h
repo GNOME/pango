@@ -27,15 +27,6 @@
 
 G_BEGIN_DECLS
 
-/**
- * PANGO_RENDER_TYPE_FC:
- *
- * A string constant used to identify shape engines that work
- * with the fontconfig based backends. See the @engine_type field
- * of `PangoEngineInfo`.
- **/
-#define PANGO_RENDER_TYPE_FC "PangoRenderFc"
-
 #define PANGO_FC_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FC_FONT, PangoFcFontClass))
 #define PANGO_IS_FC_FONT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_FC_FONT))
 #define PANGO_FC_FONT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FC_FONT, PangoFcFontClass))

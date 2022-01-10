@@ -60,7 +60,6 @@ struct _PangoFontMap
  * pango_font_map_list_families().
  * @load_fontset: a function to load a fontset with a given given description
  * suitable for a particular language. See pango_font_map_load_fontset().
- * @shape_engine_type: the type of rendering-system-dependent engines that
  * can handle fonts of this fonts loaded with this fontmap.
  * @get_serial: a function to get the serial number of the fontmap.
  * See pango_font_map_get_serial().
@@ -85,8 +84,6 @@ struct _PangoFontMapClass
                                   PangoContext               *context,
                                   const PangoFontDescription *desc,
                                   PangoLanguage              *language);
-
-  const char     *shape_engine_type;
 
   guint         (*get_serial)    (PangoFontMap               *fontmap);
   void          (*changed)       (PangoFontMap               *fontmap);

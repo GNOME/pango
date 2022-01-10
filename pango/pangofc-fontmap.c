@@ -1494,7 +1494,6 @@ pango_fc_font_map_class_init (PangoFcFontMapClass *class)
   fontmap_class->list_families = pango_fc_font_map_list_families;
   fontmap_class->get_family = pango_fc_font_map_get_family;
   fontmap_class->get_face = pango_fc_font_map_get_face;
-  fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_FC;
   fontmap_class->changed = pango_fc_font_map_changed;
 }
 

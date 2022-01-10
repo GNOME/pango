@@ -76,13 +76,8 @@ typedef struct _PangoItem PangoItem;
  */
 struct _PangoAnalysis
 {
-#ifndef __GI_SCANNER__
-  PangoEngineShape *shape_engine;
-  PangoEngineLang  *lang_engine;
-#else
   gpointer shape_engine;
   gpointer lang_engine;
-#endif
   PangoFont *font;
 
   guint8 level;
