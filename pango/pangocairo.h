@@ -118,10 +118,6 @@ void          pango_cairo_font_map_set_resolution (PangoCairoFontMap *fontmap,
 						   double             dpi);
 PANGO_AVAILABLE_IN_1_10
 double        pango_cairo_font_map_get_resolution (PangoCairoFontMap *fontmap);
-#ifndef PANGO_DISABLE_DEPRECATED
-PANGO_DEPRECATED_IN_1_22_FOR(pango_font_map_create_context)
-PangoContext *pango_cairo_font_map_create_context (PangoCairoFontMap *fontmap);
-#endif
 
 /*
  * PangoCairoFont

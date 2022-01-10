@@ -265,26 +265,6 @@ pango_cairo_font_map_get_resolution (PangoCairoFontMap *fontmap)
 }
 
 /**
- * pango_cairo_font_map_create_context: (skip)
- * @fontmap: a `PangoCairoFontMap`
- *
- * Create a `PangoContext` for the given fontmap.
- *
- * Return value: the newly created context; free with g_object_unref().
- *
- * Since: 1.10
- *
- * Deprecated: 1.22: Use pango_font_map_create_context() instead.
- */
-PangoContext *
-pango_cairo_font_map_create_context (PangoCairoFontMap *fontmap)
-{
-  g_return_val_if_fail (PANGO_IS_CAIRO_FONT_MAP (fontmap), NULL);
-
-  return pango_font_map_create_context (PANGO_FONT_MAP (fontmap));
-}
-
-/**
  * pango_cairo_font_map_get_font_type:
  * @fontmap: a `PangoCairoFontMap`
  *
