@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -76,30 +76,15 @@ GType pango_coverage_get_type (void) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
 PangoCoverage *    pango_coverage_new     (void);
-PANGO_DEPRECATED_IN_1_52_FOR(g_object_ref)
-PangoCoverage *    pango_coverage_ref     (PangoCoverage      *coverage);
-PANGO_DEPRECATED_IN_1_52_FOR(g_object_unref)
-void               pango_coverage_unref   (PangoCoverage      *coverage);
 PANGO_AVAILABLE_IN_ALL
 PangoCoverage *    pango_coverage_copy    (PangoCoverage      *coverage);
 PANGO_AVAILABLE_IN_ALL
 PangoCoverageLevel pango_coverage_get     (PangoCoverage      *coverage,
-					   int                 index_);
+                                           int                 index_);
 PANGO_AVAILABLE_IN_ALL
 void               pango_coverage_set     (PangoCoverage      *coverage,
-					   int                 index_,
-					   PangoCoverageLevel  level);
-PANGO_DEPRECATED_IN_1_44
-void               pango_coverage_max     (PangoCoverage      *coverage,
-					   PangoCoverage      *other);
-
-PANGO_DEPRECATED_IN_1_44
-void           pango_coverage_to_bytes   (PangoCoverage  *coverage,
-					  guchar        **bytes,
-					  int            *n_bytes);
-PANGO_DEPRECATED_IN_1_44
-PangoCoverage *pango_coverage_from_bytes (guchar         *bytes,
-					  int             n_bytes);
+                                           int                 index_,
+                                           PangoCoverageLevel  level);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoCoverage, g_object_unref)
 
