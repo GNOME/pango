@@ -142,6 +142,8 @@ pango_coverage_copy (PangoCoverage *coverage)
  * Increase the reference count on the `PangoCoverage` by one.
  *
  * Return value: (transfer full): @coverage
+ *
+ * Deprecated: 1.52: Use g_object_ref instead
  */
 PangoCoverage *
 pango_coverage_ref (PangoCoverage *coverage)
@@ -156,6 +158,8 @@ pango_coverage_ref (PangoCoverage *coverage)
  * Decrease the reference count on the `PangoCoverage` by one.
  *
  * If the result is zero, free the coverage and all associated memory.
+ *
+ * Deprecated: 1.52: Use g_object_unref instead
  */
 void
 pango_coverage_unref (PangoCoverage *coverage)
