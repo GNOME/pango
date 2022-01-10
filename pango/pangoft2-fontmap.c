@@ -68,8 +68,6 @@ static double        pango_ft2_font_map_get_resolution      (PangoFcFontMap     
 static guint         pango_ft2_font_map_get_serial          (PangoFontMap         *fontmap);
 static void          pango_ft2_font_map_changed             (PangoFontMap         *fontmap);
 
-static PangoFT2FontMap *pango_ft2_global_fontmap = NULL; /* MT-safe */
-
 G_DEFINE_TYPE (PangoFT2FontMap, pango_ft2_font_map, PANGO_TYPE_FC_FONT_MAP)
 
 static void
@@ -155,58 +153,6 @@ pango_ft2_font_map_changed (PangoFontMap *fontmap)
 }
 
 /**
- * pango_ft2_font_map_set_default_substitute:
- * @fontmap: a `PangoFT2FontMap`
- * @func: function to call to to do final config tweaking
- *        on #FcPattern objects.
- * @data: data to pass to @func
- * @notify: function to call when @data is no longer used.
- *
- * Sets a function that will be called to do final configuration
- * substitution on a `FcPattern` before it is used to load
- * the font.
- *
- * This function can be used to do things like set
- * hinting and antialiasing options.
- *
- * Deprecated: 1.46: Use [method@PangoFc.FontMap.set_default_substitute]
- * instead.
- *
- * Since: 1.2
- **/
-void
-pango_ft2_font_map_set_default_substitute (PangoFT2FontMap        *fontmap,
-					   PangoFT2SubstituteFunc  func,
-					   gpointer                data,
-					   GDestroyNotify          notify)
-{
-  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (fontmap);
-  pango_fc_font_map_set_default_substitute(fcfontmap, func, data, notify);
-}
-
-/**
- * pango_ft2_font_map_substitute_changed:
- * @fontmap: a `PangoFT2FontMap`
- *
- * Call this function any time the results of the
- * default substitution function set with
- * pango_ft2_font_map_set_default_substitute() change.
- *
- * That is, if your substitution function will return different
- * results for the same input pattern, you must call this function.
- *
- * Deprecated: 1.46: Use [method@PangoFc.FontMap.substitute_changed]
- * instead.
- *
- * Since: 1.2
- **/
-void
-pango_ft2_font_map_substitute_changed (PangoFT2FontMap *fontmap)
-{
-  pango_fc_font_map_substitute_changed(PANGO_FC_FONT_MAP (fontmap));
-}
-
-/**
  * pango_ft2_font_map_set_resolution:
  * @fontmap: a `PangoFT2FontMap`
  * @dpi_x: dots per inch in the X direction
@@ -226,95 +172,7 @@ pango_ft2_font_map_set_resolution (PangoFT2FontMap *fontmap,
   fontmap->dpi_x = dpi_x;
   fontmap->dpi_y = dpi_y;
 
-  pango_ft2_font_map_substitute_changed (fontmap);
-}
-
-/**
- * pango_ft2_font_map_create_context: (skip)
- * @fontmap: a `PangoFT2FontMap`
- *
- * Create a `PangoContext` for the given fontmap.
- *
- * Return value: (transfer full): the newly created context; free with
- *     g_object_unref().
- *
- * Since: 1.2
- *
- * Deprecated: 1.22: Use [method@Pango.FontMap.create_context] instead.
- **/
-PangoContext *
-pango_ft2_font_map_create_context (PangoFT2FontMap *fontmap)
-{
-  g_return_val_if_fail (PANGO_FT2_IS_FONT_MAP (fontmap), NULL);
-
-  return pango_font_map_create_context (PANGO_FONT_MAP (fontmap));
-}
-
-/**
- * pango_ft2_get_context: (skip)
- * @dpi_x:  the horizontal DPI of the target device
- * @dpi_y:  the vertical DPI of the target device
- *
- * Retrieves a `PangoContext` for the default PangoFT2 fontmap
- * (see pango_ft2_font_map_for_display()) and sets the resolution
- * for the default fontmap to @dpi_x by @dpi_y.
- *
- * Return value: (transfer full): the new `PangoContext`
- *
- * Deprecated: 1.22: Use [method@Pango.FontMap.create_context] instead.
- **/
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-PangoContext *
-pango_ft2_get_context (double dpi_x, double dpi_y)
-{
-  PangoFontMap *fontmap;
-
-  fontmap = pango_ft2_font_map_for_display ();
-  pango_ft2_font_map_set_resolution (PANGO_FT2_FONT_MAP (fontmap), dpi_x, dpi_y);
-
-  return pango_font_map_create_context (fontmap);
-}
-G_GNUC_END_IGNORE_DEPRECATIONS
-
-/**
- * pango_ft2_font_map_for_display: (skip)
- *
- * Returns a `PangoFT2FontMap`.
- *
- * This font map is cached and should
- * not be freed. If the font map is no longer needed, it can
- * be released with pango_ft2_shutdown_display(). Use of the
- * global PangoFT2 fontmap is deprecated; use pango_ft2_font_map_new()
- * instead.
- *
- * Return value: (transfer none): a `PangoFT2FontMap`.
- **/
-PangoFontMap *
-pango_ft2_font_map_for_display (void)
-{
-  if (g_once_init_enter (&pango_ft2_global_fontmap))
-    g_once_init_leave (&pango_ft2_global_fontmap, PANGO_FT2_FONT_MAP (pango_ft2_font_map_new ()));
-
-  return PANGO_FONT_MAP (pango_ft2_global_fontmap);
-}
-
-/**
- * pango_ft2_shutdown_display:
- *
- * Free the global fontmap. (See pango_ft2_font_map_for_display())
- * Use of the global PangoFT2 fontmap is deprecated.
- **/
-void
-pango_ft2_shutdown_display (void)
-{
-  if (pango_ft2_global_fontmap)
-    {
-      pango_fc_font_map_cache_clear (PANGO_FC_FONT_MAP (pango_ft2_global_fontmap));
-
-      g_object_unref (pango_ft2_global_fontmap);
-
-      pango_ft2_global_fontmap = NULL;
-    }
+  pango_fc_font_map_substitute_changed (PANGO_FC_FONT_MAP (fontmap));
 }
 
 FT_Library
