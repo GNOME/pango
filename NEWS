@@ -1,6 +1,7 @@
 Overview of changes in 1.48.11
 ==============================
 * Be more careful with rounding (#578)
+* Reinstate behavior of pango_attr_list_splice for gnumeric (#607)
 
 Overview of changes in 1.48.10
 ==============================
