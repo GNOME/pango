@@ -1546,6 +1546,8 @@ pango_itemize_with_font (PangoContext               *context,
 {
   ItemizeState state;
 
+  g_return_val_if_fail (context->font_map != NULL, NULL);
+
   if (length == 0 || g_utf8_get_char (text + start_index) == '\0')
     return NULL;
 
