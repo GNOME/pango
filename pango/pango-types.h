@@ -259,6 +259,15 @@ typedef enum {
   PANGO_ALIGN_RIGHT
 } PangoAlignment;
 
+typedef enum
+{
+  PANGO_ALIGNMENT_LEFT,
+  PANGO_ALIGNMENT_CENTER,
+  PANGO_ALIGNMENT_RIGHT,
+  PANGO_ALIGNMENT_JUSTIFY,
+  PANGO_ALIGNMENT_JUSTIFY_ALL,
+} PangoAlignmentMode;
+
 /**
  * PangoWrapMode:
  * @PANGO_WRAP_WORD: wrap lines at word boundaries.
