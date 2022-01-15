@@ -22,6 +22,8 @@
 #define __PANGO_RENDERER_H_
 
 #include <pango/pango-layout.h>
+#include <pango/pango-line.h>
+#include <pango/pango-lines.h>
 
 G_BEGIN_DECLS
 
@@ -207,6 +209,16 @@ void pango_renderer_draw_layout_line     (PangoRenderer    *renderer,
                                           PangoLayoutLine  *line,
                                           int               x,
                                           int               y);
+PANGO_AVAILABLE_IN_ALL
+void pango_renderer_draw_line            (PangoRenderer    *renderer,
+                                          PangoLine        *line,
+                                          int               x,
+                                          int               y);
+PANGO_AVAILABLE_IN_ALL
+void pango_renderer_draw_lines           (PangoRenderer    *renderer,
+                                          PangoLines       *lines,
+                                          int               x,
+                                          int               y);
 PANGO_AVAILABLE_IN_1_8
 void pango_renderer_draw_glyphs          (PangoRenderer    *renderer,
                                           PangoFont        *font,
@@ -283,6 +295,9 @@ PANGO_AVAILABLE_IN_1_20
 PangoLayout       *pango_renderer_get_layout      (PangoRenderer     *renderer);
 PANGO_AVAILABLE_IN_1_20
 PangoLayoutLine   *pango_renderer_get_layout_line (PangoRenderer     *renderer);
+
+PANGO_AVAILABLE_IN_ALL
+PangoContext *     pango_renderer_get_context     (PangoRenderer     *renderer);
 
 G_END_DECLS
 

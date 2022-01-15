@@ -491,6 +491,21 @@ pango_cairo_create_layout (cairo_t *cr)
   return layout;
 }
 
+PangoSimpleLayout *
+pango_cairo_create_simple_layout (cairo_t *cr)
+{
+  PangoContext *context;
+  PangoSimpleLayout *layout;
+
+  g_return_val_if_fail (cr != NULL, NULL);
+
+  context = pango_cairo_create_context (cr);
+  layout = pango_simple_layout_new (context);
+  g_object_unref (context);
+
+  return layout;
+}
+
 /**
  * pango_cairo_update_layout:
  * @cr: a Cairo context
@@ -504,11 +519,21 @@ pango_cairo_create_layout (cairo_t *cr)
  */
 void
 pango_cairo_update_layout (cairo_t     *cr,
-			   PangoLayout *layout)
+                           PangoLayout *layout)
 {
   g_return_if_fail (cr != NULL);
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
   _pango_cairo_update_context (cr, pango_layout_get_context (layout));
+}
+
+void
+pango_cairo_update_simple_layout (cairo_t           *cr,
+                                  PangoSimpleLayout *layout)
+{
+  g_return_if_fail (cr != NULL);
+  g_return_if_fail (PANGO_IS_SIMPLE_LAYOUT (layout));
+
+  _pango_cairo_update_context (cr, pango_simple_layout_get_context (layout));
 }
 
