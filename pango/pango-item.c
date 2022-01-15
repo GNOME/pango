@@ -359,3 +359,110 @@ pango_analysis_get_size_font (const PangoAnalysis *analysis)
 {
   return analysis->size_font;
 }
+
+/*< private >
+ * pango_item_get_properties:
+ * @item: a `PangoItem`
+ * @properties: `ItemProperties` struct to populate
+ *
+ * Extract useful information from the @item's attributes.
+ *
+ * Note that letter-spacing and shape are required to be constant
+ * across items. But underline and strikethrough can vary across
+ * an item, so we collect all the values that we find.
+ */
+void
+pango_item_get_properties (PangoItem      *item,
+                           ItemProperties *properties)
+{
+  GSList *tmp_list = item->analysis.extra_attrs;
+
+  properties->uline_single = FALSE;
+  properties->uline_double = FALSE;
+  properties->uline_low = FALSE;
+  properties->uline_error = FALSE;
+  properties->oline_single = FALSE;
+  properties->strikethrough = FALSE;
+  properties->showing_space = FALSE;
+  properties->letter_spacing = 0;
+  properties->shape_set = FALSE;
+  properties->shape_ink_rect = NULL;
+  properties->shape_logical_rect = NULL;
+  properties->line_height = 0.0;
+  properties->absolute_line_height = 0;
+
+  while (tmp_list)
+    {
+      PangoAttribute *attr = tmp_list->data;
+
+      switch ((int) attr->klass->type)
+        {
+        case PANGO_ATTR_UNDERLINE:
+          switch (((PangoAttrInt *)attr)->value)
+            {
+            case PANGO_UNDERLINE_NONE:
+              break;
+            case PANGO_UNDERLINE_SINGLE:
+            case PANGO_UNDERLINE_SINGLE_LINE:
+              properties->uline_single = TRUE;
+              break;
+            case PANGO_UNDERLINE_DOUBLE:
+            case PANGO_UNDERLINE_DOUBLE_LINE:
+              properties->uline_double = TRUE;
+              break;
+            case PANGO_UNDERLINE_LOW:
+              properties->uline_low = TRUE;
+              break;
+            case PANGO_UNDERLINE_ERROR:
+            case PANGO_UNDERLINE_ERROR_LINE:
+              properties->uline_error = TRUE;
+              break;
+            default:
+              g_assert_not_reached ();
+              break;
+            }
+          break;
+        case PANGO_ATTR_OVERLINE:
+          switch (((PangoAttrInt *)attr)->value)
+            {
+            case PANGO_OVERLINE_SINGLE:
+              properties->oline_single = TRUE;
+              break;
+            default:
+              g_assert_not_reached ();
+              break;
+            }
+          break;
+
+        case PANGO_ATTR_STRIKETHROUGH:
+          properties->strikethrough = ((PangoAttrInt *)attr)->value;
+          break;
+
+        case PANGO_ATTR_LETTER_SPACING:
+          properties->letter_spacing = ((PangoAttrInt *)attr)->value;
+          break;
+
+        case PANGO_ATTR_SHAPE:
+          properties->shape_set = TRUE;
+          properties->shape_logical_rect = &((PangoAttrShape *)attr)->logical_rect;
+          properties->shape_ink_rect = &((PangoAttrShape *)attr)->ink_rect;
+          break;
+
+        case PANGO_ATTR_LINE_HEIGHT:
+          properties->line_height = ((PangoAttrFloat *)attr)->value;
+          break;
+
+        case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
+          properties->absolute_line_height = ((PangoAttrInt *)attr)->value;
+          break;
+
+        case PANGO_ATTR_SHOW:
+          properties->showing_space = (((PangoAttrInt *)attr)->value & PANGO_SHOW_SPACES) != 0;
+          break;
+
+        default:
+          break;
+        }
+      tmp_list = tmp_list->next;
+    }
+}

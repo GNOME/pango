@@ -54,6 +54,27 @@ void               pango_item_unsplit                 (PangoItem *orig,
                                                        int        split_offset);
 
 
+typedef struct _ItemProperties ItemProperties;
+struct _ItemProperties
+{
+  guint uline_single   : 1;
+  guint uline_double   : 1;
+  guint uline_low      : 1;
+  guint uline_error    : 1;
+  guint strikethrough  : 1;
+  guint oline_single   : 1;
+  guint showing_space  : 1;
+  int            letter_spacing;
+  gboolean        shape_set;
+  PangoRectangle *shape_ink_rect;
+  PangoRectangle *shape_logical_rect;
+  double line_height;
+  int    absolute_line_height;
+};
+
+void               pango_item_get_properties          (PangoItem        *item,
+                                                       ItemProperties   *properties);
+
 G_END_DECLS
 
 #endif /* __PANGO_ITEM_PRIVATE_H__ */
