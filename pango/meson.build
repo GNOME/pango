@@ -35,6 +35,7 @@ pango_sources = [
   'pango-line.c',
   'pango-line-breaker.c',
   'pango-lines.c',
+  'pango-simple-layout.c',
 ]
 
 pango_headers = [
@@ -66,6 +67,7 @@ pango_headers = [
   'pango-modules.h',
   'pango-renderer.h',
   'pango-script.h',
+  'pango-simple-layout.h',
   'pango-tabs.h',
   'pango-types.h',
   'pango-utils.h',
