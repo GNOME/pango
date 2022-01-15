@@ -5586,7 +5586,13 @@ pango_layout_get_empty_extents_and_height_at_index (PangoLayout    *layout,
     }
 }
 
-static void
+void pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
+                                              PangoRectangle *run_ink,
+                                              PangoRectangle *run_logical,
+                                              PangoRectangle *line_logical,
+                                              int            *height);
+
+void
 pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
                                          PangoRectangle *run_ink,
                                          PangoRectangle *run_logical,
