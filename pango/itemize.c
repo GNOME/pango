@@ -944,6 +944,7 @@ itemize_state_process_run (ItemizeState *state)
   const char *p;
   gboolean last_was_forced_break = FALSE;
   gboolean is_space;
+  gunichar prev_wc = 0;
 
   /* Only one character has type G_UNICODE_LINE_SEPARATOR in Unicode 4.0;
    * update this if that changes. */
@@ -959,7 +960,8 @@ itemize_state_process_run (ItemizeState *state)
        p = g_utf8_next_char (p))
     {
       gunichar wc = g_utf8_get_char (p);
-      gboolean is_forced_break = (wc == '\t' || wc == LINE_SEPARATOR);
+      gboolean is_forced_break = wc == '\t' || wc == '\r' || wc == '\n' ||
+                                 wc == 0x2028 || wc == 0x2029;
       PangoFont *font;
       int font_position;
 
@@ -975,12 +977,17 @@ itemize_state_process_run (ItemizeState *state)
           is_space = FALSE;
         }
 
-      itemize_state_add_character (state, font, font_position,
-                                   is_forced_break || last_was_forced_break,
-                                   p,
-                                   is_space);
+      /* Don't break between \r and \n */
+      if (prev_wc == '\r' && wc == '\n')
+        state->item->num_chars++;
+      else
+        itemize_state_add_character (state, font, font_position,
+                                     is_forced_break || last_was_forced_break,
+                                     p,
+                                     is_space);
 
       last_was_forced_break = is_forced_break;
+      prev_wc = wc;
     }
 
   /* Finish the final item from the current segment */
