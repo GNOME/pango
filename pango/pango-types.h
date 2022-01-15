@@ -229,7 +229,7 @@ struct _PangoRectangle
 
 PANGO_AVAILABLE_IN_1_16
 void pango_extents_to_pixels (PangoRectangle *inclusive,
-			      PangoRectangle *nearest);
+                             PangoRectangle *nearest);
 
 
 #include <pango/pango-direction.h>
@@ -237,6 +237,69 @@ void pango_extents_to_pixels (PangoRectangle *inclusive,
 #include <pango/pango-language.h>
 #include <pango/pango-matrix.h>
 #include <pango/pango-script.h>
+
+/**
+ * PangoAlignment:
+ * @PANGO_ALIGN_LEFT: Put all available space on the right
+ * @PANGO_ALIGN_CENTER: Center the line within the available space
+ * @PANGO_ALIGN_RIGHT: Put all available space on the left
+ *
+ * `PangoAlignment` describes how to align the lines of a `PangoLayout`
+ * within the available space.
+ *
+ * If the `PangoLayout` is set to justify using [method@Pango.Layout.set_justify],
+ * this only affects partial lines.
+ *
+ * See [method@Pango.Layout.set_auto_dir] for how text direction affects
+ * the interpretation of `PangoAlignment` values.
+ */
+typedef enum {
+  PANGO_ALIGN_LEFT,
+  PANGO_ALIGN_CENTER,
+  PANGO_ALIGN_RIGHT
+} PangoAlignment;
+
+/**
+ * PangoWrapMode:
+ * @PANGO_WRAP_WORD: wrap lines at word boundaries.
+ * @PANGO_WRAP_CHAR: wrap lines at character boundaries.
+ * @PANGO_WRAP_WORD_CHAR: wrap lines at word boundaries, but fall back to
+ *   character boundaries if there is not enough space for a full word.
+ *
+ * `PangoWrapMode` describes how to wrap the lines of a `PangoLayout`
+ * to the desired width.
+ *
+ * For @PANGO_WRAP_WORD, Pango uses break opportunities that are determined
+ * by the Unicode line breaking algorithm. For @PANGO_WRAP_CHAR, Pango allows
+ * breaking at grapheme boundaries that are determined by the Unicode text
+ * segmentation algorithm.
+ */
+typedef enum {
+  PANGO_WRAP_WORD,
+  PANGO_WRAP_CHAR,
+  PANGO_WRAP_WORD_CHAR
+} PangoWrapMode;
+
+/**
+ * PangoEllipsizeMode:
+ * @PANGO_ELLIPSIZE_NONE: No ellipsization
+ * @PANGO_ELLIPSIZE_START: Omit characters at the start of the text
+ * @PANGO_ELLIPSIZE_MIDDLE: Omit characters in the middle of the text
+ * @PANGO_ELLIPSIZE_END: Omit characters at the end of the text
+ *
+ * `PangoEllipsizeMode` describes what sort of ellipsization
+ * should be applied to text.
+ *
+ * In the ellipsization process characters are removed from the
+ * text in order to make it fit to a given width and replaced
+ * with an ellipsis.
+ */
+typedef enum {
+  PANGO_ELLIPSIZE_NONE,
+  PANGO_ELLIPSIZE_START,
+  PANGO_ELLIPSIZE_MIDDLE,
+  PANGO_ELLIPSIZE_END
+} PangoEllipsizeMode;
 
 
 /*
