@@ -1600,11 +1600,6 @@ default_break (const char    *text,
               space_or_hyphen = TRUE;
             break;
           default:
-            break;
-          }
-
-        if (!space_or_hyphen)
-          {
             if (wc == '-'    || /* Hyphen-minus */
                 wc == 0x058a || /* Armenian hyphen */
                 wc == 0x1400 || /* Canadian syllabics hyphen */
@@ -1616,9 +1611,15 @@ default_break (const char    *text,
                 wc == 0xfe63 || /* Small hyphen-minus */
                 wc == 0xff0d)   /* Fullwidth hyphen-minus */
               space_or_hyphen = TRUE;
+            break;
           }
 
-        if (attrs[i].is_word_boundary)
+        if (prev_wc == 0x2027)     /* Hyphenation point */
+          {
+            attrs[i].break_inserts_hyphen = TRUE;
+            attrs[i].break_removes_preceding = TRUE;
+          }
+        else if (attrs[i].is_word_boundary)
           attrs[i].break_inserts_hyphen = FALSE;
         else if (prev_space_or_hyphen)
           attrs[i].break_inserts_hyphen = FALSE;
@@ -1626,12 +1627,6 @@ default_break (const char    *text,
           attrs[i].break_inserts_hyphen = FALSE;
         else
           attrs[i].break_inserts_hyphen = insert_hyphens;
-
-        if (prev_wc == 0x2027)     /* Hyphenation point */
-          {
-            attrs[i].break_inserts_hyphen = TRUE;
-            attrs[i].break_removes_preceding = TRUE;
-          }
 
         prev_space_or_hyphen = space_or_hyphen;
       }
