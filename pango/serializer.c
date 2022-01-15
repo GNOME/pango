@@ -26,6 +26,10 @@
 #include <pango/pango-context-private.h>
 #include <pango/pango-enum-types.h>
 #include <pango/pango-font-private.h>
+#include <pango/pango-line-private.h>
+#include <pango/pango-lines.h>
+#include <pango/pango-simple-layout.h>
+#include <pango/pango-utils-internal.h>
 
 #include <hb-ot.h>
 #include "pango/json/gtkjsonparserprivate.h"
@@ -236,6 +240,15 @@ static const char *alignment_names[] = {
   "left",
   "center",
   "right",
+  NULL
+};
+
+static const char *alignment_names2[] = {
+  "left",
+  "center",
+  "right",
+  "justify",
+  "justify-all",
   NULL
 };
 
@@ -480,15 +493,12 @@ add_context (GtkJsonPrinter *printer,
 }
 
 static void
-add_log_attrs (GtkJsonPrinter *printer,
-               PangoLayout    *layout)
+add_log_attrs (GtkJsonPrinter      *printer,
+               const PangoLogAttr  *log_attrs,
+               int                  n_attrs)
 {
-  const PangoLogAttr *log_attrs;
-  int n_attrs;
-
   gtk_json_printer_start_array (printer, "log-attrs");
 
-  log_attrs = pango_layout_get_log_attrs_readonly (layout, &n_attrs);
   for (int i = 0; i < n_attrs; i++)
     {
       gtk_json_printer_start_object (printer, NULL);
@@ -628,7 +638,7 @@ add_font (GtkJsonPrinter *printer,
 
 static void
 add_run (GtkJsonPrinter *printer,
-         PangoLayout    *layout,
+         const char     *text,
          PangoLayoutRun *run)
 {
   char *str;
@@ -639,7 +649,7 @@ add_run (GtkJsonPrinter *printer,
   gtk_json_printer_add_integer (printer, "offset", run->item->offset);
   gtk_json_printer_add_integer (printer, "length", run->item->length);
 
-  str = g_strndup (layout->text + run->item->offset, run->item->length);
+  str = g_strndup (text + run->item->offset, run->item->length);
   gtk_json_printer_add_string (printer, "text", str);
   g_free (str);
 
@@ -717,7 +727,7 @@ add_line (GtkJsonPrinter  *printer,
   for (GSList *l = line->runs; l; l = l->next)
     {
       PangoLayoutRun *run = l->data;
-      add_run (printer, line->layout, run);
+      add_run (printer, line->layout->text, run);
     }
   gtk_json_printer_end (printer);
 
@@ -729,6 +739,8 @@ add_output (GtkJsonPrinter *printer,
             PangoLayout    *layout)
 {
   int width, height;
+  const PangoLogAttr *log_attrs;
+  int n_attrs;
 
   gtk_json_printer_start_object (printer, "output");
 
@@ -740,11 +752,14 @@ add_output (GtkJsonPrinter *printer,
   gtk_json_printer_add_integer (printer, "width", width);
   gtk_json_printer_add_integer (printer, "height", height);
 
-  add_log_attrs (printer, layout);
+  log_attrs = pango_layout_get_log_attrs_readonly (layout, &n_attrs);
+  add_log_attrs (printer, log_attrs, n_attrs);
+
   gtk_json_printer_start_array (printer, "lines");
   for (GSList *l = layout->lines; l; l = l->next)
     {
       PangoLayoutLine *line = l->data;
+
       add_line (printer, line);
     }
   gtk_json_printer_end (printer);
@@ -819,6 +834,142 @@ layout_to_json (GtkJsonPrinter            *printer,
 
   if (flags & PANGO_LAYOUT_SERIALIZE_OUTPUT)
     add_output (printer, layout);
+
+  gtk_json_printer_end (printer);
+}
+
+static void
+line_to_json (GtkJsonPrinter *printer,
+              PangoLine      *line,
+              int             x,
+              int             y)
+{
+  gtk_json_printer_start_object (printer, NULL);
+
+  gtk_json_printer_start_array (printer, "position");
+  gtk_json_printer_add_number (printer, NULL, x);
+  gtk_json_printer_add_number (printer, NULL, y);
+  gtk_json_printer_end (printer);
+
+  gtk_json_printer_start_object (printer, "line");
+
+  gtk_json_printer_add_integer (printer, "start-index", line->start_index);
+  gtk_json_printer_add_integer (printer, "length", line->length);
+  gtk_json_printer_add_integer (printer, "start-offset", line->start_offset);
+  gtk_json_printer_add_integer (printer, "n-chars", line->n_chars);
+
+  gtk_json_printer_add_boolean (printer, "wrapped", line->wrapped);
+  gtk_json_printer_add_boolean (printer, "ellipsized", line->ellipsized);
+  gtk_json_printer_add_boolean (printer, "hyphenated", line->hyphenated);
+  gtk_json_printer_add_boolean (printer, "justified", line->justified);
+  gtk_json_printer_add_boolean (printer, "paragraph-start", line->starts_paragraph);
+  gtk_json_printer_add_boolean (printer, "paragraph-end", line->ends_paragraph);
+  gtk_json_printer_add_string (printer, "direction", direction_names[line->direction]);
+
+  gtk_json_printer_start_array (printer, "runs");
+  for (GSList *l = line->runs; l; l = l->next)
+    {
+      PangoLayoutRun *run = l->data;
+      add_run (printer, line->data->text, run);
+    }
+  gtk_json_printer_end (printer);
+
+  gtk_json_printer_end (printer);
+
+  gtk_json_printer_end (printer);
+}
+
+static void
+lines_to_json (GtkJsonPrinter *printer,
+               PangoLines     *lines)
+{
+  int width, height;
+
+  gtk_json_printer_start_object (printer, "output");
+
+  pango_lines_get_size (lines, &width, &height);
+  gtk_json_printer_add_integer (printer, "width", width);
+  gtk_json_printer_add_integer (printer, "height", height);
+
+  gtk_json_printer_start_array (printer, "lines");
+
+  for (int i = 0; i < pango_lines_get_line_count (lines); i++)
+    {
+      PangoLine *line;
+      int x, y;
+      line = pango_lines_get_line (lines, i, &x, &y);
+      line_to_json (printer, line, x, y);
+    }
+
+  gtk_json_printer_end (printer);
+
+  gtk_json_printer_end (printer);
+}
+
+static void
+simple_layout_to_json (GtkJsonPrinter                  *printer,
+                       PangoSimpleLayout               *layout,
+                       PangoSimpleLayoutSerializeFlags  flags)
+{
+  const char *str;
+
+  gtk_json_printer_start_object (printer, NULL);
+
+  if (flags & PANGO_SIMPLE_LAYOUT_SERIALIZE_CONTEXT)
+    add_context (printer, pango_simple_layout_get_context (layout));
+
+  str = (const char *) g_object_get_data (G_OBJECT (layout), "comment");
+  if (str)
+    gtk_json_printer_add_string (printer, "comment", str);
+
+  gtk_json_printer_add_string (printer, "text", pango_simple_layout_get_text (layout));
+
+  add_attr_list (printer, pango_simple_layout_get_attributes (layout));
+
+  if (pango_simple_layout_get_font_description (layout))
+    {
+      char *str = pango_font_description_to_string (pango_simple_layout_get_font_description (layout));
+      gtk_json_printer_add_string (printer, "font", str);
+      g_free (str);
+    }
+
+  if (pango_simple_layout_get_tabs (layout))
+    add_tab_array (printer, pango_simple_layout_get_tabs (layout));
+
+  if (!pango_simple_layout_get_auto_dir (layout))
+    gtk_json_printer_add_boolean (printer, "auto-dir", FALSE);
+
+  if (pango_simple_layout_get_alignment (layout) != PANGO_ALIGNMENT_LEFT)
+    gtk_json_printer_add_string (printer, "alignment", alignment_names2[pango_simple_layout_get_alignment (layout)]);
+
+  if (pango_simple_layout_get_wrap (layout) != PANGO_WRAP_WORD)
+    gtk_json_printer_add_string (printer, "wrap", wrap_names[pango_simple_layout_get_wrap (layout)]);
+
+  if (pango_simple_layout_get_ellipsize (layout) != PANGO_ELLIPSIZE_NONE)
+    gtk_json_printer_add_string (printer, "ellipsize", ellipsize_names[pango_simple_layout_get_ellipsize (layout)]);
+
+  if (pango_simple_layout_get_width (layout) != -1)
+    gtk_json_printer_add_integer (printer, "width", pango_simple_layout_get_width (layout));
+
+  if (pango_simple_layout_get_height (layout) != -1)
+    gtk_json_printer_add_integer (printer, "height", pango_simple_layout_get_height (layout));
+
+  if (pango_simple_layout_get_indent (layout) != 0)
+    gtk_json_printer_add_integer (printer, "indent", pango_simple_layout_get_indent (layout));
+
+  if (pango_simple_layout_get_line_spacing (layout) != 0.)
+    gtk_json_printer_add_number (printer, "line-spacing", pango_simple_layout_get_line_spacing (layout));
+
+  if (flags & PANGO_LAYOUT_SERIALIZE_OUTPUT)
+    {
+      const PangoLogAttr *log_attrs;
+      int n_attrs;
+
+      log_attrs = pango_simple_layout_get_log_attrs (layout, &n_attrs);
+      add_log_attrs (printer, log_attrs, n_attrs);
+
+      lines_to_json (printer, pango_simple_layout_get_lines (layout));
+    }
 
   gtk_json_printer_end (printer);
 }
@@ -1524,6 +1675,142 @@ json_parser_fill_layout (GtkJsonParser               *parser,
 }
 
 enum {
+  SIMPLE_LAYOUT_CONTEXT,
+  SIMPLE_LAYOUT_COMMENT,
+  SIMPLE_LAYOUT_TEXT,
+  SIMPLE_LAYOUT_ATTRIBUTES,
+  SIMPLE_LAYOUT_FONT,
+  SIMPLE_LAYOUT_TABS,
+  SIMPLE_LAYOUT_AUTO_DIR,
+  SIMPLE_LAYOUT_ALIGNMENT,
+  SIMPLE_LAYOUT_WRAP,
+  SIMPLE_LAYOUT_ELLIPSIZE,
+  SIMPLE_LAYOUT_WIDTH,
+  SIMPLE_LAYOUT_HEIGHT,
+  SIMPLE_LAYOUT_INDENT,
+  SIMPLE_LAYOUT_LINE_SPACING,
+  SIMPLE_LAYOUT_LINES
+};
+
+static const char *simple_layout_members[] = {
+  "context",
+  "comment",
+  "text",
+  "attributes",
+  "font",
+  "tabs",
+  "auto-dir",
+  "alignment",
+  "wrap",
+  "ellipsize",
+  "width",
+  "height",
+  "indent",
+  "line-spacing",
+  "lines",
+  NULL
+};
+
+static void
+json_parser_fill_simple_layout (GtkJsonParser                     *parser,
+                                PangoSimpleLayout                 *layout,
+                                PangoSimpleLayoutDeserializeFlags  flags)
+{
+  gtk_json_parser_start_object (parser);
+
+  do
+    {
+      char *str;
+
+      switch (gtk_json_parser_select_member (parser, simple_layout_members))
+        {
+        case SIMPLE_LAYOUT_CONTEXT:
+          if (flags & PANGO_LAYOUT_DESERIALIZE_CONTEXT)
+            json_parser_fill_context (parser, pango_simple_layout_get_context (layout));
+          break;
+
+        case SIMPLE_LAYOUT_COMMENT:
+          str = gtk_json_parser_get_string (parser);
+          g_object_set_data_full (G_OBJECT (layout), "comment", str, g_free);
+          break;
+
+        case SIMPLE_LAYOUT_TEXT:
+          str = gtk_json_parser_get_string (parser);
+          pango_simple_layout_set_text (layout, str, -1);
+          g_free (str);
+          break;
+
+        case SIMPLE_LAYOUT_ATTRIBUTES:
+          {
+            PangoAttrList *attributes = pango_attr_list_new ();
+            json_parser_fill_attr_list (parser, attributes);
+            pango_simple_layout_set_attributes (layout, attributes);
+            pango_attr_list_unref (attributes);
+          }
+          break;
+
+        case SIMPLE_LAYOUT_FONT:
+          {
+            PangoFontDescription *desc = parser_get_font_description (parser);;
+            pango_simple_layout_set_font_description (layout, desc);
+            pango_font_description_free (desc);
+          }
+          break;
+
+        case SIMPLE_LAYOUT_AUTO_DIR:
+          pango_simple_layout_set_auto_dir (layout, gtk_json_parser_get_boolean (parser));
+          break;
+
+        case SIMPLE_LAYOUT_LINE_SPACING:
+          pango_simple_layout_set_line_spacing (layout, gtk_json_parser_get_number (parser));
+          break;
+
+        case SIMPLE_LAYOUT_TABS:
+          {
+            PangoTabArray *tabs = pango_tab_array_new (0, FALSE);
+            json_parser_fill_tab_array (parser, tabs);
+            pango_simple_layout_set_tabs (layout, tabs);
+            pango_tab_array_free (tabs);
+          }
+          break;
+
+        case SIMPLE_LAYOUT_ALIGNMENT:
+          pango_simple_layout_set_alignment (layout, (PangoAlignment) parser_select_string (parser, alignment_names2));
+          break;
+
+        case SIMPLE_LAYOUT_WRAP:
+          pango_simple_layout_set_wrap (layout, (PangoWrapMode) parser_select_string (parser, wrap_names));
+          break;
+
+        case SIMPLE_LAYOUT_ELLIPSIZE:
+          pango_simple_layout_set_ellipsize (layout, (PangoEllipsizeMode) parser_select_string (parser, ellipsize_names));
+          break;
+
+        case SIMPLE_LAYOUT_WIDTH:
+          pango_simple_layout_set_width (layout, (int) gtk_json_parser_get_number (parser));
+          break;
+
+        case SIMPLE_LAYOUT_HEIGHT:
+          pango_simple_layout_set_height (layout, (int) gtk_json_parser_get_number (parser));
+          break;
+
+        case SIMPLE_LAYOUT_INDENT:
+          pango_simple_layout_set_indent (layout, (int) gtk_json_parser_get_number (parser));
+          break;
+
+        case SIMPLE_LAYOUT_LINES:
+          break;
+
+        default:
+          break;
+        }
+    }
+  while (gtk_json_parser_next (parser));
+
+  gtk_json_parser_end (parser);
+}
+
+enum {
   FONT_DESCRIPTION,
   FONT_CHECKSUM,
   FONT_VARIATIONS,
@@ -1657,7 +1944,6 @@ pango_layout_write_to_file (PangoLayout                *layout,
   g_bytes_unref (bytes);
 
   return result;
-
 }
 
 /**
@@ -1750,7 +2036,7 @@ pango_font_serialize (PangoFont *font)
   gsize size;
 
   g_return_val_if_fail (PANGO_IS_FONT (font), NULL);
-
+ 
   str = g_string_new ("");
 
   printer = gtk_json_printer_new (gstring_write, str, NULL);
@@ -1797,6 +2083,147 @@ pango_font_deserialize (PangoContext  *context,
   gtk_json_parser_free (parser);
 
   return font;
+}
+
+/**
+ * pango_simple_layout_serialize:
+ * @layout: a `PangoSimpleLayout`
+ * @flags: `PangoSipleLayoutSerializeFlags`
+ *
+ * Serializes the @layout for later deserialization via [func@Pango.SimpleLayout.deserialize].
+ *
+ * There are no guarantees about the format of the output across different
+ * versions of Pango and [func@Pango.SimpleLayout.deserialize] will reject data
+ * that it cannot parse.
+ *
+ * The intended use of this function is testing, benchmarking and debugging.
+ * The format is not meant as a permanent storage format.
+ *
+ * Returns: a `GBytes` containing the serialized form of @layout
+ */
+GBytes *
+pango_simple_layout_serialize (PangoSimpleLayout               *layout,
+                               PangoSimpleLayoutSerializeFlags  flags)
+{
+  GString *str;
+  GtkJsonPrinter *printer;
+  char *data;
+  gsize size;
+
+  g_return_val_if_fail (PANGO_IS_SIMPLE_LAYOUT (layout), NULL);
+
+  str = g_string_new ("");
+
+  printer = gtk_json_printer_new (gstring_write, str, NULL);
+  gtk_json_printer_set_flags (printer, GTK_JSON_PRINTER_PRETTY);
+  simple_layout_to_json (printer, layout, flags);
+  gtk_json_printer_free (printer);
+
+  g_string_append_c (str, '\n');
+
+  size = str->len;
+  data = g_string_free (str, FALSE);
+
+  return g_bytes_new_take (data, size);
+}
+
+/**
+ * pango_simple_layout_write_to_file:
+ * @layout: a `PangoLayout`
+ *
+ * A convenience method to serialize a layout to a file.
+ *
+ * It is equivalent to calling [method@Pango.SimpleLayout.serialize]
+ * followed by [func@GLib.file_set_contents].
+ *
+ * See those two functions for details on the arguments.
+ *
+ * It is mostly intended for use inside a debugger to quickly dump
+ * a layout to a file for later inspection.
+ *
+ * Returns: %TRUE if saving was successful
+ */
+gboolean
+pango_simple_layout_write_to_file (PangoSimpleLayout *layout,
+                                   const char        *filename)
+{
+  GBytes *bytes;
+  gboolean result;
+
+  g_return_val_if_fail (PANGO_IS_SIMPLE_LAYOUT (layout), FALSE);
+  g_return_val_if_fail (filename != NULL, FALSE);
+
+  bytes = pango_simple_layout_serialize (layout, PANGO_SIMPLE_LAYOUT_SERIALIZE_CONTEXT |
+                                                 PANGO_SIMPLE_LAYOUT_SERIALIZE_OUTPUT);
+
+  result = g_file_set_contents (filename,
+                                g_bytes_get_data (bytes, NULL),
+                                g_bytes_get_size (bytes),
+                                NULL);
+  g_bytes_unref (bytes);
+
+  return result;
+}
+
+/**
+ * pango_simple_layout_deserialize:
+ * @context: a `PangoContext`
+ * @flags: `PangoSimpleLayoutDeserializeFlags`
+ * @bytes: the bytes containing the data
+ * @error: return location for an error
+ *
+ * Loads data previously created via [method@Pango.SimpleLayout.serialize].
+ *
+ * For a discussion of the supported format, see that function.
+ *
+ * Note: to verify that the returned layout is identical to
+ * the one that was serialized, you can compare @bytes to the
+ * result of serializing the layout again.
+ *
+ * Returns: (nullable) (transfer full): a new `PangoSimpleLayout`
+ */
+PangoSimpleLayout *
+pango_simple_layout_deserialize (PangoContext                       *context,
+                                 GBytes                             *bytes,
+                                 PangoSimpleLayoutDeserializeFlags   flags,
+                                 GError                            **error)
+{
+  PangoSimpleLayout *layout;
+  GtkJsonParser *parser;
+  const GError *parser_error;
+
+  g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
+
+  layout = pango_simple_layout_new (context);
+
+  parser = gtk_json_parser_new_for_bytes (bytes);
+  json_parser_fill_simple_layout (parser, layout, flags);
+
+  parser_error = gtk_json_parser_get_error (parser);
+
+  if (parser_error)
+    {
+      gsize start, end;
+      int code;
+
+      gtk_json_parser_get_error_offset (parser, &start, &end);
+
+      if (g_error_matches (parser_error, GTK_JSON_ERROR, GTK_JSON_ERROR_VALUE))
+        code = PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE;
+      else if (g_error_matches (parser_error, GTK_JSON_ERROR, GTK_JSON_ERROR_SCHEMA))
+        code = PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE;
+      else
+        code = PANGO_LAYOUT_DESERIALIZE_INVALID;
+
+      g_set_error (error, PANGO_LAYOUT_DESERIALIZE_ERROR, code,
+                   "%ld:%ld: %s", start, end, parser_error->message);
+
+      g_clear_object (&layout);
+    }
+
+  gtk_json_parser_free (parser);
+
+  return layout;
 }
 
 /* }}} */
