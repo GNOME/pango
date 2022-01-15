@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -27,6 +27,7 @@
 #include "pango-font-private.h"
 #include "pango-attributes-private.h"
 #include "pango-impl-utils.h"
+#include "pango-line-private.h"
 
 typedef struct _EllipsizeState EllipsizeState;
 typedef struct _RunInfo        RunInfo;
@@ -67,8 +68,8 @@ typedef struct _LineIter       LineIter;
 struct _RunInfo
 {
   PangoGlyphItem *run;
-  int start_offset;		/* Character offset of run start */
-  int width;			/* Width of run in Pango units */
+  int start_offset;             /* Character offset of run start */
+  int width;                    /* Width of run in Pango units */
 };
 
 /* Iterator to a position within the ellipsized line */
@@ -81,48 +82,58 @@ struct _LineIter
 /* State of ellipsization process */
 struct _EllipsizeState
 {
-  PangoLayout *layout;		/* Layout being ellipsized */
-  PangoAttrList *attrs;		/* Attributes used for itemization/shaping */
+  PangoContext *context;
+  const char *text;
+  PangoLogAttr *log_attrs;
+  PangoEllipsizeMode ellipsize;
+  PangoAttrList *attrs;         /* Attributes used for itemization/shaping */
 
-  RunInfo *run_info;		/* Array of information about each run */
+  RunInfo *run_info;            /* Array of information about each run */
   int n_runs;
 
-  int total_width;		/* Original width of line in Pango units */
-  int gap_center;		/* Goal for center of gap */
+  int total_width;              /* Original width of line in Pango units */
+  int gap_center;               /* Goal for center of gap */
 
-  PangoGlyphItem *ellipsis_run;	/* Run created to hold ellipsis */
-  int ellipsis_width;		/* Width of ellipsis, in Pango units */
-  int ellipsis_is_cjk;		/* Whether the first character in the ellipsized
-				 * is wide; this triggers us to try to use a
-				 * mid-line ellipsis instead of a baseline
-				 */
+  PangoGlyphItem *ellipsis_run; /* Run created to hold ellipsis */
+  int ellipsis_width;           /* Width of ellipsis, in Pango units */
+  int ellipsis_is_cjk;          /* Whether the first character in the ellipsized
+                                 * is wide; this triggers us to try to use a
+                                 * mid-line ellipsis instead of a baseline
+                                 */
 
   PangoAttrIterator *line_start_attr; /* Cached PangoAttrIterator for the start of the run */
 
-  LineIter gap_start_iter;	/* Iteratator pointig to the first cluster in gap */
-  int gap_start_x;		/* x position of start of gap, in Pango units */
+  LineIter gap_start_iter;      /* Iteratator pointig to the first cluster in gap */
+  int gap_start_x;              /* x position of start of gap, in Pango units */
   PangoAttrIterator *gap_start_attr; /* Attribute iterator pointing to a range containing
-				      * the first character in gap */
+                                      * the first character in gap */
 
-  LineIter gap_end_iter;	/* Iterator pointing to last cluster in gap */
-  int gap_end_x;		/* x position of end of gap, in Pango units */
+  LineIter gap_end_iter;        /* Iterator pointing to last cluster in gap */
+  int gap_end_x;                /* x position of end of gap, in Pango units */
 
   PangoShapeFlags shape_flags;
 };
 
-/* Compute global information needed for the itemization process
- */
 static void
-init_state (EllipsizeState  *state,
-            PangoLayoutLine *line,
-            PangoAttrList   *attrs,
-            PangoShapeFlags  shape_flags)
+init_state (EllipsizeState     *state,
+            PangoContext       *context,
+            const char         *text,
+            int                 start_index,
+            PangoLogAttr       *log_attrs,
+            PangoEllipsizeMode  ellipsize,
+            GSList             *runs,
+            PangoAttrList      *attrs,
+            PangoShapeFlags     shape_flags)
 {
   GSList *l;
   int i;
   int start_offset;
 
-  state->layout = line->layout;
+  state->context = context;
+  state->text = text;
+  state->log_attrs = log_attrs;
+  state->ellipsize = ellipsize;
+
   if (attrs)
     state->attrs = pango_attr_list_ref (attrs);
   else
@@ -130,14 +141,13 @@ init_state (EllipsizeState  *state,
 
   state->shape_flags = shape_flags;
 
-  state->n_runs = g_slist_length (line->runs);
+  state->n_runs = g_slist_length (runs);
   state->run_info = g_new (RunInfo, state->n_runs);
 
-  start_offset = pango_utf8_strlen (line->layout->text,
-				line->start_index);
+  start_offset = pango_utf8_strlen (state->text, start_index);
 
   state->total_width = 0;
-  for (l = line->runs, i = 0; l; l = l->next, i++)
+  for (l = runs, i = 0; l; l = l->next, i++)
     {
       PangoGlyphItem *run = l->data;
       int width = pango_glyph_string_get_width (run->glyphs);
@@ -181,12 +191,12 @@ get_cluster_width (LineIter *iter)
   if (run_iter->start_glyph < run_iter->end_glyph) /* LTR */
     {
       for (i = run_iter->start_glyph; i < run_iter->end_glyph; i++)
-	width += glyphs->glyphs[i].geometry.width;
+        width += glyphs->glyphs[i].geometry.width;
     }
-  else			                 /* RTL */
+  else                                   /* RTL */
     {
       for (i = run_iter->start_glyph; i > run_iter->end_glyph; i--)
-	width += glyphs->glyphs[i].geometry.width;
+        width += glyphs->glyphs[i].geometry.width;
     }
 
   return width;
@@ -196,19 +206,19 @@ get_cluster_width (LineIter *iter)
  */
 static gboolean
 line_iter_next_cluster (EllipsizeState *state,
-			LineIter       *iter)
+                        LineIter       *iter)
 {
   if (!pango_glyph_item_iter_next_cluster (&iter->run_iter))
     {
       if (iter->run_index == state->n_runs - 1)
-	return FALSE;
+        return FALSE;
       else
-	{
-	  iter->run_index++;
-	  pango_glyph_item_iter_init_start (&iter->run_iter,
-					    state->run_info[iter->run_index].run,
-					    state->layout->text);
-	}
+        {
+          iter->run_index++;
+          pango_glyph_item_iter_init_start (&iter->run_iter,
+                                            state->run_info[iter->run_index].run,
+                                            state->text);
+        }
     }
 
   return TRUE;
@@ -218,19 +228,19 @@ line_iter_next_cluster (EllipsizeState *state,
  */
 static gboolean
 line_iter_prev_cluster (EllipsizeState *state,
-			LineIter       *iter)
+                        LineIter       *iter)
 {
   if (!pango_glyph_item_iter_prev_cluster (&iter->run_iter))
     {
       if (iter->run_index == 0)
-	return FALSE;
+        return FALSE;
       else
-	{
-	  iter->run_index--;
-	  pango_glyph_item_iter_init_end (&iter->run_iter,
-					  state->run_info[iter->run_index].run,
-					  state->layout->text);
-	}
+        {
+          iter->run_index--;
+          pango_glyph_item_iter_init_end (&iter->run_iter,
+                                          state->run_info[iter->run_index].run,
+                                          state->text);
+        }
     }
 
   return TRUE;
@@ -251,43 +261,43 @@ line_iter_prev_cluster (EllipsizeState *state,
  */
 static gboolean
 starts_at_ellipsization_boundary (EllipsizeState *state,
-				  LineIter       *iter)
+                                  LineIter       *iter)
 {
   RunInfo *run_info = &state->run_info[iter->run_index];
 
   if (iter->run_iter.start_char == 0 && iter->run_index == 0)
     return TRUE;
 
-  return state->layout->log_attrs[run_info->start_offset + iter->run_iter.start_char].is_cursor_position;
+  return state->log_attrs[run_info->start_offset + iter->run_iter.start_char].is_cursor_position;
 }
 
 /* Checks if there is a ellipsization boundary after the cluster @iter points to
  */
 static gboolean
 ends_at_ellipsization_boundary (EllipsizeState *state,
-				LineIter       *iter)
+                                LineIter       *iter)
 {
   RunInfo *run_info = &state->run_info[iter->run_index];
 
   if (iter->run_iter.end_char == run_info->run->item->num_chars && iter->run_index == state->n_runs - 1)
     return TRUE;
 
-  return state->layout->log_attrs[run_info->start_offset + iter->run_iter.end_char + 1].is_cursor_position;
+  return state->log_attrs[run_info->start_offset + iter->run_iter.end_char + 1].is_cursor_position;
 }
 
 /* Helper function to re-itemize a string of text
  */
 static PangoItem *
 itemize_text (EllipsizeState *state,
-	      const char     *text,
-	      PangoAttrList  *attrs)
+              const char     *text,
+              PangoAttrList  *attrs)
 {
   GList *items;
   PangoItem *item;
   PangoDirection dir;
 
-  dir = pango_context_get_base_dir (state->layout->context);
-  items = pango_itemize (state->layout->context, dir, text, 0, strlen (text), attrs);
+  dir = pango_context_get_base_dir (state->context);
+  items = pango_itemize (state->context, dir, text, 0, strlen (text), attrs);
   g_assert (g_list_length (items) == 1);
 
   item = items->data;
@@ -350,9 +360,9 @@ shape_ellipsis (EllipsizeState *state)
   /* First try using a specific ellipsis character in the best matching font
    */
   if (state->ellipsis_is_cjk)
-    ellipsis_text = "\342\213\257";	/* U+22EF: MIDLINE HORIZONTAL ELLIPSIS, used for CJK */
+    ellipsis_text = "\342\213\257";     /* U+22EF: MIDLINE HORIZONTAL ELLIPSIS, used for CJK */
   else
-    ellipsis_text = "\342\200\246";	/* U+2026: HORIZONTAL ELLIPSIS */
+    ellipsis_text = "\342\200\246";     /* U+2026: HORIZONTAL ELLIPSIS */
 
   item = itemize_text (state, ellipsis_text, &attrs);
 
@@ -396,7 +406,7 @@ shape_ellipsis (EllipsizeState *state)
  */
 static void
 advance_iterator_to (PangoAttrIterator *iter,
-		     int                new_index)
+                     int                new_index)
 {
   int start, end;
 
@@ -404,7 +414,7 @@ advance_iterator_to (PangoAttrIterator *iter,
     {
       pango_attr_iterator_range (iter, &start, &end);
       if (end > new_index)
-	break;
+        break;
     }
   while (pango_attr_iterator_next (iter));
 }
@@ -446,10 +456,10 @@ update_ellipsis_shape (EllipsizeState *state)
       pango_attr_iterator_range (state->gap_start_attr, &start, &end);
 
       if (state->gap_start_iter.run_iter.start_index < start)
-	{
-	  pango_attr_iterator_destroy (state->gap_start_attr);
-	  state->gap_start_attr = NULL;
-	}
+        {
+          pango_attr_iterator_destroy (state->gap_start_attr);
+          state->gap_start_attr = NULL;
+        }
     }
 
   /* Check whether we need to recompute the ellipsis because of new font attributes
@@ -458,7 +468,7 @@ update_ellipsis_shape (EllipsizeState *state)
     {
       state->gap_start_attr = pango_attr_iterator_copy (state->line_start_attr);
       advance_iterator_to (state->gap_start_attr,
-			   state->run_info[state->gap_start_iter.run_index].run->item->offset);
+                           state->run_info[state->gap_start_iter.run_index].run->item->offset);
 
       recompute = TRUE;
     }
@@ -466,7 +476,7 @@ update_ellipsis_shape (EllipsizeState *state)
   /* Check whether we need to recompute the ellipsis because we switch from CJK to not
    * or vice-versa
    */
-  start_wc = g_utf8_get_char (state->layout->text + state->gap_start_iter.run_iter.start_index);
+  start_wc = g_utf8_get_char (state->text + state->gap_start_iter.run_iter.start_index);
   is_cjk = g_unichar_iswide (start_wc);
 
   if (is_cjk != state->ellipsis_is_cjk)
@@ -491,7 +501,7 @@ find_initial_span (EllipsizeState *state)
   int x;
   int cluster_width;
 
-  switch (state->layout->ellipsize)
+  switch (state->ellipsize)
     {
     case PANGO_ELLIPSIZE_NONE:
     default:
@@ -513,12 +523,12 @@ find_initial_span (EllipsizeState *state)
   for (i = 0; i < state->n_runs; i++)
     {
       if (x + state->run_info[i].width > state->gap_center)
-	break;
+        break;
 
       x += state->run_info[i].width;
     }
 
-  if (i == state->n_runs)	/* Last run is a closed interval, so back off one run */
+  if (i == state->n_runs)       /* Last run is a closed interval, so back off one run */
     {
       i--;
       x -= state->run_info[i].width;
@@ -530,20 +540,20 @@ find_initial_span (EllipsizeState *state)
   run_iter = &state->gap_start_iter.run_iter;
   glyph_item = state->run_info[i].run;
 
-  cluster_width = 0;		/* Quiet GCC, the line must have at least one cluster */
-  for (have_cluster = pango_glyph_item_iter_init_start (run_iter, glyph_item, state->layout->text);
+  cluster_width = 0;            /* Quiet GCC, the line must have at least one cluster */
+  for (have_cluster = pango_glyph_item_iter_init_start (run_iter, glyph_item, state->text);
        have_cluster;
        have_cluster = pango_glyph_item_iter_next_cluster (run_iter))
     {
       cluster_width = get_cluster_width (&state->gap_start_iter);
 
       if (x + cluster_width > state->gap_center)
-	break;
+        break;
 
       x += cluster_width;
     }
 
-  if (!have_cluster)	/* Last cluster is a closed interval, so back off one cluster */
+  if (!have_cluster)    /* Last cluster is a closed interval, so back off one cluster */
     x -= cluster_width;
 
   state->gap_end_iter = state->gap_start_iter;
@@ -587,24 +597,24 @@ remove_one_span (EllipsizeState *state)
   do
     {
       if (!line_iter_prev_cluster (state, &new_gap_start_iter))
-	break;
+        break;
       width = get_cluster_width (&new_gap_start_iter);
       new_gap_start_x -= width;
     }
   while (!starts_at_ellipsization_boundary (state, &new_gap_start_iter) ||
-	 width == 0);
+         width == 0);
 
   new_gap_end_iter = state->gap_end_iter;
   new_gap_end_x = state->gap_end_x;
   do
     {
       if (!line_iter_next_cluster (state, &new_gap_end_iter))
-	break;
+        break;
       width = get_cluster_width (&new_gap_end_iter);
       new_gap_end_x += width;
     }
   while (!ends_at_ellipsization_boundary (state, &new_gap_end_iter) ||
-	 width == 0);
+         width == 0);
 
   if (state->gap_end_x == new_gap_end_x && state->gap_start_x == new_gap_start_x)
     return FALSE;
@@ -657,7 +667,7 @@ fixup_ellipsis_run (EllipsizeState *state,
   /* Fix up the item to point to the entire elided text */
   item->offset = state->gap_start_iter.run_iter.start_index;
   item->length = state->gap_end_iter.run_iter.end_index - item->offset;
-  item->num_chars = pango_utf8_strlen (state->layout->text + item->offset, item->length);
+  item->num_chars = pango_utf8_strlen (state->text + item->offset, item->length);
 
   /* The level for the item is the minimum level of the elided text */
   level = G_MAXINT;
@@ -690,16 +700,16 @@ get_run_list (EllipsizeState *state)
   if (run_iter->end_char != run_info->run->item->num_chars)
     {
       partial_end_run = run_info->run;
-      run_info->run = pango_glyph_item_split (run_info->run, state->layout->text,
-					      run_iter->end_index - run_info->run->item->offset);
+      run_info->run = pango_glyph_item_split (run_info->run, state->text,
+                                              run_iter->end_index - run_info->run->item->offset);
     }
 
   run_info = &state->run_info[state->gap_start_iter.run_index];
   run_iter = &state->gap_start_iter.run_iter;
   if (run_iter->start_char != 0)
     {
-      partial_start_run = pango_glyph_item_split (run_info->run, state->layout->text,
-						  run_iter->start_index - run_info->run->item->offset);
+      partial_start_run = pango_glyph_item_split (run_info->run, state->text,
+                                                  run_iter->start_index - run_info->run->item->offset);
     }
 
   /* Now assemble the new list of runs
@@ -747,16 +757,21 @@ current_width (EllipsizeState *state)
  **/
 gboolean
 _pango_layout_line_ellipsize (PangoLayoutLine *line,
-			      PangoAttrList   *attrs,
+                              PangoAttrList   *attrs,
                               PangoShapeFlags  shape_flags,
-			      int              goal_width)
+                              int              goal_width)
 {
+  PangoLayout *layout = line->layout;
+  PangoContext *context = layout->context;
+  const char *text = layout->text;
+  PangoLogAttr *log_attrs = layout->log_attrs;
+  PangoEllipsizeMode ellipsize = layout->ellipsize;
   EllipsizeState state;
   gboolean is_ellipsized = FALSE;
 
-  g_return_val_if_fail (line->layout->ellipsize != PANGO_ELLIPSIZE_NONE && goal_width >= 0, is_ellipsized);
+  g_return_val_if_fail (ellipsize != PANGO_ELLIPSIZE_NONE && goal_width >= 0, is_ellipsized);
 
-  init_state (&state, line, attrs, shape_flags);
+  init_state (&state, context, text, line->start_index, log_attrs, ellipsize, line->runs, attrs, shape_flags);
 
   if (state.total_width <= goal_width)
     goto out;
@@ -766,7 +781,7 @@ _pango_layout_line_ellipsize (PangoLayoutLine *line,
   while (current_width (&state) > goal_width)
     {
       if (!remove_one_span (&state))
-	break;
+        break;
     }
 
   fixup_ellipsis_run (&state, MAX (goal_width - current_width (&state), 0));
@@ -779,4 +794,46 @@ _pango_layout_line_ellipsize (PangoLayoutLine *line,
   free_state (&state);
 
   return is_ellipsized;
+}
+
+void
+pango_line_ellipsize (PangoLine          *line,
+                      PangoContext       *context,
+                      PangoEllipsizeMode  ellipsize,
+                      int                 goal_width)
+{
+  EllipsizeState state;
+  const char *text = line->data->text;
+  PangoAttrList *attrs = line->data->attrs;
+  PangoLogAttr *log_attrs = line->data->log_attrs;
+  PangoShapeFlags shape_flags;
+
+  g_return_if_fail (ellipsize != PANGO_ELLIPSIZE_NONE && goal_width >= 0);
+
+  if (pango_context_get_round_glyph_positions (context))
+    shape_flags = PANGO_SHAPE_ROUND_POSITIONS;
+  else
+    shape_flags = PANGO_SHAPE_NONE;
+
+  init_state (&state, context, text, line->start_index, log_attrs, ellipsize, line->runs, attrs, shape_flags);
+
+  if (state.total_width <= goal_width)
+    goto out;
+
+  find_initial_span (&state);
+
+  while (current_width (&state) > goal_width)
+    {
+      if (!remove_one_span (&state))
+        break;
+    }
+
+  fixup_ellipsis_run (&state, MAX (goal_width - current_width (&state), 0));
+
+  g_slist_free (line->runs);
+  line->runs = get_run_list (&state);
+  line->ellipsized = TRUE;
+
+ out:
+  free_state (&state);
 }
