@@ -152,6 +152,10 @@ PANGO_AVAILABLE_IN_ALL
 GBytes *                pango_simple_layout_serialize      (PangoSimpleLayout               *layout,
                                                             PangoSimpleLayoutSerializeFlags  flags);
 
+PANGO_AVAILABLE_IN_ALL
+gboolean                pango_simple_layout_write_to_file  (PangoSimpleLayout               *layout,
+                                                            const char                      *filename);
+
 typedef enum {
   PANGO_SIMPLE_LAYOUT_DESERIALIZE_DEFAULT = 0,
   PANGO_SIMPLE_LAYOUT_DESERIALIZE_CONTEXT = 1 << 0,
