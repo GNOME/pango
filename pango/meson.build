@@ -35,6 +35,7 @@ pango_sources = [
   'json/gtkjsonprinter.c',
   'pango-layout-run.c',
   'pango-line.c',
+  'pango-line-breaker.c',
 ]
 
 pango_headers = [
@@ -60,6 +61,7 @@ pango_headers = [
   'pango-language.h',
   'pango-layout-run.h',
   'pango-line.h',
+  'pango-line-breaker.h',
   'pango-layout.h',
   'pango-matrix.h',
   'pango-markup.h',
