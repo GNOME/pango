@@ -52,6 +52,7 @@
 #include <pango/pango-markup.h>
 #include <pango/pango-renderer.h>
 #include <pango/pango-script.h>
+#include <pango/pango-simple-layout.h>
 #include <pango/pango-tabs.h>
 #include <pango/pango-types.h>
 #include <pango/pango-utils.h>
