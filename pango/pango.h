@@ -45,6 +45,7 @@
 #include <pango/pango-language.h>
 #include <pango/pango-layout.h>
 #include <pango/pango-layout-run.h>
+#include <pango/pango-line.h>
 #include <pango/pango-matrix.h>
 #include <pango/pango-markup.h>
 #include <pango/pango-renderer.h>

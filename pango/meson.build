@@ -34,6 +34,7 @@ pango_sources = [
   'json/gtkjsonparser.c',
   'json/gtkjsonprinter.c',
   'pango-layout-run.c',
+  'pango-line.c',
 ]
 
 pango_headers = [
@@ -58,6 +59,7 @@ pango_headers = [
   'pango-item.h',
   'pango-language.h',
   'pango-layout-run.h',
+  'pango-line.h',
   'pango-layout.h',
   'pango-matrix.h',
   'pango-markup.h',
