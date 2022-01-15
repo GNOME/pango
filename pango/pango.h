@@ -47,6 +47,7 @@
 #include <pango/pango-layout-run.h>
 #include <pango/pango-line.h>
 #include <pango/pango-line-breaker.h>
+#include <pango/pango-lines.h>
 #include <pango/pango-matrix.h>
 #include <pango/pango-markup.h>
 #include <pango/pango-renderer.h>
