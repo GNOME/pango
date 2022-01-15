@@ -165,6 +165,11 @@ PANGO_AVAILABLE_IN_1_10
 void         pango_cairo_update_layout (cairo_t     *cr,
 					PangoLayout *layout);
 
+PANGO_AVAILABLE_IN_ALL
+PangoSimpleLayout *pango_cairo_create_simple_layout (cairo_t     *cr);
+PANGO_AVAILABLE_IN_ALL
+void         pango_cairo_update_simple_layout (cairo_t           *cr,
+                                               PangoSimpleLayout *layout);
 /*
  * Rendering
  */
@@ -179,6 +184,12 @@ void pango_cairo_show_glyph_item   (cairo_t          *cr,
 PANGO_AVAILABLE_IN_1_10
 void pango_cairo_show_layout_line  (cairo_t          *cr,
 				    PangoLayoutLine  *line);
+PANGO_AVAILABLE_IN_ALL
+void pango_cairo_show_line         (cairo_t          *cr,
+                                    PangoLine        *line);
+PANGO_AVAILABLE_IN_ALL
+void pango_cairo_show_lines        (cairo_t          *cr,
+                                    PangoLines       *lines);
 PANGO_AVAILABLE_IN_1_10
 void pango_cairo_show_layout       (cairo_t          *cr,
 				    PangoLayout      *layout);
@@ -189,6 +200,7 @@ void pango_cairo_show_error_underline (cairo_t       *cr,
 				       double         y,
 				       double         width,
 				       double         height);
+
 
 /*
  * Rendering to a path
@@ -203,6 +215,12 @@ void pango_cairo_layout_line_path  (cairo_t          *cr,
 PANGO_AVAILABLE_IN_1_10
 void pango_cairo_layout_path       (cairo_t          *cr,
 				    PangoLayout      *layout);
+PANGO_AVAILABLE_IN_ALL
+void pango_cairo_line_path  (cairo_t   *cr,
+                             PangoLine *line);
+PANGO_AVAILABLE_IN_ALL
+void pango_cairo_lines_path  (cairo_t    *cr,
+                              PangoLines *lines);
 
 PANGO_AVAILABLE_IN_1_14
 void pango_cairo_error_underline_path (cairo_t       *cr,

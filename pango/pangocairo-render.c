@@ -772,24 +772,23 @@ pango_cairo_renderer_draw_error_underline (PangoRenderer *renderer,
 
 static void
 pango_cairo_renderer_draw_shape (PangoRenderer  *renderer,
-				 PangoAttrShape *attr,
-				 int             x,
-				 int             y)
+                                 PangoAttrShape *attr,
+                                 int             x,
+                                 int             y)
 {
   PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
   cairo_t *cr = crenderer->cr;
-  PangoLayout *layout;
+  PangoContext *context;
   PangoCairoShapeRendererFunc shape_renderer;
-  gpointer                    shape_renderer_data;
+  gpointer shape_renderer_data;
   double base_x, base_y;
 
-  layout = pango_renderer_get_layout (renderer);
+  context = pango_renderer_get_context (renderer);
 
-  if (!layout)
-  	return;
+  if (!context)
+    return;
 
-  shape_renderer = pango_cairo_context_get_shape_renderer (pango_layout_get_context (layout),
-							   &shape_renderer_data);
+  shape_renderer = pango_cairo_context_get_shape_renderer (context, &shape_renderer_data);
 
   if (!shape_renderer)
     return;
@@ -993,6 +992,44 @@ _pango_cairo_do_layout_line (cairo_t          *cr,
 }
 
 static void
+_pango_cairo_do_line (cairo_t   *cr,
+                      PangoLine *line,
+                      gboolean   do_path)
+{
+  PangoCairoRenderer *crenderer = acquire_renderer ();
+  PangoRenderer *renderer = (PangoRenderer *) crenderer;
+
+  crenderer->cr = cr;
+  crenderer->do_path = do_path;
+  save_current_point (crenderer);
+
+  pango_renderer_draw_line (renderer, line, 0, 0);
+
+  restore_current_point (crenderer);
+
+  release_renderer (crenderer);
+}
+
+static void
+_pango_cairo_do_lines (cairo_t    *cr,
+                       PangoLines *lines,
+                       gboolean    do_path)
+{
+  PangoCairoRenderer *crenderer = acquire_renderer ();
+  PangoRenderer *renderer = (PangoRenderer *) crenderer;
+
+  crenderer->cr = cr;
+  crenderer->do_path = do_path;
+  save_current_point (crenderer);
+
+  pango_renderer_draw_lines (renderer, lines, 0, 0);
+
+  restore_current_point (crenderer);
+
+  release_renderer (crenderer);
+}
+
+static void
 _pango_cairo_do_layout (cairo_t     *cr,
 			PangoLayout *layout,
 			gboolean     do_path)
@@ -1118,6 +1155,46 @@ pango_cairo_show_layout_line (cairo_t          *cr,
 }
 
 /**
+ * pango_cairo_show_line:
+ * @cr: a Cairo context
+ * @line: a `PangoLine`
+ *
+ * Draws a `PangoLine` in the specified cairo context.
+ *
+ * The origin of the glyphs (the left edge of the line) will
+ * be drawn at the current point of the cairo context.
+ */
+void
+pango_cairo_show_line (cairo_t   *cr,
+                       PangoLine *line)
+{
+  g_return_if_fail (cr != NULL);
+  g_return_if_fail (line != NULL);
+
+  _pango_cairo_do_line (cr, line, FALSE);
+}
+
+/**
+ * pango_cairo_show_lines:
+ * @cr: a Cairo context
+ * @lines: a `PangoLines` object
+ *
+ * Draws a `PangoLines` object in the specified cairo context.
+ *
+ * The top-left corner of the `PangoLines` will be drawn
+ * at the current point of the cairo context.
+ */
+void
+pango_cairo_show_lines (cairo_t    *cr,
+                        PangoLines *lines)
+{
+  g_return_if_fail (cr != NULL);
+  g_return_if_fail (lines != NULL);
+
+  _pango_cairo_do_lines (cr, lines, FALSE);
+}
+
+/**
  * pango_cairo_show_layout:
  * @cr: a Cairo context
  * @layout: a Pango layout
@@ -1219,6 +1296,26 @@ pango_cairo_layout_line_path (cairo_t          *cr,
 }
 
 /**
+ * pango_cairo_line_path:
+ * @cr: a Cairo context
+ * @line: a `PangoLayoutLine`
+ *
+ * Adds the text in `PangoLine` to the current path in the
+ * specified cairo context.
+ *
+ * The origin of the glyphs (the left edge of the line) will be
+ * at the current point of the cairo context.
+ */
+void
+pango_cairo_line_path (cairo_t   *cr,
+                       PangoLine *line)
+{
+  g_return_if_fail (cr != NULL);
+
+  _pango_cairo_do_line (cr, line, TRUE);
+}
+
+/**
  * pango_cairo_layout_path:
  * @cr: a Cairo context
  * @layout: a Pango layout
@@ -1239,6 +1336,27 @@ pango_cairo_layout_path (cairo_t     *cr,
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
   _pango_cairo_do_layout (cr, layout, TRUE);
+}
+
+/**
+ * pango_cairo_lines_path:
+ * @cr: a Cairo context
+ * @lines: a `PangoLines` object
+ *
+ * Adds the text in a `PangoLines` to the current path in the
+ * specified cairo context.
+ *
+ * The top-left corner of the `PangoLayout` will be at the
+ * current point of the cairo context.
+ */
+void
+pango_cairo_lines_path (cairo_t    *cr,
+                        PangoLines *lines)
+{
+  g_return_if_fail (cr != NULL);
+  g_return_if_fail (PANGO_IS_LINES (lines));
+
+  _pango_cairo_do_lines (cr, lines, TRUE);
 }
 
 /**
