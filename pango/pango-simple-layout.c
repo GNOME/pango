@@ -1528,6 +1528,27 @@ pango_simple_layout_get_log_attrs (PangoSimpleLayout *layout,
   return line->data->log_attrs;
 }
 
+/**
+ * pango_simple_layout_get_iter:
+ * @layout: a `PangoSimpleLayout`
+ *
+ * Returns an iterator to iterate over the visual extents
+ * of the layout.
+ *
+ * This is a convenience wrapper for [method@Pango.Lines.get_iter].
+ *
+ * Returns: the new `PangoLineIter`
+ */
+PangoLineIter *
+pango_simple_layout_get_iter (PangoSimpleLayout *layout)
+{
+  g_return_val_if_fail (PANGO_IS_SIMPLE_LAYOUT (layout), NULL);
+
+  ensure_lines (layout);
+
+  return pango_lines_get_iter (layout->lines);
+}
+
 /* }}} */
 /* }}} */
 

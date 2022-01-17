@@ -3,6 +3,7 @@
 #include "pango-lines-private.h"
 #include "pango-line-private.h"
 #include "pango-item-private.h"
+#include "pango-line-iter-private.h"
 
 /**
  * PangoLines:
@@ -227,6 +228,26 @@ pango_lines_add_line (PangoLines *lines,
   lines->serial++;
   if (lines->serial == 0)
     lines->serial++;
+}
+
+/**
+ * pango_lines_get_iter:
+ * @lines: a `PangoLines`
+ *
+ * Returns an iterator to iterate over the visual extents of the lines.
+ *
+ * The returned iterator will be invaliated when more
+ * lines are added to @lines, and can't be used anymore
+ * after that point.
+ *
+ * Note that the iter holds a reference to @lines.
+ *
+ * Return value: the new `PangoLineIter`
+ */
+PangoLineIter *
+pango_lines_get_iter (PangoLines *lines)
+{
+  return pango_line_iter_new (lines);
 }
 
 /**
