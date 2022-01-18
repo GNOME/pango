@@ -4,15 +4,15 @@ larger and smaller and smaller now with base
 ---
 
 range 0 11
-0 44 scale  1.200000
+0 44 scale 1.200000
 range 11 19
-11 30 scale  1.000000
+11 30 scale 1.000000
 range 19 30
-19 30 scale  0.833333
+19 30 scale 0.833333
 range 30 31
-0 44 scale  1.200000
+0 44 scale 1.200000
 range 31 44
-0 44 scale  1.200000
+0 44 scale 1.200000
 31 44 size 15360
 range 44 2147483647
 
