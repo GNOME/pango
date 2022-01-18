@@ -5,6 +5,7 @@ if pango_cairo_backends.contains('png')
     'cairoshape',
     'cairosimple',
     'cairotwisted',
+    'parshape',
   ]
 endif
 
