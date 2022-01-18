@@ -7,7 +7,7 @@ range 0 5
 0 9 font-desc "Cantarell 11"
 range 5 9
 0 9 font-desc "Cantarell 11"
-5 9 scale  2.000000
+5 9 scale 2.000000
 range 9 2147483647
 
 

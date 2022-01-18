@@ -2646,7 +2646,7 @@ attr_print (GString        *str,
   else if ((flt = pango_attribute_as_float (attr)) != NULL)
     {
       char buf[20];
-      g_ascii_formatd (buf, 20, " %f", flt->value);
+      g_ascii_formatd (buf, 20, "%f", flt->value);
       g_string_append_printf (str, " %s", buf);
     }
   else if ((font = pango_attribute_as_font_desc (attr)) != NULL)
