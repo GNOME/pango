@@ -17,7 +17,8 @@ draw_text (cairo_t *cr)
  */
 #define TWEAKABLE_SCALE ((double) 0.1)
 
-  PangoLayout *layout;
+  PangoSimpleLayout *layout;
+  PangoLines *lines;
   PangoFontDescription *desc;
   int i;
 
@@ -25,23 +26,23 @@ draw_text (cairo_t *cr)
    */
   cairo_translate (cr, RADIUS / TWEAKABLE_SCALE, RADIUS / TWEAKABLE_SCALE);
 
-  /* Create a PangoLayout, set the font and text */
-  layout = pango_cairo_create_layout (cr);
+  /* Create a PangoSimpleLayout, set the font and text */
+  layout = pango_cairo_create_simple_layout (cr);
 
-  pango_layout_set_text (layout, "Test\nسَلام", -1);
+  pango_simple_layout_set_text (layout, "Test\nسَلام", -1);
 
   desc = pango_font_description_from_string (FONT_WITH_MANUAL_SIZE);
-  pango_font_description_set_absolute_size(desc, FONT_SIZE * DEVICE_DPI * PANGO_SCALE / (72.0 * TWEAKABLE_SCALE));
+  pango_font_description_set_absolute_size (desc, FONT_SIZE * DEVICE_DPI * PANGO_SCALE / (72.0 * TWEAKABLE_SCALE));
   //pango_font_description_set_size(desc, 27 * PANGO_SCALE / TWEAKABLE_SCALE);
 
   printf("PANGO_SCALE = %d\n", PANGO_SCALE);
-  pango_layout_set_font_description (layout, desc);
+  pango_simple_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
 
   /* Draw the layout N_WORDS times in a circle */
   for (i = 0; i < N_WORDS; i++)
     {
-      int width, height;
+      PangoRectangle ext;
       double angle = (360. * i) / N_WORDS;
       double red;
 
@@ -54,11 +55,13 @@ draw_text (cairo_t *cr)
       cairo_rotate (cr, angle * G_PI / 180.);
 
       /* Inform Pango to re-layout the text with the new transformation */
-      pango_cairo_update_layout (cr, layout);
+      pango_cairo_update_simple_layout (cr, layout);
 
-      pango_layout_get_size (layout, &width, &height);
-      cairo_move_to (cr,( - (((double)width) / PANGO_SCALE) / 2.0) , (- RADIUS)  / TWEAKABLE_SCALE);
-      pango_cairo_show_layout (cr, layout);
+      lines = pango_simple_layout_get_lines (layout);
+
+      pango_lines_get_extents (lines, NULL, &ext);
+      cairo_move_to (cr,( - (((double)ext.width) / PANGO_SCALE) / 2.0) , (- RADIUS)  / TWEAKABLE_SCALE);
+      pango_cairo_show_lines (cr, lines);
 
       cairo_restore (cr);
     }
