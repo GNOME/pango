@@ -123,11 +123,10 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
       if ((context->show_flags & PANGO_SHOW_LINE_BREAKS) != 0 &&
           unicode == 0x2028)
         {
-          /* Always mark LS as unknown. If it ends up
-           * at the line end, PangoLayout takes care of
-           * hiding them, and if they end up in the middle
-           * of a line, we are in single paragraph mode
-           * and want to show the LS
+          /* Always mark LS as unknown. If it ends up at the line end,
+           * the line breaking code takes care of hiding them, and if
+           * they end up in the middle of a line, we are in single
+           * paragraph mode and want to show the LS.
            */
           *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
           return TRUE;
