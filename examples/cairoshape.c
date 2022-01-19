@@ -2,7 +2,7 @@
  * inside a text layout, positioned by Pango.  This has become possibly
  * using the following API added in Pango 1.18:
  * 
- * 	pango_cairo_context_set_shape_renderer ()
+ *      pango_cairo_context_set_shape_renderer ()
  *
  * This examples uses a small parser to convert shapes in the format of
  * SVG paths to cairo instructions.  You can typically extract these from
@@ -52,8 +52,8 @@ static MiniSvg GnomeFootLogo = {
 
 static void
 mini_svg_render (MiniSvg  *shape,
-		 cairo_t  *cr,
-		 gboolean  do_path)
+                 cairo_t  *cr,
+                 gboolean  do_path)
 {
   double x, y;
   const char *p;
@@ -68,33 +68,33 @@ mini_svg_render (MiniSvg  *shape,
     {
       case 'M':
         {
-	  sscanf (p, "%lf,%lf %n", &x, &y, &len); p += len;
-	  cairo_move_to (cr, x, y);
-	  break;
-	}
+          sscanf (p, "%lf,%lf %n", &x, &y, &len); p += len;
+          cairo_move_to (cr, x, y);
+          break;
+        }
       case 'L':
         {
-	  sscanf (p, "%lf,%lf %n", &x, &y, &len); p += len;
-	  cairo_line_to (cr, x, y);
-	  break;
-	}
+          sscanf (p, "%lf,%lf %n", &x, &y, &len); p += len;
+          cairo_line_to (cr, x, y);
+          break;
+        }
       case 'C':
         {
-	  double x1, y1, x2, y2, x3, y3;
-	  sscanf (p, "%lf,%lf %lf,%lf %lf,%lf %n", &x1, &y1, &x2, &y2, &x3, &y3, &len); p += len;
-	  cairo_curve_to (cr, x1, y1, x2, y2, x3, y3);
-	  break;
-	}
+          double x1, y1, x2, y2, x3, y3;
+          sscanf (p, "%lf,%lf %lf,%lf %lf,%lf %n", &x1, &y1, &x2, &y2, &x3, &y3, &len); p += len;
+          cairo_curve_to (cr, x1, y1, x2, y2, x3, y3);
+          break;
+        }
       case 'z':
         {
-	  cairo_close_path (cr);
-	  break;
-	}
+          cairo_close_path (cr);
+          break;
+        }
       default: 
         {
-	  g_warning ("Invalid MiniSvg operation '%c'", *op);
-	  break;
-	}
+          g_warning ("Invalid MiniSvg operation '%c'", *op);
+          break;
+        }
     }
 
   if (!do_path)
@@ -103,9 +103,9 @@ mini_svg_render (MiniSvg  *shape,
 
 static void
 mini_svg_shape_renderer (cairo_t        *cr,
-			 PangoAttrShape *attr,
-			 gboolean        do_path,
-			 gpointer        data G_GNUC_UNUSED)
+                         PangoAttrShape *attr,
+                         gboolean        do_path,
+                         gpointer        data G_GNUC_UNUSED)
 {
   MiniSvg *shape = (MiniSvg *) attr->data;
   double scale_x, scale_y;
@@ -114,30 +114,30 @@ mini_svg_shape_renderer (cairo_t        *cr,
   scale_y = (double) attr->ink_rect.height / (PANGO_SCALE * shape->height);
 
   cairo_rel_move_to (cr,
-		     (double) attr->ink_rect.x / PANGO_SCALE,
-		     (double) attr->ink_rect.y / PANGO_SCALE);
+                     (double) attr->ink_rect.x / PANGO_SCALE,
+                     (double) attr->ink_rect.y / PANGO_SCALE);
   cairo_scale (cr, scale_x, scale_y);
 
   mini_svg_render (shape, cr, do_path);
 }
 
 
-static PangoLayout *
+static PangoSimpleLayout *
 get_layout (cairo_t *cr)
 {
-  PangoLayout *layout;
+  PangoSimpleLayout *layout;
   PangoAttrList *attrs;
   PangoRectangle ink_rect     = {1 * PANGO_SCALE, -11 * PANGO_SCALE,  8 * PANGO_SCALE, 10 * PANGO_SCALE};
   PangoRectangle logical_rect = {0 * PANGO_SCALE, -12 * PANGO_SCALE, 10 * PANGO_SCALE, 12 * PANGO_SCALE};
   const char *p;
 
-  /* Create a PangoLayout, set the font and text */
-  layout = pango_cairo_create_layout (cr);
+  /* Create a PangoSimpleLayout, set the font and text */
+  layout = pango_cairo_create_simple_layout (cr);
 
-  pango_cairo_context_set_shape_renderer (pango_layout_get_context (layout),
-					  mini_svg_shape_renderer, NULL, NULL);
+  pango_cairo_context_set_shape_renderer (pango_simple_layout_get_context (layout),
+                                          mini_svg_shape_renderer, NULL, NULL);
 
-  pango_layout_set_text (layout, text, -1);
+  pango_simple_layout_set_text (layout, text, -1);
 
   attrs = pango_attr_list_new ();
 
@@ -147,9 +147,9 @@ get_layout (cairo_t *cr)
       PangoAttribute *attr;
       
       attr = pango_attr_shape_new_with_data (&ink_rect,
-					     &logical_rect,
-					     &GnomeFootLogo,
-					     NULL, NULL);
+                                             &logical_rect,
+                                             &GnomeFootLogo,
+                                             NULL, NULL);
 
       attr->start_index = p - text;
       attr->end_index = attr->start_index + strlen (BULLET);
@@ -157,7 +157,7 @@ get_layout (cairo_t *cr)
       pango_attr_list_insert (attrs, attr);
     }
 
-  pango_layout_set_attributes (layout, attrs);
+  pango_simple_layout_set_attributes (layout, attrs);
   pango_attr_list_unref (attrs);
 
   return layout;
@@ -166,22 +166,24 @@ get_layout (cairo_t *cr)
 static void
 draw_text (cairo_t *cr, int *width, int *height)
 {
-
-  PangoLayout *layout = get_layout (cr);
+  PangoSimpleLayout *layout = get_layout (cr);
+  PangoLines *lines = pango_simple_layout_get_lines (layout);
 
   /* Adds a fixed 10-pixel margin on the sides. */
 
   if (width || height)
     {
-      pango_layout_get_pixel_size (layout, width, height);
+      PangoRectangle ext;
+      pango_lines_get_extents (lines, NULL, &ext);
+      pango_extents_to_pixels (&ext, NULL);
       if (width)
-        *width += 20;
+        *width = ext.width + 20;
       if (height)
-        *height += 20;
+        *height = ext.height + 20;
     }
 
   cairo_move_to (cr, 10, 10);
-  pango_cairo_show_layout (cr, layout);
+  pango_cairo_show_lines (cr, lines);
 
   g_object_unref (layout);
 }
@@ -205,7 +207,7 @@ int main (int argc, char **argv)
   /* First create and use a 0x0 surface, to measure how large
    * the final surface needs to be */
   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-					0, 0);
+                                        0, 0);
   cr = cairo_create (surface);
   draw_text (cr, &width, &height);
   cairo_destroy (cr);
@@ -213,7 +215,7 @@ int main (int argc, char **argv)
 
   /* Now create the final surface and draw to it. */
   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-					width, height);
+                                        width, height);
   cr = cairo_create (surface);
 
   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
