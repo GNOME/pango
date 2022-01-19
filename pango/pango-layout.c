@@ -4734,6 +4734,53 @@ apply_attributes_to_runs (PangoLayout   *layout,
     }
 }
 
+static int
+compute_n_chars (PangoLayoutLine *line)
+{
+  int n_chars = 0;
+
+  for (GSList *l = line->runs; l; l = l->next)
+    {
+      PangoGlyphItem *run = l->data;
+      n_chars += run->item->num_chars;
+    }
+
+  return n_chars;
+}
+
+static void
+pango_layout_line_check_invariants (PangoLayoutLine *line,
+                                    const char      *text)
+{
+  int n_chars;
+
+  n_chars = compute_n_chars (line);
+
+  /* Check that byte and char positions agree */
+  g_assert (g_utf8_strlen (text + line->start_index, line->length) == n_chars);
+  g_assert (g_utf8_offset_to_pointer (text + line->start_index, n_chars) == text + line->start_index + line->length);
+
+  /* Check that runs are sane */
+  if (line->runs)
+    {
+      int run_min, run_max;
+
+      run_min = G_MAXINT;
+      run_max = 0;
+      for (GSList *l = line->runs; l; l = l->next)
+        {
+          PangoGlyphItem *run = l->data;
+
+          run_min = MIN (run_min, run->item->offset);
+          run_max = MAX (run_max, run->item->offset + run->item->length);
+        }
+
+      g_assert (run_min == line->start_index);
+      g_assert (run_max == line->start_index + line->length);
+    }
+}
+
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
@@ -4943,6 +4990,12 @@ pango_layout_check_lines (PangoLayout *layout)
 
   pango_attr_list_unref (shape_attrs);
   pango_attr_list_unref (attrs);
+
+  for (GSList *l = layout->lines; l; l = l->next)
+    {
+      PangoLayoutLine *line = l->data;
+      pango_layout_line_check_invariants (line, layout->text);
+    }
 
   int w, h;
   pango_layout_get_size (layout, &w, &h);
