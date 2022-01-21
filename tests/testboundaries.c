@@ -154,26 +154,26 @@ check_line_char (gunichar      wc,
     {
       if (prev_wc == '\r')
 	{
-          g_test_message ("Do not line break between \\r and \\n");
+          if (g_test_verbose ()) if (g_test_verbose ()) g_test_message ("Do not line break between \\r and \\n");
           g_assert_false (attr->is_line_break);
 	}
 
       if (next_attr != NULL)
         {
-          g_test_message ("Line break after \\n");
+          if (g_test_verbose ()) g_test_message ("Line break after \\n");
           g_assert_true (next_attr->is_line_break);
 	}
     }
 
   if (attr->is_line_break)
     {
-      g_test_message ("first char in string should not be marked as a line break");
+      if (g_test_verbose ()) g_test_message ("first char in string should not be marked as a line break");
       g_assert_false (prev_wc == 0);
     }
 
   if (break_type == G_UNICODE_BREAK_SPACE)
     {
-      g_test_message ("can't break lines before a space unless a mandatory break char precedes it or a combining mark follows; prev char was: " CHFORMAT, prev_wc);
+      if (g_test_verbose ()) g_test_message ("can't break lines before a space unless a mandatory break char precedes it or a combining mark follows; prev char was: " CHFORMAT, prev_wc);
       g_assert_false (attr->is_line_break && prev_attr != NULL &&
                       !attr->is_mandatory_break &&
                       !(next_wc && g_unichar_break_type (next_wc) == G_UNICODE_BREAK_COMBINING_MARK));
@@ -181,7 +181,7 @@ check_line_char (gunichar      wc,
 
   if (attr->is_mandatory_break)
     {
-      g_test_message ("mandatory breaks must also be marked as regular breaks");
+      if (g_test_verbose ()) g_test_message ("mandatory breaks must also be marked as regular breaks");
       g_assert_true (attr->is_line_break);
     }
 
@@ -191,19 +191,19 @@ check_line_char (gunichar      wc,
    * be that hard to do.
    */
 
-  g_test_message ("can't break between two open punctuation chars");
+  if (g_test_verbose ()) g_test_message ("can't break between two open punctuation chars");
   g_assert_false (break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION &&
                   prev_break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION &&
                   attr->is_line_break &&
                   !attr->is_mandatory_break);
 
-  g_test_message ("can't break between two close punctuation chars");
+  if (g_test_verbose ()) g_test_message ("can't break between two close punctuation chars");
   g_assert_false (break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION &&
                   prev_break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION &&
                   attr->is_line_break &&
                   !attr->is_mandatory_break);
 
-  g_test_message ("can't break letter-quotemark sequence");
+  if (g_test_verbose ()) g_test_message ("can't break letter-quotemark sequence");
   g_assert_false (break_type == G_UNICODE_BREAK_QUOTATION &&
                   prev_break_type == G_UNICODE_BREAK_ALPHABETIC &&
                   attr->is_line_break &&
@@ -310,7 +310,7 @@ test_boundaries (void)
 
   filename = g_test_get_filename (G_TEST_DIST, "boundaries.utf8", NULL);
 
-  g_test_message ("sample file: %s\n", filename);
+  if (g_test_verbose ()) g_test_message ("sample file: %s\n", filename);
 
   g_file_get_contents (filename, &text, NULL, &error);
   g_assert_no_error (error);

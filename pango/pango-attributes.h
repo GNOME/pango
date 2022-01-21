@@ -484,7 +484,7 @@ struct _PangoAttrFontDesc
 /**
  * PangoAttrFontFeatures:
  * @attr: the common portion of the attribute
- * @features: the featues, as a string in CSS syntax
+ * @features: the features, as a string in CSS syntax
  *
  * The `PangoAttrFontFeatures` structure is used to represent OpenType
  * font features as an attribute.

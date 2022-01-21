@@ -239,7 +239,7 @@ do_test (const gchar *filename,
 
   g_assert_no_error (error);
 
-  g_test_message ("Filename: %s", filename);
+  if (g_test_verbose ()) g_test_message ("Filename: %s", filename);
 
   i = 1;
   for (;;)
@@ -268,7 +268,7 @@ do_test (const gchar *filename,
             break;
         }
 
-      g_test_message ("Parsing line: %s", line);
+      if (g_test_verbose ()) g_test_message ("Parsing line: %s", line);
       g_assert_true (parse_line (line, bits, &string, &expected_attrs, &num_attrs));
       
       if (num_attrs > 0)
@@ -290,10 +290,10 @@ do_test (const gchar *filename,
 		  comments = (char *)"";
 		}
 
-              g_test_message ("%s: line %d failed", filename, i);
-              g_test_message ("   expected: %s", line);
-              g_test_message ("   returned: %s", str);
-              g_test_message ("   comments: %s", comments);
+              if (g_test_verbose ()) g_test_message ("%s: line %d failed", filename, i);
+              if (g_test_verbose ()) g_test_message ("   expected: %s", line);
+              if (g_test_verbose ()) g_test_message ("   returned: %s", str);
+              if (g_test_verbose ()) g_test_message ("   comments: %s", comments);
 
               g_free (str);
               failed = TRUE;
