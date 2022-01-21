@@ -148,10 +148,10 @@ void pango_xft_render_layout_line (XftDraw          *draw,
 				   int               y);
 PANGO_AVAILABLE_IN_1_8
 void pango_xft_render_layout      (XftDraw          *draw,
-				   XftColor         *color,
-				   PangoLayout      *layout,
-				   int               x,
-				   int               y);
+                                   XftColor         *color,
+                                   PangoLayout      *layout,
+                                   int               x,
+                                   int               y);
 
 G_END_DECLS
 

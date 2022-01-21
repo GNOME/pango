@@ -26,6 +26,7 @@
 #include "pango-font-private.h"
 #include "pangoft2-private.h"
 #include "pango-impl-utils.h"
+#include "pango-layout-line-private.h"
 
 /* for compatibility with older freetype versions */
 #ifndef FT_LOAD_TARGET_MONO
@@ -613,7 +614,7 @@ pango_ft2_render_layout_subpixel (FT_Bitmap   *bitmap,
 
   pango_ft2_renderer_set_bitmap (PANGO_FT2_RENDERER (renderer), bitmap);
 
-  pango_renderer_draw_layout (renderer, layout, x, y);
+  pango_renderer_draw_lines (renderer, pango_layout_get_lines (layout), x, y);
 }
 
 /**
@@ -653,19 +654,17 @@ pango_ft2_render_layout (FT_Bitmap   *bitmap,
  */
 void
 pango_ft2_render_layout_line_subpixel (FT_Bitmap       *bitmap,
-				       PangoLayoutLine *line,
-				       int              x,
-				       int              y)
+                                       PangoLayoutLine *line,
+                                       int              x,
+                                       int              y)
 {
-  PangoContext *context;
   PangoFontMap *fontmap;
   PangoRenderer *renderer;
 
   g_return_if_fail (bitmap != NULL);
   g_return_if_fail (line != NULL);
 
-  context = pango_layout_get_context (line->layout);
-  fontmap = pango_context_get_font_map (context);
+  fontmap = pango_context_get_font_map (line->context);
   renderer = _pango_ft2_font_map_get_renderer (PANGO_FT2_FONT_MAP (fontmap));
 
   pango_ft2_renderer_set_bitmap (PANGO_FT2_RENDERER (renderer), bitmap);
@@ -683,10 +682,10 @@ pango_ft2_render_layout_line_subpixel (FT_Bitmap       *bitmap,
  * Render a `PangoLayoutLine` onto a FreeType2 bitmap
  */
 void
-pango_ft2_render_layout_line (FT_Bitmap       *bitmap,
-			      PangoLayoutLine *line,
-			      int              x,
-			      int              y)
+pango_ft2_render_layout_line (FT_Bitmap        *bitmap,
+                              PangoLayoutLine *line,
+                              int              x,
+                              int              y)
 {
   pango_ft2_render_layout_line_subpixel (bitmap, line, x * PANGO_SCALE, y * PANGO_SCALE);
 }

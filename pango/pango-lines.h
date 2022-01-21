@@ -3,7 +3,7 @@
 #include <glib-object.h>
 
 #include <pango/pango-types.h>
-#include <pango/pango-line.h>
+#include <pango/pango-layout-line.h>
 
 G_BEGIN_DECLS
 
@@ -12,7 +12,7 @@ G_BEGIN_DECLS
 PANGO_AVAILABLE_IN_ALL
 G_DECLARE_FINAL_TYPE (PangoLines, pango_lines, PANGO, LINES, GObject);
 
-typedef struct _PangoLineIter PangoLineIter;
+typedef struct _PangoLayoutIter PangoLayoutIter;
 
 PANGO_AVAILABLE_IN_ALL
 PangoLines *            pango_lines_new             (void);
@@ -22,7 +22,7 @@ guint                   pango_lines_get_serial      (PangoLines        *lines);
 
 PANGO_AVAILABLE_IN_ALL
 void                    pango_lines_add_line        (PangoLines        *lines,
-                                                     PangoLine         *line,
+                                                     PangoLayoutLine   *line,
                                                      int                line_x,
                                                      int                line_y);
 
@@ -30,13 +30,13 @@ PANGO_AVAILABLE_IN_ALL
 int                     pango_lines_get_line_count  (PangoLines        *lines);
 
 PANGO_AVAILABLE_IN_ALL
-PangoLine *             pango_lines_get_line        (PangoLines        *lines,
+PangoLayoutLine *       pango_lines_get_line        (PangoLines        *lines,
                                                      int                num,
                                                      int               *line_x,
                                                      int               *line_y);
 
 PANGO_AVAILABLE_IN_ALL
-PangoLineIter *         pango_lines_get_iter        (PangoLines        *lines);
+PangoLayoutIter *       pango_lines_get_iter        (PangoLines        *lines);
 
 PANGO_AVAILABLE_IN_ALL
 void                    pango_lines_get_extents     (PangoLines        *lines,
@@ -53,10 +53,10 @@ int                     pango_lines_get_baseline    (PangoLines        *lines);
 
 PANGO_AVAILABLE_IN_ALL
 void                    pango_lines_get_x_ranges    (PangoLines        *lines,
-                                                     PangoLine         *line,
-                                                     PangoLine         *start_line,
+                                                     PangoLayoutLine   *line,
+                                                     PangoLayoutLine   *start_line,
                                                      int                start_index,
-                                                     PangoLine         *end_line,
+                                                     PangoLayoutLine   *end_line,
                                                      int                end_index,
                                                      int              **ranges,
                                                      int               *n_ranges);
@@ -77,13 +77,13 @@ gboolean                pango_lines_hyphenated      (PangoLines        *lines);
 PANGO_AVAILABLE_IN_ALL
 void                    pango_lines_index_to_line   (PangoLines        *lines,
                                                      int                idx,
-                                                     PangoLine        **line,
+                                                     PangoLayoutLine  **line,
                                                      int               *line_no,
                                                      int               *x_offset,
                                                      int               *y_offset);
 
 PANGO_AVAILABLE_IN_ALL
-PangoLine *             pango_lines_pos_to_line     (PangoLines        *lines,
+PangoLayoutLine *       pango_lines_pos_to_line     (PangoLines        *lines,
                                                      int                x,
                                                      int                y,
                                                      int               *line_x,
@@ -91,12 +91,12 @@ PangoLine *             pango_lines_pos_to_line     (PangoLines        *lines,
 
 PANGO_AVAILABLE_IN_ALL
 void                    pango_lines_index_to_pos    (PangoLines        *lines,
-                                                     PangoLine         *line,
+                                                     PangoLayoutLine   *line,
                                                      int                idx,
                                                      PangoRectangle    *pos);
 
 PANGO_AVAILABLE_IN_ALL
-PangoLine *             pango_lines_pos_to_index    (PangoLines        *lines,
+PangoLayoutLine *       pango_lines_pos_to_index    (PangoLines        *lines,
                                                      int                x,
                                                      int                y,
                                                      int               *idx,
@@ -104,14 +104,14 @@ PangoLine *             pango_lines_pos_to_index    (PangoLines        *lines,
 
 PANGO_AVAILABLE_IN_ALL
 void                    pango_lines_get_cursor_pos  (PangoLines        *lines,
-                                                     PangoLine         *line,
+                                                     PangoLayoutLine   *line,
                                                      int                idx,
                                                      PangoRectangle    *strong_pos,
                                                      PangoRectangle    *weak_pos);
 
 PANGO_AVAILABLE_IN_ALL
 void                    pango_lines_get_caret_pos   (PangoLines        *lines,
-                                                     PangoLine         *line,
+                                                     PangoLayoutLine   *line,
                                                      int                idx,
                                                      PangoRectangle    *strong_pos,
                                                      PangoRectangle    *weak_pos);
@@ -119,11 +119,11 @@ void                    pango_lines_get_caret_pos   (PangoLines        *lines,
 PANGO_AVAILABLE_IN_ALL
 void                    pango_lines_move_cursor     (PangoLines        *lines,
                                                      gboolean           strong,
-                                                     PangoLine         *line,
+                                                     PangoLayoutLine   *line,
                                                      int                idx,
                                                      int                trailing,
                                                      int                direction,
-                                                     PangoLine        **new_line,
+                                                     PangoLayoutLine  **new_line,
                                                      int               *new_idx,
                                                      int               *new_trailing);
 

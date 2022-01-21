@@ -4,8 +4,6 @@
 #include <pango/pango-types.h>
 #include <pango/pango-item.h>
 #include <pango/pango-glyph.h>
-#include <pango/pango-layout.h>
-
 
 PANGO_AVAILABLE_IN_ALL
 PangoItem *             pango_layout_run_get_item     (PangoLayoutRun   *run);

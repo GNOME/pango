@@ -1,7 +1,7 @@
 #include "config.h"
 
 #include "pango-line-breaker.h"
-#include "pango-line-private.h"
+#include "pango-layout-line-private.h"
 
 #include "pango-tabs.h"
 #include "pango-impl-utils.h"
@@ -28,10 +28,10 @@
  * to influence the formatting.
  *
  * Then you can call [method@Pango.LineBreaker.next_line] repeatedly to obtain
- * `PangoLine` objects for the text, one by one.
+ * `PangoLayoutLine` objects for the text, one by one.
  *
  * `PangoLineBreaker` is meant to enable use cases like flowing text around images,
- * or shaped paragraphs. For simple formatting needs, [class@Pango.SimpleLayout]
+ * or shaped paragraphs. For simple formatting needs, [class@Pango.Layout]
  * is probably more convenient to use.
  */
 
@@ -401,7 +401,7 @@ get_resolved_dir (PangoLineBreaker *self)
 
 static gboolean
 should_ellipsize_current_line (PangoLineBreaker *self,
-                               PangoLine        *line)
+                               PangoLayoutLine  *line)
 {
   return self->line_ellipsize != PANGO_ELLIPSIZE_NONE && self->line_width >= 0;
 }
@@ -442,7 +442,7 @@ get_decimal_prefix_width (PangoItem        *item,
 }
 
 static int
-pango_line_compute_width (PangoLine *line)
+pango_line_compute_width (PangoLayoutLine *line)
 {
   int width = 0;
 
@@ -460,7 +460,7 @@ pango_line_compute_width (PangoLine *line)
 
 static inline int
 get_line_width (PangoLineBreaker *self,
-                PangoLine        *line)
+                PangoLayoutLine  *line)
 {
   if (self->remaining_width > -1)
     return self->line_width - self->remaining_width;
@@ -599,8 +599,8 @@ pad_glyphstring_left (PangoLineBreaker *self,
 }
 
 static gboolean
-is_tab_run (PangoLine      *line,
-            PangoGlyphItem *run)
+is_tab_run (PangoLayoutLine *line,
+            PangoGlyphItem  *run)
 {
   return line->data->text[run->item->offset] == '\t';
 }
@@ -675,7 +675,7 @@ reorder_runs_recurse (GSList *items,
 }
 
 static void
-pango_line_reorder (PangoLine *line)
+pango_line_reorder (PangoLayoutLine *line)
 {
   GSList *logical_runs = line->runs;
   GSList *tmp_list;
@@ -713,7 +713,7 @@ pango_line_reorder (PangoLine *line)
 }
 
 static int
-compute_n_chars (PangoLine *line)
+compute_n_chars (PangoLayoutLine *line)
 {
   int n_chars = 0;
 
@@ -731,7 +731,7 @@ compute_n_chars (PangoLine *line)
 
 static void
 get_tab_pos (PangoLineBreaker *self,
-             PangoLine        *line,
+             PangoLayoutLine  *line,
              int               index,
              int              *tab_pos,
              PangoTabAlign    *alignment,
@@ -807,7 +807,7 @@ get_tab_pos (PangoLineBreaker *self,
 
 static void
 shape_tab (PangoLineBreaker *self,
-           PangoLine        *line,
+           PangoLayoutLine  *line,
            int               current_width,
            PangoItem        *item,
            PangoGlyphString *glyphs)
@@ -910,7 +910,7 @@ distribute_letter_spacing (int  letter_spacing,
 
 static PangoGlyphString *
 shape_run (PangoLineBreaker *self,
-           PangoLine        *line,
+           PangoLayoutLine  *line,
            PangoItem       *item)
 {
   PangoGlyphString *glyphs = pango_glyph_string_new ();
@@ -999,7 +999,7 @@ free_run (PangoGlyphItem *run,
 }
 
 static PangoItem *
-uninsert_run (PangoLine *line)
+uninsert_run (PangoLayoutLine *line)
 {
   PangoGlyphItem *run;
   PangoItem *item;
@@ -1020,7 +1020,7 @@ uninsert_run (PangoLine *line)
 
 static void
 insert_run (PangoLineBreaker *self,
-            PangoLine        *line,
+            PangoLayoutLine  *line,
             PangoItem        *run_item,
             PangoGlyphString *glyphs,
             gboolean          last_run)
@@ -1239,7 +1239,7 @@ typedef enum
 
 static BreakResult
 process_item (PangoLineBreaker *self,
-              PangoLine        *line,
+              PangoLayoutLine  *line,
               gboolean         force_fit,
               gboolean         no_break_at_end,
               gboolean         is_last_item)
@@ -1585,7 +1585,7 @@ retry_break:
 
 static void
 process_line (PangoLineBreaker *self,
-              PangoLine        *line)
+              PangoLayoutLine  *line)
 {
   gboolean have_break = FALSE;      /* If we've seen a possible break yet */
   int break_remaining_width = 0;    /* Remaining width before adding run with break */
@@ -1700,7 +1700,7 @@ done:
 
 static void
 add_missing_hyphen (PangoLineBreaker *self,
-                    PangoLine        *line)
+                    PangoLayoutLine  *line)
 {
   PangoGlyphItem *run;
   PangoItem *item;
@@ -1743,7 +1743,7 @@ add_missing_hyphen (PangoLineBreaker *self,
 
 static void
 zero_line_final_space (PangoLineBreaker *self,
-                       PangoLine        *line)
+                       PangoLayoutLine  *line)
 {
   PangoGlyphItem *run;
   PangoItem *item;
@@ -1802,7 +1802,7 @@ zero_line_final_space (PangoLineBreaker *self,
  */
 static void
 adjust_line_letter_spacing (PangoLineBreaker *self,
-                            PangoLine        *line)
+                            PangoLayoutLine  *line)
 {
   gboolean reversed;
   PangoGlyphItem *last_run;
@@ -2013,7 +2013,7 @@ collect_baseline_shift (PangoLineBreaker *self,
 
 static void
 apply_baseline_shift (PangoLineBreaker *self,
-                      PangoLine        *line)
+                      PangoLayoutLine  *line)
 {
   int y_offset = 0;
   PangoItem *prev = NULL;
@@ -2041,7 +2041,7 @@ apply_baseline_shift (PangoLineBreaker *self,
 
 static void
 apply_render_attributes (PangoLineBreaker *self,
-                         PangoLine        *line)
+                         PangoLayoutLine  *line)
 {
   GSList *runs;
 
@@ -2068,7 +2068,7 @@ apply_render_attributes (PangoLineBreaker *self,
 
 static void
 postprocess_line (PangoLineBreaker *self,
-                  PangoLine        *line)
+                  PangoLayoutLine  *line)
 {
   add_missing_hyphen (self, line);
 
@@ -2081,7 +2081,7 @@ postprocess_line (PangoLineBreaker *self,
   apply_baseline_shift (self, line);
 
   if (should_ellipsize_current_line (self, line))
-    pango_line_ellipsize (line, self->context, self->line_ellipsize, self->line_width);
+    pango_layout_line_ellipsize (line, self->context, self->line_ellipsize, self->line_width);
 
   /* Now convert logical to visual order */
   pango_line_reorder (line);
@@ -2471,14 +2471,14 @@ pango_line_breaker_done (PangoLineBreaker *self)
  * Returns: (transfer full) (nullable): the next line, or `NULL`
  *   if @self has no more input
  */
-PangoLine *
+PangoLayoutLine *
 pango_line_breaker_next_line (PangoLineBreaker   *self,
                               int                 x,
                               int                 width,
                               PangoWrapMode       wrap,
                               PangoEllipsizeMode  ellipsize)
 {
-  PangoLine *line;
+  PangoLayoutLine *line;
 
   g_return_val_if_fail (PANGO_IS_LINE_BREAKER (self), NULL);
 
@@ -2487,7 +2487,7 @@ pango_line_breaker_next_line (PangoLineBreaker   *self,
   if (!self->items)
     return NULL;
 
-  line = pango_line_new (self->context, self->data);
+  line = pango_layout_line_new (self->context, self->data);
 
   line->start_index = self->line_start_index;
   line->start_offset = self->line_start_offset;
@@ -2530,7 +2530,7 @@ pango_line_breaker_next_line (PangoLineBreaker   *self,
       g_clear_pointer (&self->render_attrs, pango_attr_list_unref);
     }
 
-  pango_line_check_invariants (line);
+  pango_layout_line_check_invariants (line);
 
   return line;
 }
@@ -2556,7 +2556,7 @@ pango_line_breaker_next_line (PangoLineBreaker   *self,
  */
 gboolean
 pango_line_breaker_undo_line (PangoLineBreaker *self,
-                              PangoLine        *line)
+                              PangoLayoutLine  *line)
 {
   if (self->data == NULL &&
       line->start_index == 0 && line->length == line->data->length)

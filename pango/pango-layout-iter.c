@@ -1,13 +1,14 @@
 #include "config.h"
 
-#include "pango-line-iter-private.h"
+#include "pango-layout-iter-private.h"
 #include "pango-lines-private.h"
-#include "pango-line-private.h"
+#include "pango-layout-run-private.h"
+#include "pango-layout-line-private.h"
 #include "pango-layout-run-private.h"
 
-/* {{{ PangoLineIter implementation */
+/* {{{ PangoLayoutIter implementation */
 
-struct _PangoLineIter
+struct _PangoLayoutIter
 {
   PangoLines *lines;
   guint serial;
@@ -15,7 +16,7 @@ struct _PangoLineIter
   int line_no;
   int line_x;
   int line_y;
-  PangoLine *line;
+  PangoLayoutLine *line;
   GSList *run_link;
   PangoLayoutRun *run;
   int index;
@@ -36,8 +37,8 @@ struct _PangoLineIter
   int character_position;
 };
 
-G_DEFINE_BOXED_TYPE (PangoLineIter, pango_line_iter,
-                     pango_line_iter_copy, pango_line_iter_free);
+G_DEFINE_BOXED_TYPE (PangoLayoutIter, pango_layout_iter,
+                     pango_layout_iter_copy, pango_layout_iter_free);
 
 
 /* }}} */
@@ -46,10 +47,10 @@ G_DEFINE_BOXED_TYPE (PangoLineIter, pango_line_iter,
 #define ITER_IS_VALID(iter) ((iter)->serial == (iter)->lines->serial)
 
 static gboolean
-line_is_terminated (PangoLineIter *iter)
+line_is_terminated (PangoLayoutIter *iter)
 {
   if (iter->line_no + 1 < pango_lines_get_line_count (iter->lines))
-    return pango_line_ends_paragraph (iter->line);
+    return pango_layout_line_ends_paragraph (iter->line);
 
   return FALSE;
 
@@ -98,7 +99,7 @@ cluster_width (PangoGlyphString *glyphs,
  * is the byte index of the cluster start relative to the run.
  */
 static void
-update_cluster (PangoLineIter *iter,
+update_cluster (PangoLayoutIter *iter,
                 int            cluster_start_index)
 {
   PangoGlyphItem *glyph_item;
@@ -151,14 +152,14 @@ update_cluster (PangoLineIter *iter,
  * is considered non-empty.
  */
 static gboolean
-next_nonempty_line (PangoLineIter *iter,
-                    gboolean       include_terminators)
+next_nonempty_line (PangoLayoutIter *iter,
+                    gboolean         include_terminators)
 {
   gboolean result;
 
   while (TRUE)
     {
-      result = pango_line_iter_next_line (iter);
+      result = pango_layout_iter_next_line (iter);
       if (!result)
         break;
 
@@ -177,14 +178,14 @@ next_nonempty_line (PangoLineIter *iter,
  * paragraph separator is considered non-empty.
  */
 static gboolean
-next_nonempty_run (PangoLineIter *iter,
+next_nonempty_run (PangoLayoutIter *iter,
                    gboolean       include_terminators)
 {
   gboolean result;
 
   while (TRUE)
     {
-      result = pango_line_iter_next_run (iter);
+      result = pango_layout_iter_next_run (iter);
       if (!result)
         break;
 
@@ -203,7 +204,7 @@ next_nonempty_run (PangoLineIter *iter,
  * (But not positions introduced by line wrapping).
  */
 static gboolean
-next_cluster_internal (PangoLineIter *iter,
+next_cluster_internal (PangoLayoutIter *iter,
                        gboolean       include_terminators)
 {
   PangoGlyphItem *glyph_item;
@@ -228,8 +229,8 @@ next_cluster_internal (PangoLineIter *iter,
 }
 
 static void
-update_run (PangoLineIter *iter,
-            int            start_index)
+update_run (PangoLayoutIter *iter,
+            int              start_index)
 {
   PangoGlyphItem *glyph_item;
 
@@ -279,9 +280,9 @@ update_run (PangoLineIter *iter,
 }
 
 static inline void
-offset_line (PangoLineIter  *iter,
-             PangoRectangle *ink_rect,
-             PangoRectangle *logical_rect)
+offset_line (PangoLayoutIter *iter,
+             PangoRectangle  *ink_rect,
+             PangoRectangle  *logical_rect)
 {
   if (ink_rect)
     {
@@ -296,9 +297,9 @@ offset_line (PangoLineIter  *iter,
 }
 
 static inline void
-offset_run (PangoLineIter  *iter,
-            PangoRectangle *ink_rect,
-            PangoRectangle *logical_rect)
+offset_run (PangoLayoutIter *iter,
+            PangoRectangle  *ink_rect,
+            PangoRectangle  *logical_rect)
 {
   if (ink_rect)
     ink_rect->x += iter->run_x;
@@ -309,26 +310,26 @@ offset_run (PangoLineIter  *iter,
 /* }}} */
 /*  {{{ Private API */
 
-PangoLineIter *
-pango_line_iter_new (PangoLines *lines)
+PangoLayoutIter *
+pango_layout_iter_new (PangoLines *lines)
 {
-  PangoLineIter *iter;
+  PangoLayoutIter *iter;
   int run_start_index;
 
   g_return_val_if_fail (PANGO_IS_LINES (lines), NULL);
 
-  iter = g_new0 (PangoLineIter, 1);
+  iter = g_new0 (PangoLayoutIter, 1);
 
   iter->lines = g_object_ref (lines);
   iter->serial = pango_lines_get_serial (lines);
 
   iter->line_no = 0;
   iter->line = pango_lines_get_line (iter->lines, 0, &iter->line_x, &iter->line_y);
-  iter->run_link = pango_line_get_runs (iter->line);
+  iter->run_link = pango_layout_line_get_runs (iter->line);
   if (iter->run_link)
     {
       iter->run = iter->run_link->data;
-      run_start_index = iter->run->item->offset;
+      run_start_index = pango_layout_run_get_glyph_item (iter->run)->item->offset;
     }
   else
     {
@@ -345,36 +346,36 @@ pango_line_iter_new (PangoLines *lines)
 /* {{{ Public API */
 
 /**
- * pango_line_iter_copy:
- * @iter: (nullable): a `PangoLineIter`
+ * pango_layout_iter_copy:
+ * @iter: (nullable): a `PangoLayoutIter`
  *
- * Copies a `PangoLineIter`.
+ * Copies a `PangoLayoutIter`.
  *
- * Return value: (nullable): the newly allocated `PangoLineIter`
+ * Return value: (nullable): the newly allocated `PangoLayoutIter`
  */
-PangoLineIter *
-pango_line_iter_copy (PangoLineIter *iter)
+PangoLayoutIter *
+pango_layout_iter_copy (PangoLayoutIter *iter)
 {
-  PangoLineIter *copy;
+  PangoLayoutIter *copy;
 
   if (iter == NULL)
     return NULL;
 
-  copy = g_new0 (PangoLineIter, 1);
-  memcpy (iter, copy, sizeof (PangoLineIter));
+  copy = g_new0 (PangoLayoutIter, 1);
+  memcpy (iter, copy, sizeof (PangoLayoutIter));
   g_object_ref (copy->lines);
 
   return copy;
 }
 
 /**
- * pango_line_iter_free:
- * @iter: (nullable): a `PangoLineIter`
+ * pango_layout_iter_free:
+ * @iter: (nullable): a `PangoLayoutIter`
  *
  * Frees an iterator that's no longer in use.
  */
 void
-pango_line_iter_free (PangoLineIter *iter)
+pango_layout_iter_free (PangoLayoutIter *iter)
 {
   if (iter == NULL)
     return;
@@ -384,29 +385,29 @@ pango_line_iter_free (PangoLineIter *iter)
 }
 
 /**
- * pango_line_iter_get_lines:
- * @iter: a `PangoLineIter`
+ * pango_layout_iter_get_lines:
+ * @iter: a `PangoLayoutIter`
  *
- * Gets the `PangoLines` object associated with a `PangoLineIter`.
+ * Gets the `PangoLines` object associated with a `PangoLayoutIter`.
  *
  * Return value: (transfer none): the lines associated with @iter
  */
 PangoLines *
-pango_line_iter_get_lines (PangoLineIter *iter)
+pango_layout_iter_get_lines (PangoLayoutIter *iter)
 {
   return iter->lines;
 }
 
 /**
- * pango_line_iter_get_line:
- * @iter: a `PangoLineIter`
+ * pango_layout_iter_get_line:
+ * @iter: a `PangoLayoutIter`
  *
  * Gets the current line.
  *
  * Return value: (transfer none): the current line
  */
-PangoLine *
-pango_line_iter_get_line (PangoLineIter *iter)
+PangoLayoutLine *
+pango_layout_iter_get_line (PangoLayoutIter *iter)
 {
   g_return_val_if_fail (ITER_IS_VALID (iter), NULL);
 
@@ -414,15 +415,15 @@ pango_line_iter_get_line (PangoLineIter *iter)
 }
 
 /**
- * pango_line_iter_at_last_line:
- * @iter: a `PangoLineIter`
+ * pango_layout_iter_at_last_line:
+ * @iter: a `PangoLayoutIter`
  *
  * Determines whether @iter is on the last line.
  *
  * Return value: %TRUE if @iter is on the last line
  */
 gboolean
-pango_line_iter_at_last_line (PangoLineIter *iter)
+pango_layout_iter_at_last_line (PangoLayoutIter *iter)
 {
   g_return_val_if_fail (ITER_IS_VALID (iter), FALSE);
 
@@ -430,8 +431,8 @@ pango_line_iter_at_last_line (PangoLineIter *iter)
 }
 
 /**
- * pango_line_iter_get_run:
- * @iter: a `PangoLineIter`
+ * pango_layout_iter_get_run:
+ * @iter: a `PangoLayoutIter`
  *
  * Gets the current run.
  *
@@ -443,7 +444,7 @@ pango_line_iter_at_last_line (PangoLineIter *iter)
  * Return value: (transfer none) (nullable): the current run
  */
 PangoLayoutRun *
-pango_line_iter_get_run (PangoLineIter *iter)
+pango_layout_iter_get_run (PangoLayoutIter *iter)
 {
   g_return_val_if_fail (ITER_IS_VALID (iter), NULL);
 
@@ -451,8 +452,8 @@ pango_line_iter_get_run (PangoLineIter *iter)
 }
 
 /**
- * pango_line_iter_get_index:
- * @iter: a `PangoLineIter`
+ * pango_layout_iter_get_index:
+ * @iter: a `PangoLayoutIter`
  *
  * Gets the current byte index.
  *
@@ -462,12 +463,12 @@ pango_line_iter_get_run (PangoLineIter *iter)
  * Note that iterating forward by char moves in visual order,
  * not logical order, so indexes may not be sequential. Also,
  * the index may be equal to the length of the text in the
- * layout, if on the %NULL run (see [method@Pango.LineIter.get_run]).
+ * layout, if on the %NULL run (see [method@Pango.LayoutIter.get_run]).
  *
  * Return value: current byte index
  */
 int
-pango_line_iter_get_index (PangoLineIter *iter)
+pango_layout_iter_get_index (PangoLayoutIter *iter)
 {
   g_return_val_if_fail (ITER_IS_VALID (iter), 0);
 
@@ -475,8 +476,8 @@ pango_line_iter_get_index (PangoLineIter *iter)
 }
 
 /**
- * pango_line_iter_next_line:
- * @iter: a `PangoLineIter`
+ * pango_layout_iter_next_line:
+ * @iter: a `PangoLayoutIter`
  *
  * Moves @iter forward to the start of the next line.
  *
@@ -485,7 +486,7 @@ pango_line_iter_get_index (PangoLineIter *iter)
  * Return value: whether motion was possible
  */
 gboolean
-pango_line_iter_next_line (PangoLineIter *iter)
+pango_layout_iter_next_line (PangoLayoutIter *iter)
 {
   g_return_val_if_fail (ITER_IS_VALID (iter), FALSE);
 
@@ -494,7 +495,7 @@ pango_line_iter_next_line (PangoLineIter *iter)
     return FALSE;
 
   iter->line_no++;
-  iter->run_link = pango_line_get_runs (iter->line);
+  iter->run_link = pango_layout_line_get_runs (iter->line);
   if (iter->run_link)
     iter->run = iter->run_link->data;
   else
@@ -506,8 +507,8 @@ pango_line_iter_next_line (PangoLineIter *iter)
 }
 
 /**
- * pango_line_iter_next_run:
- * @iter: a `PangoLineIter`
+ * pango_layout_iter_next_run:
+ * @iter: a `PangoLayoutIter`
  *
  * Moves @iter forward to the next run in visual order.
  *
@@ -516,25 +517,26 @@ pango_line_iter_next_line (PangoLineIter *iter)
  * Return value: whether motion was possible
  */
 gboolean
-pango_line_iter_next_run (PangoLineIter *iter)
+pango_layout_iter_next_run (PangoLayoutIter *iter)
 {
   int run_start_index;
 
   g_return_val_if_fail (ITER_IS_VALID (iter), FALSE);
 
   if (iter->run == NULL)
-    return pango_line_iter_next_line (iter);
+    return pango_layout_iter_next_line (iter);
 
   iter->run_link = iter->run_link->next;
   if (iter->run_link == NULL)
     {
-      run_start_index = iter->run->item->offset + iter->run->item->length;
+      PangoItem *item = pango_layout_run_get_glyph_item (iter->run)->item;
+      run_start_index = item->offset + item->length;
       iter->run = NULL;
     }
   else
     {
       iter->run = iter->run_link->data;
-      run_start_index = iter->run->item->offset;
+      run_start_index = pango_layout_run_get_glyph_item (iter->run)->item->offset;
     }
 
   update_run (iter, run_start_index);
@@ -543,8 +545,8 @@ pango_line_iter_next_run (PangoLineIter *iter)
 }
 
 /**
- * pango_line_iter_next_cluster:
- * @iter: a `PangoLineIter`
+ * pango_layout_iter_next_cluster:
+ * @iter: a `PangoLayoutIter`
  *
  * Moves @iter forward to the next cluster in visual order.
  *
@@ -553,7 +555,7 @@ pango_line_iter_next_run (PangoLineIter *iter)
  * Return value: whether motion was possible
  */
 gboolean
-pango_line_iter_next_cluster (PangoLineIter *iter)
+pango_layout_iter_next_cluster (PangoLayoutIter *iter)
 {
   g_return_val_if_fail (ITER_IS_VALID (iter), FALSE);
 
@@ -561,8 +563,8 @@ pango_line_iter_next_cluster (PangoLineIter *iter)
 }
 
 /**
- * pango_line_iter_next_char:
- * @iter: a `PangoLineIter`
+ * pango_layout_iter_next_char:
+ * @iter: a `PangoLayoutIter`
  *
  * Moves @iter forward to the next character in visual order.
  *
@@ -571,7 +573,7 @@ pango_line_iter_next_cluster (PangoLineIter *iter)
  * Return value: whether motion was possible
  */
 gboolean
-pango_line_iter_next_char (PangoLineIter *iter)
+pango_layout_iter_next_char (PangoLayoutIter *iter)
 {
   const char *text;
 
@@ -607,17 +609,17 @@ pango_line_iter_next_char (PangoLineIter *iter)
 }
 
 /**
- * pango_line_iter_get_layout_extents:
- * @iter: a `PangoLineIter`
+ * pango_layout_iter_get_layout_extents:
+ * @iter: a `PangoLayoutIter`
  * @ink_rect: (out) (optional): rectangle to fill with ink extents
  * @logical_rect: (out) (optional): rectangle to fill with logical extents
  *
  * Obtains the extents of the `PangoLines` being iterated over.
  */
 void
-pango_line_iter_get_layout_extents (PangoLineIter  *iter,
-                                    PangoRectangle *ink_rect,
-                                    PangoRectangle *logical_rect)
+pango_layout_iter_get_layout_extents (PangoLayoutIter *iter,
+                                      PangoRectangle  *ink_rect,
+                                      PangoRectangle  *logical_rect)
 {
   g_return_if_fail (ITER_IS_VALID (iter));
 
@@ -625,8 +627,8 @@ pango_line_iter_get_layout_extents (PangoLineIter  *iter,
 }
 
 /**
- * pango_line_iter_get_line_extents:
- * @iter: a `PangoLineIter`
+ * pango_layout_iter_get_line_extents:
+ * @iter: a `PangoLayoutIter`
  * @ink_rect: (out) (optional): rectangle to fill with ink extents
  * @logical_rect: (out) (optional): rectangle to fill with logical extents
  *
@@ -635,39 +637,39 @@ pango_line_iter_get_layout_extents (PangoLineIter  *iter,
  * Extents are in layout coordinates (origin is the top-left corner of the
  * entire `PangoLines`). Thus the extents returned by this function will be
  * the same width/height but not at the same x/y as the extents returned
- * from [method@Pango.Line.get_extents].
+ * from [method@Pango.LayoutLine.get_extents].
  *
  * The logical extents returned by this function always have their leading
  * trimmed according to paragraph boundaries: if the line starts a paragraph,
  * it has its start leading trimmed; if it ends a paragraph, it has its end
  * leading trimmed. If you need other trimming, use
- * [method@Pango.Line.get_trimmed_extents].
+ * [method@Pango.LayoutLine.get_trimmed_extents].
  */
 void
-pango_line_iter_get_line_extents (PangoLineIter  *iter,
-                                  PangoRectangle *ink_rect,
-                                  PangoRectangle *logical_rect)
+pango_layout_iter_get_line_extents (PangoLayoutIter *iter,
+                                    PangoRectangle  *ink_rect,
+                                    PangoRectangle  *logical_rect)
 {
   g_return_if_fail (ITER_IS_VALID (iter));
 
-  pango_line_get_extents (iter->line, ink_rect, logical_rect);
+  pango_layout_line_get_extents (iter->line, ink_rect, logical_rect);
   offset_line (iter, ink_rect, logical_rect);
 }
 
 void
-pango_line_iter_get_trimmed_line_extents (PangoLineIter    *iter,
-                                          PangoLeadingTrim  trim,
-                                          PangoRectangle   *logical_rect)
+pango_layout_iter_get_trimmed_line_extents (PangoLayoutIter  *iter,
+                                            PangoLeadingTrim  trim,
+                                            PangoRectangle   *logical_rect)
 {
   g_return_if_fail (ITER_IS_VALID (iter));
 
-  pango_line_get_trimmed_extents (iter->line, trim, logical_rect);
+  pango_layout_line_get_trimmed_extents (iter->line, trim, logical_rect);
   offset_line (iter, NULL, logical_rect);
 }
 
 /**
- * pango_line_iter_get_run_extents:
- * @iter: a `PangoLineIter`
+ * pango_layout_iter_get_run_extents:
+ * @iter: a `PangoLayoutIter`
  * @ink_rect: (out) (optional): rectangle to fill with ink extents
  * @logical_rect: (out) (optional): rectangle to fill with logical extents
  *
@@ -680,9 +682,9 @@ pango_line_iter_get_trimmed_line_extents (PangoLineIter    *iter,
  * [method@Pango.LayoutRun.get_extents].
  */
 void
-pango_line_iter_get_run_extents (PangoLineIter  *iter,
-                                 PangoRectangle *ink_rect,
-                                 PangoRectangle *logical_rect)
+pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
+                                   PangoRectangle  *ink_rect,
+                                   PangoRectangle  *logical_rect)
 {
   g_return_if_fail (ITER_IS_VALID (iter));
 
@@ -692,7 +694,7 @@ pango_line_iter_get_run_extents (PangoLineIter  *iter,
     }
   else
     {
-      GSList *runs = pango_line_get_runs (iter->line);
+      GSList *runs = pango_layout_line_get_runs (iter->line);
       if (runs)
         {
           /* Virtual run at the end of a nonempty line */
@@ -709,7 +711,7 @@ pango_line_iter_get_run_extents (PangoLineIter  *iter,
           /* Empty line */
           PangoRectangle r;
 
-          pango_line_get_empty_extents (iter->line, PANGO_LEADING_TRIM_BOTH, &r);
+          pango_layout_line_get_empty_extents (iter->line, PANGO_LEADING_TRIM_BOTH, &r);
 
           if (ink_rect)
             *ink_rect = r;
@@ -724,8 +726,8 @@ pango_line_iter_get_run_extents (PangoLineIter  *iter,
 }
 
 /**
- * pango_line_iter_get_cluster_extents:
- * @iter: a `PangoLineIter`
+ * pango_layout_iter_get_cluster_extents:
+ * @iter: a `PangoLayoutIter`
  * @ink_rect: (out) (optional): rectangle to fill with ink extents
  * @logical_rect: (out) (optional): rectangle to fill with logical extents
  *
@@ -734,9 +736,9 @@ pango_line_iter_get_run_extents (PangoLineIter  *iter,
  * Layout coordinates have the origin at the top left of the entire `PangoLines`.
  */
 void
-pango_line_iter_get_cluster_extents (PangoLineIter  *iter,
-                                     PangoRectangle *ink_rect,
-                                     PangoRectangle *logical_rect)
+pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
+                                       PangoRectangle  *ink_rect,
+                                       PangoRectangle  *logical_rect)
 {
   PangoGlyphItem *glyph_item;
 
@@ -745,7 +747,7 @@ pango_line_iter_get_cluster_extents (PangoLineIter  *iter,
   if (iter->run == NULL)
     {
       /* When on the NULL run, all extents are the same */
-      pango_line_iter_get_run_extents (iter, ink_rect, logical_rect);
+      pango_layout_iter_get_run_extents (iter, ink_rect, logical_rect);
       return;
     }
 
@@ -762,20 +764,20 @@ pango_line_iter_get_cluster_extents (PangoLineIter  *iter,
   if (ink_rect)
     {
       ink_rect->x += iter->cluster_x + glyph_item->start_x_offset;
-      ink_rect->y -= iter->run->y_offset;
+      ink_rect->y -= glyph_item->y_offset;
     }
 
   if (logical_rect)
     {
       g_assert (logical_rect->width == iter->cluster_width);
       logical_rect->x += iter->cluster_x + glyph_item->start_x_offset;
-      logical_rect->y -= iter->run->y_offset;
+      logical_rect->y -= glyph_item->y_offset;
     }
 }
 
 /**
- * pango_line_iter_get_char_extents:
- * @iter: a `PangoLineIter`
+ * pango_layout_iter_get_char_extents:
+ * @iter: a `PangoLayoutIter`
  * @logical_rect: (out caller-allocates): rectangle to fill with logical extents
  *
  * Gets the extents of the current character, in layout coordinates.
@@ -786,8 +788,8 @@ pango_line_iter_get_cluster_extents (PangoLineIter  *iter,
  * ink extents make sense only down to the level of clusters.
  */
 void
-pango_line_iter_get_char_extents (PangoLineIter  *iter,
-                                  PangoRectangle *logical_rect)
+pango_layout_iter_get_char_extents (PangoLayoutIter *iter,
+                                    PangoRectangle  *logical_rect)
 {
   PangoRectangle cluster_rect;
   int            x0, x1;
@@ -797,7 +799,7 @@ pango_line_iter_get_char_extents (PangoLineIter  *iter,
   if (logical_rect == NULL)
     return;
 
-  pango_line_iter_get_cluster_extents (iter, NULL, &cluster_rect);
+  pango_layout_iter_get_cluster_extents (iter, NULL, &cluster_rect);
 
   if (iter->run == NULL)
     {
@@ -823,8 +825,8 @@ pango_line_iter_get_char_extents (PangoLineIter  *iter,
 }
 
 /**
- * pango_line_iter_get_line_baseline:
- * @iter: a `PangoLineIter`
+ * pango_layout_iter_get_line_baseline:
+ * @iter: a `PangoLayoutIter`
  *
  * Gets the Y position of the current line's baseline, in layout
  * coordinates.
@@ -834,7 +836,7 @@ pango_line_iter_get_char_extents (PangoLineIter  *iter,
  * Return value: baseline of current line
  */
 int
-pango_line_iter_get_line_baseline (PangoLineIter *iter)
+pango_layout_iter_get_line_baseline (PangoLayoutIter *iter)
 {
   g_return_val_if_fail (ITER_IS_VALID (iter), 0);
 
@@ -842,8 +844,8 @@ pango_line_iter_get_line_baseline (PangoLineIter *iter)
 }
 
 /**
- * pango_line_iter_get_run_baseline:
- * @iter: a `PangoLineIter`
+ * pango_layout_iter_get_run_baseline:
+ * @iter: a `PangoLayoutIter`
  *
  * Gets the Y position of the current run's baseline, in layout
  * coordinates.
@@ -854,14 +856,14 @@ pango_line_iter_get_line_baseline (PangoLineIter *iter)
  * example due to superscript or subscript positioning.
  */
 int
-pango_line_iter_get_run_baseline (PangoLineIter *iter)
+pango_layout_iter_get_run_baseline (PangoLayoutIter *iter)
 {
   g_return_val_if_fail (ITER_IS_VALID (iter), 0);
 
   if (iter->run)
-    return pango_line_iter_get_line_baseline (iter) - pango_layout_run_get_glyph_item (iter->run)->y_offset;
+    return pango_layout_iter_get_line_baseline (iter) - pango_layout_run_get_glyph_item (iter->run)->y_offset;
   else
-    return pango_line_iter_get_line_baseline (iter);
+    return pango_layout_iter_get_line_baseline (iter);
 }
 
 /* }}} */

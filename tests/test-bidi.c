@@ -158,8 +158,8 @@ test_bidi_embedding_levels (void)
     }
 }
 
-/* Some basic tests for pango_simple_layout_move_cursor inside
- * a single PangoLine:
+/* Some basic tests for pango_layout_move_cursor inside
+ * a single PangoLayoutLine:
  * - check that we actually move the cursor in the right direction
  * - check that we get through the line with at most n steps
  * - check that we don't skip legitimate cursor positions
@@ -174,10 +174,10 @@ test_move_cursor_line (void)
     "aאב12b",
     "pa­ra­graph", // soft hyphens
   };
-  PangoSimpleLayout *layout;
+  PangoLayout *layout;
   gboolean fail = FALSE;
 
-  layout = pango_simple_layout_new (context);
+  layout = pango_layout_new (context);
 
   for (int i = 0; i < G_N_ELEMENTS (tests); i++)
     {
@@ -189,8 +189,8 @@ test_move_cursor_line (void)
       PangoRectangle s_pos, old_s_pos;
       PangoRectangle w_pos, old_w_pos;
       PangoLines *lines;
-      PangoLine *line;
-      PangoLine *new_line;
+      PangoLayoutLine *line;
+      PangoLayoutLine *new_line;
       struct {
         int direction;
         gboolean strong;
@@ -208,15 +208,15 @@ test_move_cursor_line (void)
       int j;
       const char *p;
 
-      pango_simple_layout_set_text (layout, tests[i], -1);
+      pango_layout_set_text (layout, tests[i], -1);
 
-      text = pango_simple_layout_get_text (layout);
-      lines = pango_simple_layout_get_lines (layout);
+      text = pango_layout_get_text (layout);
+      lines = pango_layout_get_lines (layout);
       line = pango_lines_get_line (lines, 0, NULL, NULL);
 
       n_chars = g_utf8_strlen (text, -1);
 
-      attrs = pango_simple_layout_get_log_attrs (layout, &n_attrs);
+      attrs = pango_layout_get_log_attrs (layout, &n_attrs);
       strong_cursor = g_new (int, n_attrs);
       weak_cursor = g_new (int, n_attrs);
       met_cursor = g_new (gboolean, n_attrs);
@@ -242,7 +242,7 @@ test_move_cursor_line (void)
                      params[j].direction > 0 ? "->" : "<-",
                      params[j].strong ? "strong" : "weak");
 
-          if ((pango_line_get_resolved_direction (line) == PANGO_DIRECTION_LTR) == (params[j].direction > 0))
+          if ((pango_layout_line_get_resolved_direction (line) == PANGO_DIRECTION_LTR) == (params[j].direction > 0))
             start_index = 0;
           else
             start_index = strlen (text);
@@ -354,30 +354,30 @@ test_move_cursor_para (void)
     { "some text, some more text,\n\n even more text", 60 },
     { "long word", 40 },
   };
-  PangoSimpleLayout *layout;
+  PangoLayout *layout;
   PangoRectangle pos, old_pos;
   int index;
   int trailing;
   const char *text;
-  PangoLine *line;
+  PangoLayoutLine *line;
   PangoRectangle ext;
   PangoLines *lines;
-  PangoLineIter *iter;
-  PangoLine *new_line;
+  PangoLayoutIter *iter;
+  PangoLayoutLine *new_line;
 
-  layout = pango_simple_layout_new (context);
+  layout = pango_layout_new (context);
 
   for (int i = 0; i < G_N_ELEMENTS (tests); i++)
     {
-      pango_simple_layout_set_text (layout, tests[i].text, -1);
-      text = pango_simple_layout_get_text (layout);
+      pango_layout_set_text (layout, tests[i].text, -1);
+      text = pango_layout_get_text (layout);
       if (tests[i].width > 0)
-        pango_simple_layout_set_width (layout, tests[i].width * PANGO_SCALE);
+        pango_layout_set_width (layout, tests[i].width * PANGO_SCALE);
       else
-        pango_simple_layout_set_width (layout, -1);
+        pango_layout_set_width (layout, -1);
 
       index = 0;
-      lines = pango_simple_layout_get_lines (layout);
+      lines = pango_layout_get_lines (layout);
       pango_lines_get_cursor_pos (lines, NULL, index, &pos, NULL);
 
       while (index < G_MAXINT)
@@ -389,10 +389,10 @@ test_move_cursor_para (void)
             break;
 
           iter = pango_lines_get_iter (lines);
-          while (pango_line_iter_get_line (iter) != line)
-            pango_line_iter_next_line (iter);
-          pango_line_iter_get_line_extents (iter, NULL, &ext);
-          pango_line_iter_free (iter);
+          while (pango_layout_iter_get_line (iter) != line)
+            pango_layout_iter_next_line (iter);
+          pango_layout_iter_get_line_extents (iter, NULL, &ext);
+          pango_layout_iter_free (iter);
 
           pango_lines_move_cursor(lines, TRUE,
                                   NULL,
@@ -433,10 +433,10 @@ test_move_cursor_para (void)
           pango_lines_index_to_line (lines, index, &line, NULL, NULL, NULL);
           g_assert_nonnull (line);
           iter = pango_lines_get_iter (lines);
-          while (pango_line_iter_get_line (iter) != line)
-            pango_line_iter_next_line (iter);
-          pango_line_iter_get_line_extents (iter, NULL, &ext);
-          pango_line_iter_free (iter);
+          while (pango_layout_iter_get_line (iter) != line)
+            pango_layout_iter_next_line (iter);
+          pango_layout_iter_get_line_extents (iter, NULL, &ext);
+          pango_layout_iter_free (iter);
 
           pango_lines_move_cursor (lines, TRUE,
                                    NULL,

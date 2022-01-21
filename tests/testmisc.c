@@ -61,13 +61,13 @@ static void
 test_short_string_crash (void)
 {
   PangoContext *context;
-  PangoSimpleLayout *layout;
+  PangoLayout *layout;
   PangoRectangle ext;
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-  layout = pango_simple_layout_new (context);
-  pango_simple_layout_set_text (layout, "short text", 200);
-  pango_lines_get_extents (pango_simple_layout_get_lines (layout), &ext, &ext);
+  layout = pango_layout_new (context);
+  pango_layout_set_text (layout, "short text", 200);
+  pango_lines_get_extents (pango_layout_get_lines (layout), &ext, &ext);
 
   g_object_unref (layout);
   g_object_unref (context);
@@ -91,15 +91,15 @@ static void
 test_line_height (void)
 {
   PangoContext *context;
-  PangoSimpleLayout *layout;
-  PangoLine *line;
+  PangoLayout *layout;
+  PangoLayoutLine *line;
   PangoRectangle ext;
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-  layout = pango_simple_layout_new (context);
-  pango_simple_layout_set_text (layout, "one\ttwo", -1);
-  line = pango_lines_get_line (pango_simple_layout_get_lines (layout), 0, NULL, NULL);
-  pango_line_get_extents (line, NULL, &ext);
+  layout = pango_layout_new (context);
+  pango_layout_set_text (layout, "one\ttwo", -1);
+  line = pango_lines_get_line (pango_layout_get_lines (layout), 0, NULL, NULL);
+  pango_layout_line_get_extents (line, NULL, &ext);
 
   g_assert_cmpint (ext.height, >, 0);
 
@@ -111,27 +111,27 @@ static void
 test_line_height2 (void)
 {
   PangoContext *context;
-  PangoSimpleLayout *layout;
-  PangoLine *line;
+  PangoLayout *layout;
+  PangoLayoutLine *line;
   PangoRectangle ext1, ext2;
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-  layout = pango_simple_layout_new (context);
-  pango_simple_layout_set_text (layout, "one", -1);
+  layout = pango_layout_new (context);
+  pango_layout_set_text (layout, "one", -1);
 
-  line = pango_lines_get_line (pango_simple_layout_get_lines (layout), 0, NULL, NULL);
+  line = pango_lines_get_line (pango_layout_get_lines (layout), 0, NULL, NULL);
   g_assert_nonnull (line);
-  pango_line_get_extents (line, NULL, &ext1);
+  pango_layout_line_get_extents (line, NULL, &ext1);
 
-  pango_simple_layout_write_to_file (layout, "one.layout");
+  pango_layout_write_to_file (layout, "one.layout");
 
-  pango_simple_layout_set_text (layout, "", -1);
+  pango_layout_set_text (layout, "", -1);
 
-  line = pango_lines_get_line (pango_simple_layout_get_lines (layout), 0, NULL, NULL);
+  line = pango_lines_get_line (pango_layout_get_lines (layout), 0, NULL, NULL);
   g_assert_nonnull (line);
-  pango_line_get_extents (line, NULL, &ext2);
+  pango_layout_line_get_extents (line, NULL, &ext2);
 
-  pango_simple_layout_write_to_file (layout, "empty.layout");
+  pango_layout_write_to_file (layout, "empty.layout");
 
   g_assert_cmpint (ext1.height, ==, ext2.height);
 
@@ -143,29 +143,29 @@ static void
 test_line_height3 (void)
 {
   PangoContext *context;
-  PangoSimpleLayout *layout;
-  PangoLine *line;
+  PangoLayout *layout;
+  PangoLayoutLine *line;
   PangoAttrList *attrs;
   PangoRectangle ext1;
   PangoRectangle ext2;
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-  layout = pango_simple_layout_new (context);
-  pango_simple_layout_set_text (layout, "one", -1);
+  layout = pango_layout_new (context);
+  pango_layout_set_text (layout, "one", -1);
   attrs = pango_attr_list_new ();
   pango_attr_list_insert (attrs, pango_attr_line_height_new (2.0));
-  pango_simple_layout_set_attributes (layout, attrs);
+  pango_layout_set_attributes (layout, attrs);
   pango_attr_list_unref (attrs);
 
-  line = pango_lines_get_line (pango_simple_layout_get_lines (layout), 0, NULL, NULL);
-  g_assert_cmpint (pango_lines_get_line_count (pango_simple_layout_get_lines (layout)), ==, 1);
-  pango_line_get_extents (line, NULL, &ext1);
+  line = pango_lines_get_line (pango_layout_get_lines (layout), 0, NULL, NULL);
+  g_assert_cmpint (pango_lines_get_line_count (pango_layout_get_lines (layout)), ==, 1);
+  pango_layout_line_get_extents (line, NULL, &ext1);
 
-  pango_simple_layout_set_text (layout, "", -1);
+  pango_layout_set_text (layout, "", -1);
 
-  g_assert_cmpint (pango_lines_get_line_count (pango_simple_layout_get_lines (layout)), ==, 1);
-  line = pango_lines_get_line (pango_simple_layout_get_lines (layout), 0, NULL, NULL);
-  pango_line_get_extents (line, NULL, &ext2);
+  g_assert_cmpint (pango_lines_get_line_count (pango_layout_get_lines (layout)), ==, 1);
+  line = pango_lines_get_line (pango_layout_get_lines (layout), 0, NULL, NULL);
+  pango_layout_line_get_extents (line, NULL, &ext2);
 
   g_assert_cmpint (ext1.height, ==, ext2.height);
 
@@ -177,8 +177,8 @@ static void
 test_run_height (void)
 {
   PangoContext *context;
-  PangoSimpleLayout *layout;
-  PangoLineIter *iter;
+  PangoLayout *layout;
+  PangoLayoutIter *iter;
   PangoRectangle logical1, logical2;
 
   if (strcmp (G_OBJECT_TYPE_NAME (pango_cairo_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
@@ -188,18 +188,18 @@ test_run_height (void)
     }
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-  layout = pango_simple_layout_new (context);
-  pango_simple_layout_set_text (layout, "one", -1);
+  layout = pango_layout_new (context);
+  pango_layout_set_text (layout, "one", -1);
 
-  iter = pango_lines_get_iter (pango_simple_layout_get_lines (layout));
-  pango_line_iter_get_run_extents (iter, NULL, &logical1);
-  pango_line_iter_free (iter);
+  iter = pango_lines_get_iter (pango_layout_get_lines (layout));
+  pango_layout_iter_get_run_extents (iter, NULL, &logical1);
+  pango_layout_iter_free (iter);
 
-  pango_simple_layout_set_text (layout, "", -1);
+  pango_layout_set_text (layout, "", -1);
 
-  iter = pango_lines_get_iter (pango_simple_layout_get_lines (layout));
-  pango_line_iter_get_run_extents (iter, NULL, &logical2);
-  pango_line_iter_free (iter);
+  iter = pango_lines_get_iter (pango_layout_get_lines (layout));
+  pango_layout_iter_get_run_extents (iter, NULL, &logical2);
+  pango_layout_iter_free (iter);
 
   g_assert_cmpint (logical1.height, ==, logical2.height);
 
@@ -211,13 +211,13 @@ static void
 test_cursor_height (void)
 {
   PangoContext *context;
-  PangoSimpleLayout *layout;
+  PangoLayout *layout;
   PangoRectangle strong;
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-  layout = pango_simple_layout_new (context);
-  pango_simple_layout_set_text (layout, "one\ttwo", -1);
-  pango_lines_get_cursor_pos (pango_simple_layout_get_lines (layout), NULL, 0, &strong, NULL);
+  layout = pango_layout_new (context);
+  pango_layout_set_text (layout, "one\ttwo", -1);
+  pango_lines_get_cursor_pos (pango_layout_get_lines (layout), NULL, 0, &strong, NULL);
 
   g_assert_cmpint (strong.height, >, 0);
 
@@ -229,7 +229,7 @@ static void
 test_cursor_height2 (void)
 {
   PangoContext *context;
-  PangoSimpleLayout *layout;
+  PangoLayout *layout;
   PangoRectangle strong1, strong2;
 
   if (strcmp (G_OBJECT_TYPE_NAME (pango_cairo_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
@@ -239,14 +239,14 @@ test_cursor_height2 (void)
     }
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-  layout = pango_simple_layout_new (context);
-  pango_simple_layout_set_text (layout, "one", -1);
+  layout = pango_layout_new (context);
+  pango_layout_set_text (layout, "one", -1);
 
-  pango_lines_get_cursor_pos (pango_simple_layout_get_lines (layout), NULL, 0, &strong1, NULL);
+  pango_lines_get_cursor_pos (pango_layout_get_lines (layout), NULL, 0, &strong1, NULL);
 
-  pango_simple_layout_set_text (layout, "", -1);
+  pango_layout_set_text (layout, "", -1);
 
-  pango_lines_get_cursor_pos (pango_simple_layout_get_lines (layout), NULL, 0, &strong2, NULL);
+  pango_lines_get_cursor_pos (pango_layout_get_lines (layout), NULL, 0, &strong2, NULL);
 
   g_assert_cmpint (strong1.height, ==, strong2.height);
 
@@ -440,22 +440,22 @@ static void
 test_get_cursor_crash (void)
 {
   PangoContext *context;
-  PangoSimpleLayout *layout;
+  PangoLayout *layout;
   int i;
 
   const char *string = "foo\n\rbar\r\nbaz\n\nqux\n\n..";
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
-  layout = pango_simple_layout_new (context);
+  layout = pango_layout_new (context);
 
-  pango_simple_layout_set_text (layout, string, -1);
+  pango_layout_set_text (layout, string, -1);
 
   for (i = 0; string[i]; i++)
     {
       PangoRectangle rectA, rectB;
 
-      pango_lines_get_cursor_pos (pango_simple_layout_get_lines (layout), NULL, i, &rectA, &rectB);
+      pango_lines_get_cursor_pos (pango_layout_get_lines (layout), NULL, i, &rectA, &rectB);
       g_assert_cmpint (rectA.x, ==, rectB.x);
     }
 
@@ -472,27 +472,27 @@ test_get_cursor (void)
 {
   const char *text = "abאב";
   PangoContext *context;
-  PangoSimpleLayout *layout;
+  PangoLayout *layout;
   PangoRectangle strong, weak;
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
-  layout = pango_simple_layout_new (context);
-  pango_simple_layout_set_text (layout, text, -1);
+  layout = pango_layout_new (context);
+  pango_layout_set_text (layout, text, -1);
 
-  pango_lines_get_cursor_pos (pango_simple_layout_get_lines (layout), NULL, 0, &strong, &weak);
+  pango_lines_get_cursor_pos (pango_layout_get_lines (layout), NULL, 0, &strong, &weak);
   g_assert_cmpint (strong.x, ==, weak.x);
 
-  pango_lines_get_cursor_pos (pango_simple_layout_get_lines (layout), NULL, 1, &strong, &weak);
+  pango_lines_get_cursor_pos (pango_layout_get_lines (layout), NULL, 1, &strong, &weak);
   g_assert_cmpint (strong.x, ==, weak.x);
 
-  pango_lines_get_cursor_pos (pango_simple_layout_get_lines (layout), NULL, 2, &strong, &weak);
+  pango_lines_get_cursor_pos (pango_layout_get_lines (layout), NULL, 2, &strong, &weak);
   g_assert_cmpint (strong.x, !=, weak.x);
 
-  pango_lines_get_cursor_pos (pango_simple_layout_get_lines (layout), NULL, 4, &strong, &weak);
+  pango_lines_get_cursor_pos (pango_layout_get_lines (layout), NULL, 4, &strong, &weak);
   g_assert_cmpint (strong.x, ==, weak.x);
 
-  pango_lines_get_cursor_pos (pango_simple_layout_get_lines (layout), NULL, 6, &strong, &weak);
+  pango_lines_get_cursor_pos (pango_layout_get_lines (layout), NULL, 6, &strong, &weak);
   g_assert_cmpint (strong.x, !=, weak.x);
 
   g_object_unref (layout);
@@ -512,29 +512,29 @@ test_index_to_x (void)
 
   for (int i = 0; i < G_N_ELEMENTS (tests); i++)
     {
-      PangoSimpleLayout *layout;
+      PangoLayout *layout;
       const char *text;
       const char *p;
 
-      layout = pango_simple_layout_new (context);
-      pango_simple_layout_set_text (layout, tests[i], -1);
-      text = pango_simple_layout_get_text (layout);
+      layout = pango_layout_new (context);
+      pango_layout_set_text (layout, tests[i], -1);
+      text = pango_layout_get_text (layout);
 
       for (p = text; *p; p = g_utf8_next_char (p))
         {
           int index = p - text;
-          PangoLine *line;
+          PangoLayoutLine *line;
           int x;
           int index2, trailing;
           gunichar ch;
 
           ch = g_utf8_get_char (p);
 
-          pango_lines_index_to_line (pango_simple_layout_get_lines (layout), index, &line, NULL, NULL, NULL);
+          pango_lines_index_to_line (pango_layout_get_lines (layout), index, &line, NULL, NULL, NULL);
           g_assert_nonnull (line);
 
-          pango_line_index_to_x (line, index, 0, &x);
-          pango_line_x_to_index (line, x, &index2, &trailing);
+          pango_layout_line_index_to_x (line, index, 0, &x);
+          pango_layout_line_x_to_index (line, x, &index2, &trailing);
           if (!pango_is_zero_width (ch))
             g_assert_cmpint (index, ==, index2);
         }
@@ -579,9 +579,9 @@ test_extents (void)
 
   for (int i = 0; i < G_N_ELEMENTS (tests); i++)
     {
-      PangoSimpleLayout *layout;
+      PangoLayout *layout;
       PangoLines *lines;
-      PangoLineIter *iter;
+      PangoLayoutIter *iter;
       PangoRectangle layout_extents;
       PangoRectangle line_extents;
       PangoRectangle run_extents;
@@ -591,22 +591,22 @@ test_extents (void)
       PangoRectangle strong, weak;
       int index;
 
-      layout = pango_simple_layout_new (context);
-      pango_simple_layout_set_text (layout, tests[i].text, -1);
-      pango_simple_layout_set_width (layout, tests[i].width > 0 ? tests[i].width * PANGO_SCALE : tests[i].width);
+      layout = pango_layout_new (context);
+      pango_layout_set_text (layout, tests[i].text, -1);
+      pango_layout_set_width (layout, tests[i].width > 0 ? tests[i].width * PANGO_SCALE : tests[i].width);
 
-      lines = pango_simple_layout_get_lines (layout);
+      lines = pango_layout_get_lines (layout);
       pango_lines_get_extents (lines, NULL, &layout_extents);
 
       iter = pango_lines_get_iter (lines);
 
       do
         {
-          pango_line_iter_get_line_extents (iter, NULL, &line_extents);
-          pango_line_iter_get_run_extents (iter, NULL, &run_extents);
-          pango_line_iter_get_cluster_extents (iter, NULL, &cluster_extents);
-          pango_line_iter_get_char_extents (iter, &char_extents);
-          index = pango_line_iter_get_index (iter);
+          pango_layout_iter_get_line_extents (iter, NULL, &line_extents);
+          pango_layout_iter_get_run_extents (iter, NULL, &run_extents);
+          pango_layout_iter_get_cluster_extents (iter, NULL, &cluster_extents);
+          pango_layout_iter_get_char_extents (iter, &char_extents);
+          index = pango_layout_iter_get_index (iter);
           pango_lines_index_to_pos (lines, NULL, index, &pos);
           if (pos.width < 0)
             {
@@ -624,9 +624,9 @@ test_extents (void)
           g_assert_true (pango_rectangle_contains (&line_extents, &strong));
           g_assert_true (pango_rectangle_contains (&line_extents, &weak));
         }
-      while (pango_line_iter_next_char (iter));
+      while (pango_layout_iter_next_char (iter));
 
-      pango_line_iter_free (iter);
+      pango_layout_iter_free (iter);
       g_object_unref (layout);
     }
 
@@ -637,7 +637,7 @@ static void
 test_empty_line_height (void)
 {
   PangoContext *context;
-  PangoSimpleLayout *layout;
+  PangoLayout *layout;
   PangoFontDescription *description;
   PangoRectangle ext1, ext2, ext3;
   cairo_font_options_t *options;
@@ -664,20 +664,20 @@ test_empty_line_height (void)
           pango_cairo_context_set_font_options (context, options);
           cairo_font_options_destroy (options);
 
-          layout = pango_simple_layout_new (context);
-          pango_simple_layout_set_font_description (layout, description);
+          layout = pango_layout_new (context);
+          pango_layout_set_font_description (layout, description);
 
-          pango_lines_get_extents (pango_simple_layout_get_lines (layout), NULL, &ext1);
+          pango_lines_get_extents (pango_layout_get_lines (layout), NULL, &ext1);
 
-          pango_simple_layout_set_text (layout, "a", 1);
+          pango_layout_set_text (layout, "a", 1);
 
-          pango_lines_get_extents (pango_simple_layout_get_lines (layout), NULL, &ext2);
+          pango_lines_get_extents (pango_layout_get_lines (layout), NULL, &ext2);
 
           g_assert_cmpint (ext1.height, ==, ext2.height);
 
-          pango_simple_layout_set_text (layout, "Pg", 1);
+          pango_layout_set_text (layout, "Pg", 1);
 
-          pango_lines_get_extents (pango_simple_layout_get_lines (layout), NULL, &ext3);
+          pango_lines_get_extents (pango_layout_get_lines (layout), NULL, &ext3);
 
           g_assert_cmpint (ext2.height, ==, ext3.height);
 
@@ -772,19 +772,19 @@ static void
 test_wrap_char (void)
 {
   PangoContext *context;
-  PangoSimpleLayout *layout;
+  PangoLayout *layout;
   PangoRectangle ext, ext1;
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-  layout = pango_simple_layout_new (context);
-  pango_simple_layout_set_text (layout, "Rows can have suffix widgets", -1);
-  pango_simple_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
+  layout = pango_layout_new (context);
+  pango_layout_set_text (layout, "Rows can have suffix widgets", -1);
+  pango_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
 
-  pango_simple_layout_set_width (layout, 0);
-  pango_lines_get_extents (pango_simple_layout_get_lines (layout), NULL, &ext);
+  pango_layout_set_width (layout, 0);
+  pango_lines_get_extents (pango_layout_get_lines (layout), NULL, &ext);
 
-  pango_simple_layout_set_width (layout, ext.width);
-  pango_lines_get_extents (pango_simple_layout_get_lines (layout), NULL, &ext1);
+  pango_layout_set_width (layout, ext.width);
+  pango_lines_get_extents (pango_layout_get_lines (layout), NULL, &ext1);
 
   g_assert_cmpint (ext.width, ==, ext1.width);
   g_assert_cmpint (ext.height, >=, ext1.height);
@@ -798,7 +798,7 @@ static void
 test_small_caps_crash (void)
 {
   PangoContext *context;
-  PangoSimpleLayout *layout;
+  PangoLayout *layout;
   PangoFontDescription *desc;
   PangoRectangle ext;
 
@@ -809,13 +809,13 @@ test_small_caps_crash (void)
     }
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-  layout = pango_simple_layout_new (context);
+  layout = pango_layout_new (context);
   desc = pango_font_description_from_string ("Cantarell Small-Caps 11");
-  pango_simple_layout_set_font_description (layout, desc);
+  pango_layout_set_font_description (layout, desc);
 
-  pango_simple_layout_set_text (layout, "Pere Ràfols Soler\nEqualiser, LV2\nAudio: 1, 1\nMidi: 0, 0\nControls: 53, 2\nCV: 0, 0", -1);
+  pango_layout_set_text (layout, "Pere Ràfols Soler\nEqualiser, LV2\nAudio: 1, 1\nMidi: 0, 0\nControls: 53, 2\nCV: 0, 0", -1);
 
-  pango_lines_get_extents (pango_simple_layout_get_lines (layout), NULL, &ext);
+  pango_lines_get_extents (pango_layout_get_lines (layout), NULL, &ext);
 
   pango_font_description_free (desc);
   g_object_unref (layout);

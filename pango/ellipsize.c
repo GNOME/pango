@@ -23,11 +23,10 @@
 #include <string.h>
 
 #include "pango-glyph-item.h"
-#include "pango-layout-private.h"
 #include "pango-font-private.h"
 #include "pango-attributes-private.h"
 #include "pango-impl-utils.h"
-#include "pango-line-private.h"
+#include "pango-layout-line-private.h"
 
 typedef struct _EllipsizeState EllipsizeState;
 typedef struct _RunInfo        RunInfo;
@@ -742,63 +741,11 @@ current_width (EllipsizeState *state)
   return state->total_width - (state->gap_end_x - state->gap_start_x) + state->ellipsis_width;
 }
 
-/**
- * _pango_layout_line_ellipsize:
- * @line: a `PangoLayoutLine`
- * @attrs: Attributes being used for itemization/shaping
- * @shape_flags: Flags to use when shaping
- *
- * Given a `PangoLayoutLine` with the runs still in logical order, ellipsize
- * it according the layout's policy to fit within the set width of the layout.
- *
- * Return value: whether the line had to be ellipsized
- **/
-gboolean
-_pango_layout_line_ellipsize (PangoLayoutLine *line,
-                              PangoAttrList   *attrs,
-                              PangoShapeFlags  shape_flags,
-                              int              goal_width)
-{
-  PangoLayout *layout = line->layout;
-  PangoContext *context = layout->context;
-  const char *text = layout->text;
-  PangoLogAttr *log_attrs = layout->log_attrs;
-  PangoEllipsizeMode ellipsize = layout->ellipsize;
-  EllipsizeState state;
-  gboolean is_ellipsized = FALSE;
-
-  g_return_val_if_fail (ellipsize != PANGO_ELLIPSIZE_NONE && goal_width >= 0, is_ellipsized);
-
-  init_state (&state, context, text, line->start_index, log_attrs, ellipsize, line->runs, attrs, shape_flags);
-
-  if (state.total_width <= goal_width)
-    goto out;
-
-  find_initial_span (&state);
-
-  while (current_width (&state) > goal_width)
-    {
-      if (!remove_one_span (&state))
-        break;
-    }
-
-  fixup_ellipsis_run (&state, MAX (goal_width - current_width (&state), 0));
-
-  g_slist_free (line->runs);
-  line->runs = get_run_list (&state);
-  is_ellipsized = TRUE;
-
- out:
-  free_state (&state);
-
-  return is_ellipsized;
-}
-
 void
-pango_line_ellipsize (PangoLine          *line,
-                      PangoContext       *context,
-                      PangoEllipsizeMode  ellipsize,
-                      int                 goal_width)
+pango_layout_line_ellipsize (PangoLayoutLine    *line,
+                             PangoContext       *context,
+                             PangoEllipsizeMode  ellipsize,
+                             int                 goal_width)
 {
   EllipsizeState state;
   const char *text = line->data->text;

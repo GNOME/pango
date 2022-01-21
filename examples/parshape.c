@@ -57,7 +57,7 @@ main (int argc, char *argv[])
 
   while (!pango_line_breaker_done (breaker))
     {
-      PangoLine *line;
+      PangoLayoutLine *line;
       PangoRectangle ext;
       gboolean ltr;
 
@@ -66,8 +66,8 @@ main (int argc, char *argv[])
                                            PANGO_WRAP_CHAR,
                                            PANGO_ELLIPSIZE_NONE);
 
-      pango_line_get_extents (line, NULL, &ext);
-      line = pango_line_justify (line, width);
+      pango_layout_line_get_extents (line, NULL, &ext);
+      line = pango_layout_line_justify (line, width);
       pango_lines_add_line (lines, line, x, y - ext.y);
 
       ltr = pango_line_breaker_get_direction (breaker) == PANGO_DIRECTION_LTR;
@@ -99,11 +99,11 @@ main (int argc, char *argv[])
 
   for (int i = 0; i < pango_lines_get_line_count (lines); i++)
     {
-      PangoLine *line = pango_lines_get_line (lines, i, &x, &y);
+      PangoLayoutLine *line = pango_lines_get_line (lines, i, &x, &y);
 
       cairo_save (cr);
       cairo_move_to (cr, x / (double)PANGO_SCALE, y / (double)PANGO_SCALE);
-      pango_cairo_show_line (cr, line);
+      pango_cairo_show_layout_line (cr, line);
       cairo_restore (cr);
     }
 

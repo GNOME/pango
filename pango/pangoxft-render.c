@@ -24,6 +24,7 @@
 
 #include "pangoxft-render.h"
 #include "pangoxft-private.h"
+#include "pango-layout-line-private.h"
 
 enum {
   PROP_0,
@@ -718,10 +719,10 @@ release_renderer (PangoRenderer *renderer)
  */
 void
 pango_xft_render_layout (XftDraw     *draw,
-			 XftColor    *color,
-			 PangoLayout *layout,
-			 int          x,
-			 int          y)
+                        XftColor    *color,
+                        PangoLayout *layout,
+                        int          x,
+                        int          y)
 {
   PangoContext *context;
   PangoFontMap *fontmap;
@@ -735,7 +736,7 @@ pango_xft_render_layout (XftDraw     *draw,
   fontmap = pango_context_get_font_map (context);
   renderer = get_renderer (fontmap, draw, color);
 
-  pango_renderer_draw_layout (renderer, layout, x, y);
+  pango_renderer_draw_lines (renderer, pango_layout_get_lines (layout), x, y);
 
   release_renderer (renderer);
 }
@@ -755,12 +756,11 @@ pango_xft_render_layout (XftDraw     *draw,
  */
 void
 pango_xft_render_layout_line (XftDraw         *draw,
-			      XftColor        *color,
-			      PangoLayoutLine *line,
-			      int              x,
-			      int              y)
+                              XftColor        *color,
+                              PangoLayoutLine *line,
+                              int              x,
+                              int              y)
 {
-  PangoContext *context;
   PangoFontMap *fontmap;
   PangoRenderer *renderer;
 
@@ -768,8 +768,7 @@ pango_xft_render_layout_line (XftDraw         *draw,
   g_return_if_fail (color != NULL);
   g_return_if_fail (line != NULL);
 
-  context = pango_layout_get_context (line->layout);
-  fontmap = pango_context_get_font_map (context);
+  fontmap = pango_context_get_font_map (line->context);
   renderer = get_renderer (fontmap, draw, color);
 
   pango_renderer_draw_layout_line (renderer, line, x, y);

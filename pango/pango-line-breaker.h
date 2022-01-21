@@ -4,7 +4,7 @@
 #include <pango/pango-types.h>
 #include <pango/pango-break.h>
 #include <pango/pango-layout.h>
-#include <pango/pango-line.h>
+#include <pango/pango-layout-line.h>
 
 G_BEGIN_DECLS
 
@@ -44,7 +44,7 @@ PANGO_AVAILABLE_IN_ALL
 gboolean                pango_line_breaker_done         (PangoLineBreaker      *self);
 
 PANGO_AVAILABLE_IN_ALL
-PangoLine *             pango_line_breaker_next_line    (PangoLineBreaker      *self,
+PangoLayoutLine *       pango_line_breaker_next_line    (PangoLineBreaker      *self,
                                                          int                    x,
                                                          int                    width,
                                                          PangoWrapMode          wrap,
@@ -52,6 +52,6 @@ PangoLine *             pango_line_breaker_next_line    (PangoLineBreaker      *
 
 PANGO_AVAILABLE_IN_ALL
 gboolean                pango_line_breaker_undo_line    (PangoLineBreaker      *self,
-                                                         PangoLine             *line);
+                                                         PangoLayoutLine       *line);
 
 G_END_DECLS

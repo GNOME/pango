@@ -7,93 +7,95 @@
 
 G_BEGIN_DECLS
 
-typedef PangoGlyphItem PangoLayoutRun;
-
-#define PANGO_TYPE_LINE pango_line_get_type ()
+#define PANGO_TYPE_LAYOUT_LINE pango_layout_line_get_type ()
 
 PANGO_AVAILABLE_IN_ALL
-G_DECLARE_FINAL_TYPE (PangoLine, pango_line, PANGO, LINE, GObject);
+G_DECLARE_FINAL_TYPE (PangoLayoutLine, pango_layout_line, PANGO, LAYOUT_LINE, GObject);
 
 PANGO_AVAILABLE_IN_ALL
-PangoLine *             pango_line_justify              (PangoLine             *line,
+PangoLayoutLine *       pango_layout_line_justify       (PangoLayoutLine       *line,
                                                          int                    width);
 
 PANGO_AVAILABLE_IN_ALL
-GSList *                pango_line_get_runs             (PangoLine             *line);
+GSList *                pango_layout_line_get_runs      (PangoLayoutLine       *line);
 
 PANGO_AVAILABLE_IN_ALL
-const char *            pango_line_get_text             (PangoLine             *line,
+const char *            pango_layout_line_get_text      (PangoLayoutLine       *line,
                                                          int                   *start_index,
                                                          int                   *length);
 
 PANGO_AVAILABLE_IN_ALL
-int                     pango_line_get_start_index      (PangoLine             *line);
+int                     pango_layout_line_get_start_index (PangoLayoutLine     *line);
 
 PANGO_AVAILABLE_IN_ALL
-int                     pango_line_get_length           (PangoLine             *line);
+int                     pango_layout_line_get_length      (PangoLayoutLine     *line);
 
 PANGO_AVAILABLE_IN_ALL
-const PangoLogAttr *    pango_line_get_log_attrs        (PangoLine             *line,
+const PangoLogAttr *    pango_layout_line_get_log_attrs (PangoLayoutLine       *line,
                                                          int                   *start_offset,
                                                          int                   *n_attrs);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_line_wrapped              (PangoLine             *line);
+gboolean                pango_layout_line_wrapped       (PangoLayoutLine       *line);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_line_ellipsized           (PangoLine             *line);
+gboolean                pango_layout_line_ellipsized    (PangoLayoutLine       *line);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_line_hyphenated           (PangoLine             *line);
+gboolean                pango_layout_line_hyphenated    (PangoLayoutLine       *line);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_line_justified            (PangoLine             *line);
+gboolean                pango_layout_line_justified     (PangoLayoutLine       *line);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_line_starts_paragraph     (PangoLine             *line);
+gboolean                pango_layout_line_starts_paragraph
+                                                        (PangoLayoutLine       *line);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_line_ends_paragraph       (PangoLine             *line);
+gboolean                pango_layout_line_ends_paragraph
+                                                        (PangoLayoutLine       *line);
 
 PANGO_AVAILABLE_IN_ALL
-PangoDirection          pango_line_get_resolved_direction
-                                                        (PangoLine             *line);
+PangoDirection          pango_layout_line_get_resolved_direction
+                                                        (PangoLayoutLine       *line);
 
 PANGO_AVAILABLE_IN_ALL
-void                    pango_line_get_extents          (PangoLine             *line,
+void                    pango_layout_line_get_extents   (PangoLayoutLine       *line,
                                                          PangoRectangle        *ink_rect,
                                                          PangoRectangle        *logical_rect);
 
 PANGO_AVAILABLE_IN_ALL
-void                    pango_line_get_trimmed_extents  (PangoLine             *line,
+void                    pango_layout_line_get_trimmed_extents
+                                                        (PangoLayoutLine       *line,
                                                          PangoLeadingTrim       trim,
                                                          PangoRectangle        *logical_rect);
 
 PANGO_AVAILABLE_IN_ALL
-void                    pango_line_index_to_pos         (PangoLine             *line,
+void                    pango_layout_line_index_to_pos  (PangoLayoutLine       *line,
                                                          int                    idx,
                                                          PangoRectangle        *pos);
 
 PANGO_AVAILABLE_IN_ALL
-void                    pango_line_index_to_x           (PangoLine             *line,
+void                    pango_layout_line_index_to_x    (PangoLayoutLine       *line,
                                                          int                    idx,
                                                          int                    trailing,
                                                          int                   *x_pos);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_line_x_to_index           (PangoLine             *line,
+gboolean                pango_layout_line_x_to_index    (PangoLayoutLine       *line,
                                                          int                    x,
                                                          int                   *idx,
                                                          int                   *trailing);
 
 PANGO_AVAILABLE_IN_ALL
-void                    pango_line_get_cursor_pos       (PangoLine             *line,
+void                    pango_layout_line_get_cursor_pos
+                                                        (PangoLayoutLine       *line,
                                                          int                    idx,
                                                          PangoRectangle        *strong_pos,
                                                          PangoRectangle        *weak_pos);
 
 PANGO_AVAILABLE_IN_ALL
-void                    pango_line_get_caret_pos        (PangoLine             *line,
+void                    pango_layout_line_get_caret_pos (PangoLayoutLine       *line,
                                                          int                    idx,
                                                          PangoRectangle        *strong_pos,
                                                          PangoRectangle        *weak_pos);

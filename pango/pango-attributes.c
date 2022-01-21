@@ -1510,8 +1510,7 @@ pango_attr_overline_color_new (guint16 red,
  * Modify the height of logical line extents by a factor.
  *
  * This affects the values returned by
- * [method@Pango.LayoutLine.get_extents],
- * [method@Pango.LayoutLine.get_pixel_extents] and
+ * [method@Pango.LayoutLine.get_extents] and
  * [method@Pango.LayoutIter.get_line_extents].
  *
  *
@@ -1538,7 +1537,6 @@ pango_attr_line_height_new (double factor)
  *
  * This affects the values returned by
  * [method@Pango.LayoutLine.get_extents],
- * [method@Pango.LayoutLine.get_pixel_extents] and
  * [method@Pango.LayoutIter.get_line_extents].
  *
  * Since: 1.50
