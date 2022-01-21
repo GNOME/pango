@@ -2110,9 +2110,6 @@ break_attrs (const char   *text,
         pango_attr_list_insert (&hyphens, pango_attribute_copy (attr));
     }
 
-  tailored |= handle_allow_breaks (text, length, &allow_breaks, offset,
-                                   log_attrs, log_attrs_len);
-
   tailored |= handle_words (text, length, &words, offset,
                             log_attrs, log_attrs_len);
 
@@ -2121,6 +2118,9 @@ break_attrs (const char   *text,
 
   tailored |= handle_hyphens (text, length, &hyphens, offset,
                               log_attrs, log_attrs_len);
+
+  tailored |= handle_allow_breaks (text, length, &allow_breaks, offset,
+                                   log_attrs, log_attrs_len);
 
   _pango_attr_list_destroy (&allow_breaks);
   _pango_attr_list_destroy (&words);
