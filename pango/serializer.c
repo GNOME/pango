@@ -201,6 +201,7 @@ static const char *attr_type_names[] = {
   "sentence",
   "baseline-shift",
   "font-scale",
+  "paragraph",
   NULL
 };
 
@@ -342,6 +343,7 @@ add_attribute (GtkJsonPrinter *printer,
     case PANGO_ATTR_SHOW:
     case PANGO_ATTR_WORD:
     case PANGO_ATTR_SENTENCE:
+    case PANGO_ATTR_PARAGRAPH:
     case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
       gtk_json_printer_add_integer (printer, "value", ((PangoAttrInt*)attr)->value);
       break;
@@ -1071,6 +1073,11 @@ attr_for_type (GtkJsonParser *parser,
     case PANGO_ATTR_FONT_SCALE:
       attr = pango_attr_font_scale_new ((PangoFontScale) parser_select_string (parser, font_scale_names));
       break;
+
+    case PANGO_ATTR_PARAGRAPH:
+      attr = pango_attr_paragraph_new ();
+      break;
+
     }
 
   attr->start_index = start;

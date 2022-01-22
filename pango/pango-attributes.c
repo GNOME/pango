@@ -1422,6 +1422,31 @@ pango_attr_sentence_new (void)
 }
 
 /**
+ * pango_attr_paragraph_new:
+ *
+ * Marks the range of the attribute as a single paragraph.
+ *
+ * Newlines and similar characters in the range of the attribute
+ * will not be treated as paragraph separators.
+ *
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
+ */
+PangoAttribute *
+pango_attr_paragraph_new (void)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_PARAGRAPH,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal,
+  };
+
+  return pango_attr_int_new (&klass, 1);
+}
+
+/**
  * pango_attr_overline_new:
  * @overline: the overline style
  *
@@ -1598,6 +1623,7 @@ pango_attribute_as_int (PangoAttribute *attr)
     case PANGO_ATTR_TEXT_TRANSFORM:
     case PANGO_ATTR_WORD:
     case PANGO_ATTR_SENTENCE:
+    case PANGO_ATTR_PARAGRAPH:
     case PANGO_ATTR_BASELINE_SHIFT:
     case PANGO_ATTR_FONT_SCALE:
       return (PangoAttrInt *)attr;
@@ -3054,6 +3080,12 @@ pango_attr_list_from_string (const char *text)
           integer = g_ascii_strtoll (p, &endp, 10);
           if (!is_valid_end_char (*endp)) goto fail;
           attr = pango_attr_sentence_new ();
+          break;
+
+        case PANGO_ATTR_PARAGRAPH:
+          integer = g_ascii_strtoll (p, &endp, 10);
+          if (!is_valid_end_char (*endp)) goto fail;
+          attr = pango_attr_paragraph_new ();
           break;
 
         case PANGO_ATTR_BASELINE_SHIFT:
