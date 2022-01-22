@@ -57,19 +57,20 @@ void               pango_item_unsplit                 (PangoItem *orig,
 typedef struct _ItemProperties ItemProperties;
 struct _ItemProperties
 {
-  guint uline_single   : 1;
-  guint uline_double   : 1;
-  guint uline_low      : 1;
-  guint uline_error    : 1;
-  guint strikethrough  : 1;
-  guint oline_single   : 1;
-  guint showing_space  : 1;
-  int            letter_spacing;
-  gboolean        shape_set;
+  guint uline_single        : 1;
+  guint uline_double        : 1;
+  guint uline_low           : 1;
+  guint uline_error         : 1;
+  guint strikethrough       : 1;
+  guint oline_single        : 1;
+  guint showing_space       : 1;
+  guint no_paragraph_break  : 1;
+  guint shape_set           : 1;
+  int letter_spacing;
+  int absolute_line_height;
+  double line_height;
   PangoRectangle *shape_ink_rect;
   PangoRectangle *shape_logical_rect;
-  double line_height;
-  int    absolute_line_height;
 };
 
 void               pango_item_get_properties          (PangoItem        *item,
