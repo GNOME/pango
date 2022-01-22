@@ -1771,6 +1771,8 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
         add_attribute (tag, pango_attr_word_new ());
       else if (strcmp (segment, "sentence") == 0)
         add_attribute (tag, pango_attr_sentence_new ());
+      else if (strcmp (segment, "paragraph") == 0)
+        add_attribute (tag, pango_attr_paragraph_new ());
       else
         {
           g_set_error (error,

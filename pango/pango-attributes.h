@@ -79,6 +79,7 @@ typedef struct _PangoAttrFontFeatures PangoAttrFontFeatures;
  * @PANGO_ATTR_ABSOLUTE_LINE_HEIGHT: line height ([struct@Pango.AttrInt]). Since: 1.50
  * @PANGO_ATTR_WORD: override segmentation to classify the range of the attribute as a single word ([struct@Pango.AttrInt]). Since 1.50
  * @PANGO_ATTR_SENTENCE: override segmentation to classify the range of the attribute as a single sentence ([struct@Pango.AttrInt]). Since 1.50
+ * @PANGO_ATTR_PARAGRAPH: override segmentation to classify the range of the attribute as a single paragraph ([struct@Pango.AttrInt]).
  * @PANGO_ATTR_BASELINE_SHIFT: baseline displacement ([struct@Pango.AttrInt]). Since 1.50
  * @PANGO_ATTR_FONT_SCALE: font-relative size change ([struct@Pango.AttrInt]). Since 1.50
  *
@@ -129,6 +130,7 @@ typedef enum
   PANGO_ATTR_SENTENCE,          /* PangoAttrInt */
   PANGO_ATTR_BASELINE_SHIFT,    /* PangoAttrSize */
   PANGO_ATTR_FONT_SCALE,        /* PangoAttrInt */
+  PANGO_ATTR_PARAGRAPH,         /* PangoAttrInt */
 } PangoAttrType;
 
 /**
@@ -592,6 +594,8 @@ PANGO_AVAILABLE_IN_1_50
 PangoAttribute *        pango_attr_word_new                     (void);
 PANGO_AVAILABLE_IN_1_50
 PangoAttribute *        pango_attr_sentence_new                 (void);
+PANGO_AVAILABLE_IN_ALL
+PangoAttribute *        pango_attr_paragraph_new                (void);
 
 PANGO_AVAILABLE_IN_1_44
 PangoAttribute *        pango_attr_insert_hyphens_new           (gboolean                     insert_hyphens);
