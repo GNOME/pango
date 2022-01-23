@@ -310,6 +310,30 @@ typedef enum {
   PANGO_ELLIPSIZE_END
 } PangoEllipsizeMode;
 
+/**
+* PangoLeadingTrim:
+ * @PANGO_LEADING_TRIM_NONE: No trimming
+ * @PANGO_LEADING_TRIM_START: Trim leading at the top
+ * @PANGO_LEADING_TRIM_END: Trim leading at the bottom
+ *
+ * The `PangoLeadingTrim` flags control how the line height affects
+ * the extents of runs and lines.
+ */
+typedef enum
+{
+  PANGO_LEADING_TRIM_NONE  = 0,
+  PANGO_LEADING_TRIM_START = 1 << 0,
+  PANGO_LEADING_TRIM_END   = 1 << 1,
+
+} PangoLeadingTrim;
+
+/**
+ * PANGO_LEADING_TRIM_BOTH:
+ *
+ * Shorthand for `PANGO_LEADING_TRIM_START|PANGO_LEADING_TRIM_END`.
+ */
+#define PANGO_LEADING_TRIM_BOTH (PANGO_LEADING_TRIM_START|PANGO_LEADING_TRIM_END)
+
 
 /*
  * PANGO_DECLARE_INTERNAL_TYPE:
