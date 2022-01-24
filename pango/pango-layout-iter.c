@@ -6,6 +6,20 @@
 #include "pango-layout-line-private.h"
 #include "pango-layout-run-private.h"
 
+/**
+ * PangoLayoutIter:
+ *
+ * A `PangoLayoutIter` can be used to iterate over the visual
+ * extents of a `PangoLayout` or `PangoLines`.
+ *
+ * To obtain a `PangoLayoutIter`, use [method@Pango.Layout.get_iter]
+ * or [method@Pango.Lines.get_iter].
+ *
+ * The `PangoLayoutIter` structure is opaque, and has no user-visible
+ * fields.
+ */
+
+
 /* {{{ PangoLayoutIter implementation */
 
 struct _PangoLayoutIter
