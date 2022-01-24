@@ -267,7 +267,7 @@ test_serialize_layout_valid (void)
     "  },\n"
     "  \"alignment\" : \"center\",\n"
     "  \"width\" : 350000,\n"
-    "  \"line-spacing\" : 1.5\n"
+    "  \"line-height\" : 1.5\n"
     "}\n";
 
   PangoContext *context;
@@ -292,7 +292,7 @@ test_serialize_layout_valid (void)
   g_free (s);
   g_assert_cmpint (pango_layout_get_alignment (layout), ==, PANGO_ALIGN_CENTER);
   g_assert_cmpint (pango_layout_get_width (layout), ==, 350000);
-  g_assert_cmpfloat_with_epsilon (pango_layout_get_line_spacing (layout), 1.5, 0.0001);
+  g_assert_cmpfloat_with_epsilon (pango_layout_get_line_height (layout), 1.5, 0.0001);
 
   out_bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_DEFAULT);
 

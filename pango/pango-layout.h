@@ -62,12 +62,12 @@ const PangoFontDescription *
                                                     (PangoLayout                  *layout);
 
 PANGO_AVAILABLE_IN_ALL
-void                    pango_layout_set_line_spacing
+void                    pango_layout_set_line_height
                                                     (PangoLayout                  *layout,
-                                                     float                         line_spacing);
+                                                     float                         line_height);
 
 PANGO_AVAILABLE_IN_ALL
-float                   pango_layout_get_line_spacing
+float                   pango_layout_get_line_height
                                                     (PangoLayout                  *layout);
 
 PANGO_AVAILABLE_IN_ALL
