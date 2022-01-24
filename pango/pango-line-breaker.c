@@ -24,15 +24,26 @@
  * A `PangoLineBreaker` breaks text into lines.
  *
  * To use a `PangoLineBreaker`, you must call [method@Pango.LineBreaker.add_text]
- * to provide text that you want to break into lines, plus possibly attribute
+ * to provide text that you want to break into lines, plus possibly attributes
  * to influence the formatting.
  *
  * Then you can call [method@Pango.LineBreaker.next_line] repeatedly to obtain
- * `PangoLayoutLine` objects for the text, one by one.
+ * `PangoLayoutLine` objects for the text, one by one. The parameters that are
+ * passed to `pango_line_breaker_next_line`, as well as properties of the
+ * `PangoLineBreaker` can be changed from call to call. For example, you can
+ * pass `PANGO_ELLIPSIZE_END` to consume the remaining text with a single,
+ * ellipsized line once you have produced enough lines to fill your desired
+ * height.
  *
- * `PangoLineBreaker` is meant to enable use cases like flowing text around images,
- * or shaped paragraphs. For simple formatting needs, [class@Pango.Layout]
- * is probably more convenient to use.
+ * A convenient way to keep track of the lines that are produced by `PangoLineBreaker`
+ * is to add them to a [class@Pango.Lines] object, together with positioning
+ * information. Before doing so, you can tweak the line or its offset, for
+ * example to implement alignment and justification (for the latter, see
+ * [method@Pango.LayoutLine.justify]).
+ *
+ * `PangoLineBreaker` is meant to enable use cases like flowing text around
+ * images, shaped paragraphs or multi-column layout. For simple formatting
+ * needs, [class@Pango.Layout] is probably more convenient to use.
  */
 
 typedef struct _LastTabState LastTabState;
@@ -2450,15 +2461,18 @@ pango_line_breaker_done (PangoLineBreaker *self)
  * Gets the next line.
  *
  * The `PangoLineBreaker` will use as much of its unprocessed text
- * as will fit into @width. The @x position is used to determine
- * where tabs are located are.
+ * as will fit into @width. If @width is -1, then all remaining
+ * text will be included in the returned line. If @ellipsize is not
+ * `PANGO_ELLIPSIZE_NONE`, then all unprocessed text will be made
+ * to fit by ellipsizing.
  *
- * If @ellipsize is not `PANGO_ELLIPSIZE_NONE`, then all unprocessed
- * text will be made to fit by ellipsizing.
+ * The @x position is used to determine where tabs are located,
+ * so when using tabs, it is important to draw the line at the
+ * same X position that was passed here.
  *
- * Note that the line is not positioned - the leftmost point of its baseline
- * is at 0, 0. See [class@Pango.Lines] for a way to hold a list of positioned
- * `PangoLine` objects.
+ * Note that the line is not positioned - the leftmost point of its
+ * baseline is at 0, 0. See [class@Pango.Lines] for a way to hold
+ * a list of positioned `PangoLine` objects.
  *
  *     line = pango_line_breaker_next_line (breaker,
  *                                          x, width,
