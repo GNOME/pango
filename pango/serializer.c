@@ -348,6 +348,7 @@ add_attribute (GtkJsonPrinter *printer,
     case PANGO_ATTR_SENTENCE:
     case PANGO_ATTR_PARAGRAPH:
     case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
+    case PANGO_ATTR_LINE_SPACING:
       gtk_json_printer_add_integer (printer, "value", ((PangoAttrInt*)attr)->value);
       break;
 
@@ -1070,6 +1071,10 @@ attr_for_type (GtkJsonParser *parser,
 
     case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
       attr = pango_attr_line_height_new_absolute ((int) gtk_json_parser_get_number (parser));
+      break;
+
+    case PANGO_ATTR_LINE_SPACING:
+      attr = pango_attr_line_spacing_new ((int) gtk_json_parser_get_number (parser));
       break;
 
     case PANGO_ATTR_TEXT_TRANSFORM:
