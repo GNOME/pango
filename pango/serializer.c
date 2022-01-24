@@ -275,42 +275,6 @@ static const char *ellipsize_names[] = {
   NULL
 };
 
-static char *
-wrap_to_string (PangoLineWrapMode value)
-{
-  GString *str;
-  GFlagsClass *flags_class;
-  GFlagsValue *flags_value;
-
-  flags_class = g_type_class_ref (PANGO_TYPE_LINE_WRAP_MODE);
-
-  str = g_string_new (NULL);
-  while ((str->len == 0 || value != 0) &&
-         (flags_value = g_flags_get_first_value (flags_class, value)) != NULL)
-    {
-      if (str->len > 0)
-        g_string_append (str, " | ");
-
-      g_string_append (str, flags_value->value_nick);
-
-      value &= ~flags_value->value;
-    }
-
-  g_type_class_unref (flags_class);
-
-  return g_string_free (str, FALSE);
-}
-
-static PangoLineWrapMode
-string_to_wrap (const char *str)
-{
-  int value = 0;
-
-  pango_parse_flags (PANGO_TYPE_LINE_WRAP_MODE, str, &value, NULL);
-
-  return (PangoLineWrapMode) value;
-}
-
 /* }}} */
 /* {{{ Serialization */
 
@@ -984,12 +948,8 @@ simple_layout_to_json (GtkJsonPrinter                  *printer,
   if (pango_simple_layout_get_alignment (layout) != PANGO_ALIGNMENT_LEFT)
     gtk_json_printer_add_string (printer, "alignment", alignment_names2[pango_simple_layout_get_alignment (layout)]);
 
-  if (pango_simple_layout_get_wrap (layout) != PANGO_LINE_WRAP_WORD)
-    {
-      char *str = wrap_to_string (pango_simple_layout_get_wrap (layout));
-      gtk_json_printer_add_string (printer, "wrap", str);
-      g_free (str);
-    }
+  if (pango_simple_layout_get_wrap (layout) != PANGO_WRAP_WORD)
+    gtk_json_printer_add_string (printer, "wrap", wrap_names[pango_simple_layout_get_wrap (layout)]);
 
   if (pango_simple_layout_get_ellipsize (layout) != PANGO_ELLIPSIZE_NONE)
     gtk_json_printer_add_string (printer, "ellipsize", ellipsize_names[pango_simple_layout_get_ellipsize (layout)]);
@@ -1825,7 +1785,7 @@ json_parser_fill_simple_layout (GtkJsonParser                     *parser,
           break;
 
         case SIMPLE_LAYOUT_WRAP:
-          pango_simple_layout_set_wrap (layout, string_to_wrap (gtk_json_parser_get_string (parser)));
+          pango_simple_layout_set_wrap (layout, (PangoWrapMode) parser_select_string (parser, wrap_names));
           break;
 
         case SIMPLE_LAYOUT_ELLIPSIZE:
