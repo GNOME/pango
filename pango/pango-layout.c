@@ -622,7 +622,7 @@ ensure_lines (PangoLayout *layout)
 
 retry:
       line = pango_line_breaker_next_line (breaker, x, width, layout->wrap, ellipsize);
-      pango_layout_line_get_extents (line, NULL, &ext);
+      pango_layout_line_get_trimmed_extents (line, PANGO_LEADING_TRIM_NONE, &ext);
 
       if (layout->height >= 0 && y + 2 * ext.height >= layout->height &&
           ellipsize != layout->ellipsize)
