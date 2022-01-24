@@ -828,6 +828,9 @@ layout_to_json (GtkJsonPrinter            *printer,
   if (pango_layout_get_line_height (layout) != 0.)
     gtk_json_printer_add_number (printer, "line-height", pango_layout_get_line_height (layout));
 
+  if (pango_layout_get_spacing (layout) != 0)
+    gtk_json_printer_add_integer (printer, "spacing", pango_layout_get_spacing (layout));
+
   if (flags & PANGO_LAYOUT_SERIALIZE_OUTPUT)
     {
       const PangoLogAttr *log_attrs;

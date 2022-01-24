@@ -1557,8 +1557,8 @@ pango_attr_line_height_new_absolute (int height)
  * if not overridden by line spacing attributes.
  *
  * This affects the values returned by
- * [method@Pango.LayoutLine.get_extents],
- * [method@Pango.LayoutIter.get_line_extents].
+ * [method@Pango.Line.get_extents],
+ * [method@Pango.LineIter.get_line_extents].
  */
 PangoAttribute *
 pango_attr_line_spacing_new (int spacing)
