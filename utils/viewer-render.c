@@ -52,6 +52,7 @@ gboolean opt_waterfall = FALSE;
 int opt_width = -1;
 int opt_height = -1;
 int opt_indent = 0;
+int opt_spacing = 0;
 double opt_line_spacing = -1.0;
 int opt_runs = 1;
 PangoAlignment opt_align = PANGO_ALIGN_LEFT;
@@ -159,6 +160,15 @@ make_layout(PangoContext *context,
         pango_layout_set_indent (layout, opt_indent);
       else
         pango_layout_set_indent (layout, (opt_indent * opt_dpi * PANGO_SCALE + 36) / 72);
+    }
+
+  if (opt_spacing != 0)
+    {
+      if (opt_pango_units)
+        pango_layout_set_spacing (layout, opt_spacing);
+      else
+        pango_layout_set_spacing (layout, (opt_spacing * opt_dpi * PANGO_SCALE + 36) / 72);
+      pango_layout_set_line_height (layout, 0.0);
     }
 
   if (opt_line_spacing >= 0.0)
@@ -894,6 +904,8 @@ parse_options (int argc, char *argv[])
      "Subpixel order",                                      "rgb/bgr/vrgb/vbgr"},
     {"indent",		0, 0, G_OPTION_ARG_INT,				&opt_indent,
      "Width in points to indent paragraphs",			    "points"},
+    {"spacing",                0, 0, G_OPTION_ARG_INT,                         &opt_spacing,
+     "Spacing in points between lines",                                    "points"},
     {"line-spacing",	0, 0, G_OPTION_ARG_DOUBLE,		        &opt_line_spacing,
      "Spread factor for line height",			            "factor"},
     {"language",	0, 0, G_OPTION_ARG_STRING,			&opt_language,
