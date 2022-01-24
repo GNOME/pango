@@ -833,6 +833,7 @@ pango_layout_copy (PangoLayout *layout)
   if (layout->font_desc)
     copy->font_desc = pango_font_description_copy (layout->font_desc);
   copy->line_height = layout->line_height;
+  copy->spacing = layout->spacing;
   copy->width = layout->width;
   copy->height = layout->height;
   if (layout->tabs)
