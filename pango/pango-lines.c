@@ -541,9 +541,7 @@ pango_lines_get_x_ranges (PangoLines       *lines,
   g_return_if_fail (PANGO_IS_LINES (lines));
   g_return_if_fail (PANGO_IS_LAYOUT_LINE (line));
   g_return_if_fail (start_line == NULL || PANGO_IS_LAYOUT_LINE (start_line));
-  g_return_if_fail (start_index >= 0);
   g_return_if_fail (end_line == NULL || PANGO_IS_LAYOUT_LINE (end_line));
-  g_return_if_fail (end_index >= 0);
   g_return_if_fail (ranges != NULL);
   g_return_if_fail (n_ranges != NULL);
 
@@ -667,8 +665,8 @@ pango_lines_get_x_ranges (PangoLines       *lines,
  * Given an index (and possibly line), determine the line number,
  * and offset for the line.
  *
- * @idx may refer to any byte position inside @lines, as well
- * as the position after the last character (i.e.
+ * @idx may refer to any byte position inside @lines, as well as
+ * the position before the first or after the last character (i.e.
  * line->start_index + line->length, for the last line).
  *
  * If @lines contains lines with different backing data (i.e.
@@ -690,13 +688,12 @@ pango_lines_index_to_line (PangoLines       *lines,
   int i;
 
   g_return_if_fail (PANGO_IS_LINES (lines));
-  g_return_if_fail (idx >= 0);
 
   for (i = 0; i < lines->lines->len; i++)
     {
       Line *l = &g_array_index (lines->lines, Line, i);
 
-      if (l->line->start_index > idx)
+      if (l->line->start_index > idx && found)
         break;
 
       found = l;
@@ -1003,7 +1000,7 @@ pango_lines_get_caret_pos (PangoLines      *lines,
  *   was at the trailing edge.
  * @direction: direction to move cursor. A negative
  *   value indicates motion to the left
- * @new_line: `PangoLayoutLine` wrt to which @new_idx is interpreted
+ * @new_line: (nullable): `PangoLayoutLine` wrt to which @new_idx is interpreted
  * @new_idx: (out): location to store the new cursor byte index
  *   A value of -1 indicates that the cursor has been moved off the
  *   beginning of the layout. A value of %G_MAXINT indicates that
@@ -1055,7 +1052,6 @@ pango_lines_move_cursor (PangoLines       *lines,
   g_return_if_fail (PANGO_IS_LINES (lines));
   g_return_if_fail (idx >= 0);
   g_return_if_fail (trailing >= 0);
-  g_return_if_fail (new_line != NULL);
   g_return_if_fail (new_idx != NULL);
   g_return_if_fail (new_trailing != NULL);
 
@@ -1130,7 +1126,8 @@ pango_lines_move_cursor (PangoLines       *lines,
           prev_line = pango_lines_get_line (lines, line_no - 1, NULL, NULL);
           if (!prev_line)
             {
-              *new_line = NULL;
+              if (new_line)
+                *new_line = NULL;
               *new_idx = -1;
               *new_trailing = 0;
               g_array_unref (cursors);
@@ -1148,7 +1145,8 @@ pango_lines_move_cursor (PangoLines       *lines,
           next_line = pango_lines_get_line (lines, line_no + 1, NULL, NULL);
           if (!next_line)
             {
-              *new_line = NULL;
+              if (new_line)
+                *new_line = NULL;
               *new_idx = G_MAXINT;
               *new_trailing = 0;
               g_array_unref (cursors);
@@ -1205,7 +1203,8 @@ pango_lines_move_cursor (PangoLines       *lines,
       while (log_pos > start_offset && !line->data->log_attrs[log_pos].is_cursor_position);
     }
 
-  *new_line = line;
+  if (new_line)
+    *new_line = line;
 
   g_array_unref (cursors);
 }
