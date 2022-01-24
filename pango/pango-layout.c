@@ -702,7 +702,7 @@ retry:
           last = pango_lines_get_line (layout->lines,
                                        pango_lines_get_line_count (layout->lines) - 1,
                                        NULL, NULL);
-          data = last->data;
+          data = line_data_ref (last->data);
           start_index = data->length;
           start_offset = last->data->n_chars;
           offset = MAX (layout->indent, 0);
