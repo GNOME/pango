@@ -67,6 +67,7 @@ struct _ItemProperties
   guint no_paragraph_break  : 1;
   guint shape_set           : 1;
   int letter_spacing;
+  int line_spacing;
   int absolute_line_height;
   double line_height;
   PangoRectangle *shape_ink_rect;

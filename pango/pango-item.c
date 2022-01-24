@@ -391,6 +391,7 @@ pango_item_get_properties (PangoItem      *item,
   properties->shape_logical_rect = NULL;
   properties->line_height = 0.0;
   properties->absolute_line_height = 0;
+  properties->line_spacing = 0;
 
   while (tmp_list)
     {
@@ -455,6 +456,10 @@ pango_item_get_properties (PangoItem      *item,
 
         case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
           properties->absolute_line_height = ((PangoAttrInt *)attr)->value;
+          break;
+
+        case PANGO_ATTR_LINE_SPACING:
+          properties->line_spacing = ((PangoAttrInt *)attr)->value;
           break;
 
         case PANGO_ATTR_SHOW:
