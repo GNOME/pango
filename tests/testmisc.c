@@ -778,7 +778,7 @@ test_wrap_char (void)
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
   layout = pango_simple_layout_new (context);
   pango_simple_layout_set_text (layout, "Rows can have suffix widgets", -1);
-  pango_simple_layout_set_wrap (layout, PANGO_LINE_WRAP_WORD_CHAR);
+  pango_simple_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
 
   pango_simple_layout_set_width (layout, 0);
   pango_lines_get_extents (pango_simple_layout_get_lines (layout), NULL, &ext);
