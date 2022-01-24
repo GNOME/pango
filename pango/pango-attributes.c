@@ -1550,6 +1550,30 @@ pango_attr_line_height_new_absolute (int height)
 }
 
 /**
+ * pango_attr_line_spacing_new:
+ * @spacing: the line spacing, in %PANGO_SCALE-ths of a point
+ *
+ * Spacing to be added to the leading from font metrics,
+ * if not overridden by line spacing attributes.
+ *
+ * This affects the values returned by
+ * [method@Pango.LayoutLine.get_extents],
+ * [method@Pango.LayoutIter.get_line_extents].
+ */
+PangoAttribute *
+pango_attr_line_spacing_new (int spacing)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_LINE_SPACING,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal
+  };
+
+  return pango_attr_int_new (&klass, spacing);
+}
+
+/**
  * pango_attr_text_transform_new:
  * @transform: `PangoTextTransform` to apply
  *
@@ -1613,6 +1637,7 @@ pango_attribute_as_int (PangoAttribute *attr)
     case PANGO_ATTR_INSERT_HYPHENS:
     case PANGO_ATTR_OVERLINE:
     case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
+    case PANGO_ATTR_LINE_SPACING:
     case PANGO_ATTR_TEXT_TRANSFORM:
     case PANGO_ATTR_WORD:
     case PANGO_ATTR_SENTENCE:
@@ -3051,6 +3076,10 @@ pango_attr_list_from_string (const char *text)
 
         case PANGO_ATTR_LINE_HEIGHT:
           FLOAT_ATTR(line_height);
+          break;
+
+        case PANGO_ATTR_LINE_SPACING:
+          INT_ATTR(line_spacing, int);
           break;
 
         case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
