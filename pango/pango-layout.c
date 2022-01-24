@@ -72,7 +72,7 @@ pango_layout_init (PangoLayout *layout)
   layout->height = -1;
   layout->indent = 0;
   layout->wrap = PANGO_WRAP_WORD;
-  layout->alignment = PANGO_ALIGN_LEFT;
+  layout->alignment = PANGO_ALIGN_NATURAL;
   layout->ellipsize = PANGO_ELLIPSIZE_NONE;
   layout->line_spacing = 0.0;
   layout->auto_dir = TRUE;
@@ -409,11 +409,11 @@ pango_layout_class_init (PangoLayoutClass *class)
    *
    * The alignment mode of this `PangoLayout.
    *
-   * The default value is `PANGO_ALIGNMENT_LEFT`.
+   * The default value is `PANGO_ALIGN_NATURAL`.
    */
   props[PROP_ALIGNMENT] = g_param_spec_enum ("alignment", "alignment", "alignment",
                                              PANGO_TYPE_ALIGNMENT,
-                                             PANGO_ALIGN_LEFT,
+                                             PANGO_ALIGN_NATURAL,
                                              G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
@@ -603,23 +603,40 @@ retry:
       offset = 0;
       switch (layout->alignment)
         {
+
         case PANGO_ALIGN_LEFT:
           break;
+
         case PANGO_ALIGN_CENTER:
           if (ext.width < width)
             offset = (width - ext.width) / 2;
           break;
+
+        case PANGO_ALIGN_JUSTIFY:
+          if (!pango_layout_line_ends_paragraph (line))
+            {
+              line = pango_layout_line_justify (line, width);
+              break;
+            }
+          G_GNUC_FALLTHROUGH;
+
+        case PANGO_ALIGN_NATURAL:
+          {
+            PangoLayoutLine *first_line;
+            if (pango_lines_get_line_count (layout->lines) > 0)
+              first_line = pango_lines_get_line (layout->lines, 0, NULL, NULL);
+            else
+              first_line = line;
+            if (pango_layout_line_get_resolved_direction (first_line) == PANGO_DIRECTION_LTR)
+              break;
+          }
+          G_GNUC_FALLTHROUGH;
+
         case PANGO_ALIGN_RIGHT:
           if (ext.width < width)
             offset = width - ext.width;
           break;
-        case PANGO_ALIGN_JUSTIFY:
-          if (!pango_layout_line_ends_paragraph (line))
-            line = pango_layout_line_justify (line, width);
-          break;
-        case PANGO_ALIGN_JUSTIFY_ALL:
-          line = pango_layout_line_justify (line, width);
-          break;
+
         default: g_assert_not_reached ();
         }
 
@@ -1278,7 +1295,7 @@ pango_layout_get_indent (PangoLayout *layout)
  * Sets the alignment for the layout: how short lines are
  * positioned within the horizontal space available.
  *
- * The default alignment is `PANGO_ALIGN_LEFT`.
+ * The default alignment is `PANGO_ALIGN_NATURAL`.
  */
 void
 pango_layout_set_alignment (PangoLayout    *layout,
@@ -1307,7 +1324,7 @@ pango_layout_set_alignment (PangoLayout    *layout,
 PangoAlignment
 pango_layout_get_alignment (PangoLayout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), PANGO_ALIGN_LEFT);
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), PANGO_ALIGN_NATURAL);
 
   return layout->alignment;
 }
