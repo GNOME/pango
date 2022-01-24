@@ -9,13 +9,13 @@
 PangoItem *
 pango_layout_run_get_item (PangoLayoutRun *run)
 {
-  return run->item;
+  return run->glyph_item.item;
 }
 
 PangoGlyphString *
 pango_layout_run_get_glyphs (PangoLayoutRun *run)
 {
-  return run->glyphs;
+  return run->glyph_item.glyphs;
 }
 
 /**
@@ -40,7 +40,7 @@ pango_layout_run_get_extents (PangoLayoutRun   *run,
                               PangoRectangle   *ink_rect,
                               PangoRectangle   *logical_rect)
 {
-  PangoGlyphItem *glyph_item = run;
+  PangoGlyphItem *glyph_item = &run->glyph_item;
   ItemProperties properties;
   gboolean has_underline;
   gboolean has_overline;

@@ -367,7 +367,7 @@ render_callback (PangoLayout *layout,
           iter = pango_layout_get_iter (layout);
           do
             {
-              PangoGlyphItem *run;
+              PangoLayoutRun *run;
               PangoRectangle rect;
 
               run = pango_layout_iter_get_run (iter);
@@ -444,7 +444,9 @@ render_callback (PangoLayout *layout,
           iter = pango_layout_get_iter (layout);
           do
             {
-              PangoGlyphItem *run;
+              PangoLayoutRun *run;
+              PangoItem *item;
+              PangoGlyphString *glyphs;
               PangoRectangle rect;
               int x_pos, y_pos;
 
@@ -452,21 +454,24 @@ render_callback (PangoLayout *layout,
               if (!run)
                 continue;
 
+              item = pango_layout_run_get_item (run);
+              glyphs = pango_layout_run_get_glyphs (run);
+
               pango_layout_iter_get_run_extents (iter, NULL, &rect);
 
               x_pos = rect.x;
               y_pos = pango_layout_iter_get_run_baseline (iter);
 
-              for (int i = 0; i < run->glyphs->num_glyphs; i++)
+              for (int i = 0; i < glyphs->num_glyphs; i++)
                 {
                   PangoRectangle extents;
 
-                  pango_font_get_glyph_extents (run->item->analysis.font,
-                                                run->glyphs->glyphs[i].glyph,
+                  pango_font_get_glyph_extents (item->analysis.font,
+                                                glyphs->glyphs[i].glyph,
                                                 &extents, NULL);
 
-                  rect.x = x_pos + run->glyphs->glyphs[i].geometry.x_offset + extents.x;
-                  rect.y = y_pos + run->glyphs->glyphs[i].geometry.y_offset + extents.y;
+                  rect.x = x_pos + glyphs->glyphs[i].geometry.x_offset + extents.x;
+                  rect.y = y_pos + glyphs->glyphs[i].geometry.y_offset + extents.y;
                   rect.width = extents.width;
                   rect.height = extents.height;
 
@@ -478,12 +483,12 @@ render_callback (PangoLayout *layout,
                   cairo_stroke (cr);
 
                   cairo_arc (cr,
-                             (double) (x_pos + run->glyphs->glyphs[i].geometry.x_offset) / PANGO_SCALE,
-                             (double) (y_pos + run->glyphs->glyphs[i].geometry.y_offset) / PANGO_SCALE,
+                             (double) (x_pos + glyphs->glyphs[i].geometry.x_offset) / PANGO_SCALE,
+                             (double) (y_pos + glyphs->glyphs[i].geometry.y_offset) / PANGO_SCALE,
                              3.0, 0, 2*G_PI);
                   cairo_fill (cr);
 
-                  x_pos += run->glyphs->glyphs[i].geometry.width;
+                  x_pos += glyphs->glyphs[i].geometry.width;
                 }
             }
           while (pango_layout_iter_next_run (iter));
@@ -508,7 +513,9 @@ render_callback (PangoLayout *layout,
           do
             {
               PangoRectangle rect;
-              PangoGlyphItem *run;
+              PangoLayoutRun *run;
+              PangoItem *item;
+              PangoGlyphString *glyphs;
               const char *text, *start, *p;
               int x, y;
               gboolean trailing;
@@ -519,8 +526,11 @@ render_callback (PangoLayout *layout,
               if (!run)
                 continue;
 
+              item = pango_layout_run_get_item (run);
+              glyphs = pango_layout_run_get_glyphs (run);
+
               text = pango_layout_get_text (layout);
-              start = text + run->item->offset;
+              start = text + item->offset;
 
               offset = g_utf8_strlen (text, start - text);
 
@@ -528,14 +538,14 @@ render_callback (PangoLayout *layout,
 
               trailing = FALSE;
               p = start;
-              for (int i = 0; i <= run->item->num_chars; i++)
+              for (int i = 0; i <= item->num_chars; i++)
                 {
                   if (attrs[offset + i].is_cursor_position)
                     {
-                      pango_glyph_string_index_to_x_full (run->glyphs,
-                                                          text + run->item->offset,
-                                                          run->item->length,
-                                                          &run->item->analysis,
+                      pango_glyph_string_index_to_x_full (glyphs,
+                                                          text + item->offset,
+                                                          item->length,
+                                                          &item->analysis,
                                                           (PangoLogAttr *)attrs + offset,
                                                           p - start,
                                                           trailing,
@@ -554,7 +564,7 @@ render_callback (PangoLayout *layout,
                       g_free (s);
                    }
 
-                  if (i < run->item->num_chars)
+                  if (i < item->num_chars)
                     {
                       num++;
                       p = g_utf8_next_char (p);

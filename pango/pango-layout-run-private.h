@@ -6,9 +6,13 @@
 #include "pango-glyph-item.h"
 #include "pango-item-private.h"
 
+struct _PangoLayoutRun
+{
+  PangoGlyphItem glyph_item;
+};
 
 static inline PangoGlyphItem *
 pango_layout_run_get_glyph_item (PangoLayoutRun *run)
 {
-  return (PangoGlyphItem *)run;
+  return &run->glyph_item;
 }

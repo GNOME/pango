@@ -81,7 +81,7 @@ iter_char_test (PangoLayout *layout)
 {
   PangoRectangle   extents, run_extents;
   PangoLayoutIter *iter;
-  PangoGlyphItem  *run;
+  PangoLayoutRun  *run;
   int              num_chars;
   int              i, index, offset;
   int              leading_x, trailing_x, x0, x1;
@@ -117,26 +117,31 @@ iter_char_test (PangoLayout *layout)
         {
           PangoFontDescription *desc;
           char *str;
+          PangoItem *item;
+          PangoGlyphString *glyphs;
+
+          item = pango_layout_run_get_item (run);
+          glyphs = pango_layout_run_get_glyphs (run);
 
           /* Get needed data for the GlyphString */
           pango_layout_iter_get_run_extents (iter, NULL, &run_extents);
-          offset = run->item->offset;
-          rtl = run->item->analysis.level%2;
-          desc = pango_font_describe (run->item->analysis.font);
+          offset = item->offset;
+          rtl = item->analysis.level%2;
+          desc = pango_font_describe (item->analysis.font);
           str = pango_font_description_to_string (desc);
           verbose ("  (current run: font=%s,offset=%d,x=%d,len=%d,rtl=%d)\n",
-                   str, offset, run_extents.x, run->item->length, rtl);
+                   str, offset, run_extents.x, item->length, rtl);
           g_free (str);
           pango_font_description_free (desc);
 
           /* Calculate expected x result using index_to_x */
-          pango_glyph_string_index_to_x (run->glyphs,
-                                         (char *)(text + offset), run->item->length,
-                                         &run->item->analysis,
+          pango_glyph_string_index_to_x (glyphs,
+                                         (char *)(text + offset), item->length,
+                                         &item->analysis,
                                          index - offset, FALSE, &leading_x);
-          pango_glyph_string_index_to_x (run->glyphs,
-                                         (char *)(text + offset), run->item->length,
-                                         &run->item->analysis,
+          pango_glyph_string_index_to_x (glyphs,
+                                         (char *)(text + offset), item->length,
+                                         &item->analysis,
                                          index - offset, TRUE, &trailing_x);
 
           x0 = run_extents.x + MIN (leading_x, trailing_x);

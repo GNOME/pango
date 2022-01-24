@@ -54,7 +54,7 @@ typedef struct _PangoLanguage PangoLanguage;
 typedef guint32 PangoGlyph;
 
 typedef struct _PangoLines PangoLines;
-typedef struct _PangoGlyphItem PangoLayoutRun;
+typedef struct _PangoLayoutRun PangoLayoutRun;
 typedef struct _PangoLayoutIter PangoLayoutIter;
 
 /**
