@@ -20,6 +20,7 @@ struct _PangoLayout
   PangoAttrList *attrs;
   PangoFontDescription *font_desc;
   float line_height;
+  int spacing;
   int width;
   int height;
   PangoTabArray *tabs;
@@ -47,6 +48,7 @@ enum
   PROP_ATTRIBUTES,
   PROP_FONT_DESCRIPTION,
   PROP_LINE_HEIGHT,
+  PROP_SPACING,
   PROP_WIDTH,
   PROP_HEIGHT,
   PROP_TABS,
@@ -75,6 +77,7 @@ pango_layout_init (PangoLayout *layout)
   layout->alignment = PANGO_ALIGN_NATURAL;
   layout->ellipsize = PANGO_ELLIPSIZE_NONE;
   layout->line_height = 0.0;
+  layout->spacing = 0;
   layout->auto_dir = TRUE;
   layout->text = g_strdup ("");
   layout->length = 0;
@@ -124,6 +127,10 @@ pango_layout_set_property (GObject      *object,
 
     case PROP_LINE_HEIGHT:
       pango_layout_set_line_height (layout, g_value_get_float (value));
+      break;
+
+    case PROP_SPACING:
+      pango_layout_set_spacing (layout, g_value_get_int (value));
       break;
 
     case PROP_WIDTH:
@@ -196,6 +203,10 @@ pango_layout_get_property (GObject      *object,
 
     case PROP_LINE_HEIGHT:
       g_value_set_float (value, layout->line_height);
+      break;
+
+    case PROP_SPACING:
+      g_value_set_int (value, layout->spacing);
       break;
 
     case PROP_WIDTH:
@@ -304,6 +315,19 @@ pango_layout_class_init (PangoLayoutClass *class)
   props[PROP_LINE_HEIGHT] = g_param_spec_float ("line-height", "line-height", "line-height",
                                                 0., G_MAXFLOAT, 0.,
                                                 G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
+
+  /**
+   * PangoLayout:spacing: (attributes org.gtk.Property.get=pango_layout_get_spacing org.gtk.Property.set=pango_layout_set_spacing)
+   *
+   * Spacing to add between the lines of the `PangoLayout`.
+   *
+   * The spacing is specified in Pango units.
+   *
+   * The default value is 0.
+   */
+  props[PROP_SPACING] = g_param_spec_int ("spacing", "spacing", "spacing",
+                                        0, G_MAXINT, 0,
+                                        G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
    * PangoLayout:width: (attributes org.gtk.Property.get=pango_layout_get_width org.gtk.Property.set=pango_layout_set_width)
@@ -511,6 +535,13 @@ get_effective_attributes (PangoLayout *layout)
       attrs = ensure_attrs (layout, attrs);
       pango_attr_list_insert_before (attrs,
                                      pango_attr_line_height_new (layout->line_height));
+    }
+
+  if (layout->spacing != 0)
+    {
+      attrs = ensure_attrs (layout, attrs);
+      pango_attr_list_insert_before (attrs,
+                                     pango_attr_line_spacing_new (layout->spacing));
     }
 
   if (layout->single_paragraph)
@@ -1016,6 +1047,54 @@ pango_layout_get_line_height (PangoLayout *layout)
   g_return_val_if_fail (PANGO_IS_LAYOUT (layout), 0.0);
 
   return layout->line_height;
+}
+
+/**
+ * pango_layout_set_spacing:
+ * @layout: a `PangoLayout`
+ * @spacing: the amount of spacing
+ *
+ * Sets the amount of spacing in Pango units between
+ * the lines of the layout.
+ *
+ * When placing lines with spacing, Pango arranges things so that
+ *
+ *     line2.top = line1.bottom + spacing
+ *
+ * The default value is 0.
+ *
+ * Spacing only takes effect if the line height is not
+ * overridden via [method@Pango.Layout.set_line_height].
+ */
+void
+pango_layout_set_spacing (PangoLayout *layout,
+                          int          spacing)
+{
+  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+
+  if (layout->spacing == spacing)
+    return;
+
+  layout->spacing = spacing;
+
+  g_object_notify_by_pspec (G_OBJECT (layout), props[PROP_SPACING]);
+  layout_changed (layout);
+}
+
+/**
+ * pango_layout_get_spacing:
+ * @layout: a `PangoLayout`
+ *
+ * Gets the amount of spacing between the lines of the layout.
+ *
+ * Return value: the spacing in Pango units
+ */
+int
+pango_layout_get_spacing (PangoLayout *layout)
+{
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), 0);
+
+  return layout->spacing;
 }
 
 /**
