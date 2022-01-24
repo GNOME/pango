@@ -6,12 +6,41 @@
 
 #include <math.h>
 
+/**
+ * PangoLayoutRun:
+ *
+ * A `PangoLayoutRun` represents a single run within a `PangoLayoutLine`.
+ *
+ * A run is a range of text with uniform script, font and attributes that
+ * is shaped as a unit.
+ *
+ * Script, font and attributes of a run can be accessed via
+ * [method@Pango.LayoutRun.get_item]. The glyphs that result from shaping
+ * the text of the run can be obtained via [method@Pango.LayoutRun.get_glyphs].
+ */
+
+/**
+ * pango_layout_run_get_item:
+ * @run: a `PangoLayoutRun`
+ *
+ * Gets the `PangoItem` for the run.
+ *
+ * Returns: (transfer none): the `PangoItem` of @run
+ */
 PangoItem *
 pango_layout_run_get_item (PangoLayoutRun *run)
 {
   return run->glyph_item.item;
 }
 
+/**
+ * pango_layout_run_get_glyphs:
+ * @run: a `PangoLayoutRun`
+ *
+ * Gets the `PangoGlyphString` for the run.
+ *
+ * Returns: (transfer none): the `PangoGlyphString` of @run
+ */
 PangoGlyphString *
 pango_layout_run_get_glyphs (PangoLayoutRun *run)
 {
