@@ -5,6 +5,39 @@
 #include "pango-item-private.h"
 #include "pango-layout-iter-private.h"
 
+/**
+ * PangoLines:
+ *
+ * A `PangoLines` object represents the result of formatting an
+ * entire paragraph (or more) of text.
+ *
+ * A `PangoLines` object contains a list of `PangoLayoutLine` objects,
+ * together with information about where to position each line
+ * in layout coordinates.
+ *
+ * `PangoLines` has APIs to query collective information about
+ * its lines (such as ellipsization or unknown glyphs), to translate
+ * between logical character positions within the text and the physical
+ * position of the resulting glyphs, and to determine cursor positions
+ * for editing the text.
+ *
+ * One way to obtain a `PangoLines` object is to use a [class@Pango.Layout].
+ * But it is also possible to populate a `PangoLines` manually with lines
+ * produced by a [class@Pango.LineBreaker] object.
+ *
+ * Note that the lines that make up a `PangoLines` object don't have to
+ * share the same underlying text. Therefore, using byte indexes to refer
+ * to positions within the `PangoLines` is, in general, ambiguous. All the
+ * `PangoLines` APIs that take a byte index as argument or return one have
+ * a `PangoLine*` companion argument to handle this situation. When all
+ * the lines in the `PangoLines` share the same text  (such as when they
+ * originate from the same `PangoLayout`), it is safe to always pass `NULL`
+ * for the `PangoLines*`.
+ *
+ * The most convenient way to access the visual extents and components
+ * of a `PangoLines` is via a [struct@Pango.LayoutIter] iterator.
+ */
+
 /*  {{{ PangoLines implementation */
 
 typedef struct _Line Line;
