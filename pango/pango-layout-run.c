@@ -160,7 +160,7 @@ pango_layout_run_get_extents (PangoLayoutRun   *run,
           if (!metrics)
             metrics = pango_font_get_metrics (glyph_item->item->analysis.font,
                                               glyph_item->item->analysis.language);
-          leading = MAX (metrics->height - (metrics->ascent + metrics->descent), 0);
+          leading = MAX (metrics->height - (metrics->ascent + metrics->descent) + properties.line_spacing, 0);
         }
       if ((trim & PANGO_LEADING_TRIM_START) == 0)
         logical_rect->y -= leading / 2;
