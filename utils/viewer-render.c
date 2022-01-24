@@ -162,7 +162,7 @@ make_layout(PangoContext *context,
     }
 
   if (opt_line_spacing >= 0.0)
-    pango_layout_set_line_spacing (layout, (float)opt_line_spacing);
+    pango_layout_set_line_height (layout, (float)opt_line_spacing);
 
   align = opt_align;
   if (align != PANGO_ALIGN_CENTER &&
