@@ -7,6 +7,54 @@
 #include "pango-markup.h"
 #include "pango-context.h"
 
+/**
+ * PangoLayout:
+ *
+ * A `PangoLayout` structure represents an entire paragraph of text.
+ *
+ * While complete access to the layout capabilities of Pango is provided
+ * using the detailed interfaces for itemization, segmentation and shaping,
+ * using that functionality directly involves writing a fairly large amount
+ * of code. `PangoLayout` provides a high-level driver for formatting entire
+ * paragraphs of text at once. This includes paragraph-level functionality
+ * such as line breaking, justification, alignment and ellipsization.
+ *
+ * A `PangoLayout` is initialized with a `PangoContext`, a UTF-8 string
+ * and set of attributes for that string. Once that is done, the set of
+ * formatted lines can be extracted in the form of a [class@Pango.Lines]
+ * object, the layout can be rendered, and conversion between logical
+ * character positions within the layout's text, and the physical position
+ * of the resulting glyphs can be made.
+ *
+ * The most convenient way to access the visual extents and components
+ * of a formatted layout is via a [struct@Pango.LayoutIter] iterator.
+ *
+ * There are a number of parameters to adjust the formatting of a
+ * `PangoLayout`. The following image shows adjustable parameters
+ * (on the left) and font metrics (on the right):
+ *
+ * <picture>
+ *   <source srcset="layout-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img alt="Pango Layout Parameters" src="layout-light.png">
+ * </picture>
+ *
+ * The following images demonstrate the effect of alignment and justification
+ * on the layout of text:
+ *
+ * | | | |
+ * | --- | --- | --- |
+ * | ![align=left](align-left.png) | ![align=center](align-center.png) | ![align=right](align-right.png) |
+ * | ![align=justify](align-left-justify.png) | | |
+ *
+ * It is possible, as well, to ignore the 2-D setup, and simply treat the
+ * resulting `PangoLines` object as a list of lines.
+ *
+ * If you have more complex line breaking needs, such as shaping text
+ * to flow around images, or multi-column layout, the [class@Pango.LineBreaker]
+ * makes the underlying line-breaking functionality available outside of
+ * `PangoLayout`.
+ */
+
 
 /* {{{ PangoLayout implementation */
 
@@ -805,7 +853,7 @@ pango_layout_copy (PangoLayout *layout)
  * pango_layout_get_serial:
  * @layout: a `PangoLayout`
  *
- * Returns the current serial number of @layout.
+ * Returns the current serial number of the layout.
  *
  * The serial number is initialized to an small number larger than zero
  * when a new layout is created and is increased whenever the layout is
@@ -1037,7 +1085,7 @@ pango_layout_set_line_height (PangoLayout *layout,
  * pango_layout_get_line_height:
  * @layout: a `PangoLayout`
  *
- * Gets the line height factor of @layout.
+ * Gets the line height factor of the layout.
  *
  * See [method@Pango.Layout.set_line_height].
  */
@@ -1052,10 +1100,9 @@ pango_layout_get_line_height (PangoLayout *layout)
 /**
  * pango_layout_set_spacing:
  * @layout: a `PangoLayout`
- * @spacing: the amount of spacing
+ * @spacing: the amount of spacing, in Pango units
  *
- * Sets the amount of spacing in Pango units between
- * the lines of the layout.
+ * Sets the amount of spacing between the lines of the layout.
  *
  * When placing lines with spacing, Pango arranges things so that
  *
@@ -1101,7 +1148,7 @@ pango_layout_get_spacing (PangoLayout *layout)
  * pango_layout_set_width:
  * @layout: a `PangoLayout`.
  * @width: the desired width in Pango units, or -1 to indicate that no
- *   wrapping or ellipsization should be performed.
+ *   wrapping or ellipsization should be performed
  *
  * Sets the width to which the lines of the layout should
  * be wrapped or ellipsized.
@@ -1192,7 +1239,11 @@ pango_layout_get_height (PangoLayout *layout)
  * @layout: a `PangoLayout`
  * @tabs: (nullable): a `PangoTabArray`
  *
- * Sets the tabs to use for @layout, overriding the default tabs.
+ * Sets the tabs to use for the layout, overriding the
+ * default tabs.
+ *
+ * Setting the tabs to `NULL` reinstates the default
+ * tabs.
  *
  * See [method@Pango.LineBreaker.set_tabs] for details.
  */
@@ -1236,7 +1287,7 @@ pango_layout_get_tabs (PangoLayout *layout)
  * @layout: a `PangoLayout`
  * @single_paragraph: the new setting
  *
- * Sets the single paragraph mode of @layout.
+ * Sets the single paragraph mode of the layout.
  *
  * If @single_paragraph is `TRUE`, do not treat newlines and similar
  * characters as paragraph separators; instead, keep all text in a
@@ -1266,7 +1317,7 @@ pango_layout_set_single_paragraph (PangoLayout *layout,
  * pango_layout_get_single_paragraph:
  * @layout: a `PangoLayout`
  *
- * Obtains whether @layout is in single paragraph mode.
+ * Obtains whether this layout is in single paragraph mode.
  *
  * See [method@Pango.Layout.set_single_paragraph].
  *
@@ -1376,8 +1427,10 @@ pango_layout_get_indent (PangoLayout *layout)
  * @layout: a `PangoLayout`
  * @alignment: the alignment
  *
- * Sets the alignment for the layout: how short lines are
- * positioned within the horizontal space available.
+ * Sets the alignment for the layout.
+ *
+ * The alignment determines how short lines are
+ * positioned within the available horizontal space.
  *
  * The default alignment is `PANGO_ALIGN_NATURAL`.
  */
@@ -1400,8 +1453,10 @@ pango_layout_set_alignment (PangoLayout    *layout,
  * pango_layout_get_alignment:
  * @layout: a `PangoLayout`
  *
- * Gets the alignment for the layout: how short lines are
- * positioned within the horizontal space available.
+ * Gets the alignment for the layout.
+ *
+ * The alignment determines how short lines are
+ * positioned within the available horizontal space.
  *
  * Return value: the alignment
  */
@@ -1418,7 +1473,7 @@ pango_layout_get_alignment (PangoLayout *layout)
  * @layout: a `PangoLayout`
  * @ellipsize: the new ellipsization mode for @layout
  *
- * Sets the type of ellipsization being performed for @layout.
+ * Sets the type of ellipsization to use for this layout.
  *
  * Depending on the ellipsization mode @ellipsize text is removed
  * from the start, middle, or end of text so they fit within the
@@ -1427,7 +1482,7 @@ pango_layout_get_alignment (PangoLayout *layout)
  * The default value is `PANGO_ELLIPSIZE_NONE`.
  */
 void
-pango_layout_set_ellipsize (PangoLayout  *layout,
+pango_layout_set_ellipsize (PangoLayout        *layout,
                             PangoEllipsizeMode  ellipsize)
 {
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
@@ -1476,13 +1531,13 @@ pango_layout_get_ellipsize (PangoLayout *layout)
  * characters get their direction from the surrounding
  * paragraphs.
  *
- * When %FALSE, the choice between left-to-right and right-to-left
+ * When `FALSE`, the choice between left-to-right and right-to-left
  * layout is done according to the base direction of the layout's
  * `PangoContext`. (See [method@Pango.Context.set_base_dir]).
  *
  * When the auto-computed direction of a paragraph differs
  * from the base direction of the context, the interpretation
- * of %PANGO_ALIGN_LEFT and %PANGO_ALIGN_RIGHT are swapped.
+ * of `PANGO_ALIGN_LEFT` and `PANGO_ALIGN_RIGHT` are swapped.
  */
 void
 pango_layout_set_auto_dir (PangoLayout *layout,
@@ -1508,8 +1563,8 @@ pango_layout_set_auto_dir (PangoLayout *layout,
  *
  * See [method@Pango.Layout.set_auto_dir].
  *
- * Return value: %TRUE if the bidirectional base direction
- *   is computed from the layout's contents, %FALSE otherwise
+ * Return value: `TRUE` if the bidirectional base direction
+ *   is computed from the layout's contents, `FALSE` otherwise
  */
 gboolean
 pango_layout_get_auto_dir (PangoLayout *layout)
@@ -1532,7 +1587,7 @@ pango_layout_get_auto_dir (PangoLayout *layout)
  *
  * See [Pango Markup](pango_markup.html)).
  *
- * Replaces the current text and attribute list.
+ * Replaces the current text and attributes.
  */
 void
 pango_layout_set_markup (PangoLayout  *layout,
@@ -1570,7 +1625,7 @@ pango_layout_set_markup (PangoLayout  *layout,
  * @layout: a `PangoLayout`
  *
  * Returns the number of Unicode characters in the
- * the text of @layout.
+ * the text of the layout.
  *
  * Return value: the number of Unicode characters in @layout
  */
@@ -1586,85 +1641,6 @@ pango_layout_get_character_count (PangoLayout *layout)
   line = pango_lines_get_line (layout->lines, 0, NULL, NULL);
 
   return line->data->n_chars;
-}
-
-/* }}} */
-/* {{{ Output getters */
-
-/**
- * pango_layout_get_lines:
- * @layout: a `PangoLayout`
- *
- * Gets the lines of the @layout.
- *
- * The returned object will become invalid when any
- * property of @layout is changed. Take a reference
- * to keep it.
- *
- * Return value: (transfer none): a `PangoLines` object
- *   with the lines of @layout
- */
-PangoLines *
-pango_layout_get_lines (PangoLayout *layout)
-{
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
-
-  ensure_lines (layout);
-
-  return layout->lines;
-}
-
-/**
- * pango_layout_get_log_attrs:
- * @layout: a `PangoLayout`
- * @n_attrs: (out): return location for the length of the array
- *
- * Gets the `PangoLogAttr` array for the content
- * of @layout.
- *
- * The returned array becomes invalid when
- * any properties of @layout change. Make a
- * copy if you want to keep it.
- *
- * Returns: (transfer none): the `PangoLogAttr` array
- */
-const PangoLogAttr *
-pango_layout_get_log_attrs (PangoLayout *layout,
-                            int         *n_attrs)
-{
-  PangoLayoutLine *line;
-
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
-
-  ensure_lines (layout);
-
-  line = pango_lines_get_line (layout->lines, 0, NULL, NULL);
-
-  if (n_attrs)
-    *n_attrs = line->data->n_chars + 1;
-
-  return line->data->log_attrs;
-}
-
-/**
- * pango_layout_get_iter:
- * @layout: a `PangoLayout`
- *
- * Returns an iterator to iterate over the visual extents
- * of the layout.
- *
- * This is a convenience wrapper for [method@Pango.Lines.get_iter].
- *
- * Returns: the new `PangoLayoutIter`
- */
-PangoLayoutIter *
-pango_layout_get_iter (PangoLayout *layout)
-{
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
-
-  ensure_lines (layout);
-
-  return pango_lines_get_iter (layout->lines);
 }
 
 /* }}} */
