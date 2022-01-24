@@ -825,8 +825,8 @@ layout_to_json (GtkJsonPrinter            *printer,
   if (pango_layout_get_indent (layout) != 0)
     gtk_json_printer_add_integer (printer, "indent", pango_layout_get_indent (layout));
 
-  if (pango_layout_get_line_spacing (layout) != 0.)
-    gtk_json_printer_add_number (printer, "line-spacing", pango_layout_get_line_spacing (layout));
+  if (pango_layout_get_line_height (layout) != 0.)
+    gtk_json_printer_add_number (printer, "line-height", pango_layout_get_line_height (layout));
 
   if (flags & PANGO_LAYOUT_SERIALIZE_OUTPUT)
     {
@@ -1400,7 +1400,7 @@ enum {
   LAYOUT_WIDTH,
   LAYOUT_HEIGHT,
   LAYOUT_INDENT,
-  LAYOUT_LINE_SPACING,
+  LAYOUT_LINE_HEIGHT,
   LAYOUT_LINES
 };
 
@@ -1418,7 +1418,7 @@ static const char *layout_members[] = {
   "width",
   "height",
   "indent",
-  "line-spacing",
+  "line-height",
   "lines",
   NULL
 };
@@ -1473,8 +1473,8 @@ json_parser_fill_layout (GtkJsonParser               *parser,
           pango_layout_set_auto_dir (layout, gtk_json_parser_get_boolean (parser));
           break;
 
-        case LAYOUT_LINE_SPACING:
-          pango_layout_set_line_spacing (layout, gtk_json_parser_get_number (parser));
+        case LAYOUT_LINE_HEIGHT:
+          pango_layout_set_line_height (layout, gtk_json_parser_get_number (parser));
           break;
 
         case LAYOUT_TABS:
