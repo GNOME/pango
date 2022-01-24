@@ -2674,7 +2674,12 @@ attr_print (GString        *str,
   else if ((features = pango_attribute_as_font_features (attr)) != NULL)
     g_string_append_printf (str, " \"%s\"", features->features);
   else
-    g_assert_not_reached ();
+    {
+      g_warning ("Unhandled attribute type %s (%d)\n",
+                 get_attr_type_nick (attr->klass->type),
+                 attr->klass->type);
+      g_assert_not_reached ();
+    }
 }
 
 /**
