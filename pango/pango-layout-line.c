@@ -11,6 +11,25 @@
 #include <math.h>
 #include <hb-ot.h>
 
+/**
+ * PangoLayoutLine:
+ *
+ * A `PangoLayoutLine` represents one of the lines resulting from laying
+ * out a paragraph via `PangoLayout` or `PangoLineBreaker`.
+ *
+ * A line consists of a number of runs (i.e. ranges of text with uniform
+ * script, font and attributes that are shaped as a unit). Runs are
+ * represented as [struct@Pango.LayoutRun] objects.
+ *
+ * A `PangoLayoutLine` always has its origin at the leftmost point  of its
+ * baseline. To position lines in an entire paragraph of text (i.e. in layout
+ * coordinates), the `PangoLines` object stores X and Y coordinates to
+ * offset each line to.
+ *
+ * The most convenient way to access the visual extents and components
+ * of a `PangoLayoutLine` is via a [struct@Pango.LayoutIter] iterator.
+ */
+
 /* {{{ LineData */
 
 void
