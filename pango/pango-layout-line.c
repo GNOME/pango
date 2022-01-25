@@ -14,8 +14,8 @@
 /**
  * PangoLayoutLine:
  *
- * A `PangoLayoutLine` represents one of the lines resulting from laying
- * out a paragraph via `PangoLayout` or `PangoLineBreaker`.
+ * A `PangoLayoutLine` is an immutable object which represents a line resulting
+ * from laying out text via `PangoLayout` or `PangoLineBreaker`.
  *
  * A line consists of a number of runs (i.e. ranges of text with uniform
  * script, font and attributes that are shaped as a unit). Runs are
@@ -58,7 +58,7 @@ line_data_unref (LineData *data)
   g_rc_box_release_full (data, (GDestroyNotify) line_data_clear);
 }
 
-/* }}} */ 
+/* }}} */
 /* {{{ PangoLayoutLine implementation */
 
 G_DEFINE_BOXED_TYPE (PangoLayoutLine, pango_layout_line,
