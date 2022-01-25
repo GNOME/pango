@@ -261,7 +261,6 @@ test_glyphitem_iter (void)
   PangoLayout  *layout;
   PangoLine *line;
   const char *text;
-  GSList *l;
 
   fontmap = pango_cairo_font_map_get_default ();
   context = pango_font_map_create_context (fontmap);
@@ -273,10 +272,10 @@ test_glyphitem_iter (void)
   pango_layout_set_text (layout, "test تست", -1);
   text = pango_layout_get_text (layout);
 
-  line = pango_lines_get_line (pango_layout_get_lines (layout), 0, NULL, NULL);
+  line = pango_lines_get_lines (pango_layout_get_lines (layout))[0];
   for (int i = 0; i < pango_line_get_run_count (line); i++)
-    {
-    PangoGlyphItem *run = (PangoGlyphItem *)pango_line_get_runs (line)[i];
+  {
+    PangoGlyphItem *run = (PangoGlyphItem *)pango_line_get_runs (line)[i]; /* FIXME */
     int direction;
 
     for (direction = 0; direction < 2; direction++)

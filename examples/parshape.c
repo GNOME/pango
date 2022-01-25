@@ -99,7 +99,9 @@ main (int argc, char *argv[])
 
   for (int i = 0; i < pango_lines_get_line_count (lines); i++)
     {
-      PangoLine *line = pango_lines_get_line (lines, i, &x, &y);
+      PangoLine *line = pango_lines_get_lines (lines)[i];
+
+      pango_lines_get_line_position (lines, i, &x, &y);
 
       cairo_save (cr);
       cairo_move_to (cr, x / (double)PANGO_SCALE, y / (double)PANGO_SCALE);

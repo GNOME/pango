@@ -578,20 +578,22 @@ pango_renderer_draw_lines (PangoRenderer *renderer,
   int n;
   PangoLine *line;
   int line_x, line_y;
+  PangoLine **l;
 
   g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
 
   renderer->priv->lines = lines;
 
-  n = 0;
-  while ((line = pango_lines_get_line (lines, n, &line_x, &line_y)) != NULL)
+  l = pango_lines_get_lines (lines);
+  for (n = 0; n < pango_lines_get_line_count (lines); n++)
     {
+      line = l[n];
+      pango_lines_get_line_position (lines, n, &line_x, &line_y);
+
       if (n == 0)
         pango_renderer_activate_with_context (renderer, line->context);
 
       pango_renderer_draw_line (renderer, line, x + line_x, y + line_y);
-
-      n++;
     }
 
   if (n > 0)
