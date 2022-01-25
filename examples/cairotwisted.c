@@ -493,7 +493,7 @@ draw_text (cairo_t *cr,
 
   pango_layout_set_text (layout, text, -1);
 
-  line = pango_lines_get_line (pango_layout_get_lines (layout), 0, NULL, NULL);
+  line = pango_lines_get_lines (pango_layout_get_lines (layout))[0];
 
   cairo_move_to (cr, x, y);
   pango_cairo_line_path (cr, line);

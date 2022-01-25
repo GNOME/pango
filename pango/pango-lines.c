@@ -41,13 +41,6 @@
 
 /*  {{{ PangoLines implementation */
 
-typedef struct _Line Line;
-struct _Line
-{
-  PangoLine *line;
-  int x, y;
-};
-
 struct _PangoLinesClass
 {
   GObjectClass parent_class;
@@ -59,7 +52,8 @@ static void
 pango_lines_init (PangoLines *lines)
 {
   lines->serial = 1;
-  lines->lines = g_array_new (FALSE, FALSE, sizeof (Line));
+  lines->lines = g_ptr_array_new_with_free_func ((GDestroyNotify) pango_line_free);
+  lines->positions = g_array_new (FALSE, FALSE, sizeof (Position));
 }
 
 static void
@@ -67,13 +61,8 @@ pango_lines_finalize (GObject *object)
 {
   PangoLines *lines = PANGO_LINES (object);
 
-  for (int i = 0; i < lines->lines->len; i++)
-    {
-      Line *line = &g_array_index (lines->lines, Line, i);
-      pango_line_free (line->line);
-    }
-
-  g_array_free (lines->lines, TRUE);
+  g_ptr_array_unref (lines->lines);
+  g_array_unref (lines->positions);
 
   G_OBJECT_CLASS (pango_lines_parent_class)->finalize (object);
 }
@@ -115,17 +104,16 @@ pango_line_get_cursors (PangoLines      *lines,
   int j;
   const char *p;
   PangoRectangle pos;
-  Line *l = NULL;
+  Position offset;
 
   g_assert (g_array_get_element_size (cursors) == sizeof (CursorPos));
   g_assert (cursors->len == 0);
 
   for (int i = 0; i < lines->lines->len; i++)
     {
-      Line *ll = &g_array_index (lines->lines, Line, i);
-      if (ll->line == line)
+      if (line == g_ptr_array_index (lines->lines, i))
         {
-          l = ll;
+          offset = g_array_index (lines->positions, Position, i);
           break;
         }
     }
@@ -149,7 +137,7 @@ pango_line_get_cursors (PangoLines      *lines,
                                      strong ? &pos : NULL,
                                      strong ? NULL : &pos);
 
-          cursor.x = pos.x + l->x;
+          cursor.x = pos.x + offset.x;
           cursor.pos = idx;
           g_array_append_val (cursors, cursor);
         }
@@ -218,13 +206,10 @@ pango_lines_add_line (PangoLines      *lines,
                       int              x_line,
                       int              y_line)
 {
-  Line l;
+  Position pos = { x_line, y_line };
 
-  l.line = line;
-  l.x = x_line;
-  l.y = y_line;
-
-  g_array_append_val (lines->lines, l);
+  g_ptr_array_add (lines->lines, line);
+  g_array_append_val (lines->positions, pos);
 
   lines->serial++;
   if (lines->serial == 0)
@@ -266,37 +251,53 @@ pango_lines_get_line_count (PangoLines *lines)
 }
 
 /**
- * pango_lines_get_line:
+ * pango_lines_get_lines:
  * @lines: a `PangoLines`
- * @num: the position of the line to get
+ *
+ * Gets the lines.
+ *
+ * The length of the returned array can be obtained with
+ * [method@Pango.Lines.get_line_count].
+ *
+ * Returns: (transfer none): the array of lines
+ */
+PangoLine **
+pango_lines_get_lines (PangoLines *lines)
+{
+  g_return_val_if_fail (PANGO_IS_LINES (lines), NULL);
+
+  return (PangoLine **)lines->lines->pdata;
+}
+
+/**
+ * pango_lines_get_line_position:
+ * pango_lines_get_lines:
+ * @lines: a `PangoLines`
+ * @num: the index of the line to get the position for
  * @line_x: (out) (optional): return location for the X coordinate
  * @line_y: (out) (optional): return location for the Y coordinate
  *
- * Gets the @num-th line of @lines.
- *
- * Returns: (transfer none) (nullable): the line that was found
+ * Gets the position of a line.
  */
-PangoLine *
-pango_lines_get_line (PangoLines  *lines,
-                      int          num,
-                      int         *line_x,
-                      int         *line_y)
+void
+pango_lines_get_line_position (PangoLines *lines,
+                               int         num,
+                               int        *line_x,
+                               int        *line_y)
 {
-  Line *l;
+  Position *pos;
 
-  g_return_val_if_fail (PANGO_IS_LINES (lines), NULL);
+  g_return_if_fail (PANGO_IS_LINES (lines));
 
   if (num >= lines->lines->len)
-    return NULL;
+    return;
 
-  l = &g_array_index (lines->lines, Line, num);
+  pos = &g_array_index (lines->positions, Position, num);
 
   if (line_x)
-    *line_x = l->x;
+    *line_x = pos->x;
   if (line_y)
-    *line_y = l->y;
-
-  return l->line;
+    *line_y = pos->y;
 }
 
 /* {{{ Miscellaneous */
@@ -321,9 +322,9 @@ pango_lines_get_unknown_glyphs_count (PangoLines *lines)
 
   for (int i = 0; i < lines->lines->len; i++)
     {
-      Line *ll = &g_array_index (lines->lines, Line, i);
+      PangoLine *line = g_ptr_array_index (lines->lines, i);
 
-      for (GSList *l = ll->line->runs; l; l = l->next)
+      for (GSList *l = line->runs; l; l = l->next)
         {
           PangoGlyphItem *run = l->data;
 
@@ -351,8 +352,8 @@ pango_lines_is_wrapped (PangoLines *lines)
 {
   for (int i = 0; i < lines->lines->len; i++)
     {
-      Line *l = &g_array_index (lines->lines, Line, i);
-      if (pango_line_is_wrapped (l->line))
+      PangoLine *line = g_ptr_array_index (lines->lines, i);
+      if (pango_line_is_wrapped (line))
         return TRUE;
     }
 
@@ -372,8 +373,8 @@ pango_lines_is_ellipsized (PangoLines *lines)
 {
   for (int i = 0; i < lines->lines->len; i++)
     {
-      Line *l = &g_array_index (lines->lines, Line, i);
-      if (pango_line_is_ellipsized (l->line))
+      PangoLine *line = g_ptr_array_index (lines->lines, i);
+      if (pango_line_is_ellipsized (line))
         return TRUE;
     }
 
@@ -393,8 +394,8 @@ pango_lines_is_hyphenated (PangoLines *lines)
 {
   for (int i = 0; i < lines->lines->len; i++)
     {
-      Line *l = &g_array_index (lines->lines, Line, i);
-      if (pango_line_is_hyphenated (l->line))
+      PangoLine *line = g_ptr_array_index (lines->lines, i);
+      if (pango_line_is_hyphenated (line))
         return TRUE;
     }
 
@@ -428,23 +429,24 @@ pango_lines_get_extents (PangoLines     *lines,
 {
   for (int i = 0; i < lines->lines->len; i++)
     {
-      Line *l = &g_array_index (lines->lines, Line, i);
+      PangoLine *line = g_ptr_array_index (lines->lines, i);
+      Position *pos = &g_array_index (lines->positions, Position, i);
       PangoRectangle line_ink;
       PangoRectangle line_logical;
       PangoLeadingTrim trim = PANGO_LEADING_TRIM_NONE;
 
-      if (l->line->starts_paragraph)
+      if (line->starts_paragraph)
         trim |= PANGO_LEADING_TRIM_START;
-      if (l->line->ends_paragraph)
+      if (line->ends_paragraph)
         trim |= PANGO_LEADING_TRIM_END;
 
-      pango_line_get_extents (l->line, &line_ink, NULL);
-      pango_line_get_trimmed_extents (l->line, trim, &line_logical);
+      pango_line_get_extents (line, &line_ink, NULL);
+      pango_line_get_trimmed_extents (line, trim, &line_logical);
 
-      line_ink.x += l->x;
-      line_ink.y += l->y;
-      line_logical.x += l->x;
-      line_logical.y += l->y;
+      line_ink.x += pos->x;
+      line_ink.y += pos->y;
+      line_logical.x += pos->x;
+      line_logical.y += pos->y;
 
       if (i == 0)
         {
@@ -519,16 +521,16 @@ pango_lines_get_size (PangoLines *lines,
 int
 pango_lines_get_baseline (PangoLines *lines)
 {
-  Line *l;
+  Position *pos;
 
   g_return_val_if_fail (PANGO_IS_LINES (lines), 0);
 
   if (lines->lines->len == 0)
     return 0;
 
-  l = &g_array_index (lines->lines, Line, 0);
+  pos = &g_array_index (lines->positions, Position, 0);
 
-  return l->y;
+  return pos->y;
 }
 
 /**
@@ -686,7 +688,7 @@ pango_lines_get_x_ranges (PangoLines *lines,
 }
 
 /* }}} */
- /* {{{ Editing API */
+  /* {{{ Editing API */
 
 /**
  * pango_lines_index_to_line:
@@ -718,38 +720,40 @@ pango_lines_index_to_line (PangoLines *lines,
                            int        *x_offset,
                            int        *y_offset)
 {
-  Line *found = NULL;
+  PangoLine *found = NULL;
   int num;
   int i;
+  Position pos;
 
   g_return_if_fail (PANGO_IS_LINES (lines));
 
   for (i = 0; i < lines->lines->len; i++)
     {
-      Line *l = &g_array_index (lines->lines, Line, i);
+      PangoLine *l = g_ptr_array_index (lines->lines, i);
 
-      if (l->line->start_index > idx && found)
+      if (l->start_index > idx && found)
         break;
 
       found = l;
+      pos = g_array_index (lines->positions, Position, i);
       num = i;
 
-      if (*line && *line == found->line)
+      if (*line && *line == found)
         break;
 
-      if (l->line->start_index + l->line->length > idx)
+      if (l->start_index + l->length > idx)
         break;
     }
 
   if (found)
     {
-      *line = found->line;
+      *line = found;
       if (line_no)
         *line_no = num;
       if (x_offset)
-        *x_offset = found->x;
+        *x_offset = pos.x;
       if (y_offset)
-        *y_offset = found->y;
+        *y_offset = pos.y;
 
       return;
     }
@@ -783,23 +787,24 @@ pango_lines_pos_to_line (PangoLines *lines,
 
   for (int i = 0; i < lines->lines->len; i++)
     {
-      Line *l = &g_array_index (lines->lines, Line, i);
+      PangoLine *line = g_ptr_array_index (lines->lines, i);
+      Position pos = g_array_index (lines->positions, Position, i);
       PangoRectangle ext;
 
-      pango_line_get_extents (l->line, NULL, &ext);
+      pango_line_get_extents (line, NULL, &ext);
 
-      ext.x += l->x;
-      ext.y += l->y;
+      ext.x += pos.x;
+      ext.y += pos.y;
 
       if (ext.x <= x && x <= ext.x + ext.width &&
           ext.y <= y && y <= ext.y + ext.height)
         {
           if (line_x)
-            *line_x = l->x;
+            *line_x = pos.x;
           if (line_y)
-            *line_y = l->y;
+            *line_y = pos.y;
 
-          return l->line;
+          return line;
         }
     }
 
@@ -1153,11 +1158,8 @@ pango_lines_move_cursor (PangoLines  *lines,
 
       if (off_start)
         {
-          PangoLine *prev_line;
-
-          prev_line = pango_lines_get_line (lines, line_no - 1, NULL, NULL);
-          if (!prev_line)
-            {
+         if (line_no == 0)
+           {
               if (new_line)
                 *new_line = NULL;
               *new_idx = -1;
@@ -1166,16 +1168,13 @@ pango_lines_move_cursor (PangoLines  *lines,
               return;
             }
 
-          line = prev_line;
           line_no--;
+          line = g_ptr_array_index (lines->lines, line_no);
           paragraph_boundary = (line->start_index + line->length != idx);
         }
       else
         {
-          PangoLine *next_line;
-
-          next_line = pango_lines_get_line (lines, line_no + 1, NULL, NULL);
-          if (!next_line)
+          if (line_no == lines->lines->len - 1)
             {
               if (new_line)
                 *new_line = NULL;
@@ -1184,8 +1183,9 @@ pango_lines_move_cursor (PangoLines  *lines,
               g_array_unref (cursors);
               return;
             }
-          line = next_line;
+
           line_no++;
+          line = g_ptr_array_index (lines->lines, line_no);
           paragraph_boundary = (line->start_index != idx);
         }
 

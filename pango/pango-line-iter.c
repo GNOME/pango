@@ -27,8 +27,7 @@ struct _PangoLineIter
   guint serial;
 
   int line_no;
-  int line_x;
-  int line_y;
+  Position line_pos;
   PangoLine *line;
   GSList *run_link;
   PangoRun *run;
@@ -118,8 +117,9 @@ update_cluster (PangoLineIter *iter,
   PangoGlyphItem *glyph_item;
   char *cluster_text;
   int  cluster_length;
+  PangoRun *run = iter->run_link->data;
 
-  glyph_item = pango_run_get_glyph_item (iter->run);
+  glyph_item = pango_run_get_glyph_item (run);
 
   iter->character_position = 0;
 
@@ -221,11 +221,13 @@ next_cluster_internal (PangoLineIter *iter,
                        gboolean       include_terminators)
 {
   PangoGlyphItem *glyph_item;
+  PangoRun *run;
 
-  if (iter->run == NULL)
+  if (iter->run_link == NULL)
     return next_nonempty_line (iter, include_terminators);
 
-  glyph_item = pango_run_get_glyph_item (iter->run);
+  run = iter->run_link->data;
+  glyph_item = pango_run_get_glyph_item (run);
 
   if (iter->next_cluster_glyph == glyph_item->glyphs->num_glyphs)
     {
@@ -245,46 +247,32 @@ static void
 update_run (PangoLineIter *iter,
             int            start_index)
 {
-  PangoGlyphItem *glyph_item;
-
-  if (iter->run)
-    glyph_item = pango_run_get_glyph_item (iter->run);
-
-  if (iter->run_link == iter->line->runs)
-    iter->run_x = 0;
-  else
-    {
-      iter->run_x += iter->end_x_offset + iter->run_width;
-      if (iter->run)
-        iter->run_x += glyph_item->start_x_offset;
-    }
-
   if (iter->run)
     {
+      PangoGlyphItem *glyph_item = pango_run_get_glyph_item (iter->run);
+
+      if (iter->run_link == iter->line->runs)
+        iter->run_x = 0;
+      else
+        iter->run_x += iter->run_width + iter->end_x_offset + glyph_item->start_x_offset;
+
       iter->run_width = pango_glyph_string_get_width (glyph_item->glyphs);
       iter->end_x_offset = glyph_item->end_x_offset;
-    }
-  else
-    {
-      /* The empty run at the end of a line */
-      iter->run_width = 0;
-      iter->end_x_offset = 0;
-    }
-
-  if (iter->run)
-    iter->ltr = (glyph_item->item->analysis.level % 2) == 0;
-  else
-    iter->ltr = TRUE;
-
-  iter->cluster_start = 0;
-  iter->cluster_x = iter->run_x;
-
-  if (iter->run)
-    {
+      iter->ltr = (glyph_item->item->analysis.level % 2) == 0;
+      iter->cluster_start = 0;
+      iter->cluster_x = iter->run_x;
       update_cluster (iter, glyph_item->glyphs->log_clusters[0]);
     }
   else
     {
+      /* The empty run at the end of a line */
+      iter->run_x = 0;
+
+      iter->run_width = 0;
+      iter->end_x_offset = 0;
+      iter->ltr = TRUE;
+      iter->cluster_start = 0;
+      iter->cluster_x = iter->run_x;
       iter->cluster_width = 0;
       iter->character_position = 0;
       iter->cluster_num_chars = 0;
@@ -299,13 +287,13 @@ offset_line (PangoLineIter  *iter,
 {
   if (ink_rect)
     {
-      ink_rect->x += iter->line_x;
-      ink_rect->y += iter->line_y;
+      ink_rect->x += iter->line_pos.x;
+      ink_rect->y += iter->line_pos.y;
     }
   if (logical_rect)
     {
-      logical_rect->x += iter->line_x;
-      logical_rect->y += iter->line_y;
+      logical_rect->x += iter->line_pos.x;
+      logical_rect->y += iter->line_pos.y;
     }
 }
 
@@ -337,7 +325,8 @@ pango_line_iter_new (PangoLines *lines)
   iter->serial = pango_lines_get_serial (lines);
 
   iter->line_no = 0;
-  iter->line = pango_lines_get_line (iter->lines, 0, &iter->line_x, &iter->line_y);
+  iter->line = g_ptr_array_index (lines->lines, 0);
+  iter->line_pos = g_array_index (lines->positions, Position, 0);
   iter->run_link = iter->line->runs;
   if (iter->run_link)
     {
@@ -503,11 +492,13 @@ pango_line_iter_next_line (PangoLineIter *iter)
 {
   g_return_val_if_fail (ITER_IS_VALID (iter), FALSE);
 
-  iter->line = pango_lines_get_line (iter->lines, iter->line_no + 1, &iter->line_x, &iter->line_y);
-  if (!iter->line)
+  iter->line_no++;
+  if (iter->line_no == iter->lines->lines->len)
     return FALSE;
 
-  iter->line_no++;
+  iter->line = g_ptr_array_index (iter->lines->lines, iter->line_no);
+  iter->line_pos = g_array_index (iter->lines->positions, Position, iter->line_no);
+
   iter->run_link = iter->line->runs;
   if (iter->run_link)
     iter->run = iter->run_link->data;
@@ -859,7 +850,7 @@ pango_line_iter_get_line_baseline (PangoLineIter *iter)
 {
   g_return_val_if_fail (ITER_IS_VALID (iter), 0);
 
-  return iter->line_y;
+  return iter->line_pos.y;
 }
 
 /**

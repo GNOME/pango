@@ -127,7 +127,7 @@ test_move_cursor_line (void)
 
       text = pango_layout_get_text (layout);
       lines = pango_layout_get_lines (layout);
-      line = pango_lines_get_line (lines, 0, NULL, NULL);
+      line = pango_lines_get_lines (lines)[0];
 
       n_chars = g_utf8_strlen (text, -1);
 

@@ -418,15 +418,16 @@ static int
 max_glyph_width (PangoLayout *layout)
 {
   PangoLines *lines;
+  PangoLine **l;
   int max_width = 0;
-  GSList *r;
 
   lines = pango_layout_get_lines (layout);
+  l = pango_lines_get_lines (lines);
+
   for (int i = 0; i < pango_lines_get_line_count (lines); i++)
     {
-      PangoLine *line = pango_lines_get_line (lines, i, NULL, NULL);
-      PangoRun **runs = pango_line_get_runs (line);
-      int n_runs = pango_line_get_run_count (line);
+      PangoRun **runs = pango_line_get_runs (l[i]);
+      int n_runs = pango_line_get_run_count (l[i]);
 
       for (int j = 0; j < n_runs; j++)
         {
