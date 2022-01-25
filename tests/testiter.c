@@ -274,9 +274,9 @@ test_glyphitem_iter (void)
   text = pango_layout_get_text (layout);
 
   line = pango_lines_get_line (pango_layout_get_lines (layout), 0, NULL, NULL);
-  for (l = pango_line_get_runs (line); l; l = l->next)
-  {
-    PangoGlyphItem *run = l->data;
+  for (int i = 0; i < pango_line_get_run_count (line); i++)
+    {
+    PangoGlyphItem *run = (PangoGlyphItem *)pango_line_get_runs (line)[i];
     int direction;
 
     for (direction = 0; direction < 2; direction++)
