@@ -69,7 +69,7 @@ pango_lines_finalize (GObject *object)
   for (int i = 0; i < lines->lines->len; i++)
     {
       Line *line = &g_array_index (lines->lines, Line, i);
-      g_object_unref (line->line);
+      pango_layout_line_free (line->line);
     }
 
   g_array_free (lines->lines, TRUE);
@@ -104,10 +104,10 @@ compare_cursor (gconstpointer v1,
 }
 
 static void
-pango_layout_line_get_cursors (PangoLines *lines,
-                        PangoLayoutLine  *line,
-                        gboolean    strong,
-                        GArray     *cursors)
+pango_layout_line_get_cursors (PangoLines      *lines,
+                               PangoLayoutLine *line,
+                               gboolean         strong,
+                               GArray          *cursors)
 {
   const char *start, *end;
   int start_offset;
@@ -158,7 +158,7 @@ pango_layout_line_get_cursors (PangoLines *lines,
 }
 
 /* }}} */
-/* {{{ Public API */
+ /* {{{ Public API */
 
 /**
  * pango_lines_new:
@@ -580,9 +580,6 @@ pango_lines_get_x_ranges (PangoLines       *lines,
   int accumulated_width;
 
   g_return_if_fail (PANGO_IS_LINES (lines));
-  g_return_if_fail (PANGO_IS_LAYOUT_LINE (line));
-  g_return_if_fail (start_line == NULL || PANGO_IS_LAYOUT_LINE (start_line));
-  g_return_if_fail (end_line == NULL || PANGO_IS_LAYOUT_LINE (end_line));
   g_return_if_fail (ranges != NULL);
   g_return_if_fail (n_ranges != NULL);
 
@@ -845,7 +842,6 @@ pango_lines_index_to_pos (PangoLines      *lines,
   int x_offset, y_offset;
 
   g_return_if_fail (PANGO_IS_LINES (lines));
-  g_return_if_fail (line == NULL || PANGO_IS_LAYOUT_LINE (line));
   g_return_if_fail (idx >= 0);
   g_return_if_fail (pos != NULL);
 
@@ -949,7 +945,6 @@ pango_lines_get_cursor_pos (PangoLines      *lines,
   PangoLayoutLine *l;
 
   g_return_if_fail (PANGO_IS_LINES (lines));
-  g_return_if_fail (line == NULL || PANGO_IS_LAYOUT_LINE (line));
 
   l = line;
   pango_lines_index_to_line (lines, idx, &l, NULL, &x_offset, &y_offset);
@@ -1007,7 +1002,6 @@ pango_lines_get_caret_pos (PangoLines      *lines,
   int x_offset, y_offset;
 
   g_return_if_fail (PANGO_IS_LINES (lines));
-  g_return_if_fail (line == NULL || PANGO_IS_LAYOUT_LINE (line));
 
   pango_lines_index_to_line (lines, idx, &line, NULL, &x_offset, &y_offset);
 

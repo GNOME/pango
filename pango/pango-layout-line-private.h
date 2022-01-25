@@ -23,8 +23,6 @@ void            line_data_clear         (LineData *data);
 
 struct _PangoLayoutLine
 {
-  GObject parent_instance;
-
   PangoContext *context;
   LineData *data;
 

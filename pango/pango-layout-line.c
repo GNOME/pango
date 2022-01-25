@@ -58,43 +58,13 @@ line_data_unref (LineData *data)
   g_rc_box_release_full (data, (GDestroyNotify) line_data_clear);
 }
 
-/* }}} */
+/* }}} */ 
 /* {{{ PangoLayoutLine implementation */
 
-struct _PangoLayoutLineClass
-{
-  GObjectClass parent_class;
-};
+G_DEFINE_BOXED_TYPE (PangoLayoutLine, pango_layout_line,
+                     pango_layout_line_copy, pango_layout_line_free);
 
-G_DEFINE_TYPE (PangoLayoutLine, pango_layout_line, G_TYPE_OBJECT)
-
-static void
-pango_layout_line_init (PangoLayoutLine *line)
-{
-}
-
-static void
-pango_layout_line_finalize (GObject *object)
-{
-  PangoLayoutLine *line = PANGO_LAYOUT_LINE (object);
-
-  g_object_unref (line->context);
-
-  line_data_unref (line->data);
-  g_slist_free_full (line->runs, (GDestroyNotify)pango_glyph_item_free);
-
-  G_OBJECT_CLASS (pango_layout_line_parent_class)->finalize (object);
-}
-
-static void
-pango_layout_line_class_init (PangoLayoutLineClass *class)
-{
-  GObjectClass *object_class = G_OBJECT_CLASS (class);
-
-  object_class->finalize = pango_layout_line_finalize;
-}
-
-/* }}} */
+/* }}} */ 
 /* {{{ Justification */
 
 static inline void
@@ -576,8 +546,7 @@ pango_layout_line_new (PangoContext *context,
 {
   PangoLayoutLine *line;
 
-  line = g_object_new (PANGO_TYPE_LAYOUT_LINE, NULL);
-
+  line = g_new0 (PangoLayoutLine, 1);
   line->context = g_object_ref (context);
   line->data = line_data_ref (data);
 
@@ -615,6 +584,44 @@ pango_layout_line_index_to_run (PangoLayoutLine  *line,
 
 /* }}} */
 /* {{{ Public API */
+
+PangoLayoutLine *
+pango_layout_line_copy (PangoLayoutLine *line)
+{
+  PangoLayoutLine *copy;
+
+  if (line == NULL)
+    return NULL;
+
+  copy = g_new0 (PangoLayoutLine, 1);
+  copy->context = g_object_ref (line->context);
+  copy->data = line_data_ref (line->data);
+  copy->start_index = line->start_index;
+  copy->length = line->length;
+  copy->start_offset = line->start_offset;
+  copy->n_chars = line->n_chars;
+  copy->wrapped = line->wrapped;
+  copy->ellipsized = line->ellipsized;
+  copy->hyphenated = line->hyphenated;
+  copy->justified = TRUE;
+  copy->starts_paragraph = line->starts_paragraph;
+  copy->ends_paragraph = line->ends_paragraph;
+  copy->has_extents = FALSE;
+  copy->direction = line->direction;
+  copy->runs = g_slist_copy_deep (line->runs, (GCopyFunc) pango_glyph_item_copy, NULL);
+
+  return copy;
+}
+
+void
+pango_layout_line_free (PangoLayoutLine *line)
+{
+  g_object_unref (line->context);
+  line_data_unref (line->data);
+  g_slist_free_full (line->runs, (GDestroyNotify)pango_glyph_item_free);
+  g_free (line);
+}
+
 /* {{{ Simple getters */
 
 /**
@@ -631,7 +638,7 @@ pango_layout_line_index_to_run (PangoLayoutLine  *line,
 GSList *
 pango_layout_line_get_runs (PangoLayoutLine *line)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), NULL);
+  g_return_val_if_fail (line != NULL, NULL);
 
   return line->runs;
 }
@@ -657,7 +664,7 @@ pango_layout_line_get_text (PangoLayoutLine *line,
                             int             *start_index,
                             int             *length)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), NULL);
+  g_return_val_if_fail (line != NULL, NULL);
   g_return_val_if_fail (start_index != NULL, NULL);
   g_return_val_if_fail (length != NULL, NULL);
 
@@ -679,7 +686,7 @@ pango_layout_line_get_text (PangoLayoutLine *line,
 int
 pango_layout_line_get_start_index (PangoLayoutLine *line)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), 0);
+  g_return_val_if_fail (line != NULL, 0);
 
   return line->start_index;
 }
@@ -695,7 +702,7 @@ pango_layout_line_get_start_index (PangoLayoutLine *line)
 int
 pango_layout_line_get_length (PangoLayoutLine *line)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), 0);
+  g_return_val_if_fail (line != NULL, 0);
 
   return line->length;
 }
@@ -721,7 +728,7 @@ pango_layout_line_get_log_attrs (PangoLayoutLine *line,
                                  int             *start_offset,
                                  int             *n_attrs)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), NULL);
+  g_return_val_if_fail (line != NULL, NULL);
   g_return_val_if_fail (start_offset != NULL, NULL);
   g_return_val_if_fail (n_attrs != NULL, NULL);
 
@@ -742,7 +749,7 @@ pango_layout_line_get_log_attrs (PangoLayoutLine *line,
 gboolean
 pango_layout_line_is_wrapped (PangoLayoutLine *line)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), FALSE);
+  g_return_val_if_fail (line != NULL, FALSE);
 
   return line->wrapped;
 }
@@ -758,7 +765,7 @@ pango_layout_line_is_wrapped (PangoLayoutLine *line)
 gboolean
 pango_layout_line_is_ellipsized (PangoLayoutLine *line)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), FALSE);
+  g_return_val_if_fail (line != NULL, FALSE);
 
   return line->ellipsized;
 }
@@ -774,7 +781,7 @@ pango_layout_line_is_ellipsized (PangoLayoutLine *line)
 gboolean
 pango_layout_line_is_hyphenated (PangoLayoutLine *line)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), FALSE);
+  g_return_val_if_fail (line != NULL, FALSE);
 
   return line->hyphenated;
 }
@@ -792,7 +799,7 @@ pango_layout_line_is_hyphenated (PangoLayoutLine *line)
 gboolean
 pango_layout_line_is_justified (PangoLayoutLine *line)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), FALSE);
+  g_return_val_if_fail (line != NULL, FALSE);
 
   return line->justified;
 }
@@ -808,7 +815,7 @@ pango_layout_line_is_justified (PangoLayoutLine *line)
 gboolean
 pango_layout_line_is_paragraph_start (PangoLayoutLine *line)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), FALSE);
+  g_return_val_if_fail (line != NULL, FALSE);
 
   return line->starts_paragraph;
 }
@@ -824,7 +831,7 @@ pango_layout_line_is_paragraph_start (PangoLayoutLine *line)
 gboolean
 pango_layout_line_is_paragraph_end (PangoLayoutLine *line)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), FALSE);
+  g_return_val_if_fail (line != NULL, FALSE);
 
   return line->ends_paragraph;
 }
@@ -840,7 +847,7 @@ pango_layout_line_is_paragraph_end (PangoLayoutLine *line)
 PangoDirection
 pango_layout_line_get_resolved_direction (PangoLayoutLine *line)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), PANGO_DIRECTION_LTR);
+  g_return_val_if_fail (line != NULL, PANGO_DIRECTION_LTR);
 
   return line->direction;
 }
@@ -871,6 +878,8 @@ pango_layout_line_justify (PangoLayoutLine *line,
   int remaining_width;
   PangoLayoutLine *copy;
 
+  g_return_val_if_fail (line != NULL, NULL);
+
   remaining_width = width - pango_layout_line_compute_width (line);
   if (remaining_width <= 0)
     return line;
@@ -888,19 +897,12 @@ pango_layout_line_justify (PangoLayoutLine *line,
   copy->ends_paragraph = line->ends_paragraph;
   copy->has_extents = FALSE;
   copy->direction = line->direction;
-
-  /* Avoid a copy if we have exclusive ownership of line */
-  if (G_OBJECT (line)->ref_count == 1)
-    {
-      copy->runs = line->runs;
-      line->runs = NULL;
-    }
-  else
-    copy->runs = g_slist_copy_deep (line->runs, (GCopyFunc) pango_glyph_item_copy, NULL);
+  copy->runs = line->runs;
+  line->runs = NULL;
 
   justify_words (copy, &remaining_width);
 
-  g_object_unref (line);
+  pango_layout_line_free (line);
 
   return copy;
 }

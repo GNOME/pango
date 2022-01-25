@@ -7,10 +7,14 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_TYPE_LAYOUT_LINE pango_layout_line_get_type ()
+PANGO_AVAILABLE_IN_ALL
+GType                   pango_layout_line_get_type      (void) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
-G_DECLARE_FINAL_TYPE (PangoLayoutLine, pango_layout_line, PANGO, LAYOUT_LINE, GObject);
+PangoLayoutLine *       pango_layout_line_copy          (PangoLayoutLine       *line);
+
+PANGO_AVAILABLE_IN_ALL
+void                    pango_layout_line_free          (PangoLayoutLine       *line);
 
 PANGO_AVAILABLE_IN_ALL
 PangoLayoutLine *       pango_layout_line_justify       (PangoLayoutLine       *line,

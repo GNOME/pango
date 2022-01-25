@@ -1247,7 +1247,6 @@ pango_cairo_layout_line_path (cairo_t         *cr,
                               PangoLayoutLine *line)
 {
   g_return_if_fail (cr != NULL);
-  g_return_if_fail (PANGO_IS_LAYOUT_LINE (line));
 
   _pango_cairo_do_layout_line (cr, line, TRUE);
 }
