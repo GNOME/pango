@@ -63,7 +63,7 @@ main (int argc, char *argv[])
   height = (300 - margin) * PANGO_SCALE;
   col = 0;
 
-  while (!pango_line_breaker_done (breaker))
+  while (pango_line_breaker_has_line (breaker))
     {
       PangoLayoutLine *line;
       PangoRectangle ext;

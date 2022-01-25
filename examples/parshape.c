@@ -55,7 +55,7 @@ main (int argc, char *argv[])
   x = (m - w / 2) * PANGO_SCALE;
   width = w * PANGO_SCALE;
 
-  while (!pango_line_breaker_done (breaker))
+  while (pango_line_breaker_has_line (breaker))
     {
       PangoLayoutLine *line;
       PangoRectangle ext;

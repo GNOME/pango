@@ -41,7 +41,7 @@ PANGO_AVAILABLE_IN_ALL
 PangoDirection          pango_line_breaker_get_direction (PangoLineBreaker      *self);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_line_breaker_done         (PangoLineBreaker      *self);
+gboolean                pango_line_breaker_has_line     (PangoLineBreaker      *self);
 
 PANGO_AVAILABLE_IN_ALL
 PangoLayoutLine *       pango_line_breaker_next_line    (PangoLineBreaker      *self,

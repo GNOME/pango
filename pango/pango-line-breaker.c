@@ -2433,7 +2433,7 @@ pango_line_breaker_get_direction (PangoLineBreaker *self)
 }
 
 /**
- * pango_line_breaker_done:
+ * pango_line_breaker_has_line:
  * @self: a `PangoLineBreaker`
  *
  * Returns whether the `PangoLineBreaker` has any text left to process.
@@ -2441,13 +2441,13 @@ pango_line_breaker_get_direction (PangoLineBreaker *self)
  * Returns: TRUE if there are more lines.
  */
 gboolean
-pango_line_breaker_done (PangoLineBreaker *self)
+pango_line_breaker_has_line (PangoLineBreaker *self)
 {
-  g_return_val_if_fail (PANGO_IS_LINE_BREAKER (self), TRUE);
+  g_return_val_if_fail (PANGO_IS_LINE_BREAKER (self), FALSE);
 
   ensure_items (self);
 
-  return self->items == NULL;
+  return self->items != NULL;
 }
 
 /**
