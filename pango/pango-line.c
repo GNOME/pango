@@ -600,6 +600,7 @@ pango_line_copy (PangoLine *line)
   copy->has_extents = FALSE;
   copy->direction = line->direction;
   copy->runs = g_slist_copy_deep (line->runs, (GCopyFunc) pango_glyph_item_copy, NULL);
+  copy->n_runs = line->n_runs;
 
   return copy;
 }
@@ -610,10 +611,29 @@ pango_line_free (PangoLine *line)
   g_object_unref (line->context);
   line_data_unref (line->data);
   g_slist_free_full (line->runs, (GDestroyNotify)pango_glyph_item_free);
+  g_free (line->run_array);
   g_free (line);
 }
 
 /* {{{ Simple getters */
+
+/**
+ * pango_line_get_run_count:
+ * @line: a `PangoLine`
+ *
+ * Gets the number of runs in the line.
+ *
+ * Returns: the number of runs
+ */
+int
+pango_line_get_run_count (PangoLine *line)
+{
+  g_return_val_if_fail (line != NULL, 0);
+
+  pango_line_get_runs (line);
+
+  return line->n_runs;
+}
 
 /**
  * pango_line_get_runs:
@@ -624,14 +644,29 @@ pango_line_free (PangoLine *line)
  * Note that the returned list and its contents
  * are owned by Pango and must not be modified.
  *
- * Returns: (transfer none) (element-type PangoGlyphItem): a list of `PangoGlyphItem`
+ * The length of the returned array can be obtained
+ * with [method@Pango.Line.get_run_count].
+ *
+ * Returns: (transfer none): an array of `PangoRun`
  */
-GSList *
+PangoRun **
 pango_line_get_runs (PangoLine *line)
 {
   g_return_val_if_fail (line != NULL, NULL);
 
-  return line->runs;
+  if (!line->run_array)
+    {
+      GSList *l;
+      int i;
+
+      line->n_runs = g_slist_length (line->runs);
+
+      line->run_array = g_new (PangoRun *, line->n_runs);
+      for (l = line->runs, i = 0; l; l = l->next, i++)
+        line->run_array[i] = l->data;
+    }
+
+  return line->run_array;
 }
 
 /**

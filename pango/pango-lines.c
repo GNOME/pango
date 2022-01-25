@@ -3,6 +3,7 @@
 #include "pango-lines-private.h"
 #include "pango-line-private.h"
 #include "pango-item-private.h"
+#include "pango-run-private.h"
 #include "pango-line-iter-private.h"
 
 /**
@@ -621,9 +622,9 @@ pango_lines_get_x_ranges (PangoLines *lines,
     }
 
   accumulated_width = 0;
-  for (GSList *l = pango_line_get_runs (line); l; l = l->next)
+  for (int i = 0; i < pango_line_get_run_count (line); i++)
     {
-      PangoGlyphItem *run = l->data;
+      PangoGlyphItem *run = pango_run_get_glyph_item (pango_line_get_runs (line)[i]);
 
       if ((start_index < run->item->offset + run->item->length &&
            end_index > run->item->offset))
@@ -664,7 +665,7 @@ pango_lines_get_x_ranges (PangoLines *lines,
 
      range_count++;
 
-     if (l->next)
+     if (i + 1 < pango_line_get_run_count (line))
        accumulated_width += pango_glyph_string_get_width (run->glyphs);
    }
 

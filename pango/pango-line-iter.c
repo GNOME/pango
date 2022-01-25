@@ -338,7 +338,7 @@ pango_line_iter_new (PangoLines *lines)
 
   iter->line_no = 0;
   iter->line = pango_lines_get_line (iter->lines, 0, &iter->line_x, &iter->line_y);
-  iter->run_link = pango_line_get_runs (iter->line);
+  iter->run_link = iter->line->runs;
   if (iter->run_link)
     {
       iter->run = iter->run_link->data;
@@ -508,7 +508,7 @@ pango_line_iter_next_line (PangoLineIter *iter)
     return FALSE;
 
   iter->line_no++;
-  iter->run_link = pango_line_get_runs (iter->line);
+  iter->run_link = iter->line->runs;
   if (iter->run_link)
     iter->run = iter->run_link->data;
   else
@@ -707,7 +707,7 @@ pango_line_iter_get_run_extents (PangoLineIter  *iter,
     }
   else
     {
-      GSList *runs = pango_line_get_runs (iter->line);
+      GSList *runs = iter->line->runs;
       if (runs)
         {
           /* Virtual run at the end of a nonempty line */
