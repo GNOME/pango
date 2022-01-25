@@ -916,11 +916,8 @@ pango_layout_line_justify (PangoLayoutLine *line,
  *
  * Gets the extents of the line.
  *
- * The logical extents returned by this function always have their leading
- * trimmed according to paragraph boundaries: if the line starts a paragraph,
- * it has its start leading trimmed; if it ends a paragraph, it has its end
- * leading trimmed. If you need other trimming, use
- * [method@Pango.LayoutLine.get_trimmed_extents].
+ * The logical extents returned by this function always include leading.
+ * If you need extents with trimmed leading, use [method@Pango.LayoutLine.get_trimmed_extents].
  *
  * Note that the origin is at the left end of the baseline.
  */
@@ -931,17 +928,11 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
 {
   PangoRectangle ink = { 0, };
   PangoRectangle logical  = { 0, };
-  PangoLeadingTrim trim = PANGO_LEADING_TRIM_NONE;
-
-  if (line->starts_paragraph)
-    trim |= PANGO_LEADING_TRIM_START;
-  if (line->ends_paragraph)
-    trim |= PANGO_LEADING_TRIM_END;
 
   if (line->has_extents)
     goto cached;
 
-  compute_extents (line, trim, &ink, &logical);
+  compute_extents (line, PANGO_LEADING_TRIM_NONE, &ink, &logical);
 
   line->ink_rect = ink;
   line->logical_rect = logical;
@@ -975,14 +966,8 @@ pango_layout_line_get_trimmed_extents (PangoLayoutLine  *line,
                                        PangoRectangle   *logical_rect)
 {
   PangoRectangle ink = { 0, };
-  PangoLeadingTrim cached_trim = PANGO_LEADING_TRIM_NONE;
 
-  if (line->starts_paragraph)
-    cached_trim |= PANGO_LEADING_TRIM_START;
-  if (line->ends_paragraph)
-    cached_trim |= PANGO_LEADING_TRIM_END;
-
-  if (line->has_extents && trim == cached_trim)
+  if (line->has_extents && trim == PANGO_LEADING_TRIM_NONE)
     {
       *logical_rect = line->logical_rect;
       return;
