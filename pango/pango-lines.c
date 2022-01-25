@@ -430,8 +430,16 @@ pango_lines_get_extents (PangoLines     *lines,
       Line *l = &g_array_index (lines->lines, Line, i);
       PangoRectangle line_ink;
       PangoRectangle line_logical;
+      PangoLeadingTrim trim = PANGO_LEADING_TRIM_NONE;
 
-      pango_line_get_extents (l->line, &line_ink, &line_logical);
+      if (l->line->starts_paragraph)
+        trim |= PANGO_LEADING_TRIM_START;
+      if (l->line->ends_paragraph)
+        trim |= PANGO_LEADING_TRIM_END;
+
+      pango_line_get_extents (l->line, &line_ink, NULL);
+      pango_line_get_trimmed_extents (l->line, trim, &line_logical);
+
       line_ink.x += l->x;
       line_ink.y += l->y;
       line_logical.x += l->x;
