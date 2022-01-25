@@ -40,7 +40,10 @@ PangoLine *          pango_line_justify                (PangoLine        *line,
                                                         int               width);
 
 PANGO_AVAILABLE_IN_ALL
-GSList *             pango_line_get_runs               (PangoLine        *line);
+int                  pango_line_get_run_count          (PangoLine        *line);
+
+PANGO_AVAILABLE_IN_ALL
+PangoRun **          pango_line_get_runs               (PangoLine        *line);
 
 PANGO_AVAILABLE_IN_ALL
 const char *         pango_line_get_text               (PangoLine        *line,

@@ -51,6 +51,8 @@ struct _PangoLine
   int start_offset;
   int n_chars;
   GSList *runs;
+  PangoRun **run_array;
+  int n_runs;
 
   guint wrapped             : 1;
   guint ellipsized          : 1;
