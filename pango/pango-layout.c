@@ -697,7 +697,7 @@ retry:
           break;
 
         case PANGO_ALIGN_JUSTIFY:
-          if (!pango_layout_line_ends_paragraph (line))
+          if (!pango_layout_line_is_paragraph_end (line))
             {
               line = pango_layout_line_justify (line, width);
               break;

@@ -64,7 +64,7 @@ static gboolean
 line_is_terminated (PangoLayoutIter *iter)
 {
   if (iter->line_no + 1 < pango_lines_get_line_count (iter->lines))
-    return pango_layout_line_ends_paragraph (iter->line);
+    return pango_layout_line_is_paragraph_end (iter->line);
 
   return FALSE;
 

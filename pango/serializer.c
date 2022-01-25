@@ -758,9 +758,9 @@ lines_to_json (GtkJsonPrinter *printer,
 
   gtk_json_printer_start_object (printer, "output");
 
-  gtk_json_printer_add_boolean (printer, "wrapped", pango_lines_wrapped (lines));
-  gtk_json_printer_add_boolean (printer, "ellipsized", pango_lines_ellipsized (lines));
-  gtk_json_printer_add_boolean (printer, "hypenated", pango_lines_hyphenated (lines));
+  gtk_json_printer_add_boolean (printer, "wrapped", pango_lines_is_wrapped (lines));
+  gtk_json_printer_add_boolean (printer, "ellipsized", pango_lines_is_ellipsized (lines));
+  gtk_json_printer_add_boolean (printer, "hypenated", pango_lines_is_hyphenated (lines));
   gtk_json_printer_add_integer (printer, "unknown-glyphs", pango_lines_get_unknown_glyphs_count (lines));
   pango_lines_get_size (lines, &width, &height);
   gtk_json_printer_add_integer (printer, "width", width);

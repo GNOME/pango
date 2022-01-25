@@ -36,23 +36,23 @@ const PangoLogAttr *    pango_layout_line_get_log_attrs (PangoLayoutLine       *
                                                          int                   *n_attrs);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_layout_line_wrapped       (PangoLayoutLine       *line);
+gboolean                pango_layout_line_is_wrapped    (PangoLayoutLine       *line);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_layout_line_ellipsized    (PangoLayoutLine       *line);
+gboolean                pango_layout_line_is_ellipsized (PangoLayoutLine       *line);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_layout_line_hyphenated    (PangoLayoutLine       *line);
+gboolean                pango_layout_line_is_hyphenated (PangoLayoutLine       *line);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_layout_line_justified     (PangoLayoutLine       *line);
+gboolean                pango_layout_line_is_justified  (PangoLayoutLine       *line);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_layout_line_starts_paragraph
+gboolean                pango_layout_line_is_paragraph_start
                                                         (PangoLayoutLine       *line);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_layout_line_ends_paragraph
+gboolean                pango_layout_line_is_paragraph_end
                                                         (PangoLayoutLine       *line);
 
 PANGO_AVAILABLE_IN_ALL

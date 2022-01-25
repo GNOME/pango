@@ -66,13 +66,13 @@ int                     pango_lines_get_unknown_glyphs_count
                                                     (PangoLines        *lines);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_lines_wrapped         (PangoLines        *lines);
+gboolean                pango_lines_is_wrapped      (PangoLines        *lines);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_lines_ellipsized      (PangoLines        *lines);
+gboolean                pango_lines_is_ellipsized   (PangoLines        *lines);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_lines_hyphenated      (PangoLines        *lines);
+gboolean                pango_lines_is_hyphenated   (PangoLines        *lines);
 
 PANGO_AVAILABLE_IN_ALL
 void                    pango_lines_index_to_line   (PangoLines        *lines,

@@ -338,7 +338,7 @@ pango_lines_get_unknown_glyphs_count (PangoLines *lines)
 }
 
 /**
- * pango_lines_wrapped:
+ * pango_lines_is_wrapped:
  * @lines: a `PangoLines` object
  *
  * Returns whether any line in @lines is wrapped.
@@ -346,12 +346,12 @@ pango_lines_get_unknown_glyphs_count (PangoLines *lines)
  * Returns: `TRUE` if @lines is wrapped
  */
 gboolean
-pango_lines_wrapped (PangoLines *lines)
+pango_lines_is_wrapped (PangoLines *lines)
 {
   for (int i = 0; i < lines->lines->len; i++)
     {
       Line *l = &g_array_index (lines->lines, Line, i);
-      if (pango_layout_line_wrapped (l->line))
+      if (pango_layout_line_is_wrapped (l->line))
         return TRUE;
     }
 
@@ -359,7 +359,7 @@ pango_lines_wrapped (PangoLines *lines)
 }
 
 /**
- * pango_lines_ellipsized:
+ * pango_lines_is_ellipsized:
  * @lines: a `PangoLines` object
  *
  * Returns whether any line in @lines is ellipsized.
@@ -367,12 +367,12 @@ pango_lines_wrapped (PangoLines *lines)
  * Returns: `TRUE` if @lines is ellipsized
  */
 gboolean
-pango_lines_ellipsized (PangoLines *lines)
+pango_lines_is_ellipsized (PangoLines *lines)
 {
   for (int i = 0; i < lines->lines->len; i++)
     {
       Line *l = &g_array_index (lines->lines, Line, i);
-      if (pango_layout_line_ellipsized (l->line))
+      if (pango_layout_line_is_ellipsized (l->line))
         return TRUE;
     }
 
@@ -380,7 +380,7 @@ pango_lines_ellipsized (PangoLines *lines)
 }
 
 /**
- * pango_lines_hyphenated:
+ * pango_lines_is_hyphenated:
  * @lines: a `PangoLines` object
  *
  * Returns whether any line in @lines is hyphenated.
@@ -388,12 +388,12 @@ pango_lines_ellipsized (PangoLines *lines)
  * Returns: `TRUE` if @lines is hyphenated
  */
 gboolean
-pango_lines_hyphenated (PangoLines *lines)
+pango_lines_is_hyphenated (PangoLines *lines)
 {
   for (int i = 0; i < lines->lines->len; i++)
     {
       Line *l = &g_array_index (lines->lines, Line, i);
-      if (pango_layout_line_hyphenated (l->line))
+      if (pango_layout_line_is_hyphenated (l->line))
         return TRUE;
     }
 

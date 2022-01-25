@@ -732,7 +732,7 @@ pango_layout_line_get_log_attrs (PangoLayoutLine *line,
 }
 
 /**
- * pango_layout_line_wrapped:
+ * pango_layout_line_is_wrapped:
  * @line: a `PangoLayoutLine`
  *
  * Gets whether the line is wrapped.
@@ -740,7 +740,7 @@ pango_layout_line_get_log_attrs (PangoLayoutLine *line,
  * Returns: `TRUE` if @line has been wrapped
  */
 gboolean
-pango_layout_line_wrapped (PangoLayoutLine *line)
+pango_layout_line_is_wrapped (PangoLayoutLine *line)
 {
   g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), FALSE);
 
@@ -748,7 +748,7 @@ pango_layout_line_wrapped (PangoLayoutLine *line)
 }
 
 /**
- * pango_layout_line_ellipsized:
+ * pango_layout_line_is_ellipsized:
  * @line: a `PangoLayoutLine`
  *
  * Gets whether the line is ellipsized.
@@ -756,7 +756,7 @@ pango_layout_line_wrapped (PangoLayoutLine *line)
  * Returns: `TRUE` if @line has been ellipsized
  */
 gboolean
-pango_layout_line_ellipsized (PangoLayoutLine *line)
+pango_layout_line_is_ellipsized (PangoLayoutLine *line)
 {
   g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), FALSE);
 
@@ -764,7 +764,7 @@ pango_layout_line_ellipsized (PangoLayoutLine *line)
 }
 
 /**
- * pango_layout_line_hyphenated:
+ * pango_layout_line_is_hyphenated:
  * @line: a `PangoLayoutLine`
  *
  * Gets whether the line is hyphenated.
@@ -772,7 +772,7 @@ pango_layout_line_ellipsized (PangoLayoutLine *line)
  * Returns: `TRUE` if @line has been hyphenated
  */
 gboolean
-pango_layout_line_hyphenated (PangoLayoutLine *line)
+pango_layout_line_is_hyphenated (PangoLayoutLine *line)
 {
   g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), FALSE);
 
@@ -780,7 +780,7 @@ pango_layout_line_hyphenated (PangoLayoutLine *line)
 }
 
 /**
- * pango_layout_line_justified:
+ * pango_layout_line_is_justified:
  * @line: a `PangoLayoutLine`
  *
  * Gets whether the line is justified.
@@ -790,7 +790,7 @@ pango_layout_line_hyphenated (PangoLayoutLine *line)
  * Returns: `TRUE` if @line has been justified
  */
 gboolean
-pango_layout_line_justified (PangoLayoutLine *line)
+pango_layout_line_is_justified (PangoLayoutLine *line)
 {
   g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), FALSE);
 
@@ -798,7 +798,7 @@ pango_layout_line_justified (PangoLayoutLine *line)
 }
 
 /**
- * pango_layout_line_starts_paragraph:
+ * pango_layout_line_is_paragraph_start:
  * @line: a `PangoLayoutLine`
  *
  * Gets whether the line is the first of a paragraph.
@@ -806,7 +806,7 @@ pango_layout_line_justified (PangoLayoutLine *line)
  * Returns: `TRUE` if @line starts a paragraph
  */
 gboolean
-pango_layout_line_starts_paragraph (PangoLayoutLine *line)
+pango_layout_line_is_paragraph_start (PangoLayoutLine *line)
 {
   g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), FALSE);
 
@@ -822,7 +822,7 @@ pango_layout_line_starts_paragraph (PangoLayoutLine *line)
  * Returns: `TRUE` if @line ends a paragraph
  */
 gboolean
-pango_layout_line_ends_paragraph (PangoLayoutLine *line)
+pango_layout_line_is_paragraph_end (PangoLayoutLine *line)
 {
   g_return_val_if_fail (PANGO_IS_LAYOUT_LINE (line), FALSE);
 

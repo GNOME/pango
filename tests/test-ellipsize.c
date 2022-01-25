@@ -49,7 +49,7 @@ test_ellipsize_height (void)
   pango_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
 
   g_assert_cmpint (pango_lines_get_line_count (pango_layout_get_lines (layout)), ==, 1);
-  g_assert_true (pango_lines_ellipsized (pango_layout_get_lines (layout)));
+  g_assert_true (pango_lines_is_ellipsized (pango_layout_get_lines (layout)));
   pango_lines_get_size (pango_layout_get_lines (layout), NULL, &height2);
 
   g_assert_cmpint (height1, ==, height2);
@@ -73,7 +73,7 @@ test_ellipsize_crash (void)
   pango_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
 
   g_assert_cmpint (pango_lines_get_line_count (pango_layout_get_lines (layout)), ==, 1);
-  g_assert_true (pango_lines_ellipsized (pango_layout_get_lines (layout)));
+  g_assert_true (pango_lines_is_ellipsized (pango_layout_get_lines (layout)));
 
   g_object_unref (layout);
 }
