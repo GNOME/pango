@@ -2,9 +2,8 @@
 
 #include "pango-layout-iter-private.h"
 #include "pango-lines-private.h"
-#include "pango-layout-run-private.h"
 #include "pango-layout-line-private.h"
-#include "pango-layout-run-private.h"
+#include "pango-run-private.h"
 
 /**
  * PangoLayoutIter:
@@ -32,7 +31,7 @@ struct _PangoLayoutIter
   int line_y;
   PangoLayoutLine *line;
   GSList *run_link;
-  PangoLayoutRun *run;
+  PangoRun *run;
   int index;
 
   /* run handling */
@@ -120,7 +119,7 @@ update_cluster (PangoLayoutIter *iter,
   char *cluster_text;
   int  cluster_length;
 
-  glyph_item = pango_layout_run_get_glyph_item (iter->run);
+  glyph_item = pango_run_get_glyph_item (iter->run);
 
   iter->character_position = 0;
 
@@ -226,7 +225,7 @@ next_cluster_internal (PangoLayoutIter *iter,
   if (iter->run == NULL)
     return next_nonempty_line (iter, include_terminators);
 
-  glyph_item = pango_layout_run_get_glyph_item (iter->run);
+  glyph_item = pango_run_get_glyph_item (iter->run);
 
   if (iter->next_cluster_glyph == glyph_item->glyphs->num_glyphs)
     {
@@ -249,7 +248,7 @@ update_run (PangoLayoutIter *iter,
   PangoGlyphItem *glyph_item;
 
   if (iter->run)
-    glyph_item = pango_layout_run_get_glyph_item (iter->run);
+    glyph_item = pango_run_get_glyph_item (iter->run);
 
   if (iter->run_link == iter->line->runs)
     iter->run_x = 0;
@@ -343,7 +342,7 @@ pango_layout_iter_new (PangoLines *lines)
   if (iter->run_link)
     {
       iter->run = iter->run_link->data;
-      run_start_index = pango_layout_run_get_glyph_item (iter->run)->item->offset;
+      run_start_index = pango_run_get_glyph_item (iter->run)->item->offset;
     }
   else
     {
@@ -457,7 +456,7 @@ pango_layout_iter_at_last_line (PangoLayoutIter *iter)
  *
  * Return value: (transfer none) (nullable): the current run
  */
-PangoLayoutRun *
+PangoRun *
 pango_layout_iter_get_run (PangoLayoutIter *iter)
 {
   g_return_val_if_fail (ITER_IS_VALID (iter), NULL);
@@ -543,14 +542,14 @@ pango_layout_iter_next_run (PangoLayoutIter *iter)
   iter->run_link = iter->run_link->next;
   if (iter->run_link == NULL)
     {
-      PangoItem *item = pango_layout_run_get_glyph_item (iter->run)->item;
+      PangoItem *item = pango_run_get_glyph_item (iter->run)->item;
       run_start_index = item->offset + item->length;
       iter->run = NULL;
     }
   else
     {
       iter->run = iter->run_link->data;
-      run_start_index = pango_layout_run_get_glyph_item (iter->run)->item->offset;
+      run_start_index = pango_run_get_glyph_item (iter->run)->item->offset;
     }
 
   update_run (iter, run_start_index);
@@ -693,7 +692,7 @@ pango_layout_iter_get_trimmed_line_extents (PangoLayoutIter  *iter,
  *
  * The logical extents returned by this function always have their leading
  * trimmed off. If you need extents that include leading, use
- * [method@Pango.LayoutRun.get_extents].
+ * [method@Pango.Run.get_extents].
  */
 void
 pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
@@ -704,7 +703,7 @@ pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
 
   if (iter->run)
     {
-      pango_layout_run_get_extents (iter->run, PANGO_LEADING_TRIM_BOTH, ink_rect, logical_rect);
+      pango_run_get_extents (iter->run, PANGO_LEADING_TRIM_BOTH, ink_rect, logical_rect);
     }
   else
     {
@@ -712,9 +711,9 @@ pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
       if (runs)
         {
           /* Virtual run at the end of a nonempty line */
-          PangoLayoutRun *run = g_slist_last (runs)->data;
+          PangoRun *run = g_slist_last (runs)->data;
 
-          pango_layout_run_get_extents (run, PANGO_LEADING_TRIM_BOTH, ink_rect, logical_rect);
+          pango_run_get_extents (run, PANGO_LEADING_TRIM_BOTH, ink_rect, logical_rect);
           if (ink_rect)
             ink_rect->width = 0;
           if (logical_rect)
@@ -765,7 +764,7 @@ pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
       return;
     }
 
-  glyph_item = pango_layout_run_get_glyph_item (iter->run);
+  glyph_item = pango_run_get_glyph_item (iter->run);
 
   pango_glyph_string_extents_range (glyph_item->glyphs,
                                     iter->cluster_start,
@@ -875,7 +874,7 @@ pango_layout_iter_get_run_baseline (PangoLayoutIter *iter)
   g_return_val_if_fail (ITER_IS_VALID (iter), 0);
 
   if (iter->run)
-    return pango_layout_iter_get_line_baseline (iter) - pango_layout_run_get_glyph_item (iter->run)->y_offset;
+    return pango_layout_iter_get_line_baseline (iter) - pango_run_get_glyph_item (iter->run)->y_offset;
   else
     return pango_layout_iter_get_line_baseline (iter);
 }

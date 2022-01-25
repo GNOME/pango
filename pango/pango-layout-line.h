@@ -3,7 +3,7 @@
 #include <glib-object.h>
 
 #include <pango/pango-types.h>
-#include <pango/pango-layout-run.h>
+#include <pango/pango-run.h>
 
 G_BEGIN_DECLS
 

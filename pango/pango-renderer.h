@@ -181,7 +181,7 @@ struct _PangoRendererClass
   void (*end)                  (PangoRenderer    *renderer);
 
   void (*prepare_run)          (PangoRenderer    *renderer,
-                                PangoLayoutRun   *run);
+                                PangoRun         *run);
 
   void (*draw_glyph_item)      (PangoRenderer    *renderer,
                                 const char       *text,

@@ -25,7 +25,7 @@
 #include "pango-renderer.h"
 #include "pango-impl-utils.h"
 #include "pango-layout.h"
-#include "pango-layout-run-private.h"
+#include "pango-run-private.h"
 #include "pango-layout-line-private.h"
 
 #define N_RENDER_PARTS 5
@@ -93,10 +93,10 @@ static void pango_renderer_default_draw_error_underline (PangoRenderer    *rende
                                                          int               width,
                                                          int               height);
 static void pango_renderer_default_prepare_run          (PangoRenderer    *renderer,
-                                                         PangoLayoutRun   *run);
+                                                         PangoRun         *run);
 
 static void pango_renderer_prepare_run                  (PangoRenderer    *renderer,
-                                                         PangoLayoutRun   *run);
+                                                         PangoRun         *run);
 
 static void
 to_device (PangoMatrix *matrix,
@@ -616,7 +616,7 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
   for (l = runs; l; l = l->next)
     {
       PangoFontMetrics *metrics;
-      PangoLayoutRun *run = l->data;
+      PangoRun *run = l->data;
       PangoGlyphItem *glyph_item = l->data;
       PangoItem *item = glyph_item->item;
       PangoGlyphString *glyphs = glyph_item->glyphs;
@@ -1443,7 +1443,7 @@ pango_renderer_part_changed (PangoRenderer   *renderer,
 /**
  * pango_renderer_prepare_run:
  * @renderer: a `PangoRenderer`
- * @run: a `PangoLayoutRun`
+ * @run: a `PangoRun`
  *
  * Set up the state of the `PangoRenderer` for rendering @run.
  *
@@ -1451,7 +1451,7 @@ pango_renderer_part_changed (PangoRenderer   *renderer,
  */
 static void
 pango_renderer_prepare_run (PangoRenderer  *renderer,
-                            PangoLayoutRun *run)
+                            PangoRun       *run)
 {
   g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
 
@@ -1460,7 +1460,7 @@ pango_renderer_prepare_run (PangoRenderer  *renderer,
 
 static void
 pango_renderer_default_prepare_run (PangoRenderer  *renderer,
-                                    PangoLayoutRun *run)
+                                    PangoRun       *run)
 {
   PangoColor *fg_color = NULL;
   PangoColor *bg_color = NULL;
@@ -1472,7 +1472,7 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
   GSList *l;
   PangoGlyphItem *glyph_item;
 
-  glyph_item = pango_layout_run_get_glyph_item (run);
+  glyph_item = pango_run_get_glyph_item (run);
 
   renderer->underline = PANGO_UNDERLINE_NONE;
   renderer->priv->overline = PANGO_OVERLINE_NONE;

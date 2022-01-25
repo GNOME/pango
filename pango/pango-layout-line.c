@@ -6,7 +6,7 @@
 #include "pango-impl-utils.h"
 #include "pango-attributes-private.h"
 #include "pango-item-private.h"
-#include "pango-layout-run-private.h"
+#include "pango-run-private.h"
 
 #include <math.h>
 #include <hb-ot.h>
@@ -19,7 +19,7 @@
  *
  * A line consists of a number of runs (i.e. ranges of text with uniform
  * script, font and attributes that are shaped as a unit). Runs are
- * represented as [struct@Pango.LayoutRun] objects.
+ * represented as [struct@Pango.Run] objects.
  *
  * A `PangoLayoutLine` always has its origin at the leftmost point  of its
  * baseline. To position lines in an entire paragraph of text (i.e. in layout
@@ -346,12 +346,12 @@ compute_extents (PangoLayoutLine  *line,
 
   for (GSList *l = line->runs; l; l = l->next)
     {
-      PangoLayoutRun *run = l->data;
+      PangoRun *run = l->data;
       PangoRectangle run_ink;
       PangoRectangle run_logical;
       int new_pos;
 
-      pango_layout_run_get_extents (run, trim, &run_ink, &run_logical);
+      pango_run_get_extents (run, trim, &run_ink, &run_logical);
 
       if (ink->width == 0 || ink->height == 0)
         {
@@ -564,16 +564,16 @@ pango_layout_line_new (PangoContext *context,
 void
 pango_layout_line_index_to_run (PangoLayoutLine  *line,
                                 int               idx,
-                                PangoLayoutRun  **run)
+                                PangoRun  **run)
 {
   *run = NULL;
 
   for (GSList *l = line->runs; l; l = l->next)
     {
-      PangoLayoutRun *r = l->data;
+      PangoRun *r = l->data;
       PangoItem *item;
 
-      item = pango_layout_run_get_glyph_item (r)->item;
+      item = pango_run_get_glyph_item (r)->item;
       if (item->offset <= idx && idx < item->offset + item->length)
         {
           *run = r;
@@ -1029,7 +1029,7 @@ pango_layout_line_index_to_pos (PangoLayoutLine *line,
 {
   PangoRectangle run_logical;
   PangoRectangle line_logical;
-  PangoLayoutRun *run = NULL;
+  PangoRun *run = NULL;
   int x_pos;
 
   pango_layout_line_get_extents (line, NULL, &line_logical);
@@ -1045,7 +1045,7 @@ pango_layout_line_index_to_pos (PangoLayoutLine *line,
   else
     pango_layout_line_index_to_run (line, idx, &run);
 
-  pango_layout_run_get_extents (run, PANGO_LEADING_TRIM_BOTH, NULL, &run_logical);
+  pango_run_get_extents (run, PANGO_LEADING_TRIM_BOTH, NULL, &run_logical);
 
   pos->y = run_logical.y;
   pos->height = run_logical.height;
@@ -1381,7 +1381,7 @@ pango_layout_line_get_cursor_pos (PangoLayoutLine *line,
   PangoRectangle run_rect = { 666, };
   PangoDirection dir1, dir2;
   int level1, level2;
-  PangoLayoutRun *run = NULL;
+  PangoRun *run = NULL;
   int x1_trailing;
   int x2;
 
@@ -1395,7 +1395,7 @@ pango_layout_line_get_cursor_pos (PangoLayoutLine *line,
 
   pango_layout_line_get_extents (line, NULL, &line_rect);
   if (run)
-    pango_layout_run_get_extents (run, PANGO_LEADING_TRIM_BOTH, NULL, &run_rect);
+    pango_run_get_extents (run, PANGO_LEADING_TRIM_BOTH, NULL, &run_rect);
   else
     {
       run_rect = line_rect;
@@ -1425,10 +1425,10 @@ pango_layout_line_get_cursor_pos (PangoLayoutLine *line,
         }
       else
         {
-          PangoLayoutRun *prev_run;
+          PangoRun *prev_run;
 
           pango_layout_line_index_to_run (line, prev_index, &prev_run);
-          level1 = pango_layout_run_get_glyph_item (prev_run)->item->analysis.level;
+          level1 = pango_run_get_glyph_item (prev_run)->item->analysis.level;
           dir1 = level1 % 2 ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR;
           pango_layout_line_index_to_x (line, prev_index, TRUE, &x1_trailing);
         }
@@ -1447,7 +1447,7 @@ pango_layout_line_get_cursor_pos (PangoLayoutLine *line,
   else
     {
       pango_layout_line_index_to_x (line, idx, FALSE, &x2);
-      level2 = pango_layout_run_get_glyph_item (run)->item->analysis.level;
+      level2 = pango_run_get_glyph_item (run)->item->analysis.level;
       dir2 = level2 % 2 ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR;
     }
 
@@ -1510,7 +1510,7 @@ pango_layout_line_get_caret_pos (PangoLayoutLine *line,
                                  PangoRectangle  *strong_pos,
                                  PangoRectangle  *weak_pos)
 {
-  PangoLayoutRun *run = NULL;
+  PangoRun *run = NULL;
   PangoGlyphItem *glyph_item;
   hb_font_t *hb_font;
   hb_position_t caret_offset, caret_run, caret_rise, descender;
@@ -1528,7 +1528,7 @@ pango_layout_line_get_caret_pos (PangoLayoutLine *line,
   if (!run)
     return;
 
-  glyph_item = pango_layout_run_get_glyph_item (run);
+  glyph_item = pango_run_get_glyph_item (run);
   hb_font = pango_font_get_hb_font (glyph_item->item->analysis.font);
 
   if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_HORIZONTAL_CARET_RISE, &caret_rise) &&

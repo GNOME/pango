@@ -56,7 +56,7 @@ void              pango_layout_line_ellipsize (PangoLayoutLine    *line,
 
 void              pango_layout_line_index_to_run (PangoLayoutLine  *line,
                                                   int              idx,
-                                                  PangoLayoutRun **run);
+                                                  PangoRun       **run);
 
 void              pango_layout_line_get_empty_extents (PangoLayoutLine  *line,
                                                        PangoLeadingTrim  trim,

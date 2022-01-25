@@ -81,7 +81,7 @@ iter_char_test (PangoLayout *layout)
 {
   PangoRectangle   extents, run_extents;
   PangoLayoutIter *iter;
-  PangoLayoutRun  *run;
+  PangoRun  *run;
   int              num_chars;
   int              i, index, offset;
   int              leading_x, trailing_x, x0, x1;
@@ -120,8 +120,8 @@ iter_char_test (PangoLayout *layout)
           PangoItem *item;
           PangoGlyphString *glyphs;
 
-          item = pango_layout_run_get_item (run);
-          glyphs = pango_layout_run_get_glyphs (run);
+          item = pango_run_get_item (run);
+          glyphs = pango_run_get_glyphs (run);
 
           /* Get needed data for the GlyphString */
           pango_layout_iter_get_run_extents (iter, NULL, &run_extents);

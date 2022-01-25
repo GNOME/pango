@@ -367,7 +367,7 @@ render_callback (PangoLayout *layout,
           iter = pango_layout_get_iter (layout);
           do
             {
-              PangoLayoutRun *run;
+              PangoRun *run;
               PangoRectangle rect;
 
               run = pango_layout_iter_get_run (iter);
@@ -444,7 +444,7 @@ render_callback (PangoLayout *layout,
           iter = pango_layout_get_iter (layout);
           do
             {
-              PangoLayoutRun *run;
+              PangoRun *run;
               PangoItem *item;
               PangoGlyphString *glyphs;
               PangoRectangle rect;
@@ -454,8 +454,8 @@ render_callback (PangoLayout *layout,
               if (!run)
                 continue;
 
-              item = pango_layout_run_get_item (run);
-              glyphs = pango_layout_run_get_glyphs (run);
+              item = pango_run_get_item (run);
+              glyphs = pango_run_get_glyphs (run);
 
               pango_layout_iter_get_run_extents (iter, NULL, &rect);
 
@@ -513,7 +513,7 @@ render_callback (PangoLayout *layout,
           do
             {
               PangoRectangle rect;
-              PangoLayoutRun *run;
+              PangoRun *run;
               PangoItem *item;
               PangoGlyphString *glyphs;
               const char *text, *start, *p;
@@ -526,8 +526,8 @@ render_callback (PangoLayout *layout,
               if (!run)
                 continue;
 
-              item = pango_layout_run_get_item (run);
-              glyphs = pango_layout_run_get_glyphs (run);
+              item = pango_run_get_item (run);
+              glyphs = pango_run_get_glyphs (run);
 
               text = pango_layout_get_text (layout);
               start = text + item->offset;
