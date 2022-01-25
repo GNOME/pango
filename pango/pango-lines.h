@@ -47,7 +47,11 @@ PANGO_AVAILABLE_IN_ALL
 int                     pango_lines_get_line_count  (PangoLines        *lines);
 
 PANGO_AVAILABLE_IN_ALL
-PangoLine *             pango_lines_get_line        (PangoLines        *lines,
+PangoLine **            pango_lines_get_lines       (PangoLines        *lines);
+
+PANGO_AVAILABLE_IN_ALL
+void                    pango_lines_get_line_position
+                                                    (PangoLines        *lines,
                                                      int                num,
                                                      int               *line_x,
                                                      int               *line_y);

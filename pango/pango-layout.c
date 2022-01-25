@@ -708,7 +708,7 @@ retry:
           {
             PangoLine *first_line;
             if (pango_lines_get_line_count (layout->lines) > 0)
-              first_line = pango_lines_get_line (layout->lines, 0, NULL, NULL);
+              first_line = pango_lines_get_lines (layout->lines)[0];
             else
               first_line = line;
             if (pango_line_get_resolved_direction (first_line) == PANGO_DIRECTION_LTR)
@@ -748,9 +748,7 @@ retry:
         {
           PangoLine *last;
 
-          last = pango_lines_get_line (layout->lines,
-                                       pango_lines_get_line_count (layout->lines) - 1,
-                                       NULL, NULL);
+          last = pango_lines_get_lines (layout->lines)[pango_lines_get_line_count (layout->lines) - 1];
           data = line_data_ref (last->data);
           start_index = data->length;
           start_offset = last->data->n_chars;
@@ -1641,7 +1639,7 @@ pango_layout_get_character_count (PangoLayout *layout)
 
   ensure_lines (layout);
 
-  line = pango_lines_get_line (layout->lines, 0, NULL, NULL);
+  line = pango_lines_get_lines (layout->lines)[0];
 
   return line->data->n_chars;
 }
@@ -1696,7 +1694,7 @@ pango_layout_get_log_attrs (PangoLayout *layout,
 
   ensure_lines (layout);
 
-  line = pango_lines_get_line (layout->lines, 0, NULL, NULL);
+  line = pango_lines_get_lines (layout->lines)[0];
 
   if (n_attrs)
     *n_attrs = line->data->n_chars + 1;

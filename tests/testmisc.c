@@ -94,7 +94,7 @@ test_line_height (void)
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
   layout = pango_layout_new (context);
   pango_layout_set_text (layout, "one\ttwo", -1);
-  line = pango_lines_get_line (pango_layout_get_lines (layout), 0, NULL, NULL);
+  line = pango_lines_get_lines (pango_layout_get_lines (layout))[0];
   pango_line_get_extents (line, NULL, &ext);
 
   g_assert_cmpint (ext.height, >, 0);
@@ -115,13 +115,13 @@ test_line_height2 (void)
   layout = pango_layout_new (context);
   pango_layout_set_text (layout, "one", -1);
 
-  line = pango_lines_get_line (pango_layout_get_lines (layout), 0, NULL, NULL);
+  line = pango_lines_get_lines (pango_layout_get_lines (layout))[0];
   g_assert_nonnull (line);
   pango_line_get_extents (line, NULL, &ext1);
 
   pango_layout_set_text (layout, "", -1);
 
-  line = pango_lines_get_line (pango_layout_get_lines (layout), 0, NULL, NULL);
+  line = pango_lines_get_lines (pango_layout_get_lines (layout))[0];
   g_assert_nonnull (line);
   pango_line_get_extents (line, NULL, &ext2);
 
@@ -149,14 +149,14 @@ test_line_height3 (void)
   pango_layout_set_attributes (layout, attrs);
   pango_attr_list_unref (attrs);
 
-  line = pango_lines_get_line (pango_layout_get_lines (layout), 0, NULL, NULL);
+  line = pango_lines_get_lines (pango_layout_get_lines (layout))[0];
   g_assert_cmpint (pango_lines_get_line_count (pango_layout_get_lines (layout)), ==, 1);
   pango_line_get_extents (line, NULL, &ext1);
 
   pango_layout_set_text (layout, "", -1);
 
   g_assert_cmpint (pango_lines_get_line_count (pango_layout_get_lines (layout)), ==, 1);
-  line = pango_lines_get_line (pango_layout_get_lines (layout), 0, NULL, NULL);
+  line = pango_lines_get_lines (pango_layout_get_lines (layout))[0];
   pango_line_get_extents (line, NULL, &ext2);
 
   g_assert_cmpint (ext1.height, ==, ext2.height);

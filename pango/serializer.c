@@ -749,6 +749,7 @@ lines_to_json (GtkJsonPrinter *printer,
                PangoLines     *lines)
 {
   int width, height;
+  PangoLine **l;
 
   gtk_json_printer_start_object (printer, "output");
 
@@ -762,12 +763,12 @@ lines_to_json (GtkJsonPrinter *printer,
 
   gtk_json_printer_start_array (printer, "lines");
 
+  l = pango_lines_get_lines (lines);
   for (int i = 0; i < pango_lines_get_line_count (lines); i++)
     {
-      PangoLine *line;
       int x, y;
-      line = pango_lines_get_line (lines, i, &x, &y);
-      line_to_json (printer, line, x, y);
+      pango_lines_get_line_position (lines, i, &x, &y);
+      line_to_json (printer, l[i], x, y);
     }
 
   gtk_json_printer_end (printer);
