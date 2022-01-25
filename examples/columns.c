@@ -65,7 +65,7 @@ main (int argc, char *argv[])
 
   while (pango_line_breaker_has_line (breaker))
     {
-      PangoLayoutLine *line;
+      PangoLine *line;
       PangoRectangle ext;
 
 retry:
@@ -74,10 +74,10 @@ retry:
                                            PANGO_WRAP_CHAR,
                                            PANGO_ELLIPSIZE_NONE);
 
-      if (!pango_layout_line_is_paragraph_end (line))
-        line = pango_layout_line_justify (line, width);
+      if (!pango_line_is_paragraph_end (line))
+        line = pango_line_justify (line, width);
 
-      pango_layout_line_get_extents (line, NULL, &ext);
+      pango_line_get_extents (line, NULL, &ext);
 
       if (y + ext.height > height)
         {

@@ -21,7 +21,7 @@ PANGO_AVAILABLE_IN_ALL
 PangoLines *            pango_layout_iter_get_lines           (PangoLayoutIter *iter);
 
 PANGO_AVAILABLE_IN_ALL
-PangoLayoutLine *       pango_layout_iter_get_line            (PangoLayoutIter *iter);
+PangoLine *             pango_layout_iter_get_line            (PangoLayoutIter *iter);
 
 PANGO_AVAILABLE_IN_ALL
 gboolean                pango_layout_iter_at_last_line        (PangoLayoutIter *iter);

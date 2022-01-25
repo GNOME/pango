@@ -195,9 +195,9 @@ max_glyph_width (PangoLayout *layout)
   lines = pango_layout_get_lines (layout);
   for (int i = 0; i < pango_lines_get_line_count (lines); i++)
     {
-      PangoLayoutLine *line = pango_lines_get_line (lines, i, NULL, NULL);
+      PangoLine *line = pango_lines_get_line (lines, i, NULL, NULL);
 
-      for (r = pango_layout_line_get_runs (line); r; r = r->next)
+      for (r = pango_line_get_runs (line); r; r = r->next)
         {
           PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
           int i;

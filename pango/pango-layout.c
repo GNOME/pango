@@ -2,7 +2,7 @@
 
 #include "pango-layout.h"
 #include "pango-line-breaker.h"
-#include "pango-layout-line-private.h"
+#include "pango-line-private.h"
 #include "pango-enum-types.h"
 #include "pango-markup.h"
 #include "pango-context.h"
@@ -649,7 +649,7 @@ ensure_lines (PangoLayout *layout)
   line_no = 0;
   while (pango_line_breaker_has_line (breaker))
     {
-      PangoLayoutLine *line;
+      PangoLine *line;
       PangoRectangle ext;
       int offset;
       PangoEllipsizeMode ellipsize = PANGO_ELLIPSIZE_NONE;
@@ -670,7 +670,7 @@ ensure_lines (PangoLayout *layout)
 
 retry:
       line = pango_line_breaker_next_line (breaker, x, width, layout->wrap, ellipsize);
-      pango_layout_line_get_extents (line, NULL, &ext);
+      pango_line_get_extents (line, NULL, &ext);
 
       if (layout->height >= 0 && y + 2 * ext.height >= layout->height &&
           ellipsize != layout->ellipsize)
@@ -697,21 +697,21 @@ retry:
           break;
 
         case PANGO_ALIGN_JUSTIFY:
-          if (!pango_layout_line_is_paragraph_end (line))
+          if (!pango_line_is_paragraph_end (line))
             {
-              line = pango_layout_line_justify (line, width);
+              line = pango_line_justify (line, width);
               break;
             }
           G_GNUC_FALLTHROUGH;
 
         case PANGO_ALIGN_NATURAL:
           {
-            PangoLayoutLine *first_line;
+            PangoLine *first_line;
             if (pango_lines_get_line_count (layout->lines) > 0)
               first_line = pango_lines_get_line (layout->lines, 0, NULL, NULL);
             else
               first_line = line;
-            if (pango_layout_line_get_resolved_direction (first_line) == PANGO_DIRECTION_LTR)
+            if (pango_line_get_resolved_direction (first_line) == PANGO_DIRECTION_LTR)
               break;
           }
           G_GNUC_FALLTHROUGH;
@@ -740,12 +740,12 @@ retry:
       int start_index;
       int start_offset;
       int offset;
-      PangoLayoutLine *line;
+      PangoLine *line;
       PangoRectangle ext;
 
       if (pango_lines_get_line_count (layout->lines) > 0)
         {
-          PangoLayoutLine *last;
+          PangoLine *last;
 
           last = pango_lines_get_line (layout->lines,
                                        pango_lines_get_line_count (layout->lines) - 1,
@@ -768,7 +768,7 @@ retry:
           offset = 0;
         }
 
-      line = pango_layout_line_new (layout->context, data);
+      line = pango_line_new (layout->context, data);
       line->starts_paragraph = TRUE;
       line->ends_paragraph = TRUE;
       line->start_index = start_index;
@@ -776,7 +776,7 @@ retry:
       line->start_offset = start_offset;
       line->n_chars = 0;
 
-      pango_layout_line_get_extents (line, NULL, &ext);
+      pango_line_get_extents (line, NULL, &ext);
 
       pango_lines_add_line (layout->lines, line, x + offset, y - ext.y);
 
@@ -1633,7 +1633,7 @@ pango_layout_set_markup (PangoLayout  *layout,
 int
 pango_layout_get_character_count (PangoLayout *layout)
 {
-  PangoLayoutLine *line;
+  PangoLine *line;
 
   g_return_val_if_fail (PANGO_IS_LAYOUT (layout), 0);
 
@@ -1688,7 +1688,7 @@ const PangoLogAttr *
 pango_layout_get_log_attrs (PangoLayout *layout,
                             int         *n_attrs)
 {
-  PangoLayoutLine *line;
+  PangoLine *line;
 
   g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
 

@@ -87,15 +87,15 @@ void pango_ft2_render_transformed (FT_Bitmap         *bitmap,
 				   int                y);
 
 PANGO_AVAILABLE_IN_ALL
-void pango_ft2_render_layout_line         (FT_Bitmap        *bitmap,
-                                           PangoLayoutLine  *line,
+void pango_ft2_render_line                (FT_Bitmap        *bitmap,
+                                           PangoLine        *line,
                                            int               x,
                                            int               y);
 PANGO_AVAILABLE_IN_1_6
-void pango_ft2_render_layout_line_subpixel (FT_Bitmap        *bitmap,
-                                            PangoLayoutLine  *line,
-                                            int               x,
-                                            int               y);
+void pango_ft2_render_line_subpixel       (FT_Bitmap        *bitmap,
+                                           PangoLine        *line,
+                                           int               x,
+                                           int               y);
 
 PANGO_AVAILABLE_IN_ALL
 void pango_ft2_render_layout               (FT_Bitmap        *bitmap,

@@ -141,9 +141,9 @@ void pango_xft_render_transformed (XftDraw          *draw,
 				   int               x,
 				   int               y);
 PANGO_AVAILABLE_IN_1_8
-void pango_xft_render_layout_line (XftDraw          *draw,
+void pango_xft_render_line        (XftDraw          *draw,
 				   XftColor         *color,
-				   PangoLayoutLine  *line,
+				   PangoLine        *line,
 				   int               x,
 				   int               y);
 PANGO_AVAILABLE_IN_1_8

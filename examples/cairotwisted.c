@@ -472,7 +472,7 @@ draw_text (cairo_t *cr,
            const char *text)
 {
   PangoLayout *layout;
-  PangoLayoutLine *line;
+  PangoLine *line;
   PangoFontDescription *desc;
   cairo_font_options_t *font_options;
 
@@ -495,7 +495,7 @@ draw_text (cairo_t *cr,
   line = pango_lines_get_line (pango_layout_get_lines (layout), 0, NULL, NULL);
 
   cairo_move_to (cr, x, y);
-  pango_cairo_layout_line_path (cr, line);
+  pango_cairo_line_path (cr, line);
 
   g_object_unref (layout);
 }

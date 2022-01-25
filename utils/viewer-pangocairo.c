@@ -282,7 +282,7 @@ render_callback (PangoLayout *layout,
           iter = pango_layout_get_iter (layout);
           do
             {
-              PangoLayoutLine *line = pango_layout_iter_get_line (iter);
+              PangoLine *line = pango_layout_iter_get_line (iter);
               double width = (double)logical.width / PANGO_SCALE;
 
               y = pango_layout_iter_get_line_baseline (iter);
@@ -290,7 +290,7 @@ render_callback (PangoLayout *layout,
               cairo_translate (cr,
                              (double)logical.x / PANGO_SCALE + width * 0.5,
                              (double)y / PANGO_SCALE);
-              if (pango_layout_line_get_resolved_direction (line))
+              if (pango_line_get_resolved_direction (line))
                 cairo_scale (cr, -1, 1);
               cairo_move_to     (cr, -width * .5, -lw*0.2);
               cairo_rel_line_to (cr, +width * .9, -lw*0.3);

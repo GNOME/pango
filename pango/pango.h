@@ -42,7 +42,7 @@
 #include <pango/pango-item.h>
 #include <pango/pango-language.h>
 #include <pango/pango-layout.h>
-#include <pango/pango-layout-line.h>
+#include <pango/pango-line.h>
 #include <pango/pango-run.h>
 #include <pango/pango-line-breaker.h>
 #include <pango/pango-layout-iter.h>

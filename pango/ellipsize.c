@@ -26,7 +26,7 @@
 #include "pango-font-private.h"
 #include "pango-attributes-private.h"
 #include "pango-impl-utils.h"
-#include "pango-layout-line-private.h"
+#include "pango-line-private.h"
 
 typedef struct _EllipsizeState EllipsizeState;
 typedef struct _RunInfo        RunInfo;
@@ -742,10 +742,10 @@ current_width (EllipsizeState *state)
 }
 
 void
-pango_layout_line_ellipsize (PangoLayoutLine    *line,
-                             PangoContext       *context,
-                             PangoEllipsizeMode  ellipsize,
-                             int                 goal_width)
+pango_line_ellipsize (PangoLine          *line,
+                      PangoContext       *context,
+                      PangoEllipsizeMode  ellipsize,
+                      int                 goal_width)
 {
   EllipsizeState state;
   const char *text = line->data->text;

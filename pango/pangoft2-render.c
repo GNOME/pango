@@ -26,7 +26,7 @@
 #include "pango-font-private.h"
 #include "pangoft2-private.h"
 #include "pango-impl-utils.h"
-#include "pango-layout-line-private.h"
+#include "pango-line-private.h"
 
 /* for compatibility with older freetype versions */
 #ifndef FT_LOAD_TARGET_MONO
@@ -636,13 +636,13 @@ pango_ft2_render_layout (FT_Bitmap   *bitmap,
 }
 
 /**
- * pango_ft2_render_layout_line_subpixel:
+ * pango_ft2_render_line_subpixel:
  * @bitmap: a FT_Bitmap to render the line onto
- * @line: a `PangoLayoutLine`
+ * @line: a `PangoLine`
  * @x: the x position of start of string (in Pango units)
  * @y: the y position of baseline (in Pango units)
  *
- * Render a `PangoLayoutLine` onto a FreeType2 bitmap, with he
+ * Render a `PangoLine` onto a FreeType2 bitmap, with he
  * location specified in fixed-point Pango units rather than
  * pixels.
  *
@@ -653,10 +653,10 @@ pango_ft2_render_layout (FT_Bitmap   *bitmap,
  * Since: 1.6
  */
 void
-pango_ft2_render_layout_line_subpixel (FT_Bitmap       *bitmap,
-                                       PangoLayoutLine *line,
-                                       int              x,
-                                       int              y)
+pango_ft2_render_line_subpixel (FT_Bitmap *bitmap,
+                                PangoLine *line,
+                                int        x,
+                                int        y)
 {
   PangoFontMap *fontmap;
   PangoRenderer *renderer;
@@ -669,25 +669,25 @@ pango_ft2_render_layout_line_subpixel (FT_Bitmap       *bitmap,
 
   pango_ft2_renderer_set_bitmap (PANGO_FT2_RENDERER (renderer), bitmap);
 
-  pango_renderer_draw_layout_line (renderer, line, x, y);
+  pango_renderer_draw_line (renderer, line, x, y);
 }
 
 /**
- * pango_ft2_render_layout_line:
+ * pango_ft2_render_line:
  * @bitmap: a FT_Bitmap to render the line onto
- * @line: a `PangoLayoutLine`
+ * @line: a `PangoLine`
  * @x: the x position of start of string (in pixels)
  * @y: the y position of baseline (in pixels)
  *
- * Render a `PangoLayoutLine` onto a FreeType2 bitmap
+ * Render a `PangoLine` onto a FreeType2 bitmap
  */
 void
-pango_ft2_render_layout_line (FT_Bitmap        *bitmap,
-                              PangoLayoutLine *line,
-                              int              x,
-                              int              y)
+pango_ft2_render_line (FT_Bitmap *bitmap,
+                       PangoLine *line,
+                       int        x,
+                       int        y)
 {
-  pango_ft2_render_layout_line_subpixel (bitmap, line, x * PANGO_SCALE, y * PANGO_SCALE);
+  pango_ft2_render_line_subpixel (bitmap, line, x * PANGO_SCALE, y * PANGO_SCALE);
 }
 
 /**

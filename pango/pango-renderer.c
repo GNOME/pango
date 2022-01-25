@@ -26,7 +26,7 @@
 #include "pango-impl-utils.h"
 #include "pango-layout.h"
 #include "pango-run-private.h"
-#include "pango-layout-line-private.h"
+#include "pango-line-private.h"
 
 #define N_RENDER_PARTS 5
 
@@ -65,7 +65,7 @@ struct _PangoRendererPrivate
   guint16 alpha[N_RENDER_PARTS];
 
   PangoLines *lines;
-  PangoLayoutLine *line;
+  PangoLine *line;
   LineState *line_state;
   PangoOverline overline;
 };
@@ -511,9 +511,9 @@ static void pango_renderer_draw_runs (PangoRenderer *renderer,
                                       int            y);
 
 /**
- * pango_renderer_draw_layout_line:
+ * pango_renderer_draw_line:
  * @renderer: a `PangoRenderer`
- * @line: a `PangoLayoutLine`
+ * @line: a `PangoLine`
  * @x: X position of left edge of baseline, in user space coordinates
  *   in Pango units.
  * @y: Y position of left edge of baseline, in user space coordinates
@@ -526,10 +526,10 @@ static void pango_renderer_draw_runs (PangoRenderer *renderer,
  * of those items.
  */
 void
-pango_renderer_draw_layout_line (PangoRenderer   *renderer,
-                                  PangoLayoutLine *line,
-                                  int              x,
-                                  int              y)
+pango_renderer_draw_line (PangoRenderer   *renderer,
+                          PangoLine      *line,
+                          int              x,
+                          int              y)
 {
   LineState state = { 0, };
 
@@ -576,7 +576,7 @@ pango_renderer_draw_lines (PangoRenderer *renderer,
                            int            y)
 {
   int n;
-  PangoLayoutLine *line;
+  PangoLine *line;
   int line_x, line_y;
 
   g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
@@ -589,7 +589,7 @@ pango_renderer_draw_lines (PangoRenderer *renderer,
       if (n == 0)
         pango_renderer_activate_with_context (renderer, line->context);
 
-      pango_renderer_draw_layout_line (renderer, line, x + line_x, y + line_y);
+      pango_renderer_draw_line (renderer, line, x + line_x, y + line_y);
 
       n++;
     }
@@ -681,7 +681,7 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
           if (!got_overall)
             {
 #ifdef EXTENTS
-              pango_layout_line_get_extents (line, NULL, &overall_rect);
+              pango_line_get_extents (line, NULL, &overall_rect);
 #endif
               got_overall = TRUE;
             }
@@ -814,7 +814,7 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
  *
  * Note that this method does not handle attributes in @glyph_item.
  * If you want colors, shapes and lines handled automatically according
- * to those attributes, you need to use [method@Pango.Renderer.draw_layout_line]
+ * to those attributes, you need to use [method@Pango.Renderer.draw_line]
  * or [method@Pango.Renderer.draw_lines].
  *
  * Note that @text is the start of the text for layout, which is then
@@ -1616,7 +1616,7 @@ pango_renderer_get_lines (PangoRenderer *renderer)
 }
 
 /**
- * pango_renderer_get_layout_line:
+ * pango_renderer_get_line:
  * @renderer: a `PangoRenderer`
  *
  * Gets the layout line currently being rendered using @renderer.
@@ -1630,8 +1630,8 @@ pango_renderer_get_lines (PangoRenderer *renderer)
  * Return value: (transfer none) (nullable): the layout line, or %NULL
  *   if no layout line is being rendered using @renderer at this time.
  */
-PangoLayoutLine *
-pango_renderer_get_layout_line (PangoRenderer *renderer)
+PangoLine *
+pango_renderer_get_line (PangoRenderer *renderer)
 {
   return renderer->priv->line;
 }

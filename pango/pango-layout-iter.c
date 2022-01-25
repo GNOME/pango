@@ -2,7 +2,7 @@
 
 #include "pango-layout-iter-private.h"
 #include "pango-lines-private.h"
-#include "pango-layout-line-private.h"
+#include "pango-line-private.h"
 #include "pango-run-private.h"
 
 /**
@@ -29,7 +29,7 @@ struct _PangoLayoutIter
   int line_no;
   int line_x;
   int line_y;
-  PangoLayoutLine *line;
+  PangoLine *line;
   GSList *run_link;
   PangoRun *run;
   int index;
@@ -63,7 +63,7 @@ static gboolean
 line_is_terminated (PangoLayoutIter *iter)
 {
   if (iter->line_no + 1 < pango_lines_get_line_count (iter->lines))
-    return pango_layout_line_is_paragraph_end (iter->line);
+    return pango_line_is_paragraph_end (iter->line);
 
   return FALSE;
 
@@ -338,7 +338,7 @@ pango_layout_iter_new (PangoLines *lines)
 
   iter->line_no = 0;
   iter->line = pango_lines_get_line (iter->lines, 0, &iter->line_x, &iter->line_y);
-  iter->run_link = pango_layout_line_get_runs (iter->line);
+  iter->run_link = pango_line_get_runs (iter->line);
   if (iter->run_link)
     {
       iter->run = iter->run_link->data;
@@ -419,7 +419,7 @@ pango_layout_iter_get_lines (PangoLayoutIter *iter)
  *
  * Return value: (transfer none): the current line
  */
-PangoLayoutLine *
+PangoLine *
 pango_layout_iter_get_line (PangoLayoutIter *iter)
 {
   g_return_val_if_fail (ITER_IS_VALID (iter), NULL);
@@ -508,7 +508,7 @@ pango_layout_iter_next_line (PangoLayoutIter *iter)
     return FALSE;
 
   iter->line_no++;
-  iter->run_link = pango_layout_line_get_runs (iter->line);
+  iter->run_link = pango_line_get_runs (iter->line);
   if (iter->run_link)
     iter->run = iter->run_link->data;
   else
@@ -650,13 +650,13 @@ pango_layout_iter_get_layout_extents (PangoLayoutIter *iter,
  * Extents are in layout coordinates (origin is the top-left corner of the
  * entire `PangoLines`). Thus the extents returned by this function will be
  * the same width/height but not at the same x/y as the extents returned
- * from [method@Pango.LayoutLine.get_extents].
+ * from [method@Pango.Line.get_extents].
  *
  * The logical extents returned by this function always have their leading
  * trimmed according to paragraph boundaries: if the line starts a paragraph,
  * it has its start leading trimmed; if it ends a paragraph, it has its end
  * leading trimmed. If you need other trimming, use
- * [method@Pango.LayoutLine.get_trimmed_extents].
+ * [method@Pango.Line.get_trimmed_extents].
  */
 void
 pango_layout_iter_get_line_extents (PangoLayoutIter *iter,
@@ -665,7 +665,7 @@ pango_layout_iter_get_line_extents (PangoLayoutIter *iter,
 {
   g_return_if_fail (ITER_IS_VALID (iter));
 
-  pango_layout_line_get_extents (iter->line, ink_rect, logical_rect);
+  pango_line_get_extents (iter->line, ink_rect, logical_rect);
   offset_line (iter, ink_rect, logical_rect);
 }
 
@@ -676,7 +676,7 @@ pango_layout_iter_get_trimmed_line_extents (PangoLayoutIter  *iter,
 {
   g_return_if_fail (ITER_IS_VALID (iter));
 
-  pango_layout_line_get_trimmed_extents (iter->line, trim, logical_rect);
+  pango_line_get_trimmed_extents (iter->line, trim, logical_rect);
   offset_line (iter, NULL, logical_rect);
 }
 
@@ -707,7 +707,7 @@ pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
     }
   else
     {
-      GSList *runs = pango_layout_line_get_runs (iter->line);
+      GSList *runs = pango_line_get_runs (iter->line);
       if (runs)
         {
           /* Virtual run at the end of a nonempty line */
@@ -724,7 +724,7 @@ pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
           /* Empty line */
           PangoRectangle r;
 
-          pango_layout_line_get_empty_extents (iter->line, PANGO_LEADING_TRIM_BOTH, &r);
+          pango_line_get_empty_extents (iter->line, PANGO_LEADING_TRIM_BOTH, &r);
 
           if (ink_rect)
             *ink_rect = r;

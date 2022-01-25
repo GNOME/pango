@@ -24,7 +24,7 @@
 
 #include "pangoxft-render.h"
 #include "pangoxft-private.h"
-#include "pango-layout-line-private.h"
+#include "pango-line-private.h"
 
 enum {
   PROP_0,
@@ -746,20 +746,20 @@ pango_xft_render_layout (XftDraw     *draw,
  * @draw: an XftDraw
  * @color: the foreground color in which to draw the layout line
  *   (may be overridden by color attributes)
- * @line: a `PangoLayoutLine`
+ * @line: a `PangoLine`
  * @x: the x position of start of string (in Pango units)
  * @y: the y position of baseline (in Pango units)
  *
- * Render a `PangoLayoutLine` onto a XftDraw
+ * Render a `Pangoine` onto a XftDraw
  *
  * Since: 1.8
  */
 void
-pango_xft_render_layout_line (XftDraw         *draw,
-                              XftColor        *color,
-                              PangoLayoutLine *line,
-                              int              x,
-                              int              y)
+pango_xft_render_line (XftDraw   *draw,
+                       XftColor  *color,
+                       PangoLine *line,
+                       int        x,
+                       int        y)
 {
   PangoFontMap *fontmap;
   PangoRenderer *renderer;
@@ -771,7 +771,7 @@ pango_xft_render_layout_line (XftDraw         *draw,
   fontmap = pango_context_get_font_map (line->context);
   renderer = get_renderer (fontmap, draw, color);
 
-  pango_renderer_draw_layout_line (renderer, line, x, y);
+  pango_renderer_draw_line (renderer, line, x, y);
 
   release_renderer (renderer);
 }

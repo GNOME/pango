@@ -1,7 +1,7 @@
 #include "config.h"
 
 #include "pango-lines-private.h"
-#include "pango-layout-line-private.h"
+#include "pango-line-private.h"
 #include "pango-item-private.h"
 #include "pango-layout-iter-private.h"
 
@@ -11,7 +11,7 @@
  * A `PangoLines` object represents the result of formatting an
  * entire paragraph (or more) of text.
  *
- * A `PangoLines` object contains a list of `PangoLayoutLine` objects,
+ * A `PangoLines` object contains a list of `PangoLine` objects,
  * together with information about where to position each line
  * in layout coordinates.
  *
@@ -43,7 +43,7 @@
 typedef struct _Line Line;
 struct _Line
 {
-  PangoLayoutLine *line;
+  PangoLine *line;
   int x, y;
 };
 
@@ -69,7 +69,7 @@ pango_lines_finalize (GObject *object)
   for (int i = 0; i < lines->lines->len; i++)
     {
       Line *line = &g_array_index (lines->lines, Line, i);
-      pango_layout_line_free (line->line);
+      pango_line_free (line->line);
     }
 
   g_array_free (lines->lines, TRUE);
@@ -104,10 +104,10 @@ compare_cursor (gconstpointer v1,
 }
 
 static void
-pango_layout_line_get_cursors (PangoLines      *lines,
-                               PangoLayoutLine *line,
-                               gboolean         strong,
-                               GArray          *cursors)
+pango_line_get_cursors (PangoLines *lines,
+                        PangoLine  *line,
+                        gboolean    strong,
+                        GArray     *cursors)
 {
   const char *start, *end;
   int start_offset;
@@ -144,7 +144,7 @@ pango_layout_line_get_cursors (PangoLines      *lines,
         {
           CursorPos cursor;
 
-          pango_layout_line_get_cursor_pos (line, idx,
+          pango_line_get_cursor_pos (line, idx,
                                      strong ? &pos : NULL,
                                      strong ? NULL : &pos);
 
@@ -200,7 +200,7 @@ pango_lines_get_serial (PangoLines *lines)
 /**
  * pango_lines_add_line:
  * @lines: a `PangoLines`
- * @line: (transfer full): the `PangoLayoutLine` to add
+ * @line: (transfer full): the `PangoLine` to add
  * @line_x: X coordinate of the position
  * @line_y: Y coordinate of the position
  *
@@ -212,10 +212,10 @@ pango_lines_get_serial (PangoLines *lines)
  * Note that this function takes ownership of the line.
  */
 void
-pango_lines_add_line (PangoLines      *lines,
-                      PangoLayoutLine *line,
-                      int              x_line,
-                      int              y_line)
+pango_lines_add_line (PangoLines *lines,
+                      PangoLine  *line,
+                      int         x_line,
+                      int         y_line)
 {
   Line l;
 
@@ -275,11 +275,11 @@ pango_lines_get_line_count (PangoLines *lines)
  *
  * Returns: (transfer none) (nullable): the line that was found
  */
-PangoLayoutLine *
-pango_lines_get_line (PangoLines  *lines,
-                      int          num,
-                      int         *line_x,
-                      int         *line_y)
+PangoLine *
+pango_lines_get_line (PangoLines *lines,
+                      int         num,
+                      int        *line_x,
+                      int        *line_y)
 {
   Line *l;
 
@@ -351,7 +351,7 @@ pango_lines_is_wrapped (PangoLines *lines)
   for (int i = 0; i < lines->lines->len; i++)
     {
       Line *l = &g_array_index (lines->lines, Line, i);
-      if (pango_layout_line_is_wrapped (l->line))
+      if (pango_line_is_wrapped (l->line))
         return TRUE;
     }
 
@@ -372,7 +372,7 @@ pango_lines_is_ellipsized (PangoLines *lines)
   for (int i = 0; i < lines->lines->len; i++)
     {
       Line *l = &g_array_index (lines->lines, Line, i);
-      if (pango_layout_line_is_ellipsized (l->line))
+      if (pango_line_is_ellipsized (l->line))
         return TRUE;
     }
 
@@ -393,7 +393,7 @@ pango_lines_is_hyphenated (PangoLines *lines)
   for (int i = 0; i < lines->lines->len; i++)
     {
       Line *l = &g_array_index (lines->lines, Line, i);
-      if (pango_layout_line_is_hyphenated (l->line))
+      if (pango_line_is_hyphenated (l->line))
         return TRUE;
     }
 
@@ -437,8 +437,8 @@ pango_lines_get_extents (PangoLines     *lines,
       if (l->line->ends_paragraph)
         trim |= PANGO_LEADING_TRIM_END;
 
-      pango_layout_line_get_extents (l->line, &line_ink, NULL);
-      pango_layout_line_get_trimmed_extents (l->line, trim, &line_logical);
+      pango_line_get_extents (l->line, &line_ink, NULL);
+      pango_line_get_trimmed_extents (l->line, trim, &line_logical);
 
       line_ink.x += l->x;
       line_ink.y += l->y;
@@ -531,16 +531,16 @@ pango_lines_get_baseline (PangoLines *lines)
 }
 
 /**
- * pango_layout_lines_get_x_ranges:
+ * pango_lines_get_x_ranges:
  * @lines: a `PangoLines` object
- * @line: the `PangoLayoutLine` in @lines whose x ranges will be reported
- * @start_line: (nullable): `PangoLayoutLine` wrt to which @start_index is
+ * @line: the `PangoLine` in @lines whose x ranges will be reported
+ * @start_line: (nullable): `PangoLine` wrt to which @start_index is
  *   interpreted or `NULL` for the first matching line
  * @start_index: Start byte index of the logical range. If this value
  *   is less than the start index for the line, then the first range
  *   will extend all the way to the leading edge of the layout. Otherwise,
  *   it will start at the leading edge of the first character.
- * @end_line: (nullable): `PangoLayoutLine` wrt to which @end_index is
+ * @end_line: (nullable): `PangoLine` wrt to which @end_index is
  *   interpreted or `NULL` for the first matching line
  * @end_index: Ending byte index of the logical range. If this value is
  *   greater than the end index for the line, then the last range will
@@ -562,14 +562,14 @@ pango_lines_get_baseline (PangoLines *lines)
  * layout, not with respect to the line.
  */
 void
-pango_lines_get_x_ranges (PangoLines       *lines,
-                          PangoLayoutLine  *line,
-                          PangoLayoutLine  *start_line,
-                          int               start_index,
-                          PangoLayoutLine  *end_line,
-                          int               end_index,
-                          int             **ranges,
-                          int              *n_ranges)
+pango_lines_get_x_ranges (PangoLines *lines,
+                          PangoLine  *line,
+                          PangoLine  *start_line,
+                          int         start_index,
+                          PangoLine  *end_line,
+                          int         end_index,
+                          int       **ranges,
+                          int        *n_ranges)
 {
   int x_offset;
   int line_no, start_line_no, end_line_no;
@@ -608,7 +608,7 @@ pango_lines_get_x_ranges (PangoLines       *lines,
   *ranges = g_new (int, 2 * (2 + g_slist_length (line->runs)));
   range_count = 0;
 
-  dir = pango_layout_line_get_resolved_direction (line);
+  dir = pango_line_get_resolved_direction (line);
 
   if (x_offset > 0 &&
       ((dir == PANGO_DIRECTION_LTR && start_line_no < line_no) ||
@@ -621,7 +621,7 @@ pango_lines_get_x_ranges (PangoLines       *lines,
     }
 
   accumulated_width = 0;
-  for (GSList *l = pango_layout_line_get_runs (line); l; l = l->next)
+  for (GSList *l = pango_line_get_runs (line); l; l = l->next)
     {
       PangoGlyphItem *run = l->data;
 
@@ -672,7 +672,7 @@ pango_lines_get_x_ranges (PangoLines       *lines,
        accumulated_width += pango_glyph_string_get_width (run->glyphs);
    }
 
-  pango_layout_line_get_extents (line, NULL, &ext);
+  pango_line_get_extents (line, NULL, &ext);
   pango_lines_get_size (lines, &width, NULL);
 
   if (x_offset + ext.width < width &&
@@ -714,12 +714,12 @@ pango_lines_get_x_ranges (PangoLines       *lines,
  * as *@line and use this function to find the line at @idx.
  */
 void
-pango_lines_index_to_line (PangoLines       *lines,
-                           int               idx,
-                           PangoLayoutLine **line,
-                           int              *line_no,
-                           int              *x_offset,
-                           int              *y_offset)
+pango_lines_index_to_line (PangoLines  *lines,
+                           int          idx,
+                           PangoLine  **line,
+                           int         *line_no,
+                           int         *x_offset,
+                           int         *y_offset)
 {
   Line *found = NULL;
   int num;
@@ -775,7 +775,7 @@ pango_lines_index_to_line (PangoLines       *lines,
 
  * Returns: (transfer none) (nullable): the line that was found
  */
-PangoLayoutLine *
+PangoLine *
 pango_lines_pos_to_line (PangoLines *lines,
                          int         x,
                          int         y,
@@ -789,7 +789,7 @@ pango_lines_pos_to_line (PangoLines *lines,
       Line *l = &g_array_index (lines->lines, Line, i);
       PangoRectangle ext;
 
-      pango_layout_line_get_extents (l->line, NULL, &ext);
+      pango_line_get_extents (l->line, NULL, &ext);
 
       ext.x += l->x;
       ext.y += l->y;
@@ -817,12 +817,12 @@ pango_lines_pos_to_line (PangoLines *lines,
 /**
  * pango_lines_index_to_pos:
  * @lines: a `PangoLines` object
- * @line: (nullable): `PangoLayoutLine` wrt to which @idx is interpreted
+ * @line: (nullable): `PangoLine` wrt to which @idx is interpreted
  *   or `NULL` for the first matching line
  * @idx: byte index within @line
  * @pos: (out): rectangle in which to store the position of the grapheme
  *
- * Converts from an index within a `PangoLayoutLine` to the
+ * Converts from an index within a `PangoLine` to the
  * position corresponding to the grapheme at that index.
  *
  * The return value is represented as rectangle. Note that `pos->x`
@@ -834,10 +834,10 @@ pango_lines_pos_to_line (PangoLines *lines,
  * for the position off the end of the last line.
  */
 void
-pango_lines_index_to_pos (PangoLines      *lines,
-                          PangoLayoutLine *line,
-                          int              idx,
-                          PangoRectangle  *pos)
+pango_lines_index_to_pos (PangoLines     *lines,
+                          PangoLine      *line,
+                          int             idx,
+                          PangoRectangle *pos)
 {
   int x_offset, y_offset;
 
@@ -849,7 +849,7 @@ pango_lines_index_to_pos (PangoLines      *lines,
 
   g_return_if_fail (line != NULL);
 
-  pango_layout_line_index_to_pos (line, idx, pos);
+  pango_line_index_to_pos (line, idx, pos);
   pos->x += x_offset;
   pos->y += y_offset;
 }
@@ -870,14 +870,14 @@ pango_lines_index_to_pos (PangoLines      *lines,
  *
  * Returns: (transfer none) (nullable): the line that was found
  */
-PangoLayoutLine *
+PangoLine *
 pango_lines_pos_to_index (PangoLines *lines,
                           int         x,
                           int         y,
                           int        *idx,
                           int        *trailing)
 {
-  PangoLayoutLine *line;
+  PangoLine *line;
   int x_offset;
 
   g_return_val_if_fail (PANGO_IS_LINES (lines), FALSE);
@@ -886,7 +886,7 @@ pango_lines_pos_to_index (PangoLines *lines,
 
   line = pango_lines_pos_to_line (lines, x, y, &x_offset, NULL);
   if (line)
-    pango_layout_line_x_to_index (line, x - x_offset, idx, trailing);
+    pango_line_x_to_index (line, x - x_offset, idx, trailing);
 
   return line;
 }
@@ -897,7 +897,7 @@ pango_lines_pos_to_index (PangoLines *lines,
 /**
  * pango_lines_get_cursor_pos:
  * @lines: a `PangoLines` object
- * @line: (nullable): `PangoLayoutLine` wrt to which @idx is interpreted
+ * @line: (nullable): `PangoLine` wrt to which @idx is interpreted
  *   or `NULL` for the first matching line
  * @idx: the byte index of the cursor
  * @strong_pos: (out) (optional): location to store the strong cursor position
@@ -936,13 +936,13 @@ pango_lines_pos_to_index (PangoLines *lines,
  */
 void
 pango_lines_get_cursor_pos (PangoLines      *lines,
-                            PangoLayoutLine *line,
+                            PangoLine       *line,
                             int              idx,
                             PangoRectangle  *strong_pos,
                             PangoRectangle  *weak_pos)
 {
   int x_offset, y_offset;
-  PangoLayoutLine *l;
+  PangoLine *l;
 
   g_return_if_fail (PANGO_IS_LINES (lines));
 
@@ -954,7 +954,7 @@ pango_lines_get_cursor_pos (PangoLines      *lines,
 
   line = l;
 
-  pango_layout_line_get_cursor_pos (line, idx, strong_pos, weak_pos);
+  pango_line_get_cursor_pos (line, idx, strong_pos, weak_pos);
 
   if (strong_pos)
     {
@@ -971,7 +971,7 @@ pango_lines_get_cursor_pos (PangoLines      *lines,
 /**
  * pango_lines_get_caret_pos:
  * @lines: a `PangoLines` object
- * @line: (nullable): `PangoLayoutLine` wrt to which @idx is interpreted
+ * @line: (nullable): `PangoLine` wrt to which @idx is interpreted
  *   or `NULL` for the first matching line
  * @idx: the byte index of the cursor
  * @strong_pos: (out) (optional): location to store the strong cursor position
@@ -994,7 +994,7 @@ pango_lines_get_cursor_pos (PangoLines      *lines,
  */
 void
 pango_lines_get_caret_pos (PangoLines      *lines,
-                           PangoLayoutLine *line,
+                           PangoLine       *line,
                            int              idx,
                            PangoRectangle  *strong_pos,
                            PangoRectangle  *weak_pos)
@@ -1007,7 +1007,7 @@ pango_lines_get_caret_pos (PangoLines      *lines,
 
   g_return_if_fail (line != NULL);
 
-  pango_layout_line_get_caret_pos (line, idx, strong_pos, weak_pos);
+  pango_line_get_caret_pos (line, idx, strong_pos, weak_pos);
 
   if (strong_pos)
     {
@@ -1027,7 +1027,7 @@ pango_lines_get_caret_pos (PangoLines      *lines,
  * @strong: whether the moving cursor is the strong cursor or the
  *   weak cursor. The strong cursor is the cursor corresponding
  *   to text insertion in the base direction for the layout.
- * @line: (nullable): `PangoLayoutLine` wrt to which @idx is interpreted
+ * @line: (nullable): `PangoLine` wrt to which @idx is interpreted
  *   or `NULL` for the first matching line
  * @idx: the byte index of the current cursor position
  * @trailing: if 0, the cursor was at the leading edge of the
@@ -1035,7 +1035,7 @@ pango_lines_get_caret_pos (PangoLines      *lines,
  *   was at the trailing edge.
  * @direction: direction to move cursor. A negative
  *   value indicates motion to the left
- * @new_line: (nullable): `PangoLayoutLine` wrt to which @new_idx is interpreted
+ * @new_line: (nullable): `PangoLine` wrt to which @new_idx is interpreted
  * @new_idx: (out): location to store the new cursor byte index
  *   A value of -1 indicates that the cursor has been moved off the
  *   beginning of the layout. A value of %G_MAXINT indicates that
@@ -1064,15 +1064,15 @@ pango_lines_get_caret_pos (PangoLines      *lines,
  * when multiple characters combine to form a single grapheme.
  */
 void
-pango_lines_move_cursor (PangoLines       *lines,
-                         gboolean          strong,
-                         PangoLayoutLine  *line,
-                         int               idx,
-                         int               trailing,
-                         int               direction,
-                         PangoLayoutLine **new_line,
-                         int              *new_idx,
-                         int              *new_trailing)
+pango_lines_move_cursor (PangoLines  *lines,
+                         gboolean     strong,
+                         PangoLine   *line,
+                         int          idx,
+                         int          trailing,
+                         int          direction,
+                         PangoLine  **new_line,
+                         int         *new_idx,
+                         int         *new_trailing)
 {
   int line_no;
   GArray *cursors;
@@ -1104,7 +1104,7 @@ pango_lines_move_cursor (PangoLines       *lines,
     idx = line->start_index + line->length;
 
   cursors = g_array_new (FALSE, FALSE, sizeof (CursorPos));
-  pango_layout_line_get_cursors (lines, line, strong, cursors);
+  pango_line_get_cursors (lines, line, strong, cursors);
 
   pango_lines_get_cursor_pos (lines, line, idx, strong ? &pos : NULL, strong ? NULL : &pos);
 
@@ -1156,7 +1156,7 @@ pango_lines_move_cursor (PangoLines       *lines,
 
       if (off_start)
         {
-          PangoLayoutLine *prev_line;
+          PangoLine *prev_line;
 
           prev_line = pango_lines_get_line (lines, line_no - 1, NULL, NULL);
           if (!prev_line)
@@ -1175,7 +1175,7 @@ pango_lines_move_cursor (PangoLines       *lines,
         }
       else
         {
-          PangoLayoutLine *next_line;
+          PangoLine *next_line;
 
           next_line = pango_lines_get_line (lines, line_no + 1, NULL, NULL);
           if (!next_line)
@@ -1193,7 +1193,7 @@ pango_lines_move_cursor (PangoLines       *lines,
         }
 
       g_array_set_size (cursors, 0);
-      pango_layout_line_get_cursors (lines, line, strong, cursors);
+      pango_line_get_cursors (lines, line, strong, cursors);
 
       n_vis = cursors->len;
 

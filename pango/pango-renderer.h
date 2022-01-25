@@ -207,8 +207,8 @@ void pango_renderer_draw_lines           (PangoRenderer    *renderer,
                                           int               y);
 
 PANGO_AVAILABLE_IN_ALL
-void pango_renderer_draw_layout_line     (PangoRenderer    *renderer,
-                                          PangoLayoutLine  *line,
+void pango_renderer_draw_line            (PangoRenderer    *renderer,
+                                          PangoLine        *line,
                                           int               x,
                                           int               y);
 PANGO_AVAILABLE_IN_1_8
@@ -287,7 +287,7 @@ PANGO_AVAILABLE_IN_ALL
 PangoLines *       pango_renderer_get_lines       (PangoRenderer     *renderer);
 
 PANGO_AVAILABLE_IN_ALL
-PangoLayoutLine *  pango_renderer_get_layout_line (PangoRenderer     *renderer);
+PangoLine *        pango_renderer_get_line        (PangoRenderer     *renderer);
 
 PANGO_AVAILABLE_IN_ALL
 PangoContext *     pango_renderer_get_context     (PangoRenderer     *renderer);

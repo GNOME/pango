@@ -176,7 +176,7 @@ iter_cluster_test (PangoLayout *layout)
   PangoLayoutIter *iter;
   int              index;
   gboolean         iter_next_ok;
-  PangoLayoutLine *last_line = NULL;
+  PangoLine *last_line = NULL;
   int              expected_next_x = 0;
 
   iter = pango_lines_get_iter (pango_layout_get_lines (layout));
@@ -184,7 +184,7 @@ iter_cluster_test (PangoLayout *layout)
 
   while (iter_next_ok)
     {
-      PangoLayoutLine *line = pango_layout_iter_get_line (iter);
+      PangoLine *line = pango_layout_iter_get_line (iter);
 
       /* Every cluster is part of a run */
       g_assert (pango_layout_iter_get_run (iter));
@@ -259,7 +259,7 @@ test_glyphitem_iter (void)
   PangoContext *context;
   PangoFontDescription *font_desc;
   PangoLayout  *layout;
-  PangoLayoutLine *line;
+  PangoLine *line;
   const char *text;
   GSList *l;
 
@@ -274,7 +274,7 @@ test_glyphitem_iter (void)
   text = pango_layout_get_text (layout);
 
   line = pango_lines_get_line (pango_layout_get_lines (layout), 0, NULL, NULL);
-  for (l = pango_layout_line_get_runs (line); l; l = l->next)
+  for (l = pango_line_get_runs (line); l; l = l->next)
   {
     PangoGlyphItem *run = l->data;
     int direction;

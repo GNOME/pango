@@ -25,7 +25,7 @@
 #include <pango/pango-context-private.h>
 #include <pango/pango-enum-types.h>
 #include <pango/pango-font-private.h>
-#include <pango/pango-layout-line-private.h>
+#include <pango/pango-line-private.h>
 #include <pango/pango-utils-internal.h>
 
 #include <hb-ot.h>
@@ -711,7 +711,7 @@ add_run (GtkJsonPrinter *printer,
 
 static void
 line_to_json (GtkJsonPrinter  *printer,
-              PangoLayoutLine *line,
+              PangoLine       *line,
               int              x,
               int              y)
 {
@@ -770,7 +770,7 @@ lines_to_json (GtkJsonPrinter *printer,
 
   for (int i = 0; i < pango_lines_get_line_count (lines); i++)
     {
-      PangoLayoutLine *line;
+      PangoLine *line;
       int x, y;
       line = pango_lines_get_line (lines, i, &x, &y);
       line_to_json (printer, line, x, y);

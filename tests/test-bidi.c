@@ -159,7 +159,7 @@ test_bidi_embedding_levels (void)
 }
 
 /* Some basic tests for pango_layout_move_cursor inside
- * a single PangoLayoutLine:
+ * a single PangoLine:
  * - check that we actually move the cursor in the right direction
  * - check that we get through the line with at most n steps
  * - check that we don't skip legitimate cursor positions
@@ -189,8 +189,8 @@ test_move_cursor_line (void)
       PangoRectangle s_pos, old_s_pos;
       PangoRectangle w_pos, old_w_pos;
       PangoLines *lines;
-      PangoLayoutLine *line;
-      PangoLayoutLine *new_line;
+      PangoLine *line;
+      PangoLine *new_line;
       struct {
         int direction;
         gboolean strong;
@@ -242,7 +242,7 @@ test_move_cursor_line (void)
                      params[j].direction > 0 ? "->" : "<-",
                      params[j].strong ? "strong" : "weak");
 
-          if ((pango_layout_line_get_resolved_direction (line) == PANGO_DIRECTION_LTR) == (params[j].direction > 0))
+          if ((pango_line_get_resolved_direction (line) == PANGO_DIRECTION_LTR) == (params[j].direction > 0))
             start_index = 0;
           else
             start_index = strlen (text);
@@ -359,11 +359,11 @@ test_move_cursor_para (void)
   int index;
   int trailing;
   const char *text;
-  PangoLayoutLine *line;
+  PangoLine *line;
   PangoRectangle ext;
   PangoLines *lines;
   PangoLayoutIter *iter;
-  PangoLayoutLine *new_line;
+  PangoLine *new_line;
 
   layout = pango_layout_new (context);
 

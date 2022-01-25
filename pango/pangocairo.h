@@ -85,7 +85,7 @@ typedef struct _PangoCairoFontMap        PangoCairoFontMap;
  * @do_path: whether only the shape path should be appended to current
  * path of @cr and no filling/stroking done.  This will be set
  * to %TRUE when called from pango_cairo_layout_path() and
- * pango_cairo_layout_line_path() rendering functions.
+ * pango_cairo_line_path() rendering functions.
  * @data: (closure): user data passed to pango_cairo_context_set_shape_renderer()
  *
  * Function type for rendering attributes of type %PANGO_ATTR_SHAPE
@@ -181,8 +181,8 @@ void pango_cairo_show_glyph_item   (cairo_t          *cr,
 				    const char       *text,
 				    PangoGlyphItem   *glyph_item);
 PANGO_AVAILABLE_IN_ALL
-void pango_cairo_show_layout_line  (cairo_t          *cr,
-                                    PangoLayoutLine  *line);
+void pango_cairo_show_line         (cairo_t          *cr,
+                                    PangoLine        *line);
 PANGO_AVAILABLE_IN_ALL
 void pango_cairo_show_lines        (cairo_t          *cr,
                                     PangoLines       *lines);
@@ -209,8 +209,8 @@ PANGO_AVAILABLE_IN_1_10
 void pango_cairo_layout_path       (cairo_t          *cr,
 				    PangoLayout      *layout);
 PANGO_AVAILABLE_IN_ALL
-void pango_cairo_layout_line_path  (cairo_t          *cr,
-                                    PangoLayoutLine  *line);
+void pango_cairo_line_path         (cairo_t          *cr,
+                                    PangoLine        *line);
 PANGO_AVAILABLE_IN_ALL
 void pango_cairo_lines_path        (cairo_t          *cr,
                                     PangoLines       *lines);
