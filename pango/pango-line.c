@@ -913,6 +913,31 @@ pango_line_justify (PangoLine *line,
  * If you need extents with trimmed leading, use [method@Pango.LayoutLine.get_trimmed_extents].
  *
  * Note that the origin is at the left end of the baseline.
+ *
+ * Pango is following CSS in splitting the external leading, and giving one half of it
+ * to the line above, and the other half the the line below. Unless the line height is set
+ * via attributes, the external leading is determined as the difference between the
+ * height and ascent + descent in font metrics:
+ *
+ * <picture>
+ *   <source srcset="line-height1-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img alt="Pango Font Metrics" src="line-height1-light.png">
+ * </picture>
+ *
+ * If spacing is set, it also gets split, for the purpose of determining the
+ * logical extents.
+ *
+ * <picture>
+ *   <source srcset="line-height2-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img alt="Pango Extents and Spacing" src="line-height2-light.png">
+ * </picture>
+ *
+ * If line height is set, it determines the logical extents.
+ *
+ * <picture>
+ *   <source srcset="line-height3-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img alt="Pango Extents and Line Height" src="line-height3-light.png">
+ * </picture>
  */
 void
 pango_line_get_extents (PangoLine      *line,
