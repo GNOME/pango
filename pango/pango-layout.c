@@ -1645,6 +1645,85 @@ pango_layout_get_character_count (PangoLayout *layout)
 }
 
 /* }}} */
+/* {{{ Output getters */
+
+/**
+ * pango_layout_get_lines:
+ * @layout: a `PangoLayout`
+ *
+ * Gets the lines of the @layout.
+ *
+ * The returned object will become invalid when any
+ * property of @layout is changed. Take a reference
+ * to keep it.
+ *
+ * Return value: (transfer none): a `PangoLines` object
+ *   with the lines of @layout
+ */
+PangoLines *
+pango_layout_get_lines (PangoLayout *layout)
+{
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+
+  ensure_lines (layout);
+
+  return layout->lines;
+}
+
+/**
+ * pango_layout_get_log_attrs:
+ * @layout: a `PangoLayout`
+ * @n_attrs: (out): return location for the length of the array
+ *
+ * Gets the `PangoLogAttr` array for the content
+ * of @layout.
+ *
+ * The returned array becomes invalid when
+ * any properties of @layout change. Make a
+ * copy if you want to keep it.
+ *
+ * Returns: (transfer none): the `PangoLogAttr` array
+ */
+const PangoLogAttr *
+pango_layout_get_log_attrs (PangoLayout *layout,
+                            int         *n_attrs)
+{
+  PangoLayoutLine *line;
+
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+
+  ensure_lines (layout);
+
+  line = pango_lines_get_line (layout->lines, 0, NULL, NULL);
+
+  if (n_attrs)
+    *n_attrs = line->data->n_chars + 1;
+
+  return line->data->log_attrs;
+}
+
+/**
+ * pango_layout_get_iter:
+ * @layout: a `PangoLayout`
+ *
+ * Returns an iterator to iterate over the visual extents
+ * of the layout.
+ *
+ * This is a convenience wrapper for [method@Pango.Lines.get_iter].
+ *
+ * Returns: the new `PangoLayoutIter`
+ */
+PangoLayoutIter *
+pango_layout_get_iter (PangoLayout *layout)
+{
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+
+  ensure_lines (layout);
+
+  return pango_lines_get_iter (layout->lines);
+}
+
+/* }}} */
 /* }}} */
 
 /* vim:set foldmethod=marker expandtab: */
