@@ -1511,7 +1511,7 @@ pango_attr_overline_color_new (guint16 red,
  *
  * This affects the values returned by
  * [method@Pango.Line.get_extents] and
- * [method@Pango.LayoutIter.get_line_extents].
+ * [method@Pango.LineIter.get_line_extents].
  *
  *
  * Since: 1.50
@@ -1537,7 +1537,7 @@ pango_attr_line_height_new (double factor)
  *
  * This affects the values returned by
  * [method@Pango.Line.get_extents],
- * [method@Pango.LayoutIter.get_line_extents].
+ * [method@Pango.LineIter.get_line_extents].
  *
  * Since: 1.50
  */
@@ -1563,7 +1563,7 @@ pango_attr_line_height_new_absolute (int height)
  *
  * This affects the values returned by
  * [method@Pango.Line.get_extents],
- * [method@Pango.LayoutIter.get_line_extents].
+ * [method@Pango.LineIter.get_line_extents].
  */
 PangoAttribute *
 pango_attr_line_spacing_new (int spacing)

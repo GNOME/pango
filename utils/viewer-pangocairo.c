@@ -202,7 +202,7 @@ render_callback (PangoLayout *layout,
       cairo_pattern_t *pattern;
       PangoRectangle ink, logical;
       double lw = cairo_get_line_width (cr);
-      PangoLayoutIter *iter;
+      PangoLineIter *iter;
 
       pango_lines_get_extents (pango_layout_get_lines (layout), &ink, &logical);
 
@@ -282,10 +282,10 @@ render_callback (PangoLayout *layout,
           iter = pango_layout_get_iter (layout);
           do
             {
-              PangoLine *line = pango_layout_iter_get_line (iter);
+              PangoLine *line = pango_line_iter_get_line (iter);
               double width = (double)logical.width / PANGO_SCALE;
 
-              y = pango_layout_iter_get_line_baseline (iter);
+              y = pango_line_iter_get_line_baseline (iter);
               cairo_save (cr);
               cairo_translate (cr,
                              (double)logical.x / PANGO_SCALE + width * 0.5,
@@ -303,8 +303,8 @@ render_callback (PangoLayout *layout,
               cairo_fill (cr);
               cairo_restore (cr);
             }
-          while (pango_layout_iter_next_line (iter));
-          pango_layout_iter_free (iter);
+          while (pango_line_iter_next_line (iter));
+          pango_line_iter_free (iter);
           cairo_restore (cr);
         }
 
@@ -345,7 +345,7 @@ render_callback (PangoLayout *layout,
             {
               PangoRectangle rect;
 
-              pango_layout_iter_get_line_extents (iter, NULL, &rect);
+              pango_line_iter_get_line_extents (iter, NULL, &rect);
               cairo_rectangle (cr,
                                (double)rect.x / PANGO_SCALE - lw / 2,
                                (double)rect.y / PANGO_SCALE - lw / 2,
@@ -353,8 +353,8 @@ render_callback (PangoLayout *layout,
                                (double)rect.height / PANGO_SCALE + lw);
               cairo_stroke (cr);
             }
-          while (pango_layout_iter_next_line (iter));
-          pango_layout_iter_free (iter);
+          while (pango_line_iter_next_line (iter));
+          pango_line_iter_free (iter);
           cairo_restore (cr);
         }
 
@@ -370,11 +370,11 @@ render_callback (PangoLayout *layout,
               PangoRun *run;
               PangoRectangle rect;
 
-              run = pango_layout_iter_get_run (iter);
+              run = pango_line_iter_get_run (iter);
               if (!run)
                 continue;
 
-              pango_layout_iter_get_run_extents (iter, NULL, &rect);
+              pango_line_iter_get_run_extents (iter, NULL, &rect);
               cairo_rectangle (cr,
                                (double)rect.x / PANGO_SCALE - lw / 2,
                                (double)rect.y / PANGO_SCALE - lw / 2,
@@ -382,8 +382,8 @@ render_callback (PangoLayout *layout,
                                (double)rect.height / PANGO_SCALE + lw);
               cairo_stroke (cr);
             }
-          while (pango_layout_iter_next_run (iter));
-          pango_layout_iter_free (iter);
+          while (pango_line_iter_next_run (iter));
+          pango_line_iter_free (iter);
           cairo_restore (cr);
         }
 
@@ -398,7 +398,7 @@ render_callback (PangoLayout *layout,
             {
               PangoRectangle rect;
 
-              pango_layout_iter_get_cluster_extents (iter, NULL, &rect);
+              pango_line_iter_get_cluster_extents (iter, NULL, &rect);
               cairo_rectangle (cr,
                                (double)rect.x / PANGO_SCALE - lw / 2,
                                (double)rect.y / PANGO_SCALE - lw / 2,
@@ -406,8 +406,8 @@ render_callback (PangoLayout *layout,
                                (double)rect.height / PANGO_SCALE + lw);
               cairo_stroke (cr);
             }
-          while (pango_layout_iter_next_cluster (iter));
-          pango_layout_iter_free (iter);
+          while (pango_line_iter_next_cluster (iter));
+          pango_line_iter_free (iter);
           cairo_restore (cr);
         }
 
@@ -422,7 +422,7 @@ render_callback (PangoLayout *layout,
             {
               PangoRectangle rect;
 
-              pango_layout_iter_get_char_extents (iter, &rect);
+              pango_line_iter_get_char_extents (iter, &rect);
               cairo_rectangle (cr,
                                (double)rect.x / PANGO_SCALE - lw / 2,
                                (double)rect.y / PANGO_SCALE - lw / 2,
@@ -430,8 +430,8 @@ render_callback (PangoLayout *layout,
                                (double)rect.height / PANGO_SCALE + lw);
               cairo_stroke (cr);
             }
-          while (pango_layout_iter_next_cluster (iter));
-          pango_layout_iter_free (iter);
+          while (pango_line_iter_next_cluster (iter));
+          pango_line_iter_free (iter);
           cairo_restore (cr);
         }
 
@@ -450,17 +450,17 @@ render_callback (PangoLayout *layout,
               PangoRectangle rect;
               int x_pos, y_pos;
 
-              run = pango_layout_iter_get_run (iter);
+              run = pango_line_iter_get_run (iter);
               if (!run)
                 continue;
 
               item = pango_run_get_item (run);
               glyphs = pango_run_get_glyphs (run);
 
-              pango_layout_iter_get_run_extents (iter, NULL, &rect);
+              pango_line_iter_get_run_extents (iter, NULL, &rect);
 
               x_pos = rect.x;
-              y_pos = pango_layout_iter_get_run_baseline (iter);
+              y_pos = pango_line_iter_get_run_baseline (iter);
 
               for (int i = 0; i < glyphs->num_glyphs; i++)
                 {
@@ -491,8 +491,8 @@ render_callback (PangoLayout *layout,
                   x_pos += glyphs->glyphs[i].geometry.width;
                 }
             }
-          while (pango_layout_iter_next_run (iter));
-          pango_layout_iter_free (iter);
+          while (pango_line_iter_next_run (iter));
+          pango_line_iter_free (iter);
           cairo_restore (cr);
         }
 
@@ -520,8 +520,8 @@ render_callback (PangoLayout *layout,
               int x, y;
               gboolean trailing;
 
-              pango_layout_iter_get_run_extents (iter, NULL, &rect);
-              run = pango_layout_iter_get_run (iter);
+              pango_line_iter_get_run_extents (iter, NULL, &rect);
+              run = pango_line_iter_get_run (iter);
 
               if (!run)
                 continue;
@@ -534,7 +534,7 @@ render_callback (PangoLayout *layout,
 
               offset = g_utf8_strlen (text, start - text);
 
-              y = pango_layout_iter_get_run_baseline (iter);
+              y = pango_line_iter_get_run_baseline (iter);
 
               trailing = FALSE;
               p = start;
@@ -574,8 +574,8 @@ render_callback (PangoLayout *layout,
 
                 }
             }
-          while (pango_layout_iter_next_run (iter));
-          pango_layout_iter_free (iter);
+          while (pango_line_iter_next_run (iter));
+          pango_line_iter_free (iter);
           cairo_restore (cr);
         }
 

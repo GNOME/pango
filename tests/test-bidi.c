@@ -362,7 +362,7 @@ test_move_cursor_para (void)
   PangoLine *line;
   PangoRectangle ext;
   PangoLines *lines;
-  PangoLayoutIter *iter;
+  PangoLineIter *iter;
   PangoLine *new_line;
 
   layout = pango_layout_new (context);
@@ -389,10 +389,10 @@ test_move_cursor_para (void)
             break;
 
           iter = pango_lines_get_iter (lines);
-          while (pango_layout_iter_get_line (iter) != line)
-            pango_layout_iter_next_line (iter);
-          pango_layout_iter_get_line_extents (iter, NULL, &ext);
-          pango_layout_iter_free (iter);
+          while (pango_line_iter_get_line (iter) != line)
+            pango_line_iter_next_line (iter);
+          pango_line_iter_get_line_extents (iter, NULL, &ext);
+          pango_line_iter_free (iter);
 
           pango_lines_move_cursor(lines, TRUE,
                                   NULL,
@@ -433,10 +433,10 @@ test_move_cursor_para (void)
           pango_lines_index_to_line (lines, index, &line, NULL, NULL, NULL);
           g_assert_nonnull (line);
           iter = pango_lines_get_iter (lines);
-          while (pango_layout_iter_get_line (iter) != line)
-            pango_layout_iter_next_line (iter);
-          pango_layout_iter_get_line_extents (iter, NULL, &ext);
-          pango_layout_iter_free (iter);
+          while (pango_line_iter_get_line (iter) != line)
+            pango_line_iter_next_line (iter);
+          pango_line_iter_get_line_extents (iter, NULL, &ext);
+          pango_line_iter_free (iter);
 
           pango_lines_move_cursor (lines, TRUE,
                                    NULL,

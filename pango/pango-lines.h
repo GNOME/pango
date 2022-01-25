@@ -12,8 +12,6 @@ G_BEGIN_DECLS
 PANGO_AVAILABLE_IN_ALL
 G_DECLARE_FINAL_TYPE (PangoLines, pango_lines, PANGO, LINES, GObject);
 
-typedef struct _PangoLayoutIter PangoLayoutIter;
-
 PANGO_AVAILABLE_IN_ALL
 PangoLines *            pango_lines_new             (void);
 
@@ -36,7 +34,7 @@ PangoLine *             pango_lines_get_line        (PangoLines        *lines,
                                                      int               *line_y);
 
 PANGO_AVAILABLE_IN_ALL
-PangoLayoutIter *       pango_lines_get_iter        (PangoLines        *lines);
+PangoLineIter *          pango_lines_get_iter        (PangoLines        *lines);
 
 PANGO_AVAILABLE_IN_ALL
 void                    pango_lines_get_extents     (PangoLines        *lines,

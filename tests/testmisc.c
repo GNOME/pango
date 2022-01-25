@@ -178,7 +178,7 @@ test_run_height (void)
 {
   PangoContext *context;
   PangoLayout *layout;
-  PangoLayoutIter *iter;
+  PangoLineIter *iter;
   PangoRectangle logical1, logical2;
 
   if (strcmp (G_OBJECT_TYPE_NAME (pango_cairo_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
@@ -192,14 +192,14 @@ test_run_height (void)
   pango_layout_set_text (layout, "one", -1);
 
   iter = pango_lines_get_iter (pango_layout_get_lines (layout));
-  pango_layout_iter_get_run_extents (iter, NULL, &logical1);
-  pango_layout_iter_free (iter);
+  pango_line_iter_get_run_extents (iter, NULL, &logical1);
+  pango_line_iter_free (iter);
 
   pango_layout_set_text (layout, "", -1);
 
   iter = pango_lines_get_iter (pango_layout_get_lines (layout));
-  pango_layout_iter_get_run_extents (iter, NULL, &logical2);
-  pango_layout_iter_free (iter);
+  pango_line_iter_get_run_extents (iter, NULL, &logical2);
+  pango_line_iter_free (iter);
 
   g_assert_cmpint (logical1.height, ==, logical2.height);
 
@@ -581,7 +581,7 @@ test_extents (void)
     {
       PangoLayout *layout;
       PangoLines *lines;
-      PangoLayoutIter *iter;
+      PangoLineIter *iter;
       PangoRectangle layout_extents;
       PangoRectangle line_extents;
       PangoRectangle run_extents;
@@ -602,11 +602,11 @@ test_extents (void)
 
       do
         {
-          pango_layout_iter_get_line_extents (iter, NULL, &line_extents);
-          pango_layout_iter_get_run_extents (iter, NULL, &run_extents);
-          pango_layout_iter_get_cluster_extents (iter, NULL, &cluster_extents);
-          pango_layout_iter_get_char_extents (iter, &char_extents);
-          index = pango_layout_iter_get_index (iter);
+          pango_line_iter_get_line_extents (iter, NULL, &line_extents);
+          pango_line_iter_get_run_extents (iter, NULL, &run_extents);
+          pango_line_iter_get_cluster_extents (iter, NULL, &cluster_extents);
+          pango_line_iter_get_char_extents (iter, &char_extents);
+          index = pango_line_iter_get_index (iter);
           pango_lines_index_to_pos (lines, NULL, index, &pos);
           if (pos.width < 0)
             {
@@ -624,9 +624,9 @@ test_extents (void)
           g_assert_true (pango_rectangle_contains (&line_extents, &strong));
           g_assert_true (pango_rectangle_contains (&line_extents, &weak));
         }
-      while (pango_layout_iter_next_char (iter));
+      while (pango_line_iter_next_char (iter));
 
-      pango_layout_iter_free (iter);
+      pango_line_iter_free (iter);
       g_object_unref (layout);
     }
 

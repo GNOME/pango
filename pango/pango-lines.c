@@ -3,7 +3,7 @@
 #include "pango-lines-private.h"
 #include "pango-line-private.h"
 #include "pango-item-private.h"
-#include "pango-layout-iter-private.h"
+#include "pango-line-iter-private.h"
 
 /**
  * PangoLines:
@@ -35,7 +35,7 @@
  * for the `PangoLines*`.
  *
  * The most convenient way to access the visual extents and components
- * of a `PangoLines` is via a [struct@Pango.LayoutIter] iterator.
+ * of a `PangoLines` is via a [struct@Pango.LineIter] iterator.
  */
 
 /*  {{{ PangoLines implementation */
@@ -242,12 +242,12 @@ pango_lines_add_line (PangoLines *lines,
  *
  * Note that the iter holds a reference to @lines.
  *
- * Return value: the new `PangoLayoutIter`
+ * Return value: the new `PangoLineIter`
  */
-PangoLayoutIter *
+PangoLineIter *
 pango_lines_get_iter (PangoLines *lines)
 {
-  return pango_layout_iter_new (lines);
+  return pango_line_iter_new (lines);
 }
 
 /**

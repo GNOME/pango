@@ -27,7 +27,7 @@
  * offset each line to.
  *
  * The most convenient way to access the visual extents and components
- * of a `PangoLine` is via a [struct@Pango.LayoutIter] iterator.
+ * of a `PangoLine` is via a [struct@Pango.LineIter] iterator.
  */
 
 /* {{{ LineData */

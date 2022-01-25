@@ -145,7 +145,7 @@ PANGO_AVAILABLE_IN_ALL
 PangoLines *            pango_layout_get_lines      (PangoLayout                  *layout);
 
 PANGO_AVAILABLE_IN_ALL
-PangoLayoutIter *       pango_layout_get_iter       (PangoLayout                  *layout);
+PangoLineIter *         pango_layout_get_iter       (PangoLayout                  *layout);
 
 PANGO_AVAILABLE_IN_ALL
 const PangoLogAttr *    pango_layout_get_log_attrs  (PangoLayout                  *layout,

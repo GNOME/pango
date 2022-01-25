@@ -1084,7 +1084,7 @@ pango_win32_render_layout (HDC          hdc,
 			   int          x,
 			   int          y)
 {
-  PangoLayoutIter *iter;
+  PangoLineIter *iter;
 
   g_return_if_fail (hdc != NULL);
   g_return_if_fail (PANGO_IS_LAYOUT (layout));

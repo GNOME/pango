@@ -56,7 +56,7 @@ typedef guint32 PangoGlyph;
 typedef struct _PangoRun PangoRun;
 typedef struct _PangoLine PangoLine;
 typedef struct _PangoLines PangoLines;
-typedef struct _PangoLayoutIter PangoLayoutIter;
+typedef struct _PangoLineIter PangoLineIter;
 
 /**
  * PANGO_SCALE:

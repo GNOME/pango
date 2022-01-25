@@ -80,7 +80,7 @@ static void
 iter_char_test (PangoLayout *layout)
 {
   PangoRectangle   extents, run_extents;
-  PangoLayoutIter *iter;
+  PangoLineIter *iter;
   PangoRun  *run;
   int              num_chars;
   int              i, index, offset;
@@ -99,19 +99,19 @@ iter_char_test (PangoLayout *layout)
       gchar *char_str;
       g_assert (iter_next_ok);
 
-      index = pango_layout_iter_get_index (iter);
+      index = pango_line_iter_get_index (iter);
       ptr = text + index;
       char_str = g_strndup (ptr, g_utf8_next_char (ptr) - ptr);
       verbose ("i=%d (visual), index = %d '%s':\n",
                i, index, char_str);
       g_free (char_str);
 
-      pango_layout_iter_get_char_extents (iter, &extents);
+      pango_line_iter_get_char_extents (iter, &extents);
       verbose ("  char extents: x=%d,y=%d w=%d,h=%d\n",
                extents.x, extents.y,
                extents.width, extents.height);
 
-      run = pango_layout_iter_get_run (iter);
+      run = pango_line_iter_get_run (iter);
 
       if (run)
         {
@@ -124,7 +124,7 @@ iter_char_test (PangoLayout *layout)
           glyphs = pango_run_get_glyphs (run);
 
           /* Get needed data for the GlyphString */
-          pango_layout_iter_get_run_extents (iter, NULL, &run_extents);
+          pango_line_iter_get_run_extents (iter, NULL, &run_extents);
           offset = item->offset;
           rtl = item->analysis.level%2;
           desc = pango_font_describe (item->analysis.font);
@@ -158,7 +158,7 @@ iter_char_test (PangoLayout *layout)
           /* We're on a line terminator */
         }
 
-      iter_next_ok = pango_layout_iter_next_char (iter);
+      iter_next_ok = pango_line_iter_next_char (iter);
       verbose ("more to go? %d\n", iter_next_ok);
     }
 
@@ -166,14 +166,14 @@ iter_char_test (PangoLayout *layout)
    * input string */
   g_assert (!iter_next_ok);
 
-  pango_layout_iter_free (iter);
+  pango_line_iter_free (iter);
 }
 
 static void
 iter_cluster_test (PangoLayout *layout)
 {
   PangoRectangle   extents;
-  PangoLayoutIter *iter;
+  PangoLineIter *iter;
   int              index;
   gboolean         iter_next_ok;
   PangoLine *last_line = NULL;
@@ -184,16 +184,16 @@ iter_cluster_test (PangoLayout *layout)
 
   while (iter_next_ok)
     {
-      PangoLine *line = pango_layout_iter_get_line (iter);
+      PangoLine *line = pango_line_iter_get_line (iter);
 
       /* Every cluster is part of a run */
-      g_assert (pango_layout_iter_get_run (iter));
+      g_assert (pango_line_iter_get_run (iter));
 
-      index = pango_layout_iter_get_index (iter);
+      index = pango_line_iter_get_index (iter);
 
-      pango_layout_iter_get_cluster_extents (iter, NULL, &extents);
+      pango_line_iter_get_cluster_extents (iter, NULL, &extents);
 
-      iter_next_ok = pango_layout_iter_next_cluster (iter);
+      iter_next_ok = pango_line_iter_next_cluster (iter);
 
       verbose ("index = %d:\n", index);
       verbose ("  cluster extents: x=%d,y=%d w=%d,h=%d\n",
@@ -215,11 +215,11 @@ iter_cluster_test (PangoLayout *layout)
 
   g_assert (!iter_next_ok);
 
-  pango_layout_iter_free (iter);
+  pango_line_iter_free (iter);
 }
 
 static void
-test_layout_iter (void)
+test_line_iter (void)
 {
   const char  **ptext;
   PangoFontMap *fontmap;
@@ -320,7 +320,7 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  g_test_add_func ("/layout/iter", test_layout_iter);
+  g_test_add_func ("/layout/iter", test_line_iter);
   g_test_add_func ("/layout/glyphitem-iter", test_glyphitem_iter);
 
   return g_test_run ();

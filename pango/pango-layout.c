@@ -27,7 +27,7 @@
  * of the resulting glyphs can be made.
  *
  * The most convenient way to access the visual extents and components
- * of a formatted layout is via a [struct@Pango.LayoutIter] iterator.
+ * of a formatted layout is via a [struct@Pango.LineIter] iterator.
  *
  * There are a number of parameters to adjust the formatting of a
  * `PangoLayout`. The following image shows adjustable parameters
@@ -1711,9 +1711,9 @@ pango_layout_get_log_attrs (PangoLayout *layout,
  *
  * This is a convenience wrapper for [method@Pango.Lines.get_iter].
  *
- * Returns: the new `PangoLayoutIter`
+ * Returns: the new `PangoLineIter`
  */
-PangoLayoutIter *
+PangoLineIter *
 pango_layout_get_iter (PangoLayout *layout)
 {
   g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
