@@ -1256,7 +1256,8 @@ pango_layout_set_tabs (PangoLayout   *layout,
     return;
 
   g_clear_pointer (&layout->tabs, pango_tab_array_free);
-  layout->tabs = pango_tab_array_copy (tabs);
+  if (tabs)
+    layout->tabs = pango_tab_array_copy (tabs);
 
   g_object_notify_by_pspec (G_OBJECT (layout), props[PROP_TABS]);
   layout_changed (layout);
