@@ -340,13 +340,19 @@ shape_ellipsis (EllipsizeState *state)
   /* Create an attribute list
    */
   run_attrs = pango_attr_iterator_get_attrs (state->gap_start_attr);
+  int s, e;
+  pango_attr_iterator_range (state->gap_start_attr, &s, &e);
   for (l = run_attrs; l; l = l->next)
     {
       PangoAttribute *attr = l->data;
       attr->start_index = 0;
       attr->end_index = G_MAXINT;
 
-      pango_attr_list_insert (&attrs, attr);
+      if (pango_attribute_affects_itemization (attr, NULL) ||
+          pango_attribute_affects_break_or_shape (attr, NULL))
+        pango_attr_list_insert (&attrs, attr);
+      else
+        pango_attribute_destroy (attr);
     }
 
   g_slist_free (run_attrs);
