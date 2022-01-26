@@ -345,8 +345,8 @@ shape_ellipsis (EllipsizeState *state)
   for (l = run_attrs; l; l = l->next)
     {
       PangoAttribute *attr = l->data;
-      attr->start_index = 0;
-      attr->end_index = G_MAXINT;
+      attr->start_index = PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING;
+      attr->end_index = PANGO_ATTR_INDEX_TO_TEXT_END;
 
       if (pango_attribute_affects_itemization (attr, NULL) ||
           pango_attribute_affects_break_or_shape (attr, NULL))
