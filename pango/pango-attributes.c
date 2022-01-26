@@ -2611,7 +2611,10 @@ get_attr_type_nick (PangoAttrType attr_type)
   enum_value = g_enum_get_value (enum_class, attr_type);
   g_type_class_unref (enum_class);
 
-  return enum_value->value_nick;
+  if (enum_value)
+    return enum_value->value_nick;
+  else
+    return pango_attr_type_get_name (attr_type);
 }
 
 static GType
@@ -2717,6 +2720,10 @@ attr_print (GString        *str,
     g_string_append_printf (str, " %d", size->size);
   else if ((features = pango_attribute_as_font_features (attr)) != NULL)
     g_string_append_printf (str, " \"%s\"", features->features);
+  else if (pango_attr_type_get_name (attr->klass->type))
+    {
+      g_string_append (str, "NONE");
+    }
   else
     {
       g_warning ("Unhandled attribute type %s (%d)\n",
