@@ -1116,6 +1116,7 @@ compute_log_widths (PangoLineBreaker *self)
       self->num_log_widths = item->num_chars;
     }
 
+  g_assert (self->log_widths_offset == 0);
   pango_glyph_item_get_logical_widths (&glyph_item, self->data->text, self->log_widths);
 }
 
@@ -1244,6 +1245,7 @@ process_item (PangoLineBreaker *self,
 
   if (item_is_paragraph_separator (self, item))
     {
+      g_clear_pointer (&self->glyphs, pango_glyph_string_free);
       return BREAK_PARAGRAPH_SEPARATOR;
     }
 
