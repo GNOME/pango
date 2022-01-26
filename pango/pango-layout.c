@@ -677,7 +677,7 @@ retry:
         {
           if (pango_line_breaker_undo_line (breaker, line))
             {
-              g_clear_object (&line);
+              g_clear_pointer (&line, pango_line_free);
               ellipsize = layout->ellipsize;
               goto retry;
             }
