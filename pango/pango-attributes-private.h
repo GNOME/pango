@@ -50,4 +50,9 @@ gboolean  pango_attr_iterator_advance  (PangoAttrIterator *iterator,
                                         int                index);
 
 
+gboolean pango_attribute_affects_itemization    (PangoAttribute *attr,
+                                                 gpointer        data);
+gboolean pango_attribute_affects_break_or_shape (PangoAttribute *attr,
+                                                 gpointer        data);
+
 #endif

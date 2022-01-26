@@ -148,62 +148,6 @@ item_is_paragraph_separator (PangoLineBreaker *self,
   return ch == '\r' || ch == '\n' || ch == 0x2029;
 }
 
-static gboolean
-affects_itemization (PangoAttribute *attr,
-                     gpointer        data)
-{
-  switch ((int)attr->klass->type)
-    {
-    /* These affect font selection */
-    case PANGO_ATTR_LANGUAGE:
-    case PANGO_ATTR_FAMILY:
-    case PANGO_ATTR_STYLE:
-    case PANGO_ATTR_WEIGHT:
-    case PANGO_ATTR_VARIANT:
-    case PANGO_ATTR_STRETCH:
-    case PANGO_ATTR_SIZE:
-    case PANGO_ATTR_FONT_DESC:
-    case PANGO_ATTR_SCALE:
-    case PANGO_ATTR_FALLBACK:
-    case PANGO_ATTR_ABSOLUTE_SIZE:
-    case PANGO_ATTR_GRAVITY:
-    case PANGO_ATTR_GRAVITY_HINT:
-    case PANGO_ATTR_FONT_SCALE:
-    /* These need to be constant across runs */
-    case PANGO_ATTR_LETTER_SPACING:
-    case PANGO_ATTR_SHAPE:
-    case PANGO_ATTR_RISE:
-    case PANGO_ATTR_BASELINE_SHIFT:
-    case PANGO_ATTR_LINE_HEIGHT:
-    case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
-    case PANGO_ATTR_TEXT_TRANSFORM:
-      return TRUE;
-    default:
-      return FALSE;
-    }
-}
-
-static gboolean
-affects_break_or_shape (PangoAttribute *attr,
-                        gpointer        data)
-{
-  switch ((int)attr->klass->type)
-    {
-    /* Affects breaks */
-    case PANGO_ATTR_ALLOW_BREAKS:
-    case PANGO_ATTR_WORD:
-    case PANGO_ATTR_SENTENCE:
-    case PANGO_ATTR_PARAGRAPH:
-    /* Affects shaping */
-    case PANGO_ATTR_INSERT_HYPHENS:
-    case PANGO_ATTR_FONT_FEATURES:
-    case PANGO_ATTR_SHOW:
-      return TRUE;
-    default:
-      return FALSE;
-    }
-}
-
 static void
 apply_attributes_to_items (GList         *items,
                            PangoAttrList *attrs)
@@ -286,8 +230,8 @@ ensure_items (PangoLineBreaker *self)
   self->render_attrs = pango_attr_list_copy (self->data->attrs);
   if (self->render_attrs)
     {
-      shape_attrs = pango_attr_list_filter (self->render_attrs, affects_break_or_shape, NULL);
-      itemize_attrs = pango_attr_list_filter (self->render_attrs, affects_itemization, NULL);
+      shape_attrs = pango_attr_list_filter (self->render_attrs, pango_attribute_affects_break_or_shape, NULL);
+      itemize_attrs = pango_attr_list_filter (self->render_attrs, pango_attribute_affects_itemization, NULL);
     }
 
   self->items = pango_itemize_with_font (self->context,
