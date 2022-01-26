@@ -653,6 +653,7 @@ ensure_lines (PangoLayout *layout)
       PangoRectangle ext;
       int offset;
       PangoEllipsizeMode ellipsize = PANGO_ELLIPSIZE_NONE;
+      PangoLeadingTrim trim = PANGO_LEADING_TRIM_NONE;
 
       if ((line_no == 0) == (layout->indent > 0))
         {
@@ -670,7 +671,13 @@ ensure_lines (PangoLayout *layout)
 
 retry:
       line = pango_line_breaker_next_line (breaker, x, width, layout->wrap, ellipsize);
-      pango_line_get_extents (line, NULL, &ext);
+
+      if (line->starts_paragraph)
+        trim |= PANGO_LEADING_TRIM_START;
+      if (line->ends_paragraph)
+        trim |= PANGO_LEADING_TRIM_END;
+
+      pango_line_get_trimmed_extents (line, trim, &ext);
 
       if (layout->height >= 0 && y + 2 * ext.height >= layout->height &&
           ellipsize != layout->ellipsize)
