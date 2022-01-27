@@ -53,7 +53,7 @@ test_hbfont_monospace (void)
   g_assert_false (pango_font_family_is_variable (family));
   g_assert_false (pango_font_family_is_monospace (family));
 
-  pango_hb_font_map_add_face (map, pango_hb_face_new_from_file (path, 0, -2, NULL, NULL));
+  pango_hb_font_map_add_face (map, PANGO_FONT_FACE (pango_hb_face_new_from_file (path, 0, -2, NULL, NULL)));
 
   g_assert_true (pango_font_family_is_variable (family));
 
@@ -396,7 +396,7 @@ test_hbfont_load (void)
   pango_font_description_free (desc);
   g_free (path);
 
-  pango_hb_font_map_add_face (map, face_fat);
+  pango_hb_font_map_add_face (map, PANGO_FONT_FACE (face_fat));
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "DejaVuSans.ttf", NULL);
   desc = pango_font_description_new ();
@@ -404,7 +404,7 @@ test_hbfont_load (void)
   face_wild = pango_hb_face_new_from_file (path, 0, -1, "Wild", desc);
   pango_font_description_free (desc);
 
-  pango_hb_font_map_add_face (map, face_wild);
+  pango_hb_font_map_add_face (map, PANGO_FONT_FACE (face_wild));
 
   desc = pango_font_face_describe (PANGO_FONT_FACE (face_wild));
   pango_font_description_set_size (desc, 12 * PANGO_SCALE);
@@ -462,7 +462,7 @@ test_hbfont_load_variation (void)
   pango_font_description_free (desc);
   g_free (path);
 
-  pango_hb_font_map_add_face (map, face_fat);
+  pango_hb_font_map_add_face (map, PANGO_FONT_FACE (face_fat));
 
   desc = pango_font_description_new ();
   pango_font_description_set_family (desc, "Cat");
@@ -471,7 +471,7 @@ test_hbfont_load_variation (void)
   face_wild = pango_hb_face_new_instance (face_fat, &v, 1, "Wild", desc);
   pango_font_description_free (desc);
 
-  pango_hb_font_map_add_face (map, face_wild);
+  pango_hb_font_map_add_face (map, PANGO_FONT_FACE (face_wild));
 
   desc = pango_font_face_describe (PANGO_FONT_FACE (face_wild));
 
@@ -632,12 +632,13 @@ compare_family_name (gconstpointer a,
 static gboolean
 is_generic_family (PangoFontFamily *fam)
 {
-  const char *name = pango_font_family_get_name (fam);
+  return g_str_equal (G_OBJECT_TYPE_NAME (fam), "PangoGenericFamily");
+}
 
-  if (strcmp (G_OBJECT_TYPE_NAME (fam), "PangoGenericFamily") == 0)
-    return TRUE;
-
-  return g_strv_contains ((const char *[]){ "Sans", "Serif", "Monospace", "System-ui", NULL}, name);
+static gboolean
+is_generic_family_name (const char *family)
+{
+  return g_strv_contains ((const char *[]){ "Sans", "Serif", "Monospace", "System-ui", NULL}, family);
 }
 
 static const char * const *
@@ -648,9 +649,10 @@ collect_nongeneric_families (PangoFontMap *map)
   for (int i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (map)); i++)
     {
       PangoFontFamily *fam = g_list_model_get_item (G_LIST_MODEL (map), i);
+      const char *name = pango_font_family_get_name (fam);
 
-      if (!is_generic_family (fam))
-        g_ptr_array_add (array, (gpointer)pango_font_family_get_name (fam));
+      if (!(is_generic_family (fam) || is_generic_family_name (name)))
+        g_ptr_array_add (array, (gpointer)name);
 
       g_object_unref (fam);
     }

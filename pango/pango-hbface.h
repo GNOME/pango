@@ -26,6 +26,8 @@
 
 G_BEGIN_DECLS
 
+typedef struct _PangoHbFont PangoHbFont;
+
 #define PANGO_TYPE_HB_FACE      (pango_hb_face_get_type ())
 
 PANGO_AVAILABLE_IN_ALL

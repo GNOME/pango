@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc.
+ * Copyright 2022 Red Hat, Inc.
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -19,39 +19,12 @@
 
 #pragma once
 
-#include "pango-hbfont.h"
-#include "pango-hbface.h"
+#include "pango-userfont.h"
+#include "pango-userface.h"
 #include "pango-font-private.h"
 
-#include <hb.h>
 
-
-typedef struct _HexBoxInfo HexBoxInfo;
-struct _HexBoxInfo
-{
-  PangoFont *font;
-  int rows;
-  double digit_width;
-  double digit_height;
-  double pad_x;
-  double pad_y;
-  double line_width;
-  double box_descent;
-  double box_height;
-};
-
-typedef struct _CommonFont CommonFont;
-struct _CommonFont
-{
-  PangoFont parent_instance;
-
-  int size;
-  float dpi;
-  PangoGravity gravity;
-  PangoMatrix matrix;
-};
-
-struct _PangoHbFont
+struct _PangoUserFont
 {
   PangoFont parent_instance;
 
@@ -60,16 +33,7 @@ struct _PangoHbFont
   PangoGravity gravity;
   PangoMatrix matrix;
 
-  /* up to here shared with PangoUserFont */
+  /* up to here shared with PangoHbFont */
 
-  PangoHbFace *face;
-  hb_feature_t *features;
-  unsigned int n_features;
-  hb_variation_t *variations;
-  unsigned int n_variations;
-
-  HexBoxInfo *hex_box_info;
-  PangoLanguage *approximate_char_lang;
-  int approximate_char_width;
-  int approximate_digit_width;
+  PangoUserFace *face;
 };

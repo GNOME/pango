@@ -39,11 +39,11 @@ void                    pango_hb_font_map_add_file              (PangoHbFontMap 
 
 PANGO_AVAILABLE_IN_ALL
 void                    pango_hb_font_map_add_face              (PangoHbFontMap *self,
-                                                                 PangoHbFace    *face);
+                                                                 PangoFontFace  *face);
 
 PANGO_AVAILABLE_IN_ALL
 void                    pango_hb_font_map_remove_face           (PangoHbFontMap *self,
-                                                                 PangoHbFace    *face);
+                                                                 PangoFontFace  *face);
 
 PANGO_AVAILABLE_IN_ALL
 void                    pango_hb_font_map_add_family            (PangoHbFontMap  *self,

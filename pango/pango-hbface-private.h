@@ -26,21 +26,35 @@
 #include <hb.h>
 
 
+typedef struct _CommonFace CommonFace;
+struct _CommonFace {
+  PangoFontFace parent_instance;
+
+  PangoFontDescription *description;
+  char *name;
+  PangoFontFamily *family;
+  char *psname;
+  char *faceid;
+};
+
 struct _PangoHbFace
 {
   PangoFontFace parent_instance;
+
+  PangoFontDescription *description;
+  char *name;
+  PangoFontFamily *family;
+  char *psname;
+  char *faceid;
+
+  /* up to here shared with PangoUserFace */
 
   unsigned int index;
   int instance_id;
   char *file;
   hb_face_t *face;
-  char *psname;
-  char *faceid;
   hb_variation_t *variations;
   unsigned int n_variations;
-  char *name;
-  PangoFontFamily *family;
-  PangoFontDescription *description;
   PangoMatrix *matrix;
   double x_scale, y_scale;
   PangoLanguageSet *languages;

@@ -46,6 +46,8 @@ pango_sources = [
   'pango-generic-family.c',
   'pango-hbfont.c',
   'pango-hbfontmap.c',
+  'pango-userface.c',
+  'pango-userfont.c',
 ]
 
 pango_headers = [
@@ -86,6 +88,8 @@ pango_headers = [
   'pango-hbface.h',
   'pango-hbfont.h',
   'pango-hbfontmap.h',
+  'pango-userface.h',
+  'pango-userfont.h',
 ]
 
 pango_gir_includes = [

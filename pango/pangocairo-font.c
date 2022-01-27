@@ -31,6 +31,8 @@
 #include "pango-impl-utils.h"
 #include "pango-hbfont-private.h"
 #include "pango-hbface-private.h"
+#include "pango-userfont-private.h"
+#include "pango-userface-private.h"
 #include "pangocairo-fc.h"
 
 #pragma GCC diagnostic push
@@ -73,6 +75,76 @@ _pango_cairo_font_private_scaled_font_data_destroy (PangoCairoFontPrivateScaledF
 }
 
 static FT_Library ft_library;
+
+static cairo_user_data_key_t cairo_user_data;
+
+static cairo_status_t
+render_func (cairo_scaled_font_t  *scaled_font,
+             unsigned long         glyph,
+             cairo_t              *cr,
+             cairo_text_extents_t *extents)
+{
+  cairo_font_face_t *font_face;
+  PangoUserFont *font;
+  hb_glyph_extents_t glyph_extents;
+  hb_position_t h_advance;
+  hb_position_t v_advance;
+  gboolean is_color;
+
+  font_face = cairo_scaled_font_get_font_face (scaled_font);
+  font = cairo_font_face_get_user_data (font_face, &cairo_user_data);
+
+  extents->x_bearing = 0;
+  extents->y_bearing = 0;
+  extents->width = 0;
+  extents->height = 0;
+  extents->x_advance = 0;
+  extents->y_advance = 0;
+
+  if (!font->face->glyph_info_func (font->face, 1024,
+                                    (hb_codepoint_t)glyph,
+                                    &glyph_extents,
+                                    &h_advance, &v_advance,
+                                    &is_color,
+                                    font->face->user_data))
+    {
+      return CAIRO_STATUS_USER_FONT_ERROR;
+    }
+
+  extents->x_bearing = glyph_extents.x_bearing / (double) 1024;
+  extents->y_bearing = glyph_extents.y_bearing / (double) 1024;
+  extents->width = glyph_extents.width / (double) 1024;
+  extents->height = glyph_extents.height / (double) 1024;
+  extents->x_advance = h_advance / (double) 1024;
+  extents->y_advance = v_advance / (double) 1024;
+
+  if (!font->face->render_func (font->face, font->size,
+                                (hb_codepoint_t)glyph,
+                                font->face->user_data,
+                                "cairo",
+                                cr))
+    {
+      return CAIRO_STATUS_USER_FONT_ERROR;
+    }
+
+  return CAIRO_STATUS_SUCCESS;
+}
+
+static cairo_font_face_t *
+create_font_face_for_user_font (PangoUserFont *font)
+{
+  cairo_font_face_t *cairo_face;
+
+  cairo_face = cairo_user_font_face_create ();
+  cairo_font_face_set_user_data (cairo_face, &cairo_user_data, font, NULL);
+#ifdef HAVE_CAIRO_USER_FONT_FACE_SET_RENDER_COLOR_GLYPH_FUNC
+  cairo_user_font_face_set_render_color_glyph_func (cairo_face, render_func);
+#else
+  cairo_user_font_face_set_render_glyph_func (cairo_face, render_func);
+#endif
+
+  return cairo_face;
+}
 
 static cairo_font_face_t *
 create_font_face_for_hb_font (PangoHbFont *font)
@@ -145,8 +217,10 @@ _pango_cairo_font_private_get_scaled_font (PangoCairoFontPrivate *cf_priv)
 
   if (PANGO_IS_CAIRO_FONT (cf_priv->cfont))
     font_face = (* PANGO_CAIRO_FONT_GET_IFACE (cf_priv->cfont)->create_font_face) (cf_priv->cfont);
-  else
+  else if (PANGO_IS_HB_FONT (cf_priv->cfont))
     font_face = create_font_face_for_hb_font (PANGO_HB_FONT (cf_priv->cfont));
+  else if (PANGO_IS_USER_FONT (cf_priv->cfont))
+    font_face = create_font_face_for_user_font (PANGO_USER_FONT (cf_priv->cfont));
 
   if (G_UNLIKELY (font_face == NULL))
     goto done;
@@ -694,26 +768,35 @@ _pango_font_get_cairo_font_private (PangoFont *font)
   cf_priv = g_object_get_data (G_OBJECT (font), "pango-hb-font-cairo_private");
   if (!cf_priv)
     {
-      PangoHbFont *hbfont = PANGO_HB_FONT (font);
+      CommonFont *cf = (CommonFont *)font;
       cairo_font_options_t *font_options;
       cairo_matrix_t font_matrix;
+      double x_scale, y_scale;
       int size;
 
-      if (hbfont->face->matrix)
-        cairo_matrix_init (&font_matrix,
-                           hbfont->face->matrix->xx,
-                           - hbfont->face->matrix->yx,
-                           - hbfont->face->matrix->xy,
-                           hbfont->face->matrix->yy,
-                           0., 0.);
-      else
-        cairo_matrix_init (&font_matrix, 1., 0., 0., 1., 0., 0.);
+      cairo_matrix_init (&font_matrix, 1., 0., 0., 1., 0., 0.);
+      x_scale = y_scale = 1;
 
-      size = hbfont->size * hbfont->dpi / 72.;
+      if (PANGO_IS_HB_FONT (font))
+        {
+          PangoHbFont *hbfont = PANGO_HB_FONT (font);
+          if (hbfont->face->matrix)
+            cairo_matrix_init (&font_matrix,
+                               hbfont->face->matrix->xx,
+                               - hbfont->face->matrix->yx,
+                               - hbfont->face->matrix->xy,
+                               hbfont->face->matrix->yy,
+                               0., 0.);
+
+          x_scale = hbfont->face->x_scale;
+          y_scale = hbfont->face->y_scale;
+        }
+
+      size = cf->size * cf->dpi / 72.;
 
       cairo_matrix_scale (&font_matrix,
-                          hbfont->face->x_scale * size / (double)PANGO_SCALE,
-                          hbfont->face->y_scale * size / (double)PANGO_SCALE);
+                          x_scale * size / (double)PANGO_SCALE,
+                          y_scale * size / (double)PANGO_SCALE);
 
       font_options = cairo_font_options_create ();
       cairo_font_options_set_hint_style (font_options, CAIRO_HINT_STYLE_NONE);
@@ -722,9 +805,9 @@ _pango_font_get_cairo_font_private (PangoFont *font)
       cf_priv = g_new0 (PangoCairoFontPrivate, 1);
       _pango_cairo_font_private_initialize (cf_priv,
                                             (PangoCairoFont *)font,
-                                            hbfont->gravity,
+                                            cf->gravity,
                                             font_options,
-                                            &hbfont->matrix,
+                                            &cf->matrix,
                                             &font_matrix);
 
       cairo_font_options_destroy (font_options);

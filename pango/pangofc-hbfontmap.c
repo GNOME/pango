@@ -352,7 +352,7 @@ pango_fc_hb_font_map_populate (PangoHbFontMap *map)
       if (!face)
         continue;
 
-      pango_hb_font_map_add_face (PANGO_HB_FONT_MAP (self), face);
+      pango_hb_font_map_add_face (PANGO_HB_FONT_MAP (self), PANGO_FONT_FACE (face));
     }
 
   g_hash_table_unref (lang_hash);

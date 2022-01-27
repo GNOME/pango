@@ -47,4 +47,5 @@ PangoHbFont *           pango_hb_font_new_for_description       (PangoHbFace    
                                                                  const PangoFontDescription     *description,
                                                                  float                           dpi,
                                                                  const PangoMatrix              *matrix);
+
 G_END_DECLS
