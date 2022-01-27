@@ -30,6 +30,8 @@
 
 #include "pango-item-private.h"
 #include "pango-font-private.h"
+#include "pango-userfont-private.h"
+#include "pango-userface-private.h"
 
 #include <hb-ot.h>
 
@@ -530,6 +532,25 @@ pango_hb_shape (const char          *item_text,
 }
 
 /* }}} */
+/* {{{ User shaping */
+
+static void
+pango_user_shape (const char          *text,
+                  unsigned int         length,
+                  const PangoAnalysis *analysis,
+                  PangoGlyphString    *glyphs,
+                  PangoShapeFlags      flags)
+{
+  PangoUserFont *font = PANGO_USER_FONT (analysis->font);
+
+  font->face->shape_func (font->face, font->size,
+                          text, length,
+                          analysis,
+                          glyphs, flags,
+                          font->face->user_data);
+}
+
+/* }}} */
 /* {{{ Fallback shaping */
 
 /* This is not meant to produce reasonable results */
@@ -616,47 +637,47 @@ pango_shape_internal (const char          *item_text,
   g_return_if_fail (paragraph_text <= item_text);
   g_return_if_fail (paragraph_text + paragraph_length >= item_text + item_length);
 
-  if (analysis->font)
-    {
-      pango_hb_shape (item_text, item_length,
-                      paragraph_text, paragraph_length,
-                      analysis,
-                      log_attrs, num_chars,
-                      glyphs, flags);
-
-      if (G_UNLIKELY (glyphs->num_glyphs == 0))
-        {
-          /* If a font has been correctly chosen, but no glyphs are output,
-           * there's probably something wrong with the font.
-           *
-           * Trying to be informative, we print out the font description,
-           * and the text, but to not flood the terminal with
-           * zillions of the message, we set a flag to only err once per
-           * font.
-           */
-          GQuark warned_quark = g_quark_from_static_string ("pango-shape-fail-warned");
-
-          if (!g_object_get_qdata (G_OBJECT (analysis->font), warned_quark))
-            {
-              PangoFontDescription *desc;
-              char *font_name;
-
-              desc = pango_font_describe (analysis->font);
-              font_name = pango_font_description_to_string (desc);
-              pango_font_description_free (desc);
-
-              g_warning ("shaping failure, expect ugly output. font='%s', text='%.*s'",
-                         font_name, item_length, item_text);
-
-              g_free (font_name);
-
-              g_object_set_qdata (G_OBJECT (analysis->font), warned_quark,
-                                  GINT_TO_POINTER (1));
-            }
-        }
-    }
+  if (PANGO_IS_USER_FONT (analysis->font))
+    pango_user_shape (item_text, item_length, analysis, glyphs, flags);
+  else if (analysis->font)
+    pango_hb_shape (item_text, item_length,
+                    paragraph_text, paragraph_length,
+                    analysis,
+                    log_attrs, num_chars,
+                    glyphs, flags);
   else
     glyphs->num_glyphs = 0;
+
+  if (analysis->font && glyphs->num_glyphs == 0)
+    {
+      /* If a font has been correctly chosen, but no glyphs are output,
+       * there's probably something wrong with the font.
+       *
+       * Trying to be informative, we print out the font description,
+       * and the text, but to not flood the terminal with
+       * zillions of the message, we set a flag to only err once per
+       * font.
+       */
+      GQuark warned_quark = g_quark_from_static_string ("pango-shape-fail-warned");
+
+      if (!g_object_get_qdata (G_OBJECT (analysis->font), warned_quark))
+        {
+          PangoFontDescription *desc;
+          char *font_name;
+
+          desc = pango_font_describe (analysis->font);
+          font_name = pango_font_description_to_string (desc);
+          pango_font_description_free (desc);
+
+          g_warning ("shaping failure, expect ugly output. font='%s', text='%.*s'",
+                     font_name, item_length, item_text);
+
+          g_free (font_name);
+
+          g_object_set_qdata (G_OBJECT (analysis->font), warned_quark,
+                              GINT_TO_POINTER (1));
+        }
+    }
 
   if (G_UNLIKELY (!glyphs->num_glyphs))
     {

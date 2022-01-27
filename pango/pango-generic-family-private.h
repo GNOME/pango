@@ -20,7 +20,6 @@
 #pragma once
 
 #include "pango-font.h"
-#include "pango-hbface.h"
 #include "pango-generic-family.h"
 #include "pango-hbfamily-private.h"
 
@@ -38,7 +37,7 @@ struct _PangoGenericFamily
 void                    pango_generic_family_set_font_map       (PangoGenericFamily      *self,
                                                                  PangoFontMap            *map);
 
-PangoHbFace *           pango_generic_family_find_face          (PangoGenericFamily     *self,
+PangoFontFace *         pango_generic_family_find_face          (PangoGenericFamily     *self,
                                                                  PangoFontDescription   *description,
                                                                  PangoLanguage          *language,
                                                                  gunichar                wc);

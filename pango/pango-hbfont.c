@@ -48,7 +48,7 @@
  * matrix.
  */
 
- /* {{{ Utilities */
+/* {{{ Utilities */
 
 static int
 get_average_char_width (PangoFont  *font,
@@ -764,6 +764,7 @@ static PangoFontMetrics *
 pango_hb_font_get_metrics (PangoFont     *font,
                            PangoLanguage *language)
 {
+  PangoHbFont *self = PANGO_HB_FONT (font);
   hb_font_t *hb_font = pango_font_get_hb_font (font);
   PangoFontMetrics *metrics;
   hb_font_extents_t extents;
@@ -797,8 +798,17 @@ pango_hb_font_get_metrics (PangoFont     *font,
   else
     metrics->strikethrough_position = metrics->ascent / 2;
 
-  metrics->approximate_char_width = get_average_char_width (font, pango_language_get_sample_string (language));
-  get_max_char_size (font, "0123456789", &metrics->approximate_digit_width, NULL);
+  if (self->approximate_char_width == 0 || self->approximate_char_lang != language)
+    {
+      self->approximate_char_width = get_average_char_width (font, pango_language_get_sample_string (language));
+      self->approximate_char_lang = language;
+    }
+
+  if (self->approximate_digit_width == 0)
+    get_max_char_size (font, "0123456789", &self->approximate_digit_width, NULL);
+
+  metrics->approximate_char_width = self->approximate_char_width;
+  metrics->approximate_digit_width = self->approximate_digit_width;
 
   return metrics;
 }
@@ -807,7 +817,6 @@ static hb_font_t *
 pango_hb_font_create_hb_font (PangoFont *font)
 {
   PangoHbFont *self = PANGO_HB_FONT (font);
-  hb_face_t *hb_face;
   hb_font_t *hb_font;
   double x_scale, y_scale;
   unsigned int n_axes;
@@ -815,8 +824,7 @@ pango_hb_font_create_hb_font (PangoFont *font)
   float *coords;
   int size;
 
-  hb_face = pango_hb_face_get_hb_face (self->face);
-  hb_font = hb_font_create (hb_face);
+  hb_font = hb_font_create (pango_hb_face_get_hb_face (self->face));
 
   size = self->size * self->dpi / 72.f;
   x_scale = self->face->x_scale;
@@ -844,7 +852,7 @@ pango_hb_font_create_hb_font (PangoFont *font)
       axes = g_alloca (sizeof (hb_ot_var_axis_info_t) * n_axes);
       coords = g_alloca (sizeof (float) * n_axes);
 
-      hb_ot_var_get_axis_infos (hb_face, 0, &n_axes, axes);
+      hb_ot_var_get_axis_infos (self->face->face, 0, &n_axes, axes);
 
       if (self->face->instance_id >= 0)
         hb_ot_var_named_instance_get_design_coords (self->face->face, self->face->instance_id, &n_axes, coords);

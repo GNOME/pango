@@ -59,6 +59,8 @@
 #include <pango/pango-script.h>
 #include <pango/pango-tabs.h>
 #include <pango/pango-types.h>
+#include <pango/pango-userface.h>
+#include <pango/pango-userfont.h>
 #include <pango/pango-utils.h>
 #include <pango/pango-version-macros.h>
 

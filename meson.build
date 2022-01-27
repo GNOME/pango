@@ -400,6 +400,10 @@ if not cairo_dep.found()
   cairo_found_type = cairo_dep.type_name()
 endif
 
+if cc.has_function('cairo_user_font_face_set_render_color_glyph_func', args: '-lcairo', dependencies: cairo_dep)
+  pango_conf.set('HAVE_CAIRO_USER_FONT_FACE_SET_RENDER_COLOR_GLYPH_FUNC', 1)
+endif
+
 pango_font_backends = []
 pango_cairo_backends = []
 

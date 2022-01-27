@@ -199,13 +199,13 @@ pango_generic_family_set_font_map (PangoGenericFamily *self,
  *
  * Returns: (transfer none) (nullable): the face
  */
-PangoHbFace *
+PangoFontFace *
 pango_generic_family_find_face (PangoGenericFamily   *self,
                                 PangoFontDescription *description,
                                 PangoLanguage        *language,
                                 gunichar              wc)
 {
-  PangoHbFace *face = NULL;
+  PangoFontFace *face = NULL;
 
   for (int i = 0; i < self->families->len; i++)
     {
