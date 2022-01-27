@@ -25,15 +25,20 @@
 #include <string.h>
 
 #include <pango/pangocairo.h>
+#include <pango/pangofc-hbfontmap.h>
+
+static PangoFontMap *fontmap;
 
 #define BULLET "•"
+#define HEART "♥"
 
 const char text[] =
-"The GNOME project provides two things:\n"
+"The GNOME project provides three things:\n"
 "\n"
 "  • The GNOME desktop environment\n"
 "  • The GNOME development platform\n"
-"  • Planet GNOME";
+"  • Planet GNOME\n"
+"  ♥ Lots of love";
 
 typedef struct {
   double width, height;
@@ -59,106 +64,87 @@ mini_svg_render (MiniSvg  *shape,
   const char *p;
   char op[2];
   int len;
+  double x1, y1, x2, y2, x3, y3;
 
   cairo_get_current_point (cr, &x, &y);
   cairo_translate (cr, x, y);
 
   for (p = shape->path; sscanf (p, "%1s %n", op, &len), p += len, *p;)
     switch (*op)
-    {
+      {
       case 'M':
-        {
-          sscanf (p, "%lf,%lf %n", &x, &y, &len); p += len;
-          cairo_move_to (cr, x, y);
-          break;
-        }
+        sscanf (p, "%lf,%lf %n", &x, &y, &len); p += len;
+        cairo_move_to (cr, x, y);
+        break;
       case 'L':
-        {
-          sscanf (p, "%lf,%lf %n", &x, &y, &len); p += len;
-          cairo_line_to (cr, x, y);
-          break;
-        }
+        sscanf (p, "%lf,%lf %n", &x, &y, &len); p += len;
+        cairo_line_to (cr, x, y);
+        break;
       case 'C':
-        {
-          double x1, y1, x2, y2, x3, y3;
-          sscanf (p, "%lf,%lf %lf,%lf %lf,%lf %n", &x1, &y1, &x2, &y2, &x3, &y3, &len); p += len;
-          cairo_curve_to (cr, x1, y1, x2, y2, x3, y3);
-          break;
-        }
+        sscanf (p, "%lf,%lf %lf,%lf %lf,%lf %n", &x1, &y1, &x2, &y2, &x3, &y3, &len); p += len;
+        cairo_curve_to (cr, x1, y1, x2, y2, x3, y3);
+        break;
       case 'z':
-        {
-          cairo_close_path (cr);
-          break;
-        }
-      default: 
-        {
-          g_warning ("Invalid MiniSvg operation '%c'", *op);
-          break;
-        }
-    }
+        cairo_close_path (cr);
+        break;
+      default:
+        g_warning ("Invalid MiniSvg operation '%c'", *op);
+        break;
+      }
 
   if (!do_path)
     cairo_fill (cr);
 }
 
-static void
-mini_svg_shape_renderer (cairo_t        *cr,
-                         PangoAttrShape *attr,
-                         gboolean        do_path,
-                         gpointer        data G_GNUC_UNUSED)
-{
-  MiniSvg *shape = (MiniSvg *) attr->data;
-  double scale_x, scale_y;
-
-  scale_x = (double) attr->ink_rect.width  / (PANGO_SCALE * shape->width );
-  scale_y = (double) attr->ink_rect.height / (PANGO_SCALE * shape->height);
-
-  cairo_rel_move_to (cr,
-                     (double) attr->ink_rect.x / PANGO_SCALE,
-                     (double) attr->ink_rect.y / PANGO_SCALE);
-  cairo_scale (cr, scale_x, scale_y);
-
-  mini_svg_render (shape, cr, do_path);
-}
-
-
 static PangoLayout *
 get_layout (cairo_t *cr)
 {
+  PangoContext *context;
   PangoLayout *layout;
   PangoAttrList *attrs;
-  PangoRectangle ink_rect     = {1 * PANGO_SCALE, -11 * PANGO_SCALE,  8 * PANGO_SCALE, 10 * PANGO_SCALE};
-  PangoRectangle logical_rect = {0 * PANGO_SCALE, -12 * PANGO_SCALE, 10 * PANGO_SCALE, 12 * PANGO_SCALE};
   const char *p;
 
   /* Create a PangoLayout, set the font and text */
-  layout = pango_cairo_create_layout (cr);
-
-  pango_cairo_context_set_shape_renderer (pango_layout_get_context (layout),
-                                          mini_svg_shape_renderer, NULL, NULL);
+  context = pango_font_map_create_context (fontmap);
+  layout = pango_layout_new (context);
+  g_object_unref (context);
 
   pango_layout_set_text (layout, text, -1);
 
   attrs = pango_attr_list_new ();
 
-  /* Set gnome shape attributes for all bullets */
+  PangoFontDescription *font_desc = pango_font_description_from_string ("Bullets 12");
+
   for (p = text; (p = strstr (p, BULLET)); p += strlen (BULLET))
     {
       PangoAttribute *attr;
-      
-      attr = pango_attr_shape_new_with_data (&ink_rect,
-                                             &logical_rect,
-                                             &GnomeFootLogo,
-                                             NULL, NULL);
 
+      attr = pango_attr_font_desc_new (font_desc);
       attr->start_index = p - text;
       attr->end_index = attr->start_index + strlen (BULLET);
-
       pango_attr_list_insert (attrs, attr);
     }
 
+  for (p = text; (p = strstr (p, HEART)); p += strlen (HEART))
+    {
+      PangoAttribute *attr;
+
+      attr = pango_attr_font_desc_new (font_desc);
+      attr->start_index = p - text;
+      attr->end_index = attr->start_index + strlen (HEART);
+      pango_attr_list_insert (attrs, attr);
+
+      attr = pango_attr_fallback_new (0);
+      attr->start_index = p - text;
+      attr->end_index = attr->start_index + strlen (HEART);
+      pango_attr_list_insert (attrs, attr);
+    }
+
+  pango_font_description_free (font_desc);
+
   pango_layout_set_attributes (layout, attrs);
   pango_attr_list_unref (attrs);
+
 
   return layout;
 }
@@ -168,6 +154,8 @@ draw_text (cairo_t *cr, int *width, int *height)
 {
   PangoLayout *layout = get_layout (cr);
   PangoLines *lines = pango_layout_get_lines (layout);
+
+  pango_layout_write_to_file (layout, "out.layout");
 
   /* Adds a fixed 10-pixel margin on the sides. */
 
@@ -188,7 +176,122 @@ draw_text (cairo_t *cr, int *width, int *height)
   g_object_unref (layout);
 }
 
-int main (int argc, char **argv)
+static gboolean
+glyph_cb (PangoUserFace  *face,
+          hb_codepoint_t  unicode,
+          hb_codepoint_t *glyph,
+          gpointer        data)
+{
+  if (unicode == 0x2022 || /* bullet */
+      unicode == 0x2665)   /* heart */
+    {
+      *glyph = unicode;
+      return TRUE;
+    }
+
+  return FALSE;
+}
+
+static gboolean
+glyph_info_cb (PangoUserFace      *face,
+               int                 size,
+               hb_codepoint_t      glyph,
+               hb_glyph_extents_t *extents,
+               hb_position_t      *h_advance,
+               hb_position_t      *v_advance,
+               gboolean           *is_color,
+               gpointer            user_data)
+{
+  if (glyph == 0x2022 || glyph == 0x2665)
+    {
+      extents->x_bearing = 0;
+      extents->y_bearing = - size;
+      extents->width = size;
+      extents->height = size;
+
+      *h_advance = size;
+      *v_advance = size;
+
+      *is_color = glyph == 0x2665;
+
+      return TRUE;
+    }
+
+  return FALSE;
+}
+
+static gboolean
+font_info_cb (PangoUserFace     *face,
+              int                size,
+              hb_font_extents_t *extents,
+              gpointer           user_data)
+{
+  extents->ascender = size;
+  extents->descender = 0;
+  extents->line_gap = 0;
+
+  return TRUE;
+}
+
+static gboolean
+render_cb (PangoUserFace  *face,
+           int             size,
+           hb_codepoint_t  glyph,
+           gpointer        user_data,
+           const char     *backend_id,
+           gpointer        backend_data)
+{
+  cairo_t *cr = backend_data;
+
+  if (strcmp (backend_id, "cairo") != 0)
+    return FALSE;
+
+  if (glyph == 0x2022)
+    {
+      MiniSvg *shape = &GnomeFootLogo;
+
+      cairo_move_to (cr, 0, -1);
+      cairo_scale (cr, 1. / shape->width, 1. / shape->height);
+
+      mini_svg_render (shape, cr, FALSE);
+    }
+  else if (glyph == 0x2665)
+    {
+      cairo_set_source_rgb (cr, 1., 0., 0.);
+
+      cairo_move_to (cr, .5, .0);
+      cairo_line_to (cr, .9, -.4);
+      cairo_curve_to (cr, 1.1, -.8, .5, -.9, .5, -.5);
+      cairo_curve_to (cr, .5, -.9, -.1, -.8, .1, -.4);
+      cairo_close_path (cr);
+      cairo_fill (cr);
+    }
+
+  return TRUE;
+}
+
+static void
+setup_fontmap (PangoHbFontMap *fontmap)
+{
+  PangoFontDescription *desc;
+  PangoUserFace *face;
+
+  desc = pango_font_description_new ();
+  pango_font_description_set_family (desc, "Bullets");
+
+  face = pango_user_face_new (font_info_cb,
+                              glyph_cb,
+                              glyph_info_cb,
+                              NULL,
+                              render_cb,
+                              NULL, NULL, "Black", desc);
+  pango_hb_font_map_add_face (fontmap, PANGO_FONT_FACE (face));
+
+  pango_font_description_free (desc);
+}
+
+int
+main (int argc, char **argv)
 {
   cairo_t *cr;
   char *filename;
@@ -204,18 +307,17 @@ int main (int argc, char **argv)
 
   filename = argv[1];
 
-  /* First create and use a 0x0 surface, to measure how large
-   * the final surface needs to be */
-  surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-                                        0, 0);
+  fontmap = PANGO_FONT_MAP (pango_fc_hb_font_map_new ());
+  setup_fontmap (PANGO_HB_FONT_MAP (fontmap));
+
+  surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 0, 0);
   cr = cairo_create (surface);
   draw_text (cr, &width, &height);
   cairo_destroy (cr);
   cairo_surface_destroy (surface);
 
   /* Now create the final surface and draw to it. */
-  surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-                                        width, height);
+  surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
   cr = cairo_create (surface);
 
   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
@@ -230,7 +332,7 @@ int main (int argc, char **argv)
 
   if (status != CAIRO_STATUS_SUCCESS)
     {
-      g_printerr ("Could not save png to '%s'\n", filename);
+      g_printerr ("Could not save png to '%s': %s\n", filename, cairo_status_to_string (status));
       return 1;
     }
 
