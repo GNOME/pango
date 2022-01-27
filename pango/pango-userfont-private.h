@@ -20,25 +20,20 @@
 
 #pragma once
 
-#include "pango-font.h"
-#include "pango-generic-family.h"
-#include "pango-hbfamily-private.h"
+#include "pango-userfont.h"
+#include "pango-userface.h"
+#include <hb.h>
 
-
-struct _PangoGenericFamily
+struct _PangoUserFont
 {
-  PangoFontFamily parent_instance;
+  PangoFont parent_instance;
 
-  PangoFontMap *map;
-  char *name;
-  GPtrArray *families;
+  int size; /* point size, scaled by PANGO_SCALE */
+  float dpi;
+  PangoGravity gravity;
+  PangoMatrix matrix;
+
+  /* up to here shared with PangoHbFont */
+
+  PangoUserFace *face;
 };
-
-
-void                    pango_generic_family_set_font_map       (PangoGenericFamily      *self,
-                                                                 PangoFontMap            *map);
-
-PangoFontFace *         pango_generic_family_find_face          (PangoGenericFamily     *self,
-                                                                 PangoFontDescription   *description,
-                                                                 PangoLanguage          *language,
-                                                                 gunichar                wc);

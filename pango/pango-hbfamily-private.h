@@ -21,7 +21,6 @@
 #pragma once
 
 #include "pango-font.h"
-#include "pango-hbface.h"
 
 #define PANGO_TYPE_HB_FAMILY (pango_hb_family_get_type ())
 
@@ -44,12 +43,12 @@ void                    pango_hb_family_set_font_map    (PangoHbFamily          
                                                          PangoFontMap           *map);
 
 void                    pango_hb_family_add_face        (PangoHbFamily          *self,
-                                                         PangoHbFace            *face);
+                                                         PangoFontFace          *face);
 
 void                    pango_hb_family_remove_face     (PangoHbFamily          *self,
-                                                         PangoHbFace            *face);
+                                                         PangoFontFace          *face);
 
-PangoHbFace *           pango_hb_family_find_face       (PangoHbFamily          *self,
+PangoFontFace *         pango_hb_family_find_face       (PangoHbFamily          *self,
                                                          PangoFontDescription   *description,
                                                          PangoLanguage          *language,
                                                          gunichar                wc);

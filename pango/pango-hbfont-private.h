@@ -38,19 +38,36 @@ struct _HexBoxInfo
   double box_height;
 };
 
+typedef struct _CommonFont CommonFont;
+struct _CommonFont
+{
+  PangoFont parent_instance;
+
+  int size;
+  float dpi;
+  PangoGravity gravity;
+  PangoMatrix matrix;
+};
+
 struct _PangoHbFont
 {
   PangoFont parent_instance;
 
-  PangoHbFace *face;
   int size; /* point size, scaled by PANGO_SCALE */
   float dpi;
+  PangoGravity gravity;
+  PangoMatrix matrix;
+
+  /* up to here shared with PangoUserFont */
+
+  PangoHbFace *face;
   hb_feature_t *features;
   unsigned int n_features;
   hb_variation_t *variations;
   unsigned int n_variations;
-  PangoGravity gravity;
-  PangoMatrix matrix;
 
   HexBoxInfo *hex_box_info;
+  PangoLanguage *approximate_char_lang;
+  int approximate_char_width;
+  int approximate_digit_width;
 };

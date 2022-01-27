@@ -283,7 +283,8 @@ pango_hb_face_finalize (GObject *object)
 {
   PangoHbFace *self = PANGO_HB_FACE (object);
 
-  hb_face_destroy (self->face);
+  if (self->face)
+    hb_face_destroy (self->face);
   pango_font_description_free (self->description);
   g_free (self->name);
   g_free (self->file);
