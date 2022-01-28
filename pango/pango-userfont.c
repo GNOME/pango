@@ -92,8 +92,9 @@ static PangoCoverage *
 pango_user_font_get_coverage (PangoFont     *font,
                               PangoLanguage *language G_GNUC_UNUSED)
 {
-  /* FIXME */
-  return pango_coverage_new ();
+  PangoUserFont *self = PANGO_USER_FONT (font);
+
+  return pango_coverage_new_for_user_face (self->face);
 }
 
 static void

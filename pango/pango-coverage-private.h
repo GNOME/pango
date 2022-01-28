@@ -24,6 +24,7 @@
 
 #include <glib-object.h>
 #include <pango-coverage.h>
+#include <pango-userface.h>
 
 G_BEGIN_DECLS
 
@@ -42,6 +43,7 @@ struct _PangoCoverage
   GObject parent_instance;
 
   hb_set_t *chars;
+  PangoUserFace *face;
 };
 
 struct _PangoCoverageClass
@@ -57,6 +59,7 @@ struct _PangoCoverageClass
 };
 
 PangoCoverage *pango_coverage_new_for_hb_face (hb_face_t *hb_face);
+PangoCoverage *pango_coverage_new_for_user_face (PangoUserFace *face);
 
 G_END_DECLS
 
