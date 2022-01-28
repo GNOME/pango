@@ -51,7 +51,7 @@ test_hbfont_monospace (void)
   g_assert_false (pango_font_family_is_variable (family));
   g_assert_false (pango_font_family_is_monospace (family));
 
-  pango_hb_font_map_add_face (map, pango_hb_face_new_from_file (path, 0, -2, NULL, NULL));
+  pango_hb_font_map_add_face (map, PANGO_FONT_FACE (pango_hb_face_new_from_file (path, 0, -2, NULL, NULL)));
 
   g_assert_true (pango_font_family_is_variable (family));
 
@@ -394,7 +394,7 @@ test_hbfont_load (void)
   pango_font_description_free (desc);
   g_free (path);
 
-  pango_hb_font_map_add_face (map, face_fat);
+  pango_hb_font_map_add_face (map, PANGO_FONT_FACE (face_fat));
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "DejaVuSans.ttf", NULL);
   desc = pango_font_description_new ();
@@ -402,7 +402,7 @@ test_hbfont_load (void)
   face_wild = pango_hb_face_new_from_file (path, 0, -1, "Wild", desc);
   pango_font_description_free (desc);
 
-  pango_hb_font_map_add_face (map, face_wild);
+  pango_hb_font_map_add_face (map, PANGO_FONT_FACE (face_wild));
 
   desc = pango_font_face_describe (PANGO_FONT_FACE (face_wild));
   pango_font_description_set_size (desc, 12 * PANGO_SCALE);
@@ -460,7 +460,7 @@ test_hbfont_load_variation (void)
   pango_font_description_free (desc);
   g_free (path);
 
-  pango_hb_font_map_add_face (map, face_fat);
+  pango_hb_font_map_add_face (map, PANGO_FONT_FACE (face_fat));
 
   desc = pango_font_description_new ();
   pango_font_description_set_family (desc, "Cat");
@@ -469,7 +469,7 @@ test_hbfont_load_variation (void)
   face_wild = pango_hb_face_new_instance (face_fat, &v, 1, "Wild", desc);
   pango_font_description_free (desc);
 
-  pango_hb_font_map_add_face (map, face_wild);
+  pango_hb_font_map_add_face (map, PANGO_FONT_FACE (face_wild));
 
   desc = pango_font_face_describe (PANGO_FONT_FACE (face_wild));
 
