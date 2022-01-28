@@ -23,6 +23,8 @@
 #include <string.h>
 
 #include "pango-coverage-private.h"
+#include "pango-userface-private.h"
+
 
 G_DEFINE_TYPE (PangoCoverage, pango_coverage, G_TYPE_OBJECT)
 
@@ -36,8 +38,8 @@ pango_coverage_finalize (GObject *object)
 {
   PangoCoverage *coverage = PANGO_COVERAGE (object);
 
-  if (coverage->chars)
-    hb_set_destroy (coverage->chars);
+  g_clear_pointer (&coverage->chars, hb_set_destroy);
+  g_clear_object (&coverage->face);
 
   G_OBJECT_CLASS (pango_coverage_parent_class)->finalize (object);
 }
@@ -46,6 +48,14 @@ static PangoCoverageLevel
 pango_coverage_real_get (PangoCoverage *coverage,
                          int            index)
 {
+  if (coverage->face)
+    {
+      if (pango_font_face_has_char (coverage->face, index))
+        return PANGO_COVERAGE_EXACT;
+      else
+       return PANGO_COVERAGE_NONE;
+    }
+
   if (coverage->chars == NULL)
     return PANGO_COVERAGE_NONE;
 
@@ -60,6 +70,9 @@ pango_coverage_real_set (PangoCoverage     *coverage,
                          int                index,
                          PangoCoverageLevel level)
 {
+  if (coverage->face)
+    return;
+
   if (coverage->chars == NULL)
     coverage->chars = hb_set_create ();
 
@@ -88,6 +101,8 @@ pango_coverage_real_copy (PangoCoverage *coverage)
             hb_set_add (copy->chars, (hb_codepoint_t)i);
         }
     }
+  if (coverage->face)
+    copy->face = g_object_ref (coverage->face);
 
   return copy;
 }
@@ -136,6 +151,18 @@ pango_coverage_new_for_hb_face (hb_face_t *hb_face)
 
   coverage->chars = hb_set_create ();
   hb_face_collect_unicodes (hb_face, coverage->chars);
+
+  return coverage;
+}
+
+PangoCoverage *
+pango_coverage_new_for_font_face (PangoFontFace *face)
+{
+  PangoCoverage *coverage;
+
+  coverage = g_object_new (PANGO_TYPE_COVERAGE, NULL);
+
+  coverage->face = g_object_ref (face);
 
   return coverage;
 }
