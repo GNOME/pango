@@ -7,6 +7,7 @@ if pango_cairo_backends.contains('png')
     'cairotwisted',
     'parshape',
     'columns',
+    'userfont',
   ]
 endif
 
