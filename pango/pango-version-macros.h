@@ -352,7 +352,7 @@
  * functions, then using functions added after version
  * %PANGO_VERSION_MAX_ALLOWED will cause warnings.
  *
- * Unless you are using PANGO_CHECK_VERSION() or the like to compile
+ * Unless you are using PANGO_VERSION_CHECK() or the like to compile
  * different code depending on the Pango version, then this should be
  * set to the same value as %PANGO_VERSION_MIN_REQUIRED.
  *
