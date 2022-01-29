@@ -32,7 +32,6 @@ struct _CommonFace {
   PangoFontDescription *description;
   char *name;
   PangoFontFamily *family;
-  char *psname;
   char *faceid;
 };
 
@@ -43,7 +42,6 @@ struct _PangoHbFace
   PangoFontDescription *description;
   char *name;
   PangoFontFamily *family;
-  char *psname;
   char *faceid;
 
   /* up to here shared with PangoUserFace */
@@ -61,9 +59,6 @@ struct _PangoHbFace
   gboolean synthetic;
 };
 
-void                    pango_hb_face_set_family        (PangoHbFace          *self,
-                                                         PangoFontFamily      *family);
-
 PangoLanguageSet *      pango_hb_face_get_language_set  (PangoHbFace          *self);
 
 PANGO_AVAILABLE_IN_1_52
@@ -73,8 +68,3 @@ void                    pango_hb_face_set_language_set  (PangoHbFace          *s
 PANGO_AVAILABLE_IN_1_52
 void                    pango_hb_face_set_matrix        (PangoHbFace          *self,
                                                          const PangoMatrix    *matrix);
-
-gboolean                pango_hb_face_has_char          (PangoHbFace          *self,
-                                                         gunichar              wc);
-
-const char *            pango_hb_face_get_faceid        (PangoHbFace          *self);

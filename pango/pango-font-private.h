@@ -37,11 +37,23 @@ typedef struct {
   gboolean         (* supports_language)        (PangoFontFace *face,
                                                  PangoLanguage *language);
   PangoLanguage ** (* get_languages)            (PangoFontFace *face);
+  gboolean         (* has_char)                 (PangoFontFace *face,
+                                                 gunichar       wc);
+  const char *     (* get_faceid)               (PangoFontFace *face);
+  PangoFont *      (* create_font)              (PangoFontFace              *face,
+                                                 const PangoFontDescription *desc,
+                                                 float                       dpi,
+                                                 const PangoMatrix          *matrix);
 } PangoFontFaceClassPrivate;
 
 #define PANGO_FONT_FACE_GET_CLASS_PRIVATE(font) ((PangoFontFaceClassPrivate *) \
    g_type_class_get_private ((GTypeClass *) PANGO_FONT_FACE_GET_CLASS (font), PANGO_TYPE_FONT_FACE))
 
+const char *    pango_font_face_get_faceid      (PangoFontFace              *face);
+PangoFont *     pango_font_face_create_font     (PangoFontFace              *face,
+                                                 const PangoFontDescription *desc,
+                                                 float                       dpi,
+                                                 const PangoMatrix          *matrix);
 
 typedef struct {
   gboolean         (* is_hinted) (PangoFont *font);

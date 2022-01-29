@@ -38,10 +38,8 @@ pango_coverage_finalize (GObject *object)
 {
   PangoCoverage *coverage = PANGO_COVERAGE (object);
 
-  if (coverage->chars)
-    hb_set_destroy (coverage->chars);
-  if (coverage->face)
-    g_object_unref (coverage->face);
+  g_clear_pointer (&coverage->chars, hb_set_destroy);
+  g_clear_object (&coverage->face);
 
   G_OBJECT_CLASS (pango_coverage_parent_class)->finalize (object);
 }
@@ -52,7 +50,7 @@ pango_coverage_real_get (PangoCoverage *coverage,
 {
   if (coverage->face)
     {
-      if (pango_user_face_has_char (coverage->face, index))
+      if (pango_font_face_has_char (coverage->face, index))
         return PANGO_COVERAGE_EXACT;
       else
        return PANGO_COVERAGE_NONE;
@@ -158,7 +156,7 @@ pango_coverage_new_for_hb_face (hb_face_t *hb_face)
 }
 
 PangoCoverage *
-pango_coverage_new_for_user_face (PangoUserFace *face)
+pango_coverage_new_for_face (PangoFontFace *face)
 {
   PangoCoverage *coverage;
 
