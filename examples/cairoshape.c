@@ -210,7 +210,7 @@ glyph_info_cb (PangoUserFace      *face,
       *h_advance = size;
       *v_advance = size;
 
-      *is_color = FALSE;
+      *is_color = glyph == 0x2665;
 
       return TRUE;
     }
