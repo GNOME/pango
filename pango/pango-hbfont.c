@@ -1050,24 +1050,6 @@ pango_hb_font_new_for_description (PangoHbFace                *face,
   return pango_hb_font_new (face, size, features, n_features, variations, n_variations, gravity, dpi, matrix);
 }
 
-/**
- * pango_hb_font_get_size:
- * @font: a `PangoHbFont`
- *
- * Returns the size of the font in points, scaled by `PANGO_SCALE`.
- *
- * This is the same value that was passed as size to [ctor@Pango.HbFont.new].
- *
- * Returns: the size of @font
- */
-int
-pango_hb_font_get_size (PangoHbFont *font)
-{
-  g_return_val_if_fail (PANGO_IS_HB_FONT (font), 0);
-
-  return font->size;
-}
-
 /* }}} */
 
 /* vim:set foldmethod=marker expandtab: */
