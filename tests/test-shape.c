@@ -80,7 +80,6 @@ affects_itemization (PangoAttribute *attr,
     case PANGO_ATTR_GRAVITY:
     case PANGO_ATTR_GRAVITY_HINT:
     /* These are part of ItemProperties, so need to break runs */
-    case PANGO_ATTR_SHAPE:
     case PANGO_ATTR_RISE:
     case PANGO_ATTR_UNDERLINE:
     case PANGO_ATTR_STRIKETHROUGH:

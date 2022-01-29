@@ -97,9 +97,6 @@ struct _PangoRenderer
  * @draw_error_underline: draws a squiggly line that approximately
  * covers the given rectangle in the style of an underline used to
  * indicate a spelling error.
- * @draw_shape: draw content for a glyph shaped with `PangoAttrShape`
- *   @x, @y are the coordinates of the left edge of the baseline,
- *   in user coordinates.
  * @draw_trapezoid: draws a trapezoidal filled area
  * @draw_glyph: draws a single glyph
  * @part_changed: do renderer specific processing when rendering
@@ -116,10 +113,7 @@ struct _PangoRenderer
  * - draw_glyphs
  * - draw_rectangle
  * - draw_error_underline
- * - draw_shape
  * - draw_glyph_item
- *
- * The default draw_shape implementation draws nothing.
  *
  * The following vfuncs take device space coordinates as doubles
  * and must be implemented:
@@ -152,11 +146,6 @@ struct _PangoRendererClass
                                 int               y,
                                 int               width,
                                 int               height);
-  void (*draw_shape)           (PangoRenderer    *renderer,
-                                PangoAttrShape   *attr,
-                                int               x,
-                                int               y);
-
   void (*draw_trapezoid)       (PangoRenderer    *renderer,
                                 PangoRenderPart   part,
                                 double            y1_,

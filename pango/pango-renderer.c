@@ -500,56 +500,6 @@ add_strikethrough (PangoRenderer    *renderer,
     }
 }
 
-static void
-get_item_properties (PangoItem       *item,
-                     PangoAttrShape **shape_attr)
-{
-  GSList *l;
-
-  if (shape_attr)
-    *shape_attr = NULL;
-
-  for (l = item->analysis.extra_attrs; l; l = l->next)
-    {
-      PangoAttribute *attr = l->data;
-
-      switch ((int) attr->klass->type)
-        {
-        case PANGO_ATTR_SHAPE:
-          if (shape_attr)
-            *shape_attr = (PangoAttrShape *)attr;
-          break;
-
-        default:
-          break;
-        }
-    }
-}
-
-static void
-draw_shaped_glyphs (PangoRenderer    *renderer,
-                    PangoGlyphString *glyphs,
-                    PangoAttrShape   *attr,
-                    int               x,
-                    int               y)
-{
-  PangoRendererClass *class = PANGO_RENDERER_GET_CLASS (renderer);
-  int i;
-
-  if (!class->draw_shape)
-    return;
-
-  for (i = 0; i < glyphs->num_glyphs; i++)
-    {
-      PangoGlyphInfo *gi = &glyphs->glyphs[i];
-
-      class->draw_shape (renderer, attr, x, y);
-
-      x += gi->geometry.width;
-    }
-}
-
-
 /**
  * pango_renderer_draw_layout_line:
  * @renderer: a `PangoRenderer`
@@ -608,7 +558,6 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
     {
       PangoFontMetrics *metrics;
       PangoLayoutRun *run = l->data;
-      PangoAttrShape *shape_attr;
       PangoRectangle ink_rect, *ink = NULL;
       PangoRectangle logical_rect, *logical = NULL;
       int y_off;
@@ -618,36 +567,20 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
 
       pango_renderer_prepare_run (renderer, run);
 
-      get_item_properties (run->item, &shape_attr);
-
-      if (shape_attr)
+      if (renderer->underline != PANGO_UNDERLINE_NONE ||
+          renderer->priv->overline != PANGO_OVERLINE_NONE ||
+          renderer->strikethrough)
         {
           ink = &ink_rect;
           logical = &logical_rect;
-          _pango_shape_get_extents (run->glyphs->num_glyphs,
-                                    &shape_attr->ink_rect,
-                                    &shape_attr->logical_rect,
-                                    ink,
-                                    logical);
-          glyph_string_width = logical->width;
         }
+      if (G_UNLIKELY (ink || logical))
+        pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
+                                    ink, logical);
+      if (logical)
+        glyph_string_width = logical_rect.width;
       else
-        {
-          if (renderer->underline != PANGO_UNDERLINE_NONE ||
-              renderer->priv->overline != PANGO_OVERLINE_NONE ||
-              renderer->strikethrough)
-            {
-              ink = &ink_rect;
-              logical = &logical_rect;
-            }
-          if (G_UNLIKELY (ink || logical))
-            pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-                                        ink, logical);
-          if (logical)
-            glyph_string_width = logical_rect.width;
-          else
-            glyph_string_width = pango_glyph_string_get_width (run->glyphs);
-        }
+        glyph_string_width = pango_glyph_string_get_width (run->glyphs);
 
       state.logical_rect_end = x + x_off + glyph_string_width;
 
@@ -682,17 +615,10 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
                                          overall_rect.height);
         }
 
-      if (shape_attr)
-        {
-          draw_shaped_glyphs (renderer, run->glyphs, shape_attr, x + x_off, y - y_off);
-        }
-      else
-        {
-          pango_renderer_draw_glyph_item (renderer,
-                                          text,
-                                          run,
-                                          x + x_off, y - y_off);
-        }
+      pango_renderer_draw_glyph_item (renderer,
+                                      text,
+                                      run,
+                                      x + x_off, y - y_off);
 
       if (renderer->underline != PANGO_UNDERLINE_NONE ||
           renderer->priv->overline != PANGO_OVERLINE_NONE ||

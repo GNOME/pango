@@ -62,7 +62,6 @@ test_attributes_basic (void)
   test_copy (pango_attr_scale_new (2.56));
   test_copy (pango_attr_fallback_new (FALSE));
   test_copy (pango_attr_letter_spacing_new (1024));
-  test_copy (pango_attr_shape_new (&rect, &rect));
   test_copy (pango_attr_gravity_new (PANGO_GRAVITY_SOUTH));
   test_copy (pango_attr_gravity_hint_new (PANGO_GRAVITY_HINT_STRONG));
   test_copy (pango_attr_font_features_new ("csc=1"));
@@ -149,9 +148,6 @@ test_binding (PangoAttribute *attr)
     case COLOR:
       g_assert_nonnull (pango_attribute_as_color (attr));
       break;
-    case SHAPE:
-      g_assert_nonnull (pango_attribute_as_shape (attr));
-      break;
     case FLOAT:
       g_assert_nonnull (pango_attribute_as_float (attr));
       break;
@@ -196,7 +192,6 @@ test_binding_helpers (void)
   test_binding (pango_attr_scale_new (2.56));
   test_binding (pango_attr_fallback_new (FALSE));
   test_binding (pango_attr_letter_spacing_new (1024));
-  test_binding (pango_attr_shape_new (&rect, &rect));
   test_binding (pango_attr_gravity_new (PANGO_GRAVITY_SOUTH));
   test_binding (pango_attr_gravity_hint_new (PANGO_GRAVITY_HINT_STRONG));
   test_binding (pango_attr_font_features_new ("csc=1"));

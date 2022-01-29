@@ -178,7 +178,6 @@ static const char *attr_type_names[] = {
   "underline",
   "strikethrough",
   "rise",
-  "shape",
   "scale",
   "fallback",
   "letter-spacing",
@@ -393,10 +392,6 @@ add_attribute (GtkJsonPrinter *printer,
     case PANGO_ATTR_ALLOW_BREAKS:
     case PANGO_ATTR_INSERT_HYPHENS:
       gtk_json_printer_add_boolean (printer, "value", ((PangoAttrInt*)attr)->value != 0);
-      break;
-
-    case PANGO_ATTR_SHAPE:
-      gtk_json_printer_add_string (printer, "value", "shape");
       break;
 
     case PANGO_ATTR_SCALE:
@@ -1019,11 +1014,6 @@ attr_for_type (GtkJsonParser *parser,
 
     case PANGO_ATTR_RISE:
       attr = pango_attr_rise_new ((int) gtk_json_parser_get_number (parser));
-      break;
-
-    case PANGO_ATTR_SHAPE:
-      /* FIXME */
-      attr = pango_attr_shape_new (&(PangoRectangle) { 0, 0, 0, 0}, &(PangoRectangle) { 0, 0, 0, 0});
       break;
 
     case PANGO_ATTR_SCALE:

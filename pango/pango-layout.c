@@ -113,9 +113,6 @@ struct _ItemProperties
   guint oline_single   : 1;
   guint showing_space  : 1;
   gint            letter_spacing;
-  gboolean        shape_set;
-  PangoRectangle *shape_ink_rect;
-  PangoRectangle *shape_logical_rect;
   double line_height;
   int    absolute_line_height;
 };
@@ -3707,16 +3704,11 @@ shape_run (PangoLayoutLine *line,
       if (pango_context_get_round_glyph_positions (layout->context))
         shape_flags |= PANGO_SHAPE_ROUND_POSITIONS;
 
-      if (state->properties.shape_set)
-        _pango_shape_shape (layout->text + item->offset, item->num_chars,
-                            state->properties.shape_ink_rect, state->properties.shape_logical_rect,
-                            glyphs);
-      else
-        pango_shape_item (item,
-                          layout->text, layout->length,
-                          layout->log_attrs + state->start_offset,
-                          glyphs,
-                          shape_flags);
+      pango_shape_item (item,
+                        layout->text, layout->length,
+                        layout->log_attrs + state->start_offset,
+                        glyphs,
+                        shape_flags);
 
       if (state->properties.letter_spacing)
         {
@@ -4006,7 +3998,6 @@ process_item (PangoLayout     *layout,
               gboolean         is_last_item)
 {
   PangoItem *item = state->items->data;
-  gboolean shape_set = FALSE;
   int width;
   int extra_width;
   int orig_extra_width;
@@ -4322,9 +4313,6 @@ retry_break:
           insert_run (line, state, new_item, break_glyphs, FALSE);
 
           state->log_widths_offset += break_num_chars;
-
-          /* Shaped items should never be broken */
-          g_assert (!shape_set);
 
           DEBUG1 ("some-fit '%.*s', remaining %d",
                   new_item->length, layout->text + new_item->offset,
@@ -4678,7 +4666,6 @@ affects_itemization (PangoAttribute *attr,
     case PANGO_ATTR_FONT_SCALE:
     /* These need to be constant across runs */
     case PANGO_ATTR_LETTER_SPACING:
-    case PANGO_ATTR_SHAPE:
     case PANGO_ATTR_RISE:
     case PANGO_ATTR_BASELINE_SHIFT:
     case PANGO_ATTR_LINE_HEIGHT:
@@ -5625,14 +5612,8 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
   if (!run_logical && line_logical)
     run_logical = &logical;
 
-  if (properties.shape_set)
-    _pango_shape_get_extents (run->item->num_chars,
-                              properties.shape_ink_rect,
-                              properties.shape_logical_rect,
+  pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
                               run_ink, run_logical);
-  else
-    pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-                                run_ink, run_logical);
 
   if (run_ink && (has_underline || has_overline || properties.strikethrough))
     {
@@ -6791,9 +6772,6 @@ pango_layout_get_item_properties (PangoItem      *item,
   properties->strikethrough = FALSE;
   properties->showing_space = FALSE;
   properties->letter_spacing = 0;
-  properties->shape_set = FALSE;
-  properties->shape_ink_rect = NULL;
-  properties->shape_logical_rect = NULL;
   properties->line_height = 0.0;
   properties->absolute_line_height = 0;
 
@@ -6847,12 +6825,6 @@ pango_layout_get_item_properties (PangoItem      *item,
 
         case PANGO_ATTR_LETTER_SPACING:
           properties->letter_spacing = ((PangoAttrInt *)attr)->value;
-          break;
-
-        case PANGO_ATTR_SHAPE:
-          properties->shape_set = TRUE;
-          properties->shape_logical_rect = &((PangoAttrShape *)attr)->logical_rect;
-          properties->shape_ink_rect = &((PangoAttrShape *)attr)->ink_rect;
           break;
 
         case PANGO_ATTR_LINE_HEIGHT:

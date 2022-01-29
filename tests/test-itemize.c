@@ -76,7 +76,6 @@ affects_itemization (PangoAttribute *attr,
     case PANGO_ATTR_FONT_SCALE:
     /* These are part of ItemProperties, so need to break runs */
     case PANGO_ATTR_LETTER_SPACING:
-    case PANGO_ATTR_SHAPE:
     case PANGO_ATTR_RISE:
     case PANGO_ATTR_BASELINE_SHIFT:
     case PANGO_ATTR_LINE_HEIGHT:
