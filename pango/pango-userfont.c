@@ -94,7 +94,7 @@ pango_user_font_get_coverage (PangoFont     *font,
 {
   PangoUserFont *self = PANGO_USER_FONT (font);
 
-  return pango_coverage_new_for_user_face (self->face);
+  return pango_coverage_new_for_face (PANGO_FONT_FACE (self->face));
 }
 
 static void

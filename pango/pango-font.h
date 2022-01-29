@@ -552,6 +552,9 @@ gboolean              pango_font_face_supports_language (PangoFontFace *face,
 PANGO_AVAILABLE_IN_1_52
 PangoLanguage **      pango_font_face_get_languages     (PangoFontFace *face);
 
+PANGO_AVAILABLE_IN_1_52
+gboolean              pango_font_face_has_char          (PangoFontFace *face,
+                                                         gunichar       wc);
 
 
 /*

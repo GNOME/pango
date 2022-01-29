@@ -43,7 +43,7 @@ struct _PangoCoverage
   GObject parent_instance;
 
   hb_set_t *chars;
-  PangoUserFace *face;
+  PangoFontFace *face;
 };
 
 struct _PangoCoverageClass
@@ -58,8 +58,8 @@ struct _PangoCoverageClass
   PangoCoverage *    (* copy) (PangoCoverage      *coverage);
 };
 
-PangoCoverage *pango_coverage_new_for_hb_face (hb_face_t *hb_face);
-PangoCoverage *pango_coverage_new_for_user_face (PangoUserFace *face);
+PangoCoverage *pango_coverage_new_for_hb_face (hb_face_t     *hb_face);
+PangoCoverage *pango_coverage_new_for_face    (PangoFontFace *face);
 
 G_END_DECLS
 
