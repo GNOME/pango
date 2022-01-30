@@ -638,14 +638,14 @@ pango_shape_internal (const char          *item_text,
   g_return_if_fail (paragraph_text <= item_text);
   g_return_if_fail (paragraph_text + paragraph_length >= item_text + item_length);
 
-  if (PANGO_IS_HB_FONT (analysis->font))
+  if (PANGO_IS_USER_FONT (analysis->font))
+    pango_user_shape (item_text, item_length, analysis, glyphs, flags);
+  else if (analysis->font)
     pango_hb_shape (item_text, item_length,
                     paragraph_text, paragraph_length,
                     analysis,
                     log_attrs, num_chars,
                     glyphs, flags);
-  else if (PANGO_IS_USER_FONT (analysis->font))
-    pango_user_shape (item_text, item_length, analysis, glyphs, flags);
   else
     glyphs->num_glyphs = 0;
 
