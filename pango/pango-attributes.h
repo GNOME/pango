@@ -32,14 +32,21 @@ G_BEGIN_DECLS
 typedef struct _PangoAttribute        PangoAttribute;
 typedef struct _PangoAttrClass        PangoAttrClass;
 
-typedef struct _PangoAttrString       PangoAttrString;
-typedef struct _PangoAttrLanguage     PangoAttrLanguage;
-typedef struct _PangoAttrInt          PangoAttrInt;
-typedef struct _PangoAttrSize         PangoAttrSize;
-typedef struct _PangoAttrFloat        PangoAttrFloat;
-typedef struct _PangoAttrColor        PangoAttrColor;
-typedef struct _PangoAttrFontDesc     PangoAttrFontDesc;
-typedef struct _PangoAttrFontFeatures PangoAttrFontFeatures;
+typedef enum
+{
+  PANGO_ATTR_VALUE_STRING,
+  PANGO_ATTR_VALUE_INT,
+  PANGO_ATTR_VALUE_BOOLEAN,
+  PANGO_ATTR_VALUE_FLOAT,
+  PANGO_ATTR_VALUE_COLOR,
+  PANGO_ATTR_VALUE_LANGUAGE,
+  PANGO_ATTR_VALUE_FONT_DESC,
+  PANGO_ATTR_VALUE_POINTER
+} PangoAttrValueType;
+
+#define PANGO_ATTR_TYPE(value) (PANGO_ATTR_VALUE_##value | (__COUNTER__ << 8))
+#define PANGO_ATTR_TYPE_VALUE_TYPE(type) ((PangoAttrValueType)((type) & 0xff))
+#define PANGO_ATTR_VALUE_TYPE(attr) PANGO_ATTR_TYPE_VALUE_TYPE ((attr)->type)
 
 /**
  * PangoAttrType:
@@ -89,44 +96,46 @@ typedef struct _PangoAttrFontFeatures PangoAttrFontFeatures;
  */
 typedef enum
 {
-  PANGO_ATTR_INVALID,           /* 0 is an invalid attribute type */
-  PANGO_ATTR_LANGUAGE,          /* PangoAttrLanguage */
-  PANGO_ATTR_FAMILY,            /* PangoAttrString */
-  PANGO_ATTR_STYLE,             /* PangoAttrInt */
-  PANGO_ATTR_WEIGHT,            /* PangoAttrInt */
-  PANGO_ATTR_VARIANT,           /* PangoAttrInt */
-  PANGO_ATTR_STRETCH,           /* PangoAttrInt */
-  PANGO_ATTR_SIZE,              /* PangoAttrSize */
-  PANGO_ATTR_FONT_DESC,         /* PangoAttrFontDesc */
-  PANGO_ATTR_FOREGROUND,        /* PangoAttrColor */
-  PANGO_ATTR_BACKGROUND,        /* PangoAttrColor */
-  PANGO_ATTR_UNDERLINE,         /* PangoAttrInt */
-  PANGO_ATTR_STRIKETHROUGH,     /* PangoAttrInt */
-  PANGO_ATTR_RISE,              /* PangoAttrInt */
-  PANGO_ATTR_SCALE,             /* PangoAttrFloat */
-  PANGO_ATTR_FALLBACK,          /* PangoAttrInt */
-  PANGO_ATTR_LETTER_SPACING,    /* PangoAttrInt */
-  PANGO_ATTR_UNDERLINE_COLOR,   /* PangoAttrColor */
-  PANGO_ATTR_STRIKETHROUGH_COLOR,/* PangoAttrColor */
-  PANGO_ATTR_ABSOLUTE_SIZE,     /* PangoAttrSize */
-  PANGO_ATTR_GRAVITY,           /* PangoAttrInt */
-  PANGO_ATTR_GRAVITY_HINT,      /* PangoAttrInt */
-  PANGO_ATTR_FONT_FEATURES,     /* PangoAttrFontFeatures */
-  PANGO_ATTR_FOREGROUND_ALPHA,  /* PangoAttrInt */
-  PANGO_ATTR_BACKGROUND_ALPHA,  /* PangoAttrInt */
-  PANGO_ATTR_ALLOW_BREAKS,      /* PangoAttrInt */
-  PANGO_ATTR_SHOW,              /* PangoAttrInt */
-  PANGO_ATTR_INSERT_HYPHENS,    /* PangoAttrInt */
-  PANGO_ATTR_OVERLINE,          /* PangoAttrInt */
-  PANGO_ATTR_OVERLINE_COLOR,    /* PangoAttrColor */
-  PANGO_ATTR_LINE_HEIGHT,       /* PangoAttrFloat */
-  PANGO_ATTR_ABSOLUTE_LINE_HEIGHT, /* PangoAttrInt */
-  PANGO_ATTR_TEXT_TRANSFORM,    /* PangoAttrInt */
-  PANGO_ATTR_WORD,              /* PangoAttrInt */
-  PANGO_ATTR_SENTENCE,          /* PangoAttrInt */
-  PANGO_ATTR_BASELINE_SHIFT,    /* PangoAttrSize */
-  PANGO_ATTR_FONT_SCALE,        /* PangoAttrInt */
+  PANGO_ATTR_INVALID,
+  PANGO_ATTR_LANGUAGE             = PANGO_ATTR_TYPE (LANGUAGE),
+  PANGO_ATTR_FAMILY               = PANGO_ATTR_TYPE (STRING),
+  PANGO_ATTR_STYLE                = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_WEIGHT               = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_VARIANT              = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_STRETCH              = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_SIZE                 = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_FONT_DESC            = PANGO_ATTR_TYPE (FONT_DESC),
+  PANGO_ATTR_FOREGROUND           = PANGO_ATTR_TYPE (COLOR),
+  PANGO_ATTR_BACKGROUND           = PANGO_ATTR_TYPE (COLOR),
+  PANGO_ATTR_UNDERLINE            = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_STRIKETHROUGH        = PANGO_ATTR_TYPE (BOOLEAN),
+  PANGO_ATTR_RISE                 = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_SCALE                = PANGO_ATTR_TYPE (FLOAT),
+  PANGO_ATTR_FALLBACK             = PANGO_ATTR_TYPE (BOOLEAN),
+  PANGO_ATTR_LETTER_SPACING       = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_UNDERLINE_COLOR      = PANGO_ATTR_TYPE (COLOR),
+  PANGO_ATTR_STRIKETHROUGH_COLOR  = PANGO_ATTR_TYPE (COLOR),
+  PANGO_ATTR_ABSOLUTE_SIZE        = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_GRAVITY              = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_GRAVITY_HINT         = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_FONT_FEATURES        = PANGO_ATTR_TYPE (STRING),
+  PANGO_ATTR_FOREGROUND_ALPHA     = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_BACKGROUND_ALPHA     = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_ALLOW_BREAKS         = PANGO_ATTR_TYPE (BOOLEAN),
+  PANGO_ATTR_SHOW                 = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_INSERT_HYPHENS       = PANGO_ATTR_TYPE (BOOLEAN),
+  PANGO_ATTR_OVERLINE             = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_OVERLINE_COLOR       = PANGO_ATTR_TYPE (COLOR),
+  PANGO_ATTR_LINE_HEIGHT          = PANGO_ATTR_TYPE (FLOAT),
+  PANGO_ATTR_ABSOLUTE_LINE_HEIGHT = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_TEXT_TRANSFORM       = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_WORD                 = PANGO_ATTR_TYPE (BOOLEAN),
+  PANGO_ATTR_SENTENCE             = PANGO_ATTR_TYPE (BOOLEAN),
+  PANGO_ATTR_BASELINE_SHIFT       = PANGO_ATTR_TYPE (INT),
+  PANGO_ATTR_FONT_SCALE           = PANGO_ATTR_TYPE (INT),
 } PangoAttrType;
+
+#undef PANGO_ATTR_TYPE
 
 /**
  * PangoUnderline:
@@ -302,10 +311,21 @@ typedef enum {
  */
 struct _PangoAttribute
 {
-  const PangoAttrClass *klass;
+  PangoAttrType type;
   guint start_index;
   guint end_index;
+  union {
+    char *str_value;
+    int  int_value;
+    gboolean boolean_value;
+    double double_value;
+    PangoColor color_value;
+    PangoLanguage *lang_value;
+    PangoFontDescription *font_value;
+    gpointer pointer_value;
+  };
 };
+
 
 /**
  * PangoAttrFilterFunc:
@@ -330,157 +350,19 @@ typedef gboolean (*PangoAttrFilterFunc) (PangoAttribute *attribute,
  **/
 typedef gpointer (*PangoAttrDataCopyFunc) (gconstpointer user_data);
 
-/**
- * PangoAttrClass:
- * @type: the type ID for this attribute
- * @copy: function to duplicate an attribute of this type
- *   (see [method@Pango.Attribute.copy])
- * @destroy: function to free an attribute of this type
- *   (see [method@Pango.Attribute.destroy])
- * @equal: function to check two attributes of this type for equality
- *   (see [method@Pango.Attribute.equal])
- *
- * The `PangoAttrClass` structure stores the type and operations for
- * a particular type of attribute.
- *
- * The functions in this structure should not be called directly. Instead,
- * one should use the wrapper functions provided for `PangoAttribute`.
- */
-struct _PangoAttrClass
-{
-  /*< public >*/
-  PangoAttrType type;
-  PangoAttribute * (*copy) (const PangoAttribute *attr);
-  void             (*destroy) (PangoAttribute *attr);
-  gboolean         (*equal) (const PangoAttribute *attr1, const PangoAttribute *attr2);
-};
-
-/**
- * PangoAttrString:
- * @attr: the common portion of the attribute
- * @value: the string which is the value of the attribute
- *
- * The `PangoAttrString` structure is used to represent attributes with
- * a string value.
- */
-struct _PangoAttrString
-{
-  PangoAttribute attr;
-  char *value;
-};
-/**
- * PangoAttrLanguage:
- * @attr: the common portion of the attribute
- * @value: the `PangoLanguage` which is the value of the attribute
- *
- * The `PangoAttrLanguage` structure is used to represent attributes that
- * are languages.
- */
-struct _PangoAttrLanguage
-{
-  PangoAttribute attr;
-  PangoLanguage *value;
-};
-/**
- * PangoAttrInt:
- * @attr: the common portion of the attribute
- * @value: the value of the attribute
- *
- * The `PangoAttrInt` structure is used to represent attributes with
- * an integer or enumeration value.
- */
-struct _PangoAttrInt
-{
-  PangoAttribute attr;
-  int value;
-};
-/**
- * PangoAttrFloat:
- * @attr: the common portion of the attribute
- * @value: the value of the attribute
- *
- * The `PangoAttrFloat` structure is used to represent attributes with
- * a float or double value.
- */
-struct _PangoAttrFloat
-{
-  PangoAttribute attr;
-  double value;
-};
-/**
- * PangoAttrColor:
- * @attr: the common portion of the attribute
- * @color: the `PangoColor` which is the value of the attribute
- *
- * The `PangoAttrColor` structure is used to represent attributes that
- * are colors.
- */
-struct _PangoAttrColor
-{
-  PangoAttribute attr;
-  PangoColor color;
-};
-
-/**
- * PangoAttrSize:
- * @attr: the common portion of the attribute
- * @size: size of font, in units of 1/%PANGO_SCALE of a point (for
- *   %PANGO_ATTR_SIZE) or of a device unit (for %PANGO_ATTR_ABSOLUTE_SIZE)
- * @absolute: whether the font size is in device units or points.
- *   This field is only present for compatibility with Pango-1.8.0
- *   (%PANGO_ATTR_ABSOLUTE_SIZE was added in 1.8.1); and always will
- *   be %FALSE for %PANGO_ATTR_SIZE and %TRUE for %PANGO_ATTR_ABSOLUTE_SIZE.
- *
- * The `PangoAttrSize` structure is used to represent attributes which
- * set font size.
- */
-struct _PangoAttrSize
-{
-  PangoAttribute attr;
-  int size;
-  guint absolute : 1;
-};
-
-/**
- * PangoAttrFontDesc:
- * @attr: the common portion of the attribute
- * @desc: the font description which is the value of this attribute
- *
- * The `PangoAttrFontDesc` structure is used to store an attribute that
- * sets all aspects of the font description at once.
- */
-struct _PangoAttrFontDesc
-{
-  PangoAttribute attr;
-  PangoFontDescription *desc;
-};
-
-/**
- * PangoAttrFontFeatures:
- * @attr: the common portion of the attribute
- * @features: the features, as a string in CSS syntax
- *
- * The `PangoAttrFontFeatures` structure is used to represent OpenType
- * font features as an attribute.
- *
- * Since: 1.38
- */
-struct _PangoAttrFontFeatures
-{
-  PangoAttribute attr;
-  gchar *features;
-};
+typedef char * (*PangoAttrDataSerializeFunc) (gconstpointer user_data);
 
 PANGO_AVAILABLE_IN_ALL
 GType                   pango_attribute_get_type                (void) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
-PangoAttrType           pango_attr_type_register                (const char                 *name);
+PangoAttrType           pango_attr_type_register                (PangoAttrDataCopyFunc       copy,
+                                                                 GDestroyNotify              destroy,
+                                                                 GEqualFunc                  equal,
+                                                                 const char                 *name,
+                                                                 PangoAttrDataSerializeFunc  serialize);
 PANGO_AVAILABLE_IN_1_22
 const char *            pango_attr_type_get_name                (PangoAttrType               type) G_GNUC_CONST;
-PANGO_AVAILABLE_IN_1_20
-void                    pango_attribute_init                    (PangoAttribute             *attr,
-                                                                 const PangoAttrClass       *klass);
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attribute_copy                    (const PangoAttribute       *attr);
 PANGO_AVAILABLE_IN_ALL
@@ -574,23 +456,37 @@ PANGO_AVAILABLE_IN_1_50
 PangoAttribute *        pango_attr_line_height_new_absolute     (int                          height);
 PANGO_AVAILABLE_IN_1_50
 PangoAttribute *        pango_attr_text_transform_new           (PangoTextTransform transform);
+PANGO_AVAILABLE_IN_1_52
+PangoAttribute *        pango_attr_custom_new                   (PangoAttrType                type,
+                                                                 gpointer                     user_data);
 
-PANGO_AVAILABLE_IN_1_50
-PangoAttrString       * pango_attribute_as_string               (PangoAttribute              *attr);
-PANGO_AVAILABLE_IN_1_50
-PangoAttrLanguage     * pango_attribute_as_language             (PangoAttribute              *attr);
-PANGO_AVAILABLE_IN_1_50
-PangoAttrInt          * pango_attribute_as_int                  (PangoAttribute              *attr);
-PANGO_AVAILABLE_IN_1_50
-PangoAttrSize         * pango_attribute_as_size                 (PangoAttribute              *attr);
-PANGO_AVAILABLE_IN_1_50
-PangoAttrFloat        * pango_attribute_as_float                (PangoAttribute              *attr);
-PANGO_AVAILABLE_IN_1_50
-PangoAttrColor        * pango_attribute_as_color                (PangoAttribute              *attr);
-PANGO_AVAILABLE_IN_1_50
-PangoAttrFontDesc     * pango_attribute_as_font_desc            (PangoAttribute              *attr);
-PANGO_AVAILABLE_IN_1_50
-PangoAttrFontFeatures * pango_attribute_as_font_features        (PangoAttribute              *attr);
+PANGO_AVAILABLE_IN_1_52
+gboolean                pango_attribute_get_string              (PangoAttribute              *attribute,
+                                                                 const char                 **value);
+PANGO_AVAILABLE_IN_1_52
+gboolean                pango_attribute_get_language            (PangoAttribute              *attribute,
+                                                                 PangoLanguage              **value);
+PANGO_AVAILABLE_IN_1_52
+gboolean                pango_attribute_get_int                 (PangoAttribute              *attribute,
+                                                                 int                         *value);
+PANGO_AVAILABLE_IN_1_52
+gboolean                pango_attribute_get_boolean             (PangoAttribute              *attribute,
+                                                                 gboolean                    *value);
+PANGO_AVAILABLE_IN_1_52
+gboolean                pango_attribute_get_float               (PangoAttribute              *attribute,
+                                                                 double                      *value);
+PANGO_AVAILABLE_IN_1_52
+gboolean                pango_attribute_get_color               (PangoAttribute              *attribute,
+                                                                 PangoColor                  *value);
+PANGO_AVAILABLE_IN_1_52
+gboolean                pango_attribute_get_font_desc           (PangoAttribute              *attribute,
+                                                                 PangoFontDescription       **value);
+
+PANGO_AVAILABLE_IN_1_52
+gboolean                pango_attribute_get_custom              (PangoAttribute              *attribute,
+                                                                 gpointer                    *value);
+
+
 
 /* Attribute lists */
 

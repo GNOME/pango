@@ -31,9 +31,9 @@ range 38 41
 38 41 baseline-shift superscript
 range 41 42
 range 42 45
-42 54 family Monospace
+42 54 family "Monospace"
 range 45 54
-42 54 family Monospace
+42 54 family "Monospace"
 45 54 underline single
 range 54 2147483647
 

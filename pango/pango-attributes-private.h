@@ -38,6 +38,7 @@ struct _PangoAttrList
   GPtrArray *attributes;
 };
 
+char *    pango_attr_value_serialize   (PangoAttribute    *attr);
 void     _pango_attr_list_init         (PangoAttrList     *list);
 void     _pango_attr_list_destroy      (PangoAttrList     *list);
 gboolean _pango_attr_list_has_attributes (const PangoAttrList *list);
@@ -51,3 +52,4 @@ gboolean  pango_attr_iterator_advance  (PangoAttrIterator *iterator,
 
 
 #endif
+

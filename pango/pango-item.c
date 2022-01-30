@@ -276,14 +276,13 @@ pango_analysis_collect_features (const PangoAnalysis *analysis,
   for (l = analysis->extra_attrs; l && *num_features < length; l = l->next)
     {
       PangoAttribute *attr = l->data;
-      if (attr->klass->type == PANGO_ATTR_FONT_FEATURES)
+      if (attr->type == PANGO_ATTR_FONT_FEATURES)
         {
-          PangoAttrFontFeatures *fattr = (PangoAttrFontFeatures *) attr;
           const gchar *feat;
           const gchar *end;
           int len;
 
-          feat = fattr->features;
+          feat = attr->str_value;
 
           while (feat != NULL && *num_features < length)
             {
@@ -311,7 +310,7 @@ pango_analysis_collect_features (const PangoAnalysis *analysis,
   for (l = analysis->extra_attrs; l && *num_features < length; l = l->next)
     {
       PangoAttribute *attr = l->data;
-      if (attr->klass->type == PANGO_ATTR_LETTER_SPACING)
+      if (attr->type == PANGO_ATTR_LETTER_SPACING)
         {
           hb_tag_t tags[] = {
             HB_TAG('l','i','g','a'),

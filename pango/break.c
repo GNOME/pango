@@ -1801,7 +1801,7 @@ handle_allow_breaks (const char    *text,
       if (!attr)
         continue;
 
-      if (!((PangoAttrInt*)attr)->value)
+      if (!attr->int_value)
         {
           int start, end;
           int start_pos, end_pos;
@@ -2043,7 +2043,7 @@ handle_hyphens (const char    *text,
   do {
     const PangoAttribute *attr = pango_attr_iterator_get (&iter, PANGO_ATTR_INSERT_HYPHENS);
 
-    if (attr && ((PangoAttrInt*)attr)->value == 0)
+    if (attr && attr->int_value == 0)
       {
         int start, end;
         int start_pos, end_pos;
@@ -2100,13 +2100,13 @@ break_attrs (const char   *text,
     {
       PangoAttribute *attr = l->data;
 
-      if (attr->klass->type == PANGO_ATTR_ALLOW_BREAKS)
+      if (attr->type == PANGO_ATTR_ALLOW_BREAKS)
         pango_attr_list_insert (&allow_breaks, pango_attribute_copy (attr));
-      else if (attr->klass->type == PANGO_ATTR_WORD)
+      else if (attr->type == PANGO_ATTR_WORD)
         pango_attr_list_insert (&words, pango_attribute_copy (attr));
-      else if (attr->klass->type == PANGO_ATTR_SENTENCE)
+      else if (attr->type == PANGO_ATTR_SENTENCE)
         pango_attr_list_insert (&sentences, pango_attribute_copy (attr));
-      else if (attr->klass->type == PANGO_ATTR_INSERT_HYPHENS)
+      else if (attr->type == PANGO_ATTR_INSERT_HYPHENS)
         pango_attr_list_insert (&hyphens, pango_attribute_copy (attr));
     }
 

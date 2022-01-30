@@ -364,7 +364,7 @@ shape_ellipsis (EllipsizeState *state)
 
       /* Modify the fallback iter while it is inside the PangoAttrList; Don't try this at home
        */
-      ((PangoAttrInt *)fallback)->value = TRUE;
+      fallback->int_value = TRUE;
 
       ellipsis_text = "...";
       item = itemize_text (state, ellipsis_text, &attrs);

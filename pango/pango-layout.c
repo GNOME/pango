@@ -4647,7 +4647,7 @@ static gboolean
 affects_itemization (PangoAttribute *attr,
                      gpointer        data)
 {
-  switch ((int)attr->klass->type)
+  switch ((int)attr->type)
     {
     /* These affect font selection */
     case PANGO_ATTR_LANGUAGE:
@@ -4681,7 +4681,7 @@ static gboolean
 affects_break_or_shape (PangoAttribute *attr,
                         gpointer        data)
 {
-  switch ((int)attr->klass->type)
+  switch ((int)attr->type)
     {
     /* Affects breaks */
     case PANGO_ATTR_ALLOW_BREAKS:
@@ -5515,11 +5515,11 @@ pango_layout_get_empty_extents_and_height_at_index (PangoLayout    *layout,
 
                   attr = pango_attr_iterator_get (&iter, PANGO_ATTR_LINE_HEIGHT);
                   if (attr)
-                    line_height_factor = ((PangoAttrFloat *)attr)->value;
+                    line_height_factor = attr->double_value;
 
                   attr = pango_attr_iterator_get (&iter, PANGO_ATTR_ABSOLUTE_LINE_HEIGHT);
                   if (attr)
-                    absolute_line_height = ((PangoAttrInt *)attr)->value;
+                    absolute_line_height = attr->int_value;
 
                   break;
                 }
@@ -6572,14 +6572,14 @@ collect_baseline_shift (ParaBreakState *state,
     {
       PangoAttribute *attr = l->data;
 
-      if (attr->klass->type == PANGO_ATTR_RISE)
+      if (attr->type == PANGO_ATTR_RISE)
         {
-          int value = ((PangoAttrInt *)attr)->value;
+          int value = attr->int_value;
 
           *start_y_offset += value;
           *end_y_offset -= value;
         }
-      else if (attr->klass->type == PANGO_ATTR_BASELINE_SHIFT)
+      else if (attr->type == PANGO_ATTR_BASELINE_SHIFT)
         {
           if (attr->start_index == item->offset)
             {
@@ -6590,7 +6590,7 @@ collect_baseline_shift (ParaBreakState *state,
               entry->attr = attr;
               state->baseline_shifts = g_list_prepend (state->baseline_shifts, entry);
 
-              value = ((PangoAttrInt *)attr)->value;
+              value = attr->int_value;
 
               if (value > 1024 || value < -1024)
                 {
@@ -6652,7 +6652,7 @@ collect_baseline_shift (ParaBreakState *state,
 
                   if (attr->start_index == entry->attr->start_index &&
                       attr->end_index == entry->attr->end_index &&
-                      ((PangoAttrInt *)attr)->value == ((PangoAttrInt *)entry->attr)->value)
+                      attr->int_value == entry->attr->int_value)
                     {
                       *end_x_offset -= entry->x_offset;
                       *end_y_offset -= entry->y_offset;
@@ -6779,10 +6779,10 @@ pango_layout_get_item_properties (PangoItem      *item,
     {
       PangoAttribute *attr = tmp_list->data;
 
-      switch ((int) attr->klass->type)
+      switch ((int) attr->type)
         {
         case PANGO_ATTR_UNDERLINE:
-          switch (((PangoAttrInt *)attr)->value)
+          switch (attr->int_value)
             {
             case PANGO_UNDERLINE_NONE:
               break;
@@ -6808,7 +6808,7 @@ pango_layout_get_item_properties (PangoItem      *item,
           break;
 
         case PANGO_ATTR_OVERLINE:
-          switch (((PangoAttrInt *)attr)->value)
+          switch (attr->int_value)
             {
             case PANGO_OVERLINE_SINGLE:
               properties->oline_single = TRUE;
@@ -6820,23 +6820,23 @@ pango_layout_get_item_properties (PangoItem      *item,
           break;
 
         case PANGO_ATTR_STRIKETHROUGH:
-          properties->strikethrough = ((PangoAttrInt *)attr)->value;
+          properties->strikethrough = attr->int_value;
           break;
 
         case PANGO_ATTR_LETTER_SPACING:
-          properties->letter_spacing = ((PangoAttrInt *)attr)->value;
+          properties->letter_spacing = attr->int_value;
           break;
 
         case PANGO_ATTR_LINE_HEIGHT:
-          properties->line_height = ((PangoAttrFloat *)attr)->value;
+          properties->line_height = attr->double_value;
           break;
 
         case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
-          properties->absolute_line_height = ((PangoAttrInt *)attr)->value;
+          properties->absolute_line_height = attr->int_value;
           break;
 
         case PANGO_ATTR_SHOW:
-          properties->showing_space = (((PangoAttrInt *)attr)->value & PANGO_SHOW_SPACES) != 0;
+          properties->showing_space = (attr->int_value & PANGO_SHOW_SPACES) != 0;
           break;
 
         default:
