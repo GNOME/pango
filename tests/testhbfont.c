@@ -628,13 +628,15 @@ compare_family_name (gconstpointer a,
 }
 
 static gboolean
-is_generic_family (PangoFontMap *map,
-                   const char   *family)
+is_generic_family (PangoFontFamily *fam)
 {
-  if (PANGO_IS_FC_HB_FONT_MAP (map))
-    return g_strv_contains ((const char *[]){ "sans-serif", "serif", "monospace", "system-ui", "cursive", "fantasy", "emoji", NULL}, family);
-  else
-    return g_strv_contains ((const char *[]){ "Sans", "Serif", "Monospace", "System-ui", NULL}, family);
+  return g_str_equal (G_OBJECT_TYPE_NAME (fam), "PangoGenericFamily");
+}
+
+static gboolean
+is_generic_family_name (const char *family)
+{
+  return g_strv_contains ((const char *[]){ "Sans", "Serif", "Monospace", "System-ui", NULL}, family);
 }
 
 static const char * const *
@@ -647,7 +649,7 @@ collect_nongeneric_families (PangoFontMap *map)
       PangoFontFamily *fam = g_list_model_get_item (G_LIST_MODEL (map), i);
       const char *name = pango_font_family_get_name (fam);
 
-      if (!is_generic_family (map, name))
+      if (!(is_generic_family (fam) || is_generic_family_name (name)))
         g_ptr_array_add (array, (gpointer)name);
 
       g_object_unref (fam);
