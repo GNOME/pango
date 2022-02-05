@@ -17,8 +17,9 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __PANGO_ATTRIBUTES_PRIVATE_H__
-#define __PANGO_ATTRIBUTES_PRIVATE_H__
+#pragma once
+
+#include <pango/pango-attr-iterator.h>
 
 struct _PangoAttrIterator
 {
@@ -32,24 +33,6 @@ struct _PangoAttrIterator
   guint end_index;
 };
 
-struct _PangoAttrList
-{
-  guint ref_count;
-  GPtrArray *attributes;
-};
-
-char *    pango_attr_value_serialize   (PangoAttribute    *attr);
-void     _pango_attr_list_init         (PangoAttrList     *list);
-void     _pango_attr_list_destroy      (PangoAttrList     *list);
-gboolean _pango_attr_list_has_attributes (const PangoAttrList *list);
-
-void     _pango_attr_list_get_iterator (PangoAttrList     *list,
-                                        PangoAttrIterator *iterator);
-
-void     _pango_attr_iterator_destroy  (PangoAttrIterator *iterator);
-gboolean  pango_attr_iterator_advance  (PangoAttrIterator *iterator,
-                                        int                index);
-
-
-#endif
-
+void     pango_attr_iterator_clear    (PangoAttrIterator *iterator);
+gboolean pango_attr_iterator_advance  (PangoAttrIterator *iterator,
+                                       int                index);

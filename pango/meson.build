@@ -5,6 +5,9 @@ pango_sources = [
   'glyphstring.c',
   'itemize.c',
   'modules.c',
+  'pango-attr.c',
+  'pango-attr-list.c',
+  'pango-attr-iterator.c',
   'pango-attributes.c',
   'pango-bidi-type.c',
   'pango-color.c',
@@ -45,6 +48,9 @@ pango_sources = [
 
 pango_headers = [
   'pango.h',
+  'pango-attr.h',
+  'pango-attr-list.h',
+  'pango-attr-iterator.h',
   'pango-attributes.h',
   'pango-bidi-type.h',
   'pango-break.h',

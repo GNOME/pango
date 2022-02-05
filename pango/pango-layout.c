@@ -87,7 +87,8 @@
 #include <hb-ot.h>
 
 #include "pango-layout-private.h"
-#include "pango-attributes-private.h"
+#include "pango-attr-list-private.h"
+#include "pango-attr-iterator-private.h"
 #include "pango-font-private.h"
 
 
@@ -3332,12 +3333,12 @@ ensure_tab_width (PangoLayout *layout)
         {
           PangoAttrIterator iter;
 
-          _pango_attr_list_get_iterator (layout_attrs, &iter);
+          pango_attr_list_init_iterator (layout_attrs, &iter);
           pango_attr_iterator_get_font (&iter, font_desc, &language, NULL);
-          _pango_attr_iterator_destroy (&iter);
+          pango_attr_iterator_clear (&iter);
         }
 
-      _pango_attr_list_init (&tmp_attrs);
+      pango_attr_list_init (&tmp_attrs);
 
       attr = pango_attr_font_desc_new (font_desc);
       pango_font_description_free (font_desc);
@@ -3356,7 +3357,7 @@ ensure_tab_width (PangoLayout *layout)
           pango_attr_list_unref (layout_attrs);
           layout_attrs = NULL;
         }
-      _pango_attr_list_destroy (&tmp_attrs);
+      pango_attr_list_destroy (&tmp_attrs);
 
       item = items->data;
       pango_shape_with_flags ("        ", 8, "        ", 8, &item->analysis, glyphs, shape_flags);
@@ -4707,7 +4708,7 @@ apply_attributes_to_items (GList         *items,
   if (!attrs)
     return;
 
-  _pango_attr_list_get_iterator (attrs, &iter);
+  pango_attr_list_init_iterator (attrs, &iter);
 
   for (l = items; l; l = l->next)
     {
@@ -4715,7 +4716,7 @@ apply_attributes_to_items (GList         *items,
       pango_item_apply_attrs (item, &iter);
     }
 
-  _pango_attr_iterator_destroy (&iter);
+  pango_attr_iterator_clear (&iter);
 }
 
 static void
@@ -4786,7 +4787,7 @@ pango_layout_check_lines (PangoLayout *layout)
       itemize_attrs = pango_attr_list_filter (attrs, affects_itemization, NULL);
 
       if (itemize_attrs)
-        _pango_attr_list_get_iterator (itemize_attrs, &iter);
+        pango_attr_list_init_iterator (itemize_attrs, &iter);
     }
   else
     {
@@ -4954,7 +4955,7 @@ pango_layout_check_lines (PangoLayout *layout)
   if (itemize_attrs)
     {
       pango_attr_list_unref (itemize_attrs);
-      _pango_attr_iterator_destroy (&iter);
+      pango_attr_iterator_clear (&iter);
     }
 
   pango_attr_list_unref (shape_attrs);
@@ -5495,7 +5496,7 @@ pango_layout_get_empty_extents_and_height_at_index (PangoLayout    *layout,
           PangoAttrIterator iter;
           int start, end;
 
-          _pango_attr_list_get_iterator (layout->attrs, &iter);
+          pango_attr_list_init_iterator (layout->attrs, &iter);
 
           do
             {
@@ -5527,7 +5528,7 @@ pango_layout_get_empty_extents_and_height_at_index (PangoLayout    *layout,
             }
           while (pango_attr_iterator_next (&iter));
 
-          _pango_attr_iterator_destroy (&iter);
+          pango_attr_iterator_clear (&iter);
         }
 
       font = pango_context_load_font (layout->context, font_desc);

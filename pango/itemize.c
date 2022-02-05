@@ -31,7 +31,7 @@
 #include "pango-fontmap-private.h"
 #include "pango-script-private.h"
 #include "pango-emoji-private.h"
-#include "pango-attributes-private.h"
+#include "pango-attr-iterator-private.h"
 #include "pango-item-private.h"
 
 #include <hb-ot.h>

@@ -27,7 +27,8 @@
 #include <pango/pango-enum-types.h>
 #include <pango/pango-font-private.h>
 #include <pango/pango-hbface.h>
-#include <pango/pango-attributes-private.h>
+#include <pango/pango-attributes.h>
+#include <pango/pango-attr-private.h>
 
 #include <hb-ot.h>
 #include "pango/json/gtkjsonparserprivate.h"

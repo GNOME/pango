@@ -25,7 +25,8 @@
 #include "pango-glyph-item.h"
 #include "pango-layout-private.h"
 #include "pango-font-private.h"
-#include "pango-attributes-private.h"
+#include "pango-attr-list-private.h"
+#include "pango-attr-iterator-private.h"
 #include "pango-impl-utils.h"
 
 typedef struct _EllipsizeState EllipsizeState;
@@ -310,7 +311,7 @@ shape_ellipsis (EllipsizeState *state)
   int len;
   int i;
 
-  _pango_attr_list_init (&attrs);
+  pango_attr_list_init (&attrs);
 
   /* Create/reset state->ellipsis_run
    */
@@ -370,7 +371,7 @@ shape_ellipsis (EllipsizeState *state)
       item = itemize_text (state, ellipsis_text, &attrs);
     }
 
-  _pango_attr_list_destroy (&attrs);
+  pango_attr_list_destroy (&attrs);
 
   state->ellipsis_run->item = item;
 

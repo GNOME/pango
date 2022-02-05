@@ -24,7 +24,8 @@
 
 #include "pango-glyph-item.h"
 #include "pango-impl-utils.h"
-#include "pango-attributes-private.h"
+#include "pango-attr-list-private.h"
+#include "pango-attr-iterator-private.h"
 
 #define LTR(glyph_item) (((glyph_item)->item->analysis.level % 2) == 0)
 
@@ -617,7 +618,7 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
 
   /* Advance the attr iterator to the start of the item
    */
-  _pango_attr_list_get_iterator (list, &iter);
+  pango_attr_list_init_iterator (list, &iter);
   do
     {
       pango_attr_iterator_range (&iter, &range_start, &range_end);
@@ -713,7 +714,7 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
   if (LTR (glyph_item))
     result = g_slist_reverse (result);
 
-  _pango_attr_iterator_destroy (&iter);
+  pango_attr_iterator_clear (&iter);
 
   return result;
 }
