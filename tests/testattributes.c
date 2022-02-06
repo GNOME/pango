@@ -131,21 +131,25 @@ test_attributes_register (void)
   PangoAttrList *list;
   char *str;
 
-  type = pango_attr_type_register (copy_my_attribute_data,
+  type = pango_attr_type_register ("my-attribute",
+                                   PANGO_ATTR_VALUE_POINTER,
+                                   PANGO_ATTR_AFFECTS_RENDERING,
+                                   copy_my_attribute_data,
                                    destroy_my_attribute_data,
                                    my_attribute_data_equal,
-                                   "my-attribute",
                                    my_attribute_data_serialize);
 
   g_assert_cmpstr (pango_attr_type_get_name (type), ==, "my-attribute");
 
-  attr = pango_attr_custom_new (type, (gpointer)0x42);
+  attr = pango_attribute_new (type);
+  attr->pointer_value = (gpointer)0x42;
 
   ret = pango_attribute_get_custom (attr, &value);
   g_assert_true (ret);
   g_assert_true (value == (gpointer)0x42);
 
-  attr2 = pango_attr_custom_new (type, (gpointer)0x43);
+  attr2 = pango_attribute_new (type);
+  attr2->pointer_value = (gpointer)0x43;
 
   ret = pango_attribute_equal (attr, attr2);
   g_assert_false (ret);

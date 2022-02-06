@@ -4648,54 +4648,15 @@ static gboolean
 affects_itemization (PangoAttribute *attr,
                      gpointer        data)
 {
-  switch ((int)attr->type)
-    {
-    /* These affect font selection */
-    case PANGO_ATTR_LANGUAGE:
-    case PANGO_ATTR_FAMILY:
-    case PANGO_ATTR_STYLE:
-    case PANGO_ATTR_WEIGHT:
-    case PANGO_ATTR_VARIANT:
-    case PANGO_ATTR_STRETCH:
-    case PANGO_ATTR_SIZE:
-    case PANGO_ATTR_FONT_DESC:
-    case PANGO_ATTR_SCALE:
-    case PANGO_ATTR_FALLBACK:
-    case PANGO_ATTR_ABSOLUTE_SIZE:
-    case PANGO_ATTR_GRAVITY:
-    case PANGO_ATTR_GRAVITY_HINT:
-    case PANGO_ATTR_FONT_SCALE:
-    /* These need to be constant across runs */
-    case PANGO_ATTR_LETTER_SPACING:
-    case PANGO_ATTR_RISE:
-    case PANGO_ATTR_BASELINE_SHIFT:
-    case PANGO_ATTR_LINE_HEIGHT:
-    case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
-    case PANGO_ATTR_TEXT_TRANSFORM:
-      return TRUE;
-    default:
-      return FALSE;
-    }
+  return (PANGO_ATTR_AFFECTS (attr) & PANGO_ATTR_AFFECTS_ITEMIZATION) != 0;
 }
 
 static gboolean
 affects_break_or_shape (PangoAttribute *attr,
                         gpointer        data)
 {
-  switch ((int)attr->type)
-    {
-    /* Affects breaks */
-    case PANGO_ATTR_ALLOW_BREAKS:
-    case PANGO_ATTR_WORD:
-    case PANGO_ATTR_SENTENCE:
-    /* Affects shaping */
-    case PANGO_ATTR_INSERT_HYPHENS:
-    case PANGO_ATTR_FONT_FEATURES:
-    case PANGO_ATTR_SHOW:
-      return TRUE;
-    default:
-      return FALSE;
-    }
+  return (PANGO_ATTR_AFFECTS (attr) & (PANGO_ATTR_AFFECTS_BREAKING |
+                                       PANGO_ATTR_AFFECTS_SHAPING)) != 0;
 }
 
 static void

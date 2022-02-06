@@ -60,6 +60,27 @@ typedef enum
 } PangoAttrValueType;
 
 /**
+ * PangoAttrAffects:
+ * @PANGO_ATTR_AFFECTS_ITEMIZATION: the attribute affecs itemization
+ * @PANGO_ATTR_AFFECTS_BREAKING: the attribute affects `PangoLogAttr` determination
+ * @PANGO_ATTR_AFFECTS_SHAPING: the attribute affects shaping
+ * @PANGO_ATTR_AFFECTS_RENDERING: the attribute affects rendering
+ *
+ * Flags to indicate what part of Pangos processing pipeline is
+ * affected by an attribute.
+ *
+ * Marking an attribute with `PANGO_ATTR_AFFECTS_ITEMIZATION` ensures
+ * that the attribute values are constant across items.
+ */
+typedef enum
+{
+  PANGO_ATTR_AFFECTS_ITEMIZATION = 1 << 0,
+  PANGO_ATTR_AFFECTS_BREAKING    = 1 << 1,
+  PANGO_ATTR_AFFECTS_SHAPING     = 1 << 2,
+  PANGO_ATTR_AFFECTS_RENDERING   = 1 << 3
+} PangoAttrAffects;
+
+/**
  * PANGO_ATTR_TYPE_VALUE_TYPE:
  * @type: an attribute type
  *
@@ -68,12 +89,28 @@ typedef enum
 #define PANGO_ATTR_TYPE_VALUE_TYPE(type) ((PangoAttrValueType)((type) & 0xff))
 
 /**
+ * PANGO_ATTR_TYPE_AFFECTS:
+ * @type: an attribute type
+ *
+ * Extracts the `PangoAttrAffects` flags from an attribute type.
+ */
+#define PANGO_ATTR_TYPE_AFFECTS(type) ((PangoAttrAffects)(((type) >> 8) & 0xff))
+
+/**
  * PANGO_ATTR_VALUE_TYPE:
  * @attr: a `PangoAttribute`
  *
  * Obtains the `PangoAttrValueType of a `PangoAttribute`.
  */
 #define PANGO_ATTR_VALUE_TYPE(attr) PANGO_ATTR_TYPE_VALUE_TYPE ((attr)->type)
+
+/**
+ * PANGO_ATTR_AFFECTS:
+ * @attr: a `PangoAttribute`
+ *
+ * Obtains the `PangoAttrAffects` flags of a `PangoAttribute`.
+ */
+#define PANGO_ATTR_AFFECTS(attr) PANGO_ATTR_TYPE_AFFECTS ((attr)->type)
 
 /**
  * PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING:
@@ -97,7 +134,7 @@ typedef enum
 
 /**
  * PangoAttribute:
- * @klass: the class structure holding information about the type of the attribute
+ * @type: the type of the attribute
  * @start_index: the start index of the range (in bytes).
  * @end_index: end index of the range (in bytes). The character at this index
  *   is not included in the range.
@@ -116,7 +153,7 @@ typedef enum
  * The common portion of the attribute holds the range to which
  * the value in the type-specific part of the attribute applies.
  * By default, an attribute will have an all-inclusive range of
- * [0,%G_MAXUINT].
+ * `[0,G_MAXUINT]`.
  *
  * Which of the values is used depends on the value type of the
  * attribute, which can be obtained with `PANGO_ATTR_VALUE_TYPE()`.
@@ -162,10 +199,12 @@ PANGO_AVAILABLE_IN_ALL
 GType                   pango_attribute_get_type                (void) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
-guint                   pango_attr_type_register                (PangoAttrDataCopyFunc       copy,
+guint                   pango_attr_type_register                (const char                 *name,
+                                                                 PangoAttrValueType          value_type,
+                                                                 PangoAttrAffects            affects,
+                                                                 PangoAttrDataCopyFunc       copy,
                                                                  GDestroyNotify              destroy,
                                                                  GEqualFunc                  equal,
-                                                                 const char                 *name,
                                                                  PangoAttrDataSerializeFunc  serialize);
 
 PANGO_AVAILABLE_IN_1_22
@@ -179,8 +218,7 @@ gboolean                pango_attribute_equal                   (const PangoAttr
                                                                  const PangoAttribute       *attr2) G_GNUC_PURE;
 
 PANGO_AVAILABLE_IN_1_52
-PangoAttribute *        pango_attr_custom_new                   (guint                       type,
-                                                                 gpointer                     user_data);
+PangoAttribute *        pango_attribute_new                     (guint                       type);
 
 PANGO_AVAILABLE_IN_1_52
 gboolean                pango_attribute_get_string              (PangoAttribute              *attribute,

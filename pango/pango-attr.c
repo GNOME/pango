@@ -59,13 +59,15 @@ get_attr_type_nick (PangoAttrType type)
 
 /**
  * pango_attr_type_register:
- * @copy: function to copy the data of an attribute
- *   of this type
- * @destroy: function to free the data of an attribute
- *   of this type
- * @equal: function to compare the data of two attributes
- *   of this type
  * @name: (nullable): an identifier for the type
+ * @value_type: the `PangoAttrValueType` for the attribute
+ * @affects: `PangoAttrAffects` flags for the attribute
+ * @copy: (nullable): function to copy the data of an attribute
+ *   of this type
+ * @destroy: (nullable): function to free the data of an attribute
+ *   of this type
+ * @equal: (nullable): function to compare the data of two attributes
+ *   of this type
  * @serialize: (nullable): function to serialize the data
  *   of an attribute of this type
  *
@@ -74,7 +76,11 @@ get_attr_type_nick (PangoAttrType type)
  * The attribute type name can be accessed later
  * by using [func@Pango.AttrType.get_name].
  *
- * If @name and to @serialize are provided, they will be used
+ * The callbacks are only needed if @type is `PANGO_ATTR_VALUE_POINTER`,
+ * Pango knows how to handle other value types and will only use the
+ * callbacks for generic pointer values.
+ *
+ * If @name and @serialize are provided, they will be used
  * to serialize attributes of this type.
  *
  * To create attributes with the new type, use [func@Pango.attr_custom_new].
@@ -82,10 +88,12 @@ get_attr_type_nick (PangoAttrType type)
  * Return value: the attribute type ID
  */
 guint
-pango_attr_type_register (PangoAttrDataCopyFunc       copy,
+pango_attr_type_register (const char                 *name,
+                          PangoAttrValueType          value_type,
+                          PangoAttrAffects            affects,
+                          PangoAttrDataCopyFunc       copy,
                           GDestroyNotify              destroy,
                           GEqualFunc                  equal,
-                          const char                 *name,
                           PangoAttrDataSerializeFunc  serialize)
 {
   static guint current_id = MIN_CUSTOM; /* MT-safe */
@@ -93,7 +101,7 @@ pango_attr_type_register (PangoAttrDataCopyFunc       copy,
 
   G_LOCK (attr_type);
 
-  class.type = PANGO_ATTR_VALUE_POINTER | (current_id << 8);
+  class.type = value_type | (affects << 8) | (current_id << 16);
   current_id++;
 
   class.copy = copy;
@@ -139,7 +147,7 @@ pango_attr_type_get_name (guint type)
 {
   const char *result = NULL;
 
-  if ((type >> 8) < MIN_CUSTOM)
+  if ((type >> 16) < MIN_CUSTOM)
     return get_attr_type_nick (type);
 
   G_LOCK (attr_type);
@@ -208,9 +216,8 @@ pango_attribute_copy (const PangoAttribute *attr)
 
         G_UNLOCK (attr_type);
 
-        g_assert (copy != NULL);
-
-        result->pointer_value = copy (attr->pointer_value);
+        if (copy)
+          result->pointer_value = copy (attr->pointer_value);
       }
       break;
 
@@ -266,9 +273,8 @@ pango_attribute_destroy (PangoAttribute *attr)
 
         G_UNLOCK (attr_type);
 
-        g_assert (destroy != NULL);
-
-        destroy (attr->pointer_value);
+        if (destroy)
+          destroy (attr->pointer_value);
       }
       break;
 
@@ -355,7 +361,10 @@ pango_attribute_equal (const PangoAttribute *attr1,
 
         g_assert (equal != NULL);
 
-        return equal (attr1->pointer_value, attr2->pointer_value);
+        if (equal)
+          return equal (attr1->pointer_value, attr2->pointer_value);
+
+        return attr1->pointer_value == attr2->pointer_value;
       }
 
     default:
@@ -364,52 +373,33 @@ pango_attribute_equal (const PangoAttribute *attr1,
 }
 
 /**
- * pango_attr_custom_new:
+ * pango_attribute_new:
  * @type: the attribute type
- * @user_data: data for the attribute
  *
  * Creates a new attribute for the given type.
  *
  * The type must have been registered with [func@Pango.register_attr_type]
- * before. @user_data will be copied with the copy function that
- * was given when the type was registered.
+ * before or be one of the `PangoAttrType` values.
+ *
+ * Pango will initialize @start_index and @end_index to an
+ * all-inclusive range of `[0,G_MAXUINT]`.
+ *
+ * The caller is responsible for filling the proper value field
+ * with the desired value.
  *
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
-pango_attr_custom_new (guint    type,
-                       gpointer user_data)
+pango_attribute_new (guint type)
 {
   PangoAttribute *attr;
-  PangoAttrDataCopyFunc copy = NULL;
 
-  g_return_val_if_fail (PANGO_ATTR_TYPE_VALUE_TYPE (type) == PANGO_ATTR_VALUE_POINTER, NULL);
-
-  G_LOCK (attr_type);
-
-  g_assert (attr_type != NULL);
-
-  for (int i = 0; i < attr_type->len; i++)
-    {
-      PangoAttrClass *class = &g_array_index (attr_type, PangoAttrClass, i);
-      if (class->type == type)
-        {
-          copy = class->copy;
-          break;
-        }
-    }
-
-  g_assert (copy != NULL);
-
-  G_UNLOCK (attr_type);
-
-  attr = g_slice_new (PangoAttribute);
+  attr = g_slice_new0 (PangoAttribute);
   attr->type = type;
   attr->start_index = PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING;
   attr->end_index = PANGO_ATTR_INDEX_TO_TEXT_END;
-  attr->pointer_value = copy (user_data);
 
   return attr;
 }
@@ -441,7 +431,7 @@ pango_attr_value_serialize (PangoAttribute *attr)
   if (serialize)
     return serialize (attr->pointer_value);
 
-  return NULL;
+  return g_strdup_printf ("%p", attr->pointer_value);
 }
 
 /* }}} */
