@@ -57,6 +57,76 @@ get_attr_type_nick (PangoAttrType type)
   return enum_value->value_nick;
 }
 
+static gboolean
+is_valid_attr_type (guint type)
+{
+  switch (type)
+    {
+    case PANGO_ATTR_INVALID:
+      return FALSE;
+    case PANGO_ATTR_LANGUAGE:
+    case PANGO_ATTR_FAMILY:
+    case PANGO_ATTR_STYLE:
+    case PANGO_ATTR_WEIGHT:
+    case PANGO_ATTR_VARIANT:
+    case PANGO_ATTR_STRETCH:
+    case PANGO_ATTR_SIZE:
+    case PANGO_ATTR_FONT_DESC:
+    case PANGO_ATTR_FOREGROUND:
+    case PANGO_ATTR_BACKGROUND:
+    case PANGO_ATTR_UNDERLINE:
+    case PANGO_ATTR_STRIKETHROUGH:
+    case PANGO_ATTR_RISE:
+    case PANGO_ATTR_SCALE:
+    case PANGO_ATTR_FALLBACK:
+    case PANGO_ATTR_LETTER_SPACING:
+    case PANGO_ATTR_UNDERLINE_COLOR:
+    case PANGO_ATTR_STRIKETHROUGH_COLOR:
+    case PANGO_ATTR_ABSOLUTE_SIZE:
+    case PANGO_ATTR_GRAVITY:
+    case PANGO_ATTR_GRAVITY_HINT:
+    case PANGO_ATTR_FONT_FEATURES:
+    case PANGO_ATTR_FOREGROUND_ALPHA:
+    case PANGO_ATTR_BACKGROUND_ALPHA:
+    case PANGO_ATTR_ALLOW_BREAKS:
+    case PANGO_ATTR_SHOW:
+    case PANGO_ATTR_INSERT_HYPHENS:
+    case PANGO_ATTR_OVERLINE:
+    case PANGO_ATTR_OVERLINE_COLOR:
+    case PANGO_ATTR_LINE_HEIGHT:
+    case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
+    case PANGO_ATTR_TEXT_TRANSFORM:
+    case PANGO_ATTR_WORD:
+    case PANGO_ATTR_SENTENCE:
+    case PANGO_ATTR_BASELINE_SHIFT:
+    case PANGO_ATTR_FONT_SCALE:
+      return TRUE;
+    default:
+      if (!attr_type)
+        return FALSE;
+      else
+        {
+          gboolean result = FALSE;
+
+          G_LOCK (attr_type);
+
+          for (int i = 0; i < attr_type->len; i++)
+            {
+              PangoAttrClass *class = &g_array_index (attr_type, PangoAttrClass, i);
+              if (class->type == type)
+                {
+                  result = TRUE;
+                  break;
+                }
+            }
+
+          G_UNLOCK (attr_type);
+
+          return result;
+        }
+    }
+}
+
 /**
  * pango_attr_type_register:
  * @name: (nullable): an identifier for the type
@@ -380,14 +450,13 @@ pango_attribute_equal (const PangoAttribute *attr1,
  *
  * Creates a new attribute for the given type.
  *
- * The type must have been registered with [func@Pango.register_attr_type]
- * before or be one of the `PangoAttrType` values.
+ * The type must be one of the `PangoAttrType` values, or
+ * have been registered with [func@Pango.register_attr_type].
  *
  * Pango will initialize @start_index and @end_index to an
- * all-inclusive range of `[0,G_MAXUINT]`.
- *
- * The caller is responsible for filling the proper value field
- * with the desired value.
+ * all-inclusive range of `[0,G_MAXUINT]`.  The caller is
+ * responsible for filling the proper value field with the
+ * desired value.
  *
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
@@ -397,6 +466,8 @@ PangoAttribute *
 pango_attribute_new (guint type)
 {
   PangoAttribute *attr;
+
+  g_return_val_if_fail (is_valid_attr_type (type), NULL);
 
   attr = g_slice_new0 (PangoAttribute);
   attr->type = type;
