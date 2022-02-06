@@ -517,8 +517,8 @@ pango_attribute_get_font_desc (PangoAttribute        *attribute,
 }
 
 gboolean
-pango_attribute_get_custom (PangoAttribute *attribute,
-                            gpointer       *value)
+pango_attribute_get_pointer (PangoAttribute *attribute,
+                             gpointer       *value)
 {
   if (PANGO_ATTR_VALUE_TYPE (attribute) != PANGO_ATTR_VALUE_POINTER)
     return FALSE;

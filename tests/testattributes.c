@@ -145,7 +145,7 @@ test_attributes_register (void)
   attr = pango_attribute_new (type);
   attr->pointer_value = (gpointer)0x42;
 
-  ret = pango_attribute_get_custom (attr, &value);
+  ret = pango_attribute_get_pointer (attr, &value);
   g_assert_true (ret);
   g_assert_true (value == (gpointer)0x42);
 
@@ -203,7 +203,7 @@ test_binding (PangoAttribute *attr)
       g_assert_true (pango_attribute_get_float (attr, &double_value));
       break;
     case PANGO_ATTR_VALUE_POINTER:
-      g_assert_true (pango_attribute_get_custom (attr, &pointer_value));
+      g_assert_true (pango_attribute_get_pointer (attr, &pointer_value));
       break;
     default:
       g_assert_not_reached ();

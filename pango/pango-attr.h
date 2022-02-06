@@ -279,7 +279,7 @@ gboolean                pango_attribute_get_font_desc           (PangoAttribute 
                                                                  PangoFontDescription       **value);
 
 PANGO_AVAILABLE_IN_1_52
-gboolean                pango_attribute_get_custom              (PangoAttribute              *attribute,
+gboolean                pango_attribute_get_pointer             (PangoAttribute              *attribute,
                                                                  gpointer                    *value);
 
 
