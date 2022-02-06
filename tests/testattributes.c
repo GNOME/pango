@@ -134,6 +134,7 @@ test_attributes_register (void)
   type = pango_attr_type_register ("my-attribute",
                                    PANGO_ATTR_VALUE_POINTER,
                                    PANGO_ATTR_AFFECTS_RENDERING,
+                                   PANGO_ATTR_MERGE_OVERRIDES,
                                    copy_my_attribute_data,
                                    destroy_my_attribute_data,
                                    my_attribute_data_equal,

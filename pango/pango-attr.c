@@ -62,6 +62,7 @@ get_attr_type_nick (PangoAttrType type)
  * @name: (nullable): an identifier for the type
  * @value_type: the `PangoAttrValueType` for the attribute
  * @affects: `PangoAttrAffects` flags for the attribute
+ * @merge: `PangoAttrMerge` flags for the attribute
  * @copy: (nullable): function to copy the data of an attribute
  *   of this type
  * @destroy: (nullable): function to free the data of an attribute
@@ -91,6 +92,7 @@ guint
 pango_attr_type_register (const char                 *name,
                           PangoAttrValueType          value_type,
                           PangoAttrAffects            affects,
+                          PangoAttrMerge              merge,
                           PangoAttrDataCopyFunc       copy,
                           GDestroyNotify              destroy,
                           GEqualFunc                  equal,
@@ -101,7 +103,7 @@ pango_attr_type_register (const char                 *name,
 
   G_LOCK (attr_type);
 
-  class.type = value_type | (affects << 8) | (current_id << 16);
+  class.type = value_type | (affects << 8) | (merge << 12) | (current_id << 16);
   current_id++;
 
   class.copy = copy;

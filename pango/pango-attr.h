@@ -61,6 +61,7 @@ typedef enum
 
 /**
  * PangoAttrAffects:
+ * @PANGO_ATTR_AFFECTS_NONE: the attribute does not affect rendering
  * @PANGO_ATTR_AFFECTS_ITEMIZATION: the attribute affecs itemization
  * @PANGO_ATTR_AFFECTS_BREAKING: the attribute affects `PangoLogAttr` determination
  * @PANGO_ATTR_AFFECTS_SHAPING: the attribute affects shaping
@@ -74,11 +75,29 @@ typedef enum
  */
 typedef enum
 {
+  PANGO_ATTR_AFFECTS_NONE        = 0,
   PANGO_ATTR_AFFECTS_ITEMIZATION = 1 << 0,
   PANGO_ATTR_AFFECTS_BREAKING    = 1 << 1,
   PANGO_ATTR_AFFECTS_SHAPING     = 1 << 2,
   PANGO_ATTR_AFFECTS_RENDERING   = 1 << 3
 } PangoAttrAffects;
+
+/**
+ * PangoAttrMerge:
+ * @PANGO_ATTR_MERGE_OVERRIDES: only the attribute with the narrowest range is used
+ * @PANGO_ATTR_MERGE_ACCUMULATES: all attributes with overlapping range are kept
+ *
+ * Options to indicate how overlapping attribute values should be
+ * reconciled to determine the effective attribute value.
+ *
+ * These options influence the @extra_attrs returned by
+ * [method@Pango.AttrIterator.get_font].
+ */
+typedef enum
+{
+  PANGO_ATTR_MERGE_OVERRIDES,
+  PANGO_ATTR_MERGE_ACCUMULATES
+} PangoAttrMerge;
 
 /**
  * PANGO_ATTR_TYPE_VALUE_TYPE:
@@ -94,7 +113,15 @@ typedef enum
  *
  * Extracts the `PangoAttrAffects` flags from an attribute type.
  */
-#define PANGO_ATTR_TYPE_AFFECTS(type) ((PangoAttrAffects)(((type) >> 8) & 0xff))
+#define PANGO_ATTR_TYPE_AFFECTS(type) ((PangoAttrAffects)(((type) >> 8) & 0xf))
+
+/**
+ * PANGO_ATTR_TYPE_MERGE:
+ * @type: an attribute type
+ *
+ * Extracts the `PangoAttrMerge` flags from an attribute type.
+ */
+#define PANGO_ATTR_TYPE_MERGE(type) ((PangoAttrMerge)(((type) >> 12) & 0xf))
 
 /**
  * PANGO_ATTR_VALUE_TYPE:
@@ -111,6 +138,14 @@ typedef enum
  * Obtains the `PangoAttrAffects` flags of a `PangoAttribute`.
  */
 #define PANGO_ATTR_AFFECTS(attr) PANGO_ATTR_TYPE_AFFECTS ((attr)->type)
+
+/**
+ * PANGO_ATTR_MERGE:
+ * @attr: a `PangoAttribute`
+ *
+ * Obtains the `PangoAttrMerge` flags of a `PangoAttribute`.
+ */
+#define PANGO_ATTR_MERGE(attr) PANGO_ATTR_TYPE_MERGE ((attr)->type)
 
 /**
  * PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING:
@@ -202,6 +237,7 @@ PANGO_AVAILABLE_IN_ALL
 guint                   pango_attr_type_register                (const char                 *name,
                                                                  PangoAttrValueType          value_type,
                                                                  PangoAttrAffects            affects,
+                                                                 PangoAttrMerge              merge,
                                                                  PangoAttrDataCopyFunc       copy,
                                                                  GDestroyNotify              destroy,
                                                                  GEqualFunc                  equal,

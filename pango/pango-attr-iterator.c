@@ -419,14 +419,7 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
             {
               gboolean found = FALSE;
 
-              /* Hack: special-case FONT_FEATURES, BASELINE_SHIFT and FONT_SCALE.
-               * We don't want these to accumulate, not override each other,
-               * so we never merge them.
-               * This needs to be handled more systematically.
-               */
-              if (attr->type != PANGO_ATTR_FONT_FEATURES &&
-                  attr->type != PANGO_ATTR_BASELINE_SHIFT &&
-                  attr->type != PANGO_ATTR_FONT_SCALE)
+              if (PANGO_ATTR_MERGE (attr) == PANGO_ATTR_MERGE_OVERRIDES)
                 {
                   GSList *tmp_list = *extra_attrs;
                   while (tmp_list)
@@ -493,18 +486,18 @@ pango_attr_iterator_get_attrs (PangoAttrIterator *iterator)
       GSList *tmp_list2;
       gboolean found = FALSE;
 
-      if (attr->type != PANGO_ATTR_FONT_DESC &&
-          attr->type != PANGO_ATTR_BASELINE_SHIFT &&
-          attr->type != PANGO_ATTR_FONT_SCALE)
-        for (tmp_list2 = attrs; tmp_list2; tmp_list2 = tmp_list2->next)
-          {
-            PangoAttribute *old_attr = tmp_list2->data;
-            if (attr->type == old_attr->type)
-              {
-                found = TRUE;
-                break;
-              }
-          }
+      if (PANGO_ATTR_MERGE (attr) == PANGO_ATTR_MERGE_OVERRIDES)
+        {
+          for (tmp_list2 = attrs; tmp_list2; tmp_list2 = tmp_list2->next)
+            {
+              PangoAttribute *old_attr = tmp_list2->data;
+              if (attr->type == old_attr->type)
+                {
+                  found = TRUE;
+                  break;
+                }
+            }
+        }
 
       if (!found)
         attrs = g_slist_prepend (attrs, pango_attribute_copy (attr));
