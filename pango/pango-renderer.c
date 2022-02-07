@@ -82,7 +82,9 @@ static void pango_renderer_default_draw_rectangle       (PangoRenderer    *rende
                                                          int               y,
                                                          int               width,
                                                          int               height);
-static void pango_renderer_default_draw_error_underline (PangoRenderer    *renderer,
+static void pango_renderer_default_draw_line            (PangoRenderer    *renderer,
+                                                         PangoRenderPart   part,
+                                                         PangoLineStyle    style,
                                                          int               x,
                                                          int               y,
                                                          int               width,
@@ -122,7 +124,7 @@ pango_renderer_class_init (PangoRendererClass *klass)
   klass->draw_glyphs = pango_renderer_default_draw_glyphs;
   klass->draw_glyph_item = pango_renderer_default_draw_glyph_item;
   klass->draw_rectangle = pango_renderer_default_draw_rectangle;
-  klass->draw_error_underline = pango_renderer_default_draw_error_underline;
+  klass->draw_line = pango_renderer_default_draw_line;
   klass->prepare_run = pango_renderer_default_prepare_run;
 
   gobject_class->finalize = pango_renderer_finalize;
@@ -220,38 +222,17 @@ draw_underline (PangoRenderer *renderer,
   state->underline = PANGO_LINE_STYLE_NONE;
   state->underline_position = PANGO_UNDERLINE_POSITION_NORMAL;
 
-  switch (underline)
-    {
-    case PANGO_LINE_STYLE_NONE:
-      break;
-    case PANGO_LINE_STYLE_DOUBLE:
-      pango_renderer_draw_rectangle (renderer,
-                                     PANGO_RENDER_PART_UNDERLINE,
-                                     rect->x,
-                                     rect->y + 2 * rect->height,
-                                     rect->width,
-                                     rect->height);
-      G_GNUC_FALLTHROUGH;
-    case PANGO_LINE_STYLE_SINGLE:
-    case PANGO_LINE_STYLE_DOTTED:
-    case PANGO_LINE_STYLE_DASHED:
-      pango_renderer_draw_rectangle (renderer,
-                                     PANGO_RENDER_PART_UNDERLINE,
-                                     rect->x,
-                                     rect->y,
-                                     rect->width,
-                                     rect->height);
-      break;
-    case PANGO_LINE_STYLE_WAVY:
-      pango_renderer_draw_error_underline (renderer,
-                                           rect->x,
-                                           rect->y,
-                                           rect->width,
-                                           3 * rect->height);
-      break;
-    default:
-      break;
-    }
+  if (underline == PANGO_LINE_STYLE_DOUBLE ||
+      underline == PANGO_LINE_STYLE_WAVY)
+    rect->height *= 3;
+
+  pango_renderer_draw_line (renderer,
+                            PANGO_RENDER_PART_UNDERLINE,
+                            underline,
+                            rect->x,
+                            rect->y,
+                            rect->width,
+                            rect->height);
 }
 
 static void
@@ -263,32 +244,20 @@ draw_overline (PangoRenderer *renderer,
 
   state->overline = PANGO_LINE_STYLE_NONE;
 
-  switch (overline)
+  if (overline == PANGO_LINE_STYLE_DOUBLE ||
+      overline == PANGO_LINE_STYLE_WAVY)
     {
-    case PANGO_LINE_STYLE_NONE:
-      break;
-    case PANGO_LINE_STYLE_DOUBLE:
-      pango_renderer_draw_rectangle (renderer,
-                                     PANGO_RENDER_PART_OVERLINE,
-                                     rect->x,
-                                     rect->y - 2 * rect->height,
-                                     rect->width,
-                                     rect->height);
-      G_GNUC_FALLTHROUGH;
-    case PANGO_LINE_STYLE_SINGLE:
-    case PANGO_LINE_STYLE_DOTTED:
-    case PANGO_LINE_STYLE_DASHED:
-    case PANGO_LINE_STYLE_WAVY:
-      pango_renderer_draw_rectangle (renderer,
-                                     PANGO_RENDER_PART_OVERLINE,
-                                     rect->x,
-                                     rect->y,
-                                     rect->width,
-                                     rect->height);
-      break;
-    default:
-      break;
+      rect->y -= 2 * rect->height;
+      rect->height *= 3;
     }
+
+  pango_renderer_draw_line (renderer,
+                            PANGO_RENDER_PART_OVERLINE,
+                            overline,
+                            rect->x,
+                            rect->y,
+                            rect->width,
+                            rect->height);
 }
 
 static void
@@ -302,33 +271,20 @@ draw_strikethrough (PangoRenderer *renderer,
       rect->y /= state->strikethrough_glyphs;
       rect->height /= state->strikethrough_glyphs;
 
-      switch (state->strikethrough)
+      if (state->strikethrough == PANGO_LINE_STYLE_DOUBLE ||
+          state->strikethrough == PANGO_LINE_STYLE_WAVY)
         {
-        case PANGO_LINE_STYLE_NONE:
-          break;
-        case PANGO_LINE_STYLE_DOUBLE:
-          pango_renderer_draw_rectangle (renderer,
-                                         PANGO_RENDER_PART_STRIKETHROUGH,
-                                         rect->x,
-                                         rect->y - rect->height,
-                                         rect->width,
-                                         rect->height);
-          rect->y += rect->height;
-          G_GNUC_FALLTHROUGH;
-        case PANGO_LINE_STYLE_SINGLE:
-        case PANGO_LINE_STYLE_DOTTED:
-        case PANGO_LINE_STYLE_DASHED:
-        case PANGO_LINE_STYLE_WAVY:
-          pango_renderer_draw_rectangle (renderer,
-                                         PANGO_RENDER_PART_STRIKETHROUGH,
-                                         rect->x,
-                                         rect->y,
-                                         rect->width,
-                                         rect->height);
-          break;
-        default:
-          break;
+          rect->y -= rect->height;
+          rect->height *= 3;
         }
+
+      pango_renderer_draw_line (renderer,
+                                PANGO_RENDER_PART_STRIKETHROUGH,
+                                state->strikethrough,
+                                rect->x,
+                                rect->y,
+                                rect->width,
+                                rect->height);
     }
 
   state->strikethrough = PANGO_LINE_STYLE_NONE;
@@ -403,33 +359,18 @@ add_underline (PangoRenderer    *renderer,
   new_rect.height = underline_thickness;
   new_rect.y = base_y;
 
-  switch (renderer->underline)
+  if (renderer->underline_position == PANGO_UNDERLINE_POSITION_UNDER)
+    new_rect.y += ink_rect->y + ink_rect->height + underline_thickness;
+  else
+    new_rect.y -= underline_position;
+
+  if (renderer->underline == state->underline &&
+      renderer->underline_position == state->underline_position)
     {
-    case PANGO_LINE_STYLE_NONE:
-      g_assert_not_reached ();
-      break;
-    case PANGO_LINE_STYLE_SINGLE:
-    case PANGO_LINE_STYLE_DASHED:
-    case PANGO_LINE_STYLE_DOTTED:
-      if (renderer->underline_position == PANGO_UNDERLINE_POSITION_UNDER)
-        {
-          new_rect.y += ink_rect->y + ink_rect->height + underline_thickness;
-          break;
-        }
-      G_GNUC_FALLTHROUGH;
-    case PANGO_LINE_STYLE_DOUBLE:
-    case PANGO_LINE_STYLE_WAVY:
-      new_rect.y -= underline_position;
-      if (state->underline == renderer->underline)
-        {
-          new_rect.y = MAX (current_rect->y, new_rect.y);
-          new_rect.height = MAX (current_rect->height, new_rect.height);
-          current_rect->y = new_rect.y;
-          current_rect->height = new_rect.height;
-        }
-      break;
-    default:
-      break;
+      new_rect.y = MAX (current_rect->y, new_rect.y);
+      new_rect.height = MAX (current_rect->height, new_rect.height);
+      current_rect->y = new_rect.y;
+      current_rect->height = new_rect.height;
     }
 
   if (renderer->underline == state->underline &&
@@ -984,39 +925,6 @@ pango_renderer_default_draw_rectangle (PangoRenderer  *renderer,
   draw_rectangle (renderer, renderer->matrix, part, x, y, width, height);
 }
 
-/**
- * pango_renderer_draw_error_underline:
- * @renderer: a `PangoRenderer`
- * @x: X coordinate of underline, in Pango units in user coordinate system
- * @y: Y coordinate of underline, in Pango units in user coordinate system
- * @width: width of underline, in Pango units in user coordinate system
- * @height: height of underline, in Pango units in user coordinate system
- *
- * Draw a squiggly line that approximately covers the given rectangle
- * in the style of an underline used to indicate a spelling error.
- *
- * The width of the underline is rounded to an integer number
- * of up/down segments and the resulting rectangle is centered
- * in the original rectangle.
- *
- * This should be called while @renderer is already active.
- * Use [method@Pango.Renderer.activate] to activate a renderer.
- *
- * Since: 1.8
- */
-void
-pango_renderer_draw_error_underline (PangoRenderer *renderer,
-                                     int            x,
-                                     int            y,
-                                     int            width,
-                                     int            height)
-{
-  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
-  g_return_if_fail (renderer->active_count > 0);
-
-  PANGO_RENDERER_GET_CLASS (renderer)->draw_error_underline (renderer, x, y, width, height);
-}
-
 /* We are drawing an error underline that looks like one of:
  *
  *  /\      /\      /\        /\      /\               -
@@ -1084,11 +992,12 @@ get_total_matrix (PangoMatrix       *total,
 }
 
 static void
-pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
-                                             int            x,
-                                             int            y,
-                                             int            width,
-                                             int            height)
+draw_wavy_line (PangoRenderer   *renderer,
+                PangoRenderPart  part,
+                int              x,
+                int              y,
+                int              width,
+                int              height)
 {
   int square;
   int unit_width;
@@ -1121,7 +1030,7 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
   i = (width_units - 1) / 2;
   while (TRUE)
     {
-      draw_rectangle (renderer, &total, PANGO_RENDER_PART_UNDERLINE, /* A */
+      draw_rectangle (renderer, &total, part, /* A */
                       0,                      0,
                       HEIGHT_SQUARES * 2 - 1, 1);
 
@@ -1129,7 +1038,7 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
         break;
       i--;
 
-      draw_rectangle (renderer, &total, PANGO_RENDER_PART_UNDERLINE, /* B */
+      draw_rectangle (renderer, &total, part, /* B */
                       HEIGHT_SQUARES * 2 - 2, - (HEIGHT_SQUARES * 2 - 3),
                       1,                      HEIGHT_SQUARES * 2 - 3);
 
@@ -1138,9 +1047,74 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
     }
   if (width_units % 2 == 0)
     {
-      draw_rectangle (renderer, &total, PANGO_RENDER_PART_UNDERLINE, /* C */
+      draw_rectangle (renderer, &total, part, /* C */
                       HEIGHT_SQUARES * 2 - 2, - (HEIGHT_SQUARES * 2 - 2),
                       1,                      HEIGHT_SQUARES * 2 - 2);
+    }
+}
+
+/**
+ * pango_renderer_draw_line:
+ * @renderer: a `PangoRenderer`
+ * @part: type of object this rectangle is part of
+ * @style: the line style
+ * @x: X position at which to draw rectangle, in user space coordinates
+ *   in Pango units
+ * @y: Y position at which to draw rectangle, in user space coordinates
+ *   in Pango units
+ * @width: width of rectangle in Pango units
+ * @height: height of rectangle in Pango units
+ *
+ * Draw a line that approximately covers the given rectangle
+ * in the given style.
+
+ * Since: 1.52
+ */
+void
+pango_renderer_draw_line (PangoRenderer  *renderer,
+                          PangoRenderPart part,
+                          PangoLineStyle  style,
+                          int             x,
+                          int             y,
+                          int             width,
+                          int             height)
+{
+  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
+  g_return_if_fail (renderer->active_count > 0);
+
+  PANGO_RENDERER_GET_CLASS (renderer)->draw_line (renderer, part, style, x, y, width, height);
+}
+
+static void
+pango_renderer_default_draw_line (PangoRenderer  *renderer,
+                                  PangoRenderPart part,
+                                  PangoLineStyle  style,
+                                  int             x,
+                                  int             y,
+                                  int             width,
+                                  int             height)
+{
+  switch (style)
+    {
+    /* FIXME implement these: */
+    case PANGO_LINE_STYLE_DASHED:
+    case PANGO_LINE_STYLE_DOTTED:
+    case PANGO_LINE_STYLE_SINGLE:
+      pango_renderer_draw_rectangle (renderer, part, x, y, width, height);
+      break;
+
+    case PANGO_LINE_STYLE_DOUBLE:
+      pango_renderer_draw_rectangle (renderer, part, x, y, width, height / 3);
+      pango_renderer_draw_rectangle (renderer, part, x, y + height * 2 / 3, width, height / 3);
+      break;
+
+    case PANGO_LINE_STYLE_WAVY:
+      draw_wavy_line (renderer, part, x, y, width, height);
+      break;
+
+    case PANGO_LINE_STYLE_NONE:
+    default:
+      break;
     }
 }
 

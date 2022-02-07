@@ -613,7 +613,6 @@ pango_cairo_renderer_draw_rectangle (PangoRenderer     *renderer,
   if (!crenderer->do_path)
     {
       cairo_save (crenderer->cr);
-
       set_color (crenderer, part);
     }
 
@@ -625,7 +624,6 @@ pango_cairo_renderer_draw_rectangle (PangoRenderer     *renderer,
   if (!crenderer->do_path)
     {
       cairo_fill (crenderer->cr);
-
       cairo_restore (crenderer->cr);
     }
 }
@@ -743,11 +741,70 @@ draw_error_underline (cairo_t *cr,
 }
 
 static void
-pango_cairo_renderer_draw_error_underline (PangoRenderer *renderer,
-					   int            x,
-					   int            y,
-					   int            width,
-					   int            height)
+pango_cairo_do_line (cairo_t        *cr,
+                     PangoLineStyle  style,
+                     double          x,
+                     double          y,
+                     double          width,
+                     double          height,
+                     gboolean        do_path)
+{
+  if (!do_path)
+    cairo_new_path (cr);
+
+  switch (style)
+    {
+    case PANGO_LINE_STYLE_DOTTED:
+    case PANGO_LINE_STYLE_DASHED:
+      /* FIXME: make this work for paths */
+      cairo_save (cr);
+      cairo_set_line_width (cr, height);
+      if (style == PANGO_LINE_STYLE_DOTTED)
+        {
+          cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
+          cairo_set_dash (cr, (const double []){ 0., 1.5 * height}, 2, 0.);
+        }
+      else
+        {
+          cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
+          cairo_set_dash (cr, (const double []){ 3. * height, 2 * height}, 2, 0.);
+        }
+      cairo_move_to (cr, x, y + height / 2);
+      cairo_rel_line_to (cr, width, 0.);
+      cairo_stroke (cr);
+      cairo_restore (cr);
+      break;
+
+    case PANGO_LINE_STYLE_SINGLE:
+      cairo_rectangle (cr, x, y, width, height);
+      break;
+
+    case PANGO_LINE_STYLE_DOUBLE:
+      cairo_rectangle (cr, x, y, width, height / 3);
+      cairo_rectangle (cr, x, y + height * 2 / 3, width, height / 3);
+      break;
+
+    case PANGO_LINE_STYLE_WAVY:
+      draw_error_underline (cr, x, y, width, height);
+      break;
+
+    case PANGO_LINE_STYLE_NONE:
+    default:
+      break;
+    }
+
+  if (!do_path)
+    cairo_fill (cr);
+}
+
+static void
+pango_cairo_renderer_draw_line (PangoRenderer  *renderer,
+                                PangoRenderPart part,
+                                PangoLineStyle  style,
+                                int             x,
+                                int             y,
+                                int             width,
+                                int             height)
 {
   PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
   cairo_t *cr = crenderer->cr;
@@ -755,23 +812,17 @@ pango_cairo_renderer_draw_error_underline (PangoRenderer *renderer,
   if (!crenderer->do_path)
     {
       cairo_save (cr);
-
-      set_color (crenderer, PANGO_RENDER_PART_UNDERLINE);
-
-      cairo_new_path (cr);
+      set_color (crenderer, part);
     }
 
-  draw_error_underline (cr,
-			crenderer->x_offset + (double)x / PANGO_SCALE,
-			crenderer->y_offset + (double)y / PANGO_SCALE,
-			(double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
+  pango_cairo_do_line (cr, style,
+                       crenderer->x_offset + (double)x / PANGO_SCALE,
+                       crenderer->y_offset + (double)y / PANGO_SCALE,
+                       (double)width / PANGO_SCALE, (double)height / PANGO_SCALE,
+                       crenderer->do_path);
 
   if (!crenderer->do_path)
-    {
-      cairo_fill (cr);
-
-      cairo_restore (cr);
-    }
+    cairo_restore (cr);
 }
 
 static void
@@ -788,7 +839,7 @@ pango_cairo_renderer_class_init (PangoCairoRendererClass *klass)
   renderer_class->draw_glyph_item = pango_cairo_renderer_draw_glyph_item;
   renderer_class->draw_rectangle = pango_cairo_renderer_draw_rectangle;
   renderer_class->draw_trapezoid = pango_cairo_renderer_draw_trapezoid;
-  renderer_class->draw_error_underline = pango_cairo_renderer_draw_error_underline;
+  renderer_class->draw_line = pango_cairo_renderer_draw_line;
 }
 
 static PangoCairoRenderer *cached_renderer = NULL; /* MT-safe */
@@ -976,30 +1027,6 @@ _pango_cairo_do_layout (cairo_t     *cr,
   release_renderer (crenderer);
 }
 
-static void
-_pango_cairo_do_error_underline (cairo_t *cr,
-				 double   x,
-				 double   y,
-				 double   width,
-				 double   height,
-				 gboolean do_path)
-{
-  /* We don't use a renderer here, for a simple reason:
-   * the only renderer we can get is the default renderer, that
-   * is all implemented here, so we shortcircuit and make our
-   * life way easier.
-   */
-
-  if (!do_path)
-    cairo_new_path (cr);
-
-  draw_error_underline (cr, x, y, width, height);
-
-  if (!do_path)
-    cairo_fill (cr);
-}
-
-
 /* public wrapper of above to show or append path */
 
 
@@ -1105,34 +1132,31 @@ pango_cairo_show_layout (cairo_t     *cr,
 }
 
 /**
- * pango_cairo_show_error_underline:
+ * pango_cairo_show_line:
  * @cr: a Cairo context
+ * @style: the line style
  * @x: The X coordinate of one corner of the rectangle
  * @y: The Y coordinate of one corner of the rectangle
  * @width: Non-negative width of the rectangle
  * @height: Non-negative height of the rectangle
  *
- * Draw a squiggly line in the specified cairo context that approximately
- * covers the given rectangle in the style of an underline used to indicate a
- * spelling error.
+ * Draw a line in the specified cairo context that approximately
+ * covers the given rectangle in the given style.
  *
- * The width of the underline is rounded to an integer
- * number of up/down segments and the resulting rectangle is centered in the
- * original rectangle.
- *
- * Since: 1.14
+ * Since: 1.52
  */
 void
-pango_cairo_show_error_underline (cairo_t *cr,
-				  double  x,
-				  double  y,
-				  double  width,
-				  double  height)
+pango_cairo_show_line (cairo_t        *cr,
+                       PangoLineStyle  style,
+                       double          x,
+                       double          y,
+                       double          width,
+                       double          height)
 {
   g_return_if_fail (cr != NULL);
   g_return_if_fail ((width >= 0) && (height >= 0));
 
-  _pango_cairo_do_error_underline (cr, x, y, width, height, FALSE);
+  pango_cairo_do_line (cr, style, x, y, width, height, FALSE);
 }
 
 /**
@@ -1171,7 +1195,7 @@ pango_cairo_glyph_string_path (cairo_t          *cr,
  * The origin of the glyphs (the left edge of the line) will be
  * at the current point of the cairo context.
  *
- * Since: 1.10
+ * Since: 1.52
  */
 void
 pango_cairo_layout_line_path (cairo_t          *cr,
@@ -1207,31 +1231,27 @@ pango_cairo_layout_path (cairo_t     *cr,
 }
 
 /**
- * pango_cairo_error_underline_path:
+ * pango_cairo_line_path:
  * @cr: a Cairo context
+ * @style: the line style
  * @x: The X coordinate of one corner of the rectangle
  * @y: The Y coordinate of one corner of the rectangle
  * @width: Non-negative width of the rectangle
  * @height: Non-negative height of the rectangle
  *
- * Add a squiggly line to the current path in the specified cairo context that
- * approximately covers the given rectangle in the style of an underline used
- * to indicate a spelling error.
- *
- * The width of the underline is rounded to an integer number of up/down
- * segments and the resulting rectangle is centered in the original rectangle.
- *
- * Since: 1.14
+ * Add a line to the current path in the specified cairo context that
+ * approximately covers the given rectangle in the given style.
  */
 void
-pango_cairo_error_underline_path (cairo_t *cr,
-				  double   x,
-				  double   y,
-				  double   width,
-				  double   height)
+pango_cairo_line_path (cairo_t        *cr,
+                       PangoLineStyle  style,
+                       double          x,
+                       double          y,
+                       double          width,
+                       double          height)
 {
   g_return_if_fail (cr != NULL);
   g_return_if_fail ((width >= 0) && (height >= 0));
 
-  _pango_cairo_do_error_underline (cr, x, y, width, height, TRUE);
+  pango_cairo_do_line (cr, style, x, y, width, height, TRUE);
 }
