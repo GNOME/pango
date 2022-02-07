@@ -1218,6 +1218,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   const char *foreground = NULL;
   const char *background = NULL;
   const char *underline = NULL;
+  const char *underline_position = NULL;
   const char *underline_color = NULL;
   const char *overline = NULL;
   const char *overline_color = NULL;
@@ -1332,6 +1333,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	break;
       case 'u':
 	CHECK_ATTRIBUTE (underline);
+	CHECK_ATTRIBUTE (underline_position);
 	CHECK_ATTRIBUTE (underline_color);
 	break;
       case 'r':
@@ -1546,12 +1548,22 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 
   if (G_UNLIKELY (underline))
     {
-      PangoLineStyle ul = PANGO_LINE_STYLE_NONE;
+      PangoLineStyle style = PANGO_LINE_STYLE_NONE;
 
-      if (!span_parse_enum ("underline", underline, PANGO_TYPE_LINE_STYLE, (int*)(void*)&ul, line_number, error))
+      if (!span_parse_enum ("underline", underline, PANGO_TYPE_LINE_STYLE, (int*)(void*)&style, line_number, error))
 	goto error;
 
-      add_attribute (tag, pango_attr_underline_new (ul));
+      add_attribute (tag, pango_attr_underline_new (style));
+    }
+
+  if (G_UNLIKELY (underline_position))
+    {
+      PangoUnderlinePosition pos = PANGO_UNDERLINE_POSITION_NORMAL;
+
+      if (!span_parse_enum ("underline_position", underline_position, PANGO_TYPE_UNDERLINE_POSITION, (int*)(void*)&pos, line_number, error))
+	goto error;
+
+      add_attribute (tag, pango_attr_underline_position_new (pos));
     }
 
   if (G_UNLIKELY (underline_color))
@@ -1619,12 +1631,12 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 
   if (G_UNLIKELY (strikethrough))
     {
-      gboolean b = FALSE;
+      PangoLineStyle style = PANGO_LINE_STYLE_NONE;
 
-      if (!span_parse_boolean ("strikethrough", strikethrough, &b, line_number, error))
-	goto error;
+      if (!span_parse_enum ("strikethrough", strikethrough, PANGO_TYPE_LINE_STYLE, (int*)(void*)&style, line_number, error))
+        goto error;
 
-      add_attribute (tag, pango_attr_strikethrough_new (b));
+      add_attribute (tag, pango_attr_strikethrough_new (style));
     }
 
   if (G_UNLIKELY (strikethrough_color))

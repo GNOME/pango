@@ -47,7 +47,7 @@ struct _LineState
   PangoUnderlinePosition underline_position;
   PangoRectangle underline_rect;
 
-  gboolean strikethrough;
+  PangoLineStyle strikethrough;
   PangoRectangle strikethrough_rect;
   int strikethrough_glyphs;
 
@@ -239,17 +239,40 @@ draw_strikethrough (PangoRenderer *renderer,
                     LineState     *state)
 {
   PangoRectangle *rect = &state->strikethrough_rect;
-  int num_glyphs = state->strikethrough_glyphs;
 
-  if (state->strikethrough && num_glyphs > 0)
-    pango_renderer_draw_rectangle (renderer,
-                                   PANGO_RENDER_PART_STRIKETHROUGH,
-                                   rect->x,
-                                   rect->y / num_glyphs,
-                                   rect->width,
-                                   rect->height / num_glyphs);
+  if (state->strikethrough_glyphs > 0)
+    {
+      rect->y /= state->strikethrough_glyphs;
+      rect->height /= state->strikethrough_glyphs;
 
-  state->strikethrough = FALSE;
+      switch (state->strikethrough)
+        {
+        case PANGO_LINE_STYLE_NONE:
+          break;
+        case PANGO_LINE_STYLE_DOUBLE:
+          pango_renderer_draw_rectangle (renderer,
+                                         PANGO_RENDER_PART_STRIKETHROUGH,
+                                         rect->x,
+                                         rect->y - rect->height,
+                                         rect->width,
+                                         rect->height);
+          rect->y += rect->height;
+          G_GNUC_FALLTHROUGH;
+        case PANGO_LINE_STYLE_SINGLE:
+        case PANGO_LINE_STYLE_DOTTED:
+          pango_renderer_draw_rectangle (renderer,
+                                         PANGO_RENDER_PART_STRIKETHROUGH,
+                                         rect->x,
+                                         rect->y,
+                                         rect->width,
+                                         rect->height);
+          break;
+        default:
+          break;
+        }
+    }
+
+  state->strikethrough = PANGO_LINE_STYLE_NONE;
   state->strikethrough_glyphs = 0;
   rect->x += rect->width;
   rect->width = 0;
@@ -291,7 +314,7 @@ handle_line_state_change (PangoRenderer  *renderer,
     }
 
   if (part == PANGO_RENDER_PART_STRIKETHROUGH &&
-      state->strikethrough)
+      state->strikethrough != PANGO_LINE_STYLE_NONE)
     {
       PangoRectangle *rect = &state->strikethrough_rect;
 
@@ -327,7 +350,7 @@ add_underline (PangoRenderer    *renderer,
       g_assert_not_reached ();
       break;
     case PANGO_LINE_STYLE_SINGLE:
-      if (state->underline_position == PANGO_UNDERLINE_POSITION_UNDER)
+      if (renderer->underline_position == PANGO_UNDERLINE_POSITION_UNDER)
         {
           new_rect.y += ink_rect->y + ink_rect->height + underline_thickness;
           break;
@@ -439,7 +462,7 @@ add_strikethrough (PangoRenderer    *renderer,
   new_rect.y = (base_y - strikethrough_position) * num_glyphs;
   new_rect.height = strikethrough_thickness * num_glyphs;
 
-  if (state->strikethrough)
+  if (state->strikethrough == renderer->strikethrough)
     {
       current_rect->width = new_rect.x + new_rect.width - current_rect->x;
       current_rect->y += new_rect.y;
@@ -448,8 +471,10 @@ add_strikethrough (PangoRenderer    *renderer,
     }
   else
     {
+      draw_strikethrough (renderer, state);
+
       *current_rect = new_rect;
-      state->strikethrough = TRUE;
+      state->strikethrough = renderer->strikethrough;
       state->strikethrough_glyphs = num_glyphs;
     }
 }
@@ -493,7 +518,7 @@ pango_renderer_draw_line (PangoRenderer   *renderer,
   state.underline = PANGO_LINE_STYLE_NONE;
   state.underline_position = PANGO_UNDERLINE_POSITION_NORMAL;
   state.overline = PANGO_OVERLINE_NONE;
-  state.strikethrough = FALSE;
+  state.strikethrough = PANGO_LINE_STYLE_NONE;
 
   pango_renderer_draw_runs (renderer, line->runs, line->data->text, x, y);
 
@@ -584,7 +609,7 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
 
       if (renderer->underline != PANGO_LINE_STYLE_NONE ||
           renderer->priv->overline != PANGO_OVERLINE_NONE ||
-          renderer->strikethrough)
+          renderer->strikethrough != PANGO_LINE_STYLE_NONE)
         {
           ink = &ink_rect;
           logical = &logical_rect;
@@ -634,7 +659,7 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
 
       if (renderer->underline != PANGO_LINE_STYLE_NONE ||
           renderer->priv->overline != PANGO_OVERLINE_NONE ||
-          renderer->strikethrough)
+          renderer->strikethrough != PANGO_LINE_STYLE_NONE)
         {
           metrics = pango_font_get_metrics (item->analysis.font,
                                             item->analysis.language);
@@ -649,7 +674,7 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
                            x + x_off, y - y_off,
                            ink, logical);
 
-          if (renderer->strikethrough)
+          if (renderer->strikethrough != PANGO_LINE_STYLE_NONE)
             add_strikethrough (renderer, renderer->priv->line_state, metrics,
                                x + x_off, y - y_off,
                                ink, logical, glyphs->num_glyphs);
@@ -665,7 +690,8 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
           renderer->priv->line_state->overline != PANGO_OVERLINE_NONE)
         draw_overline (renderer, renderer->priv->line_state);
 
-      if (!renderer->strikethrough && renderer->priv->line_state->strikethrough)
+      if (renderer->strikethrough == PANGO_LINE_STYLE_NONE &&
+          renderer->priv->line_state->strikethrough != PANGO_LINE_STYLE_NONE)
         draw_strikethrough (renderer, renderer->priv->line_state);
 
       x_off += glyph_string_width;
@@ -1410,7 +1436,7 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
   renderer->underline = PANGO_LINE_STYLE_NONE;
   renderer->underline_position = PANGO_UNDERLINE_POSITION_NORMAL;
   renderer->priv->overline = PANGO_OVERLINE_NONE;
-  renderer->strikethrough = FALSE;
+  renderer->strikethrough = PANGO_LINE_STYLE_NONE;
 
   for (l = glyph_item->item->analysis.extra_attrs; l; l = l->next)
     {

@@ -772,6 +772,7 @@ get_attr_value_type (PangoAttrType type)
     case PANGO_ATTR_GRAVITY: return PANGO_TYPE_GRAVITY;
     case PANGO_ATTR_GRAVITY_HINT: return PANGO_TYPE_GRAVITY_HINT;
     case PANGO_ATTR_UNDERLINE: return PANGO_TYPE_LINE_STYLE;
+    case PANGO_ATTR_STRIKETHROUGH: return PANGO_TYPE_LINE_STYLE;
     case PANGO_ATTR_OVERLINE: return PANGO_TYPE_OVERLINE;
     case PANGO_ATTR_BASELINE_SHIFT: return PANGO_TYPE_BASELINE_SHIFT;
     case PANGO_ATTR_FONT_SCALE: return PANGO_TYPE_FONT_SCALE;
@@ -1149,7 +1150,7 @@ pango_attr_list_from_string (const char *text)
           break;
 
         case PANGO_ATTR_STRIKETHROUGH:
-          BOOLEAN_ATTR(strikethrough, gboolean);
+          ENUM_ATTR(strikethrough, PangoLineStyle, PANGO_LINE_STYLE_NONE, PANGO_LINE_STYLE_DOTTED);
           break;
 
         case PANGO_ATTR_RISE:
