@@ -50,7 +50,7 @@ test_attributes_basic (void)
   desc = pango_font_description_from_string ("Computer Modern 12");
   test_copy (pango_attr_font_desc_new (desc));
   pango_font_description_free (desc);
-  test_copy (pango_attr_underline_new (PANGO_UNDERLINE_LOW));
+  test_copy (pango_attr_underline_new (PANGO_UNDERLINE_SINGLE));
   test_copy (pango_attr_underline_new (PANGO_UNDERLINE_ERROR));
   test_copy (pango_attr_underline_color_new (&(PangoColor){100, 200, 300}));
   test_copy (pango_attr_overline_new (PANGO_OVERLINE_SINGLE));
@@ -230,7 +230,7 @@ test_binding_helpers (void)
   desc = pango_font_description_from_string ("Computer Modern 12");
   test_binding (pango_attr_font_desc_new (desc));
   pango_font_description_free (desc);
-  test_binding (pango_attr_underline_new (PANGO_UNDERLINE_LOW));
+  test_binding (pango_attr_underline_new (PANGO_UNDERLINE_SINGLE));
   test_binding (pango_attr_underline_new (PANGO_UNDERLINE_ERROR));
   test_binding (pango_attr_underline_color_new (&(PangoColor){100, 200, 300}));
   test_binding (pango_attr_overline_new (PANGO_OVERLINE_SINGLE));

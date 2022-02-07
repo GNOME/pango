@@ -108,8 +108,8 @@ struct _ItemProperties
 {
   guint uline_single   : 1;
   guint uline_double   : 1;
-  guint uline_low      : 1;
   guint uline_error    : 1;
+  PangoUnderlinePosition uline_position;
   guint strikethrough  : 1;
   guint oline_single   : 1;
   guint showing_space  : 1;
@@ -5561,8 +5561,9 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
 
   pango_layout_get_item_properties (run->item, &properties);
 
-  has_underline = properties.uline_single || properties.uline_double ||
-                  properties.uline_low || properties.uline_error;
+  has_underline = properties.uline_single ||
+                  properties.uline_double ||
+                  properties.uline_error;
   has_overline = properties.oline_single;
 
   if (!run_logical && (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE))
@@ -5620,15 +5621,18 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
           run_ink->height += underline_thickness;
         }
 
-      if (properties.uline_low)
-        run_ink->height += 2 * underline_thickness;
       if (properties.uline_single)
-        run_ink->height = MAX (run_ink->height,
-                               underline_thickness - underline_position - run_ink->y);
-      if (properties.uline_double)
+        {
+          if (properties.uline_position == PANGO_UNDERLINE_POSITION_UNDER)
+            run_ink->height += 2 * underline_thickness;
+          else
+            run_ink->height = MAX (run_ink->height,
+                                   underline_thickness - underline_position - run_ink->y);
+        }
+      else if (properties.uline_double)
         run_ink->height = MAX (run_ink->height,
                                  3 * underline_thickness - underline_position - run_ink->y);
-      if (properties.uline_error)
+      else if (properties.uline_error)
         run_ink->height = MAX (run_ink->height,
                                3 * underline_thickness - underline_position - run_ink->y);
     }
@@ -6728,7 +6732,7 @@ pango_layout_get_item_properties (PangoItem      *item,
 
   properties->uline_single = FALSE;
   properties->uline_double = FALSE;
-  properties->uline_low = FALSE;
+  properties->uline_position = PANGO_UNDERLINE_POSITION_NORMAL;
   properties->uline_error = FALSE;
   properties->oline_single = FALSE;
   properties->strikethrough = FALSE;
@@ -6754,9 +6758,6 @@ pango_layout_get_item_properties (PangoItem      *item,
             case PANGO_UNDERLINE_DOUBLE:
               properties->uline_double = TRUE;
               break;
-            case PANGO_UNDERLINE_LOW:
-              properties->uline_low = TRUE;
-              break;
             case PANGO_UNDERLINE_ERROR:
               properties->uline_error = TRUE;
               break;
@@ -6764,6 +6765,10 @@ pango_layout_get_item_properties (PangoItem      *item,
               g_assert_not_reached ();
               break;
             }
+          break;
+
+        case PANGO_ATTR_UNDERLINE_POSITION:
+          properties->uline_position = attr->int_value;
           break;
 
         case PANGO_ATTR_OVERLINE:

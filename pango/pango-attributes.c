@@ -360,6 +360,11 @@ pango_attr_underline_color_new (PangoColor *color)
   return pango_attr_color_new (PANGO_ATTR_UNDERLINE_COLOR, color);
 }
 
+PangoAttribute *
+pango_attr_underline_position_new (PangoUnderlinePosition position)
+{
+  return pango_attr_int_new (PANGO_ATTR_UNDERLINE_POSITION, (int)position);
+}
 /**
  * pango_attr_strikethrough_new:
  * @strikethrough: %TRUE if the text should be struck-through

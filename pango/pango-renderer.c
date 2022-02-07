@@ -42,6 +42,7 @@ struct _Point
 struct _LineState
 {
   PangoUnderline underline;
+  PangoUnderlinePosition underline_position;
   PangoRectangle underline_rect;
 
   gboolean strikethrough;
@@ -218,6 +219,7 @@ draw_underline (PangoRenderer *renderer,
   PangoUnderline underline = state->underline;
 
   state->underline = PANGO_UNDERLINE_NONE;
+  state->underline_position = PANGO_UNDERLINE_POSITION_NORMAL;
 
   switch (underline)
     {
@@ -232,7 +234,6 @@ draw_underline (PangoRenderer *renderer,
                                      rect->height);
       G_GNUC_FALLTHROUGH;
     case PANGO_UNDERLINE_SINGLE:
-    case PANGO_UNDERLINE_LOW:
       pango_renderer_draw_rectangle (renderer,
                                      PANGO_RENDER_PART_UNDERLINE,
                                      rect->x,
@@ -317,6 +318,7 @@ handle_line_state_change (PangoRenderer  *renderer,
       rect->width = state->logical_rect_end - rect->x;
       draw_underline (renderer, state);
       state->underline = renderer->underline;
+      state->underline_position = renderer->underline_position;
       rect->x = state->logical_rect_end;
       rect->width = 0;
     }
@@ -369,10 +371,13 @@ add_underline (PangoRenderer    *renderer,
     case PANGO_UNDERLINE_NONE:
       g_assert_not_reached ();
       break;
-    case PANGO_UNDERLINE_LOW:
-      new_rect.y += ink_rect->y + ink_rect->height + underline_thickness;
-      break;
     case PANGO_UNDERLINE_SINGLE:
+      if (state->underline_position == PANGO_UNDERLINE_POSITION_UNDER)
+        {
+          new_rect.y += ink_rect->y + ink_rect->height + underline_thickness;
+          break;
+        }
+      G_GNUC_FALLTHROUGH;
     case PANGO_UNDERLINE_DOUBLE:
     case PANGO_UNDERLINE_ERROR:
       new_rect.y -= underline_position;
@@ -389,6 +394,7 @@ add_underline (PangoRenderer    *renderer,
     }
 
   if (renderer->underline == state->underline &&
+      renderer->underline_position == state->underline_position &&
       new_rect.y == current_rect->y &&
       new_rect.height == current_rect->height)
     {
@@ -400,6 +406,7 @@ add_underline (PangoRenderer    *renderer,
 
       *current_rect = new_rect;
       state->underline = renderer->underline;
+      state->underline_position = renderer->underline_position;
     }
 }
 
@@ -541,6 +548,7 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
   renderer->priv->line_state = &state;
 
   state.underline = PANGO_UNDERLINE_NONE;
+  state.underline_position = PANGO_UNDERLINE_POSITION_NORMAL;
   state.overline = PANGO_OVERLINE_NONE;
   state.strikethrough = FALSE;
 
@@ -1396,6 +1404,7 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
   GSList *l;
 
   renderer->underline = PANGO_UNDERLINE_NONE;
+  renderer->underline_position = PANGO_UNDERLINE_POSITION_NORMAL;
   renderer->priv->overline = PANGO_OVERLINE_NONE;
   renderer->strikethrough = FALSE;
 
@@ -1407,6 +1416,10 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
         {
         case PANGO_ATTR_UNDERLINE:
           renderer->underline = attr->int_value;
+          break;
+
+        case PANGO_ATTR_UNDERLINE_POSITION:
+          renderer->underline_position = attr->int_value;
           break;
 
         case PANGO_ATTR_OVERLINE:

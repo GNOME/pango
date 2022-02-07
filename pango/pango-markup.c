@@ -500,10 +500,17 @@ text_handler           (GMarkupParseContext *context G_GNUC_UNUSED,
                       /* Add the underline indicating the accelerator */
                       PangoAttribute *attr;
 
-                      attr = pango_attr_underline_new (PANGO_UNDERLINE_LOW);
+                      attr = pango_attr_underline_new (PANGO_UNDERLINE_SINGLE);
 
                       uline_index = md->index;
                       uline_len = g_utf8_next_char (p) - p;
+
+                      attr->start_index = uline_index;
+                      attr->end_index = uline_index + uline_len;
+
+                      pango_attr_list_change (md->attr_list, attr);
+
+                      attr = pango_attr_underline_position_new (PANGO_UNDERLINE_POSITION_UNDER);
 
                       attr->start_index = uline_index;
                       attr->end_index = uline_index + uline_len;
