@@ -73,12 +73,11 @@ static const char *stretch_names[] = {
   NULL
 };
 
-static const char *underline_names[] = {
+static const char *line_style_names[] = {
   "none",
   "single",
   "double",
-  "low",
-  "error",
+  "dotted",
   NULL
 };
 
@@ -320,7 +319,7 @@ add_attribute (GtkJsonPrinter *printer,
           break;
 
         case PANGO_ATTR_UNDERLINE:
-          gtk_json_printer_add_string (printer, "value", underline_names[attr->int_value]);
+          gtk_json_printer_add_string (printer, "value", line_style_names[attr->int_value]);
           break;
 
         case PANGO_ATTR_UNDERLINE_POSITION:
@@ -1002,7 +1001,7 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_UNDERLINE:
-      attr = pango_attr_underline_new ((PangoUnderline) parser_select_string (parser, underline_names));
+      attr = pango_attr_underline_new ((PangoLineStyle) parser_select_string (parser, line_style_names));
       break;
 
     case PANGO_ATTR_UNDERLINE_POSITION:

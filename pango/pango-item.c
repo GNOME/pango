@@ -398,15 +398,15 @@ pango_item_get_properties (PangoItem      *item,
         case PANGO_ATTR_UNDERLINE:
           switch (attr->int_value)
             {
-            case PANGO_UNDERLINE_NONE:
+            case PANGO_LINE_STYLE_NONE:
               break;
-            case PANGO_UNDERLINE_SINGLE:
+            case PANGO_LINE_STYLE_SINGLE:
               properties->uline_single = TRUE;
               break;
-            case PANGO_UNDERLINE_DOUBLE:
+            case PANGO_LINE_STYLE_DOUBLE:
               properties->uline_double = TRUE;
               break;
-            case PANGO_UNDERLINE_ERROR:
+            case PANGO_LINE_STYLE_DOTTED:
               properties->uline_error = TRUE;
               break;
             default:

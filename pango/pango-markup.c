@@ -500,7 +500,7 @@ text_handler           (GMarkupParseContext *context G_GNUC_UNUSED,
                       /* Add the underline indicating the accelerator */
                       PangoAttribute *attr;
 
-                      attr = pango_attr_underline_new (PANGO_UNDERLINE_SINGLE);
+                      attr = pango_attr_underline_new (PANGO_LINE_STYLE_SINGLE);
 
                       uline_index = md->index;
                       uline_len = g_utf8_next_char (p) - p;
@@ -1546,9 +1546,9 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 
   if (G_UNLIKELY (underline))
     {
-      PangoUnderline ul = PANGO_UNDERLINE_NONE;
+      PangoLineStyle ul = PANGO_LINE_STYLE_NONE;
 
-      if (!span_parse_enum ("underline", underline, PANGO_TYPE_UNDERLINE, (int*)(void*)&ul, line_number, error))
+      if (!span_parse_enum ("underline", underline, PANGO_TYPE_LINE_STYLE, (int*)(void*)&ul, line_number, error))
 	goto error;
 
       add_attribute (tag, pango_attr_underline_new (ul));
@@ -1918,7 +1918,7 @@ u_parse_func        (MarkupData            *md G_GNUC_UNUSED,
 		     GError               **error)
 {
   CHECK_NO_ATTRS("u");
-  add_attribute (tag, pango_attr_underline_new (PANGO_UNDERLINE_SINGLE));
+  add_attribute (tag, pango_attr_underline_new (PANGO_LINE_STYLE_SINGLE));
 
   return TRUE;
 }
