@@ -79,8 +79,9 @@ pango_run_get_extents (PangoRun         *run,
 
   pango_item_get_properties (glyph_item->item, &properties);
 
-  has_underline = properties.uline_single || properties.uline_double ||
-                  properties.uline_low || properties.uline_error;
+  has_underline = properties.uline_single ||
+                  properties.uline_double ||
+                  properties.uline_error;
   has_overline = properties.oline_single;
 
   if (!logical_rect && (glyph_item->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE))
@@ -135,17 +136,20 @@ pango_run_get_extents (PangoRun         *run,
           ink_rect->height += underline_thickness;
         }
 
-      if (properties.uline_low)
-        ink_rect->height += 2 * underline_thickness;
       if (properties.uline_single)
-        ink_rect->height = MAX (ink_rect->height,
-                               underline_thickness - underline_position - ink_rect->y);
-      if (properties.uline_double)
+        {
+          if (properties.uline_position == PANGO_UNDERLINE_POSITION_UNDER)
+            ink_rect->height += 2 * underline_thickness;
+          else
+            ink_rect->height = MAX (ink_rect->height,
+                                    underline_thickness - underline_position - ink_rect->y);
+        }
+      else if (properties.uline_double)
         ink_rect->height = MAX (ink_rect->height,
                                  3 * underline_thickness - underline_position - ink_rect->y);
-      if (properties.uline_error)
+      else if (properties.uline_error)
         ink_rect->height = MAX (ink_rect->height,
-                               3 * underline_thickness - underline_position - ink_rect->y);
+                                3 * underline_thickness - underline_position - ink_rect->y);
     }
 
   y_offset = glyph_item->y_offset;

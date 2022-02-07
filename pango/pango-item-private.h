@@ -59,8 +59,8 @@ struct _ItemProperties
 {
   guint uline_single        : 1;
   guint uline_double        : 1;
-  guint uline_low           : 1;
   guint uline_error         : 1;
+  PangoUnderlinePosition uline_position;
   guint strikethrough       : 1;
   guint oline_single        : 1;
   guint showing_space       : 1;

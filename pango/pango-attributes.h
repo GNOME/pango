@@ -91,6 +91,7 @@ typedef enum
   PANGO_ATTR_FOREGROUND           = PANGO_ATTR_TYPE (COLOR, RENDERING, OVERRIDES),
   PANGO_ATTR_BACKGROUND           = PANGO_ATTR_TYPE (COLOR, RENDERING, OVERRIDES),
   PANGO_ATTR_UNDERLINE            = PANGO_ATTR_TYPE (INT, RENDERING, OVERRIDES),
+  PANGO_ATTR_UNDERLINE_POSITION   = PANGO_ATTR_TYPE (INT, RENDERING, OVERRIDES),
   PANGO_ATTR_STRIKETHROUGH        = PANGO_ATTR_TYPE (BOOLEAN, RENDERING, OVERRIDES),
   PANGO_ATTR_RISE                 = PANGO_ATTR_TYPE (INT, ITEMIZATION, OVERRIDES),
   PANGO_ATTR_SCALE                = PANGO_ATTR_TYPE (FLOAT, ITEMIZATION, OVERRIDES),
@@ -151,12 +152,6 @@ PangoAttribute *        pango_attr_font_desc_new                (const PangoFont
  * @PANGO_UNDERLINE_NONE: no underline should be drawn
  * @PANGO_UNDERLINE_SINGLE: a single underline should be drawn
  * @PANGO_UNDERLINE_DOUBLE: a double underline should be drawn
- * @PANGO_UNDERLINE_LOW: a single underline should be drawn at a
- *   position beneath the ink extents of the text being
- *   underlined. This should be used only for underlining
- *   single characters, such as for keyboard accelerators.
- *   %PANGO_UNDERLINE_SINGLE should be used for extended
- *   portions of text.
  * @PANGO_UNDERLINE_ERROR: an underline indicating an error should
  *   be drawn below. The exact style of rendering is up to the
  *   `PangoRenderer` in use, but typical styles include wavy
@@ -173,7 +168,6 @@ typedef enum {
   PANGO_UNDERLINE_NONE,
   PANGO_UNDERLINE_SINGLE,
   PANGO_UNDERLINE_DOUBLE,
-  PANGO_UNDERLINE_LOW,
   PANGO_UNDERLINE_ERROR
 } PangoUnderline;
 
@@ -181,6 +175,15 @@ PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_underline_new                (PangoUnderline              underline);
 PANGO_AVAILABLE_IN_1_8
 PangoAttribute *        pango_attr_underline_color_new          (PangoColor                 *color);
+
+typedef enum {
+  PANGO_UNDERLINE_POSITION_NORMAL,
+  PANGO_UNDERLINE_POSITION_UNDER
+} PangoUnderlinePosition;
+
+PANGO_AVAILABLE_IN_ALL
+PangoAttribute *        pango_attr_underline_position_new       (PangoUnderlinePosition      position);
+
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_strikethrough_new            (gboolean                    strikethrough);
 PANGO_AVAILABLE_IN_1_8

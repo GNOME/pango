@@ -82,6 +82,12 @@ static const char *underline_names[] = {
   NULL
 };
 
+static const char *underline_position_names[] = {
+  "normal",
+  "under",
+  NULL
+};
+
 static const char *overline_names[] = {
   "none",
   "single",
@@ -315,6 +321,10 @@ add_attribute (GtkJsonPrinter *printer,
 
         case PANGO_ATTR_UNDERLINE:
           gtk_json_printer_add_string (printer, "value", underline_names[attr->int_value]);
+          break;
+
+        case PANGO_ATTR_UNDERLINE_POSITION:
+          gtk_json_printer_add_string (printer, "value", underline_position_names[attr->int_value]);
           break;
 
         case PANGO_ATTR_OVERLINE:
@@ -993,6 +1003,10 @@ attr_for_type (GtkJsonParser *parser,
 
     case PANGO_ATTR_UNDERLINE:
       attr = pango_attr_underline_new ((PangoUnderline) parser_select_string (parser, underline_names));
+      break;
+
+    case PANGO_ATTR_UNDERLINE_POSITION:
+      attr = pango_attr_underline_position_new ((PangoUnderlinePosition) parser_select_string (parser, underline_position_names));
       break;
 
     case PANGO_ATTR_STRIKETHROUGH:
