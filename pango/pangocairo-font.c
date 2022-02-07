@@ -40,6 +40,7 @@
 #pragma GCC diagnostic pop
 
 #include <hb-ft.h>
+#include <hb-ot.h>
 #include <freetype/ftmm.h>
 
 #define PANGO_CAIRO_FONT_PRIVATE(font)		\
@@ -198,6 +199,204 @@ create_font_face_for_hb_font (PangoHbFont *font)
   return cairo_face;
 }
 
+static void
+move_to (hb_draw_funcs_t *dfuncs,
+         cairo_t         *cr,
+         hb_draw_state_t *st,
+         float            to_x,
+         float            to_y,
+         void            *data)
+{
+  cairo_move_to (cr, to_x, to_y);
+}
+
+static void
+line_to (hb_draw_funcs_t *dfuncs,
+         cairo_t         *cr,
+         hb_draw_state_t *st,
+         float            to_x,
+         float            to_y,
+         void            *data)
+{
+  cairo_line_to (cr, to_x, to_y);
+}
+
+static void
+cubic_to (hb_draw_funcs_t *dfuncs,
+          cairo_t         *cr,
+          hb_draw_state_t *st,
+          float            control1_x,
+          float            control1_y,
+          float            control2_x,
+          float            control2_y,
+          float            to_x,
+          float            to_y,
+          void            *data)
+{
+  cairo_curve_to (cr, control1_x, control1_y, control2_x, control2_y, to_x, to_y);
+}
+
+static void
+close_path (hb_draw_funcs_t *dfuncs,
+            cairo_t         *cr,
+            hb_draw_state_t *st,
+            void            *data)
+{
+  cairo_close_path (cr);
+}
+
+static hb_draw_funcs_t *
+get_cairo_draw_funcs (void)
+{
+  static hb_draw_funcs_t *funcs;
+
+  if (!funcs)
+    {
+      funcs = hb_draw_funcs_create ();
+      hb_draw_funcs_set_move_to_func (funcs, (hb_draw_move_to_func_t) move_to, NULL, NULL);
+      hb_draw_funcs_set_line_to_func (funcs, (hb_draw_line_to_func_t) line_to, NULL, NULL);
+      hb_draw_funcs_set_cubic_to_func (funcs, (hb_draw_cubic_to_func_t) cubic_to, NULL, NULL);
+      hb_draw_funcs_set_close_path_func (funcs, (hb_draw_close_path_func_t) close_path, NULL, NULL);
+    }
+
+  return funcs;
+}
+
+static cairo_status_t
+render_glyph (cairo_scaled_font_t  *scaled_font,
+              unsigned long         glyph,
+              cairo_t              *cr,
+              cairo_text_extents_t *extents)
+{
+  cairo_font_face_t *cairo_face = cairo_scaled_font_get_font_face (scaled_font);
+  PangoFont *font = (PangoFont *) cairo_font_face_get_user_data (cairo_face, &cairo_user_data);
+  hb_font_t *hb_font = pango_font_get_hb_font (font);
+  hb_position_t x_scale, y_scale;
+
+  hb_font_get_scale (hb_font, &x_scale, &y_scale);
+  cairo_scale (cr, +1./x_scale, -1./y_scale);
+
+  g_print ("render glyph %d\n", glyph);
+
+  hb_font_get_glyph_shape (hb_font, glyph, get_cairo_draw_funcs (), cr);
+  cairo_fill (cr);
+
+  return CAIRO_STATUS_SUCCESS;
+}
+
+#ifdef HAVE_CAIRO_USER_FONT_FACE_SET_RENDER_COLOR_GLYPH_FUNC
+
+typedef struct
+{
+  const char *data;
+  unsigned size;
+  unsigned position;
+} ReadData;
+
+static cairo_status_t
+read_func (ReadData *io,
+           char     *data,
+           unsigned  size)
+{
+  if (io->position + size > io->size)
+    return CAIRO_STATUS_READ_ERROR;
+
+  memcpy (data, io->data + io->position, size);
+  io->position += size;
+
+  return CAIRO_STATUS_SUCCESS;
+}
+
+static cairo_status_t
+render_color_glyph (cairo_scaled_font_t  *scaled_font,
+                    unsigned long         glyph,
+                    cairo_t              *cr,
+                    cairo_text_extents_t *extents)
+{
+  cairo_font_face_t *cairo_face = cairo_scaled_font_get_font_face (scaled_font);
+  PangoFont *font = (PangoFont *) cairo_font_face_get_user_data (cairo_face, &cairo_user_data);
+  hb_font_t *hb_font = pango_font_get_hb_font (font);
+  hb_blob_t *blob;
+  hb_position_t x_scale, y_scale;
+  cairo_surface_t *surface;
+  int width, height;
+  hb_glyph_extents_t hb_extents;
+  cairo_pattern_t *pattern;
+  cairo_matrix_t matrix;
+  ReadData io;
+
+  blob = hb_ot_color_glyph_reference_png (hb_font, glyph);
+  if (blob == hb_blob_get_empty ())
+    return CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED;
+
+  hb_font_get_scale (hb_font, &x_scale, &y_scale);
+  cairo_scale (cr, +1./x_scale, -1./y_scale);
+
+#ifdef CAIRO_HAS_PNG_FUNCTIONS
+  /* Draw PNG. */
+  io.data = hb_blob_get_data (blob, &io.size);
+  io.position = 0;
+  surface = cairo_image_surface_create_from_png_stream ((cairo_read_func_t) read_func, &io);
+  hb_blob_destroy (blob);
+
+  if (cairo_surface_status (surface) != CAIRO_STATUS_SUCCESS)
+    {
+      cairo_surface_destroy (surface);
+      return CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED;
+    }
+
+  width = cairo_image_surface_get_width (surface);
+  height = cairo_image_surface_get_width (surface);
+
+  if (!hb_font_get_glyph_extents (hb_font, glyph, &hb_extents))
+  {
+    cairo_surface_destroy (surface);
+    return CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED;
+  }
+
+  pattern = cairo_pattern_create_for_surface (surface);
+  cairo_pattern_set_extend (pattern, CAIRO_EXTEND_PAD);
+
+  matrix = (cairo_matrix_t) {(double) width, 0, 0, (double) height, 0, 0};
+  cairo_pattern_set_matrix (pattern, &matrix);
+
+  cairo_translate (cr, hb_extents.x_bearing, hb_extents.y_bearing);
+  cairo_scale (cr, hb_extents.width, hb_extents.height);
+  cairo_set_source (cr, pattern);
+
+  cairo_rectangle (cr, 0, 0, 1, 1);
+  cairo_fill (cr);
+  cairo_pattern_destroy (pattern);
+
+  cairo_surface_destroy (surface);
+  return CAIRO_STATUS_SUCCESS;
+#endif
+  return CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED;
+}
+#endif
+
+
+static cairo_font_face_t *
+create_font_face_for_hb_font_no_ft (PangoHbFont *font)
+{
+  hb_font_t *hb_font;
+  cairo_font_face_t *cairo_face;
+
+  hb_font = pango_font_get_hb_font (PANGO_FONT (font));
+
+  cairo_face = cairo_user_font_face_create ();
+
+  cairo_font_face_set_user_data (cairo_face, &cairo_user_data, font, NULL);
+
+  cairo_user_font_face_set_render_glyph_func (cairo_face, render_glyph);
+#ifdef HAVE_CAIRO_USER_FONT_FACE_SET_RENDER_COLOR_GLYPH_FUNC
+  if (hb_ot_color_has_png (hb_font_get_face (hb_font)))
+    cairo_user_font_face_set_render_color_glyph_func (cairo_face, render_color_glyph);
+#endif
+
+  return cairo_face;
+}
+
 cairo_scaled_font_t *
 _pango_cairo_font_private_get_scaled_font (PangoCairoFontPrivate *cf_priv)
 {
@@ -217,7 +416,11 @@ _pango_cairo_font_private_get_scaled_font (PangoCairoFontPrivate *cf_priv)
   if (PANGO_IS_CAIRO_FONT (cf_priv->cfont))
     font_face = (* PANGO_CAIRO_FONT_GET_IFACE (cf_priv->cfont)->create_font_face) (cf_priv->cfont);
   else if (PANGO_IS_HB_FONT (cf_priv->cfont))
+#if 0
     font_face = create_font_face_for_hb_font (PANGO_HB_FONT (cf_priv->cfont));
+#else
+    font_face = create_font_face_for_hb_font_no_ft (PANGO_HB_FONT (cf_priv->cfont));
+#endif
   else if (PANGO_IS_USER_FONT (cf_priv->cfont))
     font_face = create_font_face_for_user_font (PANGO_USER_FONT (cf_priv->cfont));
 
