@@ -367,7 +367,7 @@ pango_attr_underline_position_new (PangoUnderlinePosition position)
 }
 /**
  * pango_attr_strikethrough_new:
- * @strikethrough: %TRUE if the text should be struck-through
+ * @style: the line style
  *
  * Create a new strike-through attribute.
  *
@@ -376,9 +376,9 @@ pango_attr_underline_position_new (PangoUnderlinePosition position)
  *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
-pango_attr_strikethrough_new (gboolean strikethrough)
+pango_attr_strikethrough_new (PangoLineStyle style)
 {
-  return pango_attr_boolean_new (PANGO_ATTR_STRIKETHROUGH, (int)strikethrough);
+  return pango_attr_int_new (PANGO_ATTR_STRIKETHROUGH, (int)style);
 }
 
 /**

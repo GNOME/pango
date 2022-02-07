@@ -108,7 +108,7 @@ struct _ItemProperties
 {
   PangoLineStyle uline_style;
   PangoUnderlinePosition uline_position;
-  guint strikethrough  : 1;
+  PangoLineStyle strikethrough_style;
   guint oline_single   : 1;
   guint showing_space  : 1;
   gint            letter_spacing;
@@ -5551,6 +5551,7 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
   ItemProperties properties;
   PangoFontMetrics *metrics = NULL;
   gboolean has_underline;
+  gboolean has_strikethrough;
   gboolean has_overline;
   int y_offset;
 
@@ -5561,11 +5562,12 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
 
   has_underline = properties.uline_style != PANGO_LINE_STYLE_NONE;
   has_overline = properties.oline_single;
+  has_strikethrough = properties.strikethrough_style != PANGO_LINE_STYLE_NONE;
 
   if (!run_logical && (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE))
     run_logical = &logical;
 
-  if (!run_logical && (has_underline || has_overline || properties.strikethrough))
+  if (!run_logical && (has_underline || has_overline || has_strikethrough))
     run_logical = &logical;
 
   if (!run_logical && line_logical)
@@ -5574,7 +5576,7 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
   pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
                               run_ink, run_logical);
 
-  if (run_ink && (has_underline || has_overline || properties.strikethrough))
+  if (run_ink && (has_underline || has_overline || has_strikethrough))
     {
       int underline_thickness;
       int underline_position;
@@ -5602,7 +5604,7 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
        * If run_ink->height == 0, we should adjust run_ink->y appropriately.
        */
 
-      if (properties.strikethrough)
+      if (has_strikethrough)
         {
           if (run_ink->height == 0)
             {
@@ -6728,8 +6730,8 @@ pango_layout_get_item_properties (PangoItem      *item,
 
   properties->uline_style = PANGO_LINE_STYLE_NONE;
   properties->uline_position = PANGO_UNDERLINE_POSITION_NORMAL;
+  properties->strikethrough_style = PANGO_LINE_STYLE_NONE;
   properties->oline_single = FALSE;
-  properties->strikethrough = FALSE;
   properties->showing_space = FALSE;
   properties->letter_spacing = 0;
   properties->line_height = 0.0;
@@ -6762,7 +6764,7 @@ pango_layout_get_item_properties (PangoItem      *item,
           break;
 
         case PANGO_ATTR_STRIKETHROUGH:
-          properties->strikethrough = attr->int_value;
+          properties->strikethrough_style = attr->int_value;
           break;
 
         case PANGO_ATTR_LETTER_SPACING:
