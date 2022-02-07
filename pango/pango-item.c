@@ -401,18 +401,15 @@ pango_item_get_properties (PangoItem      *item,
             case PANGO_UNDERLINE_NONE:
               break;
             case PANGO_UNDERLINE_SINGLE:
-            case PANGO_UNDERLINE_SINGLE_LINE:
               properties->uline_single = TRUE;
               break;
             case PANGO_UNDERLINE_DOUBLE:
-            case PANGO_UNDERLINE_DOUBLE_LINE:
               properties->uline_double = TRUE;
               break;
             case PANGO_UNDERLINE_LOW:
               properties->uline_low = TRUE;
               break;
             case PANGO_UNDERLINE_ERROR:
-            case PANGO_UNDERLINE_ERROR_LINE:
               properties->uline_error = TRUE;
               break;
             default:

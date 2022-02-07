@@ -179,7 +179,6 @@ draw_underline (PangoRenderer *renderer,
     case PANGO_UNDERLINE_NONE:
       break;
     case PANGO_UNDERLINE_DOUBLE:
-    case PANGO_UNDERLINE_DOUBLE_LINE:
       pango_renderer_draw_rectangle (renderer,
                                      PANGO_RENDER_PART_UNDERLINE,
                                      rect->x,
@@ -189,7 +188,6 @@ draw_underline (PangoRenderer *renderer,
       G_GNUC_FALLTHROUGH;
     case PANGO_UNDERLINE_SINGLE:
     case PANGO_UNDERLINE_LOW:
-    case PANGO_UNDERLINE_SINGLE_LINE:
       pango_renderer_draw_rectangle (renderer,
                                      PANGO_RENDER_PART_UNDERLINE,
                                      rect->x,
@@ -198,7 +196,6 @@ draw_underline (PangoRenderer *renderer,
                                      rect->height);
       break;
     case PANGO_UNDERLINE_ERROR:
-    case PANGO_UNDERLINE_ERROR_LINE:
       pango_renderer_draw_error_underline (renderer,
                                            rect->x,
                                            rect->y,
@@ -327,17 +324,12 @@ add_underline (PangoRenderer    *renderer,
     case PANGO_UNDERLINE_NONE:
       g_assert_not_reached ();
       break;
-    case PANGO_UNDERLINE_SINGLE:
-    case PANGO_UNDERLINE_DOUBLE:
-    case PANGO_UNDERLINE_ERROR:
-      new_rect.y -= underline_position;
-      break;
     case PANGO_UNDERLINE_LOW:
       new_rect.y += ink_rect->y + ink_rect->height + underline_thickness;
       break;
-    case PANGO_UNDERLINE_SINGLE_LINE:
-    case PANGO_UNDERLINE_DOUBLE_LINE:
-    case PANGO_UNDERLINE_ERROR_LINE:
+    case PANGO_UNDERLINE_SINGLE:
+    case PANGO_UNDERLINE_DOUBLE:
+    case PANGO_UNDERLINE_ERROR:
       new_rect.y -= underline_position;
       if (state->underline == renderer->underline)
         {

@@ -1141,7 +1141,7 @@ pango_attr_list_from_string (const char *text)
           break;
 
         case PANGO_ATTR_UNDERLINE:
-          ENUM_ATTR(underline, PangoUnderline, PANGO_UNDERLINE_NONE, PANGO_UNDERLINE_ERROR_LINE);
+          ENUM_ATTR(underline, PangoUnderline, PANGO_UNDERLINE_NONE, PANGO_UNDERLINE_ERROR);
           break;
 
         case PANGO_ATTR_STRIKETHROUGH:
