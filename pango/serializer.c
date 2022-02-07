@@ -319,6 +319,7 @@ add_attribute (GtkJsonPrinter *printer,
           break;
 
         case PANGO_ATTR_UNDERLINE:
+        case PANGO_ATTR_STRIKETHROUGH:
           gtk_json_printer_add_string (printer, "value", line_style_names[attr->int_value]);
           break;
 
@@ -1009,7 +1010,7 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_STRIKETHROUGH:
-      attr = pango_attr_strikethrough_new (gtk_json_parser_get_boolean (parser));
+      attr = pango_attr_strikethrough_new ((PangoLineStyle) parser_select_string (parser, line_style_names));
       break;
 
     case PANGO_ATTR_RISE:

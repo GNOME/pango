@@ -42,7 +42,8 @@ G_BEGIN_DECLS
  * @PANGO_ATTR_FONT_DESC: font description
  * @PANGO_ATTR_FOREGROUND: foreground color
  * @PANGO_ATTR_BACKGROUND: background color
- * @PANGO_ATTR_UNDERLINE: whether the text has an underline
+ * @PANGO_ATTR_UNDERLINE: underline style
+ * @PANGO_ATTR_UNDERLINE_POSITION: underline position
  * @PANGO_ATTR_STRIKETHROUGH: whether the text is struck-through
  * @PANGO_ATTR_RISE: baseline displacement
  * @PANGO_ATTR_SCALE: font size scale factor
@@ -92,7 +93,7 @@ typedef enum
   PANGO_ATTR_BACKGROUND           = PANGO_ATTR_TYPE (COLOR, RENDERING, OVERRIDES),
   PANGO_ATTR_UNDERLINE            = PANGO_ATTR_TYPE (INT, RENDERING, OVERRIDES),
   PANGO_ATTR_UNDERLINE_POSITION   = PANGO_ATTR_TYPE (INT, RENDERING, OVERRIDES),
-  PANGO_ATTR_STRIKETHROUGH        = PANGO_ATTR_TYPE (BOOLEAN, RENDERING, OVERRIDES),
+  PANGO_ATTR_STRIKETHROUGH        = PANGO_ATTR_TYPE (INT, RENDERING, OVERRIDES),
   PANGO_ATTR_RISE                 = PANGO_ATTR_TYPE (INT, ITEMIZATION, OVERRIDES),
   PANGO_ATTR_SCALE                = PANGO_ATTR_TYPE (FLOAT, ITEMIZATION, OVERRIDES),
   PANGO_ATTR_FALLBACK             = PANGO_ATTR_TYPE (BOOLEAN, ITEMIZATION, OVERRIDES),
@@ -179,7 +180,7 @@ PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_underline_position_new       (PangoUnderlinePosition      position);
 
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *        pango_attr_strikethrough_new            (gboolean                    strikethrough);
+PangoAttribute *        pango_attr_strikethrough_new            (PangoLineStyle              style);
 PANGO_AVAILABLE_IN_1_8
 PangoAttribute *        pango_attr_strikethrough_color_new      (PangoColor                 *color);
 PANGO_AVAILABLE_IN_ALL
