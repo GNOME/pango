@@ -986,12 +986,12 @@ attr_for_type (GtkJsonParser *parser,
 
     case PANGO_ATTR_FOREGROUND:
       parser_get_color (parser, &color);
-      attr = pango_attr_foreground_new (color.red, color.green, color.blue);
+      attr = pango_attr_foreground_new (&color);
       break;
 
     case PANGO_ATTR_BACKGROUND:
       parser_get_color (parser, &color);
-      attr = pango_attr_background_new (color.red, color.green, color.blue);
+      attr = pango_attr_background_new (&color);
       break;
 
     case PANGO_ATTR_UNDERLINE:
@@ -1020,12 +1020,12 @@ attr_for_type (GtkJsonParser *parser,
 
     case PANGO_ATTR_UNDERLINE_COLOR:
       parser_get_color (parser, &color);
-      attr = pango_attr_underline_color_new (color.red, color.green, color.blue);
+      attr = pango_attr_underline_color_new (&color);
       break;
 
     case PANGO_ATTR_STRIKETHROUGH_COLOR:
       parser_get_color (parser, &color);
-      attr = pango_attr_strikethrough_color_new (color.red, color.green, color.blue);
+      attr = pango_attr_strikethrough_color_new (&color);
       break;
 
     case PANGO_ATTR_ABSOLUTE_SIZE:
@@ -1072,7 +1072,7 @@ attr_for_type (GtkJsonParser *parser,
 
     case PANGO_ATTR_OVERLINE_COLOR:
       parser_get_color (parser, &color);
-      attr = pango_attr_overline_color_new (color.red, color.green, color.blue);
+      attr = pango_attr_overline_color_new (&color);
       break;
 
     case PANGO_ATTR_LINE_HEIGHT:
