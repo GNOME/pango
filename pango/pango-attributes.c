@@ -98,19 +98,15 @@ pango_attr_float_new (PangoAttrType type,
 }
 
 static inline PangoAttribute *
-pango_attr_color_new (PangoAttrType type,
-                      guint16       red,
-                      guint16       green,
-                      guint16       blue)
+pango_attr_color_new (PangoAttrType  type,
+                      PangoColor    *color)
 {
   PangoAttribute *attr;
 
   g_return_val_if_fail (PANGO_ATTR_TYPE_VALUE_TYPE (type) == PANGO_ATTR_VALUE_COLOR, NULL);
 
   attr = pango_attr_init (type);
-  attr->color_value.red = red;
-  attr->color_value.green = green;
-  attr->color_value.blue = blue;
+  attr->color_value = *color;
 
   return attr;
 }
@@ -180,9 +176,7 @@ pango_attr_language_new (PangoLanguage *language)
 
 /**
  * pango_attr_foreground_new:
- * @red: the red value (ranging from 0 to 65535)
- * @green: the green value
- * @blue: the blue value
+ * @color: the color
  *
  * Create a new foreground color attribute.
  *
@@ -191,18 +185,14 @@ pango_attr_language_new (PangoLanguage *language)
  *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
-pango_attr_foreground_new (guint16 red,
-                           guint16 green,
-                           guint16 blue)
+pango_attr_foreground_new (PangoColor *color)
 {
-  return pango_attr_color_new (PANGO_ATTR_FOREGROUND, red, green, blue);
+  return pango_attr_color_new (PANGO_ATTR_FOREGROUND, color);
 }
 
 /**
  * pango_attr_background_new:
- * @red: the red value (ranging from 0 to 65535)
- * @green: the green value
- * @blue: the blue value
+ * @color: the color
  *
  * Create a new background color attribute.
  *
@@ -211,11 +201,9 @@ pango_attr_foreground_new (guint16 red,
  *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
-pango_attr_background_new (guint16 red,
-                           guint16 green,
-                           guint16 blue)
+pango_attr_background_new (PangoColor *color)
 {
-  return pango_attr_color_new (PANGO_ATTR_BACKGROUND, red, green, blue);
+  return pango_attr_color_new (PANGO_ATTR_BACKGROUND, color);
 }
 
 /**
@@ -353,9 +341,7 @@ pango_attr_underline_new (PangoUnderline underline)
 
 /**
  * pango_attr_underline_color_new:
- * @red: the red value (ranging from 0 to 65535)
- * @green: the green value
- * @blue: the blue value
+ * @color: the color
  *
  * Create a new underline color attribute.
  *
@@ -369,11 +355,9 @@ pango_attr_underline_new (PangoUnderline underline)
  * Since: 1.8
  */
 PangoAttribute *
-pango_attr_underline_color_new (guint16 red,
-                                guint16 green,
-                                guint16 blue)
+pango_attr_underline_color_new (PangoColor *color)
 {
-  return pango_attr_color_new (PANGO_ATTR_UNDERLINE_COLOR, red, green, blue);
+  return pango_attr_color_new (PANGO_ATTR_UNDERLINE_COLOR, color);
 }
 
 /**
@@ -394,9 +378,7 @@ pango_attr_strikethrough_new (gboolean strikethrough)
 
 /**
  * pango_attr_strikethrough_color_new:
- * @red: the red value (ranging from 0 to 65535)
- * @green: the green value
- * @blue: the blue value
+ * @color: the color
  *
  * Create a new strikethrough color attribute.
  *
@@ -410,11 +392,9 @@ pango_attr_strikethrough_new (gboolean strikethrough)
  * Since: 1.8
  */
 PangoAttribute *
-pango_attr_strikethrough_color_new (guint16 red,
-                                    guint16 green,
-                                    guint16 blue)
+pango_attr_strikethrough_color_new (PangoColor *color)
 {
-  return pango_attr_color_new (PANGO_ATTR_STRIKETHROUGH_COLOR, red, green, blue);
+  return pango_attr_color_new (PANGO_ATTR_STRIKETHROUGH_COLOR, color);
 }
 
 /**
@@ -786,9 +766,7 @@ pango_attr_overline_new (PangoOverline overline)
 
 /**
  * pango_attr_overline_color_new:
- * @red: the red value (ranging from 0 to 65535)
- * @green: the green value
- * @blue: the blue value
+ * @color: the color
  *
  * Create a new overline color attribute.
  *
@@ -802,11 +780,9 @@ pango_attr_overline_new (PangoOverline overline)
  * Since: 1.46
  */
 PangoAttribute *
-pango_attr_overline_color_new (guint16 red,
-                               guint16 green,
-                               guint16 blue)
+pango_attr_overline_color_new (PangoColor *color)
 {
-  return pango_attr_color_new (PANGO_ATTR_OVERLINE_COLOR, red, green, blue);
+  return pango_attr_color_new (PANGO_ATTR_OVERLINE_COLOR, color);
 }
 
 /**

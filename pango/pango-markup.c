@@ -1499,7 +1499,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
       if (!span_parse_color ("foreground", foreground, &color, &alpha, line_number, error))
 	goto error;
 
-      add_attribute (tag, pango_attr_foreground_new (color.red, color.green, color.blue));
+      add_attribute (tag, pango_attr_foreground_new (&color));
       if (alpha != 0xffff)
         add_attribute (tag, pango_attr_foreground_alpha_new (alpha));
     }
@@ -1512,7 +1512,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
       if (!span_parse_color ("background", background, &color, &alpha, line_number, error))
 	goto error;
 
-      add_attribute (tag, pango_attr_background_new (color.red, color.green, color.blue));
+      add_attribute (tag, pango_attr_background_new (&color));
       if (alpha != 0xffff)
         add_attribute (tag, pango_attr_background_alpha_new (alpha));
     }
@@ -1554,7 +1554,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
       if (!span_parse_color ("underline_color", underline_color, &color, NULL, line_number, error))
 	goto error;
 
-      add_attribute (tag, pango_attr_underline_color_new (color.red, color.green, color.blue));
+      add_attribute (tag, pango_attr_underline_color_new (&color));
     }
 
   if (G_UNLIKELY (overline))
@@ -1574,7 +1574,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
       if (!span_parse_color ("overline_color", overline_color, &color, NULL, line_number, error))
 	goto error;
 
-      add_attribute (tag, pango_attr_overline_color_new (color.red, color.green, color.blue));
+      add_attribute (tag, pango_attr_overline_color_new (&color));
     }
 
   if (G_UNLIKELY (gravity))
@@ -1627,7 +1627,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
       if (!span_parse_color ("strikethrough_color", strikethrough_color, &color, NULL, line_number, error))
 	goto error;
 
-      add_attribute (tag, pango_attr_strikethrough_color_new (color.red, color.green, color.blue));
+      add_attribute (tag, pango_attr_strikethrough_color_new (&color));
     }
 
   if (G_UNLIKELY (fallback))

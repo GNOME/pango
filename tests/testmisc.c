@@ -257,7 +257,7 @@ test_attr_list_update (void)
   weight_attr->start_index = 4;
   weight_attr->end_index = 6;
 
-  fg_attr = pango_attr_foreground_new (0, 0, 65535);
+  fg_attr = pango_attr_foreground_new (&(PangoColor){0, 0, 65535});
   fg_attr->start_index = PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING;
   fg_attr->end_index = PANGO_ATTR_INDEX_TO_TEXT_END;
 

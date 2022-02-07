@@ -128,13 +128,9 @@ PangoAttribute *        pango_attr_language_new                 (PangoLanguage  
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_family_new                   (const char                 *family);
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *        pango_attr_foreground_new               (guint16                     red,
-                                                                 guint16                     green,
-                                                                 guint16                     blue);
+PangoAttribute *        pango_attr_foreground_new               (PangoColor                 *color);
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *        pango_attr_background_new               (guint16                     red,
-                                                                 guint16                     green,
-                                                                 guint16                     blue);
+PangoAttribute *        pango_attr_background_new               (PangoColor                 *color);
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_size_new                     (int                         size);
 PANGO_AVAILABLE_IN_1_8
@@ -196,15 +192,11 @@ typedef enum {
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_underline_new                (PangoUnderline              underline);
 PANGO_AVAILABLE_IN_1_8
-PangoAttribute *        pango_attr_underline_color_new          (guint16                     red,
-                                                                 guint16                     green,
-                                                                 guint16                     blue);
+PangoAttribute *        pango_attr_underline_color_new          (PangoColor                 *color);
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_strikethrough_new            (gboolean                    strikethrough);
 PANGO_AVAILABLE_IN_1_8
-PangoAttribute *        pango_attr_strikethrough_color_new      (guint16                     red,
-                                                                 guint16                     green,
-                                                                 guint16                     blue);
+PangoAttribute *        pango_attr_strikethrough_color_new      (PangoColor                 *color);
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_rise_new                     (int                         rise);
 
@@ -295,11 +287,9 @@ typedef enum {
 } PangoOverline;
 
 PANGO_AVAILABLE_IN_1_46
-PangoAttribute *        pango_attr_overline_new                 (PangoOverline                overline);
+PangoAttribute *        pango_attr_overline_new                 (PangoOverline               overline);
 PANGO_AVAILABLE_IN_1_46
-PangoAttribute *        pango_attr_overline_color_new           (guint16                      red,
-                                                                 guint16                      green,
-                                                                 guint16                      blue);
+PangoAttribute *        pango_attr_overline_color_new           (PangoColor                 *color);
 
 /**
  * PangoShowFlags:
