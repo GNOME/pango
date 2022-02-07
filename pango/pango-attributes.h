@@ -148,31 +148,25 @@ PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_font_desc_new                (const PangoFontDescription *desc);
 
 /**
- * PangoUnderline:
- * @PANGO_UNDERLINE_NONE: no underline should be drawn
- * @PANGO_UNDERLINE_SINGLE: a single underline should be drawn
- * @PANGO_UNDERLINE_DOUBLE: a double underline should be drawn
- * @PANGO_UNDERLINE_ERROR: an underline indicating an error should
- *   be drawn below. The exact style of rendering is up to the
- *   `PangoRenderer` in use, but typical styles include wavy
- *   or dotted lines.
- *   This underline is typically used to indicate an error such
- *   as a possible mispelling; in some cases a contrasting color
- *   may automatically be used. This type of underlining is
- *   available since Pango 1.4.
+ * PangoLineStyle:
+ * @PANGO_LINE_STYLE_NONE: no line should be drawn
+ * @PANGO_LINE_STYLE_SINGLE: a single line should be drawn
+ * @PANGO_LINE_STYLE_DOUBLE: a double line should be drawn
+ * @PANGO_LINE_STYLE_DOTTED: an dotted line should be drawn
  *
- * The `PangoUnderline` enumeration is used to specify whether text
- * should be underlined, and if so, the type of underlining.
+ * The `PangoLineStyle` enumeration is used to specify how
+ * lines should be drawn.
  */
 typedef enum {
-  PANGO_UNDERLINE_NONE,
-  PANGO_UNDERLINE_SINGLE,
-  PANGO_UNDERLINE_DOUBLE,
-  PANGO_UNDERLINE_ERROR
-} PangoUnderline;
+  PANGO_LINE_STYLE_NONE,
+  PANGO_LINE_STYLE_SINGLE,
+  PANGO_LINE_STYLE_DOUBLE,
+  PANGO_LINE_STYLE_DOTTED
+} PangoLineStyle;
 
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *        pango_attr_underline_new                (PangoUnderline              underline);
+PangoAttribute *        pango_attr_underline_new                (PangoLineStyle              style);
+
 PANGO_AVAILABLE_IN_1_8
 PangoAttribute *        pango_attr_underline_color_new          (PangoColor                 *color);
 
