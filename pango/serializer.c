@@ -78,9 +78,6 @@ static const char *underline_names[] = {
   "double",
   "low",
   "error",
-  "single-line",
-  "double-line",
-  "error-line",
   NULL
 };
 
