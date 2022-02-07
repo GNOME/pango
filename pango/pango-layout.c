@@ -99,16 +99,14 @@ typedef struct _LastTabState LastTabState;
 /* Note that letter_spacing and shape are constant across items,
  * since we pass them into itemization.
  *
- * uline and strikethrough can vary across an item, so we collect
+ * _styleuline and strikethrough can vary across an item, so we collect
  * all the values that we find.
  *
  * See pango_layout_get_item_properties for details.
  */
 struct _ItemProperties
 {
-  guint uline_single   : 1;
-  guint uline_double   : 1;
-  guint uline_error    : 1;
+  PangoLineStyle uline_style;
   PangoUnderlinePosition uline_position;
   guint strikethrough  : 1;
   guint oline_single   : 1;
@@ -5561,9 +5559,7 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
 
   pango_layout_get_item_properties (run->item, &properties);
 
-  has_underline = properties.uline_single ||
-                  properties.uline_double ||
-                  properties.uline_error;
+  has_underline = properties.uline_style != PANGO_LINE_STYLE_NONE;
   has_overline = properties.oline_single;
 
   if (!run_logical && (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE))
@@ -5621,7 +5617,7 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
           run_ink->height += underline_thickness;
         }
 
-      if (properties.uline_single)
+      if (properties.uline_style == PANGO_LINE_STYLE_SINGLE)
         {
           if (properties.uline_position == PANGO_UNDERLINE_POSITION_UNDER)
             run_ink->height += 2 * underline_thickness;
@@ -5629,10 +5625,10 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
             run_ink->height = MAX (run_ink->height,
                                    underline_thickness - underline_position - run_ink->y);
         }
-      else if (properties.uline_double)
+      else if (properties.uline_style == PANGO_LINE_STYLE_DOUBLE)
         run_ink->height = MAX (run_ink->height,
                                  3 * underline_thickness - underline_position - run_ink->y);
-      else if (properties.uline_error)
+      else if (properties.uline_style == PANGO_LINE_STYLE_DOTTED)
         run_ink->height = MAX (run_ink->height,
                                3 * underline_thickness - underline_position - run_ink->y);
     }
@@ -6730,10 +6726,8 @@ pango_layout_get_item_properties (PangoItem      *item,
 {
   GSList *tmp_list = item->analysis.extra_attrs;
 
-  properties->uline_single = FALSE;
-  properties->uline_double = FALSE;
+  properties->uline_style = PANGO_LINE_STYLE_NONE;
   properties->uline_position = PANGO_UNDERLINE_POSITION_NORMAL;
-  properties->uline_error = FALSE;
   properties->oline_single = FALSE;
   properties->strikethrough = FALSE;
   properties->showing_space = FALSE;
@@ -6748,23 +6742,7 @@ pango_layout_get_item_properties (PangoItem      *item,
       switch ((int) attr->type)
         {
         case PANGO_ATTR_UNDERLINE:
-          switch (attr->int_value)
-            {
-            case PANGO_UNDERLINE_NONE:
-              break;
-            case PANGO_UNDERLINE_SINGLE:
-              properties->uline_single = TRUE;
-              break;
-            case PANGO_UNDERLINE_DOUBLE:
-              properties->uline_double = TRUE;
-              break;
-            case PANGO_UNDERLINE_ERROR:
-              properties->uline_error = TRUE;
-              break;
-            default:
-              g_assert_not_reached ();
-              break;
-            }
+          properties->uline_style = attr->int_value;
           break;
 
         case PANGO_ATTR_UNDERLINE_POSITION:

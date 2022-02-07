@@ -325,18 +325,18 @@ pango_attr_font_desc_new (const PangoFontDescription *desc)
 
 /**
  * pango_attr_underline_new:
- * @underline: the underline style
+ * @style: the line style
  *
- * Create a new underline-style attribute.
+ * Create a new underline attribute.
  *
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
-pango_attr_underline_new (PangoUnderline underline)
+pango_attr_underline_new (PangoLineStyle style)
 {
-  return pango_attr_int_new (PANGO_ATTR_UNDERLINE, (int)underline);
+  return pango_attr_int_new (PANGO_ATTR_UNDERLINE, (int)style);
 }
 
 /**
