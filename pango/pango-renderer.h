@@ -83,6 +83,7 @@ struct _PangoRenderer
   GObject parent_instance;
 
   PangoUnderline underline;
+  PangoUnderlinePosition underline_position;
   gboolean strikethrough;
   int active_count;
 

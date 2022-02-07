@@ -1144,6 +1144,10 @@ pango_attr_list_from_string (const char *text)
           ENUM_ATTR(underline, PangoUnderline, PANGO_UNDERLINE_NONE, PANGO_UNDERLINE_ERROR);
           break;
 
+        case PANGO_ATTR_UNDERLINE_POSITION:
+          ENUM_ATTR(underline_position, PangoUnderlinePosition, PANGO_UNDERLINE_POSITION_NORMAL, PANGO_UNDERLINE_POSITION_UNDER);
+          break;
+
         case PANGO_ATTR_STRIKETHROUGH:
           BOOLEAN_ATTR(strikethrough, gboolean);
           break;

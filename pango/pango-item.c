@@ -378,8 +378,8 @@ pango_item_get_properties (PangoItem      *item,
 
   properties->uline_single = FALSE;
   properties->uline_double = FALSE;
-  properties->uline_low = FALSE;
   properties->uline_error = FALSE;
+  properties->uline_position = PANGO_UNDERLINE_POSITION_NORMAL;
   properties->oline_single = FALSE;
   properties->strikethrough = FALSE;
   properties->showing_space = FALSE;
@@ -406,9 +406,6 @@ pango_item_get_properties (PangoItem      *item,
             case PANGO_UNDERLINE_DOUBLE:
               properties->uline_double = TRUE;
               break;
-            case PANGO_UNDERLINE_LOW:
-              properties->uline_low = TRUE;
-              break;
             case PANGO_UNDERLINE_ERROR:
               properties->uline_error = TRUE;
               break;
@@ -417,6 +414,11 @@ pango_item_get_properties (PangoItem      *item,
               break;
             }
           break;
+
+        case PANGO_ATTR_UNDERLINE_POSITION:
+          properties->uline_position = attr->int_value;
+          break;
+
         case PANGO_ATTR_OVERLINE:
           switch (attr->int_value)
             {
