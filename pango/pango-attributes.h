@@ -148,7 +148,9 @@ PangoAttribute *        pango_attr_font_desc_new                (const PangoFont
  * @PANGO_LINE_STYLE_NONE: no line should be drawn
  * @PANGO_LINE_STYLE_SINGLE: a single line should be drawn
  * @PANGO_LINE_STYLE_DOUBLE: a double line should be drawn
+ * @PANGO_LINE_STYLE_DASHED: an dashed line should be drawn
  * @PANGO_LINE_STYLE_DOTTED: an dotted line should be drawn
+ * @PANGO_LINE_STYLE_WAVY: an wavy line should be drawn
  *
  * The `PangoLineStyle` enumeration is used to specify how
  * lines should be drawn.
@@ -157,7 +159,9 @@ typedef enum {
   PANGO_LINE_STYLE_NONE,
   PANGO_LINE_STYLE_SINGLE,
   PANGO_LINE_STYLE_DOUBLE,
-  PANGO_LINE_STYLE_DOTTED
+  PANGO_LINE_STYLE_DASHED,
+  PANGO_LINE_STYLE_DOTTED,
+  PANGO_LINE_STYLE_WAVY
 } PangoLineStyle;
 
 PANGO_AVAILABLE_IN_ALL
@@ -248,24 +252,8 @@ PangoAttribute *        pango_attr_sentence_new                 (void);
 PANGO_AVAILABLE_IN_1_44
 PangoAttribute *        pango_attr_insert_hyphens_new           (gboolean                     insert_hyphens);
 
-/**
- * PangoOverline:
- * @PANGO_OVERLINE_NONE: no overline should be drawn
- * @PANGO_OVERLINE_SINGLE: Draw a single line above the ink
- *   extents of the text being underlined.
- *
- * The `PangoOverline` enumeration is used to specify whether text
- * should be overlined, and if so, the type of line.
- *
- * Since: 1.46
- */
-typedef enum {
-  PANGO_OVERLINE_NONE,
-  PANGO_OVERLINE_SINGLE
-} PangoOverline;
-
 PANGO_AVAILABLE_IN_1_46
-PangoAttribute *        pango_attr_overline_new                 (PangoOverline               overline);
+PangoAttribute *        pango_attr_overline_new                 (PangoLineStyle              style);
 PANGO_AVAILABLE_IN_1_46
 PangoAttribute *        pango_attr_overline_color_new           (PangoColor                 *color);
 

@@ -109,7 +109,7 @@ struct _ItemProperties
   PangoLineStyle uline_style;
   PangoUnderlinePosition uline_position;
   PangoLineStyle strikethrough_style;
-  guint oline_single   : 1;
+  PangoLineStyle oline_style;
   guint showing_space  : 1;
   gint            letter_spacing;
   double line_height;
@@ -5561,7 +5561,7 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
   pango_layout_get_item_properties (run->item, &properties);
 
   has_underline = properties.uline_style != PANGO_LINE_STYLE_NONE;
-  has_overline = properties.oline_single;
+  has_overline = properties.oline_style != PANGO_LINE_STYLE_NONE;
   has_strikethrough = properties.strikethrough_style != PANGO_LINE_STYLE_NONE;
 
   if (!run_logical && (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE))
@@ -5613,13 +5613,23 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
             }
         }
 
-      if (properties.oline_single)
+      if (properties.oline_style == PANGO_LINE_STYLE_SINGLE ||
+          properties.oline_style == PANGO_LINE_STYLE_DASHED ||
+          properties.oline_style == PANGO_LINE_STYLE_DOTTED)
         {
           run_ink->y -= underline_thickness;
           run_ink->height += underline_thickness;
         }
+      else if (properties.oline_style == PANGO_LINE_STYLE_DOUBLE ||
+               properties.oline_style == PANGO_LINE_STYLE_WAVY)
+        {
+          run_ink->y -= 3 * underline_thickness;
+          run_ink->height += 3 * underline_thickness;
+        }
 
-      if (properties.uline_style == PANGO_LINE_STYLE_SINGLE)
+      if (properties.uline_style == PANGO_LINE_STYLE_SINGLE ||
+          properties.uline_style == PANGO_LINE_STYLE_DASHED ||
+          properties.uline_style == PANGO_LINE_STYLE_DOTTED)
         {
           if (properties.uline_position == PANGO_UNDERLINE_POSITION_UNDER)
             run_ink->height += 2 * underline_thickness;
@@ -5627,12 +5637,15 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
             run_ink->height = MAX (run_ink->height,
                                    underline_thickness - underline_position - run_ink->y);
         }
-      else if (properties.uline_style == PANGO_LINE_STYLE_DOUBLE)
-        run_ink->height = MAX (run_ink->height,
-                                 3 * underline_thickness - underline_position - run_ink->y);
-      else if (properties.uline_style == PANGO_LINE_STYLE_DOTTED)
-        run_ink->height = MAX (run_ink->height,
-                               3 * underline_thickness - underline_position - run_ink->y);
+      else if (properties.uline_style == PANGO_LINE_STYLE_DOUBLE ||
+               properties.uline_style == PANGO_LINE_STYLE_WAVY)
+        {
+          if (properties.uline_position == PANGO_UNDERLINE_POSITION_UNDER)
+            run_ink->height += 4 * underline_thickness;
+          else
+            run_ink->height = MAX (run_ink->height,
+                                   3 * underline_thickness - underline_position - run_ink->y);
+        }
     }
 
   if (height)
@@ -6731,7 +6744,7 @@ pango_layout_get_item_properties (PangoItem      *item,
   properties->uline_style = PANGO_LINE_STYLE_NONE;
   properties->uline_position = PANGO_UNDERLINE_POSITION_NORMAL;
   properties->strikethrough_style = PANGO_LINE_STYLE_NONE;
-  properties->oline_single = FALSE;
+  properties->oline_style = PANGO_LINE_STYLE_NONE;
   properties->showing_space = FALSE;
   properties->letter_spacing = 0;
   properties->line_height = 0.0;
@@ -6752,15 +6765,7 @@ pango_layout_get_item_properties (PangoItem      *item,
           break;
 
         case PANGO_ATTR_OVERLINE:
-          switch (attr->int_value)
-            {
-            case PANGO_OVERLINE_SINGLE:
-              properties->oline_single = TRUE;
-              break;
-            default:
-              g_assert_not_reached ();
-              break;
-            }
+          properties->oline_style = attr->int_value;
           break;
 
         case PANGO_ATTR_STRIKETHROUGH:

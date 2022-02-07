@@ -1578,12 +1578,12 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 
   if (G_UNLIKELY (overline))
     {
-      PangoOverline ol = PANGO_OVERLINE_NONE;
+      PangoLineStyle style = PANGO_LINE_STYLE_NONE;
 
-      if (!span_parse_enum ("overline", overline, PANGO_TYPE_OVERLINE, (int*)(void*)&ol, line_number, error))
+      if (!span_parse_enum ("overline", overline, PANGO_TYPE_LINE_STYLE, (int*)(void*)&style, line_number, error))
 	goto error;
 
-      add_attribute (tag, pango_attr_overline_new (ol));
+      add_attribute (tag, pango_attr_overline_new (style));
     }
 
   if (G_UNLIKELY (overline_color))

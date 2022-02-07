@@ -767,7 +767,7 @@ get_attr_value_type (PangoAttrType type)
     case PANGO_ATTR_GRAVITY_HINT: return PANGO_TYPE_GRAVITY_HINT;
     case PANGO_ATTR_UNDERLINE: return PANGO_TYPE_LINE_STYLE;
     case PANGO_ATTR_STRIKETHROUGH: return PANGO_TYPE_LINE_STYLE;
-    case PANGO_ATTR_OVERLINE: return PANGO_TYPE_OVERLINE;
+    case PANGO_ATTR_OVERLINE: return PANGO_TYPE_LINE_STYLE;
     case PANGO_ATTR_BASELINE_SHIFT: return PANGO_TYPE_BASELINE_SHIFT;
     case PANGO_ATTR_FONT_SCALE: return PANGO_TYPE_FONT_SCALE;
     case PANGO_ATTR_TEXT_TRANSFORM: return PANGO_TYPE_TEXT_TRANSFORM;
@@ -1217,7 +1217,7 @@ pango_attr_list_from_string (const char *text)
           break;
 
         case PANGO_ATTR_OVERLINE:
-          ENUM_ATTR(overline, PangoOverline, PANGO_OVERLINE_NONE, PANGO_OVERLINE_SINGLE);
+          ENUM_ATTR(overline, PangoLineStyle, PANGO_LINE_STYLE_NONE, PANGO_LINE_STYLE_DOTTED);
           break;
 
         case PANGO_ATTR_OVERLINE_COLOR:

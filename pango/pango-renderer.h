@@ -82,6 +82,8 @@ struct _PangoRenderer
   PangoLineStyle underline;
   PangoUnderlinePosition underline_position;
   PangoLineStyle strikethrough;
+  PangoLineStyle overline;
+
   int active_count;
 
   /*< public >*/

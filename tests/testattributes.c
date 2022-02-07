@@ -53,7 +53,7 @@ test_attributes_basic (void)
   test_copy (pango_attr_underline_new (PANGO_LINE_STYLE_SINGLE));
   test_copy (pango_attr_underline_new (PANGO_LINE_STYLE_DOTTED));
   test_copy (pango_attr_underline_color_new (&(PangoColor){100, 200, 300}));
-  test_copy (pango_attr_overline_new (PANGO_OVERLINE_SINGLE));
+  test_copy (pango_attr_overline_new (PANGO_LINE_STYLE_SINGLE));
   test_copy (pango_attr_overline_color_new (&(PangoColor){100, 200, 300}));
   test_copy (pango_attr_strikethrough_new (TRUE));
   test_copy (pango_attr_strikethrough_color_new (&(PangoColor){100, 200, 300}));
@@ -233,7 +233,7 @@ test_binding_helpers (void)
   test_binding (pango_attr_underline_new (PANGO_LINE_STYLE_SINGLE));
   test_binding (pango_attr_underline_new (PANGO_LINE_STYLE_DOTTED));
   test_binding (pango_attr_underline_color_new (&(PangoColor){100, 200, 300}));
-  test_binding (pango_attr_overline_new (PANGO_OVERLINE_SINGLE));
+  test_binding (pango_attr_overline_new (PANGO_LINE_STYLE_SINGLE));
   test_binding (pango_attr_overline_color_new (&(PangoColor){100, 200, 300}));
   test_binding (pango_attr_strikethrough_new (TRUE));
   test_binding (pango_attr_strikethrough_color_new (&(PangoColor){100, 200, 300}));
