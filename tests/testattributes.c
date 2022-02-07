@@ -39,8 +39,8 @@ test_attributes_basic (void)
 
   test_copy (pango_attr_language_new (pango_language_from_string ("ja-JP")));
   test_copy (pango_attr_family_new ("Times"));
-  test_copy (pango_attr_foreground_new (100, 200, 300));
-  test_copy (pango_attr_background_new (100, 200, 300));
+  test_copy (pango_attr_foreground_new (&(PangoColor){100, 200, 300}));
+  test_copy (pango_attr_background_new (&(PangoColor){100, 200, 300}));
   test_copy (pango_attr_size_new (1024));
   test_copy (pango_attr_size_new_absolute (1024));
   test_copy (pango_attr_style_new (PANGO_STYLE_ITALIC));
@@ -52,11 +52,11 @@ test_attributes_basic (void)
   pango_font_description_free (desc);
   test_copy (pango_attr_underline_new (PANGO_UNDERLINE_LOW));
   test_copy (pango_attr_underline_new (PANGO_UNDERLINE_ERROR_LINE));
-  test_copy (pango_attr_underline_color_new (100, 200, 300));
+  test_copy (pango_attr_underline_color_new (&(PangoColor){100, 200, 300}));
   test_copy (pango_attr_overline_new (PANGO_OVERLINE_SINGLE));
-  test_copy (pango_attr_overline_color_new (100, 200, 300));
+  test_copy (pango_attr_overline_color_new (&(PangoColor){100, 200, 300}));
   test_copy (pango_attr_strikethrough_new (TRUE));
-  test_copy (pango_attr_strikethrough_color_new (100, 200, 300));
+  test_copy (pango_attr_strikethrough_color_new (&(PangoColor){100, 200, 300}));
   test_copy (pango_attr_rise_new (256));
   test_copy (pango_attr_scale_new (2.56));
   test_copy (pango_attr_fallback_new (FALSE));
@@ -219,8 +219,8 @@ test_binding_helpers (void)
 
   test_binding (pango_attr_language_new (pango_language_from_string ("ja-JP")));
   test_binding (pango_attr_family_new ("Times"));
-  test_binding (pango_attr_foreground_new (100, 200, 300));
-  test_binding (pango_attr_background_new (100, 200, 300));
+  test_binding (pango_attr_foreground_new (&(PangoColor){100, 200, 300}));
+  test_binding (pango_attr_background_new (&(PangoColor){100, 200, 300}));
   test_binding (pango_attr_size_new (1024));
   test_binding (pango_attr_size_new_absolute (1024));
   test_binding (pango_attr_style_new (PANGO_STYLE_ITALIC));
@@ -232,11 +232,11 @@ test_binding_helpers (void)
   pango_font_description_free (desc);
   test_binding (pango_attr_underline_new (PANGO_UNDERLINE_LOW));
   test_binding (pango_attr_underline_new (PANGO_UNDERLINE_ERROR_LINE));
-  test_binding (pango_attr_underline_color_new (100, 200, 300));
+  test_binding (pango_attr_underline_color_new (&(PangoColor){100, 200, 300}));
   test_binding (pango_attr_overline_new (PANGO_OVERLINE_SINGLE));
-  test_binding (pango_attr_overline_color_new (100, 200, 300));
+  test_binding (pango_attr_overline_color_new (&(PangoColor){100, 200, 300}));
   test_binding (pango_attr_strikethrough_new (TRUE));
-  test_binding (pango_attr_strikethrough_color_new (100, 200, 300));
+  test_binding (pango_attr_strikethrough_color_new (&(PangoColor){100, 200, 300}));
   test_binding (pango_attr_rise_new (256));
   test_binding (pango_attr_scale_new (2.56));
   test_binding (pango_attr_fallback_new (FALSE));

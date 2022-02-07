@@ -1064,7 +1064,7 @@ pango_attr_list_from_string (const char *text)
               g_free (str); \
               goto fail; \
             } \
-          attr = pango_attr_##name##_new (color.red, color.green, color.blue); \
+          attr = pango_attr_##name##_new (&color); \
           g_free (str);
 
       switch (attr_type)
