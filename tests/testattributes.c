@@ -64,8 +64,6 @@ test_attributes_basic (void)
   test_copy (pango_attr_gravity_new (PANGO_GRAVITY_SOUTH));
   test_copy (pango_attr_gravity_hint_new (PANGO_GRAVITY_HINT_STRONG));
   test_copy (pango_attr_font_features_new ("csc=1"));
-  test_copy (pango_attr_foreground_alpha_new (8000));
-  test_copy (pango_attr_background_alpha_new (8000));
   test_copy (pango_attr_allow_breaks_new (FALSE));
   test_copy (pango_attr_show_new (PANGO_SHOW_SPACES));
   test_copy (pango_attr_insert_hyphens_new (FALSE));
@@ -244,8 +242,6 @@ test_binding_helpers (void)
   test_binding (pango_attr_gravity_new (PANGO_GRAVITY_SOUTH));
   test_binding (pango_attr_gravity_hint_new (PANGO_GRAVITY_HINT_STRONG));
   test_binding (pango_attr_font_features_new ("csc=1"));
-  test_binding (pango_attr_foreground_alpha_new (8000));
-  test_binding (pango_attr_background_alpha_new (8000));
   test_binding (pango_attr_allow_breaks_new (FALSE));
   test_binding (pango_attr_show_new (PANGO_SHOW_SPACES));
   test_binding (pango_attr_insert_hyphens_new (FALSE));

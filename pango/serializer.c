@@ -1059,14 +1059,6 @@ attr_for_type (GtkJsonParser *parser,
       g_free (str);
       break;
 
-    case PANGO_ATTR_FOREGROUND_ALPHA:
-      attr = pango_attr_foreground_alpha_new ((int) gtk_json_parser_get_number (parser));
-      break;
-
-    case PANGO_ATTR_BACKGROUND_ALPHA:
-      attr = pango_attr_background_alpha_new ((int) gtk_json_parser_get_number (parser));
-      break;
-
     case PANGO_ATTR_ALLOW_BREAKS:
       attr = pango_attr_allow_breaks_new (gtk_json_parser_get_boolean (parser));
       break;

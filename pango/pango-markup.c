@@ -1047,11 +1047,10 @@ static gboolean
 span_parse_color (const char *attr_name,
 		  const char *attr_val,
 		  PangoColor *color,
-                  guint16 *alpha,
 		  int line_number,
 		  GError **error)
 {
-  if (!pango_color_parse_with_alpha (color, alpha, attr_val))
+  if (!pango_color_parse (color, attr_val))
     {
       g_set_error (error,
 		   G_MARKUP_ERROR,
@@ -1059,56 +1058,6 @@ span_parse_color (const char *attr_name,
 		   _("Value of '%s' attribute on <span> tag "
 		     "on line %d could not be parsed; "
 		     "should be a color specification, not '%s'"),
-		   attr_name, line_number, attr_val);
-      return FALSE;
-    }
-
-  return TRUE;
-}
-
-static gboolean
-span_parse_alpha (const char  *attr_name,
-                  const char  *attr_val,
-                  guint16     *val,
-                  int          line_number,
-                  GError     **error)
-{
-  const char *end = attr_val;
-  int int_val;
-
-  if (_pango_scan_int (&end, &int_val))
-    {
-      if (*end == '\0' && int_val > 0 && int_val <= 0xffff)
-        {
-          *val = (guint16)int_val;
-          return TRUE;
-        }
-      else if (*end == '%' && int_val > 0 && int_val <= 100)
-        {
-          *val = (guint16)(int_val * 0xffff / 100);
-          return TRUE;
-        }
-      else
-        {
-          g_set_error (error,
-                       G_MARKUP_ERROR,
-                       G_MARKUP_ERROR_INVALID_CONTENT,
-                       _("Value of '%s' attribute on <span> tag "
-                         "on line %d could not be parsed; "
-                         "should be between 0 and 65536 or a "
-                         "percentage, not '%s'"),
-                         attr_name, line_number, attr_val);
-          return FALSE;
-        }
-    }
-  else
-    {
-      g_set_error (error,
-		   G_MARKUP_ERROR,
-		   G_MARKUP_ERROR_INVALID_CONTENT,
-		   _("Value of '%s' attribute on <span> tag "
-		     "on line %d could not be parsed; "
-		     "should be an integer, not '%s'"),
 		   attr_name, line_number, attr_val);
       return FALSE;
     }
@@ -1232,8 +1181,6 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   const char *gravity = NULL;
   const char *gravity_hint = NULL;
   const char *font_features = NULL;
-  const char *alpha = NULL;
-  const char *background_alpha = NULL;
   const char *allow_breaks = NULL;
   const char *insert_hyphens = NULL;
   const char *show = NULL;
@@ -1271,13 +1218,10 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
       switch (names[i][0]) {
       case 'a':
         CHECK_ATTRIBUTE (allow_breaks);
-        CHECK_ATTRIBUTE (alpha);
         break;
       case 'b':
 	CHECK_ATTRIBUTE (background);
 	CHECK_ATTRIBUTE2(background, "bgcolor");
-        CHECK_ATTRIBUTE (background_alpha);
-        CHECK_ATTRIBUTE2(background_alpha, "bgalpha");
         CHECK_ATTRIBUTE(baseline_shift);
         break;
       case 'c':
@@ -1299,7 +1243,6 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 
 	CHECK_ATTRIBUTE (foreground);
 	CHECK_ATTRIBUTE2(foreground, "fgcolor");
-	CHECK_ATTRIBUTE2(alpha, "fgalpha");
 
 	CHECK_ATTRIBUTE (font_features);
 	break;
@@ -1503,47 +1446,21 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   if (G_UNLIKELY (foreground))
     {
       PangoColor color;
-      guint16 alpha;
 
-      if (!span_parse_color ("foreground", foreground, &color, &alpha, line_number, error))
+      if (!span_parse_color ("foreground", foreground, &color, line_number, error))
 	goto error;
 
       add_attribute (tag, pango_attr_foreground_new (&color));
-      if (alpha != 0xffff)
-        add_attribute (tag, pango_attr_foreground_alpha_new (alpha));
     }
 
   if (G_UNLIKELY (background))
     {
       PangoColor color;
-      guint16 alpha;
 
-      if (!span_parse_color ("background", background, &color, &alpha, line_number, error))
+      if (!span_parse_color ("background", background, &color, line_number, error))
 	goto error;
 
       add_attribute (tag, pango_attr_background_new (&color));
-      if (alpha != 0xffff)
-        add_attribute (tag, pango_attr_background_alpha_new (alpha));
-    }
-
-  if (G_UNLIKELY (alpha))
-    {
-      guint16 val;
-
-      if (!span_parse_alpha ("alpha", alpha, &val, line_number, error))
-        goto error;
-
-      add_attribute (tag, pango_attr_foreground_alpha_new (val));
-    }
-
-  if (G_UNLIKELY (background_alpha))
-    {
-      guint16 val;
-
-      if (!span_parse_alpha ("background_alpha", background_alpha, &val, line_number, error))
-        goto error;
-
-      add_attribute (tag, pango_attr_background_alpha_new (val));
     }
 
   if (G_UNLIKELY (underline))
@@ -1570,7 +1487,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
     {
       PangoColor color;
 
-      if (!span_parse_color ("underline_color", underline_color, &color, NULL, line_number, error))
+      if (!span_parse_color ("underline_color", underline_color, &color, line_number, error))
 	goto error;
 
       add_attribute (tag, pango_attr_underline_color_new (&color));
@@ -1590,7 +1507,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
     {
       PangoColor color;
 
-      if (!span_parse_color ("overline_color", overline_color, &color, NULL, line_number, error))
+      if (!span_parse_color ("overline_color", overline_color, &color, line_number, error))
 	goto error;
 
       add_attribute (tag, pango_attr_overline_color_new (&color));
@@ -1643,7 +1560,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
     {
       PangoColor color;
 
-      if (!span_parse_color ("strikethrough_color", strikethrough_color, &color, NULL, line_number, error))
+      if (!span_parse_color ("strikethrough_color", strikethrough_color, &color, line_number, error))
 	goto error;
 
       add_attribute (tag, pango_attr_strikethrough_color_new (&color));

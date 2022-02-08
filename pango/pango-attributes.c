@@ -594,42 +594,6 @@ pango_attr_font_features_new (const char *features)
 }
 
 /**
- * pango_attr_foreground_alpha_new:
- * @alpha: the alpha value, between 1 and 65536
- *
- * Create a new foreground alpha attribute.
- *
- * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.38
- */
-PangoAttribute *
-pango_attr_foreground_alpha_new (guint16 alpha)
-{
-  return pango_attr_int_new (PANGO_ATTR_FOREGROUND_ALPHA, (int)alpha);
-}
-
-/**
- * pango_attr_background_alpha_new:
- * @alpha: the alpha value, between 1 and 65536
- *
- * Create a new background alpha attribute.
- *
- * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.38
- */
-PangoAttribute *
-pango_attr_background_alpha_new (guint16 alpha)
-{
-  return pango_attr_int_new (PANGO_ATTR_BACKGROUND_ALPHA, (int)alpha);
-}
-
-/**
  * pango_attr_allow_breaks_new:
  * @allow_breaks: %TRUE if we line breaks are allowed
  *

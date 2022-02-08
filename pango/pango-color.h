@@ -35,15 +35,18 @@ typedef struct _PangoColor PangoColor;
  * @red: value of red component
  * @green: value of green component
  * @blue: value of blue component
+ * @alpha: value of the alpha component
  *
  * The `PangoColor` structure is used to
- * represent a color in an uncalibrated RGB color-space.
+ * represent a color in an uncalibrated RGB color-space
+ * with alpha.
  */
 struct _PangoColor
 {
   guint16 red;
   guint16 green;
   guint16 blue;
+  guint16 alpha;
 };
 
 #define PANGO_TYPE_COLOR (pango_color_get_type ())
@@ -58,12 +61,11 @@ PANGO_AVAILABLE_IN_ALL
 void        pango_color_free             (PangoColor       *color);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean    pango_color_parse            (PangoColor       *color,
-                                          const char       *spec);
+gboolean    pango_color_equal            (const PangoColor *color1,
+                                          const PangoColor *color2);
 
-PANGO_AVAILABLE_IN_1_46
-gboolean    pango_color_parse_with_alpha (PangoColor       *color,
-                                          guint16          *alpha,
+PANGO_AVAILABLE_IN_ALL
+gboolean    pango_color_parse            (PangoColor       *color,
                                           const char       *spec);
 
 PANGO_AVAILABLE_IN_1_16

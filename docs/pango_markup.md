@@ -115,25 +115,11 @@ font_features
 foreground
 fgcolor
 color
-: An RGB color specification such as '#00FF00' or a color name such as 'red'.
-  Since 1.38, an RGBA color specification such as '#00FF007F' will be interpreted
-  as specifying both a foreground color and foreground alpha.
+: An RGBA color specification such as '#00FF007F' or a color name such as 'red'.
 
 background
 bgcolor
-: An RGB color specification such as '#00FF00' or a color name such as 'red'.
-  Since 1.38, an RGBA color specification such as '#00FF007F' will be interpreted
-  as specifying both a background color and background alpha.
-
-alpha
-fgalpha
-: An alpha value for the foreground color, either a plain integer between 1 and
-  65536 or a percentage value like '50%'.
-
-background_alpha
-bgalpha
-: An alpha value for the background color, either a plain integer between 1 and
-  65536 or a percentage value like '50%'.
+: An RGBA color specification such as '#00FF007F' or a color name such as 'red'.
 
 underline
 : One of 'none', 'single', 'double', 'low', 'error'.

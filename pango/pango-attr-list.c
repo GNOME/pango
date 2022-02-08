@@ -1196,14 +1196,6 @@ pango_attr_list_from_string (const char *text)
           ENUM_ATTR(gravity_hint, PangoGravityHint, PANGO_GRAVITY_HINT_NATURAL, PANGO_GRAVITY_HINT_LINE);
           break;
 
-        case PANGO_ATTR_FOREGROUND_ALPHA:
-          INT_ATTR(foreground_alpha, int);
-          break;
-
-        case PANGO_ATTR_BACKGROUND_ALPHA:
-          INT_ATTR(background_alpha, int);
-          break;
-
         case PANGO_ATTR_ALLOW_BREAKS:
           BOOLEAN_ATTR(allow_breaks, gboolean);
           break;

@@ -43,9 +43,7 @@ G_BEGIN_DECLS
  * @PANGO_ATTR_SCALE: font size scale factor
  * @PANGO_ATTR_FONT_DESC: font description
  * @PANGO_ATTR_FOREGROUND: foreground color
- * @PANGO_ATTR_FOREGROUND_ALPHA: foreground alpha
  * @PANGO_ATTR_BACKGROUND: background color
- * @PANGO_ATTR_BACKGROUND_ALPHA: background alpha
  * @PANGO_ATTR_UNDERLINE: underline style
  * @PANGO_ATTR_UNDERLINE_POSITION: underline position
  * @PANGO_ATTR_UNDERLINE_COLOR: underline color
@@ -90,9 +88,7 @@ typedef enum
   PANGO_ATTR_SCALE                = PANGO_ATTR_TYPE (FLOAT, ITEMIZATION, OVERRIDES),
   PANGO_ATTR_FONT_DESC            = PANGO_ATTR_TYPE (FONT_DESC, ITEMIZATION, ACCUMULATES),
   PANGO_ATTR_FOREGROUND           = PANGO_ATTR_TYPE (COLOR, RENDERING, OVERRIDES),
-  PANGO_ATTR_FOREGROUND_ALPHA     = PANGO_ATTR_TYPE (INT, RENDERING, OVERRIDES),
   PANGO_ATTR_BACKGROUND           = PANGO_ATTR_TYPE (COLOR, RENDERING, OVERRIDES),
-  PANGO_ATTR_BACKGROUND_ALPHA     = PANGO_ATTR_TYPE (INT, RENDERING, OVERRIDES),
   PANGO_ATTR_UNDERLINE            = PANGO_ATTR_TYPE (INT, RENDERING, OVERRIDES),
   PANGO_ATTR_UNDERLINE_POSITION   = PANGO_ATTR_TYPE (INT, RENDERING, OVERRIDES),
   PANGO_ATTR_UNDERLINE_COLOR      = PANGO_ATTR_TYPE (COLOR, RENDERING, OVERRIDES),
@@ -240,10 +236,6 @@ PANGO_AVAILABLE_IN_1_16
 PangoAttribute *        pango_attr_gravity_hint_new             (PangoGravityHint             hint);
 PANGO_AVAILABLE_IN_1_38
 PangoAttribute *        pango_attr_font_features_new            (const char                  *features);
-PANGO_AVAILABLE_IN_1_38
-PangoAttribute *        pango_attr_foreground_alpha_new         (guint16                      alpha);
-PANGO_AVAILABLE_IN_1_38
-PangoAttribute *        pango_attr_background_alpha_new         (guint16                      alpha);
 PANGO_AVAILABLE_IN_1_44
 PangoAttribute *        pango_attr_allow_breaks_new             (gboolean                     allow_breaks);
 PANGO_AVAILABLE_IN_1_50
