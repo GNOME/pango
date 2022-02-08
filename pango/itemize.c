@@ -1367,7 +1367,7 @@ split_item_for_variant (const char   *text,
 
   start = text + item->offset;
   end = start + item->length;
-  offset = ((PangoItemPrivate *)item)->char_offset;
+  offset = item->char_offset;
 
   p = start;
   while (p < end)
@@ -1505,7 +1505,7 @@ reorder_items (PangoContext *context,
   /* Also cmpute the char offset for each item here */
   for (GList *l = items; l; l = l->next)
     {
-      PangoItemPrivate *item = l->data;
+      PangoItem *item = l->data;
       item->char_offset = char_offset;
       char_offset += item->num_chars;
     }

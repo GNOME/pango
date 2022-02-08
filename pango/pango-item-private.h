@@ -26,67 +26,6 @@
 
 G_BEGIN_DECLS
 
-/**
- * We have to do some extra work for adding the char_offset field
- * to PangoItem to preserve ABI in the face of pango's open-coded
- * structs.
- *
- * Internally, pango uses the PangoItemPrivate type, and we use
- * a bit in the PangoAnalysis flags to indicate whether we are
- * dealing with a PangoItemPrivate struct or not.
- */
-
-#define PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET (1 << 7)
-
-typedef struct _PangoAnalysisPrivate PangoAnalysisPrivate;
-
-struct _PangoAnalysisPrivate
-{
-  gpointer reserved;
-  PangoFont *size_font;
-  PangoFont *font;
-
-  guint8 level;
-  guint8 gravity;
-  guint8 flags;
-
-  guint8 script;
-  PangoLanguage *language;
-
-  GSList *extra_attrs;
-};
-
-typedef struct _PangoItemPrivate PangoItemPrivate;
-
-#if defined(__x86_64__) && !defined(__ILP32__)
-
-struct _PangoItemPrivate
-{
-  int offset;
-  int length;
-  int num_chars;
-  int char_offset;
-  PangoAnalysis analysis;
-};
-
-#else
-
-struct _PangoItemPrivate
-{
-  int offset;
-  int length;
-  int num_chars;
-  PangoAnalysis analysis;
-  int char_offset;
-};
-
-#endif
-
-G_STATIC_ASSERT (offsetof (PangoItem, offset) == offsetof (PangoItemPrivate, offset));
-G_STATIC_ASSERT (offsetof (PangoItem, length) == offsetof (PangoItemPrivate, length));
-G_STATIC_ASSERT (offsetof (PangoItem, num_chars) == offsetof (PangoItemPrivate, num_chars));
-G_STATIC_ASSERT (offsetof (PangoItem, analysis) == offsetof (PangoItemPrivate, analysis));
-
 void               pango_analysis_collect_features    (const PangoAnalysis        *analysis,
                                                        hb_feature_t               *features,
                                                        guint                       length,
