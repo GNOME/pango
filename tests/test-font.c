@@ -202,7 +202,7 @@ test_extents (void)
   items = pango_itemize (context, str, 0, strlen (str), NULL, NULL);
   glyphs = pango_glyph_string_new ();
   item = items->data;
-  pango_shape (str, strlen (str), &item->analysis, glyphs);
+  pango_shape (str, strlen (str), NULL, 0, &item->analysis, glyphs, PANGO_SHAPE_NONE);
   pango_glyph_string_extents (glyphs, item->analysis.font, &ink, &log);
 
   g_assert_cmpint (ink.width, >=, 0);

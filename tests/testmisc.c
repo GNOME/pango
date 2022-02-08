@@ -404,7 +404,7 @@ test_fallback_shape (void)
       g_clear_object (&item->analysis.font);
 
       glyphs = pango_glyph_string_new ();
-      pango_shape_full (text + item->offset, item->length, NULL, 0, &item->analysis, glyphs);
+      pango_shape (text + item->offset, item->length, NULL, 0, &item->analysis, glyphs, PANGO_SHAPE_NONE);
 
       for (int i = 0; i < glyphs->num_glyphs; i++)
         {
