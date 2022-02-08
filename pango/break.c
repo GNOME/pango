@@ -142,7 +142,6 @@ typedef enum
 static void
 default_break (const char    *text,
                int            length,
-               PangoAnalysis *analysis G_GNUC_UNUSED,
                PangoLogAttr  *attrs,
                int            attrs_len G_GNUC_UNUSED)
 {
@@ -2162,30 +2161,27 @@ tailor_break (const char    *text,
  * pango_default_break:
  * @text: text to break. Must be valid UTF-8
  * @length: length of text in bytes (may be -1 if @text is nul-terminated)
- * @analysis: (nullable): a `PangoAnalysis` structure for the @text
  * @attrs: logical attributes to fill in
  * @attrs_len: size of the array passed as @attrs
  *
  * This is the default break algorithm.
  *
  * It applies rules from the [Unicode Line Breaking Algorithm](http://www.unicode.org/unicode/reports/tr14/)
- * without language-specific tailoring, therefore the @analyis argument is unused
- * and can be %NULL.
+ * without language-specific tailoring.
  *
  * See [func@Pango.tailor_break] for language-specific breaks.
  *
  * See [func@Pango.attr_break] for attribute-based customization.
  */
 void
-pango_default_break (const char    *text,
-                     int            length,
-                     PangoAnalysis *analysis G_GNUC_UNUSED,
-                     PangoLogAttr  *attrs,
-                     int            attrs_len G_GNUC_UNUSED)
+pango_default_break (const char   *text,
+                     int           length,
+                     PangoLogAttr *attrs,
+                     int           attrs_len G_GNUC_UNUSED)
 {
   PangoLogAttr before = *attrs;
 
-  default_break (text, length, analysis, attrs, attrs_len);
+  default_break (text, length, attrs, attrs_len);
 
   attrs->is_line_break      |= before.is_line_break;
   attrs->is_mandatory_break |= before.is_mandatory_break;
@@ -2290,6 +2286,7 @@ pango_attr_break (const char    *text,
  * pango_get_log_attrs:
  * @text: text to process. Must be valid UTF-8
  * @length: length in bytes of @text
+ * @attr_list: (nullable): `PangoAttrList` to apply
  * @level: embedding level, or -1 if unknown
  * @language: language tag
  * @attrs: (array length=attrs_len): array with one `PangoLogAttr`
@@ -2309,6 +2306,7 @@ pango_attr_break (const char    *text,
 void
 pango_get_log_attrs (const char    *text,
                      int            length,
+                     PangoAttrList *attr_list,
                      int            level,
                      PangoLanguage *language,
                      PangoLogAttr  *attrs,
@@ -2324,7 +2322,7 @@ pango_get_log_attrs (const char    *text,
   analysis.level = level;
   analysis.language = language;
 
-  pango_default_break (text, length, &analysis, attrs, attrs_len);
+  pango_default_break (text, length, attrs, attrs_len);
 
   chars_broken = 0;
 
@@ -2351,6 +2349,9 @@ pango_get_log_attrs (const char    *text,
     }
   while (pango_script_iter_next (&iter));
   _pango_script_iter_fini (&iter);
+
+  if (attr_list)
+    pango_attr_break (text, length, attr_list, 0, attrs, attrs_len);
 
   if (chars_broken + 1 > attrs_len)
     g_warning ("pango_get_log_attrs: attrs_len should have been at least %d, but was %d.  Expect corrupted memory.",

@@ -282,12 +282,7 @@ check_invariants (const char *text)
   len = g_utf8_strlen (text, -1);
   attrs = g_new0 (PangoLogAttr, len + 1);
 
-  pango_get_log_attrs (text,
-		       -1,
-		       0,
-		       pango_language_from_string ("C"),
-		       attrs,
-		       len + 1);
+  pango_get_log_attrs (text, -1, NULL, 0, pango_language_from_string ("C"), attrs, len + 1);
 
   check_line_invariants (text, attrs);
   check_sentence_invariants (text, attrs);

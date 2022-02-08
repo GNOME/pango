@@ -4597,7 +4597,7 @@ get_items_log_attrs (const char    *text,
   int offset = 0;
   GList *l;
 
-  pango_default_break (text + start, length, NULL, log_attrs, log_attrs_len);
+  pango_default_break (text + start, length, log_attrs, log_attrs_len);
 
   for (l = items; l; l = l->next)
     {
