@@ -452,7 +452,6 @@ pango_attr_baseline_shift_new (int rise)
  * @scale: a `PangoFontScale` value, which indicates font size change relative
  *   to the size of the previous run.
  *
- *
  * Create a new font scale attribute.
  *
  * The effect of this attribute is to change the font size of a run,
