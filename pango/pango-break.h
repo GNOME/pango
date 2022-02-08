@@ -104,6 +104,7 @@ struct _PangoLogAttr
 PANGO_AVAILABLE_IN_ALL
 void                    pango_get_log_attrs     (const char    *text,
                                                  int            length,
+                                                 PangoAttrList *attr_list,
                                                  int            level,
                                                  PangoLanguage *language,
                                                  PangoLogAttr  *attrs,
@@ -112,7 +113,6 @@ void                    pango_get_log_attrs     (const char    *text,
 PANGO_AVAILABLE_IN_ALL
 void                    pango_default_break     (const char    *text,
                                                  int            length,
-                                                 PangoAnalysis *analysis,
                                                  PangoLogAttr  *attrs,
                                                  int            attrs_len);
 
