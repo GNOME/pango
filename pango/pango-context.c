@@ -644,9 +644,11 @@ update_metrics_from_items (PangoFontMetrics *metrics,
           pango_font_metrics_unref (raw_metrics);
         }
 
-      pango_shape_full (text + item->offset, item->length,
-                        text, text_len,
-                        &item->analysis, glyphs);
+      pango_shape (text + item->offset, item->length,
+                   text, text_len,
+                   &item->analysis, glyphs,
+                   PANGO_SHAPE_NONE);
+
       metrics->approximate_char_width += pango_glyph_string_get_width (glyphs);
     }
 

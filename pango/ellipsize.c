@@ -379,10 +379,10 @@ shape_ellipsis (EllipsizeState *state)
   glyphs = state->ellipsis_run->glyphs;
 
   len = strlen (ellipsis_text);
-  pango_shape_with_flags (ellipsis_text, len,
-                          ellipsis_text, len,
-	                  &item->analysis, glyphs,
-                          state->shape_flags);
+  pango_shape (ellipsis_text, len,
+               ellipsis_text, len,
+               &item->analysis, glyphs,
+               state->shape_flags);
 
   state->ellipsis_width = 0;
   for (i = 0; i < glyphs->num_glyphs; i++)

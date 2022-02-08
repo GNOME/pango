@@ -232,37 +232,23 @@ typedef enum {
   PANGO_SHAPE_ROUND_POSITIONS = 1 << 0,
 } PangoShapeFlags;
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_shape                             (const char          *text,
-                                                                 int                  length,
-                                                                 const PangoAnalysis *analysis,
-                                                                 PangoGlyphString    *glyphs);
-
-PANGO_AVAILABLE_IN_1_32
-void                    pango_shape_full                        (const char          *item_text,
-                                                                 int                  item_length,
-                                                                 const char          *paragraph_text,
-                                                                 int                  paragraph_length,
-                                                                 const PangoAnalysis *analysis,
-                                                                 PangoGlyphString    *glyphs);
-
 PANGO_AVAILABLE_IN_1_44
-void                    pango_shape_with_flags                  (const char          *item_text,
-                                                                 int                  item_length,
-                                                                 const char          *paragraph_text,
-                                                                 int                  paragraph_length,
-                                                                 const PangoAnalysis *analysis,
-                                                                 PangoGlyphString    *glyphs,
-                                                                 PangoShapeFlags      flags);
+void                    pango_shape             (const char          *item_text,
+                                                 int                  item_length,
+                                                 const char          *paragraph_text,
+                                                 int                  paragraph_length,
+                                                 const PangoAnalysis *analysis,
+                                                 PangoGlyphString    *glyphs,
+                                                 PangoShapeFlags      flags);
 
 
 PANGO_AVAILABLE_IN_1_50
-void                    pango_shape_item                        (PangoItem           *item,
-                                                                 const char          *paragraph_text,
-                                                                 int                  paragraph_length,
-                                                                 PangoLogAttr        *log_attrs,
-                                                                 PangoGlyphString    *glyphs,
-                                                                 PangoShapeFlags      flags);
+void                    pango_shape_item        (PangoItem           *item,
+                                                 const char          *paragraph_text,
+                                                 int                  paragraph_length,
+                                                 PangoLogAttr        *log_attrs,
+                                                 PangoGlyphString    *glyphs,
+                                                 PangoShapeFlags      flags);
 
 
 G_END_DECLS

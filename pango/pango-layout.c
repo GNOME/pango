@@ -3362,7 +3362,7 @@ ensure_tab_width (PangoLayout *layout)
       _pango_attr_list_destroy (&tmp_attrs);
 
       item = items->data;
-      pango_shape_with_flags ("        ", 8, "        ", 8, &item->analysis, glyphs, shape_flags);
+      pango_shape ("        ", 8, "        ", 8, &item->analysis, glyphs, shape_flags);
 
       pango_item_free (item);
       g_list_free (items);
