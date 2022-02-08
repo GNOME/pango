@@ -35,9 +35,7 @@
 PangoItem *
 pango_item_new (void)
 {
-  PangoItemPrivate *result = g_slice_new0 (PangoItemPrivate);
-
-  result->analysis.flags |= PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET;
+  PangoItem *result = g_slice_new0 (PangoItem);
 
   return (PangoItem *)result;
 }
@@ -64,12 +62,11 @@ pango_item_copy (PangoItem *item)
   result->offset = item->offset;
   result->length = item->length;
   result->num_chars = item->num_chars;
-  if (item->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET)
-    ((PangoItemPrivate *)result)->char_offset = ((PangoItemPrivate *)item)->char_offset;
+  result->char_offset = item->char_offset;
 
   result->analysis = item->analysis;
-  if (result->analysis.lang_engine)
-    g_object_ref (result->analysis.lang_engine);
+  if (result->analysis.size_font)
+    g_object_ref (result->analysis.size_font);
 
   if (result->analysis.font)
     g_object_ref (result->analysis.font);
@@ -105,16 +102,13 @@ pango_item_free (PangoItem *item)
       g_slist_free (item->analysis.extra_attrs);
     }
 
-  if (item->analysis.lang_engine)
-    g_object_unref (item->analysis.lang_engine);
+  if (item->analysis.size_font)
+    g_object_unref (item->analysis.size_font);
 
   if (item->analysis.font)
     g_object_unref (item->analysis.font);
 
-  if (item->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET)
-    g_slice_free (PangoItemPrivate, (PangoItemPrivate *)item);
-  else
-    g_slice_free (PangoItem, item);
+  g_slice_free (PangoItem, item);
 }
 
 G_DEFINE_BOXED_TYPE (PangoItem, pango_item,
@@ -164,8 +158,7 @@ pango_item_split (PangoItem *orig,
   orig->offset += split_index;
   orig->length -= split_index;
   orig->num_chars -= split_offset;
-  if (orig->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET)
-    ((PangoItemPrivate *)orig)->char_offset += split_offset;
+  orig->char_offset += split_offset;
 
   return new_item;
 }
@@ -190,9 +183,7 @@ pango_item_unsplit (PangoItem *orig,
   orig->offset -= split_index;
   orig->length += split_index;
   orig->num_chars += split_offset;
-
-  if (orig->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET)
-    ((PangoItemPrivate *)orig)->char_offset -= split_offset;
+  orig->char_offset -= split_offset;
 }
 
 static int
@@ -346,13 +337,11 @@ void
 pango_analysis_set_size_font (PangoAnalysis *analysis,
                               PangoFont     *font)
 {
-  PangoAnalysisPrivate *priv = (PangoAnalysisPrivate *)analysis;
-
-  if (priv->size_font)
-    g_object_unref (priv->size_font);
-  priv->size_font = font;
-  if (priv->size_font)
-    g_object_ref (priv->size_font);
+  if (analysis->size_font)
+    g_object_unref (analysis->size_font);
+  analysis->size_font = font;
+  if (analysis->size_font)
+    g_object_ref (analysis->size_font);
 }
 
 /*< private >
@@ -368,7 +357,5 @@ pango_analysis_set_size_font (PangoAnalysis *analysis,
 PangoFont *
 pango_analysis_get_size_font (const PangoAnalysis *analysis)
 {
-  PangoAnalysisPrivate *priv = (PangoAnalysisPrivate *)analysis;
-
-  return priv->size_font;
+  return analysis->size_font;
 }

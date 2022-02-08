@@ -1822,8 +1822,7 @@ pango_layout_line_index_to_x (PangoLayoutLine *line,
           /* Note: we simply assert here, since our items are all internally
            * created. If that ever changes, we need to add a fallback here.
            */
-          g_assert (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET);
-          attr_offset = ((PangoItemPrivate *)run->item)->char_offset;
+          attr_offset = run->item->char_offset;
 
           pango_glyph_string_index_to_x_full (run->glyphs,
                                               layout->text + run->item->offset,
@@ -5426,11 +5425,7 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
 
               run_end_index = g_utf8_prev_char (line->layout->text + run_end_index) - line->layout->text;
 
-              /* Note: we simply assert here, since our items are all internally
-               * created. If that ever changes, we need to add a fallback here.
-               */
-              g_assert (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET);
-              attr_offset = ((PangoItemPrivate *)run->item)->char_offset;
+              attr_offset = run->item->char_offset;
 
               pango_glyph_string_index_to_x_full (run->glyphs,
                                                   line->layout->text + run->item->offset,
@@ -6373,11 +6368,7 @@ justify_clusters (PangoLayoutLine *line,
 
           dir = run->item->analysis.level % 2 == 0 ? +1 : -1;
 
-          /* Note: we simply assert here, since our items are all internally
-           * created. If that ever changes, we need to add a fallback here.
-           */
-          g_assert (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET);
-          offset = ((PangoItemPrivate *)run->item)->char_offset;
+          offset = run->item->char_offset;
 
           for (have_cluster = dir > 0 ?
                  pango_glyph_item_iter_init_start (&cluster_iter, run, text) :
@@ -6511,11 +6502,7 @@ justify_words (PangoLayoutLine *line,
           gboolean have_cluster;
           int offset;
 
-          /* Note: we simply assert here, since our items are all internally
-           * created. If that ever changes, we need to add a fallback here.
-           */
-          g_assert (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET);
-          offset = ((PangoItemPrivate *)run->item)->char_offset;
+          offset = run->item->char_offset;
 
           for (have_cluster = pango_glyph_item_iter_init_start (&cluster_iter, run, text);
                have_cluster;

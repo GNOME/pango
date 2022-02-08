@@ -331,17 +331,17 @@ pango_glyph_string_get_width (PangoGlyphString *glyphs)
  */
 void
 pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
-				       const char       *text,
-				       int               length,
-				       int               embedding_level,
-				       int              *logical_widths)
+                                       const char       *text,
+                                       int               length,
+                                       int               embedding_level,
+                                       int              *logical_widths)
 {
   /* Build a PangoGlyphItem and call the other API */
-  PangoItem item = {0, length, pango_utf8_strlen (text, length),
-		    {NULL, NULL, NULL,
-		     embedding_level, PANGO_GRAVITY_AUTO, 0,
-		     PANGO_SCRIPT_UNKNOWN, NULL,
-		     NULL}};
+  PangoItem item = {0, length, pango_utf8_strlen (text, length), 0,
+                    {NULL, NULL,
+                     embedding_level, PANGO_GRAVITY_AUTO, 0,
+                     PANGO_SCRIPT_UNKNOWN, NULL,
+                     NULL}};
   PangoGlyphItem glyph_item = {&item, glyphs};
 
   pango_glyph_item_get_logical_widths (&glyph_item, text, logical_widths);

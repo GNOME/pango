@@ -112,10 +112,7 @@ apply_attributes_to_items (GList         *items,
 static int
 get_item_char_offset (PangoItem *item)
 {
-  if (item->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET)
-    return ((PangoItemPrivate *)item)->char_offset;
-
-  return -1;
+  return item->char_offset;
 }
 
 static void

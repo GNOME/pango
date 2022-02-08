@@ -61,9 +61,8 @@ typedef struct _PangoItem PangoItem;
 
 /**
  * PangoAnalysis:
- * @shape_engine: unused, reserved
- * @lang_engine: unused, reserved
- * @font: the font for this segment.
+ * @size_font: font to use for determining line height
+ * @font: the font for this segment
  * @level: the bidirectional level for this segment.
  * @gravity: the glyph orientation for this segment (A `PangoGravity`).
  * @flags: boolean flags for this segment (Since: 1.16).
@@ -76,8 +75,7 @@ typedef struct _PangoItem PangoItem;
  */
 struct _PangoAnalysis
 {
-  gpointer shape_engine;
-  gpointer lang_engine;
+  PangoFont *size_font;
   PangoFont *font;
 
   guint8 level;
@@ -108,6 +106,7 @@ struct _PangoItem
   int offset;
   int length;
   int num_chars;
+  int char_offset;
   PangoAnalysis analysis;
 };
 
