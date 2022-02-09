@@ -1,3 +1,17 @@
+Overview of changes in 1.50.4, 09-02-2022
+=========================================
+* Tweak synthetic space sizes
+* itemize: Try harder to avoid NULL fonts
+* docs: Some additions
+* Pass synthetic slant to harfbuzz
+* Make sloped carets work with uneven scales
+* Fix serialiation on arm
+* Avoid an uninitialized variable warning
+* Reinstate previous behavior of pango_attr_list_splice
+* Deprecated pango_coverage_ref/unref
+* Fix serialization on non-glibc systems
+* Fix allow-breaks handling
+
 Overview of changes in 1.50.3, 21-12-2021
 =========================================
 * pango-view: Add --serialize-to option for easy bug reporting
