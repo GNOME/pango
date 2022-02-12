@@ -24,7 +24,7 @@
 
 #include "pango-font-description-private.h"
 
-#include "pango-utils.h"
+#include "pango-utils-internal.h"
 
 
 struct _PangoFontDescription
