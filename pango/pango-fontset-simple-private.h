@@ -22,6 +22,7 @@
 #ifndef __PANGO_FONTSET_SIMPLE_PRIVATE_H__
 #define __PANGO_FONTSET_SIMPLE_PRIVATE_H__
 
+#include <pango/pango-fontset-private.h>
 #include <pango/pango-fontset-simple.h>
 
 G_BEGIN_DECLS
