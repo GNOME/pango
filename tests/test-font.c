@@ -450,16 +450,10 @@ test_font_models (void)
       for (guint j = 0; j < g_list_model_get_n_items (G_LIST_MODEL (obj)); j++)
         {
           GObject *obj2 = g_list_model_get_item (G_LIST_MODEL (obj), j);
-          int *sizes;
-          int n_sizes;
 
           g_assert_true (PANGO_IS_FONT_FACE (obj2));
 
           g_assert_true (pango_font_face_get_family (PANGO_FONT_FACE (obj2)) == (PangoFontFamily *)obj);
-
-          pango_font_face_list_sizes (PANGO_FONT_FACE (obj2), &sizes, &n_sizes);
-          g_assert_true ((sizes == NULL) == (n_sizes == 0));
-          g_free (sizes);
 
           if (pango_font_family_is_monospace (PANGO_FONT_FAMILY (obj)))
             {
