@@ -21,20 +21,8 @@
 #include "config.h"
 
 #include "pango-font-family-private.h"
+#include "pango-font-face.h"
 #include "pango-font.h"
-
-#if 0
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-
-#include <gio/gio.h>
-
-#include "pango-types.h"
-#include "pango-font-private.h"
-#include "pango-fontmap.h"
-#include "pango-impl-utils.h"
-#endif
 
 
 static GType
