@@ -131,9 +131,6 @@ struct _PangoFontClass
 #define PANGO_FONT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONT, PangoFontClass))
 
 
-PANGO_AVAILABLE_IN_ALL
-PangoFontMetrics *pango_font_metrics_new (void);
-
 typedef struct {
   PangoLanguage ** (* get_languages) (PangoFont *font);
 
