@@ -34,7 +34,7 @@ pango_view = executable('pango-view', pango_view_sources,
                         dependencies: pango_view_deps,
                         include_directories: [ root_inc ],
                         install: true,
-                        c_args: [
+                        c_args: common_cflags + pango_debug_cflags + [
                           '-DPACKAGE_NAME="@0@"'.format(meson.project_name()),
                           '-DPACKAGE_VERSION="@0@"'.format(meson.project_version()),
                         ])
@@ -74,7 +74,7 @@ if cairo_dep.found()
                           dependencies: pango_list_deps,
                           include_directories: [ root_inc ],
                           install: true,
-                          c_args: [
+                          c_args: common_cflags + pango_debug_cflags + [
                            '-DPACKAGE_NAME="@0@"'.format(meson.project_name()),
                            '-DPACKAGE_VERSION="@0@"'.format(meson.project_version()),
                           ])
@@ -94,7 +94,7 @@ if cairo_dep.found()
                                   dependencies: pango_segmentation_deps,
                                   include_directories: [ root_inc ],
                                   install: true,
-                                  c_args: [
+                                  c_args: common_cflags + pango_debug_cflags + [
                                    '-DPACKAGE_NAME="@0@"'.format(meson.project_name()),
                                    '-DPACKAGE_VERSION="@0@"'.format(meson.project_version()),
                                   ])
