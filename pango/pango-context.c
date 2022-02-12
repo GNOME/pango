@@ -259,39 +259,6 @@ pango_context_get_font_map (PangoContext *context)
 }
 
 /**
- * pango_context_list_families:
- * @context: a `PangoContext`
- * @families: (out) (array length=n_families) (transfer container): location
- *   to store a pointer to an array of `PangoFontFamily`. This array should
- *   be freed with g_free().
- * @n_families: (out): location to store the number of elements in @descs
- *
- * List all families for a context.
- */
-void
-pango_context_list_families (PangoContext      *context,
-                             PangoFontFamily ***families,
-                             int               *n_families)
-{
-  g_return_if_fail (context != NULL);
-  g_return_if_fail (families == NULL || n_families != NULL);
-
-  if (n_families == NULL)
-    return;
-
-  if (context->font_map == NULL)
-    {
-      *n_families = 0;
-      if (families)
-        *families = NULL;
-
-      return;
-    }
-  else
-    pango_font_map_list_families (context->font_map, families, n_families);
-}
-
-/**
  * pango_context_load_font:
  * @context: a `PangoContext`
  * @desc: a `PangoFontDescription` describing the font to load
