@@ -26,41 +26,12 @@
 #include <pango/pango-types.h>
 #include <pango/pango-font-description.h>
 #include <pango/pango-font-metrics.h>
+#include <pango/pango-font-family.h>
 
 #include <glib-object.h>
 #include <hb.h>
 
 G_BEGIN_DECLS
-
-/*
- * PangoFontFamily
- */
-
-#define PANGO_TYPE_FONT_FAMILY              (pango_font_family_get_type ())
-#define PANGO_FONT_FAMILY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONT_FAMILY, PangoFontFamily))
-#define PANGO_IS_FONT_FAMILY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONT_FAMILY))
-
-typedef struct _PangoFontFace        PangoFontFace;
-typedef struct _PangoFontFamily      PangoFontFamily;
-
-PANGO_AVAILABLE_IN_ALL
-GType      pango_font_family_get_type       (void) G_GNUC_CONST;
-
-PANGO_AVAILABLE_IN_ALL
-void                 pango_font_family_list_faces (PangoFontFamily  *family,
-                                                   PangoFontFace  ***faces,
-                                                   int              *n_faces);
-PANGO_AVAILABLE_IN_ALL
-const char *pango_font_family_get_name   (PangoFontFamily  *family) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_1_4
-gboolean   pango_font_family_is_monospace         (PangoFontFamily  *family) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_1_44
-gboolean   pango_font_family_is_variable          (PangoFontFamily  *family) G_GNUC_PURE;
-
-PANGO_AVAILABLE_IN_1_46
-PangoFontFace *pango_font_family_get_face (PangoFontFamily *family,
-                                           const char      *name);
-
 
 /*
  * PangoFontFace
@@ -196,7 +167,6 @@ PangoFont *           pango_font_deserialize       (PangoContext     *context,
 #endif
 #endif
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFontFamily, g_object_unref)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFontFace, g_object_unref)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFont, g_object_unref)
 

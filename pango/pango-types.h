@@ -31,7 +31,9 @@ G_BEGIN_DECLS
 
 typedef struct _PangoLogAttr PangoLogAttr;
 
-typedef struct _PangoFont    PangoFont;
+typedef struct _PangoFont PangoFont;
+typedef struct _PangoFontFace PangoFontFace;
+typedef struct _PangoFontFamily PangoFontFamily;
 
 typedef struct _PangoFontMap PangoFontMap;
 
