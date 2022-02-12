@@ -24,6 +24,7 @@
 
 #include <pango/pango-coverage.h>
 #include <pango/pango-types.h>
+#include <pango/pango-font-metrics.h>
 
 #include <glib-object.h>
 
@@ -36,16 +37,12 @@ G_BEGIN_DECLS
 #define PANGO_TYPE_FONTSET              (pango_fontset_get_type ())
 #define PANGO_FONTSET(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONTSET, PangoFontset))
 #define PANGO_IS_FONTSET(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONTSET))
-#define PANGO_FONTSET_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONTSET, PangoFontsetClass))
-#define PANGO_IS_FONTSET_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_FONTSET))
-#define PANGO_FONTSET_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONTSET, PangoFontsetClass))
 
 
 PANGO_AVAILABLE_IN_ALL
 GType pango_fontset_get_type (void) G_GNUC_CONST;
 
 typedef struct _PangoFontset        PangoFontset;
-typedef struct _PangoFontsetClass   PangoFontsetClass;
 
 /**
  * PangoFontsetForeachFunc:
@@ -75,48 +72,6 @@ typedef gboolean (*PangoFontsetForeachFunc) (PangoFontset  *fontset,
  * component font for a particular Unicode character, and for finding a
  * composite set of metrics for the entire fontset.
  */
-struct _PangoFontset
-{
-  GObject parent_instance;
-};
-
-/**
- * PangoFontsetClass:
- * @parent_class: parent `GObjectClass`
- * @get_font: a function to get the font in the fontset that contains the
- *   best glyph for the given Unicode character; see [method@Pango.Fontset.get_font]
- * @get_metrics: a function to get overall metric information for the fonts
- *   in the fontset; see [method@Pango.Fontset.get_metrics]
- * @get_language: a function to get the language of the fontset.
- * @foreach: a function to loop over the fonts in the fontset. See
- *   [method@Pango.Fontset.foreach]
- *
- * The `PangoFontsetClass` structure holds the virtual functions for
- * a particular `PangoFontset` implementation.
- */
-struct _PangoFontsetClass
-{
-  GObjectClass parent_class;
-
-  /*< public >*/
-
-  PangoFont *       (*get_font)     (PangoFontset     *fontset,
-                                     guint             wc);
-
-  PangoFontMetrics *(*get_metrics)  (PangoFontset     *fontset);
-  PangoLanguage *   (*get_language) (PangoFontset     *fontset);
-  void              (*foreach)      (PangoFontset           *fontset,
-                                     PangoFontsetForeachFunc func,
-                                     gpointer                data);
-
-  /*< private >*/
-
-  /* Padding for future expansion */
-  void (*_pango_reserved1) (void);
-  void (*_pango_reserved2) (void);
-  void (*_pango_reserved3) (void);
-  void (*_pango_reserved4) (void);
-};
 
 PANGO_AVAILABLE_IN_ALL
 PangoFont *             pango_fontset_get_font          (PangoFontset                   *fontset,

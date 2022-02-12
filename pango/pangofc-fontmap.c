@@ -41,6 +41,7 @@
 #include "pango-font-family-private.h"
 #include "pango-font-face-private.h"
 #include "pango-font-private.h"
+#include "pango-fontset-private.h"
 #include "pangofc-fontmap-private.h"
 #include "pangofc-private.h"
 #include "pango-impl-utils.h"
