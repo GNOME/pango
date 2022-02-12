@@ -38,6 +38,8 @@
 #include <gio/gio.h>
 
 #include "pango-context.h"
+#include "pango-font-family-private.h"
+#include "pango-font-face-private.h"
 #include "pango-font-private.h"
 #include "pango-font-family-private.h"
 #include "pangofc-fontmap-private.h"

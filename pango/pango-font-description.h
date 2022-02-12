@@ -36,7 +36,6 @@ G_BEGIN_DECLS
  * available on the system and also for specifying the characteristics of
  * a font to load.
  */
-typedef struct _PangoFontDescription PangoFontDescription;
 
 /**
  * PangoStyle:

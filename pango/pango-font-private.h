@@ -31,38 +31,6 @@
 
 G_BEGIN_DECLS
 
-struct _PangoFontFace
-{
-  GObject parent_instance;
-};
-
-typedef struct _PangoFontFaceClass PangoFontFaceClass;
-
-struct _PangoFontFaceClass
-{
-  GObjectClass parent_class;
-
-  /*< public >*/
-
-  const char           * (*get_face_name)  (PangoFontFace *face);
-  PangoFontDescription * (*describe)       (PangoFontFace *face);
-  void                   (*list_sizes)     (PangoFontFace  *face,
-                                            int           **sizes,
-                                            int            *n_sizes);
-  gboolean               (*is_synthesized) (PangoFontFace *face);
-  PangoFontFamily *      (*get_family)     (PangoFontFace *face);
-
-  /*< private >*/
-
-  /* Padding for future expansion */
-  void (*_pango_reserved3) (void);
-  void (*_pango_reserved4) (void);
-};
-
-#define PANGO_FONT_FACE_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT_FACE, PangoFontFaceClass))
-#define PANGO_IS_FONT_FACE_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_FONT_FACE))
-#define PANGO_FONT_FACE_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONT_FACE, PangoFontFaceClass))
-
 struct _PangoFont
 {
   GObject parent_instance;
