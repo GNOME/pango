@@ -91,7 +91,6 @@ pango_fc_font_class_init (PangoFcFontClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontClass *font_class = PANGO_FONT_CLASS (class);
-  PangoFontClassPrivate *pclass;
 
   class->has_char = pango_fc_font_real_has_char;
   class->get_glyph = pango_fc_font_real_get_glyph;
@@ -108,13 +107,11 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   font_class->get_features = pango_fc_font_get_features;
   font_class->create_hb_font = pango_fc_font_create_hb_font;
 
-  pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT);
-
-  pclass->get_languages = _pango_fc_font_get_languages;
-  pclass->is_hinted = _pango_fc_font_is_hinted;
-  pclass->get_scale_factors = _pango_fc_font_get_scale_factors;
-  pclass->get_matrix = pango_fc_font_get_matrix;
-  pclass->get_absolute_size = pango_fc_font_get_absolute_size;
+  font_class->get_languages = _pango_fc_font_get_languages;
+  font_class->is_hinted = _pango_fc_font_is_hinted;
+  font_class->get_scale_factors = _pango_fc_font_get_scale_factors;
+  font_class->get_matrix = pango_fc_font_get_matrix;
+  font_class->get_absolute_size = pango_fc_font_get_absolute_size;
 
   /**
    * PangoFcFont:pattern:
