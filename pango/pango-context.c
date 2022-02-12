@@ -27,7 +27,7 @@
 #include "pango-context-private.h"
 #include "pango-impl-utils.h"
 
-#include "pango-font-private.h"
+#include "pango-font-metrics-private.h"
 #include "pango-item-private.h"
 #include "pango-fontset.h"
 #include "pango-fontmap-private.h"

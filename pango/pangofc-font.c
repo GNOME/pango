@@ -22,6 +22,7 @@
 #include "config.h"
 
 #include "pango-font-private.h"
+#include "pango-font-metrics-private.h"
 #include "pangofc-font-private.h"
 #include "pangofc-fontmap.h"
 #include "pangofc-private.h"

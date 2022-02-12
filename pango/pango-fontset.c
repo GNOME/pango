@@ -26,7 +26,7 @@
  */
 
 #include "pango-types.h"
-#include "pango-font-private.h"
+#include "pango-font-metrics-private.h"
 #include "pango-fontset.h"
 #include "pango-impl-utils.h"
 
