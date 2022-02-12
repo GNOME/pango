@@ -53,38 +53,6 @@ G_BEGIN_DECLS
 #endif
 
 typedef struct _PangoFcFont      PangoFcFont;
-typedef struct _PangoFcFontClass PangoFcFontClass;
-
-#ifndef PANGO_DISABLE_DEPRECATED
-
-/**
- * PangoFcFont:
- *
- * `PangoFcFont` is a base class for font implementations
- * using the Fontconfig and FreeType libraries.
- *
- * It is used in onjunction with [class@PangoFc.FontMap].
- * When deriving from this class, you need to implement all
- * of its virtual functions other than shutdown() along with
- * the get_glyph_extents() virtual function from `PangoFont`.
- */
-struct _PangoFcFont
-{
-  PangoFont parent_instance;
-
-  FcPattern *font_pattern;          /* fully resolved pattern */
-  PangoFontMap *fontmap;            /* associated map */
-  gpointer priv;                    /* used internally */
-  PangoMatrix matrix;               /* unused */
-  PangoFontDescription *description;
-
-  GSList *metrics_by_lang;
-
-  guint is_hinted : 1;
-  guint is_transformed : 1;
-};
-
-#endif /* PANGO_DISABLE_DEPRECATED */
 
 PANGO_AVAILABLE_IN_ALL
 GType      pango_fc_font_get_type (void) G_GNUC_CONST;
