@@ -34,33 +34,16 @@ pango_font_family_get_item_type (GListModel *list)
 static guint
 pango_font_family_get_n_items (GListModel *list)
 {
-  PangoFontFamily *family = PANGO_FONT_FAMILY (list);
-  int n_faces;
-
-  pango_font_family_list_faces (family, NULL, &n_faces);
-
-  return (guint)n_faces;
+  g_assert_not_reached ();
+  return 0;
 }
 
 static gpointer
 pango_font_family_get_item (GListModel *list,
                             guint       position)
 {
-  PangoFontFamily *family = PANGO_FONT_FAMILY (list);
-  PangoFontFace **faces;
-  int n_faces;
-  PangoFontFace *face;
-
-  pango_font_family_list_faces (family, &faces, &n_faces);
-
-  if (position < n_faces)
-    face = g_object_ref (faces[position]);
-  else
-    face = NULL;
-
-  g_free (faces);
-
-  return face;
+  g_assert_not_reached ();
+  return NULL;
 }
 
 static void
@@ -90,24 +73,11 @@ pango_font_family_default_is_variable (PangoFontFamily *family)
 }
 
 static void
-pango_font_family_default_list_faces (PangoFontFamily   *family,
-                                      PangoFontFace   ***faces,
-                                      int               *n_faces)
-{
-  if (faces)
-    *faces = NULL;
-
-  if (n_faces)
-    *n_faces = 0;
-}
-
-static void
 pango_font_family_class_init (PangoFontFamilyClass *class G_GNUC_UNUSED)
 {
   class->is_monospace = pango_font_family_default_is_monospace;
   class->is_variable = pango_font_family_default_is_variable;
   class->get_face = pango_font_family_real_get_face;
-  class->list_faces = pango_font_family_default_list_faces;
 }
 
 static void
@@ -136,65 +106,25 @@ pango_font_family_get_name (PangoFontFamily  *family)
   return PANGO_FONT_FAMILY_GET_CLASS (family)->get_name (family);
 }
 
-/**
- * pango_font_family_list_faces:
- * @family: a `PangoFontFamily`
- * @faces: (out) (optional) (array length=n_faces) (transfer container):
- *   location to store an array of pointers to `PangoFontFace` objects,
- *   or %NULL. This array should be freed with g_free() when it is no
- *   longer needed.
- * @n_faces: (out): location to store number of elements in @faces.
- *
- * Lists the different font faces that make up @family.
- *
- * The faces in a family share a common design, but differ in slant, weight,
- * width and other aspects.
- *
- * Note that the returned faces are not in any particular order, and
- * multiple faces may have the same name or characteristics.
- *
- * `PangoFontFamily` also implemented the [iface@Gio.ListModel] interface
- * for enumerating faces.
- */
-void
-pango_font_family_list_faces (PangoFontFamily  *family,
-                              PangoFontFace  ***faces,
-                              int              *n_faces)
-{
-  g_return_if_fail (PANGO_IS_FONT_FAMILY (family));
-
-  PANGO_FONT_FAMILY_GET_CLASS (family)->list_faces (family, faces, n_faces);
-}
-
 static PangoFontFace *
 pango_font_family_real_get_face (PangoFontFamily *family,
                                  const char      *name)
 {
-  PangoFontFace **faces;
-  int n_faces;
   PangoFontFace *face;
-  int i;
-
-  pango_font_family_list_faces (family, &faces, &n_faces);
 
   face = NULL;
-  if (name == NULL && n_faces > 0)
+
+  for (int i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (family)); i++)
     {
-      face = faces[0];
-    }
-  else
-    {
-      for (i = 0; i < n_faces; i++)
+      PangoFontFace *f = g_list_model_get_item (G_LIST_MODEL (family), i);
+      g_object_unref (f);
+      if (name == NULL ||
+          strcmp (name, pango_font_face_get_face_name (f)) == 0)
         {
-          if (strcmp (name, pango_font_face_get_face_name (faces[i])) == 0)
-            {
-              face = faces[i];
-              break;
-            }
+          face = f;
+          break;
         }
     }
-
-  g_free (faces);
 
   return face;
 }

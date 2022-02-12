@@ -116,35 +116,6 @@ pango_font_map_load_font  (PangoFontMap               *fontmap,
 }
 
 /**
- * pango_font_map_list_families:
- * @fontmap: a `PangoFontMap`
- * @families: (out) (array length=n_families) (transfer container): location to
- *   store a pointer to an array of `PangoFontFamily` *.
- *   This array should be freed with g_free().
- * @n_families: (out): location to store the number of elements in @families
- *
- * List all families for a fontmap.
- *
- * Note that the returned families are not in any particular order.
- *
- * `PangoFontMap` also implemented the [iface@Gio.ListModel] interface
- * for enumerating families.
- */
-void
-pango_font_map_list_families (PangoFontMap      *fontmap,
-                              PangoFontFamily ***families,
-                              int               *n_families)
-{
-  PangoFontMapPrivate *priv = pango_font_map_get_instance_private (fontmap);
-  g_return_if_fail (fontmap != NULL);
-
-  PANGO_FONT_MAP_GET_CLASS (fontmap)->list_families (fontmap, families, n_families);
-
-  /* keep this value for GListModel::changed */
-  priv->n_families = *n_families;
-}
-
-/**
  * pango_font_map_load_fontset:
  * @fontmap: a `PangoFontMap`
  * @context: the `PangoContext` the font will be used with
@@ -363,25 +334,21 @@ static PangoFontFamily *
 pango_font_map_real_get_family (PangoFontMap *fontmap,
                                 const char   *name)
 {
-  PangoFontFamily **families;
-  int n_families;
   PangoFontFamily *family;
   int i;
 
-  pango_font_map_list_families (fontmap, &families, &n_families);
-
   family = NULL;
 
-  for (i = 0; i < n_families; i++)
+  for (i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (fontmap)); i++)
     {
-      if (strcmp (name, pango_font_family_get_name (families[i])) == 0)
+      PangoFontFamily *fam = g_list_model_get_item (G_LIST_MODEL (fontmap), i);
+      g_object_unref (fam);
+      if (strcmp (name, pango_font_family_get_name (fam)) == 0)
         {
-          family = families[i];
+          family = fam;
           break;
         }
     }
-
-  g_free (families);
 
   return family;
 }
@@ -415,33 +382,16 @@ pango_font_map_get_item_type (GListModel *list)
 static guint
 pango_font_map_get_n_items (GListModel *list)
 {
-  PangoFontMap *fontmap = PANGO_FONT_MAP (list);
-  int n_families;
-
-  pango_font_map_list_families (fontmap, NULL, &n_families);
-
-  return (guint)n_families;
+  g_assert_not_reached ();
+  return 0;
 }
 
 static gpointer
 pango_font_map_get_item (GListModel *list,
                          guint       position)
 {
-  PangoFontMap *fontmap = PANGO_FONT_MAP (list);
-  PangoFontFamily **families;
-  int n_families;
-  PangoFontFamily *family;
-
-  pango_font_map_list_families (fontmap, &families, &n_families);
-
-  if (position < n_families)
-    family = g_object_ref (families[position]);
-  else
-    family = NULL;
-
-  g_free (families);
-  
-  return family;
+  g_assert_not_reached ();
+  return NULL;
 }
 
 static void

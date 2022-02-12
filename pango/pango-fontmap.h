@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -37,17 +37,13 @@ PANGO_AVAILABLE_IN_1_22
 PangoContext * pango_font_map_create_context (PangoFontMap               *fontmap);
 PANGO_AVAILABLE_IN_ALL
 PangoFont *   pango_font_map_load_font     (PangoFontMap                 *fontmap,
-					    PangoContext                 *context,
-					    const PangoFontDescription   *desc);
+                                            PangoContext                 *context,
+                                            const PangoFontDescription   *desc);
 PANGO_AVAILABLE_IN_ALL
 PangoFontset *pango_font_map_load_fontset  (PangoFontMap                 *fontmap,
-					    PangoContext                 *context,
-					    const PangoFontDescription   *desc,
-					    PangoLanguage                *language);
-PANGO_AVAILABLE_IN_ALL
-void          pango_font_map_list_families (PangoFontMap                 *fontmap,
-					    PangoFontFamily            ***families,
-					    int                          *n_families);
+                                            PangoContext                 *context,
+                                            const PangoFontDescription   *desc,
+                                            PangoLanguage                *language);
 PANGO_AVAILABLE_IN_1_32
 guint         pango_font_map_get_serial    (PangoFontMap                 *fontmap);
 PANGO_AVAILABLE_IN_1_34

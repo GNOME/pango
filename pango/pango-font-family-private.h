@@ -35,9 +35,6 @@ struct _PangoFontFamilyClass
 
   /*< public >*/
 
-  void  (*list_faces)      (PangoFontFamily  *family,
-                            PangoFontFace  ***faces,
-                            int              *n_faces);
   const char * (*get_name) (PangoFontFamily  *family);
   gboolean (*is_monospace) (PangoFontFamily *family);
   gboolean (*is_variable)  (PangoFontFamily *family);
