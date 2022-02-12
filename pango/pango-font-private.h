@@ -22,6 +22,7 @@
 #ifndef __PANGO_FONT_PRIVATE_H__
 #define __PANGO_FONT_PRIVATE_H__
 
+#include <pango/pango-font-family.h>
 #include <pango/pango-font.h>
 #include <pango/pango-coverage.h>
 #include <pango/pango-types.h>
@@ -29,40 +30,6 @@
 #include <glib-object.h>
 
 G_BEGIN_DECLS
-
-typedef struct _PangoFontFamilyClass PangoFontFamilyClass;
-
-struct _PangoFontFamily
-{
-  GObject parent_instance;
-};
-
-struct _PangoFontFamilyClass
-{
-  GObjectClass parent_class;
-
-  /*< public >*/
-
-  void  (*list_faces)      (PangoFontFamily  *family,
-                            PangoFontFace  ***faces,
-                            int              *n_faces);
-  const char * (*get_name) (PangoFontFamily  *family);
-  gboolean (*is_monospace) (PangoFontFamily *family);
-  gboolean (*is_variable)  (PangoFontFamily *family);
-
-  PangoFontFace * (*get_face) (PangoFontFamily *family,
-                               const char      *name);
-
-
-  /*< private >*/
-
-  /* Padding for future expansion */
-  void (*_pango_reserved2) (void);
-};
-
-#define PANGO_FONT_FAMILY_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT_FAMILY, PangoFontFamilyClass))
-#define PANGO_IS_FONT_FAMILY_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_FONT_FAMILY))
-#define PANGO_FONT_FAMILY_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONT_FAMILY, PangoFontFamilyClass))
 
 struct _PangoFontFace
 {

@@ -39,6 +39,7 @@
 
 #include "pango-context.h"
 #include "pango-font-private.h"
+#include "pango-font-family-private.h"
 #include "pangofc-fontmap-private.h"
 #include "pangofc-private.h"
 #include "pango-impl-utils.h"
