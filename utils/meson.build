@@ -9,21 +9,16 @@ pango_view_deps = [
   libpango_dep,
 ]
 
-if build_pangoft2
-  pango_view_sources += 'viewer-pangoft2.c'
-  pango_view_deps += libpangoft2_dep
-endif
-
 extra_cflags = [
   '-DPACKAGE_NAME="@0@"'.format(meson.project_name()),
   '-DPACKAGE_VERSION="@0@"'.format(meson.project_version())
 ]
 
-if build_pangoft2 and x11_dep.found()
+if x11_dep.found()
   pango_view_sources += [
     'viewer-x.c',
   ]
-  pango_view_deps += [ libpangoft2_dep, x11_dep ]
+  pango_view_deps += [ x11_dep ]
   extra_cflags += [ '-DHAVE_X' ]
 endif
 

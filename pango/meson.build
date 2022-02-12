@@ -194,13 +194,9 @@ if build_pangoft2
   ]
 
   pangoft2_headers = [
-    'pangoft2.h',
   ]
 
   pangoft2_public_sources = [
-    'pangoft2-fontmap.c',
-    'pangoft2-render.c',
-    'pangoft2.c',
   ]
 
   pangoft2_sources = pangofc_public_sources + pangoft2_public_sources
@@ -251,23 +247,6 @@ if build_pangoft2
     )
     pangofc_gir_dep = declare_dependency(sources: pangofc_gir)
     pangoft2_dep_sources += pangofc_gir
-
-    pangoft2_gir = gnome.generate_gir(
-      libpangoft2,
-      sources: pangoft2_headers + pangoft2_public_sources,
-      dependencies: [ libpango_dep, pango_gir_dep, pangofc_gir_dep ],
-      namespace: 'PangoFT2',
-      nsversion: pango_api_version,
-      identifier_prefix: 'PangoFT2',
-      symbol_prefix: 'pango_ft2',
-      export_packages: 'pangoft2',
-      includes: [ pangofc_gir[0], 'freetype2-2.0', ],
-      header: 'pango/pangoft2.h',
-      install: true,
-      extra_args: gir_args,
-    )
-    pangoft2_gir_dep = declare_dependency(sources: pangoft2_gir)
-    pangoft2_dep_sources += pangoft2_gir
   endif
 
   libpangoft2_dep = declare_dependency(
@@ -278,14 +257,6 @@ if build_pangoft2
   )
   meson.override_dependency('pangoft2', libpangoft2_dep)
 
-  pkgconfig.generate(libpangoft2,
-    name: 'Pango FT2 and Pango Fc',
-    description: 'Freetype 2.0 and fontconfig font support for Pango',
-    filebase: 'pangoft2',
-    subdirs: pango_api_name,
-    requires: [ 'pango', freetype2_pc, fontconfig_pc ],
-  )
-
   pkgconfig.generate(
     name: 'Pango FC',
     description: 'Fontconfig support for Pango',
@@ -293,12 +264,6 @@ if build_pangoft2
     subdirs: pango_api_name,
     requires: [ 'pangoft2' ],
   )
-else
-  # For usage as a subproject
-  libpangoft2_dep = dependency('', required : false)
-  # Needed for making ft2 no-op while generating pangoxft_gir below
-  pangoft2_gir_dep = dependency('', required : false)
-  pangoft2_gir = [[]]
 endif
 
 # Win32
@@ -382,7 +347,7 @@ if cairo_dep.found()
       'pangocairo-fcfontmap.c',
     ]
 
-    pangocairo_deps += libpangoft2_dep
+    pangocairo_deps += [ libpangoft2_dep ]
   endif
 
   if host_system == 'windows' and pango_font_backends.contains('win32')

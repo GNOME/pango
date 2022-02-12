@@ -8,14 +8,6 @@
 #include <pango/pangowin32.h>
 #endif
 
-#ifdef HAVE_XFT
-#include <pango/pangoxft.h>
-#endif
-
-#ifdef HAVE_FREETYPE
-#include <pango/pangoft2.h>
-#endif
-
 #ifdef HAVE_CAIRO
 #include <pango/pangocairo.h>
 #endif
