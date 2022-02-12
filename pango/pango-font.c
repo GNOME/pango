@@ -33,24 +33,14 @@
 #include "pango-impl-utils.h"
 
 
-/*
- * PangoFont
- */
-
-typedef struct {
-  hb_font_t *hb_font;
-} PangoFontPrivate;
-
-G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFont, pango_font, G_TYPE_OBJECT,
-                                  G_ADD_PRIVATE (PangoFont))
+G_DEFINE_ABSTRACT_TYPE (PangoFont, pango_font, G_TYPE_OBJECT)
 
 static void
 pango_font_finalize (GObject *object)
 {
   PangoFont *font = PANGO_FONT (object);
-  PangoFontPrivate *priv = pango_font_get_instance_private (font);
 
-  hb_font_destroy (priv->hb_font);
+  hb_font_destroy (font->hb_font);
 
   G_OBJECT_CLASS (pango_font_parent_class)->finalize (object);
 }
@@ -356,18 +346,15 @@ pango_font_get_face (PangoFont *font)
 hb_font_t *
 pango_font_get_hb_font (PangoFont *font)
 {
-  PangoFontPrivate *priv = pango_font_get_instance_private (font);
-
   g_return_val_if_fail (PANGO_IS_FONT (font), NULL);
 
-  if (priv->hb_font)
-    return priv->hb_font;
+  if (!font->hb_font)
+    {
+      font->hb_font = PANGO_FONT_GET_CLASS (font)->create_hb_font (font);
+      hb_font_make_immutable (font->hb_font);
+    }
 
-  priv->hb_font = PANGO_FONT_GET_CLASS (font)->create_hb_font (font);
-
-  hb_font_make_immutable (priv->hb_font);
-
-  return priv->hb_font;
+  return font->hb_font;
 }
 
 /**
