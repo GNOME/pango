@@ -398,54 +398,9 @@ int               pango_font_metrics_get_strikethrough_thickness (PangoFontMetri
 #define PANGO_TYPE_FONT_FAMILY              (pango_font_family_get_type ())
 #define PANGO_FONT_FAMILY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONT_FAMILY, PangoFontFamily))
 #define PANGO_IS_FONT_FAMILY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONT_FAMILY))
-#define PANGO_FONT_FAMILY_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT_FAMILY, PangoFontFamilyClass))
-#define PANGO_IS_FONT_FAMILY_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_FONT_FAMILY))
-#define PANGO_FONT_FAMILY_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONT_FAMILY, PangoFontFamilyClass))
 
 typedef struct _PangoFontFace        PangoFontFace;
 typedef struct _PangoFontFamily      PangoFontFamily;
-typedef struct _PangoFontFamilyClass PangoFontFamilyClass;
-
-#ifndef PANGO_DISABLE_DEPRECATED
-
-/**
- * PangoFontFamily:
- *
- * A `PangoFontFamily` is used to represent a family of related
- * font faces.
- *
- * The font faces in a family share a common design, but differ in
- * slant, weight, width or other aspects.
- */
-struct _PangoFontFamily
-{
-  GObject parent_instance;
-};
-
-struct _PangoFontFamilyClass
-{
-  GObjectClass parent_class;
-
-  /*< public >*/
-
-  void  (*list_faces)      (PangoFontFamily  *family,
-                            PangoFontFace  ***faces,
-                            int              *n_faces);
-  const char * (*get_name) (PangoFontFamily  *family);
-  gboolean (*is_monospace) (PangoFontFamily *family);
-  gboolean (*is_variable)  (PangoFontFamily *family);
-
-  PangoFontFace * (*get_face) (PangoFontFamily *family,
-                               const char      *name);
-
-
-  /*< private >*/
-
-  /* Padding for future expansion */
-  void (*_pango_reserved2) (void);
-};
-
-#endif /* PANGO_DISABLE_DEPRECATED */
 
 PANGO_AVAILABLE_IN_ALL
 GType      pango_font_family_get_type       (void) G_GNUC_CONST;
@@ -473,47 +428,7 @@ PangoFontFace *pango_font_family_get_face (PangoFontFamily *family,
 #define PANGO_TYPE_FONT_FACE              (pango_font_face_get_type ())
 #define PANGO_FONT_FACE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONT_FACE, PangoFontFace))
 #define PANGO_IS_FONT_FACE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONT_FACE))
-#define PANGO_FONT_FACE_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT_FACE, PangoFontFaceClass))
-#define PANGO_IS_FONT_FACE_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_FONT_FACE))
-#define PANGO_FONT_FACE_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONT_FACE, PangoFontFaceClass))
 
-typedef struct _PangoFontFaceClass   PangoFontFaceClass;
-
-#ifndef PANGO_DISABLE_DEPRECATED
-
-/**
- * PangoFontFace:
- *
- * A `PangoFontFace` is used to represent a group of fonts with
- * the same family, slant, weight, and width, but varying sizes.
- */
-struct _PangoFontFace
-{
-  GObject parent_instance;
-};
-
-struct _PangoFontFaceClass
-{
-  GObjectClass parent_class;
-
-  /*< public >*/
-
-  const char           * (*get_face_name)  (PangoFontFace *face);
-  PangoFontDescription * (*describe)       (PangoFontFace *face);
-  void                   (*list_sizes)     (PangoFontFace  *face,
-                                            int           **sizes,
-                                            int            *n_sizes);
-  gboolean               (*is_synthesized) (PangoFontFace *face);
-  PangoFontFamily *      (*get_family)     (PangoFontFace *face);
-
-  /*< private >*/
-
-  /* Padding for future expansion */
-  void (*_pango_reserved3) (void);
-  void (*_pango_reserved4) (void);
-};
-
-#endif /* PANGO_DISABLE_DEPRECATED */
 
 PANGO_AVAILABLE_IN_ALL
 GType      pango_font_face_get_type       (void) G_GNUC_CONST;
@@ -540,50 +455,7 @@ PangoFontFamily *     pango_font_face_get_family     (PangoFontFace  *face);
 #define PANGO_TYPE_FONT              (pango_font_get_type ())
 #define PANGO_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONT, PangoFont))
 #define PANGO_IS_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONT))
-#define PANGO_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT, PangoFontClass))
-#define PANGO_IS_FONT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_FONT))
-#define PANGO_FONT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONT, PangoFontClass))
 
-
-#ifndef PANGO_DISABLE_DEPRECATED
-
-/**
- * PangoFont:
- *
- * A `PangoFont` is used to represent a font in a
- * rendering-system-independent manner.
- */
-struct _PangoFont
-{
-  GObject parent_instance;
-};
-
-typedef struct _PangoFontClass       PangoFontClass;
-struct _PangoFontClass
-{
-  GObjectClass parent_class;
-
-  /*< public >*/
-
-  PangoFontDescription *(*describe)           (PangoFont      *font);
-  PangoCoverage *       (*get_coverage)       (PangoFont      *font,
-                                               PangoLanguage  *language);
-  void                  (*get_glyph_extents)  (PangoFont      *font,
-                                               PangoGlyph      glyph,
-                                               PangoRectangle *ink_rect,
-                                               PangoRectangle *logical_rect);
-  PangoFontMetrics *    (*get_metrics)        (PangoFont      *font,
-                                               PangoLanguage  *language);
-  PangoFontMap *        (*get_font_map)       (PangoFont      *font);
-  PangoFontDescription *(*describe_absolute)  (PangoFont      *font);
-  void                  (*get_features)       (PangoFont      *font,
-                                               hb_feature_t   *features,
-                                               guint           len,
-                                               guint          *num_features);
-  hb_font_t *           (*create_hb_font)     (PangoFont      *font);
-};
-
-#endif /* PANGO_DISABLE_DEPRECATED */
 
 PANGO_AVAILABLE_IN_ALL
 GType                 pango_font_get_type          (void) G_GNUC_CONST;
