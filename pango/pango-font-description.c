@@ -978,28 +978,6 @@ pango_font_description_free (PangoFontDescription *desc)
   g_slice_free (PangoFontDescription, desc);
 }
 
-/**
- * pango_font_descriptions_free:
- * @descs: (nullable) (array length=n_descs) (transfer full): a pointer
- *   to an array of `PangoFontDescription`, may be %NULL
- * @n_descs: number of font descriptions in @descs
- *
- * Frees an array of font descriptions.
- */
-void
-pango_font_descriptions_free (PangoFontDescription **descs,
-                              int                    n_descs)
-{
-  int i;
-
-  if (descs == NULL)
-    return;
-
-  for (i = 0; i<n_descs; i++)
-    pango_font_description_free (descs[i]);
-  g_free (descs);
-}
-
 typedef struct
 {
   int value;

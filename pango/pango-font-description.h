@@ -234,9 +234,6 @@ gboolean              pango_font_description_equal       (const PangoFontDescrip
                                                           const PangoFontDescription  *desc2) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
 void                  pango_font_description_free        (PangoFontDescription        *desc);
-PANGO_AVAILABLE_IN_ALL
-void                  pango_font_descriptions_free       (PangoFontDescription       **descs,
-                                                          int                          n_descs);
 
 PANGO_AVAILABLE_IN_ALL
 void                 pango_font_description_set_family        (PangoFontDescription *desc,
