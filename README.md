@@ -11,13 +11,9 @@ Pango is designed to be modular; the core Pango layout can be used
 with different font backends. There are three basic backends, with
 multiple options for rendering with each.
 
-- Client-side fonts using the FreeType and FontConfig libraries.
-  Rendering can be with with Cairo or Xft libraries, or directly
-  to an in-memory buffer with no additional libraries.
-- Native fonts on Microsoft Windows. Rendering can be done via Cairo
-  or directly using the native Win32 API.
-- Native fonts on MacOS X with the CoreText framework, rendering via
-  Cairo.
+- Client-side fonts using the FreeType and FontConfig libraries
+- Native fonts on Microsoft Windows
+- Native fonts on MacOS with the CoreText framework
 
 The integration of Pango with [Cairo](https://cairographics.org)
 provides a complete solution with high quality text handling and
@@ -44,19 +40,12 @@ libraries:
 - [HarfBuzz](http://www.harfbuzz.org) for complex text shaping
 - [fribidi](http://fribidi.org) for bidirectional text handling
 
-Cairo support depends on the [Cairo](https://cairographics.org) library.
-The Cairo backend is the preferred backend to use Pango with and is
+Rendering support depends on the [Cairo](https://cairographics.org) library.
+The Cairo renderer is the preferred renderer to use Pango with and is
 subject of most of the development in the future.  It has the
 advantage that the same code can be used for display and printing.
 
-We suggest using Pango with Cairo as described above, but you can also
-do X-specific rendering using the Xft library. The Xft backend uses
-version 2 of the Xft library to manage client side fonts. Version 2 of
-Xft is available from https://xlibs.freedesktop.org/release/.  You'll
-need the libXft package, and possibly the libXrender and renderext
-packages as well.  You'll also need FontConfig.
-
-Installation of Pango on Win32 is possible, see README.win32.
+For details about installation of Pango on Win32 see README.win32.
 
 License
 -------
