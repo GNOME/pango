@@ -2,15 +2,11 @@
 #include "viewer.h"
 
 extern const PangoViewer pangocairo_viewer;
-extern const PangoViewer pangoft2_viewer;
 extern const PangoViewer pangox_viewer;
 
 const PangoViewer *viewers[] = {
 #ifdef HAVE_CAIRO
   &pangocairo_viewer,
-#endif
-#ifdef HAVE_FREETYPE
-  &pangoft2_viewer,
 #endif
 #ifdef HAVE_X
   &pangox_viewer,

@@ -10,10 +10,6 @@ endif
 
 examples_deps = [ libpango_dep, libpangocairo_dep, ]
 
-if pango_font_backends.contains('freetype')
-  examples_deps += libpangoft2_dep
-endif
-
 # somebody will have to fix this
 # if host_system == 'windows'
 #   # This hasn't been built in years, most likely, but try now
