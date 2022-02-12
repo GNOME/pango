@@ -30,7 +30,7 @@
 
 
 #ifdef HAVE_CAIRO_XLIB
-#ifdef HAVE_XFT
+#ifdef HAVE_X
 #include "viewer-x.h"
 #include <cairo-xlib.h>
 
@@ -67,11 +67,11 @@ cairo_x_view_iface_paint_background (gpointer  instance G_GNUC_UNUSED,
 }
 
 static CairoViewerIface cairo_x_viewer_iface = {
-  &x_viewer,
+  &pangox_viewer,
   cairo_x_view_iface_create_surface,
   cairo_x_view_iface_paint_background
 };
-#endif /* HAVE_XFT */
+#endif /* HAVE_X */
 #endif /* HAVE_CAIRO_XLIB */
 
 
@@ -348,13 +348,13 @@ cairo_viewer_iface_create (const CairoViewerIface **iface)
     return ret;
 
 #ifdef HAVE_CAIRO_XLIB
-#ifdef HAVE_XFT
+#ifdef HAVE_X
   if (opt_display)
     {
       *iface = &cairo_x_viewer_iface;
       return (*iface)->backend_class->create ((*iface)->backend_class);
     }
-#endif /* HAVE_XFT */
+#endif /* HAVE_X */
 #endif /* HAVE_CAIRO_XLIB */
 
   *iface = &cairo_image_viewer_iface;

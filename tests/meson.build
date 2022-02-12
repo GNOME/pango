@@ -2,10 +2,6 @@ test_cflags = [
   '-DSRCDIR=@0@'.format(meson.current_source_dir()),
 ]
 
-if xft_dep.found()
-  test_cflags += [ '-DHAVE_X', '-DHAVE_XFT' ]
-endif
-
 if host_system == 'windows'
   test_cflags += '-DHAVE_WIN32'
 elif host_system == 'darwin'
