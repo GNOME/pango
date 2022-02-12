@@ -1,7 +1,6 @@
 pango_sources = [
   'break.c',
   'ellipsize.c',
-  'fonts.c',
   'glyphstring.c',
   'itemize.c',
   'pango-attributes.c',
@@ -10,6 +9,7 @@ pango_sources = [
   'pango-context.c',
   'pango-coverage.c',
   'pango-emoji.c',
+  'pango-font.c',
   'pango-font-description.c',
   'pango-font-face.c',
   'pango-font-family.c',
