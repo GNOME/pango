@@ -41,47 +41,38 @@ struct _PangoFontClass
 {
   GObjectClass parent_class;
 
-  /*< public >*/
-
-  PangoFontDescription *(*describe)           (PangoFont      *font);
-  PangoCoverage *       (*get_coverage)       (PangoFont      *font,
-                                               PangoLanguage  *language);
-  void                  (*get_glyph_extents)  (PangoFont      *font,
-                                               PangoGlyph      glyph,
-                                               PangoRectangle *ink_rect,
-                                               PangoRectangle *logical_rect);
-  PangoFontMetrics *    (*get_metrics)        (PangoFont      *font,
-                                               PangoLanguage  *language);
-  PangoFontMap *        (*get_font_map)       (PangoFont      *font);
-  PangoFontDescription *(*describe_absolute)  (PangoFont      *font);
-  void                  (*get_features)       (PangoFont      *font,
-                                               hb_feature_t   *features,
-                                               guint           len,
-                                               guint          *num_features);
-  hb_font_t *           (*create_hb_font)     (PangoFont      *font);
+  PangoFontDescription * (* describe)           (PangoFont      *font);
+  PangoCoverage *        (* get_coverage)       (PangoFont      *font,
+                                                PangoLanguage  *language);
+  void                   (* get_glyph_extents)  (PangoFont      *font,
+                                                PangoGlyph      glyph,
+                                                PangoRectangle *ink_rect,
+                                                PangoRectangle *logical_rect);
+  PangoFontMetrics *     (* get_metrics)        (PangoFont      *font,
+                                                PangoLanguage  *language);
+  PangoFontMap *         (* get_font_map)       (PangoFont      *font);
+  PangoFontDescription * (* describe_absolute)  (PangoFont      *font);
+  void                   (* get_features)       (PangoFont      *font,
+                                                 hb_feature_t   *features,
+                                                 guint           len,
+                                                 guint          *num_features);
+  hb_font_t *            (* create_hb_font)     (PangoFont      *font);
+  PangoLanguage **       (* get_languages)      (PangoFont      *font);
+  gboolean               (* is_hinted)          (PangoFont      *font);
+  void                   (* get_scale_factors)  (PangoFont      *font,
+                                                 double         *x_scale,
+                                                 double         *y_scale);
+  gboolean               (* has_char)           (PangoFont      *font,
+                                                 gunichar        wc);
+  PangoFontFace *        (* get_face)           (PangoFont      *font);
+  void                   (* get_matrix)         (PangoFont      *font,
+                                                 PangoMatrix    *matrix);
+  int                    (* get_absolute_size)  (PangoFont      *font);
 };
 
 #define PANGO_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT, PangoFontClass))
 #define PANGO_IS_FONT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_FONT))
 #define PANGO_FONT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONT, PangoFontClass))
-
-
-typedef struct {
-  PangoLanguage ** (* get_languages) (PangoFont *font);
-
-  gboolean         (* is_hinted) (PangoFont *font);
-
-  void             (* get_scale_factors) (PangoFont *font,
-                                          double    *x_scale,
-                                          double    *y_scale);
-
-  gboolean         (* has_char) (PangoFont *font,
-                                 gunichar   wc);
-  PangoFontFace *  (* get_face) (PangoFont *font);
-  void             (* get_matrix) (PangoFont   *font,
-                                   PangoMatrix *matrix);
-  int              (* get_absolute_size) (PangoFont *font);
-} PangoFontClassPrivate;
 
 gboolean pango_font_is_hinted         (PangoFont *font);
 void     pango_font_get_scale_factors (PangoFont *font,
@@ -92,9 +83,7 @@ void     pango_font_get_matrix        (PangoFont   *font,
 
 static inline int pango_font_get_absolute_size (PangoFont *font)
 {
-  GTypeClass *klass = (GTypeClass *) PANGO_FONT_GET_CLASS (font);
-  PangoFontClassPrivate *priv = g_type_class_get_private (klass, PANGO_TYPE_FONT);
-  return priv->get_absolute_size (font);
+  return PANGO_FONT_GET_CLASS (font)->get_absolute_size (font);
 }
 
 G_END_DECLS

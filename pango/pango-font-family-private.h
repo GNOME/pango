@@ -33,20 +33,13 @@ struct _PangoFontFamilyClass
 {
   GObjectClass parent_class;
 
-  /*< public >*/
+  const char *    (* get_name)     (PangoFontFamily *family);
+  gboolean        (* is_monospace) (PangoFontFamily *family);
+  gboolean        (* is_variable)  (PangoFontFamily *family);
 
-  const char * (*get_name) (PangoFontFamily  *family);
-  gboolean (*is_monospace) (PangoFontFamily *family);
-  gboolean (*is_variable)  (PangoFontFamily *family);
+  PangoFontFace * (* get_face)     (PangoFontFamily *family,
+                                    const char      *name);
 
-  PangoFontFace * (*get_face) (PangoFontFamily *family,
-                               const char      *name);
-
-
-  /*< private >*/
-
-  /* Padding for future expansion */
-  void (*_pango_reserved2) (void);
 };
 
 #define PANGO_FONT_FAMILY_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT_FAMILY, PangoFontFamilyClass))

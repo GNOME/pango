@@ -35,12 +35,9 @@ G_BEGIN_DECLS
 
 
 #define PANGO_TYPE_FONT              (pango_font_get_type ())
-#define PANGO_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONT, PangoFont))
-#define PANGO_IS_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONT))
-
 
 PANGO_AVAILABLE_IN_ALL
-GType                 pango_font_get_type          (void) G_GNUC_CONST;
+PANGO_DECLARE_INTERNAL_TYPE (PangoFont, pango_font, PANGO, FONT, GObject)
 
 PANGO_AVAILABLE_IN_ALL
 PangoFontDescription *pango_font_describe          (PangoFont        *font);
@@ -136,8 +133,6 @@ PangoFont *           pango_font_deserialize       (PangoContext     *context,
 #define PANGO_UNKNOWN_GLYPH_HEIGHT 14
 #endif
 #endif
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFont, g_object_unref)
 
 G_END_DECLS
 

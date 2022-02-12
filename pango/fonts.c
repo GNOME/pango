@@ -41,13 +41,8 @@ typedef struct {
   hb_font_t *hb_font;
 } PangoFontPrivate;
 
-#define PANGO_FONT_GET_CLASS_PRIVATE(font) ((PangoFontClassPrivate *) \
-   g_type_class_get_private ((GTypeClass *) PANGO_FONT_GET_CLASS (font), \
-                            PANGO_TYPE_FONT))
-
 G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFont, pango_font, G_TYPE_OBJECT,
-                                  G_ADD_PRIVATE (PangoFont)
-                                  g_type_add_class_private (g_define_type_id, sizeof (PangoFontClassPrivate)))
+                                  G_ADD_PRIVATE (PangoFont))
 
 static void
 pango_font_finalize (GObject *object)
@@ -122,19 +117,16 @@ static void
 pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
-  PangoFontClassPrivate *pclass;
 
   object_class->finalize = pango_font_finalize;
 
-  pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT);
-
-  pclass->get_languages = pango_font_default_get_languages;
-  pclass->is_hinted = pango_font_default_is_hinted;
-  pclass->get_scale_factors = pango_font_default_get_scale_factors;
-  pclass->has_char = pango_font_default_has_char;
-  pclass->get_face = pango_font_default_get_face;
-  pclass->get_matrix = pango_font_default_get_matrix;
-  pclass->get_absolute_size = pango_font_default_get_absolute_size;
+  class->get_languages = pango_font_default_get_languages;
+  class->is_hinted = pango_font_default_is_hinted;
+  class->get_scale_factors = pango_font_default_get_scale_factors;
+  class->has_char = pango_font_default_has_char;
+  class->get_face = pango_font_default_get_face;
+  class->get_matrix = pango_font_default_get_matrix;
+  class->get_absolute_size = pango_font_default_get_absolute_size;
 }
 
 static void
@@ -343,9 +335,7 @@ pango_font_get_font_map (PangoFont *font)
 PangoFontFace *
 pango_font_get_face (PangoFont *font)
 {
-  PangoFontClassPrivate *pclass = PANGO_FONT_GET_CLASS_PRIVATE (font);
-
-  return pclass->get_face (font);
+  return PANGO_FONT_GET_CLASS (font)->get_face (font);
 }
 
 /**
@@ -395,9 +385,7 @@ gboolean
 pango_font_has_char (PangoFont *font,
                      gunichar   wc)
 {
-  PangoFontClassPrivate *pclass = PANGO_FONT_GET_CLASS_PRIVATE (font);
-
-  return pclass->has_char (font, wc);
+  return PANGO_FONT_GET_CLASS (font)->has_char (font, wc);
 }
 
 /**
@@ -447,9 +435,7 @@ pango_font_get_features (PangoFont    *font,
 PangoLanguage **
 pango_font_get_languages (PangoFont *font)
 {
-  PangoFontClassPrivate *pclass = PANGO_FONT_GET_CLASS_PRIVATE (font);
-
-  return pclass->get_languages (font);
+  return PANGO_FONT_GET_CLASS (font)->get_languages (font);
 }
 
 /*< private >
@@ -462,9 +448,7 @@ void
 pango_font_get_matrix (PangoFont   *font,
                        PangoMatrix *matrix)
 {
-  PangoFontClassPrivate *pclass = PANGO_FONT_GET_CLASS_PRIVATE (font);
-
-  pclass->get_matrix (font, matrix);
+  PANGO_FONT_GET_CLASS (font)->get_matrix (font, matrix);
 }
 
 /*< private >
@@ -478,7 +462,7 @@ pango_font_get_matrix (PangoFont   *font,
 gboolean
 pango_font_is_hinted (PangoFont *font)
 {
-  return PANGO_FONT_GET_CLASS_PRIVATE (font)->is_hinted (font);
+  return PANGO_FONT_GET_CLASS (font)->is_hinted (font);
 }
 
 /*< private >
@@ -497,5 +481,5 @@ pango_font_get_scale_factors (PangoFont *font,
                               double    *x_scale,
                               double    *y_scale)
 {
-  PANGO_FONT_GET_CLASS_PRIVATE (font)->get_scale_factors (font, x_scale, y_scale);
+  PANGO_FONT_GET_CLASS (font)->get_scale_factors (font, x_scale, y_scale);
 }
