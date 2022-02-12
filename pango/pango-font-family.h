@@ -37,10 +37,6 @@ PANGO_AVAILABLE_IN_ALL
 GType                   pango_font_family_get_type      (void) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
-void                    pango_font_family_list_faces    (PangoFontFamily  *family,
-                                                         PangoFontFace  ***faces,
-                                                         int              *n_faces);
-PANGO_AVAILABLE_IN_ALL
 const char *            pango_font_family_get_name      (PangoFontFamily  *family) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_1_4
 gboolean                pango_font_family_is_monospace  (PangoFontFamily  *family) G_GNUC_PURE;
