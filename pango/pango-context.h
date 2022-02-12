@@ -55,10 +55,6 @@ PangoFontMap *          pango_context_get_font_map              (PangoContext   
 PANGO_AVAILABLE_IN_1_32
 guint                   pango_context_get_serial                (PangoContext                 *context);
 PANGO_AVAILABLE_IN_ALL
-void                    pango_context_list_families             (PangoContext                 *context,
-                                                                 PangoFontFamily            ***families,
-                                                                 int                          *n_families);
-PANGO_AVAILABLE_IN_ALL
 PangoFont *             pango_context_load_font                 (PangoContext                 *context,
                                                                  const PangoFontDescription   *desc);
 PANGO_AVAILABLE_IN_ALL
