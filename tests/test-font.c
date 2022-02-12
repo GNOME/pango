@@ -221,13 +221,9 @@ test_enumerate (void)
 {
   PangoFontMap *fontmap;
   PangoContext *context;
-  PangoFontFamily **families;
   PangoFontFamily *family;
-  int n_families;
   int i;
-  PangoFontFace **faces;
   PangoFontFace *face;
-  int n_faces;
   PangoFontDescription *desc;
   PangoFont *font;
   gboolean found_face;
@@ -235,33 +231,40 @@ test_enumerate (void)
   fontmap = pango_cairo_font_map_get_default ();
   context = pango_font_map_create_context (fontmap);
 
-  pango_font_map_list_families (fontmap, &families, &n_families);
-  g_assert_cmpint (n_families, >, 0);
+  g_assert_cmpint (g_list_model_get_n_items (G_LIST_MODEL (fontmap)), >, 0);
 
-  for (i = 0; i < n_families; i++)
+  for (i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (fontmap)); i++)
     {
-      family = pango_font_map_get_family (fontmap, pango_font_family_get_name (families[i]));
-      g_assert_true (family == families[i]);
+      PangoFontFamily *fam = g_list_model_get_item (G_LIST_MODEL (fontmap), i);
+      family = pango_font_map_get_family (fontmap, pango_font_family_get_name (fam));
+      g_assert_true (family == fam);
+      g_object_unref (fam);
     }
 
-  pango_font_family_list_faces (families[0], &faces, &n_faces);
-  g_assert_cmpint (n_faces, >, 0);
-  for (i = 0; i < n_faces; i++)
+  family = g_list_model_get_item (G_LIST_MODEL (fontmap), 0);
+  g_object_unref (family);
+
+  g_assert_cmpint (g_list_model_get_n_items (G_LIST_MODEL (family)), >, 0);
+  for (i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (family)); i++)
     {
-      face = pango_font_family_get_face (families[0], pango_font_face_get_face_name (faces[i]));
-      g_assert_cmpstr (pango_font_face_get_face_name (face), ==, pango_font_face_get_face_name (faces[i]));
+      PangoFontFace *f = g_list_model_get_item (G_LIST_MODEL (family), i);
+      face = pango_font_family_get_face (family, pango_font_face_get_face_name (f));
+      g_assert_cmpstr (pango_font_face_get_face_name (face), ==, pango_font_face_get_face_name (f));
+      g_object_unref (f);
     }
 
   desc = pango_font_description_new ();
-  pango_font_description_set_family (desc, pango_font_family_get_name (families[0]));
+  pango_font_description_set_family (desc, pango_font_family_get_name (family));
   pango_font_description_set_size (desc, 10*PANGO_SCALE);
 
   font = pango_font_map_load_font (fontmap, context, desc);
   face = pango_font_get_face (font);
   found_face = FALSE;
-  for (i = 0; i < n_faces; i++)
+  for (i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (family)); i++)
     {
-      if (face == faces[i])
+      PangoFontFace *f = g_list_model_get_item (G_LIST_MODEL (family), i);
+      g_object_unref (f);
+      if (face == f)
         {
           found_face = TRUE;
           break;
@@ -271,8 +274,6 @@ test_enumerate (void)
 
   g_object_unref (font);
   pango_font_description_free (desc);
-  g_free (faces);
-  g_free (families);
   g_object_unref (context);
 }
 

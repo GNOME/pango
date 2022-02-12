@@ -24,30 +24,6 @@
 #include <pango/pangocairo.h>
 
 static void
-test_list_families (void)
-{
-  PangoContext *context;
-  PangoFontFamily **families = NULL;
-  int n_families = 0;
-
-  context = pango_context_new ();
-
-  pango_context_list_families (context, &families, &n_families);
-  g_assert_null (families);
-  g_assert_cmpint (n_families, ==, 0);
-
-  pango_context_set_font_map (context, pango_cairo_font_map_get_default ());
-
-  pango_context_list_families (context, &families, &n_families);
-  g_assert_nonnull (families);
-  g_assert_cmpint (n_families, >, 0);
-
-  g_free (families);
-
-  g_object_unref (context);
-}
-
-static void
 test_set_language (void)
 {
   PangoContext *context;
@@ -134,7 +110,6 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  g_test_add_func ("/context/list-families", test_list_families);
   g_test_add_func ("/context/set-language", test_set_language);
   g_test_add_func ("/context/set-base-dir", test_set_base_dir);
   g_test_add_func ("/context/set-base-gravity", test_set_base_gravity);
