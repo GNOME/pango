@@ -18,8 +18,8 @@ if x11_dep.found()
   pango_view_sources += [
     'viewer-x.c',
   ]
-  pango_view_deps += [ x11_dep ]
   extra_cflags += [ '-DHAVE_X' ]
+  pango_view_deps += [ x11_dep ]
 endif
 
 if cairo_dep.found()
@@ -27,7 +27,6 @@ if cairo_dep.found()
     'viewer-cairo.c',
     'viewer-pangocairo.c',
   ]
-  pango_view_deps += libpangocairo_dep
 endif
 
 pango_view = executable('pango-view', pango_view_sources,
@@ -63,8 +62,7 @@ if cairo_dep.found()
 
   pango_list_deps = [
     pango_deps,
-    libpango_dep,
-    libpangocairo_dep
+    libpango_dep
   ]
 
   pango_list = executable('pango-list', pango_list_sources,
@@ -82,8 +80,7 @@ if cairo_dep.found()
 
   pango_segmentation_deps = [
     pango_deps,
-    libpango_dep,
-    libpangocairo_dep
+    libpango_dep
   ]
 
   pango_segmentation = executable('pango-segmentation',

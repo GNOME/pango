@@ -8,7 +8,7 @@ if pango_cairo_backends.contains('png')
   ]
 endif
 
-examples_deps = [ libpango_dep, libpangocairo_dep, ]
+examples_deps = [ libpango_dep ]
 
 # somebody will have to fix this
 # if host_system == 'windows'

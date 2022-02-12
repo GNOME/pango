@@ -58,6 +58,95 @@ pango_headers = [
   'pango-utils.h',
 ]
 
+pango_gir_includes = [
+  'HarfBuzz-0.0',
+  'GObject-2.0',
+]
+
+if cairo_dep.found()
+  pango_headers += [
+    'pangocairo.h',
+  ]
+
+  pango_sources += [
+    'pangocairo-context.c',
+    'pangocairo-font.c',
+    'pangocairo-fontmap.c',
+    'pangocairo-render.c',
+  ]
+
+  if pango_font_backends.contains('freetype')
+    pango_sources += [
+      'pangocairo-fcfont.c',
+      'pangocairo-fcfontmap.c',
+    ]
+  endif
+
+  if pango_font_backends.contains('win32')
+    pango_sources += [
+      'pangocairo-win32font.c',
+      'pangocairo-win32fontmap.c',
+    ]
+  endif
+
+  if pango_font_backends.contains('quartz')
+    pango_sources += [
+      'pangocoretext.c',
+      'pangocoretext-fontmap.c',
+      'pangocairo-coretextfont.c',
+      'pangocairo-coretextfontmap.c',
+    ]
+  endif
+
+  pango_gir_includes += [
+    'cairo-1.0',
+  ]
+endif
+
+if build_pangoft2
+  pango_headers += [
+    'pangofc-font.h',
+    'pangofc-fontmap.h',
+    'pangofc-decoder.h',
+  ]
+
+  pango_sources += [
+    'pangofc-font.c',
+    'pangofc-fontmap.c',
+    'pangofc-decoder.c',
+    'pango-trace.c',
+  ]
+
+  pango_gir_includes += [
+    'fontconfig-2.0',
+    'freetype2-2.0',
+  ]
+endif
+
+if host_system == 'windows'
+  pango_headers += [
+    'pangowin32.h',
+  ]
+
+  pango_sources += [
+    'pangowin32.c',
+    'pangowin32-fontcache.c',
+    'pangowin32-fontmap.c',
+  ]
+
+  pango_deps += [
+    cc.find_library('gdi32'),
+  ]
+
+  pangowin32_rc = configure_file(
+    input: 'pangowin32.rc.in',
+    output: 'pangowin32.rc',
+    configuration: pango_features_conf,
+  )
+  pangowin32_res = import('windows').compile_resources(pangowin32_rc)
+  pango_sources += pangowin32_res
+endif
+
 pango_installed_headers = pango_headers + [ 'pango-version-macros.h' ]
 
 install_headers(pango_installed_headers, subdir: pango_api_path)
@@ -122,7 +211,7 @@ libpango = library(
   link_args: common_ldflags,
 )
 
-pango_dep_sources = [pango_enum_h]
+pango_dep_sources = [ pango_enum_h ]
 
 gir = find_program('g-ir-scanner', required : get_option('introspection'))
 build_gir = gir.found() and (not meson.is_cross_build() or get_option('introspection').enabled())
@@ -148,7 +237,7 @@ if build_gir
     symbol_prefix: 'pango',
     export_packages: 'pango',
     dependencies: pango_deps,
-    includes: [ 'HarfBuzz-0.0', 'GObject-2.0', 'cairo-1.0', ],
+    includes: pango_gir_includes,
     header: 'pango/pango.h',
     install: true,
     extra_args: gir_args,
@@ -177,266 +266,3 @@ pkgconfig.generate(libpango,
   filebase: 'pango',
   subdirs: pango_api_name,
 )
-
-# FreeType
-if build_pangoft2
-  pangofc_headers = [
-    'pangofc-font.h',
-    'pangofc-fontmap.h',
-    'pangofc-decoder.h',
-  ]
-
-  pangofc_public_sources = [
-    'pangofc-font.c',
-    'pangofc-fontmap.c',
-    'pangofc-decoder.c',
-    'pango-trace.c',
-  ]
-
-  pangoft2_headers = [
-  ]
-
-  pangoft2_public_sources = [
-  ]
-
-  pangoft2_sources = pangofc_public_sources + pangoft2_public_sources
-
-  if host_system == 'windows'
-    pangoft2_rc = configure_file(
-      input: 'pangoft2.rc.in',
-      output: 'pangoft2.rc',
-      configuration: pango_features_conf,
-    )
-    pangoft2_res = import('windows').compile_resources(pangoft2_rc)
-    pangoft2_sources += pangoft2_res
-  endif
-
-  install_headers(pangoft2_headers + pangofc_headers, subdir: pango_api_path)
-
-  libpangoft2 = library(
-    'pangoft2-@0@'.format(pango_api_version),
-    sources: pangoft2_sources,
-    version: pango_libversion,
-    soversion: pango_soversion,
-    darwin_versions : pango_osxversion,
-    install: true,
-    dependencies: pango_deps + [ libpango_dep ],
-    include_directories: [ root_inc, pango_inc ],
-    c_args: common_cflags + pango_debug_cflags + pango_cflags + [
-      '-DPANGO_DISABLE_DEPRECATION_WARNINGS',
-    ],
-    link_args: common_ldflags,
-  )
-
-  pangoft2_dep_sources = []
-
-  if build_gir
-    pangofc_gir = gnome.generate_gir(
-      libpangoft2,
-      sources: pangofc_headers + pangofc_public_sources,
-      dependencies: [ libpango_dep, pango_gir_dep ],
-      namespace: 'PangoFc',
-      nsversion: pango_api_version,
-      identifier_prefix: 'PangoFc',
-      symbol_prefix: 'pango_fc',
-      export_packages: 'pangofc',
-      includes: [ pango_gir[0], 'fontconfig-2.0', ],
-      header: 'pango/pangofc-fontmap.h',
-      install: true,
-      extra_args: gir_args,
-    )
-    pangofc_gir_dep = declare_dependency(sources: pangofc_gir)
-    pangoft2_dep_sources += pangofc_gir
-  endif
-
-  libpangoft2_dep = declare_dependency(
-    link_with: libpangoft2,
-    include_directories: pango_inc,
-    dependencies: pango_deps + [ libpango_dep ],
-    sources: pangoft2_dep_sources,
-  )
-  meson.override_dependency('pangoft2', libpangoft2_dep)
-
-  pkgconfig.generate(
-    name: 'Pango FC',
-    description: 'Fontconfig support for Pango',
-    filebase: 'pangofc',
-    subdirs: pango_api_name,
-    requires: [ 'pangoft2' ],
-  )
-endif
-
-# Win32
-if host_system == 'windows'
-  pangowin32_headers = [
-    'pangowin32.h',
-  ]
-
-  pangowin32_sources = [
-    'pangowin32.c',
-    'pangowin32-fontcache.c',
-    'pangowin32-fontmap.c',
-  ]
-
-  pangowin32_deps = pango_deps + [
-    libpango_dep,
-    cc.find_library('gdi32'),
-  ]
-
-  pangowin32_rc = configure_file(
-    input: 'pangowin32.rc.in',
-    output: 'pangowin32.rc',
-    configuration: pango_features_conf,
-  )
-  pangowin32_res = import('windows').compile_resources(pangowin32_rc)
-  pangowin32_sources += pangowin32_res
-
-  install_headers(pangowin32_headers, subdir: pango_api_path)
-
-  libpangowin32 = library(
-    'pangowin32-@0@'.format(pango_api_version),
-    sources: pangowin32_sources,
-    version: pango_libversion,
-    soversion: pango_soversion,
-    install: true,
-    dependencies: pangowin32_deps,
-    include_directories: [ root_inc, pango_inc ],
-    c_args: common_cflags + pango_debug_cflags + pango_cflags + [
-      '-DPANGO_DISABLE_DEPRECATION_WARNINGS',
-    ],
-    link_args: common_ldflags,
-  )
-
-  libpangowin32_dep = declare_dependency(
-    link_with: libpangowin32,
-    include_directories: root_inc,
-    dependencies: pango_deps + [ libpango_dep ],
-  )
-  meson.override_dependency('pangowin32', libpangowin32_dep)
-
-  pkgconfig.generate(libpangowin32,
-    name: 'Pango Win32',
-    description: 'Win32 GDI font support for Pango',
-    filebase: 'pangowin32',
-    subdirs: pango_api_name,
-    requires: 'pango',
-  )
-else
-  # For usage as a subproject
-  libpangowin32_dep = dependency('', required: false)
-endif
-
-# Cairo
-if cairo_dep.found()
-  pangocairo_headers = [
-    'pangocairo.h',
-  ]
-
-  pangocairo_sources = [
-    'pangocairo-context.c',
-    'pangocairo-font.c',
-    'pangocairo-fontmap.c',
-    'pangocairo-render.c',
-  ]
-
-  pangocairo_deps = pango_deps + [ libpango_dep ]
-
-  if pango_font_backends.contains('freetype')
-    pangocairo_sources += [
-      'pangocairo-fcfont.c',
-      'pangocairo-fcfontmap.c',
-    ]
-
-    pangocairo_deps += [ libpangoft2_dep ]
-  endif
-
-  if host_system == 'windows' and pango_font_backends.contains('win32')
-    pangocairo_sources += [
-      'pangocairo-win32font.c',
-      'pangocairo-win32fontmap.c',
-    ]
-
-    pangocairo_rc = configure_file(
-      input: 'pangocairo.rc.in',
-      output: 'pangocairo.rc',
-      configuration: pango_features_conf,
-    )
-    pangocairo_res = import('windows').compile_resources(pangocairo_rc)
-    pangocairo_sources += pangocairo_res
-
-    pangocairo_deps += cc.find_library('gdi32')
-    pangocairo_deps += libpangowin32_dep
-  endif
-
-  if host_system == 'darwin' and pango_font_backends.contains('quartz')
-    pangocairo_sources += [
-      'pangocoretext.c',
-      'pangocoretext-fontmap.c',
-      'pangocairo-coretextfont.c',
-      'pangocairo-coretextfontmap.c',
-    ]
-  endif
-
-  install_headers(pangocairo_headers, subdir: pango_api_path)
-
-  libpangocairo = library(
-    'pangocairo-@0@'.format(pango_api_version),
-    sources: pangocairo_sources,
-    version: pango_libversion,
-    soversion: pango_soversion,
-    darwin_versions : pango_osxversion,
-    install: true,
-    dependencies: pango_deps + pangocairo_deps,
-    include_directories: [ root_inc, pango_inc ],
-    c_args: common_cflags + pango_debug_cflags + pango_cflags + [
-      '-DPANGO_DISABLE_DEPRECATION_WARNINGS',
-    ],
-    link_args: common_ldflags
-  )
-  pangocairo_dep_sources = []
-
-  if build_gir
-    pangocairo_gir = gnome.generate_gir(
-      libpangocairo,
-      sources: pangocairo_headers + pangocairo_sources,
-      dependencies: [ pangocairo_deps, pango_gir_dep ],
-      namespace: 'PangoCairo',
-      nsversion: pango_api_version,
-      identifier_prefix: 'PangoCairo',
-      symbol_prefix: 'pango_cairo',
-      export_packages: 'pangocairo',
-      includes: [ pango_gir[0], 'GObject-2.0', 'cairo-1.0' ],
-      header: 'pango/pangocairo.h',
-      install: true,
-      extra_args: gir_args,
-    )
-    pangocairo_dep_sources += pangocairo_gir
-  endif
-
-  libpangocairo_dep = declare_dependency(
-    link_with: libpangocairo,
-    include_directories: root_inc,
-    dependencies: pango_deps + [ libpango_dep ],
-    sources: pangocairo_dep_sources,
-  )
-  meson.override_dependency('pangocairo', libpangocairo_dep)
-
-  # Create pangocairo.pc according to whether we found Cairo
-  # manually
-  if ['pkgconfig', 'internal'].contains(cairo_found_type)
-    pango_cairo_requires = [ 'pango', cairo_pc ]
-  else
-    pango_cairo_requires = [ 'pango' ]
-  endif
-
-  pkgconfig.generate(libpangocairo,
-    name: 'Pango Cairo',
-    description: 'Cairo rendering support for Pango',
-    filebase: 'pangocairo',
-    subdirs: pango_api_name,
-    requires: pango_cairo_requires,
-  )
-else
-  # For usage as a subproject
-  libpangocairo_dep = dependency('', required: false)
-endif

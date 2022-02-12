@@ -32,43 +32,43 @@ endif
 if cairo_dep.found()
   test_cflags += '-DHAVE_CAIRO'
   tests += [
-    [ 'test-bidi', [ 'test-bidi.c' ], [ libpangocairo_dep ] ],
-    [ 'testcontext', [ 'testcontext.c' ], [ libpangocairo_dep ] ],
-    [ 'testiter', [ 'testiter.c' ], [ libpangocairo_dep ] ],
-    [ 'test-ellipsize', [ 'test-ellipsize.c' ], [ libpangocairo_dep ] ],
-    [ 'markup-parse', [ 'markup-parse.c' , 'test-common.c' ], [ libpangocairo_dep ] ],
-    [ 'test-itemize', [ 'test-itemize.c', 'test-common.c' ], [ libpangocairo_dep ] ],
-    [ 'test-shape', [ 'test-shape.c', 'test-common.c' ], [ libpangocairo_dep ] ],
-    [ 'test-font', [ 'test-font.c' ], [ libpangocairo_dep ] ],
-    [ 'testattributes', [ 'testattributes.c', 'test-common.c' ], [ libpangocairo_dep ] ],
-    [ 'cxx-test', [ 'cxx-test.cpp' ], [ libpangocairo_dep, gobject_dep, harfbuzz_dep ] ],
-    [ 'test-harfbuzz', [ 'test-harfbuzz.c' ], [ libpangocairo_dep, gobject_dep, harfbuzz_dep ] ],
-    [ 'test-break', [ 'test-break.c', 'test-common.c', 'validate-log-attrs.c' ], [libpangocairo_dep, glib_dep, harfbuzz_dep ] ],
+    [ 'test-bidi', [ 'test-bidi.c' ] ],
+    [ 'testcontext', [ 'testcontext.c' ] ],
+    [ 'testiter', [ 'testiter.c' ] ],
+    [ 'test-ellipsize', [ 'test-ellipsize.c' ] ],
+    [ 'markup-parse', [ 'markup-parse.c' , 'test-common.c' ] ],
+    [ 'test-itemize', [ 'test-itemize.c', 'test-common.c' ] ],
+    [ 'test-shape', [ 'test-shape.c', 'test-common.c' ] ],
+    [ 'test-font', [ 'test-font.c' ] ],
+    [ 'testattributes', [ 'testattributes.c', 'test-common.c' ] ],
+    [ 'cxx-test', [ 'cxx-test.cpp' ] ],
+    [ 'test-harfbuzz', [ 'test-harfbuzz.c' ] ],
+    [ 'test-break', [ 'test-break.c', 'test-common.c', 'validate-log-attrs.c' ] ],
   ]
 
   if build_pangoft2
     tests += [
-      [ 'testmisc', [ 'testmisc.c' ], [ libpangocairo_dep, glib_dep, harfbuzz_dep ] ],
-      [ 'testserialize', [ 'testserialize.c' ], [ libpangocairo_dep, libpangoft2_dep ]  ],
+      [ 'testmisc', [ 'testmisc.c' ] ],
+      [ 'testserialize', [ 'testserialize.c' ] ],
     ]
 
     if host_system != 'darwin'
       tests += [
-        [ 'test-layout', [ 'test-layout.c', 'test-common.c' ], [ libpangocairo_dep, libpangoft2_dep ] ],
-        [ 'test-fonts', [ 'test-fonts.c', 'test-common.c' ], [ libpangocairo_dep, libpangoft2_dep ] ],
+        [ 'test-layout', [ 'test-layout.c', 'test-common.c' ] ],
+        [ 'test-fonts', [ 'test-fonts.c', 'test-common.c' ] ],
       ]
     endif
   endif
 
   if host_system != 'darwin'
     tests += [
-      [ 'testrandom', [ 'testrandom.c' ], [ libpangocairo_dep, gio_dep ] ],
+      [ 'testrandom', [ 'testrandom.c' ] ],
     ]
   endif
 
   if pango_cairo_backends.contains('png')
     tests += [
-      [ 'test-pangocairo-threads', [ 'test-pangocairo-threads.c' ], [ libpangocairo_dep, cairo_dep ] ],
+      [ 'test-pangocairo-threads', [ 'test-pangocairo-threads.c' ] ],
     ]
   endif
 endif
@@ -283,7 +283,7 @@ foreach t: tests
                 install_dir: installed_test_datadir)
 
   bin = executable(name, src,
-                   dependencies: deps,
+                   dependencies: deps + [ libpango_dep ],
                    include_directories: root_inc,
                    c_args: common_cflags + pango_debug_cflags + test_cflags,
                    cpp_args: common_cppflags + pango_debug_cflags + test_cflags,
