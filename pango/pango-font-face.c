@@ -22,20 +22,6 @@
 
 #include "pango-font-face-private.h"
 
-#if 0
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-
-#include <gio/gio.h>
-
-#include "pango-types.h"
-#include "pango-font-private.h"
-#include "pango-font-metrics-private.h"
-#include "pango-fontmap.h"
-#include "pango-impl-utils.h"
-#endif
-
 
 G_DEFINE_ABSTRACT_TYPE (PangoFontFace, pango_font_face, G_TYPE_OBJECT)
 
