@@ -2915,104 +2915,6 @@ pango_fc_face_get_face_name (PangoFontFace *face)
   return fcface->style;
 }
 
-static int
-compare_ints (gconstpointer ap,
-	      gconstpointer bp)
-{
-  int a = *(int *)ap;
-  int b = *(int *)bp;
-
-  if (a == b)
-    return 0;
-  else if (a > b)
-    return 1;
-  else
-    return -1;
-}
-
-static void
-pango_fc_face_list_sizes (PangoFontFace  *face,
-			  int           **sizes,
-			  int            *n_sizes)
-{
-  PangoFcFace *fcface = PANGO_FC_FACE (face);
-  FcPattern *pattern;
-  FcFontSet *fontset;
-  FcObjectSet *objectset;
-  FcFontSet *fonts;
-
-  if (sizes)
-    *sizes = NULL;
-  *n_sizes = 0;
-  if (G_UNLIKELY (!fcface->family || !fcface->family->fontmap))
-    return;
-
-  pattern = FcPatternCreate ();
-  FcPatternAddString (pattern, FC_FAMILY, (FcChar8*)(void*)fcface->family->family_name);
-  FcPatternAddString (pattern, FC_STYLE, (FcChar8*)(void*)fcface->style);
-
-  objectset = FcObjectSetCreate ();
-  FcObjectSetAdd (objectset, FC_PIXEL_SIZE);
-
-  fonts = pango_fc_font_map_get_config_fonts (fcface->family->fontmap);
-  fontset = FcFontSetList (fcface->family->fontmap->priv->config, &fonts, 1, pattern, objectset);
-
-  if (fontset)
-    {
-      GArray *size_array;
-      double size, dpi = -1.0;
-      int i, size_i, j;
-
-      size_array = g_array_new (FALSE, FALSE, sizeof (int));
-
-      for (i = 0; i < fontset->nfont; i++)
-	{
-	  for (j = 0;
-	       FcPatternGetDouble (fontset->fonts[i], FC_PIXEL_SIZE, j, &size) == FcResultMatch;
-	       j++)
-	    {
-	      if (dpi < 0)
-		dpi = pango_fc_font_map_get_resolution (fcface->family->fontmap, NULL);
-
-	      size_i = (int) (PANGO_SCALE * size * 72.0 / dpi);
-	      g_array_append_val (size_array, size_i);
-	    }
-	}
-
-      g_array_sort (size_array, compare_ints);
-
-      if (size_array->len == 0)
-	{
-	  *n_sizes = 0;
-	  if (sizes)
-	    *sizes = NULL;
-	  g_array_free (size_array, TRUE);
-	}
-      else
-	{
-	  *n_sizes = size_array->len;
-	  if (sizes)
-	    {
-	      *sizes = (int *) size_array->data;
-	      g_array_free (size_array, FALSE);
-	    }
-	  else
-	    g_array_free (size_array, TRUE);
-	}
-
-      FcFontSetDestroy (fontset);
-    }
-  else
-    {
-      *n_sizes = 0;
-      if (sizes)
-	*sizes = NULL;
-    }
-
-  FcPatternDestroy (pattern);
-  FcObjectSetDestroy (objectset);
-}
-
 static gboolean
 pango_fc_face_is_synthesized (PangoFontFace *face)
 {
@@ -3054,7 +2956,6 @@ pango_fc_face_class_init (PangoFcFaceClass *class)
 
   class->describe = pango_fc_face_describe;
   class->get_face_name = pango_fc_face_get_face_name;
-  class->list_sizes = pango_fc_face_list_sizes;
   class->is_synthesized = pango_fc_face_is_synthesized;
   class->get_family = pango_fc_face_get_family;
 }

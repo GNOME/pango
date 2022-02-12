@@ -35,10 +35,6 @@ PANGO_AVAILABLE_IN_ALL
 PangoFontDescription *  pango_font_face_describe       (PangoFontFace  *face);
 PANGO_AVAILABLE_IN_ALL
 const char *            pango_font_face_get_face_name  (PangoFontFace  *face) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_1_4
-void                    pango_font_face_list_sizes     (PangoFontFace  *face,
-                                                        int           **sizes,
-                                                        int            *n_sizes);
 PANGO_AVAILABLE_IN_1_18
 gboolean                pango_font_face_is_synthesized (PangoFontFace  *face) G_GNUC_PURE;
 

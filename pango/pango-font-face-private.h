@@ -37,9 +37,6 @@ struct _PangoFontFaceClass
 
   const char           * (*get_face_name)  (PangoFontFace *face);
   PangoFontDescription * (*describe)       (PangoFontFace *face);
-  void                   (*list_sizes)     (PangoFontFace  *face,
-                                            int           **sizes,
-                                            int            *n_sizes);
   gboolean               (*is_synthesized) (PangoFontFace *face);
   PangoFontFamily *      (*get_family)     (PangoFontFace *face);
 
