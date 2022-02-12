@@ -29,7 +29,7 @@
 #include "pango-types.h"
 #include "pango-font-private.h"
 #include "pango-font-metrics-private.h"
-#include "pango-fontmap.h"
+#include "pango-fontmap-private.h"
 #include "pango-impl-utils.h"
 
 

@@ -41,8 +41,6 @@ G_BEGIN_DECLS
 #define PANGO_FC_IS_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_FC_TYPE_FONT_MAP))
 
 typedef struct _PangoFcFontMap        PangoFcFontMap;
-typedef struct _PangoFcFontMapClass   PangoFcFontMapClass;
-typedef struct _PangoFcFontMapPrivate PangoFcFontMapPrivate;
 
 PANGO_AVAILABLE_IN_ALL
 GType pango_fc_font_map_get_type (void) G_GNUC_CONST;
