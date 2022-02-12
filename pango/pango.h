@@ -32,6 +32,7 @@
 #include <pango/pango-features.h>
 #include <pango/pango-font.h>
 #include <pango/pango-font-description.h>
+#include <pango/pango-font-face.h>
 #include <pango/pango-font-family.h>
 #include <pango/pango-font-metrics.h>
 #include <pango/pango-fontmap.h>

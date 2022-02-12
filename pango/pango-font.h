@@ -33,36 +33,6 @@
 
 G_BEGIN_DECLS
 
-/*
- * PangoFontFace
- */
-
-#define PANGO_TYPE_FONT_FACE              (pango_font_face_get_type ())
-#define PANGO_FONT_FACE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONT_FACE, PangoFontFace))
-#define PANGO_IS_FONT_FACE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONT_FACE))
-
-
-PANGO_AVAILABLE_IN_ALL
-GType      pango_font_face_get_type       (void) G_GNUC_CONST;
-
-PANGO_AVAILABLE_IN_ALL
-PangoFontDescription *pango_font_face_describe       (PangoFontFace  *face);
-PANGO_AVAILABLE_IN_ALL
-const char           *pango_font_face_get_face_name  (PangoFontFace  *face) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_1_4
-void                  pango_font_face_list_sizes     (PangoFontFace  *face,
-                                                      int           **sizes,
-                                                      int            *n_sizes);
-PANGO_AVAILABLE_IN_1_18
-gboolean              pango_font_face_is_synthesized (PangoFontFace  *face) G_GNUC_PURE;
-
-PANGO_AVAILABLE_IN_1_46
-PangoFontFamily *     pango_font_face_get_family     (PangoFontFace  *face);
-
-
-/*
- * PangoFont
- */
 
 #define PANGO_TYPE_FONT              (pango_font_get_type ())
 #define PANGO_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONT, PangoFont))
@@ -167,7 +137,6 @@ PangoFont *           pango_font_deserialize       (PangoContext     *context,
 #endif
 #endif
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFontFace, g_object_unref)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFont, g_object_unref)
 
 G_END_DECLS
