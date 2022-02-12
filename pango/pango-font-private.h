@@ -34,6 +34,8 @@ G_BEGIN_DECLS
 struct _PangoFont
 {
   GObject parent_instance;
+
+  hb_font_t *hb_font;
 };
 
 typedef struct _PangoFontClass       PangoFontClass;
