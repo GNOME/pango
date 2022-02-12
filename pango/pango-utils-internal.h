@@ -47,6 +47,24 @@ char    *_pango_trim_string             (const char *str);
 PangoDirection  pango_find_base_dir     (const char *text,
                                          int         length);
 
+gboolean pango_parse_style              (const char   *str,
+                                         PangoStyle   *style,
+                                         gboolean      warn);
+gboolean pango_parse_variant            (const char   *str,
+                                         PangoVariant *variant,
+                                         gboolean      warn);
+gboolean pango_parse_weight             (const char   *str,
+                                         PangoWeight  *weight,
+                                         gboolean      warn);
+gboolean pango_parse_stretch            (const char   *str,
+                                         PangoStretch *stretch,
+                                         gboolean      warn);
+
+void     pango_quantize_line_geometry   (int *thickness,
+                                         int *position);
+
+
+
 G_END_DECLS
 
 #endif /* __PANGO_UTILS_H__ */

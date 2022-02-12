@@ -28,37 +28,6 @@
 
 G_BEGIN_DECLS
 
-/* Functions for parsing textual representations
- * of PangoFontDescription fields. They return TRUE if the input string
- * contains a valid value, which then has been assigned to the corresponding
- * field in the PangoFontDescription. If the warn parameter is TRUE,
- * a warning is printed (with g_warning) if the string does not
- * contain a valid value.
- */
-PANGO_AVAILABLE_IN_ALL
-gboolean pango_parse_style   (const char   *str,
-			      PangoStyle   *style,
-			      gboolean      warn);
-PANGO_AVAILABLE_IN_ALL
-gboolean pango_parse_variant (const char   *str,
-			      PangoVariant *variant,
-			      gboolean      warn);
-PANGO_AVAILABLE_IN_ALL
-gboolean pango_parse_weight  (const char   *str,
-			      PangoWeight  *weight,
-			      gboolean      warn);
-PANGO_AVAILABLE_IN_ALL
-gboolean pango_parse_stretch (const char   *str,
-			      PangoStretch *stretch,
-			      gboolean      warn);
-
-
-/* Hint line position and thickness.
- */
-PANGO_AVAILABLE_IN_1_12
-void pango_quantize_line_geometry (int *thickness,
-				   int *position);
-
 /* A routine from fribidi that we either wrap or provide ourselves.
  */
 PANGO_AVAILABLE_IN_1_4
