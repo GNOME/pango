@@ -252,9 +252,8 @@ test_itemize (gconstpointer d)
   GError *error = NULL;
   GString *dump;
   gchar *diff;
-  PangoFontFamily **families;
-  int n_families;
   gboolean found_cantarell;
+  PangoFontMap *map;
 
   char *old_locale = g_strdup (setlocale (LC_ALL, NULL));
   setlocale (LC_ALL, "en_US.UTF-8");
@@ -268,16 +267,17 @@ test_itemize (gconstpointer d)
     }
 
   found_cantarell = FALSE;
-  pango_context_list_families (context, &families, &n_families);
-  for (int i = 0; i < n_families; i++)
+  map = pango_context_get_font_map (context);
+  for (int i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (map)); i++)
     {
-      if (strcmp (pango_font_family_get_name (families[i]), "Cantarell") == 0)
+      PangoFontFamily *family = g_list_model_get_item (G_LIST_MODEL (map), i);
+      g_object_unref (family);
+      if (strcmp (pango_font_family_get_name (family), "Cantarell") == 0)
         {
           found_cantarell = TRUE;
           break;
         }
     }
-  g_free (families);
 
   if (!found_cantarell)
     {
