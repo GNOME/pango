@@ -27,6 +27,7 @@
 #include "pangocairo.h"
 #include "pangocairo-private.h"
 #include "pango-font-private.h"
+#include "pango-font-metrics-private.h"
 #include "pango-impl-utils.h"
 
 #define PANGO_CAIRO_FONT_PRIVATE(font)		\
