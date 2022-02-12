@@ -220,100 +220,100 @@ typedef enum {
 #define PANGO_TYPE_FONT_DESCRIPTION (pango_font_description_get_type ())
 
 PANGO_AVAILABLE_IN_ALL
-GType                 pango_font_description_get_type    (void) G_GNUC_CONST;
+GType                   pango_font_description_get_type          (void) G_GNUC_CONST;
 PANGO_AVAILABLE_IN_ALL
-PangoFontDescription *pango_font_description_new         (void);
+PangoFontDescription *  pango_font_description_new               (void);
 PANGO_AVAILABLE_IN_ALL
-PangoFontDescription *pango_font_description_copy        (const PangoFontDescription  *desc);
+PangoFontDescription *  pango_font_description_copy              (const PangoFontDescription  *desc);
 PANGO_AVAILABLE_IN_ALL
-PangoFontDescription *pango_font_description_copy_static (const PangoFontDescription  *desc);
+PangoFontDescription *  pango_font_description_copy_static       (const PangoFontDescription  *desc);
 PANGO_AVAILABLE_IN_ALL
-guint                 pango_font_description_hash        (const PangoFontDescription  *desc) G_GNUC_PURE;
+guint                   pango_font_description_hash              (const PangoFontDescription  *desc) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
-gboolean              pango_font_description_equal       (const PangoFontDescription  *desc1,
-                                                          const PangoFontDescription  *desc2) G_GNUC_PURE;
+gboolean                pango_font_description_equal             (const PangoFontDescription  *desc1,
+                                                                  const PangoFontDescription  *desc2) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
-void                  pango_font_description_free        (PangoFontDescription        *desc);
+void                    pango_font_description_free              (PangoFontDescription        *desc);
 
 PANGO_AVAILABLE_IN_ALL
-void                 pango_font_description_set_family        (PangoFontDescription *desc,
-                                                               const char           *family);
+void                    pango_font_description_set_family        (PangoFontDescription *desc,
+                                                                  const char           *family);
 PANGO_AVAILABLE_IN_ALL
-void                 pango_font_description_set_family_static (PangoFontDescription *desc,
-                                                               const char           *family);
+void                    pango_font_description_set_family_static (PangoFontDescription *desc,
+                                                                  const char           *family);
 PANGO_AVAILABLE_IN_ALL
-const char          *pango_font_description_get_family        (const PangoFontDescription *desc) G_GNUC_PURE;
+const char *            pango_font_description_get_family        (const PangoFontDescription *desc) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
-void                 pango_font_description_set_style         (PangoFontDescription *desc,
-                                                               PangoStyle            style);
+void                    pango_font_description_set_style         (PangoFontDescription *desc,
+                                                                  PangoStyle            style);
 PANGO_AVAILABLE_IN_ALL
-PangoStyle           pango_font_description_get_style         (const PangoFontDescription *desc) G_GNUC_PURE;
+PangoStyle              pango_font_description_get_style         (const PangoFontDescription *desc) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
-void                 pango_font_description_set_variant       (PangoFontDescription *desc,
-                                                               PangoVariant          variant);
+void                    pango_font_description_set_variant       (PangoFontDescription *desc,
+                                                                  PangoVariant          variant);
 PANGO_AVAILABLE_IN_ALL
-PangoVariant         pango_font_description_get_variant       (const PangoFontDescription *desc) G_GNUC_PURE;
+PangoVariant            pango_font_description_get_variant       (const PangoFontDescription *desc) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
-void                 pango_font_description_set_weight        (PangoFontDescription *desc,
-                                                               PangoWeight           weight);
+void                    pango_font_description_set_weight        (PangoFontDescription *desc,
+                                                                  PangoWeight           weight);
 PANGO_AVAILABLE_IN_ALL
-PangoWeight          pango_font_description_get_weight        (const PangoFontDescription *desc) G_GNUC_PURE;
+PangoWeight             pango_font_description_get_weight        (const PangoFontDescription *desc) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
-void                 pango_font_description_set_stretch       (PangoFontDescription *desc,
-                                                               PangoStretch          stretch);
+void                    pango_font_description_set_stretch       (PangoFontDescription *desc,
+                                                                  PangoStretch          stretch);
 PANGO_AVAILABLE_IN_ALL
-PangoStretch         pango_font_description_get_stretch       (const PangoFontDescription *desc) G_GNUC_PURE;
+PangoStretch            pango_font_description_get_stretch       (const PangoFontDescription *desc) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
-void                 pango_font_description_set_size          (PangoFontDescription *desc,
-                                                               gint                  size);
+void                    pango_font_description_set_size          (PangoFontDescription *desc,
+                                                                  int                   size);
 PANGO_AVAILABLE_IN_ALL
-gint                 pango_font_description_get_size          (const PangoFontDescription *desc) G_GNUC_PURE;
+int                     pango_font_description_get_size          (const PangoFontDescription *desc) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_1_8
-void                 pango_font_description_set_absolute_size (PangoFontDescription *desc,
-                                                               double                size);
+void                    pango_font_description_set_absolute_size (PangoFontDescription *desc,
+                                                                  double                size);
 PANGO_AVAILABLE_IN_1_8
-gboolean             pango_font_description_get_size_is_absolute (const PangoFontDescription *desc) G_GNUC_PURE;
+gboolean                pango_font_description_get_size_is_absolute (const PangoFontDescription *desc) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_1_16
-void                 pango_font_description_set_gravity       (PangoFontDescription *desc,
-                                                               PangoGravity          gravity);
+void                    pango_font_description_set_gravity       (PangoFontDescription *desc,
+                                                                  PangoGravity          gravity);
 PANGO_AVAILABLE_IN_1_16
-PangoGravity         pango_font_description_get_gravity       (const PangoFontDescription *desc) G_GNUC_PURE;
+PangoGravity            pango_font_description_get_gravity       (const PangoFontDescription *desc) G_GNUC_PURE;
 
 PANGO_AVAILABLE_IN_1_42
-void                 pango_font_description_set_variations_static (PangoFontDescription       *desc,
-                                                                   const char                 *variations);
+void                    pango_font_description_set_variations_static (PangoFontDescription       *desc,
+                                                                      const char                 *variations);
 PANGO_AVAILABLE_IN_1_42
-void                 pango_font_description_set_variations    (PangoFontDescription       *desc,
-                                                               const char                 *variations);
+void                    pango_font_description_set_variations    (PangoFontDescription       *desc,
+                                                                  const char                 *variations);
 PANGO_AVAILABLE_IN_1_42
-const char          *pango_font_description_get_variations    (const PangoFontDescription *desc) G_GNUC_PURE;
+const char *            pango_font_description_get_variations    (const PangoFontDescription *desc) G_GNUC_PURE;
 
 PANGO_AVAILABLE_IN_ALL
-PangoFontMask pango_font_description_get_set_fields (const PangoFontDescription *desc) G_GNUC_PURE;
+PangoFontMask           pango_font_description_get_set_fields    (const PangoFontDescription *desc) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
-void          pango_font_description_unset_fields   (PangoFontDescription       *desc,
-                                                     PangoFontMask               to_unset);
+void                    pango_font_description_unset_fields      (PangoFontDescription       *desc,
+                                                                  PangoFontMask               to_unset);
 
 PANGO_AVAILABLE_IN_ALL
-void pango_font_description_merge        (PangoFontDescription       *desc,
-                                          const PangoFontDescription *desc_to_merge,
-                                          gboolean                    replace_existing);
+void                    pango_font_description_merge             (PangoFontDescription       *desc,
+                                                                  const PangoFontDescription *desc_to_merge,
+                                                                  gboolean                    replace_existing);
 PANGO_AVAILABLE_IN_ALL
-void pango_font_description_merge_static (PangoFontDescription       *desc,
-                                          const PangoFontDescription *desc_to_merge,
-                                          gboolean                    replace_existing);
+void                    pango_font_description_merge_static      (PangoFontDescription       *desc,
+                                                                  const PangoFontDescription *desc_to_merge,
+                                                                  gboolean                    replace_existing);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean pango_font_description_better_match (const PangoFontDescription *desc,
-                                              const PangoFontDescription *old_match,
-                                              const PangoFontDescription *new_match) G_GNUC_PURE;
+gboolean                pango_font_description_better_match      (const PangoFontDescription *desc,
+                                                                  const PangoFontDescription *old_match,
+                                                                  const PangoFontDescription *new_match) G_GNUC_PURE;
 
 PANGO_AVAILABLE_IN_ALL
-PangoFontDescription *pango_font_description_from_string (const char                  *str);
+PangoFontDescription *  pango_font_description_from_string       (const char                  *str);
 PANGO_AVAILABLE_IN_ALL
-char *                pango_font_description_to_string   (const PangoFontDescription  *desc);
+char *                  pango_font_description_to_string         (const PangoFontDescription  *desc);
 PANGO_AVAILABLE_IN_ALL
-char *                pango_font_description_to_filename (const PangoFontDescription  *desc);
+char *                  pango_font_description_to_filename       (const PangoFontDescription  *desc);
 
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFontDescription, pango_font_description_free)
