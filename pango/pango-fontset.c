@@ -25,13 +25,12 @@
  * PangoFontset
  */
 
+#include "pango-fontset-private.h"
 #include "pango-types.h"
 #include "pango-font-metrics-private.h"
-#include "pango-fontset.h"
 #include "pango-impl-utils.h"
 
 static PangoFontMetrics *pango_fontset_real_get_metrics (PangoFontset *fontset);
-
 
 G_DEFINE_ABSTRACT_TYPE (PangoFontset, pango_fontset, G_TYPE_OBJECT);
 
@@ -76,7 +75,7 @@ pango_fontset_get_font (PangoFontset  *fontset,
  * Return value: a `PangoFontMetrics` object
  */
 PangoFontMetrics *
-pango_fontset_get_metrics (PangoFontset  *fontset)
+pango_fontset_get_metrics (PangoFontset *fontset)
 {
   g_return_val_if_fail (PANGO_IS_FONTSET (fontset), NULL);
 
