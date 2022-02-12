@@ -28,6 +28,44 @@
 
 G_BEGIN_DECLS
 
+#define PANGO_FONT_MAP_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT_MAP, PangoFontMapClass))
+#define PANGO_IS_FONT_MAP_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_FONT_MAP))
+#define PANGO_FONT_MAP_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONT_MAP, PangoFontMapClass))
+
+typedef struct _PangoFontMapClass PangoFontMapClass;
+
+struct _PangoFontMap
+{
+  GObject parent_instance;
+};
+
+struct _PangoFontMapClass
+{
+  GObjectClass parent_class;
+
+  /*< public >*/
+
+  PangoFont *   (*load_font)     (PangoFontMap               *fontmap,
+                                  PangoContext               *context,
+                                  const PangoFontDescription *desc);
+  void          (*list_families) (PangoFontMap               *fontmap,
+                                  PangoFontFamily          ***families,
+                                  int                        *n_families);
+  PangoFontset *(*load_fontset)  (PangoFontMap               *fontmap,
+                                  PangoContext               *context,
+                                  const PangoFontDescription *desc,
+                                  PangoLanguage              *language);
+
+  guint         (*get_serial)    (PangoFontMap               *fontmap);
+  void          (*changed)       (PangoFontMap               *fontmap);
+
+  PangoFontFamily * (*get_family) (PangoFontMap               *fontmap,
+                                   const char                 *name);
+
+  PangoFontFace *   (*get_face)   (PangoFontMap               *fontmap,
+                                   PangoFont                  *font);
+};
+
 G_END_DECLS
 
 #endif /* __PANGO_FONTMAP_PRIVATE_H__ */

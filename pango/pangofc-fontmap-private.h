@@ -25,12 +25,15 @@
 #include <pango/pangofc-fontmap.h>
 #include <pango/pangofc-decoder.h>
 #include <pango/pangofc-font-private.h>
-#include <pango/pango-fontmap.h>
+#include <pango/pango-fontmap-private.h>
 #include <pango/pango-fontset.h>
 
 #include <fontconfig/fontconfig.h>
 
 G_BEGIN_DECLS
+
+typedef struct _PangoFcFontMapClass   PangoFcFontMapClass;
+typedef struct _PangoFcFontMapPrivate PangoFcFontMapPrivate;
 
 
 /**
