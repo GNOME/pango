@@ -27,10 +27,6 @@ option('cairo',
        type : 'feature',
        value : 'enabled',
        description : 'Build with cairo support')
-option('xft',
-       type : 'feature',
-       value : 'auto',
-       description : 'Build with xft support')
 option('freetype',
        type : 'feature',
        value : 'auto',

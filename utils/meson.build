@@ -14,12 +14,17 @@ if build_pangoft2
   pango_view_deps += libpangoft2_dep
 endif
 
-if xft_dep.found() and build_pangoft2
+extra_cflags = [
+  '-DPACKAGE_NAME="@0@"'.format(meson.project_name()),
+  '-DPACKAGE_VERSION="@0@"'.format(meson.project_version())
+]
+
+if build_pangoft2 and x11_dep.found()
   pango_view_sources += [
-    'viewer-pangoxft.c',
     'viewer-x.c',
   ]
-  pango_view_deps += [ libpangoft2_dep, libpangoxft_dep, ]
+  pango_view_deps += [ libpangoft2_dep, x11_dep ]
+  extra_cflags += [ '-DHAVE_X' ]
 endif
 
 if cairo_dep.found()
@@ -34,10 +39,7 @@ pango_view = executable('pango-view', pango_view_sources,
                         dependencies: pango_view_deps,
                         include_directories: [ root_inc ],
                         install: true,
-                        c_args: common_cflags + pango_debug_cflags + [
-                          '-DPACKAGE_NAME="@0@"'.format(meson.project_name()),
-                          '-DPACKAGE_VERSION="@0@"'.format(meson.project_version()),
-                        ])
+                        c_args: extra_cflags)
 
 help2man = find_program('help2man', required: false)
 # help2man has to run pango-view to generate the man page, which it can't do if

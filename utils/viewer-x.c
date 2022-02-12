@@ -219,9 +219,9 @@ x_view_display (gpointer instance,
     }
 }
 
-const PangoViewer x_viewer = {
+const PangoViewer pangox_viewer = {
   "X",
-  NULL,
+  "x",
   NULL,
   x_view_create,
   x_view_destroy,

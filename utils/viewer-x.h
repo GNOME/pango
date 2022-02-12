@@ -36,7 +36,7 @@ typedef struct
 } XViewer;
 
 
-extern const PangoViewer x_viewer;
+extern const PangoViewer pangox_viewer;
 
 void x_view_init (gpointer           instance,
 		  const PangoViewer *klass);

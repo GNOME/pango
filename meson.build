@@ -230,7 +230,6 @@ fribidi_req_version = '>= 1.0.6'
 libthai_req_version = '>= 0.1.9'
 harfbuzz_req_version = '>= 2.6.0'
 fontconfig_req_version = '>= 2.13.0'
-xft_req_version = '>= 2.0.0'
 cairo_req_version = '>= 1.12.10'
 
 # libm
@@ -356,14 +355,7 @@ if build_pangoft2
   pango_deps += freetype_dep
 endif
 
-build_pangoxft = false
-xft_dep = dependency('xft', version: xft_req_version, required: get_option('xft'))
-if xft_dep.found() and fontconfig_dep.found() and freetype_dep.found()
-  pango_conf.set('HAVE_XFT', 1)
-  pango_deps += dependency('xrender', required: false)
-  pango_deps += xft_dep
-  build_pangoxft = true
-endif
+x11_dep = dependency('x11', required: false)
 
 has_core_text = false
 if host_system == 'darwin'
