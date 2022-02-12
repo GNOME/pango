@@ -141,8 +141,8 @@ show_segmentation (const char *input,
 int
 main (int argc, char *argv[])
 {
-  char *opt_kind = "grapheme";
-  char *opt_text = NULL;
+  const char *opt_kind = "grapheme";
+  const char *opt_text = NULL;
   gboolean opt_version = FALSE;
   GOptionEntry entries[] = {
     { "kind", 0, 0, G_OPTION_ARG_STRING, &opt_kind, "Kind of boundary (grapheme/word/line/sentence)", "KIND" },
@@ -176,7 +176,7 @@ main (int argc, char *argv[])
 
   if (opt_text)
     {
-      text = opt_text;
+      text = (char *)opt_text;
     }
   else if (argc > 1)
     {
