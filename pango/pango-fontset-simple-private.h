@@ -35,6 +35,8 @@ struct _PangoFontsetSimple
   PangoLanguage *language;
 };
 
+typedef struct _PangoFontsetSimpleClass  PangoFontsetSimpleClass;
+
 struct _PangoFontsetSimpleClass
 {
   PangoFontsetClass parent_class;

@@ -44,8 +44,6 @@ G_BEGIN_DECLS
 #define PANGO_IS_FONTSET_SIMPLE(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONTSET_SIMPLE))
 
 typedef struct _PangoFontsetSimple  PangoFontsetSimple;
-typedef struct _PangoFontsetSimpleClass  PangoFontsetSimpleClass;
-
 
 PANGO_AVAILABLE_IN_ALL
 GType                   pango_fontset_simple_get_type (void) G_GNUC_CONST;
