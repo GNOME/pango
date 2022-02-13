@@ -315,7 +315,7 @@ struct _ItemizeState
 
   PangoScriptIter script_iter;
   const char *script_end;
-  PangoScript script;
+  GUnicodeScript script;
 
   PangoWidthIter width_iter;
   PangoEmojiIter emoji_iter;
@@ -800,7 +800,7 @@ get_font (ItemizeState  *state,
 
 static PangoLanguage *
 compute_derived_language (PangoLanguage *lang,
-                          PangoScript    script)
+                          GUnicodeScript script)
 {
   PangoLanguage *derived_lang;
 

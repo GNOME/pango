@@ -640,19 +640,15 @@ pango_language_get_sample_string (PangoLanguage *language)
  * The [method@Pango.Language.includes_script] function uses this
  * function internally.
  *
- * Note: while the return value is declared as `PangoScript`, the
- * returned values are from the `GUnicodeScript` enumeration, which
- * may have more values. Callers need to handle unknown values.
- *
  * Return value: (transfer none) (array length=num_scripts) (nullable):
- *   An array of `PangoScript` values, with the number of entries in
+ *   An array of `GUnicodeScript` values, with the number of entries in
  *   the array stored in @num_scripts, or %NULL if Pango does not have
  *   any information about this particular language tag (also the case
  *   if @language is %NULL).
  *
  * Since: 1.22
  */
-const PangoScript *
+const GUnicodeScript *
 pango_language_get_scripts (PangoLanguage *language,
 			    int           *num_scripts)
 {
@@ -682,13 +678,13 @@ pango_language_get_scripts (PangoLanguage *language,
       *num_scripts = j;
     }
 
-  return (const PangoScript *) script_for_lang->scripts;
+  return (const GUnicodeScript *) script_for_lang->scripts;
 }
 
 /**
  * pango_language_includes_script:
  * @language: (nullable): a `PangoLanguage`
- * @script: a `PangoScript`
+ * @script: a `GUnicodeScript`
  *
  * Determines if @script is one of the scripts used to
  * write @language.
@@ -712,14 +708,14 @@ pango_language_get_scripts (PangoLanguage *language,
  */
 gboolean
 pango_language_includes_script (PangoLanguage *language,
-				PangoScript    script)
+				GUnicodeScript    script)
 {
-  const PangoScript *scripts;
+  const GUnicodeScript *scripts;
   int num_scripts, j;
 
 /* copied from the one in pango-script.c */
 #define REAL_SCRIPT(script) \
-  ((script) > PANGO_SCRIPT_INHERITED && (script) != PANGO_SCRIPT_UNKNOWN)
+  ((script) > G_UNICODE_SCRIPT_INHERITED && (script) != G_UNICODE_SCRIPT_UNKNOWN)
 
   if (!REAL_SCRIPT (script))
     return TRUE;
@@ -800,7 +796,7 @@ static PangoLanguage * const * languages = NULL; /* MT-safe */
 static GHashTable *hash = NULL; /* MT-safe */
 
 static PangoLanguage *
-_pango_script_get_default_language (PangoScript script)
+_pango_script_get_default_language (GUnicodeScript script)
 {
   PangoLanguage *result, * const * p;
 
@@ -862,25 +858,25 @@ PangoLanguage **
 pango_language_get_preferred (void)
 {
   /* We call this just for its side-effect of initializing languages */
-  _pango_script_get_default_language (PANGO_SCRIPT_COMMON);
+  _pango_script_get_default_language (G_UNICODE_SCRIPT_COMMON);
 
   return (PangoLanguage **) languages;
 }
 
 /**
  * pango_script_get_sample_language:
- * @script: a `PangoScript`
+ * @script: a `GUnicodeScript`
  *
  * Finds a language tag that is reasonably representative of @script.
  *
  * The language will usually be the most widely spoken or used language
  * written in that script: for instance, the sample language for
- * %PANGO_SCRIPT_CYRILLIC is ru (Russian), the sample language for
- * %PANGO_SCRIPT_ARABIC is ar.
+ * %G_UNICODE_SCRIPT_CYRILLIC is ru (Russian), the sample language for
+ * %G_UNICODE_SCRIPT_ARABIC is ar.
  *
  * For some scripts, no sample language will be returned because
  * there is no language that is sufficiently representative. The
- * best example of this is %PANGO_SCRIPT_HAN, where various different
+ * best example of this is %G_UNICODE_SCRIPT_HAN, where various different
  * variants of written Chinese, Japanese, and Korean all use
  * significantly different sets of Han characters and forms
  * of shared characters. No sample language can be provided
@@ -898,7 +894,7 @@ pango_language_get_preferred (void)
  * set to "en:fa" makes Pango choose fonts suitable for Persian (fa)
  * instead of Arabic (ar) when a segment of Arabic text is found
  * in an otherwise non-Arabic text. The same trick can be used to
- * choose a default language for %PANGO_SCRIPT_HAN when setting
+ * choose a default language for %G_UNICODE_SCRIPT_HAN when setting
  * context language is not feasible.
  *
  * Return value: (nullable): a `PangoLanguage` that is representative
@@ -907,7 +903,7 @@ pango_language_get_preferred (void)
  * Since: 1.4
  */
 PangoLanguage *
-pango_script_get_sample_language (PangoScript script)
+pango_script_get_sample_language (GUnicodeScript script)
 {
   /* Note that in the following, we want
    * pango_language_includes_script() for the sample language
@@ -916,113 +912,113 @@ pango_script_get_sample_language (PangoScript script)
    * have no sample language
    */
   static const char sample_languages[][4] = {
-    "",    /* PANGO_SCRIPT_COMMON */
-    "",    /* PANGO_SCRIPT_INHERITED */
-    "ar",  /* PANGO_SCRIPT_ARABIC */
-    "hy",  /* PANGO_SCRIPT_ARMENIAN */
-    "bn",  /* PANGO_SCRIPT_BENGALI */
+    "",    /* G_UNICODE_SCRIPT_COMMON */
+    "",    /* G_UNICODE_SCRIPT_INHERITED */
+    "ar",  /* G_UNICODE_SCRIPT_ARABIC */
+    "hy",  /* G_UNICODE_SCRIPT_ARMENIAN */
+    "bn",  /* G_UNICODE_SCRIPT_BENGALI */
     /* Used primarily in Taiwan, but not part of the standard
      * zh-tw orthography  */
-    "",    /* PANGO_SCRIPT_BOPOMOFO */
-    "chr", /* PANGO_SCRIPT_CHEROKEE */
-    "cop", /* PANGO_SCRIPT_COPTIC */
-    "ru",  /* PANGO_SCRIPT_CYRILLIC */
+    "",    /* G_UNICODE_SCRIPT_BOPOMOFO */
+    "chr", /* G_UNICODE_SCRIPT_CHEROKEE */
+    "cop", /* G_UNICODE_SCRIPT_COPTIC */
+    "ru",  /* G_UNICODE_SCRIPT_CYRILLIC */
     /* Deseret was used to write English */
-    "",    /* PANGO_SCRIPT_DESERET */
-    "hi",  /* PANGO_SCRIPT_DEVANAGARI */
-    "am",  /* PANGO_SCRIPT_ETHIOPIC */
-    "ka",  /* PANGO_SCRIPT_GEORGIAN */
-    "",    /* PANGO_SCRIPT_GOTHIC */
-    "el",  /* PANGO_SCRIPT_GREEK */
-    "gu",  /* PANGO_SCRIPT_GUJARATI */
-    "pa",  /* PANGO_SCRIPT_GURMUKHI */
-    "",    /* PANGO_SCRIPT_HAN */
-    "ko",  /* PANGO_SCRIPT_HANGUL */
-    "he",  /* PANGO_SCRIPT_HEBREW */
-    "ja",  /* PANGO_SCRIPT_HIRAGANA */
-    "kn",  /* PANGO_SCRIPT_KANNADA */
-    "ja",  /* PANGO_SCRIPT_KATAKANA */
-    "km",  /* PANGO_SCRIPT_KHMER */
-    "lo",  /* PANGO_SCRIPT_LAO */
-    "en",  /* PANGO_SCRIPT_LATIN */
-    "ml",  /* PANGO_SCRIPT_MALAYALAM */
-    "mn",  /* PANGO_SCRIPT_MONGOLIAN */
-    "my",  /* PANGO_SCRIPT_MYANMAR */
+    "",    /* G_UNICODE_SCRIPT_DESERET */
+    "hi",  /* G_UNICODE_SCRIPT_DEVANAGARI */
+    "am",  /* G_UNICODE_SCRIPT_ETHIOPIC */
+    "ka",  /* G_UNICODE_SCRIPT_GEORGIAN */
+    "",    /* G_UNICODE_SCRIPT_GOTHIC */
+    "el",  /* G_UNICODE_SCRIPT_GREEK */
+    "gu",  /* G_UNICODE_SCRIPT_GUJARATI */
+    "pa",  /* G_UNICODE_SCRIPT_GURMUKHI */
+    "",    /* G_UNICODE_SCRIPT_HAN */
+    "ko",  /* G_UNICODE_SCRIPT_HANGUL */
+    "he",  /* G_UNICODE_SCRIPT_HEBREW */
+    "ja",  /* G_UNICODE_SCRIPT_HIRAGANA */
+    "kn",  /* G_UNICODE_SCRIPT_KANNADA */
+    "ja",  /* G_UNICODE_SCRIPT_KATAKANA */
+    "km",  /* G_UNICODE_SCRIPT_KHMER */
+    "lo",  /* G_UNICODE_SCRIPT_LAO */
+    "en",  /* G_UNICODE_SCRIPT_LATIN */
+    "ml",  /* G_UNICODE_SCRIPT_MALAYALAM */
+    "mn",  /* G_UNICODE_SCRIPT_MONGOLIAN */
+    "my",  /* G_UNICODE_SCRIPT_MYANMAR */
     /* Ogham was used to write old Irish */
-    "",    /* PANGO_SCRIPT_OGHAM */
-    "",    /* PANGO_SCRIPT_OLD_ITALIC */
-    "or",  /* PANGO_SCRIPT_ORIYA */
-    "",    /* PANGO_SCRIPT_RUNIC */
-    "si",  /* PANGO_SCRIPT_SINHALA */
-    "syr", /* PANGO_SCRIPT_SYRIAC */
-    "ta",  /* PANGO_SCRIPT_TAMIL */
-    "te",  /* PANGO_SCRIPT_TELUGU */
-    "dv",  /* PANGO_SCRIPT_THAANA */
-    "th",  /* PANGO_SCRIPT_THAI */
-    "bo",  /* PANGO_SCRIPT_TIBETAN */
-    "iu",  /* PANGO_SCRIPT_CANADIAN_ABORIGINAL */
-    "",    /* PANGO_SCRIPT_YI */
-    "tl",  /* PANGO_SCRIPT_TAGALOG */
+    "",    /* G_UNICODE_SCRIPT_OGHAM */
+    "",    /* G_UNICODE_SCRIPT_OLD_ITALIC */
+    "or",  /* G_UNICODE_SCRIPT_ORIYA */
+    "",    /* G_UNICODE_SCRIPT_RUNIC */
+    "si",  /* G_UNICODE_SCRIPT_SINHALA */
+    "syr", /* G_UNICODE_SCRIPT_SYRIAC */
+    "ta",  /* G_UNICODE_SCRIPT_TAMIL */
+    "te",  /* G_UNICODE_SCRIPT_TELUGU */
+    "dv",  /* G_UNICODE_SCRIPT_THAANA */
+    "th",  /* G_UNICODE_SCRIPT_THAI */
+    "bo",  /* G_UNICODE_SCRIPT_TIBETAN */
+    "iu",  /* G_UNICODE_SCRIPT_CANADIAN_ABORIGINAL */
+    "",    /* G_UNICODE_SCRIPT_YI */
+    "tl",  /* G_UNICODE_SCRIPT_TAGALOG */
     /* Phillipino languages/scripts */
-    "hnn", /* PANGO_SCRIPT_HANUNOO */
-    "bku", /* PANGO_SCRIPT_BUHID */
-    "tbw", /* PANGO_SCRIPT_TAGBANWA */
+    "hnn", /* G_UNICODE_SCRIPT_HANUNOO */
+    "bku", /* G_UNICODE_SCRIPT_BUHID */
+    "tbw", /* G_UNICODE_SCRIPT_TAGBANWA */
 
-    "",    /* PANGO_SCRIPT_BRAILLE */
-    "",    /* PANGO_SCRIPT_CYPRIOT */
-    "",    /* PANGO_SCRIPT_LIMBU */
+    "",    /* G_UNICODE_SCRIPT_BRAILLE */
+    "",    /* G_UNICODE_SCRIPT_CYPRIOT */
+    "",    /* G_UNICODE_SCRIPT_LIMBU */
     /* Used for Somali (so) in the past */
-    "",    /* PANGO_SCRIPT_OSMANYA */
+    "",    /* G_UNICODE_SCRIPT_OSMANYA */
     /* The Shavian alphabet was designed for English */
-    "",    /* PANGO_SCRIPT_SHAVIAN */
-    "",    /* PANGO_SCRIPT_LINEAR_B */
-    "",    /* PANGO_SCRIPT_TAI_LE */
-    "uga", /* PANGO_SCRIPT_UGARITIC */
+    "",    /* G_UNICODE_SCRIPT_SHAVIAN */
+    "",    /* G_UNICODE_SCRIPT_LINEAR_B */
+    "",    /* G_UNICODE_SCRIPT_TAI_LE */
+    "uga", /* G_UNICODE_SCRIPT_UGARITIC */
 
-    "",    /* PANGO_SCRIPT_NEW_TAI_LUE */
-    "bug", /* PANGO_SCRIPT_BUGINESE */
+    "",    /* G_UNICODE_SCRIPT_NEW_TAI_LUE */
+    "bug", /* G_UNICODE_SCRIPT_BUGINESE */
     /* The original script for Old Church Slavonic (chu), later
      * written with Cyrillic */
-    "",    /* PANGO_SCRIPT_GLAGOLITIC */
+    "",    /* G_UNICODE_SCRIPT_GLAGOLITIC */
     /* Used for for Berber (ber), but Arabic script is more common */
-    "",    /* PANGO_SCRIPT_TIFINAGH */
-    "syl", /* PANGO_SCRIPT_SYLOTI_NAGRI */
-    "peo", /* PANGO_SCRIPT_OLD_PERSIAN */
-    "",    /* PANGO_SCRIPT_KHAROSHTHI */
+    "",    /* G_UNICODE_SCRIPT_TIFINAGH */
+    "syl", /* G_UNICODE_SCRIPT_SYLOTI_NAGRI */
+    "peo", /* G_UNICODE_SCRIPT_OLD_PERSIAN */
+    "",    /* G_UNICODE_SCRIPT_KHAROSHTHI */
 
-    "",    /* PANGO_SCRIPT_UNKNOWN */
-    "",    /* PANGO_SCRIPT_BALINESE */
-    "",    /* PANGO_SCRIPT_CUNEIFORM */
-    "",    /* PANGO_SCRIPT_PHOENICIAN */
-    "",    /* PANGO_SCRIPT_PHAGS_PA */
-    "nqo", /* PANGO_SCRIPT_NKO */
+    "",    /* G_UNICODE_SCRIPT_UNKNOWN */
+    "",    /* G_UNICODE_SCRIPT_BALINESE */
+    "",    /* G_UNICODE_SCRIPT_CUNEIFORM */
+    "",    /* G_UNICODE_SCRIPT_PHOENICIAN */
+    "",    /* G_UNICODE_SCRIPT_PHAGS_PA */
+    "nqo", /* G_UNICODE_SCRIPT_NKO */
 
     /* Unicode-5.1 additions */
-    "",    /* PANGO_SCRIPT_KAYAH_LI */
-    "",    /* PANGO_SCRIPT_LEPCHA */
-    "",    /* PANGO_SCRIPT_REJANG */
-    "",    /* PANGO_SCRIPT_SUNDANESE */
-    "",    /* PANGO_SCRIPT_SAURASHTRA */
-    "",    /* PANGO_SCRIPT_CHAM */
-    "",    /* PANGO_SCRIPT_OL_CHIKI */
-    "",    /* PANGO_SCRIPT_VAI */
-    "",    /* PANGO_SCRIPT_CARIAN */
-    "",    /* PANGO_SCRIPT_LYCIAN */
-    "",    /* PANGO_SCRIPT_LYDIAN */
+    "",    /* G_UNICODE_SCRIPT_KAYAH_LI */
+    "",    /* G_UNICODE_SCRIPT_LEPCHA */
+    "",    /* G_UNICODE_SCRIPT_REJANG */
+    "",    /* G_UNICODE_SCRIPT_SUNDANESE */
+    "",    /* G_UNICODE_SCRIPT_SAURASHTRA */
+    "",    /* G_UNICODE_SCRIPT_CHAM */
+    "",    /* G_UNICODE_SCRIPT_OL_CHIKI */
+    "",    /* G_UNICODE_SCRIPT_VAI */
+    "",    /* G_UNICODE_SCRIPT_CARIAN */
+    "",    /* G_UNICODE_SCRIPT_LYCIAN */
+    "",    /* G_UNICODE_SCRIPT_LYDIAN */
 
     /* Unicode-6.0 additions */
-    "",    /* PANGO_SCRIPT_BATAK */
-    "",    /* PANGO_SCRIPT_BRAHMI */
-    "",    /* PANGO_SCRIPT_MANDAIC */
+    "",    /* G_UNICODE_SCRIPT_BATAK */
+    "",    /* G_UNICODE_SCRIPT_BRAHMI */
+    "",    /* G_UNICODE_SCRIPT_MANDAIC */
 
     /* Unicode-6.1 additions */
-    "",    /* PANGO_SCRIPT_CHAKMA */
-    "",    /* PANGO_SCRIPT_MEROITIC_CURSIVE */
-    "",    /* PANGO_SCRIPT_MEROITIC_HIEROGLYPHS */
-    "",    /* PANGO_SCRIPT_MIAO */
-    "",    /* PANGO_SCRIPT_SHARADA */
-    "",    /* PANGO_SCRIPT_SORA_SOMPENG */
-    "",    /* PANGO_SCRIPT_TAKRI */
+    "",    /* G_UNICODE_SCRIPT_CHAKMA */
+    "",    /* G_UNICODE_SCRIPT_MEROITIC_CURSIVE */
+    "",    /* G_UNICODE_SCRIPT_MEROITIC_HIEROGLYPHS */
+    "",    /* G_UNICODE_SCRIPT_MIAO */
+    "",    /* G_UNICODE_SCRIPT_SHARADA */
+    "",    /* G_UNICODE_SCRIPT_SORA_SOMPENG */
+    "",    /* G_UNICODE_SCRIPT_TAKRI */
   };
   const char *sample_language;
   PangoLanguage *result;

@@ -204,20 +204,12 @@ static const char *attr_type_names[] = {
   NULL
 };
 
-static const char *
-get_script_name (PangoScript script)
+static void
+get_script_name (GUnicodeScript  script,
+                 char           *buf)
 {
-  GEnumClass *enum_class;
-  GEnumValue *enum_value;
-
-  enum_class = g_type_class_ref (PANGO_TYPE_SCRIPT);
-  enum_value = g_enum_get_value (enum_class, script);
-  g_type_class_unref (enum_class);
-
-  if (enum_value)
-    return enum_value->value_nick;
-
-  return NULL;
+  guint32 tag = g_unicode_script_to_iso15924 (script);
+  hb_tag_to_string (tag, buf);
 }
 
 static const char *tab_align_names[] = {
@@ -638,6 +630,7 @@ add_run (GtkJsonPrinter *printer,
          PangoLayoutRun *run)
 {
   char *str;
+  char buf[5] = { 0, };
 
   gtk_json_printer_start_object (printer, NULL);
 
@@ -651,7 +644,8 @@ add_run (GtkJsonPrinter *printer,
   gtk_json_printer_add_integer (printer, "bidi-level", run->item->analysis.level);
   gtk_json_printer_add_string (printer, "gravity", gravity_names[run->item->analysis.gravity]);
   gtk_json_printer_add_string (printer, "language", pango_language_to_string (run->item->analysis.language));
-  gtk_json_printer_add_string (printer, "script", get_script_name (run->item->analysis.script));
+  get_script_name (run->item->analysis.script, buf);
+  gtk_json_printer_add_string (printer, "script", buf);
 
   add_font (printer, "font", run->item->analysis.font);
 

@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -72,8 +72,8 @@ G_DEFINE_BOXED_TYPE (PangoScriptIter,
 
 PangoScriptIter *
 _pango_script_iter_init (PangoScriptIter *iter,
-	                 const char      *text,
-			 int              length)
+                         const char      *text,
+                         int              length)
 {
   iter->text_start = text;
   if (length >= 0)
@@ -83,7 +83,7 @@ _pango_script_iter_init (PangoScriptIter *iter,
 
   iter->script_start = text;
   iter->script_end = text;
-  iter->script_code = PANGO_SCRIPT_COMMON;
+  iter->script_code = G_UNICODE_SCRIPT_COMMON;
 
   iter->paren_sp = -1;
 
@@ -113,7 +113,7 @@ _pango_script_iter_init (PangoScriptIter *iter,
  **/
 PangoScriptIter *
 pango_script_iter_new (const char *text,
-		       int         length)
+                       int         length)
 {
   return _pango_script_iter_init (g_slice_new (PangoScriptIter), text, length);
 }
@@ -156,18 +156,13 @@ pango_script_iter_free (PangoScriptIter *iter)
  * The range is the set of locations p where *start <= p < *end.
  * (That is, it doesn't include the character stored at *end)
  *
- * Note that while the type of the @script argument is declared
- * as `PangoScript`, as of Pango 1.18, this function simply returns
- * `GUnicodeScript` values. Callers must be prepared to handle unknown
- * values.
- *
  * Since: 1.4
  */
 void
 pango_script_iter_get_range (PangoScriptIter  *iter,
                              const char      **start,
                              const char      **end,
-                             PangoScript      *script)
+                             GUnicodeScript   *script)
 {
   if (start)
     *start = iter->script_start;
@@ -249,11 +244,11 @@ get_pair_index (gunichar ch)
       int mid = (lower + upper) / 2;
 
       if (ch < paired_chars[mid])
-	upper = mid - 1;
+        upper = mid - 1;
       else if (ch > paired_chars[mid])
-	lower = mid + 1;
+        lower = mid + 1;
       else
-	return mid;
+        return mid;
     }
 
   return -1;
@@ -261,7 +256,7 @@ get_pair_index (gunichar ch)
 
 /* duplicated in pango-language.c */
 #define REAL_SCRIPT(script) \
-  ((script) > PANGO_SCRIPT_INHERITED && (script) != PANGO_SCRIPT_UNKNOWN)
+  ((script) > G_UNICODE_SCRIPT_INHERITED && (script) != G_UNICODE_SCRIPT_UNKNOWN)
 
 #define SAME_SCRIPT(script1, script2) \
   (!REAL_SCRIPT (script1) || !REAL_SCRIPT (script2) || (script1) == (script2))
@@ -290,20 +285,20 @@ pango_script_iter_next (PangoScriptIter *iter)
     return FALSE;
 
   start_sp = iter->paren_sp;
-  iter->script_code = PANGO_SCRIPT_COMMON;
+  iter->script_code = G_UNICODE_SCRIPT_COMMON;
   iter->script_start = iter->script_end;
 
   for (; iter->script_end < iter->text_end; iter->script_end = g_utf8_next_char (iter->script_end))
     {
       gunichar ch = g_utf8_get_char (iter->script_end);
-      PangoScript sc;
+      GUnicodeScript sc;
       int pair_index;
 
-      sc = (PangoScript)g_unichar_get_script (ch);
-      if (sc != PANGO_SCRIPT_COMMON)
-	pair_index = -1;
+      sc = g_unichar_get_script (ch);
+      if (sc != G_UNICODE_SCRIPT_COMMON)
+        pair_index = -1;
       else
-	pair_index = get_pair_index (ch);
+        pair_index = get_pair_index (ch);
 
       /*
        * Paired character handling:
@@ -314,68 +309,68 @@ pango_script_iter_next (PangoScriptIter *iter)
        * characters above it on the stack will be poped.
        */
       if (pair_index >= 0)
-	{
-	  if (IS_OPEN (pair_index))
-	    {
-	      /*
-	       * If the paren stack is full, empty it. This
-	       * means that deeply nested paired punctuation
-	       * characters will be ignored, but that's an unusual
-	       * case, and it's better to ignore them than to
-	       * write off the end of the stack...
-	       */
-	      if (++iter->paren_sp >= PAREN_STACK_DEPTH)
-		iter->paren_sp = 0;
+        {
+          if (IS_OPEN (pair_index))
+            {
+              /*
+               * If the paren stack is full, empty it. This
+               * means that deeply nested paired punctuation
+               * characters will be ignored, but that's an unusual
+               * case, and it's better to ignore them than to
+               * write off the end of the stack...
+               */
+              if (++iter->paren_sp >= PAREN_STACK_DEPTH)
+                iter->paren_sp = 0;
 
-	      iter->paren_stack[iter->paren_sp].pair_index = pair_index;
-	      iter->paren_stack[iter->paren_sp].script_code = iter->script_code;
-	    }
-	  else if (iter->paren_sp >= 0)
-	    {
-	      int pi = pair_index & ~1;
+              iter->paren_stack[iter->paren_sp].pair_index = pair_index;
+              iter->paren_stack[iter->paren_sp].script_code = iter->script_code;
+            }
+          else if (iter->paren_sp >= 0)
+            {
+              int pi = pair_index & ~1;
 
-	      while (iter->paren_sp >= 0 && iter->paren_stack[iter->paren_sp].pair_index != pi)
-		iter->paren_sp--;
+              while (iter->paren_sp >= 0 && iter->paren_stack[iter->paren_sp].pair_index != pi)
+                iter->paren_sp--;
 
-	      if (iter->paren_sp < start_sp)
-		start_sp = iter->paren_sp;
+              if (iter->paren_sp < start_sp)
+                start_sp = iter->paren_sp;
 
-	      if (iter->paren_sp >= 0)
-		sc = iter->paren_stack[iter->paren_sp].script_code;
-	    }
-	}
+              if (iter->paren_sp >= 0)
+                sc = iter->paren_stack[iter->paren_sp].script_code;
+            }
+        }
 
       if (SAME_SCRIPT (iter->script_code, sc))
-	{
-	  if (!REAL_SCRIPT (iter->script_code) && REAL_SCRIPT (sc))
-	    {
-	      iter->script_code = sc;
+        {
+          if (!REAL_SCRIPT (iter->script_code) && REAL_SCRIPT (sc))
+            {
+              iter->script_code = sc;
 
-	      /*
-	       * now that we have a final script code, fix any open
-	       * characters we pushed before we knew the script code.
-	       */
-	      while (start_sp < iter->paren_sp)
-		iter->paren_stack[++start_sp].script_code = iter->script_code;
-	    }
+              /*
+               * now that we have a final script code, fix any open
+               * characters we pushed before we knew the script code.
+               */
+              while (start_sp < iter->paren_sp)
+                iter->paren_stack[++start_sp].script_code = iter->script_code;
+            }
 
-	  /*
-	   * if this character is a close paired character,
-	   * pop it from the stack
-	   */
-	  if (pair_index >= 0 && !IS_OPEN (pair_index) && iter->paren_sp >= 0)
-	    {
-	      iter->paren_sp--;
+          /*
+           * if this character is a close paired character,
+           * pop it from the stack
+           */
+          if (pair_index >= 0 && !IS_OPEN (pair_index) && iter->paren_sp >= 0)
+            {
+              iter->paren_sp--;
 
-	      if (iter->paren_sp < start_sp)
-		start_sp = iter->paren_sp;
-	    }
-	}
+              if (iter->paren_sp < start_sp)
+                start_sp = iter->paren_sp;
+            }
+        }
       else
-	{
-	  /* Different script, we're done */
-	  break;
-	}
+        {
+          /* Different script, we're done */
+          break;
+        }
     }
 
   return TRUE;

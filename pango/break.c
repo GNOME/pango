@@ -169,7 +169,7 @@ default_break (const char    *text,
   GUnicodeBreakType prev_break_type;
   GUnicodeBreakType prev_prev_break_type;
 
-  PangoScript prev_script;
+  GUnicodeScript prev_script;
 
   /* See Grapheme_Cluster_Break Property Values table of UAX#29 */
   typedef enum
@@ -263,7 +263,7 @@ default_break (const char    *text,
   prev_break_type = G_UNICODE_BREAK_UNKNOWN;
   prev_prev_break_type = G_UNICODE_BREAK_UNKNOWN;
   prev_wc = 0;
-  prev_script = PANGO_SCRIPT_COMMON;
+  prev_script = G_UNICODE_SCRIPT_COMMON;
   prev_jamo = NO_JAMO;
   prev_space_or_hyphen = FALSE;
 
@@ -296,7 +296,7 @@ default_break (const char    *text,
       /* Emoji extended pictographics */
       gboolean is_Extended_Pictographic;
 
-      PangoScript script;
+      GUnicodeScript script;
 
       wc = next_wc;
       break_type = next_break_type;
@@ -540,7 +540,7 @@ default_break (const char    *text,
 	prev_GB_type = GB_type;
       }
 
-      script = (PangoScript)g_unichar_get_script (wc);
+      script = g_unichar_get_script (wc);
       /* ---- UAX#29 Word Boundaries ---- */
       {
 	is_word_boundary = FALSE;
@@ -552,10 +552,10 @@ default_break (const char    *text,
 	    /* Find the WordBreakType of wc */
 	    WB_type = WB_Other;
 
-	    if (script == PANGO_SCRIPT_KATAKANA)
+	    if (script == G_UNICODE_SCRIPT_KATAKANA)
 	      WB_type = WB_Katakana;
 
-	    if (script == PANGO_SCRIPT_HEBREW && type == G_UNICODE_OTHER_LETTER)
+	    if (script == G_UNICODE_SCRIPT_HEBREW && type == G_UNICODE_OTHER_LETTER)
 	      WB_type = WB_Hebrew_Letter;
 
 	    if (WB_type == WB_Other)
@@ -673,7 +673,7 @@ default_break (const char    *text,
 		case G_UNICODE_TITLECASE_LETTER:
 		case G_UNICODE_UPPERCASE_LETTER:
 		Alphabetic:
-		  if (break_type != G_UNICODE_BREAK_COMPLEX_CONTEXT && script != PANGO_SCRIPT_HIRAGANA)
+		  if (break_type != G_UNICODE_BREAK_COMPLEX_CONTEXT && script != G_UNICODE_SCRIPT_HIRAGANA)
 		    WB_type = WB_ALetter; /* ALetter */
 		  break;
                 default:
@@ -1574,13 +1574,13 @@ default_break (const char    *text,
 
         switch ((int)prev_script)
           {
-          case PANGO_SCRIPT_COMMON:
+          case G_UNICODE_SCRIPT_COMMON:
             insert_hyphens = prev_wc == 0x00ad;
             break;
-          case PANGO_SCRIPT_HAN:
-          case PANGO_SCRIPT_HANGUL:
-          case PANGO_SCRIPT_HIRAGANA:
-          case PANGO_SCRIPT_KATAKANA:
+          case G_UNICODE_SCRIPT_HAN:
+          case G_UNICODE_SCRIPT_HANGUL:
+          case G_UNICODE_SCRIPT_HIRAGANA:
+          case G_UNICODE_SCRIPT_KATAKANA:
             insert_hyphens = FALSE;
             break;
           default:
@@ -1678,28 +1678,28 @@ break_script (const char          *item_text,
 {
   switch (analysis->script)
     {
-    case PANGO_SCRIPT_ARABIC:
+    case G_UNICODE_SCRIPT_ARABIC:
       break_arabic (item_text, item_length, analysis, attrs, attrs_len);
       break;
 
-    case PANGO_SCRIPT_DEVANAGARI:
-    case PANGO_SCRIPT_BENGALI:
-    case PANGO_SCRIPT_GURMUKHI:
-    case PANGO_SCRIPT_GUJARATI:
-    case PANGO_SCRIPT_ORIYA:
-    case PANGO_SCRIPT_TAMIL:
-    case PANGO_SCRIPT_TELUGU:
-    case PANGO_SCRIPT_KANNADA:
-    case PANGO_SCRIPT_MALAYALAM:
-    case PANGO_SCRIPT_SINHALA:
+    case G_UNICODE_SCRIPT_DEVANAGARI:
+    case G_UNICODE_SCRIPT_BENGALI:
+    case G_UNICODE_SCRIPT_GURMUKHI:
+    case G_UNICODE_SCRIPT_GUJARATI:
+    case G_UNICODE_SCRIPT_ORIYA:
+    case G_UNICODE_SCRIPT_TAMIL:
+    case G_UNICODE_SCRIPT_TELUGU:
+    case G_UNICODE_SCRIPT_KANNADA:
+    case G_UNICODE_SCRIPT_MALAYALAM:
+    case G_UNICODE_SCRIPT_SINHALA:
       break_indic (item_text, item_length, analysis, attrs, attrs_len);
       break;
 
-    case PANGO_SCRIPT_THAI:
+    case G_UNICODE_SCRIPT_THAI:
       break_thai (item_text, item_length, analysis, attrs, attrs_len);
       break;
 
-    case PANGO_SCRIPT_LATIN:
+    case G_UNICODE_SCRIPT_LATIN:
       break_latin (item_text, item_length, analysis, attrs, attrs_len);
       break;
 
@@ -2330,7 +2330,7 @@ pango_get_log_attrs (const char    *text,
   do
     {
       const char *run_start, *run_end;
-      PangoScript script;
+      GUnicodeScript script;
       int chars_in_range;
 
       pango_script_iter_get_range (&iter, &run_start, &run_end, &script);

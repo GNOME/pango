@@ -121,12 +121,12 @@ double       pango_gravity_to_rotation    (PangoGravity       gravity) G_GNUC_CO
 PANGO_AVAILABLE_IN_1_16
 PangoGravity pango_gravity_get_for_matrix (const PangoMatrix *matrix) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_1_16
-PangoGravity pango_gravity_get_for_script (PangoScript        script,
+PangoGravity pango_gravity_get_for_script (GUnicodeScript     script,
 					   PangoGravity       base_gravity,
 					   PangoGravityHint   hint) G_GNUC_CONST;
 PANGO_AVAILABLE_IN_1_26
 PangoGravity pango_gravity_get_for_script_and_width
-					  (PangoScript        script,
+					  (GUnicodeScript     script,
 					   gboolean           wide,
 					   PangoGravity       base_gravity,
 					   PangoGravityHint   hint) G_GNUC_CONST;

@@ -496,7 +496,7 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
     context = pango_font_map_create_context (fontmap);
 
     pango_context_set_matrix (context, &pango_ctm);
-    pango_context_set_language (context, pango_script_get_sample_language (PANGO_SCRIPT_LATIN));
+    pango_context_set_language (context, pango_script_get_sample_language (G_UNICODE_SCRIPT_LATIN));
     pango_cairo_context_set_font_options (context, font_options);
     mini_font = pango_font_map_load_font (fontmap, context, desc);
 

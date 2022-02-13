@@ -29,7 +29,7 @@ typedef struct _ParenStackEntry ParenStackEntry;
 struct _ParenStackEntry
 {
   int pair_index;
-  PangoScript script_code;
+  GUnicodeScript script_code;
 };
 
 struct _PangoScriptIter
@@ -39,7 +39,7 @@ struct _PangoScriptIter
 
   const gchar *script_start;
   const gchar *script_end;
-  PangoScript script_code;
+  GUnicodeScript script_code;
 
   ParenStackEntry paren_stack[PAREN_STACK_DEPTH];
   int paren_sp;
