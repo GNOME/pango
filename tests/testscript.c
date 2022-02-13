@@ -64,7 +64,7 @@ typedef struct
 {
   const char *run_text_escaped;
   char *run_text;
-  PangoScript run_code;
+  GUnicodeScript run_code;
 } RunTestData;
 
 static gchar *
@@ -130,16 +130,16 @@ static void
 test_script_iter (void)
 {
   static RunTestData test_data[] = {
-    { "\\u0020\\u0946\\u0939\\u093F\\u0928\\u094D\\u0926\\u0940\\u0020", NULL, PANGO_SCRIPT_DEVANAGARI },
-    { "\\u0627\\u0644\\u0639\\u0631\\u0628\\u064A\\u0629\\u0020", NULL, PANGO_SCRIPT_ARABIC },
-    { "\\u0420\\u0443\\u0441\\u0441\\u043A\\u0438\\u0439\\u0020", NULL, PANGO_SCRIPT_CYRILLIC },
-    { "English (", NULL, PANGO_SCRIPT_LATIN },
-    { "\\u0E44\\u0E17\\u0E22", NULL, PANGO_SCRIPT_THAI },
-    { ") ", NULL, PANGO_SCRIPT_LATIN },
-    { "\\u6F22\\u5B75", NULL, PANGO_SCRIPT_HAN },
-    { "\\u3068\\u3072\\u3089\\u304C\\u306A\\u3068", NULL, PANGO_SCRIPT_HIRAGANA },
-    { "\\u30AB\\u30BF\\u30AB\\u30CA", NULL, PANGO_SCRIPT_KATAKANA },
-    { "\\U00010400\\U00010401\\U00010402\\U00010403", NULL, PANGO_SCRIPT_DESERET }
+    { "\\u0020\\u0946\\u0939\\u093F\\u0928\\u094D\\u0926\\u0940\\u0020", NULL, G_UNICODE_SCRIPT_DEVANAGARI },
+    { "\\u0627\\u0644\\u0639\\u0631\\u0628\\u064A\\u0629\\u0020", NULL, G_UNICODE_SCRIPT_ARABIC },
+    { "\\u0420\\u0443\\u0441\\u0441\\u043A\\u0438\\u0439\\u0020", NULL, G_UNICODE_SCRIPT_CYRILLIC },
+    { "English (", NULL, G_UNICODE_SCRIPT_LATIN },
+    { "\\u0E44\\u0E17\\u0E22", NULL, G_UNICODE_SCRIPT_THAI },
+    { ") ", NULL, G_UNICODE_SCRIPT_LATIN },
+    { "\\u6F22\\u5B75", NULL, G_UNICODE_SCRIPT_HAN },
+    { "\\u3068\\u3072\\u3089\\u304C\\u306A\\u3068", NULL, G_UNICODE_SCRIPT_HIRAGANA },
+    { "\\u30AB\\u30BF\\u30AB\\u30CA", NULL, G_UNICODE_SCRIPT_KATAKANA },
+    { "\\U00010400\\U00010401\\U00010402\\U00010403", NULL, G_UNICODE_SCRIPT_DESERET }
   };
 
   PangoScriptIter *iter;
@@ -148,7 +148,7 @@ test_script_iter (void)
   char *pos;
   const char *start;
   const char *end;
-  PangoScript script;
+  GUnicodeScript script;
   unsigned int i;
 
   for (i = 0; i < G_N_ELEMENTS(test_data); i++)
@@ -204,7 +204,7 @@ test_script_iter (void)
 
   g_assert_true (start == all->str);
   g_assert_true (end == all->str);
-  g_assert_true (script == PANGO_SCRIPT_COMMON);
+  g_assert_true (script == G_UNICODE_SCRIPT_COMMON);
   g_assert_true (!pango_script_iter_next (iter));
 
   pango_script_iter_free (iter);
