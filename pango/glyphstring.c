@@ -340,7 +340,7 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
   PangoItem item = {0, length, pango_utf8_strlen (text, length), 0,
                     {NULL, NULL,
                      embedding_level, PANGO_GRAVITY_AUTO, 0,
-                     PANGO_SCRIPT_UNKNOWN, NULL,
+                     G_UNICODE_SCRIPT_UNKNOWN, NULL,
                      NULL}};
   PangoGlyphItem glyph_item = {&item, glyphs};
 

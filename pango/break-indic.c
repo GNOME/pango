@@ -144,7 +144,7 @@ break_indic (const char          *text,
 
       switch (analysis->script)
       {
-        case PANGO_SCRIPT_SINHALA:
+        case G_UNICODE_SCRIPT_SINHALA:
 	  /*
 	   * TODO: The cursor position should be based on the state table.
 	   *       This is the wrong place to be doing this.

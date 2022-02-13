@@ -60,9 +60,9 @@ gboolean                pango_language_matches                  (PangoLanguage  
 
 PANGO_AVAILABLE_IN_1_4
 gboolean                pango_language_includes_script          (PangoLanguage  *language,
-                                                                 PangoScript     script) G_GNUC_PURE;
+                                                                 GUnicodeScript  script) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_1_22
-const PangoScript *     pango_language_get_scripts              (PangoLanguage  *language,
+const GUnicodeScript *     pango_language_get_scripts           (PangoLanguage  *language,
                                                                  int            *num_scripts);
 
 G_END_DECLS

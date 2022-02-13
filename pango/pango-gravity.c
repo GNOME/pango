@@ -338,7 +338,7 @@ const PangoScriptProperties script_properties[] =
 #undef W
 
 static PangoScriptProperties
-get_script_properties (PangoScript script)
+get_script_properties (GUnicodeScript script)
 {
   g_return_val_if_fail (script >= 0, script_properties[0]);
 
@@ -368,7 +368,7 @@ get_script_properties (PangoScript script)
  * Since: 1.16
  */
 PangoGravity
-pango_gravity_get_for_script (PangoScript      script,
+pango_gravity_get_for_script (GUnicodeScript      script,
                               PangoGravity     base_gravity,
                               PangoGravityHint hint)
 {
@@ -407,7 +407,7 @@ pango_gravity_get_for_script (PangoScript      script,
  * Since: 1.26
  */
 PangoGravity
-pango_gravity_get_for_script_and_width (PangoScript      script,
+pango_gravity_get_for_script_and_width (GUnicodeScript   script,
                                         gboolean         wide,
                                         PangoGravity     base_gravity,
                                         PangoGravityHint hint)
