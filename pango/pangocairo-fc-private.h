@@ -39,6 +39,12 @@ struct _PangoCairoFcFontMap
 PangoFcFont *_pango_cairo_fc_font_new (PangoCairoFcFontMap *cffontmap,
 				       PangoFcFontKey      *key);
 
+void pango_cairo_fc_font_install   (PangoFcFont *font,
+                                    cairo_t     *cr,
+                                    gboolean     has_light_background);
+void pango_cairo_fc_font_uninstall (PangoFcFont *font,
+                                    cairo_t     *cr);
+
 G_END_DECLS
 
 #endif /* __PANGOCAIRO_FC_PRIVATE_H__ */

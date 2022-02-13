@@ -43,6 +43,8 @@ struct _PangoCairoRenderer
   gboolean has_show_text_glyphs;
   double x_offset, y_offset;
 
+  gboolean has_light_background;
+
   /* house-keeping options */
   gboolean is_cached_renderer;
   gboolean cr_had_current_point;
@@ -250,10 +252,11 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
   invalid_input = G_UNLIKELY (gi->glyph == PANGO_GLYPH_INVALID_INPUT || ch > 0x10FFFF);
 
   hbi = _pango_cairo_font_get_hex_box_info ((PangoCairoFont *)font);
-  if (!hbi || !_pango_cairo_font_install ((PangoFont *)(hbi->font), crenderer->cr))
+  if (!hbi || !_pango_cairo_font_install ((PangoFont *)(hbi->font), crenderer->cr, crenderer->has_light_background))
     {
       _pango_cairo_renderer_draw_box_glyph (crenderer, gi, cx, cy, invalid_input);
-      goto done;
+      cairo_restore (crenderer->cr);
+      return;
     }
 
   if (G_UNLIKELY (invalid_input))
@@ -392,6 +395,7 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
     }
 
 done:
+  _pango_cairo_font_uninstall ((PangoFont *)(hbi->font), crenderer->cr);
   cairo_restore (crenderer->cr);
 }
 
@@ -426,7 +430,7 @@ pango_cairo_renderer_show_text_glyphs (PangoRenderer        *renderer,
   if (!crenderer->do_path)
     set_color (crenderer, PANGO_RENDER_PART_FOREGROUND);
 
-  if (!_pango_cairo_font_install (font, crenderer->cr))
+  if (!_pango_cairo_font_install (font, crenderer->cr, crenderer->has_light_background))
     {
       for (i = 0; i < glyphs->num_glyphs; i++)
 	{
@@ -496,6 +500,8 @@ pango_cairo_renderer_show_text_glyphs (PangoRenderer        *renderer,
 
   if (cairo_glyphs != stack_glyphs)
     g_free (cairo_glyphs);
+
+  _pango_cairo_font_uninstall (font, crenderer->cr);
 
 done:
   cairo_restore (crenderer->cr);
@@ -814,10 +820,34 @@ pango_cairo_renderer_init (PangoCairoRenderer *renderer G_GNUC_UNUSED)
 }
 
 static void
+pango_cairo_renderer_prepare_run (PangoRenderer  *renderer,
+                                  PangoLayoutRun *run)
+{
+  PangoCairoRenderer *crenderer = (PangoCairoRenderer *) renderer;
+
+  PANGO_RENDERER_CLASS (pango_cairo_renderer_parent_class)->prepare_run (renderer, run);
+
+  for (GSList *l = run->item->analysis.extra_attrs; l; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+
+      switch ((int) attr->klass->type)
+        {
+        case PANGO_ATTR_LIGHT_BACKGROUND:
+          crenderer->has_light_background = ((PangoAttrInt *)attr)->value;
+          break;
+        default:
+          break;
+        }
+    }
+}
+
+static void
 pango_cairo_renderer_class_init (PangoCairoRendererClass *klass)
 {
   PangoRendererClass *renderer_class = PANGO_RENDERER_CLASS (klass);
 
+  renderer_class->prepare_run = pango_cairo_renderer_prepare_run;
   renderer_class->draw_glyphs = pango_cairo_renderer_draw_glyphs;
   renderer_class->draw_glyph_item = pango_cairo_renderer_draw_glyph_item;
   renderer_class->draw_rectangle = pango_cairo_renderer_draw_rectangle;

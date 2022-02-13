@@ -1233,6 +1233,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   const char *text_transform = NULL;
   const char *segment = NULL;
   const char *font_scale = NULL;
+  const char *light_background = NULL;
 
   g_markup_parse_context_get_position (context,
 				       &line_number, &char_number);
@@ -1318,6 +1319,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	CHECK_ATTRIBUTE (lang);
 	CHECK_ATTRIBUTE (letter_spacing);
         CHECK_ATTRIBUTE (line_height);
+        CHECK_ATTRIBUTE (light_background);
 	break;
       case 'o':
 	CHECK_ATTRIBUTE (overline);
@@ -1782,6 +1784,16 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
                        line_number, segment);
           goto error;
         }
+    }
+
+  if (G_UNLIKELY (light_background))
+    {
+      gboolean b = FALSE;
+
+      if (!span_parse_boolean ("light_background", light_background, &b, line_number, error))
+        goto error;
+
+      add_attribute (tag, pango_attr_light_background_new (b));
     }
 
   return TRUE;

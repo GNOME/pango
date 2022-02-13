@@ -129,6 +129,7 @@ typedef enum
   PANGO_ATTR_SENTENCE,          /* PangoAttrInt */
   PANGO_ATTR_BASELINE_SHIFT,    /* PangoAttrSize */
   PANGO_ATTR_FONT_SCALE,        /* PangoAttrInt */
+  PANGO_ATTR_LIGHT_BACKGROUND,  /* PangoAttrInt */
 } PangoAttrType;
 
 /**
@@ -609,6 +610,8 @@ PANGO_AVAILABLE_IN_1_50
 PangoAttribute *        pango_attr_line_height_new_absolute     (int                          height);
 PANGO_AVAILABLE_IN_1_50
 PangoAttribute *        pango_attr_text_transform_new           (PangoTextTransform transform);
+PANGO_AVAILABLE_IN_1_50
+PangoAttribute *        pango_attr_light_background_new         (gboolean light_background);
 
 PANGO_AVAILABLE_IN_1_50
 PangoAttrString       * pango_attribute_as_string               (PangoAttribute              *attr);

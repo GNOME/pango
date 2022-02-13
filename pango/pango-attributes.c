@@ -1556,6 +1556,20 @@ pango_attr_text_transform_new (PangoTextTransform transform)
 
   return pango_attr_int_new (&klass, transform);
 }
+
+PangoAttribute *
+pango_attr_light_background_new (gboolean light_background)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_LIGHT_BACKGROUND,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal
+  };
+
+  return pango_attr_int_new (&klass, light_background);
+}
+
 /* }}} */
 /* {{{ Binding helpers */
 

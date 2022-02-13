@@ -26,6 +26,7 @@
 
 #include "pangocairo.h"
 #include "pangocairo-private.h"
+#include "pangocairo-fc-private.h"
 #include "pango-font-private.h"
 #include "pango-impl-utils.h"
 
@@ -164,6 +165,7 @@ pango_cairo_font_get_scaled_font (PangoCairoFont *cfont)
 /**
  * _pango_cairo_font_install:
  * @font: a `PangoCairoFont`
+ * @renderer: a `PangoCairoRenderer`
  * @cr: a #cairo_t
  *
  * Makes @font the current font for rendering in the specified
@@ -173,14 +175,28 @@ pango_cairo_font_get_scaled_font (PangoCairoFont *cfont)
  */
 gboolean
 _pango_cairo_font_install (PangoFont *font,
-			   cairo_t   *cr)
+			   cairo_t   *cr,
+                           gboolean   has_light_background)
 {
   cairo_scaled_font_t *scaled_font = pango_cairo_font_get_scaled_font ((PangoCairoFont *)font);
 
   if (G_UNLIKELY (scaled_font == NULL || cairo_scaled_font_status (scaled_font) != CAIRO_STATUS_SUCCESS))
     return FALSE;
 
+  if (PANGO_IS_FC_FONT (font))
+    pango_cairo_fc_font_install (PANGO_FC_FONT (font), cr, has_light_background);
+
   cairo_set_scaled_font (cr, scaled_font);
+
+  return TRUE;
+}
+
+gboolean
+_pango_cairo_font_uninstall (PangoFont *font,
+                             cairo_t   *cr)
+{
+  if (PANGO_IS_FC_FONT (font))
+    pango_cairo_fc_font_uninstall (PANGO_FC_FONT (font), cr);
 
   return TRUE;
 }

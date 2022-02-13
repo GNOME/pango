@@ -102,7 +102,10 @@ struct _PangoCairoFontIface
 };
 
 gboolean _pango_cairo_font_install (PangoFont *font,
-				    cairo_t   *cr);
+                                    cairo_t   *cr,
+                                    gboolean   has_light_background);
+gboolean _pango_cairo_font_uninstall (PangoFont *font,
+                                      cairo_t   *cr);
 PangoFontMetrics * _pango_cairo_font_get_metrics (PangoFont     *font,
 						  PangoLanguage *language);
 PangoCairoFontHexBoxInfo *_pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont);

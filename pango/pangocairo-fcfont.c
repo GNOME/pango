@@ -35,6 +35,7 @@
 
 #include <hb-ot.h>
 #include <freetype/ftmm.h>
+#include <freetype/ftcolor.h>
 
 #define PANGO_TYPE_CAIRO_FC_FONT           (pango_cairo_fc_font_get_type ())
 #define PANGO_CAIRO_FC_FONT(object)        (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_FC_FONT, PangoCairoFcFont))
@@ -275,3 +276,45 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap *cffontmap,
 
   return (PangoFcFont *) cffont;
 }
+
+void
+pango_cairo_fc_font_install (PangoFcFont *font,
+                             cairo_t     *cr,
+                             gboolean     has_light_background)
+{
+  FT_Face face = pango_fc_font_lock_face (font);
+  FT_Palette_Data palettes;
+  int index = 0;
+  FT_Color *palette;
+
+  FT_Palette_Data_Get (face, &palettes);
+  for (int i = 0; i < palettes.num_palettes; i++)
+    {
+      if (has_light_background)
+        {
+          if (palettes.palette_flags[i] & FT_PALETTE_FOR_LIGHT_BACKGROUND)
+            {
+              index = i;
+              break;
+            }
+        }
+      else
+        {
+          if (palettes.palette_flags[i] & FT_PALETTE_FOR_DARK_BACKGROUND)
+            {
+              index = i;
+              break;
+            }
+        }
+    }
+
+  FT_Palette_Select (face, index, &palette);
+}
+
+void
+pango_cairo_fc_font_uninstall (PangoFcFont *font,
+                               cairo_t     *cr)
+{
+  pango_fc_font_unlock_face (font);
+}
+
