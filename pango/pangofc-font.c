@@ -379,29 +379,17 @@ get_face_metrics (PangoFcFont      *fcfont,
       metrics->height = extents.ascender - extents.descender + extents.line_gap;
     }
 
-  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_UNDERLINE_SIZE, &position) &&
-      position != 0)
-    metrics->underline_thickness = position;
-  else
-    metrics->underline_thickness = PANGO_SCALE;
+  hb_ot_metrics_get_position_with_fallback (hb_font, HB_OT_METRICS_TAG_UNDERLINE_SIZE, &position);
+  metrics->underline_thickness = position;
 
-  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_UNDERLINE_OFFSET, &position) &&
-      position != 0)
-    metrics->underline_position = position;
-  else
-    metrics->underline_position = - PANGO_SCALE;
+  hb_ot_metrics_get_position_with_fallback (hb_font, HB_OT_METRICS_TAG_UNDERLINE_OFFSET, &position);
+  metrics->underline_position = position;
 
-  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_STRIKEOUT_SIZE, &position) &&
-      position != 0)
-    metrics->strikethrough_thickness = position;
-  else
-    metrics->strikethrough_thickness = PANGO_SCALE;
+  hb_ot_metrics_get_position_with_fallback (hb_font, HB_OT_METRICS_TAG_STRIKEOUT_SIZE, &position);
+  metrics->strikethrough_thickness = position;
 
-  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_STRIKEOUT_OFFSET, &position) &&
-      position != 0)
-    metrics->strikethrough_position = position;
-  else
-    metrics->strikethrough_position = metrics->ascent / 2;
+  hb_ot_metrics_get_position_with_fallback (hb_font, HB_OT_METRICS_TAG_STRIKEOUT_OFFSET, &position);
+  metrics->strikethrough_position = position;
 }
 
 PangoFontMetrics *

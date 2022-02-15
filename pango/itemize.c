@@ -1076,11 +1076,11 @@ collect_font_scale (PangoContext  *context,
                 case PANGO_FONT_SCALE_NONE:
                   break;
                 case PANGO_FONT_SCALE_SUPERSCRIPT:
-                  if (prev &&
-                      hb_ot_metrics_get_position (pango_font_get_hb_font (prev->analysis.font),
-                                                  HB_OT_METRICS_TAG_SUPERSCRIPT_EM_Y_SIZE,
-                                                  &y_size))
+                  if (prev)
                     {
+                      hb_ot_metrics_get_position_with_fallback (pango_font_get_hb_font (prev->analysis.font),
+                                                                HB_OT_METRICS_TAG_SUPERSCRIPT_EM_Y_SIZE,
+                                                                &y_size);
                       hb_font_get_scale (pango_font_get_hb_font (prev->analysis.font), NULL, &y_scale);
                       entry->scale = y_size / (double) y_scale;
                     }
@@ -1090,11 +1090,11 @@ collect_font_scale (PangoContext  *context,
                     }
                   break;
                 case PANGO_FONT_SCALE_SUBSCRIPT:
-                  if (prev &&
-                      hb_ot_metrics_get_position (pango_font_get_hb_font (prev->analysis.font),
-                                                  HB_OT_METRICS_TAG_SUBSCRIPT_EM_Y_SIZE,
-                                                  &y_size))
+                  if (prev)
                     {
+                      hb_ot_metrics_get_position_with_fallback (pango_font_get_hb_font (prev->analysis.font),
+                                                                HB_OT_METRICS_TAG_SUBSCRIPT_EM_Y_SIZE,
+                                                                &y_size);
                       hb_font_get_scale (pango_font_get_hb_font (prev->analysis.font), NULL, &y_scale);
                       entry->scale = y_size / (double) y_scale;
                     }
@@ -1104,19 +1104,13 @@ collect_font_scale (PangoContext  *context,
                     }
                   break;
                 case PANGO_FONT_SCALE_SMALL_CAPS:
-                  if (hb_ot_metrics_get_position (pango_font_get_hb_font (item->analysis.font),
-                                                  HB_OT_METRICS_TAG_CAP_HEIGHT,
-                                                  &cap_height) &&
-                      hb_ot_metrics_get_position (pango_font_get_hb_font (item->analysis.font),
-                                                  HB_OT_METRICS_TAG_X_HEIGHT,
-                                                  &x_height))
-                    {
-                      entry->scale = x_height / (double) cap_height;
-                    }
-                  else
-                    {
-                      entry->scale = 0.8;
-                    }
+                  hb_ot_metrics_get_position_with_fallback (pango_font_get_hb_font (item->analysis.font),
+                                                            HB_OT_METRICS_TAG_CAP_HEIGHT,
+                                                            &cap_height);
+                  hb_ot_metrics_get_position_with_fallback (pango_font_get_hb_font (item->analysis.font),
+                                                            HB_OT_METRICS_TAG_X_HEIGHT,
+                                                            &x_height);
+                  entry->scale = x_height / (double) cap_height;
                   break;
                 default:
                   g_assert_not_reached ();

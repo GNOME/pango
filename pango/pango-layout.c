@@ -6627,16 +6627,11 @@ collect_baseline_shift (ParaBreakState *state,
                   if (prev)
                     {
                       hb_font_t *hb_font = pango_font_get_hb_font (prev->analysis.font);
-                      hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_SUPERSCRIPT_EM_Y_OFFSET, &superscript_y_offset);
-                      hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_SUPERSCRIPT_EM_X_OFFSET, &superscript_x_offset);
-                      hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_SUBSCRIPT_EM_Y_OFFSET, &subscript_y_offset);
-                      hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_SUBSCRIPT_EM_X_OFFSET, &subscript_x_offset);
+                      hb_ot_metrics_get_position_with_fallback (hb_font, HB_OT_METRICS_TAG_SUPERSCRIPT_EM_Y_OFFSET, &superscript_y_offset);
+                      hb_ot_metrics_get_position_with_fallback (hb_font, HB_OT_METRICS_TAG_SUPERSCRIPT_EM_X_OFFSET, &superscript_x_offset);
+                      hb_ot_metrics_get_position_with_fallback (hb_font, HB_OT_METRICS_TAG_SUBSCRIPT_EM_Y_OFFSET, &subscript_y_offset);
+                      hb_ot_metrics_get_position_with_fallback (hb_font, HB_OT_METRICS_TAG_SUBSCRIPT_EM_X_OFFSET, &subscript_x_offset);
                     }
-
-                  if (superscript_y_offset == 0)
-                    superscript_y_offset = 5000;
-                  if (subscript_y_offset == 0)
-                    subscript_y_offset = 5000;
 
                   switch (value)
                     {
