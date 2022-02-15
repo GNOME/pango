@@ -709,6 +709,7 @@ parse_margin (const char *name G_GNUC_UNUSED,
 {
   switch (sscanf (arg, "%d%*[ ,]%d%*[ ,]%d%*[ ,]%d", &opt_margin_t, &opt_margin_r, &opt_margin_b, &opt_margin_l))
   {
+    default:
     case 0:
     {
       g_set_error(error,
@@ -718,7 +719,9 @@ parse_margin (const char *name G_GNUC_UNUSED,
       return FALSE;
     }
     case 1: opt_margin_r = opt_margin_t;
+      G_GNUC_FALLTHROUGH;
     case 2: opt_margin_b = opt_margin_t;
+      G_GNUC_FALLTHROUGH;
     case 3: opt_margin_l = opt_margin_r;
   }
   return TRUE;

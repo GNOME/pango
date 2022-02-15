@@ -391,7 +391,7 @@ if not freetype_dep.found()
 endif
 
 # To build pangoft2, we need HarfBuzz, FontConfig and FreeType
-build_pangoft2 = harfbuzz_dep.found() and fontconfig_dep.found() and freetype_dep.found()
+build_pangoft2 = fontconfig_dep.found() and freetype_dep.found()
 if build_pangoft2
   pango_conf.set('HAVE_FREETYPE', 1)
   pango_deps += freetype_dep

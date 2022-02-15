@@ -213,6 +213,8 @@ x_view_display (gpointer instance,
       case Expose:
 	expose (&xev.xexpose, &update_region);
 	break;
+      default:
+        break;
       }
     }
 }
