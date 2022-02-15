@@ -140,7 +140,7 @@
                 "glyph" : 244,
                 "width" : 15360,
                 "x-offset" : 14764,
-                "y-offset" : 3845,
+                "y-offset" : 3844,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               },
@@ -156,7 +156,7 @@
                 "glyph" : 273,
                 "width" : 15360,
                 "x-offset" : 14764,
-                "y-offset" : 3507,
+                "y-offset" : 3506,
                 "is-cluster-start" : true,
                 "log-cluster" : 2
               }
