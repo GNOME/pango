@@ -26,6 +26,9 @@
 
 #include <pango/pangocairo.h>
 
+#include <hb-ot.h>
+#include <hb-glib.h>
+
 static int opt_annotate = 0;
 
 typedef struct
@@ -158,7 +161,8 @@ enum {
   ANNOTATE_GLYPH_EXTENTS     =  256,
   ANNOTATE_CARET_POSITIONS   =  512,
   ANNOTATE_CARET_SLOPE       = 1024,
-  ANNOTATE_LAST              = 2048,
+  ANNOTATE_RUN_BASELINES     = 2048,
+  ANNOTATE_LAST              = 4096,
 };
 
 static struct {
@@ -169,6 +173,7 @@ static struct {
   { ANNOTATE_GRAVITY_ROOF,      "gravity-roof",      "gravity" },
   { ANNOTATE_BLOCK_PROGRESSION, "block-progression", "progression" },
   { ANNOTATE_BASELINES,         "baselines",         "baselines" },
+  { ANNOTATE_RUN_BASELINES,     "run-baselines",     "run-baselines" },
   { ANNOTATE_LAYOUT_EXTENTS,    "layout-extents",    "layout" },
   { ANNOTATE_LINE_EXTENTS,      "line-extents",      "line" },
   { ANNOTATE_RUN_EXTENTS,       "run-extents",       "run" },
@@ -307,6 +312,117 @@ render_callback (PangoLayout *layout,
           pango_layout_iter_free (iter);
           cairo_restore (cr);
         }
+
+#if HB_VERSION_ATLEAST(4,0,0)
+      if (annotate & ANNOTATE_RUN_BASELINES)
+        {
+          hb_ot_layout_baseline_tag_t baseline_tag = 0;
+          /* draw baselines for runs in blue */
+          cairo_save (cr);
+          cairo_set_source_rgba (cr, 0.0, 0.0, 1.0, 0.5);
+
+          iter = pango_layout_get_iter (layout);
+          do
+            {
+              PangoLayoutRun *run;
+              PangoRectangle rect;
+              hb_font_t *hb_font;
+              hb_ot_layout_baseline_tag_t baselines[] = {
+                HB_OT_LAYOUT_BASELINE_TAG_ROMAN,
+                HB_OT_LAYOUT_BASELINE_TAG_HANGING,
+                HB_OT_LAYOUT_BASELINE_TAG_IDEO_FACE_BOTTOM_OR_LEFT,
+                HB_OT_LAYOUT_BASELINE_TAG_IDEO_FACE_TOP_OR_RIGHT,
+                HB_OT_LAYOUT_BASELINE_TAG_IDEO_EMBOX_BOTTOM_OR_LEFT,
+                HB_OT_LAYOUT_BASELINE_TAG_IDEO_EMBOX_CENTRAL,
+                HB_OT_LAYOUT_BASELINE_TAG_IDEO_EMBOX_TOP_OR_RIGHT,
+                HB_OT_LAYOUT_BASELINE_TAG_MATH
+              };
+              hb_direction_t dir;
+              hb_tag_t script, lang;
+              hb_position_t coord;
+
+              run = pango_layout_iter_get_run (iter);
+              if (!run)
+                {
+                  baseline_tag = 0;
+                  continue;
+                }
+
+              if (baseline_tag == 0)
+                {
+                  hb_script_t script = hb_glib_script_to_script (run->item->analysis.script);
+
+                  if (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
+                    baseline_tag = HB_OT_LAYOUT_BASELINE_TAG_IDEO_EMBOX_CENTRAL;
+                  else
+                    baseline_tag = hb_ot_layout_get_horizontal_baseline_tag_for_script (script);
+                }
+
+              y = pango_layout_iter_get_run_baseline (iter);
+              pango_layout_iter_get_run_extents (iter, NULL, &rect);
+
+              hb_font = pango_font_get_hb_font (run->item->analysis.font);
+              if (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
+                dir = HB_DIRECTION_TTB;
+              else
+                dir = HB_DIRECTION_LTR;
+              script = hb_glib_script_to_script (run->item->analysis.script);
+              lang = HB_TAG_NONE;
+
+              for (int i = 0; i < G_N_ELEMENTS (baselines); i++)
+                {
+                  char buf[5] = { 0, };
+
+                  cairo_save (cr);
+
+                  if (baselines[i] == baseline_tag)
+                    cairo_set_source_rgba (cr, 1.0, 0.0, 0.0, 0.5);
+                  else
+                    cairo_set_source_rgba (cr, 0.0, 0.0, 1.0, 0.5);
+
+                  if (hb_ot_layout_get_baseline (hb_font,
+                                                 baselines[i],
+                                                 dir,
+                                                 script,
+                                                 lang,
+                                                 &coord))
+                    cairo_set_dash (cr, NULL, 0, 0);
+                  else
+                    {
+                      double dashes[] = { 4 * lw, 4 * lw };
+
+                      hb_ot_layout_get_baseline_with_fallback (hb_font,
+                                                               baselines[i],
+                                                               dir,
+                                                               script,
+                                                               lang,
+                                                               &coord);
+
+                      cairo_set_dash (cr, dashes, 2, 0);
+                      cairo_set_line_cap (cr, CAIRO_LINE_CAP_SQUARE);
+                    }
+                  cairo_move_to (cr,
+                                 (double)rect.x / PANGO_SCALE,
+                                 (double)(y - coord) / PANGO_SCALE);
+                  cairo_rel_line_to (cr, (double)rect.width / PANGO_SCALE, 0);
+                  cairo_stroke (cr);
+                  cairo_set_source_rgb (cr, 0, 0, 0);
+                  cairo_move_to (cr,
+                                 (double)rect.x / PANGO_SCALE - 5,
+                                 (double)(y - coord) / PANGO_SCALE - 5);
+                  hb_tag_to_string (baselines[i], buf);
+                  if (baselines[i] == baseline_tag)
+                    g_print ("dominant %s\n", buf);
+                  cairo_show_text (cr, buf);
+
+                  cairo_restore (cr);
+                }
+            }
+          while (pango_layout_iter_next_run (iter));
+          pango_layout_iter_free (iter);
+          cairo_restore (cr);
+        }
+#endif
 
       if (annotate & ANNOTATE_LAYOUT_EXTENTS)
         {
