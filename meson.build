@@ -445,8 +445,7 @@ endif
 # in a declarative way
 if not cairo_dep.found()
   cairo_dep = dependency('cairo', version: cairo_req_version,
-                         fallback: ['cairo', 'libcairo_dep'], required: get_option('cairo'),
-                         default_options: ['freetype=enabled', 'fontconfig=enabled'])
+                         fallback: ['cairo', 'libcairo_dep'], required: get_option('cairo'))
   cairo_found_type = cairo_dep.type_name()
 endif
 
