@@ -130,6 +130,7 @@ installed_test_layouts_data = [
 installed_test_fonts_data = [
   'fonts/amiri-06dd.ttf',
   'fonts/Cantarell-VF.otf',
+  'fonts/DejaVuSans-Bold.ttf',
   'fonts/DejaVuSansMono.ttf',
   'fonts/DejaVuSans.ttf',
   'fonts/droid-sans-subset.ttf',
