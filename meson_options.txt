@@ -25,7 +25,7 @@ option('libthai',
        description : 'Build with libthai support')
 option('cairo',
        type : 'feature',
-       value : 'auto',
+       value : 'enabled',
        description : 'Build with cairo support')
 option('xft',
        type : 'feature',
