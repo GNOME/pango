@@ -177,7 +177,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "Cantarell 11",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
@@ -213,7 +213,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "Noto Color Emoji 11",
               "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47",
@@ -247,7 +247,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "Cantarell 11",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",

@@ -107,7 +107,7 @@
             "bidi-level" : 0,
             "gravity" : "east",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "Noto Sans CJK JP Rotated-Left 24",
               "checksum" : "3b50ae56f1fb5637c82d785945531f718f40b78a26bea3d137e58808bd774399",
@@ -158,7 +158,7 @@
             "bidi-level" : 0,
             "gravity" : "east",
             "language" : "xx",
-            "script" : "han",
+            "script" : "Hani",
             "font" : {
               "description" : "Noto Sans CJK JP Rotated-Left 24",
               "checksum" : "3b50ae56f1fb5637c82d785945531f718f40b78a26bea3d137e58808bd774399",
@@ -209,7 +209,7 @@
             "bidi-level" : 0,
             "gravity" : "east",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "Noto Sans CJK JP Rotated-Left 24",
               "checksum" : "3b50ae56f1fb5637c82d785945531f718f40b78a26bea3d137e58808bd774399",
