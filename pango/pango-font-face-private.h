@@ -33,12 +33,15 @@ struct _PangoFontFaceClass
 {
   GObjectClass parent_class;
 
-  const char *           (* get_face_name)  (PangoFontFace *face);
-  PangoFontDescription * (* describe)       (PangoFontFace *face);
-  gboolean               (* is_synthesized) (PangoFontFace *face);
-  gboolean               (*is_monospace)    (PangoFontFace *face);
-  gboolean               (*is_variable)     (PangoFontFace *face);
-  PangoFontFamily *      (* get_family)     (PangoFontFace *face);
+  const char *           (* get_face_name)     (PangoFontFace *face);
+  PangoFontDescription * (* describe)          (PangoFontFace *face);
+  gboolean               (* is_synthesized)    (PangoFontFace *face);
+  gboolean               (*is_monospace)       (PangoFontFace *face);
+  gboolean               (*is_variable)        (PangoFontFace *face);
+  PangoFontFamily *      (* get_family)        (PangoFontFace *face);
+  gboolean               (* supports_language) (PangoFontFace *face,
+                                                PangoLanguage *language);
+  PangoLanguage **       (* get_languages)     (PangoFontFace *face);
 };
 
 #define PANGO_FONT_FACE_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT_FACE, PangoFontFaceClass))

@@ -48,7 +48,7 @@ pango_font_finalize (GObject *object)
 static PangoLanguage **
 pango_font_default_get_languages (PangoFont *font)
 {
-  return NULL;
+  return pango_font_face_get_languages (pango_font_get_face (font));
 }
 
 static gboolean
