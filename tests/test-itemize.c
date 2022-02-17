@@ -128,6 +128,7 @@ test_file (const gchar *filename, GString *string)
   PangoAttrList *itemize_attrs;
   GList *items, *l;
   const char *sep = "";
+  PangoDirection dir;
 
   g_file_get_contents (filename, &contents, &length, &error);
   g_assert_no_error (error);
@@ -154,7 +155,8 @@ test_file (const gchar *filename, GString *string)
     length--;
 
   itemize_attrs = pango_attr_list_filter (attrs, affects_itemization, NULL);
-  items = pango_itemize (context, text, 0, length, itemize_attrs, NULL);
+  dir = pango_context_get_base_dir (context);
+  items = pango_itemize_with_base_dir (context, dir, text, 0, length, itemize_attrs, NULL);
 
   apply_attributes_to_items (items, attrs);
   pango_attr_list_unref (itemize_attrs);

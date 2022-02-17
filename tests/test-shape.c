@@ -145,6 +145,7 @@ test_file (const gchar *filename, GString *string)
   GString *s1, *s2, *s3, *s4, *s5, *s6, *s7, *s8, *s9;
   char *p1;
   const char *sep = "";
+  PangoDirection dir;
 
   if (!g_file_get_contents (filename, &contents, &length, &error))
     {
@@ -183,7 +184,8 @@ test_file (const gchar *filename, GString *string)
   itemize_attrs = pango_attr_list_filter (attrs, affects_itemization, NULL);
   shape_attrs = pango_attr_list_filter (attrs, affects_break_or_shape, NULL);
 
-  items = pango_itemize (context, text, 0, length, itemize_attrs, NULL);
+  dir = pango_context_get_base_dir (context);
+  items = pango_itemize_with_base_dir (context, dir, text, 0, length, itemize_attrs, NULL);
   apply_attributes_to_items (items, shape_attrs);
 
   pango_attr_list_unref (itemize_attrs);
