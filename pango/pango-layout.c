@@ -85,6 +85,7 @@
 #include <locale.h>
 
 #include <hb-ot.h>
+#include <hb-glib.h>
 
 #include "pango-layout-private.h"
 #include "pango-attributes-private.h"
@@ -6694,6 +6695,12 @@ apply_baseline_shift (PangoLayoutLine *line,
 {
   int y_offset = 0;
   PangoItem *prev = NULL;
+  hb_position_t baseline_adjustment = 0;
+#if HB_VERSION_ATLEAST(4,0,0)
+  hb_ot_layout_baseline_tag_t baseline_tag = 0;
+  hb_position_t baseline;
+  hb_position_t run_baseline;
+#endif
 
   for (GSList *l = line->runs; l; l = l->next)
     {
@@ -6701,16 +6708,71 @@ apply_baseline_shift (PangoLayoutLine *line,
       PangoItem *item = run->item;
       int start_x_offset, end_x_offset;
       int start_y_offset, end_y_offset;
+#if HB_VERSION_ATLEAST(4,0,0)
+      hb_font_t *hb_font;
+      hb_script_t script;
+      hb_language_t language;
+      hb_direction_t direction;
+      hb_tag_t script_tags[HB_OT_MAX_TAGS_PER_SCRIPT];
+      hb_tag_t lang_tags[HB_OT_MAX_TAGS_PER_LANGUAGE];
+      unsigned int script_count = HB_OT_MAX_TAGS_PER_SCRIPT;
+      unsigned int lang_count = HB_OT_MAX_TAGS_PER_LANGUAGE;
+
+      hb_font = pango_font_get_hb_font (item->analysis.font);
+
+      script = hb_glib_script_to_script (item->analysis.script);
+      language = hb_language_from_string (pango_language_to_string (item->analysis.language), -1);
+      hb_ot_tags_from_script_and_language (script, language,
+                                           &script_count, script_tags,
+                                           &lang_count, lang_tags);
+
+      if (item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
+        direction = HB_DIRECTION_TTB;
+      else
+        direction = HB_DIRECTION_LTR;
+
+      if (baseline_tag == 0)
+        {
+          if (item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
+            baseline_tag = HB_OT_LAYOUT_BASELINE_TAG_IDEO_EMBOX_CENTRAL;
+          else
+            baseline_tag = hb_ot_layout_get_horizontal_baseline_tag_for_script (script);
+          hb_ot_layout_get_baseline_with_fallback (hb_font,
+                                                   baseline_tag,
+                                                   direction,
+                                                   script_tags[script_count - 1],
+                                                   lang_count ? lang_tags[lang_count - 1] : HB_TAG_NONE,
+                                                   &run_baseline);
+          baseline = run_baseline;
+        }
+      else
+        {
+          hb_ot_layout_get_baseline_with_fallback (hb_font,
+                                                   baseline_tag,
+                                                   direction,
+                                                   script_tags[script_count - 1],
+                                                   lang_count ? lang_tags[lang_count - 1] : HB_TAG_NONE,
+                                                   &run_baseline);
+        }
+
+      /* Don't do baseline adjustment in vertical, since the renderer
+       * is still doing its own baseline shifting there
+       */
+      if (item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
+        baseline_adjustment = 0;
+      else
+        baseline_adjustment = baseline - run_baseline;
+#endif
 
       collect_baseline_shift (state, item, prev, &start_x_offset, &start_y_offset, &end_x_offset, &end_y_offset);
 
-      y_offset += start_y_offset;
+      y_offset += start_y_offset + baseline_adjustment;
 
       run->y_offset = y_offset;
       run->start_x_offset = start_x_offset;
       run->end_x_offset = end_x_offset;
 
-      y_offset += end_y_offset;
+      y_offset += end_y_offset - baseline_adjustment;
 
       prev = item;
     }
