@@ -284,8 +284,10 @@ itemize_text (EllipsizeState *state,
 {
   GList *items;
   PangoItem *item;
+  PangoDirection dir;
 
-  items = pango_itemize (state->layout->context, text, 0, strlen (text), attrs, NULL);
+  dir = pango_context_get_base_dir (state->layout->context);
+  items = pango_itemize_with_base_dir (state->layout->context, dir, text, 0, strlen (text), attrs, NULL);
   g_assert (g_list_length (items) == 1);
 
   item = items->data;

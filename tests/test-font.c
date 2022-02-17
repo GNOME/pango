@@ -194,13 +194,15 @@ test_extents (void)
   PangoRectangle ink, log;
   PangoContext *context;
   PangoFontDescription *desc;
+  PangoDirection dir;
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
   desc = pango_font_description_from_string("Cantarell 11");
   pango_context_set_font_description (context, desc);
   pango_font_description_free (desc);
 
-  items = pango_itemize (context, str, 0, strlen (str), NULL, NULL);
+  dir = pango_context_get_base_dir (context);
+  items = pango_itemize_with_base_dir (context, dir, str, 0, strlen (str), NULL, NULL);
   glyphs = pango_glyph_string_new ();
   item = items->data;
   pango_shape (str, strlen (str), NULL, 0, &item->analysis, glyphs, PANGO_SHAPE_NONE);
