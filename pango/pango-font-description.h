@@ -153,19 +153,21 @@ typedef enum {
  * @PANGO_FONT_MASK_SIZE: the font size is specified.
  * @PANGO_FONT_MASK_GRAVITY: the font gravity is specified (Since: 1.16.)
  * @PANGO_FONT_MASK_VARIATIONS: OpenType font variations are specified (Since: 1.42)
+ * @PANGO_FONT_MASK_FACEID: the face ID is specified
  *
  * The bits in a `PangoFontMask` correspond to the set fields in a
  * `PangoFontDescription`.
  */
 typedef enum {
-  PANGO_FONT_MASK_FAMILY  = 1 << 0,
-  PANGO_FONT_MASK_STYLE   = 1 << 1,
-  PANGO_FONT_MASK_VARIANT = 1 << 2,
-  PANGO_FONT_MASK_WEIGHT  = 1 << 3,
-  PANGO_FONT_MASK_STRETCH = 1 << 4,
-  PANGO_FONT_MASK_SIZE    = 1 << 5,
-  PANGO_FONT_MASK_GRAVITY = 1 << 6,
+  PANGO_FONT_MASK_FAMILY     = 1 << 0,
+  PANGO_FONT_MASK_STYLE      = 1 << 1,
+  PANGO_FONT_MASK_VARIANT    = 1 << 2,
+  PANGO_FONT_MASK_WEIGHT     = 1 << 3,
+  PANGO_FONT_MASK_STRETCH    = 1 << 4,
+  PANGO_FONT_MASK_SIZE       = 1 << 5,
+  PANGO_FONT_MASK_GRAVITY    = 1 << 6,
   PANGO_FONT_MASK_VARIATIONS = 1 << 7,
+  PANGO_FONT_MASK_FACEID     = 1 << 8,
 } PangoFontMask;
 
 /* CSS scale factors (1.2 factor between each size) */
@@ -285,6 +287,15 @@ PANGO_AVAILABLE_IN_1_42
 const char *            pango_font_description_get_variations    (const PangoFontDescription *desc) G_GNUC_PURE;
 
 PANGO_AVAILABLE_IN_ALL
+void                 pango_font_description_set_faceid         (PangoFontDescription     *desc,
+                                                                const char               *faceid);
+PANGO_AVAILABLE_IN_ALL
+void                 pango_font_description_set_faceid_static  (PangoFontDescription *desc,
+                                                                const char           *faceid);
+PANGO_AVAILABLE_IN_ALL
+const char *         pango_font_description_get_faceid         (const PangoFontDescription *desc) G_GNUC_PURE;
+
+PANGO_AVAILABLE_IN_ALL
 PangoFontMask           pango_font_description_get_set_fields    (const PangoFontDescription *desc) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
 void                    pango_font_description_unset_fields      (PangoFontDescription       *desc,
@@ -303,6 +314,7 @@ PANGO_AVAILABLE_IN_ALL
 gboolean                pango_font_description_better_match      (const PangoFontDescription *desc,
                                                                   const PangoFontDescription *old_match,
                                                                   const PangoFontDescription *new_match) G_GNUC_PURE;
+
 
 PANGO_AVAILABLE_IN_ALL
 PangoFontDescription *  pango_font_description_from_string       (const char                  *str);

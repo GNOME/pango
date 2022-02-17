@@ -36,14 +36,16 @@ struct _PangoFontDescription
   PangoStretch stretch;
   PangoGravity gravity;
 
+  int size;
+
   char *variations;
+  char *faceid;
 
   guint16 mask;
   guint static_family : 1;
   guint static_variations : 1;
+  guint static_faceid : 1;
   guint size_is_absolute : 1;
-
-  int size;
 };
 
 G_DEFINE_BOXED_TYPE (PangoFontDescription, pango_font_description,
@@ -58,14 +60,15 @@ static const PangoFontDescription pfd_defaults = {
   PANGO_WEIGHT_NORMAL,  /* weight */
   PANGO_STRETCH_NORMAL, /* stretch */
   PANGO_GRAVITY_SOUTH,  /* gravity */
+  0,                    /* size */
   NULL,                 /* variations */
+  NULL,                 /* faceid */
 
   0,                    /* mask */
   0,                    /* static_family */
-  0,                    /* static_variations*/
+  0,                    /* static_variations */
+  0,                    /* static_faceid */
   0,                    /* size_is_absolute */
-
-  0,                    /* size */
 };
 
 /**
@@ -662,6 +665,7 @@ pango_font_description_merge (PangoFontDescription       *desc,
 {
   gboolean family_merged;
   gboolean variations_merged;
+  gboolean faceid_merged;
 
   g_return_if_fail (desc != NULL);
 
@@ -670,6 +674,7 @@ pango_font_description_merge (PangoFontDescription       *desc,
 
   family_merged = desc_to_merge->family_name && (replace_existing || !desc->family_name);
   variations_merged = desc_to_merge->variations && (replace_existing || !desc->variations);
+  faceid_merged = desc_to_merge->faceid && (replace_existing || !desc->faceid);
 
   pango_font_description_merge_static (desc, desc_to_merge, replace_existing);
 
@@ -683,6 +688,12 @@ pango_font_description_merge (PangoFontDescription       *desc,
     {
       desc->variations = g_strdup (desc->variations);
       desc->static_variations = FALSE;
+    }
+
+  if (faceid_merged)
+    {
+      desc->faceid = g_strdup (desc->faceid);
+      desc->static_faceid = FALSE;
     }
 }
 
@@ -736,6 +747,8 @@ pango_font_description_merge_static (PangoFontDescription       *desc,
     desc->gravity = desc_to_merge->gravity;
   if (new_mask & PANGO_FONT_MASK_VARIATIONS)
     pango_font_description_set_variations_static (desc, desc_to_merge->variations);
+  if (new_mask & PANGO_FONT_MASK_FACEID)
+    pango_font_description_set_faceid_static (desc, desc_to_merge->faceid);
 
   desc->mask |= new_mask;
 }
@@ -839,6 +852,9 @@ pango_font_description_copy (const PangoFontDescription *desc)
   result->variations = g_strdup (result->variations);
   result->static_variations = FALSE;
 
+  result->faceid = g_strdup (result->faceid);
+  result->static_faceid = FALSE;
+
   return result;
 }
 
@@ -872,9 +888,11 @@ pango_font_description_copy_static (const PangoFontDescription *desc)
   if (result->family_name)
     result->static_family = TRUE;
 
-
   if (result->variations)
     result->static_variations = TRUE;
+
+  if (result->faceid)
+    result->static_faceid = TRUE;
 
   return result;
 }
@@ -910,7 +928,8 @@ pango_font_description_equal (const PangoFontDescription *desc1,
          desc1->gravity == desc2->gravity &&
          (desc1->family_name == desc2->family_name ||
           (desc1->family_name && desc2->family_name && g_ascii_strcasecmp (desc1->family_name, desc2->family_name) == 0)) &&
-         (g_strcmp0 (desc1->variations, desc2->variations) == 0);
+         (g_strcmp0 (desc1->variations, desc2->variations) == 0) &&
+         (g_strcmp0 (desc1->faceid, desc2->faceid) == 0);
 }
 
 #define TOLOWER(c) \
@@ -953,6 +972,8 @@ pango_font_description_hash (const PangoFontDescription *desc)
     hash = case_insensitive_hash (desc->family_name);
   if (desc->variations)
     hash ^= g_str_hash (desc->variations);
+  if (desc->faceid)
+    hash ^= g_str_hash (desc->faceid);
   hash ^= desc->size;
   hash ^= desc->size_is_absolute ? 0xc33ca55a : 0;
   hash ^= desc->style << 16;
@@ -981,6 +1002,9 @@ pango_font_description_free (PangoFontDescription *desc)
 
   if (desc->variations && !desc->static_variations)
     g_free (desc->variations);
+
+  if (desc->faceid && !desc->static_faceid)
+    g_free (desc->faceid);
 
   g_slice_free (PangoFontDescription, desc);
 }
@@ -1229,6 +1253,40 @@ parse_variations (const char  *word,
   return TRUE;
 }
 
+static void
+faceid_from_variations (PangoFontDescription *desc)
+{
+  const char *p, *q;
+
+  p = desc->variations;
+
+  if (g_str_has_prefix (p, "faceid="))
+    {
+      p += strlen ("faceid=");
+      q = strchr (p, ',');
+      if (q)
+        {
+          desc->faceid = g_strndup (p, q - p);
+          p = q + 1;
+        }
+      else
+        {
+          desc->faceid = g_strdup (p);
+          p = NULL;
+        }
+      desc->mask |= PANGO_FONT_MASK_FACEID;
+    }
+
+  if (p != desc->variations)
+    {
+      char *variations = g_strdup (p);
+      g_free (desc->variations);
+      desc->variations = variations;
+      if (variations == NULL || *variations == '\0')
+        desc->mask &= ~PANGO_FONT_MASK_VARIATIONS;
+    }
+}
+
 /**
  * pango_font_description_from_string:
  * @str: string representation of a font description.
@@ -1306,6 +1364,8 @@ pango_font_description_from_string (const char *str)
         {
           desc->mask |= PANGO_FONT_MASK_VARIATIONS;
           last = p;
+
+          faceid_from_variations (desc);
         }
     }
 
@@ -1416,6 +1476,7 @@ char *
 pango_font_description_to_string (const PangoFontDescription *desc)
 {
   GString *result;
+  gboolean in_variations = FALSE;
 
   g_return_val_if_fail (desc != NULL, NULL);
 
@@ -1473,10 +1534,20 @@ pango_font_description_to_string (const PangoFontDescription *desc)
         g_string_append (result, "px");
     }
 
+  if (desc->mask & PANGO_FONT_MASK_FACEID)
+    {
+      in_variations = TRUE;
+      g_string_append (result, " @");
+      g_string_append_printf (result, "faceid=%s", desc->faceid);
+    }
+
   if ((desc->variations && desc->mask & PANGO_FONT_MASK_VARIATIONS) &&
       desc->variations[0] != '\0')
     {
-      g_string_append (result, " @");
+      if (!in_variations)
+        g_string_append (result, " @");
+      else
+        g_string_append (result, ",");
       g_string_append (result, desc->variations);
     }
 
@@ -1666,4 +1737,99 @@ pango_parse_stretch (const char   *str,
                      gboolean      warn)
 {
   return FIELD (stretch, PANGO_FONT_MASK_STRETCH);
+}
+
+/**
+ * pango_font_description_set_faceid_static:
+ * @desc: a `PangoFontDescription`
+ * @faceid: the faceid string
+ *
+ * Sets the faceid field of a font description.
+ *
+ * This is like [method@Pango.FontDescription.set_faceid], except
+ * that no copy of @faceid is made. The caller must make sure that
+ * the string passed in stays around until @desc has been freed
+ * or the name is set again. This function can be used if
+ * @faceid is a static string such as a C string literal,
+ * or if @desc is only needed temporarily.
+ *
+ * Since: 1.52
+ */
+void
+pango_font_description_set_faceid_static (PangoFontDescription *desc,
+                                          const char           *faceid)
+{
+  g_return_if_fail (desc != NULL);
+
+  if (desc->faceid == faceid)
+    return;
+
+  if (desc->faceid && !desc->static_faceid)
+    g_free (desc->faceid);
+
+  if (faceid)
+    {
+      desc->faceid = (char *)faceid;
+      desc->static_faceid = TRUE;
+      desc->mask |= PANGO_FONT_MASK_FACEID;
+    }
+  else
+    {
+      desc->faceid = pfd_defaults.faceid;
+      desc->static_faceid = pfd_defaults.static_faceid;
+      desc->mask &= ~PANGO_FONT_MASK_FACEID;
+    }
+}
+
+/**
+ * pango_font_description_set_faceid:
+ * @desc: a `PangoFontDescription`.
+ * @faceid: (nullable): the faceid string
+ *
+ * Sets the faceid field of a font description.
+ *
+ * The faceid is mainly for internal use by Pango, to ensure
+ * that font -> description -> font roundtrips end up with
+ * the same font they started with, if possible.
+ *
+ * Font descriptions originating from [method@Pango.FontFace.describe]
+ * should ideally include a faceid. Pango takes the faceid
+ * into account when looking for the best matching face while
+ * loading a fontset or font.
+ *
+ * The format of this string is not guaranteed.
+ *
+ * Since: 1.52
+ */
+void
+pango_font_description_set_faceid (PangoFontDescription *desc,
+                                    const char           *faceid)
+{
+  g_return_if_fail (desc != NULL);
+
+  pango_font_description_set_faceid_static (desc, g_strdup (faceid));
+  if (faceid)
+    desc->static_faceid = FALSE;
+}
+
+/**
+ * pango_font_description_get_faceid:
+ * @desc: a `PangoFontDescription`
+ *
+ * Gets the faceid field of a font description.
+ *
+ * See [method@Pango.FontDescription.set_faceid].
+ *
+ * Return value: (nullable): the faceid field for the font
+ *   description, or %NULL if not previously set. This has the same
+ *   life-time as the font description itself and should not be freed.
+ *
+ * Since: 1.52
+ */
+const char *
+pango_font_description_get_faceid (const PangoFontDescription *desc)
+{
+  g_return_val_if_fail (desc != NULL, NULL);
+
+  return desc->faceid;
 }
