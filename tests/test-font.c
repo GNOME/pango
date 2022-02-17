@@ -202,7 +202,7 @@ test_extents (void)
   pango_font_description_free (desc);
 
   dir = pango_context_get_base_dir (context);
-  items = pango_itemize_with_base_dir (context, dir, str, 0, strlen (str), NULL, NULL);
+  items = pango_itemize_with_base_dir (context, dir, str, 0, strlen (str), NULL);
   glyphs = pango_glyph_string_new ();
   item = items->data;
   pango_shape (str, strlen (str), NULL, 0, &item->analysis, glyphs, PANGO_SHAPE_NONE);
