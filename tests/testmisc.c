@@ -390,11 +390,13 @@ test_fallback_shape (void)
   PangoContext *context;
   const char *text;
   GList *items, *l;
+  PangoDirection dir;
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  dir = pango_context_get_base_dir (context);
 
   text = "Some text to sha​pe ﺄﻧﺍ ﻕﺍﺩﺭ ﻊﻟﻯ ﺄﻜﻟ ﺎﻟﺰﺟﺎﺟ ﻭ ﻩﺫﺍ ﻻ ﻱﺆﻠﻤﻨﻳ";
-  items = pango_itemize (context, text, 0, strlen (text), NULL, NULL);
+  items = pango_itemize_with_base_dir (context, dir, text, 0, strlen (text), NULL, NULL);
   for (l = items; l; l = l->next)
     {
       PangoItem *item = l->data;
