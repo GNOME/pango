@@ -3349,9 +3349,9 @@ ensure_tab_width (PangoLayout *layout)
           pango_attr_list_insert_before (&tmp_attrs, attr);
         }
 
-      items = pango_itemize_with_base_dir (layout->context,
-                                           pango_context_get_base_dir (layout->context),
-                                           " ", 0, 1, &tmp_attrs);
+      items = pango_itemize (layout->context,
+                             pango_context_get_base_dir (layout->context),
+                             " ", 0, 1, &tmp_attrs);
 
       if (layout_attrs != layout->attrs)
         {

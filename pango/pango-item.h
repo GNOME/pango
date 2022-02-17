@@ -136,13 +136,13 @@ GList *                 pango_reorder_items          (GList             *items);
 
 /* Itemization */
 
-PANGO_AVAILABLE_IN_1_4
-GList *                 pango_itemize_with_base_dir  (PangoContext      *context,
-                                                      PangoDirection     base_dir,
-                                                      const char        *text,
-                                                      int                start_index,
-                                                      int                length,
-                                                      PangoAttrList     *attrs);
+PANGO_AVAILABLE_IN_ALL
+GList *                 pango_itemize (PangoContext      *context,
+                                       PangoDirection     base_dir,
+                                       const char        *text,
+                                       int                start_index,
+                                       int                length,
+                                       PangoAttrList     *attrs);
 
 
 G_END_DECLS
