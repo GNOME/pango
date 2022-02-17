@@ -16,8 +16,7 @@ various stages of this pipeline and the APIs that implement them.
 Itemization
 : breaks a piece of text into segments with consistent direction and shaping
   properties. Among other things, this determines which font to use for each
-  character. Use [func@Pango.itemize] or [func@Pango.itemize_with_base_dir]
-  to itemize text.
+  character. Use [func@Pango.itemize] to itemize text.
 
 Shaping
 : converts characters into glyphs. Use [func@Pango.shape],

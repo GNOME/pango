@@ -1534,8 +1534,8 @@ post_process_items (PangoContext *context,
 /* }}} */
 /* {{{ Private API */
 
-/* Like pango_itemize_with_base_dir, but takes a font description.
- * In contrast to pango_itemize_with_base_dir, this function does
+/* Like pango_itemize, but takes a font description.
+ * In contrast to pango_itemize, this function does
  * not call pango_itemize_post_process_items, so you need to do that
  * separately, after applying attributes that affect segmentation and
  * computing the log attrs.
@@ -1584,7 +1584,7 @@ pango_itemize_post_process_items (PangoContext *context,
 /* {{{ Public API */
 
 /**
- * pango_itemize_with_base_dir:
+ * pango_itemize:
  * @context: a structure holding information that affects
  *   the itemization process.
  * @base_dir: base direction to use for bidirectional processing
@@ -1594,7 +1594,12 @@ pango_itemize_post_process_items (PangoContext *context,
  *   after @start_index. This must be >= 0.
  * @attrs: the set of attributes that apply to @text.
  *
- * Like `pango_itemize()`, but with an explicitly specified base direction.
+ * Breaks a piece of text into segments with consistent directional
+ * level and font.
+ *
+ * Each byte of @text will be contained in exactly one of the items in the
+ * returned list; the generated list of items will be in logical order (the
+ * start offsets of the items are ascending).
  *
  * The base direction is used when computing bidirectional levels.
  * [func@itemize] gets the base direction from the `PangoContext`
@@ -1603,16 +1608,14 @@ pango_itemize_post_process_items (PangoContext *context,
  * Return value: (transfer full) (element-type Pango.Item): a `GList` of
  *   [struct@Pango.Item] structures. The items should be freed using
  *   [method@Pango.Item.free] probably in combination with [func@GLib.List.free_full].
- *
- * Since: 1.4
  */
 GList *
-pango_itemize_with_base_dir (PangoContext      *context,
-                             PangoDirection     base_dir,
-                             const char        *text,
-                             int                start_index,
-                             int                length,
-                             PangoAttrList     *attrs)
+pango_itemize (PangoContext      *context,
+               PangoDirection     base_dir,
+               const char        *text,
+               int                start_index,
+               int                length,
+               PangoAttrList     *attrs)
 {
   GList *items;
 

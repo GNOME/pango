@@ -185,7 +185,7 @@ test_file (const gchar *filename, GString *string)
   shape_attrs = pango_attr_list_filter (attrs, affects_break_or_shape, NULL);
 
   dir = pango_context_get_base_dir (context);
-  items = pango_itemize_with_base_dir (context, dir, text, 0, length, itemize_attrs);
+  items = pango_itemize (context, dir, text, 0, length, itemize_attrs);
   apply_attributes_to_items (items, shape_attrs);
 
   pango_attr_list_unref (itemize_attrs);
