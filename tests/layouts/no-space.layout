@@ -85,7 +85,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "common",
+            "script" : "Zyyy",
             "font" : {
               "description" : "Font Awesome 5 Free Solid Heavy 32",
               "checksum" : "8fe6cd51391fa6f8c2008609ddd489bb81a6d7674f3a1c8b7fa07efd026a6397",

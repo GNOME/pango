@@ -139,7 +139,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "common",
+            "script" : "Zyyy",
             "font" : {
               "description" : "DejaVu Sans Mono 32",
               "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
@@ -190,7 +190,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "common",
+            "script" : "Zyyy",
             "font" : {
               "description" : "DejaVu Sans Mono 32",
               "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
@@ -229,7 +229,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "common",
+            "script" : "Zyyy",
             "font" : {
               "description" : "DejaVu Sans Mono 32",
               "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
@@ -276,7 +276,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "common",
+            "script" : "Zyyy",
             "font" : {
               "description" : "DejaVu Sans Mono 32",
               "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",

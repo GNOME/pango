@@ -182,7 +182,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "Cantarell 11",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
@@ -260,7 +260,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "Cantarell 11",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
@@ -296,7 +296,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "Cantarell 11",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
@@ -358,7 +358,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "Cantarell 11",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
@@ -394,7 +394,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "Cantarell 11",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",

@@ -56,7 +56,7 @@
             "bidi-level" : 2,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "common",
+            "script" : "Zyyy",
             "font" : {
               "description" : "Amiri 32",
               "checksum" : "d5e6374130d6df09e66f80f0bbcb7262112584ebadb861f0a412a21cc742a5dd",
