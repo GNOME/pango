@@ -21,13 +21,28 @@
 #include "config.h"
 
 #include "pango-font-face-private.h"
+#include "pango-font-family.h"
 
 
 G_DEFINE_ABSTRACT_TYPE (PangoFontFace, pango_font_face, G_TYPE_OBJECT)
 
+static gboolean
+pango_font_face_default_is_monospace (PangoFontFace *face)
+{
+  return pango_font_family_is_monospace (pango_font_face_get_family (face));
+}
+
+static gboolean
+pango_font_face_default_is_variable (PangoFontFace *face)
+{
+  return pango_font_family_is_variable (pango_font_face_get_family (face));
+}
+
 static void
 pango_font_face_class_init (PangoFontFaceClass *class G_GNUC_UNUSED)
 {
+  class->is_monospace = pango_font_face_default_is_monospace;
+  class->is_variable = pango_font_face_default_is_variable;
 }
 
 static void
@@ -119,4 +134,46 @@ pango_font_face_get_family (PangoFontFace *face)
   g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);
 
   return PANGO_FONT_FACE_GET_CLASS (face)->get_family (face);
+}
+
+/**
+ * pango_font_face_is_monospace:
+ * @face: a `PangoFontFace`
+ *
+ * A monospace font is a font designed for text display where the the
+ * characters form a regular grid.
+ *
+ * See [method@Pango.FontFamily.is_monospace] for more details.
+ *
+ * Returns: `TRUE` if @face is monospace
+ *
+ * Since: 1.52
+ */
+gboolean
+pango_font_face_is_monospace (PangoFontFace *face)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), FALSE);
+
+  return PANGO_FONT_FACE_GET_CLASS (face)->is_monospace (face);
+}
+
+/**
+ * pango_font_face_is_variable:
+ * @face: a `PangoFontFace`
+ *
+ * A variable font is a font which has axes that can be modified
+ * to produce variations.
+ *
+ * See [method@Pango.FontFamily.is_variable] for more details.
+ *
+ * Returns: `TRUE` if @face is variable
+ *
+ * Since: 1.52
+ */
+gboolean
+pango_font_face_is_variable (PangoFontFace *face)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), FALSE);
+
+  return PANGO_FONT_FACE_GET_CLASS (face)->is_variable (face);
 }
