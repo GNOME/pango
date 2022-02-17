@@ -46,7 +46,7 @@ G_BEGIN_DECLS
  * and [func@find_base_dir] cannot be `PANGO_DIRECTION_WEAK_LTR` or
  * `PANGO_DIRECTION_WEAK_RTL`, since every character is either neutral
  * or has a strong direction; on the other hand `PANGO_DIRECTION_NEUTRAL`
- * doesn't make sense to pass to [func@itemize_with_base_dir].
+ * doesn't make sense to pass to [func@itemize].
  *
  * The `PANGO_DIRECTION_TTB_LTR`, `PANGO_DIRECTION_TTB_RTL` values come from
  * an earlier interpretation of this enumeration as the writing direction
