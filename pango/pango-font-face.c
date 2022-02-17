@@ -38,11 +38,26 @@ pango_font_face_default_is_variable (PangoFontFace *face)
   return pango_font_family_is_variable (pango_font_face_get_family (face));
 }
 
+static gboolean
+pango_font_face_default_supports_language (PangoFontFace *face,
+                                           PangoLanguage *language)
+{
+  return TRUE;
+}
+
+static PangoLanguage **
+pango_font_face_default_get_languages (PangoFontFace *face)
+{
+  return NULL;
+}
+
 static void
 pango_font_face_class_init (PangoFontFaceClass *class G_GNUC_UNUSED)
 {
   class->is_monospace = pango_font_face_default_is_monospace;
   class->is_variable = pango_font_face_default_is_variable;
+  class->get_languages = pango_font_face_default_get_languages;
+  class->supports_language = pango_font_face_default_supports_language;
 }
 
 static void
@@ -177,3 +192,50 @@ pango_font_face_is_variable (PangoFontFace *face)
 
   return PANGO_FONT_FACE_GET_CLASS (face)->is_variable (face);
 }
+
+/**
+ * pango_font_face_supports_language:
+ * @face: a `PangoFontFace`
+ * @language: a `PangoLanguage`
+ *
+ * Returns whether @face has all the glyphs necessary to write @language.
+ *
+ * Returns: `TRUE` if @face supports @language
+ *
+ * Since: 1.52
+ */
+gboolean
+pango_font_face_supports_language (PangoFontFace *face,
+                                   PangoLanguage *language)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), FALSE);
+
+  return PANGO_FONT_FACE_GET_CLASS (face)->supports_language (face, language);
+}
+
+/**
+ * pango_font_face_get_languages:
+ * @face: a `PangoFontFace`
+ *
+ * Returns the languages that are supported by @face.
+ *
+ * If the font backend does not provide this information,
+ * %NULL is returned. For the fontconfig backend, this
+ * corresponds to the FC_LANG member of the FcPattern.
+ *
+ * The returned array is only valid as long as the face
+ * and its fontmap are valid.
+ *
+ * Returns: (transfer none) (nullable) (array zero-terminated=1) (element-type PangoLanguage):
+ *   an array of `PangoLanguage`
+ *
+ * Since: 1.52
+ */
+PangoLanguage **
+pango_font_face_get_languages (PangoFontFace *face)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), FALSE);
+
+  return PANGO_FONT_FACE_GET_CLASS (face)->get_languages (face);
+}
+

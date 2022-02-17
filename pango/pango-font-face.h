@@ -37,13 +37,20 @@ PANGO_AVAILABLE_IN_ALL
 const char *            pango_font_face_get_face_name  (PangoFontFace  *face) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_1_18
 gboolean                pango_font_face_is_synthesized (PangoFontFace  *face) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_1_52
+PANGO_AVAILABLE_IN_ALL
 gboolean                pango_font_face_is_monospace   (PangoFontFace  *face);
-PANGO_AVAILABLE_IN_1_52
+PANGO_AVAILABLE_IN_ALL
 gboolean                pango_font_face_is_variable    (PangoFontFace  *face);
 
 PANGO_AVAILABLE_IN_1_46
 PangoFontFamily *       pango_font_face_get_family     (PangoFontFace  *face);
+
+PANGO_AVAILABLE_IN_ALL
+gboolean              pango_font_face_supports_language (PangoFontFace *face,
+                                                         PangoLanguage *language);
+
+PANGO_AVAILABLE_IN_ALL
+PangoLanguage **      pango_font_face_get_languages     (PangoFontFace *face);
 
 
 G_END_DECLS
