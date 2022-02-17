@@ -597,7 +597,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "DejaVu Sans 12",
               "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
@@ -962,7 +962,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "DejaVu Sans 12",
               "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
@@ -1175,7 +1175,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "DejaVu Sans 12",
               "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
@@ -1208,7 +1208,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "DejaVu Sans 12",
               "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
@@ -1241,7 +1241,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "DejaVu Sans 12",
               "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
@@ -1274,7 +1274,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "DejaVu Sans 12",
               "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
@@ -1307,7 +1307,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "DejaVu Sans 12",
               "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
@@ -1354,7 +1354,7 @@
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
-            "script" : "latin",
+            "script" : "Latn",
             "font" : {
               "description" : "DejaVu Sans 12",
               "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
