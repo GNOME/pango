@@ -1593,7 +1593,6 @@ pango_itemize_post_process_items (PangoContext *context,
  * @length: the number of bytes (not characters) to process
  *   after @start_index. This must be >= 0.
  * @attrs: the set of attributes that apply to @text.
- * @cached_iter: (nullable): Cached attribute iterator
  *
  * Like `pango_itemize()`, but with an explicitly specified base direction.
  *
@@ -1613,8 +1612,7 @@ pango_itemize_with_base_dir (PangoContext      *context,
                              const char        *text,
                              int                start_index,
                              int                length,
-                             PangoAttrList     *attrs,
-                             PangoAttrIterator *cached_iter)
+                             PangoAttrList     *attrs)
 {
   GList *items;
 
@@ -1625,56 +1623,9 @@ pango_itemize_with_base_dir (PangoContext      *context,
 
   items = pango_itemize_with_font (context, base_dir,
                                    text, start_index, length,
-                                   attrs, cached_iter,
-                                   NULL);
+                                   attrs, NULL, NULL);
 
   return pango_itemize_post_process_items (context, text, NULL, items);
-}
-
-/**
- * pango_itemize:
- * @context: a structure holding information that affects
- *   the itemization process.
- * @text: the text to itemize. Must be valid UTF-8
- * @start_index: first byte in @text to process
- * @length: the number of bytes (not characters) to process
- *   after @start_index. This must be >= 0.
- * @attrs: the set of attributes that apply to @text.
- * @cached_iter: (nullable): Cached attribute iterator
- *
- * Breaks a piece of text into segments with consistent directional
- * level and font.
- *
- * Each byte of @text will be contained in exactly one of the items in the
- * returned list; the generated list of items will be in logical order (the
- * start offsets of the items are ascending).
- *
- * @cached_iter should be an iterator over @attrs currently positioned
- * at a range before or containing @start_index; @cached_iter will be
- * advanced to the range covering the position just after
- * @start_index + @length. (i.e. if itemizing in a loop, just keep passing
- * in the same @cached_iter).
- *
- * Return value: (transfer full) (element-type Pango.Item): a `GList` of
- *   [struct@Pango.Item] structures. The items should be freed using
- *   [method@Pango.Item.free] in combination with [func@GLib.List.free_full].
- */
-GList *
-pango_itemize (PangoContext      *context,
-               const char        *text,
-               int                start_index,
-               int                length,
-               PangoAttrList     *attrs,
-               PangoAttrIterator *cached_iter)
-{
-  g_return_val_if_fail (context != NULL, NULL);
-  g_return_val_if_fail (start_index >= 0, NULL);
-  g_return_val_if_fail (length >= 0, NULL);
-  g_return_val_if_fail (length == 0 || text != NULL, NULL);
-
-  return pango_itemize_with_base_dir (context, context->base_dir,
-                                      text, start_index, length,
-                                      attrs, cached_iter);
 }
 
 /* }}} */
