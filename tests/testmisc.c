@@ -49,7 +49,7 @@ test_itemize_empty_crash (void)
   PangoContext *context;
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-  pango_itemize_with_base_dir (context, PANGO_DIRECTION_LTR, "", 0, 1, NULL, NULL);
+  pango_itemize_with_base_dir (context, PANGO_DIRECTION_LTR, "", 0, 1, NULL);
 
   g_object_unref (context);
 }
@@ -61,7 +61,7 @@ test_itemize_utf8 (void)
   GList *result = NULL;
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-  result = pango_itemize_with_base_dir (context, PANGO_DIRECTION_LTR, "\xc3\xa1\na", 3, 1, NULL, NULL);
+  result = pango_itemize_with_base_dir (context, PANGO_DIRECTION_LTR, "\xc3\xa1\na", 3, 1, NULL);
   g_assert (result != NULL);
 
   g_list_free_full (result, (GDestroyNotify)pango_item_free);
@@ -396,7 +396,7 @@ test_fallback_shape (void)
   dir = pango_context_get_base_dir (context);
 
   text = "Some text to sha​pe ﺄﻧﺍ ﻕﺍﺩﺭ ﻊﻟﻯ ﺄﻜﻟ ﺎﻟﺰﺟﺎﺟ ﻭ ﻩﺫﺍ ﻻ ﻱﺆﻠﻤﻨﻳ";
-  items = pango_itemize_with_base_dir (context, dir, text, 0, strlen (text), NULL, NULL);
+  items = pango_itemize_with_base_dir (context, dir, text, 0, strlen (text), NULL);
   for (l = items; l; l = l->next)
     {
       PangoItem *item = l->data;

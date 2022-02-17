@@ -156,7 +156,7 @@ test_file (const gchar *filename, GString *string)
 
   itemize_attrs = pango_attr_list_filter (attrs, affects_itemization, NULL);
   dir = pango_context_get_base_dir (context);
-  items = pango_itemize_with_base_dir (context, dir, text, 0, length, itemize_attrs, NULL);
+  items = pango_itemize_with_base_dir (context, dir, text, 0, length, itemize_attrs);
 
   apply_attributes_to_items (items, attrs);
   pango_attr_list_unref (itemize_attrs);
