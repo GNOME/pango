@@ -51,6 +51,28 @@ pango_font_face_default_get_languages (PangoFontFace *face)
   return NULL;
 }
 
+static gboolean
+pango_font_face_default_has_char (PangoFontFace *face,
+                                  gunichar       wc)
+{
+  return FALSE;
+}
+
+static const char *
+pango_font_face_default_get_faceid (PangoFontFace *face)
+{
+  return "";
+}
+
+static PangoFont *
+pango_font_face_default_create_font (PangoFontFace              *face,
+                                     const PangoFontDescription *desc,
+                                     float                       dpi,
+                                     const PangoMatrix          *matrix)
+{
+  return NULL;
+}
+
 static void
 pango_font_face_class_init (PangoFontFaceClass *class G_GNUC_UNUSED)
 {
@@ -58,6 +80,9 @@ pango_font_face_class_init (PangoFontFaceClass *class G_GNUC_UNUSED)
   class->is_variable = pango_font_face_default_is_variable;
   class->get_languages = pango_font_face_default_get_languages;
   class->supports_language = pango_font_face_default_supports_language;
+  class->has_char = pango_font_face_default_has_char;
+  class->get_faceid = pango_font_face_default_get_faceid;
+  class->create_font = pango_font_face_default_create_font;
 }
 
 static void
@@ -237,5 +262,71 @@ pango_font_face_get_languages (PangoFontFace *face)
   g_return_val_if_fail (PANGO_IS_FONT_FACE (face), FALSE);
 
   return PANGO_FONT_FACE_GET_CLASS (face)->get_languages (face);
+}
+
+/**
+ * pango_font_face_has_char:
+ * @face: a `PangoFontFace`
+ * @wc: a Unicode character
+ *
+ * Returns whether the face provides a glyph for this character.
+ *
+ * Returns: `TRUE` if @font can render @wc
+ */
+gboolean
+pango_font_face_has_char (PangoFontFace *face,
+                          gunichar       wc)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), FALSE);
+
+  return PANGO_FONT_FACE_GET_CLASS (face)->has_char (face, wc);
+}
+
+/*< private >
+ * pango_font_face_get_faceid:
+ * @self: a `PangoHbFace`
+ *
+ * Returns the faceid of the face.
+ *
+ * The faceid is meant to uniquely identify the face among the
+ * faces of its family. It includes an identifier for the font
+ * file that is used (currently, we use the PostScript name for
+ * this), the face index, the instance ID, as well as synthetic
+ * tweaks such as emboldening and transforms and variations.
+ *
+ * [method@Pango.FontFace.describe] adds the faceid to the font
+ * description that it produces.
+ *
+ * See pango_hb_family_find_face() for the code that takes the
+ * faceid into account when searching for a face. It is careful
+ * to fall back to approximate matching if an exact match for
+ * the faceid isn't found. That should make it safe to preserve
+ * faceids when saving font descriptions in configuration or
+ * other data.
+ *
+ * There are no guarantees about the format of the string that
+ * this function produces, except for that it does not contain
+ * ' ', ',' or '=', so it can be safely embedded in the '@' part
+ * of a serialized font description.
+ *
+ * Returns: (transfer none): the faceid
+ */
+const char *
+pango_font_face_get_faceid (PangoFontFace *face)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), "");
+
+  return PANGO_FONT_FACE_GET_CLASS (face)->get_faceid (face);
+}
+
+PangoFont *
+pango_font_face_create_font (PangoFontFace              *face,
+                             const PangoFontDescription *desc,
+                             float                       dpi,
+                             const PangoMatrix          *matrix)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);
+
+  return PANGO_FONT_FACE_GET_CLASS (face)->create_font (face, desc, dpi, matrix);
 }
 

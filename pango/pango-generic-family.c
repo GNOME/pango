@@ -167,26 +167,6 @@ pango_generic_family_class_init (PangoGenericFamilyClass *class)
 /* {{{ Private API */
 
 /*< private >
- * pango_generic_family_set_font_map:
- * @self: a `PangoGenericFamily`
- * @map: (nullable): a `PangoFontMap`
- *
- * Sets the map of @self.
- */
-void
-pango_generic_family_set_font_map (PangoGenericFamily *self,
-                                   PangoFontMap       *map)
-{
-  if (self->map)
-    g_object_remove_weak_pointer (G_OBJECT (self->map), (gpointer *)&self->map);
-
-  self->map = map;
-
-  if (self->map)
-    g_object_add_weak_pointer (G_OBJECT (self->map), (gpointer *)&self->map);
-}
-
-/*< private >
  * pango_generic_family_find_face:
  * @family: a `PangoGenericFamily`
  * @description: `PangoFontDescription` to match

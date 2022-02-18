@@ -31,7 +31,6 @@ struct _PangoUserFace
   PangoFontDescription *description;
   char *name;
   PangoFontFamily *family;
-  char *psname;
   char *faceid;
 
   /* up to here shared with PangoHbFace */
@@ -44,11 +43,3 @@ struct _PangoUserFace
   gpointer user_data;
   GDestroyNotify destroy;
 };
-
-void                    pango_user_face_set_family        (PangoUserFace        *self,
-                                                           PangoFontFamily      *family);
-
-gboolean                pango_user_face_has_char          (PangoUserFace        *self,
-                                                           gunichar              wc);
-
-const char *            pango_user_face_get_faceid        (PangoUserFace        *self);

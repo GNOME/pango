@@ -32,6 +32,7 @@
 #include "pango-userface-private.h"
 #include "pango-userfont-private.h"
 #include "pango-fontset.h"
+#include "pango-font-face-private.h"
 #include "pango-trace-private.h"
 #include "pango-context.h"
 
@@ -156,18 +157,6 @@ pango_fontset_cached_finalize (GObject *object)
 }
 
 static PangoFont *
-font_new_for_description (PangoFontFace              *face,
-                          const PangoFontDescription *description,
-                          float                       dpi,
-                          const PangoMatrix          *matrix)
-{
-  if (PANGO_IS_HB_FACE (face))
-    return PANGO_FONT (pango_hb_font_new_for_description (PANGO_HB_FACE (face), description, dpi, matrix));
-  else
-    return PANGO_FONT (pango_user_font_new_for_description (PANGO_USER_FACE (face), description, dpi, matrix));
-}
-
-static PangoFont *
 pango_fontset_cached_get_font (PangoFontset *fontset,
                                guint         wc)
 {
@@ -207,10 +196,10 @@ pango_fontset_cached_get_font (PangoFontset *fontset,
                                                  wc);
           if (face)
             {
-              retval = font_new_for_description (face,
-                                                 self->description,
-                                                 self->dpi,
-                                                 self->matrix);
+              retval = pango_font_face_create_font (face,
+                                                    self->description,
+                                                    self->dpi,
+                                                    self->matrix);
               break;
             }
         }
@@ -234,7 +223,7 @@ pango_fontset_cached_get_first_font (PangoFontsetCached *self)
   else if (PANGO_IS_GENERIC_FAMILY (item))
     {
       PangoFontFace *face = pango_generic_family_find_face (PANGO_GENERIC_FAMILY (item), self->description, self->language, 0);
-      return font_new_for_description (face, self->description, self->dpi, self->matrix);
+      return pango_font_face_create_font (face, self->description, self->dpi, self->matrix);
     }
 
   return NULL;
@@ -287,7 +276,7 @@ pango_fontset_cached_foreach (PangoFontset            *fontset,
       else if (PANGO_IS_GENERIC_FAMILY (item))
         {
           PangoFontFace *face = pango_generic_family_find_face (PANGO_GENERIC_FAMILY (item), self->description, self->language, 0);
-          font = font_new_for_description (face, self->description, self->dpi, self->matrix);
+          font = pango_font_face_create_font (face, self->description, self->dpi, self->matrix);
         }
 
       if ((*func) (fontset, font, data))
@@ -334,18 +323,11 @@ static void
 pango_fontset_cached_add_face (PangoFontsetCached *self,
                                PangoFontFace      *face)
 {
-  if (PANGO_IS_HB_FACE (face))
-    g_ptr_array_add (self->items,
-                     pango_hb_font_new_for_description (PANGO_HB_FACE (face),
-                                                        self->description,
-                                                        self->dpi,
-                                                        self->matrix));
-  else
-    g_ptr_array_add (self->items,
-                     pango_user_font_new_for_description (PANGO_USER_FACE (face),
-                                                          self->description,
-                                                          self->dpi,
-                                                          self->matrix));
+  g_ptr_array_add (self->items,
+                   pango_font_face_create_font (face,
+                                                self->description,
+                                                self->dpi,
+                                                self->matrix));
 }
 
 static void
@@ -870,10 +852,7 @@ pango_hb_font_map_add_face (PangoHbFontMap *self,
 
   g_return_if_fail (PANGO_IS_HB_FACE (face) || PANGO_IS_USER_FACE (face));
 
-  if (PANGO_IS_HB_FACE (face))
-    description = PANGO_HB_FACE (face)->description;
-  else
-    description = PANGO_USER_FACE (face)->description;
+  description = ((CommonFace *)face)->description;
 
   if (pango_font_description_get_set_fields (description) &
       (PANGO_FONT_MASK_VARIANT | PANGO_FONT_MASK_GRAVITY))
@@ -973,25 +952,24 @@ pango_hb_font_map_add_family (PangoHbFontMap  *self,
   int position;
 
   g_return_if_fail (PANGO_IS_HB_FAMILY (family) || PANGO_IS_GENERIC_FAMILY (family));
+  g_return_if_fail (((CommonFamily *)family)->map == NULL);
 
   if (!self->in_populate)
     g_ptr_array_add (self->added_families, g_object_ref (family));
 
-  name = pango_font_family_get_name (PANGO_FONT_FAMILY (family));
+  name = ((CommonFamily *)family)->name;
 
   position = 0;
   while (position < self->families->len)
     {
       PangoFontFamily *f = g_ptr_array_index (self->families, position);
-      if (g_ascii_strcasecmp (name, pango_font_family_get_name (f)) < 0)
+      if (g_ascii_strcasecmp (name, ((CommonFamily *)f)->name) < 0)
         break;
       position++;
     }
 
-  if (PANGO_IS_HB_FAMILY (family))
-    pango_hb_family_set_font_map (PANGO_HB_FAMILY (family), PANGO_FONT_MAP (self));
-  else
-    pango_generic_family_set_font_map (PANGO_GENERIC_FAMILY (family), PANGO_FONT_MAP (self));
+  ((CommonFamily *)family)->map = PANGO_FONT_MAP (self);
+  g_object_add_weak_pointer (G_OBJECT (self), (gpointer *)&((CommonFamily *)family)->map);
 
   g_ptr_array_insert (self->families, position, family);
   g_hash_table_add (self->families_hash, family);
@@ -1016,6 +994,7 @@ pango_hb_font_map_remove_family (PangoHbFontMap  *self,
   unsigned int position;
 
   g_return_if_fail (PANGO_IS_HB_FAMILY (family) || PANGO_IS_GENERIC_FAMILY (family));
+  g_return_if_fail (((CommonFamily *)family)->map == (PangoFontMap *)self);
 
   if (!g_ptr_array_find (self->added_families, family, &position))
     return;
@@ -1023,10 +1002,8 @@ pango_hb_font_map_remove_family (PangoHbFontMap  *self,
   g_hash_table_remove (self->families_hash, family);
   g_ptr_array_remove_index (self->families, position);
 
-  if (PANGO_IS_HB_FAMILY (family))
-    pango_hb_family_set_font_map (PANGO_HB_FAMILY (family), NULL);
-  else
-    pango_generic_family_set_font_map (PANGO_GENERIC_FAMILY (family), NULL);
+  g_object_remove_weak_pointer (G_OBJECT (self), (gpointer *)&((CommonFamily *)family)->map);
+  ((CommonFamily *)family)->map = NULL;
 
   if (!self->in_populate)
     g_list_model_items_changed (G_LIST_MODEL (self), position, 1, 0);

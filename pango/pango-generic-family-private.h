@@ -30,12 +30,12 @@ struct _PangoGenericFamily
 
   PangoFontMap *map;
   char *name;
+
+  /* up to here shared with PangoHbFamily */
+
   GPtrArray *families;
 };
 
-
-void                    pango_generic_family_set_font_map       (PangoGenericFamily      *self,
-                                                                 PangoFontMap            *map);
 
 PangoFontFace *         pango_generic_family_find_face          (PangoGenericFamily     *self,
                                                                  PangoFontDescription   *description,
