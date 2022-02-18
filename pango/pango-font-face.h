@@ -46,11 +46,16 @@ PANGO_AVAILABLE_IN_1_46
 PangoFontFamily *       pango_font_face_get_family     (PangoFontFace  *face);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean              pango_font_face_supports_language (PangoFontFace *face,
-                                                         PangoLanguage *language);
+gboolean                pango_font_face_supports_language
+                                                       (PangoFontFace  *face,
+                                                        PangoLanguage  *language);
 
 PANGO_AVAILABLE_IN_ALL
-PangoLanguage **      pango_font_face_get_languages     (PangoFontFace *face);
+PangoLanguage **        pango_font_face_get_languages  (PangoFontFace  *face);
+
+PANGO_AVAILABLE_IN_ALL
+gboolean                pango_font_face_has_char       (PangoFontFace  *face,
+                                                        gunichar        wc);
 
 
 G_END_DECLS

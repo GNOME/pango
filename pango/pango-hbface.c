@@ -22,6 +22,7 @@
 
 #include "pango-font-private.h"
 #include "pango-hbface-private.h"
+#include "pango-hbfont.h"
 
 #include "pango-language-set-simple-private.h"
 
@@ -211,25 +212,50 @@ hb_face_is_monospace (hb_face_t *face)
   return res;
 }
 
-static void
-ensure_psname (PangoHbFace *self)
-{
-  char *p;
+ static void
+ensure_faceid (PangoHbFace *self)
+ {
+  double slant;
+  char buf0[32], buf1[32], buf2[32];
+  char *str = NULL;
+  char *psname;
+   char *p;
 
-  if (self->psname)
+  if (self->faceid)
     return;
 
   ensure_hb_face (self);
 
-  self->psname = get_name_from_hb_face (self->face, HB_OT_NAME_ID_POSTSCRIPT_NAME, HB_OT_NAME_ID_INVALID);
+  psname = get_name_from_hb_face (self->face, HB_OT_NAME_ID_POSTSCRIPT_NAME, HB_OT_NAME_ID_INVALID);
 
   /* PostScript name should not contain problematic chars, but just in case,
    * make sure we don't have any ' ', '=' or ',' that would give us parsing
    * problems.
    */
-  p = self->psname;
+  p = psname;
   while ((p = strpbrk (p, " =,")) != NULL)
     *p = '?';
+
+  if (self->matrix)
+    slant = pango_matrix_get_slant_ratio (self->matrix);
+  else
+    slant = 0.;
+
+  if (self->n_variations > 0)
+    str = variations_to_string (self->variations, self->n_variations, "_", ":");
+
+  self->faceid = g_strdup_printf ("hb:%s:%u:%d:%d:%s:%s:%s%s%s",
+                                  psname,
+                                  self->index,
+                                  self->instance_id,
+                                  self->embolden,
+                                  g_ascii_formatd (buf0, sizeof (buf0), "%g", self->x_scale),
+                                  g_ascii_formatd (buf1, sizeof (buf1), "%g", self->y_scale),
+                                  g_ascii_formatd (buf2, sizeof (buf2), "%g", slant),
+                                  self->n_variations > 0 ? ":" : "",
+                                  self->n_variations > 0 ? str : "");
+  g_free (str);
+  g_free (psname);
 }
 
 static const char *
@@ -315,7 +341,10 @@ pango_hb_face_describe (PangoFontFace *face)
   PangoHbFace *self = PANGO_HB_FACE (face);
 
   if ((pango_font_description_get_set_fields (self->description) & PANGO_FONT_MASK_FACEID) == 0)
-    pango_font_description_set_faceid (self->description, pango_hb_face_get_faceid (self));
+    {
+      ensure_faceid (self);
+      pango_font_description_set_faceid (self->description, self->faceid);
+    }
 
   return pango_font_description_copy (self->description);
 }
@@ -391,6 +420,45 @@ pango_hb_face_get_languages (PangoFontFace *face)
   return NULL;
 }
 
+static gboolean
+pango_hb_face_has_char (PangoFontFace *face,
+                        gunichar       wc)
+{
+  PangoHbFace *self = PANGO_HB_FACE (face);
+  hb_font_t *hb_font;
+  hb_codepoint_t glyph;
+  gboolean ret;
+
+  ensure_hb_face (self);
+
+  hb_font = hb_font_create (self->face);
+  ret = hb_font_get_nominal_glyph (hb_font, wc, &glyph);
+  hb_font_destroy (hb_font);
+
+  return ret;
+}
+
+static const char *
+pango_hb_face_get_faceid (PangoFontFace *face)
+{
+  PangoHbFace *self = PANGO_HB_FACE (face);
+
+  ensure_faceid (self);
+
+  return self->faceid;
+}
+
+static PangoFont *
+pango_hb_face_create_font (PangoFontFace              *face,
+                           const PangoFontDescription *desc,
+                           float                       dpi,
+                           const PangoMatrix          *matrix)
+{
+  PangoHbFace *self = PANGO_HB_FACE (face);
+
+  return PANGO_FONT (pango_hb_font_new_for_description (self, desc, dpi, matrix));
+}
+
 static void
 pango_hb_face_class_init (PangoHbFaceClass *class)
 {
@@ -407,26 +475,13 @@ pango_hb_face_class_init (PangoHbFaceClass *class)
   face_class->is_variable = pango_hb_face_is_variable;
   face_class->supports_language = pango_hb_face_supports_language;
   face_class->get_languages = pango_hb_face_get_languages;
+  face_class->has_char = pango_hb_face_has_char;
+  face_class->get_faceid = pango_hb_face_get_faceid;
+  face_class->create_font = pango_hb_face_create_font;
 }
 
 /* }}} */
 /* {{{ Private API */
-
-/*< private >
- * pango_hb_face_set_family:
- * @self: a `PangoHbFace`
- * @family: a `PangoFontFamily`
- *
- * Sets the font family of a `PangoHbFace`.
- *
- * This should only be called by fontmap implementations.
- */
-void
-pango_hb_face_set_family (PangoHbFace     *self,
-                          PangoFontFamily *family)
-{
-  self->family = family;
-}
 
 /*< private >
  * pango_hb_face_get_language_set:
@@ -478,96 +533,6 @@ pango_hb_face_set_matrix (PangoHbFace       *self,
 
   pango_matrix_get_font_scale_factors (self->matrix, &self->x_scale, &self->y_scale);
   pango_matrix_scale (self->matrix, 1./self->x_scale, 1./self->y_scale);
-}
-
-/*< private >
- * pango_hb_face_has_char:
- * @self: a `PangoHbFace`
- * @wc: a Unicode character
- *
- * Returns whether the face provides a glyph for this character.
- *
- * Returns: `TRUE` if @font can render @wc
- */
-gboolean
-pango_hb_face_has_char (PangoHbFace *self,
-                        gunichar     wc)
-{
-  hb_font_t *hb_font;
-  hb_codepoint_t glyph;
-  gboolean ret;
-
-  ensure_hb_face (self);
-
-  hb_font = hb_font_create (self->face);
-  ret = hb_font_get_nominal_glyph (hb_font, wc, &glyph);
-  hb_font_destroy (hb_font);
-
-  return ret;
-}
-
-/*< private >
- * pango_hb_face_get_faceid:
- * @self: a `PangoHbFace`
- *
- * Returns the faceid of the face.
- *
- * The faceid is meant to uniquely identify the face among the
- * faces of its family. It includes an identifier for the font
- * file that is used (currently, we use the PostScript name for
- * this), the face index, the instance ID, as well as synthetic
- * tweaks such as emboldening and transforms and variations.
- *
- * [method@Pango.FontFace.describe] adds the faceid to the font
- * description that it produces.
- *
- * See pango_hb_family_find_face() for the code that takes the
- * faceid into account when searching for a face. It is careful
- * to fall back to approximate matching if an exact match for
- * the faceid isn't found. That should make it safe to preserve
- * faceids when saving font descriptions in configuration or
- * other data.
- *
- * There are no guarantees about the format of the string that
- * this function produces, except for that it does not contain
- * ' ', ',' or '=', so it can be safely embedded in the '@' part
- * of a serialized font description.
- *
- * Returns: (transfer none): the faceid
- */
-const char *
-pango_hb_face_get_faceid (PangoHbFace *self)
-{
-  if (!self->faceid)
-    {
-      double slant;
-      char buf0[32], buf1[32], buf2[32];
-      char *str = NULL;
-
-      ensure_psname (self);
-
-      if (self->matrix)
-        slant = pango_matrix_get_slant_ratio (self->matrix);
-      else
-        slant = 0.;
-
-      if (self->n_variations > 0)
-        str = variations_to_string (self->variations, self->n_variations, "_", ":");
-
-      self->faceid = g_strdup_printf ("hb:%s:%u:%d:%d:%s:%s:%s%s%s",
-                                      self->psname,
-                                      self->index,
-                                      self->instance_id,
-                                      self->embolden,
-                                      g_ascii_formatd (buf0, sizeof (buf0), "%g", self->x_scale),
-                                      g_ascii_formatd (buf1, sizeof (buf1), "%g", self->y_scale),
-                                      g_ascii_formatd (buf2, sizeof (buf2), "%g", slant),
-                                      self->n_variations > 0 ? ":" : "",
-                                      self->n_variations > 0 ? str : "");
-      g_free (str);
-    }
-
-  return self->faceid;
 }
 
 /* }}} */

@@ -45,22 +45,27 @@
  /* {{{ Utilities */
 
 static void
-ensure_psname (PangoUserFace *self)
+ensure_faceid (PangoUserFace *self)
 {
+  char *psname;
   char *p;
 
-  if (self->psname)
+  if (self->faceid)
     return;
 
-  self->psname = g_strconcat (pango_font_description_get_family (self->description), "_", self->name, NULL);
+  psname = g_strconcat (pango_font_description_get_family (self->description), "_", self->name, NULL);
 
   /* PostScript name should not contain problematic chars, but just in case,
    * make sure we don't have any ' ', '=' or ',' that would give us parsing
    * problems.
    */
-  p = self->psname;
+  p = psname;
   while ((p = strpbrk (p, " =,")) != NULL)
     *p = '?';
+
+  self->faceid = g_strconcat ("user:", psname, NULL);
+
+  g_free (psname);
 }
 
 static const char *
@@ -216,7 +221,10 @@ pango_user_face_describe (PangoFontFace *face)
   PangoUserFace *self = PANGO_USER_FACE (face);
 
   if ((pango_font_description_get_set_fields (self->description) & PANGO_FONT_MASK_FACEID) == 0)
-    pango_font_description_set_faceid (self->description, pango_user_face_get_faceid (self));
+    {
+      ensure_faceid (self);
+      pango_font_description_set_faceid (self->description, self->faceid);
+    }
 
   return pango_font_description_copy (self->description);
 }
@@ -247,6 +255,37 @@ pango_user_face_is_variable (PangoFontFace *face)
   return FALSE;
 }
 
+static gboolean
+pango_user_face_has_char (PangoFontFace *face,
+                          gunichar       wc)
+{
+  PangoUserFace *self = PANGO_USER_FACE (face);
+  hb_codepoint_t glyph;
+
+  return self->glyph_func (self, wc, &glyph, self->user_data);
+}
+
+static const char *
+pango_user_face_get_faceid (PangoFontFace *face)
+{
+  PangoUserFace *self = PANGO_USER_FACE (face);
+
+  ensure_faceid (self);
+
+  return self->faceid;
+}
+
+static PangoFont *
+pango_user_face_create_font (PangoFontFace              *face,
+                             const PangoFontDescription *desc,
+                             float                       dpi,
+                             const PangoMatrix          *matrix)
+{
+  PangoUserFace *self = PANGO_USER_FACE (face);
+
+  return PANGO_FONT (pango_user_font_new_for_description (self, desc, dpi, matrix));
+}
+
 static void
 pango_user_face_class_init (PangoUserFaceClass *class)
 {
@@ -261,63 +300,9 @@ pango_user_face_class_init (PangoUserFaceClass *class)
   face_class->get_family = pango_user_face_get_family;
   face_class->is_monospace = pango_user_face_is_monospace;
   face_class->is_variable = pango_user_face_is_variable;
-}
-
-/* }}} */
-/* {{{ Private API */
-
-/*< private >
- * pango_user_face_set_family:
- * @self: a `PangoUserFace`
- * @family: a `PangoFontFamily`
- *
- * Sets the font family of a `PangoUserFace`.
- *
- * This should only be called by fontmap implementations.
- */
-void
-pango_user_face_set_family (PangoUserFace   *self,
-                            PangoFontFamily *family)
-{
-  self->family = family;
-}
-
-/*< private >
- * pango_user_face_has_char:
- * @self: a `PangoUserFace`
- * @wc: a Unicode character
- *
- * Returns whether the face provides a glyph for this character.
- *
- * Returns: `TRUE` if @font can render @wc
- */
-gboolean
-pango_user_face_has_char (PangoUserFace *self,
-                          gunichar     wc)
-{
-  hb_codepoint_t glyph;
-
-  return self->glyph_func (self, wc, &glyph, self->user_data);
-}
-
-/*< private >
- * pango_user_face_get_faceid:
- * @self: a `PangoUserFace`
- *
- * Returns the faceid of the face.
- *
- * Returns: (transfer none): the faceid
- */
-const char *
-pango_user_face_get_faceid (PangoUserFace *self)
-{
-  if (!self->faceid)
-    {
-      ensure_psname (self);
-      self->faceid = g_strconcat ("user:", self->psname, NULL);
-    }
-
-  return self->faceid;
+  face_class->has_char = pango_user_face_has_char;
+  face_class->get_faceid = pango_user_face_get_faceid;
+  face_class->create_font = pango_user_face_create_font;
 }
 
 /* }}} */
