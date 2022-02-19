@@ -6330,6 +6330,41 @@ adjust_line_letter_spacing (PangoLayoutLine *line,
 }
 
 static void
+apply_italic_correction (PangoLayoutLine *line,
+                         ParaBreakState  *state)
+{
+#if HB_VERSION_ATLEAST (3, 0, 0)
+  for (GSList *l = line->runs; l; l = l->next)
+    {
+      PangoLayoutRun *run = l->data;
+      PangoLayoutRun *next_run = l->next ? l->next->data : NULL;
+      hb_font_t *font, *next_font;
+      float slant, next_slant;
+      hb_font_extents_t extents;
+      hb_position_t height;
+      hb_position_t pos;
+
+      if (!next_run)
+        break;
+
+      font = pango_font_get_hb_font (run->item->analysis.font);
+      next_font = pango_font_get_hb_font (next_run->item->analysis.font);
+
+      slant = hb_style_get_value (font, HB_STYLE_TAG_SLANT_RATIO);
+      next_slant = hb_style_get_value (next_font, HB_STYLE_TAG_SLANT_RATIO);
+
+      if (next_slant > slant)
+        continue;
+
+      hb_font_get_extents_for_direction (font, HB_DIRECTION_LTR, &extents);
+      height = extents.ascender - extents.descender;
+      pos = extents.ascender - height / 2;
+      pad_glyphstring_right (run->glyphs, state, (slant - next_slant) * pos);
+    }
+#endif
+}
+
+static void
 justify_clusters (PangoLayoutLine *line,
                   ParaBreakState  *state)
 {
@@ -6821,6 +6856,10 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
   adjust_line_letter_spacing (line, state);
 
   DEBUG ("after letter spacing", line, state);
+
+  apply_italic_correction (line, state);
+
+  DEBUG ("after italic correction", line, state);
 
   /* Distribute extra space between words if justifying and line was wrapped */
   if (line->layout->justify && (wrapped || ellipsized || line->layout->justify_last_line))
