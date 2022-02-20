@@ -731,7 +731,7 @@ test_list_splice (void)
   list = pango_attr_list_copy (base);
 
   other = pango_attr_list_from_string ("0 3 size 20\n"
-                                       "2 4 stretch 2\n");
+                                       "2 4 stretch condensed\n");
 
   pango_attr_list_splice (list, other, 11, 5);
 
@@ -822,7 +822,7 @@ test_list_filter (void)
   PangoAttrList *out;
 
   list = pango_attr_list_from_string ("0 -1 size 10\n"
-                                      "10 20 stretch 2\n"
+                                      "10 20 stretch condensed\n"
                                       "20 -1 weight 700\n");
 
   out = pango_attr_list_filter (list, never_true, NULL);
@@ -956,7 +956,7 @@ test_iter_get_font (void)
   pango_attr_list_insert (list, attr);
   attr = attribute_from_string ("20 -1 rise 100");
   pango_attr_list_insert (list, attr);
-  attr = attribute_from_string ("20 -1 fallback 0");
+  attr = attribute_from_string ("20 -1 fallback false");
   pango_attr_list_insert (list, attr);
 
   iter = pango_attr_list_get_iterator (list);
@@ -1015,7 +1015,7 @@ test_iter_get_attrs (void)
   pango_attr_list_insert (list, attr);
   attr = attribute_from_string ("20 -1 rise 100");
   pango_attr_list_insert (list, attr);
-  attr = attribute_from_string ("20 -1 fallback 0");
+  attr = attribute_from_string ("20 -1 fallback false");
   pango_attr_list_insert (list, attr);
 
   iter = pango_attr_list_get_iterator (list);
@@ -1025,21 +1025,21 @@ test_iter_get_attrs (void)
   pango_attr_iterator_next (iter);
   assert_attr_iterator (iter, "0 -1 size 10240\n"
                               "0 -1 family \"Times\"\n"
-                              "10 30 stretch 2\n"
+                              "10 30 stretch condensed\n"
                               "10 20 language ja-jp\n");
 
   pango_attr_iterator_next (iter);
   assert_attr_iterator (iter, "0 -1 size 10240\n"
                               "0 -1 family \"Times\"\n"
-                              "10 30 stretch 2\n"
+                              "10 30 stretch condensed\n"
                               "20 -1 rise 100\n"
-                              "20 -1 fallback 0\n");
+                              "20 -1 fallback false\n");
 
   pango_attr_iterator_next (iter);
   assert_attr_iterator (iter, "0 -1 size 10240\n"
                               "0 -1 family \"Times\"\n"
                               "20 -1 rise 100\n"
-                              "20 -1 fallback 0\n");
+                              "20 -1 fallback false\n");
 
   pango_attr_iterator_next (iter);
   g_assert_null (pango_attr_iterator_get_attrs (iter));
@@ -1056,8 +1056,8 @@ test_list_update (void)
   list = pango_attr_list_from_string ("0 200 rise 100\n"
                                       "5 15 family \"Times\"\n"
                                       "10 11 size 10240\n"
-                                      "11 100 fallback 0\n"
-                                      "30 60 stretch 2\n");
+                                      "11 100 fallback false\n"
+                                      "30 60 stretch condensed\n");
 
   pango_attr_list_update (list, 8, 10, 20);
 
@@ -1176,8 +1176,8 @@ test_insert (void)
   list = pango_attr_list_from_string ("0 200 rise 100\n"
                                       "5 15 family \"Times\"\n"
                                       "10 11 size 10240\n"
-                                      "11 100 fallback 0\n"
-                                      "30 60 stretch 2\n");
+                                      "11 100 fallback false\n"
+                                      "30 60 stretch condensed\n");
 
   attr = attribute_from_string ("10 25 family \"Times\"");
   pango_attr_list_change (list, attr);
@@ -1210,10 +1210,10 @@ test_insert2 (void)
   list = pango_attr_list_from_string ("0 200 rise 100\n"
                                       "5 15 family \"Times\"\n"
                                       "10 11 size 10240\n"
-                                      "11 100 fallback 0\n"
+                                      "11 100 fallback false\n"
                                       "20 30 family \"Times\"\n"
                                       "30 40 family \"Futura\"\n"
-                                      "30 60 stretch 2\n");
+                                      "30 60 stretch condensed\n");
 
   attr = attribute_from_string ("10 35 family \"Times\"");
   pango_attr_list_change (list, attr);
@@ -1246,8 +1246,8 @@ test_merge (void)
   list = pango_attr_list_from_string ("0 200 rise 100\n"
                                       "5 15 family \"Times\"\n"
                                       "10 11 size 10240\n"
-                                      "11 100 fallback 0\n"
-                                      "30 60 stretch 2\n");
+                                      "11 100 fallback false\n"
+                                      "30 60 stretch condensed\n");
 
   list2 = pango_attr_list_from_string ("11 13 size 10240\n"
                                        "13 15 size 11264\n"
