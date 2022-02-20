@@ -758,7 +758,6 @@ pango_font_description_is_similar (const PangoFontDescription *a,
                                    const PangoFontDescription *b)
 {
   return a->variant == b->variant &&
-         a->stretch == b->stretch &&
          a->gravity == b->gravity;
 }
 
@@ -768,14 +767,16 @@ pango_font_description_compute_distance (const PangoFontDescription *a,
 {
   if (a->style == b->style)
     {
-      return abs((int)(a->weight) - (int)(b->weight));
+      return abs ((int)(a->weight) - (int)(b->weight)) +
+             abs ((int)(a->stretch) - (int)(b->stretch));
     }
   else if (a->style != PANGO_STYLE_NORMAL &&
            b->style != PANGO_STYLE_NORMAL)
     {
       /* Equate oblique and italic, but with a big penalty
        */
-      return 1000000 + abs ((int)(a->weight) - (int)(b->weight));
+      return 1000000 + abs ((int)(a->weight) - (int)(b->weight))
+                     + abs ((int)(a->stretch) - (int)(b->stretch));
     }
   else
     return G_MAXINT;
@@ -791,11 +792,11 @@ pango_font_description_compute_distance (const PangoFontDescription *a,
  * for @desc than those of @old_match are, or if @old_match is %NULL,
  * determines if @new_match is a match at all.
  *
- * Approximate matching is done for weight and style; other style attributes
- * must match exactly. Style attributes are all attributes other than family
- * and size-related attributes. Approximate matching for style considers
- * %PANGO_STYLE_OBLIQUE and %PANGO_STYLE_ITALIC as matches, but not as good
- * a match as when the styles are equal.
+ * Approximate matching is done for weight, stretch and style; other style
+ * attributes must match exactly. Style attributes are all attributes other
+ * than family and size-related attributes. Approximate matching for style
+ * considers %PANGO_STYLE_OBLIQUE and %PANGO_STYLE_ITALIC as matches, but
+ * not as good a match as when the styles are equal.
  *
  * Note that @old_match must match @desc.
  *
