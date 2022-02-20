@@ -72,7 +72,7 @@ font_desc
   attribute, you will get Sans normal, not italic.
 
 font_family
-face
+family
 : A font family name.
 
 font_size
@@ -104,9 +104,9 @@ variant
 
 font_stretch
 stretch
-: One of 'ultracondensed', 'extracondensed',
-  'condensed', 'semicondensed', 'normal', 'semiexpanded', 'expanded',
-  'extraexpanded', 'ultraexpanded'.
+: One of 'ultra-condensed', 'extra-condensed',
+  'condensed', 'semi-condensed', 'normal', 'semi-expanded', 'expanded',
+  'extra-expanded', 'ultra-expanded'.
 
 font_features
 : A comma-separated list of OpenType font feature settings, in the same syntax as
