@@ -1,0 +1,12 @@
+<markup>
+<span font="Cantarell 20" lang="en">
+<b>be bold</b>
+<big>be big</big>
+<small>be small</small>
+<tt>go mono</tt>
+<i>be italic</i>
+<s>strike out</s>
+<u>underline it</u>
+this<sub>is</sub><sup>wild</sup>
+</span>
+</markup>
