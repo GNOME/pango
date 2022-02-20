@@ -1,0 +1,107 @@
+
+
+be bold
+be big
+be small
+go mono
+be italic
+strike out
+underline it
+thisiswild
+
+
+
+
+---
+
+range 0 1
+range 1 2
+1 79 font-desc "Cantarell 20"
+1 79 language en
+range 2 9
+1 79 font-desc "Cantarell 20"
+1 79 language en
+2 9 weight bold
+range 9 10
+1 79 font-desc "Cantarell 20"
+1 79 language en
+range 10 16
+1 79 font-desc "Cantarell 20"
+1 79 language en
+10 16 size 24576
+range 16 17
+1 79 font-desc "Cantarell 20"
+1 79 language en
+range 17 25
+1 79 font-desc "Cantarell 20"
+1 79 language en
+17 25 size 17066
+range 25 26
+1 79 font-desc "Cantarell 20"
+1 79 language en
+range 26 33
+1 79 font-desc "Cantarell 20"
+1 79 language en
+26 33 family "Monospace"
+range 33 34
+1 79 font-desc "Cantarell 20"
+1 79 language en
+range 34 43
+1 79 font-desc "Cantarell 20"
+1 79 language en
+34 43 style italic
+range 43 44
+1 79 font-desc "Cantarell 20"
+1 79 language en
+range 44 54
+1 79 font-desc "Cantarell 20"
+1 79 language en
+44 54 strikethrough single
+range 54 55
+1 79 font-desc "Cantarell 20"
+1 79 language en
+range 55 67
+1 79 font-desc "Cantarell 20"
+1 79 language en
+55 67 underline single
+range 67 72
+1 79 font-desc "Cantarell 20"
+1 79 language en
+range 72 74
+1 79 font-desc "Cantarell 20"
+1 79 language en
+72 74 font-scale subscript
+72 74 baseline-shift subscript
+range 74 78
+1 79 font-desc "Cantarell 20"
+1 79 language en
+74 78 font-scale superscript
+74 78 baseline-shift superscript
+range 78 79
+1 79 font-desc "Cantarell 20"
+1 79 language en
+range 79 2147483647
+
+
+---
+
+[0:1] (null) Normal
+[1:2] en Cantarell 20
+[2:9] en Cantarell Bold 20
+[9:10] en Cantarell 20
+[10:16] en Cantarell 24
+[16:17] en Cantarell 20
+[17:25] en Cantarell 16.666015625
+[25:26] en Cantarell 20
+[26:33] en Monospace 20
+[33:34] en Cantarell 20
+[34:43] en Cantarell Italic 20
+[43:44] en Cantarell 20
+[44:54] en Cantarell 20
+[54:55] en Cantarell 20
+[55:67] en Cantarell 20
+[67:72] en Cantarell 20
+[72:74] en Cantarell 20
+[74:78] en Cantarell 20
+[78:79] en Cantarell 20
+[79:2147483647] (null) Cantarell 20

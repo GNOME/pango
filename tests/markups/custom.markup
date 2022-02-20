@@ -1,0 +1,20 @@
+<markup>
+<span font="Cantarell 20">
+  <span font_family="Noto Sans">noto</span>
+  <span font_size="30">size</span>
+  <span font_style="italic">style</span>
+  <span font_weight="738">weight</span>
+  <span font_variant="small-caps">variant</span>
+  <span font_stretch="ultra-expanded">stretch</span>
+  <span color="red">red</span>
+  <span fgcolor="#ff0000ff">red</span>
+  <span bgcolor="#00aabbcc">not red</span>
+  <span segment="word">word</span>
+  <span segment="sentence">this is a sentence.</span>
+  <span segment="paragraph">this is a paragraph.</span>
+  <span size="smaller">smaller</span>
+  <span size="larger">larger</span>
+  <span size="xx-large">xx</span>
+  <span size="200%">double</span>
+</span>
+</markup>
