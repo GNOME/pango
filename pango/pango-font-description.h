@@ -130,17 +130,20 @@ typedef enum {
  *
  * An enumeration specifying the width of the font relative to other designs
  * within a family.
+ *
+ * Stretch is specified as a numeric value ranging from 500 to 2000.
+ * This enumeration simply provides some common, predefined values.
  */
 typedef enum {
-  PANGO_STRETCH_ULTRA_CONDENSED,
-  PANGO_STRETCH_EXTRA_CONDENSED,
-  PANGO_STRETCH_CONDENSED,
-  PANGO_STRETCH_SEMI_CONDENSED,
-  PANGO_STRETCH_NORMAL,
-  PANGO_STRETCH_SEMI_EXPANDED,
-  PANGO_STRETCH_EXPANDED,
-  PANGO_STRETCH_EXTRA_EXPANDED,
-  PANGO_STRETCH_ULTRA_EXPANDED
+  PANGO_STRETCH_ULTRA_CONDENSED =  500,
+  PANGO_STRETCH_EXTRA_CONDENSED =  625,
+  PANGO_STRETCH_CONDENSED       =  750,
+  PANGO_STRETCH_SEMI_CONDENSED  =  875,
+  PANGO_STRETCH_NORMAL          = 1000,
+  PANGO_STRETCH_SEMI_EXPANDED   = 1125,
+  PANGO_STRETCH_EXPANDED        = 1250,
+  PANGO_STRETCH_EXTRA_EXPANDED  = 1500,
+  PANGO_STRETCH_ULTRA_EXPANDED  = 2000
 } PangoStretch;
 
 /**
