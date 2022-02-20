@@ -36,7 +36,7 @@ test_serialize_attr_list (void)
     "0 100 font-desc \"Cantarell, Sans, Italic Ultra-Light 64\", 10 11 weight 100",
     "0 -1 size 10",
     "0 1 weight 700, 2 4 weight book",
-    "0 200 rise 100\n5 15 family \"Times\"\n10 11 size 10240\n11 100 fallback 0\n30 60 stretch 2\n",
+    "0 200 rise 100\n5 15 family \"Times\"\n10 11 size 10240\n11 100 fallback false\n30 60 stretch condensed\n",
     ""
   };
   const char *roundtripped[] = {
