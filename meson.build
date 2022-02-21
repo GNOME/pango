@@ -336,29 +336,17 @@ if not freetype_option.disabled() or freetype_required
   freetype_option = false
 endif
 
-# The first version of freetype with a pkg-config file is 2.1.5
-freetype_dep = dependency('freetype2', required: freetype_option)
+# The first version of freetype with a pkg-config file is 2.1.5,
+# CMake uses 'freetype' rather than 'freetype2' for the package name
+freetype_package_name = cc.get_argument_syntax() == 'msvc' ? \
+                        'freetype' : 'freetype2'
 
-if freetype_dep.found()
+freetype_dep = dependency(freetype_package_name,
+                          required: freetype_option,
+                          fallback: ['freetype2', 'freetype_dep'])
+
+if freetype_dep.found() and freetype_dep.type_name() == 'pkgconfig'
   freetype2_pc = 'freetype2'
-else
-  if cc.get_id() == 'msvc' and cc.has_header('ft2build.h')
-    foreach ft2_lib: ['freetype', 'freetypemt']
-      if not freetype_dep.found()
-        freetype_dep = cc.find_library(ft2_lib, required: freetype_option)
-        if freetype_dep.found()
-          freetype2_lib = '-l@0@'.format(ft2_lib)
-        endif
-      endif
-    endforeach
-  endif
-endif
-
-# Do the fallback now if freetype2 has not been found on the system.
-freetype_option = freetype_required ? true : get_option('freetype')
-if not freetype_dep.found()
-  freetype_dep = dependency('freetype2', required: freetype_option,
-                            fallback: ['freetype2', 'freetype_dep'])
 endif
 
 # To build pangoft2, we need HarfBuzz, FontConfig and FreeType
