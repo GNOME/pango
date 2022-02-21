@@ -270,7 +270,6 @@ cairo_pc = ''
 cairo_lib = ''
 freetype2_pc=''
 fontconfig_pc=''
-fontconfig_lib=''
 
 harfbuzz_dep = dependency('harfbuzz',
                           version: harfbuzz_req_version,
@@ -297,9 +296,6 @@ else
     # Look for the Visual Studio-style import library if FontConfig's .pc file cannot be
     # found on Visual Studio
     fontconfig_dep = cc.find_library('fontconfig', required: fontconfig_option)
-    if fontconfig_dep.found()
-      fontconfig_lib = '-lfontconfig'
-    endif
   endif
 endif
 
