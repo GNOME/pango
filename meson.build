@@ -268,40 +268,15 @@ endif
 # pkg-config files for them
 cairo_pc = ''
 cairo_lib = ''
-harfbuzz_pc=''
 freetype2_pc=''
 fontconfig_pc=''
-harfbuzz_lib=''
 fontconfig_lib=''
 
-harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version, required: false)
-if harfbuzz_dep.found()
-  harfbuzz_pc = 'harfbuzz'
-else
-  if cc.get_id() == 'msvc' and cc.has_header('hb.h')
-    # The CMake build files for HarfBuzz (which is used for MSVC builds) do not
-    # generate pkg-config files, so look for harfbuzz.lib.  Ensure that we
-    # we look for HarfBuzz 2.0.0 or later.
-    harfbuzz_lib = cc.find_library('harfbuzz', required: false)
-    if harfbuzz_lib.found()
-      if cc.has_function('hb_ot_tags_from_script_and_language', dependencies: harfbuzz_lib)
-        harfbuzz_dep = harfbuzz_lib
-      endif
-    endif
-  endif
-endif
-
-# Remove when Meson acquires ability to declare deps declaratively, or
-# when finding dependencies via CMake files is fixed.
-if not harfbuzz_dep.found()
-  harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version,
-                            fallback: ['harfbuzz', 'libharfbuzz_dep'],
-                            default_options: ['coretext=enabled'])
-endif
-
-if not harfbuzz_dep.found()
-  error('harfbuzz not found')
-endif
+harfbuzz_dep = dependency('harfbuzz',
+                          version: harfbuzz_req_version,
+                          required: true,
+                          fallback: ['harfbuzz', 'libharfbuzz_dep'],
+                          default_options: ['coretext=enabled'])
 
 pango_deps += harfbuzz_dep
 
