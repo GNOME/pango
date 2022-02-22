@@ -268,40 +268,14 @@ endif
 # pkg-config files for them
 cairo_pc = ''
 cairo_lib = ''
-harfbuzz_pc=''
 freetype2_pc=''
 fontconfig_pc=''
-harfbuzz_lib=''
-fontconfig_lib=''
 
-harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version, required: false)
-if harfbuzz_dep.found()
-  harfbuzz_pc = 'harfbuzz'
-else
-  if cc.get_id() == 'msvc' and cc.has_header('hb.h')
-    # The CMake build files for HarfBuzz (which is used for MSVC builds) do not
-    # generate pkg-config files, so look for harfbuzz.lib.  Ensure that we
-    # we look for HarfBuzz 2.0.0 or later.
-    harfbuzz_lib = cc.find_library('harfbuzz', required: false)
-    if harfbuzz_lib.found()
-      if cc.has_function('hb_ot_tags_from_script_and_language', dependencies: harfbuzz_lib)
-        harfbuzz_dep = harfbuzz_lib
-      endif
-    endif
-  endif
-endif
-
-# Remove when Meson acquires ability to declare deps declaratively, or
-# when finding dependencies via CMake files is fixed.
-if not harfbuzz_dep.found()
-  harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version,
-                            fallback: ['harfbuzz', 'libharfbuzz_dep'],
-                            default_options: ['coretext=enabled'])
-endif
-
-if not harfbuzz_dep.found()
-  error('harfbuzz not found')
-endif
+harfbuzz_dep = dependency('harfbuzz',
+                          version: harfbuzz_req_version,
+                          required: true,
+                          fallback: ['harfbuzz', 'libharfbuzz_dep'],
+                          default_options: ['coretext=enabled'])
 
 pango_deps += harfbuzz_dep
 
@@ -322,9 +296,6 @@ else
     # Look for the Visual Studio-style import library if FontConfig's .pc file cannot be
     # found on Visual Studio
     fontconfig_dep = cc.find_library('fontconfig', required: fontconfig_option)
-    if fontconfig_dep.found()
-      fontconfig_lib = '-lfontconfig'
-    endif
   endif
 endif
 
@@ -365,29 +336,17 @@ if not freetype_option.disabled() or freetype_required
   freetype_option = false
 endif
 
-# The first version of freetype with a pkg-config file is 2.1.5
-freetype_dep = dependency('freetype2', required: freetype_option)
+# The first version of freetype with a pkg-config file is 2.1.5,
+# CMake uses 'freetype' rather than 'freetype2' for the package name
+freetype_package_name = cc.get_argument_syntax() == 'msvc' ? \
+                        'freetype' : 'freetype2'
 
-if freetype_dep.found()
+freetype_dep = dependency(freetype_package_name,
+                          required: freetype_option,
+                          fallback: ['freetype2', 'freetype_dep'])
+
+if freetype_dep.found() and freetype_dep.type_name() == 'pkgconfig'
   freetype2_pc = 'freetype2'
-else
-  if cc.get_id() == 'msvc' and cc.has_header('ft2build.h')
-    foreach ft2_lib: ['freetype', 'freetypemt']
-      if not freetype_dep.found()
-        freetype_dep = cc.find_library(ft2_lib, required: freetype_option)
-        if freetype_dep.found()
-          freetype2_lib = '-l@0@'.format(ft2_lib)
-        endif
-      endif
-    endforeach
-  endif
-endif
-
-# Do the fallback now if freetype2 has not been found on the system.
-freetype_option = freetype_required ? true : get_option('freetype')
-if not freetype_dep.found()
-  freetype_dep = dependency('freetype2', required: freetype_option,
-                            fallback: ['freetype2', 'freetype_dep'])
 endif
 
 # To build pangoft2, we need HarfBuzz, FontConfig and FreeType
