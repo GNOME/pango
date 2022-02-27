@@ -49,7 +49,7 @@ pango_content_files = [
 doc_conf = configuration_data()
 doc_conf.set('PANGO_VERSION', meson.project_version())
 
-docs_dir = pango_datadir / 'doc/pango/reference'
+docs_dir = pango_datadir / 'doc'
 
 pango_toml = configure_file(input: 'pango.toml.in',
                             output: 'pango.toml',
