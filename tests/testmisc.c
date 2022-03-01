@@ -818,6 +818,43 @@ test_small_caps_crash (void)
   g_object_unref (context);
 }
 
+static void
+test_reorder (void)
+{
+  struct {
+    const char *text;
+    int offsets[10];
+  } tests[] = {
+    { "abאב01αβ", { 0, 6, 2, 8, 0, } },
+    { "abאב01גαβcd", { 0, 8, 6, 2, 10, 14 } },
+    { "abאב01גαβא", { 0, 8, 6, 2, 10, 14 } },
+  };
+  PangoContext *context;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
+  for (int i = 0; i < G_N_ELEMENTS (tests); i++)
+    {
+      GList *items;
+      GList *l;
+      int j;
+
+      items = pango_itemize (context, tests[i].text, 0, strlen (tests[i].text), NULL, NULL);
+
+      items = pango_reorder_items (items);
+
+      for (l = items, j = 0; l; l = l->next, j++)
+        {
+          PangoItem *item = l->data;
+          g_assert_cmpint (item->offset, ==, tests[i].offsets[j]);
+        }
+
+      g_list_free_full (items, (GDestroyNotify)pango_item_free);
+    }
+
+  g_object_unref (context);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -853,6 +890,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/layout/wrap-char", test_wrap_char);
   g_test_add_func ("/matrix/transform-rectangle", test_transform_rectangle);
   g_test_add_func ("/itemize/small-caps-crash", test_small_caps_crash);
+  g_test_add_func ("/itemize/reorder", test_reorder);
 
   return g_test_run ();
 }
