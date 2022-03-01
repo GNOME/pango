@@ -114,6 +114,13 @@ void               pango_item_unsplit                 (PangoItem *orig,
                                                        int        split_index,
                                                        int        split_offset);
 
+typedef struct _PangoItemRange PangoItemRange;
+
+PangoItemRange *   pango_item_range_add               (PangoItemRange *range,
+                                                       PangoItem      *item);
+GList *            pango_item_range_get_items         (PangoItemRange *range);
+GList *            pango_item_range_free              (PangoItemRange *range);
+
 
 G_END_DECLS
 

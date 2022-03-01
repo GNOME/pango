@@ -20,14 +20,192 @@
  */
 
 #include "config.h"
-#include "pango-item.h"
+#include "pango-item-private.h"
 
-/*
- * NB: The contents of the file implement the exact same algorithm
- *     pango-layout.c:pango_layout_line_reorder().
+/* Inspired by https://github.com/fribidi/linear-reorder.git */
+
+struct _PangoItemRange
+{
+  int level;
+  GList *left;
+  GList *right;
+  PangoItemRange *previous;
+  PangoItemRange *left_range;
+  PangoItemRange *right_range;
+};
+
+static PangoItemRange *
+merge_range_with_previous (PangoItemRange *range)
+{
+  PangoItemRange *previous = range->previous;
+  PangoItemRange *left_range, *right_range;
+
+  g_assert (range->previous != NULL);
+  g_assert (previous->level < range->level);
+
+  if (previous->level % 2)
+    {
+      left_range = range;
+      right_range = previous;
+    }
+  else
+    {
+      left_range = previous;
+      right_range = range;
+    }
+
+  previous->left = left_range->left;
+  previous->right = right_range->right;
+  previous->left_range = left_range->left_range;
+  previous->right_range = right_range->right_range;
+
+  g_free (range);
+
+  return previous;
+}
+
+/*< private >
+ * pango_item_range_add:
+ * @range: (nullable): `PangoItemRange` to add @item to, or `NULL`
+ * @item: `PangoItem` to add to @range
+ *
+ * Adds an item to a `PangoItemRange`.
+ *
+ * The `PangoItemRange` is an auxiliary structure to help
+ * with ordering items in visual order.
  */
+PangoItemRange *
+pango_item_range_add (PangoItemRange *range,
+                      PangoItem      *item)
+{
+  GList *run;
 
-static GList *reorder_items_recurse (GList *items, int n_items);
+  run = g_list_append (NULL, item);
+
+  while (range && range->level > item->analysis.level &&
+         range->previous && range->previous->level >= item->analysis.level)
+    range = merge_range_with_previous (range);
+
+  if (range && range->level >= item->analysis.level)
+    {
+      if (item->analysis.level % 2)
+        {
+          run->next = range->left;
+          run->next->prev = run;
+          range->left = run;
+
+          if (range->left_range)
+            {
+              range->left->prev = range->left_range->right;
+              range->left->prev->next = range->left;
+            }
+        }
+      else
+        {
+          range->right->next = run;
+          run->prev = range->right;
+          range->right = run;
+
+          if (range->right_range)
+            {
+              range->right->next = range->right_range->left;
+              range->right->next->prev = range->right;
+            }
+        }
+
+      range->level = item->analysis.level;
+    }
+  else
+    {
+      PangoItemRange *new_range = g_new (PangoItemRange, 1);
+
+      new_range->left = new_range->right = run;
+      new_range->level = item->analysis.level;
+
+      if (!range)
+        {
+          new_range->left_range = NULL;
+          new_range->right_range = NULL;
+        }
+      else if (range->level % 2)
+        {
+          new_range->left_range = range->left_range;
+          new_range->right_range = range;
+          if (new_range->left_range)
+            new_range->left_range->right_range = new_range;
+          range->left_range = new_range;
+        }
+      else
+        {
+          new_range->left_range = range;
+          new_range->right_range = range->right_range;
+          if (new_range->right_range)
+            new_range->right_range->left_range = new_range;
+          range->right_range = new_range;
+        }
+
+      if (new_range->left_range)
+        {
+          new_range->left->prev = new_range->left_range->right;
+          new_range->left->prev->next = new_range->left;
+        }
+
+      if (new_range->right_range)
+        {
+          new_range->right->next = new_range->right_range->left;
+          new_range->right->next->prev = new_range->right;
+        }
+
+      new_range->previous = range;
+      range = new_range;
+    }
+
+  return range;
+}
+
+/*< private >
+ * pango_item_range_free:
+ * @range: a `PangoItemRange`
+ *
+ * Frees @range and returns the items that were
+ * added to it in visual order.
+ *
+ * Returns: (transfer container): a list with
+ *   the items of @range, in visual order
+ */
+GList *
+pango_item_range_free (PangoItemRange *range)
+{
+  GList *list;
+
+  while (range->previous)
+    range = merge_range_with_previous (range);
+
+  list = range->left;
+
+  g_free (range);
+
+  return list;
+}
+
+/*< private >
+ * pango_item_range_get_items:
+ * @range: a `PangoItemRange`
+ *
+ * Returns a list with the items that have been
+ * added to @range, in visual order.
+ *
+ * Returns: (transfer none): The items of @range,
+ *   in visual order
+ */
+GList *
+pango_item_range_get_items (PangoItemRange *range)
+{
+  while (range->left_range)
+    range = range->left_range;
+
+  return range->left;
+}
 
 /**
  * pango_reorder_items:
@@ -49,70 +227,13 @@ static GList *reorder_items_recurse (GList *items, int n_items);
 GList *
 pango_reorder_items (GList *items)
 {
-  return reorder_items_recurse (items, g_list_length (items));
-}
+  PangoItemRange *range = NULL;
 
-static GList *
-reorder_items_recurse (GList *items,
-                       int    n_items)
-{
-  GList *tmp_list, *level_start_node;
-  int i, level_start_i;
-  int min_level = G_MAXINT;
-  GList *result = NULL;
-
-  if (n_items == 0)
+  if (!items)
     return NULL;
 
-  tmp_list = items;
-  for (i=0; i<n_items; i++)
-    {
-      PangoItem *item = tmp_list->data;
+  for (GList *l = items; l; l = l->next)
+    range = pango_item_range_add (range, (PangoItem *)l->data);
 
-      min_level = MIN (min_level, item->analysis.level);
-
-      tmp_list = tmp_list->next;
-    }
-
-  level_start_i = 0;
-  level_start_node = items;
-  tmp_list = items;
-  for (i=0; i<n_items; i++)
-    {
-      PangoItem *item = tmp_list->data;
-
-      if (item->analysis.level == min_level)
-	{
-	  if (min_level % 2)
-	    {
-	      if (i > level_start_i)
-		result = g_list_concat (reorder_items_recurse (level_start_node, i - level_start_i), result);
-	      result = g_list_prepend (result, item);
-	    }
-	  else
-	    {
-	      if (i > level_start_i)
-		result = g_list_concat (result, reorder_items_recurse (level_start_node, i - level_start_i));
-	      result = g_list_append (result, item);
-	    }
-
-	  level_start_i = i + 1;
-	  level_start_node = tmp_list->next;
-	}
-
-      tmp_list = tmp_list->next;
-    }
-
-  if (min_level % 2)
-    {
-      if (i > level_start_i)
-	result = g_list_concat (reorder_items_recurse (level_start_node, i - level_start_i), result);
-    }
-  else
-    {
-      if (i > level_start_i)
-	result = g_list_concat (result, reorder_items_recurse (level_start_node, i - level_start_i));
-    }
-
-  return result;
+  return pango_item_range_free (range);
 }
