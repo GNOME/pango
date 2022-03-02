@@ -22,8 +22,10 @@
 
 #include <glib.h>
 #include <pango/pangocairo.h>
-#include <pango/pangocairo-fc.h>
+#include <pango/pangofc-hbfontmap.h>
 #include <gio/gio.h>
+
+static PangoFontMap *map = NULL;
 
 static void
 test_serialize_attr_list (void)
@@ -141,26 +143,31 @@ test_serialize_font (void)
   GError *error = NULL;
   const char *expected =
     "{\n"
-    "  \"description\" : \"Cantarell 20 @wght=600\",\n"
+    "  \"description\" : \"Cantarell Italic 20 @wght=600\",\n"
     "  \"checksum\" : \"5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2\",\n"
     "  \"variations\" : {\n"
     "    \"wght\" : 5583\n"
     "  },\n"
     "  \"matrix\" : [\n"
     "    1,\n"
-    "    -0,\n"
-    "    -0,\n"
+    "    0.20000000000000001,\n"
+    "    0,\n"
     "    1,\n"
     "    0,\n"
     "    0\n"
     "  ]\n"
     "}";
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (map);
   desc = pango_font_description_from_string ("Cantarell Italic 20 @wght=600");
   font = pango_context_load_font (context, desc);
 
   bytes = pango_font_serialize (font);
+  if (strcmp (g_bytes_get_data (bytes, NULL), expected) != 0)
+    {
+      g_print ("expected\n%s\n", expected);
+      g_print ("got\n%s\n", (char* )g_bytes_get_data (bytes, NULL));
+    }
   g_assert_cmpstr (g_bytes_get_data (bytes, NULL), ==, expected);
 
   font2 = pango_font_deserialize (context, bytes, &error);
@@ -194,7 +201,7 @@ test_serialize_layout_minimal (void)
   GBytes *out_bytes;
   const char *str;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (map);
 
   bytes = g_bytes_new_static (test, strlen (test) + 1);
 
@@ -277,7 +284,7 @@ test_serialize_layout_valid (void)
   GBytes *out_bytes;
   char *s;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (map);
 
   bytes = g_bytes_new_static (test, strlen (test) + 1);
 
@@ -330,7 +337,7 @@ test_serialize_layout_context (void)
   PangoLayout *layout;
   GError *error = NULL;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (map);
 
   bytes = g_bytes_new_static (test, strlen (test) + 1);
 
@@ -404,7 +411,7 @@ test_serialize_layout_invalid (void)
 
   PangoContext *context;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (map);
 
   for (int i = 0; i < G_N_ELEMENTS (test); i++)
     {
@@ -431,14 +438,11 @@ install_fonts (void)
 {
   char *dir;
   FcConfig *config;
-  PangoFontMap *map;
   char *path;
   gsize len;
   char *conf;
 
   dir = g_test_build_filename (G_TEST_DIST, "fonts", NULL);
-
-  map = g_object_new (PANGO_TYPE_CAIRO_FC_FONT_MAP, NULL);
 
   config = FcConfigCreate ();
 
@@ -452,12 +456,9 @@ install_fonts (void)
   g_free (path);
 
   FcConfigAppFontAddDir (config, (const FcChar8 *) dir);
-  pango_fc_font_map_set_config (PANGO_FC_FONT_MAP (map), config);
+  map = PANGO_FONT_MAP (pango_fc_hb_font_map_new ());
+  pango_fc_hb_font_map_set_config (PANGO_FC_HB_FONT_MAP (map), config);
   FcConfigDestroy (config);
-
-  pango_cairo_font_map_set_default (PANGO_CAIRO_FONT_MAP (map));
-
-  g_object_unref (map);
 
   g_free (dir);
 }
