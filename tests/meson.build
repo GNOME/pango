@@ -43,11 +43,11 @@ if cairo_dep.found()
     [ 'cxx-test', [ 'cxx-test.cpp' ] ],
     [ 'test-harfbuzz', [ 'test-harfbuzz.c' ] ],
     [ 'test-break', [ 'test-break.c', 'test-common.c', 'validate-log-attrs.c' ] ],
+    [ 'testmisc', [ 'testmisc.c' ] ],
   ]
 
   if build_pangoft2
     tests += [
-      [ 'testmisc', [ 'testmisc.c' ] ],
       [ 'testserialize', [ 'testserialize.c' ] ],
       [ 'testhbfont', [ 'testhbfont.c' ] ],
     ]
