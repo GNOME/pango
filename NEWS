@@ -1,3 +1,11 @@
+Overview of changes in 1.50.5, 03-03-2022
+=========================================
+* Fix compiler warnings
+* Enable cairo by default
+* pango-view: Show more baselines
+* layout: Handle baselines
+* Windows: build cleanups
+
 Overview of changes in 1.50.4, 09-02-2022
 =========================================
 * Tweak synthetic space sizes
