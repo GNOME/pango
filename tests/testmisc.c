@@ -818,6 +818,213 @@ test_small_caps_crash (void)
   g_object_unref (context);
 }
 
+typedef struct _Range Range;
+struct _Range
+{
+  int level;
+  GList *left;
+  GList *right;
+  Range *previous;
+  Range *left_range;
+  Range *right_range;
+};
+
+static Range *
+merge_range_with_previous (Range *range)
+{
+  Range *previous = range->previous;
+  Range *left_range, *right_range;
+
+  g_assert (range->previous != NULL);
+  g_assert (previous->level < range->level);
+
+  if (previous->level % 2)
+    {
+      left_range = range;
+      right_range = previous;
+    }
+  else
+    {
+      left_range = previous;
+      right_range = range;
+    }
+
+  previous->left = left_range->left;
+  previous->right = right_range->right;
+  previous->left_range = left_range->left_range;
+  previous->right_range = right_range->right_range;
+
+  g_free (range);
+
+  return previous;
+}
+
+static Range *
+add_item (Range     *range,
+          PangoItem *item)
+{
+  GList *run;
+
+  run = g_list_append (NULL, item);
+
+  while (range && range->level > item->analysis.level &&
+         range->previous && range->previous->level >= item->analysis.level)
+    range = merge_range_with_previous (range);
+
+  if (range && range->level >= item->analysis.level)
+    {
+      if (item->analysis.level % 2)
+        {
+          run->next = range->left;
+          run->next->prev = run;
+          range->left = run;
+
+          if (range->left_range)
+            {
+              range->left->prev = range->left_range->right;
+              range->left->prev->next = range->left;
+            }
+        }
+      else
+        {
+          range->right->next = run;
+          run->prev = range->right;
+          range->right = run;
+
+          if (range->right_range)
+            {
+              range->right->next = range->right_range->left;
+              range->right->next->prev = range->right;
+            }
+        }
+
+      range->level = item->analysis.level;
+    }
+  else
+    {
+      Range *new_range = g_new (Range, 1);
+
+      new_range->left = new_range->right = run;
+      new_range->level = item->analysis.level;
+
+      if (!range)
+        {
+          new_range->left_range = NULL;
+          new_range->right_range = NULL;
+        }
+      else if (range->level % 2)
+        {
+          new_range->left_range = range->left_range;
+          new_range->right_range = range;
+          if (new_range->left_range)
+            new_range->left_range->right_range = new_range;
+          range->left_range = new_range;
+        }
+      else
+        {
+          new_range->left_range = range;
+          new_range->right_range = range->right_range;
+          if (new_range->right_range)
+            new_range->right_range->left_range = new_range;
+          range->right_range = new_range;
+        }
+
+      if (new_range->left_range)
+        {
+          new_range->left->prev = new_range->left_range->right;
+          new_range->left->prev->next = new_range->left;
+        }
+
+      if (new_range->right_range)
+        {
+          new_range->right->next = new_range->right_range->left;
+          new_range->right->next->prev = new_range->right;
+        }
+
+      new_range->previous = range;
+      range = new_range;
+    }
+
+  return range;
+}
+
+static Range *
+finish_reorder (Range *range)
+{
+  while (range->previous)
+    range = merge_range_with_previous (range);
+
+  range->right->next = NULL;
+
+  return range;
+}
+
+static GList *
+free_range_to_list (Range *range)
+{
+  GList *list = range->left;
+
+  g_free (range);
+
+  return list;
+}
+
+static GList *
+reorder_items (GList *items)
+{
+  Range *range = NULL;
+
+  if (!items)
+    return NULL;
+
+  for (GList *l = items; l; l = l->next)
+    range = add_item (range, (PangoItem *)l->data);
+
+  range = finish_reorder (range);
+
+  return free_range_to_list (range);
+}
+
+typedef struct _RangeIter RangeIter;
+
+struct _RangeIter
+{
+  GList *current_item;
+};
+
+static RangeIter *
+range_get_iter (Range *range)
+{
+  RangeIter *iter = g_new (RangeIter, 1);
+
+  while (range->left_range)
+    range = range->left_range;
+
+  iter->current_item = range->left;
+
+  return iter;
+}
+
+static void
+range_iter_free (RangeIter *iter)
+{
+  g_free (iter);
+}
+
+static PangoItem *
+range_iter_next (RangeIter *iter)
+{
+  PangoItem *item = NULL;
+
+  if (iter->current_item)
+    {
+      item = iter->current_item->data;
+      iter->current_item = iter->current_item->next;
+    }
+
+  return item;
+}
+
 static void
 test_reorder (void)
 {
@@ -825,9 +1032,75 @@ test_reorder (void)
     const char *text;
     int offsets[10];
   } tests[] = {
-    { "abאב01αβ", { 0, 6, 2, 8, 0, } },
-    { "abאב01גαβcd", { 0, 8, 6, 2, 10, 14 } },
-    { "abאב01גαβא", { 0, 8, 6, 2, 10, 14 } },
+    { "abאב01αβ", { 0, 6, 2, 8, -1, } },
+    { "abאב01גαβcd", { 0, 8, 6, 2, 10, 14, -1, } },
+    { "abאב01גαβא",
+        { 0, 8, 6, 2, 10, 14, -1 } },
+  };
+  PangoContext *context;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+
+  for (int i = 0; i < G_N_ELEMENTS (tests); i++)
+    {
+      GList *items;
+      GList *items2;
+      GList *l;
+      int j;
+
+      items = pango_itemize (context, tests[i].text, 0, strlen (tests[i].text), NULL, NULL);
+
+      items2 = reorder_items (items);
+
+      for (l = items2, j = 0; l; l = l->next, j++)
+        {
+          PangoItem *item = l->data;
+          g_assert_cmpint (item->offset, ==, tests[i].offsets[j]);
+        }
+
+      g_list_free (items2);
+
+      g_list_free_full (items, (GDestroyNotify)pango_item_free);
+    }
+
+  g_object_unref (context);
+}
+
+static void
+test_incremental_reorder (void)
+{
+  struct {
+    const char *text;
+    int offsets[10][10];
+  } tests[] = {
+    { "abאב01αβ",
+      {
+        { 0, -1 },
+        { 0, 2, -1 },
+        { 0, 6, 2, -1 },
+        { 0, 6, 2, 8, -1 },
+      }
+    },
+    { "abאב01גαβcd",
+      {
+        { 0, -1 },
+        { 0, 2, -1 },
+        { 0, 6, 2, -1 },
+        { 0, 8, 6, 2, -1 },
+        { 0, 8, 6, 2, 10, -1 },
+        { 0, 8, 6, 2, 10, 14, -1 },
+      }
+    },
+    { "abאב01גαβא",
+      {
+        { 0, -1 },
+        { 0, 2, -1 },
+        { 0, 6, 2, -1 },
+        { 0, 8, 6, 2, -1 },
+        { 0, 8, 6, 2, 10, -1 },
+        { 0, 8, 6, 2, 10, 14, -1 },
+      }
+    },
   };
   PangoContext *context;
 
@@ -837,16 +1110,27 @@ test_reorder (void)
     {
       GList *items;
       GList *l;
-      int j;
+      Range *range = NULL;
+      int c, d;
 
       items = pango_itemize (context, tests[i].text, 0, strlen (tests[i].text), NULL, NULL);
 
-      items = pango_reorder_items (items);
-
-      for (l = items, j = 0; l; l = l->next, j++)
+      for (l = items, c = 0; l; l = l->next, c++)
         {
-          PangoItem *item = l->data;
-          g_assert_cmpint (item->offset, ==, tests[i].offsets[j]);
+          RangeIter *iter;
+          PangoItem *item;
+
+          range = add_item (range, (PangoItem *)l->data);
+
+          iter = range_get_iter (range);
+
+          d = 0;
+          while ((item = range_iter_next (iter)) != NULL)
+            {
+              g_assert_true (item->offset == tests[i].offsets[c][d]);
+              d++;
+            }
+          range_iter_free (iter);
         }
 
       g_list_free_full (items, (GDestroyNotify)pango_item_free);
@@ -891,6 +1175,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/matrix/transform-rectangle", test_transform_rectangle);
   g_test_add_func ("/itemize/small-caps-crash", test_small_caps_crash);
   g_test_add_func ("/itemize/reorder", test_reorder);
+  g_test_add_func ("/itemize/reorder/incremental", test_incremental_reorder);
 
   return g_test_run ();
 }
