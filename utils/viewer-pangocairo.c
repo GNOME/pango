@@ -411,8 +411,6 @@ render_callback (PangoLayout *layout,
                                  (double)rect.x / PANGO_SCALE - 5,
                                  (double)(y - coord) / PANGO_SCALE - 5);
                   hb_tag_to_string (baselines[i], buf);
-                  if (baselines[i] == baseline_tag)
-                    g_print ("dominant %s\n", buf);
                   cairo_show_text (cr, buf);
 
                   cairo_restore (cr);
