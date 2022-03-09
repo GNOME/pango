@@ -27,7 +27,6 @@
 #include <pango/pangocairo.h>
 
 #include <hb-ot.h>
-#include <hb-glib.h>
 
 static int opt_annotate = 0;
 
@@ -350,7 +349,7 @@ render_callback (PangoLayout *layout,
 
               if (baseline_tag == 0)
                 {
-                  hb_script_t script = hb_glib_script_to_script (run->item->analysis.script);
+                  hb_script_t script = (hb_script_t) g_unicode_script_to_iso15924 (run->item->analysis.script);
 
                   if (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
                     baseline_tag = HB_OT_LAYOUT_BASELINE_TAG_IDEO_EMBOX_CENTRAL;
@@ -366,12 +365,14 @@ render_callback (PangoLayout *layout,
                 dir = HB_DIRECTION_TTB;
               else
                 dir = HB_DIRECTION_LTR;
-              script = hb_glib_script_to_script (run->item->analysis.script);
+              script = (hb_script_t) g_unicode_script_to_iso15924 (run->item->analysis.script);
               lang = HB_TAG_NONE;
 
               for (int i = 0; i < G_N_ELEMENTS (baselines); i++)
                 {
                   char buf[5] = { 0, };
+
+                  hb_tag_to_string (baselines[i], buf);
 
                   cairo_save (cr);
 
@@ -386,7 +387,10 @@ render_callback (PangoLayout *layout,
                                                  script,
                                                  lang,
                                                  &coord))
-                    cairo_set_dash (cr, NULL, 0, 0);
+                    {
+                      g_print ("baseline %s, value %d\n", buf, coord);
+                      cairo_set_dash (cr, NULL, 0, 0);
+                    }
                   else
                     {
                       double dashes[] = { 4 * lw, 4 * lw };
@@ -398,6 +402,7 @@ render_callback (PangoLayout *layout,
                                                                lang,
                                                                &coord);
 
+                      g_print ("baseline %s, fallback value %d\n", buf, coord);
                       cairo_set_dash (cr, dashes, 2, 0);
                       cairo_set_line_cap (cr, CAIRO_LINE_CAP_SQUARE);
                     }
@@ -410,7 +415,6 @@ render_callback (PangoLayout *layout,
                   cairo_move_to (cr,
                                  (double)rect.x / PANGO_SCALE - 5,
                                  (double)(y - coord) / PANGO_SCALE - 5);
-                  hb_tag_to_string (baselines[i], buf);
                   cairo_show_text (cr, buf);
 
                   cairo_restore (cr);
