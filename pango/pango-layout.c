@@ -85,7 +85,6 @@
 #include <locale.h>
 
 #include <hb-ot.h>
-#include <hb-glib.h>
 
 #include "pango-layout-private.h"
 #include "pango-attributes-private.h"
@@ -6720,7 +6719,7 @@ apply_baseline_shift (PangoLayoutLine *line,
 
       hb_font = pango_font_get_hb_font (item->analysis.font);
 
-      script = hb_glib_script_to_script (item->analysis.script);
+      script = (hb_script_t) g_unicode_script_to_iso15924 (item->analysis.script);
       language = hb_language_from_string (pango_language_to_string (item->analysis.language), -1);
       hb_ot_tags_from_script_and_language (script, language,
                                            &script_count, script_tags,
