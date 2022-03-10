@@ -119,6 +119,7 @@ if cairo_dep.found()
     pango_sources += [
       'pangocairo-win32font.c',
       'pangocairo-win32fontmap.c',
+      'pangodwrite-hbfontmap.cpp',
     ]
   endif
 
@@ -161,6 +162,7 @@ if host_system == 'windows'
 
   pango_deps += [
     cc.find_library('gdi32'),
+    cc.find_library('dwrite'),
   ]
 endif
 
