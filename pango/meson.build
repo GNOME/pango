@@ -235,6 +235,7 @@ libpango = library(
   dependencies: pango_deps,
   include_directories: [ root_inc, pango_inc ],
   c_args: common_cflags + pango_debug_cflags + pango_cflags,
+  cpp_args: common_cflags + pango_debug_cflags + pango_cflags,
   link_args: common_ldflags,
 )
 

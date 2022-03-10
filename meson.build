@@ -46,6 +46,7 @@ osx_current = pango_binary_age - pango_interface_age + 1
 pango_osxversion = [osx_current, '@0@.@1@.0'.format(osx_current, pango_interface_age)]
 
 cc = meson.get_compiler('c')
+cxx = meson.get_compiler('cpp')
 host_system = host_machine.system()
 
 # Compiler and linker flags
@@ -58,7 +59,7 @@ if cc.get_id() == 'msvc'
   # Compiler options taken from msvc_recommended_pragmas.h
   # in GLib, based on _Win32_Programming_ by Rector and Newcomer
   test_cflags = ['-FImsvc_recommended_pragmas.h', '-utf-8']
-  add_project_arguments(cc.get_supported_arguments(test_cflags), language: 'c')
+  add_project_arguments(cc.get_supported_arguments(test_cflags), language: ['c', 'cpp'])
   test_c_only_flags = []
 elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
   test_c_only_flags = [
