@@ -61,6 +61,12 @@ static PangoFontFace *pango_font_family_real_get_face (PangoFontFamily *family,
                                                        const char      *name);
 
 static gboolean
+pango_font_family_default_is_generic (PangoFontFamily *family)
+{
+  return FALSE;
+}
+
+static gboolean
 pango_font_family_default_is_monospace (PangoFontFamily *family)
 {
   return FALSE;
@@ -75,6 +81,7 @@ pango_font_family_default_is_variable (PangoFontFamily *family)
 static void
 pango_font_family_class_init (PangoFontFamilyClass *class G_GNUC_UNUSED)
 {
+  class->is_generic = pango_font_family_default_is_generic;
   class->is_monospace = pango_font_family_default_is_monospace;
   class->is_variable = pango_font_family_default_is_variable;
   class->get_face = pango_font_family_real_get_face;
@@ -150,6 +157,25 @@ pango_font_family_get_face (PangoFontFamily *family,
   g_return_val_if_fail (PANGO_IS_FONT_FAMILY (family), NULL);
 
   return PANGO_FONT_FAMILY_GET_CLASS (family)->get_face (family, name);
+}
+
+/**
+ * pango_font_family_is_generic:
+ * @family: a `PangoFontFamily`
+ *
+ * A generic family is using a generic name such as 'sans' or
+ * 'monospace', and collects fonts matching those characteristics.
+ *
+ * Generic families are often used as fallback.
+ *
+ * Return value: %TRUE if the family is generic
+ */
+gboolean
+pango_font_family_is_generic (PangoFontFamily  *family)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FAMILY (family), FALSE);
+
+  return PANGO_FONT_FAMILY_GET_CLASS (family)->is_generic (family);
 }
 
 /**
