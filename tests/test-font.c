@@ -470,7 +470,8 @@ test_font_models (void)
 
           g_assert_true (PANGO_IS_FONT_FACE (obj2));
 
-          g_assert_true (pango_font_face_get_family (PANGO_FONT_FACE (obj2)) == (PangoFontFamily *)obj);
+          if (!pango_font_family_is_generic (PANGO_FONT_FAMILY (obj)))
+            g_assert_true (pango_font_face_get_family (PANGO_FONT_FACE (obj2)) == PANGO_FONT_FAMILY (obj));
 
           if (pango_font_family_is_monospace (PANGO_FONT_FAMILY (obj)))
             {
