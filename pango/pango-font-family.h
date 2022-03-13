@@ -34,6 +34,8 @@ PANGO_DECLARE_INTERNAL_TYPE (PangoFontFamily, pango_font_family, PANGO, FONT_FAM
 
 PANGO_AVAILABLE_IN_ALL
 const char *            pango_font_family_get_name      (PangoFontFamily  *family) G_GNUC_PURE;
+PANGO_AVAILABLE_IN_ALL
+gboolean                pango_font_family_is_generic    (PangoFontFamily  *family) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_1_4
 gboolean                pango_font_family_is_monospace  (PangoFontFamily  *family) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_1_44
