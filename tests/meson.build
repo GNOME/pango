@@ -62,6 +62,7 @@ if cairo_dep.found()
     if host_system != 'darwin'
       tests += [
         [ 'test-layout', [ 'test-layout.c', 'test-common.c' ], [ libpangocairo_dep, libpangoft2_dep ] ],
+        [ 'test-fonts', [ 'test-fonts.c', 'test-common.c' ], [ libpangocairo_dep, libpangoft2_dep ] ],
       ]
     endif
   endif
@@ -125,6 +126,13 @@ installed_test_layouts_data = [
   'layouts/no-space.layout',
   'layouts/aaa.layout',
   'layouts/letterspacing.layout',
+]
+
+installed_test_fontsets_data = [
+  'fontsets/cantarell',
+  'fontsets/cantarell2',
+  'fontsets/mono',
+  'fontsets/mono2',
 ]
 
 installed_test_fonts_data = [
@@ -251,6 +259,7 @@ if get_option('install-tests')
   install_data(installed_test_markups_data, install_dir: join_paths(installed_test_bindir, 'markups'))
   install_data(installed_test_breaks_data, install_dir: join_paths(installed_test_bindir, 'breaks'))
   install_data(installed_test_items_data, install_dir: join_paths(installed_test_bindir, 'itemize'))
+  install_data(installed_test_fontsets_data, install_dir: join_paths(installed_test_bindir, 'fontsets'))
 endif
 
 gen_installed_test = files([ 'gen-installed-test.py' ])

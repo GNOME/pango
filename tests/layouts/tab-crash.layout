@@ -39,7 +39,7 @@
     "is-wrapped" : true,
     "is-ellipsized" : false,
     "unknown-glyphs" : 0,
-    "width" : 585728,
+    "width" : 552960,
     "height" : 58368,
     "log-attrs" : [
       {
@@ -599,8 +599,8 @@
             "language" : "en-us",
             "script" : "latin",
             "font" : {
-              "description" : "DejaVu Sans 12",
-              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "description" : "DejaVu Sans Mono 12",
+              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
               "matrix" : [
                 1,
                 -0,
@@ -617,7 +617,7 @@
             "glyphs" : [
               {
                 "glyph" : 76,
-                "width" : 4096,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               },
@@ -629,7 +629,7 @@
               },
               {
                 "glyph" : 32,
-                "width" : 13312,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 2
               },
@@ -641,67 +641,67 @@
               },
               {
                 "glyph" : 3,
-                "width" : 5120,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 4
               },
               {
                 "glyph" : 56,
-                "width" : 12288,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 5
               },
               {
                 "glyph" : 49,
-                "width" : 12288,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 6
               },
               {
                 "glyph" : 44,
-                "width" : 5120,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 7
               },
               {
                 "glyph" : 50,
-                "width" : 13312,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 8
               },
               {
                 "glyph" : 49,
-                "width" : 12288,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 9
               },
               {
                 "glyph" : 3,
-                "width" : 5120,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 10
               },
               {
                 "glyph" : 36,
-                "width" : 11264,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 11
               },
               {
                 "glyph" : 47,
-                "width" : 9216,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 12
               },
               {
                 "glyph" : 47,
-                "width" : 9216,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 13
               },
               {
                 "glyph" : 3,
-                "width" : 5120,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 14
               },
@@ -719,7 +719,7 @@
               },
               {
                 "glyph" : 47,
-                "width" : 9216,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 17
               },
@@ -731,7 +731,7 @@
               },
               {
                 "glyph" : 38,
-                "width" : 11264,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 19
               },
@@ -743,103 +743,103 @@
               },
               {
                 "glyph" : 3,
-                "width" : 5120,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 21
               },
               {
                 "glyph" : 49,
-                "width" : 12288,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 22
               },
               {
                 "glyph" : 56,
-                "width" : 12288,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 23
               },
               {
                 "glyph" : 47,
-                "width" : 9216,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 24
               },
               {
                 "glyph" : 47,
-                "width" : 9216,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 25
               },
               {
                 "glyph" : 15,
-                "width" : 5120,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 26
               },
               {
                 "glyph" : 3,
-                "width" : 5120,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 27
               },
               {
                 "glyph" : 49,
-                "width" : 12288,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 28
               },
               {
                 "glyph" : 56,
-                "width" : 12288,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 29
               },
               {
                 "glyph" : 47,
-                "width" : 9216,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 30
               },
               {
                 "glyph" : 47,
-                "width" : 9216,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 31
               },
               {
                 "glyph" : 15,
-                "width" : 5120,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 32
               },
               {
                 "glyph" : 3,
-                "width" : 5120,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 33
               },
               {
                 "glyph" : 38,
-                "width" : 11264,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 34
               },
               {
                 "glyph" : 50,
-                "width" : 13312,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 35
               },
               {
                 "glyph" : 49,
-                "width" : 12288,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 36
               },
               {
                 "glyph" : 38,
-                "width" : 11264,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 37
               },
@@ -857,7 +857,7 @@
               },
               {
                 "glyph" : 11,
-                "width" : 6144,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 40
               },
@@ -869,7 +869,7 @@
               },
               {
                 "glyph" : 91,
-                "width" : 9216,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 42
               },
@@ -935,7 +935,7 @@
               },
               {
                 "glyph" : 15,
-                "width" : 5120,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 53
               },
@@ -951,21 +951,21 @@
       },
       {
         "start-index" : 55,
-        "length" : 37,
+        "length" : 25,
         "paragraph-start" : false,
         "direction" : "ltr",
         "runs" : [
           {
             "offset" : 55,
-            "length" : 31,
-            "text" : "0x73323173656374657374), NULL--",
+            "length" : 25,
+            "text" : "0x73323173656374657374), ",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
             "font" : {
-              "description" : "DejaVu Sans 12",
-              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "description" : "DejaVu Sans Mono 12",
+              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
               "matrix" : [
                 1,
                 -0,
@@ -988,7 +988,7 @@
               },
               {
                 "glyph" : 91,
-                "width" : 9216,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 1
               },
@@ -1114,57 +1114,92 @@
               },
               {
                 "glyph" : 12,
-                "width" : 6144,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 22
               },
               {
                 "glyph" : 15,
-                "width" : 5120,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 23
               },
               {
-                "glyph" : 3,
-                "width" : 5120,
+                "glyph" : 268435455,
+                "width" : 0,
                 "is-cluster-start" : true,
                 "log-cluster" : 24
-              },
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "start-index" : 80,
+        "length" : 20,
+        "paragraph-start" : false,
+        "direction" : "ltr",
+        "runs" : [
+          {
+            "offset" : 80,
+            "length" : 6,
+            "text" : "NULL--",
+            "bidi-level" : 0,
+            "gravity" : "south",
+            "language" : "en-us",
+            "script" : "latin",
+            "font" : {
+              "description" : "DejaVu Sans Mono 12",
+              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
+              "matrix" : [
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
+              ]
+            },
+            "flags" : 0,
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
               {
                 "glyph" : 49,
-                "width" : 12288,
+                "width" : 10240,
                 "is-cluster-start" : true,
-                "log-cluster" : 25
+                "log-cluster" : 0
               },
               {
                 "glyph" : 56,
-                "width" : 12288,
+                "width" : 10240,
                 "is-cluster-start" : true,
-                "log-cluster" : 26
+                "log-cluster" : 1
               },
               {
                 "glyph" : 47,
-                "width" : 9216,
+                "width" : 10240,
                 "is-cluster-start" : true,
-                "log-cluster" : 27
+                "log-cluster" : 2
               },
               {
                 "glyph" : 47,
-                "width" : 9216,
+                "width" : 10240,
                 "is-cluster-start" : true,
-                "log-cluster" : 28
+                "log-cluster" : 3
               },
               {
                 "glyph" : 16,
-                "width" : 6144,
+                "width" : 10240,
                 "is-cluster-start" : true,
-                "log-cluster" : 29
+                "log-cluster" : 4
               },
               {
                 "glyph" : 16,
-                "width" : 6144,
+                "width" : 10240,
                 "is-cluster-start" : true,
-                "log-cluster" : 30
+                "log-cluster" : 5
               }
             ]
           },
@@ -1177,8 +1212,8 @@
             "language" : "en-us",
             "script" : "latin",
             "font" : {
-              "description" : "DejaVu Sans 12",
-              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "description" : "DejaVu Sans Mono 12",
+              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
               "matrix" : [
                 1,
                 -0,
@@ -1195,7 +1230,7 @@
             "glyphs" : [
               {
                 "glyph" : 268435455,
-                "width" : 31744,
+                "width" : 20480,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               }
@@ -1210,8 +1245,8 @@
             "language" : "en-us",
             "script" : "latin",
             "font" : {
-              "description" : "DejaVu Sans 12",
-              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "description" : "DejaVu Sans Mono 12",
+              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
               "matrix" : [
                 1,
                 -0,
@@ -1243,8 +1278,8 @@
             "language" : "en-us",
             "script" : "latin",
             "font" : {
-              "description" : "DejaVu Sans 12",
-              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "description" : "DejaVu Sans Mono 12",
+              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
               "matrix" : [
                 1,
                 -0,
@@ -1276,8 +1311,8 @@
             "language" : "en-us",
             "script" : "latin",
             "font" : {
-              "description" : "DejaVu Sans 12",
-              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "description" : "DejaVu Sans Mono 12",
+              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
               "matrix" : [
                 1,
                 -0,
@@ -1302,15 +1337,15 @@
           },
           {
             "offset" : 90,
-            "length" : 2,
-            "text" : "--",
+            "length" : 10,
+            "text" : "-->(MYSQL)",
             "bidi-level" : 0,
             "gravity" : "south",
             "language" : "en-us",
             "script" : "latin",
             "font" : {
-              "description" : "DejaVu Sans 12",
-              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "description" : "DejaVu Sans Mono 12",
+              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
               "matrix" : [
                 1,
                 -0,
@@ -1327,98 +1362,63 @@
             "glyphs" : [
               {
                 "glyph" : 16,
-                "width" : 6144,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               },
               {
                 "glyph" : 16,
-                "width" : 6144,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 1
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "start-index" : 92,
-        "length" : 8,
-        "paragraph-start" : false,
-        "direction" : "ltr",
-        "runs" : [
-          {
-            "offset" : 92,
-            "length" : 8,
-            "text" : ">(MYSQL)",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "latin",
-            "font" : {
-              "description" : "DejaVu Sans 12",
-              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
-              ]
-            },
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
+              },
               {
                 "glyph" : 33,
-                "width" : 13312,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              },
-              {
-                "glyph" : 11,
-                "width" : 6144,
-                "is-cluster-start" : true,
-                "log-cluster" : 1
-              },
-              {
-                "glyph" : 48,
-                "width" : 14336,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 2
               },
               {
-                "glyph" : 60,
+                "glyph" : 11,
                 "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 3
               },
               {
-                "glyph" : 54,
+                "glyph" : 48,
                 "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 4
               },
               {
-                "glyph" : 52,
-                "width" : 13312,
+                "glyph" : 60,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 5
               },
               {
-                "glyph" : 47,
-                "width" : 9216,
+                "glyph" : 54,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 6
               },
               {
-                "glyph" : 12,
-                "width" : 6144,
+                "glyph" : 52,
+                "width" : 10240,
                 "is-cluster-start" : true,
                 "log-cluster" : 7
+              },
+              {
+                "glyph" : 47,
+                "width" : 10240,
+                "is-cluster-start" : true,
+                "log-cluster" : 8
+              },
+              {
+                "glyph" : 12,
+                "width" : 10240,
+                "is-cluster-start" : true,
+                "log-cluster" : 9
               }
             ]
           }
