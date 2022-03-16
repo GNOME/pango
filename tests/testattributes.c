@@ -1398,6 +1398,28 @@ test_change_order (void)
   pango_attr_list_unref (list);
 }
 
+static void
+test_pitivi_crash (void)
+{
+  PangoAttrList *list;
+  PangoAttribute *attr;
+
+  list = pango_attr_list_from_string ("0 8 font-features \"tnum=1\"\n"
+                                      "0 20 font-desc \"sans-serif\"\n"
+                                      "0 9 size 102400\n");
+
+  attr = pango_attr_font_features_new ("tnum=2");
+  attr->end_index = 9;
+
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "0 9 font-features \"tnum=2\"\n"
+                          "0 20 font-desc \"sans-serif\"\n"
+                          "0 9 size 102400\n");
+
+  pango_attr_list_unref (list);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1439,6 +1461,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/attributes/iter/epsilon_zero", test_iter_epsilon_zero);
   g_test_add_func ("/attributes/gnumeric-splice", test_gnumeric_splice);
   g_test_add_func ("/attributes/list/change_order", test_change_order);
+  g_test_add_func ("/attributes/pitivi-crash", test_pitivi_crash);
 
   return g_test_run ();
 }

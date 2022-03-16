@@ -2157,6 +2157,9 @@ pango_attr_list_change (PangoAttrList  *list,
       if (tmp_attr->klass->type != attr->klass->type)
         continue;
 
+      if (tmp_attr == attr)
+        continue;
+
       if (tmp_attr->end_index <= attr->end_index ||
           pango_attribute_equal (tmp_attr, attr))
         {
