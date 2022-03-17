@@ -13,6 +13,7 @@ export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
 export G_SLICE=always-malloc
 
 meson test -C ${builddir} \
+        --timeout-multiplier "${MESON_TEST_TIMEOUT_MULTIPLIER}" \
         --print-errorlogs \
         --suite=pango 
 
