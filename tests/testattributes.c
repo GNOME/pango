@@ -238,10 +238,30 @@ assert_attributes (GSList     *attrs,
 }
 
 static void
+assert_attr_list_order (PangoAttrList *list)
+{
+  GSList *attrs, *l;
+  guint start = 0;
+
+  attrs = pango_attr_list_get_attributes (list);
+
+  for (l = attrs; l; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+      g_assert (start <= attr->start_index);
+      start = attr->start_index;
+    }
+
+  g_slist_free_full (attrs, (GDestroyNotify) pango_attribute_destroy);
+}
+
+static void
 assert_attr_list (PangoAttrList *list,
                   const char    *expected)
 {
   PangoAttrList *list2;
+
+  assert_attr_list_order (list);
 
   list2 = pango_attr_list_from_string (expected);
   if (!pango_attr_list_equal (list, list2))
@@ -1355,6 +1375,29 @@ test_gnumeric_splice (void)
   pango_attr_list_unref (list2);
 }
 
+static void
+test_change_order (void)
+{
+  PangoAttrList *list;
+  PangoAttribute *attr;
+
+  list = pango_attr_list_from_string ("1 -1 font-features \"tnum=1\"\n"
+                                      "0 20 font-desc \"sans-serif\"\n"
+                                      "0 9 size 102400\n");
+
+  attr = pango_attr_font_features_new ("tnum=2");
+  attr->end_index = 9;
+
+  pango_attr_list_change (list, attr);
+
+  assert_attr_list (list, "0 9 font-features \"tnum=2\"\n"
+                          "0 20 font-desc \"sans-serif\"\n"
+                          "0 9 size 102400\n"
+                          "9 4294967295 font-features \"tnum=1\"\n");
+
+  pango_attr_list_unref (list);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1395,6 +1438,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/attributes/iter/get_attrs", test_iter_get_attrs);
   g_test_add_func ("/attributes/iter/epsilon_zero", test_iter_epsilon_zero);
   g_test_add_func ("/attributes/gnumeric-splice", test_gnumeric_splice);
+  g_test_add_func ("/attributes/list/change_order", test_change_order);
 
   return g_test_run ();
 }
