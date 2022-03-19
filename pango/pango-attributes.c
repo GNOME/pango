@@ -2184,6 +2184,9 @@ pango_attr_list_change (PangoAttrList  *list,
 
               if (tmp_attr2->start_index >= tmp_attr->start_index)
                 break;
+
+              g_ptr_array_index (list->attributes, k - 1) = tmp_attr2;
+              g_ptr_array_index (list->attributes, k) = tmp_attr;
             }
         }
     }
