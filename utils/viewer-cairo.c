@@ -225,7 +225,7 @@ cairo_vector_view_create (const PangoViewer *klass G_GNUC_UNUSED)
     return NULL;
 
   if (0)
-    ;
+    {}
   #ifdef CAIRO_HAS_SVG_SURFACE
     else if (0 == g_ascii_strcasecmp (extension, "svg"))
       constructor = cairo_svg_surface_create;
