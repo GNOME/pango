@@ -348,6 +348,7 @@ test_move_cursor_para (void)
     { "line 1 line 2 line 3\nline 4\r\nline 5", -1 }, // various separators
     { "some text, some more text,\n\n even more text", 60 },
     { "long word", 40 },
+    { "זוהי השורה הראשונה" "\n" "זוהי השורה השנייה" "\n" "זוהי השורה השלישית" , 200 },
   };
   PangoLayout *layout;
   PangoRectangle pos, old_pos;
@@ -399,7 +400,7 @@ test_move_cursor_para (void)
             break;
 
           if (index >= strlen (tests[i].text) - 1)
-            break;
+            continue;
 
           pango_layout_get_cursor_pos (layout, index, &pos, NULL);
 
