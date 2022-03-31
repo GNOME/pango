@@ -2184,9 +2184,9 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
   else
     {
       if (old_index == line->start_index + line->length && direction < 0)
-        off_start = TRUE;
-      if (old_index == line->start_index && direction > 0)
         off_end = TRUE;
+      if (old_index == line->start_index && direction > 0)
+        off_start = TRUE;
     }
 
   if (off_start || off_end)
