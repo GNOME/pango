@@ -83,6 +83,9 @@ static void       pango_win32_font_map_finalize      (GObject                   
 static PangoFont *pango_win32_font_map_load_font     (PangoFontMap                 *fontmap,
                                                       PangoContext                 *context,
                                                       const PangoFontDescription   *description);
+static PangoFont *pango_win32_font_map_real_load_font  (PangoFontMap                 *fontmap,
+                                                        PangoContext                 *context,
+                                                        const PangoFontDescription   *description);
 static PangoFontset *pango_win32_font_map_load_fontset (PangoFontMap               *fontmap,
                                                         PangoContext                 *context,
                                                         const PangoFontDescription   *desc,
@@ -794,7 +797,7 @@ _pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
 
   class->find_font = pango_win32_font_map_real_find_font;
   object_class->finalize = pango_win32_font_map_finalize;
-  fontmap_class->load_font = pango_win32_font_map_load_font;
+  fontmap_class->load_font = pango_win32_font_map_real_load_font;
   /* we now need a load_fontset implementation for the Win32 backend */
   fontmap_class->load_fontset = pango_win32_font_map_load_fontset;
   fontmap_class->list_families = pango_win32_font_map_list_families;
@@ -1009,6 +1012,46 @@ pango_win32_get_font_family (PangoWin32FontMap *win32fontmap,
     }
 
   return win32family;
+}
+
+static gboolean
+get_first_font (PangoFontset *fontset G_GNUC_UNUSED,
+                PangoFont    *font,
+                gpointer      data)
+{
+  *(PangoFont **)data = font;
+
+  return TRUE;
+}
+
+static PangoFont *
+pango_win32_font_map_real_load_font (PangoFontMap               *fontmap,
+                                     PangoContext               *context,
+                                     const PangoFontDescription *description)
+{
+  PangoLanguage *language;
+  PangoFontset *fontset;
+  PangoFont *font = NULL;
+
+  if (context)
+    language = pango_context_get_language (context);
+  else
+    language = NULL;
+
+  fontset = pango_font_map_load_fontset (fontmap, context,
+                                         description, language);
+
+  if (fontset)
+    {
+      pango_fontset_foreach (fontset, get_first_font, &font);
+
+      if (font)
+        g_object_ref (font);
+
+      g_object_unref (fontset);
+    }
+
+  return font;
 }
 
 static PangoFont *
