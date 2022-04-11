@@ -732,8 +732,9 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 
   g_hash_table_foreach (win32fontmap->families, synthesize_foreach, win32fontmap);
 
-  /* Create synthetic "Sans", "Serif", "Monospace", "Cursive", "Fantasy" and "System-ui" families */
+  /* Create synthetic "Sans", "Sans-Serif", "Serif", "Monospace", "Cursive", "Fantasy" and "System-ui" families */
   create_standard_family (win32fontmap, "Sans");
+  create_standard_family (win32fontmap, "Sans-Serif");
   create_standard_family (win32fontmap, "Serif");
   create_standard_family (win32fontmap, "Monospace");
   create_standard_family (win32fontmap, "Cursive");
