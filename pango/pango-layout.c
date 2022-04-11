@@ -6718,7 +6718,7 @@ apply_baseline_shift (PangoLayoutLine *line,
       unsigned int lang_count = HB_OT_MAX_TAGS_PER_LANGUAGE;
 #endif
 
-      if (item-analysis.font == NULL)
+      if (item->analysis.font == NULL)
         continue;
 
 #if HB_VERSION_ATLEAST(4,0,0)
