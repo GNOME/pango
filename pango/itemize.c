@@ -1164,6 +1164,9 @@ apply_scale_to_item (PangoContext *context,
   PangoFontDescription *desc;
   double size;
 
+  if (!item->analysis.font)
+    return;
+
   if (is_small_caps)
     pango_analysis_set_size_font (&item->analysis, item->analysis.font);
 
@@ -1294,11 +1297,14 @@ static PangoVariant
 get_font_variant (PangoItem *item)
 {
   PangoFontDescription *desc;
-  PangoVariant variant;
+  PangoVariant variant = PANGO_VARIANT_NORMAL;
 
-  desc = pango_font_describe (item->analysis.font);
-  variant = pango_font_description_get_variant (desc);
-  pango_font_description_free (desc);
+  if (item->analysis.font)
+    {
+      desc = pango_font_describe (item->analysis.font);
+      variant = pango_font_description_get_variant (desc);
+      pango_font_description_free (desc);
+    }
 
   return variant;
 }
