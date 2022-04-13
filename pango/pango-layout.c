@@ -6624,7 +6624,7 @@ collect_baseline_shift (ParaBreakState *state,
                   int subscript_y_offset = 0;
 
 
-                  if (prev)
+                  if (prev && prev->analysis.font)
                     {
                       hb_font_t *hb_font = pango_font_get_hb_font (prev->analysis.font);
                       hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_SUPERSCRIPT_EM_Y_OFFSET, &superscript_y_offset);
@@ -6716,7 +6716,12 @@ apply_baseline_shift (PangoLayoutLine *line,
       hb_tag_t lang_tags[HB_OT_MAX_TAGS_PER_LANGUAGE];
       unsigned int script_count = HB_OT_MAX_TAGS_PER_SCRIPT;
       unsigned int lang_count = HB_OT_MAX_TAGS_PER_LANGUAGE;
+#endif
 
+      if (item->analysis.font == NULL)
+        continue;
+
+#if HB_VERSION_ATLEAST(4,0,0)
       hb_font = pango_font_get_hb_font (item->analysis.font);
 
       script = (hb_script_t) g_unicode_script_to_iso15924 (item->analysis.script);
