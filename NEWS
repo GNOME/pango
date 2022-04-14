@@ -1,3 +1,11 @@
+Overview of changes in 1.50.7, 14-04-2022
+=========================================
+- coretext: Fix the build
+- editing: Fix moving across paragraph boundaries in rtl
+- layout: Try harder to survive without fonts
+- Windows: Register a sans-serif font
+- Windows: Try harder to load a font
+
 Overview of changes in 1.50.6, 19-03-2022
 =========================================
 - Drop hb-glib dependency
