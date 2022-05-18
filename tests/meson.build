@@ -304,3 +304,10 @@ foreach t: tests
     protocol: 'tap',
   )
 endforeach
+
+executable('layout-performance', [ 'layout-performance.c' ],
+           dependencies: [ libpango_dep, libpangocairo_dep ],
+           include_directories: root_inc,
+           c_args: common_cflags + pango_debug_cflags + test_cflags,
+           cpp_args: common_cppflags + pango_debug_cflags + test_cflags)
+
