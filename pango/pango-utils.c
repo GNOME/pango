@@ -1257,3 +1257,49 @@ pango_find_paragraph_boundary (const char *text,
   if (start && next_paragraph_start)
     *next_paragraph_start = start - text;
 }
+
+
+/*< private >
+ * pango_utf8_make_valid:
+ * @str: the string to convert to valid UTF-8
+ * @n_bytes: return location for byte count
+ * @n_chars: return location for character count
+ *
+ * Validate that @str is valid UTF-8, and make it
+ * so if it isn't.
+ *
+ * Invalid bytes get replaced by -1 (which gets ultimatively
+ * turned into PANGO_GLYPH_INVALID_INPUT).
+ *
+ * Returns: `TRUE` if @str was valid without any modification
+ */
+gboolean
+pango_utf8_make_valid (char *str,
+                       int  *n_bytes,
+                       int  *n_chars)
+{
+  char *start, *end;
+
+  start = str;
+
+  for (;;)
+    {
+      gboolean valid;
+
+      valid = g_utf8_validate (start, -1, (const char **)&end);
+
+      if (!*end)
+        break;
+
+      if (!valid)
+        *end++ = -1;
+
+      start = end;
+    }
+
+  *n_bytes = strlen (str);
+  *n_chars = g_utf8_strlen (str, -1);
+
+  return start == str;
+}
+

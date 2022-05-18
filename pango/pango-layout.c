@@ -83,6 +83,7 @@
 #include <string.h>
 #include <math.h>
 #include <locale.h>
+#include "pango-utils-internal.h"
 
 #include <hb-ot.h>
 
@@ -1230,7 +1231,7 @@ pango_layout_set_text (PangoLayout *layout,
                        const char  *text,
                        int          length)
 {
-  char *old_text, *start, *end;
+  char *old_text;
 
   g_return_if_fail (layout != NULL);
   g_return_if_fail (length == 0 || text != NULL);
@@ -1238,50 +1239,18 @@ pango_layout_set_text (PangoLayout *layout,
   old_text = layout->text;
 
   if (length < 0)
-    {
-      layout->length = strlen (text);
-      layout->text = g_strndup (text, layout->length);
-    }
+    layout->text = g_strdup (text);
   else if (length > 0)
-    {
-      /* This is not exactly what we want.  We don't need the padding...
-       */
-      layout->length = length;
-      layout->text = g_strndup (text, length);
-    }
+    layout->text = g_strndup (text, length);
   else
-    {
-      layout->length = 0;
-      layout->text = g_malloc0 (1);
-    }
+    layout->text = g_malloc0 (1);
 
   /* validate it, and replace invalid bytes with -1 */
-  start = layout->text;
-  for (;;) {
-    gboolean valid;
-
-    valid = g_utf8_validate (start, -1, (const char **)&end);
-
-    if (!*end)
-      break;
-
-    /* Replace invalid bytes with -1.  The -1 will be converted to
-     * ((gunichar) -1) by glib, and that in turn yields a glyph value of
-     * ((PangoGlyph) -1) by PANGO_GET_UNKNOWN_GLYPH(-1),
-     * and that's PANGO_GLYPH_INVALID_INPUT.
-     */
-    if (!valid)
-      *end++ = -1;
-
-    start = end;
-  }
-
-  if (start != layout->text)
-    /* TODO: Write out the beginning excerpt of text? */
-    g_warning ("Invalid UTF-8 string passed to pango_layout_set_text()");
-
-  layout->n_chars = pango_utf8_strlen (layout->text, -1);
-  layout->length = strlen (layout->text);
+  if (!pango_utf8_make_valid (layout->text, &layout->length, &layout->n_chars))
+    {
+      /* TODO: Write out the beginning excerpt of text? */
+      g_warning ("Invalid UTF-8 string passed to pango_layout_set_text()");
+    }
 
   g_clear_pointer (&layout->log_attrs, g_free);
   layout_changed (layout);

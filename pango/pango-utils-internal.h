@@ -44,6 +44,11 @@ gboolean pango_parse_flags              (GType       type,
 char    *_pango_trim_string             (const char *str);
 
 
+gboolean pango_utf8_make_valid          (char *str,
+                                         int  *n_bytes,
+                                         int  *n_chars);
+
+
 G_END_DECLS
 
 #endif /* __PANGO_UTILS_H__ */
