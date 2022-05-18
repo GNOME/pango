@@ -1258,6 +1258,92 @@ pango_find_paragraph_boundary (const char *text,
     *next_paragraph_start = start - text;
 }
 
+#define VALIDATE_BYTE(mask, expect)                      \
+  G_STMT_START {                                         \
+    if (G_UNLIKELY((*(guchar *)p & (mask)) != (expect))) \
+      goto error;                                        \
+  } G_STMT_END
+
+static inline const char *
+utf8_validate (const char *str,
+               int        *n_chars)
+
+{
+  const char *p;
+  int chars = 0;
+
+  for (p = str; *p; p++)
+    {
+      if (*(guchar *)p < 128)
+        {
+          chars++;
+          /* done */;
+        }
+      else
+        {
+          const char *last;
+
+          last = p;
+          if (*(guchar *)p < 0xe0) /* 110xxxxx */
+            {
+              if (G_UNLIKELY (*(guchar *)p < 0xc2))
+                goto error;
+            }
+          else
+            {
+              if (*(guchar *)p < 0xf0) /* 1110xxxx */
+                {
+                  switch (*(guchar *)p++ & 0x0f)
+                    {
+                    case 0:
+                      VALIDATE_BYTE(0xe0, 0xa0); /* 0xa0 ... 0xbf */
+                      break;
+                    case 0x0d:
+                      VALIDATE_BYTE(0xe0, 0x80); /* 0x80 ... 0x9f */
+                      break;
+                    default:
+                      VALIDATE_BYTE(0xc0, 0x80); /* 10xxxxxx */
+                    }
+                }
+              else if (*(guchar *)p < 0xf5) /* 11110xxx excluding out-of-range */
+                {
+                  switch (*(guchar *)p++ & 0x07)
+                    {
+                    case 0:
+                      VALIDATE_BYTE(0xc0, 0x80); /* 10xxxxxx */
+                      if (G_UNLIKELY((*(guchar *)p & 0x30) == 0))
+                        goto error;
+                      break;
+                    case 4:
+                      VALIDATE_BYTE(0xf0, 0x80); /* 0x80 ... 0x8f */
+                      break;
+                    default:
+                      VALIDATE_BYTE(0xc0, 0x80); /* 10xxxxxx */
+                    }
+                  p++;
+                  VALIDATE_BYTE(0xc0, 0x80); /* 10xxxxxx */
+                }
+              else
+                goto error;
+            }
+
+          p++;
+          VALIDATE_BYTE(0xc0, 0x80); /* 10xxxxxx */
+
+          chars++;
+
+          continue;
+
+        error:
+          *n_chars = chars;
+          return last;
+        }
+    }
+
+  *n_chars = chars;
+
+  return p;
+}
 
 /*< private >
  * pango_utf8_make_valid:
@@ -1275,31 +1361,39 @@ pango_find_paragraph_boundary (const char *text,
  */
 gboolean
 pango_utf8_make_valid (char *str,
-                       int  *n_bytes,
-                       int  *n_chars)
+                       int  *num_bytes,
+                       int  *num_chars)
 {
-  char *start, *end;
+  char *start;
+  int n_bytes, n_chars;
 
   start = str;
 
+  n_bytes = 0;
+  n_chars = 0;
+
   for (;;)
     {
-      gboolean valid;
+      char *end;
+      int chars;
 
-      valid = g_utf8_validate (start, -1, (const char **)&end);
+      end = (char *)utf8_validate (start, &chars);
+
+      n_bytes += end - start;
+      n_chars += chars;
 
       if (!*end)
         break;
 
-      if (!valid)
-        *end++ = -1;
+      *end++ = -1;
+      n_bytes += 1;
+      n_chars += 1;
 
       start = end;
     }
 
-  *n_bytes = strlen (str);
-  *n_chars = g_utf8_strlen (str, -1);
+  *num_bytes = n_bytes;
+  *num_chars = n_chars;
 
   return start == str;
 }
-
