@@ -1,5 +1,5 @@
 <span overline="single">overline</span>
 <span overline_color="red">overline-color</span>
-<span underline="single-line">single-line</span>
-<span underline="double-line">double-line</span>
-<span underline="error-line">error-line</span>
+<span underline="single" underline-position="under">single-line</span>
+<span underline="double" underline-position="under">double-line</span>
+<span underline="dotted" underline-position="under">error-line</span>

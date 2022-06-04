@@ -14,13 +14,16 @@ range 9 23
 9 23 overline-color #ffff00000000
 range 23 24
 range 24 35
-24 35 underline single-line
+24 35 underline single
+24 35 underline-position 1
 range 35 36
 range 36 47
-36 47 underline double-line
+36 47 underline double
+36 47 underline-position 1
 range 47 48
 range 48 58
-48 58 underline error-line
+48 58 underline dotted
+48 58 underline-position 1
 range 58 2147483647
 
 

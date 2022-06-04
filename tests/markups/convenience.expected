@@ -56,7 +56,7 @@ range 43 44
 range 44 54
 1 79 font-desc "Cantarell 20"
 1 79 language en
-44 54 strikethrough single
+44 54 strikethrough 1
 range 54 55
 1 79 font-desc "Cantarell 20"
 1 79 language en
