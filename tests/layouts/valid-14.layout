@@ -19,7 +19,6 @@
   "font" : "Cantarell 11",
   "ellipsize" : "start",
   "width" : 161792,
-  "line-spacing" : 1.5,
   "log-attrs" : [
     {
       "char-break" : true,
@@ -219,11 +218,6 @@
               "extra-attributes" : [
                 {
                   "end" : 2147483647,
-                  "type" : "line-height",
-                  "value" : 1.5
-                },
-                {
-                  "end" : 2147483647,
                   "type" : "fallback",
                   "value" : true
                 }
@@ -263,12 +257,6 @@
                 "checksum" : "9e7449c453527829c963330ba36f4de3b20911e185a1df08a97082bb69e795d7"
               },
               "flags" : 0,
-              "extra-attributes" : [
-                {
-                  "type" : "line-height",
-                  "value" : 1.5
-                }
-              ],
               "y-offset" : 567,
               "start-x-offset" : 0,
               "end-x-offset" : 0,
@@ -297,12 +285,6 @@
                 }
               },
               "flags" : 0,
-              "extra-attributes" : [
-                {
-                  "type" : "line-height",
-                  "value" : 1.5
-                }
-              ],
               "y-offset" : 0,
               "start-x-offset" : 0,
               "end-x-offset" : 0,
@@ -358,12 +340,6 @@
                 "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
               },
               "flags" : 0,
-              "extra-attributes" : [
-                {
-                  "type" : "line-height",
-                  "value" : 1.5
-                }
-              ],
               "y-offset" : 337,
               "start-x-offset" : 0,
               "end-x-offset" : 0,
@@ -410,12 +386,6 @@
                 }
               },
               "flags" : 0,
-              "extra-attributes" : [
-                {
-                  "type" : "line-height",
-                  "value" : 1.5
-                }
-              ],
               "y-offset" : 0,
               "start-x-offset" : 0,
               "end-x-offset" : 0,
@@ -444,12 +414,6 @@
                 }
               },
               "flags" : 0,
-              "extra-attributes" : [
-                {
-                  "type" : "line-height",
-                  "value" : 1.5
-                }
-              ],
               "y-offset" : 0,
               "start-x-offset" : 0,
               "end-x-offset" : 0,
