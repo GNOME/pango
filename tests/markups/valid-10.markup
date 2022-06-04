@@ -3,7 +3,7 @@
       background="#f0f0f0"
       underline="double"
       underline_color="red"
-      strikethrough="yes"
+      strikethrough="single"
       strikethrough_color="blue"
       fallback="no"
       lang="de"

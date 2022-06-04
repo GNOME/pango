@@ -5,7 +5,8 @@ abc def
 
 range 0 4
 range 4 5
-4 5 underline low
+4 5 underline single
+4 5 underline-position 1
 range 5 2147483647
 
 

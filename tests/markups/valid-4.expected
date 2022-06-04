@@ -15,18 +15,18 @@ range 9 15
 9 15 style italic
 range 15 16
 range 16 29
-16 41 strikethrough true
+16 41 strikethrough 1
 range 29 32
-16 41 strikethrough true
+16 41 strikethrough 1
 29 32 font-scale subscript
 29 32 baseline-shift subscript
 range 32 33
-16 41 strikethrough true
+16 41 strikethrough 1
 range 33 38
-16 41 strikethrough true
+16 41 strikethrough 1
 33 38 scale 0.833333
 range 38 41
-16 41 strikethrough true
+16 41 strikethrough 1
 38 41 font-scale superscript
 38 41 baseline-shift superscript
 range 41 42
