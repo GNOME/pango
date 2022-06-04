@@ -17,125 +17,131 @@
   "comment" : "Test that we get synthesized spaces\nfrom HarfBuzz.",
   "text" : "    ",
   "font" : "Font Awesome 5 Free 32",
+  "log-attrs" : [
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "sentence-boundary" : true,
+      "backspace-deletes-character" : true,
+      "expandable-space" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "expandable-space" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "sentence-start" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "sentence-end" : true,
+      "backspace-deletes-character" : true,
+      "expandable-space" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "expandable-space" : true
+    },
+    {
+      "line-break" : true,
+      "mandatory-break" : true,
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "sentence-boundary" : true,
+      "word-boundary" : true
+    }
+  ],
   "output" : {
-    "is-wrapped" : false,
-    "is-ellipsized" : false,
+    "wrapped" : false,
+    "ellipsized" : false,
+    "hypenated" : false,
     "unknown-glyphs" : 4,
     "width" : 89088,
     "height" : 45056,
-    "log-attrs" : [
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "sentence-start" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "sentence-end" : true,
-        "backspace-deletes-character" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true
-      },
-      {
-        "line-break" : true,
-        "mandatory-break" : true,
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "sentence-boundary" : true,
-        "word-boundary" : true
-      }
-    ],
     "lines" : [
       {
-        "start-index" : 0,
-        "length" : 7,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : [
-          {
-            "offset" : 0,
-            "length" : 7,
-            "text" : "    ",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Zyyy",
-            "font" : {
-              "description" : "Font Awesome 5 Free Solid Heavy 32",
-              "checksum" : "8fe6cd51391fa6f8c2008609ddd489bb81a6d7674f3a1c8b7fa07efd026a6397",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+        "position" : [
+          0,
+          38912
+        ],
+        "line" : {
+          "start-index" : 0,
+          "length" : 7,
+          "start-offset" : 0,
+          "n-chars" : 5,
+          "wrapped" : false,
+          "ellipsized" : false,
+          "hyphenated" : false,
+          "justified" : false,
+          "paragraph-start" : true,
+          "paragraph-end" : true,
+          "direction" : "ltr",
+          "runs" : [
+            {
+              "offset" : 0,
+              "length" : 7,
+              "text" : "    ",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Zyyy",
+              "font" : {
+                "description" : "Font Awesome 5 Free Solid Heavy 32",
+                "checksum" : "8fe6cd51391fa6f8c2008609ddd489bb81a6d7674f3a1c8b7fa07efd026a6397"
+              },
+              "flags" : 0,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 268435488,
+                  "width" : 11264,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                },
+                {
+                  "glyph" : 268435488,
+                  "width" : 11264,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 1
+                },
+                {
+                  "glyph" : 1,
+                  "width" : 44032,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 2
+                },
+                {
+                  "glyph" : 268435488,
+                  "width" : 11264,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 5
+                },
+                {
+                  "glyph" : 268435488,
+                  "width" : 11264,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 6
+                }
               ]
-            },
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 268435488,
-                "width" : 11264,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              },
-              {
-                "glyph" : 268435488,
-                "width" : 11264,
-                "is-cluster-start" : true,
-                "log-cluster" : 1
-              },
-              {
-                "glyph" : 1,
-                "width" : 44032,
-                "is-cluster-start" : true,
-                "log-cluster" : 2
-              },
-              {
-                "glyph" : 268435488,
-                "width" : 11264,
-                "is-cluster-start" : true,
-                "log-cluster" : 5
-              },
-              {
-                "glyph" : 268435488,
-                "width" : 11264,
-                "is-cluster-start" : true,
-                "log-cluster" : 6
-              }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       }
     ]
   }
