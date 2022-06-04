@@ -18,7 +18,6 @@
   "font" : "monospace 32",
   "wrap" : "char",
   "width" : 0,
-  "line-spacing" : 1.2999999523162842,
   "log-attrs" : [
     {
       "char-break" : true,
@@ -69,7 +68,7 @@
     "hypenated" : true,
     "unknown-glyphs" : 0,
     "width" : 53248,
-    "height" : 323792,
+    "height" : 261120,
     "lines" : [
       {
         "position" : [
@@ -102,12 +101,6 @@
                 "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
               },
               "flags" : 4,
-              "extra-attributes" : [
-                {
-                  "type" : "line-height",
-                  "value" : 1.2999999523162842
-                }
-              ],
               "y-offset" : 0,
               "start-x-offset" : 0,
               "end-x-offset" : 0,
@@ -131,7 +124,7 @@
       {
         "position" : [
           0,
-          108852
+          93184
         ],
         "line" : {
           "start-index" : 1,
@@ -159,12 +152,6 @@
                 "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
               },
               "flags" : 4,
-              "extra-attributes" : [
-                {
-                  "type" : "line-height",
-                  "value" : 1.2999999523162842
-                }
-              ],
               "y-offset" : 0,
               "start-x-offset" : 0,
               "end-x-offset" : 0,
@@ -188,7 +175,7 @@
       {
         "position" : [
           0,
-          176744
+          145408
         ],
         "line" : {
           "start-index" : 2,
@@ -216,12 +203,6 @@
                 "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
               },
               "flags" : 4,
-              "extra-attributes" : [
-                {
-                  "type" : "line-height",
-                  "value" : 1.2999999523162842
-                }
-              ],
               "y-offset" : 0,
               "start-x-offset" : 0,
               "end-x-offset" : 0,
@@ -245,7 +226,7 @@
       {
         "position" : [
           0,
-          244636
+          197632
         ],
         "line" : {
           "start-index" : 3,
@@ -273,12 +254,6 @@
                 "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
               },
               "flags" : 0,
-              "extra-attributes" : [
-                {
-                  "type" : "line-height",
-                  "value" : 1.2999999523162842
-                }
-              ],
               "y-offset" : 0,
               "start-x-offset" : 0,
               "end-x-offset" : 0,
@@ -297,7 +272,7 @@
       {
         "position" : [
           0,
-          312528
+          249856
         ],
         "line" : {
           "start-index" : 4,
@@ -325,12 +300,6 @@
                 "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
               },
               "flags" : 0,
-              "extra-attributes" : [
-                {
-                  "type" : "line-height",
-                  "value" : 1.2999999523162842
-                }
-              ],
               "y-offset" : 0,
               "start-x-offset" : 0,
               "end-x-offset" : 0,
