@@ -18,242 +18,232 @@
   "text" : "ABC日本語ABC",
   "font" : "Noto Sans CJK JP 24",
   "wrap" : "word-char",
+  "log-attrs" : [
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "sentence-boundary" : true,
+      "sentence-start" : true,
+      "backspace-deletes-character" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "backspace-deletes-character" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "backspace-deletes-character" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "backspace-deletes-character" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "line-break" : true,
+      "mandatory-break" : true,
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "sentence-boundary" : true,
+      "sentence-end" : true,
+      "word-boundary" : true
+    }
+  ],
   "output" : {
-    "is-wrapped" : false,
-    "is-ellipsized" : false,
+    "wrapped" : false,
+    "ellipsized" : false,
+    "hypenated" : false,
     "unknown-glyphs" : 0,
     "width" : 294912,
     "height" : 49152,
-    "log-attrs" : [
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "sentence-boundary" : true,
-        "sentence-start" : true,
-        "backspace-deletes-character" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "backspace-deletes-character" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "backspace-deletes-character" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "backspace-deletes-character" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "line-break" : true,
-        "mandatory-break" : true,
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "sentence-boundary" : true,
-        "sentence-end" : true,
-        "word-boundary" : true
-      }
-    ],
     "lines" : [
       {
-        "start-index" : 0,
-        "length" : 15,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : [
-          {
-            "offset" : 0,
-            "length" : 3,
-            "text" : "ABC",
-            "bidi-level" : 0,
-            "gravity" : "east",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "Noto Sans CJK JP Rotated-Left 24",
-              "checksum" : "3b50ae56f1fb5637c82d785945531f718f40b78a26bea3d137e58808bd774399",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+        "position" : [
+          0,
+          24576
+        ],
+        "line" : {
+          "start-index" : 0,
+          "length" : 15,
+          "start-offset" : 0,
+          "n-chars" : 9,
+          "wrapped" : false,
+          "ellipsized" : false,
+          "hyphenated" : false,
+          "justified" : false,
+          "paragraph-start" : true,
+          "paragraph-end" : true,
+          "direction" : "ltr",
+          "runs" : [
+            {
+              "offset" : 0,
+              "length" : 3,
+              "text" : "ABC",
+              "bidi-level" : 0,
+              "gravity" : "east",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "Noto Sans CJK JP Rotated-Left 24",
+                "checksum" : "3b50ae56f1fb5637c82d785945531f718f40b78a26bea3d137e58808bd774399"
+              },
+              "flags" : 1,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 1,
+                  "width" : 32768,
+                  "x-offset" : 28836,
+                  "y-offset" : 9945,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                },
+                {
+                  "glyph" : 2,
+                  "width" : 32768,
+                  "x-offset" : 28836,
+                  "y-offset" : 10764,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 1
+                },
+                {
+                  "glyph" : 3,
+                  "width" : 32768,
+                  "x-offset" : 28836,
+                  "y-offset" : 10453,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 2
+                }
               ]
             },
-            "flags" : 1,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 1,
-                "width" : 32768,
-                "x-offset" : 28836,
-                "y-offset" : 9945,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
+            {
+              "offset" : 3,
+              "length" : 9,
+              "text" : "日本語",
+              "bidi-level" : 0,
+              "gravity" : "east",
+              "language" : "xx",
+              "script" : "Hani",
+              "font" : {
+                "description" : "Noto Sans CJK JP Rotated-Left 24",
+                "checksum" : "3b50ae56f1fb5637c82d785945531f718f40b78a26bea3d137e58808bd774399"
               },
-              {
-                "glyph" : 2,
-                "width" : 32768,
-                "x-offset" : 28836,
-                "y-offset" : 10764,
-                "is-cluster-start" : true,
-                "log-cluster" : 1
-              },
-              {
-                "glyph" : 3,
-                "width" : 32768,
-                "x-offset" : 28836,
-                "y-offset" : 10453,
-                "is-cluster-start" : true,
-                "log-cluster" : 2
-              }
-            ]
-          },
-          {
-            "offset" : 3,
-            "length" : 9,
-            "text" : "日本語",
-            "bidi-level" : 0,
-            "gravity" : "east",
-            "language" : "xx",
-            "script" : "Hani",
-            "font" : {
-              "description" : "Noto Sans CJK JP Rotated-Left 24",
-              "checksum" : "3b50ae56f1fb5637c82d785945531f718f40b78a26bea3d137e58808bd774399",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+              "flags" : 1,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 4,
+                  "width" : 32768,
+                  "x-offset" : 28836,
+                  "y-offset" : 16384,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                },
+                {
+                  "glyph" : 5,
+                  "width" : 32768,
+                  "x-offset" : 28836,
+                  "y-offset" : 16384,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 3
+                },
+                {
+                  "glyph" : 7,
+                  "width" : 32768,
+                  "x-offset" : 28836,
+                  "y-offset" : 16384,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 6
+                }
               ]
             },
-            "flags" : 1,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 4,
-                "width" : 32768,
-                "x-offset" : 28836,
-                "y-offset" : 16384,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
+            {
+              "offset" : 12,
+              "length" : 3,
+              "text" : "ABC",
+              "bidi-level" : 0,
+              "gravity" : "east",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "Noto Sans CJK JP Rotated-Left 24",
+                "checksum" : "3b50ae56f1fb5637c82d785945531f718f40b78a26bea3d137e58808bd774399"
               },
-              {
-                "glyph" : 5,
-                "width" : 32768,
-                "x-offset" : 28836,
-                "y-offset" : 16384,
-                "is-cluster-start" : true,
-                "log-cluster" : 3
-              },
-              {
-                "glyph" : 7,
-                "width" : 32768,
-                "x-offset" : 28836,
-                "y-offset" : 16384,
-                "is-cluster-start" : true,
-                "log-cluster" : 6
-              }
-            ]
-          },
-          {
-            "offset" : 12,
-            "length" : 3,
-            "text" : "ABC",
-            "bidi-level" : 0,
-            "gravity" : "east",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "Noto Sans CJK JP Rotated-Left 24",
-              "checksum" : "3b50ae56f1fb5637c82d785945531f718f40b78a26bea3d137e58808bd774399",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+              "flags" : 1,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 1,
+                  "width" : 32768,
+                  "x-offset" : 28836,
+                  "y-offset" : 9945,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                },
+                {
+                  "glyph" : 2,
+                  "width" : 32768,
+                  "x-offset" : 28836,
+                  "y-offset" : 10764,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 1
+                },
+                {
+                  "glyph" : 3,
+                  "width" : 32768,
+                  "x-offset" : 28836,
+                  "y-offset" : 10453,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 2
+                }
               ]
-            },
-            "flags" : 1,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 1,
-                "width" : 32768,
-                "x-offset" : 28836,
-                "y-offset" : 9945,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              },
-              {
-                "glyph" : 2,
-                "width" : 32768,
-                "x-offset" : 28836,
-                "y-offset" : 10764,
-                "is-cluster-start" : true,
-                "log-cluster" : 1
-              },
-              {
-                "glyph" : 3,
-                "width" : 32768,
-                "x-offset" : 28836,
-                "y-offset" : 10453,
-                "is-cluster-start" : true,
-                "log-cluster" : 2
-              }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       }
     ]
   }

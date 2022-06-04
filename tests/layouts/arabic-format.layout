@@ -17,72 +17,78 @@
   "comment" : "Test that font fallback works\nfor visible format characters\nin the Arabic block.",
   "text" : "۝",
   "font" : "Sans 32",
+  "log-attrs" : [
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "sentence-boundary" : true,
+      "backspace-deletes-character" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "mandatory-break" : true,
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "sentence-boundary" : true,
+      "backspace-deletes-character" : true,
+      "word-boundary" : true
+    }
+  ],
   "output" : {
-    "is-wrapped" : false,
-    "is-ellipsized" : false,
+    "wrapped" : false,
+    "ellipsized" : false,
+    "hypenated" : false,
     "unknown-glyphs" : 0,
     "width" : 56320,
     "height" : 77824,
-    "log-attrs" : [
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "mandatory-break" : true,
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
-        "word-boundary" : true
-      }
-    ],
     "lines" : [
       {
-        "start-index" : 0,
-        "length" : 2,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : [
-          {
-            "offset" : 0,
-            "length" : 2,
-            "text" : "۝",
-            "bidi-level" : 2,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Zyyy",
-            "font" : {
-              "description" : "Amiri 32",
-              "checksum" : "d5e6374130d6df09e66f80f0bbcb7262112584ebadb861f0a412a21cc742a5dd",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+        "position" : [
+          0,
+          49152
+        ],
+        "line" : {
+          "start-index" : 0,
+          "length" : 2,
+          "start-offset" : 0,
+          "n-chars" : 1,
+          "wrapped" : false,
+          "ellipsized" : false,
+          "hyphenated" : false,
+          "justified" : false,
+          "paragraph-start" : true,
+          "paragraph-end" : true,
+          "direction" : "ltr",
+          "runs" : [
+            {
+              "offset" : 0,
+              "length" : 2,
+              "text" : "۝",
+              "bidi-level" : 2,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Zyyy",
+              "font" : {
+                "description" : "Amiri 32",
+                "checksum" : "d5e6374130d6df09e66f80f0bbcb7262112584ebadb861f0a412a21cc742a5dd"
+              },
+              "flags" : 0,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 1,
+                  "width" : 56320,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                }
               ]
-            },
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 1,
-                "width" : 56320,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       }
     ]
   }

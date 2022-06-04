@@ -24,146 +24,152 @@
     }
   ],
   "font" : "Cantarell 11",
+  "log-attrs" : [
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "sentence-boundary" : true,
+      "sentence-start" : true,
+      "backspace-deletes-character" : true,
+      "word-boundary" : true
+    },
+    {},
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "expandable-space" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true
+    },
+    {
+      "line-break" : true,
+      "mandatory-break" : true,
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "sentence-boundary" : true,
+      "sentence-end" : true,
+      "backspace-deletes-character" : true,
+      "word-boundary" : true
+    }
+  ],
   "output" : {
-    "is-wrapped" : false,
-    "is-ellipsized" : false,
+    "wrapped" : false,
+    "ellipsized" : false,
+    "hypenated" : false,
     "unknown-glyphs" : 1,
     "width" : 45056,
     "height" : 19456,
-    "log-attrs" : [
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "sentence-boundary" : true,
-        "sentence-start" : true,
-        "backspace-deletes-character" : true,
-        "word-boundary" : true
-      },
-      {},
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true
-      },
-      {
-        "line-break" : true,
-        "mandatory-break" : true,
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "sentence-boundary" : true,
-        "sentence-end" : true,
-        "backspace-deletes-character" : true,
-        "word-boundary" : true
-      }
-    ],
     "lines" : [
       {
-        "start-index" : 0,
-        "length" : 11,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : [
-          {
-            "offset" : 0,
-            "length" : 7,
-            "text" : "😊️",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Zyyy",
-            "font" : {
-              "description" : "Noto Color Emoji 11",
-              "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47",
-              "matrix" : [
-                0.13455956135321101,
-                -0,
-                -0,
-                0.13455956135321101,
-                0,
-                0
+        "position" : [
+          0,
+          15360
+        ],
+        "line" : {
+          "start-index" : 0,
+          "length" : 11,
+          "start-offset" : 0,
+          "n-chars" : 4,
+          "wrapped" : false,
+          "ellipsized" : false,
+          "hyphenated" : false,
+          "justified" : false,
+          "paragraph-start" : true,
+          "paragraph-end" : true,
+          "direction" : "ltr",
+          "runs" : [
+            {
+              "offset" : 0,
+              "length" : 7,
+              "text" : "😊️",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Zyyy",
+              "font" : {
+                "description" : "Noto Color Emoji 11",
+                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47",
+                "matrix" : [
+                  0.13455956135321101,
+                  -0,
+                  -0,
+                  0.13455956135321101,
+                  0,
+                  0
+                ]
+              },
+              "flags" : 0,
+              "extra-attributes" : [
+                {
+                  "type" : "show",
+                  "value" : 4
+                }
+              ],
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 13,
+                  "width" : 18432,
+                  "is-cluster-start" : true,
+                  "is-color" : true,
+                  "log-cluster" : 0
+                },
+                {
+                  "glyph" : 268435455,
+                  "width" : 0,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 4
+                }
               ]
             },
-            "flags" : 0,
-            "extra-attributes" : [
-              {
-                "type" : "show",
-                "value" : 4
-              }
-            ],
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 13,
-                "width" : 18432,
-                "is-cluster-start" : true,
-                "is-color" : true,
-                "log-cluster" : 0
+            {
+              "offset" : 7,
+              "length" : 4,
+              "text" : " ‍",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Zyyy",
+              "font" : {
+                "description" : "Cantarell 11",
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+                "variations" : {
+                  "wght" : 0
+                }
               },
-              {
-                "glyph" : 268435455,
-                "width" : 0,
-                "is-cluster-start" : true,
-                "log-cluster" : 4
-              }
-            ]
-          },
-          {
-            "offset" : 7,
-            "length" : 4,
-            "text" : " ‍",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Zyyy",
-            "font" : {
-              "description" : "Cantarell 11",
-              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-              "variations" : {
-                "wght" : 0
-              },
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+              "flags" : 0,
+              "extra-attributes" : [
+                {
+                  "type" : "show",
+                  "value" : 4
+                }
+              ],
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 1109,
+                  "width" : 3072,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                },
+                {
+                  "glyph" : 268443661,
+                  "width" : 23552,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 1
+                }
               ]
-            },
-            "flags" : 0,
-            "extra-attributes" : [
-              {
-                "type" : "show",
-                "value" : 4
-              }
-            ],
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              },
-              {
-                "glyph" : 268443661,
-                "width" : 23552,
-                "is-cluster-start" : true,
-                "log-cluster" : 1
-              }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       }
     ]
   }

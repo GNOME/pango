@@ -18,367 +18,365 @@
   "comment" : "A keycap sequence",
   "text" : " 0️⃣ Keycap Digit Zero",
   "font" : "Cantarell 11",
+  "log-attrs" : [
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "sentence-boundary" : true,
+      "backspace-deletes-character" : true,
+      "expandable-space" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "sentence-start" : true,
+      "word-boundary" : true
+    },
+    {},
+    {
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "expandable-space" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "expandable-space" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "expandable-space" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "line-break" : true,
+      "mandatory-break" : true,
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "sentence-boundary" : true,
+      "sentence-end" : true,
+      "word-boundary" : true
+    }
+  ],
   "output" : {
-    "is-wrapped" : false,
-    "is-ellipsized" : false,
+    "wrapped" : false,
+    "ellipsized" : false,
+    "hypenated" : false,
     "unknown-glyphs" : 0,
     "width" : 142336,
     "height" : 19456,
-    "log-attrs" : [
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "sentence-boundary" : true,
-        "backspace-deletes-character" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "sentence-start" : true,
-        "word-boundary" : true
-      },
-      {},
-      {
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "line-break" : true,
-        "mandatory-break" : true,
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "sentence-boundary" : true,
-        "sentence-end" : true,
-        "word-boundary" : true
-      }
-    ],
     "lines" : [
       {
-        "start-index" : 0,
-        "length" : 26,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : [
-          {
-            "offset" : 0,
-            "length" : 1,
-            "text" : " ",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "Cantarell 11",
-              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-              "variations" : {
-                "wght" : 0
+        "position" : [
+          0,
+          15360
+        ],
+        "line" : {
+          "start-index" : 0,
+          "length" : 26,
+          "start-offset" : 0,
+          "n-chars" : 22,
+          "wrapped" : false,
+          "ellipsized" : false,
+          "hyphenated" : false,
+          "justified" : false,
+          "paragraph-start" : true,
+          "paragraph-end" : true,
+          "direction" : "ltr",
+          "runs" : [
+            {
+              "offset" : 0,
+              "length" : 1,
+              "text" : " ",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "Cantarell 11",
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+                "variations" : {
+                  "wght" : 0
+                }
               },
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+              "flags" : 0,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 1109,
+                  "width" : 3072,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                }
               ]
             },
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              }
-            ]
-          },
-          {
-            "offset" : 1,
-            "length" : 7,
-            "text" : "0️⃣",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "Noto Color Emoji 11",
-              "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47",
-              "matrix" : [
-                0.13455956135321101,
-                -0,
-                -0,
-                0.13455956135321101,
-                0,
-                0
+            {
+              "offset" : 1,
+              "length" : 7,
+              "text" : "0️⃣",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "Noto Color Emoji 11",
+                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47",
+                "matrix" : [
+                  0.13455956135321101,
+                  -0,
+                  -0,
+                  0.13455956135321101,
+                  0,
+                  0
+                ]
+              },
+              "flags" : 0,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 19,
+                  "width" : 18432,
+                  "is-cluster-start" : true,
+                  "is-color" : true,
+                  "log-cluster" : 0
+                }
               ]
             },
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 19,
-                "width" : 18432,
-                "is-cluster-start" : true,
-                "is-color" : true,
-                "log-cluster" : 0
-              }
-            ]
-          },
-          {
-            "offset" : 8,
-            "length" : 18,
-            "text" : " Keycap Digit Zero",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "Cantarell 11",
-              "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-              "variations" : {
-                "wght" : 0
+            {
+              "offset" : 8,
+              "length" : 18,
+              "text" : " Keycap Digit Zero",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "Cantarell 11",
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
+                "variations" : {
+                  "wght" : 0
+                }
               },
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+              "flags" : 0,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 1109,
+                  "width" : 3072,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                },
+                {
+                  "glyph" : 100,
+                  "width" : 9216,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 1
+                },
+                {
+                  "glyph" : 287,
+                  "width" : 8192,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 2
+                },
+                {
+                  "glyph" : 473,
+                  "width" : 7168,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 3
+                },
+                {
+                  "glyph" : 273,
+                  "width" : 7168,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 4
+                },
+                {
+                  "glyph" : 244,
+                  "width" : 8192,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 5
+                },
+                {
+                  "glyph" : 406,
+                  "width" : 8192,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 6
+                },
+                {
+                  "glyph" : 1109,
+                  "width" : 3072,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 7
+                },
+                {
+                  "glyph" : 37,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 8
+                },
+                {
+                  "glyph" : 324,
+                  "width" : 4096,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 9
+                },
+                {
+                  "glyph" : 312,
+                  "width" : 8192,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 10
+                },
+                {
+                  "glyph" : 324,
+                  "width" : 4096,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 11
+                },
+                {
+                  "glyph" : 430,
+                  "width" : 5120,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 12
+                },
+                {
+                  "glyph" : 1109,
+                  "width" : 3072,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 13
+                },
+                {
+                  "glyph" : 239,
+                  "width" : 9216,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 14
+                },
+                {
+                  "glyph" : 287,
+                  "width" : 8192,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 15
+                },
+                {
+                  "glyph" : 409,
+                  "width" : 6144,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 16
+                },
+                {
+                  "glyph" : 370,
+                  "width" : 8192,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 17
+                }
               ]
-            },
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              },
-              {
-                "glyph" : 100,
-                "width" : 9216,
-                "is-cluster-start" : true,
-                "log-cluster" : 1
-              },
-              {
-                "glyph" : 287,
-                "width" : 8192,
-                "is-cluster-start" : true,
-                "log-cluster" : 2
-              },
-              {
-                "glyph" : 473,
-                "width" : 7168,
-                "is-cluster-start" : true,
-                "log-cluster" : 3
-              },
-              {
-                "glyph" : 273,
-                "width" : 7168,
-                "is-cluster-start" : true,
-                "log-cluster" : 4
-              },
-              {
-                "glyph" : 244,
-                "width" : 8192,
-                "is-cluster-start" : true,
-                "log-cluster" : 5
-              },
-              {
-                "glyph" : 406,
-                "width" : 8192,
-                "is-cluster-start" : true,
-                "log-cluster" : 6
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 7
-              },
-              {
-                "glyph" : 37,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 8
-              },
-              {
-                "glyph" : 324,
-                "width" : 4096,
-                "is-cluster-start" : true,
-                "log-cluster" : 9
-              },
-              {
-                "glyph" : 312,
-                "width" : 8192,
-                "is-cluster-start" : true,
-                "log-cluster" : 10
-              },
-              {
-                "glyph" : 324,
-                "width" : 4096,
-                "is-cluster-start" : true,
-                "log-cluster" : 11
-              },
-              {
-                "glyph" : 430,
-                "width" : 5120,
-                "is-cluster-start" : true,
-                "log-cluster" : 12
-              },
-              {
-                "glyph" : 1109,
-                "width" : 3072,
-                "is-cluster-start" : true,
-                "log-cluster" : 13
-              },
-              {
-                "glyph" : 239,
-                "width" : 9216,
-                "is-cluster-start" : true,
-                "log-cluster" : 14
-              },
-              {
-                "glyph" : 287,
-                "width" : 8192,
-                "is-cluster-start" : true,
-                "log-cluster" : 15
-              },
-              {
-                "glyph" : 409,
-                "width" : 6144,
-                "is-cluster-start" : true,
-                "log-cluster" : 16
-              },
-              {
-                "glyph" : 370,
-                "width" : 8192,
-                "is-cluster-start" : true,
-                "log-cluster" : 17
-              }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       }
     ]
   }

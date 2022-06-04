@@ -35,1394 +35,1370 @@
     ]
   },
   "width" : 587776,
+  "log-attrs" : [
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "sentence-boundary" : true,
+      "sentence-start" : true,
+      "backspace-deletes-character" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "expandable-space" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "expandable-space" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "expandable-space" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "expandable-space" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "expandable-space" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "expandable-space" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "expandable-space" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "expandable-space" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "backspace-deletes-character" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "backspace-deletes-character" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "backspace-deletes-character" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "backspace-deletes-character" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "mandatory-break" : true,
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "sentence-boundary" : true,
+      "sentence-end" : true,
+      "word-boundary" : true
+    }
+  ],
   "output" : {
-    "is-wrapped" : true,
-    "is-ellipsized" : false,
+    "wrapped" : true,
+    "ellipsized" : false,
+    "hypenated" : false,
     "unknown-glyphs" : 0,
     "width" : 552960,
     "height" : 58368,
-    "log-attrs" : [
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "sentence-boundary" : true,
-        "sentence-start" : true,
-        "backspace-deletes-character" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "backspace-deletes-character" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "backspace-deletes-character" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "backspace-deletes-character" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "backspace-deletes-character" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "mandatory-break" : true,
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "sentence-boundary" : true,
-        "sentence-end" : true,
-        "word-boundary" : true
-      }
-    ],
     "lines" : [
       {
-        "start-index" : 0,
-        "length" : 55,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : [
-          {
-            "offset" : 0,
-            "length" : 55,
-            "text" : "id=3 UNION ALL SELECT NULL, NULL, CONCAT(0x7373737373, ",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "DejaVu Sans Mono 12",
-              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+        "position" : [
+          0,
+          15360
+        ],
+        "line" : {
+          "start-index" : 0,
+          "length" : 55,
+          "start-offset" : 0,
+          "n-chars" : 55,
+          "wrapped" : true,
+          "ellipsized" : false,
+          "hyphenated" : false,
+          "justified" : false,
+          "paragraph-start" : true,
+          "paragraph-end" : false,
+          "direction" : "ltr",
+          "runs" : [
+            {
+              "offset" : 0,
+              "length" : 55,
+              "text" : "id=3 UNION ALL SELECT NULL, NULL, CONCAT(0x7373737373, ",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "DejaVu Sans Mono 12",
+                "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
+              },
+              "flags" : 0,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 76,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                },
+                {
+                  "glyph" : 71,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 1
+                },
+                {
+                  "glyph" : 32,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 2
+                },
+                {
+                  "glyph" : 22,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 3
+                },
+                {
+                  "glyph" : 3,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 4
+                },
+                {
+                  "glyph" : 56,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 5
+                },
+                {
+                  "glyph" : 49,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 6
+                },
+                {
+                  "glyph" : 44,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 7
+                },
+                {
+                  "glyph" : 50,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 8
+                },
+                {
+                  "glyph" : 49,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 9
+                },
+                {
+                  "glyph" : 3,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 10
+                },
+                {
+                  "glyph" : 36,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 11
+                },
+                {
+                  "glyph" : 47,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 12
+                },
+                {
+                  "glyph" : 47,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 13
+                },
+                {
+                  "glyph" : 3,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 14
+                },
+                {
+                  "glyph" : 54,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 15
+                },
+                {
+                  "glyph" : 40,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 16
+                },
+                {
+                  "glyph" : 47,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 17
+                },
+                {
+                  "glyph" : 40,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 18
+                },
+                {
+                  "glyph" : 38,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 19
+                },
+                {
+                  "glyph" : 55,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 20
+                },
+                {
+                  "glyph" : 3,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 21
+                },
+                {
+                  "glyph" : 49,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 22
+                },
+                {
+                  "glyph" : 56,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 23
+                },
+                {
+                  "glyph" : 47,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 24
+                },
+                {
+                  "glyph" : 47,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 25
+                },
+                {
+                  "glyph" : 15,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 26
+                },
+                {
+                  "glyph" : 3,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 27
+                },
+                {
+                  "glyph" : 49,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 28
+                },
+                {
+                  "glyph" : 56,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 29
+                },
+                {
+                  "glyph" : 47,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 30
+                },
+                {
+                  "glyph" : 47,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 31
+                },
+                {
+                  "glyph" : 15,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 32
+                },
+                {
+                  "glyph" : 3,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 33
+                },
+                {
+                  "glyph" : 38,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 34
+                },
+                {
+                  "glyph" : 50,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 35
+                },
+                {
+                  "glyph" : 49,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 36
+                },
+                {
+                  "glyph" : 38,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 37
+                },
+                {
+                  "glyph" : 36,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 38
+                },
+                {
+                  "glyph" : 55,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 39
+                },
+                {
+                  "glyph" : 11,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 40
+                },
+                {
+                  "glyph" : 19,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 41
+                },
+                {
+                  "glyph" : 91,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 42
+                },
+                {
+                  "glyph" : 26,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 43
+                },
+                {
+                  "glyph" : 22,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 44
+                },
+                {
+                  "glyph" : 26,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 45
+                },
+                {
+                  "glyph" : 22,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 46
+                },
+                {
+                  "glyph" : 26,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 47
+                },
+                {
+                  "glyph" : 22,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 48
+                },
+                {
+                  "glyph" : 26,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 49
+                },
+                {
+                  "glyph" : 22,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 50
+                },
+                {
+                  "glyph" : 26,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 51
+                },
+                {
+                  "glyph" : 22,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 52
+                },
+                {
+                  "glyph" : 15,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 53
+                },
+                {
+                  "glyph" : 268435455,
+                  "width" : 0,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 54
+                }
               ]
-            },
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 76,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              },
-              {
-                "glyph" : 71,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 1
-              },
-              {
-                "glyph" : 32,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 2
-              },
-              {
-                "glyph" : 22,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 3
-              },
-              {
-                "glyph" : 3,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 4
-              },
-              {
-                "glyph" : 56,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 5
-              },
-              {
-                "glyph" : 49,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 6
-              },
-              {
-                "glyph" : 44,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 7
-              },
-              {
-                "glyph" : 50,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 8
-              },
-              {
-                "glyph" : 49,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 9
-              },
-              {
-                "glyph" : 3,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 10
-              },
-              {
-                "glyph" : 36,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 11
-              },
-              {
-                "glyph" : 47,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 12
-              },
-              {
-                "glyph" : 47,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 13
-              },
-              {
-                "glyph" : 3,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 14
-              },
-              {
-                "glyph" : 54,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 15
-              },
-              {
-                "glyph" : 40,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 16
-              },
-              {
-                "glyph" : 47,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 17
-              },
-              {
-                "glyph" : 40,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 18
-              },
-              {
-                "glyph" : 38,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 19
-              },
-              {
-                "glyph" : 55,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 20
-              },
-              {
-                "glyph" : 3,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 21
-              },
-              {
-                "glyph" : 49,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 22
-              },
-              {
-                "glyph" : 56,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 23
-              },
-              {
-                "glyph" : 47,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 24
-              },
-              {
-                "glyph" : 47,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 25
-              },
-              {
-                "glyph" : 15,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 26
-              },
-              {
-                "glyph" : 3,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 27
-              },
-              {
-                "glyph" : 49,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 28
-              },
-              {
-                "glyph" : 56,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 29
-              },
-              {
-                "glyph" : 47,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 30
-              },
-              {
-                "glyph" : 47,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 31
-              },
-              {
-                "glyph" : 15,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 32
-              },
-              {
-                "glyph" : 3,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 33
-              },
-              {
-                "glyph" : 38,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 34
-              },
-              {
-                "glyph" : 50,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 35
-              },
-              {
-                "glyph" : 49,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 36
-              },
-              {
-                "glyph" : 38,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 37
-              },
-              {
-                "glyph" : 36,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 38
-              },
-              {
-                "glyph" : 55,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 39
-              },
-              {
-                "glyph" : 11,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 40
-              },
-              {
-                "glyph" : 19,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 41
-              },
-              {
-                "glyph" : 91,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 42
-              },
-              {
-                "glyph" : 26,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 43
-              },
-              {
-                "glyph" : 22,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 44
-              },
-              {
-                "glyph" : 26,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 45
-              },
-              {
-                "glyph" : 22,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 46
-              },
-              {
-                "glyph" : 26,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 47
-              },
-              {
-                "glyph" : 22,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 48
-              },
-              {
-                "glyph" : 26,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 49
-              },
-              {
-                "glyph" : 22,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 50
-              },
-              {
-                "glyph" : 26,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 51
-              },
-              {
-                "glyph" : 22,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 52
-              },
-              {
-                "glyph" : 15,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 53
-              },
-              {
-                "glyph" : 268435455,
-                "width" : 0,
-                "is-cluster-start" : true,
-                "log-cluster" : 54
-              }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       },
       {
-        "start-index" : 55,
-        "length" : 25,
-        "paragraph-start" : false,
-        "direction" : "ltr",
-        "runs" : [
-          {
-            "offset" : 55,
-            "length" : 25,
-            "text" : "0x73323173656374657374), ",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "DejaVu Sans Mono 12",
-              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+        "position" : [
+          0,
+          34816
+        ],
+        "line" : {
+          "start-index" : 55,
+          "length" : 25,
+          "start-offset" : 55,
+          "n-chars" : 25,
+          "wrapped" : true,
+          "ellipsized" : false,
+          "hyphenated" : false,
+          "justified" : false,
+          "paragraph-start" : false,
+          "paragraph-end" : false,
+          "direction" : "ltr",
+          "runs" : [
+            {
+              "offset" : 55,
+              "length" : 25,
+              "text" : "0x73323173656374657374), ",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "DejaVu Sans Mono 12",
+                "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
+              },
+              "flags" : 0,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 19,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                },
+                {
+                  "glyph" : 91,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 1
+                },
+                {
+                  "glyph" : 26,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 2
+                },
+                {
+                  "glyph" : 22,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 3
+                },
+                {
+                  "glyph" : 22,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 4
+                },
+                {
+                  "glyph" : 21,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 5
+                },
+                {
+                  "glyph" : 22,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 6
+                },
+                {
+                  "glyph" : 20,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 7
+                },
+                {
+                  "glyph" : 26,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 8
+                },
+                {
+                  "glyph" : 22,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 9
+                },
+                {
+                  "glyph" : 25,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 10
+                },
+                {
+                  "glyph" : 24,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 11
+                },
+                {
+                  "glyph" : 25,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 12
+                },
+                {
+                  "glyph" : 22,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 13
+                },
+                {
+                  "glyph" : 26,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 14
+                },
+                {
+                  "glyph" : 23,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 15
+                },
+                {
+                  "glyph" : 25,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 16
+                },
+                {
+                  "glyph" : 24,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 17
+                },
+                {
+                  "glyph" : 26,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 18
+                },
+                {
+                  "glyph" : 22,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 19
+                },
+                {
+                  "glyph" : 26,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 20
+                },
+                {
+                  "glyph" : 23,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 21
+                },
+                {
+                  "glyph" : 12,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 22
+                },
+                {
+                  "glyph" : 15,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 23
+                },
+                {
+                  "glyph" : 268435455,
+                  "width" : 0,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 24
+                }
               ]
-            },
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 19,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              },
-              {
-                "glyph" : 91,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 1
-              },
-              {
-                "glyph" : 26,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 2
-              },
-              {
-                "glyph" : 22,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 3
-              },
-              {
-                "glyph" : 22,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 4
-              },
-              {
-                "glyph" : 21,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 5
-              },
-              {
-                "glyph" : 22,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 6
-              },
-              {
-                "glyph" : 20,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 7
-              },
-              {
-                "glyph" : 26,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 8
-              },
-              {
-                "glyph" : 22,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 9
-              },
-              {
-                "glyph" : 25,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 10
-              },
-              {
-                "glyph" : 24,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 11
-              },
-              {
-                "glyph" : 25,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 12
-              },
-              {
-                "glyph" : 22,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 13
-              },
-              {
-                "glyph" : 26,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 14
-              },
-              {
-                "glyph" : 23,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 15
-              },
-              {
-                "glyph" : 25,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 16
-              },
-              {
-                "glyph" : 24,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 17
-              },
-              {
-                "glyph" : 26,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 18
-              },
-              {
-                "glyph" : 22,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 19
-              },
-              {
-                "glyph" : 26,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 20
-              },
-              {
-                "glyph" : 23,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 21
-              },
-              {
-                "glyph" : 12,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 22
-              },
-              {
-                "glyph" : 15,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 23
-              },
-              {
-                "glyph" : 268435455,
-                "width" : 0,
-                "is-cluster-start" : true,
-                "log-cluster" : 24
-              }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       },
       {
-        "start-index" : 80,
-        "length" : 20,
-        "paragraph-start" : false,
-        "direction" : "ltr",
-        "runs" : [
-          {
-            "offset" : 80,
-            "length" : 6,
-            "text" : "NULL--",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "DejaVu Sans Mono 12",
-              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+        "position" : [
+          0,
+          54272
+        ],
+        "line" : {
+          "start-index" : 80,
+          "length" : 20,
+          "start-offset" : 80,
+          "n-chars" : 20,
+          "wrapped" : false,
+          "ellipsized" : false,
+          "hyphenated" : false,
+          "justified" : false,
+          "paragraph-start" : false,
+          "paragraph-end" : true,
+          "direction" : "ltr",
+          "runs" : [
+            {
+              "offset" : 80,
+              "length" : 6,
+              "text" : "NULL--",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "DejaVu Sans Mono 12",
+                "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
+              },
+              "flags" : 0,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 49,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                },
+                {
+                  "glyph" : 56,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 1
+                },
+                {
+                  "glyph" : 47,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 2
+                },
+                {
+                  "glyph" : 47,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 3
+                },
+                {
+                  "glyph" : 16,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 4
+                },
+                {
+                  "glyph" : 16,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 5
+                }
               ]
             },
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 49,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
+            {
+              "offset" : 86,
+              "length" : 1,
+              "text" : "\t",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "DejaVu Sans Mono 12",
+                "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
               },
-              {
-                "glyph" : 56,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 1
-              },
-              {
-                "glyph" : 47,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 2
-              },
-              {
-                "glyph" : 47,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 3
-              },
-              {
-                "glyph" : 16,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 4
-              },
-              {
-                "glyph" : 16,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 5
-              }
-            ]
-          },
-          {
-            "offset" : 86,
-            "length" : 1,
-            "text" : "\t",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "DejaVu Sans Mono 12",
-              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+              "flags" : 0,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 268435455,
+                  "width" : 20480,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                }
               ]
             },
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 268435455,
-                "width" : 20480,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              }
-            ]
-          },
-          {
-            "offset" : 87,
-            "length" : 1,
-            "text" : "\t",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "DejaVu Sans Mono 12",
-              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+            {
+              "offset" : 87,
+              "length" : 1,
+              "text" : "\t",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "DejaVu Sans Mono 12",
+                "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
+              },
+              "flags" : 0,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 268435455,
+                  "width" : 81920,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                }
               ]
             },
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 268435455,
-                "width" : 81920,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              }
-            ]
-          },
-          {
-            "offset" : 88,
-            "length" : 1,
-            "text" : "\t",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "DejaVu Sans Mono 12",
-              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+            {
+              "offset" : 88,
+              "length" : 1,
+              "text" : "\t",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "DejaVu Sans Mono 12",
+                "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
+              },
+              "flags" : 0,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 268435455,
+                  "width" : 81920,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                }
               ]
             },
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 268435455,
-                "width" : 81920,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              }
-            ]
-          },
-          {
-            "offset" : 89,
-            "length" : 1,
-            "text" : "\t",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "DejaVu Sans Mono 12",
-              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+            {
+              "offset" : 89,
+              "length" : 1,
+              "text" : "\t",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "DejaVu Sans Mono 12",
+                "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
+              },
+              "flags" : 0,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 268435455,
+                  "width" : 81920,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                }
               ]
             },
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 268435455,
-                "width" : 81920,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              }
-            ]
-          },
-          {
-            "offset" : 90,
-            "length" : 10,
-            "text" : "-->(MYSQL)",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "DejaVu Sans Mono 12",
-              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+            {
+              "offset" : 90,
+              "length" : 10,
+              "text" : "-->(MYSQL)",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "DejaVu Sans Mono 12",
+                "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
+              },
+              "flags" : 0,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 16,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                },
+                {
+                  "glyph" : 16,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 1
+                },
+                {
+                  "glyph" : 33,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 2
+                },
+                {
+                  "glyph" : 11,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 3
+                },
+                {
+                  "glyph" : 48,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 4
+                },
+                {
+                  "glyph" : 60,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 5
+                },
+                {
+                  "glyph" : 54,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 6
+                },
+                {
+                  "glyph" : 52,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 7
+                },
+                {
+                  "glyph" : 47,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 8
+                },
+                {
+                  "glyph" : 12,
+                  "width" : 10240,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 9
+                }
               ]
-            },
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 16,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              },
-              {
-                "glyph" : 16,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 1
-              },
-              {
-                "glyph" : 33,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 2
-              },
-              {
-                "glyph" : 11,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 3
-              },
-              {
-                "glyph" : 48,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 4
-              },
-              {
-                "glyph" : 60,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 5
-              },
-              {
-                "glyph" : 54,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 6
-              },
-              {
-                "glyph" : 52,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 7
-              },
-              {
-                "glyph" : 47,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 8
-              },
-              {
-                "glyph" : 12,
-                "width" : 10240,
-                "is-cluster-start" : true,
-                "log-cluster" : 9
-              }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       }
     ]
   }

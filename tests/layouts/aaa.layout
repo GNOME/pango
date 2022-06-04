@@ -19,276 +19,332 @@
   "wrap" : "char",
   "width" : 0,
   "line-spacing" : 1.2999999523162842,
+  "log-attrs" : [
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "word-start" : true,
+      "sentence-boundary" : true,
+      "sentence-start" : true,
+      "backspace-deletes-character" : true,
+      "word-boundary" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "cursor-position" : true,
+      "break-inserts-hyphen" : true
+    },
+    {
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "word-end" : true,
+      "sentence-end" : true,
+      "expandable-space" : true,
+      "word-boundary" : true
+    },
+    {
+      "line-break" : true,
+      "mandatory-break" : true,
+      "char-break" : true,
+      "white" : true,
+      "cursor-position" : true,
+      "sentence-boundary" : true,
+      "word-boundary" : true
+    }
+  ],
   "output" : {
-    "is-wrapped" : true,
-    "is-ellipsized" : false,
+    "wrapped" : true,
+    "ellipsized" : false,
+    "hypenated" : true,
     "unknown-glyphs" : 0,
     "width" : 53248,
-    "height" : 318464,
-    "log-attrs" : [
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "word-start" : true,
-        "sentence-boundary" : true,
-        "sentence-start" : true,
-        "backspace-deletes-character" : true,
-        "word-boundary" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "cursor-position" : true,
-        "break-inserts-hyphen" : true
-      },
-      {
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "word-end" : true,
-        "sentence-end" : true,
-        "expandable-space" : true,
-        "word-boundary" : true
-      },
-      {
-        "line-break" : true,
-        "mandatory-break" : true,
-        "char-break" : true,
-        "white" : true,
-        "cursor-position" : true,
-        "sentence-boundary" : true,
-        "word-boundary" : true
-      }
-    ],
+    "height" : 323792,
     "lines" : [
       {
-        "start-index" : 0,
-        "length" : 1,
-        "paragraph-start" : true,
-        "direction" : "ltr",
-        "runs" : [
-          {
-            "offset" : 0,
-            "length" : 1,
-            "text" : "a",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "DejaVu Sans Mono 32",
-              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
-              ]
-            },
-            "flags" : 4,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 68,
-                "width" : 26624,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
+        "position" : [
+          0,
+          40960
+        ],
+        "line" : {
+          "start-index" : 0,
+          "length" : 1,
+          "start-offset" : 0,
+          "n-chars" : 1,
+          "wrapped" : true,
+          "ellipsized" : false,
+          "hyphenated" : true,
+          "justified" : false,
+          "paragraph-start" : true,
+          "paragraph-end" : false,
+          "direction" : "ltr",
+          "runs" : [
+            {
+              "offset" : 0,
+              "length" : 1,
+              "text" : "a",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "DejaVu Sans Mono 32",
+                "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
               },
-              {
-                "glyph" : 1819,
-                "width" : 26624,
-                "log-cluster" : 0
-              }
-            ]
-          }
-        ]
+              "flags" : 4,
+              "extra-attributes" : [
+                {
+                  "type" : "line-height",
+                  "value" : 1.2999999523162842
+                }
+              ],
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 68,
+                  "width" : 26624,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                },
+                {
+                  "glyph" : 1819,
+                  "width" : 26624,
+                  "log-cluster" : 0
+                }
+              ]
+            }
+          ]
+        }
       },
       {
-        "start-index" : 1,
-        "length" : 1,
-        "paragraph-start" : false,
-        "direction" : "ltr",
-        "runs" : [
-          {
-            "offset" : 1,
-            "length" : 1,
-            "text" : "a",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "DejaVu Sans Mono 32",
-              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
-              ]
-            },
-            "flags" : 4,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 68,
-                "width" : 26624,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
+        "position" : [
+          0,
+          108852
+        ],
+        "line" : {
+          "start-index" : 1,
+          "length" : 1,
+          "start-offset" : 1,
+          "n-chars" : 1,
+          "wrapped" : true,
+          "ellipsized" : false,
+          "hyphenated" : true,
+          "justified" : false,
+          "paragraph-start" : false,
+          "paragraph-end" : false,
+          "direction" : "ltr",
+          "runs" : [
+            {
+              "offset" : 1,
+              "length" : 1,
+              "text" : "a",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "DejaVu Sans Mono 32",
+                "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
               },
-              {
-                "glyph" : 1819,
-                "width" : 26624,
-                "log-cluster" : 0
-              }
-            ]
-          }
-        ]
+              "flags" : 4,
+              "extra-attributes" : [
+                {
+                  "type" : "line-height",
+                  "value" : 1.2999999523162842
+                }
+              ],
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 68,
+                  "width" : 26624,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                },
+                {
+                  "glyph" : 1819,
+                  "width" : 26624,
+                  "log-cluster" : 0
+                }
+              ]
+            }
+          ]
+        }
       },
       {
-        "start-index" : 2,
-        "length" : 1,
-        "paragraph-start" : false,
-        "direction" : "ltr",
-        "runs" : [
-          {
-            "offset" : 2,
-            "length" : 1,
-            "text" : "a",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "DejaVu Sans Mono 32",
-              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
-              ]
-            },
-            "flags" : 4,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 68,
-                "width" : 26624,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
+        "position" : [
+          0,
+          176744
+        ],
+        "line" : {
+          "start-index" : 2,
+          "length" : 1,
+          "start-offset" : 2,
+          "n-chars" : 1,
+          "wrapped" : true,
+          "ellipsized" : false,
+          "hyphenated" : true,
+          "justified" : false,
+          "paragraph-start" : false,
+          "paragraph-end" : false,
+          "direction" : "ltr",
+          "runs" : [
+            {
+              "offset" : 2,
+              "length" : 1,
+              "text" : "a",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "DejaVu Sans Mono 32",
+                "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
               },
-              {
-                "glyph" : 1819,
-                "width" : 26624,
-                "log-cluster" : 0
-              }
-            ]
-          }
-        ]
+              "flags" : 4,
+              "extra-attributes" : [
+                {
+                  "type" : "line-height",
+                  "value" : 1.2999999523162842
+                }
+              ],
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 68,
+                  "width" : 26624,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                },
+                {
+                  "glyph" : 1819,
+                  "width" : 26624,
+                  "log-cluster" : 0
+                }
+              ]
+            }
+          ]
+        }
       },
       {
-        "start-index" : 3,
-        "length" : 1,
-        "paragraph-start" : false,
-        "direction" : "ltr",
-        "runs" : [
-          {
-            "offset" : 3,
-            "length" : 1,
-            "text" : "a",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "DejaVu Sans Mono 32",
-              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+        "position" : [
+          0,
+          244636
+        ],
+        "line" : {
+          "start-index" : 3,
+          "length" : 1,
+          "start-offset" : 3,
+          "n-chars" : 1,
+          "wrapped" : true,
+          "ellipsized" : false,
+          "hyphenated" : false,
+          "justified" : false,
+          "paragraph-start" : false,
+          "paragraph-end" : false,
+          "direction" : "ltr",
+          "runs" : [
+            {
+              "offset" : 3,
+              "length" : 1,
+              "text" : "a",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "DejaVu Sans Mono 32",
+                "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
+              },
+              "flags" : 0,
+              "extra-attributes" : [
+                {
+                  "type" : "line-height",
+                  "value" : 1.2999999523162842
+                }
+              ],
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 68,
+                  "width" : 26624,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                }
               ]
-            },
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 68,
-                "width" : 26624,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       },
       {
-        "start-index" : 4,
-        "length" : 1,
-        "paragraph-start" : false,
-        "direction" : "ltr",
-        "runs" : [
-          {
-            "offset" : 4,
-            "length" : 1,
-            "text" : " ",
-            "bidi-level" : 0,
-            "gravity" : "south",
-            "language" : "en-us",
-            "script" : "Latn",
-            "font" : {
-              "description" : "DejaVu Sans Mono 32",
-              "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a",
-              "matrix" : [
-                1,
-                -0,
-                -0,
-                1,
-                0,
-                0
+        "position" : [
+          0,
+          312528
+        ],
+        "line" : {
+          "start-index" : 4,
+          "length" : 1,
+          "start-offset" : 4,
+          "n-chars" : 1,
+          "wrapped" : false,
+          "ellipsized" : false,
+          "hyphenated" : false,
+          "justified" : false,
+          "paragraph-start" : false,
+          "paragraph-end" : true,
+          "direction" : "ltr",
+          "runs" : [
+            {
+              "offset" : 4,
+              "length" : 1,
+              "text" : " ",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "DejaVu Sans Mono 32",
+                "checksum" : "84c5467cadd1f6f23db0d9fbb6377e0d301334d3b5f36e6d5acebd34d0857d3a"
+              },
+              "flags" : 0,
+              "extra-attributes" : [
+                {
+                  "type" : "line-height",
+                  "value" : 1.2999999523162842
+                }
+              ],
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 3,
+                  "width" : 26624,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 0
+                }
               ]
-            },
-            "flags" : 0,
-            "y-offset" : 0,
-            "start-x-offset" : 0,
-            "end-x-offset" : 0,
-            "glyphs" : [
-              {
-                "glyph" : 3,
-                "width" : 26624,
-                "is-cluster-start" : true,
-                "log-cluster" : 0
-              }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       }
     ]
   }
