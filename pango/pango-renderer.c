@@ -1415,46 +1415,46 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
     {
       PangoAttribute *attr = l->data;
 
-      switch ((int) attr->klass->type)
+      switch ((int) attr->type)
         {
         case PANGO_ATTR_UNDERLINE:
-          renderer->underline = ((PangoAttrInt *)attr)->value;
+          renderer->underline = attr->int_value;
           break;
 
         case PANGO_ATTR_OVERLINE:
-          renderer->priv->overline = ((PangoAttrInt *)attr)->value;
+          renderer->priv->overline = attr->int_value;
           break;
 
         case PANGO_ATTR_STRIKETHROUGH:
-          renderer->strikethrough = ((PangoAttrInt *)attr)->value;
+          renderer->strikethrough = attr->int_value;
           break;
 
         case PANGO_ATTR_FOREGROUND:
-          fg_color = &((PangoAttrColor *)attr)->color;
+          fg_color = &attr->color_value;
           break;
 
         case PANGO_ATTR_BACKGROUND:
-          bg_color = &((PangoAttrColor *)attr)->color;
+          bg_color = &attr->color_value;
           break;
 
         case PANGO_ATTR_UNDERLINE_COLOR:
-          underline_color = &((PangoAttrColor *)attr)->color;
+          underline_color = &attr->color_value;
           break;
 
         case PANGO_ATTR_OVERLINE_COLOR:
-          overline_color = &((PangoAttrColor *)attr)->color;
+          overline_color = &attr->color_value;
           break;
 
         case PANGO_ATTR_STRIKETHROUGH_COLOR:
-          strikethrough_color = &((PangoAttrColor *)attr)->color;
+          strikethrough_color = &attr->color_value;
           break;
 
         case PANGO_ATTR_FOREGROUND_ALPHA:
-          fg_alpha = ((PangoAttrInt *)attr)->value;
+          fg_alpha = attr->int_value;
           break;
 
         case PANGO_ATTR_BACKGROUND_ALPHA:
-          bg_alpha = ((PangoAttrInt *)attr)->value;
+          bg_alpha = attr->int_value;
           break;
 
         default:

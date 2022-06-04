@@ -24,7 +24,9 @@
 #include "pango-break.h"
 #include "pango-script-private.h"
 #include "pango-emoji-private.h"
-#include "pango-attributes-private.h"
+#include "pango-attributes.h"
+#include "pango-attr-list-private.h"
+#include "pango-attr-iterator-private.h"
 #include "pango-break-table.h"
 #include "pango-impl-utils.h"
 #include <string.h>
@@ -1786,7 +1788,7 @@ handle_allow_breaks (const char    *text,
   PangoAttrIterator iter;
   gboolean tailored = FALSE;
 
-  _pango_attr_list_get_iterator (attrs, &iter);
+  pango_attr_list_init_iterator (attrs, &iter);
 
   do
     {
@@ -1795,7 +1797,7 @@ handle_allow_breaks (const char    *text,
       if (!attr)
         continue;
 
-      if (!((PangoAttrInt*)attr)->value)
+      if (!attr->int_value)
         {
           int start, end;
           int start_pos, end_pos;
@@ -1822,7 +1824,7 @@ handle_allow_breaks (const char    *text,
     }
   while (pango_attr_iterator_next (&iter));
 
-  _pango_attr_iterator_destroy (&iter);
+  pango_attr_iterator_clear (&iter);
 
   return tailored;
 }
@@ -1839,7 +1841,7 @@ handle_words (const char    *text,
   PangoAttrIterator iter;
   gboolean tailored = FALSE;
 
-  _pango_attr_list_get_iterator (attrs, &iter);
+  pango_attr_list_init_iterator (attrs, &iter);
 
   do
     {
@@ -1928,7 +1930,7 @@ handle_words (const char    *text,
     }
   while (pango_attr_iterator_next (&iter));
 
-  _pango_attr_iterator_destroy (&iter);
+  pango_attr_iterator_clear (&iter);
 
   return tailored;
 }
@@ -1944,7 +1946,7 @@ handle_sentences (const char    *text,
   PangoAttrIterator iter;
   gboolean tailored = FALSE;
 
-  _pango_attr_list_get_iterator (attrs, &iter);
+  pango_attr_list_init_iterator (attrs, &iter);
 
   do
     {
@@ -2016,7 +2018,7 @@ handle_sentences (const char    *text,
     }
   while (pango_attr_iterator_next (&iter));
 
-  _pango_attr_iterator_destroy (&iter);
+  pango_attr_iterator_clear (&iter);
 
   return tailored;
 }
@@ -2032,12 +2034,12 @@ handle_hyphens (const char    *text,
   PangoAttrIterator iter;
   gboolean tailored = FALSE;
 
-  _pango_attr_list_get_iterator (attrs, &iter);
+  pango_attr_list_init_iterator (attrs, &iter);
 
   do {
     const PangoAttribute *attr = pango_attr_iterator_get (&iter, PANGO_ATTR_INSERT_HYPHENS);
 
-    if (attr && ((PangoAttrInt*)attr)->value == 0)
+    if (attr && attr->int_value == 0)
       {
         int start, end;
         int start_pos, end_pos;
@@ -2065,7 +2067,7 @@ handle_hyphens (const char    *text,
       }
   } while (pango_attr_iterator_next (&iter));
 
-  _pango_attr_iterator_destroy (&iter);
+  pango_attr_iterator_clear (&iter);
 
   return tailored;
 }
@@ -2085,22 +2087,22 @@ break_attrs (const char   *text,
   GSList *l;
   gboolean tailored = FALSE;
 
-  _pango_attr_list_init (&allow_breaks);
-  _pango_attr_list_init (&words);
-  _pango_attr_list_init (&sentences);
-  _pango_attr_list_init (&hyphens);
+  pango_attr_list_init (&allow_breaks);
+  pango_attr_list_init (&words);
+  pango_attr_list_init (&sentences);
+  pango_attr_list_init (&hyphens);
 
   for (l = attributes; l; l = l->next)
     {
       PangoAttribute *attr = l->data;
 
-      if (attr->klass->type == PANGO_ATTR_ALLOW_BREAKS)
+      if (attr->type == PANGO_ATTR_ALLOW_BREAKS)
         pango_attr_list_insert (&allow_breaks, pango_attribute_copy (attr));
-      else if (attr->klass->type == PANGO_ATTR_WORD)
+      else if (attr->type == PANGO_ATTR_WORD)
         pango_attr_list_insert (&words, pango_attribute_copy (attr));
-      else if (attr->klass->type == PANGO_ATTR_SENTENCE)
+      else if (attr->type == PANGO_ATTR_SENTENCE)
         pango_attr_list_insert (&sentences, pango_attribute_copy (attr));
-      else if (attr->klass->type == PANGO_ATTR_INSERT_HYPHENS)
+      else if (attr->type == PANGO_ATTR_INSERT_HYPHENS)
         pango_attr_list_insert (&hyphens, pango_attribute_copy (attr));
     }
 
@@ -2116,10 +2118,10 @@ break_attrs (const char   *text,
   tailored |= handle_allow_breaks (text, length, &allow_breaks, offset,
                                    log_attrs, log_attrs_len);
 
-  _pango_attr_list_destroy (&allow_breaks);
-  _pango_attr_list_destroy (&words);
-  _pango_attr_list_destroy (&sentences);
-  _pango_attr_list_destroy (&hyphens);
+  pango_attr_list_destroy (&allow_breaks);
+  pango_attr_list_destroy (&words);
+  pango_attr_list_destroy (&sentences);
+  pango_attr_list_destroy (&hyphens);
 
   return tailored;
 }

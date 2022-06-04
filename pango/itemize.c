@@ -31,7 +31,7 @@
 #include "pango-fontmap-private.h"
 #include "pango-script-private.h"
 #include "pango-emoji-private.h"
-#include "pango-attributes-private.h"
+#include "pango-attr-iterator-private.h"
 #include "pango-item-private.h"
 
 #include <hb-ot.h>
@@ -352,7 +352,7 @@ find_attribute (GSList        *attr_list,
   GSList *node;
 
   for (node = attr_list; node; node = node->next)
-    if (((PangoAttribute *) node->data)->klass->type == type)
+    if (((PangoAttribute *) node->data)->type == type)
       return (PangoAttribute *) node->data;
 
   return NULL;
@@ -394,13 +394,13 @@ update_attr_iterator (ItemizeState *state)
     state->lang = state->context->language;
 
   attr = find_attribute (state->extra_attrs, PANGO_ATTR_FALLBACK);
-  state->enable_fallback = (attr == NULL || ((PangoAttrInt *)attr)->value);
+  state->enable_fallback = (attr == NULL || attr->int_value);
 
   attr = find_attribute (state->extra_attrs, PANGO_ATTR_GRAVITY);
-  state->gravity = attr == NULL ? PANGO_GRAVITY_AUTO : ((PangoAttrInt *)attr)->value;
+  state->gravity = attr == NULL ? PANGO_GRAVITY_AUTO : attr->int_value;
 
   attr = find_attribute (state->extra_attrs, PANGO_ATTR_GRAVITY_HINT);
-  state->gravity_hint = attr == NULL ? state->context->gravity_hint : (PangoGravityHint)((PangoAttrInt *)attr)->value;
+  state->gravity_hint = attr == NULL ? state->context->gravity_hint : (PangoGravityHint)attr->int_value;
 
   state->changed |= FONT_CHANGED;
   if (state->lang != old_lang)
@@ -1053,7 +1053,7 @@ collect_font_scale (PangoContext  *context,
     {
       PangoAttribute *attr = l->data;
 
-      if (attr->klass->type == PANGO_ATTR_FONT_SCALE)
+      if (attr->type == PANGO_ATTR_FONT_SCALE)
         {
           if (attr->start_index == item->offset)
             {
@@ -1067,7 +1067,7 @@ collect_font_scale (PangoContext  *context,
               entry->attr = attr;
               *stack = g_list_prepend (*stack, entry);
 
-              switch (((PangoAttrInt *)attr)->value)
+              switch (attr->int_value)
                 {
                 case PANGO_FONT_SCALE_NONE:
                   break;
@@ -1128,7 +1128,7 @@ collect_font_scale (PangoContext  *context,
      {
        ScaleItem *entry = l->data;
        *scale *= entry->scale;
-       if (((PangoAttrInt *)entry->attr)->value != PANGO_FONT_SCALE_SMALL_CAPS)
+       if (entry->attr->int_value != PANGO_FONT_SCALE_SMALL_CAPS)
          *is_small_caps = FALSE;
        retval = TRUE;
      }
@@ -1315,8 +1315,8 @@ find_text_transform (const PangoAnalysis *analysis)
     {
       PangoAttribute *attr = l->data;
 
-      if (attr->klass->type == PANGO_ATTR_TEXT_TRANSFORM)
-        transform = (PangoTextTransform) ((PangoAttrInt*)attr)->value;
+      if (attr->type == PANGO_ATTR_TEXT_TRANSFORM)
+        transform = (PangoTextTransform) attr->int_value;
     }
 
   return transform;

@@ -23,7 +23,8 @@
 #define __PANGO_ITEM_H__
 
 #include <pango/pango-types.h>
-#include <pango/pango-attributes.h>
+#include <pango/pango-attr-list.h>
+#include <pango/pango-attr-list.h>
 
 G_BEGIN_DECLS
 

@@ -5,6 +5,8 @@
 #include "pango-tabs.h"
 #include "pango-impl-utils.h"
 #include "pango-attributes-private.h"
+#include "pango-attr-list-private.h"
+#include "pango-attr-iterator-private.h"
 #include "pango-item-private.h"
 #include "pango-run-private.h"
 
@@ -436,7 +438,7 @@ pango_line_get_empty_extents (PangoLine        *line,
       PangoAttrIterator iter;
       int start, end;
 
-      _pango_attr_list_get_iterator (line->data->attrs, &iter);
+      pango_attr_list_init_iterator (line->data->attrs, &iter);
 
       do
         {
@@ -456,18 +458,18 @@ pango_line_get_empty_extents (PangoLine        *line,
 
               attr = pango_attr_iterator_get (&iter, PANGO_ATTR_LINE_HEIGHT);
               if (attr)
-                line_height_factor = ((PangoAttrFloat *)attr)->value;
+                line_height_factor = attr->double_value;
 
               attr = pango_attr_iterator_get (&iter, PANGO_ATTR_ABSOLUTE_LINE_HEIGHT);
               if (attr)
-                absolute_line_height = ((PangoAttrInt *)attr)->value;
+                absolute_line_height = attr->int_value;
 
               break;
             }
         }
       while (pango_attr_iterator_next (&iter));
 
-      _pango_attr_iterator_destroy (&iter);
+      pango_attr_iterator_clear (&iter);
     }
 
   memset (logical_rect, 0, sizeof (PangoRectangle));
