@@ -96,64 +96,115 @@ test_attributes_equal (void)
   pango_attribute_destroy (attr3);
 }
 
+static gpointer
+copy_my_attribute_data (gconstpointer data)
+{
+  return (gpointer)data;
+}
+
+static void
+destroy_my_attribute_data (gpointer data)
+{
+}
+
+static gboolean
+my_attribute_data_equal (gconstpointer data1,
+                         gconstpointer data2)
+{
+  return data1 == data2;
+}
+
+static char *
+my_attribute_data_serialize (gconstpointer data)
+{
+  return g_strdup_printf ("%p", data);
+}
+
 static void
 test_attributes_register (void)
 {
   PangoAttrType type;
-  GEnumClass *class;
+  PangoAttribute *attr;
+  PangoAttribute *attr2;
+  gpointer value = NULL;
+  gboolean ret;
+  PangoAttrList *list;
+  char *str;
 
-  type = pango_attr_type_register ("my-attribute");
+  type = pango_attr_type_register ("my-attribute",
+                                   PANGO_ATTR_VALUE_POINTER,
+                                   PANGO_ATTR_AFFECTS_RENDERING,
+                                   PANGO_ATTR_MERGE_OVERRIDES,
+                                   copy_my_attribute_data,
+                                   destroy_my_attribute_data,
+                                   my_attribute_data_equal,
+                                   my_attribute_data_serialize);
+
   g_assert_cmpstr (pango_attr_type_get_name (type), ==, "my-attribute");
 
-  class = g_type_class_ref (PANGO_TYPE_ATTR_TYPE);
-  for (int i = 0; i < class->n_values; i++)
-    {
-      g_assert_cmpint (type, !=, class->values[i].value);
-      g_assert_null (pango_attr_type_get_name (class->values[i].value));
-    }
+  attr = pango_attribute_new (type);
+  attr->pointer_value = (gpointer)0x42;
 
-  g_type_class_unref (class);
+  ret = pango_attribute_get_pointer (attr, &value);
+  g_assert_true (ret);
+  g_assert_true (value == (gpointer)0x42);
+
+  attr2 = pango_attribute_new (type);
+  attr2->pointer_value = (gpointer)0x43;
+
+  ret = pango_attribute_equal (attr, attr2);
+  g_assert_false (ret);
+
+  list = pango_attr_list_new ();
+  pango_attr_list_insert (list, attr2);
+
+  str = pango_attr_list_to_string (list);
+  g_assert_cmpstr (str, ==, "0 4294967295 my-attribute 0x43");
+  g_free (str);
+
+  pango_attr_list_unref (list);
+
+  pango_attribute_destroy (attr);
 }
 
 static void
 test_binding (PangoAttribute *attr)
 {
-  enum {
-    INVALID, INT, LANGUAGE, STRING, SIZE, FONT_DESC, COLOR, FLOAT, FONT_FEATURES,
-  } attr_base[] = {
-    INVALID, LANGUAGE, STRING, INT, INT, INT, INT, SIZE, FONT_DESC, COLOR,
-    COLOR, INT, INT, INT, FLOAT, INT, INT, COLOR, COLOR, SIZE,
-    INT, INT, FONT_FEATURES, INT, INT, INT, INT, INT, INT, COLOR, FLOAT,
-    INT, INT, INT, INT, INT, INT
-  };
+  int int_value;
+  gboolean boolean_value;
+  PangoLanguage *lang_value;
+  const char *string;
+  PangoFontDescription *font_desc;
+  PangoColor color;
+  double double_value;
+  gpointer pointer_value;
 
-  switch (attr_base[attr->klass->type])
+  switch (PANGO_ATTR_VALUE_TYPE (attr))
     {
-    case INT:
-      g_assert_nonnull (pango_attribute_as_int (attr));
+    case PANGO_ATTR_VALUE_INT:
+      g_assert_true (pango_attribute_get_int (attr, &int_value));
       break;
-    case LANGUAGE:
-      g_assert_nonnull (pango_attribute_as_language (attr));
+    case PANGO_ATTR_VALUE_BOOLEAN:
+      g_assert_true (pango_attribute_get_boolean (attr, &boolean_value));
       break;
-    case STRING:
-      g_assert_nonnull (pango_attribute_as_string (attr));
+    case PANGO_ATTR_VALUE_LANGUAGE:
+      g_assert_true (pango_attribute_get_language (attr, &lang_value));
       break;
-    case SIZE:
-      g_assert_nonnull (pango_attribute_as_size (attr));
+    case PANGO_ATTR_VALUE_STRING:
+      g_assert_true (pango_attribute_get_string (attr, &string));
       break;
-    case FONT_DESC:
-      g_assert_nonnull (pango_attribute_as_font_desc (attr));
+    case PANGO_ATTR_VALUE_FONT_DESC:
+      g_assert_true (pango_attribute_get_font_desc (attr, &font_desc));
       break;
-    case COLOR:
-      g_assert_nonnull (pango_attribute_as_color (attr));
+    case PANGO_ATTR_VALUE_COLOR:
+      g_assert_true (pango_attribute_get_color (attr, &color));
       break;
-    case FLOAT:
-      g_assert_nonnull (pango_attribute_as_float (attr));
+    case PANGO_ATTR_VALUE_FLOAT:
+      g_assert_true (pango_attribute_get_float (attr, &double_value));
       break;
-    case FONT_FEATURES:
-      g_assert_nonnull (pango_attribute_as_font_features (attr));
+    case PANGO_ATTR_VALUE_POINTER:
+      g_assert_true (pango_attribute_get_pointer (attr, &pointer_value));
       break;
-    case INVALID:
     default:
       g_assert_not_reached ();
     }
@@ -469,7 +520,7 @@ test_list_change5 (void)
   attr = attribute_from_string ("5 15 style italic");
   g_assert (attr->start_index == 5);
   g_assert (attr->end_index == 15);
-  g_assert (((PangoAttrInt *)attr)->value == PANGO_STYLE_ITALIC);
+  g_assert (attr->int_value == PANGO_STYLE_ITALIC);
   pango_attr_list_change (list, attr);
 
   assert_attr_list (list, "0 3 weight ultrabold\n"
@@ -758,7 +809,7 @@ never_true (PangoAttribute *attribute, gpointer user_data)
 static gboolean
 just_weight (PangoAttribute *attribute, gpointer user_data)
 {
-  if (attribute->klass->type == PANGO_ATTR_WEIGHT)
+  if (attribute->type == PANGO_ATTR_WEIGHT)
     return TRUE;
   else
     return FALSE;
@@ -895,7 +946,7 @@ test_iter_get_font (void)
   list = pango_attr_list_new ();
   attr = pango_attr_size_new (10 * PANGO_SCALE);
   pango_attr_list_insert (list, attr);
-  attr = attribute_from_string ("0 -1 family Times");
+  attr = attribute_from_string ("0 -1 family \"Times\"");
   pango_attr_list_insert (list, attr);
   attr = attribute_from_string ("10 30 stretch condensed");
   pango_attr_list_insert (list, attr);
@@ -956,7 +1007,7 @@ test_iter_get_attrs (void)
   list = pango_attr_list_new ();
   attr = pango_attr_size_new (10 * PANGO_SCALE);
   pango_attr_list_insert (list, attr);
-  attr = attribute_from_string ("0 -1 family Times");
+  attr = attribute_from_string ("0 -1 family \"Times\"");
   pango_attr_list_insert (list, attr);
   attr = attribute_from_string ("10 30 stretch condensed");
   pango_attr_list_insert (list, attr);
@@ -969,24 +1020,24 @@ test_iter_get_attrs (void)
 
   iter = pango_attr_list_get_iterator (list);
   assert_attr_iterator (iter, "0 -1 size 10240\n"
-                              "0 -1 family Times\n");
+                              "0 -1 family \"Times\"\n");
 
   pango_attr_iterator_next (iter);
   assert_attr_iterator (iter, "0 -1 size 10240\n"
-                              "0 -1 family Times\n"
+                              "0 -1 family \"Times\"\n"
                               "10 30 stretch 2\n"
                               "10 20 language ja-jp\n");
 
   pango_attr_iterator_next (iter);
   assert_attr_iterator (iter, "0 -1 size 10240\n"
-                              "0 -1 family Times\n"
+                              "0 -1 family \"Times\"\n"
                               "10 30 stretch 2\n"
                               "20 -1 rise 100\n"
                               "20 -1 fallback 0\n");
 
   pango_attr_iterator_next (iter);
   assert_attr_iterator (iter, "0 -1 size 10240\n"
-                              "0 -1 family Times\n"
+                              "0 -1 family \"Times\"\n"
                               "20 -1 rise 100\n"
                               "20 -1 fallback 0\n");
 
@@ -1003,7 +1054,7 @@ test_list_update (void)
   PangoAttrList *list;
 
   list = pango_attr_list_from_string ("0 200 rise 100\n"
-                                      "5 15 family Times\n"
+                                      "5 15 family \"Times\"\n"
                                       "10 11 size 10240\n"
                                       "11 100 fallback 0\n"
                                       "30 60 stretch 2\n");
@@ -1011,7 +1062,7 @@ test_list_update (void)
   pango_attr_list_update (list, 8, 10, 20);
 
   assert_attr_list (list, "0 210 rise 100\n"
-                          "5 8 family Times\n"
+                          "5 8 family \"Times\"\n"
                           "28 110 fallback false\n"
                           "40 70 stretch condensed\n");
 
@@ -1038,11 +1089,11 @@ test_list_update3 (void)
 {
   PangoAttrList *list;
 
-  list = pango_attr_list_from_string ("5 4294967285 family Times\n");
+  list = pango_attr_list_from_string ("5 4294967285 family \"Times\"\n");
 
   pango_attr_list_update (list, 8, 10, 30);
 
-  assert_attr_list (list, "5 -1 family Times\n");
+  assert_attr_list (list, "5 -1 family \"Times\"\n");
 
   pango_attr_list_unref (list);
 }
@@ -1123,28 +1174,28 @@ test_insert (void)
   PangoAttribute *attr;
 
   list = pango_attr_list_from_string ("0 200 rise 100\n"
-                                      "5 15 family Times\n"
+                                      "5 15 family \"Times\"\n"
                                       "10 11 size 10240\n"
                                       "11 100 fallback 0\n"
                                       "30 60 stretch 2\n");
 
-  attr = attribute_from_string ("10 25 family Times");
+  attr = attribute_from_string ("10 25 family \"Times\"");
   pango_attr_list_change (list, attr);
 
   assert_attr_list (list, "0 200 rise 100\n"
-                          "5 25 family Times\n"
+                          "5 25 family \"Times\"\n"
                           "10 11 size 10240\n"
                           "11 100 fallback false\n"
                           "30 60 stretch condensed\n");
 
-  attr = attribute_from_string ("11 25 family Futura");
+  attr = attribute_from_string ("11 25 family \"Futura\"");
   pango_attr_list_insert (list, attr);
 
   assert_attr_list (list, "0 200 rise 100\n"
-                          "5 25 family Times\n"
+                          "5 25 family \"Times\"\n"
                           "10 11 size 10240\n"
                           "11 100 fallback false\n"
-                          "11 25 family Futura\n"
+                          "11 25 family \"Futura\"\n"
                           "30 60 stretch condensed\n");
 
   pango_attr_list_unref (list);
@@ -1157,21 +1208,21 @@ test_insert2 (void)
   PangoAttribute *attr;
 
   list = pango_attr_list_from_string ("0 200 rise 100\n"
-                                      "5 15 family Times\n"
+                                      "5 15 family \"Times\"\n"
                                       "10 11 size 10240\n"
                                       "11 100 fallback 0\n"
-                                      "20 30 family Times\n"
-                                      "30 40 family Futura\n"
+                                      "20 30 family \"Times\"\n"
+                                      "30 40 family \"Futura\"\n"
                                       "30 60 stretch 2\n");
 
-  attr = attribute_from_string ("10 35 family Times");
+  attr = attribute_from_string ("10 35 family \"Times\"");
   pango_attr_list_change (list, attr);
 
   assert_attr_list (list, "0 200 rise 100\n"
-                          "5 35 family Times\n"
+                          "5 35 family \"Times\"\n"
                           "10 11 size 10240\n"
                           "11 100 fallback false\n"
-                          "35 40 family Futura\n"
+                          "35 40 family \"Futura\"\n"
                           "30 60 stretch condensed\n");
 
   pango_attr_list_unref (list);
@@ -1193,7 +1244,7 @@ test_merge (void)
   PangoAttrList *list2;
 
   list = pango_attr_list_from_string ("0 200 rise 100\n"
-                                      "5 15 family Times\n"
+                                      "5 15 family \"Times\"\n"
                                       "10 11 size 10240\n"
                                       "11 100 fallback 0\n"
                                       "30 60 stretch 2\n");
@@ -1205,7 +1256,7 @@ test_merge (void)
   pango_attr_list_filter (list2, attr_list_merge_filter, list);
 
   assert_attr_list (list, "0 200 rise 100\n"
-                          "5 15 family Times\n"
+                          "5 15 family \"Times\"\n"
                           "10 13 size 10240\n"
                           "11 100 fallback false\n"
                           "13 15 size 11264\n"
@@ -1271,25 +1322,25 @@ print_tags_for_attributes (PangoAttrIterator *iter,
   if (attr)
     g_string_append_printf (s, "%d  %d rise %d\n",
                             attr->start_index, attr->end_index,
-                            ((PangoAttrInt*)attr)->value);
+                            attr->int_value);
 
   attr = pango_attr_iterator_get (iter, PANGO_ATTR_SIZE);
   if (attr)
     g_string_append_printf (s, "%d  %d size %d\n",
                             attr->start_index, attr->end_index,
-                            ((PangoAttrInt*)attr)->value);
+                            attr->int_value);
 
   attr = pango_attr_iterator_get (iter, PANGO_ATTR_SCALE);
   if (attr)
     g_string_append_printf (s, "%d  %d scale %f\n",
                             attr->start_index, attr->end_index,
-                            ((PangoAttrFloat*)attr)->value);
+                            attr->double_value);
 
   attr = pango_attr_iterator_get (iter, PANGO_ATTR_ALLOW_BREAKS);
   if (attr)
     g_string_append_printf (s, "%d  %d allow_breaks %d\n",
                             attr->start_index, attr->end_index,
-                            ((PangoAttrInt*)attr)->value);
+                            attr->int_value);
 }
 
 static void

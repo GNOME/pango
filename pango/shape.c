@@ -275,8 +275,8 @@ find_show_flags (const PangoAnalysis *analysis)
     {
       PangoAttribute *attr = l->data;
 
-      if (attr->klass->type == PANGO_ATTR_SHOW)
-        flags |= ((PangoAttrInt*)attr)->value;
+      if (attr->type == PANGO_ATTR_SHOW)
+        flags |= attr->int_value;
     }
 
   return flags;
@@ -292,8 +292,8 @@ find_text_transform (const PangoAnalysis *analysis)
     {
       PangoAttribute *attr = l->data;
 
-      if (attr->klass->type == PANGO_ATTR_TEXT_TRANSFORM)
-        transform = (PangoTextTransform) ((PangoAttrInt*)attr)->value;
+      if (attr->type == PANGO_ATTR_TEXT_TRANSFORM)
+        transform = (PangoTextTransform) attr->int_value;
     }
 
   return transform;

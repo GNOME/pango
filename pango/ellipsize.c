@@ -25,6 +25,8 @@
 #include "pango-glyph-item.h"
 #include "pango-font-private.h"
 #include "pango-attributes-private.h"
+#include "pango-attr-list-private.h"
+#include "pango-attr-iterator-private.h"
 #include "pango-impl-utils.h"
 #include "pango-line-private.h"
 
@@ -321,7 +323,7 @@ shape_ellipsis (EllipsizeState *state)
   int len;
   int i;
 
-  _pango_attr_list_init (&attrs);
+  pango_attr_list_init (&attrs);
 
   /* Create/reset state->ellipsis_run
    */
@@ -381,13 +383,13 @@ shape_ellipsis (EllipsizeState *state)
 
       /* Modify the fallback iter while it is inside the PangoAttrList; Don't try this at home
        */
-      ((PangoAttrInt *)fallback)->value = TRUE;
+      fallback->int_value = TRUE;
 
       ellipsis_text = "...";
       item = itemize_text (state, ellipsis_text, &attrs);
     }
 
-  _pango_attr_list_destroy (&attrs);
+  pango_attr_list_destroy (&attrs);
 
   state->ellipsis_run->item = item;
 

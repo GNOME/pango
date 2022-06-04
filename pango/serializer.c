@@ -27,6 +27,9 @@
 #include <pango/pango-font-private.h>
 #include <pango/pango-line-private.h>
 #include <pango/pango-utils-internal.h>
+#include <pango/pango-hbface.h>
+#include <pango/pango-attributes.h>
+#include <pango/pango-attr-private.h>
 
 #include <hb-ot.h>
 #include "pango/json/gtkjsonparserprivate.h"
@@ -163,48 +166,49 @@ get_weight_name (int weight)
   return NULL;
 }
 
-static const char *attr_type_names[] = {
-  "invalid",
-  "language",
-  "family",
-  "style",
-  "weight",
-  "variant",
-  "stretch",
-  "size",
-  "font-desc",
-  "foreground",
-  "background",
-  "underline",
-  "strikethrough",
-  "rise",
-  "shape",
-  "scale",
-  "fallback",
-  "letter-spacing",
-  "underline-color",
-  "strikethrough-color",
-  "absolute-size",
-  "gravity",
-  "gravity-hint",
-  "font-features",
-  "foreground-alpha",
-  "background-alpha",
-  "allow-breaks",
-  "show",
-  "insert-hyphens",
-  "overline",
-  "overline-color",
-  "line-height",
-  "absolute-line-height",
-  "text-transform",
-  "word",
-  "sentence",
-  "baseline-shift",
-  "font-scale",
-  "paragraph",
-  NULL
-};
+static PangoAttrType
+get_attr_type (const char *nick)
+{
+  GEnumClass *enum_class;
+  GEnumValue *enum_value = NULL;
+
+  enum_class = g_type_class_ref (PANGO_TYPE_ATTR_TYPE);
+  for (int i = 0; i < enum_class->n_values; i++)
+    {
+      enum_value = &enum_class->values[i];
+      if (strcmp (enum_value->value_nick, nick) == 0)
+        break;
+      enum_value = NULL;
+    }
+  g_type_class_unref (enum_class);
+
+  if (enum_value)
+    return enum_value->value;
+
+  return 0;
+}
+
+static const char *
+get_attr_type_name (PangoAttrType type)
+{
+  GEnumClass *enum_class;
+  GEnumValue *enum_value = NULL;
+
+  enum_class = g_type_class_ref (PANGO_TYPE_ATTR_TYPE);
+  for (int i = 0; i < enum_class->n_values; i++)
+    {
+      enum_value = &enum_class->values[i];
+      if (enum_value->value == type)
+        break;
+      enum_value = NULL;
+    }
+  g_type_class_unref (enum_class);
+
+  if (enum_value)
+    return enum_value->value_nick;
+
+  return NULL;
+}
 
 static void
 get_script_name (GUnicodeScript  script,
@@ -289,112 +293,106 @@ add_attribute (GtkJsonPrinter *printer,
     gtk_json_printer_add_integer (printer, "start", (int)attr->start_index);
   if (attr->end_index != PANGO_ATTR_INDEX_TO_TEXT_END)
     gtk_json_printer_add_integer (printer, "end", (int)attr->end_index);
-  gtk_json_printer_add_string (printer, "type", attr_type_names[attr->klass->type]);
+  gtk_json_printer_add_string (printer, "type", get_attr_type_name (attr->type));
 
-  switch (attr->klass->type)
+  switch (PANGO_ATTR_VALUE_TYPE (attr))
     {
+    case PANGO_ATTR_VALUE_STRING:
+      gtk_json_printer_add_string (printer, "value", attr->str_value);
+      break;
+
+    case PANGO_ATTR_VALUE_INT:
+      switch ((int)attr->type)
+        {
+        case PANGO_ATTR_STYLE:
+          gtk_json_printer_add_string (printer, "value", style_names[attr->int_value]);
+          break;
+
+        case PANGO_ATTR_VARIANT:
+          gtk_json_printer_add_string (printer, "value", variant_names[attr->int_value]);
+          break;
+
+        case PANGO_ATTR_STRETCH:
+          gtk_json_printer_add_string (printer, "value", stretch_names[attr->int_value]);
+          break;
+
+        case PANGO_ATTR_UNDERLINE:
+          gtk_json_printer_add_string (printer, "value", underline_names[attr->int_value]);
+          break;
+
+        case PANGO_ATTR_OVERLINE:
+          gtk_json_printer_add_string (printer, "value", overline_names[attr->int_value]);
+          break;
+
+        case PANGO_ATTR_GRAVITY:
+          gtk_json_printer_add_string (printer, "value", gravity_names[attr->int_value]);
+          break;
+
+        case PANGO_ATTR_GRAVITY_HINT:
+          gtk_json_printer_add_string (printer, "value", gravity_hint_names[attr->int_value]);
+          break;
+
+        case PANGO_ATTR_TEXT_TRANSFORM:
+          gtk_json_printer_add_string (printer, "value", text_transform_names[attr->int_value]);
+          break;
+
+        case PANGO_ATTR_FONT_SCALE:
+          gtk_json_printer_add_string (printer, "value", font_scale_names[attr->int_value]);
+          break;
+
+        case PANGO_ATTR_WEIGHT:
+          {
+            const char *name = get_weight_name (attr->int_value);
+            if (name)
+              gtk_json_printer_add_string (printer, "value", name);
+            else
+              gtk_json_printer_add_integer (printer, "value", attr->int_value);
+          }
+          break;
+
+        case PANGO_ATTR_BASELINE_SHIFT:
+          gtk_json_printer_add_string (printer, "value", baseline_shift_names[attr->int_value]);
+          break;
+
+        default:
+          gtk_json_printer_add_integer (printer, "value", attr->int_value);
+          break;
+        }
+
+      break;
+
+    case PANGO_ATTR_VALUE_BOOLEAN:
+      gtk_json_printer_add_boolean (printer, "value", attr->boolean_value);
+      break;
+
+    case PANGO_ATTR_VALUE_LANGUAGE:
+      gtk_json_printer_add_string (printer, "value", pango_language_to_string (attr->lang_value));
+      break;
+
+    case PANGO_ATTR_VALUE_FONT_DESC:
+      str = font_description_to_string (attr->font_value);
+      gtk_json_printer_add_string (printer, "value", str);
+      g_free (str);
+      break;
+
+    case PANGO_ATTR_VALUE_COLOR:
+      str = pango_color_to_string (&attr->color_value);
+      gtk_json_printer_add_string (printer, "value", str);
+      g_free (str);
+      break;
+
+    case PANGO_ATTR_VALUE_FLOAT:
+      gtk_json_printer_add_number (printer, "value", attr->double_value);
+      break;
+
+    case PANGO_ATTR_VALUE_POINTER:
+      str = pango_attr_value_serialize (attr);
+      gtk_json_printer_add_string (printer, "value", str);
+      g_free (str);
+      break;
+
     default:
-    case PANGO_ATTR_INVALID:
       g_assert_not_reached ();
-    case PANGO_ATTR_LANGUAGE:
-      gtk_json_printer_add_string (printer, "value", pango_language_to_string (((PangoAttrLanguage*)attr)->value));
-      break;
-    case PANGO_ATTR_FAMILY:
-    case PANGO_ATTR_FONT_FEATURES:
-      gtk_json_printer_add_string (printer, "value", ((PangoAttrString*)attr)->value);
-      break;
-    case PANGO_ATTR_STYLE:
-      gtk_json_printer_add_string (printer, "value", style_names[((PangoAttrInt*)attr)->value]);
-      break;
-
-    case PANGO_ATTR_VARIANT:
-      gtk_json_printer_add_string (printer, "value", variant_names[((PangoAttrInt*)attr)->value]);
-      break;
-
-    case PANGO_ATTR_STRETCH:
-      gtk_json_printer_add_string (printer, "value", stretch_names[((PangoAttrInt*)attr)->value]);
-      break;
-
-    case PANGO_ATTR_UNDERLINE:
-      gtk_json_printer_add_string (printer, "value", underline_names[((PangoAttrInt*)attr)->value]);
-      break;
-
-    case PANGO_ATTR_OVERLINE:
-      gtk_json_printer_add_string (printer, "value", overline_names[((PangoAttrInt*)attr)->value]);
-      break;
-
-    case PANGO_ATTR_GRAVITY:
-      gtk_json_printer_add_string (printer, "value", gravity_names[((PangoAttrInt*)attr)->value]);
-      break;
-
-    case PANGO_ATTR_GRAVITY_HINT:
-      gtk_json_printer_add_string (printer, "value", gravity_hint_names[((PangoAttrInt*)attr)->value]);
-      break;
-
-    case PANGO_ATTR_TEXT_TRANSFORM:
-      gtk_json_printer_add_string (printer, "value", text_transform_names[((PangoAttrInt*)attr)->value]);
-      break;
-
-    case PANGO_ATTR_FONT_SCALE:
-      gtk_json_printer_add_string (printer, "value", font_scale_names[((PangoAttrInt*)attr)->value]);
-      break;
-
-    case PANGO_ATTR_WEIGHT:
-      {
-        const char *name = get_weight_name (((PangoAttrInt*)attr)->value);
-        if (name)
-          gtk_json_printer_add_string (printer, "value", name);
-        else
-          gtk_json_printer_add_integer (printer, "value", ((PangoAttrInt*)attr)->value);
-      }
-      break;
-
-    case PANGO_ATTR_BASELINE_SHIFT:
-      gtk_json_printer_add_string (printer, "value", baseline_shift_names[((PangoAttrInt*)attr)->value]);
-      break;
-
-
-    case PANGO_ATTR_SIZE:
-    case PANGO_ATTR_RISE:
-    case PANGO_ATTR_LETTER_SPACING:
-    case PANGO_ATTR_ABSOLUTE_SIZE:
-    case PANGO_ATTR_FOREGROUND_ALPHA:
-    case PANGO_ATTR_BACKGROUND_ALPHA:
-    case PANGO_ATTR_SHOW:
-    case PANGO_ATTR_WORD:
-    case PANGO_ATTR_SENTENCE:
-    case PANGO_ATTR_PARAGRAPH:
-    case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
-    case PANGO_ATTR_LINE_SPACING:
-      gtk_json_printer_add_integer (printer, "value", ((PangoAttrInt*)attr)->value);
-      break;
-
-    case PANGO_ATTR_FONT_DESC:
-      str = font_description_to_string (((PangoAttrFontDesc*)attr)->desc);
-      gtk_json_printer_add_string (printer, "value", str);
-      g_free (str);
-      break;
-
-    case PANGO_ATTR_FOREGROUND:
-    case PANGO_ATTR_BACKGROUND:
-    case PANGO_ATTR_UNDERLINE_COLOR:
-    case PANGO_ATTR_OVERLINE_COLOR:
-    case PANGO_ATTR_STRIKETHROUGH_COLOR:
-      str = pango_color_to_string (&((PangoAttrColor*)attr)->color);
-      gtk_json_printer_add_string (printer, "value", str);
-      g_free (str);
-      break;
-
-    case PANGO_ATTR_STRIKETHROUGH:
-    case PANGO_ATTR_FALLBACK:
-    case PANGO_ATTR_ALLOW_BREAKS:
-    case PANGO_ATTR_INSERT_HYPHENS:
-      gtk_json_printer_add_boolean (printer, "value", ((PangoAttrInt*)attr)->value != 0);
-      break;
-
-    case PANGO_ATTR_SCALE:
-    case PANGO_ATTR_LINE_HEIGHT:
-      gtk_json_printer_add_number (printer, "value", ((PangoAttrFloat*)attr)->value);
     }
 
   gtk_json_printer_end (printer);
@@ -1159,7 +1157,7 @@ json_to_attribute (GtkJsonParser *parser)
           break;
 
         case ATTR_TYPE:
-          type = parser_select_string (parser, attr_type_names);
+          type = get_attr_type (gtk_json_parser_get_string (parser));
           break;
 
         case ATTR_VALUE:
@@ -1173,7 +1171,12 @@ json_to_attribute (GtkJsonParser *parser)
   while (gtk_json_parser_next (parser));
 
   if (!attr && !gtk_json_parser_get_error (parser))
-    gtk_json_parser_schema_error (parser, "Attribute missing \"value\"");
+    {
+      if (type == PANGO_ATTR_INVALID)
+        gtk_json_parser_schema_error (parser, "Invalid attribute \"type\"");
+      else
+        gtk_json_parser_schema_error (parser, "Attribute missing \"value\"");
+    }
 
   gtk_json_parser_end (parser);
 

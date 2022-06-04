@@ -267,14 +267,13 @@ pango_analysis_collect_features (const PangoAnalysis *analysis,
   for (l = analysis->extra_attrs; l && *num_features < length; l = l->next)
     {
       PangoAttribute *attr = l->data;
-      if (attr->klass->type == PANGO_ATTR_FONT_FEATURES)
+      if (attr->type == PANGO_ATTR_FONT_FEATURES)
         {
-          PangoAttrFontFeatures *fattr = (PangoAttrFontFeatures *) attr;
           const gchar *feat;
           const gchar *end;
           int len;
 
-          feat = fattr->features;
+          feat = attr->str_value;
 
           while (feat != NULL && *num_features < length)
             {
@@ -302,7 +301,7 @@ pango_analysis_collect_features (const PangoAnalysis *analysis,
   for (l = analysis->extra_attrs; l && *num_features < length; l = l->next)
     {
       PangoAttribute *attr = l->data;
-      if (attr->klass->type == PANGO_ATTR_LETTER_SPACING)
+      if (attr->type == PANGO_ATTR_LETTER_SPACING)
         {
           hb_tag_t tags[] = {
             HB_TAG('l','i','g','a'),
@@ -394,10 +393,10 @@ pango_item_get_properties (PangoItem      *item,
     {
       PangoAttribute *attr = tmp_list->data;
 
-      switch ((int) attr->klass->type)
+      switch ((int) attr->type)
         {
         case PANGO_ATTR_UNDERLINE:
-          switch (((PangoAttrInt *)attr)->value)
+          switch (attr->int_value)
             {
             case PANGO_UNDERLINE_NONE:
               break;
@@ -422,7 +421,7 @@ pango_item_get_properties (PangoItem      *item,
             }
           break;
         case PANGO_ATTR_OVERLINE:
-          switch (((PangoAttrInt *)attr)->value)
+          switch (attr->int_value)
             {
             case PANGO_OVERLINE_SINGLE:
               properties->oline_single = TRUE;
@@ -434,27 +433,27 @@ pango_item_get_properties (PangoItem      *item,
           break;
 
         case PANGO_ATTR_STRIKETHROUGH:
-          properties->strikethrough = ((PangoAttrInt *)attr)->value;
+          properties->strikethrough = attr->int_value;
           break;
 
         case PANGO_ATTR_LETTER_SPACING:
-          properties->letter_spacing = ((PangoAttrInt *)attr)->value;
+          properties->letter_spacing = attr->int_value;
           break;
 
         case PANGO_ATTR_LINE_HEIGHT:
-          properties->line_height = ((PangoAttrFloat *)attr)->value;
+          properties->line_height = attr->double_value;
           break;
 
         case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
-          properties->absolute_line_height = ((PangoAttrInt *)attr)->value;
+          properties->absolute_line_height = attr->int_value;
           break;
 
         case PANGO_ATTR_LINE_SPACING:
-          properties->line_spacing = ((PangoAttrInt *)attr)->value;
+          properties->line_spacing = attr->int_value;
           break;
 
         case PANGO_ATTR_SHOW:
-          properties->showing_space = (((PangoAttrInt *)attr)->value & PANGO_SHOW_SPACES) != 0;
+          properties->showing_space = (attr->int_value & PANGO_SHOW_SPACES) != 0;
           break;
 
         case PANGO_ATTR_PARAGRAPH:

@@ -57,7 +57,7 @@ static gboolean
 affects_itemization (PangoAttribute *attr,
                      gpointer        data)
 {
-  switch ((int)attr->klass->type)
+  switch ((int)attr->type)
     {
     /* These affect font selection */
     case PANGO_ATTR_LANGUAGE:
