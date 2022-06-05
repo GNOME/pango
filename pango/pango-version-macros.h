@@ -1,7 +1,9 @@
-/* Pango - Internationalized text layout and rendering library
+/*
  * Copyright (C) 1999 Red Hat Software
  * Copyright (C) 2012 Ryan Lortie, Matthias Clasen and Emmanuele Bassi
  * Copyright (C) 2016 Chun-wei Fan
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,8 +19,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __PANGO_VERSION_H__
-#define __PANGO_VERSION_H__
+#pragma once
 
 #include <pango/pango-features.h>
 
@@ -154,5 +155,3 @@
 #else
 # define PANGO_AVAILABLE_IN_2_0                 _PANGO_EXTERN
 #endif
-
-#endif /* __PANGO_VERSION_H__ */

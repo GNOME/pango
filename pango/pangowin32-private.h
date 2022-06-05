@@ -1,28 +1,25 @@
-/* Pango
- * pangowin32-private.h:
- *
+/*
  * Copyright (C) 1999 Red Hat Software
  * Copyright (C) 2000-2002 Tor Lillqvist
  * Copyright (C) 2001 Alexander Larsson
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __PANGOWIN32_PRIVATE_H__
-#define __PANGOWIN32_PRIVATE_H__
+#pragma once
 
 /* Define if you want the possibility to get copious debugging output.
  * (You still need to set the PANGO_WIN32_DEBUG environment variable
@@ -280,5 +277,3 @@ gpointer        _pango_win32_copy_cmap (gpointer cmap,
                                         guint16 cmap_format);
 
 extern gboolean _pango_win32_debug;
-
-#endif /* __PANGOWIN32_PRIVATE_H__ */

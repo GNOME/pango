@@ -1,37 +1,32 @@
-/* Pango
- * pangocoretext-private.h:
- *
+/*
  * Copyright (C) 2003 Red Hat Software
  * Copyright (C) 2005-2007 Imendio AB
  * Copyright (C) 2010  Kristian Rietveld  <kris@gtk.org>
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __PANGOCORETEXT_PRIVATE_H__
-#define __PANGOCORETEXT_PRIVATE_H__
+#pragma once
 
 #include "pangocoretext.h"
 #include "pango-font-private.h"
 #include "pango-fontmap-private.h"
 
-G_BEGIN_DECLS
 
 #define PANGO_CORE_TEXT_FONT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_CORE_TEXT_FONT, PangoCoreTextFontClass))
-#define PANGO_IS_CORE_TEXT_FONT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_CORE_TEXT_FONT))
 #define PANGO_CORE_TEXT_FONT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_CORE_TEXT_FONT, PangoCoreTextFontClass))
 
 typedef struct _PangoCoreTextFontPrivate  PangoCoreTextFontPrivate;
@@ -60,7 +55,6 @@ struct _PangoCoreTextFontClass
 #define PANGO_CORE_TEXT_FONT_MAP(object)          (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CORE_TEXT_FONT_MAP, PangoCoreTextFontMap))
 #define PANGO_CORE_TEXT_IS_FONT_MAP(object)       (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CORE_TEXT_FONT_MAP))
 #define PANGO_CORE_TEXT_FONT_MAP_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_CORE_TEXT_FONT_MAP, PangoCoreTextFontMapClass))
-#define PANGO_IS_CORE_TEXT_FONT_MAP_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_CORE_TEXT_FONT_MAP))
 #define PANGO_CORE_TEXT_FONT_MAP_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_CORE_TEXT_FONT_MAP, PangoCoreTextFontMapClass))
 
 
@@ -143,7 +137,3 @@ CTFontDescriptorRef   pango_core_text_font_key_get_ctfontdescriptor (const Pango
 
 PangoCoreTextFace *   pango_core_text_font_map_find_face (PangoCoreTextFontMap       *map,
                                                           const PangoCoreTextFontKey *key);
-
-G_END_DECLS
-
-#endif /* __PANGOCORETEXT_PRIVATE_H__ */
