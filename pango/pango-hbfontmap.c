@@ -196,10 +196,24 @@ pango_fontset_cached_get_font (PangoFontset *fontset,
                                                  wc);
           if (face)
             {
-              retval = pango_font_face_create_font (face,
-                                                    self->description,
-                                                    self->dpi,
-                                                    self->matrix);
+              GHashTableIter iter;
+              PangoFont *font;
+
+              g_hash_table_iter_init (&iter, self->cache);
+              while (g_hash_table_iter_next (&iter, NULL, (gpointer *)&font))
+                {
+                  if (pango_font_get_face (font) == face)
+                    {
+                      retval = g_object_ref (font);
+                      break;
+                    }
+                }
+
+              if (!retval)
+                retval = pango_font_face_create_font (face,
+                                                      self->description,
+                                                      self->dpi,
+                                                      self->matrix);
               break;
             }
         }
