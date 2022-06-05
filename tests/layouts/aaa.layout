@@ -68,12 +68,12 @@
     "hypenated" : true,
     "unknown-glyphs" : 0,
     "width" : 53248,
-    "height" : 261120,
+    "height" : 254290,
     "lines" : [
       {
         "position" : [
           0,
-          40960
+          40554
         ],
         "line" : {
           "start-index" : 0,
@@ -124,7 +124,7 @@
       {
         "position" : [
           0,
-          93184
+          91412
         ],
         "line" : {
           "start-index" : 1,
@@ -175,7 +175,7 @@
       {
         "position" : [
           0,
-          145408
+          142270
         ],
         "line" : {
           "start-index" : 2,
@@ -226,7 +226,7 @@
       {
         "position" : [
           0,
-          197632
+          193128
         ],
         "line" : {
           "start-index" : 3,
@@ -272,7 +272,7 @@
       {
         "position" : [
           0,
-          249856
+          243986
         ],
         "line" : {
           "start-index" : 4,

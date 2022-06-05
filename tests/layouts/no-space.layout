@@ -69,14 +69,14 @@
     "wrapped" : false,
     "ellipsized" : false,
     "hypenated" : false,
-    "unknown-glyphs" : 4,
+    "unknown-glyphs" : 1,
     "width" : 89088,
-    "height" : 45056,
+    "height" : 50858,
     "lines" : [
       {
         "position" : [
           0,
-          38912
+          40554
         ],
         "line" : {
           "start-index" : 0,
@@ -100,8 +100,8 @@
               "language" : "en-us",
               "script" : "Zyyy",
               "font" : {
-                "description" : "Font Awesome 5 Free Solid Heavy 32",
-                "checksum" : "8fe6cd51391fa6f8c2008609ddd489bb81a6d7674f3a1c8b7fa07efd026a6397"
+                "description" : "DejaVu Sans 32",
+                "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
               },
               "flags" : 0,
               "y-offset" : 0,
@@ -109,32 +109,32 @@
               "end-x-offset" : 0,
               "glyphs" : [
                 {
-                  "glyph" : 268435488,
-                  "width" : 11264,
+                  "glyph" : 3,
+                  "width" : 14336,
                   "is-cluster-start" : true,
                   "log-cluster" : 0
                 },
                 {
-                  "glyph" : 268435488,
-                  "width" : 11264,
+                  "glyph" : 3,
+                  "width" : 14336,
                   "is-cluster-start" : true,
                   "log-cluster" : 1
                 },
                 {
-                  "glyph" : 1,
-                  "width" : 44032,
+                  "glyph" : 268497627,
+                  "width" : 31744,
                   "is-cluster-start" : true,
                   "log-cluster" : 2
                 },
                 {
-                  "glyph" : 268435488,
-                  "width" : 11264,
+                  "glyph" : 3,
+                  "width" : 14336,
                   "is-cluster-start" : true,
                   "log-cluster" : 5
                 },
                 {
-                  "glyph" : 268435488,
-                  "width" : 11264,
+                  "glyph" : 3,
+                  "width" : 14336,
                   "is-cluster-start" : true,
                   "log-cluster" : 6
                 }

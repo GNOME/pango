@@ -504,12 +504,12 @@
     "hypenated" : false,
     "unknown-glyphs" : 0,
     "width" : 460800,
-    "height" : 73728,
+    "height" : 68811,
     "lines" : [
       {
         "position" : [
           0,
-          19456
+          18789
         ],
         "line" : {
           "start-index" : 0,
@@ -830,7 +830,7 @@
               "glyphs" : [
                 {
                   "glyph" : 268435455,
-                  "width" : 39424,
+                  "width" : 44544,
                   "is-cluster-start" : true,
                   "log-cluster" : 0
                 }
@@ -876,7 +876,7 @@
       {
         "position" : [
           0,
-          44032
+          41726
         ],
         "line" : {
           "start-index" : 22,
@@ -1203,7 +1203,7 @@
               "glyphs" : [
                 {
                   "glyph" : 268435455,
-                  "width" : 33792,
+                  "width" : 38912,
                   "is-cluster-start" : true,
                   "log-cluster" : 0
                 }
@@ -1255,7 +1255,7 @@
       {
         "position" : [
           0,
-          68608
+          64663
         ],
         "line" : {
           "start-index" : 46,

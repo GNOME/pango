@@ -93,12 +93,12 @@
     "hypenated" : false,
     "unknown-glyphs" : 0,
     "width" : 294912,
-    "height" : 49152,
+    "height" : 47448,
     "lines" : [
       {
         "position" : [
           0,
-          24576
+          23724
         ],
         "line" : {
           "start-index" : 0,
@@ -133,24 +133,24 @@
                 {
                   "glyph" : 1,
                   "width" : 32768,
-                  "x-offset" : 28836,
-                  "y-offset" : 9945,
+                  "x-offset" : 28672,
+                  "y-offset" : 10240,
                   "is-cluster-start" : true,
                   "log-cluster" : 0
                 },
                 {
                   "glyph" : 2,
                   "width" : 32768,
-                  "x-offset" : 28836,
-                  "y-offset" : 10764,
+                  "x-offset" : 28672,
+                  "y-offset" : 11264,
                   "is-cluster-start" : true,
                   "log-cluster" : 1
                 },
                 {
                   "glyph" : 3,
                   "width" : 32768,
-                  "x-offset" : 28836,
-                  "y-offset" : 10453,
+                  "x-offset" : 28672,
+                  "y-offset" : 10240,
                   "is-cluster-start" : true,
                   "log-cluster" : 2
                 }
@@ -176,7 +176,7 @@
                 {
                   "glyph" : 4,
                   "width" : 32768,
-                  "x-offset" : 28836,
+                  "x-offset" : 28672,
                   "y-offset" : 16384,
                   "is-cluster-start" : true,
                   "log-cluster" : 0
@@ -184,7 +184,7 @@
                 {
                   "glyph" : 5,
                   "width" : 32768,
-                  "x-offset" : 28836,
+                  "x-offset" : 28672,
                   "y-offset" : 16384,
                   "is-cluster-start" : true,
                   "log-cluster" : 3
@@ -192,7 +192,7 @@
                 {
                   "glyph" : 7,
                   "width" : 32768,
-                  "x-offset" : 28836,
+                  "x-offset" : 28672,
                   "y-offset" : 16384,
                   "is-cluster-start" : true,
                   "log-cluster" : 6
@@ -219,24 +219,24 @@
                 {
                   "glyph" : 1,
                   "width" : 32768,
-                  "x-offset" : 28836,
-                  "y-offset" : 9945,
+                  "x-offset" : 28672,
+                  "y-offset" : 10240,
                   "is-cluster-start" : true,
                   "log-cluster" : 0
                 },
                 {
                   "glyph" : 2,
                   "width" : 32768,
-                  "x-offset" : 28836,
-                  "y-offset" : 10764,
+                  "x-offset" : 28672,
+                  "y-offset" : 11264,
                   "is-cluster-start" : true,
                   "log-cluster" : 1
                 },
                 {
                   "glyph" : 3,
                   "width" : 32768,
-                  "x-offset" : 28836,
-                  "y-offset" : 10453,
+                  "x-offset" : 28672,
+                  "y-offset" : 10240,
                   "is-cluster-start" : true,
                   "log-cluster" : 2
                 }

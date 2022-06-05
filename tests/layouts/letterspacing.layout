@@ -64,12 +64,12 @@
     "hypenated" : false,
     "unknown-glyphs" : 0,
     "width" : 63488,
-    "height" : 52224,
+    "height" : 50858,
     "lines" : [
       {
         "position" : [
           0,
-          40960
+          40554
         ],
         "line" : {
           "start-index" : 0,

@@ -125,12 +125,12 @@
     "hypenated" : false,
     "unknown-glyphs" : 0,
     "width" : 239616,
-    "height" : 104448,
+    "height" : 101716,
     "lines" : [
       {
         "position" : [
           0,
-          40960
+          40554
         ],
         "line" : {
           "start-index" : 0,
@@ -256,7 +256,7 @@
       {
         "position" : [
           0,
-          93184
+          91412
         ],
         "line" : {
           "start-index" : 6,

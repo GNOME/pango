@@ -184,12 +184,12 @@
     "hypenated" : false,
     "unknown-glyphs" : 0,
     "width" : 49152,
-    "height" : 22658,
+    "height" : 21100,
     "lines" : [
       {
         "position" : [
           0,
-          16312
+          15708
         ],
         "line" : {
           "start-index" : 0,
@@ -214,10 +214,7 @@
               "script" : "Latn",
               "font" : {
                 "description" : "Cantarell 11",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "y-offset" : 0,
@@ -241,11 +238,16 @@
               "language" : "en-us",
               "script" : "Latn",
               "font" : {
-                "description" : "Cantarell 7.1484375",
+                "description" : "Cantarell Italic 7.1494140625",
                 "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "matrix" : [
+                  1,
+                  0.20000000000000001,
+                  0,
+                  1,
+                  0,
+                  0
+                ]
               },
               "flags" : 0,
               "extra-attributes" : [
@@ -284,10 +286,7 @@
               "script" : "Latn",
               "font" : {
                 "description" : "Cantarell 11",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "y-offset" : 0,
@@ -329,11 +328,8 @@
               "language" : "en-us",
               "script" : "Latn",
               "font" : {
-                "description" : "Cantarell 7.1484375",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "description" : "Cantarell 7.1494140625",
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "extra-attributes" : [
@@ -371,11 +367,8 @@
               "language" : "en-us",
               "script" : "Latn",
               "font" : {
-                "description" : "Cantarell 4.646484375",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "description" : "Cantarell 4.6474609375",
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "extra-attributes" : [
@@ -426,10 +419,7 @@
               "script" : "Latn",
               "font" : {
                 "description" : "Cantarell 3.0205078125",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "extra-attributes" : [
@@ -491,11 +481,8 @@
               "language" : "en-us",
               "script" : "Latn",
               "font" : {
-                "description" : "Cantarell 1.962890625",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "description" : "Cantarell 1.9638671875",
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "extra-attributes" : [
@@ -570,10 +557,7 @@
               "script" : "Latn",
               "font" : {
                 "description" : "Cantarell 1.2763671875",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "extra-attributes" : [
