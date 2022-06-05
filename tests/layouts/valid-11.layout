@@ -31,19 +31,25 @@
       "start" : 7,
       "end" : 10,
       "type" : "underline",
-      "value" : "low"
+      "value" : "single"
+    },
+    {
+      "start" : 7,
+      "end" : 10,
+      "type" : "underline-position",
+      "value" : "under"
     },
     {
       "start" : 7,
       "end" : 10,
       "type" : "strikethrough",
-      "value" : true
+      "value" : "single"
     },
     {
       "start" : 11,
       "end" : 16,
       "type" : "underline",
-      "value" : "error"
+      "value" : "dotted"
     },
     {
       "start" : 11,
@@ -168,12 +174,12 @@
     "hypenated" : false,
     "unknown-glyphs" : 0,
     "width" : 109568,
-    "height" : 20480,
+    "height" : 19046,
     "lines" : [
       {
         "position" : [
           0,
-          16384
+          15787
         ],
         "line" : {
           "start-index" : 0,
@@ -198,10 +204,7 @@
               "script" : "Latn",
               "font" : {
                 "description" : "Cantarell 11",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "extra-attributes" : [
@@ -268,10 +271,7 @@
               "script" : "Latn",
               "font" : {
                 "description" : "Cantarell 11",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "y-offset" : 0,
@@ -296,10 +296,7 @@
               "script" : "Latn",
               "font" : {
                 "description" : "Cantarell 11",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "extra-attributes" : [
@@ -307,13 +304,19 @@
                   "start" : 7,
                   "end" : 10,
                   "type" : "underline",
-                  "value" : "low"
+                  "value" : "single"
+                },
+                {
+                  "start" : 7,
+                  "end" : 10,
+                  "type" : "underline-position",
+                  "value" : "under"
                 },
                 {
                   "start" : 7,
                   "end" : 10,
                   "type" : "strikethrough",
-                  "value" : true
+                  "value" : "single"
                 }
               ],
               "y-offset" : 0,
@@ -350,10 +353,7 @@
               "script" : "Latn",
               "font" : {
                 "description" : "Cantarell 11",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "y-offset" : 0,
@@ -378,10 +378,7 @@
               "script" : "Latn",
               "font" : {
                 "description" : "Cantarell 11",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "extra-attributes" : [
@@ -395,7 +392,7 @@
                   "start" : 11,
                   "end" : 16,
                   "type" : "underline",
-                  "value" : "error"
+                  "value" : "dotted"
                 }
               ],
               "y-offset" : 1024,

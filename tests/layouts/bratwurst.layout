@@ -93,13 +93,13 @@
     "ellipsized" : false,
     "hypenated" : false,
     "unknown-glyphs" : 0,
-    "width" : 200704,
-    "height" : 53248,
+    "width" : 196608,
+    "height" : 52428,
     "lines" : [
       {
         "position" : [
           0,
-          43008
+          42947
         ],
         "line" : {
           "start-index" : 0,
@@ -169,11 +169,16 @@
               "language" : "en-us",
               "script" : "Latn",
               "font" : {
-                "description" : "Cantarell Bold 32",
+                "description" : "Cantarell Bold Italic 32",
                 "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 8374
-                }
+                "matrix" : [
+                  1,
+                  0.20000000000000001,
+                  0,
+                  1,
+                  0,
+                  0
+                ]
               },
               "flags" : 0,
               "y-offset" : 0,
@@ -182,7 +187,7 @@
               "glyphs" : [
                 {
                   "glyph" : 467,
-                  "width" : 35840,
+                  "width" : 33792,
                   "is-cluster-start" : true,
                   "log-cluster" : 0
                 },
@@ -194,7 +199,7 @@
                 },
                 {
                   "glyph" : 409,
-                  "width" : 17408,
+                  "width" : 16384,
                   "is-cluster-start" : true,
                   "log-cluster" : 2
                 },
@@ -206,7 +211,7 @@
                 },
                 {
                   "glyph" : 430,
-                  "width" : 16384,
+                  "width" : 15360,
                   "is-cluster-start" : true,
                   "log-cluster" : 4
                 }

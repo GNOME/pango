@@ -71,12 +71,12 @@
     "hypenated" : false,
     "unknown-glyphs" : 0,
     "width" : 56320,
-    "height" : 19456,
+    "height" : 18430,
     "lines" : [
       {
         "position" : [
           0,
-          15360
+          14763
         ],
         "line" : {
           "start-index" : 0,
@@ -101,10 +101,7 @@
               "script" : "Latn",
               "font" : {
                 "description" : "Cantarell 11",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "y-offset" : 0,
@@ -141,15 +138,7 @@
               "script" : "Latn",
               "font" : {
                 "description" : "Noto Color Emoji 11",
-                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47",
-                "matrix" : [
-                  0.13455956135321101,
-                  -0,
-                  -0,
-                  0.13455956135321101,
-                  0,
-                  0
-                ]
+                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47"
               },
               "flags" : 0,
               "y-offset" : 0,
@@ -181,10 +170,7 @@
               "script" : "Latn",
               "font" : {
                 "description" : "Cantarell 11",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "y-offset" : 0,

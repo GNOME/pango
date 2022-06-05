@@ -162,13 +162,13 @@
     "ellipsized" : false,
     "hypenated" : false,
     "unknown-glyphs" : 0,
-    "width" : 142336,
-    "height" : 19456,
+    "width" : 160768,
+    "height" : 18430,
     "lines" : [
       {
         "position" : [
           0,
-          15360
+          14763
         ],
         "line" : {
           "start-index" : 0,
@@ -193,10 +193,7 @@
               "script" : "Latn",
               "font" : {
                 "description" : "Cantarell 11",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "y-offset" : 0,
@@ -213,23 +210,15 @@
             },
             {
               "offset" : 1,
-              "length" : 7,
-              "text" : "0️⃣",
+              "length" : 4,
+              "text" : "0️",
               "bidi-level" : 0,
               "gravity" : "south",
               "language" : "en-us",
               "script" : "Latn",
               "font" : {
                 "description" : "Noto Color Emoji 11",
-                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47",
-                "matrix" : [
-                  0.13455956135321101,
-                  -0,
-                  -0,
-                  0.13455956135321101,
-                  0,
-                  0
-                ]
+                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47"
               },
               "flags" : 0,
               "y-offset" : 0,
@@ -237,7 +226,33 @@
               "end-x-offset" : 0,
               "glyphs" : [
                 {
-                  "glyph" : 19,
+                  "glyph" : 3,
+                  "width" : 18432,
+                  "is-cluster-start" : true,
+                  "is-color" : true,
+                  "log-cluster" : 0
+                }
+              ]
+            },
+            {
+              "offset" : 5,
+              "length" : 3,
+              "text" : "⃣",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Latn",
+              "font" : {
+                "description" : "Noto Color Emoji 11",
+                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47"
+              },
+              "flags" : 0,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
+                {
+                  "glyph" : 5,
                   "width" : 18432,
                   "is-cluster-start" : true,
                   "is-color" : true,
@@ -255,10 +270,7 @@
               "script" : "Latn",
               "font" : {
                 "description" : "Cantarell 11",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "y-offset" : 0,

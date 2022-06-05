@@ -89,12 +89,12 @@
     "hypenated" : false,
     "unknown-glyphs" : 0,
     "width" : 76800,
-    "height" : 25600,
+    "height" : 23774,
     "lines" : [
       {
         "position" : [
           0,
-          15360
+          14763
         ],
         "line" : {
           "start-index" : 0,
@@ -119,10 +119,7 @@
               "script" : "Latn",
               "font" : {
                 "description" : "Cantarell Rotated-Left 11",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "extra-attributes" : [
@@ -144,24 +141,24 @@
                 {
                   "glyph" : 244,
                   "width" : 18432,
-                  "x-offset" : 14764,
-                  "y-offset" : 3845,
+                  "x-offset" : 14336,
+                  "y-offset" : 4096,
                   "is-cluster-start" : true,
                   "log-cluster" : 0
                 },
                 {
                   "glyph" : 272,
                   "width" : 18432,
-                  "x-offset" : 14764,
-                  "y-offset" : 4280,
+                  "x-offset" : 14336,
+                  "y-offset" : 4096,
                   "is-cluster-start" : true,
                   "log-cluster" : 1
                 },
                 {
                   "glyph" : 273,
                   "width" : 18432,
-                  "x-offset" : 14764,
-                  "y-offset" : 3507,
+                  "x-offset" : 14336,
+                  "y-offset" : 3072,
                   "is-cluster-start" : true,
                   "log-cluster" : 2
                 }
@@ -177,10 +174,7 @@
               "script" : "Latn",
               "font" : {
                 "description" : "Cantarell 11",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "extra-attributes" : [

@@ -61,13 +61,13 @@
     "ellipsized" : false,
     "hypenated" : false,
     "unknown-glyphs" : 1,
-    "width" : 45056,
-    "height" : 19456,
+    "width" : 36864,
+    "height" : 18430,
     "lines" : [
       {
         "position" : [
           0,
-          15360
+          14763
         ],
         "line" : {
           "start-index" : 0,
@@ -92,15 +92,7 @@
               "script" : "Zyyy",
               "font" : {
                 "description" : "Noto Color Emoji 11",
-                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47",
-                "matrix" : [
-                  0.13455956135321101,
-                  -0,
-                  -0,
-                  0.13455956135321101,
-                  0,
-                  0
-                ]
+                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47"
               },
               "flags" : 0,
               "extra-attributes" : [
@@ -138,10 +130,7 @@
               "script" : "Zyyy",
               "font" : {
                 "description" : "Cantarell 11",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "variations" : {
-                  "wght" : 0
-                }
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "extra-attributes" : [
@@ -162,7 +151,7 @@
                 },
                 {
                   "glyph" : 268443661,
-                  "width" : 23552,
+                  "width" : 15360,
                   "is-cluster-start" : true,
                   "log-cluster" : 1
                 }
