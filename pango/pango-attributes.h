@@ -135,7 +135,7 @@ PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_background_new               (PangoColor                 *color);
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_size_new                     (int                         size);
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_size_new_absolute            (int                         size);
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_style_new                    (PangoStyle                  style);
@@ -168,7 +168,7 @@ typedef enum {
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_underline_new                (PangoLineStyle              style);
 
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_underline_color_new          (PangoColor                 *color);
 
 typedef enum {
@@ -181,7 +181,7 @@ PangoAttribute *        pango_attr_underline_position_new       (PangoUnderlineP
 
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_strikethrough_new            (PangoLineStyle              style);
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_strikethrough_color_new      (PangoColor                 *color);
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_rise_new                     (int                         rise);
@@ -195,8 +195,6 @@ PangoAttribute *        pango_attr_rise_new                     (int            
  *   relative to the previous run
  *
  * An enumeration that affects baseline shifts between runs.
- *
- * Since: 1.50
  */
 typedef enum {
   PANGO_BASELINE_SHIFT_NONE,
@@ -204,7 +202,7 @@ typedef enum {
   PANGO_BASELINE_SHIFT_SUBSCRIPT,
 } PangoBaselineShift;
 
-PANGO_AVAILABLE_IN_1_50
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_baseline_shift_new           (int                         shift);
 
 /**
@@ -216,8 +214,6 @@ PangoAttribute *        pango_attr_baseline_shift_new           (int            
  *
  * An enumeration that affects font sizes for superscript
  * and subscript positioning and for (emulated) Small Caps.
- *
- * Since: 1.50
  */
 typedef enum {
   PANGO_FONT_SCALE_NONE,
@@ -226,34 +222,34 @@ typedef enum {
   PANGO_FONT_SCALE_SMALL_CAPS,
 } PangoFontScale;
 
-PANGO_AVAILABLE_IN_1_50
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_font_scale_new               (PangoFontScale              scale);
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_scale_new                    (double                      scale_factor);
-PANGO_AVAILABLE_IN_1_4
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_fallback_new                 (gboolean                    enable_fallback);
-PANGO_AVAILABLE_IN_1_6
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_letter_spacing_new           (int                         letter_spacing);
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_gravity_new                  (PangoGravity                 gravity);
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_gravity_hint_new             (PangoGravityHint             hint);
-PANGO_AVAILABLE_IN_1_38
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_font_features_new            (const char                  *features);
-PANGO_AVAILABLE_IN_1_38
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_foreground_alpha_new         (guint16                      alpha);
-PANGO_AVAILABLE_IN_1_38
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_background_alpha_new         (guint16                      alpha);
-PANGO_AVAILABLE_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_allow_breaks_new             (gboolean                     allow_breaks);
-PANGO_AVAILABLE_IN_1_50
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_word_new                     (void);
-PANGO_AVAILABLE_IN_1_50
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_sentence_new                 (void);
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_paragraph_new                (void);
 
-PANGO_AVAILABLE_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_insert_hyphens_new           (gboolean                     insert_hyphens);
 
 /**
@@ -264,17 +260,15 @@ PangoAttribute *        pango_attr_insert_hyphens_new           (gboolean       
  *
  * The `PangoOverline` enumeration is used to specify whether text
  * should be overlined, and if so, the type of line.
- *
- * Since: 1.46
  */
 typedef enum {
   PANGO_OVERLINE_NONE,
   PANGO_OVERLINE_SINGLE
 } PangoOverline;
 
-PANGO_AVAILABLE_IN_1_46
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_overline_new                 (PangoOverline               overline);
-PANGO_AVAILABLE_IN_1_46
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_overline_color_new           (PangoColor                 *color);
 
 /**
@@ -287,8 +281,6 @@ PangoAttribute *        pango_attr_overline_color_new           (PangoColor     
  *
  * These flags affect how Pango treats characters that are normally
  * not visible in the output.
- *
- * Since: 1.44
  */
 typedef enum {
   PANGO_SHOW_NONE        = 0,
@@ -297,11 +289,11 @@ typedef enum {
   PANGO_SHOW_IGNORABLES  = 1 << 2
 } PangoShowFlags;
 
-PANGO_AVAILABLE_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_show_new                     (PangoShowFlags               flags);
-PANGO_AVAILABLE_IN_1_50
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_line_height_new              (double                       factor);
-PANGO_AVAILABLE_IN_1_50
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_line_height_new_absolute     (int                          height);
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_line_spacing_new             (int                          spacing);
@@ -323,7 +315,7 @@ typedef enum {
   PANGO_TEXT_TRANSFORM_CAPITALIZE,
 } PangoTextTransform;
 
-PANGO_AVAILABLE_IN_1_50
+PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_text_transform_new           (PangoTextTransform transform);
 
 

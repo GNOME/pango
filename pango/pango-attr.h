@@ -150,8 +150,6 @@ typedef enum
  *
  * Value for @start_index in `PangoAttribute` that indicates
  * the beginning of the text.
- *
- * Since: 1.24
  */
 #define PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING ((guint)0)
 
@@ -160,8 +158,6 @@ typedef enum
  *
  * Value for @end_index in `PangoAttribute` that indicates
  * the end of the text.
- *
- * Since: 1.24
  */
 #define PANGO_ATTR_INDEX_TO_TEXT_END ((guint)(G_MAXUINT + 0))
 
@@ -241,7 +237,7 @@ guint                   pango_attr_type_register                (const char     
                                                                  GEqualFunc                  equal,
                                                                  PangoAttrDataSerializeFunc  serialize);
 
-PANGO_AVAILABLE_IN_1_22
+PANGO_AVAILABLE_IN_ALL
 const char *            pango_attr_type_get_name                (guint                       type) G_GNUC_CONST;
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attribute_copy                    (const PangoAttribute       *attr);

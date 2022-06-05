@@ -68,8 +68,6 @@ pango_cairo_font_map_default_init (PangoCairoFontMapIface *iface)
  *
  * Return value: (transfer full): the newly allocated `PangoFontMap`,
  *   which should be freed with g_object_unref().
- *
- * Since: 1.10
  */
 PangoFontMap *
 pango_cairo_font_map_new (void)
@@ -121,8 +119,6 @@ pango_cairo_font_map_new (void)
  *   `PangoFontMap` of suitable type which should be freed with
  *   g_object_unref(), or %NULL if the requested cairo font backend
  *   is not supported / compiled in.
- *
- * Since: 1.18
  */
 PangoFontMap *
 pango_cairo_font_map_new_for_font_type (cairo_font_type_t fonttype)
@@ -166,8 +162,6 @@ static GPrivate default_font_map = G_PRIVATE_INIT (g_object_unref); /* MT-safe *
  * Return value: (transfer none): the default PangoCairo fontmap
  *  for the current thread. This object is owned by Pango and must
  *  not be freed.
- *
- * Since: 1.10
  */
 PangoFontMap *
 pango_cairo_font_map_get_default (void)
@@ -202,8 +196,6 @@ pango_cairo_font_map_get_default (void)
  * A value of %NULL for @fontmap will cause the current default
  * font map to be released and a new default font map to be created
  * on demand, using [func@PangoCairo.FontMap.new].
- *
- * Since: 1.22
  */
 void
 pango_cairo_font_map_set_default (PangoCairoFontMap *fontmap)
@@ -228,8 +220,6 @@ pango_cairo_font_map_set_default (PangoCairoFontMap *fontmap)
  * points specified in a `PangoFontDescription` and Cairo units. The
  * default value is 96, meaning that a 10 point font will be 13
  * units high. (10 * 96. / 72. = 13.3).
- *
- * Since: 1.10
  */
 void
 pango_cairo_font_map_set_resolution (PangoCairoFontMap *fontmap,
@@ -249,8 +239,6 @@ pango_cairo_font_map_set_resolution (PangoCairoFontMap *fontmap,
  * See [method@PangoCairo.FontMap.set_resolution].
  *
  * Return value: the resolution in "dots per inch"
- *
- * Since: 1.10
  **/
 double
 pango_cairo_font_map_get_resolution (PangoCairoFontMap *fontmap)
@@ -267,8 +255,6 @@ pango_cairo_font_map_get_resolution (PangoCairoFontMap *fontmap)
  * Gets the type of Cairo font backend that @fontmap uses.
  *
  * Return value: the `cairo_font_type_t` cairo font backend type
- *
- * Since: 1.18
  */
 cairo_font_type_t
 pango_cairo_font_map_get_font_type (PangoCairoFontMap *fontmap)

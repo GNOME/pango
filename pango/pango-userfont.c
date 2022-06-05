@@ -414,8 +414,6 @@ pango_user_font_class_init (PangoUserFontClass *class)
  * Creates a new `PangoUserFont`.
  *
  * Returns: a newly created `PangoUserFont`
- *
- * Since: 1.52
  */
 PangoUserFont *
 pango_user_font_new (PangoUserFace     *face,
@@ -451,8 +449,6 @@ pango_user_font_new (PangoUserFace     *face,
  * from a font description.
  *
  * Returns: a newly created `PangoHbFont`
- *
- * Since: 1.52
  */
 
 PangoUserFont *

@@ -2205,8 +2205,6 @@ pango_default_break (const char   *text,
  *
  * Note that it is better to pass -1 for @offset and use [func@Pango.attr_break]
  * to apply attributes to the whole paragraph.
- *
- * Since: 1.44
  */
 void
 pango_tailor_break (const char    *text,
@@ -2247,8 +2245,6 @@ pango_tailor_break (const char    *text,
  *
  * The line breaks are assumed to have been produced
  * by [func@Pango.default_break] and [func@Pango.tailor_break].
- *
- * Since: 1.50
  */
 void
 pango_attr_break (const char    *text,

@@ -123,8 +123,6 @@ pango_font_face_describe (PangoFontFace *face)
  * lightening or modifying it in some other way.
  *
  * Return value: whether @face is synthesized
- *
- * Since: 1.18
  */
 gboolean
 pango_font_face_is_synthesized (PangoFontFace  *face)
@@ -165,8 +163,6 @@ pango_font_face_get_face_name (PangoFontFace *face)
  * Gets the `PangoFontFamily` that @face belongs to.
  *
  * Returns: (transfer none): the `PangoFontFamily`
- *
- * Since: 1.46
  */
 PangoFontFamily *
 pango_font_face_get_family (PangoFontFace *face)
@@ -186,8 +182,6 @@ pango_font_face_get_family (PangoFontFace *face)
  * See [method@Pango.FontFamily.is_monospace] for more details.
  *
  * Returns: `TRUE` if @face is monospace
- *
- * Since: 1.52
  */
 gboolean
 pango_font_face_is_monospace (PangoFontFace *face)
@@ -207,8 +201,6 @@ pango_font_face_is_monospace (PangoFontFace *face)
  * See [method@Pango.FontFamily.is_variable] for more details.
  *
  * Returns: `TRUE` if @face is variable
- *
- * Since: 1.52
  */
 gboolean
 pango_font_face_is_variable (PangoFontFace *face)
@@ -226,8 +218,6 @@ pango_font_face_is_variable (PangoFontFace *face)
  * Returns whether @face has all the glyphs necessary to write @language.
  *
  * Returns: `TRUE` if @face supports @language
- *
- * Since: 1.52
  */
 gboolean
 pango_font_face_supports_language (PangoFontFace *face,
@@ -253,8 +243,6 @@ pango_font_face_supports_language (PangoFontFace *face,
  *
  * Returns: (transfer none) (nullable) (array zero-terminated=1) (element-type PangoLanguage):
  *   an array of `PangoLanguage`
- *
- * Since: 1.52
  */
 PangoLanguage **
 pango_font_face_get_languages (PangoFontFace *face)

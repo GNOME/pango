@@ -289,8 +289,6 @@ done:
  *
  * Return value: (transfer none) (nullable): the `cairo_scaled_font_t`
  *   used by @font
- *
- * Since: 1.18
  */
 cairo_scaled_font_t *
 pango_cairo_font_get_scaled_font (PangoCairoFont *cfont)

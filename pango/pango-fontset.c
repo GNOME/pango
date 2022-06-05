@@ -89,8 +89,6 @@ pango_fontset_get_metrics (PangoFontset *fontset)
  * Gets the language that the fontset was created for.
  *
  * Returns: the language that @fontset was created for
- *
- * Since: 1.52
  */
 PangoLanguage *
 pango_fontset_get_language (PangoFontset *fontset)
@@ -110,8 +108,6 @@ pango_fontset_get_language (PangoFontset *fontset)
  * each one.
  *
  * If @func returns %TRUE, that stops the iteration.
- *
- * Since: 1.4
  */
 void
 pango_fontset_foreach (PangoFontset           *fontset,

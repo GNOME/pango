@@ -153,8 +153,6 @@ pango_font_describe (PangoFont *font)
  * Use [method@Pango.Font.describe] if you want the font size in points.
  *
  * Return value: a newly-allocated `PangoFontDescription` object.
- *
- * Since: 1.14
  */
 PangoFontDescription *
 pango_font_describe_with_absolute_size (PangoFont *font)
@@ -297,8 +295,6 @@ pango_font_get_metrics (PangoFont     *font,
  *
  * Return value: (transfer none) (nullable): the `PangoFontMap`
  *   for the font
- *
- * Since: 1.10
  */
 PangoFontMap *
 pango_font_get_font_map (PangoFont *font)
@@ -319,8 +315,6 @@ pango_font_get_font_map (PangoFont *font)
  * Gets the `PangoFontFace` to which @font belongs.
  *
  * Returns: (transfer none): the `PangoFontFace`
- *
- * Since: 1.46
  */
 PangoFontFace *
 pango_font_get_face (PangoFont *font)
@@ -340,8 +334,6 @@ pango_font_get_face (PangoFont *font)
  *
  * Returns: (transfer none) (nullable): the `hb_font_t` object
  *   backing the font
- *
- * Since: 1.44
  */
 hb_font_t *
 pango_font_get_hb_font (PangoFont *font)
@@ -365,8 +357,6 @@ pango_font_get_hb_font (PangoFont *font)
  * Returns whether the font provides a glyph for this character.
  *
  * Returns: `TRUE` if @font can render @wc
- *
- * Since: 1.44
  */
 gboolean
 pango_font_has_char (PangoFont *font,
@@ -389,8 +379,6 @@ pango_font_has_char (PangoFont *font,
  *
  * Note that this does not include OpenType features which the
  * rendering system enables by default.
- *
- * Since: 1.44
  */
 void
 pango_font_get_features (PangoFont    *font,
@@ -416,8 +404,6 @@ pango_font_get_features (PangoFont    *font,
  * and its fontmap are valid.
  *
  * Returns: (transfer none) (nullable) (array zero-terminated=1) (element-type PangoLanguage): an array of `PangoLanguage`
- *
- * Since: 1.50
  */
 PangoLanguage **
 pango_font_get_languages (PangoFont *font)

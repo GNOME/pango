@@ -45,14 +45,14 @@ GType                   pango_context_get_type                  (void) G_GNUC_CO
 
 PANGO_AVAILABLE_IN_ALL
 PangoContext *          pango_context_new                       (void);
-PANGO_AVAILABLE_IN_1_32
+PANGO_AVAILABLE_IN_ALL
 void                    pango_context_changed                   (PangoContext                 *context);
 PANGO_AVAILABLE_IN_ALL
 void                    pango_context_set_font_map              (PangoContext                 *context,
                                                                  PangoFontMap                 *font_map);
-PANGO_AVAILABLE_IN_1_6
+PANGO_AVAILABLE_IN_ALL
 PangoFontMap *          pango_context_get_font_map              (PangoContext                 *context);
-PANGO_AVAILABLE_IN_1_32
+PANGO_AVAILABLE_IN_ALL
 guint                   pango_context_get_serial                (PangoContext                 *context);
 PANGO_AVAILABLE_IN_ALL
 PangoFont *             pango_context_load_font                 (PangoContext                 *context,
@@ -82,29 +82,29 @@ void                    pango_context_set_base_dir              (PangoContext   
                                                                  PangoDirection                direction);
 PANGO_AVAILABLE_IN_ALL
 PangoDirection          pango_context_get_base_dir              (PangoContext                 *context);
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 void                    pango_context_set_base_gravity          (PangoContext                 *context,
                                                                  PangoGravity                  gravity);
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 PangoGravity            pango_context_get_base_gravity          (PangoContext                 *context);
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 PangoGravity            pango_context_get_gravity               (PangoContext                 *context);
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 void                    pango_context_set_gravity_hint          (PangoContext                 *context,
                                                                  PangoGravityHint              hint);
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 PangoGravityHint        pango_context_get_gravity_hint          (PangoContext                 *context);
 
-PANGO_AVAILABLE_IN_1_6
+PANGO_AVAILABLE_IN_ALL
 void                    pango_context_set_matrix                (PangoContext                 *context,
                                                                  const PangoMatrix            *matrix);
-PANGO_AVAILABLE_IN_1_6
+PANGO_AVAILABLE_IN_ALL
 const PangoMatrix *     pango_context_get_matrix                (PangoContext                 *context);
 
-PANGO_AVAILABLE_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 void                    pango_context_set_round_glyph_positions (PangoContext                 *context,
                                                                  gboolean                      round_positions);
-PANGO_AVAILABLE_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 gboolean                pango_context_get_round_glyph_positions (PangoContext                 *context);
 
 G_END_DECLS

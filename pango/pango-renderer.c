@@ -710,8 +710,6 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
  *   in Pango units.
  *
  * Draws the glyphs in @glyphs with the specified `PangoRenderer`.
- *
- * Since: 1.8
  */
 void
 pango_renderer_draw_glyphs (PangoRenderer    *renderer,
@@ -783,8 +781,6 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
  *
  * The default implementation of this method simply falls back to
  * [method@Pango.Renderer.draw_glyphs].
- *
- * Since: 1.22
  */
 void
 pango_renderer_draw_glyph_item (PangoRenderer  *renderer,
@@ -840,8 +836,6 @@ pango_renderer_default_draw_glyph_item (PangoRenderer  *renderer,
  *
  * This should be called while @renderer is already active.
  * Use [method@Pango.Renderer.activate] to activate a renderer.
- *
- * Since: 1.8
  */
 void
 pango_renderer_draw_rectangle (PangoRenderer   *renderer,
@@ -982,8 +976,6 @@ pango_renderer_default_draw_rectangle (PangoRenderer  *renderer,
  *
  * This should be called while @renderer is already active.
  * Use [method@Pango.Renderer.activate] to activate a renderer.
- *
- * Since: 1.8
  */
 void
 pango_renderer_draw_error_underline (PangoRenderer *renderer,
@@ -1138,8 +1130,6 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
  *
  * Draws a trapezoid with the parallel sides aligned with the X axis
  * using the given `PangoRenderer`; coordinates are in device space.
- *
- * Since: 1.8
  */
 void
 pango_renderer_draw_trapezoid (PangoRenderer   *renderer,
@@ -1169,8 +1159,6 @@ pango_renderer_draw_trapezoid (PangoRenderer   *renderer,
  * @y: Y coordinate of left edge of baseline of glyph
  *
  * Draws a single glyph with coordinates in device space.
- *
- * Since: 1.8
  */
 void
 pango_renderer_draw_glyph (PangoRenderer *renderer,
@@ -1202,8 +1190,6 @@ pango_renderer_draw_glyph (PangoRenderer *renderer,
  * Calls to [method@Pango.Renderer.activate] and
  * [method@Pango.Renderer.deactivate] can be nested and the
  * renderer will only be initialized and deinitialized once.
- *
- * Since: 1.8
  */
 void
 pango_renderer_activate (PangoRenderer *renderer)
@@ -1225,8 +1211,6 @@ pango_renderer_activate (PangoRenderer *renderer)
  * Cleans up after rendering operations on @renderer.
  *
  * See docs for [method@Pango.Renderer.activate].
- *
- * Since: 1.8
  */
 void
 pango_renderer_deactivate (PangoRenderer *renderer)
@@ -1251,8 +1235,6 @@ pango_renderer_deactivate (PangoRenderer *renderer)
  * Sets the color for part of the rendering.
  *
  * Also see [method@Pango.Renderer.set_alpha].
- *
- * Since: 1.8
  */
 void
 pango_renderer_set_color (PangoRenderer    *renderer,
@@ -1292,8 +1274,6 @@ pango_renderer_set_color (PangoRenderer    *renderer,
  * Return value: (transfer none) (nullable): the color for the
  *   specified part, or %NULL if it hasn't been set and should be
  *   inherited from the environment.
- *
- * Since: 1.8
  */
 PangoColor *
 pango_renderer_get_color (PangoRenderer   *renderer,
@@ -1318,8 +1298,6 @@ pango_renderer_get_color (PangoRenderer   *renderer,
  *
  * Note that the alpha may only be used if a color is
  * specified for @part as well.
- *
- * Since: 1.38
  */
 void
 pango_renderer_set_alpha (PangoRenderer   *renderer,
@@ -1349,8 +1327,6 @@ pango_renderer_set_alpha (PangoRenderer   *renderer,
  * Return value: the alpha for the specified part,
  *   or 0 if it hasn't been set and should be
  *   inherited from the environment.
- *
- * Since: 1.38
  */
 guint16
 pango_renderer_get_alpha (PangoRenderer   *renderer,
@@ -1382,8 +1358,6 @@ pango_renderer_get_alpha (PangoRenderer   *renderer,
  * When the stipple changes or underlines with different stipples
  * might be joined together. Pango automatically calls this for
  * changes to colors. (See [method@Pango.Renderer.set_color])
- *
- * Since: 1.8
  */
 void
 pango_renderer_part_changed (PangoRenderer   *renderer,
@@ -1405,8 +1379,6 @@ pango_renderer_part_changed (PangoRenderer   *renderer,
  * @run: a `PangoRun`
  *
  * Set up the state of the `PangoRenderer` for rendering @run.
- *
- * Since: 1.8
  */
 static void
 pango_renderer_prepare_run (PangoRenderer  *renderer,
@@ -1522,8 +1494,6 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
  *  (No matrix set is the same as setting the identity matrix.)
  *
  * Sets the transformation matrix that will be applied when rendering.
- *
- * Since: 1.8
  */
 void
 pango_renderer_set_matrix (PangoRenderer     *renderer,
@@ -1547,8 +1517,6 @@ pango_renderer_set_matrix (PangoRenderer     *renderer,
  * Return value: (nullable): the matrix, or %NULL if no matrix has
  *   been set (which is the same as the identity matrix). The returned
  *   matrix is owned by Pango and must not be modified or freed.
- *
- * Since: 1.8
  */
 const PangoMatrix *
 pango_renderer_get_matrix (PangoRenderer *renderer)

@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -30,7 +30,7 @@
 G_BEGIN_DECLS
 
 gboolean _pango_scan_int                (const char **pos,
-	         	                 int         *out);
+                                         int         *out);
 
 gboolean _pango_parse_enum              (GType       type,
                                          const char *str,

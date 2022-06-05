@@ -557,8 +557,6 @@ pango_fc_hb_font_map_class_init (PangoFcHbFontMapClass *class)
  * this font map uses the default fontconfig configuration.
  *
  * Returns: a new `PangoFcHbFontMap`
- *
- * Since: 1.52
  */
 PangoFcHbFontMap *
 pango_fc_hb_font_map_new (void)
@@ -576,8 +574,6 @@ pango_fc_hb_font_map_new (void)
  *
  * Note that changing the fontconfig configuration
  * removes all cached font families, faces and fonts.
- *
- * Since: 1.52
  */
 void
 pango_fc_hb_font_map_set_config (PangoFcHbFontMap *self,
@@ -613,8 +609,6 @@ pango_fc_hb_font_map_set_config (PangoFcHbFontMap *self,
  * Returns: (nullable): the `FcConfig` object attached to
  *   @self, which might be %NULL. The return value is
  *   owned by Pango and should not be freed.
- *
- * Since: 1.52
  */
 FcConfig *
 pango_fc_hb_font_map_get_config (PangoFcHbFontMap *self)

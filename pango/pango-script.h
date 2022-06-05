@@ -36,25 +36,25 @@ G_BEGIN_DECLS
  **/
 typedef struct _PangoScriptIter PangoScriptIter;
 
-PANGO_AVAILABLE_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 GType            pango_script_iter_get_type  (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_1_4
+PANGO_AVAILABLE_IN_ALL
 PangoScriptIter *pango_script_iter_new       (const char          *text,
                                               int                  length);
-PANGO_AVAILABLE_IN_1_4
+PANGO_AVAILABLE_IN_ALL
 void             pango_script_iter_get_range (PangoScriptIter     *iter,
                                               const char         **start,
                                               const char         **end,
                                               GUnicodeScript      *script);
-PANGO_AVAILABLE_IN_1_4
+PANGO_AVAILABLE_IN_ALL
 gboolean         pango_script_iter_next      (PangoScriptIter     *iter);
-PANGO_AVAILABLE_IN_1_4
+PANGO_AVAILABLE_IN_ALL
 void             pango_script_iter_free      (PangoScriptIter     *iter);
 
 #include <pango/pango-language.h>
 
-PANGO_AVAILABLE_IN_1_4
+PANGO_AVAILABLE_IN_ALL
 PangoLanguage *pango_script_get_sample_language (GUnicodeScript    script) G_GNUC_PURE;
 
 G_END_DECLS

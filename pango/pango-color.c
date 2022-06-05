@@ -88,8 +88,6 @@ pango_color_free (PangoColor *color)
  *
  * Return value: a newly-allocated text string that must
  *   be freed with g_free().
- *
- * Since: 1.16
  */
 gchar *
 pango_color_to_string (const PangoColor *color)
@@ -235,8 +233,6 @@ hex (const char *spec,
  *
  * Return value: %TRUE if parsing of the specifier succeeded,
  *   otherwise %FALSE
- *
- * Since: 1.46
  */
 gboolean
 pango_color_parse_with_alpha (PangoColor *color,

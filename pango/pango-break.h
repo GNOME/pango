@@ -65,17 +65,16 @@ G_BEGIN_DECLS
  *   implementation of [func@break], this bit is set on all grapheme boundaries
  *   except those following Latin, Cyrillic or Greek base characters.
  * @is_expandable_space: is a whitespace character that can possibly be
- *   expanded for justification purposes. (Since: 1.18)
+ *   expanded for justification purposes.
  * @is_word_boundary: is a word boundary, as defined by UAX#29.
  *   More specifically, means that this is not a position in the middle of a word.
  *   For example, both sides of a punctuation mark are considered word boundaries.
  *   This flag is particularly useful when selecting text word-by-word. This flag
  *   implements Unicode's [Word Boundaries](http://www.unicode.org/reports/tr29/)
- *   semantics. (Since: 1.22)
+ *   semantics.
  * @break_inserts_hyphen: when breaking lines before this char, insert a hyphen.
- *   Since: 1.50
  * @break_removes_preceding: when breaking lines before this char, remove the
- *   preceding char. Since 1.50
+ *   preceding char.
  *
  * The `PangoLogAttr` structure stores information about the attributes of a
  * single character.
@@ -116,7 +115,7 @@ void                    pango_default_break     (const char    *text,
                                                  PangoLogAttr  *attrs,
                                                  int            attrs_len);
 
-PANGO_AVAILABLE_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 void                    pango_tailor_break      (const char    *text,
                                                  int            length,
                                                  PangoAnalysis *analysis,
@@ -124,7 +123,7 @@ void                    pango_tailor_break      (const char    *text,
                                                  PangoLogAttr  *attrs,
                                                  int            attrs_len);
 
-PANGO_AVAILABLE_IN_1_50
+PANGO_AVAILABLE_IN_ALL
 void                    pango_attr_break        (const char    *text,
                                                  int            length,
                                                  PangoAttrList *attr_list,

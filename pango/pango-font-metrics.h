@@ -78,19 +78,19 @@ PANGO_AVAILABLE_IN_ALL
 int               pango_font_metrics_get_ascent                  (PangoFontMetrics *metrics) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
 int               pango_font_metrics_get_descent                 (PangoFontMetrics *metrics) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 int               pango_font_metrics_get_height                  (PangoFontMetrics *metrics) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
 int               pango_font_metrics_get_approximate_char_width  (PangoFontMetrics *metrics) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
 int               pango_font_metrics_get_approximate_digit_width (PangoFontMetrics *metrics) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_1_6
+PANGO_AVAILABLE_IN_ALL
 int               pango_font_metrics_get_underline_position      (PangoFontMetrics *metrics) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_1_6
+PANGO_AVAILABLE_IN_ALL
 int               pango_font_metrics_get_underline_thickness     (PangoFontMetrics *metrics) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_1_6
+PANGO_AVAILABLE_IN_ALL
 int               pango_font_metrics_get_strikethrough_position  (PangoFontMetrics *metrics) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_1_6
+PANGO_AVAILABLE_IN_ALL
 int               pango_font_metrics_get_strikethrough_thickness (PangoFontMetrics *metrics) G_GNUC_PURE;
 
 

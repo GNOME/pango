@@ -168,7 +168,7 @@ void                    pango_glyph_string_extents              (PangoGlyphStrin
                                                                  PangoFont           *font,
                                                                  PangoRectangle      *ink_rect,
                                                                  PangoRectangle      *logical_rect);
-PANGO_AVAILABLE_IN_1_14
+PANGO_AVAILABLE_IN_ALL
 int                     pango_glyph_string_get_width            (PangoGlyphString    *glyphs);
 
 PANGO_AVAILABLE_IN_ALL
@@ -203,7 +203,7 @@ void                    pango_glyph_string_x_to_index           (PangoGlyphStrin
                                                                  int                 *index_,
                                                                  int                 *trailing);
 
-PANGO_AVAILABLE_IN_1_50
+PANGO_AVAILABLE_IN_ALL
 void                    pango_glyph_string_index_to_x_full      (PangoGlyphString    *glyphs,
                                                                  const char          *text,
                                                                  int                  length,
@@ -224,15 +224,13 @@ void                    pango_glyph_string_index_to_x_full      (PangoGlyphStrin
  * Flags influencing the shaping process.
  *
  * `PangoShapeFlags` can be passed to [func@Pango.shape_with_flags].
- *
- * Since: 1.44
  */
 typedef enum {
   PANGO_SHAPE_NONE            = 0,
   PANGO_SHAPE_ROUND_POSITIONS = 1 << 0,
 } PangoShapeFlags;
 
-PANGO_AVAILABLE_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 void                    pango_shape             (const char          *item_text,
                                                  int                  item_length,
                                                  const char          *paragraph_text,
@@ -242,7 +240,7 @@ void                    pango_shape             (const char          *item_text,
                                                  PangoShapeFlags      flags);
 
 
-PANGO_AVAILABLE_IN_1_50
+PANGO_AVAILABLE_IN_ALL
 void                    pango_shape_item        (PangoItem           *item,
                                                  const char          *paragraph_text,
                                                  int                  paragraph_length,

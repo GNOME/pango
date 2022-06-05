@@ -36,8 +36,6 @@
  * you should multiply it by (180. / G_PI).
  *
  * Return value: the rotation value corresponding to @gravity.
- *
- * Since: 1.16
  */
 double
 pango_gravity_to_rotation (PangoGravity gravity)
@@ -68,8 +66,6 @@ pango_gravity_to_rotation (PangoGravity gravity)
  *
  * Return value: the gravity of @matrix, which will never be
  * %PANGO_GRAVITY_AUTO, or %PANGO_GRAVITY_SOUTH if @matrix is %NULL
- *
- * Since: 1.16
  */
 PangoGravity
 pango_gravity_get_for_matrix (const PangoMatrix *matrix)
@@ -364,8 +360,6 @@ get_script_properties (GUnicodeScript script)
  *
  * Return value: resolved gravity suitable to use for a run of text
  * with @script
- *
- * Since: 1.16
  */
 PangoGravity
 pango_gravity_get_for_script (GUnicodeScript      script,
@@ -403,8 +397,6 @@ pango_gravity_get_for_script (GUnicodeScript      script,
  *
  * Return value: resolved gravity suitable to use for a run of text
  * with @script and @wide.
- *
- * Since: 1.26
  */
 PangoGravity
 pango_gravity_get_for_script_and_width (GUnicodeScript   script,

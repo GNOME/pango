@@ -61,12 +61,12 @@ PANGO_AVAILABLE_IN_ALL
 gboolean    pango_color_parse            (PangoColor       *color,
                                           const char       *spec);
 
-PANGO_AVAILABLE_IN_1_46
+PANGO_AVAILABLE_IN_ALL
 gboolean    pango_color_parse_with_alpha (PangoColor       *color,
                                           guint16          *alpha,
                                           const char       *spec);
 
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 char       *pango_color_to_string        (const PangoColor *color);
 
 

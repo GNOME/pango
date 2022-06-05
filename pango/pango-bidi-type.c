@@ -47,8 +47,6 @@
  *
  * Return value: a newly allocated array of embedding levels, one item per
  *   character (not byte), that should be freed using [func@GLib.free].
- *
- * Since: 1.4
  */
 guint8 *
 pango_log2vis_get_embedding_levels (const gchar    *text,

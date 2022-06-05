@@ -232,8 +232,6 @@ pango_attr_size_new (int value)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.8
  */
 PangoAttribute *
 pango_attr_size_new_absolute (int size)
@@ -351,8 +349,6 @@ pango_attr_underline_new (PangoLineStyle style)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.8
  */
 PangoAttribute *
 pango_attr_underline_color_new (PangoColor *color)
@@ -393,8 +389,6 @@ pango_attr_strikethrough_new (PangoLineStyle style)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.8
  */
 PangoAttribute *
 pango_attr_strikethrough_color_new (PangoColor *color)
@@ -438,8 +432,6 @@ pango_attr_rise_new (int rise)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.50
  */
 PangoAttribute *
 pango_attr_baseline_shift_new (int rise)
@@ -460,8 +452,6 @@ pango_attr_baseline_shift_new (int rise)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.50
  */
 PangoAttribute *
 pango_attr_font_scale_new (PangoFontScale scale)
@@ -503,8 +493,6 @@ pango_attr_scale_new (double scale_factor)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.4
  */
 PangoAttribute *
 pango_attr_fallback_new (gboolean enable_fallback)
@@ -522,8 +510,6 @@ pango_attr_fallback_new (gboolean enable_fallback)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.6
  */
 PangoAttribute *
 pango_attr_letter_spacing_new (int letter_spacing)
@@ -540,8 +526,6 @@ pango_attr_letter_spacing_new (int letter_spacing)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.16
  */
 PangoAttribute *
 pango_attr_gravity_new (PangoGravity gravity)
@@ -560,8 +544,6 @@ pango_attr_gravity_new (PangoGravity gravity)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.16
  */
 PangoAttribute *
 pango_attr_gravity_hint_new (PangoGravityHint hint)
@@ -582,8 +564,6 @@ pango_attr_gravity_hint_new (PangoGravityHint hint)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.38
  */
 PangoAttribute *
 pango_attr_font_features_new (const char *features)
@@ -602,8 +582,6 @@ pango_attr_font_features_new (const char *features)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.38
  */
 PangoAttribute *
 pango_attr_foreground_alpha_new (guint16 alpha)
@@ -620,8 +598,6 @@ pango_attr_foreground_alpha_new (guint16 alpha)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.38
  */
 PangoAttribute *
 pango_attr_background_alpha_new (guint16 alpha)
@@ -641,8 +617,6 @@ pango_attr_background_alpha_new (guint16 alpha)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.44
  */
 PangoAttribute *
 pango_attr_allow_breaks_new (gboolean allow_breaks)
@@ -663,8 +637,6 @@ pango_attr_allow_breaks_new (gboolean allow_breaks)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.44
  */
 PangoAttribute *
 pango_attr_insert_hyphens_new (gboolean insert_hyphens)
@@ -682,8 +654,6 @@ pango_attr_insert_hyphens_new (gboolean insert_hyphens)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.44
  **/
 PangoAttribute *
 pango_attr_show_new (PangoShowFlags flags)
@@ -703,8 +673,6 @@ pango_attr_show_new (PangoShowFlags flags)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.50
  */
 PangoAttribute *
 pango_attr_word_new (void)
@@ -724,8 +692,6 @@ pango_attr_word_new (void)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.50
  */
 PangoAttribute *
 pango_attr_sentence_new (void)
@@ -760,8 +726,6 @@ pango_attr_paragraph_new (void)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.46
  */
 PangoAttribute *
 pango_attr_overline_new (PangoOverline overline)
@@ -781,8 +745,6 @@ pango_attr_overline_new (PangoOverline overline)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.46
  */
 PangoAttribute *
 pango_attr_overline_color_new (PangoColor *color)
@@ -852,8 +814,6 @@ pango_attr_line_spacing_new (int spacing)
  * Return value: (transfer full): the newly allocated
  *   `PangoAttribute`, which should be freed with
  *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.50
  */
 PangoAttribute *
 pango_attr_text_transform_new (PangoTextTransform transform)

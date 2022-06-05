@@ -1044,8 +1044,6 @@ pango_layout_set_font_description (PangoLayout                *layout,
  * Return value: (transfer none) (nullable): a pointer to the
  *   layout's font description, or %NULL if the font description
  *   from the layout's context is inherited.
- *
- * Since: 1.8
  */
 const PangoFontDescription *
 pango_layout_get_font_description (PangoLayout *layout)

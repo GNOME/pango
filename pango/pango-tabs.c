@@ -377,8 +377,6 @@ pango_tab_array_get_positions_in_pixels (PangoTabArray *tab_array)
  *
  * Sets whether positions in this array are specified in
  * pixels.
- *
- * Since: 1.50
  */
 void
 pango_tab_array_set_positions_in_pixels (PangoTabArray *tab_array,
@@ -403,7 +401,6 @@ pango_tab_array_set_positions_in_pixels (PangoTabArray *tab_array,
  * storage format.
  *
  * Returns: (transfer full): a newly allocated string
- * Since: 1.50
  */
 char *
 pango_tab_array_to_string (PangoTabArray *tab_array)
@@ -453,7 +450,6 @@ skip_whitespace (const char *p)
  * See that functions for details about the format.
  *
  * Returns: (transfer full) (nullable): a new `PangoTabArray`
- * Since: 1.50
  */
 PangoTabArray *
 pango_tab_array_from_string (const char *text)
@@ -557,8 +553,6 @@ success:
  *
  * By default, Pango uses the decimal point according
  * to the current locale.
- *
- * Since: 1.50
  */
 void
 pango_tab_array_set_decimal_point (PangoTabArray *tab_array,
@@ -587,8 +581,6 @@ pango_tab_array_set_decimal_point (PangoTabArray *tab_array,
  *
  * The default value of 0 means that Pango will use the
  * decimal point according to the current locale.
- *
- * Since: 1.50
  */
 gunichar
 pango_tab_array_get_decimal_point (PangoTabArray *tab_array,
@@ -615,8 +607,6 @@ compare_tabs (const void *p1, const void *p2)
  * @tab_array: a `PangoTabArray`
  *
  * Utility function to ensure that the tab stops are in increasing order.
- *
- * Since: 1.50
  */
 void
 pango_tab_array_sort (PangoTabArray *tab_array)

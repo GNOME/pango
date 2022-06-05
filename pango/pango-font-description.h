@@ -57,17 +57,17 @@ typedef enum {
  * @PANGO_VARIANT_SMALL_CAPS: A font with the lower case characters
  *   replaced by smaller variants of the capital characters.
  * @PANGO_VARIANT_ALL_SMALL_CAPS: A font with all characters
- *   replaced by smaller variants of the capital characters. Since: 1.50
+ *   replaced by smaller variants of the capital characters.
  * @PANGO_VARIANT_PETITE_CAPS: A font with the lower case characters
  *   replaced by smaller variants of the capital characters.
- *   Petite Caps can be even smaller than Small Caps. Since: 1.50
+ *   Petite Caps can be even smaller than Small Caps.
  * @PANGO_VARIANT_ALL_PETITE_CAPS: A font with all characters
  *   replaced by smaller variants of the capital characters.
- *   Petite Caps can be even smaller than Small Caps. Since: 1.50
+ *   Petite Caps can be even smaller than Small Caps.
  * @PANGO_VARIANT_UNICASE: A font with the upper case characters
- *   replaced by smaller variants of the capital letters. Since: 1.50
+ *   replaced by smaller variants of the capital letters.
  * @PANGO_VARIANT_TITLE_CAPS: A font with capital letters that
- *   are more suitable for all-uppercase titles. Since: 1.50
+ *   are more suitable for all-uppercase titles.
  *
  * An enumeration specifying capitalization variant of the font.
  */
@@ -83,18 +83,18 @@ typedef enum {
 
 /**
  * PangoWeight:
- * @PANGO_WEIGHT_THIN: the thin weight (= 100) Since: 1.24
+ * @PANGO_WEIGHT_THIN: the thin weight (= 100)
  * @PANGO_WEIGHT_ULTRALIGHT: the ultralight weight (= 200)
  * @PANGO_WEIGHT_LIGHT: the light weight (= 300)
- * @PANGO_WEIGHT_SEMILIGHT: the semilight weight (= 350) Since: 1.36.7
- * @PANGO_WEIGHT_BOOK: the book weight (= 380) Since: 1.24)
+ * @PANGO_WEIGHT_SEMILIGHT: the semilight weight (= 350)
+ * @PANGO_WEIGHT_BOOK: the book weight (= 380)
  * @PANGO_WEIGHT_NORMAL: the default weight (= 400)
- * @PANGO_WEIGHT_MEDIUM: the normal weight (= 500) Since: 1.24
+ * @PANGO_WEIGHT_MEDIUM: the normal weight (= 500)
  * @PANGO_WEIGHT_SEMIBOLD: the semibold weight (= 600)
  * @PANGO_WEIGHT_BOLD: the bold weight (= 700)
  * @PANGO_WEIGHT_ULTRABOLD: the ultrabold weight (= 800)
  * @PANGO_WEIGHT_HEAVY: the heavy weight (= 900)
- * @PANGO_WEIGHT_ULTRAHEAVY: the ultraheavy weight (= 1000) Since: 1.24
+ * @PANGO_WEIGHT_ULTRAHEAVY: the ultraheavy weight (= 1000)
  *
  * An enumeration specifying the weight (boldness) of a font.
  *
@@ -154,8 +154,8 @@ typedef enum {
  * @PANGO_FONT_MASK_WEIGHT: the font weight is specified.
  * @PANGO_FONT_MASK_STRETCH: the font stretch is specified.
  * @PANGO_FONT_MASK_SIZE: the font size is specified.
- * @PANGO_FONT_MASK_GRAVITY: the font gravity is specified (Since: 1.16.)
- * @PANGO_FONT_MASK_VARIATIONS: OpenType font variations are specified (Since: 1.42)
+ * @PANGO_FONT_MASK_GRAVITY: the font gravity is specified
+ * @PANGO_FONT_MASK_VARIATIONS: OpenType font variations are specified
  * @PANGO_FONT_MASK_FACEID: the face ID is specified
  *
  * The bits in a `PangoFontMask` correspond to the set fields in a
@@ -269,24 +269,24 @@ void                    pango_font_description_set_size          (PangoFontDescr
                                                                   int                   size);
 PANGO_AVAILABLE_IN_ALL
 int                     pango_font_description_get_size          (const PangoFontDescription *desc) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 void                    pango_font_description_set_absolute_size (PangoFontDescription *desc,
                                                                   double                size);
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 gboolean                pango_font_description_get_size_is_absolute (const PangoFontDescription *desc) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 void                    pango_font_description_set_gravity       (PangoFontDescription *desc,
                                                                   PangoGravity          gravity);
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 PangoGravity            pango_font_description_get_gravity       (const PangoFontDescription *desc) G_GNUC_PURE;
 
-PANGO_AVAILABLE_IN_1_42
+PANGO_AVAILABLE_IN_ALL
 void                    pango_font_description_set_variations_static (PangoFontDescription       *desc,
                                                                       const char                 *variations);
-PANGO_AVAILABLE_IN_1_42
+PANGO_AVAILABLE_IN_ALL
 void                    pango_font_description_set_variations    (PangoFontDescription       *desc,
                                                                   const char                 *variations);
-PANGO_AVAILABLE_IN_1_42
+PANGO_AVAILABLE_IN_ALL
 const char *            pango_font_description_get_variations    (const PangoFontDescription *desc) G_GNUC_PURE;
 
 PANGO_AVAILABLE_IN_ALL

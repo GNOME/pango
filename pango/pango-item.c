@@ -215,8 +215,6 @@ compare_attr (gconstpointer p1, gconstpointer p2)
  * and will be advanced past it. This function is meant to be called
  * in a loop over the items resulting from itemization, while passing
  * the iter to each call.
- *
- * Since: 1.44
  */
 void
 pango_item_apply_attrs (PangoItem         *item,

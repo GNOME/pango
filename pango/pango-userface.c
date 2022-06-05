@@ -440,8 +440,6 @@ pango_user_face_class_init (PangoUserFaceClass *class)
  * glyphs.
  *
  * Returns: (transfer full): a newly created `PangoUserFace`
- *
- * Since: 1.52
  */
 PangoUserFace *
 pango_user_face_new (PangoUserFaceGetFontInfoFunc     font_info_func,

@@ -49,9 +49,7 @@ typedef struct _PangoRendererPrivate PangoRendererPrivate;
  *
  * `PangoRenderPart` defines different items to render for such
  * purposes as setting colors.
- *
- * Since: 1.8
- **/
+ */
 /* When extending, note N_RENDER_PARTS #define in pango-renderer.c */
 typedef enum
 {
@@ -74,8 +72,6 @@ typedef enum
  * By subclassing `PangoRenderer` and overriding operations such as
  * @draw_glyphs and @draw_rectangle, renderers for particular font
  * backends and destinations can be created.
- *
- * Since: 1.8
  */
 struct _PangoRenderer
 {
@@ -126,8 +122,6 @@ struct _PangoRenderer
  * and must be implemented:
  * - draw_trapezoid
  * - draw_glyph
- *
- * Since: 1.8
  */
 struct _PangoRendererClass
 {
@@ -191,7 +185,7 @@ struct _PangoRendererClass
   void (*_pango_reserved4) (void);
 };
 
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 GType pango_renderer_get_type            (void) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
@@ -205,32 +199,32 @@ void pango_renderer_draw_line            (PangoRenderer    *renderer,
                                           PangoLine        *line,
                                           int               x,
                                           int               y);
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 void pango_renderer_draw_glyphs          (PangoRenderer    *renderer,
                                           PangoFont        *font,
                                           PangoGlyphString *glyphs,
                                           int               x,
                                           int               y);
-PANGO_AVAILABLE_IN_1_22
+PANGO_AVAILABLE_IN_ALL
 void pango_renderer_draw_glyph_item      (PangoRenderer    *renderer,
                                           const char       *text,
                                           PangoGlyphItem   *glyph_item,
                                           int               x,
                                           int               y);
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 void pango_renderer_draw_rectangle       (PangoRenderer    *renderer,
                                           PangoRenderPart   part,
                                           int               x,
                                           int               y,
                                           int               width,
                                           int               height);
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 void pango_renderer_draw_error_underline (PangoRenderer    *renderer,
                                           int               x,
                                           int               y,
                                           int               width,
                                           int               height);
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 void pango_renderer_draw_trapezoid       (PangoRenderer    *renderer,
                                           PangoRenderPart   part,
                                           double            y1_,
@@ -239,42 +233,42 @@ void pango_renderer_draw_trapezoid       (PangoRenderer    *renderer,
                                           double            y2,
                                           double            x12,
                                           double            x22);
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 void pango_renderer_draw_glyph           (PangoRenderer    *renderer,
                                           PangoFont        *font,
                                           PangoGlyph        glyph,
                                           double            x,
                                           double            y);
 
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 void pango_renderer_activate             (PangoRenderer    *renderer);
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 void pango_renderer_deactivate           (PangoRenderer    *renderer);
 
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 void pango_renderer_part_changed         (PangoRenderer   *renderer,
                                           PangoRenderPart  part);
 
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 void        pango_renderer_set_color     (PangoRenderer    *renderer,
                                           PangoRenderPart   part,
                                           const PangoColor *color);
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 PangoColor *pango_renderer_get_color     (PangoRenderer    *renderer,
                                           PangoRenderPart   part);
 
-PANGO_AVAILABLE_IN_1_38
+PANGO_AVAILABLE_IN_ALL
 void        pango_renderer_set_alpha     (PangoRenderer    *renderer,
                                           PangoRenderPart   part,
                                           guint16           alpha);
-PANGO_AVAILABLE_IN_1_38
+PANGO_AVAILABLE_IN_ALL
 guint16     pango_renderer_get_alpha     (PangoRenderer    *renderer,
                                           PangoRenderPart   part);
 
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 void               pango_renderer_set_matrix      (PangoRenderer     *renderer,
                                                    const PangoMatrix *matrix);
-PANGO_AVAILABLE_IN_1_8
+PANGO_AVAILABLE_IN_ALL
 const PangoMatrix *pango_renderer_get_matrix      (PangoRenderer     *renderer);
 
 PANGO_AVAILABLE_IN_ALL

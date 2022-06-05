@@ -41,7 +41,7 @@ PANGO_DECLARE_INTERNAL_TYPE (PangoFont, pango_font, PANGO, FONT, GObject)
 
 PANGO_AVAILABLE_IN_ALL
 PangoFontDescription *pango_font_describe          (PangoFont        *font);
-PANGO_AVAILABLE_IN_1_14
+PANGO_AVAILABLE_IN_ALL
 PangoFontDescription *pango_font_describe_with_absolute_size (PangoFont        *font);
 PANGO_AVAILABLE_IN_ALL
 PangoCoverage *       pango_font_get_coverage      (PangoFont        *font,
@@ -54,30 +54,30 @@ void                  pango_font_get_glyph_extents (PangoFont        *font,
                                                     PangoGlyph        glyph,
                                                     PangoRectangle   *ink_rect,
                                                     PangoRectangle   *logical_rect);
-PANGO_AVAILABLE_IN_1_10
+PANGO_AVAILABLE_IN_ALL
 PangoFontMap         *pango_font_get_font_map      (PangoFont        *font);
 
-PANGO_AVAILABLE_IN_1_46
+PANGO_AVAILABLE_IN_ALL
 PangoFontFace *       pango_font_get_face          (PangoFont        *font);
 
-PANGO_AVAILABLE_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 gboolean              pango_font_has_char          (PangoFont        *font,
                                                     gunichar          wc);
-PANGO_AVAILABLE_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 void                  pango_font_get_features      (PangoFont        *font,
                                                     hb_feature_t     *features,
                                                     guint             len,
                                                     guint            *num_features);
-PANGO_AVAILABLE_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 hb_font_t *           pango_font_get_hb_font       (PangoFont        *font);
 
-PANGO_AVAILABLE_IN_1_50
+PANGO_AVAILABLE_IN_ALL
 PangoLanguage **      pango_font_get_languages     (PangoFont        *font);
 
-PANGO_AVAILABLE_IN_1_50
+PANGO_AVAILABLE_IN_ALL
 GBytes *              pango_font_serialize         (PangoFont        *font);
 
-PANGO_AVAILABLE_IN_1_50
+PANGO_AVAILABLE_IN_ALL
 PangoFont *           pango_font_deserialize       (PangoContext     *context,
                                                     GBytes           *bytes,
                                                     GError          **error);
@@ -101,8 +101,6 @@ PangoFont *           pango_font_deserialize       (PangoContext     *context,
  *
  * Note that this value is defined such that it has the %PANGO_GLYPH_UNKNOWN_FLAG
  * set.
- *
- * Since: 1.20
  */
 /**
  * PANGO_GLYPH_UNKNOWN_FLAG:

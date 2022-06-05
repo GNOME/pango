@@ -85,7 +85,6 @@ typedef struct _PangoLineIter PangoLineIter;
  * Converts a dimension to device units by flooring.
  *
  * Return value: floored dimension in device units.
- * Since: 1.14
  */
 /**
  * PANGO_PIXELS_CEIL:
@@ -94,7 +93,6 @@ typedef struct _PangoLineIter PangoLineIter;
  * Converts a dimension to device units by ceiling.
  *
  * Return value: ceiled dimension in device units.
- * Since: 1.14
  */
 #define PANGO_SCALE 1024
 #define PANGO_PIXELS(d) (((int)(d) + 512) >> 10)
@@ -117,7 +115,6 @@ typedef struct _PangoLineIter PangoLineIter;
  * convert it to device units.
  *
  * Return value: rounded down dimension in Pango units.
- * Since: 1.50
  */
 #define PANGO_UNITS_FLOOR(d)                \
   ((d) & ~(PANGO_SCALE - 1))
@@ -130,7 +127,6 @@ typedef struct _PangoLineIter PangoLineIter;
  * convert it to device units.
  *
  * Return value: rounded up dimension in Pango units.
- * Since: 1.50
  */
 #define PANGO_UNITS_CEIL(d)                 \
   (((d) + (PANGO_SCALE - 1)) & ~(PANGO_SCALE - 1))
@@ -143,15 +139,14 @@ typedef struct _PangoLineIter PangoLineIter;
  * convert it to device units.
  *
  * Return value: rounded dimension in Pango units.
- * Since: 1.18
  */
 #define PANGO_UNITS_ROUND(d)				\
   (((d) + (PANGO_SCALE >> 1)) & ~(PANGO_SCALE - 1))
 
 
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 int    pango_units_from_double (double d) G_GNUC_CONST;
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 double pango_units_to_double (int i) G_GNUC_CONST;
 
 
@@ -230,7 +225,7 @@ struct _PangoRectangle
 #define PANGO_LBEARING(rect) ((rect).x)
 #define PANGO_RBEARING(rect) ((rect).x + (rect).width)
 
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 void pango_extents_to_pixels (PangoRectangle *inclusive,
                              PangoRectangle *nearest);
 
