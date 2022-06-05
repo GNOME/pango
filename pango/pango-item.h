@@ -37,8 +37,6 @@ typedef struct _PangoItem PangoItem;
  * Whether the segment should be shifted to center around the baseline.
  *
  * This is mainly used in vertical writing directions.
- *
- * Since: 1.16
  */
 #define PANGO_ANALYSIS_FLAG_CENTERED_BASELINE (1 << 0)
 
@@ -46,8 +44,6 @@ typedef struct _PangoItem PangoItem;
  * PANGO_ANALYSIS_FLAG_IS_ELLIPSIS:
  *
  * Whether this run holds ellipsized text.
- *
- * Since: 1.36.7
  */
 #define PANGO_ANALYSIS_FLAG_IS_ELLIPSIS (1 << 1)
 
@@ -55,8 +51,6 @@ typedef struct _PangoItem PangoItem;
  * PANGO_ANALYSIS_FLAG_NEED_HYPHEN:
  *
  * Whether to add a hyphen at the end of the run during shaping.
- *
- * Since: 1.44
  */
 #define PANGO_ANALYSIS_FLAG_NEED_HYPHEN (1 << 2)
 
@@ -66,8 +60,8 @@ typedef struct _PangoItem PangoItem;
  * @font: the font for this segment
  * @level: the bidirectional level for this segment.
  * @gravity: the glyph orientation for this segment (A `PangoGravity`).
- * @flags: boolean flags for this segment (Since: 1.16).
- * @script: the detected script for this segment (A `PangoScript`) (Since: 1.18).
+ * @flags: boolean flags for this segment
+ * @script: the detected script for this segment (A `PangoScript`)
  * @language: the detected language for this segment.
  * @extra_attrs: extra attributes for this segment.
  *
@@ -128,7 +122,7 @@ PangoItem *             pango_item_split             (PangoItem         *orig,
                                                       int                split_index,
                                                       int                split_offset);
 
-PANGO_AVAILABLE_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 void                    pango_item_apply_attrs       (PangoItem         *item,
                                                       PangoAttrIterator *iter);
 

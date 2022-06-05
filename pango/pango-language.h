@@ -36,10 +36,10 @@ G_BEGIN_DECLS
 PANGO_AVAILABLE_IN_ALL
 GType                   pango_language_get_type                 (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 PangoLanguage *         pango_language_get_default              (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_1_48
+PANGO_AVAILABLE_IN_ALL
 PangoLanguage **        pango_language_get_preferred            (void) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
@@ -58,10 +58,10 @@ PANGO_AVAILABLE_IN_ALL
 gboolean                pango_language_matches                  (PangoLanguage  *language,
                                                                  const char     *range_list) G_GNUC_PURE;
 
-PANGO_AVAILABLE_IN_1_4
+PANGO_AVAILABLE_IN_ALL
 gboolean                pango_language_includes_script          (PangoLanguage  *language,
                                                                  GUnicodeScript  script) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_1_22
+PANGO_AVAILABLE_IN_ALL
 const GUnicodeScript *     pango_language_get_scripts           (PangoLanguage  *language,
                                                                  int            *num_scripts);
 

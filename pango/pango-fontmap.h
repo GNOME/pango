@@ -33,7 +33,7 @@ G_BEGIN_DECLS
 PANGO_AVAILABLE_IN_ALL
 PANGO_DECLARE_INTERNAL_TYPE (PangoFontMap, pango_font_map, PANGO, FONT_MAP, GObject)
 
-PANGO_AVAILABLE_IN_1_22
+PANGO_AVAILABLE_IN_ALL
 PangoContext * pango_font_map_create_context (PangoFontMap               *fontmap);
 PANGO_AVAILABLE_IN_ALL
 PangoFont *   pango_font_map_load_font     (PangoFontMap                 *fontmap,
@@ -44,12 +44,12 @@ PangoFontset *pango_font_map_load_fontset  (PangoFontMap                 *fontma
                                             PangoContext                 *context,
                                             const PangoFontDescription   *desc,
                                             PangoLanguage                *language);
-PANGO_AVAILABLE_IN_1_32
+PANGO_AVAILABLE_IN_ALL
 guint         pango_font_map_get_serial    (PangoFontMap                 *fontmap);
-PANGO_AVAILABLE_IN_1_34
+PANGO_AVAILABLE_IN_ALL
 void          pango_font_map_changed       (PangoFontMap                 *fontmap);
 
-PANGO_AVAILABLE_IN_1_46
+PANGO_AVAILABLE_IN_ALL
 PangoFontFamily *pango_font_map_get_family (PangoFontMap                 *fontmap,
                                             const char                   *name);
 

@@ -27,10 +27,10 @@
 G_BEGIN_DECLS
 
 
-PANGO_AVAILABLE_IN_1_32
+PANGO_AVAILABLE_IN_ALL
 GMarkupParseContext * pango_markup_parser_new    (gunichar               accel_marker);
 
-PANGO_AVAILABLE_IN_1_32
+PANGO_AVAILABLE_IN_ALL
 gboolean              pango_markup_parser_finish (GMarkupParseContext   *context,
                                                   PangoAttrList        **attr_list,
                                                   char                 **text,

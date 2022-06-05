@@ -1752,8 +1752,6 @@ pango_layout_deserialize (PangoContext                 *context,
  * To recreate a font from its serialized form, use [func@Pango.Font.deserialize].
  *
  * Returns: a `GBytes` containing the serialized form of @font
- *
- * Since: 1.50
  */
 GBytes *
 pango_font_serialize (PangoFont *font)
@@ -1793,8 +1791,6 @@ pango_font_serialize (PangoFont *font)
  * result of serializing the font again.
  *
  * Returns: (nullable) (transfer full): a new `PangoFont`
- *
- * Since: 1.50
  */
 PangoFont *
 pango_font_deserialize (PangoContext  *context,

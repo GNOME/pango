@@ -220,8 +220,6 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
  * Return value: (nullable): The font structure, or %NULL if the font
  *   could not be loaded. In order to free this structure, you must call
  *   [method@Pango.Win32FontCache.unload].
- *
- * Since: 1.16
  */
 HFONT
 pango_win32_font_cache_loadw (PangoWin32FontCache *cache,

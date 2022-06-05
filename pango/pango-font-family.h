@@ -36,12 +36,12 @@ PANGO_AVAILABLE_IN_ALL
 const char *            pango_font_family_get_name      (PangoFontFamily  *family) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
 gboolean                pango_font_family_is_generic    (PangoFontFamily  *family) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_1_4
+PANGO_AVAILABLE_IN_ALL
 gboolean                pango_font_family_is_monospace  (PangoFontFamily  *family) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 gboolean                pango_font_family_is_variable   (PangoFontFamily  *family) G_GNUC_PURE;
 
-PANGO_AVAILABLE_IN_1_46
+PANGO_AVAILABLE_IN_ALL
 PangoFontFace *         pango_font_family_get_face      (PangoFontFamily  *family,
                                                          const char       *name);
 

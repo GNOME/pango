@@ -141,8 +141,6 @@ pango_font_metrics_get_descent (PangoFontMetrics *metrics)
  * If the line height is not available, 0 is returned.
  *
  * Return value: the height, in Pango units
- *
- * Since: 1.44
  */
 int
 pango_font_metrics_get_height (PangoFontMetrics *metrics)
@@ -205,8 +203,6 @@ pango_font_metrics_get_approximate_digit_width (PangoFontMetrics *metrics)
  * the baseline, this value is typically negative.
  *
  * Return value: the suggested underline position, in Pango units.
- *
- * Since: 1.6
  */
 int
 pango_font_metrics_get_underline_position (PangoFontMetrics *metrics)
@@ -223,8 +219,6 @@ pango_font_metrics_get_underline_position (PangoFontMetrics *metrics)
  * Gets the suggested thickness to draw for the underline.
  *
  * Return value: the suggested underline thickness, in Pango units.
- *
- * Since: 1.6
  */
 int
 pango_font_metrics_get_underline_thickness (PangoFontMetrics *metrics)
@@ -244,8 +238,6 @@ pango_font_metrics_get_underline_thickness (PangoFontMetrics *metrics)
  * baseline of the top of the strikethrough.
  *
  * Return value: the suggested strikethrough position, in Pango units.
- *
- * Since: 1.6
  */
 int
 pango_font_metrics_get_strikethrough_position (PangoFontMetrics *metrics)
@@ -262,8 +254,6 @@ pango_font_metrics_get_strikethrough_position (PangoFontMetrics *metrics)
  * Gets the suggested thickness to draw for the strikethrough.
  *
  * Return value: the suggested strikethrough thickness, in Pango units.
- *
- * Since: 1.6
  */
 int
 pango_font_metrics_get_strikethrough_thickness (PangoFontMetrics *metrics)

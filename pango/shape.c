@@ -813,8 +813,6 @@ pango_shape_internal (const char          *item_text,
  * so you do not pass the full paragraph text as @paragraph_text, you need
  * to subtract the item offset from their indices before calling
  * [func@Pango.shape_with_flags].
- *
- * Since: 1.44
  */
 void
 pango_shape (const char          *item_text,
@@ -853,8 +851,6 @@ pango_shape (const char          *item_text,
  * so you do not pass the full paragraph text as @paragraph_text, you need
  * to subtract the item offset from their indices before calling
  * [func@Pango.shape_with_flags].
- *
- * Since: 1.50
  */
 void
 pango_shape_item (PangoItem        *item,

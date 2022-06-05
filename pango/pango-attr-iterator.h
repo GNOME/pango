@@ -37,7 +37,7 @@ G_BEGIN_DECLS
  * currently in effect can be queried.
  */
 
-PANGO_AVAILABLE_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 GType                   pango_attr_iterator_get_type    (void) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
@@ -58,7 +58,7 @@ void                    pango_attr_iterator_get_font    (PangoAttrIterator     *
                                                          PangoFontDescription  *desc,
                                                          PangoLanguage        **language,
                                                          GSList               **extra_attrs);
-PANGO_AVAILABLE_IN_1_2
+PANGO_AVAILABLE_IN_ALL
 GSList *                pango_attr_iterator_get_attrs   (PangoAttrIterator     *iterator);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoAttrIterator, pango_attr_iterator_destroy)

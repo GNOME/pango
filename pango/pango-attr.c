@@ -211,8 +211,6 @@ pango_attr_type_register (const char                 *name,
  * Return value: (nullable): the type ID name (which
  *   may be %NULL), or %NULL if @type is a built-in Pango
  *   attribute type or invalid.
- *
- * Since: 1.22
  */
 const char *
 pango_attr_type_get_name (guint type)

@@ -55,8 +55,6 @@ typedef struct _PangoFontset        PangoFontset;
  * See [method@Pango.Fontset.foreach].
  *
  * Returns: if %TRUE, stop iteration and return immediately.
- *
- * Since: 1.4
  */
 typedef gboolean (*PangoFontsetForeachFunc) (PangoFontset  *fontset,
                                              PangoFont     *font,
@@ -78,7 +76,7 @@ PangoFont *             pango_fontset_get_font          (PangoFontset           
                                                          guint                           wc);
 PANGO_AVAILABLE_IN_ALL
 PangoFontMetrics *      pango_fontset_get_metrics       (PangoFontset                   *fontset);
-PANGO_AVAILABLE_IN_1_4
+PANGO_AVAILABLE_IN_ALL
 void                    pango_fontset_foreach           (PangoFontset                   *fontset,
                                                          PangoFontsetForeachFunc         func,
                                                          gpointer                        data);

@@ -1032,8 +1032,6 @@ _pango_cairo_do_error_underline (cairo_t *cr,
  *
  * The origin of the glyphs (the left edge of the baseline) will
  * be drawn at the current point of the cairo context.
- *
- * Since: 1.10
  */
 void
 pango_cairo_show_glyph_string (cairo_t          *cr,
@@ -1064,8 +1062,6 @@ pango_cairo_show_glyph_string (cairo_t          *cr,
  *
  * Note that @text is the start of the text for layout, which is then
  * indexed by `glyph_item->item->offset`.
- *
- * Since: 1.22
  */
 void
 pango_cairo_show_glyph_item (cairo_t          *cr,
@@ -1128,8 +1124,6 @@ pango_cairo_show_lines (cairo_t    *cr,
  *
  * The top-left corner of the `PangoLayout` will be drawn
  * at the current point of the cairo context.
- *
- * Since: 1.10
  */
 void
 pango_cairo_show_layout (cairo_t     *cr,
@@ -1156,8 +1150,6 @@ pango_cairo_show_layout (cairo_t     *cr,
  * The width of the underline is rounded to an integer
  * number of up/down segments and the resulting rectangle is centered in the
  * original rectangle.
- *
- * Since: 1.14
  */
 void
 pango_cairo_show_error_underline (cairo_t *cr,
@@ -1183,8 +1175,6 @@ pango_cairo_show_error_underline (cairo_t *cr,
  *
  * The origin of the glyphs (the left edge of the baseline)
  * will be at the current point of the cairo context.
- *
- * Since: 1.10
  */
 void
 pango_cairo_glyph_string_path (cairo_t          *cr,
@@ -1227,8 +1217,6 @@ pango_cairo_line_path (cairo_t   *cr,
  *
  * The top-left corner of the `PangoLayout` will be at the
  * current point of the cairo context.
- *
- * Since: 1.10
  */
 void
 pango_cairo_layout_path (cairo_t     *cr,
@@ -1275,8 +1263,6 @@ pango_cairo_lines_path (cairo_t    *cr,
  *
  * The width of the underline is rounded to an integer number of up/down
  * segments and the resulting rectangle is centered in the original rectangle.
- *
- * Since: 1.14
  */
 void
 pango_cairo_error_underline_path (cairo_t *cr,

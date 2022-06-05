@@ -159,8 +159,6 @@ _pango_cairo_update_context (cairo_t      *cr,
  *
  * If any layouts have been created for the context, it's necessary
  * to call [method@Pango.Layout.context_changed] on those layouts.
- *
- * Since: 1.10
  */
 void
 pango_cairo_update_context (cairo_t      *cr,
@@ -184,8 +182,6 @@ pango_cairo_update_context (cairo_t      *cr,
  * This is a scale factor between points specified in a `PangoFontDescription`
  * and Cairo units. The default value is 96, meaning that a 10 point font will
  * be 13 units high. (10 * 96. / 72. = 13.3).
- *
- * Since: 1.10
  */
 void
 pango_cairo_context_set_resolution (PangoContext *context,
@@ -205,8 +201,6 @@ pango_cairo_context_set_resolution (PangoContext *context,
  *
  * Return value: the resolution in "dots per inch". A negative value will
  *   be returned if no resolution has previously been set.
- *
- * Since: 1.10
  */
 double
 pango_cairo_context_get_resolution (PangoContext *context)
@@ -229,8 +223,6 @@ pango_cairo_context_get_resolution (PangoContext *context)
  *
  * These options override any options that [func@update_context]
  * derives from the target surface.
- *
- * Since: 1.10
  */
 void
 pango_cairo_context_set_font_options (PangoContext               *context,
@@ -287,8 +279,6 @@ pango_cairo_context_set_font_options (PangoContext               *context,
  * Return value: (nullable): the font options previously set on the
  *   context, or %NULL if no options have been set. This value is
  *   owned by the context and must not be modified or freed.
- *
- * Since: 1.10
  */
 const cairo_font_options_t *
 pango_cairo_context_get_font_options (PangoContext *context)
@@ -350,8 +340,6 @@ _pango_cairo_context_get_merged_font_options (PangoContext *context)
  * directly, you can use [func@create_layout] instead.
  *
  * Return value: (transfer full): the newly created `PangoContext`
- *
- * Since: 1.22
  */
 PangoContext *
 pango_cairo_create_context (cairo_t *cr)
@@ -386,8 +374,6 @@ pango_cairo_create_context (cairo_t *cr)
  * application that was laying out large amounts of text.
  *
  * Return value: (transfer full): the newly created `PangoLayout`
- *
- * Since: 1.10
  */
 PangoLayout *
 pango_cairo_create_layout (cairo_t *cr)
@@ -412,8 +398,6 @@ pango_cairo_create_layout (cairo_t *cr)
  * Updates the private `PangoContext` of a `PangoLayout` created with
  * [func@create_layout] to match the current transformation and target
  * surface of a Cairo context.
- *
- * Since: 1.10
  */
 void
 pango_cairo_update_layout (cairo_t     *cr,

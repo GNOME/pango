@@ -47,8 +47,6 @@ G_BEGIN_DECLS
  * [method@Pango.Context.get_base_gravity].
  *
  * See also: [enum@Pango.GravityHint]
- *
- * Since: 1.16
  */
 typedef enum {
   PANGO_GRAVITY_SOUTH,
@@ -75,8 +73,6 @@ typedef enum {
  * That is, English excerpts in a vertical paragraph for example.
  *
  * See also [enum@Pango.Gravity]
- *
- * Since: 1.16
  */
 typedef enum {
   PANGO_GRAVITY_HINT_NATURAL,
@@ -92,8 +88,6 @@ typedef enum {
  *
  * Returns: %TRUE if @gravity is %PANGO_GRAVITY_EAST or %PANGO_GRAVITY_WEST,
  *   %FALSE otherwise.
- *
- * Since: 1.16
  */
 #define PANGO_GRAVITY_IS_VERTICAL(gravity) \
 	((gravity) == PANGO_GRAVITY_EAST || (gravity) == PANGO_GRAVITY_WEST)
@@ -107,8 +101,6 @@ typedef enum {
  *
  * Returns: %TRUE if @gravity is %PANGO_GRAVITY_WEST or %PANGO_GRAVITY_NORTH,
  *   %FALSE otherwise.
- *
- * Since: 1.32
  */
 #define PANGO_GRAVITY_IS_IMPROPER(gravity) \
 	((gravity) == PANGO_GRAVITY_WEST || (gravity) == PANGO_GRAVITY_NORTH)
@@ -116,15 +108,15 @@ typedef enum {
 #include <pango/pango-matrix.h>
 #include <pango/pango-script.h>
 
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 double       pango_gravity_to_rotation    (PangoGravity       gravity) G_GNUC_CONST;
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 PangoGravity pango_gravity_get_for_matrix (const PangoMatrix *matrix) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 PangoGravity pango_gravity_get_for_script (GUnicodeScript     script,
 					   PangoGravity       base_gravity,
 					   PangoGravityHint   hint) G_GNUC_CONST;
-PANGO_AVAILABLE_IN_1_26
+PANGO_AVAILABLE_IN_ALL
 PangoGravity pango_gravity_get_for_script_and_width
 					  (GUnicodeScript     script,
 					   gboolean           wide,

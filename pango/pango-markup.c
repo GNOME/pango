@@ -714,8 +714,6 @@ pango_parse_markup (const char                 *markup_text,
  *
  * Return value: (transfer none): a `GMarkupParseContext` that should be
  * destroyed with [method@GLib.MarkupParseContext.free].
- *
- * Since: 1.31.0
  **/
 GMarkupParseContext *
 pango_markup_parser_new (gunichar accel_marker)
@@ -739,8 +737,6 @@ pango_markup_parser_new (gunichar accel_marker)
  * to do so.
  *
  * Return value: %FALSE if @error is set, otherwise %TRUE
- *
- * Since: 1.31.0
  */
 gboolean
 pango_markup_parser_finish (GMarkupParseContext   *context,

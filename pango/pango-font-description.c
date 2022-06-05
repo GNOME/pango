@@ -404,8 +404,6 @@ pango_font_description_get_size (const PangoFontDescription *desc)
  *
  * This is mutually exclusive with [method@Pango.FontDescription.set_size]
  * which sets the font size in points.
- *
- * Since: 1.8
  */
 void
 pango_font_description_set_absolute_size (PangoFontDescription *desc,
@@ -433,8 +431,6 @@ pango_font_description_set_absolute_size (PangoFontDescription *desc,
  *   points or device units. Use [method@Pango.FontDescription.get_set_fields]
  *   to find out if the size field of the font description was explicitly
  *   set or not.
- *
- * Since: 1.8
  */
 gboolean
 pango_font_description_get_size_is_absolute (const PangoFontDescription *desc)
@@ -458,8 +454,6 @@ pango_font_description_get_size_is_absolute (const PangoFontDescription *desc)
  *
  * This function is seldom useful to the user. Gravity should normally
  * be set on a `PangoContext`.
- *
- * Since: 1.16
  */
 void
 pango_font_description_set_gravity (PangoFontDescription *desc,
@@ -488,8 +482,6 @@ pango_font_description_set_gravity (PangoFontDescription *desc,
  * Return value: the gravity field for the font description.
  *   Use [method@Pango.FontDescription.get_set_fields] to find out
  *   if the field was explicitly set or not.
- *
- * Since: 1.16
  */
 PangoGravity
 pango_font_description_get_gravity (const PangoFontDescription *desc)
@@ -512,8 +504,6 @@ pango_font_description_get_gravity (const PangoFontDescription *desc)
  * or the name is set again. This function can be used if
  * @variations is a static string such as a C string literal,
  * or if @desc is only needed temporarily.
- *
- * Since: 1.42
  */
 void
 pango_font_description_set_variations_static (PangoFontDescription *desc,
@@ -562,8 +552,6 @@ pango_font_description_set_variations_static (PangoFontDescription *desc,
  * Pango does not currently have a way to find supported axes of
  * a font. Both harfbuzz and freetype have API for this. See
  * for example [hb_ot_var_get_axis_infos](https://harfbuzz.github.io/harfbuzz-hb-ot-var.html#hb-ot-var-get-axis-infos).
- *
- * Since: 1.42
  */
 void
 pango_font_description_set_variations (PangoFontDescription *desc,
@@ -587,8 +575,6 @@ pango_font_description_set_variations (PangoFontDescription *desc,
  * Return value: (nullable): the variations field for the font
  *   description, or %NULL if not previously set. This has the same
  *   life-time as the font description itself and should not be freed.
- *
- * Since: 1.42
  */
 const char *
 pango_font_description_get_variations (const PangoFontDescription *desc)
@@ -1753,8 +1739,6 @@ pango_parse_stretch (const char   *str,
  * or the name is set again. This function can be used if
  * @faceid is a static string such as a C string literal,
  * or if @desc is only needed temporarily.
- *
- * Since: 1.52
  */
 void
 pango_font_description_set_faceid_static (PangoFontDescription *desc,
@@ -1799,8 +1783,6 @@ pango_font_description_set_faceid_static (PangoFontDescription *desc,
  * loading a fontset or font.
  *
  * The format of this string is not guaranteed.
- *
- * Since: 1.52
  */
 void
 pango_font_description_set_faceid (PangoFontDescription *desc,
@@ -1824,8 +1806,6 @@ pango_font_description_set_faceid (PangoFontDescription *desc,
  * Return value: (nullable): the faceid field for the font
  *   description, or %NULL if not previously set. This has the same
  *   life-time as the font description itself and should not be freed.
- *
- * Since: 1.52
  */
 const char *
 pango_font_description_get_faceid (const PangoFontDescription *desc)

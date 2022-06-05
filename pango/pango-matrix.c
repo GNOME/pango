@@ -37,8 +37,6 @@ G_DEFINE_BOXED_TYPE (PangoMatrix, pango_matrix,
  * Copies a `PangoMatrix`.
  *
  * Return value: (nullable): the newly allocated `PangoMatrix`
- *
- * Since: 1.6
  */
 PangoMatrix *
 pango_matrix_copy (const PangoMatrix *matrix)
@@ -60,8 +58,6 @@ pango_matrix_copy (const PangoMatrix *matrix)
  * @matrix: (nullable): a `PangoMatrix`, may be %NULL
  *
  * Free a `PangoMatrix`.
- *
- * Since: 1.6
  */
 void
 pango_matrix_free (PangoMatrix *matrix)
@@ -81,8 +77,6 @@ pango_matrix_free (PangoMatrix *matrix)
  * Changes the transformation represented by @matrix to be the
  * transformation given by first translating by (@tx, @ty)
  * then applying the original transformation.
- *
- * Since: 1.6
  */
 void
 pango_matrix_translate (PangoMatrix *matrix,
@@ -105,8 +99,6 @@ pango_matrix_translate (PangoMatrix *matrix,
  * transformation given by first scaling by @sx in the X direction
  * and @sy in the Y direction then applying the original
  * transformation.
- *
- * Since: 1.6
  */
 void
 pango_matrix_scale (PangoMatrix *matrix,
@@ -129,8 +121,6 @@ pango_matrix_scale (PangoMatrix *matrix,
  * Changes the transformation represented by @matrix to be the
  * transformation given by first rotating by @degrees degrees
  * counter-clockwise then applying the original transformation.
- *
- * Since: 1.6
  */
 void
 pango_matrix_rotate (PangoMatrix *matrix,
@@ -163,8 +153,6 @@ pango_matrix_rotate (PangoMatrix *matrix,
  * Changes the transformation represented by @matrix to be the
  * transformation given by first applying transformation
  * given by @new_matrix then applying the original transformation.
- *
- * Since: 1.6
  */
 void
 pango_matrix_concat (PangoMatrix       *matrix,
@@ -196,8 +184,6 @@ pango_matrix_concat (PangoMatrix       *matrix,
  *
  * Return value: the scale factor of @matrix on the height of the font,
  *   or 1.0 if @matrix is %NULL.
- *
- * Since: 1.12
  */
 double
 pango_matrix_get_font_scale_factor (const PangoMatrix *matrix)
@@ -220,8 +206,6 @@ pango_matrix_get_font_scale_factor (const PangoMatrix *matrix)
  * vector that the X coordinate is mapped to.
  *
  * Note that output numbers will always be non-negative.
- *
- * Since: 1.38
  **/
 void
 pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
@@ -302,8 +286,6 @@ pango_matrix_get_rotation (const PangoMatrix *matrix)
  * this is simply λ.
  *
  * Returns: the slant ratio of @matrix
- *
- * Since: 1.50
  */
 double
 pango_matrix_get_slant_ratio (const PangoMatrix *matrix)
@@ -346,8 +328,6 @@ pango_matrix_get_slant_ratio (const PangoMatrix *matrix)
  * always transforms to the same vector. If (@x1,@y1) transforms
  * to (@x2,@y2) then (@x1+@dx1,@y1+@dy1) will transform to
  * (@x1+@dx2,@y1+@dy2) for all values of @x1 and @x2.
- *
- * Since: 1.16
  */
 void
 pango_matrix_transform_distance (const PangoMatrix *matrix,
@@ -373,9 +353,7 @@ pango_matrix_transform_distance (const PangoMatrix *matrix,
  * @y: (inout): in/out Y position
  *
  * Transforms the point (@x, @y) by @matrix.
- *
- * Since: 1.16
- **/
+ */
 void
 pango_matrix_transform_point (const PangoMatrix *matrix,
 			      double            *x,
@@ -413,8 +391,6 @@ pango_matrix_transform_point (const PangoMatrix *matrix,
  * to pixels first and then transform, for example when the transformed
  * coordinates may overflow in Pango units (large matrix translation for
  * example).
- *
- * Since: 1.16
  */
 void
 pango_matrix_transform_rectangle (const PangoMatrix *matrix,
@@ -485,8 +461,6 @@ pango_matrix_transform_rectangle (const PangoMatrix *matrix,
  * For better accuracy, you should use [method@Pango.Matrix.transform_rectangle]
  * on original rectangle in Pango units and convert to pixels afterward
  * using [func@extents_to_pixels]'s first argument.
- *
- * Since: 1.16
  */
 void
 pango_matrix_transform_pixel_rectangle (const PangoMatrix *matrix,

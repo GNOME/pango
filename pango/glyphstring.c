@@ -296,8 +296,6 @@ pango_glyph_string_extents (PangoGlyphString *glyphs,
  * @geometry.width for each glyph in the @glyphs.
  *
  * Return value: the logical width of the glyph string.
- *
- * Since: 1.14
  */
 int
 pango_glyph_string_get_width (PangoGlyphString *glyphs)
@@ -414,8 +412,6 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
  * accepts a `PangoLogAttr` array. The grapheme boundary information
  * in it can be used to disambiguate positioning inside some complex
  * clusters.
- *
- * Since: 1.50
  */
 void
 pango_glyph_string_index_to_x_full (PangoGlyphString *glyphs,

@@ -51,8 +51,6 @@
  * Return value: the newly allocated item representing text before
  *   @split_index, which should be freed
  *   with pango_glyph_item_free().
- *
- * Since: 1.2
  */
 PangoGlyphItem *
 pango_glyph_item_split (PangoGlyphItem *orig,
@@ -144,8 +142,6 @@ pango_glyph_item_split (PangoGlyphItem *orig,
  * Make a deep copy of an existing `PangoGlyphItem` structure.
  *
  * Return value: (nullable): the newly allocated `PangoGlyphItem`
- *
- * Since: 1.20
  */
 PangoGlyphItem *
 pango_glyph_item_copy  (PangoGlyphItem *orig)
@@ -171,8 +167,6 @@ pango_glyph_item_copy  (PangoGlyphItem *orig)
  * @glyph_item: (nullable): a `PangoGlyphItem`
  *
  * Frees a `PangoGlyphItem` and resources to which it points.
- *
- * Since: 1.6
  */
 void
 pango_glyph_item_free  (PangoGlyphItem *glyph_item)
@@ -200,8 +194,6 @@ G_DEFINE_BOXED_TYPE (PangoGlyphItem, pango_glyph_item,
  * Make a shallow copy of an existing `PangoGlyphItemIter` structure.
  *
  * Return value: (nullable): the newly allocated `PangoGlyphItemIter`
- *
- * Since: 1.22
  */
 PangoGlyphItemIter *
 pango_glyph_item_iter_copy (PangoGlyphItemIter *orig)
@@ -223,8 +215,6 @@ pango_glyph_item_iter_copy (PangoGlyphItemIter *orig)
  * @iter: (nullable): a `PangoGlyphItemIter`
  *
  * Frees a `PangoGlyphItem`Iter.
- *
- * Since: 1.22
  */
 void
 pango_glyph_item_iter_free  (PangoGlyphItemIter *iter)
@@ -249,8 +239,6 @@ G_DEFINE_BOXED_TYPE (PangoGlyphItemIter, pango_glyph_item_iter,
  *
  * Return value: %TRUE if the iterator was advanced,
  *   %FALSE if we were already on the  last cluster.
- *
- * Since: 1.22
  */
 gboolean
 pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter)
@@ -339,8 +327,6 @@ pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter)
  *
  * Return value: %TRUE if the iterator was moved,
  *   %FALSE if we were already on the first cluster.
- *
- * Since: 1.22
  */
 gboolean
 pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter)
@@ -435,8 +421,6 @@ pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter)
  * See `PangoGlyphItemIter` for details of cluster orders.
  *
  * Return value: %FALSE if there are no clusters in the glyph item
- *
- * Since: 1.22
  */
 gboolean
 pango_glyph_item_iter_init_start (PangoGlyphItemIter  *iter,
@@ -474,8 +458,6 @@ pango_glyph_item_iter_init_start (PangoGlyphItemIter  *iter,
  * See `PangoGlyphItemIter` for details of cluster orders.
  *
  * Return value: %FALSE if there are no clusters in the glyph item
- *
- * Since: 1.22
  */
 gboolean
 pango_glyph_item_iter_init_end (PangoGlyphItemIter  *iter,
@@ -587,8 +569,6 @@ split_before_cluster_start (ApplyAttrsState *state)
  *   list of glyph items resulting from splitting @glyph_item. Free
  *   the elements using [method@Pango.GlyphItem.free], the list using
  *   g_slist_free().
- *
- * Since: 1.2
  */
 GSList *
 pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
@@ -734,8 +714,6 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
  *
  * Adds spacing between the graphemes of @glyph_item to
  * give the effect of typographic letter spacing.
- *
- * Since: 1.6
  */
 void
 pango_glyph_item_letter_space (PangoGlyphItem *glyph_item,
@@ -818,8 +796,6 @@ pango_glyph_item_letter_space (PangoGlyphItem *glyph_item,
  * entire cluster is divided equally among the characters.
  *
  * See also [method@Pango.GlyphString.get_logical_widths].
- *
- * Since: 1.26
  */
 void
 pango_glyph_item_get_logical_widths (PangoGlyphItem *glyph_item,

@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -30,15 +30,15 @@ G_BEGIN_DECLS
 
 /* A routine from fribidi that we either wrap or provide ourselves.
  */
-PANGO_AVAILABLE_IN_1_4
+PANGO_AVAILABLE_IN_ALL
 guint8 * pango_log2vis_get_embedding_levels (const gchar    *text,
-					     int             length,
-					     PangoDirection *pbase_dir);
+                                             int             length,
+                                             PangoDirection *pbase_dir);
 
 /* Unicode characters that are zero-width and should not be rendered
  * normally.
  */
-PANGO_AVAILABLE_IN_1_10
+PANGO_AVAILABLE_IN_ALL
 gboolean pango_is_zero_width (gunichar ch) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
@@ -61,9 +61,9 @@ void     pango_find_paragraph_boundary (const char *text,
  * Two encoded version numbers can be compared as integers.
  */
 #define PANGO_VERSION_ENCODE(major, minor, micro) (     \
-	  ((major) * 10000)                             \
-	+ ((minor) *   100)                             \
-	+ ((micro) *     1))
+          ((major) * 10000)                             \
+        + ((minor) *   100)                             \
+        + ((micro) *     1))
 
 /* Encoded version of Pango at compile-time */
 /**
@@ -92,9 +92,9 @@ void     pango_find_paragraph_boundary (const char *text,
  * The micro component of the version of Pango available at compile-time.
  */
 #define PANGO_VERSION PANGO_VERSION_ENCODE(     \
-	PANGO_VERSION_MAJOR,                    \
-	PANGO_VERSION_MINOR,                    \
-	PANGO_VERSION_MICRO)
+        PANGO_VERSION_MAJOR,                    \
+        PANGO_VERSION_MINOR,                    \
+        PANGO_VERSION_MICRO)
 
 /* Check that compile-time Pango is as new as required */
 /**
@@ -107,19 +107,19 @@ void     pango_find_paragraph_boundary (const char *text,
  * the provided version number.
  */
 #define PANGO_VERSION_CHECK(major,minor,micro)    \
-	(PANGO_VERSION >= PANGO_VERSION_ENCODE(major,minor,micro))
+        (PANGO_VERSION >= PANGO_VERSION_ENCODE(major,minor,micro))
 
 
 /* Return encoded version of Pango at run-time */
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 int pango_version (void) G_GNUC_CONST;
 
 /* Return run-time Pango version as an string */
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 const char * pango_version_string (void) G_GNUC_CONST;
 
 /* Check that run-time Pango is as new as required */
-PANGO_AVAILABLE_IN_1_16
+PANGO_AVAILABLE_IN_ALL
 const char * pango_version_check (int required_major,
                                   int required_minor,
                                   int required_micro) G_GNUC_CONST;

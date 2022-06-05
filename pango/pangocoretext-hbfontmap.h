@@ -25,10 +25,10 @@ G_BEGIN_DECLS
 
 #define PANGO_TYPE_CORE_TEXT_HB_FONT_MAP      (pango_core_text_hb_font_map_get_type ())
 
-PANGO_AVAILABLE_IN_1_52
+PANGO_AVAILABLE_IN_ALL
 PANGO_DECLARE_INTERNAL_TYPE (PangoCoreTextHbFontMap, pango_core_text_hb_font_map, PANGO, CORE_TEXT_HB_FONT_MAP, PangoHbFontMap)
 
-PANGO_AVAILABLE_IN_1_52
+PANGO_AVAILABLE_IN_ALL
 PangoCoreTextHbFontMap * pango_core_text_hb_font_map_new (void);
 
 

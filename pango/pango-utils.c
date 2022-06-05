@@ -58,8 +58,6 @@
  * number can be encoded into an integer using PANGO_VERSION_ENCODE().
  *
  * Returns: The encoded version of Pango library available at run time.
- *
- * Since: 1.16
  */
 int
 pango_version (void)
@@ -78,8 +76,6 @@ pango_version (void)
  * Returns: A string containing the version of Pango library available
  *   at run time. The returned string is owned by Pango and should not
  *   be modified or freed.
- *
- * Since: 1.16
  */
 const char *
 pango_version_string (void)
@@ -115,8 +111,6 @@ pango_version_string (void)
  *   with the given version, or a string describing the version
  *   mismatch.  The returned string is owned by Pango and should not
  *   be modified or freed.
- *
- * Since: 1.16
  */
 const gchar*
 pango_version_check (int required_major,
@@ -332,8 +326,6 @@ pango_parse_flags (GType        type,
  * This is totally different from [func@GLib.unichar_iszerowidth] and is at best misnamed.
  *
  * Return value: %TRUE if @ch is a zero-width character, %FALSE otherwise
- *
- * Since: 1.10
  */
 gboolean
 pango_is_zero_width (gunichar ch)
@@ -393,8 +385,6 @@ pango_is_zero_width (gunichar ch)
  * Care is taken to make sure @thickness is at least one pixel when this
  * function returns, but returned @position may become zero as a result
  * of rounding.
- *
- * Since: 1.12
  */
 void
 pango_quantize_line_geometry (int *thickness,
@@ -428,8 +418,6 @@ pango_quantize_line_geometry (int *thickness,
  * rounding the result to nearest integer.
  *
  * Return value: the value in Pango units.
- *
- * Since: 1.16
  */
 int
 pango_units_from_double (double d)
@@ -446,8 +434,6 @@ pango_units_from_double (double d)
  * The conversion is done by dividing @i by %PANGO_SCALE.
  *
  * Return value: the double value.
- *
- * Since: 1.16
  */
 double
 pango_units_to_double (int i)
@@ -477,8 +463,6 @@ pango_units_to_double (int i)
  * @inclusive. If you want two touching-but-not-overlapping rectangles stay
  * touching-but-not-overlapping after rounding to device units, pass them in
  * as @nearest.
- *
- * Since: 1.16
  */
 void
 pango_extents_to_pixels (PangoRectangle *inclusive,

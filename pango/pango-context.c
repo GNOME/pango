@@ -160,8 +160,6 @@ update_resolved_gravity (PangoContext *context)
  * application of the matrix. So, they don't scale with the matrix, though
  * they may change slightly for different matrices, depending on how the
  * text is fit to the pixel grid.
- *
- * Since: 1.6
  */
 void
 pango_context_set_matrix (PangoContext      *context,
@@ -194,8 +192,6 @@ pango_context_set_matrix (PangoContext      *context,
  * Return value: (nullable): the matrix, or %NULL if no matrix has
  *   been set (which is the same as the identity matrix). The returned
  *   matrix is owned by Pango and must not be modified or freed.
- *
- * Since: 1.6
  */
 const PangoMatrix *
 pango_context_get_matrix (PangoContext *context)
@@ -247,8 +243,6 @@ pango_context_set_font_map (PangoContext *context,
  *
  * Return value: (transfer none): the font map for the `PangoContext`.
  *   This value is owned by Pango and should not be unreferenced.
- *
- * Since: 1.6
  */
 PangoFontMap *
 pango_context_get_font_map (PangoContext *context)
@@ -436,8 +430,6 @@ pango_context_get_base_dir (PangoContext *context)
  * Sets the base gravity for the context.
  *
  * The base gravity is used in laying vertical text out.
- *
- * Since: 1.16
  */
 void
 pango_context_set_base_gravity (PangoContext *context,
@@ -462,8 +454,6 @@ pango_context_set_base_gravity (PangoContext *context,
  * See [method@Pango.Context.set_base_gravity].
  *
  * Return value: the base gravity for the context.
- *
- * Since: 1.16
  */
 PangoGravity
 pango_context_get_base_gravity (PangoContext *context)
@@ -485,8 +475,6 @@ pango_context_get_base_gravity (PangoContext *context)
  * gravity from the current context matrix.
  *
  * Return value: the resolved gravity for the context.
- *
- * Since: 1.16
  */
 PangoGravity
 pango_context_get_gravity (PangoContext *context)
@@ -507,8 +495,6 @@ pango_context_get_gravity (PangoContext *context)
  * is only relevant if gravity of the context as returned by
  * [method@Pango.Context.get_gravity] is set to %PANGO_GRAVITY_EAST
  * or %PANGO_GRAVITY_WEST.
- *
- * Since: 1.16
  */
 void
 pango_context_set_gravity_hint (PangoContext     *context,
@@ -531,8 +517,6 @@ pango_context_set_gravity_hint (PangoContext     *context,
  * See [method@Pango.Context.set_gravity_hint] for details.
  *
  * Return value: the gravity hint for the context.
- *
- * Since: 1.16
  */
 PangoGravityHint
 pango_context_get_gravity_hint (PangoContext *context)
@@ -723,9 +707,7 @@ context_changed (PangoContext *context)
  * for Pango, something applications won't do. Backends should
  * call this function if they have attached extra data to the context
  * and such data is changed.
- *
- * Since: 1.32.4
- **/
+ */
 void
 pango_context_changed (PangoContext *context)
 {
@@ -764,8 +746,6 @@ check_fontmap_changed (PangoContext *context)
  * `PangoContext` changes, like `PangoLayout`.
  *
  * Return value: The current serial number of @context.
- *
- * Since: 1.32.4
  */
 guint
 pango_context_get_serial (PangoContext *context)
@@ -788,8 +768,6 @@ pango_context_get_serial (PangoContext *context)
  *
  * The default value is to round glyph positions, to remain
  * compatible with previous Pango behavior.
- *
- * Since: 1.44
  */
 void
 pango_context_set_round_glyph_positions (PangoContext *context,
@@ -808,8 +786,6 @@ pango_context_set_round_glyph_positions (PangoContext *context,
  *
  * Returns whether font rendering with this context should
  * round glyph positions and widths.
- *
- * Since: 1.44
  */
 gboolean
 pango_context_get_round_glyph_positions (PangoContext *context)

@@ -284,8 +284,6 @@ _pango_get_lc_ctype (void)
  * just call pango_language_from_string() yourself.
  *
  * Return value: (transfer none): the default language as a `PangoLanguage`
- *
- * Since: 1.16
  **/
 PangoLanguage *
 pango_language_get_default (void)
@@ -645,8 +643,6 @@ pango_language_get_sample_string (PangoLanguage *language)
  *   the array stored in @num_scripts, or %NULL if Pango does not have
  *   any information about this particular language tag (also the case
  *   if @language is %NULL).
- *
- * Since: 1.22
  */
 const GUnicodeScript *
 pango_language_get_scripts (PangoLanguage *language,
@@ -703,8 +699,6 @@ pango_language_get_scripts (PangoLanguage *language,
  * Return value: %TRUE if @script is one of the scripts used
  *   to write @language or if nothing is known about @language
  *   (including the case that @language is %NULL), %FALSE otherwise.
- *
- * Since: 1.4
  */
 gboolean
 pango_language_includes_script (PangoLanguage *language,
@@ -851,8 +845,6 @@ out:
  *
  * Returns: (transfer none) (nullable): a %NULL-terminated array
  *   of `PangoLanguage`*
- *
- * Since: 1.48
  */
 PangoLanguage **
 pango_language_get_preferred (void)
@@ -899,8 +891,6 @@ pango_language_get_preferred (void)
  *
  * Return value: (nullable): a `PangoLanguage` that is representative
  *   of the script
- *
- * Since: 1.4
  */
 PangoLanguage *
 pango_script_get_sample_language (GUnicodeScript script)

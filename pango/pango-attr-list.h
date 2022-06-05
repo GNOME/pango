@@ -47,7 +47,7 @@ GType                   pango_attr_list_get_type        (void) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_ALL
 PangoAttrList *         pango_attr_list_new             (void);
-PANGO_AVAILABLE_IN_1_10
+PANGO_AVAILABLE_IN_ALL
 PangoAttrList *         pango_attr_list_ref             (PangoAttrList         *list);
 PANGO_AVAILABLE_IN_ALL
 void                    pango_attr_list_unref           (PangoAttrList         *list);
@@ -67,7 +67,7 @@ void                    pango_attr_list_splice          (PangoAttrList         *
                                                          PangoAttrList         *other,
                                                          int                    pos,
                                                          int                    len);
-PANGO_AVAILABLE_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 void                    pango_attr_list_update          (PangoAttrList         *list,
                                                          int                    pos,
                                                          int                    remove,
@@ -86,21 +86,21 @@ void                    pango_attr_list_update          (PangoAttrList         *
 typedef gboolean (*PangoAttrFilterFunc) (PangoAttribute *attribute,
                                          gpointer        user_data);
 
-PANGO_AVAILABLE_IN_1_2
+PANGO_AVAILABLE_IN_ALL
 PangoAttrList *         pango_attr_list_filter          (PangoAttrList         *list,
                                                          PangoAttrFilterFunc    func,
                                                          gpointer               data);
 
-PANGO_AVAILABLE_IN_1_44
+PANGO_AVAILABLE_IN_ALL
 GSList *                pango_attr_list_get_attributes  (PangoAttrList         *list);
 
-PANGO_AVAILABLE_IN_1_46
+PANGO_AVAILABLE_IN_ALL
 gboolean                pango_attr_list_equal           (PangoAttrList         *list,
                                                          PangoAttrList         *other_list);
 
-PANGO_AVAILABLE_IN_1_50
+PANGO_AVAILABLE_IN_ALL
 char *                  pango_attr_list_to_string       (PangoAttrList         *list);
-PANGO_AVAILABLE_IN_1_50
+PANGO_AVAILABLE_IN_ALL
 PangoAttrList *         pango_attr_list_from_string     (const char            *text);
 
 PANGO_AVAILABLE_IN_ALL

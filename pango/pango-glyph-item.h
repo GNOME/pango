@@ -63,24 +63,24 @@ struct _PangoGlyphItem
 PANGO_AVAILABLE_IN_ALL
 GType pango_glyph_item_get_type (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_1_2
+PANGO_AVAILABLE_IN_ALL
 PangoGlyphItem *pango_glyph_item_split        (PangoGlyphItem *orig,
 					       const char     *text,
 					       int             split_index);
-PANGO_AVAILABLE_IN_1_20
+PANGO_AVAILABLE_IN_ALL
 PangoGlyphItem *pango_glyph_item_copy         (PangoGlyphItem *orig);
-PANGO_AVAILABLE_IN_1_6
+PANGO_AVAILABLE_IN_ALL
 void            pango_glyph_item_free         (PangoGlyphItem *glyph_item);
-PANGO_AVAILABLE_IN_1_2
+PANGO_AVAILABLE_IN_ALL
 GSList *        pango_glyph_item_apply_attrs  (PangoGlyphItem *glyph_item,
 					       const char     *text,
 					       PangoAttrList  *list);
-PANGO_AVAILABLE_IN_1_6
+PANGO_AVAILABLE_IN_ALL
 void            pango_glyph_item_letter_space (PangoGlyphItem *glyph_item,
 					       const char     *text,
 					       PangoLogAttr   *log_attrs,
 					       int             letter_spacing);
-PANGO_AVAILABLE_IN_1_26
+PANGO_AVAILABLE_IN_ALL
 void 	  pango_glyph_item_get_logical_widths (PangoGlyphItem *glyph_item,
 					       const char     *text,
 					       int            *logical_widths);
@@ -129,8 +129,6 @@ void 	  pango_glyph_item_get_logical_widths (PangoGlyphItem *glyph_item,
  * end variables is not.
  *
  * None of the members of a `PangoGlyphItemIter` should be modified manually.
- *
- * Since: 1.22
  */
 typedef struct _PangoGlyphItemIter PangoGlyphItemIter;
 
@@ -150,24 +148,24 @@ struct _PangoGlyphItemIter
 
 #define PANGO_TYPE_GLYPH_ITEM_ITER (pango_glyph_item_iter_get_type ())
 
-PANGO_AVAILABLE_IN_1_22
+PANGO_AVAILABLE_IN_ALL
 GType               pango_glyph_item_iter_get_type (void) G_GNUC_CONST;
-PANGO_AVAILABLE_IN_1_22
+PANGO_AVAILABLE_IN_ALL
 PangoGlyphItemIter *pango_glyph_item_iter_copy (PangoGlyphItemIter *orig);
-PANGO_AVAILABLE_IN_1_22
+PANGO_AVAILABLE_IN_ALL
 void                pango_glyph_item_iter_free (PangoGlyphItemIter *iter);
 
-PANGO_AVAILABLE_IN_1_22
+PANGO_AVAILABLE_IN_ALL
 gboolean pango_glyph_item_iter_init_start   (PangoGlyphItemIter *iter,
 					     PangoGlyphItem     *glyph_item,
 					     const char         *text);
-PANGO_AVAILABLE_IN_1_22
+PANGO_AVAILABLE_IN_ALL
 gboolean pango_glyph_item_iter_init_end     (PangoGlyphItemIter *iter,
 					     PangoGlyphItem     *glyph_item,
 					     const char         *text);
-PANGO_AVAILABLE_IN_1_22
+PANGO_AVAILABLE_IN_ALL
 gboolean pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter);
-PANGO_AVAILABLE_IN_1_22
+PANGO_AVAILABLE_IN_ALL
 gboolean pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter);
 
 G_END_DECLS

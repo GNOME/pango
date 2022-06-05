@@ -147,8 +147,6 @@ pango_font_family_real_get_face (PangoFontFamily *family,
  *
  * Returns: (transfer none) (nullable): the `PangoFontFace`,
  *   or %NULL if no face with the given name exists.
- *
- * Since: 1.46
  */
 PangoFontFace *
 pango_font_family_get_face (PangoFontFamily *family,
@@ -198,8 +196,6 @@ pango_font_family_is_generic (PangoFontFamily  *family)
  * be affected by double-width characters.
  *
  * Return value: %TRUE if the family is monospace.
- *
- * Since: 1.4
  */
 gboolean
 pango_font_family_is_monospace (PangoFontFamily  *family)
@@ -220,8 +216,6 @@ pango_font_family_is_monospace (PangoFontFamily  *family)
  * [method@Pango.FontDescription.set_variations] for more information.
  *
  * Return value: %TRUE if the family is variable
- *
- * Since: 1.44
  */
 gboolean
 pango_font_family_is_variable (PangoFontFamily  *family)

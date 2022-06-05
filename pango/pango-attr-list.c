@@ -133,8 +133,6 @@ pango_attr_list_new (void)
  * list by one.
  *
  * Return value: The attribute list passed in
- *
- * Since: 1.10
  */
 PangoAttrList *
 pango_attr_list_ref (PangoAttrList *list)
@@ -424,8 +422,6 @@ pango_attr_list_change (PangoAttrList  *list,
  *
  * Attributes start and end positions are updated if they are
  * behind @pos + @remove.
- *
- * Since: 1.44
  */
 void
 pango_attr_list_update (PangoAttrList *list,
@@ -596,8 +592,6 @@ pango_attr_list_splice (PangoAttrList *list,
  *   a list of all attributes in @list. To free this value,
  *   call [method@Pango.Attribute.destroy] on each value and
  *   g_slist_free() on the list.
- *
- * Since: 1.44
  */
 GSList *
 pango_attr_list_get_attributes (PangoAttrList *list)
@@ -634,8 +628,6 @@ pango_attr_list_get_attributes (PangoAttrList *list)
  *
  * Return value: %TRUE if the lists are equal, %FALSE if
  *   they aren't
- *
- * Since: 1.46
  */
 gboolean
 pango_attr_list_equal (PangoAttrList *list,
@@ -706,8 +698,6 @@ pango_attr_list_equal (PangoAttrList *list,
  * Return value: (transfer full) (nullable): the new
  *   `PangoAttrList` or %NULL if no attributes of the
  *   given types were found
- *
- * Since: 1.2
  */
 PangoAttrList *
 pango_attr_list_filter (PangoAttrList       *list,
@@ -893,7 +883,6 @@ attr_print (GString        *str,
  * storage format.
  *
  * Returns: (transfer full): a newly allocated string
- * Since: 1.50
  */
 char *
 pango_attr_list_to_string (PangoAttrList *list)
@@ -978,7 +967,6 @@ is_valid_end_char (char c)
  * See that functions for details about the format.
  *
  * Returns: (transfer full) (nullable): a new `PangoAttrList`
- * Since: 1.50
  */
 PangoAttrList *
 pango_attr_list_from_string (const char *text)

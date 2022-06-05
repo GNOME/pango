@@ -108,9 +108,7 @@ _pango_script_iter_init (PangoScriptIter *iter,
  *  to point at the first range in the text, which should be
  *  freed with [method@Pango.ScriptIter.free]. If the string is
  *  empty, it will point at an empty range.
- *
- * Since: 1.4
- **/
+ */
 PangoScriptIter *
 pango_script_iter_new (const char *text,
                        int         length)
@@ -134,8 +132,6 @@ _pango_script_iter_fini (PangoScriptIter *iter)
  * @iter: a `PangoScriptIter`
  *
  * Frees a `PangoScriptIter`.
- *
- * Since: 1.4
  */
 void
 pango_script_iter_free (PangoScriptIter *iter)
@@ -155,8 +151,6 @@ pango_script_iter_free (PangoScriptIter *iter)
  *
  * The range is the set of locations p where *start <= p < *end.
  * (That is, it doesn't include the character stored at *end)
- *
- * Since: 1.4
  */
 void
 pango_script_iter_get_range (PangoScriptIter  *iter,
@@ -273,8 +267,6 @@ get_pair_index (gunichar ch)
  * and %FALSE is returned.
  *
  * Return value: %TRUE if @iter was successfully advanced
- *
- * Since: 1.4
  */
 gboolean
 pango_script_iter_next (PangoScriptIter *iter)
