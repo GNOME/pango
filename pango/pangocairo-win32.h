@@ -1,26 +1,23 @@
-/* Pango
- * pangocairo-win32.h: Private header file for Cairo/Win32 combination
- *
+/*
  * Copyright (C) 2005 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __PANGOCAIRO_WIN32_H__
-#define __PANGOCAIRO_WIN32_H__
+#pragma once
 
 #include <pango/pangowin32.h>
 #include "pangowin32-private.h"
@@ -46,10 +43,7 @@ PANGO_AVAILABLE_IN_ALL
 GType pango_cairo_win32_font_map_get_type (void) G_GNUC_CONST;
 
 PangoFont *_pango_cairo_win32_font_new (PangoCairoWin32FontMap       *cwfontmap,
-					PangoContext                 *context,
-					PangoWin32Face               *face,
-					const PangoFontDescription   *desc);
+                                        PangoContext                 *context,
+                                        PangoWin32Face               *face,
+                                        const PangoFontDescription   *desc);
 G_END_DECLS
-
-#endif /* __PANGOCAIRO_WIN32_H__ */
-

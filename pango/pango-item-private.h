@@ -1,30 +1,27 @@
-/* Pango
+/*
+ * Copyright 2021 Red Hat, Inc.
  *
- * Copyright (C) 2021 Matthias Clasen
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  *
  * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __PANGO_ITEM_PRIVATE_H__
-#define __PANGO_ITEM_PRIVATE_H__
+#pragma once
 
 #include <pango/pango-item.h>
 #include <pango/pango-break.h>
 
-G_BEGIN_DECLS
 
 void               pango_analysis_collect_features    (const PangoAnalysis        *analysis,
                                                        hb_feature_t               *features,
@@ -73,7 +70,3 @@ struct _ItemProperties
 
 void               pango_item_get_properties          (PangoItem        *item,
                                                        ItemProperties   *properties);
-
-G_END_DECLS
-
-#endif /* __PANGO_ITEM_PRIVATE_H__ */
