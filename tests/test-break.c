@@ -29,10 +29,12 @@
 
 #include "config.h"
 #include <pango/pangocairo.h>
+#include <pango/pangofc-hbfontmap.h>
 #include "test-common.h"
 #include "validate-log-attrs.h"
 
 
+static PangoFontMap *map = NULL;
 static PangoContext *context;
 
 static gboolean opt_hex_chars;
@@ -358,20 +360,49 @@ test_break (gconstpointer d)
   g_free (expected_file);
 }
 
+static void
+install_fonts (const char *dir)
+{
+  FcConfig *config;
+  char *path;
+  gsize len;
+  char *conf;
+
+  config = FcConfigCreate ();
+
+  path = g_build_filename (dir, "fonts.conf", NULL);
+  g_file_get_contents (path, &conf, &len, NULL);
+
+  if (!FcConfigParseAndLoadFromMemory (config, (const FcChar8 *) conf, TRUE))
+    g_error ("Failed to parse fontconfig configuration");
+
+  g_free (conf);
+  g_free (path);
+
+  FcConfigAppFontAddDir (config, (const FcChar8 *) dir);
+  map = PANGO_FONT_MAP (pango_fc_hb_font_map_new ());
+  pango_fc_hb_font_map_set_config (PANGO_FC_HB_FONT_MAP (map), config);
+  FcConfigDestroy (config);
+}
+
 int
 main (int argc, char *argv[])
 {
   GDir *dir;
   GError *error = NULL;
+  char *opt_fonts = NULL;
   const gchar *name;
   gchar *path;
   gboolean opt_legend = 0;
   GOptionContext *option_context;
   GOptionEntry entries[] = {
+    { "fonts", 0, 0, G_OPTION_ARG_FILENAME, &opt_fonts, "Fonts to use", "DIR" },
     { "hex-chars", 0, 0, G_OPTION_ARG_NONE, &opt_hex_chars, "Print all chars in hex", NULL },
     { "legend", 0, 0, G_OPTION_ARG_NONE, &opt_legend, "Explain the output", NULL },
     { NULL, 0 },
   };
+
+  setlocale (LC_ALL, "");
 
   option_context = g_option_context_new ("");
   g_option_context_add_main_entries (option_context, entries, NULL);
@@ -383,9 +414,14 @@ main (int argc, char *argv[])
     }
   g_option_context_free (option_context);
 
-  setlocale (LC_ALL, "");
+  if (opt_fonts)
+    {
+      install_fonts (opt_fonts);
+      g_free (opt_fonts);
+    }
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  if (map)
+    context = pango_font_map_create_context (map);
 
   if (opt_legend)
     {
@@ -416,6 +452,16 @@ main (int argc, char *argv[])
     }
 
   g_test_init (&argc, &argv, NULL);
+
+  if (!opt_fonts)
+    {
+      path = g_test_build_filename (G_TEST_DIST, "fonts", NULL);
+      install_fonts (path);
+      g_free (path);
+    }
+
+  if (map)
+    context = pango_font_map_create_context (map);
 
   path = g_test_build_filename (G_TEST_DIST, "breaks", NULL);
   dir = g_dir_open (path, 0, &error);
