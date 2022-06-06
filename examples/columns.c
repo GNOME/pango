@@ -77,7 +77,7 @@ retry:
       if (!pango_line_is_paragraph_end (line))
         line = pango_line_justify (line, width);
 
-      pango_line_get_trimmed_extents (line, PANGO_LEADING_TRIM_NONE, &ext);
+      pango_line_get_extents (line, NULL, &ext);
 
       if (y + ext.height > height)
         {
