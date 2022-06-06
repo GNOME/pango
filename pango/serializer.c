@@ -244,8 +244,8 @@ static const char *alignment_names[] = {
   "left",
   "center",
   "right",
+  "natural",
   "justify",
-  "justify-all",
   NULL
 };
 
@@ -806,7 +806,7 @@ layout_to_json (GtkJsonPrinter            *printer,
   if (!pango_layout_get_auto_dir (layout))
     gtk_json_printer_add_boolean (printer, "auto-dir", FALSE);
 
-  if (pango_layout_get_alignment (layout) != PANGO_ALIGN_LEFT)
+  if (pango_layout_get_alignment (layout) != PANGO_ALIGN_NATURAL)
     gtk_json_printer_add_string (printer, "alignment", alignment_names[pango_layout_get_alignment (layout)]);
 
   if (pango_layout_get_wrap (layout) != PANGO_WRAP_WORD)
