@@ -88,6 +88,10 @@ PangoMatrix *pango_matrix_copy   (const PangoMatrix *matrix);
 PANGO_AVAILABLE_IN_1_6
 void         pango_matrix_free   (PangoMatrix *matrix);
 
+PANGO_AVAILABLE_IN_ALL
+gboolean     pango_matrix_equal (const PangoMatrix *m1,
+                                 const PangoMatrix *m2);
+
 PANGO_AVAILABLE_IN_1_6
 void pango_matrix_translate (PangoMatrix *matrix,
 			     double       tx,

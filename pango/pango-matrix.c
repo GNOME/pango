@@ -513,3 +513,12 @@ pango_matrix_transform_pixel_rectangle (const PangoMatrix *matrix,
   rect->width  = ceil (max_x - rect->x);
   rect->height = ceil (max_y - rect->y);
 }
+
+gboolean
+pango_matrix_equal (const PangoMatrix *m1,
+                    const PangoMatrix *m2)
+{
+  return m1->xx == m2->xx && m1->xy == m2->xy &&
+         m1->yx == m2->yx && m1->yy == m2->yy &&
+         m1->x0 == m2->x0 && m1->y0 == m2->y0;
+}
