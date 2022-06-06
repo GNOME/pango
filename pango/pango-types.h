@@ -246,10 +246,9 @@ void pango_extents_to_pixels (PangoRectangle *inclusive,
  * @PANGO_ALIGN_LEFT: Put all available space on the right
  * @PANGO_ALIGN_CENTER: Center the line within the available space
  * @PANGO_ALIGN_RIGHT: Put all available space on the left
- * @PANGO_ALIGN_JUSTIFY: Justify the content to fill the available
- *   space, unless the line ends the paragraph
- * @PANGO_ALIGN_JUSTIFY_ALL: Justify the content to fill the available
- *   space, even if the line ends the paragraph
+ * @PANGO_ALIGN_NATURAL: Use left or right alignment, depending
+ *   on the text direction of the paragraph
+ * @PANGO_ALIGN_JUSTIFY: Justify the content to fill the available space
  *
  * `PangoAlignment` describes how to align the lines of a `PangoLayout`
  * within the available space.
@@ -259,8 +258,8 @@ typedef enum
   PANGO_ALIGN_LEFT,
   PANGO_ALIGN_CENTER,
   PANGO_ALIGN_RIGHT,
-  PANGO_ALIGN_JUSTIFY,
-  PANGO_ALIGN_JUSTIFY_ALL,
+  PANGO_ALIGN_NATURAL,
+  PANGO_ALIGN_JUSTIFY
 } PangoAlignment;
 
 /**

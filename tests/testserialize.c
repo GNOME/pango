@@ -205,7 +205,7 @@ test_serialize_layout_minimal (void)
   g_assert_null (pango_layout_get_attributes (layout));
   g_assert_null (pango_layout_get_tabs (layout));
   g_assert_null (pango_layout_get_font_description (layout));
-  g_assert_cmpint (pango_layout_get_alignment (layout), ==, PANGO_ALIGN_LEFT);
+  g_assert_cmpint (pango_layout_get_alignment (layout), ==, PANGO_ALIGN_NATURAL);
   g_assert_cmpint (pango_layout_get_width (layout), ==, -1);
 
   out_bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_DEFAULT);
