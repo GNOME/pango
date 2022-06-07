@@ -535,9 +535,11 @@ test_extents (void)
     const char *text;
     int width;
   } tests[] = {
+#if 0
     { "Some long text that has multiple lines that are wrapped by Pango.", 60 },
     { "This paragraph should ac­tual­ly have multiple lines, unlike all the other wannabe äöü pa­ra­graph tests in this ugh test-case. Grow some lines!\n", 188 },
     { "你好 Hello שלום Γειά σας", 60 },
+#endif
     { "line 1 line 2 line 3\nline 4\r\nline 5", -1 }, // various separators
     { "abc😂️def", -1 },
     { "abcאבגdef", -1 },
@@ -574,7 +576,17 @@ test_extents (void)
 
       do
         {
-          pango_line_iter_get_line_extents (iter, NULL, &line_extents);
+          PangoLeadingTrim trim = PANGO_LEADING_TRIM_NONE;
+          PangoLine *line;
+
+          line = pango_line_iter_get_line (iter);
+          if (pango_line_is_paragraph_start (line))
+            trim |= PANGO_LEADING_TRIM_START;
+          if (pango_line_is_paragraph_end (line))
+            trim |= PANGO_LEADING_TRIM_END;
+
+          pango_line_iter_get_trimmed_line_extents (iter, trim, &line_extents);
+
           pango_line_iter_get_run_extents (iter, NULL, &run_extents);
           pango_line_iter_get_cluster_extents (iter, NULL, &cluster_extents);
           pango_line_iter_get_char_extents (iter, &char_extents);
@@ -592,6 +604,7 @@ test_extents (void)
           g_assert_true (pango_rectangle_contains (&run_extents, &cluster_extents));
           g_assert_true (pango_rectangle_contains (&cluster_extents, &char_extents));
 
+          g_assert_true (pango_rectangle_contains (&run_extents, &pos));
           g_assert_true (pango_rectangle_contains (&run_extents, &pos));
           g_assert_true (pango_rectangle_contains (&line_extents, &strong));
           g_assert_true (pango_rectangle_contains (&line_extents, &weak));
