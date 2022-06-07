@@ -276,9 +276,7 @@ test_move_cursor_para (void)
   int trailing;
   const char *text;
   PangoLine *line;
-  PangoRectangle ext;
   PangoLines *lines;
-  PangoLineIter *iter;
   PangoLine *new_line;
 
   layout = pango_layout_new (context);
@@ -304,12 +302,6 @@ test_move_cursor_para (void)
           if (line == NULL)
             break;
 
-          iter = pango_lines_get_iter (lines);
-          while (pango_line_iter_get_line (iter) != line)
-            pango_line_iter_next_line (iter);
-          pango_line_iter_get_line_extents (iter, NULL, &ext);
-          pango_line_iter_free (iter);
-
           pango_lines_move_cursor(lines, TRUE,
                                   NULL,
                                   index, 0,
@@ -332,7 +324,7 @@ test_move_cursor_para (void)
 
           // assert that we are either moving to the right
           // or jumping to the next line
-          g_assert_true (pos.y >= ext.y + ext.height || pos.x > old_pos.x);
+          g_assert_true (pos.y >= old_pos.y || pos.x > old_pos.x);
           // no invisible cursors, please
           g_assert_true (pos.height > 1024);
         }
@@ -348,11 +340,6 @@ test_move_cursor_para (void)
           line = NULL;
           pango_lines_index_to_line (lines, index, &line, NULL, NULL, NULL);
           g_assert_nonnull (line);
-          iter = pango_lines_get_iter (lines);
-          while (pango_line_iter_get_line (iter) != line)
-            pango_line_iter_next_line (iter);
-          pango_line_iter_get_line_extents (iter, NULL, &ext);
-          pango_line_iter_free (iter);
 
           pango_lines_move_cursor (lines, TRUE,
                                    NULL,
@@ -373,7 +360,7 @@ test_move_cursor_para (void)
 
           // assert that we are either moving to the left
           // or jumping to the previous line
-          g_assert_true (pos.y < ext.y || pos.x < old_pos.x);
+          g_assert_true (pos.y < old_pos.y || pos.x < old_pos.x);
           // no invisible cursors, please
           g_assert_true (pos.height > 1024);
         }
