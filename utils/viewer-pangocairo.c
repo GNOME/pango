@@ -52,7 +52,10 @@ pangocairo_view_create (const PangoViewer *klass G_GNUC_UNUSED)
   instance->backend = cairo_viewer_iface_create (&instance->iface);
 
   instance->fontmap = pango_cairo_font_map_new ();
-  pango_cairo_font_map_set_resolution (PANGO_CAIRO_FONT_MAP (instance->fontmap), opt_dpi);
+  if (PANGO_IS_CAIRO_FONT_MAP (instance->fontmap))
+    pango_cairo_font_map_set_resolution (PANGO_CAIRO_FONT_MAP (instance->fontmap), opt_dpi);
+  else
+    pango_hb_font_map_set_resolution (PANGO_HB_FONT_MAP (instance->fontmap), opt_dpi);
 
   instance->font_options = cairo_font_options_create ();
   if (opt_hinting != HINT_DEFAULT)
