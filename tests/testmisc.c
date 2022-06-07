@@ -208,39 +208,14 @@ test_cursor_height (void)
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
   layout = pango_layout_new (context);
+
   pango_layout_set_text (layout, "one\ttwo", -1);
   pango_lines_get_cursor_pos (pango_layout_get_lines (layout), NULL, 0, &strong, NULL);
-
   g_assert_cmpint (strong.height, >, 0);
 
-  g_object_unref (layout);
-  g_object_unref (context);
-}
-
-static void
-test_cursor_height2 (void)
-{
-  PangoContext *context;
-  PangoLayout *layout;
-  PangoRectangle strong1, strong2;
-
-  if (strcmp (G_OBJECT_TYPE_NAME (pango_cairo_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
-    {
-      g_test_skip ("This test fails on macOS and needs debugging");
-      return;
-    }
-
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-  layout = pango_layout_new (context);
-  pango_layout_set_text (layout, "one", -1);
-
-  pango_lines_get_cursor_pos (pango_layout_get_lines (layout), NULL, 0, &strong1, NULL);
-
   pango_layout_set_text (layout, "", -1);
-
-  pango_lines_get_cursor_pos (pango_layout_get_lines (layout), NULL, 0, &strong2, NULL);
-
-  g_assert_cmpint (strong1.height, ==, strong2.height);
+  pango_lines_get_cursor_pos (pango_layout_get_lines (layout), NULL, 0, &strong, NULL);
+  g_assert_cmpint (strong.height, >, 0);
 
   g_object_unref (layout);
   g_object_unref (context);
@@ -871,7 +846,6 @@ main (int argc, char *argv[])
   g_test_add_func ("/layout/line-height3", test_line_height3);
   g_test_add_func ("/layout/run-height", test_run_height);
   g_test_add_func ("/layout/cursor-height", test_cursor_height);
-  g_test_add_func ("/layout/cursor-height2", test_cursor_height2);
   g_test_add_func ("/attr-list/update", test_attr_list_update);
   g_test_add_func ("/misc/version-info", test_version_info);
   g_test_add_func ("/misc/is-zerowidth", test_is_zero_width);
