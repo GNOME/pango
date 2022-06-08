@@ -60,30 +60,9 @@ G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFontFamily, pango_font_family, G_TYPE_OBJ
 static PangoFontFace *pango_font_family_real_get_face (PangoFontFamily *family,
                                                        const char      *name);
 
-static gboolean
-pango_font_family_default_is_generic (PangoFontFamily *family)
-{
-  return FALSE;
-}
-
-static gboolean
-pango_font_family_default_is_monospace (PangoFontFamily *family)
-{
-  return FALSE;
-}
-
-static gboolean
-pango_font_family_default_is_variable (PangoFontFamily *family)
-{
-  return FALSE;
-}
-
 static void
 pango_font_family_class_init (PangoFontFamilyClass *class G_GNUC_UNUSED)
 {
-  class->is_generic = pango_font_family_default_is_generic;
-  class->is_monospace = pango_font_family_default_is_monospace;
-  class->is_variable = pango_font_family_default_is_variable;
   class->get_face = pango_font_family_real_get_face;
 }
 
@@ -155,72 +134,4 @@ pango_font_family_get_face (PangoFontFamily *family,
   g_return_val_if_fail (PANGO_IS_FONT_FAMILY (family), NULL);
 
   return PANGO_FONT_FAMILY_GET_CLASS (family)->get_face (family, name);
-}
-
-/**
- * pango_font_family_is_generic:
- * @family: a `PangoFontFamily`
- *
- * A generic family is using a generic name such as 'sans' or
- * 'monospace', and collects fonts matching those characteristics.
- *
- * Generic families are often used as fallback.
- *
- * Return value: %TRUE if the family is generic
- */
-gboolean
-pango_font_family_is_generic (PangoFontFamily  *family)
-{
-  g_return_val_if_fail (PANGO_IS_FONT_FAMILY (family), FALSE);
-
-  return PANGO_FONT_FAMILY_GET_CLASS (family)->is_generic (family);
-}
-
-/**
- * pango_font_family_is_monospace:
- * @family: a `PangoFontFamily`
- *
- * A monospace font is a font designed for text display where the the
- * characters form a regular grid.
- *
- * For Western languages this would
- * mean that the advance width of all characters are the same, but
- * this categorization also includes Asian fonts which include
- * double-width characters: characters that occupy two grid cells.
- * g_unichar_iswide() returns a result that indicates whether a
- * character is typically double-width in a monospace font.
- *
- * The best way to find out the grid-cell size is to call
- * [method@Pango.FontMetrics.get_approximate_digit_width], since the
- * results of [method@Pango.FontMetrics.get_approximate_char_width] may
- * be affected by double-width characters.
- *
- * Return value: %TRUE if the family is monospace.
- */
-gboolean
-pango_font_family_is_monospace (PangoFontFamily  *family)
-{
-  g_return_val_if_fail (PANGO_IS_FONT_FAMILY (family), FALSE);
-
-  return PANGO_FONT_FAMILY_GET_CLASS (family)->is_monospace (family);
-}
-
-/**
- * pango_font_family_is_variable:
- * @family: a `PangoFontFamily`
- *
- * A variable font is a font which has axes that can be modified to
- * produce different faces.
- *
- * Such axes are also known as _variations_; see
- * [method@Pango.FontDescription.set_variations] for more information.
- *
- * Return value: %TRUE if the family is variable
- */
-gboolean
-pango_font_family_is_variable (PangoFontFamily  *family)
-{
-  g_return_val_if_fail (PANGO_IS_FONT_FAMILY (family), FALSE);
-
-  return PANGO_FONT_FAMILY_GET_CLASS (family)->is_variable (family);
 }

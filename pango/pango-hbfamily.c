@@ -164,38 +164,6 @@ pango_hb_family_get_face (PangoFontFamily *family,
   return NULL;
 }
 
-static gboolean
-pango_hb_family_is_monospace (PangoFontFamily *family)
-{
-  PangoHbFamily *self = PANGO_HB_FAMILY (family);
-
-  for (int i = 0; i < self->faces->len; i++)
-    {
-      PangoFontFace *face = g_ptr_array_index (self->faces, i);
-
-      if (pango_font_face_is_monospace (face))
-        return TRUE;
-    }
-
-  return FALSE;
-}
-
-static gboolean
-pango_hb_family_is_variable (PangoFontFamily *family)
-{
-  PangoHbFamily *self = PANGO_HB_FAMILY (family);
-
-  for (int i = 0; i < self->faces->len; i++)
-    {
-      PangoFontFace *face = g_ptr_array_index (self->faces, i);
-
-      if (pango_font_face_is_variable (face))
-        return TRUE;
-    }
-
-  return FALSE;
-}
-
 static void
 pango_hb_family_class_init (PangoHbFamilyClass *class)
 {
@@ -206,8 +174,6 @@ pango_hb_family_class_init (PangoHbFamilyClass *class)
 
   family_class->get_name = pango_hb_family_get_name;
   family_class->get_face = pango_hb_family_get_face;
-  family_class->is_monospace = pango_hb_family_is_monospace;
-  family_class->is_variable = pango_hb_family_is_variable;
 }
 
 /* }}} */
