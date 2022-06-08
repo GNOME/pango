@@ -21,7 +21,6 @@
 
 #include <pango/pango-font-family.h>
 #include <pango/pango-font.h>
-#include <pango/pango-coverage.h>
 #include <pango/pango-types.h>
 
 #include <glib-object.h>
@@ -40,8 +39,6 @@ struct _PangoFontClass
   GObjectClass parent_class;
 
   PangoFontDescription * (* describe)           (PangoFont      *font);
-  PangoCoverage *        (* get_coverage)       (PangoFont      *font,
-                                                PangoLanguage  *language);
   void                   (* get_glyph_extents)  (PangoFont      *font,
                                                 PangoGlyph      glyph,
                                                 PangoRectangle *ink_rect,

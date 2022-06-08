@@ -24,7 +24,6 @@
 
 #include "pango-font-private.h"
 #include "pango-font-metrics-private.h"
-#include "pango-coverage-private.h"
 #include "pango-userface-private.h"
 #include "pango-hbfamily-private.h"
 #include "pango-impl-utils.h"
@@ -87,15 +86,6 @@ pango_user_font_describe_absolute (PangoFont *font)
   pango_font_description_set_absolute_size (desc, self->size * self->dpi / 72.);
 
   return desc;
-}
-
-static PangoCoverage *
-pango_user_font_get_coverage (PangoFont     *font,
-                              PangoLanguage *language G_GNUC_UNUSED)
-{
-  PangoUserFont *self = PANGO_USER_FONT (font);
-
-  return pango_coverage_new_for_font_face (PANGO_FONT_FACE (self->face));
 }
 
 static void
@@ -391,7 +381,6 @@ pango_user_font_class_init (PangoUserFontClass *class)
 
   font_class->describe = pango_user_font_describe;
   font_class->describe_absolute = pango_user_font_describe_absolute;
-  font_class->get_coverage = pango_user_font_get_coverage;
   font_class->get_glyph_extents = pango_user_font_get_glyph_extents;
   font_class->get_metrics = pango_user_font_get_metrics;
   font_class->get_font_map = pango_user_font_get_font_map;

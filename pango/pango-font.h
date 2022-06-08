@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include <pango/pango-coverage.h>
 #include <pango/pango-types.h>
 #include <pango/pango-font-description.h>
 #include <pango/pango-font-metrics.h>
@@ -40,9 +39,6 @@ PANGO_AVAILABLE_IN_ALL
 PangoFontDescription *pango_font_describe          (PangoFont        *font);
 PANGO_AVAILABLE_IN_ALL
 PangoFontDescription *pango_font_describe_with_absolute_size (PangoFont        *font);
-PANGO_AVAILABLE_IN_ALL
-PangoCoverage *       pango_font_get_coverage      (PangoFont        *font,
-                                                    PangoLanguage    *language);
 PANGO_AVAILABLE_IN_ALL
 PangoFontMetrics *    pango_font_get_metrics       (PangoFont        *font,
                                                     PangoLanguage    *language);

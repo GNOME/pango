@@ -24,7 +24,6 @@
 
 #include "pango-font-private.h"
 #include "pango-font-metrics-private.h"
-#include "pango-coverage-private.h"
 #include "pango-hbface-private.h"
 #include "pango-hbfamily-private.h"
 #include "pango-impl-utils.h"
@@ -609,15 +608,6 @@ pango_hb_font_describe_absolute (PangoFont *font)
   return desc;
 }
 
-static PangoCoverage *
-pango_hb_font_get_coverage (PangoFont     *font,
-                            PangoLanguage *language G_GNUC_UNUSED)
-{
-  PangoHbFont *self = PANGO_HB_FONT (font);
-
-  return pango_coverage_new_for_hb_face (pango_hb_face_get_hb_face (self->face));
-}
-
 static void
 pango_hb_font_get_glyph_extents (PangoFont      *font,
                                  PangoGlyph      glyph,
@@ -926,7 +916,6 @@ pango_hb_font_class_init (PangoHbFontClass *class)
 
   font_class->describe = pango_hb_font_describe;
   font_class->describe_absolute = pango_hb_font_describe_absolute;
-  font_class->get_coverage = pango_hb_font_get_coverage;
   font_class->get_glyph_extents = pango_hb_font_get_glyph_extents;
   font_class->get_metrics = pango_hb_font_get_metrics;
   font_class->get_font_map = pango_hb_font_get_font_map;

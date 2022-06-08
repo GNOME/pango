@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include <pango/pango-coverage.h>
 #include <pango/pango-types.h>
 #include <pango/pango-font-metrics.h>
 
