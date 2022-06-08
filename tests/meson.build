@@ -38,7 +38,6 @@ if cairo_dep.found()
     [ 'test-ellipsize', [ 'test-ellipsize.c' ] ],
     [ 'markup-parse', [ 'markup-parse.c' , 'test-common.c' ] ],
     [ 'test-itemize', [ 'test-itemize.c', 'test-common.c' ] ],
-    [ 'test-shape', [ 'test-shape.c', 'test-common.c' ] ],
     [ 'test-font', [ 'test-font.c' ] ],
     [ 'testattributes', [ 'testattributes.c', 'test-common.c' ] ],
     [ 'cxx-test', [ 'cxx-test.cpp' ] ],

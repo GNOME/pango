@@ -39,7 +39,6 @@ typedef struct _PangoAttrSize         PangoAttrSize;
 typedef struct _PangoAttrFloat        PangoAttrFloat;
 typedef struct _PangoAttrColor        PangoAttrColor;
 typedef struct _PangoAttrFontDesc     PangoAttrFontDesc;
-typedef struct _PangoAttrShape        PangoAttrShape;
 typedef struct _PangoAttrFontFeatures PangoAttrFontFeatures;
 
 /**
@@ -58,7 +57,6 @@ typedef struct _PangoAttrFontFeatures PangoAttrFontFeatures;
  * @PANGO_ATTR_UNDERLINE: whether the text has an underline ([struct@Pango.AttrInt])
  * @PANGO_ATTR_STRIKETHROUGH: whether the text is struck-through ([struct@Pango.AttrInt])
  * @PANGO_ATTR_RISE: baseline displacement ([struct@Pango.AttrInt])
- * @PANGO_ATTR_SHAPE: shape ([struct@Pango.AttrShape])
  * @PANGO_ATTR_SCALE: font size scale factor ([struct@Pango.AttrFloat])
  * @PANGO_ATTR_FALLBACK: whether fallback is enabled ([struct@Pango.AttrInt])
  * @PANGO_ATTR_LETTER_SPACING: letter spacing ([struct@PangoAttrInt])
@@ -108,7 +106,6 @@ typedef enum
   PANGO_ATTR_UNDERLINE,         /* PangoAttrInt */
   PANGO_ATTR_STRIKETHROUGH,     /* PangoAttrInt */
   PANGO_ATTR_RISE,              /* PangoAttrInt */
-  PANGO_ATTR_SHAPE,             /* PangoAttrShape */
   PANGO_ATTR_SCALE,             /* PangoAttrFloat */
   PANGO_ATTR_FALLBACK,          /* PangoAttrInt */
   PANGO_ATTR_LETTER_SPACING,    /* PangoAttrInt */
@@ -450,29 +447,6 @@ struct _PangoAttrSize
 };
 
 /**
- * PangoAttrShape:
- * @attr: the common portion of the attribute
- * @ink_rect: the ink rectangle to restrict to
- * @logical_rect: the logical rectangle to restrict to
- * @data: user data set (see [func@Pango.AttrShape.new_with_data])
- * @copy_func: copy function for the user data
- * @destroy_func: destroy function for the user data
- *
- * The `PangoAttrShape` structure is used to represent attributes which
- * impose shape restrictions.
- */
-struct _PangoAttrShape
-{
-  PangoAttribute attr;
-  PangoRectangle ink_rect;
-  PangoRectangle logical_rect;
-
-  gpointer              data;
-  PangoAttrDataCopyFunc copy_func;
-  GDestroyNotify        destroy_func;
-};
-
-/**
  * PangoAttrFontDesc:
  * @attr: the common portion of the attribute
  * @desc: the font description which is the value of this attribute
@@ -571,15 +545,6 @@ PANGO_AVAILABLE_IN_1_4
 PangoAttribute *        pango_attr_fallback_new                 (gboolean                    enable_fallback);
 PANGO_AVAILABLE_IN_1_6
 PangoAttribute *        pango_attr_letter_spacing_new           (int                         letter_spacing);
-PANGO_AVAILABLE_IN_ALL
-PangoAttribute *        pango_attr_shape_new                    (const PangoRectangle        *ink_rect,
-                                                                 const PangoRectangle        *logical_rect);
-PANGO_AVAILABLE_IN_1_8
-PangoAttribute *        pango_attr_shape_new_with_data          (const PangoRectangle        *ink_rect,
-                                                                 const PangoRectangle        *logical_rect,
-                                                                 gpointer                     data,
-                                                                 PangoAttrDataCopyFunc        copy_func,
-                                                                 GDestroyNotify               destroy_func);
 PANGO_AVAILABLE_IN_1_16
 PangoAttribute *        pango_attr_gravity_new                  (PangoGravity                 gravity);
 PANGO_AVAILABLE_IN_1_16
@@ -633,8 +598,6 @@ PANGO_AVAILABLE_IN_1_50
 PangoAttrColor        * pango_attribute_as_color                (PangoAttribute              *attr);
 PANGO_AVAILABLE_IN_1_50
 PangoAttrFontDesc     * pango_attribute_as_font_desc            (PangoAttribute              *attr);
-PANGO_AVAILABLE_IN_1_50
-PangoAttrShape        * pango_attribute_as_shape                (PangoAttribute              *attr);
 PANGO_AVAILABLE_IN_1_50
 PangoAttrFontFeatures * pango_attribute_as_font_features        (PangoAttribute              *attr);
 

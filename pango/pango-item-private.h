@@ -65,13 +65,10 @@ struct _ItemProperties
   guint oline_single        : 1;
   guint showing_space       : 1;
   guint no_paragraph_break  : 1;
-  guint shape_set           : 1;
   int letter_spacing;
   int line_spacing;
   int absolute_line_height;
   double line_height;
-  PangoRectangle *shape_ink_rect;
-  PangoRectangle *shape_logical_rect;
 };
 
 void               pango_item_get_properties          (PangoItem        *item,

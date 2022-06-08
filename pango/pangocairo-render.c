@@ -775,43 +775,6 @@ pango_cairo_renderer_draw_error_underline (PangoRenderer *renderer,
 }
 
 static void
-pango_cairo_renderer_draw_shape (PangoRenderer  *renderer,
-                                 PangoAttrShape *attr,
-                                 int             x,
-                                 int             y)
-{
-  PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
-  cairo_t *cr = crenderer->cr;
-  PangoContext *context;
-  PangoCairoShapeRendererFunc shape_renderer;
-  gpointer shape_renderer_data;
-  double base_x, base_y;
-
-  context = pango_renderer_get_context (renderer);
-
-  if (!context)
-    return;
-
-  shape_renderer = pango_cairo_context_get_shape_renderer (context, &shape_renderer_data);
-
-  if (!shape_renderer)
-    return;
-
-  base_x = crenderer->x_offset + (double)x / PANGO_SCALE;
-  base_y = crenderer->y_offset + (double)y / PANGO_SCALE;
-
-  cairo_save (cr);
-  if (!crenderer->do_path)
-    set_color (crenderer, PANGO_RENDER_PART_FOREGROUND);
-
-  cairo_move_to (cr, base_x, base_y);
-
-  shape_renderer (cr, attr, crenderer->do_path, shape_renderer_data);
-
-  cairo_restore (cr);
-}
-
-static void
 pango_cairo_renderer_init (PangoCairoRenderer *renderer G_GNUC_UNUSED)
 {
 }
@@ -826,7 +789,6 @@ pango_cairo_renderer_class_init (PangoCairoRendererClass *klass)
   renderer_class->draw_rectangle = pango_cairo_renderer_draw_rectangle;
   renderer_class->draw_trapezoid = pango_cairo_renderer_draw_trapezoid;
   renderer_class->draw_error_underline = pango_cairo_renderer_draw_error_underline;
-  renderer_class->draw_shape = pango_cairo_renderer_draw_shape;
 }
 
 static PangoCairoRenderer *cached_renderer = NULL; /* MT-safe */

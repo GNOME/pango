@@ -864,16 +864,11 @@ shape_run (PangoLineBreaker *self,
       if (pango_context_get_round_glyph_positions (self->context))
         shape_flags |= PANGO_SHAPE_ROUND_POSITIONS;
 
-      if (self->properties.shape_set)
-        _pango_shape_shape (self->data->text + item->offset, item->num_chars,
-                            self->properties.shape_ink_rect, self->properties.shape_logical_rect,
-                            glyphs);
-      else
-        pango_shape_item (item,
-                          self->data->text, self->data->length,
-                          self->data->log_attrs + self->start_offset,
-                          glyphs,
-                          shape_flags);
+      pango_shape_item (item,
+                        self->data->text, self->data->length,
+                        self->data->log_attrs + self->start_offset,
+                        glyphs,
+                        shape_flags);
 
       if (self->properties.letter_spacing)
         {
@@ -1186,7 +1181,6 @@ process_item (PangoLineBreaker *self,
               gboolean         is_last_item)
 {
   PangoItem *item = self->items->data;
-  gboolean shape_set = FALSE;
   int width;
   int extra_width;
   int orig_extra_width;
@@ -1502,9 +1496,6 @@ retry_break:
           insert_run (self, line, new_item, break_glyphs, FALSE);
 
           self->log_widths_offset += break_num_chars;
-
-          /* Shaped items should never be broken */
-          g_assert (!shape_set);
 
           DEBUG1 ("some-fit '%.*s', remaining %d",
                   new_item->length, self->data->text + new_item->offset,

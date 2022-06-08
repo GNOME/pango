@@ -392,10 +392,6 @@ add_attribute (GtkJsonPrinter *printer,
       gtk_json_printer_add_boolean (printer, "value", ((PangoAttrInt*)attr)->value != 0);
       break;
 
-    case PANGO_ATTR_SHAPE:
-      gtk_json_printer_add_string (printer, "value", "shape");
-      break;
-
     case PANGO_ATTR_SCALE:
     case PANGO_ATTR_LINE_HEIGHT:
       gtk_json_printer_add_number (printer, "value", ((PangoAttrFloat*)attr)->value);
@@ -1010,11 +1006,6 @@ attr_for_type (GtkJsonParser *parser,
 
     case PANGO_ATTR_RISE:
       attr = pango_attr_rise_new ((int) gtk_json_parser_get_number (parser));
-      break;
-
-    case PANGO_ATTR_SHAPE:
-      /* FIXME */
-      attr = pango_attr_shape_new (&(PangoRectangle) { 0, 0, 0, 0}, &(PangoRectangle) { 0, 0, 0, 0});
       break;
 
     case PANGO_ATTR_SCALE:

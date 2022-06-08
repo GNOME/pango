@@ -36,7 +36,6 @@ static void
 test_attributes_basic (void)
 {
   PangoFontDescription *desc;
-  PangoRectangle rect = { 0, 0, 10, 10 };
 
   test_copy (pango_attr_language_new (pango_language_from_string ("ja-JP")));
   test_copy (pango_attr_family_new ("Times"));
@@ -62,7 +61,6 @@ test_attributes_basic (void)
   test_copy (pango_attr_scale_new (2.56));
   test_copy (pango_attr_fallback_new (FALSE));
   test_copy (pango_attr_letter_spacing_new (1024));
-  test_copy (pango_attr_shape_new (&rect, &rect));
   test_copy (pango_attr_gravity_new (PANGO_GRAVITY_SOUTH));
   test_copy (pango_attr_gravity_hint_new (PANGO_GRAVITY_HINT_STRONG));
   test_copy (pango_attr_font_features_new ("csc=1"));
@@ -121,10 +119,10 @@ static void
 test_binding (PangoAttribute *attr)
 {
   enum {
-    INVALID, INT, LANGUAGE, STRING, SIZE, FONT_DESC, COLOR, SHAPE, FLOAT, FONT_FEATURES,
+    INVALID, INT, LANGUAGE, STRING, SIZE, FONT_DESC, COLOR, FLOAT, FONT_FEATURES,
   } attr_base[] = {
     INVALID, LANGUAGE, STRING, INT, INT, INT, INT, SIZE, FONT_DESC, COLOR,
-    COLOR, INT, INT, INT, SHAPE, FLOAT, INT, INT, COLOR, COLOR, SIZE,
+    COLOR, INT, INT, INT, FLOAT, INT, INT, COLOR, COLOR, SIZE,
     INT, INT, FONT_FEATURES, INT, INT, INT, INT, INT, INT, COLOR, FLOAT,
     INT, INT, INT, INT, INT, INT
   };
@@ -149,9 +147,6 @@ test_binding (PangoAttribute *attr)
     case COLOR:
       g_assert_nonnull (pango_attribute_as_color (attr));
       break;
-    case SHAPE:
-      g_assert_nonnull (pango_attribute_as_shape (attr));
-      break;
     case FLOAT:
       g_assert_nonnull (pango_attribute_as_float (attr));
       break;
@@ -170,7 +165,6 @@ static void
 test_binding_helpers (void)
 {
   PangoFontDescription *desc;
-  PangoRectangle rect = { 0, 0, 10, 10 };
 
   test_binding (pango_attr_language_new (pango_language_from_string ("ja-JP")));
   test_binding (pango_attr_family_new ("Times"));
@@ -196,7 +190,6 @@ test_binding_helpers (void)
   test_binding (pango_attr_scale_new (2.56));
   test_binding (pango_attr_fallback_new (FALSE));
   test_binding (pango_attr_letter_spacing_new (1024));
-  test_binding (pango_attr_shape_new (&rect, &rect));
   test_binding (pango_attr_gravity_new (PANGO_GRAVITY_SOUTH));
   test_binding (pango_attr_gravity_hint_new (PANGO_GRAVITY_HINT_STRONG));
   test_binding (pango_attr_font_features_new ("csc=1"));

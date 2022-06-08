@@ -33,21 +33,6 @@ G_BEGIN_DECLS
 /* String interning for static strings */
 #define I_(string) g_intern_static_string (string)
 
-
-/* Some functions for handling PANGO_ATTR_SHAPE */
-void _pango_shape_shape (const char       *text,
-			 unsigned int      n_chars,
-			 PangoRectangle   *shape_ink,
-			 PangoRectangle   *shape_logical,
-			 PangoGlyphString *glyphs);
-
-void _pango_shape_get_extents (gint              n_chars,
-			       PangoRectangle   *shape_ink,
-			       PangoRectangle   *shape_logical,
-			       PangoRectangle   *ink_rect,
-			       PangoRectangle   *logical_rect);
-
-
 /* We define these functions static here because we don't want to add public API
  * for them (if anything, it belongs to glib, but glib found it trivial enough
  * not to add API for).  At some point metrics calculations will be
