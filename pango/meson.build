@@ -18,6 +18,7 @@ pango_sources = [
   'pango-font-metrics.c',
   'pango-fontmap.c',
   'pango-fontset.c',
+  'pango-fontset-cached.c',
   'pango-fontset-simple.c',
   'pango-glyph-item.c',
   'pango-gravity.c',
