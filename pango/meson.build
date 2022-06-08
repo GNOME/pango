@@ -182,16 +182,6 @@ pango_features_h = configure_file(
   install_dir: join_paths(pango_includedir, pango_api_path),
 )
 
-if host_system == 'windows'
-  pangowin32_rc = configure_file(
-    input: 'pangowin32.rc.in',
-    output: 'pangowin32.rc',
-    configuration: pango_features_conf,
-  )
-  pangowin32_res = import('windows').compile_resources(pangowin32_rc)
-  pango_sources += pangowin32_res
-endif
-
 # Enumerations for GType
 pango_enums = gnome.mkenums(
   'pango-enum-types',
