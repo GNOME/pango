@@ -29,13 +29,13 @@ G_DEFINE_ABSTRACT_TYPE (PangoFontFace, pango_font_face, G_TYPE_OBJECT)
 static gboolean
 pango_font_face_default_is_monospace (PangoFontFace *face)
 {
-  return pango_font_family_is_monospace (pango_font_face_get_family (face));
+  return FALSE;
 }
 
 static gboolean
 pango_font_face_default_is_variable (PangoFontFace *face)
 {
-  return pango_font_family_is_variable (pango_font_face_get_family (face));
+  return FALSE;
 }
 
 static gboolean

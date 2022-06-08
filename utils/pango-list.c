@@ -155,20 +155,7 @@ main (int    argc,
 
       g_object_unref (family);
 
-      if (pango_font_family_is_monospace (family))
-        {
-          if (pango_font_family_is_variable (family))
-            kind = "(monospace, variable)";
-          else
-            kind = "(monospace)";
-        }
-      else
-        {
-          if (pango_font_family_is_variable (family))
-            kind = "(variable)";
-          else
-            kind = "";
-        }
+      kind = "";
 
       g_print ("%s %s\n", family_name, kind);
 
@@ -179,8 +166,7 @@ main (int    argc,
 	  const char *face_name = pango_font_face_get_face_name (face);
 	  gboolean is_synth = pango_font_face_is_synthesized (face);
 	  const char *synth_str = is_synth ? "*" : "";
-          gboolean is_variable = pango_font_face_is_variable (face);
-	  const char *variable_str = is_variable ? "@" : "";
+	  const char *variable_str = "";
           width = MAX (width, strlen (synth_str) + strlen (variable_str) + strlen (face_name));
           g_object_unref (face);
         }
@@ -222,8 +208,7 @@ main (int    argc,
               pango_font_metrics_unref (metrics);
             }
 
-          if (opt_variations &&
-              pango_font_family_is_variable (family))
+          if (opt_variations)
             {
               PangoFont *font;
               hb_font_t *hb_font;

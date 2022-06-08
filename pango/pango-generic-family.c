@@ -129,26 +129,6 @@ pango_generic_family_get_name (PangoFontFamily *family)
   return self->name;
 }
 
-static gboolean
-pango_generic_family_is_generic (PangoFontFamily *family)
-{
-  return TRUE;
-}
-
-static gboolean
-pango_generic_family_is_monospace (PangoFontFamily *family)
-{
-  PangoGenericFamily *self = PANGO_GENERIC_FAMILY (family);
-
-  return strcmp (self->name, "monospace") == 0;
-}
-
-static gboolean
-pango_generic_family_is_variable (PangoFontFamily *family)
-{
-  return FALSE;
-}
-
 static void
 pango_generic_family_class_init (PangoGenericFamilyClass *class)
 {
@@ -158,9 +138,6 @@ pango_generic_family_class_init (PangoGenericFamilyClass *class)
   object_class->finalize = pango_generic_family_finalize;
 
   family_class->get_name = pango_generic_family_get_name;
-  family_class->is_generic = pango_generic_family_is_generic;
-  family_class->is_monospace = pango_generic_family_is_monospace;
-  family_class->is_variable = pango_generic_family_is_variable;
 }
 
 /* }}} */

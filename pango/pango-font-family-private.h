@@ -34,10 +34,6 @@ struct _PangoFontFamilyClass
   GObjectClass parent_class;
 
   const char *    (* get_name)     (PangoFontFamily *family);
-  gboolean        (* is_generic)   (PangoFontFamily *family);
-  gboolean        (* is_monospace) (PangoFontFamily *family);
-  gboolean        (* is_variable)  (PangoFontFamily *family);
-
   PangoFontFace * (* get_face)     (PangoFontFamily *family,
                                     const char      *name);
 

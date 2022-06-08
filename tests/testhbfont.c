@@ -46,12 +46,8 @@ test_hbfont_monospace (void)
   family = pango_font_map_get_family (PANGO_FONT_MAP (map), "Cantarell");
 
   g_assert_nonnull (family);
-  g_assert_false (pango_font_family_is_variable (family));
-  g_assert_false (pango_font_family_is_monospace (family));
 
   pango_hb_font_map_add_face (map, PANGO_FONT_FACE (pango_hb_face_new_from_file (path, 0, -2, NULL, NULL)));
-
-  g_assert_true (pango_font_family_is_variable (family));
 
   g_free (path);
 
@@ -62,8 +58,6 @@ test_hbfont_monospace (void)
   family = pango_font_map_get_family (PANGO_FONT_MAP (map), "DejaVu Sans Mono");
 
   g_assert_nonnull (family);
-  g_assert_false (pango_font_family_is_variable (family));
-  g_assert_true (pango_font_family_is_monospace (family));
 
   g_object_unref (map);
 }

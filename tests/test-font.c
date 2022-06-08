@@ -436,10 +436,7 @@ static void
 test_font_models (void)
 {
   PangoFontMap *map = pango_cairo_font_map_get_default ();
-  gboolean monospace_found = FALSE;
   int n_families = 0;
-  int n_variable_families = 0;
-  int n_monospace_families = 0;
 
   g_assert_true (g_list_model_get_item_type (G_LIST_MODEL (map)) == PANGO_TYPE_FONT_FAMILY);
 
@@ -451,18 +448,7 @@ test_font_models (void)
 
       g_assert_true (g_list_model_get_item_type (G_LIST_MODEL (obj)) == PANGO_TYPE_FONT_FACE);
 
-      if (g_ascii_strcasecmp (pango_font_family_get_name (PANGO_FONT_FAMILY (obj)), "monospace") == 0)
-        {
-          g_assert_true (pango_font_family_is_monospace (PANGO_FONT_FAMILY (obj)));
-        }
-
       n_families++;
-
-      if (pango_font_family_is_variable (PANGO_FONT_FAMILY (obj)))
-        n_variable_families++;
-
-      if (pango_font_family_is_monospace (PANGO_FONT_FAMILY (obj)))
-        n_monospace_families++;
 
       for (guint j = 0; j < g_list_model_get_n_items (G_LIST_MODEL (obj)); j++)
         {
@@ -470,27 +456,13 @@ test_font_models (void)
 
           g_assert_true (PANGO_IS_FONT_FACE (obj2));
 
-          if (!pango_font_family_is_generic (PANGO_FONT_FAMILY (obj)))
-            g_assert_true (pango_font_face_get_family (PANGO_FONT_FACE (obj2)) == PANGO_FONT_FAMILY (obj));
-
-          if (pango_font_family_is_monospace (PANGO_FONT_FAMILY (obj)))
-            {
-              if (pango_font_face_is_synthesized (PANGO_FONT_FACE (obj2)))
-                {
-                  monospace_found = TRUE;
-                }
-            }
-
           g_object_unref (obj2);
         }
 
       g_object_unref (obj);
     }
 
-  g_assert_true (monospace_found);
-
-  g_print ("# %d font families, %d monospace, %d variable\n",
-           n_families, n_monospace_families, n_variable_families);
+  g_print ("# %d font families\n", n_families);
 }
 
 static void
