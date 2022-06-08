@@ -16,7 +16,7 @@
   },
   "comment" : "Test that font fallback works\nfor visible format characters\nin the Arabic block.",
   "text" : "۝",
-  "font" : "Sans 32",
+  "font" : "Amiri 32",
   "log-attrs" : [
     {
       "char-break" : true,
