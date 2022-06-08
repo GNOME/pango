@@ -69,10 +69,7 @@ static gboolean
 pango_font_default_has_char (PangoFont *font,
                              gunichar   wc)
 {
-  PangoCoverage *coverage = pango_font_get_coverage (font, pango_language_get_default ());
-  PangoCoverageLevel result = pango_coverage_get (coverage, wc);
-  g_object_unref (coverage);
-  return result != PANGO_COVERAGE_NONE;
+  return FALSE;
 }
 
 static PangoFontFace *
@@ -166,25 +163,6 @@ pango_font_describe_with_absolute_size (PangoFont *font)
     }
 
   return PANGO_FONT_GET_CLASS (font)->describe_absolute (font);
-}
-
-/**
- * pango_font_get_coverage:
- * @font: a `PangoFont`
- * @language: the language tag
- *
- * Computes the coverage map for a given font and language tag.
- *
- * Return value: (transfer full): a newly-allocated `PangoCoverage`
- *   object.
- */
-PangoCoverage *
-pango_font_get_coverage (PangoFont     *font,
-                         PangoLanguage *language)
-{
-  g_return_val_if_fail (font != NULL, NULL);
-
-  return PANGO_FONT_GET_CLASS (font)->get_coverage (font, language);
 }
 
 /**

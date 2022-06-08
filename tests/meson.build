@@ -15,7 +15,6 @@ test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
 test_env.set('LC_ALL', 'en_US.UTF-8')
 
 tests = [
-  [ 'test-coverage' ],
   [ 'testboundaries' ],
   [ 'testboundaries_ucd' ],
   [ 'testcolor' ],
