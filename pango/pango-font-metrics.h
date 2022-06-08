@@ -20,10 +20,8 @@
 #pragma once
 
 #include <pango/pango-types.h>
-#include <pango/pango-font-description.h>
 
 #include <glib-object.h>
-#include <hb.h>
 
 G_BEGIN_DECLS
 
@@ -49,22 +47,6 @@ G_BEGIN_DECLS
 typedef struct _PangoFontMetrics PangoFontMetrics;
 
 #define PANGO_TYPE_FONT_METRICS  (pango_font_metrics_get_type ())
-
-struct _PangoFontMetrics
-{
-  /* <private> */
-  guint ref_count;
-
-  int ascent;
-  int descent;
-  int height;
-  int approximate_char_width;
-  int approximate_digit_width;
-  int underline_position;
-  int underline_thickness;
-  int strikethrough_position;
-  int strikethrough_thickness;
-};
 
 PANGO_AVAILABLE_IN_ALL
 GType             pango_font_metrics_get_type                    (void) G_GNUC_CONST;

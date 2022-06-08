@@ -21,4 +21,20 @@
 
 #include <pango/pango-font-metrics.h>
 
+struct _PangoFontMetrics
+{
+  /* <private> */
+  guint ref_count;
+
+  int ascent;
+  int descent;
+  int height;
+  int approximate_char_width;
+  int approximate_digit_width;
+  int underline_position;
+  int underline_thickness;
+  int strikethrough_position;
+  int strikethrough_thickness;
+};
+
 PangoFontMetrics *pango_font_metrics_new (void);
