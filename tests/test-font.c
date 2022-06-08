@@ -484,8 +484,8 @@ test_font_metrics (void)
 
   metrics = pango_font_get_metrics (NULL, NULL);
 
-  g_assert_cmpint (metrics->approximate_char_width, ==, PANGO_SCALE * PANGO_UNKNOWN_GLYPH_WIDTH);
-  g_assert_cmpint (metrics->approximate_digit_width, ==, PANGO_SCALE * PANGO_UNKNOWN_GLYPH_WIDTH);
+  g_assert_cmpint (pango_font_metrics_get_approximate_char_width (metrics), ==, PANGO_SCALE * PANGO_UNKNOWN_GLYPH_WIDTH);
+  g_assert_cmpint (pango_font_metrics_get_approximate_digit_width (metrics), ==, PANGO_SCALE * PANGO_UNKNOWN_GLYPH_WIDTH);
 
   pango_font_metrics_unref (metrics);
 }
