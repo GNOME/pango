@@ -117,8 +117,6 @@ if cairo_dep.found()
 
   if pango_font_backends.contains('win32')
     pango_sources += [
-      'pangocairo-win32font.c',
-      'pangocairo-win32fontmap.c',
       'pangodwrite-hbfontmap.cpp',
     ]
   endif
@@ -151,13 +149,7 @@ endif
 
 if host_system == 'windows'
   pango_headers += [
-    'pangowin32.h',
-  ]
-
-  pango_sources += [
-    'pangowin32.c',
-    'pangowin32-fontcache.c',
-    'pangowin32-fontmap.c',
+    'pangodwrite-hbfontmap.h',
   ]
 
   pango_deps += [
