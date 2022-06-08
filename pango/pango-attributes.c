@@ -478,51 +478,6 @@ pango_attr_font_desc_equal (const PangoAttribute *attr1,
          pango_font_description_equal (desc_attr1->desc, desc_attr2->desc);
 }
 /* }}} */
-/* {{{ Shape attribute */
-static PangoAttribute *
-pango_attr_shape_copy (const PangoAttribute *attr)
-{
-  const PangoAttrShape *shape_attr = (PangoAttrShape *)attr;
-  gpointer data;
-
-  if (shape_attr->copy_func)
-    data = shape_attr->copy_func (shape_attr->data);
-  else
-    data = shape_attr->data;
-
-  return pango_attr_shape_new_with_data (&shape_attr->ink_rect, &shape_attr->logical_rect,
-                                         data, shape_attr->copy_func, shape_attr->destroy_func);
-}
-
-static void
-pango_attr_shape_destroy (PangoAttribute *attr)
-{
-  PangoAttrShape *shape_attr = (PangoAttrShape *)attr;
-
-  if (shape_attr->destroy_func)
-    shape_attr->destroy_func (shape_attr->data);
-
-  g_slice_free (PangoAttrShape, shape_attr);
-}
-
-static gboolean
-pango_attr_shape_equal (const PangoAttribute *attr1,
-                        const PangoAttribute *attr2)
-{
-  const PangoAttrShape *shape_attr1 = (const PangoAttrShape *)attr1;
-  const PangoAttrShape *shape_attr2 = (const PangoAttrShape *)attr2;
-
-  return (shape_attr1->logical_rect.x == shape_attr2->logical_rect.x &&
-          shape_attr1->logical_rect.y == shape_attr2->logical_rect.y &&
-          shape_attr1->logical_rect.width == shape_attr2->logical_rect.width &&
-          shape_attr1->logical_rect.height == shape_attr2->logical_rect.height &&
-          shape_attr1->ink_rect.x == shape_attr2->ink_rect.x &&
-          shape_attr1->ink_rect.y == shape_attr2->ink_rect.y &&
-          shape_attr1->ink_rect.width == shape_attr2->ink_rect.width &&
-          shape_attr1->ink_rect.height == shape_attr2->ink_rect.height &&
-          shape_attr1->data == shape_attr2->data);
-}
-/* }}} */
 /* }}} */
 /* {{{ Private API */
 
@@ -549,7 +504,6 @@ pango_attribute_affects_itemization (PangoAttribute *attr,
     case PANGO_ATTR_FONT_SCALE:
     /* These need to be constant across runs */
     case PANGO_ATTR_LETTER_SPACING:
-    case PANGO_ATTR_SHAPE:
     case PANGO_ATTR_RISE:
     case PANGO_ATTR_BASELINE_SHIFT:
     case PANGO_ATTR_LINE_HEIGHT:
@@ -1128,86 +1082,6 @@ pango_attr_letter_spacing_new (int letter_spacing)
   };
 
   return pango_attr_int_new (&klass, letter_spacing);
-}
-
-/**
- * pango_attr_shape_new_with_data:
- * @ink_rect: ink rectangle to assign to each character
- * @logical_rect: logical rectangle to assign to each character
- * @data: user data pointer
- * @copy_func: (nullable): function to copy @data when the
- *   attribute is copied. If %NULL, @data is simply copied
- *   as a pointer
- * @destroy_func: (nullable): function to free @data when the
- *   attribute is freed
- *
- * Creates a new shape attribute.
- *
- * Like [func@Pango.AttrShape.new], but a user data pointer
- * is also provided; this pointer can be accessed when later
- * rendering the glyph.
- *
- * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
- *
- * Since: 1.8
- */
-PangoAttribute *
-pango_attr_shape_new_with_data (const PangoRectangle  *ink_rect,
-                                const PangoRectangle  *logical_rect,
-                                gpointer               data,
-                                PangoAttrDataCopyFunc  copy_func,
-                                GDestroyNotify         destroy_func)
-{
-  static const PangoAttrClass klass = {
-    PANGO_ATTR_SHAPE,
-    pango_attr_shape_copy,
-    pango_attr_shape_destroy,
-    pango_attr_shape_equal
-  };
-
-  PangoAttrShape *result;
-
-  g_return_val_if_fail (ink_rect != NULL, NULL);
-  g_return_val_if_fail (logical_rect != NULL, NULL);
-
-  result = g_slice_new (PangoAttrShape);
-  pango_attribute_init (&result->attr, &klass);
-  result->ink_rect = *ink_rect;
-  result->logical_rect = *logical_rect;
-  result->data = data;
-  result->copy_func = copy_func;
-  result->destroy_func =  destroy_func;
-
-  return (PangoAttribute *)result;
-}
-
-/**
- * pango_attr_shape_new:
- * @ink_rect: ink rectangle to assign to each character
- * @logical_rect: logical rectangle to assign to each character
- *
- * Create a new shape attribute.
- *
- * A shape is used to impose a particular ink and logical
- * rectangle on the result of shaping a particular glyph.
- * This might be used, for instance, for embedding a picture
- * or a widget inside a `PangoLayout`.
- *
- * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
- */
-PangoAttribute *
-pango_attr_shape_new (const PangoRectangle *ink_rect,
-                      const PangoRectangle *logical_rect)
-{
-  g_return_val_if_fail (ink_rect != NULL, NULL);
-  g_return_val_if_fail (logical_rect != NULL, NULL);
-
-  return pango_attr_shape_new_with_data (ink_rect, logical_rect,
-                                         NULL, NULL, NULL);
 }
 
 /**
@@ -1892,32 +1766,6 @@ pango_attribute_as_language (PangoAttribute *attr)
     {
     case PANGO_ATTR_LANGUAGE:
       return (PangoAttrLanguage *)attr;
-
-    default:
-      return NULL;
-    }
-}
-
-/**
- * pango_attribute_as_shape:
- * @attr: A `PangoAttribute` representing a shape
- *
- * Returns the attribute cast to `PangoAttrShape`.
- *
- * This is mainly useful for language bindings.
- *
- * Returns: (nullable) (transfer none): The attribute as `PangoAttrShape`,
- *   or %NULL if it's not a shape attribute
- *
- * Since: 1.50
- */
-PangoAttrShape *
-pango_attribute_as_shape (PangoAttribute *attr)
-{
-  switch ((int)attr->klass->type)
-    {
-    case PANGO_ATTR_SHAPE:
-      return (PangoAttrShape *)attr;
 
     default:
       return NULL;
@@ -2724,7 +2572,6 @@ attr_print (GString        *str,
   PangoAttrFloat *flt;
   PangoAttrFontDesc *font;
   PangoAttrColor *color;
-  PangoAttrShape *shape;
   PangoAttrSize *size;
   PangoAttrFontFeatures *features;
 
@@ -2773,8 +2620,6 @@ attr_print (GString        *str,
       g_string_append_printf (str, " %s", s);
       g_free (s);
     }
-  else if ((shape = pango_attribute_as_shape (attr)) != NULL)
-    g_string_append (str, "shape"); /* FIXME */
   else if ((size = pango_attribute_as_size (attr)) != NULL)
     g_string_append_printf (str, " %d", size->size);
   else if ((features = pango_attribute_as_font_features (attr)) != NULL)
@@ -3062,10 +2907,6 @@ pango_attr_list_from_string (const char *text)
         case PANGO_ATTR_RISE:
           INT_ATTR(rise, int);
           break;
-
-        case PANGO_ATTR_SHAPE:
-          endp = (char *)p + strcspn (p, ",\n");
-          continue; /* FIXME */
 
         case PANGO_ATTR_SCALE:
           FLOAT_ATTR(scale);

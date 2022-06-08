@@ -89,13 +89,8 @@ pango_run_get_extents (PangoRun         *run,
   if (!logical_rect && (has_underline || has_overline || properties.strikethrough))
     logical_rect = &logical;
 
-  if (properties.shape_set)
-    _pango_shape_get_extents (glyph_item->item->num_chars,
-                              properties.shape_ink_rect, properties.shape_logical_rect,
+  pango_glyph_string_extents (glyph_item->glyphs, glyph_item->item->analysis.font,
                               ink_rect, logical_rect);
-  else
-    pango_glyph_string_extents (glyph_item->glyphs, glyph_item->item->analysis.font,
-                                ink_rect, logical_rect);
 
   if (ink_rect && (has_underline || has_overline || properties.strikethrough))
     {

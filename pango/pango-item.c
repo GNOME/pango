@@ -385,10 +385,7 @@ pango_item_get_properties (PangoItem      *item,
   properties->strikethrough = FALSE;
   properties->showing_space = FALSE;
   properties->no_paragraph_break = FALSE;
-  properties->shape_set = FALSE;
   properties->letter_spacing = 0;
-  properties->shape_ink_rect = NULL;
-  properties->shape_logical_rect = NULL;
   properties->line_height = 0.0;
   properties->absolute_line_height = 0;
   properties->line_spacing = 0;
@@ -442,12 +439,6 @@ pango_item_get_properties (PangoItem      *item,
 
         case PANGO_ATTR_LETTER_SPACING:
           properties->letter_spacing = ((PangoAttrInt *)attr)->value;
-          break;
-
-        case PANGO_ATTR_SHAPE:
-          properties->shape_set = TRUE;
-          properties->shape_logical_rect = &((PangoAttrShape *)attr)->logical_rect;
-          properties->shape_ink_rect = &((PangoAttrShape *)attr)->ink_rect;
           break;
 
         case PANGO_ATTR_LINE_HEIGHT:
