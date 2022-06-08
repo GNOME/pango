@@ -124,10 +124,7 @@ if cairo_dep.found()
 
   if pango_font_backends.contains('quartz')
     pango_sources += [
-      'pangocoretext.c',
-      'pangocoretext-fontmap.c',
-      'pangocairo-coretextfont.c',
-      'pangocairo-coretextfontmap.c',
+      'pangocoretext-hbfontmap.c',
     ]
   endif
 

@@ -26,7 +26,7 @@
 #include "pango-impl-utils.h"
 
 #if defined (HAVE_CORE_TEXT) && defined (HAVE_CAIRO_QUARTZ)
-#  include "pangocairo-coretext.h"
+#  include "pangocoretext-hbfontmap.h"
 #endif
 #if defined (HAVE_CAIRO_WIN32)
 #  include "pangocairo-win32.h"
@@ -77,7 +77,7 @@ pango_cairo_font_map_new (void)
     backend = NULL;
 #if defined(HAVE_CORE_TEXT) && defined (HAVE_CAIRO_QUARTZ)
   if (!backend || 0 == strcmp (backend, "coretext"))
-    return g_object_new (PANGO_TYPE_CAIRO_CORE_TEXT_FONT_MAP, NULL);
+    return (PangoFontMap *) pango_core_text_hb_font_map_new ();
 #endif
 #if defined(HAVE_CAIRO_WIN32)
   if (!backend || 0 == strcmp (backend, "win32"))
