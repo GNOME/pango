@@ -26,21 +26,6 @@
 
 G_BEGIN_DECLS
 
-gboolean _pango_scan_int                (const char **pos,
-                                         int         *out);
-
-gboolean _pango_parse_enum              (GType       type,
-                                         const char *str,
-                                         int        *value,
-                                         gboolean    warn,
-                                         char      **possible_values);
-gboolean pango_parse_flags              (GType       type,
-                                         const char *str,
-                                         int        *value,
-                                         char      **possible_values);
-
-char    *_pango_trim_string             (const char *str);
-
 PangoDirection  pango_find_base_dir     (const char *text,
                                          int         length);
 
@@ -56,9 +41,5 @@ gboolean pango_parse_weight             (const char   *str,
 gboolean pango_parse_stretch            (const char   *str,
                                          PangoStretch *stretch,
                                          gboolean      warn);
-
-void     pango_quantize_line_geometry   (int *thickness,
-                                         int *position);
-
 
 G_END_DECLS
