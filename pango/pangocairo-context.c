@@ -1,5 +1,5 @@
 /* Pango
- * pangocairo-fontmap.c: Cairo font handling
+ * pangocairo-context.c: Cairo context handling
  *
  * Copyright (C) 2000-2005 Red Hat Software
  *
