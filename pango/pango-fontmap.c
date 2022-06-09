@@ -36,16 +36,21 @@
 #include "pango-trace-private.h"
 #include "pango-context.h"
 
-#if defined (HAVE_CORE_TEXT)
+#ifdef HAVE_CORE_TEXT
 #include "pangocoretext-fontmap.h"
 #endif
 
-#if defined (HAVE_DIRECT_WRITE)
+#ifdef HAVE_DIRECT_WRITE
 #include "pangodwrite-fontmap.h"
 #endif
 
-#if defined (HAVE_FONTCONFIG)
+#ifdef HAVE_FONTCONFIG
 #include "pangofc-fontmap.h"
+#endif
+
+#ifdef HAVE_CAIRO
+#include <cairo.h>
+#include <pangocairo-private.h>
 #endif
 
 #include <hb-ot.h>
@@ -135,6 +140,9 @@ pango_fontset_cached_hash (const PangoFontsetCached *fontset)
 
   return (hash ^
           GPOINTER_TO_UINT (fontset->language) ^
+#ifdef HAVE_CAIRO
+          cairo_font_options_hash (fontset->font_options) ^
+#endif
           pango_font_description_hash (fontset->description));
 }
 
@@ -143,6 +151,9 @@ pango_fontset_cached_equal (const PangoFontsetCached *a,
                             const PangoFontsetCached *b)
 {
   return a->language == b->language &&
+#ifdef HAVE_CAIRO
+         cairo_font_options_equal (a->font_options, b->font_options) &&
+#endif
          pango_font_description_equal (a->description, b->description);
 }
 
@@ -417,6 +428,9 @@ pango_font_map_default_load_fontset (PangoFontMap               *self,
 
   lookup.language = language;
   lookup.description = (PangoFontDescription *)description;
+#ifdef HAVE_CAIRO
+  lookup.font_options = (cairo_font_options_t *)pango_cairo_context_get_merged_font_options (context);
+#endif
   fontset = g_hash_table_lookup (self->fontsets, &lookup);
 
   if (fontset)
@@ -425,6 +439,9 @@ pango_font_map_default_load_fontset (PangoFontMap               *self,
   matrix = pango_context_get_matrix (context);
 
   fontset = pango_fontset_cached_new (description, language, self->dpi, matrix);
+#ifdef HAVE_CAIRO
+  fontset->font_options = cairo_font_options_copy (pango_cairo_context_get_merged_font_options (context));
+#endif
 
   if (self->families->len == 0)
     {

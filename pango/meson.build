@@ -102,6 +102,7 @@ if cairo_dep.found()
   pango_headers += [
     'pangocairo.h',
     'pangocairo-context.h',
+    'pangocairo-font.h',
     'pangocairo-render.h',
   ]
 

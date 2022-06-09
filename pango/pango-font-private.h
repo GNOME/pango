@@ -25,12 +25,18 @@
 
 #include <glib-object.h>
 
+#ifdef HAVE_CAIRO
+#include <cairo.h>
+#endif
 
 struct _PangoFont
 {
   GObject parent_instance;
 
   hb_font_t *hb_font;
+#ifdef HAVE_CAIRO
+  cairo_font_options_t *options;
+#endif
 };
 
 typedef struct _PangoFontClass       PangoFontClass;
