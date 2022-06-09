@@ -25,6 +25,7 @@
 
 #include <gio/gio.h>
 #include <pango/pango.h>
+#include <pango/pango-item-private.h>
 
 static PangoContext *context;
 

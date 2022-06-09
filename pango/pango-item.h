@@ -51,57 +51,6 @@ typedef struct _PangoItem PangoItem;
  */
 #define PANGO_ANALYSIS_FLAG_NEED_HYPHEN (1 << 2)
 
-/**
- * PangoAnalysis:
- * @size_font: font to use for determining line height
- * @font: the font for this segment
- * @level: the bidirectional level for this segment.
- * @gravity: the glyph orientation for this segment (A `PangoGravity`).
- * @flags: boolean flags for this segment
- * @script: the detected script for this segment (A `PangoScript`)
- * @language: the detected language for this segment.
- * @extra_attrs: extra attributes for this segment.
- *
- * The `PangoAnalysis` structure stores information about
- * the properties of a segment of text.
- */
-struct _PangoAnalysis
-{
-  PangoFont *size_font;
-  PangoFont *font;
-
-  guint8 level;
-  guint8 gravity;
-  guint8 flags;
-
-  guint8 script;
-  PangoLanguage *language;
-
-  GSList *extra_attrs;
-};
-
-/**
- * PangoItem:
- * @offset: byte offset of the start of this item in text.
- * @length: length of this item in bytes.
- * @num_chars: number of Unicode characters in the item.
- * @char_offset: character offset of the start of this item in text. Since 1.50
- * @analysis: analysis results for the item.
- *
- * The `PangoItem` structure stores information about a segment of text.
- *
- * You typically obtain `PangoItems` by itemizing a piece of text
- * with [func@itemize].
- */
-struct _PangoItem
-{
-  int offset;
-  int length;
-  int num_chars;
-  int char_offset;
-  PangoAnalysis analysis;
-};
-
 #define PANGO_TYPE_ITEM (pango_item_get_type ())
 
 PANGO_AVAILABLE_IN_ALL
@@ -129,12 +78,36 @@ GList *                 pango_reorder_items          (GList             *items);
 /* Itemization */
 
 PANGO_AVAILABLE_IN_ALL
-GList *                 pango_itemize (PangoContext      *context,
-                                       PangoDirection     base_dir,
-                                       const char        *text,
-                                       int                start_index,
-                                       int                length,
-                                       PangoAttrList     *attrs);
+GList *                 pango_itemize                (PangoContext      *context,
+                                                      PangoDirection     base_dir,
+                                                      const char        *text,
+                                                      int                start_index,
+                                                      int                length,
+                                                      PangoAttrList     *attrs);
 
+PANGO_AVAILABLE_IN_ALL
+PangoFont *             pango_analysis_get_font                 (const PangoAnalysis *analysis);
+PANGO_AVAILABLE_IN_ALL
+int                     pango_analysis_get_bidi_level           (const PangoAnalysis *analysis);
+PANGO_AVAILABLE_IN_ALL
+PangoGravity            pango_analysis_get_gravity              (const PangoAnalysis *analysis);
+PANGO_AVAILABLE_IN_ALL
+guint                   pango_analysis_get_flags                (const PangoAnalysis *analysis);
+PANGO_AVAILABLE_IN_ALL
+GUnicodeScript          pango_analysis_get_script               (const PangoAnalysis *analysis);
+PANGO_AVAILABLE_IN_ALL
+PangoLanguage *         pango_analysis_get_language             (const PangoAnalysis *analysis);
+PANGO_AVAILABLE_IN_ALL
+GSList *                pango_analysis_get_extra_attributes     (const PangoAnalysis *analysis);
+PANGO_AVAILABLE_IN_ALL
+const PangoAnalysis *   pango_item_get_analysis                 (PangoItem *item);
+PANGO_AVAILABLE_IN_ALL
+int                     pango_item_get_byte_offset              (PangoItem *item);
+PANGO_AVAILABLE_IN_ALL
+int                     pango_item_get_byte_length              (PangoItem *item);
+PANGO_AVAILABLE_IN_ALL
+int                     pango_item_get_char_offset              (PangoItem *item);
+PANGO_AVAILABLE_IN_ALL
+int                     pango_item_get_char_length              (PangoItem *item);
 
 G_END_DECLS

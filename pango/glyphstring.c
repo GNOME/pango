@@ -23,6 +23,7 @@
 #include <glib.h>
 #include "pango-glyph.h"
 #include "pango-font.h"
+#include "pango-item-private.h"
 #include "pango-impl-utils.h"
 
 #include <hb-ot.h>
@@ -378,13 +379,13 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
  * </picture>
  */
 void
-pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
-                               const char       *text,
-                               int               length,
-                               PangoAnalysis    *analysis,
-                               int               index,
-                               gboolean          trailing,
-                               int              *x_pos)
+pango_glyph_string_index_to_x (PangoGlyphString    *glyphs,
+                               const char          *text,
+                               int                  length,
+                               const PangoAnalysis *analysis,
+                               int                  index,
+                               gboolean             trailing,
+                               int                 *x_pos)
 {
   pango_glyph_string_index_to_x_full (glyphs,
                                       text, length,
@@ -414,14 +415,14 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
  * clusters.
  */
 void
-pango_glyph_string_index_to_x_full (PangoGlyphString *glyphs,
-                                    const char       *text,
-                                    int               length,
-                                    PangoAnalysis    *analysis,
-                                    PangoLogAttr     *attrs,
-                                    int               index,
-                                    gboolean          trailing,
-                                    int              *x_pos)
+pango_glyph_string_index_to_x_full (PangoGlyphString    *glyphs,
+                                    const char          *text,
+                                    int                  length,
+                                    const PangoAnalysis *analysis,
+                                    PangoLogAttr        *attrs,
+                                    int                  index,
+                                    gboolean             trailing,
+                                    int                 *x_pos)
 {
   int i;
   int start_xpos = 0;
@@ -638,13 +639,13 @@ fallback:
  * attributes for the text to compute the valid cursor position.
  */
 void
-pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
-                               const char       *text,
-                               int               length,
-                               PangoAnalysis    *analysis,
-                               int               x_pos,
-                               int              *index,
-                               gboolean         *trailing)
+pango_glyph_string_x_to_index (PangoGlyphString    *glyphs,
+                               const char          *text,
+                               int                  length,
+                               const PangoAnalysis *analysis,
+                               int                  x_pos,
+                               int                 *index,
+                               gboolean            *trailing)
 {
   int i;
   int start_xpos = 0;

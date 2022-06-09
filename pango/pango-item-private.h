@@ -22,6 +22,57 @@
 #include <pango/pango-item.h>
 #include <pango/pango-break.h>
 
+/*< private >
+ * PangoAnalysis:
+ * @size_font: font to use for determining line height
+ * @font: the font for this segment
+ * @level: the bidirectional level for this segment.
+ * @gravity: the glyph orientation for this segment (A `PangoGravity`).
+ * @flags: boolean flags for this segment
+ * @script: the detected script for this segment (A `PangoScript`)
+ * @language: the detected language for this segment.
+ * @extra_attrs: extra attributes for this segment.
+ *
+ * The `PangoAnalysis` structure stores information about
+ * the properties of a segment of text.
+ */
+struct _PangoAnalysis
+{
+  PangoFont *size_font;
+  PangoFont *font;
+
+  guint8 level;
+  guint8 gravity;
+  guint8 flags;
+
+  guint8 script;
+  PangoLanguage *language;
+
+  GSList *extra_attrs;
+};
+
+/*< private>
+ * PangoItem:
+ * @offset: byte offset of the start of this item in text.
+ * @length: length of this item in bytes.
+ * @num_chars: number of Unicode characters in the item.
+ * @char_offset: character offset of the start of this item in text. Since 1.50
+ * @analysis: analysis results for the item.
+ *
+ * The `PangoItem` structure stores information about a segment of text.
+ *
+ * You typically obtain `PangoItems` by itemizing a piece of text
+ * with [func@itemize].
+ */
+struct _PangoItem
+{
+  int offset;
+  int length;
+  int num_chars;
+  int char_offset;
+  PangoAnalysis analysis;
+};
+
 
 void               pango_analysis_collect_features    (const PangoAnalysis        *analysis,
                                                        hb_feature_t               *features,

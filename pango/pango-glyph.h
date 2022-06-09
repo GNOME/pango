@@ -187,7 +187,7 @@ PANGO_AVAILABLE_IN_ALL
 void                    pango_glyph_string_index_to_x           (PangoGlyphString    *glyphs,
                                                                  const char          *text,
                                                                  int                  length,
-                                                                 PangoAnalysis       *analysis,
+                                                                 const PangoAnalysis *analysis,
                                                                  int                  index_,
                                                                  gboolean             trailing,
                                                                  int                 *x_pos);
@@ -195,7 +195,7 @@ PANGO_AVAILABLE_IN_ALL
 void                    pango_glyph_string_x_to_index           (PangoGlyphString    *glyphs,
                                                                  const char          *text,
                                                                  int                  length,
-                                                                 PangoAnalysis       *analysis,
+                                                                 const PangoAnalysis *analysis,
                                                                  int                  x_pos,
                                                                  int                 *index_,
                                                                  int                 *trailing);
@@ -204,7 +204,7 @@ PANGO_AVAILABLE_IN_ALL
 void                    pango_glyph_string_index_to_x_full      (PangoGlyphString    *glyphs,
                                                                  const char          *text,
                                                                  int                  length,
-                                                                 PangoAnalysis       *analysis,
+                                                                 const PangoAnalysis *analysis,
                                                                  PangoLogAttr        *attrs,
                                                                  int                  index_,
                                                                  gboolean             trailing,

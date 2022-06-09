@@ -21,6 +21,7 @@
 #include "config.h"
 
 #include "pango-break.h"
+#include "pango-item-private.h"
 #include "pango-impl-utils.h"
 
 static void

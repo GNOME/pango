@@ -22,6 +22,7 @@
 #include "config.h"
 #include <glib.h>
 #include <pango/pangocairo.h>
+#include <pango/pango-item-private.h>
 
 /* Test that itemizing a string with 0 characters works
  */

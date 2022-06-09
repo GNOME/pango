@@ -28,6 +28,7 @@
 #include "pango-attr-list-private.h"
 #include "pango-attr-iterator-private.h"
 #include "pango-break-table.h"
+#include "pango-item-private.h"
 #include "pango-impl-utils.h"
 #include <string.h>
 

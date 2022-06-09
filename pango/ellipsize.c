@@ -22,6 +22,7 @@
 #include "config.h"
 #include <string.h>
 
+#include "pango-item-private.h"
 #include "pango-glyph-item.h"
 #include "pango-font-private.h"
 #include "pango-attributes-private.h"

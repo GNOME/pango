@@ -326,6 +326,7 @@ render_callback (PangoLayout *layout,
             {
               PangoRun *run;
               PangoItem *item;
+              const PangoAnalysis *analysis;
               PangoRectangle rect;
               hb_font_t *hb_font;
               hb_ot_layout_baseline_tag_t baselines[] = {
@@ -350,12 +351,13 @@ render_callback (PangoLayout *layout,
                 }
 
               item = pango_run_get_item (run);
+              analysis = pango_item_get_analysis (item);
 
               if (baseline_tag == 0)
                 {
-                  hb_script_t script = (hb_script_t) g_unicode_script_to_iso15924 (item->analysis.script);
+                  hb_script_t script = (hb_script_t) g_unicode_script_to_iso15924 (pango_analysis_get_script (analysis));
 
-                  if (item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
+                  if (pango_analysis_get_flags (analysis) & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
                     baseline_tag = HB_OT_LAYOUT_BASELINE_TAG_IDEO_EMBOX_CENTRAL;
                   else
                     baseline_tag = hb_ot_layout_get_horizontal_baseline_tag_for_script (script);
@@ -364,12 +366,12 @@ render_callback (PangoLayout *layout,
               y = pango_line_iter_get_run_baseline (iter);
               pango_line_iter_get_run_extents (iter, NULL, &rect);
 
-              hb_font = pango_font_get_hb_font (item->analysis.font);
-              if (item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
+              hb_font = pango_font_get_hb_font (pango_analysis_get_font (analysis));
+              if (pango_analysis_get_flags (analysis) & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
                 dir = HB_DIRECTION_TTB;
               else
                 dir = HB_DIRECTION_LTR;
-              script = (hb_script_t) g_unicode_script_to_iso15924 (item->analysis.script);
+              script = (hb_script_t) g_unicode_script_to_iso15924 (pango_analysis_get_script (analysis));
               lang = HB_TAG_NONE;
 
               for (int i = 0; i < G_N_ELEMENTS (baselines); i++)
@@ -568,6 +570,7 @@ render_callback (PangoLayout *layout,
             {
               PangoRun *run;
               PangoItem *item;
+              const PangoAnalysis *analysis;
               PangoGlyphString *glyphs;
               PangoRectangle rect;
               int x_pos, y_pos;
@@ -577,6 +580,7 @@ render_callback (PangoLayout *layout,
                 continue;
 
               item = pango_run_get_item (run);
+              analysis = pango_item_get_analysis (item);
               glyphs = pango_run_get_glyphs (run);
 
               pango_line_iter_get_run_extents (iter, NULL, &rect);
@@ -588,7 +592,7 @@ render_callback (PangoLayout *layout,
                 {
                   PangoRectangle extents;
 
-                  pango_font_get_glyph_extents (item->analysis.font,
+                  pango_font_get_glyph_extents (pango_analysis_get_font (analysis),
                                                 glyphs->glyphs[i].glyph,
                                                 &extents, NULL);
 
@@ -652,7 +656,7 @@ render_callback (PangoLayout *layout,
               glyphs = pango_run_get_glyphs (run);
 
               text = pango_layout_get_text (layout);
-              start = text + item->offset;
+              start = text + pango_item_get_char_offset (item);
 
               offset = g_utf8_strlen (text, start - text);
 
@@ -660,14 +664,14 @@ render_callback (PangoLayout *layout,
 
               trailing = FALSE;
               p = start;
-              for (int i = 0; i <= item->num_chars; i++)
+              for (int i = 0; i <= pango_item_get_char_length (item); i++)
                 {
                   if (attrs[offset + i].is_cursor_position)
                     {
                       pango_glyph_string_index_to_x_full (glyphs,
-                                                          text + item->offset,
-                                                          item->length,
-                                                          &item->analysis,
+                                                          text + pango_item_get_byte_offset (item),
+                                                          pango_item_get_byte_length (item),
+                                                          pango_item_get_analysis (item),
                                                           (PangoLogAttr *)attrs + offset,
                                                           p - start,
                                                           trailing,
@@ -686,7 +690,7 @@ render_callback (PangoLayout *layout,
                       g_free (s);
                    }
 
-                  if (i < item->num_chars)
+                  if (i < pango_item_get_char_length (item))
                     {
                       num++;
                       p = g_utf8_next_char (p);

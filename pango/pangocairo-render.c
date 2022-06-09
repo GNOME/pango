@@ -23,6 +23,7 @@
 
 #include <math.h>
 
+#include "pango-item-private.h"
 #include "pango-font-private.h"
 #include "pangocairo-private.h"
 #include "pango-glyph-item.h"

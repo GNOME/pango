@@ -463,3 +463,184 @@ pango_item_get_properties (PangoItem      *item,
       tmp_list = tmp_list->next;
     }
 }
+
+/**
+ * pango_analysis_get_font:
+ * @analysis: a `PangoAnalysis`
+ *
+ * Returns the font that will be used for text
+ * with this `PangoAnalysis`.
+ *
+ * Return value: (transfer none): the `PangoFont`
+ */
+PangoFont *
+pango_analysis_get_font (const PangoAnalysis *analysis)
+{
+  return analysis->font;
+}
+
+/**
+ * pango_analysis_get_bidi_level:
+ * @analysis: a `PangoAnalysis`
+ *
+ * Returns the bidi embedding level for text
+ * with this `PangoAnalysis`.
+ *
+ * Return value: the bidi embedding level
+ */
+int
+pango_analysis_get_bidi_level (const PangoAnalysis *analysis)
+{
+  return analysis->level;
+}
+
+/**
+ * pango_analysis_get_gravity:
+ * @analysis: a `PangoAnalysis`
+ *
+ * Returns the gravity for text with this `PangoAnalysis`.
+ *
+ * Return value: the gravity
+ */
+PangoGravity
+pango_analysis_get_gravity (const PangoAnalysis *analysis)
+{
+  return (PangoGravity) analysis->gravity;
+}
+
+/**
+ * pango_analysis_get_flags:
+ * @analysis: a `PangoAnalysis`
+ *
+ * Returns flags for this `PangoAnalysis`.
+ *
+ * Possible flag values are
+ * `PANGO_ANALYSIS_FLAG_CENTERED_BASELINE`,
+ * `PANGO_ANALYSIS_FLAG_IS_ELLIPSIS` and
+ * `PANGO_ANALYSIS_FLAG_NEED_HYPHEN`.
+ *
+ * Return value: the flags
+ */
+guint
+pango_analysis_get_flags (const PangoAnalysis *analysis)
+{
+  return analysis->flags;
+}
+
+/**
+ * pango_analysis_get_script:
+ * @analysis: a `PangoAnalysis`
+ *
+ * Returns the script for text with this `PangoAnalysis`.
+ *
+ * Return value: the script
+ */
+GUnicodeScript
+pango_analysis_get_script (const PangoAnalysis *analysis)
+{
+  return (GUnicodeScript) analysis->script;
+}
+
+/**
+ * pango_analysis_get_language:
+ * @analysis: a `PangoAnalysis`
+ *
+ * Returns the language for text with this `PangoAnalysis`.
+ *
+ * Return value: the script
+ */
+PangoLanguage *
+pango_analysis_get_language (const PangoAnalysis *analysis)
+{
+  return analysis->language;
+}
+
+/**
+ * pango_analysis_get_extra_attributes:
+ * @analysis: a `PangoAnalysis`
+ *
+ * Returns attributes to apply to text with this
+ * `PangoAnalysis`.
+ *
+ * Return value: (transfer none) (element-type PangoAttribute):
+ *   a `GSList` with `PangoAttribute` values
+ */
+GSList *
+pango_analysis_get_extra_attributes (const PangoAnalysis *analysis)
+{
+  return analysis->extra_attrs;
+}
+
+/**
+ * pango_item_get_analysis:
+ * @item: a `PangoItem`
+ *
+ * Returns the `PangoAnalysis` of @item.
+ *
+ * Return value: (transfer none): a `PangoAnalysis`
+ */
+const PangoAnalysis *
+pango_item_get_analysis (PangoItem *item)
+{
+  return &item->analysis;
+}
+
+/**
+ * pango_item_get_byte_offset:
+ * @item: a `PangoItem`
+ *
+ * Returns the byte offset of this items
+ * text in the overall paragraph text.
+ *
+ * Return value: the byte offset
+ */
+int
+pango_item_get_byte_offset (PangoItem *item)
+{
+  return item->offset;
+}
+
+/**
+ * pango_item_get_byte_length:
+ * @item: a `PangoItem`
+ *
+ * Returns the length of this items
+ * text in bytes.
+ *
+ * Return value: the length of @item
+ */
+int
+pango_item_get_byte_length (PangoItem *item)
+{
+  return item->length;
+}
+
+/**
+ * pango_item_get_char_offset:
+ * @item: a `PangoItem`
+ *
+ * Returns the offset of this items text
+ * in the overall paragraph text, in characters.
+ *
+ * Returns value: the character offset
+ */
+int
+pango_item_get_char_offset (PangoItem *item)
+{
+  return item->char_offset;
+}
+
+/**
+ * pango_item_get_char_length:
+ * @item: a `PangoItem`
+ *
+ * Returns the number of characters in this
+ * items text.
+ *
+ * Return value: the number of characters in @item
+ */
+int
+pango_item_get_char_length (PangoItem *item)
+{
+  return item->num_chars;
+}
