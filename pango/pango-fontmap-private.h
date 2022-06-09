@@ -24,6 +24,8 @@
 #include <pango/pango-fontmap-private.h>
 
 
+G_BEGIN_DECLS
+
 struct _PangoFontMap
 {
   GObject parent_instance;
@@ -67,3 +69,5 @@ void                    pango_font_map_repopulate    (PangoFontMap *self,
                                                       gboolean      add_synthetic);
 
 void                    pango_font_map_changed       (PangoFontMap *self);
+
+G_END_DECLS
