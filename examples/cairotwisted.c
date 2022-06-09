@@ -472,6 +472,7 @@ draw_text (cairo_t *cr,
            const char *font,
            const char *text)
 {
+  PangoContext *context;
   PangoLayout *layout;
   PangoLine *line;
   PangoFontDescription *desc;
@@ -485,7 +486,9 @@ draw_text (cairo_t *cr,
   cairo_set_font_options (cr, font_options);
   cairo_font_options_destroy (font_options);
 
-  layout = pango_cairo_create_layout (cr);
+  context = pango_cairo_create_context (cr);
+  layout = pango_layout_new (context);
+  g_object_unref (context);
 
   desc = pango_font_description_from_string (font);
   pango_layout_set_font_description (layout, desc);

@@ -62,4 +62,4 @@ _PANGO_EXTERN
 GType pango_cairo_renderer_get_type    (void) G_GNUC_CONST;
 
 
-const cairo_font_options_t *_pango_cairo_context_get_merged_font_options (PangoContext *context);
+const cairo_font_options_t *pango_cairo_context_get_merged_font_options (PangoContext *context);

@@ -21,6 +21,9 @@
 
 #include <pango/pango-context.h>
 
+#ifdef HAVE_CAIRO
+#include <cairo.h>
+#endif
 
 struct _PangoContext
 {
@@ -44,4 +47,12 @@ struct _PangoContext
   PangoFontMetrics *metrics;
 
   gboolean round_glyph_positions;
+
+#ifdef HAVE_CAIRO
+  gboolean set_options_explicit;
+
+  cairo_font_options_t *set_options;
+  cairo_font_options_t *surface_options;
+  cairo_font_options_t *merged_options;
+#endif
 };
