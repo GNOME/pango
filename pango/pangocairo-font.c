@@ -139,11 +139,7 @@ create_font_face_for_user_font (PangoUserFont *font)
 
   cairo_face = cairo_user_font_face_create ();
   cairo_font_face_set_user_data (cairo_face, &cairo_user_data, font, NULL);
-#ifdef HAVE_CAIRO_USER_FONT_FACE_SET_RENDER_COLOR_GLYPH_FUNC
   cairo_user_font_face_set_render_color_glyph_func (cairo_face, render_func);
-#else
-  cairo_user_font_face_set_render_glyph_func (cairo_face, render_func);
-#endif
 
   return cairo_face;
 }

@@ -24,12 +24,7 @@ tests = [
   [ 'testtabs' ],
 ]
 
-if build_pangoft2
-  test_cflags += '-DHAVE_FREETYPE'
-endif
-
 if cairo_dep.found()
-  test_cflags += '-DHAVE_CAIRO'
   tests += [
     [ 'test-bidi', [ 'test-bidi.c' ] ],
     [ 'testcontext', [ 'testcontext.c' ] ],
@@ -45,11 +40,10 @@ if cairo_dep.found()
     [ 'testmisc', [ 'testmisc.c' ] ],
   ]
 
-  if build_pangoft2
-    tests += [
-      [ 'testserialize', [ 'testserialize.c' ] ],
-      [ 'testhbfont', [ 'testhbfont.c' ] ],
-    ]
+  tests += [
+    [ 'testserialize', [ 'testserialize.c' ] ],
+    [ 'testhbfont', [ 'testhbfont.c' ] ],
+  ]
 
     if host_system != 'darwin'
       tests += [
@@ -57,7 +51,6 @@ if cairo_dep.found()
         [ 'test-fonts', [ 'test-fonts.c', 'test-common.c' ] ],
       ]
     endif
-  endif
 
   if host_system != 'darwin'
     tests += [
@@ -65,7 +58,7 @@ if cairo_dep.found()
     ]
   endif
 
-  if pango_cairo_backends.contains('png')
+  if cairo_dep.found()
     tests += [
       [ 'test-pangocairo-threads', [ 'test-pangocairo-threads.c' ] ],
     ]

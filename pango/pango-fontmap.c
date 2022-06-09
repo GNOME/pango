@@ -36,15 +36,15 @@
 #include "pango-trace-private.h"
 #include "pango-context.h"
 
-#if defined (HAVE_CORE_TEXT) && defined (HAVE_CAIRO_QUARTZ)
+#if defined (HAVE_CORE_TEXT)
 #include "pangocoretext-fontmap.h"
 #endif
 
-#if defined (HAVE_CAIRO_WIN32)
+#if defined (HAVE_DIRECT_WRITE)
 #include "pangodwrite-fontmap.h"
 #endif
 
-#if defined (HAVE_CAIRO_FREETYPE)
+#if defined (HAVE_FONTCONFIG)
 #include "pangofc-fontmap.h"
 #endif
 
@@ -995,17 +995,17 @@ pango_font_map_new_default (void)
   if (backend && !*backend)
     backend = NULL;
 
-#if defined (HAVE_CORE_TEXT) && defined (HAVE_CAIRO_QUARTZ)
+#if defined (HAVE_CORE_TEXT)
   if (!backend || 0 == strcmp (backend, "coretext"))
     return PANGO_FONT_MAP (pango_core_text_font_map_new ());
 #endif
 
-#if defined (HAVE_CAIRO_WIN32)
+#if defined (HAVE_DIRECT_WRITE)
   if (!backend || 0 == strcmp (backend, "win32"))
     return PANGO_FONT_MAP (pango_direct_write_font_map_new ());
 #endif
 
-#if defined (HAVE_CAIRO_FREETYPE)
+#if defined (HAVE_FONTCONFIG)
   if (!backend || 0 == strcmp (backend, "fc")
                || 0 == strcmp (backend, "fontconfig"))
     return PANGO_FONT_MAP (pango_fc_font_map_new ());
@@ -1013,13 +1013,13 @@ pango_font_map_new_default (void)
 
   {
     const char backends[] = ""
-#if defined (HAVE_CORE_TEXT) && defined (HAVE_CAIRO_QUARTZ)
+#if defined (HAVE_CORE_TEXT)
       " coretext"
 #endif
-#if defined (HAVE_CAIRO_WIN32)
+#if defined (HAVE_DIRECT_WRITE)
       " win32"
 #endif
-#if defined (HAVE_CAIRO_FREETYPE)
+#if defined (HAVE_FNTCONFIG)
       " fontconfig"
 #endif
       ;

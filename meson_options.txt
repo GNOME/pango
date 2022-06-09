@@ -1,5 +1,5 @@
-option('gtk_doc',
-       description: 'Build API reference for Pango using GTK-Doc',
+option('docs',
+       description: 'Build API reference for Pango',
        type: 'boolean',
        value: false)
 option('introspection',
@@ -11,10 +11,6 @@ option('install-tests',
        description : 'Install tests',
        type: 'boolean',
        value: false)
-option('fontconfig',
-       description : 'Build with FontConfig support. Passing \'auto\' or \'disabled\' disables fontconfig where it is optional, i.e. on Windows and macOS. Passing \'disabled\' on platforms where fontconfig is required results in error.',
-       type: 'feature',
-       value: 'auto')
 option('sysprof',
        type : 'feature',
        value : 'disabled',
@@ -27,7 +23,3 @@ option('cairo',
        type : 'feature',
        value : 'enabled',
        description : 'Build with cairo support')
-option('freetype',
-       type : 'feature',
-       value : 'auto',
-       description : 'Build with freetype support')
