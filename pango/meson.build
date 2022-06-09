@@ -71,6 +71,7 @@ pango_headers = [
   'pango-generic-family.h',
   'pango-glyph.h',
   'pango-glyph-item.h',
+  'pango-glyph-iter.h',
   'pango-gravity.h',
   'pango-item.h',
   'pango-language.h',
