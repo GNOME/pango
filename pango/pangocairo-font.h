@@ -19,6 +19,16 @@
 
 #pragma once
 
-#include <pango/pangocairo-context.h>
-#include <pango/pangocairo-font.h>
-#include <pango/pangocairo-render.h>
+#include <pango/pango.h>
+#include <cairo.h>
+
+G_BEGIN_DECLS
+
+PANGO_AVAILABLE_IN_ALL
+void                    pango_cairo_font_set_font_options       (PangoFont                      *font,
+                                                                 const cairo_font_options_t     *options);
+PANGO_AVAILABLE_IN_ALL
+const cairo_font_options_t *
+                        pango_cairo_font_get_font_options       (PangoFont                      *font);
+
+G_END_DECLS

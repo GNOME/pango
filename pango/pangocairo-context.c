@@ -185,8 +185,7 @@ pango_cairo_context_get_merged_font_options (PangoContext *context)
       context->merged_options = cairo_font_options_create ();
 
       if (context->surface_options)
-        cairo_font_options_merge (context->merged_options, context->surface_options)
-;
+        cairo_font_options_merge (context->merged_options, context->surface_options);
       if (context->set_options)
         cairo_font_options_merge (context->merged_options, context->set_options);
     }

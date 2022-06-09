@@ -24,6 +24,9 @@
 #include <pango/pango-generic-family.h>
 #include <glib-object.h>
 
+#ifdef HAVE_CAIRO
+#include <cairo.h>
+#endif
 
 typedef struct _PangoFontsetCached PangoFontsetCached;
 typedef struct _PangoFontsetCachedClass  PangoFontsetCachedClass;
@@ -39,6 +42,10 @@ struct _PangoFontsetCached
   const PangoMatrix *matrix;
   GList cache_link;
   GHashTable *cache;
+
+#ifdef HAVE_CAIRO
+  cairo_font_options_t *font_options;
+#endif
 };
 
 struct _PangoFontsetCachedClass
@@ -60,4 +67,3 @@ void                 pango_fontset_cached_add_family     (PangoFontsetCached    
                                                           PangoGenericFamily         *family);
 int                  pango_fontset_cached_size           (PangoFontsetCached         *self);
 PangoFont *          pango_fontset_cached_get_first_font (PangoFontsetCached         *self);
-

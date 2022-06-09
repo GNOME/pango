@@ -33,6 +33,7 @@
 #include "pango-hbface-private.h"
 #include "pango-userfont-private.h"
 #include "pango-userface-private.h"
+#include "pango-font-private.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wundef"
@@ -578,9 +579,15 @@ _pango_font_get_cairo_font_private (PangoFont *font)
                           x_scale * size / (double)PANGO_SCALE,
                           y_scale * size / (double)PANGO_SCALE);
 
-      font_options = cairo_font_options_create ();
-      cairo_font_options_set_hint_style (font_options, CAIRO_HINT_STYLE_NONE);
-      cairo_font_options_set_hint_metrics (font_options, CAIRO_HINT_METRICS_OFF);
+      font_options = (cairo_font_options_t *)pango_cairo_font_get_font_options (font);
+      if (font_options)
+        font_options = cairo_font_options_copy (font_options);
+      else
+        {
+          font_options = cairo_font_options_create ();
+          cairo_font_options_set_hint_style (font_options, CAIRO_HINT_STYLE_NONE);
+          cairo_font_options_set_hint_metrics (font_options, CAIRO_HINT_METRICS_OFF);
+        }
 
       cf_priv = g_new0 (PangoCairoFontPrivate, 1);
       _pango_cairo_font_private_initialize (cf_priv,
@@ -660,4 +667,54 @@ _pango_cairo_font_private_finalize (PangoCairoFontPrivate *cf_priv)
 
   _pango_cairo_font_hex_box_info_destroy (cf_priv->hbi);
   cf_priv->hbi = NULL;
+}
+
+/**
+ * pango_cairo_font_set_font_options:
+ * @font: a `PangoFont`
+ * @options: (nullable): a `cairo_font_options_t`, or %NULL to unset
+ *   any previously set options. A copy is made.
+ *
+ * Sets the font options used when rendering text with this font.
+ *
+ * This is rarely needed. Fonts usually get font options from the
+ * `PangoContext` in which they are loaded.
+ */
+void
+pango_cairo_font_set_font_options (PangoFont                  *font,
+                                   const cairo_font_options_t *options)
+{
+  g_return_if_fail (PANGO_IS_FONT (font));
+
+  if (!font->options && !options)
+    return;
+
+  if (font->options && options &&
+      cairo_font_options_equal (font->options, options))
+    return;
+
+  if (font->options)
+    cairo_font_options_destroy (font->options);
+
+  if (options)
+    font->options = cairo_font_options_copy (options);
+  else
+    font->options = NULL;
+}
+
+/**
+ * pango_cairo_font_get_font_options:
+ * @font: a `PangoFont`
+ *
+ * Gets font options for the font.
+ *
+ * Returns: (transfer none): font options that are
+ *   applied when rendering text with this font
+ */
+const cairo_font_options_t *
+pango_cairo_font_get_font_options (PangoFont *font)
+{
+  g_return_val_if_fail (PANGO_IS_FONT (font), NULL);
+
+  return font->options;
 }
