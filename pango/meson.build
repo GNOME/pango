@@ -114,7 +114,7 @@ if cairo_dep.found()
   ]
 endif
 
-if has_core_text
+if host_system == 'darwin'
   pango_headers += [
     'pangocoretext-fontmap.h',
   ]
@@ -124,7 +124,7 @@ if has_core_text
   ]
 endif
 
-if build_pangoft2
+if host_system == 'linux'
   pango_headers += [
     'pangofc-fontmap.h',
   ]

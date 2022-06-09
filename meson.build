@@ -263,15 +263,7 @@ if thai_dep.found()
   endif
 endif
 
-# These are for the various .pc files so that things will link
-# properly, depending on whether we have the pkg-config files
-# for those non-GNOME dependencies, or when we find them manually
-# for MSVC builds, as their MSVC build systems do not generate
-# pkg-config files for them
-cairo_pc = ''
-cairo_lib = ''
-freetype2_pc=''
-fontconfig_pc=''
+x11_dep = dependency('x11', required: false)
 
 harfbuzz_dep = dependency('harfbuzz',
                           version: harfbuzz_req_version,
@@ -281,99 +273,36 @@ harfbuzz_dep = dependency('harfbuzz',
 
 pango_deps += harfbuzz_dep
 
-# If option is 'auto' or 'enabled' it is not required to find fontconfig on the
-# system because a fallback is done at the end. Override 'disabled' option on
-# platforms that requires it.
-fontconfig_option = get_option('fontconfig')
-fontconfig_required = host_system not in ['windows', 'darwin']
-if not fontconfig_option.disabled() or fontconfig_required
-  fontconfig_option = false
-endif
+if host_system == 'linux'
+  fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version, required: true)
 
-fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version, required: fontconfig_option)
-if fontconfig_dep.found()
-  fontconfig_pc = 'fontconfig'
-else
-  if cc.get_id() == 'msvc' and cc.has_header('fontconfig/fontconfig.h')
-    # Look for the Visual Studio-style import library if FontConfig's .pc file cannot be
-    # found on Visual Studio
-    fontconfig_dep = cc.find_library('fontconfig', required: fontconfig_option)
-  endif
-endif
-
-# Do the fallback now if fontconfig has not been found on the system. Override
-# user option on platforms that always require fontconfig.
-fontconfig_option = fontconfig_required ? true : get_option('fontconfig')
-if not fontconfig_dep.found()
-  fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version,
-                              fallback: ['fontconfig', 'fontconfig_dep'],
-                              required: fontconfig_option)
-endif
-
-if fontconfig_dep.found()
   pango_deps += fontconfig_dep
-
-  if fontconfig_dep.type_name() != 'library'
-    if fontconfig_dep.version().version_compare('>=2.12.92')
-      pango_conf.set('HAVE_FCWEIGHTFROMOPENTYPEDOUBLE', 1)
-    endif
-  elif cc.has_function('FcWeightFromOpenTypeDouble', dependencies: fontconfig_dep)
-    pango_conf.set('HAVE_FCWEIGHTFROMOPENTYPEDOUBLE', 1)
-  endif
+  pango_conf.set('HAVE_FONTCONFIG', 1)
 endif
 
-if pango_conf.has('HAVE_FCWEIGHTFROMOPENTYPEDOUBLE')
-  res = 'YES'
-else
-  res = 'NO'
-endif
-message('fontconfig has FcWeightFromOpenTypeDouble: ' + res)
-
-# If option is 'auto' or 'enabled' it is not required to find freetype2 on the
-# system because a fallback is done at the end. Override 'disabled' option on
-# if fontconfig has been found.
-freetype_option = get_option('freetype')
-freetype_required = fontconfig_dep.found()
-if not freetype_option.disabled() or freetype_required
-  freetype_option = false
-endif
-
-# The first version of freetype with a pkg-config file is 2.1.5,
-# CMake uses 'freetype' rather than 'freetype2' for the package name
-freetype_package_name = cc.get_argument_syntax() == 'msvc' ? \
-                        'freetype' : 'freetype2'
-
-freetype_dep = dependency(freetype_package_name,
-                          required: freetype_option,
-                          fallback: ['freetype2', 'freetype_dep'])
-
-if freetype_dep.found() and freetype_dep.type_name() == 'pkgconfig'
-  freetype2_pc = 'freetype2'
-endif
-
-# To build pangoft2, we need HarfBuzz, FontConfig and FreeType
-build_pangoft2 = fontconfig_dep.found() and freetype_dep.found()
-if build_pangoft2
-  pango_conf.set('HAVE_FREETYPE', 1)
-  pango_deps += freetype_dep
-endif
-
-x11_dep = dependency('x11', required: false)
-
-has_core_text = false
 if host_system == 'darwin'
-  has_core_text = cc.links('''#include <CoreText/CoreText.h>
+  if not cc.links('''#include <CoreText/CoreText.h>
                               int main (void) {
                                 CTGetCoreTextVersion ();
                                 return 0;
                               }''',
                            name: 'CoreText availability',
                            dependencies: dependency('appleframeworks', modules: 'ApplicationServices'))
-  if has_core_text
-    pango_conf.set('HAVE_CORE_TEXT', 1)
+    error ('CoreText is required')
   endif
 
+  pango_conf.set('HAVE_CORE_TEXT', 1)
+
   pango_deps += dependency('appleframeworks', modules: [ 'CoreFoundation', 'ApplicationServices' ])
+endif
+
+if host_system == 'windows'
+  pango_conf.set('HAVE_DIRECT_WRITE', 1)
+
+  pango_deps += [
+    cc.find_library('gdi32'),
+    cc.find_library('dwrite'),
+  ]
 endif
 
 # If option is 'auto' or 'enabled' it is not required to find cairo on the
@@ -383,186 +312,20 @@ if not cairo_option.disabled()
   cairo_option = false
 endif
 
-cairo_found_type = ''
-cairo_dep = dependency('cairo', version: cairo_req_version, required: cairo_option)
+cairo_dep = dependency('cairo', version: cairo_req_version,
+                       fallback: ['cairo', 'libcairo_dep'], required: get_option('cairo'))
 
-if cairo_dep.found()
-  cairo_found_type = cairo_dep.type_name()
-else
-  if cc.get_id() == 'msvc' and cc.has_header('cairo.h')
-    cairo_dep = cc.find_library('cairo', required: cairo_option)
-    cairo_found_type = 'library'
-  endif
+pango_conf.set('HAVE_CAIRO', cairo_dep.found ())
+pango_deps += cairo_dep
+
+cairo_png_dep = dependency('cairo-png', required: false)
+if cairo_png_dep.found()
+  pango_conf.set('HAVE_CAIRO_PNG', 1)
 endif
 
-# Remove once Meson gains capability to declare dependencies
-# in a declarative way
-if not cairo_dep.found()
-  cairo_dep = dependency('cairo', version: cairo_req_version,
-                         fallback: ['cairo', 'libcairo_dep'], required: get_option('cairo'))
-  cairo_found_type = cairo_dep.type_name()
-endif
-
-if cc.has_function('cairo_user_font_face_set_render_color_glyph_func', args: '-lcairo', dependencies: cairo_dep)
-  pango_conf.set('HAVE_CAIRO_USER_FONT_FACE_SET_RENDER_COLOR_GLYPH_FUNC', 1)
-endif
-
-pango_font_backends = []
-pango_cairo_backends = []
-
-if ['pkgconfig', 'internal'].contains(cairo_found_type)
-  # Check the following Cairo font backends
-  # - dependency
-  # - version
-  # - define
-  # - backend name
-  # Note that Cairo can be built with FreeType but without FontConfig
-
-  cairo_font_backends = [
-    [ 'cairo-ft', cairo_req_version, 'HAVE_CAIRO_FREETYPE', 'freetype', ],
-    [ 'cairo-win32', cairo_req_version, 'HAVE_CAIRO_WIN32', 'win32', ],
-    [ 'cairo-quartz', cairo_req_version, 'HAVE_CAIRO_QUARTZ', 'quartz', ],
-  ]
-
-  if cairo_found_type == 'internal'
-    cairo_features = subproject('cairo').get_variable('built_features')
-  endif
-
-  foreach b: cairo_font_backends
-    if cairo_found_type == 'pkgconfig'
-      dep = dependency(b[0], version: b[1], required: false)
-    else
-      dep = dependency('', required: false)
-      foreach f: cairo_features
-        if f['name'] == b[0]
-          dep = cairo_dep
-          message('Cairo font backend "@0@" enabled'.format(b))
-        endif
-      endforeach
-    endif
-    if dep.found()
-      if b[0] == 'cairo-ft' and not build_pangoft2
-        continue
-      endif
-      if b[0] == 'cairo-quartz' and not pango_conf.has('HAVE_CORE_TEXT')
-        continue
-      endif
-      pango_conf.set(b[2], 1)
-      pango_font_backends += b[3]
-    endif
-  endforeach
-
-  if pango_font_backends.length() == 0
-    error('No Cairo font backends found')
-  endif
-
-  # Check the following Cairo surface backends
-  # - dependency
-  # - version
-  # - define
-  # - backend name
-  cairo_surface_backends = [
-    [ 'cairo-png', cairo_req_version, 'HAVE_CAIRO_PNG', 'png', ],
-    [ 'cairo-ps', cairo_req_version, 'HAVE_CAIRO_PS', 'ps', ],
-    [ 'cairo-pdf', cairo_req_version, 'HAVE_CAIRO_PDF', 'pdf', ],
-    [ 'cairo-xlib', cairo_req_version, 'HAVE_CAIRO_XLIB', 'xlib', ],
-  ]
-
-  foreach b: cairo_surface_backends
-    if cairo_found_type == 'pkgconfig'
-      dep = dependency(b[0], version: b[1], required: false)
-    else
-      dep = dependency('', required: false)
-      foreach f: cairo_features
-        if f['name'] == b[0]
-          dep = cairo_dep
-          message('Cairo surface backend "@0@" enabled'.format(b))
-        endif
-      endforeach
-    endif
-    if dep.found()
-      pango_conf.set(b[2], 1)
-      pango_cairo_backends += b[3]
-    endif
-  endforeach
-
-  # This is to set up pangocairo.pc so that things that refer to
-  # it will link correctly
-  cairo_pc = 'cairo'
-elif cairo_found_type == 'library'
-  # Fallback: Look for Cairo items manually
-  # We need to check for headers for some
-  cairo_headers = [ 'win32', 'quartz', 'ps', 'pdf', 'xlib' ]
-
-  foreach header : cairo_headers
-    if cc.has_header('cairo-@0@.h'.format(header))
-      pango_conf.set('HAVE_CAIRO_@0@'.format(header.underscorify().to_upper()), 1)
-      if header == 'win32'
-        pango_font_backends += header
-      elif header == 'quartz'
-        if pango_conf.has('HAVE_CORE_TEXT')
-          pango_font_backends += header
-        endif
-      else
-        pango_cairo_backends += header
-      endif
-    endif
-  endforeach
-
-  # Other cairo features that we need to check for symbols
-  # Note that Cairo with FreeType support can be without FontConfig
-  # support, so we must check for FontConfig support in Cairo
-  if cc.links('''#include <cairo-ft.h>
-                 int main() {
-                   FcPattern *p = NULL;
-                   cairo_ft_font_face_create_for_pattern (p);
-                   return 0;
-                 }''',
-                 dependencies: cairo_dep,
-                 name : 'Cairo is built with FreeType and FontConfig support')
-    if build_pangoft2
-      pango_conf.set('HAVE_CAIRO_FREETYPE', 1)
-      pango_font_backends += 'freetype'
-    endif
-  endif
-
-  if pango_font_backends.length() == 0
-    error('Cairo found, but no Cairo font backends found')
-  endif
-
-  # Check for Cairo's libpng output surface support
-  if cc.links('''#include <cairo.h>
-                 #include <stdio.h>
-                 int main() {
-                   cairo_surface_t *s = NULL;
-                   const char *f = "abc.png";
-                   cairo_surface_write_to_png (s, f);
-                   return 0;
-                 }''',
-                 dependencies: cairo_dep,
-                 name : 'Cairo is built with PNG output surface support')
-    pango_conf.set('HAVE_CAIRO_PNG', 1)
-    pango_cairo_backends += 'png'
-  endif
-
-  # This is to set up pangocairo.pc so that things that refer to
-  # it will link correctly, when we don't have pkg-config files for cairo
-  cairo_lib = '-lcairo'
-endif
-
-if cairo_dep.found()
-  pango_conf.set('HAVE_CAIRO', 1)
-  pango_deps += cairo_dep
-
-  pangocairo_requires = ''
-
-  if pango_font_backends.contains('freetype')
-    pangocairo_requires += 'pangoft2 '
-  endif
-
-  if pango_font_backends.contains('win32')
-    pangocairo_requires += 'pangowin32 '
-  endif
+cairo_xlib_dep = dependency('cairo-xlib', required: false)
+if cairo_xlib_dep.found()
+  pango_conf.set('HAVE_CAIRO_XLIB', 1)
 endif
 
 # libsysprof-capture support
@@ -584,7 +347,7 @@ pango_deps += libsysprof_capture_dep
 
 gidocgen_dep = dependency('gi-docgen', version: '>= 2021.1',
                           fallback: ['gi-docgen', 'dummy_dep'],
-                          required: get_option('gtk_doc'))
+                          required: get_option('docs'))
 
 gnome = import('gnome')
 pkgconfig = import('pkgconfig')
@@ -601,7 +364,7 @@ subdir('examples')
 subdir('tests')
 subdir('tools')
 
-if get_option('gtk_doc')
+if get_option('docs')
   subdir('docs')
 endif
 
@@ -609,11 +372,10 @@ if not meson.is_subproject()
   meson.add_dist_script('build-aux/meson/dist-docs.py')
 endif
 
-summary('Font backends', pango_font_backends)
-
+summary('Fontconfig support', host_system == 'linux', section: 'Features')
+summary('CoreText support', host_system == 'darwin', section: 'Features')
+summary('DirectWrite support', host_system == 'windows', section: 'Features')
 summary('Cairo support', cairo_dep.found(), section: 'Features')
-summary('Fontconfig support', fontconfig_dep.found(), section: 'Features')
-summary('Freetype support', freetype_dep.found(), section: 'Features')
 summary('Thai support', thai_dep.found(), section: 'Features')
 summary('Sysprof support', libsysprof_capture_dep.found(), section: 'Features')
 
@@ -623,7 +385,7 @@ summary('Linker', cc.get_linker_id(), section: 'Toolchain')
 summary('Debugging', get_option('debug'), section: 'Build')
 summary('Optimization', get_option('optimization'), section: 'Build')
 summary('Introspection', get_option('introspection').enabled(), section: 'Build')
-summary('Documentation', get_option('gtk_doc'), section: 'Build')
+summary('Documentation', get_option('docs'), section: 'Build')
 summary('Install tests', get_option('install-tests'), section: 'Build')
 
 summary('prefix', pango_prefix, section: 'Directories')

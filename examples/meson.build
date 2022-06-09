@@ -1,6 +1,6 @@
 examples = []
 
-if pango_cairo_backends.contains('png')
+if cairo_png_dep.found()
   examples += [
     'cairoshape',
     'cairosimple',
