@@ -20,6 +20,7 @@
  */
 
 #include "config.h"
+#include <stdlib.h>
 #include <math.h>
 
 #include "pango-font-description-private.h"
