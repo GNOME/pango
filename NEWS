@@ -1,3 +1,118 @@
+Overview of changes in 1.90
+===========================
+
+This is an unstable development release leading towards
+Pango 2.0, which will be major new version, and will not
+be API or ABI compatible with Pango 1.x.
+
+The API changes in this release are not final, and feedback
+on the changes and features in this release is very appreciated,
+so we can fix up oversights and omissions before finalizing
+the 2.0 API.
+
+This release is parallel-installable with Pango 1.50.x.
+
+Changes
+-------
+
+Pango is now shipped as a single shared object, libpango-2.so,
+which contains the high-level cross-platform code as well as
+platform-specific fontmap implementations and the cairo
+support (if it is enabled).
+
+Linking both libpango-1.so and libpango-2.so into the same
+process is not supported, and we try to detect and prevent
+this situation.
+
+Major new APIs
+--------------
+
+- PangoLineBreaker:
+
+  PangoLineBreaker is the core of pango's line-breaking algorithm,
+  broken out from PangoLayout. Having this available independent
+  from PangoLayout will facilitate uses such as multi-column
+  layout, text flow between frames and shaping paragraphs around
+  images.
+
+- PangoLines
+
+  PangoLines is the 'formatted output' part of a PangoLayout, and
+  can be used to collect the output of a PangoLineBreaker.
+
+- PangoFontMap
+
+  The PangoFontMap class has seen some significant changes. It is
+  now possible to instantiate a PangoFontMap, and populate it manually
+  with PangoFontFamily and PangoFontFace objects.
+
+  There are platform-specific subclasses
+
+  - PangoFcFontMap
+  - PangoCoreTextFontMap
+  - PangoDirectWriteFontMap
+
+  which will use platform API to enumerate fonts and populate
+  the fontmap.
+
+- PangoGenericFamily
+
+  PangoGenericFamily is a new object representing generic font
+  families such as 'Sans' or 'Serif', which are populated with
+  lots of individual font families matching these general styles.
+
+  When a PangoFontMap returns a fontset matching a query, it will
+  always include at least on PangoGenericFamily in the result, to
+  ensure good charset coverage.
+
+  In the past, this was achieved by having the fontconfig fontmap
+  always return a fontset including *all* the system fonts, with
+  varying order. The new approach should be more performant on
+  systems with many fonts, where sorting all the fonts is expensive.
+
+- PangoHbFace, PangoHbFont
+
+  The Pango font classes have been replaced by this pair of classes
+  which are thin wrappers around hb_face_t and hb_font_t. Since
+  HarfBuzz provides these cross-platform objects for us, we don't
+  need platform-specific font implementations anymore.
+
+  As one of the advantages of the new font implementation it is
+  now possible to instantiate fonts from a font file, or from font
+  data in memory.
+
+  The cairo support code has learned to generate cairo scaled
+  fonts from PangoHbFont objects.
+
+- PangoUserFont, PangoUserFace
+
+  These are a new kind of callback-based font implementation to
+  allow for entirely application-defined font handling, including
+  glyph drawing.
+
+Other API changes
+-----------------
+
+- PangoAttribute has been reimplemented
+
+- All deprecated APIs have been dropped
+
+- The PangoScript enumeration has been replaced by GUnicodeScript
+
+- PangoCoverage has been replaced by pango_font_face_has_char
+
+- PangoColor has gained an alpha field
+
+- The PangoFontsetSimple object is unused and has been dropped
+
+- PangoXft, PangoFT2 and other backend-specific rendering APIs
+  have been dropped for now
+
+- Most structs have been made private
+
+- Many smaller API cleanups and reductions
+
+
 Overview of changes in 1.50.7, 14-04-2022
 =========================================
 - coretext: Fix the build
