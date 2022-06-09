@@ -17,6 +17,7 @@ draw_text (cairo_t *cr)
  */
 #define TWEAKABLE_SCALE ((double) 0.1)
 
+  PangoContext *context;
   PangoLayout *layout;
   PangoLines *lines;
   PangoFontDescription *desc;
@@ -27,7 +28,9 @@ draw_text (cairo_t *cr)
   cairo_translate (cr, RADIUS / TWEAKABLE_SCALE, RADIUS / TWEAKABLE_SCALE);
 
   /* Create a PangoLayout, set the font and text */
-  layout = pango_cairo_create_layout (cr);
+  context = pango_cairo_create_context (cr);
+  layout = pango_layout_new (context);
+  g_object_unref (context);
 
   pango_layout_set_text (layout, "Test\nسَلام", -1);
 

@@ -101,6 +101,8 @@ pango_gir_includes = [
 if cairo_dep.found()
   pango_headers += [
     'pangocairo.h',
+    'pangocairo-context.h',
+    'pangocairo-render.h',
   ]
 
   pango_sources += [

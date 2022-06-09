@@ -21,9 +21,12 @@ create_surface (void)
 static PangoLayout *
 create_layout (cairo_t *cr)
 {
+  PangoContext *context;
   PangoLayout *layout;
 
-  layout = pango_cairo_create_layout (cr);
+  context = pango_cairo_create_context (cr);
+  layout = pango_layout_new (context);
+  g_object_unref (context);
   pango_layout_set_text (layout, text, -1);
   pango_layout_set_width (layout, WIDTH * PANGO_SCALE);
 
