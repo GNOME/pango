@@ -118,30 +118,35 @@ iter_char_test (PangoLayout *layout)
           PangoFontDescription *desc;
           char *str;
           PangoItem *item;
+          const PangoAnalysis *analysis;
           PangoGlyphString *glyphs;
+          int length;
 
           item = pango_run_get_item (run);
+          analysis = pango_item_get_analysis (item);
           glyphs = pango_run_get_glyphs (run);
 
           /* Get needed data for the GlyphString */
           pango_line_iter_get_run_extents (iter, NULL, &run_extents);
-          offset = item->offset;
-          rtl = item->analysis.level%2;
-          desc = pango_font_describe (item->analysis.font);
+          offset = pango_item_get_byte_offset (item);
+          length = pango_item_get_byte_length (item);
+
+          rtl = pango_analysis_get_bidi_level (analysis) % 2;
+          desc = pango_font_describe (pango_analysis_get_font (analysis));
           str = pango_font_description_to_string (desc);
           verbose ("  (current run: font=%s,offset=%d,x=%d,len=%d,rtl=%d)\n",
-                   str, offset, run_extents.x, item->length, rtl);
+                   str, offset, run_extents.x, length, rtl);
           g_free (str);
           pango_font_description_free (desc);
 
           /* Calculate expected x result using index_to_x */
           pango_glyph_string_index_to_x (glyphs,
-                                         (char *)(text + offset), item->length,
-                                         &item->analysis,
+                                         (char *)(text + offset), length,
+                                         pango_item_get_analysis (item),
                                          index - offset, FALSE, &leading_x);
           pango_glyph_string_index_to_x (glyphs,
-                                         (char *)(text + offset), item->length,
-                                         &item->analysis,
+                                         (char *)(text + offset), length,
+                                         pango_item_get_analysis (item),
                                          index - offset, TRUE, &trailing_x);
 
           x0 = run_extents.x + MIN (leading_x, trailing_x);

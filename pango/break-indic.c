@@ -23,6 +23,7 @@
 #include "config.h"
 
 #include "pango-break.h"
+#include "pango-item-private.h"
 
 #define DEV_RRA 0x0931 /* 0930 + 093c */
 #define DEV_QA 0x0958 /* 0915 + 093c */

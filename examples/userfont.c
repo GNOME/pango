@@ -193,7 +193,7 @@ shape_cb (PangoUserFace       *face,
         glyph = PANGO_GET_UNKNOWN_GLYPH (wc);
 
       glyph_info_cb (face, size, glyph, &ext, &dummy, &dummy, &is_color, user_data);
-      pango_font_get_glyph_extents (analysis->font, glyph, NULL, &logical_rect);
+      pango_font_get_glyph_extents (pango_analysis_get_font (analysis), glyph, NULL, &logical_rect);
 
       glyphs->glyphs[j].glyph = glyph;
 

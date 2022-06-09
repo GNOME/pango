@@ -20,7 +20,7 @@
  */
 
 #include "config.h"
-#include "pango-item.h"
+#include "pango-item-private.h"
 
 /*
  * NB: The contents of the file implement the exact same algorithm

@@ -24,6 +24,7 @@
 #include "pango-userface-private.h"
 #include "pango-userfont-private.h"
 #include "pango-utils.h"
+#include "pango-item-private.h"
 #include "pango-impl-utils.h"
 
 #include <string.h>
