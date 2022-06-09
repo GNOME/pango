@@ -39,6 +39,7 @@
 #include <pango/pango-generic-family.h>
 #include <pango/pango-glyph.h>
 #include <pango/pango-glyph-item.h>
+#include <pango/pango-glyph-iter.h>
 #include <pango/pango-gravity.h>
 #include <pango/pango-hbface.h>
 #include <pango/pango-hbfont.h>
