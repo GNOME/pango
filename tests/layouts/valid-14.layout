@@ -25,7 +25,7 @@
     "is-ellipsized" : true,
     "unknown-glyphs" : 1,
     "width" : 161792,
-    "height" : 20480,
+    "height" : 21047,
     "log-attrs" : [
       {
         "char-break" : true,
@@ -261,7 +261,7 @@
               ]
             },
             "flags" : 0,
-            "y-offset" : 0,
+            "y-offset" : 567,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
             "glyphs" : [
@@ -360,7 +360,7 @@
               ]
             },
             "flags" : 0,
-            "y-offset" : 0,
+            "y-offset" : 337,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
             "glyphs" : [
