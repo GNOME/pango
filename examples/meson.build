@@ -24,6 +24,7 @@ endif
 foreach e: examples
   executable(e, '@0@.c'.format(e),
              dependencies: examples_deps + pango_deps,
+             c_args: common_cflags,
              include_directories: root_inc,
              install: false)
 endforeach

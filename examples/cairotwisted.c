@@ -167,7 +167,7 @@ curve_length (double x0, double y0,
   cairo_surface_t *surface;
   cairo_t *cr;
   cairo_path_t *path;
-  cairo_path_data_t *data, current_point = {0,};
+  cairo_path_data_t *data, current_point = {{0,},};
   int i;
   double length;
 
@@ -218,7 +218,7 @@ static parametrization_t *
 parametrize_path (cairo_path_t *path)
 {
   int i;
-  cairo_path_data_t *data, last_move_to = {0,}, current_point = {0,};
+  cairo_path_data_t *data, last_move_to = {{0,},}, current_point = {{0,},};
   parametrization_t *parametrization;
 
   parametrization = g_malloc (path->num_data * sizeof (parametrization[0]));
@@ -278,6 +278,7 @@ transform_path (cairo_path_t *path, transform_point_func_t f, void *closure)
     case CAIRO_PATH_CURVE_TO:
       f (closure, &data[3].point.x, &data[3].point.y);
       f (closure, &data[2].point.x, &data[2].point.y);
+      G_GNUC_FALLTHROUGH;
     case CAIRO_PATH_MOVE_TO:
     case CAIRO_PATH_LINE_TO:
       f (closure, &data[1].point.x, &data[1].point.y);
@@ -325,7 +326,7 @@ point_on_path (parametrized_path_t *param,
 {
   int i;
   double ratio, the_y = *y, the_x = *x, dx, dy;
-  cairo_path_data_t *data, last_move_to = {0,}, current_point = {0,};
+  cairo_path_data_t *data, last_move_to = {{0,},}, current_point = {{0,},};
   cairo_path_t *path = param->path;
   parametrization_t *parametrization = param->parametrization;
 
