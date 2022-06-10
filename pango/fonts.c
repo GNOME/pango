@@ -2385,68 +2385,13 @@ pango_font_family_default_list_faces (PangoFontFamily   *family,
     *n_faces = 0;
 }
 
-enum {
-  PROP_ITEM_TYPE = 1,
-  PROP_N_ITEMS,
-  N_PROPERTIES
-};
-
-static GParamSpec *font_family_properties[N_PROPERTIES] = { NULL };
-
 static void
-pango_font_family_get_property (GObject    *object,
-                                guint       property_id,
-                                GValue     *value,
-                                GParamSpec *pspec)
+pango_font_family_class_init (PangoFontFamilyClass *class G_GNUC_UNUSED)
 {
-  switch (property_id)
-    {
-    case PROP_ITEM_TYPE:
-      g_value_set_gtype (value, PANGO_TYPE_FONT);
-      break;
-
-    case PROP_N_ITEMS:
-      g_value_set_uint (value, pango_font_family_get_n_items (G_LIST_MODEL (object)));
-      break;
-
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-    }
-}
-
-static void
-pango_font_family_class_init (PangoFontFamilyClass *class)
-{
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-
-  gobject_class->get_property = pango_font_family_get_property;
-
   class->is_monospace = pango_font_family_default_is_monospace;
   class->is_variable = pango_font_family_default_is_variable;
   class->get_face = pango_font_family_real_get_face;
   class->list_faces = pango_font_family_default_list_faces;
-
-  /**
-   * PangoFontFamily:item-type:
-   *
-   * The type of items contained in this list.
-   */
-  font_family_properties[PROP_ITEM_TYPE] =
-    g_param_spec_gtype ("item-type", "", "", G_TYPE_OBJECT,
-                        G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
-
-  /**
-   * PangoFontFamily:n-items:
-   *
-   * The number of items contained in this list.
-   */
-  font_family_properties[PROP_N_ITEMS] =
-    g_param_spec_uint ("n-items", "", "", 0, G_MAXUINT, 0,
-                       G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
-
-  g_object_class_install_properties (gobject_class,
-                                     N_PROPERTIES,
-                                     font_family_properties);
 }
 
 static void
