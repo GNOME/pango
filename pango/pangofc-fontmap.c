@@ -2292,8 +2292,6 @@ pango_fc_font_map_cache_clear (PangoFcFontMap *fcfontmap)
   added = fcfontmap->priv->n_families;
 
   g_list_model_items_changed (G_LIST_MODEL (fcfontmap), 0, removed, added);
-  if (removed != added)
-    g_object_notify (G_OBJECT (fcfontmap), "n-items");
 
   pango_font_map_changed (PANGO_FONT_MAP (fcfontmap));
 }
