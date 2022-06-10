@@ -187,27 +187,70 @@ test_matrix_transform_pixel_rect (void)
 }
 
 static void
+pango_matrix_postrotate (PangoMatrix *m,
+                         double       angle)
+{
+  PangoMatrix rot = (PangoMatrix) PANGO_MATRIX_INIT;
+
+  pango_matrix_rotate (&rot, angle);
+  pango_matrix_concat (&rot, m);
+  *m = rot;
+}
+
+static void
 test_matrix_slant_ratio (void)
 {
-  PangoMatrix m = (PangoMatrix) { 1, 0, 0.2, 1, 0, 0 };
+  PangoMatrix m = (PangoMatrix) { 1, 0.2, 0, 1, 0, 0 };
   PangoMatrix m2 = (PangoMatrix) { 1, 0.4, 0, 1, 0, 0 };
+  PangoMatrix m3 = (PangoMatrix) { 1, 0.3, 0, 2, 0, 0 };
+  double a;
+  double sx, sy;
   double r;
 
-  r = pango_matrix_get_slant_ratio (&m);
-  g_assert_cmphex (r, ==, 0.2);
+  a = pango_matrix_get_rotation (&m);
+  g_assert_cmpfloat_with_epsilon (a, 0, 0.001);
 
-  pango_matrix_rotate (&m, 45);
+  pango_matrix_get_font_scale_factors (&m, &sx, &sy);
+  g_assert_cmpfloat_with_epsilon (sx, 1, 0.001);
+  g_assert_cmpfloat_with_epsilon (sy, 1, 0.001);
 
   r = pango_matrix_get_slant_ratio (&m);
-  g_assert_cmphex (r, ==, 0.2);
+  g_assert_cmpfloat_with_epsilon (r, 0.2, 0.001);
+
+  pango_matrix_postrotate (&m, 45);
+
+  a = pango_matrix_get_rotation (&m);
+  g_assert_cmpfloat_with_epsilon (a, 45, 0.001);
+
+  pango_matrix_postrotate (&m, -a);
+
+  pango_matrix_get_font_scale_factors (&m, &sx, &sy);
+  g_assert_cmpfloat_with_epsilon (sx, 1, 0.001);
+  g_assert_cmpfloat_with_epsilon (sy, 1, 0.001);
+
+  r = pango_matrix_get_slant_ratio (&m);
+  g_assert_cmpfloat_with_epsilon (r, 0.2, 0.001);
 
   pango_matrix_scale (&m, 2, 3);
 
+  a = pango_matrix_get_rotation (&m);
+  g_assert_cmpfloat_with_epsilon (a, 0, 0.001);
+
+  pango_matrix_get_font_scale_factors (&m, &sx, &sy);
+  g_assert_cmpfloat_with_epsilon (sx, 2, 0.001);
+  g_assert_cmpfloat_with_epsilon (sy, 3, 0.001);
+
+  pango_matrix_scale (&m, 1/sx, 1/sy);
+
   r = pango_matrix_get_slant_ratio (&m);
-  g_assert_cmphex (r, ==, 0.2);
+  g_assert_cmpfloat_with_epsilon (r, 0.2, 0.001);
 
   r = pango_matrix_get_slant_ratio (&m2);
-  g_assert_cmphex (r, ==, 0.4);
+  g_assert_cmpfloat_with_epsilon (r, 0.4, 0.001);
+
+  r = pango_matrix_get_slant_ratio (&m3);
+
+  g_assert_cmpfloat_with_epsilon (r, 0.15, 0.001);
 }
 
 int

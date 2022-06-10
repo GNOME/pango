@@ -262,6 +262,32 @@ pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
     *yscale = minor;
 }
 
+#define RAD_TO_DEG(x) ((x)/G_PI * 180)
+
+/**
+ * pango_matrix_get_rotation:
+ * @matrix: a `PangoMatrix`
+ *
+ * Returns the angle (in degrees) that this
+ * matrix rotates the X axis by.
+ *
+ * For font matrices, this is typically zero.
+ *
+ * Returns: the rotation of @matrix
+ */
+double
+pango_matrix_get_rotation (const PangoMatrix *matrix)
+{
+  double x, y;
+
+  x = 1;
+  y = 0;
+
+  pango_matrix_transform_distance (matrix, &x, &y);
+
+  return RAD_TO_DEG (acos (x /  sqrtf (x*x + y*y)));
+}
+
 /**
  * pango_matrix_get_slant_ratio:
  * @matrix: a `PangoMatrix`
@@ -282,18 +308,21 @@ pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
 double
 pango_matrix_get_slant_ratio (const PangoMatrix *matrix)
 {
-  double x0, y0;
-  double x1, y1;
+  if (matrix)
+    {
+      double a = matrix->xx;
+      double b = matrix->xy;
+      double c = matrix->yx;
+      double d = matrix->yy;
 
-  x0 = 0;
-  y0 = 1;
-  pango_matrix_transform_distance (matrix, &x0, &y0);
+      if (c != 0 || d != 0)
+        {
+          double s = sqrtf (c * c + d * d);
+          return (a*c + b*d) / (s*s);
+        }
+    }
 
-  x1 = 1;
-  y1 = 0;
-  pango_matrix_transform_distance (matrix, &x1, &y1);
-
-  return (x0 * x1 + y0 * y1) / (x0 * x0 + y0 * y0);
+  return 0;
 }
 
 /**
