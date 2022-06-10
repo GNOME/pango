@@ -39,79 +39,22 @@ static PangoFontFamily *pango_font_map_real_get_family (PangoFontMap *fontmap,
 
 static void pango_font_map_real_changed (PangoFontMap *fontmap);
 
-static guint pango_font_map_get_n_items (GListModel *list);
-
 static void pango_font_map_list_model_init (GListModelInterface *iface);
 
 typedef struct {
   guint n_families;
 } PangoFontMapPrivate;
 
-enum
-{
-  PROP_0,
-  PROP_ITEM_TYPE,
-  PROP_N_ITEMS,
-  N_PROPERTIES
-};
-
-static GParamSpec *properties[N_PROPERTIES] = { NULL, };
-
 G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFontMap, pango_font_map, G_TYPE_OBJECT,
                                   G_ADD_PRIVATE (PangoFontMap)
                                   G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango_font_map_list_model_init))
 
 static void
-pango_font_map_get_property (GObject    *object,
-                             guint       property_id,
-                             GValue     *value,
-                             GParamSpec *pspec)
-{
-  switch (property_id)
-    {
-    case PROP_ITEM_TYPE:
-      g_value_set_gtype (value, PANGO_TYPE_FONT_FAMILY);
-      break;
-
-    case PROP_N_ITEMS:
-      g_value_set_uint (value, pango_font_map_get_n_items (G_LIST_MODEL (object)));
-      break;
-
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-    }
-}
-
-static void
 pango_font_map_class_init (PangoFontMapClass *class)
 {
-  GObjectClass *object_class = G_OBJECT_CLASS (class);
-
-  object_class->get_property = pango_font_map_get_property;
-
   class->load_fontset = pango_font_map_real_load_fontset;
   class->get_family = pango_font_map_real_get_family;
   class->changed = pango_font_map_real_changed;
-
-  /**
-   * PangoFontMap:item-type:
-   *
-   * The type of items contained in this list.
-   */
-  properties[PROP_ITEM_TYPE] =
-    g_param_spec_gtype ("item-type", "", "", G_TYPE_OBJECT,
-                        G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
-
-  /**
-   * PangoFontMap:n-items:
-   *
-   * The number of items contained in this list.
-   */
-  properties[PROP_N_ITEMS] =
-    g_param_spec_uint ("n-items", "", "", 0, G_MAXUINT, 0,
-                       G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
-
-  g_object_class_install_properties (object_class, N_PROPERTIES, properties);
 }
 
 static void
@@ -412,8 +355,6 @@ pango_font_map_real_changed (PangoFontMap *fontmap)
   added = g_list_model_get_n_items (G_LIST_MODEL (fontmap));
 
   g_list_model_items_changed (G_LIST_MODEL (fontmap), 0, removed, added);
-  if (removed != added)
-    g_object_notify_by_pspec (G_OBJECT (fontmap), properties[PROP_N_ITEMS]);
 }
 
 /**
