@@ -278,6 +278,7 @@ transform_path (cairo_path_t *path, transform_point_func_t f, void *closure)
     case CAIRO_PATH_CURVE_TO:
       f (closure, &data[3].point.x, &data[3].point.y);
       f (closure, &data[2].point.x, &data[2].point.y);
+      G_GNUC_FALLTHROUGH;
     case CAIRO_PATH_MOVE_TO:
     case CAIRO_PATH_LINE_TO:
       f (closure, &data[1].point.x, &data[1].point.y);
