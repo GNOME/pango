@@ -1,4 +1,4 @@
-FROM fedora:34
+FROM fedora:36
 
 RUN dnf -y install \
     abattis-cantarell-fonts \
