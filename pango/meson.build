@@ -138,6 +138,7 @@ if build_pangoft2
     'pangofc-font.h',
     'pangofc-fontmap.h',
     'pangofc-decoder.h',
+    'pangofc-hbfontmap.h',
   ]
 
   pango_sources += [
@@ -145,6 +146,8 @@ if build_pangoft2
     'pangofc-fontmap.c',
     'pangofc-decoder.c',
     'pango-trace.c',
+    'pangofc-hbfontmap.c',
+    'pangofc-language-set.c',
   ]
 
   pango_gir_includes += [
