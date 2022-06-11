@@ -25,6 +25,7 @@
 
 static PangoContext *context;
 
+#if 0
 static void
 test_bidi_embedding_levels (void)
 {
@@ -72,6 +73,7 @@ test_bidi_embedding_levels (void)
       g_free (levels);
     }
 }
+#endif
 
 /* Some basic tests for pango_layout_move_cursor inside
  * a single PangoLine:
@@ -381,7 +383,9 @@ main (int argc, char *argv[])
 
   g_test_init (&argc, &argv, NULL);
 
+#if 0
   g_test_add_func ("/bidi/embedding-levels", test_bidi_embedding_levels);
+#endif
   g_test_add_func ("/bidi/move-cursor-line", test_move_cursor_line);
   g_test_add_func ("/bidi/move-cursor-para", test_move_cursor_para);
 

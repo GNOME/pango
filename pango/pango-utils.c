@@ -29,7 +29,6 @@
 #include "pango-font.h"
 #include "pango-features.h"
 #include "pango-impl-utils.h"
-#include "pango-utils-internal.h"
 
 #include <glib/gstdio.h>
 

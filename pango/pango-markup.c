@@ -30,7 +30,7 @@
 #include "pango-font.h"
 #include "pango-enum-types.h"
 #include "pango-impl-utils.h"
-#include "pango-utils-internal.h"
+#include "pango-font-description-private.h"
 
 /* FIXME */
 #define _(x) x

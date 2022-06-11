@@ -25,13 +25,6 @@
 
 G_BEGIN_DECLS
 
-/* A routine from fribidi that we either wrap or provide ourselves.
- */
-PANGO_AVAILABLE_IN_ALL
-guint8 * pango_log2vis_get_embedding_levels (const gchar    *text,
-                                             int             length,
-                                             PangoDirection *pbase_dir);
-
 /* Unicode characters that are zero-width and should not be rendered
  * normally.
  */

@@ -23,9 +23,6 @@
 
 #include "pango-font-description-private.h"
 
-#include "pango-utils-internal.h"
-
-
 struct _PangoFontDescription
 {
   char *family_name;
@@ -1636,7 +1633,7 @@ parse_field (const char *what,
 #define FIELD(NAME, MASK) \
   parse_field (G_STRINGIFY (NAME), NAME##_map, G_N_ELEMENTS (NAME##_map), str, (int *)(void *)NAME, warn)
 
-/**
+/*< private >
  * pango_parse_style:
  * @str: a string to parse.
  * @style: (out): a `PangoStyle` to store the result in.
@@ -1658,7 +1655,7 @@ pango_parse_style (const char *str,
   return FIELD (style,   PANGO_FONT_MASK_STYLE);
 }
 
-/**
+/*< private >
  * pango_parse_variant:
  * @str: a string to parse.
  * @variant: (out): a `PangoVariant` to store the result in.
@@ -1680,7 +1677,7 @@ pango_parse_variant (const char   *str,
   return FIELD (variant, PANGO_FONT_MASK_VARIANT);
 }
 
-/**
+/*< private >
  * pango_parse_weight:
  * @str: a string to parse.
  * @weight: (out): a `PangoWeight` to store the result in.
@@ -1702,7 +1699,7 @@ pango_parse_weight (const char  *str,
   return FIELD (weight,  PANGO_FONT_MASK_WEIGHT);
 }
 
-/**
+/*< private >
  * pango_parse_stretch:
  * @str: a string to parse.
  * @stretch: (out): a `PangoStretch` to store the result in.

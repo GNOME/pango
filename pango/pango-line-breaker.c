@@ -9,7 +9,7 @@
 #include "pango-attr-list-private.h"
 #include "pango-attr-iterator-private.h"
 #include "pango-item-private.h"
-#include "pango-utils-internal.h"
+#include "pango-bidi-private.h"
 
 #include <locale.h>
 

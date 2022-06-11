@@ -28,3 +28,16 @@ gboolean pango_font_description_is_similar       (const PangoFontDescription *a,
 int      pango_font_description_compute_distance (const PangoFontDescription *a,
                                                   const PangoFontDescription *b);
 
+gboolean pango_parse_style              (const char   *str,
+                                         PangoStyle   *style,
+                                         gboolean      warn);
+gboolean pango_parse_variant            (const char   *str,
+                                         PangoVariant *variant,
+                                         gboolean      warn);
+gboolean pango_parse_weight             (const char   *str,
+                                         PangoWeight  *weight,
+                                         gboolean      warn);
+gboolean pango_parse_stretch            (const char   *str,
+                                         PangoStretch *stretch,
+                                         gboolean      warn);
+
