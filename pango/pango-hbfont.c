@@ -346,10 +346,10 @@ create_hex_box_info (PangoHbFont *self)
   PangoContext *context;
   PangoFontMap *map;
 
-  if (!self->face->family)
+  if (!PANGO_FONT_FACE (self->face)->family)
     return NULL;
 
-  map = self->face->family->map;
+  map = PANGO_FONT_FACE (self->face)->family->map;
 
   if (!map)
     return NULL;

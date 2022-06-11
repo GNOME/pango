@@ -47,26 +47,28 @@
 
  /* {{{ Utilities */
 
-static char *
+static void
 get_name_from_hb_face (hb_face_t       *face,
                        hb_ot_name_id_t  name_id,
-                       hb_ot_name_id_t  fallback_id)
+                       hb_ot_name_id_t  fallback_id,
+                       char            *buf,
+                       unsigned int     len)
 {
-  char buf[256];
-  unsigned int len;
+  unsigned int size = len;
 
-  len = sizeof (buf);
-  if (hb_ot_name_get_utf8 (face, name_id, HB_LANGUAGE_INVALID, &len, buf) > 0)
-    return g_strdup (buf);
+  if (hb_ot_name_get_utf8 (face, name_id, HB_LANGUAGE_INVALID, &size, buf) > 0)
+    return;
 
   if (fallback_id != HB_OT_NAME_ID_INVALID)
     {
-      len = sizeof (buf);
-      if (hb_ot_name_get_utf8 (face, fallback_id, HB_LANGUAGE_INVALID, &len, buf) > 0)
-        return g_strdup (buf);
+      size = len;
+
+      if (hb_ot_name_get_utf8 (face, fallback_id, HB_LANGUAGE_INVALID, &size, buf) > 0)
+        return;
     }
 
-  return g_strdup ("Unnamed");
+  strncpy (buf, "Unnamed", len);
+  buf[len - 1] = '\0';
 }
 
 static void
@@ -125,13 +127,16 @@ set_name_and_description (PangoHbFace                *self,
                           const char                 *name,
                           const PangoFontDescription *description)
 {
+  PangoFontFace *face = PANGO_FONT_FACE (self);
+
   if (name)
     {
-      self->name = g_strdup (name);
+      pango_font_face_set_name (face, name);
     }
   else
     {
       hb_ot_name_id_t name_id;
+      char face_name[256] = { 0, };
 
       ensure_hb_face (self);
 
@@ -140,39 +145,44 @@ set_name_and_description (PangoHbFace                *self,
       else
         name_id = HB_OT_NAME_ID_TYPOGRAPHIC_SUBFAMILY;
 
-      self->name = get_name_from_hb_face (self->face, name_id, HB_OT_NAME_ID_FONT_SUBFAMILY);
+      get_name_from_hb_face (self->face,
+                             name_id,
+                             HB_OT_NAME_ID_FONT_SUBFAMILY,
+                             face_name, sizeof (face_name));
+
+      pango_font_face_set_name (face, face_name);
     }
 
   if (description)
     {
-      self->description = pango_font_description_copy (description);
+      face->description = pango_font_description_copy (description);
     }
   else
     {
-      char *family;
+      char family[256] = { 0, };
       char *fullname;
 
       ensure_hb_face (self);
 
-      family = get_name_from_hb_face (self->face,
-                                      HB_OT_NAME_ID_TYPOGRAPHIC_FAMILY,
-                                      HB_OT_NAME_ID_FONT_FAMILY);
-      fullname = g_strconcat (family, " ", self->name, NULL);
+      get_name_from_hb_face (self->face,
+                             HB_OT_NAME_ID_TYPOGRAPHIC_FAMILY,
+                             HB_OT_NAME_ID_FONT_FAMILY,
+                             family, sizeof (family));
+      fullname = g_strconcat (family, " ", face->name, NULL);
 
-      self->description = pango_font_description_from_string (fullname);
-      pango_font_description_unset_fields (self->description,
+      face->description = pango_font_description_from_string (fullname);
+      pango_font_description_unset_fields (face->description,
                                            PANGO_FONT_MASK_VARIANT |
                                            PANGO_FONT_MASK_VARIATIONS |
                                            PANGO_FONT_MASK_GRAVITY);
 
       g_free (fullname);
-      g_free (family);
     }
 
   if (self->n_variations > 0)
     {
       char *str = variations_to_string (self->variations, self->n_variations, "=", ",");
-      pango_font_description_set_variations (self->description, str);
+      pango_font_description_set_variations (face->description, str);
       g_free (str);
     }
 }
@@ -212,21 +222,24 @@ hb_face_is_monospace (hb_face_t *face)
   return res;
 }
 
- static void
+static void
 ensure_faceid (PangoHbFace *self)
- {
+{
   double slant;
   char buf0[32], buf1[32], buf2[32];
   char *str = NULL;
-  char *psname;
-   char *p;
+  char psname[256] = { 0, };
+  char *p;
 
   if (self->faceid)
     return;
 
   ensure_hb_face (self);
 
-  psname = get_name_from_hb_face (self->face, HB_OT_NAME_ID_POSTSCRIPT_NAME, HB_OT_NAME_ID_INVALID);
+  get_name_from_hb_face (self->face,
+                         HB_OT_NAME_ID_POSTSCRIPT_NAME,
+                         HB_OT_NAME_ID_INVALID,
+                         psname, sizeof (psname));
 
   /* PostScript name should not contain problematic chars, but just in case,
    * make sure we don't have any ' ', '=' or ',' that would give us parsing
@@ -255,7 +268,6 @@ ensure_faceid (PangoHbFace *self)
                                   self->n_variations > 0 ? ":" : "",
                                   self->n_variations > 0 ? str : "");
   g_free (str);
-  g_free (psname);
 }
 
 static const char *
@@ -312,12 +324,10 @@ pango_hb_face_finalize (GObject *object)
 {
   PangoHbFace *self = PANGO_HB_FACE (object);
 
+  g_free (self->faceid);
   if (self->face)
     hb_face_destroy (self->face);
-  pango_font_description_free (self->description);
-  g_free (self->name);
   g_free (self->file);
-  g_free (self->faceid);
   if (self->languages)
     g_object_unref (self->languages);
   g_free (self->variations);
@@ -325,36 +335,6 @@ pango_hb_face_finalize (GObject *object)
     g_free (self->matrix);
 
   G_OBJECT_CLASS (pango_hb_face_parent_class)->finalize (object);
-}
-
-static const char *
-pango_hb_face_get_face_name (PangoFontFace *face)
-{
-  PangoHbFace *self = PANGO_HB_FACE (face);
-
-  return self->name;
-}
-
-static PangoFontDescription *
-pango_hb_face_describe (PangoFontFace *face)
-{
-  PangoHbFace *self = PANGO_HB_FACE (face);
-
-  if ((pango_font_description_get_set_fields (self->description) & PANGO_FONT_MASK_FACEID) == 0)
-    {
-      ensure_faceid (self);
-      pango_font_description_set_faceid (self->description, self->faceid);
-    }
-
-  return pango_font_description_copy (self->description);
-}
-
-static PangoFontFamily *
-pango_hb_face_get_family (PangoFontFace *face)
-{
-  PangoHbFace *self = PANGO_HB_FACE (face);
-
-  return self->family;
 }
 
 static gboolean
@@ -467,10 +447,7 @@ pango_hb_face_class_init (PangoHbFaceClass *class)
 
   object_class->finalize = pango_hb_face_finalize;
 
-  face_class->get_face_name = pango_hb_face_get_face_name;
-  face_class->describe = pango_hb_face_describe;
   face_class->is_synthesized = pango_hb_face_is_synthesized;
-  face_class->get_family = pango_hb_face_get_family;
   face_class->is_monospace = pango_hb_face_is_monospace;
   face_class->is_variable = pango_hb_face_is_variable;
   face_class->supports_language = pango_hb_face_supports_language;
@@ -733,7 +710,7 @@ pango_hb_face_new_synthetic (PangoHbFace                *face,
   self->embolden = embolden;
   self->synthetic = self->embolden || (self->matrix != NULL);
 
-  desc = pango_font_description_copy (face->description);
+  desc = pango_font_description_copy (PANGO_FONT_FACE (face)->description);
   pango_font_description_merge (desc, description, TRUE);
 
   if (!name)
@@ -820,7 +797,7 @@ pango_hb_face_new_instance (PangoHbFace                *face,
   self->variations = g_memdup2 (variations, sizeof (hb_variation_t) * n_variations);
   self->n_variations = n_variations;
 
-  desc = pango_font_description_copy (face->description);
+  desc = pango_font_description_copy (PANGO_FONT_FACE (face)->description);
   pango_font_description_merge (desc, description, TRUE);
 
   if (!name)

@@ -36,6 +36,20 @@
  * or [method@Pango.FontFace.is_variable].
  */
 
+/* {{{ PangoFontFace implementation */
+
+enum {
+  PROP_NAME = 1,
+  PROP_DESCRIPTION,
+  PROP_FAMILY,
+  PROP_SYNTHESIZED,
+  PROP_MONOSPACE,
+  PROP_VARIABLE,
+  N_PROPERTIES
+};
+
+static GParamSpec *properties[N_PROPERTIES] = { NULL, };
+
 G_DEFINE_ABSTRACT_TYPE (PangoFontFace, pango_font_face, G_TYPE_OBJECT)
 
 static gboolean
@@ -86,8 +100,67 @@ pango_font_face_default_create_font (PangoFontFace              *face,
 }
 
 static void
-pango_font_face_class_init (PangoFontFaceClass *class G_GNUC_UNUSED)
+pango_font_face_finalize (GObject *object)
 {
+  PangoFontFace *face = PANGO_FONT_FACE (object);
+
+  pango_font_description_free (face->description);
+  g_free (face->name);
+
+  G_OBJECT_CLASS (pango_font_face_parent_class)->finalize (object);
+}
+
+static void
+pango_font_face_get_property (GObject    *object,
+                              guint       property_id,
+                              GValue     *value,
+                              GParamSpec *pspec)
+{
+  PangoFontFace *face = PANGO_FONT_FACE (object);
+
+  switch (property_id)
+    {
+    case PROP_NAME:
+      g_value_set_string (value, face->name);
+      break;
+
+    case PROP_DESCRIPTION:
+      if ((pango_font_description_get_set_fields (face->description) & PANGO_FONT_MASK_FACEID) == 0)
+        pango_font_description_set_faceid (face->description,
+                                           pango_font_face_get_faceid (face));
+
+      g_value_set_boxed (value, face->description);
+      break;
+
+    case PROP_FAMILY:
+      g_value_set_object (value, face->family);
+      break;
+
+    case PROP_SYNTHESIZED:
+      g_value_set_boolean (value, pango_font_face_is_synthesized (face));
+      break;
+
+    case PROP_MONOSPACE:
+      g_value_set_boolean (value, pango_font_face_is_monospace (face));
+      break;
+
+    case PROP_VARIABLE:
+      g_value_set_boolean (value, pango_font_face_is_variable (face));
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+    }
+}
+
+static void
+pango_font_face_class_init (PangoFontFaceClass *class)
+{
+  GObjectClass *object_class = G_OBJECT_CLASS (class);
+
+  object_class->finalize = pango_font_face_finalize;
+  object_class->get_property = pango_font_face_get_property;
+
   class->is_monospace = pango_font_face_default_is_monospace;
   class->is_variable = pango_font_face_default_is_variable;
   class->get_languages = pango_font_face_default_get_languages;
@@ -95,12 +168,134 @@ pango_font_face_class_init (PangoFontFaceClass *class G_GNUC_UNUSED)
   class->has_char = pango_font_face_default_has_char;
   class->get_faceid = pango_font_face_default_get_faceid;
   class->create_font = pango_font_face_default_create_font;
+
+  /**
+   * PangoFontFace:name: (attributes org.gtk.Property.get=pango_font_face_get_name)
+   *
+   * A name representing the style of this face.
+   */
+  properties[PROP_NAME] =
+      g_param_spec_string ("name", NULL, NULL, NULL,
+                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoFontFace:description: (attributes org.gtk.Property.get=pango_font_face_describe)
+   *
+   * A font description that matches the face.
+   *
+   * The font description will have the family, style,
+   * variant, weight and stretch of the face, but its size field
+   * will be unset.
+   */
+  properties[PROP_DESCRIPTION] =
+      g_param_spec_boxed ("description", NULL, NULL,
+                          PANGO_TYPE_FONT_DESCRIPTION,
+                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoFontFace:family: (attributes org.gtk.Property.get=pango_font_face_get_family)
+   *
+   * The `PangoFontFamily` that @face belongs to.
+   */
+  properties[PROP_FAMILY] =
+      g_param_spec_object ("family", NULL, NULL,
+                           PANGO_TYPE_FONT_FAMILY,
+                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoFontFace:synthesized: (attributes org.gtk.Property.get=pango_font_face_is_synthesized)
+   *
+   * `TRUE` if the face is synthesized.
+   *
+   * This will be the case if the underlying font rendering engine
+   * creates this face from another face, by shearing, emboldening,
+   * lightening or modifying it in some other way.
+   */
+  properties[PROP_SYNTHESIZED] =
+      g_param_spec_boolean ("synthesized", NULL, NULL, FALSE,
+                            G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoFontFace:monospace: (attributes org.gtk.Property.get=pango_font_face_is_monospace)
+   *
+   * `TRUE` if the face is designed for text display where the the
+   * characters form a regular grid.
+   */
+  properties[PROP_MONOSPACE] =
+      g_param_spec_boolean ("monospace", NULL, NULL, FALSE,
+                            G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoFontFace:variable: (attributes org.gtk.Property.get=pango_font_face_is_variable)
+   *
+   * `TRUE` if the face has axes that can be modified
+   * to produce variations.
+   */
+  properties[PROP_VARIABLE] =
+      g_param_spec_boolean ("variable", NULL, NULL, FALSE,
+                            G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_properties (object_class, N_PROPERTIES, properties);
 }
 
 static void
 pango_font_face_init (PangoFontFace *face G_GNUC_UNUSED)
 {
 }
+
+/* }}} */
+/* {{{ Private API */
+
+PangoFont *
+pango_font_face_create_font (PangoFontFace              *face,
+                             const PangoFontDescription *desc,
+                             float                       dpi,
+                             const PangoMatrix          *matrix)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);
+
+  return PANGO_FONT_FACE_GET_CLASS (face)->create_font (face, desc, dpi, matrix);
+}
+
+/*< private >
+ * pango_font_face_get_faceid:
+ * @self: a `PangoHbFace`
+ *
+ * Returns the faceid of the face.
+ *
+ * The faceid is meant to uniquely identify the face among the
+ * faces of its family. It includes an identifier for the font
+ * file that is used (currently, we use the PostScript name for
+ * this), the face index, the instance ID, as well as synthetic
+ * tweaks such as emboldening and transforms and variations.
+ *
+ * [method@Pango.FontFace.describe] adds the faceid to the font
+ * description that it produces.
+ *
+ * See pango_hb_family_find_face() for the code that takes the
+ * faceid into account when searching for a face. It is careful
+ * to fall back to approximate matching if an exact match for
+ * the faceid isn't found. That should make it safe to preserve
+ * faceids when saving font descriptions in configuration or
+ * other data.
+ *
+ * There are no guarantees about the format of the string that
+ * this function produces, except for that it does not contain
+ * ' ', ',' or '=', so it can be safely embedded in the '@' part
+ * of a serialized font description.
+ *
+ * Returns: (transfer none): the faceid
+ */
+const char *
+pango_font_face_get_faceid (PangoFontFace *face)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), "");
+
+  return PANGO_FONT_FACE_GET_CLASS (face)->get_faceid (face);
+}
+
+/* }}} */
+/* {{{ Public API */
 
 /**
  * pango_font_face_describe:
@@ -121,7 +316,11 @@ pango_font_face_describe (PangoFontFace *face)
 {
   g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);
 
-  return PANGO_FONT_FACE_GET_CLASS (face)->describe (face);
+  if ((pango_font_description_get_set_fields (face->description) & PANGO_FONT_MASK_FACEID) == 0)
+    pango_font_description_set_faceid (face->description,
+                                       pango_font_face_get_faceid (face));
+
+  return pango_font_description_copy (face->description);
 }
 
 /**
@@ -148,7 +347,7 @@ pango_font_face_is_synthesized (PangoFontFace  *face)
 }
 
 /**
- * pango_font_face_get_face_name:
+ * pango_font_face_get_name:
  * @face: a `PangoFontFace`.
  *
  * Gets a name representing the style of this face.
@@ -157,15 +356,15 @@ pango_font_face_is_synthesized (PangoFontFace  *face)
  * with the same name (e.g. a variable and a non-variable
  * face for the same style).
  *
- * Return value: the face name for the face. This string is
+ * Return value: the name for the face. This string is
  *   owned by the face object and must not be modified or freed.
  */
 const char *
-pango_font_face_get_face_name (PangoFontFace *face)
+pango_font_face_get_name (PangoFontFace *face)
 {
   g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);
 
-  return PANGO_FONT_FACE_GET_CLASS (face)->get_face_name (face);
+  return face->name;
 }
 
 /**
@@ -181,7 +380,7 @@ pango_font_face_get_family (PangoFontFace *face)
 {
   g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);
 
-  return PANGO_FONT_FACE_GET_CLASS (face)->get_family (face);
+  return face->family;
 }
 
 /**
@@ -293,51 +492,6 @@ pango_font_face_has_char (PangoFontFace *face,
   return PANGO_FONT_FACE_GET_CLASS (face)->has_char (face, wc);
 }
 
-/*< private >
- * pango_font_face_get_faceid:
- * @self: a `PangoHbFace`
- *
- * Returns the faceid of the face.
- *
- * The faceid is meant to uniquely identify the face among the
- * faces of its family. It includes an identifier for the font
- * file that is used (currently, we use the PostScript name for
- * this), the face index, the instance ID, as well as synthetic
- * tweaks such as emboldening and transforms and variations.
- *
- * [method@Pango.FontFace.describe] adds the faceid to the font
- * description that it produces.
- *
- * See pango_hb_family_find_face() for the code that takes the
- * faceid into account when searching for a face. It is careful
- * to fall back to approximate matching if an exact match for
- * the faceid isn't found. That should make it safe to preserve
- * faceids when saving font descriptions in configuration or
- * other data.
- *
- * There are no guarantees about the format of the string that
- * this function produces, except for that it does not contain
- * ' ', ',' or '=', so it can be safely embedded in the '@' part
- * of a serialized font description.
- *
- * Returns: (transfer none): the faceid
- */
-const char *
-pango_font_face_get_faceid (PangoFontFace *face)
-{
-  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), "");
+/* }}} */
 
-  return PANGO_FONT_FACE_GET_CLASS (face)->get_faceid (face);
-}
-
-PangoFont *
-pango_font_face_create_font (PangoFontFace              *face,
-                             const PangoFontDescription *desc,
-                             float                       dpi,
-                             const PangoMatrix          *matrix)
-{
-  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);
-
-  return PANGO_FONT_FACE_GET_CLASS (face)->create_font (face, desc, dpi, matrix);
-}
-
+/* vim:set foldmethod=marker expandtab: */

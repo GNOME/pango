@@ -20,11 +20,17 @@
 #pragma once
 
 #include <pango/pango-font-face.h>
+#include <pango/pango-font-description.h>
 
 
 struct _PangoFontFace
 {
   GObject parent_instance;
+
+  PangoFontFamily *family;
+  PangoFontDescription *description;
+  char *name;
+  char *faceid;
 };
 
 typedef struct _PangoFontFaceClass PangoFontFaceClass;
@@ -33,12 +39,9 @@ struct _PangoFontFaceClass
 {
   GObjectClass parent_class;
 
-  const char *           (* get_face_name)     (PangoFontFace *face);
-  PangoFontDescription * (* describe)          (PangoFontFace *face);
   gboolean               (* is_synthesized)    (PangoFontFace *face);
   gboolean               (* is_monospace)      (PangoFontFace *face);
   gboolean               (* is_variable)       (PangoFontFace *face);
-  PangoFontFamily *      (* get_family)        (PangoFontFace *face);
   gboolean               (* supports_language) (PangoFontFace *face,
                                                 PangoLanguage *language);
   PangoLanguage **       (* get_languages)     (PangoFontFace *face);
@@ -59,3 +62,24 @@ PangoFont *     pango_font_face_create_font     (PangoFontFace              *fac
                                                  const PangoFontDescription *desc,
                                                  float                       dpi,
                                                  const PangoMatrix          *matrix);
+
+static inline void
+pango_font_face_set_name (PangoFontFace *face,
+                          const char    *name)
+{
+  face->name = g_strdup (name);
+}
+
+static inline void
+pango_font_face_set_description (PangoFontFace              *face,
+                                 const PangoFontDescription *description)
+{
+  face->description = pango_font_description_copy (description);
+}
+
+static inline void
+pango_font_face_set_family (PangoFontFace   *face,
+                            PangoFontFamily *family)
+{
+  face->family = family;
+}

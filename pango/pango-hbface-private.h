@@ -25,30 +25,11 @@
 #include "pango-language-set-private.h"
 #include <hb.h>
 
-
-typedef struct _CommonFace CommonFace;
-struct _CommonFace {
-  PangoFontFace parent_instance;
-
-  PangoFontDescription *description;
-  char *name;
-  PangoFontFamily *family;
-  char *psname;
-  char *faceid;
-};
-
 struct _PangoHbFace
 {
   PangoFontFace parent_instance;
 
-  PangoFontDescription *description;
-  char *name;
-  PangoFontFamily *family;
-  char *psname;
   char *faceid;
-
-  /* up to here shared with PangoUserFace */
-
   unsigned int index;
   int instance_id;
   char *file;

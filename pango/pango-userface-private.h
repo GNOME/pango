@@ -28,12 +28,7 @@ struct _PangoUserFace
 {
   PangoFontFace parent_instance;
 
-  PangoFontDescription *description;
-  char *name;
-  PangoFontFamily *family;
   char *faceid;
-
-  /* up to here shared with PangoHbFace */
 
   PangoUserFaceGetFontInfoFunc font_info_func;
   PangoUserFaceUnicodeToGlyphFunc glyph_func;

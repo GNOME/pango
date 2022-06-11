@@ -162,7 +162,7 @@ main (int    argc,
       for (j = 0; j < g_list_model_get_n_items (G_LIST_MODEL (family)); j++)
 	{
           PangoFontFace *face = g_list_model_get_item (G_LIST_MODEL (family), j);
-	  const char *face_name = pango_font_face_get_face_name (face);
+	  const char *face_name = pango_font_face_get_name (face);
 	  gboolean is_synth = pango_font_face_is_synthesized (face);
 	  const char *synth_str = is_synth ? "*" : "";
 	  const char *variable_str = "";
@@ -173,7 +173,7 @@ main (int    argc,
       for (j = 0; j < g_list_model_get_n_items (G_LIST_MODEL (family)); j++)
         {
           PangoFontFace *face = g_list_model_get_item (G_LIST_MODEL (family), j);
-          const char *face_name = pango_font_face_get_face_name (face);
+          const char *face_name = pango_font_face_get_name (face);
           gboolean is_synth = pango_font_face_is_synthesized (face);
           const char *synth_str = is_synth ? "*" : "";
           gboolean is_variable = pango_font_face_is_variable (face);

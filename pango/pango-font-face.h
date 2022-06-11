@@ -34,7 +34,7 @@ PANGO_DECLARE_INTERNAL_TYPE (PangoFontFace, pango_font_face, PANGO, FONT_FACE, G
 PANGO_AVAILABLE_IN_ALL
 PangoFontDescription *  pango_font_face_describe       (PangoFontFace  *face);
 PANGO_AVAILABLE_IN_ALL
-const char *            pango_font_face_get_face_name  (PangoFontFace  *face) G_GNUC_PURE;
+const char *            pango_font_face_get_name       (PangoFontFace  *face) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
 gboolean                pango_font_face_is_synthesized (PangoFontFace  *face) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
