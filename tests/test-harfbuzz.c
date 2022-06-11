@@ -20,10 +20,7 @@
  */
 
 #include <pango/pango.h>
-#include <pango/pangocairo.h>
 #include "test-common.h"
-
-static PangoContext *context;
 
 /* Some basic checks that the hb_font_t returned
  * by pango_font_get_hb_font is functional
@@ -31,17 +28,27 @@ static PangoContext *context;
 static void
 test_hb_font (void)
 {
-  PangoFontDescription *desc;
+  PangoFontMap *map = pango_font_map_get_default ();
+  PangoFontFamily *family;
+  PangoFontFace *face;
   PangoFont *font;
   hb_font_t *hb_font;
   hb_bool_t res;
   hb_codepoint_t glyph;
 
- if (strcmp (G_OBJECT_TYPE_NAME (pango_context_get_font_map (context)), "PangoCairoWin32FontMap") == 0)
-    desc = pango_font_description_from_string ("Verdana 11");
-  else
-    desc = pango_font_description_from_string ("Cantarell 11");
-  font = pango_context_load_font (context, desc);
+  g_assert_true (g_list_model_get_n_items (G_LIST_MODEL (map)) > 0);
+
+  family = g_list_model_get_item (G_LIST_MODEL (map), 0);
+  g_assert_true (g_list_model_get_n_items (G_LIST_MODEL (family)) > 0);
+  face = g_list_model_get_item (G_LIST_MODEL (family), 0);
+
+  font = PANGO_FONT (pango_hb_font_new (PANGO_HB_FACE (face),
+                                        12 * PANGO_SCALE,
+                                        NULL, 0,
+                                        NULL, 0,
+                                        PANGO_GRAVITY_SOUTH,
+                                        96., NULL));
+
   hb_font = pango_font_get_hb_font (font);
 
   g_assert (hb_font != NULL);
@@ -52,17 +59,13 @@ test_hb_font (void)
   g_assert (glyph != 0);
 
   g_object_unref (font);
-  pango_font_description_free (desc);
+  g_object_unref (face);
+  g_object_unref (family);
 }
 
 int
 main (int argc, char *argv[])
 {
-  PangoFontMap *fontmap;
-
-  fontmap = pango_cairo_font_map_get_default ();
-  context = pango_font_map_create_context (fontmap);
-
   g_test_init (&argc, &argv, NULL);
 
   g_test_add_func ("/harfbuzz/font", test_hb_font);

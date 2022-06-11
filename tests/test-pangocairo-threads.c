@@ -135,7 +135,7 @@ pangocairo_threads (void)
 
   g_ptr_array_unref (surfaces);
 
-  pango_cairo_font_map_set_default (NULL);
+  pango_font_map_set_default (NULL);
 
 }
 

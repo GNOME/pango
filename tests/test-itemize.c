@@ -28,7 +28,7 @@
 #endif
 
 #include "config.h"
-#include <pango/pangocairo.h>
+#include <pango/pango.h>
 #include "test-common.h"
 
 #include "pango/pango-item-private.h"
@@ -332,7 +332,7 @@ main (int argc, char *argv[])
   const gchar *name;
   gchar *path;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (pango_font_map_get_default ());
   pango_context_set_language (context, pango_language_from_string ("en-us"));
 
   /* allow to easily generate expected output for new test cases */

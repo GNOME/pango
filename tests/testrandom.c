@@ -23,7 +23,7 @@
 
 #include <locale.h>
 #include <gio/gio.h>
-#include <pango/pangocairo.h>
+#include <pango/pango.h>
 
 #define N_SENTENCES 20
 
@@ -111,7 +111,7 @@ test_wrap_char (gconstpointer data)
   Size sizes[100];
   gsize i, j;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (pango_font_map_get_default ());
   desc = pango_font_description_from_string ("Sans 10");
   layout = pango_layout_new (context);
   pango_layout_set_font_description (layout, desc);
@@ -181,7 +181,7 @@ test_wrap_char_min_width (gconstpointer data)
   gsize j;
   int test_width, ref_width;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (pango_font_map_get_default ());
   desc = pango_font_description_from_string ("Sans 10");
   ref_layout = pango_layout_new (context);
   pango_layout_set_font_description (ref_layout, desc);

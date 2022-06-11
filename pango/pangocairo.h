@@ -49,50 +49,6 @@ typedef struct _PangoCairoFont      PangoCairoFont;
 #define PANGO_IS_CAIRO_FONT(object)     (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CAIRO_FONT))
 #endif
 
-/**
- * PangoCairoFontMap:
- *
- * `PangoCairoFontMap` is an interface exported by font maps for
- * use with Cairo.
- *
- * The actual type of the font map will depend on the particular
- * font technology Cairo was compiled to use.
- */
-typedef struct _PangoCairoFontMap        PangoCairoFontMap;
-
-#ifdef __GI_SCANNER__
-#define PANGO_CAIRO_TYPE_FONT_MAP       (pango_cairo_font_map_get_type())
-#define PANGO_CAIRO_FONT_MAP(obj)       (G_TYPE_CHECK_INSTANCE_CAST ((obj), PANGO_CAIRO_TYPE_FONT_MAP, PangoCairoFontMap))
-#define PANGO_CAIRO_IS_FONT_MAP(obj)    (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PANGO_CAIRO_TYPE_FONT_MAP))
-#else
-#define PANGO_TYPE_CAIRO_FONT_MAP       (pango_cairo_font_map_get_type ())
-#define PANGO_CAIRO_FONT_MAP(object)    (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_FONT_MAP, PangoCairoFontMap))
-#define PANGO_IS_CAIRO_FONT_MAP(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CAIRO_FONT_MAP))
-#endif
-
-/*
- * PangoCairoFontMap
- */
-PANGO_AVAILABLE_IN_ALL
-GType         pango_cairo_font_map_get_type          (void) G_GNUC_CONST;
-
-PANGO_AVAILABLE_IN_ALL
-PangoFontMap *pango_cairo_font_map_new               (void);
-PANGO_AVAILABLE_IN_ALL
-PangoFontMap *pango_cairo_font_map_new_for_font_type (cairo_font_type_t fonttype);
-PANGO_AVAILABLE_IN_ALL
-PangoFontMap *pango_cairo_font_map_get_default       (void);
-PANGO_AVAILABLE_IN_ALL
-void          pango_cairo_font_map_set_default       (PangoCairoFontMap *fontmap);
-PANGO_AVAILABLE_IN_ALL
-cairo_font_type_t pango_cairo_font_map_get_font_type (PangoCairoFontMap *fontmap);
-
-PANGO_AVAILABLE_IN_ALL
-void          pango_cairo_font_map_set_resolution (PangoCairoFontMap *fontmap,
-                                                   double             dpi);
-PANGO_AVAILABLE_IN_ALL
-double        pango_cairo_font_map_get_resolution (PangoCairoFontMap *fontmap);
-
 /*
  * PangoCairoFont
  */

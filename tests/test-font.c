@@ -24,7 +24,7 @@
 #include <locale.h>
 
 #include <gio/gio.h>
-#include <pango/pangocairo.h>
+#include <pango/pango.h>
 
 static PangoContext *context;
 
@@ -200,7 +200,7 @@ test_extents (void)
   PangoFontDescription *desc;
   PangoDirection dir;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (pango_font_map_get_default ());
   desc = pango_font_description_from_string("Cantarell 11");
   pango_context_set_font_description (context, desc);
   pango_font_description_free (desc);
@@ -234,7 +234,7 @@ test_enumerate (void)
   PangoFont *font;
   gboolean found_face;
 
-  fontmap = pango_cairo_font_map_get_default ();
+  fontmap = pango_font_map_get_default ();
   context = pango_font_map_create_context (fontmap);
 
   g_assert_cmpint (g_list_model_get_n_items (G_LIST_MODEL (fontmap)), >, 0);
@@ -297,7 +297,7 @@ test_roundtrip_plain (void)
   desc = pango_font_description_from_string ("Cantarell 11");
 #endif
 
-  fontmap = pango_cairo_font_map_get_default ();
+  fontmap = pango_font_map_get_default ();
   context = pango_font_map_create_context (fontmap);
 
 
@@ -328,13 +328,13 @@ test_roundtrip_small_caps (void)
   hb_feature_t features[32];
   guint num = 0;
 
-  if (strcmp (G_OBJECT_TYPE_NAME (pango_cairo_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
+  if (strcmp (G_OBJECT_TYPE_NAME (pango_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
     {
       g_test_skip ("Small Caps support needs to be added to PangoCoreTextFontMap");
       return;
     }
 
-  fontmap = pango_cairo_font_map_get_default ();
+  fontmap = pango_font_map_get_default ();
   context = pango_font_map_create_context (fontmap);
 
   desc = pango_font_description_from_string ("Cantarell Small-Caps 11");
@@ -408,7 +408,7 @@ test_roundtrip_emoji (void)
   PangoFontDescription *desc, *desc2;
   PangoFont *font;
 
-  fontmap = pango_cairo_font_map_get_default ();
+  fontmap = pango_font_map_get_default ();
   context = pango_font_map_create_context (fontmap);
 
   /* This is how pango_itemize creates the emoji font desc */
@@ -435,7 +435,7 @@ test_roundtrip_emoji (void)
 static void
 test_font_models (void)
 {
-  PangoFontMap *map = pango_cairo_font_map_get_default ();
+  PangoFontMap *map = pango_font_map_get_default ();
   int n_families = 0;
 
   g_assert_true (g_list_model_get_item_type (G_LIST_MODEL (map)) == PANGO_TYPE_FONT_FAMILY);
@@ -582,7 +582,7 @@ main (int argc, char *argv[])
 
   g_test_init (&argc, &argv, NULL);
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (pango_font_map_get_default ());
 
   g_test_add_func ("/pango/font/metrics", test_metrics);
   g_test_add_func ("/pango/fontdescription/parse", test_parse);

@@ -21,7 +21,6 @@
 
 #include <locale.h>
 #include <pango/pango.h>
-#include <pango/pangocairo.h>
 
 static PangoContext *context;
 
@@ -378,7 +377,7 @@ main (int argc, char *argv[])
 
   setlocale (LC_ALL, "");
 
-  fontmap = pango_cairo_font_map_get_default ();
+  fontmap = pango_font_map_get_default ();
   context = pango_font_map_create_context (fontmap);
 
   g_test_init (&argc, &argv, NULL);

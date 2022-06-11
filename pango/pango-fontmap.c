@@ -956,5 +956,143 @@ pango_font_map_set_resolution (PangoFontMap *self,
 }
 
 /* }}} */
+/* {{{ Default handling */
+
+static GPrivate default_font_map = G_PRIVATE_INIT (g_object_unref); /* MT-safe */
+
+/**
+ * pango_font_map_new_default:
+ *
+ * Creates a new `PangoFontMap` object.
+ *
+ * A fontmap is used to cache information about available fonts,
+ * and holds certain global parameters such as the resolution.
+ * In most cases, you can use `func@Pango.font_map_get_default]
+ * instead.
+ *
+ * Note that the type of the returned object will depend
+ * on the platform that Pango is used on. If you want to
+ * explicitly create an instance of `PangoFontMap` itself
+ * (and not a platform-specific subclass), see [ctor@Pango.FontMap.new].
+ *
+ * You can override the type of backend returned by using an
+ * environment variable %PANGOCAIRO_BACKEND. Supported types,
+ * based on your build, are fontconfig, win32, and coretext.
+ *
+ * If requested type is not available, `NULL` is returned.
+ * This is only useful for testing, when at least two backends
+ * are compiled in.
+ *
+ * Return value: (transfer full): the newly allocated `PangoFontMap`,
+ *   which should be freed with g_object_unref().
+ */
+PangoFontMap *
+pango_font_map_new_default (void)
+{
+  const char *backend;
+
+  backend = getenv ("PANGOCAIRO_BACKEND");
+  if (backend && !*backend)
+    backend = NULL;
+
+#if defined (HAVE_CORE_TEXT) && defined (HAVE_CAIRO_QUARTZ)
+  if (!backend || 0 == strcmp (backend, "coretext"))
+    return PANGO_FONT_MAP (pango_core_text_font_map_new ());
+#endif
+
+#if defined (HAVE_CAIRO_WIN32)
+  if (!backend || 0 == strcmp (backend, "win32"))
+    return PANGO_FONT_MAP (pango_direct_write_font_map_new ());
+#endif
+
+#if defined (HAVE_CAIRO_FREETYPE)
+  if (!backend || 0 == strcmp (backend, "fc")
+               || 0 == strcmp (backend, "fontconfig"))
+    return PANGO_FONT_MAP (pango_fc_font_map_new ());
+#endif
+
+  {
+    const char backends[] = ""
+#if defined (HAVE_CORE_TEXT) && defined (HAVE_CAIRO_QUARTZ)
+      " coretext"
+#endif
+#if defined (HAVE_CAIRO_WIN32)
+      " win32"
+#endif
+#if defined (HAVE_CAIRO_FREETYPE)
+      " fontconfig"
+#endif
+      ;
+
+    g_critical ("Unknown PANGOCAIRO_BACKEND value.\n"
+                "Available backends are:%s", backends);
+  }
+
+  return NULL;
+}
+
+/**
+ * pango_font_map_get_default:
+ *
+ * Gets a default `PangoFontMap`.
+ *
+ * Note that the type of the returned object will depend on the
+ * platform that Pango is used on.
+ *
+ * The default fontmap can be changed by using
+ * [method@Pango.FontMap.set_default]. This can be used to
+ *
+ * Note that the default fontmap is per-thread. Each thread gets
+ * its own default fontmap. In this way, Pango can be used safely
+ * from multiple threads.
+ *
+ * Return value: (transfer none): the default fontmap
+ *  for the current thread. This object is owned by Pango and must
+ *  not be freed.
+ */
+PangoFontMap *
+pango_font_map_get_default (void)
+{
+  PangoFontMap *fontmap = g_private_get (&default_font_map);
+
+  if (G_UNLIKELY (!fontmap))
+    {
+      fontmap = pango_font_map_new_default ();
+      g_private_replace (&default_font_map, fontmap);
+    }
+
+  return fontmap;
+}
+
+/**
+ * pango_font_map_set_default:
+ * @fontmap: (nullable): The new default font map
+ *
+ * Sets a default `PangoFontMap`.
+ *
+ * The old default font map is unreffed and the new font map referenced.
+ *
+ * Note that the default fontmap is per-thread.
+ * This function only changes the default fontmap for
+ * the current thread. Default fontmaps of existing threads
+ * are not changed. Default fontmaps of any new threads will
+ * still be created using [func@Pango.FontMap.new_default].
+ *
+ * A value of %NULL for @fontmap will cause the current default
+ * font map to be released and a new default font map to be created
+ * on demand, using [func@Pango.FontMap.new_default].
+ */
+void
+pango_font_map_set_default (PangoFontMap *fontmap)
+{
+  g_return_if_fail (fontmap == NULL || PANGO_IS_FONT_MAP (fontmap));
+
+  if (fontmap)
+    g_object_ref (fontmap);
+
+  g_private_replace (&default_font_map, fontmap);
+}
+
+/* }}} */
 
 /* vim:set foldmethod=marker expandtab: */

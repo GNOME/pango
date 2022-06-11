@@ -22,23 +22,6 @@
 #include <pango/pangocairo.h>
 #include <pango/pango-renderer.h>
 
-
-#define PANGO_CAIRO_FONT_MAP_GET_IFACE(obj)  (G_TYPE_INSTANCE_GET_INTERFACE ((obj), PANGO_TYPE_CAIRO_FONT_MAP, PangoCairoFontMapIface))
-
-typedef struct _PangoCairoFontMapIface PangoCairoFontMapIface;
-
-struct _PangoCairoFontMapIface
-{
-  GTypeInterface g_iface;
-
-  void           (*set_resolution) (PangoCairoFontMap *fontmap,
-                                    double             dpi);
-  double         (*get_resolution) (PangoCairoFontMap *fontmap);
-
-  cairo_font_type_t (*get_font_type) (PangoCairoFontMap *fontmap);
-};
-
-
 #define PANGO_CAIRO_FONT_GET_IFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), PANGO_TYPE_CAIRO_FONT, PangoCairoFontIface))
 
 typedef struct _PangoCairoFontIface                  PangoCairoFontIface;

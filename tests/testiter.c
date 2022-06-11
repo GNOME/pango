@@ -30,7 +30,7 @@
 
 #include <glib.h>
 
-#include <pango/pangocairo.h>
+#include <pango/pango.h>
 
 static void verbose (const char *format, ...) G_GNUC_PRINTF (1, 2);
 static void
@@ -227,7 +227,7 @@ test_line_iter (void)
   PangoFontDescription *font_desc;
   PangoLayout  *layout;
 
-  fontmap = pango_cairo_font_map_get_default ();
+  fontmap = pango_font_map_get_default ();
   context = pango_font_map_create_context (fontmap);
   font_desc = pango_font_description_from_string ("cantarell 11");
   pango_context_set_font_description (context, font_desc);
@@ -262,7 +262,7 @@ test_glyphitem_iter (void)
   PangoLine *line;
   const char *text;
 
-  fontmap = pango_cairo_font_map_get_default ();
+  fontmap = pango_font_map_get_default ();
   context = pango_font_map_create_context (fontmap);
   font_desc = pango_font_description_from_string ("cantarell 11");
   pango_context_set_font_description (context, font_desc);
