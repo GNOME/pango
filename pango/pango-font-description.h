@@ -323,8 +323,6 @@ PANGO_AVAILABLE_IN_ALL
 PangoFontDescription *  pango_font_description_from_string       (const char                  *str);
 PANGO_AVAILABLE_IN_ALL
 char *                  pango_font_description_to_string         (const PangoFontDescription  *desc);
-PANGO_AVAILABLE_IN_ALL
-char *                  pango_font_description_to_filename       (const PangoFontDescription  *desc);
 
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFontDescription, pango_font_description_free)

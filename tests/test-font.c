@@ -501,24 +501,6 @@ test_font_metrics (void)
 }
 
 static void
-test_to_filename (void)
-{
-  PangoFontDescription *desc;
-  char *str;
-
-  desc = pango_font_description_from_string ("Futura Medium Italic 14");
-  str = pango_font_description_to_filename (desc);
-
-  g_assert_nonnull (strstr (str, "futura"));
-  g_assert_nonnull (strstr (str, "medium"));
-  g_assert_nonnull (strstr (str, "italic"));
-
-  g_free (str);
-
-  pango_font_description_free (desc);
-}
-
-static void
 test_set_gravity (void)
 {
   PangoFontDescription *desc;
@@ -599,7 +581,6 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/fontdescription/roundtrip", test_roundtrip);
   g_test_add_func ("/pango/fontdescription/variations", test_variations);
   g_test_add_func ("/pango/fontdescription/empty-variations", test_empty_variations);
-  g_test_add_func ("/pango/fontdescription/to-filename", test_to_filename);
   g_test_add_func ("/pango/fontdescription/set-gravity", test_set_gravity);
   g_test_add_func ("/pango/fontdescription/match", test_match);
   g_test_add_func ("/pango/fontdescription/faceid", test_faceid);
