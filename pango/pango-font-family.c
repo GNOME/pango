@@ -96,7 +96,7 @@ pango_font_family_real_get_face (PangoFontFamily *family,
       PangoFontFace *f = g_list_model_get_item (G_LIST_MODEL (family), i);
       g_object_unref (f);
       if (name == NULL ||
-          strcmp (name, pango_font_face_get_face_name (f)) == 0)
+          strcmp (name, pango_font_face_get_name (f)) == 0)
         {
           face = f;
           break;

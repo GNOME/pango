@@ -48,13 +48,14 @@
 static void
 ensure_faceid (PangoUserFace *self)
 {
+  PangoFontFace *face = PANGO_FONT_FACE (self);
   char *psname;
   char *p;
 
   if (self->faceid)
     return;
 
-  psname = g_strconcat (pango_font_description_get_family (self->description), "_", self->name, NULL);
+  psname = g_strconcat (pango_font_description_get_family (face->description), "_", face->name, NULL);
 
   /* PostScript name should not contain problematic chars, but just in case,
    * make sure we don't have any ' ', '=' or ',' that would give us parsing
@@ -199,43 +200,11 @@ pango_user_face_finalize (GObject *object)
 {
   PangoUserFace *self = PANGO_USER_FACE (object);
 
-  pango_font_description_free (self->description);
-  g_free (self->name);
   g_free (self->faceid);
   if (self->destroy)
     self->destroy (self->user_data);
 
   G_OBJECT_CLASS (pango_user_face_parent_class)->finalize (object);
-}
-
-static const char *
-pango_user_face_get_face_name (PangoFontFace *face)
-{
-  PangoUserFace *self = PANGO_USER_FACE (face);
-
-  return self->name;
-}
-
-static PangoFontDescription *
-pango_user_face_describe (PangoFontFace *face)
-{
-  PangoUserFace *self = PANGO_USER_FACE (face);
-
-  if ((pango_font_description_get_set_fields (self->description) & PANGO_FONT_MASK_FACEID) == 0)
-    {
-      ensure_faceid (self);
-      pango_font_description_set_faceid (self->description, self->faceid);
-    }
-
-  return pango_font_description_copy (self->description);
-}
-
-static PangoFontFamily *
-pango_user_face_get_family (PangoFontFace *face)
-{
-  PangoUserFace *self = PANGO_USER_FACE (face);
-
-  return self->family;
 }
 
 static gboolean
@@ -295,10 +264,7 @@ pango_user_face_class_init (PangoUserFaceClass *class)
 
   object_class->finalize = pango_user_face_finalize;
 
-  face_class->get_face_name = pango_user_face_get_face_name;
-  face_class->describe = pango_user_face_describe;
   face_class->is_synthesized = pango_user_face_is_synthesized;
-  face_class->get_family = pango_user_face_get_family;
   face_class->is_monospace = pango_user_face_is_monospace;
   face_class->is_variable = pango_user_face_is_variable;
   face_class->has_char = pango_user_face_has_char;
@@ -454,6 +420,7 @@ pango_user_face_new (PangoUserFaceGetFontInfoFunc     font_info_func,
                      const PangoFontDescription      *description)
 {
   PangoUserFace *self;
+  PangoFontFace *face;
 
   g_return_val_if_fail (font_info_func != NULL, NULL);
   g_return_val_if_fail (glyph_func != NULL, NULL);
@@ -474,8 +441,10 @@ pango_user_face_new (PangoUserFaceGetFontInfoFunc     font_info_func,
   if (!name)
     name = style_from_font_description (description);
 
-  self->name = g_strdup (name);
-  self->description = pango_font_description_copy (description);
+  face = PANGO_FONT_FACE (self);
+
+  face->name = g_strdup (name);
+  face->description = pango_font_description_copy (description);
 
   return self;
 }

@@ -72,26 +72,24 @@ static int
 sort_face_func (PangoFontFace *face1,
                 PangoFontFace *face2)
 {
-  CommonFace *cf1 = (CommonFace *)face1;
-  CommonFace *cf2 = (CommonFace *)face2;
   int a, b;
 
-  a = pango_font_description_get_style (cf1->description);
-  b = pango_font_description_get_style (cf2->description);
+  a = pango_font_description_get_style (face1->description);
+  b = pango_font_description_get_style (face2->description);
   if (a != b)
     return a - b;
 
-  a = pango_font_description_get_weight (cf1->description);
-  b = pango_font_description_get_weight (cf2->description);
+  a = pango_font_description_get_weight (face1->description);
+  b = pango_font_description_get_weight (face2->description);
   if (a != b)
     return a - b;
 
-  a = pango_font_description_get_stretch (cf1->description);
-  b = pango_font_description_get_stretch (cf2->description);
+  a = pango_font_description_get_stretch (face1->description);
+  b = pango_font_description_get_stretch (face2->description);
   if (a != b)
     return a - b;
 
-  return strcmp (cf1->name, cf2->name);
+  return strcmp (face1->name, face2->name);
 }
 
 /* return 2 if face is a named instance,
@@ -135,8 +133,8 @@ pango_hb_family_finalize (GObject *object)
 
   for (int i = 0; i < self->faces->len; i++)
     {
-      PangoHbFace *face = g_ptr_array_index (self->faces, i);
-      ((CommonFace *)face)->family = NULL;
+      PangoFontFace *face = g_ptr_array_index (self->faces, i);
+      face->family = NULL;
     }
 
   g_ptr_array_unref (self->faces);
@@ -154,7 +152,7 @@ pango_hb_family_get_face (PangoFontFamily *family,
     {
       PangoFontFace *face = g_ptr_array_index (self->faces, i);
 
-      if (name == NULL || strcmp (name, pango_font_face_get_face_name (face)) == 0)
+      if (name == NULL || strcmp (name, pango_font_face_get_name (face)) == 0)
         return face;
     }
 
@@ -226,7 +224,7 @@ pango_hb_family_add_face (PangoHbFamily *self,
 
   g_ptr_array_insert (self->faces, position, face);
 
-  ((CommonFace *)face)->family = PANGO_FONT_FAMILY (self);
+  pango_font_face_set_family (face, PANGO_FONT_FAMILY (self));
 
   g_list_model_items_changed (G_LIST_MODEL (self), position, 0, 1);
   g_object_notify (G_OBJECT (self), "n-items");
@@ -250,7 +248,7 @@ pango_hb_family_remove_face (PangoHbFamily *self,
   if (!g_ptr_array_find (self->faces, face, &position))
     return;
 
-  ((CommonFace *)face)->family = NULL;
+  pango_font_face_set_family (face, NULL);
 
   g_ptr_array_remove_index (self->faces, position);
 
@@ -311,10 +309,10 @@ pango_hb_family_find_face (PangoHbFamily        *family,
       if (wc && !pango_font_face_has_char (face2, wc))
         continue;
 
-      if (!pango_font_description_is_similar (description, ((CommonFace *)face2)->description))
+      if (!pango_font_description_is_similar (description, face2->description))
         continue;
 
-      distance = pango_font_description_compute_distance (description, ((CommonFace *)face2)->description);
+      distance = pango_font_description_compute_distance (description, face2->description);
 
       variableness = face_get_variableness (PANGO_FONT_FACE (face2));
       if (distance < best_distance ||

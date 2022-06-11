@@ -81,7 +81,7 @@ test_hbface_roundtrip (void)
 
   face = pango_hb_face_new_from_file (path, 0, -1, NULL, NULL);
   g_assert_true (PANGO_IS_HB_FACE (face));
-  g_assert_cmpstr (pango_font_face_get_face_name (PANGO_FONT_FACE (face)), ==, "Regular");
+  g_assert_cmpstr (pango_font_face_get_name (PANGO_FONT_FACE (face)), ==, "Regular");
   desc = pango_font_face_describe (PANGO_FONT_FACE (face));
   g_assert_cmpint (pango_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO_FONT_MASK_FAMILY |
                                                                                  PANGO_FONT_MASK_STYLE |
@@ -99,7 +99,7 @@ test_hbface_roundtrip (void)
   pango_font_description_free (desc);
 
   g_assert_true (PANGO_IS_HB_FACE (face2));
-  g_assert_cmpstr (pango_font_face_get_face_name (PANGO_FONT_FACE (face2)), ==, "Oblique");
+  g_assert_cmpstr (pango_font_face_get_name (PANGO_FONT_FACE (face2)), ==, "Oblique");
   desc = pango_font_face_describe (PANGO_FONT_FACE (face2));
   g_assert_cmpint (pango_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO_FONT_MASK_FAMILY |
                                                                                  PANGO_FONT_MASK_STYLE |
@@ -118,7 +118,7 @@ test_hbface_roundtrip (void)
   pango_font_description_free (desc);
 
   g_assert_true (PANGO_IS_HB_FACE (face2));
-  g_assert_cmpstr (pango_font_face_get_face_name (PANGO_FONT_FACE (face2)), ==, "Bold");
+  g_assert_cmpstr (pango_font_face_get_name (PANGO_FONT_FACE (face2)), ==, "Bold");
   desc = pango_font_face_describe (PANGO_FONT_FACE (face2));
   g_assert_cmpint (pango_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO_FONT_MASK_FAMILY |
                                                                                  PANGO_FONT_MASK_STYLE |
@@ -137,7 +137,7 @@ test_hbface_roundtrip (void)
   pango_font_description_free (desc);
 
   g_assert_true (PANGO_IS_HB_FACE (face2));
-  g_assert_cmpstr (pango_font_face_get_face_name (PANGO_FONT_FACE (face2)), ==, "Regular");
+  g_assert_cmpstr (pango_font_face_get_name (PANGO_FONT_FACE (face2)), ==, "Regular");
   desc = pango_font_face_describe (PANGO_FONT_FACE (face2));
   g_assert_cmpint (pango_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO_FONT_MASK_FAMILY |
                                                                                  PANGO_FONT_MASK_STYLE |
@@ -161,7 +161,7 @@ test_hbface_roundtrip (void)
   pango_font_description_free (desc);
 
   g_assert_true (PANGO_IS_HB_FACE (face2));
-  g_assert_cmpstr (pango_font_face_get_face_name (PANGO_FONT_FACE (face2)), ==, "Fat");
+  g_assert_cmpstr (pango_font_face_get_name (PANGO_FONT_FACE (face2)), ==, "Fat");
   desc = pango_font_face_describe (PANGO_FONT_FACE (face2));
   g_assert_cmpint (pango_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO_FONT_MASK_FAMILY |
                                                                                  PANGO_FONT_MASK_STYLE |

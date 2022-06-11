@@ -265,7 +265,7 @@ synthesize_bold_and_italic_faces (PangoFontMap *map)
   for (int i = 0; i < map->families->len; i++)
     {
       PangoFontFamily *family = g_ptr_array_index (map->families, i);
-      PangoHbFace *regular_face = NULL;
+      PangoFontFace *regular_face = NULL;
       int regular_dist = G_MAXINT;
       int bold_dist = G_MAXINT;
       gboolean has_italic = FALSE;
@@ -277,7 +277,7 @@ synthesize_bold_and_italic_faces (PangoFontMap *map)
 
       for (int j = 0; j < g_list_model_get_n_items (G_LIST_MODEL (family)); j++)
         {
-          PangoHbFace *face = g_list_model_get_item (G_LIST_MODEL (family), j);
+          PangoFontFace *face = g_list_model_get_item (G_LIST_MODEL (family), j);
           int weight;
           PangoStyle style;
           int dist;
@@ -321,13 +321,22 @@ synthesize_bold_and_italic_faces (PangoFontMap *map)
       if (regular_face)
         {
           if (!has_italic)
-            add_style_variation (PANGO_HB_FAMILY (family), regular_face, PANGO_STYLE_ITALIC, PANGO_WEIGHT_NORMAL);
+            add_style_variation (PANGO_HB_FAMILY (family),
+                                 PANGO_HB_FACE (regular_face),
+                                 PANGO_STYLE_ITALIC,
+                                 PANGO_WEIGHT_NORMAL);
 
           if (!has_bold)
-            add_style_variation (PANGO_HB_FAMILY (family), regular_face, PANGO_STYLE_NORMAL, PANGO_WEIGHT_BOLD);
+            add_style_variation (PANGO_HB_FAMILY (family),
+                                 PANGO_HB_FACE (regular_face),
+                                 PANGO_STYLE_NORMAL,
+                                 PANGO_WEIGHT_BOLD);
 
           if (!has_bold_italic)
-            add_style_variation (PANGO_HB_FAMILY (family), regular_face, PANGO_STYLE_ITALIC, PANGO_WEIGHT_BOLD);
+            add_style_variation (PANGO_HB_FAMILY (family),
+                                 PANGO_HB_FACE (regular_face),
+                                 PANGO_STYLE_ITALIC,
+                                 PANGO_WEIGHT_BOLD);
         }
     }
 }
@@ -779,7 +788,7 @@ pango_font_map_add_face (PangoFontMap  *self,
   g_return_if_fail (PANGO_IS_FONT_MAP (self));
   g_return_if_fail (PANGO_IS_HB_FACE (face) || PANGO_IS_USER_FACE (face));
 
-  description = ((CommonFace *)face)->description;
+  description = face->description;
 
   if (pango_font_description_get_set_fields (description) &
       (PANGO_FONT_MASK_VARIANT | PANGO_FONT_MASK_GRAVITY))

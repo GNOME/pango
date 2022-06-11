@@ -256,8 +256,8 @@ test_enumerate (void)
   for (i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (family)); i++)
     {
       PangoFontFace *f = g_list_model_get_item (G_LIST_MODEL (family), i);
-      face = pango_font_family_get_face (family, pango_font_face_get_face_name (f));
-      g_assert_cmpstr (pango_font_face_get_face_name (face), ==, pango_font_face_get_face_name (f));
+      face = pango_font_family_get_face (family, pango_font_face_get_name (f));
+      g_assert_cmpstr (pango_font_face_get_name (face), ==, pango_font_face_get_name (f));
       g_object_unref (f);
     }
 
