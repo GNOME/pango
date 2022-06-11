@@ -32,7 +32,6 @@
 #  include "pangocairo-win32.h"
 #endif
 #if defined (HAVE_CAIRO_FREETYPE)
-#  include "pangocairo-fc.h"
 #  include "pangofc-hbfontmap.h"
 #endif
 
@@ -89,9 +88,6 @@ pango_cairo_font_map_new (void)
 #if defined(HAVE_CAIRO_FREETYPE)
   if (!backend || 0 == strcmp (backend, "fc")
                || 0 == strcmp (backend, "fontconfig"))
-    return g_object_new (PANGO_TYPE_CAIRO_FC_FONT_MAP, NULL);
-  else if (0 == strcmp (backend, "fc2") ||
-           0 == strcmp (backend, "fontconfig2"))
     return (PangoFontMap *) pango_fc_hb_font_map_new ();
 #endif
   {
@@ -104,7 +100,6 @@ pango_cairo_font_map_new (void)
 #endif
 #if defined(HAVE_CAIRO_FREETYPE)
       " fontconfig"
-      " fontconfig2"
 #endif
       ;
     g_critical ("Unknown PANGOCAIRO_BACKEND value.\nAvailable backends are:%s", backends);
@@ -141,10 +136,6 @@ pango_cairo_font_map_new_for_font_type (cairo_font_type_t fonttype)
 #if defined(HAVE_CAIRO_WIN32)
     case CAIRO_FONT_TYPE_WIN32:
       return g_object_new (PANGO_TYPE_CAIRO_WIN32_FONT_MAP, NULL);
-#endif
-#if defined(HAVE_CAIRO_FREETYPE)
-    case CAIRO_FONT_TYPE_FT:
-      return g_object_new (PANGO_TYPE_CAIRO_FC_FONT_MAP, NULL);
 #endif
     default:
       return NULL;

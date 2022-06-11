@@ -29,7 +29,6 @@
 
 #include "config.h"
 #include <pango/pangocairo.h>
-#include <pango/pangocairo-fc.h>
 #include <pango/pangofc-hbfontmap.h>
 #include "test-common.h"
 

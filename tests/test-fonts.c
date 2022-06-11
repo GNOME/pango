@@ -2,20 +2,18 @@
 #include <locale.h>
 
 #include <pango/pango.h>
-#include <pango/pangocairo-fc.h>
-#include <pango/pangofc-fontmap.h>
+#include <pango/pangofc-hbfontmap.h>
 #include "test-common.h"
+
+static PangoFontMap *map = NULL;
 
 static void
 install_fonts (const char *dir)
 {
   FcConfig *config;
-  PangoFontMap *map;
   char *path;
   gsize len;
   char *conf;
-
-  map = g_object_new (PANGO_TYPE_CAIRO_FC_FONT_MAP, NULL);
 
   config = FcConfigCreate ();
 
@@ -29,12 +27,9 @@ install_fonts (const char *dir)
   g_free (path);
 
   FcConfigAppFontAddDir (config, (const FcChar8 *) dir);
-  pango_fc_font_map_set_config (PANGO_FC_FONT_MAP (map), config);
+  map = PANGO_FONT_MAP (pango_fc_hb_font_map_new ());
+  pango_fc_hb_font_map_set_config (PANGO_FC_HB_FONT_MAP (map), config);
   FcConfigDestroy (config);
-
-  pango_cairo_font_map_set_default (PANGO_CAIRO_FONT_MAP (map));
-
-  g_object_unref (map);
 }
 
 static gboolean
@@ -74,7 +69,7 @@ list_fonts (const char *contents)
 
   desc = pango_font_description_from_string (s);
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (map);
   fonts = pango_context_load_fontset (context, desc, pango_language_get_default ());
 
   str = g_string_new (s);
@@ -102,12 +97,6 @@ test_fontset (gconstpointer d)
   gsize length;
   char *s;
   GBytes *orig;
-
-  if (strcmp (G_OBJECT_TYPE_NAME (pango_cairo_font_map_get_default ()), "PangoFcFontMap") != 0)
-    {
-      g_test_skip ("Not an fc fontmap. Skipping...");
-      return;
-    }
 
   char *old_locale = g_strdup (setlocale (LC_ALL, NULL));
   setlocale (LC_ALL, "en_US.UTF-8");

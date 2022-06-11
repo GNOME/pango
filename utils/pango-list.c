@@ -23,7 +23,6 @@
 #include "config.h"
 #include <pango/pangocairo.h>
 #include <pango/pangofc-hbfontmap.h>
-#include <pango/pangofc-font.h>
 #include <pango/pango-hbface-private.h>
 #include <hb-ot.h>
 #include <glib/gstdio.h>
@@ -242,13 +241,6 @@ main (int    argc,
                   PangoHbFace *hbface = (PangoHbFace *)face;
                   instance_id = hbface->instance_id;
                 }
-              else if (PANGO_IS_FC_FONT (font))
-                {
-                  int index;
-                  FcPattern *pattern = pango_fc_font_get_pattern (PANGO_FC_FONT (font));
-                  FcPatternGetInteger (pattern, FC_INDEX, 0, (int *)&index);
-                  instance_id = (index >> 16) - 1;
-                }
 
               if (pango_font_face_is_variable (face))
                 {
@@ -287,24 +279,6 @@ main (int    argc,
 
                   if (hbface->file)
                     g_print ("    %d %s\n", hbface->index, hbface->file);
-                }
-              else
-                {
-                  PangoFont *font;
-
-                  font = pango_context_load_font (ctx, desc);
-                  if (PANGO_IS_FC_FONT (font))
-                    {
-                      FcPattern *pattern;
-                      const char *file;
-                      int index;
-
-                      pattern = pango_fc_font_get_pattern (PANGO_FC_FONT (font));
-                      FcPatternGetString (pattern, FC_FILE, 0, (FcChar8 **)&file);
-                      FcPatternGetInteger (pattern, FC_INDEX, 0, &index);
-                      g_print ("    %d %s\n", index, file);
-                    }
-                  g_object_unref (font);
                 }
             }
 
