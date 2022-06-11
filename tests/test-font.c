@@ -26,6 +26,7 @@
 #include <gio/gio.h>
 #include <pango/pango.h>
 #include <pango/pango-item-private.h>
+#include <pango/pango-font-private.h>
 
 static PangoContext *context;
 
@@ -472,10 +473,18 @@ test_glyph_extents (void)
   PangoRectangle ink, logical;
 
   pango_font_get_glyph_extents (NULL, 0, &ink, &logical);
-  g_assert_cmpint (ink.height, ==, (PANGO_UNKNOWN_GLYPH_HEIGHT - 2) * PANGO_SCALE);
-  g_assert_cmpint (ink.width, ==, (PANGO_UNKNOWN_GLYPH_WIDTH - 2) * PANGO_SCALE);
-  g_assert_cmpint (logical.height, ==, PANGO_UNKNOWN_GLYPH_HEIGHT * PANGO_SCALE);
-  g_assert_cmpint (logical.width, ==, PANGO_UNKNOWN_GLYPH_WIDTH * PANGO_SCALE);
+
+  /* We are promised 'sane values', so lets check that
+   * we are between 1 and 100 pixels in both dimensions.
+   */
+  g_assert_cmpint (ink.height, >=, PANGO_SCALE);
+  g_assert_cmpint (ink.height, <=, 100 * PANGO_SCALE);
+  g_assert_cmpint (ink.width, >=, PANGO_SCALE);
+  g_assert_cmpint (ink.width, <=, 100 * PANGO_SCALE);
+  g_assert_cmpint (logical.height, >=, PANGO_SCALE);
+  g_assert_cmpint (logical.height, <=, 100 * PANGO_SCALE);
+  g_assert_cmpint (logical.width, >=, PANGO_SCALE);
+  g_assert_cmpint (logical.width, <=, 100 * PANGO_SCALE);
 }
 
 static void

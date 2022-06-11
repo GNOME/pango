@@ -118,11 +118,4 @@ PangoFont *           pango_font_deserialize       (PangoContext     *context,
 #define PANGO_GLYPH_UNKNOWN_FLAG    ((PangoGlyph)0x10000000)
 #define PANGO_GET_UNKNOWN_GLYPH(wc) ((PangoGlyph)(wc)|PANGO_GLYPH_UNKNOWN_FLAG)
 
-#ifndef __GI_SCANNER__
-#ifndef PANGO_DISABLE_DEPRECATED
-#define PANGO_UNKNOWN_GLYPH_WIDTH  10
-#define PANGO_UNKNOWN_GLYPH_HEIGHT 14
-#endif
-#endif
-
 G_END_DECLS
