@@ -33,7 +33,6 @@
 #include "pango-hbface-private.h"
 #include "pango-userfont-private.h"
 #include "pango-userface-private.h"
-#include "pangocairo-fc.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wundef"

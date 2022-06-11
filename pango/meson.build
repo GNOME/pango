@@ -115,13 +115,6 @@ if cairo_dep.found()
     'pangocairo-render.c',
   ]
 
-  if pango_font_backends.contains('freetype')
-    pango_sources += [
-      'pangocairo-fcfont.c',
-      'pangocairo-fcfontmap.c',
-    ]
-  endif
-
   if pango_font_backends.contains('win32')
     pango_sources += [
       'pangocairo-win32font.c',
@@ -145,24 +138,16 @@ endif
 
 if build_pangoft2
   pango_headers += [
-    'pangofc-font.h',
-    'pangofc-fontmap.h',
-    'pangofc-decoder.h',
     'pangofc-hbfontmap.h',
   ]
 
   pango_sources += [
-    'pangofc-font.c',
-    'pangofc-fontmap.c',
-    'pangofc-decoder.c',
-    'pango-trace.c',
     'pangofc-hbfontmap.c',
     'pangofc-language-set.c',
   ]
 
   pango_gir_includes += [
     'fontconfig-2.0',
-    'freetype2-2.0',
   ]
 endif
 
