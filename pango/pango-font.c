@@ -32,12 +32,26 @@
 #include "pango-fontmap-private.h"
 #include "pango-impl-utils.h"
 
+#include <hb-gobject.h>
+
 /**
  * PangoFont:
  *
  * A `PangoFont` is used to represent a font in a
  * rendering-system-independent manner.
  */
+
+enum {
+  PROP_FACE = 1,
+  PROP_SIZE,
+  PROP_DPI,
+  PROP_GRAVITY,
+  PROP_MATRIX,
+  PROP_HB_FONT,
+  N_PROPERTIES
+};
+
+static GParamSpec *properties[N_PROPERTIES] = { NULL, };
 
 G_DEFINE_ABSTRACT_TYPE (PangoFont, pango_font, G_TYPE_OBJECT)
 
@@ -50,6 +64,45 @@ pango_font_finalize (GObject *object)
   hb_font_destroy (font->hb_font);
 
   G_OBJECT_CLASS (pango_font_parent_class)->finalize (object);
+}
+
+static void
+pango_font_get_property (GObject    *object,
+                         guint       property_id,
+                         GValue     *value,
+                         GParamSpec *pspec)
+{
+  PangoFont *font = PANGO_FONT (object);
+
+  switch (property_id)
+    {
+    case PROP_FACE:
+      g_value_set_object (value, font->face);
+      break;
+
+    case PROP_SIZE:
+      g_value_set_int (value, font->size);
+      break;
+
+    case PROP_DPI:
+      g_value_set_float (value, font->dpi);
+      break;
+
+    case PROP_GRAVITY:
+      g_value_set_enum (value, font->gravity);
+      break;
+
+    case PROP_MATRIX:
+      g_value_set_boxed (value, &font->matrix);
+      break;
+
+    case PROP_HB_FONT:
+      g_value_set_boxed (value, pango_font_get_hb_font (font));
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+    }
 }
 
 static gboolean
@@ -92,11 +145,39 @@ pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
   GObjectClass *object_class = G_OBJECT_CLASS (class);
 
   object_class->finalize = pango_font_finalize;
+  object_class->get_property = pango_font_get_property;
 
   class->is_hinted = pango_font_default_is_hinted;
   class->get_scale_factors = pango_font_default_get_scale_factors;
   class->get_matrix = pango_font_default_get_matrix;
   class->get_absolute_size = pango_font_default_get_absolute_size;
+
+  properties[PROP_FACE] =
+      g_param_spec_object ("face", NULL, NULL, PANGO_TYPE_FONT_FACE,
+                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  properties[PROP_SIZE] =
+      g_param_spec_int ("size", NULL, NULL, 0, G_MAXINT, 0,
+                        G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  properties[PROP_DPI] =
+      g_param_spec_float ("dpi", NULL, NULL, 0, G_MAXFLOAT, 96.0,
+                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  properties[PROP_GRAVITY] =
+      g_param_spec_enum ("gravity", NULL, NULL, PANGO_TYPE_GRAVITY,
+                         PANGO_GRAVITY_AUTO,
+                         G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  properties[PROP_MATRIX] =
+      g_param_spec_boxed ("matrix", NULL, NULL, PANGO_TYPE_MATRIX,
+                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  properties[PROP_HB_FONT] =
+      g_param_spec_boxed ("hb-font", NULL, NULL, HB_GOBJECT_TYPE_FONT,
+                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_properties (object_class, N_PROPERTIES, properties);
 }
 
 static void
