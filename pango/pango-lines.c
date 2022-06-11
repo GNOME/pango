@@ -48,6 +48,16 @@ struct _PangoLinesClass
 
 G_DEFINE_TYPE (PangoLines, pango_lines, G_TYPE_OBJECT)
 
+enum {
+  PROP_UNKNOWN_GLYPHS_COUNT = 1,
+  PROP_WRAPPED,
+  PROP_ELLIPSIZED,
+  PROP_HYPHENATED,
+  N_PROPERTIES
+};
+
+static GParamSpec *properties[N_PROPERTIES] = { NULL, };
+
 static void
 pango_lines_init (PangoLines *lines)
 {
@@ -68,11 +78,82 @@ pango_lines_finalize (GObject *object)
 }
 
 static void
+pango_lines_get_property (GObject    *object,
+                          guint       prop_id,
+                          GValue     *value,
+                          GParamSpec *pspec)
+{
+  PangoLines *self = PANGO_LINES (object);
+
+  switch (prop_id)
+    {
+    case PROP_UNKNOWN_GLYPHS_COUNT:
+      g_value_set_int (value, pango_lines_get_unknown_glyphs_count (self));
+      break;
+
+    case PROP_WRAPPED:
+      g_value_set_boolean (value, pango_lines_is_wrapped (self));
+      break;
+
+    case PROP_ELLIPSIZED:
+      g_value_set_boolean (value, pango_lines_is_ellipsized (self));
+      break;
+
+    case PROP_HYPHENATED:
+      g_value_set_boolean (value, pango_lines_is_hyphenated (self));
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
+}
+
+static void
 pango_lines_class_init (PangoLinesClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
 
   object_class->finalize = pango_lines_finalize;
+  object_class->get_property = pango_lines_get_property;
+
+  /**
+   * PangoLines:unknown-glyphs-count: (attributes org.gtk.Property.get=pango_lines_get_unknown_glyphs_count)
+   *
+   * The number of unknown glyphs in the `PangoLines`.
+   */
+  properties[PROP_UNKNOWN_GLYPHS_COUNT] =
+    g_param_spec_uint ("unknown-glyphs-count", NULL, NULL, 0, G_MAXUINT, 0,
+                       G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoLines:wrapped: (attributes org.gtk.Property.get=pango_lines_is_wrapped)
+   *
+   * `TRUE` if the `PangoLines` contains any wrapped lines.
+   */
+  properties[PROP_WRAPPED] =
+    g_param_spec_boolean ("wrapped", NULL, NULL, FALSE,
+                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoLines:ellipsized: (attributes org.gtk.Property.get=pango_lines_is_ellipsized)
+   *
+   * `TRUE` if the `PangoLines` contains any ellipsized lines.
+   */
+  properties[PROP_ELLIPSIZED] =
+    g_param_spec_boolean ("ellipsized", NULL, NULL, FALSE,
+                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoLines:hyphenated: (attributes org.gtk.Property.get=pango_lines_is_hyphenated)
+   *
+   * `TRUE` if the `PangoLines` contains any hyphenated lines.
+   */
+  properties[PROP_HYPHENATED] =
+    g_param_spec_boolean ("hyphenated", NULL, NULL, FALSE,
+                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_properties (object_class, N_PROPERTIES, properties);
 }
 
 /* }}} */
@@ -214,6 +295,11 @@ pango_lines_add_line (PangoLines      *lines,
   lines->serial++;
   if (lines->serial == 0)
     lines->serial++;
+
+  g_object_notify_by_pspec (G_OBJECT (lines), properties[PROP_UNKNOWN_GLYPHS_COUNT]);
+  g_object_notify_by_pspec (G_OBJECT (lines), properties[PROP_WRAPPED]);
+  g_object_notify_by_pspec (G_OBJECT (lines), properties[PROP_ELLIPSIZED]);
+  g_object_notify_by_pspec (G_OBJECT (lines), properties[PROP_HYPHENATED]);
 }
 
 /**
