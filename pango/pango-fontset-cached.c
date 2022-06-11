@@ -24,6 +24,7 @@
 #include <gio/gio.h>
 
 #include "pango-fontset-cached-private.h"
+#include "pango-font-private.h"
 #include "pango-font-face-private.h"
 #include "pango-generic-family-private.h"
 
@@ -79,7 +80,7 @@ pango_fontset_cached_get_font (PangoFontset *fontset,
       if (PANGO_IS_FONT (item))
         {
           PangoFont *font = PANGO_FONT (item);
-          if (pango_font_has_char (font, wc))
+          if (pango_font_face_has_char (font->face, wc))
             {
               retval = g_object_ref (font);
               break;

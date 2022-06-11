@@ -327,16 +327,6 @@ pango_user_font_create_hb_font (PangoFont *font)
   return hb_font;
 }
 
-static gboolean
-pango_user_font_has_char (PangoFont *font,
-                          gunichar   wc)
-{
-  hb_font_t *user_font = pango_font_get_hb_font (font);
-  hb_codepoint_t glyph;
-
-  return hb_font_get_nominal_glyph (user_font, wc, &glyph);
-}
-
 static void
 pango_user_font_class_init (PangoUserFontClass *class)
 {
@@ -349,7 +339,6 @@ pango_user_font_class_init (PangoUserFontClass *class)
   font_class->get_glyph_extents = pango_user_font_get_glyph_extents;
   font_class->get_metrics = pango_user_font_get_metrics;
   font_class->create_hb_font = pango_user_font_create_hb_font;
-  font_class->has_char = pango_user_font_has_char;
 }
 
 /* }}} */

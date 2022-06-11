@@ -66,13 +66,6 @@ pango_font_default_get_scale_factors (PangoFont *font,
   *x_scale = *y_scale = 1.0;
 }
 
-static gboolean
-pango_font_default_has_char (PangoFont *font,
-                             gunichar   wc)
-{
-  return FALSE;
-}
-
 static void
 pango_font_default_get_matrix (PangoFont   *font,
                                PangoMatrix *matrix)
@@ -102,7 +95,6 @@ pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
 
   class->is_hinted = pango_font_default_is_hinted;
   class->get_scale_factors = pango_font_default_get_scale_factors;
-  class->has_char = pango_font_default_has_char;
   class->get_matrix = pango_font_default_get_matrix;
   class->get_absolute_size = pango_font_default_get_absolute_size;
 }
@@ -286,22 +278,6 @@ pango_font_get_hb_font (PangoFont *font)
     }
 
   return font->hb_font;
-}
-
-/**
- * pango_font_has_char:
- * @font: a `PangoFont`
- * @wc: a Unicode character
- *
- * Returns whether the font provides a glyph for this character.
- *
- * Returns: `TRUE` if @font can render @wc
- */
-gboolean
-pango_font_has_char (PangoFont *font,
-                     gunichar   wc)
-{
-  return PANGO_FONT_GET_CLASS (font)->has_char (font, wc);
 }
 
 /**
