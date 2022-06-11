@@ -541,13 +541,14 @@ pango_user_shape (const char          *text,
                   PangoGlyphString    *glyphs,
                   PangoShapeFlags      flags)
 {
-  PangoUserFont *font = PANGO_USER_FONT (analysis->font);
+  PangoFont *font = analysis->font;
+  PangoUserFace *face = PANGO_USER_FACE (font->face);
 
-  font->face->shape_func (font->face, font->size,
-                          text, length,
-                          analysis,
-                          glyphs, flags,
-                          font->face->user_data);
+  face->shape_func (face, font->size,
+                    text, length,
+                    analysis,
+                    glyphs, flags,
+                    face->user_data);
 }
 
 /* }}} */

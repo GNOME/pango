@@ -46,6 +46,7 @@ pango_font_finalize (GObject *object)
 {
   PangoFont *font = PANGO_FONT (object);
 
+  g_object_unref (font->face);
   hb_font_destroy (font->hb_font);
 
   G_OBJECT_CLASS (pango_font_parent_class)->finalize (object);
@@ -54,7 +55,7 @@ pango_font_finalize (GObject *object)
 static PangoLanguage **
 pango_font_default_get_languages (PangoFont *font)
 {
-  return pango_font_face_get_languages (pango_font_get_face (font));
+  return pango_font_face_get_languages (font->face);
 }
 
 static gboolean
@@ -76,12 +77,6 @@ pango_font_default_has_char (PangoFont *font,
                              gunichar   wc)
 {
   return FALSE;
-}
-
-static PangoFontFace *
-pango_font_default_get_face (PangoFont *font)
-{
-  return NULL;
 }
 
 static void
@@ -115,14 +110,15 @@ pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
   class->is_hinted = pango_font_default_is_hinted;
   class->get_scale_factors = pango_font_default_get_scale_factors;
   class->has_char = pango_font_default_has_char;
-  class->get_face = pango_font_default_get_face;
   class->get_matrix = pango_font_default_get_matrix;
   class->get_absolute_size = pango_font_default_get_absolute_size;
 }
 
 static void
-pango_font_init (PangoFont *font G_GNUC_UNUSED)
+pango_font_init (PangoFont *font)
 {
+  font->gravity = PANGO_GRAVITY_AUTO;
+  font->matrix = (PangoMatrix) PANGO_MATRIX_INIT;
 }
 
 /**
@@ -158,15 +154,14 @@ pango_font_describe (PangoFont *font)
 PangoFontDescription *
 pango_font_describe_with_absolute_size (PangoFont *font)
 {
+  PangoFontDescription *desc;
+
   g_return_val_if_fail (font != NULL, NULL);
 
-  if (G_UNLIKELY (!PANGO_FONT_GET_CLASS (font)->describe_absolute))
-    {
-      g_warning ("describe_absolute not implemented for this font class, report this as a bug");
-      return pango_font_describe (font);
-    }
+  desc = pango_font_describe (font);
+  pango_font_description_set_absolute_size (desc, font->size * font->dpi / 72.);
 
-  return PANGO_FONT_GET_CLASS (font)->describe_absolute (font);
+  return desc;
 }
 
 /**
@@ -270,7 +265,7 @@ pango_font_get_metrics (PangoFont     *font,
 PangoFontFace *
 pango_font_get_face (PangoFont *font)
 {
-  return PANGO_FONT_GET_CLASS (font)->get_face (font);
+  return font->face;
 }
 
 /**

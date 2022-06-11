@@ -48,4 +48,9 @@ PangoHbFont *           pango_hb_font_new_for_description       (PangoHbFace    
                                                                  float                           dpi,
                                                                  const PangoMatrix              *matrix);
 
+
+PANGO_AVAILABLE_IN_ALL
+const hb_variation_t *  pango_hb_font_get_variations            (PangoHbFont                    *self,
+                                                                 unsigned int                   *n_variations);
+
 G_END_DECLS

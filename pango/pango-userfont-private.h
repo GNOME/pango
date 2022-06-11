@@ -27,13 +27,4 @@
 struct _PangoUserFont
 {
   PangoFont parent_instance;
-
-  int size; /* point size, scaled by PANGO_SCALE */
-  float dpi;
-  PangoGravity gravity;
-  PangoMatrix matrix;
-
-  /* up to here shared with PangoHbFont */
-
-  PangoUserFace *face;
 };
