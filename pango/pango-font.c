@@ -52,12 +52,6 @@ pango_font_finalize (GObject *object)
   G_OBJECT_CLASS (pango_font_parent_class)->finalize (object);
 }
 
-static PangoLanguage **
-pango_font_default_get_languages (PangoFont *font)
-{
-  return pango_font_face_get_languages (font->face);
-}
-
 static gboolean
 pango_font_default_is_hinted (PangoFont *font)
 {
@@ -106,7 +100,6 @@ pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
 
   object_class->finalize = pango_font_finalize;
 
-  class->get_languages = pango_font_default_get_languages;
   class->is_hinted = pango_font_default_is_hinted;
   class->get_scale_factors = pango_font_default_get_scale_factors;
   class->has_char = pango_font_default_has_char;
@@ -334,27 +327,6 @@ pango_font_get_features (PangoFont    *font,
 {
   if (PANGO_FONT_GET_CLASS (font)->get_features)
     PANGO_FONT_GET_CLASS (font)->get_features (font, features, len, num_features);
-}
-
-/**
- * pango_font_get_languages:
- * @font: a `PangoFont`
- *
- * Returns the languages that are supported by @font.
- *
- * If the font backend does not provide this information,
- * %NULL is returned. For the fontconfig backend, this
- * corresponds to the FC_LANG member of the FcPattern.
- *
- * The returned array is only valid as long as the font
- * and its fontmap are valid.
- *
- * Returns: (transfer none) (nullable) (array zero-terminated=1) (element-type PangoLanguage): an array of `PangoLanguage`
- */
-PangoLanguage **
-pango_font_get_languages (PangoFont *font)
-{
-  return PANGO_FONT_GET_CLASS (font)->get_languages (font);
 }
 
 /*< private >
