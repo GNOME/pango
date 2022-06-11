@@ -23,6 +23,7 @@
 #include <gio/gio.h>
 
 #include "pango-generic-family-private.h"
+#include "pango-hbfamily-private.h"
 #include "pango-impl-utils.h"
 #include "pango-hbface-private.h"
 #include "pango-font-private.h"
@@ -115,29 +116,17 @@ pango_generic_family_finalize (GObject *object)
 {
   PangoGenericFamily *self = PANGO_GENERIC_FAMILY (object);
 
-  g_free (self->name);
   g_ptr_array_unref (self->families);
 
   G_OBJECT_CLASS (pango_generic_family_parent_class)->finalize (object);
-}
-
-static const char *
-pango_generic_family_get_name (PangoFontFamily *family)
-{
-  PangoGenericFamily *self = PANGO_GENERIC_FAMILY (family);
-
-  return self->name;
 }
 
 static void
 pango_generic_family_class_init (PangoGenericFamilyClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
-  PangoFontFamilyClass *family_class = PANGO_FONT_FAMILY_CLASS (class);
 
   object_class->finalize = pango_generic_family_finalize;
-
-  family_class->get_name = pango_generic_family_get_name;
 }
 
 /* }}} */
@@ -207,7 +196,7 @@ pango_generic_family_new (const char *name)
 
   self = g_object_new (PANGO_TYPE_GENERIC_FAMILY, NULL);
 
-  self->name = g_strdup (name);
+  pango_font_family_set_name (PANGO_FONT_FAMILY (self), name);
 
   return self;
 }

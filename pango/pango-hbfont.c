@@ -111,9 +111,8 @@ static PangoFontMap *
 pango_hb_font_get_font_map (PangoFont *font)
 {
   PangoHbFont *self = PANGO_HB_FONT (font);
-  PangoHbFamily *family = PANGO_HB_FAMILY (self->face->family);
 
-  return family->map;
+  return self->face->family->map;
 }
 
 static PangoVariant

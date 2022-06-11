@@ -27,17 +27,40 @@ typedef struct _PangoFontFamilyClass PangoFontFamilyClass;
 struct _PangoFontFamily
 {
   GObject parent_instance;
+
+  PangoFontMap *map;
+  char *name;
 };
 
 struct _PangoFontFamilyClass
 {
   GObjectClass parent_class;
 
-  const char *    (* get_name)     (PangoFontFamily *family);
   PangoFontFace * (* get_face)     (PangoFontFamily *family,
                                     const char      *name);
-
 };
 
 #define PANGO_FONT_FAMILY_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT_FAMILY, PangoFontFamilyClass))
 #define PANGO_FONT_FAMILY_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONT_FAMILY, PangoFontFamilyClass))
+
+static inline void
+pango_font_family_set_name (PangoFontFamily *family,
+                            const char      *name)
+{
+  family->name = g_strdup (name);
+}
+
+static inline void
+pango_font_family_set_font_map (PangoFontFamily *family,
+                                PangoFontMap    *map)
+{
+  if (family->map)
+    g_object_remove_weak_pointer (G_OBJECT (family->map),
+                                  (gpointer *)&family->map);
+
+  family->map = map;
+
+  if (family->map)
+    g_object_add_weak_pointer (G_OBJECT (family->map),
+                               (gpointer *)&family->map);
+}

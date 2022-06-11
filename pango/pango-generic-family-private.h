@@ -21,17 +21,12 @@
 
 #include "pango-font.h"
 #include "pango-generic-family.h"
-#include "pango-hbfamily-private.h"
+#include "pango-font-family-private.h"
 
 
 struct _PangoGenericFamily
 {
   PangoFontFamily parent_instance;
-
-  PangoFontMap *map;
-  char *name;
-
-  /* up to here shared with PangoHbFamily */
 
   GPtrArray *families;
 };
