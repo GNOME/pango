@@ -107,14 +107,6 @@ get_max_char_size (PangoFont  *font,
     *height = h;
 }
 
-static PangoFontMap *
-pango_hb_font_get_font_map (PangoFont *font)
-{
-  PangoHbFont *self = PANGO_HB_FONT (font);
-
-  return self->face->family->map;
-}
-
 static PangoVariant
 pango_variant_from_features (hb_feature_t *features,
                              unsigned int  n_features)
@@ -354,7 +346,10 @@ create_hex_box_info (PangoHbFont *self)
   PangoContext *context;
   PangoFontMap *map;
 
-  map = pango_hb_font_get_font_map (PANGO_FONT (self));
+  if (!self->face->family)
+    return NULL;
+
+  map = self->face->family->map;
 
   if (!map)
     return NULL;
@@ -917,7 +912,6 @@ pango_hb_font_class_init (PangoHbFontClass *class)
   font_class->describe_absolute = pango_hb_font_describe_absolute;
   font_class->get_glyph_extents = pango_hb_font_get_glyph_extents;
   font_class->get_metrics = pango_hb_font_get_metrics;
-  font_class->get_font_map = pango_hb_font_get_font_map;
   font_class->create_hb_font = pango_hb_font_create_hb_font;
   font_class->get_features = pango_hb_font_get_features;
   font_class->has_char = pango_hb_font_has_char;

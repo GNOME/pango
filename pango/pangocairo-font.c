@@ -405,11 +405,17 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
 
   /* create mini_font description */
   {
+    PangoFontFace *face;
+    PangoFontFamily *family;
     PangoFontMap *fontmap;
     PangoContext *context;
 
     /* XXX this is racy.  need a ref'ing getter... */
-    fontmap = pango_font_get_font_map (cf_priv->cfont);
+    face = pango_font_get_face (cf_priv->cfont);
+    family = pango_font_face_get_family (face);
+    if (!family)
+      return NULL;
+    fontmap = pango_font_family_get_font_map (family);
     if (!fontmap)
       return NULL;
     fontmap = g_object_ref (fontmap);
