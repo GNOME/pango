@@ -7,7 +7,7 @@ pango_sources = [
   'pango-attr-list.c',
   'pango-attr-iterator.c',
   'pango-attributes.c',
-  'pango-bidi-type.c',
+  'pango-bidi.c',
   'pango-color.c',
   'pango-context.c',
   'pango-coverage.c',

@@ -33,6 +33,7 @@
 #include "pango-emoji-private.h"
 #include "pango-attr-iterator-private.h"
 #include "pango-item-private.h"
+#include "pango-bidi-private.h"
 
 #include <hb-ot.h>
 

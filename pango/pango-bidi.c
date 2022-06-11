@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -25,12 +25,12 @@
 
 #include <fribidi.h>
 
+#include "pango-bidi-private.h"
 #include "pango-utils.h"
-#include "pango-utils-internal.h"
 
 /* Some bidi-related functions */
 
-/**
+/*< private >
  * pango_log2vis_get_embedding_levels:
  * @text: the text to itemize.
  * @length: the number of bytes (not characters) to process, or -1
@@ -49,13 +49,13 @@
  *   character (not byte), that should be freed using [func@GLib.free].
  */
 guint8 *
-pango_log2vis_get_embedding_levels (const gchar    *text,
-				    int             length,
-				    PangoDirection *pbase_dir)
+pango_log2vis_get_embedding_levels (const char     *text,
+                                    int             length,
+                                    PangoDirection *pbase_dir)
 {
   glong n_chars, i;
   guint8 *embedding_levels_list;
-  const gchar *p;
+  const char *p;
   FriBidiParType fribidi_base_dir;
   FriBidiCharType *bidi_types;
   FriBidiBracketType *bracket_types;
@@ -126,17 +126,17 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
      * o there are letters, and base_dir is weak.
      */
     if (!FRIBIDI_IS_ISOLATE (ored_types) &&
-	!FRIBIDI_IS_RTL (ored_types) &&
-	!FRIBIDI_IS_ARABIC (ored_types) &&
-	(!FRIBIDI_IS_RTL (fribidi_base_dir) ||
-	  (FRIBIDI_IS_WEAK (fribidi_base_dir) &&
-	   FRIBIDI_IS_LETTER (ored_types))
-	))
+        !FRIBIDI_IS_RTL (ored_types) &&
+        !FRIBIDI_IS_ARABIC (ored_types) &&
+        (!FRIBIDI_IS_RTL (fribidi_base_dir) ||
+          (FRIBIDI_IS_WEAK (fribidi_base_dir) &&
+           FRIBIDI_IS_LETTER (ored_types))
+        ))
       {
         /* all LTR */
-	fribidi_base_dir = FRIBIDI_PAR_LTR;
-	memset (embedding_levels_list, 0, n_chars);
-	goto resolved;
+        fribidi_base_dir = FRIBIDI_PAR_LTR;
+        memset (embedding_levels_list, 0, n_chars);
+        goto resolved;
       }
     /* The case that all resolved levels will be RTL is much more complex.
      * No isolates, no numbers, all strongs are RTL, and one of
@@ -146,23 +146,23 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
      * o there are letters, and base_dir is weak.
      */
     else if (!FRIBIDI_IS_ISOLATE (ored_types) &&
-	     !FRIBIDI_IS_NUMBER (ored_types) &&
-	     FRIBIDI_IS_RTL (anded_strongs) &&
-	     (FRIBIDI_IS_RTL (fribidi_base_dir) ||
-	       (FRIBIDI_IS_WEAK (fribidi_base_dir) &&
-		FRIBIDI_IS_LETTER (ored_types))
-	     ))
+             !FRIBIDI_IS_NUMBER (ored_types) &&
+             FRIBIDI_IS_RTL (anded_strongs) &&
+             (FRIBIDI_IS_RTL (fribidi_base_dir) ||
+               (FRIBIDI_IS_WEAK (fribidi_base_dir) &&
+                FRIBIDI_IS_LETTER (ored_types))
+             ))
       {
         /* all RTL */
-	fribidi_base_dir = FRIBIDI_PAR_RTL;
-	memset (embedding_levels_list, 1, n_chars);
-	goto resolved;
+        fribidi_base_dir = FRIBIDI_PAR_RTL;
+        memset (embedding_levels_list, 1, n_chars);
+        goto resolved;
       }
 
 
   max_level = fribidi_get_par_embedding_levels_ex (bidi_types, bracket_types, n_chars,
-						   &fribidi_base_dir,
-						   (FriBidiLevel*)embedding_levels_list);
+                                                   &fribidi_base_dir,
+                                                   (FriBidiLevel*)embedding_levels_list);
 
   if (G_UNLIKELY(max_level == 0))
     {
@@ -197,11 +197,11 @@ pango_unichar_direction (gunichar ch)
 }
 
 PangoDirection
-pango_find_base_dir (const gchar *text,
-                     gint         length)
+pango_find_base_dir (const char *text,
+                     int         length)
 {
   PangoDirection dir = PANGO_DIRECTION_NEUTRAL;
-  const gchar *p;
+  const char *p;
 
   g_return_val_if_fail (text != NULL || length == 0, PANGO_DIRECTION_NEUTRAL);
 
