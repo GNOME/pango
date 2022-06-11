@@ -27,23 +27,9 @@
 
 G_DECLARE_FINAL_TYPE (PangoHbFamily, pango_hb_family, PANGO, HB_FAMILY, PangoFontFamily)
 
-typedef struct _CommonFamily CommonFamily;
-struct _CommonFamily
-{
-  PangoFontFamily parent_instance;
-
-  PangoFontMap *map;
-  char *name;
-};
-
 struct _PangoHbFamily
 {
   PangoFontFamily parent_instance;
-
-  PangoFontMap *map;
-  char *name;
-
-  /* up to here shared with PangoGenericFamily */
 
   GPtrArray *faces;
 };

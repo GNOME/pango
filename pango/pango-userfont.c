@@ -245,9 +245,8 @@ static PangoFontMap *
 pango_user_font_get_font_map (PangoFont *font)
 {
   PangoUserFont *self = PANGO_USER_FONT (font);
-  PangoHbFamily *family = PANGO_HB_FAMILY (self->face->family);
 
-  return family->map;
+  return self->face->family->map;
 }
 
 static hb_bool_t

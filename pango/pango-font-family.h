@@ -33,6 +33,9 @@ PANGO_AVAILABLE_IN_ALL
 PANGO_DECLARE_INTERNAL_TYPE (PangoFontFamily, pango_font_family, PANGO, FONT_FAMILY, GObject)
 
 PANGO_AVAILABLE_IN_ALL
+PangoFontMap *          pango_font_family_get_font_map  (PangoFontFamily  *family);
+
+PANGO_AVAILABLE_IN_ALL
 const char *            pango_font_family_get_name      (PangoFontFamily  *family) G_GNUC_PURE;
 
 PANGO_AVAILABLE_IN_ALL
