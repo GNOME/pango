@@ -35,7 +35,7 @@ struct _PangoFontMap
   GHashTable *fontsets;
   GQueue fontset_cache;
 
-  double dpi;
+  float dpi;
   gboolean in_populate;
   guint serial;
 };
