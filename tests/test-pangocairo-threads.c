@@ -18,17 +18,20 @@ create_surface (void)
   return cairo_image_surface_create (CAIRO_FORMAT_A8, WIDTH, HEIGHT);
 }
 
-static PangoLayout *
+static PangoSimpleLayout *
 create_layout (cairo_t *cr)
 {
-  PangoLayout *layout = pango_cairo_create_layout (cr);
-  pango_layout_set_text (layout, text, -1);
-  pango_layout_set_width (layout, WIDTH * PANGO_SCALE);
+  PangoSimpleLayout *layout;
+
+  layout = pango_cairo_create_simple_layout (cr);
+  pango_simple_layout_set_text (layout, text, -1);
+  pango_simple_layout_set_width (layout, WIDTH * PANGO_SCALE);
+
   return layout;
 }
 
 static void
-draw (cairo_t *cr, PangoLayout *layout, unsigned int i)
+draw (cairo_t *cr, PangoSimpleLayout *layout, unsigned int i)
 {
   cairo_set_source_rgba (cr, 1, 1, 1, 1);
   cairo_paint (cr);
@@ -37,16 +40,16 @@ draw (cairo_t *cr, PangoLayout *layout, unsigned int i)
 
   cairo_identity_matrix (cr);
   cairo_scale (cr, (100 + i) / 100.,  (100 + i) / 100.);
-  pango_cairo_update_layout (cr, layout);
+  pango_cairo_update_context (cr, pango_simple_layout_get_context (layout));
 
-  pango_cairo_show_layout (cr, layout);
+  pango_cairo_show_lines (cr, pango_simple_layout_get_lines (layout));
 }
 
 static gpointer
 thread_func (gpointer data)
 {
   cairo_surface_t *surface = data;
-  PangoLayout *layout;
+  PangoSimpleLayout *layout;
   int i;
 
   cairo_t *cr = cairo_create (surface);
@@ -99,7 +102,7 @@ pangocairo_threads (void)
   {
     cairo_surface_t *ref_surface = create_surface ();
     cairo_t *cr = cairo_create (ref_surface);
-    PangoLayout *layout = create_layout (cr);
+    PangoSimpleLayout *layout = create_layout (cr);
     unsigned char *ref_data = cairo_image_surface_get_data (ref_surface);
     unsigned int len = WIDTH * HEIGHT;
 
