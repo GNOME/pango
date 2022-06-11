@@ -310,7 +310,7 @@ struct _PangoHbFaceClass
   PangoFontFaceClass parent_class;
 };
 
-G_DEFINE_TYPE (PangoHbFace, pango_hb_face, PANGO_TYPE_FONT_FACE)
+G_DEFINE_FINAL_TYPE (PangoHbFace, pango_hb_face, PANGO_TYPE_FONT_FACE)
 
 static void
 pango_hb_face_init (PangoHbFace *self)

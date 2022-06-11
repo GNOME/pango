@@ -102,7 +102,7 @@ struct _PangoGenericFamilyClass
   PangoFontFamilyClass parent_class;
 };
 
-G_DEFINE_TYPE_WITH_CODE (PangoGenericFamily, pango_generic_family, PANGO_TYPE_FONT_FAMILY,
+G_DEFINE_FINAL_TYPE_WITH_CODE (PangoGenericFamily, pango_generic_family, PANGO_TYPE_FONT_FAMILY,
                          G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango_generic_family_list_model_init))
 
 static void

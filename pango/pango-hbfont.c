@@ -524,7 +524,7 @@ struct _PangoHbFontClass
   PangoFontClass parent_class;
 };
 
-G_DEFINE_TYPE (PangoHbFont, pango_hb_font, PANGO_TYPE_FONT)
+G_DEFINE_FINAL_TYPE (PangoHbFont, pango_hb_font, PANGO_TYPE_FONT)
 
 static void
 pango_hb_font_init (PangoHbFont *self)

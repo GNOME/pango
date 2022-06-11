@@ -32,7 +32,7 @@
 #include "pangocairo-font.h"
 #endif
 
-G_DEFINE_TYPE (PangoFontsetCached, pango_fontset_cached, PANGO_TYPE_FONTSET);
+G_DEFINE_FINAL_TYPE (PangoFontsetCached, pango_fontset_cached, PANGO_TYPE_FONTSET);
 
 static void
 pango_fontset_cached_init (PangoFontsetCached *fontset)

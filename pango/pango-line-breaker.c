@@ -2097,7 +2097,7 @@ postprocess_line (PangoLineBreaker *self,
 /* }}} */
 /* {{{ PangoLineBreaker implementation */
 
-G_DEFINE_TYPE (PangoLineBreaker, pango_line_breaker, G_TYPE_OBJECT)
+G_DEFINE_FINAL_TYPE (PangoLineBreaker, pango_line_breaker, G_TYPE_OBJECT)
 
 enum {
   PROP_CONTEXT = 1,

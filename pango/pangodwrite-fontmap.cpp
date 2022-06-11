@@ -335,7 +335,7 @@ pango_direct_write_font_map_populate (PangoFontMap *map)
 /* }}} */
 /* {{{ PangoDirctWriteFontMap implementation */
 
-G_DEFINE_TYPE (PangoDirectWriteFontMap, pango_direct_write_font_map, PANGO_TYPE_FONT_MAP)
+G_DEFINE_FINAL_TYPE (PangoDirectWriteFontMap, pango_direct_write_font_map, PANGO_TYPE_FONT_MAP)
 
 static void
 pango_direct_write_font_map_init (PangoDirectWriteFontMap *self)

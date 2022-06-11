@@ -112,7 +112,7 @@ enum
 
 static GParamSpec *props[NUM_PROPERTIES] = { NULL, };
 
-G_DEFINE_TYPE (PangoLayout, pango_layout, G_TYPE_OBJECT)
+G_DEFINE_FINAL_TYPE (PangoLayout, pango_layout, G_TYPE_OBJECT)
 
 static void
 pango_layout_init (PangoLayout *layout)

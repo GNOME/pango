@@ -58,7 +58,7 @@ struct _PangoContextClass
 static void pango_context_finalize    (GObject       *object);
 static void context_changed           (PangoContext  *context);
 
-G_DEFINE_TYPE (PangoContext, pango_context, G_TYPE_OBJECT)
+G_DEFINE_FINAL_TYPE (PangoContext, pango_context, G_TYPE_OBJECT)
 
 static void
 pango_context_init (PangoContext *context)

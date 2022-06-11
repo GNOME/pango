@@ -410,7 +410,7 @@ pango_core_text_font_map_populate (PangoFontMap *map)
 /* }}} */
 /* {{{ PangoCoreTextFontMap implementation */
 
-G_DEFINE_TYPE (PangoCoreTextFontMap, pango_core_text_font_map, PANGO_TYPE_FONT_MAP)
+G_DEFINE_FINAL_TYPE (PangoCoreTextFontMap, pango_core_text_font_map, PANGO_TYPE_FONT_MAP)
 
 static void
 pango_core_text_font_map_init (PangoCoreTextFontMap *self)
