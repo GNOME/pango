@@ -28,6 +28,7 @@
 
 #include <string.h>
 #include <hb-ot.h>
+#include <hb-gobject.h>
 
 /**
  * PangoHbFace:
@@ -310,6 +311,19 @@ struct _PangoHbFaceClass
   PangoFontFaceClass parent_class;
 };
 
+enum {
+  PROP_HB_FACE = 1,
+  PROP_FILE,
+  PROP_FACE_INDEX,
+  PROP_INSTANCE_ID,
+  PROP_VARIATIONS,
+  PROP_EMBOLDEN,
+  PROP_TRANSFORM,
+  N_PROPERTIES
+};
+
+static GParamSpec *properties[N_PROPERTIES] = { NULL, };
+
 G_DEFINE_FINAL_TYPE (PangoHbFace, pango_hb_face, PANGO_TYPE_FONT_FACE)
 
 static void
@@ -440,12 +454,61 @@ pango_hb_face_create_font (PangoFontFace              *face,
 }
 
 static void
+pango_hb_face_get_property (GObject    *object,
+                            guint       property_id,
+                            GValue     *value,
+                            GParamSpec *pspec)
+{
+  PangoHbFace *self = PANGO_HB_FACE (object);
+
+  switch (property_id)
+    {
+    case PROP_HB_FACE:
+      g_value_set_boxed (value, pango_hb_face_get_hb_face (self));
+      break;
+
+    case PROP_FILE:
+      g_value_set_string (value, pango_hb_face_get_file (self));
+      break;
+
+    case PROP_FACE_INDEX:
+      g_value_set_uint (value, pango_hb_face_get_face_index (self));
+      break;
+
+    case PROP_INSTANCE_ID:
+      g_value_set_int (value, pango_hb_face_get_instance_id (self));
+      break;
+
+    case PROP_VARIATIONS:
+      {
+        char *str = NULL;
+        if (self->variations)
+          str = variations_to_string (self->variations, self->n_variations, "=", ",");
+        g_value_take_string (value, str);
+      }
+      break;
+
+    case PROP_EMBOLDEN:
+      g_value_set_boolean (value, pango_hb_face_get_embolden (self));
+      break;
+
+    case PROP_TRANSFORM:
+      g_value_set_boxed (value, pango_hb_face_get_transform (self));
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+    }
+}
+
+static void
 pango_hb_face_class_init (PangoHbFaceClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontFaceClass *face_class = PANGO_FONT_FACE_CLASS (class);
 
   object_class->finalize = pango_hb_face_finalize;
+  object_class->get_property = pango_hb_face_get_property;
 
   face_class->is_synthesized = pango_hb_face_is_synthesized;
   face_class->is_monospace = pango_hb_face_is_monospace;
@@ -455,6 +518,82 @@ pango_hb_face_class_init (PangoHbFaceClass *class)
   face_class->has_char = pango_hb_face_has_char;
   face_class->get_faceid = pango_hb_face_get_faceid;
   face_class->create_font = pango_hb_face_create_font;
+
+  /**
+   * PangoHbFace:hb-face: (attributes org.gtk.Property.get=pango_hb_face_get_hb_face)
+   *
+   * A `hb_face_t` object backing this face.
+   */
+  properties[PROP_HB_FACE] =
+      g_param_spec_boxed ("hb-face", NULL, NULL, HB_GOBJECT_TYPE_FACE,
+                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoHbFace:file: (attributes org.gtk.Property.get=pango_hb_face_get_file)
+   *
+   * The file that this face was created from, if any.
+   */
+  properties[PROP_FILE] =
+      g_param_spec_string ("file", NULL, NULL, NULL,
+                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoHbFace:face-index: (attributes org.gtk.Property.get=pango_hb_face_get_face_index)
+   *
+   * The index of the face, in case that it was created
+   * from a file containing data for multiple faces.
+   */
+  properties[PROP_FACE_INDEX] =
+      g_param_spec_uint ("face-index", NULL, NULL, 0, G_MAXUINT, 0,
+                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoHbFace:instance-id: (attributes org.gtk.Property.get=pango_hb_face_get_instance_id)
+   *
+   * The ID of the named instance of this face.
+   *
+   * -1 represents the default instance, and
+   * -2 represents no instance, meaning that the face will
+   *  be variable.
+   */
+  properties[PROP_INSTANCE_ID] =
+      g_param_spec_int ("instance-id", NULL, NULL, -2, G_MAXINT, -1,
+                        G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoHbFace:variations: (attributes org.gtk.Property.get=pango_hb_face_get_variations)
+   *
+   * The variations that are applied for this face.
+   *
+   * This property contains a string representation of the variations.
+   */
+  properties[PROP_VARIATIONS] =
+      g_param_spec_string ("variations", NULL, NULL, NULL,
+                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoHbFace:embolden: (attributes org.gtk.Property.get=pango_hb_face_get_embolden)
+   *
+   * `TRUE` if the face is using synthetic emboldening.
+   */
+  properties[PROP_EMBOLDEN] =
+      g_param_spec_boolean ("embolden", NULL, NULL, FALSE,
+                            G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoHbFace:transform: (attributes org.gtk.Property.get=pango_hb_face_get_transform)
+   *
+   * The transform from 'font space' to 'user space' that
+   * this face uses.
+   *
+   * This is the 'font matrix' which is used for
+   * sythetic italics and width variations.
+   */
+  properties[PROP_TRANSFORM] =
+      g_param_spec_boxed ("transform", NULL, NULL, PANGO_TYPE_MATRIX,
+                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_properties (object_class, N_PROPERTIES, properties);
 }
 
 /* }}} */
@@ -825,6 +964,8 @@ pango_hb_face_new_instance (PangoHbFace                *face,
 hb_face_t *
 pango_hb_face_get_hb_face (PangoHbFace *self)
 {
+  g_return_val_if_fail (PANGO_IS_HB_FACE (self), NULL);
+
   ensure_hb_face (self);
 
   return self->face;
@@ -841,6 +982,8 @@ pango_hb_face_get_hb_face (PangoHbFace *self)
 const char *
 pango_hb_face_get_file (PangoHbFace *self)
 {
+  g_return_val_if_fail (PANGO_IS_HB_FACE (self), NULL);
+
   return self->file;
 }
 
@@ -855,6 +998,8 @@ pango_hb_face_get_file (PangoHbFace *self)
 unsigned int
 pango_hb_face_get_face_index (PangoHbFace *self)
 {
+  g_return_val_if_fail (PANGO_IS_HB_FACE (self), 0);
+
   return self->index;
 }
 
@@ -869,6 +1014,8 @@ pango_hb_face_get_face_index (PangoHbFace *self)
 int
 pango_hb_face_get_instance_id (PangoHbFace *self)
 {
+  g_return_val_if_fail (PANGO_IS_HB_FACE (self), -1);
+
   return self->instance_id;
 }
 
@@ -886,6 +1033,8 @@ const hb_variation_t *
 pango_hb_face_get_variations (PangoHbFace  *self,
                               unsigned int *n_variations)
 {
+  g_return_val_if_fail (PANGO_IS_HB_FACE (self), NULL);
+
   if (n_variations)
     *n_variations = self->n_variations;
 
@@ -903,6 +1052,8 @@ pango_hb_face_get_variations (PangoHbFace  *self,
 gboolean
 pango_hb_face_get_embolden (PangoHbFace *self)
 {
+  g_return_val_if_fail (PANGO_IS_HB_FACE (self), FALSE);
+
   return self->embolden;
 }
 
@@ -912,7 +1063,7 @@ pango_hb_face_get_embolden (PangoHbFace *self)
  *
  * Gets the transform that this face uses.
  *
- * This is the 'font matrix' which iis used for
+ * This is the 'font matrix' which is used for
  * sythetic italics and width variations.
  *
  * Returns: (nullable) (transfer none): the transform of face
@@ -920,6 +1071,8 @@ pango_hb_face_get_embolden (PangoHbFace *self)
 const PangoMatrix *
 pango_hb_face_get_transform (PangoHbFace *self)
 {
+  g_return_val_if_fail (PANGO_IS_HB_FACE (self), NULL);
+
   return self->matrix;
 }
 
