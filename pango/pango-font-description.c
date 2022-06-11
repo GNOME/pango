@@ -768,46 +768,6 @@ pango_font_description_compute_distance (const PangoFontDescription *a,
 }
 
 /**
- * pango_font_description_better_match:
- * @desc: a `PangoFontDescription`
- * @old_match: (nullable): a `PangoFontDescription`, or %NULL
- * @new_match: a `PangoFontDescription`
- *
- * Determines if the style attributes of @new_match are a closer match
- * for @desc than those of @old_match are, or if @old_match is %NULL,
- * determines if @new_match is a match at all.
- *
- * Approximate matching is done for weight, stretch and style; other style
- * attributes must match exactly. Style attributes are all attributes other
- * than family and size-related attributes. Approximate matching for style
- * considers %PANGO_STYLE_OBLIQUE and %PANGO_STYLE_ITALIC as matches, but
- * not as good a match as when the styles are equal.
- *
- * Note that @old_match must match @desc.
- *
- * Return value: %TRUE if @new_match is a better match
- */
-gboolean
-pango_font_description_better_match (const PangoFontDescription *desc,
-                                     const PangoFontDescription *old_match,
-                                     const PangoFontDescription *new_match)
-{
-  g_return_val_if_fail (desc != NULL, G_MAXINT);
-  g_return_val_if_fail (new_match != NULL, G_MAXINT);
-
-  if (pango_font_description_is_similar (new_match, desc))
-    {
-      int old_distance = old_match ? pango_font_description_compute_distance (desc, old_match) : G_MAXINT;
-      int new_distance = pango_font_description_compute_distance (desc, new_match);
-
-      if (new_distance < old_distance)
-        return TRUE;
-    }
-
-  return FALSE;
-}
-
-/**
  * pango_font_description_copy:
  * @desc: (nullable): a `PangoFontDescription`, may be %NULL
  *
