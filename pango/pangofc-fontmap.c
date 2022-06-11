@@ -508,7 +508,7 @@ pango_fc_font_map_populate (PangoFontMap *map)
 /* }}} */
 /* {{{ PangoFcFontMap implementation */
 
-G_DEFINE_TYPE (PangoFcFontMap, pango_fc_font_map, PANGO_TYPE_FONT_MAP)
+G_DEFINE_FINAL_TYPE (PangoFcFontMap, pango_fc_font_map, PANGO_TYPE_FONT_MAP)
 
 static void
 pango_fc_font_map_init (PangoFcFontMap *self)

@@ -188,7 +188,7 @@ struct _PangoUserFaceClass
   PangoFontFaceClass parent_class;
 };
 
-G_DEFINE_TYPE (PangoUserFace, pango_user_face, PANGO_TYPE_FONT_FACE)
+G_DEFINE_FINAL_TYPE (PangoUserFace, pango_user_face, PANGO_TYPE_FONT_FACE)
 
 static void
 pango_user_face_init (PangoUserFace *self)

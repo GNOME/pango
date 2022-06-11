@@ -44,7 +44,7 @@ struct _PangoUserFontClass
   PangoFontClass parent_class;
 };
 
-G_DEFINE_TYPE (PangoUserFont, pango_user_font, PANGO_TYPE_FONT)
+G_DEFINE_FINAL_TYPE (PangoUserFont, pango_user_font, PANGO_TYPE_FONT)
 
 static void
 pango_user_font_init (PangoUserFont *self G_GNUC_UNUSED)
