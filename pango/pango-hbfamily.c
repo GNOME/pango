@@ -133,6 +133,12 @@ pango_hb_family_finalize (GObject *object)
 {
   PangoHbFamily *self = PANGO_HB_FAMILY (object);
 
+  for (int i = 0; i < self->faces->len; i++)
+    {
+      PangoHbFace *face = g_ptr_array_index (self->faces, i);
+      ((CommonFace *)face)->family = NULL;
+    }
+
   g_ptr_array_unref (self->faces);
 
   G_OBJECT_CLASS (pango_hb_family_parent_class)->finalize (object);
