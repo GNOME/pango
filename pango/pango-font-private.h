@@ -33,7 +33,15 @@ struct _PangoFont
 {
   GObject parent_instance;
 
+  PangoFontFace *face;
+
   hb_font_t *hb_font;
+
+  int size; /* point size, scaled by PANGO_SCALE */
+  float dpi;
+  PangoGravity gravity;
+  PangoMatrix matrix;
+
 #ifdef HAVE_CAIRO
   cairo_font_options_t *options;
 #endif
@@ -51,7 +59,6 @@ struct _PangoFontClass
                                                 PangoRectangle *logical_rect);
   PangoFontMetrics *     (* get_metrics)        (PangoFont      *font,
                                                 PangoLanguage  *language);
-  PangoFontDescription * (* describe_absolute)  (PangoFont      *font);
   void                   (* get_features)       (PangoFont      *font,
                                                  hb_feature_t   *features,
                                                  guint           len,
@@ -64,7 +71,6 @@ struct _PangoFontClass
                                                  double         *y_scale);
   gboolean               (* has_char)           (PangoFont      *font,
                                                  gunichar        wc);
-  PangoFontFace *        (* get_face)           (PangoFont      *font);
   void                   (* get_matrix)         (PangoFont      *font,
                                                  PangoMatrix    *matrix);
   int                    (* get_absolute_size)  (PangoFont      *font);
@@ -72,6 +78,41 @@ struct _PangoFontClass
 
 #define PANGO_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT, PangoFontClass))
 #define PANGO_FONT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONT, PangoFontClass))
+
+static inline void
+pango_font_set_face (PangoFont     *font,
+                     PangoFontFace *face)
+{
+  font->face = g_object_ref (face);
+}
+
+static inline void
+pango_font_set_size (PangoFont *font,
+                     int        size)
+{
+  font->size = size;
+}
+
+static inline void
+pango_font_set_dpi (PangoFont *font,
+                    float      dpi)
+{
+  font->dpi = dpi;
+}
+
+static inline void
+pango_font_set_gravity (PangoFont    *font,
+                        PangoGravity  gravity)
+{
+  font->gravity = gravity;
+}
+
+static inline void
+pango_font_set_matrix (PangoFont         *font,
+                       const PangoMatrix *matrix)
+{
+  font->matrix = *matrix;
+}
 
 gboolean pango_font_is_hinted         (PangoFont *font);
 void     pango_font_get_scale_factors (PangoFont *font,

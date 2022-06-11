@@ -47,43 +47,24 @@ struct _PangoUserFontClass
 G_DEFINE_TYPE (PangoUserFont, pango_user_font, PANGO_TYPE_FONT)
 
 static void
-pango_user_font_init (PangoUserFont *self)
+pango_user_font_init (PangoUserFont *self G_GNUC_UNUSED)
 {
-  self->gravity = PANGO_GRAVITY_AUTO;
-  self->matrix = (PangoMatrix) PANGO_MATRIX_INIT;
 }
 
 static void
 pango_user_font_finalize (GObject *object)
 {
-  PangoUserFont *self = PANGO_USER_FONT (object);
-
-  g_object_unref (self->face);
-
   G_OBJECT_CLASS (pango_user_font_parent_class)->finalize (object);
 }
 
 static PangoFontDescription *
 pango_user_font_describe (PangoFont *font)
 {
-  PangoUserFont *self = PANGO_USER_FONT (font);
   PangoFontDescription *desc;
 
-  desc = pango_font_face_describe (PANGO_FONT_FACE (self->face));
-  pango_font_description_set_gravity (desc, self->gravity);
-  pango_font_description_set_size (desc, self->size);
-
-  return desc;
-}
-
-static PangoFontDescription *
-pango_user_font_describe_absolute (PangoFont *font)
-{
-  PangoUserFont *self = PANGO_USER_FONT (font);
-  PangoFontDescription *desc;
-
-  desc = pango_user_font_describe (font);
-  pango_font_description_set_absolute_size (desc, self->size * self->dpi / 72.);
+  desc = pango_font_face_describe (PANGO_FONT_FACE (font->face));
+  pango_font_description_set_gravity (desc, font->gravity);
+  pango_font_description_set_size (desc, font->size);
 
   return desc;
 }
@@ -94,13 +75,12 @@ pango_user_font_get_glyph_extents (PangoFont      *font,
                                    PangoRectangle *ink_rect,
                                    PangoRectangle *logical_rect)
 {
-  PangoUserFont *self = PANGO_USER_FONT (font);
   hb_font_t *hb_font = pango_font_get_hb_font (font);
   hb_glyph_extents_t extents;
   hb_direction_t direction;
   hb_font_extents_t font_extents;
 
-  direction = PANGO_GRAVITY_IS_VERTICAL (self->gravity)
+  direction = PANGO_GRAVITY_IS_VERTICAL (font->gravity)
               ? HB_DIRECTION_TTB
               : HB_DIRECTION_LTR;
 
@@ -132,7 +112,7 @@ pango_user_font_get_glyph_extents (PangoFont      *font,
       r.width = extents.width;
       r.height = - extents.height;
 
-      switch (self->gravity)
+      switch (font->gravity)
         {
         case PANGO_GRAVITY_AUTO:
         case PANGO_GRAVITY_SOUTH:
@@ -163,7 +143,7 @@ pango_user_font_get_glyph_extents (PangoFont      *font,
           g_assert_not_reached ();
         }
 
-      if (PANGO_GRAVITY_IS_IMPROPER (self->gravity))
+      if (PANGO_GRAVITY_IS_IMPROPER (font->gravity))
         {
           PangoMatrix matrix = (PangoMatrix) PANGO_MATRIX_INIT;
           pango_matrix_scale (&matrix, -1, -1);
@@ -184,7 +164,7 @@ pango_user_font_get_glyph_extents (PangoFont      *font,
       logical_rect->width = h_advance;
       logical_rect->height = extents.ascender - extents.descender;
 
-      switch (self->gravity)
+      switch (font->gravity)
         {
         case PANGO_GRAVITY_AUTO:
         case PANGO_GRAVITY_SOUTH:
@@ -207,7 +187,7 @@ pango_user_font_get_glyph_extents (PangoFont      *font,
           g_assert_not_reached ();
         }
 
-      if (PANGO_GRAVITY_IS_IMPROPER (self->gravity))
+      if (PANGO_GRAVITY_IS_IMPROPER (font->gravity))
         {
           logical_rect->height = - logical_rect->height;
           logical_rect->y = - logical_rect->y;
@@ -242,79 +222,82 @@ pango_user_font_get_metrics (PangoFont     *font,
 }
 
 static hb_bool_t
-nominal_glyph_func (hb_font_t *font, void *font_data,
+nominal_glyph_func (hb_font_t *hb_font, void *font_data,
                     hb_codepoint_t unicode,
                     hb_codepoint_t *glyph,
                     void *user_data)
 {
-  PangoUserFont *self = font_data;
+  PangoFont *font = font_data;
+  PangoUserFace *face = PANGO_USER_FACE (font->face);
 
-  return self->face->glyph_func (self->face, unicode, glyph, self->face->user_data);
+  return face->glyph_func (face, unicode, glyph, face->user_data);
 }
 
 static hb_position_t
-glyph_h_advance_func (hb_font_t *font, void *font_data,
+glyph_h_advance_func (hb_font_t *hb_font, void *font_data,
                       hb_codepoint_t glyph,
                       void *user_data)
 {
-  PangoUserFont *self = font_data;
-  int size = self->size * self->dpi / 72.;
+  PangoFont *font = font_data;
+  PangoUserFace *face = PANGO_USER_FACE (font->face);
+  int size = font->size * font->dpi / 72.;
   hb_position_t h_advance, v_advance;
   hb_glyph_extents_t glyph_extents;
   gboolean is_color;
 
-  self->face->glyph_info_func (self->face, size, glyph,
-                               &glyph_extents,
-                               &h_advance, &v_advance,
-                               &is_color,
-                               self->face->user_data);
+  face->glyph_info_func (face, size, glyph,
+                         &glyph_extents,
+                         &h_advance, &v_advance,
+                         &is_color,
+                         face->user_data);
 
   return h_advance;
 }
 
 static hb_bool_t
-glyph_extents_func (hb_font_t *font, void *font_data,
+glyph_extents_func (hb_font_t *hb_font, void *font_data,
                     hb_codepoint_t glyph,
                     hb_glyph_extents_t *extents,
                     void *user_data)
 {
-  PangoUserFont *self = font_data;
-  int size = self->size * self->dpi / 72.;
+  PangoFont *font = font_data;
+  PangoUserFace *face = PANGO_USER_FACE (font->face);
+  int size = font->size * font->dpi / 72.;
   hb_position_t h_advance, v_advance;
   gboolean is_color;
 
-  return self->face->glyph_info_func (self->face, size, glyph,
-                                      extents,
-                                      &h_advance, &v_advance,
-                                      &is_color,
-                                      self->face->user_data);
+  return face->glyph_info_func (face, size, glyph,
+                                extents,
+                                &h_advance, &v_advance,
+                                &is_color,
+                                face->user_data);
 }
 
 static hb_bool_t
-font_extents_func (hb_font_t *font, void *font_data,
+font_extents_func (hb_font_t *hb_font, void *font_data,
                    hb_font_extents_t *extents,
                    void *user_data)
 {
-  PangoUserFont *self = font_data;
-  int size = self->size * self->dpi / 72.;
+  PangoFont *font = font_data;
+  PangoUserFace *face = PANGO_USER_FACE (font->face);
+  int size = font->size * font->dpi / 72.;
 
-  return self->face->font_info_func (self->face, size, extents, self->face->user_data);
+  return face->font_info_func (face, size, extents, face->user_data);
 }
 
 static hb_font_t *
 pango_user_font_create_hb_font (PangoFont *font)
 {
-  PangoUserFont *self = PANGO_USER_FONT (font);
-  hb_font_t *hb_font;
   double x_scale, y_scale;
   int size;
   hb_blob_t *blob;
-  hb_face_t *face;
+  hb_face_t *hb_face;
+  hb_font_t *hb_font;
   hb_font_funcs_t *funcs;
 
   blob = hb_blob_create ("", 0, HB_MEMORY_MODE_READONLY, NULL, NULL);
-  face = hb_face_create (blob, 0);
-  hb_font = hb_font_create (face);
+  hb_face = hb_face_create (blob, 0);
+  hb_font = hb_font_create (hb_face);
 
   funcs = hb_font_funcs_create ();
 
@@ -323,23 +306,23 @@ pango_user_font_create_hb_font (PangoFont *font)
   hb_font_funcs_set_glyph_extents_func (funcs, glyph_extents_func, NULL, NULL);
   hb_font_funcs_set_font_h_extents_func (funcs, font_extents_func, NULL, NULL);
 
-  hb_font_set_funcs (hb_font, funcs, self, NULL);
+  hb_font_set_funcs (hb_font, funcs, font, NULL);
 
   hb_font_funcs_destroy (funcs);
-  hb_face_destroy (face);
+  hb_face_destroy (hb_face);
   hb_blob_destroy (blob);
 
-  size = self->size * self->dpi / 72.f;
+  size = font->size * font->dpi / 72.f;
   x_scale = y_scale = 1;
 
-  if (PANGO_GRAVITY_IS_IMPROPER (self->gravity))
+  if (PANGO_GRAVITY_IS_IMPROPER (font->gravity))
     {
       x_scale = - x_scale;
       y_scale = - y_scale;
     }
 
   hb_font_set_scale (hb_font, size * x_scale, size * y_scale);
-  hb_font_set_ptem (hb_font, self->size / PANGO_SCALE);
+  hb_font_set_ptem (hb_font, font->size / PANGO_SCALE);
 
   return hb_font;
 }
@@ -354,14 +337,6 @@ pango_user_font_has_char (PangoFont *font,
   return hb_font_get_nominal_glyph (user_font, wc, &glyph);
 }
 
-static PangoFontFace *
-pango_user_font_get_face (PangoFont *font)
-{
-  PangoUserFont *self = PANGO_USER_FONT (font);
-
-  return PANGO_FONT_FACE (self->face);
-}
-
 static void
 pango_user_font_class_init (PangoUserFontClass *class)
 {
@@ -371,12 +346,10 @@ pango_user_font_class_init (PangoUserFontClass *class)
   object_class->finalize = pango_user_font_finalize;
 
   font_class->describe = pango_user_font_describe;
-  font_class->describe_absolute = pango_user_font_describe_absolute;
   font_class->get_glyph_extents = pango_user_font_get_glyph_extents;
   font_class->get_metrics = pango_user_font_get_metrics;
   font_class->create_hb_font = pango_user_font_create_hb_font;
   font_class->has_char = pango_user_font_has_char;
-  font_class->get_face = pango_user_font_get_face;
 }
 
 /* }}} */
@@ -402,17 +375,18 @@ pango_user_font_new (PangoUserFace     *face,
                      const PangoMatrix *matrix)
 {
   PangoUserFont *self;
+  PangoFont *font;
 
   self = g_object_new (PANGO_TYPE_USER_FONT, NULL);
 
-  self->face = g_object_ref (face);
+  font = PANGO_FONT (self);
 
-  self->size = size;
-  self->dpi = dpi;
-  if (gravity != PANGO_GRAVITY_AUTO)
-    self->gravity = gravity;
+  pango_font_set_face (font, PANGO_FONT_FACE (face));
+  pango_font_set_size (font, size);
+  pango_font_set_dpi (font, dpi);
+  pango_font_set_gravity (font, gravity);
   if (matrix)
-    self->matrix = *matrix;
+    pango_font_set_matrix (font, matrix);
 
   return self;
 }
