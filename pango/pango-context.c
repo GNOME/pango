@@ -58,6 +58,20 @@ struct _PangoContextClass
 static void pango_context_finalize    (GObject       *object);
 static void context_changed           (PangoContext  *context);
 
+enum {
+  PROP_FONT_MAP = 1,
+  PROP_FONT_DESCRIPTION,
+  PROP_LANGUAGE,
+  PROP_BASE_DIR,
+  PROP_BASE_GRAVITY,
+  PROP_GRAVITY_HINT,
+  PROP_MATRIX,
+  PROP_ROUND_GLYPH_POSITIONS,
+  N_PROPERTIES
+};
+
+static GParamSpec *properties[N_PROPERTIES] = { NULL, };
+
 G_DEFINE_FINAL_TYPE (PangoContext, pango_context, G_TYPE_OBJECT)
 
 static void
@@ -100,15 +114,212 @@ pango_has_mixed_deps (void)
 }
 
 static void
+pango_context_set_property (GObject      *object,
+                            guint         property_id,
+                            const GValue *value,
+                            GParamSpec   *pspec)
+{
+  PangoContext *context = PANGO_CONTEXT (object);
+
+  switch (property_id)
+    {
+    case PROP_FONT_MAP:
+      pango_context_set_font_map (context, g_value_get_object (value));
+      break;
+
+    case PROP_FONT_DESCRIPTION:
+      pango_context_set_font_description (context, g_value_get_boxed (value));
+      break;
+
+    case PROP_LANGUAGE:
+      pango_context_set_language (context, g_value_get_boxed (value));
+      break;
+
+    case PROP_BASE_DIR:
+      pango_context_set_base_dir (context, g_value_get_enum (value));
+      break;
+
+    case PROP_BASE_GRAVITY:
+      pango_context_set_base_gravity (context, g_value_get_enum (value));
+      break;
+
+    case PROP_GRAVITY_HINT:
+      pango_context_set_gravity_hint (context, g_value_get_enum (value));
+      break;
+
+    case PROP_MATRIX:
+      pango_context_set_matrix (context, g_value_get_boxed (value));
+      break;
+
+    case PROP_ROUND_GLYPH_POSITIONS:
+      pango_context_set_round_glyph_positions (context, g_value_get_boolean (value));
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+    }
+}
+
+static void
+pango_context_get_property (GObject    *object,
+                            guint       property_id,
+                            GValue     *value,
+                            GParamSpec *pspec)
+{
+  PangoContext *context = PANGO_CONTEXT (object);
+
+  switch (property_id)
+    {
+    case PROP_FONT_MAP:
+      g_value_set_object (value, pango_context_get_font_map (context));
+      break;
+
+    case PROP_FONT_DESCRIPTION:
+      g_value_set_boxed (value, pango_context_get_font_description (context));
+      break;
+
+    case PROP_LANGUAGE:
+      g_value_set_boxed (value, pango_context_get_language (context));
+      break;
+
+    case PROP_BASE_DIR:
+      g_value_set_enum (value, pango_context_get_base_dir (context));
+      break;
+
+    case PROP_BASE_GRAVITY:
+      g_value_set_enum (value, pango_context_get_base_gravity (context));
+      break;
+
+    case PROP_GRAVITY_HINT:
+      g_value_set_enum (value, pango_context_get_gravity_hint (context));
+      break;
+
+    case PROP_MATRIX:
+      g_value_set_boxed (value, pango_context_get_matrix (context));
+      break;
+
+    case PROP_ROUND_GLYPH_POSITIONS:
+      g_value_set_boolean (value, pango_context_get_round_glyph_positions (context));
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+    }
+}
+
+static void
 pango_context_class_init (PangoContextClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
   /* Put the check for mixed linkage here, for lack of a better place */
   if (pango_has_mixed_deps ())
-    g_error ("Pango 1.x symbols detected.\nUsing Pango 1.x and 2 in the same process is not supported."); 
+    g_error ("Pango 1.x symbols detected.\n"
+             "Using Pango 1.x and 2 in the same process is not supported.");
 
   object_class->finalize = pango_context_finalize;
+  object_class->set_property = pango_context_set_property;
+  object_class->get_property = pango_context_get_property;
+
+  /**
+   * PangoContext:font-map: (attributes org.gtk.Property.get=pango_context_get_font_map org.gtk.Property.set=pango_context_set_font_map)
+   *
+   * The font map to be searched when fonts are looked up
+   * in this context.
+   */
+  properties[PROP_FONT_MAP] =
+    g_param_spec_object ("font-map", NULL, NULL, PANGO_TYPE_FONT_MAP,
+                         G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoContext:font-description: (attributes org.gtk.Property.get=pango_context_get_font_description org.gtk.Property.set=pango_context_set_font_description)
+   *
+   * The default font descriptoin for the context.
+   */
+  properties[PROP_FONT_DESCRIPTION] =
+    g_param_spec_boxed ("font-description", NULL, NULL, PANGO_TYPE_FONT_DESCRIPTION,
+                        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoContext:language: (attributes org.gtk.Property.get=pango_context_get_language org.gtk.Property.set=pango_context_set_language)
+   *
+   * The global language for the context.
+   */
+  properties[PROP_LANGUAGE] =
+    g_param_spec_boxed ("language", NULL, NULL, PANGO_TYPE_LANGUAGE,
+                        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoContext:base-direction: (attributes org.gtk.Property.get=pango_context_get_base_dir org.gtk.Property.set=pango_context_set_base_dir)
+   *
+   * The base direction for the context.
+   *
+   * The base direction is used in applying the Unicode bidirectional
+   * algorithm; if the @direction is `PANGO_DIRECTION_LTR` or
+   * `PANGO_DIRECTION_RTL`, then the value will be used as the paragraph
+   * direction in the Unicode bidirectional algorithm. A value of
+   * `PANGO_DIRECTION_WEAK_LTR` or `PANGO_DIRECTION_WEAK_RTL` is used only
+   * for paragraphs that do not contain any strong characters themselves.
+   */
+  properties[PROP_BASE_DIR] =
+    g_param_spec_enum ("base-direction", NULL, NULL, PANGO_TYPE_DIRECTION,
+                       PANGO_DIRECTION_LTR,
+                       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoContext:base-gravity: (attributes org.gtk.Property.get=pango_context_get_base_gravity org.gtk.Property.set=pango_context_set_base_gravity)
+   *
+   * The base gravity for the context.
+   *
+   * The base gravity is used in laying vertical text out.
+   */
+  properties[PROP_BASE_GRAVITY] =
+    g_param_spec_enum ("base-gravity", NULL, NULL, PANGO_TYPE_GRAVITY,
+                       PANGO_GRAVITY_SOUTH,
+                       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoContext:gravity-hint: (attributes org.gtk.Property.get=pango_context_get_gravity_hint org.gtk.Property.set=pango_context_set_gravity_hint)
+   *
+   * The gravity hint for the context.
+   *
+   * The gravity hint is used in laying vertical text out, and
+   * is only relevant if gravity of the context as returned by
+   * [method@Pango.Context.get_gravity] is set to `PANGO_GRAVITY_EAST`
+   * or `PANGO_GRAVITY_WEST`.
+   */
+  properties[PROP_GRAVITY_HINT] =
+    g_param_spec_enum ("gravity-hint", NULL, NULL, PANGO_TYPE_GRAVITY_HINT,
+                       PANGO_GRAVITY_HINT_NATURAL,
+                       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoContext:matrix: (attributes org.gtk.Property.get=pango_context_get_matrix org.gtk.Property.set=pango_context_set_matrix)
+   *
+   * The transformation matrix that will be applied when rendering
+   * with this context.
+   *
+   * This matrix is also known as the 'ctm'.
+   */
+  properties[PROP_MATRIX] =
+    g_param_spec_boxed ("matrix", NULL, NULL, PANGO_TYPE_MATRIX,
+                        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoContext:round-glyph-positions: (attributes org.gtk.Property.get=pango_context_get_round_glyph_positions org.gtk.Property.set=pango_context_set_round_glyph_positions)
+   *
+   * Determines whether font rendering with this context should
+   * round glyph positions and widths to integral positions,
+   * in device units.
+   *
+   * This is useful when the renderer can't handle subpixel
+   * positioning of glyphs.
+   */
+  properties[PROP_ROUND_GLYPH_POSITIONS] =
+    g_param_spec_boolean ("round-glyph-positions", NULL, NULL, TRUE,
+                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_properties (object_class, N_PROPERTIES, properties);
 }
 
 static void
@@ -200,6 +411,7 @@ pango_context_set_matrix (PangoContext      *context,
     context->matrix = NULL;
 
   update_resolved_gravity (context);
+  g_object_notify_by_pspec (G_OBJECT (context), properties[PROP_MATRIX]);
 }
 
 /**
@@ -255,6 +467,8 @@ pango_context_set_font_map (PangoContext *context,
 
   context->font_map = font_map;
   context->fontmap_serial = pango_font_map_get_serial (font_map);
+
+  g_object_notify_by_pspec (G_OBJECT (context), properties[PROP_FONT_MAP]);
 }
 
 /**
@@ -338,6 +552,8 @@ pango_context_set_font_description (PangoContext               *context,
 
       pango_font_description_free (context->font_desc);
       context->font_desc = pango_font_description_copy (desc);
+
+      g_object_notify_by_pspec (G_OBJECT (context), properties[PROP_FONT_DESCRIPTION]);
     }
 }
 
@@ -382,6 +598,8 @@ pango_context_set_language (PangoContext  *context,
     context->language = language;
   else
     context->language = pango_language_get_default ();
+
+  g_object_notify_by_pspec (G_OBJECT (context), properties[PROP_LANGUAGE]);
 }
 
 /**
@@ -420,10 +638,13 @@ pango_context_set_base_dir (PangoContext   *context,
 {
   g_return_if_fail (context != NULL);
 
-  if (direction != context->base_dir)
-    context_changed (context);
+  if (direction == context->base_dir)
+    return;
+
+  context_changed (context);
 
   context->base_dir = direction;
+  g_object_notify_by_pspec (G_OBJECT (context), properties[PROP_BASE_DIR]);
 }
 
 /**
@@ -459,12 +680,15 @@ pango_context_set_base_gravity (PangoContext *context,
 {
   g_return_if_fail (context != NULL);
 
-  if (gravity != context->base_gravity)
-    context_changed (context);
+  if (gravity == context->base_gravity)
+    return;
+
+  context_changed (context);
 
   context->base_gravity = gravity;
 
   update_resolved_gravity (context);
+  g_object_notify_by_pspec (G_OBJECT (context), properties[PROP_BASE_GRAVITY]);
 }
 
 /**
@@ -524,10 +748,13 @@ pango_context_set_gravity_hint (PangoContext     *context,
 {
   g_return_if_fail (context != NULL);
 
-  if (hint != context->gravity_hint)
-    context_changed (context);
+  if (hint == context->gravity_hint)
+    return;
+
+  context_changed (context);
 
   context->gravity_hint = hint;
+  g_object_notify_by_pspec (G_OBJECT (context), properties[PROP_GRAVITY_HINT]);
 }
 
 /**
@@ -788,11 +1015,12 @@ void
 pango_context_set_round_glyph_positions (PangoContext *context,
                                          gboolean      round_positions)
 {
-  if (context->round_glyph_positions != round_positions)
-    {
-      context->round_glyph_positions = round_positions;
-      context_changed (context);
-    }
+  if (context->round_glyph_positions == round_positions)
+    return;
+
+  context->round_glyph_positions = round_positions;
+  context_changed (context);
+  g_object_notify_by_pspec (G_OBJECT (context), properties[PROP_ROUND_GLYPH_POSITIONS]);
 }
 
 /**
