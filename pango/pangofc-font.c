@@ -417,22 +417,26 @@ pango_fc_font_create_base_metrics_for_context (PangoFcFont   *fcfont,
 static int
 max_glyph_width (PangoLayout *layout)
 {
+  PangoLines *lines;
   int max_width = 0;
-  GSList *l, *r;
+  GSList *r;
 
-  for (l = pango_layout_get_lines_readonly (layout); l; l = l->next)
+  lines = pango_layout_get_lines (layout);
+  for (int i = 0; i < pango_lines_get_line_count (lines); i++)
     {
-      PangoLayoutLine *line = l->data;
+      PangoLine *line = pango_lines_get_line (lines, i, NULL, NULL);
 
-      for (r = line->runs; r; r = r->next)
-	{
-	  PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
-	  int i;
+      for (r = pango_line_get_runs (line); r; r = r->next)
+        {
+          PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
+          int i;
 
-	  for (i = 0; i < glyphs->num_glyphs; i++)
-	    if (glyphs->glyphs[i].geometry.width > max_width)
-	      max_width = glyphs->glyphs[i].geometry.width;
-	}
+          for (i = 0; i < glyphs->num_glyphs; i++)
+            {
+              if (glyphs->glyphs[i].geometry.width > max_width)
+                max_width = glyphs->glyphs[i].geometry.width;
+            }
+        }
     }
 
   return max_width;
@@ -474,8 +478,7 @@ pango_fc_font_get_metrics (PangoFont     *font,
       /* Note: we need to add info to the list before calling
        * into PangoLayout below, to prevent recursion
        */
-      fcfont->metrics_by_lang = g_slist_prepend (fcfont->metrics_by_lang,
-						 info);
+      fcfont->metrics_by_lang = g_slist_prepend (fcfont->metrics_by_lang, info);
 
       info->sample_str = sample_str;
 
@@ -499,7 +502,7 @@ pango_fc_font_get_metrics (PangoFont     *font,
           pango_font_description_free (desc);
 
           pango_layout_set_text (layout, sample_str, -1);
-          pango_layout_get_extents (layout, NULL, &extents);
+          pango_lines_get_extents (pango_layout_get_lines (layout), NULL, &extents);
 
           sample_str_width = pango_utf8_strwidth (sample_str);
           g_assert (sample_str_width > 0);

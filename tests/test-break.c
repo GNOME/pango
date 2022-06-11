@@ -52,7 +52,7 @@ test_file (const gchar *filename, GString *string)
   char *test;
   char *text;
   PangoAttrList *attributes;
-  PangoSimpleLayout *layout;
+  PangoLayout *layout;
 
   g_file_get_contents (filename, &contents, &length, &error);
   g_assert_no_error (error);
@@ -69,9 +69,9 @@ test_file (const gchar *filename, GString *string)
   pango_parse_markup (test, -1, 0, &attributes, &text, NULL, &error);
   g_assert_no_error (error);
 
-  layout = pango_simple_layout_new (context);
-  pango_simple_layout_set_text (layout, text, length);
-  pango_simple_layout_set_attributes (layout, attributes);
+  layout = pango_layout_new (context);
+  pango_layout_set_text (layout, text, length);
+  pango_layout_set_attributes (layout, attributes);
 
 #if 0
   if (pango_layout_get_unknown_glyphs_count (layout) > 0)
@@ -90,7 +90,7 @@ test_file (const gchar *filename, GString *string)
     }
 #endif
 
-  attrs = pango_simple_layout_get_log_attrs (layout, &len);
+  attrs = pango_layout_get_log_attrs (layout, &len);
 
   if (!pango_validate_log_attrs (text, length, attrs, len, &error))
     {

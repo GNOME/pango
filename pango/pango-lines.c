@@ -11,7 +11,7 @@
  * A `PangoLines` object represents the result of formatting an
  * entire paragraph (or more) of text.
  *
- * A `PangoLines` object contains a list of `PangoLayoutLine` objects,
+ * A `PangoLines` object contains a list of `PangoLine` objects,
  * together with information about where to position each line
  * in layout coordinates.
  *
@@ -35,7 +35,7 @@
  * for the `PangoLines*`.
  *
  * The most convenient way to access the visual extents and components
- * of a `PangoLines` is via a [struct@Pango.LayoutIter] iterator.
+ * of a `PangoLines` is via a [struct@Pango.LineIter] iterator.
  */
 
 /*  {{{ PangoLines implementation */
@@ -104,10 +104,10 @@ compare_cursor (gconstpointer v1,
 }
 
 static void
-pango_line_get_cursors (PangoLines *lines,
-                        PangoLine  *line,
-                        gboolean    strong,
-                        GArray     *cursors)
+pango_line_get_cursors (PangoLines      *lines,
+                        PangoLine       *line,
+                        gboolean         strong,
+                        GArray          *cursors)
 {
   const char *start, *end;
   int start_offset;
@@ -158,7 +158,7 @@ pango_line_get_cursors (PangoLines *lines,
 }
 
 /* }}} */
-/* {{{ Public API */
+ /* {{{ Public API */
 
 /**
  * pango_lines_new:
@@ -212,10 +212,10 @@ pango_lines_get_serial (PangoLines *lines)
  * Note that this function takes ownership of the line.
  */
 void
-pango_lines_add_line (PangoLines *lines,
-                      PangoLine  *line,
-                      int         x_line,
-                      int         y_line)
+pango_lines_add_line (PangoLines      *lines,
+                      PangoLine       *line,
+                      int              x_line,
+                      int              y_line)
 {
   Line l;
 
@@ -523,7 +523,7 @@ pango_lines_get_baseline (PangoLines *lines)
 }
 
 /**
- * pango_layout_lines_get_x_ranges:
+ * pango_lines_get_x_ranges:
  * @lines: a `PangoLines` object
  * @line: the `PangoLine` in @lines whose x ranges will be reported
  * @start_line: (nullable): `PangoLine` wrt to which @start_index is
@@ -554,14 +554,14 @@ pango_lines_get_baseline (PangoLines *lines)
  * layout, not with respect to the line.
  */
 void
-pango_lines_get_x_ranges (PangoLines  *lines,
-                          PangoLine   *line,
-                          PangoLine   *start_line,
-                          int          start_index,
-                          PangoLine   *end_line,
-                          int          end_index,
-                          int        **ranges,
-                          int         *n_ranges)
+pango_lines_get_x_ranges (PangoLines *lines,
+                          PangoLine  *line,
+                          PangoLine  *start_line,
+                          int         start_index,
+                          PangoLine  *end_line,
+                          int         end_index,
+                          int       **ranges,
+                          int        *n_ranges)
 {
   int x_offset;
   int line_no, start_line_no, end_line_no;
@@ -691,8 +691,8 @@ pango_lines_get_x_ranges (PangoLines  *lines,
  * Given an index (and possibly line), determine the line number,
  * and offset for the line.
  *
- * @idx may refer to any byte position inside @lines, as well
- * as the position before the first or after the last character (i.e.
+ * @idx may refer to any byte position inside @lines, as well as
+ * the position before the first or after the last character (i.e.
  * line->start_index + line->length, for the last line).
  *
  * If @lines contains lines with different backing data (i.e.
@@ -702,12 +702,12 @@ pango_lines_get_x_ranges (PangoLines  *lines,
  * as *@line and use this function to find the line at @idx.
  */
 void
-pango_lines_index_to_line (PangoLines  *lines,
-                           int          idx,
-                           PangoLine  **line,
-                           int         *line_no,
-                           int         *x_offset,
-                           int         *y_offset)
+pango_lines_index_to_line (PangoLines *lines,
+                           int         idx,
+                           PangoLine **line,
+                           int        *line_no,
+                           int        *x_offset,
+                           int        *y_offset)
 {
   Line *found = NULL;
   int num;
@@ -764,11 +764,11 @@ pango_lines_index_to_line (PangoLines  *lines,
  * Returns: (transfer none) (nullable): the line that was found
  */
 PangoLine *
-pango_lines_pos_to_line (PangoLines  *lines,
-                         int          x,
-                         int          y,
-                         int         *line_x,
-                         int         *line_y)
+pango_lines_pos_to_line (PangoLines *lines,
+                         int         x,
+                         int         y,
+                         int        *line_x,
+                         int        *line_y)
 {
   g_return_val_if_fail (PANGO_IS_LINES (lines), FALSE);
 
@@ -859,11 +859,11 @@ pango_lines_index_to_pos (PangoLines     *lines,
  * Returns: (transfer none) (nullable): the line that was found
  */
 PangoLine *
-pango_lines_pos_to_index (PangoLines  *lines,
-                          int          x,
-                          int          y,
-                          int         *idx,
-                          int         *trailing)
+pango_lines_pos_to_index (PangoLines *lines,
+                          int         x,
+                          int         y,
+                          int        *idx,
+                          int        *trailing)
 {
   PangoLine *line;
   int x_offset;

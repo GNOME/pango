@@ -66,20 +66,20 @@ struct _PangoLine
   PangoRectangle logical_rect;
 };
 
-PangoLine * pango_line_new       (PangoContext       *context,
-                                  LineData           *data);
+PangoLine * pango_line_new               (PangoContext       *context,
+                                          LineData           *data);
 
-void        pango_line_ellipsize (PangoLine          *line,
-                                  PangoContext       *context,
-                                  PangoEllipsizeMode  ellipsize,
-                                  int                 goal_width);
+void        pango_line_ellipsize         (PangoLine          *line,
+                                          PangoContext       *context,
+                                          PangoEllipsizeMode  ellipsize,
+                                          int                 goal_width);
 
-void        pango_line_index_to_run (PangoLine       *line,
-                                     int              idx,
-                                     PangoLayoutRun **run);
+void        pango_line_index_to_run      (PangoLine          *line,
+                                          int                 idx,
+                                          PangoRun          **run);
 
-void        pango_line_get_empty_extents (PangoLine        *line,
-                                          PangoLeadingTrim  trim,
-                                          PangoRectangle   *logical_rect);
+void        pango_line_get_empty_extents (PangoLine          *line,
+                                          PangoLeadingTrim    trim,
+                                          PangoRectangle     *logical_rect);
 
-void        pango_line_check_invariants (PangoLine *line);
+void        pango_line_check_invariants  (PangoLine          *line);

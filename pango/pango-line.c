@@ -6,7 +6,7 @@
 #include "pango-impl-utils.h"
 #include "pango-attributes-private.h"
 #include "pango-item-private.h"
-#include "pango-layout-run-private.h"
+#include "pango-run-private.h"
 
 #include <math.h>
 #include <hb-ot.h>
@@ -14,12 +14,12 @@
 /**
  * PangoLine:
  *
- * A `PangoLine` represents one of the lines resulting from laying
- * out a paragraph via `PangoLayout` or `PangoLineBreaker`.
+ * A `PangoLine` is an immutable object which represents a line resulting
+ * from laying out text via `PangoLayout` or `PangoLineBreaker`.
  *
  * A line consists of a number of runs (i.e. ranges of text with uniform
  * script, font and attributes that are shaped as a unit). Runs are
- * represented as [struct@Pango.LayoutRun] objects.
+ * represented as [struct@Pango.Run] objects.
  *
  * A `PangoLine` always has its origin at the leftmost point  of its
  * baseline. To position lines in an entire paragraph of text (i.e. in layout
@@ -337,12 +337,12 @@ compute_extents (PangoLine        *line,
 
   for (GSList *l = line->runs; l; l = l->next)
     {
-      PangoLayoutRun *run = l->data;
+      PangoRun *run = l->data;
       PangoRectangle run_ink;
       PangoRectangle run_logical;
       int new_pos;
 
-      pango_layout_run_get_extents (run, trim, &run_ink, &run_logical);
+      pango_run_get_extents (run, trim, &run_ink, &run_logical);
 
       if (ink->width == 0 || ink->height == 0)
         {
@@ -553,18 +553,18 @@ pango_line_new (PangoContext *context,
  * Finds the run in @line which contains @idx.
  */
 void
-pango_line_index_to_run (PangoLine       *line,
-                         int              idx,
-                         PangoLayoutRun **run)
+pango_line_index_to_run (PangoLine  *line,
+                         int         idx,
+                         PangoRun  **run)
 {
   *run = NULL;
 
   for (GSList *l = line->runs; l; l = l->next)
     {
-      PangoLayoutRun *r = l->data;
+      PangoRun *r = l->data;
       PangoItem *item;
 
-      item = pango_layout_run_get_glyph_item (r)->item;
+      item = pango_run_get_glyph_item (r)->item;
       if (item->offset <= idx && idx < item->offset + item->length)
         {
           *run = r;
@@ -783,7 +783,7 @@ pango_line_is_hyphenated (PangoLine *line)
  *
  * Gets whether the line is justified.
  *
- * See [method@Pango.Line.justify].
+ * See [method@Pango.LayoutLine.justify].
  *
  * Returns: `TRUE` if @line has been justified
  */
@@ -913,7 +913,7 @@ pango_line_justify (PangoLine *line,
  * trimmed according to paragraph boundaries: if the line starts a paragraph,
  * it has its start leading trimmed; if it ends a paragraph, it has its end
  * leading trimmed. If you need other trimming, use
- * [method@Pango.Line.get_trimmed_extents].
+ * [method@Pango.LayoutLine.get_trimmed_extents].
  *
  * Note that the origin is at the left end of the baseline.
  */
@@ -1010,7 +1010,7 @@ pango_line_index_to_pos (PangoLine      *line,
 {
   PangoRectangle run_logical;
   PangoRectangle line_logical;
-  PangoLayoutRun *run = NULL;
+  PangoRun *run = NULL;
   int x_pos;
 
   pango_line_get_extents (line, NULL, &line_logical);
@@ -1026,7 +1026,7 @@ pango_line_index_to_pos (PangoLine      *line,
   else
     pango_line_index_to_run (line, idx, &run);
 
-  pango_layout_run_get_extents (run, PANGO_LEADING_TRIM_BOTH, NULL, &run_logical);
+  pango_run_get_extents (run, PANGO_LEADING_TRIM_BOTH, NULL, &run_logical);
 
   pos->y = run_logical.y;
   pos->height = run_logical.height;
@@ -1358,7 +1358,7 @@ pango_line_get_cursor_pos (PangoLine      *line,
   PangoRectangle run_rect = { 666, };
   PangoDirection dir1, dir2;
   int level1, level2;
-  PangoLayoutRun *run = NULL;
+  PangoRun *run = NULL;
   int x1_trailing;
   int x2;
 
@@ -1372,7 +1372,7 @@ pango_line_get_cursor_pos (PangoLine      *line,
 
   pango_line_get_extents (line, NULL, &line_rect);
   if (run)
-    pango_layout_run_get_extents (run, PANGO_LEADING_TRIM_BOTH, NULL, &run_rect);
+    pango_run_get_extents (run, PANGO_LEADING_TRIM_BOTH, NULL, &run_rect);
   else
     {
       run_rect = line_rect;
@@ -1402,10 +1402,10 @@ pango_line_get_cursor_pos (PangoLine      *line,
         }
       else
         {
-          PangoLayoutRun *prev_run;
+          PangoRun *prev_run;
 
           pango_line_index_to_run (line, prev_index, &prev_run);
-          level1 = pango_layout_run_get_glyph_item (prev_run)->item->analysis.level;
+          level1 = pango_run_get_glyph_item (prev_run)->item->analysis.level;
           dir1 = level1 % 2 ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR;
           pango_line_index_to_x (line, prev_index, TRUE, &x1_trailing);
         }
@@ -1424,7 +1424,7 @@ pango_line_get_cursor_pos (PangoLine      *line,
   else
     {
       pango_line_index_to_x (line, idx, FALSE, &x2);
-      level2 = pango_layout_run_get_glyph_item (run)->item->analysis.level;
+      level2 = pango_run_get_glyph_item (run)->item->analysis.level;
       dir2 = level2 % 2 ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR;
     }
 
@@ -1472,7 +1472,7 @@ done:
  *
  * Note that @idx is allowed to be @line->start_index + @line->length.
  *
- * This is a variant of [method@Pango.Line.get_cursor_pos] that applies
+ * This is a variant of [method@Pango.LayoutLine.get_cursor_pos] that applies
  * font metric information about caret slope and offset to the positions
  * it returns.
  *
@@ -1487,7 +1487,7 @@ pango_line_get_caret_pos (PangoLine      *line,
                           PangoRectangle *strong_pos,
                           PangoRectangle *weak_pos)
 {
-  PangoLayoutRun *run = NULL;
+  PangoRun *run = NULL;
   PangoGlyphItem *glyph_item;
   hb_font_t *hb_font;
   hb_position_t caret_offset, caret_run, caret_rise, descender;
@@ -1505,7 +1505,7 @@ pango_line_get_caret_pos (PangoLine      *line,
   if (!run)
     return;
 
-  glyph_item = pango_layout_run_get_glyph_item (run);
+  glyph_item = pango_run_get_glyph_item (run);
   hb_font = pango_font_get_hb_font (glyph_item->item->analysis.font);
 
   if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_HORIZONTAL_CARET_RISE, &caret_rise) &&

@@ -53,7 +53,10 @@ typedef struct _PangoLanguage PangoLanguage;
  */
 typedef guint32 PangoGlyph;
 
-
+typedef struct _PangoLines PangoLines;
+typedef struct _PangoRun PangoRun;
+typedef struct _PangoLine PangoLine;
+typedef struct _PangoLineIter PangoLineIter;
 
 /**
  * PANGO_SCALE:
@@ -243,30 +246,22 @@ void pango_extents_to_pixels (PangoRectangle *inclusive,
  * @PANGO_ALIGN_LEFT: Put all available space on the right
  * @PANGO_ALIGN_CENTER: Center the line within the available space
  * @PANGO_ALIGN_RIGHT: Put all available space on the left
+ * @PANGO_ALIGN_JUSTIFY: Justify the content to fill the available
+ *   space, unless the line ends the paragraph
+ * @PANGO_ALIGN_JUSTIFY_ALL: Justify the content to fill the available
+ *   space, even if the line ends the paragraph
  *
  * `PangoAlignment` describes how to align the lines of a `PangoLayout`
  * within the available space.
- *
- * If the `PangoLayout` is set to justify using [method@Pango.Layout.set_justify],
- * this only affects partial lines.
- *
- * See [method@Pango.Layout.set_auto_dir] for how text direction affects
- * the interpretation of `PangoAlignment` values.
  */
-typedef enum {
-  PANGO_ALIGN_LEFT,
-  PANGO_ALIGN_CENTER,
-  PANGO_ALIGN_RIGHT
-} PangoAlignment;
-
 typedef enum
 {
-  PANGO_ALIGNMENT_LEFT,
-  PANGO_ALIGNMENT_CENTER,
-  PANGO_ALIGNMENT_RIGHT,
-  PANGO_ALIGNMENT_JUSTIFY,
-  PANGO_ALIGNMENT_JUSTIFY_ALL,
-} PangoAlignmentMode;
+  PANGO_ALIGN_LEFT,
+  PANGO_ALIGN_CENTER,
+  PANGO_ALIGN_RIGHT,
+  PANGO_ALIGN_JUSTIFY,
+  PANGO_ALIGN_JUSTIFY_ALL,
+} PangoAlignment;
 
 /**
  * PangoWrapMode:
