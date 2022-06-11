@@ -185,7 +185,7 @@ test_metrics (void)
   g_test_message ("\tstrikethrough thickness: %d",
                   pango_font_metrics_get_strikethrough_thickness (metrics));
 
-  pango_font_metrics_unref (metrics);
+  pango_font_metrics_free (metrics);
   g_free (str);
   pango_font_description_free (desc);
 }
@@ -497,7 +497,7 @@ test_font_metrics (void)
   g_assert_cmpint (pango_font_metrics_get_approximate_char_width (metrics), ==, PANGO_SCALE * PANGO_UNKNOWN_GLYPH_WIDTH);
   g_assert_cmpint (pango_font_metrics_get_approximate_digit_width (metrics), ==, PANGO_SCALE * PANGO_UNKNOWN_GLYPH_WIDTH);
 
-  pango_font_metrics_unref (metrics);
+  pango_font_metrics_free (metrics);
 }
 
 static void

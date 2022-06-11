@@ -294,7 +294,7 @@ pango_font_get_glyph_extents  (PangoFont      *font,
  * output variables and returns.
  *
  * Return value: a `PangoFontMetrics` object. The caller must call
- *   [method@Pango.FontMetrics.unref] when finished using the object.
+ *   [method@Pango.FontMetrics.free] when finished using the object.
  */
 PangoFontMetrics *
 pango_font_get_metrics (PangoFont     *font,

@@ -200,5 +200,5 @@ pango_run_get_extents (PangoRun         *run,
     }
 
   if (metrics)
-    pango_font_metrics_unref (metrics);
+    pango_font_metrics_free (metrics);
 }

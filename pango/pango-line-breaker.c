@@ -1324,7 +1324,7 @@ process_item (PangoLineBreaker *self,
    */
   metrics = pango_font_get_metrics (item->analysis.font, item->analysis.language);
   safe_distance = pango_font_metrics_get_approximate_char_width (metrics) * 3;
-  pango_font_metrics_unref (metrics);
+  pango_font_metrics_free (metrics);
 
   if (processing_new_item)
     {

@@ -679,7 +679,7 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
                                x + x_off, y - y_off,
                                ink, logical, glyphs->num_glyphs);
 
-          pango_font_metrics_unref (metrics);
+          pango_font_metrics_free (metrics);
         }
 
       if (renderer->underline == PANGO_LINE_STYLE_NONE &&

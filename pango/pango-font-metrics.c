@@ -25,8 +25,8 @@
 
 
 G_DEFINE_BOXED_TYPE (PangoFontMetrics, pango_font_metrics,
-                     pango_font_metrics_ref,
-                     pango_font_metrics_unref);
+                     pango_font_metrics_copy,
+                     pango_font_metrics_free);
 
 /**
  * pango_font_metrics_new:
@@ -37,54 +37,39 @@ G_DEFINE_BOXED_TYPE (PangoFontMetrics, pango_font_metrics,
  * no public way to set the fields of the structure.
  *
  * Return value: a newly-created `PangoFontMetrics` structure
- *   with a reference count of 1.
  */
 PangoFontMetrics *
 pango_font_metrics_new (void)
 {
   PangoFontMetrics *metrics = g_slice_new0 (PangoFontMetrics);
-  metrics->ref_count = 1;
 
   return metrics;
 }
 
 /**
- * pango_font_metrics_ref:
+ * pango_font_metrics_copy:
  * @metrics: (nullable): a `PangoFontMetrics` structure, may be %NULL
  *
- * Increase the reference count of a font metrics structure by one.
+ * Create a copy of @metrics.
  *
  * Return value: (nullable): @metrics
  */
 PangoFontMetrics *
-pango_font_metrics_ref (PangoFontMetrics *metrics)
+pango_font_metrics_copy (PangoFontMetrics *metrics)
 {
-  if (metrics == NULL)
-    return NULL;
-
-  g_atomic_int_inc ((int *) &metrics->ref_count);
-
-  return metrics;
+  return g_slice_dup (PangoFontMetrics, metrics);
 }
 
 /**
- * pango_font_metrics_unref:
+ * pango_font_metrics_free:
  * @metrics: (nullable): a `PangoFontMetrics` structure, may be %NULL
  *
- * Decrease the reference count of a font metrics structure by one.
- *
- * If the result is zero, frees the structure and any associated memory.
+ * Free the @metrics.
  */
 void
-pango_font_metrics_unref (PangoFontMetrics *metrics)
+pango_font_metrics_free (PangoFontMetrics *metrics)
 {
-  if (metrics == NULL)
-    return;
-
-  g_return_if_fail (metrics->ref_count > 0 );
-
-  if (g_atomic_int_dec_and_test ((int *) &metrics->ref_count))
-    g_slice_free (PangoFontMetrics, metrics);
+  g_slice_free (PangoFontMetrics, metrics);
 }
 
 /**

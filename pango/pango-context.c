@@ -126,7 +126,7 @@ pango_context_finalize (GObject *object)
     pango_matrix_free (context->matrix);
 
   if (context->metrics)
-    pango_font_metrics_unref (context->metrics);
+    pango_font_metrics_free (context->metrics);
 
   G_OBJECT_CLASS (pango_context_parent_class)->finalize (object);
 }
@@ -554,31 +554,21 @@ get_first_metrics_foreach (PangoFontset  *fontset,
                            PangoFont     *font,
                            gpointer       data)
 {
-  PangoFontMetrics *fontset_metrics = data;
+  PangoFontMetrics **fontset_metrics = data;
   PangoLanguage *language = pango_fontset_get_language (fontset);
-  PangoFontMetrics *font_metrics = pango_font_get_metrics (font, language);
-  guint save_ref_count;
 
-  /* Initialize the fontset metrics to metrics of the first font in the
-   * fontset; saving the refcount and restoring it is a bit of hack but avoids
-   * having to update this code for each metrics addition.
-   */
-  save_ref_count = fontset_metrics->ref_count;
-  *fontset_metrics = *font_metrics;
-  fontset_metrics->ref_count = save_ref_count;
+  *fontset_metrics = pango_font_get_metrics (font, language);
 
-  pango_font_metrics_unref (font_metrics);
-
-  return TRUE;                  /* Stops iteration */
+  return TRUE; /* Stops iteration */
 }
 
 static PangoFontMetrics *
 get_base_metrics (PangoFontset *fontset)
 {
-  PangoFontMetrics *metrics = pango_font_metrics_new ();
+  PangoFontMetrics *metrics = NULL;
 
   /* Initialize the metrics from the first font in the fontset */
-  pango_fontset_foreach (fontset, get_first_metrics_foreach, metrics);
+  pango_fontset_foreach (fontset, get_first_metrics_foreach, &metrics);
 
   return metrics;
 }
@@ -615,7 +605,7 @@ update_metrics_from_items (PangoFontMetrics *metrics,
           metrics->ascent = MAX (metrics->ascent, raw_metrics->ascent);
           metrics->descent = MAX (metrics->descent, raw_metrics->descent);
           metrics->height = MAX (metrics->height, raw_metrics->height);
-          pango_font_metrics_unref (raw_metrics);
+          pango_font_metrics_free (raw_metrics);
         }
 
       pango_shape (text + item->offset, item->length,
@@ -658,7 +648,7 @@ update_metrics_from_items (PangoFontMetrics *metrics,
  * for the individual families.
  *
  * Return value: a `PangoFontMetrics` object. The caller must call
- *   [method@Pango.FontMetrics.unref] when finished using the object.
+ *   [method@Pango.FontMetrics.free] when finished using the object.
  */
 PangoFontMetrics *
 pango_context_get_metrics (PangoContext               *context,
@@ -682,7 +672,7 @@ pango_context_get_metrics (PangoContext               *context,
   if (desc == context->font_desc &&
       language == context->language &&
       context->metrics != NULL)
-    return pango_font_metrics_ref (context->metrics);
+    return pango_font_metrics_copy (context->metrics);
 
   current_fonts = pango_font_map_load_fontset (context->font_map, context, desc, language);
   metrics = get_base_metrics (current_fonts);
@@ -703,7 +693,10 @@ pango_context_get_metrics (PangoContext               *context,
 
   if (desc == context->font_desc &&
       language == context->language)
-    context->metrics = pango_font_metrics_ref (metrics);
+    {
+      pango_font_metrics_free (context->metrics);
+      context->metrics = pango_font_metrics_copy (metrics);
+    }
 
   return metrics;
 }
@@ -715,7 +708,7 @@ context_changed (PangoContext *context)
   if (context->serial == 0)
     context->serial++;
 
-  g_clear_pointer (&context->metrics, pango_font_metrics_unref);
+  g_clear_pointer (&context->metrics, pango_font_metrics_free);
 }
 
 /**
