@@ -210,6 +210,9 @@ void                    pango_glyph_string_index_to_x_full      (PangoGlyphStrin
                                                                  gboolean             trailing,
                                                                  int                 *x_pos);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoGlyphString, pango_glyph_string_free)
+
+
 /* Shaping */
 
 /**

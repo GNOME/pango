@@ -98,4 +98,6 @@ int                  pango_line_iter_get_line_baseline        (PangoLineIter    
 PANGO_AVAILABLE_IN_ALL
 int                  pango_line_iter_get_run_baseline         (PangoLineIter    *iter);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoLineIter, pango_line_iter_free)
+
 G_END_DECLS

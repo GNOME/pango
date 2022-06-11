@@ -123,5 +123,7 @@ double pango_matrix_get_rotation (const PangoMatrix *matrix) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
 double pango_matrix_get_slant_ratio (const PangoMatrix *matrix) G_GNUC_PURE;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoMatrix, pango_matrix_free)
+
 
 G_END_DECLS
