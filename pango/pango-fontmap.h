@@ -74,4 +74,11 @@ PANGO_AVAILABLE_IN_ALL
 void                    pango_font_map_set_resolution           (PangoFontMap               *self,
                                                                  double                      dpi);
 
+PANGO_AVAILABLE_IN_ALL
+PangoFontMap *          pango_font_map_new_default              (void);
+PANGO_AVAILABLE_IN_ALL
+PangoFontMap *          pango_font_map_get_default              (void);
+PANGO_AVAILABLE_IN_ALL
+void                    pango_font_map_set_default              (PangoFontMap *fontmap);
+
 G_END_DECLS

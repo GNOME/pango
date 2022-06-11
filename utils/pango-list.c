@@ -21,8 +21,7 @@
  */
 
 #include "config.h"
-#include <pango/pangocairo.h>
-#include <pango/pangofc-fontmap.h>
+#include <pango/pango.h>
 #include <pango/pango-hbface-private.h>
 #include <hb-ot.h>
 #include <glib/gstdio.h>
@@ -141,7 +140,7 @@ main (int    argc,
       exit (0);
     }
 
-  fontmap = pango_cairo_font_map_get_default ();
+  fontmap = pango_font_map_get_default ();
   ctx = pango_font_map_create_context (fontmap);
 
   if (opt_verbose)

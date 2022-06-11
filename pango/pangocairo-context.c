@@ -349,7 +349,7 @@ pango_cairo_create_context (cairo_t *cr)
 
   g_return_val_if_fail (cr != NULL, NULL);
 
-  fontmap = pango_cairo_font_map_get_default ();
+  fontmap = pango_font_map_get_default ();
   context = pango_font_map_create_context (fontmap);
   pango_cairo_update_context (cr, context);
 

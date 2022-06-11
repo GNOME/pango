@@ -20,7 +20,7 @@
  */
 
 #include <glib.h>
-#include <pango/pangocairo.h>
+#include <pango/pango.h>
 #include <string.h>
 #include <stdlib.h>
 #include <locale.h>
@@ -70,7 +70,7 @@ show_segmentation (const char *input,
   PangoAttrList *attributes;
   PangoLayout *layout;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (pango_font_map_get_default ());
 
   string = g_string_new ("");
 

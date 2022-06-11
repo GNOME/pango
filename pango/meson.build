@@ -106,7 +106,6 @@ if cairo_dep.found()
   pango_sources += [
     'pangocairo-context.c',
     'pangocairo-font.c',
-    'pangocairo-fontmap.c',
     'pangocairo-render.c',
   ]
 

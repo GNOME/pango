@@ -33,7 +33,7 @@ main (int argc, char *argv[])
 
   filename = argv[2];
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (pango_font_map_get_default ());
 
   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 600, 600);
   cr = cairo_create (surface);
