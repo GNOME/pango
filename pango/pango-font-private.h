@@ -64,7 +64,6 @@ struct _PangoFontClass
                                                  guint           len,
                                                  guint          *num_features);
   hb_font_t *            (* create_hb_font)     (PangoFont      *font);
-  PangoLanguage **       (* get_languages)      (PangoFont      *font);
   gboolean               (* is_hinted)          (PangoFont      *font);
   void                   (* get_scale_factors)  (PangoFont      *font,
                                                  double         *x_scale,
