@@ -75,47 +75,4 @@ PangoFont *           pango_font_deserialize       (PangoContext     *context,
                                                     GBytes           *bytes,
                                                     GError          **error);
 
-/**
- * PANGO_GLYPH_EMPTY:
- *
- * A `PangoGlyph` value that indicates a zero-width empty glpyh.
- *
- * This is useful for example in shaper modules, to use as the glyph for
- * various zero-width Unicode characters (those passing [func@is_zero_width]).
- */
-
-/**
- * PANGO_GLYPH_INVALID_INPUT:
- *
- * A `PangoGlyph` value for invalid input.
- *
- * `PangoLayout` produces one such glyph per invalid input UTF-8 byte and such
- * a glyph is rendered as a crossed box.
- *
- * Note that this value is defined such that it has the %PANGO_GLYPH_UNKNOWN_FLAG
- * set.
- */
-/**
- * PANGO_GLYPH_UNKNOWN_FLAG:
- *
- * Flag used in `PangoGlyph` to turn a `gunichar` value of a valid Unicode
- * character into an unknown-character glyph for that `gunichar`.
- *
- * Such unknown-character glyphs may be rendered as a 'hex box'.
- */
-/**
- * PANGO_GET_UNKNOWN_GLYPH:
- * @wc: a Unicode character
- *
- * The way this unknown glyphs are rendered is backend specific. For example,
- * a box with the hexadecimal Unicode code-point of the character written in it
- * is what is done in the most common backends.
- *
- * Returns: a `PangoGlyph` value that means no glyph was found for @wc.
- */
-#define PANGO_GLYPH_EMPTY           ((PangoGlyph)0x0FFFFFFF)
-#define PANGO_GLYPH_INVALID_INPUT   ((PangoGlyph)0xFFFFFFFF)
-#define PANGO_GLYPH_UNKNOWN_FLAG    ((PangoGlyph)0x10000000)
-#define PANGO_GET_UNKNOWN_GLYPH(wc) ((PangoGlyph)(wc)|PANGO_GLYPH_UNKNOWN_FLAG)
-
 G_END_DECLS
