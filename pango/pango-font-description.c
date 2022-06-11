@@ -1538,44 +1538,6 @@ pango_font_description_to_string (const PangoFontDescription *desc)
   return g_string_free (result, FALSE);
 }
 
-/**
- * pango_font_description_to_filename:
- * @desc: a `PangoFontDescription`
- *
- * Creates a filename representation of a font description.
- *
- * The filename is identical to the result from calling
- * [method@Pango.FontDescription.to_string], but with underscores
- * instead of characters that are untypical in filenames, and in
- * lower case only.
- *
- * Return value: a new string that must be freed with g_free().
- */
-char *
-pango_font_description_to_filename (const PangoFontDescription *desc)
-{
-  char *result;
-  char *p;
-
-  g_return_val_if_fail (desc != NULL, NULL);
-
-  result = pango_font_description_to_string (desc);
-
-  p = result;
-  while (*p)
-    {
-      if (G_UNLIKELY ((guchar) *p >= 128))
-        /* skip over non-ASCII chars */;
-      else if (strchr ("-+_.", *p) == NULL && !g_ascii_isalnum (*p))
-        *p = '_';
-      else
-        *p = g_ascii_tolower (*p);
-      p++;
-    }
-
-  return result;
-}
-
 static gboolean
 parse_field (const char *what,
              const FieldMap *map,
