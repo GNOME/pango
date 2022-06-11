@@ -26,19 +26,10 @@
 
 G_BEGIN_DECLS
 
-/*
- * PangoFontset
- */
-
 #define PANGO_TYPE_FONTSET              (pango_fontset_get_type ())
-#define PANGO_FONTSET(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONTSET, PangoFontset))
-#define PANGO_IS_FONTSET(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONTSET))
-
 
 PANGO_AVAILABLE_IN_ALL
-GType pango_fontset_get_type (void) G_GNUC_CONST;
-
-typedef struct _PangoFontset        PangoFontset;
+PANGO_DECLARE_INTERNAL_TYPE (PangoFontset, pango_fontset, PANGO, FONTSET, GObject)
 
 /**
  * PangoFontsetForeachFunc:
