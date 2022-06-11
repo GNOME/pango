@@ -159,7 +159,7 @@
     "ellipsized" : false,
     "hypenated" : false,
     "unknown-glyphs" : 0,
-    "width" : 203776,
+    "width" : 166912,
     "height" : 18430,
     "lines" : [
       {
@@ -276,8 +276,8 @@
             },
             {
               "offset" : 16,
-              "length" : 4,
-              "text" : "🇩",
+              "length" : 8,
+              "text" : "🇩🇪",
               "bidi-level" : 0,
               "gravity" : "south",
               "language" : "en-us",
@@ -292,33 +292,7 @@
               "end-x-offset" : 0,
               "glyphs" : [
                 {
-                  "glyph" : 8,
-                  "width" : 18432,
-                  "is-cluster-start" : true,
-                  "is-color" : true,
-                  "log-cluster" : 0
-                }
-              ]
-            },
-            {
-              "offset" : 20,
-              "length" : 4,
-              "text" : "🇪",
-              "bidi-level" : 0,
-              "gravity" : "south",
-              "language" : "en-us",
-              "script" : "Zyyy",
-              "font" : {
-                "description" : "Noto Color Emoji 11",
-                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47"
-              },
-              "flags" : 0,
-              "y-offset" : 0,
-              "start-x-offset" : 0,
-              "end-x-offset" : 0,
-              "glyphs" : [
-                {
-                  "glyph" : 9,
+                  "glyph" : 22,
                   "width" : 18432,
                   "is-cluster-start" : true,
                   "is-color" : true,
@@ -404,8 +378,8 @@
             },
             {
               "offset" : 29,
-              "length" : 3,
-              "text" : "✋",
+              "length" : 7,
+              "text" : "✋🏾",
               "bidi-level" : 0,
               "gravity" : "south",
               "language" : "en-us",
@@ -420,33 +394,7 @@
               "end-x-offset" : 0,
               "glyphs" : [
                 {
-                  "glyph" : 7,
-                  "width" : 18432,
-                  "is-cluster-start" : true,
-                  "is-color" : true,
-                  "log-cluster" : 0
-                }
-              ]
-            },
-            {
-              "offset" : 32,
-              "length" : 4,
-              "text" : "🏾",
-              "bidi-level" : 0,
-              "gravity" : "south",
-              "language" : "en-us",
-              "script" : "Zyyy",
-              "font" : {
-                "description" : "Noto Color Emoji 11",
-                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47"
-              },
-              "flags" : 0,
-              "y-offset" : 0,
-              "start-x-offset" : 0,
-              "end-x-offset" : 0,
-              "glyphs" : [
-                {
-                  "glyph" : 11,
+                  "glyph" : 21,
                   "width" : 18432,
                   "is-cluster-start" : true,
                   "is-color" : true,
