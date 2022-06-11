@@ -121,4 +121,6 @@ void                 pango_line_get_caret_pos          (PangoLine        *line,
                                                         PangoRectangle   *strong_pos,
                                                         PangoRectangle   *weak_pos);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoLine, pango_line_free)
+
 G_END_DECLS

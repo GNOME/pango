@@ -110,4 +110,6 @@ int                     pango_item_get_char_offset              (PangoItem *item
 PANGO_AVAILABLE_IN_ALL
 int                     pango_item_get_char_length              (PangoItem *item);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoItem, pango_item_free)
+
 G_END_DECLS

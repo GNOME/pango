@@ -73,5 +73,6 @@ int               pango_font_metrics_get_strikethrough_position  (PangoFontMetri
 PANGO_AVAILABLE_IN_ALL
 int               pango_font_metrics_get_strikethrough_thickness (PangoFontMetrics *metrics) G_GNUC_PURE;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFontMetrics, pango_font_metrics_unref)
 
 G_END_DECLS

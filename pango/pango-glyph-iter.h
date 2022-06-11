@@ -105,4 +105,6 @@ gboolean                pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *
 PANGO_AVAILABLE_IN_ALL
 gboolean                pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoGlyphItemIter, pango_glyph_item_iter_free)
+
 G_END_DECLS

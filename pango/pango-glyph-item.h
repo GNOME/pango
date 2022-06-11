@@ -82,5 +82,7 @@ void                    pango_glyph_item_get_logical_widths     (PangoGlyphItem 
                                                                  const char     *text,
                                                                  int            *logical_widths);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoGlyphItem, pango_glyph_item_free)
+
 
 G_END_DECLS
