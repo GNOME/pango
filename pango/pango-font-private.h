@@ -68,8 +68,6 @@ struct _PangoFontClass
   void                   (* get_scale_factors)  (PangoFont      *font,
                                                  double         *x_scale,
                                                  double         *y_scale);
-  gboolean               (* has_char)           (PangoFont      *font,
-                                                 gunichar        wc);
   void                   (* get_matrix)         (PangoFont      *font,
                                                  PangoMatrix    *matrix);
   int                    (* get_absolute_size)  (PangoFont      *font);

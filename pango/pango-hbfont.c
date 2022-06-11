@@ -846,16 +846,6 @@ pango_hb_font_create_hb_font (PangoFont *font)
   return hb_font;
 }
 
-static gboolean
-pango_hb_font_has_char (PangoFont *font,
-                        gunichar   wc)
-{
-  hb_font_t *hb_font = pango_font_get_hb_font (font);
-  hb_codepoint_t glyph;
-
-  return hb_font_get_nominal_glyph (hb_font, wc, &glyph);
-}
-
 static void
 pango_hb_font_get_matrix (PangoFont   *font,
                           PangoMatrix *matrix)
@@ -897,7 +887,6 @@ pango_hb_font_class_init (PangoHbFontClass *class)
   font_class->create_hb_font = pango_hb_font_create_hb_font;
   font_class->get_features = pango_hb_font_get_features;
   font_class->get_matrix = pango_hb_font_get_matrix;
-  font_class->has_char = pango_hb_font_has_char;
 }
 
 /* }}} */
