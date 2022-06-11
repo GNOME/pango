@@ -135,22 +135,12 @@ get_first_metrics_foreach (PangoFontset  *fontset,
                            PangoFont     *font,
                            gpointer       data)
 {
-  PangoFontMetrics *fontset_metrics = data;
+  PangoFontMetrics **fontset_metrics = data;
   PangoLanguage *language = pango_fontset_get_language (fontset);
-  PangoFontMetrics *font_metrics = pango_font_get_metrics (font, language);
-  guint save_ref_count;
 
-  /* Initialize the fontset metrics to metrics of the first font in the
-   * fontset; saving the refcount and restoring it is a bit of hack but avoids
-   * having to update this code for each metrics addition.
-   */
-  save_ref_count = fontset_metrics->ref_count;
-  *fontset_metrics = *font_metrics;
-  fontset_metrics->ref_count = save_ref_count;
+  *fontset_metrics = pango_font_get_metrics (font, language);
 
-  pango_font_metrics_unref (font_metrics);
-
-  return TRUE;                  /* Stops iteration */
+  return TRUE; /* Stops iteration */
 }
 
 static PangoFontMetrics *
@@ -168,11 +158,11 @@ pango_fontset_real_get_metrics (PangoFontset  *fontset)
   sample_str = pango_language_get_sample_string (language);
 
   count = 0;
-  metrics = pango_font_metrics_new ();
+  metrics = NULL;
   fonts_seen = g_hash_table_new_full (NULL, NULL, g_object_unref, NULL);
 
   /* Initialize the metrics from the first font in the fontset */
-  pango_fontset_foreach (fontset, get_first_metrics_foreach, metrics);
+  pango_fontset_foreach (fontset, get_first_metrics_foreach, &metrics);
 
   p = sample_str;
   while (*p)
@@ -201,7 +191,7 @@ pango_fontset_real_get_metrics (PangoFontset  *fontset)
                   metrics->approximate_digit_width += raw_metrics->approximate_digit_width;
                 }
               count++;
-              pango_font_metrics_unref (raw_metrics);
+              pango_font_metrics_free (raw_metrics);
             }
           else
             g_object_unref (font);

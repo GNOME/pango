@@ -51,9 +51,9 @@ typedef struct _PangoFontMetrics PangoFontMetrics;
 PANGO_AVAILABLE_IN_ALL
 GType             pango_font_metrics_get_type                    (void) G_GNUC_CONST;
 PANGO_AVAILABLE_IN_ALL
-PangoFontMetrics *pango_font_metrics_ref                         (PangoFontMetrics *metrics);
+PangoFontMetrics *pango_font_metrics_copy                        (PangoFontMetrics *metrics);
 PANGO_AVAILABLE_IN_ALL
-void              pango_font_metrics_unref                       (PangoFontMetrics *metrics);
+void              pango_font_metrics_free                        (PangoFontMetrics *metrics);
 PANGO_AVAILABLE_IN_ALL
 int               pango_font_metrics_get_ascent                  (PangoFontMetrics *metrics) G_GNUC_PURE;
 PANGO_AVAILABLE_IN_ALL
@@ -73,6 +73,6 @@ int               pango_font_metrics_get_strikethrough_position  (PangoFontMetri
 PANGO_AVAILABLE_IN_ALL
 int               pango_font_metrics_get_strikethrough_thickness (PangoFontMetrics *metrics) G_GNUC_PURE;
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFontMetrics, pango_font_metrics_unref)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFontMetrics, pango_font_metrics_free)
 
 G_END_DECLS

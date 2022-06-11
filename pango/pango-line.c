@@ -511,7 +511,7 @@ pango_line_get_empty_extents (PangoLine        *line,
                 logical_rect->height += (leading - leading / 2);
             }
 
-          pango_font_metrics_unref (metrics);
+          pango_font_metrics_free (metrics);
         }
 
       g_object_unref (font);

@@ -204,7 +204,7 @@ main (int    argc,
                        pango_font_metrics_get_underline_thickness (metrics),
                        pango_font_metrics_get_strikethrough_position (metrics),
                        pango_font_metrics_get_strikethrough_thickness (metrics));
-              pango_font_metrics_unref (metrics);
+              pango_font_metrics_free (metrics);
             }
 
           if (opt_variations)
