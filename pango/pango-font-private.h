@@ -91,3 +91,10 @@ gboolean pango_font_description_is_similar       (const PangoFontDescription *a,
 
 int      pango_font_description_compute_distance (const PangoFontDescription *a,
                                                   const PangoFontDescription *b);
+
+/* We use these values in a few places as a fallback size for an
+ * unknown glyph, if we have no better information.
+ */
+
+#define PANGO_UNKNOWN_GLYPH_WIDTH  10
+#define PANGO_UNKNOWN_GLYPH_HEIGHT 14
