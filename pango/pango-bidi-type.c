@@ -71,11 +71,9 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
   switch (*pbase_dir)
     {
     case PANGO_DIRECTION_LTR:
-    case PANGO_DIRECTION_TTB_RTL:
       fribidi_base_dir = FRIBIDI_PAR_LTR;
       break;
     case PANGO_DIRECTION_RTL:
-    case PANGO_DIRECTION_TTB_LTR:
       fribidi_base_dir = FRIBIDI_PAR_RTL;
       break;
     case PANGO_DIRECTION_WEAK_RTL:

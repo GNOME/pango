@@ -41,8 +41,6 @@ random_word (PangoDirection dir)
         return ltr_words[g_test_rand_int_range (0, n_ltr_words)];
       case PANGO_DIRECTION_RTL:
         return rtl_words[g_test_rand_int_range (0, n_rtl_words)];
-      case PANGO_DIRECTION_TTB_LTR:
-      case PANGO_DIRECTION_TTB_RTL:
       case PANGO_DIRECTION_WEAK_LTR:
       case PANGO_DIRECTION_WEAK_RTL:
       case PANGO_DIRECTION_NEUTRAL:

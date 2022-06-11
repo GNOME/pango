@@ -2755,11 +2755,9 @@ direction_simple (PangoDirection d)
     {
     case PANGO_DIRECTION_LTR :
     case PANGO_DIRECTION_WEAK_LTR :
-    case PANGO_DIRECTION_TTB_RTL :
       return 1;
     case PANGO_DIRECTION_RTL :
     case PANGO_DIRECTION_WEAK_RTL :
-    case PANGO_DIRECTION_TTB_LTR :
       return -1;
     case PANGO_DIRECTION_NEUTRAL :
       return 0;
@@ -4355,14 +4353,12 @@ line_set_resolved_dir (PangoLayoutLine *line,
     {
     default:
     case PANGO_DIRECTION_LTR:
-    case PANGO_DIRECTION_TTB_RTL:
     case PANGO_DIRECTION_WEAK_LTR:
     case PANGO_DIRECTION_NEUTRAL:
       line->resolved_dir = PANGO_DIRECTION_LTR;
       break;
     case PANGO_DIRECTION_RTL:
     case PANGO_DIRECTION_WEAK_RTL:
-    case PANGO_DIRECTION_TTB_LTR:
       line->resolved_dir = PANGO_DIRECTION_RTL;
       break;
     }
