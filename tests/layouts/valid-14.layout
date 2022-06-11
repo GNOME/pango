@@ -201,8 +201,8 @@
           "runs" : [
             {
               "offset" : 0,
-              "length" : 3,
-              "text" : "你",
+              "length" : 7,
+              "text" : "你好 ",
               "bidi-level" : 0,
               "gravity" : "south",
               "language" : "xx",
@@ -221,37 +221,18 @@
                   "width" : 11264,
                   "is-cluster-start" : true,
                   "log-cluster" : 0
-                }
-              ]
-            },
-            {
-              "offset" : 3,
-              "length" : 4,
-              "text" : "好 ",
-              "bidi-level" : 0,
-              "gravity" : "south",
-              "language" : "xx",
-              "script" : "Hani",
-              "font" : {
-                "description" : "DejaVu Sans 11",
-                "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
-              },
-              "flags" : 0,
-              "y-offset" : 0,
-              "start-x-offset" : 0,
-              "end-x-offset" : 0,
-              "glyphs" : [
+                },
                 {
                   "glyph" : 268458365,
                   "width" : 11264,
                   "is-cluster-start" : true,
-                  "log-cluster" : 0
+                  "log-cluster" : 3
                 },
                 {
                   "glyph" : 3,
                   "width" : 5120,
                   "is-cluster-start" : true,
-                  "log-cluster" : 3
+                  "log-cluster" : 6
                 }
               ]
             },
@@ -311,9 +292,9 @@
               ]
             },
             {
-              "offset" : 19,
-              "length" : 2,
-              "text" : "ם",
+              "offset" : 13,
+              "length" : 8,
+              "text" : "שלום",
               "bidi-level" : 1,
               "gravity" : "south",
               "language" : "he",
@@ -331,77 +312,20 @@
                   "glyph" : 1332,
                   "width" : 10240,
                   "is-cluster-start" : true,
-                  "log-cluster" : 0
-                }
-              ]
-            },
-            {
-              "offset" : 17,
-              "length" : 2,
-              "text" : "ו",
-              "bidi-level" : 1,
-              "gravity" : "south",
-              "language" : "he",
-              "script" : "Hebr",
-              "font" : {
-                "description" : "DejaVu Sans 11",
-                "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
-              },
-              "flags" : 0,
-              "y-offset" : 0,
-              "start-x-offset" : 0,
-              "end-x-offset" : 0,
-              "glyphs" : [
+                  "log-cluster" : 6
+                },
                 {
                   "glyph" : 1324,
                   "width" : 4096,
                   "is-cluster-start" : true,
-                  "log-cluster" : 0
-                }
-              ]
-            },
-            {
-              "offset" : 15,
-              "length" : 2,
-              "text" : "ל",
-              "bidi-level" : 1,
-              "gravity" : "south",
-              "language" : "he",
-              "script" : "Hebr",
-              "font" : {
-                "description" : "DejaVu Sans 11",
-                "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
-              },
-              "flags" : 0,
-              "y-offset" : 0,
-              "start-x-offset" : 0,
-              "end-x-offset" : 0,
-              "glyphs" : [
+                  "log-cluster" : 4
+                },
                 {
                   "glyph" : 1331,
                   "width" : 8192,
                   "is-cluster-start" : true,
-                  "log-cluster" : 0
-                }
-              ]
-            },
-            {
-              "offset" : 13,
-              "length" : 2,
-              "text" : "ש",
-              "bidi-level" : 1,
-              "gravity" : "south",
-              "language" : "he",
-              "script" : "Hebr",
-              "font" : {
-                "description" : "DejaVu Sans 11",
-                "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
-              },
-              "flags" : 0,
-              "y-offset" : 0,
-              "start-x-offset" : 0,
-              "end-x-offset" : 0,
-              "glyphs" : [
+                  "log-cluster" : 2
+                },
                 {
                   "glyph" : 1344,
                   "width" : 10240,
