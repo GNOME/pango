@@ -516,26 +516,6 @@ test_set_gravity (void)
 }
 
 static void
-test_match (void)
-{
-  PangoFontDescription *desc;
-  PangoFontDescription *desc1;
-  PangoFontDescription *desc2;
-
-  desc = pango_font_description_from_string ("Futura Medium Italic 14");
-  desc1 = pango_font_description_from_string ("Futura Bold 16");
-  pango_font_description_set_style (desc1, PANGO_STYLE_OBLIQUE);
-  desc2 = pango_font_description_from_string ("Futura Medium 16");
-  pango_font_description_set_style (desc2, PANGO_STYLE_ITALIC);
-
-  g_assert_true (pango_font_description_better_match (desc, desc1, desc2));
-
-  pango_font_description_free (desc);
-  pango_font_description_free (desc1);
-  pango_font_description_free (desc2);
-}
-
-static void
 test_faceid (void)
 {
   const char *test = "Cantarell Bold Italic 32 @faceid=Cantarell-Regular:0:-1:0,wght=600";
@@ -582,7 +562,6 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/fontdescription/variations", test_variations);
   g_test_add_func ("/pango/fontdescription/empty-variations", test_empty_variations);
   g_test_add_func ("/pango/fontdescription/set-gravity", test_set_gravity);
-  g_test_add_func ("/pango/fontdescription/match", test_match);
   g_test_add_func ("/pango/fontdescription/faceid", test_faceid);
   g_test_add_func ("/pango/font/extents", test_extents);
   g_test_add_func ("/pango/font/enumerate", test_enumerate);

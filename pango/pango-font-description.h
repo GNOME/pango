@@ -314,12 +314,6 @@ void                    pango_font_description_merge_static      (PangoFontDescr
                                                                   gboolean                    replace_existing);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_font_description_better_match      (const PangoFontDescription *desc,
-                                                                  const PangoFontDescription *old_match,
-                                                                  const PangoFontDescription *new_match) G_GNUC_PURE;
-
-
-PANGO_AVAILABLE_IN_ALL
 PangoFontDescription *  pango_font_description_from_string       (const char                  *str);
 PANGO_AVAILABLE_IN_ALL
 char *                  pango_font_description_to_string         (const PangoFontDescription  *desc);
