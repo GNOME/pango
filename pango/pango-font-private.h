@@ -51,7 +51,6 @@ struct _PangoFontClass
                                                 PangoRectangle *logical_rect);
   PangoFontMetrics *     (* get_metrics)        (PangoFont      *font,
                                                 PangoLanguage  *language);
-  PangoFontMap *         (* get_font_map)       (PangoFont      *font);
   PangoFontDescription * (* describe_absolute)  (PangoFont      *font);
   void                   (* get_features)       (PangoFont      *font,
                                                  hb_feature_t   *features,

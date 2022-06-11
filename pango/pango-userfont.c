@@ -241,14 +241,6 @@ pango_user_font_get_metrics (PangoFont     *font,
   return metrics;
 }
 
-static PangoFontMap *
-pango_user_font_get_font_map (PangoFont *font)
-{
-  PangoUserFont *self = PANGO_USER_FONT (font);
-
-  return self->face->family->map;
-}
-
 static hb_bool_t
 nominal_glyph_func (hb_font_t *font, void *font_data,
                     hb_codepoint_t unicode,
@@ -382,7 +374,6 @@ pango_user_font_class_init (PangoUserFontClass *class)
   font_class->describe_absolute = pango_user_font_describe_absolute;
   font_class->get_glyph_extents = pango_user_font_get_glyph_extents;
   font_class->get_metrics = pango_user_font_get_metrics;
-  font_class->get_font_map = pango_user_font_get_font_map;
   font_class->create_hb_font = pango_user_font_create_hb_font;
   font_class->has_char = pango_user_font_has_char;
   font_class->get_face = pango_user_font_get_face;

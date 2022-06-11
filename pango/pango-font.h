@@ -47,8 +47,6 @@ void                  pango_font_get_glyph_extents (PangoFont        *font,
                                                     PangoGlyph        glyph,
                                                     PangoRectangle   *ink_rect,
                                                     PangoRectangle   *logical_rect);
-PANGO_AVAILABLE_IN_ALL
-PangoFontMap         *pango_font_get_font_map      (PangoFont        *font);
 
 PANGO_AVAILABLE_IN_ALL
 PangoFontFace *       pango_font_get_face          (PangoFont        *font);
