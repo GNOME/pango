@@ -68,7 +68,7 @@ show_segmentation (const char *input,
   int i;
   char *text;
   PangoAttrList *attributes;
-  PangoSimpleLayout *layout;
+  PangoLayout *layout;
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
@@ -80,11 +80,11 @@ show_segmentation (const char *input,
   pango_parse_markup (input, -1, 0, &attributes, &text, NULL, &error);
   g_assert_no_error (error);
 
-  layout = pango_simple_layout_new (context);
-  pango_simple_layout_set_text (layout, text, length);
-  pango_simple_layout_set_attributes (layout, attributes);
+  layout = pango_layout_new (context);
+  pango_layout_set_text (layout, text, length);
+  pango_layout_set_attributes (layout, attributes);
 
-  attrs = pango_simple_layout_get_log_attrs (layout, &len);
+  attrs = pango_layout_get_log_attrs (layout, &len);
 
   for (i = 0, p = text; i < len; i++, p = g_utf8_next_char (p))
     {

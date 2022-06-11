@@ -22,8 +22,9 @@
 #define __PANGO_RENDERER_H_
 
 #include <pango/pango-layout.h>
-#include <pango/pango-line.h>
 #include <pango/pango-lines.h>
+#include <pango/pango-glyph.h>
+#include <pango/pango-glyph-item.h>
 
 G_BEGIN_DECLS
 
@@ -180,7 +181,7 @@ struct _PangoRendererClass
   void (*end)                  (PangoRenderer    *renderer);
 
   void (*prepare_run)          (PangoRenderer    *renderer,
-                                PangoLayoutRun   *run);
+                                PangoRun         *run);
 
   void (*draw_glyph_item)      (PangoRenderer    *renderer,
                                 const char       *text,
@@ -199,24 +200,15 @@ struct _PangoRendererClass
 PANGO_AVAILABLE_IN_1_8
 GType pango_renderer_get_type            (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_1_8
-void pango_renderer_draw_layout          (PangoRenderer    *renderer,
-                                          PangoLayout      *layout,
-                                          int               x,
-                                          int               y);
-PANGO_AVAILABLE_IN_1_8
-void pango_renderer_draw_layout_line     (PangoRenderer    *renderer,
-                                          PangoLayoutLine  *line,
-                                          int               x,
-                                          int               y);
-PANGO_AVAILABLE_IN_ALL
-void pango_renderer_draw_line            (PangoRenderer    *renderer,
-                                          PangoLine        *line,
-                                          int               x,
-                                          int               y);
 PANGO_AVAILABLE_IN_ALL
 void pango_renderer_draw_lines           (PangoRenderer    *renderer,
                                           PangoLines       *lines,
+                                          int               x,
+                                          int               y);
+
+PANGO_AVAILABLE_IN_ALL
+void pango_renderer_draw_line            (PangoRenderer    *renderer,
+                                          PangoLine        *line,
                                           int               x,
                                           int               y);
 PANGO_AVAILABLE_IN_1_8
@@ -291,10 +283,11 @@ void               pango_renderer_set_matrix      (PangoRenderer     *renderer,
 PANGO_AVAILABLE_IN_1_8
 const PangoMatrix *pango_renderer_get_matrix      (PangoRenderer     *renderer);
 
-PANGO_AVAILABLE_IN_1_20
-PangoLayout       *pango_renderer_get_layout      (PangoRenderer     *renderer);
-PANGO_AVAILABLE_IN_1_20
-PangoLayoutLine   *pango_renderer_get_layout_line (PangoRenderer     *renderer);
+PANGO_AVAILABLE_IN_ALL
+PangoLines *       pango_renderer_get_lines       (PangoRenderer     *renderer);
+
+PANGO_AVAILABLE_IN_ALL
+PangoLine *        pango_renderer_get_layout_line (PangoRenderer     *renderer);
 
 PANGO_AVAILABLE_IN_ALL
 PangoContext *     pango_renderer_get_context     (PangoRenderer     *renderer);

@@ -1,62 +1,62 @@
 #include "config.h"
 
-#include "pango-layout-run-private.h"
+#include "pango-run-private.h"
 #include "pango-item-private.h"
 #include "pango-impl-utils.h"
 
 #include <math.h>
 
 /**
- * PangoLayoutRun:
+ * PangoRun:
  *
- * A `PangoLayoutRun` represents a single run within a `PangoLayoutLine`.
+ * A `PangoRun` represents a single run within a `PangoLayoutLine`.
  *
  * A run is a range of text with uniform script, font and attributes that
  * is shaped as a unit.
  *
  * Script, font and attributes of a run can be accessed via
- * [method@Pango.LayoutRun.get_item]. The glyphs that result from shaping
- * the text of the run can be obtained via [method@Pango.LayoutRun.get_glyphs].
+ * [method@Pango.Run.get_item]. The glyphs that result from shaping
+ * the text of the run can be obtained via [method@Pango.Run.get_glyphs].
  */
 
 /**
- * pango_layout_run_get_item:
- * @run: a `PangoLayoutRun`
+ * pango_run_get_item:
+ * @run: a `PangoRun`
  *
  * Gets the `PangoItem` for the run.
  *
  * Returns: (transfer none): the `PangoItem` of @run
  */
 PangoItem *
-pango_layout_run_get_item (PangoLayoutRun *run)
+pango_run_get_item (PangoRun *run)
 {
-  return run->item;
+  return run->glyph_item.item;
 }
 
 /**
- * pango_layout_run_get_glyphs:
- * @run: a `PangoLayoutRun`
+ * pango_run_get_glyphs:
+ * @run: a `PangoRun`
  *
  * Gets the `PangoGlyphString` for the run.
  *
  * Returns: (transfer none): the `PangoGlyphString` of @run
  */
 PangoGlyphString *
-pango_layout_run_get_glyphs (PangoLayoutRun *run)
+pango_run_get_glyphs (PangoRun *run)
 {
-  return run->glyphs;
+  return run->glyph_item.glyphs;
 }
 
 /**
- * pango_layout_run_get_extents:
- * @run: a `PangoLayoutRun`
+ * pango_run_get_extents:
+ * @run: a `PangoRun`
  * @trim: `PangoLeadingTrim` flags
  * @ink_rect: (out caller-allocates) (optional): return location
  *   for the ink extents
  * @logical_rect: (out caller-allocates) (optional): return location
  *   for the logical extents
  *
- * Gets the extents of a `PangoLayoutRun`.
+ * Gets the extents of a `PangoRun`.
  *
  * The @trim flags specify if line-height attributes are taken
  * into consideration for determining the logical height. See the
@@ -64,12 +64,12 @@ pango_layout_run_get_glyphs (PangoLayoutRun *run)
  * specification for details.
  */
 void
-pango_layout_run_get_extents (PangoLayoutRun   *run,
-                              PangoLeadingTrim  trim,
-                              PangoRectangle   *ink_rect,
-                              PangoRectangle   *logical_rect)
+pango_run_get_extents (PangoRun         *run,
+                       PangoLeadingTrim  trim,
+                       PangoRectangle   *ink_rect,
+                       PangoRectangle   *logical_rect)
 {
-  PangoGlyphItem *glyph_item = run;
+  PangoGlyphItem *glyph_item = &run->glyph_item;
   ItemProperties properties;
   gboolean has_underline;
   gboolean has_overline;

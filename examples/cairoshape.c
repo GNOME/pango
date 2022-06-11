@@ -122,22 +122,22 @@ mini_svg_shape_renderer (cairo_t        *cr,
 }
 
 
-static PangoSimpleLayout *
+static PangoLayout *
 get_layout (cairo_t *cr)
 {
-  PangoSimpleLayout *layout;
+  PangoLayout *layout;
   PangoAttrList *attrs;
   PangoRectangle ink_rect     = {1 * PANGO_SCALE, -11 * PANGO_SCALE,  8 * PANGO_SCALE, 10 * PANGO_SCALE};
   PangoRectangle logical_rect = {0 * PANGO_SCALE, -12 * PANGO_SCALE, 10 * PANGO_SCALE, 12 * PANGO_SCALE};
   const char *p;
 
-  /* Create a PangoSimpleLayout, set the font and text */
-  layout = pango_cairo_create_simple_layout (cr);
+  /* Create a PangoLayout, set the font and text */
+  layout = pango_cairo_create_layout (cr);
 
-  pango_cairo_context_set_shape_renderer (pango_simple_layout_get_context (layout),
+  pango_cairo_context_set_shape_renderer (pango_layout_get_context (layout),
                                           mini_svg_shape_renderer, NULL, NULL);
 
-  pango_simple_layout_set_text (layout, text, -1);
+  pango_layout_set_text (layout, text, -1);
 
   attrs = pango_attr_list_new ();
 
@@ -157,7 +157,7 @@ get_layout (cairo_t *cr)
       pango_attr_list_insert (attrs, attr);
     }
 
-  pango_simple_layout_set_attributes (layout, attrs);
+  pango_layout_set_attributes (layout, attrs);
   pango_attr_list_unref (attrs);
 
   return layout;
@@ -166,8 +166,8 @@ get_layout (cairo_t *cr)
 static void
 draw_text (cairo_t *cr, int *width, int *height)
 {
-  PangoSimpleLayout *layout = get_layout (cr);
-  PangoLines *lines = pango_simple_layout_get_lines (layout);
+  PangoLayout *layout = get_layout (cr);
+  PangoLines *lines = pango_layout_get_lines (layout);
 
   /* Adds a fixed 10-pixel margin on the sides. */
 

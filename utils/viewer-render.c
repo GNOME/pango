@@ -52,10 +52,7 @@ gboolean opt_waterfall = FALSE;
 int opt_width = -1;
 int opt_height = -1;
 int opt_indent = 0;
-int opt_spacing = 0;
 double opt_line_spacing = -1.0;
-gboolean opt_justify = 0;
-gboolean opt_justify_last_line = 0;
 int opt_runs = 1;
 PangoAlignment opt_align = PANGO_ALIGN_LEFT;
 PangoEllipsizeMode opt_ellipsize = PANGO_ELLIPSIZE_NONE;
@@ -131,9 +128,7 @@ make_layout(PangoContext *context,
 
   pango_layout_set_auto_dir (layout, opt_auto_dir);
   pango_layout_set_ellipsize (layout, opt_ellipsize);
-  pango_layout_set_justify (layout, opt_justify);
-  pango_layout_set_justify_last_line (layout, opt_justify_last_line);
-  pango_layout_set_single_paragraph_mode (layout, opt_single_par);
+  pango_layout_set_single_paragraph (layout, opt_single_par);
   pango_layout_set_wrap (layout, opt_wrap);
 
   font_description = pango_font_description_from_string (opt_font);
@@ -166,14 +161,6 @@ make_layout(PangoContext *context,
         pango_layout_set_indent (layout, (opt_indent * opt_dpi * PANGO_SCALE + 36) / 72);
     }
 
-  if (opt_spacing != 0)
-    {
-      if (opt_pango_units)
-        pango_layout_set_spacing (layout, opt_spacing);
-      else
-        pango_layout_set_spacing (layout, (opt_spacing * opt_dpi * PANGO_SCALE + 36) / 72);
-      pango_layout_set_line_spacing (layout, 0.0);
-    }
   if (opt_line_spacing >= 0.0)
     pango_layout_set_line_spacing (layout, (float)opt_line_spacing);
 
@@ -195,13 +182,8 @@ make_layout(PangoContext *context,
 out:
   if (opt_serialized_output)
     {
-      GError *error = NULL;
-
-      if (!pango_layout_write_to_file (layout,
-                                       PANGO_LAYOUT_SERIALIZE_CONTEXT|PANGO_LAYOUT_SERIALIZE_OUTPUT,
-                                       opt_serialized_output,
-                                       &error))
-        fail ("%s\n", error->message);
+      if (!pango_layout_write_to_file (layout, opt_serialized_output))
+        fail ("Failed to serialize\n");
     }
 
   return layout;
@@ -278,7 +260,8 @@ output_body (PangoLayout    *layout,
 	  pango_font_description_free (desc);
 	}
 
-      pango_layout_get_pixel_extents (layout, NULL, &logical_rect);
+      pango_lines_get_extents (pango_layout_get_lines (layout), NULL, &logical_rect);
+      pango_extents_to_pixels (&logical_rect, NULL);
 
       if (render_cb)
 	(*render_cb) (layout, x, y+*height, cb_context, cb_data);
@@ -347,7 +330,7 @@ do_output (PangoContext     *context,
       char *options_string = get_options_string ();
       pango_context_set_base_gravity (context, PANGO_GRAVITY_SOUTH);
       layout = make_layout (context, options_string, 10);
-      pango_layout_get_extents (layout, NULL, &rect);
+      pango_lines_get_extents (pango_layout_get_lines (layout), NULL, &rect);
 
       width = MAX (width, PANGO_PIXELS (rect.width));
       height += PANGO_PIXELS (rect.height);
@@ -911,14 +894,8 @@ parse_options (int argc, char *argv[])
      "Subpixel order",                                      "rgb/bgr/vrgb/vbgr"},
     {"indent",		0, 0, G_OPTION_ARG_INT,				&opt_indent,
      "Width in points to indent paragraphs",			    "points"},
-    {"spacing",		0, 0, G_OPTION_ARG_INT,				&opt_spacing,
-     "Spacing in points between lines",			            "points"},
     {"line-spacing",	0, 0, G_OPTION_ARG_DOUBLE,		        &opt_line_spacing,
      "Spread factor for line height",			            "factor"},
-    {"justify",         0, 0, G_OPTION_ARG_NONE,                        &opt_justify,
-     "Stretch paragraph lines to be justified",                         NULL},
-    {"justify-last-line", 0, 0, G_OPTION_ARG_NONE,                      &opt_justify_last_line,
-     "Justify the last line of the paragraph",                          NULL},
     {"language",	0, 0, G_OPTION_ARG_STRING,			&opt_language,
      "Language to use for font selection",			    "en_US/etc"},
     {"margin",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_margin,
@@ -939,8 +916,8 @@ parse_options (int argc, char *argv[])
      "Angle at which to rotate results",			   "degrees"},
     {"runs",		'n', 0, G_OPTION_ARG_INT,			&opt_runs,
      "Run Pango layout engine this many times",			   "integer"},
-    {"single-par",	0, 0, G_OPTION_ARG_NONE,			&opt_single_par,
-     "Enable single-paragraph mode",					NULL},
+    {"single-par",     0, 0, G_OPTION_ARG_NONE,                        &opt_single_par,
+     "Enable single-paragraph mode",                                   NULL},
     {"text",		't', 0, G_OPTION_ARG_STRING,			&opt_text,
      "Text to display (instead of a file)",			    "string"},
     {"version",		0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, &show_version,

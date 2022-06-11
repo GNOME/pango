@@ -90,13 +90,13 @@ compare_size (gconstpointer a,
 }
 
 static void
-layout_check_size (PangoSimpleLayout *layout,
+layout_check_size (PangoLayout *layout,
                    int                width,
                    Size              *out_size)
 {
   out_size->set_width = width;
-  pango_simple_layout_set_width (layout, width);
-  pango_lines_get_size (pango_simple_layout_get_lines (layout), &out_size->width, &out_size->height);
+  pango_layout_set_width (layout, width);
+  pango_lines_get_size (pango_layout_get_lines (layout), &out_size->width, &out_size->height);
 }
 
 static void
@@ -105,7 +105,7 @@ test_wrap_char (gconstpointer data)
   PangoDirection dir = GPOINTER_TO_UINT (data);
   PangoFontDescription *desc;
   PangoContext *context;
-  PangoSimpleLayout *layout;
+  PangoLayout *layout;
   char *sentence;
   Size min, max;
   Size sizes[100];
@@ -113,15 +113,15 @@ test_wrap_char (gconstpointer data)
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
   desc = pango_font_description_from_string ("Sans 10");
-  layout = pango_simple_layout_new (context);
-  pango_simple_layout_set_font_description (layout, desc);
+  layout = pango_layout_new (context);
+  pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
-  pango_simple_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
+  pango_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
 
   for (j = 0; j < N_SENTENCES; j++)
     {
       sentence = create_random_sentence (dir);
-      pango_simple_layout_set_text (layout, sentence, -1);
+      pango_layout_set_text (layout, sentence, -1);
       g_test_message ("%s", sentence);
       g_free (sentence);
 
@@ -175,7 +175,7 @@ test_wrap_char_min_width (gconstpointer data)
   PangoDirection dir = GPOINTER_TO_UINT (data);
   PangoFontDescription *desc;
   PangoContext *context;
-  PangoSimpleLayout *test_layout, *ref_layout;
+  PangoLayout *test_layout, *ref_layout;
   char *sentence, *s;
   GString *ref_string;
   gsize j;
@@ -183,18 +183,18 @@ test_wrap_char_min_width (gconstpointer data)
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
   desc = pango_font_description_from_string ("Sans 10");
-  ref_layout = pango_simple_layout_new (context);
-  pango_simple_layout_set_font_description (ref_layout, desc);
-  test_layout = pango_simple_layout_new (context);
-  pango_simple_layout_set_font_description (test_layout, desc);
-  pango_simple_layout_set_wrap (test_layout, PANGO_WRAP_WORD_CHAR);
-  pango_simple_layout_set_width (test_layout, 0);
+  ref_layout = pango_layout_new (context);
+  pango_layout_set_font_description (ref_layout, desc);
+  test_layout = pango_layout_new (context);
+  pango_layout_set_font_description (test_layout, desc);
+  pango_layout_set_wrap (test_layout, PANGO_WRAP_WORD_CHAR);
+  pango_layout_set_width (test_layout, 0);
   pango_font_description_free (desc);
 
   for (j = 0; j < N_SENTENCES; j++)
     {
       sentence = create_random_sentence (dir);
-      pango_simple_layout_set_text (test_layout, sentence, -1);
+      pango_layout_set_text (test_layout, sentence, -1);
       g_test_message ("%s", sentence);
       ref_string = g_string_new ("");
       for (s = sentence; *s; s = g_utf8_next_char (s))
@@ -203,12 +203,12 @@ test_wrap_char_min_width (gconstpointer data)
           g_string_append_unichar (ref_string, g_test_rand_bit () ? 0x2010 : '-');
           g_string_append_c (ref_string, '\n');
         }
-      pango_simple_layout_set_text (ref_layout, ref_string->str, ref_string->len);
+      pango_layout_set_text (ref_layout, ref_string->str, ref_string->len);
       g_string_free (ref_string, TRUE);
       g_free (sentence);
 
-      pango_lines_get_size (pango_simple_layout_get_lines (test_layout), &test_width, NULL);
-      pango_lines_get_size (pango_simple_layout_get_lines (ref_layout), &ref_width, NULL);
+      pango_lines_get_size (pango_layout_get_lines (test_layout), &test_width, NULL);
+      pango_lines_get_size (pango_layout_get_lines (ref_layout), &ref_width, NULL);
 
       g_assert_cmpint (test_width, <=, ref_width);
     }

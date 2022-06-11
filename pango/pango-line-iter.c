@@ -3,7 +3,7 @@
 #include "pango-line-iter-private.h"
 #include "pango-lines-private.h"
 #include "pango-line-private.h"
-#include "pango-layout-run-private.h"
+#include "pango-run-private.h"
 
 /**
  * PangoLineIter:
@@ -18,6 +18,7 @@
  * fields.
  */
 
+
 /* {{{ PangoLineIter implementation */
 
 struct _PangoLineIter
@@ -30,7 +31,7 @@ struct _PangoLineIter
   int line_y;
   PangoLine *line;
   GSList *run_link;
-  PangoLayoutRun *run;
+  PangoRun *run;
   int index;
 
   /* run handling */
@@ -118,7 +119,7 @@ update_cluster (PangoLineIter *iter,
   char *cluster_text;
   int  cluster_length;
 
-  glyph_item = pango_layout_run_get_glyph_item (iter->run);
+  glyph_item = pango_run_get_glyph_item (iter->run);
 
   iter->character_position = 0;
 
@@ -224,7 +225,7 @@ next_cluster_internal (PangoLineIter *iter,
   if (iter->run == NULL)
     return next_nonempty_line (iter, include_terminators);
 
-  glyph_item = pango_layout_run_get_glyph_item (iter->run);
+  glyph_item = pango_run_get_glyph_item (iter->run);
 
   if (iter->next_cluster_glyph == glyph_item->glyphs->num_glyphs)
     {
@@ -247,7 +248,7 @@ update_run (PangoLineIter *iter,
   PangoGlyphItem *glyph_item;
 
   if (iter->run)
-    glyph_item = pango_layout_run_get_glyph_item (iter->run);
+    glyph_item = pango_run_get_glyph_item (iter->run);
 
   if (iter->run_link == iter->line->runs)
     iter->run_x = 0;
@@ -320,7 +321,7 @@ offset_run (PangoLineIter  *iter,
 }
 
 /* }}} */
-/*  {{{ Private API */
+/*  {{{ Private API */ 
 
 PangoLineIter *
 pango_line_iter_new (PangoLines *lines)
@@ -341,7 +342,7 @@ pango_line_iter_new (PangoLines *lines)
   if (iter->run_link)
     {
       iter->run = iter->run_link->data;
-      run_start_index = iter->run->item->offset;
+      run_start_index = pango_run_get_glyph_item (iter->run)->item->offset;
     }
   else
     {
@@ -455,7 +456,7 @@ pango_line_iter_at_last_line (PangoLineIter *iter)
  *
  * Return value: (transfer none) (nullable): the current run
  */
-PangoLayoutRun *
+PangoRun *
 pango_line_iter_get_run (PangoLineIter *iter)
 {
   g_return_val_if_fail (ITER_IS_VALID (iter), NULL);
@@ -541,13 +542,14 @@ pango_line_iter_next_run (PangoLineIter *iter)
   iter->run_link = iter->run_link->next;
   if (iter->run_link == NULL)
     {
-      run_start_index = iter->run->item->offset + iter->run->item->length;
+      PangoItem *item = pango_run_get_glyph_item (iter->run)->item;
+      run_start_index = item->offset + item->length;
       iter->run = NULL;
     }
   else
     {
       iter->run = iter->run_link->data;
-      run_start_index = iter->run->item->offset;
+      run_start_index = pango_run_get_glyph_item (iter->run)->item->offset;
     }
 
   update_run (iter, run_start_index);
@@ -690,7 +692,7 @@ pango_line_iter_get_trimmed_line_extents (PangoLineIter    *iter,
  *
  * The logical extents returned by this function always have their leading
  * trimmed off. If you need extents that include leading, use
- * [method@Pango.LayoutRun.get_extents].
+ * [method@Pango.Run.get_extents].
  */
 void
 pango_line_iter_get_run_extents (PangoLineIter  *iter,
@@ -701,7 +703,7 @@ pango_line_iter_get_run_extents (PangoLineIter  *iter,
 
   if (iter->run)
     {
-      pango_layout_run_get_extents (iter->run, PANGO_LEADING_TRIM_BOTH, ink_rect, logical_rect);
+      pango_run_get_extents (iter->run, PANGO_LEADING_TRIM_BOTH, ink_rect, logical_rect);
     }
   else
     {
@@ -709,9 +711,9 @@ pango_line_iter_get_run_extents (PangoLineIter  *iter,
       if (runs)
         {
           /* Virtual run at the end of a nonempty line */
-          PangoLayoutRun *run = g_slist_last (runs)->data;
+          PangoRun *run = g_slist_last (runs)->data;
 
-          pango_layout_run_get_extents (run, PANGO_LEADING_TRIM_BOTH, ink_rect, logical_rect);
+          pango_run_get_extents (run, PANGO_LEADING_TRIM_BOTH, ink_rect, logical_rect);
           if (ink_rect)
             {
               ink_rect->x += ink_rect->width;
@@ -768,7 +770,7 @@ pango_line_iter_get_cluster_extents (PangoLineIter  *iter,
       return;
     }
 
-  glyph_item = pango_layout_run_get_glyph_item (iter->run);
+  glyph_item = pango_run_get_glyph_item (iter->run);
 
   pango_glyph_string_extents_range (glyph_item->glyphs,
                                     iter->cluster_start,
@@ -781,14 +783,14 @@ pango_line_iter_get_cluster_extents (PangoLineIter  *iter,
   if (ink_rect)
     {
       ink_rect->x += iter->cluster_x + glyph_item->start_x_offset;
-      ink_rect->y -= iter->run->y_offset;
+      ink_rect->y -= glyph_item->y_offset;
     }
 
   if (logical_rect)
     {
       g_assert (logical_rect->width == iter->cluster_width);
       logical_rect->x += iter->cluster_x + glyph_item->start_x_offset;
-      logical_rect->y -= iter->run->y_offset;
+      logical_rect->y -= glyph_item->y_offset;
     }
 }
 
@@ -878,11 +880,11 @@ pango_line_iter_get_run_baseline (PangoLineIter *iter)
   g_return_val_if_fail (ITER_IS_VALID (iter), 0);
 
   if (iter->run)
-    return pango_line_iter_get_line_baseline (iter) - pango_layout_run_get_glyph_item (iter->run)->y_offset;
+    return pango_line_iter_get_line_baseline (iter) - pango_run_get_glyph_item (iter->run)->y_offset;
   else
     return pango_line_iter_get_line_baseline (iter);
 }
 
-/* }}} */
+/* }}} */ 
 
 /* vim:set foldmethod=marker expandtab: */
