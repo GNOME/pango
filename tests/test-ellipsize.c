@@ -31,26 +31,26 @@ static PangoContext *context;
 static void
 test_ellipsize_height (void)
 {
-  PangoLayout *layout;
+  PangoSimpleLayout *layout;
   int height1, height2;
   PangoFontDescription *desc;
 
-  layout = pango_layout_new (context);
+  layout = pango_simple_layout_new (context);
 
   desc = pango_font_description_from_string ("Fixed 7");
   //pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
 
-  pango_layout_set_text (layout, "some text that should be ellipsized", -1);
-  g_assert_cmpint (pango_layout_get_line_count (layout), ==, 1);
-  pango_layout_get_size (layout, NULL, &height1);
+  pango_simple_layout_set_text (layout, "some text that should be ellipsized", -1);
+  g_assert_cmpint (pango_lines_get_line_count (pango_simple_layout_get_lines (layout)), ==, 1);
+  pango_lines_get_size (pango_simple_layout_get_lines (layout), NULL, &height1);
 
-  pango_layout_set_width (layout, 100 * PANGO_SCALE);
-  pango_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
+  pango_simple_layout_set_width (layout, 100 * PANGO_SCALE);
+  pango_simple_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
 
-  g_assert_cmpint (pango_layout_get_line_count (layout), ==, 1);
-  g_assert_cmpint (pango_layout_is_ellipsized (layout), ==, 1);
-  pango_layout_get_size (layout, NULL, &height2);
+  g_assert_cmpint (pango_lines_get_line_count (pango_simple_layout_get_lines (layout)), ==, 1);
+  g_assert_true (pango_lines_is_ellipsized (pango_simple_layout_get_lines (layout)));
+  pango_lines_get_size (pango_simple_layout_get_lines (layout), NULL, &height2);
 
   g_assert_cmpint (height1, ==, height2);
 
@@ -62,18 +62,18 @@ test_ellipsize_height (void)
 static void
 test_ellipsize_crash (void)
 {
-  PangoLayout *layout;
+  PangoSimpleLayout *layout;
 
-  layout = pango_layout_new (context);
+  layout = pango_simple_layout_new (context);
 
-  pango_layout_set_text (layout, "some text that should be ellipsized", -1);
-  g_assert_cmpint (pango_layout_get_line_count (layout), ==, 1);
+  pango_simple_layout_set_text (layout, "some text that should be ellipsized", -1);
+  g_assert_cmpint (pango_lines_get_line_count (pango_simple_layout_get_lines (layout)), ==, 1);
 
-  pango_layout_set_width (layout, 100 * PANGO_SCALE);
-  pango_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
+  pango_simple_layout_set_width (layout, 100 * PANGO_SCALE);
+  pango_simple_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
 
-  g_assert_cmpint (pango_layout_get_line_count (layout), ==, 1);
-  g_assert_cmpint (pango_layout_is_ellipsized (layout), ==, 1);
+  g_assert_cmpint (pango_lines_get_line_count (pango_simple_layout_get_lines (layout)), ==, 1);
+  g_assert_true (pango_lines_is_ellipsized (pango_simple_layout_get_lines (layout)));
 
   g_object_unref (layout);
 }
@@ -84,21 +84,21 @@ test_ellipsize_crash (void)
 static void
 test_ellipsize_fully (void)
 {
-  PangoLayout *layout;
+  PangoSimpleLayout *layout;
   PangoRectangle ink, logical;
   PangoRectangle ink2, logical2;
 
-  layout = pango_layout_new (context);
+  layout = pango_simple_layout_new (context);
 
-  pango_layout_set_text (layout, "…", -1);
-  pango_layout_get_extents (layout, &ink, &logical);
+  pango_simple_layout_set_text (layout, "…", -1);
+  pango_lines_get_extents (pango_simple_layout_get_lines (layout), &ink, &logical);
 
-  pango_layout_set_text (layout, "ellipsized", -1);
+  pango_simple_layout_set_text (layout, "ellipsized", -1);
 
-  pango_layout_set_width (layout, 10 * PANGO_SCALE);
-  pango_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
+  pango_simple_layout_set_width (layout, 10 * PANGO_SCALE);
+  pango_simple_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
 
-  pango_layout_get_extents (layout, &ink2, &logical2);
+  pango_lines_get_extents (pango_simple_layout_get_lines (layout), &ink2, &logical2);
 
   g_assert_cmpint (ink.width, ==, ink2.width);
   g_assert_cmpint (logical.width, ==, logical2.width);

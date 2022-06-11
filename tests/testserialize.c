@@ -273,7 +273,6 @@ test_serialize_layout_valid (void)
   PangoContext *context;
   GBytes *bytes;
   PangoLayout *layout;
-  PangoTabArray *tabs;
   GError *error = NULL;
   GBytes *out_bytes;
   char *s;
@@ -287,9 +286,7 @@ test_serialize_layout_valid (void)
   g_assert_true (PANGO_IS_LAYOUT (layout));
   g_assert_cmpstr (pango_layout_get_text (layout), ==, "Some fun with layouts!");
   g_assert_nonnull (pango_layout_get_attributes (layout));
-  tabs = pango_layout_get_tabs (layout);
-  g_assert_nonnull (tabs);
-  pango_tab_array_free (tabs);
+  g_assert_nonnull (pango_layout_get_tabs (layout));
   s = pango_font_description_to_string (pango_layout_get_font_description (layout));
   g_assert_cmpstr (s, ==, "Sans Bold 32");
   g_free (s);

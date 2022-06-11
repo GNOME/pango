@@ -43,10 +43,8 @@ test_file (const gchar *filename, GString *string)
   gchar *contents;
   gsize  length;
   GError *error = NULL;
-  PangoLogAttr *attrs;
-  const PangoLogAttr *attrs2;
+  const PangoLogAttr *attrs;
   int len;
-  int len2;
   char *p;
   int i;
   GString *s1, *s2, *s3, *s4, *s5, *s6;
@@ -54,8 +52,7 @@ test_file (const gchar *filename, GString *string)
   char *test;
   char *text;
   PangoAttrList *attributes;
-  PangoLayout *layout;
-  PangoLayout *layout2;
+  PangoSimpleLayout *layout;
 
   g_file_get_contents (filename, &contents, &length, &error);
   g_assert_no_error (error);
@@ -72,9 +69,9 @@ test_file (const gchar *filename, GString *string)
   pango_parse_markup (test, -1, 0, &attributes, &text, NULL, &error);
   g_assert_no_error (error);
 
-  layout = pango_layout_new (context);
-  pango_layout_set_text (layout, text, length);
-  pango_layout_set_attributes (layout, attributes);
+  layout = pango_simple_layout_new (context);
+  pango_simple_layout_set_text (layout, text, length);
+  pango_simple_layout_set_attributes (layout, attributes);
 
 #if 0
   if (pango_layout_get_unknown_glyphs_count (layout) > 0)
@@ -93,24 +90,13 @@ test_file (const gchar *filename, GString *string)
     }
 #endif
 
-  pango_layout_get_log_attrs (layout, &attrs, &len);
-  attrs2 = pango_layout_get_log_attrs_readonly (layout, &len2);
+  attrs = pango_simple_layout_get_log_attrs (layout, &len);
 
-  g_assert_cmpint (len, ==, len2);
-  g_assert_true (memcmp (attrs, attrs2, sizeof (PangoLogAttr) * len) == 0);
   if (!pango_validate_log_attrs (text, length, attrs, len, &error))
     {
       g_warning ("%s: Log attrs invalid: %s", filename, error->message);
 //      g_assert_not_reached ();
     }
-
-  layout2 = pango_layout_copy (layout);
-  attrs2 = pango_layout_get_log_attrs_readonly (layout2, &len2);
-
-  g_assert_cmpint (len, ==, len2);
-  g_assert_true (memcmp (attrs, attrs2, sizeof (PangoLogAttr) * len) == 0);
-
-  g_object_unref (layout2);
 
   s1 = g_string_new ("Breaks: ");
   s2 = g_string_new ("Whitespace: ");
@@ -291,7 +277,6 @@ test_file (const gchar *filename, GString *string)
   g_string_free (s6, TRUE);
 
   g_object_unref (layout);
-  g_free (attrs);
   g_free (contents);
   g_free (text);
   pango_attr_list_unref (attributes);

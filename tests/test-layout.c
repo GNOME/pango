@@ -45,7 +45,7 @@ test_layout (gconstpointer d)
   gsize length;
   GBytes *orig;
   PangoContext *context;
-  PangoLayout *layout;
+  PangoSimpleLayout *layout;
 
   if (!PANGO_FC_IS_FONT_MAP (pango_cairo_font_map_get_default ()))
     {
@@ -69,10 +69,11 @@ test_layout (gconstpointer d)
   orig = g_bytes_new_take (contents, length);
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-  layout = pango_layout_deserialize (context, orig, PANGO_LAYOUT_DESERIALIZE_CONTEXT, &error);
+  layout = pango_simple_layout_deserialize (context, orig, PANGO_SIMPLE_LAYOUT_DESERIALIZE_CONTEXT, &error);
   g_assert_no_error (error);
 
-  bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_CONTEXT | PANGO_LAYOUT_SERIALIZE_OUTPUT);
+  bytes = pango_simple_layout_serialize (layout, PANGO_SIMPLE_LAYOUT_SERIALIZE_CONTEXT |
+                                                 PANGO_SIMPLE_LAYOUT_SERIALIZE_OUTPUT);
 
   g_object_unref (layout);
   g_object_unref (context);
@@ -175,16 +176,17 @@ main (int argc, char *argv[])
       GBytes *orig;
       GBytes *bytes;
       PangoContext *context;
-      PangoLayout *layout;
+      PangoSimpleLayout *layout;
 
       g_file_get_contents (argv[1], &contents, &length, &error);
       g_assert_no_error (error);
       orig = g_bytes_new_take (contents, length);
       context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-      layout = pango_layout_deserialize (context, orig, PANGO_LAYOUT_DESERIALIZE_CONTEXT, &error);
+      layout = pango_simple_layout_deserialize (context, orig, PANGO_SIMPLE_LAYOUT_DESERIALIZE_CONTEXT, &error);
       g_assert_no_error (error);
 
-      bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_CONTEXT | PANGO_LAYOUT_SERIALIZE_OUTPUT);
+      bytes = pango_simple_layout_serialize (layout, PANGO_SIMPLE_LAYOUT_SERIALIZE_CONTEXT |
+                                                     PANGO_SIMPLE_LAYOUT_SERIALIZE_OUTPUT);
 
       g_object_unref (layout);
       g_object_unref (context);
