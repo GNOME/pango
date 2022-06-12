@@ -1,6 +1,7 @@
 gidocgen = find_program('gi-docgen', required: get_option('docs'))
 
 pango_content_files = [
+  'first_steps.md',
   'pango_rendering.md',
   'pango_markup.md',
   'pango_fonts.md',
@@ -54,6 +55,7 @@ pango_content_files = [
   'line-height3-dark.png',
   'rotated-text.png',
   'bullets.png',
+  'first-steps.png',
 ]
 
 doc_conf = configuration_data()
