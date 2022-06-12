@@ -921,6 +921,13 @@ pango_hb_font_class_init (PangoHbFontClass *class)
   font_class->get_features = pango_hb_font_get_features;
   font_class->get_transform = pango_hb_font_get_transform;
 
+  /**
+   * PangoHbFont:variations: (attributes org.gtk.Property.get=pango_hb_font_get_variations)
+   *
+   * The variations that are applied for this font.
+   *
+   * This property contains a string representation of the variations.
+   */
   properties[PROP_VARIATIONS] =
       g_param_spec_string ("variations", NULL, NULL, NULL,
                            G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
