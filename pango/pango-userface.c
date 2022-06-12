@@ -249,11 +249,11 @@ static PangoFont *
 pango_user_face_create_font (PangoFontFace              *face,
                              const PangoFontDescription *desc,
                              float                       dpi,
-                             const PangoMatrix          *matrix)
+                             const PangoMatrix          *ctm)
 {
   PangoUserFace *self = PANGO_USER_FACE (face);
 
-  return PANGO_FONT (pango_user_font_new_for_description (self, desc, dpi, matrix));
+  return PANGO_FONT (pango_user_font_new_for_description (self, desc, dpi, ctm));
 }
 
 static void

@@ -94,7 +94,7 @@ static PangoFont *
 pango_font_face_default_create_font (PangoFontFace              *face,
                                      const PangoFontDescription *desc,
                                      float                       dpi,
-                                     const PangoMatrix          *matrix)
+                                     const PangoMatrix          *ctm)
 {
   return NULL;
 }
@@ -250,11 +250,11 @@ PangoFont *
 pango_font_face_create_font (PangoFontFace              *face,
                              const PangoFontDescription *desc,
                              float                       dpi,
-                             const PangoMatrix          *matrix)
+                             const PangoMatrix          *ctm)
 {
   g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);
 
-  return PANGO_FONT_FACE_GET_CLASS (face)->create_font (face, desc, dpi, matrix);
+  return PANGO_FONT_FACE_GET_CLASS (face)->create_font (face, desc, dpi, ctm);
 }
 
 /*< private >

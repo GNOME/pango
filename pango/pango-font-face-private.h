@@ -51,7 +51,7 @@ struct _PangoFontFaceClass
   PangoFont *            (* create_font)       (PangoFontFace              *face,
                                                 const PangoFontDescription *desc,
                                                 float                       dpi,
-                                                const PangoMatrix          *matrix);
+                                                const PangoMatrix          *ctm);
 };
 
 #define PANGO_FONT_FACE_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT_FACE, PangoFontFaceClass))
@@ -61,7 +61,7 @@ const char *    pango_font_face_get_faceid      (PangoFontFace              *fac
 PangoFont *     pango_font_face_create_font     (PangoFontFace              *face,
                                                  const PangoFontDescription *desc,
                                                  float                       dpi,
-                                                 const PangoMatrix          *matrix);
+                                                 const PangoMatrix          *ctm);
 
 static inline void
 pango_font_face_set_name (PangoFontFace *face,
