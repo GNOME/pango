@@ -51,6 +51,7 @@ content_files = [
   "pango_bidi.md",
   "pango_cairo.md",
   "pango_user.md",
+  "pango_layout.md",
 ]
 
 content_images = [
@@ -101,6 +102,7 @@ content_images = [
   "rotated-text.png",
   "bullets.png",
   "first-steps.png",
+  "parshape.png",
 ]
 
 urlmap_file = "urlmap.js"

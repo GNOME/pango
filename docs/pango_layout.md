@@ -1,3 +1,29 @@
+---
+Title: Complex layout
+---
+
+# Complex layout
+
+The central object in high-level Pango API is [class@Pango.Layout].
+It is well-suited for breaking text into lines that fill a rectangular
+area, since that is commonly how paragraphs are formatted in books.
+But in real-life situations, text does not always fit in a box.
+Examples of more complicated requirements are fitting text around
+an image, or flowing text between multiple frames.
+
+For cases like these, it is better to use [class@Pango.LineBreaker]
+directly instead of `PangoLayout` (`PangoLayout` is using a line
+breaker internally). The way `PangoLineBreaker` works is to let
+applications access the formatted result one line at a time, place
+it, and change parameters such as the line width before requesting
+the next one.
+
+The following example shows how to use `PangoLineBreaker` to
+produce an unusually shaped paragraph with a hole in the middle.
+
+## Using GtkLineBreaker
+
+```
 #include <pango/pango.h>
 #include <pango/pangocairo.h>
 
@@ -134,3 +160,9 @@ main (int argc, char *argv[])
 
   return 0;
 }
+```
+
+Once you build and run the example code above, you should see the
+following result:
+
+![Output of the example](parshape.png)
