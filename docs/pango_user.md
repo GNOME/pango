@@ -1,22 +1,23 @@
-/* Example code to show how to use user fonts to render arbitrary content
- * inside a text layout, positioned by Pango.
- *
- * This examples uses a small parser to convert shapes in the format of
- * SVG paths to cairo instructions.  You can typically extract these from
- * the SVG file's <path> elements directly.
- *
- * The code then searches for the Unicode bullet character in the layout
- * text and automatically adds PangoAttribtues to the layout to replace
- * each of the with a rendering of the GNOME Foot logo.
- *
- * Written by Behdad Esfahbod, 2007
- * Updated for user fonts by Matthias Clasen, 2022
- *
- * Permission to use, copy, modify, distribute, and sell this example
- * for any purpose is hereby granted without fee.
- * It is provided "as is" without express or implied warranty.
- */
+---
+Title: Rendering with user fonts
+---
 
+# Rendering with user fonts
+
+Most of the time, text is rendered using fonts that are ready-made and provided
+in formats such as TrueType or OpenType. Pango supports such fonts with
+[class@PangoHbFace]. But there are fonts in custom formats that HarfBuzz might
+not support. And sometimes, it is more convenient to use a drawing API to render
+glyphs on-the-spot, maybe with fancy effects.
+
+For these cases, Pango provides the [class@PangoUserFace] implementation of
+`PangoFontFace` that uses callbacks for its functionality. This lets you embed
+custom drawing into your text, fully integrated with Pango's text layout
+capabilities.
+
+## A user font example
+
+```
 #include <stdio.h>
 #include <string.h>
 
@@ -327,3 +328,9 @@ main (int argc, char **argv)
 
   return 0;
 }
+```
+
+Once you build and run the example code above, you should see the
+following result:
+
+![Output of the example](bullets.png)

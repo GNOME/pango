@@ -49,6 +49,7 @@ content_files = [
   "pango_fonts.md",
   "pango_bidi.md",
   "pango_cairo.md",
+  "pango_user.md",
 ]
 
 content_images = [
@@ -97,6 +98,7 @@ content_images = [
   "line-height3-light.png",
   "line-height3-dark.png",
   "rotated-text.png",
+  "bullets.png",
 ]
 
 urlmap_file = "urlmap.js"
