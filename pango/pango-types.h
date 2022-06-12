@@ -320,7 +320,6 @@ typedef enum
  */
 #define PANGO_LEADING_TRIM_BOTH (PANGO_LEADING_TRIM_START|PANGO_LEADING_TRIM_END)
 
-
 /*
  * PANGO_DECLARE_INTERNAL_TYPE:
  * @ModuleObjName: The name of the new type, in camel case (like GtkWidget)
@@ -359,6 +358,5 @@ typedef enum
   G_GNUC_UNUSED static inline ModuleObjName##Class * MODULE##_##OBJ_NAME##_GET_CLASS (gpointer ptr) {    \
     return G_TYPE_INSTANCE_GET_CLASS (ptr, module_obj_name##_get_type (), ModuleObjName##Class); }       \
   G_GNUC_END_IGNORE_DEPRECATIONS
-
 
 G_END_DECLS

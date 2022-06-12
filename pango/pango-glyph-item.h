@@ -41,7 +41,7 @@ G_BEGIN_DECLS
  * resulting from shaping the items text.
  *
  * As an example of the usage of `PangoGlyphItem`, the results
- * of shaping text with `PangoLayout` is a list of `PangoLayoutLine`,
+ * of shaping text with `PangoLayout` is a list of `PangoLine`,
  * each of which contains a list of `PangoGlyphItem`.
  */
 typedef struct _PangoGlyphItem PangoGlyphItem;

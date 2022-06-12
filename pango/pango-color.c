@@ -87,7 +87,7 @@ pango_color_free (PangoColor *color)
  * red, green, and blue components respectively.
  *
  * Return value: a newly-allocated text string that must
- *   be freed with g_free().
+ *   be freed with [GLib.free]
  */
 gchar *
 pango_color_to_string (const PangoColor *color)

@@ -168,7 +168,7 @@ G_DEFINE_BOXED_TYPE (PangoLanguage, pango_language,
  * variables, and does return a Unix-style locale string based on
  * either said environment variables or the thread's current locale.
  *
- * Return value: a dynamically allocated string, free with g_free().
+ * Return value: a dynamically allocated string, free with [GLib.free]
  */
 static gchar *
 _pango_get_lc_ctype (void)
@@ -281,7 +281,7 @@ _pango_get_lc_ctype (void)
  *
  * Also note that this function will not do the right thing if you
  * use per-thread locales with uselocale(). In that case, you should
- * just call pango_language_from_string() yourself.
+ * just call [func@Pango.Language.from_string] yourself.
  *
  * Return value: (transfer none): the default language as a `PangoLanguage`
  **/

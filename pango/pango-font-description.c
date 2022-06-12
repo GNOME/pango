@@ -74,7 +74,7 @@ static const PangoFontDescription pfd_defaults = {
  * Creates a new font description structure with all fields unset.
  *
  * Return value: the newly allocated `PangoFontDescription`, which
- *   should be freed using [method@Pango.FontDescription.free].
+ *   should be freed using [method@Pango.FontDescription.free]
  */
 PangoFontDescription *
 pango_font_description_new (void)
@@ -812,8 +812,7 @@ pango_font_description_better_match (const PangoFontDescription *desc,
  * Make a copy of a `PangoFontDescription`.
  *
  * Return value: (nullable): the newly allocated `PangoFontDescription`,
- *   which should be freed with [method@Pango.FontDescription.free],
- *   or %NULL if @desc was %NULL.
+ *   which should be freed with [method@Pango.FontDescription.free]
  */
 PangoFontDescription *
 pango_font_description_copy (const PangoFontDescription *desc)
@@ -855,8 +854,7 @@ pango_font_description_copy (const PangoFontDescription *desc)
  * to be used when the copy is only needed temporarily.
  *
  * Return value: (nullable): the newly allocated `PangoFontDescription`,
- *   which should be freed with [method@Pango.FontDescription.free],
- *   or %NULL if @desc was %NULL.
+ *   which should be freed with [method@Pango.FontDescription.free]
  */
 PangoFontDescription *
 pango_font_description_copy_static (const PangoFontDescription *desc)
@@ -941,7 +939,7 @@ case_insensitive_hash (const char *key)
  * Computes a hash of a `PangoFontDescription` structure.
  *
  * This is suitable to be used, for example, as an argument
- * to g_hash_table_new(). The hash value is independent of @desc->mask.
+ * to [GLib.HashTable.new]. The hash value is independent of @desc->mask.
  *
  * Return value: the hash value.
  */
@@ -1454,7 +1452,7 @@ append_field (GString *str, const char *what, const FieldMap *map, int n_element
  * the string description will only have a terminating comma if
  * the last word of the list is a valid style option.
  *
- * Return value: a new string that must be freed with g_free().
+ * Return value: a newly allocated string
  */
 char *
 pango_font_description_to_string (const PangoFontDescription *desc)

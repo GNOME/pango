@@ -25,6 +25,23 @@
 #include "pango-impl-utils.h"
 
 /**
+ * PangoAnalysis:
+ *
+ * The `PangoAnalysis` structure stores information about
+ * the properties of a segment of text.
+ */
+
+/**
+ * PangoItem:
+ *
+ * The `PangoItem` structure stores information about
+ * a segment of text.
+ *
+ * You typically obtain `PangoItems` by itemizing a piece
+ * of text with [func@Pango.itemize].
+ */
+
+/**
  * pango_item_new:
  *
  * Creates a new `PangoItem` structure initialized to default values.

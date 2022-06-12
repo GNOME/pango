@@ -59,8 +59,8 @@ G_BEGIN_DECLS
  *   on grapheme boundaries (where @is_cursor_position is set). In some languages,
  *   the full grapheme (e.g. letter + diacritics) is considered a unit, while in
  *   others, each decomposed character in the grapheme is a unit. In the default
- *   implementation of [func@break], this bit is set on all grapheme boundaries
- *   except those following Latin, Cyrillic or Greek base characters.
+ *   implementation of [func@default_break], this bit is set on all grapheme
+ *   boundaries except those following Latin, Cyrillic or Greek base characters.
  * @is_expandable_space: is a whitespace character that can possibly be
  *   expanded for justification purposes.
  * @is_word_boundary: is a word boundary, as defined by UAX#29.

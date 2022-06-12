@@ -4,10 +4,10 @@ Title: Fonts and Glyphs
 
 # Fonts
 
-Pango supports a flexible architecture where a particular rendering architecture
-can supply an implementation of fonts. The `PangoFont` structure represents an
-abstract rendering-system-independent font. Pango provides routines to list
-available fonts, and to load a font matching a given description.
+Pango supports a flexible architecture where platform-specific code can supply
+an implementation of font enumeration. The `PangoFont` structure represents a
+rendering-system-independent font. Pango provides routines to list available
+fonts, and to load a font matching a given description.
 
 Conceptually, Pango groups fonts into faces and families which are identified
 by a name. A *font face* provides the different sizes of a single font style.
@@ -22,14 +22,14 @@ The central object for dealing with the available fonts on a system and caching
 loaded fonts is a [class@Pango.FontMap]. An application typically uses a single
 font map.
 
-Since the font map depends on the rendering architecture in use, you'll need to
-use the backend function pango_cairo_font_map_get_default() to obtain the default
-fontmap. Depending on the platform, it will return a `PangoCairoFcFontMap`, a
-`PangoCairoWin32FontMap` or a `PangoCairoCoreTextFontMap`.
+Since the font map depends on the platform in use, you'll need to use the backend
+function [func@Pango.FontMap.get_default] to obtain the default fontmap. Depending
+on the platform, it will return a `PangoFcFontMap`, a `PangoDirectWriterFontMap`
+or a `PangoCoreTextFontMap`.
 
-Once you have a fontmap, you can enumerate the available font families with
-[method@Pango.FontMap.list_families]. To enumerate the faces of a font family,
-use [method@Pango.FontFamily.list_faces].
+Once you have a fontmap, you can enumerate the available font families using
+the [iface@Gio.ListModel] implementation of the fontmap. To enumerate the faces
+of a font family, use the [iface@Gio.ListModel] implementation of the font family.
 
 # Font Descriptions
 
@@ -55,7 +55,7 @@ and clustering information (i.e. which glyphs correspond to which characters).
 ![A glyph string](rects3.png)
 
 A glyph is identified by a [alias@Pango.Glyph], which is a numeric ID. Note that
-glyph IDs are font-specific: the same character can be represented by diffferent
+glyph IDs are font-specific: the same character can be represented by different
 glyph IDs in different fonts.
 
 The mapping between characters and glyphs is in general neither 1-1 nor a map:

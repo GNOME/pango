@@ -821,7 +821,7 @@ pango_line_is_hyphenated (PangoLine *line)
  *
  * Gets whether the line is justified.
  *
- * See [method@Pango.LayoutLine.justify].
+ * See [method@Pango.Line.justify].
  *
  * Returns: `TRUE` if @line has been justified
  */
@@ -948,7 +948,7 @@ pango_line_justify (PangoLine *line,
  * Gets the extents of the line.
  *
  * The logical extents returned by this function always include leading.
- * If you need extents with trimmed leading, use [method@Pango.LayoutLine.get_trimmed_extents].
+ * If you need extents with trimmed leading, use [method@Pango.Line.get_trimmed_extents].
  *
  * Note that the origin is at the left end of the baseline.
  *
@@ -1520,7 +1520,7 @@ done:
  *
  * Note that @idx is allowed to be @line->start_index + @line->length.
  *
- * This is a variant of [method@Pango.LayoutLine.get_cursor_pos] that applies
+ * This is a variant of [method@Pango.Line.get_cursor_pos] that applies
  * font metric information about caret slope and offset to the positions
  * it returns.
  *

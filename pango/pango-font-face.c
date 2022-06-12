@@ -23,6 +23,18 @@
 #include "pango-font-face-private.h"
 #include "pango-font-family.h"
 
+/**
+ * PangoFontFace:
+ *
+ * A `PangoFontFace` is used to represent a group of fonts with
+ * the same family, slant, weight, and width, but varying sizes.
+ *
+ * `PangoFontFace` provides APIs to determine coverage information,
+ * such as [method@Pango.FontFace.has_char] and
+ * [method@Pango.FontFace.supports_language], as well as general
+ * information about the font face like [method@Pango.FontFace.is_monospace]
+ * or [method@Pango.FontFace.is_variable].
+ */
 
 G_DEFINE_ABSTRACT_TYPE (PangoFontFace, pango_font_face, G_TYPE_OBJECT)
 
@@ -179,7 +191,17 @@ pango_font_face_get_family (PangoFontFace *face)
  * A monospace font is a font designed for text display where the the
  * characters form a regular grid.
  *
- * See [method@Pango.FontFamily.is_monospace] for more details.
+ * For Western languages this would mean that the advance width of all
+ * characters are the same, but this categorization also includes Asian
+ * fonts which include double-width characters: characters that occupy
+ * two grid cells. [func@GLib.unichar_iswide] returns a result that
+ * indicates whether a character is typically double-width in a monospace
+ * font.
+ *
+ * The best way to find out the grid-cell size is to call
+ * [method@Pango.FontMetrics.get_approximate_digit_width], since the
+ * results of [method@Pango.FontMetrics.get_approximate_char_width] may
+ * be affected by double-width characters.
  *
  * Returns: `TRUE` if @face is monospace
  */
@@ -198,7 +220,8 @@ pango_font_face_is_monospace (PangoFontFace *face)
  * A variable font is a font which has axes that can be modified
  * to produce variations.
  *
- * See [method@Pango.FontFamily.is_variable] for more details.
+ * Such axes are also known as _variations_; see
+ * [method@Pango.FontDescription.set_variations] for more information.
  *
  * Returns: `TRUE` if @face is variable
  */

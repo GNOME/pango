@@ -4,7 +4,7 @@ version = "@PANGO_VERSION@"
 browse_url = "https://gitlab.gnome.org/GNOME/pango/"
 repository_url = "https://gitlab.gnome.org/GNOME/pango.git"
 website_url = "https://www.pango.org"
-authors = "Owen Taylor, Behdad Esfahbod"
+authors = "Owen Taylor, Behdad Esfahbod, Matthias Clasen"
 logo_url = "pango-name.png"
 license = "LGPL-2.1-or-later"
 description = "Internationalized text layout and rendering"
@@ -24,34 +24,20 @@ search_index = true
   description = "A text shaping library"
   docs_url = "https://harfbuzz.github.io/"
 
-  [dependencies."PangoCairo-1.0"]
-  name = "PangoCairo"
-  description = "Cairo support for Pango"
-  docs_url = "../PangoCairo/"
+  [dependencies."Fribidi-0.0"]
+  name = "FriBidi"
+  description = "The Unicode bidirectional algorithm"
+  docs_url = "https://github.com/fribidi/fribidi"
 
-  [dependencies."PangoFc-1.0"]
-  name = "PangoFc"
-  description = "Fontconfig support for Pango"
-  docs_url = "../PangoFc/"
-
-  [dependencies."PangoFT2-1.0"]
-  name = "PangoFT2"
-  description = "Freetype support for Pango"
-  docs_url = "../PangoFT2/"
-
-  [dependencies."PangoOT-1.0"]
-  name = "PangoOT"
-  description = "OpenType support for Pango"
-  docs_url = "../PangoOT/"
-
-  [dependencies."PangoXft-1.0"]
-  name = "PangoXft"
-  description = "Xft support for Pango"
-  docs_url = "../PangoXft/"
+  [dependencies."Cairo-0.0"]
+  name = "cairo"
+  description = "A 2D graphics library"
+  docs_url = "https://www.cairographics.org/documentation/"
 
 [theme]
 name = "basic"
 show_index_summary = true
+show_class_hierarchy = true
 
 [source-location]
 base_url = "https://gitlab.gnome.org/GNOME/pango/-/blob/main/"
@@ -62,6 +48,7 @@ content_files = [
   "pango_markup.md",
   "pango_fonts.md",
   "pango_bidi.md",
+  "pango_cairo.md",
 ]
 
 content_images = [
@@ -109,6 +96,7 @@ content_images = [
   "line-height2-dark.png",
   "line-height3-light.png",
   "line-height3-dark.png",
+  "rotated-text.png",
 ]
 
 urlmap_file = "urlmap.js"

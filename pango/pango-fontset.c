@@ -21,8 +21,18 @@
 
 #include "config.h"
 
-/*
- * PangoFontset
+/**
+ * PangoFontset:
+ *
+ * A `PangoFontset` represents a set of `PangoFont` to use when rendering text.
+ *
+ * A `PangoFontset` is the result of resolving a `PangoFontDescription`
+ * against a particular `PangoContext`. It has operations for finding the
+ * component font for a particular Unicode character, and for finding a
+ * composite set of metrics for the entire fontset.
+ *
+ * To obtain a `PangoFontset`, use [method@Pango.Context.load_fontset] or
+ * [method@Pango.FontMap.load_fontset].
  */
 
 #include "pango-fontset-private.h"

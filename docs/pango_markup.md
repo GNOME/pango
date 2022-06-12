@@ -12,8 +12,7 @@ font or size attributes will influence the font selection that is happening duri
 itemization, font features and letterspacing attributes will influence shaping, and
 color or underline attributes will be used for rendering.
 
-Pango uses a simple structs for individual attributes, such as
-[struct@Pango.AttrColor] or [struct@Pango.AttrFontDesc]. Each attribute has a type,
+Pango uses a simple structs for individual attributes. Each attribute has a type,
 and a start and end index that determine the range of characters that the attribute
 applies to. See the [enum@Pango.AttrType] enumeration for all the possible
 attribute types.
@@ -99,8 +98,7 @@ weight
 font_variant
 variant
 : One of 'normal', 'small-caps', 'all-small-caps', 'petite-caps', 'all-petite-caps',
-  'unicase', 'title-caps'. Values other than 'normal' and 'small-caps' are available
-  since 1.50.
+  'unicase', 'title-caps'.
 
 font_stretch
 stretch
@@ -157,12 +155,12 @@ rise
 baseline_shift
 : Vertical displacement. In contrast to rise, baseline_shift attributes are cumulative.
   The value can be a length in Pango units or in points (e.g. '5pt'), or 'superscript'
-  or 'subscript'. Available since 1.50.
+  or 'subscript'.
 
 font_scale:
 : Font size change. The possible values are 'superscript', 'subscript' or 'small-caps'.
   This is similar to the font_size values 'smaller' or 'larger', but uses font metrics
-  to find the new size. Available since 1.50.
+  to find the new size.
 
 strikethrough
 : 'true' or 'false' whether to strike through the text.
@@ -196,28 +194,25 @@ show
 
 insert_hyphens
 : 'true' or 'false' to indicate whether hyphens should be inserted when breaking
-  lines in the middle of words. Available since Pango 1.44.
+  lines in the middle of words.
 
 allow_breaks
-: 'true' or 'false' to indicate whether breaking lines is allowed. Available
-  since Pango 1.44.
+: 'true' or 'false' to indicate whether breaking lines is allowed.
 
 line_height
 : Overrides the line height. The value can be either a factor (< 1024) that is
   used to scale up the logical extents of runs or an absolute value (in 1024th
   of a point).
-  Available since Pango 1.50.
 
 text_transform
 : Specifies how characters are transformed during shaping. The values can be
-  'none', 'lowercase', 'uppercase' or 'capitalize'. Support for text transformation
-  was added in Pango 1.50.
+  'none', 'lowercase', 'uppercase' or 'capitalize'.
 
 segment
-: Overrides word or sentence boundaries. The value can be 'word' or 'sentence',
-  to indicate that the span should be treated as a single word or sentence.
-  Overlapping segments will be split to allow this, and line breaks will be
-  adjusted accordingly. Available since Pango 1.50.
+: Overrides word or sentence boundaries. The value can be 'word', 'sentence',
+  or 'paragraph', to indicate that the span should be treated as a single word,
+  sentence or paragraph. Overlapping segments will be split to allow this, and
+  line breaks will be adjusted accordingly.
 
 ## Convenience Tags
 

@@ -220,7 +220,7 @@ void                    pango_glyph_string_index_to_x_full      (PangoGlyphStrin
  *
  * Flags influencing the shaping process.
  *
- * `PangoShapeFlags` can be passed to [func@Pango.shape_with_flags].
+ * `PangoShapeFlags` can be passed to [func@Pango.shape].
  */
 typedef enum {
   PANGO_SHAPE_NONE            = 0,

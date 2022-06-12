@@ -32,6 +32,12 @@
 #include "pango-fontmap-private.h"
 #include "pango-impl-utils.h"
 
+/**
+ * PangoFont:
+ *
+ * A `PangoFont` is used to represent a font in a
+ * rendering-system-independent manner.
+ */
 
 G_DEFINE_ABSTRACT_TYPE (PangoFont, pango_font, G_TYPE_OBJECT)
 

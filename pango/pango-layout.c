@@ -437,9 +437,10 @@ pango_layout_class_init (PangoLayoutClass *class)
    * PangoLayout:single-paragraph: (attributes org.gtk.Property.get=pango_layout_get_single_paragraph org.gtk.Property.set=pango_layout_set_single_paragraph)
    *
    * Whether to treat newlines and similar characters as paragraph
-   * separators or not. If this property is `TRUE`, all text is kept
-   * in a single paragraph, and paragraph separator characters are
-   * displayed with a glyph.
+   * separators or not.
+   *
+   * If this property is `TRUE`, all text is kept in a single paragraph,
+   * and paragraph separator characters are displayed with a glyph.
    *
    * This is useful to allow editing of newlines on a single text line.
    *

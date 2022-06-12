@@ -36,11 +36,11 @@ G_BEGIN_DECLS
  * in right-to-left cases, @start_glyph is greater than @end_glyph.
  *
  * An iterator should be initialized using either
- * pango_glyph_item_iter_init_start() or
- * pango_glyph_item_iter_init_end(), for forward and backward iteration
+ * [method@Pango.GlyphItemIter.init_start] or
+ * [method@Pango.GlyphItemIter.init_end], for forward and backward iteration
  * respectively, and walked over using any desired mixture of
- * pango_glyph_item_iter_next_cluster() and
- * pango_glyph_item_iter_prev_cluster().
+ * [method@Pango.GlyphItemIter.next_cluster] and
+ * [method@Pango.GlyphItemIter.prev_cluster].
  *
  * A common idiom for doing a forward iteration over the clusters is:
  *

@@ -59,9 +59,8 @@
 /**
  * PangoFontMap:
  *
- * `PangoFontMap` is a `PangoFontMap` subclass for use with
- * `PangoHbFace` and `PangoHbFont`. It handles caching and
- * lookup of faces and fonts.
+ * `PangoFontMap` is the base class for font enumeration.
+ * It also handles caching and lookup of faces and fonts.
  *
  * Subclasses populate the fontmap using backend-specific APIs
  * to enumerate the available fonts on the sytem, but it is
@@ -73,6 +72,9 @@
  * generic families for monospace and sans-serif. These can
  * be added using [method@Pango.FontMap.add_family] and
  * [ctor@Pango.GenericFamily.new].
+ *
+ * `PangoFontMap` implements the [iface@Gio.ListModel] interface,
+ * to provide a list of font families.
  */
 
 
@@ -770,7 +772,7 @@ pango_font_map_new (void)
  * Adds @face to the `PangoFontMap`.
  *
  * This is most useful for creating transformed faces or aliases.
- * See [ctor@Pango.HbFace.new_synthetic] and [ctor@Pango.HbFace.new_instance].
+ * See [method@Pango.HbFace.new_synthetic] and [method@Pango.HbFace.new_instance].
  */
 void
 pango_font_map_add_face (PangoFontMap  *self,
@@ -918,7 +920,7 @@ pango_font_map_add_family (PangoFontMap    *self,
  * @self: a `PangoFontMap`
  * @family: a `PangoFontFamily` that belongs to @self
  *
- * Removes a `PangoHbFamily` from a `PangoFontMap`
+ * Removes @family from a `PangoFontMap`
  */
 void
 pango_font_map_remove_family (PangoFontMap    *self,
@@ -984,7 +986,7 @@ static GPrivate default_font_map = G_PRIVATE_INIT (g_object_unref); /* MT-safe *
  *
  * A fontmap is used to cache information about available fonts,
  * and holds certain global parameters such as the resolution.
- * In most cases, you can use `func@Pango.font_map_get_default]
+ * In most cases, you can use [func@Pango.FontMap.get_default]
  * instead.
  *
  * Note that the type of the returned object will depend
@@ -1057,7 +1059,7 @@ pango_font_map_new_default (void)
  * platform that Pango is used on.
  *
  * The default fontmap can be changed by using
- * [method@Pango.FontMap.set_default]. This can be used to
+ * [method@Pango.FontMap.set_default].
  *
  * Note that the default fontmap is per-thread. Each thread gets
  * its own default fontmap. In this way, Pango can be used safely
@@ -1093,11 +1095,11 @@ pango_font_map_get_default (void)
  * This function only changes the default fontmap for
  * the current thread. Default fontmaps of existing threads
  * are not changed. Default fontmaps of any new threads will
- * still be created using [func@Pango.FontMap.new_default].
+ * still be created using [ctor@Pango.FontMap.new_default].
  *
  * A value of %NULL for @fontmap will cause the current default
  * font map to be released and a new default font map to be created
- * on demand, using [func@Pango.FontMap.new_default].
+ * on demand, using [ctor@Pango.FontMap.new_default].
  */
 void
 pango_font_map_set_default (PangoFontMap *fontmap)

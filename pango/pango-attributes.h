@@ -25,8 +25,12 @@
 
 G_BEGIN_DECLS
 
+#ifndef __GI_SCANNER__
 
 #define PANGO_ATTR_TYPE(value, affects, merge) (PANGO_ATTR_VALUE_##value | (PANGO_ATTR_AFFECTS_##affects << 8) | (PANGO_ATTR_MERGE_##merge << 12) | (__COUNTER__ << 16))
+
+#endif
+
 /**
  * PangoAttrType:
  * @PANGO_ATTR_INVALID: does not happen

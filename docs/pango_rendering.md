@@ -19,21 +19,21 @@ Itemization
   character. Use [func@Pango.itemize] to itemize text.
 
 Shaping
-: converts characters into glyphs. Use [func@Pango.shape],
-  [func@Pango.shape_full] or [func@Pango.shape_item] to shape text.
+: converts characters into glyphs. Use [func@Pango.shape] or
+  [func@Pango.shape_item] to shape text.
 
 Line Breaking
 : determines where line breaks should be inserted into a sequence of glyphs.
   The functions [func@Pango.default_break], [func@Pango.tailor_break] and
   [func@Pango.attr_break] determine possible line breaks. The actual line
-  breaking is done by [class@Pango.Layout].
+  breaking is done by [class@Pango.LineBreaker].
 
 Justification
 : adjusts inter-word spacing to form lines of even length. This is done by
-  [class@Pango.Layout].
+  [struct@Pango.Line].
 
 Rendering
 : takes a string of positioned glyphs, and renders them onto a surface.
   This is accomplished by a [class@Pango.Renderer] object. The functions
-  pango_cairo_show_glyph_string() and pango_cairo_show_layout() use a
-  [class@Pango.Renderer] to draw text onto a cairo surface.
+  [func@Pango.cairo_show_glyph_string] and [func@Pango.cairo_show_layout]
+  use a [class@Pango.Renderer] to draw text onto a cairo surface.

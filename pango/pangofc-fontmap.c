@@ -551,10 +551,8 @@ pango_fc_font_map_class_init (PangoFcFontMapClass *class)
 /**
  * pango_fc_font_map_new:
  *
- * Creates a new `PangoFcFontMap` object.
- *
- * Unless overridden by [method@PangoFc.FontMap.set_config],
- * this font map uses the default fontconfig configuration.
+ * Creates a new `PangoFcFontMap` using the default
+ * fontconfig configuration.
  *
  * Returns: a new `PangoFcFontMap`
  */

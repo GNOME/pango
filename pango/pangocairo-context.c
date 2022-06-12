@@ -115,7 +115,7 @@ pango_cairo_update_context (cairo_t      *cr,
  *
  * Sets the font options used when rendering text with this context.
  *
- * These options override any options that [func@update_context]
+ * These options override any options that [func@Pango.cairo_update_context]
  * derives from the target surface.
  */
 void
@@ -160,10 +160,10 @@ pango_cairo_context_set_font_options (PangoContext               *context,
  * @context: a `PangoContext`, from a pangocairo font map
  *
  * Retrieves any font rendering options previously set with
- * [func@PangoCairo.context_set_font_options].
+ * [func@Pango.cairo_context_set_font_options].
  *
  * This function does not report options that are derived from
- * the target surface by [func@update_context].
+ * the target surface by [func@Pango.cairo_update_context].
  *
  * Return value: (nullable): the font options previously set on the
  *   context, or %NULL if no options have been set. This value is
@@ -203,10 +203,8 @@ pango_cairo_context_get_merged_font_options (PangoContext *context)
  * This context can then be
  * used to create a layout using [ctor@Pango.Layout.new].
  *
- * This function is a convenience function that creates a context using
- * the default font map, then updates it to @cr. If you just need to
- * create a layout for use with @cr and do not need to access `PangoContext`
- * directly, you can use [func@create_layout] instead.
+ * This function is a convenience function that creates a context
+ * using the default font map, then updates it to @cr.
  *
  * Return value: (transfer full): the newly created `PangoContext`
  */
@@ -228,11 +226,10 @@ pango_cairo_create_context (cairo_t *cr)
 /**
  * pango_cairo_update_layout:
  * @cr: a Cairo context
- * @layout: a `PangoLayout`, from [func@create_layout]
+ * @layout: a `PangoLayout`
  *
- * Updates the private `PangoContext` of a `PangoLayout` created with
- * [func@create_layout] to match the current transformation and target
- * surface of a Cairo context.
+ * Updates the private `PangoContext` of a `PangoLayout` to match
+ * the current transformation and target surface of a Cairo context.
  */
 void
 pango_cairo_update_layout (cairo_t     *cr,

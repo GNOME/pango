@@ -45,7 +45,8 @@
  * to look up fonts, and default values such as the default language,
  * default gravity, or default font.
  *
- * To obtain a `PangoContext`, use [method@Pango.FontMap.create_context].
+ * To obtain a `PangoContext`, use [method@Pango.FontMap.create_context]
+ * or [func@Pango.cairo_create_context].
  */
 
 struct _PangoContextClass
@@ -142,11 +143,11 @@ pango_context_finalize (GObject *object)
  *
  * If you are using Pango as part of a higher-level system,
  * that system may have it's own way of create a `PangoContext`.
- * For instance, the GTK toolkit has, among others,
- * `gtk_widget_get_pango_context()`. Use those instead.
+ * Pango's own cairo support for instance, has [func@Pango.cairo_create_context],
+ * and the GTK toolkit has, among others, gtk_widget_get_pango_context().
+ * Use those instead.
  *
- * Return value: the newly allocated `PangoContext`, which should
- *   be freed with g_object_unref().
+ * Return value: the newly allocated `PangoContext`
  */
 PangoContext *
 pango_context_new (void)
