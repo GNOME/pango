@@ -133,12 +133,30 @@ pango_font_map_list_model_init (GListModelInterface *iface)
 /* The number of fontsets we keep in the fontset cache */
 #define FONTSET_CACHE_SIZE 256
 
+#define FNV_32_PRIME ((guint32)0x01000193)
 #define FNV1_32_INIT ((guint32)0x811c9dc5)
+
+static guint32
+hash_bytes_fnv (unsigned char *buffer,
+                int            len,
+                guint32        hval)
+{
+  while (len--)
+    {
+      hval *= FNV_32_PRIME;
+      hval ^= *buffer++;
+    }
+
+  return hval;
+}
 
 static guint
 pango_fontset_cached_hash (const PangoFontsetCached *fontset)
 {
   guint32 hash = FNV1_32_INIT;
+
+  if (fontset->ctm)
+    hash = hash_bytes_fnv ((unsigned char *)(fontset->ctm), sizeof (double) * 4, hash);
 
   return (hash ^
           GPOINTER_TO_UINT (fontset->language) ^
@@ -156,6 +174,8 @@ pango_fontset_cached_equal (const PangoFontsetCached *a,
 #ifdef HAVE_CAIRO
          cairo_font_options_equal (a->font_options, b->font_options) &&
 #endif
+         (a->ctm == b->ctm ||
+          (a->ctm && b->ctm && memcmp (a->ctm, b->ctm, 4 * sizeof (double)) == 0)) &&
          pango_font_description_equal (a->description, b->description);
 }
 
@@ -470,7 +490,7 @@ pango_font_map_default_load_fontset (PangoFontMap               *self,
 {
   PangoFontsetCached lookup;
   PangoFontsetCached *fontset;
-  const PangoMatrix *matrix;
+  const PangoMatrix *ctm;
   const char *family_name;
   char **families;
   PangoFontDescription *copy;
@@ -485,9 +505,11 @@ pango_font_map_default_load_fontset (PangoFontMap               *self,
     language = pango_context_get_language (context);
 
   family_name = pango_font_description_get_family (description);
+  ctm = pango_context_get_matrix (context);
 
   lookup.language = language;
   lookup.description = (PangoFontDescription *)description;
+  lookup.ctm = ctm;
 #ifdef HAVE_CAIRO
   lookup.font_options = (cairo_font_options_t *)pango_cairo_context_get_merged_font_options (context);
 #endif
@@ -496,9 +518,7 @@ pango_font_map_default_load_fontset (PangoFontMap               *self,
   if (fontset)
     goto done;
 
-  matrix = pango_context_get_matrix (context);
-
-  fontset = pango_fontset_cached_new (description, language, self->dpi, matrix);
+  fontset = pango_fontset_cached_new (description, language, self->dpi, ctm);
 #ifdef HAVE_CAIRO
   fontset->font_options = cairo_font_options_copy (pango_cairo_context_get_merged_font_options (context));
 #endif

@@ -119,7 +119,7 @@ pango_fontset_cached_get_font (PangoFontset *fontset,
                   retval = pango_font_face_create_font (face,
                                                         self->description,
                                                         self->dpi,
-                                                        self->matrix);
+                                                        self->ctm);
 #ifdef HAVE_CAIRO
                   pango_cairo_font_set_font_options (retval, self->font_options);
 #endif
@@ -156,7 +156,7 @@ pango_fontset_cached_get_first_font (PangoFontsetCached *self)
       font = pango_font_face_create_font (face,
                                           self->description,
                                           self->dpi,
-                                          self->matrix);
+                                          self->ctm);
 #ifdef HAVE_CAIRO
       pango_cairo_font_set_font_options (font, self->font_options);
 #endif
@@ -213,7 +213,7 @@ pango_fontset_cached_foreach (PangoFontset            *fontset,
       else if (PANGO_IS_GENERIC_FAMILY (item))
         {
           PangoFontFace *face = pango_generic_family_find_face (PANGO_GENERIC_FAMILY (item), self->description, self->language, 0);
-          font = pango_font_face_create_font (face, self->description, self->dpi, self->matrix);
+          font = pango_font_face_create_font (face, self->description, self->dpi, self->ctm);
 #ifdef HAVE_CAIRO
           pango_cairo_font_set_font_options (font, self->font_options);
 #endif
@@ -246,7 +246,7 @@ PangoFontsetCached *
 pango_fontset_cached_new (const PangoFontDescription *description,
                           PangoLanguage              *language,
                           float                       dpi,
-                          const PangoMatrix          *matrix)
+                          const PangoMatrix          *ctm)
 {
   PangoFontsetCached *self;
 
@@ -254,7 +254,7 @@ pango_fontset_cached_new (const PangoFontDescription *description,
   self->language = language;
   self->description = pango_font_description_copy (description);
   self->dpi = dpi;
-  self->matrix = matrix;
+  self->ctm = ctm;
 
   return self;
 }
@@ -268,7 +268,7 @@ pango_fontset_cached_add_face (PangoFontsetCached *self,
   font = pango_font_face_create_font (face,
                                       self->description,
                                       self->dpi,
-                                      self->matrix);
+                                      self->ctm);
 #ifdef HAVE_CAIRO
   pango_cairo_font_set_font_options (font, self->font_options);
 #endif

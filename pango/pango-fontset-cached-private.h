@@ -39,7 +39,7 @@ struct _PangoFontsetCached
   PangoLanguage *language;
   PangoFontDescription *description;
   float dpi;
-  const PangoMatrix *matrix;
+  const PangoMatrix *ctm;
   GList cache_link;
   GHashTable *cache;
 
@@ -59,7 +59,7 @@ GType                pango_fontset_cached_get_type       (void) G_GNUC_CONST;
 PangoFontsetCached * pango_fontset_cached_new            (const PangoFontDescription *description,
                                                           PangoLanguage              *language,
                                                           float                       dpi,
-                                                          const PangoMatrix          *matrix);
+                                                          const PangoMatrix          *ctm);
 
 void                 pango_fontset_cached_add_face       (PangoFontsetCached         *self,
                                                           PangoFontFace              *face);

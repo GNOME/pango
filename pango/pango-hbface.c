@@ -446,11 +446,11 @@ static PangoFont *
 pango_hb_face_create_font (PangoFontFace              *face,
                            const PangoFontDescription *desc,
                            float                       dpi,
-                           const PangoMatrix          *matrix)
+                           const PangoMatrix          *ctm)
 {
   PangoHbFace *self = PANGO_HB_FACE (face);
 
-  return PANGO_FONT (pango_hb_font_new_for_description (self, desc, dpi, matrix));
+  return PANGO_FONT (pango_hb_font_new_for_description (self, desc, dpi, ctm));
 }
 
 static void
