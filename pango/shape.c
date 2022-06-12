@@ -805,14 +805,10 @@ pango_shape_internal (const char          *item_text,
  * returned from [func@Pango.itemize], convert the characters into glyphs.
  * You may also pass in only a substring of the item from [func@Pango.itemize].
  *
- * This is similar to [func@Pango.shape_full], except it also takes flags
- * that can influence the shaping process.
- *
  * Note that the extra attributes in the @analyis that is returned from
  * [func@Pango.itemize] have indices that are relative to the entire paragraph,
  * so you do not pass the full paragraph text as @paragraph_text, you need
- * to subtract the item offset from their indices before calling
- * [func@Pango.shape_with_flags].
+ * to subtract the item offset from their indices first.
  */
 void
 pango_shape (const char          *item_text,
@@ -841,16 +837,14 @@ pango_shape (const char          *item_text,
  *
  * Convert the characters in @item into glyphs.
  *
- * This is similar to [func@Pango.shape_with_flags], except it takes a
- * `PangoItem` instead of separate @item_text and @analysis arguments.
- * It also takes @log_attrs, which may be used in implementing text
- * transforms.
+ * This is similar to [func@Pango.shape], except it takes a `PangoItem`
+ * instead of separate @item_text and @analysis arguments. It also takes
+ * @log_attrs, which may be used in implementing text transforms.
  *
  * Note that the extra attributes in the @analyis that is returned from
  * [func@Pango.itemize] have indices that are relative to the entire paragraph,
- * so you do not pass the full paragraph text as @paragraph_text, you need
- * to subtract the item offset from their indices before calling
- * [func@Pango.shape_with_flags].
+ * so you do not pass the full paragraph text as @paragraph_text, you need to
+ * subtract the item offset from their indices before calling [func@Pango.shape].
  */
 void
 pango_shape_item (PangoItem        *item,

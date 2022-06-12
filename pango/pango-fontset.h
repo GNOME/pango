@@ -56,17 +56,6 @@ typedef gboolean (*PangoFontsetForeachFunc) (PangoFontset  *fontset,
                                              PangoFont     *font,
                                              gpointer       user_data);
 
-/**
- * PangoFontset:
- *
- * A `PangoFontset` represents a set of `PangoFont` to use when rendering text.
- *
- * A `PangoFontset` is the result of resolving a `PangoFontDescription`
- * against a particular `PangoContext`. It has operations for finding the
- * component font for a particular Unicode character, and for finding a
- * composite set of metrics for the entire fontset.
- */
-
 PANGO_AVAILABLE_IN_ALL
 PangoFont *             pango_fontset_get_font          (PangoFontset                   *fontset,
                                                          guint                           wc);

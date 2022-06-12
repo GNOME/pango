@@ -466,7 +466,7 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
  * Return value: (element-type Pango.Attribute) (transfer full):
  *   a list of all attributes for the current range. To free
  *   this value, call [method@Pango.Attribute.destroy] on each
- *   value and g_slist_free() on the list.
+ *   value and [func@GLib.SList.free] on the list.
  */
 GSList *
 pango_attr_iterator_get_attrs (PangoAttrIterator *iterator)

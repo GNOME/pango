@@ -356,6 +356,16 @@ pango_attr_underline_color_new (PangoColor *color)
   return pango_attr_color_new (PANGO_ATTR_UNDERLINE_COLOR, color);
 }
 
+/**
+ * pango_attr_underline_position_new:
+ * @position: the underline position
+ *
+ * Create a new underline position attribute.
+ *
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
+ */
 PangoAttribute *
 pango_attr_underline_position_new (PangoUnderlinePosition position)
 {

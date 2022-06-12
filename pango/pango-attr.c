@@ -154,7 +154,7 @@ is_valid_attr_type (guint type)
  * If @name and @serialize are provided, they will be used
  * to serialize attributes of this type.
  *
- * To create attributes with the new type, use [func@Pango.attr_custom_new].
+ * To create attributes with the new type, use [ctor@PangoAttribute.new].
  *
  * Return value: the attribute type ID
  */
@@ -205,7 +205,7 @@ pango_attr_type_register (const char                 *name,
  * [func@Pango.AttrType.register].
  *
  * The returned value is an interned string (see
- * g_intern_string() for what that means) that should
+ * [func@GLib.intern_string] for what that means) that should
  * not be modified or freed.
  *
  * Return value: (nullable): the type ID name (which
@@ -449,7 +449,7 @@ pango_attribute_equal (const PangoAttribute *attr1,
  * Creates a new attribute for the given type.
  *
  * The type must be one of the `PangoAttrType` values, or
- * have been registered with [func@Pango.register_attr_type].
+ * have been registered with [func@Pango.AttrType.register].
  *
  * Pango will initialize @start_index and @end_index to an
  * all-inclusive range of `[0,G_MAXUINT]`.  The caller is

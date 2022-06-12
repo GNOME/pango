@@ -1056,7 +1056,7 @@ pango_cairo_show_glyph_string (cairo_t          *cr,
  *
  * embedding the text associated with the glyphs in the output if the
  * output format supports it (PDF for example), otherwise it acts
- * similar to [func@show_glyph_string].
+ * similar to [func@Pango.cairo_show_glyph_string].
  *
  * The origin of the glyphs (the left edge of the baseline) will
  * be drawn at the current point of the cairo context.

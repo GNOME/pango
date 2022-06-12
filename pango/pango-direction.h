@@ -35,17 +35,16 @@ G_BEGIN_DECLS
  * algorithm.
  *
  * Not every value in this enumeration makes sense for every usage of
- * `PangoDirection`; for example, the return value of [func@unichar_direction]
- * and [func@find_base_dir] cannot be `PANGO_DIRECTION_WEAK_LTR` or
- * `PANGO_DIRECTION_WEAK_RTL`, since every character is either neutral
- * or has a strong direction; on the other hand `PANGO_DIRECTION_NEUTRAL`
- * doesn't make sense to pass to [func@itemize].
+ * `PangoDirection`; for example, the direction of characters cannot be
+ * `PANGO_DIRECTION_WEAK_LTR` or `PANGO_DIRECTION_WEAK_RTL`, since every
+ * character is either neutral or has a strong direction; on the other hand
+ * `PANGO_DIRECTION_NEUTRAL` doesn't make sense to pass to [func@itemize].
  *
  * See `PangoGravity` for how vertical text is handled in Pango.
  *
- * If you are interested in text direction, you should really use fribidi
- * directly. `PangoDirection` is only retained because it is used in some
- * public apis.
+ * If you are interested in text direction, you should really use
+ * [fribidi](http://fribidi.org/) directly. `PangoDirection` is only
+ * retained because it is used in some public apis.
  */
 typedef enum {
   PANGO_DIRECTION_LTR,

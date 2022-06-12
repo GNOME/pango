@@ -24,6 +24,18 @@
 #include "pango-font-face.h"
 #include "pango-font.h"
 
+/**
+ * PangoFontFamily:
+ *
+ * A `PangoFontFamily` is used to represent a family of related
+ * font faces.
+ *
+ * The font faces in a family share a common design, but differ in
+ * slant, weight, width or other aspects.
+ *
+ * `PangoFontFamily` implements the [iface@Gio.ListModel] interface,
+ * to provide a list of font faces.
+ */
 
 static GType
 pango_font_family_get_item_type (GListModel *list)

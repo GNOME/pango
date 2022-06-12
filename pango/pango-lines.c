@@ -553,7 +553,7 @@ pango_lines_get_baseline (PangoLines *lines)
  *   store a pointer to an array of ranges. The array will be of length
  *   `2*n_ranges`, with each range starting at `(*ranges)[2*n]` and of
  *   width `(*ranges)[2*n + 1] - (*ranges)[2*n]`. This array must be freed
- *   with g_free(). The coordinates are relative to the layout and are in
+ *   with [GLib.free]. The coordinates are relative to the layout and are in
  *   Pango units.
  * @n_ranges: The number of ranges stored in @ranges
  *

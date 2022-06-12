@@ -97,6 +97,7 @@ pango_headers = [
 pango_gir_includes = [
   'HarfBuzz-0.0',
   'GObject-2.0',
+  'Gio-2.0'
 ]
 
 if cairo_dep.found()

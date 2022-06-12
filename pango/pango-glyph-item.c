@@ -47,12 +47,11 @@
  * to the length of @orig (that is, there must be at least one byte
  * assigned to each item, you can't create a zero-length item).
  *
- * This function is similar in function to pango_item_split() (and uses
- * it internally.)
+ * This function is similar in function to [method@PangoItem.split]
+ * (and uses it internally).
  *
  * Return value: the newly allocated item representing text before
- *   @split_index, which should be freed
- *   with pango_glyph_item_free().
+ *   @split_index, which should be freed with [method@Pango.GlyphItem.free]
  */
 PangoGlyphItem *
 pango_glyph_item_split (PangoGlyphItem *orig,
@@ -216,7 +215,7 @@ pango_glyph_item_iter_copy (PangoGlyphItemIter *orig)
  * pango_glyph_item_iter_free:
  * @iter: (nullable): a `PangoGlyphItemIter`
  *
- * Frees a `PangoGlyphItem`Iter.
+ * Frees a `PangoGlyphItemIter`.
  */
 void
 pango_glyph_item_iter_free  (PangoGlyphItemIter *iter)
@@ -570,7 +569,7 @@ split_before_cluster_start (ApplyAttrsState *state)
  * Return value: (transfer full) (element-type Pango.GlyphItem): a
  *   list of glyph items resulting from splitting @glyph_item. Free
  *   the elements using [method@Pango.GlyphItem.free], the list using
- *   g_slist_free().
+ *   [func@GLib.SList.free]
  */
 GSList *
 pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,

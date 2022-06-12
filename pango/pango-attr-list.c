@@ -178,8 +178,7 @@ pango_attr_list_unref (PangoAttrList *list)
  *
  * Return value: (nullable): the newly allocated
  *   `PangoAttrList`, with a reference count of one,
- *   which should be freed with [method@Pango.AttrList.unref].
- *   Returns %NULL if @list was %NULL.
+ *   which should be freed with [method@Pango.AttrList.unref]
  */
 PangoAttrList *
 pango_attr_list_copy (PangoAttrList *list)
@@ -591,7 +590,7 @@ pango_attr_list_splice (PangoAttrList *list,
  * Return value: (element-type Pango.Attribute) (transfer full):
  *   a list of all attributes in @list. To free this value,
  *   call [method@Pango.Attribute.destroy] on each value and
- *   g_slist_free() on the list.
+ *   [func@GLib.SList.free] on the list
  */
 GSList *
 pango_attr_list_get_attributes (PangoAttrList *list)

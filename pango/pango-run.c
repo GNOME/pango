@@ -10,7 +10,7 @@
 /**
  * PangoRun:
  *
- * A `PangoRun` represents a single run within a `PangoLayoutLine`.
+ * A `PangoRun` represents a single run within a `PangoLine`.
  *
  * A run is a range of text with uniform script, font and attributes that
  * is shaped as a unit.
