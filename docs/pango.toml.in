@@ -44,6 +44,7 @@ base_url = "https://gitlab.gnome.org/GNOME/pango/-/blob/main/"
 
 [extra]
 content_files = [
+  "first_steps.md",
   "pango_rendering.md",
   "pango_markup.md",
   "pango_fonts.md",
@@ -99,6 +100,7 @@ content_images = [
   "line-height3-dark.png",
   "rotated-text.png",
   "bullets.png",
+  "first-steps.png",
 ]
 
 urlmap_file = "urlmap.js"

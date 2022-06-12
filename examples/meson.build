@@ -2,6 +2,7 @@ examples = []
 
 if cairo_png_dep.found()
   examples += [
+    'first-steps',
     'cairoshape',
     'cairosimple',
     'cairotwisted',
