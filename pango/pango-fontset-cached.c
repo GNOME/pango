@@ -62,6 +62,26 @@ pango_fontset_cached_finalize (GObject *object)
 }
 
 static PangoFont *
+find_font_for_face (PangoFontsetCached *self,
+                    PangoFontFace      *face)
+{
+  GHashTableIter iter;
+  PangoFont *font;
+
+  g_hash_table_iter_init (&iter, self->cache);
+  while (g_hash_table_iter_next (&iter, NULL, (gpointer *)&font))
+    {
+      if (pango_font_get_face (font) == face)
+        {
+          return font;
+          break;
+        }
+    }
+
+  return NULL;
+}
+
+static PangoFont *
 pango_fontset_cached_get_font (PangoFontset *fontset,
                                guint         wc)
 {
@@ -101,20 +121,14 @@ pango_fontset_cached_get_font (PangoFontset *fontset,
                                                  wc);
           if (face)
             {
-              GHashTableIter iter;
               PangoFont *font;
 
-              g_hash_table_iter_init (&iter, self->cache);
-              while (g_hash_table_iter_next (&iter, NULL, (gpointer *)&font))
+              font = find_font_for_face (self, face);
+              if (font)
                 {
-                  if (pango_font_get_face (font) == face)
-                    {
-                      retval = g_object_ref (font);
-                      break;
-                    }
+                  retval = g_object_ref (font);
                 }
-
-              if (!retval)
+              else
                 {
                   retval = pango_font_face_create_font (face,
                                                         self->description,
@@ -153,13 +167,20 @@ pango_fontset_cached_get_first_font (PangoFontsetCached *self)
                                              self->description,
                                              self->language,
                                              0);
-      font = pango_font_face_create_font (face,
-                                          self->description,
-                                          self->dpi,
-                                          self->ctm);
+      font = find_font_for_face (self, face);
+      if (font)
+        g_object_ref (font);
+      else
+        {
+          font = pango_font_face_create_font (face,
+                                              self->description,
+                                              self->dpi,
+                                              self->ctm);
 #ifdef HAVE_CAIRO
-      pango_cairo_font_set_font_options (font, self->font_options);
+          pango_cairo_font_set_font_options (font, self->font_options);
 #endif
+        }
+
       return font;
     }
 
@@ -173,9 +194,10 @@ pango_fontset_cached_get_metrics (PangoFontset *fontset)
 
   if (self->items->len == 1)
     {
-      PangoFont *font = pango_fontset_cached_get_first_font (self);
+      PangoFont *font;
       PangoFontMetrics *ret;
 
+      font = pango_fontset_cached_get_first_font (self);
       ret = pango_font_get_metrics (font, self->language);
       g_object_unref (font);
 
@@ -212,11 +234,26 @@ pango_fontset_cached_foreach (PangoFontset            *fontset,
         }
       else if (PANGO_IS_GENERIC_FAMILY (item))
         {
-          PangoFontFace *face = pango_generic_family_find_face (PANGO_GENERIC_FAMILY (item), self->description, self->language, 0);
-          font = pango_font_face_create_font (face, self->description, self->dpi, self->ctm);
+          PangoFontFace *face;
+
+          face = pango_generic_family_find_face (PANGO_GENERIC_FAMILY (item),
+                                                 self->description,
+                                                 self->language,
+                                                 0);
+
+          font = find_font_for_face (self, face);
+          if (font)
+            g_object_ref (font);
+          else
+            {
+              font = pango_font_face_create_font (face,
+                                                  self->description,
+                                                  self->dpi,
+                                                  self->ctm);
 #ifdef HAVE_CAIRO
-          pango_cairo_font_set_font_options (font, self->font_options);
+              pango_cairo_font_set_font_options (font, self->font_options);
 #endif
+            }
         }
 
       if ((*func) (fontset, font, data))
