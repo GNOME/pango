@@ -383,7 +383,7 @@ create_hex_box_info (PangoHbFont *self)
 
   /* Load mini_font */
   context = pango_font_map_create_context (map);
-  pango_context_set_matrix (context, &font->matrix);
+  pango_context_set_matrix (context, &font->ctm);
   pango_context_set_language (context, pango_script_get_sample_language (G_UNICODE_SCRIPT_LATIN));
 
   mini_font = pango_font_map_load_font (map, context, desc);
@@ -524,6 +524,13 @@ struct _PangoHbFontClass
   PangoFontClass parent_class;
 };
 
+enum {
+  PROP_VARIATIONS = 1,
+  N_PROPERTIES
+};
+
+static GParamSpec *properties[N_PROPERTIES] = { NULL, };
+
 G_DEFINE_FINAL_TYPE (PangoHbFont, pango_hb_font, PANGO_TYPE_FONT)
 
 static void
@@ -547,6 +554,31 @@ pango_hb_font_finalize (GObject *object)
   g_clear_pointer (&self->hex_box_info, hex_box_info_destroy);
 
   G_OBJECT_CLASS (pango_hb_font_parent_class)->finalize (object);
+}
+
+
+static void
+pango_hb_font_get_property (GObject    *object,
+                            guint       property_id,
+                            GValue     *value,
+                            GParamSpec *pspec)
+{
+  PangoHbFont *self = PANGO_HB_FONT (object);
+
+  switch (property_id)
+    {
+    case PROP_VARIATIONS:
+      {
+        char *str = NULL;
+        if (self->variations)
+          str = variations_to_string (self->variations, self->n_variations);
+        g_value_take_string (value, str);
+      }
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+    }
 }
 
 static PangoFontDescription *
@@ -643,12 +675,12 @@ pango_hb_font_get_glyph_extents (PangoFont      *font,
       r.width = extents.width;
       r.height = - extents.height;
 
-      if (face->matrix)
+      if (face->transform)
         {
-          m.xx = face->matrix->xx;
-          m.yx = - face->matrix->yx;
-          m.xy = - face->matrix->xy;
-          m.yy = face->matrix->yy;
+          m.xx = face->transform->xx;
+          m.yx = - face->transform->yx;
+          m.xy = - face->transform->xy;
+          m.yy = face->transform->yy;
         }
 
       pango_matrix_transform_rectangle (&m, &r);
@@ -815,7 +847,7 @@ pango_hb_font_create_hb_font (PangoFont *font)
   hb_font_set_ptem (hb_font, font->size / PANGO_SCALE);
 
 #if HB_VERSION_ATLEAST (3, 3, 0)
-  hb_font_set_synthetic_slant (hb_font, pango_matrix_get_slant_ratio (face->matrix));
+  hb_font_set_synthetic_slant (hb_font, pango_matrix_get_slant_ratio (face->transform));
 #endif
 
   if (face->instance_id >= 0)
@@ -847,14 +879,14 @@ pango_hb_font_create_hb_font (PangoFont *font)
 }
 
 static void
-pango_hb_font_get_matrix (PangoFont   *font,
-                          PangoMatrix *matrix)
+pango_hb_font_get_transform (PangoFont   *font,
+                               PangoMatrix *matrix)
 {
   PangoHbFace *face = PANGO_HB_FACE (font->face);
 
-  if (face->matrix)
+  if (face->transform)
     {
-      *matrix = *face->matrix;
+      *matrix = *face->transform;
       pango_matrix_scale (matrix, face->x_scale, face->y_scale);
     }
   else
@@ -880,13 +912,20 @@ pango_hb_font_class_init (PangoHbFontClass *class)
   PangoFontClass *font_class = PANGO_FONT_CLASS (class);
 
   object_class->finalize = pango_hb_font_finalize;
+  object_class->get_property = pango_hb_font_get_property;
 
   font_class->describe = pango_hb_font_describe;
   font_class->get_glyph_extents = pango_hb_font_get_glyph_extents;
   font_class->get_metrics = pango_hb_font_get_metrics;
   font_class->create_hb_font = pango_hb_font_create_hb_font;
   font_class->get_features = pango_hb_font_get_features;
-  font_class->get_matrix = pango_hb_font_get_matrix;
+  font_class->get_transform = pango_hb_font_get_transform;
+
+  properties[PROP_VARIATIONS] =
+      g_param_spec_string ("variations", NULL, NULL, NULL,
+                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_properties (object_class, N_PROPERTIES, properties);
 }
 
 /* }}} */
@@ -902,7 +941,7 @@ pango_hb_font_class_init (PangoHbFontClass *class)
  * @n_variations: length of @variations
  * @gravity: the gravity to use when rendering
  * @dpi: the dpi used when rendering
- * @matrix: (nullable): transformation matrix to use when rendering
+ * @ctm: (nullable): transformation matrix to use when rendering
  *
  * Creates a new `PangoHbFont`.
  *
@@ -917,7 +956,7 @@ pango_hb_font_new (PangoHbFace       *face,
                    unsigned int       n_variations,
                    PangoGravity       gravity,
                    float              dpi,
-                   const PangoMatrix *matrix)
+                   const PangoMatrix *ctm)
 {
   PangoHbFont *self;
   PangoFont *font;
@@ -934,8 +973,7 @@ pango_hb_font_new (PangoHbFace       *face,
   pango_font_set_size (font, size);
   pango_font_set_dpi (font, dpi);
   pango_font_set_gravity (font, gravity);
-  if (matrix)
-    pango_font_set_matrix (font, matrix);
+  pango_font_set_ctm (font, ctm);
 
   self->features = g_memdup2 (features, sizeof (hb_feature_t) * n_features);
   self->n_features = n_features;
@@ -950,7 +988,7 @@ pango_hb_font_new (PangoHbFace       *face,
  * @face: the `PangoHbFace` to use
  * @description: a `PangoFontDescription`
  * @dpi: the dpi used when rendering
- * @matrix: (nullable): transformation matrix to use when rendering
+ * @ctm: (nullable): transformation matrix to use when rendering
  *
  * Creates a new `PangoHbFont` with size, features, variations and
  * gravity taken from a font description.
@@ -961,7 +999,7 @@ PangoHbFont *
 pango_hb_font_new_for_description (PangoHbFace                *face,
                                    const PangoFontDescription *description,
                                    float                       dpi,
-                                   const PangoMatrix          *matrix)
+                                   const PangoMatrix          *ctm)
 {
   int size;
   hb_feature_t features[10];
@@ -1005,11 +1043,11 @@ pango_hb_font_new_for_description (PangoHbFace                *face,
   else
     gravity = PANGO_GRAVITY_AUTO;
 
-  return pango_hb_font_new (face, size, features, n_features, variations, n_variations, gravity, dpi, matrix);
+  return pango_hb_font_new (face, size, features, n_features, variations, n_variations, gravity, dpi, ctm);
 }
 
 /**
- * hb_font_get_variations:
+ * pango_hb_font_get_variations:
  * @self: a `PangoHbFont`
  * @n_variations: (nullable) (out caller-allocates): return location for
  *   the length of the returned array

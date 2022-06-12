@@ -41,13 +41,38 @@
  * rendering-system-independent manner.
  */
 
+/* {{{ Utilities */
+
+static char *
+features_to_string (hb_feature_t *features,
+                    unsigned int  n_features)
+{
+  GString *s;
+  char buf[128];
+
+  s = g_string_new ("");
+
+  for (unsigned int i = 0; i < n_features; i++)
+    {
+      hb_feature_to_string (&features[i], buf, sizeof (buf));
+      if (s->len > 0)
+        g_string_append_c (s, ',');
+      g_string_append (s, buf);
+    }
+
+  return g_string_free (s, FALSE);
+}
+
+/* }}} */
+/* {{{ PangoFont implementation */
+
 enum {
   PROP_FACE = 1,
+  PROP_HB_FONT,
   PROP_SIZE,
   PROP_DPI,
   PROP_GRAVITY,
-  PROP_MATRIX,
-  PROP_HB_FONT,
+  PROP_FEATURES,
   N_PROPERTIES
 };
 
@@ -80,6 +105,10 @@ pango_font_get_property (GObject    *object,
       g_value_set_object (value, font->face);
       break;
 
+    case PROP_HB_FONT:
+      g_value_set_boxed (value, pango_font_get_hb_font (font));
+      break;
+
     case PROP_SIZE:
       g_value_set_int (value, font->size);
       break;
@@ -92,12 +121,17 @@ pango_font_get_property (GObject    *object,
       g_value_set_enum (value, font->gravity);
       break;
 
-    case PROP_MATRIX:
-      g_value_set_boxed (value, &font->matrix);
-      break;
+    case PROP_FEATURES:
+      {
+        hb_feature_t features[64];
+        guint n_features;
+        char *s;
 
-    case PROP_HB_FONT:
-      g_value_set_boxed (value, pango_font_get_hb_font (font));
+        pango_font_get_features (font, features, sizeof (features), &n_features);
+        s = features_to_string (features, n_features);
+        g_value_set_string (value, s);
+        g_free (s);
+      }
       break;
 
     default:
@@ -120,23 +154,19 @@ pango_font_default_get_scale_factors (PangoFont *font,
 }
 
 static void
-pango_font_default_get_matrix (PangoFont   *font,
-                               PangoMatrix *matrix)
+pango_font_default_get_transform (PangoFont   *font,
+                                  PangoMatrix *matrix)
 {
   *matrix = (PangoMatrix) PANGO_MATRIX_INIT;
 }
 
-static int
-pango_font_default_get_absolute_size (PangoFont *font)
+static void
+pango_font_default_get_features (PangoFont    *font,
+                                 hb_feature_t *features,
+                                 guint         len,
+                                 guint        *num_features)
 {
-  PangoFontDescription *desc;
-  int size;
-
-  desc = pango_font_describe_with_absolute_size (font);
-  size = pango_font_description_get_size (desc);
-  pango_font_description_free (desc);
-
-  return size;
+  *num_features = 0;
 }
 
 static void
@@ -147,14 +177,18 @@ pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
   object_class->finalize = pango_font_finalize;
   object_class->get_property = pango_font_get_property;
 
+  class->get_features = pango_font_default_get_features;
   class->is_hinted = pango_font_default_is_hinted;
   class->get_scale_factors = pango_font_default_get_scale_factors;
-  class->get_matrix = pango_font_default_get_matrix;
-  class->get_absolute_size = pango_font_default_get_absolute_size;
+  class->get_transform = pango_font_default_get_transform;
 
   properties[PROP_FACE] =
       g_param_spec_object ("face", NULL, NULL, PANGO_TYPE_FONT_FACE,
                            G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  properties[PROP_HB_FONT] =
+      g_param_spec_boxed ("hb-font", NULL, NULL, HB_GOBJECT_TYPE_FONT,
+                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   properties[PROP_SIZE] =
       g_param_spec_int ("size", NULL, NULL, 0, G_MAXINT, 0,
@@ -169,13 +203,9 @@ pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
                          PANGO_GRAVITY_AUTO,
                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
-  properties[PROP_MATRIX] =
-      g_param_spec_boxed ("matrix", NULL, NULL, PANGO_TYPE_MATRIX,
-                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
-
-  properties[PROP_HB_FONT] =
-      g_param_spec_boxed ("hb-font", NULL, NULL, HB_GOBJECT_TYPE_FONT,
-                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  properties[PROP_FEATURES] =
+      g_param_spec_string ("features", NULL, NULL, NULL,
+                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);
 }
@@ -184,8 +214,61 @@ static void
 pango_font_init (PangoFont *font)
 {
   font->gravity = PANGO_GRAVITY_AUTO;
-  font->matrix = (PangoMatrix) PANGO_MATRIX_INIT;
+  font->ctm = (PangoMatrix) PANGO_MATRIX_INIT;
 }
+
+/* }}} */
+/* {{{ Private API */
+
+/*< private >
+ * pango_font_get_transform:
+ * @font: a `PangoFont`
+ * @matrix: the matrix to fill in
+ *
+ * Gets the matrix for the transformation from 'font space' to 'user space'.
+ */
+void
+pango_font_get_transform (PangoFont   *font,
+                          PangoMatrix *matrix)
+{
+  PANGO_FONT_GET_CLASS (font)->get_transform (font, matrix);
+}
+
+/*< private >
+ * pango_font_is_hinted:
+ * @font: a `PangoFont`
+ *
+ * Gets whether this font is hinted.
+ *
+ * Returns: %TRUE if @font is hinted
+ */
+gboolean
+pango_font_is_hinted (PangoFont *font)
+{
+  return PANGO_FONT_GET_CLASS (font)->is_hinted (font);
+}
+
+/*< private >
+ * pango_font_get_scale_factors:
+ * @font: a `PangoFont`
+ * @x_scale: return location for X scale
+ * @y_scale: return location for Y scale
+ *
+ * Gets the font scale factors of the ctm for this font.
+ *
+ * The ctm is the matrix set on the context that this font was
+ * loaded for.
+ */
+void
+pango_font_get_scale_factors (PangoFont *font,
+                              double    *x_scale,
+                              double    *y_scale)
+{
+  PANGO_FONT_GET_CLASS (font)->get_scale_factors (font, x_scale, y_scale);
+}
+
+/* }}} */
+/* {{{ Public API */
 
 /**
  * pango_font_describe:
@@ -250,10 +333,10 @@ pango_font_describe_with_absolute_size (PangoFont *font)
  * output variables and returns.
  */
 void
-pango_font_get_glyph_extents  (PangoFont      *font,
-                               PangoGlyph      glyph,
-                               PangoRectangle *ink_rect,
-                               PangoRectangle *logical_rect)
+pango_font_get_glyph_extents (PangoFont      *font,
+                              PangoGlyph      glyph,
+                              PangoRectangle *ink_rect,
+                              PangoRectangle *logical_rect)
 {
   if (G_UNLIKELY (!font))
     {
@@ -331,6 +414,8 @@ pango_font_get_metrics (PangoFont     *font,
 PangoFontFace *
 pango_font_get_face (PangoFont *font)
 {
+  g_return_val_if_fail (PANGO_IS_FONT (font), NULL);
+
   return font->face;
 }
 
@@ -362,6 +447,54 @@ pango_font_get_hb_font (PangoFont *font)
 }
 
 /**
+ * pango_font_get_size:
+ * @font: a `PangoFont`
+ *
+ * Returns the size of the font, scaled by `PANGO_SCALE`.
+ *
+ * Return value: the size of the font
+ */
+int
+pango_font_get_size (PangoFont *font)
+{
+  g_return_val_if_fail (PANGO_IS_FONT (font), 0);
+
+  return font->size;
+}
+
+/**
+ * pango_font_get_absolute_size:
+ * @font: a `PangoFont`
+ *
+ * Returns the pixel size of the font, scaled by `PANGO_SCALE`.
+ *
+ * Return value: the pixel size of the font
+ */
+double
+pango_font_get_absolute_size (PangoFont *font)
+{
+  g_return_val_if_fail (PANGO_IS_FONT (font), 0.);
+
+  return font->size * font->dpi / 72.;
+}
+
+/**
+ * pango_font_get_gravity:
+ * @font: a `PangoFont`
+ *
+ * Returns the gravity of the font.
+ *
+ * Return value: the gravity of the font
+ */
+PangoGravity
+pango_font_get_gravity (PangoFont *font)
+{
+  g_return_val_if_fail (PANGO_IS_FONT (font), PANGO_GRAVITY_SOUTH);
+
+  return font->gravity;
+}
+
+/**
  * pango_font_get_features:
  * @font: a `PangoFont`
  * @features: (out caller-allocates) (array length=len): Array to features in
@@ -382,52 +515,11 @@ pango_font_get_features (PangoFont    *font,
                          guint         len,
                          guint        *num_features)
 {
-  if (PANGO_FONT_GET_CLASS (font)->get_features)
-    PANGO_FONT_GET_CLASS (font)->get_features (font, features, len, num_features);
+  g_return_if_fail (PANGO_IS_FONT (font));
+
+  PANGO_FONT_GET_CLASS (font)->get_features (font, features, len, num_features);
 }
 
-/*< private >
- * pango_font_get_matrix:
- * @font: a `PangoFont`
- *
- * Gets the matrix for the transformation from 'font space' to 'user space'.
- */
-void
-pango_font_get_matrix (PangoFont   *font,
-                       PangoMatrix *matrix)
-{
-  PANGO_FONT_GET_CLASS (font)->get_matrix (font, matrix);
-}
+/* }}} */
 
-/*< private >
- * pango_font_is_hinted:
- * @font: a `PangoFont`
- *
- * Gets whether this font is hinted.
- *
- * Returns: %TRUE if @font is hinted
- */
-gboolean
-pango_font_is_hinted (PangoFont *font)
-{
-  return PANGO_FONT_GET_CLASS (font)->is_hinted (font);
-}
-
-/*< private >
- * pango_font_get_scale_factors:
- * @font: a `PangoFont`
- * @x_scale: return location for X scale
- * @y_scale: return location for Y scale
- *
- * Gets the font scale factors of the ctm for this font.
- *
- * The ctm is the matrix set on the context that this font was
- * loaded for.
- */
-void
-pango_font_get_scale_factors (PangoFont *font,
-                              double    *x_scale,
-                              double    *y_scale)
-{
-  PANGO_FONT_GET_CLASS (font)->get_scale_factors (font, x_scale, y_scale);
-}
+/* vim:set foldmethod=marker expandtab: */

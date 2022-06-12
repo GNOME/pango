@@ -625,7 +625,7 @@ add_font (GtkJsonPrinter *printer,
       gtk_json_printer_end (printer);
     }
 
-  pango_font_get_matrix (font, &matrix);
+  pango_font_get_transform (font, &matrix);
   if (!pango_matrix_equal (&matrix, &(const PangoMatrix)PANGO_MATRIX_INIT))
     {
       gtk_json_printer_start_array (printer, "matrix");

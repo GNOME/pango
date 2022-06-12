@@ -52,12 +52,22 @@ PANGO_AVAILABLE_IN_ALL
 PangoFontFace *       pango_font_get_face          (PangoFont        *font);
 
 PANGO_AVAILABLE_IN_ALL
+hb_font_t *           pango_font_get_hb_font       (PangoFont        *font);
+
+PANGO_AVAILABLE_IN_ALL
+int                   pango_font_get_size          (PangoFont        *font);
+
+PANGO_AVAILABLE_IN_ALL
+double                pango_font_get_absolute_size (PangoFont        *font);
+
+PANGO_AVAILABLE_IN_ALL
+PangoGravity          pango_font_get_gravity       (PangoFont        *font);
+
+PANGO_AVAILABLE_IN_ALL
 void                  pango_font_get_features      (PangoFont        *font,
                                                     hb_feature_t     *features,
                                                     guint             len,
                                                     guint            *num_features);
-PANGO_AVAILABLE_IN_ALL
-hb_font_t *           pango_font_get_hb_font       (PangoFont        *font);
 
 PANGO_AVAILABLE_IN_ALL
 GBytes *              pango_font_serialize         (PangoFont        *font);

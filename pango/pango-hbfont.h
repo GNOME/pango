@@ -40,13 +40,13 @@ PangoHbFont *           pango_hb_font_new                       (PangoHbFace    
                                                                  unsigned int                    n_variations,
                                                                  PangoGravity                    gravity,
                                                                  float                           dpi,
-                                                                 const PangoMatrix              *matrix);
+                                                                 const PangoMatrix              *ctm);
 
 PANGO_AVAILABLE_IN_ALL
 PangoHbFont *           pango_hb_font_new_for_description       (PangoHbFace                    *face,
                                                                  const PangoFontDescription     *description,
                                                                  float                           dpi,
-                                                                 const PangoMatrix              *matrix);
+                                                                 const PangoMatrix              *ctm);
 
 
 PANGO_AVAILABLE_IN_ALL

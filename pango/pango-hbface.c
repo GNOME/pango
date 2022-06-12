@@ -250,8 +250,8 @@ ensure_faceid (PangoHbFace *self)
   while ((p = strpbrk (p, " =,")) != NULL)
     *p = '?';
 
-  if (self->matrix)
-    slant = pango_matrix_get_slant_ratio (self->matrix);
+  if (self->transform)
+    slant = pango_matrix_get_slant_ratio (self->transform);
   else
     slant = 0.;
 
@@ -329,7 +329,7 @@ G_DEFINE_FINAL_TYPE (PangoHbFace, pango_hb_face, PANGO_TYPE_FONT_FACE)
 static void
 pango_hb_face_init (PangoHbFace *self)
 {
-  self->matrix = NULL;
+  self->transform = NULL;
   self->x_scale = self->y_scale = 1.;
 }
 
@@ -345,8 +345,8 @@ pango_hb_face_finalize (GObject *object)
   if (self->languages)
     g_object_unref (self->languages);
   g_free (self->variations);
-  if (self->matrix)
-    g_free (self->matrix);
+  if (self->transform)
+    g_free (self->transform);
 
   G_OBJECT_CLASS (pango_hb_face_parent_class)->finalize (object);
 }
@@ -642,13 +642,13 @@ void
 pango_hb_face_set_matrix (PangoHbFace       *self,
                           const PangoMatrix *matrix)
 {
-  if (!self->matrix)
-    self->matrix = g_new (PangoMatrix, 1);
+  if (!self->transform)
+    self->transform = g_new (PangoMatrix, 1);
 
-  *self->matrix = *matrix;
+  *self->transform = *matrix;
 
-  pango_matrix_get_font_scale_factors (self->matrix, &self->x_scale, &self->y_scale);
-  pango_matrix_scale (self->matrix, 1./self->x_scale, 1./self->y_scale);
+  pango_matrix_get_font_scale_factors (self->transform, &self->x_scale, &self->y_scale);
+  pango_matrix_scale (self->transform, 1./self->x_scale, 1./self->y_scale);
 }
 
 /* }}} */
@@ -847,7 +847,7 @@ pango_hb_face_new_synthetic (PangoHbFace                *face,
     pango_hb_face_set_matrix (self, transform);
 
   self->embolden = embolden;
-  self->synthetic = self->embolden || (self->matrix != NULL);
+  self->synthetic = self->embolden || (self->transform != NULL);
 
   desc = pango_font_description_copy (PANGO_FONT_FACE (face)->description);
   pango_font_description_merge (desc, description, TRUE);
@@ -923,15 +923,15 @@ pango_hb_face_new_instance (PangoHbFace                *face,
   self->index = face->index;
   self->instance_id = face->instance_id;
 
-  if (face->matrix)
+  if (face->transform)
     {
-      self->matrix = g_memdup2 (face->matrix, sizeof (PangoMatrix));
+      self->transform = g_memdup2 (face->transform, sizeof (PangoMatrix));
       self->x_scale = face->x_scale;
       self->y_scale = face->y_scale;
     }
 
   self->embolden = face->embolden;
-  self->synthetic = self->embolden || (self->matrix != NULL);
+  self->synthetic = self->embolden || (self->transform != NULL);
 
   self->variations = g_memdup2 (variations, sizeof (hb_variation_t) * n_variations);
   self->n_variations = n_variations;
@@ -1061,7 +1061,7 @@ pango_hb_face_get_embolden (PangoHbFace *self)
  * pango_hb_face_get_transform:
  * @self: a `PangoHbFace`
  *
- * Gets the transform that this face uses.
+ * Gets the transform from 'font space' to 'user space' that this face uses.
  *
  * This is the 'font matrix' which is used for
  * sythetic italics and width variations.
@@ -1073,7 +1073,7 @@ pango_hb_face_get_transform (PangoHbFace *self)
 {
   g_return_val_if_fail (PANGO_IS_HB_FACE (self), NULL);
 
-  return self->matrix;
+  return self->transform;
 }
 
 /* }}} */

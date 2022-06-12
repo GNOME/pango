@@ -36,7 +36,7 @@ struct _PangoHbFace
   hb_face_t *face;
   hb_variation_t *variations;
   unsigned int n_variations;
-  PangoMatrix *matrix;
+  PangoMatrix *transform;
   double x_scale, y_scale;
   PangoLanguageSet *languages;
   gboolean embolden;
