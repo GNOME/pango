@@ -92,7 +92,7 @@ pango_fontset_get_metrics (PangoFontset *fontset)
   return PANGO_FONTSET_GET_CLASS (fontset)->get_metrics (fontset);
 }
 
-/**
+/*< private >
  * pango_fontset_get_language:
  * @fontset: a `PangoFontset`
  *

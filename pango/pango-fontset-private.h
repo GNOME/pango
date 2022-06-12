@@ -37,12 +37,15 @@ struct _PangoFontsetClass
 {
   GObjectClass parent_class;
 
-  PangoFont *       (*get_font)     (PangoFontset     *fontset,
-                                     guint             wc);
+  PangoFont *            (* get_font)      (PangoFontset            *fontset,
+                                            guint                    wc);
 
-  PangoFontMetrics *(*get_metrics)  (PangoFontset     *fontset);
-  PangoLanguage *   (*get_language) (PangoFontset     *fontset);
-  void              (*foreach)      (PangoFontset           *fontset,
-                                     PangoFontsetForeachFunc func,
-                                     gpointer                data);
+  PangoFontMetrics *     (* get_metrics)   (PangoFontset            *fontset);
+  PangoLanguage *        (* get_language)  (PangoFontset            *fontset);
+  void                   (* foreach)       (PangoFontset            *fontset,
+                                            PangoFontsetForeachFunc  func,
+                                            gpointer                 data);
 };
+
+PangoLanguage * pango_fontset_get_language (PangoFontset *fontset);
+
