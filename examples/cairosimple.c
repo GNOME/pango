@@ -38,7 +38,6 @@ draw_text (cairo_t *cr)
   pango_font_description_set_absolute_size (desc, FONT_SIZE * DEVICE_DPI * PANGO_SCALE / (72.0 * TWEAKABLE_SCALE));
   //pango_font_description_set_size(desc, 27 * PANGO_SCALE / TWEAKABLE_SCALE);
 
-  printf("PANGO_SCALE = %d\n", PANGO_SCALE);
   pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
 
