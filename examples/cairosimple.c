@@ -1,50 +1,33 @@
-/* Simple example to use pangocairo to render rotated text */
-
 #include <math.h>
 #include <pango/pangocairo.h>
+
+#define RADIUS 150
+#define N_WORDS 10
+#define FONT "Sans Bold 27"
 
 static void
 draw_text (cairo_t *cr)
 {
-#define RADIUS 200
-#define N_WORDS 8
-#define FONT_WITH_MANUAL_SIZE "Times new roman,Sans"
-#define FONT_SIZE 36
-#define DEVICE_DPI 72
-
-/* The following number applies a cairo CTM.  Tests for
- * https://bugzilla.gnome.org/show_bug.cgi?id=700592
- */
-#define TWEAKABLE_SCALE ((double) 0.1)
-
-  PangoContext *context;
   PangoLayout *layout;
   PangoLines *lines;
   PangoFontDescription *desc;
   int i;
 
-  /* Center coordinates on the middle of the region we are drawing
-   */
-  cairo_translate (cr, RADIUS / TWEAKABLE_SCALE, RADIUS / TWEAKABLE_SCALE);
+  /* Center coordinates on the middle of the region we are drawing */
+  cairo_translate (cr, RADIUS, RADIUS);
 
   /* Create a PangoLayout, set the font and text */
-  context = pango_cairo_create_context (cr);
-  layout = pango_layout_new (context);
-  g_object_unref (context);
+  layout = pango_cairo_create_layout (cr);
 
-  pango_layout_set_text (layout, "Test\nسَلام", -1);
-
-  desc = pango_font_description_from_string (FONT_WITH_MANUAL_SIZE);
-  pango_font_description_set_absolute_size (desc, FONT_SIZE * DEVICE_DPI * PANGO_SCALE / (72.0 * TWEAKABLE_SCALE));
-  //pango_font_description_set_size(desc, 27 * PANGO_SCALE / TWEAKABLE_SCALE);
-
+  pango_layout_set_text (layout, "Text", -1);
+  desc = pango_font_description_from_string (FONT);
   pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
 
   /* Draw the layout N_WORDS times in a circle */
   for (i = 0; i < N_WORDS; i++)
     {
-      PangoRectangle ext;
+      int width, height;
       double angle = (360. * i) / N_WORDS;
       double red;
 
@@ -61,18 +44,19 @@ draw_text (cairo_t *cr)
 
       lines = pango_layout_get_lines (layout);
 
-      pango_lines_get_extents (lines, NULL, &ext);
-      cairo_move_to (cr,( - (((double)ext.width) / PANGO_SCALE) / 2.0) , (- RADIUS)  / TWEAKABLE_SCALE);
-      pango_cairo_show_lines (cr, lines);
+      pango_lines_get_size (lines, &width, &height);
+      cairo_move_to (cr, - ((double) width / PANGO_SCALE) / 2, - RADIUS);
+      pango_cairo_show_layout (cr, layout);
 
       cairo_restore (cr);
     }
 
-  /* free the layout object */
+  /* Free the layout object */
   g_object_unref (layout);
 }
 
-int main (int argc, char **argv)
+int
+main (int argc, char **argv)
 {
   cairo_t *cr;
   char *filename;
@@ -85,13 +69,11 @@ int main (int argc, char **argv)
       return 1;
     }
 
-     filename = argv[1];
+  filename = argv[1];
 
   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
                                         2 * RADIUS, 2 * RADIUS);
   cr = cairo_create (surface);
-
-  cairo_scale(cr, 1 * TWEAKABLE_SCALE, 1 * TWEAKABLE_SCALE);
 
   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
   cairo_paint (cr);

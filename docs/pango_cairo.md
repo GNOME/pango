@@ -13,9 +13,10 @@ this section allow using Pango to render to Cairo surfaces.
 Using Pango with Cairo is straightforward. A `PangoContext` created with
 [func@Pango.cairo_create_context] can be used on any Cairo context (`cairo_t`),
 but needs to be updated to match the current transformation matrix and target
-surface of the Cairo context using [func@Pango.cairo_update_context]. The
-convenience function [func@Pango.cairo_update_layout] handles the common case
-where the program doesn't need to manipulate the properties of the `PangoContext`.
+surface of the Cairo context using [func@Pango.cairo_update_context].
+The convenience functions [func@Pango.cairo_create_layout] and
+[func@Pango.cairo_update_layout] handle the common case where the program
+doesn't need to manipulate the properties of the `PangoContext`.
 
 When you get the metrics of a layout or of a piece of a layout using functions
 such as [method@Pango.Lines.get_extents], the reported metrics are in user-space
@@ -59,7 +60,6 @@ draw_text (cairo_t *cr)
   /* Draw the layout N_WORDS times in a circle */
   for (i = 0; i < N_WORDS; i++)
     {
-      PangoRectangle ext;
       int width, height;
       double angle = (360. * i) / N_WORDS;
       double red;
@@ -77,14 +77,14 @@ draw_text (cairo_t *cr)
 
       lines = pango_layout_get_lines (layout);
 
-      pango_lines_get_extents (lines, NULL, &ext);
-      cairo_move_to (cr, - ((double)ext.width / PANGO_SCALE) / 2, - RADIUS);
-      pango_cairo_show_lines (cr, layout);
+      pango_lines_get_size (lines, &width, &height);
+      cairo_move_to (cr, - ((double) width / PANGO_SCALE) / 2, - RADIUS);
+      pango_cairo_show_layout (cr, layout);
 
       cairo_restore (cr);
     }
 
-  /* free the layout object */
+  /* Free the layout object */
   g_object_unref (layout);
 }
 
