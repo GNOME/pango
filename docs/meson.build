@@ -5,6 +5,8 @@ pango_content_files = [
   'pango_markup.md',
   'pango_fonts.md',
   'pango_bidi.md',
+  'pango_cairo.md',
+  'pango_user.md',
   'pango-name.png',
   'layout-light.png',
   'layout-dark.png',
@@ -51,6 +53,7 @@ pango_content_files = [
   'line-height3-light.png',
   'line-height3-dark.png',
   'rotated-text.png',
+  'bullets.png',
 ]
 
 doc_conf = configuration_data()
