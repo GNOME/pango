@@ -182,27 +182,69 @@ pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
   class->get_scale_factors = pango_font_default_get_scale_factors;
   class->get_transform = pango_font_default_get_transform;
 
+  /**
+   * PangoFont:face: (attributes org.gtk.Property.get=pango_font_get_face)
+   *
+   * The face to which the font belongs.
+   */
   properties[PROP_FACE] =
       g_param_spec_object ("face", NULL, NULL, PANGO_TYPE_FONT_FACE,
                            G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
+  /**
+   * PangoFont:hb-font: (attributes org.gtk.Property.get=pango_font_get_hb_font)
+   *
+   * A `hb_font_t` object backing this font.
+   */
   properties[PROP_HB_FONT] =
       g_param_spec_boxed ("hb-font", NULL, NULL, HB_GOBJECT_TYPE_FONT,
                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
+  /**
+   * PangoFont:size: (attributes org.gtk.Property.get=pango_font_get_size)
+   *
+   * The size of the font, scaled by `PANGO_SCALE`.
+   */
   properties[PROP_SIZE] =
       g_param_spec_int ("size", NULL, NULL, 0, G_MAXINT, 0,
                         G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
+  /**
+   * PangoFont:dpi:
+   *
+   * The resolution at which the font is rendered.
+   *
+   * The pixel size of the font is computed as
+   *
+   *     size * dpi / 72.
+   */
   properties[PROP_DPI] =
       g_param_spec_float ("dpi", NULL, NULL, 0, G_MAXFLOAT, 96.0,
                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
+  /**
+   * PangoFont:gravity: (attributes org.gtk.Property.get=pango_font_get_gravity)
+   *
+   * The gravity of the font.
+   */
   properties[PROP_GRAVITY] =
       g_param_spec_enum ("gravity", NULL, NULL, PANGO_TYPE_GRAVITY,
                          PANGO_GRAVITY_AUTO,
                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
+  /**
+   * PangoFont:features: (attributes org.gtk.Property.get=pango_font_get_features)
+   *
+   * OpenType features that are provided by the font.
+   *
+   * These are passed to the rendering system, together with features
+   * that have been explicitly set via attributes.
+   *
+   * Note that this does not include OpenType features which the
+   * rendering system enables by default.
+   *
+   * This property holds a string representation of the features.
+   */
   properties[PROP_FEATURES] =
       g_param_spec_string ("features", NULL, NULL, NULL,
                            G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
@@ -420,7 +462,7 @@ pango_font_get_face (PangoFont *font)
 }
 
 /**
- * pango_font_get_hb_font: (skip)
+ * pango_font_get_hb_font:
  * @font: a `PangoFont`
  *
  * Get a `hb_font_t` object backing this font.
