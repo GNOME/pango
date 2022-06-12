@@ -350,7 +350,7 @@ pango_user_font_class_init (PangoUserFontClass *class)
  * @size: the desired size in points, scaled by `PANGO_SCALE`
  * @gravity: the gravity to use when rendering
  * @dpi: the dpi used when rendering
- * @matrix: (nullable): transformation matrix to use when rendering
+ * @ctm: (nullable): transformation matrix to use when rendering
  *
  * Creates a new `PangoUserFont`.
  *
@@ -361,7 +361,7 @@ pango_user_font_new (PangoUserFace     *face,
                      int                size,
                      PangoGravity       gravity,
                      float              dpi,
-                     const PangoMatrix *matrix)
+                     const PangoMatrix *ctm)
 {
   PangoUserFont *self;
   PangoFont *font;
@@ -374,8 +374,7 @@ pango_user_font_new (PangoUserFace     *face,
   pango_font_set_size (font, size);
   pango_font_set_dpi (font, dpi);
   pango_font_set_gravity (font, gravity);
-  if (matrix)
-    pango_font_set_matrix (font, matrix);
+  pango_font_set_ctm (font, ctm);
 
   return self;
 }
@@ -385,7 +384,7 @@ pango_user_font_new (PangoUserFace     *face,
  * @face: the `PangoUserFace` to use
  * @description: a `PangoFontDescription`
  * @dpi: the dpi used when rendering
- * @matrix: (nullable): transformation matrix to use when rendering
+ * @ctm: (nullable): transformation matrix to use when rendering
  *
  * Creates a new `PangoUserFont` with size and gravity taken
  * from a font description.
@@ -397,7 +396,7 @@ PangoUserFont *
 pango_user_font_new_for_description (PangoUserFace              *face,
                                      const PangoFontDescription *description,
                                      float                       dpi,
-                                     const PangoMatrix          *matrix)
+                                     const PangoMatrix          *ctm)
 {
   int size;
   PangoGravity gravity;
@@ -413,7 +412,7 @@ pango_user_font_new_for_description (PangoUserFace              *face,
   else
     gravity = PANGO_GRAVITY_AUTO;
 
-  return pango_user_font_new (face, size, gravity, dpi, matrix);
+  return pango_user_font_new (face, size, gravity, dpi, ctm);
 }
 
 /* }}} */

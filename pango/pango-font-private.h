@@ -40,7 +40,7 @@ struct _PangoFont
   int size; /* point size, scaled by PANGO_SCALE */
   float dpi;
   PangoGravity gravity;
-  PangoMatrix matrix;
+  PangoMatrix ctm;
 
 #ifdef HAVE_CAIRO
   cairo_font_options_t *options;
@@ -68,9 +68,8 @@ struct _PangoFontClass
   void                   (* get_scale_factors)  (PangoFont      *font,
                                                  double         *x_scale,
                                                  double         *y_scale);
-  void                   (* get_matrix)         (PangoFont      *font,
+  void                   (* get_transform)      (PangoFont      *font,
                                                  PangoMatrix    *matrix);
-  int                    (* get_absolute_size)  (PangoFont      *font);
 };
 
 #define PANGO_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT, PangoFontClass))
@@ -105,23 +104,18 @@ pango_font_set_gravity (PangoFont    *font,
 }
 
 static inline void
-pango_font_set_matrix (PangoFont         *font,
-                       const PangoMatrix *matrix)
+pango_font_set_ctm (PangoFont         *font,
+                    const PangoMatrix *ctm)
 {
-  font->matrix = *matrix;
+  font->ctm = ctm ? *ctm : (PangoMatrix) PANGO_MATRIX_INIT;
 }
 
 gboolean pango_font_is_hinted         (PangoFont *font);
 void     pango_font_get_scale_factors (PangoFont *font,
                                        double    *x_scale,
                                        double    *y_scale);
-void     pango_font_get_matrix        (PangoFont   *font,
+void     pango_font_get_transform     (PangoFont   *font,
                                        PangoMatrix *matrix);
-
-static inline int pango_font_get_absolute_size (PangoFont *font)
-{
-  return PANGO_FONT_GET_CLASS (font)->get_absolute_size (font);
-}
 
 gboolean pango_font_description_is_similar       (const PangoFontDescription *a,
                                                   const PangoFontDescription *b);

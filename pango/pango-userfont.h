@@ -35,12 +35,12 @@ PangoUserFont * pango_user_font_new                 (PangoUserFace              
                                                      int                         size,
                                                      PangoGravity                gravity,
                                                      float                       dpi,
-                                                     const PangoMatrix          *matrix);
+                                                     const PangoMatrix          *ctm);
 
 PANGO_AVAILABLE_IN_ALL
 PangoUserFont * pango_user_font_new_for_description (PangoUserFace              *face,
                                                      const PangoFontDescription *description,
                                                      float                       dpi,
-                                                     const PangoMatrix          *matrix);
+                                                     const PangoMatrix          *ctm);
 
 G_END_DECLS

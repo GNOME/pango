@@ -569,12 +569,12 @@ _pango_font_get_cairo_font_private (PangoFont *font)
       if (PANGO_IS_HB_FONT (font))
         {
           PangoHbFace *face = PANGO_HB_FACE (font->face);
-          if (face->matrix)
+          if (face->transform)
             cairo_matrix_init (&font_matrix,
-                               face->matrix->xx,
-                               - face->matrix->yx,
-                               - face->matrix->xy,
-                               face->matrix->yy,
+                               face->transform->xx,
+                               - face->transform->yx,
+                               - face->transform->xy,
+                               face->transform->yy,
                                0., 0.);
 
           x_scale = face->x_scale;
@@ -602,7 +602,7 @@ _pango_font_get_cairo_font_private (PangoFont *font)
                                             font,
                                             font->gravity,
                                             font_options,
-                                            &font->matrix,
+                                            &font->ctm,
                                             &font_matrix);
 
       cairo_font_options_destroy (font_options);
