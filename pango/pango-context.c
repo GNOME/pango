@@ -296,10 +296,14 @@ pango_context_class_init (PangoContextClass *klass)
   /**
    * PangoContext:matrix: (attributes org.gtk.Property.get=pango_context_get_matrix org.gtk.Property.set=pango_context_set_matrix)
    *
-   * The transformation matrix that will be applied when rendering
+   * The 'user to device' transformation that will be applied when rendering
    * with this context.
    *
-   * This matrix is also known as the 'ctm'.
+   * This matrix is also known as the current transformation matrix, or 'ctm'.
+   *
+   * The transformation is needed in cases where the font rendering applies
+   * hinting that depends on knowing the position of text with respect to
+   * the pixel grid. If your font rendering does not
    */
   properties[PROP_MATRIX] =
     g_param_spec_boxed ("matrix", NULL, NULL, PANGO_TYPE_MATRIX,
@@ -385,8 +389,14 @@ update_resolved_gravity (PangoContext *context)
  * @matrix: (nullable): a `PangoMatrix`, or %NULL to unset any existing
  * matrix. (No matrix set is the same as setting the identity matrix.)
  *
- * Sets the transformation matrix that will be applied when rendering
+ * Sets the 'user to device' transformation that will be applied when rendering
  * with this context.
+ *
+ * This matrix is also known as the current transformation matrix, or 'ctm'.
+ *
+ * The transformation is needed in cases where the font rendering applies
+ * hinting that depends on knowing the position of text with respect to
+ * the pixel grid.
  *
  * Note that reported metrics are in the user space coordinates before
  * the application of the matrix, not device-space coordinates after the
