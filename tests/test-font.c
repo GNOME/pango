@@ -89,7 +89,7 @@ test_variations (void)
 {
   PangoFontDescription *desc1;
   PangoFontDescription *desc2;
-  gchar *str;
+  char *str;
 
   desc1 = pango_font_description_from_string ("Cantarell 14");
   g_assert_nonnull (desc1);
@@ -129,7 +129,7 @@ static void
 test_empty_variations (void)
 {
   PangoFontDescription *desc;
-  gchar *str;
+  char *str;
 
   desc = pango_font_description_from_string ("Cantarell 14");
   g_assert_nonnull (desc);

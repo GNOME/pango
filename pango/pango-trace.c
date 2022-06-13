@@ -24,9 +24,9 @@
 #include <stdarg.h>
 
 void
-(pango_trace_mark) (gint64       begin_time,
-                    const gchar *name,
-                    const gchar *message_format,
+(pango_trace_mark) (gint64      begin_time,
+                    const char *name,
+                    const char *message_format,
                     ...)
 {
 #ifdef HAVE_SYSPROF

@@ -72,7 +72,7 @@ typedef struct _PangoGlyphItemIter PangoGlyphItemIter;
 struct _PangoGlyphItemIter
 {
   PangoGlyphItem *glyph_item;
-  const gchar *text;
+  const char *text;
 
   int start_glyph;
   int start_index;

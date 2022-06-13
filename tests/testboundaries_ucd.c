@@ -37,12 +37,12 @@ AttrBits;
 
 /* counts the number of multiplication and divison signs up to the first
  * '#' or null character */
-static gint
-count_attrs (gchar *line)
+static int
+count_attrs (char *line)
 {
   gunichar ch;
-  gchar *p = line;
-  gint count = 0;
+  char *p = line;
+  int count = 0;
 
   for (;;)
     {
@@ -69,16 +69,16 @@ count_attrs (gchar *line)
 }
 
 static gboolean
-parse_line (gchar *line,
+parse_line (char *line,
             AttrBits bits,
-            gchar **str_return,
+            char **str_return,
             PangoLogAttr **attr_return,
-            gint *num_attrs)
+            int *num_attrs)
 {
   GString *gs;
   gunichar ch, character;
-  gchar *p, *q;
-  gint i;
+  char *p, *q;
+  int i;
   AttrBits temp_attr;
 
   *num_attrs = count_attrs (line);
@@ -154,11 +154,11 @@ parse_line (gchar *line,
 static gboolean
 attrs_equal (PangoLogAttr *attrs1,
              PangoLogAttr *attrs2,
-             gint len,
+             int len,
              AttrBits bits)
 {
   AttrBits a, b;
-  gint i;
+  int i;
 
   for (i = 0;  i < len;  i++)
     {
@@ -179,15 +179,15 @@ attrs_equal (PangoLogAttr *attrs1,
   return TRUE;
 }
 
-static gchar *
-make_test_string (gchar *string, 
+static char *
+make_test_string (char *string, 
                   PangoLogAttr *attrs, 
                   AttrBits bits)
 {
   GString *gs = g_string_new (NULL);
-  gint i = 0;
+  int i = 0;
   AttrBits a;
-  gchar *p = string;
+  char *p = string;
   gunichar ch;
 
   for (;;)
@@ -215,18 +215,18 @@ make_test_string (gchar *string,
 }
 
 static void
-do_test (const gchar *filename,
+do_test (const char *filename,
          AttrBits bits)
 {
   GIOChannel *channel;
   GIOStatus status;
-  gchar *line;
+  char *line;
   gsize length, terminator_pos;
   GError *error;
-  gchar *string;
+  char *string;
   PangoLogAttr *expected_attrs;
-  gint num_attrs;
-  gint i;
+  int num_attrs;
+  int i;
 
   error = NULL;
   channel = g_io_channel_new_file (filename, "r", &error);
@@ -278,7 +278,7 @@ do_test (const gchar *filename,
 
           if (! attrs_equal (attrs, expected_attrs, num_attrs, bits))
             {
-              gchar *str = make_test_string (string, attrs, bits);
+              char *str = make_test_string (string, attrs, bits);
               char *comments = strchr (line, '#');
               if (comments) /* don't print the # comment in the error message.  print it separately */
 	        {
@@ -392,9 +392,8 @@ test_line_break (void)
 }
 
 
-gint
-main (gint argc,
-      gchar **argv)
+int
+main (int argc, char **argv)
 {
   setlocale (LC_ALL, "");
 

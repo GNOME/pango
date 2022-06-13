@@ -32,11 +32,11 @@ struct _ParenStackEntry
 
 struct _PangoScriptIter
 {
-  const gchar *text_start;
-  const gchar *text_end;
+  const char *text_start;
+  const char *text_end;
 
-  const gchar *script_start;
-  const gchar *script_end;
+  const char *script_start;
+  const char *script_end;
   GUnicodeScript script_code;
 
   ParenStackEntry paren_stack[PAREN_STACK_DEPTH];

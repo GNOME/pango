@@ -33,8 +33,8 @@
 #endif
 
 void pango_trace_mark (gint64       begin_time,
-                       const gchar *name,
-                       const gchar *message_format,
+                       const char  *name,
+                       const char  *message_format,
                        ...) G_GNUC_PRINTF (3, 4);
 
 #ifndef HAVE_SYSPROF

@@ -165,7 +165,7 @@ pango_font_description_from_pattern (FcPattern *pattern)
   res = FcPatternGetString (pattern, FC_FAMILY, 0, (FcChar8 **) &s);
   g_assert (res == FcResultMatch);
 
-  pango_font_description_set_family (desc, (gchar *)s);
+  pango_font_description_set_family (desc, (char *)s);
 
   if (FcPatternGetInteger (pattern, FC_SLANT, 0, &i) == FcResultMatch)
     style = convert_fc_slant_to_pango (i);

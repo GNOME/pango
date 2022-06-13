@@ -1036,7 +1036,7 @@ get_total_matrix (PangoMatrix       *total,
                   int                square)
 {
   PangoMatrix local;
-  gdouble scale = 0.5 * square;
+  double scale = 0.5 * square;
 
   /* The local matrix translates from the axis aligned coordinate system
    * to the original user space coordinate system.

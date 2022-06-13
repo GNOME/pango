@@ -358,7 +358,7 @@ pango_font_description_get_stretch (const PangoFontDescription *desc)
  */
 void
 pango_font_description_set_size (PangoFontDescription *desc,
-                                 gint                  size)
+                                 int                   size)
 {
   g_return_if_fail (desc != NULL);
   g_return_if_fail (size >= 0);
@@ -384,7 +384,7 @@ pango_font_description_set_size (PangoFontDescription *desc,
  *   Use [method@Pango.FontDescription.get_set_fields] to find out
  *   if the field was explicitly set or not.
  */
-gint
+int
 pango_font_description_get_size (const PangoFontDescription *desc)
 {
   g_return_val_if_fail (desc != NULL, pfd_defaults.size);
@@ -1024,19 +1024,19 @@ static const FieldMap gravity_map[] = {
 };
 
 static gboolean
-field_matches (const gchar *s1,
-               const gchar *s2,
-               gsize n)
+field_matches (const char *s1,
+               const char *s2,
+               gsize       n)
 {
-  gint c1, c2;
+  int c1, c2;
 
   g_return_val_if_fail (s1 != NULL, 0);
   g_return_val_if_fail (s2 != NULL, 0);
 
   while (n && *s1 && *s2)
     {
-      c1 = (gint)(guchar) TOLOWER (*s1);
-      c2 = (gint)(guchar) TOLOWER (*s2);
+      c1 = (int)(guchar) TOLOWER (*s1);
+      c2 = (int)(guchar) TOLOWER (*s2);
       if (c1 != c2) {
         if (c1 == '-') {
           s1++;

@@ -111,13 +111,13 @@ pango_version_string (void)
  *   mismatch.  The returned string is owned by Pango and should not
  *   be modified or freed.
  */
-const gchar*
+const char *
 pango_version_check (int required_major,
 		     int required_minor,
 		     int required_micro)
 {
-  gint pango_effective_micro = 100 * PANGO_VERSION_MINOR + PANGO_VERSION_MICRO;
-  gint required_effective_micro = 100 * required_minor + required_micro;
+  int pango_effective_micro = 100 * PANGO_VERSION_MINOR + PANGO_VERSION_MICRO;
+  int required_effective_micro = 100 * required_minor + required_micro;
 
   if (required_major > PANGO_VERSION_MAJOR)
     return "Pango version too old (major mismatch)";

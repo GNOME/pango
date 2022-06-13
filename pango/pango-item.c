@@ -284,8 +284,8 @@ pango_analysis_collect_features (const PangoAnalysis *analysis,
       PangoAttribute *attr = l->data;
       if (attr->type == PANGO_ATTR_FONT_FEATURES)
         {
-          const gchar *feat;
-          const gchar *end;
+          const char *feat;
+          const char *end;
           int len;
 
           feat = attr->str_value;

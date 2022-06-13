@@ -84,12 +84,12 @@ main (int    argc,
 	  else
 	    {
 	      int fd;
-	      const gchar *convert_argv[5] = {"gm", "convert", "-", "%s"};
+	      const char *convert_argv[5] = {"gm", "convert", "-", "%s"};
 	      GError *error;
 
 	      convert_argv[3] = opt_output;
 
-	      if (!g_spawn_async_with_pipes (NULL, (gchar **)(void*)convert_argv, NULL,
+	      if (!g_spawn_async_with_pipes (NULL, (char **)(void*)convert_argv, NULL,
 					     G_SPAWN_DO_NOT_REAP_CHILD |
 					     G_SPAWN_SEARCH_PATH |
 					     G_SPAWN_STDOUT_TO_DEV_NULL |
@@ -144,7 +144,7 @@ no_display:
 	{
 	  int fd;
 	  FILE *stream;
-	  const gchar *display_argv[6] = {"gm", "display", "-title", "%s", "-"};
+	  const char *display_argv[6] = {"gm", "display", "-title", "%s", "-"};
 	  GError *error = NULL;
 	  GPid pid;
 
@@ -152,7 +152,7 @@ no_display:
 	    fail ("%s viewer backend does not support displaying or writing", view->name);
 	  display_argv[3] = title;
 
-	  if (!g_spawn_async_with_pipes (NULL, (gchar **)(void*)display_argv, NULL,
+	  if (!g_spawn_async_with_pipes (NULL, (char **)(void*)display_argv, NULL,
 					 G_SPAWN_DO_NOT_REAP_CHILD |
 					 G_SPAWN_SEARCH_PATH |
 					 G_SPAWN_STDOUT_TO_DEV_NULL |

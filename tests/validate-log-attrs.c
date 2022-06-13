@@ -49,9 +49,9 @@ log_attr_foreach (const char          *text,
                   CharForeachFunc      func,
                   GError             **error)
 {
-  const gchar *next = text;
-  const gchar *end = text + length;
-  gint i = 0;
+  const char *next = text;
+  const char *end = text + length;
+  int i = 0;
   gunichar prev_wc;
   gunichar next_wc;
   GUnicodeType prev_type;

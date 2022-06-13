@@ -512,8 +512,8 @@ pango_attr_list_update (PangoAttrList *list,
 void
 pango_attr_list_splice (PangoAttrList *list,
                         PangoAttrList *other,
-                        gint           pos,
-                        gint           len)
+                        int            pos,
+                        int            len)
 {
   guint i, p;
   guint upos, ulen;

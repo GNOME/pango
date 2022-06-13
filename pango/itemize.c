@@ -134,11 +134,11 @@ typedef struct _PangoWidthIter PangoWidthIter;
 
 struct _PangoWidthIter
 {
-        const gchar *text_start;
-        const gchar *text_end;
-        const gchar *start;
-        const gchar *end;
-        gboolean     upright;
+        const char *text_start;
+        const char *text_end;
+        const char *start;
+        const char *end;
+        gboolean upright;
 };
 
 static gboolean

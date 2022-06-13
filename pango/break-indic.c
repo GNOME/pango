@@ -111,7 +111,7 @@ break_indic (const char          *text,
 	     PangoLogAttr        *attrs,
 	     int                  attrs_len G_GNUC_UNUSED)
 {
-  const gchar *p, *next = NULL, *next_next;
+  const char *p, *next = NULL, *next_next;
   gunichar prev_wc, this_wc, next_wc, next_next_wc;
   gboolean is_conjunct = FALSE;
   int i;

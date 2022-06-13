@@ -70,11 +70,11 @@ struct _OpenTag
    * an absolute size is set.
    * Each "larger" ups it 1, each "smaller" decrements it 1
    */
-  gint scale_level;
+  int scale_level;
   /* Our impact on scale_level, so we know whether we
    * need to create an attribute ourselves on close
    */
-  gint scale_level_delta;
+  int scale_level_delta;
   /* Base scale factor currently in effect
    * or size that this tag
    * forces, or parent's scale factor or size.
@@ -86,75 +86,75 @@ struct _OpenTag
 
 typedef gboolean (*TagParseFunc) (MarkupData            *md,
                                   OpenTag               *tag,
-                                  const gchar          **names,
-                                  const gchar          **values,
+                                  const char           **names,
+                                  const char           **values,
                                   GMarkupParseContext   *context,
                                   GError               **error);
 
 static gboolean b_parse_func        (MarkupData           *md,
                                      OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
+                                     const char          **names,
+                                     const char          **values,
                                      GMarkupParseContext  *context,
                                      GError              **error);
 static gboolean big_parse_func      (MarkupData           *md,
                                      OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
+                                     const char          **names,
+                                     const char          **values,
                                      GMarkupParseContext  *context,
                                      GError              **error);
 static gboolean span_parse_func     (MarkupData           *md,
                                      OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
+                                     const char          **names,
+                                     const char          **values,
                                      GMarkupParseContext  *context,
                                      GError              **error);
 static gboolean i_parse_func        (MarkupData           *md,
                                      OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
+                                     const char          **names,
+                                     const char          **values,
                                      GMarkupParseContext  *context,
                                      GError              **error);
 static gboolean markup_parse_func   (MarkupData           *md,
                                      OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
+                                     const char          **names,
+                                     const char          **values,
                                      GMarkupParseContext  *context,
                                      GError              **error);
 static gboolean s_parse_func        (MarkupData           *md,
                                      OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
+                                     const char          **names,
+                                     const char          **values,
                                      GMarkupParseContext  *context,
                                      GError              **error);
 static gboolean sub_parse_func      (MarkupData           *md,
                                      OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
+                                     const char          **names,
+                                     const char          **values,
                                      GMarkupParseContext  *context,
                                      GError              **error);
 static gboolean sup_parse_func      (MarkupData           *md,
                                      OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
+                                     const char          **names,
+                                     const char          **values,
                                      GMarkupParseContext  *context,
                                      GError              **error);
 static gboolean small_parse_func    (MarkupData           *md,
                                      OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
+                                     const char          **names,
+                                     const char          **values,
                                      GMarkupParseContext  *context,
                                      GError              **error);
 static gboolean tt_parse_func       (MarkupData           *md,
                                      OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
+                                     const char          **names,
+                                     const char          **values,
                                      GMarkupParseContext  *context,
                                      GError              **error);
 static gboolean u_parse_func        (MarkupData           *md,
                                      OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
+                                     const char          **names,
+                                     const char          **values,
                                      GMarkupParseContext  *context,
                                      GError              **error);
 
@@ -494,9 +494,9 @@ markup_data_close_tag (MarkupData *md)
 
 static void
 start_element_handler  (GMarkupParseContext *context,
-                        const gchar         *element_name,
-                        const gchar        **attribute_names,
-                        const gchar        **attribute_values,
+                        const char          *element_name,
+                        const char         **attribute_names,
+                        const char         **attribute_values,
                         gpointer             user_data,
                         GError             **error)
 {
@@ -551,7 +551,7 @@ start_element_handler  (GMarkupParseContext *context,
 
   if (parse_func == NULL)
     {
-      gint line_number, char_number;
+      int line_number, char_number;
 
       g_markup_parse_context_get_position (context,
                                            &line_number, &char_number);
@@ -582,7 +582,7 @@ start_element_handler  (GMarkupParseContext *context,
 
 static void
 end_element_handler    (GMarkupParseContext *context G_GNUC_UNUSED,
-                        const gchar         *element_name G_GNUC_UNUSED,
+                        const char          *element_name G_GNUC_UNUSED,
                         gpointer             user_data,
                         GError             **error G_GNUC_UNUSED)
 {
@@ -591,7 +591,7 @@ end_element_handler    (GMarkupParseContext *context G_GNUC_UNUSED,
 
 static void
 text_handler           (GMarkupParseContext *context G_GNUC_UNUSED,
-                        const gchar         *text,
+                        const char          *text,
                         gsize                text_len,
                         gpointer             user_data,
                         GError             **error G_GNUC_UNUSED)
@@ -609,10 +609,10 @@ text_handler           (GMarkupParseContext *context G_GNUC_UNUSED,
   else
     {
       /* Parse the accelerator */
-      const gchar *p;
-      const gchar *end;
-      const gchar *range_start;
-      const gchar *range_end;
+      const char *p;
+      const char *end;
+      const char *range_start;
+      const char *range_end;
       gssize uline_index = -1;
       gsize uline_len = 0;      /* Quiet GCC */
 
@@ -971,7 +971,7 @@ set_bad_attribute (GError             **error,
                    const char          *element_name,
                    const char          *attribute_name)
 {
-  gint line_number, char_number;
+  int line_number, char_number;
 
   g_markup_parse_context_get_position (context,
                                        &line_number, &char_number);
@@ -1004,8 +1004,8 @@ add_attribute (OpenTag        *ot,
 static gboolean
 b_parse_func        (MarkupData            *md G_GNUC_UNUSED,
                      OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values G_GNUC_UNUSED,
+                     const char           **names,
+                     const char           **values G_GNUC_UNUSED,
                      GMarkupParseContext   *context,
                      GError               **error)
 {
@@ -1017,8 +1017,8 @@ b_parse_func        (MarkupData            *md G_GNUC_UNUSED,
 static gboolean
 big_parse_func      (MarkupData            *md G_GNUC_UNUSED,
                      OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values G_GNUC_UNUSED,
+                     const char           **names,
+                     const char           **values G_GNUC_UNUSED,
                      GMarkupParseContext   *context,
                      GError               **error)
 {
@@ -1095,7 +1095,7 @@ done:
 }
 
 /* a string compare func that ignores '-' vs '_' differences */
-static gint
+static int
 attr_strcmp (gconstpointer pa,
              gconstpointer pb)
 {
@@ -1311,8 +1311,8 @@ parse_length (const char *attr_val,
 static gboolean
 span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
                      OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values,
+                     const char           **names,
+                     const char           **values,
                      GMarkupParseContext   *context,
                      GError               **error)
 {
@@ -1760,7 +1760,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 
   if (G_UNLIKELY (rise))
     {
-      gint n = 0;
+      int n = 0;
 
       if (!parse_length (rise, &n))
         {
@@ -1779,7 +1779,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 
   if (G_UNLIKELY (baseline_shift))
     {
-      gint shift = 0;
+      int shift = 0;
 
       if (span_parse_enum ("baseline_shift", baseline_shift, PANGO_TYPE_BASELINE_SHIFT, (int*)(void*)&shift, line_number, NULL))
         add_attribute (tag, pango_attr_baseline_shift_new (shift));
@@ -1811,7 +1811,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 
   if (G_UNLIKELY (letter_spacing))
     {
-      gint n = 0;
+      int n = 0;
 
       if (!span_parse_int ("letter_spacing", letter_spacing, &n, line_number, error))
         goto error;
@@ -1894,8 +1894,8 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 static gboolean
 i_parse_func        (MarkupData            *md G_GNUC_UNUSED,
                      OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values G_GNUC_UNUSED,
+                     const char           **names,
+                     const char           **values G_GNUC_UNUSED,
                      GMarkupParseContext   *context,
                      GError               **error)
 {
@@ -1908,8 +1908,8 @@ i_parse_func        (MarkupData            *md G_GNUC_UNUSED,
 static gboolean
 markup_parse_func (MarkupData            *md G_GNUC_UNUSED,
                    OpenTag               *tag G_GNUC_UNUSED,
-                   const gchar          **names G_GNUC_UNUSED,
-                   const gchar          **values G_GNUC_UNUSED,
+                   const char           **names G_GNUC_UNUSED,
+                   const char           **values G_GNUC_UNUSED,
                    GMarkupParseContext   *context G_GNUC_UNUSED,
                    GError               **error G_GNUC_UNUSED)
 {
@@ -1922,8 +1922,8 @@ markup_parse_func (MarkupData            *md G_GNUC_UNUSED,
 static gboolean
 s_parse_func        (MarkupData            *md G_GNUC_UNUSED,
                      OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values G_GNUC_UNUSED,
+                     const char           **names,
+                     const char           **values G_GNUC_UNUSED,
                      GMarkupParseContext   *context,
                      GError               **error)
 {
@@ -1936,8 +1936,8 @@ s_parse_func        (MarkupData            *md G_GNUC_UNUSED,
 static gboolean
 sub_parse_func      (MarkupData            *md G_GNUC_UNUSED,
                      OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values G_GNUC_UNUSED,
+                     const char           **names,
+                     const char           **values G_GNUC_UNUSED,
                      GMarkupParseContext   *context,
                      GError               **error)
 {
@@ -1952,8 +1952,8 @@ sub_parse_func      (MarkupData            *md G_GNUC_UNUSED,
 static gboolean
 sup_parse_func      (MarkupData            *md G_GNUC_UNUSED,
                      OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values G_GNUC_UNUSED,
+                     const char           **names,
+                     const char           **values G_GNUC_UNUSED,
                      GMarkupParseContext   *context,
                      GError               **error)
 {
@@ -1968,8 +1968,8 @@ sup_parse_func      (MarkupData            *md G_GNUC_UNUSED,
 static gboolean
 small_parse_func    (MarkupData            *md G_GNUC_UNUSED,
                      OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values G_GNUC_UNUSED,
+                     const char           **names,
+                     const char           **values G_GNUC_UNUSED,
                      GMarkupParseContext   *context,
                      GError               **error)
 {
@@ -1988,8 +1988,8 @@ small_parse_func    (MarkupData            *md G_GNUC_UNUSED,
 static gboolean
 tt_parse_func       (MarkupData            *md G_GNUC_UNUSED,
                      OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values G_GNUC_UNUSED,
+                     const char           **names,
+                     const char           **values G_GNUC_UNUSED,
                      GMarkupParseContext   *context,
                      GError               **error)
 {
@@ -2003,8 +2003,8 @@ tt_parse_func       (MarkupData            *md G_GNUC_UNUSED,
 static gboolean
 u_parse_func        (MarkupData            *md G_GNUC_UNUSED,
                      OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values G_GNUC_UNUSED,
+                     const char           **names,
+                     const char           **values G_GNUC_UNUSED,
                      GMarkupParseContext   *context,
                      GError               **error)
 {

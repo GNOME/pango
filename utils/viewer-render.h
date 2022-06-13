@@ -77,7 +77,7 @@ void   do_output          (PangoContext     *context,
 			   int              *width,
 			   int              *height);
 void   finalize           (void);
-gchar *get_options_string (void);
+char  *get_options_string (void);
 
 extern const char *prog_name;
 
