@@ -25,92 +25,65 @@
 typedef struct _ColorSpec {
   const gchar *spec;
   gboolean valid;
-  int color_or_alpha;
   guint16 red;
   guint16 green;
   guint16 blue;
   guint16 alpha;
 } ColorSpec;
 
-#define COLOR 1
-#define ALPHA 2
-#define BOTH  3
-
 static void
 test_one_color (ColorSpec *spec)
 {
   PangoColor color;
   gboolean accepted;
-  guint16 alpha;
 
-  if (spec->color_or_alpha & COLOR)
+  accepted = pango_color_parse (&color, spec->spec);
+
+  if (!spec->valid)
     {
-      accepted = pango_color_parse (&color, spec->spec);
-
-      if (!spec->valid)
-        {
-          g_assert_false (accepted);
-        }
-      else
-        {
-          g_assert_true (accepted);
-          g_assert_cmpuint (color.red, ==, spec->red);
-          g_assert_cmpuint (color.green, ==, spec->green);
-          g_assert_cmpuint (color.blue, ==, spec->blue);
-        }
+      g_assert_false (accepted);
     }
-
-  if (spec->color_or_alpha & ALPHA)
+  else
     {
-      accepted = pango_color_parse_with_alpha (&color, &alpha, spec->spec);
-
-      if (!spec->valid)
-        {
-          g_assert_false (accepted);
-        }
-      else
-        {
-          g_assert_true (accepted);
-          g_assert_cmpuint (color.red, ==, spec->red);
-          g_assert_cmpuint (color.green, ==, spec->green);
-          g_assert_cmpuint (color.blue, ==, spec->blue);
-          g_assert_cmpuint (alpha, ==, spec->alpha);
-        }
+      g_assert_true (accepted);
+      g_assert_cmpuint (color.red, ==, spec->red);
+      g_assert_cmpuint (color.green, ==, spec->green);
+      g_assert_cmpuint (color.blue, ==, spec->blue);
+      g_assert_cmpuint (color.alpha, ==, spec->alpha);
     }
 }
 
 ColorSpec specs [] = {
-  { "#abc",          1, BOTH, 0xaaaa, 0xbbbb, 0xcccc, 0xffff },
-  { "#aabbcc",       1, BOTH, 0xaaaa, 0xbbbb, 0xcccc, 0xffff },
-  { "#aaabbbccc",    1, BOTH, 0xaaaa, 0xbbbb, 0xcccc, 0xffff },
-  { "#100100100",    1, BOTH, 0x1001, 0x1001, 0x1001, 0xffff },
-  { "#aaaabbbbcccc", 1, COLOR, 0xaaaa, 0xbbbb, 0xcccc, 0xffff },
-  { "#fff",          1, BOTH, 0xffff, 0xffff, 0xffff, 0xffff },
-  { "#ffffff",       1, BOTH, 0xffff, 0xffff, 0xffff, 0xffff },
-  { "#fffffffff",    1, BOTH, 0xffff, 0xffff, 0xffff, 0xffff },
-  { "#ffffffffffff", 1, COLOR, 0xffff, 0xffff, 0xffff, 0xffff },
-  { "#000",          1, BOTH, 0x0000, 0x0000, 0x0000, 0xffff },
-  { "#000000",       1, BOTH, 0x0000, 0x0000, 0x0000, 0xffff },
-  { "#000000000",    1, BOTH, 0x0000, 0x0000, 0x0000, 0xffff },
-  { "#000000000000", 1, COLOR, 0x0000, 0x0000, 0x0000, 0xffff },
-  { "#AAAABBBBCCCC", 1, COLOR, 0xaaaa, 0xbbbb, 0xcccc, 0xffff },
-  { "#aa bb cc ",    0, BOTH, 0, 0, 0, 0 },
-  { "#aa bb ccc",    0, BOTH, 0, 0, 0, 0 },
-  { "#ab",           0, BOTH, 0, 0, 0, 0 },
-  { "#aabb",         0, COLOR, 0, 0, 0, 0 },
-  { "#aaabb",        0, BOTH, 0, 0, 0, 0 },
-  { "aaabb",         0, BOTH, 0, 0, 0, 0 },
-  { "",              0, BOTH, 0, 0, 0, 0 },
-  { "#",             0, BOTH, 0, 0, 0, 0 },
-  { "##fff",         0, BOTH, 0, 0, 0, 0 },
-  { "#0000ff+",      0, BOTH, 0, 0, 0, 0 },
-  { "#0000f+",       0, BOTH, 0, 0, 0, 0 },
-  { "#0x00x10x2",    0, BOTH, 0, 0, 0, 0 },
-  { "#abcd",         1, ALPHA, 0xaaaa, 0xbbbb, 0xcccc, 0xdddd },
-  { "#aabbccdd",     1, ALPHA, 0xaaaa, 0xbbbb, 0xcccc, 0xdddd },
-  { "#aaaabbbbccccdddd",
-                     1, ALPHA, 0xaaaa, 0xbbbb, 0xcccc, 0xdddd },
-  { NULL,            0, BOTH, 0, 0, 0, 0 }
+  { "#abc",          1, 0xaaaa, 0xbbbb, 0xcccc, 0xffff },
+  { "#aabbcc",       1, 0xaaaa, 0xbbbb, 0xcccc, 0xffff },
+  { "#aaabbbccc",    1, 0xaaaa, 0xbbbb, 0xcccc, 0xffff },
+  { "#100100100",    1, 0x1001, 0x1001, 0x1001, 0xffff },
+  { "#aaaabbbbcccc", 1, 0xaaaa, 0xbbbb, 0xcccc, 0xffff },
+  { "#fff",          1, 0xffff, 0xffff, 0xffff, 0xffff },
+  { "#ffffff",       1, 0xffff, 0xffff, 0xffff, 0xffff },
+  { "#fffffffff",    1, 0xffff, 0xffff, 0xffff, 0xffff },
+  { "#ffffffffffff", 1, 0xffff, 0xffff, 0xffff, 0xffff },
+  { "#000",          1, 0x0000, 0x0000, 0x0000, 0xffff },
+  { "#000000",       1, 0x0000, 0x0000, 0x0000, 0xffff },
+  { "#000000000",    1, 0x0000, 0x0000, 0x0000, 0xffff },
+  { "#000000000000", 1, 0x0000, 0x0000, 0x0000, 0xffff },
+  { "#AAAABBBBCCCC", 1, 0xaaaa, 0xbbbb, 0xcccc, 0xffff },
+  { "#aa bb cc ",    0, 0, 0, 0, 0 },
+  { "#aa bb ccc",    0, 0, 0, 0, 0 },
+  { "#ab",           0, 0, 0, 0, 0 },
+  { "#aabb",         1, 0xaaaa, 0xaaaa, 0xbbbb, 0xbbbb },
+  { "#aaabb",        0, 0, 0, 0, 0 },
+  { "aaabb",         0, 0, 0, 0, 0 },
+  { "",              0, 0, 0, 0, 0 },
+  { "#",             0, 0, 0, 0, 0 },
+  { "##fff",         0, 0, 0, 0, 0 },
+  { "#0000ff+",      0, 0, 0, 0, 0 },
+  { "#0000f+",       0, 0, 0, 0, 0 },
+  { "#0x00x10x2",    0, 0, 0, 0, 0 },
+  { "#abcd",         1, 0xaaaa, 0xbbbb, 0xcccc, 0xdddd },
+  { "#aabbccdd",     1, 0xaaaa, 0xbbbb, 0xcccc, 0xdddd },
+  { "#aaaabbbbccccdddd", 1, 0xaaaa, 0xbbbb, 0xcccc, 0xdddd },
+  { NULL,            0, 0, 0, 0, 0 }
 };
 
 static void
@@ -125,7 +98,7 @@ test_color (void)
 static void
 test_color_copy (void)
 {
-  PangoColor orig = { 0, 200, 5000 };
+  PangoColor orig = { 0, 200, 5000, 666 };
   PangoColor *copy;
 
   copy = pango_color_copy (&orig);
@@ -133,6 +106,7 @@ test_color_copy (void)
   g_assert_cmpint (orig.red, ==, copy->red);
   g_assert_cmpint (orig.green, ==, copy->green);
   g_assert_cmpint (orig.blue, ==, copy->blue);
+  g_assert_cmpint (orig.alpha, ==, copy->alpha);
 
   pango_color_free (copy);
 }
@@ -140,12 +114,12 @@ test_color_copy (void)
 static void
 test_color_serialize (void)
 {
-  PangoColor orig = { 0, 200, 5000 };
+  PangoColor orig = { 0, 200, 5000, 666 };
   char *string;
 
   string = pango_color_to_string (&orig);
 
-  g_assert_cmpstr (string, ==, "#000000c81388");
+  g_assert_cmpstr (string, ==, "#000000c81388029a");
 
   g_free (string);
 }

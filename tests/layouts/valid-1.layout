@@ -21,7 +21,7 @@
       "start" : 22,
       "end" : 41,
       "type" : "foreground",
-      "value" : "#00000000ffff"
+      "value" : "#00000000ffffffff"
     },
     {
       "start" : 22,
@@ -525,7 +525,7 @@
                   "start" : 22,
                   "end" : 41,
                   "type" : "foreground",
-                  "value" : "#00000000ffff"
+                  "value" : "#00000000ffffffff"
                 },
                 {
                   "start" : 22,
@@ -629,7 +629,7 @@
                   "start" : 22,
                   "end" : 41,
                   "type" : "foreground",
-                  "value" : "#00000000ffff"
+                  "value" : "#00000000ffffffff"
                 },
                 {
                   "start" : 22,

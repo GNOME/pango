@@ -57,8 +57,6 @@ G_BEGIN_DECLS
  * @PANGO_ATTR_GRAVITY: base text gravity
  * @PANGO_ATTR_GRAVITY_HINT: gravity hint
  * @PANGO_ATTR_FONT_FEATURES: OpenType font features
- * @PANGO_ATTR_FOREGROUND_ALPHA: foreground alpha
- * @PANGO_ATTR_BACKGROUND_ALPHA: background alpha
  * @PANGO_ATTR_ALLOW_BREAKS: whether line breaks are allowed
  * @PANGO_ATTR_SHOW: how to render invisible characters
  * @PANGO_ATTR_INSERT_HYPHENS: whether to insert hyphens at intra-word line breaks
@@ -106,8 +104,6 @@ typedef enum
   PANGO_ATTR_GRAVITY              = PANGO_ATTR_TYPE (INT, ITEMIZATION, OVERRIDES),
   PANGO_ATTR_GRAVITY_HINT         = PANGO_ATTR_TYPE (INT, ITEMIZATION, OVERRIDES),
   PANGO_ATTR_FONT_FEATURES        = PANGO_ATTR_TYPE (STRING, SHAPING, ACCUMULATES),
-  PANGO_ATTR_FOREGROUND_ALPHA     = PANGO_ATTR_TYPE (INT, RENDERING, OVERRIDES),
-  PANGO_ATTR_BACKGROUND_ALPHA     = PANGO_ATTR_TYPE (INT, RENDERING, OVERRIDES),
   PANGO_ATTR_ALLOW_BREAKS         = PANGO_ATTR_TYPE (BOOLEAN, BREAKING, OVERRIDES),
   PANGO_ATTR_SHOW                 = PANGO_ATTR_TYPE (INT, SHAPING, OVERRIDES),
   PANGO_ATTR_INSERT_HYPHENS       = PANGO_ATTR_TYPE (BOOLEAN, SHAPING, OVERRIDES),
@@ -238,10 +234,6 @@ PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_gravity_hint_new             (PangoGravityHint             hint);
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_font_features_new            (const char                  *features);
-PANGO_AVAILABLE_IN_ALL
-PangoAttribute *        pango_attr_foreground_alpha_new         (guint16                      alpha);
-PANGO_AVAILABLE_IN_ALL
-PangoAttribute *        pango_attr_background_alpha_new         (guint16                      alpha);
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_allow_breaks_new             (gboolean                     allow_breaks);
 PANGO_AVAILABLE_IN_ALL

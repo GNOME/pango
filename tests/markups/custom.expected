@@ -57,18 +57,17 @@ range 52 55
 1 160 font-desc "Cantarell 20"
 range 55 58
 1 160 font-desc "Cantarell 20"
-55 58 foreground #ffff00000000
+55 58 foreground #ffff00000000ffff
 range 58 61
 1 160 font-desc "Cantarell 20"
 range 61 64
 1 160 font-desc "Cantarell 20"
-61 64 foreground #ffff00000000
+61 64 foreground #ffff00000000ffff
 range 64 67
 1 160 font-desc "Cantarell 20"
 range 67 74
 1 160 font-desc "Cantarell 20"
-67 74 background #0000aaaabbbb
-67 74 background-alpha 52428
+67 74 background #0000aaaabbbbcccc
 range 74 77
 1 160 font-desc "Cantarell 20"
 range 77 81

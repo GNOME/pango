@@ -6,7 +6,7 @@ test
 range 0 4
 0 4 family "Times"
 0 4 weight bold
-0 4 foreground #ffff00000000
+0 4 foreground #ffff00000000ffff
 0 4 letter-spacing 1024
 0 4 insert-hyphens true
 range 4 2147483647
