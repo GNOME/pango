@@ -79,7 +79,7 @@ static inline void
 pango_font_set_face (PangoFont     *font,
                      PangoFontFace *face)
 {
-  font->face = g_object_ref (face);
+  font->face = (PangoFontFace *) g_object_ref (face);
 }
 
 static inline void
@@ -107,7 +107,8 @@ static inline void
 pango_font_set_ctm (PangoFont         *font,
                     const PangoMatrix *ctm)
 {
-  font->ctm = ctm ? *ctm : (PangoMatrix) PANGO_MATRIX_INIT;
+  const PangoMatrix matrix_init = PANGO_MATRIX_INIT;
+  font->ctm = ctm ? *ctm : matrix_init;
 }
 
 gboolean pango_font_is_hinted         (PangoFont *font);
