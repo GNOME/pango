@@ -43,8 +43,8 @@ test_serialize_attr_list (void)
   };
   const char *roundtripped[] = {
     "5 16 style italic",
-    "0 10 foreground #ffff00000000\n5 15 weight bold\n0 200 font-desc \"Sans Small-Caps 10\"",
-    "0 10 foreground #ffff00000000\n5 15 weight bold\n0 200 font-desc \"Sans Small-Caps 10\"",
+    "0 10 foreground #ffff00000000ffff\n5 15 weight bold\n0 200 font-desc \"Sans Small-Caps 10\"",
+    "0 10 foreground #ffff00000000ffff\n5 15 weight bold\n0 200 font-desc \"Sans Small-Caps 10\"",
     "0 10 fallback false\n5 15 weight semilight",
     "0 100 font-desc \"Cantarell,Sans Ultra-Light Italic 64\"\n10 11 weight thin",
     "0 4294967295 size 10",
@@ -237,18 +237,18 @@ test_serialize_layout_valid (void)
     "    {\n"
     "      \"end\" : 4,\n"
     "      \"type\" : \"foreground\",\n"
-    "      \"value\" : \"#ffff00000000\"\n"
+    "      \"value\" : \"#ffff00000000ffff\"\n"
     "    },\n"
     "    {\n"
     "      \"start\" : 5,\n"
     "      \"end\" : 8,\n"
     "      \"type\" : \"foreground\",\n"
-    "      \"value\" : \"#000080800000\"\n"
+    "      \"value\" : \"#000080800000ffff\"\n"
     "    },\n"
     "    {\n"
     "      \"start\" : 14,\n"
     "      \"type\" : \"foreground\",\n"
-    "      \"value\" : \"#ffff0000ffff\"\n"
+    "      \"value\" : \"#ffff0000ffffffff\"\n"
     "    }\n"
     "  ],\n"
     "  \"font\" : \"Sans Bold 32\",\n"

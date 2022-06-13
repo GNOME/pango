@@ -63,7 +63,6 @@ struct _PangoRendererPrivate
 
   PangoColor color[N_RENDER_PARTS];
   gboolean color_set[N_RENDER_PARTS];
-  guint16 alpha[N_RENDER_PARTS];
 
   PangoLines *lines;
   PangoLine *line;
@@ -1233,8 +1232,6 @@ pango_renderer_deactivate (PangoRenderer *renderer)
  * @color: (nullable): the new color or %NULL to unset the current color
  *
  * Sets the color for part of the rendering.
- *
- * Also see [method@Pango.Renderer.set_alpha].
  */
 void
 pango_renderer_set_color (PangoRenderer    *renderer,
@@ -1246,9 +1243,7 @@ pango_renderer_set_color (PangoRenderer    *renderer,
 
   if ((!color && !renderer->priv->color_set[part]) ||
       (color && renderer->priv->color_set[part] &&
-       renderer->priv->color[part].red == color->red &&
-       renderer->priv->color[part].green == color->green &&
-       renderer->priv->color[part].blue == color->blue))
+       pango_color_equal (color, &renderer->priv->color[part])))
     return;
 
   pango_renderer_part_changed (renderer, part);
@@ -1286,56 +1281,6 @@ pango_renderer_get_color (PangoRenderer   *renderer,
     return &renderer->priv->color[part];
   else
     return NULL;
-}
-
-/**
- * pango_renderer_set_alpha:
- * @renderer: a `PangoRenderer`
- * @part: the part to set the alpha for
- * @alpha: an alpha value between 1 and 65536, or 0 to unset the alpha
- *
- * Sets the alpha for part of the rendering.
- *
- * Note that the alpha may only be used if a color is
- * specified for @part as well.
- */
-void
-pango_renderer_set_alpha (PangoRenderer   *renderer,
-                          PangoRenderPart  part,
-                          guint16          alpha)
-{
-  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
-  g_return_if_fail (IS_VALID_PART (part));
-
-  if ((!alpha && !renderer->priv->alpha[part]) ||
-      (alpha && renderer->priv->alpha[part] &&
-       renderer->priv->alpha[part] == alpha))
-    return;
-
-  pango_renderer_part_changed (renderer, part);
-
-  renderer->priv->alpha[part] = alpha;
-}
-
-/**
- * pango_renderer_get_alpha:
- * @renderer: a `PangoRenderer`
- * @part: the part to get the alpha for
- *
- * Gets the current alpha for the specified part.
- *
- * Return value: the alpha for the specified part,
- *   or 0 if it hasn't been set and should be
- *   inherited from the environment.
- */
-guint16
-pango_renderer_get_alpha (PangoRenderer   *renderer,
-                          PangoRenderPart  part)
-{
-  g_return_val_if_fail (PANGO_IS_RENDERER_FAST (renderer), 0);
-  g_return_val_if_fail (IS_VALID_PART (part), 0);
-
-  return renderer->priv->alpha[part];
 }
 
 /**
@@ -1398,8 +1343,6 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
   PangoColor *underline_color = NULL;
   PangoColor *overline_color = NULL;
   PangoColor *strikethrough_color = NULL;
-  guint16 fg_alpha = 0;
-  guint16 bg_alpha = 0;
   GSList *l;
   PangoGlyphItem *glyph_item;
 
@@ -1452,14 +1395,6 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
           strikethrough_color = &attr->color_value;
           break;
 
-        case PANGO_ATTR_FOREGROUND_ALPHA:
-          fg_alpha = attr->int_value;
-          break;
-
-        case PANGO_ATTR_BACKGROUND_ALPHA:
-          bg_alpha = attr->int_value;
-          break;
-
         default:
           break;
         }
@@ -1479,12 +1414,6 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
   pango_renderer_set_color (renderer, PANGO_RENDER_PART_UNDERLINE, underline_color);
   pango_renderer_set_color (renderer, PANGO_RENDER_PART_STRIKETHROUGH, strikethrough_color);
   pango_renderer_set_color (renderer, PANGO_RENDER_PART_OVERLINE, overline_color);
-
-  pango_renderer_set_alpha (renderer, PANGO_RENDER_PART_FOREGROUND, fg_alpha);
-  pango_renderer_set_alpha (renderer, PANGO_RENDER_PART_BACKGROUND, bg_alpha);
-  pango_renderer_set_alpha (renderer, PANGO_RENDER_PART_UNDERLINE, fg_alpha);
-  pango_renderer_set_alpha (renderer, PANGO_RENDER_PART_STRIKETHROUGH, fg_alpha);
-  pango_renderer_set_alpha (renderer, PANGO_RENDER_PART_OVERLINE, fg_alpha);
 }
 
 /**

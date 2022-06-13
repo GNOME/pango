@@ -1,8 +1,8 @@
-<span foreground="blue" alpha="65535" size="xx-small" variant="normal" stretch="ultracondensed">Text</span>
-<span fgcolor="blue" fgalpha="50%" size="x-small" font_variant="smallcaps" font_stretch="extracondensed">Text</span>
-<span background="blue" background_alpha="1" size="small" stretch="condensed">Text</span>
-<span bgcolor="blue" bgalpha="33%" size="medium" stretch="semicondensed">Text</span>
-<span background="blue" bgalpha="33%" font_size="large" stretch="normal">Text</span>
+<span foreground="blue" size="xx-small" variant="normal" stretch="ultracondensed">Text</span>
+<span fgcolor="#00f8" size="x-small" font_variant="smallcaps" font_stretch="extracondensed">Text</span>
+<span background="blue" size="small" stretch="condensed">Text</span>
+<span bgcolor="#00f5" size="medium" stretch="semicondensed">Text</span>
+<span background="#00f5" font_size="large" stretch="normal">Text</span>
 <span background="#0000ffaa" font_size="x-large" stretch="semiexpanded">Text</span>
 <span font_size="xx-large" stretch="expanded">Text</span>
 <span font_size="xx-large" stretch="extraexpanded">Text</span>

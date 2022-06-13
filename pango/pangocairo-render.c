@@ -62,10 +62,9 @@ set_color (PangoCairoRenderer *crenderer,
 	   PangoRenderPart     part)
 {
   PangoColor *color = pango_renderer_get_color ((PangoRenderer *) (crenderer), part);
-  guint16 a = pango_renderer_get_alpha ((PangoRenderer *) (crenderer), part);
   gdouble red, green, blue, alpha;
 
-  if (!a && !color)
+  if (!color)
     return;
 
   if (color)
@@ -73,7 +72,7 @@ set_color (PangoCairoRenderer *crenderer,
       red = color->red / 65535.;
       green = color->green / 65535.;
       blue = color->blue / 65535.;
-      alpha = 1.;
+      alpha = color->alpha / 65535.;
     }
   else
     {
@@ -89,9 +88,6 @@ set_color (PangoCairoRenderer *crenderer,
           alpha = 1.;
         }
     }
-
-  if (a)
-    alpha = a / 65535.;
 
   cairo_set_source_rgba (crenderer->cr, red, green, blue, alpha);
 }

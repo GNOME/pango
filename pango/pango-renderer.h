@@ -256,14 +256,6 @@ PangoColor *pango_renderer_get_color     (PangoRenderer    *renderer,
                                           PangoRenderPart   part);
 
 PANGO_AVAILABLE_IN_ALL
-void        pango_renderer_set_alpha     (PangoRenderer    *renderer,
-                                          PangoRenderPart   part,
-                                          guint16           alpha);
-PANGO_AVAILABLE_IN_ALL
-guint16     pango_renderer_get_alpha     (PangoRenderer    *renderer,
-                                          PangoRenderPart   part);
-
-PANGO_AVAILABLE_IN_ALL
 void               pango_renderer_set_matrix      (PangoRenderer     *renderer,
                                                    const PangoMatrix *matrix);
 PANGO_AVAILABLE_IN_ALL
