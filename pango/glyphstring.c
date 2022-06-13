@@ -57,7 +57,7 @@ pango_glyph_string_new (void)
  * Resize a glyph string to the given length.
  */
 void
-pango_glyph_string_set_size (PangoGlyphString *string, gint new_len)
+pango_glyph_string_set_size (PangoGlyphString *string, int new_len)
 {
   g_return_if_fail (new_len >= 0);
 
@@ -70,7 +70,7 @@ pango_glyph_string_set_size (PangoGlyphString *string, gint new_len)
       else
 	{
 	  const guint max_space =
-	    MIN (G_MAXINT, G_MAXSIZE / MAX (sizeof(PangoGlyphInfo), sizeof(gint)));
+	    MIN (G_MAXINT, G_MAXSIZE / MAX (sizeof(PangoGlyphInfo), sizeof(int)));
 
 	  guint more_space = (guint)string->space * 2;
 
@@ -90,7 +90,7 @@ pango_glyph_string_set_size (PangoGlyphString *string, gint new_len)
     }
 
   string->glyphs = g_realloc (string->glyphs, string->space * sizeof (PangoGlyphInfo));
-  string->log_clusters = g_realloc (string->log_clusters, string->space * sizeof (gint));
+  string->log_clusters = g_realloc (string->log_clusters, string->space * sizeof (int));
   string->num_glyphs = new_len;
 }
 
@@ -121,7 +121,7 @@ pango_glyph_string_copy (PangoGlyphString *string)
   new_string->glyphs = g_memdup2 (string->glyphs,
                                   string->space * sizeof (PangoGlyphInfo));
   new_string->log_clusters = g_memdup2 (string->log_clusters,
-                                        string->space * sizeof (gint));
+                                        string->space * sizeof (int));
 
   return new_string;
 }

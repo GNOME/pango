@@ -45,14 +45,14 @@ struct _PangoTab
  */
 struct _PangoTabArray
 {
-  gint size;
-  gint allocated;
+  int size;
+  int allocated;
   gboolean positions_in_pixels;
   PangoTab *tabs;
 };
 
 static void
-init_tabs (PangoTabArray *array, gint start, gint end)
+init_tabs (PangoTabArray *array, int start, int end)
 {
   while (start < end)
     {
@@ -77,7 +77,7 @@ init_tabs (PangoTabArray *array, gint start, gint end)
  *   be freed with [method@Pango.TabArray.free].
  */
 PangoTabArray*
-pango_tab_array_new (gint     initial_size,
+pango_tab_array_new (int     initial_size,
                      gboolean positions_in_pixels)
 {
   PangoTabArray *array;
@@ -122,10 +122,10 @@ pango_tab_array_new (gint     initial_size,
  *   be freed with [method@Pango.TabArray.free].
  */
 PangoTabArray  *
-pango_tab_array_new_with_positions (gint           size,
+pango_tab_array_new_with_positions (int            size,
                                     gboolean       positions_in_pixels,
                                     PangoTabAlign  first_alignment,
-                                    gint           first_position,
+                                    int            first_position,
                                     ...)
 {
   PangoTabArray *array;
@@ -218,7 +218,7 @@ pango_tab_array_free (PangoTabArray *tab_array)
  *
  * Return value: the number of tab stops in the array.
  */
-gint
+int
 pango_tab_array_get_size (PangoTabArray *tab_array)
 {
   g_return_val_if_fail (tab_array != NULL, 0);
@@ -238,11 +238,11 @@ pango_tab_array_get_size (PangoTabArray *tab_array)
  */
 void
 pango_tab_array_resize (PangoTabArray *tab_array,
-                        gint           new_size)
+                        int            new_size)
 {
   if (new_size > tab_array->allocated)
     {
-      gint current_end = tab_array->allocated;
+      int current_end = tab_array->allocated;
 
       /* Ratchet allocated size up above the index. */
       if (tab_array->allocated == 0)
@@ -271,9 +271,9 @@ pango_tab_array_resize (PangoTabArray *tab_array,
  */
 void
 pango_tab_array_set_tab (PangoTabArray *tab_array,
-                         gint           tab_index,
+                         int            tab_index,
                          PangoTabAlign  alignment,
-                         gint           location)
+                         int            location)
 {
   g_return_if_fail (tab_array != NULL);
   g_return_if_fail (tab_index >= 0);
@@ -297,9 +297,9 @@ pango_tab_array_set_tab (PangoTabArray *tab_array,
  */
 void
 pango_tab_array_get_tab (PangoTabArray *tab_array,
-                         gint           tab_index,
+                         int            tab_index,
                          PangoTabAlign *alignment,
-                         gint          *location)
+                         int           *location)
 {
   g_return_if_fail (tab_array != NULL);
   g_return_if_fail (tab_index < tab_array->size);
@@ -327,11 +327,11 @@ pango_tab_array_get_tab (PangoTabArray *tab_array,
  * You must free the returned array.
  */
 void
-pango_tab_array_get_tabs (PangoTabArray *tab_array,
+pango_tab_array_get_tabs (PangoTabArray  *tab_array,
                           PangoTabAlign **alignments,
-                          gint          **locations)
+                          int           **locations)
 {
-  gint i;
+  int i;
 
   g_return_if_fail (tab_array != NULL);
 
@@ -339,7 +339,7 @@ pango_tab_array_get_tabs (PangoTabArray *tab_array,
     *alignments = g_new (PangoTabAlign, tab_array->size);
 
   if (locations)
-    *locations = g_new (gint, tab_array->size);
+    *locations = g_new (int, tab_array->size);
 
   i = 0;
   while (i < tab_array->size)

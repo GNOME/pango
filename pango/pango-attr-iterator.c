@@ -167,8 +167,8 @@ pango_attr_iterator_copy (PangoAttrIterator *iterator)
  */
 void
 pango_attr_iterator_range (PangoAttrIterator *iterator,
-                           gint              *start,
-                           gint              *end)
+                           int               *start,
+                           int               *end)
 {
   g_return_if_fail (iterator != NULL);
 
@@ -317,7 +317,7 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 {
   PangoFontMask mask = 0;
   gboolean have_language = FALSE;
-  gdouble scale = 0;
+  double scale = 0;
   gboolean have_scale = FALSE;
   int i;
 

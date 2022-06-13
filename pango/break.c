@@ -160,8 +160,8 @@ default_break (const char    *text,
    * before we start, and then never assign %FALSE to anything
    */
 
-  const gchar *next;
-  gint i;
+  const char *next;
+  int i;
 
   gunichar prev_wc;
   gunichar next_wc;
@@ -211,7 +211,7 @@ default_break (const char    *text,
     WB_WSegSpace,
   } WordBreakType;
   WordBreakType prev_prev_WB_type = WB_Other, prev_WB_type = WB_Other;
-  gint prev_WB_i = -1;
+  int prev_WB_i = -1;
 
   /* See Sentence_Break Property Values table of UAX#29 */
   typedef enum
@@ -233,7 +233,7 @@ default_break (const char    *text,
     SB_STerm_Close_Sp,
   } SentenceBreakType;
   SentenceBreakType prev_prev_SB_type = SB_Other, prev_SB_type = SB_Other;
-  gint prev_SB_i = -1;
+  int prev_SB_i = -1;
 
   /* Rule LB25 with Example 7 of Customization */
   typedef enum
@@ -250,8 +250,8 @@ default_break (const char    *text,
   gunichar last_word_letter = 0;
   gunichar base_character = 0;
 
-  gint last_sentence_start = -1;
-  gint last_non_space = -1;
+  int last_sentence_start = -1;
+  int last_non_space = -1;
 
   gboolean prev_space_or_hyphen;
 

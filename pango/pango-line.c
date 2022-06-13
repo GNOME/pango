@@ -1197,14 +1197,14 @@ pango_line_x_to_index (PangoLine *line,
                        int       *trailing)
 {
   GSList *tmp_list;
-  gint start_pos = 0;
-  gint first_index = 0; /* line->start_index */
-  gint first_offset;
-  gint last_index;      /* start of last grapheme in line */
-  gint last_offset;
-  gint end_index;       /* end iterator for line */
-  gint end_offset;      /* end iterator for line */
-  gint last_trailing;
+  int start_pos = 0;
+  int first_index = 0; /* line->start_index */
+  int first_offset;
+  int last_index;      /* start of last grapheme in line */
+  int last_offset;
+  int end_index;       /* end iterator for line */
+  int end_offset;      /* end iterator for line */
+  int last_trailing;
   gboolean suppress_last_trailing;
 
   /* Find the last index in the line */

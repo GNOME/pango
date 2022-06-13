@@ -67,12 +67,12 @@ typedef struct
   GUnicodeScript run_code;
 } RunTestData;
 
-static gchar *
+static char *
 unescape (const char *text)
 {
   gboolean escaped = FALSE;
   GString *result = g_string_new (NULL);
-  const gchar *p;
+  const char *p;
 
   for (p = text; *p; p = g_utf8_next_char (p))
     {

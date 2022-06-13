@@ -199,12 +199,12 @@ out:
   return layout;
 }
 
-gchar *
+char *
 get_options_string (void)
 {
   PangoFontDescription *font_description = pango_font_description_from_string (opt_font);
-  gchar *font_name;
-  gchar *result;
+  char *font_name;
+  char *result;
 
   if (opt_waterfall)
     pango_font_description_unset_fields (font_description, PANGO_FONT_MASK_SIZE);
@@ -764,7 +764,7 @@ parse_margin (const char *name G_GNUC_UNUSED,
 }
 
 
-static gchar *
+static char *
 backends_to_string (void)
 {
   GString *backends = g_string_new (NULL);
@@ -776,7 +776,7 @@ backends_to_string (void)
 	g_string_append (backends, (*viewer)->id);
 	g_string_append_c (backends, '/');
       }
-  g_string_truncate (backends, MAX (0, (gint)backends->len - 1));
+  g_string_truncate (backends, MAX (0, (int)backends->len - 1));
 
   return g_string_free(backends,FALSE);
 }
@@ -795,7 +795,7 @@ backends_get_count (void)
 }
 
 
-static gchar *
+static char *
 backend_description (void)
 {
  GString *description  = g_string_new("Pango backend to use for rendering ");
@@ -829,7 +829,7 @@ parse_backend (const char *name G_GNUC_UNUSED,
     opt_viewer = *viewer;
   else
     {
-      gchar *backends = backends_to_string ();
+      char *backends = backends_to_string ();
 
       g_set_error(error,
 		  G_OPTION_ERROR,
@@ -861,9 +861,9 @@ show_version(const char *name G_GNUC_UNUSED,
 void
 parse_options (int argc, char *argv[])
 {
-  gchar *backend_options = backends_to_string ();
+  char *backend_options = backends_to_string ();
   GOptionFlags backend_flag = backends_get_count () > 1 ? 0 : G_OPTION_FLAG_HIDDEN;
-  gchar *backend_desc = backend_description ();
+  char *backend_desc = backend_description ();
   GOptionEntry entries[] =
   {
     {"no-auto-dir",	0, G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE,	&opt_auto_dir,

@@ -840,7 +840,7 @@ test_iter (void)
   PangoAttribute *attr;
   PangoAttrIterator *iter;
   PangoAttrIterator *copy;
-  gint start, end;
+  int start, end;
 
   /* Empty list */
   list = pango_attr_list_new ();

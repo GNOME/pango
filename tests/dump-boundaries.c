@@ -110,7 +110,7 @@ int
 main (int    argc,
       char **argv)
 {
-  gchar *text;
+  char *text;
 
   if (argc < 2)
     fail ("must give a filename on the command line");

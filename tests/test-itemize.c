@@ -115,9 +115,9 @@ get_item_char_offset (PangoItem *item)
 }
 
 static void
-test_file (const gchar *filename, GString *string)
+test_file (const char *filename, GString *string)
 {
-  gchar *contents;
+  char *contents;
   gsize  length;
   GError *error = NULL;
   GString *s1, *s2, *s3, *s4, *s5, *s6, *s7;
@@ -231,10 +231,10 @@ test_file (const gchar *filename, GString *string)
   g_free (contents);
 }
 
-static gchar *
-get_expected_filename (const gchar *filename)
+static char *
+get_expected_filename (const char *filename)
 {
-  gchar *f, *p, *expected;
+  char *f, *p, *expected;
 
   f = g_strdup (filename);
   p = strstr (f, ".items");
@@ -250,11 +250,11 @@ get_expected_filename (const gchar *filename)
 static void
 test_itemize (gconstpointer d)
 {
-  const gchar *filename = d;
-  gchar *expected_file;
+  const char *filename = d;
+  char *expected_file;
   GError *error = NULL;
   GString *dump;
-  gchar *diff;
+  char *diff;
   gboolean found_cantarell;
   PangoFontMap *map;
 
@@ -329,8 +329,8 @@ main (int argc, char *argv[])
 {
   GDir *dir;
   GError *error = NULL;
-  const gchar *name;
-  gchar *path;
+  const char *name;
+  char *path;
 
   context = pango_font_map_create_context (pango_font_map_get_default ());
   pango_context_set_language (context, pango_language_from_string ("en-us"));

@@ -127,11 +127,11 @@ ct_font_descriptor_get_weight (CTFontDescriptorRef desc)
   return weight;
 }
 
-static gchar *
+static char *
 gchar_from_cf_string (CFStringRef str)
 {
   CFIndex len;
-  gchar *buffer;
+  char *buffer;
 
   /* GetLength returns the number of UTF-16 pairs, so this number
    * times 2 should definitely gives us enough space for UTF8.

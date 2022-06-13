@@ -31,10 +31,10 @@ typedef struct _PangoEmojiIter PangoEmojiIter;
 
 struct _PangoEmojiIter
 {
-  const gchar *text_start;
-  const gchar *text_end;
-  const gchar *start;
-  const gchar *end;
+  const char *text_start;
+  const char *text_end;
+  const char *start;
+  const char *end;
   gboolean is_emoji;
 
   unsigned char *types;

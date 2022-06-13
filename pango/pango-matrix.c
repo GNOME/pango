@@ -127,7 +127,7 @@ pango_matrix_rotate (PangoMatrix *matrix,
 		     double       degrees)
 {
   PangoMatrix tmp;
-  gdouble r, s, c;
+  double r, s, c;
 
   g_return_if_fail (matrix != NULL);
 

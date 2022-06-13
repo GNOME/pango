@@ -811,7 +811,7 @@ shape_tab (PangoLineBreaker *self,
 
 static inline gboolean
 can_break_at (PangoLineBreaker *self,
-              gint              offset,
+              int               offset,
               PangoWrapMode     wrap)
 {
   if (offset == self->data->n_chars)

@@ -40,9 +40,9 @@ static PangoContext *context;
 static gboolean opt_hex_chars;
 
 static gboolean
-test_file (const gchar *filename, GString *string)
+test_file (const char *filename, GString *string)
 {
-  gchar *contents;
+  char *contents;
   gsize  length;
   GError *error = NULL;
   const PangoLogAttr *attrs;
@@ -286,10 +286,10 @@ test_file (const gchar *filename, GString *string)
   return TRUE;
 }
 
-static gchar *
-get_expected_filename (const gchar *filename)
+static char *
+get_expected_filename (const char *filename)
 {
-  gchar *f, *p, *expected;
+  char *f, *p, *expected;
 
   f = g_strdup (filename);
   p = strstr (f, ".break");
@@ -305,11 +305,11 @@ get_expected_filename (const gchar *filename)
 static void
 test_break (gconstpointer d)
 {
-  const gchar *filename = d;
-  gchar *expected_file;
+  const char *filename = d;
+  char *expected_file;
   GError *error = NULL;
   GString *dump;
-  gchar *diff;
+  char *diff;
 
   char *old_locale = g_strdup (setlocale (LC_ALL, NULL));
   setlocale (LC_ALL, "en_US.UTF-8");
@@ -391,8 +391,8 @@ main (int argc, char *argv[])
   GDir *dir;
   GError *error = NULL;
   char *opt_fonts = NULL;
-  const gchar *name;
-  gchar *path;
+  const char *name;
+  char *path;
   gboolean opt_legend = 0;
   GOptionContext *option_context;
   GOptionEntry entries[] = {

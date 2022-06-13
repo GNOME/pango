@@ -170,7 +170,7 @@ G_DEFINE_BOXED_TYPE (PangoLanguage, pango_language,
  *
  * Return value: a dynamically allocated string, free with [GLib.free]
  */
-static gchar *
+static char *
 _pango_get_lc_ctype (void)
 {
 #ifdef G_OS_WIN32
@@ -185,7 +185,7 @@ _pango_get_lc_ctype (void)
    * start the program with LC_ALL=something on the command line.)
    */
 
-  gchar *p;
+  char *p;
 
   p = getenv ("LC_ALL");
   if (p != NULL)
@@ -203,8 +203,8 @@ _pango_get_lc_ctype (void)
 #elif defined(HAVE_CORE_TEXT)
   CFArrayRef languages;
   CFStringRef language;
-  gchar ret[16];
-  gchar *p;
+  char ret[16];
+  char *p;
 
   /* Take the same approach as done for Windows above. First we check
    * if somebody tried to set the locale through environment variables.
@@ -238,7 +238,7 @@ _pango_get_lc_ctype (void)
   return g_strdup (ret);
 #else
   {
-    gchar *lc_ctype = setlocale (LC_CTYPE, NULL);
+    char *lc_ctype = setlocale (LC_CTYPE, NULL);
 
     if (lc_ctype)
       return g_strdup (lc_ctype);
@@ -292,7 +292,7 @@ pango_language_get_default (void)
 
   if (g_once_init_enter (&result))
     {
-      gchar *lc_ctype;
+      char *lc_ctype;
       PangoLanguage *lang;
 
       lc_ctype = _pango_get_lc_ctype ();

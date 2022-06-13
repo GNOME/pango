@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -110,7 +110,7 @@ pango_color_equal (const PangoColor *color1,
  * Return value: a newly-allocated text string that must
  *   be freed with [GLib.free]
  */
-gchar *
+char *
 pango_color_to_string (const PangoColor *color)
 {
   g_return_val_if_fail (color != NULL, NULL);
@@ -185,25 +185,25 @@ compare_xcolor_entries (const void *a, const void *b)
       int c1, c2;
       while (*s1 == ' ') s1++;
       while (*s2 == ' ') s1++;
-      c1 = (gint)(guchar) TOLOWER (*s1);
-      c2 = (gint)(guchar) TOLOWER (*s2);
+      c1 = (int)(guchar) TOLOWER (*s1);
+      c2 = (int)(guchar) TOLOWER (*s2);
       if (c1 != c2)
         return (c1 - c2);
       s1++; s2++;
     }
 
-  return ((gint) *s1) - ((gint) *s2);
+  return ((int) *s1) - ((int) *s2);
 }
 
 static gboolean
 find_color(const char *name,
-	   PangoColor *color)
+           PangoColor *color)
 {
   ColorEntry *found;
 
   found = bsearch (name, color_entries, G_N_ELEMENTS (color_entries),
-		   sizeof (ColorEntry),
-		   compare_xcolor_entries);
+                   sizeof (ColorEntry),
+                   compare_xcolor_entries);
   if (found == NULL)
     return FALSE;
 

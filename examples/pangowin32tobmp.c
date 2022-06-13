@@ -68,7 +68,7 @@ int main (int argc, char **argv)
   PangoFontFamily** families = NULL;
   PangoFontFace** faces = NULL;
   int nb, i;
-  gchar* family_name = NULL;
+  char *family_name = NULL;
   PangoLanguage *lang = pango_language_from_string (g_win32_getlocale ());
   HDC hdc = NULL;
   int line = 0;

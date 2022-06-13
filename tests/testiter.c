@@ -96,7 +96,7 @@ iter_char_test (PangoLayout *layout)
 
   for (i = 0 ; i < num_chars; ++i)
     {
-      gchar *char_str;
+      char *char_str;
       g_assert (iter_next_ok);
 
       index = pango_line_iter_get_index (iter);

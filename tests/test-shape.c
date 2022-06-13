@@ -131,9 +131,9 @@ apply_attributes_to_items (GList         *items,
 }
 
 static void
-test_file (const gchar *filename, GString *string)
+test_file (const char *filename, GString *string)
 {
-  gchar *contents;
+  char *contents;
   gsize  length;
   GError *error = NULL;
   char *test;
@@ -339,10 +339,10 @@ test_file (const gchar *filename, GString *string)
   pango_attr_list_unref (attrs);
 }
 
-static gchar *
-get_expected_filename (const gchar *filename)
+static char *
+get_expected_filename (const char *filename)
 {
-  gchar *f, *p, *expected;
+  char *f, *p, *expected;
 
   f = g_strdup (filename);
   p = strstr (f, ".shape");
@@ -358,11 +358,11 @@ get_expected_filename (const gchar *filename)
 static void
 test_shape (gconstpointer d)
 {
-  const gchar *filename = d;
-  gchar *expected_file;
+  const char *filename = d;
+  char *expected_file;
   GError *error = NULL;
   GString *dump;
-  gchar *diff;
+  char *diff;
 
   expected_file = get_expected_filename (filename);
 
@@ -390,8 +390,8 @@ main (int argc, char *argv[])
 {
   GDir *dir;
   GError *error = NULL;
-  const gchar *name;
-  gchar *path;
+  const char *name;
+  char *path;
   GOptionContext *option_context;
   GOptionEntry entries[] = {
     { "hex-chars", '0', 0, G_OPTION_ARG_NONE, &opt_hex_chars, "Print all chars in hex", NULL },

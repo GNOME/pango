@@ -63,10 +63,10 @@ log_attr_foreach (const char     *text,
 		  CharForeachFunc func,
 		  gpointer        data)
 {
-  const gchar *next = text;
-  gint length = strlen (text);
-  const gchar *end = text + length;
-  gint i = 0;
+  const char *next = text;
+  int length = strlen (text);
+  const char *end = text + length;
+  int i = 0;
   gunichar prev_wc;
   gunichar next_wc;
   GUnicodeType prev_type;

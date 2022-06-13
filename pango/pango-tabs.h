@@ -50,13 +50,13 @@ typedef enum
 #define PANGO_TYPE_TAB_ARRAY (pango_tab_array_get_type ())
 
 PANGO_AVAILABLE_IN_ALL
-PangoTabArray  *pango_tab_array_new                 (gint           initial_size,
+PangoTabArray  *pango_tab_array_new                 (int            initial_size,
                                                      gboolean       positions_in_pixels);
 PANGO_AVAILABLE_IN_ALL
-PangoTabArray  *pango_tab_array_new_with_positions  (gint           size,
+PangoTabArray  *pango_tab_array_new_with_positions  (int            size,
                                                      gboolean       positions_in_pixels,
                                                      PangoTabAlign  first_alignment,
-                                                     gint           first_position,
+                                                     int            first_position,
                                                      ...);
 PANGO_AVAILABLE_IN_ALL
 GType           pango_tab_array_get_type            (void) G_GNUC_CONST;
@@ -65,24 +65,24 @@ PangoTabArray  *pango_tab_array_copy                (PangoTabArray *src);
 PANGO_AVAILABLE_IN_ALL
 void            pango_tab_array_free                (PangoTabArray *tab_array);
 PANGO_AVAILABLE_IN_ALL
-gint            pango_tab_array_get_size            (PangoTabArray *tab_array);
+int             pango_tab_array_get_size            (PangoTabArray *tab_array);
 PANGO_AVAILABLE_IN_ALL
 void            pango_tab_array_resize              (PangoTabArray *tab_array,
-                                                     gint           new_size);
+                                                     int            new_size);
 PANGO_AVAILABLE_IN_ALL
 void            pango_tab_array_set_tab             (PangoTabArray *tab_array,
-                                                     gint           tab_index,
+                                                     int            tab_index,
                                                      PangoTabAlign  alignment,
-                                                     gint           location);
+                                                     int            location);
 PANGO_AVAILABLE_IN_ALL
 void            pango_tab_array_get_tab             (PangoTabArray *tab_array,
-                                                     gint           tab_index,
+                                                     int            tab_index,
                                                      PangoTabAlign *alignment,
-                                                     gint          *location);
+                                                     int           *location);
 PANGO_AVAILABLE_IN_ALL
 void            pango_tab_array_get_tabs            (PangoTabArray *tab_array,
                                                      PangoTabAlign **alignments,
-                                                     gint          **locations);
+                                                     int           **locations);
 
 PANGO_AVAILABLE_IN_ALL
 gboolean        pango_tab_array_get_positions_in_pixels (PangoTabArray *tab_array);

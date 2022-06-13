@@ -132,7 +132,7 @@ main (int argc, char *argv[])
   GDir *dir;
   GError *error = NULL;
   char *opt_fonts = NULL;
-  const gchar *name;
+  const char *name;
   char *path;
   GOptionContext *option_context;
   GOptionEntry entries[] = {

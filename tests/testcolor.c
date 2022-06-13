@@ -23,7 +23,7 @@
 #include <pango/pango.h>
 
 typedef struct _ColorSpec {
-  const gchar *spec;
+  const char *spec;
   gboolean valid;
   guint16 red;
   guint16 green;
