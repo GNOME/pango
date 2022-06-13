@@ -31,6 +31,25 @@ Once you have a fontmap, you can enumerate the available font families using
 the [iface@Gio.ListModel] implementation of the fontmap. To enumerate the faces
 of a font family, use the [iface@Gio.ListModel] implementation of the font family.
 
+# Custom Fonts
+
+The default font map used by Pango will contain the fonts that are available
+via the font enumeration APIs of the system (for Linux, that is fontconfig).
+For special situations (such as writing Pango tests), it can appropriate
+to create an empty font map with [ctor@Pango.FontMap.new] and populate it
+only with the fonts you need, using [method@Pango.FontMap.add_file].
+
+It is also possible to add custom fonts to the default font map if you
+just want to make some custom font available in addition to the normal
+system fonts. While loading a font from a .ttf or .otf file with
+[method@Pango.FontMap.add_file] is often the most convenient way to add
+a custom font, it is also possible to load a font from memory by combining
+[ctor@Pango.HbFace.new_from_hb_face] and `hb_face_create()`.
+
+Another approach to custom fonts is to draw the glyphs yourself. This
+is possible with [class@Pango.UserFace]. Such font faces can also be
+added to font maps and used like regular font faces.
+
 # Font Descriptions
 
 Since loading fonts uses system resources, Pango provides a way to describe
