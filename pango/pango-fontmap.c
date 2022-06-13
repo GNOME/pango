@@ -756,11 +756,11 @@ pango_font_map_changed (PangoFontMap *self)
  *
  * If you are using Pango as part of a higher-level system,
  * that system may have it's own way of create a `PangoContext`.
- * For instance, the GTK toolkit has, among others,
- * gtk_widget_get_pango_context(). Use those instead.
+ * Pango's own cairo support for instance, has [func@Pango.cairo_create_context],
+ * and the GTK toolkit has, among others, gtk_widget_get_pango_context().
+ * Use those instead.
  *
- * Return value: (transfer full): the newly allocated `PangoContext`,
- *   which should be freed with g_object_unref().
+ * Return value: (transfer full): the newly created `PangoContext`
  */
 PangoContext *
 pango_font_map_create_context (PangoFontMap *self)
@@ -784,8 +784,8 @@ pango_font_map_create_context (PangoFontMap *self)
  *
  * Load the font in the fontmap that is the closest match for @desc.
  *
- * Returns: (transfer full) (nullable): the newly allocated `PangoFont`
- *   loaded, or %NULL if no font matched.
+ * Returns: (transfer full) (nullable): the `PangoFont` that was found,
+ *   or %NULL if no font matched
  */
 PangoFont *
 pango_font_map_load_font (PangoFontMap               *self,
@@ -807,8 +807,8 @@ pango_font_map_load_font (PangoFontMap               *self,
  * Load a set of fonts in the fontmap that can be used to render
  * a font matching @desc.
  *
- * Returns: (transfer full) (nullable): the newly allocated
- *   `PangoFontset` loaded, or %NULL if no font matched.
+ * Returns: (transfer full) (nullable): the `PangoFontset` containing
+ *   the fonts that were found, or %NULL if no font matched
  */
 PangoFontset *
 pango_font_map_load_fontset (PangoFontMap               *self,
@@ -870,6 +870,9 @@ pango_font_map_get_family (PangoFontMap *self,
  * pango_font_map_new:
  *
  * Creates a new `PangoFontMap`.
+ *
+ * A fontmap is used to cache information about available fonts,
+ * and holds certain global parameters such as the resolution.
  *
  * Returns: A newly created `PangoFontMap
  */
@@ -1126,15 +1129,14 @@ static GPrivate default_font_map = G_PRIVATE_INIT (g_object_unref); /* MT-safe *
  *
  * Creates a new `PangoFontMap` object.
  *
- * A fontmap is used to cache information about available fonts,
- * and holds certain global parameters such as the resolution.
- * In most cases, you can use [func@Pango.FontMap.get_default]
- * instead.
- *
  * Note that the type of the returned object will depend
  * on the platform that Pango is used on. If you want to
  * explicitly create an instance of `PangoFontMap` itself
  * (and not a platform-specific subclass), see [ctor@Pango.FontMap.new].
+ *
+ * In most cases, you should use [func@Pango.FontMap.get_default],
+ * which will automatically create a new default fontmap,
+ * if one has not been created for the current thread yet.
  *
  * Return value: (transfer full): the newly allocated `PangoFontMap`
  */
@@ -1159,17 +1161,17 @@ pango_font_map_new_default (void)
 /**
  * pango_font_map_get_default:
  *
- * Gets a default `PangoFontMap`.
+ * Gets the default `PangoFontMap`.
  *
- * Note that the type of the returned object will depend on the
+ * The type of the returned object will depend on the
  * platform that Pango is used on.
- *
- * The default fontmap can be changed by using
- * [method@Pango.FontMap.set_default].
  *
  * Note that the default fontmap is per-thread. Each thread gets
  * its own default fontmap. In this way, Pango can be used safely
  * from multiple threads.
+ *
+ * The default fontmap can be changed by using
+ * [method@Pango.FontMap.set_default].
  *
  * Return value: (transfer none): the default fontmap
  *  for the current thread. This object is owned by Pango and must
