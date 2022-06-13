@@ -1136,60 +1136,24 @@ static GPrivate default_font_map = G_PRIVATE_INIT (g_object_unref); /* MT-safe *
  * explicitly create an instance of `PangoFontMap` itself
  * (and not a platform-specific subclass), see [ctor@Pango.FontMap.new].
  *
- * You can override the type of backend returned by using an
- * environment variable %PANGOCAIRO_BACKEND. Supported types,
- * based on your build, are fontconfig, win32, and coretext.
- *
- * If requested type is not available, `NULL` is returned.
- * This is only useful for testing, when at least two backends
- * are compiled in.
- *
- * Return value: (transfer full): the newly allocated `PangoFontMap`,
- *   which should be freed with g_object_unref().
+ * Return value: (transfer full): the newly allocated `PangoFontMap`
  */
 PangoFontMap *
 pango_font_map_new_default (void)
 {
-  const char *backend;
-
-  backend = getenv ("PANGOCAIRO_BACKEND");
-  if (backend && !*backend)
-    backend = NULL;
-
+/* If we ever go back to having multiple backends built
+ * at the same time, bring back a PANGO_BACKEND env var
+ * here.
+ */
 #if defined (HAVE_CORE_TEXT)
-  if (!backend || 0 == strcmp (backend, "coretext"))
-    return PANGO_FONT_MAP (pango_core_text_font_map_new ());
-#endif
-
-#if defined (HAVE_DIRECT_WRITE)
-  if (!backend || 0 == strcmp (backend, "win32"))
-    return PANGO_FONT_MAP (pango_direct_write_font_map_new ());
-#endif
-
-#if defined (HAVE_FONTCONFIG)
-  if (!backend || 0 == strcmp (backend, "fc")
-               || 0 == strcmp (backend, "fontconfig"))
-    return PANGO_FONT_MAP (pango_fc_font_map_new ());
-#endif
-
-  {
-    const char backends[] = ""
-#if defined (HAVE_CORE_TEXT)
-      " coretext"
-#endif
-#if defined (HAVE_DIRECT_WRITE)
-      " win32"
-#endif
-#if defined (HAVE_FNTCONFIG)
-      " fontconfig"
-#endif
-      ;
-
-    g_critical ("Unknown PANGOCAIRO_BACKEND value.\n"
-                "Available backends are:%s", backends);
-  }
-
+  return PANGO_FONT_MAP (pango_core_text_font_map_new ());
+#elif defined (HAVE_DIRECT_WRITE)
+  return PANGO_FONT_MAP (pango_direct_write_font_map_new ());
+#elif defined (HAVE_FONTCONFIG)
+  return PANGO_FONT_MAP (pango_fc_font_map_new ());
+#else
   return NULL;
+#endif
 }
 
 /**
