@@ -46,11 +46,31 @@ In brief overview:
    type names are StudlyCaps, macro names are UPPER_CASE_WITH_UNDERSCORES
 
 
+Standard types
+==============
+
+Nowadays, we prefer standard C types over their 'g' typedefs
+in many cases:
+
+- int instead of gint
+- float instead of gfloat
+- double instead of gdouble
+
+Unfortunately, bool is not compatible with gboolean, so we have
+to keep using gboolean. The following 'g' types are still used:
+
+- gint64
+- gsize
+- gssize
+
+The jury is still out on guint vs unsigned int.
+
+
 Documentation comments
 ======================
 
 All public API functions should have inline documentation headers
-in the gtk-doc / gnome-doc style. For instance:
+in the gi-docgen style. For instance:
 
 ```c
 /**
@@ -61,7 +81,7 @@ in the gtk-doc / gnome-doc style. For instance:
  *
  * Retrieves a particular line from a `PangoLayout` (or @layout.)
  *
- * Return value: the requested `PangoLine`, or %NULL
+ * Return value: the requested `PangoLine`, or `NULL`
  *   if the index is out of range. This layout line can
  *   be ref'ed and retained, but will become invalid
  *   if changes are made to the `PangoLayout`.
@@ -73,6 +93,23 @@ pango_layout_get_line (PangoLayout *layout,
                        int          line)
 [...]
 ```
+
+The most noticable difference between old gtk-doc style doc
+comments and gi-docgen is linking. gi-docgen can only link
+to APIs that have gi-docgen generated docs. To make
+cross-project links work, you need to
+
+- Add the gir to the gir dependencies
+- Add the prefix to docs/urlmap.js
+
+With gi-docgen, links look like this:
+
+```c
+[method@Pango.Context.set_matrix]
+```
+
+and require some knowledge of how the linked-to APIs are
+represented in gobject-introspection.
 
 Choosing Function Names
 =======================
@@ -89,7 +126,7 @@ Choosing Function Names
   pango_layout_ln_cnt ();
   ```
 
-- function that retrieve a value in a side-effect free fashion, should
+- Functions that retrieve a value in a side-effect free fashion, should
   include "get" in the name.
 
   ```c
@@ -102,8 +139,9 @@ Choosing Function Names
   pango_layout_line_count ();
   ```
 
+  For booleans, "is" can be instead of "get".
 
-- functions that set a single parameter in a side-effect free fashion
+- Functions that set a single parameter in a side-effect free fashion
   should include "set" in the name, for instance:
 
   ```c
