@@ -183,9 +183,7 @@ static struct {
 static inline G_GNUC_UNUSED const char *
 pango_get_ignorable (gunichar ch)
 {
-  int i;
-
-  for (i = 0; i < G_N_ELEMENTS (ignorables); i++)
+  for (guint i = 0; i < G_N_ELEMENTS (ignorables); i++)
     {
       if (ch < ignorables[i].ch)
         return NULL;
@@ -193,6 +191,7 @@ pango_get_ignorable (gunichar ch)
       if (ch == ignorables[i].ch)
         return ignorables[i].nick;
     }
+
   return NULL;
 }
 
