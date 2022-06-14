@@ -286,6 +286,6 @@ pkgconfig.generate(libpango,
   name: 'Pango',
   description: 'Internationalized text handling',
   requires: pango_pkg_requires,
-  filebase: 'pango',
+  filebase: 'pango2',
   subdirs: pango_api_name,
 )
