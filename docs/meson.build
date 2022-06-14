@@ -1,4 +1,4 @@
-gidocgen = find_program('gi-docgen', required: get_option('docs'))
+gidocgen = find_program('gi-docgen', required: get_option('documentation'))
 
 pango_content_files = [
   'first_steps.md',
