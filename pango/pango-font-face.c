@@ -23,6 +23,34 @@
 #include "pango-font-face-private.h"
 #include "pango-font-family.h"
 
+#ifdef __linux__
+#include <execinfo.h>
+
+static inline char *
+get_backtrace (void)
+{
+  void *buffer[1024];
+  int size;
+  char **symbols;
+  GString *s;
+
+  size = backtrace (buffer, 1024);
+  symbols = backtrace_symbols (buffer, size);
+
+  s = g_string_new ("");
+
+  for (int i = 0; i < size; i++)
+    {
+      g_string_append (s, symbols[i]);
+      g_string_append_c (s, '\n');
+    }
+
+  free (symbols);
+
+  return g_string_free (s, FALSE);
+}
+#endif
+
 /**
  * PangoFontFace:
  *
@@ -252,6 +280,19 @@ pango_font_face_create_font (PangoFontFace              *face,
                              float                       dpi,
                              const PangoMatrix          *ctm)
 {
+  if (!PANGO_IS_FONT_FACE (face))
+    {
+      char *s = pango_font_description_to_string (desc);
+#ifdef __linux__
+      char *bs = get_backtrace ();
+#else
+      char *bs = g_strdup ("");
+#endif
+      g_critical ("pango_font_face_create_font called without a face for %s\n%s", s, bs);
+      g_free (s);
+      g_free (bs);
+    }
+
   g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);
 
   return PANGO_FONT_FACE_GET_CLASS (face)->create_font (face, desc, dpi, ctm);
