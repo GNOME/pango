@@ -237,7 +237,7 @@ pango_deps = []
 glib_req_version = '>= 2.62'
 fribidi_req_version = '>= 1.0.6'
 libthai_req_version = '>= 0.1.9'
-harfbuzz_req_version = '>= 3.3.0'
+harfbuzz_req_version = '>= 4.3.0'
 fontconfig_req_version = '>= 2.13.0'
 cairo_req_version = '>= 1.12.10'
 
