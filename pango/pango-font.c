@@ -75,9 +75,7 @@ pango_font_default_has_char (PangoFont *font,
 static PangoFontFace *
 pango_font_default_get_face (PangoFont *font)
 {
-  PangoFontMap *map = pango_font_get_font_map (font);
-
-  return PANGO_FONT_MAP_GET_CLASS (map)->get_face (map,font);
+  return NULL;
 }
 
 static void

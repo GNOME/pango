@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <gio/gio.h>
 #include <pango/pangocairo.h>
-#include <pango/pangofc-hbfontmap.h>
+#include <pango/pangofc-fontmap.h>
 
 #include <hb-ot.h>
 
@@ -34,25 +34,25 @@
 static void
 test_hbfont_monospace (void)
 {
-  PangoHbFontMap *map;
+  PangoFontMap *map;
   PangoFontFamily *family;
   char *path;
 
-  map = pango_hb_font_map_new ();
+  map = pango_font_map_new ();
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
-  pango_hb_font_map_add_file (map, path);
+  pango_font_map_add_file (map, path);
 
   family = pango_font_map_get_family (PANGO_FONT_MAP (map), "Cantarell");
 
   g_assert_nonnull (family);
 
-  pango_hb_font_map_add_face (map, PANGO_FONT_FACE (pango_hb_face_new_from_file (path, 0, -2, NULL, NULL)));
+  pango_font_map_add_face (map, PANGO_FONT_FACE (pango_hb_face_new_from_file (path, 0, -2, NULL, NULL)));
 
   g_free (path);
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "DejaVuSansMono.ttf", NULL);
-  pango_hb_font_map_add_file (map, path);
+  pango_font_map_add_file (map, path);
   g_free (path);
 
   family = pango_font_map_get_family (PANGO_FONT_MAP (map), "DejaVu Sans Mono");
@@ -367,7 +367,7 @@ test_hbfont_faceid (void)
 static void
 test_hbfont_load (void)
 {
-  PangoHbFontMap *map;
+  PangoFontMap *map;
   PangoContext *context;
   char *path;
   PangoFontDescription *desc;
@@ -376,7 +376,7 @@ test_hbfont_load (void)
   PangoFont *font;
 
   /* Make a Cat family, with the two faces Fat and Wild */
-  map = pango_hb_font_map_new ();
+  map = pango_font_map_new ();
   context = pango_font_map_create_context (PANGO_FONT_MAP (map));
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
@@ -386,7 +386,7 @@ test_hbfont_load (void)
   pango_font_description_free (desc);
   g_free (path);
 
-  pango_hb_font_map_add_face (map, PANGO_FONT_FACE (face_fat));
+  pango_font_map_add_face (map, PANGO_FONT_FACE (face_fat));
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "DejaVuSans.ttf", NULL);
   desc = pango_font_description_new ();
@@ -394,7 +394,7 @@ test_hbfont_load (void)
   face_wild = pango_hb_face_new_from_file (path, 0, -1, "Wild", desc);
   pango_font_description_free (desc);
 
-  pango_hb_font_map_add_face (map, PANGO_FONT_FACE (face_wild));
+  pango_font_map_add_face (map, PANGO_FONT_FACE (face_wild));
 
   desc = pango_font_face_describe (PANGO_FONT_FACE (face_wild));
   pango_font_description_set_size (desc, 12 * PANGO_SCALE);
@@ -429,7 +429,7 @@ test_hbfont_load (void)
 static void
 test_hbfont_load_variation (void)
 {
-  PangoHbFontMap *map;
+  PangoFontMap *map;
   PangoContext *context;
   char *path;
   PangoFontDescription *desc;
@@ -442,7 +442,7 @@ test_hbfont_load_variation (void)
   unsigned int length;
 
   /* Make a Cat family, with the two faces Fat and Wild */
-  map = pango_hb_font_map_new ();
+  map = pango_font_map_new ();
   context = pango_font_map_create_context (PANGO_FONT_MAP (map));
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
@@ -452,7 +452,7 @@ test_hbfont_load_variation (void)
   pango_font_description_free (desc);
   g_free (path);
 
-  pango_hb_font_map_add_face (map, PANGO_FONT_FACE (face_fat));
+  pango_font_map_add_face (map, PANGO_FONT_FACE (face_fat));
 
   desc = pango_font_description_new ();
   pango_font_description_set_family (desc, "Cat");
@@ -461,7 +461,7 @@ test_hbfont_load_variation (void)
   face_wild = pango_hb_face_new_instance (face_fat, &v, 1, "Wild", desc);
   pango_font_description_free (desc);
 
-  pango_hb_font_map_add_face (map, PANGO_FONT_FACE (face_wild));
+  pango_font_map_add_face (map, PANGO_FONT_FACE (face_wild));
 
   desc = pango_font_face_describe (PANGO_FONT_FACE (face_wild));
 
@@ -506,7 +506,7 @@ get_font (PangoFontset *fontset,
 }
 
 static void
-test_hbfontmap_language (void)
+test_fontmap_language (void)
 {
   PangoFontMap *map;
   PangoContext *context;
@@ -514,7 +514,7 @@ test_hbfontmap_language (void)
   PangoFontset *fonts;
   gboolean found;
 
-  map = PANGO_FONT_MAP (pango_fc_hb_font_map_new ());
+  map = PANGO_FONT_MAP (pango_fc_font_map_new ());
   context = pango_font_map_create_context (map);
   desc = pango_font_description_from_string ("serif 11");
 
@@ -545,7 +545,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/hbfont/faceid", test_hbfont_faceid);
   g_test_add_func ("/hbfont/load", test_hbfont_load);
   g_test_add_func ("/hbfont/load/variation", test_hbfont_load_variation);
-  g_test_add_func ("/hbfontmap/language", test_hbfontmap_language);
+  g_test_add_func ("/fontmap/language", test_fontmap_language);
 
   return g_test_run ();
 }

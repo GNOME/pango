@@ -23,10 +23,10 @@
 
 #include <gio/gio.h>
 
-#include "pangofc-hbfontmap.h"
+#include "pangofc-fontmap.h"
 #include "pango-hbfamily-private.h"
 #include "pango-generic-family-private.h"
-#include "pango-hbfontmap-private.h"
+#include "pango-fontmap-private.h"
 #include "pango-hbface-private.h"
 #include "pango-hbfont-private.h"
 #include "pango-context.h"
@@ -39,23 +39,23 @@
 
 
 /**
- * PangoFcHbFontMap:
+ * PangoFcFontMap:
  *
- * `PangoFcHbFontMap` is a subclass of `PangoHbFontMap` that uses
+ * `PangoFcFontMap` is a subclass of `PangoFontMap` that uses
  * fontconfig to populate the fontmap with the available fonts.
  */
 
 
-struct _PangoFcHbFontMap
+struct _PangoFcFontMap
 {
-  PangoHbFontMap parent_instance;
+  PangoFontMap parent_instance;
 
   FcConfig *config;
 };
 
-struct _PangoFcHbFontMapClass
+struct _PangoFcFontMapClass
 {
-  PangoHbFontMapClass parent_class;
+  PangoFontMapClass parent_class;
 };
 
 /* {{{ Fontconfig utilities */
@@ -249,9 +249,9 @@ font_matrix_from_pattern (FcPattern   *pattern,
 }
 
 static PangoHbFace *
-pango_hb_face_from_pattern (PangoFcHbFontMap *self,
-                            FcPattern        *pattern,
-                            GHashTable       *lang_hash)
+pango_hb_face_from_pattern (PangoFcFontMap *self,
+                            FcPattern      *pattern,
+                            GHashTable     *lang_hash)
 {
   const char *family_name, *file;
   int index;
@@ -319,12 +319,12 @@ pango_hb_face_from_pattern (PangoFcHbFontMap *self,
 }
 
 /* }}} */
-/* {{{ PangoHbFontMap implementation */
+/* {{{ PangoFontMap implementation */
 
 static void
-pango_fc_hb_font_map_populate (PangoHbFontMap *map)
+pango_fc_font_map_populate (PangoFontMap *map)
 {
-  PangoFcHbFontMap *self = PANGO_FC_HB_FONT_MAP (map);
+  PangoFcFontMap *self = PANGO_FC_FONT_MAP (map);
   FcPattern *pat;
   FcFontSet *fontset;
   int k;
@@ -352,7 +352,7 @@ pango_fc_hb_font_map_populate (PangoHbFontMap *map)
       if (!face)
         continue;
 
-      pango_hb_font_map_add_face (PANGO_HB_FONT_MAP (self), PANGO_FONT_FACE (face));
+      pango_font_map_add_face (PANGO_FONT_MAP (self), PANGO_FONT_FACE (face));
     }
 
   g_hash_table_unref (lang_hash);
@@ -372,7 +372,7 @@ pango_fc_hb_font_map_populate (PangoHbFontMap *map)
       FcResult res;
       const char *family_name;
 
-      if (pango_font_map_get_family (PANGO_FONT_MAP (self), alias_names[i]))
+      if (pango_font_map_get_family (map, alias_names[i]))
         continue;
 
       pattern = FcPatternCreate ();
@@ -385,14 +385,14 @@ pango_fc_hb_font_map_populate (PangoHbFontMap *map)
 
       if (FcPatternGetString (ret, FC_FAMILY, 0, (FcChar8 **)(void*)&family_name) == FcResultMatch)
         {
-          PangoFontFamily *family = pango_font_map_get_family (PANGO_FONT_MAP (self), family_name);
+          PangoFontFamily *family = pango_font_map_get_family (map, family_name);
           if (family)
             {
               PangoGenericFamily *alias_family;
 
               alias_family = pango_generic_family_new (alias_names[i]);
               pango_generic_family_add_family (alias_family, family);
-              pango_hb_font_map_add_family (PANGO_HB_FONT_MAP (self), PANGO_FONT_FAMILY (alias_family));
+              pango_font_map_add_family (map, PANGO_FONT_FAMILY (alias_family));
             }
         }
 
@@ -425,7 +425,7 @@ pango_fc_hb_font_map_populate (PangoHbFontMap *map)
       FcFontSet *ret;
       FcResult res;
 
-      if (pango_font_map_get_family (PANGO_FONT_MAP (self), generic_names[i]))
+      if (pango_font_map_get_family (map, generic_names[i]))
         continue;
 
       generic_family = pango_generic_family_new (generic_names[i]);
@@ -479,7 +479,7 @@ pango_fc_hb_font_map_populate (PangoHbFontMap *map)
 
           index = index & 0xffff;
 
-          family = PANGO_HB_FAMILY (pango_font_map_get_family (PANGO_FONT_MAP (self), family_name));
+          family = PANGO_HB_FAMILY (pango_font_map_get_family (map, family_name));
           if (!family)
             continue;
 
@@ -494,7 +494,7 @@ pango_fc_hb_font_map_populate (PangoHbFontMap *map)
       FcPatternDestroy (pattern);
       g_hash_table_unref (families_hash);
 
-      pango_hb_font_map_add_family (PANGO_HB_FONT_MAP (self), PANGO_FONT_FAMILY (generic_family));
+      pango_font_map_add_family (map, PANGO_FONT_FAMILY (generic_family));
     }
 
   FcLangSetDestroy (no_langs);
@@ -502,36 +502,36 @@ pango_fc_hb_font_map_populate (PangoHbFontMap *map)
 
   FcObjectSetDestroy (os);
 
-  pango_trace_mark (before, "populate FcHbFontMap", NULL);
+  pango_trace_mark (before, "populate FcFontMap", NULL);
 }
 
 /* }}} */
-/* {{{ PangoFontMap implementation */
+/* {{{ PangoFcFontMap implementation */
 
-G_DEFINE_TYPE (PangoFcHbFontMap, pango_fc_hb_font_map, PANGO_TYPE_HB_FONT_MAP)
+G_DEFINE_TYPE (PangoFcFontMap, pango_fc_font_map, PANGO_TYPE_FONT_MAP)
 
 static void
-pango_fc_hb_font_map_init (PangoFcHbFontMap *self)
+pango_fc_font_map_init (PangoFcFontMap *self)
 {
-  pango_hb_font_map_repopulate (PANGO_HB_FONT_MAP (self), TRUE);
+  pango_font_map_repopulate (PANGO_FONT_MAP (self), TRUE);
 }
 
 static void
-pango_fc_hb_font_map_finalize (GObject *object)
+pango_fc_font_map_finalize (GObject *object)
 {
-  PangoFcHbFontMap *self = PANGO_FC_HB_FONT_MAP (object);
+  PangoFcFontMap *self = PANGO_FC_FONT_MAP (object);
 
   if (self->config)
     FcConfigDestroy (self->config);
 
-  G_OBJECT_CLASS (pango_fc_hb_font_map_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango_fc_font_map_parent_class)->finalize (object);
 }
 
 static void
-pango_fc_hb_font_map_class_init (PangoFcHbFontMapClass *class)
+pango_fc_font_map_class_init (PangoFcFontMapClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
-  PangoHbFontMapClass *hb_font_map_class = PANGO_HB_FONT_MAP_CLASS (class);
+  PangoFontMapClass *font_map_class = PANGO_FONT_MAP_CLASS (class);
   gint64 before G_GNUC_UNUSED;
 
   before = PANGO_TRACE_CURRENT_TIME;
@@ -540,33 +540,33 @@ pango_fc_hb_font_map_class_init (PangoFcHbFontMapClass *class)
 
   pango_trace_mark (before, "FcInit", NULL);
 
-  object_class->finalize = pango_fc_hb_font_map_finalize;
+  object_class->finalize = pango_fc_font_map_finalize;
 
-  hb_font_map_class->populate = pango_fc_hb_font_map_populate;
+  font_map_class->populate = pango_fc_font_map_populate;
 }
 
 /* }}} */
 /* {{{ Public API */
 
 /**
- * pango_fc_hb_font_map_new:
+ * pango_fc_font_map_new:
  *
- * Creates a new `PangoFcHbFontMap` object.
+ * Creates a new `PangoFcFontMap` object.
  *
- * Unless overridden by [method@PangoFc.HbFontMap.set_config],
+ * Unless overridden by [method@PangoFc.FontMap.set_config],
  * this font map uses the default fontconfig configuration.
  *
- * Returns: a new `PangoFcHbFontMap`
+ * Returns: a new `PangoFcFontMap`
  */
-PangoFcHbFontMap *
-pango_fc_hb_font_map_new (void)
+PangoFcFontMap *
+pango_fc_font_map_new (void)
 {
-  return g_object_new (PANGO_TYPE_FC_HB_FONT_MAP, NULL);
+  return g_object_new (PANGO_TYPE_FC_FONT_MAP, NULL);
 }
 
 /**
- * pango_fc_hb_font_map_set_config: (skip)
- * @self: a `PangoFcHbFontMap`
+ * pango_fc_font_map_set_config: (skip)
+ * @self: a `PangoFcFontMap`
  * @config: (nullable): the `FcConfig` to use, or `NULL` to use
  *   the default configuration
  *
@@ -576,10 +576,10 @@ pango_fc_hb_font_map_new (void)
  * removes all cached font families, faces and fonts.
  */
 void
-pango_fc_hb_font_map_set_config (PangoFcHbFontMap *self,
-                                 FcConfig         *config)
+pango_fc_font_map_set_config (PangoFcFontMap *self,
+                              FcConfig       *config)
 {
-  g_return_if_fail (PANGO_IS_FC_HB_FONT_MAP (self));
+  g_return_if_fail (PANGO_IS_FC_FONT_MAP (self));
 
   if (self->config == config && FcConfigUptoDate (config))
     return;
@@ -595,25 +595,25 @@ pango_fc_hb_font_map_set_config (PangoFcHbFontMap *self,
         FcConfigReference (self->config);
     }
 
-  pango_hb_font_map_repopulate (PANGO_HB_FONT_MAP (self), TRUE);
+  pango_font_map_repopulate (PANGO_FONT_MAP (self), TRUE);
 }
 
 /**
- * pango_fc_hb_font_map_get_config: (skip)
- * @self: a `PangoFcHbFontMap`
+ * pango_fc_font_map_get_config: (skip)
+ * @self: a `PangoFcFontMap`
  *
  * Fetches the `FcConfig` attached to a font map.
  *
- * See also: [method@PangoFc.HbFontMap.set_config].
+ * See also: [method@PangoFc.FontMap.set_config].
  *
  * Returns: (nullable): the `FcConfig` object attached to
  *   @self, which might be %NULL. The return value is
  *   owned by Pango and should not be freed.
  */
 FcConfig *
-pango_fc_hb_font_map_get_config (PangoFcHbFontMap *self)
+pango_fc_font_map_get_config (PangoFcFontMap *self)
 {
-  g_return_val_if_fail (PANGO_IS_FC_HB_FONT_MAP (self), NULL);
+  g_return_val_if_fail (PANGO_IS_FC_FONT_MAP (self), NULL);
 
   return self->config;
 }

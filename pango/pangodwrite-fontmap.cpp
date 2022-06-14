@@ -1,5 +1,5 @@
 /* Pango
- * pangodwrite-hbfontmap.c: Fontmap using DirectWrite
+ * pangodwrite-fontmap.cpp: Fontmap using DirectWrite
  *
  * Copyright (C) 2022 the GTK team
  *
@@ -27,9 +27,9 @@
 #include <hb-ot.h>
 #include <hb-directwrite.h>
 
-#include "pangodwrite-hbfontmap.h"
+#include "pangodwrite-fontmap.h"
 #include "pango-hbfamily-private.h"
-#include "pango-hbfontmap-private.h"
+#include "pango-fontmap-private.h"
 #include "pango-hbface-private.h"
 #include "pango-hbfont-private.h"
 #include "pango-context.h"
@@ -38,21 +38,21 @@
 
 
 /**
- * PangoDirectWriteHbFontMap:
+ * PangoDirectWriteFontMap:
  *
- * `PangoDirectWriteHbFontMap` is a subclass of `PangoHbFontMap` that
+ * `PangoDirectWriteFontMap` is a subclass of `PangoFontMap` that
  * uses DirectWrite to populate the fontmap with the available fonts.
  */
 
 
-struct _PangoDirectWriteHbFontMap
+struct _PangoDirectWriteFontMap
 {
-  PangoHbFontMap parent_instance;
+  PangoFontMap parent_instance;
 };
 
-struct _PangoDirectWriteHbFontMapClass
+struct _PangoDirectWriteFontMapClass
 {
-  PangoHbFontMapClass parent_class;
+  PangoFontMapClass parent_class;
 };
 
 #ifdef _MSC_VER
@@ -226,10 +226,10 @@ util_create_pango_hb_face (IDWriteFontFamily *family,
 }
 
 /* }}} */
-/* {{{ PangoHbFontMap implementation */
+/* {{{ PangoFontMap implementation */
 
 static void
-pango_direct_write_hb_font_map_populate (PangoHbFontMap *map)
+pango_direct_write_font_map_populate (PangoFontMap *map)
 {
   IDWriteFactory *factory = NULL;
   IDWriteFontCollection *collection = NULL;
@@ -285,8 +285,7 @@ pango_direct_write_hb_font_map_populate (PangoHbFontMap *map)
 
           pango_face = util_create_pango_hb_face (family, font, face);
           if (pango_face)
-            pango_hb_font_map_add_face (PANGO_HB_FONT_MAP (self),
-                                        PANGO_FONT_FACE (pango_face));
+            pango_font_map_add_face (map, PANGO_FONT_FACE (pango_face));
 
           face->Release ();
           font->Release ();
@@ -320,7 +319,7 @@ pango_direct_write_hb_font_map_populate (PangoHbFontMap *map)
 
   for (gsize i = 0; i < G_N_ELEMENTS (aliases); i++)
     {
-      PangoFontFamily *family = pango_font_map_get_family (PANGO_FONT_MAP (map), aliases[i].family_name);
+      PangoFontFamily *family = pango_font_map_get_family (map, aliases[i].family_name);
 
       if (family)
         {
@@ -328,53 +327,53 @@ pango_direct_write_hb_font_map_populate (PangoHbFontMap *map)
 
           alias_family = pango_generic_family_new (aliases[i].alias_name);
           pango_generic_family_add_family (alias_family, family);
-          pango_hb_font_map_add_family (map, PANGO_FONT_FAMILY (alias_family));
+          pango_font_map_add_family (map, PANGO_FONT_FAMILY (alias_family));
         }
     }
 }
 
 /* }}} */
-/* {{{ PangoFontMap implementation */
+/* {{{ PangoDirctWriteFontMap implementation */
 
-G_DEFINE_TYPE (PangoDirectWriteHbFontMap, pango_direct_write_hb_font_map, PANGO_TYPE_HB_FONT_MAP)
+G_DEFINE_TYPE (PangoDirectWriteFontMap, pango_direct_write_font_map, PANGO_TYPE_FONT_MAP)
 
 static void
-pango_direct_write_hb_font_map_init (PangoDirectWriteHbFontMap *self)
+pango_direct_write_font_map_init (PangoDirectWriteFontMap *self)
 {
-  pango_hb_font_map_repopulate (PANGO_HB_FONT_MAP (self), TRUE);
+  pango_font_map_repopulate (PANGO_FONT_MAP (self), TRUE);
 }
 
 static void
-pango_direct_write_hb_font_map_finalize (GObject *object)
+pango_direct_write_font_map_finalize (GObject *object)
 {
-  G_OBJECT_CLASS (pango_direct_write_hb_font_map_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango_direct_write_font_map_parent_class)->finalize (object);
 }
 
 static void
-pango_direct_write_hb_font_map_class_init (PangoDirectWriteHbFontMapClass *class_)
+pango_direct_write_font_map_class_init (PangoDirectWriteFontMapClass *class_)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class_);
-  PangoHbFontMapClass *hb_font_map_class = PANGO_HB_FONT_MAP_CLASS (class_);
+  PangoFontMapClass *font_map_class = PANGO_FONT_MAP_CLASS (class_);
 
-  object_class->finalize = pango_direct_write_hb_font_map_finalize;
+  object_class->finalize = pango_direct_write_font_map_finalize;
 
-  hb_font_map_class->populate = pango_direct_write_hb_font_map_populate;
+  font_map_class->populate = pango_direct_write_font_map_populate;
 }
 
 /* }}} */
  /* {{{ Public API */
 
 /**
- * pango_direct_write_hb_font_map_new:
+ * pango_direct_write_font_map_new:
  *
- * Creates a new `PangoDirectWriteHbFontMap` object.
+ * Creates a new `PangoDirectWriteFontMap` object.
  *
- * Returns: a new `PangoDirectWriteHbFontMap`
+ * Returns: a new `PangoDirectWriteFontMap`
  */
-PangoDirectWriteHbFontMap *
-pango_direct_write_hb_font_map_new (void)
+PangoDirectWriteFontMap *
+pango_direct_write_font_map_new (void)
 {
-  return (PangoDirectWriteHbFontMap *) g_object_new (PANGO_TYPE_DIRECT_WRITE_HB_FONT_MAP, NULL);
+  return (PangoDirectWriteFontMap *) g_object_new (PANGO_TYPE_DIRECT_WRITE_FONT_MAP, NULL);
 }
 
 /* }}} */

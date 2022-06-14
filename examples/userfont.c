@@ -15,7 +15,7 @@
 #include <stdio.h>
 
 #include <pango/pangocairo.h>
-#include <pango/pangofc-hbfontmap.h>
+#include <pango/pangofc-fontmap.h>
 
 static PangoFontMap *fontmap;
 
@@ -285,7 +285,7 @@ render_cb (PangoUserFace  *face,
 }
 
 static void
-setup_fontmap (PangoHbFontMap *fontmap)
+setup_fontmap (PangoFontMap *fontmap)
 {
   PangoFontDescription *desc;
   PangoUserFace *face;
@@ -299,7 +299,7 @@ setup_fontmap (PangoHbFontMap *fontmap)
                               render_cb,
                               (gpointer) glyphs, NULL,
                               "Black", desc);
-  pango_hb_font_map_add_face (fontmap, PANGO_FONT_FACE (face));
+  pango_font_map_add_face (fontmap, PANGO_FONT_FACE (face));
   pango_font_description_free (desc);
 }
 
@@ -321,8 +321,8 @@ main (int argc, char **argv)
 
   filename = argv[1];
 
-  fontmap = PANGO_FONT_MAP (pango_fc_hb_font_map_new ());
-  setup_fontmap (PANGO_HB_FONT_MAP (fontmap));
+  fontmap = PANGO_FONT_MAP (pango_fc_font_map_new ());
+  setup_fontmap (PANGO_FONT_MAP (fontmap));
 
   layout = get_layout ();
 

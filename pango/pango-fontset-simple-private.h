@@ -19,9 +19,13 @@
 
 #pragma once
 
+#include <pango/pango-types.h>
 #include <pango/pango-fontset-private.h>
-#include <pango/pango-fontset-simple.h>
+#include <glib-object.h>
 
+
+typedef struct _PangoFontsetSimple  PangoFontsetSimple;
+typedef struct _PangoFontsetSimpleClass  PangoFontsetSimpleClass;
 
 struct _PangoFontsetSimple
 {
@@ -31,9 +35,19 @@ struct _PangoFontsetSimple
   PangoLanguage *language;
 };
 
-typedef struct _PangoFontsetSimpleClass  PangoFontsetSimpleClass;
-
 struct _PangoFontsetSimpleClass
 {
   PangoFontsetClass parent_class;
 };
+
+
+#define PANGO_TYPE_FONTSET_SIMPLE       (pango_fontset_simple_get_type ())
+#define PANGO_FONTSET_SIMPLE(object)    (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONTSET_SIMPLE, PangoFontsetSimple))
+#define PANGO_IS_FONTSET_SIMPLE(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONTSET_SIMPLE))
+
+GType                   pango_fontset_simple_get_type (void) G_GNUC_CONST;
+
+PangoFontsetSimple *    pango_fontset_simple_new    (PangoLanguage      *language);
+void                    pango_fontset_simple_append (PangoFontsetSimple *fontset,
+                                                     PangoFont          *font);
+int                     pango_fontset_simple_size   (PangoFontsetSimple *fontset);

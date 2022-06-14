@@ -693,7 +693,7 @@ test_gravity_metrics (void)
 static void
 test_gravity_metrics2 (void)
 {
-  PangoHbFontMap *map;
+  PangoFontMap *map;
   PangoContext *context;
   PangoFontDescription *desc;
   PangoFont *font;
@@ -703,9 +703,9 @@ test_gravity_metrics2 (void)
   PangoRectangle log[4];
   char *path;
 
-  map = pango_hb_font_map_new ();
+  map = pango_font_map_new ();
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
-  pango_hb_font_map_add_file (map, path);
+  pango_font_map_add_file (map, path);
   g_free (path);
 
   context = pango_font_map_create_context (PANGO_FONT_MAP (map));

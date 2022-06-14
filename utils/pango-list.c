@@ -22,7 +22,7 @@
 
 #include "config.h"
 #include <pango/pangocairo.h>
-#include <pango/pangofc-hbfontmap.h>
+#include <pango/pangofc-fontmap.h>
 #include <pango/pango-hbface-private.h>
 #include <hb-ot.h>
 #include <glib/gstdio.h>
