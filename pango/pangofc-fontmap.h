@@ -20,16 +20,23 @@
 #pragma once
 
 #include <pango/pango.h>
+#include <fontconfig/fontconfig.h>
 
 G_BEGIN_DECLS
 
-#define PANGO_TYPE_CORE_TEXT_HB_FONT_MAP      (pango_core_text_hb_font_map_get_type ())
+#define PANGO_TYPE_FC_FONT_MAP      (pango_fc_font_map_get_type ())
 
 PANGO_AVAILABLE_IN_ALL
-PANGO_DECLARE_INTERNAL_TYPE (PangoCoreTextHbFontMap, pango_core_text_hb_font_map, PANGO, CORE_TEXT_HB_FONT_MAP, PangoHbFontMap)
+PANGO_DECLARE_INTERNAL_TYPE (PangoFcFontMap, pango_fc_font_map, PANGO, FC_FONT_MAP, PangoFontMap)
 
 PANGO_AVAILABLE_IN_ALL
-PangoCoreTextHbFontMap * pango_core_text_hb_font_map_new (void);
+PangoFcFontMap *        pango_fc_font_map_new         (void);
 
+PANGO_AVAILABLE_IN_ALL
+void                    pango_fc_font_map_set_config  (PangoFcFontMap *self,
+                                                       FcConfig       *config);
+
+PANGO_AVAILABLE_IN_ALL
+FcConfig *              pango_fc_font_map_get_config  (PangoFcFontMap *self);
 
 G_END_DECLS

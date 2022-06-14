@@ -32,7 +32,7 @@
 #  include "pangocairo-win32.h"
 #endif
 #if defined (HAVE_CAIRO_FREETYPE)
-#  include "pangofc-hbfontmap.h"
+#  include "pangofc-fontmap.h"
 #endif
 
 
@@ -86,7 +86,7 @@ pango_cairo_font_map_new (void)
 #if defined(HAVE_CAIRO_FREETYPE)
   if (!backend || 0 == strcmp (backend, "fc")
                || 0 == strcmp (backend, "fontconfig"))
-    return (PangoFontMap *) pango_fc_hb_font_map_new ();
+    return (PangoFontMap *) pango_fc_font_map_new ();
 #endif
   {
     const char backends[] = ""

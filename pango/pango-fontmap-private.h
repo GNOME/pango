@@ -1,5 +1,5 @@
 /*
- * Copyright 2000 Red Hat Software
+ * Copyright 2021 Red Hat, Inc.
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -19,39 +19,51 @@
 
 #pragma once
 
-#include <pango/pango-font-private.h>
-#include <pango/pango-fontset.h>
 #include <pango/pango-fontmap.h>
+#include <pango/pango-hbfamily-private.h>
+#include <pango/pango-fontmap-private.h>
 
-
-#define PANGO_FONT_MAP_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT_MAP, PangoFontMapClass))
-#define PANGO_FONT_MAP_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONT_MAP, PangoFontMapClass))
-
-typedef struct _PangoFontMapClass PangoFontMapClass;
 
 struct _PangoFontMap
 {
   GObject parent_instance;
+
+  GPtrArray *added_faces;
+  GPtrArray *added_families;
+  GHashTable *families_hash;
+  GPtrArray *families;
+  GHashTable *fontsets;
+  GQueue fontset_cache;
+
+  double dpi;
+  gboolean in_populate;
+  guint serial;
 };
 
+/**
+ * PangoFontMapClass:
+ * @populate: Subclasses should call pango_font_map_add_face to populate
+ *   the map with faces and families in this vfunc.
+ */
 struct _PangoFontMapClass
 {
   GObjectClass parent_class;
 
-  PangoFont *   (*load_font)     (PangoFontMap               *fontmap,
-                                  PangoContext               *context,
-                                  const PangoFontDescription *desc);
-  PangoFontset *(*load_fontset)  (PangoFontMap               *fontmap,
-                                  PangoContext               *context,
-                                  const PangoFontDescription *desc,
-                                  PangoLanguage              *language);
-
-  guint         (*get_serial)    (PangoFontMap               *fontmap);
-  void          (*changed)       (PangoFontMap               *fontmap);
-
-  PangoFontFamily * (*get_family) (PangoFontMap               *fontmap,
-                                   const char                 *name);
-
-  PangoFontFace *   (*get_face)   (PangoFontMap               *fontmap,
-                                   PangoFont                  *font);
+  PangoFont *       (* load_font)     (PangoFontMap               *self,
+                                       PangoContext               *context,
+                                       const PangoFontDescription *desc);
+  PangoFontset *    (* load_fontset)  (PangoFontMap               *self,
+                                       PangoContext               *context,
+                                       const PangoFontDescription *desc,
+                                       PangoLanguage              *language);
+  guint             (* get_serial)    (PangoFontMap               *self);
+  void              (* changed)       (PangoFontMap               *self);
+  PangoFontFamily * (* get_family)    (PangoFontMap               *self,
+                                       const char                 *name);
+  void              (* populate)      (PangoFontMap               *self);
 };
+
+void                    pango_font_map_repopulate    (PangoFontMap *self,
+                                                      gboolean      add_synthetic);
+
+void                    pango_font_map_changed       (PangoFontMap *self);

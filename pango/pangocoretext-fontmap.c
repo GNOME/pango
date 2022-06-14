@@ -23,9 +23,9 @@
 
 #include <gio/gio.h>
 
-#include "pangocoretext-hbfontmap.h"
+#include "pangocoretext-fontmap.h"
 #include "pango-hbfamily-private.h"
-#include "pango-hbfontmap-private.h"
+#include "pango-fontmap-private.h"
 #include "pango-hbface-private.h"
 #include "pango-hbfont-private.h"
 #include "pango-context.h"
@@ -38,21 +38,21 @@
 
 
 /**
- * PangoCoreTextHbFontMap:
+ * PangoCoreTextFontMap:
  *
- * `PangoCoreTextHbFontMap` is a subclass of `PangoHbFontMap` that uses
+ * `PangoCoreTextFontMap` is a subclass of `PangoFontMap` that uses
  * CoreText to populate the fontmap with the available fonts.
  */
 
 
-struct _PangoCoreTextHbFontMap
+struct _PangoCoreTextFontMap
 {
-  PangoHbFontMap parent_instance;
+  PangoFontMap parent_instance;
 };
 
-struct _PangoCoreTextHbFontMapClass
+struct _PangoCoreTextFontMapClass
 {
-  PangoHbFontMapClass parent_class;
+  PangoFontMapClass parent_class;
 };
 
 /* {{{ CoreText utilities */
@@ -357,12 +357,12 @@ face_from_ct_font_descriptor (CTFontDescriptorRef desc)
 }
 
 /* }}} */
-/* {{{ PangoHbFontMap implementation */
+/* {{{ PangoFontMap implementation */
 
 static void
-pango_core_text_hb_font_map_populate (PangoHbFontMap *map)
+pango_core_text_font_map_populate (PangoFontMap *map)
 {
-  PangoCoreTextHbFontMap *self = PANGO_CORE_TEXT_HB_FONT_MAP (map);
+  PangoCoreTextFontMap *self = PANGO_CORE_TEXT_FONT_MAP (map);
   CTFontCollectionRef collection;
   CFArrayRef ctfaces;
   CFIndex count;
@@ -375,7 +375,7 @@ pango_core_text_hb_font_map_populate (PangoHbFontMap *map)
   for (int i = 0; i < count; i++)
     {
       CTFontDescriptorRef desc = CFArrayGetValueAtIndex (ctfaces, i);
-      pango_hb_font_map_add_face (PANGO_HB_FONT_MAP (self), face_from_ct_font_descriptor (desc));
+      pango_font_map_add_face (map, face_from_ct_font_descriptor (desc));
     }
 
   /* Add generic aliases */
@@ -394,7 +394,7 @@ pango_core_text_hb_font_map_populate (PangoHbFontMap *map)
 
   for (int i = 0; i < G_N_ELEMENTS (aliases); i++)
     {
-      PangoFontFamily *family = pango_font_map_get_family (PANGO_FONT_MAP (map), aliases[i].family_name);
+      PangoFontFamily *family = pango_font_map_get_family (map, aliases[i].family_name);
 
       if (family)
         {
@@ -402,55 +402,53 @@ pango_core_text_hb_font_map_populate (PangoHbFontMap *map)
 
           alias_family = pango_generic_family_new (aliases[i].alias_name);
           pango_generic_family_add_family (alias_family, family);
-          pango_hb_font_map_add_family (map, alias_family);
+          pango_font_map_add_family (map, alias_family);
         }
     }
 }
 
 /* }}} */
-/* {{{ PangoFontMap implementation */
+/* {{{ PangoCoreTextFontMap implementation */
 
-G_DEFINE_TYPE (PangoCoreTextHbFontMap, pango_core_text_hb_font_map, PANGO_TYPE_HB_FONT_MAP)
+G_DEFINE_TYPE (PangoCoreTextFontMap, pango_core_text_font_map, PANGO_TYPE_FONT_MAP)
 
 static void
-pango_core_text_hb_font_map_init (PangoCoreTextHbFontMap *self)
+pango_core_text_font_map_init (PangoCoreTextFontMap *self)
 {
-  pango_hb_font_map_repopulate (PANGO_HB_FONT_MAP (self), TRUE);
+  pango_font_map_repopulate (PANGO_FONT_MAP (self), TRUE);
 }
 
 static void
-pango_core_text_hb_font_map_finalize (GObject *object)
+pango_core_text_font_map_finalize (GObject *object)
 {
-  //PangoCoreTextHbFontMap *self = PANGO_CORE_TEXT_HB_FONT_MAP (object);
-
-  G_OBJECT_CLASS (pango_core_text_hb_font_map_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango_core_text_font_map_parent_class)->finalize (object);
 }
 
 static void
-pango_core_text_hb_font_map_class_init (PangoCoreTextHbFontMapClass *class)
+pango_core_text_font_map_class_init (PangoCoreTextFontMapClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
-  PangoHbFontMapClass *hb_font_map_class = PANGO_HB_FONT_MAP_CLASS (class);
+  PangoFontMapClass *font_map_class = PANGO_FONT_MAP_CLASS (class);
 
-  object_class->finalize = pango_core_text_hb_font_map_finalize;
+  object_class->finalize = pango_core_text_font_map_finalize;
 
-  hb_font_map_class->populate = pango_core_text_hb_font_map_populate;
+  font_map_class->populate = pango_core_text_font_map_populate;
 }
 
 /* }}} */
  /* {{{ Public API */
 
 /**
- * pango_core_text_hb_font_map_new:
+ * pango_core_text_font_map_new:
  *
- * Creates a new `PangoCoreTextHbFontMap` object.
+ * Creates a new `PangoCoreTextFontMap` object.
  *
- * Returns: a new `PangoCoreTextHbFontMap`
+ * Returns: a new `PangoCoreTextFontMap`
  */
-PangoCoreTextHbFontMap *
-pango_core_text_hb_font_map_new (void)
+PangoCoreTextFontMap *
+pango_core_text_font_map_new (void)
 {
-  return g_object_new (PANGO_TYPE_CORE_TEXT_HB_FONT_MAP, NULL);
+  return g_object_new (PANGO_TYPE_CORE_TEXT_FONT_MAP, NULL);
 }
 
 /* }}} */

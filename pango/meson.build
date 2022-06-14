@@ -48,7 +48,6 @@ pango_sources = [
   'pango-hbfamily.c',
   'pango-generic-family.c',
   'pango-hbfont.c',
-  'pango-hbfontmap.c',
   'pango-userface.c',
   'pango-userfont.c',
 ]
@@ -70,7 +69,6 @@ pango_headers = [
   'pango-font-metrics.h',
   'pango-fontmap.h',
   'pango-fontset.h',
-  'pango-fontset-simple.h',
   'pango-generic-family.h',
   'pango-glyph.h',
   'pango-glyph-item.h',
@@ -92,7 +90,6 @@ pango_headers = [
   'pango-utils.h',
   'pango-hbface.h',
   'pango-hbfont.h',
-  'pango-hbfontmap.h',
   'pango-userface.h',
   'pango-userfont.h',
 ]
@@ -114,30 +111,28 @@ if cairo_dep.found()
     'pangocairo-render.c',
   ]
 
-  if pango_font_backends.contains('win32')
-    pango_sources += [
-      'pangodwrite-hbfontmap.cpp',
-    ]
-  endif
-
-  if pango_font_backends.contains('quartz')
-    pango_sources += [
-      'pangocoretext-hbfontmap.c',
-    ]
-  endif
-
   pango_gir_includes += [
     'cairo-1.0',
   ]
 endif
 
-if build_pangoft2
+if has_core_text
   pango_headers += [
-    'pangofc-hbfontmap.h',
+    'pangocoretext-fontmap.h',
   ]
 
   pango_sources += [
-    'pangofc-hbfontmap.c',
+    'pangocoretext-fontmap.c',
+  ]
+endif
+
+if build_pangoft2
+  pango_headers += [
+    'pangofc-fontmap.h',
+  ]
+
+  pango_sources += [
+    'pangofc-fontmap.c',
     'pangofc-language-set.c',
   ]
 
@@ -148,7 +143,11 @@ endif
 
 if host_system == 'windows'
   pango_headers += [
-    'pangodwrite-hbfontmap.h',
+    'pangodwrite-fontmap.h',
+  ]
+
+  pango_sources += [
+    'pangodwrite-fontmap.cpp',
   ]
 
   pango_deps += [

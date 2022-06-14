@@ -22,7 +22,7 @@
 
 #include <glib.h>
 #include <pango/pangocairo.h>
-#include <pango/pangofc-hbfontmap.h>
+#include <pango/pangofc-fontmap.h>
 #include <gio/gio.h>
 
 static PangoFontMap *map = NULL;
@@ -456,8 +456,8 @@ install_fonts (void)
   g_free (path);
 
   FcConfigAppFontAddDir (config, (const FcChar8 *) dir);
-  map = PANGO_FONT_MAP (pango_fc_hb_font_map_new ());
-  pango_fc_hb_font_map_set_config (PANGO_FC_HB_FONT_MAP (map), config);
+  map = PANGO_FONT_MAP (pango_fc_font_map_new ());
+  pango_fc_font_map_set_config (PANGO_FC_FONT_MAP (map), config);
   FcConfigDestroy (config);
 
   g_free (dir);

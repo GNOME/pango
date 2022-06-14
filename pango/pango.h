@@ -36,14 +36,12 @@
 #include <pango/pango-font-metrics.h>
 #include <pango/pango-fontmap.h>
 #include <pango/pango-fontset.h>
-#include <pango/pango-fontset-simple.h>
 #include <pango/pango-generic-family.h>
 #include <pango/pango-glyph.h>
 #include <pango/pango-glyph-item.h>
 #include <pango/pango-gravity.h>
 #include <pango/pango-hbface.h>
 #include <pango/pango-hbfont.h>
-#include <pango/pango-hbfontmap.h>
 #include <pango/pango-item.h>
 #include <pango/pango-language.h>
 #include <pango/pango-layout.h>
