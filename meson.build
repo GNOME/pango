@@ -361,7 +361,7 @@ pango_deps += libsysprof_capture_dep
 
 gidocgen_dep = dependency('gi-docgen', version: '>= 2021.1',
                           fallback: ['gi-docgen', 'dummy_dep'],
-                          required: get_option('docs'))
+                          required: get_option('documentation'))
 
 gnome = import('gnome')
 pkgconfig = import('pkgconfig')
@@ -378,7 +378,7 @@ subdir('examples')
 subdir('tests')
 subdir('tools')
 
-if get_option('docs')
+if get_option('documentation')
   subdir('docs')
 endif
 
@@ -399,7 +399,7 @@ summary('Linker', cc.get_linker_id(), section: 'Toolchain')
 summary('Debugging', get_option('debug'), section: 'Build')
 summary('Optimization', get_option('optimization'), section: 'Build')
 summary('Introspection', get_option('introspection').enabled(), section: 'Build')
-summary('Documentation', get_option('docs'), section: 'Build')
+summary('Documentation', get_option('documentation'), section: 'Build')
 summary('Install tests', get_option('install-tests'), section: 'Build')
 
 summary('prefix', pango_prefix, section: 'Directories')

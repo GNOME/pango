@@ -1,4 +1,4 @@
-option('docs',
+option('documentation',
        description: 'Build API reference for Pango',
        type: 'boolean',
        value: false)
