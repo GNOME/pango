@@ -1,12 +1,18 @@
-The fonts in this directory are the fonts that areavailable for
+The fonts in this directory are the fonts that are available for
 test-layout tests.
 
 Cantarell-VF.otf: Cantarell
-DejaVSans.ttf: DejaVu Sans
-DejaVSans-Bold.ttf: DejaVu Sans Bold
-DejaVSansMono.ttf: DejaVu Sans Mono
+DejaVuSans.ttf: DejaVu Sans
+DejaVuSans-Bold.ttf: DejaVu Sans Bold
+DejaVuSansMono.ttf: DejaVu Sans Mono
 emoji-subset.ttf: subset of Noto Color Emoji
 droid-sans-subset.ttf: subset of Droid Sans Japanese
 amiri-06dd.ttf: subset of Amiri containing U+06dd
 fa-regular-f2db.ttf, fa-solid-f2db.ttf: subset of FontAwesome containing U+f2db
 noto-sans-cjk.ttf: subset of Noto Sans CJK
+
+In addition to ttf files, the directory contains definitions
+for generic families:
+
+monospace.generic
+sans-serif.generic
