@@ -152,6 +152,11 @@ if host_system == 'windows'
   pango_sources += [
     'pangodwrite-fontmap.cpp',
   ]
+  if cairo_dep.found()
+    pango_sources += [
+      'pangocairo-dwrite-font.cpp',
+    ]
+  endif
 
   pango_deps += [
     cc.find_library('gdi32'),

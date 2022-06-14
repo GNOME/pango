@@ -41,16 +41,9 @@
 #include <cairo-quartz.h>
 #include <hb-coretext.h>
 
-#elif defined (HAVE_DIRECT_WRITE)
+#elif defined (HAVE_FONTCONFIG)
 
-#include <windows.h>
-#include <dwrite.h>
-#include <hb-directwrite.h>
-#include <cairo-win32.h>
-
-#else
-
-#include <hb-ft.h>
+#include <hb-ot.h>
 #include <cairo-ft.h>
 #include <freetype/ftmm.h>
 
@@ -181,19 +174,10 @@ create_cairo_font_face_for_hb_font (PangoFont *font)
 
 #elif defined (HAVE_DIRECT_WRITE)
 
-cairo_font_face_t *
+static cairo_font_face_t *
 create_cairo_font_face_for_hb_font (PangoFont *font)
 {
-  hb_font_t *hbfont;
-  IDWriteFontFace *dfont = NULL;
-  cairo_font_face_t *cairo_face;
-
-  hbfont = pango_font_get_hb_font (font);
-  dfont = hb_directwrite_face_get_font_face (hb_font_get_face (hbfont));
-
-  cairo_face = cairo_dwrite_font_face_create_for_dwrite_fontface (dfont);
-
-  return cairo_face;
+  return pango_cairo_create_font_face_for_dwrite_pango_font (font);
 }
 
 #else
