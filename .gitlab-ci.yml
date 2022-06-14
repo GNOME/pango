@@ -6,7 +6,7 @@ stages:
 
 # Common variables
 variables:
-  COMMON_MESON_FLAGS: "--fatal-meson-warnings --werror"
+  COMMON_MESON_FLAGS: "--fatal-meson-warnings -Dwerror=true"
   MESON_TEST_TIMEOUT_MULTIPLIER: 2
   FEDORA_IMAGE: registry.gitlab.gnome.org/gnome/pango/fedora:v9
 
@@ -22,7 +22,7 @@ linux-fedora:
   stage: build
   needs: []
   variables:
-    EXTRA_MESON_FLAGS: "--buildtype=debug --default-library=both"
+    EXTRA_MESON_FLAGS: "--buildtype=debug --default-library=both -Dharfbuzz:docs=disabled -Dharfbuzz:werror=false"
   script:
     - meson ${COMMON_MESON_FLAGS} ${EXTRA_MESON_FLAGS}
             _build
