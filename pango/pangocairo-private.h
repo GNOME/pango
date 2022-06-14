@@ -22,6 +22,8 @@
 #include <pango/pangocairo.h>
 #include <pango/pango-renderer.h>
 
+G_BEGIN_DECLS
+
 typedef struct _PangoCairoFontPrivate                PangoCairoFontPrivate;
 typedef struct _HexBoxInfo                           PangoCairoFontHexBoxInfo;
 typedef struct _PangoCairoFontPrivateScaledFontData  PangoCairoFontPrivateScaledFontData;
@@ -63,3 +65,10 @@ GType pango_cairo_renderer_get_type    (void) G_GNUC_CONST;
 
 const cairo_font_options_t *
          pango_cairo_context_get_merged_font_options (PangoContext *context);
+
+#ifdef HAVE_DIRECT_WRITE
+cairo_font_face_t *
+pango_cairo_create_font_face_for_dwrite_pango_font (PangoFont *font);
+#endif
+
+G_END_DECLS
