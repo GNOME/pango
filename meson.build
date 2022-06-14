@@ -277,7 +277,7 @@ harfbuzz_dep = dependency('harfbuzz',
                           version: harfbuzz_req_version,
                           required: true,
                           fallback: ['harfbuzz', 'libharfbuzz_dep'],
-                          default_options: ['coretext=enabled'])
+                          default_options: ['coretext=enabled', 'werror=false', 'docs=disabled'])
 harfbuzz_gobj_dep = dependency('harfbuzz-gobject',
                                version: harfbuzz_req_version,
                                required: true,
@@ -290,6 +290,8 @@ if host_system == 'linux'
 
   pango_deps += fontconfig_dep
   pango_conf.set('HAVE_FONTCONFIG', 1)
+else
+  fontconfig_dep = disabler()
 endif
 
 if host_system == 'darwin'
