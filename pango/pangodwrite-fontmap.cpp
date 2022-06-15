@@ -212,6 +212,8 @@ util_create_pango_hb_face (IDWriteFontFamily *family,
       hb_face_t *hb_face = hb_directwrite_face_create (face);
       char *name = g_strconcat (family_name, " ", variant_name, NULL);
 
+      hb_face_make_immutable (hb_face);
+
       pango_face = pango_hb_face_new_from_hb_face (hb_face, -1, name, description);
 
       g_free (name);
