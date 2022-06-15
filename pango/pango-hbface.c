@@ -171,11 +171,20 @@ set_name_and_description (PangoHbFace                *self,
                              family, sizeof (family));
       fullname = g_strconcat (family, " ", face->name, NULL);
 
+      /* This is an attempt to parse style/weight/variant information
+       * out of the face name. FIXME: we should look at variation
+       * coordinates too, here, instead of these guessing games.
+       */
       face->description = pango_font_description_from_string (fullname);
       pango_font_description_unset_fields (face->description,
                                            PANGO_FONT_MASK_VARIANT |
                                            PANGO_FONT_MASK_VARIATIONS |
                                            PANGO_FONT_MASK_GRAVITY);
+
+      /* Make sure we don't leave any leftovers misinterpreted
+       * as part of the family name.
+       */
+      pango_font_description_set_family (face->description, family);
 
       g_free (fullname);
     }
