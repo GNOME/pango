@@ -121,31 +121,12 @@ main (int argc, char *argv[])
 {
   GDir *dir;
   GError *error = NULL;
-  char *opt_fonts = NULL;
   const char *name;
   char *path;
-  GOptionContext *option_context;
-  GOptionEntry entries[] = {
-    { "fonts", 0, 0, G_OPTION_ARG_FILENAME, &opt_fonts, "Fonts to use", "DIR" },
-    { NULL, 0 },
-  };
 
   setlocale (LC_ALL, "");
-  option_context = g_option_context_new ("");
-  g_option_context_add_main_entries (option_context, entries, NULL);
-  g_option_context_set_ignore_unknown_options (option_context, TRUE);
-  if (!g_option_context_parse (option_context, &argc, &argv, &error))
-    {
-      g_error ("failed to parse options: %s", error->message);
-      return 1;
-    }
-  g_option_context_free (option_context);
 
-  if (opt_fonts)
-    {
-      install_fonts (opt_fonts);
-      g_free (opt_fonts);
-    }
+  install_fonts ();
 
  /* allow to easily generate expected output for new test cases */
   if (argc > 1 && argv[1][0] != '-')
@@ -169,9 +150,6 @@ main (int argc, char *argv[])
     }
 
   g_test_init (&argc, &argv, NULL);
-
-  if (!opt_fonts)
-    install_fonts (NULL);
 
   path = g_test_build_filename (G_TEST_DIST, "fontsets", NULL);
   dir = g_dir_open (path, 0, &error);

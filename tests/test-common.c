@@ -414,20 +414,19 @@ add_synthetic_faces (PangoFontMap *map,
 }
 
 void
-install_fonts (const char *path)
+install_fonts (void)
 {
   PangoFontMap *map;
   GDir *dir;
   GError *error = NULL;
-  const char *name;
   GPtrArray *generic;
   GPtrArray *synthetic;
-  char *testpath = NULL;
+  char *path = NULL;
+  char *name_i = NULL;
 
   map = pango_font_map_new ();
 
-  if (!path)
-    path = testpath = g_test_build_filename (G_TEST_DIST, "fonts", NULL);
+  path = g_build_filename (g_getenv ("G_TEST_SRCDIR"), "fonts", NULL);
 
   dir = g_dir_open (path, 0, &error);
 
@@ -439,7 +438,7 @@ install_fonts (const char *path)
 
   while (TRUE)
     {
-      name = g_dir_read_name (dir);
+      const char *name = g_dir_read_name (dir);
       if (name == NULL)
         break;
 
@@ -447,9 +446,9 @@ install_fonts (const char *path)
           g_str_has_suffix (name, ".otf"))
         add_file (map, path, name);
       else if (g_str_has_suffix (name, ".generic"))
-        g_ptr_array_add (generic, (gpointer) name);
+        g_ptr_array_add (generic, g_strdup (name));
       else if (g_str_has_suffix (name, ".synthetic"))
-        g_ptr_array_add (synthetic, (gpointer) name);
+        g_ptr_array_add (synthetic, g_strdup (name));
     }
 
   /* Add generics and synthetics in a second path,
@@ -457,15 +456,17 @@ install_fonts (const char *path)
    */
   for (int i = 0; i < generic->len; i++)
     {
-      name = g_ptr_array_index (generic, i);
-      add_generic_family (map, path, name);
+      name_i = g_ptr_array_index (generic, i);
+      add_generic_family (map, path, name_i);
+      g_free (name_i);
     }
   g_ptr_array_free (generic, TRUE);
 
   for (int i = 0; i < synthetic->len; i++)
     {
-      name = g_ptr_array_index (synthetic, i);
-      add_synthetic_faces (map, path, name);
+      name_i = g_ptr_array_index (synthetic, i);
+      add_synthetic_faces (map, path, name_i);
+      g_free (name_i);
     }
   g_ptr_array_free (synthetic, TRUE);
 
@@ -475,7 +476,7 @@ install_fonts (const char *path)
   g_object_unref (map);
   g_dir_close (dir);
 
-  g_free (testpath);
+  g_free (path);
 }
 
 void
