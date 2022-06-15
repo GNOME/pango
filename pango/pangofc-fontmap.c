@@ -494,7 +494,10 @@ pango_fc_font_map_populate (PangoFontMap *map)
       FcPatternDestroy (pattern);
       g_hash_table_unref (families_hash);
 
-      pango_font_map_add_family (map, PANGO_FONT_FAMILY (generic_family));
+      if (g_list_model_get_n_items (G_LIST_MODEL (generic_family)) > 0)
+        pango_font_map_add_family (map, PANGO_FONT_FAMILY (generic_family));
+      else
+        g_object_unref (generic_family);
     }
 
   FcLangSetDestroy (no_langs);
