@@ -362,7 +362,6 @@ face_from_ct_font_descriptor (CTFontDescriptorRef desc)
 static void
 pango_core_text_font_map_populate (PangoFontMap *map)
 {
-  PangoCoreTextFontMap *self = PANGO_CORE_TEXT_FONT_MAP (map);
   CTFontCollectionRef collection;
   CFArrayRef ctfaces;
   CFIndex count;
@@ -375,7 +374,8 @@ pango_core_text_font_map_populate (PangoFontMap *map)
   for (int i = 0; i < count; i++)
     {
       CTFontDescriptorRef desc = CFArrayGetValueAtIndex (ctfaces, i);
-      pango_font_map_add_face (map, face_from_ct_font_descriptor (desc));
+      PangoHbFace *face = face_from_ct_font_descriptor (desc);
+      pango_font_map_add_face (map, PANGO_FONT_FACE (face));
     }
 
   /* Add generic aliases */
@@ -402,7 +402,7 @@ pango_core_text_font_map_populate (PangoFontMap *map)
 
           alias_family = pango_generic_family_new (aliases[i].alias_name);
           pango_generic_family_add_family (alias_family, family);
-          pango_font_map_add_family (map, alias_family);
+          pango_font_map_add_family (map, PANGO_FONT_FAMILY (alias_family));
         }
     }
 }
