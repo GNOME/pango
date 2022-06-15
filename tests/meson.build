@@ -38,31 +38,13 @@ if cairo_dep.found()
     [ 'test-harfbuzz', [ 'test-harfbuzz.c' ] ],
     [ 'test-break', [ 'test-break.c', 'test-common.c', 'validate-log-attrs.c' ] ],
     [ 'testmisc', [ 'testmisc.c' ] ],
-  ]
-
-  tests += [
     [ 'testserialize', [ 'testserialize.c' ] ],
     [ 'testhbfont', [ 'testhbfont.c' ] ],
+    [ 'test-layout', [ 'test-layout.c', 'test-common.c' ] ],
+    [ 'test-fontsets', [ 'test-fontsets.c', 'test-common.c' ] ],
+    [ 'testrandom', [ 'testrandom.c' ] ],
+    [ 'test-pangocairo-threads', [ 'test-pangocairo-threads.c' ] ],
   ]
-
-    if host_system != 'darwin'
-      tests += [
-        [ 'test-layout', [ 'test-layout.c', 'test-common.c' ] ],
-        [ 'test-fonts', [ 'test-fonts.c', 'test-common.c' ] ],
-      ]
-    endif
-
-  if host_system != 'darwin'
-    tests += [
-      [ 'testrandom', [ 'testrandom.c' ] ],
-    ]
-  endif
-
-  if cairo_dep.found()
-    tests += [
-      [ 'test-pangocairo-threads', [ 'test-pangocairo-threads.c' ] ],
-    ]
-  endif
 endif
 
 installed_test_data = [
