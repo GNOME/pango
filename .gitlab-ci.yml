@@ -118,7 +118,7 @@ reference:
   variables:
     EXTRA_MESON_FLAGS: ""
   script:
-    - meson ${COMMON_MESON_FLAGS} ${EXTRA_MESON_FLAGS} -Dgtk_doc=true _build
+    - meson ${COMMON_MESON_FLAGS} ${EXTRA_MESON_FLAGS} -Ddocumentation=true _build
     - ninja -C _build
     - mkdir -p _reference/
     - mv _build/docs/Pango/ _reference/
