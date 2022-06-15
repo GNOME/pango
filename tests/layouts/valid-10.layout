@@ -241,7 +241,7 @@
               "language" : "he",
               "script" : "Hebr",
               "font" : {
-                "description" : "DejaVu Sans 11",
+                "description" : "DejaVu Sans Book 11",
                 "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
               },
               "flags" : 0,
@@ -284,8 +284,8 @@
               "language" : "he",
               "script" : "Hebr",
               "font" : {
-                "description" : "DejaVu Sans 11",
-                "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
+                "description" : "Cantarell 11",
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "y-offset" : 0,
@@ -293,8 +293,8 @@
               "end-x-offset" : 0,
               "glyphs" : [
                 {
-                  "glyph" : 3,
-                  "width" : 5120,
+                  "glyph" : 1109,
+                  "width" : 3072,
                   "is-cluster-start" : true,
                   "log-cluster" : 0
                 }
@@ -351,7 +351,7 @@
               "glyphs" : [
                 {
                   "glyph" : 1062,
-                  "width" : 17408,
+                  "width" : 19456,
                   "is-cluster-start" : true,
                   "log-cluster" : 0
                 }

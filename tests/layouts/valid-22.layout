@@ -238,16 +238,8 @@
               "language" : "en-us",
               "script" : "Latn",
               "font" : {
-                "description" : "Cantarell Italic 7.1494140625",
-                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
-                "matrix" : [
-                  1,
-                  0.20000000000000001,
-                  0,
-                  1,
-                  0,
-                  0
-                ]
+                "description" : "Cantarell 7.1494140625",
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
               "extra-attributes" : [

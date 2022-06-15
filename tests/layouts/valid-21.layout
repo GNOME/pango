@@ -61,8 +61,8 @@
     "ellipsized" : false,
     "hypenated" : false,
     "unknown-glyphs" : 1,
-    "width" : 36864,
-    "height" : 18430,
+    "width" : 33792,
+    "height" : 18305,
     "lines" : [
       {
         "position" : [
@@ -91,8 +91,8 @@
               "language" : "en-us",
               "script" : "Zyyy",
               "font" : {
-                "description" : "Noto Color Emoji 11",
-                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47"
+                "description" : "DejaVu Sans Book 11",
+                "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
               },
               "flags" : 0,
               "extra-attributes" : [
@@ -106,10 +106,9 @@
               "end-x-offset" : 0,
               "glyphs" : [
                 {
-                  "glyph" : 13,
-                  "width" : 18432,
+                  "glyph" : 5867,
+                  "width" : 15360,
                   "is-cluster-start" : true,
-                  "is-color" : true,
                   "log-cluster" : 0
                 },
                 {

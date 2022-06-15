@@ -161,9 +161,9 @@
     "wrapped" : false,
     "ellipsized" : false,
     "hypenated" : false,
-    "unknown-glyphs" : 0,
-    "width" : 142336,
-    "height" : 18430,
+    "unknown-glyphs" : 1,
+    "width" : 144384,
+    "height" : 18305,
     "lines" : [
       {
         "position" : [
@@ -217,8 +217,8 @@
               "language" : "en-us",
               "script" : "Latn",
               "font" : {
-                "description" : "Noto Color Emoji 11",
-                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47"
+                "description" : "DejaVu Sans Book 11",
+                "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
               },
               "flags" : 0,
               "y-offset" : 0,
@@ -227,10 +227,21 @@
               "glyphs" : [
                 {
                   "glyph" : 19,
-                  "width" : 18432,
+                  "width" : 9216,
                   "is-cluster-start" : true,
-                  "is-color" : true,
                   "log-cluster" : 0
+                },
+                {
+                  "glyph" : 268435455,
+                  "width" : 0,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 1
+                },
+                {
+                  "glyph" : 268443875,
+                  "width" : 11264,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 4
                 }
               ]
             },
