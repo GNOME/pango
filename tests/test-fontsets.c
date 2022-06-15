@@ -41,7 +41,7 @@ list_fonts (const char *contents)
 
   desc = pango_font_description_from_string (s);
 
-  context = pango_font_map_create_context (pango_font_map_get_default ());
+  context = pango_context_new ();
   fonts = pango_context_load_fontset (context, desc, pango_language_get_default ());
 
   str = g_string_new (s);

@@ -202,7 +202,7 @@ test_extents (void)
   PangoFontDescription *desc;
   PangoDirection dir;
 
-  context = pango_font_map_create_context (pango_font_map_get_default ());
+  context = pango_context_new ();
   desc = pango_font_description_from_string("Cantarell 11");
   pango_context_set_font_description (context, desc);
   pango_font_description_free (desc);
@@ -237,7 +237,7 @@ test_enumerate (void)
   gboolean found_face;
 
   fontmap = pango_font_map_get_default ();
-  context = pango_font_map_create_context (fontmap);
+  context = pango_context_new_with_font_map (fontmap);
 
   g_assert_cmpint (g_list_model_get_n_items (G_LIST_MODEL (fontmap)), >, 0);
 
@@ -288,7 +288,6 @@ test_enumerate (void)
 static void
 test_roundtrip_plain (void)
 {
-  PangoFontMap *fontmap;
   PangoContext *context;
   PangoFontDescription *desc, *desc2, *desc3;
   PangoFont *font, *font2;
@@ -299,9 +298,7 @@ test_roundtrip_plain (void)
   desc = pango_font_description_from_string ("Cantarell 11");
 #endif
 
-  fontmap = pango_font_map_get_default ();
-  context = pango_font_map_create_context (fontmap);
-
+  context = pango_context_new ();
 
   font = pango_context_load_font (context, desc);
   desc2 = pango_font_describe (font);
@@ -323,7 +320,6 @@ test_roundtrip_plain (void)
 static void
 test_roundtrip_small_caps (void)
 {
-  PangoFontMap *fontmap;
   PangoContext *context;
   PangoFontDescription *desc, *desc2;
   PangoFont *font;
@@ -336,8 +332,7 @@ test_roundtrip_small_caps (void)
       return;
     }
 
-  fontmap = pango_font_map_get_default ();
-  context = pango_font_map_create_context (fontmap);
+  context = pango_context_new ();
 
   desc = pango_font_description_from_string ("Cantarell Small-Caps 11");
   g_assert_true (pango_font_description_get_variant (desc) == PANGO_VARIANT_SMALL_CAPS);
@@ -405,13 +400,11 @@ test_roundtrip_small_caps (void)
 static void
 test_roundtrip_emoji (void)
 {
-  PangoFontMap *fontmap;
   PangoContext *context;
   PangoFontDescription *desc, *desc2;
   PangoFont *font;
 
-  fontmap = pango_font_map_get_default ();
-  context = pango_font_map_create_context (fontmap);
+  context = pango_context_new ();
 
   /* This is how pango_itemize creates the emoji font desc */
   desc = pango_font_description_from_string ("Cantarell 11");
@@ -554,7 +547,7 @@ main (int argc, char *argv[])
 
   g_test_init (&argc, &argv, NULL);
 
-  context = pango_font_map_create_context (pango_font_map_get_default ());
+  context = pango_context_new ();
 
   g_test_add_func ("/pango/font/metrics", test_metrics);
   g_test_add_func ("/pango/fontdescription/parse", test_parse);

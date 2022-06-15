@@ -38,7 +38,7 @@ if cairo_dep.found()
     [ 'test-harfbuzz', [ 'test-harfbuzz.c' ] ],
     [ 'test-break', [ 'test-break.c', 'test-common.c', 'validate-log-attrs.c' ] ],
     [ 'testmisc', [ 'testmisc.c' ] ],
-    [ 'testserialize', [ 'testserialize.c' ] ],
+    [ 'testserialize', [ 'testserialize.c', 'test-common.c' ] ],
     [ 'testhbfont', [ 'testhbfont.c' ] ],
     [ 'test-layout', [ 'test-layout.c', 'test-common.c' ] ],
     [ 'test-fontsets', [ 'test-fontsets.c', 'test-common.c' ] ],

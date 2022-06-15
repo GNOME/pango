@@ -373,12 +373,9 @@ test_move_cursor_para (void)
 int
 main (int argc, char *argv[])
 {
-  PangoFontMap *fontmap;
-
   setlocale (LC_ALL, "");
 
-  fontmap = pango_font_map_get_default ();
-  context = pango_font_map_create_context (fontmap);
+  context = pango_context_new ();
 
   g_test_init (&argc, &argv, NULL);
 

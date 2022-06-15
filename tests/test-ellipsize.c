@@ -108,10 +108,7 @@ test_ellipsize_fully (void)
 int
 main (int argc, char *argv[])
 {
-  PangoFontMap *fontmap;
-
-  fontmap = pango_font_map_get_default ();
-  context = pango_font_map_create_context (fontmap);
+  context = pango_context_new ();
 
   g_test_init (&argc, &argv, NULL);
 

@@ -211,13 +211,11 @@ pango_cairo_context_get_merged_font_options (PangoContext *context)
 PangoContext *
 pango_cairo_create_context (cairo_t *cr)
 {
-  PangoFontMap *fontmap;
   PangoContext *context;
 
   g_return_val_if_fail (cr != NULL, NULL);
 
-  fontmap = pango_font_map_get_default ();
-  context = pango_font_map_create_context (fontmap);
+  context = pango_context_new ();
   pango_cairo_update_context (cr, context);
 
   return context;

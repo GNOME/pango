@@ -157,7 +157,7 @@ test_serialize_font (void)
     "  ]\n"
     "}";
 
-  context = pango_font_map_create_context (pango_font_map_get_default ());
+  context = pango_context_new ();
   desc = pango_font_description_from_string ("Cantarell Italic 20 @wght=600");
   font = pango_context_load_font (context, desc);
 
@@ -200,7 +200,7 @@ test_serialize_layout_minimal (void)
   GBytes *out_bytes;
   const char *str;
 
-  context = pango_font_map_create_context (pango_font_map_get_default ());
+  context = pango_context_new ();
 
   bytes = g_bytes_new_static (test, strlen (test) + 1);
 
@@ -283,7 +283,7 @@ test_serialize_layout_valid (void)
   GBytes *out_bytes;
   char *s;
 
-  context = pango_font_map_create_context (pango_font_map_get_default ());
+  context = pango_context_new ();
 
   bytes = g_bytes_new_static (test, strlen (test) + 1);
 
@@ -336,7 +336,7 @@ test_serialize_layout_context (void)
   PangoLayout *layout;
   GError *error = NULL;
 
-  context = pango_font_map_create_context (pango_font_map_get_default ());
+  context = pango_context_new ();
 
   bytes = g_bytes_new_static (test, strlen (test) + 1);
 
@@ -410,7 +410,7 @@ test_serialize_layout_invalid (void)
 
   PangoContext *context;
 
-  context = pango_font_map_create_context (pango_font_map_get_default ());
+  context = pango_context_new ();
 
   for (int i = 0; i < G_N_ELEMENTS (test); i++)
     {

@@ -31,8 +31,6 @@ PANGO_AVAILABLE_IN_ALL
 PANGO_DECLARE_INTERNAL_TYPE (PangoFontMap, pango_font_map, PANGO, FONT_MAP, GObject)
 
 PANGO_AVAILABLE_IN_ALL
-PangoContext *          pango_font_map_create_context           (PangoFontMap               *self);
-PANGO_AVAILABLE_IN_ALL
 PangoFont *             pango_font_map_load_font                (PangoFontMap               *self,
                                                                  PangoContext               *context,
                                                                  const PangoFontDescription *desc);

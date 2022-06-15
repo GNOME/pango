@@ -378,7 +378,7 @@ test_hbfont_load (void)
 
   /* Make a Cat family, with the two faces Fat and Wild */
   map = pango_font_map_new ();
-  context = pango_font_map_create_context (PANGO_FONT_MAP (map));
+  context = pango_context_new_with_font_map (PANGO_FONT_MAP (map));
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
   desc = pango_font_description_new ();
@@ -444,7 +444,7 @@ test_hbfont_load_variation (void)
 
   /* Make a Cat family, with the two faces Fat and Wild */
   map = pango_font_map_new ();
-  context = pango_font_map_create_context (PANGO_FONT_MAP (map));
+  context = pango_context_new_with_font_map (PANGO_FONT_MAP (map));
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
   desc = pango_font_description_new ();
@@ -516,7 +516,7 @@ test_fontmap_language (void)
   gboolean found;
 
   map = PANGO_FONT_MAP (pango_font_map_new_default ());
-  context = pango_font_map_create_context (map);
+  context = pango_context_new_with_font_map (map);
   desc = pango_font_description_from_string ("serif 11");
 
   /* zz isn't assigned, so there should not be any fonts claiming to support
