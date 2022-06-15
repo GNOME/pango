@@ -25,5 +25,7 @@ void print_attr_list (PangoAttrList  *attrs,
 
 const char *get_script_name (GUnicodeScript s);
 
+void install_fonts (const char *path);
+void dump_fonts (void);
 
 #endif
