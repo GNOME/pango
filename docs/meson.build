@@ -9,6 +9,7 @@ pango_content_files = [
   'pango_cairo.md',
   'pango_user.md',
   'pango_layout.md',
+  'migrating.md',
   'pango-name.png',
   'layout-light.png',
   'layout-dark.png',
