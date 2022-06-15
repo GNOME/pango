@@ -48,6 +48,8 @@
 struct _PangoDirectWriteFontMap
 {
   PangoFontMap parent_instance;
+
+  IDWriteFactory *dwrite_factory;
 };
 
 struct _PangoDirectWriteFontMapClass
@@ -233,18 +235,12 @@ util_create_pango_hb_face (IDWriteFontFamily *family,
 static void
 pango_direct_write_font_map_populate (PangoFontMap *map)
 {
-  IDWriteFactory *factory = NULL;
+  PangoDirectWriteFontMap *dwrite_map = PANGO_DIRECT_WRITE_FONT_MAP (map);
   IDWriteFontCollection *collection = NULL;
   UINT32 count;
   HRESULT hr;
 
-  hr = DWriteCreateFactory (DWRITE_FACTORY_TYPE_SHARED,
-                            UUID_OF_IDWriteFactory,
-                            reinterpret_cast<IUnknown**> (&factory));
-  if (FAILED (hr) || !factory)
-    g_error ("DWriteCreateFactory failed with error code %x", (unsigned)hr);
-
-  hr = factory->GetSystemFontCollection (&collection, FALSE);
+  hr = dwrite_map->dwrite_factory->GetSystemFontCollection (&collection, FALSE);
   if (FAILED (hr) || collection == NULL)
     g_error ("IDWriteFactory::GetSystemFontCollection failed with error code %x\n", (unsigned)hr);
 
@@ -299,9 +295,6 @@ pango_direct_write_font_map_populate (PangoFontMap *map)
   collection->Release ();
   collection = NULL;
 
-  factory->Release ();
-  factory = NULL;
-
   /* Add generic aliases */
   struct {
     const char *alias_name;
@@ -335,19 +328,33 @@ pango_direct_write_font_map_populate (PangoFontMap *map)
 }
 
 /* }}} */
-/* {{{ PangoDirctWriteFontMap implementation */
+/* {{{ PangoDirectWriteFontMap implementation */
 
 G_DEFINE_FINAL_TYPE (PangoDirectWriteFontMap, pango_direct_write_font_map, PANGO_TYPE_FONT_MAP)
 
 static void
 pango_direct_write_font_map_init (PangoDirectWriteFontMap *self)
 {
+  HRESULT hr;
+
+  hr = DWriteCreateFactory (DWRITE_FACTORY_TYPE_SHARED,
+                            UUID_OF_IDWriteFactory,
+                            reinterpret_cast<IUnknown**> (&self->dwrite_factory));
+
+  if (FAILED (hr) || !self->dwrite_factory)
+    g_error ("DWriteCreateFactory failed with error code %x", (unsigned)hr);
+
   pango_font_map_repopulate (PANGO_FONT_MAP (self), TRUE);
 }
 
 static void
 pango_direct_write_font_map_finalize (GObject *object)
 {
+  PangoDirectWriteFontMap *dwrite_map = PANGO_DIRECT_WRITE_FONT_MAP (object);
+
+  dwrite_map->dwrite_factory->Release ();
+  dwrite_map->dwrite_factory = NULL;
+
   G_OBJECT_CLASS (pango_direct_write_font_map_parent_class)->finalize (object);
 }
 
