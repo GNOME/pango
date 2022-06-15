@@ -93,7 +93,7 @@
               "language" : "en-us",
               "script" : "Zyyy",
               "font" : {
-                "description" : "DejaVu Sans 12",
+                "description" : "DejaVu Sans Book 12",
                 "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
               },
               "flags" : 0,
@@ -118,7 +118,7 @@
               "language" : "en-us",
               "script" : "Zyyy",
               "font" : {
-                "description" : "DejaVu Sans 12",
+                "description" : "DejaVu Sans Book 12",
                 "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
               },
               "flags" : 0,
@@ -143,7 +143,7 @@
               "language" : "en-us",
               "script" : "Zyyy",
               "font" : {
-                "description" : "DejaVu Sans 12",
+                "description" : "DejaVu Sans Book 12",
                 "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
               },
               "flags" : 0,

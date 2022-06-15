@@ -158,9 +158,9 @@
     "wrapped" : false,
     "ellipsized" : false,
     "hypenated" : false,
-    "unknown-glyphs" : 0,
-    "width" : 166912,
-    "height" : 18430,
+    "unknown-glyphs" : 6,
+    "width" : 174080,
+    "height" : 18305,
     "lines" : [
       {
         "position" : [
@@ -189,7 +189,7 @@
               "language" : "en-us",
               "script" : "Zyyy",
               "font" : {
-                "description" : "DejaVu Sans 11",
+                "description" : "DejaVu Sans Book 11",
                 "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
               },
               "flags" : 0,
@@ -226,8 +226,8 @@
               "language" : "en-us",
               "script" : "Zyyy",
               "font" : {
-                "description" : "Noto Color Emoji 11",
-                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47"
+                "description" : "DejaVu Sans Book 11",
+                "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
               },
               "flags" : 0,
               "y-offset" : 0,
@@ -235,10 +235,9 @@
               "end-x-offset" : 0,
               "glyphs" : [
                 {
-                  "glyph" : 13,
-                  "width" : 18432,
+                  "glyph" : 5867,
+                  "width" : 15360,
                   "is-cluster-start" : true,
-                  "is-color" : true,
                   "log-cluster" : 0
                 },
                 {
@@ -283,8 +282,8 @@
               "language" : "en-us",
               "script" : "Zyyy",
               "font" : {
-                "description" : "Noto Color Emoji 11",
-                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47"
+                "description" : "DejaVu Sans Book 11",
+                "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
               },
               "flags" : 0,
               "y-offset" : 0,
@@ -292,11 +291,16 @@
               "end-x-offset" : 0,
               "glyphs" : [
                 {
-                  "glyph" : 22,
-                  "width" : 18432,
+                  "glyph" : 268562921,
+                  "width" : 15360,
                   "is-cluster-start" : true,
-                  "is-color" : true,
                   "log-cluster" : 0
+                },
+                {
+                  "glyph" : 268562922,
+                  "width" : 15360,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 4
                 }
               ]
             },
@@ -334,8 +338,8 @@
               "language" : "en-us",
               "script" : "Zyyy",
               "font" : {
-                "description" : "Noto Color Emoji 11",
-                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47"
+                "description" : "DejaVu Sans Book 11",
+                "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
               },
               "flags" : 0,
               "y-offset" : 0,
@@ -343,10 +347,9 @@
               "end-x-offset" : 0,
               "glyphs" : [
                 {
-                  "glyph" : 6,
-                  "width" : 18432,
+                  "glyph" : 268445450,
+                  "width" : 11264,
                   "is-cluster-start" : true,
-                  "is-color" : true,
                   "log-cluster" : 0
                 }
               ]
@@ -385,8 +388,8 @@
               "language" : "en-us",
               "script" : "Zyyy",
               "font" : {
-                "description" : "Noto Color Emoji 11",
-                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47"
+                "description" : "DejaVu Sans Book 11",
+                "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
               },
               "flags" : 0,
               "y-offset" : 0,
@@ -394,11 +397,16 @@
               "end-x-offset" : 0,
               "glyphs" : [
                 {
-                  "glyph" : 21,
-                  "width" : 18432,
+                  "glyph" : 268445451,
+                  "width" : 11264,
                   "is-cluster-start" : true,
-                  "is-color" : true,
                   "log-cluster" : 0
+                },
+                {
+                  "glyph" : 268563454,
+                  "width" : 15360,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 3
                 }
               ]
             },
@@ -460,8 +468,8 @@
               "language" : "en-us",
               "script" : "Zyyy",
               "font" : {
-                "description" : "Noto Color Emoji 11",
-                "checksum" : "054c1c2e2ca956b920262840dcad39dcf27bb88d6f70b892b2b1180de2c2ab47"
+                "description" : "DejaVu Sans Book 11",
+                "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01"
               },
               "flags" : 0,
               "y-offset" : 0,
@@ -469,11 +477,28 @@
               "end-x-offset" : 0,
               "glyphs" : [
                 {
-                  "glyph" : 10,
-                  "width" : 18432,
+                  "glyph" : 268563444,
+                  "width" : 15360,
                   "is-cluster-start" : true,
-                  "is-color" : true,
                   "log-cluster" : 0
+                },
+                {
+                  "glyph" : 268435455,
+                  "width" : 0,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 4
+                },
+                {
+                  "glyph" : 268435455,
+                  "width" : 0,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 8
+                },
+                {
+                  "glyph" : 268435455,
+                  "width" : 0,
+                  "is-cluster-start" : true,
+                  "log-cluster" : 12
                 },
                 {
                   "glyph" : 268435455,
