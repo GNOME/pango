@@ -2,35 +2,7 @@
 #include <locale.h>
 
 #include <pango/pango.h>
-#include <pango/pangofc-fontmap.h>
 #include "test-common.h"
-
-static PangoFontMap *map = NULL;
-
-static void
-install_fonts (const char *dir)
-{
-  FcConfig *config;
-  char *path;
-  gsize len;
-  char *conf;
-
-  config = FcConfigCreate ();
-
-  path = g_build_filename (dir, "fonts.conf", NULL);
-  g_file_get_contents (path, &conf, &len, NULL);
-
-  if (!FcConfigParseAndLoadFromMemory (config, (const FcChar8 *) conf, TRUE))
-    g_error ("Failed to parse fontconfig configuration");
-
-  g_free (conf);
-  g_free (path);
-
-  FcConfigAppFontAddDir (config, (const FcChar8 *) dir);
-  map = PANGO_FONT_MAP (pango_fc_font_map_new ());
-  pango_fc_font_map_set_config (PANGO_FC_FONT_MAP (map), config);
-  FcConfigDestroy (config);
-}
 
 static gboolean
 append_one (PangoFontset *fonts,
@@ -69,7 +41,7 @@ list_fonts (const char *contents)
 
   desc = pango_font_description_from_string (s);
 
-  context = pango_font_map_create_context (map);
+  context = pango_font_map_create_context (pango_font_map_get_default ());
   fonts = pango_context_load_fontset (context, desc, pango_language_get_default ());
 
   str = g_string_new (s);
@@ -199,11 +171,7 @@ main (int argc, char *argv[])
   g_test_init (&argc, &argv, NULL);
 
   if (!opt_fonts)
-    {
-      path = g_test_build_filename (G_TEST_DIST, "fonts", NULL);
-      install_fonts (path);
-      g_free (path);
-    }
+    install_fonts (NULL);
 
   path = g_test_build_filename (G_TEST_DIST, "fontsets", NULL);
   dir = g_dir_open (path, 0, &error);
