@@ -332,6 +332,8 @@ main (int argc, char *argv[])
   const char *name;
   char *path;
 
+  install_fonts ();
+
   context = pango_context_new ();
   pango_context_set_language (context, pango_language_from_string ("en-us"));
 

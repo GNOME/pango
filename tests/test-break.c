@@ -363,13 +363,11 @@ main (int argc, char *argv[])
 {
   GDir *dir;
   GError *error = NULL;
-  char *opt_fonts = NULL;
   const char *name;
   char *path;
   gboolean opt_legend = 0;
   GOptionContext *option_context;
   GOptionEntry entries[] = {
-    { "fonts", 0, 0, G_OPTION_ARG_FILENAME, &opt_fonts, "Fonts to use", "DIR" },
     { "hex-chars", 0, 0, G_OPTION_ARG_NONE, &opt_hex_chars, "Print all chars in hex", NULL },
     { "legend", 0, 0, G_OPTION_ARG_NONE, &opt_legend, "Explain the output", NULL },
     { NULL, 0 },
@@ -387,12 +385,8 @@ main (int argc, char *argv[])
     }
   g_option_context_free (option_context);
 
-  if (opt_fonts)
-    {
-      install_fonts (opt_fonts);
-      context = pango_context_new ();
-      g_free (opt_fonts);
-    }
+  install_fonts ();
+  context = pango_context_new ();
 
   if (opt_legend)
     {
@@ -423,12 +417,6 @@ main (int argc, char *argv[])
     }
 
   g_test_init (&argc, &argv, NULL);
-
-  if (!opt_fonts)
-    {
-      install_fonts (NULL);
-      context = pango_context_new ();
-    }
 
   path = g_test_build_filename (G_TEST_DIST, "breaks", NULL);
   dir = g_dir_open (path, 0, &error);

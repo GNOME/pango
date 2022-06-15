@@ -437,7 +437,7 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  install_fonts (NULL);
+  install_fonts ();
 
   g_test_add_func ("/serialize/attr-list", test_serialize_attr_list);
   g_test_add_func ("/serialize/tab-array", test_serialize_tab_array);
