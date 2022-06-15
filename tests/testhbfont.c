@@ -23,7 +23,6 @@
 #include <glib.h>
 #include <gio/gio.h>
 #include <pango/pangocairo.h>
-#include <pango/pangofc-fontmap.h>
 
 #include <math.h>
 
@@ -516,7 +515,7 @@ test_fontmap_language (void)
   PangoFontset *fonts;
   gboolean found;
 
-  map = PANGO_FONT_MAP (pango_fc_font_map_new ());
+  map = PANGO_FONT_MAP (pango_font_map_new_default ());
   context = pango_font_map_create_context (map);
   desc = pango_font_description_from_string ("serif 11");
 
