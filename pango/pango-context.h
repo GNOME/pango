@@ -35,6 +35,9 @@ G_DECLARE_FINAL_TYPE (PangoContext, pango_context, PANGO, CONTEXT, GObject);
 PANGO_AVAILABLE_IN_ALL
 PangoContext *          pango_context_new                       (void);
 PANGO_AVAILABLE_IN_ALL
+PangoContext *          pango_context_new_with_font_map         (PangoFontMap                 *font_map);
+
+PANGO_AVAILABLE_IN_ALL
 void                    pango_context_changed                   (PangoContext                 *context);
 PANGO_AVAILABLE_IN_ALL
 void                    pango_context_set_font_map              (PangoContext                 *context,

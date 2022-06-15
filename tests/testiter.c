@@ -227,13 +227,11 @@ static void
 test_line_iter (void)
 {
   const char  **ptext;
-  PangoFontMap *fontmap;
   PangoContext *context;
   PangoFontDescription *font_desc;
   PangoLayout  *layout;
 
-  fontmap = pango_font_map_get_default ();
-  context = pango_font_map_create_context (fontmap);
+  context = pango_context_new ();
   font_desc = pango_font_description_from_string ("cantarell 11");
   pango_context_set_font_description (context, font_desc);
 
@@ -260,15 +258,13 @@ test_line_iter (void)
 static void
 test_glyphitem_iter (void)
 {
-  PangoFontMap *fontmap;
   PangoContext *context;
   PangoFontDescription *font_desc;
   PangoLayout  *layout;
   PangoLine *line;
   const char *text;
 
-  fontmap = pango_font_map_get_default ();
-  context = pango_font_map_create_context (fontmap);
+  context = pango_context_new ();
   font_desc = pango_font_description_from_string ("cantarell 11");
   pango_context_set_font_description (context, font_desc);
 

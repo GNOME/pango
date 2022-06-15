@@ -45,7 +45,7 @@
  * to look up fonts, and default values such as the default language,
  * default gravity, or default font.
  *
- * To obtain a `PangoContext`, use [method@Pango.FontMap.create_context]
+ * To obtain a `PangoContext`, use [ctor@Pango.Context.new]
  * or [func@Pango.cairo_create_context].
  */
 
@@ -351,10 +351,9 @@ pango_context_finalize (GObject *object)
  *
  * Creates a new `PangoContext` initialized to default values.
  *
- * This function is not particularly useful as it should always
- * be followed by a [method@Pango.Context.set_font_map] call, and the
- * function [method@Pango.FontMap.create_context] does these two steps
- * together and hence users are recommended to use that.
+ * If you want to use a specific [class@Pango.FontMap] other than
+ * the default one, you should use [ctor@Pango.Context.new_with_font_map]
+ * instead.
  *
  * If you are using Pango as part of a higher-level system,
  * that system may have it's own way of create a `PangoContext`.
@@ -367,11 +366,31 @@ pango_context_finalize (GObject *object)
 PangoContext *
 pango_context_new (void)
 {
-  PangoContext *context;
+  return g_object_new (PANGO_TYPE_CONTEXT,
+                       "font-map", pango_font_map_get_default (),
+                       NULL);
+}
 
-  context = g_object_new (PANGO_TYPE_CONTEXT, NULL);
-
-  return context;
+/**
+ * pango_context_new_with_font_map:
+ * @font_map: the `PangoFontMap` to use
+ *
+ * Creates a new `PangoContext` with the given font map.
+ *
+ * If you are using Pango as part of a higher-level system,
+ * that system may have it's own way of create a `PangoContext`.
+ * Pango's own cairo support for instance, has [func@Pango.cairo_create_context],
+ * and the GTK toolkit has, among others, gtk_widget_get_pango_context().
+ * Use those instead.
+ *
+ * Return value: the newly allocated `PangoContext`
+ */
+PangoContext *
+pango_context_new_with_font_map (PangoFontMap *font_map)
+{
+  return g_object_new (PANGO_TYPE_CONTEXT,
+                       "font-map", font_map,
+                       NULL);
 }
 
 static void

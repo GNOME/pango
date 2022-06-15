@@ -82,7 +82,7 @@ get_layout (void)
   PangoFontDescription *desc;
 
   /* Create a PangoLayout, set the font and text */
-  context = pango_font_map_create_context (fontmap);
+  context = pango_context_new_with_font_map (fontmap);
   layout = pango_layout_new (context);
   g_object_unref (context);
 

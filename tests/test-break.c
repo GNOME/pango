@@ -390,7 +390,7 @@ main (int argc, char *argv[])
   if (opt_fonts)
     {
       install_fonts (opt_fonts);
-      context = pango_font_map_create_context (pango_font_map_get_default ());
+      context = pango_context_new ();
       g_free (opt_fonts);
     }
 
@@ -427,7 +427,7 @@ main (int argc, char *argv[])
   if (!opt_fonts)
     {
       install_fonts (NULL);
-      context = pango_font_map_create_context (pango_font_map_get_default ());
+      context = pango_context_new ();
     }
 
   path = g_test_build_filename (G_TEST_DIST, "breaks", NULL);

@@ -141,7 +141,7 @@ main (int    argc,
     }
 
   fontmap = pango_font_map_get_default ();
-  ctx = pango_font_map_create_context (fontmap);
+  ctx = pango_context_new ();
 
   if (opt_verbose)
     g_print ("Using %s\n\n", G_OBJECT_TYPE_NAME (fontmap));

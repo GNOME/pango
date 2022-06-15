@@ -102,7 +102,7 @@ pangocairo_view_get_context (gpointer instance)
   CairoViewer *c = (CairoViewer *) instance;
   PangoContext *context;
 
-  context = pango_font_map_create_context (c->fontmap);
+  context = pango_context_new_with_font_map (c->fontmap);
   pango_cairo_context_set_font_options (context, c->font_options);
   pango_context_set_round_glyph_positions (context, !c->subpixel_positions);
 

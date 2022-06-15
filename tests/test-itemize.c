@@ -332,7 +332,7 @@ main (int argc, char *argv[])
   const char *name;
   char *path;
 
-  context = pango_font_map_create_context (pango_font_map_get_default ());
+  context = pango_context_new ();
   pango_context_set_language (context, pango_language_from_string ("en-us"));
 
   /* allow to easily generate expected output for new test cases */

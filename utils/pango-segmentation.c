@@ -70,7 +70,7 @@ show_segmentation (const char *input,
   PangoAttrList *attributes;
   PangoLayout *layout;
 
-  context = pango_font_map_create_context (pango_font_map_get_default ());
+  context = pango_context_new ();
 
   string = g_string_new ("");
 

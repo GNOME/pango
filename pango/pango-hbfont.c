@@ -382,7 +382,7 @@ create_hex_box_info (PangoHbFont *self)
   pango_font_description_set_size (desc, mini_size);
 
   /* Load mini_font */
-  context = pango_font_map_create_context (map);
+  context = pango_context_new_with_font_map (map);
   pango_context_set_matrix (context, &font->ctm);
   pango_context_set_language (context, pango_script_get_sample_language (G_UNICODE_SCRIPT_LATIN));
 

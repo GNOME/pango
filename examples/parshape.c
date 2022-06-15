@@ -10,7 +10,7 @@ format_text (const char *text)
   int x, y, width;
   int inc, m, w, w2;
 
-  context = pango_font_map_create_context (pango_font_map_get_default ());
+  context = pango_context_new ();
   breaker = pango_line_breaker_new (context);
 
   pango_line_breaker_add_text (breaker, text, -1, NULL);

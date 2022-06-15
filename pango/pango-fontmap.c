@@ -746,37 +746,6 @@ pango_font_map_changed (PangoFontMap *self)
 /* {{{ Public API */
 
 /**
- * pango_font_map_create_context:
- * @self: a `PangoFontMap`
- *
- * Creates a `PangoContext` connected to @fontmap.
- *
- * This is equivalent to [ctor@Pango.Context.new] followed by
- * [method@Pango.Context.set_font_map].
- *
- * If you are using Pango as part of a higher-level system,
- * that system may have it's own way of create a `PangoContext`.
- * Pango's own cairo support for instance, has [func@Pango.cairo_create_context],
- * and the GTK toolkit has, among others, gtk_widget_get_pango_context().
- * Use those instead.
- *
- * Return value: (transfer full): the newly created `PangoContext`
- */
-PangoContext *
-pango_font_map_create_context (PangoFontMap *self)
-{
-  PangoContext *context;
-
-  g_return_val_if_fail (PANGO_IS_FONT_MAP (self), NULL);
-
-  context = pango_context_new ();
-  pango_context_set_font_map (context, self);
-
-  return context;
-}
-
-
-/**
  * pango_font_map_load_font:
  * @self: a `PangoFontMap`
  * @context: the `PangoContext` the font will be used with

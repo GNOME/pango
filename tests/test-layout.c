@@ -60,7 +60,7 @@ test_layout (gconstpointer d)
   g_assert_no_error (error);
   orig = g_bytes_new_take (contents, length);
 
-  context = pango_font_map_create_context (pango_font_map_get_default ());
+  context = pango_context_new ();
   layout = pango_layout_deserialize (context, orig, PANGO_LAYOUT_DESERIALIZE_CONTEXT, &error);
   g_assert_no_error (error);
 
@@ -143,7 +143,7 @@ main (int argc, char *argv[])
       g_file_get_contents (argv[1], &contents, &length, &error);
       g_assert_no_error (error);
       orig = g_bytes_new_take (contents, length);
-      context = pango_font_map_create_context (pango_font_map_get_default ());
+      context = pango_context_new ();
       layout = pango_layout_deserialize (context, orig, PANGO_LAYOUT_DESERIALIZE_CONTEXT, &error);
       g_assert_no_error (error);
 
