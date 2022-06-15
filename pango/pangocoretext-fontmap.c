@@ -343,6 +343,9 @@ face_from_ct_font_descriptor (CTFontDescriptorRef desc)
 
   name = ct_font_descriptor_get_style_name (desc);
   description = font_description_from_ct_font_descriptor (desc);
+  pango_font_description_unset_fields (description, PANGO_FONT_MASK_VARIANT |
+                                                    PANGO_FONT_MASK_SIZE |
+                                                    PANGO_FONT_MASK_GRAVITY);
 
   hb_face_make_immutable (hb_face);
 
