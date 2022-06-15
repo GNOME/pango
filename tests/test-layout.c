@@ -27,12 +27,10 @@
 #include <unistd.h>
 #endif
 
-#include "config.h"
 #include <pango/pangocairo.h>
-#include <pango/pangofc-fontmap.h>
 #include "test-common.h"
 
-static PangoFontMap *map = NULL;
+#include <hb-ot.h>
 
 static void
 test_layout (gconstpointer d)
@@ -62,7 +60,7 @@ test_layout (gconstpointer d)
   g_assert_no_error (error);
   orig = g_bytes_new_take (contents, length);
 
-  context = pango_font_map_create_context (map);
+  context = pango_font_map_create_context (pango_font_map_get_default ());
   layout = pango_layout_deserialize (context, orig, PANGO_LAYOUT_DESERIALIZE_CONTEXT, &error);
   g_assert_no_error (error);
 
@@ -99,33 +97,6 @@ test_layout (gconstpointer d)
   g_free (diff);
 }
 
-static void
-install_fonts (const char *dir)
-{
-  FcConfig *config;
-  char *path;
-  gsize len;
-  char *conf;
-
-  config = FcConfigCreate ();
-
-  path = g_build_filename (dir, "fonts.conf", NULL);
-  g_file_get_contents (path, &conf, &len, NULL);
-
-  if (!FcConfigParseAndLoadFromMemory (config, (const FcChar8 *) conf, TRUE))
-    g_error ("Failed to parse fontconfig configuration");
-
-  g_free (conf);
-  g_free (path);
-
-  FcConfigAppFontAddDir (config, (const FcChar8 *) dir);
-
-  map = PANGO_FONT_MAP (pango_fc_font_map_new ());
-  pango_fc_font_map_set_config (PANGO_FC_FONT_MAP (map), config);
-
-  FcConfigDestroy (config);
-}
-
 int
 main (int argc, char *argv[])
 {
@@ -144,6 +115,7 @@ main (int argc, char *argv[])
   option_context = g_option_context_new ("");
   g_option_context_add_main_entries (option_context, entries, NULL);
   g_option_context_set_ignore_unknown_options (option_context, TRUE);
+
   if (!g_option_context_parse (option_context, &argc, &argv, &error))
     {
       g_error ("failed to parse options: %s", error->message);
@@ -171,7 +143,7 @@ main (int argc, char *argv[])
       g_file_get_contents (argv[1], &contents, &length, &error);
       g_assert_no_error (error);
       orig = g_bytes_new_take (contents, length);
-      context = pango_font_map_create_context (map);
+      context = pango_font_map_create_context (pango_font_map_get_default ());
       layout = pango_layout_deserialize (context, orig, PANGO_LAYOUT_DESERIALIZE_CONTEXT, &error);
       g_assert_no_error (error);
 
@@ -192,11 +164,7 @@ main (int argc, char *argv[])
   g_test_init (&argc, &argv, NULL);
 
   if (!opt_fonts)
-    {
-      path = g_test_build_filename (G_TEST_DIST, "fonts", NULL);
-      install_fonts (path);
-      g_free (path);
-    }
+    install_fonts (NULL);
 
   path = g_test_build_filename (G_TEST_DIST, "layouts", NULL);
   dir = g_dir_open (path, 0, &error);
