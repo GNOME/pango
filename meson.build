@@ -278,7 +278,7 @@ harfbuzz_dep = dependency('harfbuzz',
                           version: harfbuzz_req_version,
                           required: true,
                           fallback: ['harfbuzz', 'libharfbuzz_dep'],
-                          default_options: ['coretext=enabled', 'werror=false', 'docs=disabled'])
+                          default_options: ['coretext=enabled', 'directwrite=auto', 'werror=false', 'docs=disabled'])
 harfbuzz_gobj_dep = dependency('harfbuzz-gobject',
                                version: harfbuzz_req_version,
                                required: true,
