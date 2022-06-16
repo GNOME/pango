@@ -326,12 +326,6 @@ test_roundtrip_small_caps (void)
   hb_feature_t features[32];
   guint num = 0;
 
-  if (strcmp (G_OBJECT_TYPE_NAME (pango_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
-    {
-      g_test_skip ("Small Caps support needs to be added to PangoCoreTextFontMap");
-      return;
-    }
-
   context = pango_context_new ();
 
   desc = pango_font_description_from_string ("Cantarell Small-Caps 11");

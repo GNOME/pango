@@ -174,12 +174,6 @@ test_run_height (void)
   PangoLineIter *iter;
   PangoRectangle logical1, logical2;
 
-  if (strcmp (G_OBJECT_TYPE_NAME (pango_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
-    {
-      g_test_skip ("This test fails on macOS and needs debugging");
-      return;
-    }
-
   context = pango_context_new ();
   layout = pango_layout_new (context);
   pango_layout_set_text (layout, "one", -1);
@@ -605,12 +599,6 @@ test_empty_line_height (void)
   int hint;
   int size;
 
-  if (strcmp (G_OBJECT_TYPE_NAME (pango_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
-    {
-      g_test_skip ("This test fails on macOS and needs debugging");
-      return;
-    }
-
   context = pango_context_new ();
   description = pango_font_description_new ();
 
@@ -812,12 +800,6 @@ test_small_caps_crash (void)
   PangoLayout *layout;
   PangoFontDescription *desc;
   PangoRectangle ext;
-
-  if (strcmp (G_OBJECT_TYPE_NAME (pango_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
-    {
-      g_test_skip ("This test needs a fontmap that supports Small-Caps");
-      return;
-    }
 
   context = pango_context_new ();
   layout = pango_layout_new (context);
