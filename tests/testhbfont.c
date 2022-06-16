@@ -82,6 +82,7 @@ test_hbface_roundtrip (void)
   desc = pango_font_face_describe (PANGO_FONT_FACE (face));
   g_assert_cmpint (pango_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO_FONT_MASK_FAMILY |
                                                                                  PANGO_FONT_MASK_STYLE |
+                                                                                 PANGO_FONT_MASK_VARIANT |
                                                                                  PANGO_FONT_MASK_WEIGHT |
                                                                                  PANGO_FONT_MASK_STRETCH);
   g_assert_cmpstr (pango_font_description_get_family (desc), ==, "Cantarell");
@@ -100,6 +101,7 @@ test_hbface_roundtrip (void)
   desc = pango_font_face_describe (PANGO_FONT_FACE (face2));
   g_assert_cmpint (pango_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO_FONT_MASK_FAMILY |
                                                                                  PANGO_FONT_MASK_STYLE |
+                                                                                 PANGO_FONT_MASK_VARIANT |
                                                                                  PANGO_FONT_MASK_WEIGHT |
                                                                                  PANGO_FONT_MASK_STRETCH);
   g_assert_cmpstr (pango_font_description_get_family (desc), ==, "Cantarell");
@@ -119,6 +121,7 @@ test_hbface_roundtrip (void)
   desc = pango_font_face_describe (PANGO_FONT_FACE (face2));
   g_assert_cmpint (pango_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO_FONT_MASK_FAMILY |
                                                                                  PANGO_FONT_MASK_STYLE |
+                                                                                 PANGO_FONT_MASK_VARIANT |
                                                                                  PANGO_FONT_MASK_WEIGHT |
                                                                                  PANGO_FONT_MASK_STRETCH);
   g_assert_cmpstr (pango_font_description_get_family (desc), ==, "Cantarell");
@@ -138,6 +141,7 @@ test_hbface_roundtrip (void)
   desc = pango_font_face_describe (PANGO_FONT_FACE (face2));
   g_assert_cmpint (pango_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO_FONT_MASK_FAMILY |
                                                                                  PANGO_FONT_MASK_STYLE |
+                                                                                 PANGO_FONT_MASK_VARIANT |
                                                                                  PANGO_FONT_MASK_WEIGHT |
                                                                                  PANGO_FONT_MASK_STRETCH);
   g_assert_cmpstr (pango_font_description_get_family (desc), ==, "Cantarellagain");
@@ -163,6 +167,7 @@ test_hbface_roundtrip (void)
   g_assert_cmpint (pango_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO_FONT_MASK_FAMILY |
                                                                                  PANGO_FONT_MASK_STYLE |
                                                                                  PANGO_FONT_MASK_WEIGHT |
+                                                                                 PANGO_FONT_MASK_VARIANT |
                                                                                  PANGO_FONT_MASK_VARIATIONS |
                                                                                  PANGO_FONT_MASK_STRETCH);
   g_assert_cmpstr (pango_font_description_get_family (desc), ==, "Cat");
