@@ -177,7 +177,6 @@ set_name_and_description (PangoHbFace                *self,
        */
       face->description = pango_font_description_from_string (fullname);
       pango_font_description_unset_fields (face->description,
-                                           PANGO_FONT_MASK_VARIANT |
                                            PANGO_FONT_MASK_VARIATIONS |
                                            PANGO_FONT_MASK_GRAVITY);
 
@@ -704,9 +703,7 @@ pango_hb_face_new_from_hb_face (hb_face_t                 *face,
   g_return_val_if_fail (instance_id >= -2, NULL);
   g_return_val_if_fail (description == NULL ||
                         (pango_font_description_get_set_fields (description) &
-                         (PANGO_FONT_MASK_VARIANT|
-                          PANGO_FONT_MASK_SIZE|
-                          PANGO_FONT_MASK_GRAVITY)) == 0, NULL);
+                         (PANGO_FONT_MASK_SIZE|PANGO_FONT_MASK_GRAVITY)) == 0, NULL);
 
   self = g_object_new (PANGO_TYPE_HB_FACE, NULL);
 

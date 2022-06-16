@@ -874,8 +874,7 @@ pango_font_map_add_face (PangoFontMap  *self,
 
   description = face->description;
 
-  if (pango_font_description_get_set_fields (description) &
-      (PANGO_FONT_MASK_VARIANT | PANGO_FONT_MASK_GRAVITY))
+  if (pango_font_description_get_set_fields (description) & PANGO_FONT_MASK_GRAVITY)
     g_warning ("Font description for PangoFontFace includes things that it shouldn't");
 
   if (!self->in_populate)
