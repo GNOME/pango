@@ -292,3 +292,13 @@ pkgconfig.generate(libpango,
   filebase: 'pango2',
   subdirs: pango_api_name,
 )
+
+if cairo_dep.found()
+  pkgconfig.generate(libpango,
+    name: 'Pango Cairo',
+    description: 'Cairo rendering support for Pango',
+    requires: ['pango2'],
+    filebase: 'pangocairo2',
+    subdirs: pango_api_name,
+  )
+endif
