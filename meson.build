@@ -319,27 +319,22 @@ if host_system == 'windows'
   ]
 endif
 
-# If option is 'auto' or 'enabled' it is not required to find cairo on the
-# system because a fallback is done at the end.
-cairo_option = get_option('cairo')
-if not cairo_option.disabled()
-  cairo_option = false
+if get_option('cairo').disabled()
+  cairo_dep = disabler()
+  cairo_png_dep = disabler()
+  cairo_xlib_dep = disabler()
+else
+  cairo_dep = dependency('cairo', version: cairo_req_version,
+                         fallback: ['cairo', 'libcairo_dep'], required: get_option('cairo'))
+  cairo_png_dep = dependency('cairo-png', required: false)
+  cairo_xlib_dep = dependency('cairo-xlib', required: false)
 endif
-
-cairo_dep = dependency('cairo', version: cairo_req_version,
-                       fallback: ['cairo', 'libcairo_dep'], required: get_option('cairo'))
 
 pango_conf.set('HAVE_CAIRO', cairo_dep.found ())
-pango_deps += cairo_dep
-
-cairo_png_dep = dependency('cairo-png', required: false)
-if cairo_png_dep.found()
-  pango_conf.set('HAVE_CAIRO_PNG', 1)
-endif
-
-cairo_xlib_dep = dependency('cairo-xlib', required: false)
-if cairo_xlib_dep.found()
-  pango_conf.set('HAVE_CAIRO_XLIB', 1)
+pango_conf.set('HAVE_CAIRO_PNG', cairo_dep.found() and cairo_png_dep.found())
+pango_conf.set('HAVE_CAIRO_XLIB', cairo_dep.found() and cairo_xlib_dep.found())
+if cairo_dep.found()
+  pango_deps += cairo_dep
 endif
 
 # libsysprof-capture support
