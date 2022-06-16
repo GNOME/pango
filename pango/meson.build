@@ -170,6 +170,9 @@ pango_features_conf.set('PANGO_VERSION_MINOR', pango_minor_version)
 pango_features_conf.set('PANGO_VERSION_MICRO', pango_micro_version)
 pango_features_conf.set('PANGO_API_VERSION', pango_api_version)
 pango_features_conf.set('PANGO_CURRENT_MINUS_AGE', '0')
+if cairo_dep.found()
+  pango_features_conf.set('PANGO_RENDERING_CAIRO', 1)
+endif
 
 pango_features_h = configure_file(
   input: 'pango-features.h.meson',
