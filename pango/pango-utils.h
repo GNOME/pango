@@ -37,9 +37,15 @@ void     pango_find_paragraph_boundary (const char *text,
                                         int        *paragraph_delimiter_index,
                                         int        *next_paragraph_start);
 
-/* Pango version checking */
+/**
+ * PANGO_RENDERING_CAIRO:
+ *
+ * Defined to 1 at compile time if Pango was built with cairo support.
+ */
 
 /* Encode a Pango version as an integer */
+/* Pango version checking */
+
 /**
  * PANGO_VERSION_ENCODE:
  * @major: the major component of the version number
