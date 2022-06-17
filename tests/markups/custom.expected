@@ -52,7 +52,7 @@ range 42 45
 1 160 font-desc "Cantarell 20"
 range 45 52
 1 160 font-desc "Cantarell 20"
-45 52 stretch ultra-expanded
+45 52 stretch 811
 range 52 55
 1 160 font-desc "Cantarell 20"
 range 55 58
@@ -122,7 +122,7 @@ range 160 2147483647
 [32:35] (null) Cantarell 20
 [35:42] (null) Cantarell Small-Caps 20
 [42:45] (null) Cantarell 20
-[45:52] (null) Cantarell Ultra-Expanded 20
+[45:52] (null) Cantarell stretch=811 20
 [52:55] (null) Cantarell 20
 [55:58] (null) Cantarell 20
 [58:61] (null) Cantarell 20
