@@ -30,6 +30,7 @@
 #include <hb-ot.h>
 
 static int opt_annotate = 0;
+static char **opt_font_file = NULL;
 
 typedef struct
 {
@@ -51,7 +52,40 @@ pangocairo_view_create (const PangoViewer *klass G_GNUC_UNUSED)
 
   instance->backend = cairo_viewer_iface_create (&instance->iface);
 
-  instance->fontmap = pango_font_map_new_default ();
+  if (opt_font_file != NULL)
+    {
+      PangoFontFace *first = NULL;
+
+      instance->fontmap = pango_font_map_new ();
+
+      for (int i = 0; opt_font_file[i]; i++)
+        {
+          PangoFontFace *face;
+
+          face = PANGO_FONT_FACE (pango_hb_face_new_from_file (opt_font_file[i],
+                                                               0, -1,
+                                                               NULL, NULL));
+
+          pango_font_map_add_face (instance->fontmap, face);
+
+          if (!first)
+            first = face;
+        }
+
+      /* We always need monospace, or Pango will complain */
+      if (!pango_font_map_get_family (instance->fontmap, "monospace"))
+        {
+          PangoGenericFamily *family;
+
+          family = pango_generic_family_new ("monospace");
+          pango_generic_family_add_family (family, pango_font_face_get_family (first));
+          pango_font_map_add_family (instance->fontmap, PANGO_FONT_FAMILY (family));
+        }
+    }
+  else
+    {
+      instance->fontmap = pango_font_map_new_default ();
+    }
   pango_font_map_set_resolution (PANGO_FONT_MAP (instance->fontmap), opt_dpi);
 
   instance->font_options = cairo_font_options_create ();
@@ -930,6 +964,7 @@ pangocairo_view_get_option_group (const PangoViewer *klass G_GNUC_UNUSED)
   GOptionEntry entries[] =
   {
     {"annotate", 0, 0, G_OPTION_ARG_CALLBACK, parse_annotate_arg, annotate_arg_help, "FLAGS"},
+    { "font-file", 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &opt_font_file, "Create a fontmap with this font", "FILE" },
     {NULL}
   };
   GOptionGroup *group;
