@@ -77,19 +77,15 @@ static const char *line_style_names[] = {
   "none",
   "single",
   "double",
+  "dashed",
   "dotted",
+  "wavy",
   NULL
 };
 
 static const char *underline_position_names[] = {
   "normal",
   "under",
-  NULL
-};
-
-static const char *overline_names[] = {
-  "none",
-  "single",
   NULL
 };
 
@@ -320,15 +316,12 @@ add_attribute (GtkJsonPrinter *printer,
 
         case PANGO_ATTR_UNDERLINE:
         case PANGO_ATTR_STRIKETHROUGH:
+        case PANGO_ATTR_OVERLINE:
           gtk_json_printer_add_string (printer, "value", line_style_names[attr->int_value]);
           break;
 
         case PANGO_ATTR_UNDERLINE_POSITION:
           gtk_json_printer_add_string (printer, "value", underline_position_names[attr->int_value]);
-          break;
-
-        case PANGO_ATTR_OVERLINE:
-          gtk_json_printer_add_string (printer, "value", overline_names[attr->int_value]);
           break;
 
         case PANGO_ATTR_GRAVITY:
@@ -1070,7 +1063,7 @@ attr_for_type (GtkJsonParser *parser,
       break;
 
     case PANGO_ATTR_OVERLINE:
-      attr = pango_attr_overline_new ((PangoOverline) parser_select_string (parser, overline_names));
+      attr = pango_attr_overline_new ((PangoLineStyle) parser_select_string (parser, line_style_names));
       break;
 
     case PANGO_ATTR_OVERLINE_COLOR:

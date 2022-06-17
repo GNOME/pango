@@ -63,7 +63,7 @@ range 54 55
 range 55 67
 1 79 font-desc "Cantarell 20"
 1 79 language en
-55 67 underline single
+55 67 underline solid
 range 67 72
 1 79 font-desc "Cantarell 20"
 1 79 language en

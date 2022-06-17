@@ -4,11 +4,11 @@ abc def _x_
 ---
 
 range 0 1
-0 1 underline single
+0 1 underline solid
 0 1 underline-position 1
 range 1 4
 range 4 5
-4 5 underline single
+4 5 underline solid
 4 5 underline-position 1
 range 5 2147483647
 
