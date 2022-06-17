@@ -74,27 +74,27 @@ pango_run_get_extents (PangoRun         *run,
   ItemProperties properties;
   gboolean has_underline;
   gboolean has_overline;
+  gboolean has_strikethrough;
   PangoRectangle logical;
   PangoFontMetrics *metrics = NULL;
   int y_offset;
 
   pango_item_get_properties (glyph_item->item, &properties);
 
-  has_underline = properties.uline_single ||
-                  properties.uline_double ||
-                  properties.uline_error;
-  has_overline = properties.oline_single;
+  has_underline = properties.uline_style != PANGO_LINE_STYLE_NONE;
+  has_overline = properties.oline_style != PANGO_LINE_STYLE_NONE;
+  has_strikethrough = properties.strikethrough_style != PANGO_LINE_STYLE_NONE;
 
   if (!logical_rect && (glyph_item->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE))
     logical_rect = &logical;
 
-  if (!logical_rect && (has_underline || has_overline || properties.strikethrough))
+  if (!logical_rect && (has_underline || has_overline || has_strikethrough))
     logical_rect = &logical;
 
   pango_glyph_string_extents (glyph_item->glyphs, glyph_item->item->analysis.font,
                               ink_rect, logical_rect);
 
-  if (ink_rect && (has_underline || has_overline || properties.strikethrough))
+  if (ink_rect && (has_underline || has_overline || has_strikethrough))
     {
       int underline_thickness;
       int underline_position;
@@ -122,7 +122,7 @@ pango_run_get_extents (PangoRun         *run,
        * If ink_rect->height == 0, we should adjust ink_rect->y appropriately.
        */
 
-      if (properties.strikethrough)
+      if (has_strikethrough)
         {
           if (ink_rect->height == 0)
             {
@@ -131,13 +131,23 @@ pango_run_get_extents (PangoRun         *run,
             }
         }
 
-      if (properties.oline_single)
+      if (properties.oline_style == PANGO_LINE_STYLE_SOLID ||
+          properties.oline_style == PANGO_LINE_STYLE_DASHED ||
+          properties.oline_style == PANGO_LINE_STYLE_DOTTED)
         {
           ink_rect->y -= underline_thickness;
           ink_rect->height += underline_thickness;
         }
+      else if (properties.oline_style == PANGO_LINE_STYLE_DOUBLE ||
+               properties.oline_style == PANGO_LINE_STYLE_WAVY)
+        {
+          ink_rect->y -= 3 * underline_thickness;
+          ink_rect->height += 3 * underline_thickness;
+        }
 
-      if (properties.uline_single)
+      if (properties.uline_style == PANGO_LINE_STYLE_SOLID ||
+          properties.uline_style == PANGO_LINE_STYLE_DASHED ||
+          properties.uline_style == PANGO_LINE_STYLE_DOTTED)
         {
           if (properties.uline_position == PANGO_UNDERLINE_POSITION_UNDER)
             ink_rect->height += 2 * underline_thickness;
@@ -145,12 +155,15 @@ pango_run_get_extents (PangoRun         *run,
             ink_rect->height = MAX (ink_rect->height,
                                     underline_thickness - underline_position - ink_rect->y);
         }
-      else if (properties.uline_double)
-        ink_rect->height = MAX (ink_rect->height,
-                                 3 * underline_thickness - underline_position - ink_rect->y);
-      else if (properties.uline_error)
-        ink_rect->height = MAX (ink_rect->height,
-                                3 * underline_thickness - underline_position - ink_rect->y);
+      else if (properties.uline_style == PANGO_LINE_STYLE_DOUBLE ||
+               properties.uline_style == PANGO_LINE_STYLE_WAVY)
+        {
+          if (properties.uline_position == PANGO_UNDERLINE_POSITION_UNDER)
+            ink_rect->height += 4 * underline_thickness;
+          else
+            ink_rect->height = MAX (ink_rect->height,
+                                   3 * underline_thickness - underline_position - ink_rect->y);
+        }
     }
 
   y_offset = glyph_item->y_offset;

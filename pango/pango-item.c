@@ -391,12 +391,10 @@ pango_item_get_properties (PangoItem      *item,
 {
   GSList *tmp_list = item->analysis.extra_attrs;
 
-  properties->uline_single = FALSE;
-  properties->uline_double = FALSE;
-  properties->uline_error = FALSE;
+  properties->uline_style = PANGO_LINE_STYLE_NONE;
   properties->uline_position = PANGO_UNDERLINE_POSITION_NORMAL;
-  properties->oline_single = FALSE;
-  properties->strikethrough = FALSE;
+  properties->oline_style = PANGO_LINE_STYLE_NONE;
+  properties->strikethrough_style = PANGO_LINE_STYLE_NONE;
   properties->showing_space = FALSE;
   properties->no_paragraph_break = FALSE;
   properties->letter_spacing = 0;
@@ -411,23 +409,7 @@ pango_item_get_properties (PangoItem      *item,
       switch ((int) attr->type)
         {
         case PANGO_ATTR_UNDERLINE:
-          switch (attr->int_value)
-            {
-            case PANGO_LINE_STYLE_NONE:
-              break;
-            case PANGO_LINE_STYLE_SINGLE:
-              properties->uline_single = TRUE;
-              break;
-            case PANGO_LINE_STYLE_DOUBLE:
-              properties->uline_double = TRUE;
-              break;
-            case PANGO_LINE_STYLE_DOTTED:
-              properties->uline_error = TRUE;
-              break;
-            default:
-              g_assert_not_reached ();
-              break;
-            }
+          properties->uline_style = attr->int_value;
           break;
 
         case PANGO_ATTR_UNDERLINE_POSITION:
@@ -435,19 +417,11 @@ pango_item_get_properties (PangoItem      *item,
           break;
 
         case PANGO_ATTR_OVERLINE:
-          switch (attr->int_value)
-            {
-            case PANGO_OVERLINE_SINGLE:
-              properties->oline_single = TRUE;
-              break;
-            default:
-              g_assert_not_reached ();
-              break;
-            }
+          properties->oline_style = attr->int_value;
           break;
 
         case PANGO_ATTR_STRIKETHROUGH:
-          properties->strikethrough = attr->int_value;
+          properties->strikethrough_style = attr->int_value;
           break;
 
         case PANGO_ATTR_LETTER_SPACING:

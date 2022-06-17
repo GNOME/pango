@@ -48,10 +48,10 @@ test_attributes_basic (void)
   desc = pango_font_description_from_string ("Computer Modern 12");
   test_copy (pango_attr_font_desc_new (desc));
   pango_font_description_free (desc);
-  test_copy (pango_attr_underline_new (PANGO_LINE_STYLE_SINGLE));
+  test_copy (pango_attr_underline_new (PANGO_LINE_STYLE_SOLID));
   test_copy (pango_attr_underline_new (PANGO_LINE_STYLE_DOTTED));
   test_copy (pango_attr_underline_color_new (&(PangoColor){100, 200, 300}));
-  test_copy (pango_attr_overline_new (PANGO_OVERLINE_SINGLE));
+  test_copy (pango_attr_overline_new (PANGO_LINE_STYLE_SOLID));
   test_copy (pango_attr_overline_color_new (&(PangoColor){100, 200, 300}));
   test_copy (pango_attr_strikethrough_new (TRUE));
   test_copy (pango_attr_strikethrough_color_new (&(PangoColor){100, 200, 300}));
@@ -226,10 +226,10 @@ test_binding_helpers (void)
   desc = pango_font_description_from_string ("Computer Modern 12");
   test_binding (pango_attr_font_desc_new (desc));
   pango_font_description_free (desc);
-  test_binding (pango_attr_underline_new (PANGO_LINE_STYLE_SINGLE));
+  test_binding (pango_attr_underline_new (PANGO_LINE_STYLE_SOLID));
   test_binding (pango_attr_underline_new (PANGO_LINE_STYLE_DOTTED));
   test_binding (pango_attr_underline_color_new (&(PangoColor){100, 200, 300}));
-  test_binding (pango_attr_overline_new (PANGO_OVERLINE_SINGLE));
+  test_binding (pango_attr_overline_new (PANGO_LINE_STYLE_SOLID));
   test_binding (pango_attr_overline_color_new (&(PangoColor){100, 200, 300}));
   test_binding (pango_attr_strikethrough_new (TRUE));
   test_binding (pango_attr_strikethrough_color_new (&(PangoColor){100, 200, 300}));
@@ -1276,7 +1276,7 @@ test_merge2 (void)
   attr = attribute_from_string ("2 3 foreground #ffff00000000");
   pango_attr_list_change (list, attr);
 
-  assert_attr_list (list, "0 10 underline single\n"
+  assert_attr_list (list, "0 10 underline solid\n"
                           "0 2 foreground #00000000ffff\n"
                           "2 3 foreground #ffff00000000\n"
                           "3 10 foreground #00000000ffff");
@@ -1284,7 +1284,7 @@ test_merge2 (void)
   attr = attribute_from_string ("3 4 foreground #0000ffff0000");
   pango_attr_list_change (list, attr);
 
-  assert_attr_list (list, "0 10 underline single\n"
+  assert_attr_list (list, "0 10 underline solid\n"
                           "0 2 foreground #00000000ffff\n"
                           "2 3 foreground #ffff00000000\n"
                           "3 4 foreground #0000ffff0000\n"
@@ -1293,7 +1293,7 @@ test_merge2 (void)
   attr = attribute_from_string ("4 5 foreground #00000000ffff");
   pango_attr_list_change (list, attr);
 
-  assert_attr_list (list, "0 10 underline single\n"
+  assert_attr_list (list, "0 10 underline solid\n"
                           "0 2 foreground #00000000ffff\n"
                           "2 3 foreground #ffff00000000\n"
                           "3 4 foreground #0000ffff0000\n"

@@ -118,14 +118,17 @@ bgcolor
 : An RGBA color specification such as '#00FF007F' or a color name such as 'red'.
 
 underline
-: One of 'none', 'single', 'double', 'low', 'error'.
+: One of 'none', 'single', 'double', 'dashed', 'dotted' and 'wavy'.
 
 underline_color
 : The color of underlines; an RGBA color specification such as '#00FF007F' or a color
   name such as 'red'.
 
+underline_position:
+: The position of underlines, one of 'normal' or 'under'.
+
 overline
-: One of 'none' or 'single'. Overline support was added in Pango 1.46.
+: One of 'none', 'single', 'double', 'dashed', 'dotted' and 'wavy'.
 
 overline_color
 : The color of overlines; an RGBA color specification such as '#00FF007F' or a color
@@ -146,7 +149,7 @@ font_scale:
   to find the new size.
 
 strikethrough
-: 'true' or 'false' whether to strike through the text.
+: One of 'none', 'single', 'double', 'dashed', 'dotted' and 'wavy'.
 
 strikethrough_color
 : The color of strikethrough lines; an RGBA color specification such as '#00FF007F'
@@ -173,7 +176,6 @@ gravity_hint
 show
 : Specifies what special characters to show visibly. The value can be 'none'
   or a combination of 'spaces', 'line-breaks' and 'ignorables', combined with '|'.
-  Support for showing special characters was added in Pango 1.44.
 
 insert_hyphens
 : 'true' or 'false' to indicate whether hyphens should be inserted when breaking

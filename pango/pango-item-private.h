@@ -105,11 +105,10 @@ void               pango_item_unsplit                 (PangoItem *orig,
 typedef struct _ItemProperties ItemProperties;
 struct _ItemProperties
 {
-  guint uline_single        : 1;
-  guint uline_double        : 1;
-  guint uline_error         : 1;
+  PangoLineStyle uline_style;
   PangoUnderlinePosition uline_position;
-  guint strikethrough       : 1;
+  PangoLineStyle strikethrough_style;
+  PangoLineStyle oline_style;
   guint oline_single        : 1;
   guint showing_space       : 1;
   guint no_paragraph_break  : 1;

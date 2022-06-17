@@ -697,7 +697,7 @@ pango_attr_paragraph_new (void)
 
 /**
  * pango_attr_overline_new:
- * @overline: the overline style
+ * @style: the line style
  *
  * Create a new overline-style attribute.
  *
@@ -706,9 +706,9 @@ pango_attr_paragraph_new (void)
  *   [method@Pango.Attribute.destroy]
  */
 PangoAttribute *
-pango_attr_overline_new (PangoOverline overline)
+pango_attr_overline_new (PangoLineStyle style)
 {
-  return pango_attr_int_new (PANGO_ATTR_OVERLINE, (int)overline);
+  return pango_attr_int_new (PANGO_ATTR_OVERLINE, (int)style);
 }
 
 /**

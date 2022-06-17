@@ -1,1 +1,1 @@
-ERROR: 'x' is not a valid value for the 'strikethrough' attribute on <span> tag, line 11; valid values are none/single/double/dotted
+ERROR: 'x' is not a valid value for the 'strikethrough' attribute on <span> tag, line 11; valid values are none/solid/double/dashed/dotted/wavy
