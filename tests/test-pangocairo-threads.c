@@ -3,6 +3,8 @@
 #include <pango/pango.h>
 #include <pango/pangocairo.h>
 
+#include "test-common.h"
+
 #define WIDTH 100
 #define HEIGHT 100
 const char *text = "Hamburgerfonts\nวิวิวิวิวิวิ\nبهداد";
@@ -54,6 +56,8 @@ thread_func (gpointer data)
   cairo_surface_t *surface = data;
   PangoLayout *layout;
   int i;
+
+  install_fonts ();
 
   cairo_t *cr = cairo_create (surface);
 
@@ -146,6 +150,8 @@ int
 main (int argc, char **argv)
 {
   g_test_init (&argc, &argv, NULL);
+
+  install_fonts ();
 
   if (argc > 1)
     num_threads = atoi (argv[1]);
