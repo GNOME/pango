@@ -1,5 +1,5 @@
 /* Pango
- * test-font.c: Test PangoFontDescription
+ * test-font.c: Test fonts and font maps
  *
  * Copyright (C) 2014 Red Hat, Inc
  *
@@ -160,11 +160,7 @@ test_metrics (void)
   PangoFontMetrics *metrics;
   char *str;
 
-
-  if (strcmp (G_OBJECT_TYPE_NAME (pango_context_get_font_map (context)), "PangoCairoWin32FontMap") == 0)
-    desc = pango_font_description_from_string ("Verdana 11");
-  else
-    desc = pango_font_description_from_string ("Cantarell 11");
+  desc = pango_font_description_from_string ("Cantarell 11");
 
   str = pango_font_description_to_string (desc);
 
@@ -227,7 +223,7 @@ test_extents (void)
 }
 
 static void
-test_enumerate (void)
+test_fontmap_enumerate (void)
 {
   PangoFontMap *fontmap;
   PangoContext *context;
@@ -424,7 +420,7 @@ test_roundtrip_emoji (void)
 }
 
 static void
-test_font_models (void)
+test_fontmap_models (void)
 {
   PangoFontMap *map = pango_font_map_get_default ();
   int n_families = 0;
@@ -536,6 +532,118 @@ test_faceid (void)
   pango_font_description_free (desc);
 }
 
+static gboolean
+font_info_cb (PangoUserFace     *face,
+              int                size,
+              hb_font_extents_t *extents,
+              gpointer           user_data)
+{
+  extents->ascender = 0.75 * size;
+  extents->descender = - 0.25 * size;
+  extents->line_gap = 0;
+
+  return TRUE;
+}
+
+static gboolean
+glyph_cb (PangoUserFace  *face,
+          hb_codepoint_t  unicode,
+          hb_codepoint_t *glyph,
+          gpointer        user_data)
+{
+  if (unicode == ' ')
+    {
+      *glyph = 0x20;
+      return TRUE;
+    }
+
+  return FALSE;
+}
+
+static gboolean
+glyph_info_cb (PangoUserFace      *face,
+               int                 size,
+               hb_codepoint_t      glyph,
+               hb_glyph_extents_t *extents,
+               hb_position_t      *h_advance,
+               hb_position_t      *v_advance,
+               gboolean           *is_color,
+               gpointer            user_data)
+{
+  return FALSE;
+}
+
+static gboolean
+count_fonts (PangoFontset *fontset,
+             PangoFont    *font,
+             gpointer      user_data)
+{
+  int *count = user_data;
+
+  (*count)++;
+
+  return FALSE;
+}
+
+/* test that fontmap fallback works as expected */
+static void
+test_fontmap_fallback (void)
+{
+  PangoFontMap *map;
+  PangoUserFace *custom;
+  PangoFontDescription *desc;
+  PangoFontset *fontset;
+  PangoFont *font;
+  int count;
+
+  map = pango_font_map_new ();
+
+  desc = pango_font_description_from_string ("CustomFont");
+  custom = pango_user_face_new (font_info_cb,
+                                glyph_cb,
+                                glyph_info_cb,
+                                NULL,
+                                NULL,
+                                NULL, NULL,
+                                "Regular", desc);
+  pango_font_description_free (desc);
+
+  pango_font_map_add_face (map, PANGO_FONT_FACE (custom));
+
+  desc = pango_font_description_from_string ("CustomFont 11");
+  fontset = pango_font_map_load_fontset (map, context, desc, NULL);
+  g_assert_nonnull (fontset);
+
+  font = pango_fontset_get_font (fontset, 0x20);
+  g_assert_nonnull (font);
+  g_assert_true (pango_font_get_face (font) == PANGO_FONT_FACE (custom));
+  g_object_unref (font);
+
+  count = 0;
+  pango_fontset_foreach (fontset, count_fonts, &count);
+  g_assert_true (count == 1);
+
+  pango_font_map_set_fallback (map, pango_font_map_get_default ());
+
+  desc = pango_font_description_from_string ("CustomFont 11");
+  fontset = pango_font_map_load_fontset (map, context, desc, NULL);
+  g_assert_nonnull (fontset);
+
+  font = pango_fontset_get_font (fontset, ' ');
+  g_assert_nonnull (font);
+  g_assert_true (pango_font_get_face (font) == PANGO_FONT_FACE (custom));
+  g_object_unref (font);
+
+  font = pango_fontset_get_font (fontset, 'a');
+  g_assert_nonnull (font);
+
+  count = 0;
+  pango_fontset_foreach (fontset, count_fonts, &count);
+  g_assert_true (count > 1);
+
+  g_object_unref (map);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -547,21 +655,22 @@ main (int argc, char *argv[])
 
   context = pango_context_new ();
 
-  g_test_add_func ("/pango/font/metrics", test_metrics);
   g_test_add_func ("/pango/fontdescription/parse", test_parse);
   g_test_add_func ("/pango/fontdescription/roundtrip", test_roundtrip);
   g_test_add_func ("/pango/fontdescription/variations", test_variations);
   g_test_add_func ("/pango/fontdescription/empty-variations", test_empty_variations);
   g_test_add_func ("/pango/fontdescription/set-gravity", test_set_gravity);
   g_test_add_func ("/pango/fontdescription/faceid", test_faceid);
+  g_test_add_func ("/pango/font/metrics", test_metrics);
   g_test_add_func ("/pango/font/extents", test_extents);
-  g_test_add_func ("/pango/font/enumerate", test_enumerate);
+  g_test_add_func ("/pango/font/glyph-extents", test_glyph_extents);
+  g_test_add_func ("/pango/font/font-metrics", test_font_metrics);
   g_test_add_func ("/pango/font/roundtrip/plain", test_roundtrip_plain);
   g_test_add_func ("/pango/font/roundtrip/small-caps", test_roundtrip_small_caps);
   g_test_add_func ("/pango/font/roundtrip/emoji", test_roundtrip_emoji);
-  g_test_add_func ("/pango/font/models", test_font_models);
-  g_test_add_func ("/pango/font/glyph-extents", test_glyph_extents);
-  g_test_add_func ("/pango/font/font-metrics", test_font_metrics);
+  g_test_add_func ("/pango/fontmap/enumerate", test_fontmap_enumerate);
+  g_test_add_func ("/pango/fontmap/models", test_fontmap_models);
+  g_test_add_func ("/pango/fontmap/fallback", test_fontmap_fallback);
 
   return g_test_run ();
 }

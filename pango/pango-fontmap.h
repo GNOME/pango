@@ -69,6 +69,12 @@ void                    pango_font_map_remove_family            (PangoFontMap   
                                                                  PangoFontFamily            *family);
 
 PANGO_AVAILABLE_IN_ALL
+void                    pango_font_map_set_fallback             (PangoFontMap               *self,
+                                                                 PangoFontMap               *fallback);
+PANGO_AVAILABLE_IN_ALL
+PangoFontMap *          pango_font_map_get_fallback             (PangoFontMap               *self);
+
+PANGO_AVAILABLE_IN_ALL
 float                   pango_font_map_get_resolution           (PangoFontMap               *self);
 
 PANGO_AVAILABLE_IN_ALL
