@@ -28,8 +28,9 @@
 #include <cairo.h>
 #endif
 
-typedef struct _PangoFontsetCached PangoFontsetCached;
-typedef struct _PangoFontsetCachedClass  PangoFontsetCachedClass;
+#define PANGO_TYPE_FONTSET_CACHED (pango_fontset_cached_get_type ())
+
+G_DECLARE_FINAL_TYPE (PangoFontsetCached, pango_fontset_cached, PANGO, FONTSET_CACHED, PangoFontset)
 
 struct _PangoFontsetCached
 {
@@ -48,14 +49,6 @@ struct _PangoFontsetCached
 #endif
 };
 
-struct _PangoFontsetCachedClass
-{
-  PangoFontsetClass parent_class;
-};
-
-
-GType                pango_fontset_cached_get_type       (void) G_GNUC_CONST;
-
 PangoFontsetCached * pango_fontset_cached_new            (const PangoFontDescription *description,
                                                           PangoLanguage              *language,
                                                           float                       dpi,
@@ -67,3 +60,6 @@ void                 pango_fontset_cached_add_family     (PangoFontsetCached    
                                                           PangoGenericFamily         *family);
 int                  pango_fontset_cached_size           (PangoFontsetCached         *self);
 PangoFont *          pango_fontset_cached_get_first_font (PangoFontsetCached         *self);
+
+void                 pango_fontset_cached_append         (PangoFontsetCached         *self,
+                                                          PangoFontsetCached         *other);
