@@ -62,7 +62,7 @@ set_color (PangoCairoRenderer *crenderer,
 	   PangoRenderPart     part)
 {
   PangoColor *color = pango_renderer_get_color ((PangoRenderer *) (crenderer), part);
-  gdouble red, green, blue, alpha;
+  double red, green, blue, alpha;
 
   if (!color)
     return;
