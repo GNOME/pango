@@ -43,7 +43,7 @@ if cairo_dep.found()
     [ 'test-layout', [ 'test-layout.c', 'test-common.c' ] ],
     [ 'test-fontsets', [ 'test-fontsets.c', 'test-common.c' ] ],
     [ 'testrandom', [ 'testrandom.c' ] ],
-    [ 'test-pangocairo-threads', [ 'test-pangocairo-threads.c' ] ],
+    [ 'test-pangocairo-threads', [ 'test-pangocairo-threads.c', 'test-common.c' ] ],
   ]
 endif
 
