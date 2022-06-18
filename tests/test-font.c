@@ -28,6 +28,8 @@
 #include <pango/pango-item-private.h>
 #include <pango/pango-font-private.h>
 
+#include "test-common.h"
+
 static PangoContext *context;
 
 static void
@@ -401,7 +403,7 @@ test_roundtrip_emoji (void)
   context = pango_context_new ();
 
   /* This is how pango_itemize creates the emoji font desc */
-  desc = pango_font_description_from_string ("Cantarell 11");
+  desc = pango_font_description_from_string ("DejaVu Sans Book 11");
   pango_font_description_set_family_static (desc, "emoji");
 
   font = pango_context_load_font (context, desc);
@@ -540,6 +542,8 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
 
   g_test_init (&argc, &argv, NULL);
+
+  install_fonts ();
 
   context = pango_context_new ();
 
