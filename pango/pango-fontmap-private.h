@@ -36,6 +36,7 @@ struct _PangoFontMap
   GPtrArray *families;
   GHashTable *fontsets;
   GQueue fontset_cache;
+  PangoFontMap *fallback;
 
   float dpi;
   gboolean in_populate;

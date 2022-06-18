@@ -61,12 +61,19 @@
  *
  * `PangoFontMap` is the base class for font enumeration.
  * It also handles caching and lookup of faces and fonts.
+ * To obtain fonts from a `PangoFontMap`, use [method@Pango.FontMap.load_font]
+ * or [method@Pango.FontMap.load_fontset].
  *
  * Subclasses populate the fontmap using backend-specific APIs
  * to enumerate the available fonts on the sytem, but it is
  * also possible to create an instance of `PangoFontMap` and
  * populate it manually using [method@Pango.FontMap.add_file]
  * and [method@Pango.FontMap.add_face].
+ *
+ * Fontmaps can be combined using [method@Pango.FontMap.set_fallback].
+ * This can be useful to add custom fonts to the default fonts
+ * without making them available to every user of the default
+ * fontmap.
  *
  * Note that to be fully functional, a fontmap needs to provide
  * generic families for monospace and sans-serif. These can
@@ -104,7 +111,10 @@ pango_font_map_get_n_items (GListModel *list)
 {
   PangoFontMap *self = PANGO_FONT_MAP (list);
 
-  return self->families->len;
+  if (self->fallback)
+    return self->families->len + g_list_model_get_n_items (G_LIST_MODEL (self->fallback));
+  else
+    return self->families->len;
 }
 
 static gpointer
@@ -115,6 +125,8 @@ pango_font_map_get_item (GListModel *list,
 
   if (position < self->families->len)
     return g_object_ref (g_ptr_array_index (self->families, position));
+  else if (self->fallback)
+    return g_list_model_get_item (G_LIST_MODEL (self->fallback), position);
 
   return NULL;
 }
@@ -366,6 +378,7 @@ synthesize_bold_and_italic_faces (PangoFontMap *map)
 
 enum {
   PROP_RESOLUTION = 1,
+  PROP_FALLBACK,
   PROP_ITEM_TYPE,
   PROP_N_ITEMS,
   N_PROPERTIES
@@ -400,6 +413,7 @@ pango_font_map_finalize (GObject *object)
 {
   PangoFontMap *self = PANGO_FONT_MAP (object);
 
+  g_clear_object (&self->fallback);
   g_ptr_array_unref (self->added_faces);
   g_ptr_array_unref (self->added_families);
   g_hash_table_unref (self->families_hash);
@@ -423,6 +437,10 @@ pango_font_map_set_property (GObject      *object,
       pango_font_map_set_resolution (map, g_value_get_float (value));
       break;
 
+    case PROP_FALLBACK:
+      pango_font_map_set_fallback (map, g_value_get_object (value));
+      break;
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     }
@@ -440,6 +458,10 @@ pango_font_map_get_property (GObject    *object,
     {
     case PROP_RESOLUTION:
       g_value_set_float (value, map->dpi);
+      break;
+
+    case PROP_FALLBACK:
+      g_value_set_object (value, map->fallback);
       break;
 
     case PROP_ITEM_TYPE:
@@ -497,6 +519,7 @@ pango_font_map_default_load_fontset (PangoFontMap               *self,
   PangoFontFamily *family;
   PangoFontFace *face;
   gboolean has_generic = FALSE;
+  PangoFontset *fallback;
   gint64 before G_GNUC_UNUSED;
 
   before = PANGO_TRACE_CURRENT_TIME;
@@ -525,8 +548,13 @@ pango_font_map_default_load_fontset (PangoFontMap               *self,
 
   if (self->families->len == 0)
     {
-      g_warning ("Font map contains no fonts!!!!");
-      goto done_no_cache;
+      if (self->fallback)
+        goto add_fallback;
+      else
+        {
+          g_warning ("Font map contains no fonts!!!!");
+          goto done_no_cache;
+        }
     }
 
   families = g_strsplit (family_name ? family_name : "", ",", -1);
@@ -558,19 +586,29 @@ pango_font_map_default_load_fontset (PangoFontMap               *self,
 
   g_strfreev (families);
 
+  pango_font_description_free (copy);
+
   /* Returning an empty fontset leads to bad outcomes.
    *
    * We always include a generic family in order
    * to produce fontsets with good coverage.
+   *
+   * If we have a fallback fontmap, this is where we bring
+   * it in and just add its results to ours.
    */
   if (!has_generic)
     {
       family = find_family (self, "sans-serif");
       if (PANGO_IS_GENERIC_FAMILY (family))
         pango_fontset_cached_add_family (fontset, PANGO_GENERIC_FAMILY (family));
+      else if (self->fallback)
+        {
+add_fallback:
+          fallback = pango_font_map_load_fontset (self->fallback, context, description, language);
+          pango_fontset_cached_append (fontset, PANGO_FONTSET_CACHED (fallback));
+          g_object_unref (fallback);
+        }
     }
-
-  pango_font_description_free (copy);
 
   g_hash_table_add (self->fontsets, fontset);
 
@@ -585,7 +623,7 @@ done:
     }
 
 done_no_cache:
-  pango_trace_mark (before, "pango_hb_fontmap_load_fontset", "%s", family_name);
+  pango_trace_mark (before, "pango_fontmap_load_fontset", "%s", family_name);
 
   return g_object_ref (PANGO_FONTSET (fontset));
 }
@@ -644,6 +682,16 @@ pango_font_map_class_init (PangoFontMapClass *class)
    */
   properties[PROP_RESOLUTION] =
       g_param_spec_float ("resolution", NULL, NULL, 0, G_MAXFLOAT, 96.0,
+                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoFontMap:fallback: (attributes org.gtk.Property.get=pango_font_map_get_fallback org.gtk.Property.set=pango_font_map_set_fallback)
+   *
+   * The fallback fontmap is used to look up fonts that
+   * this map does not have itself.
+   */
+  properties[PROP_FALLBACK] =
+      g_param_spec_object ("fallback", NULL, NULL, PANGO_TYPE_FONT_MAP,
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
   /**
@@ -762,6 +810,8 @@ pango_font_map_load_font (PangoFontMap               *self,
                           const PangoFontDescription *desc)
 {
   g_return_val_if_fail (PANGO_IS_FONT_MAP (self), NULL);
+  g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
+  g_return_val_if_fail (desc != NULL, NULL);
 
   return PANGO_FONT_MAP_GET_CLASS (self)->load_font (self, context, desc);
 }
@@ -771,7 +821,8 @@ pango_font_map_load_font (PangoFontMap               *self,
  * @self: a `PangoFontMap`
  * @context: the `PangoContext` the font will be used with
  * @desc: a `PangoFontDescription` describing the font to load
- * @language: a `PangoLanguage` the fonts will be used for
+ * @language: (nullable): a `PangoLanguage` the fonts will be used for,
+ *    or `NULL` to use the language of @context
  *
  * Load a set of fonts in the fontmap that can be used to render
  * a font matching @desc.
@@ -786,6 +837,8 @@ pango_font_map_load_fontset (PangoFontMap               *self,
                              PangoLanguage              *language)
 {
   g_return_val_if_fail (PANGO_IS_FONT_MAP (self), NULL);
+  g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
+  g_return_val_if_fail (desc != NULL, NULL);
 
   return PANGO_FONT_MAP_GET_CLASS (self)->load_fontset (self, context, desc, language);
 }
@@ -1037,6 +1090,49 @@ pango_font_map_remove_family (PangoFontMap    *self,
   pango_font_map_changed (self);
 
   g_ptr_array_remove_index (self->added_families, position);
+}
+
+/**
+ * pango_font_map_set_fallback:
+ * @self: a `PangoFontMap`
+ * @fallback: (nullable): the `PangoFontMap` to use as fallback
+ *
+ * Sets the fontmap to use as fallback when a font isn't found.
+ *
+ * This can be used to make a custom font available only via a
+ * special fontmap, while still having all the regular fonts
+ * from the fallback fontmap.
+ */
+void
+pango_font_map_set_fallback (PangoFontMap *self,
+                             PangoFontMap *fallback)
+{
+  g_return_if_fail (PANGO_IS_FONT_MAP (self));
+  g_return_if_fail (fallback == NULL || PANGO_IS_FONT_MAP (fallback));
+
+  if (!g_set_object (&self->fallback, fallback))
+    return;
+
+  clear_caches (self);
+  g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_FALLBACK]);
+}
+
+/**
+ * pango_font_map_get_fallback:
+ * @self: a `PangoFontMap`
+ *
+ * Returns the fallback fontmap of @self
+ *
+ * See [method@Pango.FontMap.set_fallback].
+ *
+ * Returns: (nullable) (transfer none): the fallback fontmap
+ */
+PangoFontMap *
+pango_font_map_get_fallback (PangoFontMap *self)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_MAP (self), NULL);
+
+  return self->fallback;
 }
 
 /**
