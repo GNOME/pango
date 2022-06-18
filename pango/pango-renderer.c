@@ -499,6 +499,7 @@ add_strikethrough (PangoRenderer    *renderer,
 }
 
 static void pango_renderer_draw_runs (PangoRenderer *renderer,
+                                      PangoLine     *line,
                                       GSList        *runs,
                                       const char    *text,
                                       int            x,
@@ -539,7 +540,7 @@ pango_renderer_draw_line (PangoRenderer   *renderer,
   state.overline = PANGO_LINE_STYLE_NONE;
   state.strikethrough = PANGO_LINE_STYLE_NONE;
 
-  pango_renderer_draw_runs (renderer, line->runs, line->data->text, x, y);
+  pango_renderer_draw_runs (renderer, line, line->runs, line->data->text, x, y);
 
   /* Finish off any remaining underlines */
   draw_underline (renderer, &state);
@@ -599,6 +600,7 @@ pango_renderer_draw_lines (PangoRenderer *renderer,
 
 static void
 pango_renderer_draw_runs (PangoRenderer *renderer,
+                          PangoLine     *line,
                           GSList        *runs,
                           const char    *text,
                           int            x,
@@ -660,9 +662,7 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
         {
           if (!got_overall)
             {
-#ifdef EXTENTS
-              pango_layout_line_get_extents (line, NULL, &overall_rect);
-#endif
+              pango_line_get_extents (line, NULL, &overall_rect);
               got_overall = TRUE;
             }
 
