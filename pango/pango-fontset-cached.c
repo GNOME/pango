@@ -325,4 +325,19 @@ pango_fontset_cached_size (PangoFontsetCached *self)
   return self->items->len;
 }
 
+void
+pango_fontset_cached_append (PangoFontsetCached *self,
+                             PangoFontsetCached *other)
+{
+  for (int i = 0; i < other->items->len; i++)
+    {
+      gpointer item = g_ptr_array_index (other->items, i);
+
+      if (PANGO_IS_FONT (item))
+        pango_fontset_cached_add_face (self, pango_font_get_face (PANGO_FONT (item)));
+      else if (PANGO_IS_GENERIC_FAMILY (item))
+        pango_fontset_cached_add_family (self, PANGO_GENERIC_FAMILY (item));
+    }
+}
+
 /* vim:set foldmethod=marker expandtab: */
