@@ -7,6 +7,7 @@ project('pango', 'c', 'cpp',
           # We only need c99, but glib needs GNU-specific features
           # https://github.com/mesonbuild/meson/issues/2289
           'c_std=gnu99',
+          'cpp_std=c++11',
         ],
         meson_version : '>= 0.55.3')
 
