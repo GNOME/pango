@@ -22,7 +22,7 @@
 #include "config.h"
 #include <glib.h>
 #include <gio/gio.h>
-#include <pango/pangocairo.h>
+#include <pango/pango.h>
 
 #include <hb-ot.h>
 
