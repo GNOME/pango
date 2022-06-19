@@ -1576,7 +1576,8 @@ pango_line_get_caret_pos (PangoLine      *line,
         return;
 
       hb_font_get_scale (hb_font, &x_scale, &y_scale);
-      slope_inv = (caret_run * y_scale) / (double) (caret_rise * x_scale);
+
+      slope_inv = (caret_run / (double) caret_rise) * (y_scale / (double) x_scale);
 
       if (strong_pos)
         {
