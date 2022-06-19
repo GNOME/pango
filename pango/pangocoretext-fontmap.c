@@ -386,13 +386,14 @@ pango_core_text_font_map_populate (PangoFontMap *map)
     const char *alias_name;
     const char *family_name;
   } aliases[] = {
-    { "monospace",  "Courier" },
-    { "sans-serif", "Helvetica" },
-    { "serif",      "Times" },
-    { "cursive",    "Apple Chancery" },
-    { "fantasy",    "Papyrus", },
-    { "system-ui",  ".AppleSystemUIFont" },
-    { "emoji",      "Apple Color Emoji" }
+    { "Monospace",  "Courier" },
+    { "Sans-serif", "Helvetica" },
+    { "Sans", "Helvetica" },
+    { "Serif",      "Times" },
+    { "Cursive",    "Apple Chancery" },
+    { "Fantasy",    "Papyrus", },
+    { "System-ui",  ".AppleSystemUIFont" },
+    { "Emoji",      "Apple Color Emoji" }
   };
 
   for (int i = 0; i < G_N_ELEMENTS (aliases); i++)

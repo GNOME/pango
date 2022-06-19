@@ -361,8 +361,8 @@ pango_fc_font_map_populate (PangoFontMap *map)
 
   /* Add aliases */
   const char *alias_names[] = {
-    "system-ui",
-    "emoji"
+    "System-ui",
+    "Emoji"
   };
 
   for (int i = 0; i < G_N_ELEMENTS (alias_names); i++)
@@ -405,12 +405,12 @@ pango_fc_font_map_populate (PangoFontMap *map)
    * has 'sans-serif'
    */
   const char *generic_names[] = {
-    "monospace",
-    "sans-serif",
-    "sans",
-    "serif",
-    "cursive",
-    "fantasy",
+    "Monospace",
+    "Sans-serif",
+    "Sans",
+    "Serif",
+    "Cursive",
+    "Fantasy",
   };
   FcLangSet *no_langs = FcLangSetCreate ();
   FcLangSet *emoji_langs = FcLangSetCreate ();
