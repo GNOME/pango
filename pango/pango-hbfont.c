@@ -1019,10 +1019,11 @@ pango_hb_font_new_for_description (PangoHbFace                *face,
 
   g_return_val_if_fail (PANGO_IS_HB_FACE (face), NULL);
   g_return_val_if_fail (description != NULL, NULL);
-  g_return_val_if_fail ((pango_font_description_get_set_fields (description) & PANGO_FONT_MASK_SIZE) != 0, NULL);
   g_return_val_if_fail (dpi > 0, NULL);
 
-  if (pango_font_description_get_size_is_absolute (description))
+  if ((pango_font_description_get_set_fields (description) & PANGO_FONT_MASK_SIZE) == 0)
+    size = 10 * PANGO_SCALE;
+  else if (pango_font_description_get_size_is_absolute (description))
     size = pango_font_description_get_size (description) * 72. / dpi;
   else
     size = pango_font_description_get_size (description);
