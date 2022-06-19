@@ -101,8 +101,10 @@ main (int    argc,
   gboolean opt_metrics = FALSE;
   gboolean opt_variations = FALSE;
   gboolean opt_version = FALSE;
+  gboolean opt_only_families = FALSE;
   GOptionEntry entries[] = {
     { "verbose", 0, 0, G_OPTION_ARG_NONE, &opt_verbose, "Print verbose information", NULL },
+    { "families", 0, 0, G_OPTION_ARG_NONE, &opt_only_families, "List only families", NULL },
     { "metrics", 0, 0, G_OPTION_ARG_NONE, &opt_metrics, "Print font metrics", NULL },
     { "variations", 0, 0, G_OPTION_ARG_NONE, &opt_variations, "Print font variations", NULL },
     { "version", 0, 0, G_OPTION_ARG_NONE, &opt_version, "Show version" },
@@ -149,14 +151,24 @@ main (int    argc,
   for (i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (fontmap)); i++)
     {
       PangoFontFamily *family = g_list_model_get_item (G_LIST_MODEL (fontmap), i);
-      const char *kind;
       const char *family_name = pango_font_family_get_name (family);
 
       g_object_unref (family);
 
-      kind = "";
+      g_print ("%s", family_name);
 
-      g_print ("%s %s\n", family_name, kind);
+      if (opt_verbose)
+        {
+          if (PANGO_IS_GENERIC_FAMILY (family))
+            g_print ("(generic)");
+
+          g_print (" (%d faces)", g_list_model_get_n_items (G_LIST_MODEL (family)));
+        }
+
+      g_print ("\n");
+
+      if (opt_only_families)
+        continue;
 
       width = 0;
       for (j = 0; j < g_list_model_get_n_items (G_LIST_MODEL (family)); j++)
