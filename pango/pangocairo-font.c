@@ -35,6 +35,14 @@
 #include "pango-userface-private.h"
 #include "pango-font-private.h"
 
+#if defined (HAVE_CORE_TEXT)
+
+#include <Carbon/Carbon.h>
+#include <cairo-quartz.h>
+#include <hb-coretext.h>
+
+#else
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wundef"
 #include <cairo-ft.h>
@@ -42,6 +50,8 @@
 
 #include <hb-ft.h>
 #include <freetype/ftmm.h>
+
+#endif
 
 #define PANGO_CAIRO_FONT_PRIVATE(font)		\
   ((PangoCairoFontPrivate *)			\
@@ -76,8 +86,6 @@ _pango_cairo_font_private_scaled_font_data_destroy (PangoCairoFontPrivateScaledF
       g_slice_free (PangoCairoFontPrivateScaledFontData, data);
     }
 }
-
-static FT_Library ft_library;
 
 static cairo_user_data_key_t cairo_user_data;
 
@@ -147,6 +155,31 @@ create_font_face_for_user_font (PangoFont *font)
   return cairo_face;
 }
 
+#if defined (HAVE_CORE_TEXT)
+
+static cairo_font_face_t *
+create_font_face_for_hb_font (PangoFont *font)
+{
+  hb_font_t *hbfont;
+  CTFontRef ctfont;
+  CGFontRef cgfont;
+  cairo_font_face_t *cairo_face;
+
+  hbfont = pango_font_get_hb_font (font);
+  ctfont = hb_coretext_font_get_ct_font (hbfont);
+  cgfont = CTFontCopyGraphicsFont (ctfont, NULL);
+
+  cairo_face = cairo_quartz_font_face_create_for_cgfont (cgfont);
+
+  CFRelease (cgfont);
+
+  return cairo_face;
+}
+
+#else
+
+static FT_Library ft_library;
+
 static cairo_font_face_t *
 create_font_face_for_hb_font (PangoFont *font)
 {
@@ -200,6 +233,8 @@ create_font_face_for_hb_font (PangoFont *font)
 
   return cairo_face;
 }
+
+#endif
 
 static cairo_scaled_font_t *
 _pango_cairo_font_private_get_scaled_font (PangoCairoFontPrivate *cf_priv)
