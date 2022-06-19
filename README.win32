@@ -1,17 +1,16 @@
 The Pango backends written for Win32 is pangowin32. Pangowin32 uses
-the Win32 GDI font API. GTK+ 2.8 and later on Win32 however actually
-uses the pangocairo backend (which then uses only small parts of
-pangowin32). Much of the GDI font API calls are in cairo.
-
-The pangoft2 backend was originally written with Win32 in mind, but
-its main use nowadays is on other platforms than Win32.
+the Win32 DirectWrite font API. GTK+ 2.8 and later on Win32 however
+actually uses the pangocairo backend (which then uses only small parts of
+pangowin32). Much of the DirectWrite font API calls are in cairo.
 
 To build Pango for Win32:
 
 You need to have gcc (mingw-w64) or Visual Studio 2015 or later, along with
-Python 3.6.x+ and Meson 0.55.3 at the time of writing.  If building
-the introspection files, you will also need to ensure that the Python
-release series and build architecture (i.e. Win32 (x86)/
+Python 3.6.x+ and Meson 0.55.3 at the time of writing. However, if you do not
+have HarfBuzz installed and are building it as part of building Pango, you will
+need to use Visual Studio 2017 (the latest 15.9.x release is recommended) or
+later. If building the introspection files, you will also need to ensure that
+the Python release series and build architecture (i.e. Win32 (x86)/
 x64 (amd64/x86-64) matches the Python release series and build
 architecture that was used to build GObject-Introspection.
 The Python interpreter executable directory must be in your PATH.
@@ -27,16 +26,12 @@ are currently not supported for any cross-builds.
 You will also need the following libraries installed with their headers
 and import libraries, and their DLLs, if applicable, needs to be found in
 %PATH%.  All of their required dependencies are required as well.  Their
-pkg-config files are needed on all builds unless marked with a *, where
-only their headers/import libraries are needed on Visual Studio:
+pkg-config files are needed on all builds.
 
 -GLib
 -Fribidi
--Cairo* (With Win32 support built in, and optionally FreeType and FontConfig
-         support for building PangoFT2.)
--HarfBuzz* (GLib support required, and FreeType2 if building PangoFT2)
--FreeType* (Optional, needed for PangoFT2)
--FontConfig* (Optional, needed for PangoFT2)
+-Cairo (With Win32+DirectWrite support built in, optionally libpng support)
+-HarfBuzz (GLib, GObject and DirectWrite support required)
 
 Please see meson.build to see what versions are needed for these dependencies.
 
