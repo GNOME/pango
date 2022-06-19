@@ -301,11 +301,12 @@ pango_direct_write_font_map_populate (PangoFontMap *map)
     const char *alias_name;
     const char *family_name;
   } aliases[] = {
-    { "monospace",  "Consolas" },
-    { "sans-serif", "Arial" },
-    { "serif",      "Times New Roman" },
-    { "system-ui",  "Segoe UI" },
-    { "emoji",      "Segoe UI Emoji" }
+    { "Monospace",  "Consolas" },
+    { "Sans-serif", "Arial" },
+    { "Sans", "Arial" },
+    { "Serif",      "Times New Roman" },
+    { "System-ui",  "Segoe UI" },
+    { "Emoji",      "Segoe UI Emoji" }
   };
 
 #if 0
