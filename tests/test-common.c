@@ -422,7 +422,6 @@ install_fonts (void)
   GPtrArray *generic;
   GPtrArray *synthetic;
   char *path = NULL;
-  char *name_i = NULL;
 
   map = pango_font_map_new ();
 
@@ -433,8 +432,8 @@ install_fonts (void)
   if (!dir)
     g_error ("Failed to install fonts: %s", error->message);
 
-  generic = g_ptr_array_new ();
-  synthetic = g_ptr_array_new ();
+  generic = g_ptr_array_new_with_free_func (g_free);
+  synthetic = g_ptr_array_new_with_free_func (g_free);
 
   while (TRUE)
     {
@@ -456,17 +455,15 @@ install_fonts (void)
    */
   for (int i = 0; i < generic->len; i++)
     {
-      name_i = g_ptr_array_index (generic, i);
-      add_generic_family (map, path, name_i);
-      g_free (name_i);
+      const char *name = g_ptr_array_index (generic, i);
+      add_generic_family (map, path, name);
     }
   g_ptr_array_free (generic, TRUE);
 
   for (int i = 0; i < synthetic->len; i++)
     {
-      name_i = g_ptr_array_index (synthetic, i);
-      add_synthetic_faces (map, path, name_i);
-      g_free (name_i);
+      const char *name = g_ptr_array_index (synthetic, i);
+      add_synthetic_faces (map, path, name);
     }
   g_ptr_array_free (synthetic, TRUE);
 
