@@ -27,6 +27,7 @@
 #include <pango/pango-font-private.h>
 #include <pango/pango-line-private.h>
 #include <pango/pango-hbface.h>
+#include <pango/pango-hbfont.h>
 #include <pango/pango-attributes.h>
 #include <pango/pango-attr-private.h>
 #include <pango/pango-item-private.h>
@@ -553,7 +554,7 @@ add_font (GtkJsonPrinter *printer,
   const char *data;
   guint length;
   const int *coords;
-  hb_feature_t features[32];
+  const hb_feature_t *features;
   PangoMatrix matrix;
 
   gtk_json_printer_start_object (printer, member);
@@ -602,7 +603,8 @@ add_font (GtkJsonPrinter *printer,
     }
 
   length = 0;
-  pango_font_get_features (font, features, G_N_ELEMENTS (features), &length);
+  if (PANGO_IS_HB_FONT (font))
+    features = pango_hb_font_get_features (PANGO_HB_FONT (font), &length);
   if (length > 0)
     {
       gtk_json_printer_start_object (printer, "features");

@@ -192,7 +192,6 @@ test_hbfont_roundtrip (void)
   PangoHbFace *face;
   PangoHbFont *font;
   PangoFontDescription *desc;
-  hb_feature_t features[10];
   unsigned int n_features;
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
@@ -203,7 +202,7 @@ test_hbfont_roundtrip (void)
   font = pango_hb_font_new (face, 11 * PANGO_SCALE, NULL, 0, NULL, 0, PANGO_GRAVITY_AUTO, 96., NULL);
   g_assert_true (PANGO_IS_HB_FONT (font));
   g_assert_true (pango_font_get_face (PANGO_FONT (font)) == PANGO_FONT_FACE (face));
-  pango_font_get_features (PANGO_FONT (font), features, G_N_ELEMENTS (features), &n_features);
+  pango_hb_font_get_features (PANGO_HB_FONT (font), &n_features);
   g_assert_cmpint (n_features, ==, 0);
 
   desc = pango_font_describe (PANGO_FONT (font));

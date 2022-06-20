@@ -894,18 +894,6 @@ pango_hb_font_get_transform (PangoFont   *font,
 }
 
 static void
-pango_hb_font_get_features (PangoFont    *font,
-                            hb_feature_t *features,
-                            guint         len,
-                            guint        *num_features)
-{
-  PangoHbFont *self = PANGO_HB_FONT (font);
-
-  *num_features = MIN (len, self->n_features);
-  memcpy (features, self->features, sizeof (hb_feature_t) * *num_features);
-}
-
-static void
 pango_hb_font_class_init (PangoHbFontClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
@@ -918,7 +906,6 @@ pango_hb_font_class_init (PangoHbFontClass *class)
   font_class->get_glyph_extents = pango_hb_font_get_glyph_extents;
   font_class->get_metrics = pango_hb_font_get_metrics;
   font_class->create_hb_font = pango_hb_font_create_hb_font;
-  font_class->get_features = pango_hb_font_get_features;
   font_class->get_transform = pango_hb_font_get_transform;
 
   /**
@@ -1053,6 +1040,35 @@ pango_hb_font_new_for_description (PangoHbFace                *face,
 
   return pango_hb_font_new (face, size, features, n_features, variations, n_variations, gravity, dpi, ctm);
 }
+
+/**
+ * pango_hb_font_get_features:
+ * @self: a `PangoFont`
+ * @n_features: (nullable) (out caller-allocates): return location for
+ *   the length of the returned array
+ *
+ * Obtain the OpenType features that are provided by the font.
+ *
+ * These are passed to the rendering system, together with features
+ * that have been explicitly set via attributes.
+ *
+ * Note that this does not include OpenType features which the
+ * rendering system enables by default.
+ *
+ * Returns: (nullable) (transfer none): the features
+ */
+const hb_feature_t *
+pango_hb_font_get_features (PangoHbFont  *self,
+                            unsigned int *n_features)
+{
+  g_return_val_if_fail (PANGO_IS_HB_FONT (self), NULL);
+
+  if (n_features)
+    *n_features = self->n_features;
+
+  return self->features;
+}
+
 
 /**
  * pango_hb_font_get_variations:

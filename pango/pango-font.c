@@ -41,28 +41,6 @@
  * rendering-system-independent manner.
  */
 
-/* {{{ Utilities */
-
-static char *
-features_to_string (hb_feature_t *features,
-                    unsigned int  n_features)
-{
-  GString *s;
-  char buf[128];
-
-  s = g_string_new ("");
-
-  for (unsigned int i = 0; i < n_features; i++)
-    {
-      hb_feature_to_string (&features[i], buf, sizeof (buf));
-      if (s->len > 0)
-        g_string_append_c (s, ',');
-      g_string_append (s, buf);
-    }
-
-  return g_string_free (s, FALSE);
-}
-
 /* }}} */
 /* {{{ PangoFont implementation */
 
@@ -72,7 +50,6 @@ enum {
   PROP_SIZE,
   PROP_DPI,
   PROP_GRAVITY,
-  PROP_FEATURES,
   N_PROPERTIES
 };
 
@@ -121,19 +98,6 @@ pango_font_get_property (GObject    *object,
       g_value_set_enum (value, font->gravity);
       break;
 
-    case PROP_FEATURES:
-      {
-        hb_feature_t features[64];
-        guint n_features;
-        char *s;
-
-        pango_font_get_features (font, features, sizeof (features), &n_features);
-        s = features_to_string (features, n_features);
-        g_value_set_string (value, s);
-        g_free (s);
-      }
-      break;
-
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     }
@@ -161,15 +125,6 @@ pango_font_default_get_transform (PangoFont   *font,
 }
 
 static void
-pango_font_default_get_features (PangoFont    *font,
-                                 hb_feature_t *features,
-                                 guint         len,
-                                 guint        *num_features)
-{
-  *num_features = 0;
-}
-
-static void
 pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
@@ -177,7 +132,6 @@ pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
   object_class->finalize = pango_font_finalize;
   object_class->get_property = pango_font_get_property;
 
-  class->get_features = pango_font_default_get_features;
   class->is_hinted = pango_font_default_is_hinted;
   class->get_scale_factors = pango_font_default_get_scale_factors;
   class->get_transform = pango_font_default_get_transform;
@@ -231,23 +185,6 @@ pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
       g_param_spec_enum ("gravity", NULL, NULL, PANGO_TYPE_GRAVITY,
                          PANGO_GRAVITY_AUTO,
                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
-
-  /**
-   * PangoFont:features: (attributes org.gtk.Property.get=pango_font_get_features)
-   *
-   * OpenType features that are provided by the font.
-   *
-   * These are passed to the rendering system, together with features
-   * that have been explicitly set via attributes.
-   *
-   * Note that this does not include OpenType features which the
-   * rendering system enables by default.
-   *
-   * This property holds a string representation of the features.
-   */
-  properties[PROP_FEATURES] =
-      g_param_spec_string ("features", NULL, NULL, NULL,
-                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);
 }
@@ -534,32 +471,6 @@ pango_font_get_gravity (PangoFont *font)
   g_return_val_if_fail (PANGO_IS_FONT (font), PANGO_GRAVITY_SOUTH);
 
   return font->gravity;
-}
-
-/**
- * pango_font_get_features:
- * @font: a `PangoFont`
- * @features: (out caller-allocates) (array length=len): Array to features in
- * @len: the length of @features
- * @num_features: (inout): the number of used items in @features
- *
- * Obtain the OpenType features that are provided by the font.
- *
- * These are passed to the rendering system, together with features
- * that have been explicitly set via attributes.
- *
- * Note that this does not include OpenType features which the
- * rendering system enables by default.
- */
-void
-pango_font_get_features (PangoFont    *font,
-                         hb_feature_t *features,
-                         guint         len,
-                         guint        *num_features)
-{
-  g_return_if_fail (PANGO_IS_FONT (font));
-
-  PANGO_FONT_GET_CLASS (font)->get_features (font, features, len, num_features);
 }
 
 /* }}} */
