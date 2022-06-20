@@ -222,31 +222,34 @@ test_attr_list_update (void)
   PangoAttribute *weight_attr;
   PangoAttribute *fg_attr;
   PangoAttrList *list;
+  guint start, end;
 
   weight_attr = pango_attr_weight_new (700);
-  weight_attr->start_index = 4;
-  weight_attr->end_index = 6;
+  pango_attribute_set_range (weight_attr, 4, 6);
 
   fg_attr = pango_attr_foreground_new (&(PangoColor){0, 0, 65535});
-  fg_attr->start_index = PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING;
-  fg_attr->end_index = PANGO_ATTR_INDEX_TO_TEXT_END;
+  pango_attribute_set_range (fg_attr, PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING, PANGO_ATTR_INDEX_TO_TEXT_END);
 
   list = pango_attr_list_new();
   pango_attr_list_insert (list, weight_attr);
   pango_attr_list_insert (list, fg_attr);
 
-  g_assert_cmpuint (weight_attr->start_index, ==, 4);
-  g_assert_cmpuint (weight_attr->end_index, ==, 6);
-  g_assert_cmpuint (fg_attr->start_index, ==, PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING);
-  g_assert_cmpuint (fg_attr->end_index, ==, PANGO_ATTR_INDEX_TO_TEXT_END);
+  pango_attribute_get_range (weight_attr, &start, &end);
+  g_assert_cmpuint (start, ==, 4);
+  g_assert_cmpuint (end, ==, 6);
+  pango_attribute_get_range (fg_attr, &start, &end);
+  g_assert_cmpuint (start, ==, PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING);
+  g_assert_cmpuint (end, ==, PANGO_ATTR_INDEX_TO_TEXT_END);
 
   // Delete 1 byte at position 2
   pango_attr_list_update (list, 2, 1, 0);
 
-  g_assert_cmpuint (weight_attr->start_index, ==, 3);
-  g_assert_cmpuint (weight_attr->end_index, ==, 5);
-  g_assert_cmpuint (fg_attr->start_index, ==, PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING);
-  g_assert_cmpuint (fg_attr->end_index, ==, PANGO_ATTR_INDEX_TO_TEXT_END);
+  pango_attribute_get_range (weight_attr, &start, &end);
+  g_assert_cmpuint (start, ==, 3);
+  g_assert_cmpuint (end, ==, 5);
+  pango_attribute_get_range (fg_attr, &start, &end);
+  g_assert_cmpuint (start, ==, PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING);
+  g_assert_cmpuint (end, ==, PANGO_ATTR_INDEX_TO_TEXT_END);
 
   pango_attr_list_unref (list);
 }

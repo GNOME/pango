@@ -21,6 +21,7 @@
 
 #include "config.h"
 #include "pango-attributes.h"
+#include "pango-attr-private.h"
 #include "pango-item-private.h"
 #include "pango-impl-utils.h"
 

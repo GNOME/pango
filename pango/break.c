@@ -25,6 +25,7 @@
 #include "pango-script-private.h"
 #include "pango-emoji-private.h"
 #include "pango-attributes.h"
+#include "pango-attr-private.h"
 #include "pango-attr-list-private.h"
 #include "pango-attr-iterator-private.h"
 #include "pango-break-table.h"

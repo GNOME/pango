@@ -26,6 +26,7 @@
 #include "pango-glyph-item.h"
 #include "pango-font-private.h"
 #include "pango-attributes-private.h"
+#include "pango-attr-private.h"
 #include "pango-attr-list-private.h"
 #include "pango-attr-iterator-private.h"
 #include "pango-impl-utils.h"

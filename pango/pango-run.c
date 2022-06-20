@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include "pango-run-private.h"
+#include "pango-attr-private.h"
 #include "pango-item-private.h"
 #include "pango-impl-utils.h"
 #include "pango-font-metrics-private.h"
