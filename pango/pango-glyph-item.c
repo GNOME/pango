@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -47,16 +47,13 @@
  * to the length of @orig (that is, there must be at least one byte
  * assigned to each item, you can't create a zero-length item).
  *
- * This function is similar in function to [method@PangoItem.split]
- * (and uses it internally).
- *
  * Return value: the newly allocated item representing text before
  *   @split_index, which should be freed with [method@Pango.GlyphItem.free]
  */
 PangoGlyphItem *
 pango_glyph_item_split (PangoGlyphItem *orig,
-			const char     *text,
-			int             split_index)
+                        const char     *text,
+                        int             split_index)
 {
   PangoGlyphItem *new;
   int i;
@@ -72,13 +69,13 @@ pango_glyph_item_split (PangoGlyphItem *orig,
   if (LTR (orig))
     {
       for (i = 0; i < orig->glyphs->num_glyphs; i++)
-	{
-	  if (orig->glyphs->log_clusters[i] >= split_index)
-	    break;
-	}
+        {
+          if (orig->glyphs->log_clusters[i] >= split_index)
+            break;
+        }
 
       if (i == orig->glyphs->num_glyphs) /* No splitting necessary */
-	return NULL;
+        return NULL;
 
       split_index = orig->glyphs->log_clusters[i];
       num_glyphs = i;
@@ -86,13 +83,13 @@ pango_glyph_item_split (PangoGlyphItem *orig,
   else
     {
       for (i = orig->glyphs->num_glyphs - 1; i >= 0; i--)
-	{
-	  if (orig->glyphs->log_clusters[i] >= split_index)
-	    break;
-	}
+        {
+          if (orig->glyphs->log_clusters[i] >= split_index)
+            break;
+        }
 
       if (i < 0) /* No splitting necessary */
-	return NULL;
+        return NULL;
 
       split_index = orig->glyphs->log_clusters[i];
       num_glyphs = orig->glyphs->num_glyphs - 1 - i;
@@ -102,7 +99,7 @@ pango_glyph_item_split (PangoGlyphItem *orig,
 
   new = g_slice_new (PangoGlyphItem);
   split_offset = g_utf8_pointer_to_offset (text + orig->item->offset,
-					   text + orig->item->offset + split_index);
+                                           text + orig->item->offset + split_index);
   new->item = pango_item_split (orig->item, split_index, split_offset);
 
   new->glyphs = pango_glyph_string_new ();
@@ -114,9 +111,9 @@ pango_glyph_item_split (PangoGlyphItem *orig,
       memcpy (new->glyphs->log_clusters, orig->glyphs->log_clusters, num_glyphs * sizeof (int));
 
       memmove (orig->glyphs->glyphs, orig->glyphs->glyphs + num_glyphs,
-	       num_remaining * sizeof (PangoGlyphInfo));
+               num_remaining * sizeof (PangoGlyphInfo));
       for (i = num_glyphs; i < orig->glyphs->num_glyphs; i++)
-	orig->glyphs->log_clusters[i - num_glyphs] = orig->glyphs->log_clusters[i] - split_index;
+        orig->glyphs->log_clusters[i - num_glyphs] = orig->glyphs->log_clusters[i] - split_index;
     }
   else
     {
@@ -124,7 +121,7 @@ pango_glyph_item_split (PangoGlyphItem *orig,
       memcpy (new->glyphs->log_clusters, orig->glyphs->log_clusters + num_remaining, num_glyphs * sizeof (int));
 
       for (i = 0; i < num_remaining; i++)
-	orig->glyphs->log_clusters[i] = orig->glyphs->log_clusters[i] - split_index;
+        orig->glyphs->log_clusters[i] = orig->glyphs->log_clusters[i] - split_index;
     }
 
   pango_glyph_string_set_size (orig->glyphs, orig->glyphs->num_glyphs - num_glyphs);
@@ -252,12 +249,12 @@ pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter)
   if (LTR (iter->glyph_item))
     {
       if (glyph_index == glyphs->num_glyphs)
-	return FALSE;
+        return FALSE;
     }
   else
     {
       if (glyph_index < 0)
-	return FALSE;
+        return FALSE;
     }
 
   iter->start_glyph = iter->end_glyph;
@@ -268,47 +265,47 @@ pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter)
     {
       cluster = glyphs->log_clusters[glyph_index];
       while (TRUE)
-	{
-	  glyph_index++;
+        {
+          glyph_index++;
 
-	  if (glyph_index == glyphs->num_glyphs)
-	    {
-	      iter->end_index = item->offset + item->length;
-	      iter->end_char = item->num_chars;
-	      break;
-	    }
+          if (glyph_index == glyphs->num_glyphs)
+            {
+              iter->end_index = item->offset + item->length;
+              iter->end_char = item->num_chars;
+              break;
+            }
 
-	  if (glyphs->log_clusters[glyph_index] > cluster)
-	    {
-	      iter->end_index = item->offset + glyphs->log_clusters[glyph_index];
-	      iter->end_char += pango_utf8_strlen (iter->text + iter->start_index,
-					       iter->end_index - iter->start_index);
-	      break;
-	    }
-	}
+          if (glyphs->log_clusters[glyph_index] > cluster)
+            {
+              iter->end_index = item->offset + glyphs->log_clusters[glyph_index];
+              iter->end_char += pango_utf8_strlen (iter->text + iter->start_index,
+                                               iter->end_index - iter->start_index);
+              break;
+            }
+        }
     }
-  else			/* RTL */
+  else                  /* RTL */
     {
       cluster = glyphs->log_clusters[glyph_index];
       while (TRUE)
-	{
-	  glyph_index--;
+        {
+          glyph_index--;
 
-	  if (glyph_index < 0)
-	    {
-	      iter->end_index = item->offset + item->length;
-	      iter->end_char = item->num_chars;
-	      break;
-	    }
+          if (glyph_index < 0)
+            {
+              iter->end_index = item->offset + item->length;
+              iter->end_char = item->num_chars;
+              break;
+            }
 
-	  if (glyphs->log_clusters[glyph_index] > cluster)
-	    {
-	      iter->end_index = item->offset + glyphs->log_clusters[glyph_index];
-	      iter->end_char += pango_utf8_strlen (iter->text + iter->start_index,
-					       iter->end_index - iter->start_index);
-	      break;
-	    }
-	}
+          if (glyphs->log_clusters[glyph_index] > cluster)
+            {
+              iter->end_index = item->offset + glyphs->log_clusters[glyph_index];
+              iter->end_char += pango_utf8_strlen (iter->text + iter->start_index,
+                                               iter->end_index - iter->start_index);
+              break;
+            }
+        }
     }
 
   iter->end_glyph = glyph_index;
@@ -340,12 +337,12 @@ pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter)
   if (LTR (iter->glyph_item))
     {
       if (glyph_index == 0)
-	return FALSE;
+        return FALSE;
     }
   else
     {
       if (glyph_index == glyphs->num_glyphs - 1)
-	return FALSE;
+        return FALSE;
 
     }
 
@@ -357,49 +354,49 @@ pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter)
     {
       cluster = glyphs->log_clusters[glyph_index - 1];
       while (TRUE)
-	{
-	  if (glyph_index == 0)
-	    {
-	      iter->start_index = item->offset;
-	      iter->start_char = 0;
-	      break;
-	    }
+        {
+          if (glyph_index == 0)
+            {
+              iter->start_index = item->offset;
+              iter->start_char = 0;
+              break;
+            }
 
-	  glyph_index--;
+          glyph_index--;
 
-	  if (glyphs->log_clusters[glyph_index] < cluster)
-	    {
-	      glyph_index++;
-	      iter->start_index = item->offset + glyphs->log_clusters[glyph_index];
-	      iter->start_char -= pango_utf8_strlen (iter->text + iter->start_index,
-						 iter->end_index - iter->start_index);
-	      break;
-	    }
-	}
+          if (glyphs->log_clusters[glyph_index] < cluster)
+            {
+              glyph_index++;
+              iter->start_index = item->offset + glyphs->log_clusters[glyph_index];
+              iter->start_char -= pango_utf8_strlen (iter->text + iter->start_index,
+                                                 iter->end_index - iter->start_index);
+              break;
+            }
+        }
     }
-  else			/* RTL */
+  else                  /* RTL */
     {
       cluster = glyphs->log_clusters[glyph_index + 1];
       while (TRUE)
-	{
-	  if (glyph_index == glyphs->num_glyphs - 1)
-	    {
-	      iter->start_index = item->offset;
-	      iter->start_char = 0;
-	      break;
-	    }
+        {
+          if (glyph_index == glyphs->num_glyphs - 1)
+            {
+              iter->start_index = item->offset;
+              iter->start_char = 0;
+              break;
+            }
 
-	  glyph_index++;
+          glyph_index++;
 
-	  if (glyphs->log_clusters[glyph_index] < cluster)
-	    {
-	      glyph_index--;
-	      iter->start_index = item->offset + glyphs->log_clusters[glyph_index];
-	      iter->start_char -= pango_utf8_strlen (iter->text + iter->start_index,
-						 iter->end_index - iter->start_index);
-	      break;
-	    }
-	}
+          if (glyphs->log_clusters[glyph_index] < cluster)
+            {
+              glyph_index--;
+              iter->start_index = item->offset + glyphs->log_clusters[glyph_index];
+              iter->start_char -= pango_utf8_strlen (iter->text + iter->start_index,
+                                                 iter->end_index - iter->start_index);
+              break;
+            }
+        }
     }
 
   iter->start_glyph = glyph_index;
@@ -425,8 +422,8 @@ pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter)
  */
 gboolean
 pango_glyph_item_iter_init_start (PangoGlyphItemIter  *iter,
-				  PangoGlyphItem      *glyph_item,
-				  const char          *text)
+                                  PangoGlyphItem      *glyph_item,
+                                  const char          *text)
 {
   iter->glyph_item = glyph_item;
   iter->text = text;
@@ -462,8 +459,8 @@ pango_glyph_item_iter_init_start (PangoGlyphItemIter  *iter,
  */
 gboolean
 pango_glyph_item_iter_init_end (PangoGlyphItemIter  *iter,
-				PangoGlyphItem      *glyph_item,
-				const char          *text)
+                                PangoGlyphItem      *glyph_item,
+                                const char          *text)
 {
   iter->glyph_item = glyph_item;
   iter->text = text;
@@ -495,7 +492,7 @@ typedef struct
  */
 static void
 append_attrs (PangoGlyphItem *glyph_item,
-	      GSList         *attrs)
+              GSList         *attrs)
 {
   glyph_item->item->analysis.extra_attrs =
     g_slist_concat (glyph_item->item->analysis.extra_attrs, attrs);
@@ -573,8 +570,8 @@ split_before_cluster_start (ApplyAttrsState *state)
  */
 GSList *
 pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
-			      const char       *text,
-			      PangoAttrList    *list)
+                              const char       *text,
+                              PangoAttrList    *list)
 {
   PangoAttrIterator iter;
   GSList *result = NULL;
@@ -604,7 +601,7 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
     {
       pango_attr_iterator_range (&iter, &range_start, &range_end);
       if (range_end > glyph_item->item->offset)
-	break;
+        break;
     }
   while (pango_attr_iterator_next (&iter));
 
@@ -634,11 +631,11 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
        * of the last cluster
        */
       if (start_new_segment)
-	{
-	  result = g_slist_prepend (result,
-				    split_before_cluster_start (&state));
-	  state.segment_attrs = pango_attr_iterator_get_attrs (&iter);
-	}
+        {
+          result = g_slist_prepend (result,
+                                    split_before_cluster_start (&state));
+          state.segment_attrs = pango_attr_iterator_get_attrs (&iter);
+        }
 
       start_new_segment = FALSE;
 
@@ -647,42 +644,42 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
        * intersects the next cluster.
        */
       do
-	{
-	  if (range_end > state.iter.end_index) /* Range intersects next cluster */
-	    break;
+        {
+          if (range_end > state.iter.end_index) /* Range intersects next cluster */
+            break;
 
-	  /* Since ranges end in this cluster, the next cluster goes into a
-	   * separate segment
-	   */
-	  start_new_segment = TRUE;
+          /* Since ranges end in this cluster, the next cluster goes into a
+           * separate segment
+           */
+          start_new_segment = TRUE;
 
-	  have_next = pango_attr_iterator_next (&iter);
-	  pango_attr_iterator_range (&iter, &range_start, &range_end);
+          have_next = pango_attr_iterator_next (&iter);
+          pango_attr_iterator_range (&iter, &range_start, &range_end);
 
-	  if (range_start >= state.iter.end_index) /* New range doesn't intersect this cluster */
-	    {
-	      /* No gap between ranges, so previous range must of ended
-	       * at cluster boundary.
-	       */
-	      g_assert (range_start == state.iter.end_index && start_new_segment);
-	      break;
-	    }
+          if (range_start >= state.iter.end_index) /* New range doesn't intersect this cluster */
+            {
+              /* No gap between ranges, so previous range must of ended
+               * at cluster boundary.
+               */
+              g_assert (range_start == state.iter.end_index && start_new_segment);
+              break;
+            }
 
-	  /* If any ranges start *inside* this cluster, then we need
-	   * to split the previous cluster into a separate segment
-	   */
-	  if (range_start > state.iter.start_index &&
-	      state.iter.start_index != glyph_item->item->offset)
-	    {
-	      GSList *new_attrs = attr_slist_copy (state.segment_attrs);
-	      result = g_slist_prepend (result,
-					split_before_cluster_start (&state));
-	      state.segment_attrs = new_attrs;
-	    }
+          /* If any ranges start *inside* this cluster, then we need
+           * to split the previous cluster into a separate segment
+           */
+          if (range_start > state.iter.start_index &&
+              state.iter.start_index != glyph_item->item->offset)
+            {
+              GSList *new_attrs = attr_slist_copy (state.segment_attrs);
+              result = g_slist_prepend (result,
+                                        split_before_cluster_start (&state));
+              state.segment_attrs = new_attrs;
+            }
 
-	  state.segment_attrs = g_slist_concat (state.segment_attrs,
-						pango_attr_iterator_get_attrs (&iter));
-	}
+          state.segment_attrs = g_slist_concat (state.segment_attrs,
+                                                pango_attr_iterator_get_attrs (&iter));
+        }
       while (have_next);
     }
 
@@ -718,9 +715,9 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
  */
 void
 pango_glyph_item_letter_space (PangoGlyphItem *glyph_item,
-			       const char     *text,
-			       PangoLogAttr   *log_attrs,
-			       int             letter_spacing)
+                               const char     *text,
+                               PangoLogAttr   *log_attrs,
+                               int             letter_spacing)
 {
   PangoGlyphItemIter iter;
   PangoGlyphInfo *glyphs = glyph_item->glyphs->glyphs;
@@ -754,29 +751,29 @@ pango_glyph_item_letter_space (PangoGlyphItem *glyph_item,
         }
 
       if (iter.start_glyph < iter.end_glyph) /* LTR */
-	{
-	  if (iter.start_char > 0)
-	    {
-	      glyphs[iter.start_glyph].geometry.width    += space_left ;
-	      glyphs[iter.start_glyph].geometry.x_offset += space_left ;
-	    }
-	  if (iter.end_char < glyph_item->item->num_chars)
-	    {
-	      glyphs[iter.end_glyph-1].geometry.width    += space_right;
-	    }
-	}
-      else			                 /* RTL */
-	{
-	  if (iter.start_char > 0)
-	    {
-	      glyphs[iter.start_glyph].geometry.width    += space_right;
-	    }
-	  if (iter.end_char < glyph_item->item->num_chars)
-	    {
-	      glyphs[iter.end_glyph+1].geometry.x_offset += space_left ;
-	      glyphs[iter.end_glyph+1].geometry.width    += space_left ;
-	    }
-	}
+        {
+          if (iter.start_char > 0)
+            {
+              glyphs[iter.start_glyph].geometry.width    += space_left ;
+              glyphs[iter.start_glyph].geometry.x_offset += space_left ;
+            }
+          if (iter.end_char < glyph_item->item->num_chars)
+            {
+              glyphs[iter.end_glyph-1].geometry.width    += space_right;
+            }
+        }
+      else                                       /* RTL */
+        {
+          if (iter.start_char > 0)
+            {
+              glyphs[iter.start_glyph].geometry.width    += space_right;
+            }
+          if (iter.end_char < glyph_item->item->num_chars)
+            {
+              glyphs[iter.end_glyph+1].geometry.x_offset += space_left ;
+              glyphs[iter.end_glyph+1].geometry.width    += space_left ;
+            }
+        }
     }
 }
 
@@ -800,8 +797,8 @@ pango_glyph_item_letter_space (PangoGlyphItem *glyph_item,
  */
 void
 pango_glyph_item_get_logical_widths (PangoGlyphItem *glyph_item,
-				     const char     *text,
-				     int            *logical_widths)
+                                     const char     *text,
+                                     int            *logical_widths)
 {
   PangoGlyphItemIter iter;
   gboolean has_cluster;
@@ -815,26 +812,26 @@ pango_glyph_item_get_logical_widths (PangoGlyphItem *glyph_item,
       int glyph_index, char_index, num_chars, cluster_width = 0, char_width;
 
       for (glyph_index  = iter.start_glyph;
-	   glyph_index != iter.end_glyph;
-	   glyph_index += dir)
+           glyph_index != iter.end_glyph;
+           glyph_index += dir)
         {
-	  cluster_width += glyph_item->glyphs->glyphs[glyph_index].geometry.width;
-	}
+          cluster_width += glyph_item->glyphs->glyphs[glyph_index].geometry.width;
+        }
 
       num_chars = iter.end_char - iter.start_char;
       if (num_chars) /* pedantic */
         {
-	  char_width = cluster_width / num_chars;
+          char_width = cluster_width / num_chars;
 
-	  for (char_index = iter.start_char;
-	       char_index < iter.end_char;
-	       char_index++)
-	    {
-	      logical_widths[char_index] = char_width;
-	    }
+          for (char_index = iter.start_char;
+               char_index < iter.end_char;
+               char_index++)
+            {
+              logical_widths[char_index] = char_width;
+            }
 
-	  /* add any residues to the first char */
-	  logical_widths[iter.start_char] += cluster_width - (char_width * num_chars);
-	}
+          /* add any residues to the first char */
+          logical_widths[iter.start_char] += cluster_width - (char_width * num_chars);
+        }
     }
 }
