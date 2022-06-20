@@ -27,6 +27,7 @@
 #include "pango-layout.h"
 #include "pango-run-private.h"
 #include "pango-line-private.h"
+#include "pango-attributes-private.h"
 
 #define N_RENDER_PARTS 5
 
@@ -505,6 +506,34 @@ static void pango_renderer_draw_runs (PangoRenderer *renderer,
                                       int            x,
                                       int            y);
 
+static void
+draw_shaped_glyphs (PangoRenderer    *renderer,
+                    PangoGlyphString *glyphs,
+                    PangoAttribute   *attr,
+                    int               x,
+                    int               y)
+{
+  PangoRendererClass *class = PANGO_RENDERER_GET_CLASS (renderer);
+  int i;
+
+  if (!class->draw_shape)
+    return;
+
+  for (i = 0; i < glyphs->num_glyphs; i++)
+    {
+      PangoGlyphInfo *gi = &glyphs->glyphs[i];
+      ShapeData *data = (ShapeData *)attr->pointer_value;
+
+      class->draw_shape (renderer,
+                         &data->ink_rect,
+                         &data->logical_rect,
+                         data->data,
+                         x, y);
+
+      x += gi->geometry.width;
+    }
+}
+
 /**
  * pango_renderer_draw_line:
  * @renderer: a `PangoRenderer`
@@ -599,6 +628,41 @@ pango_renderer_draw_lines (PangoRenderer *renderer,
 }
 
 static void
+pango_shape_get_extents (int               n_chars,
+                         PangoRectangle   *shape_ink,
+                         PangoRectangle   *shape_logical,
+                         PangoRectangle   *ink_rect,
+                         PangoRectangle   *logical_rect)
+{
+  if (n_chars > 0)
+    {
+      ink_rect->x = MIN (shape_ink->x, shape_ink->x + shape_logical->width * (n_chars - 1));
+      ink_rect->width = MAX (shape_ink->width, shape_ink->width + shape_logical->width * (n_chars - 1));
+      ink_rect->y = shape_ink->y;
+      ink_rect->height = shape_ink->height;
+
+      logical_rect->x = MIN (shape_logical->x, shape_logical->x + shape_logical->width * (n_chars - 1));
+      logical_rect->width = MAX (shape_logical->width, shape_logical->width + shape_logical->width * (n_chars - 1));
+      logical_rect->y = shape_logical->y;
+      logical_rect->height = shape_logical->height;
+    }
+  else
+    {
+      ink_rect->x = 0;
+      ink_rect->y = 0;
+      ink_rect->width = 0;
+      ink_rect->height = 0;
+
+      logical_rect->x = 0;
+      logical_rect->y = 0;
+      logical_rect->width = 0;
+      logical_rect->height = 0;
+    }
+}
+
+
+
+static void
 pango_renderer_draw_runs (PangoRenderer *renderer,
                           PangoLine     *line,
                           GSList        *runs,
@@ -621,6 +685,7 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
       PangoGlyphString *glyphs = glyph_item->glyphs;
       PangoRectangle ink_rect, *ink = NULL;
       PangoRectangle logical_rect, *logical = NULL;
+      ItemProperties properties;
       int y_off;
 
       if (glyph_item->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
@@ -628,19 +693,38 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
 
       pango_renderer_prepare_run (renderer, run);
 
-      if (renderer->underline != PANGO_LINE_STYLE_NONE ||
-          renderer->overline != PANGO_LINE_STYLE_NONE ||
-          renderer->strikethrough != PANGO_LINE_STYLE_NONE)
+      pango_item_get_properties (item, &properties);
+
+      if (properties.shape)
         {
+          ShapeData *data = (ShapeData *)properties.shape->pointer_value;
+
           ink = &ink_rect;
           logical = &logical_rect;
+          pango_shape_get_extents (glyphs->num_glyphs,
+                                   &data->ink_rect,
+                                   &data->logical_rect,
+                                   ink,
+                                   logical);
+
+          glyph_string_width = logical->width;
         }
-      if (G_UNLIKELY (ink || logical))
-        pango_glyph_string_extents (glyphs, item->analysis.font, ink, logical);
-      if (logical)
-        glyph_string_width = logical_rect.width;
       else
-        glyph_string_width = pango_glyph_string_get_width (glyphs);
+        {
+          if (renderer->underline != PANGO_LINE_STYLE_NONE ||
+              renderer->overline != PANGO_LINE_STYLE_NONE ||
+              renderer->strikethrough != PANGO_LINE_STYLE_NONE)
+            {
+              ink = &ink_rect;
+              logical = &logical_rect;
+            }
+          if (G_UNLIKELY (ink || logical))
+            pango_glyph_string_extents (glyphs, item->analysis.font, ink, logical);
+          if (logical)
+            glyph_string_width = logical_rect.width;
+          else
+            glyph_string_width = pango_glyph_string_get_width (glyphs);
+        }
 
       renderer->priv->line_state->logical_rect_end = x + x_off + glyph_string_width;
 
@@ -674,7 +758,10 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
                                          overall_rect.height);
         }
 
-      pango_renderer_draw_glyph_item (renderer, text, glyph_item, x + x_off, y - y_off);
+      if (properties.shape)
+        draw_shaped_glyphs (renderer, glyphs, properties.shape, x + x_off, y - y_off);
+      else
+        pango_renderer_draw_glyph_item (renderer, text, glyph_item, x + x_off, y - y_off);
 
       if (renderer->underline != PANGO_LINE_STYLE_NONE ||
           renderer->overline != PANGO_LINE_STYLE_NONE ||

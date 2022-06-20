@@ -127,7 +127,6 @@ struct _PangoRendererClass
   /*< private >*/
   GObjectClass parent_class;
 
-  /* vtable - not signals */
   /*< public >*/
 
   void (*draw_glyphs)          (PangoRenderer    *renderer,
@@ -146,7 +145,12 @@ struct _PangoRendererClass
                                 int               y,
                                 int               width,
                                 int               height);
-
+  void (*draw_shape)           (PangoRenderer    *renderer,
+                                PangoRectangle   *ink_rect,
+                                PangoRectangle   *logical_rect,
+                                gpointer          data,
+                                int               x,
+                                int               y);
   void (*draw_trapezoid)       (PangoRenderer    *renderer,
                                 PangoRenderPart   part,
                                 double            y1_,
@@ -179,9 +183,7 @@ struct _PangoRendererClass
   /*< private >*/
 
   /* Padding for future expansion */
-  void (*_pango_reserved2) (void);
-  void (*_pango_reserved3) (void);
-  void (*_pango_reserved4) (void);
+  gpointer _pango_reserved[8];
 };
 
 PANGO_AVAILABLE_IN_ALL

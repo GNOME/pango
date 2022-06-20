@@ -118,10 +118,10 @@ typedef enum
   PANGO_ATTR_BASELINE_SHIFT       = PANGO_ATTR_TYPE (INT, ITEMIZATION, ACCUMULATES),
   PANGO_ATTR_FONT_SCALE           = PANGO_ATTR_TYPE (INT, ITEMIZATION, ACCUMULATES),
   PANGO_ATTR_LINE_SPACING         = PANGO_ATTR_TYPE (INT, ITEMIZATION, OVERRIDES),
+  PANGO_ATTR_SHAPE                = PANGO_ATTR_TYPE (POINTER, ITEMIZATION, OVERRIDES),
 } PangoAttrType;
 
 #undef PANGO_ATTR_TYPE
-
 
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_language_new                 (PangoLanguage              *language);
@@ -301,5 +301,11 @@ typedef enum {
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_text_transform_new           (PangoTextTransform transform);
 
+PANGO_AVAILABLE_IN_ALL
+PangoAttribute *        pango_attr_shape_new                    (PangoRectangle        *ink_rect,
+                                                                 PangoRectangle        *logical_rect,
+                                                                 gpointer               data,
+                                                                 PangoAttrDataCopyFunc  copy,
+                                                                 GDestroyNotify         destroy);
 
 G_END_DECLS

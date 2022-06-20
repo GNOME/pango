@@ -25,3 +25,12 @@ gboolean pango_attribute_affects_itemization    (PangoAttribute *attr,
                                                  gpointer        data);
 gboolean pango_attribute_affects_break_or_shape (PangoAttribute *attr,
                                                  gpointer        data);
+
+typedef struct {
+  PangoRectangle ink_rect;
+  PangoRectangle logical_rect;
+  gpointer data;
+  PangoAttrDataCopyFunc copy;
+  GDestroyNotify destroy;
+} ShapeData;
+
