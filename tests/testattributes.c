@@ -113,7 +113,7 @@ my_attribute_data_equal (gconstpointer data1,
 static char *
 my_attribute_data_serialize (gconstpointer data)
 {
-  return g_strdup_printf ("%p", data);
+  return g_strdup_printf ("%#x", GPOINTER_TO_UINT (data));
 }
 
 static void
