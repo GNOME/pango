@@ -277,7 +277,16 @@ pango_analysis_collect_features (const PangoAnalysis *analysis,
 {
   GSList *l;
 
-  pango_font_get_features (analysis->font, features, length, num_features);
+  if (PANGO_IS_HB_FONT (analysis->font))
+    {
+      const hb_feature_t *font_features;
+      guint n_font_features;
+
+      font_features = pango_hb_font_get_features (PANGO_HB_FONT (analysis->font),
+                                                  &n_font_features);
+      *num_features = MIN (length, n_font_features);
+      memcpy (features, font_features, sizeof (hb_feature_t) * *num_features);
+   }
 
   for (l = analysis->extra_attrs; l && *num_features < length; l = l->next)
     {
