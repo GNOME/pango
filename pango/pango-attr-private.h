@@ -21,4 +21,21 @@
 
 #include <pango/pango-attr.h>
 
+struct _PangoAttribute
+{
+  guint type;
+  guint start_index;
+  guint end_index;
+  union {
+    char *str_value;
+    int int_value;
+    gboolean boolean_value;
+    double double_value;
+    PangoColor color_value;
+    PangoLanguage *lang_value;
+    PangoFontDescription *font_value;
+    gpointer pointer_value;
+  };
+};
+
 char *    pango_attr_value_serialize   (PangoAttribute    *attr);

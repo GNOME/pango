@@ -127,7 +127,7 @@ typedef enum
  *
  * Obtains the `PangoAttrValueType of a `PangoAttribute`.
  */
-#define PANGO_ATTR_VALUE_TYPE(attr) PANGO_ATTR_TYPE_VALUE_TYPE ((attr)->type)
+#define PANGO_ATTR_VALUE_TYPE(attr) PANGO_ATTR_TYPE_VALUE_TYPE (pango_attribute_type (attr))
 
 /**
  * PANGO_ATTR_AFFECTS:
@@ -135,7 +135,7 @@ typedef enum
  *
  * Obtains the `PangoAttrAffects` flags of a `PangoAttribute`.
  */
-#define PANGO_ATTR_AFFECTS(attr) PANGO_ATTR_TYPE_AFFECTS ((attr)->type)
+#define PANGO_ATTR_AFFECTS(attr) PANGO_ATTR_TYPE_AFFECTS (pango_attribute_type (attr))
 
 /**
  * PANGO_ATTR_MERGE:
@@ -143,7 +143,7 @@ typedef enum
  *
  * Obtains the `PangoAttrMerge` flags of a `PangoAttribute`.
  */
-#define PANGO_ATTR_MERGE(attr) PANGO_ATTR_TYPE_MERGE ((attr)->type)
+#define PANGO_ATTR_MERGE(attr) PANGO_ATTR_TYPE_MERGE (pango_attribute_type (attr))
 
 /**
  * PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING:
@@ -160,49 +160,6 @@ typedef enum
  * the end of the text.
  */
 #define PANGO_ATTR_INDEX_TO_TEXT_END ((guint)(G_MAXUINT + 0))
-
-/**
- * PangoAttribute:
- * @type: the type of the attribute
- * @start_index: the start index of the range (in bytes).
- * @end_index: end index of the range (in bytes). The character at this index
- *   is not included in the range.
- * @str_value: the string value
- * @int_value: the integer value
- * @boolean_value: the boolean value
- * @double_value: the double value
- * @color_value: the `PangoColor` value
- * @lang_value: the `PangoLanguage` value
- * @font_value: the `PangoFontDescription` value
- * @pointer_value: a custom value
- *
- * The `PangoAttribute` structure contains information for a single
- * attribute.
- *
- * The common portion of the attribute holds the range to which
- * the value in the type-specific part of the attribute applies.
- * By default, an attribute will have an all-inclusive range of
- * `[0,G_MAXUINT]`.
- *
- * Which of the values is used depends on the value type of the
- * attribute, which can be obtained with `PANGO_ATTR_VALUE_TYPE()`.
- */
-struct _PangoAttribute
-{
-  guint type;
-  guint start_index;
-  guint end_index;
-  union {
-    char *str_value;
-    int  int_value;
-    gboolean boolean_value;
-    double double_value;
-    PangoColor color_value;
-    PangoLanguage *lang_value;
-    PangoFontDescription *font_value;
-    gpointer pointer_value;
-  };
-};
 
 /**
  * PangoAttrDataCopyFunc:
@@ -248,33 +205,39 @@ gboolean                pango_attribute_equal                   (const PangoAttr
                                                                  const PangoAttribute       *attr2) G_GNUC_PURE;
 
 PANGO_AVAILABLE_IN_ALL
-PangoAttribute *        pango_attribute_new                     (guint                       type);
+PangoAttribute *        pango_attribute_new                     (guint                       type,
+                                                                 gconstpointer               value);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_attribute_get_string              (PangoAttribute              *attribute,
-                                                                 const char                 **value);
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_attribute_get_language            (PangoAttribute              *attribute,
-                                                                 PangoLanguage              **value);
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_attribute_get_int                 (PangoAttribute              *attribute,
-                                                                 int                         *value);
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_attribute_get_boolean             (PangoAttribute              *attribute,
-                                                                 gboolean                    *value);
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_attribute_get_float               (PangoAttribute              *attribute,
-                                                                 double                      *value);
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_attribute_get_color               (PangoAttribute              *attribute,
-                                                                 PangoColor                  *value);
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_attribute_get_font_desc           (PangoAttribute              *attribute,
-                                                                 PangoFontDescription       **value);
+guint                   pango_attribute_type                    (const PangoAttribute        *attribute);
 
 PANGO_AVAILABLE_IN_ALL
-gboolean                pango_attribute_get_pointer             (PangoAttribute              *attribute,
-                                                                 gpointer                    *value);
+void                    pango_attribute_set_range               (PangoAttribute              *attribute,
+                                                                 guint                        start_index,
+                                                                 guint                        end_index);
+
+PANGO_AVAILABLE_IN_ALL
+void                    pango_attribute_get_range               (PangoAttribute              *attribute,
+                                                                 guint                       *start_index,
+                                                                 guint                       *end_index);
+
+PANGO_AVAILABLE_IN_ALL
+const char *            pango_attribute_get_string              (PangoAttribute              *attribute);
+PANGO_AVAILABLE_IN_ALL
+PangoLanguage *         pango_attribute_get_language            (PangoAttribute              *attribute);
+PANGO_AVAILABLE_IN_ALL
+int                     pango_attribute_get_int                 (PangoAttribute              *attribute);
+PANGO_AVAILABLE_IN_ALL
+gboolean                pango_attribute_get_boolean             (PangoAttribute              *attribute);
+PANGO_AVAILABLE_IN_ALL
+double                  pango_attribute_get_float               (PangoAttribute              *attribute);
+PANGO_AVAILABLE_IN_ALL
+PangoColor *            pango_attribute_get_color               (PangoAttribute              *attribute);
+PANGO_AVAILABLE_IN_ALL
+PangoFontDescription *  pango_attribute_get_font_desc           (PangoAttribute              *attribute);
+
+PANGO_AVAILABLE_IN_ALL
+gpointer                pango_attribute_get_pointer             (PangoAttribute              *attribute);
 
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoAttribute, pango_attribute_destroy)

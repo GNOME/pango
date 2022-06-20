@@ -31,6 +31,7 @@
 #include <pango/pango.h>
 #include "test-common.h"
 
+#include "pango/pango-attr-private.h"
 #include "pango/pango-item-private.h"
 
 

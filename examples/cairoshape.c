@@ -111,8 +111,7 @@ get_layout (cairo_t *cr)
       PangoAttribute *attr;
 
       attr = pango_attr_font_desc_new (font_desc);
-      attr->start_index = p - text;
-      attr->end_index = attr->start_index + strlen (BULLET);
+      pango_attribute_set_range (attr, p - text, p - text + strlen (BULLET));
       pango_attr_list_insert (attrs, attr);
     }
 
@@ -121,8 +120,7 @@ get_layout (cairo_t *cr)
       PangoAttribute *attr;
 
       attr = pango_attr_font_desc_new (font_desc);
-      attr->start_index = p - text;
-      attr->end_index = attr->start_index + strlen (HEART);
+      pango_attribute_set_range (attr, p - text, p - text + strlen (HEART));
       pango_attr_list_insert (attrs, attr);
     }
 
