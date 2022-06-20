@@ -547,10 +547,6 @@ is_tab_run (PangoLine       *line,
   return line->data->text[run->item->offset] == '\t';
 }
 
-/*
- * NB: This implement the exact same algorithm as
- *     reorder-items.c:pango_reorder_items().
- */
 static GSList *
 reorder_runs_recurse (GSList *items,
                       int     n_items)

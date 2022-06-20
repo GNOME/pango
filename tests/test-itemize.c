@@ -87,6 +87,56 @@ affects_itemization (PangoAttribute *attr,
     }
 }
 
+/* Keep in sync with pango-item.c */
+static int
+compare_attr (gconstpointer p1, gconstpointer p2)
+{
+  const PangoAttribute *a1 = p1;
+  const PangoAttribute *a2 = p2;
+  if (pango_attribute_equal (a1, a2) &&
+      a1->start_index == a2->start_index &&
+      a1->end_index == a2->end_index)
+    return 0;
+
+  return 1;
+}
+
+void
+pango_item_apply_attrs (PangoItem         *item,
+                        PangoAttrIterator *iter)
+{
+  int start, end;
+  GSList *attrs = NULL;
+
+  do
+    {
+      pango_attr_iterator_range (iter, &start, &end);
+
+      if (start >= item->offset + item->length)
+        break;
+
+      if (end >= item->offset)
+        {
+          GSList *list, *l;
+
+          list = pango_attr_iterator_get_attrs (iter);
+          for (l = list; l; l = l->next)
+            {
+              if (!g_slist_find_custom (attrs, l->data, compare_attr))
+
+                attrs = g_slist_prepend (attrs, pango_attribute_copy (l->data));
+            }
+          g_slist_free_full (list, (GDestroyNotify)pango_attribute_destroy);
+        }
+
+      if (end >= item->offset + item->length)
+        break;
+    }
+  while (pango_attr_iterator_next (iter));
+
+  item->analysis.extra_attrs = g_slist_concat (item->analysis.extra_attrs, attrs);
+}
+
 static void
 apply_attributes_to_items (GList         *items,
                            PangoAttrList *attrs)

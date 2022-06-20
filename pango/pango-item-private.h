@@ -97,9 +97,15 @@ GList *            pango_itemize_post_process_items   (PangoContext             
                                                        PangoLogAttr               *log_attrs,
                                                        GList                      *items);
 
-void               pango_item_unsplit                 (PangoItem *orig,
-                                                       int        split_index,
-                                                       int        split_offset);
+PangoItem *        pango_item_new                     (void);
+PangoItem *        pango_item_split                   (PangoItem                  *orig,
+                                                       int                         split_index,
+                                                       int                         split_offset);
+void               pango_item_unsplit                 (PangoItem                  *orig,
+                                                       int                         split_index,
+                                                       int                         split_offset);
+void               pango_item_apply_attrs             (PangoItem                  *item,
+                                                      PangoAttrIterator           *iter);
 
 
 typedef struct _ItemProperties ItemProperties;
