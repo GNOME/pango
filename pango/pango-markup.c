@@ -27,6 +27,7 @@
 #include "pango-markup.h"
 
 #include "pango-attributes.h"
+#include "pango-attr-private.h"
 #include "pango-font.h"
 #include "pango-enum-types.h"
 #include "pango-impl-utils.h"

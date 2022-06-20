@@ -5,6 +5,7 @@
 #include "pango-tabs.h"
 #include "pango-impl-utils.h"
 #include "pango-attributes-private.h"
+#include "pango-attr-private.h"
 #include "pango-attr-list-private.h"
 #include "pango-attr-iterator-private.h"
 #include "pango-item-private.h"

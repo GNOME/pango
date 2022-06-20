@@ -20,6 +20,7 @@
  */
 
 #include <pango/pango.h>
+#include <pango/pango-attr-private.h>
 
 static void
 test_copy (PangoAttribute *attr)
@@ -122,7 +123,6 @@ test_attributes_register (void)
   PangoAttrType type;
   PangoAttribute *attr;
   PangoAttribute *attr2;
-  gpointer value = NULL;
   gboolean ret;
   PangoAttrList *list;
   char *str;
@@ -138,15 +138,12 @@ test_attributes_register (void)
 
   g_assert_cmpstr (pango_attr_type_get_name (type), ==, "my-attribute");
 
-  attr = pango_attribute_new (type);
-  attr->pointer_value = (gpointer)0x42;
+  attr = pango_attribute_new (type, (gpointer)0x42);
 
-  ret = pango_attribute_get_pointer (attr, &value);
   g_assert_true (ret);
-  g_assert_true (value == (gpointer)0x42);
+  g_assert_true (pango_attribute_get_pointer (attr) == (gpointer)0x42);
 
-  attr2 = pango_attribute_new (type);
-  attr2->pointer_value = (gpointer)0x43;
+  attr2 = pango_attribute_new (type, (gpointer)0x43);
 
   ret = pango_attribute_equal (attr, attr2);
   g_assert_false (ret);
@@ -161,93 +158,6 @@ test_attributes_register (void)
   pango_attr_list_unref (list);
 
   pango_attribute_destroy (attr);
-}
-
-static void
-test_binding (PangoAttribute *attr)
-{
-  int int_value;
-  gboolean boolean_value;
-  PangoLanguage *lang_value;
-  const char *string;
-  PangoFontDescription *font_desc;
-  PangoColor color;
-  double double_value;
-  gpointer pointer_value;
-
-  switch (PANGO_ATTR_VALUE_TYPE (attr))
-    {
-    case PANGO_ATTR_VALUE_INT:
-      g_assert_true (pango_attribute_get_int (attr, &int_value));
-      break;
-    case PANGO_ATTR_VALUE_BOOLEAN:
-      g_assert_true (pango_attribute_get_boolean (attr, &boolean_value));
-      break;
-    case PANGO_ATTR_VALUE_LANGUAGE:
-      g_assert_true (pango_attribute_get_language (attr, &lang_value));
-      break;
-    case PANGO_ATTR_VALUE_STRING:
-      g_assert_true (pango_attribute_get_string (attr, &string));
-      break;
-    case PANGO_ATTR_VALUE_FONT_DESC:
-      g_assert_true (pango_attribute_get_font_desc (attr, &font_desc));
-      break;
-    case PANGO_ATTR_VALUE_COLOR:
-      g_assert_true (pango_attribute_get_color (attr, &color));
-      break;
-    case PANGO_ATTR_VALUE_FLOAT:
-      g_assert_true (pango_attribute_get_float (attr, &double_value));
-      break;
-    case PANGO_ATTR_VALUE_POINTER:
-      g_assert_true (pango_attribute_get_pointer (attr, &pointer_value));
-      break;
-    default:
-      g_assert_not_reached ();
-    }
-
-  pango_attribute_destroy (attr);
-}
-
-static void
-test_binding_helpers (void)
-{
-  PangoFontDescription *desc;
-
-  test_binding (pango_attr_language_new (pango_language_from_string ("ja-JP")));
-  test_binding (pango_attr_family_new ("Times"));
-  test_binding (pango_attr_foreground_new (&(PangoColor){100, 200, 300, 400}));
-  test_binding (pango_attr_background_new (&(PangoColor){100, 200, 300, 400}));
-  test_binding (pango_attr_size_new (1024));
-  test_binding (pango_attr_size_new_absolute (1024));
-  test_binding (pango_attr_style_new (PANGO_STYLE_ITALIC));
-  test_binding (pango_attr_weight_new (PANGO_WEIGHT_ULTRALIGHT));
-  test_binding (pango_attr_variant_new (PANGO_VARIANT_SMALL_CAPS));
-  test_binding (pango_attr_stretch_new (PANGO_STRETCH_SEMI_EXPANDED));
-  desc = pango_font_description_from_string ("Computer Modern 12");
-  test_binding (pango_attr_font_desc_new (desc));
-  pango_font_description_free (desc);
-  test_binding (pango_attr_underline_new (PANGO_LINE_STYLE_SOLID));
-  test_binding (pango_attr_underline_new (PANGO_LINE_STYLE_DOTTED));
-  test_binding (pango_attr_underline_color_new (&(PangoColor){100, 200, 300}));
-  test_binding (pango_attr_overline_new (PANGO_LINE_STYLE_SOLID));
-  test_binding (pango_attr_overline_color_new (&(PangoColor){100, 200, 300}));
-  test_binding (pango_attr_strikethrough_new (TRUE));
-  test_binding (pango_attr_strikethrough_color_new (&(PangoColor){100, 200, 300}));
-  test_binding (pango_attr_rise_new (256));
-  test_binding (pango_attr_scale_new (2.56));
-  test_binding (pango_attr_fallback_new (FALSE));
-  test_binding (pango_attr_letter_spacing_new (1024));
-  test_binding (pango_attr_gravity_new (PANGO_GRAVITY_SOUTH));
-  test_binding (pango_attr_gravity_hint_new (PANGO_GRAVITY_HINT_STRONG));
-  test_binding (pango_attr_font_features_new ("csc=1"));
-  test_binding (pango_attr_allow_breaks_new (FALSE));
-  test_binding (pango_attr_show_new (PANGO_SHOW_SPACES));
-  test_binding (pango_attr_insert_hyphens_new (FALSE));
-  test_binding (pango_attr_text_transform_new (PANGO_TEXT_TRANSFORM_UPPERCASE));
-  test_binding (pango_attr_line_height_new (1.5));
-  test_binding (pango_attr_line_height_new_absolute (3000));
-  test_binding (pango_attr_word_new ());
-  test_binding (pango_attr_sentence_new ());
 }
 
 static void
@@ -1466,7 +1376,6 @@ main (int argc, char *argv[])
   g_test_add_func ("/attributes/basic", test_attributes_basic);
   g_test_add_func ("/attributes/equal", test_attributes_equal);
   g_test_add_func ("/attributes/register", test_attributes_register);
-  g_test_add_func ("/attributes/binding-helpers", test_binding_helpers);
   g_test_add_func ("/attributes/list/basic", test_list);
   g_test_add_func ("/attributes/list/change", test_list_change);
   g_test_add_func ("/attributes/list/change2", test_list_change2);
