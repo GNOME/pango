@@ -31,11 +31,11 @@
 
 #define N_RENDER_PARTS 5
 
-#define PANGO_IS_RENDERER_FAST(renderer) (renderer != NULL)
 #define IS_VALID_PART(part) ((guint)part < N_RENDER_PARTS)
 
 typedef struct _LineState LineState;
 typedef struct _Point Point;
+typedef struct _PangoRendererPrivate PangoRendererPrivate;
 
 struct _Point
 {
@@ -60,6 +60,13 @@ struct _LineState
 
 struct _PangoRendererPrivate
 {
+  PangoLineStyle underline;
+  PangoUnderlinePosition underline_position;
+  PangoLineStyle strikethrough;
+  PangoLineStyle overline;
+  int active_count;
+
+  PangoMatrix *matrix;
   PangoContext *context;
 
   PangoColor color[N_RENDER_PARTS];
@@ -136,17 +143,18 @@ pango_renderer_class_init (PangoRendererClass *klass)
 static void
 pango_renderer_init (PangoRenderer *renderer)
 {
-  renderer->priv = pango_renderer_get_instance_private (renderer);
-  renderer->matrix = NULL;
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
+  priv->matrix = NULL;
 }
 
 static void
 pango_renderer_finalize (GObject *gobject)
 {
   PangoRenderer *renderer = PANGO_RENDERER (gobject);
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
 
-  if (renderer->matrix)
-    pango_matrix_free (renderer->matrix);
+  if (priv->matrix)
+    pango_matrix_free (priv->matrix);
 
   G_OBJECT_CLASS (pango_renderer_parent_class)->finalize (gobject);
 }
@@ -155,11 +163,13 @@ static void
 pango_renderer_activate_with_context (PangoRenderer *renderer,
                                       PangoContext  *context)
 {
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
+
   /* We only change the matrix if the renderer isn't already active. */
-  if (!renderer->active_count)
+  if (!priv->active_count)
     {
       pango_renderer_set_matrix (renderer, context ? pango_context_get_matrix (context) : NULL);
-      renderer->priv->context = context;
+      priv->context = context;
     }
 
   pango_renderer_activate (renderer);
@@ -298,7 +308,8 @@ static void
 handle_line_state_change (PangoRenderer  *renderer,
                           PangoRenderPart part)
 {
-  LineState *state = renderer->priv->line_state;
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
+  LineState *state = priv->line_state;
   if (!state)
     return;
 
@@ -309,8 +320,8 @@ handle_line_state_change (PangoRenderer  *renderer,
 
       rect->width = state->logical_rect_end - rect->x;
       draw_underline (renderer, state);
-      state->underline = renderer->underline;
-      state->underline_position = renderer->underline_position;
+      state->underline = priv->underline;
+      state->underline_position = priv->underline_position;
       rect->x = state->logical_rect_end;
       rect->width = 0;
     }
@@ -322,7 +333,7 @@ handle_line_state_change (PangoRenderer  *renderer,
 
       rect->width = state->logical_rect_end - rect->x;
       draw_overline (renderer, state);
-      state->overline = renderer->overline;
+      state->overline = priv->overline;
       rect->x = state->logical_rect_end;
       rect->width = 0;
     }
@@ -334,7 +345,7 @@ handle_line_state_change (PangoRenderer  *renderer,
 
       rect->width = state->logical_rect_end - rect->x;
       draw_strikethrough (renderer, state);
-      state->strikethrough = renderer->strikethrough;
+      state->strikethrough = priv->strikethrough;
     }
 }
 
@@ -347,6 +358,7 @@ add_underline (PangoRenderer    *renderer,
                PangoRectangle   *ink_rect,
                PangoRectangle   *logical_rect)
 {
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
   PangoRectangle *current_rect = &state->underline_rect;
   PangoRectangle new_rect;
 
@@ -358,7 +370,7 @@ add_underline (PangoRenderer    *renderer,
   new_rect.height = underline_thickness;
   new_rect.y = base_y;
 
-  switch (renderer->underline)
+  switch (priv->underline)
     {
     case PANGO_LINE_STYLE_NONE:
       g_assert_not_reached ();
@@ -366,7 +378,7 @@ add_underline (PangoRenderer    *renderer,
     case PANGO_LINE_STYLE_SOLID:
     case PANGO_LINE_STYLE_DASHED:
     case PANGO_LINE_STYLE_DOTTED:
-      if (renderer->underline_position == PANGO_UNDERLINE_POSITION_UNDER)
+      if (priv->underline_position == PANGO_UNDERLINE_POSITION_UNDER)
         {
           new_rect.y += ink_rect->y + ink_rect->height + underline_thickness;
           break;
@@ -375,7 +387,7 @@ add_underline (PangoRenderer    *renderer,
     case PANGO_LINE_STYLE_DOUBLE:
     case PANGO_LINE_STYLE_WAVY:
       new_rect.y -= underline_position;
-      if (state->underline == renderer->underline)
+      if (state->underline == priv->underline)
         {
           new_rect.y = MAX (current_rect->y, new_rect.y);
           new_rect.height = MAX (current_rect->height, new_rect.height);
@@ -387,8 +399,8 @@ add_underline (PangoRenderer    *renderer,
       break;
     }
 
-  if (renderer->underline == state->underline &&
-      renderer->underline_position == state->underline_position &&
+  if (priv->underline == state->underline &&
+      priv->underline_position == state->underline_position &&
       new_rect.y == current_rect->y &&
       new_rect.height == current_rect->height)
     {
@@ -399,8 +411,8 @@ add_underline (PangoRenderer    *renderer,
       draw_underline (renderer, state);
 
       *current_rect = new_rect;
-      state->underline = renderer->underline;
-      state->underline_position = renderer->underline_position;
+      state->underline = priv->underline;
+      state->underline_position = priv->underline_position;
     }
 }
 
@@ -413,6 +425,7 @@ add_overline (PangoRenderer    *renderer,
               PangoRectangle   *ink_rect,
               PangoRectangle   *logical_rect)
 {
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
   PangoRectangle *current_rect = &state->overline_rect;
   PangoRectangle new_rect;
   int underline_thickness = pango_font_metrics_get_underline_thickness (metrics);
@@ -423,7 +436,7 @@ add_overline (PangoRenderer    *renderer,
   new_rect.height = underline_thickness;
   new_rect.y = base_y;
 
-  switch (renderer->overline)
+  switch (priv->overline)
     {
     case PANGO_LINE_STYLE_NONE:
       g_assert_not_reached ();
@@ -434,7 +447,7 @@ add_overline (PangoRenderer    *renderer,
     case PANGO_LINE_STYLE_DOTTED:
     case PANGO_LINE_STYLE_WAVY:
       new_rect.y -= ascent;
-      if (state->overline == renderer->overline)
+      if (state->overline == priv->overline)
         {
           new_rect.y = MIN (current_rect->y, new_rect.y);
           new_rect.height = MAX (current_rect->height, new_rect.height);
@@ -446,7 +459,7 @@ add_overline (PangoRenderer    *renderer,
       break;
     }
 
-  if (renderer->overline == state->overline &&
+  if (priv->overline == state->overline &&
       new_rect.y == current_rect->y &&
       new_rect.height == current_rect->height)
     {
@@ -457,7 +470,7 @@ add_overline (PangoRenderer    *renderer,
       draw_overline (renderer, state);
 
       *current_rect = new_rect;
-      state->overline = renderer->overline;
+      state->overline = priv->overline;
     }
 }
 
@@ -471,6 +484,7 @@ add_strikethrough (PangoRenderer    *renderer,
                    PangoRectangle   *logical_rect,
                    int               num_glyphs)
 {
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
   PangoRectangle *current_rect = &state->strikethrough_rect;
   PangoRectangle new_rect;
 
@@ -482,7 +496,7 @@ add_strikethrough (PangoRenderer    *renderer,
   new_rect.y = (base_y - strikethrough_position) * num_glyphs;
   new_rect.height = strikethrough_thickness * num_glyphs;
 
-  if (state->strikethrough == renderer->strikethrough)
+  if (state->strikethrough == priv->strikethrough)
     {
       current_rect->width = new_rect.x + new_rect.width - current_rect->x;
       current_rect->y += new_rect.y;
@@ -494,7 +508,7 @@ add_strikethrough (PangoRenderer    *renderer,
       draw_strikethrough (renderer, state);
 
       *current_rect = new_rect;
-      state->strikethrough = renderer->strikethrough;
+      state->strikethrough = priv->strikethrough;
       state->strikethrough_glyphs = num_glyphs;
     }
 }
@@ -550,19 +564,20 @@ draw_shaped_glyphs (PangoRenderer    *renderer,
  * of those items.
  */
 void
-pango_renderer_draw_line (PangoRenderer   *renderer,
-                          PangoLine      *line,
-                          int              x,
-                          int              y)
+pango_renderer_draw_line (PangoRenderer *renderer,
+                          PangoLine     *line,
+                          int            x,
+                          int            y)
 {
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
   LineState state = { 0, };
 
-  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
+  g_return_if_fail (PANGO_IS_RENDERER (renderer));
 
   pango_renderer_activate_with_context (renderer, line->context);
 
-  renderer->priv->line = line;
-  renderer->priv->line_state = &state;
+  priv->line = line;
+  priv->line_state = &state;
 
   state.underline = PANGO_LINE_STYLE_NONE;
   state.underline_position = PANGO_UNDERLINE_POSITION_NORMAL;
@@ -576,9 +591,9 @@ pango_renderer_draw_line (PangoRenderer   *renderer,
   draw_overline (renderer, &state);
   draw_strikethrough (renderer, &state);
 
-  renderer->priv->line = NULL;
-  renderer->priv->line_state = NULL;
-  renderer->priv->line = NULL;
+  priv->line = NULL;
+  priv->line_state = NULL;
+  priv->line = NULL;
 
   pango_renderer_deactivate (renderer);
 }
@@ -600,14 +615,15 @@ pango_renderer_draw_lines (PangoRenderer *renderer,
                            int            x,
                            int            y)
 {
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
   int n;
   PangoLine *line;
   int line_x, line_y;
   PangoLine **l;
 
-  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
+  g_return_if_fail (PANGO_IS_RENDERER (renderer));
 
-  renderer->priv->lines = lines;
+  priv->lines = lines;
 
   l = pango_lines_get_lines (lines);
   for (n = 0; n < pango_lines_get_line_count (lines); n++)
@@ -624,15 +640,15 @@ pango_renderer_draw_lines (PangoRenderer *renderer,
   if (n > 0)
     pango_renderer_deactivate (renderer);
 
-  renderer->priv->lines = NULL;
+  priv->lines = NULL;
 }
 
 static void
-pango_shape_get_extents (int               n_chars,
-                         PangoRectangle   *shape_ink,
-                         PangoRectangle   *shape_logical,
-                         PangoRectangle   *ink_rect,
-                         PangoRectangle   *logical_rect)
+pango_shape_get_extents (int             n_chars,
+                         PangoRectangle *shape_ink,
+                         PangoRectangle *shape_logical,
+                         PangoRectangle *ink_rect,
+                         PangoRectangle *logical_rect)
 {
   if (n_chars > 0)
     {
@@ -670,6 +686,7 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
                           int            x,
                           int            y)
 {
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
   GSList *l;
   int x_off = 0;
   int glyph_string_width;
@@ -711,9 +728,9 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
         }
       else
         {
-          if (renderer->underline != PANGO_LINE_STYLE_NONE ||
-              renderer->overline != PANGO_LINE_STYLE_NONE ||
-              renderer->strikethrough != PANGO_LINE_STYLE_NONE)
+          if (priv->underline != PANGO_LINE_STYLE_NONE ||
+              priv->overline != PANGO_LINE_STYLE_NONE ||
+              priv->strikethrough != PANGO_LINE_STYLE_NONE)
             {
               ink = &ink_rect;
               logical = &logical_rect;
@@ -726,7 +743,7 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
             glyph_string_width = pango_glyph_string_get_width (glyphs);
         }
 
-      renderer->priv->line_state->logical_rect_end = x + x_off + glyph_string_width;
+      priv->line_state->logical_rect_end = x + x_off + glyph_string_width;
 
       x_off += glyph_item->start_x_offset;
       y_off = glyph_item->y_offset;
@@ -742,7 +759,7 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
           y_off += adjustment;
         }
 
-      if (renderer->priv->color_set[PANGO_RENDER_PART_BACKGROUND])
+      if (priv->color_set[PANGO_RENDER_PART_BACKGROUND])
         {
           if (!got_overall)
             {
@@ -763,42 +780,42 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
       else
         pango_renderer_draw_glyph_item (renderer, text, glyph_item, x + x_off, y - y_off);
 
-      if (renderer->underline != PANGO_LINE_STYLE_NONE ||
-          renderer->overline != PANGO_LINE_STYLE_NONE ||
-          renderer->strikethrough != PANGO_LINE_STYLE_NONE)
+      if (priv->underline != PANGO_LINE_STYLE_NONE ||
+          priv->overline != PANGO_LINE_STYLE_NONE ||
+          priv->strikethrough != PANGO_LINE_STYLE_NONE)
         {
           metrics = pango_font_get_metrics (item->analysis.font,
                                             item->analysis.language);
 
-          if (renderer->underline != PANGO_LINE_STYLE_NONE)
-            add_underline (renderer, renderer->priv->line_state, metrics,
+          if (priv->underline != PANGO_LINE_STYLE_NONE)
+            add_underline (renderer, priv->line_state, metrics,
                            x + x_off, y - y_off,
                            ink, logical);
 
-          if (renderer->overline != PANGO_LINE_STYLE_NONE)
-            add_overline (renderer, renderer->priv->line_state, metrics,
+          if (priv->overline != PANGO_LINE_STYLE_NONE)
+            add_overline (renderer, priv->line_state, metrics,
                            x + x_off, y - y_off,
                            ink, logical);
 
-          if (renderer->strikethrough != PANGO_LINE_STYLE_NONE)
-            add_strikethrough (renderer, renderer->priv->line_state, metrics,
+          if (priv->strikethrough != PANGO_LINE_STYLE_NONE)
+            add_strikethrough (renderer, priv->line_state, metrics,
                                x + x_off, y - y_off,
                                ink, logical, glyphs->num_glyphs);
 
           pango_font_metrics_free (metrics);
         }
 
-      if (renderer->underline == PANGO_LINE_STYLE_NONE &&
-          renderer->priv->line_state->underline != PANGO_LINE_STYLE_NONE)
-        draw_underline (renderer, renderer->priv->line_state);
+      if (priv->underline == PANGO_LINE_STYLE_NONE &&
+          priv->line_state->underline != PANGO_LINE_STYLE_NONE)
+        draw_underline (renderer, priv->line_state);
 
-      if (renderer->overline == PANGO_LINE_STYLE_NONE &&
-          renderer->priv->line_state->overline != PANGO_LINE_STYLE_NONE)
-        draw_overline (renderer, renderer->priv->line_state);
+      if (priv->overline == PANGO_LINE_STYLE_NONE &&
+          priv->line_state->overline != PANGO_LINE_STYLE_NONE)
+        draw_overline (renderer, priv->line_state);
 
-      if (renderer->strikethrough == PANGO_LINE_STYLE_NONE &&
-          renderer->priv->line_state->strikethrough != PANGO_LINE_STYLE_NONE)
-        draw_strikethrough (renderer, renderer->priv->line_state);
+      if (priv->strikethrough == PANGO_LINE_STYLE_NONE &&
+          priv->line_state->strikethrough != PANGO_LINE_STYLE_NONE)
+        draw_strikethrough (renderer, priv->line_state);
 
       x_off += glyph_string_width;
       x_off += glyph_item->end_x_offset;
@@ -824,7 +841,7 @@ pango_renderer_draw_glyphs (PangoRenderer    *renderer,
                             int               x,
                             int               y)
 {
-  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
+  g_return_if_fail (PANGO_IS_RENDERER (renderer));
 
   pango_renderer_activate (renderer);
 
@@ -840,6 +857,7 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
                                     int               x,
                                     int               y)
 {
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
   int i;
   int x_position = 0;
 
@@ -848,7 +866,7 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
       PangoGlyphInfo *gi = &glyphs->glyphs[i];
       Point p;
 
-      to_device (renderer->matrix,
+      to_device (priv->matrix,
                  x + x_position + gi->geometry.x_offset,
                  y +              gi->geometry.y_offset,
                  &p);
@@ -904,7 +922,7 @@ pango_renderer_draw_glyph_item (PangoRenderer  *renderer,
       return;
     }
 
-  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
+  g_return_if_fail (PANGO_IS_RENDERER (renderer));
 
   pango_renderer_activate (renderer);
 
@@ -951,9 +969,11 @@ pango_renderer_draw_rectangle (PangoRenderer   *renderer,
                                int              width,
                                int              height)
 {
-  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
+
+  g_return_if_fail (PANGO_IS_RENDERER (renderer));
   g_return_if_fail (IS_VALID_PART (part));
-  g_return_if_fail (renderer->active_count > 0);
+  g_return_if_fail (priv->active_count > 0);
 
   PANGO_RENDERER_GET_CLASS (renderer)->draw_rectangle (renderer, part, x, y, width, height);
 }
@@ -1062,7 +1082,9 @@ pango_renderer_default_draw_rectangle (PangoRenderer  *renderer,
                                        int             width,
                                        int             height)
 {
-  draw_rectangle (renderer, renderer->matrix, part, x, y, width, height);
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
+
+  draw_rectangle (renderer, priv->matrix, part, x, y, width, height);
 }
 
 /**
@@ -1090,8 +1112,10 @@ pango_renderer_draw_error_underline (PangoRenderer *renderer,
                                      int            width,
                                      int            height)
 {
-  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
-  g_return_if_fail (renderer->active_count > 0);
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
+
+  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (priv->active_count > 0);
 
   PANGO_RENDERER_GET_CLASS (renderer)->draw_error_underline (renderer, x, y, width, height);
 }
@@ -1169,6 +1193,7 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
                                              int            width,
                                              int            height)
 {
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
   int square;
   int unit_width;
   int width_units;
@@ -1187,8 +1212,8 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
 
   x += (width - width_units * unit_width) / 2;
 
-  if (renderer->matrix)
-    matrix = renderer->matrix;
+  if (priv->matrix)
+    matrix = priv->matrix;
   else
     matrix = &identity;
 
@@ -1247,8 +1272,10 @@ pango_renderer_draw_trapezoid (PangoRenderer   *renderer,
                                double           x12,
                                double           x22)
 {
-  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
-  g_return_if_fail (renderer->active_count > 0);
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
+
+  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (priv->active_count > 0);
 
   if (PANGO_RENDERER_GET_CLASS (renderer)->draw_trapezoid)
     PANGO_RENDERER_GET_CLASS (renderer)->draw_trapezoid (renderer, part,
@@ -1273,8 +1300,10 @@ pango_renderer_draw_glyph (PangoRenderer *renderer,
                            double         x,
                            double         y)
 {
-  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
-  g_return_if_fail (renderer->active_count > 0);
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
+
+  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (priv->active_count > 0);
 
   if (glyph == PANGO_GLYPH_EMPTY) /* glyph PANGO_GLYPH_EMPTY never renders */
     return;
@@ -1300,10 +1329,12 @@ pango_renderer_draw_glyph (PangoRenderer *renderer,
 void
 pango_renderer_activate (PangoRenderer *renderer)
 {
-  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
 
-  renderer->active_count++;
-  if (renderer->active_count == 1)
+  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+
+  priv->active_count++;
+  if (priv->active_count == 1)
     {
       if (PANGO_RENDERER_GET_CLASS (renderer)->begin)
         PANGO_RENDERER_GET_CLASS (renderer)->begin (renderer);
@@ -1321,15 +1352,17 @@ pango_renderer_activate (PangoRenderer *renderer)
 void
 pango_renderer_deactivate (PangoRenderer *renderer)
 {
-  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
-  g_return_if_fail (renderer->active_count > 0);
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
 
-  if (renderer->active_count == 1)
+  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (priv->active_count > 0);
+
+  if (priv->active_count == 1)
     {
       if (PANGO_RENDERER_GET_CLASS (renderer)->end)
         PANGO_RENDERER_GET_CLASS (renderer)->end (renderer);
     }
-  renderer->active_count--;
+  priv->active_count--;
 }
 
 /**
@@ -1345,24 +1378,26 @@ pango_renderer_set_color (PangoRenderer    *renderer,
                           PangoRenderPart   part,
                           const PangoColor *color)
 {
-  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
+
+  g_return_if_fail (PANGO_IS_RENDERER (renderer));
   g_return_if_fail (IS_VALID_PART (part));
 
-  if ((!color && !renderer->priv->color_set[part]) ||
-      (color && renderer->priv->color_set[part] &&
-       pango_color_equal (color, &renderer->priv->color[part])))
+  if ((!color && !priv->color_set[part]) ||
+      (color && priv->color_set[part] &&
+       pango_color_equal (color, &priv->color[part])))
     return;
 
   pango_renderer_part_changed (renderer, part);
 
   if (color)
     {
-      renderer->priv->color_set[part] = TRUE;
-      renderer->priv->color[part] = *color;
+      priv->color_set[part] = TRUE;
+      priv->color[part] = *color;
     }
   else
     {
-      renderer->priv->color_set[part] = FALSE;
+      priv->color_set[part] = FALSE;
     }
 }
 
@@ -1381,11 +1416,13 @@ PangoColor *
 pango_renderer_get_color (PangoRenderer   *renderer,
                           PangoRenderPart  part)
 {
-  g_return_val_if_fail (PANGO_IS_RENDERER_FAST (renderer), NULL);
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
+
+  g_return_val_if_fail (PANGO_IS_RENDERER (renderer), NULL);
   g_return_val_if_fail (IS_VALID_PART (part), NULL);
 
-  if (renderer->priv->color_set[part])
-    return &renderer->priv->color[part];
+  if (priv->color_set[part])
+    return &priv->color[part];
   else
     return NULL;
 }
@@ -1415,9 +1452,11 @@ void
 pango_renderer_part_changed (PangoRenderer   *renderer,
                              PangoRenderPart  part)
 {
-  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
+
+  g_return_if_fail (PANGO_IS_RENDERER (renderer));
   g_return_if_fail (IS_VALID_PART (part));
-  g_return_if_fail (renderer->active_count > 0);
+  g_return_if_fail (priv->active_count > 0);
 
   handle_line_state_change (renderer, part);
 
@@ -1436,7 +1475,7 @@ static void
 pango_renderer_prepare_run (PangoRenderer  *renderer,
                             PangoRun       *run)
 {
-  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
+  g_return_if_fail (PANGO_IS_RENDERER (renderer));
 
   PANGO_RENDERER_GET_CLASS (renderer)->prepare_run (renderer, run);
 }
@@ -1445,6 +1484,7 @@ static void
 pango_renderer_default_prepare_run (PangoRenderer  *renderer,
                                     PangoRun       *run)
 {
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
   PangoColor *fg_color = NULL;
   PangoColor *bg_color = NULL;
   PangoColor *underline_color = NULL;
@@ -1455,10 +1495,10 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
 
   glyph_item = pango_run_get_glyph_item (run);
 
-  renderer->underline = PANGO_LINE_STYLE_NONE;
-  renderer->underline_position = PANGO_UNDERLINE_POSITION_NORMAL;
-  renderer->overline = PANGO_LINE_STYLE_NONE;
-  renderer->strikethrough = PANGO_LINE_STYLE_NONE;
+  priv->underline = PANGO_LINE_STYLE_NONE;
+  priv->underline_position = PANGO_UNDERLINE_POSITION_NORMAL;
+  priv->overline = PANGO_LINE_STYLE_NONE;
+  priv->strikethrough = PANGO_LINE_STYLE_NONE;
 
   for (l = glyph_item->item->analysis.extra_attrs; l; l = l->next)
     {
@@ -1467,19 +1507,19 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
       switch ((int) attr->type)
         {
         case PANGO_ATTR_UNDERLINE:
-          renderer->underline = attr->int_value;
+          priv->underline = attr->int_value;
           break;
 
         case PANGO_ATTR_UNDERLINE_POSITION:
-          renderer->underline_position = attr->int_value;
+          priv->underline_position = attr->int_value;
           break;
 
         case PANGO_ATTR_OVERLINE:
-          renderer->overline = attr->int_value;
+          priv->overline = attr->int_value;
           break;
 
         case PANGO_ATTR_STRIKETHROUGH:
-          renderer->strikethrough = attr->int_value;
+          priv->strikethrough = attr->int_value;
           break;
 
         case PANGO_ATTR_FOREGROUND:
@@ -1535,10 +1575,12 @@ void
 pango_renderer_set_matrix (PangoRenderer     *renderer,
                            const PangoMatrix *matrix)
 {
-  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
 
-  pango_matrix_free (renderer->matrix);
-  renderer->matrix = pango_matrix_copy (matrix);
+  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+
+  pango_matrix_free (priv->matrix);
+  priv->matrix = pango_matrix_copy (matrix);
 }
 
 /**
@@ -1557,9 +1599,11 @@ pango_renderer_set_matrix (PangoRenderer     *renderer,
 const PangoMatrix *
 pango_renderer_get_matrix (PangoRenderer *renderer)
 {
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
+
   g_return_val_if_fail (PANGO_IS_RENDERER (renderer), NULL);
 
-  return renderer->matrix;
+  return priv->matrix;
 }
 
 /**
@@ -1580,7 +1624,9 @@ pango_renderer_get_matrix (PangoRenderer *renderer)
 PangoLines *
 pango_renderer_get_lines (PangoRenderer *renderer)
 {
-  return renderer->priv->lines;
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
+
+  return priv->lines;
 }
 
 /**
@@ -1601,7 +1647,9 @@ pango_renderer_get_lines (PangoRenderer *renderer)
 PangoLine *
 pango_renderer_get_layout_line (PangoRenderer *renderer)
 {
-  return renderer->priv->line;
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
+
+  return priv->line;
 }
 
 /**
@@ -1615,5 +1663,7 @@ pango_renderer_get_layout_line (PangoRenderer *renderer)
 PangoContext *
 pango_renderer_get_context (PangoRenderer *renderer)
 {
-  return renderer->priv->context;
+  PangoRendererPrivate *priv = pango_renderer_get_instance_private (renderer);
+
+  return priv->context;
 }

@@ -35,7 +35,6 @@ G_BEGIN_DECLS
 
 typedef struct _PangoRenderer        PangoRenderer;
 typedef struct _PangoRendererClass   PangoRendererClass;
-typedef struct _PangoRendererPrivate PangoRendererPrivate;
 
 /**
  * PangoRenderPart:
@@ -60,9 +59,6 @@ typedef enum
 
 /**
  * PangoRenderer:
- * @matrix: (nullable): the current transformation matrix for
- *   the Renderer; may be %NULL, which should be treated the
- *   same as the identity matrix.
  *
  * `PangoRenderer` is a base class for objects that can render text
  * provided as `PangoGlyphString` or `PangoLayout`.
@@ -73,20 +69,7 @@ typedef enum
  */
 struct _PangoRenderer
 {
-  /*< private >*/
   GObject parent_instance;
-
-  PangoLineStyle underline;
-  PangoUnderlinePosition underline_position;
-  PangoLineStyle strikethrough;
-  PangoLineStyle overline;
-  int active_count;
-
-  /*< public >*/
-  PangoMatrix *matrix;          /* May be NULL */
-
-  /*< private >*/
-  PangoRendererPrivate *priv;
 };
 
 /**
