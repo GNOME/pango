@@ -799,6 +799,50 @@ pango_attr_text_transform_new (PangoTextTransform transform)
   return pango_attr_int_new (PANGO_ATTR_TEXT_TRANSFORM, transform);
 }
 
+/**
+ * pango_attr_shape_new:
+ * @ink_rect: ink rectangle to use for each character
+ * @logical_rect: logical rectangle to use for each character
+ * @data: user data
+ * @copy: (nullable): function to copy @data when the attribute
+ *   is copied
+ * @destroy: (nullable): function to free @data when the attribute
+ *   is freed
+ *
+ * Creates a new shape attribute.
+ *
+ * Shape attributes override the extents for a glyph and can
+ * trigger custom rendering in a `PangoRenderer`. This might
+ * be used, for instance, for embedding a picture or a widget
+ * inside a `PangoLayout`.
+ *
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
+ */
+PangoAttribute *
+pango_attr_shape_new (PangoRectangle        *ink_rect,
+                      PangoRectangle        *logical_rect,
+                      gpointer               data,
+                      PangoAttrDataCopyFunc  copy,
+                      GDestroyNotify         destroy)
+{
+  PangoAttribute *attr;
+  ShapeData *shape_data;
+
+  shape_data = g_new0 (ShapeData, 1);
+  shape_data->ink_rect = *ink_rect;
+  shape_data->logical_rect = *logical_rect;
+  shape_data->data = data;
+  shape_data->copy = copy;
+  shape_data->destroy = destroy;
+
+  attr = pango_attr_init (PANGO_ATTR_SHAPE);
+  attr->pointer_value = shape_data;
+
+  return attr;
+}
+
 /* }}} */
 /* {{{ Private API */
 

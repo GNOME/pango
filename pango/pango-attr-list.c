@@ -1253,6 +1253,7 @@ pango_attr_list_from_string (const char *text)
           INT_ATTR(line_spacing, int);
           break;
 
+        case PANGO_ATTR_SHAPE:
         default:
           g_assert_not_reached ();
         }

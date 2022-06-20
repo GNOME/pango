@@ -936,6 +936,7 @@ attr_for_type (GtkJsonParser *parser,
 
   switch (type)
     {
+    case PANGO_ATTR_SHAPE:
     default:
       g_assert_not_reached ();
 

@@ -401,6 +401,7 @@ pango_item_get_properties (PangoItem      *item,
   properties->line_height = 0.0;
   properties->absolute_line_height = 0;
   properties->line_spacing = 0;
+  properties->shape = NULL;
 
   while (tmp_list)
     {
@@ -446,6 +447,10 @@ pango_item_get_properties (PangoItem      *item,
 
         case PANGO_ATTR_PARAGRAPH:
           properties->no_paragraph_break = TRUE;
+          break;
+
+        case PANGO_ATTR_SHAPE:
+          properties->shape = attr;
           break;
 
         default:
