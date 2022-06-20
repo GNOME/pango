@@ -23,6 +23,7 @@
 #include <string.h>
 
 #include "pango-attr-private.h"
+#include "pango-attributes-private.h"
 #include "pango-impl-utils.h"
 
 
@@ -98,6 +99,7 @@ is_valid_attr_type (guint type)
     case PANGO_ATTR_SENTENCE:
     case PANGO_ATTR_BASELINE_SHIFT:
     case PANGO_ATTR_FONT_SCALE:
+    case PANGO_ATTR_SHAPE:
       return TRUE;
     default:
       if (!attr_type)
@@ -265,28 +267,39 @@ pango_attribute_copy (const PangoAttribute *attr)
       break;
 
     case PANGO_ATTR_VALUE_POINTER:
-      {
-        PangoAttrDataCopyFunc copy = NULL;
+      if (attr->type == PANGO_ATTR_SHAPE)
+        {
+          ShapeData *shape_data;
 
-        G_LOCK (attr_type);
+          shape_data = g_memdup2 (attr->pointer_value, sizeof (ShapeData));
+          if (shape_data->copy)
+            shape_data->data = shape_data->copy (shape_data->data);
 
-        g_assert (attr_type != NULL);
+          result->pointer_value = shape_data;
+        }
+      else
+        {
+          PangoAttrDataCopyFunc copy = NULL;
 
-        for (int i = 0; i < attr_type->len; i++)
-          {
-            PangoAttrClass *class = &g_array_index (attr_type, PangoAttrClass, i);
-            if (class->type == attr->type)
-              {
-                copy = class->copy;
-                break;
-              }
-          }
+          G_LOCK (attr_type);
 
-        G_UNLOCK (attr_type);
+          g_assert (attr_type != NULL);
 
-        if (copy)
-          result->pointer_value = copy (attr->pointer_value);
-      }
+          for (int i = 0; i < attr_type->len; i++)
+            {
+              PangoAttrClass *class = &g_array_index (attr_type, PangoAttrClass, i);
+              if (class->type == attr->type)
+                {
+                  copy = class->copy;
+                  break;
+                }
+            }
+
+          G_UNLOCK (attr_type);
+
+          if (copy)
+            result->pointer_value = copy (attr->pointer_value);
+        }
       break;
 
     case PANGO_ATTR_VALUE_INT:
@@ -322,28 +335,38 @@ pango_attribute_destroy (PangoAttribute *attr)
       break;
 
     case PANGO_ATTR_VALUE_POINTER:
-      {
-        GDestroyNotify destroy = NULL;
+      if (attr->type == PANGO_ATTR_SHAPE)
+        {
+          ShapeData *shape_data = attr->pointer_value;
 
-        G_LOCK (attr_type);
+          if (shape_data->destroy)
+            shape_data->destroy (shape_data->data);
 
-        g_assert (attr_type != NULL);
+          g_free (shape_data);
+        }
+      else
+        {
+          GDestroyNotify destroy = NULL;
 
-        for (int i = 0; i < attr_type->len; i++)
-          {
-            PangoAttrClass *class = &g_array_index (attr_type, PangoAttrClass, i);
-            if (class->type == attr->type)
-              {
-                destroy = class->destroy;
-                break;
-              }
-          }
+          G_LOCK (attr_type);
 
-        G_UNLOCK (attr_type);
+          g_assert (attr_type != NULL);
 
-        if (destroy)
-          destroy (attr->pointer_value);
-      }
+          for (int i = 0; i < attr_type->len; i++)
+            {
+              PangoAttrClass *class = &g_array_index (attr_type, PangoAttrClass, i);
+              if (class->type == attr->type)
+                {
+                  destroy = class->destroy;
+                  break;
+                }
+            }
+
+          G_UNLOCK (attr_type);
+
+          if (destroy)
+            destroy (attr->pointer_value);
+        }
       break;
 
     case PANGO_ATTR_VALUE_INT:
@@ -426,8 +449,6 @@ pango_attribute_equal (const PangoAttribute *attr1,
           }
 
         G_UNLOCK (attr_type);
-
-        g_assert (equal != NULL);
 
         if (equal)
           return equal (attr1->pointer_value, attr2->pointer_value);

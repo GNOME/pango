@@ -849,6 +849,28 @@ distribute_letter_spacing (int  letter_spacing,
   *space_right = letter_spacing - *space_left;
 }
 
+static void
+pango_shape_shape (const char       *text,
+                   unsigned int      n_chars,
+                   ShapeData        *shape,
+                   PangoGlyphString *glyphs)
+{
+  unsigned int i;
+  const char *p;
+
+  pango_glyph_string_set_size (glyphs, n_chars);
+
+  for (i = 0, p = text; i < n_chars; i++, p = g_utf8_next_char (p))
+    {
+      glyphs->glyphs[i].glyph = PANGO_GLYPH_EMPTY;
+      glyphs->glyphs[i].geometry.x_offset = 0;
+      glyphs->glyphs[i].geometry.y_offset = 0;
+      glyphs->glyphs[i].geometry.width = shape->logical_rect.width;
+      glyphs->glyphs[i].attr.is_cluster_start = 1;
+
+      glyphs->log_clusters[i] = p - text;
+    }
+}
 
 static PangoGlyphString *
 shape_run (PangoLineBreaker *self,
@@ -866,11 +888,16 @@ shape_run (PangoLineBreaker *self,
       if (pango_context_get_round_glyph_positions (self->context))
         shape_flags |= PANGO_SHAPE_ROUND_POSITIONS;
 
-      pango_shape_item (item,
-                        self->data->text, self->data->length,
-                        self->data->log_attrs + self->start_offset,
-                        glyphs,
-                        shape_flags);
+      if (self->properties.shape)
+        pango_shape_shape (self->data->text + item->offset, item->num_chars,
+                           (ShapeData *)self->properties.shape->pointer_value,
+                           glyphs);
+      else
+        pango_shape_item (item,
+                          self->data->text, self->data->length,
+                          self->data->log_attrs + self->start_offset,
+                          glyphs,
+                          shape_flags);
 
       if (self->properties.letter_spacing)
         {

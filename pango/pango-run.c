@@ -4,6 +4,7 @@
 #include "pango-item-private.h"
 #include "pango-impl-utils.h"
 #include "pango-font-metrics-private.h"
+#include "pango-attributes-private.h"
 
 #include <math.h>
 
@@ -46,6 +47,54 @@ PangoGlyphString *
 pango_run_get_glyphs (PangoRun *run)
 {
   return run->glyph_item.glyphs;
+}
+
+static void
+pango_shape_get_extents (int             n_chars,
+                         PangoAttribute *attr,
+                         PangoRectangle *ink_rect,
+                         PangoRectangle *logical_rect)
+{
+  if (n_chars > 0)
+    {
+      ShapeData *data = (ShapeData *)attr->pointer_value;
+      PangoRectangle *shape_ink = &data->ink_rect;
+      PangoRectangle *shape_logical = &data->logical_rect;
+
+      if (ink_rect)
+        {
+          ink_rect->x = MIN (shape_ink->x, shape_ink->x + shape_logical->width * (n_chars - 1));
+          ink_rect->width = MAX (shape_ink->width, shape_ink->width + shape_logical->width * (n_chars - 1));
+          ink_rect->y = shape_ink->y;
+          ink_rect->height = shape_ink->height;
+        }
+
+      if (logical_rect)
+        {
+          logical_rect->x = MIN (shape_logical->x, shape_logical->x + shape_logical->width * (n_chars - 1));
+          logical_rect->width = MAX (shape_logical->width, shape_logical->width + shape_logical->width * (n_chars - 1));
+          logical_rect->y = shape_logical->y;
+          logical_rect->height = shape_logical->height;
+        }
+    }
+  else
+    {
+      if (ink_rect)
+        {
+          ink_rect->x = 0;
+          ink_rect->y = 0;
+          ink_rect->width = 0;
+          ink_rect->height = 0;
+        }
+
+      if (logical_rect)
+        {
+          logical_rect->x = 0;
+          logical_rect->y = 0;
+          logical_rect->width = 0;
+          logical_rect->height = 0;
+        }
+    }
 }
 
 /**
@@ -91,8 +140,12 @@ pango_run_get_extents (PangoRun         *run,
   if (!logical_rect && (has_underline || has_overline || has_strikethrough))
     logical_rect = &logical;
 
-  pango_glyph_string_extents (glyph_item->glyphs, glyph_item->item->analysis.font,
-                              ink_rect, logical_rect);
+  if (properties.shape)
+    pango_shape_get_extents (glyph_item->item->num_chars, properties.shape,
+                             ink_rect, logical_rect);
+  else
+    pango_glyph_string_extents (glyph_item->glyphs, glyph_item->item->analysis.font,
+                                ink_rect, logical_rect);
 
   if (ink_rect && (has_underline || has_overline || has_strikethrough))
     {

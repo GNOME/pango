@@ -116,6 +116,7 @@ struct _ItemProperties
   int line_spacing;
   int absolute_line_height;
   double line_height;
+  PangoAttribute *shape;
 };
 
 void               pango_item_get_properties          (PangoItem        *item,
