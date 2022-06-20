@@ -33,7 +33,6 @@ pango_sources = [
   'pango-tabs.c',
   'pango-trace.c',
   'pango-utils.c',
-  'reorder-items.c',
   'shape.c',
   'serializer.c',
   'json/gtkjsonparser.c',
