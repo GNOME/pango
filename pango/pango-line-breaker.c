@@ -232,8 +232,8 @@ ensure_items (PangoLineBreaker *self)
   self->render_attrs = pango_attr_list_copy (self->data->attrs);
   if (self->render_attrs)
     {
-      shape_attrs = pango_attr_list_filter (self->render_attrs, pango_attribute_affects_break_or_shape, NULL);
       itemize_attrs = pango_attr_list_filter (self->render_attrs, pango_attribute_affects_itemization, NULL);
+      shape_attrs = pango_attr_list_filter (self->render_attrs, pango_attribute_affects_break_or_shape, NULL);
     }
 
   self->items = pango_itemize_with_font (self->context,
