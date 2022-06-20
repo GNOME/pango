@@ -321,7 +321,7 @@ test_roundtrip_small_caps (void)
   PangoContext *context;
   PangoFontDescription *desc, *desc2;
   PangoFont *font;
-  hb_feature_t features[32];
+  const hb_feature_t *features;
   guint num = 0;
 
   context = pango_context_new ();
@@ -333,7 +333,7 @@ test_roundtrip_small_caps (void)
   desc2 = pango_font_describe (font);
 
   num = 0;
-  pango_font_get_features (font, features, G_N_ELEMENTS (features), &num);
+  features = pango_hb_font_get_features (PANGO_HB_FONT (font), &num);
   g_assert_true (num == 1);
   g_assert_true (features[0].tag == HB_TAG ('s', 'm', 'c', 'p'));
   g_assert_true (features[0].value == 1);
@@ -353,7 +353,7 @@ test_roundtrip_small_caps (void)
   desc2 = pango_font_describe (font);
 
   num = 0;
-  pango_font_get_features (font, features, G_N_ELEMENTS (features), &num);
+  features = pango_hb_font_get_features (PANGO_HB_FONT (font), &num);
   g_assert_true (num == 2);
   g_assert_true (features[0].tag == HB_TAG ('s', 'm', 'c', 'p'));
   g_assert_true (features[0].value == 1);
@@ -374,7 +374,7 @@ test_roundtrip_small_caps (void)
   desc2 = pango_font_describe (font);
 
   num = 0;
-  pango_font_get_features (font, features, G_N_ELEMENTS (features), &num);
+  features = pango_hb_font_get_features (PANGO_HB_FONT (font), &num);
   g_assert_true (num == 1);
   g_assert_true (features[0].tag == HB_TAG ('u', 'n', 'i', 'c'));
   g_assert_true (features[0].value == 1);
