@@ -2,6 +2,7 @@ pango_view_sources = [
   'pango-view.c',
   'viewer-main.c',
   'viewer-render.c',
+  'userfont.c',
 ]
 
 pango_view_deps = [

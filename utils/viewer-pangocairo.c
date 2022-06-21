@@ -23,13 +23,16 @@
 
 #include "viewer-render.h"
 #include "viewer-cairo.h"
+#include "userfont.h"
 
 #include <pango/pangocairo.h>
 #include <pango/pango-run.h>
 
 #include <hb-ot.h>
 
+
 static int opt_annotate = 0;
+static gboolean opt_userfont = 0;
 static char **opt_font_file = NULL;
 
 typedef struct
@@ -86,7 +89,11 @@ pangocairo_view_create (const PangoViewer *klass G_GNUC_UNUSED)
     {
       instance->fontmap = pango_font_map_new_default ();
     }
+
   pango_font_map_set_resolution (PANGO_FONT_MAP (instance->fontmap), opt_dpi);
+
+  if (opt_userfont)
+    add_userfont (instance->fontmap);
 
   instance->font_options = cairo_font_options_create ();
   if (opt_hinting != HINT_DEFAULT)
@@ -965,6 +972,7 @@ pangocairo_view_get_option_group (const PangoViewer *klass G_GNUC_UNUSED)
   {
     {"annotate", 0, 0, G_OPTION_ARG_CALLBACK, parse_annotate_arg, annotate_arg_help, "FLAGS"},
     { "font-file", 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &opt_font_file, "Create a fontmap with this font", "FILE" },
+    { "userfont", 0, 0, G_OPTION_ARG_NONE, &opt_userfont, "Add userfont" },
     {NULL}
   };
   GOptionGroup *group;
