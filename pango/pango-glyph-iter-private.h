@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <pango/pango-glyph-item.h>
+#include <pango/pango-glyph-item-private.h>
 
 G_BEGIN_DECLS
 

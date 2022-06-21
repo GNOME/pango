@@ -30,9 +30,9 @@ void    pango_cairo_show_glyph_string           (cairo_t          *cr,
                                                  PangoGlyphString *glyphs);
 
 PANGO_AVAILABLE_IN_ALL
-void    pango_cairo_show_glyph_item             (cairo_t          *cr,
+void    pango_cairo_show_run                    (cairo_t          *cr,
                                                  const char       *text,
-                                                 PangoGlyphItem   *glyph_item);
+                                                 PangoRun         *run);
 PANGO_AVAILABLE_IN_ALL
 void     pango_cairo_show_line                  (cairo_t          *cr,
                                                  PangoLine        *line);

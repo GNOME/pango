@@ -22,7 +22,6 @@
 #include <pango/pango-layout.h>
 #include <pango/pango-lines.h>
 #include <pango/pango-glyph.h>
-#include <pango/pango-glyph-item.h>
 
 G_BEGIN_DECLS
 
@@ -157,9 +156,9 @@ struct _PangoRendererClass
   void (*prepare_run)          (PangoRenderer    *renderer,
                                 PangoRun         *run);
 
-  void (*draw_glyph_item)      (PangoRenderer    *renderer,
+  void (*draw_run)             (PangoRenderer    *renderer,
                                 const char       *text,
-                                PangoGlyphItem   *glyph_item,
+                                PangoRun         *run,
                                 int               x,
                                 int               y);
 
@@ -190,9 +189,9 @@ void pango_renderer_draw_glyphs          (PangoRenderer    *renderer,
                                           int               x,
                                           int               y);
 PANGO_AVAILABLE_IN_ALL
-void pango_renderer_draw_glyph_item      (PangoRenderer    *renderer,
+void pango_renderer_draw_run             (PangoRenderer    *renderer,
                                           const char       *text,
-                                          PangoGlyphItem   *glyph_item,
+                                          PangoRun         *run,
                                           int               x,
                                           int               y);
 PANGO_AVAILABLE_IN_ALL

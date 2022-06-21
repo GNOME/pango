@@ -255,73 +255,12 @@ test_line_iter (void)
   pango_font_description_free (font_desc);
 }
 
-static void
-test_glyphitem_iter (void)
-{
-  PangoContext *context;
-  PangoFontDescription *font_desc;
-  PangoLayout  *layout;
-  PangoLine *line;
-  const char *text;
-
-  context = pango_context_new ();
-  font_desc = pango_font_description_from_string ("cantarell 11");
-  pango_context_set_font_description (context, font_desc);
-
-  layout = pango_layout_new (context);
-  /* This shouldn't form any ligatures. */
-  pango_layout_set_text (layout, "test تست", -1);
-  text = pango_layout_get_text (layout);
-
-  line = pango_lines_get_lines (pango_layout_get_lines (layout))[0];
-  for (int i = 0; i < pango_line_get_run_count (line); i++)
-  {
-    PangoGlyphItem *run = (PangoGlyphItem *)pango_line_get_runs (line)[i]; /* FIXME */
-    int direction;
-
-    for (direction = 0; direction < 2; direction++)
-    {
-      PangoGlyphItemIter iter;
-      gboolean have_cluster;
-      PangoGlyphItemIter *iter2;
-
-      for (have_cluster = direction ?
-             pango_glyph_item_iter_init_start (&iter, run, text) :
-             pango_glyph_item_iter_init_end (&iter, run, text);
-           have_cluster;
-           have_cluster = direction ?
-             pango_glyph_item_iter_next_cluster (&iter) :
-             pango_glyph_item_iter_prev_cluster (&iter))
-      {
-        verbose ("start index %d end index %d\n", iter.start_index, iter.end_index);
-        g_assert_true (iter.start_index < iter.end_index);
-        g_assert_true (iter.start_index + 2 >= iter.end_index);
-        g_assert_true (iter.start_char + 1 == iter.end_char);
-
-        iter2 = pango_glyph_item_iter_copy (&iter);
-        g_assert_true (iter2->start_glyph == iter.start_glyph);
-        g_assert_true (iter2->start_index == iter.start_index);
-        g_assert_true (iter2->start_char == iter.start_char);
-        g_assert_true (iter2->end_glyph == iter.end_glyph);
-        g_assert_true (iter2->end_index == iter.end_index);
-        g_assert_true (iter2->end_char == iter.end_char);
-        pango_glyph_item_iter_free (iter2);
-      }
-    }
-  }
-
-  g_object_unref (layout);
-  g_object_unref (context);
-  pango_font_description_free (font_desc);
-}
-
 int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
   g_test_add_func ("/layout/iter", test_line_iter);
-  g_test_add_func ("/layout/glyphitem-iter", test_glyphitem_iter);
 
   return g_test_run ();
 }

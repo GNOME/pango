@@ -22,8 +22,8 @@
 #include "config.h"
 #include <string.h>
 
-#include "pango-glyph-item.h"
-#include "pango-glyph-iter.h"
+#include "pango-glyph-item-private.h"
+#include "pango-glyph-iter-private.h"
 #include "pango-item-private.h"
 #include "pango-impl-utils.h"
 #include "pango-attr-list-private.h"
