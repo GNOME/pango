@@ -29,6 +29,7 @@
 #include "pango-run-private.h"
 #include "pango-line-private.h"
 #include "pango-attributes-private.h"
+#include "pango-glyph-item-private.h"
 
 #define N_RENDER_PARTS 5
 
@@ -84,9 +85,9 @@ static void pango_renderer_default_draw_glyphs          (PangoRenderer    *rende
                                                          PangoGlyphString *glyphs,
                                                          int               x,
                                                          int               y);
-static void pango_renderer_default_draw_glyph_item      (PangoRenderer    *renderer,
+static void pango_renderer_default_draw_run             (PangoRenderer    *renderer,
                                                          const char       *text,
-                                                         PangoGlyphItem   *glyph_item,
+                                                         PangoRun         *run,
                                                          int               x,
                                                          int               y);
 static void pango_renderer_default_draw_rectangle       (PangoRenderer    *renderer,
@@ -133,7 +134,7 @@ pango_renderer_class_init (PangoRendererClass *klass)
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
 
   klass->draw_glyphs = pango_renderer_default_draw_glyphs;
-  klass->draw_glyph_item = pango_renderer_default_draw_glyph_item;
+  klass->draw_run = pango_renderer_default_draw_run;
   klass->draw_rectangle = pango_renderer_default_draw_rectangle;
   klass->draw_error_underline = pango_renderer_default_draw_error_underline;
   klass->prepare_run = pango_renderer_default_prepare_run;
@@ -698,15 +699,15 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
     {
       PangoFontMetrics *metrics;
       PangoRun *run = l->data;
-      PangoGlyphItem *glyph_item = l->data;
-      PangoItem *item = glyph_item->item;
-      PangoGlyphString *glyphs = glyph_item->glyphs;
+      PangoGlyphItem *glyph_item = pango_run_get_glyph_item (run);
+      PangoItem *item = pango_run_get_item (run);
+      PangoGlyphString *glyphs = pango_run_get_glyphs (run);
       PangoRectangle ink_rect, *ink = NULL;
       PangoRectangle logical_rect, *logical = NULL;
       ItemProperties properties;
       int y_off;
 
-      if (glyph_item->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
+      if (item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
         logical = &logical_rect;
 
       pango_renderer_prepare_run (renderer, run);
@@ -779,7 +780,7 @@ pango_renderer_draw_runs (PangoRenderer *renderer,
       if (properties.shape)
         draw_shaped_glyphs (renderer, glyphs, properties.shape, x + x_off, y - y_off);
       else
-        pango_renderer_draw_glyph_item (renderer, text, glyph_item, x + x_off, y - y_off);
+        pango_renderer_draw_run (renderer, text, run, x + x_off, y - y_off);
 
       if (priv->underline != PANGO_LINE_STYLE_NONE ||
           priv->overline != PANGO_LINE_STYLE_NONE ||
@@ -879,28 +880,28 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
 }
 
 /**
- * pango_renderer_draw_glyph_item:
+ * pango_renderer_draw_run:
  * @renderer: a `PangoRenderer`
  * @text: (nullable): the UTF-8 text that @glyph_item refers to
- * @glyph_item: a `PangoGlyphItem`
+ * @run: a `PangoRun`
  * @x: X position of left edge of baseline, in user space coordinates
  *   in Pango units
  * @y: Y position of left edge of baseline, in user space coordinates
  *   in Pango units
  *
- * Draws the glyphs in @glyph_item with the specified `PangoRenderer`,
+ * Draws the glyphs in @run with the specified `PangoRenderer`,
  * embedding the text associated with the glyphs in the output if the
  * output format supports it.
  *
  * This is useful for rendering text in PDF.
  *
- * Note that this method does not handle attributes in @glyph_item.
+ * Note that this method does not handle attributes in @run.
  * If you want colors, shapes and lines handled automatically according
  * to those attributes, you need to use [method@Pango.Renderer.draw_line]
  * or [method@Pango.Renderer.draw_lines].
  *
  * Note that @text is the start of the text for layout, which is then
- * indexed by `glyph_item->item->offset`.
+ * indexed by `run->item->offset`.
  *
  * If @text is %NULL, this simply calls [method@Pango.Renderer.draw_glyphs].
  *
@@ -908,18 +909,18 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
  * [method@Pango.Renderer.draw_glyphs].
  */
 void
-pango_renderer_draw_glyph_item (PangoRenderer  *renderer,
-                                const char     *text,
-                                PangoGlyphItem *glyph_item,
-                                int             x,
-                                int             y)
+pango_renderer_draw_run (PangoRenderer  *renderer,
+                         const char     *text,
+                         PangoRun       *run,
+                         int             x,
+                         int             y)
 {
   if (!text)
     {
-      pango_renderer_draw_glyphs (renderer,
-                                  glyph_item->item->analysis.font,
-                                  glyph_item->glyphs,
-                                  x, y);
+      PangoItem *item = pango_run_get_item (run);
+      PangoGlyphString *glyphs = pango_run_get_glyphs (run);
+
+      pango_renderer_draw_glyphs (renderer, item->analysis.font, glyphs, x, y);
       return;
     }
 
@@ -927,22 +928,22 @@ pango_renderer_draw_glyph_item (PangoRenderer  *renderer,
 
   pango_renderer_activate (renderer);
 
-  PANGO_RENDERER_GET_CLASS (renderer)->draw_glyph_item (renderer, text, glyph_item, x, y);
+  PANGO_RENDERER_GET_CLASS (renderer)->draw_run (renderer, text, run, x, y);
 
   pango_renderer_deactivate (renderer);
 }
 
 static void
-pango_renderer_default_draw_glyph_item (PangoRenderer  *renderer,
-                                        const char     *text G_GNUC_UNUSED,
-                                        PangoGlyphItem *glyph_item,
-                                        int             x,
-                                        int             y)
+pango_renderer_default_draw_run (PangoRenderer  *renderer,
+                                 const char     *text G_GNUC_UNUSED,
+                                 PangoRun       *run,
+                                 int             x,
+                                 int             y)
 {
-  pango_renderer_draw_glyphs (renderer,
-                              glyph_item->item->analysis.font,
-                              glyph_item->glyphs,
-                              x, y);
+  PangoItem *item = pango_run_get_item (run);
+  PangoGlyphString *glyphs = pango_run_get_glyphs (run);
+
+  pango_renderer_draw_glyphs (renderer, item->analysis.font, glyphs, x, y);
 }
 
 /**

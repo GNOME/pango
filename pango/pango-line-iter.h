@@ -23,7 +23,6 @@
 
 #include <pango/pango-types.h>
 #include <pango/pango-lines.h>
-#include <pango/pango-glyph-item.h>
 
 G_BEGIN_DECLS
 

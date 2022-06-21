@@ -22,7 +22,7 @@
 #include "config.h"
 
 #include "pango-run.h"
-#include "pango-glyph-item.h"
+#include "pango-glyph-item-private.h"
 #include "pango-item-private.h"
 
 
