@@ -24,6 +24,7 @@
 #include "pango-glyph.h"
 #include "pango-font.h"
 #include "pango-item-private.h"
+#include "pango-glyph-item-private.h"
 #include "pango-impl-utils.h"
 
 #include <hb-ot.h>
@@ -325,8 +326,6 @@ pango_glyph_string_get_width (PangoGlyphString *glyphs)
  *
  * When multiple characters compose a single cluster, the width of the
  * entire cluster is divided equally among the characters.
- *
- * See also [method@Pango.GlyphItem.get_logical_widths].
  */
 void
 pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,

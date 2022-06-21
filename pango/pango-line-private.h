@@ -22,7 +22,7 @@
 #include "pango-line.h"
 #include "pango-break.h"
 #include "pango-attributes.h"
-#include "pango-glyph-item.h"
+#include "pango-glyph-item-private.h"
 
 
 typedef struct _LineData LineData;
