@@ -48,8 +48,8 @@
 #include <pango/pango-line-breaker.h>
 #include <pango/pango-line-iter.h>
 #include <pango/pango-lines.h>
-#include <pango/pango-matrix.h>
 #include <pango/pango-markup.h>
+#include <pango/pango-matrix.h>
 #include <pango/pango-renderer.h>
 #include <pango/pango-run.h>
 #include <pango/pango-script.h>
