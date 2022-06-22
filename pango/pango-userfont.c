@@ -160,8 +160,6 @@ pango_user_font_get_glyph_extents (PangoFont      *font,
       hb_font_get_h_extents (hb_font, &extents);
 
       logical_rect->x = 0;
-      logical_rect->y = - extents.ascender;
-      logical_rect->width = h_advance;
       logical_rect->height = extents.ascender - extents.descender;
 
       switch (font->gravity)
@@ -266,11 +264,21 @@ glyph_extents_func (hb_font_t *hb_font, void *font_data,
   hb_position_t h_advance, v_advance;
   gboolean is_color;
 
-  return face->glyph_info_func (face, size, glyph,
-                                extents,
-                                &h_advance, &v_advance,
-                                &is_color,
-                                face->user_data);
+  face->glyph_info_func (face, size, glyph,
+                         extents,
+                         &h_advance, &v_advance,
+                         &is_color,
+                         face->user_data);
+
+  if (PANGO_GRAVITY_IS_IMPROPER (font->gravity))
+    {
+      extents->x_bearing = - extents->x_bearing;
+      extents->y_bearing = - extents->y_bearing;
+      extents->width = - extents->width;
+      extents->height = - extents->height;
+    }
+
+  return TRUE;
 }
 
 static hb_bool_t
@@ -281,8 +289,17 @@ font_extents_func (hb_font_t *hb_font, void *font_data,
   PangoFont *font = font_data;
   PangoUserFace *face = PANGO_USER_FACE (font->face);
   int size = font->size * font->dpi / 72.;
+  gboolean ret;
 
-  return face->font_info_func (face, size, extents, face->user_data);
+  ret = face->font_info_func (face, size, extents, face->user_data);
+
+  if (PANGO_GRAVITY_IS_IMPROPER (font->gravity))
+    {
+      extents->ascender = - extents->ascender;
+      extents->descender = - extents->descender;
+    }
+
+  return ret;
 }
 
 static hb_font_t *
@@ -305,6 +322,7 @@ pango_user_font_create_hb_font (PangoFont *font)
   hb_font_funcs_set_glyph_h_advance_func (funcs, glyph_h_advance_func, NULL, NULL);
   hb_font_funcs_set_glyph_extents_func (funcs, glyph_extents_func, NULL, NULL);
   hb_font_funcs_set_font_h_extents_func (funcs, font_extents_func, NULL, NULL);
+  hb_font_funcs_set_font_v_extents_func (funcs, font_extents_func, NULL, NULL);
 
   hb_font_set_funcs (hb_font, funcs, font, NULL);
 

@@ -91,9 +91,9 @@ glyph_info_cb (PangoUserFace      *face,
   test_scaled_font_glyph_t *glyphs = user_data;
 
   extents->x_bearing = 0;
-  extents->y_bearing = - 0.75 * size;
+  extents->y_bearing = 0.75 * size;
   extents->width = glyphs[glyph].width / 4.0 * size;
-  extents->height = size;
+  extents->height = - size;
 
   *h_advance = *v_advance = glyphs[glyph].width / 4.0 * size;
 
@@ -108,8 +108,8 @@ font_info_cb (PangoUserFace     *face,
               hb_font_extents_t *extents,
               gpointer           user_data)
 {
-  extents->ascender = - 0.75 * size;
-  extents->descender = 0.25 * size;
+  extents->ascender = 0.75 * size;
+  extents->descender = - 0.25 * size;
   extents->line_gap = 0;
 
   return TRUE;
