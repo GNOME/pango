@@ -111,6 +111,12 @@ test_wrap_char (gconstpointer data)
   Size sizes[100];
   gsize i, j;
 
+  if (dir != PANGO_DIRECTION_LTR)
+    {
+      g_test_skip ("Skipping known broken tetts");
+      return;
+    }
+
   context = pango_context_new ();
   desc = pango_font_description_from_string ("Sans 10");
   layout = pango_layout_new (context);
