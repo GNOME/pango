@@ -109,16 +109,20 @@ pango_fontset_cached_get_font (PangoFontset *fontset,
       else if (PANGO_IS_GENERIC_FAMILY (item))
         {
           PangoGenericFamily *family = PANGO_GENERIC_FAMILY (item);
+          PangoFontDescription *copy;
           PangoFontFace *face;
 
           /* Here is where we implement delayed picking for generic families.
            * If a face does not cover the character and its family is generic,
            * choose a different face from the same family and create a font to use.
            */
-          face = pango_generic_family_find_face (family,
-                                                 self->description,
-                                                 self->language,
-                                                 wc);
+          copy = pango_font_description_copy_static (self->description);
+          pango_font_description_unset_fields (copy, PANGO_FONT_MASK_VARIATIONS |
+                                                     PANGO_FONT_MASK_GRAVITY |
+                                                     PANGO_FONT_MASK_VARIANT);
+          face = pango_generic_family_find_face (family, copy, self->language, wc);
+          pango_font_description_free (copy);
+
           if (face)
             {
               PangoFont *font;
