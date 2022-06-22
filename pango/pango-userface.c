@@ -120,6 +120,8 @@ default_shape_func (PangoUserFace       *face,
   gboolean is_color;
   hb_glyph_extents_t ext;
   hb_position_t dummy;
+  hb_font_t *hb_font;
+  hb_font_extents_t font_extents;
 
   n_chars = g_utf8_strlen (text, length);
 
@@ -127,11 +129,15 @@ default_shape_func (PangoUserFace       *face,
 
   last_cluster = -1;
 
+  hb_font = pango_font_get_hb_font (analysis->font);
+  hb_font_get_h_extents (hb_font, &font_extents);
+
   p = text;
   for (i = 0; i < n_chars; i++)
     {
       gunichar wc;
       PangoGlyph glyph;
+      PangoRectangle ink_rect;
       PangoRectangle logical_rect;
 
       wc = g_utf8_get_char (p);
@@ -145,16 +151,37 @@ default_shape_func (PangoUserFace       *face,
         glyph = PANGO_GET_UNKNOWN_GLYPH (wc);
 
       face->glyph_info_func (face, size, glyph, &ext, &dummy, &dummy, &is_color, face->user_data);
-      pango_font_get_glyph_extents (analysis->font, glyph, NULL, &logical_rect);
+      pango_font_get_glyph_extents (analysis->font, glyph, &ink_rect, &logical_rect);
 
       glyphs->glyphs[i].glyph = glyph;
 
       glyphs->glyphs[i].attr.is_cluster_start = cluster != last_cluster;
       glyphs->glyphs[i].attr.is_color = is_color;
 
-      glyphs->glyphs[i].geometry.x_offset = 0;
-      glyphs->glyphs[i].geometry.y_offset = 0;
-      glyphs->glyphs[i].geometry.width = logical_rect.width;
+      if (analysis->gravity == PANGO_GRAVITY_EAST)
+        {
+          glyphs->glyphs[i].geometry.x_offset = font_extents.ascender;
+          glyphs->glyphs[i].geometry.y_offset = - logical_rect.y - (logical_rect.height - ink_rect.height) / 2;
+          glyphs->glyphs[i].geometry.width = logical_rect.width;
+        }
+      else if (analysis->gravity == PANGO_GRAVITY_WEST)
+        {
+          glyphs->glyphs[i].geometry.x_offset = font_extents.descender;
+          glyphs->glyphs[i].geometry.y_offset = logical_rect.y + (logical_rect.height - ink_rect.height) / 2;
+          glyphs->glyphs[i].geometry.width = logical_rect.width;
+        }
+      else if (analysis->gravity == PANGO_GRAVITY_SOUTH)
+        {
+          glyphs->glyphs[i].geometry.x_offset = 0;
+          glyphs->glyphs[i].geometry.y_offset = 0;
+          glyphs->glyphs[i].geometry.width = logical_rect.width;
+        }
+      else if (analysis->gravity == PANGO_GRAVITY_NORTH)
+        {
+          glyphs->glyphs[i].geometry.x_offset = 0;
+          glyphs->glyphs[i].geometry.y_offset = 0;
+          glyphs->glyphs[i].geometry.width = - logical_rect.width;
+        }
 
       glyphs->log_clusters[i] = cluster;
       last_cluster = cluster;
