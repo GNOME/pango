@@ -681,9 +681,9 @@ pango_hb_font_get_glyph_extents (PangoFont      *font,
           m.yx = - face->transform->yx;
           m.xy = - face->transform->xy;
           m.yy = face->transform->yy;
-        }
 
-      pango_matrix_transform_rectangle (&m, &r);
+          pango_matrix_transform_rectangle (&m, &r);
+        }
 
       switch (font->gravity)
         {

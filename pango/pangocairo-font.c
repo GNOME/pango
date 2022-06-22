@@ -49,12 +49,6 @@
 
 #endif
 
-#define PANGO_CAIRO_FONT_PRIVATE(font)          \
-  ((PangoCairoFontPrivate *)                    \
-   (font == NULL ? NULL :                       \
-    G_STRUCT_MEMBER_P (font,                    \
-    PANGO_CAIRO_FONT_GET_IFACE(PANGO_CAIRO_FONT(font))->cf_priv_offset)))
-
 static PangoCairoFontPrivate * _pango_font_get_cairo_font_private (PangoFont *font);
 static cairo_scaled_font_t * _pango_font_get_scaled_font (PangoFont *font);
 static void _pango_cairo_font_private_initialize (PangoCairoFontPrivate      *cf_priv,
@@ -120,12 +114,12 @@ render_func (cairo_scaled_font_t  *scaled_font,
       return CAIRO_STATUS_USER_FONT_ERROR;
     }
 
-  extents->x_bearing = glyph_extents.x_bearing / (double) 1024;
-  extents->y_bearing = glyph_extents.y_bearing / (double) 1024;
-  extents->width = glyph_extents.width / (double) 1024;
-  extents->height = glyph_extents.height / (double) 1024;
-  extents->x_advance = h_advance / (double) 1024;
-  extents->y_advance = v_advance / (double) 1024;
+  extents->x_bearing = glyph_extents.x_bearing / 1024.;
+  extents->y_bearing = - glyph_extents.y_bearing / 1024.;
+  extents->width = glyph_extents.width / 1024.;
+  extents->height = - glyph_extents.height / 1024.;
+  extents->x_advance = h_advance / 1024.;
+  extents->y_advance = v_advance / 1024.;
 
   if (!face->render_func (face, font->size,
                           (hb_codepoint_t)glyph,
@@ -139,6 +133,31 @@ render_func (cairo_scaled_font_t  *scaled_font,
   return CAIRO_STATUS_SUCCESS;
 }
 
+static cairo_status_t
+init_func (cairo_scaled_font_t  *scaled_font,
+           cairo_t              *cr,
+           cairo_font_extents_t *extents)
+{
+  cairo_font_face_t *cairo_face;
+  PangoFont *font;
+  PangoUserFace *face;
+  hb_font_extents_t font_extents;
+
+  cairo_face = cairo_scaled_font_get_font_face (scaled_font);
+  font = cairo_font_face_get_user_data (cairo_face, &cairo_user_data);
+  face = (PangoUserFace *) pango_font_get_face (font);
+
+  face->font_info_func (face,
+                        pango_font_get_size (font),
+                        &font_extents,
+                        face->user_data);
+
+  extents->ascent = font_extents.ascender / (font_extents.ascender + font_extents.descender);
+  extents->descent = font_extents.descender / (font_extents.ascender + font_extents.descender);
+
+  return CAIRO_STATUS_SUCCESS;
+}
+
 static cairo_font_face_t *
 create_cairo_font_face_for_user_font (PangoFont *font)
 {
@@ -146,6 +165,7 @@ create_cairo_font_face_for_user_font (PangoFont *font)
 
   cairo_face = cairo_user_font_face_create ();
   cairo_font_face_set_user_data (cairo_face, &cairo_user_data, font, NULL);
+  cairo_user_font_face_set_init_func (cairo_face, init_func);
   cairo_user_font_face_set_render_color_glyph_func (cairo_face, render_func);
 
   return cairo_face;
@@ -602,7 +622,7 @@ _pango_font_get_cairo_font_private (PangoFont *font)
 {
   PangoCairoFontPrivate *cf_priv;
 
-  cf_priv = g_object_get_data (G_OBJECT (font), "pango-hb-font-cairo_private");
+  cf_priv = g_object_get_data (G_OBJECT (font), "pango-font-cairo_private");
   if (!cf_priv)
     {
       cairo_font_options_t *font_options;
@@ -654,7 +674,7 @@ _pango_font_get_cairo_font_private (PangoFont *font)
 
       cairo_font_options_destroy (font_options);
 
-      g_object_set_data_full (G_OBJECT (font), "pango-hb-font-cairo_private",
+      g_object_set_data_full (G_OBJECT (font), "pango-font-cairo_private",
                               cf_priv, free_cairo_font_private);
     }
 
@@ -687,9 +707,10 @@ _pango_cairo_font_private_initialize (PangoCairoFontPrivate      *cf_priv,
   /* first apply gravity rotation, then font_matrix, such that
    * vertical italic text comes out "correct".  we don't do anything
    * like baseline adjustment etc though.  should be specially
-   * handled when we support italic correction. */
-  cairo_matrix_init_rotate(&gravity_matrix,
-                           pango_gravity_to_rotation (cf_priv->gravity));
+   * handled when we support italic correction.
+   */
+  cairo_matrix_init_rotate (&gravity_matrix,
+                            pango_gravity_to_rotation (cf_priv->gravity));
   cairo_matrix_multiply (&cf_priv->data->font_matrix,
                          font_matrix,
                          &gravity_matrix);
