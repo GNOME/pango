@@ -15,7 +15,7 @@ export G_SLICE=always-malloc
 meson test -C ${builddir} \
         --timeout-multiplier "${MESON_TEST_TIMEOUT_MULTIPLIER}" \
         --print-errorlogs \
-        --suite=pango 
+        --suite=pango
 
 # Store the exit code for the CI run, but always
 # generate the reports
@@ -24,7 +24,7 @@ exit_code=$?
 cd ${builddir}
 
 ./utils/pango-list --verbose > fontlist.txt
-./tests/test-font -p /pango/font/metrics --verbose
+G_TEST_SRCDIR=${srcdir}/tests ./tests/test-font -p /pango/font/metrics --verbose
 ./utils/pango-view --no-display --output hello.png ${srcdir}/utils/HELLO.txt
 
 $srcdir/.gitlab-ci/meson-junit-report.py \
