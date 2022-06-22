@@ -123,8 +123,8 @@ test_attributes_register (void)
   PangoAttrType type;
   PangoAttribute *attr;
   PangoAttribute *attr2;
-  gboolean ret;
   PangoAttrList *list;
+  gboolean ret;
   char *str;
 
   type = pango_attr_type_register ("my-attribute",
@@ -140,7 +140,6 @@ test_attributes_register (void)
 
   attr = pango_attribute_new (type, (gpointer)0x42);
 
-  g_assert_true (ret);
   g_assert_true (pango_attribute_get_pointer (attr) == (gpointer)0x42);
 
   attr2 = pango_attribute_new (type, (gpointer)0x43);
