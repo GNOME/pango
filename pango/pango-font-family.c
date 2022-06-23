@@ -242,14 +242,14 @@ pango_font_family_get_name (PangoFontFamily *family)
 /**
  * pango_font_family_get_face:
  * @family: a `PangoFontFamily`
- * @name: (nullable): the name of a face. If the name is %NULL,
+ * @name: (nullable): the name of a face. If the name is `NULL`,
  *   the family's default face (fontconfig calls it "Regular")
  *   will be returned.
  *
- * Gets the `PangoFontFace` of @family with the given name.
+ * Gets the `PangoFontFace` of the family with the given name.
  *
  * Returns: (transfer none) (nullable): the `PangoFontFace`,
- *   or %NULL if no face with the given name exists.
+ *   or `NULL` if no face with the given name exists.
  */
 PangoFontFace *
 pango_font_family_get_face (PangoFontFamily *family,

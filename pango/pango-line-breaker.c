@@ -28,7 +28,7 @@
  * A `PangoLineBreaker` breaks text into lines.
  *
  * To use a `PangoLineBreaker`, you must call [method@Pango.LineBreaker.add_text]
- * to provide text that you want to break into lines, plus possibly attribute
+ * to provide text that you want to break into lines, plus possibly attributes
  * to influence the formatting.
  *
  * Then you can call [method@Pango.LineBreaker.next_line] repeatedly to obtain
@@ -2288,7 +2288,7 @@ pango_line_breaker_new (PangoContext *context)
  * pango_line_breaker_get_context:
  * @self: a `PangoLineBreaker`
  *
- * Retrieves the context used for this `PangoLineBreaker`.
+ * Retrieves the context used for the `PangoLineBreaker`.
  *
  * Returns: (transfer none): the `PangoContext` for @self
  */
@@ -2344,7 +2344,7 @@ pango_line_breaker_set_tabs (PangoLineBreaker *self,
  * pango_line_breaker_get_tabs:
  * @self: a `PangoLineBreaker`
  *
- * Gets the current `PangoTabArray` used by this `PangoLineBreaker`.
+ * Gets the current `PangoTabArray` used by the `PangoLineBreaker`.
  *
  * If no `PangoTabArray` has been set, then the default tabs are
  * in use and %NULL is returned. Default tabs are every 8 spaces.
@@ -2367,7 +2367,7 @@ pango_line_breaker_get_tabs (PangoLineBreaker *self)
  * @self: a `PangoLineBreaker`
  * @direction: the direction
  *
- * Sets the base direction for lines produced by this `PangoLineBreaker`.
+ * Sets the base direction for lines produced by the `PangoLineBreaker`.
  *
  * If @direction is `PANGO_DIRECTION_NEUTRAL`, the direction is determined
  * from the content. This is the default behavior.
@@ -2390,7 +2390,7 @@ pango_line_breaker_set_base_dir (PangoLineBreaker *self,
  * pango_line_breaker_get_base_dir:
  * @self: a `PangoLineBreaker`
  *
- * Gets the base direction for lines produced by this `PangoLineBreaker`.
+ * Gets the base direction for lines produced by the `PangoLineBreaker`.
  *
  * See [method@Pango.LineBreaker.set_base_dir].
  */
@@ -2565,7 +2565,7 @@ pango_line_breaker_next_line (PangoLineBreaker   *self,
  * @self: a `PangoLineBreaker`
  * @line: (transfer none): the most recent line produced by @self
  *
- * Re-adds the content of @line to the unprocessed
+ * Re-adds the content of a line to the unprocessed
  * input of the `PangoLineBreaker`.
  *
  * This can be used to try this line again with

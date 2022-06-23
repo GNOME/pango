@@ -72,7 +72,7 @@ pango_toml = configure_file(input: 'pango.toml.in',
 
 custom_target('pango-doc',
   input: pango_gir[0],
-  output: 'Pango',
+  output: 'Pango2',
   command: [
     gidocgen,
     'generate',

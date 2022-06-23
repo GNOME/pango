@@ -110,6 +110,12 @@ Other API changes
 
 - Most structs have been made private
 
+- Support for trimming the leading of the first and last line in
+  a layout
+
+- Face-ids have been introduced to guarantee lossless
+  font - description - font roundtrips
+
 - Many smaller API cleanups and reductions
 
 

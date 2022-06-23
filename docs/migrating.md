@@ -3,16 +3,16 @@ Title: Migrating from Pango 1.x to Pango 2
 ---
 
 Pango 2 is a major new version of Pango that breaks both API and ABI
-compared to Pango 1.x. Thankfully, most of the changes are not hard
-to adapt to.
+compared to Pango 1.x. Therefore, some porting is required when switching
+an application from Pango 1 to Pango 2. Thankfully, most of the changes
+are not hard to adapt to.
 
 ## Preparation in Pango 1.x
 
-The steps outlined in the following sections assume that your
-application is working with a recent version of Pango 1.x, such
-as Pango 1.50. If you are using an older version of Pango, you
-should first get your application to build and work with
-Pango 1.50.
+The steps outlined in the following sections assume that your application
+is working with a recent version of Pango 1.x, such as Pango 1.50. If you
+are using an older version of Pango, you should first get your application
+to build and work with Pango 1.50.
 
 ### Do not use deprecated symbols
 
@@ -51,11 +51,11 @@ the `pangocairo.h` header, and use the APIs that are declared in it.
 There is still a `pangocairo2.pc` file, if you want to be explicit in your
 build configuration about requiring cairo support. If you want to handle
 the possible absence of cairo support at runtime, you can check the
-`PANGO_CAIRO_RENDERING` macro before including `pangocairo.h`.
+[const@Pango.RENDERING_CAIRO] macro before including `pangocairo.h`.
 
 ### PangoFontMap changes
 
-The `PangoFontMap` class has seen some significant changes. It is now possible
+The [class@Pango.FontMap] class has seen some significant changes. It is now possible
 to instantiate a `PangoFontMap`, and populate it manually with `PangoFontFamily`
 and `PangoFontFace` objects. If you simply want to obtain the default fontmap
 that is populated with the native font enumeration APIs, use
@@ -70,7 +70,7 @@ APIs to obtain a suitable fontmap, or set the resolution.
 
 ### Font-related API changes
 
-Some APIs have moved between [class@Pango.Font], [class@Pango.FontFace]
+Some APIs have been moved between [class@Pango.Font], [class@Pango.FontFace]
 and [class@Pango.FontFamily] or renamed.
 
 | Old API | New API |
@@ -101,7 +101,7 @@ and have getters. APIs for creating items have been dropped.
 ### PangoLayout changes
 
 Most APIs that provide information about the formatted output have been
-moved from `PangoLayout` to the new objects [class@Pango.Lines] and
+moved from [class@Pango.Layout] to the new objects [class@Pango.Lines] and
 [struct@Pango.LineIter]. To obtain these from a `PangoLayout`, use
 [method@Pango.Layout.get_lines] and [method@Pango.Layout.get_iter].
 
@@ -134,18 +134,20 @@ The `PangoGlyphItem/PangoLayoutRun` struct has been replaced by a new
 
 ### PangoAttribute changes
 
-`PangoAttribute` is no longer defined with different structs, but is
-an opaque type with getters for the different types of value. To set
-the range of an attribute use [method@Pango.Attribute.set_range]. To
-define your own attribute types, use [func@Pango.AttrType.register].
+[struct@Pango.Attribute] is no longer defined with different structs,
+but is an opaque type with getters for the different types of value.
+To set the range of an attribute use [method@Pango.Attribute.set_range].
+To define your own attribute types, use [func@Pango.AttrType.register].
 
 Some of the existing attribute types have seen changes as well. All the
-color-related attributes now take a [struct@PangoColor] argument in their
-constructor. The line-related attributes have been reorganized. There is now
-a [enum@Pango.LineStyle] enumeration that can be applied to underlines,
-overlines and strikethroughs, and a separate [enum@Pango.UnderlinePosition]
-enumeration. Alpha attributes have been removed, since [struct@Pango.Color]
+color-related attributes now take a [struct@Pango.Color] argument in their
+constructor. Alpha attributes have been removed, since [struct@Pango.Color]
 now contains an alpha field.
+
+The line-related attributes have been reorganized. There is now a
+[enum@Pango.LineStyle] enumeration that can be applied to underlines,
+overlines and strikethroughs, and a separate [enum@Pango.UnderlinePosition]
+enumeration.
 
 ### Markup changes
 

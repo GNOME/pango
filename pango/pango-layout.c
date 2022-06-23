@@ -453,7 +453,7 @@ pango_layout_class_init (PangoLayoutClass *class)
   /**
    * PangoLayout:wrap: (attributes org.gtk.Property.get=pango_layout_get_wrap org.gtk.Property.set=pango_layout_set_wrap)
    *
-   * The wrap mode of this `PangoLayout.
+   * The wrap mode of this `PangoLayout`.
    *
    * The wrap mode influences how Pango chooses line breaks
    * when text needs to be wrapped.
@@ -468,7 +468,7 @@ pango_layout_class_init (PangoLayoutClass *class)
   /**
    * PangoLayout:indent: (attributes org.gtk.Property.get=pango_layout_get_indent org.gtk.Property.set=pango_layout_set_indent)
    *
-   * The indent of this `PangoLayout.
+   * The indent of this `PangoLayout`.
    *
    * The indent is specified in Pango units.
    *
@@ -485,7 +485,7 @@ pango_layout_class_init (PangoLayoutClass *class)
   /**
    * PangoLayout:alignment: (attributes org.gtk.Property.get=pango_layout_get_alignment org.gtk.Property.set=pango_layout_set_alignment)
    *
-   * The alignment mode of this `PangoLayout.
+   * The alignment mode of this `PangoLayout`.
    *
    * The default value is `PANGO_ALIGN_NATURAL`.
    */
@@ -497,7 +497,7 @@ pango_layout_class_init (PangoLayoutClass *class)
   /**
    * PangoLayout:ellipsize: (attributes org.gtk.Property.get=pango_layout_get_ellipsize org.gtk.Property.set=pango_layout_set_ellipsize)
    *
-   * The ellipsization mode of this `PangoLayout.
+   * The ellipsization mode of this `PangoLayout`.
    *
    * The default value is `PANGO_ELLIPSIZE_NONE`.
    */
@@ -888,7 +888,7 @@ pango_layout_get_serial (PangoLayout *layout)
  * pango_layout_context_changed:
  * @layout: a `PangoLayout`
  *
- * Forces recomputation of any state in the `PangoLayout` that
+ * Forces recomputation of any state in the layout that
  * might depend on the layout's context.
  *
  * This function should be called if you make changes to the
@@ -1507,7 +1507,7 @@ pango_layout_set_ellipsize (PangoLayout        *layout,
  * pango_layout_get_ellipsize:
  * @layout: a `PangoLayout`
  *
- * Gets the type of ellipsization being performed for @layout.
+ * Gets the type of ellipsization being performed for the layout.
  *
  * See [method@Pango.Layout.set_ellipsize].
  *
@@ -1657,7 +1657,7 @@ pango_layout_get_character_count (PangoLayout *layout)
  * pango_layout_get_lines:
  * @layout: a `PangoLayout`
  *
- * Gets the lines of the @layout.
+ * Gets the lines of the layout.
  *
  * The returned object will become invalid when any
  * property of @layout is changed. Take a reference
@@ -1681,8 +1681,7 @@ pango_layout_get_lines (PangoLayout *layout)
  * @layout: a `PangoLayout`
  * @n_attrs: (out): return location for the length of the array
  *
- * Gets the `PangoLogAttr` array for the content
- * of @layout.
+ * Gets the `PangoLogAttr` array for the content of layout.
  *
  * The returned array becomes invalid when
  * any properties of @layout change. Make a

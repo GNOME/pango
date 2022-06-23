@@ -221,9 +221,9 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoGlyphString, pango_glyph_string_free)
  * @PANGO_SHAPE_ROUND_POSITIONS: Round glyph positions and widths to whole device units
  *   This option should be set if the target renderer can't do subpixel positioning of glyphs
  *
- * Flags influencing the shaping process.
+ * `PangoShapeFlags` influence the shaping process.
  *
- * `PangoShapeFlags` can be passed to [func@Pango.shape].
+ * These flags can be passed to [func@Pango.shape].
  */
 typedef enum {
   PANGO_SHAPE_NONE            = 0,

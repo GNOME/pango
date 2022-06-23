@@ -310,7 +310,6 @@ typedef enum
   PANGO_LEADING_TRIM_NONE  = 0,
   PANGO_LEADING_TRIM_START = 1 << 0,
   PANGO_LEADING_TRIM_END   = 1 << 1,
-
 } PangoLeadingTrim;
 
 /**

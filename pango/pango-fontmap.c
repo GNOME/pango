@@ -799,10 +799,11 @@ pango_font_map_changed (PangoFontMap *self)
  * @context: the `PangoContext` the font will be used with
  * @desc: a `PangoFontDescription` describing the font to load
  *
- * Load the font in the fontmap that is the closest match for @desc.
+ * Load the font in the fontmap that is the closest match for
+ * a font description.
  *
- * Returns: (transfer full) (nullable): the `PangoFont` that was found,
- *   or %NULL if no font matched
+ * Returns: (transfer full) (nullable): the `PangoFont` that
+ *   was found
  */
 PangoFont *
 pango_font_map_load_font (PangoFontMap               *self,
@@ -825,10 +826,10 @@ pango_font_map_load_font (PangoFontMap               *self,
  *    or `NULL` to use the language of @context
  *
  * Load a set of fonts in the fontmap that can be used to render
- * a font matching @desc.
+ * a font matching a font description.
  *
  * Returns: (transfer full) (nullable): the `PangoFontset` containing
- *   the fonts that were found, or %NULL if no font matched
+ *   the fonts that were found
  */
 PangoFontset *
 pango_font_map_load_fontset (PangoFontMap               *self,
@@ -847,7 +848,7 @@ pango_font_map_load_fontset (PangoFontMap               *self,
  * pango_font_map_get_serial:
  * @self: a `PangoFontMap`
  *
- * Returns the current serial number of @self.
+ * Returns the current serial number of the fontmap.
  *
  * The serial number is initialized to an small number larger than zero
  * when a new fontmap is created and is increased whenever the fontmap
@@ -909,7 +910,7 @@ pango_font_map_new (void)
  * @self: a `PangoFontMap`
  * @face: (transfer full): a `PangoFontFace`
  *
- * Adds @face to the `PangoFontMap`.
+ * Adds a face to the fontmap.
  *
  * This is most useful for creating transformed faces or aliases.
  * See [method@Pango.HbFace.new_synthetic] and [method@Pango.HbFace.new_instance].
@@ -953,7 +954,7 @@ pango_font_map_add_face (PangoFontMap  *self,
  * @self: a `PangoFontMap`
  * @face: a `PangoFontFace` that belongs to @map
  *
- * Removes @face from the `PangoFontMap`.
+ * Removes @face from the fontmap.
  *
  * @face must have been added with [method@Pango.FontMap.add_face].
  */
@@ -1009,7 +1010,7 @@ pango_font_map_add_file (PangoFontMap *self,
  * @self: a `PangoFontMap`
  * @family: (transfer full): a `PangoFontFamily`
  *
- * Adds @family to @self.
+ * Adds a family to the `PangoFontMap`.
  *
  * The fontmap must not contain a family with the
  * same name as @family yet.
@@ -1061,7 +1062,7 @@ pango_font_map_add_family (PangoFontMap    *self,
  * @self: a `PangoFontMap`
  * @family: a `PangoFontFamily` that belongs to @self
  *
- * Removes @family from a `PangoFontMap`
+ * Removes a family from the fontmap.
  */
 void
 pango_font_map_remove_family (PangoFontMap    *self,
@@ -1121,7 +1122,7 @@ pango_font_map_set_fallback (PangoFontMap *self,
  * pango_font_map_get_fallback:
  * @self: a `PangoFontMap`
  *
- * Returns the fallback fontmap of @self
+ * Returns the fallback fontmap of the fontmap.
  *
  * See [method@Pango.FontMap.set_fallback].
  *

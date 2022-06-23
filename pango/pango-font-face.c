@@ -223,7 +223,7 @@ pango_font_face_class_init (PangoFontFaceClass *class)
   /**
    * PangoFontFace:family: (attributes org.gtk.Property.get=pango_font_face_get_family)
    *
-   * The `PangoFontFamily` that @face belongs to.
+   * The `PangoFontFamily` that the face belongs to.
    */
   properties[PROP_FAMILY] =
       g_param_spec_object ("family", NULL, NULL,
@@ -412,7 +412,7 @@ pango_font_face_get_name (PangoFontFace *face)
  * pango_font_face_get_family:
  * @face: a `PangoFontFace`
  *
- * Gets the `PangoFontFamily` that @face belongs to.
+ * Gets the `PangoFontFamily` that the face belongs to.
  *
  * Returns: (transfer none): the `PangoFontFamily`
  */
@@ -427,6 +427,8 @@ pango_font_face_get_family (PangoFontFace *face)
 /**
  * pango_font_face_is_monospace:
  * @face: a `PangoFontFace`
+ *
+ * Returns whether this font face is monospace.
  *
  * A monospace font is a font designed for text display where the the
  * characters form a regular grid.
@@ -457,6 +459,8 @@ pango_font_face_is_monospace (PangoFontFace *face)
  * pango_font_face_is_variable:
  * @face: a `PangoFontFace`
  *
+ * Returns whether this font face is variable.
+ *
  * A variable font is a font which has axes that can be modified
  * to produce variations.
  *
@@ -478,7 +482,8 @@ pango_font_face_is_variable (PangoFontFace *face)
  * @face: a `PangoFontFace`
  * @language: a `PangoLanguage`
  *
- * Returns whether @face has all the glyphs necessary to write @language.
+ * Returns whether the face has all the glyphs necessary to
+ * support this language.
  *
  * Returns: `TRUE` if @face supports @language
  */
@@ -495,11 +500,11 @@ pango_font_face_supports_language (PangoFontFace *face,
  * pango_font_face_get_languages:
  * @face: a `PangoFontFace`
  *
- * Returns the languages that are supported by @face.
+ * Returns the languages that are supported by the face.
  *
  * If the font backend does not provide this information,
- * %NULL is returned. For the fontconfig backend, this
- * corresponds to the FC_LANG member of the FcPattern.
+ * `NULL` is returned. For the fontconfig backend, this
+ * corresponds to the `FC_LANG` member of the `FcPattern`.
  *
  * The returned array is only valid as long as the face
  * and its fontmap are valid.

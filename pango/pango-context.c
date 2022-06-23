@@ -234,7 +234,7 @@ pango_context_class_init (PangoContextClass *klass)
   /**
    * PangoContext:font-description: (attributes org.gtk.Property.get=pango_context_get_font_description org.gtk.Property.set=pango_context_set_font_description)
    *
-   * The default font descriptoin for the context.
+   * The default font description for the context.
    */
   properties[PROP_FONT_DESCRIPTION] =
     g_param_spec_boxed ("font-description", NULL, NULL, PANGO_TYPE_FONT_DESCRIPTION,
@@ -303,7 +303,7 @@ pango_context_class_init (PangoContextClass *klass)
    *
    * The transformation is needed in cases where the font rendering applies
    * hinting that depends on knowing the position of text with respect to
-   * the pixel grid. If your font rendering does not
+   * the pixel grid.
    */
   properties[PROP_MATRIX] =
     g_param_spec_boxed ("matrix", NULL, NULL, PANGO_TYPE_MATRIX,
