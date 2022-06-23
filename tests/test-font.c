@@ -290,11 +290,7 @@ test_roundtrip_plain (void)
   PangoFontDescription *desc, *desc2, *desc3;
   PangoFont *font, *font2;
 
-#ifdef HAVE_CARBON
-  desc = pango_font_description_from_string ("Helvetica 11");
-#else
   desc = pango_font_description_from_string ("Cantarell 11");
-#endif
 
   context = pango_context_new ();
 

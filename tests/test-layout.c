@@ -27,7 +27,7 @@
 #include <unistd.h>
 #endif
 
-#include <pango/pangocairo.h>
+#include <pango/pango.h>
 #include "test-common.h"
 
 #include <hb-ot.h>

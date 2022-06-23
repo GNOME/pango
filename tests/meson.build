@@ -1,13 +1,3 @@
-test_cflags = [
-  '-DSRCDIR=@0@'.format(meson.current_source_dir()),
-]
-
-if host_system == 'windows'
-  test_cflags += '-DHAVE_WIN32'
-elif host_system == 'darwin'
-  test_cflags += '-DHAVE_CARBON'
-endif
-
 test_env = environment()
 test_env.set('srcdir', meson.current_source_dir())
 test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
@@ -22,28 +12,28 @@ tests = [
   [ 'testlanguage' ],
   [ 'testmatrix' ],
   [ 'testtabs' ],
+  [ 'test-bidi' ],
+  [ 'testcontext' ],
+  [ 'testiter' ],
+  [ 'test-ellipsize' ],
+  [ 'markup-parse' ],
+  [ 'test-itemize' ],
+  [ 'test-font' ],
+  [ 'testattributes' ],
+  [ 'cxx-test', [ 'cxx-test.cpp' ] ],
+  [ 'test-harfbuzz' ],
+  [ 'test-break', [ 'test-break.c', 'test-common.c', 'validate-log-attrs.c' ] ],
+  [ 'testserialize' ],
+  [ 'testhbfont' ],
+  [ 'test-layout' ],
+  [ 'test-fontsets' ],
+  [ 'testrandom' ],
 ]
 
 if cairo_dep.found()
   tests += [
-    [ 'test-bidi', [ 'test-bidi.c' ] ],
-    [ 'testcontext', [ 'testcontext.c' ] ],
-    [ 'testiter', [ 'testiter.c' ] ],
-    [ 'test-ellipsize', [ 'test-ellipsize.c' ] ],
-    [ 'markup-parse', [ 'markup-parse.c' , 'test-common.c' ] ],
-    [ 'test-itemize', [ 'test-itemize.c', 'test-common.c' ] ],
-    [ 'test-font', [ 'test-font.c', 'test-common.c' ] ],
-    [ 'testattributes', [ 'testattributes.c', 'test-common.c' ] ],
-    [ 'cxx-test', [ 'cxx-test.cpp' ] ],
-    [ 'test-harfbuzz', [ 'test-harfbuzz.c' ] ],
-    [ 'test-break', [ 'test-break.c', 'test-common.c', 'validate-log-attrs.c' ] ],
-    [ 'testmisc', [ 'testmisc.c' ] ],
-    [ 'testserialize', [ 'testserialize.c', 'test-common.c' ] ],
-    [ 'testhbfont', [ 'testhbfont.c' ] ],
-    [ 'test-layout', [ 'test-layout.c', 'test-common.c' ] ],
-    [ 'test-fontsets', [ 'test-fontsets.c', 'test-common.c' ] ],
-    [ 'testrandom', [ 'testrandom.c' ] ],
-    [ 'test-pangocairo-threads', [ 'test-pangocairo-threads.c', 'test-common.c' ] ],
+    [ 'testmisc' ],
+    [ 'test-pangocairo-threads' ],
   ]
 endif
 
@@ -242,7 +232,7 @@ custom_target('all-unicode',
 
 foreach t: tests
   name = t[0]
-  src = t.get(1, [ '@0@.c'.format(name) ])
+  src = t.get(1, [ '@0@.c'.format(name), 'test-common.c' ])
   deps = t.get(2, [ libpango_dep ])
 
   custom_target(name + '.test',
@@ -259,8 +249,8 @@ foreach t: tests
   bin = executable(name, src,
                    dependencies: deps + [ libpango_dep ],
                    include_directories: root_inc,
-                   c_args: common_cflags + pango_debug_cflags + test_cflags,
-                   cpp_args: common_cppflags + pango_debug_cflags + test_cflags,
+                   c_args: common_cflags + pango_debug_cflags,
+                   cpp_args: common_cppflags + pango_debug_cflags,
                    install: get_option('install-tests'),
                    install_dir: installed_test_bindir)
 
