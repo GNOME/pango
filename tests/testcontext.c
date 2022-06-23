@@ -21,7 +21,6 @@
 
 #include <glib.h>
 #include <pango/pango.h>
-#include <pango/pangocairo.h>
 
 static void
 test_set_language (void)

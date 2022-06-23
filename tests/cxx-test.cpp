@@ -4,7 +4,7 @@
 
 #include <pango/pango.h>
 
-#ifdef HAVE_CAIRO
+#if PANGO_RENDERING_CAIRO
 #include <pango/pangocairo.h>
 #endif
 
