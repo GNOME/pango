@@ -20,6 +20,7 @@
  */
 
 #include <pango/pango.h>
+#include <gio/gio.h>
 #include "test-common.h"
 
 /* Some basic checks that the hb_font_t returned

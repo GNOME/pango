@@ -23,6 +23,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <gio/gio.h>
+
 #include "pango-context.h"
 #include "pango-context-private.h"
 #include "pango-impl-utils.h"
