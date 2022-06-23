@@ -20,6 +20,8 @@
 
 #include "config.h"
 
+#include <gio/gio.h>
+
 #include "pango-font-family-private.h"
 #include "pango-font-face.h"
 #include "pango-font.h"

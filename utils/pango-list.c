@@ -25,6 +25,7 @@
 #include <pango/pango-hbface-private.h>
 #include <hb-ot.h>
 #include <glib/gstdio.h>
+#include <gio/gio.h>
 #include <stdlib.h>
 #include <locale.h>
 
