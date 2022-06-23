@@ -26,6 +26,19 @@
 #include "pango-attributes-private.h"
 #include "pango-impl-utils.h"
 
+/**
+ * PangoAttribute:
+ *
+ * A `PangoAttribute` structure associates a named attribute with
+ * a certain range of a text.
+ *
+ * Attributes can have basic types, such as int, float, boolean
+ * `PangoColor`, `PangoFontDescription or `PangoLanguage`. It is
+ * also possible to define new, custom attributes.
+ *
+ * By default, an attribute will have an all-inclusive range of
+ * `[0,G_MAXUINT]`.
+ */
 
 /* {{{ Generic attribute code */
 

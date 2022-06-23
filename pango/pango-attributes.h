@@ -69,10 +69,11 @@ G_BEGIN_DECLS
  * @PANGO_ATTR_PARAGRAPH: mark the range of the attribute as a single paragraph
  * @PANGO_ATTR_BASELINE_SHIFT: baseline displacement
  * @PANGO_ATTR_FONT_SCALE: font-relative size change
- * @PANGO_ATTR_LINE_SPACING: extra space to add to the leading from the
- *   font metrics (if not overridden by line height attribute)
+ * @PANGO_ATTR_LINE_SPACING: space to add to the leading from the
+ *   font metrics (if not overridden by a line height attribute)
+ * @PANGO_ATTR_SHAPE: override glyph shapes (requires renderer support)
  *
- * The `PangoAttrType` enumeration contains predefined types for attributes.
+ * `PangoAttrType` contains predefined attribute types.
  *
  * Along with the predefined values, it is possible to allocate additional
  * values for custom attributes using [func@AttrType.register]. The predefined
@@ -148,15 +149,14 @@ PangoAttribute *        pango_attr_font_desc_new                (const PangoFont
 
 /**
  * PangoLineStyle:
- * @PANGO_LINE_STYLE_NONE: no line should be drawn
- * @PANGO_LINE_STYLE_SOLID: a single line should be drawn
- * @PANGO_LINE_STYLE_DOUBLE: a double line should be drawn
- * @PANGO_LINE_STYLE_DASHED: an dashed line should be drawn
- * @PANGO_LINE_STYLE_DOTTED: an dotted line should be drawn
- * @PANGO_LINE_STYLE_WAVY: an wavy line should be drawn
+ * @PANGO_LINE_STYLE_NONE: No visible line
+ * @PANGO_LINE_STYLE_SOLID: A single line
+ * @PANGO_LINE_STYLE_DOUBLE: A double line
+ * @PANGO_LINE_STYLE_DASHED: A dashed line
+ * @PANGO_LINE_STYLE_DOTTED: A dotted line
+ * @PANGO_LINE_STYLE_WAVY: A wavy line
  *
- * The `PangoLineStyle` enumeration is used to specify how
- * lines should be drawn.
+ * `PangoLineStyle specifies how lines should be drawn.
  */
 typedef enum {
   PANGO_LINE_STYLE_NONE,
@@ -173,6 +173,13 @@ PangoAttribute *        pango_attr_underline_new                (PangoLineStyle 
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_underline_color_new          (PangoColor                 *color);
 
+/**
+ * PangoUnderlinePosition:
+ * @PANGO_UNDERLINE_POSITION_NORMAL: As specified by font metrics
+ * @PANGO_UNDERLINE_POSITION_UNDER: Below the ink extents of the run
+ *
+ * `PangoUnderlinePosition` specifies where underlines should be drawn.
+ */
 typedef enum {
   PANGO_UNDERLINE_POSITION_NORMAL,
   PANGO_UNDERLINE_POSITION_UNDER
@@ -196,7 +203,7 @@ PangoAttribute *        pango_attr_rise_new                     (int            
  * @PANGO_BASELINE_SHIFT_SUBSCRIPT: Shift the baseline to the subscript position,
  *   relative to the previous run
  *
- * An enumeration that affects baseline shifts between runs.
+ * `PangoBaselineShift` influences how baselines are changed between runs.
  */
 typedef enum {
   PANGO_BASELINE_SHIFT_NONE,
@@ -214,8 +221,7 @@ PangoAttribute *        pango_attr_baseline_shift_new           (int            
  * @PANGO_FONT_SCALE_SUBSCRIPT: Change the font to a size suitable for subscripts
  * @PANGO_FONT_SCALE_SMALL_CAPS: Change the font to a size suitable for Small Caps
  *
- * An enumeration that affects font sizes for superscript
- * and subscript positioning and for (emulated) Small Caps.
+ * `PangoFontScale` influences the font size of a run.
  */
 typedef enum {
   PANGO_FONT_SCALE_NONE,
@@ -262,7 +268,7 @@ PangoAttribute *        pango_attr_overline_color_new           (PangoColor     
  * @PANGO_SHOW_IGNORABLES: Render default-ignorable Unicode
  *   characters visibly
  *
- * These flags affect how Pango treats characters that are normally
+ * `PangoShowFlags` affect how Pango treats characters that are normally
  * not visible in the output.
  */
 typedef enum {
@@ -281,7 +287,7 @@ PangoAttribute *        pango_attr_line_height_new_absolute     (int            
 PANGO_AVAILABLE_IN_ALL
 PangoAttribute *        pango_attr_line_spacing_new             (int                          spacing);
 
-/*
+/**
  * PangoTextTransform:
  * @PANGO_TEXT_TRANSFORM_NONE: Leave text unchanged
  * @PANGO_TEXT_TRANSFORM_LOWERCASE: Display letters and numbers as lowercase
@@ -289,7 +295,8 @@ PangoAttribute *        pango_attr_line_spacing_new             (int            
  * @PANGO_TEXT_TRANSFORM_CAPITALIZE: Display the first character of a word
  *   in titlecase
  *
- * An enumeration that affects how Pango treats characters during shaping.
+ * `PangoTextTransform` determines if Pango changes the case of characters
+ * during shaping.
   */
 typedef enum {
   PANGO_TEXT_TRANSFORM_NONE,

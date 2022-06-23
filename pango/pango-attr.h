@@ -30,20 +30,20 @@ typedef struct _PangoAttribute PangoAttribute;
 
 /**
  * PangoAttrValueType:
- * @PANGO_ATTR_VALUE_STRING: a string
- * @PANGO_ATTR_VALUE_INT: an integer
- * @PANGO_ATTR_VALUE_BOOLEAN: a boolean
- * @PANGO_ATTR_VALUE_FLOAT: a floating point number
- * @PANGO_ATTR_VALUE_COLOR: a `PangoColor`
- * @PANGO_ATTR_VALUE_LANGUAGE: a `PangoLanguage`
- * @PANGO_ATTR_VALUE_FONT_DESC: a `PangoFontDescription`
- * @PANGO_ATTR_VALUE_POINTER: a generic pointer
+ * @PANGO_ATTR_VALUE_STRING: A string
+ * @PANGO_ATTR_VALUE_INT: An integer
+ * @PANGO_ATTR_VALUE_BOOLEAN: A boolean
+ * @PANGO_ATTR_VALUE_FLOAT: A floating point number
+ * @PANGO_ATTR_VALUE_COLOR: A `PangoColor`
+ * @PANGO_ATTR_VALUE_LANGUAGE: A `PangoLanguage`
+ * @PANGO_ATTR_VALUE_FONT_DESC: A `PangoFontDescription`
+ * @PANGO_ATTR_VALUE_POINTER: A generic pointer
  *
- * The `PangoAttrValueType` enumeration describes the various types
- * of values that a `PangoAttribute` can contain.
+ * `PangoAttrValueType` enumerates the types of values
+ * that a `PangoAttribute` can contain.
  *
- * The `PangoAttrValueType` of a `PangoAttribute` is part of its type,
- * and can be obtained with `PANGO_ATTR_VALUE_TYPE()`.
+ * The `PangoAttrValueType` of a `PangoAttribute` is part
+ * of its type, and can be obtained with `PANGO_ATTR_VALUE_TYPE()`.
  */
 typedef enum
 {
@@ -59,14 +59,14 @@ typedef enum
 
 /**
  * PangoAttrAffects:
- * @PANGO_ATTR_AFFECTS_NONE: the attribute does not affect rendering
- * @PANGO_ATTR_AFFECTS_ITEMIZATION: the attribute affecs itemization
- * @PANGO_ATTR_AFFECTS_BREAKING: the attribute affects `PangoLogAttr` determination
- * @PANGO_ATTR_AFFECTS_SHAPING: the attribute affects shaping
- * @PANGO_ATTR_AFFECTS_RENDERING: the attribute affects rendering
+ * @PANGO_ATTR_AFFECTS_NONE: The attribute does not affect rendering
+ * @PANGO_ATTR_AFFECTS_ITEMIZATION: The attribute affecs itemization
+ * @PANGO_ATTR_AFFECTS_BREAKING: The attribute affects `PangoLogAttr` determination
+ * @PANGO_ATTR_AFFECTS_SHAPING: The attribute affects shaping
+ * @PANGO_ATTR_AFFECTS_RENDERING: The attribute affects rendering
  *
- * Flags to indicate what part of Pangos processing pipeline is
- * affected by an attribute.
+ * A `PangoAttrAffects` value indicates what part of Pango's processing
+ * pipeline is affected by an attribute.
  *
  * Marking an attribute with `PANGO_ATTR_AFFECTS_ITEMIZATION` ensures
  * that the attribute values are constant across items.
@@ -82,11 +82,11 @@ typedef enum
 
 /**
  * PangoAttrMerge:
- * @PANGO_ATTR_MERGE_OVERRIDES: only the attribute with the narrowest range is used
- * @PANGO_ATTR_MERGE_ACCUMULATES: all attributes with overlapping range are kept
+ * @PANGO_ATTR_MERGE_OVERRIDES: Only the attribute with the narrowest range is used
+ * @PANGO_ATTR_MERGE_ACCUMULATES: All attributes with overlapping range are kept
  *
- * Options to indicate how overlapping attribute values should be
- * reconciled to determine the effective attribute value.
+ * A `PangoAttrMerge` value indicates how overlapping attribute values
+ * should be reconciled to determine the effective attribute value.
  *
  * These options influence the @extra_attrs returned by
  * [method@Pango.AttrIterator.get_font].

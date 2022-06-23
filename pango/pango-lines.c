@@ -392,7 +392,7 @@ pango_lines_get_line_position (PangoLines *lines,
  * pango_lines_get_unknown_glyphs_count:
  * @lines: a `PangoLines` object
  *
- * Counts the number of unknown glyphs in @lines.
+ * Counts the number of unknown glyphs in the `PangoLines`
  *
  * This function can be used to determine if there are any fonts
  * available to render all characters in a certain string, or when
@@ -429,7 +429,7 @@ pango_lines_get_unknown_glyphs_count (PangoLines *lines)
  * pango_lines_is_wrapped:
  * @lines: a `PangoLines` object
  *
- * Returns whether any line in @lines is wrapped.
+ * Returns whether any of the lines is wrapped.
  *
  * Returns: `TRUE` if @lines is wrapped
  */
@@ -450,7 +450,7 @@ pango_lines_is_wrapped (PangoLines *lines)
  * pango_lines_is_ellipsized:
  * @lines: a `PangoLines` object
  *
- * Returns whether any line in @lines is ellipsized.
+ * Returns whether any of the lines is ellipsized.
  *
  * Returns: `TRUE` if @lines is ellipsized
  */
@@ -471,7 +471,7 @@ pango_lines_is_ellipsized (PangoLines *lines)
  * pango_lines_is_hyphenated:
  * @lines: a `PangoLines` object
  *
- * Returns whether any line in @lines is hyphenated.
+ * Returns whether any of the lines is hyphenated.
  *
  * Returns: `TRUE` if @lines is hyphenated
  */
@@ -497,7 +497,7 @@ pango_lines_is_hyphenated (PangoLines *lines)
  * @ink_rect: (out) (optional): return location for the ink extents
  * @logical_rect: (out) (optional): return location for the logical extents
  *
- * Computes the extents of @lines.
+ * Computes the extents of the lines.
  *
  * Logical extents are usually what you want for positioning things. Note
  * that the extents may have non-zero x and y. You may want to use those
@@ -600,7 +600,7 @@ pango_lines_get_size (PangoLines *lines,
  * pango_lines_get_baseline:
  * @lines: a `PangoLines` object
  *
- * Gets the Y position of baseline of the first line in @lines.
+ * Gets the Y position of baseline of the first line.
  *
  * Return value: baseline of first line
  */
@@ -774,7 +774,7 @@ pango_lines_get_x_ranges (PangoLines *lines,
 }
 
 /* }}} */
-  /* {{{ Editing API */
+  /* { {{ Editing API */
 
 /**
  * pango_lines_index_to_line:

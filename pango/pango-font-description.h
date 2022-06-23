@@ -96,7 +96,7 @@ typedef enum {
  * @PANGO_WEIGHT_HEAVY: the heavy weight (= 900)
  * @PANGO_WEIGHT_ULTRAHEAVY: the ultraheavy weight (= 1000)
  *
- * An enumeration specifying the weight (boldness) of a font.
+ * A `PangoWeight` specifes the weight (boldness) of a font.
  *
  * Weight is specified as a numeric value ranging from 100 to 1000.
  * This enumeration simply provides some common, predefined values.
@@ -118,18 +118,18 @@ typedef enum {
 
 /**
  * PangoStretch:
- * @PANGO_STRETCH_ULTRA_CONDENSED: ultra condensed width
- * @PANGO_STRETCH_EXTRA_CONDENSED: extra condensed width
- * @PANGO_STRETCH_CONDENSED: condensed width
- * @PANGO_STRETCH_SEMI_CONDENSED: semi condensed width
- * @PANGO_STRETCH_NORMAL: the normal width
- * @PANGO_STRETCH_SEMI_EXPANDED: semi expanded width
- * @PANGO_STRETCH_EXPANDED: expanded width
- * @PANGO_STRETCH_EXTRA_EXPANDED: extra expanded width
- * @PANGO_STRETCH_ULTRA_EXPANDED: ultra expanded width
+ * @PANGO_STRETCH_ULTRA_CONDENSED: ultra-condensed width (= 500)
+ * @PANGO_STRETCH_EXTRA_CONDENSED: extra-condensed width (= 625)
+ * @PANGO_STRETCH_CONDENSED: condensed width (= 750)
+ * @PANGO_STRETCH_SEMI_CONDENSED: semi-condensed width (= 875)
+ * @PANGO_STRETCH_NORMAL: the normal width (= 1000)
+ * @PANGO_STRETCH_SEMI_EXPANDED: semi-expanded width (= 1125)
+ * @PANGO_STRETCH_EXPANDED: expanded width (= 1250)
+ * @PANGO_STRETCH_EXTRA_EXPANDED: extra-expanded width (= 1500)
+ * @PANGO_STRETCH_ULTRA_EXPANDED: ultra-expanded width (= 2000)
  *
- * An enumeration specifying the width of the font relative to other designs
- * within a family.
+ * A `PangoStretch` specifes the width of the font relative
+ * to other designs within a family.
  *
  * Stretch is specified as a numeric value ranging from 500 to 2000.
  * This enumeration simply provides some common, predefined values.

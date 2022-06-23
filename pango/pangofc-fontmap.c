@@ -603,12 +603,12 @@ pango_fc_font_map_set_config (PangoFcFontMap *self,
  * pango_fc_font_map_get_config: (skip)
  * @self: a `PangoFcFontMap`
  *
- * Fetches the `FcConfig` attached to a font map.
+ * Fetches the fontconfig configuration of the fontmap.
  *
  * See also: [method@PangoFc.FontMap.set_config].
  *
  * Returns: (nullable): the `FcConfig` object attached to
- *   @self, which might be %NULL. The return value is
+ *   @self, which might be `NULL`. The return value is
  *   owned by Pango and should not be freed.
  */
 FcConfig *

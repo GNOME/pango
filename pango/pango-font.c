@@ -386,7 +386,7 @@ pango_font_get_metrics (PangoFont     *font,
  * pango_font_get_face:
  * @font: a `PangoFont`
  *
- * Gets the `PangoFontFace` to which @font belongs.
+ * Gets the `PangoFontFace` to which the font belongs.
  *
  * Returns: (transfer none): the `PangoFontFace`
  */
