@@ -269,7 +269,7 @@ pango_matrix_get_rotation (const PangoMatrix *matrix)
 
   pango_matrix_transform_distance (matrix, &x, &y);
 
-  return RAD_TO_DEG (acos (x /  sqrtf (x*x + y*y)));
+  return RAD_TO_DEG (acos (CLAMP (x /  sqrtf (x*x + y*y), -1., 1.)));
 }
 
 /**
