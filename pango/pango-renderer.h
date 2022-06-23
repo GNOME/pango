@@ -75,13 +75,12 @@ struct _PangoRenderer
  * PangoRendererClass:
  * @draw_glyphs: draws a `PangoGlyphString`
  * @draw_rectangle: draws a rectangle
- * @draw_error_underline: draws a squiggly line that approximately
- * covers the given rectangle in the style of an underline used to
- * indicate a spelling error.
+ * @draw_line: draws a line in the given style that approximately
+ *   covers the given rectangle
  * @draw_trapezoid: draws a trapezoidal filled area
  * @draw_glyph: draws a single glyph
  * @part_changed: do renderer specific processing when rendering
- *  attributes change
+ *   attributes change
  * @begin: Do renderer-specific initialization before drawing
  * @end: Do renderer-specific cleanup after drawing
  * @prepare_run: updates the renderer for a new run
@@ -93,7 +92,7 @@ struct _PangoRenderer
  * and have default implementations:
  * - draw_glyphs
  * - draw_rectangle
- * - draw_error_underline
+ * - draw_styled_line
  * - draw_shape
  * - draw_glyph_item
  *
@@ -122,7 +121,15 @@ struct _PangoRendererClass
                                 int               y,
                                 int               width,
                                 int               height);
-  void (*draw_error_underline) (PangoRenderer    *renderer,
+  void (*draw_styled_line)     (PangoRenderer    *renderer,
+                                PangoRenderPart   part,
+                                PangoLineStyle    style,
+                                int               x,
+                                int               y,
+                                int               width,
+                                int               height);
+  void (*draw_line)            (PangoRenderer    *renderer,
+                                PangoLineStyle    style,
                                 int               x,
                                 int               y,
                                 int               width,
@@ -197,6 +204,14 @@ void pango_renderer_draw_run             (PangoRenderer    *renderer,
 PANGO_AVAILABLE_IN_ALL
 void pango_renderer_draw_rectangle       (PangoRenderer    *renderer,
                                           PangoRenderPart   part,
+                                          int               x,
+                                          int               y,
+                                          int               width,
+                                          int               height);
+PANGO_AVAILABLE_IN_ALL
+void pango_renderer_draw_styled_line     (PangoRenderer    *renderer,
+                                          PangoRenderPart   part,
+                                          PangoLineStyle    style,
                                           int               x,
                                           int               y,
                                           int               width,

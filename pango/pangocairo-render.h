@@ -42,33 +42,22 @@ void    pango_cairo_show_lines                  (cairo_t          *cr,
 PANGO_AVAILABLE_IN_ALL
 void    pango_cairo_show_layout                 (cairo_t          *cr,
                                                  PangoLayout      *layout);
-
-PANGO_AVAILABLE_IN_ALL
-void    pango_cairo_show_error_underline        (cairo_t          *cr,
-                                                 double            x,
-                                                 double            y,
-                                                 double            width,
-                                                 double            height);
-
 PANGO_AVAILABLE_IN_ALL
 void    pango_cairo_glyph_string_path           (cairo_t          *cr,
                                                  PangoFont        *font,
                                                  PangoGlyphString *glyphs);
 PANGO_AVAILABLE_IN_ALL
-void    pango_cairo_layout_path                 (cairo_t          *cr,
-                                                 PangoLayout      *layout);
+void    pango_cairo_run_path                    (cairo_t          *cr,
+                                                 const char       *text,
+                                                 PangoRun         *run);
 PANGO_AVAILABLE_IN_ALL
 void    pango_cairo_line_path                   (cairo_t          *cr,
                                                  PangoLine        *line);
 PANGO_AVAILABLE_IN_ALL
 void    pango_cairo_lines_path                  (cairo_t          *cr,
                                                  PangoLines       *lines);
-
 PANGO_AVAILABLE_IN_ALL
-void    pango_cairo_error_underline_path        (cairo_t          *cr,
-                                                 double            x,
-                                                 double            y,
-                                                 double            width,
-                                                 double            height);
+void    pango_cairo_layout_path                 (cairo_t          *cr,
+                                                 PangoLayout      *layout);
 
 G_END_DECLS
