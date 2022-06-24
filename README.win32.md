@@ -32,7 +32,12 @@ properly setup for such builds (please refer to the Meson documentation
 for further instructions).  Support for introspection for ARM64 builds is
 currently not supported, due to the lack of an official build of Python
 for ARM64 Windows, and introspection builds are currently not supported
-for any cross-builds.
+for any cross-builds.  It is highly recommended that you build pixman,
+which is a dependency of Cairo beforehand and ensure that its pkg-config
+file can be found when building for ARM64, if Cairo is not installed
+beforehand, as currently building pixman for ARM64 Windows require using
+`clang-cl` (note that this is not strictly necessary for x86/x64 Windows
+builds).
 
 You will also need the following libraries installed with their headers
 and import libraries, and their DLLs, if applicable, needs to be found in
