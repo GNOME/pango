@@ -548,7 +548,7 @@ pango_glyph_string_index_to_x_full (PangoGlyphString *glyphs,
     }
 
   if (trailing)
-    cluster_offset += 1;
+    cluster_offset = MIN (cluster_offset + 1, cluster_chars);
 
   if (G_UNLIKELY (!cluster_chars)) /* pedantic */
      {
