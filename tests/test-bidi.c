@@ -453,6 +453,44 @@ test_move_cursor_para (void)
   g_object_unref (layout);
 }
 
+static void
+test_sinhala_cursor (void)
+{
+  const char *text = "ර් á ";
+  PangoLayout *layout;
+  const char *p;
+  const PangoLogAttr *attrs;
+  int n, i;
+
+  layout = pango_layout_new (context);
+
+  pango_layout_set_text (layout, text, -1);
+
+  if (pango_layout_get_unknown_glyphs_count (layout) > 0)
+    {
+      g_object_unref (layout);
+      g_test_skip ("missing Sinhala fonts");
+      return;
+    }
+
+  attrs = pango_layout_get_log_attrs_readonly (layout, &n);
+
+  for (i = 0, p = text; *p; i++, p = g_utf8_next_char (p))
+    {
+      int index = p - text;
+      PangoRectangle strong, weak;
+
+      if (!attrs[i].is_cursor_position)
+        continue;
+
+      g_assert_true (pango_layout_get_direction (layout, index) == PANGO_DIRECTION_LTR);
+
+      pango_layout_get_cursor_pos (layout, index, &strong, &weak);
+      g_assert_true (strong.x == weak.x);
+      g_assert_true (strong.width == weak.width);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -471,6 +509,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/bidi/embedding-levels", test_bidi_embedding_levels);
   g_test_add_func ("/bidi/move-cursor-line", test_move_cursor_line);
   g_test_add_func ("/bidi/move-cursor-para", test_move_cursor_para);
+  g_test_add_func ("/bidi/sinhala-cursor", test_sinhala_cursor);
 
   return g_test_run ();
 }
