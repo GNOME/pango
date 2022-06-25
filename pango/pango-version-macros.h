@@ -34,20 +34,20 @@
 /* XXX: Every new stable minor release bump should add a macro here */
 
 /**
- * PANGO2_VERSION_1_90
+ * PANGO2_VERSION_0_90
  *
- * A macro that evaluates to the 1.90 version of Pango2, in a format
+ * A macro that evaluates to the 0.90 version of Pango2, in a format
  * that can be used by the C pre-processor.
  */
-#define PANGO2_VERSION_1_90       (G_ENCODE_VERSION (1, 90))
+#define PANGO2_VERSION_0_90       (G_ENCODE_VERSION (0, 90))
 
 /**
- * PANGO2_VERSION_2_0
+ * PANGO2_VERSION_1_0
  *
- * A macro that evaluates to the 2.0 version of Pango2, in a format
+ * A macro that evaluates to the 1.0 version of Pango2, in a format
  * that can be used by the C pre-processor.
  */
-#define PANGO2_VERSION_2_0       (G_ENCODE_VERSION (2, 0))
+#define PANGO2_VERSION_1_0       (G_ENCODE_VERSION (1, 0))
 
 /* evaluates to the current stable version; for development cycles,
  * this means the next stable target
@@ -123,8 +123,8 @@
 #if PANGO2_VERSION_MAX_ALLOWED < PANGO2_VERSION_MIN_REQUIRED
 #error "PANGO2_VERSION_MAX_ALLOWED must be >= PANGO2_VERSION_MIN_REQUIRED"
 #endif
-#if PANGO2_VERSION_MIN_REQUIRED < PANGO2_VERSION_1_90
-#error "PANGO2_VERSION_MIN_REQUIRED must be >= PANGO2_VERSION_1_90"
+#if PANGO2_VERSION_MIN_REQUIRED < PANGO2_VERSION_0_90
+#error "PANGO2_VERSION_MIN_REQUIRED must be >= PANGO2_VERSION_0_90"
 #endif
 
 /* These macros are used to mark deprecated functions in Pango2 headers,
@@ -142,16 +142,16 @@
 
 /* XXX: Every new stable minor release should add a set of macros here */
 
-#if PANGO2_VERSION_MIN_REQUIRED >= PANGO2_VERSION_2_0
-# define PANGO2_DEPRECATED_IN_2_0                PANGO2_DEPRECATED
-# define PANGO2_DEPRECATED_IN_2_0_FOR(f)         PANGO2_DEPRECATED_FOR(f)
+#if PANGO2_VERSION_MIN_REQUIRED >= PANGO2_VERSION_1_0
+# define PANGO2_DEPRECATED_IN_1_0                PANGO2_DEPRECATED
+# define PANGO2_DEPRECATED_IN_1_0_FOR(f)         PANGO2_DEPRECATED_FOR(f)
 #else
-# define PANGO2_DEPRECATED_IN_2_0                _PANGO2_EXTERN
-# define PANGO2_DEPRECATED_IN_2_0_FOR(f)         _PANGO2_EXTERN
+# define PANGO2_DEPRECATED_IN_1_0                _PANGO2_EXTERN
+# define PANGO2_DEPRECATED_IN_1_0_FOR(f)         _PANGO2_EXTERN
 #endif
 
-#if PANGO2_VERSION_MAX_ALLOWED < PANGO2_VERSION_2_0
-# define PANGO2_AVAILABLE_IN_2_0                 PANGO2_UNAVAILABLE(2, 0)
+#if PANGO2_VERSION_MAX_ALLOWED < PANGO2_VERSION_1_0
+# define PANGO2_AVAILABLE_IN_1_0                 PANGO2_UNAVAILABLE(2, 0)
 #else
-# define PANGO2_AVAILABLE_IN_2_0                 _PANGO2_EXTERN
+# define PANGO2_AVAILABLE_IN_1_0                 _PANGO2_EXTERN
 #endif
