@@ -1,4 +1,4 @@
-/* viewer.h: PangoViewer class
+/* viewer.h: Pango2Viewer class
  *
  * Copyright (C) 1999,2004,2005 Red Hat, Inc.
  * Copyright (C) 2001 Sun Microsystems
@@ -23,9 +23,9 @@
 
 #include <pango/pango.h>
 
-typedef struct _PangoViewer PangoViewer;
+typedef struct _Pango2Viewer Pango2Viewer;
 
-struct _PangoViewer {
+struct _Pango2Viewer {
 
   const char *name;
 
@@ -33,11 +33,11 @@ struct _PangoViewer {
 
   const char *write_suffix;
 
-  gpointer (*create) (const PangoViewer *klass);
+  gpointer (*create) (const Pango2Viewer *klass);
 
   void (*destroy) (gpointer instance);
 
-  PangoContext * (*get_context) (gpointer instance);
+  Pango2Context * (*get_context) (gpointer instance);
 
   gpointer (*create_surface) (gpointer instance,
 			      int      width,
@@ -48,7 +48,7 @@ struct _PangoViewer {
 
   void (*render) (gpointer      instance,
 		  gpointer      surface,
-		  PangoContext *context,
+		  Pango2Context *context,
 		  int          *width,
 		  int          *height,
 		  gpointer      state);
@@ -90,9 +90,9 @@ struct _PangoViewer {
 		int      height,
 		int      stride);
 
-  GOptionGroup * (*get_option_group) (const PangoViewer *klass);
+  GOptionGroup * (*get_option_group) (const Pango2Viewer *klass);
 };
 
-extern const PangoViewer *viewers[];
+extern const Pango2Viewer *viewers[];
 
 #endif /* VIEWER_H */

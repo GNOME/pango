@@ -20,23 +20,23 @@ create_surface (void)
   return cairo_image_surface_create (CAIRO_FORMAT_A8, WIDTH, HEIGHT);
 }
 
-static PangoLayout *
+static Pango2Layout *
 create_layout (cairo_t *cr)
 {
-  PangoContext *context;
-  PangoLayout *layout;
+  Pango2Context *context;
+  Pango2Layout *layout;
 
-  context = pango_cairo_create_context (cr);
-  layout = pango_layout_new (context);
+  context = pango2_cairo_create_context (cr);
+  layout = pango2_layout_new (context);
   g_object_unref (context);
-  pango_layout_set_text (layout, text, -1);
-  pango_layout_set_width (layout, WIDTH * PANGO_SCALE);
+  pango2_layout_set_text (layout, text, -1);
+  pango2_layout_set_width (layout, WIDTH * PANGO2_SCALE);
 
   return layout;
 }
 
 static void
-draw (cairo_t *cr, PangoLayout *layout, unsigned int i)
+draw (cairo_t *cr, Pango2Layout *layout, unsigned int i)
 {
   cairo_set_source_rgba (cr, 1, 1, 1, 1);
   cairo_paint (cr);
@@ -45,16 +45,16 @@ draw (cairo_t *cr, PangoLayout *layout, unsigned int i)
 
   cairo_identity_matrix (cr);
   cairo_scale (cr, (100 + i) / 100.,  (100 + i) / 100.);
-  pango_cairo_update_context (cr, pango_layout_get_context (layout));
+  pango2_cairo_update_context (cr, pango2_layout_get_context (layout));
 
-  pango_cairo_show_lines (cr, pango_layout_get_lines (layout));
+  pango2_cairo_show_lines (cr, pango2_layout_get_lines (layout));
 }
 
 static gpointer
 thread_func (gpointer data)
 {
   cairo_surface_t *surface = data;
-  PangoLayout *layout;
+  Pango2Layout *layout;
   int i;
 
   install_fonts ();
@@ -109,7 +109,7 @@ pangocairo_threads (void)
   {
     cairo_surface_t *ref_surface = create_surface ();
     cairo_t *cr = cairo_create (ref_surface);
-    PangoLayout *layout = create_layout (cr);
+    Pango2Layout *layout = create_layout (cr);
     unsigned char *ref_data = cairo_image_surface_get_data (ref_surface);
     unsigned int len = WIDTH * HEIGHT;
 
@@ -142,7 +142,7 @@ pangocairo_threads (void)
 
   g_ptr_array_unref (surfaces);
 
-  pango_font_map_set_default (NULL);
+  pango2_font_map_set_default (NULL);
 
 }
 

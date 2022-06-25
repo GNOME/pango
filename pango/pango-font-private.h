@@ -29,100 +29,100 @@
 #include <cairo.h>
 #endif
 
-struct _PangoFont
+struct _Pango2Font
 {
   GObject parent_instance;
 
-  PangoFontFace *face;
+  Pango2FontFace *face;
 
   hb_font_t *hb_font;
 
-  int size; /* point size, scaled by PANGO_SCALE */
+  int size; /* point size, scaled by PANGO2_SCALE */
   float dpi;
-  PangoGravity gravity;
-  PangoMatrix ctm;
+  Pango2Gravity gravity;
+  Pango2Matrix ctm;
 
 #ifdef HAVE_CAIRO
   cairo_font_options_t *options;
 #endif
 };
 
-typedef struct _PangoFontClass       PangoFontClass;
-struct _PangoFontClass
+typedef struct _Pango2FontClass       Pango2FontClass;
+struct _Pango2FontClass
 {
   GObjectClass parent_class;
 
-  PangoFontDescription * (* describe)           (PangoFont      *font);
-  void                   (* get_glyph_extents)  (PangoFont      *font,
-                                                PangoGlyph      glyph,
-                                                PangoRectangle *ink_rect,
-                                                PangoRectangle *logical_rect);
-  PangoFontMetrics *     (* get_metrics)        (PangoFont      *font,
-                                                PangoLanguage  *language);
-  hb_font_t *            (* create_hb_font)     (PangoFont      *font);
-  gboolean               (* is_hinted)          (PangoFont      *font);
-  void                   (* get_scale_factors)  (PangoFont      *font,
-                                                 double         *x_scale,
-                                                 double         *y_scale);
-  void                   (* get_transform)      (PangoFont      *font,
-                                                 PangoMatrix    *matrix);
+  Pango2FontDescription * (* describe)           (Pango2Font      *font);
+  void                    (* get_glyph_extents)  (Pango2Font      *font,
+                                                  Pango2Glyph      glyph,
+                                                  Pango2Rectangle *ink_rect,
+                                                  Pango2Rectangle *logical_rect);
+  Pango2FontMetrics *     (* get_metrics)        (Pango2Font      *font,
+                                                  Pango2Language  *language);
+  hb_font_t *             (* create_hb_font)     (Pango2Font      *font);
+  gboolean                (* is_hinted)          (Pango2Font      *font);
+  void                    (* get_scale_factors)  (Pango2Font      *font,
+                                                  double          *x_scale,
+                                                  double          *y_scale);
+  void                    (* get_transform)      (Pango2Font      *font,
+                                                  Pango2Matrix    *matrix);
 };
 
-#define PANGO_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT, PangoFontClass))
-#define PANGO_FONT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONT, PangoFontClass))
+#define PANGO2_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO2_TYPE_FONT, Pango2FontClass))
+#define PANGO2_FONT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO2_TYPE_FONT, Pango2FontClass))
 
 static inline void
-pango_font_set_face (PangoFont     *font,
-                     PangoFontFace *face)
+pango2_font_set_face (Pango2Font     *font,
+                     Pango2FontFace *face)
 {
-  font->face = (PangoFontFace *) g_object_ref (face);
+  font->face = (Pango2FontFace *) g_object_ref (face);
 }
 
 static inline void
-pango_font_set_size (PangoFont *font,
-                     int        size)
+pango2_font_set_size (Pango2Font *font,
+                      int         size)
 {
   font->size = size;
 }
 
 static inline void
-pango_font_set_dpi (PangoFont *font,
-                    float      dpi)
+pango2_font_set_dpi (Pango2Font *font,
+                     float       dpi)
 {
   font->dpi = dpi;
 }
 
 static inline void
-pango_font_set_gravity (PangoFont    *font,
-                        PangoGravity  gravity)
+pango2_font_set_gravity (Pango2Font    *font,
+                         Pango2Gravity  gravity)
 {
   font->gravity = gravity;
 }
 
 static inline void
-pango_font_set_ctm (PangoFont         *font,
-                    const PangoMatrix *ctm)
+pango2_font_set_ctm (Pango2Font         *font,
+                     const Pango2Matrix *ctm)
 {
-  const PangoMatrix matrix_init = PANGO_MATRIX_INIT;
+  const Pango2Matrix matrix_init = PANGO2_MATRIX_INIT;
   font->ctm = ctm ? *ctm : matrix_init;
 }
 
-gboolean pango_font_is_hinted         (PangoFont *font);
-void     pango_font_get_scale_factors (PangoFont *font,
-                                       double    *x_scale,
-                                       double    *y_scale);
-void     pango_font_get_transform     (PangoFont   *font,
-                                       PangoMatrix *matrix);
+gboolean pango2_font_is_hinted         (Pango2Font  *font);
+void     pango2_font_get_scale_factors (Pango2Font  *font,
+                                        double      *x_scale,
+                                        double      *y_scale);
+void     pango2_font_get_transform     (Pango2Font  *font,
+                                       Pango2Matrix *matrix);
 
-gboolean pango_font_description_is_similar       (const PangoFontDescription *a,
-                                                  const PangoFontDescription *b);
+gboolean pango2_font_description_is_similar       (const Pango2FontDescription *a,
+                                                   const Pango2FontDescription *b);
 
-int      pango_font_description_compute_distance (const PangoFontDescription *a,
-                                                  const PangoFontDescription *b);
+int      pango2_font_description_compute_distance (const Pango2FontDescription *a,
+                                                   const Pango2FontDescription *b);
 
 /* We use these values in a few places as a fallback size for an
  * unknown glyph, if we have no better information.
  */
 
-#define PANGO_UNKNOWN_GLYPH_WIDTH  10
-#define PANGO_UNKNOWN_GLYPH_HEIGHT 14
+#define PANGO2_UNKNOWN_GLYPH_WIDTH  10
+#define PANGO2_UNKNOWN_GLYPH_HEIGHT 14

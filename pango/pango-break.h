@@ -28,7 +28,7 @@ G_BEGIN_DECLS
 /* Logical attributes of a character.
  */
 /**
- * PangoLogAttr:
+ * Pango2LogAttr:
  * @is_line_break: if set, can break line in front of character
  * @is_mandatory_break: if set, must break line in front of character
  * @is_char_break: if set, can break here when doing character wrapping
@@ -73,10 +73,10 @@ G_BEGIN_DECLS
  * @break_removes_preceding: when breaking lines before this char, remove the
  *   preceding char.
  *
- * The `PangoLogAttr` structure stores information about the attributes of a
+ * The `Pango2LogAttr` structure stores information about the attributes of a
  * single character.
  */
-struct _PangoLogAttr
+struct _Pango2LogAttr
 {
   guint is_line_break               : 1;
   guint is_mandatory_break          : 1;
@@ -97,35 +97,35 @@ struct _PangoLogAttr
   guint reserved                    : 17;
 };
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_get_log_attrs     (const char    *text,
-                                                 int            length,
-                                                 PangoAttrList *attr_list,
-                                                 int            level,
-                                                 PangoLanguage *language,
-                                                 PangoLogAttr  *attrs,
-                                                 int            attrs_len);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_get_log_attrs     (const char     *text,
+                                                  int             length,
+                                                  Pango2AttrList *attr_list,
+                                                  int             level,
+                                                  Pango2Language *language,
+                                                  Pango2LogAttr  *attrs,
+                                                  int             attrs_len);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_default_break     (const char    *text,
-                                                 int            length,
-                                                 PangoLogAttr  *attrs,
-                                                 int            attrs_len);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_default_break     (const char     *text,
+                                                  int             length,
+                                                  Pango2LogAttr  *attrs,
+                                                  int             attrs_len);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_tailor_break      (const char    *text,
-                                                 int            length,
-                                                 PangoAnalysis *analysis,
-                                                 int            offset,
-                                                 PangoLogAttr  *attrs,
-                                                 int            attrs_len);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_tailor_break      (const char     *text,
+                                                  int             length,
+                                                  Pango2Analysis *analysis,
+                                                  int             offset,
+                                                  Pango2LogAttr  *attrs,
+                                                  int             attrs_len);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_attr_break        (const char    *text,
-                                                 int            length,
-                                                 PangoAttrList *attr_list,
-                                                 int            offset,
-                                                 PangoLogAttr  *attrs,
-                                                 int            attrs_len);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_attr_break        (const char     *text,
+                                                  int             length,
+                                                  Pango2AttrList *attr_list,
+                                                  int             offset,
+                                                  Pango2LogAttr  *attrs,
+                                                  int             attrs_len);
 
 G_END_DECLS

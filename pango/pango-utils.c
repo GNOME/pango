@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * pango-utils.c: Utilities for internal functions and modules
  *
  * Copyright (C) 2000 Red Hat Software
@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -48,53 +48,53 @@
 #endif
 
 /**
- * pango_version:
+ * pango2_version:
  *
- * Returns the encoded version of Pango available at run-time.
+ * Returns the encoded version of Pango2 available at run-time.
  *
- * This is similar to the macro %PANGO_VERSION except that the macro
+ * This is similar to the macro %PANGO2_VERSION except that the macro
  * returns the encoded version available at compile-time. A version
- * number can be encoded into an integer using PANGO_VERSION_ENCODE().
+ * number can be encoded into an integer using PANGO2_VERSION_ENCODE().
  *
- * Returns: The encoded version of Pango library available at run time.
+ * Returns: The encoded version of Pango2 library available at run time.
  */
 int
-pango_version (void)
+pango2_version (void)
 {
-  return PANGO_VERSION;
+  return PANGO2_VERSION;
 }
 
 /**
- * pango_version_string:
+ * pango2_version_string:
  *
- * Returns the version of Pango available at run-time.
+ * Returns the version of Pango2 available at run-time.
  *
- * This is similar to the macro %PANGO_VERSION_STRING except that the
+ * This is similar to the macro %PANGO2_VERSION_STRING except that the
  * macro returns the version available at compile-time.
  *
- * Returns: A string containing the version of Pango library available
- *   at run time. The returned string is owned by Pango and should not
+ * Returns: A string containing the version of Pango2 library available
+ *   at run time. The returned string is owned by Pango2 and should not
  *   be modified or freed.
  */
 const char *
-pango_version_string (void)
+pango2_version_string (void)
 {
-  return PANGO_VERSION_STRING;
+  return PANGO2_VERSION_STRING;
 }
 
 /**
- * pango_version_check:
+ * pango2_version_check:
  * @required_major: the required major version
  * @required_minor: the required minor version
  * @required_micro: the required major version
  *
- * Checks that the Pango library in use is compatible with the
+ * Checks that the Pango2 library in use is compatible with the
  * given version.
  *
- * Generally you would pass in the constants %PANGO_VERSION_MAJOR,
- * %PANGO_VERSION_MINOR, %PANGO_VERSION_MICRO as the three arguments
+ * Generally you would pass in the constants %PANGO2_VERSION_MAJOR,
+ * %PANGO2_VERSION_MINOR, %PANGO2_VERSION_MICRO as the three arguments
  * to this function; that produces a check that the library in use at
- * run-time is compatible with the version of Pango the application or
+ * run-time is compatible with the version of Pango2 the application or
  * module was compiled against.
  *
  * Compatibility is defined by two things: first the version
@@ -104,34 +104,34 @@ pango_version_string (void)
  * version @required_major.required_minor.@required_micro
  * (same major version.)
  *
- * For compile-time version checking use PANGO_VERSION_CHECK().
+ * For compile-time version checking use PANGO2_VERSION_CHECK().
  *
- * Return value: (nullable): %NULL if the Pango library is compatible
+ * Return value: (nullable): %NULL if the Pango2 library is compatible
  *   with the given version, or a string describing the version
- *   mismatch.  The returned string is owned by Pango and should not
+ *   mismatch.  The returned string is owned by Pango2 and should not
  *   be modified or freed.
  */
 const char *
-pango_version_check (int required_major,
-		     int required_minor,
-		     int required_micro)
+pango2_version_check (int required_major,
+                      int required_minor,
+                      int required_micro)
 {
-  int pango_effective_micro = 100 * PANGO_VERSION_MINOR + PANGO_VERSION_MICRO;
+  int pango2_effective_micro = 100 * PANGO2_VERSION_MINOR + PANGO2_VERSION_MICRO;
   int required_effective_micro = 100 * required_minor + required_micro;
 
-  if (required_major > PANGO_VERSION_MAJOR)
-    return "Pango version too old (major mismatch)";
-  if (required_major < PANGO_VERSION_MAJOR)
-    return "Pango version too new (major mismatch)";
-  if (required_effective_micro < pango_effective_micro - PANGO_BINARY_AGE)
-    return "Pango version too new (micro mismatch)";
-  if (required_effective_micro > pango_effective_micro)
-    return "Pango version too old (micro mismatch)";
+  if (required_major > PANGO2_VERSION_MAJOR)
+    return "Pango2 version too old (major mismatch)";
+  if (required_major < PANGO2_VERSION_MAJOR)
+    return "Pango2 version too new (major mismatch)";
+  if (required_effective_micro < pango2_effective_micro - PANGO2_BINARY_AGE)
+    return "Pango2 version too new (micro mismatch)";
+  if (required_effective_micro > pango2_effective_micro)
+    return "Pango2 version too old (micro mismatch)";
   return NULL;
 }
 
 /**
- * pango_is_zero_width:
+ * pango2_is_zero_width:
  * @ch: a Unicode character
  *
  * Checks if a character that should not be normally rendered.
@@ -144,7 +144,7 @@ pango_version_check (int required_major,
  * Return value: %TRUE if @ch is a zero-width character, %FALSE otherwise
  */
 gboolean
-pango_is_zero_width (gunichar ch)
+pango2_is_zero_width (gunichar ch)
 {
 /* Zero Width characters:
  *
@@ -178,57 +178,57 @@ pango_is_zero_width (gunichar ch)
  *  FEFF  ZERO WIDTH NO-BREAK SPACE
  */
   return ((ch & ~(gunichar)0x007F) == 0x2000 && (
-		(ch >= 0x200B && ch <= 0x200F) ||
-		(ch >= 0x202A && ch <= 0x202E) ||
-		(ch >= 0x2060 && ch <= 0x2063) ||
+                (ch >= 0x200B && ch <= 0x200F) ||
+                (ch >= 0x202A && ch <= 0x202E) ||
+                (ch >= 0x2060 && ch <= 0x2063) ||
                 (ch >= 0x2066 && ch <= 0x2069) ||
-		(ch == 0x2028)
-	 )) || G_UNLIKELY (ch == 0x00AD
-			|| ch == 0x034F
-			|| ch == 0xFEFF);
+                (ch == 0x2028)
+         )) || G_UNLIKELY (ch == 0x00AD
+                        || ch == 0x034F
+                        || ch == 0xFEFF);
 }
 
 /**
- * pango_units_from_double:
+ * pango2_units_from_double:
  * @d: double floating-point value
  *
- * Converts a floating-point number to Pango units.
+ * Converts a floating-point number to Pango2 units.
  *
- * The conversion is done by multiplying @d by %PANGO_SCALE and
+ * The conversion is done by multiplying @d by %PANGO2_SCALE and
  * rounding the result to nearest integer.
  *
- * Return value: the value in Pango units.
+ * Return value: the value in Pango2 units.
  */
 int
-pango_units_from_double (double d)
+pango2_units_from_double (double d)
 {
-  return (int)floor (d * PANGO_SCALE + 0.5);
+  return (int)floor (d * PANGO2_SCALE + 0.5);
 }
 
 /**
- * pango_units_to_double:
- * @i: value in Pango units
+ * pango2_units_to_double:
+ * @i: value in Pango2 units
  *
- * Converts a number in Pango units to floating-point.
+ * Converts a number in Pango2 units to floating-point.
  *
- * The conversion is done by dividing @i by %PANGO_SCALE.
+ * The conversion is done by dividing @i by %PANGO2_SCALE.
  *
  * Return value: the double value.
  */
 double
-pango_units_to_double (int i)
+pango2_units_to_double (int i)
 {
-  return (double)i / PANGO_SCALE;
+  return (double)i / PANGO2_SCALE;
 }
 
 /**
- * pango_extents_to_pixels:
+ * pango2_extents_to_pixels:
  * @inclusive: (nullable): rectangle to round to pixels inclusively
  * @nearest: (nullable): rectangle to round to nearest pixels
  *
- * Converts extents from Pango units to device units.
+ * Converts extents from Pango2 units to device units.
  *
- * The conversion is done by dividing by the %PANGO_SCALE factor and
+ * The conversion is done by dividing by the %PANGO2_SCALE factor and
  * performing rounding.
  *
  * The @inclusive rectangle is converted by flooring the x/y coordinates
@@ -245,19 +245,19 @@ pango_units_to_double (int i)
  * as @nearest.
  */
 void
-pango_extents_to_pixels (PangoRectangle *inclusive,
-			 PangoRectangle *nearest)
+pango2_extents_to_pixels (Pango2Rectangle *inclusive,
+                          Pango2Rectangle *nearest)
 {
   if (inclusive)
     {
       int orig_x = inclusive->x;
       int orig_y = inclusive->y;
 
-      inclusive->x = PANGO_PIXELS_FLOOR (inclusive->x);
-      inclusive->y = PANGO_PIXELS_FLOOR (inclusive->y);
+      inclusive->x = PANGO2_PIXELS_FLOOR (inclusive->x);
+      inclusive->y = PANGO2_PIXELS_FLOOR (inclusive->y);
 
-      inclusive->width  = PANGO_PIXELS_CEIL (orig_x + inclusive->width ) - inclusive->x;
-      inclusive->height = PANGO_PIXELS_CEIL (orig_y + inclusive->height) - inclusive->y;
+      inclusive->width  = PANGO2_PIXELS_CEIL (orig_x + inclusive->width ) - inclusive->x;
+      inclusive->height = PANGO2_PIXELS_CEIL (orig_y + inclusive->height) - inclusive->y;
     }
 
   if (nearest)
@@ -265,16 +265,16 @@ pango_extents_to_pixels (PangoRectangle *inclusive,
       int orig_x = nearest->x;
       int orig_y = nearest->y;
 
-      nearest->x = PANGO_PIXELS (nearest->x);
-      nearest->y = PANGO_PIXELS (nearest->y);
+      nearest->x = PANGO2_PIXELS (nearest->x);
+      nearest->y = PANGO2_PIXELS (nearest->y);
 
-      nearest->width  = PANGO_PIXELS (orig_x + nearest->width ) - nearest->x;
-      nearest->height = PANGO_PIXELS (orig_y + nearest->height) - nearest->y;
+      nearest->width  = PANGO2_PIXELS (orig_x + nearest->width ) - nearest->x;
+      nearest->height = PANGO2_PIXELS (orig_y + nearest->height) - nearest->y;
     }
 }
 
 /**
- * pango_find_paragraph_boundary:
+ * pango2_find_paragraph_boundary:
  * @text: UTF-8 text
  * @length: length of @text in bytes, or -1 if nul-terminated
  * @paragraph_delimiter_index: (out): return location for index of
@@ -298,10 +298,10 @@ pango_extents_to_pixels (PangoRectangle *inclusive,
  * (an index one off the end).
  */
 void
-pango_find_paragraph_boundary (const char *text,
-                               int         length,
-                               int        *paragraph_delimiter_index,
-                               int        *next_paragraph_start)
+pango2_find_paragraph_boundary (const char *text,
+                                int         length,
+                                int        *paragraph_delimiter_index,
+                                int        *next_paragraph_start)
 {
   const char *p = text;
   const char *end;

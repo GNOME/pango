@@ -6,12 +6,12 @@
  * 
  * Do not edit.
  */
-typedef struct _PangoScriptForLang {
+typedef struct _Pango2ScriptForLang {
   const char lang[9];
   GUnicodeScript scripts[3];
-} PangoScriptForLang;
+} Pango2ScriptForLang;
 
-static const PangoScriptForLang pango_script_for_lang[] = {
+static const Pango2ScriptForLang pango2_script_for_lang[] = {
   { "aa",       { G_UNICODE_SCRIPT_LATIN/*62*/ } },
   { "ab",       { G_UNICODE_SCRIPT_CYRILLIC/*90*/ } },
   { "af",       { G_UNICODE_SCRIPT_LATIN/*69*/ } },

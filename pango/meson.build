@@ -167,13 +167,13 @@ install_headers(pango_installed_headers, subdir: pango_api_path)
 
 # Features header
 pango_features_conf = configuration_data()
-pango_features_conf.set('PANGO_VERSION_MAJOR', pango_major_version)
-pango_features_conf.set('PANGO_VERSION_MINOR', pango_minor_version)
-pango_features_conf.set('PANGO_VERSION_MICRO', pango_micro_version)
-pango_features_conf.set('PANGO_API_VERSION', pango_api_version)
-pango_features_conf.set('PANGO_CURRENT_MINUS_AGE', '0')
+pango_features_conf.set('PANGO2_VERSION_MAJOR', pango_major_version)
+pango_features_conf.set('PANGO2_VERSION_MINOR', pango_minor_version)
+pango_features_conf.set('PANGO2_VERSION_MICRO', pango_micro_version)
+pango_features_conf.set('PANGO2_API_VERSION', pango_api_version)
+pango_features_conf.set('PANGO2_CURRENT_MINUS_AGE', '0')
 if cairo_dep.found()
-  pango_features_conf.set('PANGO_RENDERING_CAIRO', 1)
+  pango_features_conf.set('PANGO2_RENDERING_CAIRO', 1)
 endif
 
 pango_features_h = configure_file(
@@ -188,6 +188,8 @@ pango_features_h = configure_file(
 pango_enums = gnome.mkenums(
   'pango-enum-types',
   sources: pango_headers,
+  identifier_prefix: 'Pango2',
+  symbol_prefix: 'PANGO2',
   c_template: 'pango-enum-types.c.template',
   h_template: 'pango-enum-types.h.template',
   install_dir: join_paths(pango_includedir, pango_api_path),
@@ -249,10 +251,10 @@ if build_gir
   pango_gir = gnome.generate_gir(
     libpango,
     sources: pango_sources + pango_headers + [ pango_enum_h, pango_features_h ],
-    namespace: 'Pango',
+    namespace: 'Pango2',
     nsversion: pango_api_version,
-    identifier_prefix: 'Pango',
-    symbol_prefix: 'pango',
+    identifier_prefix: 'Pango2',
+    symbol_prefix: 'pango2',
     export_packages: 'pango',
     dependencies: pango_deps,
     includes: pango_gir_includes,

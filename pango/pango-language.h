@@ -28,38 +28,38 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_TYPE_LANGUAGE (pango_language_get_type ())
+#define PANGO2_TYPE_LANGUAGE (pango2_language_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-GType                   pango_language_get_type                 (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+GType                   pango2_language_get_type                 (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_ALL
-PangoLanguage *         pango_language_get_default              (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+Pango2Language *        pango2_language_get_default              (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_ALL
-PangoLanguage **        pango_language_get_preferred            (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+Pango2Language **       pango2_language_get_preferred            (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_ALL
-PangoLanguage *         pango_language_from_string              (const char     *language);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Language *        pango2_language_from_string              (const char      *language);
 
-PANGO_AVAILABLE_IN_ALL
-const char *            pango_language_to_string                (PangoLanguage  *language) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+const char *            pango2_language_to_string                (Pango2Language  *language) G_GNUC_CONST;
 
 /* For back compat.  Will have to keep indefinitely. */
-#define pango_language_to_string(language) ((const char *)language)
+#define pango2_language_to_string(language) ((const char *)language)
 
-PANGO_AVAILABLE_IN_ALL
-const char *            pango_language_get_sample_string        (PangoLanguage  *language) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+const char *            pango2_language_get_sample_string        (Pango2Language  *language) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_language_matches                  (PangoLanguage  *language,
-                                                                 const char     *range_list) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_language_matches                  (Pango2Language  *language,
+                                                                  const char      *range_list) G_GNUC_PURE;
 
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_language_includes_script          (PangoLanguage  *language,
-                                                                 GUnicodeScript  script) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-const GUnicodeScript *     pango_language_get_scripts           (PangoLanguage  *language,
-                                                                 int            *num_scripts);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_language_includes_script          (Pango2Language  *language,
+                                                                  GUnicodeScript   script) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+const GUnicodeScript *  pango2_language_get_scripts              (Pango2Language  *language,
+                                                                  int             *num_scripts);
 
 G_END_DECLS

@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  *
  * Copyright (C) 2022 Matthias Clasen
  *
@@ -31,31 +31,31 @@
 #include <hb-ot.h>
 
 /**
- * PangoUserFace:
+ * Pango2UserFace:
  *
- * `PangoUserFace` is a `PangoFontFace` implementation that uses callbacks.
+ * `Pango2UserFace` is a `Pango2FontFace` implementation that uses callbacks.
  *
  * It allows to draw the glyphs in a font using custom code. This can
  * be used to implement fonts in non-standard formats, but can also be
  * used by games and other application to draw "funky" fonts.
  *
- * To get a font instance at a specific size from a `PangoUserFace`,
- * use [ctor@Pango.UserFont.new].
+ * To get a font instance at a specific size from a `Pango2UserFace`,
+ * use [ctor@Pango2.UserFont.new].
  */
 
- /* {{{ Utilities */
+/* {{{ Utilities */
 
 static void
-ensure_faceid (PangoUserFace *self)
+ensure_faceid (Pango2UserFace *self)
 {
-  PangoFontFace *face = PANGO_FONT_FACE (self);
+  Pango2FontFace *face = PANGO2_FONT_FACE (self);
   char *psname;
   char *p;
 
   if (self->faceid)
     return;
 
-  psname = g_strconcat (pango_font_description_get_family (face->description), "_", face->name, NULL);
+  psname = g_strconcat (pango2_font_description_get_family (face->description), "_", face->name, NULL);
 
   /* PostScript name should not contain problematic chars, but just in case,
    * make sure we don't have any ' ', '=' or ',' that would give us parsing
@@ -71,27 +71,27 @@ ensure_faceid (PangoUserFace *self)
 }
 
 static const char *
-style_from_font_description (const PangoFontDescription *desc)
+style_from_font_description (const Pango2FontDescription *desc)
 {
-  PangoStyle style = pango_font_description_get_style (desc);
-  PangoWeight weight = pango_font_description_get_weight (desc);
+  Pango2Style style = pango2_font_description_get_style (desc);
+  Pango2Weight weight = pango2_font_description_get_weight (desc);
 
   switch (style)
     {
-    case PANGO_STYLE_ITALIC:
-      if (weight == PANGO_WEIGHT_BOLD)
+    case PANGO2_STYLE_ITALIC:
+      if (weight == PANGO2_WEIGHT_BOLD)
         return "Bold Italic";
       else
         return "Italic";
       break;
-    case PANGO_STYLE_OBLIQUE:
-      if (weight == PANGO_WEIGHT_BOLD)
+    case PANGO2_STYLE_OBLIQUE:
+      if (weight == PANGO2_WEIGHT_BOLD)
         return "Bold Oblique";
       else
         return "Oblique";
       break;
-    case PANGO_STYLE_NORMAL:
-      if (weight == PANGO_WEIGHT_BOLD)
+    case PANGO2_STYLE_NORMAL:
+      if (weight == PANGO2_WEIGHT_BOLD)
         return "Bold";
       else
         return "Regular";
@@ -103,14 +103,14 @@ style_from_font_description (const PangoFontDescription *desc)
 }
 
 static gboolean
-default_shape_func (PangoUserFace       *face,
-                    int                  size,
-                    const char          *text,
-                    int                  length,
-                    const PangoAnalysis *analysis,
-                    PangoGlyphString    *glyphs,
-                    PangoShapeFlags      flags,
-                    gpointer             user_data)
+default_shape_func (Pango2UserFace       *face,
+                    int                   size,
+                    const char           *text,
+                    int                   length,
+                    const Pango2Analysis *analysis,
+                    Pango2GlyphString    *glyphs,
+                    Pango2ShapeFlags      flags,
+                    gpointer              user_data)
 {
   int n_chars;
   const char *p;
@@ -125,58 +125,58 @@ default_shape_func (PangoUserFace       *face,
 
   n_chars = g_utf8_strlen (text, length);
 
-  pango_glyph_string_set_size (glyphs, n_chars);
+  pango2_glyph_string_set_size (glyphs, n_chars);
 
   last_cluster = -1;
 
-  hb_font = pango_font_get_hb_font (analysis->font);
+  hb_font = pango2_font_get_hb_font (analysis->font);
   hb_font_get_h_extents (hb_font, &font_extents);
 
   p = text;
   for (i = 0; i < n_chars; i++)
     {
       gunichar wc;
-      PangoGlyph glyph;
-      PangoRectangle ink_rect;
-      PangoRectangle logical_rect;
+      Pango2Glyph glyph;
+      Pango2Rectangle ink_rect;
+      Pango2Rectangle logical_rect;
 
       wc = g_utf8_get_char (p);
 
       if (g_unichar_type (wc) != G_UNICODE_NON_SPACING_MARK)
         cluster = p - text;
 
-      if (pango_is_zero_width (wc))
-        glyph = PANGO_GLYPH_EMPTY;
+      if (pango2_is_zero_width (wc))
+        glyph = PANGO2_GLYPH_EMPTY;
       else if (!face->glyph_func (face, wc, &glyph, face->user_data))
-        glyph = PANGO_GET_UNKNOWN_GLYPH (wc);
+        glyph = PANGO2_GET_UNKNOWN_GLYPH (wc);
 
       face->glyph_info_func (face, size, glyph, &ext, &dummy, &dummy, &is_color, face->user_data);
-      pango_font_get_glyph_extents (analysis->font, glyph, &ink_rect, &logical_rect);
+      pango2_font_get_glyph_extents (analysis->font, glyph, &ink_rect, &logical_rect);
 
       glyphs->glyphs[i].glyph = glyph;
 
       glyphs->glyphs[i].attr.is_cluster_start = cluster != last_cluster;
       glyphs->glyphs[i].attr.is_color = is_color;
 
-      if (analysis->gravity == PANGO_GRAVITY_EAST)
+      if (analysis->gravity == PANGO2_GRAVITY_EAST)
         {
           glyphs->glyphs[i].geometry.x_offset = font_extents.ascender;
           glyphs->glyphs[i].geometry.y_offset = - logical_rect.y - (logical_rect.height - ink_rect.height) / 2;
           glyphs->glyphs[i].geometry.width = logical_rect.width;
         }
-      else if (analysis->gravity == PANGO_GRAVITY_WEST)
+      else if (analysis->gravity == PANGO2_GRAVITY_WEST)
         {
           glyphs->glyphs[i].geometry.x_offset = font_extents.descender;
           glyphs->glyphs[i].geometry.y_offset = logical_rect.y + (logical_rect.height - ink_rect.height) / 2;
           glyphs->glyphs[i].geometry.width = logical_rect.width;
         }
-      else if (analysis->gravity == PANGO_GRAVITY_SOUTH)
+      else if (analysis->gravity == PANGO2_GRAVITY_SOUTH)
         {
           glyphs->glyphs[i].geometry.x_offset = 0;
           glyphs->glyphs[i].geometry.y_offset = 0;
           glyphs->glyphs[i].geometry.width = logical_rect.width;
         }
-      else if (analysis->gravity == PANGO_GRAVITY_NORTH)
+      else if (analysis->gravity == PANGO2_GRAVITY_NORTH)
         {
           glyphs->glyphs[i].geometry.x_offset = 0;
           glyphs->glyphs[i].geometry.y_offset = 0;
@@ -190,17 +190,17 @@ default_shape_func (PangoUserFace       *face,
     }
 
   if (analysis->level & 1)
-    pango_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
+    pango2_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
 
   return TRUE;
 }
 
 static gboolean
-default_render_func (PangoUserFace *face,
-                     int            size,
+default_render_func (Pango2UserFace *face,
+                     int             size,
                      hb_codepoint_t  glyph,
                      gpointer        user_data,
-                     const char     *backend_id,
+                     const char      *backend_id,
                      gpointer        backend_data)
 {
   /* Draw nothing... not very exciting */
@@ -208,106 +208,106 @@ default_render_func (PangoUserFace *face,
 }
 
 /* }}} */
-/* {{{ PangoFontFace implementation */
+/* {{{ Pango2FontFace implementation */
 
-struct _PangoUserFaceClass
+struct _Pango2UserFaceClass
 {
-  PangoFontFaceClass parent_class;
+  Pango2FontFaceClass parent_class;
 };
 
-G_DEFINE_FINAL_TYPE (PangoUserFace, pango_user_face, PANGO_TYPE_FONT_FACE)
+G_DEFINE_FINAL_TYPE (Pango2UserFace, pango2_user_face, PANGO2_TYPE_FONT_FACE)
 
 static void
-pango_user_face_init (PangoUserFace *self)
+pango2_user_face_init (Pango2UserFace *self)
 {
 }
 
 static void
-pango_user_face_finalize (GObject *object)
+pango2_user_face_finalize (GObject *object)
 {
-  PangoUserFace *self = PANGO_USER_FACE (object);
+  Pango2UserFace *self = PANGO2_USER_FACE (object);
 
   g_free (self->faceid);
   if (self->destroy)
     self->destroy (self->user_data);
 
-  G_OBJECT_CLASS (pango_user_face_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango2_user_face_parent_class)->finalize (object);
 }
 
 static gboolean
-pango_user_face_is_synthesized (PangoFontFace *face)
+pango2_user_face_is_synthesized (Pango2FontFace *face)
 {
   return TRUE;
 }
 
 static gboolean
-pango_user_face_is_monospace (PangoFontFace *face)
+pango2_user_face_is_monospace (Pango2FontFace *face)
 {
   return FALSE;
 }
 
 static gboolean
-pango_user_face_is_variable (PangoFontFace *face)
+pango2_user_face_is_variable (Pango2FontFace *face)
 {
   return FALSE;
 }
 
 static gboolean
-pango_user_face_has_char (PangoFontFace *face,
-                          gunichar       wc)
+pango2_user_face_has_char (Pango2FontFace *face,
+                           gunichar        wc)
 {
-  PangoUserFace *self = PANGO_USER_FACE (face);
+  Pango2UserFace *self = PANGO2_USER_FACE (face);
   hb_codepoint_t glyph;
 
   return self->glyph_func (self, wc, &glyph, self->user_data);
 }
 
 static const char *
-pango_user_face_get_faceid (PangoFontFace *face)
+pango2_user_face_get_faceid (Pango2FontFace *face)
 {
-  PangoUserFace *self = PANGO_USER_FACE (face);
+  Pango2UserFace *self = PANGO2_USER_FACE (face);
 
   ensure_faceid (self);
 
   return self->faceid;
 }
 
-static PangoFont *
-pango_user_face_create_font (PangoFontFace              *face,
-                             const PangoFontDescription *desc,
-                             float                       dpi,
-                             const PangoMatrix          *ctm)
+static Pango2Font *
+pango2_user_face_create_font (Pango2FontFace              *face,
+                              const Pango2FontDescription *desc,
+                              float                        dpi,
+                              const Pango2Matrix          *ctm)
 {
-  PangoUserFace *self = PANGO_USER_FACE (face);
+  Pango2UserFace *self = PANGO2_USER_FACE (face);
 
-  return PANGO_FONT (pango_user_font_new_for_description (self, desc, dpi, ctm));
+  return PANGO2_FONT (pango2_user_font_new_for_description (self, desc, dpi, ctm));
 }
 
 static void
-pango_user_face_class_init (PangoUserFaceClass *class)
+pango2_user_face_class_init (Pango2UserFaceClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
-  PangoFontFaceClass *face_class = PANGO_FONT_FACE_CLASS (class);
+  Pango2FontFaceClass *face_class = PANGO2_FONT_FACE_CLASS (class);
 
-  object_class->finalize = pango_user_face_finalize;
+  object_class->finalize = pango2_user_face_finalize;
 
-  face_class->is_synthesized = pango_user_face_is_synthesized;
-  face_class->is_monospace = pango_user_face_is_monospace;
-  face_class->is_variable = pango_user_face_is_variable;
-  face_class->has_char = pango_user_face_has_char;
-  face_class->get_faceid = pango_user_face_get_faceid;
-  face_class->create_font = pango_user_face_create_font;
+  face_class->is_synthesized = pango2_user_face_is_synthesized;
+  face_class->is_monospace = pango2_user_face_is_monospace;
+  face_class->is_variable = pango2_user_face_is_variable;
+  face_class->has_char = pango2_user_face_has_char;
+  face_class->get_faceid = pango2_user_face_get_faceid;
+  face_class->create_font = pango2_user_face_create_font;
 }
 
 /* }}} */
  /* {{{ Public API */
 
 /**
- * PangoUserFaceGetFontInfoFunc:
- * @face: the `PangoUserFace`
+ * Pango2UserFaceGetFontInfoFunc:
+ * @face: the `Pango2UserFace`
  * @size: the size of the font that is being created
  * @extents: (out caller-allocates): return location for font extents
- * user_data: user data that was passed to [ctor@Pango.UserFace.new]
+ * user_data: user data that was passed to [ctor@Pango2.UserFace.new]
  *
  * Callback to obtain font extents for user fonts.
  *
@@ -319,11 +319,11 @@ pango_user_face_class_init (PangoUserFaceClass *class)
  */
 
 /**
- * PangoUserFaceUnicodeToGlyphFunc:
- * @face: the `PangoUserFace`
+ * Pango2UserFaceUnicodeToGlyphFunc:
+ * @face: the `Pango2UserFace`
  * @unicode: the Unicode character
  * @glyph: (out caller-allocates): return location for the glyph that
- * @user_data: user data that was passed to [ctor@Pango.UserFace.new]
+ * @user_data: user data that was passed to [ctor@Pango2.UserFace.new]
  *
  * Callback to determine if a user font can render a character,
  * and what glyph it will use.
@@ -332,8 +332,8 @@ pango_user_face_class_init (PangoUserFaceClass *class)
  */
 
 /**
- * PangoUserFaceGetGlyphInfoFunc:
- * @face: the `PangoUserFace`
+ * Pango2UserFaceGetGlyphInfoFunc:
+ * @face: the `Pango2UserFace`
  * @size: the size of the font that is queried
  * @glyph: the glyph that is being queried
  * @extents: (out caller-allocates): return location for the glyphs ink rectangle
@@ -341,7 +341,7 @@ pango_user_face_class_init (PangoUserFaceClass *class)
  * @v_advance: (out caller-allocates): return location for the v advance
  * @is_color_glyph: (out caller-allocates): return location for information about
  *   whether @glyph has color
- * @user_data: user data that was passed to [ctor@Pango.UserFace.new]
+ * @user_data: user data that was passed to [ctor@Pango2.UserFace.new]
  *
  * Callback to obtain information about a glyph in a user font.
  *
@@ -353,41 +353,41 @@ pango_user_face_class_init (PangoUserFaceClass *class)
  */
 
 /**
- * PangoUserFaceTextToGlyphFunc:
- * @face: the `PangoUserFace`
+ * Pango2UserFaceTextToGlyphFunc:
+ * @face: the `Pango2UserFace`
  * @size: the size of the font that is used
  * @text: the text to shape
  * @length: the length of @text
- * @analysis: `PangoAnalysis` for @text
- * @glyphs: (out caller-allocates): the `PangoGlyphString` to populate
- * @flags: `PangoShapeFlags` to use
- * @user_data: user data that was pased to [ctor@Pango.UserFace.new]
+ * @analysis: `Pango2Analysis` for @text
+ * @glyphs: (out caller-allocates): the `Pango2GlyphString` to populate
+ * @flags: `Pango2ShapeFlags` to use
+ * @user_data: user data that was pased to [ctor@Pango2.UserFace.new]
  *
  * Callback to shape a segment of text with a user font.
  *
  * This callback is optional when creating a user font. If it isn't
- * provided, Pango will rely on the `PangoUserFaceUnicodeToGlyphFunc`
- * and the `PangoUserFaceGetGlyphInfo` callback to translate Unicode
+ * provided, Pango2 will rely on the `Pango2UserFaceUnicodeToGlyphFunc`
+ * and the `Pango2UserFaceGetGlyphInfo` callback to translate Unicode
  * characters to glyphs 1-1, and position the glyphs according to their
  * advance widths.
  *
- * If this callback is provided, it replaces all of Pango's own shaping.
+ * If this callback is provided, it replaces all of Pango2's own shaping.
  * The function can implement ligatures, reordering, and other features
  * that turn the text-to-glyph mapping into an m-n relationship. The
  * function is responsible for filling not just the glyphs and their
  * positions, but also cluster information and glyph attributes in
- * [struct@Pango.GlyphVisAttr].
+ * [struct@Pango2.GlyphVisAttr].
  *
  * Returns: `TRUE` on success
  */
 
 /**
- * PangoUserFaceRenderGlyphFunc:
- * @face: the `PangoUserFace`
+ * Pango2UserFaceRenderGlyphFunc:
+ * @face: the `Pango2UserFace`
  * @size: the size of the font that is used
  * @glyph: the glyph that is being queried
- * @user_data: user data that was pased to [ctor@Pango.UserFace.new]
- * @backend_id: a string identifying the [class@Pango.Renderer] in use
+ * @user_data: user data that was pased to [ctor@Pango2.UserFace.new]
+ * @backend_id: a string identifying the [class@Pango2.Renderer] in use
  * @backend_data: backend-specific data
  *
  * Callback to render a glyph with a user font.
@@ -395,13 +395,13 @@ pango_user_face_class_init (PangoUserFaceClass *class)
  * This callback is optional when creating a user font. If it isn't
  * provided, the font will not produce any visible output.
  *
- * The @backend_id identifies the [class@Pango.Renderer] in use.
+ * The @backend_id identifies the [class@Pango2.Renderer] in use.
  * Implementations should return `FALSE` for unsupported backends.
  *
  * The cairo backend uses the string "cairo" as @backend_id, and
  * provides a `cairo_t` as @backend_data. The context is set up
  * to render in `font space`, i.e. The transformation is set up
- * to map the unit square to @size x @size. If supported, Pango
+ * to map the unit square to @size x @size. If supported, Pango2
  * uses `cairo_user_font_face_set_render_color_glyph_func` to
  * allow glyphs to be rendered with colors. For more information,
  * see the cairo documentation about user fonts.
@@ -410,16 +410,16 @@ pango_user_face_class_init (PangoUserFaceClass *class)
  */
 
 /**
- * pango_user_face_new:
- * @font_info_func: (scope notified): a `PangoUserFaceGetFontInfoFunc`
- * @glyph_func: (scope notified): a `PangoUserFaceUnicodeToGlyphFunc`
- * @glyph_info_func: (scope notified): a `PangoUserFaceGetGlyphInfoFunc`
- * @shape_func: (scope notified) (nullable): a `PangoUserFaceTextToGlyphFunc`
- * @render_func: (scope notified) (nullable): a `PangoUserFaceRenderGlyphFunc`
+ * pango2_user_face_new:
+ * @font_info_func: (scope notified): a `Pango2UserFaceGetFontInfoFunc`
+ * @glyph_func: (scope notified): a `Pango2UserFaceUnicodeToGlyphFunc`
+ * @glyph_info_func: (scope notified): a `Pango2UserFaceGetGlyphInfoFunc`
+ * @shape_func: (scope notified) (nullable): a `Pango2UserFaceTextToGlyphFunc`
+ * @render_func: (scope notified) (nullable): a `Pango2UserFaceRenderGlyphFunc`
  * @user_data: user data that will be assed to the callbacks
  * @destroy: destroy notify for @user_data
  * @name: name for the face
- * @description: `PangoFontDescription` for the font
+ * @description: `Pango2FontDescription` for the font
  *
  * Creates a new user font face.
  *
@@ -427,27 +427,27 @@ pango_user_face_class_init (PangoUserFaceClass *class)
  * but instead uses callbacks to determine glyph extents, positions
  * and rendering.
  *
- * If @shape_func is `NULL`, Pango will rely on @glyph_func and
+ * If @shape_func is `NULL`, Pango2 will rely on @glyph_func and
  * @glyph_info_func to find and position a glyph for each character.
  *
  * If @render_func is `NULL`, the font will not produce any visible
  * glyphs.
  *
- * Returns: (transfer full): a newly created `PangoUserFace`
+ * Returns: (transfer full): a newly created `Pango2UserFace`
  */
-PangoUserFace *
-pango_user_face_new (PangoUserFaceGetFontInfoFunc     font_info_func,
-                     PangoUserFaceUnicodeToGlyphFunc  glyph_func,
-                     PangoUserFaceGetGlyphInfoFunc    glyph_info_func,
-                     PangoUserFaceTextToGlyphFunc     shape_func,
-                     PangoUserFaceRenderGlyphFunc     render_func,
-                     gpointer                         user_data,
-                     GDestroyNotify                   destroy,
-                     const char                      *name,
-                     const PangoFontDescription      *description)
+Pango2UserFace *
+pango2_user_face_new (Pango2UserFaceGetFontInfoFunc     font_info_func,
+                      Pango2UserFaceUnicodeToGlyphFunc  glyph_func,
+                      Pango2UserFaceGetGlyphInfoFunc    glyph_info_func,
+                      Pango2UserFaceTextToGlyphFunc     shape_func,
+                      Pango2UserFaceRenderGlyphFunc     render_func,
+                      gpointer                          user_data,
+                      GDestroyNotify                    destroy,
+                      const char                       *name,
+                      const Pango2FontDescription      *description)
 {
-  PangoUserFace *self;
-  PangoFontFace *face;
+  Pango2UserFace *self;
+  Pango2FontFace *face;
 
   g_return_val_if_fail (font_info_func != NULL, NULL);
   g_return_val_if_fail (glyph_func != NULL, NULL);
@@ -455,7 +455,7 @@ pango_user_face_new (PangoUserFaceGetFontInfoFunc     font_info_func,
   g_return_val_if_fail (name != NULL, NULL);
   g_return_val_if_fail (description != NULL, NULL);
 
-  self = g_object_new (PANGO_TYPE_USER_FACE, NULL);
+  self = g_object_new (PANGO2_TYPE_USER_FACE, NULL);
 
   self->font_info_func = font_info_func;
   self->glyph_func = glyph_func;
@@ -468,10 +468,10 @@ pango_user_face_new (PangoUserFaceGetFontInfoFunc     font_info_func,
   if (!name)
     name = style_from_font_description (description);
 
-  face = PANGO_FONT_FACE (self);
+  face = PANGO2_FONT_FACE (self);
 
   face->name = g_strdup (name);
-  face->description = pango_font_description_copy (description);
+  face->description = pango2_font_description_copy (description);
 
   return self;
 }

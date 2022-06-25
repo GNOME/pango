@@ -8,21 +8,21 @@
 static void
 draw_text (cairo_t *cr)
 {
-  PangoLayout *layout;
-  PangoLines *lines;
-  PangoFontDescription *desc;
+  Pango2Layout *layout;
+  Pango2Lines *lines;
+  Pango2FontDescription *desc;
   int i;
 
   /* Center coordinates on the middle of the region we are drawing */
   cairo_translate (cr, RADIUS, RADIUS);
 
-  /* Create a PangoLayout, set the font and text */
-  layout = pango_cairo_create_layout (cr);
+  /* Create a Pango2Layout, set the font and text */
+  layout = pango2_cairo_create_layout (cr);
 
-  pango_layout_set_text (layout, "Text", -1);
-  desc = pango_font_description_from_string (FONT);
-  pango_layout_set_font_description (layout, desc);
-  pango_font_description_free (desc);
+  pango2_layout_set_text (layout, "Text", -1);
+  desc = pango2_font_description_from_string (FONT);
+  pango2_layout_set_font_description (layout, desc);
+  pango2_font_description_free (desc);
 
   /* Draw the layout N_WORDS times in a circle */
   for (i = 0; i < N_WORDS; i++)
@@ -39,14 +39,14 @@ draw_text (cairo_t *cr)
 
       cairo_rotate (cr, angle * G_PI / 180.);
 
-      /* Inform Pango to re-layout the text with the new transformation */
-      pango_cairo_update_layout (cr, layout);
+      /* Inform Pango2 to re-layout the text with the new transformation */
+      pango2_cairo_update_layout (cr, layout);
 
-      lines = pango_layout_get_lines (layout);
+      lines = pango2_layout_get_lines (layout);
 
-      pango_lines_get_size (lines, &width, &height);
-      cairo_move_to (cr, - ((double) width / PANGO_SCALE) / 2, - RADIUS);
-      pango_cairo_show_layout (cr, layout);
+      pango2_lines_get_size (lines, &width, &height);
+      cairo_move_to (cr, - ((double) width / PANGO2_SCALE) / 2, - RADIUS);
+      pango2_cairo_show_layout (cr, layout);
 
       cairo_restore (cr);
     }

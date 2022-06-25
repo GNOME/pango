@@ -1,5 +1,5 @@
-/* Pango
- * test-break.c: Test Pango line breaking
+/* Pango2
+ * test-break.c: Test Pango2 line breaking
  *
  * Copyright (C) 2019 Red Hat, Inc
  *
@@ -36,7 +36,7 @@
 #include "pango/pango-item-private.h"
 
 
-static PangoContext *context;
+static Pango2Context *context;
 
 static void
 append_text (GString    *s,
@@ -56,33 +56,33 @@ append_text (GString    *s,
 }
 
 static gboolean
-affects_itemization (PangoAttribute *attr,
+affects_itemization (Pango2Attribute *attr,
                      gpointer        data)
 {
   switch ((int)attr->type)
     {
     /* These affect font selection */
-    case PANGO_ATTR_LANGUAGE:
-    case PANGO_ATTR_FAMILY:
-    case PANGO_ATTR_STYLE:
-    case PANGO_ATTR_WEIGHT:
-    case PANGO_ATTR_VARIANT:
-    case PANGO_ATTR_STRETCH:
-    case PANGO_ATTR_SIZE:
-    case PANGO_ATTR_FONT_DESC:
-    case PANGO_ATTR_SCALE:
-    case PANGO_ATTR_FALLBACK:
-    case PANGO_ATTR_ABSOLUTE_SIZE:
-    case PANGO_ATTR_GRAVITY:
-    case PANGO_ATTR_GRAVITY_HINT:
-    case PANGO_ATTR_FONT_SCALE:
+    case PANGO2_ATTR_LANGUAGE:
+    case PANGO2_ATTR_FAMILY:
+    case PANGO2_ATTR_STYLE:
+    case PANGO2_ATTR_WEIGHT:
+    case PANGO2_ATTR_VARIANT:
+    case PANGO2_ATTR_STRETCH:
+    case PANGO2_ATTR_SIZE:
+    case PANGO2_ATTR_FONT_DESC:
+    case PANGO2_ATTR_SCALE:
+    case PANGO2_ATTR_FALLBACK:
+    case PANGO2_ATTR_ABSOLUTE_SIZE:
+    case PANGO2_ATTR_GRAVITY:
+    case PANGO2_ATTR_GRAVITY_HINT:
+    case PANGO2_ATTR_FONT_SCALE:
     /* These are part of ItemProperties, so need to break runs */
-    case PANGO_ATTR_LETTER_SPACING:
-    case PANGO_ATTR_RISE:
-    case PANGO_ATTR_BASELINE_SHIFT:
-    case PANGO_ATTR_LINE_HEIGHT:
-    case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
-    case PANGO_ATTR_TEXT_TRANSFORM:
+    case PANGO2_ATTR_LETTER_SPACING:
+    case PANGO2_ATTR_RISE:
+    case PANGO2_ATTR_BASELINE_SHIFT:
+    case PANGO2_ATTR_LINE_HEIGHT:
+    case PANGO2_ATTR_ABSOLUTE_LINE_HEIGHT:
+    case PANGO2_ATTR_TEXT_TRANSFORM:
       return TRUE;
     default:
       return FALSE;
@@ -93,9 +93,9 @@ affects_itemization (PangoAttribute *attr,
 static int
 compare_attr (gconstpointer p1, gconstpointer p2)
 {
-  const PangoAttribute *a1 = p1;
-  const PangoAttribute *a2 = p2;
-  if (pango_attribute_equal (a1, a2) &&
+  const Pango2Attribute *a1 = p1;
+  const Pango2Attribute *a2 = p2;
+  if (pango2_attribute_equal (a1, a2) &&
       a1->start_index == a2->start_index &&
       a1->end_index == a2->end_index)
     return 0;
@@ -104,15 +104,15 @@ compare_attr (gconstpointer p1, gconstpointer p2)
 }
 
 void
-pango_item_apply_attrs (PangoItem         *item,
-                        PangoAttrIterator *iter)
+pango2_item_apply_attrs (Pango2Item         *item,
+                        Pango2AttrIterator *iter)
 {
   int start, end;
   GSList *attrs = NULL;
 
   do
     {
-      pango_attr_iterator_range (iter, &start, &end);
+      pango2_attr_iterator_range (iter, &start, &end);
 
       if (start >= item->offset + item->length)
         break;
@@ -121,47 +121,47 @@ pango_item_apply_attrs (PangoItem         *item,
         {
           GSList *list, *l;
 
-          list = pango_attr_iterator_get_attrs (iter);
+          list = pango2_attr_iterator_get_attrs (iter);
           for (l = list; l; l = l->next)
             {
               if (!g_slist_find_custom (attrs, l->data, compare_attr))
 
-                attrs = g_slist_prepend (attrs, pango_attribute_copy (l->data));
+                attrs = g_slist_prepend (attrs, pango2_attribute_copy (l->data));
             }
-          g_slist_free_full (list, (GDestroyNotify)pango_attribute_destroy);
+          g_slist_free_full (list, (GDestroyNotify)pango2_attribute_destroy);
         }
 
       if (end >= item->offset + item->length)
         break;
     }
-  while (pango_attr_iterator_next (iter));
+  while (pango2_attr_iterator_next (iter));
 
   item->analysis.extra_attrs = g_slist_concat (item->analysis.extra_attrs, attrs);
 }
 
 static void
 apply_attributes_to_items (GList         *items,
-                           PangoAttrList *attrs)
+                           Pango2AttrList *attrs)
 {
   GList *l;
-  PangoAttrIterator *iter;
+  Pango2AttrIterator *iter;
 
   if (!attrs)
     return;
 
-  iter = pango_attr_list_get_iterator (attrs);
+  iter = pango2_attr_list_get_iterator (attrs);
 
   for (l = items; l; l = l->next)
     {
-      PangoItem *item = l->data;
-      pango_item_apply_attrs (item, iter);
+      Pango2Item *item = l->data;
+      pango2_item_apply_attrs (item, iter);
     }
 
-  pango_attr_iterator_destroy (iter);
+  pango2_attr_iterator_destroy (iter);
 }
 
 static int
-get_item_char_offset (PangoItem *item)
+get_item_char_offset (Pango2Item *item)
 {
   return item->char_offset;
 }
@@ -175,11 +175,11 @@ test_file (const char *filename, GString *string)
   GString *s1, *s2, *s3, *s4, *s5, *s6, *s7;
   char *test;
   char *text;
-  PangoAttrList *attrs;
-  PangoAttrList *itemize_attrs;
+  Pango2AttrList *attrs;
+  Pango2AttrList *itemize_attrs;
   GList *items, *l;
   const char *sep = "";
-  PangoDirection dir;
+  Pango2Direction dir;
 
   g_file_get_contents (filename, &contents, &length, &error);
   g_assert_no_error (error);
@@ -190,7 +190,7 @@ test_file (const char *filename, GString *string)
   while (test[0] == '#')
     test = strchr (test, '\n') + 1;
 
-  pango_parse_markup (test, -1, 0, &attrs, &text, NULL, &error);
+  pango2_parse_markup (test, -1, 0, &attrs, &text, NULL, &error);
   g_assert_no_error (error);
 
   s1 = g_string_new ("Items:  ");
@@ -205,25 +205,25 @@ test_file (const char *filename, GString *string)
   if (text[length - 1] == '\n')
     length--;
 
-  itemize_attrs = pango_attr_list_filter (attrs, affects_itemization, NULL);
-  dir = pango_context_get_base_dir (context);
-  items = pango_itemize (context, dir, text, 0, length, itemize_attrs);
+  itemize_attrs = pango2_attr_list_filter (attrs, affects_itemization, NULL);
+  dir = pango2_context_get_base_dir (context);
+  items = pango2_itemize (context, dir, text, 0, length, itemize_attrs);
 
   apply_attributes_to_items (items, attrs);
-  pango_attr_list_unref (itemize_attrs);
+  pango2_attr_list_unref (itemize_attrs);
 
   for (l = items; l; l = l->next)
     {
-      PangoItem *item = l->data;
-      PangoFontDescription *desc;
+      Pango2Item *item = l->data;
+      Pango2FontDescription *desc;
       char *font;
       int m;
       GSList *a;
 
-      desc = pango_font_describe (item->analysis.font);
+      desc = pango2_font_describe (item->analysis.font);
       /* Leave out faceid for now to avoid backend-dependent test output */
-      pango_font_description_unset_fields (desc, PANGO_FONT_MASK_FACEID);
-      font = pango_font_description_to_string (desc);
+      pango2_font_description_unset_fields (desc, PANGO2_FONT_MASK_FACEID);
+      font = pango2_font_description_to_string (desc);
 
       if (l != items)
         sep = "|";
@@ -232,20 +232,20 @@ test_file (const char *filename, GString *string)
 
       g_string_append_printf (s2, "%s%s", sep, font);
       g_string_append_printf (s3, "%s%s", sep, get_script_name (item->analysis.script));
-      g_string_append_printf (s4, "%s%s", sep, pango_language_to_string (item->analysis.language));
+      g_string_append_printf (s4, "%s%s", sep, pango2_language_to_string (item->analysis.language));
       g_string_append_printf (s5, "%s%d", sep, item->analysis.level);
       g_string_append_printf (s6, "%s", sep);
       g_string_append_printf (s7, "%s%d(%d)", sep, item->num_chars, get_item_char_offset (item));
       for (a = item->analysis.extra_attrs; a; a = a->next)
         {
-          PangoAttribute *attr = a->data;
+          Pango2Attribute *attr = a->data;
           if (a != item->analysis.extra_attrs)
             g_string_append (s6, ",");
           print_attribute (attr, s6);
         }
 
       g_free (font);
-      pango_font_description_free (desc);
+      pango2_font_description_free (desc);
 
       m = MAX (MAX (MAX (s1->len, s2->len),
                     MAX (s3->len, s4->len)),
@@ -277,8 +277,8 @@ test_file (const char *filename, GString *string)
   g_string_free (s6, TRUE);
   g_string_free (s7, TRUE);
 
-  g_list_free_full (items, (GDestroyNotify)pango_item_free);
-  pango_attr_list_unref (attrs);
+  g_list_free_full (items, (GDestroyNotify)pango2_item_free);
+  pango2_attr_list_unref (attrs);
   g_free (text);
   g_free (contents);
 }
@@ -308,7 +308,7 @@ test_itemize (gconstpointer d)
   GString *dump;
   char *diff;
   gboolean found_cantarell;
-  PangoFontMap *map;
+  Pango2FontMap *map;
 
   char *old_locale = g_strdup (setlocale (LC_ALL, NULL));
   setlocale (LC_ALL, "en_US.UTF-8");
@@ -322,12 +322,12 @@ test_itemize (gconstpointer d)
     }
 
   found_cantarell = FALSE;
-  map = pango_context_get_font_map (context);
+  map = pango2_context_get_font_map (context);
   for (int i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (map)); i++)
     {
-      PangoFontFamily *family = g_list_model_get_item (G_LIST_MODEL (map), i);
+      Pango2FontFamily *family = g_list_model_get_item (G_LIST_MODEL (map), i);
       g_object_unref (family);
-      if (strcmp (pango_font_family_get_name (family), "Cantarell") == 0)
+      if (strcmp (pango2_font_family_get_name (family), "Cantarell") == 0)
         {
           found_cantarell = TRUE;
           break;
@@ -386,8 +386,8 @@ main (int argc, char *argv[])
 
   install_fonts ();
 
-  context = pango_context_new ();
-  pango_context_set_language (context, pango_language_from_string ("en-us"));
+  context = pango2_context_new ();
+  pango2_context_set_language (context, pango2_language_from_string ("en-us"));
 
   /* allow to easily generate expected output for new test cases */
   if (argc > 1 && argv[1][0] != '-')

@@ -26,41 +26,41 @@ G_BEGIN_DECLS
 
 
 /**
- * PangoAttrIterator:
+ * Pango2AttrIterator:
  *
- * A `PangoAttrIterator` is used to iterate through a `PangoAttrList`.
+ * A `Pango2AttrIterator` is used to iterate through a `Pango2AttrList`.
  *
- * A new iterator is created with [method@Pango.AttrList.get_iterator].
+ * A new iterator is created with [method@Pango2.AttrList.get_iterator].
  * Once the iterator is created, it can be advanced through the style
- * changes in the text using [method@Pango.AttrIterator.next]. At each
+ * changes in the text using [method@Pango2.AttrIterator.next]. At each
  * style change, the range of the current style segment and the attributes
  * currently in effect can be queried.
  */
 
-PANGO_AVAILABLE_IN_ALL
-GType                   pango_attr_iterator_get_type    (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+GType                   pango2_attr_iterator_get_type    (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_attr_iterator_range       (PangoAttrIterator     *iterator,
-                                                         int                   *start,
-                                                         int                   *end);
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_attr_iterator_next        (PangoAttrIterator     *iterator);
-PANGO_AVAILABLE_IN_ALL
-PangoAttrIterator *     pango_attr_iterator_copy        (PangoAttrIterator     *iterator);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_attr_iterator_destroy     (PangoAttrIterator     *iterator);
-PANGO_AVAILABLE_IN_ALL
-PangoAttribute *        pango_attr_iterator_get         (PangoAttrIterator     *iterator,
-                                                         guint                  type);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_attr_iterator_get_font    (PangoAttrIterator     *iterator,
-                                                         PangoFontDescription  *desc,
-                                                         PangoLanguage        **language,
-                                                         GSList               **extra_attrs);
-PANGO_AVAILABLE_IN_ALL
-GSList *                pango_attr_iterator_get_attrs   (PangoAttrIterator     *iterator);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_attr_iterator_range       (Pango2AttrIterator     *iterator,
+                                                          int                    *start,
+                                                          int                    *end);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_attr_iterator_next        (Pango2AttrIterator     *iterator);
+PANGO2_AVAILABLE_IN_ALL
+Pango2AttrIterator *    pango2_attr_iterator_copy        (Pango2AttrIterator     *iterator);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_attr_iterator_destroy     (Pango2AttrIterator     *iterator);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Attribute *       pango2_attr_iterator_get         (Pango2AttrIterator     *iterator,
+                                                          guint                   type);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_attr_iterator_get_font    (Pango2AttrIterator     *iterator,
+                                                          Pango2FontDescription  *desc,
+                                                          Pango2Language        **language,
+                                                          GSList                **extra_attrs);
+PANGO2_AVAILABLE_IN_ALL
+GSList *                pango2_attr_iterator_get_attrs  (Pango2AttrIterator      *iterator);
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoAttrIterator, pango_attr_iterator_destroy)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(Pango2AttrIterator, pango2_attr_iterator_destroy)
 
 G_END_DECLS

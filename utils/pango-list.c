@@ -112,8 +112,8 @@ main (int    argc,
     { NULL, }
   };
   GOptionContext *context;
-  PangoContext *ctx;
-  PangoFontMap *fontmap;
+  Pango2Context *ctx;
+  Pango2FontMap *fontmap;
   int i, j;
   int width;
   GError *error = NULL;
@@ -143,16 +143,16 @@ main (int    argc,
       exit (0);
     }
 
-  fontmap = pango_font_map_get_default ();
-  ctx = pango_context_new ();
+  fontmap = pango2_font_map_get_default ();
+  ctx = pango2_context_new ();
 
   if (opt_verbose)
     g_print ("Using %s\n\n", G_OBJECT_TYPE_NAME (fontmap));
 
   for (i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (fontmap)); i++)
     {
-      PangoFontFamily *family = g_list_model_get_item (G_LIST_MODEL (fontmap), i);
-      const char *family_name = pango_font_family_get_name (family);
+      Pango2FontFamily *family = g_list_model_get_item (G_LIST_MODEL (fontmap), i);
+      const char *family_name = pango2_font_family_get_name (family);
 
       g_object_unref (family);
 
@@ -160,7 +160,7 @@ main (int    argc,
 
       if (opt_verbose)
         {
-          if (PANGO_IS_GENERIC_FAMILY (family))
+          if (PANGO2_IS_GENERIC_FAMILY (family))
             g_print ("(generic)");
 
           g_print (" (%d faces)", g_list_model_get_n_items (G_LIST_MODEL (family)));
@@ -174,9 +174,9 @@ main (int    argc,
       width = 0;
       for (j = 0; j < g_list_model_get_n_items (G_LIST_MODEL (family)); j++)
 	{
-          PangoFontFace *face = g_list_model_get_item (G_LIST_MODEL (family), j);
-	  const char *face_name = pango_font_face_get_name (face);
-	  gboolean is_synth = pango_font_face_is_synthesized (face);
+          Pango2FontFace *face = g_list_model_get_item (G_LIST_MODEL (family), j);
+	  const char *face_name = pango2_font_face_get_name (face);
+	  gboolean is_synth = pango2_font_face_is_synthesized (face);
 	  const char *synth_str = is_synth ? "*" : "";
 	  const char *variable_str = "";
           width = MAX (width, strlen (synth_str) + strlen (variable_str) + strlen (face_name));
@@ -185,61 +185,61 @@ main (int    argc,
 
       for (j = 0; j < g_list_model_get_n_items (G_LIST_MODEL (family)); j++)
         {
-          PangoFontFace *face = g_list_model_get_item (G_LIST_MODEL (family), j);
-          const char *face_name = pango_font_face_get_name (face);
-          gboolean is_synth = pango_font_face_is_synthesized (face);
+          Pango2FontFace *face = g_list_model_get_item (G_LIST_MODEL (family), j);
+          const char *face_name = pango2_font_face_get_name (face);
+          gboolean is_synth = pango2_font_face_is_synthesized (face);
           const char *synth_str = is_synth ? "*" : "";
-          gboolean is_variable = pango_font_face_is_variable (face);
+          gboolean is_variable = pango2_font_face_is_variable (face);
           const char *variable_str = is_variable ? "@" : "";
-          PangoFontDescription *desc;
+          Pango2FontDescription *desc;
           char *desc_str;
 
-          desc = pango_font_face_describe (face);
-          desc_str = pango_font_description_to_string (desc);
+          desc = pango2_font_face_describe (face);
+          desc_str = pango2_font_description_to_string (desc);
 
           g_print ("  %s%s%s: %*s%s\n", synth_str, variable_str, face_name,
                    width - (int)strlen (face_name) - (int)strlen (synth_str) - (int)strlen (variable_str), "", desc_str);
 
-          pango_font_description_set_absolute_size (desc, 10 * PANGO_SCALE);
+          pango2_font_description_set_absolute_size (desc, 10 * PANGO2_SCALE);
 
           if (opt_metrics)
             {
-              PangoFontMetrics *metrics;
+              Pango2FontMetrics *metrics;
 
-              metrics = pango_context_get_metrics (ctx, desc, pango_language_from_string ("en-us"));
+              metrics = pango2_context_get_metrics (ctx, desc, pango2_language_from_string ("en-us"));
               g_print ("    (a %d d %d h %d cw %d dw %d u %d %d s %d %d)\n",
-                       pango_font_metrics_get_ascent (metrics),
-                       pango_font_metrics_get_descent (metrics),
-                       pango_font_metrics_get_height (metrics),
-                       pango_font_metrics_get_approximate_char_width (metrics),
-                       pango_font_metrics_get_approximate_digit_width (metrics),
-                       pango_font_metrics_get_underline_position (metrics),
-                       pango_font_metrics_get_underline_thickness (metrics),
-                       pango_font_metrics_get_strikethrough_position (metrics),
-                       pango_font_metrics_get_strikethrough_thickness (metrics));
-              pango_font_metrics_free (metrics);
+                       pango2_font_metrics_get_ascent (metrics),
+                       pango2_font_metrics_get_descent (metrics),
+                       pango2_font_metrics_get_height (metrics),
+                       pango2_font_metrics_get_approximate_char_width (metrics),
+                       pango2_font_metrics_get_approximate_digit_width (metrics),
+                       pango2_font_metrics_get_underline_position (metrics),
+                       pango2_font_metrics_get_underline_thickness (metrics),
+                       pango2_font_metrics_get_strikethrough_position (metrics),
+                       pango2_font_metrics_get_strikethrough_thickness (metrics));
+              pango2_font_metrics_free (metrics);
             }
 
           if (opt_variations)
             {
-              PangoFont *font;
+              Pango2Font *font;
               hb_font_t *hb_font;
               int instance_id = -1;
 
               /* set variations here, to make the fontmap prefer the variable family
                * over a non-variable one.
                */
-              pango_font_description_set_variations (desc, "@");
+              pango2_font_description_set_variations (desc, "@");
 
-              font = pango_context_load_font (ctx, desc);
-              hb_font = pango_font_get_hb_font (font);
-              if (PANGO_IS_HB_FONT (font))
+              font = pango2_context_load_font (ctx, desc);
+              hb_font = pango2_font_get_hb_font (font);
+              if (PANGO2_IS_HB_FONT (font))
                 {
-                  PangoHbFace *hbface = (PangoHbFace *)face;
+                  Pango2HbFace *hbface = (Pango2HbFace *)face;
                   instance_id = hbface->instance_id;
                 }
 
-              if (pango_font_face_is_variable (face))
+              if (pango2_font_face_is_variable (face))
                 {
                   if (instance_id >= 0)
                     g_print ("    Instance %d\n", instance_id);
@@ -270,9 +270,9 @@ main (int    argc,
 
           if (opt_verbose)
             {
-              if (PANGO_IS_HB_FACE (face))
+              if (PANGO2_IS_HB_FACE (face))
                 {
-                  PangoHbFace *hbface = (PangoHbFace *)face;
+                  Pango2HbFace *hbface = (Pango2HbFace *)face;
 
                   if (hbface->file)
                     g_print ("    %d %s\n", hbface->index, hbface->file);
@@ -280,7 +280,7 @@ main (int    argc,
             }
 
           g_free (desc_str);
-          pango_font_description_free (desc);
+          pango2_font_description_free (desc);
           g_object_unref (face);
         }
     }

@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * pango-language.c: Language handling routines
  *
  * Copyright (C) 2000 Red Hat Software
@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -34,7 +34,7 @@
 #endif /* HAVE_CORE_TEXT */
 
 
-/* We embed a private struct right *before* a where a PangoLanguage *
+/* We embed a private struct right *before* a where a Pango2Language *
  * points to.
  */
 
@@ -43,34 +43,34 @@ typedef struct {
   gconstpointer script_for_lang;
 
   int magic; /* Used for verification */
-} PangoLanguagePrivate;
+} Pango2LanguagePrivate;
 
-#define PANGO_LANGUAGE_PRIVATE_MAGIC 0x0BE4DAD0
+#define PANGO2_LANGUAGE_PRIVATE_MAGIC 0x0BE4DAD0
 
 static void
-pango_language_private_init (PangoLanguagePrivate *priv)
+pango2_language_private_init (Pango2LanguagePrivate *priv)
 {
-  priv->magic = PANGO_LANGUAGE_PRIVATE_MAGIC;
+  priv->magic = PANGO2_LANGUAGE_PRIVATE_MAGIC;
 
   priv->lang_info = (gconstpointer) -1;
   priv->script_for_lang = (gconstpointer) -1;
 }
 
-static PangoLanguagePrivate * pango_language_get_private (PangoLanguage *language) G_GNUC_CONST;
+static Pango2LanguagePrivate * pango2_language_get_private (Pango2Language *language) G_GNUC_CONST;
 
-static PangoLanguagePrivate *
-pango_language_get_private (PangoLanguage *language)
+static Pango2LanguagePrivate *
+pango2_language_get_private (Pango2Language *language)
 {
-  PangoLanguagePrivate *priv;
+  Pango2LanguagePrivate *priv;
 
   if (!language)
     return NULL;
 
-  priv = (PangoLanguagePrivate *)(void *)((char *)language - sizeof (PangoLanguagePrivate));
+  priv = (Pango2LanguagePrivate *)(void *)((char *)language - sizeof (Pango2LanguagePrivate));
 
-  if (G_UNLIKELY (priv->magic != PANGO_LANGUAGE_PRIVATE_MAGIC))
+  if (G_UNLIKELY (priv->magic != PANGO2_LANGUAGE_PRIVATE_MAGIC))
     {
-      g_critical ("Invalid PangoLanguage.  Did you pass in a straight string instead of calling pango_language_from_string()?");
+      g_critical ("Invalid Pango2Language.  Did you pass in a straight string instead of calling pango2_language_from_string()?");
       return NULL;
     }
 
@@ -94,7 +94,7 @@ static const char canon_map[256] = {
 
 static gboolean
 lang_equal (gconstpointer v1,
-	    gconstpointer v2)
+            gconstpointer v2)
 {
   const guchar *p1 = v1;
   const guchar *p2 = v2;
@@ -121,33 +121,33 @@ lang_hash (gconstpointer key)
   return h;
 }
 
-static PangoLanguage *
-pango_language_copy (PangoLanguage *language)
+static Pango2Language *
+pango2_language_copy (Pango2Language *language)
 {
   return language; /* language tags are const */
 }
 
 static void
-pango_language_free (PangoLanguage *language G_GNUC_UNUSED)
+pango2_language_free (Pango2Language *language G_GNUC_UNUSED)
 {
   return; /* nothing */
 }
 
 /**
- * PangoLanguage:
+ * Pango2Language:
  *
- * The `PangoLanguage` structure is used to
+ * The `Pango2Language` structure is used to
  * represent a language.
  *
- * `PangoLanguage` pointers can be efficiently
+ * `Pango2Language` pointers can be efficiently
  * copied and compared with each other.
  */
-G_DEFINE_BOXED_TYPE (PangoLanguage, pango_language,
-                     pango_language_copy,
-                     pango_language_free);
+G_DEFINE_BOXED_TYPE (Pango2Language, pango2_language,
+                     pango2_language_copy,
+                     pango2_language_free);
 
 /**
- * _pango_get_lc_ctype:
+ * _pango2_get_lc_ctype:
  *
  * Return the Unix-style locale string for the language currently in
  * effect. On Unix systems, this is the return value from
@@ -171,7 +171,7 @@ G_DEFINE_BOXED_TYPE (PangoLanguage, pango_language,
  * Return value: a dynamically allocated string, free with [GLib.free]
  */
 static char *
-_pango_get_lc_ctype (void)
+_pango2_get_lc_ctype (void)
 {
 #ifdef G_OS_WIN32
   /* Somebody might try to set the locale for this process using the
@@ -179,8 +179,8 @@ _pango_get_lc_ctype (void)
    * doesn't know anything about them. You set the locale in the
    * Control Panel. Setting these env vars won't have any affect on
    * locale-dependent C library functions like ctime(). But just for
-   * kicks, do obey LC_ALL, LC_CTYPE and LANG in Pango. (This also makes
-   * it easier to test GTK and Pango in various default languages, you
+   * kicks, do obey LC_ALL, LC_CTYPE and LANG in Pango2. (This also makes
+   * it easier to test GTK and Pango2 in various default languages, you
    * don't have to clickety-click in the Control Panel, you can simply
    * start the program with LC_ALL=something on the command line.)
    */
@@ -249,9 +249,9 @@ _pango_get_lc_ctype (void)
 }
 
 /**
- * pango_language_get_default:
+ * pango2_language_get_default:
  *
- * Returns the `PangoLanguage` for the current locale of the process.
+ * Returns the `Pango2Language` for the current locale of the process.
  *
  * On Unix systems, this is the return value is derived from
  * `setlocale (LC_CTYPE, NULL)`, and the user can
@@ -281,22 +281,22 @@ _pango_get_lc_ctype (void)
  *
  * Also note that this function will not do the right thing if you
  * use per-thread locales with uselocale(). In that case, you should
- * just call [func@Pango.Language.from_string] yourself.
+ * just call [func@Pango2.Language.from_string] yourself.
  *
- * Return value: (transfer none): the default language as a `PangoLanguage`
+ * Return value: (transfer none): the default language as a `Pango2Language`
  **/
-PangoLanguage *
-pango_language_get_default (void)
+Pango2Language *
+pango2_language_get_default (void)
 {
-  static PangoLanguage *result = NULL; /* MT-safe */
+  static Pango2Language *result = NULL; /* MT-safe */
 
   if (g_once_init_enter (&result))
     {
       char *lc_ctype;
-      PangoLanguage *lang;
+      Pango2Language *lang;
 
-      lc_ctype = _pango_get_lc_ctype ();
-      lang = pango_language_from_string (lc_ctype);
+      lc_ctype = _pango2_get_lc_ctype ();
+      lang = pango2_language_from_string (lc_ctype);
       g_free (lc_ctype);
 
       g_once_init_leave (&result, lang);
@@ -306,12 +306,12 @@ pango_language_get_default (void)
 }
 
 /**
- * pango_language_from_string:
+ * pango2_language_from_string:
  * @language: (nullable): a string representing a language tag
  *
- * Convert a language tag to a `PangoLanguage`.
+ * Convert a language tag to a `Pango2Language`.
  *
- * The language tag must be in a RFC-3066 format. `PangoLanguage` pointers
+ * The language tag must be in a RFC-3066 format. `Pango2Language` pointers
  * can be efficiently copied (copy the pointer) and compared with other
  * language tags (compare the pointer.)
  *
@@ -319,17 +319,17 @@ pango_language_get_default (void)
  * lowercase, mapping '_' to '-', and stripping all characters other
  * than letters and '-'.
  *
- * Use [func@Pango.Language.get_default] if you want to get the
- * `PangoLanguage` for the current locale of the process.
+ * Use [func@Pango2.Language.get_default] if you want to get the
+ * `Pango2Language` for the current locale of the process.
  *
- * Return value: (transfer none) (nullable): a `PangoLanguage`
+ * Return value: (transfer none) (nullable): a `Pango2Language`
  */
-PangoLanguage *
-pango_language_from_string (const char *language)
+Pango2Language *
+pango2_language_from_string (const char *language)
 {
   G_LOCK_DEFINE_STATIC (lang_from_string);
   static GHashTable *hash = NULL; /* MT-safe */
-  PangoLanguagePrivate *priv;
+  Pango2LanguagePrivate *priv;
   char *result;
   int len;
   char *p;
@@ -349,13 +349,13 @@ pango_language_from_string (const char *language)
     }
 
   len = strlen (language);
-  priv = g_malloc0 (sizeof (PangoLanguagePrivate) + len + 1);
+  priv = g_malloc0 (sizeof (Pango2LanguagePrivate) + len + 1);
   g_assert (priv);
 
   result = (char *)priv;
-  result += sizeof (PangoLanguagePrivate);
+  result += sizeof (Pango2LanguagePrivate);
 
-  pango_language_private_init (priv);
+  pango2_language_private_init (priv);
 
   p = result;
   while ((*(p++) = canon_map[*(guchar *)language++]))
@@ -366,11 +366,11 @@ pango_language_from_string (const char *language)
 out:
   G_UNLOCK (lang_from_string);
 
-  return (PangoLanguage *)result;
+  return (Pango2Language *)result;
 }
 
 /**
- * pango_language_to_string:
+ * pango2_language_to_string:
  * @language: a language tag.
  *
  * Gets the RFC-3066 format string representing the given language tag.
@@ -378,19 +378,19 @@ out:
  * Returns (transfer none): a string representing the language tag
  */
 const char *
-(pango_language_to_string) (PangoLanguage *language)
+(pango2_language_to_string) (Pango2Language *language)
 {
-  return pango_language_to_string (language);
+  return pango2_language_to_string (language);
 }
 
 /**
- * pango_language_matches:
- * @language: (nullable): a language tag (see [func@Pango.Language.from_string]),
+ * pango2_language_matches:
+ * @language: (nullable): a language tag (see [func@Pango2.Language.from_string]),
  *   %NULL is allowed and matches nothing but '*'
  * @range_list: a list of language ranges, separated by ';', ':',
  *   ',', or space characters.
  *   Each element must either be '*', or a RFC 3066 language range
- *   canonicalized as by [func@Pango.Language.from_string]
+ *   canonicalized as by [func@Pango2.Language.from_string]
  *
  * Checks if a language tag matches one of the elements in a list of
  * language ranges.
@@ -402,10 +402,10 @@ const char *
  * Return value: %TRUE if a match was found
  */
 gboolean
-pango_language_matches (PangoLanguage *language,
-			const char    *range_list)
+pango2_language_matches (Pango2Language *language,
+                         const char     *range_list)
 {
-  const char *lang_str = pango_language_to_string (language);
+  const char *lang_str = pango2_language_to_string (language);
   const char *p = range_list;
   gboolean done = FALSE;
 
@@ -413,18 +413,18 @@ pango_language_matches (PangoLanguage *language,
     {
       const char *end = strpbrk (p, LANGUAGE_SEPARATORS);
       if (!end)
-	{
-	  end = p + strlen (p);
-	  done = TRUE;
-	}
+        {
+          end = p + strlen (p);
+          done = TRUE;
+        }
 
       if (strncmp (p, "*", 1) == 0 ||
-	  (lang_str && strncmp (lang_str, p, end - p) == 0 &&
-	   (lang_str[end - p] == '\0' || lang_str[end - p] == '-')))
-	return TRUE;
+          (lang_str && strncmp (lang_str, p, end - p) == 0 &&
+           (lang_str[end - p] == '\0' || lang_str[end - p] == '-')))
+        return TRUE;
 
       if (!done)
-	p = end + 1;
+        p = end + 1;
     }
 
   return FALSE;
@@ -432,7 +432,7 @@ pango_language_matches (PangoLanguage *language,
 
 static int
 lang_compare_first_component (gconstpointer pa,
-			      gconstpointer pb)
+                              gconstpointer pb)
 {
   const char *a = pa, *b = pb;
   unsigned int da, db;
@@ -443,7 +443,7 @@ lang_compare_first_component (gconstpointer pa,
 
   p = strstr (b, "-");
   db = p ? (unsigned int) (p - b) : strlen (b);
-   
+
   return strncmp (a, b, MAX (da, db));
 }
 
@@ -453,10 +453,10 @@ lang_compare_first_component (gconstpointer pa,
  * sorted on language code.
  */
 static gconstpointer
-find_best_lang_match (PangoLanguage *language,
-		      gconstpointer  records,
-		      guint          num_records,
-		      guint          record_size)
+find_best_lang_match (Pango2Language *language,
+                      gconstpointer   records,
+                      guint           num_records,
+                      guint           record_size)
 {
   const char *lang_str;
   const char *record, *start, *end;
@@ -464,11 +464,11 @@ find_best_lang_match (PangoLanguage *language,
   if (language == NULL)
     return NULL;
 
-  lang_str = pango_language_to_string (language);
+  lang_str = pango2_language_to_string (language);
 
   record = bsearch (lang_str,
-		    records, num_records, record_size,
-		    lang_compare_first_component);
+                    records, num_records, record_size,
+                    lang_compare_first_component);
   if (!record)
     return NULL;
 
@@ -479,14 +479,14 @@ find_best_lang_match (PangoLanguage *language,
 
   /* go to the final one matching in the first component */
   while (record < end - record_size &&
-	 lang_compare_first_component (lang_str, record + record_size) == 0)
+         lang_compare_first_component (lang_str, record + record_size) == 0)
     record += record_size;
 
   /* go back, find which one matches completely */
   while (start <= record &&
-	 lang_compare_first_component (lang_str, record) == 0)
+         lang_compare_first_component (lang_str, record) == 0)
     {
-      if (pango_language_matches (language, record))
+      if (pango2_language_matches (language, record))
         return record;
 
       record -= record_size;
@@ -496,11 +496,11 @@ find_best_lang_match (PangoLanguage *language,
 }
 
 static gconstpointer
-find_best_lang_match_cached (PangoLanguage *language,
-			     gconstpointer *cache,
-			     gconstpointer  records,
-			     guint          num_records,
-			     guint          record_size)
+find_best_lang_match_cached (Pango2Language *language,
+                             gconstpointer  *cache,
+                             gconstpointer   records,
+                             guint           num_records,
+                             guint           record_size)
 {
   gconstpointer result;
 
@@ -508,9 +508,9 @@ find_best_lang_match_cached (PangoLanguage *language,
     return *cache;
 
   result = find_best_lang_match (language,
-				 records,
-				 num_records,
-				 record_size);
+                                 records,
+                                 num_records,
+                                 record_size);
 
   if (cache)
     *cache = result;
@@ -519,12 +519,12 @@ find_best_lang_match_cached (PangoLanguage *language,
 }
 
 #define FIND_BEST_LANG_MATCH_CACHED(language, cache_key, records) \
-	find_best_lang_match_cached ((language), \
-				     pango_language_get_private (language) ? \
-				       &(pango_language_get_private (language)->cache_key) : NULL, \
-				     records, \
-				     G_N_ELEMENTS (records), \
-				     sizeof (*records));
+        find_best_lang_match_cached ((language), \
+                                     pango2_language_get_private (language) ? \
+                                       &(pango2_language_get_private (language)->cache_key) : NULL, \
+                                     records, \
+                                     G_N_ELEMENTS (records), \
+                                     sizeof (*records));
 
 typedef struct {
   char lang[6];
@@ -551,16 +551,16 @@ static const union _LangPool {
 #undef LANGUAGE
 } };
 static const LangInfo lang_texts[] = {
-#define LANGUAGE(id, source, sample) {G_STRINGIFY(id),	G_STRUCT_OFFSET(struct _LangPoolStruct, POOLSTRFIELD(__LINE__))},
+#define LANGUAGE(id, source, sample) {G_STRINGIFY(id),  G_STRUCT_OFFSET(struct _LangPoolStruct, POOLSTRFIELD(__LINE__))},
 #include "pango-language-sample-table.h"
 #undef LANGUAGE
   /* One extra entry with no final comma, to make it C89-happy */
- {"~~",	0}
+ {"~~", 0}
 };
 
 /**
- * pango_language_get_sample_string:
- * @language: (nullable): a `PangoLanguage`
+ * pango2_language_get_sample_string:
+ * @language: (nullable): a `Pango2Language`
  *
  * Get a string that is representative of the characters needed to
  * render a particular language.
@@ -571,30 +571,28 @@ static const LangInfo lang_texts[] = {
  * as sample text in a font selection dialog.
  *
  * If @language is %NULL, the default language as found by
- * [func@Pango.Language.get_default] is used.
+ * [func@Pango2.Language.get_default] is used.
  *
- * If Pango does not have a sample string for @language, the classic
+ * If Pango2 does not have a sample string for @language, the classic
  * "The quick brown fox..." is returned.  This can be detected by
  * comparing the returned pointer value to that returned for (non-existent)
  * language code "xx".  That is, compare to:
  *
  * ```
- * pango_language_get_sample_string (pango_language_from_string ("xx"))
+ * pango2_language_get_sample_string (pango2_language_from_string ("xx"))
  * ```
  *
  * Return value: (transfer none): the sample string
  */
 const char *
-pango_language_get_sample_string (PangoLanguage *language)
+pango2_language_get_sample_string (Pango2Language *language)
 {
   const LangInfo *lang_info;
 
   if (!language)
-    language = pango_language_get_default ();
+    language = pango2_language_get_default ();
 
-  lang_info = FIND_BEST_LANG_MATCH_CACHED (language,
-					   lang_info,
-					   lang_texts);
+  lang_info = FIND_BEST_LANG_MATCH_CACHED (language, lang_info, lang_texts);
 
   if (lang_info)
     return lang_pool.str + lang_info->offset;
@@ -613,8 +611,8 @@ pango_language_get_sample_string (PangoLanguage *language)
 #include "pango-script-lang-table.h"
 
 /**
- * pango_language_get_scripts:
- * @language: (nullable): a `PangoLanguage`
+ * pango2_language_get_scripts:
+ * @language: (nullable): a `Pango2Language`
  * @num_scripts: (out caller-allocates) (optional): location to
  *   return number of scripts
  *
@@ -635,30 +633,30 @@ pango_language_get_sample_string (PangoLanguage *language)
  * though, except that it is positive if the return value is not
  * %NULL, and it is a small number.
  *
- * The [method@Pango.Language.includes_script] function uses this
+ * The [method@Pango2.Language.includes_script] function uses this
  * function internally.
  *
  * Return value: (transfer none) (array length=num_scripts) (nullable):
  *   An array of `GUnicodeScript` values, with the number of entries in
- *   the array stored in @num_scripts, or %NULL if Pango does not have
+ *   the array stored in @num_scripts, or %NULL if Pango2 does not have
  *   any information about this particular language tag (also the case
  *   if @language is %NULL).
  */
 const GUnicodeScript *
-pango_language_get_scripts (PangoLanguage *language,
-			    int           *num_scripts)
+pango2_language_get_scripts (Pango2Language *language,
+                            int           *num_scripts)
 {
-  const PangoScriptForLang *script_for_lang;
+  const Pango2ScriptForLang *script_for_lang;
   unsigned int j;
 
   script_for_lang = FIND_BEST_LANG_MATCH_CACHED (language,
-						 script_for_lang,
-						 pango_script_for_lang);
+                                                 script_for_lang,
+                                                 pango2_script_for_lang);
 
   if (!script_for_lang || script_for_lang->scripts[0] == 0)
     {
       if (num_scripts)
-	*num_scripts = 0;
+        *num_scripts = 0;
 
       return NULL;
     }
@@ -666,8 +664,8 @@ pango_language_get_scripts (PangoLanguage *language,
   if (num_scripts)
     {
       for (j = 0; j < G_N_ELEMENTS (script_for_lang->scripts); j++)
-	if (script_for_lang->scripts[j] == 0)
-	  break;
+        if (script_for_lang->scripts[j] == 0)
+          break;
 
       g_assert (j > 0);
 
@@ -678,8 +676,8 @@ pango_language_get_scripts (PangoLanguage *language,
 }
 
 /**
- * pango_language_includes_script:
- * @language: (nullable): a `PangoLanguage`
+ * pango2_language_includes_script:
+ * @language: (nullable): a `Pango2Language`
  * @script: a `GUnicodeScript`
  *
  * Determines if @script is one of the scripts used to
@@ -687,22 +685,22 @@ pango_language_get_scripts (PangoLanguage *language,
  *
  * The returned value is conservative; if nothing is known about
  * the language tag @language, %TRUE will be returned, since, as
- * far as Pango knows, @script might be used to write @language.
+ * far as Pango2 knows, @script might be used to write @language.
  *
- * This routine is used in Pango's itemization process when
+ * This routine is used in Pango2's itemization process when
  * determining if a supplied language tag is relevant to
  * a particular section of text. It probably is not useful
  * for applications in most circumstances.
  *
- * This function uses [method@Pango.Language.get_scripts] internally.
+ * This function uses [method@Pango2.Language.get_scripts] internally.
  *
  * Return value: %TRUE if @script is one of the scripts used
  *   to write @language or if nothing is known about @language
  *   (including the case that @language is %NULL), %FALSE otherwise.
  */
 gboolean
-pango_language_includes_script (PangoLanguage *language,
-				GUnicodeScript    script)
+pango2_language_includes_script (Pango2Language *language,
+                                GUnicodeScript    script)
 {
   const GUnicodeScript *scripts;
   int num_scripts, j;
@@ -716,7 +714,7 @@ pango_language_includes_script (PangoLanguage *language,
 
 #undef REAL_SCRIPT
 
-  scripts = pango_language_get_scripts (language, &num_scripts);
+  scripts = pango2_language_get_scripts (language, &num_scripts);
   if (!scripts)
     return TRUE;
 
@@ -735,14 +733,14 @@ pango_language_includes_script (PangoLanguage *language,
  */
 
 
-static PangoLanguage **
+static Pango2Language **
 parse_default_languages (void)
 {
   char *p, *p_copy;
   gboolean done = FALSE;
   GPtrArray *langs;
 
-  p = getenv ("PANGO_LANGUAGE");
+  p = getenv ("PANGO2_LANGUAGE");
 
   if (p == NULL)
     p = getenv ("LANGUAGE");
@@ -758,41 +756,41 @@ parse_default_languages (void)
     {
       char *end = strpbrk (p, LANGUAGE_SEPARATORS);
       if (!end)
-	{
-	  end = p + strlen (p);
-	  done = TRUE;
-	}
+        {
+          end = p + strlen (p);
+          done = TRUE;
+        }
       else
         *end = '\0';
 
       /* skip empty languages, and skip the language 'C' */
       if (p != end && !(p + 1 == end && *p == 'C'))
         {
-	  PangoLanguage *l = pango_language_from_string (p);
-	  
-	  g_ptr_array_add (langs, l);
-	}
+          Pango2Language *l = pango2_language_from_string (p);
+          
+          g_ptr_array_add (langs, l);
+        }
 
       if (!done)
-	p = end + 1;
+        p = end + 1;
     }
 
   g_ptr_array_add (langs, NULL);
 
   g_free (p_copy);
 
-  return (PangoLanguage **) g_ptr_array_free (langs, FALSE);
+  return (Pango2Language **) g_ptr_array_free (langs, FALSE);
 }
 
 G_LOCK_DEFINE_STATIC (languages);
 static gboolean initialized = FALSE; /* MT-safe */
-static PangoLanguage * const * languages = NULL; /* MT-safe */
+static Pango2Language * const * languages = NULL; /* MT-safe */
 static GHashTable *hash = NULL; /* MT-safe */
 
-static PangoLanguage *
-_pango_script_get_default_language (GUnicodeScript script)
+static Pango2Language *
+_pango2_script_get_default_language (GUnicodeScript script)
 {
-  PangoLanguage *result, * const * p;
+  Pango2Language *result, * const * p;
 
   G_LOCK (languages);
 
@@ -801,7 +799,7 @@ _pango_script_get_default_language (GUnicodeScript script)
       languages = parse_default_languages ();
 
       if (languages)
-	hash = g_hash_table_new (NULL, NULL);
+        hash = g_hash_table_new (NULL, NULL);
 
       initialized = TRUE;
     }
@@ -816,7 +814,7 @@ _pango_script_get_default_language (GUnicodeScript script)
     goto out;
 
   for (p = languages; *p; p++)
-    if (pango_language_includes_script (*p, script))
+    if (pango2_language_includes_script (*p, script))
       break;
   result = *p;
 
@@ -829,34 +827,34 @@ out:
 }
 
 /**
- * pango_language_get_preferred:
+ * pango2_language_get_preferred:
  *
  * Returns the list of languages that the user prefers.
  *
- * The list is specified by the `PANGO_LANGUAGE` or `LANGUAGE`
+ * The list is specified by the `PANGO2_LANGUAGE` or `LANGUAGE`
  * environment variables, in order of preference. Note that this
  * list does not necessarily include the language returned by
- * [func@Pango.Language.get_default].
+ * [func@Pango2.Language.get_default].
  *
  * When choosing language-specific resources, such as the sample
- * text returned by [method@Pango.Language.get_sample_string],
+ * text returned by [method@Pango2.Language.get_sample_string],
  * you should first try the default language, followed by the
  * languages returned by this function.
  *
  * Returns: (transfer none) (nullable): a %NULL-terminated array
- *   of `PangoLanguage`*
+ *   of `Pango2Language`*
  */
-PangoLanguage **
-pango_language_get_preferred (void)
+Pango2Language **
+pango2_language_get_preferred (void)
 {
   /* We call this just for its side-effect of initializing languages */
-  _pango_script_get_default_language (G_UNICODE_SCRIPT_COMMON);
+  _pango2_script_get_default_language (G_UNICODE_SCRIPT_COMMON);
 
-  return (PangoLanguage **) languages;
+  return (Pango2Language **) languages;
 }
 
 /**
- * pango_script_get_sample_language:
+ * pango2_script_get_sample_language:
  * @script: a `GUnicodeScript`
  *
  * Finds a language tag that is reasonably representative of @script.
@@ -875,28 +873,28 @@ pango_language_get_preferred (void)
  * for many historical scripts as well.
  *
  * As of 1.18, this function checks the environment variables
- * `PANGO_LANGUAGE` and `LANGUAGE` (checked in that order) first.
+ * `PANGO2_LANGUAGE` and `LANGUAGE` (checked in that order) first.
  * If one of them is set, it is parsed as a list of language tags
  * separated by colons or other separators. This function
- * will return the first language in the parsed list that Pango
+ * will return the first language in the parsed list that Pango2
  * believes may use @script for writing. This last predicate
- * is tested using [method@Pango.Language.includes_script]. This can
- * be used to control Pango's font selection for non-primary
- * languages. For example, a `PANGO_LANGUAGE` enviroment variable
- * set to "en:fa" makes Pango choose fonts suitable for Persian (fa)
+ * is tested using [method@Pango2.Language.includes_script]. This can
+ * be used to control Pango2's font selection for non-primary
+ * languages. For example, a `PANGO2_LANGUAGE` enviroment variable
+ * set to "en:fa" makes Pango2 choose fonts suitable for Persian (fa)
  * instead of Arabic (ar) when a segment of Arabic text is found
  * in an otherwise non-Arabic text. The same trick can be used to
  * choose a default language for %G_UNICODE_SCRIPT_HAN when setting
  * context language is not feasible.
  *
- * Return value: (nullable): a `PangoLanguage` that is representative
+ * Return value: (nullable): a `Pango2Language` that is representative
  *   of the script
  */
-PangoLanguage *
-pango_script_get_sample_language (GUnicodeScript script)
+Pango2Language *
+pango2_script_get_sample_language (GUnicodeScript script)
 {
   /* Note that in the following, we want
-   * pango_language_includes_script() for the sample language
+   * pango2_language_includes_script() for the sample language
    * to include the script, so alternate orthographies
    * (Shavian for English, Osmanya for Somali, etc), typically
    * have no sample language
@@ -1011,14 +1009,14 @@ pango_script_get_sample_language (GUnicodeScript script)
     "",    /* G_UNICODE_SCRIPT_TAKRI */
   };
   const char *sample_language;
-  PangoLanguage *result;
+  Pango2Language *result;
 
   g_return_val_if_fail (script >= 0, NULL);
 
   if ((guint)script >= G_N_ELEMENTS (sample_languages))
     return NULL;
 
-  result = _pango_script_get_default_language (script);
+  result = _pango2_script_get_default_language (script);
   if (result)
     return result;
 
@@ -1027,5 +1025,5 @@ pango_script_get_sample_language (GUnicodeScript script)
   if (!sample_language[0])
     return NULL;
   else
-    return pango_language_from_string (sample_language);
+    return pango2_language_from_string (sample_language);
 }

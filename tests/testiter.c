@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * testiter.c: Test pangolayoutiter.c
  *
  * Copyright (C) 2005 Amit Aronovitch
@@ -45,7 +45,7 @@ verbose (const char *format, ...)
 #endif
 }
 
-#define LAYOUT_WIDTH (80 * PANGO_SCALE)
+#define LAYOUT_WIDTH (80 * PANGO2_SCALE)
 
 /* Note: The test expects that any newline sequence is of length 1
  * use \n (not \r\n) in the test texts.
@@ -77,21 +77,21 @@ const char *test_texts[] =
  *  - GlyphString's index_to_x positions match those returned by the Iter
  */
 static void
-iter_char_test (PangoLayout *layout)
+iter_char_test (Pango2Layout *layout)
 {
-  PangoRectangle   extents, run_extents;
-  PangoLineIter *iter;
-  PangoRun  *run;
+  Pango2Rectangle   extents, run_extents;
+  Pango2LineIter *iter;
+  Pango2Run  *run;
   int              num_chars;
   int              i, index, offset;
   int              leading_x, trailing_x, x0, x1;
   gboolean         iter_next_ok, rtl;
   const char      *text, *ptr;
 
-  text = pango_layout_get_text (layout);
+  text = pango2_layout_get_text (layout);
   num_chars = g_utf8_strlen (text, -1);
 
-  iter = pango_lines_get_iter (pango_layout_get_lines (layout));
+  iter = pango2_lines_get_iter (pango2_layout_get_lines (layout));
   iter_next_ok = TRUE;
 
   for (i = 0 ; i < num_chars; ++i)
@@ -99,54 +99,54 @@ iter_char_test (PangoLayout *layout)
       char *char_str;
       g_assert (iter_next_ok);
 
-      index = pango_line_iter_get_index (iter);
+      index = pango2_line_iter_get_index (iter);
       ptr = text + index;
       char_str = g_strndup (ptr, g_utf8_next_char (ptr) - ptr);
       verbose ("i=%d (visual), index = %d '%s':\n",
                i, index, char_str);
       g_free (char_str);
 
-      pango_line_iter_get_char_extents (iter, &extents);
+      pango2_line_iter_get_char_extents (iter, &extents);
       verbose ("  char extents: x=%d,y=%d w=%d,h=%d\n",
                extents.x, extents.y,
                extents.width, extents.height);
 
-      run = pango_line_iter_get_run (iter);
+      run = pango2_line_iter_get_run (iter);
 
       if (run)
         {
-          PangoFontDescription *desc;
+          Pango2FontDescription *desc;
           char *str;
-          PangoItem *item;
-          const PangoAnalysis *analysis;
-          PangoGlyphString *glyphs;
+          Pango2Item *item;
+          const Pango2Analysis *analysis;
+          Pango2GlyphString *glyphs;
           int length;
 
-          item = pango_run_get_item (run);
-          analysis = pango_item_get_analysis (item);
-          glyphs = pango_run_get_glyphs (run);
+          item = pango2_run_get_item (run);
+          analysis = pango2_item_get_analysis (item);
+          glyphs = pango2_run_get_glyphs (run);
 
           /* Get needed data for the GlyphString */
-          pango_line_iter_get_run_extents (iter, NULL, &run_extents);
-          offset = pango_item_get_byte_offset (item);
-          length = pango_item_get_byte_length (item);
+          pango2_line_iter_get_run_extents (iter, NULL, &run_extents);
+          offset = pango2_item_get_byte_offset (item);
+          length = pango2_item_get_byte_length (item);
 
-          rtl = pango_analysis_get_bidi_level (analysis) % 2;
-          desc = pango_font_describe (pango_analysis_get_font (analysis));
-          str = pango_font_description_to_string (desc);
+          rtl = pango2_analysis_get_bidi_level (analysis) % 2;
+          desc = pango2_font_describe (pango2_analysis_get_font (analysis));
+          str = pango2_font_description_to_string (desc);
           verbose ("  (current run: font=%s,offset=%d,x=%d,len=%d,rtl=%d)\n",
                    str, offset, run_extents.x, length, rtl);
           g_free (str);
-          pango_font_description_free (desc);
+          pango2_font_description_free (desc);
 
           /* Calculate expected x result using index_to_x */
-          pango_glyph_string_index_to_x (glyphs,
+          pango2_glyph_string_index_to_x (glyphs,
                                          (char *)(text + offset), length,
-                                         pango_item_get_analysis (item),
+                                         pango2_item_get_analysis (item),
                                          index - offset, FALSE, &leading_x);
-          pango_glyph_string_index_to_x (glyphs,
+          pango2_glyph_string_index_to_x (glyphs,
                                          (char *)(text + offset), length,
-                                         pango_item_get_analysis (item),
+                                         pango2_item_get_analysis (item),
                                          index - offset, TRUE, &trailing_x);
 
           x0 = run_extents.x + MIN (leading_x, trailing_x);
@@ -163,7 +163,7 @@ iter_char_test (PangoLayout *layout)
           /* We're on a line terminator */
         }
 
-      iter_next_ok = pango_line_iter_next_char (iter);
+      iter_next_ok = pango2_line_iter_next_char (iter);
       verbose ("more to go? %d\n", iter_next_ok);
     }
 
@@ -171,34 +171,34 @@ iter_char_test (PangoLayout *layout)
    * input string */
   g_assert (!iter_next_ok);
 
-  pango_line_iter_free (iter);
+  pango2_line_iter_free (iter);
 }
 
 static void
-iter_cluster_test (PangoLayout *layout)
+iter_cluster_test (Pango2Layout *layout)
 {
-  PangoRectangle   extents;
-  PangoLineIter *iter;
+  Pango2Rectangle   extents;
+  Pango2LineIter *iter;
   int              index;
   gboolean         iter_next_ok;
-  PangoLine       *last_line = NULL;
+  Pango2Line       *last_line = NULL;
   int              expected_next_x = 0;
 
-  iter = pango_lines_get_iter (pango_layout_get_lines (layout));
+  iter = pango2_lines_get_iter (pango2_layout_get_lines (layout));
   iter_next_ok = TRUE;
 
   while (iter_next_ok)
     {
-      PangoLine *line = pango_line_iter_get_line (iter);
+      Pango2Line *line = pango2_line_iter_get_line (iter);
 
       /* Every cluster is part of a run */
-      g_assert (pango_line_iter_get_run (iter));
+      g_assert (pango2_line_iter_get_run (iter));
 
-      index = pango_line_iter_get_index (iter);
+      index = pango2_line_iter_get_index (iter);
 
-      pango_line_iter_get_cluster_extents (iter, NULL, &extents);
+      pango2_line_iter_get_cluster_extents (iter, NULL, &extents);
 
-      iter_next_ok = pango_line_iter_next_cluster (iter);
+      iter_next_ok = pango2_line_iter_next_cluster (iter);
 
       verbose ("index = %d:\n", index);
       verbose ("  cluster extents: x=%d,y=%d w=%d,h=%d\n",
@@ -220,23 +220,23 @@ iter_cluster_test (PangoLayout *layout)
 
   g_assert (!iter_next_ok);
 
-  pango_line_iter_free (iter);
+  pango2_line_iter_free (iter);
 }
 
 static void
 test_line_iter (void)
 {
   const char  **ptext;
-  PangoContext *context;
-  PangoFontDescription *font_desc;
-  PangoLayout  *layout;
+  Pango2Context *context;
+  Pango2FontDescription *font_desc;
+  Pango2Layout  *layout;
 
-  context = pango_context_new ();
-  font_desc = pango_font_description_from_string ("cantarell 11");
-  pango_context_set_font_description (context, font_desc);
+  context = pango2_context_new ();
+  font_desc = pango2_font_description_from_string ("cantarell 11");
+  pango2_context_set_font_description (context, font_desc);
 
-  layout = pango_layout_new (context);
-  pango_layout_set_width (layout, LAYOUT_WIDTH);
+  layout = pango2_layout_new (context);
+  pango2_layout_set_width (layout, LAYOUT_WIDTH);
 
   for (ptext = test_texts; *ptext != NULL; ++ptext)
     {
@@ -245,14 +245,14 @@ test_line_iter (void)
       verbose ( "len=%ld, bytes=%ld\n",
                 (long)g_utf8_strlen (*ptext, -1), (long)strlen (*ptext));
 
-      pango_layout_set_text (layout, *ptext, -1);
+      pango2_layout_set_text (layout, *ptext, -1);
       iter_char_test (layout);
       iter_cluster_test (layout);
     }
 
   g_object_unref (layout);
   g_object_unref (context);
-  pango_font_description_free (font_desc);
+  pango2_font_description_free (font_desc);
 }
 
 int

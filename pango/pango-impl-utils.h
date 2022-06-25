@@ -36,21 +36,21 @@ G_BEGIN_DECLS
  */
 
 static inline G_GNUC_UNUSED int
-pango_unichar_width (gunichar c)
+pango2_unichar_width (gunichar c)
 {
   return G_UNLIKELY (g_unichar_iszerowidth (c)) ? 0 :
-	   G_UNLIKELY (g_unichar_iswide (c)) ? 2 : 1;
+           G_UNLIKELY (g_unichar_iswide (c)) ? 2 : 1;
 }
 
 static G_GNUC_UNUSED glong
-pango_utf8_strwidth (const char *p)
+pango2_utf8_strwidth (const char *p)
 {
   glong len = 0;
   g_return_val_if_fail (p != NULL, 0);
 
   while (*p)
     {
-      len += pango_unichar_width (g_utf8_get_char (p));
+      len += pango2_unichar_width (g_utf8_get_char (p));
       p = g_utf8_next_char (p);
     }
 
@@ -60,7 +60,8 @@ pango_utf8_strwidth (const char *p)
 /* Glib's g_utf8_strlen() is broken and stops at embedded NUL's.
  * Wrap it here. */
 static G_GNUC_UNUSED glong
-pango_utf8_strlen (const char *p, gssize max)
+pango2_utf8_strlen (const char *p,
+                    gssize      max)
 {
   glong len = 0;
   const char *start = p;
@@ -89,14 +90,15 @@ pango_utf8_strlen (const char *p, gssize max)
 /* To be made public at some point */
 
 static G_GNUC_UNUSED void
-pango_glyph_string_reverse_range (PangoGlyphString *glyphs,
-				  int start, int end)
+pango2_glyph_string_reverse_range (Pango2GlyphString *glyphs,
+                                   int                start,
+                                   int                end)
 {
   int i, j;
 
   for (i = start, j = end - 1; i < j; i++, j--)
     {
-      PangoGlyphInfo glyph_info;
+      Pango2GlyphInfo glyph_info;
       int log_cluster;
 
       glyph_info = glyphs->glyphs[i];
@@ -110,7 +112,7 @@ pango_glyph_string_reverse_range (PangoGlyphString *glyphs,
 }
 
 static inline gboolean
-pango_is_default_ignorable (gunichar ch)
+pango2_is_default_ignorable (gunichar ch)
 {
   int plane = ch >> 16;
 
@@ -145,7 +147,7 @@ pango_is_default_ignorable (gunichar ch)
 }
 
 /* These are the default ignorables that we render as hexboxes
- * with nicks if PANGO_SHOW_IGNORABLES is used.
+ * with nicks if PANGO2_SHOW_IGNORABLES is used.
  *
  * The cairo hexbox drawing code assumes that these nicks are
  * 1-6 ASCII chars
@@ -181,7 +183,7 @@ static struct {
 };
 
 static inline G_GNUC_UNUSED const char *
-pango_get_ignorable (gunichar ch)
+pango2_get_ignorable (gunichar ch)
 {
   for (guint i = 0; i < G_N_ELEMENTS (ignorables); i++)
     {
@@ -196,14 +198,14 @@ pango_get_ignorable (gunichar ch)
 }
 
 static inline G_GNUC_UNUSED const char *
-pango_get_ignorable_size (gunichar  ch,
-                          int      *rows,
-                          int      *cols)
+pango2_get_ignorable_size (gunichar  ch,
+                           int      *rows,
+                           int      *cols)
 {
   const char *nick;
   int len;
 
-  nick = pango_get_ignorable (ch);
+  nick = pango2_get_ignorable (ch);
   if (nick)
     {
       len = strlen (nick);

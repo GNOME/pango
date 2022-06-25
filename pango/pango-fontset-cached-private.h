@@ -28,19 +28,19 @@
 #include <cairo.h>
 #endif
 
-#define PANGO_TYPE_FONTSET_CACHED (pango_fontset_cached_get_type ())
+#define PANGO2_TYPE_FONTSET_CACHED (pango2_fontset_cached_get_type ())
 
-G_DECLARE_FINAL_TYPE (PangoFontsetCached, pango_fontset_cached, PANGO, FONTSET_CACHED, PangoFontset)
+G_DECLARE_FINAL_TYPE (Pango2FontsetCached, pango2_fontset_cached, PANGO2, FONTSET_CACHED, Pango2Fontset)
 
-struct _PangoFontsetCached
+struct _Pango2FontsetCached
 {
-  PangoFontset parent_instance;
+  Pango2Fontset parent_instance;
 
-  GPtrArray *items; /* contains PangoHbFont or PangoGenericFamily */
-  PangoLanguage *language;
-  PangoFontDescription *description;
+  GPtrArray *items; /* contains Pango2HbFont or Pango2GenericFamily */
+  Pango2Language *language;
+  Pango2FontDescription *description;
   float dpi;
-  const PangoMatrix *ctm;
+  const Pango2Matrix *ctm;
   GList cache_link;
   GHashTable *cache;
 
@@ -49,17 +49,17 @@ struct _PangoFontsetCached
 #endif
 };
 
-PangoFontsetCached * pango_fontset_cached_new            (const PangoFontDescription *description,
-                                                          PangoLanguage              *language,
-                                                          float                       dpi,
-                                                          const PangoMatrix          *ctm);
+Pango2FontsetCached * pango2_fontset_cached_new            (const Pango2FontDescription *description,
+                                                            Pango2Language              *language,
+                                                            float                        dpi,
+                                                            const Pango2Matrix          *ctm);
 
-void                 pango_fontset_cached_add_face       (PangoFontsetCached         *self,
-                                                          PangoFontFace              *face);
-void                 pango_fontset_cached_add_family     (PangoFontsetCached         *self,
-                                                          PangoGenericFamily         *family);
-int                  pango_fontset_cached_size           (PangoFontsetCached         *self);
-PangoFont *          pango_fontset_cached_get_first_font (PangoFontsetCached         *self);
+void                 pango2_fontset_cached_add_face        (Pango2FontsetCached         *self,
+                                                            Pango2FontFace              *face);
+void                 pango2_fontset_cached_add_family      (Pango2FontsetCached         *self,
+                                                            Pango2GenericFamily         *family);
+int                  pango2_fontset_cached_size            (Pango2FontsetCached         *self);
+Pango2Font *          pango2_fontset_cached_get_first_font (Pango2FontsetCached         *self);
 
-void                 pango_fontset_cached_append         (PangoFontsetCached         *self,
-                                                          PangoFontsetCached         *other);
+void                 pango2_fontset_cached_append          (Pango2FontsetCached         *self,
+                                                            Pango2FontsetCached         *other);

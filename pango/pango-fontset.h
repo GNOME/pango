@@ -26,35 +26,35 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_TYPE_FONTSET              (pango_fontset_get_type ())
+#define PANGO2_TYPE_FONTSET              (pango2_fontset_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-PANGO_DECLARE_INTERNAL_TYPE (PangoFontset, pango_fontset, PANGO, FONTSET, GObject)
+PANGO2_AVAILABLE_IN_ALL
+PANGO2_DECLARE_INTERNAL_TYPE (Pango2Fontset, pango2_fontset, PANGO2, FONTSET, GObject)
 
 /**
- * PangoFontsetForeachFunc:
- * @fontset: a `PangoFontset`
+ * Pango2FontsetForeachFunc:
+ * @fontset: a `Pango2Fontset`
  * @font: a font from @fontset
  * @user_data: callback data
  *
  * Callback used when enumerating fonts in a fontset.
  *
- * See [method@Pango.Fontset.foreach].
+ * See [method@Pango2.Fontset.foreach].
  *
  * Returns: if %TRUE, stop iteration and return immediately.
  */
-typedef gboolean (*PangoFontsetForeachFunc) (PangoFontset  *fontset,
-                                             PangoFont     *font,
-                                             gpointer       user_data);
+typedef gboolean (*Pango2FontsetForeachFunc) (Pango2Fontset *fontset,
+                                              Pango2Font    *font,
+                                              gpointer       user_data);
 
-PANGO_AVAILABLE_IN_ALL
-PangoFont *             pango_fontset_get_font          (PangoFontset                   *fontset,
-                                                         guint                           wc);
-PANGO_AVAILABLE_IN_ALL
-PangoFontMetrics *      pango_fontset_get_metrics       (PangoFontset                   *fontset);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_fontset_foreach           (PangoFontset                   *fontset,
-                                                         PangoFontsetForeachFunc         func,
-                                                         gpointer                        data);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Font *             pango2_fontset_get_font          (Pango2Fontset                   *fontset,
+                                                           guint                            wc);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontMetrics *      pango2_fontset_get_metrics       (Pango2Fontset                   *fontset);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_fontset_foreach           (Pango2Fontset                   *fontset,
+                                                           Pango2FontsetForeachFunc         func,
+                                                           gpointer                         data);
 
 G_END_DECLS

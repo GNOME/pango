@@ -27,22 +27,22 @@
 
 
 #ifdef HAVE_SYSPROF
-#define PANGO_TRACE_CURRENT_TIME SYSPROF_CAPTURE_CURRENT_TIME
+#define PANGO2_TRACE_CURRENT_TIME SYSPROF_CAPTURE_CURRENT_TIME
 #else
-#define PANGO_TRACE_CURRENT_TIME 0
+#define PANGO2_TRACE_CURRENT_TIME 0
 #endif
 
-void pango_trace_mark (gint64       begin_time,
-                       const char  *name,
-                       const char  *message_format,
-                       ...) G_GNUC_PRINTF (3, 4);
+void pango2_trace_mark (gint64       begin_time,
+                        const char  *name,
+                        const char  *message_format,
+                        ...) G_GNUC_PRINTF (3, 4);
 
 #ifndef HAVE_SYSPROF
 /* Optimise the whole call out */
 #if defined(G_HAVE_ISO_VARARGS)
-#define pango_trace_mark(b, n, m, ...) G_STMT_START { } G_STMT_END
+#define pango2_trace_mark(b, n, m, ...) G_STMT_START { } G_STMT_END
 #elif defined(G_HAVE_GNUC_VARARGS)
-#define pango_trace_mark(b, n, m...) G_STMT_START { } G_STMT_END
+#define pango2_trace_mark(b, n, m...) G_STMT_START { } G_STMT_END
 #else
 /* no varargs macro support; the call will have to be optimised out by the compiler */
 #endif

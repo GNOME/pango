@@ -472,10 +472,10 @@ draw_text (cairo_t *cr,
            const char *font,
            const char *text)
 {
-  PangoContext *context;
-  PangoLayout *layout;
-  PangoLine *line;
-  PangoFontDescription *desc;
+  Pango2Context *context;
+  Pango2Layout *layout;
+  Pango2Line *line;
+  Pango2FontDescription *desc;
   cairo_font_options_t *font_options;
 
   font_options = cairo_font_options_create ();
@@ -486,20 +486,20 @@ draw_text (cairo_t *cr,
   cairo_set_font_options (cr, font_options);
   cairo_font_options_destroy (font_options);
 
-  context = pango_cairo_create_context (cr);
-  layout = pango_layout_new (context);
+  context = pango2_cairo_create_context (cr);
+  layout = pango2_layout_new (context);
   g_object_unref (context);
 
-  desc = pango_font_description_from_string (font);
-  pango_layout_set_font_description (layout, desc);
-  pango_font_description_free (desc);
+  desc = pango2_font_description_from_string (font);
+  pango2_layout_set_font_description (layout, desc);
+  pango2_font_description_free (desc);
 
-  pango_layout_set_text (layout, text, -1);
+  pango2_layout_set_text (layout, text, -1);
 
-  line = pango_lines_get_lines (pango_layout_get_lines (layout))[0];
+  line = pango2_lines_get_lines (pango2_layout_get_lines (layout))[0];
 
   cairo_move_to (cr, x, y);
-  pango_cairo_line_path (cr, line);
+  pango2_cairo_line_path (cr, line);
 
   g_object_unref (layout);
 }

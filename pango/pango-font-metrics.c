@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * pango-font-metrics.c:
  *
  * Copyright (C) 1999 Red Hat Software
@@ -24,57 +24,57 @@
 #include "pango-font-metrics-private.h"
 
 
-G_DEFINE_BOXED_TYPE (PangoFontMetrics, pango_font_metrics,
-                     pango_font_metrics_copy,
-                     pango_font_metrics_free);
+G_DEFINE_BOXED_TYPE (Pango2FontMetrics, pango2_font_metrics,
+                     pango2_font_metrics_copy,
+                     pango2_font_metrics_free);
 
 /**
- * pango_font_metrics_new:
+ * pango2_font_metrics_new:
  *
- * Creates a new `PangoFontMetrics` structure.
+ * Creates a new `Pango2FontMetrics` structure.
  *
- * This is only for internal use by Pango backends and there is
+ * This is only for internal use by Pango2 backends and there is
  * no public way to set the fields of the structure.
  *
- * Return value: a newly-created `PangoFontMetrics` structure
+ * Return value: a newly-created `Pango2FontMetrics` structure
  */
-PangoFontMetrics *
-pango_font_metrics_new (void)
+Pango2FontMetrics *
+pango2_font_metrics_new (void)
 {
-  PangoFontMetrics *metrics = g_slice_new0 (PangoFontMetrics);
+  Pango2FontMetrics *metrics = g_slice_new0 (Pango2FontMetrics);
 
   return metrics;
 }
 
 /**
- * pango_font_metrics_copy:
- * @metrics: (nullable): a `PangoFontMetrics` structure, may be %NULL
+ * pango2_font_metrics_copy:
+ * @metrics: (nullable): a `Pango2FontMetrics` structure, may be %NULL
  *
  * Create a copy of @metrics.
  *
  * Return value: (nullable): @metrics
  */
-PangoFontMetrics *
-pango_font_metrics_copy (PangoFontMetrics *metrics)
+Pango2FontMetrics *
+pango2_font_metrics_copy (Pango2FontMetrics *metrics)
 {
-  return g_slice_dup (PangoFontMetrics, metrics);
+  return g_slice_dup (Pango2FontMetrics, metrics);
 }
 
 /**
- * pango_font_metrics_free:
- * @metrics: (nullable): a `PangoFontMetrics` structure, may be %NULL
+ * pango2_font_metrics_free:
+ * @metrics: (nullable): a `Pango2FontMetrics` structure, may be %NULL
  *
  * Free the @metrics.
  */
 void
-pango_font_metrics_free (PangoFontMetrics *metrics)
+pango2_font_metrics_free (Pango2FontMetrics *metrics)
 {
-  g_slice_free (PangoFontMetrics, metrics);
+  g_slice_free (Pango2FontMetrics, metrics);
 }
 
 /**
- * pango_font_metrics_get_ascent:
- * @metrics: a `PangoFontMetrics` structure
+ * pango2_font_metrics_get_ascent:
+ * @metrics: a `Pango2FontMetrics` structure
  *
  * Gets the ascent from a font metrics structure.
  *
@@ -83,10 +83,10 @@ pango_font_metrics_free (PangoFontMetrics *metrics)
  * of the actual drawn ink. It is necessary to lay out the text to
  * figure where the ink will be.)
  *
- * Return value: the ascent, in Pango units.
+ * Return value: the ascent, in Pango2 units.
  */
 int
-pango_font_metrics_get_ascent (PangoFontMetrics *metrics)
+pango2_font_metrics_get_ascent (Pango2FontMetrics *metrics)
 {
   g_return_val_if_fail (metrics != NULL, 0);
 
@@ -94,8 +94,8 @@ pango_font_metrics_get_ascent (PangoFontMetrics *metrics)
 }
 
 /**
- * pango_font_metrics_get_descent:
- * @metrics: a `PangoFontMetrics` structure
+ * pango2_font_metrics_get_descent:
+ * @metrics: a `Pango2FontMetrics` structure
  *
  * Gets the descent from a font metrics structure.
  *
@@ -104,10 +104,10 @@ pango_font_metrics_get_ascent (PangoFontMetrics *metrics)
  * bottom of the actual drawn ink. It is necessary to lay out the text
  * to figure where the ink will be.)
  *
- * Return value: the descent, in Pango units.
+ * Return value: the descent, in Pango2 units.
  */
 int
-pango_font_metrics_get_descent (PangoFontMetrics *metrics)
+pango2_font_metrics_get_descent (Pango2FontMetrics *metrics)
 {
   g_return_val_if_fail (metrics != NULL, 0);
 
@@ -115,8 +115,8 @@ pango_font_metrics_get_descent (PangoFontMetrics *metrics)
 }
 
 /**
- * pango_font_metrics_get_height:
- * @metrics: a `PangoFontMetrics` structure
+ * pango2_font_metrics_get_height:
+ * @metrics: a `Pango2FontMetrics` structure
  *
  * Gets the line height from a font metrics structure.
  *
@@ -125,10 +125,10 @@ pango_font_metrics_get_descent (PangoFontMetrics *metrics)
  *
  * If the line height is not available, 0 is returned.
  *
- * Return value: the height, in Pango units
+ * Return value: the height, in Pango2 units
  */
 int
-pango_font_metrics_get_height (PangoFontMetrics *metrics)
+pango2_font_metrics_get_height (Pango2FontMetrics *metrics)
 {
   g_return_val_if_fail (metrics != NULL, 0);
 
@@ -136,8 +136,8 @@ pango_font_metrics_get_height (PangoFontMetrics *metrics)
 }
 
 /**
- * pango_font_metrics_get_approximate_char_width:
- * @metrics: a `PangoFontMetrics` structure
+ * pango2_font_metrics_get_approximate_char_width:
+ * @metrics: a `Pango2FontMetrics` structure
  *
  * Gets the approximate character width for a font metrics structure.
  *
@@ -145,10 +145,10 @@ pango_font_metrics_get_height (PangoFontMetrics *metrics)
  * determining the initial size for a window. Actual characters in
  * text will be wider and narrower than this.
  *
- * Return value: the character width, in Pango units.
+ * Return value: the character width, in Pango2 units.
  */
 int
-pango_font_metrics_get_approximate_char_width (PangoFontMetrics *metrics)
+pango2_font_metrics_get_approximate_char_width (Pango2FontMetrics *metrics)
 {
   g_return_val_if_fail (metrics != NULL, 0);
 
@@ -156,8 +156,8 @@ pango_font_metrics_get_approximate_char_width (PangoFontMetrics *metrics)
 }
 
 /**
- * pango_font_metrics_get_approximate_digit_width:
- * @metrics: a `PangoFontMetrics` structure
+ * pango2_font_metrics_get_approximate_digit_width:
+ * @metrics: a `Pango2FontMetrics` structure
  *
  * Gets the approximate digit width for a font metrics structure.
  *
@@ -165,12 +165,12 @@ pango_font_metrics_get_approximate_char_width (PangoFontMetrics *metrics)
  * determining the initial size for a window. Actual digits in
  * text can be wider or narrower than this, though this value
  * is generally somewhat more accurate than the result of
- * pango_font_metrics_get_approximate_char_width() for digits.
+ * pango2_font_metrics_get_approximate_char_width() for digits.
  *
- * Return value: the digit width, in Pango units.
+ * Return value: the digit width, in Pango2 units.
  */
 int
-pango_font_metrics_get_approximate_digit_width (PangoFontMetrics *metrics)
+pango2_font_metrics_get_approximate_digit_width (Pango2FontMetrics *metrics)
 {
   g_return_val_if_fail (metrics != NULL, 0);
 
@@ -178,8 +178,8 @@ pango_font_metrics_get_approximate_digit_width (PangoFontMetrics *metrics)
 }
 
 /**
- * pango_font_metrics_get_underline_position:
- * @metrics: a `PangoFontMetrics` structure
+ * pango2_font_metrics_get_underline_position:
+ * @metrics: a `Pango2FontMetrics` structure
  *
  * Gets the suggested position to draw the underline.
  *
@@ -187,10 +187,10 @@ pango_font_metrics_get_approximate_digit_width (PangoFontMetrics *metrics)
  * of the underline. Since most fonts have underline positions beneath
  * the baseline, this value is typically negative.
  *
- * Return value: the suggested underline position, in Pango units.
+ * Return value: the suggested underline position, in Pango2 units.
  */
 int
-pango_font_metrics_get_underline_position (PangoFontMetrics *metrics)
+pango2_font_metrics_get_underline_position (Pango2FontMetrics *metrics)
 {
   g_return_val_if_fail (metrics != NULL, 0);
 
@@ -198,15 +198,15 @@ pango_font_metrics_get_underline_position (PangoFontMetrics *metrics)
 }
 
 /**
- * pango_font_metrics_get_underline_thickness:
- * @metrics: a `PangoFontMetrics` structure
+ * pango2_font_metrics_get_underline_thickness:
+ * @metrics: a `Pango2FontMetrics` structure
  *
  * Gets the suggested thickness to draw for the underline.
  *
- * Return value: the suggested underline thickness, in Pango units.
+ * Return value: the suggested underline thickness, in Pango2 units.
  */
 int
-pango_font_metrics_get_underline_thickness (PangoFontMetrics *metrics)
+pango2_font_metrics_get_underline_thickness (Pango2FontMetrics *metrics)
 {
   g_return_val_if_fail (metrics != NULL, 0);
 
@@ -214,18 +214,18 @@ pango_font_metrics_get_underline_thickness (PangoFontMetrics *metrics)
 }
 
 /**
- * pango_font_metrics_get_strikethrough_position:
- * @metrics: a `PangoFontMetrics` structure
+ * pango2_font_metrics_get_strikethrough_position:
+ * @metrics: a `Pango2FontMetrics` structure
  *
  * Gets the suggested position to draw the strikethrough.
  *
  * The value returned is the distance *above* the
  * baseline of the top of the strikethrough.
  *
- * Return value: the suggested strikethrough position, in Pango units.
+ * Return value: the suggested strikethrough position, in Pango2 units.
  */
 int
-pango_font_metrics_get_strikethrough_position (PangoFontMetrics *metrics)
+pango2_font_metrics_get_strikethrough_position (Pango2FontMetrics *metrics)
 {
   g_return_val_if_fail (metrics != NULL, 0);
 
@@ -233,15 +233,15 @@ pango_font_metrics_get_strikethrough_position (PangoFontMetrics *metrics)
 }
 
 /**
- * pango_font_metrics_get_strikethrough_thickness:
- * @metrics: a `PangoFontMetrics` structure
+ * pango2_font_metrics_get_strikethrough_thickness:
+ * @metrics: a `Pango2FontMetrics` structure
  *
  * Gets the suggested thickness to draw for the strikethrough.
  *
- * Return value: the suggested strikethrough thickness, in Pango units.
+ * Return value: the suggested strikethrough thickness, in Pango2 units.
  */
 int
-pango_font_metrics_get_strikethrough_thickness (PangoFontMetrics *metrics)
+pango2_font_metrics_get_strikethrough_thickness (Pango2FontMetrics *metrics)
 {
   g_return_val_if_fail (metrics != NULL, 0);
 

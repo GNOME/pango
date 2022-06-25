@@ -24,9 +24,9 @@
 #include <pango/pango-font.h>
 #include <pango/pango-direction.h>
 
-guint8 *        pango_log2vis_get_embedding_levels (const char     *text,
-                                                    int             length,
-                                                    PangoDirection *pbase_dir);
+guint8 *         pango2_log2vis_get_embedding_levels (const char      *text,
+                                                      int              length,
+                                                      Pango2Direction *pbase_dir);
 
-PangoDirection  pango_find_base_dir                (const char     *text,
-                                                    int             length);
+Pango2Direction  pango2_find_base_dir                (const char      *text,
+                                                      int              length);

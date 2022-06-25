@@ -26,77 +26,77 @@
 
 G_BEGIN_DECLS
 
-PANGO_AVAILABLE_IN_ALL
-GType                pango_line_iter_get_type                 (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+GType                   pango2_line_iter_get_type                 (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_ALL
-PangoLineIter *      pango_line_iter_copy                     (PangoLineIter    *iter);
+PANGO2_AVAILABLE_IN_ALL
+Pango2LineIter *        pango2_line_iter_copy                     (Pango2LineIter    *iter);
 
-PANGO_AVAILABLE_IN_ALL
-void                 pango_line_iter_free                     (PangoLineIter    *iter);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_line_iter_free                     (Pango2LineIter    *iter);
 
-PANGO_AVAILABLE_IN_ALL
-PangoLines *         pango_line_iter_get_lines                (PangoLineIter    *iter);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Lines *           pango2_line_iter_get_lines                (Pango2LineIter    *iter);
 
-PANGO_AVAILABLE_IN_ALL
-PangoLine *          pango_line_iter_get_line                 (PangoLineIter    *iter);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Line *            pango2_line_iter_get_line                 (Pango2LineIter    *iter);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean             pango_line_iter_at_last_line             (PangoLineIter    *iter);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_line_iter_at_last_line             (Pango2LineIter    *iter);
 
-PANGO_AVAILABLE_IN_ALL
-PangoRun *           pango_line_iter_get_run                  (PangoLineIter    *iter);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Run *             pango2_line_iter_get_run                  (Pango2LineIter    *iter);
 
-PANGO_AVAILABLE_IN_ALL
-int                  pango_line_iter_get_index                (PangoLineIter    *iter);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_line_iter_get_index                (Pango2LineIter    *iter);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean             pango_line_iter_next_line                (PangoLineIter    *iter);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_line_iter_next_line                (Pango2LineIter    *iter);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean             pango_line_iter_next_run                 (PangoLineIter    *iter);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_line_iter_next_run                 (Pango2LineIter    *iter);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean             pango_line_iter_next_cluster             (PangoLineIter    *iter);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_line_iter_next_cluster             (Pango2LineIter    *iter);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean             pango_line_iter_next_char                (PangoLineIter    *iter);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_line_iter_next_char                (Pango2LineIter    *iter);
 
-PANGO_AVAILABLE_IN_ALL
-void                 pango_line_iter_get_layout_extents       (PangoLineIter    *iter,
-                                                               PangoRectangle   *ink_rect,
-                                                               PangoRectangle   *logical_rect);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_line_iter_get_layout_extents       (Pango2LineIter    *iter,
+                                                                   Pango2Rectangle   *ink_rect,
+                                                                   Pango2Rectangle   *logical_rect);
 
-PANGO_AVAILABLE_IN_ALL
-void                 pango_line_iter_get_line_extents         (PangoLineIter    *iter,
-                                                               PangoRectangle   *ink_rect,
-                                                               PangoRectangle   *logical_rect);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_line_iter_get_line_extents         (Pango2LineIter    *iter,
+                                                                   Pango2Rectangle   *ink_rect,
+                                                                   Pango2Rectangle   *logical_rect);
 
-PANGO_AVAILABLE_IN_ALL
-void                 pango_line_iter_get_trimmed_line_extents (PangoLineIter    *iter,
-                                                               PangoLeadingTrim  trim,
-                                                               PangoRectangle   *logical_rect);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_line_iter_get_trimmed_line_extents (Pango2LineIter    *iter,
+                                                                   Pango2LeadingTrim  trim,
+                                                                   Pango2Rectangle   *logical_rect);
 
-PANGO_AVAILABLE_IN_ALL
-void                 pango_line_iter_get_run_extents          (PangoLineIter    *iter,
-                                                               PangoRectangle   *ink_rect,
-                                                               PangoRectangle   *logical_rect);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_line_iter_get_run_extents          (Pango2LineIter    *iter,
+                                                                   Pango2Rectangle   *ink_rect,
+                                                                   Pango2Rectangle   *logical_rect);
 
-PANGO_AVAILABLE_IN_ALL
-void                 pango_line_iter_get_cluster_extents      (PangoLineIter    *iter,
-                                                               PangoRectangle   *ink_rect,
-                                                               PangoRectangle   *logical_rect);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_line_iter_get_cluster_extents      (Pango2LineIter    *iter,
+                                                                   Pango2Rectangle   *ink_rect,
+                                                                   Pango2Rectangle   *logical_rect);
 
-PANGO_AVAILABLE_IN_ALL
-void                 pango_line_iter_get_char_extents         (PangoLineIter    *iter,
-                                                               PangoRectangle   *logical_rect);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_line_iter_get_char_extents         (Pango2LineIter    *iter,
+                                                                   Pango2Rectangle   *logical_rect);
 
-PANGO_AVAILABLE_IN_ALL
-int                  pango_line_iter_get_line_baseline        (PangoLineIter    *iter);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_line_iter_get_line_baseline        (Pango2LineIter    *iter);
 
-PANGO_AVAILABLE_IN_ALL
-int                  pango_line_iter_get_run_baseline         (PangoLineIter    *iter);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_line_iter_get_run_baseline         (Pango2LineIter    *iter);
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoLineIter, pango_line_iter_free)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(Pango2LineIter, pango2_line_iter_free)
 
 G_END_DECLS

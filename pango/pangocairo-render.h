@@ -24,40 +24,40 @@
 
 G_BEGIN_DECLS
 
-PANGO_AVAILABLE_IN_ALL
-void    pango_cairo_show_glyph_string           (cairo_t          *cr,
-                                                 PangoFont        *font,
-                                                 PangoGlyphString *glyphs);
+PANGO2_AVAILABLE_IN_ALL
+void    pango2_cairo_show_glyph_string           (cairo_t           *cr,
+                                                  Pango2Font        *font,
+                                                  Pango2GlyphString *glyphs);
 
-PANGO_AVAILABLE_IN_ALL
-void    pango_cairo_show_run                    (cairo_t          *cr,
-                                                 const char       *text,
-                                                 PangoRun         *run);
-PANGO_AVAILABLE_IN_ALL
-void     pango_cairo_show_line                  (cairo_t          *cr,
-                                                 PangoLine        *line);
-PANGO_AVAILABLE_IN_ALL
-void    pango_cairo_show_lines                  (cairo_t          *cr,
-                                                 PangoLines       *lines);
-PANGO_AVAILABLE_IN_ALL
-void    pango_cairo_show_layout                 (cairo_t          *cr,
-                                                 PangoLayout      *layout);
-PANGO_AVAILABLE_IN_ALL
-void    pango_cairo_glyph_string_path           (cairo_t          *cr,
-                                                 PangoFont        *font,
-                                                 PangoGlyphString *glyphs);
-PANGO_AVAILABLE_IN_ALL
-void    pango_cairo_run_path                    (cairo_t          *cr,
-                                                 const char       *text,
-                                                 PangoRun         *run);
-PANGO_AVAILABLE_IN_ALL
-void    pango_cairo_line_path                   (cairo_t          *cr,
-                                                 PangoLine        *line);
-PANGO_AVAILABLE_IN_ALL
-void    pango_cairo_lines_path                  (cairo_t          *cr,
-                                                 PangoLines       *lines);
-PANGO_AVAILABLE_IN_ALL
-void    pango_cairo_layout_path                 (cairo_t          *cr,
-                                                 PangoLayout      *layout);
+PANGO2_AVAILABLE_IN_ALL
+void    pango2_cairo_show_run                    (cairo_t           *cr,
+                                                  const char        *text,
+                                                  Pango2Run         *run);
+PANGO2_AVAILABLE_IN_ALL
+void     pango2_cairo_show_line                  (cairo_t           *cr,
+                                                  Pango2Line        *line);
+PANGO2_AVAILABLE_IN_ALL
+void    pango2_cairo_show_lines                  (cairo_t           *cr,
+                                                  Pango2Lines       *lines);
+PANGO2_AVAILABLE_IN_ALL
+void    pango2_cairo_show_layout                 (cairo_t           *cr,
+                                                  Pango2Layout      *layout);
+PANGO2_AVAILABLE_IN_ALL
+void    pango2_cairo_glyph_string_path           (cairo_t           *cr,
+                                                  Pango2Font        *font,
+                                                  Pango2GlyphString *glyphs);
+PANGO2_AVAILABLE_IN_ALL
+void    pango2_cairo_run_path                    (cairo_t           *cr,
+                                                  const char        *text,
+                                                  Pango2Run         *run);
+PANGO2_AVAILABLE_IN_ALL
+void    pango2_cairo_line_path                   (cairo_t           *cr,
+                                                  Pango2Line        *line);
+PANGO2_AVAILABLE_IN_ALL
+void    pango2_cairo_lines_path                  (cairo_t           *cr,
+                                                  Pango2Lines       *lines);
+PANGO2_AVAILABLE_IN_ALL
+void    pango2_cairo_layout_path                 (cairo_t           *cr,
+                                                  Pango2Layout      *layout);
 
 G_END_DECLS

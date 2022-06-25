@@ -24,10 +24,10 @@
 
 G_BEGIN_DECLS
 
-typedef struct _PangoMatrix    PangoMatrix;
+typedef struct _Pango2Matrix    Pango2Matrix;
 
 /**
- * PangoMatrix:
+ * Pango2Matrix:
  * @xx: 1st component of the transformation matrix
  * @xy: 2nd component of the transformation matrix
  * @yx: 3rd component of the transformation matrix
@@ -35,7 +35,7 @@ typedef struct _PangoMatrix    PangoMatrix;
  * @x0: x translation
  * @y0: y translation
  *
- * A `PangoMatrix` specifies a transformation between user-space
+ * A `Pango2Matrix` specifies a transformation between user-space
  * and device coordinates.
  *
  * The transformation is given by
@@ -45,7 +45,7 @@ typedef struct _PangoMatrix    PangoMatrix;
  * y_device = x_user * matrix->yx + y_user * matrix->yy + matrix->y0;
  * ```
  */
-struct _PangoMatrix
+struct _Pango2Matrix
 {
   double xx;
   double xy;
@@ -55,75 +55,76 @@ struct _PangoMatrix
   double y0;
 };
 
-#define PANGO_TYPE_MATRIX (pango_matrix_get_type ())
+#define PANGO2_TYPE_MATRIX (pango2_matrix_get_type ())
 
 /**
- * PANGO_MATRIX_INIT:
+ * PANGO2_MATRIX_INIT:
  *
- * Constant that can be used to initialize a `PangoMatrix` to
+ * Constant that can be used to initialize a `Pango2Matrix` to
  * the identity transform.
  *
  * ```
- * PangoMatrix matrix = PANGO_MATRIX_INIT;
- * pango_matrix_rotate (&matrix, 45.);
+ * Pango2Matrix matrix = PANGO2_MATRIX_INIT;
+ * pango2_matrix_rotate (&matrix, 45.);
  * ```
  */
-#define PANGO_MATRIX_INIT { 1., 0., 0., 1., 0., 0. }
+#define PANGO2_MATRIX_INIT { 1., 0., 0., 1., 0., 0. }
 
-/* for PangoRectangle */
+/* for Pango2Rectangle */
 #include <pango/pango-types.h>
 
-PANGO_AVAILABLE_IN_ALL
-GType pango_matrix_get_type (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+GType                   pango2_matrix_get_type                  (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_ALL
-PangoMatrix *pango_matrix_copy   (const PangoMatrix *matrix);
-PANGO_AVAILABLE_IN_ALL
-void         pango_matrix_free   (PangoMatrix *matrix);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Matrix *          pango2_matrix_copy                      (const Pango2Matrix *matrix);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_matrix_free                      (Pango2Matrix       *matrix);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean     pango_matrix_equal (const PangoMatrix *m1,
-                                 const PangoMatrix *m2);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_matrix_equal                     (const Pango2Matrix *m1,
+                                                                 const Pango2Matrix *m2);
 
-PANGO_AVAILABLE_IN_ALL
-void pango_matrix_translate (PangoMatrix *matrix,
-                             double       tx,
-                             double       ty);
-PANGO_AVAILABLE_IN_ALL
-void pango_matrix_scale     (PangoMatrix *matrix,
-                             double       scale_x,
-                             double       scale_y);
-PANGO_AVAILABLE_IN_ALL
-void pango_matrix_rotate    (PangoMatrix *matrix,
-                             double       degrees);
-PANGO_AVAILABLE_IN_ALL
-void pango_matrix_concat    (PangoMatrix       *matrix,
-                             const PangoMatrix *new_matrix);
-PANGO_AVAILABLE_IN_ALL
-void pango_matrix_transform_point    (const PangoMatrix *matrix,
-                                      double            *x,
-                                      double            *y);
-PANGO_AVAILABLE_IN_ALL
-void pango_matrix_transform_distance (const PangoMatrix *matrix,
-                                      double            *dx,
-                                      double            *dy);
-PANGO_AVAILABLE_IN_ALL
-void pango_matrix_transform_rectangle (const PangoMatrix *matrix,
-                                       PangoRectangle    *rect);
-PANGO_AVAILABLE_IN_ALL
-void pango_matrix_transform_pixel_rectangle (const PangoMatrix *matrix,
-                                             PangoRectangle    *rect);
-PANGO_AVAILABLE_IN_ALL
-double pango_matrix_get_font_scale_factor (const PangoMatrix *matrix) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-void pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
-                                          double *xscale, double *yscale);
-PANGO_AVAILABLE_IN_ALL
-double pango_matrix_get_rotation (const PangoMatrix *matrix) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-double pango_matrix_get_slant_ratio (const PangoMatrix *matrix) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_matrix_translate                 (Pango2Matrix       *matrix,
+                                                                 double              tx,
+                                                                 double              ty);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_matrix_scale                     (Pango2Matrix       *matrix,
+                                                                 double              scale_x,
+                                                                 double              scale_y);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_matrix_rotate                    (Pango2Matrix       *matrix,
+                                                                 double              degrees);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_matrix_concat                    (Pango2Matrix       *matrix,
+                                                                 const Pango2Matrix *new_matrix);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_matrix_transform_point           (const Pango2Matrix *matrix,
+                                                                 double            *x,
+                                                                 double            *y);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_matrix_transform_distance        (const Pango2Matrix *matrix,
+                                                                 double            *dx,
+                                                                 double            *dy);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_matrix_transform_rectangle       (const Pango2Matrix *matrix,
+                                                                 Pango2Rectangle    *rect);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_matrix_transform_pixel_rectangle (const Pango2Matrix *matrix,
+                                                                 Pango2Rectangle    *rect);
+PANGO2_AVAILABLE_IN_ALL
+double                  pango2_matrix_get_font_scale_factor     (const Pango2Matrix *matrix) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_matrix_get_font_scale_factors    (const Pango2Matrix *matrix,
+                                                                 double             *xscale,
+                                                                 double             *yscale);
+PANGO2_AVAILABLE_IN_ALL
+double                  pango2_matrix_get_rotation              (const Pango2Matrix *matrix) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+double                  pango2_matrix_get_slant_ratio           (const Pango2Matrix *matrix) G_GNUC_PURE;
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoMatrix, pango_matrix_free)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(Pango2Matrix, pango2_matrix_free)
 
 
 G_END_DECLS

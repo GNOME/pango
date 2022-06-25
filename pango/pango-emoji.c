@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * pango-emoji.c: Emoji handling
  *
  * Copyright (C) 2017 Google, Inc.
@@ -18,7 +18,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * Implementation of pango_emoji_iter is based on Chromium's Ragel-based
+ * Implementation of pango2_emoji_iter is based on Chromium's Ragel-based
  * parser:
  *
  * https://chromium-review.googlesource.com/c/chromium/src/+/1264577
@@ -75,48 +75,48 @@ bsearch_interval (gunichar              c,
   return FALSE;
 }
 
-#define DEFINE_pango_Is_(name) \
+#define DEFINE_pango2_Is_(name) \
 static inline gboolean \
-_pango_Is_##name (gunichar ch) \
+_pango2_Is_##name (gunichar ch) \
 { \
-  return ch >= _pango_##name##_table[0].start && \
+  return ch >= _pango2_##name##_table[0].start && \
          bsearch_interval (ch, \
-                           _pango_##name##_table, \
-                           G_N_ELEMENTS (_pango_##name##_table)); \
+                           _pango2_##name##_table, \
+                           G_N_ELEMENTS (_pango2_##name##_table)); \
 }
 
-DEFINE_pango_Is_(Emoji)
-DEFINE_pango_Is_(Emoji_Presentation)
-DEFINE_pango_Is_(Emoji_Modifier)
-DEFINE_pango_Is_(Emoji_Modifier_Base)
-DEFINE_pango_Is_(Extended_Pictographic)
+DEFINE_pango2_Is_(Emoji)
+DEFINE_pango2_Is_(Emoji_Presentation)
+DEFINE_pango2_Is_(Emoji_Modifier)
+DEFINE_pango2_Is_(Emoji_Modifier_Base)
+DEFINE_pango2_Is_(Extended_Pictographic)
 
 gboolean
-_pango_Is_Emoji_Base_Character (gunichar ch)
+_pango2_Is_Emoji_Base_Character (gunichar ch)
 {
-	return _pango_Is_Emoji (ch);
+	return _pango2_Is_Emoji (ch);
 }
 
 gboolean
-_pango_Is_Emoji_Extended_Pictographic (gunichar ch)
+_pango2_Is_Emoji_Extended_Pictographic (gunichar ch)
 {
-	return _pango_Is_Extended_Pictographic (ch);
+	return _pango2_Is_Extended_Pictographic (ch);
 }
 
 static inline gboolean
-_pango_Is_Emoji_Emoji_Default (gunichar ch)
+_pango2_Is_Emoji_Emoji_Default (gunichar ch)
 {
-  return _pango_Is_Emoji_Presentation (ch);
+  return _pango2_Is_Emoji_Presentation (ch);
 }
 
 static inline gboolean
-_pango_Is_Emoji_Keycap_Base (gunichar ch)
+_pango2_Is_Emoji_Keycap_Base (gunichar ch)
 {
   return (ch >= '0' && ch <= '9') || ch == '#' || ch == '*';
 }
 
 static inline gboolean
-_pango_Is_Regional_Indicator (gunichar ch)
+_pango2_Is_Regional_Indicator (gunichar ch)
 {
   return (ch >= 0x1F1E6 && ch <= 0x1F1FF);
 }
@@ -128,7 +128,7 @@ _pango_Is_Regional_Indicator (gunichar ch)
 #define kVariationSelector16Character 0xFE0F
 #define kZeroWidthJoinerCharacter 0x200D
 
-enum PangoEmojiScannerCategory {
+enum Pango2EmojiScannerCategory {
   EMOJI = 0,
   EMOJI_TEXT_PRESENTATION = 1,
   EMOJI_EMOJI_PRESENTATION = 2,
@@ -149,7 +149,7 @@ enum PangoEmojiScannerCategory {
 };
 
 static inline unsigned char
-_pango_EmojiSegmentationCategory (gunichar codepoint)
+_pango2_EmojiSegmentationCategory (gunichar codepoint)
 {
   /* Specific ones first. */
   if (('a' <= codepoint && codepoint <= 'z') ||
@@ -183,17 +183,17 @@ _pango_EmojiSegmentationCategory (gunichar codepoint)
       (0xE0061 <= codepoint && codepoint <= 0xE007A))
     return TAG_SEQUENCE;
 
-  if (_pango_Is_Emoji_Modifier_Base (codepoint))
+  if (_pango2_Is_Emoji_Modifier_Base (codepoint))
     return EMOJI_MODIFIER_BASE;
-  if (_pango_Is_Emoji_Modifier (codepoint))
+  if (_pango2_Is_Emoji_Modifier (codepoint))
     return EMOJI_MODIFIER;
-  if (_pango_Is_Regional_Indicator (codepoint))
+  if (_pango2_Is_Regional_Indicator (codepoint))
     return REGIONAL_INDICATOR;
-  if (_pango_Is_Emoji_Keycap_Base (codepoint))
+  if (_pango2_Is_Emoji_Keycap_Base (codepoint))
     return KEYCAP_BASE;
-  if (_pango_Is_Emoji_Emoji_Default (codepoint))
+  if (_pango2_Is_Emoji_Emoji_Default (codepoint))
     return EMOJI_EMOJI_PRESENTATION;
-  if (_pango_Is_Emoji (codepoint))
+  if (_pango2_Is_Emoji (codepoint))
     return EMOJI_TEXT_PRESENTATION;
 
   /* Ragel state machine will interpret unknown category as "any". */
@@ -211,8 +211,8 @@ typedef unsigned char *emoji_text_iter_t;
 #pragma GCC diagnostic pop
 
 
-PangoEmojiIter *
-_pango_emoji_iter_init (PangoEmojiIter *iter,
+Pango2EmojiIter *
+_pango2_emoji_iter_init (Pango2EmojiIter *iter,
 			const char     *text,
 			int             length)
 {
@@ -224,7 +224,7 @@ _pango_emoji_iter_init (PangoEmojiIter *iter,
   p = text;
   for (i = 0; i < n_chars; i++)
   {
-    types[i] = _pango_EmojiSegmentationCategory (g_utf8_get_char (p));
+    types[i] = _pango2_EmojiSegmentationCategory (g_utf8_get_char (p));
     p = g_utf8_next_char (p);
   }
 
@@ -239,19 +239,19 @@ _pango_emoji_iter_init (PangoEmojiIter *iter,
   iter->n_chars = n_chars;
   iter->cursor = 0;
 
-  _pango_emoji_iter_next (iter);
+  _pango2_emoji_iter_next (iter);
 
   return iter;
 }
 
 void
-_pango_emoji_iter_fini (PangoEmojiIter *iter)
+_pango2_emoji_iter_fini (Pango2EmojiIter *iter)
 {
   g_free (iter->types);
 }
 
 gboolean
-_pango_emoji_iter_next (PangoEmojiIter *iter)
+_pango2_emoji_iter_next (Pango2EmojiIter *iter)
 {
   unsigned int old_cursor, cursor;
   gboolean is_emoji;

@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * pango-matrix.c: Matrix manipulation routines
  *
  * Copyright (C) 2000, 2006 Red Hat Software
@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -26,27 +26,27 @@
 #include "pango-matrix.h"
 #include "pango-impl-utils.h"
 
-G_DEFINE_BOXED_TYPE (PangoMatrix, pango_matrix,
-                     pango_matrix_copy,
-                     pango_matrix_free);
+G_DEFINE_BOXED_TYPE (Pango2Matrix, pango2_matrix,
+                     pango2_matrix_copy,
+                     pango2_matrix_free);
 
 /**
- * pango_matrix_copy:
- * @matrix: (nullable): a `PangoMatrix`
+ * pango2_matrix_copy:
+ * @matrix: (nullable): a `Pango2Matrix`
  *
- * Copies a `PangoMatrix`.
+ * Copies a `Pango2Matrix`.
  *
- * Return value: (nullable): the newly allocated `PangoMatrix`
+ * Return value: (nullable): the newly allocated `Pango2Matrix`
  */
-PangoMatrix *
-pango_matrix_copy (const PangoMatrix *matrix)
+Pango2Matrix *
+pango2_matrix_copy (const Pango2Matrix *matrix)
 {
-  PangoMatrix *new_matrix;
+  Pango2Matrix *new_matrix;
 
   if (matrix == NULL)
     return NULL;
 
-  new_matrix = g_slice_new (PangoMatrix);
+  new_matrix = g_slice_new (Pango2Matrix);
 
   *new_matrix = *matrix;
 
@@ -54,23 +54,23 @@ pango_matrix_copy (const PangoMatrix *matrix)
 }
 
 /**
- * pango_matrix_free:
- * @matrix: (nullable): a `PangoMatrix`, may be %NULL
+ * pango2_matrix_free:
+ * @matrix: (nullable): a `Pango2Matrix`, may be %NULL
  *
- * Free a `PangoMatrix`.
+ * Free a `Pango2Matrix`.
  */
 void
-pango_matrix_free (PangoMatrix *matrix)
+pango2_matrix_free (Pango2Matrix *matrix)
 {
   if (matrix == NULL)
     return;
 
-  g_slice_free (PangoMatrix, matrix);
+  g_slice_free (Pango2Matrix, matrix);
 }
 
 /**
- * pango_matrix_translate:
- * @matrix: a `PangoMatrix`
+ * pango2_matrix_translate:
+ * @matrix: a `Pango2Matrix`
  * @tx: amount to translate in the X direction
  * @ty: amount to translate in the Y direction
  *
@@ -79,9 +79,9 @@ pango_matrix_free (PangoMatrix *matrix)
  * then applying the original transformation.
  */
 void
-pango_matrix_translate (PangoMatrix *matrix,
-			double       tx,
-			double       ty)
+pango2_matrix_translate (Pango2Matrix *matrix,
+                         double        tx,
+                         double        ty)
 {
   g_return_if_fail (matrix != NULL);
 
@@ -90,8 +90,8 @@ pango_matrix_translate (PangoMatrix *matrix,
 }
 
 /**
- * pango_matrix_scale:
- * @matrix: a `PangoMatrix`
+ * pango2_matrix_scale:
+ * @matrix: a `Pango2Matrix`
  * @scale_x: amount to scale by in X direction
  * @scale_y: amount to scale by in Y direction
  *
@@ -101,9 +101,9 @@ pango_matrix_translate (PangoMatrix *matrix,
  * transformation.
  */
 void
-pango_matrix_scale (PangoMatrix *matrix,
-		    double       scale_x,
-		    double       scale_y)
+pango2_matrix_scale (Pango2Matrix *matrix,
+                     double        scale_x,
+                     double        scale_y)
 {
   g_return_if_fail (matrix != NULL);
 
@@ -114,8 +114,8 @@ pango_matrix_scale (PangoMatrix *matrix,
 }
 
 /**
- * pango_matrix_rotate:
- * @matrix: a `PangoMatrix`
+ * pango2_matrix_rotate:
+ * @matrix: a `Pango2Matrix`
  * @degrees: degrees to rotate counter-clockwise
  *
  * Changes the transformation represented by @matrix to be the
@@ -123,10 +123,10 @@ pango_matrix_scale (PangoMatrix *matrix,
  * counter-clockwise then applying the original transformation.
  */
 void
-pango_matrix_rotate (PangoMatrix *matrix,
-		     double       degrees)
+pango2_matrix_rotate (Pango2Matrix *matrix,
+                      double        degrees)
 {
-  PangoMatrix tmp;
+  Pango2Matrix tmp;
   double r, s, c;
 
   g_return_if_fail (matrix != NULL);
@@ -142,23 +142,23 @@ pango_matrix_rotate (PangoMatrix *matrix,
   tmp.x0 = 0;
   tmp.y0 = 0;
 
-  pango_matrix_concat (matrix, &tmp);
+  pango2_matrix_concat (matrix, &tmp);
 }
 
 /**
- * pango_matrix_concat:
- * @matrix: a `PangoMatrix`
- * @new_matrix: a `PangoMatrix`
+ * pango2_matrix_concat:
+ * @matrix: a `Pango2Matrix`
+ * @new_matrix: a `Pango2Matrix`
  *
  * Changes the transformation represented by @matrix to be the
  * transformation given by first applying transformation
  * given by @new_matrix then applying the original transformation.
  */
 void
-pango_matrix_concat (PangoMatrix       *matrix,
-		     const PangoMatrix *new_matrix)
+pango2_matrix_concat (Pango2Matrix       *matrix,
+                      const Pango2Matrix *new_matrix)
 {
-  PangoMatrix tmp;
+  Pango2Matrix tmp;
 
   g_return_if_fail (matrix != NULL);
 
@@ -173,29 +173,29 @@ pango_matrix_concat (PangoMatrix       *matrix,
 }
 
 /**
- * pango_matrix_get_font_scale_factor:
- * @matrix: (nullable): a `PangoMatrix`, may be %NULL
+ * pango2_matrix_get_font_scale_factor:
+ * @matrix: (nullable): a `Pango2Matrix`, may be %NULL
  *
  * Returns the scale factor of a matrix on the height of the font.
  *
  * That is, the scale factor in the direction perpendicular to the
  * vector that the X coordinate is mapped to.  If the scale in the X
- * coordinate is needed as well, use [method@Pango.Matrix.get_font_scale_factors].
+ * coordinate is needed as well, use [method@Pango2.Matrix.get_font_scale_factors].
  *
  * Return value: the scale factor of @matrix on the height of the font,
  *   or 1.0 if @matrix is %NULL.
  */
 double
-pango_matrix_get_font_scale_factor (const PangoMatrix *matrix)
+pango2_matrix_get_font_scale_factor (const Pango2Matrix *matrix)
 {
   double yscale;
-  pango_matrix_get_font_scale_factors (matrix, NULL, &yscale);
+  pango2_matrix_get_font_scale_factors (matrix, NULL, &yscale);
   return yscale;
 }
 
 /**
- * pango_matrix_get_font_scale_factors:
- * @matrix: (nullable): a `PangoMatrix`
+ * pango2_matrix_get_font_scale_factors:
+ * @matrix: (nullable): a `Pango2Matrix`
  * @xscale: (out) (optional): output scale factor in the x direction
  * @yscale: (out) (optional): output scale factor perpendicular to the x direction
  *
@@ -208,8 +208,9 @@ pango_matrix_get_font_scale_factor (const PangoMatrix *matrix)
  * Note that output numbers will always be non-negative.
  **/
 void
-pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
-				     double *xscale, double *yscale)
+pango2_matrix_get_font_scale_factors (const Pango2Matrix *matrix,
+                                      double             *xscale,
+                                      double             *yscale)
 {
 /*
  * Based on cairo-matrix.c:_cairo_matrix_compute_scale_factors()
@@ -225,17 +226,17 @@ pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
       major = sqrt (x*x + y*y);
 
       if (major)
-	{
-	  double det = matrix->xx * matrix->yy - matrix->yx * matrix->xy;
+        {
+          double det = matrix->xx * matrix->yy - matrix->yx * matrix->xy;
 
-	  /*
-	   * ignore mirroring
-	   */
-	  if (det < 0)
-	    det = - det;
+          /*
+           * ignore mirroring
+           */
+          if (det < 0)
+            det = - det;
 
-	  minor = det / major;
-	}
+          minor = det / major;
+        }
       else
         minor = 0.;
     }
@@ -249,8 +250,8 @@ pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
 #define RAD_TO_DEG(x) ((x)/G_PI * 180)
 
 /**
- * pango_matrix_get_rotation:
- * @matrix: a `PangoMatrix`
+ * pango2_matrix_get_rotation:
+ * @matrix: a `Pango2Matrix`
  *
  * Returns the angle (in degrees) that this
  * matrix rotates the X axis by.
@@ -260,21 +261,21 @@ pango_matrix_get_font_scale_factors (const PangoMatrix *matrix,
  * Returns: the rotation of @matrix
  */
 double
-pango_matrix_get_rotation (const PangoMatrix *matrix)
+pango2_matrix_get_rotation (const Pango2Matrix *matrix)
 {
   double x, y;
 
   x = 1;
   y = 0;
 
-  pango_matrix_transform_distance (matrix, &x, &y);
+  pango2_matrix_transform_distance (matrix, &x, &y);
 
   return RAD_TO_DEG (acos (CLAMP (x /  sqrtf (x*x + y*y), -1., 1.)));
 }
 
 /**
- * pango_matrix_get_slant_ratio:
- * @matrix: a `PangoMatrix`
+ * pango2_matrix_get_slant_ratio:
+ * @matrix: a `Pango2Matrix`
  *
  * Gets the slant ratio of a matrix.
  *
@@ -288,7 +289,7 @@ pango_matrix_get_rotation (const PangoMatrix *matrix)
  * Returns: the slant ratio of @matrix
  */
 double
-pango_matrix_get_slant_ratio (const PangoMatrix *matrix)
+pango2_matrix_get_slant_ratio (const Pango2Matrix *matrix)
 {
   if (matrix)
     {
@@ -308,14 +309,14 @@ pango_matrix_get_slant_ratio (const PangoMatrix *matrix)
 }
 
 /**
- * pango_matrix_transform_distance:
- * @matrix: (nullable): a `PangoMatrix`
+ * pango2_matrix_transform_distance:
+ * @matrix: (nullable): a `Pango2Matrix`
  * @dx: (inout): in/out X component of a distance vector
  * @dy: (inout): in/out Y component of a distance vector
  *
  * Transforms the distance vector (@dx,@dy) by @matrix.
  *
- * This is similar to [method@Pango.Matrix.transform_point],
+ * This is similar to [method@Pango2.Matrix.transform_point],
  * except that the translation components of the transformation
  * are ignored. The calculation of the returned vector is as follows:
  *
@@ -330,9 +331,9 @@ pango_matrix_get_slant_ratio (const PangoMatrix *matrix)
  * (@x1+@dx2,@y1+@dy2) for all values of @x1 and @x2.
  */
 void
-pango_matrix_transform_distance (const PangoMatrix *matrix,
-				 double            *dx,
-				 double            *dy)
+pango2_matrix_transform_distance (const Pango2Matrix *matrix,
+                                  double             *dx,
+                                  double             *dy)
 {
   if (matrix)
     {
@@ -347,21 +348,21 @@ pango_matrix_transform_distance (const PangoMatrix *matrix,
 }
 
 /**
- * pango_matrix_transform_point:
- * @matrix: (nullable): a `PangoMatrix`
+ * pango2_matrix_transform_point:
+ * @matrix: (nullable): a `Pango2Matrix`
  * @x: (inout): in/out X position
  * @y: (inout): in/out Y position
  *
  * Transforms the point (@x, @y) by @matrix.
  */
 void
-pango_matrix_transform_point (const PangoMatrix *matrix,
-			      double            *x,
-			      double            *y)
+pango2_matrix_transform_point (const Pango2Matrix *matrix,
+                               double             *x,
+                               double             *y)
 {
   if (matrix)
     {
-      pango_matrix_transform_distance (matrix, x, y);
+      pango2_matrix_transform_distance (matrix, x, y);
 
       *x += matrix->x0;
       *y += matrix->y0;
@@ -369,32 +370,32 @@ pango_matrix_transform_point (const PangoMatrix *matrix,
 }
 
 /**
- * pango_matrix_transform_rectangle:
- * @matrix: (nullable): a `PangoMatrix`
- * @rect: (inout) (optional): in/out bounding box in Pango units
+ * pango2_matrix_transform_rectangle:
+ * @matrix: (nullable): a `Pango2Matrix`
+ * @rect: (inout) (optional): in/out bounding box in Pango2 units
  *
  * First transforms @rect using @matrix, then calculates the bounding box
  * of the transformed rectangle.
  *
  * This function is useful for example when you want to draw a rotated
- * @PangoLayout to an image buffer, and want to know how large the image
+ * @Pango2Layout to an image buffer, and want to know how large the image
  * should be and how much you should shift the layout when rendering.
  *
  * If you have a rectangle in device units (pixels), use
- * [method@Pango.Matrix.transform_pixel_rectangle].
+ * [method@Pango2.Matrix.transform_pixel_rectangle].
  *
- * If you have the rectangle in Pango units and want to convert to
+ * If you have the rectangle in Pango2 units and want to convert to
  * transformed pixel bounding box, it is more accurate to transform it first
- * (using this function) and pass the result to pango_extents_to_pixels(),
+ * (using this function) and pass the result to pango2_extents_to_pixels(),
  * first argument, for an inclusive rounded rectangle.
  * However, there are valid reasons that you may want to convert
  * to pixels first and then transform, for example when the transformed
- * coordinates may overflow in Pango units (large matrix translation for
+ * coordinates may overflow in Pango2 units (large matrix translation for
  * example).
  */
 void
-pango_matrix_transform_rectangle (const PangoMatrix *matrix,
-				  PangoRectangle    *rect)
+pango2_matrix_transform_rectangle (const Pango2Matrix *matrix,
+                                   Pango2Rectangle    *rect)
 {
   int i;
   double quad_x[4], quad_y[4];
@@ -406,19 +407,19 @@ pango_matrix_transform_rectangle (const PangoMatrix *matrix,
   if (!rect || !matrix)
     return;
 
-  quad_x[0] = pango_units_to_double (rect->x);
-  quad_y[0] = pango_units_to_double (rect->y);
-  pango_matrix_transform_point (matrix, &quad_x[0], &quad_y[0]);
+  quad_x[0] = pango2_units_to_double (rect->x);
+  quad_y[0] = pango2_units_to_double (rect->y);
+  pango2_matrix_transform_point (matrix, &quad_x[0], &quad_y[0]);
 
-  dx1 = pango_units_to_double (rect->width);
+  dx1 = pango2_units_to_double (rect->width);
   dy1 = 0;
-  pango_matrix_transform_distance (matrix, &dx1, &dy1);
+  pango2_matrix_transform_distance (matrix, &dx1, &dy1);
   quad_x[1] = quad_x[0] + dx1;
   quad_y[1] = quad_y[0] + dy1;
 
   dx2 = 0;
-  dy2 = pango_units_to_double (rect->height);
-  pango_matrix_transform_distance (matrix, &dx2, &dy2);
+  dy2 = pango2_units_to_double (rect->height);
+  pango2_matrix_transform_distance (matrix, &dx2, &dy2);
   quad_x[2] = quad_x[0] + dx2;
   quad_y[2] = quad_y[0] + dy2;
 
@@ -430,41 +431,41 @@ pango_matrix_transform_rectangle (const PangoMatrix *matrix,
 
   for (i=1; i < 4; i++) {
       if (quad_x[i] < min_x)
-	  min_x = quad_x[i];
+          min_x = quad_x[i];
       else if (quad_x[i] > max_x)
-	  max_x = quad_x[i];
+          max_x = quad_x[i];
 
       if (quad_y[i] < min_y)
-	  min_y = quad_y[i];
+          min_y = quad_y[i];
       else if (quad_y[i] > max_y)
-	  max_y = quad_y[i];
+          max_y = quad_y[i];
   }
 
-  rect->x      = pango_units_from_double (min_x);
-  rect->y      = pango_units_from_double (min_y);
-  rect->width  = pango_units_from_double (max_x) - rect->x;
-  rect->height = pango_units_from_double (max_y) - rect->y;
+  rect->x      = pango2_units_from_double (min_x);
+  rect->y      = pango2_units_from_double (min_y);
+  rect->width  = pango2_units_from_double (max_x) - rect->x;
+  rect->height = pango2_units_from_double (max_y) - rect->y;
 }
 
 /**
- * pango_matrix_transform_pixel_rectangle:
- * @matrix: (nullable): a `PangoMatrix`
+ * pango2_matrix_transform_pixel_rectangle:
+ * @matrix: (nullable): a `Pango2Matrix`
  * @rect: (inout) (optional): in/out bounding box in device units
  *
  * First transforms the @rect using @matrix, then calculates the bounding box
  * of the transformed rectangle.
  *
  * This function is useful for example when you want to draw a rotated
- * @PangoLayout to an image buffer, and want to know how large the image
+ * @Pango2Layout to an image buffer, and want to know how large the image
  * should be and how much you should shift the layout when rendering.
  *
- * For better accuracy, you should use [method@Pango.Matrix.transform_rectangle]
- * on original rectangle in Pango units and convert to pixels afterward
+ * For better accuracy, you should use [method@Pango2.Matrix.transform_rectangle]
+ * on original rectangle in Pango2 units and convert to pixels afterward
  * using [func@extents_to_pixels]'s first argument.
  */
 void
-pango_matrix_transform_pixel_rectangle (const PangoMatrix *matrix,
-					PangoRectangle    *rect)
+pango2_matrix_transform_pixel_rectangle (const Pango2Matrix *matrix,
+                                         Pango2Rectangle    *rect)
 {
   int i;
   double quad_x[4], quad_y[4];
@@ -478,17 +479,17 @@ pango_matrix_transform_pixel_rectangle (const PangoMatrix *matrix,
 
   quad_x[0] = rect->x;
   quad_y[0] = rect->y;
-  pango_matrix_transform_point (matrix, &quad_x[0], &quad_y[0]);
+  pango2_matrix_transform_point (matrix, &quad_x[0], &quad_y[0]);
 
   dx1 = rect->width;
   dy1 = 0;
-  pango_matrix_transform_distance (matrix, &dx1, &dy1);
+  pango2_matrix_transform_distance (matrix, &dx1, &dy1);
   quad_x[1] = quad_x[0] + dx1;
   quad_y[1] = quad_y[0] + dy1;
 
   dx2 = 0;
   dy2 = rect->height;
-  pango_matrix_transform_distance (matrix, &dx2, &dy2);
+  pango2_matrix_transform_distance (matrix, &dx2, &dy2);
   quad_x[2] = quad_x[0] + dx2;
   quad_y[2] = quad_y[0] + dy2;
 
@@ -518,8 +519,8 @@ pango_matrix_transform_pixel_rectangle (const PangoMatrix *matrix,
 }
 
 gboolean
-pango_matrix_equal (const PangoMatrix *m1,
-                    const PangoMatrix *m2)
+pango2_matrix_equal (const Pango2Matrix *m1,
+                     const Pango2Matrix *m2)
 {
   return m1->xx == m2->xx && m1->xy == m2->xy &&
          m1->yx == m2->yx && m1->yy == m2->yy &&

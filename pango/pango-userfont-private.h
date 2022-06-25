@@ -24,7 +24,7 @@
 #include "pango-font-private.h"
 
 
-struct _PangoUserFont
+struct _Pango2UserFont
 {
-  PangoFont parent_instance;
+  Pango2Font parent_instance;
 };

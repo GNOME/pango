@@ -29,7 +29,7 @@ typedef struct _CairoViewerIface CairoViewerIface;
 
 struct _CairoViewerIface
 {
-  const PangoViewer *backend_class;
+  const Pango2Viewer *backend_class;
 
   cairo_surface_t * (*create_surface) (gpointer instance,
 				       gpointer surface,

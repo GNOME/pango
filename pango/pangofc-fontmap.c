@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  *
  * Copyright (C) 2021 Red Hat, Inc.
  *
@@ -39,23 +39,23 @@
 
 
 /**
- * PangoFcFontMap:
+ * Pango2FcFontMap:
  *
- * `PangoFcFontMap` is a subclass of `PangoFontMap` that uses
+ * `Pango2FcFontMap` is a subclass of `Pango2FontMap` that uses
  * fontconfig to populate the fontmap with the available fonts.
  */
 
 
-struct _PangoFcFontMap
+struct _Pango2FcFontMap
 {
-  PangoFontMap parent_instance;
+  Pango2FontMap parent_instance;
 
   FcConfig *config;
 };
 
-struct _PangoFcFontMapClass
+struct _Pango2FcFontMapClass
 {
-  PangoFontMapClass parent_class;
+  Pango2FontMapClass parent_class;
 };
 
 /* {{{ Fontconfig utilities */
@@ -90,103 +90,103 @@ is_supported_font_format (FcPattern *pattern)
   return FALSE;
 }
 
-static PangoStyle
+static Pango2Style
 convert_fc_slant_to_pango (int fc_style)
 {
   switch (fc_style)
     {
     case FC_SLANT_ROMAN:
-      return PANGO_STYLE_NORMAL;
+      return PANGO2_STYLE_NORMAL;
     case FC_SLANT_ITALIC:
-      return PANGO_STYLE_ITALIC;
+      return PANGO2_STYLE_ITALIC;
     case FC_SLANT_OBLIQUE:
-      return PANGO_STYLE_OBLIQUE;
+      return PANGO2_STYLE_OBLIQUE;
     default:
-      return PANGO_STYLE_NORMAL;
+      return PANGO2_STYLE_NORMAL;
     }
 }
 
-static PangoStretch
+static Pango2Stretch
 convert_fc_width_to_pango (int fc_stretch)
 {
   switch (fc_stretch)
     {
     case FC_WIDTH_NORMAL:
-      return PANGO_STRETCH_NORMAL;
+      return PANGO2_STRETCH_NORMAL;
     case FC_WIDTH_ULTRACONDENSED:
-      return PANGO_STRETCH_ULTRA_CONDENSED;
+      return PANGO2_STRETCH_ULTRA_CONDENSED;
     case FC_WIDTH_EXTRACONDENSED:
-      return PANGO_STRETCH_EXTRA_CONDENSED;
+      return PANGO2_STRETCH_EXTRA_CONDENSED;
     case FC_WIDTH_CONDENSED:
-      return PANGO_STRETCH_CONDENSED;
+      return PANGO2_STRETCH_CONDENSED;
     case FC_WIDTH_SEMICONDENSED:
-      return PANGO_STRETCH_SEMI_CONDENSED;
+      return PANGO2_STRETCH_SEMI_CONDENSED;
     case FC_WIDTH_SEMIEXPANDED:
-      return PANGO_STRETCH_SEMI_EXPANDED;
+      return PANGO2_STRETCH_SEMI_EXPANDED;
     case FC_WIDTH_EXPANDED:
-      return PANGO_STRETCH_EXPANDED;
+      return PANGO2_STRETCH_EXPANDED;
     case FC_WIDTH_EXTRAEXPANDED:
-      return PANGO_STRETCH_EXTRA_EXPANDED;
+      return PANGO2_STRETCH_EXTRA_EXPANDED;
     case FC_WIDTH_ULTRAEXPANDED:
-      return PANGO_STRETCH_ULTRA_EXPANDED;
+      return PANGO2_STRETCH_ULTRA_EXPANDED;
     default:
-      return PANGO_STRETCH_NORMAL;
+      return PANGO2_STRETCH_NORMAL;
     }
 }
 
-static PangoWeight
+static Pango2Weight
 convert_fc_weight_to_pango (double fc_weight)
 {
   return FcWeightToOpenTypeDouble (fc_weight);
 }
 
-#define PANGO_FC_GRAVITY "gravity"
+#define PANGO2_FC_GRAVITY "gravity"
 
 /* Create font description that matches the pattern.
  * We explicitly don't want to include variant, gravity,
  * variations and font features here, since there are
- * handled on the font level, by PangoHbFont, not
- * by PangoHbFace.
+ * handled on the font level, by Pango2HbFont, not
+ * by Pango2HbFace.
  */
-static PangoFontDescription *
-pango_font_description_from_pattern (FcPattern *pattern)
+static Pango2FontDescription *
+pango2_font_description_from_pattern (FcPattern *pattern)
 {
-  PangoFontDescription *desc;
-  PangoStyle style;
-  PangoWeight weight;
-  PangoStretch stretch;
+  Pango2FontDescription *desc;
+  Pango2Style style;
+  Pango2Weight weight;
+  Pango2Stretch stretch;
   FcChar8 *s;
   int i;
   double d;
   FcResult res;
 
-  desc = pango_font_description_new ();
+  desc = pango2_font_description_new ();
 
   res = FcPatternGetString (pattern, FC_FAMILY, 0, (FcChar8 **) &s);
   g_assert (res == FcResultMatch);
 
-  pango_font_description_set_family (desc, (char *)s);
+  pango2_font_description_set_family (desc, (char *)s);
 
   if (FcPatternGetInteger (pattern, FC_SLANT, 0, &i) == FcResultMatch)
     style = convert_fc_slant_to_pango (i);
   else
-    style = PANGO_STYLE_NORMAL;
+    style = PANGO2_STYLE_NORMAL;
 
-  pango_font_description_set_style (desc, style);
+  pango2_font_description_set_style (desc, style);
 
   if (FcPatternGetDouble (pattern, FC_WEIGHT, 0, &d) == FcResultMatch)
     weight = convert_fc_weight_to_pango (d);
   else
-    weight = PANGO_WEIGHT_NORMAL;
+    weight = PANGO2_WEIGHT_NORMAL;
 
-  pango_font_description_set_weight (desc, weight);
+  pango2_font_description_set_weight (desc, weight);
 
   if (FcPatternGetInteger (pattern, FC_WIDTH, 0, &i) == FcResultMatch)
     stretch = convert_fc_width_to_pango (i);
   else
-    stretch = PANGO_STRETCH_NORMAL;
+    stretch = PANGO2_STRETCH_NORMAL;
 
-  pango_font_description_set_stretch (desc, stretch);
+  pango2_font_description_set_stretch (desc, stretch);
 
   return desc;
 }
@@ -225,8 +225,8 @@ style_name_from_pattern (FcPattern *pattern)
 }
 
 static gboolean
-font_matrix_from_pattern (FcPattern   *pattern,
-                          PangoMatrix *matrix)
+font_matrix_from_pattern (FcPattern    *pattern,
+                          Pango2Matrix *matrix)
 {
   FcMatrix fc_matrix, *fc_matrix_val;
   int i;
@@ -248,18 +248,18 @@ font_matrix_from_pattern (FcPattern   *pattern,
   return FALSE;
 }
 
-static PangoHbFace *
-pango_hb_face_from_pattern (PangoFcFontMap *self,
-                            FcPattern      *pattern,
-                            GHashTable     *lang_hash)
+static Pango2HbFace *
+pango2_hb_face_from_pattern (Pango2FcFontMap *self,
+                             FcPattern       *pattern,
+                             GHashTable      *lang_hash)
 {
   const char *family_name, *file;
   int index;
   int instance_id;
-  PangoFontDescription *description;
+  Pango2FontDescription *description;
   const char *name;
-  PangoHbFace *face;
-  PangoMatrix font_matrix;
+  Pango2HbFace *face;
+  Pango2Matrix font_matrix;
   FcLangSet *langs;
   gboolean variable;
 
@@ -284,20 +284,20 @@ pango_hb_face_from_pattern (PangoFcFontMap *self,
   if (variable)
     instance_id = -2;
 
-  description = pango_font_description_from_pattern (pattern);
+  description = pango2_font_description_from_pattern (pattern);
   name = style_name_from_pattern (pattern);
 
-  face = pango_hb_face_new_from_file (file, index, instance_id, name, description);
+  face = pango2_hb_face_new_from_file (file, index, instance_id, name, description);
 
-  pango_font_description_free (description);
+  pango2_font_description_free (description);
 
   if (font_matrix_from_pattern (pattern, &font_matrix))
-    pango_hb_face_set_matrix (face, &font_matrix);
+    pango2_hb_face_set_matrix (face, &font_matrix);
 
   if (FcPatternGetLangSet (pattern, FC_LANG, 0, &langs) == FcResultMatch)
     {
-      PangoFcLanguageSet lookup;
-      PangoLanguageSet *languages;
+      Pango2FcLanguageSet lookup;
+      Pango2LanguageSet *languages;
       FcLangSet *empty = FcLangSetCreate ();
 
       if (!FcLangSetEqual (langs, empty))
@@ -306,10 +306,10 @@ pango_hb_face_from_pattern (PangoFcFontMap *self,
           languages = g_hash_table_lookup (lang_hash, &lookup);
           if (!languages)
             {
-              languages = PANGO_LANGUAGE_SET (pango_fc_language_set_new (langs));
+              languages = PANGO2_LANGUAGE_SET (pango2_fc_language_set_new (langs));
               g_hash_table_add (lang_hash, languages);
             }
-          pango_hb_face_set_language_set (face, languages);
+          pango2_hb_face_set_language_set (face, languages);
         }
 
       FcLangSetDestroy (empty);
@@ -319,12 +319,12 @@ pango_hb_face_from_pattern (PangoFcFontMap *self,
 }
 
 /* }}} */
-/* {{{ PangoFontMap implementation */
+/* {{{ Pango2FontMap implementation */
 
 static void
-pango_fc_font_map_populate (PangoFontMap *map)
+pango2_fc_font_map_populate (Pango2FontMap *map)
 {
-  PangoFcFontMap *self = PANGO_FC_FONT_MAP (map);
+  Pango2FcFontMap *self = PANGO2_FC_FONT_MAP (map);
   FcPattern *pat;
   FcFontSet *fontset;
   int k;
@@ -332,7 +332,7 @@ pango_fc_font_map_populate (PangoFontMap *map)
   FcObjectSet *os;
   gint64 before G_GNUC_UNUSED;
 
-  before = PANGO_TRACE_CURRENT_TIME;
+  before = PANGO2_TRACE_CURRENT_TIME;
 
   os = FcObjectSetBuild (FC_FAMILY, FC_SPACING, FC_STYLE, FC_WEIGHT,
                          FC_WIDTH, FC_SLANT, FC_VARIABLE, FC_FONTFORMAT,
@@ -342,17 +342,17 @@ pango_fc_font_map_populate (PangoFontMap *map)
   fontset = FcFontList (self->config, pat, os);
   FcPatternDestroy (pat);
 
-  lang_hash = g_hash_table_new_full ((GHashFunc) pango_fc_language_set_hash,
-                                     (GEqualFunc) pango_fc_language_set_equal,
+  lang_hash = g_hash_table_new_full ((GHashFunc) pango2_fc_language_set_hash,
+                                     (GEqualFunc) pango2_fc_language_set_equal,
                                      NULL, g_object_unref);
 
   for (k = 0; k < fontset->nfont; k++)
     {
-      PangoHbFace *face = pango_hb_face_from_pattern (self, fontset->fonts[k], lang_hash);
+      Pango2HbFace *face = pango2_hb_face_from_pattern (self, fontset->fonts[k], lang_hash);
       if (!face)
         continue;
 
-      pango_font_map_add_face (PANGO_FONT_MAP (self), PANGO_FONT_FACE (face));
+      pango2_font_map_add_face (PANGO2_FONT_MAP (self), PANGO2_FONT_FACE (face));
     }
 
   g_hash_table_unref (lang_hash);
@@ -372,7 +372,7 @@ pango_fc_font_map_populate (PangoFontMap *map)
       FcResult res;
       const char *family_name;
 
-      if (pango_font_map_get_family (map, alias_names[i]))
+      if (pango2_font_map_get_family (map, alias_names[i]))
         continue;
 
       pattern = FcPatternCreate ();
@@ -385,14 +385,14 @@ pango_fc_font_map_populate (PangoFontMap *map)
 
       if (FcPatternGetString (ret, FC_FAMILY, 0, (FcChar8 **)(void*)&family_name) == FcResultMatch)
         {
-          PangoFontFamily *family = pango_font_map_get_family (map, family_name);
+          Pango2FontFamily *family = pango2_font_map_get_family (map, family_name);
           if (family)
             {
-              PangoGenericFamily *alias_family;
+              Pango2GenericFamily *alias_family;
 
-              alias_family = pango_generic_family_new (alias_names[i]);
-              pango_generic_family_add_family (alias_family, family);
-              pango_font_map_add_family (map, PANGO_FONT_FAMILY (alias_family));
+              alias_family = pango2_generic_family_new (alias_names[i]);
+              pango2_generic_family_add_family (alias_family, family);
+              pango2_font_map_add_family (map, PANGO2_FONT_FAMILY (alias_family));
             }
         }
 
@@ -419,16 +419,16 @@ pango_fc_font_map_populate (PangoFontMap *map)
 
   for (int i = 0; i < G_N_ELEMENTS (generic_names); i++)
     {
-      PangoGenericFamily *generic_family;
+      Pango2GenericFamily *generic_family;
       GHashTable *families_hash;
       FcPattern *pattern;
       FcFontSet *ret;
       FcResult res;
 
-      if (pango_font_map_get_family (map, generic_names[i]))
+      if (pango2_font_map_get_family (map, generic_names[i]))
         continue;
 
-      generic_family = pango_generic_family_new (generic_names[i]);
+      generic_family = pango2_generic_family_new (generic_names[i]);
 
       families_hash = g_hash_table_new (NULL, NULL);
 
@@ -441,7 +441,7 @@ pango_fc_font_map_populate (PangoFontMap *map)
       ret = FcFontSort (self->config, pattern, TRUE, NULL, &res);
       for (int j = 0; j < ret->nfont; j++)
         {
-          PangoHbFamily *family;
+          Pango2HbFamily *family;
           const char *file;
           int index;
           FcLangSet *langs;
@@ -479,14 +479,14 @@ pango_fc_font_map_populate (PangoFontMap *map)
 
           index = index & 0xffff;
 
-          family = PANGO_HB_FAMILY (pango_font_map_get_family (map, family_name));
+          family = PANGO2_HB_FAMILY (pango2_font_map_get_family (map, family_name));
           if (!family)
             continue;
 
           if (g_hash_table_contains (families_hash, family))
             continue;
 
-          pango_generic_family_add_family (generic_family, PANGO_FONT_FAMILY (family));
+          pango2_generic_family_add_family (generic_family, PANGO2_FONT_FAMILY (family));
           g_hash_table_add (families_hash, family);
        }
 
@@ -495,7 +495,7 @@ pango_fc_font_map_populate (PangoFontMap *map)
       g_hash_table_unref (families_hash);
 
       if (g_list_model_get_n_items (G_LIST_MODEL (generic_family)) > 0)
-        pango_font_map_add_family (map, PANGO_FONT_FAMILY (generic_family));
+        pango2_font_map_add_family (map, PANGO2_FONT_FAMILY (generic_family));
       else
         g_object_unref (generic_family);
     }
@@ -505,69 +505,69 @@ pango_fc_font_map_populate (PangoFontMap *map)
 
   FcObjectSetDestroy (os);
 
-  pango_trace_mark (before, "populate FcFontMap", NULL);
+  pango2_trace_mark (before, "populate FcFontMap", NULL);
 }
 
 /* }}} */
-/* {{{ PangoFcFontMap implementation */
+/* {{{ Pango2FcFontMap implementation */
 
-G_DEFINE_FINAL_TYPE (PangoFcFontMap, pango_fc_font_map, PANGO_TYPE_FONT_MAP)
+G_DEFINE_FINAL_TYPE (Pango2FcFontMap, pango2_fc_font_map, PANGO2_TYPE_FONT_MAP)
 
 static void
-pango_fc_font_map_init (PangoFcFontMap *self)
+pango2_fc_font_map_init (Pango2FcFontMap *self)
 {
-  pango_font_map_repopulate (PANGO_FONT_MAP (self), TRUE);
+  pango2_font_map_repopulate (PANGO2_FONT_MAP (self), TRUE);
 }
 
 static void
-pango_fc_font_map_finalize (GObject *object)
+pango2_fc_font_map_finalize (GObject *object)
 {
-  PangoFcFontMap *self = PANGO_FC_FONT_MAP (object);
+  Pango2FcFontMap *self = PANGO2_FC_FONT_MAP (object);
 
   if (self->config)
     FcConfigDestroy (self->config);
 
-  G_OBJECT_CLASS (pango_fc_font_map_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango2_fc_font_map_parent_class)->finalize (object);
 }
 
 static void
-pango_fc_font_map_class_init (PangoFcFontMapClass *class)
+pango2_fc_font_map_class_init (Pango2FcFontMapClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
-  PangoFontMapClass *font_map_class = PANGO_FONT_MAP_CLASS (class);
+  Pango2FontMapClass *font_map_class = PANGO2_FONT_MAP_CLASS (class);
   gint64 before G_GNUC_UNUSED;
 
-  before = PANGO_TRACE_CURRENT_TIME;
+  before = PANGO2_TRACE_CURRENT_TIME;
 
   FcInit ();
 
-  pango_trace_mark (before, "FcInit", NULL);
+  pango2_trace_mark (before, "FcInit", NULL);
 
-  object_class->finalize = pango_fc_font_map_finalize;
+  object_class->finalize = pango2_fc_font_map_finalize;
 
-  font_map_class->populate = pango_fc_font_map_populate;
+  font_map_class->populate = pango2_fc_font_map_populate;
 }
 
 /* }}} */
 /* {{{ Public API */
 
 /**
- * pango_fc_font_map_new:
+ * pango2_fc_font_map_new:
  *
- * Creates a new `PangoFcFontMap` using the default
+ * Creates a new `Pango2FcFontMap` using the default
  * fontconfig configuration.
  *
- * Returns: a new `PangoFcFontMap`
+ * Returns: a new `Pango2FcFontMap`
  */
-PangoFcFontMap *
-pango_fc_font_map_new (void)
+Pango2FcFontMap *
+pango2_fc_font_map_new (void)
 {
-  return g_object_new (PANGO_TYPE_FC_FONT_MAP, NULL);
+  return g_object_new (PANGO2_TYPE_FC_FONT_MAP, NULL);
 }
 
 /**
- * pango_fc_font_map_set_config: (skip)
- * @self: a `PangoFcFontMap`
+ * pango2_fc_font_map_set_config: (skip)
+ * @self: a `Pango2FcFontMap`
  * @config: (nullable): the `FcConfig` to use, or `NULL` to use
  *   the default configuration
  *
@@ -577,10 +577,10 @@ pango_fc_font_map_new (void)
  * removes all cached font families, faces and fonts.
  */
 void
-pango_fc_font_map_set_config (PangoFcFontMap *self,
-                              FcConfig       *config)
+pango2_fc_font_map_set_config (Pango2FcFontMap *self,
+                               FcConfig        *config)
 {
-  g_return_if_fail (PANGO_IS_FC_FONT_MAP (self));
+  g_return_if_fail (PANGO2_IS_FC_FONT_MAP (self));
 
   if (self->config == config && FcConfigUptoDate (config))
     return;
@@ -596,25 +596,25 @@ pango_fc_font_map_set_config (PangoFcFontMap *self,
         FcConfigReference (self->config);
     }
 
-  pango_font_map_repopulate (PANGO_FONT_MAP (self), TRUE);
+  pango2_font_map_repopulate (PANGO2_FONT_MAP (self), TRUE);
 }
 
 /**
- * pango_fc_font_map_get_config: (skip)
- * @self: a `PangoFcFontMap`
+ * pango2_fc_font_map_get_config: (skip)
+ * @self: a `Pango2FcFontMap`
  *
  * Fetches the fontconfig configuration of the fontmap.
  *
- * See also: [method@PangoFc.FontMap.set_config].
+ * See also: [method@Pango2Fc.FontMap.set_config].
  *
  * Returns: (nullable): the `FcConfig` object attached to
  *   @self, which might be `NULL`. The return value is
- *   owned by Pango and should not be freed.
+ *   owned by Pango2 and should not be freed.
  */
 FcConfig *
-pango_fc_font_map_get_config (PangoFcFontMap *self)
+pango2_fc_font_map_get_config (Pango2FcFontMap *self)
 {
-  g_return_val_if_fail (PANGO_IS_FC_FONT_MAP (self), NULL);
+  g_return_val_if_fail (PANGO2_IS_FC_FONT_MAP (self), NULL);
 
   return self->config;
 }

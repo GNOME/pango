@@ -8,34 +8,34 @@
 #include "pango-context.h"
 
 /**
- * PangoLayout:
+ * Pango2Layout:
  *
- * A `PangoLayout` structure represents an entire paragraph of text.
+ * A `Pango2Layout` structure represents an entire paragraph of text.
  *
- * While complete access to the layout capabilities of Pango is provided
+ * While complete access to the layout capabilities of Pango2 is provided
  * using the detailed interfaces for itemization, segmentation and shaping,
  * using that functionality directly involves writing a fairly large amount
- * of code. `PangoLayout` provides a high-level driver for formatting entire
+ * of code. `Pango2Layout` provides a high-level driver for formatting entire
  * paragraphs of text at once. This includes paragraph-level functionality
  * such as line breaking, justification, alignment and ellipsization.
  *
- * A `PangoLayout` is initialized with a `PangoContext`, a UTF-8 string
+ * A `Pango2Layout` is initialized with a `Pango2Context`, a UTF-8 string
  * and set of attributes for that string. Once that is done, the set of
- * formatted lines can be extracted in the form of a [class@Pango.Lines]
+ * formatted lines can be extracted in the form of a [class@Pango2.Lines]
  * object, the layout can be rendered, and conversion between logical
  * character positions within the layout's text, and the physical position
  * of the resulting glyphs can be made.
  *
  * The most convenient way to access the visual extents and components
- * of a formatted layout is via a [struct@Pango.LineIter] iterator.
+ * of a formatted layout is via a [struct@Pango2.LineIter] iterator.
  *
  * There are a number of parameters to adjust the formatting of a
- * `PangoLayout`. The following image shows adjustable parameters
+ * `Pango2Layout`. The following image shows adjustable parameters
  * (on the left) and font metrics (on the right):
  *
  * <picture>
  *   <source srcset="layout-dark.png" media="(prefers-color-scheme: dark)">
- *   <img alt="Pango Layout Parameters" src="layout-light.png">
+ *   <img alt="Pango2 Layout Parameters" src="layout-light.png">
  * </picture>
  *
  * The following images demonstrate the effect of alignment and justification
@@ -47,44 +47,44 @@
  * | ![align=justify](align-left-justify.png) | | |
  *
  * It is possible, as well, to ignore the 2-D setup, and simply treat the
- * resulting `PangoLines` object as a list of lines.
+ * resulting `Pango2Lines` object as a list of lines.
  *
  * If you have more complex line breaking needs, such as shaping text
- * to flow around images, or multi-column layout, the [class@Pango.LineBreaker]
+ * to flow around images, or multi-column layout, the [class@Pango2.LineBreaker]
  * makes the underlying line-breaking functionality available outside of
- * `PangoLayout`.
+ * `Pango2Layout`.
  */
 
 
-/* {{{ PangoLayout implementation */
+/* {{{ Pango2Layout implementation */
 
-struct _PangoLayout
+struct _Pango2Layout
 {
   GObject parent_instance;
 
-  PangoContext *context;
+  Pango2Context *context;
   char *text;
   int length;
-  PangoAttrList *attrs;
-  PangoFontDescription *font_desc;
+  Pango2AttrList *attrs;
+  Pango2FontDescription *font_desc;
   float line_height;
   int spacing;
   int width;
   int height;
-  PangoTabArray *tabs;
+  Pango2TabArray *tabs;
   gboolean single_paragraph;
-  PangoWrapMode wrap;
+  Pango2WrapMode wrap;
   int indent;
   guint serial;
   guint context_serial;
-  PangoAlignment alignment;
-  PangoEllipsizeMode ellipsize;
+  Pango2Alignment alignment;
+  Pango2EllipsizeMode ellipsize;
   gboolean auto_dir;
 
-  PangoLines *lines;
+  Pango2Lines *lines;
 };
 
-struct _PangoLayoutClass
+struct _Pango2LayoutClass
 {
   GObjectClass parent_class;
 };
@@ -112,18 +112,18 @@ enum
 
 static GParamSpec *props[NUM_PROPERTIES] = { NULL, };
 
-G_DEFINE_FINAL_TYPE (PangoLayout, pango_layout, G_TYPE_OBJECT)
+G_DEFINE_FINAL_TYPE (Pango2Layout, pango2_layout, G_TYPE_OBJECT)
 
 static void
-pango_layout_init (PangoLayout *layout)
+pango2_layout_init (Pango2Layout *layout)
 {
   layout->serial = 1;
   layout->width = -1;
   layout->height = -1;
   layout->indent = 0;
-  layout->wrap = PANGO_WRAP_WORD;
-  layout->alignment = PANGO_ALIGN_NATURAL;
-  layout->ellipsize = PANGO_ELLIPSIZE_NONE;
+  layout->wrap = PANGO2_WRAP_WORD;
+  layout->alignment = PANGO2_ALIGN_NATURAL;
+  layout->ellipsize = PANGO2_ELLIPSIZE_NONE;
   layout->line_height = 0.0;
   layout->spacing = 0;
   layout->auto_dir = TRUE;
@@ -132,89 +132,89 @@ pango_layout_init (PangoLayout *layout)
 }
 
 static void
-pango_layout_finalize (GObject *object)
+pango2_layout_finalize (GObject *object)
 {
-  PangoLayout *layout = PANGO_LAYOUT (object);
+  Pango2Layout *layout = PANGO2_LAYOUT (object);
 
-  g_clear_pointer (&layout->font_desc, pango_font_description_free);
+  g_clear_pointer (&layout->font_desc, pango2_font_description_free);
   g_object_unref (layout->context);
   g_free (layout->text);
-  g_clear_pointer (&layout->attrs, pango_attr_list_unref);
-  g_clear_pointer (&layout->tabs, pango_tab_array_free);
+  g_clear_pointer (&layout->attrs, pango2_attr_list_unref);
+  g_clear_pointer (&layout->tabs, pango2_tab_array_free);
   g_clear_object (&layout->lines);
 
-  G_OBJECT_CLASS (pango_layout_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango2_layout_parent_class)->finalize (object);
 }
 
 static void
-pango_layout_set_property (GObject      *object,
-                           guint         prop_id,
-                           const GValue *value,
-                           GParamSpec   *pspec)
+pango2_layout_set_property (GObject      *object,
+                            guint         prop_id,
+                            const GValue *value,
+                            GParamSpec   *pspec)
 {
-  PangoLayout *layout = PANGO_LAYOUT (object);
+  Pango2Layout *layout = PANGO2_LAYOUT (object);
 
   switch (prop_id)
     {
     case PROP_CONTEXT:
       layout->context = g_value_dup_object (value);
-      layout->context_serial = pango_context_get_serial (layout->context);
+      layout->context_serial = pango2_context_get_serial (layout->context);
       break;
 
     case PROP_TEXT:
-      pango_layout_set_text (layout, g_value_get_string (value), -1);
+      pango2_layout_set_text (layout, g_value_get_string (value), -1);
       break;
 
     case PROP_ATTRIBUTES:
-      pango_layout_set_attributes (layout, g_value_get_boxed (value));
+      pango2_layout_set_attributes (layout, g_value_get_boxed (value));
       break;
 
     case PROP_FONT_DESCRIPTION:
-      pango_layout_set_font_description (layout, g_value_get_boxed (value));
+      pango2_layout_set_font_description (layout, g_value_get_boxed (value));
       break;
 
     case PROP_LINE_HEIGHT:
-      pango_layout_set_line_height (layout, g_value_get_float (value));
+      pango2_layout_set_line_height (layout, g_value_get_float (value));
       break;
 
     case PROP_SPACING:
-      pango_layout_set_spacing (layout, g_value_get_int (value));
+      pango2_layout_set_spacing (layout, g_value_get_int (value));
       break;
 
     case PROP_WIDTH:
-      pango_layout_set_width (layout, g_value_get_int (value));
+      pango2_layout_set_width (layout, g_value_get_int (value));
       break;
 
     case PROP_HEIGHT:
-      pango_layout_set_height (layout, g_value_get_int (value));
+      pango2_layout_set_height (layout, g_value_get_int (value));
       break;
 
     case PROP_TABS:
-      pango_layout_set_tabs (layout, g_value_get_boxed (value));
+      pango2_layout_set_tabs (layout, g_value_get_boxed (value));
       break;
 
     case PROP_SINGLE_PARAGRAPH:
-      pango_layout_set_single_paragraph (layout, g_value_get_boolean (value));
+      pango2_layout_set_single_paragraph (layout, g_value_get_boolean (value));
       break;
 
     case PROP_WRAP:
-      pango_layout_set_wrap (layout, g_value_get_enum (value));
+      pango2_layout_set_wrap (layout, g_value_get_enum (value));
       break;
 
     case PROP_INDENT:
-      pango_layout_set_indent (layout, g_value_get_int (value));
+      pango2_layout_set_indent (layout, g_value_get_int (value));
       break;
 
     case PROP_ALIGNMENT:
-      pango_layout_set_alignment (layout, g_value_get_enum (value));
+      pango2_layout_set_alignment (layout, g_value_get_enum (value));
       break;
 
     case PROP_ELLIPSIZE:
-      pango_layout_set_ellipsize (layout, g_value_get_enum (value));
+      pango2_layout_set_ellipsize (layout, g_value_get_enum (value));
       break;
 
     case PROP_AUTO_DIR:
-      pango_layout_set_auto_dir (layout, g_value_get_boolean (value));
+      pango2_layout_set_auto_dir (layout, g_value_get_boolean (value));
       break;
 
     default:
@@ -224,12 +224,12 @@ pango_layout_set_property (GObject      *object,
 }
 
 static void
-pango_layout_get_property (GObject      *object,
-                           guint         prop_id,
-                           GValue       *value,
-                           GParamSpec   *pspec)
+pango2_layout_get_property (GObject      *object,
+                            guint         prop_id,
+                            GValue       *value,
+                            GParamSpec   *pspec)
 {
-  PangoLayout *layout = PANGO_LAYOUT (object);
+  Pango2Layout *layout = PANGO2_LAYOUT (object);
 
   switch (prop_id)
     {
@@ -294,7 +294,7 @@ pango_layout_get_property (GObject      *object,
       break;
 
     case PROP_LINES:
-      g_value_set_object (value, pango_layout_get_lines (layout));
+      g_value_set_object (value, pango2_layout_get_lines (layout));
       break;
 
     default:
@@ -304,56 +304,56 @@ pango_layout_get_property (GObject      *object,
 }
 
 static void
-pango_layout_class_init (PangoLayoutClass *class)
+pango2_layout_class_init (Pango2LayoutClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
 
-  object_class->finalize = pango_layout_finalize;
-  object_class->set_property = pango_layout_set_property;
-  object_class->get_property = pango_layout_get_property;
+  object_class->finalize = pango2_layout_finalize;
+  object_class->set_property = pango2_layout_set_property;
+  object_class->get_property = pango2_layout_get_property;
 
   /**
-   * PangoLayout:context: (attributes org.gtk.Property.get=pango_layout_get_context)
+   * Pango2Layout:context: (attributes org.gtk.Property.get=pango2_layout_get_context)
    *
-   * The context for the `PangoLayout`.
+   * The context for the `Pango2Layout`.
    */
   props[PROP_CONTEXT] = g_param_spec_object ("context", "context", "context",
-                                             PANGO_TYPE_CONTEXT,
+                                             PANGO2_TYPE_CONTEXT,
                                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 
   /**
-   * PangoLayout:text: (attributes org.gtk.Property.get=pango_layout_get_text org.gtk.Property.set=pango_layout_set_text)
+   * Pango2Layout:text: (attributes org.gtk.Property.get=pango2_layout_get_text org.gtk.Property.set=pango2_layout_set_text)
    *
-   * The text of the `PangoLayout`.
+   * The text of the `Pango2Layout`.
    */
   props[PROP_TEXT] = g_param_spec_string ("text", "text", "text",
                                           "",
                                           G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * PangoLayout:attributes: (attributes org.gtk.Property.get=pango_layout_get_attributes org.gtk.Property.set=pango_layout_set_attributes)
+   * Pango2Layout:attributes: (attributes org.gtk.Property.get=pango2_layout_get_attributes org.gtk.Property.set=pango2_layout_set_attributes)
    *
-   * The attributes of the `PangoLayout`.
+   * The attributes of the `Pango2Layout`.
    *
    * Attributes can affect how the text is formatted.
    */
   props[PROP_ATTRIBUTES] = g_param_spec_boxed ("attributes", "attributes", "attributes",
-                                               PANGO_TYPE_ATTR_LIST,
+                                               PANGO2_TYPE_ATTR_LIST,
                                                G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * PangoLayout:font-description: (attributes org.gtk.Property.get=pango_layout_get_font_description org.gtk.Property.set=pango_layout_set_font_description)
+   * Pango2Layout:font-description: (attributes org.gtk.Property.get=pango2_layout_get_font_description org.gtk.Property.set=pango2_layout_set_font_description)
    *
-   * The font description of the `PangoLayout`.
+   * The font description of the `Pango2Layout`.
    */
   props[PROP_FONT_DESCRIPTION] = g_param_spec_boxed ("font-description", "font-description", "font-description",
-                                                     PANGO_TYPE_FONT_DESCRIPTION,
+                                                     PANGO2_TYPE_FONT_DESCRIPTION,
                                                      G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * PangoLayout:line-height: (attributes org.gtk.Property.get=pango_layout_get_line_height org.gtk.Property.set=pango_layout_set_line_height)
+   * Pango2Layout:line-height: (attributes org.gtk.Property.get=pango2_layout_get_line_height org.gtk.Property.set=pango2_layout_set_line_height)
    *
-   * The line height factor of the `PangoLayout`.
+   * The line height factor of the `Pango2Layout`.
    *
    * If non-zero, the line height is multiplied by this factor to determine
    * the logical extents of the text.
@@ -365,11 +365,11 @@ pango_layout_class_init (PangoLayoutClass *class)
                                                 G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * PangoLayout:spacing: (attributes org.gtk.Property.get=pango_layout_get_spacing org.gtk.Property.set=pango_layout_set_spacing)
+   * Pango2Layout:spacing: (attributes org.gtk.Property.get=pango2_layout_get_spacing org.gtk.Property.set=pango2_layout_set_spacing)
    *
-   * Spacing to add between the lines of the `PangoLayout`.
+   * Spacing to add between the lines of the `Pango2Layout`.
    *
-   * The spacing is specified in Pango units.
+   * The spacing is specified in Pango2 units.
    *
    * The default value is 0.
    */
@@ -378,11 +378,11 @@ pango_layout_class_init (PangoLayoutClass *class)
                                         G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * PangoLayout:width: (attributes org.gtk.Property.get=pango_layout_get_width org.gtk.Property.set=pango_layout_set_width)
+   * Pango2Layout:width: (attributes org.gtk.Property.get=pango2_layout_get_width org.gtk.Property.set=pango2_layout_set_width)
    *
-   * The width to which the text of `PangoLayout` will be broken.
+   * The width to which the text of `Pango2Layout` will be broken.
    *
-   * The width is specified in Pango units, with -1 meaning unlimited.
+   * The width is specified in Pango2 units, with -1 meaning unlimited.
    *
    * The default value is -1.
    */
@@ -391,9 +391,9 @@ pango_layout_class_init (PangoLayoutClass *class)
                                         G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * PangoLayout:height: (attributes org.gtk.Property.get=pango_layout_get_height org.gtk.Property.set=pango_layout_set_height)
+   * Pango2Layout:height: (attributes org.gtk.Property.get=pango2_layout_get_height org.gtk.Property.set=pango2_layout_set_height)
    *
-   * The height to which the `PangoLayout` will be ellipsized.
+   * The height to which the `Pango2Layout` will be ellipsized.
    *
    * If @height is positive, it will be the maximum height of the
    * layout. Only lines would be shown that would fit, and if there
@@ -411,9 +411,9 @@ pango_layout_class_init (PangoLayoutClass *class)
    * paragraph is ellipsized.
    *
    * Height setting only has effect if a positive width is set on the
-   * layout and its ellipsization mode is not `PANGO_ELLIPSIZE_NONE`.
+   * layout and its ellipsization mode is not `PANGO2_ELLIPSIZE_NONE`.
    * The behavior is undefined if a height other than -1 is set and
-   * ellipsization mode is set to `PANGO_ELLIPSIZE_NONE`.
+   * ellipsization mode is set to `PANGO2_ELLIPSIZE_NONE`.
    *
    * The default value is -1.
    */
@@ -422,19 +422,19 @@ pango_layout_class_init (PangoLayoutClass *class)
                                          G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * PangoLayout:tabs: (attributes org.gtk.Property.get=pango_layout_get_tabs org.gtk.Property.set=pango_layout_set_tabs)
+   * Pango2Layout:tabs: (attributes org.gtk.Property.get=pango2_layout_get_tabs org.gtk.Property.set=pango2_layout_set_tabs)
    *
-   * The tabs to use when formatting the text of `PangoLayout`.
+   * The tabs to use when formatting the text of `Pango2Layout`.
    *
-   * `PangoLayout` will place content at the next tab position
+   * `Pango2Layout` will place content at the next tab position
    * whenever it meets a Tab character (U+0009).
    */
   props[PROP_TABS] = g_param_spec_boxed ("tabs", "tabs", "tabs",
-                                         PANGO_TYPE_TAB_ARRAY,
+                                         PANGO2_TYPE_TAB_ARRAY,
                                          G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * PangoLayout:single-paragraph: (attributes org.gtk.Property.get=pango_layout_get_single_paragraph org.gtk.Property.set=pango_layout_set_single_paragraph)
+   * Pango2Layout:single-paragraph: (attributes org.gtk.Property.get=pango2_layout_get_single_paragraph org.gtk.Property.set=pango2_layout_set_single_paragraph)
    *
    * Whether to treat newlines and similar characters as paragraph
    * separators or not.
@@ -451,26 +451,26 @@ pango_layout_class_init (PangoLayoutClass *class)
                                                        G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * PangoLayout:wrap: (attributes org.gtk.Property.get=pango_layout_get_wrap org.gtk.Property.set=pango_layout_set_wrap)
+   * Pango2Layout:wrap: (attributes org.gtk.Property.get=pango2_layout_get_wrap org.gtk.Property.set=pango2_layout_set_wrap)
    *
-   * The wrap mode of this `PangoLayout`.
+   * The wrap mode of this `Pango2Layout`.
    *
-   * The wrap mode influences how Pango chooses line breaks
+   * The wrap mode influences how Pango2 chooses line breaks
    * when text needs to be wrapped.
    *
-   * The default value is `PANGO_WRAP_WORD`.
+   * The default value is `PANGO2_WRAP_WORD`.
    */
   props[PROP_WRAP] = g_param_spec_enum ("wrap", "wrap", "wrap",
-                                        PANGO_TYPE_WRAP_MODE,
-                                        PANGO_WRAP_WORD,
+                                        PANGO2_TYPE_WRAP_MODE,
+                                        PANGO2_WRAP_WORD,
                                         G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * PangoLayout:indent: (attributes org.gtk.Property.get=pango_layout_get_indent org.gtk.Property.set=pango_layout_set_indent)
+   * Pango2Layout:indent: (attributes org.gtk.Property.get=pango2_layout_get_indent org.gtk.Property.set=pango2_layout_set_indent)
    *
-   * The indent of this `PangoLayout`.
+   * The indent of this `Pango2Layout`.
    *
-   * The indent is specified in Pango units.
+   * The indent is specified in Pango2 units.
    *
    * A negative value of @indent will produce a hanging indentation.
    * That is, the first line will have the full width, and subsequent
@@ -483,33 +483,33 @@ pango_layout_class_init (PangoLayoutClass *class)
                                          G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * PangoLayout:alignment: (attributes org.gtk.Property.get=pango_layout_get_alignment org.gtk.Property.set=pango_layout_set_alignment)
+   * Pango2Layout:alignment: (attributes org.gtk.Property.get=pango2_layout_get_alignment org.gtk.Property.set=pango2_layout_set_alignment)
    *
-   * The alignment mode of this `PangoLayout`.
+   * The alignment mode of this `Pango2Layout`.
    *
-   * The default value is `PANGO_ALIGN_NATURAL`.
+   * The default value is `PANGO2_ALIGN_NATURAL`.
    */
   props[PROP_ALIGNMENT] = g_param_spec_enum ("alignment", "alignment", "alignment",
-                                             PANGO_TYPE_ALIGNMENT,
-                                             PANGO_ALIGN_NATURAL,
+                                             PANGO2_TYPE_ALIGNMENT,
+                                             PANGO2_ALIGN_NATURAL,
                                              G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * PangoLayout:ellipsize: (attributes org.gtk.Property.get=pango_layout_get_ellipsize org.gtk.Property.set=pango_layout_set_ellipsize)
+   * Pango2Layout:ellipsize: (attributes org.gtk.Property.get=pango2_layout_get_ellipsize org.gtk.Property.set=pango2_layout_set_ellipsize)
    *
-   * The ellipsization mode of this `PangoLayout`.
+   * The ellipsization mode of this `Pango2Layout`.
    *
-   * The default value is `PANGO_ELLIPSIZE_NONE`.
+   * The default value is `PANGO2_ELLIPSIZE_NONE`.
    */
   props[PROP_ELLIPSIZE] = g_param_spec_enum ("ellipsize", "ellipsize", "ellipsize",
-                                             PANGO_TYPE_ELLIPSIZE_MODE,
-                                             PANGO_ELLIPSIZE_NONE,
+                                             PANGO2_TYPE_ELLIPSIZE_MODE,
+                                             PANGO2_ELLIPSIZE_NONE,
                                              G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * PangoLayout:auto-dir: (attributes org.gtk.Property.get=pango_layout_get_auto_dir org.gtk.Property.set=pango_layout_set_auto_dir)
+   * Pango2Layout:auto-dir: (attributes org.gtk.Property.get=pango2_layout_get_auto_dir org.gtk.Property.set=pango2_layout_set_auto_dir)
    *
-   * Whether this `PangoLayout` determines the
+   * Whether this `Pango2Layout` determines the
    * base direction from the content.
    *
    * The default value is `TRUE`.
@@ -519,12 +519,12 @@ pango_layout_class_init (PangoLayoutClass *class)
                                                G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * PangoLayout:lines: (attributes org.gtk.Property.get=pango_layout_get_lines)
+   * Pango2Layout:lines: (attributes org.gtk.Property.get=pango2_layout_get_lines)
    *
-   * The `PangoLines` object holding the formatted lines.
+   * The `Pango2Lines` object holding the formatted lines.
    */
   props[PROP_LINES] = g_param_spec_object ("lines", "lines", "lines",
-                                           PANGO_TYPE_LINES,
+                                           PANGO2_TYPE_LINES,
                                            G_PARAM_READABLE);
 
   g_object_class_install_properties (object_class, NUM_PROPERTIES, props);
@@ -534,7 +534,7 @@ pango_layout_class_init (PangoLayoutClass *class)
 /* {{{ Utilities */
 
 static void
-layout_changed (PangoLayout *layout)
+layout_changed (Pango2Layout *layout)
 {
   layout->serial++;
   if (layout->serial == 0)
@@ -545,69 +545,69 @@ layout_changed (PangoLayout *layout)
 }
 
 static void
-check_context_changed (PangoLayout *layout)
+check_context_changed (Pango2Layout *layout)
 {
   guint old_serial = layout->context_serial;
 
-  layout->context_serial = pango_context_get_serial (layout->context);
+  layout->context_serial = pango2_context_get_serial (layout->context);
 
   if (old_serial != layout->context_serial)
-    pango_layout_context_changed (layout);
+    pango2_layout_context_changed (layout);
 }
 
-static PangoAttrList *
-ensure_attrs (PangoLayout   *layout,
-              PangoAttrList *attrs)
+static Pango2AttrList *
+ensure_attrs (Pango2Layout   *layout,
+              Pango2AttrList *attrs)
 {
   if (attrs)
     return attrs;
   else if (layout->attrs)
-    return pango_attr_list_copy (layout->attrs);
+    return pango2_attr_list_copy (layout->attrs);
   else
-    return pango_attr_list_new ();
+    return pango2_attr_list_new ();
 }
 
-static PangoAttrList *
-get_effective_attributes (PangoLayout *layout)
+static Pango2AttrList *
+get_effective_attributes (Pango2Layout *layout)
 {
-  PangoAttrList *attrs = NULL;
+  Pango2AttrList *attrs = NULL;
 
   if (layout->font_desc)
     {
       attrs = ensure_attrs (layout, attrs);
-      pango_attr_list_insert_before (attrs,
-                                     pango_attr_font_desc_new (layout->font_desc));
+      pango2_attr_list_insert_before (attrs,
+                                      pango2_attr_font_desc_new (layout->font_desc));
     }
 
   if (layout->line_height != 0.0)
     {
       attrs = ensure_attrs (layout, attrs);
-      pango_attr_list_insert_before (attrs,
-                                     pango_attr_line_height_new (layout->line_height));
+      pango2_attr_list_insert_before (attrs,
+                                      pango2_attr_line_height_new (layout->line_height));
     }
 
   if (layout->spacing != 0)
     {
       attrs = ensure_attrs (layout, attrs);
-      pango_attr_list_insert_before (attrs,
-                                     pango_attr_line_spacing_new (layout->spacing));
+      pango2_attr_list_insert_before (attrs,
+                                      pango2_attr_line_spacing_new (layout->spacing));
     }
 
   if (layout->single_paragraph)
     {
       attrs = ensure_attrs (layout, attrs);
-      pango_attr_list_insert_before (attrs,
-                                     pango_attr_paragraph_new ());
+      pango2_attr_list_insert_before (attrs,
+                                      pango2_attr_paragraph_new ());
     }
 
   if (attrs)
     return attrs;
 
-  return pango_attr_list_ref (layout->attrs);
+  return pango2_attr_list_ref (layout->attrs);
 }
 
 static gboolean
-ends_with_paragraph_separator (PangoLayout *layout)
+ends_with_paragraph_separator (Pango2Layout *layout)
 {
   if (layout->single_paragraph)
     return FALSE;
@@ -619,10 +619,10 @@ ends_with_paragraph_separator (PangoLayout *layout)
 }
 
 static void
-ensure_lines (PangoLayout *layout)
+ensure_lines (Pango2Layout *layout)
 {
-  PangoLineBreaker *breaker;
-  PangoAttrList *attrs;
+  Pango2LineBreaker *breaker;
+  Pango2AttrList *attrs;
   int x, y, width;
   int line_no;
 
@@ -631,30 +631,30 @@ ensure_lines (PangoLayout *layout)
   if (layout->lines)
     return;
 
-  breaker = pango_line_breaker_new (layout->context);
+  breaker = pango2_line_breaker_new (layout->context);
 
-  pango_line_breaker_set_tabs (breaker, layout->tabs);
-  pango_line_breaker_set_base_dir (breaker,
-                                   layout->auto_dir
-                                     ? PANGO_DIRECTION_NEUTRAL
-                                     : pango_context_get_base_dir (layout->context));
+  pango2_line_breaker_set_tabs (breaker, layout->tabs);
+  pango2_line_breaker_set_base_dir (breaker,
+                                    layout->auto_dir
+                                      ? PANGO2_DIRECTION_NEUTRAL
+                                      : pango2_context_get_base_dir (layout->context));
 
   attrs = get_effective_attributes (layout);
-  pango_line_breaker_add_text (breaker, layout->text ? layout->text : "", -1, attrs);
+  pango2_line_breaker_add_text (breaker, layout->text ? layout->text : "", -1, attrs);
   if (attrs)
-    pango_attr_list_unref (attrs);
+    pango2_attr_list_unref (attrs);
 
-  layout->lines = pango_lines_new ();
+  layout->lines = pango2_lines_new ();
 
   x = y = 0;
   line_no = 0;
-  while (pango_line_breaker_has_line (breaker))
+  while (pango2_line_breaker_has_line (breaker))
     {
-      PangoLine *line;
-      PangoRectangle ext;
+      Pango2Line *line;
+      Pango2Rectangle ext;
       int offset;
-      PangoEllipsizeMode ellipsize = PANGO_ELLIPSIZE_NONE;
-      PangoLeadingTrim trim = PANGO_LEADING_TRIM_NONE;
+      Pango2EllipsizeMode ellipsize = PANGO2_ELLIPSIZE_NONE;
+      Pango2LeadingTrim trim = PANGO2_LEADING_TRIM_NONE;
 
       if ((line_no == 0) == (layout->indent > 0))
         {
@@ -671,21 +671,21 @@ ensure_lines (PangoLayout *layout)
         ellipsize = layout->ellipsize;
 
 retry:
-      line = pango_line_breaker_next_line (breaker, x, width, layout->wrap, ellipsize);
+      line = pango2_line_breaker_next_line (breaker, x, width, layout->wrap, ellipsize);
 
       if (line->starts_paragraph)
-        trim |= PANGO_LEADING_TRIM_START;
+        trim |= PANGO2_LEADING_TRIM_START;
       if (line->ends_paragraph)
-        trim |= PANGO_LEADING_TRIM_END;
+        trim |= PANGO2_LEADING_TRIM_END;
 
-      pango_line_get_trimmed_extents (line, trim, &ext);
+      pango2_line_get_trimmed_extents (line, trim, &ext);
 
       if (layout->height >= 0 && y + 2 * ext.height >= layout->height &&
           ellipsize != layout->ellipsize)
         {
-          if (pango_line_breaker_undo_line (breaker, line))
+          if (pango2_line_breaker_undo_line (breaker, line))
             {
-              g_clear_pointer (&line, pango_line_free);
+              g_clear_pointer (&line, pango2_line_free);
               ellipsize = layout->ellipsize;
               goto retry;
             }
@@ -696,35 +696,35 @@ retry:
       switch (layout->alignment)
         {
 
-        case PANGO_ALIGN_LEFT:
+        case PANGO2_ALIGN_LEFT:
           break;
 
-        case PANGO_ALIGN_CENTER:
+        case PANGO2_ALIGN_CENTER:
           if (ext.width < width)
             offset = (width - ext.width) / 2;
           break;
 
-        case PANGO_ALIGN_JUSTIFY:
-          if (!pango_line_is_paragraph_end (line))
+        case PANGO2_ALIGN_JUSTIFY:
+          if (!pango2_line_is_paragraph_end (line))
             {
-              line = pango_line_justify (line, width);
+              line = pango2_line_justify (line, width);
               break;
             }
           G_GNUC_FALLTHROUGH;
 
-        case PANGO_ALIGN_NATURAL:
+        case PANGO2_ALIGN_NATURAL:
           {
-            PangoLine *first_line;
-            if (pango_lines_get_line_count (layout->lines) > 0)
-              first_line = pango_lines_get_lines (layout->lines)[0];
+            Pango2Line *first_line;
+            if (pango2_lines_get_line_count (layout->lines) > 0)
+              first_line = pango2_lines_get_lines (layout->lines)[0];
             else
               first_line = line;
-            if (pango_line_get_resolved_direction (first_line) == PANGO_DIRECTION_LTR)
+            if (pango2_line_get_resolved_direction (first_line) == PANGO2_DIRECTION_LTR)
               break;
           }
           G_GNUC_FALLTHROUGH;
 
-        case PANGO_ALIGN_RIGHT:
+        case PANGO2_ALIGN_RIGHT:
           if (ext.width < width)
             offset = width - ext.width;
           break;
@@ -733,7 +733,7 @@ retry:
           g_assert_not_reached ();
         }
 
-      pango_lines_add_line (layout->lines, line, x + offset, y - ext.y);
+      pango2_lines_add_line (layout->lines, line, x + offset, y - ext.y);
 
       y += ext.height;
       line_no++;
@@ -742,21 +742,21 @@ retry:
   /* Append an empty line if we end with a newline.
    * And always provide at least one line
    */
-  if (pango_lines_get_line_count (layout->lines) == 0 ||
+  if (pango2_lines_get_line_count (layout->lines) == 0 ||
       ends_with_paragraph_separator (layout))
     {
       LineData *data;
       int start_index;
       int start_offset;
       int offset;
-      PangoLine *line;
-      PangoRectangle ext;
+      Pango2Line *line;
+      Pango2Rectangle ext;
 
-      if (pango_lines_get_line_count (layout->lines) > 0)
+      if (pango2_lines_get_line_count (layout->lines) > 0)
         {
-          PangoLine *last;
+          Pango2Line *last;
 
-          last = pango_lines_get_lines (layout->lines)[pango_lines_get_line_count (layout->lines) - 1];
+          last = pango2_lines_get_lines (layout->lines)[pango2_lines_get_line_count (layout->lines) - 1];
           data = line_data_ref (last->data);
           start_index = data->length;
           start_offset = last->data->n_chars;
@@ -768,14 +768,14 @@ retry:
           data->text = g_strdup ("");
           data->length = 0;
           data->attrs = get_effective_attributes (layout);
-          data->log_attrs = g_new0 (PangoLogAttr, 1);
+          data->log_attrs = g_new0 (Pango2LogAttr, 1);
           data->log_attrs[0].is_cursor_position = TRUE;
           start_index = 0;
           start_offset = 0;
           offset = 0;
         }
 
-      line = pango_line_new (layout->context, data);
+      line = pango2_line_new (layout->context, data);
       line->starts_paragraph = TRUE;
       line->ends_paragraph = TRUE;
       line->start_index = start_index;
@@ -783,9 +783,9 @@ retry:
       line->start_offset = start_offset;
       line->n_chars = 0;
 
-      pango_line_get_extents (line, NULL, &ext);
+      pango2_line_get_extents (line, NULL, &ext);
 
-      pango_lines_add_line (layout->lines, line, x + offset, y - ext.y);
+      pango2_lines_add_line (layout->lines, line, x + offset, y - ext.y);
 
       line_data_unref (data);
     }
@@ -797,54 +797,54 @@ retry:
 /* {{{ Public API */
 
 /**
- * pango_layout_new:
- * @context: a `PangoContext`
+ * pango2_layout_new:
+ * @context: a `Pango2Context`
  *
- * Creates a new `PangoLayout` with attribute initialized to
- * default values for a particular `PangoContext`
+ * Creates a new `Pango2Layout` with attribute initialized to
+ * default values for a particular `Pango2Context`
  *
- * Return value: a newly allocated `PangoLayout`
+ * Return value: a newly allocated `Pango2Layout`
  */
-PangoLayout *
-pango_layout_new (PangoContext *context)
+Pango2Layout *
+pango2_layout_new (Pango2Context *context)
 {
-  g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
+  g_return_val_if_fail (PANGO2_IS_CONTEXT (context), NULL);
 
-  return g_object_new (PANGO_TYPE_LAYOUT, "context", context, NULL);
+  return g_object_new (PANGO2_TYPE_LAYOUT, "context", context, NULL);
 }
 
 /**
- * pango_layout_copy:
- * @layout: a `PangoLayout`
+ * pango2_layout_copy:
+ * @layout: a `Pango2Layout`
  *
  * Creates a deep copy-by-value of the layout.
  *
  * The attribute list, tab array, and text from the original layout
  * are all copied by value.
  *
- * Return value: (transfer full): the newly allocated `PangoLayout`
+ * Return value: (transfer full): the newly allocated `Pango2Layout`
  */
-PangoLayout *
-pango_layout_copy (PangoLayout *layout)
+Pango2Layout *
+pango2_layout_copy (Pango2Layout *layout)
 {
-  PangoLayout *copy;
+  Pango2Layout *copy;
 
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), NULL);
 
-  copy = pango_layout_new (layout->context);
+  copy = pango2_layout_new (layout->context);
 
   copy->text = g_strdup (layout->text);
   copy->length = layout->length;
   if (layout->attrs)
-    copy->attrs = pango_attr_list_copy (layout->attrs);
+    copy->attrs = pango2_attr_list_copy (layout->attrs);
   if (layout->font_desc)
-    copy->font_desc = pango_font_description_copy (layout->font_desc);
+    copy->font_desc = pango2_font_description_copy (layout->font_desc);
   copy->line_height = layout->line_height;
   copy->spacing = layout->spacing;
   copy->width = layout->width;
   copy->height = layout->height;
   if (layout->tabs)
-    copy->tabs = pango_tab_array_copy (layout->tabs);
+    copy->tabs = pango2_tab_array_copy (layout->tabs);
   copy->single_paragraph = layout->single_paragraph;
   copy->wrap = layout->wrap;
   copy->indent = layout->indent;
@@ -858,26 +858,26 @@ pango_layout_copy (PangoLayout *layout)
 }
 
 /**
- * pango_layout_get_serial:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_serial:
+ * @layout: a `Pango2Layout`
  *
  * Returns the current serial number of the layout.
  *
  * The serial number is initialized to an small number larger than zero
  * when a new layout is created and is increased whenever the layout is
- * changed using any of the setter functions, or the `PangoContext` it
+ * changed using any of the setter functions, or the `Pango2Context` it
  * uses has changed.
  *
  * The serial may wrap, but will never have the value 0. Since it can
  * wrap, never compare it with "less than", always use "not equals".
  *
- * This can be used to automatically detect changes to a `PangoLayout`,
+ * This can be used to automatically detect changes to a `Pango2Layout`,
  * and is useful for example to decide whether a layout needs redrawing.
  *
  * Return value: The current serial number of @layout
  */
 guint
-pango_layout_get_serial (PangoLayout *layout)
+pango2_layout_get_serial (Pango2Layout *layout)
 {
   check_context_changed (layout);
 
@@ -885,8 +885,8 @@ pango_layout_get_serial (PangoLayout *layout)
 }
 
 /**
- * pango_layout_context_changed:
- * @layout: a `PangoLayout`
+ * pango2_layout_context_changed:
+ * @layout: a `Pango2Layout`
  *
  * Forces recomputation of any state in the layout that
  * might depend on the layout's context.
@@ -895,9 +895,9 @@ pango_layout_get_serial (PangoLayout *layout)
  * context subsequent to creating the layout.
  */
 void
-pango_layout_context_changed (PangoLayout *layout)
+pango2_layout_context_changed (Pango2Layout *layout)
 {
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
 
   layout_changed (layout);
 }
@@ -905,24 +905,24 @@ pango_layout_context_changed (PangoLayout *layout)
 /* {{{ Property getters and setters */
 
 /**
- * pango_layout_get_context:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_context:
+ * @layout: a `Pango2Layout`
  *
- * Retrieves the `PangoContext` used for this layout.
+ * Retrieves the `Pango2Context` used for this layout.
  *
- * Return value: (transfer none): the `PangoContext` for the layout
+ * Return value: (transfer none): the `Pango2Context` for the layout
  */
-PangoContext *
-pango_layout_get_context (PangoLayout *layout)
+Pango2Context *
+pango2_layout_get_context (Pango2Layout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), NULL);
 
   return layout->context;
 }
 
 /**
- * pango_layout_set_text:
- * @layout: a `PangoLayout`
+ * pango2_layout_set_text:
+ * @layout: a `Pango2Layout`
  * @text: the text
  * @length: maximum length of @text, in bytes. -1 indicates that
  *   the string is nul-terminated
@@ -930,11 +930,11 @@ pango_layout_get_context (PangoLayout *layout)
  * Sets the text of the layout.
  */
 void
-pango_layout_set_text (PangoLayout *layout,
-                       const char  *text,
-                       int          length)
+pango2_layout_set_text (Pango2Layout *layout,
+                        const char   *text,
+                        int           length)
 {
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
 
   if (length < 0)
     length = strlen (text);
@@ -948,8 +948,8 @@ pango_layout_set_text (PangoLayout *layout,
 }
 
 /**
- * pango_layout_get_text:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_text:
+ * @layout: a `Pango2Layout`
  *
  * Gets the text in the layout.
  *
@@ -958,57 +958,57 @@ pango_layout_set_text (PangoLayout *layout,
  * Return value: (transfer none): the text in the @layout
  */
 const char *
-pango_layout_get_text (PangoLayout *layout)
+pango2_layout_get_text (Pango2Layout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), NULL);
 
   return layout->text;
 }
 
 /**
- * pango_layout_set_attributes:
- * @layout: a `PangoLayout`
- * @attrs: (nullable) (transfer none): a `PangoAttrList`
+ * pango2_layout_set_attributes:
+ * @layout: a `Pango2Layout`
+ * @attrs: (nullable) (transfer none): a `Pango2AttrList`
  *
  * Sets the attributes for a layout object.
  *
  * References @attrs, so the caller can unref its reference.
  */
 void
-pango_layout_set_attributes (PangoLayout   *layout,
-                             PangoAttrList *attrs)
+pango2_layout_set_attributes (Pango2Layout   *layout,
+                              Pango2AttrList *attrs)
 {
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
 
-  g_clear_pointer (&layout->attrs, pango_attr_list_unref);
+  g_clear_pointer (&layout->attrs, pango2_attr_list_unref);
   layout->attrs = attrs;
   if (layout->attrs)
-    pango_attr_list_ref (layout->attrs);
+    pango2_attr_list_ref (layout->attrs);
 
   g_object_notify_by_pspec (G_OBJECT (layout), props[PROP_ATTRIBUTES]);
   layout_changed (layout);
 }
 
 /**
- * pango_layout_get_attributes:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_attributes:
+ * @layout: a `Pango2Layout`
  *
  * Gets the attribute list for the layout, if any.
  *
- * Return value: (transfer none) (nullable): a `PangoAttrList`
+ * Return value: (transfer none) (nullable): a `Pango2AttrList`
  */
-PangoAttrList *
-pango_layout_get_attributes (PangoLayout *layout)
+Pango2AttrList *
+pango2_layout_get_attributes (Pango2Layout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), NULL);
 
   return layout->attrs;
 }
 
 /**
- * pango_layout_set_font_description:
- * @layout: a `PangoLayout`
- * @desc: (nullable): the new `PangoFontDescription`
+ * pango2_layout_set_font_description:
+ * @layout: a `Pango2Layout`
+ * @desc: (nullable): the new `Pango2FontDescription`
  *
  * Sets the default font description for the layout.
  *
@@ -1018,18 +1018,18 @@ pango_layout_get_attributes (PangoLayout *layout)
  * This method is a shorthand for adding a font-desc attribute.
  */
 void
-pango_layout_set_font_description (PangoLayout                *layout,
-                                   const PangoFontDescription *desc)
+pango2_layout_set_font_description (Pango2Layout                *layout,
+                                    const Pango2FontDescription *desc)
 {
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
 
   if (desc != layout->font_desc &&
-      (!desc || !layout->font_desc || !pango_font_description_equal (desc, layout->font_desc)))
+      (!desc || !layout->font_desc || !pango2_font_description_equal (desc, layout->font_desc)))
     {
       if (layout->font_desc)
-        pango_font_description_free (layout->font_desc);
+        pango2_font_description_free (layout->font_desc);
 
-      layout->font_desc = desc ? pango_font_description_copy (desc) : NULL;
+      layout->font_desc = desc ? pango2_font_description_copy (desc) : NULL;
 
       g_object_notify_by_pspec (G_OBJECT (layout), props[PROP_FONT_DESCRIPTION]);
       layout_changed (layout);
@@ -1037,8 +1037,8 @@ pango_layout_set_font_description (PangoLayout                *layout,
 }
 
 /**
- * pango_layout_get_font_description:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_font_description:
+ * @layout: a `Pango2Layout`
  *
  * Gets the font description for the layout, if any.
  *
@@ -1046,17 +1046,17 @@ pango_layout_set_font_description (PangoLayout                *layout,
  *   layout's font description, or %NULL if the font description
  *   from the layout's context is inherited.
  */
-const PangoFontDescription *
-pango_layout_get_font_description (PangoLayout *layout)
+const Pango2FontDescription *
+pango2_layout_get_font_description (Pango2Layout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), NULL);
 
   return layout->font_desc;
 }
 
 /**
- * pango_layout_set_line_height:
- * @layout: a `PangoLayout`
+ * pango2_layout_set_line_height:
+ * @layout: a `Pango2Layout`
  * @line_height: the new line height factor
  *
  * Sets a factor for line height.
@@ -1073,10 +1073,10 @@ pango_layout_get_font_description (PangoLayout *layout)
  * This method is a shorthand for adding a line-height attribute.
  */
 void
-pango_layout_set_line_height (PangoLayout *layout,
-                              float        line_height)
+pango2_layout_set_line_height (Pango2Layout *layout,
+                               float         line_height)
 {
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
 
   if (layout->line_height == line_height)
     return;
@@ -1088,42 +1088,42 @@ pango_layout_set_line_height (PangoLayout *layout,
 }
 
 /**
- * pango_layout_get_line_height:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_line_height:
+ * @layout: a `Pango2Layout`
  *
  * Gets the line height factor of the layout.
  *
- * See [method@Pango.Layout.set_line_height].
+ * See [method@Pango2.Layout.set_line_height].
  */
 float
-pango_layout_get_line_height (PangoLayout *layout)
+pango2_layout_get_line_height (Pango2Layout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), 0.0);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), 0.0);
 
   return layout->line_height;
 }
 
 /**
- * pango_layout_set_spacing:
- * @layout: a `PangoLayout`
- * @spacing: the amount of spacing, in Pango units
+ * pango2_layout_set_spacing:
+ * @layout: a `Pango2Layout`
+ * @spacing: the amount of spacing, in Pango2 units
  *
  * Sets the amount of spacing between the lines of the layout.
  *
- * When placing lines with spacing, Pango arranges things so that
+ * When placing lines with spacing, Pango2 arranges things so that
  *
  *     line2.top = line1.bottom + spacing
  *
  * The default value is 0.
  *
  * Spacing only takes effect if the line height is not
- * overridden via [method@Pango.Layout.set_line_height].
+ * overridden via [method@Pango2.Layout.set_line_height].
  */
 void
-pango_layout_set_spacing (PangoLayout *layout,
-                          int          spacing)
+pango2_layout_set_spacing (Pango2Layout *layout,
+                           int           spacing)
 {
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
 
   if (layout->spacing == spacing)
     return;
@@ -1135,25 +1135,25 @@ pango_layout_set_spacing (PangoLayout *layout,
 }
 
 /**
- * pango_layout_get_spacing:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_spacing:
+ * @layout: a `Pango2Layout`
  *
  * Gets the amount of spacing between the lines of the layout.
  *
- * Return value: the spacing in Pango units
+ * Return value: the spacing in Pango2 units
  */
 int
-pango_layout_get_spacing (PangoLayout *layout)
+pango2_layout_get_spacing (Pango2Layout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), 0);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), 0);
 
   return layout->spacing;
 }
 
 /**
- * pango_layout_set_width:
- * @layout: a `PangoLayout`.
- * @width: the desired width in Pango units, or -1 to indicate that no
+ * pango2_layout_set_width:
+ * @layout: a `Pango2Layout`.
+ * @width: the desired width in Pango2 units, or -1 to indicate that no
  *   wrapping or ellipsization should be performed
  *
  * Sets the width to which the lines of the layout should
@@ -1162,10 +1162,10 @@ pango_layout_get_spacing (PangoLayout *layout)
  * The default value is -1: no width set.
  */
 void
-pango_layout_set_width (PangoLayout *layout,
-                        int          width)
+pango2_layout_set_width (Pango2Layout *layout,
+                         int           width)
 {
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
 
   if (width < -1)
     width = -1;
@@ -1180,38 +1180,38 @@ pango_layout_set_width (PangoLayout *layout,
 }
 
 /**
- * pango_layout_get_width:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_width:
+ * @layout: a `Pango2Layout`
  *
  * Gets the width to which the lines of the layout should wrap.
  *
- * Return value: the width in Pango units, or -1 if no width set.
+ * Return value: the width in Pango2 units, or -1 if no width set.
  */
 int
-pango_layout_get_width (PangoLayout *layout)
+pango2_layout_get_width (Pango2Layout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), -1);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), -1);
 
   return layout->width;
 }
 
 /**
- * pango_layout_set_height:
- * @layout: a `PangoLayout`.
+ * pango2_layout_set_height:
+ * @layout: a `Pango2Layout`.
  * @height: the desired height
  *
- * Sets the height to which the `PangoLayout` should be ellipsized at.
+ * Sets the height to which the `Pango2Layout` should be ellipsized at.
  *
  * There are two different behaviors, based on whether @height is positive
  * or negative.
  *
- * See [property@Pango.Layout:height] for details.
+ * See [property@Pango2.Layout:height] for details.
  */
 void
-pango_layout_set_height (PangoLayout *layout,
-                         int          height)
+pango2_layout_set_height (Pango2Layout *layout,
+                          int           height)
 {
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
 
   if (layout->height == height)
     return;
@@ -1223,27 +1223,27 @@ pango_layout_set_height (PangoLayout *layout,
 }
 
 /**
- * pango_layout_get_height:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_height:
+ * @layout: a `Pango2Layout`
  *
  * Gets the height to which the lines of the layout should ellipsize.
  *
- * See [property@Pango.Layout:height] for details.
+ * See [property@Pango2.Layout:height] for details.
  *
  * Return value: the height
  */
 int
-pango_layout_get_height (PangoLayout *layout)
+pango2_layout_get_height (Pango2Layout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), -1);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), -1);
 
   return layout->height;
 }
 
 /**
- * pango_layout_set_tabs:
- * @layout: a `PangoLayout`
- * @tabs: (nullable): a `PangoTabArray`
+ * pango2_layout_set_tabs:
+ * @layout: a `Pango2Layout`
+ * @tabs: (nullable): a `Pango2TabArray`
  *
  * Sets the tabs to use for the layout, overriding the
  * default tabs.
@@ -1251,47 +1251,47 @@ pango_layout_get_height (PangoLayout *layout)
  * Setting the tabs to `NULL` reinstates the default
  * tabs.
  *
- * See [method@Pango.LineBreaker.set_tabs] for details.
+ * See [method@Pango2.LineBreaker.set_tabs] for details.
  */
 void
-pango_layout_set_tabs (PangoLayout   *layout,
-                       PangoTabArray *tabs)
+pango2_layout_set_tabs (Pango2Layout   *layout,
+                        Pango2TabArray *tabs)
 {
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
 
   if (layout->tabs == tabs)
     return;
 
-  g_clear_pointer (&layout->tabs, pango_tab_array_free);
+  g_clear_pointer (&layout->tabs, pango2_tab_array_free);
   if (tabs)
-    layout->tabs = pango_tab_array_copy (tabs);
+    layout->tabs = pango2_tab_array_copy (tabs);
 
   g_object_notify_by_pspec (G_OBJECT (layout), props[PROP_TABS]);
   layout_changed (layout);
 }
 
 /**
- * pango_layout_get_tabs:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_tabs:
+ * @layout: a `Pango2Layout`
  *
- * Gets the current `PangoTabArray` used by this layout.
+ * Gets the current `Pango2TabArray` used by this layout.
  *
- * If no `PangoTabArray` has been set, then the default tabs are
+ * If no `Pango2TabArray` has been set, then the default tabs are
  * in use and %NULL is returned. Default tabs are every 8 spaces.
  *
  * Return value: (transfer none) (nullable): the tabs for this layout
  */
-PangoTabArray *
-pango_layout_get_tabs (PangoLayout *layout)
+Pango2TabArray *
+pango2_layout_get_tabs (Pango2Layout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), NULL);
 
   return layout->tabs;
 }
 
 /**
- * pango_layout_set_single_paragraph:
- * @layout: a `PangoLayout`
+ * pango2_layout_set_single_paragraph:
+ * @layout: a `Pango2Layout`
  * @single_paragraph: the new setting
  *
  * Sets the single paragraph mode of the layout.
@@ -1306,10 +1306,10 @@ pango_layout_get_tabs (PangoLayout *layout)
  * The default value is %FALSE.
  */
 void
-pango_layout_set_single_paragraph (PangoLayout *layout,
-                                   gboolean     single_paragraph)
+pango2_layout_set_single_paragraph (Pango2Layout *layout,
+                                    gboolean      single_paragraph)
 {
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
 
   if (layout->single_paragraph == single_paragraph)
     return;
@@ -1321,42 +1321,42 @@ pango_layout_set_single_paragraph (PangoLayout *layout,
 }
 
 /**
- * pango_layout_get_single_paragraph:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_single_paragraph:
+ * @layout: a `Pango2Layout`
  *
  * Obtains whether this layout is in single paragraph mode.
  *
- * See [method@Pango.Layout.set_single_paragraph].
+ * See [method@Pango2.Layout.set_single_paragraph].
  *
  * Return value: `TRUE` if the layout does not break paragraphs
  *   at paragraph separator characters, %FALSE otherwise
  */
 gboolean
-pango_layout_get_single_paragraph (PangoLayout *layout)
+pango2_layout_get_single_paragraph (Pango2Layout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), FALSE);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), FALSE);
 
   return layout->single_paragraph;
 }
 
 /**
- * pango_layout_set_wrap:
- * @layout: a `PangoLayout`
+ * pango2_layout_set_wrap:
+ * @layout: a `Pango2Layout`
  * @wrap: the wrap mode
  *
  * Sets the wrap mode.
  *
  * The wrap mode only has effect if a width is set on the layout
- * with [method@Pango.Layout.set_width]. To turn off wrapping,
+ * with [method@Pango2.Layout.set_width]. To turn off wrapping,
  * set the width to -1.
  *
- * The default value is %PANGO_WRAP_WORD.
+ * The default value is %PANGO2_WRAP_WORD.
  */
 void
-pango_layout_set_wrap (PangoLayout   *layout,
-                       PangoWrapMode  wrap)
+pango2_layout_set_wrap (Pango2Layout   *layout,
+                        Pango2WrapMode  wrap)
 {
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
 
   if (layout->wrap == wrap)
     return;
@@ -1368,27 +1368,27 @@ pango_layout_set_wrap (PangoLayout   *layout,
 }
 
 /**
- * pango_layout_get_wrap:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_wrap:
+ * @layout: a `Pango2Layout`
  *
  * Gets the wrap mode for the layout.
  *
  * Return value: active wrap mode.
  */
-PangoWrapMode
-pango_layout_get_wrap (PangoLayout *layout)
+Pango2WrapMode
+pango2_layout_get_wrap (Pango2Layout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), PANGO_WRAP_WORD);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), PANGO2_WRAP_WORD);
 
   return layout->wrap;
 }
 
 /**
- * pango_layout_set_indent:
- * @layout: a `PangoLayout`
+ * pango2_layout_set_indent:
+ * @layout: a `Pango2Layout`
  * @indent: the amount by which to indent
  *
- * Sets the width in Pango units to indent each paragraph.
+ * Sets the width in Pango2 units to indent each paragraph.
  *
  * A negative value of @indent will produce a hanging indentation.
  * That is, the first line will have the full width, and subsequent
@@ -1397,10 +1397,10 @@ pango_layout_get_wrap (PangoLayout *layout)
  * The default value is 0.
  */
 void
-pango_layout_set_indent (PangoLayout *layout,
-                         int          indent)
+pango2_layout_set_indent (Pango2Layout *layout,
+                          int           indent)
 {
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
 
   if (layout->indent == indent)
     return;
@@ -1412,26 +1412,26 @@ pango_layout_set_indent (PangoLayout *layout,
 }
 
 /**
- * pango_layout_get_indent:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_indent:
+ * @layout: a `Pango2Layout`
  *
- * Gets the paragraph indent width in Pango units.
+ * Gets the paragraph indent width in Pango2 units.
  *
  * A negative value indicates a hanging indentation.
  *
- * Return value: the indent in Pango units
+ * Return value: the indent in Pango2 units
  */
 int
-pango_layout_get_indent (PangoLayout *layout)
+pango2_layout_get_indent (Pango2Layout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), 0);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), 0);
 
   return layout->indent;
 }
 
 /**
- * pango_layout_set_alignment:
- * @layout: a `PangoLayout`
+ * pango2_layout_set_alignment:
+ * @layout: a `Pango2Layout`
  * @alignment: the alignment
  *
  * Sets the alignment for the layout.
@@ -1439,13 +1439,13 @@ pango_layout_get_indent (PangoLayout *layout)
  * The alignment determines how short lines are
  * positioned within the available horizontal space.
  *
- * The default alignment is `PANGO_ALIGN_NATURAL`.
+ * The default alignment is `PANGO2_ALIGN_NATURAL`.
  */
 void
-pango_layout_set_alignment (PangoLayout    *layout,
-                            PangoAlignment  alignment)
+pango2_layout_set_alignment (Pango2Layout    *layout,
+                             Pango2Alignment  alignment)
 {
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
 
   if (layout->alignment == alignment)
     return;
@@ -1457,8 +1457,8 @@ pango_layout_set_alignment (PangoLayout    *layout,
 }
 
 /**
- * pango_layout_get_alignment:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_alignment:
+ * @layout: a `Pango2Layout`
  *
  * Gets the alignment for the layout.
  *
@@ -1467,32 +1467,32 @@ pango_layout_set_alignment (PangoLayout    *layout,
  *
  * Return value: the alignment
  */
-PangoAlignment
-pango_layout_get_alignment (PangoLayout *layout)
+Pango2Alignment
+pango2_layout_get_alignment (Pango2Layout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), PANGO_ALIGN_NATURAL);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), PANGO2_ALIGN_NATURAL);
 
   return layout->alignment;
 }
 
 /**
- * pango_layout_set_ellipsize:
- * @layout: a `PangoLayout`
+ * pango2_layout_set_ellipsize:
+ * @layout: a `Pango2Layout`
  * @ellipsize: the new ellipsization mode for @layout
  *
  * Sets the type of ellipsization to use for this layout.
  *
  * Depending on the ellipsization mode @ellipsize text is removed
  * from the start, middle, or end of text so they fit within the
- * width of layout set with [method@Pango.Layout.set_width].
+ * width of layout set with [method@Pango2.Layout.set_width].
  *
- * The default value is `PANGO_ELLIPSIZE_NONE`.
+ * The default value is `PANGO2_ELLIPSIZE_NONE`.
  */
 void
-pango_layout_set_ellipsize (PangoLayout        *layout,
-                            PangoEllipsizeMode  ellipsize)
+pango2_layout_set_ellipsize (Pango2Layout        *layout,
+                             Pango2EllipsizeMode  ellipsize)
 {
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
 
   if (layout->ellipsize == ellipsize)
     return;
@@ -1504,26 +1504,26 @@ pango_layout_set_ellipsize (PangoLayout        *layout,
 }
 
 /**
- * pango_layout_get_ellipsize:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_ellipsize:
+ * @layout: a `Pango2Layout`
  *
  * Gets the type of ellipsization being performed for the layout.
  *
- * See [method@Pango.Layout.set_ellipsize].
+ * See [method@Pango2.Layout.set_ellipsize].
  *
  * Return value: the current ellipsization mode for @layout
  */
-PangoEllipsizeMode
-pango_layout_get_ellipsize (PangoLayout *layout)
+Pango2EllipsizeMode
+pango2_layout_get_ellipsize (Pango2Layout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), PANGO_ELLIPSIZE_NONE);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), PANGO2_ELLIPSIZE_NONE);
 
   return layout->ellipsize;
 }
 
 /**
- * pango_layout_set_auto_dir:
- * @layout: a `PangoLayout`
+ * pango2_layout_set_auto_dir:
+ * @layout: a `Pango2Layout`
  * @auto_dir: if %TRUE, compute the bidirectional base direction
  *   from the layout's contents
  *
@@ -1540,17 +1540,17 @@ pango_layout_get_ellipsize (PangoLayout *layout)
  *
  * When `FALSE`, the choice between left-to-right and right-to-left
  * layout is done according to the base direction of the layout's
- * `PangoContext`. (See [method@Pango.Context.set_base_dir]).
+ * `Pango2Context`. (See [method@Pango2.Context.set_base_dir]).
  *
  * When the auto-computed direction of a paragraph differs
  * from the base direction of the context, the interpretation
- * of `PANGO_ALIGN_LEFT` and `PANGO_ALIGN_RIGHT` are swapped.
+ * of `PANGO2_ALIGN_LEFT` and `PANGO2_ALIGN_RIGHT` are swapped.
  */
 void
-pango_layout_set_auto_dir (PangoLayout *layout,
-                           gboolean     auto_dir)
+pango2_layout_set_auto_dir (Pango2Layout *layout,
+                            gboolean      auto_dir)
 {
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
 
   if (auto_dir == layout->auto_dir)
     return;
@@ -1562,21 +1562,21 @@ pango_layout_set_auto_dir (PangoLayout *layout,
 }
 
 /**
- * pango_layout_get_auto_dir:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_auto_dir:
+ * @layout: a `Pango2Layout`
  *
  * Gets whether to calculate the base direction for the layout
  * according to its contents.
  *
- * See [method@Pango.Layout.set_auto_dir].
+ * See [method@Pango2.Layout.set_auto_dir].
  *
  * Return value: `TRUE` if the bidirectional base direction
  *   is computed from the layout's contents, `FALSE` otherwise
  */
 gboolean
-pango_layout_get_auto_dir (PangoLayout *layout)
+pango2_layout_get_auto_dir (Pango2Layout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), TRUE);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), TRUE);
 
   return layout->auto_dir;
 }
@@ -1585,32 +1585,32 @@ pango_layout_get_auto_dir (PangoLayout *layout)
 /* {{{ Miscellaneous */
 
 /**
- * pango_layout_set_markup:
- * @layout: a `PangoLayout`
+ * pango2_layout_set_markup:
+ * @layout: a `Pango2Layout`
  * @markup: marked-up text
  * @length: length of @markup in bytes, or -1 if it is `NUL`-terminated
  *
  * Sets the layout text and attribute list from marked-up text.
  *
- * See [Pango Markup](pango_markup.html)).
+ * See [Pango2 Markup](pango2_markup.html)).
  *
  * Replaces the current text and attributes.
  */
 void
-pango_layout_set_markup (PangoLayout  *layout,
-                         const char   *markup,
-                         int           length)
+pango2_layout_set_markup (Pango2Layout *layout,
+                          const char   *markup,
+                          int           length)
 {
-  PangoAttrList *attrs;
+  Pango2AttrList *attrs;
   char *text;
   GError *error = NULL;
 
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
   g_return_if_fail (markup != NULL);
 
-  if (!pango_parse_markup (markup, length, 0, &attrs, &text, NULL, &error))
+  if (!pango2_parse_markup (markup, length, 0, &attrs, &text, NULL, &error))
     {
-      g_warning ("pango_layout_set_markup_with_accel: %s", error->message);
+      g_warning ("pango2_layout_set_markup_with_accel: %s", error->message);
       g_error_free (error);
       return;
     }
@@ -1619,7 +1619,7 @@ pango_layout_set_markup (PangoLayout  *layout,
   layout->text = text;
   layout->length = strlen (text);
 
-  g_clear_pointer (&layout->attrs, pango_attr_list_unref);
+  g_clear_pointer (&layout->attrs, pango2_attr_list_unref);
   layout->attrs = attrs;
 
   g_object_notify_by_pspec (G_OBJECT (layout), props[PROP_TEXT]);
@@ -1628,8 +1628,8 @@ pango_layout_set_markup (PangoLayout  *layout,
 }
 
 /**
- * pango_layout_get_character_count:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_character_count:
+ * @layout: a `Pango2Layout`
  *
  * Returns the number of Unicode characters in the
  * the text of the layout.
@@ -1637,15 +1637,15 @@ pango_layout_set_markup (PangoLayout  *layout,
  * Return value: the number of Unicode characters in @layout
  */
 int
-pango_layout_get_character_count (PangoLayout *layout)
+pango2_layout_get_character_count (Pango2Layout *layout)
 {
-  PangoLine *line;
+  Pango2Line *line;
 
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), 0);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), 0);
 
   ensure_lines (layout);
 
-  line = pango_lines_get_lines (layout->lines)[0];
+  line = pango2_lines_get_lines (layout->lines)[0];
 
   return line->data->n_chars;
 }
@@ -1654,8 +1654,8 @@ pango_layout_get_character_count (PangoLayout *layout)
 /* {{{ Output getters */
 
 /**
- * pango_layout_get_lines:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_lines:
+ * @layout: a `Pango2Layout`
  *
  * Gets the lines of the layout.
  *
@@ -1663,13 +1663,13 @@ pango_layout_get_character_count (PangoLayout *layout)
  * property of @layout is changed. Take a reference
  * to keep it.
  *
- * Return value: (transfer none): a `PangoLines` object
+ * Return value: (transfer none): a `Pango2Lines` object
  *   with the lines of @layout
  */
-PangoLines *
-pango_layout_get_lines (PangoLayout *layout)
+Pango2Lines *
+pango2_layout_get_lines (Pango2Layout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), NULL);
 
   ensure_lines (layout);
 
@@ -1677,29 +1677,29 @@ pango_layout_get_lines (PangoLayout *layout)
 }
 
 /**
- * pango_layout_get_log_attrs:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_log_attrs:
+ * @layout: a `Pango2Layout`
  * @n_attrs: (out): return location for the length of the array
  *
- * Gets the `PangoLogAttr` array for the content of layout.
+ * Gets the `Pango2LogAttr` array for the content of layout.
  *
  * The returned array becomes invalid when
  * any properties of @layout change. Make a
  * copy if you want to keep it.
  *
- * Returns: (transfer none): the `PangoLogAttr` array
+ * Returns: (transfer none): the `Pango2LogAttr` array
  */
-const PangoLogAttr *
-pango_layout_get_log_attrs (PangoLayout *layout,
-                            int         *n_attrs)
+const Pango2LogAttr *
+pango2_layout_get_log_attrs (Pango2Layout *layout,
+                             int          *n_attrs)
 {
-  PangoLine *line;
+  Pango2Line *line;
 
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), NULL);
 
   ensure_lines (layout);
 
-  line = pango_lines_get_lines (layout->lines)[0];
+  line = pango2_lines_get_lines (layout->lines)[0];
 
   if (n_attrs)
     *n_attrs = line->data->n_chars + 1;
@@ -1708,24 +1708,24 @@ pango_layout_get_log_attrs (PangoLayout *layout,
 }
 
 /**
- * pango_layout_get_iter:
- * @layout: a `PangoLayout`
+ * pango2_layout_get_iter:
+ * @layout: a `Pango2Layout`
  *
  * Returns an iterator to iterate over the visual extents
  * of the layout.
  *
- * This is a convenience wrapper for [method@Pango.Lines.get_iter].
+ * This is a convenience wrapper for [method@Pango2.Lines.get_iter].
  *
- * Returns: the new `PangoLineIter`
+ * Returns: the new `Pango2LineIter`
  */
-PangoLineIter *
-pango_layout_get_iter (PangoLayout *layout)
+Pango2LineIter *
+pango2_layout_get_iter (Pango2Layout *layout)
 {
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), NULL);
 
   ensure_lines (layout);
 
-  return pango_lines_get_iter (layout->lines);
+  return pango2_lines_get_iter (layout->lines);
 }
 
 /* }}} */

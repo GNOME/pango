@@ -25,9 +25,9 @@
 #include "pango-language-set-private.h"
 #include <hb.h>
 
-struct _PangoHbFace
+struct _Pango2HbFace
 {
-  PangoFontFace parent_instance;
+  Pango2FontFace parent_instance;
 
   char *faceid;
   unsigned int index;
@@ -36,17 +36,17 @@ struct _PangoHbFace
   hb_face_t *face;
   hb_variation_t *variations;
   unsigned int n_variations;
-  PangoMatrix *transform;
+  Pango2Matrix *transform;
   double x_scale, y_scale;
-  PangoLanguageSet *languages;
+  Pango2LanguageSet *languages;
   gboolean embolden;
   gboolean synthetic;
 };
 
-PangoLanguageSet *      pango_hb_face_get_language_set  (PangoHbFace          *self);
+Pango2LanguageSet *     pango2_hb_face_get_language_set  (Pango2HbFace          *self);
 
-void                    pango_hb_face_set_language_set  (PangoHbFace          *self,
-                                                         PangoLanguageSet     *languages);
+void                    pango2_hb_face_set_language_set  (Pango2HbFace          *self,
+                                                          Pango2LanguageSet     *languages);
 
-void                    pango_hb_face_set_matrix        (PangoHbFace          *self,
-                                                         const PangoMatrix    *matrix);
+void                    pango2_hb_face_set_matrix        (Pango2HbFace          *self,
+                                                          const Pango2Matrix    *matrix);

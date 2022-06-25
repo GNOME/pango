@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  *
  * Copyright (C) 2021 Red Hat, Inc.
  *
@@ -25,62 +25,62 @@
 #include "pango-language-set-private.h"
 
 
-G_DEFINE_ABSTRACT_TYPE (PangoLanguageSet, pango_language_set, G_TYPE_OBJECT)
+G_DEFINE_ABSTRACT_TYPE (Pango2LanguageSet, pango2_language_set, G_TYPE_OBJECT)
 
 static void
-pango_language_set_init (PangoLanguageSet *set)
+pango2_language_set_init (Pango2LanguageSet *set)
 {
 }
 
 static gboolean
-pango_language_set_default_matches_language (PangoLanguageSet *set,
-                                             PangoLanguage    *language)
+pango2_language_set_default_matches_language (Pango2LanguageSet *set,
+                                              Pango2Language    *language)
 {
   return FALSE;
 }
 
-static PangoLanguage **
-pango_language_set_default_get_languages (PangoLanguageSet *set)
+static Pango2Language **
+pango2_language_set_default_get_languages (Pango2LanguageSet *set)
 {
   return NULL;
 }
 
 static void
-pango_language_set_class_init (PangoLanguageSetClass *class)
+pango2_language_set_class_init (Pango2LanguageSetClass *class)
 {
-  PangoLanguageSetClass *language_set_class = PANGO_LANGUAGE_SET_CLASS (class);
+  Pango2LanguageSetClass *language_set_class = PANGO2_LANGUAGE_SET_CLASS (class);
 
-  language_set_class->matches_language = pango_language_set_default_matches_language;
-  language_set_class->get_languages = pango_language_set_default_get_languages;
+  language_set_class->matches_language = pango2_language_set_default_matches_language;
+  language_set_class->get_languages = pango2_language_set_default_get_languages;
 }
 
 gboolean
-pango_language_set_matches_language (PangoLanguageSet *set,
-                                     PangoLanguage    *language)
+pango2_language_set_matches_language (Pango2LanguageSet *set,
+                                      Pango2Language    *language)
 {
-  return PANGO_LANGUAGE_SET_GET_CLASS (set)->matches_language (set, language);
+  return PANGO2_LANGUAGE_SET_GET_CLASS (set)->matches_language (set, language);
 }
 
-PangoLanguage **
-pango_language_set_get_languages (PangoLanguageSet *set)
+Pango2Language **
+pango2_language_set_get_languages (Pango2LanguageSet *set)
 {
-  return PANGO_LANGUAGE_SET_GET_CLASS (set)->get_languages (set);
+  return PANGO2_LANGUAGE_SET_GET_CLASS (set)->get_languages (set);
 }
 
 char *
-pango_language_set_to_string (PangoLanguageSet *set)
+pango2_language_set_to_string (Pango2LanguageSet *set)
 {
-  PangoLanguage **languages;
+  Pango2Language **languages;
   GString *s;
 
   s = g_string_new ("");
 
-  languages = pango_language_set_get_languages (set);
+  languages = pango2_language_set_get_languages (set);
   for (int i = 0; languages[i]; i++)
     {
       if (s->len > 0)
         g_string_append (s, "|");
-      g_string_append (s, pango_language_to_string (languages[i]));
+      g_string_append (s, pango2_language_to_string (languages[i]));
     }
 
   return g_string_free (s, FALSE);

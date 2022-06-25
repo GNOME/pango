@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * break-arabic.c:
  *
  * Copyright (C) 2006 Red Hat Software
@@ -48,11 +48,11 @@
 #define IS_COMPOSITE_WITH_ALEF(c) (MADDAH_ABOVE <= (c) && (c) <= HAMZA_BELOW)
 
 static void
-break_arabic (const char          *text,
-	      int                  length,
-	      const PangoAnalysis *analysis G_GNUC_UNUSED,
-	      PangoLogAttr        *attrs,
-	      int                  attrs_len G_GNUC_UNUSED)
+break_arabic (const char           *text,
+	      int                   length,
+	      const Pango2Analysis *analysis G_GNUC_UNUSED,
+	      Pango2LogAttr        *attrs,
+	      int                   attrs_len G_GNUC_UNUSED)
 {
   int i;
   const char *p;

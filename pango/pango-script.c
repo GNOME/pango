@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * pango-script.c: Script tag handling
  *
  * Copyright (C) 2002 Red Hat Software
@@ -18,7 +18,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * Implementation of pango_script_iter is derived from ICU:
+ * Implementation of pango2_script_iter is derived from ICU:
  *
  *  icu/sources/common/usc_impl.c
  *
@@ -63,17 +63,17 @@
 
 /**********************************************************************/
 
-static PangoScriptIter *pango_script_iter_copy (PangoScriptIter *iter);
+static Pango2ScriptIter *pango2_script_iter_copy (Pango2ScriptIter *iter);
 
-G_DEFINE_BOXED_TYPE (PangoScriptIter,
-                     pango_script_iter,
-                     pango_script_iter_copy,
-                     pango_script_iter_free)
+G_DEFINE_BOXED_TYPE (Pango2ScriptIter,
+                     pango2_script_iter,
+                     pango2_script_iter_copy,
+                     pango2_script_iter_free)
 
-PangoScriptIter *
-_pango_script_iter_init (PangoScriptIter *iter,
-                         const char      *text,
-                         int              length)
+Pango2ScriptIter *
+_pango2_script_iter_init (Pango2ScriptIter *iter,
+                          const char       *text,
+                          int               length)
 {
   iter->text_start = text;
   if (length >= 0)
@@ -87,62 +87,62 @@ _pango_script_iter_init (PangoScriptIter *iter,
 
   iter->paren_sp = -1;
 
-  pango_script_iter_next (iter);
+  pango2_script_iter_next (iter);
 
   return iter;
 }
 
 /**
- * pango_script_iter_new:
+ * pango2_script_iter_new:
  * @text: a UTF-8 string
  * @length: length of @text, or -1 if @text is nul-terminated
  *
- * Create a new `PangoScriptIter`, used to break a string of
+ * Create a new `Pango2ScriptIter`, used to break a string of
  * Unicode text into runs by Unicode script.
  *
  * No copy is made of @text, so the caller needs to make
  * sure it remains valid until the iterator is freed with
- * [method@Pango.ScriptIter.free].
+ * [method@Pango2.ScriptIter.free].
  *
  * Return value: the new script iterator, initialized
  *  to point at the first range in the text, which should be
- *  freed with [method@Pango.ScriptIter.free]. If the string is
+ *  freed with [method@Pango2.ScriptIter.free]. If the string is
  *  empty, it will point at an empty range.
  */
-PangoScriptIter *
-pango_script_iter_new (const char *text,
-                       int         length)
+Pango2ScriptIter *
+pango2_script_iter_new (const char *text,
+                        int         length)
 {
-  return _pango_script_iter_init (g_slice_new (PangoScriptIter), text, length);
+  return _pango2_script_iter_init (g_slice_new (Pango2ScriptIter), text, length);
 }
 
-static PangoScriptIter *
-pango_script_iter_copy (PangoScriptIter *iter)
+static Pango2ScriptIter *
+pango2_script_iter_copy (Pango2ScriptIter *iter)
 {
-  return g_slice_dup (PangoScriptIter, iter);
+  return g_slice_dup (Pango2ScriptIter, iter);
 }
 
 void
-_pango_script_iter_fini (PangoScriptIter *iter)
+_pango2_script_iter_fini (Pango2ScriptIter *iter)
 {
 }
 
 /**
- * pango_script_iter_free:
- * @iter: a `PangoScriptIter`
+ * pango2_script_iter_free:
+ * @iter: a `Pango2ScriptIter`
  *
- * Frees a `PangoScriptIter`.
+ * Frees a `Pango2ScriptIter`.
  */
 void
-pango_script_iter_free (PangoScriptIter *iter)
+pango2_script_iter_free (Pango2ScriptIter *iter)
 {
-  _pango_script_iter_fini (iter);
-  g_slice_free (PangoScriptIter, iter);
+  _pango2_script_iter_fini (iter);
+  g_slice_free (Pango2ScriptIter, iter);
 }
 
 /**
- * pango_script_iter_get_range:
- * @iter: a `PangoScriptIter`
+ * pango2_script_iter_get_range:
+ * @iter: a `Pango2ScriptIter`
  * @start: (out) (optional): location to store start position of the range
  * @end: (out) (optional): location to store end position of the range
  * @script: (out) (optional): location to store script for range
@@ -153,10 +153,10 @@ pango_script_iter_free (PangoScriptIter *iter)
  * (That is, it doesn't include the character stored at *end)
  */
 void
-pango_script_iter_get_range (PangoScriptIter  *iter,
-                             const char      **start,
-                             const char      **end,
-                             GUnicodeScript   *script)
+pango2_script_iter_get_range (Pango2ScriptIter  *iter,
+                              const char       **start,
+                              const char       **end,
+                              GUnicodeScript    *script)
 {
   if (start)
     *start = iter->script_start;
@@ -258,10 +258,10 @@ get_pair_index (gunichar ch)
 #define IS_OPEN(pair_index) (((pair_index) & 1) == 0)
 
 /**
- * pango_script_iter_next:
- * @iter: a `PangoScriptIter`
+ * pango2_script_iter_next:
+ * @iter: a `Pango2ScriptIter`
  *
- * Advances a `PangoScriptIter` to the next range.
+ * Advances a `Pango2ScriptIter` to the next range.
  *
  * If @iter is already at the end, it is left unchanged
  * and %FALSE is returned.
@@ -269,7 +269,7 @@ get_pair_index (gunichar ch)
  * Return value: %TRUE if @iter was successfully advanced
  */
 gboolean
-pango_script_iter_next (PangoScriptIter *iter)
+pango2_script_iter_next (Pango2ScriptIter *iter)
 {
   int start_sp;
 

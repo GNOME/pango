@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * pango-trace.c:
  *
  * Copyright (C) 2020 Red Hat, Inc
@@ -24,17 +24,17 @@
 #include <stdarg.h>
 
 void
-(pango_trace_mark) (gint64      begin_time,
-                    const char *name,
-                    const char *message_format,
-                    ...)
+(pango2_trace_mark) (gint64      begin_time,
+                     const char *name,
+                     const char *message_format,
+                     ...)
 {
 #ifdef HAVE_SYSPROF
-  gint64 end_time = PANGO_TRACE_CURRENT_TIME;
+  gint64 end_time = PANGO2_TRACE_CURRENT_TIME;
   va_list args;
 
   va_start (args, message_format);
-  sysprof_collector_mark_vprintf (begin_time, end_time - begin_time, "Pango", name, message_format, args);
+  sysprof_collector_mark_vprintf (begin_time, end_time - begin_time, "Pango2", name, message_format, args);
   va_end (args);
 #endif  /* HAVE_SYSPROF */
 }

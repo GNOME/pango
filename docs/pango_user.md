@@ -6,11 +6,11 @@ Title: Rendering with user fonts
 
 Most of the time, text is rendered using fonts that are ready-made and provided
 in formats such as TrueType or OpenType. Pango supports such fonts with
-[class@PangoHbFace]. But there are fonts in custom formats that HarfBuzz might
+[class@Pango2.HbFace]. But there are fonts in custom formats that HarfBuzz might
 not support. And sometimes, it is more convenient to use a drawing API to render
 glyphs on-the-spot, maybe with fancy effects.
 
-For these cases, Pango provides the [class@PangoUserFace] implementation of
+For these cases, Pango provides the [class@Pango2.UserFace] implementation of
 `PangoFontFace` that uses callbacks for its functionality. This lets you embed
 custom drawing into your text, fully integrated with Pango's text layout
 capabilities.

@@ -24,34 +24,34 @@
 G_BEGIN_DECLS
 
 /**
- * PangoDirection:
- * @PANGO_DIRECTION_LTR: A strong left-to-right direction
- * @PANGO_DIRECTION_RTL: A strong right-to-left direction
- * @PANGO_DIRECTION_WEAK_LTR: A weak left-to-right direction
- * @PANGO_DIRECTION_WEAK_RTL: A weak right-to-left direction
- * @PANGO_DIRECTION_NEUTRAL: No direction specified
+ * Pango2Direction:
+ * @PANGO2_DIRECTION_LTR: A strong left-to-right direction
+ * @PANGO2_DIRECTION_RTL: A strong right-to-left direction
+ * @PANGO2_DIRECTION_WEAK_LTR: A weak left-to-right direction
+ * @PANGO2_DIRECTION_WEAK_RTL: A weak right-to-left direction
+ * @PANGO2_DIRECTION_NEUTRAL: No direction specified
  *
- * `PangoDirection` represents a direction in the Unicode bidirectional
+ * `Pango2Direction` represents a direction in the Unicode bidirectional
  * algorithm.
  *
  * Not every value in this enumeration makes sense for every usage of
- * `PangoDirection`; for example, the direction of characters cannot be
- * `PANGO_DIRECTION_WEAK_LTR` or `PANGO_DIRECTION_WEAK_RTL`, since every
+ * `Pango2Direction`; for example, the direction of characters cannot be
+ * `PANGO2_DIRECTION_WEAK_LTR` or `PANGO2_DIRECTION_WEAK_RTL`, since every
  * character is either neutral or has a strong direction; on the other hand
- * `PANGO_DIRECTION_NEUTRAL` doesn't make sense to pass to [func@itemize].
+ * `PANGO2_DIRECTION_NEUTRAL` doesn't make sense to pass to [func@itemize].
  *
- * See `PangoGravity` for how vertical text is handled in Pango.
+ * See `Pango2Gravity` for how vertical text is handled in Pango2.
  *
  * If you are interested in text direction, you should really use
- * [fribidi](http://fribidi.org/) directly. `PangoDirection` is only
+ * [fribidi](http://fribidi.org/) directly. `Pango2Direction` is only
  * retained because it is used in some public apis.
  */
 typedef enum {
-  PANGO_DIRECTION_LTR,
-  PANGO_DIRECTION_RTL,
-  PANGO_DIRECTION_WEAK_LTR,
-  PANGO_DIRECTION_WEAK_RTL,
-  PANGO_DIRECTION_NEUTRAL
-} PangoDirection;
+  PANGO2_DIRECTION_LTR,
+  PANGO2_DIRECTION_RTL,
+  PANGO2_DIRECTION_WEAK_LTR,
+  PANGO2_DIRECTION_WEAK_RTL,
+  PANGO2_DIRECTION_NEUTRAL
+} Pango2Direction;
 
 G_END_DECLS

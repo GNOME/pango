@@ -24,51 +24,51 @@
 
 G_BEGIN_DECLS
 
-typedef struct _PangoCairoFontPrivate                PangoCairoFontPrivate;
-typedef struct _HexBoxInfo                           PangoCairoFontHexBoxInfo;
-typedef struct _PangoCairoFontPrivateScaledFontData  PangoCairoFontPrivateScaledFontData;
+typedef struct _Pango2CairoFontPrivate                Pango2CairoFontPrivate;
+typedef struct _HexBoxInfo                            Pango2CairoFontHexBoxInfo;
+typedef struct _Pango2CairoFontPrivateScaledFontData  Pango2CairoFontPrivateScaledFontData;
 
-struct _PangoCairoFontPrivateScaledFontData
+struct _Pango2CairoFontPrivateScaledFontData
 {
   cairo_matrix_t font_matrix;
   cairo_matrix_t ctm;
   cairo_font_options_t *options;
 };
 
-struct _PangoCairoFontPrivate
+struct _Pango2CairoFontPrivate
 {
-  PangoFont *cfont;
+  Pango2Font *cfont;
 
-  PangoCairoFontPrivateScaledFontData *data;
+  Pango2CairoFontPrivateScaledFontData *data;
 
   cairo_scaled_font_t *scaled_font;
-  PangoCairoFontHexBoxInfo *hbi;
+  Pango2CairoFontHexBoxInfo *hbi;
 
   gboolean is_hinted;
-  PangoGravity gravity;
+  Pango2Gravity gravity;
 
-  PangoRectangle font_extents;
+  Pango2Rectangle font_extents;
 };
 
-gboolean _pango_cairo_font_install (PangoFont *font,
-                                    cairo_t   *cr);
-PangoCairoFontHexBoxInfo *_pango_cairo_font_get_hex_box_info (PangoFont *font);
+gboolean _pango2_cairo_font_install (Pango2Font *font,
+                                     cairo_t    *cr);
+Pango2CairoFontHexBoxInfo *_pango2_cairo_font_get_hex_box_info (Pango2Font *font);
 
-#define PANGO_TYPE_CAIRO_RENDERER            (pango_cairo_renderer_get_type())
-#define PANGO_CAIRO_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_RENDERER, PangoCairoRenderer))
-#define PANGO_IS_CAIRO_RENDERER(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CAIRO_RENDERER))
+#define PANGO2_TYPE_CAIRO_RENDERER            (pango2_cairo_renderer_get_type())
+#define PANGO2_CAIRO_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO2_TYPE_CAIRO_RENDERER, Pango2CairoRenderer))
+#define PANGO2_IS_CAIRO_RENDERER(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO2_TYPE_CAIRO_RENDERER))
 
-typedef struct _PangoCairoRenderer PangoCairoRenderer;
+typedef struct _Pango2CairoRenderer Pango2CairoRenderer;
 
-_PANGO_EXTERN
-GType pango_cairo_renderer_get_type    (void) G_GNUC_CONST;
+_PANGO2_EXTERN
+GType pango2_cairo_renderer_get_type    (void) G_GNUC_CONST;
 
 const cairo_font_options_t *
-         pango_cairo_context_get_merged_font_options (PangoContext *context);
+         pango2_cairo_context_get_merged_font_options (Pango2Context *context);
 
 #ifdef HAVE_DIRECT_WRITE
 cairo_font_face_t *
-pango_cairo_create_font_face_for_dwrite_pango_font (PangoFont *font);
+pango2_cairo_create_font_face_for_dwrite_pango2_font (Pango2Font *font);
 #endif
 
 G_END_DECLS

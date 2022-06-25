@@ -1,5 +1,5 @@
-/* Pango
- * test-break.c: Test Pango line breaking
+/* Pango2
+ * test-break.c: Test Pango2 line breaking
  *
  * Copyright (C) 2019 Red Hat, Inc
  *
@@ -33,7 +33,7 @@
 #include "validate-log-attrs.h"
 
 
-static PangoContext *context;
+static Pango2Context *context;
 
 static gboolean opt_hex_chars;
 
@@ -43,7 +43,7 @@ test_file (const char *filename, GString *string)
   char *contents;
   gsize  length;
   GError *error = NULL;
-  const PangoLogAttr *attrs;
+  const Pango2LogAttr *attrs;
   int len;
   char *p;
   int i;
@@ -51,8 +51,8 @@ test_file (const char *filename, GString *string)
   int m;
   char *test;
   char *text;
-  PangoAttrList *attributes;
-  PangoLayout *layout;
+  Pango2AttrList *attributes;
+  Pango2Layout *layout;
 
   g_file_get_contents (filename, &contents, &length, &error);
   g_assert_no_error (error);
@@ -66,15 +66,15 @@ test_file (const char *filename, GString *string)
   length = strlen (test);
   len = g_utf8_strlen (test, -1) + 1;
 
-  pango_parse_markup (test, -1, 0, &attributes, &text, NULL, &error);
+  pango2_parse_markup (test, -1, 0, &attributes, &text, NULL, &error);
   g_assert_no_error (error);
 
-  layout = pango_layout_new (context);
-  pango_layout_set_text (layout, text, length);
-  pango_layout_set_attributes (layout, attributes);
+  layout = pango2_layout_new (context);
+  pango2_layout_set_text (layout, text, length);
+  pango2_layout_set_attributes (layout, attributes);
 
 #if 0
-  if (pango_layout_get_unknown_glyphs_count (layout) > 0)
+  if (pango2_layout_get_unknown_glyphs_count (layout) > 0)
     {
       char *msg = g_strdup_printf ("Missing glyphs - skipping %s. Maybe fonts are missing?", filename);
       if (g_test_initialized())
@@ -84,15 +84,15 @@ test_file (const char *filename, GString *string)
       g_free (msg);
       g_free (contents);
       g_object_unref (layout);
-      pango_attr_list_unref (attributes);
+      pango2_attr_list_unref (attributes);
       g_free (text);
       return FALSE;
     }
 #endif
 
-  attrs = pango_layout_get_log_attrs (layout, &len);
+  attrs = pango2_layout_get_log_attrs (layout, &len);
 
-  if (!pango_validate_log_attrs (text, length, attrs, len, &error))
+  if (!pango2_validate_log_attrs (text, length, attrs, len, &error))
     {
       g_warning ("%s: Log attrs invalid: %s", filename, error->message);
 //      g_assert_not_reached ();
@@ -119,7 +119,7 @@ test_file (const char *filename, GString *string)
 
   for (i = 0, p = text; i < len; i++, p = g_utf8_next_char (p))
     {
-      PangoLogAttr log = attrs[i];
+      Pango2LogAttr log = attrs[i];
       int b = 0;
       int w = 0;
       int o = 0;
@@ -279,7 +279,7 @@ test_file (const char *filename, GString *string)
   g_object_unref (layout);
   g_free (contents);
   g_free (text);
-  pango_attr_list_unref (attributes);
+  pango2_attr_list_unref (attributes);
 
   return TRUE;
 }
@@ -386,7 +386,7 @@ main (int argc, char *argv[])
   g_option_context_free (option_context);
 
   install_fonts ();
-  context = pango_context_new ();
+  context = pango2_context_new ();
 
   if (opt_legend)
     {

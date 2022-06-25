@@ -26,13 +26,13 @@
 #include "pango-item-private.h"
 
 
-struct _PangoRun
+struct _Pango2Run
 {
-  PangoGlyphItem glyph_item;
+  Pango2GlyphItem glyph_item;
 };
 
-static inline PangoGlyphItem *
-pango_run_get_glyph_item (PangoRun *run)
+static inline Pango2GlyphItem *
+pango2_run_get_glyph_item (Pango2Run *run)
 {
   return &run->glyph_item;
 }

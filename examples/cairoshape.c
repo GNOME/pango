@@ -1,12 +1,12 @@
 /* Example code to show how to use user fonts to render arbitrary content
- * inside a text layout, positioned by Pango.
+ * inside a text layout, positioned by Pango2.
  *
  * This examples uses a small parser to convert shapes in the format of
  * SVG paths to cairo instructions.  You can typically extract these from
  * the SVG file's <path> elements directly.
  *
  * The code then searches for the Unicode bullet character in the layout
- * text and automatically adds PangoAttribtues to the layout to replace
+ * text and automatically adds Pango2Attribtues to the layout to replace
  * each of the with a rendering of the GNOME Foot logo.
  *
  * Written by Behdad Esfahbod, 2007
@@ -86,48 +86,48 @@ mini_svg_render (MiniSvg  *shape, cairo_t  *cr)
   cairo_fill (cr);
 }
 
-static PangoLayout *
+static Pango2Layout *
 get_layout (cairo_t *cr)
 {
-  PangoLayout *layout;
-  PangoAttrList *attrs;
-  PangoFontDescription *font_desc;
+  Pango2Layout *layout;
+  Pango2AttrList *attrs;
+  Pango2FontDescription *font_desc;
   const char *p;
 
-  /* Create a PangoLayout, set the font and text */
-  layout = pango_cairo_create_layout (cr);
-  pango_layout_set_text (layout, text, -1);
+  /* Create a Pango2Layout, set the font and text */
+  layout = pango2_cairo_create_layout (cr);
+  pango2_layout_set_text (layout, text, -1);
 
-  font_desc = pango_font_description_from_string ("Cantarell 12");
-  pango_layout_set_font_description (layout, font_desc);
-  pango_font_description_free (font_desc);
+  font_desc = pango2_font_description_from_string ("Cantarell 12");
+  pango2_layout_set_font_description (layout, font_desc);
+  pango2_font_description_free (font_desc);
 
-  attrs = pango_attr_list_new ();
+  attrs = pango2_attr_list_new ();
 
-  font_desc = pango_font_description_from_string ("Bullets 12");
+  font_desc = pango2_font_description_from_string ("Bullets 12");
 
   for (p = text; (p = strstr (p, BULLET)); p += strlen (BULLET))
     {
-      PangoAttribute *attr;
+      Pango2Attribute *attr;
 
-      attr = pango_attr_font_desc_new (font_desc);
-      pango_attribute_set_range (attr, p - text, p - text + strlen (BULLET));
-      pango_attr_list_insert (attrs, attr);
+      attr = pango2_attr_font_desc_new (font_desc);
+      pango2_attribute_set_range (attr, p - text, p - text + strlen (BULLET));
+      pango2_attr_list_insert (attrs, attr);
     }
 
   for (p = text; (p = strstr (p, HEART)); p += strlen (HEART))
     {
-      PangoAttribute *attr;
+      Pango2Attribute *attr;
 
-      attr = pango_attr_font_desc_new (font_desc);
-      pango_attribute_set_range (attr, p - text, p - text + strlen (HEART));
-      pango_attr_list_insert (attrs, attr);
+      attr = pango2_attr_font_desc_new (font_desc);
+      pango2_attribute_set_range (attr, p - text, p - text + strlen (HEART));
+      pango2_attr_list_insert (attrs, attr);
     }
 
-  pango_font_description_free (font_desc);
+  pango2_font_description_free (font_desc);
 
-  pango_layout_set_attributes (layout, attrs);
-  pango_attr_list_unref (attrs);
+  pango2_layout_set_attributes (layout, attrs);
+  pango2_attr_list_unref (attrs);
 
   return layout;
 }
@@ -135,12 +135,12 @@ get_layout (cairo_t *cr)
 static void
 measure_text (cairo_t *cr, int *width, int *height)
 {
-  PangoLayout *layout = get_layout (cr);
-  PangoLines *lines = pango_layout_get_lines (layout);
-  PangoRectangle ext;
+  Pango2Layout *layout = get_layout (cr);
+  Pango2Lines *lines = pango2_layout_get_lines (layout);
+  Pango2Rectangle ext;
 
-  pango_lines_get_extents (lines, NULL, &ext);
-  pango_extents_to_pixels (&ext, NULL);
+  pango2_lines_get_extents (lines, NULL, &ext);
+  pango2_extents_to_pixels (&ext, NULL);
 
   *width = ext.width + 20;
   *height = ext.height + 20;
@@ -149,17 +149,17 @@ measure_text (cairo_t *cr, int *width, int *height)
 static void
 draw_text (cairo_t *cr)
 {
-  PangoLayout *layout = get_layout (cr);
-  PangoLines *lines = pango_layout_get_lines (layout);
+  Pango2Layout *layout = get_layout (cr);
+  Pango2Lines *lines = pango2_layout_get_lines (layout);
 
   cairo_move_to (cr, 10, 10);
-  pango_cairo_show_lines (cr, lines);
+  pango2_cairo_show_lines (cr, lines);
 
   g_object_unref (layout);
 }
 
 static gboolean
-glyph_cb (PangoUserFace  *face,
+glyph_cb (Pango2UserFace  *face,
           hb_codepoint_t  unicode,
           hb_codepoint_t *glyph,
           gpointer        data)
@@ -174,7 +174,7 @@ glyph_cb (PangoUserFace  *face,
 }
 
 static gboolean
-glyph_info_cb (PangoUserFace      *face,
+glyph_info_cb (Pango2UserFace      *face,
                int                 size,
                hb_codepoint_t      glyph,
                hb_glyph_extents_t *extents,
@@ -201,7 +201,7 @@ glyph_info_cb (PangoUserFace      *face,
 }
 
 static gboolean
-font_info_cb (PangoUserFace     *face,
+font_info_cb (Pango2UserFace     *face,
               int                size,
               hb_font_extents_t *extents,
               gpointer           user_data)
@@ -214,7 +214,7 @@ font_info_cb (PangoUserFace     *face,
 }
 
 static gboolean
-render_cb (PangoUserFace  *face,
+render_cb (Pango2UserFace  *face,
            int             size,
            hb_codepoint_t  glyph,
            gpointer        user_data,
@@ -257,15 +257,15 @@ render_cb (PangoUserFace  *face,
 static void
 setup_fontmap (void)
 {
-  PangoFontMap *fontmap = pango_font_map_get_default ();
-  PangoFontDescription *desc;
-  PangoUserFace *face;
+  Pango2FontMap *fontmap = pango2_font_map_get_default ();
+  Pango2FontDescription *desc;
+  Pango2UserFace *face;
 
-  desc = pango_font_description_new ();
-  pango_font_description_set_family (desc, "Bullets");
+  desc = pango2_font_description_new ();
+  pango2_font_description_set_family (desc, "Bullets");
 
   /* Create our fancy user font, "Bullets Black" */
-  face = pango_user_face_new (font_info_cb,
+  face = pango2_user_face_new (font_info_cb,
                               glyph_cb,
                               glyph_info_cb,
                               NULL,
@@ -273,9 +273,9 @@ setup_fontmap (void)
                               NULL, NULL, "Black", desc);
 
   /* And add it to the default fontmap */
-  pango_font_map_add_face (fontmap, PANGO_FONT_FACE (face));
+  pango2_font_map_add_face (fontmap, PANGO2_FONT_FACE (face));
 
-  pango_font_description_free (desc);
+  pango2_font_description_free (desc);
 }
 
 int

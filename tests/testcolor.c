@@ -1,5 +1,5 @@
-/* Pango
- * test-color.c: Test program for pango_color_parse()
+/* Pango2
+ * test-color.c: Test program for pango2_color_parse()
  *
  * Copyright (C) 2002 Matthias Clasen
  *
@@ -34,10 +34,10 @@ typedef struct _ColorSpec {
 static void
 test_one_color (ColorSpec *spec)
 {
-  PangoColor color;
+  Pango2Color color;
   gboolean accepted;
 
-  accepted = pango_color_parse (&color, spec->spec);
+  accepted = pango2_color_parse (&color, spec->spec);
 
   if (!spec->valid)
     {
@@ -98,26 +98,26 @@ test_color (void)
 static void
 test_color_copy (void)
 {
-  PangoColor orig = { 0, 200, 5000, 666 };
-  PangoColor *copy;
+  Pango2Color orig = { 0, 200, 5000, 666 };
+  Pango2Color *copy;
 
-  copy = pango_color_copy (&orig);
+  copy = pango2_color_copy (&orig);
 
   g_assert_cmpint (orig.red, ==, copy->red);
   g_assert_cmpint (orig.green, ==, copy->green);
   g_assert_cmpint (orig.blue, ==, copy->blue);
   g_assert_cmpint (orig.alpha, ==, copy->alpha);
 
-  pango_color_free (copy);
+  pango2_color_free (copy);
 }
 
 static void
 test_color_serialize (void)
 {
-  PangoColor orig = { 0, 200, 5000, 666 };
+  Pango2Color orig = { 0, 200, 5000, 666 };
   char *string;
 
-  string = pango_color_to_string (&orig);
+  string = pango2_color_to_string (&orig);
 
   g_assert_cmpstr (string, ==, "#000000c81388029a");
 

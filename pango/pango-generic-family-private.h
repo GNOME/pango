@@ -24,15 +24,15 @@
 #include "pango-font-family-private.h"
 
 
-struct _PangoGenericFamily
+struct _Pango2GenericFamily
 {
-  PangoFontFamily parent_instance;
+  Pango2FontFamily parent_instance;
 
   GPtrArray *families;
 };
 
 
-PangoFontFace *         pango_generic_family_find_face          (PangoGenericFamily     *self,
-                                                                 PangoFontDescription   *description,
-                                                                 PangoLanguage          *language,
-                                                                 gunichar                wc);
+Pango2FontFace *         pango2_generic_family_find_face          (Pango2GenericFamily     *self,
+                                                                   Pango2FontDescription   *description,
+                                                                   Pango2Language          *language,
+                                                                   gunichar                 wc);

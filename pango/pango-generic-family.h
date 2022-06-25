@@ -23,16 +23,16 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_TYPE_GENERIC_FAMILY (pango_generic_family_get_type ())
+#define PANGO2_TYPE_GENERIC_FAMILY (pango2_generic_family_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-PANGO_DECLARE_INTERNAL_TYPE (PangoGenericFamily, pango_generic_family, PANGO, GENERIC_FAMILY, PangoFontFamily)
+PANGO2_AVAILABLE_IN_ALL
+PANGO2_DECLARE_INTERNAL_TYPE (Pango2GenericFamily, pango2_generic_family, PANGO2, GENERIC_FAMILY, Pango2FontFamily)
 
-PANGO_AVAILABLE_IN_ALL
-PangoGenericFamily *    pango_generic_family_new                (const char              *name);
+PANGO2_AVAILABLE_IN_ALL
+Pango2GenericFamily *    pango2_generic_family_new                (const char              *name);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_generic_family_add_family         (PangoGenericFamily      *self,
-                                                                 PangoFontFamily         *family);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_generic_family_add_family         (Pango2GenericFamily     *self,
+                                                                   Pango2FontFamily        *family);
 
 G_END_DECLS

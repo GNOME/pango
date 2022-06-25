@@ -22,4 +22,4 @@
 #include "pango-line-iter.h"
 
 
-PangoLineIter * pango_line_iter_new (PangoLines *lines);
+Pango2LineIter * pango2_line_iter_new (Pango2Lines *lines);

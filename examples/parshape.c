@@ -1,52 +1,52 @@
 #include <pango/pango.h>
 #include <pango/pangocairo.h>
 
-static PangoLines *
+static Pango2Lines *
 format_text (const char *text)
 {
-  PangoContext *context;
-  PangoLineBreaker *breaker;
-  PangoLines *lines;
+  Pango2Context *context;
+  Pango2LineBreaker *breaker;
+  Pango2Lines *lines;
   int x, y, width;
   int inc, m, w, w2;
 
-  context = pango_context_new ();
-  breaker = pango_line_breaker_new (context);
+  context = pango2_context_new ();
+  breaker = pango2_line_breaker_new (context);
 
-  pango_line_breaker_add_text (breaker, text, -1, NULL);
+  pango2_line_breaker_add_text (breaker, text, -1, NULL);
 
-  lines = pango_lines_new ();
+  lines = pango2_lines_new ();
 
   m = 200;
   w = 10;
   w2 = -200;
   inc = 40;
 
-  y = 40 * PANGO_SCALE;
-  x = (m - w / 2) * PANGO_SCALE;
-  width = w * PANGO_SCALE;
+  y = 40 * PANGO2_SCALE;
+  x = (m - w / 2) * PANGO2_SCALE;
+  width = w * PANGO2_SCALE;
 
-  while (pango_line_breaker_has_line (breaker))
+  while (pango2_line_breaker_has_line (breaker))
     {
-      PangoLine *line;
-      PangoRectangle ext;
+      Pango2Line *line;
+      Pango2Rectangle ext;
       gboolean ltr;
 
-      line = pango_line_breaker_next_line (breaker,
+      line = pango2_line_breaker_next_line (breaker,
                                            x, width,
-                                           PANGO_WRAP_CHAR,
-                                           PANGO_ELLIPSIZE_NONE);
+                                           PANGO2_WRAP_CHAR,
+                                           PANGO2_ELLIPSIZE_NONE);
 
-      pango_line_get_extents (line, NULL, &ext);
-      line = pango_line_justify (line, width);
-      pango_lines_add_line (lines, line, x, y - ext.y);
+      pango2_line_get_extents (line, NULL, &ext);
+      line = pango2_line_justify (line, width);
+      pango2_lines_add_line (lines, line, x, y - ext.y);
 
-      ltr = pango_line_breaker_get_direction (breaker) == PANGO_DIRECTION_LTR;
+      ltr = pango2_line_breaker_get_direction (breaker) == PANGO2_DIRECTION_LTR;
 
-      if (w2 > 0 && ltr && x <= m * PANGO_SCALE)
-        x = (m + w2 / 2) * PANGO_SCALE;
-      else if (w2 > 0 && !ltr && x > m * PANGO_SCALE)
-        x = (m - w2 / 2) * PANGO_SCALE;
+      if (w2 > 0 && ltr && x <= m * PANGO2_SCALE)
+        x = (m + w2 / 2) * PANGO2_SCALE;
+      else if (w2 > 0 && !ltr && x > m * PANGO2_SCALE)
+        x = (m - w2 / 2) * PANGO2_SCALE;
       else
         {
           y += ext.height;
@@ -57,14 +57,14 @@ format_text (const char *text)
             inc = - inc;
 
           if (w2 > 0)
-            width = ((w - w2) / 2) * PANGO_SCALE;
+            width = ((w - w2) / 2) * PANGO2_SCALE;
           else
-            width = w * PANGO_SCALE;
+            width = w * PANGO2_SCALE;
 
           if (ltr)
-            x = (m - w / 2) * PANGO_SCALE;
+            x = (m - w / 2) * PANGO2_SCALE;
           else
-            x = (m + w / 2) * PANGO_SCALE;
+            x = (m + w / 2) * PANGO2_SCALE;
         }
     }
 
@@ -75,18 +75,18 @@ format_text (const char *text)
 }
 
 static void
-draw_lines (cairo_t *cr, PangoLines *lines)
+draw_lines (cairo_t *cr, Pango2Lines *lines)
 {
-  for (int i = 0; i < pango_lines_get_line_count (lines); i++)
+  for (int i = 0; i < pango2_lines_get_line_count (lines); i++)
     {
-      PangoLine *line = pango_lines_get_lines (lines)[i];
+      Pango2Line *line = pango2_lines_get_lines (lines)[i];
       int x, y;
 
-      pango_lines_get_line_position (lines, i, &x, &y);
+      pango2_lines_get_line_position (lines, i, &x, &y);
 
       cairo_save (cr);
-      cairo_move_to (cr, x / (double)PANGO_SCALE, y / (double)PANGO_SCALE);
-      pango_cairo_show_line (cr, line);
+      cairo_move_to (cr, x / (double)PANGO2_SCALE, y / (double)PANGO2_SCALE);
+      pango2_cairo_show_line (cr, line);
       cairo_restore (cr);
     }
 }
@@ -95,7 +95,7 @@ int
 main (int argc, char *argv[])
 {
   const char *filename;
-  PangoLines *lines;
+  Pango2Lines *lines;
   cairo_surface_t *surface;
   cairo_t *cr;
   char *text;

@@ -30,45 +30,45 @@
 G_BEGIN_DECLS
 
 
-#define PANGO_TYPE_FONT              (pango_font_get_type ())
+#define PANGO2_TYPE_FONT              (pango2_font_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-PANGO_DECLARE_INTERNAL_TYPE (PangoFont, pango_font, PANGO, FONT, GObject)
+PANGO2_AVAILABLE_IN_ALL
+PANGO2_DECLARE_INTERNAL_TYPE (Pango2Font, pango2_font, PANGO2, FONT, GObject)
 
-PANGO_AVAILABLE_IN_ALL
-PangoFontDescription *pango_font_describe          (PangoFont        *font);
-PANGO_AVAILABLE_IN_ALL
-PangoFontDescription *pango_font_describe_with_absolute_size (PangoFont        *font);
-PANGO_AVAILABLE_IN_ALL
-PangoFontMetrics *    pango_font_get_metrics       (PangoFont        *font,
-                                                    PangoLanguage    *language);
-PANGO_AVAILABLE_IN_ALL
-void                  pango_font_get_glyph_extents (PangoFont        *font,
-                                                    PangoGlyph        glyph,
-                                                    PangoRectangle   *ink_rect,
-                                                    PangoRectangle   *logical_rect);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontDescription * pango2_font_describe            (Pango2Font        *font);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontDescription * pango2_font_describe_with_absolute_size (Pango2Font        *font);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontMetrics *     pango2_font_get_metrics         (Pango2Font        *font,
+                                                         Pango2Language    *language);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_get_glyph_extents   (Pango2Font        *font,
+                                                         Pango2Glyph        glyph,
+                                                         Pango2Rectangle   *ink_rect,
+                                                         Pango2Rectangle   *logical_rect);
 
-PANGO_AVAILABLE_IN_ALL
-PangoFontFace *       pango_font_get_face          (PangoFont        *font);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontFace *        pango2_font_get_face            (Pango2Font        *font);
 
-PANGO_AVAILABLE_IN_ALL
-hb_font_t *           pango_font_get_hb_font       (PangoFont        *font);
+PANGO2_AVAILABLE_IN_ALL
+hb_font_t *             pango2_font_get_hb_font         (Pango2Font        *font);
 
-PANGO_AVAILABLE_IN_ALL
-int                   pango_font_get_size          (PangoFont        *font);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_font_get_size            (Pango2Font        *font);
 
-PANGO_AVAILABLE_IN_ALL
-double                pango_font_get_absolute_size (PangoFont        *font);
+PANGO2_AVAILABLE_IN_ALL
+double                  pango2_font_get_absolute_size   (Pango2Font        *font);
 
-PANGO_AVAILABLE_IN_ALL
-PangoGravity          pango_font_get_gravity       (PangoFont        *font);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Gravity           pango2_font_get_gravity         (Pango2Font        *font);
 
-PANGO_AVAILABLE_IN_ALL
-GBytes *              pango_font_serialize         (PangoFont        *font);
+PANGO2_AVAILABLE_IN_ALL
+GBytes *                pango2_font_serialize           (Pango2Font        *font);
 
-PANGO_AVAILABLE_IN_ALL
-PangoFont *           pango_font_deserialize       (PangoContext     *context,
-                                                    GBytes           *bytes,
-                                                    GError          **error);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Font *            pango2_font_deserialize         (Pango2Context     *context,
+                                                         GBytes            *bytes,
+                                                         GError           **error);
 
 G_END_DECLS

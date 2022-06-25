@@ -26,34 +26,34 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_TYPE_HB_FONT      (pango_hb_font_get_type ())
+#define PANGO2_TYPE_HB_FONT      (pango2_hb_font_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-PANGO_DECLARE_INTERNAL_TYPE (PangoHbFont, pango_hb_font, PANGO, HB_FONT, PangoFont)
+PANGO2_AVAILABLE_IN_ALL
+PANGO2_DECLARE_INTERNAL_TYPE (Pango2HbFont, pango2_hb_font, PANGO2, HB_FONT, Pango2Font)
 
-PANGO_AVAILABLE_IN_ALL
-PangoHbFont *           pango_hb_font_new                       (PangoHbFace                    *face,
-                                                                 int                             size,
-                                                                 hb_feature_t                   *features,
-                                                                 unsigned int                    n_features,
-                                                                 hb_variation_t                 *variations,
-                                                                 unsigned int                    n_variations,
-                                                                 PangoGravity                    gravity,
-                                                                 float                           dpi,
-                                                                 const PangoMatrix              *ctm);
+PANGO2_AVAILABLE_IN_ALL
+Pango2HbFont *          pango2_hb_font_new                      (Pango2HbFace                    *face,
+                                                                 int                              size,
+                                                                 hb_feature_t                    *features,
+                                                                 unsigned int                     n_features,
+                                                                 hb_variation_t                  *variations,
+                                                                 unsigned int                     n_variations,
+                                                                 Pango2Gravity                    gravity,
+                                                                 float                            dpi,
+                                                                 const Pango2Matrix              *ctm);
 
-PANGO_AVAILABLE_IN_ALL
-PangoHbFont *           pango_hb_font_new_for_description       (PangoHbFace                    *face,
-                                                                 const PangoFontDescription     *description,
-                                                                 float                           dpi,
-                                                                 const PangoMatrix              *ctm);
+PANGO2_AVAILABLE_IN_ALL
+Pango2HbFont *          pango2_hb_font_new_for_description      (Pango2HbFace                    *face,
+                                                                 const Pango2FontDescription     *description,
+                                                                 float                            dpi,
+                                                                 const Pango2Matrix              *ctm);
 
-PANGO_AVAILABLE_IN_ALL
-const hb_feature_t *    pango_hb_font_get_features              (PangoHbFont                    *self,
-                                                                 unsigned int                   *n_features);
+PANGO2_AVAILABLE_IN_ALL
+const hb_feature_t *    pango2_hb_font_get_features             (Pango2HbFont                    *self,
+                                                                 unsigned int                    *n_features);
 
-PANGO_AVAILABLE_IN_ALL
-const hb_variation_t *  pango_hb_font_get_variations            (PangoHbFont                    *self,
-                                                                 unsigned int                   *n_variations);
+PANGO2_AVAILABLE_IN_ALL
+const hb_variation_t *  pango2_hb_font_get_variations           (Pango2HbFont                    *self,
+                                                                 unsigned int                    *n_variations);
 
 G_END_DECLS

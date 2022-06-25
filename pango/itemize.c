@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * itemize.c: Turning text into items
  *
  * Copyright (C) 2000, 2006 Red Hat Software
@@ -49,7 +49,7 @@ typedef struct {
 } FontCache;
 
 typedef struct {
-  PangoFont *font;
+  Pango2Font *font;
   int position; /* position of the font in the fontset */
 } FontElement;
 
@@ -69,7 +69,7 @@ font_element_destroy (FontElement *element)
 }
 
 static FontCache *
-get_font_cache (PangoFontset *fontset)
+get_font_cache (Pango2Fontset *fontset)
 {
   FontCache *cache;
 
@@ -97,10 +97,10 @@ retry:
 }
 
 static gboolean
-font_cache_get (FontCache   *cache,
-                gunichar     wc,
-                PangoFont  **font,
-                int         *position)
+font_cache_get (FontCache    *cache,
+                gunichar      wc,
+                Pango2Font  **font,
+                int          *position)
 {
   FontElement *element;
 
@@ -116,10 +116,10 @@ font_cache_get (FontCache   *cache,
 }
 
 static void
-font_cache_insert (FontCache *cache,
-                   gunichar   wc,
-                   PangoFont *font,
-                   int        position)
+font_cache_insert (FontCache  *cache,
+                   gunichar    wc,
+                   Pango2Font *font,
+                   int         position)
 {
   FontElement *element = g_slice_new (FontElement);
   element->font = font ? g_object_ref (font) : NULL;
@@ -129,17 +129,17 @@ font_cache_insert (FontCache *cache,
 }
 
 /* }}} */
-/* {{{ Width Iter */
+/* {{{ Width Iter */ 
 
-typedef struct _PangoWidthIter PangoWidthIter;
+typedef struct _Pango2WidthIter Pango2WidthIter;
 
-struct _PangoWidthIter
+struct _Pango2WidthIter
 {
-        const char *text_start;
-        const char *text_end;
-        const char *start;
-        const char *end;
-        gboolean upright;
+  const char *text_start;
+  const char *text_end;
+  const char *start;
+  const char *end;
+  gboolean upright;
 };
 
 static gboolean
@@ -200,7 +200,7 @@ width_iter_is_upright (gunichar ch)
 }
 
 static void
-width_iter_next (PangoWidthIter *iter)
+width_iter_next (Pango2WidthIter *iter)
 {
   gboolean met_joiner = FALSE;
   iter->start = iter->end;
@@ -248,9 +248,9 @@ width_iter_next (PangoWidthIter *iter)
 }
 
 static void
-width_iter_init (PangoWidthIter *iter,
-                 const char     *text,
-                 int             length)
+width_iter_init (Pango2WidthIter *iter,
+                 const char      *text,
+                 int              length)
 {
   iter->text_start = text;
   iter->text_end = text + length;
@@ -260,12 +260,12 @@ width_iter_init (PangoWidthIter *iter,
 }
 
 static void
-width_iter_fini (PangoWidthIter *iter)
+width_iter_fini (Pango2WidthIter *iter)
 {
 }
 
 /* }}} */
-/* {{{ Itemization */
+ /* {{{ Itemization */
 
 typedef struct _ItemizeState ItemizeState;
 
@@ -283,7 +283,7 @@ typedef enum {
 
 struct _ItemizeState
 {
-  PangoContext *context;
+  Pango2Context *context;
   const char *text;
   const char *end;
 
@@ -291,42 +291,42 @@ struct _ItemizeState
   const char *run_end;
 
   GList *result;
-  PangoItem *item;
+  Pango2Item *item;
 
   guint8 *embedding_levels;
   int embedding_end_offset;
   const char *embedding_end;
   guint8 embedding;
 
-  PangoGravity gravity;
-  PangoGravityHint gravity_hint;
-  PangoGravity resolved_gravity;
-  PangoGravity font_desc_gravity;
+  Pango2Gravity gravity;
+  Pango2GravityHint gravity_hint;
+  Pango2Gravity resolved_gravity;
+  Pango2Gravity font_desc_gravity;
   gboolean centered_baseline;
 
-  PangoAttrIterator *attr_iter;
+  Pango2AttrIterator *attr_iter;
   gboolean free_attr_iter;
   const char *attr_end;
-  PangoFontDescription *font_desc;
-  PangoFontDescription *emoji_font_desc;
-  PangoLanguage *lang;
+  Pango2FontDescription *font_desc;
+  Pango2FontDescription *emoji_font_desc;
+  Pango2Language *lang;
   GSList *extra_attrs;
   gboolean copy_extra_attrs;
 
   ChangedFlags changed;
 
-  PangoScriptIter script_iter;
+  Pango2ScriptIter script_iter;
   const char *script_end;
   GUnicodeScript script;
 
-  PangoWidthIter width_iter;
-  PangoEmojiIter emoji_iter;
+  Pango2WidthIter width_iter;
+  Pango2EmojiIter emoji_iter;
 
-  PangoLanguage *derived_lang;
+  Pango2Language *derived_lang;
 
-  PangoFontset *current_fonts;
+  Pango2Fontset *current_fonts;
   FontCache *cache;
-  PangoFont *base_font;
+  Pango2Font *base_font;
   gboolean enable_fallback;
 
   const char *first_space; /* first of a sequence of spaces we've seen */
@@ -347,15 +347,15 @@ update_embedding_end (ItemizeState *state)
   state->changed |= EMBEDDING_CHANGED;
 }
 
-static PangoAttribute *
+static Pango2Attribute *
 find_attribute (GSList        *attr_list,
-                PangoAttrType  type)
+                Pango2AttrType  type)
 {
   GSList *node;
 
   for (node = attr_list; node; node = node->next)
-    if (((PangoAttribute *) node->data)->type == type)
-      return (PangoAttribute *) node->data;
+    if (((Pango2Attribute *) node->data)->type == type)
+      return (Pango2Attribute *) node->data;
 
   return NULL;
 }
@@ -363,11 +363,11 @@ find_attribute (GSList        *attr_list,
 static void
 update_attr_iterator (ItemizeState *state)
 {
-  PangoLanguage *old_lang;
-  PangoAttribute *attr;
+  Pango2Language *old_lang;
+  Pango2Attribute *attr;
   int end_index;
 
-  pango_attr_iterator_range (state->attr_iter, NULL, &end_index);
+  pango2_attr_iterator_range (state->attr_iter, NULL, &end_index);
   if (end_index < state->end - state->text)
     state->attr_end = state->text + end_index;
   else
@@ -375,34 +375,34 @@ update_attr_iterator (ItemizeState *state)
 
   if (state->emoji_font_desc)
     {
-      pango_font_description_free (state->emoji_font_desc);
+      pango2_font_description_free (state->emoji_font_desc);
       state->emoji_font_desc = NULL;
     }
 
   old_lang = state->lang;
   if (state->font_desc)
-    pango_font_description_free (state->font_desc);
-  state->font_desc = pango_font_description_copy_static (state->context->font_desc);
-  pango_attr_iterator_get_font (state->attr_iter, state->font_desc,
+    pango2_font_description_free (state->font_desc);
+  state->font_desc = pango2_font_description_copy_static (state->context->font_desc);
+  pango2_attr_iterator_get_font (state->attr_iter, state->font_desc,
                                 &state->lang, &state->extra_attrs);
-  if (pango_font_description_get_set_fields (state->font_desc) & PANGO_FONT_MASK_GRAVITY)
-    state->font_desc_gravity = pango_font_description_get_gravity (state->font_desc);
+  if (pango2_font_description_get_set_fields (state->font_desc) & PANGO2_FONT_MASK_GRAVITY)
+    state->font_desc_gravity = pango2_font_description_get_gravity (state->font_desc);
   else
-    state->font_desc_gravity = PANGO_GRAVITY_AUTO;
+    state->font_desc_gravity = PANGO2_GRAVITY_AUTO;
 
   state->copy_extra_attrs = FALSE;
 
   if (!state->lang)
     state->lang = state->context->language;
 
-  attr = find_attribute (state->extra_attrs, PANGO_ATTR_FALLBACK);
+  attr = find_attribute (state->extra_attrs, PANGO2_ATTR_FALLBACK);
   state->enable_fallback = (attr == NULL || attr->int_value);
 
-  attr = find_attribute (state->extra_attrs, PANGO_ATTR_GRAVITY);
-  state->gravity = attr == NULL ? PANGO_GRAVITY_AUTO : attr->int_value;
+  attr = find_attribute (state->extra_attrs, PANGO2_ATTR_GRAVITY);
+  state->gravity = attr == NULL ? PANGO2_GRAVITY_AUTO : attr->int_value;
 
-  attr = find_attribute (state->extra_attrs, PANGO_ATTR_GRAVITY_HINT);
-  state->gravity_hint = attr == NULL ? state->context->gravity_hint : (PangoGravityHint)attr->int_value;
+  attr = find_attribute (state->extra_attrs, PANGO2_ATTR_GRAVITY_HINT);
+  state->gravity_hint = attr == NULL ? state->context->gravity_hint : (Pango2GravityHint)attr->int_value;
 
   state->changed |= FONT_CHANGED;
   if (state->lang != old_lang)
@@ -425,15 +425,15 @@ update_end (ItemizeState *state)
 
 
 static void
-itemize_state_init (ItemizeState               *state,
-                    PangoContext               *context,
-                    const char                 *text,
-                    PangoDirection              base_dir,
-                    int                         start_index,
-                    int                         length,
-                    PangoAttrList              *attrs,
-                    PangoAttrIterator          *cached_iter,
-                    const PangoFontDescription *desc)
+itemize_state_init (ItemizeState                *state,
+                    Pango2Context               *context,
+                    const char                  *text,
+                    Pango2Direction              base_dir,
+                    int                          start_index,
+                    int                          length,
+                    Pango2AttrList              *attrs,
+                    Pango2AttrIterator          *cached_iter,
+                    const Pango2FontDescription *desc)
 {
   state->context = context;
   state->text = text;
@@ -449,16 +449,16 @@ itemize_state_init (ItemizeState               *state,
   /* First, apply the bidirectional algorithm to break
    * the text into directional runs.
    */
-  state->embedding_levels = pango_log2vis_get_embedding_levels (text + start_index, length, &base_dir);
+  state->embedding_levels = pango2_log2vis_get_embedding_levels (text + start_index, length, &base_dir);
 
   state->embedding_end_offset = 0;
   state->embedding_end = text + start_index;
   update_embedding_end (state);
 
-  state->gravity = PANGO_GRAVITY_AUTO;
-  state->centered_baseline = PANGO_GRAVITY_IS_VERTICAL (state->context->resolved_gravity);
+  state->gravity = PANGO2_GRAVITY_AUTO;
+  state->centered_baseline = PANGO2_GRAVITY_IS_VERTICAL (state->context->resolved_gravity);
   state->gravity_hint = state->context->gravity_hint;
-  state->resolved_gravity = PANGO_GRAVITY_AUTO;
+  state->resolved_gravity = PANGO2_GRAVITY_AUTO;
 
   /* Initialize the attribute iterator
    */
@@ -469,7 +469,7 @@ itemize_state_init (ItemizeState               *state,
     }
   else if (attrs)
     {
-      state->attr_iter = pango_attr_list_get_iterator (attrs);
+      state->attr_iter = pango2_attr_list_get_iterator (attrs);
       state->free_attr_iter = TRUE;
     }
   else
@@ -484,12 +484,12 @@ itemize_state_init (ItemizeState               *state,
       state->font_desc = NULL;
       state->lang = NULL;
 
-      pango_attr_iterator_advance (state->attr_iter, start_index);
+      pango2_attr_iterator_advance (state->attr_iter, start_index);
       update_attr_iterator (state);
     }
   else
     {
-      state->font_desc = pango_font_description_copy_static (desc ? desc : state->context->font_desc);
+      state->font_desc = pango2_font_description_copy_static (desc ? desc : state->context->font_desc);
       state->lang = state->context->language;
       state->extra_attrs = NULL;
       state->copy_extra_attrs = FALSE;
@@ -500,24 +500,24 @@ itemize_state_init (ItemizeState               *state,
 
   /* Initialize the script iterator
    */
-  _pango_script_iter_init (&state->script_iter, text + start_index, length);
-  pango_script_iter_get_range (&state->script_iter, NULL,
+  _pango2_script_iter_init (&state->script_iter, text + start_index, length);
+  pango2_script_iter_get_range (&state->script_iter, NULL,
                                &state->script_end, &state->script);
 
   width_iter_init (&state->width_iter, text + start_index, length);
-  _pango_emoji_iter_init (&state->emoji_iter, text + start_index, length);
+  _pango2_emoji_iter_init (&state->emoji_iter, text + start_index, length);
 
-  if (!PANGO_GRAVITY_IS_VERTICAL (state->context->resolved_gravity))
+  if (!PANGO2_GRAVITY_IS_VERTICAL (state->context->resolved_gravity))
     state->width_iter.end = state->end;
   else if (state->emoji_iter.is_emoji)
     state->width_iter.end = MAX (state->width_iter.end, state->emoji_iter.end);
 
   update_end (state);
 
-  if (pango_font_description_get_set_fields (state->font_desc) & PANGO_FONT_MASK_GRAVITY)
-    state->font_desc_gravity = pango_font_description_get_gravity (state->font_desc);
+  if (pango2_font_description_get_set_fields (state->font_desc) & PANGO2_FONT_MASK_GRAVITY)
+    state->font_desc_gravity = pango2_font_description_get_gravity (state->font_desc);
   else
-    state->font_desc_gravity = PANGO_GRAVITY_AUTO;
+    state->font_desc_gravity = PANGO2_GRAVITY_AUTO;
 
   state->derived_lang = NULL;
   state->current_fonts = NULL;
@@ -544,20 +544,20 @@ itemize_state_next (ItemizeState *state)
 
   if (state->run_end == state->attr_end)
     {
-      pango_attr_iterator_next (state->attr_iter);
+      pango2_attr_iterator_next (state->attr_iter);
       update_attr_iterator (state);
     }
 
   if (state->run_end == state->script_end)
     {
-      pango_script_iter_next (&state->script_iter);
-      pango_script_iter_get_range (&state->script_iter, NULL,
+      pango2_script_iter_next (&state->script_iter);
+      pango2_script_iter_get_range (&state->script_iter, NULL,
                                    &state->script_end, &state->script);
       state->changed |= SCRIPT_CHANGED;
     }
   if (state->run_end == state->emoji_iter.end)
     {
-      _pango_emoji_iter_next (&state->emoji_iter);
+      _pango2_emoji_iter_next (&state->emoji_iter);
       state->changed |= EMOJI_CHANGED;
 
       if (state->emoji_iter.is_emoji)
@@ -581,20 +581,20 @@ copy_attr_slist (GSList *attr_slist)
   GSList *l;
 
   for (l = attr_slist; l; l = l->next)
-    new_list = g_slist_prepend (new_list, pango_attribute_copy (l->data));
+    new_list = g_slist_prepend (new_list, pango2_attribute_copy (l->data));
 
   return g_slist_reverse (new_list);
 }
 
 static void
 itemize_state_fill_font (ItemizeState *state,
-                         PangoFont    *font)
+                         Pango2Font    *font)
 {
   GList *l;
 
   for (l = state->result; l; l = l->next)
     {
-      PangoItem *item = l->data;
+      Pango2Item *item = l->data;
       if (item->analysis.font)
         break;
       if (font)
@@ -603,12 +603,12 @@ itemize_state_fill_font (ItemizeState *state,
 }
 
 static void
-itemize_state_add_character (ItemizeState *state,
-                             PangoFont    *font,
-                             int           font_position,
-                             gboolean      force_break,
-                             const char   *pos,
-                             gboolean      is_space)
+itemize_state_add_character (ItemizeState  *state,
+                             Pango2Font    *font,
+                             int            font_position,
+                             gboolean       force_break,
+                             const char    *pos,
+                             gboolean       is_space)
 {
   const char *first_space = state->first_space;
   int n_spaces = 0;
@@ -659,7 +659,7 @@ itemize_state_add_character (ItemizeState *state,
       state->item->length = (pos - state->text) - state->item->offset;
     }
 
-  state->item = pango_item_new ();
+  state->item = pango2_item_new ();
   state->item->offset = pos - state->text;
   state->item->length = 0;
   state->item->num_chars = n_spaces + 1;
@@ -688,22 +688,22 @@ itemize_state_add_character (ItemizeState *state,
    */
   switch (state->item->analysis.gravity)
     {
-      case PANGO_GRAVITY_SOUTH:
+      case PANGO2_GRAVITY_SOUTH:
       default:
         break;
-      case PANGO_GRAVITY_NORTH:
+      case PANGO2_GRAVITY_NORTH:
         state->item->analysis.level++;
         break;
-      case PANGO_GRAVITY_EAST:
+      case PANGO2_GRAVITY_EAST:
         state->item->analysis.level += 1;
         state->item->analysis.level &= ~1;
         break;
-      case PANGO_GRAVITY_WEST:
+      case PANGO2_GRAVITY_WEST:
         state->item->analysis.level |= 1;
         break;
     }
 
-  state->item->analysis.flags |= state->centered_baseline ? PANGO_ANALYSIS_FLAG_CENTERED_BASELINE : 0;
+  state->item->analysis.flags |= state->centered_baseline ? PANGO2_ANALYSIS_FLAG_CENTERED_BASELINE : 0;
 
   state->item->analysis.script = state->script;
   state->item->analysis.language = state->derived_lang;
@@ -722,14 +722,14 @@ itemize_state_add_character (ItemizeState *state,
 }
 
 typedef struct {
-  PangoFont *font;
+  Pango2Font *font;
   int position;
 } GetFontInfo;
 
 static gboolean
-get_font_foreach (PangoFontset *fontset,
-                  PangoFont    *font,
-                  gpointer      data)
+get_font_foreach (Pango2Fontset *fontset,
+                  Pango2Font    *font,
+                  gpointer       data)
 {
   GetFontInfo *info = data;
 
@@ -741,21 +741,21 @@ get_font_foreach (PangoFontset *fontset,
   return FALSE;
 }
 
-static PangoFont *
+static Pango2Font *
 get_base_font (ItemizeState *state)
 {
   if (!state->base_font)
-    state->base_font = pango_font_map_load_font (state->context->font_map,
+    state->base_font = pango2_font_map_load_font (state->context->font_map,
                                                  state->context,
                                                  state->font_desc);
   return state->base_font;
 }
 
 static gboolean
-get_font (ItemizeState  *state,
-          gunichar       wc,
-          PangoFont    **font,
-          int           *position)
+get_font (ItemizeState   *state,
+          gunichar        wc,
+          Pango2Font    **font,
+          int            *position)
 {
   GetFontInfo info;
 
@@ -770,10 +770,10 @@ get_font (ItemizeState  *state,
 
   if (state->enable_fallback)
     {
-      info.font = pango_fontset_get_font (state->current_fonts, wc);
+      info.font = pango2_fontset_get_font (state->current_fonts, wc);
       if (info.font)
         g_object_unref (info.font);
-      pango_fontset_foreach (state->current_fonts, get_font_foreach, &info);
+      pango2_fontset_foreach (state->current_fonts, get_font_foreach, &info);
     }
 
   if (!info.font)
@@ -789,30 +789,30 @@ get_font (ItemizeState  *state,
   return TRUE;
 }
 
-static PangoLanguage *
-compute_derived_language (PangoLanguage *lang,
-                          GUnicodeScript script)
+static Pango2Language *
+compute_derived_language (Pango2Language *lang,
+                          GUnicodeScript  script)
 {
-  PangoLanguage *derived_lang;
+  Pango2Language *derived_lang;
 
   /* Make sure the language tag is consistent with the derived
    * script. There is no point in marking up a section of
    * Arabic text with the "en" language tag.
    */
-  if (lang && pango_language_includes_script (lang, script))
+  if (lang && pango2_language_includes_script (lang, script))
     derived_lang = lang;
   else
     {
-      derived_lang = pango_script_get_sample_language (script);
+      derived_lang = pango2_script_get_sample_language (script);
       /* If we don't find a sample language for the script, we
        * use a language tag that shouldn't actually be used
-       * anywhere. This keeps fontconfig (for the PangoFc*
+       * anywhere. This keeps fontconfig (for the Pango2Fc*
        * backend) from using the language tag to affect the
        * sort order. I don't have a reference for 'xx' being
        * safe here, though Keith Packard claims it is.
        */
       if (!derived_lang)
-        derived_lang = pango_language_from_string ("xx");
+        derived_lang = pango2_language_from_string ("xx");
     }
 
   return derived_lang;
@@ -826,19 +826,19 @@ itemize_state_update_for_new_run (ItemizeState *state)
   if (state->changed & (FONT_CHANGED | SCRIPT_CHANGED | WIDTH_CHANGED))
     {
       /* Font-desc gravity overrides everything */
-      if (state->font_desc_gravity != PANGO_GRAVITY_AUTO)
+      if (state->font_desc_gravity != PANGO2_GRAVITY_AUTO)
         {
           state->resolved_gravity = state->font_desc_gravity;
         }
       else
         {
-          PangoGravity gravity = state->gravity;
-          PangoGravityHint gravity_hint = state->gravity_hint;
+          Pango2Gravity gravity = state->gravity;
+          Pango2GravityHint gravity_hint = state->gravity_hint;
 
-          if (G_LIKELY (gravity == PANGO_GRAVITY_AUTO))
+          if (G_LIKELY (gravity == PANGO2_GRAVITY_AUTO))
             gravity = state->context->resolved_gravity;
 
-          state->resolved_gravity = pango_gravity_get_for_script_and_width (state->script,
+          state->resolved_gravity = pango2_gravity_get_for_script_and_width (state->script,
                                                                             state->width_iter.upright,
                                                                             gravity,
                                                                             gravity_hint);
@@ -846,14 +846,14 @@ itemize_state_update_for_new_run (ItemizeState *state)
 
       if (state->font_desc_gravity != state->resolved_gravity)
         {
-          pango_font_description_set_gravity (state->font_desc, state->resolved_gravity);
+          pango2_font_description_set_gravity (state->font_desc, state->resolved_gravity);
           state->changed |= FONT_CHANGED;
         }
     }
 
   if (state->changed & (SCRIPT_CHANGED | LANG_CHANGED))
     {
-      PangoLanguage *old_derived_lang = state->derived_lang;
+      Pango2Language *old_derived_lang = state->derived_lang;
       state->derived_lang = compute_derived_language (state->lang, state->script);
       if (old_derived_lang != state->derived_lang)
         state->changed |= DERIVED_LANG_CHANGED;
@@ -877,10 +877,10 @@ itemize_state_update_for_new_run (ItemizeState *state)
       gboolean is_emoji = state->emoji_iter.is_emoji;
       if (is_emoji && !state->emoji_font_desc)
         {
-          state->emoji_font_desc = pango_font_description_copy_static (state->font_desc);
-          pango_font_description_set_family_static (state->emoji_font_desc, "emoji");
+          state->emoji_font_desc = pango2_font_description_copy_static (state->font_desc);
+          pango2_font_description_set_family_static (state->emoji_font_desc, "emoji");
         }
-      state->current_fonts = pango_font_map_load_fontset (state->context->font_map,
+      state->current_fonts = pango2_font_map_load_fontset (state->context->font_map,
                                                           state->context,
                                                           is_emoji ? state->emoji_font_desc : state->font_desc,
                                                           state->derived_lang);
@@ -953,7 +953,7 @@ itemize_state_process_run (ItemizeState *state)
       gunichar wc = g_utf8_get_char (p);
       gboolean is_forced_break = wc == '\t' || wc == '\r' || wc == '\n' ||
                                  wc == 0x2028 || wc == 0x2029;
-      PangoFont *font;
+      Pango2Font *font;
       int font_position;
 
       if (consider_as_space (wc))
@@ -985,13 +985,13 @@ itemize_state_process_run (ItemizeState *state)
   state->item->length = (p - state->text) - state->item->offset;
   if (!state->item->analysis.font)
     {
-      PangoFont *font;
+      Pango2Font *font;
       int position;
 
       if (G_UNLIKELY (!get_font (state, ' ', &font, &position)))
         {
           /* If no font was found, warn once per fontmap/script pair */
-          PangoFontMap *fontmap = state->context->font_map;
+          Pango2FontMap *fontmap = state->context->font_map;
           char *script_tag = g_strdup_printf ("g-unicode-script-%d", state->script);
 
           if (!g_object_get_data (G_OBJECT (fontmap), script_tag))
@@ -1017,12 +1017,12 @@ itemize_state_finish (ItemizeState *state)
 {
   g_free (state->embedding_levels);
   if (state->free_attr_iter)
-    pango_attr_iterator_destroy (state->attr_iter);
-  _pango_script_iter_fini (&state->script_iter);
-  pango_font_description_free (state->font_desc);
-  pango_font_description_free (state->emoji_font_desc);
+    pango2_attr_iterator_destroy (state->attr_iter);
+  _pango2_script_iter_fini (&state->script_iter);
+  pango2_font_description_free (state->font_desc);
+  pango2_font_description_free (state->emoji_font_desc);
   width_iter_fini (&state->width_iter);
-  _pango_emoji_iter_fini (&state->emoji_iter);
+  _pango2_emoji_iter_fini (&state->emoji_iter);
 
   if (state->current_fonts)
     g_object_unref (state->current_fonts);
@@ -1031,31 +1031,31 @@ itemize_state_finish (ItemizeState *state)
 }
 
 /* }}} */
-/* {{{ Post-processing */
+ /* {{{ Post-processing */
 
- /* {{{ Handling font scale */
+  /* {{{ Handling font scale */
 
 typedef struct {
-  PangoAttribute *attr;
+  Pango2Attribute *attr;
   double scale;
 } ScaleItem;
 
 static gboolean
-collect_font_scale (PangoContext  *context,
-                    GList        **stack,
-                    PangoItem     *item,
-                    PangoItem     *prev,
-                    double        *scale,
-                    gboolean      *is_small_caps)
+collect_font_scale (Pango2Context  *context,
+                    GList         **stack,
+                    Pango2Item     *item,
+                    Pango2Item     *prev,
+                    double         *scale,
+                    gboolean       *is_small_caps)
 {
   gboolean retval = FALSE;
   GList *l;
 
   for (GSList *l = item->analysis.extra_attrs; l; l = l->next)
     {
-      PangoAttribute *attr = l->data;
+      Pango2Attribute *attr = l->data;
 
-      if (attr->type == PANGO_ATTR_FONT_SCALE)
+      if (attr->type == PANGO2_ATTR_FONT_SCALE)
         {
           if (attr->start_index == item->offset)
             {
@@ -1071,15 +1071,15 @@ collect_font_scale (PangoContext  *context,
 
               switch (attr->int_value)
                 {
-                case PANGO_FONT_SCALE_NONE:
+                case PANGO2_FONT_SCALE_NONE:
                   break;
-                case PANGO_FONT_SCALE_SUPERSCRIPT:
+                case PANGO2_FONT_SCALE_SUPERSCRIPT:
                   if (prev &&
-                      hb_ot_metrics_get_position (pango_font_get_hb_font (prev->analysis.font),
+                      hb_ot_metrics_get_position (pango2_font_get_hb_font (prev->analysis.font),
                                                   HB_OT_METRICS_TAG_SUPERSCRIPT_EM_Y_SIZE,
                                                   &y_size))
                     {
-                      hb_font_get_scale (pango_font_get_hb_font (prev->analysis.font), NULL, &y_scale);
+                      hb_font_get_scale (pango2_font_get_hb_font (prev->analysis.font), NULL, &y_scale);
                       entry->scale = y_size / (double) y_scale;
                     }
                   else
@@ -1087,13 +1087,13 @@ collect_font_scale (PangoContext  *context,
                       entry->scale = 1 / 1.2;
                     }
                   break;
-                case PANGO_FONT_SCALE_SUBSCRIPT:
+                case PANGO2_FONT_SCALE_SUBSCRIPT:
                   if (prev &&
-                      hb_ot_metrics_get_position (pango_font_get_hb_font (prev->analysis.font),
+                      hb_ot_metrics_get_position (pango2_font_get_hb_font (prev->analysis.font),
                                                   HB_OT_METRICS_TAG_SUBSCRIPT_EM_Y_SIZE,
                                                   &y_size))
                     {
-                      hb_font_get_scale (pango_font_get_hb_font (prev->analysis.font), NULL, &y_scale);
+                      hb_font_get_scale (pango2_font_get_hb_font (prev->analysis.font), NULL, &y_scale);
                       entry->scale = y_size / (double) y_scale;
                     }
                   else
@@ -1101,11 +1101,11 @@ collect_font_scale (PangoContext  *context,
                       entry->scale = 1 / 1.2;
                     }
                   break;
-                case PANGO_FONT_SCALE_SMALL_CAPS:
-                  if (hb_ot_metrics_get_position (pango_font_get_hb_font (item->analysis.font),
+                case PANGO2_FONT_SCALE_SMALL_CAPS:
+                  if (hb_ot_metrics_get_position (pango2_font_get_hb_font (item->analysis.font),
                                                   HB_OT_METRICS_TAG_CAP_HEIGHT,
                                                   &cap_height) &&
-                      hb_ot_metrics_get_position (pango_font_get_hb_font (item->analysis.font),
+                      hb_ot_metrics_get_position (pango2_font_get_hb_font (item->analysis.font),
                                                   HB_OT_METRICS_TAG_X_HEIGHT,
                                                   &x_height))
                     {
@@ -1130,7 +1130,7 @@ collect_font_scale (PangoContext  *context,
      {
        ScaleItem *entry = l->data;
        *scale *= entry->scale;
-       if (entry->attr->int_value != PANGO_FONT_SCALE_SMALL_CAPS)
+       if (entry->attr->int_value != PANGO2_FONT_SCALE_SMALL_CAPS)
          *is_small_caps = FALSE;
        retval = TRUE;
      }
@@ -1154,44 +1154,44 @@ collect_font_scale (PangoContext  *context,
 }
 
 static void
-apply_scale_to_item (PangoContext *context,
-                     PangoItem    *item,
-                     double        scale,
-                     gboolean      is_small_caps)
+apply_scale_to_item (Pango2Context *context,
+                     Pango2Item    *item,
+                     double         scale,
+                     gboolean       is_small_caps)
 {
-  PangoFontDescription *desc;
+  Pango2FontDescription *desc;
   double size;
 
   if (!item->analysis.font)
     return;
 
   if (is_small_caps)
-    pango_analysis_set_size_font (&item->analysis, item->analysis.font);
+    pango2_analysis_set_size_font (&item->analysis, item->analysis.font);
 
-  desc = pango_font_describe (item->analysis.font);
-  size = scale * pango_font_description_get_size (desc);
+  desc = pango2_font_describe (item->analysis.font);
+  size = scale * pango2_font_description_get_size (desc);
 
-  if (pango_font_description_get_size_is_absolute (desc))
-    pango_font_description_set_absolute_size (desc, size);
+  if (pango2_font_description_get_size_is_absolute (desc))
+    pango2_font_description_set_absolute_size (desc, size);
   else
-    pango_font_description_set_size (desc, size);
+    pango2_font_description_set_size (desc, size);
 
   g_object_unref (item->analysis.font);
-  item->analysis.font = pango_font_map_load_font (context->font_map, context, desc);
+  item->analysis.font = pango2_font_map_load_font (context->font_map, context, desc);
 
-  pango_font_description_free (desc);
+  pango2_font_description_free (desc);
 }
 
 static void
-apply_font_scale (PangoContext *context,
-                  GList        *items)
+apply_font_scale (Pango2Context *context,
+                  GList         *items)
 {
-  PangoItem *prev = NULL;
+  Pango2Item *prev = NULL;
   GList *stack = NULL;
 
   for (GList *l = items; l; l = l->next)
     {
-      PangoItem *item = l->data;
+      Pango2Item *item = l->data;
       double scale;
       gboolean is_small_caps;
 
@@ -1209,14 +1209,14 @@ apply_font_scale (PangoContext *context,
 }
 
 /* }}} */
-/* {{{ Handling Casing variants */
+/* { {{ Handling Casing variants */
 
 static gboolean
-all_features_supported (PangoItem *item,
-                        hb_tag_t  *features,
-                        guint      n_features)
+all_features_supported (Pango2Item *item,
+                        hb_tag_t   *features,
+                        guint       n_features)
 {
-  hb_font_t *font = pango_font_get_hb_font (item->analysis.font);
+  hb_font_t *font = pango2_font_get_hb_font (item->analysis.font);
   hb_face_t *face = hb_font_get_face (font);
   hb_script_t script;
   hb_language_t language;
@@ -1229,7 +1229,7 @@ all_features_supported (PangoItem *item,
   guint index;
 
   script = g_unicode_script_to_iso15924 (item->analysis.script);
-  language = hb_language_from_string (pango_language_to_string (item->analysis.language), -1);
+  language = hb_language_from_string (pango2_language_to_string (item->analysis.language), -1);
 
   hb_ot_tags_from_script_and_language (script, language,
                                        &script_count, script_tags,
@@ -1256,32 +1256,32 @@ all_features_supported (PangoItem *item,
 }
 
 static gboolean
-variant_supported (PangoItem    *item,
-                   PangoVariant  variant)
+variant_supported (Pango2Item    *item,
+                   Pango2Variant  variant)
 {
   hb_tag_t features[2];
   guint num_features = 0;
 
   switch (variant)
     {
-    case PANGO_VARIANT_NORMAL:
-    case PANGO_VARIANT_TITLE_CAPS:
+    case PANGO2_VARIANT_NORMAL:
+    case PANGO2_VARIANT_TITLE_CAPS:
       return TRUE;
-    case PANGO_VARIANT_SMALL_CAPS:
+    case PANGO2_VARIANT_SMALL_CAPS:
       features[num_features++] = HB_TAG ('s', 'm', 'c', 'p');
       break;
-    case PANGO_VARIANT_ALL_SMALL_CAPS:
+    case PANGO2_VARIANT_ALL_SMALL_CAPS:
       features[num_features++] = HB_TAG ('s', 'm', 'c', 'p');
       features[num_features++] = HB_TAG ('c', '2', 's', 'c');
       break;
-    case PANGO_VARIANT_PETITE_CAPS:
+    case PANGO2_VARIANT_PETITE_CAPS:
       features[num_features++] = HB_TAG ('p', 'c', 'a', 'p');
       break;
-    case PANGO_VARIANT_ALL_PETITE_CAPS:
+    case PANGO2_VARIANT_ALL_PETITE_CAPS:
       features[num_features++] = HB_TAG ('p', 'c', 'a', 'p');
       features[num_features++] = HB_TAG ('c', '2', 'p', 'c');
       break;
-    case PANGO_VARIANT_UNICASE:
+    case PANGO2_VARIANT_UNICASE:
       features[num_features++] = HB_TAG ('u', 'n', 'i', 'c');
       break;
     default:
@@ -1291,34 +1291,34 @@ variant_supported (PangoItem    *item,
   return all_features_supported (item, features, num_features);
 }
 
-static PangoVariant
-get_font_variant (PangoItem *item)
+static Pango2Variant
+get_font_variant (Pango2Item *item)
 {
-  PangoFontDescription *desc;
-  PangoVariant variant = PANGO_VARIANT_NORMAL;
+  Pango2FontDescription *desc;
+  Pango2Variant variant = PANGO2_VARIANT_NORMAL;
 
   if (item->analysis.font)
     {
-      desc = pango_font_describe (item->analysis.font);
-      variant = pango_font_description_get_variant (desc);
-      pango_font_description_free (desc);
+      desc = pango2_font_describe (item->analysis.font);
+      variant = pango2_font_description_get_variant (desc);
+      pango2_font_description_free (desc);
     }
 
   return variant;
 }
 
-static PangoTextTransform
-find_text_transform (const PangoAnalysis *analysis)
+static Pango2TextTransform
+find_text_transform (const Pango2Analysis *analysis)
 {
   GSList *l;
-  PangoTextTransform transform = PANGO_TEXT_TRANSFORM_NONE;
+  Pango2TextTransform transform = PANGO2_TEXT_TRANSFORM_NONE;
 
   for (l = analysis->extra_attrs; l; l = l->next)
     {
-      PangoAttribute *attr = l->data;
+      Pango2Attribute *attr = l->data;
 
-      if (attr->type == PANGO_ATTR_TEXT_TRANSFORM)
-        transform = (PangoTextTransform) attr->int_value;
+      if (attr->type == PANGO2_ATTR_TEXT_TRANSFORM)
+        transform = (Pango2TextTransform) attr->int_value;
     }
 
   return transform;
@@ -1331,38 +1331,38 @@ find_text_transform (const PangoAnalysis *analysis)
  * determining the case of characters int he run.
  */
 static void
-split_item_for_variant (const char   *text,
-                        PangoLogAttr *log_attrs,
-                        PangoVariant  variant,
-                        GList        *list_item)
+split_item_for_variant (const char    *text,
+                        Pango2LogAttr *log_attrs,
+                        Pango2Variant  variant,
+                        GList         *list_item)
 {
-  PangoItem *item = list_item->data;
+  Pango2Item *item = list_item->data;
   const char *start, *end;
   const char *p, *p0;
   gunichar wc;
-  PangoTextTransform transform = PANGO_TEXT_TRANSFORM_NONE;
-  PangoFontScale lowercase_scale = PANGO_FONT_SCALE_NONE;
-  PangoFontScale uppercase_scale = PANGO_FONT_SCALE_NONE;
-  PangoTextTransform item_transform;
+  Pango2TextTransform transform = PANGO2_TEXT_TRANSFORM_NONE;
+  Pango2FontScale lowercase_scale = PANGO2_FONT_SCALE_NONE;
+  Pango2FontScale uppercase_scale = PANGO2_FONT_SCALE_NONE;
+  Pango2TextTransform item_transform;
   gboolean is_word_start;
   int offset;
 
   switch (variant)
     {
-    case PANGO_VARIANT_ALL_SMALL_CAPS:
-    case PANGO_VARIANT_ALL_PETITE_CAPS:
-      uppercase_scale = PANGO_FONT_SCALE_SMALL_CAPS;
+    case PANGO2_VARIANT_ALL_SMALL_CAPS:
+    case PANGO2_VARIANT_ALL_PETITE_CAPS:
+      uppercase_scale = PANGO2_FONT_SCALE_SMALL_CAPS;
       G_GNUC_FALLTHROUGH;
-    case PANGO_VARIANT_SMALL_CAPS:
-    case PANGO_VARIANT_PETITE_CAPS:
-      transform = PANGO_TEXT_TRANSFORM_UPPERCASE;
-      lowercase_scale = PANGO_FONT_SCALE_SMALL_CAPS;
+    case PANGO2_VARIANT_SMALL_CAPS:
+    case PANGO2_VARIANT_PETITE_CAPS:
+      transform = PANGO2_TEXT_TRANSFORM_UPPERCASE;
+      lowercase_scale = PANGO2_FONT_SCALE_SMALL_CAPS;
       break;
-    case PANGO_VARIANT_UNICASE:
-      uppercase_scale = PANGO_FONT_SCALE_SMALL_CAPS;
+    case PANGO2_VARIANT_UNICASE:
+      uppercase_scale = PANGO2_FONT_SCALE_SMALL_CAPS;
       break;
-    case PANGO_VARIANT_NORMAL:
-    case PANGO_VARIANT_TITLE_CAPS:
+    case PANGO2_VARIANT_NORMAL:
+    case PANGO2_VARIANT_TITLE_CAPS:
     default:
       g_assert_not_reached ();
     }
@@ -1379,11 +1379,11 @@ split_item_for_variant (const char   *text,
       p0 = p;
       wc = g_utf8_get_char (p);
       is_word_start = log_attrs && log_attrs[offset].is_word_start;
-      while (p < end && (item_transform == PANGO_TEXT_TRANSFORM_LOWERCASE ||
+      while (p < end && (item_transform == PANGO2_TEXT_TRANSFORM_LOWERCASE ||
                          consider_as_space (wc) ||
                          (g_unichar_islower (wc) &&
-                          !(item_transform == PANGO_TEXT_TRANSFORM_UPPERCASE ||
-                            (item_transform == PANGO_TEXT_TRANSFORM_CAPITALIZE && is_word_start)))))
+                          !(item_transform == PANGO2_TEXT_TRANSFORM_UPPERCASE ||
+                            (item_transform == PANGO2_TEXT_TRANSFORM_CAPITALIZE && is_word_start)))))
         {
           p = g_utf8_next_char (p);
           wc = g_utf8_get_char (p);
@@ -1393,13 +1393,13 @@ split_item_for_variant (const char   *text,
 
       if (p0 < p)
         {
-          PangoItem *new_item;
-          PangoAttribute *attr;
+          Pango2Item *new_item;
+          Pango2Attribute *attr;
 
           /* p0 .. p is a lowercase segment */
           if (p < end)
             {
-              new_item = pango_item_split (item, p - p0, g_utf8_strlen (p0, p - p0));
+              new_item = pango2_item_split (item, p - p0, g_utf8_strlen (p0, p - p0));
               list_item->data = new_item;
               list_item = g_list_insert_before (list_item, list_item->next, item);
               list_item = list_item->next;
@@ -1409,17 +1409,17 @@ split_item_for_variant (const char   *text,
               new_item = item;
             }
 
-          if (transform != PANGO_TEXT_TRANSFORM_NONE)
+          if (transform != PANGO2_TEXT_TRANSFORM_NONE)
             {
-              attr = pango_attr_text_transform_new (transform);
+              attr = pango2_attr_text_transform_new (transform);
               attr->start_index = new_item->offset;
               attr->end_index = new_item->offset + new_item->length;
               new_item->analysis.extra_attrs = g_slist_append (new_item->analysis.extra_attrs, attr);
             }
 
-          if (lowercase_scale != PANGO_FONT_SCALE_NONE)
+          if (lowercase_scale != PANGO2_FONT_SCALE_NONE)
             {
-              attr = pango_attr_font_scale_new (lowercase_scale);
+              attr = pango2_attr_font_scale_new (lowercase_scale);
               attr->start_index = new_item->offset;
               attr->end_index = new_item->offset + new_item->length;
               new_item->analysis.extra_attrs = g_slist_append (new_item->analysis.extra_attrs, attr);
@@ -1429,10 +1429,10 @@ split_item_for_variant (const char   *text,
       p0 = p;
       wc = g_utf8_get_char (p);
       is_word_start = log_attrs && log_attrs[offset].is_word_start;
-      while (p < end && (item_transform == PANGO_TEXT_TRANSFORM_UPPERCASE ||
+      while (p < end && (item_transform == PANGO2_TEXT_TRANSFORM_UPPERCASE ||
                          consider_as_space (wc) ||
-                         !(item_transform == PANGO_TEXT_TRANSFORM_LOWERCASE || g_unichar_islower (wc)) ||
-                         (item_transform == PANGO_TEXT_TRANSFORM_CAPITALIZE && is_word_start)))
+                         !(item_transform == PANGO2_TEXT_TRANSFORM_LOWERCASE || g_unichar_islower (wc)) ||
+                         (item_transform == PANGO2_TEXT_TRANSFORM_CAPITALIZE && is_word_start)))
         {
           p = g_utf8_next_char (p);
           wc = g_utf8_get_char (p);
@@ -1442,13 +1442,13 @@ split_item_for_variant (const char   *text,
 
       if (p0 < p)
         {
-          PangoItem *new_item;
-          PangoAttribute *attr;
+          Pango2Item *new_item;
+          Pango2Attribute *attr;
 
           /* p0 .. p is a uppercase segment */
           if (p < end)
             {
-              new_item = pango_item_split (item, p - p0, g_utf8_strlen (p0, p - p0));
+              new_item = pango2_item_split (item, p - p0, g_utf8_strlen (p0, p - p0));
               list_item->data = new_item;
               list_item = g_list_insert_before (list_item, list_item->next, item);
               list_item = list_item->next;
@@ -1458,9 +1458,9 @@ split_item_for_variant (const char   *text,
               new_item = item;
             }
 
-          if (uppercase_scale != PANGO_FONT_SCALE_NONE)
+          if (uppercase_scale != PANGO2_FONT_SCALE_NONE)
             {
-              attr = pango_attr_font_scale_new (uppercase_scale);
+              attr = pango2_attr_font_scale_new (uppercase_scale);
               attr->start_index = new_item->offset;
               attr->end_index = new_item->offset + new_item->length;
               new_item->analysis.extra_attrs = g_slist_append (new_item->analysis.extra_attrs, attr);
@@ -1470,12 +1470,12 @@ split_item_for_variant (const char   *text,
 }
 
 static void
-handle_variants_for_item (const char   *text,
-                          PangoLogAttr *log_attrs,
-                          GList        *l)
+handle_variants_for_item (const char    *text,
+                          Pango2LogAttr *log_attrs,
+                          GList         *l)
 {
-  PangoItem *item = l->data;
-  PangoVariant variant;
+  Pango2Item *item = l->data;
+  Pango2Variant variant;
 
   variant = get_font_variant (item);
   if (!variant_supported (item, variant))
@@ -1483,9 +1483,9 @@ handle_variants_for_item (const char   *text,
 }
 
 static void
-handle_variants (const char   *text,
-                 PangoLogAttr *log_attrs,
-                 GList        *items)
+handle_variants (const char    *text,
+                 Pango2LogAttr *log_attrs,
+                 GList         *items)
 {
   GList *next;
 
@@ -1499,8 +1499,8 @@ handle_variants (const char   *text,
 /* }}} */
 
 static GList *
-reorder_items (PangoContext *context,
-               GList        *items)
+reorder_items (Pango2Context *context,
+               GList         *items)
 {
   int char_offset = 0;
 
@@ -1509,7 +1509,7 @@ reorder_items (PangoContext *context,
   /* Also cmpute the char offset for each item here */
   for (GList *l = items; l; l = l->next)
     {
-      PangoItem *item = l->data;
+      Pango2Item *item = l->data;
       item->char_offset = char_offset;
       char_offset += item->num_chars;
     }
@@ -1518,10 +1518,10 @@ reorder_items (PangoContext *context,
 }
 
 static GList *
-post_process_items (PangoContext *context,
-                    const char   *text,
-                    PangoLogAttr *log_attrs,
-                    GList        *items)
+post_process_items (Pango2Context *context,
+                    const char    *text,
+                    Pango2LogAttr *log_attrs,
+                    GList         *items)
 {
   handle_variants (text, log_attrs, items);
   apply_font_scale (context, items);
@@ -1532,21 +1532,21 @@ post_process_items (PangoContext *context,
 /* }}} */
 /* {{{ Private API */
 
-/* Like pango_itemize, but takes a font description.
- * In contrast to pango_itemize, this function does
- * not call pango_itemize_post_process_items, so you need to do that
+/* Like pango2_itemize, but takes a font description.
+ * In contrast to pango2_itemize, this function does
+ * not call pango2_itemize_post_process_items, so you need to do that
  * separately, after applying attributes that affect segmentation and
  * computing the log attrs.
  */
 GList *
-pango_itemize_with_font (PangoContext               *context,
-                         PangoDirection              base_dir,
-                         const char                 *text,
-                         int                         start_index,
-                         int                         length,
-                         PangoAttrList              *attrs,
-                         PangoAttrIterator          *cached_iter,
-                         const PangoFontDescription *desc)
+pango2_itemize_with_font (Pango2Context               *context,
+                          Pango2Direction              base_dir,
+                          const char                  *text,
+                          int                          start_index,
+                          int                          length,
+                          Pango2AttrList              *attrs,
+                          Pango2AttrIterator          *cached_iter,
+                          const Pango2FontDescription *desc)
 {
   ItemizeState state;
 
@@ -1570,19 +1570,19 @@ pango_itemize_with_font (PangoContext               *context,
 /* Apply post-processing steps that may require log attrs.
  */
 GList *
-pango_itemize_post_process_items (PangoContext *context,
-                                  const char   *text,
-                                  PangoLogAttr *log_attrs,
-                                  GList        *items)
+pango2_itemize_post_process_items (Pango2Context *context,
+                                   const char    *text,
+                                   Pango2LogAttr *log_attrs,
+                                   GList         *items)
 {
   return post_process_items (context, text, log_attrs, items);
 }
 
-/* }}} */
+/* }}} */ 
 /* {{{ Public API */
 
 /**
- * pango_itemize:
+ * pango2_itemize:
  * @context: a structure holding information that affects
  *   the itemization process.
  * @base_dir: base direction to use for bidirectional processing
@@ -1600,20 +1600,20 @@ pango_itemize_post_process_items (PangoContext *context,
  * start offsets of the items are ascending).
  *
  * The base direction is used when computing bidirectional levels.
- * [func@itemize] gets the base direction from the `PangoContext`
- * (see [method@Pango.Context.set_base_dir]).
+ * [func@itemize] gets the base direction from the `Pango2Context`
+ * (see [method@Pango2.Context.set_base_dir]).
  *
- * Return value: (transfer full) (element-type Pango.Item): a `GList` of
- *   [struct@Pango.Item] structures. The items should be freed using
- *   [method@Pango.Item.free] probably in combination with [func@GLib.List.free_full].
+ * Return value: (transfer full) (element-type Pango2.Item): a `GList` of
+ *   [struct@Pango2.Item] structures. The items should be freed using
+ *   [method@Pango2.Item.free] probably in combination with [func@GLib.List.free_full].
  */
 GList *
-pango_itemize (PangoContext      *context,
-               PangoDirection     base_dir,
-               const char        *text,
-               int                start_index,
-               int                length,
-               PangoAttrList     *attrs)
+pango2_itemize (Pango2Context      *context,
+                Pango2Direction     base_dir,
+                const char         *text,
+                int                 start_index,
+                int                 length,
+                Pango2AttrList     *attrs)
 {
   GList *items;
 
@@ -1622,13 +1622,13 @@ pango_itemize (PangoContext      *context,
   g_return_val_if_fail (length >= 0, NULL);
   g_return_val_if_fail (length == 0 || text != NULL, NULL);
 
-  items = pango_itemize_with_font (context, base_dir,
+  items = pango2_itemize_with_font (context, base_dir,
                                    text, start_index, length,
                                    attrs, NULL, NULL);
 
-  return pango_itemize_post_process_items (context, text, NULL, items);
+  return pango2_itemize_post_process_items (context, text, NULL, items);
 }
 
-/* }}} */
+/* }}} */ 
 
 /* vim:set foldmethod=marker expandtab: */

@@ -27,33 +27,32 @@
 G_BEGIN_DECLS
 
 /**
- * PangoScriptIter:
+ * Pango2ScriptIter:
  *
- * A `PangoScriptIter` is used to iterate through a string
+ * A `Pango2ScriptIter` is used to iterate through a string
  * and identify ranges in different scripts.
  **/
-typedef struct _PangoScriptIter PangoScriptIter;
+typedef struct _Pango2ScriptIter Pango2ScriptIter;
 
-PANGO_AVAILABLE_IN_ALL
-GType            pango_script_iter_get_type  (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+GType                   pango2_script_iter_get_type             (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_ALL
-PangoScriptIter *pango_script_iter_new       (const char          *text,
-                                              int                  length);
-PANGO_AVAILABLE_IN_ALL
-void             pango_script_iter_get_range (PangoScriptIter     *iter,
-                                              const char         **start,
-                                              const char         **end,
-                                              GUnicodeScript      *script);
-PANGO_AVAILABLE_IN_ALL
-gboolean         pango_script_iter_next      (PangoScriptIter     *iter);
-PANGO_AVAILABLE_IN_ALL
-void             pango_script_iter_free      (PangoScriptIter     *iter);
+PANGO2_AVAILABLE_IN_ALL
+Pango2ScriptIter *      pango2_script_iter_new                  (const char        *text,
+                                                                 int                length);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_script_iter_get_range            (Pango2ScriptIter  *iter,
+                                                                 const char       **start,
+                                                                 const char       **end,
+                                                                 GUnicodeScript    *script);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_script_iter_next                 (Pango2ScriptIter  *iter);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_script_iter_free                 (Pango2ScriptIter  *iter);
 
-PANGO_AVAILABLE_IN_ALL
-PangoLanguage   *pango_script_get_sample_language
-                                             (GUnicodeScript       script) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+Pango2Language *        pango2_script_get_sample_language       (GUnicodeScript     script) G_GNUC_PURE;
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoScriptIter, pango_script_iter_free)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(Pango2ScriptIter, pango2_script_iter_free)
 
 G_END_DECLS

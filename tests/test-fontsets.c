@@ -5,21 +5,21 @@
 #include "test-common.h"
 
 static gboolean
-append_one (PangoFontset *fonts,
-            PangoFont    *font,
+append_one (Pango2Fontset *fonts,
+            Pango2Font    *font,
             gpointer      data)
 {
-  PangoFontDescription *desc;
+  Pango2FontDescription *desc;
   GString *str = data;
   char *s;
 
-  desc = pango_font_describe (font);
-  s = pango_font_description_to_string (desc);
+  desc = pango2_font_describe (font);
+  s = pango2_font_description_to_string (desc);
 
   g_string_append_printf (str, "%s\n", s);
 
   g_free (s);
-  pango_font_description_free (desc);
+  pango2_font_description_free (desc);
 
   return FALSE;
 }
@@ -28,9 +28,9 @@ static char *
 list_fonts (const char *contents)
 {
   char *p, *s;
-  PangoFontDescription *desc;
-  PangoContext *context;
-  PangoFontset *fonts;
+  Pango2FontDescription *desc;
+  Pango2Context *context;
+  Pango2Fontset *fonts;
   GString *str;
 
   p = strchr (contents, '\n');
@@ -39,19 +39,19 @@ list_fonts (const char *contents)
   else
     s = g_strdup (contents);
 
-  desc = pango_font_description_from_string (s);
+  desc = pango2_font_description_from_string (s);
 
-  context = pango_context_new ();
-  fonts = pango_context_load_fontset (context, desc, pango_language_get_default ());
+  context = pango2_context_new ();
+  fonts = pango2_context_load_fontset (context, desc, pango2_language_get_default ());
 
   str = g_string_new (s);
   g_string_append (str, "\n\n");
 
-  pango_fontset_foreach (fonts, append_one, str);
+  pango2_fontset_foreach (fonts, append_one, str);
 
   g_object_unref (fonts);
   g_object_unref (context);
-  pango_font_description_free (desc);
+  pango2_font_description_free (desc);
 
   g_free (s);
 

@@ -25,67 +25,69 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_TYPE_FONT_MAP   (pango_font_map_get_type ())
+#define PANGO2_TYPE_FONT_MAP   (pango2_font_map_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-PANGO_DECLARE_INTERNAL_TYPE (PangoFontMap, pango_font_map, PANGO, FONT_MAP, GObject)
+PANGO2_AVAILABLE_IN_ALL
+PANGO2_DECLARE_INTERNAL_TYPE (Pango2FontMap, pango2_font_map, PANGO2, FONT_MAP, GObject)
 
-PANGO_AVAILABLE_IN_ALL
-PangoFont *             pango_font_map_load_font                (PangoFontMap               *self,
-                                                                 PangoContext               *context,
-                                                                 const PangoFontDescription *desc);
-PANGO_AVAILABLE_IN_ALL
-PangoFontset *          pango_font_map_load_fontset             (PangoFontMap               *self,
-                                                                 PangoContext               *context,
-                                                                 const PangoFontDescription *desc,
-                                                                 PangoLanguage              *language);
-PANGO_AVAILABLE_IN_ALL
-guint                   pango_font_map_get_serial               (PangoFontMap               *self);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Font *             pango2_font_map_load_font                (Pango2FontMap               *self,
+                                                                   Pango2Context               *context,
+                                                                   const Pango2FontDescription *desc);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Fontset *          pango2_font_map_load_fontset             (Pango2FontMap               *self,
+                                                                   Pango2Context               *context,
+                                                                   const Pango2FontDescription *desc,
+                                                                   Pango2Language              *language);
+PANGO2_AVAILABLE_IN_ALL
+guint                    pango2_font_map_get_serial               (Pango2FontMap               *self);
 
-PANGO_AVAILABLE_IN_ALL
-PangoFontFamily *       pango_font_map_get_family               (PangoFontMap               *self,
-                                                                 const char                 *name);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontFamily *       pango2_font_map_get_family               (Pango2FontMap               *self,
+                                                                   const char                  *name);
 
-PANGO_AVAILABLE_IN_ALL
-PangoFontMap *          pango_font_map_new                      (void);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontMap *          pango2_font_map_new                      (void);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_map_add_file                 (PangoFontMap               *self,
-                                                                 const char                 *file);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_font_map_add_file                 (Pango2FontMap               *self,
+                                                                   const char                  *file);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_map_add_face                 (PangoFontMap               *self,
-                                                                 PangoFontFace              *face);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_font_map_add_face                 (Pango2FontMap               *self,
+                                                                   Pango2FontFace              *face);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_map_remove_face              (PangoFontMap               *self,
-                                                                 PangoFontFace              *face);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_font_map_remove_face              (Pango2FontMap               *self,
+                                                                   Pango2FontFace              *face);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_map_add_family               (PangoFontMap               *self,
-                                                                 PangoFontFamily            *family);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_map_remove_family            (PangoFontMap               *self,
-                                                                 PangoFontFamily            *family);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_font_map_add_family               (Pango2FontMap               *self,
+                                                                   Pango2FontFamily            *family);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_map_set_fallback             (PangoFontMap               *self,
-                                                                 PangoFontMap               *fallback);
-PANGO_AVAILABLE_IN_ALL
-PangoFontMap *          pango_font_map_get_fallback             (PangoFontMap               *self);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_font_map_remove_family            (Pango2FontMap               *self,
+                                                                   Pango2FontFamily            *family);
 
-PANGO_AVAILABLE_IN_ALL
-float                   pango_font_map_get_resolution           (PangoFontMap               *self);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_font_map_set_fallback             (Pango2FontMap               *self,
+                                                                   Pango2FontMap               *fallback);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_map_set_resolution           (PangoFontMap               *self,
-                                                                 float                       dpi);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontMap *          pango2_font_map_get_fallback             (Pango2FontMap               *self);
 
-PANGO_AVAILABLE_IN_ALL
-PangoFontMap *          pango_font_map_new_default              (void);
-PANGO_AVAILABLE_IN_ALL
-PangoFontMap *          pango_font_map_get_default              (void);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_map_set_default              (PangoFontMap *fontmap);
+PANGO2_AVAILABLE_IN_ALL
+float                    pango2_font_map_get_resolution           (Pango2FontMap               *self);
+
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_font_map_set_resolution           (Pango2FontMap               *self,
+                                                                   float                        dpi);
+
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontMap *          pango2_font_map_new_default              (void);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontMap *          pango2_font_map_get_default              (void);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_font_map_set_default              (Pango2FontMap               *fontmap);
 
 G_END_DECLS

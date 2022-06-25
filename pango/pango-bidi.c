@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * pango-bidi-type.c: Bidirectional Character Types
  *
  * Copyright (C) 2008 Jürg Billeter <j@bitron.ch>
@@ -31,7 +31,7 @@
 /* Some bidi-related functions */
 
 /*< private >
- * pango_log2vis_get_embedding_levels:
+ * pango2_log2vis_get_embedding_levels:
  * @text: the text to itemize.
  * @length: the number of bytes (not characters) to process, or -1
  *   if @text is nul-terminated and the length should be calculated.
@@ -49,9 +49,9 @@
  *   character (not byte), that should be freed using [func@GLib.free].
  */
 guint8 *
-pango_log2vis_get_embedding_levels (const char     *text,
-                                    int             length,
-                                    PangoDirection *pbase_dir)
+pango2_log2vis_get_embedding_levels (const char      *text,
+                                     int              length,
+                                     Pango2Direction *pbase_dir)
 {
   glong n_chars, i;
   guint8 *embedding_levels_list;
@@ -68,17 +68,17 @@ pango_log2vis_get_embedding_levels (const char     *text,
 
   switch (*pbase_dir)
     {
-    case PANGO_DIRECTION_LTR:
+    case PANGO2_DIRECTION_LTR:
       fribidi_base_dir = FRIBIDI_PAR_LTR;
       break;
-    case PANGO_DIRECTION_RTL:
+    case PANGO2_DIRECTION_RTL:
       fribidi_base_dir = FRIBIDI_PAR_RTL;
       break;
-    case PANGO_DIRECTION_WEAK_RTL:
+    case PANGO2_DIRECTION_WEAK_RTL:
       fribidi_base_dir = FRIBIDI_PAR_WRTL;
       break;
-    case PANGO_DIRECTION_WEAK_LTR:
-    case PANGO_DIRECTION_NEUTRAL:
+    case PANGO2_DIRECTION_WEAK_LTR:
+    case PANGO2_DIRECTION_NEUTRAL:
     default:
       fribidi_base_dir = FRIBIDI_PAR_WLTR;
       break;
@@ -174,13 +174,13 @@ resolved:
   g_free (bidi_types);
   g_free (bracket_types);
 
-  *pbase_dir = (fribidi_base_dir == FRIBIDI_PAR_LTR) ?  PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL;
+  *pbase_dir = (fribidi_base_dir == FRIBIDI_PAR_LTR) ?  PANGO2_DIRECTION_LTR : PANGO2_DIRECTION_RTL;
 
   return embedding_levels_list;
 }
 
-static PangoDirection
-pango_unichar_direction (gunichar ch)
+static Pango2Direction
+pango2_unichar_direction (gunichar ch)
 {
   FriBidiCharType fribidi_ch_type;
 
@@ -189,21 +189,21 @@ pango_unichar_direction (gunichar ch)
   fribidi_ch_type = fribidi_get_bidi_type (ch);
 
   if (!FRIBIDI_IS_STRONG (fribidi_ch_type))
-    return PANGO_DIRECTION_NEUTRAL;
+    return PANGO2_DIRECTION_NEUTRAL;
   else if (FRIBIDI_IS_RTL (fribidi_ch_type))
-    return PANGO_DIRECTION_RTL;
+    return PANGO2_DIRECTION_RTL;
   else
-    return PANGO_DIRECTION_LTR;
+    return PANGO2_DIRECTION_LTR;
 }
 
-PangoDirection
-pango_find_base_dir (const char *text,
+Pango2Direction
+pango2_find_base_dir (const char *text,
                      int         length)
 {
-  PangoDirection dir = PANGO_DIRECTION_NEUTRAL;
+  Pango2Direction dir = PANGO2_DIRECTION_NEUTRAL;
   const char *p;
 
-  g_return_val_if_fail (text != NULL || length == 0, PANGO_DIRECTION_NEUTRAL);
+  g_return_val_if_fail (text != NULL || length == 0, PANGO2_DIRECTION_NEUTRAL);
 
   p = text;
   while ((length < 0 || p < text + length) && *p)
@@ -211,9 +211,9 @@ pango_find_base_dir (const char *text,
       gunichar wc = g_utf8_get_char (p);
 
 
-      dir = pango_unichar_direction (wc);
+      dir = pango2_unichar_direction (wc);
 
-      if (dir != PANGO_DIRECTION_NEUTRAL)
+      if (dir != PANGO2_DIRECTION_NEUTRAL)
         break;
 
       p = g_utf8_next_char (p);

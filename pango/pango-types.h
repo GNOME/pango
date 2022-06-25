@@ -26,142 +26,142 @@
 
 G_BEGIN_DECLS
 
-typedef struct _PangoLogAttr PangoLogAttr;
+typedef struct _Pango2LogAttr Pango2LogAttr;
 
-typedef struct _PangoFontDescription PangoFontDescription;
+typedef struct _Pango2FontDescription Pango2FontDescription;
 
-typedef struct _PangoFont PangoFont;
-typedef struct _PangoFontFace PangoFontFace;
-typedef struct _PangoFontFamily PangoFontFamily;
+typedef struct _Pango2Font Pango2Font;
+typedef struct _Pango2FontFace Pango2FontFace;
+typedef struct _Pango2FontFamily Pango2FontFamily;
 
-typedef struct _PangoFontMap PangoFontMap;
+typedef struct _Pango2FontMap Pango2FontMap;
 
-typedef struct _PangoRectangle PangoRectangle;
+typedef struct _Pango2Rectangle Pango2Rectangle;
 
-typedef struct _PangoContext PangoContext;
+typedef struct _Pango2Context Pango2Context;
 
-typedef struct _PangoLanguage PangoLanguage;
+typedef struct _Pango2Language Pango2Language;
 
 /* A index of a glyph into a font. Rendering system dependent */
 /**
- * PangoGlyph:
+ * Pango2Glyph:
  *
- * A `PangoGlyph` represents a single glyph in the output form of a string.
+ * A `Pango2Glyph` represents a single glyph in the output form of a string.
  */
-typedef guint32 PangoGlyph;
+typedef guint32 Pango2Glyph;
 
-typedef struct _PangoLines PangoLines;
-typedef struct _PangoRun PangoRun;
-typedef struct _PangoLine PangoLine;
-typedef struct _PangoLineIter PangoLineIter;
+typedef struct _Pango2Lines Pango2Lines;
+typedef struct _Pango2Run Pango2Run;
+typedef struct _Pango2Line Pango2Line;
+typedef struct _Pango2LineIter Pango2LineIter;
 
 /**
- * PANGO_SCALE:
+ * PANGO2_SCALE:
  *
- * The scale between dimensions used for Pango distances and device units.
+ * The scale between dimensions used for Pango2 distances and device units.
  *
  * The definition of device units is dependent on the output device; it will
- * typically be pixels for a screen, and points for a printer. %PANGO_SCALE is
+ * typically be pixels for a screen, and points for a printer. %PANGO2_SCALE is
  * currently 1024, but this may be changed in the future.
  *
  * When setting font sizes, device units are always considered to be
  * points (as in "12 point font"), rather than pixels.
  */
 /**
- * PANGO_PIXELS:
- * @d: a dimension in Pango units.
+ * PANGO2_PIXELS:
+ * @d: a dimension in Pango2 units.
  *
  * Converts a dimension to device units by rounding.
  *
  * Return value: rounded dimension in device units.
  */
 /**
- * PANGO_PIXELS_FLOOR:
- * @d: a dimension in Pango units.
+ * PANGO2_PIXELS_FLOOR:
+ * @d: a dimension in Pango2 units.
  *
  * Converts a dimension to device units by flooring.
  *
  * Return value: floored dimension in device units.
  */
 /**
- * PANGO_PIXELS_CEIL:
- * @d: a dimension in Pango units.
+ * PANGO2_PIXELS_CEIL:
+ * @d: a dimension in Pango2 units.
  *
  * Converts a dimension to device units by ceiling.
  *
  * Return value: ceiled dimension in device units.
  */
-#define PANGO_SCALE 1024
-#define PANGO_PIXELS(d) (((int)(d) + 512) >> 10)
-#define PANGO_PIXELS_FLOOR(d) (((int)(d)) >> 10)
-#define PANGO_PIXELS_CEIL(d) (((int)(d) + 1023) >> 10)
+#define PANGO2_SCALE 1024
+#define PANGO2_PIXELS(d) (((int)(d) + 512) >> 10)
+#define PANGO2_PIXELS_FLOOR(d) (((int)(d)) >> 10)
+#define PANGO2_PIXELS_CEIL(d) (((int)(d) + 1023) >> 10)
 /* The above expressions are just slightly wrong for floating point d;
- * For example we'd expect PANGO_PIXELS(-512.5) => -1 but instead we get 0.
+ * For example we'd expect PANGO2_PIXELS(-512.5) => -1 but instead we get 0.
  * That's unlikely to matter for practical use and the expression is much
  * more compact and faster than alternatives that work exactly for both
  * integers and floating point.
  *
- * PANGO_PIXELS also behaves differently for +512 and -512.
+ * PANGO2_PIXELS also behaves differently for +512 and -512.
  */
 
 /**
- * PANGO_UNITS_FLOOR:
- * @d: a dimension in Pango units.
+ * PANGO2_UNITS_FLOOR:
+ * @d: a dimension in Pango2 units.
  *
  * Rounds a dimension down to whole device units, but does not
  * convert it to device units.
  *
- * Return value: rounded down dimension in Pango units.
+ * Return value: rounded down dimension in Pango2 units.
  */
-#define PANGO_UNITS_FLOOR(d)                \
-  ((d) & ~(PANGO_SCALE - 1))
+#define PANGO2_UNITS_FLOOR(d)                \
+  ((d) & ~(PANGO2_SCALE - 1))
 
 /**
- * PANGO_UNITS_CEIL:
- * @d: a dimension in Pango units.
+ * PANGO2_UNITS_CEIL:
+ * @d: a dimension in Pango2 units.
  *
  * Rounds a dimension up to whole device units, but does not
  * convert it to device units.
  *
- * Return value: rounded up dimension in Pango units.
+ * Return value: rounded up dimension in Pango2 units.
  */
-#define PANGO_UNITS_CEIL(d)                 \
-  (((d) + (PANGO_SCALE - 1)) & ~(PANGO_SCALE - 1))
+#define PANGO2_UNITS_CEIL(d)                 \
+  (((d) + (PANGO2_SCALE - 1)) & ~(PANGO2_SCALE - 1))
 
 /**
- * PANGO_UNITS_ROUND:
- * @d: a dimension in Pango units.
+ * PANGO2_UNITS_ROUND:
+ * @d: a dimension in Pango2 units.
  *
  * Rounds a dimension to whole device units, but does not
  * convert it to device units.
  *
- * Return value: rounded dimension in Pango units.
+ * Return value: rounded dimension in Pango2 units.
  */
-#define PANGO_UNITS_ROUND(d)				\
-  (((d) + (PANGO_SCALE >> 1)) & ~(PANGO_SCALE - 1))
+#define PANGO2_UNITS_ROUND(d)                           \
+  (((d) + (PANGO2_SCALE >> 1)) & ~(PANGO2_SCALE - 1))
 
 
-PANGO_AVAILABLE_IN_ALL
-int    pango_units_from_double (double d) G_GNUC_CONST;
-PANGO_AVAILABLE_IN_ALL
-double pango_units_to_double (int i) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+int    pango2_units_from_double (double d) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+double pango2_units_to_double (int i) G_GNUC_CONST;
 
 
 
 /**
- * PangoRectangle:
+ * Pango2Rectangle:
  * @x: X coordinate of the left side of the rectangle.
  * @y: Y coordinate of the the top side of the rectangle.
  * @width: width of the rectangle.
  * @height: height of the rectangle.
  *
- * The `PangoRectangle` structure represents a rectangle.
+ * The `Pango2Rectangle` structure represents a rectangle.
  *
- * `PangoRectangle` is frequently used to represent the logical or ink
+ * `Pango2Rectangle` is frequently used to represent the logical or ink
  * extents of a single glyph or section of text. (See, for instance,
- * [method@Pango.Font.get_glyph_extents].)
+ * [method@Pango2.Font.get_glyph_extents].)
  */
-struct _PangoRectangle
+struct _Pango2Rectangle
 {
   int x;
   int y;
@@ -172,10 +172,10 @@ struct _PangoRectangle
 /* Macros to translate from extents rectangles to ascent/descent/lbearing/rbearing
  */
 /**
- * PANGO_ASCENT:
- * @rect: a `PangoRectangle`
+ * PANGO2_ASCENT:
+ * @rect: a `Pango2Rectangle`
  *
- * Extracts the *ascent* from a `PangoRectangle`
+ * Extracts the *ascent* from a `Pango2Rectangle`
  * representing glyph extents.
  *
  * The ascent is the distance from the baseline to the
@@ -183,10 +183,10 @@ struct _PangoRectangle
  * glyph ascends above the baseline.
  */
 /**
- * PANGO_DESCENT:
- * @rect: a `PangoRectangle`
+ * PANGO2_DESCENT:
+ * @rect: a `Pango2Rectangle`
  *
- * Extracts the *descent* from a `PangoRectangle`
+ * Extracts the *descent* from a `Pango2Rectangle`
  * representing glyph extents.
  *
  * The descent is the distance from the baseline to the
@@ -194,10 +194,10 @@ struct _PangoRectangle
  * glyph descends below the baseline.
  */
 /**
- * PANGO_LBEARING:
- * @rect: a `PangoRectangle`
+ * PANGO2_LBEARING:
+ * @rect: a `Pango2Rectangle`
  *
- * Extracts the *left bearing* from a `PangoRectangle`
+ * Extracts the *left bearing* from a `Pango2Rectangle`
  * representing glyph extents.
  *
  * The left bearing is the distance from the horizontal
@@ -206,10 +206,10 @@ struct _PangoRectangle
  * the right of the glyph origin.
  */
 /**
- * PANGO_RBEARING:
- * @rect: a `PangoRectangle`
+ * PANGO2_RBEARING:
+ * @rect: a `Pango2Rectangle`
  *
- * Extracts the *right bearing* from a `PangoRectangle`
+ * Extracts the *right bearing* from a `Pango2Rectangle`
  * representing glyph extents.
  *
  * The right bearing is the distance from the horizontal
@@ -217,14 +217,14 @@ struct _PangoRectangle
  * This is positive except for characters drawn completely
  * to the left of the horizontal origin.
  */
-#define PANGO_ASCENT(rect) (-(rect).y)
-#define PANGO_DESCENT(rect) ((rect).y + (rect).height)
-#define PANGO_LBEARING(rect) ((rect).x)
-#define PANGO_RBEARING(rect) ((rect).x + (rect).width)
+#define PANGO2_ASCENT(rect) (-(rect).y)
+#define PANGO2_DESCENT(rect) ((rect).y + (rect).height)
+#define PANGO2_LBEARING(rect) ((rect).x)
+#define PANGO2_RBEARING(rect) ((rect).x + (rect).width)
 
-PANGO_AVAILABLE_IN_ALL
-void pango_extents_to_pixels (PangoRectangle *inclusive,
-                             PangoRectangle *nearest);
+PANGO2_AVAILABLE_IN_ALL
+void pango2_extents_to_pixels (Pango2Rectangle *inclusive,
+                               Pango2Rectangle *nearest);
 
 
 #include <pango/pango-direction.h>
@@ -234,55 +234,55 @@ void pango_extents_to_pixels (PangoRectangle *inclusive,
 #include <pango/pango-script.h>
 
 /**
- * PangoAlignment:
- * @PANGO_ALIGN_LEFT: Put all available space on the right
- * @PANGO_ALIGN_CENTER: Center the line within the available space
- * @PANGO_ALIGN_RIGHT: Put all available space on the left
- * @PANGO_ALIGN_NATURAL: Use left or right alignment, depending
+ * Pango2Alignment:
+ * @PANGO2_ALIGN_LEFT: Put all available space on the right
+ * @PANGO2_ALIGN_CENTER: Center the line within the available space
+ * @PANGO2_ALIGN_RIGHT: Put all available space on the left
+ * @PANGO2_ALIGN_NATURAL: Use left or right alignment, depending
  *   on the text direction of the paragraph
- * @PANGO_ALIGN_JUSTIFY: Justify the content to fill the available space
+ * @PANGO2_ALIGN_JUSTIFY: Justify the content to fill the available space
  *
- * `PangoAlignment` describes how to align the lines of a `PangoLayout`
+ * `Pango2Alignment` describes how to align the lines of a `Pango2Layout`
  * within the available space.
  */
 typedef enum
 {
-  PANGO_ALIGN_LEFT,
-  PANGO_ALIGN_CENTER,
-  PANGO_ALIGN_RIGHT,
-  PANGO_ALIGN_NATURAL,
-  PANGO_ALIGN_JUSTIFY
-} PangoAlignment;
+  PANGO2_ALIGN_LEFT,
+  PANGO2_ALIGN_CENTER,
+  PANGO2_ALIGN_RIGHT,
+  PANGO2_ALIGN_NATURAL,
+  PANGO2_ALIGN_JUSTIFY
+} Pango2Alignment;
 
 /**
- * PangoWrapMode:
- * @PANGO_WRAP_WORD: wrap lines at word boundaries.
- * @PANGO_WRAP_CHAR: wrap lines at character boundaries.
- * @PANGO_WRAP_WORD_CHAR: wrap lines at word boundaries, but fall back to
+ * Pango2WrapMode:
+ * @PANGO2_WRAP_WORD: wrap lines at word boundaries.
+ * @PANGO2_WRAP_CHAR: wrap lines at character boundaries.
+ * @PANGO2_WRAP_WORD_CHAR: wrap lines at word boundaries, but fall back to
  *   character boundaries if there is not enough space for a full word.
  *
- * `PangoWrapMode` describes how to wrap the lines of a `PangoLayout`
+ * `Pango2WrapMode` describes how to wrap the lines of a `Pango2Layout`
  * to the desired width.
  *
- * For @PANGO_WRAP_WORD, Pango uses break opportunities that are determined
- * by the Unicode line breaking algorithm. For @PANGO_WRAP_CHAR, Pango allows
+ * For @PANGO2_WRAP_WORD, Pango2 uses break opportunities that are determined
+ * by the Unicode line breaking algorithm. For @PANGO2_WRAP_CHAR, Pango2 allows
  * breaking at grapheme boundaries that are determined by the Unicode text
  * segmentation algorithm.
  */
 typedef enum {
-  PANGO_WRAP_WORD,
-  PANGO_WRAP_CHAR,
-  PANGO_WRAP_WORD_CHAR
-} PangoWrapMode;
+  PANGO2_WRAP_WORD,
+  PANGO2_WRAP_CHAR,
+  PANGO2_WRAP_WORD_CHAR
+} Pango2WrapMode;
 
 /**
- * PangoEllipsizeMode:
- * @PANGO_ELLIPSIZE_NONE: No ellipsization
- * @PANGO_ELLIPSIZE_START: Omit characters at the start of the text
- * @PANGO_ELLIPSIZE_MIDDLE: Omit characters in the middle of the text
- * @PANGO_ELLIPSIZE_END: Omit characters at the end of the text
+ * Pango2EllipsizeMode:
+ * @PANGO2_ELLIPSIZE_NONE: No ellipsization
+ * @PANGO2_ELLIPSIZE_START: Omit characters at the start of the text
+ * @PANGO2_ELLIPSIZE_MIDDLE: Omit characters in the middle of the text
+ * @PANGO2_ELLIPSIZE_END: Omit characters at the end of the text
  *
- * `PangoEllipsizeMode` describes what sort of ellipsization
+ * `Pango2EllipsizeMode` describes what sort of ellipsization
  * should be applied to text.
  *
  * In the ellipsization process characters are removed from the
@@ -290,37 +290,37 @@ typedef enum {
  * with an ellipsis.
  */
 typedef enum {
-  PANGO_ELLIPSIZE_NONE,
-  PANGO_ELLIPSIZE_START,
-  PANGO_ELLIPSIZE_MIDDLE,
-  PANGO_ELLIPSIZE_END
-} PangoEllipsizeMode;
+  PANGO2_ELLIPSIZE_NONE,
+  PANGO2_ELLIPSIZE_START,
+  PANGO2_ELLIPSIZE_MIDDLE,
+  PANGO2_ELLIPSIZE_END
+} Pango2EllipsizeMode;
 
 /**
-* PangoLeadingTrim:
- * @PANGO_LEADING_TRIM_NONE: No trimming
- * @PANGO_LEADING_TRIM_START: Trim leading at the top
- * @PANGO_LEADING_TRIM_END: Trim leading at the bottom
+* Pango2LeadingTrim:
+ * @PANGO2_LEADING_TRIM_NONE: No trimming
+ * @PANGO2_LEADING_TRIM_START: Trim leading at the top
+ * @PANGO2_LEADING_TRIM_END: Trim leading at the bottom
  *
- * The `PangoLeadingTrim` flags control how the line height affects
+ * The `Pango2LeadingTrim` flags control how the line height affects
  * the extents of runs and lines.
  */
 typedef enum
 {
-  PANGO_LEADING_TRIM_NONE  = 0,
-  PANGO_LEADING_TRIM_START = 1 << 0,
-  PANGO_LEADING_TRIM_END   = 1 << 1,
-} PangoLeadingTrim;
+  PANGO2_LEADING_TRIM_NONE  = 0,
+  PANGO2_LEADING_TRIM_START = 1 << 0,
+  PANGO2_LEADING_TRIM_END   = 1 << 1,
+} Pango2LeadingTrim;
 
 /**
- * PANGO_LEADING_TRIM_BOTH:
+ * PANGO2_LEADING_TRIM_BOTH:
  *
- * Shorthand for `PANGO_LEADING_TRIM_START|PANGO_LEADING_TRIM_END`.
+ * Shorthand for `PANGO2_LEADING_TRIM_START|PANGO2_LEADING_TRIM_END`.
  */
-#define PANGO_LEADING_TRIM_BOTH (PANGO_LEADING_TRIM_START|PANGO_LEADING_TRIM_END)
+#define PANGO2_LEADING_TRIM_BOTH (PANGO2_LEADING_TRIM_START|PANGO2_LEADING_TRIM_END)
 
 /*
- * PANGO_DECLARE_INTERNAL_TYPE:
+ * PANGO2_DECLARE_INTERNAL_TYPE:
  * @ModuleObjName: The name of the new type, in camel case (like GtkWidget)
  * @module_obj_name: The name of the new type in lowercase, with words
  *  separated by '_' (like 'gtk_widget')
@@ -337,7 +337,7 @@ typedef enum
  * derive this type, assuming they have access to the instance and class
  * structures; external users will not be able to subclass this type.
  */
-#define PANGO_DECLARE_INTERNAL_TYPE(ModuleObjName, module_obj_name, MODULE, OBJ_NAME, ParentName) \
+#define PANGO2_DECLARE_INTERNAL_TYPE(ModuleObjName, module_obj_name, MODULE, OBJ_NAME, ParentName) \
   GType module_obj_name##_get_type (void);                                                               \
   G_GNUC_BEGIN_IGNORE_DEPRECATIONS                                                                       \
   typedef struct _##ModuleObjName ModuleObjName;                                                         \

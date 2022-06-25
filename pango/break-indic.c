@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * break-indic.c:
  *
  * Copyright (C) 2006 Red Hat Software
@@ -11,7 +11,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -79,21 +79,21 @@
 #define MLYM_AU 0x0D4C
 
 #define IS_COMPOSITE_WITH_BRAHMI_NUKTA(c) ( \
-	(c >= BENGALI_RRA  && c <= BENGALI_YYA) || \
-	(c >= DEV_QA  && c <= DEV_YA) || (c == DEV_RRA) || (c >= DEV_KHHA  && c <= DEV_YYA) || \
-	(c >= KNDA_EE  && c <= KNDA_AI) ||(c >= KNDA_O  && c <= KNDA_OO) || \
-	(c == TAMIL_O) || (c == TAMIL_OO) || (c == TAMIL_AU) || \
-	(c == TELUGU_EE) || (c == TELUGU_AI) || \
-	(c == ORIYA_AI) || (c == ORIYA_O) || (c == ORIYA_AU) || \
-	(c >= GURUMUKHI_KHHA  && c <= GURUMUKHI_RRA) || (c == GURUMUKHI_FA)|| (c == GURUMUKHI_LLA)|| (c == GURUMUKHI_SHA) || \
-	FALSE)
+        (c >= BENGALI_RRA  && c <= BENGALI_YYA) || \
+        (c >= DEV_QA  && c <= DEV_YA) || (c == DEV_RRA) || (c >= DEV_KHHA  && c <= DEV_YYA) || \
+        (c >= KNDA_EE  && c <= KNDA_AI) ||(c >= KNDA_O  && c <= KNDA_OO) || \
+        (c == TAMIL_O) || (c == TAMIL_OO) || (c == TAMIL_AU) || \
+        (c == TELUGU_EE) || (c == TELUGU_AI) || \
+        (c == ORIYA_AI) || (c == ORIYA_O) || (c == ORIYA_AU) || \
+        (c >= GURUMUKHI_KHHA  && c <= GURUMUKHI_RRA) || (c == GURUMUKHI_FA)|| (c == GURUMUKHI_LLA)|| (c == GURUMUKHI_SHA) || \
+        FALSE)
 #define IS_SPLIT_MATRA_BRAHMI(c) ( \
-	(c == BENGALI_SIGN_O) || (c == BENGALI_SIGN_AU) || \
-	(c >= MLYM_O  && c <= MLYM_AU) || \
-	FALSE)
+        (c == BENGALI_SIGN_O) || (c == BENGALI_SIGN_AU) || \
+        (c >= MLYM_O  && c <= MLYM_AU) || \
+        FALSE)
 
 static void
-not_cursor_position (PangoLogAttr *attr)
+not_cursor_position (Pango2LogAttr *attr)
 {
   if (!attr->is_mandatory_break)
     {
@@ -105,11 +105,11 @@ not_cursor_position (PangoLogAttr *attr)
 }
 
 static void
-break_indic (const char          *text,
-	     int                  length,
-	     const PangoAnalysis *analysis,
-	     PangoLogAttr        *attrs,
-	     int                  attrs_len G_GNUC_UNUSED)
+break_indic (const char           *text,
+             int                   length,
+             const Pango2Analysis *analysis,
+             Pango2LogAttr        *attrs,
+             int                   attrs_len G_GNUC_UNUSED)
 {
   const char *p, *next = NULL, *next_next;
   gunichar prev_wc, this_wc, next_wc, next_next_wc;
@@ -129,84 +129,84 @@ break_indic (const char          *text,
       }
 
       if (next != NULL && next < (text + length))
-	{
-	  next_wc = g_utf8_get_char (next);
-	  next_next = g_utf8_next_char (next);
-	}
+        {
+          next_wc = g_utf8_get_char (next);
+          next_next = g_utf8_next_char (next);
+        }
       else
-	{
-	  next_wc = 0;
-	  next_next = NULL;
-	}
+        {
+          next_wc = 0;
+          next_next = NULL;
+        }
       if (next_next != NULL && next_next < (text + length))
-	next_next_wc = g_utf8_get_char (next_next);
+        next_next_wc = g_utf8_get_char (next_next);
       else
-	next_next_wc = 0;
+        next_next_wc = 0;
 
       switch (analysis->script)
       {
         case G_UNICODE_SCRIPT_SINHALA:
-	  /*
-	   * TODO: The cursor position should be based on the state table.
-	   *       This is the wrong place to be doing this.
-	   */
+          /*
+           * TODO: The cursor position should be based on the state table.
+           *       This is the wrong place to be doing this.
+           */
 
-	  /*
-	   * The cursor should treat as a single glyph:
-	   * SINHALA CONS + 0x0DCA + 0x200D + SINHALA CONS
-	   * SINHALA CONS + 0x200D + 0x0DCA + SINHALA CONS
-	   */
-	  if ((this_wc == 0x0DCA && next_wc == 0x200D)
-	      || (this_wc == 0x200D && next_wc == 0x0DCA))
-	    {
-	      not_cursor_position(&attrs[i]);
-	      not_cursor_position(&attrs[i + 1]);
-	      is_conjunct = TRUE;
-	    }
-	  else if (is_conjunct
-		   && (prev_wc == 0x200D || prev_wc == 0x0DCA)
-		   && this_wc >= 0x0D9A
-		   && this_wc <= 0x0DC6)
-	    {
-	      not_cursor_position(&attrs[i]);
-	      is_conjunct = FALSE;
-	    }
-	  /*
-	   * Consonant clusters do NOT result in implicit conjuncts
-	   * in SINHALA orthography.
-	   */
-	  else if (!is_conjunct && prev_wc == 0x0DCA && this_wc != 0x200D)
-	    {
-	      attrs[i].is_cursor_position = TRUE;
-	    }
+          /*
+           * The cursor should treat as a single glyph:
+           * SINHALA CONS + 0x0DCA + 0x200D + SINHALA CONS
+           * SINHALA CONS + 0x200D + 0x0DCA + SINHALA CONS
+           */
+          if ((this_wc == 0x0DCA && next_wc == 0x200D)
+              || (this_wc == 0x200D && next_wc == 0x0DCA))
+            {
+              not_cursor_position(&attrs[i]);
+              not_cursor_position(&attrs[i + 1]);
+              is_conjunct = TRUE;
+            }
+          else if (is_conjunct
+                   && (prev_wc == 0x200D || prev_wc == 0x0DCA)
+                   && this_wc >= 0x0D9A
+                   && this_wc <= 0x0DC6)
+            {
+              not_cursor_position(&attrs[i]);
+              is_conjunct = FALSE;
+            }
+          /*
+           * Consonant clusters do NOT result in implicit conjuncts
+           * in SINHALA orthography.
+           */
+          else if (!is_conjunct && prev_wc == 0x0DCA && this_wc != 0x200D)
+            {
+              attrs[i].is_cursor_position = TRUE;
+            }
 
-	  break;
+          break;
 
-	default:
+        default:
 
-	  if (prev_wc != 0 && (this_wc == 0x200D || this_wc == 0x200C))
-	    {
-	      not_cursor_position(&attrs[i]);
-	      if (next_wc != 0)
-		{
-		  not_cursor_position(&attrs[i+1]);
-		  if ((next_next_wc != 0) &&
-		       (next_wc == 0x09CD ||	/* Bengali */
-			next_wc == 0x0ACD ||	/* Gujarati */
-			next_wc == 0x094D ||	/* Hindi */
-			next_wc == 0x0CCD ||	/* Kannada */
-			next_wc == 0x0D4D ||	/* Malayalam */
-			next_wc == 0x0B4D ||	/* Oriya */
-			next_wc == 0x0A4D ||	/* Punjabi */
-			next_wc == 0x0BCD ||	/* Tamil */
-			next_wc == 0x0C4D))	/* Telugu */
-		    {
-		      not_cursor_position(&attrs[i+2]);
-		    }
-		}
-	    }
+          if (prev_wc != 0 && (this_wc == 0x200D || this_wc == 0x200C))
+            {
+              not_cursor_position(&attrs[i]);
+              if (next_wc != 0)
+                {
+                  not_cursor_position(&attrs[i+1]);
+                  if ((next_next_wc != 0) &&
+                       (next_wc == 0x09CD ||    /* Bengali */
+                        next_wc == 0x0ACD ||    /* Gujarati */
+                        next_wc == 0x094D ||    /* Hindi */
+                        next_wc == 0x0CCD ||    /* Kannada */
+                        next_wc == 0x0D4D ||    /* Malayalam */
+                        next_wc == 0x0B4D ||    /* Oriya */
+                        next_wc == 0x0A4D ||    /* Punjabi */
+                        next_wc == 0x0BCD ||    /* Tamil */
+                        next_wc == 0x0C4D))     /* Telugu */
+                    {
+                      not_cursor_position(&attrs[i+2]);
+                    }
+                }
+            }
 
-	  break;
+          break;
       }
     }
 }

@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  *
  * Copyright (C) 2022 Matthias Clasen
  *
@@ -29,12 +29,12 @@
 #include "pango-font-private.h"
 
 /**
- * PangoGenericFamily:
+ * Pango2GenericFamily:
  *
- * An implementation of `PangoFontFamily`
+ * An implementation of `Pango2FontFamily`
  * that provides faces from other families.
  *
- * `PangoGenericFamily can be used to e.g. assemble a
+ * `Pango2GenericFamily can be used to e.g. assemble a
  * generic 'sans-serif' family from a number of other
  * font families.
  */
@@ -43,21 +43,21 @@
 /* {{{ GListModel implementation */
 
 static GType
-pango_generic_family_get_item_type (GListModel *list)
+pango2_generic_family_get_item_type (GListModel *list)
 {
-  return PANGO_TYPE_FONT_FACE;
+  return PANGO2_TYPE_FONT_FACE;
 }
 
 static guint
-pango_generic_family_get_n_items (GListModel *list)
+pango2_generic_family_get_n_items (GListModel *list)
 {
-  PangoGenericFamily *self = PANGO_GENERIC_FAMILY (list);
+  Pango2GenericFamily *self = PANGO2_GENERIC_FAMILY (list);
   guint n;
 
   n = 0;
   for (int i = 0; i < self->families->len; i++)
     {
-      PangoHbFamily *family = g_ptr_array_index (self->families, i);
+      Pango2HbFamily *family = g_ptr_array_index (self->families, i);
 
       n += g_list_model_get_n_items (G_LIST_MODEL (family));
     }
@@ -66,16 +66,16 @@ pango_generic_family_get_n_items (GListModel *list)
 }
 
 static gpointer
-pango_generic_family_get_item (GListModel *list,
-                               guint       position)
+pango2_generic_family_get_item (GListModel *list,
+                                guint       position)
 {
-  PangoGenericFamily *self = PANGO_GENERIC_FAMILY (list);
+  Pango2GenericFamily *self = PANGO2_GENERIC_FAMILY (list);
   guint pos;
 
   pos = position;
   for (int i = 0; i < self->families->len; i++)
     {
-      PangoHbFamily *family = g_ptr_array_index (self->families, i);
+      Pango2HbFamily *family = g_ptr_array_index (self->families, i);
 
       if (pos < g_list_model_get_n_items (G_LIST_MODEL (family)))
         return g_list_model_get_item (G_LIST_MODEL (family), pos);
@@ -87,56 +87,56 @@ pango_generic_family_get_item (GListModel *list,
 }
 
 static void
-pango_generic_family_list_model_init (GListModelInterface *iface)
+pango2_generic_family_list_model_init (GListModelInterface *iface)
 {
-  iface->get_item_type = pango_generic_family_get_item_type;
-  iface->get_n_items = pango_generic_family_get_n_items;
-  iface->get_item = pango_generic_family_get_item;
+  iface->get_item_type = pango2_generic_family_get_item_type;
+  iface->get_n_items = pango2_generic_family_get_n_items;
+  iface->get_item = pango2_generic_family_get_item;
 }
 
 /* }}} */
-/* {{{ PangoFontFamily implementation */
+/* {{{ Pango2FontFamily implementation */
 
-struct _PangoGenericFamilyClass
+struct _Pango2GenericFamilyClass
 {
-  PangoFontFamilyClass parent_class;
+  Pango2FontFamilyClass parent_class;
 };
 
-G_DEFINE_FINAL_TYPE_WITH_CODE (PangoGenericFamily, pango_generic_family, PANGO_TYPE_FONT_FAMILY,
-                         G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango_generic_family_list_model_init))
+G_DEFINE_FINAL_TYPE_WITH_CODE (Pango2GenericFamily, pango2_generic_family, PANGO2_TYPE_FONT_FAMILY,
+                               G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango2_generic_family_list_model_init))
 
 static void
-pango_generic_family_init (PangoGenericFamily *self)
+pango2_generic_family_init (Pango2GenericFamily *self)
 {
   self->families = g_ptr_array_new_with_free_func (g_object_unref);
 }
 
 static void
-pango_generic_family_finalize (GObject *object)
+pango2_generic_family_finalize (GObject *object)
 {
-  PangoGenericFamily *self = PANGO_GENERIC_FAMILY (object);
+  Pango2GenericFamily *self = PANGO2_GENERIC_FAMILY (object);
 
   g_ptr_array_unref (self->families);
 
-  G_OBJECT_CLASS (pango_generic_family_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango2_generic_family_parent_class)->finalize (object);
 }
 
 static void
-pango_generic_family_class_init (PangoGenericFamilyClass *class)
+pango2_generic_family_class_init (Pango2GenericFamilyClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
 
-  object_class->finalize = pango_generic_family_finalize;
+  object_class->finalize = pango2_generic_family_finalize;
 }
 
 /* }}} */
 /* {{{ Private API */
 
 /*< private >
- * pango_generic_family_find_face:
- * @family: a `PangoGenericFamily`
- * @description: `PangoFontDescription` to match
- * @language: (nullable): `PangoLanguage` to support
+ * pango2_generic_family_find_face:
+ * @family: a `Pango2GenericFamily`
+ * @description: `Pango2FontDescription` to match
+ * @language: (nullable): `Pango2Language` to support
  * @wc: a Unicode character, or 0 to ignore
  *
  * Finds the face that best matches the font description while
@@ -145,19 +145,19 @@ pango_generic_family_class_init (PangoGenericFamilyClass *class)
  *
  * Returns: (transfer none) (nullable): the face
  */
-PangoFontFace *
-pango_generic_family_find_face (PangoGenericFamily   *self,
-                                PangoFontDescription *description,
-                                PangoLanguage        *language,
-                                gunichar              wc)
+Pango2FontFace *
+pango2_generic_family_find_face (Pango2GenericFamily   *self,
+                                 Pango2FontDescription *description,
+                                 Pango2Language        *language,
+                                 gunichar               wc)
 {
-  PangoFontFace *face = NULL;
+  Pango2FontFace *face = NULL;
 
   for (int i = 0; i < self->families->len; i++)
     {
-      PangoHbFamily *family = g_ptr_array_index (self->families, i);
+      Pango2HbFamily *family = g_ptr_array_index (self->families, i);
 
-      face = pango_hb_family_find_face (family, description, language, wc);
+      face = pango2_hb_family_find_face (family, description, language, wc);
       if (face)
         break;
     }
@@ -165,7 +165,7 @@ pango_generic_family_find_face (PangoGenericFamily   *self,
   /* last resort */
   if (!face && self->families->len > 0)
     {
-      PangoHbFamily *family = g_ptr_array_index (self->families, 0);
+      Pango2HbFamily *family = g_ptr_array_index (self->families, 0);
       face = g_list_model_get_item (G_LIST_MODEL (family), 0);
       g_object_unref (face);
     }
@@ -177,46 +177,46 @@ pango_generic_family_find_face (PangoGenericFamily   *self,
 /* {{{ Public API */
 
 /**
- * pango_generic_family_new:
+ * pango2_generic_family_new:
  * @name: the family name
  *
- * Creates a new `PangoGenericFamily`.
+ * Creates a new `Pango2GenericFamily`.
  *
  * A generic family does not contain faces, but will return
  * faces from other families that match a given query.
  *
- * Returns: a newly created `PangoGenericFamily`
+ * Returns: a newly created `Pango2GenericFamily`
  */
-PangoGenericFamily *
-pango_generic_family_new (const char *name)
+Pango2GenericFamily *
+pango2_generic_family_new (const char *name)
 {
-  PangoGenericFamily *self;
+  Pango2GenericFamily *self;
 
   g_return_val_if_fail (name != NULL, NULL);
 
-  self = g_object_new (PANGO_TYPE_GENERIC_FAMILY, NULL);
+  self = g_object_new (PANGO2_TYPE_GENERIC_FAMILY, NULL);
 
-  pango_font_family_set_name (PANGO_FONT_FAMILY (self), name);
+  pango2_font_family_set_name (PANGO2_FONT_FAMILY (self), name);
 
   return self;
 }
 
 /**
- * pango_generic_family_add_family:
- * @self: a `PangoGenericFamily`
- * @family: (transfer none): a `PangoFontFamily` to add
+ * pango2_generic_family_add_family:
+ * @self: a `Pango2GenericFamily`
+ * @family: (transfer none): a `Pango2FontFamily` to add
  *
- * Adds a `PangoFontFamily` to a `PangoGenericFamily`.
+ * Adds a `Pango2FontFamily` to a `Pango2GenericFamily`.
  *
  * It is an error to call this function more than
  * once for the same family.
  */
 void
-pango_generic_family_add_family (PangoGenericFamily *self,
-                                 PangoFontFamily    *family)
+pango2_generic_family_add_family (Pango2GenericFamily *self,
+                                  Pango2FontFamily    *family)
 {
-  g_return_if_fail (PANGO_IS_GENERIC_FAMILY (self));
-  g_return_if_fail (PANGO_IS_FONT_FAMILY (family));
+  g_return_if_fail (PANGO2_IS_GENERIC_FAMILY (self));
+  g_return_if_fail (PANGO2_IS_FONT_FAMILY (family));
 
   g_ptr_array_add (self->families, g_object_ref (family));
 }

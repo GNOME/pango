@@ -1,5 +1,5 @@
-/* Pango
- * markup-parse.c: Test Pango markup
+/* Pango2
+ * markup-parse.c: Test Pango2 markup
  *
  * Copyright (C) 2014 Red Hat, Inc
  *
@@ -40,10 +40,10 @@ test_file (const char *filename, GString *string)
   gsize  length;
   GError *error = NULL;
   char *text;
-  PangoAttrList *attrs;
-  PangoAttrIterator *iter;
-  PangoFontDescription *desc;
-  PangoLanguage *lang;
+  Pango2AttrList *attrs;
+  Pango2AttrIterator *iter;
+  Pango2FontDescription *desc;
+  Pango2Language *lang;
   gboolean ret;
   char *str;
   int start, end;
@@ -52,7 +52,7 @@ test_file (const char *filename, GString *string)
   g_file_get_contents (filename, &contents, &length, &error);
   g_assert_no_error (error);
 
-  ret = pango_parse_markup (contents, length, '_', &attrs, &text, &accel, &error);
+  ret = pango2_parse_markup (contents, length, '_', &attrs, &text, &accel, &error);
 
   if (ret)
     {
@@ -61,18 +61,18 @@ test_file (const char *filename, GString *string)
       g_string_append (string, "\n\n---\n\n");
       print_attr_list (attrs, string);
       g_string_append (string, "\n\n---\n\n");
-      desc = pango_font_description_new ();
-      iter = pango_attr_list_get_iterator (attrs);
+      desc = pango2_font_description_new ();
+      iter = pango2_attr_list_get_iterator (attrs);
       do {
-        pango_attr_iterator_range (iter, &start, &end);
-        pango_attr_iterator_get_font (iter, desc, &lang, NULL);
-        str = pango_font_description_to_string (desc);
+        pango2_attr_iterator_range (iter, &start, &end);
+        pango2_attr_iterator_get_font (iter, desc, &lang, NULL);
+        str = pango2_font_description_to_string (desc);
         g_string_append_printf (string, "[%d:%d] %s %s\n", start, end, (char *)lang, str);
         g_free (str);
-      } while (pango_attr_iterator_next (iter));
-      pango_attr_iterator_destroy (iter);
-      pango_attr_list_unref (attrs);
-      pango_font_description_free (desc);
+      } while (pango2_attr_iterator_next (iter));
+      pango2_attr_iterator_destroy (iter);
+      pango2_attr_list_unref (attrs);
+      pango2_font_description_free (desc);
       g_free (text);
 
       if (accel)
@@ -82,7 +82,7 @@ test_file (const char *filename, GString *string)
         }
 
       /* Check that all optional arguments can be NULL */
-      ret = pango_parse_markup (contents, length, '_', NULL, NULL, NULL, NULL);
+      ret = pango2_parse_markup (contents, length, '_', NULL, NULL, NULL, NULL);
       g_assert_true (ret);
     }
   else
@@ -147,10 +147,10 @@ test_file_incrementally (const char *filename, GString *string)
   gsize  length;
   GError *error = NULL;
   char *text;
-  PangoAttrList *attrs;
-  PangoAttrIterator *iter;
-  PangoFontDescription *desc;
-  PangoLanguage *lang;
+  Pango2AttrList *attrs;
+  Pango2AttrIterator *iter;
+  Pango2FontDescription *desc;
+  Pango2Language *lang;
   gboolean ret;
   char *str;
   int start, end;
@@ -160,7 +160,7 @@ test_file_incrementally (const char *filename, GString *string)
   g_file_get_contents (filename, &contents, &length, &error);
   g_assert_no_error (error);
 
-  ctx = pango_markup_parser_new ('_');
+  ctx = pango2_markup_parser_new ('_');
 
   ret = TRUE;
   for (int i = 0; i < length; i++)
@@ -174,25 +174,25 @@ test_file_incrementally (const char *filename, GString *string)
 
   if (ret)
     {
-      pango_markup_parser_finish (ctx, &attrs, &text, &accel, &error);
+      pango2_markup_parser_finish (ctx, &attrs, &text, &accel, &error);
 
       g_assert_no_error (error);
       g_string_append (string, text);
       g_string_append (string, "\n\n---\n\n");
       print_attr_list (attrs, string);
       g_string_append (string, "\n\n---\n\n");
-      desc = pango_font_description_new ();
-      iter = pango_attr_list_get_iterator (attrs);
+      desc = pango2_font_description_new ();
+      iter = pango2_attr_list_get_iterator (attrs);
       do {
-        pango_attr_iterator_range (iter, &start, &end);
-        pango_attr_iterator_get_font (iter, desc, &lang, NULL);
-        str = pango_font_description_to_string (desc);
+        pango2_attr_iterator_range (iter, &start, &end);
+        pango2_attr_iterator_get_font (iter, desc, &lang, NULL);
+        str = pango2_font_description_to_string (desc);
         g_string_append_printf (string, "[%d:%d] %s %s\n", start, end, (char *)lang, str);
         g_free (str);
-      } while (pango_attr_iterator_next (iter));
-      pango_attr_iterator_destroy (iter);
-      pango_attr_list_unref (attrs);
-      pango_font_description_free (desc);
+      } while (pango2_attr_iterator_next (iter));
+      pango2_attr_iterator_destroy (iter);
+      pango2_attr_list_unref (attrs);
+      pango2_font_description_free (desc);
       g_free (text);
 
       if (accel)

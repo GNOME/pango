@@ -26,19 +26,19 @@
 G_BEGIN_DECLS
 
 
-#define PANGO_TYPE_FONT_FAMILY              (pango_font_family_get_type ())
+#define PANGO2_TYPE_FONT_FAMILY              (pango2_font_family_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-PANGO_DECLARE_INTERNAL_TYPE (PangoFontFamily, pango_font_family, PANGO, FONT_FAMILY, GObject)
+PANGO2_AVAILABLE_IN_ALL
+PANGO2_DECLARE_INTERNAL_TYPE (Pango2FontFamily, pango2_font_family, PANGO2, FONT_FAMILY, GObject)
 
-PANGO_AVAILABLE_IN_ALL
-PangoFontMap *          pango_font_family_get_font_map  (PangoFontFamily  *family);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontMap *         pango2_font_family_get_font_map  (Pango2FontFamily  *family);
 
-PANGO_AVAILABLE_IN_ALL
-const char *            pango_font_family_get_name      (PangoFontFamily  *family) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+const char *            pango2_font_family_get_name      (Pango2FontFamily  *family) G_GNUC_PURE;
 
-PANGO_AVAILABLE_IN_ALL
-PangoFontFace *         pango_font_family_get_face      (PangoFontFamily  *family,
-                                                         const char       *name);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontFace *        pango2_font_family_get_face      (Pango2FontFamily  *family,
+                                                          const char        *name);
 
 G_END_DECLS

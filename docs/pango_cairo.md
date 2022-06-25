@@ -11,15 +11,15 @@ files, and to the screen on X and on other windowing systems. The functions in
 this section allow using Pango to render to Cairo surfaces.
 
 Using Pango with Cairo is straightforward. A `PangoContext` created with
-[func@Pango.cairo_create_context] can be used on any Cairo context (`cairo_t`),
+[func@Pango2.cairo_create_context] can be used on any Cairo context (`cairo_t`),
 but needs to be updated to match the current transformation matrix and target
-surface of the Cairo context using [func@Pango.cairo_update_context].
-The convenience functions [func@Pango.cairo_create_layout] and
-[func@Pango.cairo_update_layout] handle the common case where the program
+surface of the Cairo context using [func@Pango2.cairo_update_context].
+The convenience functions [func@Pango2.cairo_create_layout] and
+[func@Pango2.cairo_update_layout] handle the common case where the program
 doesn't need to manipulate the properties of the `PangoContext`.
 
 When you get the metrics of a layout or of a piece of a layout using functions
-such as [method@Pango.Lines.get_extents], the reported metrics are in user-space
+such as [method@Pango2.Lines.get_extents], the reported metrics are in user-space
 coordinates. If a piece of text is 10 units long, and you call
 `cairo_scale (cr, 2.0)`, it still is more-or-less 10 units long. However, the
 results will be affected by hinting (that is, the process of adjusting the text

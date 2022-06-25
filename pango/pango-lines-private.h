@@ -28,7 +28,7 @@ struct _Position
   int x, y;
 };
 
-struct _PangoLines
+struct _Pango2Lines
 {
   GObject parent_instance;
 

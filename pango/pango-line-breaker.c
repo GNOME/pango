@@ -23,52 +23,52 @@
 #endif
 
 /**
- * PangoLineBreaker:
+ * Pango2LineBreaker:
  *
- * A `PangoLineBreaker` breaks text into lines.
+ * A `Pango2LineBreaker` breaks text into lines.
  *
- * To use a `PangoLineBreaker`, you must call [method@Pango.LineBreaker.add_text]
+ * To use a `Pango2LineBreaker`, you must call [method@Pango2.LineBreaker.add_text]
  * to provide text that you want to break into lines, plus possibly attributes
  * to influence the formatting.
  *
- * Then you can call [method@Pango.LineBreaker.next_line] repeatedly to obtain
- * `PangoLine` objects for the text, one by one.
+ * Then you can call [method@Pango2.LineBreaker.next_line] repeatedly to obtain
+ * `Pango2Line` objects for the text, one by one.
  *
- * `PangoLineBreaker` is meant to enable use cases like flowing text around images,
- * or shaped paragraphs. For simple formatting needs, [class@Pango.Layout]
+ * `Pango2LineBreaker` is meant to enable use cases like flowing text around images,
+ * or shaped paragraphs. For simple formatting needs, [class@Pango2.Layout]
  * is probably more convenient to use.
  */
 
 typedef struct _LastTabState LastTabState;
 struct _LastTabState
 {
-  PangoGlyphString *glyphs;
+  Pango2GlyphString *glyphs;
   int index;
   int width;
   int pos;
-  PangoTabAlign align;
+  Pango2TabAlign align;
   gunichar decimal;
 };
 
-struct _PangoLineBreaker
+struct _Pango2LineBreaker
 {
   GObject parent_instance;
 
   /* Properties */
-  PangoContext *context;
-  PangoDirection base_dir;
-  PangoTabArray *tabs;
+  Pango2Context *context;
+  Pango2Direction base_dir;
+  Pango2TabArray *tabs;
 
   /* Data that we're building lines from, shared among all the lines */
   GSList *datas;     /* Queued up LineData */
   LineData *data;    /* The LineData we're currently processing */
   GList *data_items; /* Original items for data (only used for undoing) */
   GList *items;      /* The remaining unprocessed items for data */
-  PangoAttrList *render_attrs; /* Attributes to be re-added after line breaking */
+  Pango2AttrList *render_attrs; /* Attributes to be re-added after line breaking */
 
   /* Arguments to next_line, for use while processing the next line */
-  PangoWrapMode line_wrap;
-  PangoEllipsizeMode line_ellipsize;
+  Pango2WrapMode line_wrap;
+  Pango2EllipsizeMode line_ellipsize;
 
   int tab_width;                  /* Cached width of a tab. -1 == not yet calculated */
   int hyphen_width;               /* Cached width of a hyphen. -1 == not yet calculated */
@@ -76,7 +76,7 @@ struct _PangoLineBreaker
 
   /* State for line breaking */
   int n_lines;                    /* Line count, starting from 0 */
-  PangoGlyphString *glyphs;       /* Glyphs for the first item in self->items */
+  Pango2GlyphString *glyphs;       /* Glyphs for the first item in self->items */
   int start_offset;               /* Character offset of first item in self->items in self->data->text */
   ItemProperties properties;      /* Properties of the first item in self->items */
   int *log_widths;                /* Logical widths for th efirst item in self->items */
@@ -98,7 +98,7 @@ struct _PangoLineBreaker
   LastTabState last_tab;
 };
 
-struct _PangoLineBreakerClass
+struct _Pango2LineBreakerClass
 {
   GObjectClass parent_class;
 };
@@ -106,10 +106,10 @@ struct _PangoLineBreakerClass
 /* {{{ Utilities */
 
 static LineData *
-make_line_data (PangoLineBreaker *self,
-                const char       *text,
-                int               length,
-                PangoAttrList    *attrs)
+make_line_data (Pango2LineBreaker *self,
+                const char        *text,
+                int                length,
+                Pango2AttrList    *attrs)
 {
   LineData *data;
 
@@ -118,12 +118,12 @@ make_line_data (PangoLineBreaker *self,
 
   data = line_data_new ();
 
-  if (self->base_dir == PANGO_DIRECTION_NEUTRAL)
+  if (self->base_dir == PANGO2_DIRECTION_NEUTRAL)
     {
-      data->direction = pango_find_base_dir (text, length);
+      data->direction = pango2_find_base_dir (text, length);
 
-      if (data->direction == PANGO_DIRECTION_NEUTRAL)
-        data->direction = pango_context_get_base_dir (self->context);
+      if (data->direction == PANGO2_DIRECTION_NEUTRAL)
+        data->direction = pango2_context_get_base_dir (self->context);
     }
   else
     data->direction = self->base_dir;
@@ -132,14 +132,14 @@ make_line_data (PangoLineBreaker *self,
   data->length = length;
   data->n_chars = g_utf8_strlen (text, length);
   if (attrs)
-    data->attrs = pango_attr_list_copy (attrs);
+    data->attrs = pango2_attr_list_copy (attrs);
 
   return data;
 }
 
 static gboolean
-item_is_paragraph_separator (PangoLineBreaker *self,
-                             PangoItem        *item)
+item_is_paragraph_separator (Pango2LineBreaker *self,
+                             Pango2Item        *item)
 {
   gunichar ch;
 
@@ -152,71 +152,71 @@ item_is_paragraph_separator (PangoLineBreaker *self,
 }
 
 static void
-apply_attributes_to_items (GList         *items,
-                           PangoAttrList *attrs)
+apply_attributes_to_items (GList          *items,
+                           Pango2AttrList *attrs)
 {
   GList *l;
-  PangoAttrIterator iter;
+  Pango2AttrIterator iter;
 
   if (!attrs)
     return;
 
-  pango_attr_list_init_iterator (attrs, &iter);
+  pango2_attr_list_init_iterator (attrs, &iter);
 
   for (l = items; l; l = l->next)
     {
-      PangoItem *item = l->data;
-      pango_item_apply_attrs (item, &iter);
+      Pango2Item *item = l->data;
+      pango2_item_apply_attrs (item, &iter);
     }
 
-  pango_attr_iterator_clear (&iter);
+  pango2_attr_iterator_clear (&iter);
 }
 
-static PangoLogAttr *
+static Pango2LogAttr *
 get_log_attrs (LineData *data,
                GList    *items)
 {
-  PangoLogAttr *log_attrs;
+  Pango2LogAttr *log_attrs;
   int offset;
 
-  log_attrs = g_new0 (PangoLogAttr, (data->n_chars + 1));
+  log_attrs = g_new0 (Pango2LogAttr, (data->n_chars + 1));
 
-  pango_default_break (data->text,
-                       data->length,
-                       log_attrs,
-                       data->n_chars + 1);
+  pango2_default_break (data->text,
+                        data->length,
+                        log_attrs,
+                        data->n_chars + 1);
 
   offset = 0;
   for (GList *l = items; l; l = l->next)
     {
-      PangoItem *item = l->data;
+      Pango2Item *item = l->data;
 
-      pango_tailor_break (data->text + item->offset,
-                          item->length,
-                          &item->analysis,
-                          item->offset,
-                          log_attrs + offset,
-                          item->num_chars + 1);
+      pango2_tailor_break (data->text + item->offset,
+                           item->length,
+                           &item->analysis,
+                           item->offset,
+                           log_attrs + offset,
+                           item->num_chars + 1);
 
       offset += item->num_chars;
     }
 
   if (data->attrs)
-    pango_attr_break (data->text,
-                      data->length,
-                      data->attrs,
-                      0,
-                      log_attrs,
-                      data->n_chars + 1);
+    pango2_attr_break (data->text,
+                       data->length,
+                       data->attrs,
+                       0,
+                       log_attrs,
+                       data->n_chars + 1);
 
   return log_attrs;
 }
 
 static void
-ensure_items (PangoLineBreaker *self)
+ensure_items (Pango2LineBreaker *self)
 {
-  PangoAttrList *itemize_attrs = NULL;
-  PangoAttrList *shape_attrs = NULL;
+  Pango2AttrList *itemize_attrs = NULL;
+  Pango2AttrList *shape_attrs = NULL;
 
   if (self->items)
     return;
@@ -230,36 +230,36 @@ ensure_items (PangoLineBreaker *self)
   if (!self->data)
     return;
 
-  self->render_attrs = pango_attr_list_copy (self->data->attrs);
+  self->render_attrs = pango2_attr_list_copy (self->data->attrs);
   if (self->render_attrs)
     {
-      itemize_attrs = pango_attr_list_filter (self->render_attrs, pango_attribute_affects_itemization, NULL);
-      shape_attrs = pango_attr_list_filter (self->render_attrs, pango_attribute_affects_break_or_shape, NULL);
+      itemize_attrs = pango2_attr_list_filter (self->render_attrs, pango2_attribute_affects_itemization, NULL);
+      shape_attrs = pango2_attr_list_filter (self->render_attrs, pango2_attribute_affects_break_or_shape, NULL);
     }
 
-  self->items = pango_itemize_with_font (self->context,
-                                         self->data->direction,
-                                         self->data->text,
-                                         0,
-                                         self->data->length,
-                                         itemize_attrs,
-                                         NULL,
-                                         NULL);
+  self->items = pango2_itemize_with_font (self->context,
+                                          self->data->direction,
+                                          self->data->text,
+                                          0,
+                                          self->data->length,
+                                          itemize_attrs,
+                                          NULL,
+                                          NULL);
 
   apply_attributes_to_items (self->items, shape_attrs);
 
-  pango_attr_list_unref (itemize_attrs);
-  pango_attr_list_unref (shape_attrs);
+  pango2_attr_list_unref (itemize_attrs);
+  pango2_attr_list_unref (shape_attrs);
 
   self->data->log_attrs = get_log_attrs (self->data, self->items);
 
-  self->items = pango_itemize_post_process_items (self->context,
-                                                  self->data->text,
-                                                  self->data->log_attrs,
-                                                  self->items);
+  self->items = pango2_itemize_post_process_items (self->context,
+                                                   self->data->text,
+                                                   self->data->log_attrs,
+                                                   self->items);
 
   g_assert (self->data_items == NULL);
-  self->data_items = g_list_copy_deep (self->items, (GCopyFunc) pango_item_copy, NULL);
+  self->data_items = g_list_copy_deep (self->items, (GCopyFunc) pango2_item_copy, NULL);
 
   self->hyphen_width = -1;
   self->tab_width = -1;
@@ -270,7 +270,7 @@ ensure_items (PangoLineBreaker *self)
 
   g_list_free_full (self->baseline_shifts, g_free);
   self->baseline_shifts = NULL;
-  g_clear_pointer (&self->glyphs, pango_glyph_string_free);
+  g_clear_pointer (&self->glyphs, pango2_glyph_string_free);
   g_clear_pointer (&self->log_widths, g_free);
   self->num_log_widths = 0;
   self->log_widths_offset = 0;
@@ -282,27 +282,27 @@ ensure_items (PangoLineBreaker *self)
 /* The resolved direction for the line is always one
  * of LTR/RTL; not a week or neutral directions
  */
-static PangoDirection
-get_resolved_dir (PangoLineBreaker *self)
+static Pango2Direction
+get_resolved_dir (Pango2LineBreaker *self)
 {
-  PangoDirection dir;
+  Pango2Direction dir;
 
   ensure_items (self);
 
   if (!self->data)
-    return PANGO_DIRECTION_NEUTRAL;
+    return PANGO2_DIRECTION_NEUTRAL;
 
   switch (self->data->direction)
     {
     default:
-    case PANGO_DIRECTION_LTR:
-    case PANGO_DIRECTION_WEAK_LTR:
-    case PANGO_DIRECTION_NEUTRAL:
-      dir = PANGO_DIRECTION_LTR;
+    case PANGO2_DIRECTION_LTR:
+    case PANGO2_DIRECTION_WEAK_LTR:
+    case PANGO2_DIRECTION_NEUTRAL:
+      dir = PANGO2_DIRECTION_LTR;
       break;
-    case PANGO_DIRECTION_RTL:
-    case PANGO_DIRECTION_WEAK_RTL:
-      dir = PANGO_DIRECTION_RTL;
+    case PANGO2_DIRECTION_RTL:
+    case PANGO2_DIRECTION_WEAK_RTL:
+      dir = PANGO2_DIRECTION_RTL;
       break;
     }
 
@@ -320,20 +320,20 @@ get_resolved_dir (PangoLineBreaker *self)
    * itemize_state_add_character().  Keep in synch.
    */
 
-  switch (pango_context_get_gravity (self->context))
+  switch (pango2_context_get_gravity (self->context))
     {
     default:
-    case PANGO_GRAVITY_AUTO:
-    case PANGO_GRAVITY_SOUTH:
+    case PANGO2_GRAVITY_AUTO:
+    case PANGO2_GRAVITY_SOUTH:
       break;
-    case PANGO_GRAVITY_NORTH:
-      dir = PANGO_DIRECTION_LTR + PANGO_DIRECTION_RTL - dir;
+    case PANGO2_GRAVITY_NORTH:
+      dir = PANGO2_DIRECTION_LTR + PANGO2_DIRECTION_RTL - dir;
       break;
-    case PANGO_GRAVITY_EAST:
-      dir = PANGO_DIRECTION_LTR;
+    case PANGO2_GRAVITY_EAST:
+      dir = PANGO2_DIRECTION_LTR;
       break;
-    case PANGO_GRAVITY_WEST:
-      dir = PANGO_DIRECTION_RTL;
+    case PANGO2_GRAVITY_WEST:
+      dir = PANGO2_DIRECTION_RTL;
       break;
     }
 
@@ -341,28 +341,28 @@ get_resolved_dir (PangoLineBreaker *self)
 }
 
 static gboolean
-should_ellipsize_current_line (PangoLineBreaker *self,
-                               PangoLine        *line)
+should_ellipsize_current_line (Pango2LineBreaker *self,
+                               Pango2Line        *line)
 {
-  return self->line_ellipsize != PANGO_ELLIPSIZE_NONE && self->line_width >= 0;
+  return self->line_ellipsize != PANGO2_ELLIPSIZE_NONE && self->line_width >= 0;
 }
 
 static void
-get_decimal_prefix_width (PangoItem        *item,
-                          PangoGlyphString *glyphs,
-                          const char       *text,
-                          gunichar          decimal,
-                          int              *width,
-                          gboolean         *found)
+get_decimal_prefix_width (Pango2Item        *item,
+                          Pango2GlyphString *glyphs,
+                          const char        *text,
+                          gunichar           decimal,
+                          int               *width,
+                          gboolean          *found)
 {
-  PangoGlyphItem glyph_item = { item, glyphs, 0, 0, 0 };
+  Pango2GlyphItem glyph_item = { item, glyphs, 0, 0, 0 };
   int *log_widths;
   int i;
   const char *p;
 
   log_widths = g_new (int, item->num_chars);
 
-  pango_glyph_item_get_logical_widths (&glyph_item, text, log_widths);
+  pango2_glyph_item_get_logical_widths (&glyph_item, text, log_widths);
 
   *width = 0;
   *found = FALSE;
@@ -383,7 +383,7 @@ get_decimal_prefix_width (PangoItem        *item,
 }
 
 static int
-pango_line_compute_width (PangoLine *line)
+pango2_line_compute_width (Pango2Line *line)
 {
   int width = 0;
 
@@ -392,117 +392,117 @@ pango_line_compute_width (PangoLine *line)
    */
   for (GSList *l = line->runs; l; l = l->next)
     {
-      PangoGlyphItem *run = l->data;
-      width += pango_glyph_string_get_width (run->glyphs);
+      Pango2GlyphItem *run = l->data;
+      width += pango2_glyph_string_get_width (run->glyphs);
     }
 
   return width;
 }
 
 static inline int
-get_line_width (PangoLineBreaker *self,
-                PangoLine        *line)
+get_line_width (Pango2LineBreaker *self,
+                Pango2Line        *line)
 {
   if (self->remaining_width > -1)
     return self->line_width - self->remaining_width;
 
-  return pango_line_compute_width (line);
+  return pango2_line_compute_width (line);
 }
 
 static inline void
-ensure_decimal (PangoLineBreaker *self)
+ensure_decimal (Pango2LineBreaker *self)
 {
   if (self->decimal == 0)
     self->decimal = g_utf8_get_char (localeconv ()->decimal_point);
 }
 
 static void
-ensure_tab_width (PangoLineBreaker *self)
+ensure_tab_width (Pango2LineBreaker *self)
 {
   if (self->tab_width == -1)
     {
       /* Find out how wide 8 spaces are in the context's default
        * font. Utter performance killer. :-(
        */
-      PangoGlyphString *glyphs = pango_glyph_string_new ();
-      PangoItem *item;
+      Pango2GlyphString *glyphs = pango2_glyph_string_new ();
+      Pango2Item *item;
       GList *items;
-      PangoAttribute *attr;
-      PangoAttrList *attrs;
-      PangoAttrList tmp_attrs;
-      PangoFontDescription *font_desc = pango_font_description_copy_static (pango_context_get_font_description (self->context));
-      PangoLanguage *language = NULL;
-      PangoShapeFlags shape_flags = PANGO_SHAPE_NONE;
-      PangoDirection dir;
+      Pango2Attribute *attr;
+      Pango2AttrList *attrs;
+      Pango2AttrList tmp_attrs;
+      Pango2FontDescription *font_desc = pango2_font_description_copy_static (pango2_context_get_font_description (self->context));
+      Pango2Language *language = NULL;
+      Pango2ShapeFlags shape_flags = PANGO2_SHAPE_NONE;
+      Pango2Direction dir;
 
-      if (pango_context_get_round_glyph_positions (self->context))
-        shape_flags |= PANGO_SHAPE_ROUND_POSITIONS;
+      if (pango2_context_get_round_glyph_positions (self->context))
+        shape_flags |= PANGO2_SHAPE_ROUND_POSITIONS;
 
       attrs = self->data->attrs;
       if (attrs)
         {
-          PangoAttrIterator iter;
+          Pango2AttrIterator iter;
 
-          pango_attr_list_init_iterator (attrs, &iter);
-          pango_attr_iterator_get_font (&iter, font_desc, &language, NULL);
-          pango_attr_iterator_clear (&iter);
+          pango2_attr_list_init_iterator (attrs, &iter);
+          pango2_attr_iterator_get_font (&iter, font_desc, &language, NULL);
+          pango2_attr_iterator_clear (&iter);
         }
 
-      pango_attr_list_init (&tmp_attrs);
-      attr = pango_attr_font_desc_new (font_desc);
-      pango_font_description_free (font_desc);
-      pango_attr_list_insert_before (&tmp_attrs, attr);
+      pango2_attr_list_init (&tmp_attrs);
+      attr = pango2_attr_font_desc_new (font_desc);
+      pango2_font_description_free (font_desc);
+      pango2_attr_list_insert_before (&tmp_attrs, attr);
 
       if (language)
         {
-          attr = pango_attr_language_new (language);
-          pango_attr_list_insert_before (&tmp_attrs, attr);
+          attr = pango2_attr_language_new (language);
+          pango2_attr_list_insert_before (&tmp_attrs, attr);
         }
 
-      dir = pango_context_get_base_dir (self->context);
-      items = pango_itemize (self->context, dir, " ", 0, 1, &tmp_attrs);
+      dir = pango2_context_get_base_dir (self->context);
+      items = pango2_itemize (self->context, dir, " ", 0, 1, &tmp_attrs);
 
       if (attrs != self->data->attrs)
         {
-          pango_attr_list_unref (attrs);
+          pango2_attr_list_unref (attrs);
           attrs = NULL;
         }
 
-      pango_attr_list_destroy (&tmp_attrs);
+      pango2_attr_list_destroy (&tmp_attrs);
 
       item = items->data;
-      pango_shape ("        ", 8, "        ", 8, &item->analysis, glyphs, shape_flags);
+      pango2_shape ("        ", 8, "        ", 8, &item->analysis, glyphs, shape_flags);
 
-      pango_item_free (item);
+      pango2_item_free (item);
       g_list_free (items);
 
-      self->tab_width = pango_glyph_string_get_width (glyphs);
+      self->tab_width = pango2_glyph_string_get_width (glyphs);
 
-      pango_glyph_string_free (glyphs);
+      pango2_glyph_string_free (glyphs);
 
       /* We need to make sure the tab_width is > 0 so finding tab positions
        * terminates. This check should be necessary only under extreme
        * problems with the font.
        */
       if (self->tab_width <= 0)
-        self->tab_width = 50 * PANGO_SCALE; /* pretty much arbitrary */
+        self->tab_width = 50 * PANGO2_SCALE; /* pretty much arbitrary */
     }
 }
 
 static int
-get_item_letter_spacing (PangoItem *item)
+get_item_letter_spacing (Pango2Item *item)
 {
   ItemProperties properties;
 
-  pango_item_get_properties (item, &properties);
+  pango2_item_get_properties (item, &properties);
 
   return properties.letter_spacing;
 }
 
 static void
-pad_glyphstring_right (PangoLineBreaker *self,
-                       PangoGlyphString *glyphs,
-                       int               adjustment)
+pad_glyphstring_right (Pango2LineBreaker *self,
+                       Pango2GlyphString *glyphs,
+                       int                adjustment)
 {
   int glyph = glyphs->num_glyphs - 1;
 
@@ -523,9 +523,9 @@ pad_glyphstring_right (PangoLineBreaker *self,
 }
 
 static void
-pad_glyphstring_left (PangoLineBreaker *self,
-                      PangoGlyphString *glyphs,
-                      int               adjustment)
+pad_glyphstring_left (Pango2LineBreaker *self,
+                      Pango2GlyphString *glyphs,
+                      int                adjustment)
 {
   int glyph = 0;
 
@@ -542,8 +542,8 @@ pad_glyphstring_left (PangoLineBreaker *self,
 }
 
 static gboolean
-is_tab_run (PangoLine       *line,
-            PangoGlyphItem  *run)
+is_tab_run (Pango2Line      *line,
+            Pango2GlyphItem *run)
 {
   return line->data->text[run->item->offset] == '\t';
 }
@@ -561,9 +561,9 @@ reorder_runs_recurse (GSList *items,
     return NULL;
 
   tmp_list = items;
-  for (i=0; i<n_items; i++)
+  for (i = 0; i < n_items; i++)
     {
-      PangoGlyphItem *run = tmp_list->data;
+      Pango2GlyphItem *run = tmp_list->data;
 
       min_level = MIN (min_level, run->item->analysis.level);
 
@@ -575,7 +575,7 @@ reorder_runs_recurse (GSList *items,
   tmp_list = items;
   for (i=0; i<n_items; i++)
     {
-      PangoGlyphItem *run = tmp_list->data;
+      Pango2GlyphItem *run = tmp_list->data;
 
       if (run->item->analysis.level == min_level)
         {
@@ -614,7 +614,7 @@ reorder_runs_recurse (GSList *items,
 }
 
 static void
-pango_line_reorder (PangoLine *line)
+pango2_line_reorder (Pango2Line *line)
 {
   GSList *logical_runs = line->runs;
   GSList *tmp_list;
@@ -628,7 +628,7 @@ pango_line_reorder (PangoLine *line)
    */
   for (tmp_list = logical_runs; tmp_list != NULL; tmp_list = tmp_list->next)
     {
-      PangoGlyphItem *run = tmp_list->data;
+      Pango2GlyphItem *run = tmp_list->data;
 
       level_or |= run->item->analysis.level;
       level_and &= run->item->analysis.level;
@@ -652,13 +652,13 @@ pango_line_reorder (PangoLine *line)
 }
 
 static int
-compute_n_chars (PangoLine *line)
+compute_n_chars (Pango2Line *line)
 {
   int n_chars = 0;
 
   for (GSList *l = line->runs; l; l = l->next)
     {
-      PangoGlyphItem *run = l->data;
+      Pango2GlyphItem *run = l->data;
       n_chars += run->item->num_chars;
     }
 
@@ -669,13 +669,13 @@ compute_n_chars (PangoLine *line)
 /* {{{ Line Breaking */
 
 static void
-get_tab_pos (PangoLineBreaker *self,
-             PangoLine        *line,
-             int               index,
-             int              *tab_pos,
-             PangoTabAlign    *alignment,
-             gunichar         *decimal,
-             gboolean         *is_default)
+get_tab_pos (Pango2LineBreaker *self,
+             Pango2Line        *line,
+             int                index,
+             int               *tab_pos,
+             Pango2TabAlign    *alignment,
+             gunichar          *decimal,
+             gboolean          *is_default)
 {
   int n_tabs;
   gboolean in_pixels;
@@ -685,8 +685,8 @@ get_tab_pos (PangoLineBreaker *self,
 
   if (self->tabs)
     {
-      n_tabs = pango_tab_array_get_size (self->tabs);
-      in_pixels = pango_tab_array_get_positions_in_pixels (self->tabs);
+      n_tabs = pango2_tab_array_get_size (self->tabs);
+      in_pixels = pango2_tab_array_get_positions_in_pixels (self->tabs);
       *is_default = FALSE;
     }
   else
@@ -698,12 +698,12 @@ get_tab_pos (PangoLineBreaker *self,
 
   if (index < n_tabs)
     {
-      pango_tab_array_get_tab (self->tabs, index, alignment, tab_pos);
+      pango2_tab_array_get_tab (self->tabs, index, alignment, tab_pos);
 
       if (in_pixels)
-        *tab_pos *= PANGO_SCALE;
+        *tab_pos *= PANGO2_SCALE;
 
-      *decimal = pango_tab_array_get_decimal_point (self->tabs, index);
+      *decimal = pango2_tab_array_get_decimal_point (self->tabs, index);
     }
   else if (n_tabs > 0)
     {
@@ -712,18 +712,18 @@ get_tab_pos (PangoLineBreaker *self,
       int next_to_last_pos = 0;
       int tab_width;
 
-      pango_tab_array_get_tab (self->tabs, n_tabs - 1, alignment, &last_pos);
-      *decimal = pango_tab_array_get_decimal_point (self->tabs, n_tabs - 1);
+      pango2_tab_array_get_tab (self->tabs, n_tabs - 1, alignment, &last_pos);
+      *decimal = pango2_tab_array_get_decimal_point (self->tabs, n_tabs - 1);
 
       if (n_tabs > 1)
-        pango_tab_array_get_tab (self->tabs, n_tabs - 2, NULL, &next_to_last_pos);
+        pango2_tab_array_get_tab (self->tabs, n_tabs - 2, NULL, &next_to_last_pos);
       else
         next_to_last_pos = 0;
 
       if (in_pixels)
         {
-          next_to_last_pos *= PANGO_SCALE;
-          last_pos *= PANGO_SCALE;
+          next_to_last_pos *= PANGO2_SCALE;
+          last_pos *= PANGO2_SCALE;
         }
 
       if (last_pos > next_to_last_pos)
@@ -737,7 +737,7 @@ get_tab_pos (PangoLineBreaker *self,
     {
       /* No tab array set, so use default tab width */
       *tab_pos = self->tab_width * index;
-      *alignment = PANGO_TAB_LEFT;
+      *alignment = PANGO2_TAB_LEFT;
       *decimal = 0;
     }
 
@@ -745,23 +745,23 @@ get_tab_pos (PangoLineBreaker *self,
 }
 
 static void
-shape_tab (PangoLineBreaker *self,
-           PangoLine        *line,
-           int               current_width,
-           PangoItem        *item,
-           PangoGlyphString *glyphs)
+shape_tab (Pango2LineBreaker *self,
+           Pango2Line        *line,
+           int                current_width,
+           Pango2Item        *item,
+           Pango2GlyphString *glyphs)
 {
   int i, space_width;
   int tab_pos;
-  PangoTabAlign tab_align;
+  Pango2TabAlign tab_align;
   gunichar tab_decimal;
 
-  pango_glyph_string_set_size (glyphs, 1);
+  pango2_glyph_string_set_size (glyphs, 1);
 
   if (self->properties.showing_space)
-    glyphs->glyphs[0].glyph = PANGO_GET_UNKNOWN_GLYPH ('\t');
+    glyphs->glyphs[0].glyph = PANGO2_GET_UNKNOWN_GLYPH ('\t');
   else
-    glyphs->glyphs[0].glyph = PANGO_GLYPH_EMPTY;
+    glyphs->glyphs[0].glyph = PANGO2_GLYPH_EMPTY;
 
   glyphs->glyphs[0].geometry.x_offset = 0;
   glyphs->glyphs[0].geometry.y_offset = 0;
@@ -807,23 +807,23 @@ shape_tab (PangoLineBreaker *self,
 }
 
 static inline gboolean
-can_break_at (PangoLineBreaker *self,
-              int               offset,
-              PangoWrapMode     wrap)
+can_break_at (Pango2LineBreaker *self,
+              int                offset,
+              Pango2WrapMode     wrap)
 {
   if (offset == self->data->n_chars)
     return TRUE;
-  else if (wrap == PANGO_WRAP_CHAR)
+  else if (wrap == PANGO2_WRAP_CHAR)
     return self->data->log_attrs[offset].is_char_break;
   else
     return self->data->log_attrs[offset].is_line_break;
 }
 
 static inline gboolean
-can_break_in (PangoLineBreaker *self,
-              int               start_offset,
-              int               num_chars,
-              gboolean          allow_break_at_start)
+can_break_in (Pango2LineBreaker *self,
+              int                start_offset,
+              int                num_chars,
+              gboolean           allow_break_at_start)
 {
   for (int i = allow_break_at_start ? 0 : 1; i < num_chars; i++)
     {
@@ -841,25 +841,25 @@ distribute_letter_spacing (int  letter_spacing,
   *space_left = letter_spacing / 2;
 
   /* hinting */
-  if ((letter_spacing & (PANGO_SCALE - 1)) == 0)
-    *space_left = PANGO_UNITS_ROUND (*space_left);
+  if ((letter_spacing & (PANGO2_SCALE - 1)) == 0)
+    *space_left = PANGO2_UNITS_ROUND (*space_left);
   *space_right = letter_spacing - *space_left;
 }
 
 static void
-pango_shape_shape (const char       *text,
-                   unsigned int      n_chars,
-                   ShapeData        *shape,
-                   PangoGlyphString *glyphs)
+pango2_shape_shape (const char       *text,
+                   unsigned int       n_chars,
+                   ShapeData         *shape,
+                   Pango2GlyphString *glyphs)
 {
   unsigned int i;
   const char *p;
 
-  pango_glyph_string_set_size (glyphs, n_chars);
+  pango2_glyph_string_set_size (glyphs, n_chars);
 
   for (i = 0, p = text; i < n_chars; i++, p = g_utf8_next_char (p))
     {
-      glyphs->glyphs[i].glyph = PANGO_GLYPH_EMPTY;
+      glyphs->glyphs[i].glyph = PANGO2_GLYPH_EMPTY;
       glyphs->glyphs[i].geometry.x_offset = 0;
       glyphs->glyphs[i].geometry.y_offset = 0;
       glyphs->glyphs[i].geometry.width = shape->logical_rect.width;
@@ -869,45 +869,45 @@ pango_shape_shape (const char       *text,
     }
 }
 
-static PangoGlyphString *
-shape_run (PangoLineBreaker *self,
-           PangoLine        *line,
-           PangoItem       *item)
+static Pango2GlyphString *
+shape_run (Pango2LineBreaker *self,
+           Pango2Line        *line,
+           Pango2Item        *item)
 {
-  PangoGlyphString *glyphs = pango_glyph_string_new ();
+  Pango2GlyphString *glyphs = pango2_glyph_string_new ();
 
   if (self->data->text[item->offset] == '\t')
     shape_tab (self, line, get_line_width (self, line), item, glyphs);
   else
     {
-      PangoShapeFlags shape_flags = PANGO_SHAPE_NONE;
+      Pango2ShapeFlags shape_flags = PANGO2_SHAPE_NONE;
 
-      if (pango_context_get_round_glyph_positions (self->context))
-        shape_flags |= PANGO_SHAPE_ROUND_POSITIONS;
+      if (pango2_context_get_round_glyph_positions (self->context))
+        shape_flags |= PANGO2_SHAPE_ROUND_POSITIONS;
 
       if (self->properties.shape)
-        pango_shape_shape (self->data->text + item->offset, item->num_chars,
-                           (ShapeData *)self->properties.shape->pointer_value,
-                           glyphs);
+        pango2_shape_shape (self->data->text + item->offset, item->num_chars,
+                            (ShapeData *)self->properties.shape->pointer_value,
+                            glyphs);
       else
-        pango_shape_item (item,
-                          self->data->text, self->data->length,
-                          self->data->log_attrs + self->start_offset,
-                          glyphs,
-                          shape_flags);
+        pango2_shape_item (item,
+                           self->data->text, self->data->length,
+                           self->data->log_attrs + self->start_offset,
+                           glyphs,
+                           shape_flags);
 
       if (self->properties.letter_spacing)
         {
-          PangoGlyphItem glyph_item;
+          Pango2GlyphItem glyph_item;
           int space_left, space_right;
 
           glyph_item.item = item;
           glyph_item.glyphs = glyphs;
 
-          pango_glyph_item_letter_space (&glyph_item,
-                                         self->data->text,
-                                         self->data->log_attrs + self->start_offset,
-                                         self->properties.letter_spacing);
+          pango2_glyph_item_letter_space (&glyph_item,
+                                          self->data->text,
+                                          self->data->log_attrs + self->start_offset,
+                                          self->properties.letter_spacing);
 
           distribute_letter_spacing (self->properties.letter_spacing, &space_left, &space_right);
 
@@ -926,11 +926,11 @@ shape_run (PangoLineBreaker *self,
 
           w = self->last_tab.pos - self->last_tab.width;
 
-          if (self->last_tab.align == PANGO_TAB_RIGHT)
-            w -= pango_glyph_string_get_width (glyphs);
-          else if (self->last_tab.align == PANGO_TAB_CENTER)
-            w -= pango_glyph_string_get_width (glyphs) / 2;
-          else if (self->last_tab.align == PANGO_TAB_DECIMAL)
+          if (self->last_tab.align == PANGO2_TAB_RIGHT)
+            w -= pango2_glyph_string_get_width (glyphs);
+          else if (self->last_tab.align == PANGO2_TAB_CENTER)
+            w -= pango2_glyph_string_get_width (glyphs) / 2;
+          else if (self->last_tab.align == PANGO2_TAB_DECIMAL)
             {
               int width;
               gboolean found;
@@ -948,22 +948,22 @@ shape_run (PangoLineBreaker *self,
 }
 
 static void
-free_run (PangoGlyphItem *run,
-          gpointer        data)
+free_run (Pango2GlyphItem *run,
+          gpointer         data)
 {
   gboolean free_item = data != NULL;
   if (free_item)
-    pango_item_free (run->item);
+    pango2_item_free (run->item);
 
-  pango_glyph_string_free (run->glyphs);
-  g_slice_free (PangoGlyphItem, run);
+  pango2_glyph_string_free (run->glyphs);
+  g_slice_free (Pango2GlyphItem, run);
 }
 
-static PangoItem *
-uninsert_run (PangoLine *line)
+static Pango2Item *
+uninsert_run (Pango2Line *line)
 {
-  PangoGlyphItem *run;
-  PangoItem *item;
+  Pango2GlyphItem *run;
+  Pango2Item *item;
 
   GSList *tmp_node = line->runs;
 
@@ -980,13 +980,13 @@ uninsert_run (PangoLine *line)
 }
 
 static void
-insert_run (PangoLineBreaker *self,
-            PangoLine        *line,
-            PangoItem        *run_item,
-            PangoGlyphString *glyphs,
-            gboolean          last_run)
+insert_run (Pango2LineBreaker *self,
+            Pango2Line        *line,
+            Pango2Item        *run_item,
+            Pango2GlyphString *glyphs,
+            gboolean           last_run)
 {
-  PangoGlyphItem *run = g_slice_new (PangoGlyphItem);
+  Pango2GlyphItem *run = g_slice_new (Pango2GlyphItem);
 
   run->item = run_item;
 
@@ -994,7 +994,7 @@ insert_run (PangoLineBreaker *self,
     run->glyphs = glyphs;
   else if (last_run &&
            self->log_widths_offset == 0 &&
-           !(run_item->analysis.flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN))
+           !(run_item->analysis.flags & PANGO2_ANALYSIS_FLAG_NEED_HYPHEN))
     {
       run->glyphs = self->glyphs;
       self->glyphs = NULL;
@@ -1004,7 +1004,7 @@ insert_run (PangoLineBreaker *self,
 
   if (last_run && self->glyphs)
     {
-      pango_glyph_string_free (self->glyphs);
+      pango2_glyph_string_free (self->glyphs);
       self->glyphs = NULL;
     }
 
@@ -1021,11 +1021,11 @@ insert_run (PangoLineBreaker *self,
        * done once we've placed the run with the decimal point.
        */
 
-      if (self->last_tab.align == PANGO_TAB_RIGHT)
-        self->last_tab.width += pango_glyph_string_get_width (run->glyphs);
-      else if (self->last_tab.align == PANGO_TAB_CENTER)
-        self->last_tab.width += pango_glyph_string_get_width (run->glyphs) / 2;
-      else if (self->last_tab.align == PANGO_TAB_DECIMAL)
+      if (self->last_tab.align == PANGO2_TAB_RIGHT)
+        self->last_tab.width += pango2_glyph_string_get_width (run->glyphs);
+      else if (self->last_tab.align == PANGO2_TAB_CENTER)
+        self->last_tab.width += pango2_glyph_string_get_width (run->glyphs) / 2;
+      else if (self->last_tab.align == PANGO2_TAB_DECIMAL)
         {
           int width;
 
@@ -1043,8 +1043,8 @@ insert_run (PangoLineBreaker *self,
 }
 
 static gboolean
-break_needs_hyphen (PangoLineBreaker *self,
-                    int               pos)
+break_needs_hyphen (Pango2LineBreaker *self,
+                    int                pos)
 {
   return self->data->log_attrs[self->start_offset + pos].break_inserts_hyphen ||
          self->data->log_attrs[self->start_offset + pos].break_removes_preceding;
@@ -1052,7 +1052,7 @@ break_needs_hyphen (PangoLineBreaker *self,
 
 
 static int
-find_hyphen_width (PangoItem *item)
+find_hyphen_width (Pango2Item *item)
 {
   hb_font_t *hb_font;
   hb_codepoint_t glyph;
@@ -1065,7 +1065,7 @@ find_hyphen_width (PangoItem *item)
    * b) we should reshape the entire run
    * But it is close enough in practice
    */
-  hb_font = pango_font_get_hb_font (item->analysis.font);
+  hb_font = pango2_font_get_hb_font (item->analysis.font);
   if (hb_font_get_nominal_glyph (hb_font, 0x2010, &glyph) ||
       hb_font_get_nominal_glyph (hb_font, '-', &glyph))
     return hb_font_get_glyph_h_advance (hb_font, glyph);
@@ -1074,18 +1074,18 @@ find_hyphen_width (PangoItem *item)
 }
 
 static inline void
-ensure_hyphen_width (PangoLineBreaker *self)
+ensure_hyphen_width (Pango2LineBreaker *self)
 {
   if (self ->hyphen_width < 0)
     {
-      PangoItem *item = self->items->data;
+      Pango2Item *item = self->items->data;
       self->hyphen_width = find_hyphen_width (item);
     }
 }
 
 static int
-find_break_extra_width (PangoLineBreaker *self,
-                        int               pos)
+find_break_extra_width (Pango2LineBreaker *self,
+                        int                pos)
 {
   /* Check whether to insert a hyphen,
    * or whether we are breaking after one of those
@@ -1111,10 +1111,10 @@ find_break_extra_width (PangoLineBreaker *self,
 }
 
 static inline void
-compute_log_widths (PangoLineBreaker *self)
+compute_log_widths (Pango2LineBreaker *self)
 {
-  PangoItem *item = self->items->data;
-  PangoGlyphItem glyph_item = { item, self->glyphs };
+  Pango2Item *item = self->items->data;
+  Pango2GlyphItem glyph_item = { item, self->glyphs };
 
   if (item->num_chars > self->num_log_widths)
     {
@@ -1123,7 +1123,7 @@ compute_log_widths (PangoLineBreaker *self)
     }
 
   g_assert (self->log_widths_offset == 0);
-  pango_glyph_item_get_logical_widths (&glyph_item, self->data->text, self->log_widths);
+  pango2_glyph_item_get_logical_widths (&glyph_item, self->data->text, self->log_widths);
 }
 
 /* If last_tab is set, we've added a tab and remaining_width has been updated to
@@ -1132,7 +1132,7 @@ compute_log_widths (PangoLineBreaker *self)
  * against remaining_width.
  */
 static int
-tab_width_change (PangoLineBreaker *self)
+tab_width_change (Pango2LineBreaker *self)
 {
   if (self->last_tab.glyphs)
     return self->last_tab.glyphs->glyphs[0].geometry.width - (self->last_tab.pos - self->last_tab.width);
@@ -1200,13 +1200,13 @@ typedef enum
  */
 
 static BreakResult
-process_item (PangoLineBreaker *self,
-              PangoLine        *line,
-              gboolean         force_fit,
-              gboolean         no_break_at_end,
-              gboolean         is_last_item)
+process_item (Pango2LineBreaker *self,
+              Pango2Line        *line,
+              gboolean           force_fit,
+              gboolean           no_break_at_end,
+              gboolean           is_last_item)
 {
-  PangoItem *item = self->items->data;
+  Pango2Item *item = self->items->data;
   int width;
   int extra_width;
   int orig_extra_width;
@@ -1215,12 +1215,12 @@ process_item (PangoLineBreaker *self,
   int processing_new_item;
   int num_chars;
   int orig_width;
-  PangoWrapMode wrap;
+  Pango2WrapMode wrap;
   int break_num_chars;
   int break_width;
   int break_extra_width;
-  PangoGlyphString *break_glyphs;
-  PangoFontMetrics *metrics;
+  Pango2GlyphString *break_glyphs;
+  Pango2FontMetrics *metrics;
   int safe_distance;
 
   DEBUG1 ("process item '%.*s'. Remaining width %d",
@@ -1240,7 +1240,7 @@ process_item (PangoLineBreaker *self,
    */
   if (!self->glyphs)
     {
-      pango_item_get_properties (item, &self->properties);
+      pango2_item_get_properties (item, &self->properties);
       self->glyphs = shape_run (self, line, item);
       self->log_widths_offset = 0;
       processing_new_item = TRUE;
@@ -1250,7 +1250,7 @@ process_item (PangoLineBreaker *self,
 
   if (item_is_paragraph_separator (self, item))
     {
-      g_clear_pointer (&self->glyphs, pango_glyph_string_free);
+      g_clear_pointer (&self->glyphs, pango2_glyph_string_free);
       return BREAK_PARAGRAPH_SEPARATOR;
     }
 
@@ -1306,15 +1306,15 @@ process_item (PangoLineBreaker *self,
     extra_width = 0;
 
   if ((width + extra_width <= self->remaining_width || (item->num_chars == 1 && !line->runs) ||
-      (self->last_tab.glyphs && self->last_tab.align != PANGO_TAB_LEFT)) &&
+      (self->last_tab.glyphs && self->last_tab.align != PANGO2_TAB_LEFT)) &&
       !no_break_at_end)
     {
-      PangoGlyphString *glyphs;
+      Pango2GlyphString *glyphs;
 
       DEBUG1 ("%d + %d <= %d", width, extra_width, self->remaining_width);
       glyphs = shape_run (self, line, item);
 
-      width = pango_glyph_string_get_width (glyphs) + tab_width_change (self);
+      width = pango2_glyph_string_get_width (glyphs) + tab_width_change (self);
 
       if (width + extra_width <= self->remaining_width || (item->num_chars == 1 && !line->runs))
         {
@@ -1330,7 +1330,7 @@ process_item (PangoLineBreaker *self,
         }
 
       /* if it doesn't fit after shaping, discard and proceed to break the item */
-      pango_glyph_string_free (glyphs);
+      pango2_glyph_string_free (glyphs);
     }
 
   /*** From here on, we look for a way to break item ***/
@@ -1346,9 +1346,9 @@ process_item (PangoLineBreaker *self,
   /* Add some safety margin here. If we are farther away from the end of the
    * line than this, we don't look carefully at a break possibility.
    */
-  metrics = pango_font_get_metrics (item->analysis.font, item->analysis.language);
-  safe_distance = pango_font_metrics_get_approximate_char_width (metrics) * 3;
-  pango_font_metrics_free (metrics);
+  metrics = pango2_font_get_metrics (item->analysis.font, item->analysis.language);
+  safe_distance = pango2_font_metrics_get_approximate_char_width (metrics) * 3;
+  pango2_font_metrics_free (metrics);
 
   if (processing_new_item)
     {
@@ -1396,26 +1396,26 @@ retry_break:
             {
               int length;
               int new_break_width;
-              PangoItem *new_item;
-              PangoGlyphString *glyphs;
+              Pango2Item *new_item;
+              Pango2GlyphString *glyphs;
 
               length = g_utf8_offset_to_pointer (self->data->text + item->offset, num_chars) - (self->data->text + item->offset);
 
               if (num_chars < item->num_chars)
                 {
-                  new_item = pango_item_split (item, length, num_chars);
+                  new_item = pango2_item_split (item, length, num_chars);
 
                   if (break_needs_hyphen (self, num_chars))
-                    new_item->analysis.flags |= PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
+                    new_item->analysis.flags |= PANGO2_ANALYSIS_FLAG_NEED_HYPHEN;
                   else
-                    new_item->analysis.flags &= ~PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
+                    new_item->analysis.flags &= ~PANGO2_ANALYSIS_FLAG_NEED_HYPHEN;
                 }
               else
                 new_item = item;
 
               glyphs = shape_run (self, line, new_item);
 
-              new_break_width = pango_glyph_string_get_width (glyphs) + tab_width_change (self);
+              new_break_width = pango2_glyph_string_get_width (glyphs) + tab_width_change (self);
 
               if (num_chars > 0 &&
                   (item != new_item || !is_last_item) && /* We don't collapse space at the very end */
@@ -1431,8 +1431,8 @@ retry_break:
 
               if (new_item != item)
                 {
-                  pango_item_free (new_item);
-                  pango_item_unsplit (item, length, num_chars);
+                  pango2_item_free (new_item);
+                  pango2_item_unsplit (item, length, num_chars);
                 }
 
               if (break_num_chars == item->num_chars ||
@@ -1447,13 +1447,13 @@ retry_break:
                   break_extra_width = extra_width;
 
                   if (break_glyphs)
-                    pango_glyph_string_free (break_glyphs);
+                    pango2_glyph_string_free (break_glyphs);
                   break_glyphs = glyphs;
                 }
               else
                 {
                   DEBUG1 ("ignore breakpoint %d", num_chars);
-                  pango_glyph_string_free (glyphs);
+                  pango2_glyph_string_free (glyphs);
                 }
             }
         }
@@ -1463,18 +1463,18 @@ retry_break:
         width += self->log_widths[self->log_widths_offset + num_chars];
     }
 
-   if (wrap == PANGO_WRAP_WORD_CHAR &&
+   if (wrap == PANGO2_WRAP_WORD_CHAR &&
        force_fit &&
        break_width + break_extra_width > self->remaining_width)
     {
       /* Try again, with looser conditions */
       DEBUG1 ("does not fit, try again with wrap-char");
-      wrap = PANGO_WRAP_CHAR;
+      wrap = PANGO2_WRAP_CHAR;
       break_num_chars = item->num_chars;
       break_width = orig_width;
       break_extra_width = orig_extra_width;
       if (break_glyphs)
-        pango_glyph_string_free (break_glyphs);
+        pango2_glyph_string_free (break_glyphs);
       break_glyphs = NULL;
       goto retry_break;
     }
@@ -1491,12 +1491,12 @@ retry_break:
         {
           if (can_break_at (self, self->start_offset + break_num_chars, wrap) &&
               break_needs_hyphen (self, break_num_chars))
-            item->analysis.flags |= PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
+            item->analysis.flags |= PANGO2_ANALYSIS_FLAG_NEED_HYPHEN;
 
           insert_run (self, line, item, NULL, TRUE);
 
           if (break_glyphs)
-            pango_glyph_string_free (break_glyphs);
+            pango2_glyph_string_free (break_glyphs);
 
           DEBUG1 ("all-fit '%.*s', remaining %d",
                   item->length, self->data->text + item->offset,
@@ -1506,18 +1506,18 @@ retry_break:
       else if (break_num_chars == 0)
         {
           if (break_glyphs)
-            pango_glyph_string_free (break_glyphs);
+            pango2_glyph_string_free (break_glyphs);
 
           DEBUG1 ("empty-fit, remaining %d", self->remaining_width);
           return BREAK_EMPTY_FIT;
         }
       else
         {
-          PangoItem *new_item;
+          Pango2Item *new_item;
 
           length = g_utf8_offset_to_pointer (self->data->text + item->offset, break_num_chars) - (self->data->text + item->offset);
 
-          new_item = pango_item_split (item, length, break_num_chars);
+          new_item = pango2_item_split (item, length, break_num_chars);
 
           insert_run (self, line, new_item, break_glyphs, FALSE);
 
@@ -1531,11 +1531,11 @@ retry_break:
     }
   else
     {
-      pango_glyph_string_free (self->glyphs);
+      pango2_glyph_string_free (self->glyphs);
       self->glyphs = NULL;
 
       if (break_glyphs)
-        pango_glyph_string_free (break_glyphs);
+        pango2_glyph_string_free (break_glyphs);
 
       DEBUG1 ("none-fit, remaining %d", self->remaining_width);
       return BREAK_NONE_FIT;
@@ -1543,8 +1543,8 @@ retry_break:
 }
 
 static void
-process_line (PangoLineBreaker *self,
-              PangoLine        *line)
+process_line (Pango2LineBreaker *self,
+              Pango2Line        *line)
 {
   gboolean have_break = FALSE;      /* If we've seen a possible break yet */
   int break_remaining_width = 0;    /* Remaining width before adding run with break */
@@ -1554,7 +1554,7 @@ process_line (PangoLineBreaker *self,
 
   while (self->items)
     {
-      PangoItem *item = self->items->data;
+      Pango2Item *item = self->items->data;
       BreakResult result;
       int old_num_chars;
       int old_remaining_width;
@@ -1597,14 +1597,14 @@ process_line (PangoLineBreaker *self,
           /* Back up over unused runs to run where there is a break */
           while (line->runs && line->runs != break_link)
             {
-              PangoGlyphItem *run = line->runs->data;
+              Pango2GlyphItem *run = line->runs->data;
 
               /* Reset tab stat if we uninsert the current tab run */
               if (run->glyphs == self->last_tab.glyphs)
                 {
                   self->last_tab.glyphs = NULL;
                   self->last_tab.index = 0;
-                  self->last_tab.align = PANGO_TAB_LEFT;
+                  self->last_tab.align = PANGO2_TAB_LEFT;
                 }
 
               self->items = g_list_prepend (self->items, uninsert_run (line));
@@ -1643,7 +1643,7 @@ process_line (PangoLineBreaker *self,
           self->line_start_index += item->length;
           self->start_offset += item->num_chars;
           self->items = g_list_delete_link (self->items, self->items);
-          pango_item_free (item);
+          pango2_item_free (item);
           goto done;
 
         default:
@@ -1658,11 +1658,11 @@ done:
 /* {{{ Post-processing */
 
 static void
-add_missing_hyphen (PangoLineBreaker *self,
-                    PangoLine        *line)
+add_missing_hyphen (Pango2LineBreaker *self,
+                    Pango2Line        *line)
 {
-  PangoGlyphItem *run;
-  PangoItem *item;
+  Pango2GlyphItem *run;
+  Pango2Item *item;
 
   if (!line->runs)
     return;
@@ -1671,7 +1671,7 @@ add_missing_hyphen (PangoLineBreaker *self,
   item = run->item;
 
   if (self->data->log_attrs[self->line_start_offset + line->n_chars].break_inserts_hyphen &&
-      !(item->analysis.flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN))
+      !(item->analysis.flags & PANGO2_ANALYSIS_FLAG_NEED_HYPHEN))
     {
       int width;
       int start_offset;
@@ -1679,7 +1679,7 @@ add_missing_hyphen (PangoLineBreaker *self,
       DEBUG1 ("add a missing hyphen");
 
       /* The last run fit onto the line without breaking it, but it still needs a hyphen */
-      width = pango_glyph_string_get_width (run->glyphs);
+      width = pango2_glyph_string_get_width (run->glyphs);
 
       /* Ugly, shape_run uses self->start_offset, so temporarily rewind things
        * to the state before the run was inserted. Otherwise, we end up passing
@@ -1688,25 +1688,25 @@ add_missing_hyphen (PangoLineBreaker *self,
       start_offset = self->start_offset;
       self->start_offset = self->line_start_offset + line->n_chars - item->num_chars;
 
-      pango_glyph_string_free (run->glyphs);
-      item->analysis.flags |= PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
+      pango2_glyph_string_free (run->glyphs);
+      item->analysis.flags |= PANGO2_ANALYSIS_FLAG_NEED_HYPHEN;
       run->glyphs = shape_run (self, line, item);
 
       self->start_offset = start_offset;
 
-      self->remaining_width += pango_glyph_string_get_width (run->glyphs) - width;
+      self->remaining_width += pango2_glyph_string_get_width (run->glyphs) - width;
     }
 
-  line->hyphenated = (item->analysis.flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN) != 0;
+  line->hyphenated = (item->analysis.flags & PANGO2_ANALYSIS_FLAG_NEED_HYPHEN) != 0;
 }
 
 static void
-zero_line_final_space (PangoLineBreaker *self,
-                       PangoLine        *line)
+zero_line_final_space (Pango2LineBreaker *self,
+                       Pango2Line        *line)
 {
-  PangoGlyphItem *run;
-  PangoItem *item;
-  PangoGlyphString *glyphs;
+  Pango2GlyphItem *run;
+  Pango2Item *item;
+  Pango2GlyphString *glyphs;
   int glyph;
 
   if (!line->runs)
@@ -1718,7 +1718,7 @@ zero_line_final_space (PangoLineBreaker *self,
   glyphs = run->glyphs;
   glyph = item->analysis.level % 2 ? 0 : glyphs->num_glyphs - 1;
 
-  if (glyphs->glyphs[glyph].glyph == PANGO_GET_UNKNOWN_GLYPH (0x2028))
+  if (glyphs->glyphs[glyph].glyph == PANGO2_GET_UNKNOWN_GLYPH (0x2028))
     {
       DEBUG1 ("zero final space: visible space");
       return; /* this LS is visible */
@@ -1744,7 +1744,7 @@ zero_line_final_space (PangoLineBreaker *self,
 
   DEBUG1 ("zero line final space: collapsing the space");
   glyphs->glyphs[glyph].geometry.width = 0;
-  glyphs->glyphs[glyph].glyph = PANGO_GLYPH_EMPTY;
+  glyphs->glyphs[glyph].glyph = PANGO2_GLYPH_EMPTY;
 }
 
 /* When doing shaping, we add the letter spacing value for a
@@ -1760,11 +1760,11 @@ zero_line_final_space (PangoLineBreaker *self,
  * cases.
  */
 static void
-adjust_line_letter_spacing (PangoLineBreaker *self,
-                            PangoLine        *line)
+adjust_line_letter_spacing (Pango2LineBreaker *self,
+                            Pango2Line        *line)
 {
   gboolean reversed;
-  PangoGlyphItem *last_run;
+  Pango2GlyphItem *last_run;
   int tab_adjustment;
   GSList *l;
 
@@ -1774,7 +1774,7 @@ adjust_line_letter_spacing (PangoLineBreaker *self,
    * tab stops.
    */
   reversed = FALSE;
-  if (line->direction == PANGO_DIRECTION_RTL)
+  if (line->direction == PANGO2_DIRECTION_RTL)
     {
       for (l = line->runs; l; l = l->next)
         if (is_tab_run (line, l->data))
@@ -1797,8 +1797,8 @@ adjust_line_letter_spacing (PangoLineBreaker *self,
   tab_adjustment = 0;
   for (l = line->runs; l; l = l->next)
     {
-      PangoGlyphItem *run = l->data;
-      PangoGlyphItem *next_run = l->next ? l->next->data : NULL;
+      Pango2GlyphItem *run = l->data;
+      Pango2GlyphItem *next_run = l->next ? l->next->data : NULL;
 
       if (is_tab_run (line, run))
         {
@@ -1807,8 +1807,8 @@ adjust_line_letter_spacing (PangoLineBreaker *self,
         }
       else
         {
-          PangoGlyphItem *visual_next_run = reversed ? last_run : next_run;
-          PangoGlyphItem *visual_last_run = reversed ? next_run : last_run;
+          Pango2GlyphItem *visual_next_run = reversed ? last_run : next_run;
+          Pango2GlyphItem *visual_last_run = reversed ? next_run : last_run;
           int run_spacing = get_item_letter_spacing (run->item);
           int space_left, space_right;
 
@@ -1850,19 +1850,19 @@ adjust_line_letter_spacing (PangoLineBreaker *self,
 }
 
 typedef struct {
-  PangoAttribute *attr;
+  Pango2Attribute *attr;
   int x_offset;
   int y_offset;
 } BaselineItem;
 
 static void
-collect_baseline_shift (PangoLineBreaker *self,
-                        PangoItem        *item,
-                        PangoItem        *prev,
-                        int              *start_x_offset,
-                        int              *start_y_offset,
-                        int              *end_x_offset,
-                        int              *end_y_offset)
+collect_baseline_shift (Pango2LineBreaker *self,
+                        Pango2Item        *item,
+                        Pango2Item        *prev,
+                        int               *start_x_offset,
+                        int               *start_y_offset,
+                        int               *end_x_offset,
+                        int               *end_y_offset)
 {
   *start_x_offset = 0;
   *start_y_offset = 0;
@@ -1871,16 +1871,16 @@ collect_baseline_shift (PangoLineBreaker *self,
 
   for (GSList *l = item->analysis.extra_attrs; l; l = l->next)
     {
-      PangoAttribute *attr = l->data;
+      Pango2Attribute *attr = l->data;
 
-      if (attr->type == PANGO_ATTR_RISE)
+      if (attr->type == PANGO2_ATTR_RISE)
         {
           int value = attr->int_value;
 
           *start_y_offset += value;
           *end_y_offset -= value;
         }
-      else if (attr->type == PANGO_ATTR_BASELINE_SHIFT)
+      else if (attr->type == PANGO2_ATTR_BASELINE_SHIFT)
         {
           if (attr->start_index == item->offset)
             {
@@ -1908,7 +1908,7 @@ collect_baseline_shift (PangoLineBreaker *self,
 
                   if (prev)
                     {
-                      hb_font_t *hb_font = pango_font_get_hb_font (prev->analysis.font);
+                      hb_font_t *hb_font = pango2_font_get_hb_font (prev->analysis.font);
                       hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_SUPERSCRIPT_EM_Y_OFFSET, &superscript_y_offset);
                       hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_SUPERSCRIPT_EM_X_OFFSET, &superscript_x_offset);
                       hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_SUBSCRIPT_EM_Y_OFFSET, &subscript_y_offset);
@@ -1922,15 +1922,15 @@ collect_baseline_shift (PangoLineBreaker *self,
 
                   switch (value)
                     {
-                    case PANGO_BASELINE_SHIFT_NONE:
+                    case PANGO2_BASELINE_SHIFT_NONE:
                       entry->x_offset = 0;
                       entry->y_offset = 0;
                       break;
-                    case PANGO_BASELINE_SHIFT_SUPERSCRIPT:
+                    case PANGO2_BASELINE_SHIFT_SUPERSCRIPT:
                       entry->x_offset = superscript_x_offset;
                       entry->y_offset = superscript_y_offset;
                       break;
-                    case PANGO_BASELINE_SHIFT_SUBSCRIPT:
+                    case PANGO2_BASELINE_SHIFT_SUBSCRIPT:
                       entry->x_offset = subscript_x_offset;
                       entry->y_offset = -subscript_y_offset;
                       break;
@@ -1971,11 +1971,11 @@ collect_baseline_shift (PangoLineBreaker *self,
 }
 
 static void
-apply_baseline_shift (PangoLineBreaker *self,
-                      PangoLine        *line)
+apply_baseline_shift (Pango2LineBreaker *self,
+                      Pango2Line        *line)
 {
   int y_offset = 0;
-  PangoItem *prev = NULL;
+  Pango2Item *prev = NULL;
   hb_position_t baseline_adjustment = 0;
 #if HB_VERSION_ATLEAST(4,0,0)
   hb_ot_layout_baseline_tag_t baseline_tag = 0;
@@ -1985,8 +1985,8 @@ apply_baseline_shift (PangoLineBreaker *self,
 
   for (GSList *l = line->runs; l; l = l->next)
     {
-      PangoGlyphItem *run = l->data;
-      PangoItem *item = run->item;
+      Pango2GlyphItem *run = l->data;
+      Pango2Item *item = run->item;
       int start_x_offset, end_x_offset;
       int start_y_offset, end_y_offset;
 #if HB_VERSION_ATLEAST(4,0,0)
@@ -2004,22 +2004,22 @@ apply_baseline_shift (PangoLineBreaker *self,
         continue;
 
 #if HB_VERSION_ATLEAST(4,0,0)
-      hb_font = pango_font_get_hb_font (item->analysis.font);
+      hb_font = pango2_font_get_hb_font (item->analysis.font);
 
       script = (hb_script_t) g_unicode_script_to_iso15924 (item->analysis.script);
-      language = hb_language_from_string (pango_language_to_string (item->analysis.language), -1);
+      language = hb_language_from_string (pango2_language_to_string (item->analysis.language), -1);
       hb_ot_tags_from_script_and_language (script, language,
                                            &script_count, script_tags,
                                            &lang_count, lang_tags);
 
-      if (item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
+      if (item->analysis.flags & PANGO2_ANALYSIS_FLAG_CENTERED_BASELINE)
         direction = HB_DIRECTION_TTB;
       else
         direction = HB_DIRECTION_LTR;
 
       if (baseline_tag == 0)
         {
-          if (item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
+          if (item->analysis.flags & PANGO2_ANALYSIS_FLAG_CENTERED_BASELINE)
             baseline_tag = HB_OT_LAYOUT_BASELINE_TAG_IDEO_EMBOX_CENTRAL;
           else
             baseline_tag = hb_ot_layout_get_horizontal_baseline_tag_for_script (script);
@@ -2044,7 +2044,7 @@ apply_baseline_shift (PangoLineBreaker *self,
       /* Don't do baseline adjustment in vertical, since the renderer
        * is still doing its own baseline shifting there
        */
-      if (item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
+      if (item->analysis.flags & PANGO2_ANALYSIS_FLAG_CENTERED_BASELINE)
         baseline_adjustment = 0;
       else
         baseline_adjustment = baseline - run_baseline;
@@ -2065,8 +2065,8 @@ apply_baseline_shift (PangoLineBreaker *self,
 }
 
 static void
-apply_render_attributes (PangoLineBreaker *self,
-                         PangoLine        *line)
+apply_render_attributes (Pango2LineBreaker *self,
+                         Pango2Line        *line)
 {
   GSList *runs;
 
@@ -2078,12 +2078,12 @@ apply_render_attributes (PangoLineBreaker *self,
 
   for (GSList *l = runs; l; l = l->next)
     {
-      PangoGlyphItem *glyph_item = l->data;
+      Pango2GlyphItem *glyph_item = l->data;
       GSList *new_runs;
 
-      new_runs = pango_glyph_item_apply_attrs (glyph_item,
-                                               line->data->text,
-                                               self->render_attrs);
+      new_runs = pango2_glyph_item_apply_attrs (glyph_item,
+                                                line->data->text,
+                                                self->render_attrs);
 
       line->runs = g_slist_concat (new_runs, line->runs);
     }
@@ -2092,8 +2092,8 @@ apply_render_attributes (PangoLineBreaker *self,
 }
 
 static void
-postprocess_line (PangoLineBreaker *self,
-                  PangoLine        *line)
+postprocess_line (Pango2LineBreaker *self,
+                  Pango2Line        *line)
 {
   add_missing_hyphen (self, line);
 
@@ -2106,10 +2106,10 @@ postprocess_line (PangoLineBreaker *self,
   apply_baseline_shift (self, line);
 
   if (should_ellipsize_current_line (self, line))
-    pango_line_ellipsize (line, self->context, self->line_ellipsize, self->line_width);
+    pango2_line_ellipsize (line, self->context, self->line_ellipsize, self->line_width);
 
   /* Now convert logical to visual order */
-  pango_line_reorder (line);
+  pango2_line_reorder (line);
 
   /* Fixup letter spacing between runs */
   adjust_line_letter_spacing (self, line);
@@ -2119,9 +2119,9 @@ postprocess_line (PangoLineBreaker *self,
 
 /* }}} */
 /* }}} */
-/* {{{ PangoLineBreaker implementation */
+/* {{{ Pango2LineBreaker implementation */
 
-G_DEFINE_FINAL_TYPE (PangoLineBreaker, pango_line_breaker, G_TYPE_OBJECT)
+G_DEFINE_FINAL_TYPE (Pango2LineBreaker, pango2_line_breaker, G_TYPE_OBJECT)
 
 enum {
   PROP_CONTEXT = 1,
@@ -2133,7 +2133,7 @@ enum {
 static GParamSpec *properties[N_PROPERTIES];
 
 static void
-pango_line_breaker_init (PangoLineBreaker *self)
+pango2_line_breaker_init (Pango2LineBreaker *self)
 {
   self->tabs = NULL;
   self->tab_width = -1;
@@ -2142,31 +2142,31 @@ pango_line_breaker_init (PangoLineBreaker *self)
 }
 
 static void
-pango_line_breaker_finalize (GObject *object)
+pango2_line_breaker_finalize (GObject *object)
 {
-  PangoLineBreaker *self = PANGO_LINE_BREAKER (object);
+  Pango2LineBreaker *self = PANGO2_LINE_BREAKER (object);
 
   g_list_free_full (self->baseline_shifts, g_free);
-  g_clear_pointer (&self->glyphs, pango_glyph_string_free);
+  g_clear_pointer (&self->glyphs, pango2_glyph_string_free);
   g_clear_pointer (&self->log_widths, g_free);
-  g_list_free_full (self->items, (GDestroyNotify) pango_item_free);
+  g_list_free_full (self->items, (GDestroyNotify) pango2_item_free);
   g_clear_pointer (&self->data, line_data_unref);
-  g_list_free_full (self->data_items, (GDestroyNotify) pango_item_free);
-  g_clear_pointer (&self->render_attrs, pango_attr_list_unref);
+  g_list_free_full (self->data_items, (GDestroyNotify) pango2_item_free);
+  g_clear_pointer (&self->render_attrs, pango2_attr_list_unref);
   g_slist_free_full (self->datas, (GDestroyNotify) line_data_unref);
-  g_clear_pointer (&self->tabs, pango_tab_array_free);
+  g_clear_pointer (&self->tabs, pango2_tab_array_free);
   g_object_unref (self->context);
 
-  G_OBJECT_CLASS (pango_line_breaker_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango2_line_breaker_parent_class)->finalize (object);
 }
 
 static void
-pango_line_breaker_set_property (GObject      *object,
-                                 guint         prop_id,
-                                 const GValue *value,
-                                 GParamSpec   *pspec)
+pango2_line_breaker_set_property (GObject      *object,
+                                  guint         prop_id,
+                                  const GValue *value,
+                                  GParamSpec   *pspec)
 {
-  PangoLineBreaker *self = PANGO_LINE_BREAKER (object);
+  Pango2LineBreaker *self = PANGO2_LINE_BREAKER (object);
 
   switch (prop_id)
     {
@@ -2176,11 +2176,11 @@ pango_line_breaker_set_property (GObject      *object,
       break;
 
     case PROP_BASE_DIR:
-      pango_line_breaker_set_base_dir (self, g_value_get_enum (value));
+      pango2_line_breaker_set_base_dir (self, g_value_get_enum (value));
       break;
 
     case PROP_TABS:
-      pango_line_breaker_set_tabs (self, g_value_get_boxed (value));
+      pango2_line_breaker_set_tabs (self, g_value_get_boxed (value));
       break;
 
     default:
@@ -2190,12 +2190,12 @@ pango_line_breaker_set_property (GObject      *object,
 }
 
 static void
-pango_line_breaker_get_property (GObject    *object,
-                                 guint       prop_id,
-                                 GValue     *value,
-                                 GParamSpec *pspec)
+pango2_line_breaker_get_property (GObject    *object,
+                                  guint       prop_id,
+                                  GValue     *value,
+                                  GParamSpec *pspec)
 {
-  PangoLineBreaker *self = PANGO_LINE_BREAKER (object);
+  Pango2LineBreaker *self = PANGO2_LINE_BREAKER (object);
 
   switch (prop_id)
     {
@@ -2204,11 +2204,11 @@ pango_line_breaker_get_property (GObject    *object,
       break;
 
     case PROP_BASE_DIR:
-      g_value_set_enum (value, pango_line_breaker_get_base_dir (self));
+      g_value_set_enum (value, pango2_line_breaker_get_base_dir (self));
       break;
 
     case PROP_TABS:
-      g_value_set_boxed (value, pango_line_breaker_get_tabs (self));
+      g_value_set_boxed (value, pango2_line_breaker_get_tabs (self));
       break;
 
     default:
@@ -2218,48 +2218,48 @@ pango_line_breaker_get_property (GObject    *object,
 }
 
 static void
-pango_line_breaker_class_init (PangoLineBreakerClass *class)
+pango2_line_breaker_class_init (Pango2LineBreakerClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
 
-  object_class->finalize = pango_line_breaker_finalize;
-  object_class->set_property = pango_line_breaker_set_property;
-  object_class->get_property = pango_line_breaker_get_property;
+  object_class->finalize = pango2_line_breaker_finalize;
+  object_class->set_property = pango2_line_breaker_set_property;
+  object_class->get_property = pango2_line_breaker_get_property;
 
   /**
-   * PangoLineBreaker:context: (attributes org.gtk.Property.get=pango_line_breaker_get_context)
+   * Pango2LineBreaker:context: (attributes org.gtk.Property.get=pango2_line_breaker_get_context)
    *
-   * The context for the `PangoLineBreaker`.
+   * The context for the `Pango2LineBreaker`.
    */
   properties[PROP_CONTEXT] =
     g_param_spec_object ("context", "context", "context",
-                         PANGO_TYPE_CONTEXT,
+                         PANGO2_TYPE_CONTEXT,
                          G_PARAM_READWRITE|G_PARAM_CONSTRUCT_ONLY|G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * PangoLineBreaker:base-dir: (attributes org.gtk.Property.get=pango_line_breaker_get_base_dir org.gtk.Property.set=pango_line_breaker_set_base_dir)
+   * Pango2LineBreaker:base-dir: (attributes org.gtk.Property.get=pango2_line_breaker_get_base_dir org.gtk.Property.set=pango2_line_breaker_set_base_dir)
    *
-   * The base direction for the `PangoLineBreaker`.
+   * The base direction for the `Pango2LineBreaker`.
    *
-   * The default value is `PANGO_DIRECTION_NEUTRAL`.
+   * The default value is `PANGO2_DIRECTION_NEUTRAL`.
    */
   properties[PROP_BASE_DIR] =
     g_param_spec_enum ("base-dir", "base-dir", "base-dir",
-                       PANGO_TYPE_DIRECTION,
-                       PANGO_DIRECTION_NEUTRAL,
+                       PANGO2_TYPE_DIRECTION,
+                       PANGO2_DIRECTION_NEUTRAL,
                        G_PARAM_READWRITE|G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * PangoLineBreaker:tabs: (attributes org.gtk.Property.get=pango_line_breaker_get_tabs org.gtk.Property.set=pango_line_breaker_set_tabs)
+   * Pango2LineBreaker:tabs: (attributes org.gtk.Property.get=pango2_line_breaker_get_tabs org.gtk.Property.set=pango2_line_breaker_set_tabs)
    *
-   * The tabs to use when formatting the next line of the `PangoLineBreaker`.
+   * The tabs to use when formatting the next line of the `Pango2LineBreaker`.
    *
-   * `PangoLineBreaker` will place content at the next tab position
+   * `Pango2LineBreaker` will place content at the next tab position
    * whenever it meets a Tab character (U+0009).
    */
   properties[PROP_TABS] =
     g_param_spec_boxed ("tabs", "tabs", "tabs",
-                        PANGO_TYPE_TAB_ARRAY,
+                        PANGO2_TYPE_TAB_ARRAY,
                         G_PARAM_READWRITE|G_PARAM_EXPLICIT_NOTIFY);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);
@@ -2269,45 +2269,45 @@ pango_line_breaker_class_init (PangoLineBreakerClass *class)
 /* {{{ Public API */
 
 /**
- * pango_line_breaker_new:
- * @context: a `PangoContext`
+ * pango2_line_breaker_new:
+ * @context: a `Pango2Context`
  *
- * Creates a new `PangoLineBreaker`.
+ * Creates a new `Pango2LineBreaker`.
  *
- * Returns: a newly created `PangoLineBreaker`
+ * Returns: a newly created `Pango2LineBreaker`
  */
-PangoLineBreaker *
-pango_line_breaker_new (PangoContext *context)
+Pango2LineBreaker *
+pango2_line_breaker_new (Pango2Context *context)
 {
-  g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
+  g_return_val_if_fail (PANGO2_IS_CONTEXT (context), NULL);
 
-  return  g_object_new (PANGO_TYPE_LINE_BREAKER, "context", context, NULL);
+  return  g_object_new (PANGO2_TYPE_LINE_BREAKER, "context", context, NULL);
 }
 
 /**
- * pango_line_breaker_get_context:
- * @self: a `PangoLineBreaker`
+ * pango2_line_breaker_get_context:
+ * @self: a `Pango2LineBreaker`
  *
- * Retrieves the context used for the `PangoLineBreaker`.
+ * Retrieves the context used for the `Pango2LineBreaker`.
  *
- * Returns: (transfer none): the `PangoContext` for @self
+ * Returns: (transfer none): the `Pango2Context` for @self
  */
-PangoContext *
-pango_line_breaker_get_context (PangoLineBreaker *self)
+Pango2Context *
+pango2_line_breaker_get_context (Pango2LineBreaker *self)
 {
-  g_return_val_if_fail (PANGO_IS_LINE_BREAKER (self), NULL);
+  g_return_val_if_fail (PANGO2_IS_LINE_BREAKER (self), NULL);
 
   return self->context;
 }
 
 /**
- * pango_line_breaker_set_tabs:
- * @self: a `PangoLineBreaker`
- * @tabs: (nullable): a `PangoTabArray`
+ * pango2_line_breaker_set_tabs:
+ * @self: a `Pango2LineBreaker`
+ * @tabs: (nullable): a `Pango2TabArray`
  *
  * Sets the tab positions to use for lines.
  *
- * `PangoLineBreaker` will place content at the next tab position
+ * `Pango2LineBreaker` will place content at the next tab position
  * whenever it meets a Tab character (U+0009).
  *
  * By default, tabs are every 8 spaces. If @tabs is %NULL, the
@@ -2317,44 +2317,44 @@ pango_line_breaker_get_context (PangoLineBreaker *self)
  * Note that tabs and justification conflict with each other:
  * Justification will move content away from its tab-aligned
  * positions. The same is true for alignments other than
- * %PANGO_ALIGNMENT_LEFT.
+ * %PANGO2_ALIGNMENT_LEFT.
  */
 void
-pango_line_breaker_set_tabs (PangoLineBreaker *self,
-                             PangoTabArray    *tabs)
+pango2_line_breaker_set_tabs (Pango2LineBreaker *self,
+                              Pango2TabArray    *tabs)
 {
-  g_return_if_fail (PANGO_IS_LINE_BREAKER (self));
+  g_return_if_fail (PANGO2_IS_LINE_BREAKER (self));
 
   if (self->tabs)
     {
-      pango_tab_array_free (self->tabs);
+      pango2_tab_array_free (self->tabs);
       self->tabs = NULL;
     }
 
   if (tabs)
     {
-      self->tabs = pango_tab_array_copy (tabs);
-      pango_tab_array_sort (self->tabs);
+      self->tabs = pango2_tab_array_copy (tabs);
+      pango2_tab_array_sort (self->tabs);
     }
 
   g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_TABS]);
 }
 
 /**
- * pango_line_breaker_get_tabs:
- * @self: a `PangoLineBreaker`
+ * pango2_line_breaker_get_tabs:
+ * @self: a `Pango2LineBreaker`
  *
- * Gets the current `PangoTabArray` used by the `PangoLineBreaker`.
+ * Gets the current `Pango2TabArray` used by the `Pango2LineBreaker`.
  *
- * If no `PangoTabArray` has been set, then the default tabs are
+ * If no `Pango2TabArray` has been set, then the default tabs are
  * in use and %NULL is returned. Default tabs are every 8 spaces.
  *
  * Return value: (transfer none) (nullable): the tabs for @self
  */
-PangoTabArray *
-pango_line_breaker_get_tabs (PangoLineBreaker *self)
+Pango2TabArray *
+pango2_line_breaker_get_tabs (Pango2LineBreaker *self)
 {
-  g_return_val_if_fail (PANGO_IS_LINE_BREAKER (self), NULL);
+  g_return_val_if_fail (PANGO2_IS_LINE_BREAKER (self), NULL);
 
   if (self->tabs)
     return self->tabs;
@@ -2363,20 +2363,20 @@ pango_line_breaker_get_tabs (PangoLineBreaker *self)
 }
 
 /**
- * pango_line_breaker_set_base_dir:
- * @self: a `PangoLineBreaker`
+ * pango2_line_breaker_set_base_dir:
+ * @self: a `Pango2LineBreaker`
  * @direction: the direction
  *
- * Sets the base direction for lines produced by the `PangoLineBreaker`.
+ * Sets the base direction for lines produced by the `Pango2LineBreaker`.
  *
- * If @direction is `PANGO_DIRECTION_NEUTRAL`, the direction is determined
+ * If @direction is `PANGO2_DIRECTION_NEUTRAL`, the direction is determined
  * from the content. This is the default behavior.
  */
 void
-pango_line_breaker_set_base_dir (PangoLineBreaker *self,
-                                 PangoDirection    direction)
+pango2_line_breaker_set_base_dir (Pango2LineBreaker *self,
+                                  Pango2Direction    direction)
 {
-  g_return_if_fail (PANGO_IS_LINE_BREAKER (self));
+  g_return_if_fail (PANGO2_IS_LINE_BREAKER (self));
 
   if (self->base_dir == direction)
     return;
@@ -2387,77 +2387,77 @@ pango_line_breaker_set_base_dir (PangoLineBreaker *self,
 }
 
 /**
- * pango_line_breaker_get_base_dir:
- * @self: a `PangoLineBreaker`
+ * pango2_line_breaker_get_base_dir:
+ * @self: a `Pango2LineBreaker`
  *
- * Gets the base direction for lines produced by the `PangoLineBreaker`.
+ * Gets the base direction for lines produced by the `Pango2LineBreaker`.
  *
- * See [method@Pango.LineBreaker.set_base_dir].
+ * See [method@Pango2.LineBreaker.set_base_dir].
  */
-PangoDirection
-pango_line_breaker_get_base_dir (PangoLineBreaker *self)
+Pango2Direction
+pango2_line_breaker_get_base_dir (Pango2LineBreaker *self)
 {
-  g_return_val_if_fail (PANGO_IS_LINE_BREAKER (self), PANGO_DIRECTION_NEUTRAL);
+  g_return_val_if_fail (PANGO2_IS_LINE_BREAKER (self), PANGO2_DIRECTION_NEUTRAL);
 
   return self->base_dir;
 }
 
 /**
- * pango_line_breaker_add_text:
+ * pango2_line_breaker_add_text:
  * @text: the text to break into lines
  * @length: length of @text in bytes, or -1 if @text is nul-terminated
- * @attrs: (nullable): a `PangoAttrList` with attributes for @text, or `NULL`
+ * @attrs: (nullable): a `Pango2AttrList` with attributes for @text, or `NULL`
  *
- * Provides input that the `PangoLineBreaker` should break into lines.
+ * Provides input that the `Pango2LineBreaker` should break into lines.
  *
  * It is possible to call this function repeatedly to add more
- * input to an existing `PangoLineBreaker`.
+ * input to an existing `Pango2LineBreaker`.
  *
  * The end of @text is treated as a paragraph break.
  */
 void
-pango_line_breaker_add_text (PangoLineBreaker *self,
-                             const char       *text,
-                             int               length,
-                             PangoAttrList    *attrs)
+pango2_line_breaker_add_text (Pango2LineBreaker *self,
+                              const char        *text,
+                              int                length,
+                              Pango2AttrList    *attrs)
 {
-  g_return_if_fail (PANGO_IS_LINE_BREAKER (self));
+  g_return_if_fail (PANGO2_IS_LINE_BREAKER (self));
   g_return_if_fail (text != NULL);
 
   self->datas = g_slist_append (self->datas, make_line_data (self, text, length, attrs));
 }
 
 /**
- * pango_line_breaker_get_direction:
- * @self: a `PangoLineBreaker`
+ * pango2_line_breaker_get_direction:
+ * @self: a `Pango2LineBreaker`
  *
  * Obtains the resolved direction for the next line.
  *
- * If the `PangoLineBreaker` has no more input, then
- * `PANGO_DIRECTION_NEUTRAL` is returned.
+ * If the `Pango2LineBreaker` has no more input, then
+ * `PANGO2_DIRECTION_NEUTRAL` is returned.
  *
  * Returns: the resolved direction of the next line.
  */
-PangoDirection
-pango_line_breaker_get_direction (PangoLineBreaker *self)
+Pango2Direction
+pango2_line_breaker_get_direction (Pango2LineBreaker *self)
 {
-  g_return_val_if_fail (PANGO_IS_LINE_BREAKER (self), PANGO_DIRECTION_NEUTRAL);
+  g_return_val_if_fail (PANGO2_IS_LINE_BREAKER (self), PANGO2_DIRECTION_NEUTRAL);
 
   return get_resolved_dir (self);
 }
 
 /**
- * pango_line_breaker_has_line:
- * @self: a `PangoLineBreaker`
+ * pango2_line_breaker_has_line:
+ * @self: a `Pango2LineBreaker`
  *
- * Returns whether the `PangoLineBreaker` has any text left to process.
+ * Returns whether the `Pango2LineBreaker` has any text left to process.
  *
  * Returns: TRUE if there are more lines.
  */
 gboolean
-pango_line_breaker_has_line (PangoLineBreaker *self)
+pango2_line_breaker_has_line (Pango2LineBreaker *self)
 {
-  g_return_val_if_fail (PANGO_IS_LINE_BREAKER (self), FALSE);
+  g_return_val_if_fail (PANGO2_IS_LINE_BREAKER (self), FALSE);
 
   ensure_items (self);
 
@@ -2465,54 +2465,54 @@ pango_line_breaker_has_line (PangoLineBreaker *self)
 }
 
 /**
- * pango_line_breaker_next_line:
- * @self: a `PangoLineBreaker`
- * @x: the X position for the line, in Pango units
- * @width: the width for the line, or -1 for no limit, in Pango units
+ * pango2_line_breaker_next_line:
+ * @self: a `Pango2LineBreaker`
+ * @x: the X position for the line, in Pango2 units
+ * @width: the width for the line, or -1 for no limit, in Pango2 units
  * @wrap: how to wrap the text
  * @ellipsize: whether to ellipsize the text
  *
  * Gets the next line.
  *
- * The `PangoLineBreaker` will use as much of its unprocessed text
+ * The `Pango2LineBreaker` will use as much of its unprocessed text
  * as will fit into @width. The @x position is used to determine
  * where tabs are located are.
  *
- * If @ellipsize is not `PANGO_ELLIPSIZE_NONE`, then all unprocessed
+ * If @ellipsize is not `PANGO2_ELLIPSIZE_NONE`, then all unprocessed
  * text will be made to fit by ellipsizing.
  *
  * Note that the line is not positioned - the leftmost point of its baseline
- * is at 0, 0. See [class@Pango.Lines] for a way to hold a list of positioned
- * `PangoLine` objects.
+ * is at 0, 0. See [class@Pango2.Lines] for a way to hold a list of positioned
+ * `Pango2Line` objects.
  *
- *     line = pango_line_breaker_next_line (breaker,
- *                                          x, width,
- *                                          PANGO_WRAP_MODE,
- *                                          PANGO_ELLIPSIZE_NONE);
- *     pango_line_get_extents (line, &ext);
- *     line = pango_line_justify (line, width);
- *     pango_lines_add_line (lines, line, x, y - ext.y);
+ *     line = pango2_line_breaker_next_line (breaker,
+ *                                           x, width,
+ *                                           PANGO2_WRAP_MODE,
+ *                                           PANGO2_ELLIPSIZE_NONE);
+ *     pango2_line_get_extents (line, &ext);
+ *     line = pango2_line_justify (line, width);
+ *     pango2_lines_add_line (lines, line, x, y - ext.y);
  *
  * Returns: (transfer full) (nullable): the next line, or `NULL`
  *   if @self has no more input
  */
-PangoLine *
-pango_line_breaker_next_line (PangoLineBreaker   *self,
-                              int                 x,
-                              int                 width,
-                              PangoWrapMode       wrap,
-                              PangoEllipsizeMode  ellipsize)
+Pango2Line *
+pango2_line_breaker_next_line (Pango2LineBreaker   *self,
+                               int                  x,
+                               int                  width,
+                               Pango2WrapMode       wrap,
+                               Pango2EllipsizeMode  ellipsize)
 {
-  PangoLine *line;
+  Pango2Line *line;
 
-  g_return_val_if_fail (PANGO_IS_LINE_BREAKER (self), NULL);
+  g_return_val_if_fail (PANGO2_IS_LINE_BREAKER (self), NULL);
 
   ensure_items (self);
 
   if (!self->items)
     return NULL;
 
-  line = pango_line_new (self->context, self->data);
+  line = pango2_line_new (self->context, self->data);
 
   line->start_index = self->line_start_index;
   line->start_offset = self->line_start_offset;
@@ -2526,7 +2526,7 @@ pango_line_breaker_next_line (PangoLineBreaker   *self,
 
   self->last_tab.glyphs = NULL;
   self->last_tab.index = 0;
-  self->last_tab.align = PANGO_TAB_LEFT;
+  self->last_tab.align = PANGO2_TAB_LEFT;
 
   if (should_ellipsize_current_line (self, line))
     self->remaining_width = -1;
@@ -2550,38 +2550,38 @@ pango_line_breaker_next_line (PangoLineBreaker   *self,
   if (self->items == NULL)
     {
       g_clear_pointer (&self->data, line_data_unref);
-      g_list_free_full (self->data_items, (GDestroyNotify) pango_item_free);
+      g_list_free_full (self->data_items, (GDestroyNotify) pango2_item_free);
       self->data_items = NULL;
-      g_clear_pointer (&self->render_attrs, pango_attr_list_unref);
+      g_clear_pointer (&self->render_attrs, pango2_attr_list_unref);
     }
 
-  pango_line_check_invariants (line);
+  pango2_line_check_invariants (line);
 
   return line;
 }
 
 /**
- * pango_line_breaker_undo_line:
- * @self: a `PangoLineBreaker`
+ * pango2_line_breaker_undo_line:
+ * @self: a `Pango2LineBreaker`
  * @line: (transfer none): the most recent line produced by @self
  *
  * Re-adds the content of a line to the unprocessed
- * input of the `PangoLineBreaker`.
+ * input of the `Pango2LineBreaker`.
  *
  * This can be used to try this line again with
  * different parameters passed to
- * [method@Pango.LineBreaker.next_line].
+ * [method@Pango2.LineBreaker.next_line].
  *
  * When undoing multiple lines, they have to be
  * undone in the reverse order in which they
  * were produced.
  *
- * Returns: `TRUE` on success, `FALSE` if Pango
+ * Returns: `TRUE` on success, `FALSE` if Pango2
  *   determines that the line can't be undone
  */
 gboolean
-pango_line_breaker_undo_line (PangoLineBreaker *self,
-                              PangoLine        *line)
+pango2_line_breaker_undo_line (Pango2LineBreaker *self,
+                               Pango2Line        *line)
 {
   if (self->data == NULL &&
       line->start_index == 0 && line->length == line->data->length)
@@ -2593,7 +2593,7 @@ pango_line_breaker_undo_line (PangoLineBreaker *self,
 
       /* ensure_items will set up everything else */
 
-      g_clear_pointer (&self->glyphs, pango_glyph_string_free);
+      g_clear_pointer (&self->glyphs, pango2_glyph_string_free);
 
       return TRUE;
     }
@@ -2606,7 +2606,7 @@ pango_line_breaker_undo_line (PangoLineBreaker *self,
       /* recover the original items */
       for (GList *l = self->data_items; l; l = l->next)
         {
-          PangoItem *item = l->data;
+          Pango2Item *item = l->data;
 
           if (item->offset + item->length < line->start_index)
             continue;
@@ -2614,26 +2614,26 @@ pango_line_breaker_undo_line (PangoLineBreaker *self,
           if (item->offset > self->line_start_index)
             break;
 
-          item = pango_item_copy (item);
+          item = pango2_item_copy (item);
 
           if (item->offset < line->start_index)
             {
-              PangoItem *new_item;
+              Pango2Item *new_item;
               int n_chars;
 
               n_chars = g_utf8_strlen (self->data->text + item->offset, line->start_index - item->offset);
-              new_item = pango_item_split (item, line->start_index - item->offset, n_chars);
-              pango_item_free (new_item);
+              new_item = pango2_item_split (item, line->start_index - item->offset, n_chars);
+              pango2_item_free (new_item);
             }
 
           if (item->offset + item->length > self->line_start_index)
             {
-              PangoItem *new_item;
+              Pango2Item *new_item;
               int n_chars;
 
               n_chars = g_utf8_strlen (self->data->text + item->offset, self->line_start_index - item->offset);
-              new_item = pango_item_split (item, self->line_start_index - item->offset, n_chars);
-              pango_item_free (item);
+              new_item = pango2_item_split (item, self->line_start_index - item->offset, n_chars);
+              pango2_item_free (item);
               item = new_item;
             }
 
@@ -2648,7 +2648,7 @@ pango_line_breaker_undo_line (PangoLineBreaker *self,
       self->line_start_index = line->start_index;
       self->line_start_offset = line->start_offset;
 
-      g_clear_pointer (&self->glyphs, pango_glyph_string_free);
+      g_clear_pointer (&self->glyphs, pango2_glyph_string_free);
       self->start_offset = line->start_offset;
       self->log_widths_offset = 0;
 

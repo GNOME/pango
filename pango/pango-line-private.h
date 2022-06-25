@@ -30,10 +30,10 @@ struct _LineData {
   char *text;
   int length;
   int n_chars;
-  PangoDirection direction;
+  Pango2Direction direction;
 
-  PangoAttrList *attrs;
-  PangoLogAttr *log_attrs;
+  Pango2AttrList *attrs;
+  Pango2LogAttr *log_attrs;
 };
 
 LineData *      line_data_new           (void);
@@ -41,9 +41,9 @@ LineData *      line_data_ref           (LineData *data);
 void            line_data_unref         (LineData *data);
 void            line_data_clear         (LineData *data);
 
-struct _PangoLine
+struct _Pango2Line
 {
-  PangoContext *context;
+  Pango2Context *context;
   LineData *data;
 
   int start_index;
@@ -51,7 +51,7 @@ struct _PangoLine
   int start_offset;
   int n_chars;
   GSList *runs;
-  PangoRun **run_array;
+  Pango2Run **run_array;
   int n_runs;
 
   guint wrapped             : 1;
@@ -62,26 +62,26 @@ struct _PangoLine
   guint ends_paragraph      : 1;
   guint has_extents         : 1;
 
-  PangoDirection direction;
+  Pango2Direction direction;
 
-  PangoRectangle ink_rect;
-  PangoRectangle logical_rect;
+  Pango2Rectangle ink_rect;
+  Pango2Rectangle logical_rect;
 };
 
-PangoLine * pango_line_new               (PangoContext       *context,
-                                          LineData           *data);
+Pango2Line * pango2_line_new               (Pango2Context       *context,
+                                            LineData            *data);
 
-void        pango_line_ellipsize         (PangoLine          *line,
-                                          PangoContext       *context,
-                                          PangoEllipsizeMode  ellipsize,
-                                          int                 goal_width);
+void         pango2_line_ellipsize         (Pango2Line          *line,
+                                            Pango2Context       *context,
+                                            Pango2EllipsizeMode  ellipsize,
+                                            int                  goal_width);
 
-void        pango_line_index_to_run      (PangoLine          *line,
-                                          int                 idx,
-                                          PangoRun          **run);
+void         pango2_line_index_to_run      (Pango2Line          *line,
+                                            int                  idx,
+                                            Pango2Run          **run);
 
-void        pango_line_get_empty_extents (PangoLine          *line,
-                                          PangoLeadingTrim    trim,
-                                          PangoRectangle     *logical_rect);
+void         pango2_line_get_empty_extents (Pango2Line          *line,
+                                            Pango2LeadingTrim    trim,
+                                            Pango2Rectangle     *logical_rect);
 
-void        pango_line_check_invariants  (PangoLine          *line);
+void         pango2_line_check_invariants  (Pango2Line          *line);

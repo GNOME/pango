@@ -1,4 +1,4 @@
-/* Example code to show how to use user fonts with Pango
+/* Example code to show how to use user fonts with Pango2
  *
  * Written by Matthias Clasen, 2022
  *
@@ -16,7 +16,7 @@
 
 #include <pango/pangocairo.h>
 
-static PangoFontMap *fontmap;
+static Pango2FontMap *fontmap;
 
 #define END_GLYPH 0
 #define STROKE 126
@@ -74,31 +74,31 @@ static const test_scaled_font_glyph_t glyphs [] = {
 
 const char text[] = "finally... pango user-font";
 
-static PangoLayout *
+static Pango2Layout *
 get_layout (void)
 {
-  PangoContext *context;
-  PangoLayout *layout;
-  PangoFontDescription *desc;
+  Pango2Context *context;
+  Pango2Layout *layout;
+  Pango2FontDescription *desc;
 
-  /* Create a PangoLayout, set the font and text */
-  context = pango_context_new_with_font_map (fontmap);
-  layout = pango_layout_new (context);
+  /* Create a Pango2Layout, set the font and text */
+  context = pango2_context_new_with_font_map (fontmap);
+  layout = pango2_layout_new (context);
   g_object_unref (context);
 
-  pango_layout_set_text (layout, text, -1);
+  pango2_layout_set_text (layout, text, -1);
 
-  desc = pango_font_description_from_string ("Userfont 20");
-  pango_layout_set_font_description (layout, desc);
-  pango_font_description_free (desc);
+  desc = pango2_font_description_from_string ("Userfont 20");
+  pango2_layout_set_font_description (layout, desc);
+  pango2_font_description_free (desc);
 
-  pango_layout_write_to_file (layout, "out.layout");
+  pango2_layout_write_to_file (layout, "out.layout");
 
   return layout;
 }
 
 static gboolean
-glyph_cb (PangoUserFace  *face,
+glyph_cb (Pango2UserFace  *face,
           hb_codepoint_t  unicode,
           hb_codepoint_t *glyph,
           gpointer        user_data)
@@ -118,7 +118,7 @@ glyph_cb (PangoUserFace  *face,
 }
 
 static gboolean
-glyph_info_cb (PangoUserFace      *face,
+glyph_info_cb (Pango2UserFace      *face,
                int                 size,
                hb_codepoint_t      glyph,
                hb_glyph_extents_t *extents,
@@ -142,13 +142,13 @@ glyph_info_cb (PangoUserFace      *face,
 }
 
 static gboolean
-shape_cb (PangoUserFace       *face,
+shape_cb (Pango2UserFace       *face,
           int                  size,
           const char          *text,
           int                  length,
-          const PangoAnalysis *analysis,
-          PangoGlyphString    *glyphs,
-          PangoShapeFlags      flags,
+          const Pango2Analysis *analysis,
+          Pango2GlyphString    *glyphs,
+          Pango2ShapeFlags      flags,
           gpointer             user_data)
 {
   int n_chars;
@@ -162,7 +162,7 @@ shape_cb (PangoUserFace       *face,
 
   n_chars = g_utf8_strlen (text, length);
 
-  pango_glyph_string_set_size (glyphs, n_chars);
+  pango2_glyph_string_set_size (glyphs, n_chars);
 
   last_cluster = -1;
 
@@ -171,8 +171,8 @@ shape_cb (PangoUserFace       *face,
   for (i = 0; i < n_chars; i++)
     {
       gunichar wc;
-      PangoGlyph glyph = 0;
-      PangoRectangle logical_rect;
+      Pango2Glyph glyph = 0;
+      Pango2Rectangle logical_rect;
 
       wc = g_utf8_get_char (p);
 
@@ -186,13 +186,13 @@ shape_cb (PangoUserFace       *face,
           i++;
           glyph_cb (face, 0xe000, &glyph, user_data);
         }
-      else if (pango_is_zero_width (wc))
-        glyph = PANGO_GLYPH_EMPTY;
+      else if (pango2_is_zero_width (wc))
+        glyph = PANGO2_GLYPH_EMPTY;
       else if (!glyph_cb (face, wc, &glyph, user_data))
-        glyph = PANGO_GET_UNKNOWN_GLYPH (wc);
+        glyph = PANGO2_GET_UNKNOWN_GLYPH (wc);
 
       glyph_info_cb (face, size, glyph, &ext, &dummy, &dummy, &is_color, user_data);
-      pango_font_get_glyph_extents (pango_analysis_get_font (analysis), glyph, NULL, &logical_rect);
+      pango2_font_get_glyph_extents (pango2_analysis_get_font (analysis), glyph, NULL, &logical_rect);
 
       glyphs->glyphs[j].glyph = glyph;
 
@@ -217,14 +217,14 @@ shape_cb (PangoUserFace       *face,
 #if 0
   /* FIXME export this */
   if (analysis->level & 1)
-    pango_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
+    pango2_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
 #endif
 
   return TRUE;
 }
 
 static gboolean
-font_info_cb (PangoUserFace     *face,
+font_info_cb (Pango2UserFace     *face,
               int                size,
               hb_font_extents_t *extents,
               gpointer           user_data)
@@ -237,7 +237,7 @@ font_info_cb (PangoUserFace     *face,
 }
 
 static gboolean
-render_cb (PangoUserFace  *face,
+render_cb (Pango2UserFace  *face,
            int             size,
            hb_codepoint_t  glyph,
            gpointer        user_data,
@@ -284,22 +284,22 @@ render_cb (PangoUserFace  *face,
 }
 
 static void
-setup_fontmap (PangoFontMap *fontmap)
+setup_fontmap (Pango2FontMap *fontmap)
 {
-  PangoFontDescription *desc;
-  PangoUserFace *face;
+  Pango2FontDescription *desc;
+  Pango2UserFace *face;
 
-  desc = pango_font_description_new ();
-  pango_font_description_set_family (desc, "Userfont");
-  face = pango_user_face_new (font_info_cb,
+  desc = pango2_font_description_new ();
+  pango2_font_description_set_family (desc, "Userfont");
+  face = pango2_user_face_new (font_info_cb,
                               glyph_cb,
                               glyph_info_cb,
                               shape_cb,
                               render_cb,
                               (gpointer) glyphs, NULL,
                               "Black", desc);
-  pango_font_map_add_face (fontmap, PANGO_FONT_FACE (face));
-  pango_font_description_free (desc);
+  pango2_font_map_add_face (fontmap, PANGO2_FONT_FACE (face));
+  pango2_font_description_free (desc);
 }
 
 int
@@ -309,8 +309,8 @@ main (int argc, char **argv)
   char *filename;
   cairo_status_t status;
   cairo_surface_t *surface;
-  PangoLayout *layout;
-  PangoRectangle ext;
+  Pango2Layout *layout;
+  Pango2Rectangle ext;
 
   if (argc != 2)
     {
@@ -320,13 +320,13 @@ main (int argc, char **argv)
 
   filename = argv[1];
 
-  fontmap = PANGO_FONT_MAP (pango_font_map_new_default ());
-  setup_fontmap (PANGO_FONT_MAP (fontmap));
+  fontmap = PANGO2_FONT_MAP (pango2_font_map_new_default ());
+  setup_fontmap (PANGO2_FONT_MAP (fontmap));
 
   layout = get_layout ();
 
-  pango_lines_get_extents (pango_layout_get_lines (layout), NULL, &ext);
-  pango_extents_to_pixels (&ext, NULL);
+  pango2_lines_get_extents (pango2_layout_get_lines (layout), NULL, &ext);
+  pango2_extents_to_pixels (&ext, NULL);
 
   /* Now create the final surface and draw to it. */
   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, ext.width + 20, ext.height + 20);
@@ -337,7 +337,7 @@ main (int argc, char **argv)
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.5);
 
   cairo_move_to (cr, 10, 10);
-  pango_cairo_show_layout (cr, layout);
+  pango2_cairo_show_layout (cr, layout);
 
   cairo_destroy (cr);
 

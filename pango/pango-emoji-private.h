@@ -22,14 +22,14 @@
 #include <glib.h>
 
 gboolean
-_pango_Is_Emoji_Base_Character (gunichar ch);
+_pango2_Is_Emoji_Base_Character (gunichar ch);
 
 gboolean
-_pango_Is_Emoji_Extended_Pictographic (gunichar ch);
+_pango2_Is_Emoji_Extended_Pictographic (gunichar ch);
 
-typedef struct _PangoEmojiIter PangoEmojiIter;
+typedef struct _Pango2EmojiIter Pango2EmojiIter;
 
-struct _PangoEmojiIter
+struct _Pango2EmojiIter
 {
   const char *text_start;
   const char *text_end;
@@ -42,13 +42,13 @@ struct _PangoEmojiIter
   unsigned int cursor;
 };
 
-PangoEmojiIter *
-_pango_emoji_iter_init (PangoEmojiIter *iter,
-			const char     *text,
-			int             length);
+Pango2EmojiIter *
+_pango2_emoji_iter_init (Pango2EmojiIter *iter,
+                         const char      *text,
+                         int              length);
 
 gboolean
-_pango_emoji_iter_next (PangoEmojiIter *iter);
+_pango2_emoji_iter_next (Pango2EmojiIter *iter);
 
 void
-_pango_emoji_iter_fini (PangoEmojiIter *iter);
+_pango2_emoji_iter_fini (Pango2EmojiIter *iter);

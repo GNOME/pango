@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * break-latin.c:
  *
  * Copyright (C) 2021 Jordi Mas i Hernàndez <jmas@softcatala.org>
@@ -25,18 +25,18 @@
 #include "pango-impl-utils.h"
 
 static void
-break_latin (const char          *text,
-             int                  length,
-             const PangoAnalysis *analysis,
-             PangoLogAttr        *attrs,
-             int                  attrs_len G_GNUC_UNUSED)
+break_latin (const char           *text,
+             int                   length,
+             const Pango2Analysis *analysis,
+             Pango2LogAttr        *attrs,
+             int                   attrs_len G_GNUC_UNUSED)
 {
   int i;
   const char *p, *next;
   gunichar wc, prev_wc;
 
   if (!analysis || !analysis->language ||
-      g_ascii_strncasecmp (pango_language_to_string (analysis->language), "ca-", 3) != 0)
+      g_ascii_strncasecmp (pango2_language_to_string (analysis->language), "ca-", 3) != 0)
     return;
 
   for (p = text, i = 0, prev_wc = 0;

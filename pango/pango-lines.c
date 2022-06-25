@@ -7,46 +7,46 @@
 #include "pango-line-iter-private.h"
 
 /**
- * PangoLines:
+ * Pango2Lines:
  *
- * A `PangoLines` object represents the result of formatting an
+ * A `Pango2Lines` object represents the result of formatting an
  * entire paragraph (or more) of text.
  *
- * A `PangoLines` object contains a list of `PangoLine` objects,
+ * A `Pango2Lines` object contains a list of `Pango2Line` objects,
  * together with information about where to position each line
  * in layout coordinates.
  *
- * `PangoLines` has APIs to query collective information about
+ * `Pango2Lines` has APIs to query collective information about
  * its lines (such as ellipsization or unknown glyphs), to translate
  * between logical character positions within the text and the physical
  * position of the resulting glyphs, and to determine cursor positions
  * for editing the text.
  *
- * One way to obtain a `PangoLines` object is to use a [class@Pango.Layout].
- * But it is also possible to populate a `PangoLines` manually with lines
- * produced by a [class@Pango.LineBreaker] object.
+ * One way to obtain a `Pango2Lines` object is to use a [class@Pango2.Layout].
+ * But it is also possible to populate a `Pango2Lines` manually with lines
+ * produced by a [class@Pango2.LineBreaker] object.
  *
- * Note that the lines that make up a `PangoLines` object don't have to
+ * Note that the lines that make up a `Pango2Lines` object don't have to
  * share the same underlying text. Therefore, using byte indexes to refer
- * to positions within the `PangoLines` is, in general, ambiguous. All the
- * `PangoLines` APIs that take a byte index as argument or return one have
- * a `PangoLine*` companion argument to handle this situation. When all
- * the lines in the `PangoLines` share the same text  (such as when they
- * originate from the same `PangoLayout`), it is safe to always pass `NULL`
- * for the `PangoLines*`.
+ * to positions within the `Pango2Lines` is, in general, ambiguous. All the
+ * `Pango2Lines` APIs that take a byte index as argument or return one have
+ * a `Pango2Line*` companion argument to handle this situation. When all
+ * the lines in the `Pango2Lines` share the same text  (such as when they
+ * originate from the same `Pango2Layout`), it is safe to always pass `NULL`
+ * for the `Pango2Lines*`.
  *
  * The most convenient way to access the visual extents and components
- * of a `PangoLines` is via a [struct@Pango.LineIter] iterator.
+ * of a `Pango2Lines` is via a [struct@Pango2.LineIter] iterator.
  */
 
-/*  {{{ PangoLines implementation */
+/* {{{ Pango2Lines implementation */
 
-struct _PangoLinesClass
+struct _Pango2LinesClass
 {
   GObjectClass parent_class;
 };
 
-G_DEFINE_TYPE (PangoLines, pango_lines, G_TYPE_OBJECT)
+G_DEFINE_TYPE (Pango2Lines, pango2_lines, G_TYPE_OBJECT)
 
 enum {
   PROP_UNKNOWN_GLYPHS_COUNT = 1,
@@ -59,48 +59,48 @@ enum {
 static GParamSpec *properties[N_PROPERTIES] = { NULL, };
 
 static void
-pango_lines_init (PangoLines *lines)
+pango2_lines_init (Pango2Lines *lines)
 {
   lines->serial = 1;
-  lines->lines = g_ptr_array_new_with_free_func ((GDestroyNotify) pango_line_free);
+  lines->lines = g_ptr_array_new_with_free_func ((GDestroyNotify) pango2_line_free);
   lines->positions = g_array_new (FALSE, FALSE, sizeof (Position));
 }
 
 static void
-pango_lines_finalize (GObject *object)
+pango2_lines_finalize (GObject *object)
 {
-  PangoLines *lines = PANGO_LINES (object);
+  Pango2Lines *lines = PANGO2_LINES (object);
 
   g_ptr_array_unref (lines->lines);
   g_array_unref (lines->positions);
 
-  G_OBJECT_CLASS (pango_lines_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango2_lines_parent_class)->finalize (object);
 }
 
 static void
-pango_lines_get_property (GObject    *object,
-                          guint       prop_id,
-                          GValue     *value,
-                          GParamSpec *pspec)
+pango2_lines_get_property (GObject    *object,
+                           guint       prop_id,
+                           GValue     *value,
+                           GParamSpec *pspec)
 {
-  PangoLines *self = PANGO_LINES (object);
+  Pango2Lines *self = PANGO2_LINES (object);
 
   switch (prop_id)
     {
     case PROP_UNKNOWN_GLYPHS_COUNT:
-      g_value_set_int (value, pango_lines_get_unknown_glyphs_count (self));
+      g_value_set_int (value, pango2_lines_get_unknown_glyphs_count (self));
       break;
 
     case PROP_WRAPPED:
-      g_value_set_boolean (value, pango_lines_is_wrapped (self));
+      g_value_set_boolean (value, pango2_lines_is_wrapped (self));
       break;
 
     case PROP_ELLIPSIZED:
-      g_value_set_boolean (value, pango_lines_is_ellipsized (self));
+      g_value_set_boolean (value, pango2_lines_is_ellipsized (self));
       break;
 
     case PROP_HYPHENATED:
-      g_value_set_boolean (value, pango_lines_is_hyphenated (self));
+      g_value_set_boolean (value, pango2_lines_is_hyphenated (self));
       break;
 
     default:
@@ -110,44 +110,44 @@ pango_lines_get_property (GObject    *object,
 }
 
 static void
-pango_lines_class_init (PangoLinesClass *class)
+pango2_lines_class_init (Pango2LinesClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
 
-  object_class->finalize = pango_lines_finalize;
-  object_class->get_property = pango_lines_get_property;
+  object_class->finalize = pango2_lines_finalize;
+  object_class->get_property = pango2_lines_get_property;
 
   /**
-   * PangoLines:unknown-glyphs-count: (attributes org.gtk.Property.get=pango_lines_get_unknown_glyphs_count)
+   * Pango2Lines:unknown-glyphs-count: (attributes org.gtk.Property.get=pango2_lines_get_unknown_glyphs_count)
    *
-   * The number of unknown glyphs in the `PangoLines`.
+   * The number of unknown glyphs in the `Pango2Lines`.
    */
   properties[PROP_UNKNOWN_GLYPHS_COUNT] =
     g_param_spec_uint ("unknown-glyphs-count", NULL, NULL, 0, G_MAXUINT, 0,
                        G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
-   * PangoLines:wrapped: (attributes org.gtk.Property.get=pango_lines_is_wrapped)
+   * Pango2Lines:wrapped: (attributes org.gtk.Property.get=pango2_lines_is_wrapped)
    *
-   * `TRUE` if the `PangoLines` contains any wrapped lines.
+   * `TRUE` if the `Pango2Lines` contains any wrapped lines.
    */
   properties[PROP_WRAPPED] =
     g_param_spec_boolean ("wrapped", NULL, NULL, FALSE,
                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
-   * PangoLines:ellipsized: (attributes org.gtk.Property.get=pango_lines_is_ellipsized)
+   * Pango2Lines:ellipsized: (attributes org.gtk.Property.get=pango2_lines_is_ellipsized)
    *
-   * `TRUE` if the `PangoLines` contains any ellipsized lines.
+   * `TRUE` if the `Pango2Lines` contains any ellipsized lines.
    */
   properties[PROP_ELLIPSIZED] =
     g_param_spec_boolean ("ellipsized", NULL, NULL, FALSE,
                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
-   * PangoLines:hyphenated: (attributes org.gtk.Property.get=pango_lines_is_hyphenated)
+   * Pango2Lines:hyphenated: (attributes org.gtk.Property.get=pango2_lines_is_hyphenated)
    *
-   * `TRUE` if the `PangoLines` contains any hyphenated lines.
+   * `TRUE` if the `Pango2Lines` contains any hyphenated lines.
    */
   properties[PROP_HYPHENATED] =
     g_param_spec_boolean ("hyphenated", NULL, NULL, FALSE,
@@ -157,7 +157,7 @@ pango_lines_class_init (PangoLinesClass *class)
 }
 
 /* }}} */
- /* {{{ Utilities*/
+/* {{{ Utilities*/
 
 typedef struct {
   int x;
@@ -175,16 +175,16 @@ compare_cursor (gconstpointer v1,
 }
 
 static void
-pango_line_get_cursors (PangoLines      *lines,
-                        PangoLine       *line,
-                        gboolean         strong,
-                        GArray          *cursors)
+pango2_line_get_cursors (Pango2Lines      *lines,
+                         Pango2Line       *line,
+                         gboolean          strong,
+                         GArray           *cursors)
 {
   const char *start, *end;
   int start_offset;
   int j;
   const char *p;
-  PangoRectangle pos;
+  Pango2Rectangle pos;
   Position offset;
 
   g_assert (g_array_get_element_size (cursors) == sizeof (CursorPos));
@@ -214,9 +214,9 @@ pango_line_get_cursors (PangoLines      *lines,
         {
           CursorPos cursor;
 
-          pango_line_get_cursor_pos (line, idx,
-                                     strong ? &pos : NULL,
-                                     strong ? NULL : &pos);
+          pango2_line_get_cursor_pos (line, idx,
+                                      strong ? &pos : NULL,
+                                      strong ? NULL : &pos);
 
           cursor.x = pos.x + offset.x;
           cursor.pos = idx;
@@ -228,24 +228,24 @@ pango_line_get_cursors (PangoLines      *lines,
 }
 
 /* }}} */
- /* {{{ Public API */
+/* {{{ Public API */
 
 /**
- * pango_lines_new:
+ * pango2_lines_new:
  *
- * Creates an empty `PangoLines` object.
+ * Creates an empty `Pango2Lines` object.
  *
- * Returns: a newly allocated `PangoLines`
+ * Returns: a newly allocated `Pango2Lines`
  */
-PangoLines *
-pango_lines_new (void)
+Pango2Lines *
+pango2_lines_new (void)
 {
-  return g_object_new (PANGO_TYPE_LINES, NULL);
+  return g_object_new (PANGO2_TYPE_LINES, NULL);
 }
 
 /**
- * pango_lines_get_serial:
- * @lines: a `PangoLines`
+ * pango2_lines_get_serial:
+ * @lines: a `Pango2Lines`
  *
  * Returns the current serial number of @lines.
  *
@@ -256,25 +256,25 @@ pango_lines_new (void)
  * The serial may wrap, but will never have the value 0. Since it can
  * wrap, never compare it with "less than", always use "not equals".
  *
- * This can be used to automatically detect changes to a `PangoLines`,
+ * This can be used to automatically detect changes to a `Pango2Lines`,
  * and is useful for example to decide whether a layout needs redrawing.
  *
  * Return value: The current serial number of @lines
  */
 guint
-pango_lines_get_serial (PangoLines *lines)
+pango2_lines_get_serial (Pango2Lines *lines)
 {
   return lines->serial;
 }
 
 /**
- * pango_lines_add_line:
- * @lines: a `PangoLines`
- * @line: (transfer full): the `PangoLine` to add
+ * pango2_lines_add_line:
+ * @lines: a `Pango2Lines`
+ * @line: (transfer full): the `Pango2Line` to add
  * @line_x: X coordinate of the position
  * @line_y: Y coordinate of the position
  *
- * Adds a line to the `PangoLines`.
+ * Adds a line to the `Pango2Lines`.
  *
  * The coordinates are the position
  * at which @line is placed.
@@ -282,10 +282,10 @@ pango_lines_get_serial (PangoLines *lines)
  * Note that this function takes ownership of the line.
  */
 void
-pango_lines_add_line (PangoLines      *lines,
-                      PangoLine       *line,
-                      int              x_line,
-                      int              y_line)
+pango2_lines_add_line (Pango2Lines      *lines,
+                       Pango2Line       *line,
+                       int               x_line,
+                       int               y_line)
 {
   Position pos = { x_line, y_line };
 
@@ -303,8 +303,8 @@ pango_lines_add_line (PangoLines      *lines,
 }
 
 /**
- * pango_lines_get_iter:
- * @lines: a `PangoLines`
+ * pango2_lines_get_iter:
+ * @lines: a `Pango2Lines`
  *
  * Returns an iterator to iterate over the visual extents of the lines.
  *
@@ -314,51 +314,50 @@ pango_lines_add_line (PangoLines      *lines,
  *
  * Note that the iter holds a reference to @lines.
  *
- * Return value: the new `PangoLineIter`
+ * Return value: the new `Pango2LineIter`
  */
-PangoLineIter *
-pango_lines_get_iter (PangoLines *lines)
+Pango2LineIter *
+pango2_lines_get_iter (Pango2Lines *lines)
 {
-  return pango_line_iter_new (lines);
+  return pango2_line_iter_new (lines);
 }
 
 /**
- * pango_lines_get_line_count:
- * @lines: a `PangoLines`
+ * pango2_lines_get_line_count:
+ * @lines: a `Pango2Lines`
  *
  * Gets the number of lines in @lines.
  *
  * Returns: the number of lines'
  */
 int
-pango_lines_get_line_count (PangoLines *lines)
+pango2_lines_get_line_count (Pango2Lines *lines)
 {
   return lines->lines->len;
 }
 
 /**
- * pango_lines_get_lines:
- * @lines: a `PangoLines`
+ * pango2_lines_get_lines:
+ * @lines: a `Pango2Lines`
  *
  * Gets the lines.
  *
  * The length of the returned array can be obtained with
- * [method@Pango.Lines.get_line_count].
+ * [method@Pango2.Lines.get_line_count].
  *
  * Returns: (transfer none): the array of lines
  */
-PangoLine **
-pango_lines_get_lines (PangoLines *lines)
+Pango2Line **
+pango2_lines_get_lines (Pango2Lines *lines)
 {
-  g_return_val_if_fail (PANGO_IS_LINES (lines), NULL);
+  g_return_val_if_fail (PANGO2_IS_LINES (lines), NULL);
 
-  return (PangoLine **)lines->lines->pdata;
+  return (Pango2Line **)lines->lines->pdata;
 }
 
 /**
- * pango_lines_get_line_position:
- * pango_lines_get_lines:
- * @lines: a `PangoLines`
+ * pango2_lines_get_line_position:
+ * @lines: a `Pango2Lines`
  * @num: the index of the line to get the position for
  * @line_x: (out) (optional): return location for the X coordinate
  * @line_y: (out) (optional): return location for the Y coordinate
@@ -366,14 +365,14 @@ pango_lines_get_lines (PangoLines *lines)
  * Gets the position of a line.
  */
 void
-pango_lines_get_line_position (PangoLines *lines,
-                               int         num,
-                               int        *line_x,
-                               int        *line_y)
+pango2_lines_get_line_position (Pango2Lines *lines,
+                                int          num,
+                                int         *line_x,
+                                int         *line_y)
 {
   Position *pos;
 
-  g_return_if_fail (PANGO_IS_LINES (lines));
+  g_return_if_fail (PANGO2_IS_LINES (lines));
 
   if (num >= lines->lines->len)
     return;
@@ -389,34 +388,34 @@ pango_lines_get_line_position (PangoLines *lines,
 /* {{{ Miscellaneous */
 
 /**
- * pango_lines_get_unknown_glyphs_count:
- * @lines: a `PangoLines` object
+ * pango2_lines_get_unknown_glyphs_count:
+ * @lines: a `Pango2Lines` object
  *
- * Counts the number of unknown glyphs in the `PangoLines`
+ * Counts the number of unknown glyphs in the `Pango2Lines`
  *
  * This function can be used to determine if there are any fonts
  * available to render all characters in a certain string, or when
- * used in combination with `PANGO_ATTR_FALLBACK`, to check if a
+ * used in combination with `PANGO2_ATTR_FALLBACK`, to check if a
  * certain font supports all the characters in the string.
  *
  * Return value: The number of unknown glyphs in @lines
  */
 int
-pango_lines_get_unknown_glyphs_count (PangoLines *lines)
+pango2_lines_get_unknown_glyphs_count (Pango2Lines *lines)
 {
   int count = 0;
 
   for (int i = 0; i < lines->lines->len; i++)
     {
-      PangoLine *line = g_ptr_array_index (lines->lines, i);
+      Pango2Line *line = g_ptr_array_index (lines->lines, i);
 
       for (GSList *l = line->runs; l; l = l->next)
         {
-          PangoGlyphItem *run = l->data;
+          Pango2GlyphItem *run = l->data;
 
           for (int j = 0; j < run->glyphs->num_glyphs; j++)
             {
-              if (run->glyphs->glyphs[j].glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+              if (run->glyphs->glyphs[j].glyph & PANGO2_GLYPH_UNKNOWN_FLAG)
                 count++;
             }
         }
@@ -426,20 +425,20 @@ pango_lines_get_unknown_glyphs_count (PangoLines *lines)
 }
 
 /**
- * pango_lines_is_wrapped:
- * @lines: a `PangoLines` object
+ * pango2_lines_is_wrapped:
+ * @lines: a `Pango2Lines` object
  *
  * Returns whether any of the lines is wrapped.
  *
  * Returns: `TRUE` if @lines is wrapped
  */
 gboolean
-pango_lines_is_wrapped (PangoLines *lines)
+pango2_lines_is_wrapped (Pango2Lines *lines)
 {
   for (int i = 0; i < lines->lines->len; i++)
     {
-      PangoLine *line = g_ptr_array_index (lines->lines, i);
-      if (pango_line_is_wrapped (line))
+      Pango2Line *line = g_ptr_array_index (lines->lines, i);
+      if (pango2_line_is_wrapped (line))
         return TRUE;
     }
 
@@ -447,20 +446,20 @@ pango_lines_is_wrapped (PangoLines *lines)
 }
 
 /**
- * pango_lines_is_ellipsized:
- * @lines: a `PangoLines` object
+ * pango2_lines_is_ellipsized:
+ * @lines: a `Pango2Lines` object
  *
  * Returns whether any of the lines is ellipsized.
  *
  * Returns: `TRUE` if @lines is ellipsized
  */
 gboolean
-pango_lines_is_ellipsized (PangoLines *lines)
+pango2_lines_is_ellipsized (Pango2Lines *lines)
 {
   for (int i = 0; i < lines->lines->len; i++)
     {
-      PangoLine *line = g_ptr_array_index (lines->lines, i);
-      if (pango_line_is_ellipsized (line))
+      Pango2Line *line = g_ptr_array_index (lines->lines, i);
+      if (pango2_line_is_ellipsized (line))
         return TRUE;
     }
 
@@ -468,20 +467,20 @@ pango_lines_is_ellipsized (PangoLines *lines)
 }
 
 /**
- * pango_lines_is_hyphenated:
- * @lines: a `PangoLines` object
+ * pango2_lines_is_hyphenated:
+ * @lines: a `Pango2Lines` object
  *
  * Returns whether any of the lines is hyphenated.
  *
  * Returns: `TRUE` if @lines is hyphenated
  */
 gboolean
-pango_lines_is_hyphenated (PangoLines *lines)
+pango2_lines_is_hyphenated (Pango2Lines *lines)
 {
   for (int i = 0; i < lines->lines->len; i++)
     {
-      PangoLine *line = g_ptr_array_index (lines->lines, i);
-      if (pango_line_is_hyphenated (line))
+      Pango2Line *line = g_ptr_array_index (lines->lines, i);
+      if (pango2_line_is_hyphenated (line))
         return TRUE;
     }
 
@@ -492,8 +491,8 @@ pango_lines_is_hyphenated (PangoLines *lines)
 /* {{{ Extents */
 
 /**
- * pango_lines_get_extents:
- * @lines: a `PangoLines` object
+ * pango2_lines_get_extents:
+ * @lines: a `Pango2Lines` object
  * @ink_rect: (out) (optional): return location for the ink extents
  * @logical_rect: (out) (optional): return location for the logical extents
  *
@@ -505,29 +504,29 @@ pango_lines_is_hyphenated (PangoLines *lines)
  * bug that shows up as right-to-left layouts not being correctly positioned
  * in a layout with a set width.
  *
- * The extents are given in layout coordinates and in Pango units; layout
+ * The extents are given in layout coordinates and in Pango2 units; layout
  * coordinates begin at the top left corner.
  */
 void
-pango_lines_get_extents (PangoLines     *lines,
-                         PangoRectangle *ink_rect,
-                         PangoRectangle *logical_rect)
+pango2_lines_get_extents (Pango2Lines     *lines,
+                          Pango2Rectangle *ink_rect,
+                          Pango2Rectangle *logical_rect)
 {
   for (int i = 0; i < lines->lines->len; i++)
     {
-      PangoLine *line = g_ptr_array_index (lines->lines, i);
+      Pango2Line *line = g_ptr_array_index (lines->lines, i);
       Position *pos = &g_array_index (lines->positions, Position, i);
-      PangoRectangle line_ink;
-      PangoRectangle line_logical;
-      PangoLeadingTrim trim = PANGO_LEADING_TRIM_NONE;
+      Pango2Rectangle line_ink;
+      Pango2Rectangle line_logical;
+      Pango2LeadingTrim trim = PANGO2_LEADING_TRIM_NONE;
 
       if (line->starts_paragraph)
-        trim |= PANGO_LEADING_TRIM_START;
+        trim |= PANGO2_LEADING_TRIM_START;
       if (line->ends_paragraph)
-        trim |= PANGO_LEADING_TRIM_END;
+        trim |= PANGO2_LEADING_TRIM_END;
 
-      pango_line_get_extents (line, &line_ink, NULL);
-      pango_line_get_trimmed_extents (line, trim, &line_logical);
+      pango2_line_get_extents (line, &line_ink, NULL);
+      pango2_line_get_trimmed_extents (line, trim, &line_logical);
 
       line_ink.x += pos->x;
       line_ink.y += pos->y;
@@ -570,25 +569,25 @@ pango_lines_get_extents (PangoLines     *lines,
 }
 
 /**
- * pango_lines_get_size:
- * @lines: a `PangoLines`
+ * pango2_lines_get_size:
+ * @lines: a `Pango2Lines`
  * @width: (out) (optional): location to store the logical width
  * @height: (out) (optional): location to store the logical height
  *
- * Determines the logical width and height of a `PangoLines`
- * in Pango units.
+ * Determines the logical width and height of a `Pango2Lines`
+ * in Pango2 units.
  *
  * This is simply a convenience function around
- * [method@Pango.Lines.get_extents].
+ * [method@Pango2.Lines.get_extents].
  */
 void
-pango_lines_get_size (PangoLines *lines,
-                      int        *width,
-                      int        *height)
+pango2_lines_get_size (Pango2Lines *lines,
+                       int         *width,
+                       int         *height)
 {
-  PangoRectangle ext;
+  Pango2Rectangle ext;
 
-  pango_lines_get_extents (lines, NULL, &ext);
+  pango2_lines_get_extents (lines, NULL, &ext);
 
   if (width)
     *width = ext.width;
@@ -597,19 +596,19 @@ pango_lines_get_size (PangoLines *lines,
 }
 
 /**
- * pango_lines_get_baseline:
- * @lines: a `PangoLines` object
+ * pango2_lines_get_baseline:
+ * @lines: a `Pango2Lines` object
  *
  * Gets the Y position of baseline of the first line.
  *
  * Return value: baseline of first line
  */
 int
-pango_lines_get_baseline (PangoLines *lines)
+pango2_lines_get_baseline (Pango2Lines *lines)
 {
   Position *pos;
 
-  g_return_val_if_fail (PANGO_IS_LINES (lines), 0);
+  g_return_val_if_fail (PANGO2_IS_LINES (lines), 0);
 
   if (lines->lines->len == 0)
     return 0;
@@ -620,16 +619,16 @@ pango_lines_get_baseline (PangoLines *lines)
 }
 
 /**
- * pango_lines_get_x_ranges:
- * @lines: a `PangoLines` object
- * @line: the `PangoLine` in @lines whose x ranges will be reported
- * @start_line: (nullable): `PangoLine` wrt to which @start_index is
+ * pango2_lines_get_x_ranges:
+ * @lines: a `Pango2Lines` object
+ * @line: the `Pango2Line` in @lines whose x ranges will be reported
+ * @start_line: (nullable): `Pango2Line` wrt to which @start_index is
  *   interpreted or `NULL` for the first matching line
  * @start_index: Start byte index of the logical range. If this value
  *   is less than the start index for the line, then the first range
  *   will extend all the way to the leading edge of the layout. Otherwise,
  *   it will start at the leading edge of the first character.
- * @end_line: (nullable): `PangoLine` wrt to which @end_index is
+ * @end_line: (nullable): `Pango2Line` wrt to which @end_index is
  *   interpreted or `NULL` for the first matching line
  * @end_index: Ending byte index of the logical range. If this value is
  *   greater than the end index for the line, then the last range will
@@ -640,7 +639,7 @@ pango_lines_get_baseline (PangoLines *lines)
  *   `2*n_ranges`, with each range starting at `(*ranges)[2*n]` and of
  *   width `(*ranges)[2*n + 1] - (*ranges)[2*n]`. This array must be freed
  *   with [GLib.free]. The coordinates are relative to the layout and are in
- *   Pango units.
+ *   Pango2 units.
  * @n_ranges: The number of ranges stored in @ranges
  *
  * Gets a list of visual ranges corresponding to a given logical range.
@@ -651,35 +650,35 @@ pango_lines_get_baseline (PangoLines *lines)
  * layout, not with respect to the line.
  */
 void
-pango_lines_get_x_ranges (PangoLines *lines,
-                          PangoLine  *line,
-                          PangoLine  *start_line,
-                          int         start_index,
-                          PangoLine  *end_line,
-                          int         end_index,
-                          int       **ranges,
-                          int        *n_ranges)
+pango2_lines_get_x_ranges (Pango2Lines *lines,
+                           Pango2Line  *line,
+                           Pango2Line  *start_line,
+                           int          start_index,
+                           Pango2Line  *end_line,
+                           int          end_index,
+                           int        **ranges,
+                           int         *n_ranges)
 {
   int x_offset;
   int line_no, start_line_no, end_line_no;
-  PangoDirection dir;
+  Pango2Direction dir;
   int range_count;
   int width;
-  PangoRectangle ext;
+  Pango2Rectangle ext;
   int accumulated_width;
 
-  g_return_if_fail (PANGO_IS_LINES (lines));
+  g_return_if_fail (PANGO2_IS_LINES (lines));
   g_return_if_fail (ranges != NULL);
   g_return_if_fail (n_ranges != NULL);
 
-  pango_lines_index_to_line (lines, line->start_index, &line, &line_no, &x_offset, NULL);
+  pango2_lines_index_to_line (lines, line->start_index, &line, &line_no, &x_offset, NULL);
   g_return_if_fail (line != NULL);
 
-  pango_lines_index_to_line (lines, start_index, &start_line, &start_line_no, NULL, NULL);
+  pango2_lines_index_to_line (lines, start_index, &start_line, &start_line_no, NULL, NULL);
   g_return_if_fail (start_line != NULL);
   g_return_if_fail (start_line_no <= line_no);
 
-  pango_lines_index_to_line (lines, end_index, &end_line, &end_line_no, NULL, NULL);
+  pango2_lines_index_to_line (lines, end_index, &end_line, &end_line_no, NULL, NULL);
   g_return_if_fail (end_line != NULL);
   g_return_if_fail (end_line_no >= line_no);
 
@@ -697,11 +696,11 @@ pango_lines_get_x_ranges (PangoLines *lines,
   *ranges = g_new (int, 2 * (2 + g_slist_length (line->runs)));
   range_count = 0;
 
-  dir = pango_line_get_resolved_direction (line);
+  dir = pango2_line_get_resolved_direction (line);
 
   if (x_offset > 0 &&
-      ((dir == PANGO_DIRECTION_LTR && start_line_no < line_no) ||
-       (dir == PANGO_DIRECTION_RTL && end_line_no > line_no)))
+      ((dir == PANGO2_DIRECTION_LTR && start_line_no < line_no) ||
+       (dir == PANGO2_DIRECTION_RTL && end_line_no > line_no)))
     {
       /* add range from left edge of layout to line start */
       (*ranges)[2*range_count] = 0;
@@ -710,9 +709,9 @@ pango_lines_get_x_ranges (PangoLines *lines,
     }
 
   accumulated_width = 0;
-  for (int i = 0; i < pango_line_get_run_count (line); i++)
+  for (int i = 0; i < pango2_line_get_run_count (line); i++)
     {
-      PangoGlyphItem *run = pango_run_get_glyph_item (pango_line_get_runs (line)[i]);
+      Pango2GlyphItem *run = pango2_run_get_glyph_item (pango2_line_get_runs (line)[i]);
 
       if ((start_index < run->item->offset + run->item->length &&
            end_index > run->item->offset))
@@ -732,20 +731,20 @@ pango_lines_get_x_ranges (PangoLines *lines,
 
           attr_offset = run->item->char_offset;
 
-          pango_glyph_string_index_to_x_full (run->glyphs,
-                                              line->data->text + run->item->offset,
-                                              run->item->length,
-                                              &run->item->analysis,
-                                              line->data->log_attrs + attr_offset,
-                                              run_start_index - run->item->offset, FALSE,
-                                              &run_start_x);
-          pango_glyph_string_index_to_x_full (run->glyphs,
-                                              line->data->text + run->item->offset,
-                                              run->item->length,
-                                              &run->item->analysis,
-                                              line->data->log_attrs + attr_offset,
-                                              run_end_index - run->item->offset, TRUE,
-                                              &run_end_x);
+          pango2_glyph_string_index_to_x_full (run->glyphs,
+                                               line->data->text + run->item->offset,
+                                               run->item->length,
+                                               &run->item->analysis,
+                                               line->data->log_attrs + attr_offset,
+                                               run_start_index - run->item->offset, FALSE,
+                                               &run_start_x);
+          pango2_glyph_string_index_to_x_full (run->glyphs,
+                                               line->data->text + run->item->offset,
+                                               run->item->length,
+                                               &run->item->analysis,
+                                               line->data->log_attrs + attr_offset,
+                                               run_end_index - run->item->offset, TRUE,
+                                               &run_end_x);
 
           (*ranges)[2*range_count] = x_offset + accumulated_width + MIN (run_start_x, run_end_x);
           (*ranges)[2*range_count + 1] = x_offset + accumulated_width + MAX (run_start_x, run_end_x);
@@ -753,16 +752,16 @@ pango_lines_get_x_ranges (PangoLines *lines,
 
      range_count++;
 
-     if (i + 1 < pango_line_get_run_count (line))
-       accumulated_width += pango_glyph_string_get_width (run->glyphs);
+     if (i + 1 < pango2_line_get_run_count (line))
+       accumulated_width += pango2_glyph_string_get_width (run->glyphs);
    }
 
-  pango_line_get_extents (line, NULL, &ext);
-  pango_lines_get_size (lines, &width, NULL);
+  pango2_line_get_extents (line, NULL, &ext);
+  pango2_lines_get_size (lines, &width, NULL);
 
   if (x_offset + ext.width < width &&
-      ((dir == PANGO_DIRECTION_LTR && start_line_no < line_no) ||
-       (dir == PANGO_DIRECTION_RTL && end_line_no > line_no)))
+      ((dir == PANGO2_DIRECTION_LTR && start_line_no < line_no) ||
+       (dir == PANGO2_DIRECTION_RTL && end_line_no > line_no)))
     {
       /* add range from line end to rigth edge of layout */
       (*ranges)[2*range_count] = x_offset + ext.width;
@@ -777,8 +776,8 @@ pango_lines_get_x_ranges (PangoLines *lines,
   /* { {{ Editing API */
 
 /**
- * pango_lines_index_to_line:
- * @lines: a `PangoLines`
+ * pango2_lines_index_to_line:
+ * @lines: a `Pango2Lines`
  * @idx: index in @lines
  * @line: (inout): if *@line is `NULL`, the found line will be returned here
  * @line_no: (out) (optional): return location for line number
@@ -799,23 +798,23 @@ pango_lines_get_x_ranges (PangoLines *lines,
  * as *@line and use this function to find the line at @idx.
  */
 void
-pango_lines_index_to_line (PangoLines *lines,
-                           int         idx,
-                           PangoLine **line,
-                           int        *line_no,
-                           int        *x_offset,
-                           int        *y_offset)
+pango2_lines_index_to_line (Pango2Lines *lines,
+                            int          idx,
+                            Pango2Line **line,
+                            int         *line_no,
+                            int         *x_offset,
+                            int         *y_offset)
 {
-  PangoLine *found = NULL;
+  Pango2Line *found = NULL;
   int num;
   int i;
   Position pos;
 
-  g_return_if_fail (PANGO_IS_LINES (lines));
+  g_return_if_fail (PANGO2_IS_LINES (lines));
 
   for (i = 0; i < lines->lines->len; i++)
     {
-      PangoLine *l = g_ptr_array_index (lines->lines, i);
+      Pango2Line *l = g_ptr_array_index (lines->lines, i);
 
       if (l->start_index > idx && found)
         break;
@@ -848,10 +847,10 @@ pango_lines_index_to_line (PangoLines *lines,
 }
 
 /**
- * pango_lines_pos_to_line:
- * @lines: a `PangoLines` object
- * @x: the X position (in Pango units)
- * @y: the Y position (in Pango units)
+ * pango2_lines_pos_to_line:
+ * @lines: a `Pango2Lines` object
+ * @x: the X position (in Pango2 units)
+ * @y: the Y position (in Pango2 units)
  * @line_x: (out) (optional): return location for the X offset of the line
  * @line_y: (out) (optional): return location for the Y offset of the line
  *
@@ -862,22 +861,22 @@ pango_lines_index_to_line (PangoLines *lines,
 
  * Returns: (transfer none) (nullable): the line that was found
  */
-PangoLine *
-pango_lines_pos_to_line (PangoLines *lines,
-                         int         x,
-                         int         y,
-                         int        *line_x,
-                         int        *line_y)
+Pango2Line *
+pango2_lines_pos_to_line (Pango2Lines *lines,
+                          int          x,
+                          int          y,
+                          int         *line_x,
+                          int         *line_y)
 {
-  g_return_val_if_fail (PANGO_IS_LINES (lines), FALSE);
+  g_return_val_if_fail (PANGO2_IS_LINES (lines), FALSE);
 
   for (int i = 0; i < lines->lines->len; i++)
     {
-      PangoLine *line = g_ptr_array_index (lines->lines, i);
+      Pango2Line *line = g_ptr_array_index (lines->lines, i);
       Position pos = g_array_index (lines->positions, Position, i);
-      PangoRectangle ext;
+      Pango2Rectangle ext;
 
-      pango_line_get_extents (line, NULL, &ext);
+      pango2_line_get_extents (line, NULL, &ext);
 
       ext.x += pos.x;
       ext.y += pos.y;
@@ -903,14 +902,14 @@ pango_lines_pos_to_line (PangoLines *lines,
 }
 
 /**
- * pango_lines_index_to_pos:
- * @lines: a `PangoLines` object
- * @line: (nullable): `PangoLine` wrt to which @idx is interpreted
+ * pango2_lines_index_to_pos:
+ * @lines: a `Pango2Lines` object
+ * @line: (nullable): `Pango2Line` wrt to which @idx is interpreted
  *   or `NULL` for the first matching line
  * @idx: byte index within @line
  * @pos: (out): rectangle in which to store the position of the grapheme
  *
- * Converts from an index within a `PangoLine` to the
+ * Converts from an index within a `Pango2Line` to the
  * position corresponding to the grapheme at that index.
  *
  * The return value is represented as rectangle. Note that `pos->x`
@@ -922,31 +921,31 @@ pango_lines_pos_to_line (PangoLines *lines,
  * for the position off the end of the last line.
  */
 void
-pango_lines_index_to_pos (PangoLines     *lines,
-                          PangoLine      *line,
-                          int             idx,
-                          PangoRectangle *pos)
+pango2_lines_index_to_pos (Pango2Lines     *lines,
+                           Pango2Line      *line,
+                           int              idx,
+                           Pango2Rectangle *pos)
 {
   int x_offset, y_offset;
 
-  g_return_if_fail (PANGO_IS_LINES (lines));
+  g_return_if_fail (PANGO2_IS_LINES (lines));
   g_return_if_fail (idx >= 0);
   g_return_if_fail (pos != NULL);
 
-  pango_lines_index_to_line (lines, idx, &line, NULL, &x_offset, &y_offset);
+  pango2_lines_index_to_line (lines, idx, &line, NULL, &x_offset, &y_offset);
 
   g_return_if_fail (line != NULL);
 
-  pango_line_index_to_pos (line, idx, pos);
+  pango2_line_index_to_pos (line, idx, pos);
   pos->x += x_offset;
   pos->y += y_offset;
 }
 
 /**
- * pango_lines_pos_to_index:
- * @lines: a `PangoLines` object
- * @x: the X offset (in Pango units) from the left edge of the layout
- * @y: the Y offset (in Pango units) from the top edge of the layout
+ * pango2_lines_pos_to_index:
+ * @lines: a `Pango2Lines` object
+ * @x: the X offset (in Pango2 units) from the left edge of the layout
+ * @y: the Y offset (in Pango2 units) from the top edge of the layout
  * @idx: (out): location to store calculated byte index
  * @trailing: (out): location to store a integer indicating where
  *   in the grapheme the user clicked. It will either be zero, or the
@@ -958,23 +957,23 @@ pango_lines_index_to_pos (PangoLines     *lines,
  *
  * Returns: (transfer none) (nullable): the line that was found
  */
-PangoLine *
-pango_lines_pos_to_index (PangoLines *lines,
-                          int         x,
-                          int         y,
-                          int        *idx,
-                          int        *trailing)
+Pango2Line *
+pango2_lines_pos_to_index (Pango2Lines *lines,
+                           int          x,
+                           int          y,
+                           int         *idx,
+                           int         *trailing)
 {
-  PangoLine *line;
+  Pango2Line *line;
   int x_offset;
 
-  g_return_val_if_fail (PANGO_IS_LINES (lines), FALSE);
+  g_return_val_if_fail (PANGO2_IS_LINES (lines), FALSE);
   g_return_val_if_fail (idx != NULL, FALSE);
   g_return_val_if_fail (trailing != NULL, FALSE);
 
-  line = pango_lines_pos_to_line (lines, x, y, &x_offset, NULL);
+  line = pango2_lines_pos_to_line (lines, x, y, &x_offset, NULL);
   if (line)
-    pango_line_x_to_index (line, x - x_offset, idx, trailing);
+    pango2_line_x_to_index (line, x - x_offset, idx, trailing);
 
   return line;
 }
@@ -983,9 +982,9 @@ pango_lines_pos_to_index (PangoLines *lines,
 /* {{{ Cursor positioning */
 
 /**
- * pango_lines_get_cursor_pos:
- * @lines: a `PangoLines` object
- * @line: (nullable): `PangoLine` wrt to which @idx is interpreted
+ * pango2_lines_get_cursor_pos:
+ * @lines: a `Pango2Lines` object
+ * @line: (nullable): `Pango2Line` wrt to which @idx is interpreted
  *   or `NULL` for the first matching line
  * @idx: the byte index of the cursor
  * @strong_pos: (out) (optional): location to store the strong cursor position
@@ -1023,26 +1022,26 @@ pango_lines_pos_to_index (PangoLines *lines,
  * will insert it at the end.
  */
 void
-pango_lines_get_cursor_pos (PangoLines     *lines,
-                            PangoLine      *line,
-                            int             idx,
-                            PangoRectangle *strong_pos,
-                            PangoRectangle *weak_pos)
+pango2_lines_get_cursor_pos (Pango2Lines     *lines,
+                             Pango2Line      *line,
+                             int              idx,
+                             Pango2Rectangle *strong_pos,
+                             Pango2Rectangle *weak_pos)
 {
   int x_offset, y_offset;
-  PangoLine *l;
+  Pango2Line *l;
 
-  g_return_if_fail (PANGO_IS_LINES (lines));
+  g_return_if_fail (PANGO2_IS_LINES (lines));
 
   l = line;
-  pango_lines_index_to_line (lines, idx, &l, NULL, &x_offset, &y_offset);
+  pango2_lines_index_to_line (lines, idx, &l, NULL, &x_offset, &y_offset);
 
   g_return_if_fail (l != NULL);
   g_return_if_fail (line == NULL || l == line);
 
   line = l;
 
-  pango_line_get_cursor_pos (line, idx, strong_pos, weak_pos);
+  pango2_line_get_cursor_pos (line, idx, strong_pos, weak_pos);
 
   if (strong_pos)
     {
@@ -1057,9 +1056,9 @@ pango_lines_get_cursor_pos (PangoLines     *lines,
 }
 
 /**
- * pango_lines_get_caret_pos:
- * @lines: a `PangoLines` object
- * @line: (nullable): `PangoLine` wrt to which @idx is interpreted
+ * pango2_lines_get_caret_pos:
+ * @lines: a `Pango2Lines` object
+ * @line: (nullable): `Pango2Line` wrt to which @idx is interpreted
  *   or `NULL` for the first matching line
  * @idx: the byte index of the cursor
  * @strong_pos: (out) (optional): location to store the strong cursor position
@@ -1071,7 +1070,7 @@ pango_lines_get_cursor_pos (PangoLines     *lines,
  * Note that @idx is allowed to be @line->start_index + @line->length
  * for the position off the end of the last line.
  *
- * This is a variant of [method@Pango.Lines.get_cursor_pos] that applies
+ * This is a variant of [method@Pango2.Lines.get_cursor_pos] that applies
  * font metric information about caret slope and offset to the positions
  * it returns.
  *
@@ -1081,21 +1080,21 @@ pango_lines_get_cursor_pos (PangoLines     *lines,
  * </picture>
  */
 void
-pango_lines_get_caret_pos (PangoLines     *lines,
-                           PangoLine      *line,
-                           int             idx,
-                           PangoRectangle *strong_pos,
-                           PangoRectangle *weak_pos)
+pango2_lines_get_caret_pos (Pango2Lines     *lines,
+                            Pango2Line      *line,
+                            int              idx,
+                            Pango2Rectangle *strong_pos,
+                            Pango2Rectangle *weak_pos)
 {
   int x_offset, y_offset;
 
-  g_return_if_fail (PANGO_IS_LINES (lines));
+  g_return_if_fail (PANGO2_IS_LINES (lines));
 
-  pango_lines_index_to_line (lines, idx, &line, NULL, &x_offset, &y_offset);
+  pango2_lines_index_to_line (lines, idx, &line, NULL, &x_offset, &y_offset);
 
   g_return_if_fail (line != NULL);
 
-  pango_line_get_caret_pos (line, idx, strong_pos, weak_pos);
+  pango2_line_get_caret_pos (line, idx, strong_pos, weak_pos);
 
   if (strong_pos)
     {
@@ -1110,12 +1109,12 @@ pango_lines_get_caret_pos (PangoLines     *lines,
 }
 
 /**
- * pango_lines_move_cursor:
- * @lines: a `PangoLines` object
+ * pango2_lines_move_cursor:
+ * @lines: a `Pango2Lines` object
  * @strong: whether the moving cursor is the strong cursor or the
  *   weak cursor. The strong cursor is the cursor corresponding
  *   to text insertion in the base direction for the layout.
- * @line: (nullable): `PangoLine` wrt to which @idx is interpreted
+ * @line: (nullable): `Pango2Line` wrt to which @idx is interpreted
  *   or `NULL` for the first matching line
  * @idx: the byte index of the current cursor position
  * @trailing: if 0, the cursor was at the leading edge of the
@@ -1123,7 +1122,7 @@ pango_lines_get_caret_pos (PangoLines     *lines,
  *   was at the trailing edge.
  * @direction: direction to move cursor. A negative
  *   value indicates motion to the left
- * @new_line: (nullable): `PangoLine` wrt to which @new_idx is interpreted
+ * @new_line: (nullable): `Pango2Line` wrt to which @new_idx is interpreted
  * @new_idx: (out): location to store the new cursor byte index
  *   A value of -1 indicates that the cursor has been moved off the
  *   beginning of the layout. A value of %G_MAXINT indicates that
@@ -1152,15 +1151,15 @@ pango_lines_get_caret_pos (PangoLines     *lines,
  * when multiple characters combine to form a single grapheme.
  */
 void
-pango_lines_move_cursor (PangoLines  *lines,
-                         gboolean     strong,
-                         PangoLine   *line,
-                         int          idx,
-                         int          trailing,
-                         int          direction,
-                         PangoLine  **new_line,
-                         int         *new_idx,
-                         int         *new_trailing)
+pango2_lines_move_cursor (Pango2Lines  *lines,
+                          gboolean     strong,
+                          Pango2Line   *line,
+                          int           idx,
+                          int           trailing,
+                          int           direction,
+                          Pango2Line  **new_line,
+                          int          *new_idx,
+                          int          *new_trailing)
 {
   int line_no;
   GArray *cursors;
@@ -1169,10 +1168,10 @@ pango_lines_move_cursor (PangoLines  *lines,
   int start_offset;
   gboolean off_start = FALSE;
   gboolean off_end = FALSE;
-  PangoRectangle pos;
+  Pango2Rectangle pos;
   int j;
 
-  g_return_if_fail (PANGO_IS_LINES (lines));
+  g_return_if_fail (PANGO2_IS_LINES (lines));
   g_return_if_fail (idx >= 0);
   g_return_if_fail (trailing >= 0);
   g_return_if_fail (new_idx != NULL);
@@ -1180,7 +1179,7 @@ pango_lines_move_cursor (PangoLines  *lines,
 
   direction = (direction >= 0 ? 1 : -1);
 
-  pango_lines_index_to_line (lines, idx, &line, &line_no, NULL, NULL);
+  pango2_lines_index_to_line (lines, idx, &line, &line_no, NULL, NULL);
 
   g_return_if_fail (line != NULL);
 
@@ -1192,9 +1191,9 @@ pango_lines_move_cursor (PangoLines  *lines,
     idx = line->start_index + line->length;
 
   cursors = g_array_new (FALSE, FALSE, sizeof (CursorPos));
-  pango_line_get_cursors (lines, line, strong, cursors);
+  pango2_line_get_cursors (lines, line, strong, cursors);
 
-  pango_lines_get_cursor_pos (lines, line, idx, strong ? &pos : NULL, strong ? NULL : &pos);
+  pango2_lines_get_cursor_pos (lines, line, idx, strong ? &pos : NULL, strong ? NULL : &pos);
 
   vis_pos = -1;
   for (j = 0; j < cursors->len; j++)
@@ -1214,14 +1213,14 @@ pango_lines_move_cursor (PangoLines  *lines,
   if (vis_pos == -1 &&
       idx == line->start_index + line->length)
     {
-      if (line->direction == PANGO_DIRECTION_LTR)
+      if (line->direction == PANGO2_DIRECTION_LTR)
         vis_pos = cursors->len;
       else
         vis_pos = 0;
     }
 
   /* Handling movement between lines */
-  if (line->direction == PANGO_DIRECTION_LTR)
+  if (line->direction == PANGO2_DIRECTION_LTR)
     {
       if (idx == line->start_index && direction < 0)
         off_start = TRUE;
@@ -1276,7 +1275,7 @@ pango_lines_move_cursor (PangoLines  *lines,
         }
 
       g_array_set_size (cursors, 0);
-      pango_line_get_cursors (lines, line, strong, cursors);
+      pango2_line_get_cursors (lines, line, strong, cursors);
 
       n_vis = cursors->len;
 

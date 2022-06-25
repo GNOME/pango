@@ -1,5 +1,5 @@
-/* Pango
- * testlanguage.c: Test program for PangoLanguage
+/* Pango2
+ * testlanguage.c: Test program for Pango2Language
  *
  * Copyright (C) 2021 Matthias Clasen
  *
@@ -25,11 +25,11 @@
 static void
 test_language_to_string (void)
 {
-  PangoLanguage *lang;
+  Pango2Language *lang;
 
-  lang = pango_language_from_string ("ja-jp");
-  g_assert_cmpstr (pango_language_to_string (lang), ==, "ja-jp");
-  g_assert_cmpstr ((pango_language_to_string) (lang), ==, "ja-jp");
+  lang = pango2_language_from_string ("ja-jp");
+  g_assert_cmpstr (pango2_language_to_string (lang), ==, "ja-jp");
+  g_assert_cmpstr ((pango2_language_to_string) (lang), ==, "ja-jp");
 }
 
 static void
@@ -37,15 +37,15 @@ test_language_env (void)
 {
   if (g_test_subprocess ())
     {
-      PangoLanguage **preferred;
+      Pango2Language **preferred;
 
-      g_setenv ("PANGO_LANGUAGE", "de:ja", TRUE);
+      g_setenv ("PANGO2_LANGUAGE", "de:ja", TRUE);
       g_setenv ("LANGUAGE", "fr", TRUE);
 
-      preferred = pango_language_get_preferred ();
+      preferred = pango2_language_get_preferred ();
       g_assert_nonnull (preferred);
-      g_assert_true (preferred[0] == pango_language_from_string ("de"));
-      g_assert_true (preferred[1] == pango_language_from_string ("ja"));
+      g_assert_true (preferred[0] == pango2_language_from_string ("de"));
+      g_assert_true (preferred[1] == pango2_language_from_string ("ja"));
       g_assert_null (preferred[2]);
 
       return;

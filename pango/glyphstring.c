@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * glyphstring.c:
  *
  * Copyright (C) 1999 Red Hat Software
@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -30,17 +30,17 @@
 #include <hb-ot.h>
 
 /**
- * pango_glyph_string_new:
+ * pango2_glyph_string_new:
  *
- * Create a new `PangoGlyphString`.
+ * Create a new `Pango2GlyphString`.
  *
- * Return value: the newly allocated `PangoGlyphString`, which
- *   should be freed with [method@Pango.GlyphString.free].
+ * Return value: the newly allocated `Pango2GlyphString`, which
+ *   should be freed with [method@Pango2.GlyphString.free].
  */
-PangoGlyphString *
-pango_glyph_string_new (void)
+Pango2GlyphString *
+pango2_glyph_string_new (void)
 {
-  PangoGlyphString *string = g_slice_new (PangoGlyphString);
+  Pango2GlyphString *string = g_slice_new (Pango2GlyphString);
 
   string->num_glyphs = 0;
   string->space = 0;
@@ -51,76 +51,77 @@ pango_glyph_string_new (void)
 }
 
 /**
- * pango_glyph_string_set_size:
- * @string: a `PangoGlyphString`.
+ * pango2_glyph_string_set_size:
+ * @string: a `Pango2GlyphString`.
  * @new_len: the new length of the string
  *
  * Resize a glyph string to the given length.
  */
 void
-pango_glyph_string_set_size (PangoGlyphString *string, int new_len)
+pango2_glyph_string_set_size (Pango2GlyphString *string,
+                              int                new_len)
 {
   g_return_if_fail (new_len >= 0);
 
   while (new_len > string->space)
     {
       if (string->space == 0)
-	{
-	  string->space = 4;
-	}
+        {
+          string->space = 4;
+        }
       else
-	{
-	  const guint max_space =
-	    MIN (G_MAXINT, G_MAXSIZE / MAX (sizeof(PangoGlyphInfo), sizeof(int)));
+        {
+          const guint max_space =
+            MIN (G_MAXINT, G_MAXSIZE / MAX (sizeof(Pango2GlyphInfo), sizeof(int)));
 
-	  guint more_space = (guint)string->space * 2;
+          guint more_space = (guint)string->space * 2;
 
-	  if (more_space > max_space)
-	    {
-	      more_space = max_space;
+          if (more_space > max_space)
+            {
+              more_space = max_space;
 
-	      if ((guint)new_len > max_space)
-		{
-		  g_error ("%s: failed to allocate glyph string of length %i\n",
-			   G_STRLOC, new_len);
-		}
-	    }
+              if ((guint)new_len > max_space)
+                {
+                  g_error ("%s: failed to allocate glyph string of length %i\n",
+                           G_STRLOC, new_len);
+                }
+            }
 
-	  string->space = more_space;
-	}
+          string->space = more_space;
+        }
     }
 
-  string->glyphs = g_realloc (string->glyphs, string->space * sizeof (PangoGlyphInfo));
+  string->glyphs = g_realloc (string->glyphs, string->space * sizeof (Pango2GlyphInfo));
   string->log_clusters = g_realloc (string->log_clusters, string->space * sizeof (int));
   string->num_glyphs = new_len;
 }
 
-G_DEFINE_BOXED_TYPE (PangoGlyphString, pango_glyph_string,
-                     pango_glyph_string_copy,
-                     pango_glyph_string_free);
+G_DEFINE_BOXED_TYPE (Pango2GlyphString, pango2_glyph_string,
+                     pango2_glyph_string_copy,
+                     pango2_glyph_string_free);
 
 /**
- * pango_glyph_string_copy:
- * @string: (nullable): a `PangoGlyphString`
+ * pango2_glyph_string_copy:
+ * @string: (nullable): a `Pango2GlyphString`
  *
  * Copy a glyph string and associated storage.
  *
- * Return value: (nullable): the newly allocated `PangoGlyphString`
+ * Return value: (nullable): the newly allocated `Pango2GlyphString`
  */
-PangoGlyphString *
-pango_glyph_string_copy (PangoGlyphString *string)
+Pango2GlyphString *
+pango2_glyph_string_copy (Pango2GlyphString *string)
 {
-  PangoGlyphString *new_string;
+  Pango2GlyphString *new_string;
 
   if (string == NULL)
     return NULL;
 
-  new_string = g_slice_new (PangoGlyphString);
+  new_string = g_slice_new (Pango2GlyphString);
 
   *new_string = *string;
 
   new_string->glyphs = g_memdup2 (string->glyphs,
-                                  string->space * sizeof (PangoGlyphInfo));
+                                  string->space * sizeof (Pango2GlyphInfo));
   new_string->log_clusters = g_memdup2 (string->log_clusters,
                                         string->space * sizeof (int));
 
@@ -128,29 +129,29 @@ pango_glyph_string_copy (PangoGlyphString *string)
 }
 
 /**
- * pango_glyph_string_free:
- * @string: (nullable): a `PangoGlyphString`, may be %NULL
+ * pango2_glyph_string_free:
+ * @string: (nullable): a `Pango2GlyphString`, may be %NULL
  *
  * Free a glyph string and associated storage.
  */
 void
-pango_glyph_string_free (PangoGlyphString *string)
+pango2_glyph_string_free (Pango2GlyphString *string)
 {
   if (string == NULL)
     return;
 
   g_free (string->glyphs);
   g_free (string->log_clusters);
-  g_slice_free (PangoGlyphString, string);
+  g_slice_free (Pango2GlyphString, string);
 }
 
 /**
- * pango_glyph_string_extents_range:
- * @glyphs: a `PangoGlyphString`
+ * pango2_glyph_string_extents_range:
+ * @glyphs: a `Pango2GlyphString`
  * @start: start index
  * @end: end index (the range is the set of bytes with
  *   indices such that start <= index < end)
- * @font: a `PangoFont`
+ * @font: a `Pango2Font`
  * @ink_rect: (out caller-allocates) (optional): rectangle used to
  *   store the extents of the glyph string range as drawn
  * @logical_rect: (out caller-allocates) (optional): rectangle used to
@@ -163,12 +164,12 @@ pango_glyph_string_free (PangoGlyphString *string)
  * not at the start of the entire glyph string).
  */
 void
-pango_glyph_string_extents_range (PangoGlyphString *glyphs,
-				  int               start,
-				  int               end,
-				  PangoFont        *font,
-				  PangoRectangle   *ink_rect,
-				  PangoRectangle   *logical_rect)
+pango2_glyph_string_extents_range (Pango2GlyphString *glyphs,
+                                   int                start,
+                                   int                end,
+                                   Pango2Font        *font,
+                                   Pango2Rectangle   *ink_rect,
+                                   Pango2Rectangle   *logical_rect)
 {
   int x_pos = 0;
   int i;
@@ -204,72 +205,72 @@ pango_glyph_string_extents_range (PangoGlyphString *glyphs,
 
   for (i = start; i < end; i++)
     {
-      PangoRectangle glyph_ink;
-      PangoRectangle glyph_logical;
+      Pango2Rectangle glyph_ink;
+      Pango2Rectangle glyph_logical;
 
-      PangoGlyphGeometry *geometry = &glyphs->glyphs[i].geometry;
+      Pango2GlyphGeometry *geometry = &glyphs->glyphs[i].geometry;
 
-      pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph,
-				    ink_rect ? &glyph_ink : NULL,
-				    logical_rect ? &glyph_logical : NULL);
+      pango2_font_get_glyph_extents (font, glyphs->glyphs[i].glyph,
+                                    ink_rect ? &glyph_ink : NULL,
+                                    logical_rect ? &glyph_logical : NULL);
 
       if (ink_rect && glyph_ink.width != 0 && glyph_ink.height != 0)
-	{
-	  if (ink_rect->width == 0 || ink_rect->height == 0)
-	    {
-	      ink_rect->x = x_pos + glyph_ink.x + geometry->x_offset;
-	      ink_rect->width = glyph_ink.width;
-	      ink_rect->y = glyph_ink.y + geometry->y_offset;
-	      ink_rect->height = glyph_ink.height;
-	    }
-	  else
-	    {
-	      int new_x, new_y;
+        {
+          if (ink_rect->width == 0 || ink_rect->height == 0)
+            {
+              ink_rect->x = x_pos + glyph_ink.x + geometry->x_offset;
+              ink_rect->width = glyph_ink.width;
+              ink_rect->y = glyph_ink.y + geometry->y_offset;
+              ink_rect->height = glyph_ink.height;
+            }
+          else
+            {
+              int new_x, new_y;
 
-	      new_x = MIN (ink_rect->x, x_pos + glyph_ink.x + geometry->x_offset);
-	      ink_rect->width = MAX (ink_rect->x + ink_rect->width,
-				     x_pos + glyph_ink.x + glyph_ink.width + geometry->x_offset) - new_x;
-	      ink_rect->x = new_x;
+              new_x = MIN (ink_rect->x, x_pos + glyph_ink.x + geometry->x_offset);
+              ink_rect->width = MAX (ink_rect->x + ink_rect->width,
+                                     x_pos + glyph_ink.x + glyph_ink.width + geometry->x_offset) - new_x;
+              ink_rect->x = new_x;
 
-	      new_y = MIN (ink_rect->y, glyph_ink.y + geometry->y_offset);
-	      ink_rect->height = MAX (ink_rect->y + ink_rect->height,
-				      glyph_ink.y + glyph_ink.height + geometry->y_offset) - new_y;
-	      ink_rect->y = new_y;
-	    }
-	}
+              new_y = MIN (ink_rect->y, glyph_ink.y + geometry->y_offset);
+              ink_rect->height = MAX (ink_rect->y + ink_rect->height,
+                                      glyph_ink.y + glyph_ink.height + geometry->y_offset) - new_y;
+              ink_rect->y = new_y;
+            }
+        }
 
       if (logical_rect)
-	{
-	  logical_rect->width += geometry->width;
+        {
+          logical_rect->width += geometry->width;
 
-	  if (i == start)
-	    {
-	      logical_rect->y = glyph_logical.y;
-	      logical_rect->height = glyph_logical.height;
-	    }
-	  else
-	    {
-	      int new_y = MIN (logical_rect->y, glyph_logical.y);
-	      logical_rect->height = MAX (logical_rect->y + logical_rect->height,
-					  glyph_logical.y + glyph_logical.height) - new_y;
-	      logical_rect->y = new_y;
-	    }
-	}
+          if (i == start)
+            {
+              logical_rect->y = glyph_logical.y;
+              logical_rect->height = glyph_logical.height;
+            }
+          else
+            {
+              int new_y = MIN (logical_rect->y, glyph_logical.y);
+              logical_rect->height = MAX (logical_rect->y + logical_rect->height,
+                                          glyph_logical.y + glyph_logical.height) - new_y;
+              logical_rect->y = new_y;
+            }
+        }
 
       x_pos += geometry->width;
     }
 }
 
 /**
- * pango_glyph_string_extents:
- * @glyphs: a `PangoGlyphString`
- * @font: a `PangoFont`
+ * pango2_glyph_string_extents:
+ * @glyphs: a `Pango2GlyphString`
+ * @font: a `Pango2Font`
  * @ink_rect: (out) (optional): rectangle used to store the extents of the glyph string as drawn
  * @logical_rect: (out) (optional): rectangle used to store the logical extents of the glyph string
  *
  * Compute the logical and ink extents of a glyph string.
  *
- * See the documentation for [method@Pango.Font.get_glyph_extents] for details
+ * See the documentation for [method@Pango2.Font.get_glyph_extents] for details
  * about the interpretation of the rectangles.
  *
  * Examples of logical (red) and ink (green) rects:
@@ -277,22 +278,22 @@ pango_glyph_string_extents_range (PangoGlyphString *glyphs,
  * ![](rects1.png) ![](rects2.png)
  */
 void
-pango_glyph_string_extents (PangoGlyphString *glyphs,
-			    PangoFont        *font,
-			    PangoRectangle   *ink_rect,
-			    PangoRectangle   *logical_rect)
+pango2_glyph_string_extents (Pango2GlyphString *glyphs,
+                             Pango2Font        *font,
+                             Pango2Rectangle   *ink_rect,
+                             Pango2Rectangle   *logical_rect)
 {
-  pango_glyph_string_extents_range (glyphs, 0, glyphs->num_glyphs,
-				    font, ink_rect, logical_rect);
+  pango2_glyph_string_extents_range (glyphs, 0, glyphs->num_glyphs,
+                                    font, ink_rect, logical_rect);
 }
 
 /**
- * pango_glyph_string_get_width:
- * @glyphs:  a `PangoGlyphString`
+ * pango2_glyph_string_get_width:
+ * @glyphs:  a `Pango2GlyphString`
  *
  * Computes the logical width of the glyph string.
  *
- * This can also be computed using [method@Pango.GlyphString.extents].
+ * This can also be computed using [method@Pango2.GlyphString.extents].
  * However, since this only computes the width, it's much faster. This
  * is in fact only a convenience function that computes the sum of
  * @geometry.width for each glyph in the @glyphs.
@@ -300,7 +301,7 @@ pango_glyph_string_extents (PangoGlyphString *glyphs,
  * Return value: the logical width of the glyph string.
  */
 int
-pango_glyph_string_get_width (PangoGlyphString *glyphs)
+pango2_glyph_string_get_width (Pango2GlyphString *glyphs)
 {
   int i;
   int width = 0;
@@ -312,8 +313,8 @@ pango_glyph_string_get_width (PangoGlyphString *glyphs)
 }
 
 /**
- * pango_glyph_string_get_logical_widths:
- * @glyphs: a `PangoGlyphString`
+ * pango2_glyph_string_get_logical_widths:
+ * @glyphs: a `Pango2GlyphString`
  * @text: the text corresponding to the glyphs
  * @length: the length of @text, in bytes
  * @embedding_level: the embedding level of the string
@@ -321,28 +322,28 @@ pango_glyph_string_get_width (PangoGlyphString *glyphs)
  *   characters in text (equal to `g_utf8_strlen (text, length)` unless
  *   text has `NUL` bytes) to be filled in with the resulting character widths.
  *
- * Given a `PangoGlyphString` and corresponding text, determine the width
+ * Given a `Pango2GlyphString` and corresponding text, determine the width
  * corresponding to each character.
  *
  * When multiple characters compose a single cluster, the width of the
  * entire cluster is divided equally among the characters.
  */
 void
-pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
-                                       const char       *text,
-                                       int               length,
-                                       int               embedding_level,
-                                       int              *logical_widths)
+pango2_glyph_string_get_logical_widths (Pango2GlyphString *glyphs,
+                                        const char        *text,
+                                        int                length,
+                                        int                embedding_level,
+                                        int               *logical_widths)
 {
-  /* Build a PangoGlyphItem and call the other API */
-  PangoItem item = {0, length, pango_utf8_strlen (text, length), 0,
+  /* Build a Pango2GlyphItem and call the other API */
+  Pango2Item item = {0, length, pango2_utf8_strlen (text, length), 0,
                     {NULL, NULL,
-                     embedding_level, PANGO_GRAVITY_AUTO, 0,
+                     embedding_level, PANGO2_GRAVITY_AUTO, 0,
                      G_UNICODE_SCRIPT_UNKNOWN, NULL,
                      NULL}};
-  PangoGlyphItem glyph_item = {&item, glyphs};
+  Pango2GlyphItem glyph_item = {&item, glyphs};
 
-  pango_glyph_item_get_logical_widths (&glyph_item, text, logical_widths);
+  pango2_glyph_item_get_logical_widths (&glyph_item, text, logical_widths);
 }
 
 /* The initial implementation here is script independent,
@@ -355,7 +356,7 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
  */
 
 /**
- * pango_glyph_string_index_to_x:
+ * pango2_glyph_string_index_to_x:
  * @glyphs: the glyphs return from [func@shape]
  * @text: the text for the run
  * @length: the number of bytes (not characters) in @text.
@@ -378,15 +379,15 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
  * </picture>
  */
 void
-pango_glyph_string_index_to_x (PangoGlyphString    *glyphs,
-                               const char          *text,
-                               int                  length,
-                               const PangoAnalysis *analysis,
-                               int                  index,
-                               gboolean             trailing,
-                               int                 *x_pos)
+pango2_glyph_string_index_to_x (Pango2GlyphString    *glyphs,
+                                const char           *text,
+                                int                   length,
+                                const Pango2Analysis *analysis,
+                                int                   index,
+                                gboolean              trailing,
+                                int                  *x_pos)
 {
-  pango_glyph_string_index_to_x_full (glyphs,
+  pango2_glyph_string_index_to_x_full (glyphs,
                                       text, length,
                                       analysis,
                                       NULL,
@@ -395,12 +396,12 @@ pango_glyph_string_index_to_x (PangoGlyphString    *glyphs,
 }
 
 /**
- * pango_glyph_string_index_to_x_full:
+ * pango2_glyph_string_index_to_x_full:
  * @glyphs: the glyphs return from [func@shape]
  * @text: the text for the run
  * @length: the number of bytes (not characters) in @text.
  * @analysis: the analysis information return from [func@itemize]
- * @attrs: (nullable): `PangoLogAttr` array for @text
+ * @attrs: (nullable): `Pango2LogAttr` array for @text
  * @index_: the byte index within @text
  * @trailing: whether we should compute the result for the beginning (%FALSE)
  *   or end (%TRUE) of the character.
@@ -408,20 +409,20 @@ pango_glyph_string_index_to_x (PangoGlyphString    *glyphs,
  *
  * Converts from character position to x position.
  *
- * This variant of [method@Pango.GlyphString.index_to_x] additionally
- * accepts a `PangoLogAttr` array. The grapheme boundary information
+ * This variant of [method@Pango2.GlyphString.index_to_x] additionally
+ * accepts a `Pango2LogAttr` array. The grapheme boundary information
  * in it can be used to disambiguate positioning inside some complex
  * clusters.
  */
 void
-pango_glyph_string_index_to_x_full (PangoGlyphString    *glyphs,
-                                    const char          *text,
-                                    int                  length,
-                                    const PangoAnalysis *analysis,
-                                    PangoLogAttr        *attrs,
-                                    int                  index,
-                                    gboolean             trailing,
-                                    int                 *x_pos)
+pango2_glyph_string_index_to_x_full (Pango2GlyphString    *glyphs,
+                                     const char           *text,
+                                     int                   length,
+                                     const Pango2Analysis *analysis,
+                                     Pango2LogAttr        *attrs,
+                                     int                   index,
+                                     gboolean              trailing,
+                                     int                  *x_pos)
 {
   int i;
   int start_xpos = 0;
@@ -564,7 +565,7 @@ pango_glyph_string_index_to_x_full (PangoGlyphString    *glyphs,
       int glyph_pos;
       int num_carets;
 
-      hb_font = pango_font_get_hb_font (analysis->font);
+      hb_font = pango2_font_get_hb_font (analysis->font);
 
       if (start_glyph_pos == end_glyph_pos)
         glyph_pos = start_glyph_pos;
@@ -619,12 +620,12 @@ fallback:
 }
 
 /**
- * pango_glyph_string_x_to_index:
+ * pango2_glyph_string_x_to_index:
  * @glyphs: the glyphs returned from [func@shape]
  * @text: the text for the run
  * @length: the number of bytes (not characters) in text.
  * @analysis: the analysis information return from [func@itemize]
- * @x_pos: the x offset (in Pango units)
+ * @x_pos: the x offset (in Pango2 units)
  * @index_: (out): location to store calculated byte index within @text
  * @trailing: (out): location to store a boolean indicating whether the
  *   user clicked on the leading or trailing edge of the character
@@ -638,13 +639,13 @@ fallback:
  * attributes for the text to compute the valid cursor position.
  */
 void
-pango_glyph_string_x_to_index (PangoGlyphString    *glyphs,
-                               const char          *text,
-                               int                  length,
-                               const PangoAnalysis *analysis,
-                               int                  x_pos,
-                               int                 *index,
-                               gboolean            *trailing)
+pango2_glyph_string_x_to_index (Pango2GlyphString    *glyphs,
+                                const char           *text,
+                                int                   length,
+                                const Pango2Analysis *analysis,
+                                int                   x_pos,
+                                int                  *index,
+                                gboolean             *trailing)
 {
   int i;
   int start_xpos = 0;
@@ -666,55 +667,55 @@ pango_glyph_string_x_to_index (PangoGlyphString    *glyphs,
   if (analysis->level % 2) /* Right to left */
     {
       for (i = glyphs->num_glyphs - 1; i >= 0; i--)
-	width += glyphs->glyphs[i].geometry.width;
+        width += glyphs->glyphs[i].geometry.width;
 
       for (i = glyphs->num_glyphs - 1; i >= 0; i--)
-	{
-	  if (glyphs->log_clusters[i] != start_index)
-	    {
-	      if (found)
-		{
-		  end_index = glyphs->log_clusters[i];
-		  end_xpos = width;
-		  break;
-		}
-	      else
-		{
-		  start_index = glyphs->log_clusters[i];
-		  start_xpos = width;
-		}
-	    }
+        {
+          if (glyphs->log_clusters[i] != start_index)
+            {
+              if (found)
+                {
+                  end_index = glyphs->log_clusters[i];
+                  end_xpos = width;
+                  break;
+                }
+              else
+                {
+                  start_index = glyphs->log_clusters[i];
+                  start_xpos = width;
+                }
+            }
 
-	  width -= glyphs->glyphs[i].geometry.width;
+          width -= glyphs->glyphs[i].geometry.width;
 
-	  if (width <= x_pos && x_pos < width + glyphs->glyphs[i].geometry.width)
-	    found = TRUE;
-	}
+          if (width <= x_pos && x_pos < width + glyphs->glyphs[i].geometry.width)
+            found = TRUE;
+        }
     }
   else /* Left to right */
     {
       for (i = 0; i < glyphs->num_glyphs; i++)
-	{
-	  if (glyphs->log_clusters[i] != start_index)
-	    {
-	      if (found)
-		{
-		  end_index = glyphs->log_clusters[i];
-		  end_xpos = width;
-		  break;
-		}
-	      else
-		{
-		  start_index = glyphs->log_clusters[i];
-		  start_xpos = width;
-		}
-	    }
+        {
+          if (glyphs->log_clusters[i] != start_index)
+            {
+              if (found)
+                {
+                  end_index = glyphs->log_clusters[i];
+                  end_xpos = width;
+                  break;
+                }
+              else
+                {
+                  start_index = glyphs->log_clusters[i];
+                  start_xpos = width;
+                }
+            }
 
-	  if (width <= x_pos && x_pos < width + glyphs->glyphs[i].geometry.width)
-	    found = TRUE;
+          if (width <= x_pos && x_pos < width + glyphs->glyphs[i].geometry.width)
+            found = TRUE;
 
-	  width += glyphs->glyphs[i].geometry.width;
-	}
+          width += glyphs->glyphs[i].geometry.width;
+        }
     }
 
   if (end_index == -1)
@@ -734,9 +735,9 @@ pango_glyph_string_x_to_index (PangoGlyphString    *glyphs,
   if (start_xpos == end_xpos)
     {
       if (index)
-	*index = start_index;
+        *index = start_index;
       if (trailing)
-	*trailing = FALSE;
+        *trailing = FALSE;
     }
   else
     {
@@ -748,45 +749,45 @@ pango_glyph_string_x_to_index (PangoGlyphString    *glyphs,
        * character for LTR, with the previous character for RTL.
        */
       if (start_xpos < end_xpos) /* Left-to-right */
-	{
-	  if (index)
-	    {
-	      const char *p = text + start_index;
-	      int i = 0;
+        {
+          if (index)
+            {
+              const char *p = text + start_index;
+              int i = 0;
 
-	      while (i + 1 <= cp)
-		{
-		  p = g_utf8_next_char (p);
-		  i++;
-		}
+              while (i + 1 <= cp)
+                {
+                  p = g_utf8_next_char (p);
+                  i++;
+                }
 
-	      *index = (p - text);
-	    }
+              *index = (p - text);
+            }
 
-	  if (trailing)
-	    *trailing = (cp - (int)cp >= 0.5) ? TRUE : FALSE;
-	}
+          if (trailing)
+            *trailing = (cp - (int)cp >= 0.5) ? TRUE : FALSE;
+        }
       else /* Right-to-left */
-	{
-	  if (index)
-	    {
-	      const char *p = text + start_index;
-	      int i = 0;
+        {
+          if (index)
+            {
+              const char *p = text + start_index;
+              int i = 0;
 
-	      while (i + 1 < cp)
-		{
-		  p = g_utf8_next_char (p);
-		  i++;
-		}
+              while (i + 1 < cp)
+                {
+                  p = g_utf8_next_char (p);
+                  i++;
+                }
 
-	      *index = (p - text);
-	    }
+              *index = (p - text);
+            }
 
-	  if (trailing)
-	    {
-	      double cp_flip = cluster_chars - cp;
-	      *trailing = (cp_flip - (int)cp_flip >= 0.5) ? FALSE : TRUE;
-	    }
-	}
+          if (trailing)
+            {
+              double cp_flip = cluster_chars - cp;
+              *trailing = (cp_flip - (int)cp_flip >= 0.5) ? FALSE : TRUE;
+            }
+        }
     }
 }

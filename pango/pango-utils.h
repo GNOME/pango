@@ -25,99 +25,92 @@
 
 G_BEGIN_DECLS
 
-/* Unicode characters that are zero-width and should not be rendered
- * normally.
- */
-PANGO_AVAILABLE_IN_ALL
-gboolean pango_is_zero_width (gunichar ch) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_is_zero_width           (gunichar ch) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_ALL
-void     pango_find_paragraph_boundary (const char *text,
-                                        int         length,
-                                        int        *paragraph_delimiter_index,
-                                        int        *next_paragraph_start);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_find_paragraph_boundary (const char *text,
+                                                        int         length,
+                                                        int        *paragraph_delimiter_index,
+                                                        int        *next_paragraph_start);
 
 /**
- * PANGO_RENDERING_CAIRO:
+ * PANGO2_RENDERING_CAIRO:
  *
- * Defined to 1 at compile time if Pango was built with cairo support.
+ * Defined to 1 at compile time if Pango2 was built with cairo support.
  */
 
-/* Encode a Pango version as an integer */
-/* Pango version checking */
+/* Encode a Pango2 version as an integer */
+/* Pango2 version checking */
 
 /**
- * PANGO_VERSION_ENCODE:
+ * PANGO2_VERSION_ENCODE:
  * @major: the major component of the version number
  * @minor: the minor component of the version number
  * @micro: the micro component of the version number
  *
- * This macro encodes the given Pango version into an integer.  The numbers
- * returned by %PANGO_VERSION and pango_version() are encoded using this macro.
+ * This macro encodes the given Pango2 version into an integer.  The numbers
+ * returned by %PANGO2_VERSION and pango2_version() are encoded using this macro.
  * Two encoded version numbers can be compared as integers.
  */
-#define PANGO_VERSION_ENCODE(major, minor, micro) (     \
+#define PANGO2_VERSION_ENCODE(major, minor, micro) (     \
           ((major) * 10000)                             \
         + ((minor) *   100)                             \
         + ((micro) *     1))
 
-/* Encoded version of Pango at compile-time */
+/* Encoded version of Pango2 at compile-time */
 /**
- * PANGO_VERSION:
+ * PANGO2_VERSION:
  *
- * The version of Pango available at compile-time, encoded using PANGO_VERSION_ENCODE().
+ * The version of Pango2 available at compile-time, encoded using PANGO2_VERSION_ENCODE().
  */
 /**
- * PANGO_VERSION_STRING:
+ * PANGO2_VERSION_STRING:
  *
- * A string literal containing the version of Pango available at compile-time.
+ * A string literal containing the version of Pango2 available at compile-time.
  */
 /**
- * PANGO_VERSION_MAJOR:
+ * PANGO2_VERSION_MAJOR:
  *
- * The major component of the version of Pango available at compile-time.
+ * The major component of the version of Pango2 available at compile-time.
  */
 /**
- * PANGO_VERSION_MINOR:
+ * PANGO2_VERSION_MINOR:
  *
- * The minor component of the version of Pango available at compile-time.
+ * The minor component of the version of Pango2 available at compile-time.
  */
 /**
- * PANGO_VERSION_MICRO:
+ * PANGO2_VERSION_MICRO:
  *
- * The micro component of the version of Pango available at compile-time.
+ * The micro component of the version of Pango2 available at compile-time.
  */
-#define PANGO_VERSION PANGO_VERSION_ENCODE(     \
-        PANGO_VERSION_MAJOR,                    \
-        PANGO_VERSION_MINOR,                    \
-        PANGO_VERSION_MICRO)
+#define PANGO2_VERSION PANGO2_VERSION_ENCODE(     \
+        PANGO2_VERSION_MAJOR,                    \
+        PANGO2_VERSION_MINOR,                    \
+        PANGO2_VERSION_MICRO)
 
-/* Check that compile-time Pango is as new as required */
+/* Check that compile-time Pango2 is as new as required */
 /**
- * PANGO_VERSION_CHECK:
+ * PANGO2_VERSION_CHECK:
  * @major: the major component of the version number
  * @minor: the minor component of the version number
  * @micro: the micro component of the version number
  *
- * Checks that the version of Pango available at compile-time is not older than
+ * Checks that the version of Pango2 available at compile-time is not older than
  * the provided version number.
  */
-#define PANGO_VERSION_CHECK(major,minor,micro)    \
-        (PANGO_VERSION >= PANGO_VERSION_ENCODE(major,minor,micro))
+#define PANGO2_VERSION_CHECK(major,minor,micro)    \
+        (PANGO2_VERSION >= PANGO2_VERSION_ENCODE(major,minor,micro))
 
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_version        (void) G_GNUC_CONST;
 
-/* Return encoded version of Pango at run-time */
-PANGO_AVAILABLE_IN_ALL
-int pango_version (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+const char *            pango2_version_string (void) G_GNUC_CONST;
 
-/* Return run-time Pango version as an string */
-PANGO_AVAILABLE_IN_ALL
-const char * pango_version_string (void) G_GNUC_CONST;
-
-/* Check that run-time Pango is as new as required */
-PANGO_AVAILABLE_IN_ALL
-const char * pango_version_check (int required_major,
-                                  int required_minor,
-                                  int required_micro) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+const char *            pango2_version_check  (int required_major,
+                                               int required_minor,
+                                               int required_micro) G_GNUC_CONST;
 
 G_END_DECLS

@@ -25,26 +25,26 @@
 #include <cairo.h>
 #endif
 
-struct _PangoContext
+struct _Pango2Context
 {
   GObject parent_instance;
   guint serial;
   guint fontmap_serial;
 
-  PangoLanguage *set_language;
-  PangoLanguage *language;
-  PangoDirection base_dir;
-  PangoGravity base_gravity;
-  PangoGravity resolved_gravity;
-  PangoGravityHint gravity_hint;
+  Pango2Language *set_language;
+  Pango2Language *language;
+  Pango2Direction base_dir;
+  Pango2Gravity base_gravity;
+  Pango2Gravity resolved_gravity;
+  Pango2GravityHint gravity_hint;
 
-  PangoFontDescription *font_desc;
+  Pango2FontDescription *font_desc;
 
-  PangoMatrix *matrix;
+  Pango2Matrix *matrix;
 
-  PangoFontMap *font_map;
+  Pango2FontMap *font_map;
 
-  PangoFontMetrics *metrics;
+  Pango2FontMetrics *metrics;
 
   gboolean round_glyph_positions;
 

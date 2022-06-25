@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * pango-tabs.c: Tab-related stuff
  *
  * Copyright (C) 2000 Red Hat Software
@@ -25,62 +25,62 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct _PangoTab PangoTab;
+typedef struct _Pango2Tab Pango2Tab;
 
-struct _PangoTab
+struct _Pango2Tab
 {
   int location;
-  PangoTabAlign alignment;
+  Pango2TabAlign alignment;
   gunichar decimal_point;
 };
 
 /**
- * PangoTabArray:
+ * Pango2TabArray:
  *
- * A `PangoTabArray` contains an array of tab stops.
+ * A `Pango2TabArray` contains an array of tab stops.
  *
- * `PangoTabArray` can be used to set tab stops in a `PangoLayout`.
+ * `Pango2TabArray` can be used to set tab stops in a `Pango2Layout`.
  * Each tab stop has an alignment, a position, and optionally
  * a character to use as decimal point.
  */
-struct _PangoTabArray
+struct _Pango2TabArray
 {
   int size;
   int allocated;
   gboolean positions_in_pixels;
-  PangoTab *tabs;
+  Pango2Tab *tabs;
 };
 
 static void
-init_tabs (PangoTabArray *array, int start, int end)
+init_tabs (Pango2TabArray *array, int start, int end)
 {
   while (start < end)
     {
       array->tabs[start].location = 0;
-      array->tabs[start].alignment = PANGO_TAB_LEFT;
+      array->tabs[start].alignment = PANGO2_TAB_LEFT;
       array->tabs[start].decimal_point = 0;
       ++start;
     }
 }
 
 /**
- * pango_tab_array_new:
+ * pango2_tab_array_new:
  * @initial_size: Initial number of tab stops to allocate, can be 0
  * @positions_in_pixels: whether positions are in pixel units
  *
  * Creates an array of @initial_size tab stops.
  *
  * Tab stops are specified in pixel units if @positions_in_pixels is %TRUE,
- * otherwise in Pango units. All stops are initially at position 0.
+ * otherwise in Pango2 units. All stops are initially at position 0.
  *
- * Return value: the newly allocated `PangoTabArray`, which should
- *   be freed with [method@Pango.TabArray.free].
+ * Return value: the newly allocated `Pango2TabArray`, which should
+ *   be freed with [method@Pango2.TabArray.free].
  */
-PangoTabArray*
-pango_tab_array_new (int     initial_size,
-                     gboolean positions_in_pixels)
+Pango2TabArray*
+pango2_tab_array_new (int     initial_size,
+                      gboolean positions_in_pixels)
 {
-  PangoTabArray *array;
+  Pango2TabArray *array;
 
   g_return_val_if_fail (initial_size >= 0, NULL);
 
@@ -89,12 +89,12 @@ pango_tab_array_new (int     initial_size,
    * If we allowed tab array resizing we'd need to drop this
    * optimization.
    */
-  array = g_slice_new (PangoTabArray);
+  array = g_slice_new (Pango2TabArray);
   array->size = initial_size; array->allocated = initial_size;
 
   if (array->allocated > 0)
     {
-      array->tabs = g_new (PangoTab, array->allocated);
+      array->tabs = g_new (Pango2Tab, array->allocated);
       init_tabs (array, 0, array->allocated);
     }
   else
@@ -106,35 +106,35 @@ pango_tab_array_new (int     initial_size,
 }
 
 /**
- * pango_tab_array_new_with_positions:
+ * pango2_tab_array_new_with_positions:
  * @size: number of tab stops in the array
  * @positions_in_pixels: whether positions are in pixel units
  * @first_alignment: alignment of first tab stop
  * @first_position: position of first tab stop
  * @...: additional alignment/position pairs
  *
- * Creates a `PangoTabArray` and allows you to specify the alignment
+ * Creates a `Pango2TabArray` and allows you to specify the alignment
  * and position of each tab stop.
  *
  * You **must** provide an alignment and position for @size tab stops.
  *
- * Return value: the newly allocated `PangoTabArray`, which should
- *   be freed with [method@Pango.TabArray.free].
+ * Return value: the newly allocated `Pango2TabArray`, which should
+ *   be freed with [method@Pango2.TabArray.free].
  */
-PangoTabArray  *
-pango_tab_array_new_with_positions (int            size,
-                                    gboolean       positions_in_pixels,
-                                    PangoTabAlign  first_alignment,
-                                    int            first_position,
-                                    ...)
+Pango2TabArray  *
+pango2_tab_array_new_with_positions (int             size,
+                                     gboolean        positions_in_pixels,
+                                     Pango2TabAlign  first_alignment,
+                                     int             first_position,
+                                     ...)
 {
-  PangoTabArray *array;
+  Pango2TabArray *array;
   va_list args;
   int i;
 
   g_return_val_if_fail (size >= 0, NULL);
 
-  array = pango_tab_array_new (size, positions_in_pixels);
+  array = pango2_tab_array_new (size, positions_in_pixels);
 
   if (size == 0)
     return array;
@@ -151,7 +151,7 @@ pango_tab_array_new_with_positions (int            size,
   i = 1;
   while (i < size)
     {
-      PangoTabAlign align = va_arg (args, PangoTabAlign);
+      Pango2TabAlign align = va_arg (args, Pango2TabAlign);
       int pos = va_arg (args, int);
 
       array->tabs[i].alignment = align;
@@ -166,60 +166,60 @@ pango_tab_array_new_with_positions (int            size,
   return array;
 }
 
-G_DEFINE_BOXED_TYPE (PangoTabArray, pango_tab_array,
-                     pango_tab_array_copy,
-                     pango_tab_array_free);
+G_DEFINE_BOXED_TYPE (Pango2TabArray, pango2_tab_array,
+                     pango2_tab_array_copy,
+                     pango2_tab_array_free);
 
 /**
- * pango_tab_array_copy:
- * @src: `PangoTabArray` to copy
+ * pango2_tab_array_copy:
+ * @src: `Pango2TabArray` to copy
  *
- * Copies a `PangoTabArray`.
+ * Copies a `Pango2TabArray`.
  *
- * Return value: the newly allocated `PangoTabArray`, which should
- *   be freed with [method@Pango.TabArray.free].
+ * Return value: the newly allocated `Pango2TabArray`, which should
+ *   be freed with [method@Pango2.TabArray.free].
  */
-PangoTabArray*
-pango_tab_array_copy (PangoTabArray *src)
+Pango2TabArray*
+pango2_tab_array_copy (Pango2TabArray *src)
 {
-  PangoTabArray *copy;
+  Pango2TabArray *copy;
 
   g_return_val_if_fail (src != NULL, NULL);
 
-  copy = pango_tab_array_new (src->size, src->positions_in_pixels);
+  copy = pango2_tab_array_new (src->size, src->positions_in_pixels);
 
   if (copy->tabs)
-    memcpy (copy->tabs, src->tabs, sizeof(PangoTab) * src->size);
+    memcpy (copy->tabs, src->tabs, sizeof(Pango2Tab) * src->size);
 
   return copy;
 }
 
 /**
- * pango_tab_array_free:
- * @tab_array: a `PangoTabArray`
+ * pango2_tab_array_free:
+ * @tab_array: a `Pango2TabArray`
  *
  * Frees a tab array and associated resources.
  */
 void
-pango_tab_array_free (PangoTabArray *tab_array)
+pango2_tab_array_free (Pango2TabArray *tab_array)
 {
   g_return_if_fail (tab_array != NULL);
 
   g_free (tab_array->tabs);
 
-  g_slice_free (PangoTabArray, tab_array);
+  g_slice_free (Pango2TabArray, tab_array);
 }
 
 /**
- * pango_tab_array_get_size:
- * @tab_array: a `PangoTabArray`
+ * pango2_tab_array_get_size:
+ * @tab_array: a `Pango2TabArray`
  *
  * Gets the number of tab stops in @tab_array.
  *
  * Return value: the number of tab stops in the array.
  */
 int
-pango_tab_array_get_size (PangoTabArray *tab_array)
+pango2_tab_array_get_size (Pango2TabArray *tab_array)
 {
   g_return_val_if_fail (tab_array != NULL, 0);
 
@@ -227,8 +227,8 @@ pango_tab_array_get_size (PangoTabArray *tab_array)
 }
 
 /**
- * pango_tab_array_resize:
- * @tab_array: a `PangoTabArray`
+ * pango2_tab_array_resize:
+ * @tab_array: a `Pango2TabArray`
  * @new_size: new size of the array
  *
  * Resizes a tab array.
@@ -237,8 +237,8 @@ pango_tab_array_get_size (PangoTabArray *tab_array)
  * that were added as a result of growing the array.
  */
 void
-pango_tab_array_resize (PangoTabArray *tab_array,
-                        int            new_size)
+pango2_tab_array_resize (Pango2TabArray *tab_array,
+                         int             new_size)
 {
   if (new_size > tab_array->allocated)
     {
@@ -251,7 +251,7 @@ pango_tab_array_resize (PangoTabArray *tab_array,
       while (new_size > tab_array->allocated)
         tab_array->allocated = tab_array->allocated * 2;
 
-      tab_array->tabs = g_renew (PangoTab, tab_array->tabs,
+      tab_array->tabs = g_renew (Pango2Tab, tab_array->tabs,
                                  tab_array->allocated);
 
       init_tabs (tab_array, current_end, tab_array->allocated);
@@ -261,34 +261,34 @@ pango_tab_array_resize (PangoTabArray *tab_array,
 }
 
 /**
- * pango_tab_array_set_tab:
- * @tab_array: a `PangoTabArray`
+ * pango2_tab_array_set_tab:
+ * @tab_array: a `Pango2TabArray`
  * @tab_index: the index of a tab stop
  * @alignment: tab alignment
- * @location: tab location in Pango units
+ * @location: tab location in Pango2 units
  *
  * Sets the alignment and location of a tab stop.
  */
 void
-pango_tab_array_set_tab (PangoTabArray *tab_array,
-                         int            tab_index,
-                         PangoTabAlign  alignment,
-                         int            location)
+pango2_tab_array_set_tab (Pango2TabArray *tab_array,
+                          int             tab_index,
+                          Pango2TabAlign  alignment,
+                          int             location)
 {
   g_return_if_fail (tab_array != NULL);
   g_return_if_fail (tab_index >= 0);
   g_return_if_fail (location >= 0);
 
   if (tab_index >= tab_array->size)
-    pango_tab_array_resize (tab_array, tab_index + 1);
+    pango2_tab_array_resize (tab_array, tab_index + 1);
 
   tab_array->tabs[tab_index].alignment = alignment;
   tab_array->tabs[tab_index].location = location;
 }
 
 /**
- * pango_tab_array_get_tab:
- * @tab_array: a `PangoTabArray`
+ * pango2_tab_array_get_tab:
+ * @tab_array: a `Pango2TabArray`
  * @tab_index: tab stop index
  * @alignment: (out) (optional): location to store alignment
  * @location: (out) (optional): location to store tab position
@@ -296,10 +296,10 @@ pango_tab_array_set_tab (PangoTabArray *tab_array,
  * Gets the alignment and position of a tab stop.
  */
 void
-pango_tab_array_get_tab (PangoTabArray *tab_array,
-                         int            tab_index,
-                         PangoTabAlign *alignment,
-                         int           *location)
+pango2_tab_array_get_tab (Pango2TabArray *tab_array,
+                          int             tab_index,
+                          Pango2TabAlign *alignment,
+                          int            *location)
 {
   g_return_if_fail (tab_array != NULL);
   g_return_if_fail (tab_index < tab_array->size);
@@ -313,8 +313,8 @@ pango_tab_array_get_tab (PangoTabArray *tab_array,
 }
 
 /**
- * pango_tab_array_get_tabs:
- * @tab_array: a `PangoTabArray`
+ * pango2_tab_array_get_tabs:
+ * @tab_array: a `Pango2TabArray`
  * @alignments: (out) (optional): location to store an array of tab
  *   stop alignments
  * @locations: (out) (optional) (array): location to store an array
@@ -323,20 +323,20 @@ pango_tab_array_get_tab (PangoTabArray *tab_array,
  * If non-%NULL, @alignments and @locations are filled with allocated
  * arrays.
  *
- * The arrays are of length [method@Pango.TabArray.get_size].
+ * The arrays are of length [method@Pango2.TabArray.get_size].
  * You must free the returned array.
  */
 void
-pango_tab_array_get_tabs (PangoTabArray  *tab_array,
-                          PangoTabAlign **alignments,
-                          int           **locations)
+pango2_tab_array_get_tabs (Pango2TabArray  *tab_array,
+                           Pango2TabAlign **alignments,
+                           int            **locations)
 {
   int i;
 
   g_return_if_fail (tab_array != NULL);
 
   if (alignments)
-    *alignments = g_new (PangoTabAlign, tab_array->size);
+    *alignments = g_new (Pango2TabAlign, tab_array->size);
 
   if (locations)
     *locations = g_new (int, tab_array->size);
@@ -354,16 +354,16 @@ pango_tab_array_get_tabs (PangoTabArray  *tab_array,
 }
 
 /**
- * pango_tab_array_get_positions_in_pixels:
- * @tab_array: a `PangoTabArray`
+ * pango2_tab_array_get_positions_in_pixels:
+ * @tab_array: a `Pango2TabArray`
  *
  * Returns %TRUE if the tab positions are in pixels,
- * %FALSE if they are in Pango units.
+ * %FALSE if they are in Pango2 units.
  *
  * Return value: whether positions are in pixels.
  */
 gboolean
-pango_tab_array_get_positions_in_pixels (PangoTabArray *tab_array)
+pango2_tab_array_get_positions_in_pixels (Pango2TabArray *tab_array)
 {
   g_return_val_if_fail (tab_array != NULL, FALSE);
 
@@ -371,16 +371,16 @@ pango_tab_array_get_positions_in_pixels (PangoTabArray *tab_array)
 }
 
 /**
- * pango_tab_array_set_positions_in_pixels:
- * @tab_array: a `PangoTabArray`
+ * pango2_tab_array_set_positions_in_pixels:
+ * @tab_array: a `Pango2TabArray`
  * @positions_in_pixels: whether positions are in pixels
  *
  * Sets whether positions in this array are specified in
  * pixels.
  */
 void
-pango_tab_array_set_positions_in_pixels (PangoTabArray *tab_array,
-                                         gboolean       positions_in_pixels)
+pango2_tab_array_set_positions_in_pixels (Pango2TabArray *tab_array,
+                                          gboolean        positions_in_pixels)
 {
   g_return_if_fail (tab_array != NULL);
 
@@ -388,13 +388,13 @@ pango_tab_array_set_positions_in_pixels (PangoTabArray *tab_array,
 }
 
 /**
- * pango_tab_array_to_string:
- * @tab_array: a `PangoTabArray`
+ * pango2_tab_array_to_string:
+ * @tab_array: a `Pango2TabArray`
  *
- * Serializes a `PangoTabArray` to a string.
+ * Serializes a `Pango2TabArray` to a string.
  *
  * No guarantees are made about the format of the string,
- * it may change between Pango versions.
+ * it may change between Pango2 versions.
  *
  * The intended use of this function is testing and
  * debugging. The format is not meant as a permanent
@@ -403,7 +403,7 @@ pango_tab_array_set_positions_in_pixels (PangoTabArray *tab_array,
  * Returns: (transfer full): a newly allocated string
  */
 char *
-pango_tab_array_to_string (PangoTabArray *tab_array)
+pango2_tab_array_to_string (Pango2TabArray *tab_array)
 {
   GString *s;
 
@@ -414,11 +414,11 @@ pango_tab_array_to_string (PangoTabArray *tab_array)
       if (i > 0)
         g_string_append_c (s, '\n');
 
-      if (tab_array->tabs[i].alignment == PANGO_TAB_RIGHT)
+      if (tab_array->tabs[i].alignment == PANGO2_TAB_RIGHT)
         g_string_append (s, "right:");
-      else if (tab_array->tabs[i].alignment == PANGO_TAB_CENTER)
+      else if (tab_array->tabs[i].alignment == PANGO2_TAB_CENTER)
         g_string_append (s, "center:");
-      else if (tab_array->tabs[i].alignment == PANGO_TAB_DECIMAL)
+      else if (tab_array->tabs[i].alignment == PANGO2_TAB_DECIMAL)
         g_string_append (s, "decimal:");
 
       g_string_append_printf (s, "%d", tab_array->tabs[i].location);
@@ -441,27 +441,27 @@ skip_whitespace (const char *p)
 }
 
 /**
- * pango_tab_array_from_string:
+ * pango2_tab_array_from_string:
  * @text: a string
  *
- * Deserializes a `PangoTabArray` from a string.
+ * Deserializes a `Pango2TabArray` from a string.
  *
- * This is the counterpart to [method@Pango.TabArray.to_string].
+ * This is the counterpart to [method@Pango2.TabArray.to_string].
  * See that functions for details about the format.
  *
- * Returns: (transfer full) (nullable): a new `PangoTabArray`
+ * Returns: (transfer full) (nullable): a new `Pango2TabArray`
  */
-PangoTabArray *
-pango_tab_array_from_string (const char *text)
+Pango2TabArray *
+pango2_tab_array_from_string (const char *text)
 {
-  PangoTabArray *array;
+  Pango2TabArray *array;
   gboolean pixels;
   const char *p;
   int i;
 
   pixels = strstr (text, "px") != NULL;
 
-  array = pango_tab_array_new (0, pixels);
+  array = pango2_tab_array_new (0, pixels);
 
   p = skip_whitespace (text);
 
@@ -470,31 +470,31 @@ pango_tab_array_from_string (const char *text)
     {
       char *endp;
       gint64 pos;
-      PangoTabAlign align;
+      Pango2TabAlign align;
 
       if (g_str_has_prefix (p, "left:"))
         {
-          align = PANGO_TAB_LEFT;
+          align = PANGO2_TAB_LEFT;
           p += strlen ("left:");
         }
       else if (g_str_has_prefix (p, "right:"))
         {
-          align = PANGO_TAB_RIGHT;
+          align = PANGO2_TAB_RIGHT;
           p += strlen ("right:");
         }
       else if (g_str_has_prefix (p, "center:"))
         {
-          align = PANGO_TAB_CENTER;
+          align = PANGO2_TAB_CENTER;
           p += strlen ("center:");
         }
       else if (g_str_has_prefix (p, "decimal:"))
         {
-          align = PANGO_TAB_DECIMAL;
+          align = PANGO2_TAB_DECIMAL;
           p += strlen ("decimal:");
         }
       else
         {
-          align = PANGO_TAB_LEFT;
+          align = PANGO2_TAB_LEFT;
         }
 
       pos = g_ascii_strtoll (p, &endp, 10);
@@ -502,7 +502,7 @@ pango_tab_array_from_string (const char *text)
           (pixels && *endp != 'p') ||
           (!pixels && !g_ascii_isspace (*endp) && *endp != ':' && *endp != '\0')) goto fail;
 
-      pango_tab_array_set_tab (array, i, align, pos);
+      pango2_tab_array_set_tab (array, i, align, pos);
 
       p = (const char *)endp;
       if (pixels)
@@ -519,7 +519,7 @@ pango_tab_array_from_string (const char *text)
           ch = g_ascii_strtoll (p, &endp, 10);
           if (!g_ascii_isspace (*endp) && *endp != '\0') goto fail;
 
-          pango_tab_array_set_decimal_point (array, i, ch);
+          pango2_tab_array_set_decimal_point (array, i, ch);
 
           p = (const char *)endp;
         }
@@ -532,7 +532,7 @@ pango_tab_array_from_string (const char *text)
   goto success;
 
 fail:
-  pango_tab_array_free (array);
+  pango2_tab_array_free (array);
   array = NULL;
 
 success:
@@ -540,51 +540,51 @@ success:
 }
 
 /**
- * pango_tab_array_set_decimal_point:
- * @tab_array: a `PangoTabArray`
+ * pango2_tab_array_set_decimal_point:
+ * @tab_array: a `Pango2TabArray`
  * @tab_index: the index of a tab stop
  * @decimal_point: the decimal point to use
  *
  * Sets the Unicode character to use as decimal point.
  *
- * This is only relevant for tabs with %PANGO_TAB_DECIMAL alignment,
+ * This is only relevant for tabs with %PANGO2_TAB_DECIMAL alignment,
  * which align content at the first occurrence of the decimal point
  * character.
  *
- * By default, Pango uses the decimal point according
+ * By default, Pango2 uses the decimal point according
  * to the current locale.
  */
 void
-pango_tab_array_set_decimal_point (PangoTabArray *tab_array,
-                                   int            tab_index,
-                                   gunichar       decimal_point)
+pango2_tab_array_set_decimal_point (Pango2TabArray *tab_array,
+                                    int             tab_index,
+                                    gunichar        decimal_point)
 {
   g_return_if_fail (tab_array != NULL);
   g_return_if_fail (tab_index >= 0);
 
   if (tab_index >= tab_array->size)
-    pango_tab_array_resize (tab_array, tab_index + 1);
+    pango2_tab_array_resize (tab_array, tab_index + 1);
 
   tab_array->tabs[tab_index].decimal_point = decimal_point;
 }
 
 /**
- * pango_tab_array_get_decimal_point:
- * @tab_array: a `PangoTabArray`
+ * pango2_tab_array_get_decimal_point:
+ * @tab_array: a `Pango2TabArray`
  * @tab_index: the index of a tab stop
  *
  * Gets the Unicode character to use as decimal point.
  *
- * This is only relevant for tabs with %PANGO_TAB_DECIMAL alignment,
+ * This is only relevant for tabs with %PANGO2_TAB_DECIMAL alignment,
  * which align content at the first occurrence of the decimal point
  * character.
  *
- * The default value of 0 means that Pango will use the
+ * The default value of 0 means that Pango2 will use the
  * decimal point according to the current locale.
  */
 gunichar
-pango_tab_array_get_decimal_point (PangoTabArray *tab_array,
-                                   int            tab_index)
+pango2_tab_array_get_decimal_point (Pango2TabArray *tab_array,
+                                    int             tab_index)
 {
   g_return_val_if_fail (tab_array != NULL, 0);
   g_return_val_if_fail (tab_index < tab_array->size, 0);
@@ -596,22 +596,22 @@ pango_tab_array_get_decimal_point (PangoTabArray *tab_array,
 static int
 compare_tabs (const void *p1, const void *p2)
 {
-  const PangoTab *t1 = p1;
-  const PangoTab *t2 = p2;
+  const Pango2Tab *t1 = p1;
+  const Pango2Tab *t2 = p2;
 
   return t1->location - t2->location;
 }
 
 /**
- * pango_tab_array_sort:
- * @tab_array: a `PangoTabArray`
+ * pango2_tab_array_sort:
+ * @tab_array: a `Pango2TabArray`
  *
  * Utility function to ensure that the tab stops are in increasing order.
  */
 void
-pango_tab_array_sort (PangoTabArray *tab_array)
+pango2_tab_array_sort (Pango2TabArray *tab_array)
 {
   g_return_if_fail (tab_array != NULL);
 
-  qsort (tab_array->tabs, tab_array->size, sizeof (PangoTab), compare_tabs);
+  qsort (tab_array->tabs, tab_array->size, sizeof (Pango2Tab), compare_tabs);
 }

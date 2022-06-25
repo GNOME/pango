@@ -1,6 +1,6 @@
 /* -*- mode: C; c-file-style: "gnu" -*- */
-/* Pango
- * testscript.c: Test cases for PangoScriptIter
+/* Pango2
+ * testscript.c: Test cases for Pango2ScriptIter
  *
  * Copyright (C) 2002 Red Hat Software
  *
@@ -142,8 +142,8 @@ test_script_iter (void)
     { "\\U00010400\\U00010401\\U00010402\\U00010403", NULL, G_UNICODE_SCRIPT_DESERET }
   };
 
-  PangoScriptIter *iter;
-  PangoScriptIter *iter2;
+  Pango2ScriptIter *iter;
+  Pango2ScriptIter *iter2;
   GString *all = g_string_new (FALSE);
   char *pos;
   const char *start;
@@ -157,9 +157,9 @@ test_script_iter (void)
       g_string_append (all, test_data[i].run_text);
     }
 
-  iter = pango_script_iter_new (all->str, -1);
+  iter = pango2_script_iter_new (all->str, -1);
 
-  iter2 = g_boxed_copy (pango_script_iter_get_type (), iter);
+  iter2 = g_boxed_copy (pango2_script_iter_get_type (), iter);
 
   g_test_message ("Total length: %" G_GSIZE_FORMAT "\n", all->len);
 
@@ -169,7 +169,7 @@ test_script_iter (void)
       char *next_pos = pos + strlen (test_data[i].run_text);
       gboolean result;
 
-      pango_script_iter_get_range (iter, &start, &end, &script);
+      pango2_script_iter_get_range (iter, &start, &end, &script);
 
       g_test_message ("Range: %d-%d: %d\n",
                       (int) (start - all->str),
@@ -180,34 +180,34 @@ test_script_iter (void)
       g_assert_true (end == next_pos);
       g_assert_true (script == test_data[i].run_code);
 
-      result = pango_script_iter_next (iter);
+      result = pango2_script_iter_next (iter);
       g_assert_true (result == (i != G_N_ELEMENTS (test_data) - 1));
 
       pos = next_pos;
     }
 
   /* Check that copying the iter worked */
-  pango_script_iter_get_range (iter2, &start, &end, &script);
+  pango2_script_iter_get_range (iter2, &start, &end, &script);
   g_assert_true (start == all->str);
   g_assert_true (end == all->str + strlen (test_data[0].run_text));
   g_assert_true (script == test_data[0].run_code);
-  pango_script_iter_free (iter2);
+  pango2_script_iter_free (iter2);
 
-  pango_script_iter_free (iter);
+  pango2_script_iter_free (iter);
 
   /*
    * Test an empty string.
    */
-  iter = pango_script_iter_new (all->str, 0);
+  iter = pango2_script_iter_new (all->str, 0);
 
-  pango_script_iter_get_range (iter, &start, &end, &script);
+  pango2_script_iter_get_range (iter, &start, &end, &script);
 
   g_assert_true (start == all->str);
   g_assert_true (end == all->str);
   g_assert_true (script == G_UNICODE_SCRIPT_COMMON);
-  g_assert_true (!pango_script_iter_next (iter));
+  g_assert_true (!pango2_script_iter_next (iter));
 
-  pango_script_iter_free (iter);
+  pango2_script_iter_free (iter);
 
   /* Cleanup */
 
