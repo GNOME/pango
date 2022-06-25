@@ -98,23 +98,6 @@ pango2_context_init (Pango2Context *context)
   pango2_font_description_set_size (context->font_desc, 12 * PANGO2_SCALE);
 }
 
-static gboolean
-pango2_has_mixed_deps (void)
-{
-  GModule *module;
-  gpointer func;
-  gboolean result = FALSE;
-
-  module = g_module_open (NULL, 0);
-
-  if (g_module_symbol (module, "pango2_ot_info_find_script", &func))
-    result = TRUE;
-
-  g_module_close (module);
-
-  return result;
-}
-
 static void
 pango2_context_set_property (GObject      *object,
                              guint         property_id,
@@ -213,11 +196,6 @@ static void
 pango2_context_class_init (Pango2ContextClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-  /* Put the check for mixed linkage here, for lack of a better place */
-  if (pango2_has_mixed_deps ())
-    g_error ("Pango2 1.x symbols detected.\n"
-             "Using Pango2 1.x and 2 in the same process is not supported.");
 
   object_class->finalize = pango2_context_finalize;
   object_class->set_property = pango2_context_set_property;
