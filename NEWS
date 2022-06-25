@@ -1,3 +1,20 @@
+Overview of changes
+===================
+
+Change the prefix to make Pango 1.x and Pango 2 usable
+in the same process. The new setup is:
+- All types are Pango2...
+- All symbols are pango2_...
+- Includes are #include <pango2/pango.h>
+- The library is libpango2
+- The pc files is pango2.pc
+
+Since this is now effectively an separate project from
+Pango 1.x, the version number has been dropped to 0.x,
+and the news release will be a 0.91 development release
+leading towards Pango2 1.0.
+
+
 Overview of changes in 1.90
 ===========================
 
