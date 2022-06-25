@@ -21,7 +21,7 @@
 
 #include <pango/pango-attr.h>
 
-struct _PangoAttribute
+struct _Pango2Attribute
 {
   guint type;
   guint start_index;
@@ -31,11 +31,11 @@ struct _PangoAttribute
     int int_value;
     gboolean boolean_value;
     double double_value;
-    PangoColor color_value;
-    PangoLanguage *lang_value;
-    PangoFontDescription *font_value;
+    Pango2Color color_value;
+    Pango2Language *lang_value;
+    Pango2FontDescription *font_value;
     gpointer pointer_value;
   };
 };
 
-char *    pango_attr_value_serialize   (PangoAttribute    *attr);
+char *    pango2_attr_value_serialize   (Pango2Attribute    *attr);

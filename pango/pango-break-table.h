@@ -110,14 +110,14 @@
  * # @missing: 0000..10FFFF; N
  */
 
-#ifndef PANGO_BREAK_TABLE_H
-#define PANGO_BREAK_TABLE_H
+#ifndef PANGO2_BREAK_TABLE_H
+#define PANGO2_BREAK_TABLE_H
 
 #include <glib.h>
 
 
 static inline gboolean
-_pango_is_STerm (gunichar wc)
+_pango2_is_STerm (gunichar wc)
 {
   if ((wc >= 0x0021 && wc <= 0x1945))
     {
@@ -269,7 +269,7 @@ _pango_is_STerm (gunichar wc)
 }
 
 static inline gboolean
-_pango_is_Virama (gunichar wc)
+_pango2_is_Virama (gunichar wc)
 {
   if ((wc >= 0x094D && wc <= 0x0BCD))
     {
@@ -323,7 +323,7 @@ _pango_is_Virama (gunichar wc)
 }
 
 static inline gboolean
-_pango_is_Vowel_Dependent (gunichar wc)
+_pango2_is_Vowel_Dependent (gunichar wc)
 {
   if ((wc >= 0x093A && wc <= 0x0CC8))
     {
@@ -588,7 +588,7 @@ _pango_is_Vowel_Dependent (gunichar wc)
 }
 
 static inline gboolean
-_pango_is_Consonant_Prefixed (gunichar wc)
+_pango2_is_Consonant_Prefixed (gunichar wc)
 {
   if ((wc >= 0x111C2 && wc <= 0x111C3) ||
       wc == 0x1193F || wc == 0x11A3A || (wc >= 0x11A84 && wc <= 0x11A89))
@@ -597,7 +597,7 @@ _pango_is_Consonant_Prefixed (gunichar wc)
 }
 
 static inline gboolean
-_pango_is_Consonant_Preceding_Repha (gunichar wc)
+_pango2_is_Consonant_Preceding_Repha (gunichar wc)
 {
   if (wc == 0x0D4E || wc == 0x11941 || wc == 0x11D46)
     return TRUE;
@@ -605,7 +605,7 @@ _pango_is_Consonant_Preceding_Repha (gunichar wc)
 }
 
 static inline gboolean
-_pango_is_EastAsianWide (gunichar wc)
+_pango2_is_EastAsianWide (gunichar wc)
 {
   if ((wc >= 0x1100 && wc <= 0x27B0))
     {
@@ -859,6 +859,6 @@ _pango_is_EastAsianWide (gunichar wc)
   return FALSE;
 }
 
-#endif /* PANGO_BREAK_TABLE_H */
+#endif /* PANGO2_BREAK_TABLE_H */
 
 /* == End of generated table == */

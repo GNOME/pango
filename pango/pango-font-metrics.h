@@ -26,12 +26,12 @@
 G_BEGIN_DECLS
 
 /**
- * PangoFontMetrics:
+ * Pango2FontMetrics:
  *
- * A `PangoFontMetrics` structure holds the overall metric information
+ * A `Pango2FontMetrics` structure holds the overall metric information
  * for a font.
  *
- * The information in a `PangoFontMetrics` structure may be restricted
+ * The information in a `Pango2FontMetrics` structure may be restricted
  * to a script. The fields of this structure are private to implementations
  * of a font backend. See the documentation of the corresponding getters
  * for documentation of their meaning.
@@ -44,35 +44,35 @@ G_BEGIN_DECLS
  * </picture>
 
  */
-typedef struct _PangoFontMetrics PangoFontMetrics;
+typedef struct _Pango2FontMetrics Pango2FontMetrics;
 
-#define PANGO_TYPE_FONT_METRICS  (pango_font_metrics_get_type ())
+#define PANGO2_TYPE_FONT_METRICS  (pango2_font_metrics_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-GType             pango_font_metrics_get_type                    (void) G_GNUC_CONST;
-PANGO_AVAILABLE_IN_ALL
-PangoFontMetrics *pango_font_metrics_copy                        (PangoFontMetrics *metrics);
-PANGO_AVAILABLE_IN_ALL
-void              pango_font_metrics_free                        (PangoFontMetrics *metrics);
-PANGO_AVAILABLE_IN_ALL
-int               pango_font_metrics_get_ascent                  (PangoFontMetrics *metrics) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-int               pango_font_metrics_get_descent                 (PangoFontMetrics *metrics) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-int               pango_font_metrics_get_height                  (PangoFontMetrics *metrics) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-int               pango_font_metrics_get_approximate_char_width  (PangoFontMetrics *metrics) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-int               pango_font_metrics_get_approximate_digit_width (PangoFontMetrics *metrics) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-int               pango_font_metrics_get_underline_position      (PangoFontMetrics *metrics) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-int               pango_font_metrics_get_underline_thickness     (PangoFontMetrics *metrics) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-int               pango_font_metrics_get_strikethrough_position  (PangoFontMetrics *metrics) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-int               pango_font_metrics_get_strikethrough_thickness (PangoFontMetrics *metrics) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+GType             pango2_font_metrics_get_type                    (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontMetrics *pango2_font_metrics_copy                        (Pango2FontMetrics *metrics);
+PANGO2_AVAILABLE_IN_ALL
+void              pango2_font_metrics_free                        (Pango2FontMetrics *metrics);
+PANGO2_AVAILABLE_IN_ALL
+int               pango2_font_metrics_get_ascent                  (Pango2FontMetrics *metrics) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+int               pango2_font_metrics_get_descent                 (Pango2FontMetrics *metrics) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+int               pango2_font_metrics_get_height                  (Pango2FontMetrics *metrics) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+int               pango2_font_metrics_get_approximate_char_width  (Pango2FontMetrics *metrics) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+int               pango2_font_metrics_get_approximate_digit_width (Pango2FontMetrics *metrics) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+int               pango2_font_metrics_get_underline_position      (Pango2FontMetrics *metrics) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+int               pango2_font_metrics_get_underline_thickness     (Pango2FontMetrics *metrics) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+int               pango2_font_metrics_get_strikethrough_position  (Pango2FontMetrics *metrics) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+int               pango2_font_metrics_get_strikethrough_thickness (Pango2FontMetrics *metrics) G_GNUC_PURE;
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFontMetrics, pango_font_metrics_free)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(Pango2FontMetrics, pango2_font_metrics_free)
 
 G_END_DECLS

@@ -26,7 +26,7 @@
 
 G_BEGIN_DECLS
 
-struct _PangoFontMap
+struct _Pango2FontMap
 {
   GObject parent_instance;
 
@@ -36,7 +36,7 @@ struct _PangoFontMap
   GPtrArray *families;
   GHashTable *fontsets;
   GQueue fontset_cache;
-  PangoFontMap *fallback;
+  Pango2FontMap *fallback;
 
   float dpi;
   gboolean in_populate;
@@ -44,31 +44,31 @@ struct _PangoFontMap
 };
 
 /**
- * PangoFontMapClass:
- * @populate: Subclasses should call pango_font_map_add_face to populate
+ * Pango2FontMapClass:
+ * @populate: Subclasses should call pango2_font_map_add_face to populate
  *   the map with faces and families in this vfunc.
  */
-struct _PangoFontMapClass
+struct _Pango2FontMapClass
 {
   GObjectClass parent_class;
 
-  PangoFont *       (* load_font)     (PangoFontMap               *self,
-                                       PangoContext               *context,
-                                       const PangoFontDescription *desc);
-  PangoFontset *    (* load_fontset)  (PangoFontMap               *self,
-                                       PangoContext               *context,
-                                       const PangoFontDescription *desc,
-                                       PangoLanguage              *language);
-  guint             (* get_serial)    (PangoFontMap               *self);
-  void              (* changed)       (PangoFontMap               *self);
-  PangoFontFamily * (* get_family)    (PangoFontMap               *self,
-                                       const char                 *name);
-  void              (* populate)      (PangoFontMap               *self);
+  Pango2Font *       (* load_font)     (Pango2FontMap               *self,
+                                        Pango2Context               *context,
+                                        const Pango2FontDescription *desc);
+  Pango2Fontset *    (* load_fontset)  (Pango2FontMap               *self,
+                                        Pango2Context               *context,
+                                        const Pango2FontDescription *desc,
+                                        Pango2Language              *language);
+  guint              (* get_serial)    (Pango2FontMap               *self);
+  void               (* changed)       (Pango2FontMap               *self);
+  Pango2FontFamily * (* get_family)    (Pango2FontMap               *self,
+                                        const char                  *name);
+  void               (* populate)      (Pango2FontMap               *self);
 };
 
-void                    pango_font_map_repopulate    (PangoFontMap *self,
-                                                      gboolean      add_synthetic);
+void                    pango2_font_map_repopulate    (Pango2FontMap *self,
+                                                       gboolean       add_synthetic);
 
-void                    pango_font_map_changed       (PangoFontMap *self);
+void                    pango2_font_map_changed       (Pango2FontMap *self);
 
 G_END_DECLS

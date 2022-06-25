@@ -23,63 +23,63 @@
 #include <pango/pango-font-description.h>
 
 
-struct _PangoFontFace
+struct _Pango2FontFace
 {
   GObject parent_instance;
 
-  PangoFontFamily *family;
-  PangoFontDescription *description;
+  Pango2FontFamily *family;
+  Pango2FontDescription *description;
   char *name;
   char *faceid;
 };
 
-typedef struct _PangoFontFaceClass PangoFontFaceClass;
+typedef struct _Pango2FontFaceClass Pango2FontFaceClass;
 
-struct _PangoFontFaceClass
+struct _Pango2FontFaceClass
 {
   GObjectClass parent_class;
 
-  gboolean               (* is_synthesized)    (PangoFontFace *face);
-  gboolean               (* is_monospace)      (PangoFontFace *face);
-  gboolean               (* is_variable)       (PangoFontFace *face);
-  gboolean               (* supports_language) (PangoFontFace *face,
-                                                PangoLanguage *language);
-  PangoLanguage **       (* get_languages)     (PangoFontFace *face);
-  gboolean               (* has_char)          (PangoFontFace *face,
-                                                gunichar       wc);
-  const char *           (* get_faceid)        (PangoFontFace *face);
-  PangoFont *            (* create_font)       (PangoFontFace              *face,
-                                                const PangoFontDescription *desc,
-                                                float                       dpi,
-                                                const PangoMatrix          *ctm);
+  gboolean               (* is_synthesized)    (Pango2FontFace *face);
+  gboolean               (* is_monospace)      (Pango2FontFace *face);
+  gboolean               (* is_variable)       (Pango2FontFace *face);
+  gboolean               (* supports_language) (Pango2FontFace *face,
+                                                Pango2Language *language);
+  Pango2Language **      (* get_languages)     (Pango2FontFace *face);
+  gboolean               (* has_char)          (Pango2FontFace *face,
+                                                gunichar        wc);
+  const char *           (* get_faceid)        (Pango2FontFace *face);
+  Pango2Font *           (* create_font)       (Pango2FontFace              *face,
+                                                const Pango2FontDescription *desc,
+                                                float                        dpi,
+                                                const Pango2Matrix          *ctm);
 };
 
-#define PANGO_FONT_FACE_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT_FACE, PangoFontFaceClass))
-#define PANGO_FONT_FACE_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONT_FACE, PangoFontFaceClass))
+#define PANGO2_FONT_FACE_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO2_TYPE_FONT_FACE, Pango2FontFaceClass))
+#define PANGO2_FONT_FACE_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO2_TYPE_FONT_FACE, Pango2FontFaceClass))
 
-const char *    pango_font_face_get_faceid      (PangoFontFace              *face);
-PangoFont *     pango_font_face_create_font     (PangoFontFace              *face,
-                                                 const PangoFontDescription *desc,
-                                                 float                       dpi,
-                                                 const PangoMatrix          *ctm);
+const char *    pango2_font_face_get_faceid      (Pango2FontFace              *face);
+Pango2Font *    pango2_font_face_create_font     (Pango2FontFace              *face,
+                                                  const Pango2FontDescription *desc,
+                                                  float                        dpi,
+                                                  const Pango2Matrix          *ctm);
 
 static inline void
-pango_font_face_set_name (PangoFontFace *face,
-                          const char    *name)
+pango2_font_face_set_name (Pango2FontFace *face,
+                           const char     *name)
 {
   face->name = g_strdup (name);
 }
 
 static inline void
-pango_font_face_set_description (PangoFontFace              *face,
-                                 const PangoFontDescription *description)
+pango2_font_face_set_description (Pango2FontFace              *face,
+                                  const Pango2FontDescription *description)
 {
-  face->description = pango_font_description_copy (description);
+  face->description = pango2_font_description_copy (description);
 }
 
 static inline void
-pango_font_face_set_family (PangoFontFace   *face,
-                            PangoFontFamily *family)
+pango2_font_face_set_family (Pango2FontFace   *face,
+                             Pango2FontFamily *family)
 {
   face->family = family;
 }

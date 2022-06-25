@@ -22,37 +22,37 @@
 #include <pango/pango-font-family.h>
 
 
-typedef struct _PangoFontFamilyClass PangoFontFamilyClass;
+typedef struct _Pango2FontFamilyClass Pango2FontFamilyClass;
 
-struct _PangoFontFamily
+struct _Pango2FontFamily
 {
   GObject parent_instance;
 
-  PangoFontMap *map;
+  Pango2FontMap *map;
   char *name;
 };
 
-struct _PangoFontFamilyClass
+struct _Pango2FontFamilyClass
 {
   GObjectClass parent_class;
 
-  PangoFontFace * (* get_face)     (PangoFontFamily *family,
+  Pango2FontFace * (* get_face)     (Pango2FontFamily *family,
                                     const char      *name);
 };
 
-#define PANGO_FONT_FAMILY_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT_FAMILY, PangoFontFamilyClass))
-#define PANGO_FONT_FAMILY_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONT_FAMILY, PangoFontFamilyClass))
+#define PANGO2_FONT_FAMILY_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO2_TYPE_FONT_FAMILY, Pango2FontFamilyClass))
+#define PANGO2_FONT_FAMILY_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO2_TYPE_FONT_FAMILY, Pango2FontFamilyClass))
 
 static inline void
-pango_font_family_set_name (PangoFontFamily *family,
-                            const char      *name)
+pango2_font_family_set_name (Pango2FontFamily *family,
+                             const char       *name)
 {
   family->name = g_strdup (name);
 }
 
 static inline void
-pango_font_family_set_font_map (PangoFontFamily *family,
-                                PangoFontMap    *map)
+pango2_font_family_set_font_map (Pango2FontFamily *family,
+                                 Pango2FontMap    *map)
 {
   if (family->map)
     g_object_remove_weak_pointer (G_OBJECT (family->map),

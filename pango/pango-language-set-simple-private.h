@@ -22,11 +22,11 @@
 #include "pango-language-set-private.h"
 
 
-#define PANGO_TYPE_LANGUAGE_SET_SIMPLE (pango_language_set_simple_get_type ())
+#define PANGO2_TYPE_LANGUAGE_SET_SIMPLE (pango2_language_set_simple_get_type ())
 
-G_DECLARE_FINAL_TYPE (PangoLanguageSetSimple, pango_language_set_simple, PANGO, LANGUAGE_SET_SIMPLE, PangoLanguageSet)
+G_DECLARE_FINAL_TYPE (Pango2LanguageSetSimple, pango2_language_set_simple, PANGO2, LANGUAGE_SET_SIMPLE, Pango2LanguageSet)
 
-PangoLanguageSetSimple *pango_language_set_simple_new           (void);
+Pango2LanguageSetSimple *pango2_language_set_simple_new           (void);
 
-void                    pango_language_set_simple_add_language  (PangoLanguageSetSimple *self,
-                                                                 PangoLanguage          *language);
+void                     pango2_language_set_simple_add_language  (Pango2LanguageSetSimple *self,
+                                                                   Pango2Language          *language);

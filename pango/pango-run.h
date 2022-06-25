@@ -24,14 +24,14 @@
 #include <pango/pango-item.h>
 #include <pango/pango-glyph.h>
 
-PANGO_AVAILABLE_IN_ALL
-PangoItem *             pango_run_get_item     (PangoRun         *run);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Item *            pango2_run_get_item     (Pango2Run         *run);
 
-PANGO_AVAILABLE_IN_ALL
-PangoGlyphString *      pango_run_get_glyphs   (PangoRun         *run);
+PANGO2_AVAILABLE_IN_ALL
+Pango2GlyphString *     pango2_run_get_glyphs   (Pango2Run         *run);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_run_get_extents  (PangoRun         *run,
-                                                PangoLeadingTrim  trim,
-                                                PangoRectangle   *ink_rect,
-                                                PangoRectangle   *logical_rect);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_run_get_extents  (Pango2Run         *run,
+                                                 Pango2LeadingTrim  trim,
+                                                 Pango2Rectangle   *ink_rect,
+                                                 Pango2Rectangle   *logical_rect);

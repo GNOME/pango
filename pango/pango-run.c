@@ -10,57 +10,57 @@
 #include <math.h>
 
 /**
- * PangoRun:
+ * Pango2Run:
  *
- * A `PangoRun` represents a single run within a `PangoLine`.
+ * A `Pango2Run` represents a single run within a `Pango2Line`.
  *
  * A run is a range of text with uniform script, font and attributes that
  * is shaped as a unit.
  *
  * Script, font and attributes of a run can be accessed via
- * [method@Pango.Run.get_item]. The glyphs that result from shaping
- * the text of the run can be obtained via [method@Pango.Run.get_glyphs].
+ * [method@Pango2.Run.get_item]. The glyphs that result from shaping
+ * the text of the run can be obtained via [method@Pango2.Run.get_glyphs].
  */
 
 /**
- * pango_run_get_item:
- * @run: a `PangoRun`
+ * pango2_run_get_item:
+ * @run: a `Pango2Run`
  *
- * Gets the `PangoItem` for the run.
+ * Gets the `Pango2Item` for the run.
  *
- * Returns: (transfer none): the `PangoItem` of @run
+ * Returns: (transfer none): the `Pango2Item` of @run
  */
-PangoItem *
-pango_run_get_item (PangoRun *run)
+Pango2Item *
+pango2_run_get_item (Pango2Run *run)
 {
   return run->glyph_item.item;
 }
 
 /**
- * pango_run_get_glyphs:
- * @run: a `PangoRun`
+ * pango2_run_get_glyphs:
+ * @run: a `Pango2Run`
  *
- * Gets the `PangoGlyphString` for the run.
+ * Gets the `Pango2GlyphString` for the run.
  *
- * Returns: (transfer none): the `PangoGlyphString` of @run
+ * Returns: (transfer none): the `Pango2GlyphString` of @run
  */
-PangoGlyphString *
-pango_run_get_glyphs (PangoRun *run)
+Pango2GlyphString *
+pango2_run_get_glyphs (Pango2Run *run)
 {
   return run->glyph_item.glyphs;
 }
 
 static void
-pango_shape_get_extents (int             n_chars,
-                         PangoAttribute *attr,
-                         PangoRectangle *ink_rect,
-                         PangoRectangle *logical_rect)
+pango2_shape_get_extents (int              n_chars,
+                          Pango2Attribute *attr,
+                          Pango2Rectangle *ink_rect,
+                          Pango2Rectangle *logical_rect)
 {
   if (n_chars > 0)
     {
       ShapeData *data = (ShapeData *)attr->pointer_value;
-      PangoRectangle *shape_ink = &data->ink_rect;
-      PangoRectangle *shape_logical = &data->logical_rect;
+      Pango2Rectangle *shape_ink = &data->ink_rect;
+      Pango2Rectangle *shape_logical = &data->logical_rect;
 
       if (ink_rect)
         {
@@ -99,15 +99,15 @@ pango_shape_get_extents (int             n_chars,
 }
 
 /**
- * pango_run_get_extents:
- * @run: a `PangoRun`
- * @trim: `PangoLeadingTrim` flags
+ * pango2_run_get_extents:
+ * @run: a `Pango2Run`
+ * @trim: `Pango2LeadingTrim` flags
  * @ink_rect: (out caller-allocates) (optional): return location
  *   for the ink extents
  * @logical_rect: (out caller-allocates) (optional): return location
  *   for the logical extents
  *
- * Gets the extents of a `PangoRun`.
+ * Gets the extents of a `Pango2Run`.
  *
  * The @trim flags specify if line-height attributes are taken
  * into consideration for determining the logical height. See the
@@ -115,38 +115,38 @@ pango_shape_get_extents (int             n_chars,
  * specification for details.
  */
 void
-pango_run_get_extents (PangoRun         *run,
-                       PangoLeadingTrim  trim,
-                       PangoRectangle   *ink_rect,
-                       PangoRectangle   *logical_rect)
+pango2_run_get_extents (Pango2Run         *run,
+                        Pango2LeadingTrim  trim,
+                        Pango2Rectangle   *ink_rect,
+                        Pango2Rectangle   *logical_rect)
 {
-  PangoGlyphItem *glyph_item = &run->glyph_item;
+  Pango2GlyphItem *glyph_item = &run->glyph_item;
   ItemProperties properties;
   gboolean has_underline;
   gboolean has_overline;
   gboolean has_strikethrough;
-  PangoRectangle logical;
-  PangoFontMetrics *metrics = NULL;
+  Pango2Rectangle logical;
+  Pango2FontMetrics *metrics = NULL;
   int y_offset;
 
-  pango_item_get_properties (glyph_item->item, &properties);
+  pango2_item_get_properties (glyph_item->item, &properties);
 
-  has_underline = properties.uline_style != PANGO_LINE_STYLE_NONE;
-  has_overline = properties.oline_style != PANGO_LINE_STYLE_NONE;
-  has_strikethrough = properties.strikethrough_style != PANGO_LINE_STYLE_NONE;
+  has_underline = properties.uline_style != PANGO2_LINE_STYLE_NONE;
+  has_overline = properties.oline_style != PANGO2_LINE_STYLE_NONE;
+  has_strikethrough = properties.strikethrough_style != PANGO2_LINE_STYLE_NONE;
 
-  if (!logical_rect && (glyph_item->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE))
+  if (!logical_rect && (glyph_item->item->analysis.flags & PANGO2_ANALYSIS_FLAG_CENTERED_BASELINE))
     logical_rect = &logical;
 
   if (!logical_rect && (has_underline || has_overline || has_strikethrough))
     logical_rect = &logical;
 
   if (properties.shape)
-    pango_shape_get_extents (glyph_item->item->num_chars, properties.shape,
-                             ink_rect, logical_rect);
+    pango2_shape_get_extents (glyph_item->item->num_chars, properties.shape,
+                              ink_rect, logical_rect);
   else
-    pango_glyph_string_extents (glyph_item->glyphs, glyph_item->item->analysis.font,
-                                ink_rect, logical_rect);
+    pango2_glyph_string_extents (glyph_item->glyphs, glyph_item->item->analysis.font,
+                                 ink_rect, logical_rect);
 
   if (ink_rect && (has_underline || has_overline || has_strikethrough))
     {
@@ -157,13 +157,13 @@ pango_run_get_extents (PangoRun         *run,
       int new_pos;
 
       if (!metrics)
-        metrics = pango_font_get_metrics (glyph_item->item->analysis.font,
-                                          glyph_item->item->analysis.language);
+        metrics = pango2_font_get_metrics (glyph_item->item->analysis.font,
+                                           glyph_item->item->analysis.language);
 
-      underline_thickness = pango_font_metrics_get_underline_thickness (metrics);
-      underline_position = pango_font_metrics_get_underline_position (metrics);
-      strikethrough_thickness = pango_font_metrics_get_strikethrough_thickness (metrics);
-      strikethrough_position = pango_font_metrics_get_strikethrough_position (metrics);
+      underline_thickness = pango2_font_metrics_get_underline_thickness (metrics);
+      underline_position = pango2_font_metrics_get_underline_position (metrics);
+      strikethrough_thickness = pango2_font_metrics_get_strikethrough_thickness (metrics);
+      strikethrough_position = pango2_font_metrics_get_strikethrough_position (metrics);
 
       /* the underline/strikethrough takes x, width of logical_rect.
        * Reflect that into ink_rect.
@@ -185,50 +185,50 @@ pango_run_get_extents (PangoRun         *run,
             }
         }
 
-      if (properties.oline_style == PANGO_LINE_STYLE_SOLID ||
-          properties.oline_style == PANGO_LINE_STYLE_DASHED ||
-          properties.oline_style == PANGO_LINE_STYLE_DOTTED)
+      if (properties.oline_style == PANGO2_LINE_STYLE_SOLID ||
+          properties.oline_style == PANGO2_LINE_STYLE_DASHED ||
+          properties.oline_style == PANGO2_LINE_STYLE_DOTTED)
         {
           ink_rect->y -= underline_thickness;
           ink_rect->height += underline_thickness;
         }
-      else if (properties.oline_style == PANGO_LINE_STYLE_DOUBLE ||
-               properties.oline_style == PANGO_LINE_STYLE_WAVY)
+      else if (properties.oline_style == PANGO2_LINE_STYLE_DOUBLE ||
+               properties.oline_style == PANGO2_LINE_STYLE_WAVY)
         {
           ink_rect->y -= 3 * underline_thickness;
           ink_rect->height += 3 * underline_thickness;
         }
 
-      if (properties.uline_style == PANGO_LINE_STYLE_SOLID ||
-          properties.uline_style == PANGO_LINE_STYLE_DASHED ||
-          properties.uline_style == PANGO_LINE_STYLE_DOTTED)
+      if (properties.uline_style == PANGO2_LINE_STYLE_SOLID ||
+          properties.uline_style == PANGO2_LINE_STYLE_DASHED ||
+          properties.uline_style == PANGO2_LINE_STYLE_DOTTED)
         {
-          if (properties.uline_position == PANGO_UNDERLINE_POSITION_UNDER)
+          if (properties.uline_position == PANGO2_UNDERLINE_POSITION_UNDER)
             ink_rect->height += 2 * underline_thickness;
           else
             ink_rect->height = MAX (ink_rect->height,
                                     underline_thickness - underline_position - ink_rect->y);
         }
-      else if (properties.uline_style == PANGO_LINE_STYLE_DOUBLE ||
-               properties.uline_style == PANGO_LINE_STYLE_WAVY)
+      else if (properties.uline_style == PANGO2_LINE_STYLE_DOUBLE ||
+               properties.uline_style == PANGO2_LINE_STYLE_WAVY)
         {
-          if (properties.uline_position == PANGO_UNDERLINE_POSITION_UNDER)
+          if (properties.uline_position == PANGO2_UNDERLINE_POSITION_UNDER)
             ink_rect->height += 4 * underline_thickness;
           else
             ink_rect->height = MAX (ink_rect->height,
-                                   3 * underline_thickness - underline_position - ink_rect->y);
+                                    3 * underline_thickness - underline_position - ink_rect->y);
         }
     }
 
   y_offset = glyph_item->y_offset;
 
-  if (glyph_item->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
+  if (glyph_item->item->analysis.flags & PANGO2_ANALYSIS_FLAG_CENTERED_BASELINE)
     {
-      gboolean is_hinted = (logical_rect->y & logical_rect->height & (PANGO_SCALE - 1)) == 0;
+      gboolean is_hinted = (logical_rect->y & logical_rect->height & (PANGO2_SCALE - 1)) == 0;
       int adjustment = logical_rect->y + logical_rect->height / 2;
 
       if (is_hinted)
-        adjustment = PANGO_UNITS_ROUND (adjustment);
+        adjustment = PANGO2_UNITS_ROUND (adjustment);
 
       y_offset += adjustment;
     }
@@ -239,7 +239,7 @@ pango_run_get_extents (PangoRun         *run,
   if (logical_rect)
     logical_rect->y -= y_offset;
 
-  if (logical_rect && trim != PANGO_LEADING_TRIM_BOTH)
+  if (logical_rect && trim != PANGO2_LEADING_TRIM_BOTH)
     {
       int leading;
 
@@ -254,18 +254,18 @@ pango_run_get_extents (PangoRun         *run,
         {
           /* line-height 'normal' in the CSS inline layout spec */
           if (!metrics)
-            metrics = pango_font_get_metrics (glyph_item->item->analysis.font,
-                                              glyph_item->item->analysis.language);
+            metrics = pango2_font_get_metrics (glyph_item->item->analysis.font,
+                                               glyph_item->item->analysis.language);
           leading = MAX (metrics->height - (metrics->ascent + metrics->descent) + properties.line_spacing, 0);
         }
-      if ((trim & PANGO_LEADING_TRIM_START) == 0)
+      if ((trim & PANGO2_LEADING_TRIM_START) == 0)
         logical_rect->y -= leading / 2;
-      if (trim == PANGO_LEADING_TRIM_NONE)
+      if (trim == PANGO2_LEADING_TRIM_NONE)
         logical_rect->height += leading;
       else
         logical_rect->height += (leading - leading / 2);
     }
 
   if (metrics)
-    pango_font_metrics_free (metrics);
+    pango2_font_metrics_free (metrics);
 }

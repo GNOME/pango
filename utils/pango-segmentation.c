@@ -1,5 +1,5 @@
-/* Pango
- * pango-segmentation.c: Test Pango line breaking
+/* Pango2
+ * pango-segmentation.c: Test Pango2 line breaking
  *
  * Copyright (C) 2021 Red Hat, Inc
  *
@@ -59,36 +59,36 @@ show_segmentation (const char *input,
                    BreakKind   kind)
 {
   GString *string;
-  PangoContext *context;
+  Pango2Context *context;
   gsize  length;
   GError *error = NULL;
-  const PangoLogAttr *attrs;
+  const Pango2LogAttr *attrs;
   int len;
   char *p;
   int i;
   char *text;
-  PangoAttrList *attributes;
-  PangoLayout *layout;
+  Pango2AttrList *attributes;
+  Pango2Layout *layout;
 
-  context = pango_context_new ();
+  context = pango2_context_new ();
 
   string = g_string_new ("");
 
   length = strlen (input);
   len = g_utf8_strlen (input, -1) + 1;
 
-  pango_parse_markup (input, -1, 0, &attributes, &text, NULL, &error);
+  pango2_parse_markup (input, -1, 0, &attributes, &text, NULL, &error);
   g_assert_no_error (error);
 
-  layout = pango_layout_new (context);
-  pango_layout_set_text (layout, text, length);
-  pango_layout_set_attributes (layout, attributes);
+  layout = pango2_layout_new (context);
+  pango2_layout_set_text (layout, text, length);
+  pango2_layout_set_attributes (layout, attributes);
 
-  attrs = pango_layout_get_log_attrs (layout, &len);
+  attrs = pango2_layout_get_log_attrs (layout, &len);
 
   for (i = 0, p = text; i < len; i++, p = g_utf8_next_char (p))
     {
-      PangoLogAttr log = attrs[i];
+      Pango2LogAttr log = attrs[i];
       gboolean is_break = FALSE;
 
       switch (kind)
@@ -128,7 +128,7 @@ show_segmentation (const char *input,
 
   g_object_unref (layout);
   g_free (text);
-  pango_attr_list_unref (attributes);
+  pango2_attr_list_unref (attributes);
 
   g_print ("%s\n", string->str);
 
@@ -160,7 +160,7 @@ main (int argc, char *argv[])
   context = g_option_context_new ("[FILE]");
   g_option_context_add_main_entries (context, entries, NULL);
   g_option_context_set_description (context,
-      "Show text segmentation as determined by Pango.");
+      "Show text segmentation as determined by Pango2.");
   if (!g_option_context_parse (context, &argc, &argv, &error))
     {
       g_printerr ("%s\n", error->message);

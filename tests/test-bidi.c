@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * test-bidi.c: Test bidi apis
  *
  * Copyright (C) 2021 Red Hat, Inc.
@@ -22,7 +22,7 @@
 #include <locale.h>
 #include <pango/pango.h>
 
-static PangoContext *context;
+static Pango2Context *context;
 
 #if 0
 static void
@@ -31,32 +31,32 @@ test_bidi_embedding_levels (void)
   /* Examples taken from https://www.w3.org/International/articles/inline-bidi-markup/uba-basics */
   struct {
     const char *text;
-    PangoDirection dir;
+    Pango2Direction dir;
     const char *levels;
-    PangoDirection out_dir;
+    Pango2Direction out_dir;
   } tests[] = {
-    { "bahrain مصر kuwait", PANGO_DIRECTION_LTR, "\0\0\0\0\0\0\0\0\1\1\1\0\0\0\0\0\0\0", PANGO_DIRECTION_LTR },
-    { "bahrain مصر kuwait", PANGO_DIRECTION_WEAK_LTR, "\0\0\0\0\0\0\0\0\1\1\1\0\0\0\0\0\0\0", PANGO_DIRECTION_LTR },
-    { "bahrain مصر kuwait", PANGO_DIRECTION_RTL, "\2\2\2\2\2\2\2\1\1\1\1\1\2\2\2\2\2\2", PANGO_DIRECTION_RTL },
-    { "bahrain مصر kuwait", PANGO_DIRECTION_WEAK_RTL, "\0\0\0\0\0\0\0\0\1\1\1\0\0\0\0\0\0\0", PANGO_DIRECTION_LTR },
-    { "The title is مفتاح معايير الويب in Arabic.", PANGO_DIRECTION_LTR, "\0\0\0\0\0\0\0\0\0\0\0\0\0\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\0\0\0\0\0\0\0\0\0\0\0", PANGO_DIRECTION_LTR },
-    { "The title is مفتاح معايير الويب, in Arabic.", PANGO_DIRECTION_LTR, "\0\0\0\0\0\0\0\0\0\0\0\0\0\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\0\0\0\0\0\0\0\0\0\0\0\0", PANGO_DIRECTION_LTR },
-    { "The title is مفتاح معايير الويب⁧!⁩ in Arabic.", PANGO_DIRECTION_LTR, "\0\0\0\0\0\0\0\0\0\0\0\0\0\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\0\1\0\0\0\0\0\0\0\0\0\0\0", PANGO_DIRECTION_LTR }, // FIXME 
-    { "one two ثلاثة 1234 خمسة", PANGO_DIRECTION_LTR, "\0\0\0\0\0\0\0\0\1\1\1\1\1\1\2\2\2\2\1\1\1\1\1", PANGO_DIRECTION_LTR },
-    { "one two ثلاثة ١٢٣٤ خمسة", PANGO_DIRECTION_LTR, "\0\0\0\0\0\0\0\0\1\1\1\1\1\1\2\2\2\2\1\1\1\1\1", PANGO_DIRECTION_LTR },
-    { "abאב12cd", PANGO_DIRECTION_LTR, "\0\0\1\1\2\2\0\0" },
-    { "abאב‪xy‬cd", PANGO_DIRECTION_LTR, "\0\0\1\1\1\2\2\2\0\0" },
+    { "bahrain مصر kuwait", PANGO2_DIRECTION_LTR, "\0\0\0\0\0\0\0\0\1\1\1\0\0\0\0\0\0\0", PANGO2_DIRECTION_LTR },
+    { "bahrain مصر kuwait", PANGO2_DIRECTION_WEAK_LTR, "\0\0\0\0\0\0\0\0\1\1\1\0\0\0\0\0\0\0", PANGO2_DIRECTION_LTR },
+    { "bahrain مصر kuwait", PANGO2_DIRECTION_RTL, "\2\2\2\2\2\2\2\1\1\1\1\1\2\2\2\2\2\2", PANGO2_DIRECTION_RTL },
+    { "bahrain مصر kuwait", PANGO2_DIRECTION_WEAK_RTL, "\0\0\0\0\0\0\0\0\1\1\1\0\0\0\0\0\0\0", PANGO2_DIRECTION_LTR },
+    { "The title is مفتاح معايير الويب in Arabic.", PANGO2_DIRECTION_LTR, "\0\0\0\0\0\0\0\0\0\0\0\0\0\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\0\0\0\0\0\0\0\0\0\0\0", PANGO2_DIRECTION_LTR },
+    { "The title is مفتاح معايير الويب, in Arabic.", PANGO2_DIRECTION_LTR, "\0\0\0\0\0\0\0\0\0\0\0\0\0\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\0\0\0\0\0\0\0\0\0\0\0\0", PANGO2_DIRECTION_LTR },
+    { "The title is مفتاح معايير الويب⁧!⁩ in Arabic.", PANGO2_DIRECTION_LTR, "\0\0\0\0\0\0\0\0\0\0\0\0\0\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\0\1\0\0\0\0\0\0\0\0\0\0\0", PANGO2_DIRECTION_LTR }, // FIXME 
+    { "one two ثلاثة 1234 خمسة", PANGO2_DIRECTION_LTR, "\0\0\0\0\0\0\0\0\1\1\1\1\1\1\2\2\2\2\1\1\1\1\1", PANGO2_DIRECTION_LTR },
+    { "one two ثلاثة ١٢٣٤ خمسة", PANGO2_DIRECTION_LTR, "\0\0\0\0\0\0\0\0\1\1\1\1\1\1\2\2\2\2\1\1\1\1\1", PANGO2_DIRECTION_LTR },
+    { "abאב12cd", PANGO2_DIRECTION_LTR, "\0\0\1\1\2\2\0\0" },
+    { "abאב‪xy‬cd", PANGO2_DIRECTION_LTR, "\0\0\1\1\1\2\2\2\0\0" },
 
   };
 
   for (int i = 0; i < G_N_ELEMENTS (tests); i++)
     {
       const char *text = tests[i].text;
-      PangoDirection dir = tests[i].dir;
+      Pango2Direction dir = tests[i].dir;
       guint8 *levels;
       gsize len;
 
-      levels = pango_log2vis_get_embedding_levels (text, -1, &dir);
+      levels = pango2_log2vis_get_embedding_levels (text, -1, &dir);
 
       len = g_utf8_strlen (text, -1);
 
@@ -74,8 +74,8 @@ test_bidi_embedding_levels (void)
 }
 #endif
 
-/* Some basic tests for pango_layout_move_cursor inside
- * a single PangoLine:
+/* Some basic tests for pango2_layout_move_cursor inside
+ * a single Pango2Line:
  * - check that we actually move the cursor in the right direction
  * - check that we get through the line with at most n steps
  * - check that we don't skip legitimate cursor positions
@@ -90,10 +90,10 @@ test_move_cursor_line (void)
     "aאב12b",
     "pa­ra­graph", // soft hyphens
   };
-  PangoLayout *layout;
+  Pango2Layout *layout;
   gboolean fail = FALSE;
 
-  layout = pango_layout_new (context);
+  layout = pango2_layout_new (context);
 
   for (int i = 0; i < G_N_ELEMENTS (tests); i++)
     {
@@ -102,11 +102,11 @@ test_move_cursor_line (void)
       int index;
       int start_index;
       gboolean trailing;
-      PangoRectangle s_pos, old_s_pos;
-      PangoRectangle w_pos, old_w_pos;
-      PangoLines *lines;
-      PangoLine *line;
-      PangoLine *new_line;
+      Pango2Rectangle s_pos, old_s_pos;
+      Pango2Rectangle w_pos, old_w_pos;
+      Pango2Lines *lines;
+      Pango2Line *line;
+      Pango2Line *new_line;
       struct {
         int direction;
         gboolean strong;
@@ -119,20 +119,20 @@ test_move_cursor_line (void)
       int *strong_cursor;
       int *weak_cursor;
       gboolean *met_cursor;
-      const PangoLogAttr *attrs;
+      const Pango2LogAttr *attrs;
       int n_attrs;
       int j;
       const char *p;
 
-      pango_layout_set_text (layout, tests[i], -1);
+      pango2_layout_set_text (layout, tests[i], -1);
 
-      text = pango_layout_get_text (layout);
-      lines = pango_layout_get_lines (layout);
-      line = pango_lines_get_lines (lines)[0];
+      text = pango2_layout_get_text (layout);
+      lines = pango2_layout_get_lines (layout);
+      line = pango2_lines_get_lines (lines)[0];
 
       n_chars = g_utf8_strlen (text, -1);
 
-      attrs = pango_layout_get_log_attrs (layout, &n_attrs);
+      attrs = pango2_layout_get_log_attrs (layout, &n_attrs);
       strong_cursor = g_new (int, n_attrs);
       weak_cursor = g_new (int, n_attrs);
       met_cursor = g_new (gboolean, n_attrs);
@@ -140,7 +140,7 @@ test_move_cursor_line (void)
         {
           if (attrs[j].is_cursor_position)
             {
-              pango_lines_get_cursor_pos (lines, NULL, p - text, &s_pos, &w_pos);
+              pango2_lines_get_cursor_pos (lines, NULL, p - text, &s_pos, &w_pos);
               strong_cursor[j] = s_pos.x;
               weak_cursor[j] = w_pos.x;
             }
@@ -158,7 +158,7 @@ test_move_cursor_line (void)
                      params[j].direction > 0 ? "->" : "<-",
                      params[j].strong ? "strong" : "weak");
 
-          if ((pango_line_get_resolved_direction (line) == PANGO_DIRECTION_LTR) == (params[j].direction > 0))
+          if ((pango2_line_get_resolved_direction (line) == PANGO2_DIRECTION_LTR) == (params[j].direction > 0))
             start_index = 0;
           else
             start_index = strlen (text);
@@ -167,7 +167,7 @@ test_move_cursor_line (void)
 
           memset (met_cursor, 0, sizeof (gboolean) * n_attrs);
 
-          pango_lines_get_cursor_pos (lines, NULL, index, &s_pos, &w_pos);
+          pango2_lines_get_cursor_pos (lines, NULL, index, &s_pos, &w_pos);
           for (int l = 0; l < n_attrs; l++)
             {
               if ((params[j].strong && strong_cursor[l] == s_pos.x) ||
@@ -181,7 +181,7 @@ test_move_cursor_line (void)
             {
               old_s_pos = s_pos;
               old_w_pos = w_pos;
-              pango_lines_move_cursor (lines, params[j].strong,
+              pango2_lines_move_cursor (lines, params[j].strong,
                                        NULL,
                                        index, 0,
                                        params[j].direction,
@@ -197,7 +197,7 @@ test_move_cursor_line (void)
               if (index == -1 || index == G_MAXINT)
                 break;
 
-              pango_lines_get_cursor_pos (lines, NULL, index, &s_pos, &w_pos);
+              pango2_lines_get_cursor_pos (lines, NULL, index, &s_pos, &w_pos);
               for (int l = 0; l < n_attrs; l++)
                 {
                   if ((params[j].strong && strong_cursor[l] == s_pos.x) ||
@@ -271,39 +271,39 @@ test_move_cursor_para (void)
     { "long word", 40 },
     { "זוהי השורה הראשונה" "\n" "זוהי השורה השנייה" "\n" "זוהי השורה השלישית" , 200 },
   };
-  PangoLayout *layout;
-  PangoRectangle pos, old_pos;
+  Pango2Layout *layout;
+  Pango2Rectangle pos, old_pos;
   int index;
   int trailing;
   const char *text;
-  PangoLine *line;
-  PangoLines *lines;
-  PangoLine *new_line;
+  Pango2Line *line;
+  Pango2Lines *lines;
+  Pango2Line *new_line;
 
-  layout = pango_layout_new (context);
+  layout = pango2_layout_new (context);
 
   for (int i = 0; i < G_N_ELEMENTS (tests); i++)
     {
-      pango_layout_set_text (layout, tests[i].text, -1);
-      text = pango_layout_get_text (layout);
+      pango2_layout_set_text (layout, tests[i].text, -1);
+      text = pango2_layout_get_text (layout);
       if (tests[i].width > 0)
-        pango_layout_set_width (layout, tests[i].width * PANGO_SCALE);
+        pango2_layout_set_width (layout, tests[i].width * PANGO2_SCALE);
       else
-        pango_layout_set_width (layout, -1);
+        pango2_layout_set_width (layout, -1);
 
       index = 0;
-      lines = pango_layout_get_lines (layout);
-      pango_lines_get_cursor_pos (lines, NULL, index, &pos, NULL);
+      lines = pango2_layout_get_lines (layout);
+      pango2_lines_get_cursor_pos (lines, NULL, index, &pos, NULL);
 
       while (index < G_MAXINT)
         {
           old_pos = pos;
 
-          pango_lines_index_to_line (lines, index, &line, NULL, NULL, NULL);
+          pango2_lines_index_to_line (lines, index, &line, NULL, NULL, NULL);
           if (line == NULL)
             break;
 
-          pango_lines_move_cursor(lines, TRUE,
+          pango2_lines_move_cursor(lines, TRUE,
                                   NULL,
                                   index, 0,
                                   1,
@@ -321,7 +321,7 @@ test_move_cursor_para (void)
           if (index >= strlen (tests[i].text) - 1)
             continue;
 
-          pango_lines_get_cursor_pos (lines, NULL, index, &pos, NULL);
+          pango2_lines_get_cursor_pos (lines, NULL, index, &pos, NULL);
 
           // assert that we are either moving to the right
           // or jumping to the next line
@@ -332,17 +332,17 @@ test_move_cursor_para (void)
 
       /* and now backwards */
       index = strlen (text);
-      pango_lines_get_cursor_pos (lines, NULL, index, &pos, NULL);
+      pango2_lines_get_cursor_pos (lines, NULL, index, &pos, NULL);
 
       while (index > -1)
         {
           old_pos = pos;
 
           line = NULL;
-          pango_lines_index_to_line (lines, index, &line, NULL, NULL, NULL);
+          pango2_lines_index_to_line (lines, index, &line, NULL, NULL, NULL);
           g_assert_nonnull (line);
 
-          pango_lines_move_cursor (lines, TRUE,
+          pango2_lines_move_cursor (lines, TRUE,
                                    NULL,
                                    index, 0,
                                    -1,
@@ -357,7 +357,7 @@ test_move_cursor_para (void)
           if (index == -1 || index == G_MAXINT)
             break;
 
-          pango_lines_get_cursor_pos (lines, NULL, index, &pos, NULL);
+          pango2_lines_get_cursor_pos (lines, NULL, index, &pos, NULL);
 
           // assert that we are either moving to the left
           // or jumping to the previous line
@@ -375,7 +375,7 @@ main (int argc, char *argv[])
 {
   setlocale (LC_ALL, "");
 
-  context = pango_context_new ();
+  context = pango2_context_new ();
 
   g_test_init (&argc, &argv, NULL);
 

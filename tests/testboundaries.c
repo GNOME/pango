@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * testboundaries.c: Test text boundary algorithms
  *
  * Copyright (C) 1999-2000 Red Hat Software
@@ -52,14 +52,14 @@ typedef void (* CharForeachFunc) (gunichar      wc,
 				  GUnicodeType  type,
 				  GUnicodeType  prev_type,
 				  GUnicodeType  next_type,
-				  PangoLogAttr *attr,
-				  PangoLogAttr *prev_attr,
-				  PangoLogAttr *next_attr,
+				  Pango2LogAttr *attr,
+				  Pango2LogAttr *prev_attr,
+				  Pango2LogAttr *next_attr,
 				  gpointer      data);
 
 static void
 log_attr_foreach (const char     *text,
-		  PangoLogAttr   *attrs,
+		  Pango2LogAttr   *attrs,
 		  CharForeachFunc func,
 		  gpointer        data)
 {
@@ -136,9 +136,9 @@ check_line_char (gunichar      wc,
 		 GUnicodeType  type,
 		 GUnicodeType  prev_type,
 		 GUnicodeType  next_type,
-		 PangoLogAttr *attr,
-		 PangoLogAttr *prev_attr,
-		 PangoLogAttr *next_attr,
+		 Pango2LogAttr *attr,
+		 Pango2LogAttr *prev_attr,
+		 Pango2LogAttr *next_attr,
 		 gpointer      data)
 {
   GUnicodeBreakType break_type;
@@ -212,14 +212,14 @@ check_line_char (gunichar      wc,
 
 static void
 check_line_invariants (const char   *text,
-		       PangoLogAttr *attrs)
+		       Pango2LogAttr *attrs)
 {
   log_attr_foreach (text, attrs, check_line_char, NULL);
 }
 
 static void
 check_word_invariants (const char   *text,
-		       PangoLogAttr *attrs)
+		       Pango2LogAttr *attrs)
 {
 
 
@@ -227,7 +227,7 @@ check_word_invariants (const char   *text,
 
 static void
 check_sentence_invariants (const char   *text,
-			   PangoLogAttr *attrs)
+			   Pango2LogAttr *attrs)
 {
 
 
@@ -235,7 +235,7 @@ check_sentence_invariants (const char   *text,
 
 static void
 check_grapheme_invariants (const char   *text,
-			   PangoLogAttr *attrs)
+			   Pango2LogAttr *attrs)
 {
 
 
@@ -243,10 +243,10 @@ check_grapheme_invariants (const char   *text,
 
 #if 0
 static void print_sentences (const char   *text,
-			     PangoLogAttr *attrs);
+			     Pango2LogAttr *attrs);
 static void
 print_sentences (const char   *text,
-		 PangoLogAttr *attrs)
+		 Pango2LogAttr *attrs)
 {
   const char *p;
   const char *last;
@@ -275,14 +275,14 @@ static void
 check_invariants (const char *text)
 {
   int len;
-  PangoLogAttr *attrs;
+  Pango2LogAttr *attrs;
 
   g_assert_true (g_utf8_validate (text, -1, NULL));
 
   len = g_utf8_strlen (text, -1);
-  attrs = g_new0 (PangoLogAttr, len + 1);
+  attrs = g_new0 (Pango2LogAttr, len + 1);
 
-  pango_get_log_attrs (text, -1, NULL, 0, pango_language_from_string ("C"), attrs, len + 1);
+  pango2_get_log_attrs (text, -1, NULL, 0, pango2_language_from_string ("C"), attrs, len + 1);
 
   check_line_invariants (text, attrs);
   check_sentence_invariants (text, attrs);

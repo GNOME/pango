@@ -25,22 +25,22 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_TYPE_USER_FONT      (pango_user_font_get_type ())
+#define PANGO2_TYPE_USER_FONT      (pango2_user_font_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-PANGO_DECLARE_INTERNAL_TYPE (PangoUserFont, pango_user_font, PANGO, USER_FONT, PangoFont)
+PANGO2_AVAILABLE_IN_ALL
+PANGO2_DECLARE_INTERNAL_TYPE (Pango2UserFont, pango2_user_font, PANGO2, USER_FONT, Pango2Font)
 
-PANGO_AVAILABLE_IN_ALL
-PangoUserFont * pango_user_font_new                 (PangoUserFace              *face,
-                                                     int                         size,
-                                                     PangoGravity                gravity,
-                                                     float                       dpi,
-                                                     const PangoMatrix          *ctm);
+PANGO2_AVAILABLE_IN_ALL
+Pango2UserFont *        pango2_user_font_new                 (Pango2UserFace              *face,
+                                                              int                          size,
+                                                              Pango2Gravity                gravity,
+                                                              float                        dpi,
+                                                              const Pango2Matrix          *ctm);
 
-PANGO_AVAILABLE_IN_ALL
-PangoUserFont * pango_user_font_new_for_description (PangoUserFace              *face,
-                                                     const PangoFontDescription *description,
-                                                     float                       dpi,
-                                                     const PangoMatrix          *ctm);
+PANGO2_AVAILABLE_IN_ALL
+Pango2UserFont *        pango2_user_font_new_for_description (Pango2UserFace              *face,
+                                                              const Pango2FontDescription *description,
+                                                              float                        dpi,
+                                                              const Pango2Matrix          *ctm);
 
 G_END_DECLS

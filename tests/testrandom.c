@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * testmisc.c: Test program for miscellaneous things
  *
  * Copyright (C) 2021 Benjamin Otte
@@ -33,24 +33,24 @@ static char **rtl_words;
 static gsize n_rtl_words;
 
 static const char *
-random_word (PangoDirection dir)
+random_word (Pango2Direction dir)
 {
   switch (dir)
     {
-      case PANGO_DIRECTION_LTR:
+      case PANGO2_DIRECTION_LTR:
         return ltr_words[g_test_rand_int_range (0, n_ltr_words)];
-      case PANGO_DIRECTION_RTL:
+      case PANGO2_DIRECTION_RTL:
         return rtl_words[g_test_rand_int_range (0, n_rtl_words)];
-      case PANGO_DIRECTION_WEAK_LTR:
-      case PANGO_DIRECTION_WEAK_RTL:
-      case PANGO_DIRECTION_NEUTRAL:
+      case PANGO2_DIRECTION_WEAK_LTR:
+      case PANGO2_DIRECTION_WEAK_RTL:
+      case PANGO2_DIRECTION_NEUTRAL:
       default:
-        return random_word (g_test_rand_bit () ? PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL);
+        return random_word (g_test_rand_bit () ? PANGO2_DIRECTION_LTR : PANGO2_DIRECTION_RTL);
     }
 }
 
 static char *
-create_random_sentence (PangoDirection dir)
+create_random_sentence (Pango2Direction dir)
 {
   GString *string = g_string_new (NULL);
   gsize i, n_words;
@@ -90,38 +90,38 @@ compare_size (gconstpointer a,
 }
 
 static void
-layout_check_size (PangoLayout *layout,
+layout_check_size (Pango2Layout *layout,
                    int                width,
                    Size              *out_size)
 {
   out_size->set_width = width;
-  pango_layout_set_width (layout, width);
-  pango_lines_get_size (pango_layout_get_lines (layout), &out_size->width, &out_size->height);
+  pango2_layout_set_width (layout, width);
+  pango2_lines_get_size (pango2_layout_get_lines (layout), &out_size->width, &out_size->height);
 }
 
 static void
 test_wrap_char (gconstpointer data)
 {
-  PangoDirection dir = GPOINTER_TO_UINT (data);
-  PangoFontDescription *desc;
-  PangoContext *context;
-  PangoLayout *layout;
+  Pango2Direction dir = GPOINTER_TO_UINT (data);
+  Pango2FontDescription *desc;
+  Pango2Context *context;
+  Pango2Layout *layout;
   char *sentence;
   Size min, max;
   Size sizes[100];
   gsize i, j;
 
-  context = pango_context_new ();
-  desc = pango_font_description_from_string ("Sans 10");
-  layout = pango_layout_new (context);
-  pango_layout_set_font_description (layout, desc);
-  pango_font_description_free (desc);
-  pango_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
+  context = pango2_context_new ();
+  desc = pango2_font_description_from_string ("Sans 10");
+  layout = pango2_layout_new (context);
+  pango2_layout_set_font_description (layout, desc);
+  pango2_font_description_free (desc);
+  pango2_layout_set_wrap (layout, PANGO2_WRAP_WORD_CHAR);
 
   for (j = 0; j < N_SENTENCES; j++)
     {
       sentence = create_random_sentence (dir);
-      pango_layout_set_text (layout, sentence, -1);
+      pango2_layout_set_text (layout, sentence, -1);
       g_test_message ("%s", sentence);
       g_free (sentence);
 
@@ -172,29 +172,29 @@ test_wrap_char (gconstpointer data)
 static void
 test_wrap_char_min_width (gconstpointer data)
 {
-  PangoDirection dir = GPOINTER_TO_UINT (data);
-  PangoFontDescription *desc;
-  PangoContext *context;
-  PangoLayout *test_layout, *ref_layout;
+  Pango2Direction dir = GPOINTER_TO_UINT (data);
+  Pango2FontDescription *desc;
+  Pango2Context *context;
+  Pango2Layout *test_layout, *ref_layout;
   char *sentence, *s;
   GString *ref_string;
   gsize j;
   int test_width, ref_width;
 
-  context = pango_context_new ();
-  desc = pango_font_description_from_string ("Sans 10");
-  ref_layout = pango_layout_new (context);
-  pango_layout_set_font_description (ref_layout, desc);
-  test_layout = pango_layout_new (context);
-  pango_layout_set_font_description (test_layout, desc);
-  pango_layout_set_wrap (test_layout, PANGO_WRAP_WORD_CHAR);
-  pango_layout_set_width (test_layout, 0);
-  pango_font_description_free (desc);
+  context = pango2_context_new ();
+  desc = pango2_font_description_from_string ("Sans 10");
+  ref_layout = pango2_layout_new (context);
+  pango2_layout_set_font_description (ref_layout, desc);
+  test_layout = pango2_layout_new (context);
+  pango2_layout_set_font_description (test_layout, desc);
+  pango2_layout_set_wrap (test_layout, PANGO2_WRAP_WORD_CHAR);
+  pango2_layout_set_width (test_layout, 0);
+  pango2_font_description_free (desc);
 
   for (j = 0; j < N_SENTENCES; j++)
     {
       sentence = create_random_sentence (dir);
-      pango_layout_set_text (test_layout, sentence, -1);
+      pango2_layout_set_text (test_layout, sentence, -1);
       g_test_message ("%s", sentence);
       ref_string = g_string_new ("");
       for (s = sentence; *s; s = g_utf8_next_char (s))
@@ -203,12 +203,12 @@ test_wrap_char_min_width (gconstpointer data)
           g_string_append_unichar (ref_string, g_test_rand_bit () ? 0x2010 : '-');
           g_string_append_c (ref_string, '\n');
         }
-      pango_layout_set_text (ref_layout, ref_string->str, ref_string->len);
+      pango2_layout_set_text (ref_layout, ref_string->str, ref_string->len);
       g_string_free (ref_string, TRUE);
       g_free (sentence);
 
-      pango_lines_get_size (pango_layout_get_lines (test_layout), &test_width, NULL);
-      pango_lines_get_size (pango_layout_get_lines (ref_layout), &ref_width, NULL);
+      pango2_lines_get_size (pango2_layout_get_lines (test_layout), &test_width, NULL);
+      pango2_lines_get_size (pango2_layout_get_lines (ref_layout), &ref_width, NULL);
 
       g_assert_cmpint (test_width, <=, ref_width);
     }
@@ -303,12 +303,12 @@ main (int argc, char *argv[])
   rtl_words = init_rtl_words ();
   n_rtl_words = g_strv_length (rtl_words);
 
-  g_test_add_data_func ("/layout/ltr/wrap-char", GUINT_TO_POINTER (PANGO_DIRECTION_LTR), test_wrap_char);
-  g_test_add_data_func ("/layout/rtl/wrap-char", GUINT_TO_POINTER (PANGO_DIRECTION_RTL), test_wrap_char);
-  g_test_add_data_func ("/layout/any/wrap-char", GUINT_TO_POINTER (PANGO_DIRECTION_NEUTRAL), test_wrap_char);
-  g_test_add_data_func ("/layout/ltr/wrap-char-min-width", GUINT_TO_POINTER (PANGO_DIRECTION_LTR), test_wrap_char_min_width);
-  g_test_add_data_func ("/layout/rtl/wrap-char-min-width", GUINT_TO_POINTER (PANGO_DIRECTION_RTL), test_wrap_char_min_width);
-  g_test_add_data_func ("/layout/any/wrap-char-min-width", GUINT_TO_POINTER (PANGO_DIRECTION_NEUTRAL), test_wrap_char_min_width);
+  g_test_add_data_func ("/layout/ltr/wrap-char", GUINT_TO_POINTER (PANGO2_DIRECTION_LTR), test_wrap_char);
+  g_test_add_data_func ("/layout/rtl/wrap-char", GUINT_TO_POINTER (PANGO2_DIRECTION_RTL), test_wrap_char);
+  g_test_add_data_func ("/layout/any/wrap-char", GUINT_TO_POINTER (PANGO2_DIRECTION_NEUTRAL), test_wrap_char);
+  g_test_add_data_func ("/layout/ltr/wrap-char-min-width", GUINT_TO_POINTER (PANGO2_DIRECTION_LTR), test_wrap_char_min_width);
+  g_test_add_data_func ("/layout/rtl/wrap-char-min-width", GUINT_TO_POINTER (PANGO2_DIRECTION_RTL), test_wrap_char_min_width);
+  g_test_add_data_func ("/layout/any/wrap-char-min-width", GUINT_TO_POINTER (PANGO2_DIRECTION_NEUTRAL), test_wrap_char_min_width);
 
   result = g_test_run ();
 

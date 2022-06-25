@@ -1,5 +1,5 @@
-/* Pango
- * test-shape.c: Test Pango shaping
+/* Pango2
+ * test-shape.c: Test Pango2 shaping
  *
  * Copyright (C) 2019 Red Hat, Inc
  *
@@ -34,7 +34,7 @@
 #include "test-common.h"
 
 
-static PangoContext *context;
+static Pango2Context *context;
 
 gboolean opt_hex_chars;
 
@@ -60,31 +60,31 @@ append_text (GString    *s,
 }
 
 static gboolean
-affects_itemization (PangoAttribute *attr,
+affects_itemization (Pango2Attribute *attr,
                      gpointer        data)
 {
   switch ((int)attr->klass->type)
     {
     /* These affect font selection */
-    case PANGO_ATTR_LANGUAGE:
-    case PANGO_ATTR_FAMILY:
-    case PANGO_ATTR_STYLE:
-    case PANGO_ATTR_WEIGHT:
-    case PANGO_ATTR_VARIANT:
-    case PANGO_ATTR_STRETCH:
-    case PANGO_ATTR_SIZE:
-    case PANGO_ATTR_FONT_DESC:
-    case PANGO_ATTR_SCALE:
-    case PANGO_ATTR_FALLBACK:
-    case PANGO_ATTR_ABSOLUTE_SIZE:
-    case PANGO_ATTR_GRAVITY:
-    case PANGO_ATTR_GRAVITY_HINT:
+    case PANGO2_ATTR_LANGUAGE:
+    case PANGO2_ATTR_FAMILY:
+    case PANGO2_ATTR_STYLE:
+    case PANGO2_ATTR_WEIGHT:
+    case PANGO2_ATTR_VARIANT:
+    case PANGO2_ATTR_STRETCH:
+    case PANGO2_ATTR_SIZE:
+    case PANGO2_ATTR_FONT_DESC:
+    case PANGO2_ATTR_SCALE:
+    case PANGO2_ATTR_FALLBACK:
+    case PANGO2_ATTR_ABSOLUTE_SIZE:
+    case PANGO2_ATTR_GRAVITY:
+    case PANGO2_ATTR_GRAVITY_HINT:
     /* These are part of ItemProperties, so need to break runs */
-    case PANGO_ATTR_SHAPE:
-    case PANGO_ATTR_RISE:
-    case PANGO_ATTR_UNDERLINE:
-    case PANGO_ATTR_STRIKETHROUGH:
-    case PANGO_ATTR_LETTER_SPACING:
+    case PANGO2_ATTR_SHAPE:
+    case PANGO2_ATTR_RISE:
+    case PANGO2_ATTR_UNDERLINE:
+    case PANGO2_ATTR_STRIKETHROUGH:
+    case PANGO2_ATTR_LETTER_SPACING:
       return TRUE;
     default:
       return FALSE;
@@ -92,17 +92,17 @@ affects_itemization (PangoAttribute *attr,
 }
 
 static gboolean
-affects_break_or_shape (PangoAttribute *attr,
+affects_break_or_shape (Pango2Attribute *attr,
                         gpointer        data)
 {
   switch ((int)attr->klass->type)
     {
     /* Affects breaks */
-    case PANGO_ATTR_ALLOW_BREAKS:
+    case PANGO2_ATTR_ALLOW_BREAKS:
     /* Affects shaping */
-    case PANGO_ATTR_INSERT_HYPHENS:
-    case PANGO_ATTR_FONT_FEATURES:
-    case PANGO_ATTR_SHOW:
+    case PANGO2_ATTR_INSERT_HYPHENS:
+    case PANGO2_ATTR_FONT_FEATURES:
+    case PANGO2_ATTR_SHOW:
       return TRUE;
     default:
       return FALSE;
@@ -111,23 +111,23 @@ affects_break_or_shape (PangoAttribute *attr,
 
 static void
 apply_attributes_to_items (GList         *items,
-                           PangoAttrList *attrs)
+                           Pango2AttrList *attrs)
 {
   GList *l;
-  PangoAttrIterator *iter;
+  Pango2AttrIterator *iter;
 
   if (!attrs)
     return;
 
-  iter = pango_attr_list_get_iterator (attrs);
+  iter = pango2_attr_list_get_iterator (attrs);
 
   for (l = items; l; l = l->next)
     {
-      PangoItem *item = l->data;
-      pango_item_apply_attrs (item, iter);
+      Pango2Item *item = l->data;
+      pango2_item_apply_attrs (item, iter);
     }
 
-  pango_attr_iterator_destroy (iter);
+  pango2_attr_iterator_destroy (iter);
 }
 
 static void
@@ -138,14 +138,14 @@ test_file (const char *filename, GString *string)
   GError *error = NULL;
   char *test;
   char *text;
-  PangoAttrList *attrs;
-  PangoAttrList *itemize_attrs;
-  PangoAttrList *shape_attrs;
+  Pango2AttrList *attrs;
+  Pango2AttrList *itemize_attrs;
+  Pango2AttrList *shape_attrs;
   GList *items, *l;
   GString *s1, *s2, *s3, *s4, *s5, *s6, *s7, *s8, *s9;
   char *p1;
   const char *sep = "";
-  PangoDirection dir;
+  Pango2Direction dir;
 
   if (!g_file_get_contents (filename, &contents, &length, &error))
     {
@@ -160,7 +160,7 @@ test_file (const char *filename, GString *string)
   while (test[0] == '#')
     test = strchr (test, '\n') + 1;
 
-  if (!pango_parse_markup (test, -1, 0, &attrs, &text, NULL, &error))
+  if (!pango2_parse_markup (test, -1, 0, &attrs, &text, NULL, &error))
     {
       fprintf (stderr, "%s\n", error->message);
       g_error_free (error);
@@ -181,31 +181,31 @@ test_file (const char *filename, GString *string)
   if (text[length - 1] == '\n')
     length--;
 
-  itemize_attrs = pango_attr_list_filter (attrs, affects_itemization, NULL);
-  shape_attrs = pango_attr_list_filter (attrs, affects_break_or_shape, NULL);
+  itemize_attrs = pango2_attr_list_filter (attrs, affects_itemization, NULL);
+  shape_attrs = pango2_attr_list_filter (attrs, affects_break_or_shape, NULL);
 
-  dir = pango_context_get_base_dir (context);
-  items = pango_itemize (context, dir, text, 0, length, itemize_attrs);
+  dir = pango2_context_get_base_dir (context);
+  items = pango2_itemize (context, dir, text, 0, length, itemize_attrs);
   apply_attributes_to_items (items, shape_attrs);
 
-  pango_attr_list_unref (itemize_attrs);
-  pango_attr_list_unref (shape_attrs);
+  pango2_attr_list_unref (itemize_attrs);
+  pango2_attr_list_unref (shape_attrs);
 
   for (l = items; l; l = l->next)
     {
-      PangoItem *item = l->data;
-      PangoGlyphString *glyphs;
+      Pango2Item *item = l->data;
+      Pango2GlyphString *glyphs;
       gboolean rtl = item->analysis.level % 2;
-      PangoGlyphItem glyph_item;
+      Pango2GlyphItem glyph_item;
       int i;
 
-      glyphs = pango_glyph_string_new ();
+      glyphs = pango2_glyph_string_new ();
       /* FIXME: get log attrs */
-      pango_shape_item (item, text, length, NULL, glyphs, 0);
+      pango2_shape_item (item, text, length, NULL, glyphs, 0);
 
       glyph_item.item = item;
       glyph_item.glyphs = glyphs;
-      pango_glyph_item_apply_attrs (&glyph_item, text, attrs);
+      pango2_glyph_item_apply_attrs (&glyph_item, text, attrs);
 
       g_string_append (s1, sep);
       g_string_append (s2, sep);
@@ -224,7 +224,7 @@ test_file (const char *filename, GString *string)
       for (i = 0; i < glyphs->num_glyphs; i++)
         {
           int len;
-          PangoGlyphInfo *gi = &glyphs->glyphs[i];
+          Pango2GlyphInfo *gi = &glyphs->glyphs[i];
 
 
           if (gi->attr.is_cluster_start && i > 0)
@@ -257,15 +257,15 @@ test_file (const char *filename, GString *string)
                 p1 = text + item->offset + item->length;
             }
           append_text (s1, p, p1 - p);
-          if (gi->glyph & PANGO_GLYPH_UNKNOWN_FLAG)
-            g_string_append_printf (s2, "(%d)", gi->glyph & ~PANGO_GLYPH_UNKNOWN_FLAG);
+          if (gi->glyph & PANGO2_GLYPH_UNKNOWN_FLAG)
+            g_string_append_printf (s2, "(%d)", gi->glyph & ~PANGO2_GLYPH_UNKNOWN_FLAG);
           else
             g_string_append_printf (s2, "[%d]", gi->glyph);
           g_string_append_printf (s4, "%d ", gi->geometry.width);
           g_string_append_printf (s7, "%d,%d ", gi->geometry.x_offset, gi->geometry.y_offset);
           if (gi->attr.is_cluster_start)
             g_string_append_printf (s3, "%d ", item->offset + glyphs->log_clusters[i]);
-          switch (hb_ot_layout_get_glyph_class (hb_font_get_face (pango_font_get_hb_font (item->analysis.font)), gi->glyph))
+          switch (hb_ot_layout_get_glyph_class (hb_font_get_face (pango2_font_get_hb_font (item->analysis.font)), gi->glyph))
             {
             case HB_OT_LAYOUT_GLYPH_CLASS_UNCLASSIFIED:
               g_string_append (s8, "u");
@@ -308,7 +308,7 @@ test_file (const char *filename, GString *string)
           g_string_append_printf (s9, "%*s", len - (int)g_utf8_strlen (s9->str, s9->len), "");
         }
 
-      pango_glyph_string_free (glyphs);
+      pango2_glyph_string_free (glyphs);
     }
 
   g_string_append_printf (string, "%s\n", test);
@@ -332,11 +332,11 @@ test_file (const char *filename, GString *string)
   g_string_free (s8, TRUE);
   g_string_free (s9, TRUE);
 
-  g_list_free_full (items, (GDestroyNotify)pango_item_free);
+  g_list_free_full (items, (GDestroyNotify)pango2_item_free);
   g_free (contents);
   g_free (text);
 
-  pango_attr_list_unref (attrs);
+  pango2_attr_list_unref (attrs);
 }
 
 static char *
@@ -412,7 +412,7 @@ main (int argc, char *argv[])
 
   g_test_init (&argc, &argv, NULL);
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango2_font_map_create_context (pango2_cairo_font_map_get_default ());
 
   /* allow to easily generate expected output for new test cases */
   if (argc > 1)

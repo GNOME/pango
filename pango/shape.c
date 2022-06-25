@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * shape.c: Convert characters into glyphs.
  *
  * Copyright (C) 1999 Red Hat Software
@@ -78,27 +78,27 @@ release_buffer (hb_buffer_t *buffer,
 }
 
 /* }}} */
-/* {{{ Use PangoFont with Harfbuzz */
+/* {{{ Use Pango2Font with Harfbuzz */
 
 typedef struct
 {
-  PangoFont *font;
+  Pango2Font *font;
   hb_font_t *parent;
-  PangoShowFlags show_flags;
-} PangoHbShapeContext;
+  Pango2ShowFlags show_flags;
+} Pango2HbShapeContext;
 
 static hb_bool_t
-pango_hb_font_get_nominal_glyph (hb_font_t      *font,
+pango2_hb_font_get_nominal_glyph (hb_font_t      *font,
                                  void           *font_data,
                                  hb_codepoint_t  unicode,
                                  hb_codepoint_t *glyph,
                                  void           *user_data G_GNUC_UNUSED)
 {
-  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
+  Pango2HbShapeContext *context = (Pango2HbShapeContext *) font_data;
 
   if (context->show_flags != 0)
     {
-      if ((context->show_flags & PANGO_SHOW_SPACES) != 0 &&
+      if ((context->show_flags & PANGO2_SHOW_SPACES) != 0 &&
           g_unichar_type (unicode) == G_UNICODE_SPACE_SEPARATOR)
         {
           /* Replace 0x20 by visible space, since we
@@ -108,22 +108,22 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
             unicode = 0x2423;
           else
             {
-              *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
+              *glyph = PANGO2_GET_UNKNOWN_GLYPH (unicode);
               return TRUE;
             }
         }
 
-      if ((context->show_flags & PANGO_SHOW_IGNORABLES) != 0 &&
-          pango_is_default_ignorable (unicode))
+      if ((context->show_flags & PANGO2_SHOW_IGNORABLES) != 0 &&
+          pango2_is_default_ignorable (unicode))
         {
-          if (pango_get_ignorable (unicode))
-            *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
+          if (pango2_get_ignorable (unicode))
+            *glyph = PANGO2_GET_UNKNOWN_GLYPH (unicode);
           else
-            *glyph = PANGO_GLYPH_EMPTY;
+            *glyph = PANGO2_GLYPH_EMPTY;
           return TRUE;
         }
 
-      if ((context->show_flags & PANGO_SHOW_LINE_BREAKS) != 0 &&
+      if ((context->show_flags & PANGO2_SHOW_LINE_BREAKS) != 0 &&
           unicode == 0x2028)
         {
           /* Always mark LS as unknown. If it ends up at the line end,
@@ -131,7 +131,7 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
            * they end up in the middle of a line, we are in single
            * paragraph mode and want to show the LS.
            */
-          *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
+          *glyph = PANGO2_GET_UNKNOWN_GLYPH (unicode);
           return TRUE;
         }
     }
@@ -145,20 +145,20 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
    *
    * For 0x20, on the other hand, we need to pretend that we have a glyph
    * and rely on our glyph extents code to provide a reasonable width for
-   * PANGO_GET_UNKNOWN_WIDTH (0x20).
+   * PANGO2_GET_UNKNOWN_WIDTH (0x20).
    */
   if (g_unichar_type (unicode) == G_UNICODE_SPACE_SEPARATOR)
     {
       if (unicode == 0x20)
         {
-          *glyph = PANGO_GET_UNKNOWN_GLYPH (0x20);
+          *glyph = PANGO2_GET_UNKNOWN_GLYPH (0x20);
           return TRUE;
         }
 
       return FALSE;
     }
 
-  *glyph = PANGO_GET_UNKNOWN_GLYPH (unicode);
+  *glyph = PANGO2_GET_UNKNOWN_GLYPH (unicode);
 
   /* We draw our own invalid-Unicode shape, so prevent HarfBuzz
    * from using REPLACEMENT CHARACTER.
@@ -170,18 +170,18 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
 }
 
 static hb_position_t
-pango_hb_font_get_glyph_h_advance (hb_font_t      *font,
+pango2_hb_font_get_glyph_h_advance (hb_font_t      *font,
                                    void           *font_data,
                                    hb_codepoint_t  glyph,
                                    void           *user_data G_GNUC_UNUSED)
 {
-  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
+  Pango2HbShapeContext *context = (Pango2HbShapeContext *) font_data;
 
-  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+  if (glyph & PANGO2_GLYPH_UNKNOWN_FLAG)
     {
-      PangoRectangle logical;
+      Pango2Rectangle logical;
 
-      pango_font_get_glyph_extents (context->font, glyph, NULL, &logical);
+      pango2_font_get_glyph_extents (context->font, glyph, NULL, &logical);
       return logical.width;
     }
 
@@ -189,18 +189,18 @@ pango_hb_font_get_glyph_h_advance (hb_font_t      *font,
 }
 
 static hb_position_t
-pango_hb_font_get_glyph_v_advance (hb_font_t      *font,
+pango2_hb_font_get_glyph_v_advance (hb_font_t      *font,
                                    void           *font_data,
                                    hb_codepoint_t  glyph,
                                    void           *user_data G_GNUC_UNUSED)
 {
-  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
+  Pango2HbShapeContext *context = (Pango2HbShapeContext *) font_data;
 
-  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+  if (glyph & PANGO2_GLYPH_UNKNOWN_FLAG)
     {
-      PangoRectangle logical;
+      Pango2Rectangle logical;
 
-      pango_font_get_glyph_extents (context->font, glyph, NULL, &logical);
+      pango2_font_get_glyph_extents (context->font, glyph, NULL, &logical);
       return logical.height;
     }
 
@@ -208,19 +208,19 @@ pango_hb_font_get_glyph_v_advance (hb_font_t      *font,
 }
 
 static hb_bool_t
-pango_hb_font_get_glyph_extents (hb_font_t          *font,
+pango2_hb_font_get_glyph_extents (hb_font_t          *font,
                                  void               *font_data,
                                  hb_codepoint_t      glyph,
                                  hb_glyph_extents_t *extents,
                                  void               *user_data G_GNUC_UNUSED)
 {
-  PangoHbShapeContext *context = (PangoHbShapeContext *) font_data;
+  Pango2HbShapeContext *context = (Pango2HbShapeContext *) font_data;
 
-  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+  if (glyph & PANGO2_GLYPH_UNKNOWN_FLAG)
     {
-      PangoRectangle ink;
+      Pango2Rectangle ink;
 
-      pango_font_get_glyph_extents (context->font, glyph, &ink, NULL);
+      pango2_font_get_glyph_extents (context->font, glyph, &ink, NULL);
 
       extents->x_bearing = ink.x;
       extents->y_bearing = ink.y;
@@ -234,22 +234,22 @@ pango_hb_font_get_glyph_extents (hb_font_t          *font,
 }
 
 static hb_font_t *
-pango_font_get_hb_font_for_context (PangoFont           *font,
-                                    PangoHbShapeContext *context)
+pango2_font_get_hb_font_for_context (Pango2Font           *font,
+                                    Pango2HbShapeContext *context)
 {
   hb_font_t *hb_font;
   static hb_font_funcs_t *funcs;
 
-  hb_font = pango_font_get_hb_font (font);
+  hb_font = pango2_font_get_hb_font (font);
 
   if (G_UNLIKELY (!funcs))
     {
       funcs = hb_font_funcs_create ();
 
-      hb_font_funcs_set_nominal_glyph_func (funcs, pango_hb_font_get_nominal_glyph, NULL, NULL);
-      hb_font_funcs_set_glyph_h_advance_func (funcs, pango_hb_font_get_glyph_h_advance, NULL, NULL);
-      hb_font_funcs_set_glyph_v_advance_func (funcs, pango_hb_font_get_glyph_v_advance, NULL, NULL);
-      hb_font_funcs_set_glyph_extents_func (funcs, pango_hb_font_get_glyph_extents, NULL, NULL);
+      hb_font_funcs_set_nominal_glyph_func (funcs, pango2_hb_font_get_nominal_glyph, NULL, NULL);
+      hb_font_funcs_set_glyph_h_advance_func (funcs, pango2_hb_font_get_glyph_h_advance, NULL, NULL);
+      hb_font_funcs_set_glyph_v_advance_func (funcs, pango2_hb_font_get_glyph_v_advance, NULL, NULL);
+      hb_font_funcs_set_glyph_extents_func (funcs, pango2_hb_font_get_glyph_extents, NULL, NULL);
 
       hb_font_funcs_make_immutable (funcs);
     }
@@ -266,35 +266,35 @@ pango_font_get_hb_font_for_context (PangoFont           *font,
 /* }}} */
 /* {{{ Utilities */
 
-static PangoShowFlags
-find_show_flags (const PangoAnalysis *analysis)
+static Pango2ShowFlags
+find_show_flags (const Pango2Analysis *analysis)
 {
   GSList *l;
-  PangoShowFlags flags = 0;
+  Pango2ShowFlags flags = 0;
 
   for (l = analysis->extra_attrs; l; l = l->next)
     {
-      PangoAttribute *attr = l->data;
+      Pango2Attribute *attr = l->data;
 
-      if (attr->type == PANGO_ATTR_SHOW)
+      if (attr->type == PANGO2_ATTR_SHOW)
         flags |= attr->int_value;
     }
 
   return flags;
 }
 
-static PangoTextTransform
-find_text_transform (const PangoAnalysis *analysis)
+static Pango2TextTransform
+find_text_transform (const Pango2Analysis *analysis)
 {
   GSList *l;
-  PangoTextTransform transform = PANGO_TEXT_TRANSFORM_NONE;
+  Pango2TextTransform transform = PANGO2_TEXT_TRANSFORM_NONE;
 
   for (l = analysis->extra_attrs; l; l = l->next)
     {
-      PangoAttribute *attr = l->data;
+      Pango2Attribute *attr = l->data;
 
-      if (attr->type == PANGO_ATTR_TEXT_TRANSFORM)
-        transform = (PangoTextTransform) attr->int_value;
+      if (attr->type == PANGO2_ATTR_TEXT_TRANSFORM)
+        transform = (Pango2TextTransform) attr->int_value;
     }
 
   return transform;
@@ -342,17 +342,17 @@ glyph_has_color (hb_font_t      *font,
 /* }}} */
 
 static void
-pango_hb_shape (const char          *item_text,
+pango2_hb_shape (const char          *item_text,
                 int                  item_length,
                 const char          *paragraph_text,
                 int                  paragraph_length,
-                const PangoAnalysis *analysis,
-                PangoLogAttr        *log_attrs,
+                const Pango2Analysis *analysis,
+                Pango2LogAttr        *log_attrs,
                 int                  num_chars,
-                PangoGlyphString    *glyphs,
-                PangoShapeFlags      flags)
+                Pango2GlyphString    *glyphs,
+                Pango2ShapeFlags      flags)
 {
-  PangoHbShapeContext context = { 0, };
+  Pango2HbShapeContext context = { 0, };
   hb_buffer_flags_t hb_buffer_flags;
   hb_font_t *hb_font;
   hb_buffer_t *hb_buffer;
@@ -365,40 +365,40 @@ pango_hb_shape (const char          *item_text,
   unsigned int item_offset = item_text - paragraph_text;
   hb_feature_t features[32];
   unsigned int num_features = 0;
-  PangoGlyphInfo *infos;
-  PangoTextTransform transform;
+  Pango2GlyphInfo *infos;
+  Pango2TextTransform transform;
   int hyphen_index;
 
   g_return_if_fail (analysis != NULL);
   g_return_if_fail (analysis->font != NULL);
 
   context.show_flags = find_show_flags (analysis);
-  hb_font = pango_font_get_hb_font_for_context (analysis->font, &context);
+  hb_font = pango2_font_get_hb_font_for_context (analysis->font, &context);
   hb_buffer = acquire_buffer (&free_buffer);
 
   transform = find_text_transform (analysis);
 
-  hb_direction = PANGO_GRAVITY_IS_VERTICAL (analysis->gravity) ? HB_DIRECTION_TTB : HB_DIRECTION_LTR;
+  hb_direction = PANGO2_GRAVITY_IS_VERTICAL (analysis->gravity) ? HB_DIRECTION_TTB : HB_DIRECTION_LTR;
   if (analysis->level % 2)
     hb_direction = HB_DIRECTION_REVERSE (hb_direction);
-  if (PANGO_GRAVITY_IS_IMPROPER (analysis->gravity))
+  if (PANGO2_GRAVITY_IS_IMPROPER (analysis->gravity))
     hb_direction = HB_DIRECTION_REVERSE (hb_direction);
 
   hb_buffer_flags = HB_BUFFER_FLAG_BOT | HB_BUFFER_FLAG_EOT;
 
-  if (context.show_flags & PANGO_SHOW_IGNORABLES)
+  if (context.show_flags & PANGO2_SHOW_IGNORABLES)
     hb_buffer_flags |= HB_BUFFER_FLAG_PRESERVE_DEFAULT_IGNORABLES;
 
   /* setup buffer */
 
   hb_buffer_set_direction (hb_buffer, hb_direction);
   hb_buffer_set_script (hb_buffer, (hb_script_t) g_unicode_script_to_iso15924 (analysis->script));
-  hb_buffer_set_language (hb_buffer, hb_language_from_string (pango_language_to_string (analysis->language), -1));
+  hb_buffer_set_language (hb_buffer, hb_language_from_string (pango2_language_to_string (analysis->language), -1));
   hb_buffer_set_cluster_level (hb_buffer, HB_BUFFER_CLUSTER_LEVEL_MONOTONE_CHARACTERS);
   hb_buffer_set_flags (hb_buffer, hb_buffer_flags);
-  hb_buffer_set_invisible_glyph (hb_buffer, PANGO_GLYPH_EMPTY);
+  hb_buffer_set_invisible_glyph (hb_buffer, PANGO2_GLYPH_EMPTY);
 
-  if (analysis->flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN)
+  if (analysis->flags & PANGO2_ANALYSIS_FLAG_NEED_HYPHEN)
     {
       const char *p = paragraph_text + item_offset + item_length;
       int last_char_len = p - g_utf8_prev_char (p);
@@ -412,7 +412,7 @@ pango_hb_shape (const char          *item_text,
   /* Add pre-context */
   hb_buffer_add_utf8 (hb_buffer, paragraph_text, item_offset, item_offset, 0);
 
-  if (transform == PANGO_TEXT_TRANSFORM_NONE)
+  if (transform == PANGO2_TEXT_TRANSFORM_NONE)
     {
       hb_buffer_add_utf8 (hb_buffer, paragraph_text, item_offset + item_length, item_offset, item_length);
     }
@@ -434,22 +434,22 @@ pango_hb_shape (const char          *item_text,
 
           switch (transform)
             {
-            case PANGO_TEXT_TRANSFORM_LOWERCASE:
+            case PANGO2_TEXT_TRANSFORM_LOWERCASE:
               if (g_unichar_isalnum (ch))
                 str = g_utf8_strdown (p, g_utf8_next_char (p) - p);
               break;
 
-            case PANGO_TEXT_TRANSFORM_UPPERCASE:
+            case PANGO2_TEXT_TRANSFORM_UPPERCASE:
               if (g_unichar_isalnum (ch))
                 str = g_utf8_strup (p, g_utf8_next_char (p) - p);
               break;
 
-            case PANGO_TEXT_TRANSFORM_CAPITALIZE:
+            case PANGO2_TEXT_TRANSFORM_CAPITALIZE:
               if (log_attrs[i].is_word_start)
                 ch = g_unichar_totitle (ch);
               break;
 
-            case PANGO_TEXT_TRANSFORM_NONE:
+            case PANGO2_TEXT_TRANSFORM_NONE:
             default:
               g_assert_not_reached ();
             }
@@ -471,7 +471,7 @@ pango_hb_shape (const char          *item_text,
   /* Add post-context */
   hb_buffer_add_utf8 (hb_buffer, paragraph_text, paragraph_length, item_offset + item_length, 0);
 
-  if (analysis->flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN)
+  if (analysis->flags & PANGO2_ANALYSIS_FLAG_NEED_HYPHEN)
     {
       /* Insert either a Unicode or ASCII hyphen. We may
        * want to look for script-specific hyphens here.
@@ -485,17 +485,17 @@ pango_hb_shape (const char          *item_text,
         hb_buffer_add (hb_buffer, '-', hyphen_index);
     }
 
-  pango_analysis_collect_features (analysis, features, G_N_ELEMENTS (features), &num_features);
+  pango2_analysis_collect_features (analysis, features, G_N_ELEMENTS (features), &num_features);
 
   hb_shape (hb_font, hb_buffer, features, num_features);
 
-  if (PANGO_GRAVITY_IS_IMPROPER (analysis->gravity))
+  if (PANGO2_GRAVITY_IS_IMPROPER (analysis->gravity))
     hb_buffer_reverse (hb_buffer);
 
   /* buffer output */
   num_glyphs = hb_buffer_get_length (hb_buffer);
   hb_glyph = hb_buffer_get_glyph_infos (hb_buffer, NULL);
-  pango_glyph_string_set_size (glyphs, num_glyphs);
+  pango2_glyph_string_set_size (glyphs, num_glyphs);
   infos = glyphs->glyphs;
   last_cluster = -1;
 
@@ -510,7 +510,7 @@ pango_hb_shape (const char          *item_text,
     }
 
   hb_position = hb_buffer_get_glyph_positions (hb_buffer, NULL);
-  if (PANGO_GRAVITY_IS_VERTICAL (analysis->gravity))
+  if (PANGO2_GRAVITY_IS_VERTICAL (analysis->gravity))
     for (i = 0; i < num_glyphs; i++)
       {
         /* 90 degrees rotation counter-clockwise. */
@@ -536,14 +536,14 @@ pango_hb_shape (const char          *item_text,
 /* {{{ User shaping */
 
 static void
-pango_user_shape (const char          *text,
+pango2_user_shape (const char          *text,
                   unsigned int         length,
-                  const PangoAnalysis *analysis,
-                  PangoGlyphString    *glyphs,
-                  PangoShapeFlags      flags)
+                  const Pango2Analysis *analysis,
+                  Pango2GlyphString    *glyphs,
+                  Pango2ShapeFlags      flags)
 {
-  PangoFont *font = analysis->font;
-  PangoUserFace *face = PANGO_USER_FACE (font->face);
+  Pango2Font *font = analysis->font;
+  Pango2UserFace *face = PANGO2_USER_FACE (font->face);
 
   face->shape_func (face, font->size,
                     text, length,
@@ -560,36 +560,36 @@ pango_user_shape (const char          *text,
 static void
 fallback_shape (const char          *text,
                 unsigned int         length,
-                const PangoAnalysis *analysis,
-                PangoGlyphString    *glyphs)
+                const Pango2Analysis *analysis,
+                Pango2GlyphString    *glyphs)
 {
   int n_chars;
   const char *p;
   int cluster = 0;
   int i;
 
-  n_chars = text ? pango_utf8_strlen (text, length) : 0;
+  n_chars = text ? pango2_utf8_strlen (text, length) : 0;
 
-  pango_glyph_string_set_size (glyphs, n_chars);
+  pango2_glyph_string_set_size (glyphs, n_chars);
 
   p = text;
   for (i = 0; i < n_chars; i++)
     {
       gunichar wc;
-      PangoGlyph glyph;
-      PangoRectangle logical_rect;
+      Pango2Glyph glyph;
+      Pango2Rectangle logical_rect;
 
       wc = g_utf8_get_char (p);
 
       if (g_unichar_type (wc) != G_UNICODE_NON_SPACING_MARK)
         cluster = p - text;
 
-      if (pango_is_zero_width (wc))
-        glyph = PANGO_GLYPH_EMPTY;
+      if (pango2_is_zero_width (wc))
+        glyph = PANGO2_GLYPH_EMPTY;
       else
-        glyph = PANGO_GET_UNKNOWN_GLYPH (wc);
+        glyph = PANGO2_GET_UNKNOWN_GLYPH (wc);
 
-      pango_font_get_glyph_extents (analysis->font, glyph, NULL, &logical_rect);
+      pango2_font_get_glyph_extents (analysis->font, glyph, NULL, &logical_rect);
 
       glyphs->glyphs[i].glyph = glyph;
 
@@ -603,22 +603,22 @@ fallback_shape (const char          *text,
     }
 
   if (analysis->level & 1)
-    pango_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
+    pango2_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
 }
 
 /*  }}} */
 /* {{{ Shaping implementation */
 
 static void
-pango_shape_internal (const char          *item_text,
+pango2_shape_internal (const char          *item_text,
                       int                  item_length,
                       const char          *paragraph_text,
                       int                  paragraph_length,
-                      const PangoAnalysis *analysis,
-                      PangoLogAttr        *log_attrs,
+                      const Pango2Analysis *analysis,
+                      Pango2LogAttr        *log_attrs,
                       int                  num_chars,
-                      PangoGlyphString    *glyphs,
-                      PangoShapeFlags      flags)
+                      Pango2GlyphString    *glyphs,
+                      Pango2ShapeFlags      flags)
 {
   int i;
   int last_cluster;
@@ -639,10 +639,10 @@ pango_shape_internal (const char          *item_text,
   g_return_if_fail (paragraph_text <= item_text);
   g_return_if_fail (paragraph_text + paragraph_length >= item_text + item_length);
 
-  if (PANGO_IS_USER_FONT (analysis->font))
-    pango_user_shape (item_text, item_length, analysis, glyphs, flags);
+  if (PANGO2_IS_USER_FONT (analysis->font))
+    pango2_user_shape (item_text, item_length, analysis, glyphs, flags);
   else if (analysis->font)
-    pango_hb_shape (item_text, item_length,
+    pango2_hb_shape (item_text, item_length,
                     paragraph_text, paragraph_length,
                     analysis,
                     log_attrs, num_chars,
@@ -664,12 +664,12 @@ pango_shape_internal (const char          *item_text,
 
       if (!g_object_get_qdata (G_OBJECT (analysis->font), warned_quark))
         {
-          PangoFontDescription *desc;
+          Pango2FontDescription *desc;
           char *font_name;
 
-          desc = pango_font_describe (analysis->font);
-          font_name = pango_font_description_to_string (desc);
-          pango_font_description_free (desc);
+          desc = pango2_font_describe (analysis->font);
+          font_name = pango2_font_description_to_string (desc);
+          pango2_font_description_free (desc);
 
           g_warning ("shaping failure, expect ugly output. font='%s', text='%.*s'",
                      font_name, item_length, item_text);
@@ -720,19 +720,19 @@ pango_shape_internal (const char          *item_text,
       g_warning ("Expected RTL run but got LTR. Fixing.");
 
       /* *Fix* it so we don't crash later */
-      pango_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
+      pango2_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
     }
 
-  if (flags & PANGO_SHAPE_ROUND_POSITIONS)
+  if (flags & PANGO2_SHAPE_ROUND_POSITIONS)
     {
-      if (analysis->font && pango_font_is_hinted (analysis->font))
+      if (analysis->font && pango2_font_is_hinted (analysis->font))
         {
           double x_scale_inv, y_scale_inv;
           double x_scale, y_scale;
 
-          pango_font_get_scale_factors (analysis->font, &x_scale_inv, &y_scale_inv);
+          pango2_font_get_scale_factors (analysis->font, &x_scale_inv, &y_scale_inv);
 
-          if (PANGO_GRAVITY_IS_IMPROPER (analysis->gravity))
+          if (PANGO2_GRAVITY_IS_IMPROPER (analysis->gravity))
             {
               x_scale_inv = -x_scale_inv;
               y_scale_inv = -y_scale_inv;
@@ -744,12 +744,12 @@ pango_shape_internal (const char          *item_text,
           if (x_scale == 1.0 && y_scale == 1.0)
             {
               for (i = 0; i < glyphs->num_glyphs; i++)
-                glyphs->glyphs[i].geometry.width = PANGO_UNITS_ROUND (glyphs->glyphs[i].geometry.width);
+                glyphs->glyphs[i].geometry.width = PANGO2_UNITS_ROUND (glyphs->glyphs[i].geometry.width);
             }
           else
             {
     #if 0
-                  if (PANGO_GRAVITY_IS_VERTICAL (analysis->gravity))
+                  if (PANGO2_GRAVITY_IS_VERTICAL (analysis->gravity))
                     {
                       /* XXX */
                       double tmp = x_scale;
@@ -757,7 +757,7 @@ pango_shape_internal (const char          *item_text,
                       y_scale = -tmp;
                     }
     #endif
-    #define HINT(value, scale_inv, scale) (PANGO_UNITS_ROUND ((int) ((value) * scale)) * scale_inv)
+    #define HINT(value, scale_inv, scale) (PANGO2_UNITS_ROUND ((int) ((value) * scale)) * scale_inv)
     #define HINT_X(value) HINT ((value), x_scale, x_scale_inv)
     #define HINT_Y(value) HINT ((value), y_scale, y_scale_inv)
               for (i = 0; i < glyphs->num_glyphs; i++)
@@ -776,11 +776,11 @@ pango_shape_internal (const char          *item_text,
           for (i = 0; i < glyphs->num_glyphs; i++)
             {
               glyphs->glyphs[i].geometry.width =
-                PANGO_UNITS_ROUND (glyphs->glyphs[i].geometry.width);
+                PANGO2_UNITS_ROUND (glyphs->glyphs[i].geometry.width);
               glyphs->glyphs[i].geometry.x_offset =
-                PANGO_UNITS_ROUND (glyphs->glyphs[i].geometry.x_offset);
+                PANGO2_UNITS_ROUND (glyphs->glyphs[i].geometry.x_offset);
               glyphs->glyphs[i].geometry.y_offset =
-                PANGO_UNITS_ROUND (glyphs->glyphs[i].geometry.y_offset);
+                PANGO2_UNITS_ROUND (glyphs->glyphs[i].geometry.y_offset);
             }
         }
     }
@@ -790,73 +790,73 @@ pango_shape_internal (const char          *item_text,
 /* {{{ Public API */
 
 /**
- * pango_shape:
+ * pango2_shape:
  * @item_text: valid UTF-8 text to shape
  * @item_length: the length (in bytes) of @item_text.
  *     -1 means nul-terminated text.
  * @paragraph_text: (nullable): text of the paragraph (see details).
  * @paragraph_length: the length (in bytes) of @paragraph_text.
  *     -1 means nul-terminated text.
- * @analysis:  `PangoAnalysis` structure from [func@Pango.itemize]
+ * @analysis:  `Pango2Analysis` structure from [func@Pango2.itemize]
  * @glyphs: glyph string in which to store results
  * @flags: flags influencing the shaping process
  *
  * Convert the characters in @text into glyphs.
  *
- * Given a segment of text and the corresponding `PangoAnalysis` structure
- * returned from [func@Pango.itemize], convert the characters into glyphs.
- * You may also pass in only a substring of the item from [func@Pango.itemize].
+ * Given a segment of text and the corresponding `Pango2Analysis` structure
+ * returned from [func@Pango2.itemize], convert the characters into glyphs.
+ * You may also pass in only a substring of the item from [func@Pango2.itemize].
  *
  * Note that the extra attributes in the @analyis that is returned from
- * [func@Pango.itemize] have indices that are relative to the entire paragraph,
+ * [func@Pango2.itemize] have indices that are relative to the entire paragraph,
  * so you do not pass the full paragraph text as @paragraph_text, you need
  * to subtract the item offset from their indices first.
  */
 void
-pango_shape (const char          *item_text,
+pango2_shape (const char          *item_text,
              int                  item_length,
              const char          *paragraph_text,
              int                  paragraph_length,
-             const PangoAnalysis *analysis,
-             PangoGlyphString    *glyphs,
-             PangoShapeFlags      flags)
+             const Pango2Analysis *analysis,
+             Pango2GlyphString    *glyphs,
+             Pango2ShapeFlags      flags)
 {
-  pango_shape_internal (item_text, item_length,
+  pango2_shape_internal (item_text, item_length,
                         paragraph_text, paragraph_length,
                         analysis, NULL, 0,
                         glyphs, flags);
 }
 
 /**
- * pango_shape_item:
- * @item: `PangoItem` to shape
+ * pango2_shape_item:
+ * @item: `Pango2Item` to shape
  * @paragraph_text: (nullable): text of the paragraph (see details).
  * @paragraph_length: the length (in bytes) of @paragraph_text.
  *     -1 means nul-terminated text.
- * @log_attrs: (nullable): array of `PangoLogAttr` for @item
+ * @log_attrs: (nullable): array of `Pango2LogAttr` for @item
  * @glyphs: glyph string in which to store results
  * @flags: flags influencing the shaping process
  *
  * Convert the characters in @item into glyphs.
  *
- * This is similar to [func@Pango.shape], except it takes a `PangoItem`
+ * This is similar to [func@Pango2.shape], except it takes a `Pango2Item`
  * instead of separate @item_text and @analysis arguments. It also takes
  * @log_attrs, which may be used in implementing text transforms.
  *
  * Note that the extra attributes in the @analyis that is returned from
- * [func@Pango.itemize] have indices that are relative to the entire paragraph,
+ * [func@Pango2.itemize] have indices that are relative to the entire paragraph,
  * so you do not pass the full paragraph text as @paragraph_text, you need to
- * subtract the item offset from their indices before calling [func@Pango.shape].
+ * subtract the item offset from their indices before calling [func@Pango2.shape].
  */
 void
-pango_shape_item (PangoItem        *item,
+pango2_shape_item (Pango2Item        *item,
                   const char       *paragraph_text,
                   int               paragraph_length,
-                  PangoLogAttr     *log_attrs,
-                  PangoGlyphString *glyphs,
-                  PangoShapeFlags   flags)
+                  Pango2LogAttr     *log_attrs,
+                  Pango2GlyphString *glyphs,
+                  Pango2ShapeFlags   flags)
 {
-  pango_shape_internal (paragraph_text + item->offset, item->length,
+  pango2_shape_internal (paragraph_text + item->offset, item->length,
                         paragraph_text, paragraph_length,
                         &item->analysis,
                         log_attrs, item->num_chars,

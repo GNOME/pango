@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  *
  * Copyright (C) 2021 Red Hat, Inc.
  *
@@ -24,47 +24,47 @@
 
 #include "pango-language-set-simple-private.h"
 
-struct _PangoLanguageSetSimple
+struct _Pango2LanguageSetSimple
 {
-  PangoLanguageSet parent_instance;
+  Pango2LanguageSet parent_instance;
 
   GHashTable *languages;
-  PangoLanguage **list;
+  Pango2Language **list;
 };
 
-G_DEFINE_TYPE (PangoLanguageSetSimple, pango_language_set_simple, PANGO_TYPE_LANGUAGE_SET)
+G_DEFINE_TYPE (Pango2LanguageSetSimple, pango2_language_set_simple, PANGO2_TYPE_LANGUAGE_SET)
 
 static void
-pango_language_set_simple_init (PangoLanguageSetSimple *self)
+pango2_language_set_simple_init (Pango2LanguageSetSimple *self)
 {
   self->languages = g_hash_table_new (g_direct_hash, g_direct_equal);
 }
 
 static void
-pango_language_set_simple_finalize (GObject *object)
+pango2_language_set_simple_finalize (GObject *object)
 {
-  PangoLanguageSetSimple *self = PANGO_LANGUAGE_SET_SIMPLE (object);
+  Pango2LanguageSetSimple *self = PANGO2_LANGUAGE_SET_SIMPLE (object);
 
   g_hash_table_unref (self->languages);
   g_free (self->list);
 
-  G_OBJECT_CLASS (pango_language_set_simple_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango2_language_set_simple_parent_class)->finalize (object);
 }
 
 static gboolean
-pango_language_set_simple_matches_language (PangoLanguageSet *set,
-                                            PangoLanguage    *language)
+pango2_language_set_simple_matches_language (Pango2LanguageSet *set,
+                                             Pango2Language    *language)
 {
-  PangoLanguageSetSimple *self = PANGO_LANGUAGE_SET_SIMPLE (set);
+  Pango2LanguageSetSimple *self = PANGO2_LANGUAGE_SET_SIMPLE (set);
   const char *s;
 
   if (g_hash_table_contains (self->languages, language))
     return TRUE;
 
-  if (language == pango_language_from_string ("c"))
+  if (language == pango2_language_from_string ("c"))
     return TRUE;
 
-  s = pango_language_to_string (language);
+  s = pango2_language_to_string (language);
   if (strchr (s, '-'))
     {
       char buf[10];
@@ -80,44 +80,44 @@ pango_language_set_simple_matches_language (PangoLanguageSet *set,
         }
       buf[9] = '\0';
 
-      if (g_hash_table_contains (self->languages, pango_language_from_string (buf)))
+      if (g_hash_table_contains (self->languages, pango2_language_from_string (buf)))
         return TRUE;
     }
 
   return FALSE;
 }
 
-static PangoLanguage **
-pango_language_set_simple_get_languages (PangoLanguageSet *set)
+static Pango2Language **
+pango2_language_set_simple_get_languages (Pango2LanguageSet *set)
 {
-  PangoLanguageSetSimple *self = PANGO_LANGUAGE_SET_SIMPLE (set);
+  Pango2LanguageSetSimple *self = PANGO2_LANGUAGE_SET_SIMPLE (set);
 
   if (!self->list)
-    self->list = (PangoLanguage **) g_hash_table_get_keys_as_array (self->languages, NULL);
+    self->list = (Pango2Language **) g_hash_table_get_keys_as_array (self->languages, NULL);
 
   return self->list;
 }
 
 static void
-pango_language_set_simple_class_init (PangoLanguageSetSimpleClass *class)
+pango2_language_set_simple_class_init (Pango2LanguageSetSimpleClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
-  PangoLanguageSetClass *language_set_class = PANGO_LANGUAGE_SET_CLASS (class);
+  Pango2LanguageSetClass *language_set_class = PANGO2_LANGUAGE_SET_CLASS (class);
 
-  object_class->finalize = pango_language_set_simple_finalize;
-  language_set_class->matches_language = pango_language_set_simple_matches_language;
-  language_set_class->get_languages = pango_language_set_simple_get_languages;
+  object_class->finalize = pango2_language_set_simple_finalize;
+  language_set_class->matches_language = pango2_language_set_simple_matches_language;
+  language_set_class->get_languages = pango2_language_set_simple_get_languages;
 }
 
-PangoLanguageSetSimple *
-pango_language_set_simple_new (void)
+Pango2LanguageSetSimple *
+pango2_language_set_simple_new (void)
 {
-  return g_object_new (PANGO_TYPE_LANGUAGE_SET_SIMPLE, NULL);
+  return g_object_new (PANGO2_TYPE_LANGUAGE_SET_SIMPLE, NULL);
 }
 
 void
-pango_language_set_simple_add_language (PangoLanguageSetSimple *self,
-                                        PangoLanguage          *language)
+pango2_language_set_simple_add_language (Pango2LanguageSetSimple *self,
+                                         Pango2Language          *language)
 {
   g_return_if_fail (self->list == NULL);
 

@@ -24,10 +24,10 @@
 G_BEGIN_DECLS
 
 /**
- * PangoGlyphItemIter:
+ * Pango2GlyphItemIter:
  *
- * A `PangoGlyphItemIter` is an iterator over the clusters in a
- * `PangoGlyphItem`.
+ * A `Pango2GlyphItemIter` is an iterator over the clusters in a
+ * `Pango2GlyphItem`.
  *
  * The *forward direction* of the iterator is the logical direction of text.
  * That is, with increasing @start_index and @start_char values. If @glyph_item
@@ -36,22 +36,22 @@ G_BEGIN_DECLS
  * in right-to-left cases, @start_glyph is greater than @end_glyph.
  *
  * An iterator should be initialized using either
- * [method@Pango.GlyphItemIter.init_start] or
- * [method@Pango.GlyphItemIter.init_end], for forward and backward iteration
+ * [method@Pango2.GlyphItemIter.init_start] or
+ * [method@Pango2.GlyphItemIter.init_end], for forward and backward iteration
  * respectively, and walked over using any desired mixture of
- * [method@Pango.GlyphItemIter.next_cluster] and
- * [method@Pango.GlyphItemIter.prev_cluster].
+ * [method@Pango2.GlyphItemIter.next_cluster] and
+ * [method@Pango2.GlyphItemIter.prev_cluster].
  *
  * A common idiom for doing a forward iteration over the clusters is:
  *
  * ```
- * PangoGlyphItemIter cluster_iter;
+ * Pango2GlyphItemIter cluster_iter;
  * gboolean have_cluster;
  *
- * for (have_cluster = pango_glyph_item_iter_init_start (&cluster_iter,
- *                                                       glyph_item, text);
+ * for (have_cluster = pango2_glyph_item_iter_init_start (&cluster_iter,
+ *                                                        glyph_item, text);
  *      have_cluster;
- *      have_cluster = pango_glyph_item_iter_next_cluster (&cluster_iter))
+ *      have_cluster = pango2_glyph_item_iter_next_cluster (&cluster_iter))
  * {
  *   ...
  * }
@@ -65,13 +65,13 @@ G_BEGIN_DECLS
  * the start variables is included in the cluster while the one pointed at by
  * end variables is not.
  *
- * None of the members of a `PangoGlyphItemIter` should be modified manually.
+ * None of the members of a `Pango2GlyphItemIter` should be modified manually.
  */
-typedef struct _PangoGlyphItemIter PangoGlyphItemIter;
+typedef struct _Pango2GlyphItemIter Pango2GlyphItemIter;
 
-struct _PangoGlyphItemIter
+struct _Pango2GlyphItemIter
 {
-  PangoGlyphItem *glyph_item;
+  Pango2GlyphItem *glyph_item;
   const char *text;
 
   int start_glyph;
@@ -83,28 +83,28 @@ struct _PangoGlyphItemIter
   int end_char;
 };
 
-#define PANGO_TYPE_GLYPH_ITEM_ITER (pango_glyph_item_iter_get_type ())
+#define PANGO2_TYPE_GLYPH_ITEM_ITER (pango2_glyph_item_iter_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-GType                   pango_glyph_item_iter_get_type     (void) G_GNUC_CONST;
-PANGO_AVAILABLE_IN_ALL
-PangoGlyphItemIter *    pango_glyph_item_iter_copy         (PangoGlyphItemIter *orig);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_glyph_item_iter_free         (PangoGlyphItemIter *iter);
+PANGO2_AVAILABLE_IN_ALL
+GType                   pango2_glyph_item_iter_get_type     (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+Pango2GlyphItemIter *   pango2_glyph_item_iter_copy         (Pango2GlyphItemIter *orig);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_glyph_item_iter_free         (Pango2GlyphItemIter *iter);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_glyph_item_iter_init_start   (PangoGlyphItemIter *iter,
-                                                            PangoGlyphItem     *glyph_item,
-                                                            const char         *text);
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_glyph_item_iter_init_end     (PangoGlyphItemIter *iter,
-                                                            PangoGlyphItem     *glyph_item,
-                                                             const char         *text);
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter);
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_glyph_item_iter_init_start   (Pango2GlyphItemIter *iter,
+                                                             Pango2GlyphItem     *glyph_item,
+                                                             const char          *text);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_glyph_item_iter_init_end     (Pango2GlyphItemIter *iter,
+                                                             Pango2GlyphItem     *glyph_item,
+                                                             const char          *text);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_glyph_item_iter_next_cluster (Pango2GlyphItemIter *iter);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_glyph_item_iter_prev_cluster (Pango2GlyphItemIter *iter);
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoGlyphItemIter, pango_glyph_item_iter_free)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(Pango2GlyphItemIter, pango2_glyph_item_iter_free)
 
 G_END_DECLS

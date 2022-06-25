@@ -14,13 +14,13 @@ gboolean file_has_prefix (const char  *file,
                           const char  *str,
                           GError     **error);
 
-void print_attribute (PangoAttribute *attr,
+void print_attribute (Pango2Attribute *attr,
                       GString        *string);
 
 void print_attributes (GSList        *attrs,
                        GString       *string);
 
-void print_attr_list (PangoAttrList  *attrs,
+void print_attr_list (Pango2AttrList  *attrs,
                       GString        *string);
 
 const char *get_script_name (GUnicodeScript s);

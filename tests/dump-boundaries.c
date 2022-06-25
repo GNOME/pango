@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * dump-boundaries.c: Dump text boundaries for a file
  *
  * Copyright (C) 1999-2000 Red Hat Software
@@ -50,7 +50,7 @@ static void
 dump_text (const char *text)
 {
   unsigned int len;
-  PangoLogAttr *attrs;
+  Pango2LogAttr *attrs;
   unsigned int i;
   gunichar *ucs4;
 
@@ -58,12 +58,12 @@ dump_text (const char *text)
     fail ("Invalid UTF-8 in file");
 
   len = g_utf8_strlen (text, -1);
-  attrs = g_new0 (PangoLogAttr, len + 1);
+  attrs = g_new0 (Pango2LogAttr, len + 1);
 
-  pango_get_log_attrs (text,
+  pango2_get_log_attrs (text,
 		       -1,
 		       0,
-		       pango_language_from_string ("C"),
+		       pango2_language_from_string ("C"),
 		       attrs,
 		       len + 1);
 

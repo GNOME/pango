@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * testboundaries_ucd.c: Test text boundary algorithms with test data from
  *                       Unicode Character Database.
  *
@@ -27,10 +27,10 @@
 
 static gboolean failed = FALSE;
 
-/* PangoLogAttr has to be the same size as guint or this hack breaks */
+/* Pango2LogAttr has to be the same size as guint or this hack breaks */
 typedef union
 {
-  PangoLogAttr attr;
+  Pango2LogAttr attr;
   guint bits;
 }
 AttrBits;
@@ -72,7 +72,7 @@ static gboolean
 parse_line (char *line,
             AttrBits bits,
             char **str_return,
-            PangoLogAttr **attr_return,
+            Pango2LogAttr **attr_return,
             int *num_attrs)
 {
   GString *gs;
@@ -82,7 +82,7 @@ parse_line (char *line,
   AttrBits temp_attr;
 
   *num_attrs = count_attrs (line);
-  *attr_return = g_new (PangoLogAttr, *num_attrs);
+  *attr_return = g_new (Pango2LogAttr, *num_attrs);
 
   p = line;
   i = 0;
@@ -152,8 +152,8 @@ parse_line (char *line,
 }
 
 static gboolean
-attrs_equal (PangoLogAttr *attrs1,
-             PangoLogAttr *attrs2,
+attrs_equal (Pango2LogAttr *attrs1,
+             Pango2LogAttr *attrs2,
              int len,
              AttrBits bits)
 {
@@ -181,7 +181,7 @@ attrs_equal (PangoLogAttr *attrs1,
 
 static char *
 make_test_string (char *string, 
-                  PangoLogAttr *attrs, 
+                  Pango2LogAttr *attrs, 
                   AttrBits bits)
 {
   GString *gs = g_string_new (NULL);
@@ -224,7 +224,7 @@ do_test (const char *filename,
   gsize length, terminator_pos;
   GError *error;
   char *string;
-  PangoLogAttr *expected_attrs;
+  Pango2LogAttr *expected_attrs;
   int num_attrs;
   int i;
 
@@ -273,8 +273,8 @@ do_test (const char *filename,
       
       if (num_attrs > 0)
         {
-          PangoLogAttr *attrs = g_new0 (PangoLogAttr, num_attrs);
-          pango_get_log_attrs (string, -1, NULL, 0, pango_language_from_string ("C"), attrs, num_attrs);
+          Pango2LogAttr *attrs = g_new0 (Pango2LogAttr, num_attrs);
+          pango2_get_log_attrs (string, -1, NULL, 0, pango2_language_from_string ("C"), attrs, num_attrs);
 
           if (! attrs_equal (attrs, expected_attrs, num_attrs, bits))
             {

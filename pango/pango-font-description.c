@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * pango-font-description.c:
  *
  * Copyright (C) 1999 Red Hat Software
@@ -26,15 +26,15 @@
 #include "pango-font-description-private.h"
 
 
-struct _PangoFontDescription
+struct _Pango2FontDescription
 {
   char *family_name;
 
-  PangoStyle style;
-  PangoVariant variant;
-  PangoWeight weight;
-  PangoStretch stretch;
-  PangoGravity gravity;
+  Pango2Style style;
+  Pango2Variant variant;
+  Pango2Weight weight;
+  Pango2Stretch stretch;
+  Pango2Gravity gravity;
 
   int size;
 
@@ -48,18 +48,18 @@ struct _PangoFontDescription
   guint size_is_absolute : 1;
 };
 
-G_DEFINE_BOXED_TYPE (PangoFontDescription, pango_font_description,
-                     pango_font_description_copy,
-                     pango_font_description_free);
+G_DEFINE_BOXED_TYPE (Pango2FontDescription, pango2_font_description,
+                     pango2_font_description_copy,
+                     pango2_font_description_free);
 
-static const PangoFontDescription pfd_defaults = {
+static const Pango2FontDescription pfd_defaults = {
   NULL,                 /* family_name */
 
-  PANGO_STYLE_NORMAL,   /* style */
-  PANGO_VARIANT_NORMAL, /* variant */
-  PANGO_WEIGHT_NORMAL,  /* weight */
-  PANGO_STRETCH_NORMAL, /* stretch */
-  PANGO_GRAVITY_SOUTH,  /* gravity */
+  PANGO2_STYLE_NORMAL,   /* style */
+  PANGO2_VARIANT_NORMAL, /* variant */
+  PANGO2_WEIGHT_NORMAL,  /* weight */
+  PANGO2_STRETCH_NORMAL, /* stretch */
+  PANGO2_GRAVITY_SOUTH,  /* gravity */
   0,                    /* size */
   NULL,                 /* variations */
   NULL,                 /* faceid */
@@ -72,17 +72,17 @@ static const PangoFontDescription pfd_defaults = {
 };
 
 /**
- * pango_font_description_new:
+ * pango2_font_description_new:
  *
  * Creates a new font description structure with all fields unset.
  *
- * Return value: the newly allocated `PangoFontDescription`, which
- *   should be freed using [method@Pango.FontDescription.free]
+ * Return value: the newly allocated `Pango2FontDescription`, which
+ *   should be freed using [method@Pango2.FontDescription.free]
  */
-PangoFontDescription *
-pango_font_description_new (void)
+Pango2FontDescription *
+pango2_font_description_new (void)
 {
-  PangoFontDescription *desc = g_slice_new (PangoFontDescription);
+  Pango2FontDescription *desc = g_slice_new (Pango2FontDescription);
 
   *desc = pfd_defaults;
 
@@ -90,45 +90,45 @@ pango_font_description_new (void)
 }
 
 /**
- * pango_font_description_set_family:
- * @desc: a `PangoFontDescription`.
+ * pango2_font_description_set_family:
+ * @desc: a `Pango2FontDescription`.
  * @family: a string representing the family name.
  *
  * Sets the family name field of a font description.
  *
  * The family
  * name represents a family of related font styles, and will
- * resolve to a particular `PangoFontFamily`. In some uses of
- * `PangoFontDescription`, it is also possible to use a comma
+ * resolve to a particular `Pango2FontFamily`. In some uses of
+ * `Pango2FontDescription`, it is also possible to use a comma
  * separated list of family names for this field.
  */
 void
-pango_font_description_set_family (PangoFontDescription *desc,
-                                   const char           *family)
+pango2_font_description_set_family (Pango2FontDescription *desc,
+                                    const char            *family)
 {
   g_return_if_fail (desc != NULL);
 
-  pango_font_description_set_family_static (desc, family ? g_strdup (family) : NULL);
+  pango2_font_description_set_family_static (desc, family ? g_strdup (family) : NULL);
   if (family)
     desc->static_family = FALSE;
 }
 
 /**
- * pango_font_description_set_family_static:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_set_family_static:
+ * @desc: a `Pango2FontDescription`
  * @family: a string representing the family name
  *
  * Sets the family name field of a font description, without copying the string.
  *
- * This is like [method@Pango.FontDescription.set_family], except that no
+ * This is like [method@Pango2.FontDescription.set_family], except that no
  * copy of @family is made. The caller must make sure that the
  * string passed in stays around until @desc has been freed or the
  * name is set again. This function can be used if @family is a static
  * string such as a C string literal, or if @desc is only needed temporarily.
  */
 void
-pango_font_description_set_family_static (PangoFontDescription *desc,
-                                          const char           *family)
+pango2_font_description_set_family_static (Pango2FontDescription *desc,
+                                           const char            *family)
 {
   g_return_if_fail (desc != NULL);
 
@@ -142,30 +142,30 @@ pango_font_description_set_family_static (PangoFontDescription *desc,
     {
       desc->family_name = (char *)family;
       desc->static_family = TRUE;
-      desc->mask |= PANGO_FONT_MASK_FAMILY;
+      desc->mask |= PANGO2_FONT_MASK_FAMILY;
     }
   else
     {
       desc->family_name = pfd_defaults.family_name;
       desc->static_family = pfd_defaults.static_family;
-      desc->mask &= ~PANGO_FONT_MASK_FAMILY;
+      desc->mask &= ~PANGO2_FONT_MASK_FAMILY;
     }
 }
 
 /**
- * pango_font_description_get_family:
- * @desc: a `PangoFontDescription`.
+ * pango2_font_description_get_family:
+ * @desc: a `Pango2FontDescription`.
  *
  * Gets the family name field of a font description.
  *
- * See [method@Pango.FontDescription.set_family].
+ * See [method@Pango2.FontDescription.set_family].
  *
  * Return value: (nullable): the family name field for the font
  *   description, or %NULL if not previously set. This has the same
  *   life-time as the font description itself and should not be freed.
  */
 const char *
-pango_font_description_get_family (const PangoFontDescription *desc)
+pango2_font_description_get_family (const Pango2FontDescription *desc)
 {
   g_return_val_if_fail (desc != NULL, NULL);
 
@@ -173,45 +173,45 @@ pango_font_description_get_family (const PangoFontDescription *desc)
 }
 
 /**
- * pango_font_description_set_style:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_set_style:
+ * @desc: a `Pango2FontDescription`
  * @style: the style for the font description
  *
- * Sets the style field of a `PangoFontDescription`.
+ * Sets the style field of a `Pango2FontDescription`.
  *
- * The [enum@Pango.Style] enumeration describes whether the font is
+ * The [enum@Pango2.Style] enumeration describes whether the font is
  * slanted and the manner in which it is slanted; it can be either
- * %PANGO_STYLE_NORMAL, %PANGO_STYLE_ITALIC, or %PANGO_STYLE_OBLIQUE.
+ * %PANGO2_STYLE_NORMAL, %PANGO2_STYLE_ITALIC, or %PANGO2_STYLE_OBLIQUE.
  *
  * Most fonts will either have a italic style or an oblique style,
- * but not both, and font matching in Pango will match italic
+ * but not both, and font matching in Pango2 will match italic
  * specifications with oblique fonts and vice-versa if an exact
  * match is not found.
  */
 void
-pango_font_description_set_style (PangoFontDescription *desc,
-                                  PangoStyle            style)
+pango2_font_description_set_style (Pango2FontDescription *desc,
+                                   Pango2Style            style)
 {
   g_return_if_fail (desc != NULL);
 
   desc->style = style;
-  desc->mask |= PANGO_FONT_MASK_STYLE;
+  desc->mask |= PANGO2_FONT_MASK_STYLE;
 }
 
 /**
- * pango_font_description_get_style:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_get_style:
+ * @desc: a `Pango2FontDescription`
  *
- * Gets the style field of a `PangoFontDescription`.
+ * Gets the style field of a `Pango2FontDescription`.
  *
- * See [method@Pango.FontDescription.set_style].
+ * See [method@Pango2.FontDescription.set_style].
  *
  * Return value: the style field for the font description.
- *   Use [method@Pango.FontDescription.get_set_fields] to
+ *   Use [method@Pango2.FontDescription.get_set_fields] to
  *   find out if the field was explicitly set or not.
  */
-PangoStyle
-pango_font_description_get_style (const PangoFontDescription *desc)
+Pango2Style
+pango2_font_description_get_style (const Pango2FontDescription *desc)
 {
   g_return_val_if_fail (desc != NULL, pfd_defaults.style);
 
@@ -219,39 +219,39 @@ pango_font_description_get_style (const PangoFontDescription *desc)
 }
 
 /**
- * pango_font_description_set_variant:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_set_variant:
+ * @desc: a `Pango2FontDescription`
  * @variant: the variant type for the font description.
  *
  * Sets the variant field of a font description.
  *
- * The [enum@Pango.Variant] can either be %PANGO_VARIANT_NORMAL
- * or %PANGO_VARIANT_SMALL_CAPS.
+ * The [enum@Pango2.Variant] can either be %PANGO2_VARIANT_NORMAL
+ * or %PANGO2_VARIANT_SMALL_CAPS.
  */
 void
-pango_font_description_set_variant (PangoFontDescription *desc,
-                                    PangoVariant          variant)
+pango2_font_description_set_variant (Pango2FontDescription *desc,
+                                     Pango2Variant          variant)
 {
   g_return_if_fail (desc != NULL);
 
   desc->variant = variant;
-  desc->mask |= PANGO_FONT_MASK_VARIANT;
+  desc->mask |= PANGO2_FONT_MASK_VARIANT;
 }
 
 /**
- * pango_font_description_get_variant:
- * @desc: a `PangoFontDescription`.
+ * pango2_font_description_get_variant:
+ * @desc: a `Pango2FontDescription`.
  *
- * Gets the variant field of a `PangoFontDescription`.
+ * Gets the variant field of a `Pango2FontDescription`.
  *
- * See [method@Pango.FontDescription.set_variant].
+ * See [method@Pango2.FontDescription.set_variant].
  *
  * Return value: the variant field for the font description.
- *   Use [method@Pango.FontDescription.get_set_fields] to find
+ *   Use [method@Pango2.FontDescription.get_set_fields] to find
  *   out if the field was explicitly set or not.
  */
-PangoVariant
-pango_font_description_get_variant (const PangoFontDescription *desc)
+Pango2Variant
+pango2_font_description_get_variant (const Pango2FontDescription *desc)
 {
   g_return_val_if_fail (desc != NULL, pfd_defaults.variant);
 
@@ -259,41 +259,41 @@ pango_font_description_get_variant (const PangoFontDescription *desc)
 }
 
 /**
- * pango_font_description_set_weight:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_set_weight:
+ * @desc: a `Pango2FontDescription`
  * @weight: the weight for the font description.
  *
  * Sets the weight field of a font description.
  *
  * The weight field
  * specifies how bold or light the font should be. In addition
- * to the values of the [enum@Pango.Weight] enumeration, other
+ * to the values of the [enum@Pango2.Weight] enumeration, other
  * intermediate numeric values are possible.
  */
 void
-pango_font_description_set_weight (PangoFontDescription *desc,
-                                   PangoWeight          weight)
+pango2_font_description_set_weight (Pango2FontDescription *desc,
+                                    Pango2Weight           weight)
 {
   g_return_if_fail (desc != NULL);
 
   desc->weight = weight;
-  desc->mask |= PANGO_FONT_MASK_WEIGHT;
+  desc->mask |= PANGO2_FONT_MASK_WEIGHT;
 }
 
 /**
- * pango_font_description_get_weight:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_get_weight:
+ * @desc: a `Pango2FontDescription`
  *
  * Gets the weight field of a font description.
  *
- * See [method@Pango.FontDescription.set_weight].
+ * See [method@Pango2.FontDescription.set_weight].
  *
  * Return value: the weight field for the font description.
- *   Use [method@Pango.FontDescription.get_set_fields] to find
+ *   Use [method@Pango2.FontDescription.get_set_fields] to find
  *   out if the field was explicitly set or not.
  */
-PangoWeight
-pango_font_description_get_weight (const PangoFontDescription *desc)
+Pango2Weight
+pango2_font_description_get_weight (const Pango2FontDescription *desc)
 {
   g_return_val_if_fail (desc != NULL, pfd_defaults.weight);
 
@@ -301,39 +301,39 @@ pango_font_description_get_weight (const PangoFontDescription *desc)
 }
 
 /**
- * pango_font_description_set_stretch:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_set_stretch:
+ * @desc: a `Pango2FontDescription`
  * @stretch: the stretch for the font description
  *
  * Sets the stretch field of a font description.
  *
- * The [enum@Pango.Stretch] field specifies how narrow or
+ * The [enum@Pango2.Stretch] field specifies how narrow or
  * wide the font should be.
  */
 void
-pango_font_description_set_stretch (PangoFontDescription *desc,
-                                    PangoStretch          stretch)
+pango2_font_description_set_stretch (Pango2FontDescription *desc,
+                                     Pango2Stretch          stretch)
 {
   g_return_if_fail (desc != NULL);
 
   desc->stretch = stretch;
-  desc->mask |= PANGO_FONT_MASK_STRETCH;
+  desc->mask |= PANGO2_FONT_MASK_STRETCH;
 }
 
 /**
- * pango_font_description_get_stretch:
- * @desc: a `PangoFontDescription`.
+ * pango2_font_description_get_stretch:
+ * @desc: a `Pango2FontDescription`.
  *
  * Gets the stretch field of a font description.
  *
- * See [method@Pango.FontDescription.set_stretch].
+ * See [method@Pango2.FontDescription.set_stretch].
  *
  * Return value: the stretch field for the font description.
- *   Use [method@Pango.FontDescription.get_set_fields] to find
+ *   Use [method@Pango2.FontDescription.get_set_fields] to find
  *   out if the field was explicitly set or not.
  */
-PangoStretch
-pango_font_description_get_stretch (const PangoFontDescription *desc)
+Pango2Stretch
+pango2_font_description_get_stretch (const Pango2FontDescription *desc)
 {
   g_return_val_if_fail (desc != NULL, pfd_defaults.stretch);
 
@@ -341,52 +341,52 @@ pango_font_description_get_stretch (const PangoFontDescription *desc)
 }
 
 /**
- * pango_font_description_set_size:
- * @desc: a `PangoFontDescription`
- * @size: the size of the font in points, scaled by %PANGO_SCALE.
- *   (That is, a @size value of 10 * PANGO_SCALE is a 10 point font.
+ * pango2_font_description_set_size:
+ * @desc: a `Pango2FontDescription`
+ * @size: the size of the font in points, scaled by %PANGO2_SCALE.
+ *   (That is, a @size value of 10 * PANGO2_SCALE is a 10 point font.
  *   The conversion factor between points and device units depends on
  *   system configuration and the output device. For screen display, a
  *   logical DPI of 96 is common, in which case a 10 point font corresponds
  *   to a 10 * (96 / 72) = 13.3 pixel font.
- *   Use [method@Pango.FontDescription.set_absolute_size] if you need
+ *   Use [method@Pango2.FontDescription.set_absolute_size] if you need
  *   a particular size in device units.
  *
  * Sets the size field of a font description in fractional points.
  *
  * This is mutually exclusive with
- * [method@Pango.FontDescription.set_absolute_size].
+ * [method@Pango2.FontDescription.set_absolute_size].
  */
 void
-pango_font_description_set_size (PangoFontDescription *desc,
-                                 int                   size)
+pango2_font_description_set_size (Pango2FontDescription *desc,
+                                  int                    size)
 {
   g_return_if_fail (desc != NULL);
   g_return_if_fail (size >= 0);
 
   desc->size = size;
   desc->size_is_absolute = FALSE;
-  desc->mask |= PANGO_FONT_MASK_SIZE;
+  desc->mask |= PANGO2_FONT_MASK_SIZE;
 }
 
 /**
- * pango_font_description_get_size:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_get_size:
+ * @desc: a `Pango2FontDescription`
  *
  * Gets the size field of a font description.
  *
- * See [method@Pango.FontDescription.set_size].
+ * See [method@Pango2.FontDescription.set_size].
  *
  * Return value: the size field for the font description in points
  *   or device units. You must call
- *   [method@Pango.FontDescription.get_size_is_absolute] to find out
+ *   [method@Pango2.FontDescription.get_size_is_absolute] to find out
  *   which is the case. Returns 0 if the size field has not previously
  *   been set or it has been set to 0 explicitly.
- *   Use [method@Pango.FontDescription.get_set_fields] to find out
+ *   Use [method@Pango2.FontDescription.get_set_fields] to find out
  *   if the field was explicitly set or not.
  */
 int
-pango_font_description_get_size (const PangoFontDescription *desc)
+pango2_font_description_get_size (const Pango2FontDescription *desc)
 {
   g_return_val_if_fail (desc != NULL, pfd_defaults.size);
 
@@ -394,46 +394,46 @@ pango_font_description_get_size (const PangoFontDescription *desc)
 }
 
 /**
- * pango_font_description_set_absolute_size:
- * @desc: a `PangoFontDescription`
- * @size: the new size, in Pango units. There are %PANGO_SCALE Pango units
+ * pango2_font_description_set_absolute_size:
+ * @desc: a `Pango2FontDescription`
+ * @size: the new size, in Pango2 units. There are %PANGO2_SCALE Pango2 units
  *   in one device unit. For an output backend where a device unit is a pixel,
- *   a @size value of 10 * PANGO_SCALE gives a 10 pixel font.
+ *   a @size value of 10 * PANGO2_SCALE gives a 10 pixel font.
  *
  * Sets the size field of a font description, in device units.
  *
- * This is mutually exclusive with [method@Pango.FontDescription.set_size]
+ * This is mutually exclusive with [method@Pango2.FontDescription.set_size]
  * which sets the font size in points.
  */
 void
-pango_font_description_set_absolute_size (PangoFontDescription *desc,
-                                          double                size)
+pango2_font_description_set_absolute_size (Pango2FontDescription *desc,
+                                           double                 size)
 {
   g_return_if_fail (desc != NULL);
   g_return_if_fail (size >= 0);
 
   desc->size = round (size);
   desc->size_is_absolute = TRUE;
-  desc->mask |= PANGO_FONT_MASK_SIZE;
+  desc->mask |= PANGO2_FONT_MASK_SIZE;
 }
 
 /**
- * pango_font_description_get_size_is_absolute:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_get_size_is_absolute:
+ * @desc: a `Pango2FontDescription`
  *
  * Determines whether the size of the font is in points (not absolute)
  * or device units (absolute).
  *
- * See [method@Pango.FontDescription.set_size]
- * and [method@Pango.FontDescription.set_absolute_size].
+ * See [method@Pango2.FontDescription.set_size]
+ * and [method@Pango2.FontDescription.set_absolute_size].
  *
  * Return value: whether the size for the font description is in
- *   points or device units. Use [method@Pango.FontDescription.get_set_fields]
+ *   points or device units. Use [method@Pango2.FontDescription.get_set_fields]
  *   to find out if the size field of the font description was explicitly
  *   set or not.
  */
 gboolean
-pango_font_description_get_size_is_absolute (const PangoFontDescription *desc)
+pango2_font_description_get_size_is_absolute (const Pango2FontDescription *desc)
 {
   g_return_val_if_fail (desc != NULL, pfd_defaults.size_is_absolute);
 
@@ -441,50 +441,50 @@ pango_font_description_get_size_is_absolute (const PangoFontDescription *desc)
 }
 
 /**
- * pango_font_description_set_gravity:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_set_gravity:
+ * @desc: a `Pango2FontDescription`
  * @gravity: the gravity for the font description.
  *
  * Sets the gravity field of a font description.
  *
  * The gravity field
  * specifies how the glyphs should be rotated. If @gravity is
- * %PANGO_GRAVITY_AUTO, this actually unsets the gravity mask on
+ * %PANGO2_GRAVITY_AUTO, this actually unsets the gravity mask on
  * the font description.
  *
  * This function is seldom useful to the user. Gravity should normally
- * be set on a `PangoContext`.
+ * be set on a `Pango2Context`.
  */
 void
-pango_font_description_set_gravity (PangoFontDescription *desc,
-                                    PangoGravity          gravity)
+pango2_font_description_set_gravity (Pango2FontDescription *desc,
+                                     Pango2Gravity          gravity)
 {
   g_return_if_fail (desc != NULL);
 
-  if (gravity == PANGO_GRAVITY_AUTO)
+  if (gravity == PANGO2_GRAVITY_AUTO)
     {
-      pango_font_description_unset_fields (desc, PANGO_FONT_MASK_GRAVITY);
+      pango2_font_description_unset_fields (desc, PANGO2_FONT_MASK_GRAVITY);
       return;
     }
 
   desc->gravity = gravity;
-  desc->mask |= PANGO_FONT_MASK_GRAVITY;
+  desc->mask |= PANGO2_FONT_MASK_GRAVITY;
 }
 
 /**
- * pango_font_description_get_gravity:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_get_gravity:
+ * @desc: a `Pango2FontDescription`
  *
  * Gets the gravity field of a font description.
  *
- * See [method@Pango.FontDescription.set_gravity].
+ * See [method@Pango2.FontDescription.set_gravity].
  *
  * Return value: the gravity field for the font description.
- *   Use [method@Pango.FontDescription.get_set_fields] to find out
+ *   Use [method@Pango2.FontDescription.get_set_fields] to find out
  *   if the field was explicitly set or not.
  */
-PangoGravity
-pango_font_description_get_gravity (const PangoFontDescription *desc)
+Pango2Gravity
+pango2_font_description_get_gravity (const Pango2FontDescription *desc)
 {
   g_return_val_if_fail (desc != NULL, pfd_defaults.gravity);
 
@@ -492,13 +492,13 @@ pango_font_description_get_gravity (const PangoFontDescription *desc)
 }
 
 /**
- * pango_font_description_set_variations_static:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_set_variations_static:
+ * @desc: a `Pango2FontDescription`
  * @variations: a string representing the variations
  *
  * Sets the variations field of a font description.
  *
- * This is like [method@Pango.FontDescription.set_variations], except
+ * This is like [method@Pango2.FontDescription.set_variations], except
  * that no copy of @variations is made. The caller must make sure that
  * the string passed in stays around until @desc has been freed
  * or the name is set again. This function can be used if
@@ -506,8 +506,8 @@ pango_font_description_get_gravity (const PangoFontDescription *desc)
  * or if @desc is only needed temporarily.
  */
 void
-pango_font_description_set_variations_static (PangoFontDescription *desc,
-                                              const char           *variations)
+pango2_font_description_set_variations_static (Pango2FontDescription *desc,
+                                               const char            *variations)
 {
   g_return_if_fail (desc != NULL);
 
@@ -521,19 +521,19 @@ pango_font_description_set_variations_static (PangoFontDescription *desc,
     {
       desc->variations = (char *)variations;
       desc->static_variations = TRUE;
-      desc->mask |= PANGO_FONT_MASK_VARIATIONS;
+      desc->mask |= PANGO2_FONT_MASK_VARIATIONS;
     }
   else
     {
       desc->variations = pfd_defaults.variations;
       desc->static_variations = pfd_defaults.static_variations;
-      desc->mask &= ~PANGO_FONT_MASK_VARIATIONS;
+      desc->mask &= ~PANGO2_FONT_MASK_VARIATIONS;
     }
 }
 
 /**
- * pango_font_description_set_variations:
- * @desc: a `PangoFontDescription`.
+ * pango2_font_description_set_variations:
+ * @desc: a `Pango2FontDescription`.
  * @variations: (nullable): a string representing the variations
  *
  * Sets the variations field of a font description.
@@ -549,35 +549,35 @@ pango_font_description_set_variations_static (PangoFontDescription *desc,
  * and each VALUE a floating point number. Unknown axes are ignored,
  * and values are clamped to their allowed range.
  *
- * Pango does not currently have a way to find supported axes of
+ * Pango2 does not currently have a way to find supported axes of
  * a font. Both harfbuzz and freetype have API for this. See
  * for example [hb_ot_var_get_axis_infos](https://harfbuzz.github.io/harfbuzz-hb-ot-var.html#hb-ot-var-get-axis-infos).
  */
 void
-pango_font_description_set_variations (PangoFontDescription *desc,
-                                       const char           *variations)
+pango2_font_description_set_variations (Pango2FontDescription *desc,
+                                        const char            *variations)
 {
   g_return_if_fail (desc != NULL);
 
-  pango_font_description_set_variations_static (desc, g_strdup (variations));
+  pango2_font_description_set_variations_static (desc, g_strdup (variations));
   if (variations)
     desc->static_variations = FALSE;
 }
 
 /**
- * pango_font_description_get_variations:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_get_variations:
+ * @desc: a `Pango2FontDescription`
  *
  * Gets the variations field of a font description.
  *
- * See [method@Pango.FontDescription.set_variations].
+ * See [method@Pango2.FontDescription.set_variations].
  *
  * Return value: (nullable): the variations field for the font
  *   description, or %NULL if not previously set. This has the same
  *   life-time as the font description itself and should not be freed.
  */
 const char *
-pango_font_description_get_variations (const PangoFontDescription *desc)
+pango2_font_description_get_variations (const Pango2FontDescription *desc)
 {
   g_return_val_if_fail (desc != NULL, NULL);
 
@@ -585,16 +585,16 @@ pango_font_description_get_variations (const PangoFontDescription *desc)
 }
 
 /**
- * pango_font_description_get_set_fields:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_get_set_fields:
+ * @desc: a `Pango2FontDescription`
  *
  * Determines which fields in a font description have been set.
  *
  * Return value: a bitmask with bits set corresponding to the
  *   fields in @desc that have been set.
  */
-PangoFontMask
-pango_font_description_get_set_fields (const PangoFontDescription *desc)
+Pango2FontMask
+pango2_font_description_get_set_fields (const Pango2FontDescription *desc)
 {
   g_return_val_if_fail (desc != NULL, pfd_defaults.mask);
 
@@ -602,34 +602,34 @@ pango_font_description_get_set_fields (const PangoFontDescription *desc)
 }
 
 /**
- * pango_font_description_unset_fields:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_unset_fields:
+ * @desc: a `Pango2FontDescription`
  * @to_unset: bitmask of fields in the @desc to unset.
  *
- * Unsets some of the fields in a `PangoFontDescription`.
+ * Unsets some of the fields in a `Pango2FontDescription`.
  *
  * The unset fields will get back to their default values.
  */
 void
-pango_font_description_unset_fields (PangoFontDescription *desc,
-                                     PangoFontMask         to_unset)
+pango2_font_description_unset_fields (Pango2FontDescription *desc,
+                                      Pango2FontMask         to_unset)
 {
-  PangoFontDescription unset_desc;
+  Pango2FontDescription unset_desc;
 
   g_return_if_fail (desc != NULL);
 
   unset_desc = pfd_defaults;
   unset_desc.mask = to_unset;
 
-  pango_font_description_merge_static (desc, &unset_desc, TRUE);
+  pango2_font_description_merge_static (desc, &unset_desc, TRUE);
 
   desc->mask &= ~to_unset;
 }
 
 /**
- * pango_font_description_merge:
- * @desc: a `PangoFontDescription`
- * @desc_to_merge: (nullable): the `PangoFontDescription` to merge from,
+ * pango2_font_description_merge:
+ * @desc: a `Pango2FontDescription`
+ * @desc_to_merge: (nullable): the `Pango2FontDescription` to merge from,
  *   or %NULL
  * @replace_existing: if %TRUE, replace fields in @desc with the
  *   corresponding values from @desc_to_merge, even if they
@@ -645,9 +645,9 @@ pango_font_description_unset_fields (PangoFontDescription *desc,
  * If @desc_to_merge is %NULL, this function performs nothing.
  */
 void
-pango_font_description_merge (PangoFontDescription       *desc,
-                              const PangoFontDescription *desc_to_merge,
-                              gboolean                    replace_existing)
+pango2_font_description_merge (Pango2FontDescription       *desc,
+                               const Pango2FontDescription *desc_to_merge,
+                               gboolean                     replace_existing)
 {
   gboolean family_merged;
   gboolean variations_merged;
@@ -662,7 +662,7 @@ pango_font_description_merge (PangoFontDescription       *desc,
   variations_merged = desc_to_merge->variations && (replace_existing || !desc->variations);
   faceid_merged = desc_to_merge->faceid && (replace_existing || !desc->faceid);
 
-  pango_font_description_merge_static (desc, desc_to_merge, replace_existing);
+  pango2_font_description_merge_static (desc, desc_to_merge, replace_existing);
 
   if (family_merged)
     {
@@ -684,9 +684,9 @@ pango_font_description_merge (PangoFontDescription       *desc,
 }
 
 /**
- * pango_font_description_merge_static:
- * @desc: a `PangoFontDescription`
- * @desc_to_merge: the `PangoFontDescription` to merge from
+ * pango2_font_description_merge_static:
+ * @desc: a `Pango2FontDescription`
+ * @desc_to_merge: the `Pango2FontDescription` to merge from
  * @replace_existing: if %TRUE, replace fields in @desc with the
  *   corresponding values from @desc_to_merge, even if they
  *   are already exist.
@@ -694,17 +694,17 @@ pango_font_description_merge (PangoFontDescription       *desc,
  * Merges the fields that are set in @desc_to_merge into the fields in
  * @desc, without copying allocated fields.
  *
- * This is like [method@Pango.FontDescription.merge], but only a shallow copy
+ * This is like [method@Pango2.FontDescription.merge], but only a shallow copy
  * is made of the family name and other allocated fields. @desc can only
  * be used until @desc_to_merge is modified or freed. This is meant to
  * be used when the merged font description is only needed temporarily.
  */
 void
-pango_font_description_merge_static (PangoFontDescription       *desc,
-                                     const PangoFontDescription *desc_to_merge,
-                                     gboolean                    replace_existing)
+pango2_font_description_merge_static (Pango2FontDescription       *desc,
+                                      const Pango2FontDescription *desc_to_merge,
+                                      gboolean                     replace_existing)
 {
-  PangoFontMask new_mask;
+  Pango2FontMask new_mask;
 
   g_return_if_fail (desc != NULL);
   g_return_if_fail (desc_to_merge != NULL);
@@ -714,50 +714,50 @@ pango_font_description_merge_static (PangoFontDescription       *desc,
   else
     new_mask = desc_to_merge->mask & ~desc->mask;
 
-  if (new_mask & PANGO_FONT_MASK_FAMILY)
-    pango_font_description_set_family_static (desc, desc_to_merge->family_name);
-  if (new_mask & PANGO_FONT_MASK_STYLE)
+  if (new_mask & PANGO2_FONT_MASK_FAMILY)
+    pango2_font_description_set_family_static (desc, desc_to_merge->family_name);
+  if (new_mask & PANGO2_FONT_MASK_STYLE)
     desc->style = desc_to_merge->style;
-  if (new_mask & PANGO_FONT_MASK_VARIANT)
+  if (new_mask & PANGO2_FONT_MASK_VARIANT)
     desc->variant = desc_to_merge->variant;
-  if (new_mask & PANGO_FONT_MASK_WEIGHT)
+  if (new_mask & PANGO2_FONT_MASK_WEIGHT)
     desc->weight = desc_to_merge->weight;
-  if (new_mask & PANGO_FONT_MASK_STRETCH)
+  if (new_mask & PANGO2_FONT_MASK_STRETCH)
     desc->stretch = desc_to_merge->stretch;
-  if (new_mask & PANGO_FONT_MASK_SIZE)
+  if (new_mask & PANGO2_FONT_MASK_SIZE)
     {
       desc->size = desc_to_merge->size;
       desc->size_is_absolute = desc_to_merge->size_is_absolute;
     }
-  if (new_mask & PANGO_FONT_MASK_GRAVITY)
+  if (new_mask & PANGO2_FONT_MASK_GRAVITY)
     desc->gravity = desc_to_merge->gravity;
-  if (new_mask & PANGO_FONT_MASK_VARIATIONS)
-    pango_font_description_set_variations_static (desc, desc_to_merge->variations);
-  if (new_mask & PANGO_FONT_MASK_FACEID)
-    pango_font_description_set_faceid_static (desc, desc_to_merge->faceid);
+  if (new_mask & PANGO2_FONT_MASK_VARIATIONS)
+    pango2_font_description_set_variations_static (desc, desc_to_merge->variations);
+  if (new_mask & PANGO2_FONT_MASK_FACEID)
+    pango2_font_description_set_faceid_static (desc, desc_to_merge->faceid);
 
   desc->mask |= new_mask;
 }
 
 gboolean
-pango_font_description_is_similar (const PangoFontDescription *a,
-                                   const PangoFontDescription *b)
+pango2_font_description_is_similar (const Pango2FontDescription *a,
+                                    const Pango2FontDescription *b)
 {
   return a->variant == b->variant &&
          a->gravity == b->gravity;
 }
 
 int
-pango_font_description_compute_distance (const PangoFontDescription *a,
-                                         const PangoFontDescription *b)
+pango2_font_description_compute_distance (const Pango2FontDescription *a,
+                                          const Pango2FontDescription *b)
 {
   if (a->style == b->style)
     {
       return abs ((int)(a->weight) - (int)(b->weight)) +
              abs ((int)(a->stretch) - (int)(b->stretch));
     }
-  else if (a->style != PANGO_STYLE_NORMAL &&
-           b->style != PANGO_STYLE_NORMAL)
+  else if (a->style != PANGO2_STYLE_NORMAL &&
+           b->style != PANGO2_STYLE_NORMAL)
     {
       /* Equate oblique and italic, but with a big penalty
        */
@@ -769,23 +769,23 @@ pango_font_description_compute_distance (const PangoFontDescription *a,
 }
 
 /**
- * pango_font_description_copy:
- * @desc: (nullable): a `PangoFontDescription`, may be %NULL
+ * pango2_font_description_copy:
+ * @desc: (nullable): a `Pango2FontDescription`, may be %NULL
  *
- * Make a copy of a `PangoFontDescription`.
+ * Make a copy of a `Pango2FontDescription`.
  *
- * Return value: (nullable): the newly allocated `PangoFontDescription`,
- *   which should be freed with [method@Pango.FontDescription.free]
+ * Return value: (nullable): the newly allocated `Pango2FontDescription`,
+ *   which should be freed with [method@Pango2.FontDescription.free]
  */
-PangoFontDescription *
-pango_font_description_copy (const PangoFontDescription *desc)
+Pango2FontDescription *
+pango2_font_description_copy (const Pango2FontDescription *desc)
 {
-  PangoFontDescription *result;
+  Pango2FontDescription *result;
 
   if (desc == NULL)
     return NULL;
 
-  result = g_slice_new (PangoFontDescription);
+  result = g_slice_new (Pango2FontDescription);
 
   *result = *desc;
 
@@ -805,29 +805,29 @@ pango_font_description_copy (const PangoFontDescription *desc)
 }
 
 /**
- * pango_font_description_copy_static:
- * @desc: (nullable): a `PangoFontDescription`, may be %NULL
+ * pango2_font_description_copy_static:
+ * @desc: (nullable): a `Pango2FontDescription`, may be %NULL
  *
- * Make a copy of a `PangoFontDescription`, but don't duplicate
+ * Make a copy of a `Pango2FontDescription`, but don't duplicate
  * allocated fields.
  *
- * This is like [method@Pango.FontDescription.copy], but only a shallow
+ * This is like [method@Pango2.FontDescription.copy], but only a shallow
  * copy is made of the family name and other allocated fields. The result
  * can only be used until @desc is modified or freed. This is meant
  * to be used when the copy is only needed temporarily.
  *
- * Return value: (nullable): the newly allocated `PangoFontDescription`,
- *   which should be freed with [method@Pango.FontDescription.free]
+ * Return value: (nullable): the newly allocated `Pango2FontDescription`,
+ *   which should be freed with [method@Pango2.FontDescription.free]
  */
-PangoFontDescription *
-pango_font_description_copy_static (const PangoFontDescription *desc)
+Pango2FontDescription *
+pango2_font_description_copy_static (const Pango2FontDescription *desc)
 {
-  PangoFontDescription *result;
+  Pango2FontDescription *result;
 
   if (desc == NULL)
     return NULL;
 
-  result = g_slice_new (PangoFontDescription);
+  result = g_slice_new (Pango2FontDescription);
 
   *result = *desc;
   if (result->family_name)
@@ -843,9 +843,9 @@ pango_font_description_copy_static (const PangoFontDescription *desc)
 }
 
 /**
- * pango_font_description_equal:
- * @desc1: a `PangoFontDescription`
- * @desc2: another `PangoFontDescription`
+ * pango2_font_description_equal:
+ * @desc1: a `Pango2FontDescription`
+ * @desc2: another `Pango2FontDescription`
  *
  * Compares two font descriptions for equality.
  *
@@ -858,8 +858,8 @@ pango_font_description_copy_static (const PangoFontDescription *desc)
  *   %FALSE otherwise.
  */
 gboolean
-pango_font_description_equal (const PangoFontDescription *desc1,
-                              const PangoFontDescription *desc2)
+pango2_font_description_equal (const Pango2FontDescription *desc1,
+                               const Pango2FontDescription *desc2)
 {
   g_return_val_if_fail (desc1 != NULL, FALSE);
   g_return_val_if_fail (desc2 != NULL, FALSE);
@@ -896,10 +896,10 @@ case_insensitive_hash (const char *key)
 }
 
 /**
- * pango_font_description_hash:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_hash:
+ * @desc: a `Pango2FontDescription`
  *
- * Computes a hash of a `PangoFontDescription` structure.
+ * Computes a hash of a `Pango2FontDescription` structure.
  *
  * This is suitable to be used, for example, as an argument
  * to [GLib.HashTable.new]. The hash value is independent of @desc->mask.
@@ -907,7 +907,7 @@ case_insensitive_hash (const char *key)
  * Return value: the hash value.
  */
 guint
-pango_font_description_hash (const PangoFontDescription *desc)
+pango2_font_description_hash (const Pango2FontDescription *desc)
 {
   guint hash = 0;
 
@@ -931,13 +931,13 @@ pango_font_description_hash (const PangoFontDescription *desc)
 }
 
 /**
- * pango_font_description_free:
- * @desc: (nullable): a `PangoFontDescription`, may be %NULL
+ * pango2_font_description_free:
+ * @desc: (nullable): a `Pango2FontDescription`, may be %NULL
  *
  * Frees a font description.
  */
 void
-pango_font_description_free (PangoFontDescription *desc)
+pango2_font_description_free (Pango2FontDescription *desc)
 {
   if (desc == NULL)
     return;
@@ -951,7 +951,7 @@ pango_font_description_free (PangoFontDescription *desc)
   if (desc->faceid && !desc->static_faceid)
     g_free (desc->faceid);
 
-  g_slice_free (PangoFontDescription, desc);
+  g_slice_free (Pango2FontDescription, desc);
 }
 
 typedef struct
@@ -961,67 +961,67 @@ typedef struct
 } FieldMap;
 
 static const FieldMap style_map[] = {
-  { PANGO_STYLE_NORMAL, "" },
-  { PANGO_STYLE_NORMAL, "Roman" },
-  { PANGO_STYLE_OBLIQUE, "Oblique" },
-  { PANGO_STYLE_ITALIC, "Italic" }
+  { PANGO2_STYLE_NORMAL, "" },
+  { PANGO2_STYLE_NORMAL, "Roman" },
+  { PANGO2_STYLE_OBLIQUE, "Oblique" },
+  { PANGO2_STYLE_ITALIC, "Italic" }
 };
 
 static const FieldMap variant_map[] = {
-  { PANGO_VARIANT_NORMAL, "" },
-  { PANGO_VARIANT_SMALL_CAPS, "Small-Caps" },
-  { PANGO_VARIANT_ALL_SMALL_CAPS, "All-Small-Caps" },
-  { PANGO_VARIANT_PETITE_CAPS, "Petite-Caps" },
-  { PANGO_VARIANT_ALL_PETITE_CAPS, "All-Petite-Caps" },
-  { PANGO_VARIANT_UNICASE, "Unicase" },
-  { PANGO_VARIANT_TITLE_CAPS, "Title-Caps" }
+  { PANGO2_VARIANT_NORMAL, "" },
+  { PANGO2_VARIANT_SMALL_CAPS, "Small-Caps" },
+  { PANGO2_VARIANT_ALL_SMALL_CAPS, "All-Small-Caps" },
+  { PANGO2_VARIANT_PETITE_CAPS, "Petite-Caps" },
+  { PANGO2_VARIANT_ALL_PETITE_CAPS, "All-Petite-Caps" },
+  { PANGO2_VARIANT_UNICASE, "Unicase" },
+  { PANGO2_VARIANT_TITLE_CAPS, "Title-Caps" }
 };
 
 static const FieldMap weight_map[] = {
-  { PANGO_WEIGHT_THIN, "Thin" },
-  { PANGO_WEIGHT_ULTRALIGHT, "Ultra-Light" },
-  { PANGO_WEIGHT_ULTRALIGHT, "Extra-Light" },
-  { PANGO_WEIGHT_LIGHT, "Light" },
-  { PANGO_WEIGHT_SEMILIGHT, "Semi-Light" },
-  { PANGO_WEIGHT_SEMILIGHT, "Demi-Light" },
-  { PANGO_WEIGHT_BOOK, "Book" },
-  { PANGO_WEIGHT_NORMAL, "" },
-  { PANGO_WEIGHT_NORMAL, "Regular" },
-  { PANGO_WEIGHT_MEDIUM, "Medium" },
-  { PANGO_WEIGHT_SEMIBOLD, "Semi-Bold" },
-  { PANGO_WEIGHT_SEMIBOLD, "Demi-Bold" },
-  { PANGO_WEIGHT_BOLD, "Bold" },
-  { PANGO_WEIGHT_ULTRABOLD, "Ultra-Bold" },
-  { PANGO_WEIGHT_ULTRABOLD, "Extra-Bold" },
-  { PANGO_WEIGHT_HEAVY, "Heavy" },
-  { PANGO_WEIGHT_HEAVY, "Black" },
-  { PANGO_WEIGHT_ULTRAHEAVY, "Ultra-Heavy" },
-  { PANGO_WEIGHT_ULTRAHEAVY, "Extra-Heavy" },
-  { PANGO_WEIGHT_ULTRAHEAVY, "Ultra-Black" },
-  { PANGO_WEIGHT_ULTRAHEAVY, "Extra-Black" }
+  { PANGO2_WEIGHT_THIN, "Thin" },
+  { PANGO2_WEIGHT_ULTRALIGHT, "Ultra-Light" },
+  { PANGO2_WEIGHT_ULTRALIGHT, "Extra-Light" },
+  { PANGO2_WEIGHT_LIGHT, "Light" },
+  { PANGO2_WEIGHT_SEMILIGHT, "Semi-Light" },
+  { PANGO2_WEIGHT_SEMILIGHT, "Demi-Light" },
+  { PANGO2_WEIGHT_BOOK, "Book" },
+  { PANGO2_WEIGHT_NORMAL, "" },
+  { PANGO2_WEIGHT_NORMAL, "Regular" },
+  { PANGO2_WEIGHT_MEDIUM, "Medium" },
+  { PANGO2_WEIGHT_SEMIBOLD, "Semi-Bold" },
+  { PANGO2_WEIGHT_SEMIBOLD, "Demi-Bold" },
+  { PANGO2_WEIGHT_BOLD, "Bold" },
+  { PANGO2_WEIGHT_ULTRABOLD, "Ultra-Bold" },
+  { PANGO2_WEIGHT_ULTRABOLD, "Extra-Bold" },
+  { PANGO2_WEIGHT_HEAVY, "Heavy" },
+  { PANGO2_WEIGHT_HEAVY, "Black" },
+  { PANGO2_WEIGHT_ULTRAHEAVY, "Ultra-Heavy" },
+  { PANGO2_WEIGHT_ULTRAHEAVY, "Extra-Heavy" },
+  { PANGO2_WEIGHT_ULTRAHEAVY, "Ultra-Black" },
+  { PANGO2_WEIGHT_ULTRAHEAVY, "Extra-Black" }
 };
 
 static const FieldMap stretch_map[] = {
-  { PANGO_STRETCH_ULTRA_CONDENSED, "Ultra-Condensed" },
-  { PANGO_STRETCH_EXTRA_CONDENSED, "Extra-Condensed" },
-  { PANGO_STRETCH_CONDENSED,       "Condensed" },
-  { PANGO_STRETCH_SEMI_CONDENSED,  "Semi-Condensed" },
-  { PANGO_STRETCH_NORMAL,          "" },
-  { PANGO_STRETCH_SEMI_EXPANDED,   "Semi-Expanded" },
-  { PANGO_STRETCH_EXPANDED,        "Expanded" },
-  { PANGO_STRETCH_EXTRA_EXPANDED,  "Extra-Expanded" },
-  { PANGO_STRETCH_ULTRA_EXPANDED,  "Ultra-Expanded" }
+  { PANGO2_STRETCH_ULTRA_CONDENSED, "Ultra-Condensed" },
+  { PANGO2_STRETCH_EXTRA_CONDENSED, "Extra-Condensed" },
+  { PANGO2_STRETCH_CONDENSED,       "Condensed" },
+  { PANGO2_STRETCH_SEMI_CONDENSED,  "Semi-Condensed" },
+  { PANGO2_STRETCH_NORMAL,          "" },
+  { PANGO2_STRETCH_SEMI_EXPANDED,   "Semi-Expanded" },
+  { PANGO2_STRETCH_EXPANDED,        "Expanded" },
+  { PANGO2_STRETCH_EXTRA_EXPANDED,  "Extra-Expanded" },
+  { PANGO2_STRETCH_ULTRA_EXPANDED,  "Ultra-Expanded" }
 };
 
 static const FieldMap gravity_map[] = {
-  { PANGO_GRAVITY_SOUTH, "Not-Rotated" },
-  { PANGO_GRAVITY_SOUTH, "South" },
-  { PANGO_GRAVITY_NORTH, "Upside-Down" },
-  { PANGO_GRAVITY_NORTH, "North" },
-  { PANGO_GRAVITY_EAST,  "Rotated-Left" },
-  { PANGO_GRAVITY_EAST,  "East" },
-  { PANGO_GRAVITY_WEST,  "Rotated-Right" },
-  { PANGO_GRAVITY_WEST,  "West" }
+  { PANGO2_GRAVITY_SOUTH, "Not-Rotated" },
+  { PANGO2_GRAVITY_SOUTH, "South" },
+  { PANGO2_GRAVITY_NORTH, "Upside-Down" },
+  { PANGO2_GRAVITY_NORTH, "North" },
+  { PANGO2_GRAVITY_EAST,  "Rotated-Left" },
+  { PANGO2_GRAVITY_EAST,  "East" },
+  { PANGO2_GRAVITY_WEST,  "Rotated-Right" },
+  { PANGO2_GRAVITY_WEST,  "West" }
 };
 
 static gboolean
@@ -1073,12 +1073,12 @@ parse_int (const char *word,
 }
 
 static gboolean
-find_field (const char *what,
+find_field (const char     *what,
             const FieldMap *map,
-            int n_elements,
-            const char *str,
-            int len,
-            int *val)
+            int             n_elements,
+            const char     *str,
+            int             len,
+            int            *val)
 {
   int i;
   gboolean had_prefix = FALSE;
@@ -1111,7 +1111,9 @@ find_field (const char *what,
 }
 
 static gboolean
-find_field_any (const char *str, int len, PangoFontDescription *desc)
+find_field_any (const char            *str,
+                int                    len,
+                Pango2FontDescription *desc)
 {
   if (field_matches ("Normal", str, len))
     return TRUE;
@@ -1127,11 +1129,11 @@ find_field_any (const char *str, int len, PangoFontDescription *desc)
     } \
   } G_STMT_END
 
-  FIELD (weight,  PANGO_FONT_MASK_WEIGHT);
-  FIELD (style,   PANGO_FONT_MASK_STYLE);
-  FIELD (stretch, PANGO_FONT_MASK_STRETCH);
-  FIELD (variant, PANGO_FONT_MASK_VARIANT);
-  FIELD (gravity, PANGO_FONT_MASK_GRAVITY);
+  FIELD (weight,  PANGO2_FONT_MASK_WEIGHT);
+  FIELD (style,   PANGO2_FONT_MASK_STYLE);
+  FIELD (stretch, PANGO2_FONT_MASK_STRETCH);
+  FIELD (variant, PANGO2_FONT_MASK_VARIANT);
+  FIELD (gravity, PANGO2_FONT_MASK_GRAVITY);
 
 #undef FIELD
 
@@ -1139,7 +1141,10 @@ find_field_any (const char *str, int len, PangoFontDescription *desc)
 }
 
 static const char *
-getword (const char *str, const char *last, size_t *wordlen, const char *stop)
+getword (const char *str,
+         const char *last,
+         size_t     *wordlen,
+         const char *stop)
 {
   const char *result;
 
@@ -1158,7 +1163,7 @@ getword (const char *str, const char *last, size_t *wordlen, const char *stop)
 static gboolean
 parse_size (const char *word,
             size_t      wordlen,
-            int        *pango_size,
+            int        *pango2_size,
             gboolean   *size_is_absolute)
 {
   char *end;
@@ -1169,8 +1174,8 @@ parse_size (const char *word,
        (end + 2 == word + wordlen && !strncmp (end, "px", 2))
       ) && size >= 0 && size <= 1000000) /* word is a valid float */
     {
-      if (pango_size)
-        *pango_size = (int)(size * PANGO_SCALE + 0.5);
+      if (pango2_size)
+        *pango2_size = (int)(size * PANGO2_SCALE + 0.5);
 
       if (size_is_absolute)
         *size_is_absolute = end < word + wordlen;
@@ -1199,7 +1204,7 @@ parse_variations (const char  *word,
 }
 
 static void
-faceid_from_variations (PangoFontDescription *desc)
+faceid_from_variations (Pango2FontDescription *desc)
 {
   const char *p, *q;
 
@@ -1219,7 +1224,7 @@ faceid_from_variations (PangoFontDescription *desc)
           desc->faceid = g_strdup (p);
           p = NULL;
         }
-      desc->mask |= PANGO_FONT_MASK_FACEID;
+      desc->mask |= PANGO2_FONT_MASK_FACEID;
     }
 
   if (p != desc->variations)
@@ -1228,12 +1233,12 @@ faceid_from_variations (PangoFontDescription *desc)
       g_free (desc->variations);
       desc->variations = variations;
       if (variations == NULL || *variations == '\0')
-        desc->mask &= ~PANGO_FONT_MASK_VARIATIONS;
+        desc->mask &= ~PANGO2_FONT_MASK_VARIATIONS;
     }
 }
 
 /**
- * pango_font_description_from_string:
+ * pango2_font_description_from_string:
  * @str: string representation of a font description.
  *
  * Creates a new font description from a string representation.
@@ -1281,23 +1286,23 @@ faceid_from_variations (PangoFontDescription *desc)
  *
  *     "Cantarell Italic Light 15 \@wght=200"
  *
- * Return value: a new `PangoFontDescription`.
+ * Return value: a new `Pango2FontDescription`.
  */
-PangoFontDescription *
-pango_font_description_from_string (const char *str)
+Pango2FontDescription *
+pango2_font_description_from_string (const char *str)
 {
-  PangoFontDescription *desc;
+  Pango2FontDescription *desc;
   const char *p, *last;
   size_t len, wordlen;
 
   g_return_val_if_fail (str != NULL, NULL);
 
-  desc = pango_font_description_new ();
+  desc = pango2_font_description_new ();
 
-  desc->mask = PANGO_FONT_MASK_STYLE |
-               PANGO_FONT_MASK_WEIGHT |
-               PANGO_FONT_MASK_VARIANT |
-               PANGO_FONT_MASK_STRETCH;
+  desc->mask = PANGO2_FONT_MASK_STYLE |
+               PANGO2_FONT_MASK_WEIGHT |
+               PANGO2_FONT_MASK_VARIANT |
+               PANGO2_FONT_MASK_STRETCH;
 
   len = strlen (str);
   last = str + len;
@@ -1307,7 +1312,7 @@ pango_font_description_from_string (const char *str)
     {
       if (parse_variations (p, wordlen, &desc->variations))
         {
-          desc->mask |= PANGO_FONT_MASK_VARIATIONS;
+          desc->mask |= PANGO2_FONT_MASK_VARIATIONS;
           last = p;
 
           faceid_from_variations (desc);
@@ -1322,7 +1327,7 @@ pango_font_description_from_string (const char *str)
       if (parse_size (p, wordlen, &desc->size, &size_is_absolute))
         {
           desc->size_is_absolute = size_is_absolute;
-          desc->mask |= PANGO_FONT_MASK_SIZE;
+          desc->mask |= PANGO2_FONT_MASK_SIZE;
           last = p;
         }
     }
@@ -1375,14 +1380,18 @@ pango_font_description_from_string (const char *str)
       desc->family_name = g_strjoinv (",", families);
       g_strfreev (families);
 
-      desc->mask |= PANGO_FONT_MASK_FAMILY;
+      desc->mask |= PANGO2_FONT_MASK_FAMILY;
     }
 
   return desc;
 }
 
 static void
-append_field (GString *str, const char *what, const FieldMap *map, int n_elements, int val)
+append_field (GString        *str,
+              const char     *what,
+              const FieldMap *map,
+              int             n_elements,
+              int             val)
 {
   int i;
   for (i=0; i<n_elements; i++)
@@ -1405,12 +1414,12 @@ append_field (GString *str, const char *what, const FieldMap *map, int n_element
 }
 
 /**
- * pango_font_description_to_string:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_to_string:
+ * @desc: a `Pango2FontDescription`
  *
  * Creates a string representation of a font description.
  *
- * See [func@Pango.FontDescription.from_string] for a description
+ * See [func@Pango2.FontDescription.from_string] for a description
  * of the format of the string representation. The family list in
  * the string description will only have a terminating comma if
  * the last word of the list is a valid style option.
@@ -1418,7 +1427,7 @@ append_field (GString *str, const char *what, const FieldMap *map, int n_element
  * Return value: a newly allocated string
  */
 char *
-pango_font_description_to_string (const PangoFontDescription *desc)
+pango2_font_description_to_string (const Pango2FontDescription *desc)
 {
   GString *result;
   gboolean in_variations = FALSE;
@@ -1427,7 +1436,7 @@ pango_font_description_to_string (const PangoFontDescription *desc)
 
   result = g_string_new (NULL);
 
-  if (G_LIKELY (desc->family_name && desc->mask & PANGO_FONT_MASK_FAMILY))
+  if (G_LIKELY (desc->family_name && desc->mask & PANGO2_FONT_MASK_FAMILY))
     {
       const char *p;
       size_t wordlen;
@@ -1442,51 +1451,51 @@ pango_font_description_to_string (const PangoFontDescription *desc)
       if (wordlen != 0 &&
           (find_field_any (p, wordlen, NULL) ||
            (parse_size (p, wordlen, NULL, NULL) &&
-            desc->weight == PANGO_WEIGHT_NORMAL &&
-            desc->style == PANGO_STYLE_NORMAL &&
-            desc->stretch == PANGO_STRETCH_NORMAL &&
-            desc->variant == PANGO_VARIANT_NORMAL &&
-            (desc->mask & (PANGO_FONT_MASK_GRAVITY | PANGO_FONT_MASK_SIZE)) == 0)))
+            desc->weight == PANGO2_WEIGHT_NORMAL &&
+            desc->style == PANGO2_STYLE_NORMAL &&
+            desc->stretch == PANGO2_STRETCH_NORMAL &&
+            desc->variant == PANGO2_VARIANT_NORMAL &&
+            (desc->mask & (PANGO2_FONT_MASK_GRAVITY | PANGO2_FONT_MASK_SIZE)) == 0)))
         g_string_append_c (result, ',');
     }
 
 #define FIELD(NAME, MASK) \
   append_field (result, G_STRINGIFY (NAME), NAME##_map, G_N_ELEMENTS (NAME##_map), desc->NAME)
 
-  FIELD (weight,  PANGO_FONT_MASK_WEIGHT);
-  FIELD (style,   PANGO_FONT_MASK_STYLE);
-  FIELD (stretch, PANGO_FONT_MASK_STRETCH);
-  FIELD (variant, PANGO_FONT_MASK_VARIANT);
-  if (desc->mask & PANGO_FONT_MASK_GRAVITY)
-    FIELD (gravity, PANGO_FONT_MASK_GRAVITY);
+  FIELD (weight,  PANGO2_FONT_MASK_WEIGHT);
+  FIELD (style,   PANGO2_FONT_MASK_STYLE);
+  FIELD (stretch, PANGO2_FONT_MASK_STRETCH);
+  FIELD (variant, PANGO2_FONT_MASK_VARIANT);
+  if (desc->mask & PANGO2_FONT_MASK_GRAVITY)
+    FIELD (gravity, PANGO2_FONT_MASK_GRAVITY);
 
 #undef FIELD
 
   if (result->len == 0)
     g_string_append (result, "Normal");
 
-  if (desc->mask & PANGO_FONT_MASK_SIZE)
+  if (desc->mask & PANGO2_FONT_MASK_SIZE)
     {
       char buf[G_ASCII_DTOSTR_BUF_SIZE];
 
       if (result->len > 0 || result->str[result->len -1] != ' ')
         g_string_append_c (result, ' ');
 
-      g_ascii_dtostr (buf, sizeof (buf), (double)desc->size / PANGO_SCALE);
+      g_ascii_dtostr (buf, sizeof (buf), (double)desc->size / PANGO2_SCALE);
       g_string_append (result, buf);
 
       if (desc->size_is_absolute)
         g_string_append (result, "px");
     }
 
-  if (desc->mask & PANGO_FONT_MASK_FACEID)
+  if (desc->mask & PANGO2_FONT_MASK_FACEID)
     {
       in_variations = TRUE;
       g_string_append (result, " @");
       g_string_append_printf (result, "faceid=%s", desc->faceid);
     }
 
-  if ((desc->variations && desc->mask & PANGO_FONT_MASK_VARIATIONS) &&
+  if ((desc->variations && desc->mask & PANGO2_FONT_MASK_VARIATIONS) &&
       desc->variations[0] != '\0')
     {
       if (!in_variations)
@@ -1500,12 +1509,12 @@ pango_font_description_to_string (const PangoFontDescription *desc)
 }
 
 static gboolean
-parse_field (const char *what,
+parse_field (const char     *what,
              const FieldMap *map,
-             int n_elements,
-             const char *str,
-             int *val,
-             gboolean warn)
+             int             n_elements,
+             const char     *str,
+             int            *val,
+             gboolean        warn)
 {
   gboolean found;
   int len = strlen (str);
@@ -1557,9 +1566,9 @@ parse_field (const char *what,
   parse_field (G_STRINGIFY (NAME), NAME##_map, G_N_ELEMENTS (NAME##_map), str, (int *)(void *)NAME, warn)
 
 /*< private >
- * pango_parse_style:
+ * pango2_parse_style:
  * @str: a string to parse.
- * @style: (out): a `PangoStyle` to store the result in.
+ * @style: (out): a `Pango2Style` to store the result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  *
  * Parses a font style.
@@ -1571,17 +1580,17 @@ parse_field (const char *what,
  * Return value: %TRUE if @str was successfully parsed.
  */
 gboolean
-pango_parse_style (const char *str,
-                   PangoStyle *style,
-                   gboolean    warn)
+pango2_parse_style (const char  *str,
+                    Pango2Style *style,
+                    gboolean     warn)
 {
-  return FIELD (style,   PANGO_FONT_MASK_STYLE);
+  return FIELD (style,   PANGO2_FONT_MASK_STYLE);
 }
 
 /*< private >
- * pango_parse_variant:
+ * pango2_parse_variant:
  * @str: a string to parse.
- * @variant: (out): a `PangoVariant` to store the result in.
+ * @variant: (out): a `Pango2Variant` to store the result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  *
  * Parses a font variant.
@@ -1593,17 +1602,17 @@ pango_parse_style (const char *str,
  * Return value: %TRUE if @str was successfully parsed.
  */
 gboolean
-pango_parse_variant (const char   *str,
-                     PangoVariant *variant,
-                     gboolean      warn)
+pango2_parse_variant (const char    *str,
+                      Pango2Variant *variant,
+                      gboolean       warn)
 {
-  return FIELD (variant, PANGO_FONT_MASK_VARIANT);
+  return FIELD (variant, PANGO2_FONT_MASK_VARIANT);
 }
 
 /*< private >
- * pango_parse_weight:
+ * pango2_parse_weight:
  * @str: a string to parse.
- * @weight: (out): a `PangoWeight` to store the result in.
+ * @weight: (out): a `Pango2Weight` to store the result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  *
  * Parses a font weight.
@@ -1615,17 +1624,17 @@ pango_parse_variant (const char   *str,
  * Return value: %TRUE if @str was successfully parsed.
  */
 gboolean
-pango_parse_weight (const char  *str,
-                    PangoWeight *weight,
-                    gboolean     warn)
+pango2_parse_weight (const char   *str,
+                     Pango2Weight *weight,
+                     gboolean      warn)
 {
-  return FIELD (weight,  PANGO_FONT_MASK_WEIGHT);
+  return FIELD (weight,  PANGO2_FONT_MASK_WEIGHT);
 }
 
 /*< private >
- * pango_parse_stretch:
+ * pango2_parse_stretch:
  * @str: a string to parse.
- * @stretch: (out): a `PangoStretch` to store the result in.
+ * @stretch: (out): a `Pango2Stretch` to store the result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  *
  * Parses a font stretch.
@@ -1639,21 +1648,21 @@ pango_parse_weight (const char  *str,
  * Return value: %TRUE if @str was successfully parsed.
  */
 gboolean
-pango_parse_stretch (const char   *str,
-                     PangoStretch *stretch,
-                     gboolean      warn)
+pango2_parse_stretch (const char    *str,
+                      Pango2Stretch *stretch,
+                      gboolean       warn)
 {
-  return FIELD (stretch, PANGO_FONT_MASK_STRETCH);
+  return FIELD (stretch, PANGO2_FONT_MASK_STRETCH);
 }
 
 /**
- * pango_font_description_set_faceid_static:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_set_faceid_static:
+ * @desc: a `Pango2FontDescription`
  * @faceid: the faceid string
  *
  * Sets the faceid field of a font description.
  *
- * This is like [method@Pango.FontDescription.set_faceid], except
+ * This is like [method@Pango2.FontDescription.set_faceid], except
  * that no copy of @faceid is made. The caller must make sure that
  * the string passed in stays around until @desc has been freed
  * or the name is set again. This function can be used if
@@ -1661,8 +1670,8 @@ pango_parse_stretch (const char   *str,
  * or if @desc is only needed temporarily.
  */
 void
-pango_font_description_set_faceid_static (PangoFontDescription *desc,
-                                          const char           *faceid)
+pango2_font_description_set_faceid_static (Pango2FontDescription *desc,
+                                           const char            *faceid)
 {
   g_return_if_fail (desc != NULL);
 
@@ -1676,59 +1685,59 @@ pango_font_description_set_faceid_static (PangoFontDescription *desc,
     {
       desc->faceid = (char *)faceid;
       desc->static_faceid = TRUE;
-      desc->mask |= PANGO_FONT_MASK_FACEID;
+      desc->mask |= PANGO2_FONT_MASK_FACEID;
     }
   else
     {
       desc->faceid = pfd_defaults.faceid;
       desc->static_faceid = pfd_defaults.static_faceid;
-      desc->mask &= ~PANGO_FONT_MASK_FACEID;
+      desc->mask &= ~PANGO2_FONT_MASK_FACEID;
     }
 }
 
 /**
- * pango_font_description_set_faceid:
- * @desc: a `PangoFontDescription`.
+ * pango2_font_description_set_faceid:
+ * @desc: a `Pango2FontDescription`.
  * @faceid: (nullable): the faceid string
  *
  * Sets the faceid field of a font description.
  *
- * The faceid is mainly for internal use by Pango, to ensure
+ * The faceid is mainly for internal use by Pango2, to ensure
  * that font -> description -> font roundtrips end up with
  * the same font they started with, if possible.
  *
- * Font descriptions originating from [method@Pango.FontFace.describe]
- * should ideally include a faceid. Pango takes the faceid
+ * Font descriptions originating from [method@Pango2.FontFace.describe]
+ * should ideally include a faceid. Pango2 takes the faceid
  * into account when looking for the best matching face while
  * loading a fontset or font.
  *
  * The format of this string is not guaranteed.
  */
 void
-pango_font_description_set_faceid (PangoFontDescription *desc,
-                                    const char           *faceid)
+pango2_font_description_set_faceid (Pango2FontDescription *desc,
+                                    const char            *faceid)
 {
   g_return_if_fail (desc != NULL);
 
-  pango_font_description_set_faceid_static (desc, g_strdup (faceid));
+  pango2_font_description_set_faceid_static (desc, g_strdup (faceid));
   if (faceid)
     desc->static_faceid = FALSE;
 }
 
 /**
- * pango_font_description_get_faceid:
- * @desc: a `PangoFontDescription`
+ * pango2_font_description_get_faceid:
+ * @desc: a `Pango2FontDescription`
  *
  * Gets the faceid field of a font description.
  *
- * See [method@Pango.FontDescription.set_faceid].
+ * See [method@Pango2.FontDescription.set_faceid].
  *
  * Return value: (nullable): the faceid field for the font
  *   description, or %NULL if not previously set. This has the same
  *   life-time as the font description itself and should not be freed.
  */
 const char *
-pango_font_description_get_faceid (const PangoFontDescription *desc)
+pango2_font_description_get_faceid (const Pango2FontDescription *desc)
 {
   g_return_val_if_fail (desc != NULL, NULL);
 

@@ -25,19 +25,19 @@
 G_BEGIN_DECLS
 
 
-typedef struct _PangoColor PangoColor;
+typedef struct _Pango2Color Pango2Color;
 
 /**
- * PangoColor:
+ * Pango2Color:
  * @red: value of the red component
  * @green: value of the green component
  * @blue: value of the blue component
  * @alpha: value of the alpha component
  *
- * The `PangoColor` structure is used to
+ * The `Pango2Color` structure is used to
  * represent a color in an uncalibrated RGB color-space.
  */
-struct _PangoColor
+struct _Pango2Color
 {
   guint16 red;
   guint16 green;
@@ -45,27 +45,27 @@ struct _PangoColor
   guint16 alpha;
 };
 
-#define PANGO_TYPE_COLOR (pango_color_get_type ())
+#define PANGO2_TYPE_COLOR (pango2_color_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-GType       pango_color_get_type         (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+GType        pango2_color_get_type         (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_ALL
-PangoColor *pango_color_copy             (const PangoColor *src);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Color *pango2_color_copy             (const Pango2Color *src);
 
-PANGO_AVAILABLE_IN_ALL
-void        pango_color_free             (PangoColor       *color);
+PANGO2_AVAILABLE_IN_ALL
+void         pango2_color_free             (Pango2Color       *color);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean    pango_color_equal            (const PangoColor *color1,
-                                          const PangoColor *color2);
-PANGO_AVAILABLE_IN_ALL
-gboolean    pango_color_parse            (PangoColor       *color,
-                                          const char       *spec);
+PANGO2_AVAILABLE_IN_ALL
+gboolean     pango2_color_equal            (const Pango2Color *color1,
+                                            const Pango2Color *color2);
+PANGO2_AVAILABLE_IN_ALL
+gboolean     pango2_color_parse            (Pango2Color       *color,
+                                            const char        *spec);
 
-PANGO_AVAILABLE_IN_ALL
-char       *pango_color_to_string        (const PangoColor *color);
+PANGO2_AVAILABLE_IN_ALL
+char *       pango2_color_to_string        (const Pango2Color *color);
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoColor, pango_color_free)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(Pango2Color, pango2_color_free)
 
 G_END_DECLS

@@ -40,7 +40,7 @@ typedef struct {
 } ScriptInfo;
 
 typedef struct {
-  PangoLanguage *lang;
+  Pango2Language *lang;
   ScriptInfo scripts[MAX_SCRIPTS];
 } LangInfo;
 
@@ -97,7 +97,7 @@ script_for_char (gunichar   ch,
 	}
 
       if (j == MAX_SCRIPTS)
-	fail ("More than %d scripts found for %s.  Increase MAX_SCRIPTS.\n", MAX_SCRIPTS, pango_language_to_string (info->lang));
+	fail ("More than %d scripts found for %s.  Increase MAX_SCRIPTS.\n", MAX_SCRIPTS, pango2_language_to_string (info->lang));
 
       info->scripts[j].freq++;
     }
@@ -145,7 +145,7 @@ do_lang (GArray        *script_array,
   LangInfo info;
   int j;
 
-  info.lang = pango_language_from_string ((const char *)lang);
+  info.lang = pango2_language_from_string ((const char *)lang);
 
   for (j = 0; j < MAX_SCRIPTS; j++)
     {
@@ -195,8 +195,8 @@ compare_lang (gconstpointer a,
   const LangInfo *info_a = a;
   const LangInfo *info_b = b;
 
-  return strcmp (pango_language_to_string (info_a->lang),
-		 pango_language_to_string (info_b->lang));
+  return strcmp (pango2_language_to_string (info_a->lang),
+		 pango2_language_to_string (info_b->lang));
 }
 
 int main (void)
@@ -238,7 +238,7 @@ int main (void)
       LangInfo *info = &g_array_index (script_array, LangInfo, i);
 
       max_lang_len = MAX (max_lang_len,
-			  (int)strlen (pango_language_to_string (info->lang)));
+			  (int)strlen (pango2_language_to_string (info->lang)));
 
       g_qsort_with_data (info->scripts,
 			 G_N_ELEMENTS (info->scripts),
@@ -284,8 +284,8 @@ int main (void)
       LangInfo *info = &g_array_index (script_array, LangInfo, i);
       
       g_print ("  { \"%s\", %*s{ ",
-	       pango_language_to_string (info->lang),
-	       (int)(max_lang_len - strlen (pango_language_to_string (info->lang))), "");
+	       pango2_language_to_string (info->lang),
+	       (int)(max_lang_len - strlen (pango2_language_to_string (info->lang))), "");
       for (j = 0; j < MAX_SCRIPTS; j++)
 	{
 	  if (!info->scripts[j].freq)

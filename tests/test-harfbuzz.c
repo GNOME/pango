@@ -1,5 +1,5 @@
-/* Pango
- * test-harfbuzz.c: Test Pango harfbuzz apis
+/* Pango2
+ * test-harfbuzz.c: Test Pango2 harfbuzz apis
  *
  * Copyright (C) 2019 Red Hat, Inc.
  *
@@ -24,15 +24,15 @@
 #include "test-common.h"
 
 /* Some basic checks that the hb_font_t returned
- * by pango_font_get_hb_font is functional
+ * by pango2_font_get_hb_font is functional
  */
 static void
 test_hb_font (void)
 {
-  PangoFontMap *map = pango_font_map_get_default ();
-  PangoFontFamily *family;
-  PangoFontFace *face;
-  PangoFont *font;
+  Pango2FontMap *map = pango2_font_map_get_default ();
+  Pango2FontFamily *family;
+  Pango2FontFace *face;
+  Pango2Font *font;
   hb_font_t *hb_font;
   hb_bool_t res;
   hb_codepoint_t glyph;
@@ -43,14 +43,14 @@ test_hb_font (void)
   g_assert_true (g_list_model_get_n_items (G_LIST_MODEL (family)) > 0);
   face = g_list_model_get_item (G_LIST_MODEL (family), 0);
 
-  font = PANGO_FONT (pango_hb_font_new (PANGO_HB_FACE (face),
-                                        12 * PANGO_SCALE,
+  font = PANGO2_FONT (pango2_hb_font_new (PANGO2_HB_FACE (face),
+                                        12 * PANGO2_SCALE,
                                         NULL, 0,
                                         NULL, 0,
-                                        PANGO_GRAVITY_SOUTH,
+                                        PANGO2_GRAVITY_SOUTH,
                                         96., NULL));
 
-  hb_font = pango_font_get_hb_font (font);
+  hb_font = pango2_font_get_hb_font (font);
 
   g_assert (hb_font != NULL);
 

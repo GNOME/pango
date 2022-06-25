@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * test-common.c: Common test code
  *
  * Copyright (C) 2014 Red Hat, Inc
@@ -169,44 +169,44 @@ file_has_prefix (const char  *filename,
 }
 
 void
-print_attribute (PangoAttribute *attr, GString *string)
+print_attribute (Pango2Attribute *attr, GString *string)
 {
-  PangoAttrList *l = pango_attr_list_new ();
+  Pango2AttrList *l = pango2_attr_list_new ();
   char *s;
 
-  pango_attr_list_insert (l, pango_attribute_copy (attr));
-  s = pango_attr_list_to_string (l);
+  pango2_attr_list_insert (l, pango2_attribute_copy (attr));
+  s = pango2_attr_list_to_string (l);
   g_string_append (string, s);
   g_free (s);
-  pango_attr_list_unref (l);
+  pango2_attr_list_unref (l);
 }
 
 void
-print_attr_list (PangoAttrList *attrs, GString *string)
+print_attr_list (Pango2AttrList *attrs, GString *string)
 {
-  PangoAttrIterator *iter;
+  Pango2AttrIterator *iter;
 
   if (!attrs)
     return;
 
-  iter = pango_attr_list_get_iterator (attrs);
+  iter = pango2_attr_list_get_iterator (attrs);
   do {
     int start, end;
     GSList *list, *l;
 
-    pango_attr_iterator_range (iter, &start, &end);
+    pango2_attr_iterator_range (iter, &start, &end);
     g_string_append_printf (string, "range %d %d\n", start, end);
-    list = pango_attr_iterator_get_attrs (iter);
+    list = pango2_attr_iterator_get_attrs (iter);
     for (l = list; l; l = l->next)
       {
-        PangoAttribute *attr = l->data;
+        Pango2Attribute *attr = l->data;
         print_attribute (attr, string);
         g_string_append (string, "\n");
       }
-    g_slist_free_full (list, (GDestroyNotify)pango_attribute_destroy);
-  } while (pango_attr_iterator_next (iter));
+    g_slist_free_full (list, (GDestroyNotify)pango2_attribute_destroy);
+  } while (pango2_attr_iterator_next (iter));
 
-  pango_attr_iterator_destroy (iter);
+  pango2_attr_iterator_destroy (iter);
 }
 
 void
@@ -216,7 +216,7 @@ print_attributes (GSList *attrs, GString *string)
 
   for (l = attrs; l; l = l->next)
     {
-      PangoAttribute *attr = l->data;
+      Pango2Attribute *attr = l->data;
 
       print_attribute (attr, string);
       g_string_append (string, "\n");
@@ -238,14 +238,14 @@ get_script_name (GUnicodeScript s)
 }
 
 static void
-add_file (PangoFontMap *map,
+add_file (Pango2FontMap *map,
           const char   *path,
           const char   *name)
 {
   char *fullname;
   hb_blob_t *blob;
   hb_face_t *hbface;
-  PangoHbFace *face;
+  Pango2HbFace *face;
 
   fullname = g_build_filename (path, name, NULL);
 
@@ -261,22 +261,22 @@ add_file (PangoFontMap *map,
   if (hb_ot_var_get_axis_count (hbface) == 0)
     {
       /* Add the default instance */
-      face = pango_hb_face_new_from_hb_face (hbface, -1, NULL, NULL);
-      pango_font_map_add_face (map, PANGO_FONT_FACE (face));
+      face = pango2_hb_face_new_from_hb_face (hbface, -1, NULL, NULL);
+      pango2_font_map_add_face (map, PANGO2_FONT_FACE (face));
       return;
     }
 
   /* Add the variable face */
-  face = pango_hb_face_new_from_hb_face (hbface, -2, "Variable", NULL);
-  pango_font_map_add_face (map, PANGO_FONT_FACE (face));
+  face = pango2_hb_face_new_from_hb_face (hbface, -2, "Variable", NULL);
+  pango2_font_map_add_face (map, PANGO2_FONT_FACE (face));
 
   if (hb_ot_var_get_named_instance_count (hbface) > 0)
     {
       /* Add named instances */
       for (int i = 0; i < hb_ot_var_get_named_instance_count (hbface); i++)
         {
-          face = pango_hb_face_new_from_hb_face (hbface, i, NULL, NULL);
-          pango_font_map_add_face (map, PANGO_FONT_FACE (face));
+          face = pango2_hb_face_new_from_hb_face (hbface, i, NULL, NULL);
+          pango2_font_map_add_face (map, PANGO2_FONT_FACE (face));
         }
     }
 
@@ -284,7 +284,7 @@ add_file (PangoFontMap *map,
 }
 
 static void
-add_generic_family (PangoFontMap *map,
+add_generic_family (Pango2FontMap *map,
                     const char   *path,
                     const char   *name)
 {
@@ -294,7 +294,7 @@ add_generic_family (PangoFontMap *map,
   char *basename;
   char **families;
   GError *error = NULL;
-  PangoGenericFamily *generic;
+  Pango2GenericFamily *generic;
 
   g_assert (g_str_has_suffix (name, ".generic"));
 
@@ -308,28 +308,28 @@ add_generic_family (PangoFontMap *map,
   basename = g_strdup (name);
   basename[strlen (name) - strlen (".generic")] = '\0';
 
-  generic = pango_generic_family_new (basename);
+  generic = pango2_generic_family_new (basename);
 
   families = g_strsplit (contents, "\n", -1);
   for (int i = 0; families[i]; i++)
     {
       const char *name = families[i];
-      PangoFontFamily *family;
+      Pango2FontFamily *family;
 
       if (name[0] == '\0')
         continue;
 
-      family = pango_font_map_get_family (map, name);
+      family = pango2_font_map_get_family (map, name);
       if (!family)
         {
           g_warning ("no such family: %s", name);
           continue;
         }
 
-      pango_generic_family_add_family (generic, family);
+      pango2_generic_family_add_family (generic, family);
     }
 
-  pango_font_map_add_family (map, PANGO_FONT_FAMILY (generic));
+  pango2_font_map_add_family (map, PANGO2_FONT_FAMILY (generic));
 
   g_strfreev (families);
   g_free (basename);
@@ -337,7 +337,7 @@ add_generic_family (PangoFontMap *map,
 }
 
 static void
-add_synthetic_faces (PangoFontMap *map,
+add_synthetic_faces (Pango2FontMap *map,
                      const char   *path,
                      const char   *name)
 {
@@ -346,10 +346,10 @@ add_synthetic_faces (PangoFontMap *map,
   GError *error = NULL;
   gsize length;
   char *basename;
-  PangoFontFamily *family;
+  Pango2FontFamily *family;
   gboolean make_italic;
-  PangoMatrix italic_matrix = { 1, 0.2, 0, 1, 0, 0 };
-  PangoHbFace *newface;
+  Pango2Matrix italic_matrix = { 1, 0.2, 0, 1, 0, 0 };
+  Pango2HbFace *newface;
   GSList *newfaces, *l;
 
   g_assert (g_str_has_suffix (name, ".synthetic"));
@@ -364,7 +364,7 @@ add_synthetic_faces (PangoFontMap *map,
   basename = g_strdup (name);
   basename[strlen (name) - strlen (".synthetic")] = '\0';
 
-  family = pango_font_map_get_family (map, basename);
+  family = pango2_font_map_get_family (map, basename);
   if (!family)
     g_error ("Family %s not found", basename);
 
@@ -375,27 +375,27 @@ add_synthetic_faces (PangoFontMap *map,
 
   for (int i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (family)); i++)
     {
-      PangoHbFace *face = g_list_model_get_item (G_LIST_MODEL (family), i);
+      Pango2HbFace *face = g_list_model_get_item (G_LIST_MODEL (family), i);
 
       if (make_italic)
         {
           char *name;
-          PangoFontDescription *desc;
+          Pango2FontDescription *desc;
 
-          name = g_strconcat (pango_font_face_get_name (PANGO_FONT_FACE (face)),
+          name = g_strconcat (pango2_font_face_get_name (PANGO2_FONT_FACE (face)),
                               " Italic",
                               NULL);
-          desc = pango_font_face_describe (PANGO_FONT_FACE (face));
-          pango_font_description_set_style (desc, PANGO_STYLE_ITALIC);
-          pango_font_description_unset_fields (desc, ~(PANGO_FONT_MASK_FAMILY|
-                                                       PANGO_FONT_MASK_STYLE|
-                                                       PANGO_FONT_MASK_STRETCH|
-                                                       PANGO_FONT_MASK_WEIGHT));
-          newface = pango_hb_face_new_synthetic (face, &italic_matrix, FALSE, name, desc);
+          desc = pango2_font_face_describe (PANGO2_FONT_FACE (face));
+          pango2_font_description_set_style (desc, PANGO2_STYLE_ITALIC);
+          pango2_font_description_unset_fields (desc, ~(PANGO2_FONT_MASK_FAMILY|
+                                                       PANGO2_FONT_MASK_STYLE|
+                                                       PANGO2_FONT_MASK_STRETCH|
+                                                       PANGO2_FONT_MASK_WEIGHT));
+          newface = pango2_hb_face_new_synthetic (face, &italic_matrix, FALSE, name, desc);
           newfaces = g_slist_prepend (newfaces, newface);
 
           g_free (name);
-          pango_font_description_free (desc);
+          pango2_font_description_free (desc);
         }
 
       g_object_unref (face);
@@ -405,7 +405,7 @@ add_synthetic_faces (PangoFontMap *map,
   for (l = newfaces; l; l = l->next)
     {
       newface = l->data;
-      pango_font_map_add_face (map, PANGO_FONT_FACE (newface));
+      pango2_font_map_add_face (map, PANGO2_FONT_FACE (newface));
     }
 
   g_slist_free (newfaces);
@@ -417,14 +417,14 @@ add_synthetic_faces (PangoFontMap *map,
 void
 install_fonts (void)
 {
-  PangoFontMap *map;
+  Pango2FontMap *map;
   GDir *dir;
   GError *error = NULL;
   GPtrArray *generic;
   GPtrArray *synthetic;
   char *path = NULL;
 
-  map = pango_font_map_new ();
+  map = pango2_font_map_new ();
 
   path = g_build_filename (g_getenv ("G_TEST_SRCDIR"), "fonts", NULL);
 
@@ -469,7 +469,7 @@ install_fonts (void)
   g_ptr_array_free (synthetic, TRUE);
 
 
-  pango_font_map_set_default (map);
+  pango2_font_map_set_default (map);
 
   g_object_unref (map);
   g_dir_close (dir);
@@ -480,30 +480,30 @@ install_fonts (void)
 void
 dump_fonts (void)
 {
-  PangoFontMap *map;
+  Pango2FontMap *map;
 
-  map = pango_font_map_get_default ();
+  map = pango2_font_map_get_default ();
 
   for (int i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (map)); i++)
     {
-      PangoFontFamily *family = g_list_model_get_item (G_LIST_MODEL (map), i);
+      Pango2FontFamily *family = g_list_model_get_item (G_LIST_MODEL (map), i);
 
-      if (PANGO_IS_GENERIC_FAMILY (family))
+      if (PANGO2_IS_GENERIC_FAMILY (family))
         {
-          g_print ("%s (generic)\n", pango_font_family_get_name (family));
+          g_print ("%s (generic)\n", pango2_font_family_get_name (family));
         }
       else
         {
-          g_print ("%s\n", pango_font_family_get_name (family));
+          g_print ("%s\n", pango2_font_family_get_name (family));
 
           for (int j = 0; j < g_list_model_get_n_items (G_LIST_MODEL (family)); j++)
             {
-              PangoFontFace *face = g_list_model_get_item (G_LIST_MODEL (family), j);
+              Pango2FontFace *face = g_list_model_get_item (G_LIST_MODEL (family), j);
 
               g_print ("\t%s %s%s\n",
-                       pango_font_family_get_name (family),
-                       pango_font_face_get_name (face),
-                       pango_font_face_is_variable (face) ? " (variable)" : "");
+                       pango2_font_family_get_name (family),
+                       pango2_font_face_get_name (face),
+                       pango2_font_face_is_variable (face) ? " (variable)" : "");
 
               g_object_unref (face);
             }

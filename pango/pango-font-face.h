@@ -26,36 +26,36 @@
 G_BEGIN_DECLS
 
 
-#define PANGO_TYPE_FONT_FACE              (pango_font_face_get_type ())
+#define PANGO2_TYPE_FONT_FACE              (pango2_font_face_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-PANGO_DECLARE_INTERNAL_TYPE (PangoFontFace, pango_font_face, PANGO, FONT_FACE, GObject)
+PANGO2_AVAILABLE_IN_ALL
+PANGO2_DECLARE_INTERNAL_TYPE (Pango2FontFace, pango2_font_face, PANGO2, FONT_FACE, GObject)
 
-PANGO_AVAILABLE_IN_ALL
-PangoFontDescription *  pango_font_face_describe       (PangoFontFace  *face);
-PANGO_AVAILABLE_IN_ALL
-const char *            pango_font_face_get_name       (PangoFontFace  *face) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_font_face_is_synthesized (PangoFontFace  *face) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_font_face_is_monospace   (PangoFontFace  *face);
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_font_face_is_variable    (PangoFontFace  *face);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontDescription * pango2_font_face_describe       (Pango2FontFace  *face);
+PANGO2_AVAILABLE_IN_ALL
+const char *            pango2_font_face_get_name       (Pango2FontFace  *face) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_font_face_is_synthesized (Pango2FontFace  *face) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_font_face_is_monospace   (Pango2FontFace  *face);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_font_face_is_variable    (Pango2FontFace  *face);
 
-PANGO_AVAILABLE_IN_ALL
-PangoFontFamily *       pango_font_face_get_family     (PangoFontFace  *face);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontFamily *      pango2_font_face_get_family     (Pango2FontFace  *face);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_font_face_supports_language
-                                                       (PangoFontFace  *face,
-                                                        PangoLanguage  *language);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_font_face_supports_language
+                                                        (Pango2FontFace  *face,
+                                                         Pango2Language  *language);
 
-PANGO_AVAILABLE_IN_ALL
-PangoLanguage **        pango_font_face_get_languages  (PangoFontFace  *face);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Language **       pango2_font_face_get_languages  (Pango2FontFace  *face);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_font_face_has_char       (PangoFontFace  *face,
-                                                        gunichar        wc);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_font_face_has_char       (Pango2FontFace  *face,
+                                                         gunichar         wc);
 
 
 G_END_DECLS

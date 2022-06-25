@@ -5,7 +5,7 @@ Title: Text Attributes and Markup
 # Text Attributes
 
 Attributed text is used in a number of places in Pango. It is used as the
-input to the itemization process and also when creating a [class@Pango.Layout].
+input to the itemization process and also when creating a [class@Pango2.Layout].
 
 Attributes can influence the various stages of the rendering pipeline. For example,
 font or size attributes will influence the font selection that is happening during
@@ -14,17 +14,17 @@ color or underline attributes will be used for rendering.
 
 Pango uses a simple structs for individual attributes. Each attribute has a type,
 and a start and end index that determine the range of characters that the attribute
-applies to. See the [enum@Pango.AttrType] enumeration for all the possible
+applies to. See the [enum@Pango2.AttrType] enumeration for all the possible
 attribute types.
 
-Attributes rarely come alone. Pango uses the [struct@Pango.AttrList] structure
+Attributes rarely come alone. Pango uses the [struct@Pango2.AttrList] structure
 to hold all attributes that apply to a piece of text.
 
 # Pango Markup
 
 Frequently, you want to display some text to the user with attributes applied to
 part of the text (for example, you might want bold or italicized words). With the
-base Pango interfaces, you could create a [struct@Pango.AttrList] and apply it to
+base Pango interfaces, you could create a [struct@Pango2.AttrList] and apply it to
 the text; the problem is that you'd need to apply attributes to some numeric range
 of characters, for example "characters 12-17." This is broken from an
 internationalization standpoint; once the text is translated, the word you wanted
@@ -32,7 +32,7 @@ to italicize could be in a different position.
 
 The solution is to include the text attributes in the string to be translated.
 Pango provides this feature with a small markup language. You can parse a marked-up
-string into the string text plus a [struct@Pango.AttrList] using either of
+string into the string text plus a [struct@Pango2.AttrList] using either of
 [func@parse_markup] or [func@markup_parser_new].
 
 A simple example of a marked-up string might be:
@@ -55,7 +55,7 @@ Arabic text:
 Pango uses GMarkup to parse this language, which means that XML features
 such as numeric character entities such as `&#169;` for © can be used too.
 
-The root tag of a marked-up document is `<markup>`, but [func@Pango.parse_markup]
+The root tag of a marked-up document is `<markup>`, but [func@Pango2.parse_markup]
 allows you to omit this tag, so you will most likely never need to use it.
 The most general markup tag is `<span>`, then there are some convenience
 tags.
@@ -65,7 +65,7 @@ tags.
 font
 font_desc
 : A font description string, such as "Sans Italic 12". See
-  [func@Pango.FontDescription.from_string] for a description of the format of
+  [func@Pango2.FontDescription.from_string] for a description of the format of
   the string representation. Note that any other span attributes will override
   this description. So if you have "Sans Italic" and also a style="normal"
   attribute, you will get Sans normal, not italic.

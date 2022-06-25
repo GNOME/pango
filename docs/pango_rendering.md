@@ -16,24 +16,24 @@ various stages of this pipeline and the APIs that implement them.
 Itemization
 : breaks a piece of text into segments with consistent direction and shaping
   properties. Among other things, this determines which font to use for each
-  character. Use [func@Pango.itemize] to itemize text.
+  character. Use [func@Pango2.itemize] to itemize text.
 
 Shaping
-: converts characters into glyphs. Use [func@Pango.shape] or
-  [func@Pango.shape_item] to shape text.
+: converts characters into glyphs. Use [func@Pango2.shape] or
+  [func@Pango2.shape_item] to shape text.
 
 Line Breaking
 : determines where line breaks should be inserted into a sequence of glyphs.
-  The functions [func@Pango.default_break], [func@Pango.tailor_break] and
-  [func@Pango.attr_break] determine possible line breaks. The actual line
-  breaking is done by [class@Pango.LineBreaker].
+  The functions [func@Pango2.default_break], [func@Pango2.tailor_break] and
+  [func@Pango2.attr_break] determine possible line breaks. The actual line
+  breaking is done by [class@Pango2.LineBreaker].
 
 Justification
 : adjusts inter-word spacing to form lines of even length. This is done by
-  [struct@Pango.Line].
+  [struct@Pango2.Line].
 
 Rendering
 : takes a string of positioned glyphs, and renders them onto a surface.
-  This is accomplished by a [class@Pango.Renderer] object. The functions
-  [func@Pango.cairo_show_glyph_string] and [func@Pango.cairo_show_layout]
-  use a [class@Pango.Renderer] to draw text onto a cairo surface.
+  This is accomplished by a [class@Pango2.Renderer] object. The functions
+  [func@Pango2.cairo_show_glyph_string] and [func@Pango2.cairo_show_layout]
+  use a [class@Pango2.Renderer] to draw text onto a cairo surface.

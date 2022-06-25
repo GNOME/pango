@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * pango-attributes.c: Attributed text
  *
  * Copyright (C) 2000-2002 Red Hat Software
@@ -28,113 +28,113 @@
 
 /* {{{ Attribute value types */
 
-static inline PangoAttribute *
-pango_attr_init (PangoAttrType type)
+static inline Pango2Attribute *
+pango2_attr_init (Pango2AttrType type)
 {
-  PangoAttribute *attr;
+  Pango2Attribute *attr;
 
-  attr = g_slice_new (PangoAttribute);
+  attr = g_slice_new (Pango2Attribute);
   attr->type = type;
-  attr->start_index = PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING;
-  attr->end_index = PANGO_ATTR_INDEX_TO_TEXT_END;
+  attr->start_index = PANGO2_ATTR_INDEX_FROM_TEXT_BEGINNING;
+  attr->end_index = PANGO2_ATTR_INDEX_TO_TEXT_END;
 
   return attr;
 }
 
-static inline PangoAttribute *
-pango_attr_string_new (PangoAttrType  type,
-                       const char    *value)
+static inline Pango2Attribute *
+pango2_attr_string_new (Pango2AttrType  type,
+                        const char     *value)
 {
-  PangoAttribute *attr;
+  Pango2Attribute *attr;
 
-  g_return_val_if_fail (PANGO_ATTR_TYPE_VALUE_TYPE (type) == PANGO_ATTR_VALUE_STRING, NULL);
+  g_return_val_if_fail (PANGO2_ATTR_TYPE_VALUE_TYPE (type) == PANGO2_ATTR_VALUE_STRING, NULL);
 
-  attr = pango_attr_init (type);
+  attr = pango2_attr_init (type);
   attr->str_value = g_strdup (value);
 
   return attr;
 }
 
-static inline PangoAttribute *
-pango_attr_int_new (PangoAttrType type,
-                    int           value)
+static inline Pango2Attribute *
+pango2_attr_int_new (Pango2AttrType type,
+                     int            value)
 {
-  PangoAttribute *attr;
+  Pango2Attribute *attr;
 
-  g_return_val_if_fail (PANGO_ATTR_TYPE_VALUE_TYPE (type) == PANGO_ATTR_VALUE_INT, NULL);
+  g_return_val_if_fail (PANGO2_ATTR_TYPE_VALUE_TYPE (type) == PANGO2_ATTR_VALUE_INT, NULL);
 
-  attr = pango_attr_init (type);
+  attr = pango2_attr_init (type);
   attr->int_value = value;
 
   return attr;
 }
 
-static inline PangoAttribute *
-pango_attr_boolean_new (PangoAttrType type,
-                        gboolean      value)
+static inline Pango2Attribute *
+pango2_attr_boolean_new (Pango2AttrType type,
+                         gboolean       value)
 {
-  PangoAttribute *attr;
+  Pango2Attribute *attr;
 
-  g_return_val_if_fail (PANGO_ATTR_TYPE_VALUE_TYPE (type) == PANGO_ATTR_VALUE_BOOLEAN, NULL);
+  g_return_val_if_fail (PANGO2_ATTR_TYPE_VALUE_TYPE (type) == PANGO2_ATTR_VALUE_BOOLEAN, NULL);
 
-  attr = pango_attr_init (type);
+  attr = pango2_attr_init (type);
   attr->boolean_value = value;
 
   return attr;
 }
 
-static inline PangoAttribute *
-pango_attr_float_new (PangoAttrType type,
-                      double        value)
+static inline Pango2Attribute *
+pango2_attr_float_new (Pango2AttrType type,
+                       double         value)
 {
-  PangoAttribute *attr;
+  Pango2Attribute *attr;
 
-  g_return_val_if_fail (PANGO_ATTR_TYPE_VALUE_TYPE (type) == PANGO_ATTR_VALUE_FLOAT, NULL);
+  g_return_val_if_fail (PANGO2_ATTR_TYPE_VALUE_TYPE (type) == PANGO2_ATTR_VALUE_FLOAT, NULL);
 
-  attr = pango_attr_init (type);
+  attr = pango2_attr_init (type);
   attr->double_value = value;
 
   return attr;
 }
 
-static inline PangoAttribute *
-pango_attr_color_new (PangoAttrType  type,
-                      PangoColor    *color)
+static inline Pango2Attribute *
+pango2_attr_color_new (Pango2AttrType  type,
+                       Pango2Color    *color)
 {
-  PangoAttribute *attr;
+  Pango2Attribute *attr;
 
-  g_return_val_if_fail (PANGO_ATTR_TYPE_VALUE_TYPE (type) == PANGO_ATTR_VALUE_COLOR, NULL);
+  g_return_val_if_fail (PANGO2_ATTR_TYPE_VALUE_TYPE (type) == PANGO2_ATTR_VALUE_COLOR, NULL);
 
-  attr = pango_attr_init (type);
+  attr = pango2_attr_init (type);
   attr->color_value = *color;
 
   return attr;
 }
 
-static inline PangoAttribute *
-pango_attr_lang_new (PangoAttrType  type,
-                     PangoLanguage *value)
+static inline Pango2Attribute *
+pango2_attr_lang_new (Pango2AttrType  type,
+                      Pango2Language *value)
 {
-  PangoAttribute *attr;
+  Pango2Attribute *attr;
 
-  g_return_val_if_fail (PANGO_ATTR_TYPE_VALUE_TYPE (type) == PANGO_ATTR_VALUE_LANGUAGE, NULL);
+  g_return_val_if_fail (PANGO2_ATTR_TYPE_VALUE_TYPE (type) == PANGO2_ATTR_VALUE_LANGUAGE, NULL);
 
-  attr = pango_attr_init (type);
+  attr = pango2_attr_init (type);
   attr->lang_value  = value;
 
   return attr;
 }
 
-static inline PangoAttribute *
-pango_attr_font_description_new (PangoAttrType               type,
-                                 const PangoFontDescription *value)
+static inline Pango2Attribute *
+pango2_attr_font_description_new (Pango2AttrType               type,
+                                  const Pango2FontDescription *value)
 {
-  PangoAttribute *attr;
+  Pango2Attribute *attr;
 
-  g_return_val_if_fail (PANGO_ATTR_TYPE_VALUE_TYPE (type) == PANGO_ATTR_VALUE_FONT_DESC, NULL);
+  g_return_val_if_fail (PANGO2_ATTR_TYPE_VALUE_TYPE (type) == PANGO2_ATTR_VALUE_FONT_DESC, NULL);
 
-  attr = pango_attr_init (type);
-  attr->font_value  = pango_font_description_copy (value);
+  attr = pango2_attr_init (type);
+  attr->font_value  = pango2_font_description_copy (value);
 
   return attr;
 }
@@ -143,167 +143,167 @@ pango_attr_font_description_new (PangoAttrType               type,
 /* {{{ Attribute types */
 
 /**
- * pango_attr_family_new:
+ * pango2_attr_family_new:
  * @family: the family or comma-separated list of families
  *
  * Create a new font family attribute.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_family_new (const char *family)
+Pango2Attribute *
+pango2_attr_family_new (const char *family)
 {
-  return pango_attr_string_new (PANGO_ATTR_FAMILY, family);
+  return pango2_attr_string_new (PANGO2_ATTR_FAMILY, family);
 }
 
 /**
- * pango_attr_language_new:
+ * pango2_attr_language_new:
  * @language: language tag
  *
  * Create a new language tag attribute.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_language_new (PangoLanguage *language)
+Pango2Attribute *
+pango2_attr_language_new (Pango2Language *language)
 {
-  return pango_attr_lang_new (PANGO_ATTR_LANGUAGE, language);
+  return pango2_attr_lang_new (PANGO2_ATTR_LANGUAGE, language);
 }
 
 /**
- * pango_attr_foreground_new:
+ * pango2_attr_foreground_new:
  * @color: the color
  *
  * Create a new foreground color attribute.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_foreground_new (PangoColor *color)
+Pango2Attribute *
+pango2_attr_foreground_new (Pango2Color *color)
 {
-  return pango_attr_color_new (PANGO_ATTR_FOREGROUND, color);
+  return pango2_attr_color_new (PANGO2_ATTR_FOREGROUND, color);
 }
 
 /**
- * pango_attr_background_new:
+ * pango2_attr_background_new:
  * @color: the color
  *
  * Create a new background color attribute.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_background_new (PangoColor *color)
+Pango2Attribute *
+pango2_attr_background_new (Pango2Color *color)
 {
-  return pango_attr_color_new (PANGO_ATTR_BACKGROUND, color);
+  return pango2_attr_color_new (PANGO2_ATTR_BACKGROUND, color);
 }
 
 /**
- * pango_attr_size_new:
- * @size: the font size, in %PANGO_SCALE-ths of a point
+ * pango2_attr_size_new:
+ * @size: the font size, in %PANGO2_SCALE-ths of a point
  *
  * Create a new font-size attribute in fractional points.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_size_new (int value)
+Pango2Attribute *
+pango2_attr_size_new (int value)
 {
-  return pango_attr_int_new (PANGO_ATTR_SIZE, value);
+  return pango2_attr_int_new (PANGO2_ATTR_SIZE, value);
 }
 
 
 /**
- * pango_attr_size_new_absolute:
- * @size: the font size, in %PANGO_SCALE-ths of a device unit
+ * pango2_attr_size_new_absolute:
+ * @size: the font size, in %PANGO2_SCALE-ths of a device unit
  *
  * Create a new font-size attribute in device units.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_size_new_absolute (int size)
+Pango2Attribute *
+pango2_attr_size_new_absolute (int size)
 {
-  return pango_attr_int_new (PANGO_ATTR_ABSOLUTE_SIZE, size);
+  return pango2_attr_int_new (PANGO2_ATTR_ABSOLUTE_SIZE, size);
 }
 
 /**
- * pango_attr_style_new:
+ * pango2_attr_style_new:
  * @style: the slant style
  *
  * Create a new font slant style attribute.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_style_new (PangoStyle style)
+Pango2Attribute *
+pango2_attr_style_new (Pango2Style style)
 {
-  return pango_attr_int_new (PANGO_ATTR_STYLE, (int)style);
+  return pango2_attr_int_new (PANGO2_ATTR_STYLE, (int)style);
 }
 
 /**
- * pango_attr_weight_new:
+ * pango2_attr_weight_new:
  * @weight: the weight
  *
  * Create a new font weight attribute.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_weight_new (PangoWeight weight)
+Pango2Attribute *
+pango2_attr_weight_new (Pango2Weight weight)
 {
-  return pango_attr_int_new (PANGO_ATTR_WEIGHT, (int)weight);
+  return pango2_attr_int_new (PANGO2_ATTR_WEIGHT, (int)weight);
 }
 
 /**
- * pango_attr_variant_new:
+ * pango2_attr_variant_new:
  * @variant: the variant
  *
  * Create a new font variant attribute (normal or small caps).
  *
- * Return value: (transfer full): the newly allocated `PangoAttribute`,
- *   which should be freed with [method@Pango.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`,
+ *   which should be freed with [method@Pango2.Attribute.destroy].
  */
-PangoAttribute *
-pango_attr_variant_new (PangoVariant variant)
+Pango2Attribute *
+pango2_attr_variant_new (Pango2Variant variant)
 {
-  return pango_attr_int_new (PANGO_ATTR_VARIANT, (int)variant);
+  return pango2_attr_int_new (PANGO2_ATTR_VARIANT, (int)variant);
 }
 
 /**
- * pango_attr_stretch_new:
+ * pango2_attr_stretch_new:
  * @stretch: the stretch
  *
  * Create a new font stretch attribute.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_stretch_new (PangoStretch stretch)
+Pango2Attribute *
+pango2_attr_stretch_new (Pango2Stretch stretch)
 {
-  return pango_attr_int_new (PANGO_ATTR_STRETCH, (int)stretch);
+  return pango2_attr_int_new (PANGO2_ATTR_STRETCH, (int)stretch);
 }
 
 /**
- * pango_attr_font_desc_new:
+ * pango2_attr_font_desc_new:
  * @desc: the font description
  *
  * Create a new font description attribute.
@@ -312,33 +312,33 @@ pango_attr_stretch_new (PangoStretch stretch)
  * stretch, and size simultaneously.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_font_desc_new (const PangoFontDescription *desc)
+Pango2Attribute *
+pango2_attr_font_desc_new (const Pango2FontDescription *desc)
 {
-  return pango_attr_font_description_new (PANGO_ATTR_FONT_DESC, desc);
+  return pango2_attr_font_description_new (PANGO2_ATTR_FONT_DESC, desc);
 }
 
 /**
- * pango_attr_underline_new:
+ * pango2_attr_underline_new:
  * @style: the line style
  *
  * Create a new underline attribute.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_underline_new (PangoLineStyle style)
+Pango2Attribute *
+pango2_attr_underline_new (Pango2LineStyle style)
 {
-  return pango_attr_int_new (PANGO_ATTR_UNDERLINE, (int)style);
+  return pango2_attr_int_new (PANGO2_ATTR_UNDERLINE, (int)style);
 }
 
 /**
- * pango_attr_underline_color_new:
+ * pango2_attr_underline_color_new:
  * @color: the color
  *
  * Create a new underline color attribute.
@@ -347,48 +347,48 @@ pango_attr_underline_new (PangoLineStyle style)
  * If not set, underlines will use the foreground color.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_underline_color_new (PangoColor *color)
+Pango2Attribute *
+pango2_attr_underline_color_new (Pango2Color *color)
 {
-  return pango_attr_color_new (PANGO_ATTR_UNDERLINE_COLOR, color);
+  return pango2_attr_color_new (PANGO2_ATTR_UNDERLINE_COLOR, color);
 }
 
 /**
- * pango_attr_underline_position_new:
+ * pango2_attr_underline_position_new:
  * @position: the underline position
  *
  * Create a new underline position attribute.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_underline_position_new (PangoUnderlinePosition position)
+Pango2Attribute *
+pango2_attr_underline_position_new (Pango2UnderlinePosition position)
 {
-  return pango_attr_int_new (PANGO_ATTR_UNDERLINE_POSITION, (int)position);
+  return pango2_attr_int_new (PANGO2_ATTR_UNDERLINE_POSITION, (int)position);
 }
 /**
- * pango_attr_strikethrough_new:
+ * pango2_attr_strikethrough_new:
  * @style: the line style
  *
  * Create a new strike-through attribute.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_strikethrough_new (PangoLineStyle style)
+Pango2Attribute *
+pango2_attr_strikethrough_new (Pango2LineStyle style)
 {
-  return pango_attr_int_new (PANGO_ATTR_STRIKETHROUGH, (int)style);
+  return pango2_attr_int_new (PANGO2_ATTR_STRIKETHROUGH, (int)style);
 }
 
 /**
- * pango_attr_strikethrough_color_new:
+ * pango2_attr_strikethrough_color_new:
  * @color: the color
  *
  * Create a new strikethrough color attribute.
@@ -397,36 +397,36 @@ pango_attr_strikethrough_new (PangoLineStyle style)
  * If not set, strikethrough lines will use the foreground color.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_strikethrough_color_new (PangoColor *color)
+Pango2Attribute *
+pango2_attr_strikethrough_color_new (Pango2Color *color)
 {
-  return pango_attr_color_new (PANGO_ATTR_STRIKETHROUGH_COLOR, color);
+  return pango2_attr_color_new (PANGO2_ATTR_STRIKETHROUGH_COLOR, color);
 }
 
 /**
- * pango_attr_rise_new:
+ * pango2_attr_rise_new:
  * @rise: the amount that the text should be displaced vertically,
- *   in Pango units. Positive values displace the text upwards.
+ *   in Pango2 units. Positive values displace the text upwards.
  *
  * Create a new baseline displacement attribute.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_rise_new (int rise)
+Pango2Attribute *
+pango2_attr_rise_new (int rise)
 {
-  return pango_attr_int_new (PANGO_ATTR_RISE, (int)rise);
+  return pango2_attr_int_new (PANGO2_ATTR_RISE, (int)rise);
 }
 
 /**
- * pango_attr_baseline_shift_new:
- * @shift: either a `PangoBaselineShift` enumeration value or an absolute value (> 1024)
- *   in Pango units, relative to the baseline of the previous run.
+ * pango2_attr_baseline_shift_new:
+ * @shift: either a `Pango2BaselineShift` enumeration value or an absolute value (> 1024)
+ *   in Pango2 units, relative to the baseline of the previous run.
  *   Positive values displace the text upwards.
  *
  * Create a new baseline displacement attribute.
@@ -440,18 +440,18 @@ pango_attr_rise_new (int rise)
  * </picture>
 
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_baseline_shift_new (int rise)
+Pango2Attribute *
+pango2_attr_baseline_shift_new (int rise)
 {
-  return pango_attr_int_new (PANGO_ATTR_BASELINE_SHIFT, (int)rise);
+  return pango2_attr_int_new (PANGO2_ATTR_BASELINE_SHIFT, (int)rise);
 }
 
 /**
- * pango_attr_font_scale_new:
- * @scale: a `PangoFontScale` value, which indicates font size change relative
+ * pango2_attr_font_scale_new:
+ * @scale: a `Pango2FontScale` value, which indicates font size change relative
  *   to the size of the previous run.
  *
  * Create a new font scale attribute.
@@ -460,17 +460,17 @@ pango_attr_baseline_shift_new (int rise)
  * relative to the size of preceding run.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_font_scale_new (PangoFontScale scale)
+Pango2Attribute *
+pango2_attr_font_scale_new (Pango2FontScale scale)
 {
-  return pango_attr_int_new (PANGO_ATTR_FONT_SCALE, (int)scale);
+  return pango2_attr_int_new (PANGO2_ATTR_FONT_SCALE, (int)scale);
 }
 
 /**
- * pango_attr_scale_new:
+ * pango2_attr_scale_new:
  * @scale_factor: factor to scale the font
  *
  * Create a new font size scale attribute.
@@ -479,17 +479,17 @@ pango_attr_font_scale_new (PangoFontScale scale)
  * its size multiplied by @scale_factor.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute*
-pango_attr_scale_new (double scale_factor)
+Pango2Attribute*
+pango2_attr_scale_new (double scale_factor)
 {
-  return pango_attr_float_new (PANGO_ATTR_SCALE, scale_factor);
+  return pango2_attr_float_new (PANGO2_ATTR_SCALE, scale_factor);
 }
 
 /**
- * pango_attr_fallback_new:
+ * pango2_attr_fallback_new:
  * @enable_fallback: %TRUE if we should fall back on other fonts
  *   for characters the active font is missing
  *
@@ -501,68 +501,68 @@ pango_attr_scale_new (double scale_factor)
  * that might contain the characters in the text.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_fallback_new (gboolean enable_fallback)
+Pango2Attribute *
+pango2_attr_fallback_new (gboolean enable_fallback)
 {
-  return pango_attr_boolean_new (PANGO_ATTR_FALLBACK, enable_fallback);
+  return pango2_attr_boolean_new (PANGO2_ATTR_FALLBACK, enable_fallback);
 }
 
 /**
- * pango_attr_letter_spacing_new:
+ * pango2_attr_letter_spacing_new:
  * @letter_spacing: amount of extra space to add between
- *   graphemes of the text, in Pango units
+ *   graphemes of the text, in Pango2 units
  *
  * Create a new letter-spacing attribute.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_letter_spacing_new (int letter_spacing)
+Pango2Attribute *
+pango2_attr_letter_spacing_new (int letter_spacing)
 {
-  return pango_attr_int_new (PANGO_ATTR_LETTER_SPACING, letter_spacing);
+  return pango2_attr_int_new (PANGO2_ATTR_LETTER_SPACING, letter_spacing);
 }
 
 /**
- * pango_attr_gravity_new:
- * @gravity: the gravity value; should not be %PANGO_GRAVITY_AUTO
+ * pango2_attr_gravity_new:
+ * @gravity: the gravity value; should not be %PANGO2_GRAVITY_AUTO
  *
  * Create a new gravity attribute.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_gravity_new (PangoGravity gravity)
+Pango2Attribute *
+pango2_attr_gravity_new (Pango2Gravity gravity)
 {
-  g_return_val_if_fail (gravity != PANGO_GRAVITY_AUTO, NULL);
+  g_return_val_if_fail (gravity != PANGO2_GRAVITY_AUTO, NULL);
 
-  return pango_attr_int_new (PANGO_ATTR_GRAVITY, (int)gravity);
+  return pango2_attr_int_new (PANGO2_ATTR_GRAVITY, (int)gravity);
 }
 
 /**
- * pango_attr_gravity_hint_new:
+ * pango2_attr_gravity_hint_new:
  * @hint: the gravity hint value
  *
  * Create a new gravity hint attribute.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_gravity_hint_new (PangoGravityHint hint)
+Pango2Attribute *
+pango2_attr_gravity_hint_new (Pango2GravityHint hint)
 {
-  return pango_attr_int_new (PANGO_ATTR_GRAVITY_HINT, (int)hint);
+  return pango2_attr_int_new (PANGO2_ATTR_GRAVITY_HINT, (int)hint);
 }
 
 /**
- * pango_attr_font_features_new:
+ * pango2_attr_font_features_new:
  * @features: a string with OpenType font features, with the syntax of the [CSS
  * font-feature-settings property](https://www.w3.org/TR/css-fonts-4/#font-rend-desc)
  *
@@ -572,19 +572,19 @@ pango_attr_gravity_hint_new (PangoGravityHint hint)
  * alternative glyphs, ligatures, etc. for fonts that support them.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_font_features_new (const char *features)
+Pango2Attribute *
+pango2_attr_font_features_new (const char *features)
 {
   g_return_val_if_fail (features != NULL, NULL);
 
-  return pango_attr_string_new (PANGO_ATTR_FONT_FEATURES, features);
+  return pango2_attr_string_new (PANGO2_ATTR_FONT_FEATURES, features);
 }
 
 /**
- * pango_attr_allow_breaks_new:
+ * pango2_attr_allow_breaks_new:
  * @allow_breaks: %TRUE if we line breaks are allowed
  *
  * Create a new allow-breaks attribute.
@@ -593,54 +593,54 @@ pango_attr_font_features_new (const char *features)
  * single run, as far as possible.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_allow_breaks_new (gboolean allow_breaks)
+Pango2Attribute *
+pango2_attr_allow_breaks_new (gboolean allow_breaks)
 {
-  return pango_attr_boolean_new (PANGO_ATTR_ALLOW_BREAKS, allow_breaks);
+  return pango2_attr_boolean_new (PANGO2_ATTR_ALLOW_BREAKS, allow_breaks);
 }
 
 /**
- * pango_attr_insert_hyphens_new:
+ * pango2_attr_insert_hyphens_new:
  * @insert_hyphens: %TRUE if hyphens should be inserted
  *
  * Create a new insert-hyphens attribute.
  *
- * Pango will insert hyphens when breaking lines in
+ * Pango2 will insert hyphens when breaking lines in
  * the middle of a word. This attribute can be used
  * to suppress the hyphen.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_insert_hyphens_new (gboolean insert_hyphens)
+Pango2Attribute *
+pango2_attr_insert_hyphens_new (gboolean insert_hyphens)
 {
-  return pango_attr_boolean_new (PANGO_ATTR_INSERT_HYPHENS, insert_hyphens);
+  return pango2_attr_boolean_new (PANGO2_ATTR_INSERT_HYPHENS, insert_hyphens);
 }
 
 /**
- * pango_attr_show_new:
- * @flags: `PangoShowFlags` to apply
+ * pango2_attr_show_new:
+ * @flags: `Pango2ShowFlags` to apply
  *
  * Create a new attribute that influences how invisible
  * characters are rendered.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  **/
-PangoAttribute *
-pango_attr_show_new (PangoShowFlags flags)
+Pango2Attribute *
+pango2_attr_show_new (Pango2ShowFlags flags)
 {
-  return pango_attr_int_new (PANGO_ATTR_SHOW, (int)flags);
+  return pango2_attr_int_new (PANGO2_ATTR_SHOW, (int)flags);
 }
 
 /**
- * pango_attr_word_new:
+ * pango2_attr_word_new:
  *
  * Create a new attribute that marks its range
  * as a single word.
@@ -649,17 +649,17 @@ pango_attr_show_new (PangoShowFlags flags)
  * sentence classification around the range.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_word_new (void)
+Pango2Attribute *
+pango2_attr_word_new (void)
 {
-  return pango_attr_boolean_new (PANGO_ATTR_WORD, TRUE);
+  return pango2_attr_boolean_new (PANGO2_ATTR_WORD, TRUE);
 }
 
 /**
- * pango_attr_sentence_new:
+ * pango2_attr_sentence_new:
  *
  * Create a new attribute that marks its range
  * as a single sentence.
@@ -668,17 +668,17 @@ pango_attr_word_new (void)
  * sentence classification around the range.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_sentence_new (void)
+Pango2Attribute *
+pango2_attr_sentence_new (void)
 {
-  return pango_attr_boolean_new (PANGO_ATTR_SENTENCE, TRUE);
+  return pango2_attr_boolean_new (PANGO2_ATTR_SENTENCE, TRUE);
 }
 
 /**
- * pango_attr_paragraph_new:
+ * pango2_attr_paragraph_new:
  *
  * Create a new attribute that marks its range as a single paragraph.
  *
@@ -686,33 +686,33 @@ pango_attr_sentence_new (void)
  * will not be treated as paragraph separators.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_paragraph_new (void)
+Pango2Attribute *
+pango2_attr_paragraph_new (void)
 {
-  return pango_attr_boolean_new (PANGO_ATTR_SENTENCE, TRUE);
+  return pango2_attr_boolean_new (PANGO2_ATTR_SENTENCE, TRUE);
 }
 
 /**
- * pango_attr_overline_new:
+ * pango2_attr_overline_new:
  * @style: the line style
  *
  * Create a new overline-style attribute.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_overline_new (PangoLineStyle style)
+Pango2Attribute *
+pango2_attr_overline_new (Pango2LineStyle style)
 {
-  return pango_attr_int_new (PANGO_ATTR_OVERLINE, (int)style);
+  return pango2_attr_int_new (PANGO2_ATTR_OVERLINE, (int)style);
 }
 
 /**
- * pango_attr_overline_color_new:
+ * pango2_attr_overline_color_new:
  * @color: the color
  *
  * Create a new overline color attribute.
@@ -721,86 +721,86 @@ pango_attr_overline_new (PangoLineStyle style)
  * If not set, overlines will use the foreground color.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_overline_color_new (PangoColor *color)
+Pango2Attribute *
+pango2_attr_overline_color_new (Pango2Color *color)
 {
-  return pango_attr_color_new (PANGO_ATTR_OVERLINE_COLOR, color);
+  return pango2_attr_color_new (PANGO2_ATTR_OVERLINE_COLOR, color);
 }
 
 /**
- * pango_attr_line_height_new:
+ * pango2_attr_line_height_new:
  * @factor: the scaling factor to apply to the logical height
  *
  * Create a new attribute that modifies the height
  * of logical line extents by a factor.
  *
  * This affects the values returned by
- * [method@Pango.Line.get_extents] and
- * [method@Pango.LineIter.get_line_extents].
+ * [method@Pango2.Line.get_extents] and
+ * [method@Pango2.LineIter.get_line_extents].
  */
-PangoAttribute *
-pango_attr_line_height_new (double factor)
+Pango2Attribute *
+pango2_attr_line_height_new (double factor)
 {
-  return pango_attr_float_new (PANGO_ATTR_LINE_HEIGHT, factor);
+  return pango2_attr_float_new (PANGO2_ATTR_LINE_HEIGHT, factor);
 }
 
 /**
- * pango_attr_line_height_new_absolute:
- * @height: the line height, in %PANGO_SCALE-ths of a point
+ * pango2_attr_line_height_new_absolute:
+ * @height: the line height, in %PANGO2_SCALE-ths of a point
  *
  * Create a new attribute that overrides the height
  * of logical line extents to be @height.
  *
  * This affects the values returned by
- * [method@Pango.Line.get_extents],
- * [method@Pango.LineIter.get_line_extents].
+ * [method@Pango2.Line.get_extents],
+ * [method@Pango2.LineIter.get_line_extents].
  */
-PangoAttribute *
-pango_attr_line_height_new_absolute (int height)
+Pango2Attribute *
+pango2_attr_line_height_new_absolute (int height)
 {
-  return pango_attr_int_new (PANGO_ATTR_ABSOLUTE_LINE_HEIGHT, height);
+  return pango2_attr_int_new (PANGO2_ATTR_ABSOLUTE_LINE_HEIGHT, height);
 }
 
 /**
- * pango_attr_line_spacing_new:
- * @spacing: the line spacing, in %PANGO_SCALE-ths of a point
+ * pango2_attr_line_spacing_new:
+ * @spacing: the line spacing, in %PANGO2_SCALE-ths of a point
  *
  * Create a new attribute that adds space to the
  * leading from font metrics, if not overridden
  * by line spacing attributes.
  *
  * This affects the values returned by
- * [method@Pango.Line.get_extents],
- * [method@Pango.LineIter.get_line_extents].
+ * [method@Pango2.Line.get_extents],
+ * [method@Pango2.LineIter.get_line_extents].
  */
-PangoAttribute *
-pango_attr_line_spacing_new (int spacing)
+Pango2Attribute *
+pango2_attr_line_spacing_new (int spacing)
 {
-  return pango_attr_int_new (PANGO_ATTR_LINE_SPACING, spacing);
+  return pango2_attr_int_new (PANGO2_ATTR_LINE_SPACING, spacing);
 }
 
 /**
- * pango_attr_text_transform_new:
- * @transform: `PangoTextTransform` to apply
+ * pango2_attr_text_transform_new:
+ * @transform: `Pango2TextTransform` to apply
  *
  * Create a new attribute that influences how characters
  * are transformed during shaping.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_text_transform_new (PangoTextTransform transform)
+Pango2Attribute *
+pango2_attr_text_transform_new (Pango2TextTransform transform)
 {
-  return pango_attr_int_new (PANGO_ATTR_TEXT_TRANSFORM, transform);
+  return pango2_attr_int_new (PANGO2_ATTR_TEXT_TRANSFORM, transform);
 }
 
 /**
- * pango_attr_shape_new:
+ * pango2_attr_shape_new:
  * @ink_rect: ink rectangle to use for each character
  * @logical_rect: logical rectangle to use for each character
  * @data: user data
@@ -812,22 +812,22 @@ pango_attr_text_transform_new (PangoTextTransform transform)
  * Creates a new shape attribute.
  *
  * Shape attributes override the extents for a glyph and can
- * trigger custom rendering in a `PangoRenderer`. This might
+ * trigger custom rendering in a `Pango2Renderer`. This might
  * be used, for instance, for embedding a picture or a widget
- * inside a `PangoLayout`.
+ * inside a `Pango2Layout`.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attr_shape_new (PangoRectangle        *ink_rect,
-                      PangoRectangle        *logical_rect,
-                      gpointer               data,
-                      PangoAttrDataCopyFunc  copy,
-                      GDestroyNotify         destroy)
+Pango2Attribute *
+pango2_attr_shape_new (Pango2Rectangle        *ink_rect,
+                       Pango2Rectangle        *logical_rect,
+                       gpointer                data,
+                       Pango2AttrDataCopyFunc  copy,
+                       GDestroyNotify          destroy)
 {
-  PangoAttribute *attr;
+  Pango2Attribute *attr;
   ShapeData *shape_data;
 
   shape_data = g_new0 (ShapeData, 1);
@@ -837,7 +837,7 @@ pango_attr_shape_new (PangoRectangle        *ink_rect,
   shape_data->copy = copy;
   shape_data->destroy = destroy;
 
-  attr = pango_attr_init (PANGO_ATTR_SHAPE);
+  attr = pango2_attr_init (PANGO2_ATTR_SHAPE);
   attr->pointer_value = shape_data;
 
   return attr;
@@ -847,18 +847,18 @@ pango_attr_shape_new (PangoRectangle        *ink_rect,
 /* {{{ Private API */
 
 gboolean
-pango_attribute_affects_itemization (PangoAttribute *attr,
-                                     gpointer        data)
+pango2_attribute_affects_itemization (Pango2Attribute *attr,
+                                      gpointer         data)
 {
-  return (PANGO_ATTR_AFFECTS (attr) & PANGO_ATTR_AFFECTS_ITEMIZATION) != 0;
+  return (PANGO2_ATTR_AFFECTS (attr) & PANGO2_ATTR_AFFECTS_ITEMIZATION) != 0;
 }
 
 gboolean
-pango_attribute_affects_break_or_shape (PangoAttribute *attr,
-                                        gpointer        data)
+pango2_attribute_affects_break_or_shape (Pango2Attribute *attr,
+                                         gpointer         data)
 {
-  return (PANGO_ATTR_AFFECTS (attr) & (PANGO_ATTR_AFFECTS_BREAKING |
-                                       PANGO_ATTR_AFFECTS_SHAPING)) != 0;
+  return (PANGO2_ATTR_AFFECTS (attr) & (PANGO2_ATTR_AFFECTS_BREAKING |
+                                       PANGO2_ATTR_AFFECTS_SHAPING)) != 0;
 }
 
 /* }}} */

@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * Copyright (C) 1999 Red Hat Software
  *
  * testfonts.c:
@@ -53,38 +53,38 @@ static int
 compare_font_family (gconstpointer a,
                      gconstpointer b)
 {
-  PangoFontFamily **aa = (PangoFontFamily **)a;
-  PangoFontFamily **bb = (PangoFontFamily **)b;
-  return strcmp (pango_font_family_get_name (*aa),
-                 pango_font_family_get_name (*bb));
+  Pango2FontFamily **aa = (Pango2FontFamily **)a;
+  Pango2FontFamily **bb = (Pango2FontFamily **)b;
+  return strcmp (pango2_font_family_get_name (*aa),
+                 pango2_font_family_get_name (*bb));
 }
 
 int main (int argc, char **argv)
 {
-  PangoFontMap *fontmap = pango_win32_font_map_for_display();
-  PangoContext *context;
-  PangoCoverage * coverage = NULL;
-  PangoFont* font = NULL;
-  PangoFontFamily** families = NULL;
-  PangoFontFace** faces = NULL;
+  Pango2FontMap *fontmap = pango2_win32_font_map_for_display();
+  Pango2Context *context;
+  Pango2Coverage * coverage = NULL;
+  Pango2Font* font = NULL;
+  Pango2FontFamily** families = NULL;
+  Pango2FontFace** faces = NULL;
   int nb, i;
   char *family_name = NULL;
-  PangoLanguage *lang = pango_language_from_string (g_win32_getlocale ());
+  Pango2Language *lang = pango2_language_from_string (g_win32_getlocale ());
   HDC hdc = NULL;
   int line = 0;
   GTimeVal tv0, tv1;
   int my_font_size = 12;
 
-  printf ("# Pango Font Test\n"
+  printf ("# Pango2 Font Test\n"
 	  "# Language: %s\n"
-	  "#\n", pango_language_to_string (lang));
+	  "#\n", pango2_language_to_string (lang));
 
   /* this wasn't necessary with previous version
    *
    * force initialization of built-in engines, otherwise
    * the rendering get's really fast - too fast to work :-(
    */
-  context = pango_font_map_create_context (pango_win32_font_map_for_display ());
+  context = pango2_font_map_create_context (pango2_win32_font_map_for_display ());
 
   if (argc == 1)		/* No arguments given */
     {
@@ -93,17 +93,17 @@ int main (int argc, char **argv)
       /* try to load some fonts often hardcoded */
       for (i = 0; i < G_N_ELEMENTS (std_fonts); i++)
 	{
-	  PangoFontDescription *desc = pango_font_description_from_string(std_fonts[i]);
+	  Pango2FontDescription *desc = pango2_font_description_from_string(std_fonts[i]);
 
 	  /* spits warnings if font cannot be loaded */
-	  font = pango_font_map_load_font (fontmap, context, desc);
+	  font = pango2_font_map_load_font (fontmap, context, desc);
 
 	  g_object_unref (font);
 	}
     }
   else
     {
-      PangoFontDescription *desc = NULL;
+      Pango2FontDescription *desc = NULL;
       GString *s;
 
       s = g_string_new (argv[1]);
@@ -116,34 +116,34 @@ int main (int argc, char **argv)
 	    my_font_size = atoi (argv[i]);
 	}
 
-      desc = pango_font_description_from_string(s->str);
-      family_name = g_strdup (pango_font_description_get_family (desc));
+      desc = pango2_font_description_from_string(s->str);
+      family_name = g_strdup (pango2_font_description_get_family (desc));
 
-      font = pango_font_map_load_font (fontmap, context, desc);
+      font = pango2_font_map_load_font (fontmap, context, desc);
 
-      coverage = pango_font_get_coverage (font, lang);
+      coverage = pango2_font_get_coverage (font, lang);
 
       /* ... */
 
       g_object_unref (coverage);
-      pango_font_description_free (desc);
+      pango2_font_description_free (desc);
       g_object_unref (font);
     }
 
-  pango_font_map_list_families (fontmap, &families, &nb);
+  pango2_font_map_list_families (fontmap, &families, &nb);
 
   if (!family_name)
     {
-      qsort (families, nb, sizeof (PangoFontFamily*), compare_font_family);
+      qsort (families, nb, sizeof (Pango2FontFamily*), compare_font_family);
     }
   else
     {
       /* Get on the family faces. No simple way ? */
       for (i = 0; i < nb; i++)
 	{
-	  if (0 == g_ascii_strcasecmp (pango_font_family_get_name (families[i]), family_name))
+	  if (0 == g_ascii_strcasecmp (pango2_font_family_get_name (families[i]), family_name))
 	    {
-	      pango_font_family_list_faces (families[i], &faces, &nb);
+	      pango2_font_family_list_faces (families[i], &faces, &nb);
 	      /* now nb is the number of faces */
 	      break;
 	    }
@@ -158,91 +158,91 @@ int main (int argc, char **argv)
 
   for (i = 0; i < nb; i++)
     {
-      PangoFontDescription *desc;
+      Pango2FontDescription *desc;
       const char *f_name;
-      PangoWeight weight;
-      PangoStyle  style;
+      Pango2Weight weight;
+      Pango2Style  style;
 
       if (families)
 	{
-	  desc = pango_font_description_new ();
+	  desc = pango2_font_description_new ();
 
-	  f_name =  pango_font_family_get_name (families[i]);
-	  pango_font_description_set_family (desc, f_name);
+	  f_name =  pango2_font_family_get_name (families[i]);
+	  pango2_font_description_set_family (desc, f_name);
 	}
       else
 	{
-	  desc = pango_font_face_describe (faces[i]);
+	  desc = pango2_font_face_describe (faces[i]);
 	  /* this is _not_ the family name from above */
-	  f_name = pango_font_description_get_family (desc);
+	  f_name = pango2_font_description_get_family (desc);
 	}
-      weight = pango_font_description_get_weight (desc);
-      style  = pango_font_description_get_style  (desc);
+      weight = pango2_font_description_get_weight (desc);
+      style  = pango2_font_description_get_style  (desc);
 
       g_print ("%s; Style: %d; Weight: %d\n",
 	       f_name, style, weight);
 
       /* give it an arbitray size to load it */
-      pango_font_description_set_size (desc, my_font_size * PANGO_SCALE);
+      pango2_font_description_set_size (desc, my_font_size * PANGO2_SCALE);
 
       g_get_current_time (&tv0);
-      font = pango_font_map_load_font (fontmap, context, desc);
+      font = pango2_font_map_load_font (fontmap, context, desc);
       g_get_current_time (&tv1);
-      g_print ("\tpango_font_map_load_font took %.3f sec\n", calc_duration (&tv1, &tv0));
+      g_print ("\tpango2_font_map_load_font took %.3f sec\n", calc_duration (&tv1, &tv0));
 
       if (font)
 	{
-	  PangoItem     *item;
-	  PangoGlyphString * glyphs;
+	  Pango2Item     *item;
+	  Pango2GlyphString * glyphs;
 	  char s[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		     "abcdefghijklmnopqrstuvwxyz"
 		     "1234567890 -+*/!\xc2\xa7$%&()[]{}<>|#=?@";
 
 	  g_get_current_time (&tv0);
-	  coverage = pango_font_get_coverage (font, lang);
+	  coverage = pango2_font_get_coverage (font, lang);
 	  g_get_current_time (&tv1);
-	  g_print ("\tpango_font_get_coverage took %.3f sec\n", calc_duration (&tv1, &tv0));
+	  g_print ("\tpango2_font_get_coverage took %.3f sec\n", calc_duration (&tv1, &tv0));
 
 	  /* ... */
-	  pango_context_set_language (context, lang);
-	  pango_context_set_base_dir (context, PANGO_DIRECTION_LTR);
-	  pango_context_set_font_description (context, desc);
+	  pango2_context_set_language (context, lang);
+	  pango2_context_set_base_dir (context, PANGO2_DIRECTION_LTR);
+	  pango2_context_set_font_description (context, desc);
 
-	  glyphs = pango_glyph_string_new ();
-	  item = pango_item_new ();
+	  glyphs = pango2_glyph_string_new ();
+	  item = pango2_item_new ();
 
 	  item->analysis.font = g_object_ref (font);
-	  pango_shape ( s, sizeof(s), &(item->analysis), glyphs);
+	  pango2_shape ( s, sizeof(s), &(item->analysis), glyphs);
 
 	  if (hdc)
 	    {
 	      /* the positioning isn't correct */
 	      char* name = g_strdup_printf ("%s (%s%s)",
 					    f_name,
-					    weight == PANGO_WEIGHT_NORMAL ? "n" :
-					      (weight == PANGO_WEIGHT_HEAVY ? "h" :
-					      (weight > PANGO_WEIGHT_NORMAL ? "b" : "l")),
-					    style == PANGO_STYLE_OBLIQUE ? "o" :
-					      (style == PANGO_STYLE_ITALIC ? "i" : "n"));
+					    weight == PANGO2_WEIGHT_NORMAL ? "n" :
+					      (weight == PANGO2_WEIGHT_HEAVY ? "h" :
+					      (weight > PANGO2_WEIGHT_NORMAL ? "b" : "l")),
+					    style == PANGO2_STYLE_OBLIQUE ? "o" :
+					      (style == PANGO2_STYLE_ITALIC ? "i" : "n"));
 
 	      TextOut (hdc, 0, line, name, strlen(name));
 	      g_get_current_time (&tv0);
-	      pango_win32_render (hdc, font, glyphs, 200, line);
+	      pango2_win32_render (hdc, font, glyphs, 200, line);
 	      g_get_current_time (&tv1);
-	      g_print ("\tpango_win32_render took %.3f sec\n",
+	      g_print ("\tpango2_win32_render took %.3f sec\n",
 		       calc_duration (&tv1, &tv0));
 	      line += (3 * my_font_size / 2);
 	      g_free(name);
 	    }
 
 	  /* free glyphs, ... */
-	  pango_glyph_string_free (glyphs);
-	  pango_item_free (item);
+	  pango2_glyph_string_free (glyphs);
+	  pango2_item_free (item);
 
 	  g_object_unref (coverage);
 	  g_object_unref (font);
 	}
-      pango_font_description_free (desc);
+      pango2_font_description_free (desc);
     }
 
   if (hdc)

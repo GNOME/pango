@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * pangodwrite-fontmap.h: Fontmap using DirectWrite
  *
  * Copyright (C) 2022 the GTK team
@@ -25,16 +25,16 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_TYPE_DIRECT_WRITE_FONT_MAP (pango_direct_write_font_map_get_type ())
+#define PANGO2_TYPE_DIRECT_WRITE_FONT_MAP (pango2_direct_write_font_map_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-PANGO_DECLARE_INTERNAL_TYPE (PangoDirectWriteFontMap,
-                             pango_direct_write_font_map,
-                             PANGO, DIRECT_WRITE_FONT_MAP,
-                             PangoFontMap)
+PANGO2_AVAILABLE_IN_ALL
+PANGO2_DECLARE_INTERNAL_TYPE (Pango2DirectWriteFontMap,
+                              pango2_direct_write_font_map,
+                              PANGO2, DIRECT_WRITE_FONT_MAP,
+                              Pango2FontMap)
 
-PANGO_AVAILABLE_IN_ALL
-PangoDirectWriteFontMap * pango_direct_write_font_map_new (void);
+PANGO2_AVAILABLE_IN_ALL
+Pango2DirectWriteFontMap * pango2_direct_write_font_map_new (void);
 
 
 G_END_DECLS

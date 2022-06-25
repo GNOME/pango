@@ -25,57 +25,57 @@
 
 G_BEGIN_DECLS
 
-typedef struct _PangoUserFont PangoUserFont;
+typedef struct _Pango2UserFont Pango2UserFont;
 
-#define PANGO_TYPE_USER_FACE      (pango_user_face_get_type ())
+#define PANGO2_TYPE_USER_FACE      (pango2_user_face_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-PANGO_DECLARE_INTERNAL_TYPE (PangoUserFace, pango_user_face, PANGO, USER_FACE, PangoFontFace)
+PANGO2_AVAILABLE_IN_ALL
+PANGO2_DECLARE_INTERNAL_TYPE (Pango2UserFace, pango2_user_face, PANGO2, USER_FACE, Pango2FontFace)
 
-typedef gboolean      (* PangoUserFaceGetFontInfoFunc)     (PangoUserFace     *face,
-                                                            int                size,
-                                                            hb_font_extents_t *extents,
-                                                            gpointer           user_data);
+typedef gboolean      (* Pango2UserFaceGetFontInfoFunc)     (Pango2UserFace       *face,
+                                                             int                   size,
+                                                             hb_font_extents_t    *extents,
+                                                             gpointer              user_data);
 
-typedef gboolean      (* PangoUserFaceUnicodeToGlyphFunc)  (PangoUserFace  *face,
-                                                            hb_codepoint_t  unicode,
-                                                            hb_codepoint_t *glyph,
-                                                            gpointer        user_data);
+typedef gboolean      (* Pango2UserFaceUnicodeToGlyphFunc)  (Pango2UserFace       *face,
+                                                             hb_codepoint_t        unicode,
+                                                             hb_codepoint_t       *glyph,
+                                                             gpointer              user_data);
 
-typedef gboolean      (* PangoUserFaceGetGlyphInfoFunc)    (PangoUserFace      *face,
-                                                            int                 size,
-                                                            hb_codepoint_t      glyph,
-                                                            hb_glyph_extents_t *extents,
-                                                            hb_position_t      *h_advance,
-                                                            hb_position_t      *v_advance,
-                                                            gboolean           *is_color_glyph,
-                                                            gpointer            user_data);
+typedef gboolean      (* Pango2UserFaceGetGlyphInfoFunc)    (Pango2UserFace       *face,
+                                                             int                   size,
+                                                             hb_codepoint_t        glyph,
+                                                             hb_glyph_extents_t   *extents,
+                                                             hb_position_t        *h_advance,
+                                                             hb_position_t        *v_advance,
+                                                             gboolean             *is_color_glyph,
+                                                             gpointer              user_data);
 
-typedef gboolean      (* PangoUserFaceTextToGlyphFunc)     (PangoUserFace       *face,
-                                                            int                  size,
-                                                            const char          *text,
-                                                            int                  length,
-                                                            const PangoAnalysis *analysis,
-                                                            PangoGlyphString    *glyphs,
-                                                            PangoShapeFlags      flags,
-                                                            gpointer             user_data);
+typedef gboolean      (* Pango2UserFaceTextToGlyphFunc)     (Pango2UserFace       *face,
+                                                             int                   size,
+                                                             const char           *text,
+                                                             int                   length,
+                                                             const Pango2Analysis *analysis,
+                                                             Pango2GlyphString    *glyphs,
+                                                             Pango2ShapeFlags      flags,
+                                                             gpointer              user_data);
 
-typedef gboolean      (* PangoUserFaceRenderGlyphFunc)     (PangoUserFace  *face,
-                                                            int             size,
-                                                            hb_codepoint_t  glyph,
-                                                            gpointer        user_data,
-                                                            const char     *backend_id,
-                                                            gpointer        backend_data);
+typedef gboolean      (* Pango2UserFaceRenderGlyphFunc)     (Pango2UserFace       *face,
+                                                             int                   size,
+                                                             hb_codepoint_t        glyph,
+                                                             gpointer              user_data,
+                                                             const char           *backend_id,
+                                                             gpointer              backend_data);
 
-PANGO_AVAILABLE_IN_ALL
-PangoUserFace *   pango_user_face_new          (PangoUserFaceGetFontInfoFunc    font_info_func,
-                                                PangoUserFaceUnicodeToGlyphFunc glyph_func,
-                                                PangoUserFaceGetGlyphInfoFunc   glyph_info_func,
-                                                PangoUserFaceTextToGlyphFunc    shape_func,
-                                                PangoUserFaceRenderGlyphFunc    render_func,
-                                                gpointer                        user_data,
-                                                GDestroyNotify                  destroy,
-                                                const char                     *name,
-                                                const PangoFontDescription     *description);
+PANGO2_AVAILABLE_IN_ALL
+Pango2UserFace *        pango2_user_face_new          (Pango2UserFaceGetFontInfoFunc     font_info_func,
+                                                       Pango2UserFaceUnicodeToGlyphFunc  glyph_func,
+                                                       Pango2UserFaceGetGlyphInfoFunc    glyph_info_func,
+                                                       Pango2UserFaceTextToGlyphFunc     shape_func,
+                                                       Pango2UserFaceRenderGlyphFunc     render_func,
+                                                       gpointer                          user_data,
+                                                       GDestroyNotify                    destroy,
+                                                       const char                       *name,
+                                                       const Pango2FontDescription      *description);
 
 G_END_DECLS

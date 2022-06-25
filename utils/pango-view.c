@@ -1,10 +1,10 @@
 #include "config.h"
 #include "viewer.h"
 
-extern const PangoViewer pangocairo_viewer;
-extern const PangoViewer pangox_viewer;
+extern const Pango2Viewer pangocairo_viewer;
+extern const Pango2Viewer pangox_viewer;
 
-const PangoViewer *viewers[] = {
+const Pango2Viewer *viewers[] = {
 #ifdef HAVE_CAIRO
   &pangocairo_viewer,
 #endif

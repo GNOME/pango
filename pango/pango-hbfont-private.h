@@ -29,7 +29,7 @@
 typedef struct _HexBoxInfo HexBoxInfo;
 struct _HexBoxInfo
 {
-  PangoFont *font;
+  Pango2Font *font;
   int rows;
   double digit_width;
   double digit_height;
@@ -40,9 +40,9 @@ struct _HexBoxInfo
   double box_height;
 };
 
-struct _PangoHbFont
+struct _Pango2HbFont
 {
-  PangoFont parent_instance;
+  Pango2Font parent_instance;
 
   hb_feature_t *features;
   unsigned int n_features;
@@ -50,7 +50,7 @@ struct _PangoHbFont
   unsigned int n_variations;
 
   HexBoxInfo *hex_box_info;
-  PangoLanguage *approximate_char_lang;
+  Pango2Language *approximate_char_lang;
   int approximate_char_width;
   int approximate_digit_width;
 };

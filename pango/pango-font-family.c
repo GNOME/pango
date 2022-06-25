@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  *
  * Copyright (C) 1999 Red Hat Software
  *
@@ -27,51 +27,51 @@
 #include "pango-font.h"
 
 /**
- * PangoFontFamily:
+ * Pango2FontFamily:
  *
- * A `PangoFontFamily` is used to represent a family of related
+ * A `Pango2FontFamily` is used to represent a family of related
  * font faces.
  *
  * The font faces in a family share a common design, but differ in
  * slant, weight, width or other aspects.
  *
- * `PangoFontFamily` implements the [iface@Gio.ListModel] interface,
+ * `Pango2FontFamily` implements the [iface@Gio.ListModel] interface,
  * to provide a list of font faces.
  */
 
 /* {{{ GListModel implementation */
 
 static GType
-pango_font_family_get_item_type (GListModel *list)
+pango2_font_family_get_item_type (GListModel *list)
 {
-  return PANGO_TYPE_FONT_FACE;
+  return PANGO2_TYPE_FONT_FACE;
 }
 
 static guint
-pango_font_family_get_n_items (GListModel *list)
+pango2_font_family_get_n_items (GListModel *list)
 {
   g_assert_not_reached ();
   return 0;
 }
 
 static gpointer
-pango_font_family_get_item (GListModel *list,
-                            guint       position)
+pango2_font_family_get_item (GListModel *list,
+                             guint       position)
 {
   g_assert_not_reached ();
   return NULL;
 }
 
 static void
-pango_font_family_list_model_init (GListModelInterface *iface)
+pango2_font_family_list_model_init (GListModelInterface *iface)
 {
-  iface->get_item_type = pango_font_family_get_item_type;
-  iface->get_n_items = pango_font_family_get_n_items;
-  iface->get_item = pango_font_family_get_item;
+  iface->get_item_type = pango2_font_family_get_item_type;
+  iface->get_n_items = pango2_font_family_get_n_items;
+  iface->get_item = pango2_font_family_get_item;
 }
 
 /* }}} */
-/* {{{ PangoFontFamily implementation */
+/* {{{ Pango2FontFamily implementation */
 
 enum {
   PROP_NAME = 1,
@@ -82,23 +82,23 @@ enum {
 
 static GParamSpec *properties[N_PROPERTIES] = { NULL, };
 
-G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFontFamily, pango_font_family, G_TYPE_OBJECT,
-                                  G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango_font_family_list_model_init))
+G_DEFINE_ABSTRACT_TYPE_WITH_CODE (Pango2FontFamily, pango2_font_family, G_TYPE_OBJECT,
+                                  G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango2_font_family_list_model_init))
 
-static PangoFontFace *
-pango_font_family_real_get_face (PangoFontFamily *family,
-                                 const char      *name)
+static Pango2FontFace *
+pango2_font_family_real_get_face (Pango2FontFamily *family,
+                                  const char       *name)
 {
-  PangoFontFace *face;
+  Pango2FontFace *face;
 
   face = NULL;
 
   for (int i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (family)); i++)
     {
-      PangoFontFace *f = g_list_model_get_item (G_LIST_MODEL (family), i);
+      Pango2FontFace *f = g_list_model_get_item (G_LIST_MODEL (family), i);
       g_object_unref (f);
       if (name == NULL ||
-          strcmp (name, pango_font_face_get_name (f)) == 0)
+          strcmp (name, pango2_font_face_get_name (f)) == 0)
         {
           face = f;
           break;
@@ -109,24 +109,24 @@ pango_font_family_real_get_face (PangoFontFamily *family,
 }
 
 static void
-pango_font_family_finalize (GObject *object)
+pango2_font_family_finalize (GObject *object)
 {
-  PangoFontFamily *family = PANGO_FONT_FAMILY (object);
+  Pango2FontFamily *family = PANGO2_FONT_FAMILY (object);
 
   g_free (family->name);
   if (family->map)
     g_object_remove_weak_pointer (G_OBJECT (family->map), (gpointer *)&family->map);
 
-  G_OBJECT_CLASS (pango_font_family_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango2_font_family_parent_class)->finalize (object);
 }
 
 static void
-pango_font_family_get_property (GObject    *object,
-                                guint       property_id,
-                                GValue     *value,
-                                GParamSpec *pspec)
+pango2_font_family_get_property (GObject    *object,
+                                 guint       property_id,
+                                 GValue     *value,
+                                 GParamSpec *pspec)
 {
-  PangoFontFamily *family = PANGO_FONT_FAMILY (object);
+  Pango2FontFamily *family = PANGO2_FONT_FAMILY (object);
 
   switch (property_id)
     {
@@ -135,11 +135,11 @@ pango_font_family_get_property (GObject    *object,
       break;
 
     case PROP_ITEM_TYPE:
-      g_value_set_gtype (value, PANGO_TYPE_FONT);
+      g_value_set_gtype (value, PANGO2_TYPE_FONT);
       break;
 
     case PROP_N_ITEMS:
-      g_value_set_uint (value, pango_font_family_get_n_items (G_LIST_MODEL (object)));
+      g_value_set_uint (value, pango2_font_family_get_n_items (G_LIST_MODEL (object)));
       break;
 
     default:
@@ -148,17 +148,17 @@ pango_font_family_get_property (GObject    *object,
 }
 
 static void
-pango_font_family_class_init (PangoFontFamilyClass *class)
+pango2_font_family_class_init (Pango2FontFamilyClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
 
-  object_class->finalize = pango_font_family_finalize;
-  object_class->get_property = pango_font_family_get_property;
+  object_class->finalize = pango2_font_family_finalize;
+  object_class->get_property = pango2_font_family_get_property;
 
-  class->get_face = pango_font_family_real_get_face;
+  class->get_face = pango2_font_family_real_get_face;
 
   /**
-   * PangoFontFamily:name: (attributes org.gtk.Property.get=pango_font_family_get_name)
+   * Pango2FontFamily:name: (attributes org.gtk.Property.get=pango2_font_family_get_name)
    *
    * The name of the family.
    */
@@ -167,16 +167,16 @@ pango_font_family_class_init (PangoFontFamilyClass *class)
                            G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
-   * PangoFontFamily:item-type:
+   * Pango2FontFamily:item-type:
    *
    * The type of objects that the family contains.
    */
   properties[PROP_ITEM_TYPE] =
-      g_param_spec_gtype ("item-type", NULL, NULL, PANGO_TYPE_FONT_FACE,
+      g_param_spec_gtype ("item-type", NULL, NULL, PANGO2_TYPE_FONT_FACE,
                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
-   * PangoFontFamily:n-items:
+   * Pango2FontFamily:n-items:
    *
    * The number of faces contained in the family.
    */
@@ -188,7 +188,7 @@ pango_font_family_class_init (PangoFontFamilyClass *class)
 }
 
 static void
-pango_font_family_init (PangoFontFamily *family G_GNUC_UNUSED)
+pango2_font_family_init (Pango2FontFamily *family G_GNUC_UNUSED)
 {
 }
 
@@ -196,10 +196,10 @@ pango_font_family_init (PangoFontFamily *family G_GNUC_UNUSED)
 /* {{{ Public API */
 
 /**
- * pango_font_family_get_font_map:
- * @family: a `PangoFontFamily`
+ * pango2_font_family_get_font_map:
+ * @family: a `Pango2FontFamily`
  *
- * Returns the `PangoFontMap that @family belongs to.
+ * Returns the `Pango2FontMap that @family belongs to.
  *
  * Note that the family maintains a *weak* reference to
  * the font map, so if all references to font map are
@@ -209,57 +209,57 @@ pango_font_family_init (PangoFontFamily *family G_GNUC_UNUSED)
  *
  * It is the responsibility of the user to ensure that the
  * font map is kept alive. In most uses this is not an issue
- * as a `PangoContext` holds a reference to the font map.
+ * as a `Pango2Context` holds a reference to the font map.
 
  *
- * Return value: (transfer none) (nullable): the `PangoFontMap
+ * Return value: (transfer none) (nullable): the `Pango2FontMap
  */
-PangoFontMap *
-pango_font_family_get_font_map (PangoFontFamily *family)
+Pango2FontMap *
+pango2_font_family_get_font_map (Pango2FontFamily *family)
 {
   return family->map;
 }
 
 /**
- * pango_font_family_get_name:
- * @family: a `PangoFontFamily`
+ * pango2_font_family_get_name:
+ * @family: a `Pango2FontFamily`
  *
  * Gets the name of the family.
  *
  * The name is unique among all fonts for the font backend and can
- * be used in a `PangoFontDescription` to specify that a face from
+ * be used in a `Pango2FontDescription` to specify that a face from
  * this family is desired.
  *
  * Return value: the name of the family. This string is owned
  *   by the family object and must not be modified or freed.
  */
 const char *
-pango_font_family_get_name (PangoFontFamily *family)
+pango2_font_family_get_name (Pango2FontFamily *family)
 {
-  g_return_val_if_fail (PANGO_IS_FONT_FAMILY (family), NULL);
+  g_return_val_if_fail (PANGO2_IS_FONT_FAMILY (family), NULL);
 
   return family->name;
 }
 
 /**
- * pango_font_family_get_face:
- * @family: a `PangoFontFamily`
+ * pango2_font_family_get_face:
+ * @family: a `Pango2FontFamily`
  * @name: (nullable): the name of a face. If the name is `NULL`,
  *   the family's default face (fontconfig calls it "Regular")
  *   will be returned.
  *
- * Gets the `PangoFontFace` of the family with the given name.
+ * Gets the `Pango2FontFace` of the family with the given name.
  *
- * Returns: (transfer none) (nullable): the `PangoFontFace`,
+ * Returns: (transfer none) (nullable): the `Pango2FontFace`,
  *   or `NULL` if no face with the given name exists.
  */
-PangoFontFace *
-pango_font_family_get_face (PangoFontFamily *family,
-                            const char      *name)
+Pango2FontFace *
+pango2_font_family_get_face (Pango2FontFamily *family,
+                             const char       *name)
 {
-  g_return_val_if_fail (PANGO_IS_FONT_FAMILY (family), NULL);
+  g_return_val_if_fail (PANGO2_IS_FONT_FAMILY (family), NULL);
 
-  return PANGO_FONT_FAMILY_GET_CLASS (family)->get_face (family, name);
+  return PANGO2_FONT_FAMILY_GET_CLASS (family)->get_face (family, name);
 }
 
 /* }}} */

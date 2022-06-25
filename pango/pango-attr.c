@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * pango-attr.c: Attributed text
  *
  * Copyright (C) 2000-2002 Red Hat Software
@@ -27,13 +27,13 @@
 #include "pango-impl-utils.h"
 
 /**
- * PangoAttribute:
+ * Pango2Attribute:
  *
- * A `PangoAttribute` structure associates a named attribute with
+ * A `Pango2Attribute` structure associates a named attribute with
  * a certain range of a text.
  *
  * Attributes can have basic types, such as int, float, boolean
- * `PangoColor`, `PangoFontDescription or `PangoLanguage`. It is
+ * `Pango2Color`, `Pango2FontDescription or `Pango2Language`. It is
  * also possible to define new, custom attributes.
  *
  * By default, an attribute will have an all-inclusive range of
@@ -47,24 +47,24 @@ static GArray *attr_type;
 
 #define MIN_CUSTOM 1000
 
-typedef struct _PangoAttrClass PangoAttrClass;
+typedef struct _Pango2AttrClass Pango2AttrClass;
 
-struct _PangoAttrClass {
+struct _Pango2AttrClass {
   guint type;
   const char *name;
-  PangoAttrDataCopyFunc copy;
+  Pango2AttrDataCopyFunc copy;
   GDestroyNotify destroy;
   GEqualFunc equal;
-  PangoAttrDataSerializeFunc serialize;
+  Pango2AttrDataSerializeFunc serialize;
 };
 
 static const char *
-get_attr_type_nick (PangoAttrType type)
+get_attr_type_nick (Pango2AttrType type)
 {
   GEnumClass *enum_class;
   GEnumValue *enum_value;
 
-  enum_class = g_type_class_ref (pango_attr_type_get_type ());
+  enum_class = g_type_class_ref (pango2_attr_type_get_type ());
   enum_value = g_enum_get_value (enum_class, type);
   g_type_class_unref (enum_class);
 
@@ -76,43 +76,43 @@ is_valid_attr_type (guint type)
 {
   switch (type)
     {
-    case PANGO_ATTR_INVALID:
+    case PANGO2_ATTR_INVALID:
       return FALSE;
-    case PANGO_ATTR_LANGUAGE:
-    case PANGO_ATTR_FAMILY:
-    case PANGO_ATTR_STYLE:
-    case PANGO_ATTR_WEIGHT:
-    case PANGO_ATTR_VARIANT:
-    case PANGO_ATTR_STRETCH:
-    case PANGO_ATTR_SIZE:
-    case PANGO_ATTR_FONT_DESC:
-    case PANGO_ATTR_FOREGROUND:
-    case PANGO_ATTR_BACKGROUND:
-    case PANGO_ATTR_UNDERLINE:
-    case PANGO_ATTR_STRIKETHROUGH:
-    case PANGO_ATTR_RISE:
-    case PANGO_ATTR_SCALE:
-    case PANGO_ATTR_FALLBACK:
-    case PANGO_ATTR_LETTER_SPACING:
-    case PANGO_ATTR_UNDERLINE_COLOR:
-    case PANGO_ATTR_STRIKETHROUGH_COLOR:
-    case PANGO_ATTR_ABSOLUTE_SIZE:
-    case PANGO_ATTR_GRAVITY:
-    case PANGO_ATTR_GRAVITY_HINT:
-    case PANGO_ATTR_FONT_FEATURES:
-    case PANGO_ATTR_ALLOW_BREAKS:
-    case PANGO_ATTR_SHOW:
-    case PANGO_ATTR_INSERT_HYPHENS:
-    case PANGO_ATTR_OVERLINE:
-    case PANGO_ATTR_OVERLINE_COLOR:
-    case PANGO_ATTR_LINE_HEIGHT:
-    case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
-    case PANGO_ATTR_TEXT_TRANSFORM:
-    case PANGO_ATTR_WORD:
-    case PANGO_ATTR_SENTENCE:
-    case PANGO_ATTR_BASELINE_SHIFT:
-    case PANGO_ATTR_FONT_SCALE:
-    case PANGO_ATTR_SHAPE:
+    case PANGO2_ATTR_LANGUAGE:
+    case PANGO2_ATTR_FAMILY:
+    case PANGO2_ATTR_STYLE:
+    case PANGO2_ATTR_WEIGHT:
+    case PANGO2_ATTR_VARIANT:
+    case PANGO2_ATTR_STRETCH:
+    case PANGO2_ATTR_SIZE:
+    case PANGO2_ATTR_FONT_DESC:
+    case PANGO2_ATTR_FOREGROUND:
+    case PANGO2_ATTR_BACKGROUND:
+    case PANGO2_ATTR_UNDERLINE:
+    case PANGO2_ATTR_STRIKETHROUGH:
+    case PANGO2_ATTR_RISE:
+    case PANGO2_ATTR_SCALE:
+    case PANGO2_ATTR_FALLBACK:
+    case PANGO2_ATTR_LETTER_SPACING:
+    case PANGO2_ATTR_UNDERLINE_COLOR:
+    case PANGO2_ATTR_STRIKETHROUGH_COLOR:
+    case PANGO2_ATTR_ABSOLUTE_SIZE:
+    case PANGO2_ATTR_GRAVITY:
+    case PANGO2_ATTR_GRAVITY_HINT:
+    case PANGO2_ATTR_FONT_FEATURES:
+    case PANGO2_ATTR_ALLOW_BREAKS:
+    case PANGO2_ATTR_SHOW:
+    case PANGO2_ATTR_INSERT_HYPHENS:
+    case PANGO2_ATTR_OVERLINE:
+    case PANGO2_ATTR_OVERLINE_COLOR:
+    case PANGO2_ATTR_LINE_HEIGHT:
+    case PANGO2_ATTR_ABSOLUTE_LINE_HEIGHT:
+    case PANGO2_ATTR_TEXT_TRANSFORM:
+    case PANGO2_ATTR_WORD:
+    case PANGO2_ATTR_SENTENCE:
+    case PANGO2_ATTR_BASELINE_SHIFT:
+    case PANGO2_ATTR_FONT_SCALE:
+    case PANGO2_ATTR_SHAPE:
       return TRUE;
     default:
       if (!attr_type)
@@ -125,7 +125,7 @@ is_valid_attr_type (guint type)
 
           for (int i = 0; i < attr_type->len; i++)
             {
-              PangoAttrClass *class = &g_array_index (attr_type, PangoAttrClass, i);
+              Pango2AttrClass *class = &g_array_index (attr_type, Pango2AttrClass, i);
               if (class->type == type)
                 {
                   result = TRUE;
@@ -141,11 +141,11 @@ is_valid_attr_type (guint type)
 }
 
 /**
- * pango_attr_type_register:
+ * pango2_attr_type_register:
  * @name: (nullable): an identifier for the type
- * @value_type: the `PangoAttrValueType` for the attribute
- * @affects: `PangoAttrAffects` flags for the attribute
- * @merge: `PangoAttrMerge` flags for the attribute
+ * @value_type: the `Pango2AttrValueType` for the attribute
+ * @affects: `Pango2AttrAffects` flags for the attribute
+ * @merge: `Pango2AttrMerge` flags for the attribute
  * @copy: (scope forever) (nullable): function to copy the data of an attribute
  *   of this type
  * @destroy: (scope forever) (nullable): function to free the data of an attribute
@@ -158,31 +158,31 @@ is_valid_attr_type (guint type)
  * Register a new attribute type.
  *
  * The attribute type name can be accessed later
- * by using [func@Pango.AttrType.get_name].
+ * by using [func@Pango2.AttrType.get_name].
  *
- * The callbacks are only needed if @type is `PANGO_ATTR_VALUE_POINTER`,
- * Pango knows how to handle other value types and will only use the
+ * The callbacks are only needed if @type is `PANGO2_ATTR_VALUE_POINTER`,
+ * Pango2 knows how to handle other value types and will only use the
  * callbacks for generic pointer values.
  *
  * If @name and @serialize are provided, they will be used
  * to serialize attributes of this type.
  *
- * To create attributes with the new type, use [ctor@PangoAttribute.new].
+ * To create attributes with the new type, use [ctor@Pango2.Attribute.new].
  *
  * Return value: the attribute type ID
  */
 guint
-pango_attr_type_register (const char                 *name,
-                          PangoAttrValueType          value_type,
-                          PangoAttrAffects            affects,
-                          PangoAttrMerge              merge,
-                          PangoAttrDataCopyFunc       copy,
-                          GDestroyNotify              destroy,
-                          GEqualFunc                  equal,
-                          PangoAttrDataSerializeFunc  serialize)
+pango2_attr_type_register (const char                  *name,
+                           Pango2AttrValueType          value_type,
+                           Pango2AttrAffects            affects,
+                           Pango2AttrMerge              merge,
+                           Pango2AttrDataCopyFunc       copy,
+                           GDestroyNotify               destroy,
+                           GEqualFunc                   equal,
+                           Pango2AttrDataSerializeFunc  serialize)
 {
   static guint current_id = MIN_CUSTOM; /* MT-safe */
-  PangoAttrClass class;
+  Pango2AttrClass class;
 
   G_LOCK (attr_type);
 
@@ -198,7 +198,7 @@ pango_attr_type_register (const char                 *name,
     class.name = g_intern_string (name);
 
   if (attr_type == NULL)
-    attr_type = g_array_new (FALSE, FALSE, sizeof (PangoAttrClass));
+    attr_type = g_array_new (FALSE, FALSE, sizeof (Pango2AttrClass));
 
   g_array_append_val (attr_type, class);
 
@@ -208,25 +208,25 @@ pango_attr_type_register (const char                 *name,
 }
 
 /**
- * pango_attr_type_get_name:
+ * pango2_attr_type_get_name:
  * @type: an attribute type ID to fetch the name for
  *
  * Fetches the attribute type name.
  *
  * The attribute type name is the string passed in
  * when registering the type using
- * [func@Pango.AttrType.register].
+ * [func@Pango2.AttrType.register].
  *
  * The returned value is an interned string (see
  * [func@GLib.intern_string] for what that means) that should
  * not be modified or freed.
  *
  * Return value: (nullable): the type ID name (which
- *   may be %NULL), or %NULL if @type is a built-in Pango
+ *   may be %NULL), or %NULL if @type is a built-in Pango2
  *   attribute type or invalid.
  */
 const char *
-pango_attr_type_get_name (guint type)
+pango2_attr_type_get_name (guint type)
 {
   const char *result = NULL;
 
@@ -237,7 +237,7 @@ pango_attr_type_get_name (guint type)
 
   for (int i = 0; i < attr_type->len; i++)
     {
-      PangoAttrClass *class = &g_array_index (attr_type, PangoAttrClass, i);
+      Pango2AttrClass *class = &g_array_index (attr_type, Pango2AttrClass, i);
       if (class->type == type)
         {
           result = class->name;
@@ -251,36 +251,36 @@ pango_attr_type_get_name (guint type)
 }
 
 /**
- * pango_attribute_copy:
- * @attr: a `PangoAttribute`
+ * pango2_attribute_copy:
+ * @attr: a `Pango2Attribute`
  *
  * Make a copy of an attribute.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy].
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy].
  */
-PangoAttribute *
-pango_attribute_copy (const PangoAttribute *attr)
+Pango2Attribute *
+pango2_attribute_copy (const Pango2Attribute *attr)
 {
-  PangoAttribute *result;
+  Pango2Attribute *result;
 
   g_return_val_if_fail (attr != NULL, NULL);
 
-  result = g_slice_dup (PangoAttribute, attr);
+  result = g_slice_dup (Pango2Attribute, attr);
 
-  switch (PANGO_ATTR_VALUE_TYPE (attr))
+  switch (PANGO2_ATTR_VALUE_TYPE (attr))
     {
-    case PANGO_ATTR_VALUE_STRING:
+    case PANGO2_ATTR_VALUE_STRING:
       result->str_value = g_strdup (attr->str_value);
       break;
 
-    case PANGO_ATTR_VALUE_FONT_DESC:
-      result->font_value = pango_font_description_copy (attr->font_value);
+    case PANGO2_ATTR_VALUE_FONT_DESC:
+      result->font_value = pango2_font_description_copy (attr->font_value);
       break;
 
-    case PANGO_ATTR_VALUE_POINTER:
-      if (attr->type == PANGO_ATTR_SHAPE)
+    case PANGO2_ATTR_VALUE_POINTER:
+      if (attr->type == PANGO2_ATTR_SHAPE)
         {
           ShapeData *shape_data;
 
@@ -292,7 +292,7 @@ pango_attribute_copy (const PangoAttribute *attr)
         }
       else
         {
-          PangoAttrDataCopyFunc copy = NULL;
+          Pango2AttrDataCopyFunc copy = NULL;
 
           G_LOCK (attr_type);
 
@@ -300,7 +300,7 @@ pango_attribute_copy (const PangoAttribute *attr)
 
           for (int i = 0; i < attr_type->len; i++)
             {
-              PangoAttrClass *class = &g_array_index (attr_type, PangoAttrClass, i);
+              Pango2AttrClass *class = &g_array_index (attr_type, Pango2AttrClass, i);
               if (class->type == attr->type)
                 {
                   copy = class->copy;
@@ -315,11 +315,11 @@ pango_attribute_copy (const PangoAttribute *attr)
         }
       break;
 
-    case PANGO_ATTR_VALUE_INT:
-    case PANGO_ATTR_VALUE_BOOLEAN:
-    case PANGO_ATTR_VALUE_FLOAT:
-    case PANGO_ATTR_VALUE_COLOR:
-    case PANGO_ATTR_VALUE_LANGUAGE:
+    case PANGO2_ATTR_VALUE_INT:
+    case PANGO2_ATTR_VALUE_BOOLEAN:
+    case PANGO2_ATTR_VALUE_FLOAT:
+    case PANGO2_ATTR_VALUE_COLOR:
+    case PANGO2_ATTR_VALUE_LANGUAGE:
     default: ;
     }
 
@@ -327,28 +327,28 @@ pango_attribute_copy (const PangoAttribute *attr)
 }
 
 /**
- * pango_attribute_destroy:
- * @attr: a `PangoAttribute`.
+ * pango2_attribute_destroy:
+ * @attr: a `Pango2Attribute`.
  *
- * Destroy a `PangoAttribute` and free all associated memory.
+ * Destroy a `Pango2Attribute` and free all associated memory.
  */
 void
-pango_attribute_destroy (PangoAttribute *attr)
+pango2_attribute_destroy (Pango2Attribute *attr)
 {
   g_return_if_fail (attr != NULL);
 
-  switch (PANGO_ATTR_VALUE_TYPE (attr))
+  switch (PANGO2_ATTR_VALUE_TYPE (attr))
     {
-    case PANGO_ATTR_VALUE_STRING:
+    case PANGO2_ATTR_VALUE_STRING:
       g_free (attr->str_value);
       break;
 
-    case PANGO_ATTR_VALUE_FONT_DESC:
-      pango_font_description_free (attr->font_value);
+    case PANGO2_ATTR_VALUE_FONT_DESC:
+      pango2_font_description_free (attr->font_value);
       break;
 
-    case PANGO_ATTR_VALUE_POINTER:
-      if (attr->type == PANGO_ATTR_SHAPE)
+    case PANGO2_ATTR_VALUE_POINTER:
+      if (attr->type == PANGO2_ATTR_SHAPE)
         {
           ShapeData *shape_data = attr->pointer_value;
 
@@ -367,7 +367,7 @@ pango_attribute_destroy (PangoAttribute *attr)
 
           for (int i = 0; i < attr_type->len; i++)
             {
-              PangoAttrClass *class = &g_array_index (attr_type, PangoAttrClass, i);
+              Pango2AttrClass *class = &g_array_index (attr_type, Pango2AttrClass, i);
               if (class->type == attr->type)
                 {
                   destroy = class->destroy;
@@ -382,25 +382,25 @@ pango_attribute_destroy (PangoAttribute *attr)
         }
       break;
 
-    case PANGO_ATTR_VALUE_INT:
-    case PANGO_ATTR_VALUE_BOOLEAN:
-    case PANGO_ATTR_VALUE_FLOAT:
-    case PANGO_ATTR_VALUE_COLOR:
-    case PANGO_ATTR_VALUE_LANGUAGE:
+    case PANGO2_ATTR_VALUE_INT:
+    case PANGO2_ATTR_VALUE_BOOLEAN:
+    case PANGO2_ATTR_VALUE_FLOAT:
+    case PANGO2_ATTR_VALUE_COLOR:
+    case PANGO2_ATTR_VALUE_LANGUAGE:
     default: ;
     }
 
-  g_slice_free (PangoAttribute, attr);
+  g_slice_free (Pango2Attribute, attr);
 }
 
-G_DEFINE_BOXED_TYPE (PangoAttribute, pango_attribute,
-                     pango_attribute_copy,
-                     pango_attribute_destroy);
+G_DEFINE_BOXED_TYPE (Pango2Attribute, pango2_attribute,
+                     pango2_attribute_copy,
+                     pango2_attribute_destroy);
 
 /**
- * pango_attribute_equal:
- * @attr1: a `PangoAttribute`
- * @attr2: another `PangoAttribute`
+ * pango2_attribute_equal:
+ * @attr1: a `Pango2Attribute`
+ * @attr2: another `Pango2Attribute`
  *
  * Compare two attributes for equality.
  *
@@ -411,8 +411,8 @@ G_DEFINE_BOXED_TYPE (PangoAttribute, pango_attribute,
  * Return value: %TRUE if the two attributes have the same value
  */
 gboolean
-pango_attribute_equal (const PangoAttribute *attr1,
-                       const PangoAttribute *attr2)
+pango2_attribute_equal (const Pango2Attribute *attr1,
+                        const Pango2Attribute *attr2)
 {
   g_return_val_if_fail (attr1 != NULL, FALSE);
   g_return_val_if_fail (attr2 != NULL, FALSE);
@@ -420,30 +420,30 @@ pango_attribute_equal (const PangoAttribute *attr1,
   if (attr1->type != attr2->type)
     return FALSE;
 
-  switch (PANGO_ATTR_VALUE_TYPE (attr1))
+  switch (PANGO2_ATTR_VALUE_TYPE (attr1))
     {
-    case PANGO_ATTR_VALUE_STRING:
+    case PANGO2_ATTR_VALUE_STRING:
       return strcmp (attr1->str_value, attr2->str_value) == 0;
 
-    case PANGO_ATTR_VALUE_INT:
+    case PANGO2_ATTR_VALUE_INT:
       return attr1->int_value == attr2->int_value;
 
-    case PANGO_ATTR_VALUE_BOOLEAN:
+    case PANGO2_ATTR_VALUE_BOOLEAN:
       return attr1->boolean_value == attr2->boolean_value;
 
-    case PANGO_ATTR_VALUE_FLOAT:
+    case PANGO2_ATTR_VALUE_FLOAT:
       return attr1->double_value == attr2->double_value;
 
-    case PANGO_ATTR_VALUE_COLOR:
-      return memcmp (&attr1->color_value, &attr2->color_value, sizeof (PangoColor)) == 0;
+    case PANGO2_ATTR_VALUE_COLOR:
+      return memcmp (&attr1->color_value, &attr2->color_value, sizeof (Pango2Color)) == 0;
 
-    case PANGO_ATTR_VALUE_LANGUAGE:
+    case PANGO2_ATTR_VALUE_LANGUAGE:
       return attr1->lang_value == attr2->lang_value;
 
-    case PANGO_ATTR_VALUE_FONT_DESC:
-      return pango_font_description_equal (attr1->font_value, attr2->font_value);
+    case PANGO2_ATTR_VALUE_FONT_DESC:
+      return pango2_font_description_equal (attr1->font_value, attr2->font_value);
 
-    case PANGO_ATTR_VALUE_POINTER:
+    case PANGO2_ATTR_VALUE_POINTER:
       {
         GEqualFunc equal = NULL;
 
@@ -453,7 +453,7 @@ pango_attribute_equal (const PangoAttribute *attr1,
 
         for (int i = 0; i < attr_type->len; i++)
           {
-            PangoAttrClass *class = &g_array_index (attr_type, PangoAttrClass, i);
+            Pango2AttrClass *class = &g_array_index (attr_type, Pango2AttrClass, i);
             if (class->type == attr1->type)
               {
                 equal = class->equal;
@@ -475,58 +475,58 @@ pango_attribute_equal (const PangoAttribute *attr1,
 }
 
 /**
- * pango_attribute_new:
+ * pango2_attribute_new:
  * @type: the attribute type
  * @value: pointer to the value to be copied, must be of the right type
  *
  * Creates a new attribute for the given type.
  *
- * The type must be one of the `PangoAttrType` values, or
- * have been registered with [func@Pango.AttrType.register].
+ * The type must be one of the `Pango2AttrType` values, or
+ * have been registered with [func@Pango2.AttrType.register].
  *
- * Pango will initialize @start_index and @end_index to an
+ * Pango2 will initialize @start_index and @end_index to an
  * all-inclusive range of `[0,G_MAXUINT]`. The value is copied.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttribute`, which should be freed with
- *   [method@Pango.Attribute.destroy]
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
  */
-PangoAttribute *
-pango_attribute_new (guint         type,
-                     gconstpointer value)
+Pango2Attribute *
+pango2_attribute_new (guint         type,
+                      gconstpointer value)
 {
-  PangoAttribute attr;
+  Pango2Attribute attr;
 
   g_return_val_if_fail (is_valid_attr_type (type), NULL);
 
   attr.type = type;
-  attr.start_index = PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING;
-  attr.end_index = PANGO_ATTR_INDEX_TO_TEXT_END;
+  attr.start_index = PANGO2_ATTR_INDEX_FROM_TEXT_BEGINNING;
+  attr.end_index = PANGO2_ATTR_INDEX_TO_TEXT_END;
 
-  switch (PANGO_ATTR_TYPE_VALUE_TYPE (type))
+  switch (PANGO2_ATTR_TYPE_VALUE_TYPE (type))
     {
-    case PANGO_ATTR_VALUE_STRING:
+    case PANGO2_ATTR_VALUE_STRING:
       attr.str_value = (char *)value;
       break;
-    case PANGO_ATTR_VALUE_INT:
+    case PANGO2_ATTR_VALUE_INT:
       attr.int_value = *(int *)value;
       break;
-    case PANGO_ATTR_VALUE_BOOLEAN:
+    case PANGO2_ATTR_VALUE_BOOLEAN:
       attr.boolean_value = *(gboolean *)value;
       break;
-    case PANGO_ATTR_VALUE_FLOAT:
+    case PANGO2_ATTR_VALUE_FLOAT:
       attr.double_value = *(double *)value;
       break;
-    case PANGO_ATTR_VALUE_COLOR:
-      attr.color_value = *(PangoColor *)value;
+    case PANGO2_ATTR_VALUE_COLOR:
+      attr.color_value = *(Pango2Color *)value;
       break;
-    case PANGO_ATTR_VALUE_LANGUAGE:
-      attr.lang_value = (PangoLanguage *)value;
+    case PANGO2_ATTR_VALUE_LANGUAGE:
+      attr.lang_value = (Pango2Language *)value;
       break;
-    case PANGO_ATTR_VALUE_FONT_DESC:
-      attr.font_value = (PangoFontDescription *)value;
+    case PANGO2_ATTR_VALUE_FONT_DESC:
+      attr.font_value = (Pango2FontDescription *)value;
       break;
-    case PANGO_ATTR_VALUE_POINTER:
+    case PANGO2_ATTR_VALUE_POINTER:
       attr.pointer_value = (gpointer)value;
       break;
     default:
@@ -534,32 +534,32 @@ pango_attribute_new (guint         type,
     }
 
   /* Copy the value */
-  return pango_attribute_copy (&attr);
+  return pango2_attribute_copy (&attr);
 }
 
 /**
- * pango_attribute_type:
- * @attribute: a `PangoAttribute`
+ * pango2_attribute_type:
+ * @attribute: a `Pango2Attribute`
  *
  * Returns the type of @attribute, either a
- * value from the [enum@Pango.AttrType] enumeration
+ * value from the [enum@Pango2.AttrType] enumeration
  * or a registered custom type.
  *
- * Return value: the type of `PangoAttribute`
+ * Return value: the type of `Pango2Attribute`
  */
 guint
-pango_attribute_type (const PangoAttribute *attribute)
+pango2_attribute_type (const Pango2Attribute *attribute)
 {
   return attribute->type;
 }
 
 /* }}} */
-/* {{{ Private API */
+ /* {{{ Private API */
 
 char *
-pango_attr_value_serialize (PangoAttribute *attr)
+pango2_attr_value_serialize (Pango2Attribute *attr)
 {
-  PangoAttrDataSerializeFunc serialize = NULL;
+  Pango2AttrDataSerializeFunc serialize = NULL;
 
   G_LOCK (attr_type);
 
@@ -567,7 +567,7 @@ pango_attr_value_serialize (PangoAttribute *attr)
 
   for (int i = 0; i < attr_type->len; i++)
     {
-      PangoAttrClass *class = &g_array_index (attr_type, PangoAttrClass, i);
+      Pango2AttrClass *class = &g_array_index (attr_type, Pango2AttrClass, i);
       if (class->type == attr->type)
         {
           serialize = class->serialize;
@@ -587,170 +587,170 @@ pango_attr_value_serialize (PangoAttribute *attr)
 /* {{{ Binding Helpers */
 
 /**
- * pango_attribute_set_range:
- * @attribute: a `PangoAttribute`
+ * pango2_attribute_set_range:
+ * @attribute: a `Pango2Attribute`
  * @start_index: start index
  * @end_index: end index
  *
  * Sets the range of the attribute.
  */
 void
-pango_attribute_set_range (PangoAttribute *attribute,
-                           guint           start_index,
-                           guint           end_index)
+pango2_attribute_set_range (Pango2Attribute *attribute,
+                            guint            start_index,
+                            guint            end_index)
 {
   attribute->start_index = start_index;
   attribute->end_index = end_index;
 }
 
 /**
- * pango_attribute_get_range:
- * @attribute: a `PangoAttribute`
+ * pango2_attribute_get_range:
+ * @attribute: a `Pango2Attribute`
  * @start_index: (out caller-allocates): return location for start index
  * @end_index: (out caller-allocates): return location for end index
  *
  * Gets the range of the attribute.
  */
 void
-pango_attribute_get_range (PangoAttribute *attribute,
-                           guint          *start_index,
-                           guint          *end_index)
+pango2_attribute_get_range (Pango2Attribute *attribute,
+                            guint           *start_index,
+                            guint           *end_index)
 {
   *start_index = attribute->start_index;
   *end_index = attribute->end_index;
 }
 
 /**
- * pango_attribute_get_string:
- * @attribute: a `PangoAttribute`
+ * pango2_attribute_get_string:
+ * @attribute: a `Pango2Attribute`
  *
  * Gets the value of an attribute whose value type is string.
  *
  * Returns: (nullable): the string value
  */
 const char *
-pango_attribute_get_string (PangoAttribute *attribute)
+pango2_attribute_get_string (Pango2Attribute *attribute)
 {
-  if (PANGO_ATTR_VALUE_TYPE (attribute) != PANGO_ATTR_VALUE_STRING)
+  if (PANGO2_ATTR_VALUE_TYPE (attribute) != PANGO2_ATTR_VALUE_STRING)
     return NULL;
 
   return attribute->str_value;
 }
 
 /**
- * pango_attribute_get_language:
- * @attribute: a `PangoAttribute`
+ * pango2_attribute_get_language:
+ * @attribute: a `Pango2Attribute`
  *
- * Gets the value of an attribute whose value type is `PangoLanguage`.
+ * Gets the value of an attribute whose value type is `Pango2Language`.
  *
  * Returns: (nullable): the language value
  */
-PangoLanguage *
-pango_attribute_get_language (PangoAttribute *attribute)
+Pango2Language *
+pango2_attribute_get_language (Pango2Attribute *attribute)
 {
-  if (PANGO_ATTR_VALUE_TYPE (attribute) != PANGO_ATTR_VALUE_LANGUAGE)
+  if (PANGO2_ATTR_VALUE_TYPE (attribute) != PANGO2_ATTR_VALUE_LANGUAGE)
     return NULL;
 
   return attribute->lang_value;
 }
 
 /**
- * pango_attribute_get_int:
- * @attribute: a `PangoAttribute`
+ * pango2_attribute_get_int:
+ * @attribute: a `Pango2Attribute`
  *
  * Gets the value of an attribute whose value type is `int`.
  *
  * Returns: the integer value, or 0
  */
 int
-pango_attribute_get_int (PangoAttribute *attribute)
+pango2_attribute_get_int (Pango2Attribute *attribute)
 {
-  if (PANGO_ATTR_VALUE_TYPE (attribute) != PANGO_ATTR_VALUE_INT)
+  if (PANGO2_ATTR_VALUE_TYPE (attribute) != PANGO2_ATTR_VALUE_INT)
     return 0;
 
   return attribute->int_value;
 }
 
 /**
- * pango_attribute_get_boolean:
- * @attribute: a `PangoAttribute`
+ * pango2_attribute_get_boolean:
+ * @attribute: a `Pango2Attribute`
  *
  * Gets the value of an attribute whose value type is `gboolean`.
  *
  * Returns: the boolean value, or `FALSE`
  */
 gboolean
-pango_attribute_get_boolean (PangoAttribute *attribute)
+pango2_attribute_get_boolean (Pango2Attribute *attribute)
 {
-  if (PANGO_ATTR_VALUE_TYPE (attribute) != PANGO_ATTR_VALUE_BOOLEAN)
+  if (PANGO2_ATTR_VALUE_TYPE (attribute) != PANGO2_ATTR_VALUE_BOOLEAN)
     return FALSE;
 
   return attribute->boolean_value;
 }
 
 /**
- * pango_attribute_get_float:
- * @attribute: a `PangoAttribute`
+ * pango2_attribute_get_float:
+ * @attribute: a `Pango2Attribute`
  *
  * Gets the value of an attribute whose value type is `double`.
  *
  * Returns: the float value, or 0
  */
 double
-pango_attribute_get_float (PangoAttribute *attribute)
+pango2_attribute_get_float (Pango2Attribute *attribute)
 {
-  if (PANGO_ATTR_VALUE_TYPE (attribute) != PANGO_ATTR_VALUE_FLOAT)
+  if (PANGO2_ATTR_VALUE_TYPE (attribute) != PANGO2_ATTR_VALUE_FLOAT)
     return 0.;
 
   return attribute->double_value;
 }
 
 /**
- * pango_attribute_get_color:
- * @attribute: a `PangoAttribute`
+ * pango2_attribute_get_color:
+ * @attribute: a `Pango2Attribute`
  *
- * Gets the value of an attribute whose value type is `PangoColor`.
+ * Gets the value of an attribute whose value type is `Pango2Color`.
  *
  * Returns: (nullable): pointer to the color value
  */
-PangoColor *
-pango_attribute_get_color (PangoAttribute *attribute)
+Pango2Color *
+pango2_attribute_get_color (Pango2Attribute *attribute)
 {
-  if (PANGO_ATTR_VALUE_TYPE (attribute) != PANGO_ATTR_VALUE_COLOR)
+  if (PANGO2_ATTR_VALUE_TYPE (attribute) != PANGO2_ATTR_VALUE_COLOR)
     return NULL;
 
   return &attribute->color_value;
 }
 
 /**
- * pango_attribute_get_font_desc:
- * @attribute: a `PangoAttribute`
+ * pango2_attribute_get_font_desc:
+ * @attribute: a `Pango2Attribute`
  *
- * Gets the value of an attribute whose value type is `PangoFontDescription`.
+ * Gets the value of an attribute whose value type is `Pango2FontDescription`.
  *
  * Returns: (nullable): the font description
  */
-PangoFontDescription *
-pango_attribute_get_font_desc (PangoAttribute *attribute)
+Pango2FontDescription *
+pango2_attribute_get_font_desc (Pango2Attribute *attribute)
 {
-  if (PANGO_ATTR_VALUE_TYPE (attribute) != PANGO_ATTR_VALUE_FONT_DESC)
+  if (PANGO2_ATTR_VALUE_TYPE (attribute) != PANGO2_ATTR_VALUE_FONT_DESC)
     return NULL;
 
   return attribute->font_value;
 }
 
 /**
- * pango_attribute_get_pointer:
- * @attribute: a `PangoAttribute`
+ * pango2_attribute_get_pointer:
+ * @attribute: a `Pango2Attribute`
  *
  * Gets the value of an attribute whose value type is `gpointer`.
  *
  * Returns: (nullable): the pointer value
  */
 gpointer
-pango_attribute_get_pointer (PangoAttribute *attribute)
+pango2_attribute_get_pointer (Pango2Attribute *attribute)
 {
-  if (PANGO_ATTR_VALUE_TYPE (attribute) != PANGO_ATTR_VALUE_POINTER)
+  if (PANGO2_ATTR_VALUE_TYPE (attribute) != PANGO2_ATTR_VALUE_POINTER)
     return NULL;
 
   return attribute->pointer_value;

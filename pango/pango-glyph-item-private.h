@@ -27,9 +27,9 @@
 G_BEGIN_DECLS
 
 /**
- * PangoGlyphItem:
- * @item: corresponding `PangoItem`
- * @glyphs: corresponding `PangoGlyphString`
+ * Pango2GlyphItem:
+ * @item: corresponding `Pango2Item`
+ * @glyphs: corresponding `Pango2GlyphString`
  * @y_offset: shift of the baseline, relative to the baseline
  *   of the containing line. Positive values shift upwards
  * @start_x_offset: horizontal displacement to apply before the
@@ -37,52 +37,52 @@ G_BEGIN_DECLS
  * @end_x_offset: horizontal displacement to apply after th
  *   glyph item. Positive values shift right
  *
- * A `PangoGlyphItem` is a pair of a `PangoItem` and the glyphs
+ * A `Pango2GlyphItem` is a pair of a `Pango2Item` and the glyphs
  * resulting from shaping the items text.
  *
- * As an example of the usage of `PangoGlyphItem`, the results
- * of shaping text with `PangoLayout` is a list of `PangoLine`,
- * each of which contains a list of `PangoGlyphItem`.
+ * As an example of the usage of `Pango2GlyphItem`, the results
+ * of shaping text with `Pango2Layout` is a list of `Pango2Line`,
+ * each of which contains a list of `Pango2GlyphItem`.
  */
-typedef struct _PangoGlyphItem PangoGlyphItem;
+typedef struct _Pango2GlyphItem Pango2GlyphItem;
 
-struct _PangoGlyphItem
+struct _Pango2GlyphItem
 {
-  PangoItem *item;
-  PangoGlyphString *glyphs;
+  Pango2Item *item;
+  Pango2GlyphString *glyphs;
   int y_offset;
   int start_x_offset;
   int end_x_offset;
 };
 
-#define PANGO_TYPE_GLYPH_ITEM (pango_glyph_item_get_type ())
+#define PANGO2_TYPE_GLYPH_ITEM (pango2_glyph_item_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-GType                   pango_glyph_item_get_type               (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+GType                   pango2_glyph_item_get_type               (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_ALL
-PangoGlyphItem *        pango_glyph_item_split                  (PangoGlyphItem *orig,
-                                                                 const char     *text,
-                                                                 int             split_index);
-PANGO_AVAILABLE_IN_ALL
-PangoGlyphItem *        pango_glyph_item_copy                   (PangoGlyphItem *orig);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_glyph_item_free                   (PangoGlyphItem *glyph_item);
-PANGO_AVAILABLE_IN_ALL
-GSList *                pango_glyph_item_apply_attrs            (PangoGlyphItem *glyph_item,
-                                                                 const char     *text,
-                                                                 PangoAttrList  *list);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_glyph_item_letter_space           (PangoGlyphItem *glyph_item,
-                                                                 const char     *text,
-                                                                 PangoLogAttr   *log_attrs,
-                                                                 int             letter_spacing);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_glyph_item_get_logical_widths     (PangoGlyphItem *glyph_item,
-                                                                 const char     *text,
-                                                                 int            *logical_widths);
+PANGO2_AVAILABLE_IN_ALL
+Pango2GlyphItem *       pango2_glyph_item_split                  (Pango2GlyphItem *orig,
+                                                                  const char      *text,
+                                                                  int              split_index);
+PANGO2_AVAILABLE_IN_ALL
+Pango2GlyphItem *       pango2_glyph_item_copy                   (Pango2GlyphItem *orig);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_glyph_item_free                   (Pango2GlyphItem *glyph_item);
+PANGO2_AVAILABLE_IN_ALL
+GSList *                pango2_glyph_item_apply_attrs            (Pango2GlyphItem *glyph_item,
+                                                                  const char      *text,
+                                                                  Pango2AttrList  *list);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_glyph_item_letter_space           (Pango2GlyphItem *glyph_item,
+                                                                  const char      *text,
+                                                                  Pango2LogAttr   *log_attrs,
+                                                                  int              letter_spacing);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_glyph_item_get_logical_widths     (Pango2GlyphItem *glyph_item,
+                                                                  const char      *text,
+                                                                  int             *logical_widths);
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoGlyphItem, pango_glyph_item_free)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(Pango2GlyphItem, pango2_glyph_item_free)
 
 
 G_END_DECLS

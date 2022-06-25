@@ -25,75 +25,75 @@
 
 G_BEGIN_DECLS
 
-typedef struct _PangoAnalysis PangoAnalysis;
-typedef struct _PangoItem PangoItem;
+typedef struct _Pango2Analysis Pango2Analysis;
+typedef struct _Pango2Item Pango2Item;
 
 /**
- * PANGO_ANALYSIS_FLAG_CENTERED_BASELINE:
+ * PANGO2_ANALYSIS_FLAG_CENTERED_BASELINE:
  *
  * Whether the segment should be shifted to center around the baseline.
  *
  * This is mainly used in vertical writing directions.
  */
-#define PANGO_ANALYSIS_FLAG_CENTERED_BASELINE (1 << 0)
+#define PANGO2_ANALYSIS_FLAG_CENTERED_BASELINE (1 << 0)
 
 /**
- * PANGO_ANALYSIS_FLAG_IS_ELLIPSIS:
+ * PANGO2_ANALYSIS_FLAG_IS_ELLIPSIS:
  *
  * Whether this run holds ellipsized text.
  */
-#define PANGO_ANALYSIS_FLAG_IS_ELLIPSIS (1 << 1)
+#define PANGO2_ANALYSIS_FLAG_IS_ELLIPSIS (1 << 1)
 
 /**
- * PANGO_ANALYSIS_FLAG_NEED_HYPHEN:
+ * PANGO2_ANALYSIS_FLAG_NEED_HYPHEN:
  *
  * Whether to add a hyphen at the end of the run during shaping.
  */
-#define PANGO_ANALYSIS_FLAG_NEED_HYPHEN (1 << 2)
+#define PANGO2_ANALYSIS_FLAG_NEED_HYPHEN (1 << 2)
 
-#define PANGO_TYPE_ITEM (pango_item_get_type ())
+#define PANGO2_TYPE_ITEM (pango2_item_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-GType                   pango_item_get_type          (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+GType                   pango2_item_get_type          (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_ALL
-PangoItem *             pango_item_copy              (PangoItem         *item);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_item_free              (PangoItem         *item);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Item *            pango2_item_copy              (Pango2Item         *item);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_item_free              (Pango2Item         *item);
 
-PANGO_AVAILABLE_IN_ALL
-GList *                 pango_itemize                (PangoContext      *context,
-                                                      PangoDirection     base_dir,
-                                                      const char        *text,
-                                                      int                start_index,
-                                                      int                length,
-                                                      PangoAttrList     *attrs);
+PANGO2_AVAILABLE_IN_ALL
+GList *                 pango2_itemize                (Pango2Context      *context,
+                                                       Pango2Direction     base_dir,
+                                                       const char         *text,
+                                                       int                 start_index,
+                                                       int                 length,
+                                                       Pango2AttrList     *attrs);
 
-PANGO_AVAILABLE_IN_ALL
-PangoFont *             pango_analysis_get_font                 (const PangoAnalysis *analysis);
-PANGO_AVAILABLE_IN_ALL
-int                     pango_analysis_get_bidi_level           (const PangoAnalysis *analysis);
-PANGO_AVAILABLE_IN_ALL
-PangoGravity            pango_analysis_get_gravity              (const PangoAnalysis *analysis);
-PANGO_AVAILABLE_IN_ALL
-guint                   pango_analysis_get_flags                (const PangoAnalysis *analysis);
-PANGO_AVAILABLE_IN_ALL
-GUnicodeScript          pango_analysis_get_script               (const PangoAnalysis *analysis);
-PANGO_AVAILABLE_IN_ALL
-PangoLanguage *         pango_analysis_get_language             (const PangoAnalysis *analysis);
-PANGO_AVAILABLE_IN_ALL
-GSList *                pango_analysis_get_extra_attributes     (const PangoAnalysis *analysis);
-PANGO_AVAILABLE_IN_ALL
-const PangoAnalysis *   pango_item_get_analysis                 (PangoItem *item);
-PANGO_AVAILABLE_IN_ALL
-int                     pango_item_get_byte_offset              (PangoItem *item);
-PANGO_AVAILABLE_IN_ALL
-int                     pango_item_get_byte_length              (PangoItem *item);
-PANGO_AVAILABLE_IN_ALL
-int                     pango_item_get_char_offset              (PangoItem *item);
-PANGO_AVAILABLE_IN_ALL
-int                     pango_item_get_char_length              (PangoItem *item);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Font *            pango2_analysis_get_font                 (const Pango2Analysis *analysis);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_analysis_get_bidi_level           (const Pango2Analysis *analysis);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Gravity           pango2_analysis_get_gravity              (const Pango2Analysis *analysis);
+PANGO2_AVAILABLE_IN_ALL
+guint                   pango2_analysis_get_flags                (const Pango2Analysis *analysis);
+PANGO2_AVAILABLE_IN_ALL
+GUnicodeScript          pango2_analysis_get_script               (const Pango2Analysis *analysis);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Language *        pango2_analysis_get_language             (const Pango2Analysis *analysis);
+PANGO2_AVAILABLE_IN_ALL
+GSList *                pango2_analysis_get_extra_attributes     (const Pango2Analysis *analysis);
+PANGO2_AVAILABLE_IN_ALL
+const Pango2Analysis *  pango2_item_get_analysis                 (Pango2Item *item);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_item_get_byte_offset              (Pango2Item *item);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_item_get_byte_length              (Pango2Item *item);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_item_get_char_offset              (Pango2Item *item);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_item_get_char_length              (Pango2Item *item);
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoItem, pango_item_free)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(Pango2Item, pango2_item_free)
 
 G_END_DECLS

@@ -59,7 +59,7 @@ static const test_scaled_font_glyph_t glyphs [] = {
 };
 
 static gboolean
-glyph_cb (PangoUserFace  *face,
+glyph_cb (Pango2UserFace  *face,
           hb_codepoint_t  unicode,
           hb_codepoint_t *glyph,
           gpointer        user_data)
@@ -79,7 +79,7 @@ glyph_cb (PangoUserFace  *face,
 }
 
 static gboolean
-glyph_info_cb (PangoUserFace      *face,
+glyph_info_cb (Pango2UserFace      *face,
                int                 size,
                hb_codepoint_t      glyph,
                hb_glyph_extents_t *extents,
@@ -103,7 +103,7 @@ glyph_info_cb (PangoUserFace      *face,
 }
 
 static gboolean
-font_info_cb (PangoUserFace     *face,
+font_info_cb (Pango2UserFace     *face,
               int                size,
               hb_font_extents_t *extents,
               gpointer           user_data)
@@ -116,7 +116,7 @@ font_info_cb (PangoUserFace     *face,
 }
 
 static gboolean
-render_cb (PangoUserFace  *face,
+render_cb (Pango2UserFace  *face,
            int             size,
            hb_codepoint_t  glyph,
            gpointer        user_data,
@@ -163,20 +163,20 @@ render_cb (PangoUserFace  *face,
 }
 
 void
-add_userfont (PangoFontMap *fontmap)
+add_userfont (Pango2FontMap *fontmap)
 {
-  PangoFontDescription *desc;
-  PangoUserFace *face;
+  Pango2FontDescription *desc;
+  Pango2UserFace *face;
 
-  desc = pango_font_description_new ();
-  pango_font_description_set_family (desc, "Userfont");
-  face = pango_user_face_new (font_info_cb,
+  desc = pango2_font_description_new ();
+  pango2_font_description_set_family (desc, "Userfont");
+  face = pango2_user_face_new (font_info_cb,
                               glyph_cb,
                               glyph_info_cb,
                               NULL,
                               render_cb,
                               (gpointer) glyphs, NULL,
                               "Black", desc);
-  pango_font_map_add_face (fontmap, PANGO_FONT_FACE (face));
-  pango_font_description_free (desc);
+  pango2_font_map_add_face (fontmap, PANGO2_FONT_FACE (face));
+  pango2_font_description_free (desc);
 }

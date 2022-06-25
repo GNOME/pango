@@ -1,1 +1,1 @@
-void add_userfont (PangoFontMap *map);
+void add_userfont (Pango2FontMap *map);

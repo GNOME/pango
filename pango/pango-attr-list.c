@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * pango-attr-list.c: Attribute lists
  *
  * Copyright (C) 2000-2002 Red Hat Software
@@ -27,19 +27,19 @@
 #include "pango-impl-utils.h"
 
 
-G_DEFINE_BOXED_TYPE (PangoAttrList, pango_attr_list,
-                     pango_attr_list_copy,
-                     pango_attr_list_unref);
+G_DEFINE_BOXED_TYPE (Pango2AttrList, pango2_attr_list,
+                     pango2_attr_list_copy,
+                     pango2_attr_list_unref);
 
 /* {{{ Utilities */
 
 static void
-pango_attr_list_insert_internal (PangoAttrList  *list,
-                                 PangoAttribute *attr,
-                                 gboolean        before)
+pango2_attr_list_insert_internal (Pango2AttrList  *list,
+                                  Pango2Attribute *attr,
+                                  gboolean         before)
 {
   const guint start_index = attr->start_index;
-  PangoAttribute *last_attr;
+  Pango2Attribute *last_attr;
 
   if (G_UNLIKELY (!list->attributes))
     list->attributes = g_ptr_array_new ();
@@ -65,7 +65,7 @@ pango_attr_list_insert_internal (PangoAttrList  *list,
 
       for (i = 0, p = list->attributes->len; i < p; i++)
         {
-          PangoAttribute *cur = g_ptr_array_index (list->attributes, i);
+          Pango2Attribute *cur = g_ptr_array_index (list->attributes, i);
 
           if (cur->start_index > start_index ||
               (before && cur->start_index == start_index))
@@ -81,14 +81,14 @@ pango_attr_list_insert_internal (PangoAttrList  *list,
 /* {{{ Private API */
 
 void
-pango_attr_list_init (PangoAttrList *list)
+pango2_attr_list_init (Pango2AttrList *list)
 {
   list->ref_count = 1;
   list->attributes = NULL;
 }
 
 void
-pango_attr_list_destroy (PangoAttrList *list)
+pango2_attr_list_destroy (Pango2AttrList *list)
 {
   if (!list->attributes)
     return;
@@ -97,7 +97,7 @@ pango_attr_list_destroy (PangoAttrList *list)
 }
 
 gboolean
-pango_attr_list_has_attributes (const PangoAttrList *list)
+pango2_attr_list_has_attributes (const Pango2AttrList *list)
 {
   return list && list->attributes != NULL && list->attributes->len > 0;
 }
@@ -106,36 +106,36 @@ pango_attr_list_has_attributes (const PangoAttrList *list)
 /* {{{ Public API */
 
 /**
- * pango_attr_list_new:
+ * pango2_attr_list_new:
  *
  * Create a new empty attribute list with a reference
  * count of one.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttrList`, which should be freed with
- *   [method@Pango.AttrList.unref]
+ *   `Pango2AttrList`, which should be freed with
+ *   [method@Pango2.AttrList.unref]
  */
-PangoAttrList *
-pango_attr_list_new (void)
+Pango2AttrList *
+pango2_attr_list_new (void)
 {
-  PangoAttrList *list = g_slice_new (PangoAttrList);
+  Pango2AttrList *list = g_slice_new (Pango2AttrList);
 
-  pango_attr_list_init (list);
+  pango2_attr_list_init (list);
 
   return list;
 }
 
 /**
- * pango_attr_list_ref:
- * @list: (nullable): a `PangoAttrList`
+ * pango2_attr_list_ref:
+ * @list: (nullable): a `Pango2AttrList`
  *
  * Increase the reference count of the given attribute
  * list by one.
  *
  * Return value: The attribute list passed in
  */
-PangoAttrList *
-pango_attr_list_ref (PangoAttrList *list)
+Pango2AttrList *
+pango2_attr_list_ref (Pango2AttrList *list)
 {
   if (list == NULL)
     return NULL;
@@ -146,8 +146,8 @@ pango_attr_list_ref (PangoAttrList *list)
 }
 
 /**
- * pango_attr_list_unref:
- * @list: (nullable): a `PangoAttrList`
+ * pango2_attr_list_unref:
+ * @list: (nullable): a `Pango2AttrList`
  *
  * Decrease the reference count of the given attribute
  * list by one.
@@ -156,7 +156,7 @@ pango_attr_list_ref (PangoAttrList *list)
  * and the attributes it contains.
  */
 void
-pango_attr_list_unref (PangoAttrList *list)
+pango2_attr_list_unref (Pango2AttrList *list)
 {
   if (list == NULL)
     return;
@@ -165,99 +165,99 @@ pango_attr_list_unref (PangoAttrList *list)
 
   if (g_atomic_int_dec_and_test ((int *) &list->ref_count))
     {
-      pango_attr_list_destroy (list);
-      g_slice_free (PangoAttrList, list);
+      pango2_attr_list_destroy (list);
+      g_slice_free (Pango2AttrList, list);
     }
 }
 
 /**
- * pango_attr_list_copy:
- * @list: (nullable): a `PangoAttrList`
+ * pango2_attr_list_copy:
+ * @list: (nullable): a `Pango2AttrList`
  *
  * Copy @list and return an identical new list.
  *
  * Return value: (nullable): the newly allocated
- *   `PangoAttrList`, with a reference count of one,
- *   which should be freed with [method@Pango.AttrList.unref]
+ *   `Pango2AttrList`, with a reference count of one,
+ *   which should be freed with [method@Pango2.AttrList.unref]
  */
-PangoAttrList *
-pango_attr_list_copy (PangoAttrList *list)
+Pango2AttrList *
+pango2_attr_list_copy (Pango2AttrList *list)
 {
-  PangoAttrList *new;
+  Pango2AttrList *new;
 
   if (list == NULL)
     return NULL;
 
-  new = pango_attr_list_new ();
+  new = pango2_attr_list_new ();
   if (!list->attributes || list->attributes->len == 0)
     return new;
 
-  new->attributes = g_ptr_array_copy (list->attributes, (GCopyFunc)pango_attribute_copy, NULL);
+  new->attributes = g_ptr_array_copy (list->attributes, (GCopyFunc)pango2_attribute_copy, NULL);
 
   return new;
 }
 
 /**
- * pango_attr_list_insert:
- * @list: a `PangoAttrList`
+ * pango2_attr_list_insert:
+ * @list: a `Pango2AttrList`
  * @attr: (transfer full): the attribute to insert
  *
- * Insert the given attribute into the `PangoAttrList`.
+ * Insert the given attribute into the `Pango2AttrList`.
  *
  * It will be inserted after all other attributes with a
  * matching @start_index.
  */
 void
-pango_attr_list_insert (PangoAttrList  *list,
-                        PangoAttribute *attr)
+pango2_attr_list_insert (Pango2AttrList  *list,
+                         Pango2Attribute *attr)
 {
   g_return_if_fail (list != NULL);
   g_return_if_fail (attr != NULL);
 
-  pango_attr_list_insert_internal (list, attr, FALSE);
+  pango2_attr_list_insert_internal (list, attr, FALSE);
 }
 
 /**
- * pango_attr_list_insert_before:
- * @list: a `PangoAttrList`
+ * pango2_attr_list_insert_before:
+ * @list: a `Pango2AttrList`
  * @attr: (transfer full): the attribute to insert
  *
- * Insert the given attribute into the `PangoAttrList`.
+ * Insert the given attribute into the `Pango2AttrList`.
  *
  * It will be inserted before all other attributes with a
  * matching @start_index.
  */
 void
-pango_attr_list_insert_before (PangoAttrList  *list,
-                               PangoAttribute *attr)
+pango2_attr_list_insert_before (Pango2AttrList  *list,
+                                Pango2Attribute *attr)
 {
   g_return_if_fail (list != NULL);
   g_return_if_fail (attr != NULL);
 
-  pango_attr_list_insert_internal (list, attr, TRUE);
+  pango2_attr_list_insert_internal (list, attr, TRUE);
 }
 
 /**
- * pango_attr_list_change:
- * @list: a `PangoAttrList`
+ * pango2_attr_list_change:
+ * @list: a `Pango2AttrList`
  * @attr: (transfer full): the attribute to insert
  *
- * Insert the given attribute into the `PangoAttrList`.
+ * Insert the given attribute into the `Pango2AttrList`.
  *
  * It will replace any attributes of the same type
  * on that segment and be merged with any adjoining
  * attributes that are identical.
  *
- * This function is slower than [method@Pango.AttrList.insert]
+ * This function is slower than [method@Pango2.AttrList.insert]
  * for creating an attribute list in order (potentially
  * much slower for large lists). However,
- * [method@Pango.AttrList.insert] is not suitable for
+ * [method@Pango2.AttrList.insert] is not suitable for
  * continually changing a set of attributes since it
  * never removes or combines existing attributes.
  */
 void
-pango_attr_list_change (PangoAttrList  *list,
-                        PangoAttribute *attr)
+pango2_attr_list_change (Pango2AttrList  *list,
+                         Pango2Attribute *attr)
 {
   guint i, p;
   guint start_index = attr->start_index;
@@ -268,20 +268,20 @@ pango_attr_list_change (PangoAttrList  *list,
 
   if (start_index == end_index) /* empty, nothing to do */
     {
-      pango_attribute_destroy (attr);
+      pango2_attribute_destroy (attr);
       return;
     }
 
   if (!list->attributes || list->attributes->len == 0)
     {
-      pango_attr_list_insert (list, attr);
+      pango2_attr_list_insert (list, attr);
       return;
     }
 
   inserted = FALSE;
   for (i = 0, p = list->attributes->len; i < p; i++)
     {
-      PangoAttribute *tmp_attr = g_ptr_array_index (list->attributes, i);
+      Pango2Attribute *tmp_attr = g_ptr_array_index (list->attributes, i);
 
       if (tmp_attr->start_index > start_index)
         {
@@ -299,7 +299,7 @@ pango_attr_list_change (PangoAttrList  *list,
       g_assert (tmp_attr->start_index <= start_index);
       g_assert (tmp_attr->end_index >= start_index);
 
-      if (pango_attribute_equal (tmp_attr, attr))
+      if (pango2_attribute_equal (tmp_attr, attr))
         {
           /* We can merge the new attribute with this attribute
            */
@@ -308,12 +308,12 @@ pango_attr_list_change (PangoAttrList  *list,
               /* We are totally overlapping the previous attribute.
                * No action is needed.
                */
-              pango_attribute_destroy (attr);
+              pango2_attribute_destroy (attr);
               return;
             }
 
           tmp_attr->end_index = end_index;
-          pango_attribute_destroy (attr);
+          pango2_attribute_destroy (attr);
 
           attr = tmp_attr;
           inserted = TRUE;
@@ -325,15 +325,15 @@ pango_attr_list_change (PangoAttrList  *list,
            */
           if (tmp_attr->end_index > end_index)
             {
-              PangoAttribute *end_attr = pango_attribute_copy (tmp_attr);
+              Pango2Attribute *end_attr = pango2_attribute_copy (tmp_attr);
 
               end_attr->start_index = end_index;
-              pango_attr_list_insert (list, end_attr);
+              pango2_attr_list_insert (list, end_attr);
             }
 
           if (tmp_attr->start_index == start_index)
             {
-              pango_attribute_destroy (tmp_attr);
+              pango2_attribute_destroy (tmp_attr);
               g_ptr_array_remove_index (list->attributes, i);
               break;
             }
@@ -346,7 +346,7 @@ pango_attr_list_change (PangoAttrList  *list,
 
   if (!inserted)
     /* we didn't insert attr yet */
-    pango_attr_list_insert (list, attr);
+    pango2_attr_list_insert (list, attr);
 
   /* We now have the range inserted into the list one way or the
    * other. Fix up the remainder
@@ -354,7 +354,7 @@ pango_attr_list_change (PangoAttrList  *list,
   /* Attention: No i = 0 here. */
   for (i = i + 1, p = list->attributes->len; i < p; i++)
     {
-      PangoAttribute *tmp_attr = g_ptr_array_index (list->attributes, i);
+      Pango2Attribute *tmp_attr = g_ptr_array_index (list->attributes, i);
 
       if (tmp_attr->start_index > end_index)
         break;
@@ -366,11 +366,11 @@ pango_attr_list_change (PangoAttrList  *list,
         continue;
 
       if (tmp_attr->end_index <= attr->end_index ||
-          pango_attribute_equal (tmp_attr, attr))
+          pango2_attribute_equal (tmp_attr, attr))
         {
           /* We can merge the new attribute with this attribute. */
           attr->end_index = MAX (end_index, tmp_attr->end_index);
-          pango_attribute_destroy (tmp_attr);
+          pango2_attribute_destroy (tmp_attr);
           g_ptr_array_remove_index (list->attributes, i);
           i--;
           p--;
@@ -388,7 +388,7 @@ pango_attr_list_change (PangoAttrList  *list,
 
           for (k = i + 1, m = list->attributes->len; k < m; k++)
             {
-              PangoAttribute *tmp_attr2 = g_ptr_array_index (list->attributes, k);
+              Pango2Attribute *tmp_attr2 = g_ptr_array_index (list->attributes, k);
 
               if (tmp_attr2->start_index >= tmp_attr->start_index)
                 break;
@@ -401,8 +401,8 @@ pango_attr_list_change (PangoAttrList  *list,
 }
 
 /**
- * pango_attr_list_update:
- * @list: a `PangoAttrList`
+ * pango2_attr_list_update:
+ * @list: a `Pango2AttrList`
  * @pos: the position of the change
  * @remove: the number of removed bytes
  * @add: the number of added bytes
@@ -423,10 +423,10 @@ pango_attr_list_change (PangoAttrList  *list,
  * behind @pos + @remove.
  */
 void
-pango_attr_list_update (PangoAttrList *list,
-                        int             pos,
-                        int             remove,
-                        int             add)
+pango2_attr_list_update (Pango2AttrList *list,
+                         int             pos,
+                         int             remove,
+                         int             add)
 {
   guint i, p;
 
@@ -437,19 +437,19 @@ pango_attr_list_update (PangoAttrList *list,
   if (list->attributes)
     for (i = 0, p = list->attributes->len; i < p; i++)
       {
-        PangoAttribute *attr = g_ptr_array_index (list->attributes, i);
+        Pango2Attribute *attr = g_ptr_array_index (list->attributes, i);
 
         if (attr->start_index >= pos &&
           attr->end_index < pos + remove)
           {
-            pango_attribute_destroy (attr);
+            pango2_attribute_destroy (attr);
             g_ptr_array_remove_index (list->attributes, i);
             i--; /* Look at this index again */
             p--;
             continue;
           }
 
-        if (attr->start_index != PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING)
+        if (attr->start_index != PANGO2_ATTR_INDEX_FROM_TEXT_BEGINNING)
           {
             if (attr->start_index >= pos &&
                 attr->start_index < pos + remove)
@@ -462,7 +462,7 @@ pango_attr_list_update (PangoAttrList *list,
               }
           }
 
-        if (attr->end_index != PANGO_ATTR_INDEX_TO_TEXT_END)
+        if (attr->end_index != PANGO2_ATTR_INDEX_TO_TEXT_END)
           {
             if (attr->end_index >= pos &&
                 attr->end_index < pos + remove)
@@ -482,9 +482,9 @@ pango_attr_list_update (PangoAttrList *list,
 }
 
 /**
- * pango_attr_list_splice:
- * @list: a `PangoAttrList`
- * @other: another `PangoAttrList`
+ * pango2_attr_list_splice:
+ * @list: a `Pango2AttrList`
+ * @other: another `Pango2AttrList`
  * @pos: the position in @list at which to insert @other
  * @len: the length of the spliced segment. (Note that this
  *   must be specified since the attributes in @other may only
@@ -496,7 +496,7 @@ pango_attr_list_update (PangoAttrList *list,
  *
  * This operation is equivalent to stretching every attribute
  * that applies at position @pos in @list by an amount @len,
- * and then calling [method@Pango.AttrList.change] with a copy
+ * and then calling [method@Pango2.AttrList.change] with a copy
  * of each attribute in @other in sequence (offset in position
  * by @pos, and limited in length to @len).
  *
@@ -510,10 +510,10 @@ pango_attr_list_update (PangoAttrList *list,
  * This mode is useful for merging two lists of attributes together.
  */
 void
-pango_attr_list_splice (PangoAttrList *list,
-                        PangoAttrList *other,
-                        int            pos,
-                        int            len)
+pango2_attr_list_splice (Pango2AttrList *list,
+                         Pango2AttrList *other,
+                         int             pos,
+                         int             len)
 {
   guint i, p;
   guint upos, ulen;
@@ -537,7 +537,7 @@ pango_attr_list_splice (PangoAttrList *list,
   if (list->attributes)
     for (i = 0, p = list->attributes->len; i < p; i++)
       {
-        PangoAttribute *attr = g_ptr_array_index (list->attributes, i);;
+        Pango2Attribute *attr = g_ptr_array_index (list->attributes, i);;
 
         if (attr->start_index <= upos)
           {
@@ -561,7 +561,7 @@ pango_attr_list_splice (PangoAttrList *list,
 
   for (i = 0, p = other->attributes->len; i < p; i++)
     {
-      PangoAttribute *attr = pango_attribute_copy (g_ptr_array_index (other->attributes, i));
+      Pango2Attribute *attr = pango2_attribute_copy (g_ptr_array_index (other->attributes, i));
       if (ulen > 0)
         {
           attr->start_index = MIN (CLAMP_ADD (attr->start_index, upos), end);
@@ -574,26 +574,26 @@ pango_attr_list_splice (PangoAttrList *list,
         }
 
       /* Same as above, the attribute could be squashed to zero-length; here
-       * pango_attr_list_change() will take care of deleting it.
+       * pango2_attr_list_change() will take care of deleting it.
        */
-      pango_attr_list_change (list, attr);
+      pango2_attr_list_change (list, attr);
     }
 #undef CLAMP_ADD
 }
 
 /**
- * pango_attr_list_get_attributes:
- * @list: a `PangoAttrList`
+ * pango2_attr_list_get_attributes:
+ * @list: a `Pango2AttrList`
  *
  * Gets a list of all attributes in @list.
  *
- * Return value: (element-type Pango.Attribute) (transfer full):
+ * Return value: (element-type Pango2.Attribute) (transfer full):
  *   a list of all attributes in @list. To free this value,
- *   call [method@Pango.Attribute.destroy] on each value and
+ *   call [method@Pango2.Attribute.destroy] on each value and
  *   [func@GLib.SList.free] on the list
  */
 GSList *
-pango_attr_list_get_attributes (PangoAttrList *list)
+pango2_attr_list_get_attributes (Pango2AttrList *list)
 {
   GSList *result = NULL;
   guint i, p;
@@ -605,18 +605,18 @@ pango_attr_list_get_attributes (PangoAttrList *list)
 
   for (i = 0, p = list->attributes->len; i < p; i++)
     {
-      PangoAttribute *attr = g_ptr_array_index (list->attributes, i);
+      Pango2Attribute *attr = g_ptr_array_index (list->attributes, i);
 
-      result = g_slist_prepend (result, pango_attribute_copy (attr));
+      result = g_slist_prepend (result, pango2_attribute_copy (attr));
     }
 
   return g_slist_reverse (result);
 }
 
 /**
- * pango_attr_list_equal:
- * @list: a `PangoAttrList`
- * @other_list: the other `PangoAttrList`
+ * pango2_attr_list_equal:
+ * @list: a `Pango2AttrList`
+ * @other_list: the other `Pango2AttrList`
  *
  * Checks whether @list and @other_list contain the same
  * attributes and whether those attributes apply to the
@@ -629,8 +629,8 @@ pango_attr_list_get_attributes (PangoAttrList *list)
  *   they aren't
  */
 gboolean
-pango_attr_list_equal (PangoAttrList *list,
-                       PangoAttrList *other_list)
+pango2_attr_list_equal (Pango2AttrList *list,
+                        Pango2AttrList *other_list)
 {
   GPtrArray *attrs, *other_attrs;
   guint64 skip_bitmask = 0;
@@ -653,13 +653,13 @@ pango_attr_list_equal (PangoAttrList *list,
 
   for (i = 0; i < attrs->len; i++)
     {
-      PangoAttribute *attr = g_ptr_array_index (attrs, i);
+      Pango2Attribute *attr = g_ptr_array_index (attrs, i);
       gboolean attr_equal = FALSE;
       guint other_attr_index;
 
       for (other_attr_index = 0; other_attr_index < other_attrs->len; other_attr_index++)
         {
-          PangoAttribute *other_attr = g_ptr_array_index (other_attrs, other_attr_index);
+          Pango2Attribute *other_attr = g_ptr_array_index (other_attrs, other_attr_index);
           guint64 other_attr_bitmask = other_attr_index < 64 ? 1 << other_attr_index : 0;
 
           if ((skip_bitmask & other_attr_bitmask) != 0)
@@ -667,7 +667,7 @@ pango_attr_list_equal (PangoAttrList *list,
 
           if (attr->start_index == other_attr->start_index &&
               attr->end_index == other_attr->end_index &&
-              pango_attribute_equal (attr, other_attr))
+              pango2_attribute_equal (attr, other_attr))
             {
               skip_bitmask |= other_attr_bitmask;
               attr_equal = TRUE;
@@ -684,27 +684,27 @@ pango_attr_list_equal (PangoAttrList *list,
 }
 
 /**
- * pango_attr_list_filter:
- * @list: a `PangoAttrList`
+ * pango2_attr_list_filter:
+ * @list: a `Pango2AttrList`
  * @func: (scope call) (closure data): callback function;
  *   returns %TRUE if an attribute should be filtered out
  * @data: (closure): Data to be passed to @func
  *
- * Given a `PangoAttrList` and callback function, removes
+ * Given a `Pango2AttrList` and callback function, removes
  * any elements of @list for which @func returns %TRUE and
  * inserts them into a new list.
  *
  * Return value: (transfer full) (nullable): the new
- *   `PangoAttrList` or %NULL if no attributes of the
+ *   `Pango2AttrList` or %NULL if no attributes of the
  *   given types were found
  */
-PangoAttrList *
-pango_attr_list_filter (PangoAttrList       *list,
-                        PangoAttrFilterFunc  func,
-                        gpointer             data)
+Pango2AttrList *
+pango2_attr_list_filter (Pango2AttrList       *list,
+                         Pango2AttrFilterFunc  func,
+                         gpointer              data)
 
 {
-  PangoAttrList *new = NULL;
+  Pango2AttrList *new = NULL;
   guint i, p;
 
   g_return_val_if_fail (list != NULL, NULL);
@@ -714,7 +714,7 @@ pango_attr_list_filter (PangoAttrList       *list,
 
   for (i = 0, p = list->attributes->len; i < p; i++)
     {
-      PangoAttribute *tmp_attr = g_ptr_array_index (list->attributes, i);
+      Pango2Attribute *tmp_attr = g_ptr_array_index (list->attributes, i);
 
       if ((*func) (tmp_attr, data))
         {
@@ -724,7 +724,7 @@ pango_attr_list_filter (PangoAttrList       *list,
 
           if (G_UNLIKELY (!new))
             {
-              new = pango_attr_list_new ();
+              new = pango2_attr_list_new ();
               new->attributes = g_ptr_array_new ();
             }
 
@@ -750,22 +750,22 @@ pango_attr_list_filter (PangoAttrList       *list,
  */
 
 static GType
-get_attr_value_type (PangoAttrType type)
+get_attr_value_type (Pango2AttrType type)
 {
   switch ((int)type)
     {
-    case PANGO_ATTR_STYLE: return PANGO_TYPE_STYLE;
-    case PANGO_ATTR_WEIGHT: return PANGO_TYPE_WEIGHT;
-    case PANGO_ATTR_VARIANT: return PANGO_TYPE_VARIANT;
-    case PANGO_ATTR_STRETCH: return PANGO_TYPE_STRETCH;
-    case PANGO_ATTR_GRAVITY: return PANGO_TYPE_GRAVITY;
-    case PANGO_ATTR_GRAVITY_HINT: return PANGO_TYPE_GRAVITY_HINT;
-    case PANGO_ATTR_UNDERLINE: return PANGO_TYPE_LINE_STYLE;
-    case PANGO_ATTR_STRIKETHROUGH: return PANGO_TYPE_LINE_STYLE;
-    case PANGO_ATTR_OVERLINE: return PANGO_TYPE_LINE_STYLE;
-    case PANGO_ATTR_BASELINE_SHIFT: return PANGO_TYPE_BASELINE_SHIFT;
-    case PANGO_ATTR_FONT_SCALE: return PANGO_TYPE_FONT_SCALE;
-    case PANGO_ATTR_TEXT_TRANSFORM: return PANGO_TYPE_TEXT_TRANSFORM;
+    case PANGO2_ATTR_STYLE: return PANGO2_TYPE_STYLE;
+    case PANGO2_ATTR_WEIGHT: return PANGO2_TYPE_WEIGHT;
+    case PANGO2_ATTR_VARIANT: return PANGO2_TYPE_VARIANT;
+    case PANGO2_ATTR_STRETCH: return PANGO2_TYPE_STRETCH;
+    case PANGO2_ATTR_GRAVITY: return PANGO2_TYPE_GRAVITY;
+    case PANGO2_ATTR_GRAVITY_HINT: return PANGO2_TYPE_GRAVITY_HINT;
+    case PANGO2_ATTR_UNDERLINE: return PANGO2_TYPE_LINE_STYLE;
+    case PANGO2_ATTR_STRIKETHROUGH: return PANGO2_TYPE_LINE_STYLE;
+    case PANGO2_ATTR_OVERLINE: return PANGO2_TYPE_LINE_STYLE;
+    case PANGO2_ATTR_BASELINE_SHIFT: return PANGO2_TYPE_BASELINE_SHIFT;
+    case PANGO2_ATTR_FONT_SCALE: return PANGO2_TYPE_FONT_SCALE;
+    case PANGO2_ATTR_TEXT_TRANSFORM: return PANGO2_TYPE_TEXT_TRANSFORM;
     default: return G_TYPE_INVALID;
     }
 }
@@ -790,48 +790,48 @@ append_enum_value (GString *str,
 
 static void
 attr_print (GString        *str,
-            PangoAttribute *attr)
+            Pango2Attribute *attr)
 {
   const char *name;
 
-  name = pango_attr_type_get_name (attr->type);
+  name = pango2_attr_type_get_name (attr->type);
   if (!name)
     return;
 
   g_string_append_printf (str, "%u %u %s", attr->start_index, attr->end_index, name);
 
-  switch (PANGO_ATTR_VALUE_TYPE (attr))
+  switch (PANGO2_ATTR_VALUE_TYPE (attr))
     {
-    case PANGO_ATTR_VALUE_INT:
-      if (attr->type == PANGO_ATTR_WEIGHT ||
-          attr->type == PANGO_ATTR_STYLE ||
-          attr->type == PANGO_ATTR_STRETCH ||
-          attr->type == PANGO_ATTR_VARIANT ||
-          attr->type == PANGO_ATTR_GRAVITY ||
-          attr->type == PANGO_ATTR_GRAVITY_HINT ||
-          attr->type == PANGO_ATTR_UNDERLINE ||
-          attr->type == PANGO_ATTR_OVERLINE ||
-          attr->type == PANGO_ATTR_BASELINE_SHIFT ||
-          attr->type == PANGO_ATTR_FONT_SCALE ||
-          attr->type == PANGO_ATTR_TEXT_TRANSFORM)
+    case PANGO2_ATTR_VALUE_INT:
+      if (attr->type == PANGO2_ATTR_WEIGHT ||
+          attr->type == PANGO2_ATTR_STYLE ||
+          attr->type == PANGO2_ATTR_STRETCH ||
+          attr->type == PANGO2_ATTR_VARIANT ||
+          attr->type == PANGO2_ATTR_GRAVITY ||
+          attr->type == PANGO2_ATTR_GRAVITY_HINT ||
+          attr->type == PANGO2_ATTR_UNDERLINE ||
+          attr->type == PANGO2_ATTR_OVERLINE ||
+          attr->type == PANGO2_ATTR_BASELINE_SHIFT ||
+          attr->type == PANGO2_ATTR_FONT_SCALE ||
+          attr->type == PANGO2_ATTR_TEXT_TRANSFORM)
         append_enum_value (str, get_attr_value_type (attr->type), attr->int_value);
       else
         g_string_append_printf (str, " %d", attr->int_value);
       break;
 
-    case PANGO_ATTR_VALUE_BOOLEAN:
+    case PANGO2_ATTR_VALUE_BOOLEAN:
       g_string_append (str, attr->int_value ? " true" : " false");
       break;
 
-    case PANGO_ATTR_VALUE_STRING:
+    case PANGO2_ATTR_VALUE_STRING:
       g_string_append_printf (str, " \"%s\"", attr->str_value);
       break;
 
-    case PANGO_ATTR_VALUE_LANGUAGE:
-      g_string_append_printf (str, " %s", pango_language_to_string (attr->lang_value));
+    case PANGO2_ATTR_VALUE_LANGUAGE:
+      g_string_append_printf (str, " %s", pango2_language_to_string (attr->lang_value));
       break;
 
-    case PANGO_ATTR_VALUE_FLOAT:
+    case PANGO2_ATTR_VALUE_FLOAT:
       {
         char buf[20];
         g_ascii_formatd (buf, 20, "%f", attr->double_value);
@@ -839,25 +839,25 @@ attr_print (GString        *str,
       }
       break;
 
-    case PANGO_ATTR_VALUE_FONT_DESC:
+    case PANGO2_ATTR_VALUE_FONT_DESC:
       {
-        char *s = pango_font_description_to_string (attr->font_value);
+        char *s = pango2_font_description_to_string (attr->font_value);
         g_string_append_printf (str, " \"%s\"", s);
         g_free (s);
       }
       break;
 
-    case PANGO_ATTR_VALUE_COLOR:
+    case PANGO2_ATTR_VALUE_COLOR:
       {
-        char *s = pango_color_to_string (&attr->color_value);
+        char *s = pango2_color_to_string (&attr->color_value);
         g_string_append_printf (str, " %s", s);
         g_free (s);
       }
       break;
 
-    case PANGO_ATTR_VALUE_POINTER:
+    case PANGO2_ATTR_VALUE_POINTER:
       {
-        char *s = pango_attr_value_serialize (attr);
+        char *s = pango2_attr_value_serialize (attr);
         g_string_append_printf (str, " %s", s);
         g_free (s);
       }
@@ -869,13 +869,13 @@ attr_print (GString        *str,
 }
 
 /**
- * pango_attr_list_to_string:
- * @list: a `PangoAttrList`
+ * pango2_attr_list_to_string:
+ * @list: a `Pango2AttrList`
  *
- * Serializes a `PangoAttrList` to a string.
+ * Serializes a `Pango2AttrList` to a string.
  *
  * No guarantees are made about the format of the string,
- * it may change between Pango versions.
+ * it may change between Pango2 versions.
  *
  * The intended use of this function is testing and
  * debugging. The format is not meant as a permanent
@@ -884,7 +884,7 @@ attr_print (GString        *str,
  * Returns: (transfer full): a newly allocated string
  */
 char *
-pango_attr_list_to_string (PangoAttrList *list)
+pango2_attr_list_to_string (Pango2AttrList *list)
 {
   GString *s;
 
@@ -893,7 +893,7 @@ pango_attr_list_to_string (PangoAttrList *list)
   if (list->attributes)
     for (int i = 0; i < list->attributes->len; i++)
       {
-        PangoAttribute *attr = g_ptr_array_index (list->attributes, i);
+        Pango2Attribute *attr = g_ptr_array_index (list->attributes, i);
 
         if (i > 0)
           g_string_append (s, "\n");
@@ -903,28 +903,28 @@ pango_attr_list_to_string (PangoAttrList *list)
   return g_string_free (s, FALSE);
 }
 
-static PangoAttrType
+static Pango2AttrType
 get_attr_type_by_nick (const char *nick,
                        int         len)
 {
   GEnumClass *enum_class;
 
-  enum_class = g_type_class_ref (pango_attr_type_get_type ());
+  enum_class = g_type_class_ref (pango2_attr_type_get_type ());
   for (GEnumValue *ev = enum_class->values; ev->value_name; ev++)
     {
       if (ev->value_nick && strncmp (ev->value_nick, nick, len) == 0)
         {
           g_type_class_unref (enum_class);
-          return (PangoAttrType) ev->value;
+          return (Pango2AttrType) ev->value;
         }
     }
 
   g_type_class_unref (enum_class);
-  return PANGO_ATTR_INVALID;
+  return PANGO2_ATTR_INVALID;
 }
 
 static int
-get_attr_value (PangoAttrType  type,
+get_attr_value (Pango2AttrType  type,
                 const char    *str,
                 int            len)
 {
@@ -957,25 +957,25 @@ is_valid_end_char (char c)
 }
 
 /**
- * pango_attr_list_from_string:
+ * pango2_attr_list_from_string:
  * @text: a string
  *
- * Deserializes a `PangoAttrList` from a string.
+ * Deserializes a `Pango2AttrList` from a string.
  *
- * This is the counterpart to [method@Pango.AttrList.to_string].
+ * This is the counterpart to [method@Pango2.AttrList.to_string].
  * See that functions for details about the format.
  *
- * Returns: (transfer full) (nullable): a new `PangoAttrList`
+ * Returns: (transfer full) (nullable): a new `Pango2AttrList`
  */
-PangoAttrList *
-pango_attr_list_from_string (const char *text)
+Pango2AttrList *
+pango2_attr_list_from_string (const char *text)
 {
-  PangoAttrList *list;
+  Pango2AttrList *list;
   const char *p;
 
   g_return_val_if_fail (text != NULL, NULL);
 
-  list = pango_attr_list_new ();
+  list = pango2_attr_list_new ();
 
   if (*text == '\0')
     return list;
@@ -989,12 +989,12 @@ pango_attr_list_from_string (const char *text)
       gint64 start_index;
       gint64 end_index;
       char *str;
-      PangoAttrType attr_type;
-      PangoAttribute *attr;
-      PangoLanguage *lang;
+      Pango2AttrType attr_type;
+      Pango2Attribute *attr;
+      Pango2Language *lang;
       gint64 integer;
-      PangoFontDescription *desc;
-      PangoColor color;
+      Pango2FontDescription *desc;
+      Pango2Color color;
       double num;
 
       start_index = g_ascii_strtoll (p, &endp, 10);
@@ -1021,7 +1021,7 @@ pango_attr_list_from_string (const char *text)
 #define INT_ATTR(name,type) \
           integer = g_ascii_strtoll (p, &endp, 10); \
           if (!is_valid_end_char (*endp)) goto fail; \
-          attr = pango_attr_##name##_new ((type)integer);
+          attr = pango2_attr_##name##_new ((type)integer);
 
 #define BOOLEAN_ATTR(name,type) \
           if (strncmp (p, "true", strlen ("true")) == 0) \
@@ -1037,223 +1037,223 @@ pango_attr_list_from_string (const char *text)
           else \
             integer = g_ascii_strtoll (p, &endp, 10); \
           if (!is_valid_end_char (*endp)) goto fail; \
-          attr = pango_attr_##name##_new ((type)integer);
+          attr = pango2_attr_##name##_new ((type)integer);
 
 #define ENUM_ATTR(name, type, min, max) \
           endp = (char *)p + strcspn (p, ",\n"); \
           integer = get_attr_value (attr_type, p, endp - p); \
-          attr = pango_attr_##name##_new ((type) CLAMP (integer, min, max));
+          attr = pango2_attr_##name##_new ((type) CLAMP (integer, min, max));
 
 #define FLOAT_ATTR(name) \
           num = g_ascii_strtod (p, &endp); \
           if (!is_valid_end_char (*endp)) goto fail; \
-          attr = pango_attr_##name##_new ((float)num);
+          attr = pango2_attr_##name##_new ((float)num);
 
 #define COLOR_ATTR(name) \
           endp = (char *)p + strcspn (p, ",\n"); \
           if (!is_valid_end_char (*endp)) goto fail; \
           str = g_strndup (p, endp - p); \
-          if (!pango_color_parse (&color, str)) \
+          if (!pango2_color_parse (&color, str)) \
             { \
               g_free (str); \
               goto fail; \
             } \
-          attr = pango_attr_##name##_new (&color); \
+          attr = pango2_attr_##name##_new (&color); \
           g_free (str);
 
       switch (attr_type)
         {
-        case PANGO_ATTR_INVALID:
-          pango_attr_list_unref (list);
+        case PANGO2_ATTR_INVALID:
+          pango2_attr_list_unref (list);
           return NULL;
 
-        case PANGO_ATTR_LANGUAGE:
+        case PANGO2_ATTR_LANGUAGE:
           endp = (char *)p + strcspn (p, ",\n");
           if (!is_valid_end_char (*endp)) goto fail;
           str = g_strndup (p, endp - p);
-          lang = pango_language_from_string (str);
-          attr = pango_attr_language_new (lang);
+          lang = pango2_language_from_string (str);
+          attr = pango2_attr_language_new (lang);
           g_free (str);
           break;
 
-        case PANGO_ATTR_FAMILY:
+        case PANGO2_ATTR_FAMILY:
           p++;
           endp = strchr (p, '"');
           if (!endp) goto fail;
           str = g_strndup (p, endp - p);
-          attr = pango_attr_family_new (str);
+          attr = pango2_attr_family_new (str);
           g_free (str);
           endp++;
           if (!is_valid_end_char (*endp)) goto fail;
           break;
 
-        case PANGO_ATTR_STYLE:
-          ENUM_ATTR(style, PangoStyle, PANGO_STYLE_NORMAL, PANGO_STYLE_ITALIC);
+        case PANGO2_ATTR_STYLE:
+          ENUM_ATTR(style, Pango2Style, PANGO2_STYLE_NORMAL, PANGO2_STYLE_ITALIC);
           break;
 
-        case PANGO_ATTR_WEIGHT:
-          ENUM_ATTR(weight, PangoWeight, PANGO_WEIGHT_THIN, PANGO_WEIGHT_ULTRAHEAVY);
+        case PANGO2_ATTR_WEIGHT:
+          ENUM_ATTR(weight, Pango2Weight, PANGO2_WEIGHT_THIN, PANGO2_WEIGHT_ULTRAHEAVY);
           break;
 
-        case PANGO_ATTR_VARIANT:
-          ENUM_ATTR(variant, PangoVariant, PANGO_VARIANT_NORMAL, PANGO_VARIANT_TITLE_CAPS);
+        case PANGO2_ATTR_VARIANT:
+          ENUM_ATTR(variant, Pango2Variant, PANGO2_VARIANT_NORMAL, PANGO2_VARIANT_TITLE_CAPS);
           break;
 
-        case PANGO_ATTR_STRETCH:
-          ENUM_ATTR(stretch, PangoStretch, PANGO_STRETCH_ULTRA_CONDENSED, PANGO_STRETCH_ULTRA_EXPANDED);
+        case PANGO2_ATTR_STRETCH:
+          ENUM_ATTR(stretch, Pango2Stretch, PANGO2_STRETCH_ULTRA_CONDENSED, PANGO2_STRETCH_ULTRA_EXPANDED);
           break;
 
-        case PANGO_ATTR_SIZE:
+        case PANGO2_ATTR_SIZE:
           INT_ATTR(size, int);
           break;
 
-        case PANGO_ATTR_FONT_DESC:
+        case PANGO2_ATTR_FONT_DESC:
           p++;
           endp = strchr (p, '"');
           if (!endp) goto fail;
           str = g_strndup (p, endp - p);
-          desc = pango_font_description_from_string (str);
-          attr = pango_attr_font_desc_new (desc);
-          pango_font_description_free (desc);
+          desc = pango2_font_description_from_string (str);
+          attr = pango2_attr_font_desc_new (desc);
+          pango2_font_description_free (desc);
           g_free (str);
           endp++;
           if (!is_valid_end_char (*endp)) goto fail;
           break;
 
-        case PANGO_ATTR_FOREGROUND:
+        case PANGO2_ATTR_FOREGROUND:
           COLOR_ATTR(foreground);
           break;
 
-        case PANGO_ATTR_BACKGROUND:
+        case PANGO2_ATTR_BACKGROUND:
           COLOR_ATTR(background);
           break;
 
-        case PANGO_ATTR_UNDERLINE:
-          ENUM_ATTR(underline, PangoLineStyle, PANGO_LINE_STYLE_NONE, PANGO_LINE_STYLE_WAVY);
+        case PANGO2_ATTR_UNDERLINE:
+          ENUM_ATTR(underline, Pango2LineStyle, PANGO2_LINE_STYLE_NONE, PANGO2_LINE_STYLE_WAVY);
           break;
 
-        case PANGO_ATTR_UNDERLINE_POSITION:
-          ENUM_ATTR(underline_position, PangoUnderlinePosition, PANGO_UNDERLINE_POSITION_NORMAL, PANGO_UNDERLINE_POSITION_UNDER);
+        case PANGO2_ATTR_UNDERLINE_POSITION:
+          ENUM_ATTR(underline_position, Pango2UnderlinePosition, PANGO2_UNDERLINE_POSITION_NORMAL, PANGO2_UNDERLINE_POSITION_UNDER);
           break;
 
-        case PANGO_ATTR_STRIKETHROUGH:
-          ENUM_ATTR(strikethrough, PangoLineStyle, PANGO_LINE_STYLE_NONE, PANGO_LINE_STYLE_WAVY);
+        case PANGO2_ATTR_STRIKETHROUGH:
+          ENUM_ATTR(strikethrough, Pango2LineStyle, PANGO2_LINE_STYLE_NONE, PANGO2_LINE_STYLE_WAVY);
           break;
 
-        case PANGO_ATTR_RISE:
+        case PANGO2_ATTR_RISE:
           INT_ATTR(rise, int);
           break;
 
-        case PANGO_ATTR_SCALE:
+        case PANGO2_ATTR_SCALE:
           FLOAT_ATTR(scale);
           break;
 
-        case PANGO_ATTR_FALLBACK:
+        case PANGO2_ATTR_FALLBACK:
           BOOLEAN_ATTR(fallback, gboolean);
           break;
 
-        case PANGO_ATTR_LETTER_SPACING:
+        case PANGO2_ATTR_LETTER_SPACING:
           INT_ATTR(letter_spacing, int);
           break;
 
-        case PANGO_ATTR_UNDERLINE_COLOR:
+        case PANGO2_ATTR_UNDERLINE_COLOR:
           COLOR_ATTR(underline_color);
           break;
 
-        case PANGO_ATTR_STRIKETHROUGH_COLOR:
+        case PANGO2_ATTR_STRIKETHROUGH_COLOR:
           COLOR_ATTR(strikethrough_color);
           break;
 
-        case PANGO_ATTR_ABSOLUTE_SIZE:
+        case PANGO2_ATTR_ABSOLUTE_SIZE:
           integer = g_ascii_strtoll (p, &endp, 10);
           if (!is_valid_end_char (*endp)) goto fail;
-          attr = pango_attr_size_new_absolute (integer);
+          attr = pango2_attr_size_new_absolute (integer);
           break;
 
-        case PANGO_ATTR_GRAVITY:
-          ENUM_ATTR(gravity, PangoGravity, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_WEST);
+        case PANGO2_ATTR_GRAVITY:
+          ENUM_ATTR(gravity, Pango2Gravity, PANGO2_GRAVITY_SOUTH, PANGO2_GRAVITY_WEST);
           break;
 
-        case PANGO_ATTR_FONT_FEATURES:
+        case PANGO2_ATTR_FONT_FEATURES:
           p++;
           endp = strchr (p, '"');
           if (!endp) goto fail;
           str = g_strndup (p, endp - p);
-          attr = pango_attr_font_features_new (str);
+          attr = pango2_attr_font_features_new (str);
           g_free (str);
           endp++;
           if (!is_valid_end_char (*endp)) goto fail;
           break;
 
-        case PANGO_ATTR_GRAVITY_HINT:
-          ENUM_ATTR(gravity_hint, PangoGravityHint, PANGO_GRAVITY_HINT_NATURAL, PANGO_GRAVITY_HINT_LINE);
+        case PANGO2_ATTR_GRAVITY_HINT:
+          ENUM_ATTR(gravity_hint, Pango2GravityHint, PANGO2_GRAVITY_HINT_NATURAL, PANGO2_GRAVITY_HINT_LINE);
           break;
 
-        case PANGO_ATTR_ALLOW_BREAKS:
+        case PANGO2_ATTR_ALLOW_BREAKS:
           BOOLEAN_ATTR(allow_breaks, gboolean);
           break;
 
-        case PANGO_ATTR_SHOW:
-          INT_ATTR(show, PangoShowFlags);
+        case PANGO2_ATTR_SHOW:
+          INT_ATTR(show, Pango2ShowFlags);
           break;
 
-        case PANGO_ATTR_INSERT_HYPHENS:
+        case PANGO2_ATTR_INSERT_HYPHENS:
           BOOLEAN_ATTR(insert_hyphens, gboolean);
           break;
 
-        case PANGO_ATTR_OVERLINE:
-          ENUM_ATTR(overline, PangoLineStyle, PANGO_LINE_STYLE_NONE, PANGO_LINE_STYLE_WAVY);
+        case PANGO2_ATTR_OVERLINE:
+          ENUM_ATTR(overline, Pango2LineStyle, PANGO2_LINE_STYLE_NONE, PANGO2_LINE_STYLE_WAVY);
           break;
 
-        case PANGO_ATTR_OVERLINE_COLOR:
+        case PANGO2_ATTR_OVERLINE_COLOR:
           COLOR_ATTR(overline_color);
           break;
 
-        case PANGO_ATTR_LINE_HEIGHT:
+        case PANGO2_ATTR_LINE_HEIGHT:
           FLOAT_ATTR(line_height);
           break;
 
-        case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
+        case PANGO2_ATTR_ABSOLUTE_LINE_HEIGHT:
           integer = g_ascii_strtoll (p, &endp, 10);
           if (!is_valid_end_char (*endp)) goto fail;
-          attr = pango_attr_line_height_new_absolute (integer);
+          attr = pango2_attr_line_height_new_absolute (integer);
           break;
 
-        case PANGO_ATTR_TEXT_TRANSFORM:
-          ENUM_ATTR(text_transform, PangoTextTransform, PANGO_TEXT_TRANSFORM_NONE, PANGO_TEXT_TRANSFORM_CAPITALIZE);
+        case PANGO2_ATTR_TEXT_TRANSFORM:
+          ENUM_ATTR(text_transform, Pango2TextTransform, PANGO2_TEXT_TRANSFORM_NONE, PANGO2_TEXT_TRANSFORM_CAPITALIZE);
           break;
 
-        case PANGO_ATTR_WORD:
+        case PANGO2_ATTR_WORD:
           integer = g_ascii_strtoll (p, &endp, 10);
           if (!is_valid_end_char (*endp)) goto fail;
-          attr = pango_attr_word_new ();
+          attr = pango2_attr_word_new ();
           break;
 
-        case PANGO_ATTR_SENTENCE:
+        case PANGO2_ATTR_SENTENCE:
           integer = g_ascii_strtoll (p, &endp, 10);
           if (!is_valid_end_char (*endp)) goto fail;
-          attr = pango_attr_sentence_new ();
+          attr = pango2_attr_sentence_new ();
           break;
 
-        case PANGO_ATTR_PARAGRAPH:
+        case PANGO2_ATTR_PARAGRAPH:
           integer = g_ascii_strtoll (p, &endp, 10);
           if (!is_valid_end_char (*endp)) goto fail;
-          attr = pango_attr_paragraph_new ();
+          attr = pango2_attr_paragraph_new ();
           break;
 
-        case PANGO_ATTR_BASELINE_SHIFT:
-          ENUM_ATTR(baseline_shift, PangoBaselineShift, 0, G_MAXINT);
+        case PANGO2_ATTR_BASELINE_SHIFT:
+          ENUM_ATTR(baseline_shift, Pango2BaselineShift, 0, G_MAXINT);
           break;
 
-        case PANGO_ATTR_FONT_SCALE:
-          ENUM_ATTR(font_scale, PangoFontScale, PANGO_FONT_SCALE_NONE, PANGO_FONT_SCALE_SMALL_CAPS);
+        case PANGO2_ATTR_FONT_SCALE:
+          ENUM_ATTR(font_scale, Pango2FontScale, PANGO2_FONT_SCALE_NONE, PANGO2_FONT_SCALE_SMALL_CAPS);
           break;
 
-        case PANGO_ATTR_LINE_SPACING:
+        case PANGO2_ATTR_LINE_SPACING:
           INT_ATTR(line_spacing, int);
           break;
 
-        case PANGO_ATTR_SHAPE:
+        case PANGO2_ATTR_SHAPE:
         default:
           g_assert_not_reached ();
         }
@@ -1274,7 +1274,7 @@ pango_attr_list_from_string (const char *text)
   goto success;
 
 fail:
-  pango_attr_list_unref (list);
+  pango2_attr_list_unref (list);
   list = NULL;
 
 success:

@@ -35,7 +35,7 @@
 gboolean opt_display = TRUE;
 int opt_dpi = 96;
 gboolean opt_pixels = FALSE;
-gboolean opt_pango_units = FALSE;
+gboolean opt_pango2_units = FALSE;
 const char *opt_font = "";
 gboolean opt_header = FALSE;
 const char *opt_output = NULL;
@@ -55,25 +55,25 @@ int opt_indent = 0;
 int opt_spacing = 0;
 double opt_line_spacing = -1.0;
 int opt_runs = 1;
-PangoAlignment opt_align = PANGO_ALIGN_LEFT;
-PangoEllipsizeMode opt_ellipsize = PANGO_ELLIPSIZE_NONE;
-PangoGravity opt_gravity = PANGO_GRAVITY_SOUTH;
-PangoGravityHint opt_gravity_hint = PANGO_GRAVITY_HINT_NATURAL;
+Pango2Alignment opt_align = PANGO2_ALIGN_LEFT;
+Pango2EllipsizeMode opt_ellipsize = PANGO2_ELLIPSIZE_NONE;
+Pango2Gravity opt_gravity = PANGO2_GRAVITY_SOUTH;
+Pango2GravityHint opt_gravity_hint = PANGO2_GRAVITY_HINT_NATURAL;
 HintMode opt_hinting = HINT_DEFAULT;
 HintMetrics opt_hint_metrics = HINT_METRICS_DEFAULT;
 SubpixelOrder opt_subpixel_order = SUBPIXEL_DEFAULT;
 Antialias opt_antialias = ANTIALIAS_DEFAULT;
 gboolean opt_subpixel_positions = FALSE;
-PangoWrapMode opt_wrap = PANGO_WRAP_WORD_CHAR;
+Pango2WrapMode opt_wrap = PANGO2_WRAP_WORD_CHAR;
 gboolean opt_wrap_set = FALSE;
 static const char *opt_pangorc = NULL; /* Unused */
-const PangoViewer *opt_viewer = NULL;
+const Pango2Viewer *opt_viewer = NULL;
 const char *opt_language = NULL;
 gboolean opt_single_par = FALSE;
-PangoColor opt_fg_color = {0, 0, 0};
+Pango2Color opt_fg_color = {0, 0, 0};
 guint16 opt_fg_alpha = 65535;
 gboolean opt_bg_set = FALSE;
-PangoColor opt_bg_color = {65535, 65535, 65535};
+Pango2Color opt_bg_color = {65535, 65535, 65535};
 guint16 opt_bg_alpha = 65535;
 gboolean opt_serialized = FALSE;
 const char *opt_serialized_output;
@@ -95,14 +95,14 @@ fail (const char *format, ...)
   exit (1);
 }
 
-static PangoLayout *
-make_layout(PangoContext *context,
+static Pango2Layout *
+make_layout(Pango2Context *context,
 	    const char   *text,
 	    double        size)
 {
-  static PangoFontDescription *font_description;
-  PangoAlignment align;
-  PangoLayout *layout;
+  static Pango2FontDescription *font_description;
+  Pango2Alignment align;
+  Pango2Layout *layout;
 
   if (opt_serialized)
     {
@@ -114,85 +114,85 @@ make_layout(PangoContext *context,
       if (!g_file_get_contents (file_arg, &data, &len, &error))
         fail ("%s\n", error->message);
       bytes = g_bytes_new_take (data, len);
-      layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_CONTEXT, &error);
+      layout = pango2_layout_deserialize (context, bytes, PANGO2_LAYOUT_DESERIALIZE_CONTEXT, &error);
       if (!layout)
         fail ("%s\n", error->message);
       g_bytes_unref (bytes);
       goto out;
     }
 
-  layout = pango_layout_new (context);
+  layout = pango2_layout_new (context);
   if (opt_markup)
-    pango_layout_set_markup (layout, text, -1);
+    pango2_layout_set_markup (layout, text, -1);
   else
-    pango_layout_set_text (layout, text, -1);
+    pango2_layout_set_text (layout, text, -1);
 
-  pango_layout_set_auto_dir (layout, opt_auto_dir);
-  pango_layout_set_ellipsize (layout, opt_ellipsize);
-  pango_layout_set_single_paragraph (layout, opt_single_par);
-  pango_layout_set_wrap (layout, opt_wrap);
+  pango2_layout_set_auto_dir (layout, opt_auto_dir);
+  pango2_layout_set_ellipsize (layout, opt_ellipsize);
+  pango2_layout_set_single_paragraph (layout, opt_single_par);
+  pango2_layout_set_wrap (layout, opt_wrap);
 
-  font_description = pango_font_description_from_string (opt_font);
+  font_description = pango2_font_description_from_string (opt_font);
   if (size > 0)
-    pango_font_description_set_size (font_description, size * PANGO_SCALE);
+    pango2_font_description_set_size (font_description, size * PANGO2_SCALE);
 
   if (opt_width >= 0)
     {
-      if (opt_pango_units)
-        pango_layout_set_width (layout, opt_width);
+      if (opt_pango2_units)
+        pango2_layout_set_width (layout, opt_width);
       else
-        pango_layout_set_width (layout, (opt_width * opt_dpi * PANGO_SCALE + 36) / 72);
+        pango2_layout_set_width (layout, (opt_width * opt_dpi * PANGO2_SCALE + 36) / 72);
     }
 
   if (opt_height >= 0)
     {
-      if (opt_pango_units)
-        pango_layout_set_width (layout, opt_height);
+      if (opt_pango2_units)
+        pango2_layout_set_width (layout, opt_height);
       else
-        pango_layout_set_height (layout, (opt_height * opt_dpi * PANGO_SCALE + 36) / 72);
+        pango2_layout_set_height (layout, (opt_height * opt_dpi * PANGO2_SCALE + 36) / 72);
     }
   else
-    pango_layout_set_height (layout, opt_height);
+    pango2_layout_set_height (layout, opt_height);
 
   if (opt_indent != 0)
     {
-      if (opt_pango_units)
-        pango_layout_set_indent (layout, opt_indent);
+      if (opt_pango2_units)
+        pango2_layout_set_indent (layout, opt_indent);
       else
-        pango_layout_set_indent (layout, (opt_indent * opt_dpi * PANGO_SCALE + 36) / 72);
+        pango2_layout_set_indent (layout, (opt_indent * opt_dpi * PANGO2_SCALE + 36) / 72);
     }
 
   if (opt_spacing != 0)
     {
-      if (opt_pango_units)
-        pango_layout_set_spacing (layout, opt_spacing);
+      if (opt_pango2_units)
+        pango2_layout_set_spacing (layout, opt_spacing);
       else
-        pango_layout_set_spacing (layout, (opt_spacing * opt_dpi * PANGO_SCALE + 36) / 72);
-      pango_layout_set_line_height (layout, 0.0);
+        pango2_layout_set_spacing (layout, (opt_spacing * opt_dpi * PANGO2_SCALE + 36) / 72);
+      pango2_layout_set_line_height (layout, 0.0);
     }
 
   if (opt_line_spacing >= 0.0)
-    pango_layout_set_line_height (layout, (float)opt_line_spacing);
+    pango2_layout_set_line_height (layout, (float)opt_line_spacing);
 
   align = opt_align;
-  if (align != PANGO_ALIGN_CENTER &&
-      pango_context_get_base_dir (context) != PANGO_DIRECTION_LTR) {
+  if (align != PANGO2_ALIGN_CENTER &&
+      pango2_context_get_base_dir (context) != PANGO2_DIRECTION_LTR) {
     /* pango reverses left and right if base dir ir rtl.  so we should
      * reverse to cancel that.  unfortunately it also does that for
      * rtl paragraphs, so we cannot really get left/right.  all we get
      * is default/other-side. */
-    align = PANGO_ALIGN_LEFT + PANGO_ALIGN_RIGHT - align;
+    align = PANGO2_ALIGN_LEFT + PANGO2_ALIGN_RIGHT - align;
   }
-  pango_layout_set_alignment (layout, align);
+  pango2_layout_set_alignment (layout, align);
 
-  pango_layout_set_font_description (layout, font_description);
+  pango2_layout_set_font_description (layout, font_description);
 
-  pango_font_description_free (font_description);
+  pango2_font_description_free (font_description);
 
 out:
   if (opt_serialized_output)
     {
-      if (!pango_layout_write_to_file (layout, opt_serialized_output))
+      if (!pango2_layout_write_to_file (layout, opt_serialized_output))
         fail ("Failed to serialize\n");
     }
 
@@ -202,23 +202,23 @@ out:
 char *
 get_options_string (void)
 {
-  PangoFontDescription *font_description = pango_font_description_from_string (opt_font);
+  Pango2FontDescription *font_description = pango2_font_description_from_string (opt_font);
   char *font_name;
   char *result;
 
   if (opt_waterfall)
-    pango_font_description_unset_fields (font_description, PANGO_FONT_MASK_SIZE);
+    pango2_font_description_unset_fields (font_description, PANGO2_FONT_MASK_SIZE);
 
-  font_name = pango_font_description_to_string (font_description);
+  font_name = pango2_font_description_to_string (font_description);
   result = g_strdup_printf ("%s: %s (%d dpi)", opt_viewer->name, font_name, opt_dpi);
-  pango_font_description_free (font_description);
+  pango2_font_description_free (font_description);
   g_free (font_name);
 
   return result;
 }
 
 static void
-output_body (PangoLayout    *layout,
+output_body (Pango2Layout    *layout,
 	     RenderCallback  render_cb,
 	     gpointer        cb_context,
 	     gpointer        cb_data,
@@ -226,23 +226,23 @@ output_body (PangoLayout    *layout,
 	     int            *height,
 	     gboolean        supports_matrix)
 {
-  PangoRectangle logical_rect;
+  Pango2Rectangle logical_rect;
   int size, start_size, end_size, increment;
   int x = 0, y = 0;
 
   if (!supports_matrix)
     {
-      const PangoMatrix* matrix;
-      const PangoMatrix identity = PANGO_MATRIX_INIT;
-      PangoContext *context = pango_layout_get_context (layout);
-      matrix = pango_context_get_matrix (context);
+      const Pango2Matrix* matrix;
+      const Pango2Matrix identity = PANGO2_MATRIX_INIT;
+      Pango2Context *context = pango2_layout_get_context (layout);
+      matrix = pango2_context_get_matrix (context);
       if (matrix)
 	{
 	  x += matrix->x0;
 	  y += matrix->y0;
 	}
-      pango_context_set_matrix (context, &identity);
-      pango_layout_context_changed (layout);
+      pango2_context_set_matrix (context, &identity);
+      pango2_layout_context_changed (layout);
     }
 
   if (opt_waterfall)
@@ -264,40 +264,40 @@ output_body (PangoLayout    *layout,
     {
       if (size > 0)
         {
-	  PangoFontDescription *desc = pango_font_description_copy (pango_layout_get_font_description (layout));
-	  pango_font_description_set_size (desc, size * PANGO_SCALE);
-	  pango_layout_set_font_description (layout, desc);
-	  pango_font_description_free (desc);
+	  Pango2FontDescription *desc = pango2_font_description_copy (pango2_layout_get_font_description (layout));
+	  pango2_font_description_set_size (desc, size * PANGO2_SCALE);
+	  pango2_layout_set_font_description (layout, desc);
+	  pango2_font_description_free (desc);
 	}
 
-      pango_lines_get_extents (pango_layout_get_lines (layout), NULL, &logical_rect);
-      pango_extents_to_pixels (&logical_rect, NULL);
+      pango2_lines_get_extents (pango2_layout_get_lines (layout), NULL, &logical_rect);
+      pango2_extents_to_pixels (&logical_rect, NULL);
 
       if (render_cb)
 	(*render_cb) (layout, x, y+*height, cb_context, cb_data);
 
       *width = MAX (*width, 
 		    MAX (logical_rect.x + logical_rect.width,
-			 PANGO_PIXELS (pango_layout_get_width (layout))));
+			 PANGO2_PIXELS (pango2_layout_get_width (layout))));
       *height +=    MAX (logical_rect.y + logical_rect.height,
-			 PANGO_PIXELS (pango_layout_get_height (layout)));
+			 PANGO2_PIXELS (pango2_layout_get_height (layout)));
     }
 }
 
 static void
-set_transform (PangoContext     *context,
+set_transform (Pango2Context     *context,
 	       TransformCallback transform_cb,
 	       gpointer          cb_context,
 	       gpointer          cb_data,
-	       PangoMatrix      *matrix)
+	       Pango2Matrix      *matrix)
 {
-  pango_context_set_matrix (context, matrix);
+  pango2_context_set_matrix (context, matrix);
   if (transform_cb)
     (*transform_cb) (context, matrix, cb_context, cb_data);
 }
 
 void
-do_output (PangoContext     *context,
+do_output (Pango2Context     *context,
 	   RenderCallback    render_cb,
 	   TransformCallback transform_cb,
 	   gpointer          cb_context,
@@ -305,10 +305,10 @@ do_output (PangoContext     *context,
 	   int              *width_out,
 	   int              *height_out)
 {
-  PangoLayout *layout;
-  PangoRectangle rect;
-  PangoMatrix matrix = PANGO_MATRIX_INIT;
-  PangoMatrix *orig_matrix;
+  Pango2Layout *layout;
+  Pango2Rectangle rect;
+  Pango2Matrix matrix = PANGO2_MATRIX_INIT;
+  Pango2Matrix *orig_matrix;
   gboolean supports_matrix;
   int rotated_width, rotated_height;
   int x = opt_margin_l;
@@ -318,7 +318,7 @@ do_output (PangoContext     *context,
   width = 0;
   height = 0;
 
-  orig_matrix = pango_matrix_copy (pango_context_get_matrix (context));
+  orig_matrix = pango2_matrix_copy (pango2_context_get_matrix (context));
   /* If the backend sets an all-zero matrix on the context,
    * means that it doesn't support transformations.
    */
@@ -329,26 +329,26 @@ do_output (PangoContext     *context,
 
   set_transform (context, transform_cb, cb_context, cb_data, NULL);
 
-  pango_context_set_language (context,
-			      opt_language ? pango_language_from_string (opt_language)
-					   : pango_language_get_default ());
-  pango_context_set_base_dir (context,
-			      opt_rtl ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR);
+  pango2_context_set_language (context,
+			      opt_language ? pango2_language_from_string (opt_language)
+					   : pango2_language_get_default ());
+  pango2_context_set_base_dir (context,
+			      opt_rtl ? PANGO2_DIRECTION_RTL : PANGO2_DIRECTION_LTR);
 
   if (opt_header)
     {
       char *options_string = get_options_string ();
-      pango_context_set_base_gravity (context, PANGO_GRAVITY_SOUTH);
+      pango2_context_set_base_gravity (context, PANGO2_GRAVITY_SOUTH);
       layout = make_layout (context, options_string, 10);
-      pango_lines_get_extents (pango_layout_get_lines (layout), NULL, &rect);
+      pango2_lines_get_extents (pango2_layout_get_lines (layout), NULL, &rect);
 
-      width = MAX (width, PANGO_PIXELS (rect.width));
-      height += PANGO_PIXELS (rect.height);
+      width = MAX (width, PANGO2_PIXELS (rect.width));
+      height += PANGO2_PIXELS (rect.height);
 
       if (render_cb)
 	(*render_cb) (layout, x, y, cb_context, cb_data);
 
-      y += PANGO_PIXELS (rect.height);
+      y += PANGO2_PIXELS (rect.height);
 
       g_object_unref (layout);
       g_free (options_string);
@@ -357,19 +357,19 @@ do_output (PangoContext     *context,
   if (opt_rotate != 0)
     {
       if (supports_matrix)
-	pango_matrix_rotate (&matrix, opt_rotate);
+	pango2_matrix_rotate (&matrix, opt_rotate);
       else
 	g_printerr ("The backend does not support rotated text\n");
     }
 
-  pango_context_set_base_gravity (context, opt_gravity);
-  pango_context_set_gravity_hint (context, opt_gravity_hint);
+  pango2_context_set_base_gravity (context, opt_gravity);
+  pango2_context_set_gravity_hint (context, opt_gravity_hint);
 
   layout = make_layout (context, text, -1);
   if (opt_serialized && supports_matrix)
     {
-      const PangoMatrix *context_matrix = pango_context_get_matrix (pango_layout_get_context (layout));
-      matrix = context_matrix ? *context_matrix : (PangoMatrix) PANGO_MATRIX_INIT;
+      const Pango2Matrix *context_matrix = pango2_context_get_matrix (pango2_layout_get_context (layout));
+      matrix = context_matrix ? *context_matrix : (Pango2Matrix) PANGO2_MATRIX_INIT;
     }
 
   set_transform (context, transform_cb, cb_context, cb_data, &matrix);
@@ -383,7 +383,7 @@ do_output (PangoContext     *context,
   rect.width = rotated_width;
   rect.height = rotated_height;
 
-  pango_matrix_transform_pixel_rectangle (&matrix, &rect);
+  pango2_matrix_transform_pixel_rectangle (&matrix, &rect);
 
   matrix.x0 = x - rect.x;
   matrix.y0 = y - rect.y;
@@ -407,8 +407,8 @@ do_output (PangoContext     *context,
   if (height_out)
     *height_out = height;
 
-  pango_context_set_matrix (context, orig_matrix);
-  pango_matrix_free (orig_matrix);
+  pango2_context_set_matrix (context, orig_matrix);
+  pango2_matrix_free (orig_matrix);
   g_object_unref (layout);
 }
 
@@ -495,7 +495,7 @@ parse_align (const char *name,
 	     gpointer    data,
 	     GError **error)
 {
-  return parse_enum (PANGO_TYPE_ALIGNMENT, (int*)(void*)&opt_align,
+  return parse_enum (PANGO2_TYPE_ALIGNMENT, (int*)(void*)&opt_align,
 		     name, arg, data, error);
 }
 
@@ -505,7 +505,7 @@ parse_ellipsis (const char *name,
 		gpointer    data,
 		GError **error)
 {
-  return parse_enum (PANGO_TYPE_ELLIPSIZE_MODE, (int*)(void*)&opt_ellipsize,
+  return parse_enum (PANGO2_TYPE_ELLIPSIZE_MODE, (int*)(void*)&opt_ellipsize,
 		     name, arg, data, error);
 }
 
@@ -515,7 +515,7 @@ parse_gravity (const char *name,
 	       gpointer    data,
 	       GError **error)
 {
-  return parse_enum (PANGO_TYPE_GRAVITY, (int*)(void*)&opt_gravity,
+  return parse_enum (PANGO2_TYPE_GRAVITY, (int*)(void*)&opt_gravity,
 		     name, arg, data, error);
 }
 
@@ -525,7 +525,7 @@ parse_gravity_hint (const char *name,
 		    gpointer    data,
 		    GError **error)
 {
-  return parse_enum (PANGO_TYPE_GRAVITY_HINT, (int*)(void*)&opt_gravity_hint,
+  return parse_enum (PANGO2_TYPE_GRAVITY_HINT, (int*)(void*)&opt_gravity_hint,
 		     name, arg, data, error);
 }
 
@@ -643,7 +643,7 @@ parse_wrap (const char *name,
 	    GError    **error)
 {
   gboolean ret;
-  if ((ret = parse_enum (PANGO_TYPE_WRAP_MODE, (int*)(void*)&opt_wrap,
+  if ((ret = parse_enum (PANGO2_TYPE_WRAP_MODE, (int*)(void*)&opt_wrap,
 			 name, arg, data, error)))
     {
       opt_wrap_set = TRUE;
@@ -652,7 +652,7 @@ parse_wrap (const char *name,
 }
 
 static gboolean
-parse_rgba_color (PangoColor *color,
+parse_rgba_color (Pango2Color *color,
 		  guint16    *alpha,
 		  const char *name,
 		  const char *arg,
@@ -694,7 +694,7 @@ parse_rgba_color (PangoColor *color,
   else
     *alpha = 65535;
 
-  ret = pango_color_parse (color, arg);
+  ret = pango2_color_parse (color, arg);
 
 err:
   if (!ret && error)
@@ -768,7 +768,7 @@ static char *
 backends_to_string (void)
 {
   GString *backends = g_string_new (NULL);
-  const PangoViewer **viewer;
+  const Pango2Viewer **viewer;
 
   for (viewer = viewers; *viewer; viewer++)
     if ((*viewer)->id)
@@ -784,7 +784,7 @@ backends_to_string (void)
 static int
 backends_get_count (void)
 {
-  const PangoViewer **viewer;
+  const Pango2Viewer **viewer;
   int i = 0;
 
   for (viewer = viewers; *viewer; viewer++)
@@ -798,7 +798,7 @@ backends_get_count (void)
 static char *
 backend_description (void)
 {
- GString *description  = g_string_new("Pango backend to use for rendering ");
+ GString *description  = g_string_new("Pango2 backend to use for rendering ");
  int backends_count = backends_get_count ();
 
  if (backends_count > 1)
@@ -819,7 +819,7 @@ parse_backend (const char *name G_GNUC_UNUSED,
 	       GError    **error)
 {
   gboolean ret = TRUE;
-  const PangoViewer **viewer;
+  const Pango2Viewer **viewer;
 
   for (viewer = viewers; *viewer; viewer++)
     if (!g_ascii_strcasecmp ((*viewer)->id, arg))
@@ -852,8 +852,8 @@ show_version(const char *name G_GNUC_UNUSED,
 {
   g_printf("%s (%s) %s\n", g_get_prgname (), PACKAGE_NAME, PACKAGE_VERSION);
 
-  if (PANGO_VERSION != pango_version())
-    g_printf("Linked Pango library has a different version: %s\n", pango_version_string ());
+  if (PANGO2_VERSION != pango2_version())
+    g_printf("Linked Pango2 library has a different version: %s\n", pango2_version_string ());
 
   exit(0);
 }
@@ -913,21 +913,21 @@ parse_options (int argc, char *argv[])
     {"margin",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_margin,
      "Set the margin on the output in pixels",			    "CSS-style numbers in pixels"},
     {"markup",		0, 0, G_OPTION_ARG_NONE,			&opt_markup,
-     "Interpret text as Pango markup",					NULL},
+     "Interpret text as Pango2 markup",					NULL},
     {"output",		'o', 0, G_OPTION_ARG_STRING,			&opt_output,
      "Save rendered image to output file",			      "file"},
     {"pangorc",		0, G_OPTION_FLAG_HIDDEN, G_OPTION_ARG_STRING,	&opt_pangorc,
      "Deprecated",		      "file"},
     {"pixels",		0, 0, G_OPTION_ARG_NONE,			&opt_pixels,
      "Use pixel units instead of points (sets dpi to 72)",		NULL},
-    {"pango-units",	0, 0, G_OPTION_ARG_NONE,			&opt_pango_units,
-     "Use Pango units instead of points",		                NULL},
+    {"pango-units",	0, 0, G_OPTION_ARG_NONE,			&opt_pango2_units,
+     "Use Pango2 units instead of points",		                NULL},
     {"rtl",		0, 0, G_OPTION_ARG_NONE,			&opt_rtl,
      "Set base direction to right-to-left",				NULL},
     {"rotate",		0, 0, G_OPTION_ARG_DOUBLE,			&opt_rotate,
      "Angle at which to rotate results",			   "degrees"},
     {"runs",		'n', 0, G_OPTION_ARG_INT,			&opt_runs,
-     "Run Pango layout engine this many times",			   "integer"},
+     "Run Pango2 layout engine this many times",			   "integer"},
     {"single-par",     0, 0, G_OPTION_ARG_NONE,                        &opt_single_par,
      "Enable single-paragraph mode",                                   NULL},
     {"text",		't', 0, G_OPTION_ARG_STRING,			&opt_text,
@@ -950,7 +950,7 @@ parse_options (int argc, char *argv[])
   GError *parse_error = NULL;
   GOptionContext *context;
   size_t len;
-  const PangoViewer **viewer;
+  const Pango2Viewer **viewer;
 
   context = g_option_context_new ("- FILE");
   g_option_context_add_main_entries (context, entries, NULL);
@@ -1031,7 +1031,7 @@ parse_options (int argc, char *argv[])
   /* Make sure we have valid markup
    */
   if (opt_markup &&
-      !pango_parse_markup (text, -1, 0, NULL, NULL, NULL, &error))
+      !pango2_parse_markup (text, -1, 0, NULL, NULL, NULL, &error))
     fail ("Cannot parse input as markup: %s", error->message);
 }
 

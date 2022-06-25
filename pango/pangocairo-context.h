@@ -24,21 +24,21 @@
 
 G_BEGIN_DECLS
 
-PANGO_AVAILABLE_IN_ALL
-PangoContext *          pango_cairo_create_context              (cairo_t                        *cr);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_cairo_update_context              (cairo_t                        *cr,
-                                                                 PangoContext                   *context);
-PANGO_AVAILABLE_IN_ALL
-PangoLayout *           pango_cairo_create_layout               (cairo_t                        *cr);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_cairo_update_layout               (cairo_t                        *cr,
-                                                                 PangoLayout                    *layout);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_cairo_context_set_font_options    (PangoContext                   *context,
-                                                                 const cairo_font_options_t     *options);
-PANGO_AVAILABLE_IN_ALL
+PANGO2_AVAILABLE_IN_ALL
+Pango2Context *         pango2_cairo_create_context              (cairo_t                        *cr);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_cairo_update_context              (cairo_t                        *cr,
+                                                                  Pango2Context                  *context);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Layout *          pango2_cairo_create_layout               (cairo_t                        *cr);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_cairo_update_layout               (cairo_t                        *cr,
+                                                                  Pango2Layout                   *layout);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_cairo_context_set_font_options    (Pango2Context                  *context,
+                                                                  const cairo_font_options_t     *options);
+PANGO2_AVAILABLE_IN_ALL
 const cairo_font_options_t *
-                        pango_cairo_context_get_font_options    (PangoContext                   *context);
+                        pango2_cairo_context_get_font_options    (Pango2Context                  *context);
 
 G_END_DECLS

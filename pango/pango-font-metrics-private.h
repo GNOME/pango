@@ -21,7 +21,7 @@
 
 #include <pango/pango-font-metrics.h>
 
-struct _PangoFontMetrics
+struct _Pango2FontMetrics
 {
   /* <private> */
   guint ref_count;
@@ -37,4 +37,4 @@ struct _PangoFontMetrics
   int strikethrough_thickness;
 };
 
-PangoFontMetrics *pango_font_metrics_new (void);
+Pango2FontMetrics *pango2_font_metrics_new (void);

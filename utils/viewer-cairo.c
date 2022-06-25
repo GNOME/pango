@@ -89,7 +89,7 @@ cairo_view_iface_create_surface (gpointer instance,
 
 
 static gpointer
-cairo_image_view_create (const PangoViewer *klass G_GNUC_UNUSED)
+cairo_image_view_create (const Pango2Viewer *klass G_GNUC_UNUSED)
 {
   return NULL;
 }
@@ -125,7 +125,7 @@ cairo_image_view_destroy_surface (gpointer instance,
   cairo_surface_destroy (surface);
 }
 
-const PangoViewer cairo_image_viewer = {
+const Pango2Viewer cairo_image_viewer = {
   "CairoImage",
   NULL,
   NULL,
@@ -209,7 +209,7 @@ typedef struct
 } CairoVectorViewer;
 
 static gpointer
-cairo_vector_view_create (const PangoViewer *klass G_GNUC_UNUSED)
+cairo_vector_view_create (const Pango2Viewer *klass G_GNUC_UNUSED)
 {
   const char *extension = NULL;
   CairoVectorFileCreateFunc constructor = NULL;
@@ -297,7 +297,7 @@ cairo_vector_view_destroy_surface (gpointer instance,
   cairo_surface_destroy (surface);
 }
 
-const PangoViewer cairo_vector_viewer = {
+const Pango2Viewer cairo_vector_viewer = {
   "CairoFile",
   NULL,
   NULL,

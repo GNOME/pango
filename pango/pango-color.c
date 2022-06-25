@@ -28,33 +28,33 @@
 #include "pango-impl-utils.h"
 
 
-G_DEFINE_BOXED_TYPE (PangoColor, pango_color,
-                     pango_color_copy,
-                     pango_color_free);
+G_DEFINE_BOXED_TYPE (Pango2Color, pango2_color,
+                     pango2_color_copy,
+                     pango2_color_free);
 
 /**
- * pango_color_copy:
+ * pango2_color_copy:
  * @src: (nullable): color to copy
  *
  * Creates a copy of @src.
  *
- * The copy should be freed with [method@Pango.Color.free].
+ * The copy should be freed with [method@Pango2.Color.free].
  * Primarily used by language bindings, not that useful
  * otherwise (since colors can just be copied by assignment
  * in C).
  *
- * Return value: (nullable): the newly allocated `PangoColor`,
- *   which should be freed with [method@Pango.Color.free]
+ * Return value: (nullable): the newly allocated `Pango2Color`,
+ *   which should be freed with [method@Pango2.Color.free]
  */
-PangoColor*
-pango_color_copy (const PangoColor *src)
+Pango2Color*
+pango2_color_copy (const Pango2Color *src)
 {
-  PangoColor *ret;
+  Pango2Color *ret;
 
   if (src == NULL)
     return NULL;
 
-  ret = g_slice_new (PangoColor);
+  ret = g_slice_new (Pango2Color);
 
   *ret = *src;
 
@@ -62,32 +62,32 @@ pango_color_copy (const PangoColor *src)
 }
 
 /**
- * pango_color_free:
- * @color: (nullable): an allocated `PangoColor`
+ * pango2_color_free:
+ * @color: (nullable): an allocated `Pango2Color`
  *
- * Frees a color allocated by [method@Pango.Color.copy].
+ * Frees a color allocated by [method@Pango2.Color.copy].
  */
 void
-pango_color_free (PangoColor *color)
+pango2_color_free (Pango2Color *color)
 {
   if (color == NULL)
     return;
 
-  g_slice_free (PangoColor, color);
+  g_slice_free (Pango2Color, color);
 }
 
 /**
- * pango_color_equal:
- * @color1: (nullable): a `PangoColor`
- * @color2: (nullable): another `PangoColor`
+ * pango2_color_equal:
+ * @color1: (nullable): a `Pango2Color`
+ * @color2: (nullable): another `Pango2Color`
  *
  * Compares two colors for quality.
  *
  * Returns: `TRUE` if the colors are equal
  */
 gboolean
-pango_color_equal (const PangoColor *color1,
-                   const PangoColor *color2)
+pango2_color_equal (const Pango2Color *color1,
+                    const Pango2Color *color2)
 {
   return color1 == color2 ||
          (color1 && color2 &&
@@ -98,8 +98,8 @@ pango_color_equal (const PangoColor *color1,
 }
 
 /**
- * pango_color_to_string:
- * @color: a `PangoColor`
+ * pango2_color_to_string:
+ * @color: a `Pango2Color`
  *
  * Returns a textual specification of @color.
  *
@@ -111,7 +111,7 @@ pango_color_equal (const PangoColor *color1,
  *   be freed with [GLib.free]
  */
 char *
-pango_color_to_string (const PangoColor *color)
+pango2_color_to_string (const Pango2Color *color)
 {
   g_return_val_if_fail (color != NULL, NULL);
 
@@ -197,7 +197,7 @@ compare_xcolor_entries (const void *a, const void *b)
 
 static gboolean
 find_color(const char *name,
-           PangoColor *color)
+           Pango2Color *color)
 {
   ColorEntry *found;
 
@@ -218,9 +218,9 @@ find_color(const char *name,
 }
 
 static gboolean
-hex (const char *spec,
-    int len,
-    unsigned int *c)
+hex (const char   *spec,
+     int           len,
+     unsigned int *c)
 {
   const char *end;
   *c = 0;
@@ -234,8 +234,8 @@ hex (const char *spec,
 
 
 /**
- * pango_color_parse:
- * @color: a `PangoColor` structure in which to store the result
+ * pango2_color_parse:
+ * @color: a `Pango2Color` structure in which to store the result
  * @spec: a string specifying the new color
  *
  * Fill in the fields of a color from a string specification.
@@ -258,8 +258,8 @@ hex (const char *spec,
  *   otherwise %FALSE
  */
 gboolean
-pango_color_parse (PangoColor *color,
-                   const char *spec)
+pango2_color_parse (Pango2Color *color,
+                    const char  *spec)
 {
   g_return_val_if_fail (spec != NULL, FALSE);
 

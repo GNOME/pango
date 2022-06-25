@@ -24,17 +24,17 @@
 #include "pango-font-face-private.h"
 
 
-struct _PangoUserFace
+struct _Pango2UserFace
 {
-  PangoFontFace parent_instance;
+  Pango2FontFace parent_instance;
 
   char *faceid;
 
-  PangoUserFaceGetFontInfoFunc font_info_func;
-  PangoUserFaceUnicodeToGlyphFunc glyph_func;
-  PangoUserFaceGetGlyphInfoFunc glyph_info_func;
-  PangoUserFaceTextToGlyphFunc shape_func;
-  PangoUserFaceRenderGlyphFunc render_func;
+  Pango2UserFaceGetFontInfoFunc font_info_func;
+  Pango2UserFaceUnicodeToGlyphFunc glyph_func;
+  Pango2UserFaceGetGlyphInfoFunc glyph_info_func;
+  Pango2UserFaceTextToGlyphFunc shape_func;
+  Pango2UserFaceRenderGlyphFunc render_func;
   gpointer user_data;
   GDestroyNotify destroy;
 };

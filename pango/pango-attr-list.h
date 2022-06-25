@@ -25,57 +25,57 @@
 G_BEGIN_DECLS
 
 
-typedef struct _PangoAttrList     PangoAttrList;
-typedef struct _PangoAttrIterator PangoAttrIterator;
+typedef struct _Pango2AttrList     Pango2AttrList;
+typedef struct _Pango2AttrIterator Pango2AttrIterator;
 
-#define PANGO_TYPE_ATTR_LIST pango_attr_list_get_type ()
+#define PANGO2_TYPE_ATTR_LIST pango2_attr_list_get_type ()
 
 /**
- * PangoAttrList:
+ * Pango2AttrList:
  *
- * A `PangoAttrList` represents a list of attributes that apply to a section
+ * A `Pango2AttrList` represents a list of attributes that apply to a section
  * of text.
  *
- * The attributes in a `PangoAttrList` are, in general, allowed to overlap in
+ * The attributes in a `Pango2AttrList` are, in general, allowed to overlap in
  * an arbitrary fashion. However, if the attributes are manipulated only through
- * [method@Pango.AttrList.change], the overlap between properties will meet
+ * [method@Pango2.AttrList.change], the overlap between properties will meet
  * stricter criteria.
  */
 
-PANGO_AVAILABLE_IN_ALL
-GType                   pango_attr_list_get_type        (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+GType                   pango2_attr_list_get_type        (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_ALL
-PangoAttrList *         pango_attr_list_new             (void);
-PANGO_AVAILABLE_IN_ALL
-PangoAttrList *         pango_attr_list_ref             (PangoAttrList         *list);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_attr_list_unref           (PangoAttrList         *list);
-PANGO_AVAILABLE_IN_ALL
-PangoAttrList *         pango_attr_list_copy            (PangoAttrList         *list);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_attr_list_insert          (PangoAttrList         *list,
-                                                         PangoAttribute        *attr);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_attr_list_insert_before   (PangoAttrList         *list,
-                                                         PangoAttribute        *attr);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_attr_list_change          (PangoAttrList         *list,
-                                                         PangoAttribute        *attr);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_attr_list_splice          (PangoAttrList         *list,
-                                                         PangoAttrList         *other,
-                                                         int                    pos,
-                                                         int                    len);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_attr_list_update          (PangoAttrList         *list,
-                                                         int                    pos,
-                                                         int                    remove,
-                                                         int                    add);
+PANGO2_AVAILABLE_IN_ALL
+Pango2AttrList *         pango2_attr_list_new            (void);
+PANGO2_AVAILABLE_IN_ALL
+Pango2AttrList *         pango2_attr_list_ref            (Pango2AttrList         *list);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_attr_list_unref           (Pango2AttrList         *list);
+PANGO2_AVAILABLE_IN_ALL
+Pango2AttrList *         pango2_attr_list_copy           (Pango2AttrList         *list);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_attr_list_insert          (Pango2AttrList         *list,
+                                                          Pango2Attribute        *attr);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_attr_list_insert_before   (Pango2AttrList         *list,
+                                                          Pango2Attribute        *attr);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_attr_list_change          (Pango2AttrList         *list,
+                                                          Pango2Attribute        *attr);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_attr_list_splice          (Pango2AttrList         *list,
+                                                          Pango2AttrList         *other,
+                                                          int                     pos,
+                                                          int                     len);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_attr_list_update          (Pango2AttrList         *list,
+                                                          int                     pos,
+                                                          int                     remove,
+                                                          int                     add);
 
 /**
- * PangoAttrFilterFunc:
- * @attribute: a Pango attribute
+ * Pango2AttrFilterFunc:
+ * @attribute: a Pango2 attribute
  * @user_data: user data passed to the function
  *
  * Callback to filter a list of attributes.
@@ -83,30 +83,30 @@ void                    pango_attr_list_update          (PangoAttrList         *
  * Return value: `TRUE` if the attribute should be selected for
  *   filtering, `FALSE` otherwise.
  */
-typedef gboolean (*PangoAttrFilterFunc) (PangoAttribute *attribute,
+typedef gboolean (*Pango2AttrFilterFunc) (Pango2Attribute *attribute,
                                          gpointer        user_data);
 
-PANGO_AVAILABLE_IN_ALL
-PangoAttrList *         pango_attr_list_filter          (PangoAttrList         *list,
-                                                         PangoAttrFilterFunc    func,
-                                                         gpointer               data);
+PANGO2_AVAILABLE_IN_ALL
+Pango2AttrList *         pango2_attr_list_filter         (Pango2AttrList         *list,
+                                                          Pango2AttrFilterFunc    func,
+                                                          gpointer                data);
 
-PANGO_AVAILABLE_IN_ALL
-GSList *                pango_attr_list_get_attributes  (PangoAttrList         *list);
+PANGO2_AVAILABLE_IN_ALL
+GSList *                pango2_attr_list_get_attributes  (Pango2AttrList         *list);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_attr_list_equal           (PangoAttrList         *list,
-                                                         PangoAttrList         *other_list);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_attr_list_equal           (Pango2AttrList         *list,
+                                                          Pango2AttrList         *other_list);
 
-PANGO_AVAILABLE_IN_ALL
-char *                  pango_attr_list_to_string       (PangoAttrList         *list);
-PANGO_AVAILABLE_IN_ALL
-PangoAttrList *         pango_attr_list_from_string     (const char            *text);
+PANGO2_AVAILABLE_IN_ALL
+char *                  pango2_attr_list_to_string       (Pango2AttrList         *list);
+PANGO2_AVAILABLE_IN_ALL
+Pango2AttrList *         pango2_attr_list_from_string    (const char             *text);
 
-PANGO_AVAILABLE_IN_ALL
-PangoAttrIterator *     pango_attr_list_get_iterator    (PangoAttrList         *list);
+PANGO2_AVAILABLE_IN_ALL
+Pango2AttrIterator *     pango2_attr_list_get_iterator   (Pango2AttrList         *list);
 
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoAttrList, pango_attr_list_unref)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(Pango2AttrList, pango2_attr_list_unref)
 
 G_END_DECLS

@@ -26,60 +26,58 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_TYPE_HB_FACE      (pango_hb_face_get_type ())
+#define PANGO2_TYPE_HB_FACE      (pango2_hb_face_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-PANGO_DECLARE_INTERNAL_TYPE (PangoHbFace, pango_hb_face, PANGO, HB_FACE, PangoFontFace)
+PANGO2_AVAILABLE_IN_ALL
+PANGO2_DECLARE_INTERNAL_TYPE (Pango2HbFace, pango2_hb_face, PANGO2, HB_FACE, Pango2FontFace)
 
-PANGO_AVAILABLE_IN_ALL
-PangoHbFace *   pango_hb_face_new_from_hb_face  (hb_face_t                  *face,
-                                                 int                         instance_id,
-                                                 const char                 *name,
-                                                 const PangoFontDescription *description);
+PANGO2_AVAILABLE_IN_ALL
+Pango2HbFace *          pango2_hb_face_new_from_hb_face  (hb_face_t                   *face,
+                                                          int                          instance_id,
+                                                          const char                  *name,
+                                                          const Pango2FontDescription *description);
 
-PANGO_AVAILABLE_IN_ALL
-PangoHbFace *   pango_hb_face_new_from_file     (const char                 *file,
-                                                 unsigned int                index,
-                                                 int                         instance_id,
-                                                 const char                 *name,
-                                                 const PangoFontDescription *description);
+PANGO2_AVAILABLE_IN_ALL
+Pango2HbFace *          pango2_hb_face_new_from_file     (const char                  *file,
+                                                          unsigned int                 index,
+                                                          int                          instance_id,
+                                                          const char                  *name,
+                                                          const Pango2FontDescription *description);
 
-PANGO_AVAILABLE_IN_ALL
-PangoHbFace *   pango_hb_face_new_synthetic     (PangoHbFace                *face,
-                                                 const PangoMatrix          *transform,
-                                                 gboolean                    embolden,
-                                                 const char                 *name,
-                                                 const PangoFontDescription *description);
+PANGO2_AVAILABLE_IN_ALL
+Pango2HbFace *          pango2_hb_face_new_synthetic     (Pango2HbFace                *face,
+                                                          const Pango2Matrix          *transform,
+                                                          gboolean                     embolden,
+                                                          const char                  *name,
+                                                          const Pango2FontDescription *description);
 
-PANGO_AVAILABLE_IN_ALL
-PangoHbFace *   pango_hb_face_new_instance      (PangoHbFace                *face,
-                                                 const hb_variation_t       *variations,
-                                                 unsigned int                n_variations,
-                                                 const char                 *name,
-                                                 const PangoFontDescription *description);
+PANGO2_AVAILABLE_IN_ALL
+Pango2HbFace *          pango2_hb_face_new_instance      (Pango2HbFace                *face,
+                                                          const hb_variation_t        *variations,
+                                                          unsigned int                 n_variations,
+                                                          const char                  *name,
+                                                          const Pango2FontDescription *description);
 
-PANGO_AVAILABLE_IN_ALL
-hb_face_t *     pango_hb_face_get_hb_face       (PangoHbFace            *self);
+PANGO2_AVAILABLE_IN_ALL
+hb_face_t *             pango2_hb_face_get_hb_face       (Pango2HbFace                *self);
 
-PANGO_AVAILABLE_IN_ALL
-const char *    pango_hb_face_get_file          (PangoHbFace            *self);
+PANGO2_AVAILABLE_IN_ALL
+const char *            pango2_hb_face_get_file          (Pango2HbFace                *self);
 
-PANGO_AVAILABLE_IN_ALL
-unsigned int    pango_hb_face_get_face_index    (PangoHbFace            *self);
+PANGO2_AVAILABLE_IN_ALL
+unsigned int            pango2_hb_face_get_face_index    (Pango2HbFace                *self);
 
-PANGO_AVAILABLE_IN_ALL
-int             pango_hb_face_get_instance_id   (PangoHbFace            *self);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_hb_face_get_instance_id   (Pango2HbFace                *self);
 
-PANGO_AVAILABLE_IN_ALL
-const hb_variation_t *
-                pango_hb_face_get_variations   (PangoHbFace            *self,
-                                                unsigned int           *n_variations);
+PANGO2_AVAILABLE_IN_ALL
+const hb_variation_t * pango2_hb_face_get_variations     (Pango2HbFace                *self,
+                                                          unsigned int                *n_variations);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean        pango_hb_face_get_embolden      (PangoHbFace            *self);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_hb_face_get_embolden      (Pango2HbFace                *self);
 
-PANGO_AVAILABLE_IN_ALL
-const PangoMatrix *
-                pango_hb_face_get_transform     (PangoHbFace            *self);
+PANGO2_AVAILABLE_IN_ALL
+const Pango2Matrix *    pango2_hb_face_get_transform     (Pango2HbFace                *self);
 
 G_END_DECLS

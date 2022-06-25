@@ -1,4 +1,4 @@
-project('pango', 'c', 'cpp',
+project('pango2', 'c', 'cpp',
         version: '1.90.0',
         license: 'LGPLv2.1+',
         default_options: [
@@ -42,11 +42,11 @@ pango_api_path = join_paths(pango_api_name, 'pango')
 
 pango_conf = configuration_data()
 
-pango_conf.set('PANGO_BINARY_AGE', pango_binary_age)
-pango_conf.set('PANGO_INTERFACE_AGE', pango_interface_age)
-pango_conf.set('PANGO_VERSION_MAJOR', pango_major_version)
-pango_conf.set('PANGO_VERSION_MINOR', pango_minor_version)
-pango_conf.set('PANGO_VERSION_MICRO', pango_micro_version)
+pango_conf.set('PANGO2_BINARY_AGE', pango_binary_age)
+pango_conf.set('PANGO2_INTERFACE_AGE', pango_interface_age)
+pango_conf.set('PANGO2_VERSION_MAJOR', pango_major_version)
+pango_conf.set('PANGO2_VERSION_MINOR', pango_minor_version)
+pango_conf.set('PANGO2_VERSION_MICRO', pango_micro_version)
 
 # Maintain version scheme with libtool
 pango_soversion = 0
@@ -165,12 +165,12 @@ endif
 if get_option('default_library') != 'static'
   if host_system == 'windows'
     pango_conf.set('DLL_EXPORT', true)
-    pango_conf.set('_PANGO_EXTERN', '__declspec(dllexport) extern')
+    pango_conf.set('_PANGO2_EXTERN', '__declspec(dllexport) extern')
     if cc.get_id() != 'msvc'
       test_cflags += ['-fvisibility=hidden']
     endif
   else
-    pango_conf.set('_PANGO_EXTERN', '__attribute__((visibility("default"))) extern')
+    pango_conf.set('_PANGO2_EXTERN', '__attribute__((visibility("default"))) extern')
     test_cflags += ['-fvisibility=hidden']
   endif
 endif

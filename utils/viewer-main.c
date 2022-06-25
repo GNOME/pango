@@ -40,9 +40,9 @@ int
 main (int    argc,
       char **argv)
 {
-  const PangoViewer *view;
+  const Pango2Viewer *view;
   gpointer instance;
-  PangoContext *context;
+  Pango2Context *context;
   int run;
   int width, height;
   gpointer surface;

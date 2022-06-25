@@ -22,22 +22,22 @@
 #include "pango-font-description.h"
 
 
-gboolean pango_font_description_is_similar       (const PangoFontDescription *a,
-                                                  const PangoFontDescription *b);
+gboolean pango2_font_description_is_similar       (const Pango2FontDescription *a,
+                                                   const Pango2FontDescription *b);
 
-int      pango_font_description_compute_distance (const PangoFontDescription *a,
-                                                  const PangoFontDescription *b);
+int      pango2_font_description_compute_distance (const Pango2FontDescription *a,
+                                                   const Pango2FontDescription *b);
 
-gboolean pango_parse_style              (const char   *str,
-                                         PangoStyle   *style,
-                                         gboolean      warn);
-gboolean pango_parse_variant            (const char   *str,
-                                         PangoVariant *variant,
-                                         gboolean      warn);
-gboolean pango_parse_weight             (const char   *str,
-                                         PangoWeight  *weight,
-                                         gboolean      warn);
-gboolean pango_parse_stretch            (const char   *str,
-                                         PangoStretch *stretch,
-                                         gboolean      warn);
+gboolean pango2_parse_style              (const char    *str,
+                                          Pango2Style   *style,
+                                          gboolean       warn);
+gboolean pango2_parse_variant            (const char    *str,
+                                          Pango2Variant *variant,
+                                          gboolean       warn);
+gboolean pango2_parse_weight             (const char    *str,
+                                          Pango2Weight  *weight,
+                                          gboolean       warn);
+gboolean pango2_parse_stretch            (const char    *str,
+                                          Pango2Stretch *stretch,
+                                          gboolean       warn);
 

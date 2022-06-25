@@ -1,5 +1,5 @@
-/* Pango
- * test-layout.c: Test Pango Layout
+/* Pango2
+ * test-layout.c: Test Pango2 Layout
  *
  * Copyright (C) 2014 Red Hat, Inc
  *
@@ -42,8 +42,8 @@ test_layout (gconstpointer d)
   char *contents;
   gsize length;
   GBytes *orig;
-  PangoContext *context;
-  PangoLayout *layout;
+  Pango2Context *context;
+  Pango2Layout *layout;
 
   char *old_locale = g_strdup (setlocale (LC_ALL, NULL));
   setlocale (LC_ALL, "en_US.UTF-8");
@@ -60,12 +60,12 @@ test_layout (gconstpointer d)
   g_assert_no_error (error);
   orig = g_bytes_new_take (contents, length);
 
-  context = pango_context_new ();
-  layout = pango_layout_deserialize (context, orig, PANGO_LAYOUT_DESERIALIZE_CONTEXT, &error);
+  context = pango2_context_new ();
+  layout = pango2_layout_deserialize (context, orig, PANGO2_LAYOUT_DESERIALIZE_CONTEXT, &error);
   g_assert_no_error (error);
 
-  bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_CONTEXT |
-                                                 PANGO_LAYOUT_SERIALIZE_OUTPUT);
+  bytes = pango2_layout_serialize (layout, PANGO2_LAYOUT_SERIALIZE_CONTEXT |
+                                                 PANGO2_LAYOUT_SERIALIZE_OUTPUT);
 
   g_object_unref (layout);
   g_object_unref (context);
@@ -117,18 +117,18 @@ main (int argc, char *argv[])
       GError *error = NULL;
       GBytes *orig;
       GBytes *bytes;
-      PangoContext *context;
-      PangoLayout *layout;
+      Pango2Context *context;
+      Pango2Layout *layout;
 
       g_file_get_contents (argv[1], &contents, &length, &error);
       g_assert_no_error (error);
       orig = g_bytes_new_take (contents, length);
-      context = pango_context_new ();
-      layout = pango_layout_deserialize (context, orig, PANGO_LAYOUT_DESERIALIZE_CONTEXT, &error);
+      context = pango2_context_new ();
+      layout = pango2_layout_deserialize (context, orig, PANGO2_LAYOUT_DESERIALIZE_CONTEXT, &error);
       g_assert_no_error (error);
 
-      bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_CONTEXT |
-                                              PANGO_LAYOUT_SERIALIZE_OUTPUT);
+      bytes = pango2_layout_serialize (layout, PANGO2_LAYOUT_SERIALIZE_CONTEXT |
+                                              PANGO2_LAYOUT_SERIALIZE_OUTPUT);
 
       g_object_unref (layout);
       g_object_unref (context);

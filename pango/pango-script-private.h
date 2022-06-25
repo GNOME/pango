@@ -30,7 +30,7 @@ struct _ParenStackEntry
   GUnicodeScript script_code;
 };
 
-struct _PangoScriptIter
+struct _Pango2ScriptIter
 {
   const char *text_start;
   const char *text_end;
@@ -43,10 +43,10 @@ struct _PangoScriptIter
   int paren_sp;
 };
 
-PangoScriptIter *
-_pango_script_iter_init (PangoScriptIter *iter,
-	                 const char      *text,
-			 int              length);
+Pango2ScriptIter *
+_pango2_script_iter_init (Pango2ScriptIter *iter,
+                          const char       *text,
+                          int               length);
 
 void
-_pango_script_iter_fini (PangoScriptIter *iter);
+_pango2_script_iter_fini (Pango2ScriptIter *iter);

@@ -24,19 +24,19 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_TYPE_FC_FONT_MAP      (pango_fc_font_map_get_type ())
+#define PANGO2_TYPE_FC_FONT_MAP      (pango2_fc_font_map_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-PANGO_DECLARE_INTERNAL_TYPE (PangoFcFontMap, pango_fc_font_map, PANGO, FC_FONT_MAP, PangoFontMap)
+PANGO2_AVAILABLE_IN_ALL
+PANGO2_DECLARE_INTERNAL_TYPE (Pango2FcFontMap, pango2_fc_font_map, PANGO2, FC_FONT_MAP, Pango2FontMap)
 
-PANGO_AVAILABLE_IN_ALL
-PangoFcFontMap *        pango_fc_font_map_new         (void);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FcFontMap *       pango2_fc_font_map_new         (void);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_fc_font_map_set_config  (PangoFcFontMap *self,
-                                                       FcConfig       *config);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_fc_font_map_set_config  (Pango2FcFontMap *self,
+                                                        FcConfig        *config);
 
-PANGO_AVAILABLE_IN_ALL
-FcConfig *              pango_fc_font_map_get_config  (PangoFcFontMap *self);
+PANGO2_AVAILABLE_IN_ALL
+FcConfig *              pango2_fc_font_map_get_config  (Pango2FcFontMap *self);
 
 G_END_DECLS

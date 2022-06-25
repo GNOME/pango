@@ -26,101 +26,101 @@
 
 G_BEGIN_DECLS
 
-PANGO_AVAILABLE_IN_ALL
-GType                pango_line_get_type               (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+GType                   pango2_line_get_type               (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_ALL
-PangoLine *          pango_line_copy                   (PangoLine        *line);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Line *            pango2_line_copy                   (Pango2Line        *line);
 
-PANGO_AVAILABLE_IN_ALL
-void                 pango_line_free                   (PangoLine        *line);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_line_free                   (Pango2Line        *line);
 
-PANGO_AVAILABLE_IN_ALL
-PangoLine *          pango_line_justify                (PangoLine        *line,
-                                                        int               width);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Line *            pango2_line_justify                (Pango2Line        *line,
+                                                            int                width);
 
-PANGO_AVAILABLE_IN_ALL
-int                  pango_line_get_run_count          (PangoLine        *line);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_line_get_run_count          (Pango2Line        *line);
 
-PANGO_AVAILABLE_IN_ALL
-PangoRun **          pango_line_get_runs               (PangoLine        *line);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Run **            pango2_line_get_runs               (Pango2Line        *line);
 
-PANGO_AVAILABLE_IN_ALL
-const char *         pango_line_get_text               (PangoLine        *line,
-                                                        int              *start_index,
-                                                        int              *length);
+PANGO2_AVAILABLE_IN_ALL
+const char *            pango2_line_get_text               (Pango2Line        *line,
+                                                            int               *start_index,
+                                                            int               *length);
 
-PANGO_AVAILABLE_IN_ALL
-int                  pango_line_get_start_index        (PangoLine        *line);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_line_get_start_index        (Pango2Line        *line);
 
-PANGO_AVAILABLE_IN_ALL
-int                  pango_line_get_length             (PangoLine        *line);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_line_get_length             (Pango2Line        *line);
 
-PANGO_AVAILABLE_IN_ALL
-const PangoLogAttr * pango_line_get_log_attrs          (PangoLine        *line,
-                                                        int              *start_offset,
-                                                        int              *n_attrs);
+PANGO2_AVAILABLE_IN_ALL
+const Pango2LogAttr *   pango2_line_get_log_attrs          (Pango2Line        *line,
+                                                            int               *start_offset,
+                                                            int               *n_attrs);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean             pango_line_is_wrapped             (PangoLine        *line);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_line_is_wrapped             (Pango2Line        *line);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean             pango_line_is_ellipsized          (PangoLine        *line);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_line_is_ellipsized          (Pango2Line        *line);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean             pango_line_is_hyphenated          (PangoLine        *line);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_line_is_hyphenated          (Pango2Line        *line);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean             pango_line_is_justified           (PangoLine        *line);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_line_is_justified           (Pango2Line        *line);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean             pango_line_is_paragraph_start     (PangoLine        *line);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_line_is_paragraph_start     (Pango2Line        *line);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean             pango_line_is_paragraph_end       (PangoLine        *line);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_line_is_paragraph_end       (Pango2Line        *line);
 
-PANGO_AVAILABLE_IN_ALL
-PangoDirection       pango_line_get_resolved_direction (PangoLine        *line);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Direction         pango2_line_get_resolved_direction (Pango2Line        *line);
 
-PANGO_AVAILABLE_IN_ALL
-void                 pango_line_get_extents            (PangoLine        *line,
-                                                        PangoRectangle   *ink_rect,
-                                                        PangoRectangle   *logical_rect);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_line_get_extents            (Pango2Line        *line,
+                                                            Pango2Rectangle   *ink_rect,
+                                                            Pango2Rectangle   *logical_rect);
 
-PANGO_AVAILABLE_IN_ALL
-void                 pango_line_get_trimmed_extents    (PangoLine        *line,
-                                                        PangoLeadingTrim  trim,
-                                                        PangoRectangle   *logical_rect);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_line_get_trimmed_extents    (Pango2Line        *line,
+                                                            Pango2LeadingTrim  trim,
+                                                            Pango2Rectangle   *logical_rect);
 
-PANGO_AVAILABLE_IN_ALL
-void                 pango_line_index_to_pos           (PangoLine        *line,
-                                                        int               idx,
-                                                        PangoRectangle   *pos);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_line_index_to_pos           (Pango2Line        *line,
+                                                            int                idx,
+                                                            Pango2Rectangle   *pos);
 
-PANGO_AVAILABLE_IN_ALL
-void                 pango_line_index_to_x             (PangoLine        *line,
-                                                        int               idx,
-                                                        int               trailing,
-                                                        int              *x_pos);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_line_index_to_x             (Pango2Line        *line,
+                                                            int                idx,
+                                                            int                trailing,
+                                                            int               *x_pos);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean             pango_line_x_to_index             (PangoLine        *line,
-                                                        int               x,
-                                                        int              *idx,
-                                                        int              *trailing);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_line_x_to_index             (Pango2Line        *line,
+                                                            int                x,
+                                                            int               *idx,
+                                                            int               *trailing);
 
-PANGO_AVAILABLE_IN_ALL
-void                 pango_line_get_cursor_pos         (PangoLine        *line,
-                                                        int               idx,
-                                                        PangoRectangle   *strong_pos,
-                                                        PangoRectangle   *weak_pos);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_line_get_cursor_pos         (Pango2Line        *line,
+                                                            int                idx,
+                                                            Pango2Rectangle   *strong_pos,
+                                                            Pango2Rectangle   *weak_pos);
 
-PANGO_AVAILABLE_IN_ALL
-void                 pango_line_get_caret_pos          (PangoLine        *line,
-                                                        int               idx,
-                                                        PangoRectangle   *strong_pos,
-                                                        PangoRectangle   *weak_pos);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_line_get_caret_pos          (Pango2Line        *line,
+                                                            int                idx,
+                                                            Pango2Rectangle   *strong_pos,
+                                                            Pango2Rectangle   *weak_pos);
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoLine, pango_line_free)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(Pango2Line, pango2_line_free)
 
 G_END_DECLS

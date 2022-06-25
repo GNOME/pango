@@ -1,5 +1,5 @@
-/* Pango
- * testcontext.c: Test program for PangoContext
+/* Pango2
+ * testcontext.c: Test program for Pango2Context
  *
  * Copyright (C) 2021 Matthias Clasen
  *
@@ -25,15 +25,15 @@
 static void
 test_set_language (void)
 {
-  PangoContext *context;
+  Pango2Context *context;
 
-  context = pango_context_new ();
+  context = pango2_context_new ();
 
-  pango_context_set_language (context, pango_language_from_string ("de-de"));
-  g_assert_true (pango_context_get_language (context) == pango_language_from_string ("de-de"));
+  pango2_context_set_language (context, pango2_language_from_string ("de-de"));
+  g_assert_true (pango2_context_get_language (context) == pango2_language_from_string ("de-de"));
 
-  pango_context_set_language (context, NULL);
-  g_assert_null (pango_context_get_language (context));
+  pango2_context_set_language (context, NULL);
+  g_assert_null (pango2_context_get_language (context));
 
   g_object_unref (context);
 }
@@ -41,15 +41,15 @@ test_set_language (void)
 static void
 test_set_base_dir (void)
 {
-  PangoContext *context;
+  Pango2Context *context;
 
-  context = pango_context_new ();
+  context = pango2_context_new ();
 
-  pango_context_set_base_dir (context, PANGO_DIRECTION_RTL);
-  g_assert_true (pango_context_get_base_dir (context) == PANGO_DIRECTION_RTL);
+  pango2_context_set_base_dir (context, PANGO2_DIRECTION_RTL);
+  g_assert_true (pango2_context_get_base_dir (context) == PANGO2_DIRECTION_RTL);
 
-  pango_context_set_base_dir (context, PANGO_DIRECTION_WEAK_LTR);
-  g_assert_true (pango_context_get_base_dir (context) == PANGO_DIRECTION_WEAK_LTR);
+  pango2_context_set_base_dir (context, PANGO2_DIRECTION_WEAK_LTR);
+  g_assert_true (pango2_context_get_base_dir (context) == PANGO2_DIRECTION_WEAK_LTR);
 
   g_object_unref (context);
 }
@@ -57,17 +57,17 @@ test_set_base_dir (void)
 static void
 test_set_base_gravity (void)
 {
-  PangoContext *context;
+  Pango2Context *context;
 
-  context = pango_context_new ();
+  context = pango2_context_new ();
 
-  pango_context_set_base_gravity (context, PANGO_GRAVITY_SOUTH);
-  g_assert_true (pango_context_get_base_gravity (context) == PANGO_GRAVITY_SOUTH);
-  g_assert_true (pango_context_get_gravity (context) == PANGO_GRAVITY_SOUTH);
+  pango2_context_set_base_gravity (context, PANGO2_GRAVITY_SOUTH);
+  g_assert_true (pango2_context_get_base_gravity (context) == PANGO2_GRAVITY_SOUTH);
+  g_assert_true (pango2_context_get_gravity (context) == PANGO2_GRAVITY_SOUTH);
 
-  pango_context_set_base_gravity (context, PANGO_GRAVITY_AUTO);
-  g_assert_true (pango_context_get_base_gravity (context) == PANGO_GRAVITY_AUTO);
-  g_assert_true (pango_context_get_gravity (context) == PANGO_GRAVITY_SOUTH);
+  pango2_context_set_base_gravity (context, PANGO2_GRAVITY_AUTO);
+  g_assert_true (pango2_context_get_base_gravity (context) == PANGO2_GRAVITY_AUTO);
+  g_assert_true (pango2_context_get_gravity (context) == PANGO2_GRAVITY_SOUTH);
 
   g_object_unref (context);
 }
@@ -75,15 +75,15 @@ test_set_base_gravity (void)
 static void
 test_set_gravity_hint (void)
 {
-  PangoContext *context;
+  Pango2Context *context;
 
-  context = pango_context_new ();
+  context = pango2_context_new ();
 
-  pango_context_set_gravity_hint (context, PANGO_GRAVITY_HINT_NATURAL);
-  g_assert_true (pango_context_get_gravity_hint (context) == PANGO_GRAVITY_HINT_NATURAL);
+  pango2_context_set_gravity_hint (context, PANGO2_GRAVITY_HINT_NATURAL);
+  g_assert_true (pango2_context_get_gravity_hint (context) == PANGO2_GRAVITY_HINT_NATURAL);
 
-  pango_context_set_gravity_hint (context, PANGO_GRAVITY_HINT_STRONG);
-  g_assert_true (pango_context_get_gravity_hint (context) == PANGO_GRAVITY_HINT_STRONG);
+  pango2_context_set_gravity_hint (context, PANGO2_GRAVITY_HINT_STRONG);
+  g_assert_true (pango2_context_get_gravity_hint (context) == PANGO2_GRAVITY_HINT_STRONG);
 
   g_object_unref (context);
 }
@@ -91,15 +91,15 @@ test_set_gravity_hint (void)
 static void
 test_set_round_glyph_positions (void)
 {
-  PangoContext *context;
+  Pango2Context *context;
 
-  context = pango_context_new ();
+  context = pango2_context_new ();
 
-  pango_context_set_round_glyph_positions (context, TRUE);
-  g_assert_true (pango_context_get_round_glyph_positions (context));
+  pango2_context_set_round_glyph_positions (context, TRUE);
+  g_assert_true (pango2_context_get_round_glyph_positions (context));
 
-  pango_context_set_round_glyph_positions (context, FALSE);
-  g_assert_false (pango_context_get_round_glyph_positions (context));
+  pango2_context_set_round_glyph_positions (context, FALSE);
+  g_assert_false (pango2_context_get_round_glyph_positions (context));
 
   g_object_unref (context);
 }

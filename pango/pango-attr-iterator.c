@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * pango-attr-iterator.c: Attribute iterator
  *
  * Copyright (C) 2000-2002 Red Hat Software
@@ -28,16 +28,16 @@
 #include "pango-impl-utils.h"
 
 
-G_DEFINE_BOXED_TYPE (PangoAttrIterator,
-                     pango_attr_iterator,
-                     pango_attr_iterator_copy,
-                     pango_attr_iterator_destroy)
+G_DEFINE_BOXED_TYPE (Pango2AttrIterator,
+                     pango2_attr_iterator,
+                     pango2_attr_iterator_copy,
+                     pango2_attr_iterator_destroy)
 
 /* {{{ Private API */
 
 void
-pango_attr_list_init_iterator (PangoAttrList     *list,
-                               PangoAttrIterator *iterator)
+pango2_attr_list_init_iterator (Pango2AttrList     *list,
+                                Pango2AttrIterator *iterator)
 {
   iterator->attribute_stack = NULL;
   iterator->attrs = list->attributes;
@@ -47,34 +47,34 @@ pango_attr_list_init_iterator (PangoAttrList     *list,
   iterator->start_index = 0;
   iterator->end_index = 0;
 
-  if (!pango_attr_iterator_next (iterator))
+  if (!pango2_attr_iterator_next (iterator))
     iterator->end_index = G_MAXUINT;
 }
 
 void
-pango_attr_iterator_clear (PangoAttrIterator *iterator)
+pango2_attr_iterator_clear (Pango2AttrIterator *iterator)
 {
   if (iterator->attribute_stack)
     g_ptr_array_free (iterator->attribute_stack, TRUE);
 }
 
 gboolean
-pango_attr_iterator_advance (PangoAttrIterator *iterator,
-                             int                index)
+pango2_attr_iterator_advance (Pango2AttrIterator *iterator,
+                              int                 index)
 {
   int start_range, end_range;
 
-  pango_attr_iterator_range (iterator, &start_range, &end_range);
+  pango2_attr_iterator_range (iterator, &start_range, &end_range);
 
   while (index >= end_range)
     {
-      if (!pango_attr_iterator_next (iterator))
+      if (!pango2_attr_iterator_next (iterator))
         return FALSE;
-      pango_attr_iterator_range (iterator, &start_range, &end_range);
+      pango2_attr_iterator_range (iterator, &start_range, &end_range);
     }
 
   if (start_range > index)
-    g_warning ("pango_attr_iterator_advance(): iterator had already "
+    g_warning ("pango2_attr_iterator_advance(): iterator had already "
                "moved beyond the index");
 
   return TRUE;
@@ -84,63 +84,63 @@ pango_attr_iterator_advance (PangoAttrIterator *iterator,
 /* {{{ Public API */
 
 /**
- * pango_attr_list_get_iterator:
- * @list: a `PangoAttrList`
+ * pango2_attr_list_get_iterator:
+ * @list: a `Pango2AttrList`
  *
  * Create a iterator initialized to the beginning of the list.
  *
  * @list must not be modified until this iterator is freed.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttrIterator`, which should be freed with
- *   [method@Pango.AttrIterator.destroy]
+ *   `Pango2AttrIterator`, which should be freed with
+ *   [method@Pango2.AttrIterator.destroy]
  */
-PangoAttrIterator *
-pango_attr_list_get_iterator (PangoAttrList  *list)
+Pango2AttrIterator *
+pango2_attr_list_get_iterator (Pango2AttrList *list)
 {
-  PangoAttrIterator *iterator;
+  Pango2AttrIterator *iterator;
 
   g_return_val_if_fail (list != NULL, NULL);
 
-  iterator = g_slice_new (PangoAttrIterator);
-  pango_attr_list_init_iterator (list, iterator);
+  iterator = g_slice_new (Pango2AttrIterator);
+  pango2_attr_list_init_iterator (list, iterator);
 
   return iterator;
 }
 
 /**
- * pango_attr_iterator_destroy:
- * @iterator: a `PangoAttrIterator`
+ * pango2_attr_iterator_destroy:
+ * @iterator: a `Pango2AttrIterator`
  *
- * Destroy a `PangoAttrIterator` and free all associated memory.
+ * Destroy a `Pango2AttrIterator` and free all associated memory.
  */
 void
-pango_attr_iterator_destroy (PangoAttrIterator *iterator)
+pango2_attr_iterator_destroy (Pango2AttrIterator *iterator)
 {
   g_return_if_fail (iterator != NULL);
 
-  pango_attr_iterator_clear (iterator);
-  g_slice_free (PangoAttrIterator, iterator);
+  pango2_attr_iterator_clear (iterator);
+  g_slice_free (Pango2AttrIterator, iterator);
 }
 
 /**
- * pango_attr_iterator_copy:
- * @iterator: a `PangoAttrIterator`
+ * pango2_attr_iterator_copy:
+ * @iterator: a `Pango2AttrIterator`
  *
- * Copy a `PangoAttrIterator`.
+ * Copy a `Pango2AttrIterator`.
  *
  * Return value: (transfer full): the newly allocated
- *   `PangoAttrIterator`, which should be freed with
- *   [method@Pango.AttrIterator.destroy]
+ *   `Pango2AttrIterator`, which should be freed with
+ *   [method@Pango2.AttrIterator.destroy]
  */
-PangoAttrIterator *
-pango_attr_iterator_copy (PangoAttrIterator *iterator)
+Pango2AttrIterator *
+pango2_attr_iterator_copy (Pango2AttrIterator *iterator)
 {
-  PangoAttrIterator *copy;
+  Pango2AttrIterator *copy;
 
   g_return_val_if_fail (iterator != NULL, NULL);
 
-  copy = g_slice_new (PangoAttrIterator);
+  copy = g_slice_new (Pango2AttrIterator);
 
   *copy = *iterator;
 
@@ -153,22 +153,22 @@ pango_attr_iterator_copy (PangoAttrIterator *iterator)
 }
 
 /**
- * pango_attr_iterator_range:
- * @iterator: a PangoAttrIterator
+ * pango2_attr_iterator_range:
+ * @iterator: a Pango2AttrIterator
  * @start: (out): location to store the start of the range
  * @end: (out): location to store the end of the range
  *
  * Get the range of the current segment.
  *
  * Note that the stored return values are signed, not unsigned
- * like the values in `PangoAttribute`. To deal with this API
+ * like the values in `Pango2Attribute`. To deal with this API
  * oversight, stored return values that wouldn't fit into
  * a signed integer are clamped to %G_MAXINT.
  */
 void
-pango_attr_iterator_range (PangoAttrIterator *iterator,
-                           int               *start,
-                           int               *end)
+pango2_attr_iterator_range (Pango2AttrIterator *iterator,
+                            int                *start,
+                            int                *end)
 {
   g_return_if_fail (iterator != NULL);
 
@@ -179,8 +179,8 @@ pango_attr_iterator_range (PangoAttrIterator *iterator,
 }
 
 /**
- * pango_attr_iterator_next:
- * @iterator: a `PangoAttrIterator`
+ * pango2_attr_iterator_next:
+ * @iterator: a `Pango2AttrIterator`
  *
  * Advance the iterator until the next change of style.
  *
@@ -188,7 +188,7 @@ pango_attr_iterator_range (PangoAttrIterator *iterator,
  *   of the list, otherwise %TRUE
  */
 gboolean
-pango_attr_iterator_next (PangoAttrIterator *iterator)
+pango2_attr_iterator_next (Pango2AttrIterator *iterator)
 {
   int i;
 
@@ -205,7 +205,7 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
     {
       for (i = iterator->attribute_stack->len - 1; i>= 0; i--)
         {
-          const PangoAttribute *attr = g_ptr_array_index (iterator->attribute_stack, i);
+          const Pango2Attribute *attr = g_ptr_array_index (iterator->attribute_stack, i);
 
           if (attr->end_index == iterator->start_index)
             g_ptr_array_remove_index (iterator->attribute_stack, i); /* Can't use index_fast :( */
@@ -216,7 +216,7 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
 
   while (1)
     {
-      PangoAttribute *attr;
+      Pango2Attribute *attr;
 
       if (iterator->attr_index >= iterator->n_attrs)
         break;
@@ -241,7 +241,7 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
 
   if (iterator->attr_index < iterator->n_attrs)
       {
-      PangoAttribute *attr = g_ptr_array_index (iterator->attrs, iterator->attr_index);
+      Pango2Attribute *attr = g_ptr_array_index (iterator->attrs, iterator->attr_index);
 
       iterator->end_index = MIN (iterator->end_index, attr->start_index);
     }
@@ -250,8 +250,8 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
 }
 
 /**
- * pango_attr_iterator_get:
- * @iterator: a `PangoAttrIterator`
+ * pango2_attr_iterator_get:
+ * @iterator: a `Pango2AttrIterator`
  * @type: the type of attribute to find
  *
  * Find the current attribute of a particular type
@@ -265,9 +265,9 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
  *   attribute of the given type, or %NULL if no attribute
  *   of that type applies to the current location.
  */
-PangoAttribute *
-pango_attr_iterator_get (PangoAttrIterator *iterator,
-                         guint              type)
+Pango2Attribute *
+pango2_attr_iterator_get (Pango2AttrIterator *iterator,
+                          guint               type)
 {
   int i;
 
@@ -278,7 +278,7 @@ pango_attr_iterator_get (PangoAttrIterator *iterator,
 
   for (i = iterator->attribute_stack->len - 1; i>= 0; i--)
     {
-      PangoAttribute *attr = g_ptr_array_index (iterator->attribute_stack, i);
+      Pango2Attribute *attr = g_ptr_array_index (iterator->attribute_stack, i);
 
       if (attr->type == type)
         return attr;
@@ -288,34 +288,34 @@ pango_attr_iterator_get (PangoAttrIterator *iterator,
 }
 
 /**
- * pango_attr_iterator_get_font:
- * @iterator: a `PangoAttrIterator`
- * @desc: (out caller-allocates): a `PangoFontDescription` to fill in with the current
+ * pango2_attr_iterator_get_font:
+ * @iterator: a `Pango2AttrIterator`
+ * @desc: (out caller-allocates): a `Pango2FontDescription` to fill in with the current
  *   values. The family name in this structure will be set using
- *   [method@Pango.FontDescription.set_family_static] using
- *   values from an attribute in the `PangoAttrList` associated
+ *   [method@Pango2.FontDescription.set_family_static] using
+ *   values from an attribute in the `Pango2AttrList` associated
  *   with the iterator, so if you plan to keep it around, you
  *   must call:
- *   `pango_font_description_set_family (desc, pango_font_description_get_family (desc))`.
+ *   `pango2_font_description_set_family (desc, pango2_font_description_get_family (desc))`.
  * @language: (out) (optional): location to store language tag
  *   for item, or %NULL if none is found.
- * @extra_attrs: (out) (optional) (element-type Pango.Attribute) (transfer full):
+ * @extra_attrs: (out) (optional) (element-type Pango2.Attribute) (transfer full):
  *   location in which to store a list of non-font attributes
  *   at the the current position; only the highest priority
  *   value of each attribute will be added to this list. In
  *   order to free this value, you must call
- *   [method@Pango.Attribute.destroy] on each member.
+ *   [method@Pango2.Attribute.destroy] on each member.
  *
  * Get the font and other attributes at the current
  * iterator position.
  */
 void
-pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
-                              PangoFontDescription  *desc,
-                              PangoLanguage        **language,
-                              GSList               **extra_attrs)
+pango2_attr_iterator_get_font (Pango2AttrIterator     *iterator,
+                               Pango2FontDescription  *desc,
+                               Pango2Language        **language,
+                               GSList                **extra_attrs)
 {
-  PangoFontMask mask = 0;
+  Pango2FontMask mask = 0;
   gboolean have_language = FALSE;
   double scale = 0;
   gboolean have_scale = FALSE;
@@ -335,76 +335,76 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 
   for (i = iterator->attribute_stack->len - 1; i >= 0; i--)
     {
-      const PangoAttribute *attr = g_ptr_array_index (iterator->attribute_stack, i);
+      const Pango2Attribute *attr = g_ptr_array_index (iterator->attribute_stack, i);
 
       switch ((int) attr->type)
         {
-        case PANGO_ATTR_FONT_DESC:
+        case PANGO2_ATTR_FONT_DESC:
           {
-            PangoFontMask new_mask = pango_font_description_get_set_fields (attr->font_value) & ~mask;
+            Pango2FontMask new_mask = pango2_font_description_get_set_fields (attr->font_value) & ~mask;
             mask |= new_mask;
-            pango_font_description_unset_fields (desc, new_mask);
-            pango_font_description_merge_static (desc, attr->font_value, FALSE);
+            pango2_font_description_unset_fields (desc, new_mask);
+            pango2_font_description_merge_static (desc, attr->font_value, FALSE);
 
             break;
           }
-        case PANGO_ATTR_FAMILY:
-          if (!(mask & PANGO_FONT_MASK_FAMILY))
+        case PANGO2_ATTR_FAMILY:
+          if (!(mask & PANGO2_FONT_MASK_FAMILY))
             {
-              mask |= PANGO_FONT_MASK_FAMILY;
-              pango_font_description_set_family (desc, attr->str_value);
+              mask |= PANGO2_FONT_MASK_FAMILY;
+              pango2_font_description_set_family (desc, attr->str_value);
             }
           break;
-        case PANGO_ATTR_STYLE:
-          if (!(mask & PANGO_FONT_MASK_STYLE))
+        case PANGO2_ATTR_STYLE:
+          if (!(mask & PANGO2_FONT_MASK_STYLE))
             {
-              mask |= PANGO_FONT_MASK_STYLE;
-              pango_font_description_set_style (desc, attr->int_value);
+              mask |= PANGO2_FONT_MASK_STYLE;
+              pango2_font_description_set_style (desc, attr->int_value);
             }
           break;
-        case PANGO_ATTR_VARIANT:
-          if (!(mask & PANGO_FONT_MASK_VARIANT))
+        case PANGO2_ATTR_VARIANT:
+          if (!(mask & PANGO2_FONT_MASK_VARIANT))
             {
-              mask |= PANGO_FONT_MASK_VARIANT;
-              pango_font_description_set_variant (desc, attr->int_value);
+              mask |= PANGO2_FONT_MASK_VARIANT;
+              pango2_font_description_set_variant (desc, attr->int_value);
             }
           break;
-        case PANGO_ATTR_WEIGHT:
-          if (!(mask & PANGO_FONT_MASK_WEIGHT))
+        case PANGO2_ATTR_WEIGHT:
+          if (!(mask & PANGO2_FONT_MASK_WEIGHT))
             {
-              mask |= PANGO_FONT_MASK_WEIGHT;
-              pango_font_description_set_weight (desc, attr->int_value);
+              mask |= PANGO2_FONT_MASK_WEIGHT;
+              pango2_font_description_set_weight (desc, attr->int_value);
             }
           break;
-        case PANGO_ATTR_STRETCH:
-          if (!(mask & PANGO_FONT_MASK_STRETCH))
+        case PANGO2_ATTR_STRETCH:
+          if (!(mask & PANGO2_FONT_MASK_STRETCH))
             {
-              mask |= PANGO_FONT_MASK_STRETCH;
-              pango_font_description_set_stretch (desc, attr->int_value);
+              mask |= PANGO2_FONT_MASK_STRETCH;
+              pango2_font_description_set_stretch (desc, attr->int_value);
             }
           break;
-        case PANGO_ATTR_SIZE:
-          if (!(mask & PANGO_FONT_MASK_SIZE))
+        case PANGO2_ATTR_SIZE:
+          if (!(mask & PANGO2_FONT_MASK_SIZE))
             {
-              mask |= PANGO_FONT_MASK_SIZE;
-              pango_font_description_set_size (desc, attr->int_value);
+              mask |= PANGO2_FONT_MASK_SIZE;
+              pango2_font_description_set_size (desc, attr->int_value);
             }
           break;
-        case PANGO_ATTR_ABSOLUTE_SIZE:
-          if (!(mask & PANGO_FONT_MASK_SIZE))
+        case PANGO2_ATTR_ABSOLUTE_SIZE:
+          if (!(mask & PANGO2_FONT_MASK_SIZE))
             {
-              mask |= PANGO_FONT_MASK_SIZE;
-              pango_font_description_set_absolute_size (desc, attr->int_value);
+              mask |= PANGO2_FONT_MASK_SIZE;
+              pango2_font_description_set_absolute_size (desc, attr->int_value);
             }
           break;
-        case PANGO_ATTR_SCALE:
+        case PANGO2_ATTR_SCALE:
           if (!have_scale)
             {
               have_scale = TRUE;
               scale = attr->double_value;
             }
           break;
-        case PANGO_ATTR_LANGUAGE:
+        case PANGO2_ATTR_LANGUAGE:
           if (language)
             {
               if (!have_language)
@@ -419,12 +419,12 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
             {
               gboolean found = FALSE;
 
-              if (PANGO_ATTR_MERGE (attr) == PANGO_ATTR_MERGE_OVERRIDES)
+              if (PANGO2_ATTR_MERGE (attr) == PANGO2_ATTR_MERGE_OVERRIDES)
                 {
                   GSList *tmp_list = *extra_attrs;
                   while (tmp_list)
                     {
-                      PangoAttribute *old_attr = tmp_list->data;
+                      Pango2Attribute *old_attr = tmp_list->data;
                       if (attr->type == old_attr->type)
                         {
                           found = TRUE;
@@ -436,7 +436,7 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
                 }
 
               if (!found)
-                *extra_attrs = g_slist_prepend (*extra_attrs, pango_attribute_copy (attr));
+                *extra_attrs = g_slist_prepend (*extra_attrs, pango2_attribute_copy (attr));
             }
         }
     }
@@ -447,29 +447,29 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
        * implicitly cast it to integer while the result is kept in registers,
        * leading to a wrong approximation in i386 (with 387 FPU)
        */
-      volatile double size = scale * pango_font_description_get_size (desc);
+      volatile double size = scale * pango2_font_description_get_size (desc);
 
-      if (pango_font_description_get_size_is_absolute (desc))
-        pango_font_description_set_absolute_size (desc, size);
+      if (pango2_font_description_get_size_is_absolute (desc))
+        pango2_font_description_set_absolute_size (desc, size);
       else
-        pango_font_description_set_size (desc, size);
+        pango2_font_description_set_size (desc, size);
     }
 }
 
 /**
- * pango_attr_iterator_get_attrs:
- * @iterator: a `PangoAttrIterator`
+ * pango2_attr_iterator_get_attrs:
+ * @iterator: a `Pango2AttrIterator`
  *
  * Gets a list of all attributes at the current position of the
  * iterator.
  *
- * Return value: (element-type Pango.Attribute) (transfer full):
+ * Return value: (element-type Pango2.Attribute) (transfer full):
  *   a list of all attributes for the current range. To free
- *   this value, call [method@Pango.Attribute.destroy] on each
+ *   this value, call [method@Pango2.Attribute.destroy] on each
  *   value and [func@GLib.SList.free] on the list.
  */
 GSList *
-pango_attr_iterator_get_attrs (PangoAttrIterator *iterator)
+pango2_attr_iterator_get_attrs (Pango2AttrIterator *iterator)
 {
   GSList *attrs = NULL;
   int i;
@@ -480,15 +480,15 @@ pango_attr_iterator_get_attrs (PangoAttrIterator *iterator)
 
   for (i = iterator->attribute_stack->len - 1; i >= 0; i--)
     {
-      PangoAttribute *attr = g_ptr_array_index (iterator->attribute_stack, i);
+      Pango2Attribute *attr = g_ptr_array_index (iterator->attribute_stack, i);
       GSList *tmp_list2;
       gboolean found = FALSE;
 
-      if (PANGO_ATTR_MERGE (attr) == PANGO_ATTR_MERGE_OVERRIDES)
+      if (PANGO2_ATTR_MERGE (attr) == PANGO2_ATTR_MERGE_OVERRIDES)
         {
           for (tmp_list2 = attrs; tmp_list2; tmp_list2 = tmp_list2->next)
             {
-              PangoAttribute *old_attr = tmp_list2->data;
+              Pango2Attribute *old_attr = tmp_list2->data;
               if (attr->type == old_attr->type)
                 {
                   found = TRUE;
@@ -498,7 +498,7 @@ pango_attr_iterator_get_attrs (PangoAttrIterator *iterator)
         }
 
       if (!found)
-        attrs = g_slist_prepend (attrs, pango_attribute_copy (attr));
+        attrs = g_slist_prepend (attrs, pango2_attribute_copy (attr));
     }
 
   return attrs;

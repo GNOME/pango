@@ -1,5 +1,5 @@
-/* Pango
- * testhbfont.c: Test program for PangoHbFont etc
+/* Pango2
+ * testhbfont.c: Test program for Pango2HbFont etc
  *
  * Copyright (C) 2021 Matthias Clasen
  *
@@ -30,33 +30,33 @@
 
 
 /* Verify that the variable and monospace properties work as expected
- * for PangoHbFamily
+ * for Pango2HbFamily
  */
 static void
 test_hbfont_monospace (void)
 {
-  PangoFontMap *map;
-  PangoFontFamily *family;
+  Pango2FontMap *map;
+  Pango2FontFamily *family;
   char *path;
 
-  map = pango_font_map_new ();
+  map = pango2_font_map_new ();
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
-  pango_font_map_add_file (map, path);
+  pango2_font_map_add_file (map, path);
 
-  family = pango_font_map_get_family (PANGO_FONT_MAP (map), "Cantarell");
+  family = pango2_font_map_get_family (PANGO2_FONT_MAP (map), "Cantarell");
 
   g_assert_nonnull (family);
 
-  pango_font_map_add_face (map, PANGO_FONT_FACE (pango_hb_face_new_from_file (path, 0, -2, NULL, NULL)));
+  pango2_font_map_add_face (map, PANGO2_FONT_FACE (pango2_hb_face_new_from_file (path, 0, -2, NULL, NULL)));
 
   g_free (path);
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "DejaVuSansMono.ttf", NULL);
-  pango_font_map_add_file (map, path);
+  pango2_font_map_add_file (map, path);
   g_free (path);
 
-  family = pango_font_map_get_family (PANGO_FONT_MAP (map), "DejaVu Sans Mono");
+  family = pango2_font_map_get_family (PANGO2_FONT_MAP (map), "DejaVu Sans Mono");
 
   g_assert_nonnull (family);
 
@@ -64,190 +64,190 @@ test_hbfont_monospace (void)
 }
 
 /* Verify that a description -> face -> description roundtrip works for
- * PangoHbFaces created with pango_hb_face_new_synthetic or pango_hb_face_new_instance
+ * Pango2HbFaces created with pango2_hb_face_new_synthetic or pango2_hb_face_new_instance
  */
 static void
 test_hbface_roundtrip (void)
 {
   char *path;
-  PangoHbFace *face;
-  PangoHbFace *face2;
-  PangoFontDescription *desc;
-  const int NO_FACEID = ~PANGO_FONT_MASK_FACEID;
+  Pango2HbFace *face;
+  Pango2HbFace *face2;
+  Pango2FontDescription *desc;
+  const int NO_FACEID = ~PANGO2_FONT_MASK_FACEID;
   hb_variation_t v;
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
 
-  face = pango_hb_face_new_from_file (path, 0, -1, NULL, NULL);
-  g_assert_true (PANGO_IS_HB_FACE (face));
-  g_assert_cmpstr (pango_font_face_get_name (PANGO_FONT_FACE (face)), ==, "Regular");
-  desc = pango_font_face_describe (PANGO_FONT_FACE (face));
-  g_assert_cmpint (pango_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO_FONT_MASK_FAMILY |
-                                                                                 PANGO_FONT_MASK_STYLE |
-                                                                                 PANGO_FONT_MASK_VARIANT |
-                                                                                 PANGO_FONT_MASK_WEIGHT |
-                                                                                 PANGO_FONT_MASK_STRETCH);
-  g_assert_cmpstr (pango_font_description_get_family (desc), ==, "Cantarell");
-  g_assert_cmpint (pango_font_description_get_style (desc), ==, PANGO_STYLE_NORMAL);
-  g_assert_cmpint (pango_font_description_get_weight (desc), ==, PANGO_WEIGHT_NORMAL);
-  g_assert_cmpint (pango_font_description_get_stretch (desc), ==, PANGO_STRETCH_NORMAL);
-  pango_font_description_free (desc);
+  face = pango2_hb_face_new_from_file (path, 0, -1, NULL, NULL);
+  g_assert_true (PANGO2_IS_HB_FACE (face));
+  g_assert_cmpstr (pango2_font_face_get_name (PANGO2_FONT_FACE (face)), ==, "Regular");
+  desc = pango2_font_face_describe (PANGO2_FONT_FACE (face));
+  g_assert_cmpint (pango2_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO2_FONT_MASK_FAMILY |
+                                                                                 PANGO2_FONT_MASK_STYLE |
+                                                                                 PANGO2_FONT_MASK_VARIANT |
+                                                                                 PANGO2_FONT_MASK_WEIGHT |
+                                                                                 PANGO2_FONT_MASK_STRETCH);
+  g_assert_cmpstr (pango2_font_description_get_family (desc), ==, "Cantarell");
+  g_assert_cmpint (pango2_font_description_get_style (desc), ==, PANGO2_STYLE_NORMAL);
+  g_assert_cmpint (pango2_font_description_get_weight (desc), ==, PANGO2_WEIGHT_NORMAL);
+  g_assert_cmpint (pango2_font_description_get_stretch (desc), ==, PANGO2_STRETCH_NORMAL);
+  pango2_font_description_free (desc);
 
-  desc = pango_font_description_new ();
-  pango_font_description_set_style (desc, PANGO_STYLE_OBLIQUE);
-  face2 = pango_hb_face_new_synthetic (face, &(PangoMatrix){ 1, 0.2, 0, 1, 0, 0 }, FALSE, NULL, desc);
-  pango_font_description_free (desc);
+  desc = pango2_font_description_new ();
+  pango2_font_description_set_style (desc, PANGO2_STYLE_OBLIQUE);
+  face2 = pango2_hb_face_new_synthetic (face, &(Pango2Matrix){ 1, 0.2, 0, 1, 0, 0 }, FALSE, NULL, desc);
+  pango2_font_description_free (desc);
 
-  g_assert_true (PANGO_IS_HB_FACE (face2));
-  g_assert_cmpstr (pango_font_face_get_name (PANGO_FONT_FACE (face2)), ==, "Oblique");
-  desc = pango_font_face_describe (PANGO_FONT_FACE (face2));
-  g_assert_cmpint (pango_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO_FONT_MASK_FAMILY |
-                                                                                 PANGO_FONT_MASK_STYLE |
-                                                                                 PANGO_FONT_MASK_VARIANT |
-                                                                                 PANGO_FONT_MASK_WEIGHT |
-                                                                                 PANGO_FONT_MASK_STRETCH);
-  g_assert_cmpstr (pango_font_description_get_family (desc), ==, "Cantarell");
-  g_assert_cmpint (pango_font_description_get_style (desc), ==, PANGO_STYLE_OBLIQUE);
-  g_assert_cmpint (pango_font_description_get_weight (desc), ==, PANGO_WEIGHT_NORMAL);
-  g_assert_cmpint (pango_font_description_get_stretch (desc), ==, PANGO_STRETCH_NORMAL);
-  pango_font_description_free (desc);
+  g_assert_true (PANGO2_IS_HB_FACE (face2));
+  g_assert_cmpstr (pango2_font_face_get_name (PANGO2_FONT_FACE (face2)), ==, "Oblique");
+  desc = pango2_font_face_describe (PANGO2_FONT_FACE (face2));
+  g_assert_cmpint (pango2_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO2_FONT_MASK_FAMILY |
+                                                                                 PANGO2_FONT_MASK_STYLE |
+                                                                                 PANGO2_FONT_MASK_VARIANT |
+                                                                                 PANGO2_FONT_MASK_WEIGHT |
+                                                                                 PANGO2_FONT_MASK_STRETCH);
+  g_assert_cmpstr (pango2_font_description_get_family (desc), ==, "Cantarell");
+  g_assert_cmpint (pango2_font_description_get_style (desc), ==, PANGO2_STYLE_OBLIQUE);
+  g_assert_cmpint (pango2_font_description_get_weight (desc), ==, PANGO2_WEIGHT_NORMAL);
+  g_assert_cmpint (pango2_font_description_get_stretch (desc), ==, PANGO2_STRETCH_NORMAL);
+  pango2_font_description_free (desc);
   g_object_unref (face2);
 
-  desc = pango_font_description_new ();
-  pango_font_description_set_weight (desc, PANGO_WEIGHT_BOLD);
-  face2 = pango_hb_face_new_synthetic (face, NULL, TRUE, NULL, desc);
-  pango_font_description_free (desc);
+  desc = pango2_font_description_new ();
+  pango2_font_description_set_weight (desc, PANGO2_WEIGHT_BOLD);
+  face2 = pango2_hb_face_new_synthetic (face, NULL, TRUE, NULL, desc);
+  pango2_font_description_free (desc);
 
-  g_assert_true (PANGO_IS_HB_FACE (face2));
-  g_assert_cmpstr (pango_font_face_get_name (PANGO_FONT_FACE (face2)), ==, "Bold");
-  desc = pango_font_face_describe (PANGO_FONT_FACE (face2));
-  g_assert_cmpint (pango_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO_FONT_MASK_FAMILY |
-                                                                                 PANGO_FONT_MASK_STYLE |
-                                                                                 PANGO_FONT_MASK_VARIANT |
-                                                                                 PANGO_FONT_MASK_WEIGHT |
-                                                                                 PANGO_FONT_MASK_STRETCH);
-  g_assert_cmpstr (pango_font_description_get_family (desc), ==, "Cantarell");
-  g_assert_cmpint (pango_font_description_get_style (desc), ==, PANGO_STYLE_NORMAL);
-  g_assert_cmpint (pango_font_description_get_weight (desc), ==, PANGO_WEIGHT_BOLD);
-  g_assert_cmpint (pango_font_description_get_stretch (desc), ==, PANGO_STRETCH_NORMAL);
-  pango_font_description_free (desc);
+  g_assert_true (PANGO2_IS_HB_FACE (face2));
+  g_assert_cmpstr (pango2_font_face_get_name (PANGO2_FONT_FACE (face2)), ==, "Bold");
+  desc = pango2_font_face_describe (PANGO2_FONT_FACE (face2));
+  g_assert_cmpint (pango2_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO2_FONT_MASK_FAMILY |
+                                                                                 PANGO2_FONT_MASK_STYLE |
+                                                                                 PANGO2_FONT_MASK_VARIANT |
+                                                                                 PANGO2_FONT_MASK_WEIGHT |
+                                                                                 PANGO2_FONT_MASK_STRETCH);
+  g_assert_cmpstr (pango2_font_description_get_family (desc), ==, "Cantarell");
+  g_assert_cmpint (pango2_font_description_get_style (desc), ==, PANGO2_STYLE_NORMAL);
+  g_assert_cmpint (pango2_font_description_get_weight (desc), ==, PANGO2_WEIGHT_BOLD);
+  g_assert_cmpint (pango2_font_description_get_stretch (desc), ==, PANGO2_STRETCH_NORMAL);
+  pango2_font_description_free (desc);
   g_object_unref (face2);
 
-  desc = pango_font_description_new ();
-  pango_font_description_set_family (desc, "Cantarellagain");
-  face2 = pango_hb_face_new_synthetic (face, NULL, FALSE, NULL, desc);
-  pango_font_description_free (desc);
+  desc = pango2_font_description_new ();
+  pango2_font_description_set_family (desc, "Cantarellagain");
+  face2 = pango2_hb_face_new_synthetic (face, NULL, FALSE, NULL, desc);
+  pango2_font_description_free (desc);
 
-  g_assert_true (PANGO_IS_HB_FACE (face2));
-  g_assert_cmpstr (pango_font_face_get_name (PANGO_FONT_FACE (face2)), ==, "Regular");
-  desc = pango_font_face_describe (PANGO_FONT_FACE (face2));
-  g_assert_cmpint (pango_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO_FONT_MASK_FAMILY |
-                                                                                 PANGO_FONT_MASK_STYLE |
-                                                                                 PANGO_FONT_MASK_VARIANT |
-                                                                                 PANGO_FONT_MASK_WEIGHT |
-                                                                                 PANGO_FONT_MASK_STRETCH);
-  g_assert_cmpstr (pango_font_description_get_family (desc), ==, "Cantarellagain");
-  g_assert_cmpint (pango_font_description_get_style (desc), ==, PANGO_STYLE_NORMAL);
-  g_assert_cmpint (pango_font_description_get_weight (desc), ==, PANGO_WEIGHT_NORMAL);
-  g_assert_cmpint (pango_font_description_get_stretch (desc), ==, PANGO_STRETCH_NORMAL);
-  pango_font_description_free (desc);
+  g_assert_true (PANGO2_IS_HB_FACE (face2));
+  g_assert_cmpstr (pango2_font_face_get_name (PANGO2_FONT_FACE (face2)), ==, "Regular");
+  desc = pango2_font_face_describe (PANGO2_FONT_FACE (face2));
+  g_assert_cmpint (pango2_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO2_FONT_MASK_FAMILY |
+                                                                                 PANGO2_FONT_MASK_STYLE |
+                                                                                 PANGO2_FONT_MASK_VARIANT |
+                                                                                 PANGO2_FONT_MASK_WEIGHT |
+                                                                                 PANGO2_FONT_MASK_STRETCH);
+  g_assert_cmpstr (pango2_font_description_get_family (desc), ==, "Cantarellagain");
+  g_assert_cmpint (pango2_font_description_get_style (desc), ==, PANGO2_STYLE_NORMAL);
+  g_assert_cmpint (pango2_font_description_get_weight (desc), ==, PANGO2_WEIGHT_NORMAL);
+  g_assert_cmpint (pango2_font_description_get_stretch (desc), ==, PANGO2_STRETCH_NORMAL);
+  pango2_font_description_free (desc);
   g_object_unref (face2);
 
-  desc = pango_font_description_new ();
-  pango_font_description_set_family (desc, "Cat");
-  pango_font_description_set_weight (desc, PANGO_WEIGHT_ULTRABOLD);
+  desc = pango2_font_description_new ();
+  pango2_font_description_set_family (desc, "Cat");
+  pango2_font_description_set_weight (desc, PANGO2_WEIGHT_ULTRABOLD);
 
   v.tag = HB_OT_TAG_VAR_AXIS_WEIGHT;
   v.value = 768.;
 
-  face2 = pango_hb_face_new_instance (face, &v, 1, "Fat", desc);
-  pango_font_description_free (desc);
+  face2 = pango2_hb_face_new_instance (face, &v, 1, "Fat", desc);
+  pango2_font_description_free (desc);
 
-  g_assert_true (PANGO_IS_HB_FACE (face2));
-  g_assert_cmpstr (pango_font_face_get_name (PANGO_FONT_FACE (face2)), ==, "Fat");
-  desc = pango_font_face_describe (PANGO_FONT_FACE (face2));
-  g_assert_cmpint (pango_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO_FONT_MASK_FAMILY |
-                                                                                 PANGO_FONT_MASK_STYLE |
-                                                                                 PANGO_FONT_MASK_WEIGHT |
-                                                                                 PANGO_FONT_MASK_VARIANT |
-                                                                                 PANGO_FONT_MASK_VARIATIONS |
-                                                                                 PANGO_FONT_MASK_STRETCH);
-  g_assert_cmpstr (pango_font_description_get_family (desc), ==, "Cat");
-  g_assert_cmpint (pango_font_description_get_style (desc), ==, PANGO_STYLE_NORMAL);
-  g_assert_cmpint (pango_font_description_get_weight (desc), ==, PANGO_WEIGHT_ULTRABOLD);
-  g_assert_cmpint (pango_font_description_get_stretch (desc), ==, PANGO_STRETCH_NORMAL);
-  g_assert_cmpstr (pango_font_description_get_variations (desc), ==, "wght=768");
-  pango_font_description_free (desc);
+  g_assert_true (PANGO2_IS_HB_FACE (face2));
+  g_assert_cmpstr (pango2_font_face_get_name (PANGO2_FONT_FACE (face2)), ==, "Fat");
+  desc = pango2_font_face_describe (PANGO2_FONT_FACE (face2));
+  g_assert_cmpint (pango2_font_description_get_set_fields (desc) & NO_FACEID, ==, PANGO2_FONT_MASK_FAMILY |
+                                                                                 PANGO2_FONT_MASK_STYLE |
+                                                                                 PANGO2_FONT_MASK_WEIGHT |
+                                                                                 PANGO2_FONT_MASK_VARIANT |
+                                                                                 PANGO2_FONT_MASK_VARIATIONS |
+                                                                                 PANGO2_FONT_MASK_STRETCH);
+  g_assert_cmpstr (pango2_font_description_get_family (desc), ==, "Cat");
+  g_assert_cmpint (pango2_font_description_get_style (desc), ==, PANGO2_STYLE_NORMAL);
+  g_assert_cmpint (pango2_font_description_get_weight (desc), ==, PANGO2_WEIGHT_ULTRABOLD);
+  g_assert_cmpint (pango2_font_description_get_stretch (desc), ==, PANGO2_STRETCH_NORMAL);
+  g_assert_cmpstr (pango2_font_description_get_variations (desc), ==, "wght=768");
+  pango2_font_description_free (desc);
   g_object_unref (face2);
 
   g_object_unref (face);
   g_free (path);
 }
 
-/* Verify that face -> font -> description works as expected for PangoHbFont */
+/* Verify that face -> font -> description works as expected for Pango2HbFont */
 static void
 test_hbfont_roundtrip (void)
 {
   char *path;
-  PangoHbFace *face;
-  PangoHbFont *font;
-  PangoFontDescription *desc;
+  Pango2HbFace *face;
+  Pango2HbFont *font;
+  Pango2FontDescription *desc;
   unsigned int n_features;
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
 
-  face = pango_hb_face_new_from_file (path, 0, -1, NULL, NULL);
-  g_assert_true (PANGO_IS_HB_FACE (face));
+  face = pango2_hb_face_new_from_file (path, 0, -1, NULL, NULL);
+  g_assert_true (PANGO2_IS_HB_FACE (face));
 
-  font = pango_hb_font_new (face, 11 * PANGO_SCALE, NULL, 0, NULL, 0, PANGO_GRAVITY_AUTO, 96., NULL);
-  g_assert_true (PANGO_IS_HB_FONT (font));
-  g_assert_true (pango_font_get_face (PANGO_FONT (font)) == PANGO_FONT_FACE (face));
-  pango_hb_font_get_features (PANGO_HB_FONT (font), &n_features);
+  font = pango2_hb_font_new (face, 11 * PANGO2_SCALE, NULL, 0, NULL, 0, PANGO2_GRAVITY_AUTO, 96., NULL);
+  g_assert_true (PANGO2_IS_HB_FONT (font));
+  g_assert_true (pango2_font_get_face (PANGO2_FONT (font)) == PANGO2_FONT_FACE (face));
+  pango2_hb_font_get_features (PANGO2_HB_FONT (font), &n_features);
   g_assert_cmpint (n_features, ==, 0);
 
-  desc = pango_font_describe (PANGO_FONT (font));
-  g_assert_cmpstr (pango_font_description_get_family (desc), ==, "Cantarell");
-  g_assert_cmpint (pango_font_description_get_style (desc), ==, PANGO_STYLE_NORMAL);
-  g_assert_cmpint (pango_font_description_get_weight (desc), ==, PANGO_WEIGHT_NORMAL);
-  g_assert_cmpint (pango_font_description_get_stretch (desc), ==, PANGO_STRETCH_NORMAL);
-  g_assert_cmpint (pango_font_description_get_size (desc), ==, 11 * PANGO_SCALE);
-  pango_font_description_free (desc);
+  desc = pango2_font_describe (PANGO2_FONT (font));
+  g_assert_cmpstr (pango2_font_description_get_family (desc), ==, "Cantarell");
+  g_assert_cmpint (pango2_font_description_get_style (desc), ==, PANGO2_STYLE_NORMAL);
+  g_assert_cmpint (pango2_font_description_get_weight (desc), ==, PANGO2_WEIGHT_NORMAL);
+  g_assert_cmpint (pango2_font_description_get_stretch (desc), ==, PANGO2_STRETCH_NORMAL);
+  g_assert_cmpint (pango2_font_description_get_size (desc), ==, 11 * PANGO2_SCALE);
+  pango2_font_description_free (desc);
 
   g_object_unref (font);
   g_object_unref (face);
   g_free (path);
 }
 
-/* Verify that pango_font_describe and pango_font_describe_with_absolute_size
- * work as expected with PangoHbFont
+/* Verify that pango2_font_describe and pango2_font_describe_with_absolute_size
+ * work as expected with Pango2HbFont
  */
 static void
 test_hbfont_describe (void)
 {
   char *path;
-  PangoHbFace *face;
-  PangoHbFont *font;
-  PangoFontDescription *desc;
+  Pango2HbFace *face;
+  Pango2HbFont *font;
+  Pango2FontDescription *desc;
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
 
-  face = pango_hb_face_new_from_file (path, 0, -1, NULL, NULL);
-  g_assert_true (PANGO_IS_HB_FACE (face));
+  face = pango2_hb_face_new_from_file (path, 0, -1, NULL, NULL);
+  g_assert_true (PANGO2_IS_HB_FACE (face));
 
-  font = pango_hb_font_new (face, 11 * PANGO_SCALE, NULL, 0, NULL, 0, PANGO_GRAVITY_AUTO, 96., NULL);
-  g_assert_true (PANGO_IS_HB_FONT (font));
+  font = pango2_hb_font_new (face, 11 * PANGO2_SCALE, NULL, 0, NULL, 0, PANGO2_GRAVITY_AUTO, 96., NULL);
+  g_assert_true (PANGO2_IS_HB_FONT (font));
 
-  desc = pango_font_describe (PANGO_FONT (font));
-  g_assert_cmpstr (pango_font_description_get_family (desc), ==, "Cantarell");
-  g_assert_cmpint (pango_font_description_get_size (desc), ==, 11 * PANGO_SCALE);
-  g_assert_true (!pango_font_description_get_size_is_absolute (desc));
-  pango_font_description_free (desc);
+  desc = pango2_font_describe (PANGO2_FONT (font));
+  g_assert_cmpstr (pango2_font_description_get_family (desc), ==, "Cantarell");
+  g_assert_cmpint (pango2_font_description_get_size (desc), ==, 11 * PANGO2_SCALE);
+  g_assert_true (!pango2_font_description_get_size_is_absolute (desc));
+  pango2_font_description_free (desc);
 
-  desc = pango_font_describe_with_absolute_size (PANGO_FONT (font));
-  g_assert_cmpstr (pango_font_description_get_family (desc), ==, "Cantarell");
-  g_assert_cmpint (pango_font_description_get_size (desc), ==, round (11 * PANGO_SCALE * 96./72.));
-  g_assert_true (pango_font_description_get_size_is_absolute (desc));
-  pango_font_description_free (desc);
+  desc = pango2_font_describe_with_absolute_size (PANGO2_FONT (font));
+  g_assert_cmpstr (pango2_font_description_get_family (desc), ==, "Cantarell");
+  g_assert_cmpint (pango2_font_description_get_size (desc), ==, round (11 * PANGO2_SCALE * 96./72.));
+  g_assert_true (pango2_font_description_get_size_is_absolute (desc));
+  pango2_font_description_free (desc);
 
   g_object_unref (font);
   g_object_unref (face);
@@ -259,65 +259,65 @@ static void
 test_hbfont_describe_variation (void)
 {
   char *path;
-  PangoHbFace *face, *face2;
-  PangoHbFont *font;
-  PangoFontDescription *desc;
+  Pango2HbFace *face, *face2;
+  Pango2HbFont *font;
+  Pango2FontDescription *desc;
   hb_variation_t v;
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
 
-  face = pango_hb_face_new_from_file (path, 0, -1, NULL, NULL);
-  g_assert_true (PANGO_IS_HB_FACE (face));
+  face = pango2_hb_face_new_from_file (path, 0, -1, NULL, NULL);
+  g_assert_true (PANGO2_IS_HB_FACE (face));
 
-  font = pango_hb_font_new (face, 11 * PANGO_SCALE, NULL, 0, NULL, 0, PANGO_GRAVITY_AUTO, 96., NULL);
-  g_assert_true (PANGO_IS_HB_FONT (font));
+  font = pango2_hb_font_new (face, 11 * PANGO2_SCALE, NULL, 0, NULL, 0, PANGO2_GRAVITY_AUTO, 96., NULL);
+  g_assert_true (PANGO2_IS_HB_FONT (font));
 
-  desc = pango_font_describe (PANGO_FONT (font));
-  g_assert_true ((pango_font_description_get_set_fields (desc) & PANGO_FONT_MASK_VARIATIONS) == 0);
-  pango_font_description_free (desc);
+  desc = pango2_font_describe (PANGO2_FONT (font));
+  g_assert_true ((pango2_font_description_get_set_fields (desc) & PANGO2_FONT_MASK_VARIATIONS) == 0);
+  pango2_font_description_free (desc);
   g_object_unref (font);
 
   v.tag = HB_OT_TAG_VAR_AXIS_WEIGHT;
   v.value = 768.;
-  font = pango_hb_font_new (face, 11 * PANGO_SCALE, NULL, 0, &v, 1, PANGO_GRAVITY_AUTO, 96., NULL);
+  font = pango2_hb_font_new (face, 11 * PANGO2_SCALE, NULL, 0, &v, 1, PANGO2_GRAVITY_AUTO, 96., NULL);
 
-  desc = pango_font_describe (PANGO_FONT (font));
-  g_assert_true ((pango_font_description_get_set_fields (desc) & PANGO_FONT_MASK_VARIATIONS) != 0);
-  g_assert_cmpstr (pango_font_description_get_variations (desc), ==, "wght=768");
-  pango_font_description_free (desc);
+  desc = pango2_font_describe (PANGO2_FONT (font));
+  g_assert_true ((pango2_font_description_get_set_fields (desc) & PANGO2_FONT_MASK_VARIATIONS) != 0);
+  g_assert_cmpstr (pango2_font_description_get_variations (desc), ==, "wght=768");
+  pango2_font_description_free (desc);
   g_object_unref (font);
 
-  desc = pango_font_description_new ();
-  pango_font_description_set_family (desc, "Cantarellagain");
+  desc = pango2_font_description_new ();
+  pango2_font_description_set_family (desc, "Cantarellagain");
 
   v.tag = HB_OT_TAG_VAR_AXIS_WEIGHT;
   v.value = 512.;
-  face2 = pango_hb_face_new_instance (face, &v, 1, "Medium", desc);
-  g_assert_true (PANGO_IS_HB_FACE (face));
-  pango_font_description_free (desc);
+  face2 = pango2_hb_face_new_instance (face, &v, 1, "Medium", desc);
+  g_assert_true (PANGO2_IS_HB_FACE (face));
+  pango2_font_description_free (desc);
 
-  desc = pango_font_face_describe (PANGO_FONT_FACE (face2));
-  g_assert_true ((pango_font_description_get_set_fields (desc) & PANGO_FONT_MASK_VARIATIONS) != 0);
-  g_assert_cmpstr (pango_font_description_get_variations (desc), ==, "wght=512");
-  pango_font_description_free (desc);
+  desc = pango2_font_face_describe (PANGO2_FONT_FACE (face2));
+  g_assert_true ((pango2_font_description_get_set_fields (desc) & PANGO2_FONT_MASK_VARIATIONS) != 0);
+  g_assert_cmpstr (pango2_font_description_get_variations (desc), ==, "wght=512");
+  pango2_font_description_free (desc);
 
-  font = pango_hb_font_new (face2, 11 * PANGO_SCALE, NULL, 0, NULL, 0, PANGO_GRAVITY_AUTO, 96., NULL);
-  g_assert_true (PANGO_IS_HB_FONT (font));
+  font = pango2_hb_font_new (face2, 11 * PANGO2_SCALE, NULL, 0, NULL, 0, PANGO2_GRAVITY_AUTO, 96., NULL);
+  g_assert_true (PANGO2_IS_HB_FONT (font));
 
-  desc = pango_font_describe (PANGO_FONT (font));
-  g_assert_true ((pango_font_description_get_set_fields (desc) & PANGO_FONT_MASK_VARIATIONS) != 0);
-  g_assert_cmpstr (pango_font_description_get_variations (desc), ==, "wght=512");
-  pango_font_description_free (desc);
+  desc = pango2_font_describe (PANGO2_FONT (font));
+  g_assert_true ((pango2_font_description_get_set_fields (desc) & PANGO2_FONT_MASK_VARIATIONS) != 0);
+  g_assert_cmpstr (pango2_font_description_get_variations (desc), ==, "wght=512");
+  pango2_font_description_free (desc);
   g_object_unref (font);
 
   v.tag = HB_OT_TAG_VAR_AXIS_WEIGHT;
   v.value = 768.;
-  font = pango_hb_font_new (face2, 11 * PANGO_SCALE, NULL, 0, &v, 1, PANGO_GRAVITY_AUTO, 96., NULL);
+  font = pango2_hb_font_new (face2, 11 * PANGO2_SCALE, NULL, 0, &v, 1, PANGO2_GRAVITY_AUTO, 96., NULL);
 
-  desc = pango_font_describe (PANGO_FONT (font));
-  g_assert_true ((pango_font_description_get_set_fields (desc) & PANGO_FONT_MASK_VARIATIONS) != 0);
-  g_assert_cmpstr (pango_font_description_get_variations (desc), ==, "wght=768");
-  pango_font_description_free (desc);
+  desc = pango2_font_describe (PANGO2_FONT (font));
+  g_assert_true ((pango2_font_description_get_set_fields (desc) & PANGO2_FONT_MASK_VARIATIONS) != 0);
+  g_assert_cmpstr (pango2_font_description_get_variations (desc), ==, "wght=768");
+  pango2_font_description_free (desc);
   g_object_unref (font);
 
   g_object_unref (face2);
@@ -332,34 +332,34 @@ static void
 test_hbfont_faceid (void)
 {
   char *path;
-  PangoHbFace *face, *face2, *face3;
-  PangoFontDescription *desc, *desc2, *desc3;
+  Pango2HbFace *face, *face2, *face3;
+  Pango2FontDescription *desc, *desc2, *desc3;
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
 
-  face = pango_hb_face_new_from_file (path, 0, -1, NULL, NULL);
-  face2 = pango_hb_face_new_from_file (path, 0, 2, NULL, NULL);
-  desc = pango_font_description_new ();
-  pango_font_description_set_weight (desc, PANGO_WEIGHT_BOLD);
-  face3 = pango_hb_face_new_synthetic (face, NULL, TRUE, NULL, desc);
-  pango_font_description_free (desc);
+  face = pango2_hb_face_new_from_file (path, 0, -1, NULL, NULL);
+  face2 = pango2_hb_face_new_from_file (path, 0, 2, NULL, NULL);
+  desc = pango2_font_description_new ();
+  pango2_font_description_set_weight (desc, PANGO2_WEIGHT_BOLD);
+  face3 = pango2_hb_face_new_synthetic (face, NULL, TRUE, NULL, desc);
+  pango2_font_description_free (desc);
 
-  desc = pango_font_face_describe (PANGO_FONT_FACE (face));
-  g_assert_true (pango_font_description_get_set_fields (desc) & PANGO_FONT_MASK_FACEID);
+  desc = pango2_font_face_describe (PANGO2_FONT_FACE (face));
+  g_assert_true (pango2_font_description_get_set_fields (desc) & PANGO2_FONT_MASK_FACEID);
 
-  desc2 = pango_font_face_describe (PANGO_FONT_FACE (face2));
-  g_assert_true (pango_font_description_get_set_fields (desc2) & PANGO_FONT_MASK_FACEID);
+  desc2 = pango2_font_face_describe (PANGO2_FONT_FACE (face2));
+  g_assert_true (pango2_font_description_get_set_fields (desc2) & PANGO2_FONT_MASK_FACEID);
 
-  desc3 = pango_font_face_describe (PANGO_FONT_FACE (face3));
-  g_assert_true (pango_font_description_get_set_fields (desc3) & PANGO_FONT_MASK_FACEID);
+  desc3 = pango2_font_face_describe (PANGO2_FONT_FACE (face3));
+  g_assert_true (pango2_font_description_get_set_fields (desc3) & PANGO2_FONT_MASK_FACEID);
 
-  g_assert_cmpstr (pango_font_description_get_faceid (desc), !=, pango_font_description_get_faceid (desc2));
-  g_assert_cmpstr (pango_font_description_get_faceid (desc), !=, pango_font_description_get_faceid (desc3));
-  g_assert_cmpstr (pango_font_description_get_faceid (desc2), !=, pango_font_description_get_faceid (desc3));
+  g_assert_cmpstr (pango2_font_description_get_faceid (desc), !=, pango2_font_description_get_faceid (desc2));
+  g_assert_cmpstr (pango2_font_description_get_faceid (desc), !=, pango2_font_description_get_faceid (desc3));
+  g_assert_cmpstr (pango2_font_description_get_faceid (desc2), !=, pango2_font_description_get_faceid (desc3));
 
-  pango_font_description_free (desc);
-  pango_font_description_free (desc2);
-  pango_font_description_free (desc3);
+  pango2_font_description_free (desc);
+  pango2_font_description_free (desc2);
+  pango2_font_description_free (desc3);
 
   g_object_unref (face);
   g_object_unref (face2);
@@ -372,59 +372,59 @@ test_hbfont_faceid (void)
 static void
 test_hbfont_load (void)
 {
-  PangoFontMap *map;
-  PangoContext *context;
+  Pango2FontMap *map;
+  Pango2Context *context;
   char *path;
-  PangoFontDescription *desc;
-  PangoHbFace *face_fat, *face_wild;
+  Pango2FontDescription *desc;
+  Pango2HbFace *face_fat, *face_wild;
   char *s;
-  PangoFont *font;
+  Pango2Font *font;
 
   /* Make a Cat family, with the two faces Fat and Wild */
-  map = pango_font_map_new ();
-  context = pango_context_new_with_font_map (PANGO_FONT_MAP (map));
+  map = pango2_font_map_new ();
+  context = pango2_context_new_with_font_map (PANGO2_FONT_MAP (map));
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
-  desc = pango_font_description_new ();
-  pango_font_description_set_family (desc, "Cat");
-  face_fat = pango_hb_face_new_from_file (path, 0, -1, "Fat", desc);
-  pango_font_description_free (desc);
+  desc = pango2_font_description_new ();
+  pango2_font_description_set_family (desc, "Cat");
+  face_fat = pango2_hb_face_new_from_file (path, 0, -1, "Fat", desc);
+  pango2_font_description_free (desc);
   g_free (path);
 
-  pango_font_map_add_face (map, PANGO_FONT_FACE (face_fat));
+  pango2_font_map_add_face (map, PANGO2_FONT_FACE (face_fat));
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "DejaVuSans.ttf", NULL);
-  desc = pango_font_description_new ();
-  pango_font_description_set_family (desc, "Cat");
-  face_wild = pango_hb_face_new_from_file (path, 0, -1, "Wild", desc);
-  pango_font_description_free (desc);
+  desc = pango2_font_description_new ();
+  pango2_font_description_set_family (desc, "Cat");
+  face_wild = pango2_hb_face_new_from_file (path, 0, -1, "Wild", desc);
+  pango2_font_description_free (desc);
 
-  pango_font_map_add_face (map, PANGO_FONT_FACE (face_wild));
+  pango2_font_map_add_face (map, PANGO2_FONT_FACE (face_wild));
 
-  desc = pango_font_face_describe (PANGO_FONT_FACE (face_wild));
-  pango_font_description_set_size (desc, 12 * PANGO_SCALE);
+  desc = pango2_font_face_describe (PANGO2_FONT_FACE (face_wild));
+  pango2_font_description_set_size (desc, 12 * PANGO2_SCALE);
 
-  s = pango_font_description_to_string (desc);
+  s = pango2_font_description_to_string (desc);
   g_assert_cmpstr (s, ==, "Cat 12 @faceid=hb:DejaVuSans:0:-1:0:1:1:0");
   g_free (s);
 
   /* loading with faceid set works as expected */
-  font = pango_font_map_load_font (PANGO_FONT_MAP (map), context, desc);
-  g_assert_true (pango_font_get_face (font) == PANGO_FONT_FACE (face_wild));
+  font = pango2_font_map_load_font (PANGO2_FONT_MAP (map), context, desc);
+  g_assert_true (pango2_font_get_face (font) == PANGO2_FONT_FACE (face_wild));
   g_object_unref (font);
 
-  pango_font_description_unset_fields (desc, PANGO_FONT_MASK_FACEID);
+  pango2_font_description_unset_fields (desc, PANGO2_FONT_MASK_FACEID);
 
   /* ...and without doesn't */
-  s = pango_font_description_to_string (desc);
+  s = pango2_font_description_to_string (desc);
   g_assert_cmpstr (s, ==, "Cat 12");
   g_free (s);
 
-  font = pango_font_map_load_font (PANGO_FONT_MAP (map), context, desc);
-  g_assert_true (pango_font_get_face (font) == PANGO_FONT_FACE (face_fat));
+  font = pango2_font_map_load_font (PANGO2_FONT_MAP (map), context, desc);
+  g_assert_true (pango2_font_get_face (font) == PANGO2_FONT_FACE (face_fat));
   g_object_unref (font);
 
-  pango_font_description_free (desc);
+  pango2_font_description_free (desc);
 
   g_object_unref (context);
   g_object_unref (map);
@@ -434,73 +434,73 @@ test_hbfont_load (void)
 static void
 test_hbfont_load_variation (void)
 {
-  PangoFontMap *map;
-  PangoContext *context;
+  Pango2FontMap *map;
+  Pango2Context *context;
   char *path;
-  PangoFontDescription *desc;
-  PangoHbFace *face_fat, *face_wild;
+  Pango2FontDescription *desc;
+  Pango2HbFace *face_fat, *face_wild;
   char *s;
-  PangoFont *font;
+  Pango2Font *font;
   hb_variation_t v;
   hb_font_t *hb_font;
   const float *coords;
   unsigned int length;
 
   /* Make a Cat family, with the two faces Fat and Wild */
-  map = pango_font_map_new ();
-  context = pango_context_new_with_font_map (PANGO_FONT_MAP (map));
+  map = pango2_font_map_new ();
+  context = pango2_context_new_with_font_map (PANGO2_FONT_MAP (map));
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
-  desc = pango_font_description_new ();
-  pango_font_description_set_family (desc, "Cat");
-  face_fat = pango_hb_face_new_from_file (path, 0, -1, "Fat", desc);
-  pango_font_description_free (desc);
+  desc = pango2_font_description_new ();
+  pango2_font_description_set_family (desc, "Cat");
+  face_fat = pango2_hb_face_new_from_file (path, 0, -1, "Fat", desc);
+  pango2_font_description_free (desc);
   g_free (path);
 
-  pango_font_map_add_face (map, PANGO_FONT_FACE (face_fat));
+  pango2_font_map_add_face (map, PANGO2_FONT_FACE (face_fat));
 
-  desc = pango_font_description_new ();
-  pango_font_description_set_family (desc, "Cat");
+  desc = pango2_font_description_new ();
+  pango2_font_description_set_family (desc, "Cat");
   v.tag = HB_OT_TAG_VAR_AXIS_WEIGHT;
   v.value = 624.;
-  face_wild = pango_hb_face_new_instance (face_fat, &v, 1, "Wild", desc);
-  pango_font_description_free (desc);
+  face_wild = pango2_hb_face_new_instance (face_fat, &v, 1, "Wild", desc);
+  pango2_font_description_free (desc);
 
-  pango_font_map_add_face (map, PANGO_FONT_FACE (face_wild));
+  pango2_font_map_add_face (map, PANGO2_FONT_FACE (face_wild));
 
-  desc = pango_font_face_describe (PANGO_FONT_FACE (face_wild));
+  desc = pango2_font_face_describe (PANGO2_FONT_FACE (face_wild));
 
-  g_assert_cmpstr (pango_font_description_get_variations (desc), ==, "wght=624");
+  g_assert_cmpstr (pango2_font_description_get_variations (desc), ==, "wght=624");
 
-  pango_font_description_set_size (desc, 12 * PANGO_SCALE);
+  pango2_font_description_set_size (desc, 12 * PANGO2_SCALE);
 
-  s = pango_font_description_to_string (desc);
+  s = pango2_font_description_to_string (desc);
   g_assert_cmpstr (s, ==, "Cat 12 @faceid=hb:Cantarell-Regular:0:-1:0:1:1:0:wght_624,wght=624");
   g_free (s);
 
-  font = pango_font_map_load_font (PANGO_FONT_MAP (map), context, desc);
-  g_assert_true (pango_font_get_face (font) == PANGO_FONT_FACE (face_wild));
+  font = pango2_font_map_load_font (PANGO2_FONT_MAP (map), context, desc);
+  g_assert_true (pango2_font_get_face (font) == PANGO2_FONT_FACE (face_wild));
 
-  hb_font = pango_font_get_hb_font (font);
+  hb_font = pango2_font_get_hb_font (font);
   coords = hb_font_get_var_coords_design (hb_font, &length);
   g_assert_cmpint (length, ==, 1);
   g_assert_cmphex (coords[0], ==, 624.);
 
   g_object_unref (font);
 
-  pango_font_description_free (desc);
+  pango2_font_description_free (desc);
 
   g_object_unref (context);
   g_object_unref (map);
 }
 
-/* Verify that pango_fontmap_load_fontset produces a non-empty result
+/* Verify that pango2_fontmap_load_fontset produces a non-empty result
  * even if the language isn't covered - our itemization code relies
  * on this.
  */
 static gboolean
-get_font (PangoFontset *fontset,
-          PangoFont    *font,
+get_font (Pango2Fontset *fontset,
+          Pango2Font    *font,
           gpointer      data)
 {
   gboolean *found = data;
@@ -513,28 +513,28 @@ get_font (PangoFontset *fontset,
 static void
 test_fontmap_language (void)
 {
-  PangoFontMap *map;
-  PangoContext *context;
-  PangoFontDescription *desc;
-  PangoFontset *fonts;
+  Pango2FontMap *map;
+  Pango2Context *context;
+  Pango2FontDescription *desc;
+  Pango2Fontset *fonts;
   gboolean found;
 
-  map = PANGO_FONT_MAP (pango_font_map_new_default ());
-  context = pango_context_new_with_font_map (map);
-  desc = pango_font_description_from_string ("serif 11");
+  map = PANGO2_FONT_MAP (pango2_font_map_new_default ());
+  context = pango2_context_new_with_font_map (map);
+  desc = pango2_font_description_from_string ("serif 11");
 
   /* zz isn't assigned, so there should not be any fonts claiming to support
    * this language. We are expecting to get a nonempty fontset regardless.
    */
-  fonts = pango_font_map_load_fontset (map, context, desc, pango_language_from_string ("zz"));
-  g_assert_true (PANGO_IS_FONTSET (fonts));
+  fonts = pango2_font_map_load_fontset (map, context, desc, pango2_language_from_string ("zz"));
+  g_assert_true (PANGO2_IS_FONTSET (fonts));
 
   found = FALSE;
-  pango_fontset_foreach (fonts, get_font, &found);
+  pango2_fontset_foreach (fonts, get_font, &found);
   g_assert_true (found);
 
   g_object_unref (fonts);
-  pango_font_description_free (desc);
+  pango2_font_description_free (desc);
 }
 
 int

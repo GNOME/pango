@@ -23,26 +23,26 @@
 #include "pango-hbface.h"
 
 
-#define PANGO_TYPE_HB_FAMILY (pango_hb_family_get_type ())
+#define PANGO2_TYPE_HB_FAMILY (pango2_hb_family_get_type ())
 
-G_DECLARE_FINAL_TYPE (PangoHbFamily, pango_hb_family, PANGO, HB_FAMILY, PangoFontFamily)
+G_DECLARE_FINAL_TYPE (Pango2HbFamily, pango2_hb_family, PANGO2, HB_FAMILY, Pango2FontFamily)
 
-struct _PangoHbFamily
+struct _Pango2HbFamily
 {
-  PangoFontFamily parent_instance;
+  Pango2FontFamily parent_instance;
 
   GPtrArray *faces;
 };
 
-PangoHbFamily *         pango_hb_family_new             (const char             *name);
+Pango2HbFamily *         pango2_hb_family_new             (const char              *name);
 
-void                    pango_hb_family_add_face        (PangoHbFamily          *self,
-                                                         PangoFontFace          *face);
+void                     pango2_hb_family_add_face        (Pango2HbFamily          *self,
+                                                           Pango2FontFace          *face);
 
-void                    pango_hb_family_remove_face     (PangoHbFamily          *self,
-                                                         PangoFontFace          *face);
+void                     pango2_hb_family_remove_face     (Pango2HbFamily          *self,
+                                                           Pango2FontFace          *face);
 
-PangoFontFace *         pango_hb_family_find_face       (PangoHbFamily          *self,
-                                                         PangoFontDescription   *description,
-                                                         PangoLanguage          *language,
-                                                         gunichar                wc);
+Pango2FontFace *         pango2_hb_family_find_face       (Pango2HbFamily          *self,
+                                                           Pango2FontDescription   *description,
+                                                           Pango2Language          *language,
+                                                           gunichar                 wc);

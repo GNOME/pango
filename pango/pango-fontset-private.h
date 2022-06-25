@@ -22,30 +22,30 @@
 #include "pango-fontset.h"
 
 
-#define PANGO_FONTSET_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONTSET, PangoFontsetClass))
-#define PANGO_FONTSET_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONTSET, PangoFontsetClass))
+#define PANGO2_FONTSET_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO2_TYPE_FONTSET, Pango2FontsetClass))
+#define PANGO2_FONTSET_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO2_TYPE_FONTSET, Pango2FontsetClass))
 
 
-typedef struct _PangoFontsetClass   PangoFontsetClass;
+typedef struct _Pango2FontsetClass   Pango2FontsetClass;
 
-struct _PangoFontset
+struct _Pango2Fontset
 {
   GObject parent_instance;
 };
 
-struct _PangoFontsetClass
+struct _Pango2FontsetClass
 {
   GObjectClass parent_class;
 
-  PangoFont *            (* get_font)      (PangoFontset            *fontset,
-                                            guint                    wc);
+  Pango2Font *            (* get_font)      (Pango2Fontset            *fontset,
+                                             guint                     wc);
 
-  PangoFontMetrics *     (* get_metrics)   (PangoFontset            *fontset);
-  PangoLanguage *        (* get_language)  (PangoFontset            *fontset);
-  void                   (* foreach)       (PangoFontset            *fontset,
-                                            PangoFontsetForeachFunc  func,
-                                            gpointer                 data);
+  Pango2FontMetrics *     (* get_metrics)   (Pango2Fontset            *fontset);
+  Pango2Language *        (* get_language)  (Pango2Fontset            *fontset);
+  void                    (* foreach)       (Pango2Fontset            *fontset,
+                                             Pango2FontsetForeachFunc  func,
+                                             gpointer                  data);
 };
 
-PangoLanguage * pango_fontset_get_language (PangoFontset *fontset);
+Pango2Language * pango2_fontset_get_language (Pango2Fontset *fontset);
 

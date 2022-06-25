@@ -23,24 +23,24 @@
 #include <fontconfig/fontconfig.h>
 
 
-#define PANGO_TYPE_FC_LANGUAGE_SET (pango_fc_language_set_get_type ())
+#define PANGO2_TYPE_FC_LANGUAGE_SET (pango2_fc_language_set_get_type ())
 
-G_DECLARE_FINAL_TYPE (PangoFcLanguageSet, pango_fc_language_set, PANGO, FC_LANGUAGE_SET, PangoLanguageSet)
+G_DECLARE_FINAL_TYPE (Pango2FcLanguageSet, pango2_fc_language_set, PANGO2, FC_LANGUAGE_SET, Pango2LanguageSet)
 
-struct _PangoFcLanguageSet
+struct _Pango2FcLanguageSet
 {
-  PangoLanguageSet parent_instance;
+  Pango2LanguageSet parent_instance;
 
   FcLangSet *langs;
 };
 
-struct _PangoFcLanguageSetClass
+struct _Pango2FcLanguageSetClass
 {
-  PangoLanguageSetClass parent_class;
+  Pango2LanguageSetClass parent_class;
 };
 
-PangoFcLanguageSet *    pango_fc_language_set_new       (FcLangSet                      *langs);
+Pango2FcLanguageSet *   pango2_fc_language_set_new       (FcLangSet                      *langs);
 
-guint                   pango_fc_language_set_hash      (const PangoFcLanguageSet       *self);
-gboolean                pango_fc_language_set_equal     (const PangoFcLanguageSet       *a,
-                                                         const PangoFcLanguageSet       *b);
+guint                   pango2_fc_language_set_hash      (const Pango2FcLanguageSet      *self);
+gboolean                pango2_fc_language_set_equal     (const Pango2FcLanguageSet      *a,
+                                                          const Pango2FcLanguageSet      *b);

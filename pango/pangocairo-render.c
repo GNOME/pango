@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * pangocairo-render.c: Rendering routines to Cairo surfaces
  *
  * Copyright (C) 2004 Red Hat, Inc.
@@ -32,15 +32,15 @@
 #include "pango-impl-utils.h"
 #include "pango-hbfont-private.h"
 
-typedef struct _PangoCairoRendererClass PangoCairoRendererClass;
+typedef struct _Pango2CairoRendererClass Pango2CairoRendererClass;
 
-#define PANGO_CAIRO_RENDERER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_CAIRO_RENDERER, PangoCairoRendererClass))
-#define PANGO_IS_CAIRO_RENDERER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_CAIRO_RENDERER))
-#define PANGO_CAIRO_RENDERER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_CAIRO_RENDERER, PangoCairoRendererClass))
+#define PANGO2_CAIRO_RENDERER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO2_TYPE_CAIRO_RENDERER, Pango2CairoRendererClass))
+#define PANGO2_IS_CAIRO_RENDERER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO2_TYPE_CAIRO_RENDERER))
+#define PANGO2_CAIRO_RENDERER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO2_TYPE_CAIRO_RENDERER, Pango2CairoRendererClass))
 
-struct _PangoCairoRenderer
+struct _Pango2CairoRenderer
 {
-  PangoRenderer parent_instance;
+  Pango2Renderer parent_instance;
 
   cairo_t *cr;
   gboolean do_path;
@@ -52,18 +52,18 @@ struct _PangoCairoRenderer
   gboolean cr_had_current_point;
 };
 
-struct _PangoCairoRendererClass
+struct _Pango2CairoRendererClass
 {
-  PangoRendererClass parent_class;
+  Pango2RendererClass parent_class;
 };
 
-G_DEFINE_TYPE (PangoCairoRenderer, pango_cairo_renderer, PANGO_TYPE_RENDERER)
+G_DEFINE_TYPE (Pango2CairoRenderer, pango2_cairo_renderer, PANGO2_TYPE_RENDERER)
 
 static void
-set_color (PangoCairoRenderer *crenderer,
-           PangoRenderPart     part)
+set_color (Pango2CairoRenderer *crenderer,
+           Pango2RenderPart     part)
 {
-  PangoColor *color = pango_renderer_get_color ((PangoRenderer *) (crenderer), part);
+  Pango2Color *color = pango2_renderer_get_color ((Pango2Renderer *) (crenderer), part);
   double red, green, blue, alpha;
 
   if (!color)
@@ -96,13 +96,13 @@ set_color (PangoCairoRenderer *crenderer,
 
 /* note: modifies crenderer->cr without doing cairo_save/restore() */
 static void
-_pango_cairo_renderer_draw_frame (PangoCairoRenderer *crenderer,
-                                  double              x,
-                                  double              y,
-                                  double              width,
-                                  double              height,
-                                  double              line_width,
-                                  gboolean            invalid)
+_pango2_cairo_renderer_draw_frame (Pango2CairoRenderer *crenderer,
+                                   double               x,
+                                   double               y,
+                                   double               width,
+                                   double               height,
+                                   double               line_width,
+                                   gboolean             invalid)
 {
   cairo_t *cr = crenderer->cr;
 
@@ -206,31 +206,31 @@ _pango_cairo_renderer_draw_frame (PangoCairoRenderer *crenderer,
 }
 
 static void
-_pango_cairo_renderer_draw_box_glyph (PangoCairoRenderer *crenderer,
-                                      PangoGlyphInfo     *gi,
-                                      double              cx,
-                                      double              cy,
-                                      gboolean            invalid)
+_pango2_cairo_renderer_draw_box_glyph (Pango2CairoRenderer *crenderer,
+                                       Pango2GlyphInfo     *gi,
+                                       double               cx,
+                                       double               cy,
+                                       gboolean             invalid)
 {
   cairo_save (crenderer->cr);
 
-  _pango_cairo_renderer_draw_frame (crenderer,
-                                    cx + 1.5,
-                                    cy + 1.5 - PANGO_UNKNOWN_GLYPH_HEIGHT,
-                                    (double)gi->geometry.width / PANGO_SCALE - 3.0,
-                                    PANGO_UNKNOWN_GLYPH_HEIGHT - 3.0,
-                                    1.0,
-                                    invalid);
+  _pango2_cairo_renderer_draw_frame (crenderer,
+                                     cx + 1.5,
+                                     cy + 1.5 - PANGO2_UNKNOWN_GLYPH_HEIGHT,
+                                     (double)gi->geometry.width / PANGO2_SCALE - 3.0,
+                                     PANGO2_UNKNOWN_GLYPH_HEIGHT - 3.0,
+                                     1.0,
+                                     invalid);
 
   cairo_restore (crenderer->cr);
 }
 
 static void
-_pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
-                                          PangoFont          *font,
-                                          PangoGlyphInfo     *gi,
-                                          double              cx,
-                                          double              cy)
+_pango2_cairo_renderer_draw_unknown_glyph (Pango2CairoRenderer *crenderer,
+                                           Pango2Font          *font,
+                                           Pango2GlyphInfo     *gi,
+                                           double               cx,
+                                           double               cy)
 {
   char buf[7];
   double x0, y0;
@@ -238,7 +238,7 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
   int rows, cols;
   double width, lsb;
   char hexbox_string[2] = { 0, 0 };
-  PangoCairoFontHexBoxInfo *hbi;
+  Pango2CairoFontHexBoxInfo *hbi;
   gunichar ch;
   gboolean invalid_input;
   const char *p;
@@ -246,16 +246,16 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
 
   cairo_save (crenderer->cr);
 
-  ch = gi->glyph & ~PANGO_GLYPH_UNKNOWN_FLAG;
-  invalid_input = G_UNLIKELY (gi->glyph == PANGO_GLYPH_INVALID_INPUT || ch > 0x10FFFF);
+  ch = gi->glyph & ~PANGO2_GLYPH_UNKNOWN_FLAG;
+  invalid_input = G_UNLIKELY (gi->glyph == PANGO2_GLYPH_INVALID_INPUT || ch > 0x10FFFF);
 
-  if (PANGO_IS_HB_FONT (font))
-    hbi = PANGO_HB_FONT (font)->hex_box_info;
+  if (PANGO2_IS_HB_FONT (font))
+    hbi = PANGO2_HB_FONT (font)->hex_box_info;
   else
-    hbi = _pango_cairo_font_get_hex_box_info (font);
-  if (!hbi || !_pango_cairo_font_install ((PangoFont *)(hbi->font), crenderer->cr))
+    hbi = _pango2_cairo_font_get_hex_box_info (font);
+  if (!hbi || !_pango2_cairo_font_install ((Pango2Font *)(hbi->font), crenderer->cr))
     {
-      _pango_cairo_renderer_draw_box_glyph (crenderer, gi, cx, cy, invalid_input);
+      _pango2_cairo_renderer_draw_box_glyph (crenderer, gi, cx, cy, invalid_input);
       goto done;
     }
 
@@ -274,7 +274,7 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
        * Since we don't want to rely on glyph availability,
        * we render a centered dot ourselves.
        */
-      double x = cx + 0.5 *((double)gi->geometry.width / PANGO_SCALE);
+      double x = cx + 0.5 *((double)gi->geometry.width / PANGO2_SCALE);
       double y = cy + hbi->box_descent - 0.5 * hbi->box_height;
 
       cairo_new_sub_path (crenderer->cr);
@@ -289,7 +289,7 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
        * we render an arrow like ↦ ourselves.
        */
       double y = cy + hbi->box_descent - 0.5 * hbi->box_height;
-      double width = (double)gi->geometry.width / PANGO_SCALE;
+      double width = (double)gi->geometry.width / PANGO2_SCALE;
       double offset = 0.2 * width;
       double x = cx + offset;
       double al = width - 2 * offset; /* arrow length */
@@ -317,7 +317,7 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
       /* Since we don't want to rely on glyph availability,
        * we render an arrow like ↵ ourselves.
        */
-      double width = (double)gi->geometry.width / PANGO_SCALE;
+      double width = (double)gi->geometry.width / PANGO2_SCALE;
       double offset = 0.2 * width;
       double al = width - 2 * offset; /* arrow length */
       double tl = MIN (hbi->digit_width, 0.75 * al); /* tip length */
@@ -340,7 +340,7 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
       cairo_fill (crenderer->cr);
       goto done;
     }
-  else if ((name = pango_get_ignorable_size (ch, &rows, &cols)))
+  else if ((name = pango2_get_ignorable_size (ch, &rows, &cols)))
     {
       /* Nothing else to do, we render 'default ignorable' chars
        * as hex box with their nick.
@@ -356,16 +356,16 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
     }
 
   width = (3 * hbi->pad_x + cols * (hbi->digit_width + hbi->pad_x));
-  lsb = ((double)gi->geometry.width / PANGO_SCALE - width) * .5;
+  lsb = ((double)gi->geometry.width / PANGO2_SCALE - width) * .5;
   lsb = floor (lsb / hbi->pad_x) * hbi->pad_x;
 
-  _pango_cairo_renderer_draw_frame (crenderer,
-                                    cx + lsb + .5 * hbi->pad_x,
-                                    cy + hbi->box_descent - hbi->box_height + hbi->pad_y * 0.5,
-                                    width - hbi->pad_x,
-                                    (hbi->box_height - hbi->pad_y),
-                                    hbi->line_width,
-                                    invalid_input);
+  _pango2_cairo_renderer_draw_frame (crenderer,
+                                     cx + lsb + .5 * hbi->pad_x,
+                                     cy + hbi->box_descent - hbi->box_height + hbi->pad_y * 0.5,
+                                     width - hbi->pad_x,
+                                     (hbi->box_height - hbi->pad_y),
+                                     hbi->line_width,
+                                     invalid_input);
 
   if (invalid_input)
     goto done;
@@ -405,44 +405,44 @@ done:
 #define STACK_ARRAY_LENGTH(T) (STACK_BUFFER_SIZE / sizeof(T))
 
 static void
-pango_cairo_renderer_show_text_glyphs (PangoRenderer        *renderer,
-                                       const char           *text,
-                                       int                   text_len,
-                                       PangoGlyphString     *glyphs,
-                                       cairo_text_cluster_t *clusters,
-                                       int                   num_clusters,
-                                       gboolean              backward,
-                                       PangoFont            *font,
-                                       int                   x,
-                                       int                   y)
+pango2_cairo_renderer_show_text_glyphs (Pango2Renderer       *renderer,
+                                        const char           *text,
+                                        int                   text_len,
+                                        Pango2GlyphString    *glyphs,
+                                        cairo_text_cluster_t *clusters,
+                                        int                   num_clusters,
+                                        gboolean              backward,
+                                        Pango2Font           *font,
+                                        int                   x,
+                                        int                   y)
 {
-  PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
+  Pango2CairoRenderer *crenderer = (Pango2CairoRenderer *) (renderer);
 
   int i, count;
   int x_position = 0;
   cairo_glyph_t *cairo_glyphs;
   cairo_glyph_t stack_glyphs[STACK_ARRAY_LENGTH (cairo_glyph_t)];
-  double base_x = crenderer->x_offset + (double)x / PANGO_SCALE;
-  double base_y = crenderer->y_offset + (double)y / PANGO_SCALE;
+  double base_x = crenderer->x_offset + (double)x / PANGO2_SCALE;
+  double base_y = crenderer->y_offset + (double)y / PANGO2_SCALE;
 
   cairo_save (crenderer->cr);
   if (!crenderer->do_path)
-    set_color (crenderer, PANGO_RENDER_PART_FOREGROUND);
+    set_color (crenderer, PANGO2_RENDER_PART_FOREGROUND);
 
-  if (!_pango_cairo_font_install (font, crenderer->cr))
+  if (!_pango2_cairo_font_install (font, crenderer->cr))
     {
       for (i = 0; i < glyphs->num_glyphs; i++)
         {
-          PangoGlyphInfo *gi = &glyphs->glyphs[i];
+          Pango2GlyphInfo *gi = &glyphs->glyphs[i];
 
-          if (gi->glyph != PANGO_GLYPH_EMPTY)
+          if (gi->glyph != PANGO2_GLYPH_EMPTY)
             {
-              double cx = base_x + (double)(x_position + gi->geometry.x_offset) / PANGO_SCALE;
+              double cx = base_x + (double)(x_position + gi->geometry.x_offset) / PANGO2_SCALE;
               double cy = gi->geometry.y_offset == 0 ?
                           base_y :
-                          base_y + (double)(gi->geometry.y_offset) / PANGO_SCALE;
+                          base_y + (double)(gi->geometry.y_offset) / PANGO2_SCALE;
 
-              _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
+              _pango2_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
             }
           x_position += gi->geometry.width;
         }
@@ -458,21 +458,21 @@ pango_cairo_renderer_show_text_glyphs (PangoRenderer        *renderer,
   count = 0;
   for (i = 0; i < glyphs->num_glyphs; i++)
     {
-      PangoGlyphInfo *gi = &glyphs->glyphs[i];
+      Pango2GlyphInfo *gi = &glyphs->glyphs[i];
 
-      if (gi->glyph != PANGO_GLYPH_EMPTY)
+      if (gi->glyph != PANGO2_GLYPH_EMPTY)
         {
-          double cx = base_x + (double)(x_position + gi->geometry.x_offset) / PANGO_SCALE;
+          double cx = base_x + (double)(x_position + gi->geometry.x_offset) / PANGO2_SCALE;
           double cy = gi->geometry.y_offset == 0 ?
                       base_y :
-                      base_y + (double)(gi->geometry.y_offset) / PANGO_SCALE;
+                      base_y + (double)(gi->geometry.y_offset) / PANGO2_SCALE;
 
-          if (gi->glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+          if (gi->glyph & PANGO2_GLYPH_UNKNOWN_FLAG)
             {
-              if (gi->glyph == (0x20 | PANGO_GLYPH_UNKNOWN_FLAG))
+              if (gi->glyph == (0x20 | PANGO2_GLYPH_UNKNOWN_FLAG))
                 ; /* no hex boxes for space, please */
               else
-                _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
+                _pango2_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
             }
           else
             {
@@ -505,48 +505,36 @@ done:
 }
 
 static void
-pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
-                                  PangoFont         *font,
-                                  PangoGlyphString  *glyphs,
-                                  int                x,
-                                  int                y)
+pango2_cairo_renderer_draw_glyphs (Pango2Renderer     *renderer,
+                                   Pango2Font         *font,
+                                   Pango2GlyphString  *glyphs,
+                                   int                 x,
+                                   int                 y)
 {
-  pango_cairo_renderer_show_text_glyphs (renderer,
-                                         NULL, 0,
-                                         glyphs,
-                                         NULL, 0,
-                                         FALSE,
-                                         font,
-                                         x, y);
+  pango2_cairo_renderer_show_text_glyphs (renderer, NULL, 0, glyphs, NULL, 0, FALSE, font, x, y);
 }
 
 static void
-pango_cairo_renderer_draw_run (PangoRenderer     *renderer,
-                               const char        *text,
-                               PangoRun          *run,
-                               int                x,
-                               int                y)
+pango2_cairo_renderer_draw_run (Pango2Renderer *renderer,
+                                const char     *text,
+                                Pango2Run      *run,
+                                int             x,
+                                int             y)
 {
-  PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
-  PangoItem *item = pango_run_get_item (run);
-  PangoGlyphString *glyphs = pango_run_get_glyphs (run);
-  PangoFont *font = item->analysis.font;
+  Pango2CairoRenderer *crenderer = (Pango2CairoRenderer *) (renderer);
+  Pango2Item *item = pango2_run_get_item (run);
+  Pango2GlyphString *glyphs = pango2_run_get_glyphs (run);
+  Pango2Font *font = item->analysis.font;
   gboolean backward  = (item->analysis.level & 1) != 0;
-  PangoGlyphItem *glyph_item = pango_run_get_glyph_item (run);
-  PangoGlyphItemIter iter;
+  Pango2GlyphItem *glyph_item = pango2_run_get_glyph_item (run);
+  Pango2GlyphItemIter iter;
   cairo_text_cluster_t *cairo_clusters;
   cairo_text_cluster_t stack_clusters[STACK_ARRAY_LENGTH (cairo_text_cluster_t)];
   int num_clusters;
 
   if (!crenderer->has_show_text_glyphs || crenderer->do_path)
     {
-      pango_cairo_renderer_show_text_glyphs (renderer,
-                                             NULL, 0,
-                                             glyphs,
-                                             NULL, 0,
-                                             FALSE,
-                                             font,
-                                             x, y);
+      pango2_cairo_renderer_show_text_glyphs (renderer, NULL, 0, glyphs, NULL, 0, FALSE, font, x, y);
       return;
     }
 
@@ -556,7 +544,7 @@ pango_cairo_renderer_draw_run (PangoRenderer     *renderer,
     cairo_clusters = stack_clusters;
 
   num_clusters = 0;
-  if (pango_glyph_item_iter_init_start (&iter, glyph_item, text))
+  if (pango2_glyph_item_iter_init_start (&iter, glyph_item, text))
     {
       do {
         int num_bytes, num_glyphs, i;
@@ -565,49 +553,49 @@ pango_cairo_renderer_draw_run (PangoRenderer     *renderer,
         num_glyphs = backward ? iter.start_glyph - iter.end_glyph : iter.end_glyph - iter.start_glyph;
 
         if (num_bytes < 1)
-          g_warning ("pango_cairo_renderer_draw_glyph_item: bad cluster has num_bytes %d", num_bytes);
+          g_warning ("pango2_cairo_renderer_draw_glyph_item: bad cluster has num_bytes %d", num_bytes);
         if (num_glyphs < 1)
-          g_warning ("pango_cairo_renderer_draw_glyph_item: bad cluster has num_glyphs %d", num_glyphs);
+          g_warning ("pango2_cairo_renderer_draw_glyph_item: bad cluster has num_glyphs %d", num_glyphs);
 
         /* Discount empty and unknown glyphs */
         for (i = MIN (iter.start_glyph, iter.end_glyph+1);
              i < MAX (iter.start_glyph+1, iter.end_glyph);
              i++)
           {
-            PangoGlyphInfo *gi = &glyphs->glyphs[i];
+            Pango2GlyphInfo *gi = &glyphs->glyphs[i];
 
-            if (gi->glyph == PANGO_GLYPH_EMPTY ||
-                gi->glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+            if (gi->glyph == PANGO2_GLYPH_EMPTY ||
+                gi->glyph & PANGO2_GLYPH_UNKNOWN_FLAG)
               num_glyphs--;
           }
 
         cairo_clusters[num_clusters].num_bytes  = num_bytes;
         cairo_clusters[num_clusters].num_glyphs = num_glyphs;
         num_clusters++;
-      } while (pango_glyph_item_iter_next_cluster (&iter));
+      } while (pango2_glyph_item_iter_next_cluster (&iter));
     }
 
-  pango_cairo_renderer_show_text_glyphs (renderer,
-                                         text + item->offset, item->length,
-                                         glyphs,
-                                         cairo_clusters, num_clusters,
-                                         backward,
-                                         font,
-                                         x, y);
+  pango2_cairo_renderer_show_text_glyphs (renderer,
+                                          text + item->offset, item->length,
+                                          glyphs,
+                                          cairo_clusters, num_clusters,
+                                          backward,
+                                          font,
+                                          x, y);
 
   if (cairo_clusters != stack_clusters)
     g_free (cairo_clusters);
 }
 
 static void
-pango_cairo_renderer_draw_rectangle (PangoRenderer     *renderer,
-                                     PangoRenderPart    part,
-                                     int                x,
-                                     int                y,
-                                     int                width,
-                                     int                height)
+pango2_cairo_renderer_draw_rectangle (Pango2Renderer   *renderer,
+                                      Pango2RenderPart  part,
+                                      int               x,
+                                      int               y,
+                                      int               width,
+                                      int               height)
 {
-  PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
+  Pango2CairoRenderer *crenderer = (Pango2CairoRenderer *) (renderer);
 
   if (!crenderer->do_path)
     {
@@ -617,9 +605,9 @@ pango_cairo_renderer_draw_rectangle (PangoRenderer     *renderer,
     }
 
   cairo_rectangle (crenderer->cr,
-                   crenderer->x_offset + (double)x / PANGO_SCALE,
-                   crenderer->y_offset + (double)y / PANGO_SCALE,
-                   (double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
+                   crenderer->x_offset + (double)x / PANGO2_SCALE,
+                   crenderer->y_offset + (double)y / PANGO2_SCALE,
+                   (double)width / PANGO2_SCALE, (double)height / PANGO2_SCALE);
 
   if (!crenderer->do_path)
     {
@@ -630,16 +618,16 @@ pango_cairo_renderer_draw_rectangle (PangoRenderer     *renderer,
 }
 
 static void
-pango_cairo_renderer_draw_trapezoid (PangoRenderer     *renderer,
-                                     PangoRenderPart    part,
-                                     double             y1_,
-                                     double             x11,
-                                     double             x21,
-                                     double             y2,
-                                     double             x12,
-                                     double             x22)
+pango2_cairo_renderer_draw_trapezoid (Pango2Renderer   *renderer,
+                                      Pango2RenderPart  part,
+                                      double            y1_,
+                                      double            x11,
+                                      double            x21,
+                                      double            y2,
+                                      double            x12,
+                                      double            x22)
 {
-  PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
+  Pango2CairoRenderer *crenderer = (Pango2CairoRenderer *) (renderer);
   cairo_t *cr;
   double x, y;
 
@@ -742,15 +730,15 @@ draw_wavy_line (cairo_t *cr,
 }
 
 static void
-pango_cairo_renderer_draw_styled_line (PangoRenderer   *renderer,
-                                       PangoRenderPart  part,
-                                       PangoLineStyle   style,
-                                       int              x,
-                                       int              y,
-                                       int              width,
-                                       int              height)
+pango2_cairo_renderer_draw_styled_line (Pango2Renderer   *renderer,
+                                        Pango2RenderPart  part,
+                                        Pango2LineStyle   style,
+                                        int               x,
+                                        int               y,
+                                        int               width,
+                                        int               height)
 {
-  PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
+  Pango2CairoRenderer *crenderer = (Pango2CairoRenderer *) (renderer);
   cairo_t *cr = crenderer->cr;
 
   if (!crenderer->do_path)
@@ -764,57 +752,57 @@ pango_cairo_renderer_draw_styled_line (PangoRenderer   *renderer,
 
   switch (style)
     {
-    case PANGO_LINE_STYLE_NONE:
+    case PANGO2_LINE_STYLE_NONE:
       break;
 
-    case PANGO_LINE_STYLE_DOTTED:
-    case PANGO_LINE_STYLE_DASHED:
+    case PANGO2_LINE_STYLE_DOTTED:
+    case PANGO2_LINE_STYLE_DASHED:
       cairo_save (cr);
-      cairo_set_line_width (cr, (double)height / PANGO_SCALE);
-      if (style == PANGO_LINE_STYLE_DOTTED)
+      cairo_set_line_width (cr, (double)height / PANGO2_SCALE);
+      if (style == PANGO2_LINE_STYLE_DOTTED)
         {
           cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
-          cairo_set_dash (cr, (const double []){0., (double)(2 * height) / PANGO_SCALE}, 2, 0.);
+          cairo_set_dash (cr, (const double []){0., (double)(2 * height) / PANGO2_SCALE}, 2, 0.);
         }
       else
         {
           cairo_set_line_cap (cr, CAIRO_LINE_CAP_SQUARE);
-          cairo_set_dash (cr, (const double []){(double)(3 * height) / PANGO_SCALE, (double)(3 * height) / PANGO_SCALE}, 2, 0.);
+          cairo_set_dash (cr, (const double []){(double)(3 * height) / PANGO2_SCALE, (double)(3 * height) / PANGO2_SCALE}, 2, 0.);
         }
       cairo_move_to (cr,
-                     crenderer->x_offset + (double)x / PANGO_SCALE + (double)height / (2 * PANGO_SCALE),
-                     crenderer->y_offset + (double)y / PANGO_SCALE + (double)height / (2 * PANGO_SCALE));
+                     crenderer->x_offset + (double)x / PANGO2_SCALE + (double)height / (2 * PANGO2_SCALE),
+                     crenderer->y_offset + (double)y / PANGO2_SCALE + (double)height / (2 * PANGO2_SCALE));
       cairo_line_to (cr,
-                     crenderer->x_offset + (double)x / PANGO_SCALE + (double)width / PANGO_SCALE - (double)height / PANGO_SCALE,
-                     crenderer->y_offset + (double)y / PANGO_SCALE + (double)height / (2 * PANGO_SCALE));
+                     crenderer->x_offset + (double)x / PANGO2_SCALE + (double)width / PANGO2_SCALE - (double)height / PANGO2_SCALE,
+                     crenderer->y_offset + (double)y / PANGO2_SCALE + (double)height / (2 * PANGO2_SCALE));
       cairo_stroke (cr);
       cairo_restore (cr);
       break;
 
-    case PANGO_LINE_STYLE_SOLID:
+    case PANGO2_LINE_STYLE_SOLID:
       cairo_rectangle (cr,
-                       crenderer->x_offset + (double)x / PANGO_SCALE,
-                       crenderer->y_offset + (double)y / PANGO_SCALE,
-                       (double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
+                       crenderer->x_offset + (double)x / PANGO2_SCALE,
+                       crenderer->y_offset + (double)y / PANGO2_SCALE,
+                       (double)width / PANGO2_SCALE, (double)height / PANGO2_SCALE);
       break;
 
-    case PANGO_LINE_STYLE_DOUBLE:
+    case PANGO2_LINE_STYLE_DOUBLE:
       cairo_rectangle (cr,
-                       crenderer->x_offset + (double)x / PANGO_SCALE,
-                       crenderer->y_offset + (double)y / PANGO_SCALE,
-                       (double)width / PANGO_SCALE, (double)height / (3 * PANGO_SCALE));
+                       crenderer->x_offset + (double)x / PANGO2_SCALE,
+                       crenderer->y_offset + (double)y / PANGO2_SCALE,
+                       (double)width / PANGO2_SCALE, (double)height / (3 * PANGO2_SCALE));
       cairo_rectangle (cr,
-                       crenderer->x_offset + (double)x / PANGO_SCALE,
-                       crenderer->y_offset + (double)y / PANGO_SCALE + (double)(2 * height) / (3 * PANGO_SCALE),
-                       (double)width / PANGO_SCALE, (double)height / (3 * PANGO_SCALE));
+                       crenderer->x_offset + (double)x / PANGO2_SCALE,
+                       crenderer->y_offset + (double)y / PANGO2_SCALE + (double)(2 * height) / (3 * PANGO2_SCALE),
+                       (double)width / PANGO2_SCALE, (double)height / (3 * PANGO2_SCALE));
       break;
 
 
-    case PANGO_LINE_STYLE_WAVY:
+    case PANGO2_LINE_STYLE_WAVY:
       draw_wavy_line (cr,
-                      crenderer->x_offset + (double)x / PANGO_SCALE,
-                      crenderer->y_offset + (double)y / PANGO_SCALE,
-                      (double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
+                      crenderer->x_offset + (double)x / PANGO2_SCALE,
+                      crenderer->y_offset + (double)y / PANGO2_SCALE,
+                      (double)width / PANGO2_SCALE, (double)height / PANGO2_SCALE);
       break;
     default:
       g_assert_not_reached ();
@@ -829,35 +817,35 @@ pango_cairo_renderer_draw_styled_line (PangoRenderer   *renderer,
 }
 
 static void
-pango_cairo_renderer_init (PangoCairoRenderer *renderer G_GNUC_UNUSED)
+pango2_cairo_renderer_init (Pango2CairoRenderer *renderer G_GNUC_UNUSED)
 {
 }
 
 static void
-pango_cairo_renderer_class_init (PangoCairoRendererClass *klass)
+pango2_cairo_renderer_class_init (Pango2CairoRendererClass *klass)
 {
-  PangoRendererClass *renderer_class = PANGO_RENDERER_CLASS (klass);
+  Pango2RendererClass *renderer_class = PANGO2_RENDERER_CLASS (klass);
 
-  renderer_class->draw_glyphs = pango_cairo_renderer_draw_glyphs;
-  renderer_class->draw_run = pango_cairo_renderer_draw_run;
-  renderer_class->draw_rectangle = pango_cairo_renderer_draw_rectangle;
-  renderer_class->draw_styled_line = pango_cairo_renderer_draw_styled_line;
-  renderer_class->draw_trapezoid = pango_cairo_renderer_draw_trapezoid;
+  renderer_class->draw_glyphs = pango2_cairo_renderer_draw_glyphs;
+  renderer_class->draw_run = pango2_cairo_renderer_draw_run;
+  renderer_class->draw_rectangle = pango2_cairo_renderer_draw_rectangle;
+  renderer_class->draw_styled_line = pango2_cairo_renderer_draw_styled_line;
+  renderer_class->draw_trapezoid = pango2_cairo_renderer_draw_trapezoid;
 }
 
-static PangoCairoRenderer *cached_renderer = NULL; /* MT-safe */
+static Pango2CairoRenderer *cached_renderer = NULL; /* MT-safe */
 G_LOCK_DEFINE_STATIC (cached_renderer);
 
-static PangoCairoRenderer *
+static Pango2CairoRenderer *
 acquire_renderer (void)
 {
-  PangoCairoRenderer *renderer;
+  Pango2CairoRenderer *renderer;
 
   if (G_LIKELY (G_TRYLOCK (cached_renderer)))
     {
       if (G_UNLIKELY (!cached_renderer))
         {
-          cached_renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
+          cached_renderer = g_object_new (PANGO2_TYPE_CAIRO_RENDERER, NULL);
           cached_renderer->is_cached_renderer = TRUE;
         }
 
@@ -865,14 +853,14 @@ acquire_renderer (void)
     }
   else
     {
-      renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
+      renderer = g_object_new (PANGO2_TYPE_CAIRO_RENDERER, NULL);
     }
 
   return renderer;
 }
 
 static void
-release_renderer (PangoCairoRenderer *renderer)
+release_renderer (Pango2CairoRenderer *renderer)
 {
   if (G_LIKELY (renderer->is_cached_renderer))
     {
@@ -889,7 +877,7 @@ release_renderer (PangoCairoRenderer *renderer)
 }
 
 static void
-save_current_point (PangoCairoRenderer *renderer)
+save_current_point (Pango2CairoRenderer *renderer)
 {
   renderer->cr_had_current_point = cairo_has_current_point (renderer->cr);
   cairo_get_current_point (renderer->cr, &renderer->x_offset, &renderer->y_offset);
@@ -899,7 +887,7 @@ save_current_point (PangoCairoRenderer *renderer)
 }
 
 static void
-restore_current_point (PangoCairoRenderer *renderer)
+restore_current_point (Pango2CairoRenderer *renderer)
 {
   if (renderer->cr_had_current_point)
     /* XXX should do cairo_set_current_point() when we have that function */
@@ -913,13 +901,13 @@ restore_current_point (PangoCairoRenderer *renderer)
 
 
 static void
-_pango_cairo_do_glyph_string (cairo_t          *cr,
-                              PangoFont        *font,
-                              PangoGlyphString *glyphs,
-                              gboolean          do_path)
+_pango2_cairo_do_glyph_string (cairo_t           *cr,
+                               Pango2Font        *font,
+                               Pango2GlyphString *glyphs,
+                               gboolean           do_path)
 {
-  PangoCairoRenderer *crenderer = acquire_renderer ();
-  PangoRenderer *renderer = (PangoRenderer *) crenderer;
+  Pango2CairoRenderer *crenderer = acquire_renderer ();
+  Pango2Renderer *renderer = (Pango2Renderer *) crenderer;
 
   crenderer->cr = cr;
   crenderer->do_path = do_path;
@@ -931,20 +919,20 @@ _pango_cairo_do_glyph_string (cairo_t          *cr,
        * prepare_run() isn't called.
        */
 
-      pango_renderer_activate (renderer);
+      pango2_renderer_activate (renderer);
 
-      pango_renderer_set_color (renderer, PANGO_RENDER_PART_FOREGROUND, NULL);
-      pango_renderer_set_color (renderer, PANGO_RENDER_PART_BACKGROUND, NULL);
-      pango_renderer_set_color (renderer, PANGO_RENDER_PART_UNDERLINE, NULL);
-      pango_renderer_set_color (renderer, PANGO_RENDER_PART_STRIKETHROUGH, NULL);
-      pango_renderer_set_color (renderer, PANGO_RENDER_PART_OVERLINE, NULL);
+      pango2_renderer_set_color (renderer, PANGO2_RENDER_PART_FOREGROUND, NULL);
+      pango2_renderer_set_color (renderer, PANGO2_RENDER_PART_BACKGROUND, NULL);
+      pango2_renderer_set_color (renderer, PANGO2_RENDER_PART_UNDERLINE, NULL);
+      pango2_renderer_set_color (renderer, PANGO2_RENDER_PART_STRIKETHROUGH, NULL);
+      pango2_renderer_set_color (renderer, PANGO2_RENDER_PART_OVERLINE, NULL);
     }
 
-  pango_renderer_draw_glyphs (renderer, font, glyphs, 0, 0);
+  pango2_renderer_draw_glyphs (renderer, font, glyphs, 0, 0);
 
   if (!do_path)
     {
-      pango_renderer_deactivate (renderer);
+      pango2_renderer_deactivate (renderer);
     }
 
   restore_current_point (crenderer);
@@ -953,13 +941,13 @@ _pango_cairo_do_glyph_string (cairo_t          *cr,
 }
 
 static void
-_pango_cairo_do_run (cairo_t          *cr,
-                     const char       *text,
-                     PangoRun         *run,
-                     gboolean          do_path)
+_pango2_cairo_do_run (cairo_t    *cr,
+                      const char *text,
+                      Pango2Run  *run,
+                      gboolean    do_path)
 {
-  PangoCairoRenderer *crenderer = acquire_renderer ();
-  PangoRenderer *renderer = (PangoRenderer *) crenderer;
+  Pango2CairoRenderer *crenderer = acquire_renderer ();
+  Pango2Renderer *renderer = (Pango2Renderer *) crenderer;
 
   crenderer->cr = cr;
   crenderer->do_path = do_path;
@@ -971,19 +959,19 @@ _pango_cairo_do_run (cairo_t          *cr,
        * prepare_run() isn't called.
        */
 
-      pango_renderer_activate (renderer);
+      pango2_renderer_activate (renderer);
 
-      pango_renderer_set_color (renderer, PANGO_RENDER_PART_FOREGROUND, NULL);
-      pango_renderer_set_color (renderer, PANGO_RENDER_PART_BACKGROUND, NULL);
-      pango_renderer_set_color (renderer, PANGO_RENDER_PART_UNDERLINE, NULL);
-      pango_renderer_set_color (renderer, PANGO_RENDER_PART_STRIKETHROUGH, NULL);
-      pango_renderer_set_color (renderer, PANGO_RENDER_PART_OVERLINE, NULL);
+      pango2_renderer_set_color (renderer, PANGO2_RENDER_PART_FOREGROUND, NULL);
+      pango2_renderer_set_color (renderer, PANGO2_RENDER_PART_BACKGROUND, NULL);
+      pango2_renderer_set_color (renderer, PANGO2_RENDER_PART_UNDERLINE, NULL);
+      pango2_renderer_set_color (renderer, PANGO2_RENDER_PART_STRIKETHROUGH, NULL);
+      pango2_renderer_set_color (renderer, PANGO2_RENDER_PART_OVERLINE, NULL);
     }
 
-  pango_renderer_draw_run (renderer, text, run, 0, 0);
+  pango2_renderer_draw_run (renderer, text, run, 0, 0);
 
   if (!do_path)
-    pango_renderer_deactivate (renderer);
+    pango2_renderer_deactivate (renderer);
 
   restore_current_point (crenderer);
 
@@ -991,37 +979,18 @@ _pango_cairo_do_run (cairo_t          *cr,
 }
 
 static void
-_pango_cairo_do_line (cairo_t   *cr,
-                      PangoLine *line,
-                      gboolean   do_path)
-{
-  PangoCairoRenderer *crenderer = acquire_renderer ();
-  PangoRenderer *renderer = (PangoRenderer *) crenderer;
-
-  crenderer->cr = cr;
-  crenderer->do_path = do_path;
-  save_current_point (crenderer);
-
-  pango_renderer_draw_line (renderer, line, 0, 0);
-
-  restore_current_point (crenderer);
-
-  release_renderer (crenderer);
-}
-
-static void
-_pango_cairo_do_lines (cairo_t    *cr,
-                       PangoLines *lines,
+_pango2_cairo_do_line (cairo_t    *cr,
+                       Pango2Line *line,
                        gboolean    do_path)
 {
-  PangoCairoRenderer *crenderer = acquire_renderer ();
-  PangoRenderer *renderer = (PangoRenderer *) crenderer;
+  Pango2CairoRenderer *crenderer = acquire_renderer ();
+  Pango2Renderer *renderer = (Pango2Renderer *) crenderer;
 
   crenderer->cr = cr;
   crenderer->do_path = do_path;
   save_current_point (crenderer);
 
-  pango_renderer_draw_lines (renderer, lines, 0, 0);
+  pango2_renderer_draw_line (renderer, line, 0, 0);
 
   restore_current_point (crenderer);
 
@@ -1029,18 +998,37 @@ _pango_cairo_do_lines (cairo_t    *cr,
 }
 
 static void
-_pango_cairo_do_layout (cairo_t     *cr,
-                        PangoLayout *layout,
+_pango2_cairo_do_lines (cairo_t     *cr,
+                        Pango2Lines *lines,
                         gboolean     do_path)
 {
-  PangoCairoRenderer *crenderer = acquire_renderer ();
-  PangoRenderer *renderer = (PangoRenderer *) crenderer;
+  Pango2CairoRenderer *crenderer = acquire_renderer ();
+  Pango2Renderer *renderer = (Pango2Renderer *) crenderer;
 
   crenderer->cr = cr;
   crenderer->do_path = do_path;
   save_current_point (crenderer);
 
-  pango_renderer_draw_lines (renderer, pango_layout_get_lines (layout), 0, 0);
+  pango2_renderer_draw_lines (renderer, lines, 0, 0);
+
+  restore_current_point (crenderer);
+
+  release_renderer (crenderer);
+}
+
+static void
+_pango2_cairo_do_layout (cairo_t      *cr,
+                         Pango2Layout *layout,
+                         gboolean      do_path)
+{
+  Pango2CairoRenderer *crenderer = acquire_renderer ();
+  Pango2Renderer *renderer = (Pango2Renderer *) crenderer;
+
+  crenderer->cr = cr;
+  crenderer->do_path = do_path;
+  save_current_point (crenderer);
+
+  pango2_renderer_draw_lines (renderer, pango2_layout_get_lines (layout), 0, 0);
 
   restore_current_point (crenderer);
 
@@ -1051,10 +1039,10 @@ _pango_cairo_do_layout (cairo_t     *cr,
 
 
 /**
- * pango_cairo_show_glyph_string:
+ * pango2_cairo_show_glyph_string:
  * @cr: a Cairo context
- * @font: a `PangoFont` from a `PangoCairoFontMap`
- * @glyphs: a `PangoGlyphString`
+ * @font: a `Pango2Font` from a `Pango2CairoFontMap`
+ * @glyphs: a `Pango2GlyphString`
  *
  * Draws the glyphs in @glyphs in the specified cairo context.
  *
@@ -1062,27 +1050,26 @@ _pango_cairo_do_layout (cairo_t     *cr,
  * be drawn at the current point of the cairo context.
  */
 void
-pango_cairo_show_glyph_string (cairo_t          *cr,
-                               PangoFont        *font,
-                               PangoGlyphString *glyphs)
+pango2_cairo_show_glyph_string (cairo_t           *cr,
+                                Pango2Font        *font,
+                                Pango2GlyphString *glyphs)
 {
   g_return_if_fail (cr != NULL);
   g_return_if_fail (glyphs != NULL);
 
-  _pango_cairo_do_glyph_string (cr, font, glyphs, FALSE);
+  _pango2_cairo_do_glyph_string (cr, font, glyphs, FALSE);
 }
 
-
 /**
- * pango_cairo_show_run:
+ * pango2_cairo_show_run:
  * @cr: a Cairo context
  * @text: the UTF-8 text that @run refers to
- * @run: a `PangoRun`
+ * @run: a `Pango2Run`
  *
  * Draws the glyphs in @run in the specified cairo context,
  * embedding the text associated with the glyphs in the output if the
  * output format supports it (PDF for example), otherwise it acts
- * similar to [func@Pango.cairo_show_glyph_string].
+ * similar to [func@Pango2.cairo_show_glyph_string].
  *
  * The origin of the glyphs (the left edge of the baseline) will
  * be drawn at the current point of the cairo context.
@@ -1091,82 +1078,82 @@ pango_cairo_show_glyph_string (cairo_t          *cr,
  * indexed by `run->item->offset`.
  */
 void
-pango_cairo_show_run (cairo_t          *cr,
-                      const char       *text,
-                      PangoRun         *run)
+pango2_cairo_show_run (cairo_t    *cr,
+                       const char *text,
+                       Pango2Run  *run)
 {
   g_return_if_fail (cr != NULL);
   g_return_if_fail (text != NULL);
   g_return_if_fail (run != NULL);
 
-  _pango_cairo_do_run (cr, text, run, FALSE);
+  _pango2_cairo_do_run (cr, text, run, FALSE);
 }
 
 /**
- * pango_cairo_show_line:
+ * pango2_cairo_show_line:
  * @cr: a Cairo context
- * @line: a `PangoLine`
+ * @line: a `Pango2Line`
  *
- * Draws a `PangoLine` in the specified cairo context.
+ * Draws a `Pango2Line` in the specified cairo context.
  *
  * The origin of the glyphs (the left edge of the line) will
  * be drawn at the current point of the cairo context.
  */
 void
-pango_cairo_show_line (cairo_t   *cr,
-                       PangoLine *line)
+pango2_cairo_show_line (cairo_t    *cr,
+                        Pango2Line *line)
 {
   g_return_if_fail (cr != NULL);
   g_return_if_fail (line != NULL);
 
-  _pango_cairo_do_line (cr, line, FALSE);
+  _pango2_cairo_do_line (cr, line, FALSE);
 }
 
 /**
- * pango_cairo_show_lines:
+ * pango2_cairo_show_lines:
  * @cr: a Cairo context
- * @lines: a `PangoLines` object
+ * @lines: a `Pango2Lines` object
  *
- * Draws a `PangoLines` object in the specified cairo context.
+ * Draws a `Pango2Lines` object in the specified cairo context.
  *
- * The top-left corner of the `PangoLines` will be drawn
+ * The top-left corner of the `Pango2Lines` will be drawn
  * at the current point of the cairo context.
  */
 void
-pango_cairo_show_lines (cairo_t    *cr,
-                        PangoLines *lines)
+pango2_cairo_show_lines (cairo_t     *cr,
+                         Pango2Lines *lines)
 {
   g_return_if_fail (cr != NULL);
   g_return_if_fail (lines != NULL);
 
-  _pango_cairo_do_lines (cr, lines, FALSE);
+  _pango2_cairo_do_lines (cr, lines, FALSE);
 }
 
 /**
- * pango_cairo_show_layout:
+ * pango2_cairo_show_layout:
  * @cr: a Cairo context
- * @layout: a Pango layout
+ * @layout: a Pango2 layout
  *
- * Draws a `PangoLayout` in the specified cairo context.
+ * Draws a `Pango2Layout` in the specified cairo context.
  *
- * The top-left corner of the `PangoLayout` will be drawn
+ * The top-left corner of the `Pango2Layout` will be drawn
  * at the current point of the cairo context.
  */
 void
-pango_cairo_show_layout (cairo_t     *cr,
-                         PangoLayout *layout)
+pango2_cairo_show_layout (cairo_t      *cr,
+                          Pango2Layout *layout)
 {
   g_return_if_fail (cr != NULL);
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
 
-  _pango_cairo_do_layout (cr, layout, FALSE);
+  _pango2_cairo_do_layout (cr, layout, FALSE);
 }
 
 /**
- * pango_cairo_glyph_string_path:
+ * pango2_cairo_glyph_string_path:
  * @cr: a Cairo context
- * @font: a `PangoFont` from a `PangoCairoFontMap`
- * @glyphs: a `PangoGlyphString`
+ * @font: a `Pango2Font` from a `Pango2CairoFontMap`
+ * @glyphs: a `Pango2GlyphString`
  *
  * Adds the glyphs in @glyphs to the current path in the specified
  * cairo context.
@@ -1175,94 +1162,94 @@ pango_cairo_show_layout (cairo_t     *cr,
  * will be at the current point of the cairo context.
  */
 void
-pango_cairo_glyph_string_path (cairo_t          *cr,
-                               PangoFont        *font,
-                               PangoGlyphString *glyphs)
+pango2_cairo_glyph_string_path (cairo_t           *cr,
+                                Pango2Font        *font,
+                                Pango2GlyphString *glyphs)
 {
   g_return_if_fail (cr != NULL);
   g_return_if_fail (glyphs != NULL);
 
-  _pango_cairo_do_glyph_string (cr, font, glyphs, TRUE);
+  _pango2_cairo_do_glyph_string (cr, font, glyphs, TRUE);
 }
 
 /**
- * pango_cairo_run_path:
+ * pango2_cairo_run_path:
  * @cr: a Cairo context
  * @text: the UTF-8 text that @run refers to
- * @run: a `PangoRun`
+ * @run: a `Pango2Run`
  *
- * Adds the text in `PangoRun` to the current path in the
+ * Adds the text in `Pango2Run` to the current path in the
  * specified cairo context.
  *
  * The origin of the glyphs (the left edge of the line) will be
  * at the current point of the cairo context.
  */
 void
-pango_cairo_run_path (cairo_t    *cr,
-                      const char *text,
-                      PangoRun   *run)
+pango2_cairo_run_path (cairo_t    *cr,
+                       const char *text,
+                       Pango2Run  *run)
 {
-  _pango_cairo_do_run (cr, text, run, TRUE);
+  _pango2_cairo_do_run (cr, text, run, TRUE);
 }
 
 /**
- * pango_cairo_line_path:
+ * pango2_cairo_line_path:
  * @cr: a Cairo context
- * @line: a `PangoLine`
+ * @line: a `Pango2Line`
  *
- * Adds the text in `PangoLine` to the current path in the
+ * Adds the text in `Pango2Line` to the current path in the
  * specified cairo context.
  *
  * The origin of the glyphs (the left edge of the line) will be
  * at the current point of the cairo context.
  */
 void
-pango_cairo_line_path (cairo_t   *cr,
-                       PangoLine *line)
+pango2_cairo_line_path (cairo_t    *cr,
+                        Pango2Line *line)
 {
   g_return_if_fail (cr != NULL);
 
-  _pango_cairo_do_line (cr, line, TRUE);
+  _pango2_cairo_do_line (cr, line, TRUE);
 }
 
 /**
- * pango_cairo_layout_path:
+ * pango2_cairo_layout_path:
  * @cr: a Cairo context
- * @layout: a Pango layout
+ * @layout: a Pango2 layout
  *
- * Adds the text in a `PangoLayout` to the current path in the
+ * Adds the text in a `Pango2Layout` to the current path in the
  * specified cairo context.
  *
- * The top-left corner of the `PangoLayout` will be at the
+ * The top-left corner of the `Pango2Layout` will be at the
  * current point of the cairo context.
  */
 void
-pango_cairo_layout_path (cairo_t     *cr,
-                         PangoLayout *layout)
+pango2_cairo_layout_path (cairo_t      *cr,
+                          Pango2Layout *layout)
 {
   g_return_if_fail (cr != NULL);
-  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (PANGO2_IS_LAYOUT (layout));
 
-  _pango_cairo_do_layout (cr, layout, TRUE);
+  _pango2_cairo_do_layout (cr, layout, TRUE);
 }
 
 /**
- * pango_cairo_lines_path:
+ * pango2_cairo_lines_path:
  * @cr: a Cairo context
- * @lines: a `PangoLines` object
+ * @lines: a `Pango2Lines` object
  *
- * Adds the text in a `PangoLines` to the current path in the
+ * Adds the text in a `Pango2Lines` to the current path in the
  * specified cairo context.
  *
- * The top-left corner of the `PangoLayout` will be at the
+ * The top-left corner of the `Pango2Layout` will be at the
  * current point of the cairo context.
  */
 void
-pango_cairo_lines_path (cairo_t    *cr,
-                        PangoLines *lines)
+pango2_cairo_lines_path (cairo_t     *cr,
+                         Pango2Lines *lines)
 {
   g_return_if_fail (cr != NULL);
-  g_return_if_fail (PANGO_IS_LINES (lines));
+  g_return_if_fail (PANGO2_IS_LINES (lines));
 
-  _pango_cairo_do_lines (cr, lines, TRUE);
+  _pango2_cairo_do_lines (cr, lines, TRUE);
 }

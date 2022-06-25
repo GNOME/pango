@@ -23,13 +23,13 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_TYPE_CORE_TEXT_FONT_MAP      (pango_core_text_font_map_get_type ())
+#define PANGO2_TYPE_CORE_TEXT_FONT_MAP      (pango2_core_text_font_map_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-PANGO_DECLARE_INTERNAL_TYPE (PangoCoreTextFontMap, pango_core_text_font_map, PANGO, CORE_TEXT_FONT_MAP, PangoFontMap)
+PANGO2_AVAILABLE_IN_ALL
+PANGO2_DECLARE_INTERNAL_TYPE (Pango2CoreTextFontMap, pango2_core_text_font_map, PANGO2, CORE_TEXT_FONT_MAP, Pango2FontMap)
 
-PANGO_AVAILABLE_IN_ALL
-PangoCoreTextFontMap * pango_core_text_font_map_new (void);
+PANGO2_AVAILABLE_IN_ALL
+Pango2CoreTextFontMap * pango2_core_text_font_map_new (void);
 
 
 G_END_DECLS

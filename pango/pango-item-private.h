@@ -23,98 +23,98 @@
 #include <pango/pango-break.h>
 
 /*< private >
- * PangoAnalysis:
+ * Pango2Analysis:
  * @size_font: font to use for determining line height
  * @font: the font for this segment
  * @level: the bidirectional level for this segment.
- * @gravity: the glyph orientation for this segment (A `PangoGravity`).
+ * @gravity: the glyph orientation for this segment (A `Pango2Gravity`).
  * @flags: boolean flags for this segment
- * @script: the detected script for this segment (A `PangoScript`)
+ * @script: the detected script for this segment (A `Pango2Script`)
  * @language: the detected language for this segment.
  * @extra_attrs: extra attributes for this segment.
  *
- * The `PangoAnalysis` structure stores information about
+ * The `Pango2Analysis` structure stores information about
  * the properties of a segment of text.
  */
-struct _PangoAnalysis
+struct _Pango2Analysis
 {
-  PangoFont *size_font;
-  PangoFont *font;
+  Pango2Font *size_font;
+  Pango2Font *font;
 
   guint8 level;
   guint8 gravity;
   guint8 flags;
 
   guint8 script;
-  PangoLanguage *language;
+  Pango2Language *language;
 
   GSList *extra_attrs;
 };
 
 /*< private>
- * PangoItem:
+ * Pango2Item:
  * @offset: byte offset of the start of this item in text.
  * @length: length of this item in bytes.
  * @num_chars: number of Unicode characters in the item.
  * @char_offset: character offset of the start of this item in text. Since 1.50
  * @analysis: analysis results for the item.
  *
- * The `PangoItem` structure stores information about a segment of text.
+ * The `Pango2Item` structure stores information about a segment of text.
  *
- * You typically obtain `PangoItems` by itemizing a piece of text
+ * You typically obtain `Pango2Items` by itemizing a piece of text
  * with [func@itemize].
  */
-struct _PangoItem
+struct _Pango2Item
 {
   int offset;
   int length;
   int num_chars;
   int char_offset;
-  PangoAnalysis analysis;
+  Pango2Analysis analysis;
 };
 
 
-void               pango_analysis_collect_features    (const PangoAnalysis        *analysis,
-                                                       hb_feature_t               *features,
-                                                       guint                       length,
-                                                       guint                      *num_features);
+void               pango2_analysis_collect_features    (const Pango2Analysis        *analysis,
+                                                        hb_feature_t                *features,
+                                                        guint                        length,
+                                                        guint                       *num_features);
 
-void               pango_analysis_set_size_font       (PangoAnalysis              *analysis,
-                                                       PangoFont                  *font);
-PangoFont *        pango_analysis_get_size_font       (const PangoAnalysis        *analysis);
+void               pango2_analysis_set_size_font       (Pango2Analysis              *analysis,
+                                                        Pango2Font                  *font);
+Pango2Font *       pango2_analysis_get_size_font       (const Pango2Analysis        *analysis);
 
-GList *            pango_itemize_with_font            (PangoContext               *context,
-                                                       PangoDirection              base_dir,
-                                                       const char                 *text,
-                                                       int                         start_index,
-                                                       int                         length,
-                                                       PangoAttrList              *attrs,
-                                                       PangoAttrIterator          *cached_iter,
-                                                       const PangoFontDescription *desc);
+GList *            pango2_itemize_with_font            (Pango2Context               *context,
+                                                        Pango2Direction              base_dir,
+                                                        const char                  *text,
+                                                        int                          start_index,
+                                                        int                          length,
+                                                        Pango2AttrList              *attrs,
+                                                        Pango2AttrIterator          *cached_iter,
+                                                        const Pango2FontDescription *desc);
 
-GList *            pango_itemize_post_process_items   (PangoContext               *context,
-                                                       const char                 *text,
-                                                       PangoLogAttr               *log_attrs,
-                                                       GList                      *items);
+GList *            pango2_itemize_post_process_items   (Pango2Context               *context,
+                                                        const char                  *text,
+                                                        Pango2LogAttr               *log_attrs,
+                                                        GList                       *items);
 
-PangoItem *        pango_item_new                     (void);
-PangoItem *        pango_item_split                   (PangoItem                  *orig,
-                                                       int                         split_index,
-                                                       int                         split_offset);
-void               pango_item_unsplit                 (PangoItem                  *orig,
-                                                       int                         split_index,
-                                                       int                         split_offset);
-void               pango_item_apply_attrs             (PangoItem                  *item,
-                                                      PangoAttrIterator           *iter);
+Pango2Item *       pango2_item_new                     (void);
+Pango2Item *       pango2_item_split                   (Pango2Item                  *orig,
+                                                        int                         split_index,
+                                                        int                         split_offset);
+void               pango2_item_unsplit                 (Pango2Item                  *orig,
+                                                        int                         split_index,
+                                                        int                         split_offset);
+void               pango2_item_apply_attrs             (Pango2Item                  *item,
+                                                        Pango2AttrIterator          *iter);
 
 
 typedef struct _ItemProperties ItemProperties;
 struct _ItemProperties
 {
-  PangoLineStyle uline_style;
-  PangoUnderlinePosition uline_position;
-  PangoLineStyle strikethrough_style;
-  PangoLineStyle oline_style;
+  Pango2LineStyle uline_style;
+  Pango2UnderlinePosition uline_position;
+  Pango2LineStyle strikethrough_style;
+  Pango2LineStyle oline_style;
   guint oline_single        : 1;
   guint showing_space       : 1;
   guint no_paragraph_break  : 1;
@@ -122,8 +122,8 @@ struct _ItemProperties
   int line_spacing;
   int absolute_line_height;
   double line_height;
-  PangoAttribute *shape;
+  Pango2Attribute *shape;
 };
 
-void               pango_item_get_properties          (PangoItem        *item,
+void               pango2_item_get_properties          (Pango2Item        *item,
                                                        ItemProperties   *properties);

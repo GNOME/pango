@@ -22,23 +22,23 @@
 #include "pango-language.h"
 
 
-#define PANGO_TYPE_LANGUAGE_SET (pango_language_set_get_type ())
+#define PANGO2_TYPE_LANGUAGE_SET (pango2_language_set_get_type ())
 
-G_DECLARE_DERIVABLE_TYPE (PangoLanguageSet, pango_language_set, PANGO, LANGUAGE_SET, GObject)
+G_DECLARE_DERIVABLE_TYPE (Pango2LanguageSet, pango2_language_set, PANGO2, LANGUAGE_SET, GObject)
 
-struct _PangoLanguageSetClass
+struct _Pango2LanguageSetClass
 {
   GObjectClass parent_class;
 
-  gboolean               (* matches_language)   (PangoLanguageSet       *set,
-                                                 PangoLanguage          *language);
+  gboolean               (* matches_language)   (Pango2LanguageSet       *set,
+                                                 Pango2Language          *language);
 
-  PangoLanguage **      (* get_languages)       (PangoLanguageSet       *set);
+  Pango2Language **      (* get_languages)      (Pango2LanguageSet       *set);
 };
 
-gboolean                pango_language_set_matches_language     (PangoLanguageSet *set,
-                                                                 PangoLanguage    *language);
+gboolean                pango2_language_set_matches_language     (Pango2LanguageSet *set,
+                                                                  Pango2Language    *language);
 
-PangoLanguage **        pango_language_set_get_languages        (PangoLanguageSet *set);
+Pango2Language **       pango2_language_set_get_languages        (Pango2LanguageSet *set);
 
-char *                  pango_language_set_to_string            (PangoLanguageSet *set);
+char *                  pango2_language_set_to_string            (Pango2LanguageSet *set);

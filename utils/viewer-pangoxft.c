@@ -1,4 +1,4 @@
-/* viewer-pangoxft.c: PangoXft viewer backend.
+/* viewer-pangoxft.c: Pango2Xft viewer backend.
  *
  * Copyright (C) 1999,2004,2005 Red Hat, Inc.
  * Copyright (C) 2001 Sun Microsystems
@@ -43,7 +43,7 @@ default_substitute (FcPattern *pattern,
 }
 
 static gpointer
-pangoxft_view_create (const PangoViewer *klass)
+pangoxft_view_create (const Pango2Viewer *klass)
 {
   XViewer *instance;
 
@@ -51,7 +51,7 @@ pangoxft_view_create (const PangoViewer *klass)
 
   XftInit (NULL);
 
-  pango_fc_font_map_set_default_substitute (PANGO_FC_FONT_MAP (pango_xft_get_font_map (instance->display, instance->screen)),
+  pango2_fc_font_map_set_default_substitute (PANGO2_FC_FONT_MAP (pango2_xft_get_font_map (instance->display, instance->screen)),
 				            default_substitute, NULL, NULL);
 
   return instance;
@@ -62,17 +62,17 @@ pangoxft_view_destroy (gpointer instance)
 {
   XViewer *x = (XViewer *)instance;
 
-  pango_xft_shutdown_display (x->display, x->screen);
+  pango2_xft_shutdown_display (x->display, x->screen);
 
   x_view_destroy (instance);
 }
 
-static PangoContext *
+static Pango2Context *
 pangoxft_view_get_context (gpointer instance)
 {
   XViewer *x = (XViewer *) instance;
 
-  return pango_font_map_create_context (pango_xft_get_font_map (x->display, x->screen));
+  return pango2_font_map_create_context (pango2_xft_get_font_map (x->display, x->screen));
 }
 
 typedef struct
@@ -82,7 +82,7 @@ typedef struct
 } MyXftContext;
 
 static void
-render_callback (PangoLayout *layout,
+render_callback (Pango2Layout *layout,
 		 int          x,
 		 int          y,
 		 gpointer     context,
@@ -90,16 +90,16 @@ render_callback (PangoLayout *layout,
 {
   MyXftContext *xft_context = (MyXftContext *) context;
 
-  pango_xft_render_layout (xft_context->draw,
+  pango2_xft_render_layout (xft_context->draw,
 			   &xft_context->color,
 			   layout,
-			   x * PANGO_SCALE, y * PANGO_SCALE);
+			   x * PANGO2_SCALE, y * PANGO2_SCALE);
 }
 
 static void
 pangoxft_view_render (gpointer      instance,
 		      gpointer      surface,
-		      PangoContext *context,
+		      Pango2Context *context,
 		      int          *width,
 		      int          *height,
 		      gpointer      state)
@@ -137,8 +137,8 @@ pangoxft_view_render (gpointer      instance,
   XftDrawDestroy (draw);
 }
 
-const PangoViewer pangoxft_viewer = {
-  "PangoXft",
+const Pango2Viewer pangoxft_viewer = {
+  "Pango2Xft",
   "xft",
   NULL,
   pangoxft_view_create,

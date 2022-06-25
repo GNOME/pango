@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * pango-fontset.c:
  *
  * Copyright (C) 2001 Red Hat Software
@@ -22,17 +22,17 @@
 #include "config.h"
 
 /**
- * PangoFontset:
+ * Pango2Fontset:
  *
- * A `PangoFontset` represents a set of `PangoFont` to use when rendering text.
+ * A `Pango2Fontset` represents a set of `Pango2Font` to use when rendering text.
  *
- * A `PangoFontset` is the result of resolving a `PangoFontDescription`
- * against a particular `PangoContext`. It has operations for finding the
+ * A `Pango2Fontset` is the result of resolving a `Pango2FontDescription`
+ * against a particular `Pango2Context`. It has operations for finding the
  * component font for a particular Unicode character, and for finding a
  * composite set of metrics for the entire fontset.
  *
- * To obtain a `PangoFontset`, use [method@Pango.Context.load_fontset] or
- * [method@Pango.FontMap.load_fontset].
+ * To obtain a `Pango2Fontset`, use [method@Pango2.Context.load_fontset] or
+ * [method@Pango2.FontMap.load_fontset].
  */
 
 #include "pango-fontset-private.h"
@@ -40,77 +40,77 @@
 #include "pango-font-metrics-private.h"
 #include "pango-impl-utils.h"
 
-static PangoFontMetrics *pango_fontset_real_get_metrics (PangoFontset *fontset);
+static Pango2FontMetrics *pango2_fontset_real_get_metrics (Pango2Fontset *fontset);
 
-G_DEFINE_ABSTRACT_TYPE (PangoFontset, pango_fontset, G_TYPE_OBJECT);
+G_DEFINE_ABSTRACT_TYPE (Pango2Fontset, pango2_fontset, G_TYPE_OBJECT);
 
 static void
-pango_fontset_init (PangoFontset *self)
+pango2_fontset_init (Pango2Fontset *self)
 {
 }
 
 static void
-pango_fontset_class_init (PangoFontsetClass *class)
+pango2_fontset_class_init (Pango2FontsetClass *class)
 {
-  class->get_metrics = pango_fontset_real_get_metrics;
+  class->get_metrics = pango2_fontset_real_get_metrics;
 }
 
 
 /**
- * pango_fontset_get_font:
- * @fontset: a `PangoFontset`
+ * pango2_fontset_get_font:
+ * @fontset: a `Pango2Fontset`
  * @wc: a Unicode character
  *
  * Returns the font in the fontset that contains the best
  * glyph for a Unicode character.
  *
- * Return value: (transfer full): a `PangoFont`
+ * Return value: (transfer full): a `Pango2Font`
  */
-PangoFont *
-pango_fontset_get_font (PangoFontset *fontset,
-                        guint         wc)
+Pango2Font *
+pango2_fontset_get_font (Pango2Fontset *fontset,
+                         guint          wc)
 {
 
-  g_return_val_if_fail (PANGO_IS_FONTSET (fontset), NULL);
+  g_return_val_if_fail (PANGO2_IS_FONTSET (fontset), NULL);
 
-  return PANGO_FONTSET_GET_CLASS (fontset)->get_font (fontset, wc);
+  return PANGO2_FONTSET_GET_CLASS (fontset)->get_font (fontset, wc);
 }
 
 /**
- * pango_fontset_get_metrics:
- * @fontset: a `PangoFontset`
+ * pango2_fontset_get_metrics:
+ * @fontset: a `Pango2Fontset`
  *
  * Get overall metric information for the fonts in the fontset.
  *
- * Return value: a `PangoFontMetrics` object
+ * Return value: a `Pango2FontMetrics` object
  */
-PangoFontMetrics *
-pango_fontset_get_metrics (PangoFontset *fontset)
+Pango2FontMetrics *
+pango2_fontset_get_metrics (Pango2Fontset *fontset)
 {
-  g_return_val_if_fail (PANGO_IS_FONTSET (fontset), NULL);
+  g_return_val_if_fail (PANGO2_IS_FONTSET (fontset), NULL);
 
-  return PANGO_FONTSET_GET_CLASS (fontset)->get_metrics (fontset);
+  return PANGO2_FONTSET_GET_CLASS (fontset)->get_metrics (fontset);
 }
 
 /*< private >
- * pango_fontset_get_language:
- * @fontset: a `PangoFontset`
+ * pango2_fontset_get_language:
+ * @fontset: a `Pango2Fontset`
  *
  * Gets the language that the fontset was created for.
  *
  * Returns: the language that @fontset was created for
  */
-PangoLanguage *
-pango_fontset_get_language (PangoFontset *fontset)
+Pango2Language *
+pango2_fontset_get_language (Pango2Fontset *fontset)
 {
-  g_return_val_if_fail (PANGO_IS_FONTSET (fontset), NULL);
+  g_return_val_if_fail (PANGO2_IS_FONTSET (fontset), NULL);
 
-  return PANGO_FONTSET_GET_CLASS (fontset)->get_language (fontset);
+  return PANGO2_FONTSET_GET_CLASS (fontset)->get_language (fontset);
 }
 
 /**
- * pango_fontset_foreach:
- * @fontset: a `PangoFontset`
+ * pango2_fontset_foreach:
+ * @fontset: a `Pango2Fontset`
  * @func: (closure data) (scope call): Callback function
  * @data: (closure): data to pass to the callback function
  *
@@ -120,60 +120,60 @@ pango_fontset_get_language (PangoFontset *fontset)
  * If @func returns %TRUE, that stops the iteration.
  */
 void
-pango_fontset_foreach (PangoFontset           *fontset,
-                       PangoFontsetForeachFunc func,
-                       gpointer                data)
+pango2_fontset_foreach (Pango2Fontset            *fontset,
+                        Pango2FontsetForeachFunc  func,
+                        gpointer                  data)
 {
-  g_return_if_fail (PANGO_IS_FONTSET (fontset));
+  g_return_if_fail (PANGO2_IS_FONTSET (fontset));
   g_return_if_fail (func != NULL);
 
-  PANGO_FONTSET_GET_CLASS (fontset)->foreach (fontset, func, data);
+  PANGO2_FONTSET_GET_CLASS (fontset)->foreach (fontset, func, data);
 }
 
 static gboolean
-get_first_metrics_foreach (PangoFontset  *fontset,
-                           PangoFont     *font,
+get_first_metrics_foreach (Pango2Fontset *fontset,
+                           Pango2Font    *font,
                            gpointer       data)
 {
-  PangoFontMetrics **fontset_metrics = data;
-  PangoLanguage *language = pango_fontset_get_language (fontset);
+  Pango2FontMetrics **fontset_metrics = data;
+  Pango2Language *language = pango2_fontset_get_language (fontset);
 
-  *fontset_metrics = pango_font_get_metrics (font, language);
+  *fontset_metrics = pango2_font_get_metrics (font, language);
 
   return TRUE; /* Stops iteration */
 }
 
-static PangoFontMetrics *
-pango_fontset_real_get_metrics (PangoFontset  *fontset)
+static Pango2FontMetrics *
+pango2_fontset_real_get_metrics (Pango2Fontset *fontset)
 {
-  PangoFontMetrics *metrics, *raw_metrics;
+  Pango2FontMetrics *metrics, *raw_metrics;
   const char *sample_str;
   const char *p;
   int count;
   GHashTable *fonts_seen;
-  PangoFont *font;
-  PangoLanguage *language;
+  Pango2Font *font;
+  Pango2Language *language;
 
-  language = pango_fontset_get_language (fontset);
-  sample_str = pango_language_get_sample_string (language);
+  language = pango2_fontset_get_language (fontset);
+  sample_str = pango2_language_get_sample_string (language);
 
   count = 0;
   metrics = NULL;
   fonts_seen = g_hash_table_new_full (NULL, NULL, g_object_unref, NULL);
 
   /* Initialize the metrics from the first font in the fontset */
-  pango_fontset_foreach (fontset, get_first_metrics_foreach, &metrics);
+  pango2_fontset_foreach (fontset, get_first_metrics_foreach, &metrics);
 
   p = sample_str;
   while (*p)
     {
       gunichar wc = g_utf8_get_char (p);
-      font = pango_fontset_get_font (fontset, wc);
+      font = pango2_fontset_get_font (fontset, wc);
       if (font)
         {
           if (g_hash_table_lookup (fonts_seen, font) == NULL)
             {
-              raw_metrics = pango_font_get_metrics (font, language);
+              raw_metrics = pango2_font_get_metrics (font, language);
               g_hash_table_insert (fonts_seen, font, font);
 
               if (count == 0)
@@ -191,7 +191,7 @@ pango_fontset_real_get_metrics (PangoFontset  *fontset)
                   metrics->approximate_digit_width += raw_metrics->approximate_digit_width;
                 }
               count++;
-              pango_font_metrics_free (raw_metrics);
+              pango2_font_metrics_free (raw_metrics);
             }
           else
             g_object_unref (font);

@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  * break-thai.c:
  *
  * Copyright (C) 2003 Theppitak Karoonboonyanan <thep@linux.thai.net>
@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -35,7 +35,7 @@ static ThBrk *thai_brk = NULL;
 
 /*
  * tis_text is assumed to be large enough to hold the converted string,
- * i.e. it must be at least pango_utf8_strlen(text, len)+1 bytes.
+ * i.e. it must be at least pango2_utf8_strlen(text, len)+1 bytes.
  */
 static thchar_t *
 utf8_to_tis (const char *text, int len, thchar_t *tis_text, int *tis_cnt)
@@ -54,11 +54,11 @@ utf8_to_tis (const char *text, int len, thchar_t *tis_text, int *tis_cnt)
 
 #endif
 static void
-break_thai (const char          *text,
-	    int                  len,
-	    const PangoAnalysis *analysis G_GNUC_UNUSED,
-	    PangoLogAttr        *attrs,
-	    int                  attrs_len G_GNUC_UNUSED)
+break_thai (const char           *text,
+            int                   len,
+            const Pango2Analysis *analysis G_GNUC_UNUSED,
+            Pango2LogAttr        *attrs,
+            int                   attrs_len G_GNUC_UNUSED)
 {
 #ifdef HAVE_LIBTHAI
   thchar_t tis_stack[512];
@@ -67,7 +67,7 @@ break_thai (const char          *text,
   int *brk_pnts;
   int cnt;
 
-  cnt = pango_utf8_strlen (text, len) + 1;
+  cnt = pango2_utf8_strlen (text, len) + 1;
 
   tis_text = tis_stack;
   if (cnt > (int) G_N_ELEMENTS (tis_stack))

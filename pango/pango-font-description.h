@@ -27,298 +27,298 @@
 G_BEGIN_DECLS
 
 /**
- * PangoFontDescription:
+ * Pango2FontDescription:
  *
- * A `PangoFontDescription` describes a font in an implementation-independent
+ * A `Pango2FontDescription` describes a font in an implementation-independent
  * manner.
  *
- * `PangoFontDescription` structures are used both to list what fonts are
+ * `Pango2FontDescription` structures are used both to list what fonts are
  * available on the system and also for specifying the characteristics of
  * a font to load.
  */
 
 /**
- * PangoStyle:
- * @PANGO_STYLE_NORMAL: the font is upright.
- * @PANGO_STYLE_OBLIQUE: the font is slanted, but in a roman style.
- * @PANGO_STYLE_ITALIC: the font is slanted in an italic style.
+ * Pango2Style:
+ * @PANGO2_STYLE_NORMAL: the font is upright.
+ * @PANGO2_STYLE_OBLIQUE: the font is slanted, but in a roman style.
+ * @PANGO2_STYLE_ITALIC: the font is slanted in an italic style.
  *
  * An enumeration specifying the various slant styles possible for a font.
  **/
 typedef enum {
-  PANGO_STYLE_NORMAL,
-  PANGO_STYLE_OBLIQUE,
-  PANGO_STYLE_ITALIC
-} PangoStyle;
+  PANGO2_STYLE_NORMAL,
+  PANGO2_STYLE_OBLIQUE,
+  PANGO2_STYLE_ITALIC
+} Pango2Style;
 
 /**
- * PangoVariant:
- * @PANGO_VARIANT_NORMAL: A normal font.
- * @PANGO_VARIANT_SMALL_CAPS: A font with the lower case characters
+ * Pango2Variant:
+ * @PANGO2_VARIANT_NORMAL: A normal font.
+ * @PANGO2_VARIANT_SMALL_CAPS: A font with the lower case characters
  *   replaced by smaller variants of the capital characters.
- * @PANGO_VARIANT_ALL_SMALL_CAPS: A font with all characters
+ * @PANGO2_VARIANT_ALL_SMALL_CAPS: A font with all characters
  *   replaced by smaller variants of the capital characters.
- * @PANGO_VARIANT_PETITE_CAPS: A font with the lower case characters
- *   replaced by smaller variants of the capital characters.
- *   Petite Caps can be even smaller than Small Caps.
- * @PANGO_VARIANT_ALL_PETITE_CAPS: A font with all characters
+ * @PANGO2_VARIANT_PETITE_CAPS: A font with the lower case characters
  *   replaced by smaller variants of the capital characters.
  *   Petite Caps can be even smaller than Small Caps.
- * @PANGO_VARIANT_UNICASE: A font with the upper case characters
+ * @PANGO2_VARIANT_ALL_PETITE_CAPS: A font with all characters
+ *   replaced by smaller variants of the capital characters.
+ *   Petite Caps can be even smaller than Small Caps.
+ * @PANGO2_VARIANT_UNICASE: A font with the upper case characters
  *   replaced by smaller variants of the capital letters.
- * @PANGO_VARIANT_TITLE_CAPS: A font with capital letters that
+ * @PANGO2_VARIANT_TITLE_CAPS: A font with capital letters that
  *   are more suitable for all-uppercase titles.
  *
  * An enumeration specifying capitalization variant of the font.
  */
 typedef enum {
-  PANGO_VARIANT_NORMAL,
-  PANGO_VARIANT_SMALL_CAPS,
-  PANGO_VARIANT_ALL_SMALL_CAPS,
-  PANGO_VARIANT_PETITE_CAPS,
-  PANGO_VARIANT_ALL_PETITE_CAPS,
-  PANGO_VARIANT_UNICASE,
-  PANGO_VARIANT_TITLE_CAPS
-} PangoVariant;
+  PANGO2_VARIANT_NORMAL,
+  PANGO2_VARIANT_SMALL_CAPS,
+  PANGO2_VARIANT_ALL_SMALL_CAPS,
+  PANGO2_VARIANT_PETITE_CAPS,
+  PANGO2_VARIANT_ALL_PETITE_CAPS,
+  PANGO2_VARIANT_UNICASE,
+  PANGO2_VARIANT_TITLE_CAPS
+} Pango2Variant;
 
 /**
- * PangoWeight:
- * @PANGO_WEIGHT_THIN: the thin weight (= 100)
- * @PANGO_WEIGHT_ULTRALIGHT: the ultralight weight (= 200)
- * @PANGO_WEIGHT_LIGHT: the light weight (= 300)
- * @PANGO_WEIGHT_SEMILIGHT: the semilight weight (= 350)
- * @PANGO_WEIGHT_BOOK: the book weight (= 380)
- * @PANGO_WEIGHT_NORMAL: the default weight (= 400)
- * @PANGO_WEIGHT_MEDIUM: the normal weight (= 500)
- * @PANGO_WEIGHT_SEMIBOLD: the semibold weight (= 600)
- * @PANGO_WEIGHT_BOLD: the bold weight (= 700)
- * @PANGO_WEIGHT_ULTRABOLD: the ultrabold weight (= 800)
- * @PANGO_WEIGHT_HEAVY: the heavy weight (= 900)
- * @PANGO_WEIGHT_ULTRAHEAVY: the ultraheavy weight (= 1000)
+ * Pango2Weight:
+ * @PANGO2_WEIGHT_THIN: the thin weight (= 100)
+ * @PANGO2_WEIGHT_ULTRALIGHT: the ultralight weight (= 200)
+ * @PANGO2_WEIGHT_LIGHT: the light weight (= 300)
+ * @PANGO2_WEIGHT_SEMILIGHT: the semilight weight (= 350)
+ * @PANGO2_WEIGHT_BOOK: the book weight (= 380)
+ * @PANGO2_WEIGHT_NORMAL: the default weight (= 400)
+ * @PANGO2_WEIGHT_MEDIUM: the normal weight (= 500)
+ * @PANGO2_WEIGHT_SEMIBOLD: the semibold weight (= 600)
+ * @PANGO2_WEIGHT_BOLD: the bold weight (= 700)
+ * @PANGO2_WEIGHT_ULTRABOLD: the ultrabold weight (= 800)
+ * @PANGO2_WEIGHT_HEAVY: the heavy weight (= 900)
+ * @PANGO2_WEIGHT_ULTRAHEAVY: the ultraheavy weight (= 1000)
  *
- * A `PangoWeight` specifes the weight (boldness) of a font.
+ * A `Pango2Weight` specifes the weight (boldness) of a font.
  *
  * Weight is specified as a numeric value ranging from 100 to 1000.
  * This enumeration simply provides some common, predefined values.
  */
 typedef enum {
-  PANGO_WEIGHT_THIN = 100,
-  PANGO_WEIGHT_ULTRALIGHT = 200,
-  PANGO_WEIGHT_LIGHT = 300,
-  PANGO_WEIGHT_SEMILIGHT = 350,
-  PANGO_WEIGHT_BOOK = 380,
-  PANGO_WEIGHT_NORMAL = 400,
-  PANGO_WEIGHT_MEDIUM = 500,
-  PANGO_WEIGHT_SEMIBOLD = 600,
-  PANGO_WEIGHT_BOLD = 700,
-  PANGO_WEIGHT_ULTRABOLD = 800,
-  PANGO_WEIGHT_HEAVY = 900,
-  PANGO_WEIGHT_ULTRAHEAVY = 1000
-} PangoWeight;
+  PANGO2_WEIGHT_THIN = 100,
+  PANGO2_WEIGHT_ULTRALIGHT = 200,
+  PANGO2_WEIGHT_LIGHT = 300,
+  PANGO2_WEIGHT_SEMILIGHT = 350,
+  PANGO2_WEIGHT_BOOK = 380,
+  PANGO2_WEIGHT_NORMAL = 400,
+  PANGO2_WEIGHT_MEDIUM = 500,
+  PANGO2_WEIGHT_SEMIBOLD = 600,
+  PANGO2_WEIGHT_BOLD = 700,
+  PANGO2_WEIGHT_ULTRABOLD = 800,
+  PANGO2_WEIGHT_HEAVY = 900,
+  PANGO2_WEIGHT_ULTRAHEAVY = 1000
+} Pango2Weight;
 
 /**
- * PangoStretch:
- * @PANGO_STRETCH_ULTRA_CONDENSED: ultra-condensed width (= 500)
- * @PANGO_STRETCH_EXTRA_CONDENSED: extra-condensed width (= 625)
- * @PANGO_STRETCH_CONDENSED: condensed width (= 750)
- * @PANGO_STRETCH_SEMI_CONDENSED: semi-condensed width (= 875)
- * @PANGO_STRETCH_NORMAL: the normal width (= 1000)
- * @PANGO_STRETCH_SEMI_EXPANDED: semi-expanded width (= 1125)
- * @PANGO_STRETCH_EXPANDED: expanded width (= 1250)
- * @PANGO_STRETCH_EXTRA_EXPANDED: extra-expanded width (= 1500)
- * @PANGO_STRETCH_ULTRA_EXPANDED: ultra-expanded width (= 2000)
+ * Pango2Stretch:
+ * @PANGO2_STRETCH_ULTRA_CONDENSED: ultra-condensed width (= 500)
+ * @PANGO2_STRETCH_EXTRA_CONDENSED: extra-condensed width (= 625)
+ * @PANGO2_STRETCH_CONDENSED: condensed width (= 750)
+ * @PANGO2_STRETCH_SEMI_CONDENSED: semi-condensed width (= 875)
+ * @PANGO2_STRETCH_NORMAL: the normal width (= 1000)
+ * @PANGO2_STRETCH_SEMI_EXPANDED: semi-expanded width (= 1125)
+ * @PANGO2_STRETCH_EXPANDED: expanded width (= 1250)
+ * @PANGO2_STRETCH_EXTRA_EXPANDED: extra-expanded width (= 1500)
+ * @PANGO2_STRETCH_ULTRA_EXPANDED: ultra-expanded width (= 2000)
  *
- * A `PangoStretch` specifes the width of the font relative
+ * A `Pango2Stretch` specifes the width of the font relative
  * to other designs within a family.
  *
  * Stretch is specified as a numeric value ranging from 500 to 2000.
  * This enumeration simply provides some common, predefined values.
  */
 typedef enum {
-  PANGO_STRETCH_ULTRA_CONDENSED =  500,
-  PANGO_STRETCH_EXTRA_CONDENSED =  625,
-  PANGO_STRETCH_CONDENSED       =  750,
-  PANGO_STRETCH_SEMI_CONDENSED  =  875,
-  PANGO_STRETCH_NORMAL          = 1000,
-  PANGO_STRETCH_SEMI_EXPANDED   = 1125,
-  PANGO_STRETCH_EXPANDED        = 1250,
-  PANGO_STRETCH_EXTRA_EXPANDED  = 1500,
-  PANGO_STRETCH_ULTRA_EXPANDED  = 2000
-} PangoStretch;
+  PANGO2_STRETCH_ULTRA_CONDENSED =  500,
+  PANGO2_STRETCH_EXTRA_CONDENSED =  625,
+  PANGO2_STRETCH_CONDENSED       =  750,
+  PANGO2_STRETCH_SEMI_CONDENSED  =  875,
+  PANGO2_STRETCH_NORMAL          = 1000,
+  PANGO2_STRETCH_SEMI_EXPANDED   = 1125,
+  PANGO2_STRETCH_EXPANDED        = 1250,
+  PANGO2_STRETCH_EXTRA_EXPANDED  = 1500,
+  PANGO2_STRETCH_ULTRA_EXPANDED  = 2000
+} Pango2Stretch;
 
 /**
- * PangoFontMask:
- * @PANGO_FONT_MASK_FAMILY: the font family is specified.
- * @PANGO_FONT_MASK_STYLE: the font style is specified.
- * @PANGO_FONT_MASK_VARIANT: the font variant is specified.
- * @PANGO_FONT_MASK_WEIGHT: the font weight is specified.
- * @PANGO_FONT_MASK_STRETCH: the font stretch is specified.
- * @PANGO_FONT_MASK_SIZE: the font size is specified.
- * @PANGO_FONT_MASK_GRAVITY: the font gravity is specified
- * @PANGO_FONT_MASK_VARIATIONS: OpenType font variations are specified
- * @PANGO_FONT_MASK_FACEID: the face ID is specified
+ * Pango2FontMask:
+ * @PANGO2_FONT_MASK_FAMILY: the font family is specified.
+ * @PANGO2_FONT_MASK_STYLE: the font style is specified.
+ * @PANGO2_FONT_MASK_VARIANT: the font variant is specified.
+ * @PANGO2_FONT_MASK_WEIGHT: the font weight is specified.
+ * @PANGO2_FONT_MASK_STRETCH: the font stretch is specified.
+ * @PANGO2_FONT_MASK_SIZE: the font size is specified.
+ * @PANGO2_FONT_MASK_GRAVITY: the font gravity is specified
+ * @PANGO2_FONT_MASK_VARIATIONS: OpenType font variations are specified
+ * @PANGO2_FONT_MASK_FACEID: the face ID is specified
  *
- * The bits in a `PangoFontMask` correspond to the set fields in a
- * `PangoFontDescription`.
+ * The bits in a `Pango2FontMask` correspond to the set fields in a
+ * `Pango2FontDescription`.
  */
 typedef enum {
-  PANGO_FONT_MASK_FAMILY     = 1 << 0,
-  PANGO_FONT_MASK_STYLE      = 1 << 1,
-  PANGO_FONT_MASK_VARIANT    = 1 << 2,
-  PANGO_FONT_MASK_WEIGHT     = 1 << 3,
-  PANGO_FONT_MASK_STRETCH    = 1 << 4,
-  PANGO_FONT_MASK_SIZE       = 1 << 5,
-  PANGO_FONT_MASK_GRAVITY    = 1 << 6,
-  PANGO_FONT_MASK_VARIATIONS = 1 << 7,
-  PANGO_FONT_MASK_FACEID     = 1 << 8,
-} PangoFontMask;
+  PANGO2_FONT_MASK_FAMILY     = 1 << 0,
+  PANGO2_FONT_MASK_STYLE      = 1 << 1,
+  PANGO2_FONT_MASK_VARIANT    = 1 << 2,
+  PANGO2_FONT_MASK_WEIGHT     = 1 << 3,
+  PANGO2_FONT_MASK_STRETCH    = 1 << 4,
+  PANGO2_FONT_MASK_SIZE       = 1 << 5,
+  PANGO2_FONT_MASK_GRAVITY    = 1 << 6,
+  PANGO2_FONT_MASK_VARIATIONS = 1 << 7,
+  PANGO2_FONT_MASK_FACEID     = 1 << 8,
+} Pango2FontMask;
 
 /* CSS scale factors (1.2 factor between each size) */
 /**
- * PANGO_SCALE_XX_SMALL:
+ * PANGO2_SCALE_XX_SMALL:
  *
  * The scale factor for three shrinking steps (1 / (1.2 * 1.2 * 1.2)).
  */
 /**
- * PANGO_SCALE_X_SMALL:
+ * PANGO2_SCALE_X_SMALL:
  *
  * The scale factor for two shrinking steps (1 / (1.2 * 1.2)).
  */
 /**
- * PANGO_SCALE_SMALL:
+ * PANGO2_SCALE_SMALL:
  *
  * The scale factor for one shrinking step (1 / 1.2).
  */
 /**
- * PANGO_SCALE_MEDIUM:
+ * PANGO2_SCALE_MEDIUM:
  *
  * The scale factor for normal size (1.0).
  */
 /**
- * PANGO_SCALE_LARGE:
+ * PANGO2_SCALE_LARGE:
  *
  * The scale factor for one magnification step (1.2).
  */
 /**
- * PANGO_SCALE_X_LARGE:
+ * PANGO2_SCALE_X_LARGE:
  *
  * The scale factor for two magnification steps (1.2 * 1.2).
  */
 /**
- * PANGO_SCALE_XX_LARGE:
+ * PANGO2_SCALE_XX_LARGE:
  *
  * The scale factor for three magnification steps (1.2 * 1.2 * 1.2).
  */
-#define PANGO_SCALE_XX_SMALL ((double)0.5787037037037)
-#define PANGO_SCALE_X_SMALL  ((double)0.6944444444444)
-#define PANGO_SCALE_SMALL    ((double)0.8333333333333)
-#define PANGO_SCALE_MEDIUM   ((double)1.0)
-#define PANGO_SCALE_LARGE    ((double)1.2)
-#define PANGO_SCALE_X_LARGE  ((double)1.44)
-#define PANGO_SCALE_XX_LARGE ((double)1.728)
+#define PANGO2_SCALE_XX_SMALL ((double)0.5787037037037)
+#define PANGO2_SCALE_X_SMALL  ((double)0.6944444444444)
+#define PANGO2_SCALE_SMALL    ((double)0.8333333333333)
+#define PANGO2_SCALE_MEDIUM   ((double)1.0)
+#define PANGO2_SCALE_LARGE    ((double)1.2)
+#define PANGO2_SCALE_X_LARGE  ((double)1.44)
+#define PANGO2_SCALE_XX_LARGE ((double)1.728)
 
 
-#define PANGO_TYPE_FONT_DESCRIPTION (pango_font_description_get_type ())
+#define PANGO2_TYPE_FONT_DESCRIPTION (pango2_font_description_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-GType                   pango_font_description_get_type          (void) G_GNUC_CONST;
-PANGO_AVAILABLE_IN_ALL
-PangoFontDescription *  pango_font_description_new               (void);
-PANGO_AVAILABLE_IN_ALL
-PangoFontDescription *  pango_font_description_copy              (const PangoFontDescription  *desc);
-PANGO_AVAILABLE_IN_ALL
-PangoFontDescription *  pango_font_description_copy_static       (const PangoFontDescription  *desc);
-PANGO_AVAILABLE_IN_ALL
-guint                   pango_font_description_hash              (const PangoFontDescription  *desc) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_font_description_equal             (const PangoFontDescription  *desc1,
-                                                                  const PangoFontDescription  *desc2) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_description_free              (PangoFontDescription        *desc);
+PANGO2_AVAILABLE_IN_ALL
+GType                   pango2_font_description_get_type          (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontDescription * pango2_font_description_new               (void);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontDescription * pango2_font_description_copy              (const Pango2FontDescription  *desc);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontDescription * pango2_font_description_copy_static       (const Pango2FontDescription  *desc);
+PANGO2_AVAILABLE_IN_ALL
+guint                   pango2_font_description_hash              (const Pango2FontDescription  *desc) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_font_description_equal             (const Pango2FontDescription  *desc1,
+                                                                   const Pango2FontDescription  *desc2) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_description_free              (Pango2FontDescription        *desc);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_description_set_family        (PangoFontDescription *desc,
-                                                                  const char           *family);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_description_set_family_static (PangoFontDescription *desc,
-                                                                  const char           *family);
-PANGO_AVAILABLE_IN_ALL
-const char *            pango_font_description_get_family        (const PangoFontDescription *desc) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_description_set_style         (PangoFontDescription *desc,
-                                                                  PangoStyle            style);
-PANGO_AVAILABLE_IN_ALL
-PangoStyle              pango_font_description_get_style         (const PangoFontDescription *desc) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_description_set_variant       (PangoFontDescription *desc,
-                                                                  PangoVariant          variant);
-PANGO_AVAILABLE_IN_ALL
-PangoVariant            pango_font_description_get_variant       (const PangoFontDescription *desc) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_description_set_weight        (PangoFontDescription *desc,
-                                                                  PangoWeight           weight);
-PANGO_AVAILABLE_IN_ALL
-PangoWeight             pango_font_description_get_weight        (const PangoFontDescription *desc) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_description_set_stretch       (PangoFontDescription *desc,
-                                                                  PangoStretch          stretch);
-PANGO_AVAILABLE_IN_ALL
-PangoStretch            pango_font_description_get_stretch       (const PangoFontDescription *desc) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_description_set_size          (PangoFontDescription *desc,
-                                                                  int                   size);
-PANGO_AVAILABLE_IN_ALL
-int                     pango_font_description_get_size          (const PangoFontDescription *desc) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_description_set_absolute_size (PangoFontDescription *desc,
-                                                                  double                size);
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_font_description_get_size_is_absolute (const PangoFontDescription *desc) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_description_set_gravity       (PangoFontDescription *desc,
-                                                                  PangoGravity          gravity);
-PANGO_AVAILABLE_IN_ALL
-PangoGravity            pango_font_description_get_gravity       (const PangoFontDescription *desc) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_description_set_family        (Pango2FontDescription *desc,
+                                                                   const char           *family);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_description_set_family_static (Pango2FontDescription *desc,
+                                                                   const char           *family);
+PANGO2_AVAILABLE_IN_ALL
+const char *            pango2_font_description_get_family        (const Pango2FontDescription *desc) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_description_set_style         (Pango2FontDescription *desc,
+                                                                   Pango2Style            style);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Style             pango2_font_description_get_style         (const Pango2FontDescription *desc) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_description_set_variant       (Pango2FontDescription *desc,
+                                                                   Pango2Variant          variant);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Variant           pango2_font_description_get_variant       (const Pango2FontDescription *desc) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_description_set_weight        (Pango2FontDescription *desc,
+                                                                   Pango2Weight           weight);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Weight            pango2_font_description_get_weight        (const Pango2FontDescription *desc) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_description_set_stretch       (Pango2FontDescription *desc,
+                                                                   Pango2Stretch          stretch);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Stretch           pango2_font_description_get_stretch       (const Pango2FontDescription *desc) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_description_set_size          (Pango2FontDescription *desc,
+                                                                   int                   size);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_font_description_get_size          (const Pango2FontDescription *desc) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_description_set_absolute_size (Pango2FontDescription *desc,
+                                                                   double                size);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_font_description_get_size_is_absolute (const Pango2FontDescription *desc) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_description_set_gravity       (Pango2FontDescription *desc,
+                                                                   Pango2Gravity          gravity);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Gravity           pango2_font_description_get_gravity       (const Pango2FontDescription *desc) G_GNUC_PURE;
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_description_set_variations_static (PangoFontDescription       *desc,
-                                                                      const char                 *variations);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_description_set_variations    (PangoFontDescription       *desc,
-                                                                  const char                 *variations);
-PANGO_AVAILABLE_IN_ALL
-const char *            pango_font_description_get_variations    (const PangoFontDescription *desc) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_description_set_variations_static (Pango2FontDescription       *desc,
+                                                                       const char                 *variations);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_description_set_variations    (Pango2FontDescription       *desc,
+                                                                   const char                 *variations);
+PANGO2_AVAILABLE_IN_ALL
+const char *            pango2_font_description_get_variations    (const Pango2FontDescription *desc) G_GNUC_PURE;
 
-PANGO_AVAILABLE_IN_ALL
-void                 pango_font_description_set_faceid         (PangoFontDescription     *desc,
-                                                                const char               *faceid);
-PANGO_AVAILABLE_IN_ALL
-void                 pango_font_description_set_faceid_static  (PangoFontDescription *desc,
-                                                                const char           *faceid);
-PANGO_AVAILABLE_IN_ALL
-const char *         pango_font_description_get_faceid         (const PangoFontDescription *desc) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_description_set_faceid        (Pango2FontDescription     *desc,
+                                                                   const char               *faceid);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_description_set_faceid_static (Pango2FontDescription *desc,
+                                                                   const char           *faceid);
+PANGO2_AVAILABLE_IN_ALL
+const char *            pango2_font_description_get_faceid        (const Pango2FontDescription *desc) G_GNUC_PURE;
 
-PANGO_AVAILABLE_IN_ALL
-PangoFontMask           pango_font_description_get_set_fields    (const PangoFontDescription *desc) G_GNUC_PURE;
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_description_unset_fields      (PangoFontDescription       *desc,
-                                                                  PangoFontMask               to_unset);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontMask          pango2_font_description_get_set_fields    (const Pango2FontDescription *desc) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_description_unset_fields      (Pango2FontDescription       *desc,
+                                                                   Pango2FontMask               to_unset);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_description_merge             (PangoFontDescription       *desc,
-                                                                  const PangoFontDescription *desc_to_merge,
-                                                                  gboolean                    replace_existing);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_font_description_merge_static      (PangoFontDescription       *desc,
-                                                                  const PangoFontDescription *desc_to_merge,
-                                                                  gboolean                    replace_existing);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_description_merge             (Pango2FontDescription       *desc,
+                                                                   const Pango2FontDescription *desc_to_merge,
+                                                                   gboolean                    replace_existing);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_font_description_merge_static      (Pango2FontDescription       *desc,
+                                                                   const Pango2FontDescription *desc_to_merge,
+                                                                   gboolean                    replace_existing);
 
-PANGO_AVAILABLE_IN_ALL
-PangoFontDescription *  pango_font_description_from_string       (const char                  *str);
-PANGO_AVAILABLE_IN_ALL
-char *                  pango_font_description_to_string         (const PangoFontDescription  *desc);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontDescription * pango2_font_description_from_string       (const char                  *str);
+PANGO2_AVAILABLE_IN_ALL
+char *                  pango2_font_description_to_string         (const Pango2FontDescription  *desc);
 
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFontDescription, pango_font_description_free)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(Pango2FontDescription, pango2_font_description_free)
 
 G_END_DECLS

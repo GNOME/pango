@@ -27,193 +27,193 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_TYPE_LAYOUT pango_layout_get_type ()
+#define PANGO2_TYPE_LAYOUT pango2_layout_get_type ()
 
-PANGO_AVAILABLE_IN_ALL
-G_DECLARE_FINAL_TYPE (PangoLayout, pango_layout, PANGO, LAYOUT, GObject);
+PANGO2_AVAILABLE_IN_ALL
+G_DECLARE_FINAL_TYPE (Pango2Layout, pango2_layout, PANGO2, LAYOUT, GObject);
 
-PANGO_AVAILABLE_IN_ALL
-PangoLayout *           pango_layout_new            (PangoContext                 *context);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Layout *          pango2_layout_new            (Pango2Context                 *context);
 
-PANGO_AVAILABLE_IN_ALL
-PangoLayout *           pango_layout_copy           (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Layout *          pango2_layout_copy           (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-guint                   pango_layout_get_serial     (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+guint                   pango2_layout_get_serial     (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-PangoContext *          pango_layout_get_context    (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Context *         pango2_layout_get_context    (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_layout_context_changed (PangoLayout                 *layout);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_layout_context_changed (Pango2Layout                 *layout);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_layout_set_text       (PangoLayout                  *layout,
-                                                     const char                   *text,
-                                                     int                           length);
-PANGO_AVAILABLE_IN_ALL
-const char *            pango_layout_get_text       (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_layout_set_text       (Pango2Layout                  *layout,
+                                                      const char                    *text,
+                                                      int                            length);
+PANGO2_AVAILABLE_IN_ALL
+const char *            pango2_layout_get_text       (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_layout_set_markup     (PangoLayout                  *layout,
-                                                     const char                   *markup,
-                                                     int                           length);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_layout_set_markup     (Pango2Layout                  *layout,
+                                                      const char                    *markup,
+                                                      int                            length);
 
-PANGO_AVAILABLE_IN_ALL
-int                     pango_layout_get_character_count
-                                                    (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_layout_get_character_count
+                                                     (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_layout_set_attributes (PangoLayout                  *layout,
-                                                     PangoAttrList                *attrs);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_layout_set_attributes (Pango2Layout                  *layout,
+                                                      Pango2AttrList                *attrs);
 
-PANGO_AVAILABLE_IN_ALL
-PangoAttrList *         pango_layout_get_attributes (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+Pango2AttrList *        pango2_layout_get_attributes (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_layout_set_font_description
-                                                    (PangoLayout                  *layout,
-                                                     const PangoFontDescription   *desc);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_layout_set_font_description
+                                                     (Pango2Layout                  *layout,
+                                                      const Pango2FontDescription   *desc);
 
-PANGO_AVAILABLE_IN_ALL
-const PangoFontDescription *
-                        pango_layout_get_font_description
-                                                    (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+const Pango2FontDescription *
+                        pango2_layout_get_font_description
+                                                     (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_layout_set_line_height
-                                                    (PangoLayout                  *layout,
-                                                     float                         line_height);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_layout_set_line_height
+                                                     (Pango2Layout                  *layout,
+                                                      float                          line_height);
 
-PANGO_AVAILABLE_IN_ALL
-float                   pango_layout_get_line_height
-                                                    (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+float                   pango2_layout_get_line_height
+                                                     (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_layout_set_spacing    (PangoLayout                  *layout,
-                                                     int                           spacing);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_layout_set_spacing    (Pango2Layout                  *layout,
+                                                      int                            spacing);
 
-PANGO_AVAILABLE_IN_ALL
-int                     pango_layout_get_spacing    (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_layout_get_spacing    (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_layout_set_width      (PangoLayout                  *layout,
-                                                     int                           width);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_layout_set_width      (Pango2Layout                  *layout,
+                                                      int                            width);
 
-PANGO_AVAILABLE_IN_ALL
-int                     pango_layout_get_width      (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_layout_get_width      (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_layout_set_height     (PangoLayout                  *layout,
-                                                     int                           height);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_layout_set_height     (Pango2Layout                  *layout,
+                                                      int                            height);
 
-PANGO_AVAILABLE_IN_ALL
-int                     pango_layout_get_height     (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_layout_get_height     (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_layout_set_tabs       (PangoLayout                  *layout,
-                                                     PangoTabArray                *tabs);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_layout_set_tabs       (Pango2Layout                  *layout,
+                                                      Pango2TabArray                *tabs);
 
-PANGO_AVAILABLE_IN_ALL
-PangoTabArray *         pango_layout_get_tabs       (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+Pango2TabArray *        pango2_layout_get_tabs       (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_layout_set_single_paragraph
-                                                    (PangoLayout                  *layout,
-                                                     gboolean                      single_paragraph);
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_layout_get_single_paragraph
-                                                    (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_layout_set_single_paragraph
+                                                     (Pango2Layout                  *layout,
+                                                      gboolean                       single_paragraph);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_layout_get_single_paragraph
+                                                     (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_layout_set_wrap       (PangoLayout                  *layout,
-                                                     PangoWrapMode                 wrap);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_layout_set_wrap       (Pango2Layout                  *layout,
+                                                      Pango2WrapMode                 wrap);
 
-PANGO_AVAILABLE_IN_ALL
-PangoWrapMode           pango_layout_get_wrap       (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+Pango2WrapMode          pango2_layout_get_wrap       (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_layout_set_indent     (PangoLayout                  *layout,
-                                                     int                           indent);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_layout_set_indent     (Pango2Layout                  *layout,
+                                                      int                            indent);
 
-PANGO_AVAILABLE_IN_ALL
-int                     pango_layout_get_indent     (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_layout_get_indent     (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_layout_set_alignment  (PangoLayout                  *layout,
-                                                     PangoAlignment                alignment);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_layout_set_alignment  (Pango2Layout                  *layout,
+                                                      Pango2Alignment                alignment);
 
-PANGO_AVAILABLE_IN_ALL
-PangoAlignment          pango_layout_get_alignment  (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Alignment         pango2_layout_get_alignment  (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_layout_set_ellipsize  (PangoLayout                  *layout,
-                                                     PangoEllipsizeMode            ellipsize);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_layout_set_ellipsize  (Pango2Layout                  *layout,
+                                                      Pango2EllipsizeMode            ellipsize);
 
-PANGO_AVAILABLE_IN_ALL
-PangoEllipsizeMode      pango_layout_get_ellipsize  (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+Pango2EllipsizeMode     pango2_layout_get_ellipsize  (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_layout_set_auto_dir   (PangoLayout                  *layout,
-                                                     gboolean                      auto_dir);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_layout_set_auto_dir   (Pango2Layout                  *layout,
+                                                      gboolean                       auto_dir);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_layout_get_auto_dir   (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_layout_get_auto_dir   (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-PangoLines *            pango_layout_get_lines      (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Lines *           pango2_layout_get_lines      (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-PangoLineIter *         pango_layout_get_iter       (PangoLayout                  *layout);
+PANGO2_AVAILABLE_IN_ALL
+Pango2LineIter *        pango2_layout_get_iter       (Pango2Layout                  *layout);
 
-PANGO_AVAILABLE_IN_ALL
-const PangoLogAttr *    pango_layout_get_log_attrs  (PangoLayout                  *layout,
-                                                     int                          *n_attrs);
+PANGO2_AVAILABLE_IN_ALL
+const Pango2LogAttr *   pango2_layout_get_log_attrs  (Pango2Layout                  *layout,
+                                                      int                           *n_attrs);
 
 typedef enum {
-  PANGO_LAYOUT_SERIALIZE_DEFAULT = 0,
-  PANGO_LAYOUT_SERIALIZE_CONTEXT = 1 << 0,
-  PANGO_LAYOUT_SERIALIZE_OUTPUT = 1 << 1,
-} PangoLayoutSerializeFlags;
+  PANGO2_LAYOUT_SERIALIZE_DEFAULT = 0,
+  PANGO2_LAYOUT_SERIALIZE_CONTEXT = 1 << 0,
+  PANGO2_LAYOUT_SERIALIZE_OUTPUT = 1 << 1,
+} Pango2LayoutSerializeFlags;
 
-PANGO_AVAILABLE_IN_ALL
-GBytes *                pango_layout_serialize      (PangoLayout                  *layout,
-                                                     PangoLayoutSerializeFlags     flags);
+PANGO2_AVAILABLE_IN_ALL
+GBytes *                pango2_layout_serialize      (Pango2Layout                  *layout,
+                                                      Pango2LayoutSerializeFlags     flags);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_layout_write_to_file  (PangoLayout                  *layout,
-                                                     const char                   *filename);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_layout_write_to_file  (Pango2Layout                  *layout,
+                                                      const char                    *filename);
 
-#define PANGO_LAYOUT_DESERIALIZE_ERROR (pango_layout_deserialize_error_quark ())
+#define PANGO2_LAYOUT_DESERIALIZE_ERROR (pango2_layout_deserialize_error_quark ())
 
 /**
- * PangoLayoutDeserializeError:
- * @PANGO_LAYOUT_DESERIALIZE_INVALID: Unspecified error
- * @PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE: A JSon value could not be
+ * Pango2LayoutDeserializeError:
+ * @PANGO2_LAYOUT_DESERIALIZE_INVALID: Unspecified error
+ * @PANGO2_LAYOUT_DESERIALIZE_INVALID_VALUE: A JSon value could not be
  *   interpreted
- * @PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE: A required JSon member was
+ * @PANGO2_LAYOUT_DESERIALIZE_MISSING_VALUE: A required JSon member was
  *   not found
  *
- * Errors that can be returned by [func@Pango.Layout.deserialize].
+ * Errors that can be returned by [func@Pango2.Layout.deserialize].
  */
 typedef enum {
-  PANGO_LAYOUT_DESERIALIZE_INVALID,
-  PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE,
-  PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE,
-} PangoLayoutDeserializeError;
+  PANGO2_LAYOUT_DESERIALIZE_INVALID,
+  PANGO2_LAYOUT_DESERIALIZE_INVALID_VALUE,
+  PANGO2_LAYOUT_DESERIALIZE_MISSING_VALUE,
+} Pango2LayoutDeserializeError;
 
 typedef enum {
-  PANGO_LAYOUT_DESERIALIZE_DEFAULT = 0,
-  PANGO_LAYOUT_DESERIALIZE_CONTEXT = 1 << 0,
-} PangoLayoutDeserializeFlags;
+  PANGO2_LAYOUT_DESERIALIZE_DEFAULT = 0,
+  PANGO2_LAYOUT_DESERIALIZE_CONTEXT = 1 << 0,
+} Pango2LayoutDeserializeFlags;
 
-PANGO_AVAILABLE_IN_ALL
-GQuark                  pango_layout_deserialize_error_quark (void);
+PANGO2_AVAILABLE_IN_ALL
+GQuark                  pango2_layout_deserialize_error_quark (void);
 
-PANGO_AVAILABLE_IN_ALL
-PangoLayout *           pango_layout_deserialize    (PangoContext                 *context,
-                                                     GBytes                       *bytes,
-                                                     PangoLayoutDeserializeFlags   flags,
-                                                     GError                      **error);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Layout *          pango2_layout_deserialize    (Pango2Context                 *context,
+                                                      GBytes                        *bytes,
+                                                      Pango2LayoutDeserializeFlags   flags,
+                                                      GError                       **error);
 
 G_END_DECLS

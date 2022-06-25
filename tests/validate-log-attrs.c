@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  *
  * Copyright (C) 1999 Red Hat Software
  *
@@ -26,7 +26,7 @@
 
 /* {{{ Validation */
 
-G_DEFINE_QUARK(pango-validate-error-quark, pango_validate_error)
+G_DEFINE_QUARK(pango-validate-error-quark, pango2_validate_error)
 
 typedef gboolean (* CharForeachFunc) (int                  pos,
                                       gunichar             wc,
@@ -35,16 +35,16 @@ typedef gboolean (* CharForeachFunc) (int                  pos,
                                       GUnicodeType         type,
                                       GUnicodeType         prev_type,
                                       GUnicodeType         next_type,
-                                      const PangoLogAttr  *attr,
-                                      const PangoLogAttr  *prev_attr,
-                                      const PangoLogAttr  *next_attr,
+                                      const Pango2LogAttr  *attr,
+                                      const Pango2LogAttr  *prev_attr,
+                                      const Pango2LogAttr  *next_attr,
                                       gboolean            *after_zws,
                                       GError             **error);
 
 static gboolean
 log_attr_foreach (const char          *text,
                   int                  length,
-                  const PangoLogAttr  *attrs,
+                  const Pango2LogAttr  *attrs,
                   int                  attrs_len,
                   CharForeachFunc      func,
                   GError             **error)
@@ -114,9 +114,9 @@ check_line_char (int                  pos,
                  GUnicodeType         type,
                  GUnicodeType         prev_type,
                  GUnicodeType         next_type,
-                 const PangoLogAttr  *attr,
-                 const PangoLogAttr  *prev_attr,
-                 const PangoLogAttr  *next_attr,
+                 const Pango2LogAttr  *attr,
+                 const Pango2LogAttr  *prev_attr,
+                 const Pango2LogAttr  *next_attr,
                  gboolean            *after_zws,
                  GError             **error)
 {
@@ -141,7 +141,7 @@ check_line_char (int                  pos,
       if (attr->is_line_break)
         {
           g_set_error (error,
-                       PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_BREAK,
+                       PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_BREAK,
                        "char %#x %d: Do not break between \\r and \\n (LB5)", wc, pos);
           return FALSE;
         }
@@ -152,7 +152,7 @@ check_line_char (int                  pos,
       if (attr->is_line_break)
         {
           g_set_error (error,
-                       PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_BREAK,
+                       PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_BREAK,
                        "char %#x %d: Do not break before first char (LB2)", wc, pos);
           return FALSE;
         }
@@ -163,7 +163,7 @@ check_line_char (int                  pos,
       if (!next_attr->is_line_break)
         {
           g_set_error (error,
-                       PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_BREAK,
+                       PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_BREAK,
                        "char %#x %d: Always break after the last char (LB3)", wc, pos);
           return FALSE;
         }
@@ -174,7 +174,7 @@ check_line_char (int                  pos,
       if (!attr->is_mandatory_break)
         {
           g_set_error (error,
-                       PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_BREAK,
+                       PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_BREAK,
                        "char %#x %d: Always break after hard line breaks (LB4)", wc, pos);
           return FALSE;
         }
@@ -187,7 +187,7 @@ check_line_char (int                  pos,
       if (!attr->is_mandatory_break)
         {
           g_set_error (error,
-                       PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_BREAK,
+                       PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_BREAK,
                        "char %#x %d: Always break after CR, LF and NL (LB5)", wc, pos);
           return FALSE;
         }
@@ -201,7 +201,7 @@ check_line_char (int                  pos,
           if (attr->is_line_break)
             {
               g_set_error (error,
-                           PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_BREAK,
+                           PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_BREAK,
                            "char %#x %d: Do not break before hard line beaks (LB6)", wc, pos);
               return FALSE;
             }
@@ -215,7 +215,7 @@ check_line_char (int                  pos,
           !(next_wc && g_unichar_break_type (next_wc) == G_UNICODE_BREAK_COMBINING_MARK))
         {
           g_set_error (error,
-                       PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_BREAK,
+                       PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_BREAK,
                        "char %#x %d: Can't break before a space unless mandatory precedes or combining mark follows (LB7)", wc, pos);
           return FALSE;
         }
@@ -228,7 +228,7 @@ check_line_char (int                  pos,
       if (!attr->is_line_break)
         {
           g_set_error (error,
-                       PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_BREAK,
+                       PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_BREAK,
                        "char %#x %d: Break before a char following ZWS, even if spaces intervene (LB8)", wc, pos);
           return FALSE;
         }
@@ -239,7 +239,7 @@ check_line_char (int                  pos,
       if (attr->is_line_break)
         {
           g_set_error (error,
-                       PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_BREAK,
+                       PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_BREAK,
                        "char %#x %d: Do not break after ZWJ (LB8a)", wc, pos);
           return FALSE;
         }
@@ -253,7 +253,7 @@ check_line_char (int                  pos,
       if (attr->is_line_break)
         {
           g_set_error (error,
-                       PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_BREAK,
+                       PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_BREAK,
                        "char %#x %d: Do not break before or after WJ (LB11)", wc, pos);
           return FALSE;
         }
@@ -262,7 +262,7 @@ check_line_char (int                  pos,
   if (prev_break_type == G_UNICODE_BREAK_NON_BREAKING_GLUE)
     {
           g_set_error (error,
-                       PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_BREAK,
+                       PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_BREAK,
                        "char %#x %d: Do not break after GL (LB12)", wc, pos);
           return FALSE;
     }
@@ -272,7 +272,7 @@ check_line_char (int                  pos,
   if (attr->is_mandatory_break && !attr->is_line_break)
     {
       g_set_error (error,
-                   PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_BREAK,
+                   PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_BREAK,
                    "char %#x %d: Mandatory breaks must also be marked as regular breaks", wc, pos);
       return FALSE;
     }
@@ -283,7 +283,7 @@ check_line_char (int                  pos,
 static gboolean
 check_line_invariants (const char          *text,
                        int                  length,
-                       const PangoLogAttr  *attrs,
+                       const Pango2LogAttr  *attrs,
                        int                  attrs_len,
                        GError             **error)
 {
@@ -295,7 +295,7 @@ check_line_invariants (const char          *text,
 static gboolean
 check_grapheme_invariants (const char          *text,
                            int                  length,
-                           const PangoLogAttr  *attrs,
+                           const Pango2LogAttr  *attrs,
                            int                  attrs_len,
                            GError             **error)
 {
@@ -305,7 +305,7 @@ check_grapheme_invariants (const char          *text,
 static gboolean
 check_word_invariants (const char          *text,
                        int                  length,
-                       const PangoLogAttr  *attrs,
+                       const Pango2LogAttr  *attrs,
                        int                  attrs_len,
                        GError             **error)
 {
@@ -331,7 +331,7 @@ check_word_invariants (const char          *text,
           if (attrs[i].is_word_end)
             {
               g_set_error (error,
-                           PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_WORD,
+                           PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_WORD,
                            "char %d: Unexpected word end", i);
               return FALSE;
             }
@@ -349,7 +349,7 @@ check_word_invariants (const char          *text,
           if (attrs[i].is_word_start)
             {
               g_set_error (error,
-                           PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_WORD,
+                           PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_WORD,
                            "char %d: Unexpected word start", i);
               return FALSE;
             }
@@ -363,7 +363,7 @@ check_word_invariants (const char          *text,
       if (attrs[i].is_word_boundary && !attrs[i].is_cursor_position)
         {
           g_set_error (error,
-                       PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_SENTENCE,
+                       PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_SENTENCE,
                        "char %d: Word ends inside a grapheme", i);
           return FALSE;
         }
@@ -375,7 +375,7 @@ check_word_invariants (const char          *text,
 static gboolean
 check_sentence_invariants (const char          *text,
                            int                  length,
-                           const PangoLogAttr  *attrs,
+                           const Pango2LogAttr  *attrs,
                            int                  attrs_len,
                            GError             **error)
 {
@@ -401,7 +401,7 @@ check_sentence_invariants (const char          *text,
           if (attrs[i].is_sentence_end)
             {
               g_set_error (error,
-                           PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_SENTENCE,
+                           PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_SENTENCE,
                            "char %d: Unexpected sentence end", i);
               return FALSE;
             }
@@ -419,7 +419,7 @@ check_sentence_invariants (const char          *text,
           if (attrs[i].is_sentence_start)
             {
               g_set_error (error,
-                           PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_SENTENCE,
+                           PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_SENTENCE,
                            "char %d: Unexpected sentence start", i);
               return FALSE;
             }
@@ -436,7 +436,7 @@ check_sentence_invariants (const char          *text,
 static gboolean
 check_space_invariants (const char          *text,
                         int                  length,
-                        const PangoLogAttr  *log_attrs,
+                        const Pango2LogAttr  *log_attrs,
                         int                  attrs_len,
                         GError             **error)
 {
@@ -445,7 +445,7 @@ check_space_invariants (const char          *text,
       if (log_attrs[i].is_expandable_space && !log_attrs[i].is_white)
         {
           g_set_error (error,
-                       PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_SPACE,
+                       PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_SPACE,
                        "char %d: Expandable space must be space", i);
           return FALSE;
         }
@@ -458,15 +458,15 @@ check_space_invariants (const char          *text,
 /* {{{ Public API */
 
 /*
- * pango_validate_log_attrs:
+ * pango2_validate_log_attrs:
  * @text: text to which @log_attrs belong
  * @length: length of @text
- * @log_attrs: `PangoLogAttr` array to validate
+ * @log_attrs: `Pango2LogAttr` array to validate
  * @attrs_len: length of @log_attrs
  *
  * Apply sanity checks to @log_attrs.
  *
- * This function checks some conditions that Pango
+ * This function checks some conditions that Pango2
  * relies on. It is not guaranteed to be an exhaustive
  * validity test. Currentlty, it checks that
  *
@@ -488,9 +488,9 @@ check_space_invariants (const char          *text,
  * Returns: %TRUE if @log_attrs are valid
  */
 gboolean
-pango_validate_log_attrs (const char          *text,
+pango2_validate_log_attrs (const char          *text,
                           int                  length,
-                          const PangoLogAttr  *log_attrs,
+                          const Pango2LogAttr  *log_attrs,
                           int                  attrs_len,
                           GError             **error)
 {
@@ -500,7 +500,7 @@ pango_validate_log_attrs (const char          *text,
   if (attrs_len != n_chars + 1)
     {
       g_set_error_literal (error,
-                           PANGO_VALIDATE_ERROR, PANGO_VALIDATE_ERROR_FAILED,
+                           PANGO2_VALIDATE_ERROR, PANGO2_VALIDATE_ERROR_FAILED,
                            "Array has wrong length");
       return FALSE;
     }

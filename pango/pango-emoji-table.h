@@ -18,8 +18,8 @@
  * # For documentation and usage, see http://www.unicode.org/reports/tr51
  */
 
-#ifndef PANGO_EMOJI_TABLE_H
-#define PANGO_EMOJI_TABLE_H
+#ifndef PANGO2_EMOJI_TABLE_H
+#define PANGO2_EMOJI_TABLE_H
 
 #include <glib.h>
 
@@ -27,7 +27,7 @@ struct Interval {
   gunichar start, end;
 };
 
-static const struct Interval _pango_Emoji_table[] =
+static const struct Interval _pango2_Emoji_table[] =
 {
   {0x0023, 0x0023},
   {0x002A, 0x002A},
@@ -184,7 +184,7 @@ static const struct Interval _pango_Emoji_table[] =
   {0x1FAF0, 0x1FAF6},
 };
 
-static const struct Interval _pango_Emoji_Presentation_table[] =
+static const struct Interval _pango2_Emoji_Presentation_table[] =
 {
   {0x231A, 0x231B},
   {0x23E9, 0x23EC},
@@ -271,12 +271,12 @@ static const struct Interval _pango_Emoji_Presentation_table[] =
   {0x1FAF0, 0x1FAF6},
 };
 
-static const struct Interval _pango_Emoji_Modifier_table[] =
+static const struct Interval _pango2_Emoji_Modifier_table[] =
 {
   {0x1F3FB, 0x1F3FF},
 };
 
-static const struct Interval _pango_Emoji_Modifier_Base_table[] =
+static const struct Interval _pango2_Emoji_Modifier_Base_table[] =
 {
   {0x261D, 0x261D},
   {0x26F9, 0x26F9},
@@ -320,7 +320,7 @@ static const struct Interval _pango_Emoji_Modifier_Base_table[] =
   {0x1FAF0, 0x1FAF6},
 };
 
-static const struct Interval _pango_Extended_Pictographic_table[] =
+static const struct Interval _pango2_Extended_Pictographic_table[] =
 {
   {0x00A9, 0x00A9},
   {0x00AE, 0x00AE},
@@ -402,6 +402,6 @@ static const struct Interval _pango_Extended_Pictographic_table[] =
   {0x1FC00, 0x1FFFD},
 };
 
-#endif /* PANGO_EMOJI_TABLE_H */
+#endif /* PANGO2_EMOJI_TABLE_H */
 
 /* == End of generated table == */

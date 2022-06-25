@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  *
  * Copyright (C) 2021 Red Hat, Inc.
  *
@@ -38,21 +38,21 @@
 
 
 /**
- * PangoCoreTextFontMap:
+ * Pango2CoreTextFontMap:
  *
- * `PangoCoreTextFontMap` is a subclass of `PangoFontMap` that uses
+ * `Pango2CoreTextFontMap` is a subclass of `Pango2FontMap` that uses
  * CoreText to populate the fontmap with the available fonts.
  */
 
 
-struct _PangoCoreTextFontMap
+struct _Pango2CoreTextFontMap
 {
-  PangoFontMap parent_instance;
+  Pango2FontMap parent_instance;
 };
 
-struct _PangoCoreTextFontMapClass
+struct _Pango2CoreTextFontMapClass
 {
-  PangoFontMapClass parent_class;
+  Pango2FontMapClass parent_class;
 };
 
 /* {{{ CoreText utilities */
@@ -68,18 +68,18 @@ struct _PangoCoreTextFontMapClass
 
 static struct {
   float ct_weight;
-  PangoWeight pango_weight;
+  Pango2Weight pango2_weight;
 } ct_weight_map[] = {
-  { ct_weight_min,  PANGO_WEIGHT_THIN },
-  { -0.5,           PANGO_WEIGHT_ULTRALIGHT },
-  { -0.23,          PANGO_WEIGHT_LIGHT },
-  { -0.115,         PANGO_WEIGHT_SEMILIGHT },
-  {  0.00,          PANGO_WEIGHT_NORMAL },
-  {  0.2,           PANGO_WEIGHT_MEDIUM },
-  {  0.3,           PANGO_WEIGHT_SEMIBOLD },
-  {  0.4,           PANGO_WEIGHT_BOLD },
-  {  0.6,           PANGO_WEIGHT_ULTRABOLD },
-  {  ct_weight_max, PANGO_WEIGHT_HEAVY }
+  { ct_weight_min,  PANGO2_WEIGHT_THIN },
+  { -0.5,           PANGO2_WEIGHT_ULTRALIGHT },
+  { -0.23,          PANGO2_WEIGHT_LIGHT },
+  { -0.115,         PANGO2_WEIGHT_SEMILIGHT },
+  {  0.00,          PANGO2_WEIGHT_NORMAL },
+  {  0.2,           PANGO2_WEIGHT_MEDIUM },
+  {  0.3,           PANGO2_WEIGHT_SEMIBOLD },
+  {  0.4,           PANGO2_WEIGHT_BOLD },
+  {  0.6,           PANGO2_WEIGHT_ULTRABOLD },
+  {  ct_weight_max, PANGO2_WEIGHT_HEAVY }
 };
 
 static int
@@ -90,13 +90,13 @@ lerp (float x, float x1, float x2, int y1, int y2)
   return y1 + (dy * (x - x1) + dx / 2) / dx;
 }
 
-static PangoWeight
+static Pango2Weight
 ct_font_descriptor_get_weight (CTFontDescriptorRef desc)
 {
   CFDictionaryRef dict;
   CFNumberRef cf_number;
   CGFloat value;
-  PangoWeight weight = PANGO_WEIGHT_NORMAL;
+  Pango2Weight weight = PANGO2_WEIGHT_NORMAL;
   guint i;
 
   dict = CTFontDescriptorCopyAttribute (desc, kCTFontTraitsAttribute);
@@ -115,12 +115,12 @@ ct_font_descriptor_get_weight (CTFontDescriptorRef desc)
           ;
 
         weight = lerp (value, ct_weight_map[i-1].ct_weight, ct_weight_map[i].ct_weight,
-                       ct_weight_map[i-1].pango_weight, ct_weight_map[i].pango_weight);
+                       ct_weight_map[i-1].pango2_weight, ct_weight_map[i].pango2_weight);
 
       }
     }
   else
-    weight = PANGO_WEIGHT_NORMAL;
+    weight = PANGO2_WEIGHT_NORMAL;
 
   CFRelease (dict);
 
@@ -279,59 +279,59 @@ ct_font_descriptor_is_small_caps (CTFontDescriptorRef desc)
 }
 
 static gboolean
-pango_core_text_style_name_is_oblique (const char *style_name)
+pango2_core_text_style_name_is_oblique (const char *style_name)
 {
   return style_name && strstr (style_name, "Oblique");
 }
 
-static PangoFontDescription *
+static Pango2FontDescription *
 font_description_from_ct_font_descriptor (CTFontDescriptorRef desc)
 {
   SInt64 font_traits;
   char *family_name;
   char *style_name;
-  PangoFontDescription *font_desc;
+  Pango2FontDescription *font_desc;
 
-  font_desc = pango_font_description_new ();
+  font_desc = pango2_font_description_new ();
 
   family_name = ct_font_descriptor_get_family_name (desc, FALSE);
-  pango_font_description_set_family (font_desc, family_name);
+  pango2_font_description_set_family (font_desc, family_name);
   g_free (family_name);
 
-  pango_font_description_set_weight (font_desc, ct_font_descriptor_get_weight (desc));
+  pango2_font_description_set_weight (font_desc, ct_font_descriptor_get_weight (desc));
 
   font_traits = ct_font_descriptor_get_traits (desc);
   style_name = ct_font_descriptor_get_style_name (desc);
 
   if ((font_traits & kCTFontItalicTrait) == kCTFontItalicTrait)
-    pango_font_description_set_style (font_desc, PANGO_STYLE_ITALIC);
-  else if (pango_core_text_style_name_is_oblique (style_name))
-    pango_font_description_set_style (font_desc, PANGO_STYLE_OBLIQUE);
+    pango2_font_description_set_style (font_desc, PANGO2_STYLE_ITALIC);
+  else if (pango2_core_text_style_name_is_oblique (style_name))
+    pango2_font_description_set_style (font_desc, PANGO2_STYLE_OBLIQUE);
   else
-    pango_font_description_set_style (font_desc, PANGO_STYLE_NORMAL);
+    pango2_font_description_set_style (font_desc, PANGO2_STYLE_NORMAL);
 
   if ((font_traits & kCTFontCondensedTrait) == kCTFontCondensedTrait)
-    pango_font_description_set_stretch (font_desc, PANGO_STRETCH_CONDENSED);
+    pango2_font_description_set_stretch (font_desc, PANGO2_STRETCH_CONDENSED);
 
   if (ct_font_descriptor_is_small_caps (desc))
-    pango_font_description_set_variant (font_desc, PANGO_VARIANT_SMALL_CAPS);
+    pango2_font_description_set_variant (font_desc, PANGO2_VARIANT_SMALL_CAPS);
   else
-    pango_font_description_set_variant (font_desc, PANGO_VARIANT_NORMAL);
+    pango2_font_description_set_variant (font_desc, PANGO2_VARIANT_NORMAL);
 
   g_free (style_name);
 
   return font_desc;
 }
 
-static PangoHbFace *
+static Pango2HbFace *
 face_from_ct_font_descriptor (CTFontDescriptorRef desc)
 {
-  PangoHbFace *face;
+  Pango2HbFace *face;
   CTFontRef ctfont;
   CGFontRef cgfont;
   hb_face_t *hb_face;
   char *name;
-  PangoFontDescription *description;
+  Pango2FontDescription *description;
 
   ctfont = CTFontCreateWithFontDescriptor (desc, 0.0, NULL);
   cgfont = CTFontCopyGraphicsFont (ctfont, NULL);
@@ -343,16 +343,16 @@ face_from_ct_font_descriptor (CTFontDescriptorRef desc)
 
   name = ct_font_descriptor_get_style_name (desc);
   description = font_description_from_ct_font_descriptor (desc);
-  pango_font_description_unset_fields (description, PANGO_FONT_MASK_VARIANT |
-                                                    PANGO_FONT_MASK_SIZE |
-                                                    PANGO_FONT_MASK_GRAVITY);
+  pango2_font_description_unset_fields (description, PANGO2_FONT_MASK_VARIANT |
+                                                     PANGO2_FONT_MASK_SIZE |
+                                                     PANGO2_FONT_MASK_GRAVITY);
 
   hb_face_make_immutable (hb_face);
 
-  face = pango_hb_face_new_from_hb_face (hb_face, -1, name, description);
+  face = pango2_hb_face_new_from_hb_face (hb_face, -1, name, description);
   // FIXME: what about languages? see CTFontCopySupportedLanguages
 
-  pango_font_description_free (description);
+  pango2_font_description_free (description);
   g_free (name);
   hb_face_destroy (hb_face);
 
@@ -360,10 +360,10 @@ face_from_ct_font_descriptor (CTFontDescriptorRef desc)
 }
 
 /* }}} */
-/* {{{ PangoFontMap implementation */
+/* {{{ Pango2FontMap implementation */
 
 static void
-pango_core_text_font_map_populate (PangoFontMap *map)
+pango2_core_text_font_map_populate (Pango2FontMap *map)
 {
   CTFontCollectionRef collection;
   CFArrayRef ctfaces;
@@ -377,8 +377,8 @@ pango_core_text_font_map_populate (PangoFontMap *map)
   for (int i = 0; i < count; i++)
     {
       CTFontDescriptorRef desc = CFArrayGetValueAtIndex (ctfaces, i);
-      PangoHbFace *face = face_from_ct_font_descriptor (desc);
-      pango_font_map_add_face (map, PANGO_FONT_FACE (face));
+      Pango2HbFace *face = face_from_ct_font_descriptor (desc);
+      pango2_font_map_add_face (map, PANGO2_FONT_FACE (face));
     }
 
   /* Add generic aliases */
@@ -398,61 +398,61 @@ pango_core_text_font_map_populate (PangoFontMap *map)
 
   for (int i = 0; i < G_N_ELEMENTS (aliases); i++)
     {
-      PangoFontFamily *family = pango_font_map_get_family (map, aliases[i].family_name);
+      Pango2FontFamily *family = pango2_font_map_get_family (map, aliases[i].family_name);
 
       if (family)
         {
-          PangoGenericFamily *alias_family;
+          Pango2GenericFamily *alias_family;
 
-          alias_family = pango_generic_family_new (aliases[i].alias_name);
-          pango_generic_family_add_family (alias_family, family);
-          pango_font_map_add_family (map, PANGO_FONT_FAMILY (alias_family));
+          alias_family = pango2_generic_family_new (aliases[i].alias_name);
+          pango2_generic_family_add_family (alias_family, family);
+          pango2_font_map_add_family (map, PANGO2_FONT_FAMILY (alias_family));
         }
     }
 }
 
 /* }}} */
-/* {{{ PangoCoreTextFontMap implementation */
+/* {{{ Pango2CoreTextFontMap implementation */
 
-G_DEFINE_FINAL_TYPE (PangoCoreTextFontMap, pango_core_text_font_map, PANGO_TYPE_FONT_MAP)
+G_DEFINE_FINAL_TYPE (Pango2CoreTextFontMap, pango2_core_text_font_map, PANGO2_TYPE_FONT_MAP)
 
 static void
-pango_core_text_font_map_init (PangoCoreTextFontMap *self)
+pango2_core_text_font_map_init (Pango2CoreTextFontMap *self)
 {
-  pango_font_map_repopulate (PANGO_FONT_MAP (self), TRUE);
+  pango2_font_map_repopulate (PANGO2_FONT_MAP (self), TRUE);
 }
 
 static void
-pango_core_text_font_map_finalize (GObject *object)
+pango2_core_text_font_map_finalize (GObject *object)
 {
-  G_OBJECT_CLASS (pango_core_text_font_map_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango2_core_text_font_map_parent_class)->finalize (object);
 }
 
 static void
-pango_core_text_font_map_class_init (PangoCoreTextFontMapClass *class)
+pango2_core_text_font_map_class_init (Pango2CoreTextFontMapClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
-  PangoFontMapClass *font_map_class = PANGO_FONT_MAP_CLASS (class);
+  Pango2FontMapClass *font_map_class = PANGO2_FONT_MAP_CLASS (class);
 
-  object_class->finalize = pango_core_text_font_map_finalize;
+  object_class->finalize = pango2_core_text_font_map_finalize;
 
-  font_map_class->populate = pango_core_text_font_map_populate;
+  font_map_class->populate = pango2_core_text_font_map_populate;
 }
 
 /* }}} */
  /* {{{ Public API */
 
 /**
- * pango_core_text_font_map_new:
+ * pango2_core_text_font_map_new:
  *
- * Creates a new `PangoCoreTextFontMap` object.
+ * Creates a new `Pango2CoreTextFontMap` object.
  *
- * Returns: a new `PangoCoreTextFontMap`
+ * Returns: a new `Pango2CoreTextFontMap`
  */
-PangoCoreTextFontMap *
-pango_core_text_font_map_new (void)
+Pango2CoreTextFontMap *
+pango2_core_text_font_map_new (void)
 {
-  return g_object_new (PANGO_TYPE_CORE_TEXT_FONT_MAP, NULL);
+  return g_object_new (PANGO2_TYPE_CORE_TEXT_FONT_MAP, NULL);
 }
 
 /* }}} */

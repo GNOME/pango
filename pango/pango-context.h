@@ -27,76 +27,76 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_TYPE_CONTEXT              (pango_context_get_type ())
+#define PANGO2_TYPE_CONTEXT              (pango2_context_get_type ())
 
-PANGO_AVAILABLE_IN_ALL
-G_DECLARE_FINAL_TYPE (PangoContext, pango_context, PANGO, CONTEXT, GObject);
+PANGO2_AVAILABLE_IN_ALL
+G_DECLARE_FINAL_TYPE (Pango2Context, pango2_context, PANGO2, CONTEXT, GObject);
 
-PANGO_AVAILABLE_IN_ALL
-PangoContext *          pango_context_new                       (void);
-PANGO_AVAILABLE_IN_ALL
-PangoContext *          pango_context_new_with_font_map         (PangoFontMap                 *font_map);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Context *          pango2_context_new                       (void);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Context *          pango2_context_new_with_font_map         (Pango2FontMap                 *font_map);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_context_changed                   (PangoContext                 *context);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_context_set_font_map              (PangoContext                 *context,
-                                                                 PangoFontMap                 *font_map);
-PANGO_AVAILABLE_IN_ALL
-PangoFontMap *          pango_context_get_font_map              (PangoContext                 *context);
-PANGO_AVAILABLE_IN_ALL
-guint                   pango_context_get_serial                (PangoContext                 *context);
-PANGO_AVAILABLE_IN_ALL
-PangoFont *             pango_context_load_font                 (PangoContext                 *context,
-                                                                 const PangoFontDescription   *desc);
-PANGO_AVAILABLE_IN_ALL
-PangoFontset *          pango_context_load_fontset              (PangoContext                 *context,
-                                                                 const PangoFontDescription   *desc,
-                                                                 PangoLanguage                *language);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_context_changed                   (Pango2Context                 *context);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_context_set_font_map              (Pango2Context                 *context,
+                                                                   Pango2FontMap                 *font_map);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontMap *          pango2_context_get_font_map              (Pango2Context                 *context);
+PANGO2_AVAILABLE_IN_ALL
+guint                    pango2_context_get_serial                (Pango2Context                 *context);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Font *             pango2_context_load_font                 (Pango2Context                 *context,
+                                                                   const Pango2FontDescription   *desc);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Fontset *          pango2_context_load_fontset              (Pango2Context                 *context,
+                                                                   const Pango2FontDescription   *desc,
+                                                                   Pango2Language                *language);
 
-PANGO_AVAILABLE_IN_ALL
-PangoFontMetrics *      pango_context_get_metrics               (PangoContext                 *context,
-                                                                 const PangoFontDescription   *desc,
-                                                                 PangoLanguage                *language);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontMetrics *      pango2_context_get_metrics               (Pango2Context                 *context,
+                                                                   const Pango2FontDescription   *desc,
+                                                                   Pango2Language                *language);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_context_set_font_description      (PangoContext                 *context,
-                                                                 const PangoFontDescription   *desc);
-PANGO_AVAILABLE_IN_ALL
-PangoFontDescription *  pango_context_get_font_description      (PangoContext                 *context);
-PANGO_AVAILABLE_IN_ALL
-PangoLanguage *         pango_context_get_language              (PangoContext                 *context);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_context_set_language              (PangoContext                 *context,
-                                                                 PangoLanguage                *language);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_context_set_base_dir              (PangoContext                 *context,
-                                                                 PangoDirection                direction);
-PANGO_AVAILABLE_IN_ALL
-PangoDirection          pango_context_get_base_dir              (PangoContext                 *context);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_context_set_base_gravity          (PangoContext                 *context,
-                                                                 PangoGravity                  gravity);
-PANGO_AVAILABLE_IN_ALL
-PangoGravity            pango_context_get_base_gravity          (PangoContext                 *context);
-PANGO_AVAILABLE_IN_ALL
-PangoGravity            pango_context_get_gravity               (PangoContext                 *context);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_context_set_gravity_hint          (PangoContext                 *context,
-                                                                 PangoGravityHint              hint);
-PANGO_AVAILABLE_IN_ALL
-PangoGravityHint        pango_context_get_gravity_hint          (PangoContext                 *context);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_context_set_font_description      (Pango2Context                 *context,
+                                                                  const Pango2FontDescription    *desc);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontDescription *  pango2_context_get_font_description      (Pango2Context                 *context);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Language *         pango2_context_get_language              (Pango2Context                 *context);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_context_set_language              (Pango2Context                 *context,
+                                                                   Pango2Language                *language);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_context_set_base_dir              (Pango2Context                 *context,
+                                                                   Pango2Direction                direction);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Direction          pango2_context_get_base_dir              (Pango2Context                 *context);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_context_set_base_gravity          (Pango2Context                 *context,
+                                                                   Pango2Gravity                  gravity);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Gravity            pango2_context_get_base_gravity          (Pango2Context                 *context);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Gravity            pango2_context_get_gravity               (Pango2Context                 *context);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_context_set_gravity_hint          (Pango2Context                 *context,
+                                                                   Pango2GravityHint              hint);
+PANGO2_AVAILABLE_IN_ALL
+Pango2GravityHint        pango2_context_get_gravity_hint          (Pango2Context                 *context);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_context_set_matrix                (PangoContext                 *context,
-                                                                 const PangoMatrix            *matrix);
-PANGO_AVAILABLE_IN_ALL
-const PangoMatrix *     pango_context_get_matrix                (PangoContext                 *context);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_context_set_matrix                (Pango2Context                 *context,
+                                                                   const Pango2Matrix            *matrix);
+PANGO2_AVAILABLE_IN_ALL
+const Pango2Matrix *     pango2_context_get_matrix                (Pango2Context                 *context);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_context_set_round_glyph_positions (PangoContext                 *context,
-                                                                 gboolean                      round_positions);
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_context_get_round_glyph_positions (PangoContext                 *context);
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_context_set_round_glyph_positions (Pango2Context                 *context,
+                                                                   gboolean                       round_positions);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                 pango2_context_get_round_glyph_positions (Pango2Context                 *context);
 
 G_END_DECLS

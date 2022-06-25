@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  *
  * Copyright (C) 1999 Red Hat Software
  *
@@ -27,23 +27,23 @@ G_BEGIN_DECLS
 
 #include <pango/pango-item.h>
 
-#define PANGO_VALIDATE_ERROR (pango_validate_error_quark ())
+#define PANGO2_VALIDATE_ERROR (pango2_validate_error_quark ())
 
 typedef enum
 {
-  PANGO_VALIDATE_ERROR_FAILED,
-  PANGO_VALIDATE_ERROR_BREAK,
-  PANGO_VALIDATE_ERROR_GRAPHEME,
-  PANGO_VALIDATE_ERROR_WORD,
-  PANGO_VALIDATE_ERROR_SENTENCE,
-  PANGO_VALIDATE_ERROR_SPACE
-} PangoValidateError;
+  PANGO2_VALIDATE_ERROR_FAILED,
+  PANGO2_VALIDATE_ERROR_BREAK,
+  PANGO2_VALIDATE_ERROR_GRAPHEME,
+  PANGO2_VALIDATE_ERROR_WORD,
+  PANGO2_VALIDATE_ERROR_SENTENCE,
+  PANGO2_VALIDATE_ERROR_SPACE
+} Pango2ValidateError;
 
-GQuark                 pango_validate_error_quark (void);
+GQuark                 pango2_validate_error_quark (void);
 
-gboolean               pango_validate_log_attrs (const char          *text,
+gboolean               pango2_validate_log_attrs (const char          *text,
                                                  int                  length,
-                                                 const PangoLogAttr  *log_attrs,
+                                                 const Pango2LogAttr  *log_attrs,
                                                  int                  attrs_len,
                                                  GError             **error);
 

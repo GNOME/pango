@@ -1,4 +1,4 @@
-/* Pango
+/* Pango2
  *
  * Copyright (C) 2021 Matthias Clasen
  *
@@ -59,22 +59,22 @@ test_serialize_attr_list (void)
 
   for (int i = 0; i < G_N_ELEMENTS (valid); i++)
     {
-      PangoAttrList *attrs;
+      Pango2AttrList *attrs;
       char *str;
 
-      attrs = pango_attr_list_from_string (valid[i]);
+      attrs = pango2_attr_list_from_string (valid[i]);
       g_assert_nonnull (attrs);
-      str = pango_attr_list_to_string (attrs);
+      str = pango2_attr_list_to_string (attrs);
       g_assert_cmpstr (str, ==, roundtripped[i]);
       g_free (str);
-      pango_attr_list_unref (attrs);
+      pango2_attr_list_unref (attrs);
     }
 
   for (int i = 0; i < G_N_ELEMENTS (invalid); i++)
     {
-      PangoAttrList *attrs;
+      Pango2AttrList *attrs;
 
-      attrs = pango_attr_list_from_string (invalid[i]);
+      attrs = pango2_attr_list_from_string (invalid[i]);
       g_assert_null (attrs);
     }
 }
@@ -110,22 +110,22 @@ test_serialize_tab_array (void)
 
   for (int i = 0; i < G_N_ELEMENTS (valid); i++)
     {
-      PangoTabArray *tabs;
+      Pango2TabArray *tabs;
       char *str;
 
-      tabs = pango_tab_array_from_string (valid[i]);
+      tabs = pango2_tab_array_from_string (valid[i]);
       g_assert_nonnull (tabs);
-      str = pango_tab_array_to_string (tabs);
+      str = pango2_tab_array_to_string (tabs);
       g_assert_cmpstr (str, ==, roundtripped[i]);
       g_free (str);
-      pango_tab_array_free (tabs);
+      pango2_tab_array_free (tabs);
     }
 
   for (int i = 0; i < G_N_ELEMENTS (invalid); i++)
     {
-      PangoTabArray *tabs;
+      Pango2TabArray *tabs;
 
-      tabs = pango_tab_array_from_string (invalid[i]);
+      tabs = pango2_tab_array_from_string (invalid[i]);
       g_assert_null (tabs);
     }
 }
@@ -133,10 +133,10 @@ test_serialize_tab_array (void)
 static void
 test_serialize_font (void)
 {
-  PangoContext *context;
-  PangoFontDescription *desc;
-  PangoFont *font;
-  PangoFont *font2;
+  Pango2Context *context;
+  Pango2FontDescription *desc;
+  Pango2Font *font;
+  Pango2Font *font2;
   GBytes *bytes;
   GBytes *bytes2;
   GError *error = NULL;
@@ -157,11 +157,11 @@ test_serialize_font (void)
     "  ]\n"
     "}";
 
-  context = pango_context_new ();
-  desc = pango_font_description_from_string ("Cantarell Italic 20 @wght=600");
-  font = pango_context_load_font (context, desc);
+  context = pango2_context_new ();
+  desc = pango2_font_description_from_string ("Cantarell Italic 20 @wght=600");
+  font = pango2_context_load_font (context, desc);
 
-  bytes = pango_font_serialize (font);
+  bytes = pango2_font_serialize (font);
   if (strcmp (g_bytes_get_data (bytes, NULL), expected) != 0)
     {
       g_print ("expected\n%s\n", expected);
@@ -169,16 +169,16 @@ test_serialize_font (void)
     }
   g_assert_cmpstr (g_bytes_get_data (bytes, NULL), ==, expected);
 
-  font2 = pango_font_deserialize (context, bytes, &error);
+  font2 = pango2_font_deserialize (context, bytes, &error);
   g_assert_no_error (error);
   g_assert_nonnull (font2);
 
-  bytes2 = pango_font_serialize (font2);
+  bytes2 = pango2_font_serialize (font2);
   g_assert_true (g_bytes_equal (bytes2, bytes));
 
   g_object_unref (font);
   g_object_unref (font2);
-  pango_font_description_free (desc);
+  pango2_font_description_free (desc);
 
   g_bytes_unref (bytes);
   g_bytes_unref (bytes2);
@@ -193,28 +193,28 @@ test_serialize_layout_minimal (void)
     "  \"text\" : \"Almost nothing\"\n"
     "}\n";
 
-  PangoContext *context;
+  Pango2Context *context;
   GBytes *bytes;
-  PangoLayout *layout;
+  Pango2Layout *layout;
   GError *error = NULL;
   GBytes *out_bytes;
   const char *str;
 
-  context = pango_context_new ();
+  context = pango2_context_new ();
 
   bytes = g_bytes_new_static (test, strlen (test) + 1);
 
-  layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_DEFAULT, &error);
+  layout = pango2_layout_deserialize (context, bytes, PANGO2_LAYOUT_DESERIALIZE_DEFAULT, &error);
   g_assert_no_error (error);
-  g_assert_true (PANGO_IS_LAYOUT (layout));
-  g_assert_cmpstr (pango_layout_get_text (layout), ==, "Almost nothing");
-  g_assert_null (pango_layout_get_attributes (layout));
-  g_assert_null (pango_layout_get_tabs (layout));
-  g_assert_null (pango_layout_get_font_description (layout));
-  g_assert_cmpint (pango_layout_get_alignment (layout), ==, PANGO_ALIGN_NATURAL);
-  g_assert_cmpint (pango_layout_get_width (layout), ==, -1);
+  g_assert_true (PANGO2_IS_LAYOUT (layout));
+  g_assert_cmpstr (pango2_layout_get_text (layout), ==, "Almost nothing");
+  g_assert_null (pango2_layout_get_attributes (layout));
+  g_assert_null (pango2_layout_get_tabs (layout));
+  g_assert_null (pango2_layout_get_font_description (layout));
+  g_assert_cmpint (pango2_layout_get_alignment (layout), ==, PANGO2_ALIGN_NATURAL);
+  g_assert_cmpint (pango2_layout_get_width (layout), ==, -1);
 
-  out_bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_DEFAULT);
+  out_bytes = pango2_layout_serialize (layout, PANGO2_LAYOUT_SERIALIZE_DEFAULT);
   str = g_bytes_get_data (out_bytes, NULL);
 
   g_assert_cmpstr (str, ==, test);
@@ -276,31 +276,31 @@ test_serialize_layout_valid (void)
     "  \"line-height\" : 1.5\n"
     "}\n";
 
-  PangoContext *context;
+  Pango2Context *context;
   GBytes *bytes;
-  PangoLayout *layout;
+  Pango2Layout *layout;
   GError *error = NULL;
   GBytes *out_bytes;
   char *s;
 
-  context = pango_context_new ();
+  context = pango2_context_new ();
 
   bytes = g_bytes_new_static (test, strlen (test) + 1);
 
-  layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_DEFAULT, &error);
+  layout = pango2_layout_deserialize (context, bytes, PANGO2_LAYOUT_DESERIALIZE_DEFAULT, &error);
   g_assert_no_error (error);
-  g_assert_true (PANGO_IS_LAYOUT (layout));
-  g_assert_cmpstr (pango_layout_get_text (layout), ==, "Some fun with layouts!");
-  g_assert_nonnull (pango_layout_get_attributes (layout));
-  g_assert_nonnull (pango_layout_get_tabs (layout));
-  s = pango_font_description_to_string (pango_layout_get_font_description (layout));
+  g_assert_true (PANGO2_IS_LAYOUT (layout));
+  g_assert_cmpstr (pango2_layout_get_text (layout), ==, "Some fun with layouts!");
+  g_assert_nonnull (pango2_layout_get_attributes (layout));
+  g_assert_nonnull (pango2_layout_get_tabs (layout));
+  s = pango2_font_description_to_string (pango2_layout_get_font_description (layout));
   g_assert_cmpstr (s, ==, "Sans Bold 32");
   g_free (s);
-  g_assert_cmpint (pango_layout_get_alignment (layout), ==, PANGO_ALIGN_CENTER);
-  g_assert_cmpint (pango_layout_get_width (layout), ==, 350000);
-  g_assert_cmpfloat_with_epsilon (pango_layout_get_line_height (layout), 1.5, 0.0001);
+  g_assert_cmpint (pango2_layout_get_alignment (layout), ==, PANGO2_ALIGN_CENTER);
+  g_assert_cmpint (pango2_layout_get_width (layout), ==, 350000);
+  g_assert_cmpfloat_with_epsilon (pango2_layout_get_line_height (layout), 1.5, 0.0001);
 
-  out_bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_DEFAULT);
+  out_bytes = pango2_layout_serialize (layout, PANGO2_LAYOUT_SERIALIZE_DEFAULT);
 
   if (strcmp (g_bytes_get_data (out_bytes, NULL), g_bytes_get_data (bytes, NULL)) != 0)
     {
@@ -331,23 +331,23 @@ test_serialize_layout_context (void)
     "  \"text\" : \"Some fun with layouts!\"\n"
     "}\n";
 
-  PangoContext *context;
+  Pango2Context *context;
   GBytes *bytes;
-  PangoLayout *layout;
+  Pango2Layout *layout;
   GError *error = NULL;
 
-  context = pango_context_new ();
+  context = pango2_context_new ();
 
   bytes = g_bytes_new_static (test, strlen (test) + 1);
 
-  layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_CONTEXT, &error);
+  layout = pango2_layout_deserialize (context, bytes, PANGO2_LAYOUT_DESERIALIZE_CONTEXT, &error);
   g_assert_no_error (error);
-  g_assert_true (PANGO_IS_LAYOUT (layout));
-  g_assert_cmpstr (pango_layout_get_text (layout), ==, "Some fun with layouts!");
+  g_assert_true (PANGO2_IS_LAYOUT (layout));
+  g_assert_cmpstr (pango2_layout_get_text (layout), ==, "Some fun with layouts!");
 
-  g_assert_cmpint (pango_context_get_base_gravity (context), ==, PANGO_GRAVITY_EAST);
-  g_assert_true (pango_context_get_language (context) == pango_language_from_string ("de-de"));
-  g_assert_false (pango_context_get_round_glyph_positions (context));
+  g_assert_cmpint (pango2_context_get_base_gravity (context), ==, PANGO2_GRAVITY_EAST);
+  g_assert_true (pango2_context_get_language (context) == pango2_language_from_string ("de-de"));
+  g_assert_false (pango2_context_get_round_glyph_positions (context));
 
   g_object_unref (layout);
   g_bytes_unref (bytes);
@@ -369,7 +369,7 @@ test_serialize_layout_invalid (void)
       "    }\n"
       "  ]\n"
       "}\n",
-      PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE
+      PANGO2_LAYOUT_DESERIALIZE_MISSING_VALUE
     },
     {
       "{\n"
@@ -379,7 +379,7 @@ test_serialize_layout_invalid (void)
       "    }\n"
       "  ]\n"
       "}\n",
-      PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE
+      PANGO2_LAYOUT_DESERIALIZE_MISSING_VALUE
     },
     {
       "{\n"
@@ -390,13 +390,13 @@ test_serialize_layout_invalid (void)
       "    }\n"
       "  ]\n"
       "}\n",
-      PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE
+      PANGO2_LAYOUT_DESERIALIZE_INVALID_VALUE
     },
     {
       "{\n"
       "  \"alignment\" : \"nonsense\"\n"
       "}\n",
-      PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE
+      PANGO2_LAYOUT_DESERIALIZE_INVALID_VALUE
     },
     {
       "{\n"
@@ -408,21 +408,21 @@ test_serialize_layout_invalid (void)
     }
   };
 
-  PangoContext *context;
+  Pango2Context *context;
 
-  context = pango_context_new ();
+  context = pango2_context_new ();
 
   for (int i = 0; i < G_N_ELEMENTS (test); i++)
     {
       GBytes *bytes;
-      PangoLayout *layout;
+      Pango2Layout *layout;
       GError *error = NULL;
 
        bytes = g_bytes_new_static (test[i].json, strlen (test[i].json) + 1);
-       layout = pango_layout_deserialize (context, bytes, PANGO_LAYOUT_DESERIALIZE_DEFAULT, &error);
+       layout = pango2_layout_deserialize (context, bytes, PANGO2_LAYOUT_DESERIALIZE_DEFAULT, &error);
        g_assert_null (layout);
        if (test[i].expected_error)
-         g_assert_error (error, PANGO_LAYOUT_DESERIALIZE_ERROR, test[i].expected_error);
+         g_assert_error (error, PANGO2_LAYOUT_DESERIALIZE_ERROR, test[i].expected_error);
        else
          g_assert_nonnull (error);
        g_bytes_unref (bytes);

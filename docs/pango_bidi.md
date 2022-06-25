@@ -7,7 +7,7 @@ Title: Bidirectional and Vertical Text
 Pango supports bidirectional text (like Arabic and Hebrew) automatically.
 Some applications however, need some help to correctly handle bidirectional text.
 
-The [enum@Pango.Direction] type can be used with [method@Pango.Context.set_base_dir]
+The [enum@Pango2.Direction] type can be used with [method@Pango2.Context.set_base_dir]
 to instruct Pango about direction of text, though in most cases Pango detects
 text direction correctly and automatically.
 
@@ -43,36 +43,36 @@ tells glyphs which way is down, so the gravity of normal Latin text is south.
 A gravity value of east means that glyphs will be rotated ninety degrees
 counterclockwise. So, to render vertical text one needs to set the gravity
 and rotate the layout using the matrix machinery already in place. This has
-the huge advantage that most algorithms working on a [class@Pango.Layout] do
+the huge advantage that most algorithms working on a [class@Pango2.Layout] do
 not need any change as the assumption that lines run in the X direction and
 stack in the Y direction holds even for vertical text layouts.
 
 Here is an example for some English text rendered with gravity west,
 rotated 90 degrees:
 
-Applications should only need to set base gravity on [class@Pango.Context] in use,
+Applications should only need to set base gravity on [class@Pango2.Context] in use,
 and let Pango decide the gravity assigned to each run of text. This automatically
 handles text with mixed scripts. A very common use is to set the context base
-gravity to auto using [method@Pango.Context.set_base_gravity] and rotate the layout
+gravity to auto using [method@Pango2.Context.set_base_gravity] and rotate the layout
 normally. Pango will make sure that Asian languages take the right form, while
 other scripts are rotated normally.
 
 The correct way to set gravity on a layout is to set it on the context associated
-with it using [method@Pango.Context.set_base_gravity]. The context of a layout can
-be accessed using [method@Pango.Layout.get_context]. The currently set base gravity
-of the context can be accessed using [method@Pango.Context.get_base_gravity] and
-the *resolved* gravity of it using [method@Pango.Context.get_gravity]. The resolved
+with it using [method@Pango2.Context.set_base_gravity]. The context of a layout can
+be accessed using [method@Pango2.Layout.get_context]. The currently set base gravity
+of the context can be accessed using [method@Pango2.Context.get_base_gravity] and
+the *resolved* gravity of it using [method@Pango2.Context.get_gravity]. The resolved
 gravity is the same as the base gravity for the most part, except that if the base
 gravity is set to `PANGO_GRAVITY_AUTO`, the resolved gravity will depend on the
-current matrix set on context, and is derived using [func@Pango.Gravity.get_for_matrix].
+current matrix set on context, and is derived using [func@Pango2.Gravity.get_for_matrix].
 
 The next thing an application may want to set on the context is the *gravity hint*.
-A [enum@Pango.GravityHint] instructs how different scripts should react to the set
+A [enum@Pango2.GravityHint] instructs how different scripts should react to the set
 base gravity.
 
 Font descriptions have a gravity property too, that can be set using
-[method@Pango.FontDescription.set_gravity] and accessed using
-[method@Pango.FontDescription.get_gravity]. However, those are rarely useful
+[method@Pango2.FontDescription.set_gravity] and accessed using
+[method@Pango2.FontDescription.get_gravity]. However, those are rarely useful
 from application code and are mainly used by `PangoLayout` internally.
 
 Last but not least, one can create `PangoAttributes` for gravity and gravity

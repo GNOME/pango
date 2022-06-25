@@ -22,7 +22,7 @@
 #include <pango/pango-attr-iterator.h>
 
 
-struct _PangoAttrIterator
+struct _Pango2AttrIterator
 {
   GPtrArray *attrs; /* From the list */
   guint n_attrs; /* Copied from the list */
@@ -34,6 +34,6 @@ struct _PangoAttrIterator
   guint end_index;
 };
 
-void     pango_attr_iterator_clear    (PangoAttrIterator *iterator);
-gboolean pango_attr_iterator_advance  (PangoAttrIterator *iterator,
-                                       int                index);
+void     pango2_attr_iterator_clear    (Pango2AttrIterator *iterator);
+gboolean pango2_attr_iterator_advance  (Pango2AttrIterator *iterator,
+                                        int                 index);

@@ -1,5 +1,5 @@
-/* Pango
- * serializer.c: Code to serialize various Pango objects
+/* Pango2
+ * serializer.c: Code to serialize various Pango2 objects
  *
  * Copyright (C) 2021 Red Hat, Inc
  *
@@ -38,7 +38,7 @@
 
 /* {{{ Error handling */
 
-G_DEFINE_QUARK(pango-layout-deserialize-error-quark, pango_layout_deserialize_error)
+G_DEFINE_QUARK(pango-layout-deserialize-error-quark, pango2_layout_deserialize_error)
 
 /* }}} */
 /* {{{ Enum names */
@@ -165,13 +165,13 @@ get_weight_name (int weight)
   return NULL;
 }
 
-static PangoAttrType
+static Pango2AttrType
 get_attr_type (const char *nick)
 {
   GEnumClass *enum_class;
   GEnumValue *enum_value = NULL;
 
-  enum_class = g_type_class_ref (PANGO_TYPE_ATTR_TYPE);
+  enum_class = g_type_class_ref (PANGO2_TYPE_ATTR_TYPE);
   for (int i = 0; i < enum_class->n_values; i++)
     {
       enum_value = &enum_class->values[i];
@@ -188,12 +188,12 @@ get_attr_type (const char *nick)
 }
 
 static const char *
-get_attr_type_name (PangoAttrType type)
+get_attr_type_name (Pango2AttrType type)
 {
   GEnumClass *enum_class;
   GEnumValue *enum_value = NULL;
 
-  enum_class = g_type_class_ref (PANGO_TYPE_ATTR_TYPE);
+  enum_class = g_type_class_ref (PANGO2_TYPE_ATTR_TYPE);
   for (int i = 0; i < enum_class->n_values; i++)
     {
       enum_value = &enum_class->values[i];
@@ -264,84 +264,84 @@ static const char *ellipsize_names[] = {
 /* {{{ Serialization */
 
 static char *
-font_description_to_string (PangoFontDescription *desc)
+font_description_to_string (Pango2FontDescription *desc)
 {
-  PangoFontDescription *copy;
+  Pango2FontDescription *copy;
   char *s;
 
   /* Leave out the faceid for now, since it would make serialization
    * backend-dependent.
    */
-  copy = pango_font_description_copy_static (desc);
-  pango_font_description_unset_fields (copy, PANGO_FONT_MASK_FACEID);
-  s = pango_font_description_to_string (copy);
-  pango_font_description_free (copy);
+  copy = pango2_font_description_copy_static (desc);
+  pango2_font_description_unset_fields (copy, PANGO2_FONT_MASK_FACEID);
+  s = pango2_font_description_to_string (copy);
+  pango2_font_description_free (copy);
 
   return s;
 }
 
 static void
 add_attribute (GtkJsonPrinter *printer,
-               PangoAttribute *attr)
+               Pango2Attribute *attr)
 {
   char *str;
 
   gtk_json_printer_start_object (printer, NULL);
 
-  if (attr->start_index != PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING)
+  if (attr->start_index != PANGO2_ATTR_INDEX_FROM_TEXT_BEGINNING)
     gtk_json_printer_add_integer (printer, "start", (int)attr->start_index);
-  if (attr->end_index != PANGO_ATTR_INDEX_TO_TEXT_END)
+  if (attr->end_index != PANGO2_ATTR_INDEX_TO_TEXT_END)
     gtk_json_printer_add_integer (printer, "end", (int)attr->end_index);
   gtk_json_printer_add_string (printer, "type", get_attr_type_name (attr->type));
 
-  switch (PANGO_ATTR_VALUE_TYPE (attr))
+  switch (PANGO2_ATTR_VALUE_TYPE (attr))
     {
-    case PANGO_ATTR_VALUE_STRING:
+    case PANGO2_ATTR_VALUE_STRING:
       gtk_json_printer_add_string (printer, "value", attr->str_value);
       break;
 
-    case PANGO_ATTR_VALUE_INT:
+    case PANGO2_ATTR_VALUE_INT:
       switch ((int)attr->type)
         {
-        case PANGO_ATTR_STYLE:
+        case PANGO2_ATTR_STYLE:
           gtk_json_printer_add_string (printer, "value", style_names[attr->int_value]);
           break;
 
-        case PANGO_ATTR_VARIANT:
+        case PANGO2_ATTR_VARIANT:
           gtk_json_printer_add_string (printer, "value", variant_names[attr->int_value]);
           break;
 
-        case PANGO_ATTR_STRETCH:
+        case PANGO2_ATTR_STRETCH:
           gtk_json_printer_add_string (printer, "value", stretch_names[attr->int_value]);
           break;
 
-        case PANGO_ATTR_UNDERLINE:
-        case PANGO_ATTR_STRIKETHROUGH:
-        case PANGO_ATTR_OVERLINE:
+        case PANGO2_ATTR_UNDERLINE:
+        case PANGO2_ATTR_STRIKETHROUGH:
+        case PANGO2_ATTR_OVERLINE:
           gtk_json_printer_add_string (printer, "value", line_style_names[attr->int_value]);
           break;
 
-        case PANGO_ATTR_UNDERLINE_POSITION:
+        case PANGO2_ATTR_UNDERLINE_POSITION:
           gtk_json_printer_add_string (printer, "value", underline_position_names[attr->int_value]);
           break;
 
-        case PANGO_ATTR_GRAVITY:
+        case PANGO2_ATTR_GRAVITY:
           gtk_json_printer_add_string (printer, "value", gravity_names[attr->int_value]);
           break;
 
-        case PANGO_ATTR_GRAVITY_HINT:
+        case PANGO2_ATTR_GRAVITY_HINT:
           gtk_json_printer_add_string (printer, "value", gravity_hint_names[attr->int_value]);
           break;
 
-        case PANGO_ATTR_TEXT_TRANSFORM:
+        case PANGO2_ATTR_TEXT_TRANSFORM:
           gtk_json_printer_add_string (printer, "value", text_transform_names[attr->int_value]);
           break;
 
-        case PANGO_ATTR_FONT_SCALE:
+        case PANGO2_ATTR_FONT_SCALE:
           gtk_json_printer_add_string (printer, "value", font_scale_names[attr->int_value]);
           break;
 
-        case PANGO_ATTR_WEIGHT:
+        case PANGO2_ATTR_WEIGHT:
           {
             const char *name = get_weight_name (attr->int_value);
             if (name)
@@ -351,7 +351,7 @@ add_attribute (GtkJsonPrinter *printer,
           }
           break;
 
-        case PANGO_ATTR_BASELINE_SHIFT:
+        case PANGO2_ATTR_BASELINE_SHIFT:
           gtk_json_printer_add_string (printer, "value", baseline_shift_names[attr->int_value]);
           break;
 
@@ -362,32 +362,32 @@ add_attribute (GtkJsonPrinter *printer,
 
       break;
 
-    case PANGO_ATTR_VALUE_BOOLEAN:
+    case PANGO2_ATTR_VALUE_BOOLEAN:
       gtk_json_printer_add_boolean (printer, "value", attr->boolean_value);
       break;
 
-    case PANGO_ATTR_VALUE_LANGUAGE:
-      gtk_json_printer_add_string (printer, "value", pango_language_to_string (attr->lang_value));
+    case PANGO2_ATTR_VALUE_LANGUAGE:
+      gtk_json_printer_add_string (printer, "value", pango2_language_to_string (attr->lang_value));
       break;
 
-    case PANGO_ATTR_VALUE_FONT_DESC:
+    case PANGO2_ATTR_VALUE_FONT_DESC:
       str = font_description_to_string (attr->font_value);
       gtk_json_printer_add_string (printer, "value", str);
       g_free (str);
       break;
 
-    case PANGO_ATTR_VALUE_COLOR:
-      str = pango_color_to_string (&attr->color_value);
+    case PANGO2_ATTR_VALUE_COLOR:
+      str = pango2_color_to_string (&attr->color_value);
       gtk_json_printer_add_string (printer, "value", str);
       g_free (str);
       break;
 
-    case PANGO_ATTR_VALUE_FLOAT:
+    case PANGO2_ATTR_VALUE_FLOAT:
       gtk_json_printer_add_number (printer, "value", attr->double_value);
       break;
 
-    case PANGO_ATTR_VALUE_POINTER:
-      str = pango_attr_value_serialize (attr);
+    case PANGO2_ATTR_VALUE_POINTER:
+      str = pango2_attr_value_serialize (attr);
       gtk_json_printer_add_string (printer, "value", str);
       g_free (str);
       break;
@@ -401,14 +401,14 @@ add_attribute (GtkJsonPrinter *printer,
 
 static void
 add_attr_list (GtkJsonPrinter *printer,
-               PangoAttrList  *attrs)
+               Pango2AttrList  *attrs)
 {
   GSList *attributes, *l;
 
   if (!attrs)
     return;
 
-  attributes = pango_attr_list_get_attributes (attrs);
+  attributes = pango2_attr_list_get_attributes (attrs);
 
   if (!attributes)
     return;
@@ -417,34 +417,34 @@ add_attr_list (GtkJsonPrinter *printer,
 
   for (l = attributes; l; l = l->next)
     {
-      PangoAttribute *attr = l->data;
+      Pango2Attribute *attr = l->data;
       add_attribute (printer, attr);
     }
-  g_slist_free_full (attributes, (GDestroyNotify) pango_attribute_destroy);
+  g_slist_free_full (attributes, (GDestroyNotify) pango2_attribute_destroy);
 
   gtk_json_printer_end (printer);
 }
 
 static void
 add_tab_array (GtkJsonPrinter *printer,
-               PangoTabArray  *tabs)
+               Pango2TabArray  *tabs)
 {
-  if (!tabs || pango_tab_array_get_size (tabs) == 0)
+  if (!tabs || pango2_tab_array_get_size (tabs) == 0)
     return;
 
   gtk_json_printer_start_object (printer, "tabs");
 
-  gtk_json_printer_add_boolean (printer, "positions-in-pixels", pango_tab_array_get_positions_in_pixels (tabs));
+  gtk_json_printer_add_boolean (printer, "positions-in-pixels", pango2_tab_array_get_positions_in_pixels (tabs));
   gtk_json_printer_start_array (printer, "positions");
-  for (int i = 0; i < pango_tab_array_get_size (tabs); i++)
+  for (int i = 0; i < pango2_tab_array_get_size (tabs); i++)
     {
-      PangoTabAlign align;
+      Pango2TabAlign align;
       int pos;
-      pango_tab_array_get_tab (tabs, i, &align, &pos);
+      pango2_tab_array_get_tab (tabs, i, &align, &pos);
       gtk_json_printer_start_object (printer, NULL);
       gtk_json_printer_add_integer (printer, "position", pos);
       gtk_json_printer_add_string (printer, "alignment", tab_align_names[align]);
-      gtk_json_printer_add_integer (printer, "decimal-point", pango_tab_array_get_decimal_point (tabs, i));
+      gtk_json_printer_add_integer (printer, "decimal-point", pango2_tab_array_get_decimal_point (tabs, i));
       gtk_json_printer_end (printer);
     }
   gtk_json_printer_end (printer);
@@ -454,11 +454,11 @@ add_tab_array (GtkJsonPrinter *printer,
 
 static void
 add_context (GtkJsonPrinter *printer,
-             PangoContext   *context)
+             Pango2Context   *context)
 {
   char *str;
-  const PangoMatrix *matrix;
-  PangoMatrix identity = PANGO_MATRIX_INIT;
+  const Pango2Matrix *matrix;
+  Pango2Matrix identity = PANGO2_MATRIX_INIT;
 
   gtk_json_printer_start_object (printer, "context");
 
@@ -472,14 +472,14 @@ add_context (GtkJsonPrinter *printer,
   g_free (str);
 
   if (context->set_language)
-    gtk_json_printer_add_string (printer, "language", pango_language_to_string (context->set_language));
+    gtk_json_printer_add_string (printer, "language", pango2_language_to_string (context->set_language));
 
   gtk_json_printer_add_string (printer, "base-gravity", gravity_names[context->base_gravity]);
   gtk_json_printer_add_string (printer, "gravity-hint", gravity_hint_names[context->gravity_hint]);
   gtk_json_printer_add_string (printer, "base-dir", direction_names[context->base_dir]);
   gtk_json_printer_add_boolean (printer, "round-glyph-positions", context->round_glyph_positions);
 
-  matrix = pango_context_get_matrix (context);
+  matrix = pango2_context_get_matrix (context);
   if (!matrix)
     matrix = &identity;
 
@@ -497,7 +497,7 @@ add_context (GtkJsonPrinter *printer,
 
 static void
 add_log_attrs (GtkJsonPrinter      *printer,
-               const PangoLogAttr  *log_attrs,
+               const Pango2LogAttr  *log_attrs,
                int                  n_attrs)
 {
   gtk_json_printer_start_array (printer, "log-attrs");
@@ -544,9 +544,9 @@ add_log_attrs (GtkJsonPrinter      *printer,
 static void
 add_font (GtkJsonPrinter *printer,
           const char     *member,
-          PangoFont      *font)
+          Pango2Font      *font)
 {
-  PangoFontDescription *desc;
+  Pango2FontDescription *desc;
   char *str;
   hb_font_t *hb_font;
   hb_face_t *face;
@@ -555,17 +555,17 @@ add_font (GtkJsonPrinter *printer,
   guint length;
   const int *coords;
   const hb_feature_t *features;
-  PangoMatrix matrix;
+  Pango2Matrix matrix;
 
   gtk_json_printer_start_object (printer, member);
 
-  desc = pango_font_describe (font);
+  desc = pango2_font_describe (font);
   str = font_description_to_string (desc);
   gtk_json_printer_add_string (printer, "description", str);
   g_free (str);
-  pango_font_description_free (desc);
+  pango2_font_description_free (desc);
 
-  hb_font = pango_font_get_hb_font (font);
+  hb_font = pango2_font_get_hb_font (font);
   face = hb_font_get_face (hb_font);
   blob = hb_face_reference_blob (face);
 
@@ -603,8 +603,8 @@ add_font (GtkJsonPrinter *printer,
     }
 
   length = 0;
-  if (PANGO_IS_HB_FONT (font))
-    features = pango_hb_font_get_features (PANGO_HB_FONT (font), &length);
+  if (PANGO2_IS_HB_FONT (font))
+    features = pango2_hb_font_get_features (PANGO2_HB_FONT (font), &length);
   if (length > 0)
     {
       gtk_json_printer_start_object (printer, "features");
@@ -620,8 +620,8 @@ add_font (GtkJsonPrinter *printer,
       gtk_json_printer_end (printer);
     }
 
-  pango_font_get_transform (font, &matrix);
-  if (!pango_matrix_equal (&matrix, &(const PangoMatrix)PANGO_MATRIX_INIT))
+  pango2_font_get_transform (font, &matrix);
+  if (!pango2_matrix_equal (&matrix, &(const Pango2Matrix)PANGO2_MATRIX_INIT))
     {
       gtk_json_printer_start_array (printer, "matrix");
       gtk_json_printer_add_number (printer, NULL, matrix.xx);
@@ -636,14 +636,14 @@ add_font (GtkJsonPrinter *printer,
   gtk_json_printer_end (printer);
 }
 
-#define ANALYSIS_FLAGS (PANGO_ANALYSIS_FLAG_CENTERED_BASELINE | \
-                        PANGO_ANALYSIS_FLAG_IS_ELLIPSIS | \
-                        PANGO_ANALYSIS_FLAG_NEED_HYPHEN)
+#define ANALYSIS_FLAGS (PANGO2_ANALYSIS_FLAG_CENTERED_BASELINE | \
+                        PANGO2_ANALYSIS_FLAG_IS_ELLIPSIS | \
+                        PANGO2_ANALYSIS_FLAG_NEED_HYPHEN)
 
 static void
 add_run (GtkJsonPrinter *printer,
          const char     *text,
-         PangoGlyphItem *run)
+         Pango2GlyphItem *run)
 {
   char *str;
   char buf[5] = { 0, };
@@ -659,7 +659,7 @@ add_run (GtkJsonPrinter *printer,
 
   gtk_json_printer_add_integer (printer, "bidi-level", run->item->analysis.level);
   gtk_json_printer_add_string (printer, "gravity", gravity_names[run->item->analysis.gravity]);
-  gtk_json_printer_add_string (printer, "language", pango_language_to_string (run->item->analysis.language));
+  gtk_json_printer_add_string (printer, "language", pango2_language_to_string (run->item->analysis.language));
   get_script_name (run->item->analysis.script, buf);
   gtk_json_printer_add_string (printer, "script", buf);
 
@@ -674,7 +674,7 @@ add_run (GtkJsonPrinter *printer,
       gtk_json_printer_start_array (printer, "extra-attributes");
       for (l = run->item->analysis.extra_attrs; l; l = l->next)
         {
-          PangoAttribute *attr = l->data;
+          Pango2Attribute *attr = l->data;
           add_attribute (printer, attr);
         }
       gtk_json_printer_end (printer);
@@ -718,7 +718,7 @@ add_run (GtkJsonPrinter *printer,
 
 static void
 line_to_json (GtkJsonPrinter  *printer,
-              PangoLine       *line,
+              Pango2Line       *line,
               int              x,
               int              y)
 {
@@ -747,7 +747,7 @@ line_to_json (GtkJsonPrinter  *printer,
   gtk_json_printer_start_array (printer, "runs");
   for (GSList *l = line->runs; l; l = l->next)
     {
-      PangoGlyphItem *run = l->data;
+      Pango2GlyphItem *run = l->data;
       add_run (printer, line->data->text, run);
     }
   gtk_json_printer_end (printer);
@@ -759,28 +759,28 @@ line_to_json (GtkJsonPrinter  *printer,
 
 static void
 lines_to_json (GtkJsonPrinter *printer,
-               PangoLines     *lines)
+               Pango2Lines     *lines)
 {
   int width, height;
-  PangoLine **l;
+  Pango2Line **l;
 
   gtk_json_printer_start_object (printer, "output");
 
-  gtk_json_printer_add_boolean (printer, "wrapped", pango_lines_is_wrapped (lines));
-  gtk_json_printer_add_boolean (printer, "ellipsized", pango_lines_is_ellipsized (lines));
-  gtk_json_printer_add_boolean (printer, "hypenated", pango_lines_is_hyphenated (lines));
-  gtk_json_printer_add_integer (printer, "unknown-glyphs", pango_lines_get_unknown_glyphs_count (lines));
-  pango_lines_get_size (lines, &width, &height);
+  gtk_json_printer_add_boolean (printer, "wrapped", pango2_lines_is_wrapped (lines));
+  gtk_json_printer_add_boolean (printer, "ellipsized", pango2_lines_is_ellipsized (lines));
+  gtk_json_printer_add_boolean (printer, "hypenated", pango2_lines_is_hyphenated (lines));
+  gtk_json_printer_add_integer (printer, "unknown-glyphs", pango2_lines_get_unknown_glyphs_count (lines));
+  pango2_lines_get_size (lines, &width, &height);
   gtk_json_printer_add_integer (printer, "width", width);
   gtk_json_printer_add_integer (printer, "height", height);
 
   gtk_json_printer_start_array (printer, "lines");
 
-  l = pango_lines_get_lines (lines);
-  for (int i = 0; i < pango_lines_get_line_count (lines); i++)
+  l = pango2_lines_get_lines (lines);
+  for (int i = 0; i < pango2_lines_get_line_count (lines); i++)
     {
       int x, y;
-      pango_lines_get_line_position (lines, i, &x, &y);
+      pango2_lines_get_line_position (lines, i, &x, &y);
       line_to_json (printer, l[i], x, y);
     }
 
@@ -791,69 +791,69 @@ lines_to_json (GtkJsonPrinter *printer,
 
 static void
 layout_to_json (GtkJsonPrinter            *printer,
-                PangoLayout               *layout,
-                PangoLayoutSerializeFlags  flags)
+                Pango2Layout               *layout,
+                Pango2LayoutSerializeFlags  flags)
 {
   const char *str;
 
   gtk_json_printer_start_object (printer, NULL);
 
-  if (flags & PANGO_LAYOUT_SERIALIZE_CONTEXT)
-    add_context (printer, pango_layout_get_context (layout));
+  if (flags & PANGO2_LAYOUT_SERIALIZE_CONTEXT)
+    add_context (printer, pango2_layout_get_context (layout));
 
   str = (const char *) g_object_get_data (G_OBJECT (layout), "comment");
   if (str)
     gtk_json_printer_add_string (printer, "comment", str);
 
-  gtk_json_printer_add_string (printer, "text", pango_layout_get_text (layout));
+  gtk_json_printer_add_string (printer, "text", pango2_layout_get_text (layout));
 
-  add_attr_list (printer, pango_layout_get_attributes (layout));
+  add_attr_list (printer, pango2_layout_get_attributes (layout));
 
-  if (pango_layout_get_font_description (layout))
+  if (pango2_layout_get_font_description (layout))
     {
-      char *str = pango_font_description_to_string (pango_layout_get_font_description (layout));
+      char *str = pango2_font_description_to_string (pango2_layout_get_font_description (layout));
       gtk_json_printer_add_string (printer, "font", str);
       g_free (str);
     }
 
-  add_tab_array (printer, pango_layout_get_tabs (layout));
+  add_tab_array (printer, pango2_layout_get_tabs (layout));
 
-  if (!pango_layout_get_auto_dir (layout))
+  if (!pango2_layout_get_auto_dir (layout))
     gtk_json_printer_add_boolean (printer, "auto-dir", FALSE);
 
-  if (pango_layout_get_alignment (layout) != PANGO_ALIGN_NATURAL)
-    gtk_json_printer_add_string (printer, "alignment", alignment_names[pango_layout_get_alignment (layout)]);
+  if (pango2_layout_get_alignment (layout) != PANGO2_ALIGN_NATURAL)
+    gtk_json_printer_add_string (printer, "alignment", alignment_names[pango2_layout_get_alignment (layout)]);
 
-  if (pango_layout_get_wrap (layout) != PANGO_WRAP_WORD)
-    gtk_json_printer_add_string (printer, "wrap", wrap_names[pango_layout_get_wrap (layout)]);
+  if (pango2_layout_get_wrap (layout) != PANGO2_WRAP_WORD)
+    gtk_json_printer_add_string (printer, "wrap", wrap_names[pango2_layout_get_wrap (layout)]);
 
-  if (pango_layout_get_ellipsize (layout) != PANGO_ELLIPSIZE_NONE)
-    gtk_json_printer_add_string (printer, "ellipsize", ellipsize_names[pango_layout_get_ellipsize (layout)]);
+  if (pango2_layout_get_ellipsize (layout) != PANGO2_ELLIPSIZE_NONE)
+    gtk_json_printer_add_string (printer, "ellipsize", ellipsize_names[pango2_layout_get_ellipsize (layout)]);
 
-  if (pango_layout_get_width (layout) != -1)
-    gtk_json_printer_add_integer (printer, "width", pango_layout_get_width (layout));
+  if (pango2_layout_get_width (layout) != -1)
+    gtk_json_printer_add_integer (printer, "width", pango2_layout_get_width (layout));
 
-  if (pango_layout_get_height (layout) != -1)
-    gtk_json_printer_add_integer (printer, "height", pango_layout_get_height (layout));
+  if (pango2_layout_get_height (layout) != -1)
+    gtk_json_printer_add_integer (printer, "height", pango2_layout_get_height (layout));
 
-  if (pango_layout_get_indent (layout) != 0)
-    gtk_json_printer_add_integer (printer, "indent", pango_layout_get_indent (layout));
+  if (pango2_layout_get_indent (layout) != 0)
+    gtk_json_printer_add_integer (printer, "indent", pango2_layout_get_indent (layout));
 
-  if (pango_layout_get_line_height (layout) != 0.)
-    gtk_json_printer_add_number (printer, "line-height", pango_layout_get_line_height (layout));
+  if (pango2_layout_get_line_height (layout) != 0.)
+    gtk_json_printer_add_number (printer, "line-height", pango2_layout_get_line_height (layout));
 
-  if (pango_layout_get_spacing (layout) != 0)
-    gtk_json_printer_add_integer (printer, "spacing", pango_layout_get_spacing (layout));
+  if (pango2_layout_get_spacing (layout) != 0)
+    gtk_json_printer_add_integer (printer, "spacing", pango2_layout_get_spacing (layout));
 
-  if (flags & PANGO_LAYOUT_SERIALIZE_OUTPUT)
+  if (flags & PANGO2_LAYOUT_SERIALIZE_OUTPUT)
     {
-      const PangoLogAttr *log_attrs;
+      const Pango2LogAttr *log_attrs;
       int n_attrs;
 
-      log_attrs = pango_layout_get_log_attrs (layout, &n_attrs);
+      log_attrs = pango2_layout_get_log_attrs (layout, &n_attrs);
       add_log_attrs (printer, log_attrs, n_attrs);
 
-      lines_to_json (printer, pango_layout_get_lines (layout));
+      lines_to_json (printer, pango2_layout_get_lines (layout));
     }
 
   gtk_json_printer_end (printer);
@@ -896,11 +896,11 @@ parser_select_string (GtkJsonParser  *parser,
   return value;
 }
 
-static PangoFontDescription *
+static Pango2FontDescription *
 parser_get_font_description (GtkJsonParser *parser)
 {
   char *str = gtk_json_parser_get_string (parser);
-  PangoFontDescription *desc = pango_font_description_from_string (str);
+  Pango2FontDescription *desc = pango2_font_description_from_string (str);
 
   if (!desc)
     gtk_json_parser_value_error (parser,
@@ -912,10 +912,10 @@ parser_get_font_description (GtkJsonParser *parser)
 
 static void
 parser_get_color (GtkJsonParser *parser,
-                  PangoColor    *color)
+                  Pango2Color    *color)
 {
   char *str = gtk_json_parser_get_string (parser);
-  if (!pango_color_parse (color, str))
+  if (!pango2_color_parse (color, str))
     {
       gtk_json_parser_value_error (parser,
                                    "Failed to parse color: %s", str);
@@ -925,189 +925,189 @@ parser_get_color (GtkJsonParser *parser,
   g_free (str);
 }
 
-static PangoAttribute *
+static Pango2Attribute *
 attr_for_type (GtkJsonParser *parser,
-               PangoAttrType  type,
+               Pango2AttrType  type,
                int            start,
                int            end)
 {
-  PangoAttribute *attr;
-  PangoFontDescription *desc;
-  PangoColor color;
+  Pango2Attribute *attr;
+  Pango2FontDescription *desc;
+  Pango2Color color;
   char *str;
 
   switch (type)
     {
-    case PANGO_ATTR_SHAPE:
+    case PANGO2_ATTR_SHAPE:
     default:
       g_assert_not_reached ();
 
-    case PANGO_ATTR_INVALID:
+    case PANGO2_ATTR_INVALID:
       gtk_json_parser_schema_error (parser, "Missing attribute type");
       return NULL;
 
-    case PANGO_ATTR_LANGUAGE:
+    case PANGO2_ATTR_LANGUAGE:
       str = gtk_json_parser_get_string (parser);
-      attr = pango_attr_language_new (pango_language_from_string (str));
+      attr = pango2_attr_language_new (pango2_language_from_string (str));
       g_free (str);
       break;
 
-    case PANGO_ATTR_FAMILY:
+    case PANGO2_ATTR_FAMILY:
       str = gtk_json_parser_get_string (parser);
-      attr = pango_attr_family_new (str);
+      attr = pango2_attr_family_new (str);
       g_free (str);
       break;
 
-    case PANGO_ATTR_STYLE:
-      attr = pango_attr_style_new ((PangoStyle) parser_select_string (parser, style_names));
+    case PANGO2_ATTR_STYLE:
+      attr = pango2_attr_style_new ((Pango2Style) parser_select_string (parser, style_names));
       break;
 
-    case PANGO_ATTR_WEIGHT:
+    case PANGO2_ATTR_WEIGHT:
       if (gtk_json_parser_get_node (parser) == GTK_JSON_STRING)
-        attr = pango_attr_weight_new (get_weight (parser_select_string (parser, weight_names)));
+        attr = pango2_attr_weight_new (get_weight (parser_select_string (parser, weight_names)));
       else
-        attr = pango_attr_weight_new ((int) gtk_json_parser_get_int (parser));
+        attr = pango2_attr_weight_new ((int) gtk_json_parser_get_int (parser));
       break;
 
-    case PANGO_ATTR_VARIANT:
-      attr = pango_attr_variant_new ((PangoVariant) parser_select_string (parser, variant_names));
+    case PANGO2_ATTR_VARIANT:
+      attr = pango2_attr_variant_new ((Pango2Variant) parser_select_string (parser, variant_names));
       break;
 
-    case PANGO_ATTR_STRETCH:
-      attr = pango_attr_stretch_new ((PangoStretch) parser_select_string (parser, stretch_names));
+    case PANGO2_ATTR_STRETCH:
+      attr = pango2_attr_stretch_new ((Pango2Stretch) parser_select_string (parser, stretch_names));
       break;
 
-    case PANGO_ATTR_SIZE:
-      attr = pango_attr_size_new ((int) gtk_json_parser_get_number (parser));
+    case PANGO2_ATTR_SIZE:
+      attr = pango2_attr_size_new ((int) gtk_json_parser_get_number (parser));
       break;
 
-    case PANGO_ATTR_FONT_DESC:
+    case PANGO2_ATTR_FONT_DESC:
       desc = parser_get_font_description (parser);
-      attr = pango_attr_font_desc_new (desc);
-      pango_font_description_free (desc);
+      attr = pango2_attr_font_desc_new (desc);
+      pango2_font_description_free (desc);
       break;
 
-    case PANGO_ATTR_FOREGROUND:
+    case PANGO2_ATTR_FOREGROUND:
       parser_get_color (parser, &color);
-      attr = pango_attr_foreground_new (&color);
+      attr = pango2_attr_foreground_new (&color);
       break;
 
-    case PANGO_ATTR_BACKGROUND:
+    case PANGO2_ATTR_BACKGROUND:
       parser_get_color (parser, &color);
-      attr = pango_attr_background_new (&color);
+      attr = pango2_attr_background_new (&color);
       break;
 
-    case PANGO_ATTR_UNDERLINE:
-      attr = pango_attr_underline_new ((PangoLineStyle) parser_select_string (parser, line_style_names));
+    case PANGO2_ATTR_UNDERLINE:
+      attr = pango2_attr_underline_new ((Pango2LineStyle) parser_select_string (parser, line_style_names));
       break;
 
-    case PANGO_ATTR_UNDERLINE_POSITION:
-      attr = pango_attr_underline_position_new ((PangoUnderlinePosition) parser_select_string (parser, underline_position_names));
+    case PANGO2_ATTR_UNDERLINE_POSITION:
+      attr = pango2_attr_underline_position_new ((Pango2UnderlinePosition) parser_select_string (parser, underline_position_names));
       break;
 
-    case PANGO_ATTR_STRIKETHROUGH:
-      attr = pango_attr_strikethrough_new ((PangoLineStyle) parser_select_string (parser, line_style_names));
+    case PANGO2_ATTR_STRIKETHROUGH:
+      attr = pango2_attr_strikethrough_new ((Pango2LineStyle) parser_select_string (parser, line_style_names));
       break;
 
-    case PANGO_ATTR_RISE:
-      attr = pango_attr_rise_new ((int) gtk_json_parser_get_number (parser));
+    case PANGO2_ATTR_RISE:
+      attr = pango2_attr_rise_new ((int) gtk_json_parser_get_number (parser));
       break;
 
-    case PANGO_ATTR_SCALE:
-      attr = pango_attr_scale_new (gtk_json_parser_get_number (parser));
+    case PANGO2_ATTR_SCALE:
+      attr = pango2_attr_scale_new (gtk_json_parser_get_number (parser));
       break;
 
-    case PANGO_ATTR_FALLBACK:
-      attr = pango_attr_fallback_new (gtk_json_parser_get_boolean (parser));
+    case PANGO2_ATTR_FALLBACK:
+      attr = pango2_attr_fallback_new (gtk_json_parser_get_boolean (parser));
       break;
 
-    case PANGO_ATTR_LETTER_SPACING:
-      attr = pango_attr_letter_spacing_new ((int) gtk_json_parser_get_number (parser));
+    case PANGO2_ATTR_LETTER_SPACING:
+      attr = pango2_attr_letter_spacing_new ((int) gtk_json_parser_get_number (parser));
       break;
 
-    case PANGO_ATTR_UNDERLINE_COLOR:
+    case PANGO2_ATTR_UNDERLINE_COLOR:
       parser_get_color (parser, &color);
-      attr = pango_attr_underline_color_new (&color);
+      attr = pango2_attr_underline_color_new (&color);
       break;
 
-    case PANGO_ATTR_STRIKETHROUGH_COLOR:
+    case PANGO2_ATTR_STRIKETHROUGH_COLOR:
       parser_get_color (parser, &color);
-      attr = pango_attr_strikethrough_color_new (&color);
+      attr = pango2_attr_strikethrough_color_new (&color);
       break;
 
-    case PANGO_ATTR_ABSOLUTE_SIZE:
-      attr = pango_attr_size_new_absolute ((int) gtk_json_parser_get_number (parser));
+    case PANGO2_ATTR_ABSOLUTE_SIZE:
+      attr = pango2_attr_size_new_absolute ((int) gtk_json_parser_get_number (parser));
       break;
 
-    case PANGO_ATTR_GRAVITY:
-      attr = pango_attr_gravity_new ((PangoGravity) parser_select_string (parser, gravity_names));
+    case PANGO2_ATTR_GRAVITY:
+      attr = pango2_attr_gravity_new ((Pango2Gravity) parser_select_string (parser, gravity_names));
       break;
 
-    case PANGO_ATTR_GRAVITY_HINT:
-      attr = pango_attr_gravity_hint_new ((PangoGravityHint) parser_select_string (parser, gravity_hint_names));
+    case PANGO2_ATTR_GRAVITY_HINT:
+      attr = pango2_attr_gravity_hint_new ((Pango2GravityHint) parser_select_string (parser, gravity_hint_names));
       break;
 
-    case PANGO_ATTR_FONT_FEATURES:
+    case PANGO2_ATTR_FONT_FEATURES:
       str = gtk_json_parser_get_string (parser);
-      attr = pango_attr_font_features_new (str);
+      attr = pango2_attr_font_features_new (str);
       g_free (str);
       break;
 
-    case PANGO_ATTR_ALLOW_BREAKS:
-      attr = pango_attr_allow_breaks_new (gtk_json_parser_get_boolean (parser));
+    case PANGO2_ATTR_ALLOW_BREAKS:
+      attr = pango2_attr_allow_breaks_new (gtk_json_parser_get_boolean (parser));
       break;
 
-    case PANGO_ATTR_SHOW:
-      attr = pango_attr_show_new ((int) gtk_json_parser_get_number (parser));
+    case PANGO2_ATTR_SHOW:
+      attr = pango2_attr_show_new ((int) gtk_json_parser_get_number (parser));
       break;
 
-    case PANGO_ATTR_INSERT_HYPHENS:
-      attr = pango_attr_insert_hyphens_new ((int) gtk_json_parser_get_number (parser));
+    case PANGO2_ATTR_INSERT_HYPHENS:
+      attr = pango2_attr_insert_hyphens_new ((int) gtk_json_parser_get_number (parser));
       break;
 
-    case PANGO_ATTR_OVERLINE:
-      attr = pango_attr_overline_new ((PangoLineStyle) parser_select_string (parser, line_style_names));
+    case PANGO2_ATTR_OVERLINE:
+      attr = pango2_attr_overline_new ((Pango2LineStyle) parser_select_string (parser, line_style_names));
       break;
 
-    case PANGO_ATTR_OVERLINE_COLOR:
+    case PANGO2_ATTR_OVERLINE_COLOR:
       parser_get_color (parser, &color);
-      attr = pango_attr_overline_color_new (&color);
+      attr = pango2_attr_overline_color_new (&color);
       break;
 
-    case PANGO_ATTR_LINE_HEIGHT:
-      attr = pango_attr_line_height_new (gtk_json_parser_get_number (parser));
+    case PANGO2_ATTR_LINE_HEIGHT:
+      attr = pango2_attr_line_height_new (gtk_json_parser_get_number (parser));
       break;
 
-    case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
-      attr = pango_attr_line_height_new_absolute ((int) gtk_json_parser_get_number (parser));
+    case PANGO2_ATTR_ABSOLUTE_LINE_HEIGHT:
+      attr = pango2_attr_line_height_new_absolute ((int) gtk_json_parser_get_number (parser));
       break;
 
-    case PANGO_ATTR_LINE_SPACING:
-      attr = pango_attr_line_spacing_new ((int) gtk_json_parser_get_number (parser));
+    case PANGO2_ATTR_LINE_SPACING:
+      attr = pango2_attr_line_spacing_new ((int) gtk_json_parser_get_number (parser));
       break;
 
-    case PANGO_ATTR_TEXT_TRANSFORM:
-      attr = pango_attr_text_transform_new ((PangoTextTransform) parser_select_string (parser, text_transform_names));
+    case PANGO2_ATTR_TEXT_TRANSFORM:
+      attr = pango2_attr_text_transform_new ((Pango2TextTransform) parser_select_string (parser, text_transform_names));
       break;
 
-    case PANGO_ATTR_WORD:
-      attr = pango_attr_word_new ();
+    case PANGO2_ATTR_WORD:
+      attr = pango2_attr_word_new ();
       break;
 
-    case PANGO_ATTR_SENTENCE:
-      attr = pango_attr_sentence_new ();
+    case PANGO2_ATTR_SENTENCE:
+      attr = pango2_attr_sentence_new ();
       break;
 
-    case PANGO_ATTR_BASELINE_SHIFT:
-      attr = pango_attr_baseline_shift_new (parser_select_string (parser, baseline_shift_names));
+    case PANGO2_ATTR_BASELINE_SHIFT:
+      attr = pango2_attr_baseline_shift_new (parser_select_string (parser, baseline_shift_names));
       break;
 
-    case PANGO_ATTR_FONT_SCALE:
-      attr = pango_attr_font_scale_new ((PangoFontScale) parser_select_string (parser, font_scale_names));
+    case PANGO2_ATTR_FONT_SCALE:
+      attr = pango2_attr_font_scale_new ((Pango2FontScale) parser_select_string (parser, font_scale_names));
       break;
 
-    case PANGO_ATTR_PARAGRAPH:
-      attr = pango_attr_paragraph_new ();
+    case PANGO2_ATTR_PARAGRAPH:
+      attr = pango2_attr_paragraph_new ();
       break;
 
     }
@@ -1133,13 +1133,13 @@ static const char *attr_members[] = {
   NULL
 };
 
-static PangoAttribute *
+static Pango2Attribute *
 json_to_attribute (GtkJsonParser *parser)
 {
-  PangoAttribute *attr = NULL;
-  PangoAttrType type = PANGO_ATTR_INVALID;
-  guint start = PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING;
-  guint end = PANGO_ATTR_INDEX_TO_TEXT_END;
+  Pango2Attribute *attr = NULL;
+  Pango2AttrType type = PANGO2_ATTR_INVALID;
+  guint start = PANGO2_ATTR_INDEX_FROM_TEXT_BEGINNING;
+  guint end = PANGO2_ATTR_INDEX_TO_TEXT_END;
 
   gtk_json_parser_start_object (parser);
 
@@ -1171,7 +1171,7 @@ json_to_attribute (GtkJsonParser *parser)
 
   if (!attr && !gtk_json_parser_get_error (parser))
     {
-      if (type == PANGO_ATTR_INVALID)
+      if (type == PANGO2_ATTR_INVALID)
         gtk_json_parser_schema_error (parser, "Invalid attribute \"type\"");
       else
         gtk_json_parser_schema_error (parser, "Attribute missing \"value\"");
@@ -1184,15 +1184,15 @@ json_to_attribute (GtkJsonParser *parser)
 
 static void
 json_parser_fill_attr_list (GtkJsonParser *parser,
-                            PangoAttrList *attributes)
+                            Pango2AttrList *attributes)
 {
   gtk_json_parser_start_array (parser);
 
   do
     {
-      PangoAttribute *attr = json_to_attribute (parser);
+      Pango2Attribute *attr = json_to_attribute (parser);
       if (attr)
-        pango_attr_list_insert (attributes, attr);
+        pango2_attr_list_insert (attributes, attr);
     }
   while (gtk_json_parser_next (parser));
 
@@ -1215,7 +1215,7 @@ static const char *tab_members[] = {
 
 static void
 json_parser_fill_tabs (GtkJsonParser *parser,
-                       PangoTabArray *tabs)
+                       Pango2TabArray *tabs)
 {
   int index;
 
@@ -1225,7 +1225,7 @@ json_parser_fill_tabs (GtkJsonParser *parser,
   do
     {
       int pos;
-      PangoTabAlign align = PANGO_TAB_LEFT;
+      Pango2TabAlign align = PANGO2_TAB_LEFT;
       gunichar ch = 0;
 
       if (gtk_json_parser_get_node (parser) == GTK_JSON_OBJECT)
@@ -1240,7 +1240,7 @@ json_parser_fill_tabs (GtkJsonParser *parser,
                   break;
 
                 case TAB_ALIGNMENT:
-                  align = (PangoTabAlign) parser_select_string (parser, tab_align_names);
+                  align = (Pango2TabAlign) parser_select_string (parser, tab_align_names);
                   break;
 
                 case TAB_DECIMAL_POINT:
@@ -1258,8 +1258,8 @@ json_parser_fill_tabs (GtkJsonParser *parser,
       else
         pos = (int) gtk_json_parser_get_number (parser);
 
-      pango_tab_array_set_tab (tabs, index, align, pos);
-      pango_tab_array_set_decimal_point (tabs, index, ch);
+      pango2_tab_array_set_tab (tabs, index, align, pos);
+      pango2_tab_array_set_decimal_point (tabs, index, ch);
       index++;
     }
   while (gtk_json_parser_next (parser));
@@ -1280,7 +1280,7 @@ static const char *tabs_members[] = {
 
 static void
 json_parser_fill_tab_array (GtkJsonParser *parser,
-                            PangoTabArray *tabs)
+                            Pango2TabArray *tabs)
 {
   gtk_json_parser_start_object (parser);
 
@@ -1289,7 +1289,7 @@ json_parser_fill_tab_array (GtkJsonParser *parser,
       switch (gtk_json_parser_select_member (parser, tabs_members))
         {
         case TABS_POSITIONS_IN_PIXELS:
-          pango_tab_array_set_positions_in_pixels (tabs, gtk_json_parser_get_boolean (parser));
+          pango2_tab_array_set_positions_in_pixels (tabs, gtk_json_parser_get_boolean (parser));
           break;
 
         case TABS_POSITIONS:
@@ -1328,7 +1328,7 @@ static const char *context_members[] = {
 
 static void
 json_parser_fill_context (GtkJsonParser *parser,
-                          PangoContext  *context)
+                          Pango2Context  *context)
 {
   gtk_json_parser_start_object (parser);
 
@@ -1340,38 +1340,38 @@ json_parser_fill_context (GtkJsonParser *parser,
         {
         case CONTEXT_LANGUAGE:
           str = gtk_json_parser_get_string (parser);
-          PangoLanguage *language = pango_language_from_string (str);
-          pango_context_set_language (context, language);
+          Pango2Language *language = pango2_language_from_string (str);
+          pango2_context_set_language (context, language);
           g_free (str);
           break;
 
         case CONTEXT_FONT:
           {
-            PangoFontDescription *desc = parser_get_font_description (parser);
-            pango_context_set_font_description (context, desc);
-            pango_font_description_free (desc);
+            Pango2FontDescription *desc = parser_get_font_description (parser);
+            pango2_context_set_font_description (context, desc);
+            pango2_font_description_free (desc);
           }
           break;
 
         case CONTEXT_BASE_GRAVITY:
-          pango_context_set_base_gravity (context, (PangoGravity) parser_select_string (parser, gravity_names));
+          pango2_context_set_base_gravity (context, (Pango2Gravity) parser_select_string (parser, gravity_names));
           break;
 
         case CONTEXT_GRAVITY_HINT:
-          pango_context_set_gravity_hint (context, (PangoGravityHint) parser_select_string (parser, gravity_hint_names));
+          pango2_context_set_gravity_hint (context, (Pango2GravityHint) parser_select_string (parser, gravity_hint_names));
           break;
 
         case CONTEXT_BASE_DIR:
-          pango_context_set_base_dir (context, (PangoDirection) parser_select_string (parser, direction_names));
+          pango2_context_set_base_dir (context, (Pango2Direction) parser_select_string (parser, direction_names));
           break;
 
         case CONTEXT_ROUND_GLYPH_POSITIONS:
-          pango_context_set_round_glyph_positions (context, gtk_json_parser_get_boolean (parser));
+          pango2_context_set_round_glyph_positions (context, gtk_json_parser_get_boolean (parser));
           break;
 
         case CONTEXT_TRANSFORM:
           {
-            PangoMatrix m = PANGO_MATRIX_INIT;
+            Pango2Matrix m = PANGO2_MATRIX_INIT;
 
             gtk_json_parser_start_array (parser);
             m.xx = gtk_json_parser_get_number (parser);
@@ -1387,7 +1387,7 @@ json_parser_fill_context (GtkJsonParser *parser,
             m.y0 = gtk_json_parser_get_number (parser);
             gtk_json_parser_end (parser);
 
-            pango_context_set_matrix (context, &m);
+            pango2_context_set_matrix (context, &m);
           }
           break;
 
@@ -1439,8 +1439,8 @@ static const char *layout_members[] = {
 
 static void
 json_parser_fill_layout (GtkJsonParser               *parser,
-                         PangoLayout                 *layout,
-                         PangoLayoutDeserializeFlags  flags)
+                         Pango2Layout                 *layout,
+                         Pango2LayoutDeserializeFlags  flags)
 {
   gtk_json_parser_start_object (parser);
 
@@ -1451,8 +1451,8 @@ json_parser_fill_layout (GtkJsonParser               *parser,
       switch (gtk_json_parser_select_member (parser, layout_members))
         {
         case LAYOUT_CONTEXT:
-          if (flags & PANGO_LAYOUT_DESERIALIZE_CONTEXT)
-            json_parser_fill_context (parser, pango_layout_get_context (layout));
+          if (flags & PANGO2_LAYOUT_DESERIALIZE_CONTEXT)
+            json_parser_fill_context (parser, pango2_layout_get_context (layout));
           break;
 
         case LAYOUT_COMMENT:
@@ -1462,66 +1462,66 @@ json_parser_fill_layout (GtkJsonParser               *parser,
 
         case LAYOUT_TEXT:
           str = gtk_json_parser_get_string (parser);
-          pango_layout_set_text (layout, str, -1);
+          pango2_layout_set_text (layout, str, -1);
           g_free (str);
           break;
 
         case LAYOUT_ATTRIBUTES:
           {
-            PangoAttrList *attributes = pango_attr_list_new ();
+            Pango2AttrList *attributes = pango2_attr_list_new ();
             json_parser_fill_attr_list (parser, attributes);
-            pango_layout_set_attributes (layout, attributes);
-            pango_attr_list_unref (attributes);
+            pango2_layout_set_attributes (layout, attributes);
+            pango2_attr_list_unref (attributes);
           }
           break;
 
         case LAYOUT_FONT:
           {
-            PangoFontDescription *desc = parser_get_font_description (parser);;
-            pango_layout_set_font_description (layout, desc);
-            pango_font_description_free (desc);
+            Pango2FontDescription *desc = parser_get_font_description (parser);;
+            pango2_layout_set_font_description (layout, desc);
+            pango2_font_description_free (desc);
           }
           break;
 
         case LAYOUT_AUTO_DIR:
-          pango_layout_set_auto_dir (layout, gtk_json_parser_get_boolean (parser));
+          pango2_layout_set_auto_dir (layout, gtk_json_parser_get_boolean (parser));
           break;
 
         case LAYOUT_LINE_HEIGHT:
-          pango_layout_set_line_height (layout, gtk_json_parser_get_number (parser));
+          pango2_layout_set_line_height (layout, gtk_json_parser_get_number (parser));
           break;
 
         case LAYOUT_TABS:
           {
-            PangoTabArray *tabs = pango_tab_array_new (0, FALSE);
+            Pango2TabArray *tabs = pango2_tab_array_new (0, FALSE);
             json_parser_fill_tab_array (parser, tabs);
-            pango_layout_set_tabs (layout, tabs);
-            pango_tab_array_free (tabs);
+            pango2_layout_set_tabs (layout, tabs);
+            pango2_tab_array_free (tabs);
           }
           break;
 
         case LAYOUT_ALIGNMENT:
-          pango_layout_set_alignment (layout, (PangoAlignment) parser_select_string (parser, alignment_names));
+          pango2_layout_set_alignment (layout, (Pango2Alignment) parser_select_string (parser, alignment_names));
           break;
 
         case LAYOUT_WRAP:
-          pango_layout_set_wrap (layout, (PangoWrapMode) parser_select_string (parser, wrap_names));
+          pango2_layout_set_wrap (layout, (Pango2WrapMode) parser_select_string (parser, wrap_names));
           break;
 
         case LAYOUT_ELLIPSIZE:
-          pango_layout_set_ellipsize (layout, (PangoEllipsizeMode) parser_select_string (parser, ellipsize_names));
+          pango2_layout_set_ellipsize (layout, (Pango2EllipsizeMode) parser_select_string (parser, ellipsize_names));
           break;
 
         case LAYOUT_WIDTH:
-          pango_layout_set_width (layout, (int) gtk_json_parser_get_number (parser));
+          pango2_layout_set_width (layout, (int) gtk_json_parser_get_number (parser));
           break;
 
         case LAYOUT_HEIGHT:
-          pango_layout_set_height (layout, (int) gtk_json_parser_get_number (parser));
+          pango2_layout_set_height (layout, (int) gtk_json_parser_get_number (parser));
           break;
 
         case LAYOUT_INDENT:
-          pango_layout_set_indent (layout, (int) gtk_json_parser_get_number (parser));
+          pango2_layout_set_indent (layout, (int) gtk_json_parser_get_number (parser));
           break;
 
         case LAYOUT_LINES:
@@ -1553,12 +1553,12 @@ static const char *font_members[] = {
   NULL
 };
 
-static PangoFont *
+static Pango2Font *
 json_parser_load_font (GtkJsonParser  *parser,
-                       PangoContext   *context,
+                       Pango2Context   *context,
                        GError        **error)
 {
-  PangoFont *font = NULL;
+  Pango2Font *font = NULL;
 
   gtk_json_parser_start_object (parser);
 
@@ -1566,9 +1566,9 @@ json_parser_load_font (GtkJsonParser  *parser,
     {
     case FONT_DESCRIPTION:
       {
-        PangoFontDescription *desc = parser_get_font_description (parser);
-        font = pango_context_load_font (context, desc);
-        pango_font_description_free (desc);
+        Pango2FontDescription *desc = parser_get_font_description (parser);
+        font = pango2_context_load_font (context, desc);
+        pango2_font_description_free (desc);
       }
       break;
 
@@ -1585,14 +1585,14 @@ json_parser_load_font (GtkJsonParser  *parser,
 /* {{{ Public API */
 
 /**
- * pango_layout_serialize:
- * @layout: a `PangoLayout`
- * @flags: `PangoLayoutSerializeFlags`
+ * pango2_layout_serialize:
+ * @layout: a `Pango2Layout`
+ * @flags: `Pango2LayoutSerializeFlags`
  *
- * Serializes the @layout for later deserialization via [func@Pango.Layout.deserialize].
+ * Serializes the @layout for later deserialization via [func@Pango2.Layout.deserialize].
  *
  * There are no guarantees about the format of the output across different
- * versions of Pango and [func@Pango.Layout.deserialize] will reject data
+ * versions of Pango2 and [func@Pango2.Layout.deserialize] will reject data
  * that it cannot parse.
  *
  * The intended use of this function is testing, benchmarking and debugging.
@@ -1601,15 +1601,15 @@ json_parser_load_font (GtkJsonParser  *parser,
  * Returns: a `GBytes` containing the serialized form of @layout
  */
 GBytes *
-pango_layout_serialize (PangoLayout               *layout,
-                        PangoLayoutSerializeFlags  flags)
+pango2_layout_serialize (Pango2Layout               *layout,
+                        Pango2LayoutSerializeFlags  flags)
 {
   GString *str;
   GtkJsonPrinter *printer;
   char *data;
   gsize size;
 
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), NULL);
 
   str = g_string_new ("");
 
@@ -1627,12 +1627,12 @@ pango_layout_serialize (PangoLayout               *layout,
 }
 
 /**
- * pango_layout_write_to_file:
- * @layout: a `PangoLayout`
+ * pango2_layout_write_to_file:
+ * @layout: a `Pango2Layout`
  *
  * A convenience method to serialize a layout to a file.
  *
- * It is equivalent to calling [method@Pango.Layout.serialize]
+ * It is equivalent to calling [method@Pango2.Layout.serialize]
  * followed by [func@GLib.file_set_contents].
  *
  * See those two functions for details on the arguments.
@@ -1643,17 +1643,17 @@ pango_layout_serialize (PangoLayout               *layout,
  * Returns: %TRUE if saving was successful
  */
 gboolean
-pango_layout_write_to_file (PangoLayout *layout,
+pango2_layout_write_to_file (Pango2Layout *layout,
                             const char  *filename)
 {
   GBytes *bytes;
   gboolean result;
 
-  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), FALSE);
+  g_return_val_if_fail (PANGO2_IS_LAYOUT (layout), FALSE);
   g_return_val_if_fail (filename != NULL, FALSE);
 
-  bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_CONTEXT |
-                                          PANGO_LAYOUT_SERIALIZE_OUTPUT);
+  bytes = pango2_layout_serialize (layout, PANGO2_LAYOUT_SERIALIZE_CONTEXT |
+                                          PANGO2_LAYOUT_SERIALIZE_OUTPUT);
 
   result = g_file_set_contents (filename,
                                 g_bytes_get_data (bytes, NULL),
@@ -1665,13 +1665,13 @@ pango_layout_write_to_file (PangoLayout *layout,
 }
 
 /**
- * pango_layout_deserialize:
- * @context: a `PangoContext`
- * @flags: `PangoLayoutDeserializeFlags`
+ * pango2_layout_deserialize:
+ * @context: a `Pango2Context`
+ * @flags: `Pango2LayoutDeserializeFlags`
  * @bytes: the bytes containing the data
  * @error: return location for an error
  *
- * Loads data previously created via [method@Pango.Layout.serialize].
+ * Loads data previously created via [method@Pango2.Layout.serialize].
  *
  * For a discussion of the supported format, see that function.
  *
@@ -1679,21 +1679,21 @@ pango_layout_write_to_file (PangoLayout *layout,
  * the one that was serialized, you can compare @bytes to the
  * result of serializing the layout again.
  *
- * Returns: (nullable) (transfer full): a new `PangoLayout`
+ * Returns: (nullable) (transfer full): a new `Pango2Layout`
  */
-PangoLayout *
-pango_layout_deserialize (PangoContext                 *context,
+Pango2Layout *
+pango2_layout_deserialize (Pango2Context                 *context,
                           GBytes                       *bytes,
-                          PangoLayoutDeserializeFlags   flags,
+                          Pango2LayoutDeserializeFlags   flags,
                           GError                      **error)
 {
-  PangoLayout *layout;
+  Pango2Layout *layout;
   GtkJsonParser *parser;
   const GError *parser_error;
 
-  g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
+  g_return_val_if_fail (PANGO2_IS_CONTEXT (context), NULL);
 
-  layout = pango_layout_new (context);
+  layout = pango2_layout_new (context);
 
   parser = gtk_json_parser_new_for_bytes (bytes);
   json_parser_fill_layout (parser, layout, flags);
@@ -1708,13 +1708,13 @@ pango_layout_deserialize (PangoContext                 *context,
       gtk_json_parser_get_error_offset (parser, &start, &end);
 
       if (g_error_matches (parser_error, GTK_JSON_ERROR, GTK_JSON_ERROR_VALUE))
-        code = PANGO_LAYOUT_DESERIALIZE_INVALID_VALUE;
+        code = PANGO2_LAYOUT_DESERIALIZE_INVALID_VALUE;
       else if (g_error_matches (parser_error, GTK_JSON_ERROR, GTK_JSON_ERROR_SCHEMA))
-        code = PANGO_LAYOUT_DESERIALIZE_MISSING_VALUE;
+        code = PANGO2_LAYOUT_DESERIALIZE_MISSING_VALUE;
       else
-        code = PANGO_LAYOUT_DESERIALIZE_INVALID;
+        code = PANGO2_LAYOUT_DESERIALIZE_INVALID;
 
-      g_set_error (error, PANGO_LAYOUT_DESERIALIZE_ERROR, code,
+      g_set_error (error, PANGO2_LAYOUT_DESERIALIZE_ERROR, code,
                    "%" G_GSIZE_FORMAT ":%" G_GSIZE_FORMAT ": %s",
                    start, end, parser_error->message);
 
@@ -1727,30 +1727,30 @@ pango_layout_deserialize (PangoContext                 *context,
 }
 
 /**
- * pango_font_serialize:
- * @font: a `PangoFont`
+ * pango2_font_serialize:
+ * @font: a `Pango2Font`
  *
  * Serializes the @font in a way that can be uniquely identified.
  *
  * There are no guarantees about the format of the output across different
- * versions of Pango.
+ * versions of Pango2.
  *
  * The intended use of this function is testing, benchmarking and debugging.
  * The format is not meant as a permanent storage format.
  *
- * To recreate a font from its serialized form, use [func@Pango.Font.deserialize].
+ * To recreate a font from its serialized form, use [func@Pango2.Font.deserialize].
  *
  * Returns: a `GBytes` containing the serialized form of @font
  */
 GBytes *
-pango_font_serialize (PangoFont *font)
+pango2_font_serialize (Pango2Font *font)
 {
   GString *str;
   GtkJsonPrinter *printer;
   char *data;
   gsize size;
 
-  g_return_val_if_fail (PANGO_IS_FONT (font), NULL);
+  g_return_val_if_fail (PANGO2_IS_FONT (font), NULL);
  
   str = g_string_new ("");
 
@@ -1766,12 +1766,12 @@ pango_font_serialize (PangoFont *font)
 }
 
 /**
- * pango_font_deserialize:
- * @context: a `PangoContext`
+ * pango2_font_deserialize:
+ * @context: a `Pango2Context`
  * @bytes: the bytes containing the data
  * @error: return location for an error
  *
- * Loads data previously created via [method@Pango.Font.serialize].
+ * Loads data previously created via [method@Pango2.Font.serialize].
  *
  * For a discussion of the supported format, see that function.
  *
@@ -1779,17 +1779,17 @@ pango_font_serialize (PangoFont *font)
  * the one that was serialized, you can compare @bytes to the
  * result of serializing the font again.
  *
- * Returns: (nullable) (transfer full): a new `PangoFont`
+ * Returns: (nullable) (transfer full): a new `Pango2Font`
  */
-PangoFont *
-pango_font_deserialize (PangoContext  *context,
+Pango2Font *
+pango2_font_deserialize (Pango2Context  *context,
                         GBytes        *bytes,
                         GError       **error)
 {
-  PangoFont *font;
+  Pango2Font *font;
   GtkJsonParser *parser;
 
-  g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
+  g_return_val_if_fail (PANGO2_IS_CONTEXT (context), NULL);
 
   parser = gtk_json_parser_new_for_bytes (bytes);
   font = json_parser_load_font (parser, context, error);

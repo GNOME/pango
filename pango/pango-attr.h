@@ -26,220 +26,220 @@
 G_BEGIN_DECLS
 
 
-typedef struct _PangoAttribute PangoAttribute;
+typedef struct _Pango2Attribute Pango2Attribute;
 
 /**
- * PangoAttrValueType:
- * @PANGO_ATTR_VALUE_STRING: A string
- * @PANGO_ATTR_VALUE_INT: An integer
- * @PANGO_ATTR_VALUE_BOOLEAN: A boolean
- * @PANGO_ATTR_VALUE_FLOAT: A floating point number
- * @PANGO_ATTR_VALUE_COLOR: A `PangoColor`
- * @PANGO_ATTR_VALUE_LANGUAGE: A `PangoLanguage`
- * @PANGO_ATTR_VALUE_FONT_DESC: A `PangoFontDescription`
- * @PANGO_ATTR_VALUE_POINTER: A generic pointer
+ * Pango2AttrValueType:
+ * @PANGO2_ATTR_VALUE_STRING: A string
+ * @PANGO2_ATTR_VALUE_INT: An integer
+ * @PANGO2_ATTR_VALUE_BOOLEAN: A boolean
+ * @PANGO2_ATTR_VALUE_FLOAT: A floating point number
+ * @PANGO2_ATTR_VALUE_COLOR: A `Pango2Color`
+ * @PANGO2_ATTR_VALUE_LANGUAGE: A `Pango2Language`
+ * @PANGO2_ATTR_VALUE_FONT_DESC: A `Pango2FontDescription`
+ * @PANGO2_ATTR_VALUE_POINTER: A generic pointer
  *
- * `PangoAttrValueType` enumerates the types of values
- * that a `PangoAttribute` can contain.
+ * `Pango2AttrValueType` enumerates the types of values
+ * that a `Pango2Attribute` can contain.
  *
- * The `PangoAttrValueType` of a `PangoAttribute` is part
- * of its type, and can be obtained with `PANGO_ATTR_VALUE_TYPE()`.
+ * The `Pango2AttrValueType` of a `Pango2Attribute` is part
+ * of its type, and can be obtained with `PANGO2_ATTR_VALUE_TYPE()`.
  */
 typedef enum
 {
-  PANGO_ATTR_VALUE_STRING,
-  PANGO_ATTR_VALUE_INT,
-  PANGO_ATTR_VALUE_BOOLEAN,
-  PANGO_ATTR_VALUE_FLOAT,
-  PANGO_ATTR_VALUE_COLOR,
-  PANGO_ATTR_VALUE_LANGUAGE,
-  PANGO_ATTR_VALUE_FONT_DESC,
-  PANGO_ATTR_VALUE_POINTER
-} PangoAttrValueType;
+  PANGO2_ATTR_VALUE_STRING,
+  PANGO2_ATTR_VALUE_INT,
+  PANGO2_ATTR_VALUE_BOOLEAN,
+  PANGO2_ATTR_VALUE_FLOAT,
+  PANGO2_ATTR_VALUE_COLOR,
+  PANGO2_ATTR_VALUE_LANGUAGE,
+  PANGO2_ATTR_VALUE_FONT_DESC,
+  PANGO2_ATTR_VALUE_POINTER
+} Pango2AttrValueType;
 
 /**
- * PangoAttrAffects:
- * @PANGO_ATTR_AFFECTS_NONE: The attribute does not affect rendering
- * @PANGO_ATTR_AFFECTS_ITEMIZATION: The attribute affecs itemization
- * @PANGO_ATTR_AFFECTS_BREAKING: The attribute affects `PangoLogAttr` determination
- * @PANGO_ATTR_AFFECTS_SHAPING: The attribute affects shaping
- * @PANGO_ATTR_AFFECTS_RENDERING: The attribute affects rendering
+ * Pango2AttrAffects:
+ * @PANGO2_ATTR_AFFECTS_NONE: The attribute does not affect rendering
+ * @PANGO2_ATTR_AFFECTS_ITEMIZATION: The attribute affecs itemization
+ * @PANGO2_ATTR_AFFECTS_BREAKING: The attribute affects `Pango2LogAttr` determination
+ * @PANGO2_ATTR_AFFECTS_SHAPING: The attribute affects shaping
+ * @PANGO2_ATTR_AFFECTS_RENDERING: The attribute affects rendering
  *
- * A `PangoAttrAffects` value indicates what part of Pango's processing
+ * A `Pango2AttrAffects` value indicates what part of Pango2's processing
  * pipeline is affected by an attribute.
  *
- * Marking an attribute with `PANGO_ATTR_AFFECTS_ITEMIZATION` ensures
+ * Marking an attribute with `PANGO2_ATTR_AFFECTS_ITEMIZATION` ensures
  * that the attribute values are constant across items.
  */
 typedef enum
 {
-  PANGO_ATTR_AFFECTS_NONE        = 0,
-  PANGO_ATTR_AFFECTS_ITEMIZATION = 1 << 0,
-  PANGO_ATTR_AFFECTS_BREAKING    = 1 << 1,
-  PANGO_ATTR_AFFECTS_SHAPING     = 1 << 2,
-  PANGO_ATTR_AFFECTS_RENDERING   = 1 << 3
-} PangoAttrAffects;
+  PANGO2_ATTR_AFFECTS_NONE        = 0,
+  PANGO2_ATTR_AFFECTS_ITEMIZATION = 1 << 0,
+  PANGO2_ATTR_AFFECTS_BREAKING    = 1 << 1,
+  PANGO2_ATTR_AFFECTS_SHAPING     = 1 << 2,
+  PANGO2_ATTR_AFFECTS_RENDERING   = 1 << 3
+} Pango2AttrAffects;
 
 /**
- * PangoAttrMerge:
- * @PANGO_ATTR_MERGE_OVERRIDES: Only the attribute with the narrowest range is used
- * @PANGO_ATTR_MERGE_ACCUMULATES: All attributes with overlapping range are kept
+ * Pango2AttrMerge:
+ * @PANGO2_ATTR_MERGE_OVERRIDES: Only the attribute with the narrowest range is used
+ * @PANGO2_ATTR_MERGE_ACCUMULATES: All attributes with overlapping range are kept
  *
- * A `PangoAttrMerge` value indicates how overlapping attribute values
+ * A `Pango2AttrMerge` value indicates how overlapping attribute values
  * should be reconciled to determine the effective attribute value.
  *
  * These options influence the @extra_attrs returned by
- * [method@Pango.AttrIterator.get_font].
+ * [method@Pango2.AttrIterator.get_font].
  */
 typedef enum
 {
-  PANGO_ATTR_MERGE_OVERRIDES,
-  PANGO_ATTR_MERGE_ACCUMULATES
-} PangoAttrMerge;
+  PANGO2_ATTR_MERGE_OVERRIDES,
+  PANGO2_ATTR_MERGE_ACCUMULATES
+} Pango2AttrMerge;
 
 /**
- * PANGO_ATTR_TYPE_VALUE_TYPE:
+ * PANGO2_ATTR_TYPE_VALUE_TYPE:
  * @type: an attribute type
  *
- * Extracts the `PangoAttrValueType` from an attribute type.
+ * Extracts the `Pango2AttrValueType` from an attribute type.
  */
-#define PANGO_ATTR_TYPE_VALUE_TYPE(type) ((PangoAttrValueType)((type) & 0xff))
+#define PANGO2_ATTR_TYPE_VALUE_TYPE(type) ((Pango2AttrValueType)((type) & 0xff))
 
 /**
- * PANGO_ATTR_TYPE_AFFECTS:
+ * PANGO2_ATTR_TYPE_AFFECTS:
  * @type: an attribute type
  *
- * Extracts the `PangoAttrAffects` flags from an attribute type.
+ * Extracts the `Pango2AttrAffects` flags from an attribute type.
  */
-#define PANGO_ATTR_TYPE_AFFECTS(type) ((PangoAttrAffects)(((type) >> 8) & 0xf))
+#define PANGO2_ATTR_TYPE_AFFECTS(type) ((Pango2AttrAffects)(((type) >> 8) & 0xf))
 
 /**
- * PANGO_ATTR_TYPE_MERGE:
+ * PANGO2_ATTR_TYPE_MERGE:
  * @type: an attribute type
  *
- * Extracts the `PangoAttrMerge` flags from an attribute type.
+ * Extracts the `Pango2AttrMerge` flags from an attribute type.
  */
-#define PANGO_ATTR_TYPE_MERGE(type) ((PangoAttrMerge)(((type) >> 12) & 0xf))
+#define PANGO2_ATTR_TYPE_MERGE(type) ((Pango2AttrMerge)(((type) >> 12) & 0xf))
 
 /**
- * PANGO_ATTR_VALUE_TYPE:
- * @attr: a `PangoAttribute`
+ * PANGO2_ATTR_VALUE_TYPE:
+ * @attr: a `Pango2Attribute`
  *
- * Obtains the `PangoAttrValueType of a `PangoAttribute`.
+ * Obtains the `Pango2AttrValueType of a `Pango2Attribute`.
  */
-#define PANGO_ATTR_VALUE_TYPE(attr) PANGO_ATTR_TYPE_VALUE_TYPE (pango_attribute_type (attr))
+#define PANGO2_ATTR_VALUE_TYPE(attr) PANGO2_ATTR_TYPE_VALUE_TYPE (pango2_attribute_type (attr))
 
 /**
- * PANGO_ATTR_AFFECTS:
- * @attr: a `PangoAttribute`
+ * PANGO2_ATTR_AFFECTS:
+ * @attr: a `Pango2Attribute`
  *
- * Obtains the `PangoAttrAffects` flags of a `PangoAttribute`.
+ * Obtains the `Pango2AttrAffects` flags of a `Pango2Attribute`.
  */
-#define PANGO_ATTR_AFFECTS(attr) PANGO_ATTR_TYPE_AFFECTS (pango_attribute_type (attr))
+#define PANGO2_ATTR_AFFECTS(attr) PANGO2_ATTR_TYPE_AFFECTS (pango2_attribute_type (attr))
 
 /**
- * PANGO_ATTR_MERGE:
- * @attr: a `PangoAttribute`
+ * PANGO2_ATTR_MERGE:
+ * @attr: a `Pango2Attribute`
  *
- * Obtains the `PangoAttrMerge` flags of a `PangoAttribute`.
+ * Obtains the `Pango2AttrMerge` flags of a `Pango2Attribute`.
  */
-#define PANGO_ATTR_MERGE(attr) PANGO_ATTR_TYPE_MERGE (pango_attribute_type (attr))
+#define PANGO2_ATTR_MERGE(attr) PANGO2_ATTR_TYPE_MERGE (pango2_attribute_type (attr))
 
 /**
- * PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING:
+ * PANGO2_ATTR_INDEX_FROM_TEXT_BEGINNING:
  *
- * Value for @start_index in `PangoAttribute` that indicates
+ * Value for @start_index in `Pango2Attribute` that indicates
  * the beginning of the text.
  */
-#define PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING ((guint)0)
+#define PANGO2_ATTR_INDEX_FROM_TEXT_BEGINNING ((guint)0)
 
 /**
- * PANGO_ATTR_INDEX_TO_TEXT_END: (value 4294967295)
+ * PANGO2_ATTR_INDEX_TO_TEXT_END: (value 4294967295)
  *
- * Value for @end_index in `PangoAttribute` that indicates
+ * Value for @end_index in `Pango2Attribute` that indicates
  * the end of the text.
  */
-#define PANGO_ATTR_INDEX_TO_TEXT_END ((guint)(G_MAXUINT + 0))
+#define PANGO2_ATTR_INDEX_TO_TEXT_END ((guint)(G_MAXUINT + 0))
 
 /**
- * PangoAttrDataCopyFunc:
+ * Pango2AttrDataCopyFunc:
  * @value: value to copy
  *
  * Callback to duplicate the value of an attribute.
  *
  * Return value: new copy of @value.
  **/
-typedef gpointer (*PangoAttrDataCopyFunc) (gconstpointer value);
+typedef gpointer (*Pango2AttrDataCopyFunc) (gconstpointer value);
 
 /**
- * PangoAttrDataSerializeFunc:
+ * Pango2AttrDataSerializeFunc:
  * @value: value to serialize
  *
  * Callback to serialize the value of an attribute.
  *
  * Return value: a newly allocated string holding the serialization of @value
  */
-typedef char * (*PangoAttrDataSerializeFunc) (gconstpointer value);
+typedef char * (*Pango2AttrDataSerializeFunc) (gconstpointer value);
 
-PANGO_AVAILABLE_IN_ALL
-GType                   pango_attribute_get_type                (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+GType                   pango2_attribute_get_type               (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_ALL
-guint                   pango_attr_type_register                (const char                 *name,
-                                                                 PangoAttrValueType          value_type,
-                                                                 PangoAttrAffects            affects,
-                                                                 PangoAttrMerge              merge,
-                                                                 PangoAttrDataCopyFunc       copy,
-                                                                 GDestroyNotify              destroy,
-                                                                 GEqualFunc                  equal,
-                                                                 PangoAttrDataSerializeFunc  serialize);
+PANGO2_AVAILABLE_IN_ALL
+guint                   pango2_attr_type_register               (const char                  *name,
+                                                                 Pango2AttrValueType          value_type,
+                                                                 Pango2AttrAffects            affects,
+                                                                 Pango2AttrMerge              merge,
+                                                                 Pango2AttrDataCopyFunc       copy,
+                                                                 GDestroyNotify               destroy,
+                                                                 GEqualFunc                   equal,
+                                                                 Pango2AttrDataSerializeFunc  serialize);
 
-PANGO_AVAILABLE_IN_ALL
-const char *            pango_attr_type_get_name                (guint                       type) G_GNUC_CONST;
-PANGO_AVAILABLE_IN_ALL
-PangoAttribute *        pango_attribute_copy                    (const PangoAttribute       *attr);
-PANGO_AVAILABLE_IN_ALL
-void                    pango_attribute_destroy                 (PangoAttribute             *attr);
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_attribute_equal                   (const PangoAttribute       *attr1,
-                                                                 const PangoAttribute       *attr2) G_GNUC_PURE;
+PANGO2_AVAILABLE_IN_ALL
+const char *            pango2_attr_type_get_name               (guint                        type) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+Pango2Attribute *       pango2_attribute_copy                   (const Pango2Attribute       *attr);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_attribute_destroy                (Pango2Attribute             *attr);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_attribute_equal                  (const Pango2Attribute       *attr1,
+                                                                 const Pango2Attribute       *attr2) G_GNUC_PURE;
 
-PANGO_AVAILABLE_IN_ALL
-PangoAttribute *        pango_attribute_new                     (guint                       type,
-                                                                 gconstpointer               value);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Attribute *       pango2_attribute_new                    (guint                        type,
+                                                                 gconstpointer                value);
 
-PANGO_AVAILABLE_IN_ALL
-guint                   pango_attribute_type                    (const PangoAttribute        *attribute);
+PANGO2_AVAILABLE_IN_ALL
+guint                   pango2_attribute_type                   (const Pango2Attribute        *attribute);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_attribute_set_range               (PangoAttribute              *attribute,
-                                                                 guint                        start_index,
-                                                                 guint                        end_index);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_attribute_set_range              (Pango2Attribute              *attribute,
+                                                                 guint                         start_index,
+                                                                 guint                         end_index);
 
-PANGO_AVAILABLE_IN_ALL
-void                    pango_attribute_get_range               (PangoAttribute              *attribute,
-                                                                 guint                       *start_index,
-                                                                 guint                       *end_index);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_attribute_get_range              (Pango2Attribute              *attribute,
+                                                                 guint                        *start_index,
+                                                                 guint                        *end_index);
 
-PANGO_AVAILABLE_IN_ALL
-const char *            pango_attribute_get_string              (PangoAttribute              *attribute);
-PANGO_AVAILABLE_IN_ALL
-PangoLanguage *         pango_attribute_get_language            (PangoAttribute              *attribute);
-PANGO_AVAILABLE_IN_ALL
-int                     pango_attribute_get_int                 (PangoAttribute              *attribute);
-PANGO_AVAILABLE_IN_ALL
-gboolean                pango_attribute_get_boolean             (PangoAttribute              *attribute);
-PANGO_AVAILABLE_IN_ALL
-double                  pango_attribute_get_float               (PangoAttribute              *attribute);
-PANGO_AVAILABLE_IN_ALL
-PangoColor *            pango_attribute_get_color               (PangoAttribute              *attribute);
-PANGO_AVAILABLE_IN_ALL
-PangoFontDescription *  pango_attribute_get_font_desc           (PangoAttribute              *attribute);
+PANGO2_AVAILABLE_IN_ALL
+const char *            pango2_attribute_get_string             (Pango2Attribute              *attribute);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Language *        pango2_attribute_get_language           (Pango2Attribute              *attribute);
+PANGO2_AVAILABLE_IN_ALL
+int                     pango2_attribute_get_int                (Pango2Attribute              *attribute);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_attribute_get_boolean            (Pango2Attribute              *attribute);
+PANGO2_AVAILABLE_IN_ALL
+double                  pango2_attribute_get_float              (Pango2Attribute              *attribute);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Color *           pango2_attribute_get_color              (Pango2Attribute              *attribute);
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontDescription * pango2_attribute_get_font_desc          (Pango2Attribute              *attribute);
 
-PANGO_AVAILABLE_IN_ALL
-gpointer                pango_attribute_get_pointer             (PangoAttribute              *attribute);
+PANGO2_AVAILABLE_IN_ALL
+gpointer                pango2_attribute_get_pointer            (Pango2Attribute              *attribute);
 
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoAttribute, pango_attribute_destroy)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(Pango2Attribute, pango2_attribute_destroy)
 
 G_END_DECLS

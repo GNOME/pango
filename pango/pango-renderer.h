@@ -25,55 +25,55 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_TYPE_RENDERER            (pango_renderer_get_type())
-#define PANGO_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_RENDERER, PangoRenderer))
-#define PANGO_IS_RENDERER(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_RENDERER))
-#define PANGO_RENDERER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_RENDERER, PangoRendererClass))
-#define PANGO_IS_RENDERER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_RENDERER))
-#define PANGO_RENDERER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_RENDERER, PangoRendererClass))
+#define PANGO2_TYPE_RENDERER            (pango2_renderer_get_type())
+#define PANGO2_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO2_TYPE_RENDERER, Pango2Renderer))
+#define PANGO2_IS_RENDERER(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO2_TYPE_RENDERER))
+#define PANGO2_RENDERER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO2_TYPE_RENDERER, Pango2RendererClass))
+#define PANGO2_IS_RENDERER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO2_TYPE_RENDERER))
+#define PANGO2_RENDERER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO2_TYPE_RENDERER, Pango2RendererClass))
 
-typedef struct _PangoRenderer        PangoRenderer;
-typedef struct _PangoRendererClass   PangoRendererClass;
+typedef struct _Pango2Renderer        Pango2Renderer;
+typedef struct _Pango2RendererClass   Pango2RendererClass;
 
 /**
- * PangoRenderPart:
- * @PANGO_RENDER_PART_FOREGROUND: the text itself
- * @PANGO_RENDER_PART_BACKGROUND: the area behind the text
- * @PANGO_RENDER_PART_UNDERLINE: underlines
- * @PANGO_RENDER_PART_STRIKETHROUGH: strikethrough lines
- * @PANGO_RENDER_PART_OVERLINE: overlines
+ * Pango2RenderPart:
+ * @PANGO2_RENDER_PART_FOREGROUND: the text itself
+ * @PANGO2_RENDER_PART_BACKGROUND: the area behind the text
+ * @PANGO2_RENDER_PART_UNDERLINE: underlines
+ * @PANGO2_RENDER_PART_STRIKETHROUGH: strikethrough lines
+ * @PANGO2_RENDER_PART_OVERLINE: overlines
  *
- * `PangoRenderPart` defines different items to render for such
+ * `Pango2RenderPart` defines different items to render for such
  * purposes as setting colors.
  */
 /* When extending, note N_RENDER_PARTS #define in pango-renderer.c */
 typedef enum
 {
-  PANGO_RENDER_PART_FOREGROUND,
-  PANGO_RENDER_PART_BACKGROUND,
-  PANGO_RENDER_PART_UNDERLINE,
-  PANGO_RENDER_PART_STRIKETHROUGH,
-  PANGO_RENDER_PART_OVERLINE
-} PangoRenderPart;
+  PANGO2_RENDER_PART_FOREGROUND,
+  PANGO2_RENDER_PART_BACKGROUND,
+  PANGO2_RENDER_PART_UNDERLINE,
+  PANGO2_RENDER_PART_STRIKETHROUGH,
+  PANGO2_RENDER_PART_OVERLINE
+} Pango2RenderPart;
 
 /**
- * PangoRenderer:
+ * Pango2Renderer:
  *
- * `PangoRenderer` is a base class for objects that can render text
- * provided as `PangoGlyphString` or `PangoLayout`.
+ * `Pango2Renderer` is a base class for objects that can render text
+ * provided as `Pango2GlyphString` or `Pango2Layout`.
  *
- * By subclassing `PangoRenderer` and overriding operations such as
+ * By subclassing `Pango2Renderer` and overriding operations such as
  * @draw_glyphs and @draw_rectangle, renderers for particular font
  * backends and destinations can be created.
  */
-struct _PangoRenderer
+struct _Pango2Renderer
 {
   GObject parent_instance;
 };
 
 /**
- * PangoRendererClass:
- * @draw_glyphs: draws a `PangoGlyphString`
+ * Pango2RendererClass:
+ * @draw_glyphs: draws a `Pango2GlyphString`
  * @draw_rectangle: draws a rectangle
  * @draw_line: draws a line in the given style that approximately
  *   covers the given rectangle
@@ -84,11 +84,11 @@ struct _PangoRenderer
  * @begin: Do renderer-specific initialization before drawing
  * @end: Do renderer-specific cleanup after drawing
  * @prepare_run: updates the renderer for a new run
- * @draw_glyph_item: draws a `PangoGlyphItem`
+ * @draw_glyph_item: draws a `Pango2GlyphItem`
  *
- * Class structure for `PangoRenderer`.
+ * Class structure for `Pango2Renderer`.
  *
- * The following vfuncs take user space coordinates in Pango units
+ * The following vfuncs take user space coordinates in Pango2 units
  * and have default implementations:
  * - draw_glyphs
  * - draw_rectangle
@@ -103,171 +103,171 @@ struct _PangoRenderer
  * - draw_trapezoid
  * - draw_glyph
  */
-struct _PangoRendererClass
+struct _Pango2RendererClass
 {
   /*< private >*/
   GObjectClass parent_class;
 
   /*< public >*/
 
-  void (*draw_glyphs)          (PangoRenderer    *renderer,
-                                PangoFont        *font,
-                                PangoGlyphString *glyphs,
-                                int               x,
-                                int               y);
-  void (*draw_rectangle)       (PangoRenderer    *renderer,
-                                PangoRenderPart   part,
-                                int               x,
-                                int               y,
-                                int               width,
-                                int               height);
-  void (*draw_styled_line)     (PangoRenderer    *renderer,
-                                PangoRenderPart   part,
-                                PangoLineStyle    style,
-                                int               x,
-                                int               y,
-                                int               width,
-                                int               height);
-  void (*draw_line)            (PangoRenderer    *renderer,
-                                PangoLineStyle    style,
-                                int               x,
-                                int               y,
-                                int               width,
-                                int               height);
-  void (*draw_shape)           (PangoRenderer    *renderer,
-                                PangoRectangle   *ink_rect,
-                                PangoRectangle   *logical_rect,
-                                gpointer          data,
-                                int               x,
-                                int               y);
-  void (*draw_trapezoid)       (PangoRenderer    *renderer,
-                                PangoRenderPart   part,
-                                double            y1_,
-                                double            x11,
-                                double            x21,
-                                double            y2,
-                                double            x12,
-                                double            x22);
-  void (*draw_glyph)           (PangoRenderer    *renderer,
-                                PangoFont        *font,
-                                PangoGlyph        glyph,
-                                double            x,
-                                double            y);
+  void (* draw_glyphs)          (Pango2Renderer    *renderer,
+                                 Pango2Font        *font,
+                                 Pango2GlyphString *glyphs,
+                                 int                x,
+                                 int                y);
+  void (* draw_rectangle)       (Pango2Renderer    *renderer,
+                                 Pango2RenderPart   part,
+                                 int                x,
+                                 int                y,
+                                 int                width,
+                                 int                height);
+  void (* draw_styled_line)     (Pango2Renderer    *renderer,
+                                 Pango2RenderPart   part,
+                                 Pango2LineStyle    style,
+                                 int                x,
+                                 int                y,
+                                 int                width,
+                                 int                height);
+  void (* draw_line)            (Pango2Renderer    *renderer,
+                                 Pango2LineStyle    style,
+                                 int                x,
+                                 int                y,
+                                 int                width,
+                                 int                height);
+  void (* draw_shape)           (Pango2Renderer    *renderer,
+                                 Pango2Rectangle   *ink_rect,
+                                 Pango2Rectangle   *logical_rect,
+                                 gpointer           data,
+                                 int                x,
+                                 int                y);
+  void (* draw_trapezoid)       (Pango2Renderer    *renderer,
+                                 Pango2RenderPart   part,
+                                 double             y1_,
+                                 double             x11,
+                                 double             x21,
+                                 double             y2,
+                                 double             x12,
+                                 double             x22);
+  void (* draw_glyph)           (Pango2Renderer    *renderer,
+                                 Pango2Font        *font,
+                                 Pango2Glyph        glyph,
+                                 double             x,
+                                 double             y);
 
-  void (*part_changed)         (PangoRenderer    *renderer,
-                                PangoRenderPart   part);
+  void (* part_changed)         (Pango2Renderer    *renderer,
+                                 Pango2RenderPart   part);
 
-  void (*begin)                (PangoRenderer    *renderer);
-  void (*end)                  (PangoRenderer    *renderer);
+  void (* begin)                (Pango2Renderer    *renderer);
+  void (* end)                  (Pango2Renderer    *renderer);
 
-  void (*prepare_run)          (PangoRenderer    *renderer,
-                                PangoRun         *run);
+  void (* prepare_run)          (Pango2Renderer    *renderer,
+                                 Pango2Run         *run);
 
-  void (*draw_run)             (PangoRenderer    *renderer,
-                                const char       *text,
-                                PangoRun         *run,
-                                int               x,
-                                int               y);
+  void (* draw_run)             (Pango2Renderer    *renderer,
+                                 const char        *text,
+                                 Pango2Run         *run,
+                                 int                x,
+                                 int                y);
 
   /*< private >*/
 
   /* Padding for future expansion */
-  gpointer _pango_reserved[8];
+  gpointer _pango2_reserved[8];
 };
 
-PANGO_AVAILABLE_IN_ALL
-GType pango_renderer_get_type            (void) G_GNUC_CONST;
+PANGO2_AVAILABLE_IN_ALL
+GType                   pango2_renderer_get_type            (void) G_GNUC_CONST;
 
-PANGO_AVAILABLE_IN_ALL
-void pango_renderer_draw_lines           (PangoRenderer    *renderer,
-                                          PangoLines       *lines,
-                                          int               x,
-                                          int               y);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_renderer_draw_lines           (Pango2Renderer    *renderer,
+                                                              Pango2Lines       *lines,
+                                                              int                x,
+                                                              int                y);
 
-PANGO_AVAILABLE_IN_ALL
-void pango_renderer_draw_line            (PangoRenderer    *renderer,
-                                          PangoLine        *line,
-                                          int               x,
-                                          int               y);
-PANGO_AVAILABLE_IN_ALL
-void pango_renderer_draw_glyphs          (PangoRenderer    *renderer,
-                                          PangoFont        *font,
-                                          PangoGlyphString *glyphs,
-                                          int               x,
-                                          int               y);
-PANGO_AVAILABLE_IN_ALL
-void pango_renderer_draw_run             (PangoRenderer    *renderer,
-                                          const char       *text,
-                                          PangoRun         *run,
-                                          int               x,
-                                          int               y);
-PANGO_AVAILABLE_IN_ALL
-void pango_renderer_draw_rectangle       (PangoRenderer    *renderer,
-                                          PangoRenderPart   part,
-                                          int               x,
-                                          int               y,
-                                          int               width,
-                                          int               height);
-PANGO_AVAILABLE_IN_ALL
-void pango_renderer_draw_styled_line     (PangoRenderer    *renderer,
-                                          PangoRenderPart   part,
-                                          PangoLineStyle    style,
-                                          int               x,
-                                          int               y,
-                                          int               width,
-                                          int               height);
-PANGO_AVAILABLE_IN_ALL
-void pango_renderer_draw_error_underline (PangoRenderer    *renderer,
-                                          int               x,
-                                          int               y,
-                                          int               width,
-                                          int               height);
-PANGO_AVAILABLE_IN_ALL
-void pango_renderer_draw_trapezoid       (PangoRenderer    *renderer,
-                                          PangoRenderPart   part,
-                                          double            y1_,
-                                          double            x11,
-                                          double            x21,
-                                          double            y2,
-                                          double            x12,
-                                          double            x22);
-PANGO_AVAILABLE_IN_ALL
-void pango_renderer_draw_glyph           (PangoRenderer    *renderer,
-                                          PangoFont        *font,
-                                          PangoGlyph        glyph,
-                                          double            x,
-                                          double            y);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_renderer_draw_line            (Pango2Renderer    *renderer,
+                                                              Pango2Line        *line,
+                                                              int                x,
+                                                              int                y);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_renderer_draw_glyphs          (Pango2Renderer    *renderer,
+                                                              Pango2Font        *font,
+                                                              Pango2GlyphString *glyphs,
+                                                              int                x,
+                                                              int                y);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_renderer_draw_run             (Pango2Renderer    *renderer,
+                                                              const char        *text,
+                                                              Pango2Run         *run,
+                                                              int                x,
+                                                              int                y);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_renderer_draw_rectangle       (Pango2Renderer    *renderer,
+                                                              Pango2RenderPart   part,
+                                                              int                x,
+                                                              int                y,
+                                                              int                width,
+                                                              int                height);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_renderer_draw_styled_line     (Pango2Renderer    *renderer,
+                                                              Pango2RenderPart   part,
+                                                              Pango2LineStyle    style,
+                                                              int                x,
+                                                              int                y,
+                                                              int                width,
+                                                              int                height);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_renderer_draw_error_underline (Pango2Renderer    *renderer,
+                                                              int                x,
+                                                              int                y,
+                                                              int                width,
+                                                              int                height);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_renderer_draw_trapezoid       (Pango2Renderer    *renderer,
+                                                              Pango2RenderPart   part,
+                                                              double             y1_,
+                                                              double             x11,
+                                                              double             x21,
+                                                              double             y2,
+                                                              double             x12,
+                                                              double             x22);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_renderer_draw_glyph           (Pango2Renderer    *renderer,
+                                                              Pango2Font        *font,
+                                                              Pango2Glyph        glyph,
+                                                              double             x,
+                                                              double             y);
 
-PANGO_AVAILABLE_IN_ALL
-void pango_renderer_activate             (PangoRenderer    *renderer);
-PANGO_AVAILABLE_IN_ALL
-void pango_renderer_deactivate           (PangoRenderer    *renderer);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_renderer_activate             (Pango2Renderer    *renderer);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_renderer_deactivate           (Pango2Renderer    *renderer);
 
-PANGO_AVAILABLE_IN_ALL
-void pango_renderer_part_changed         (PangoRenderer   *renderer,
-                                          PangoRenderPart  part);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_renderer_part_changed         (Pango2Renderer   *renderer,
+                                                              Pango2RenderPart  part);
 
-PANGO_AVAILABLE_IN_ALL
-void        pango_renderer_set_color     (PangoRenderer    *renderer,
-                                          PangoRenderPart   part,
-                                          const PangoColor *color);
-PANGO_AVAILABLE_IN_ALL
-PangoColor *pango_renderer_get_color     (PangoRenderer    *renderer,
-                                          PangoRenderPart   part);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_renderer_set_color            (Pango2Renderer    *renderer,
+                                                              Pango2RenderPart   part,
+                                                              const Pango2Color *color);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Color *           pango2_renderer_get_color            (Pango2Renderer    *renderer,
+                                                              Pango2RenderPart   part);
 
-PANGO_AVAILABLE_IN_ALL
-void               pango_renderer_set_matrix      (PangoRenderer     *renderer,
-                                                   const PangoMatrix *matrix);
-PANGO_AVAILABLE_IN_ALL
-const PangoMatrix *pango_renderer_get_matrix      (PangoRenderer     *renderer);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_renderer_set_matrix           (Pango2Renderer     *renderer,
+                                                              const Pango2Matrix *matrix);
+PANGO2_AVAILABLE_IN_ALL
+const Pango2Matrix *    pango2_renderer_get_matrix           (Pango2Renderer     *renderer);
 
-PANGO_AVAILABLE_IN_ALL
-PangoLines *       pango_renderer_get_lines       (PangoRenderer     *renderer);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Lines *           pango2_renderer_get_lines            (Pango2Renderer     *renderer);
 
-PANGO_AVAILABLE_IN_ALL
-PangoLine *        pango_renderer_get_layout_line (PangoRenderer     *renderer);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Line *            pango2_renderer_get_layout_line      (Pango2Renderer     *renderer);
 
-PANGO_AVAILABLE_IN_ALL
-PangoContext *     pango_renderer_get_context     (PangoRenderer     *renderer);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Context *         pango2_renderer_get_context          (Pango2Renderer     *renderer);
 
 G_END_DECLS

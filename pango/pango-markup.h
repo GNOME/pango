@@ -24,24 +24,24 @@
 G_BEGIN_DECLS
 
 
-PANGO_AVAILABLE_IN_ALL
-GMarkupParseContext * pango_markup_parser_new    (gunichar               accel_marker);
+PANGO2_AVAILABLE_IN_ALL
+GMarkupParseContext *   pango2_markup_parser_new        (gunichar               accel_marker);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean              pango_markup_parser_finish (GMarkupParseContext   *context,
-                                                  PangoAttrList        **attr_list,
-                                                  char                 **text,
-                                                  gunichar              *accel_char,
-                                                  GError               **error);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_markup_parser_finish     (GMarkupParseContext   *context,
+                                                         Pango2AttrList       **attr_list,
+                                                         char                 **text,
+                                                         gunichar              *accel_char,
+                                                         GError               **error);
 
-PANGO_AVAILABLE_IN_ALL
-gboolean               pango_parse_markup        (const char            *markup_text,
-                                                  int                    length,
-                                                  gunichar               accel_marker,
-                                                  PangoAttrList        **attr_list,
-                                                  char                 **text,
-                                                  gunichar              *accel_char,
-                                                  GError               **error);
+PANGO2_AVAILABLE_IN_ALL
+gboolean                pango2_parse_markup             (const char            *markup_text,
+                                                         int                    length,
+                                                         gunichar               accel_marker,
+                                                         Pango2AttrList       **attr_list,
+                                                         char                 **text,
+                                                         gunichar              *accel_char,
+                                                         GError               **error);
 
 
 G_END_DECLS

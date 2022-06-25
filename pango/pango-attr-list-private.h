@@ -22,15 +22,15 @@
 #include <pango/pango-attr-list.h>
 
 
-struct _PangoAttrList
+struct _Pango2AttrList
 {
   guint ref_count;
   GPtrArray *attributes;
 };
 
-void     pango_attr_list_init           (PangoAttrList       *list);
-void     pango_attr_list_destroy        (PangoAttrList       *list);
-gboolean pango_attr_list_has_attributes (const PangoAttrList *list);
+void     pango2_attr_list_init           (Pango2AttrList       *list);
+void     pango2_attr_list_destroy        (Pango2AttrList       *list);
+gboolean pango2_attr_list_has_attributes (const Pango2AttrList *list);
 
-void     pango_attr_list_init_iterator  (PangoAttrList       *list,
-                                         PangoAttrIterator   *iterator);
+void     pango2_attr_list_init_iterator  (Pango2AttrList       *list,
+                                          Pango2AttrIterator   *iterator);
