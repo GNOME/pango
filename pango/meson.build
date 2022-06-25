@@ -280,7 +280,7 @@ if harfbuzz_dep.type_name() == 'pkgconfig'
 endif
 
 pkgconfig.generate(libpango,
-  name: 'Pango',
+  name: 'Pango2',
   description: 'Internationalized text handling',
   requires: pango_pkg_requires,
   filebase: 'pango2',
@@ -289,10 +289,10 @@ pkgconfig.generate(libpango,
 
 if cairo_dep.found()
   pkgconfig.generate(libpango,
-    name: 'Pango Cairo',
-    description: 'Cairo rendering support for Pango',
+    name: 'Pango2 Cairo',
+    description: 'Cairo rendering support for Pango2',
     requires: ['pango2'],
-    filebase: 'pangocairo2',
+    filebase: 'pango2cairo',
     subdirs: pango_api_name,
   )
 endif

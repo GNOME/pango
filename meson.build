@@ -1,5 +1,5 @@
 project('pango2', 'c', 'cpp',
-        version: '1.90.0',
+        version: '0.91.0',
         license: 'LGPLv2.1+',
         default_options: [
           'buildtype=debugoptimized',
@@ -37,8 +37,8 @@ pango_interface_age = pango_minor_version.is_odd() ? 0 : pango_micro_version
 pango_binary_age = api_minor * 100 + pango_micro_version
 
 pango_api_version = '@0@.0'.format(api_major)
-pango_api_name = 'pango-@0@'.format(pango_api_version)
-pango_api_path = join_paths(pango_api_name, 'pango')
+pango_api_name = 'pango2-@0@'.format(pango_api_version)
+pango_api_path = join_paths(pango_api_name, 'pango2')
 
 pango_conf = configuration_data()
 
