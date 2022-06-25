@@ -36,11 +36,24 @@ text rendering.
 
 ## Changes that need to be done at the time of the switch
 
+### Switch to the new prefix
+
+Pango 2 has changed its prefix from `pango` to `pango2`, and all types
+have been renamed from `Pango` to `Pango2` as well. Headers use the new
+prefix as well:
+
+    #include <pango2/pango.h>
+
+The big advantage of this change is that the two libraries can be used
+side-by-side in the same process without symbol or type clashes. The downside
+is, of course, that you have to adapt your code to change all uses of
+Pango API. Thankfully, this is largely a mechanical change.
+
 ### Build setup changes
 
 Pango 2 ships as a single shared library. If you've used libpangocairo,
 libpangoft2 or any of the other Pango 1.x libraries, you may be able to
-simplify your build setup by only linking against libpango. If you are
+simplify your build setup by only linking against libpango2. If you are
 using pkgconfig (as you should), just use pango2.pc, going forward.
 
 The cairo support is still optional, you can enable it with the `-Dcairo`
@@ -48,7 +61,7 @@ meson option. But if it is enabled, it no longer requires linking against
 a separate shared library or using a separate pkgconfig file. Just include
 the `pangocairo.h` header, and use the APIs that are declared in it.
 
-There is still a `pangocairo2.pc` file, if you want to be explicit in your
+There is still a `pango2cairo.pc` file, if you want to be explicit in your
 build configuration about requiring cairo support. If you want to handle
 the possible absence of cairo support at runtime, you can check the
 [const@Pango2.RENDERING_CAIRO] macro before including `pangocairo.h`.
