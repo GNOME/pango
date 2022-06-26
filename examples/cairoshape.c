@@ -314,7 +314,13 @@ main (int argc, char **argv)
   cairo_destroy (cr);
 
   /* Write out the surface as PNG */
+
+#ifdef CAIRO_HAS_PNG_FUNCTIONS
   status = cairo_surface_write_to_png (surface, filename);
+#else
+  status = CAIRO_STATUS_PNG_ERROR; /* Not technically correct, but... */
+#endif
+
   cairo_surface_destroy (surface);
 
   if (status != CAIRO_STATUS_SUCCESS)

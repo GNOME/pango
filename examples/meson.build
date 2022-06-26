@@ -1,16 +1,14 @@
 examples = []
 
-if cairo_png_dep.found()
-  examples += [
-    'first-steps',
-    'cairoshape',
-    'cairosimple',
-    'cairotwisted',
-    'parshape',
-    'columns',
-    'userfont',
-  ]
-endif
+examples += [
+  'first-steps',
+  'cairoshape',
+  'cairosimple',
+  'cairotwisted',
+  'parshape',
+  'columns',
+  'userfont',
+]
 
 examples_deps = [ libpango_dep ]
 

@@ -35,20 +35,6 @@
 #include "pango-userface-private.h"
 #include "pango-font-private.h"
 
-#if defined (HAVE_CORE_TEXT)
-
-#include <Carbon/Carbon.h>
-#include <cairo-quartz.h>
-#include <hb-coretext.h>
-
-#elif defined (HAVE_FONTCONFIG)
-
-#include <hb-ot.h>
-#include <cairo-ft.h>
-#include <freetype/ftmm.h>
-
-#endif
-
 static Pango2CairoFontPrivate * _pango2_font_get_cairo_font_private (Pango2Font *font);
 static cairo_scaled_font_t * _pango2_font_get_scaled_font (Pango2Font *font);
 static void _pango2_cairo_font_private_initialize (Pango2CairoFontPrivate     *cf_priv,
@@ -77,196 +63,34 @@ _pango2_cairo_font_private_scaled_font_data_destroy (Pango2CairoFontPrivateScale
     }
 }
 
-static cairo_user_data_key_t cairo_user_data;
-
-static cairo_status_t
-render_func (cairo_scaled_font_t  *scaled_font,
-             unsigned long         glyph,
-             cairo_t              *cr,
-             cairo_text_extents_t *extents)
-{
-  cairo_font_face_t *font_face;
-  Pango2Font *font;
-  Pango2UserFace *face;
-  hb_glyph_extents_t glyph_extents;
-  hb_position_t h_advance;
-  hb_position_t v_advance;
-  gboolean is_color;
-
-  font_face = cairo_scaled_font_get_font_face (scaled_font);
-  font = cairo_font_face_get_user_data (font_face, &cairo_user_data);
-  face = PANGO2_USER_FACE (font->face);
-
-  extents->x_bearing = 0;
-  extents->y_bearing = 0;
-  extents->width = 0;
-  extents->height = 0;
-  extents->x_advance = 0;
-  extents->y_advance = 0;
-
-  if (!face->glyph_info_func (face, 1024,
-                              (hb_codepoint_t)glyph,
-                              &glyph_extents,
-                              &h_advance, &v_advance,
-                              &is_color,
-                              face->user_data))
-    {
-      return CAIRO_STATUS_USER_FONT_ERROR;
-    }
-
-  extents->x_bearing = glyph_extents.x_bearing / 1024.;
-  extents->y_bearing = - glyph_extents.y_bearing / 1024.;
-  extents->width = glyph_extents.width / 1024.;
-  extents->height = - glyph_extents.height / 1024.;
-  extents->x_advance = h_advance / 1024.;
-  extents->y_advance = v_advance / 1024.;
-
-  if (!face->render_func (face, font->size,
-                          (hb_codepoint_t)glyph,
-                          face->user_data,
-                          "cairo",
-                          cr))
-    {
-      return CAIRO_STATUS_USER_FONT_ERROR;
-    }
-
-  return CAIRO_STATUS_SUCCESS;
-}
-
-static cairo_status_t
-init_func (cairo_scaled_font_t  *scaled_font,
-           cairo_t              *cr,
-           cairo_font_extents_t *extents)
-{
-  cairo_font_face_t *cairo_face;
-  Pango2Font *font;
-  Pango2UserFace *face;
-  hb_font_extents_t font_extents;
-
-  cairo_face = cairo_scaled_font_get_font_face (scaled_font);
-  font = cairo_font_face_get_user_data (cairo_face, &cairo_user_data);
-  face = (Pango2UserFace *) pango2_font_get_face (font);
-
-  face->font_info_func (face,
-                        pango2_font_get_size (font),
-                        &font_extents,
-                        face->user_data);
-
-  extents->ascent = font_extents.ascender / (font_extents.ascender + font_extents.descender);
-  extents->descent = font_extents.descender / (font_extents.ascender + font_extents.descender);
-
-  return CAIRO_STATUS_SUCCESS;
-}
-
 static cairo_font_face_t *
-create_cairo_font_face_for_user_font (Pango2Font *font)
+create_cairo_font_face (Pango2Font *font)
 {
   cairo_font_face_t *cairo_face;
 
-  cairo_face = cairo_user_font_face_create ();
-  cairo_font_face_set_user_data (cairo_face, &cairo_user_data, font, NULL);
-  cairo_user_font_face_set_init_func (cairo_face, init_func);
-  cairo_user_font_face_set_render_color_glyph_func (cairo_face, render_func);
+  if (PANGO2_IS_USER_FONT (font))
+    return create_cairo_user_font_face (font);
 
-  return cairo_face;
-}
-
-#if defined (HAVE_CORE_TEXT)
-
-static cairo_font_face_t *
-create_cairo_font_face_for_hb_font (Pango2Font *font)
-{
-  hb_font_t *hbfont;
-  CTFontRef ctfont;
-  CGFontRef cgfont;
-  cairo_font_face_t *cairo_face;
-
-  hbfont = pango2_font_get_hb_font (font);
-  ctfont = hb_coretext_font_get_ct_font (hbfont);
-  cgfont = CTFontCopyGraphicsFont (ctfont, NULL);
-
-  cairo_face = cairo_quartz_font_face_create_for_cgfont (cgfont);
-
-  CFRelease (cgfont);
-
-  return cairo_face;
-}
-
-#elif defined (HAVE_DIRECT_WRITE)
-
-static cairo_font_face_t *
-create_cairo_font_face_for_hb_font (Pango2Font *font)
-{
-  return pango2_cairo_create_font_face_for_dwrite_pango2_font (font);
-}
-
-#else
-
-static cairo_font_face_t *
-create_cairo_font_face_for_hb_font (Pango2Font *font)
-{
-  static FT_Library ft_library;
-
-  Pango2HbFace *face = PANGO2_HB_FACE (font->face);
-  hb_blob_t *blob;
-  const char *blob_data;
-  unsigned int blob_length;
-  FT_Face ft_face;
-  hb_font_t *hb_font;
-  unsigned int num_coords;
-  const int *coords;
-  cairo_font_face_t *cairo_face;
-  static const cairo_user_data_key_t key;
-  static const cairo_user_data_key_t key2;
-  FT_Error error;
-
-  if (g_once_init_enter (&ft_library))
-    {
-      FT_Library library;
-      FT_Init_FreeType (&library);
-      g_once_init_leave (&ft_library, library);
-    }
-
-  hb_font = pango2_font_get_hb_font (font);
-  blob = hb_face_reference_blob (hb_font_get_face (hb_font));
-  blob_data = hb_blob_get_data (blob, &blob_length);
-
-  if ((error = FT_New_Memory_Face (ft_library,
-                                   (const FT_Byte *) blob_data,
-                                   blob_length,
-                                   hb_face_get_index (face->face),
-                                   &ft_face)) != 0)
-    {
-      hb_blob_destroy (blob);
-      g_warning ("FT_New_Memory_Face failed: %d %s", error, FT_Error_String (error));
-      return NULL;
-    }
-
-  coords = hb_font_get_var_coords_normalized (hb_font, &num_coords);
-  if (num_coords > 0)
-    {
-      FT_Fixed *ft_coords = (FT_Fixed *) g_alloca (num_coords * sizeof (FT_Fixed));
-
-      for (unsigned int i = 0; i < num_coords; i++)
-        ft_coords[i] = coords[i] << 2;
-
-      FT_Set_Var_Blend_Coordinates (ft_face, num_coords, ft_coords);
-    }
-
-  cairo_face = cairo_ft_font_face_create_for_ft_face (ft_face, FT_LOAD_NO_HINTING | FT_LOAD_COLOR);
-
-  if (face->embolden)
-    cairo_ft_font_face_set_synthesize (cairo_face, CAIRO_FT_SYNTHESIZE_BOLD);
-
-  cairo_font_face_set_user_data (cairo_face, &key,
-                                 ft_face, (cairo_destroy_func_t) FT_Done_Face);
-  cairo_font_face_set_user_data (cairo_face, &key2,
-                                 blob, (cairo_destroy_func_t) hb_blob_destroy);
-
-  return cairo_face;
-}
-
+#ifdef HAVE_CORE_TEXT
+  cairo_face = create_cairo_core_text_font_face (font);
+  if (cairo_face)
+    return cairo_face;
 #endif
+
+#ifdef HAVE_DIRECT_WRITE
+  cairo_face = create_dwrite_font_face (font);
+  if (cairo_face)
+    return cairo_face;
+#endif
+
+#ifdef CAIRO_HAS_FT_FONT
+  cairo_face = create_cairo_ft_font_face (font);
+  if (cairo_face)
+    return cairo_face;
+#endif
+
+  return NULL;
+}
 
 static cairo_scaled_font_t *
 _pango2_cairo_font_private_get_scaled_font (Pango2CairoFontPrivate *cf_priv)
@@ -284,10 +108,7 @@ _pango2_cairo_font_private_get_scaled_font (Pango2CairoFontPrivate *cf_priv)
       return NULL;
     }
 
-  if (PANGO2_IS_HB_FONT (cf_priv->cfont))
-    font_face = create_cairo_font_face_for_hb_font (cf_priv->cfont);
-  else if (PANGO2_IS_USER_FONT (cf_priv->cfont))
-    font_face = create_cairo_font_face_for_user_font (cf_priv->cfont);
+  font_face = create_cairo_font_face (cf_priv->cfont);
 
   if (G_UNLIKELY (font_face == NULL))
     goto done;

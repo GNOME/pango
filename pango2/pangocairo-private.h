@@ -66,9 +66,22 @@ GType pango2_cairo_renderer_get_type    (void) G_GNUC_CONST;
 const cairo_font_options_t *
          pango2_cairo_context_get_merged_font_options (Pango2Context *context);
 
+cairo_font_face_t *
+create_cairo_user_font_face (Pango2Font *font);
+
+#ifdef CAIRO_HAS_FT_FONT
+cairo_font_face_t *
+create_cairo_ft_font_face (Pango2Font *font);
+#endif
+
+#ifdef HAVE_CORE_TEXT
+cairo_font_face_t *
+create_cairo_core_text_font_face (Pango2Font *font);
+#endif
+
 #ifdef HAVE_DIRECT_WRITE
 cairo_font_face_t *
-pango2_cairo_create_font_face_for_dwrite_pango2_font (Pango2Font *font);
+create_cairo_dwrite_font_face (Pango2Font *font);
 #endif
 
 G_END_DECLS
