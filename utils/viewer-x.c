@@ -221,7 +221,7 @@ x_view_display (gpointer instance,
 
 const Pango2Viewer pangox_viewer = {
   "X",
-  "x",
+  NULL,
   NULL,
   x_view_create,
   x_view_destroy,
