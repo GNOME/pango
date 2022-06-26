@@ -64,7 +64,15 @@ the `pangocairo.h` header, and use the APIs that are declared in it.
 There is still a `pango2cairo.pc` file, if you want to be explicit in your
 build configuration about requiring cairo support. If you want to handle
 the possible absence of cairo support at runtime, you can check the
-[const@Pango2.RENDERING_CAIRO] macro before including `pangocairo.h`.
+`PANGO2_HAS_CAIRO` macro before including `pangocairo.h`.
+
+The native fontmap implementations provide their own headers:
+`pangofc-fontmap.h`, `pangocoretext-fontmap.h` and `pangodwrite-fontmap.h`.
+If you want to check for the available fontmaps implementations
+at runtime (even though they are entirely determined by the platform you
+are running on, currently), you can check the `PANGO2_HAS_FC_FONTMAP`,
+`PANGO2_HAS_CORE_TEXT_FONTMAP` and `PANGO2_HAS_DIRECT_WRITE_FONTMAP` macros
+before including the corresponding header file.
 
 ### PangoFontMap changes
 

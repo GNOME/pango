@@ -4,7 +4,7 @@
 
 #include <pango2/pango.h>
 
-#if PANGO_RENDERING_CAIRO
+#if PANGO2_HAS_CAIRO
 #include <pango2/pangocairo.h>
 #endif
 

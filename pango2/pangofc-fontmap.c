@@ -37,7 +37,6 @@
 #include <fontconfig/fontconfig.h>
 #include <hb-ot.h>
 
-
 /**
  * Pango2FcFontMap:
  *
@@ -45,6 +44,11 @@
  * fontconfig to populate the fontmap with the available fonts.
  */
 
+/**
+ * PANGO2_HAS_FC_FONTMAP:
+ *
+ * Defined to 1 at compile time if Pango was built with fontconfig support.
+ */
 
 struct _Pango2FcFontMap
 {

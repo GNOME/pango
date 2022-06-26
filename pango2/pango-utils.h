@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 #include <glib.h>
+#include <pango2/pango-features.h>
 #include <pango2/pango-font.h>
 
 G_BEGIN_DECLS
@@ -33,12 +34,6 @@ void                    pango2_find_paragraph_boundary (const char *text,
                                                         int         length,
                                                         int        *paragraph_delimiter_index,
                                                         int        *next_paragraph_start);
-
-/**
- * PANGO2_RENDERING_CAIRO:
- *
- * Defined to 1 at compile time if Pango2 was built with cairo support.
- */
 
 /* Encode a Pango2 version as an integer */
 /* Pango2 version checking */
@@ -64,11 +59,13 @@ void                    pango2_find_paragraph_boundary (const char *text,
  *
  * The version of Pango2 available at compile-time, encoded using PANGO2_VERSION_ENCODE().
  */
+
 /**
  * PANGO2_VERSION_STRING:
  *
  * A string literal containing the version of Pango2 available at compile-time.
  */
+
 /**
  * PANGO2_VERSION_MAJOR:
  *
@@ -88,6 +85,7 @@ void                    pango2_find_paragraph_boundary (const char *text,
         PANGO2_VERSION_MAJOR,                    \
         PANGO2_VERSION_MINOR,                    \
         PANGO2_VERSION_MICRO)
+
 
 /* Check that compile-time Pango2 is as new as required */
 /**

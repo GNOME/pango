@@ -29,6 +29,12 @@
 #include <string.h>
 
 /**
+ * PANGO2_HAS_CAIRO:
+ *
+ * Defined to 1 at compile time if Pango was built with cairo support.
+ */
+
+/**
  * pango2_cairo_update_context:
  * @cr: a Cairo context
  * @context: a `Pango2Context`, from a pangocairo font map

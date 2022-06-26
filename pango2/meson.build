@@ -97,6 +97,14 @@ pango_gir_includes = [
   'Gio-2.0'
 ]
 
+pango_features_conf = configuration_data()
+pango_features_conf.set_quoted('PANGO2_VERSION_STRING', meson.project_version())
+pango_features_conf.set('PANGO2_VERSION_MAJOR', pango_major_version)
+pango_features_conf.set('PANGO2_VERSION_MINOR', pango_minor_version)
+pango_features_conf.set('PANGO2_VERSION_MICRO', pango_micro_version)
+pango_features_conf.set('PANGO2_API_VERSION', pango_api_version)
+pango_features_conf.set('PANGO2_CURRENT_MINUS_AGE', '0')
+
 if cairo_dep.found()
   pango_headers += [
     'pangocairo.h',
@@ -116,21 +124,8 @@ if cairo_dep.found()
   pango_gir_includes += [
     'cairo-1.0',
   ]
-endif
 
-if host_system == 'darwin'
-  pango_headers += [
-    'pangocoretext-fontmap.h',
-  ]
-
-  pango_sources += [
-    'pangocoretext-fontmap.c',
-  ]
-  if cairo_dep.found()
-    pango_sources += [
-      'pangocairo-coretext-font.c',
-    ]
-  endif
+  pango_features_conf.set('PANGO2_HAS_CAIRO', 1)
 endif
 
 if host_system == 'linux'
@@ -146,6 +141,26 @@ if host_system == 'linux'
   pango_gir_includes += [
     'fontconfig-2.0',
   ]
+
+  pango_features_conf.set('PANGO2_HAS_FC_FONTMAP', 1)
+endif
+
+if host_system == 'darwin'
+  pango_headers += [
+    'pangocoretext-fontmap.h',
+  ]
+
+  pango_sources += [
+    'pangocoretext-fontmap.c',
+  ]
+
+  if cairo_dep.found()
+    pango_sources += [
+      'pangocairo-coretext-font.c',
+    ]
+  endif
+
+  pango_features_conf.set('PANGO2_HAS_CORE_TEXT_FONTMAP', 1)
 endif
 
 if host_system == 'windows'
@@ -156,16 +171,14 @@ if host_system == 'windows'
   pango_sources += [
     'pangodwrite-fontmap.cpp',
   ]
+
   if cairo_dep.found()
     pango_sources += [
       'pangocairo-dwrite-font.cpp',
     ]
   endif
 
-  pango_deps += [
-    cc.find_library('gdi32'),
-    cc.find_library('dwrite'),
-  ]
+  pango_features_conf.set('PANGO2_HAS_DIRECT_WRITE_FONTMAP', 1)
 endif
 
 pango_installed_headers = pango_headers + [ 'pango-version-macros.h' ]
@@ -173,18 +186,7 @@ pango_installed_headers = pango_headers + [ 'pango-version-macros.h' ]
 install_headers(pango_installed_headers, subdir: pango_api_path)
 
 # Features header
-pango_features_conf = configuration_data()
-pango_features_conf.set('PANGO2_VERSION_MAJOR', pango_major_version)
-pango_features_conf.set('PANGO2_VERSION_MINOR', pango_minor_version)
-pango_features_conf.set('PANGO2_VERSION_MICRO', pango_micro_version)
-pango_features_conf.set('PANGO2_API_VERSION', pango_api_version)
-pango_features_conf.set('PANGO2_CURRENT_MINUS_AGE', '0')
-if cairo_dep.found()
-  pango_features_conf.set('PANGO2_RENDERING_CAIRO', 1)
-endif
-
 pango_features_h = configure_file(
-  input: 'pango-features.h.meson',
   output: 'pango-features.h',
   configuration: pango_features_conf,
   install: true,

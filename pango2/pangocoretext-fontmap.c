@@ -44,6 +44,11 @@
  * CoreText to populate the fontmap with the available fonts.
  */
 
+/**
+ * PANGO2_HAS_CORE_TEXT_FONTMAP:
+ *
+ * Defined to 1 at compile time if Pango2 was built with CoreText support.
+ */
 
 struct _Pango2CoreTextFontMap
 {
