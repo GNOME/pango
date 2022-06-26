@@ -46,8 +46,8 @@ prefix as well:
 
 The big advantage of this change is that the two libraries can be used
 side-by-side in the same process without symbol or type clashes. The downside
-is, of course, that you have to adapt your code to change all uses of
-Pango API. Thankfully, this is largely a mechanical change.
+is, of course, that you have to adapt all uses of Pango API in your code.
+Thankfully, this is largely a mechanical change.
 
 ### Build setup changes
 

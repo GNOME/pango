@@ -11,173 +11,121 @@ not support. And sometimes, it is more convenient to use a drawing API to render
 glyphs on-the-spot, maybe with fancy effects.
 
 For these cases, Pango provides the [class@Pango2.UserFace] implementation of
-`PangoFontFace` that uses callbacks for its functionality. This lets you embed
+`Pango2FontFace` that uses callbacks for its functionality. This lets you embed
 custom drawing into your text, fully integrated with Pango's text layout
 capabilities.
 
 ## A user font example
 
 ```
+#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 
-#include <pango/pangocairo.h>
+#include <pango2/pangocairo.h>
 
-#define BULLET "•"
-#define HEART "♥"
+static Pango2FontMap *fontmap;
 
-const char text[] =
-"The GNOME project provides three things:\n"
-"\n"
-"  • The GNOME desktop environment\n"
-"  • The GNOME development platform\n"
-"  • Planet GNOME\n"
-"  ♥ Lots of love";
+#define END_GLYPH 0
+#define STROKE 126
+#define CLOSE 127
 
-typedef struct {
-  double width, height;
-  const char *path;
-} MiniSvg;
+/* Simple glyph definition: 1 - 15 means lineto (or moveto for first
+ * point) for one of the points on this grid:
+ *
+ *      1  2  3
+ *      4  5  6
+ *      7  8  9
+ * ----10 11 12----(baseline)
+ *     13 14 15
+ */
+typedef struct
+{
+  gunichar ucs4;
+  int width;
+  char data[16];
+} test_scaled_font_glyph_t;
 
-static MiniSvg GnomeFootLogo = {
-  96.2152, 118.26,
-  "M 86.068,1 C 61.466,0 56.851,35.041 70.691,35.041 C 84.529,35.041 110.671,0 86.068,0 z "
-  "M 45.217,30.699 C 52.586,31.149 60.671,2.577 46.821,4.374 C 32.976,6.171 37.845,30.249 45.217,30.699 z "
-  "M 11.445,48.453 C 16.686,46.146 12.12,23.581 3.208,29.735 C -5.7,35.89 6.204,50.759 11.445,48.453 z "
-  "M 26.212,36.642 C 32.451,35.37 32.793,9.778 21.667,14.369 C 10.539,18.961 19.978,37.916 26.212,36.642 L 26.212,36.642 z "
-  "M 58.791,93.913 C 59.898,102.367 52.589,106.542 45.431,101.092 C 22.644,83.743 83.16,75.088 79.171,51.386 C 75.86,31.712 15.495,37.769 8.621,68.553 C 3.968,89.374 27.774,118.26 52.614,118.26 C 64.834,118.26 78.929,107.226 81.566,93.248 C 83.58,82.589 57.867,86.86 58.791,93.913 L 58.791,93.913 z "
-  "\0"
+/* Simple glyph definition: 1 - 15 means lineto (or moveto for first
+ * point) for one of the points on this grid:
+ *
+ *      1  2  3
+ *      4  5  6
+ *      7  8  9
+ * ----10 11 12----(baseline)
+ *     13 14 15
+ */
+static const test_scaled_font_glyph_t glyphs [] = {
+  { 'a',  3, { 4, 6, 12, 10, 7, 9, STROKE, END_GLYPH } },
+  { 'c',  3, { 6, 4, 10, 12, STROKE, END_GLYPH } },
+  { 'e',  3, { 12, 10, 4, 6, 9, 7, STROKE, END_GLYPH } },
+  { 'f',  3, { 3, 2, 11, STROKE, 4, 6, STROKE, END_GLYPH } },
+  { 'g',  3, { 12, 10, 4, 6, 15, 13, STROKE, END_GLYPH } },
+  { 'h',  3, { 1, 10, STROKE, 7, 5, 6, 12, STROKE, END_GLYPH } },
+  { 'i',  1, { 1, 1, STROKE, 4, 10, STROKE, END_GLYPH } },
+  { 'l',  1, { 1, 10, STROKE, END_GLYPH } },
+  { 'n',  3, { 10, 4, STROKE, 7, 5, 6, 12, STROKE, END_GLYPH } },
+  { 'o',  3, { 4, 10, 12, 6, CLOSE, END_GLYPH } },
+  { 'p',  3, { 4, 10, 12, 6, CLOSE, 4, 13, STROKE, END_GLYPH } },
+  { 'r',  3, { 4, 10, STROKE, 7, 5, 6, STROKE, END_GLYPH } },
+  { 's',  3, { 6, 4, 7, 9, 12, 10, STROKE, END_GLYPH } },
+  { 't',  3, { 2, 11, 12, STROKE, 4, 6, STROKE, END_GLYPH } },
+  { 'u',  3, { 4, 10, 12, 6, STROKE, END_GLYPH } },
+  { 'y',  3, { 4, 10, 12, 6, STROKE, 12, 15, 13, STROKE, END_GLYPH } },
+  { 'z',  3, { 4, 6, 10, 12, STROKE, END_GLYPH } },
+  { ' ',  1, { END_GLYPH } },
+  { '-',  2, { 7, 8, STROKE, END_GLYPH } },
+  { '.',  1, { 10, 10, STROKE, END_GLYPH } },
+  { 0xe000, 3, { 3, 2, 11, STROKE, 4, 6, STROKE, 3, 3, STROKE, 6, 12, STROKE, END_GLYPH } }, /* fi */
+  { -1,  0, { END_GLYPH } },
 };
 
-static void
-mini_svg_render (MiniSvg  *shape, cairo_t  *cr)
+const char text[] = "finally... pango user-font";
+
+static Pango2Layout *
+get_layout (void)
 {
-  double x, y;
-  char op[2];
-  int len;
-  double x1, y1, x2, y2, x3, y3;
-  const char *p;
+  Pango2Context *context;
+  Pango2Layout *layout;
+  Pango2FontDescription *desc;
 
-  cairo_get_current_point (cr, &x, &y);
-  cairo_translate (cr, x, y);
+  /* Create a Pango2Layout, set the font and text */
+  context = pango2_context_new_with_font_map (fontmap);
+  layout = pango2_layout_new (context);
+  g_object_unref (context);
 
-  for (p = shape->path; sscanf (p, "%1s %n", op, &len), p += len, *p;)
-    switch (*op)
-      {
-      case 'M':
-        sscanf (p, "%lf,%lf %n", &x, &y, &len); p += len;
-        cairo_move_to (cr, x, y);
-        break;
-      case 'L':
-        sscanf (p, "%lf,%lf %n", &x, &y, &len); p += len;
-        cairo_line_to (cr, x, y);
-        break;
-      case 'C':
-        sscanf (p, "%lf,%lf %lf,%lf %lf,%lf %n", &x1, &y1, &x2, &y2, &x3, &y3, &len); p += len;
-        cairo_curve_to (cr, x1, y1, x2, y2, x3, y3);
-        break;
-      case 'z':
-        cairo_close_path (cr);
-        break;
-      default:
-        g_warning ("Invalid MiniSvg operation '%c'", *op);
-        break;
-      }
+  pango2_layout_set_text (layout, text, -1);
 
-  cairo_fill (cr);
-}
+  desc = pango2_font_description_from_string ("Userfont 20");
+  pango2_layout_set_font_description (layout, desc);
+  pango2_font_description_free (desc);
 
-static PangoLayout *
-get_layout (cairo_t *cr)
-{
-  PangoLayout *layout;
-  PangoAttrList *attrs;
-  PangoFontDescription *font_desc;
-  const char *p;
-
-  /* Create a PangoLayout, set the font and text */
-  layout = pango_cairo_create_layout (cr);
-  pango_layout_set_text (layout, text, -1);
-
-  font_desc = pango_font_description_from_string ("Cantarell 12");
-  pango_layout_set_font_description (layout, font_desc);
-  pango_font_description_free (font_desc);
-
-  attrs = pango_attr_list_new ();
-
-  font_desc = pango_font_description_from_string ("Bullets 12");
-
-  for (p = text; (p = strstr (p, BULLET)); p += strlen (BULLET))
-    {
-      PangoAttribute *attr;
-
-      attr = pango_attr_font_desc_new (font_desc);
-      attr->start_index = p - text;
-      attr->end_index = attr->start_index + strlen (BULLET);
-      pango_attr_list_insert (attrs, attr);
-    }
-
-  for (p = text; (p = strstr (p, HEART)); p += strlen (HEART))
-    {
-      PangoAttribute *attr;
-
-      attr = pango_attr_font_desc_new (font_desc);
-      attr->start_index = p - text;
-      attr->end_index = attr->start_index + strlen (HEART);
-      pango_attr_list_insert (attrs, attr);
-    }
-
-  pango_font_description_free (font_desc);
-
-  pango_layout_set_attributes (layout, attrs);
-  pango_attr_list_unref (attrs);
+  pango2_layout_write_to_file (layout, "out.layout");
 
   return layout;
 }
 
-static void
-measure_text (cairo_t *cr, int *width, int *height)
-{
-  PangoLayout *layout = get_layout (cr);
-  PangoLines *lines = pango_layout_get_lines (layout);
-  PangoRectangle ext;
-
-  pango_lines_get_extents (lines, NULL, &ext);
-  pango_extents_to_pixels (&ext, NULL);
-
-  *width = ext.width + 20;
-  *height = ext.height + 20;
-}
-
-static void
-draw_text (cairo_t *cr)
-{
-  PangoLayout *layout = get_layout (cr);
-  PangoLines *lines = pango_layout_get_lines (layout);
-
-  cairo_move_to (cr, 10, 10);
-  pango_cairo_show_lines (cr, lines);
-
-  g_object_unref (layout);
-}
-
 static gboolean
-glyph_cb (PangoUserFace  *face,
+glyph_cb (Pango2UserFace  *face,
           hb_codepoint_t  unicode,
           hb_codepoint_t *glyph,
-          gpointer        data)
+          gpointer        user_data)
 {
-  if (unicode == 0x2022 || unicode == 0x2665)
+  test_scaled_font_glyph_t *glyphs = user_data;
+
+  for (int i = 0; glyphs[i].ucs4 != (gunichar) -1; i++)
     {
-      *glyph = unicode;
-      return TRUE;
+      if (glyphs[i].ucs4 == unicode)
+        {
+          *glyph = i;
+          return TRUE;
+        }
     }
 
   return FALSE;
 }
 
 static gboolean
-glyph_info_cb (PangoUserFace      *face,
+glyph_info_cb (Pango2UserFace      *face,
                int                 size,
                hb_codepoint_t      glyph,
                hb_glyph_extents_t *extents,
@@ -186,99 +134,179 @@ glyph_info_cb (PangoUserFace      *face,
                gboolean           *is_color,
                gpointer            user_data)
 {
-  if (glyph == 0x2022 || glyph == 0x2665)
-    {
-      extents->x_bearing = 0;
-      extents->y_bearing = - size;
-      extents->width = size;
-      extents->height = size;
+  test_scaled_font_glyph_t *glyphs = user_data;
 
-      *h_advance = size;
-      *v_advance = size;
-      *is_color = glyph == 0x2665;
+  extents->x_bearing = 0;
+  extents->y_bearing = 0.75 * size;
+  extents->width = glyphs[glyph].width / 4.0 * size;
+  extents->height = - size;
 
-      return TRUE;
-    }
+  *h_advance = *v_advance = glyphs[glyph].width / 4.0 * size;
 
-  return FALSE;
+  *is_color = FALSE;
+
+  return TRUE;
 }
 
 static gboolean
-font_info_cb (PangoUserFace     *face,
+shape_cb (Pango2UserFace       *face,
+          int                  size,
+          const char          *text,
+          int                  length,
+          const Pango2Analysis *analysis,
+          Pango2GlyphString    *glyphs,
+          Pango2ShapeFlags      flags,
+          gpointer             user_data)
+{
+  int n_chars;
+  const char *p;
+  int cluster = 0;
+  int i, j;
+  int last_cluster;
+  gboolean is_color;
+  hb_glyph_extents_t ext;
+  hb_position_t dummy;
+
+  n_chars = g_utf8_strlen (text, length);
+
+  pango2_glyph_string_set_size (glyphs, n_chars);
+
+  last_cluster = -1;
+
+  p = text;
+  j = 0;
+  for (i = 0; i < n_chars; i++)
+    {
+      gunichar wc;
+      Pango2Glyph glyph = 0;
+      Pango2Rectangle logical_rect;
+
+      wc = g_utf8_get_char (p);
+
+      if (g_unichar_type (wc) != G_UNICODE_NON_SPACING_MARK)
+        cluster = p - text;
+
+      /* Handle the fi ligature */
+      if (p[0] == 'f' && p[1] == 'i')
+        {
+          p = g_utf8_next_char (p);
+          i++;
+          glyph_cb (face, 0xe000, &glyph, user_data);
+        }
+      else if (pango2_is_zero_width (wc))
+        glyph = PANGO2_GLYPH_EMPTY;
+      else if (!glyph_cb (face, wc, &glyph, user_data))
+        glyph = PANGO2_GET_UNKNOWN_GLYPH (wc);
+
+      glyph_info_cb (face, size, glyph, &ext, &dummy, &dummy, &is_color, user_data);
+      pango2_font_get_glyph_extents (pango2_analysis_get_font (analysis), glyph, NULL, &logical_rect);
+
+      glyphs->glyphs[j].glyph = glyph;
+
+      glyphs->glyphs[j].attr.is_cluster_start = cluster != last_cluster;
+      glyphs->glyphs[j].attr.is_color = is_color;
+
+      glyphs->glyphs[j].geometry.x_offset = 0;
+      glyphs->glyphs[j].geometry.y_offset = 0;
+      glyphs->glyphs[j].geometry.width = logical_rect.width;
+
+      glyphs->log_clusters[j] = cluster;
+
+      j++;
+
+      last_cluster = cluster;
+
+      p = g_utf8_next_char (p);
+    }
+
+  glyphs->num_glyphs = j;
+
+#if 0
+  /* FIXME export this */
+  if (analysis->level & 1)
+    pango2_glyph_string_reverse_range (glyphs, 0, glyphs->num_glyphs);
+#endif
+
+  return TRUE;
+}
+
+static gboolean
+font_info_cb (Pango2UserFace     *face,
               int                size,
               hb_font_extents_t *extents,
               gpointer           user_data)
 {
-  extents->ascender = size;
-  extents->descender = 0;
+  extents->ascender = 0.75 * size;
+  extents->descender = - 0.25 * size;
   extents->line_gap = 0;
 
   return TRUE;
 }
 
 static gboolean
-render_cb (PangoUserFace  *face,
+render_cb (Pango2UserFace  *face,
            int             size,
            hb_codepoint_t  glyph,
            gpointer        user_data,
            const char     *backend_id,
            gpointer        backend_data)
 {
+  test_scaled_font_glyph_t *glyphs = user_data;
   cairo_t *cr = backend_data;
+  const char *data;
+  div_t d;
+  double x, y;
 
   if (strcmp (backend_id, "cairo") != 0)
     return FALSE;
 
-  if (glyph == 0x2022)
+  cairo_set_line_width (cr, 0.1);
+  cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
+  cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
+
+  data = glyphs[glyph].data;
+  for (int i = 0; data[i] != END_GLYPH; i++)
     {
-      MiniSvg *shape = &GnomeFootLogo;
+      switch (data[i])
+        {
+        case STROKE:
+          cairo_new_sub_path (cr);
+          break;
 
-      cairo_move_to (cr, 0, -1);
-      cairo_scale (cr, 1. / shape->width, 1. / shape->height);
+        case CLOSE:
+          cairo_close_path (cr);
+          break;
 
-      mini_svg_render (shape, cr);
-
-      return TRUE;
-    }
-  else if (glyph == 0x2665)
-    {
-      cairo_set_source_rgb (cr, 1., 0., 0.);
-
-      cairo_move_to (cr, .5, .0);
-      cairo_line_to (cr, .9, -.4);
-      cairo_curve_to (cr, 1.1, -.8, .5, -.9, .5, -.5);
-      cairo_curve_to (cr, .5, -.9, -.1, -.8, .1, -.4);
-      cairo_close_path (cr);
-      cairo_fill (cr);
-
-      return TRUE;
+        default:
+          d = div (data[i] - 1, 3);
+          x = d.rem / 4.0 + 0.125;
+          y = d.quot / 5.0 + 0.4 - 1.0;
+          cairo_line_to (cr, x, y);
+        }
     }
 
-  return FALSE;
+  cairo_stroke (cr);
+
+  return TRUE;
 }
 
 static void
-setup_fontmap (void)
+setup_fontmap (Pango2FontMap *fontmap)
 {
-  PangoFontMap *fontmap = pango_font_map_get_default ();
-  PangoFontDescription *desc;
-  PangoUserFace *face;
+  Pango2FontDescription *desc;
+  Pango2UserFace *face;
 
-  desc = pango_font_description_new ();
-  pango_font_description_set_family (desc, "Bullets");
-
-  /* Create our fancy user font, "Bullets Black" */
-  face = pango_user_face_new (font_info_cb,
+  desc = pango2_font_description_new ();
+  pango2_font_description_set_family (desc, "Userfont");
+  face = pango2_user_face_new (font_info_cb,
                               glyph_cb,
                               glyph_info_cb,
-                              NULL,
+                              shape_cb,
                               render_cb,
-                              NULL, NULL, "Black", desc);
-
-  /* And add it to the default fontmap */
-  pango_font_map_add_face (fontmap, PANGO_FONT_FACE (face));
-
-  pango_font_description_free (desc);
+                              (gpointer) glyphs, NULL,
+                              "Black", desc);
+  pango2_font_map_add_face (fontmap, PANGO2_FONT_FACE (face));
+  pango2_font_description_free (desc);
 }
 
 int
@@ -288,36 +316,47 @@ main (int argc, char **argv)
   char *filename;
   cairo_status_t status;
   cairo_surface_t *surface;
-  int width, height;
+  Pango2Layout *layout;
+  Pango2Rectangle ext;
 
   if (argc != 2)
     {
-      g_printerr ("Usage: cairoshape OUTPUT_FILENAME\n");
+      g_printerr ("Usage: userfont OUTPUT_FILENAME\n");
       return 1;
     }
 
   filename = argv[1];
 
-  setup_fontmap ();
+  fontmap = PANGO2_FONT_MAP (pango2_font_map_new_default ());
+  setup_fontmap (PANGO2_FONT_MAP (fontmap));
 
-  surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 0, 0);
-  cr = cairo_create (surface);
-  measure_text (cr, &width, &height);
-  cairo_destroy (cr);
-  cairo_surface_destroy (surface);
+  layout = get_layout ();
+
+  pango2_lines_get_extents (pango2_layout_get_lines (layout), NULL, &ext);
+  pango2_extents_to_pixels (&ext, NULL);
 
   /* Now create the final surface and draw to it. */
-  surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+  surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, ext.width + 20, ext.height + 20);
   cr = cairo_create (surface);
 
   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
   cairo_paint (cr);
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.5);
-  draw_text (cr);
+
+  cairo_move_to (cr, 10, 10);
+  pango2_cairo_show_layout (cr, layout);
+
   cairo_destroy (cr);
 
+  g_object_unref (layout);
+
   /* Write out the surface as PNG */
+#ifdef CAIRO_HAS_PNG_FUNCTIONS
   status = cairo_surface_write_to_png (surface, filename);
+#else
+  status = CAIRO_STATUS_PNG_ERROR; /* Not technically correct, but... */
+#endif
+
   cairo_surface_destroy (surface);
 
   if (status != CAIRO_STATUS_SUCCESS)

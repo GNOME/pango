@@ -22,29 +22,29 @@ Useful next steps would be:
 
 ```
 #include <math.h>
-#include <pango/pangocairo.h>
+#include <pango2/pangocairo.h>
 
 #define SIZE 150
 
 static void
 draw_text (cairo_t *cr)
 {
-  PangoLayout *layout;
-  PangoFontDescription *desc;
+  Pango2Layout *layout;
+  Pango2FontDescription *desc;
 
-  /* Create a PangoLayout */
-  layout = pango_cairo_create_layout (cr);
+  /* Create a Pango2Layout */
+  layout = pango2_cairo_create_layout (cr);
 
   /* Set the text */
-  pango_layout_set_text (layout, "Text", -1);
+  pango2_layout_set_text (layout, "Text", -1);
 
   /* Set a font for the layout */
-  desc = pango_font_description_from_string ("Sans Bold 20");
-  pango_layout_set_font_description (layout, desc);
-  pango_font_description_free (desc);
+  desc = pango2_font_description_from_string ("Sans Bold 20");
+  pango2_layout_set_font_description (layout, desc);
+  pango2_font_description_free (desc);
 
   /* Show the layout */
-  pango_cairo_show_layout (cr, layout);
+  pango2_cairo_show_layout (cr, layout);
 
   /* Free the layout object */
   g_object_unref (layout);
@@ -85,7 +85,12 @@ main (int argc, char **argv)
 
   cairo_destroy (cr);
 
+#ifdef CAIRO_HAS_PNG_FUNCTIONS
   status = cairo_surface_write_to_png (surface, filename);
+#else
+  status = CAIRO_STATUS_PNG_ERROR; /* Not technically correct, but... */
+#endif
+
   cairo_surface_destroy (surface);
 
   if (status != CAIRO_STATUS_SUCCESS)
