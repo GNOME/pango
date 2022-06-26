@@ -13,6 +13,7 @@ main (int argc, char *argv[])
   Pango2Lines *lines;
   cairo_surface_t *surface;
   cairo_t *cr;
+  cairo_status_t status;
   char *text;
   gsize length;
   Pango2AttrList *attrs;
@@ -116,8 +117,16 @@ retry:
 
   pango2_cairo_show_lines (cr, lines);
 
-  cairo_surface_write_to_png (surface, filename);
-  g_print ("Output written to %s\n", filename);
+#ifdef CAIRO_HAS_PNG_FUNCTIONS
+  status = cairo_surface_write_to_png (surface, filename);
+#else
+  status = CAIRO_STATUS_PNG_ERROR; /* Not technically correct, but... */
+#endif
+
+  if (status != CAIRO_STATUS_SUCCESS)
+    g_printerr ("Could not save png to '%s'\n", filename);
+  else
+    g_print ("Output written to %s\n", filename);
 
   g_object_unref (lines);
   g_object_unref (breaker);

@@ -32,16 +32,16 @@
 
 /* {{{ DirectWrite PangoCairo utilities */
 cairo_font_face_t *
-pango_cairo_create_font_face_for_dwrite_pango_font (PangoFont *font)
+create_cairo_dwrite_font_face (Pango2Font *font)
 {
   hb_font_t *hb_font;
   IDWriteFontFace *dwrite_font_face = NULL;
-  cairo_font_face_t *result;
+  cairo_font_face_t *result = NULL;
 
-  hb_font = pango_font_get_hb_font (font);
+  hb_font = pango2_font_get_hb_font (font);
   dwrite_font_face = hb_directwrite_face_get_font_face (hb_font_get_face (hb_font));
-
-  result = cairo_dwrite_font_face_create_for_dwrite_fontface (dwrite_font_face);
+  if (dwrite_font_face)
+    result = cairo_dwrite_font_face_create_for_dwrite_fontface (dwrite_font_face);
 
   return result;
 }

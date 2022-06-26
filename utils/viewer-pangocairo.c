@@ -851,7 +851,7 @@ pangocairo_view_render (gpointer      instance,
   cairo_destroy (cr);
 }
 
-#ifdef HAVE_CAIRO_PNG
+#ifdef CAIRO_HAS_PNG_FUNCTIONS
 static cairo_status_t
 write_func (void                *closure,
 	    const unsigned char *data,
@@ -993,7 +993,7 @@ pangocairo_view_get_option_group (const Pango2Viewer *klass G_GNUC_UNUSED)
 const Pango2Viewer pangocairo_viewer = {
   "Pango2Cairo",
   "cairo",
-#ifdef HAVE_CAIRO_PNG
+#ifdef CAIRO_HAS_PNG_FUNCTIONS
   "png",
 #else
   NULL,
@@ -1004,7 +1004,7 @@ const Pango2Viewer pangocairo_viewer = {
   pangocairo_view_create_surface,
   pangocairo_view_destroy_surface,
   pangocairo_view_render,
-#ifdef HAVE_CAIRO_PNG
+#ifdef CAIRO_HAS_PNG_FUNCTIONS
   pangocairo_view_write,
 #else
   NULL,

@@ -100,6 +100,7 @@ main (int argc, char *argv[])
   char *text;
   gsize length;
   GError *error = NULL;
+  cairo_status_t status;
 
   if (argc != 3)
     {
@@ -125,8 +126,16 @@ main (int argc, char *argv[])
   draw_lines (cr, lines);
   g_object_unref (lines);
 
-  cairo_surface_write_to_png (surface, filename);
-  g_print ("Output written to %s\n", filename);
+#ifdef CAIRO_HAS_PNG_FUNCTIONS
+  status = cairo_surface_write_to_png (surface, filename);
+#else
+  status = CAIRO_STATUS_PNG_ERROR; /* Not technically correct, but... */
+#endif
+
+  if (status != CAIRO_STATUS_SUCCESS)
+    g_printerr ("Could not save png to '%s'\n", filename);
+  else
+    g_print ("Output written to %s\n", filename);
 
   cairo_surface_destroy (surface);
   cairo_destroy (cr);

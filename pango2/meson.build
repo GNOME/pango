@@ -109,6 +109,8 @@ if cairo_dep.found()
     'pangocairo-context.c',
     'pangocairo-font.c',
     'pangocairo-render.c',
+    'pangocairo-user-font.c',
+    'pangocairo-ft-font.c',
   ]
 
   pango_gir_includes += [
@@ -124,6 +126,11 @@ if host_system == 'darwin'
   pango_sources += [
     'pangocoretext-fontmap.c',
   ]
+  if cairo_dep.found()
+    pango_sources += [
+      'pangocairo-coretext-font.c',
+    ]
+  endif
 endif
 
 if host_system == 'linux'
