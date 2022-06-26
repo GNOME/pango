@@ -72,7 +72,7 @@ draw_text (cairo_t *cr)
 
       cairo_rotate (cr, angle * G_PI / 180.);
 
-      /* Inform Pango2 to re-layout the text with the new transformation */
+      /* Inform Pango to re-layout the text with the new transformation */
       pango2_cairo_update_layout (cr, layout);
 
       lines = pango2_layout_get_lines (layout);

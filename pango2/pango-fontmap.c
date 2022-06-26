@@ -1199,7 +1199,7 @@ static GPrivate default_font_map = G_PRIVATE_INIT (g_object_unref); /* MT-safe *
  * Creates a new `Pango2FontMap` object.
  *
  * Note that the type of the returned object will depend
- * on the platform that Pango2 is used on. If you want to
+ * on the platform that Pango is used on. If you want to
  * explicitly create an instance of `Pango2FontMap` itself
  * (and not a platform-specific subclass), see [ctor@Pango2.FontMap.new].
  *
@@ -1233,17 +1233,17 @@ pango2_font_map_new_default (void)
  * Gets the default `Pango2FontMap`.
  *
  * The type of the returned object will depend on the
- * platform that Pango2 is used on.
+ * platform that Pango is used on.
  *
  * Note that the default fontmap is per-thread. Each thread gets
- * its own default fontmap. In this way, Pango2 can be used safely
+ * its own default fontmap. In this way, Pango can be used safely
  * from multiple threads.
  *
  * The default fontmap can be changed by using
  * [method@Pango2.FontMap.set_default].
  *
  * Return value: (transfer none): the default fontmap
- *  for the current thread. This object is owned by Pango2 and must
+ *  for the current thread. This object is owned by Pango and must
  *  not be freed.
  */
 Pango2FontMap *

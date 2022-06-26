@@ -1,5 +1,5 @@
 /* Pango2
- * test-layout.c: Test Pango2 Layout
+ * test-layout.c: Test Pango Layout
  *
  * Copyright (C) 2014 Red Hat, Inc
  *

@@ -875,7 +875,7 @@ attr_print (GString        *str,
  * Serializes a `Pango2AttrList` to a string.
  *
  * No guarantees are made about the format of the string,
- * it may change between Pango2 versions.
+ * it may change between Pango versions.
  *
  * The intended use of this function is testing and
  * debugging. The format is not meant as a permanent

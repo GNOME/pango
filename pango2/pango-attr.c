@@ -161,7 +161,7 @@ is_valid_attr_type (guint type)
  * by using [func@Pango2.AttrType.get_name].
  *
  * The callbacks are only needed if @type is `PANGO2_ATTR_VALUE_POINTER`,
- * Pango2 knows how to handle other value types and will only use the
+ * Pango knows how to handle other value types and will only use the
  * callbacks for generic pointer values.
  *
  * If @name and @serialize are provided, they will be used
@@ -484,7 +484,7 @@ pango2_attribute_equal (const Pango2Attribute *attr1,
  * The type must be one of the `Pango2AttrType` values, or
  * have been registered with [func@Pango2.AttrType.register].
  *
- * Pango2 will initialize @start_index and @end_index to an
+ * Pango will initialize @start_index and @end_index to an
  * all-inclusive range of `[0,G_MAXUINT]`. The value is copied.
  *
  * Return value: (transfer full): the newly allocated

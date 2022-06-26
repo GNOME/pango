@@ -772,7 +772,7 @@ pango2_markup_parser_new_internal (char       accel_marker,
 
 /**
  * pango2_parse_markup:
- * @markup_text: markup to parse (see the [Pango2 Markup](pango2_markup.html) docs)
+ * @markup_text: markup to parse (see the [Pango Markup](pango2_markup.html) docs)
  * @length: length of @markup_text, or -1 if nul-terminated
  * @accel_marker: character that precedes an accelerator, or 0 for none
  * @attr_list: (out) (optional): address of return location for a `Pango2AttrList`
@@ -782,7 +782,7 @@ pango2_markup_parser_new_internal (char       accel_marker,
  *
  * Parses marked-up text to create a plain-text string and an attribute list.
  *
- * See the [Pango2 Markup](pango2_markup.html) docs for details about the
+ * See the [Pango Markup](pango2_markup.html) docs for details about the
  * supported markup.
  *
  * If @accel_marker is nonzero, the given character will mark the
@@ -856,7 +856,7 @@ pango2_parse_markup (const char      *markup_text,
  * Incrementally parses marked-up text to create a plain-text string
  * and an attribute list.
  *
- * See the [Pango2 Markup](pango2_markup.html) docs for details about the
+ * See the [Pango Markup](pango2_markup.html) docs for details about the
  * supported markup.
  *
  * If @accel_marker is nonzero, the given character will mark the
@@ -872,8 +872,8 @@ pango2_parse_markup (const char      *markup_text,
  * to the parser, use [func@markup_parser_finish] to get the data out
  * of it, and then use [method@GLib.MarkupParseContext.free] to free it.
  *
- * This function is designed for applications that read Pango2 markup
- * from streams. To simply parse a string containing Pango2 markup,
+ * This function is designed for applications that read Pango markup
+ * from streams. To simply parse a string containing Pango markup,
  * the [func@Pango2.parse_markup] API is recommended instead.
  *
  * Return value: (transfer none): a `GMarkupParseContext` that should be
@@ -895,7 +895,7 @@ pango2_markup_parser_new (gunichar accel_marker)
  *
  * Finishes parsing markup.
  *
- * After feeding a Pango2 markup parser some data with [method@GLib.MarkupParseContext.parse],
+ * After feeding a Pango markup parser some data with [method@GLib.MarkupParseContext.parse],
  * use this function to get the list of attributes and text out of the
  * markup. This function will not free @context, use [method@GLib.MarkupParseContext.free]
  * to do so.

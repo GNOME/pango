@@ -50,13 +50,13 @@
 /**
  * pango2_version:
  *
- * Returns the encoded version of Pango2 available at run-time.
+ * Returns the encoded version of Pango available at run-time.
  *
  * This is similar to the macro %PANGO2_VERSION except that the macro
  * returns the encoded version available at compile-time. A version
  * number can be encoded into an integer using PANGO2_VERSION_ENCODE().
  *
- * Returns: The encoded version of Pango2 library available at run time.
+ * Returns: The encoded version of Pango library available at run time.
  */
 int
 pango2_version (void)
@@ -67,13 +67,13 @@ pango2_version (void)
 /**
  * pango2_version_string:
  *
- * Returns the version of Pango2 available at run-time.
+ * Returns the version of Pango available at run-time.
  *
  * This is similar to the macro %PANGO2_VERSION_STRING except that the
  * macro returns the version available at compile-time.
  *
- * Returns: A string containing the version of Pango2 library available
- *   at run time. The returned string is owned by Pango2 and should not
+ * Returns: A string containing the version of Pango library available
+ *   at run time. The returned string is owned by Pango and should not
  *   be modified or freed.
  */
 const char *
@@ -88,13 +88,13 @@ pango2_version_string (void)
  * @required_minor: the required minor version
  * @required_micro: the required major version
  *
- * Checks that the Pango2 library in use is compatible with the
+ * Checks that the Pango library in use is compatible with the
  * given version.
  *
  * Generally you would pass in the constants %PANGO2_VERSION_MAJOR,
  * %PANGO2_VERSION_MINOR, %PANGO2_VERSION_MICRO as the three arguments
  * to this function; that produces a check that the library in use at
- * run-time is compatible with the version of Pango2 the application or
+ * run-time is compatible with the version of Pango the application or
  * module was compiled against.
  *
  * Compatibility is defined by two things: first the version
@@ -106,9 +106,9 @@ pango2_version_string (void)
  *
  * For compile-time version checking use PANGO2_VERSION_CHECK().
  *
- * Return value: (nullable): %NULL if the Pango2 library is compatible
+ * Return value: (nullable): %NULL if the Pango library is compatible
  *   with the given version, or a string describing the version
- *   mismatch.  The returned string is owned by Pango2 and should not
+ *   mismatch.  The returned string is owned by Pango and should not
  *   be modified or freed.
  */
 const char *
@@ -192,12 +192,12 @@ pango2_is_zero_width (gunichar ch)
  * pango2_units_from_double:
  * @d: double floating-point value
  *
- * Converts a floating-point number to Pango2 units.
+ * Converts a floating-point number to Pango units.
  *
  * The conversion is done by multiplying @d by %PANGO2_SCALE and
  * rounding the result to nearest integer.
  *
- * Return value: the value in Pango2 units.
+ * Return value: the value in Pango units.
  */
 int
 pango2_units_from_double (double d)
@@ -207,9 +207,9 @@ pango2_units_from_double (double d)
 
 /**
  * pango2_units_to_double:
- * @i: value in Pango2 units
+ * @i: value in Pango units
  *
- * Converts a number in Pango2 units to floating-point.
+ * Converts a number in Pango units to floating-point.
  *
  * The conversion is done by dividing @i by %PANGO2_SCALE.
  *
@@ -226,7 +226,7 @@ pango2_units_to_double (int i)
  * @inclusive: (nullable): rectangle to round to pixels inclusively
  * @nearest: (nullable): rectangle to round to nearest pixels
  *
- * Converts extents from Pango2 units to device units.
+ * Converts extents from Pango units to device units.
  *
  * The conversion is done by dividing by the %PANGO2_SCALE factor and
  * performing rounding.

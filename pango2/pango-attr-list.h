@@ -75,7 +75,7 @@ void                    pango2_attr_list_update          (Pango2AttrList        
 
 /**
  * Pango2AttrFilterFunc:
- * @attribute: a Pango2 attribute
+ * @attribute: a Pango attribute
  * @user_data: user data passed to the function
  *
  * Callback to filter a list of attributes.

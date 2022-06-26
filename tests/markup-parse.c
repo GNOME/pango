@@ -1,5 +1,5 @@
 /* Pango2
- * markup-parse.c: Test Pango2 markup
+ * markup-parse.c: Test Pango markup
  *
  * Copyright (C) 2014 Red Hat, Inc
  *

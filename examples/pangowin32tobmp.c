@@ -75,7 +75,7 @@ int main (int argc, char **argv)
   GTimeVal tv0, tv1;
   int my_font_size = 12;
 
-  printf ("# Pango2 Font Test\n"
+  printf ("# Pango Font Test\n"
 	  "# Language: %s\n"
 	  "#\n", pango2_language_to_string (lang));
 

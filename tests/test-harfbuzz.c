@@ -1,5 +1,5 @@
 /* Pango2
- * test-harfbuzz.c: Test Pango2 harfbuzz apis
+ * test-harfbuzz.c: Test Pango harfbuzz apis
  *
  * Copyright (C) 2019 Red Hat, Inc.
  *

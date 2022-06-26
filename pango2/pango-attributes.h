@@ -50,7 +50,7 @@ G_BEGIN_DECLS
  * @PANGO2_ATTR_RISE: baseline displacement
  * @PANGO2_ATTR_SCALE: font size scale factor
  * @PANGO2_ATTR_FALLBACK: whether font fallback is enabled
- * @PANGO2_ATTR_LETTER_SPACING: letter spacing in Pango2 units
+ * @PANGO2_ATTR_LETTER_SPACING: letter spacing in Pango units
  * @PANGO2_ATTR_UNDERLINE_COLOR: underline color
  * @PANGO2_ATTR_STRIKETHROUGH_COLOR: strikethrough color
  * @PANGO2_ATTR_ABSOLUTE_SIZE: font size in pixels scaled by `PANGO2_SCALE`
@@ -63,7 +63,7 @@ G_BEGIN_DECLS
  * @PANGO2_ATTR_OVERLINE: whether the text has an overline
  * @PANGO2_ATTR_OVERLINE_COLOR: overline color
  * @PANGO2_ATTR_LINE_HEIGHT: line height factor
- * @PANGO2_ATTR_ABSOLUTE_LINE_HEIGHT: line height in Pango2 units
+ * @PANGO2_ATTR_ABSOLUTE_LINE_HEIGHT: line height in Pango units
  * @PANGO2_ATTR_WORD: mark the range of the attribute as a single word
  * @PANGO2_ATTR_SENTENCE: mark the range of the attribute as a single sentence
  * @PANGO2_ATTR_PARAGRAPH: mark the range of the attribute as a single paragraph

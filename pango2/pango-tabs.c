@@ -71,7 +71,7 @@ init_tabs (Pango2TabArray *array, int start, int end)
  * Creates an array of @initial_size tab stops.
  *
  * Tab stops are specified in pixel units if @positions_in_pixels is %TRUE,
- * otherwise in Pango2 units. All stops are initially at position 0.
+ * otherwise in Pango units. All stops are initially at position 0.
  *
  * Return value: the newly allocated `Pango2TabArray`, which should
  *   be freed with [method@Pango2.TabArray.free].
@@ -265,7 +265,7 @@ pango2_tab_array_resize (Pango2TabArray *tab_array,
  * @tab_array: a `Pango2TabArray`
  * @tab_index: the index of a tab stop
  * @alignment: tab alignment
- * @location: tab location in Pango2 units
+ * @location: tab location in Pango units
  *
  * Sets the alignment and location of a tab stop.
  */
@@ -358,7 +358,7 @@ pango2_tab_array_get_tabs (Pango2TabArray  *tab_array,
  * @tab_array: a `Pango2TabArray`
  *
  * Returns %TRUE if the tab positions are in pixels,
- * %FALSE if they are in Pango2 units.
+ * %FALSE if they are in Pango units.
  *
  * Return value: whether positions are in pixels.
  */
@@ -394,7 +394,7 @@ pango2_tab_array_set_positions_in_pixels (Pango2TabArray *tab_array,
  * Serializes a `Pango2TabArray` to a string.
  *
  * No guarantees are made about the format of the string,
- * it may change between Pango2 versions.
+ * it may change between Pango versions.
  *
  * The intended use of this function is testing and
  * debugging. The format is not meant as a permanent
@@ -551,7 +551,7 @@ success:
  * which align content at the first occurrence of the decimal point
  * character.
  *
- * By default, Pango2 uses the decimal point according
+ * By default, Pango uses the decimal point according
  * to the current locale.
  */
 void
@@ -579,7 +579,7 @@ pango2_tab_array_set_decimal_point (Pango2TabArray *tab_array,
  * which align content at the first occurrence of the decimal point
  * character.
  *
- * The default value of 0 means that Pango2 will use the
+ * The default value of 0 means that Pango will use the
  * decimal point according to the current locale.
  */
 gunichar
