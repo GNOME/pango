@@ -366,7 +366,7 @@ pango2_user_face_class_init (Pango2UserFaceClass *class)
  * Callback to shape a segment of text with a user font.
  *
  * This callback is optional when creating a user font. If it isn't
- * provided, Pango2 will rely on the `Pango2UserFaceUnicodeToGlyphFunc`
+ * provided, Pango will rely on the `Pango2UserFaceUnicodeToGlyphFunc`
  * and the `Pango2UserFaceGetGlyphInfo` callback to translate Unicode
  * characters to glyphs 1-1, and position the glyphs according to their
  * advance widths.
@@ -427,7 +427,7 @@ pango2_user_face_class_init (Pango2UserFaceClass *class)
  * but instead uses callbacks to determine glyph extents, positions
  * and rendering.
  *
- * If @shape_func is `NULL`, Pango2 will rely on @glyph_func and
+ * If @shape_func is `NULL`, Pango will rely on @glyph_func and
  * @glyph_info_func to find and position a glyph for each character.
  *
  * If @render_func is `NULL`, the font will not produce any visible

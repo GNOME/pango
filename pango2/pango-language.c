@@ -180,7 +180,7 @@ _pango2_get_lc_ctype (void)
    * Control Panel. Setting these env vars won't have any affect on
    * locale-dependent C library functions like ctime(). But just for
    * kicks, do obey LC_ALL, LC_CTYPE and LANG in Pango2. (This also makes
-   * it easier to test GTK and Pango2 in various default languages, you
+   * it easier to test GTK and Pango in various default languages, you
    * don't have to clickety-click in the Control Panel, you can simply
    * start the program with LC_ALL=something on the command line.)
    */
@@ -573,7 +573,7 @@ static const LangInfo lang_texts[] = {
  * If @language is %NULL, the default language as found by
  * [func@Pango2.Language.get_default] is used.
  *
- * If Pango2 does not have a sample string for @language, the classic
+ * If Pango does not have a sample string for @language, the classic
  * "The quick brown fox..." is returned.  This can be detected by
  * comparing the returned pointer value to that returned for (non-existent)
  * language code "xx".  That is, compare to:
@@ -638,7 +638,7 @@ pango2_language_get_sample_string (Pango2Language *language)
  *
  * Return value: (transfer none) (array length=num_scripts) (nullable):
  *   An array of `GUnicodeScript` values, with the number of entries in
- *   the array stored in @num_scripts, or %NULL if Pango2 does not have
+ *   the array stored in @num_scripts, or %NULL if Pango does not have
  *   any information about this particular language tag (also the case
  *   if @language is %NULL).
  */
@@ -685,7 +685,7 @@ pango2_language_get_scripts (Pango2Language *language,
  *
  * The returned value is conservative; if nothing is known about
  * the language tag @language, %TRUE will be returned, since, as
- * far as Pango2 knows, @script might be used to write @language.
+ * far as Pango knows, @script might be used to write @language.
  *
  * This routine is used in Pango2's itemization process when
  * determining if a supplied language tag is relevant to
@@ -881,7 +881,7 @@ pango2_language_get_preferred (void)
  * is tested using [method@Pango2.Language.includes_script]. This can
  * be used to control Pango2's font selection for non-primary
  * languages. For example, a `PANGO2_LANGUAGE` enviroment variable
- * set to "en:fa" makes Pango2 choose fonts suitable for Persian (fa)
+ * set to "en:fa" makes Pango choose fonts suitable for Persian (fa)
  * instead of Arabic (ar) when a segment of Arabic text is found
  * in an otherwise non-Arabic text. The same trick can be used to
  * choose a default language for %G_UNICODE_SCRIPT_HAN when setting

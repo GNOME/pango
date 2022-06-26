@@ -1,5 +1,5 @@
 /* Pango2
- * test-shape.c: Test Pango2 shaping
+ * test-shape.c: Test Pango shaping
  *
  * Copyright (C) 2019 Red Hat, Inc
  *

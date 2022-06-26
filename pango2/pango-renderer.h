@@ -88,7 +88,7 @@ struct _Pango2Renderer
  *
  * Class structure for `Pango2Renderer`.
  *
- * The following vfuncs take user space coordinates in Pango2 units
+ * The following vfuncs take user space coordinates in Pango units
  * and have default implementations:
  * - draw_glyphs
  * - draw_rectangle

@@ -335,7 +335,7 @@ pango2_context_finalize (GObject *object)
  * the default one, you should use [ctor@Pango2.Context.new_with_font_map]
  * instead.
  *
- * If you are using Pango2 as part of a higher-level system,
+ * If you are using Pango as part of a higher-level system,
  * that system may have it's own way of create a `Pango2Context`.
  * Pango2's own cairo support for instance, has [func@Pango2.cairo_create_context],
  * and the GTK toolkit has, among others, gtk_widget_get_pango2_context().
@@ -357,7 +357,7 @@ pango2_context_new (void)
  *
  * Creates a new `Pango2Context` with the given font map.
  *
- * If you are using Pango2 as part of a higher-level system,
+ * If you are using Pango as part of a higher-level system,
  * that system may have it's own way of create a `Pango2Context`.
  * Pango2's own cairo support for instance, has [func@Pango2.cairo_create_context],
  * and the GTK toolkit has, among others, gtk_widget_get_pango2_context().
@@ -434,7 +434,7 @@ pango2_context_set_matrix (Pango2Context      *context,
  *
  * Return value: (nullable): the matrix, or %NULL if no matrix has
  *   been set (which is the same as the identity matrix). The returned
- *   matrix is owned by Pango2 and must not be modified or freed.
+ *   matrix is owned by Pango and must not be modified or freed.
  */
 const Pango2Matrix *
 pango2_context_get_matrix (Pango2Context *context)
@@ -452,7 +452,7 @@ pango2_context_get_matrix (Pango2Context *context)
  * Sets the font map to be searched when fonts are looked-up
  * in this context.
  *
- * This is only for internal use by Pango2 backends, a `Pango2Context`
+ * This is only for internal use by Pango backends, a `Pango2Context`
  * obtained via one of the recommended methods should already have a
  * suitable font map.
  */
@@ -487,7 +487,7 @@ pango2_context_set_font_map (Pango2Context *context,
  * Gets the `Pango2FontMap` used to look up fonts for this context.
  *
  * Return value: (transfer none): the font map for the `Pango2Context`.
- *   This value is owned by Pango2 and should not be unreferenced.
+ *   This value is owned by Pango and should not be unreferenced.
  */
 Pango2FontMap *
 pango2_context_get_font_map (Pango2Context *context)
@@ -1018,7 +1018,7 @@ pango2_context_get_serial (Pango2Context *context)
  * positioning of glyphs.
  *
  * The default value is to round glyph positions, to remain
- * compatible with previous Pango2 behavior.
+ * compatible with previous Pango behavior.
  */
 void
 pango2_context_set_round_glyph_positions (Pango2Context *context,

@@ -73,7 +73,7 @@ struct _RunInfo
 {
   Pango2GlyphItem *run;
   int start_offset;             /* Character offset of run start */
-  int width;                    /* Width of run in Pango2 units */
+  int width;                    /* Width of run in Pango units */
 };
 
 /* Iterator to a position within the ellipsized line */
@@ -95,11 +95,11 @@ struct _EllipsizeState
   RunInfo *run_info;            /* Array of information about each run */
   int n_runs;
 
-  int total_width;              /* Original width of line in Pango2 units */
+  int total_width;              /* Original width of line in Pango units */
   int gap_center;               /* Goal for center of gap */
 
   Pango2GlyphItem *ellipsis_run; /* Run created to hold ellipsis */
-  int ellipsis_width;           /* Width of ellipsis, in Pango2 units */
+  int ellipsis_width;           /* Width of ellipsis, in Pango units */
   int ellipsis_is_cjk;          /* Whether the first character in the ellipsized
                                  * is wide; this triggers us to try to use a
                                  * mid-line ellipsis instead of a baseline
@@ -108,12 +108,12 @@ struct _EllipsizeState
   Pango2AttrIterator *line_start_attr; /* Cached Pango2AttrIterator for the start of the run */
 
   LineIter gap_start_iter;      /* Iteratator pointig to the first cluster in gap */
-  int gap_start_x;              /* x position of start of gap, in Pango2 units */
+  int gap_start_x;              /* x position of start of gap, in Pango units */
   Pango2AttrIterator *gap_start_attr; /* Attribute iterator pointing to a range containing
                                       * the first character in gap */
 
   LineIter gap_end_iter;        /* Iterator pointing to last cluster in gap */
-  int gap_end_x;                /* x position of end of gap, in Pango2 units */
+  int gap_end_x;                /* x position of end of gap, in Pango units */
 
   Pango2ShapeFlags shape_flags;
 };

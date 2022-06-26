@@ -598,9 +598,9 @@ draw_shaped_glyphs (Pango2Renderer    *renderer,
  * @renderer: a `Pango2Renderer`
  * @line: a `Pango2Line`
  * @x: X position of left edge of baseline, in user space coordinates
- *   in Pango2 units.
+ *   in Pango units.
  * @y: Y position of left edge of baseline, in user space coordinates
- *   in Pango2 units.
+ *   in Pango units.
  *
  * Draws @line with the specified `Pango2Renderer`.
  *
@@ -648,9 +648,9 @@ pango2_renderer_draw_line (Pango2Renderer *renderer,
  * @renderer: a `Pango2Renderer`
  * @lines: a `Pango2Lines` object
  * @x: X position of left edge of baseline, in user space coordinates
- *   in Pango2 units.
+ *   in Pango units.
  * @y: Y position of left edge of baseline, in user space coordinates
- *   in Pango2 units.
+ *   in Pango units.
  *
  * Draws @lines with the specified `Pango2Renderer`.
  */
@@ -873,9 +873,9 @@ pango2_renderer_draw_runs (Pango2Renderer *renderer,
  * @font: a `Pango2Font`
  * @glyphs: a `Pango2GlyphString`
  * @x: X position of left edge of baseline, in user space coordinates
- *   in Pango2 units.
+ *   in Pango units.
  * @y: Y position of left edge of baseline, in user space coordinates
- *   in Pango2 units.
+ *   in Pango units.
  *
  * Draws the glyphs in @glyphs with the specified `Pango2Renderer`.
  */
@@ -928,9 +928,9 @@ pango2_renderer_default_draw_glyphs (Pango2Renderer    *renderer,
  * @text: (nullable): the UTF-8 text that @glyph_item refers to
  * @run: a `Pango2Run`
  * @x: X position of left edge of baseline, in user space coordinates
- *   in Pango2 units
+ *   in Pango units
  * @y: Y position of left edge of baseline, in user space coordinates
- *   in Pango2 units
+ *   in Pango units
  *
  * Draws the glyphs in @run with the specified `Pango2Renderer`,
  * embedding the text associated with the glyphs in the output if the
@@ -994,11 +994,11 @@ pango2_renderer_default_draw_run (Pango2Renderer  *renderer,
  * @renderer: a `Pango2Renderer`
  * @part: type of object this rectangle is part of
  * @x: X position at which to draw rectangle, in user space coordinates
- *   in Pango2 units
+ *   in Pango units
  * @y: Y position at which to draw rectangle, in user space coordinates
- *   in Pango2 units
- * @width: width of rectangle in Pango2 units
- * @height: height of rectangle in Pango2 units
+ *   in Pango units
+ * @width: width of rectangle in Pango units
+ * @height: height of rectangle in Pango units
  *
  * Draws an axis-aligned rectangle in user space coordinates with the
  * specified `Pango2Renderer`.
@@ -1137,10 +1137,10 @@ pango2_renderer_default_draw_rectangle (Pango2Renderer  *renderer,
  * @renderer: a `Pango2Renderer`
  * @part: type of object this rectangle is part of
  * @style: the line style
- * @x: X coordinate of line, in Pango2 units in user coordinate system
- * @y: Y coordinate of line, in Pango2 units in user coordinate system
- * @width: width of line, in Pango2 units in user coordinate system
- * @height: height of line, in Pango2 units in user coordinate system
+ * @x: X coordinate of line, in Pango units in user coordinate system
+ * @y: Y coordinate of line, in Pango units in user coordinate system
+ * @width: width of line, in Pango units in user coordinate system
+ * @height: height of line, in Pango units in user coordinate system
  *
  * Draw a line in the given style.
  *
@@ -1494,7 +1494,7 @@ pango2_renderer_get_color (Pango2Renderer   *renderer,
  * @renderer: a `Pango2Renderer`
  * @part: the part for which rendering has changed.
  *
- * Informs Pango2 that the way that the rendering is done
+ * Informs Pango that the way that the rendering is done
  * for @part has changed.
  *
  * This should be called if the rendering changes in a way that would
@@ -1507,7 +1507,7 @@ pango2_renderer_get_color (Pango2Renderer   *renderer,
  * ```
  *
  * When the stipple changes or underlines with different stipples
- * might be joined together. Pango2 automatically calls this for
+ * might be joined together. Pango automatically calls this for
  * changes to colors. (See [method@Pango2.Renderer.set_color])
  */
 void
@@ -1656,7 +1656,7 @@ pango2_renderer_set_matrix (Pango2Renderer     *renderer,
  *
  * Return value: (nullable): the matrix, or %NULL if no matrix has
  *   been set (which is the same as the identity matrix). The returned
- *   matrix is owned by Pango2 and must not be modified or freed.
+ *   matrix is owned by Pango and must not be modified or freed.
  */
 const Pango2Matrix *
 pango2_renderer_get_matrix (Pango2Renderer *renderer)

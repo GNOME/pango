@@ -613,7 +613,7 @@ pango2_fc_font_map_set_config (Pango2FcFontMap *self,
  *
  * Returns: (nullable): the `FcConfig` object attached to
  *   @self, which might be `NULL`. The return value is
- *   owned by Pango2 and should not be freed.
+ *   owned by Pango and should not be freed.
  */
 FcConfig *
 pango2_fc_font_map_get_config (Pango2FcFontMap *self)

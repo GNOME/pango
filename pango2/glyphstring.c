@@ -625,7 +625,7 @@ fallback:
  * @text: the text for the run
  * @length: the number of bytes (not characters) in text.
  * @analysis: the analysis information return from [func@itemize]
- * @x_pos: the x offset (in Pango2 units)
+ * @x_pos: the x offset (in Pango units)
  * @index_: (out): location to store calculated byte index within @text
  * @trailing: (out): location to store a boolean indicating whether the
  *   user clicked on the leading or trailing edge of the character

@@ -372,7 +372,7 @@ pango2_matrix_transform_point (const Pango2Matrix *matrix,
 /**
  * pango2_matrix_transform_rectangle:
  * @matrix: (nullable): a `Pango2Matrix`
- * @rect: (inout) (optional): in/out bounding box in Pango2 units
+ * @rect: (inout) (optional): in/out bounding box in Pango units
  *
  * First transforms @rect using @matrix, then calculates the bounding box
  * of the transformed rectangle.
@@ -384,13 +384,13 @@ pango2_matrix_transform_point (const Pango2Matrix *matrix,
  * If you have a rectangle in device units (pixels), use
  * [method@Pango2.Matrix.transform_pixel_rectangle].
  *
- * If you have the rectangle in Pango2 units and want to convert to
+ * If you have the rectangle in Pango units and want to convert to
  * transformed pixel bounding box, it is more accurate to transform it first
  * (using this function) and pass the result to pango2_extents_to_pixels(),
  * first argument, for an inclusive rounded rectangle.
  * However, there are valid reasons that you may want to convert
  * to pixels first and then transform, for example when the transformed
- * coordinates may overflow in Pango2 units (large matrix translation for
+ * coordinates may overflow in Pango units (large matrix translation for
  * example).
  */
 void
@@ -460,7 +460,7 @@ pango2_matrix_transform_rectangle (const Pango2Matrix *matrix,
  * should be and how much you should shift the layout when rendering.
  *
  * For better accuracy, you should use [method@Pango2.Matrix.transform_rectangle]
- * on original rectangle in Pango2 units and convert to pixels afterward
+ * on original rectangle in Pango units and convert to pixels afterward
  * using [func@extents_to_pixels]'s first argument.
  */
 void

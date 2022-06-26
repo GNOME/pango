@@ -2467,8 +2467,8 @@ pango2_line_breaker_has_line (Pango2LineBreaker *self)
 /**
  * pango2_line_breaker_next_line:
  * @self: a `Pango2LineBreaker`
- * @x: the X position for the line, in Pango2 units
- * @width: the width for the line, or -1 for no limit, in Pango2 units
+ * @x: the X position for the line, in Pango units
+ * @width: the width for the line, or -1 for no limit, in Pango units
  * @wrap: how to wrap the text
  * @ellipsize: whether to ellipsize the text
  *

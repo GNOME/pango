@@ -1,4 +1,4 @@
-/* viewer-pangocairo.c: Pango2Cairo viewer backend.
+/* viewer-pangocairo.c: PangoCairo viewer backend.
  *
  * Copyright (C) 1999,2004,2005 Red Hat, Inc.
  * Copyright (C) 2001 Sun Microsystems

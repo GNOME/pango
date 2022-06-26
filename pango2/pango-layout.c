@@ -12,7 +12,7 @@
  *
  * A `Pango2Layout` structure represents an entire paragraph of text.
  *
- * While complete access to the layout capabilities of Pango2 is provided
+ * While complete access to the layout capabilities of Pango is provided
  * using the detailed interfaces for itemization, segmentation and shaping,
  * using that functionality directly involves writing a fairly large amount
  * of code. `Pango2Layout` provides a high-level driver for formatting entire
@@ -35,7 +35,7 @@
  *
  * <picture>
  *   <source srcset="layout-dark.png" media="(prefers-color-scheme: dark)">
- *   <img alt="Pango2 Layout Parameters" src="layout-light.png">
+ *   <img alt="Pango Layout Parameters" src="layout-light.png">
  * </picture>
  *
  * The following images demonstrate the effect of alignment and justification
@@ -369,7 +369,7 @@ pango2_layout_class_init (Pango2LayoutClass *class)
    *
    * Spacing to add between the lines of the `Pango2Layout`.
    *
-   * The spacing is specified in Pango2 units.
+   * The spacing is specified in Pango units.
    *
    * The default value is 0.
    */
@@ -382,7 +382,7 @@ pango2_layout_class_init (Pango2LayoutClass *class)
    *
    * The width to which the text of `Pango2Layout` will be broken.
    *
-   * The width is specified in Pango2 units, with -1 meaning unlimited.
+   * The width is specified in Pango units, with -1 meaning unlimited.
    *
    * The default value is -1.
    */
@@ -455,7 +455,7 @@ pango2_layout_class_init (Pango2LayoutClass *class)
    *
    * The wrap mode of this `Pango2Layout`.
    *
-   * The wrap mode influences how Pango2 chooses line breaks
+   * The wrap mode influences how Pango chooses line breaks
    * when text needs to be wrapped.
    *
    * The default value is `PANGO2_WRAP_WORD`.
@@ -470,7 +470,7 @@ pango2_layout_class_init (Pango2LayoutClass *class)
    *
    * The indent of this `Pango2Layout`.
    *
-   * The indent is specified in Pango2 units.
+   * The indent is specified in Pango units.
    *
    * A negative value of @indent will produce a hanging indentation.
    * That is, the first line will have the full width, and subsequent
@@ -1106,11 +1106,11 @@ pango2_layout_get_line_height (Pango2Layout *layout)
 /**
  * pango2_layout_set_spacing:
  * @layout: a `Pango2Layout`
- * @spacing: the amount of spacing, in Pango2 units
+ * @spacing: the amount of spacing, in Pango units
  *
  * Sets the amount of spacing between the lines of the layout.
  *
- * When placing lines with spacing, Pango2 arranges things so that
+ * When placing lines with spacing, Pango arranges things so that
  *
  *     line2.top = line1.bottom + spacing
  *
@@ -1140,7 +1140,7 @@ pango2_layout_set_spacing (Pango2Layout *layout,
  *
  * Gets the amount of spacing between the lines of the layout.
  *
- * Return value: the spacing in Pango2 units
+ * Return value: the spacing in Pango units
  */
 int
 pango2_layout_get_spacing (Pango2Layout *layout)
@@ -1153,7 +1153,7 @@ pango2_layout_get_spacing (Pango2Layout *layout)
 /**
  * pango2_layout_set_width:
  * @layout: a `Pango2Layout`.
- * @width: the desired width in Pango2 units, or -1 to indicate that no
+ * @width: the desired width in Pango units, or -1 to indicate that no
  *   wrapping or ellipsization should be performed
  *
  * Sets the width to which the lines of the layout should
@@ -1185,7 +1185,7 @@ pango2_layout_set_width (Pango2Layout *layout,
  *
  * Gets the width to which the lines of the layout should wrap.
  *
- * Return value: the width in Pango2 units, or -1 if no width set.
+ * Return value: the width in Pango units, or -1 if no width set.
  */
 int
 pango2_layout_get_width (Pango2Layout *layout)
@@ -1388,7 +1388,7 @@ pango2_layout_get_wrap (Pango2Layout *layout)
  * @layout: a `Pango2Layout`
  * @indent: the amount by which to indent
  *
- * Sets the width in Pango2 units to indent each paragraph.
+ * Sets the width in Pango units to indent each paragraph.
  *
  * A negative value of @indent will produce a hanging indentation.
  * That is, the first line will have the full width, and subsequent
@@ -1415,11 +1415,11 @@ pango2_layout_set_indent (Pango2Layout *layout,
  * pango2_layout_get_indent:
  * @layout: a `Pango2Layout`
  *
- * Gets the paragraph indent width in Pango2 units.
+ * Gets the paragraph indent width in Pango units.
  *
  * A negative value indicates a hanging indentation.
  *
- * Return value: the indent in Pango2 units
+ * Return value: the indent in Pango units
  */
 int
 pango2_layout_get_indent (Pango2Layout *layout)
@@ -1592,7 +1592,7 @@ pango2_layout_get_auto_dir (Pango2Layout *layout)
  *
  * Sets the layout text and attribute list from marked-up text.
  *
- * See [Pango2 Markup](pango2_markup.html)).
+ * See [Pango Markup](pango2_markup.html)).
  *
  * Replaces the current text and attributes.
  */

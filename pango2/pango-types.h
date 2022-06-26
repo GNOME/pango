@@ -58,7 +58,7 @@ typedef struct _Pango2LineIter Pango2LineIter;
 /**
  * PANGO2_SCALE:
  *
- * The scale between dimensions used for Pango2 distances and device units.
+ * The scale between dimensions used for Pango distances and device units.
  *
  * The definition of device units is dependent on the output device; it will
  * typically be pixels for a screen, and points for a printer. %PANGO2_SCALE is
@@ -69,7 +69,7 @@ typedef struct _Pango2LineIter Pango2LineIter;
  */
 /**
  * PANGO2_PIXELS:
- * @d: a dimension in Pango2 units.
+ * @d: a dimension in Pango units.
  *
  * Converts a dimension to device units by rounding.
  *
@@ -77,7 +77,7 @@ typedef struct _Pango2LineIter Pango2LineIter;
  */
 /**
  * PANGO2_PIXELS_FLOOR:
- * @d: a dimension in Pango2 units.
+ * @d: a dimension in Pango units.
  *
  * Converts a dimension to device units by flooring.
  *
@@ -85,7 +85,7 @@ typedef struct _Pango2LineIter Pango2LineIter;
  */
 /**
  * PANGO2_PIXELS_CEIL:
- * @d: a dimension in Pango2 units.
+ * @d: a dimension in Pango units.
  *
  * Converts a dimension to device units by ceiling.
  *
@@ -106,36 +106,36 @@ typedef struct _Pango2LineIter Pango2LineIter;
 
 /**
  * PANGO2_UNITS_FLOOR:
- * @d: a dimension in Pango2 units.
+ * @d: a dimension in Pango units.
  *
  * Rounds a dimension down to whole device units, but does not
  * convert it to device units.
  *
- * Return value: rounded down dimension in Pango2 units.
+ * Return value: rounded down dimension in Pango units.
  */
 #define PANGO2_UNITS_FLOOR(d)                \
   ((d) & ~(PANGO2_SCALE - 1))
 
 /**
  * PANGO2_UNITS_CEIL:
- * @d: a dimension in Pango2 units.
+ * @d: a dimension in Pango units.
  *
  * Rounds a dimension up to whole device units, but does not
  * convert it to device units.
  *
- * Return value: rounded up dimension in Pango2 units.
+ * Return value: rounded up dimension in Pango units.
  */
 #define PANGO2_UNITS_CEIL(d)                 \
   (((d) + (PANGO2_SCALE - 1)) & ~(PANGO2_SCALE - 1))
 
 /**
  * PANGO2_UNITS_ROUND:
- * @d: a dimension in Pango2 units.
+ * @d: a dimension in Pango units.
  *
  * Rounds a dimension to whole device units, but does not
  * convert it to device units.
  *
- * Return value: rounded dimension in Pango2 units.
+ * Return value: rounded dimension in Pango units.
  */
 #define PANGO2_UNITS_ROUND(d)                           \
   (((d) + (PANGO2_SCALE >> 1)) & ~(PANGO2_SCALE - 1))
@@ -264,8 +264,8 @@ typedef enum
  * `Pango2WrapMode` describes how to wrap the lines of a `Pango2Layout`
  * to the desired width.
  *
- * For @PANGO2_WRAP_WORD, Pango2 uses break opportunities that are determined
- * by the Unicode line breaking algorithm. For @PANGO2_WRAP_CHAR, Pango2 allows
+ * For @PANGO2_WRAP_WORD, Pango uses break opportunities that are determined
+ * by the Unicode line breaking algorithm. For @PANGO2_WRAP_CHAR, Pango allows
  * breaking at grapheme boundaries that are determined by the Unicode text
  * segmentation algorithm.
  */

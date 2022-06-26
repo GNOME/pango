@@ -647,7 +647,7 @@ pango2_line_get_run_count (Pango2Line *line)
  * Gets the runs of the line.
  *
  * Note that the returned list and its contents
- * are owned by Pango2 and must not be modified.
+ * are owned by Pango and must not be modified.
  *
  * The length of the returned array can be obtained
  * with [method@Pango2.Line.get_run_count].
@@ -954,14 +954,14 @@ pango2_line_justify (Pango2Line *line,
  *
  * Note that the origin is at the left end of the baseline.
  *
- * Pango2 is following CSS in splitting the external leading, and giving one half of it
+ * Pango is following CSS in splitting the external leading, and giving one half of it
  * to the line above, and the other half the the line below. Unless the line height is set
  * via attributes, the external leading is determined as the difference between the
  * height and ascent + descent in font metrics:
  *
  * <picture>
  *   <source srcset="line-height1-dark.png" media="(prefers-color-scheme: dark)">
- *   <img alt="Pango2 Font Metrics" src="line-height1-light.png">
+ *   <img alt="Pango Font Metrics" src="line-height1-light.png">
  * </picture>
  *
  * If spacing is set, it also gets split, for the purpose of determining the
@@ -969,14 +969,14 @@ pango2_line_justify (Pango2Line *line,
  *
  * <picture>
  *   <source srcset="line-height2-dark.png" media="(prefers-color-scheme: dark)">
- *   <img alt="Pango2 Extents and Spacing" src="line-height2-light.png">
+ *   <img alt="Pango Extents and Spacing" src="line-height2-light.png">
  * </picture>
  *
  * If line height is set, it determines the logical extents.
  *
  * <picture>
  *   <source srcset="line-height3-dark.png" media="(prefers-color-scheme: dark)">
- *   <img alt="Pango2 Extents and Line Height" src="line-height3-light.png">
+ *   <img alt="Pango Extents and Line Height" src="line-height3-light.png">
  * </picture>
  */
 void
@@ -1102,7 +1102,7 @@ pango2_line_index_to_pos (Pango2Line      *line,
  * @trailing: an integer indicating the edge of the grapheme to retrieve
  *   the position of. If > 0, the trailing edge of the grapheme,
  *   if 0, the leading of the grapheme
- * @x_pos: (out): location to store the x_offset (in Pango2 units)
+ * @x_pos: (out): location to store the x_offset (in Pango units)
  *
  * Converts an index within a `Pango2Line` to a X position.
  *
@@ -1171,7 +1171,7 @@ pango2_line_index_to_x (Pango2Line *line,
 /**
  * pango2_line_x_to_index:
  * @line: a `Pango2Line`
- * @x: the X offset (in Pango2 units) from the left edge of the line
+ * @x: the X offset (in Pango units) from the left edge of the line
  * @idx: (out): location to store calculated byte index for the grapheme
  *   in which the user clicked
  * @trailing: (out): location to store an integer indicating where in the

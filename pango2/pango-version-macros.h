@@ -70,10 +70,10 @@
  *
  * A macro that should be defined by the user prior to including
  * the pango.h header.
- * The definition should be one of the predefined Pango2 version
+ * The definition should be one of the predefined Pango version
  * macros: %PANGO2_VERSION_2_0,…
  *
- * This macro defines the earliest version of Pango2 that the package is
+ * This macro defines the earliest version of Pango that the package is
  * required to be able to compile against.
  *
  * If the compiler is configured to warn about the use of deprecated
@@ -97,10 +97,10 @@
  *
  * A macro that should be defined by the user prior to including
  * the glib.h header.
- * The definition should be one of the predefined Pango2 version
+ * The definition should be one of the predefined Pango version
  * macros: %PANGO2_VERSION_2_0,…
  *
- * This macro defines the latest version of the Pango2 API that the
+ * This macro defines the latest version of the Pango API that the
  * package is allowed to make use of.
  *
  * If the compiler is configured to warn about the use of deprecated
@@ -108,7 +108,7 @@
  * %PANGO2_VERSION_MAX_ALLOWED will cause warnings.
  *
  * Unless you are using PANGO2_VERSION_CHECK() or the like to compile
- * different code depending on the Pango2 version, then this should be
+ * different code depending on the Pango version, then this should be
  * set to the same value as %PANGO2_VERSION_MIN_REQUIRED.
  */
 #if !defined (PANGO2_VERSION_MAX_ALLOWED) || (PANGO2_VERSION_MAX_ALLOWED == 0)
@@ -127,7 +127,7 @@
 #error "PANGO2_VERSION_MIN_REQUIRED must be >= PANGO2_VERSION_0_90"
 #endif
 
-/* These macros are used to mark deprecated functions in Pango2 headers,
+/* These macros are used to mark deprecated functions in Pango headers,
  * and thus have to be exposed in installed headers.
  */
 #ifdef PANGO2_DISABLE_DEPRECATION_WARNINGS

@@ -1,5 +1,5 @@
 /* Pango2
- * test-break.c: Test Pango2 line breaking
+ * test-break.c: Test Pango line breaking
  *
  * Copyright (C) 2019 Red Hat, Inc
  *

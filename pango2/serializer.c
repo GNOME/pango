@@ -1,5 +1,5 @@
 /* Pango2
- * serializer.c: Code to serialize various Pango2 objects
+ * serializer.c: Code to serialize various Pango objects
  *
  * Copyright (C) 2021 Red Hat, Inc
  *
@@ -1592,7 +1592,7 @@ json_parser_load_font (GtkJsonParser  *parser,
  * Serializes the @layout for later deserialization via [func@Pango2.Layout.deserialize].
  *
  * There are no guarantees about the format of the output across different
- * versions of Pango2 and [func@Pango2.Layout.deserialize] will reject data
+ * versions of Pango and [func@Pango2.Layout.deserialize] will reject data
  * that it cannot parse.
  *
  * The intended use of this function is testing, benchmarking and debugging.

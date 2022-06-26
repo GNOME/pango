@@ -182,7 +182,7 @@ pango2_font_description_get_family (const Pango2FontDescription *desc)
  * %PANGO2_STYLE_NORMAL, %PANGO2_STYLE_ITALIC, or %PANGO2_STYLE_OBLIQUE.
  *
  * Most fonts will either have a italic style or an oblique style,
- * but not both, and font matching in Pango2 will match italic
+ * but not both, and font matching in Pango will match italic
  * specifications with oblique fonts and vice-versa if an exact
  * match is not found.
  */
@@ -394,7 +394,7 @@ pango2_font_description_get_size (const Pango2FontDescription *desc)
 /**
  * pango2_font_description_set_absolute_size:
  * @desc: a `Pango2FontDescription`
- * @size: the new size, in Pango2 units. There are %PANGO2_SCALE Pango2 units
+ * @size: the new size, in Pango units. There are %PANGO2_SCALE Pango units
  *   in one device unit. For an output backend where a device unit is a pixel,
  *   a @size value of 10 * PANGO2_SCALE gives a 10 pixel font.
  *
@@ -547,7 +547,7 @@ pango2_font_description_set_variations_static (Pango2FontDescription *desc,
  * and each VALUE a floating point number. Unknown axes are ignored,
  * and values are clamped to their allowed range.
  *
- * Pango2 does not currently have a way to find supported axes of
+ * Pango does not currently have a way to find supported axes of
  * a font. Both harfbuzz and freetype have API for this. See
  * for example [hb_ot_var_get_axis_infos](https://harfbuzz.github.io/harfbuzz-hb-ot-var.html#hb-ot-var-get-axis-infos).
  */
@@ -1705,7 +1705,7 @@ pango2_font_description_set_faceid_static (Pango2FontDescription *desc,
  * the same font they started with, if possible.
  *
  * Font descriptions originating from [method@Pango2.FontFace.describe]
- * should ideally include a faceid. Pango2 takes the faceid
+ * should ideally include a faceid. Pango takes the faceid
  * into account when looking for the best matching face while
  * loading a fontset or font.
  *

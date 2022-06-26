@@ -707,7 +707,7 @@ pango2_glyph_item_apply_attrs (Pango2GlyphItem *glyph_item,
  *   (the first logical attribute refers to the position
  *   before the first character in the item)
  * @letter_spacing: amount of letter spacing to add
- *   in Pango2 units. May be negative, though too large
+ *   in Pango units. May be negative, though too large
  *   negative values will give ugly results.
  *
  * Adds spacing between the graphemes of @glyph_item to

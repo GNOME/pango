@@ -1,5 +1,5 @@
 /* Pango2
- * pango-segmentation.c: Test Pango2 line breaking
+ * pango-segmentation.c: Test Pango line breaking
  *
  * Copyright (C) 2021 Red Hat, Inc
  *

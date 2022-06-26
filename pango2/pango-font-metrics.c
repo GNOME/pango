@@ -33,7 +33,7 @@ G_DEFINE_BOXED_TYPE (Pango2FontMetrics, pango2_font_metrics,
  *
  * Creates a new `Pango2FontMetrics` structure.
  *
- * This is only for internal use by Pango2 backends and there is
+ * This is only for internal use by Pango backends and there is
  * no public way to set the fields of the structure.
  *
  * Return value: a newly-created `Pango2FontMetrics` structure
@@ -83,7 +83,7 @@ pango2_font_metrics_free (Pango2FontMetrics *metrics)
  * of the actual drawn ink. It is necessary to lay out the text to
  * figure where the ink will be.)
  *
- * Return value: the ascent, in Pango2 units.
+ * Return value: the ascent, in Pango units.
  */
 int
 pango2_font_metrics_get_ascent (Pango2FontMetrics *metrics)
@@ -104,7 +104,7 @@ pango2_font_metrics_get_ascent (Pango2FontMetrics *metrics)
  * bottom of the actual drawn ink. It is necessary to lay out the text
  * to figure where the ink will be.)
  *
- * Return value: the descent, in Pango2 units.
+ * Return value: the descent, in Pango units.
  */
 int
 pango2_font_metrics_get_descent (Pango2FontMetrics *metrics)
@@ -125,7 +125,7 @@ pango2_font_metrics_get_descent (Pango2FontMetrics *metrics)
  *
  * If the line height is not available, 0 is returned.
  *
- * Return value: the height, in Pango2 units
+ * Return value: the height, in Pango units
  */
 int
 pango2_font_metrics_get_height (Pango2FontMetrics *metrics)
@@ -145,7 +145,7 @@ pango2_font_metrics_get_height (Pango2FontMetrics *metrics)
  * determining the initial size for a window. Actual characters in
  * text will be wider and narrower than this.
  *
- * Return value: the character width, in Pango2 units.
+ * Return value: the character width, in Pango units.
  */
 int
 pango2_font_metrics_get_approximate_char_width (Pango2FontMetrics *metrics)
@@ -167,7 +167,7 @@ pango2_font_metrics_get_approximate_char_width (Pango2FontMetrics *metrics)
  * is generally somewhat more accurate than the result of
  * pango2_font_metrics_get_approximate_char_width() for digits.
  *
- * Return value: the digit width, in Pango2 units.
+ * Return value: the digit width, in Pango units.
  */
 int
 pango2_font_metrics_get_approximate_digit_width (Pango2FontMetrics *metrics)
@@ -187,7 +187,7 @@ pango2_font_metrics_get_approximate_digit_width (Pango2FontMetrics *metrics)
  * of the underline. Since most fonts have underline positions beneath
  * the baseline, this value is typically negative.
  *
- * Return value: the suggested underline position, in Pango2 units.
+ * Return value: the suggested underline position, in Pango units.
  */
 int
 pango2_font_metrics_get_underline_position (Pango2FontMetrics *metrics)
@@ -203,7 +203,7 @@ pango2_font_metrics_get_underline_position (Pango2FontMetrics *metrics)
  *
  * Gets the suggested thickness to draw for the underline.
  *
- * Return value: the suggested underline thickness, in Pango2 units.
+ * Return value: the suggested underline thickness, in Pango units.
  */
 int
 pango2_font_metrics_get_underline_thickness (Pango2FontMetrics *metrics)
@@ -222,7 +222,7 @@ pango2_font_metrics_get_underline_thickness (Pango2FontMetrics *metrics)
  * The value returned is the distance *above* the
  * baseline of the top of the strikethrough.
  *
- * Return value: the suggested strikethrough position, in Pango2 units.
+ * Return value: the suggested strikethrough position, in Pango units.
  */
 int
 pango2_font_metrics_get_strikethrough_position (Pango2FontMetrics *metrics)
@@ -238,7 +238,7 @@ pango2_font_metrics_get_strikethrough_position (Pango2FontMetrics *metrics)
  *
  * Gets the suggested thickness to draw for the strikethrough.
  *
- * Return value: the suggested strikethrough thickness, in Pango2 units.
+ * Return value: the suggested strikethrough thickness, in Pango units.
  */
 int
 pango2_font_metrics_get_strikethrough_thickness (Pango2FontMetrics *metrics)

@@ -409,7 +409,7 @@ pango2_attr_strikethrough_color_new (Pango2Color *color)
 /**
  * pango2_attr_rise_new:
  * @rise: the amount that the text should be displaced vertically,
- *   in Pango2 units. Positive values displace the text upwards.
+ *   in Pango units. Positive values displace the text upwards.
  *
  * Create a new baseline displacement attribute.
  *
@@ -426,7 +426,7 @@ pango2_attr_rise_new (int rise)
 /**
  * pango2_attr_baseline_shift_new:
  * @shift: either a `Pango2BaselineShift` enumeration value or an absolute value (> 1024)
- *   in Pango2 units, relative to the baseline of the previous run.
+ *   in Pango units, relative to the baseline of the previous run.
  *   Positive values displace the text upwards.
  *
  * Create a new baseline displacement attribute.
@@ -513,7 +513,7 @@ pango2_attr_fallback_new (gboolean enable_fallback)
 /**
  * pango2_attr_letter_spacing_new:
  * @letter_spacing: amount of extra space to add between
- *   graphemes of the text, in Pango2 units
+ *   graphemes of the text, in Pango units
  *
  * Create a new letter-spacing attribute.
  *
@@ -608,7 +608,7 @@ pango2_attr_allow_breaks_new (gboolean allow_breaks)
  *
  * Create a new insert-hyphens attribute.
  *
- * Pango2 will insert hyphens when breaking lines in
+ * Pango will insert hyphens when breaking lines in
  * the middle of a word. This attribute can be used
  * to suppress the hyphen.
  *

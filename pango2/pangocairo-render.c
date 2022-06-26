@@ -1132,7 +1132,7 @@ pango2_cairo_show_lines (cairo_t     *cr,
 /**
  * pango2_cairo_show_layout:
  * @cr: a Cairo context
- * @layout: a Pango2 layout
+ * @layout: a `Pango2Layout`
  *
  * Draws a `Pango2Layout` in the specified cairo context.
  *
@@ -1215,7 +1215,7 @@ pango2_cairo_line_path (cairo_t    *cr,
 /**
  * pango2_cairo_layout_path:
  * @cr: a Cairo context
- * @layout: a Pango2 layout
+ * @layout: a `Pango2Layout`
  *
  * Adds the text in a `Pango2Layout` to the current path in the
  * specified cairo context.

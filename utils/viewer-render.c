@@ -798,7 +798,7 @@ backends_get_count (void)
 static char *
 backend_description (void)
 {
- GString *description  = g_string_new("Pango2 backend to use for rendering ");
+ GString *description  = g_string_new("Pango backend to use for rendering ");
  int backends_count = backends_get_count ();
 
  if (backends_count > 1)
@@ -853,7 +853,7 @@ show_version(const char *name G_GNUC_UNUSED,
   g_printf("%s (%s) %s\n", g_get_prgname (), PACKAGE_NAME, PACKAGE_VERSION);
 
   if (PANGO2_VERSION != pango2_version())
-    g_printf("Linked Pango2 library has a different version: %s\n", pango2_version_string ());
+    g_printf("Linked Pango library has a different version: %s\n", pango2_version_string ());
 
   exit(0);
 }
@@ -913,7 +913,7 @@ parse_options (int argc, char *argv[])
     {"margin",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_margin,
      "Set the margin on the output in pixels",			    "CSS-style numbers in pixels"},
     {"markup",		0, 0, G_OPTION_ARG_NONE,			&opt_markup,
-     "Interpret text as Pango2 markup",					NULL},
+     "Interpret text as Pango markup",					NULL},
     {"output",		'o', 0, G_OPTION_ARG_STRING,			&opt_output,
      "Save rendered image to output file",			      "file"},
     {"pangorc",		0, G_OPTION_FLAG_HIDDEN, G_OPTION_ARG_STRING,	&opt_pangorc,
@@ -921,13 +921,13 @@ parse_options (int argc, char *argv[])
     {"pixels",		0, 0, G_OPTION_ARG_NONE,			&opt_pixels,
      "Use pixel units instead of points (sets dpi to 72)",		NULL},
     {"pango-units",	0, 0, G_OPTION_ARG_NONE,			&opt_pango2_units,
-     "Use Pango2 units instead of points",		                NULL},
+     "Use Pango units instead of points",		                NULL},
     {"rtl",		0, 0, G_OPTION_ARG_NONE,			&opt_rtl,
      "Set base direction to right-to-left",				NULL},
     {"rotate",		0, 0, G_OPTION_ARG_DOUBLE,			&opt_rotate,
      "Angle at which to rotate results",			   "degrees"},
     {"runs",		'n', 0, G_OPTION_ARG_INT,			&opt_runs,
-     "Run Pango2 layout engine this many times",			   "integer"},
+     "Run Pango layout engine this many times",			   "integer"},
     {"single-par",     0, 0, G_OPTION_ARG_NONE,                        &opt_single_par,
      "Enable single-paragraph mode",                                   NULL},
     {"text",		't', 0, G_OPTION_ARG_STRING,			&opt_text,

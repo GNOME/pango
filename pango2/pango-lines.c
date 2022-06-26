@@ -504,7 +504,7 @@ pango2_lines_is_hyphenated (Pango2Lines *lines)
  * bug that shows up as right-to-left layouts not being correctly positioned
  * in a layout with a set width.
  *
- * The extents are given in layout coordinates and in Pango2 units; layout
+ * The extents are given in layout coordinates and in Pango units; layout
  * coordinates begin at the top left corner.
  */
 void
@@ -575,7 +575,7 @@ pango2_lines_get_extents (Pango2Lines     *lines,
  * @height: (out) (optional): location to store the logical height
  *
  * Determines the logical width and height of a `Pango2Lines`
- * in Pango2 units.
+ * in Pango units.
  *
  * This is simply a convenience function around
  * [method@Pango2.Lines.get_extents].
@@ -639,7 +639,7 @@ pango2_lines_get_baseline (Pango2Lines *lines)
  *   `2*n_ranges`, with each range starting at `(*ranges)[2*n]` and of
  *   width `(*ranges)[2*n + 1] - (*ranges)[2*n]`. This array must be freed
  *   with [GLib.free]. The coordinates are relative to the layout and are in
- *   Pango2 units.
+ *   Pango units.
  * @n_ranges: The number of ranges stored in @ranges
  *
  * Gets a list of visual ranges corresponding to a given logical range.
@@ -849,8 +849,8 @@ pango2_lines_index_to_line (Pango2Lines *lines,
 /**
  * pango2_lines_pos_to_line:
  * @lines: a `Pango2Lines` object
- * @x: the X position (in Pango2 units)
- * @y: the Y position (in Pango2 units)
+ * @x: the X position (in Pango units)
+ * @y: the Y position (in Pango units)
  * @line_x: (out) (optional): return location for the X offset of the line
  * @line_y: (out) (optional): return location for the Y offset of the line
  *
@@ -944,8 +944,8 @@ pango2_lines_index_to_pos (Pango2Lines     *lines,
 /**
  * pango2_lines_pos_to_index:
  * @lines: a `Pango2Lines` object
- * @x: the X offset (in Pango2 units) from the left edge of the layout
- * @y: the Y offset (in Pango2 units) from the top edge of the layout
+ * @x: the X offset (in Pango units) from the left edge of the layout
+ * @y: the Y offset (in Pango units) from the top edge of the layout
  * @idx: (out): location to store calculated byte index
  * @trailing: (out): location to store a integer indicating where
  *   in the grapheme the user clicked. It will either be zero, or the

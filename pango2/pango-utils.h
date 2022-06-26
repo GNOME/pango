@@ -35,8 +35,8 @@ void                    pango2_find_paragraph_boundary (const char *text,
                                                         int        *paragraph_delimiter_index,
                                                         int        *next_paragraph_start);
 
-/* Encode a Pango2 version as an integer */
-/* Pango2 version checking */
+/* Encode a Pango version as an integer */
+/* Pango version checking */
 
 /**
  * PANGO2_VERSION_ENCODE:
@@ -44,7 +44,7 @@ void                    pango2_find_paragraph_boundary (const char *text,
  * @minor: the minor component of the version number
  * @micro: the micro component of the version number
  *
- * This macro encodes the given Pango2 version into an integer.  The numbers
+ * This macro encodes the given Pango version into an integer.  The numbers
  * returned by %PANGO2_VERSION and pango2_version() are encoded using this macro.
  * Two encoded version numbers can be compared as integers.
  */
@@ -53,33 +53,33 @@ void                    pango2_find_paragraph_boundary (const char *text,
         + ((minor) *   100)                             \
         + ((micro) *     1))
 
-/* Encoded version of Pango2 at compile-time */
+/* Encoded version of Pango at compile-time */
 /**
  * PANGO2_VERSION:
  *
- * The version of Pango2 available at compile-time, encoded using PANGO2_VERSION_ENCODE().
+ * The version of Pango available at compile-time, encoded using PANGO2_VERSION_ENCODE().
  */
 
 /**
  * PANGO2_VERSION_STRING:
  *
- * A string literal containing the version of Pango2 available at compile-time.
+ * A string literal containing the version of Pango available at compile-time.
  */
 
 /**
  * PANGO2_VERSION_MAJOR:
  *
- * The major component of the version of Pango2 available at compile-time.
+ * The major component of the version of Pango available at compile-time.
  */
 /**
  * PANGO2_VERSION_MINOR:
  *
- * The minor component of the version of Pango2 available at compile-time.
+ * The minor component of the version of Pango available at compile-time.
  */
 /**
  * PANGO2_VERSION_MICRO:
  *
- * The micro component of the version of Pango2 available at compile-time.
+ * The micro component of the version of Pango available at compile-time.
  */
 #define PANGO2_VERSION PANGO2_VERSION_ENCODE(     \
         PANGO2_VERSION_MAJOR,                    \
@@ -87,14 +87,14 @@ void                    pango2_find_paragraph_boundary (const char *text,
         PANGO2_VERSION_MICRO)
 
 
-/* Check that compile-time Pango2 is as new as required */
+/* Check that compile-time Pango is as new as required */
 /**
  * PANGO2_VERSION_CHECK:
  * @major: the major component of the version number
  * @minor: the minor component of the version number
  * @micro: the micro component of the version number
  *
- * Checks that the version of Pango2 available at compile-time is not older than
+ * Checks that the version of Pango available at compile-time is not older than
  * the provided version number.
  */
 #define PANGO2_VERSION_CHECK(major,minor,micro)    \

@@ -681,11 +681,11 @@ pango2_hb_face_set_matrix (Pango2HbFace       *self,
  * the returned `Pango2HbFace`.
  *
  * If @name is provided, it is used as the name for the face.
- * Otherwise, Pango2 will use the named instance subfamily name
+ * Otherwise, Pango will use the named instance subfamily name
  * or `HB_OT_NAME_ID_TYPOGRAPHIC_SUBFAMILY`.
  *
  * If @description is provided, it is used as the font description
- * for the face. Otherwise, Pango2 creates a description using
+ * for the face. Otherwise, Pango creates a description using
  * `HB_OT_NAME_ID_TYPOGRAPHIC_FAMILY` and the name of the face.
  *
  * Returns: a newly created `Pango2HbFace`
@@ -742,11 +742,11 @@ pango2_hb_face_new_from_hb_face (hb_face_t                  *face,
  * the returned `Pango2HbFace`.
  *
  * If @name is provided, it is used as the name for the face.
- * Otherwise, Pango2 will use the named instance subfamily name
+ * Otherwise, Pango will use the named instance subfamily name
  * or `HB_OT_NAME_ID_TYPOGRAPHIC_SUBFAMILY`.
  *
  * If @description is provided, it is used as the font description
- * for the face. Otherwise, Pango2 creates a description using
+ * for the face. Otherwise, Pango creates a description using
  * `HB_OT_NAME_ID_TYPOGRAPHIC_FAMILY` and the name of the face.
  *
  * If @desc and @name are provided, then the returned `Pango2HbFace`
@@ -799,7 +799,7 @@ pango2_hb_face_new_from_file (const char                  *file,
  * @transform can be used to specify a non-trivial font matrix for creating
  * synthetic italics or synthetic condensed variants of an existing face.
  *
- * If @embolden is `TRUE`, Pango2 will render the glyphs bolder, creating
+ * If @embolden is `TRUE`, Pango will render the glyphs bolder, creating
  * a synthetic bold variant of the face.
  *
  * If a @name is not specified, the name for the face will be derived
