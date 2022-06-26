@@ -45,6 +45,12 @@
  * uses DirectWrite to populate the fontmap with the available fonts.
  */
 
+/**
+ * PANGO2_HAS_DIRECT_WRITE_FONTMAP:
+ *
+ * Defined to 1 at compile time if Pango was built with DirectWrite support.
+ */
+
 
 struct _PangoDirectWriteFontMap
 {

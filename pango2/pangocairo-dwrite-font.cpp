@@ -30,7 +30,6 @@
 
 #include "pangocairo-private.h"
 
-/* {{{ DirectWrite PangoCairo utilities */
 cairo_font_face_t *
 create_cairo_dwrite_font_face (Pango2Font *font)
 {
@@ -47,7 +46,5 @@ create_cairo_dwrite_font_face (Pango2Font *font)
 }
 
 #endif /* HAVE_DIRECT_WRITE */
-
-/* }}} */
 
 /* vim:set foldmethod=marker expandtab: */
