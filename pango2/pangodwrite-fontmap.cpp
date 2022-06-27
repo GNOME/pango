@@ -39,29 +39,29 @@
 
 
 /**
- * PangoDirectWriteFontMap:
+ * Pango2DirectWriteFontMap:
  *
- * `PangoDirectWriteFontMap` is a subclass of `PangoFontMap` that
+ * `Pango2DirectWriteFontMap` is a subclass of `Pango2FontMap` that
  * uses DirectWrite to populate the fontmap with the available fonts.
  */
 
 /**
  * PANGO2_HAS_DIRECT_WRITE_FONTMAP:
  *
- * Defined to 1 at compile time if Pango was built with DirectWrite support.
+ * Defined to 1 at compile time if Pango2 was built with DirectWrite support.
  */
 
 
-struct _PangoDirectWriteFontMap
+struct _Pango2DirectWriteFontMap
 {
-  PangoFontMap parent_instance;
+  Pango2FontMap parent_instance;
 
   IDWriteFactory *dwrite_factory;
 };
 
-struct _PangoDirectWriteFontMapClass
+struct _Pango2DirectWriteFontMapClass
 {
-  PangoFontMapClass parent_class;
+  Pango2FontMapClass parent_class;
 };
 
 #ifdef _MSC_VER
@@ -72,32 +72,32 @@ struct _PangoDirectWriteFontMapClass
 
 /* {{{ DirectWrite utilities */
 
-static PangoStretch
-util_to_pango_stretch (DWRITE_FONT_STRETCH stretch)
+static Pango2Stretch
+util_to_pango2_stretch (DWRITE_FONT_STRETCH stretch)
 {
   int value = (int) stretch;
 
   if G_UNLIKELY (stretch <= DWRITE_FONT_STRETCH_UNDEFINED ||
                  stretch > DWRITE_FONT_STRETCH_ULTRA_EXPANDED)
-    return PANGO_STRETCH_NORMAL;
+    return PANGO2_STRETCH_NORMAL;
 
-  return (PangoStretch) --value;
+  return (Pango2Stretch) --value;
 }
 
-static PangoStyle
-util_to_pango_style (DWRITE_FONT_STYLE style)
+static Pango2Style
+util_to_pango2_style (DWRITE_FONT_STYLE style)
 {
   switch (style)
     {
     case DWRITE_FONT_STYLE_NORMAL:
-      return PANGO_STYLE_NORMAL;
+      return PANGO2_STYLE_NORMAL;
     case DWRITE_FONT_STYLE_OBLIQUE:
-      return PANGO_STYLE_OBLIQUE;
+      return PANGO2_STYLE_OBLIQUE;
     case DWRITE_FONT_STYLE_ITALIC:
-      return PANGO_STYLE_ITALIC;
+      return PANGO2_STYLE_ITALIC;
     default:
       g_assert_not_reached ();
-      return PANGO_STYLE_NORMAL;
+      return PANGO2_STYLE_NORMAL;
     }
 }
 
@@ -113,29 +113,29 @@ util_map_weight (int weight)
   return weight;
 }
 
-static PangoWeight
-util_to_pango_weight (DWRITE_FONT_WEIGHT weight)
+static Pango2Weight
+util_to_pango2_weight (DWRITE_FONT_WEIGHT weight)
 {
-  /* DirectWrite weight values range from 1 to 999, Pango values
+  /* DirectWrite weight values range from 1 to 999, Pango2 weight values
    * range from 100 to 1000. */
 
-  return (PangoWeight) util_map_weight (weight);
+  return (Pango2Weight) util_map_weight (weight);
 }
 
-static PangoFontDescription*
-util_get_pango_font_description (IDWriteFont *font,
-                                 const char *family_name)
+static Pango2FontDescription*
+util_get_pango2_font_description (IDWriteFont *font,
+                                  const char *family_name)
 {
   DWRITE_FONT_STRETCH stretch = font->GetStretch ();
   DWRITE_FONT_STYLE style = font->GetStyle ();
   DWRITE_FONT_WEIGHT weight = font->GetWeight ();
-  PangoFontDescription *description;
+  Pango2FontDescription *description;
 
-  description = pango_font_description_new ();
-  pango_font_description_set_family (description, family_name);
-  pango_font_description_set_stretch (description, util_to_pango_stretch (stretch));
-  pango_font_description_set_style (description, util_to_pango_style (style));
-  pango_font_description_set_weight (description, util_to_pango_weight (weight));
+  description = pango2_font_description_new ();
+  pango2_font_description_set_family (description, family_name);
+  pango2_font_description_set_stretch (description, util_to_pango2_stretch (stretch));
+  pango2_font_description_set_style (description, util_to_pango2_style (style));
+  pango2_font_description_set_weight (description, util_to_pango2_weight (weight));
 
   return description;
 }
@@ -206,28 +206,28 @@ util_dwrite_get_font_family_name (IDWriteFontFamily *family)
   return util_free_to_string (strings);
 }
 
-static PangoHbFace*
-util_create_pango_hb_face (IDWriteFontFamily *family,
-                           IDWriteFont *font,
-                           IDWriteFontFace *face)
+static Pango2HbFace*
+util_create_pango2_hb_face (IDWriteFontFamily *family,
+                            IDWriteFont *font,
+                            IDWriteFontFace *face)
 {
   char *family_name = util_dwrite_get_font_family_name (family);
   char *variant_name = util_dwrite_get_font_variant_name (font);
-  PangoHbFace *pango_face = NULL;
+  Pango2HbFace *pango_face = NULL;
 
   if (family_name && variant_name)
     {
-      PangoFontDescription *description = util_get_pango_font_description (font, family_name);
+      Pango2FontDescription *description = util_get_pango2_font_description (font, family_name);
       hb_face_t *hb_face = hb_directwrite_face_create (face);
       char *name = g_strconcat (family_name, " ", variant_name, NULL);
 
       hb_face_make_immutable (hb_face);
 
-      pango_face = pango_hb_face_new_from_hb_face (hb_face, -1, name, description);
+      pango_face = pango2_hb_face_new_from_hb_face (hb_face, -1, name, description);
 
       g_free (name);
       hb_face_destroy (hb_face);
-      pango_font_description_free (description);
+      pango2_font_description_free (description);
     }
 
   g_free (family_name);
@@ -237,12 +237,12 @@ util_create_pango_hb_face (IDWriteFontFamily *family,
 }
 
 /* }}} */
-/* {{{ PangoFontMap implementation */
+/* {{{ Pango2FontMap implementation */
 
 static void
-pango_direct_write_font_map_populate (PangoFontMap *map)
+pango2_direct_write_font_map_populate (Pango2FontMap *map)
 {
-  PangoDirectWriteFontMap *dwrite_map = PANGO_DIRECT_WRITE_FONT_MAP (map);
+  Pango2DirectWriteFontMap *dwrite_map = PANGO2_DIRECT_WRITE_FONT_MAP (map);
   IDWriteFontCollection *collection = NULL;
   UINT32 count;
   HRESULT hr;
@@ -271,7 +271,7 @@ pango_direct_write_font_map_populate (PangoFontMap *map)
         {
           IDWriteFont *font = NULL;
           IDWriteFontFace *face = NULL;
-          PangoHbFace *pango_face = NULL;
+          Pango2HbFace *pango_face = NULL;
 
           hr = family->GetFont (j, &font);
           if (FAILED (hr) || font == NULL)
@@ -288,9 +288,9 @@ pango_direct_write_font_map_populate (PangoFontMap *map)
               continue;
             }
 
-          pango_face = util_create_pango_hb_face (family, font, face);
+          pango_face = util_create_pango2_hb_face (family, font, face);
           if (pango_face)
-            pango_font_map_add_face (map, PANGO_FONT_FACE (pango_face));
+            pango2_font_map_add_face (map, PANGO2_FONT_FACE (pango_face));
 
           face->Release ();
           font->Release ();
@@ -322,26 +322,26 @@ pango_direct_write_font_map_populate (PangoFontMap *map)
 
   for (gsize i = 0; i < G_N_ELEMENTS (aliases); i++)
     {
-      PangoFontFamily *family = pango_font_map_get_family (map, aliases[i].family_name);
+      Pango2FontFamily *family = pango2_font_map_get_family (map, aliases[i].family_name);
 
       if (family)
         {
-          PangoGenericFamily *alias_family;
+          Pango2GenericFamily *alias_family;
 
-          alias_family = pango_generic_family_new (aliases[i].alias_name);
-          pango_generic_family_add_family (alias_family, family);
-          pango_font_map_add_family (map, PANGO_FONT_FAMILY (alias_family));
+          alias_family = pango2_generic_family_new (aliases[i].alias_name);
+          pango2_generic_family_add_family (alias_family, family);
+          pango2_font_map_add_family (map, PANGO2_FONT_FAMILY (alias_family));
         }
     }
 }
 
 /* }}} */
-/* {{{ PangoDirectWriteFontMap implementation */
+/* {{{ Pango2DirectWriteFontMap implementation */
 
-G_DEFINE_FINAL_TYPE (PangoDirectWriteFontMap, pango_direct_write_font_map, PANGO_TYPE_FONT_MAP)
+G_DEFINE_FINAL_TYPE (Pango2DirectWriteFontMap, pango2_direct_write_font_map, PANGO2_TYPE_FONT_MAP)
 
 static void
-pango_direct_write_font_map_init (PangoDirectWriteFontMap *self)
+pango2_direct_write_font_map_init (Pango2DirectWriteFontMap *self)
 {
   HRESULT hr;
 
@@ -352,45 +352,45 @@ pango_direct_write_font_map_init (PangoDirectWriteFontMap *self)
   if (FAILED (hr) || !self->dwrite_factory)
     g_error ("DWriteCreateFactory failed with error code %x", (unsigned)hr);
 
-  pango_font_map_repopulate (PANGO_FONT_MAP (self), TRUE);
+  pango2_font_map_repopulate (PANGO2_FONT_MAP (self), TRUE);
 }
 
 static void
-pango_direct_write_font_map_finalize (GObject *object)
+pango2_direct_write_font_map_finalize (GObject *object)
 {
-  PangoDirectWriteFontMap *dwrite_map = PANGO_DIRECT_WRITE_FONT_MAP (object);
+  Pango2DirectWriteFontMap *dwrite_map = PANGO2_DIRECT_WRITE_FONT_MAP (object);
 
   dwrite_map->dwrite_factory->Release ();
   dwrite_map->dwrite_factory = NULL;
 
-  G_OBJECT_CLASS (pango_direct_write_font_map_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango2_direct_write_font_map_parent_class)->finalize (object);
 }
 
 static void
-pango_direct_write_font_map_class_init (PangoDirectWriteFontMapClass *class_)
+pango2_direct_write_font_map_class_init (Pango2DirectWriteFontMapClass *class_)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class_);
-  PangoFontMapClass *font_map_class = PANGO_FONT_MAP_CLASS (class_);
+  Pango2FontMapClass *font_map_class = PANGO2_FONT_MAP_CLASS (class_);
 
-  object_class->finalize = pango_direct_write_font_map_finalize;
+  object_class->finalize = pango2_direct_write_font_map_finalize;
 
-  font_map_class->populate = pango_direct_write_font_map_populate;
+  font_map_class->populate = pango2_direct_write_font_map_populate;
 }
 
 /* }}} */
  /* {{{ Public API */
 
 /**
- * pango_direct_write_font_map_new:
+ * pango2_direct_write_font_map_new:
  *
- * Creates a new `PangoDirectWriteFontMap` object.
+ * Creates a new `Pango2DirectWriteFontMap` object.
  *
- * Returns: a new `PangoDirectWriteFontMap`
+ * Returns: a new `Pango2DirectWriteFontMap`
  */
-PangoDirectWriteFontMap *
-pango_direct_write_font_map_new (void)
+Pango2DirectWriteFontMap *
+pango2_direct_write_font_map_new (void)
 {
-  return (PangoDirectWriteFontMap *) g_object_new (PANGO_TYPE_DIRECT_WRITE_FONT_MAP, NULL);
+  return (Pango2DirectWriteFontMap *) g_object_new (PANGO2_TYPE_DIRECT_WRITE_FONT_MAP, NULL);
 }
 
 /* }}} */
