@@ -22,7 +22,7 @@ pacman --noconfirm -S --needed \
     mingw-w64-$MSYS2_ARCH-toolchain \
     mingw-w64-$MSYS2_ARCH-cantarell-fonts
 
-meson --buildtype debug --force-fallback-for harfbuzz _build
+meson --buildtype debug --force-fallback-for harfbuzz -Dharfbuzz:tests=disabled _build
 cd _build
 ninja
 
