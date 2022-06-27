@@ -75,13 +75,44 @@ struct _Pango2DirectWriteFontMapClass
 static Pango2Stretch
 util_to_pango2_stretch (DWRITE_FONT_STRETCH stretch)
 {
-  int value = (int) stretch;
+  Pango2Stretch pango2_stretch = PANGO2_STRETCH_NORMAL;
 
-  if G_UNLIKELY (stretch <= DWRITE_FONT_STRETCH_UNDEFINED ||
-                 stretch > DWRITE_FONT_STRETCH_ULTRA_EXPANDED)
-    return PANGO2_STRETCH_NORMAL;
+  switch (stretch)
+    {
+      case DWRITE_FONT_STRETCH_ULTRA_CONDENSED:
+        pango2_stretch = PANGO2_STRETCH_ULTRA_CONDENSED;
+        break;
+      case DWRITE_FONT_STRETCH_EXTRA_CONDENSED:
+        pango2_stretch = PANGO2_STRETCH_EXTRA_CONDENSED;
+        break;
+      case DWRITE_FONT_STRETCH_CONDENSED:
+        pango2_stretch = PANGO2_STRETCH_CONDENSED;
+        break;
+      case DWRITE_FONT_STRETCH_SEMI_CONDENSED:
+        pango2_stretch = PANGO2_STRETCH_SEMI_CONDENSED;
+        break;
+      case DWRITE_FONT_STRETCH_NORMAL:
+        /* also DWRITE_FONT_STRETCH_MEDIUM */
+        pango2_stretch = PANGO2_STRETCH_NORMAL;
+        break;
+      case DWRITE_FONT_STRETCH_SEMI_EXPANDED:
+        pango2_stretch = PANGO2_STRETCH_SEMI_EXPANDED;
+        break;
+      case DWRITE_FONT_STRETCH_EXPANDED:
+        pango2_stretch = PANGO2_STRETCH_EXPANDED;
+        break;
+      case DWRITE_FONT_STRETCH_EXTRA_EXPANDED:
+        pango2_stretch = PANGO2_STRETCH_EXTRA_EXPANDED;
+        break;
+      case DWRITE_FONT_STRETCH_ULTRA_EXPANDED:
+        pango2_stretch = PANGO2_STRETCH_ULTRA_EXPANDED;
+        break;
+      case DWRITE_FONT_STRETCH_UNDEFINED:
+      default:
+        pango2_stretch = PANGO2_STRETCH_NORMAL;
+    }
 
-  return (Pango2Stretch) --value;
+  return pango2_stretch;
 }
 
 static Pango2Style
