@@ -153,7 +153,7 @@ if build_gir
     symbol_prefix: 'pango',
     export_packages: 'pango',
     dependencies: pango_deps,
-    includes: [ 'HarfBuzz-0.0', 'GObject-2.0', 'cairo-1.0', ],
+    includes: [ 'HarfBuzz-0.0', 'GObject-2.0', 'Gio-2.0', 'cairo-1.0' ],
     header: 'pango/pango.h',
     install: true,
     extra_args: gir_args,
