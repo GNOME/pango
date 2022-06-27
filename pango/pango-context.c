@@ -23,8 +23,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <gio/gio.h>
-
 #include "pango-context.h"
 #include "pango-context-private.h"
 #include "pango-impl-utils.h"
@@ -82,32 +80,10 @@ pango_context_init (PangoContext *context)
   pango_font_description_set_size (context->font_desc, 12 * PANGO_SCALE);
 }
 
-static gboolean
-pango_has_mixed_deps (void)
-{
-  GModule *module;
-  gpointer func;
-  gboolean result = FALSE;
-
-  module = g_module_open (NULL, 0);
-
-  if (g_module_symbol (module, "pango_hb_font_new", &func))
-    result = TRUE;
-
-  g_module_close (module);
-
-  return result;
-}
-
 static void
 pango_context_class_init (PangoContextClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
- /* Put the check for mixed linkage here, for lack of a better place */
-  if (pango_has_mixed_deps ())
-    g_error ("Pango 2 symbols detected.\n"
-             "Using Pango 1.x and 2 in the same process is not supported.");
 
   object_class->finalize = pango_context_finalize;
 }
