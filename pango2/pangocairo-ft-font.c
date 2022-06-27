@@ -32,6 +32,101 @@
 #include <cairo-ft.h>
 #include <freetype/ftmm.h>
 
+/* Get the font data as a blob. Either, the hb_face_t was
+ * created from a blob to begin with, or we receate one using
+ * hb_face_builder_create(). Unfortunately we can't rely on
+ * hb_face_get_table_tags(), so we just have to list all possible
+ * OpenType tables here and try them all.
+ *
+ * This is not ideal from a memory perspective, but cairo does
+ * not have a scaled font implementation that takes individual
+ * tables.
+ */
+static hb_blob_t *
+face_get_blob (hb_face_t *face)
+{
+  hb_blob_t *blob;
+  hb_face_t *builder;
+  static const hb_tag_t ot_tables[] = {
+    HB_TAG ('a','v','a','r'),
+    HB_TAG ('B','A','S','E'),
+    HB_TAG ('C','B','D','T'),
+    HB_TAG ('C','B','L','C'),
+    HB_TAG ('C','F','F',' '),
+    HB_TAG ('C','F','F','2'),
+    HB_TAG ('c','m','a','p'),
+    HB_TAG ('C','O','L','R'),
+    HB_TAG ('C','P','A','L'),
+    HB_TAG ('c','v','a','r'),
+    HB_TAG ('c','v','t',' '),
+    HB_TAG ('D','S','I','G'),
+    HB_TAG ('E','B','D','T'),
+    HB_TAG ('E','B','L','C'),
+    HB_TAG ('E','B','S','C'),
+    HB_TAG ('f','p','g','m'),
+    HB_TAG ('f','v','a','r'),
+    HB_TAG ('g','a','s','p'),
+    HB_TAG ('G','D','E','F'),
+    HB_TAG ('g','l','y','f'),
+    HB_TAG ('G','P','O','S'),
+    HB_TAG ('G','S','U','B'),
+    HB_TAG ('g','v','a','r'),
+    HB_TAG ('h','d','m','x'),
+    HB_TAG ('h','e','a','d'),
+    HB_TAG ('h','h','e','a'),
+    HB_TAG ('h','m','t','x'),
+    HB_TAG ('H','V','A','R'),
+    HB_TAG ('J','S','T','F'),
+    HB_TAG ('k','e','r','n'),
+    HB_TAG ('l','o','c','a'),
+    HB_TAG ('L','T','S','H'),
+    HB_TAG ('M','A','T','H'),
+    HB_TAG ('m','a','x','p'),
+    HB_TAG ('M','E','R','G'),
+    HB_TAG ('m','e','t','a'),
+    HB_TAG ('M','V','A','R'),
+    HB_TAG ('n','a','m','e'),
+    HB_TAG ('O','S','/','2'),
+    HB_TAG ('P','C','L','T'),
+    HB_TAG ('p','o','s','t'),
+    HB_TAG ('p','r','e','p'),
+    HB_TAG ('s','b','i','x'),
+    HB_TAG ('S','T','A','T'),
+    HB_TAG ('S','V','G',' '),
+    HB_TAG ('V','D','M','X'),
+    HB_TAG ('v','h','e','a'),
+    HB_TAG ('v','m','t','x'),
+    HB_TAG ('V','O','R','G'),
+    HB_TAG ('V','V','A','R'),
+  };
+
+  blob = hb_face_reference_blob (face);
+
+  if (blob != hb_blob_get_empty ())
+    return blob;
+
+  builder = hb_face_builder_create ();
+
+  for (unsigned int i = 0; i < G_N_ELEMENTS (ot_tables); i++)
+    {
+      hb_blob_t *table;
+
+      table = hb_face_reference_table (face, ot_tables[i]);
+
+      if (table != hb_blob_get_empty ())
+        {
+          hb_face_builder_add_table (builder, ot_tables[i], table);
+          hb_blob_destroy (table);
+        }
+    }
+
+  blob = hb_face_reference_blob (builder);
+
+  hb_face_destroy (builder);
+
+  return blob;
+}
+
 cairo_font_face_t *
 create_cairo_ft_font_face (Pango2Font *font)
 {
@@ -43,6 +138,7 @@ create_cairo_ft_font_face (Pango2Font *font)
   unsigned int blob_length;
   FT_Face ft_face;
   hb_font_t *hb_font;
+  hb_face_t *hbface;
   unsigned int num_coords;
   const int *coords;
   cairo_font_face_t *cairo_face;
@@ -58,7 +154,8 @@ create_cairo_ft_font_face (Pango2Font *font)
     }
 
   hb_font = pango2_font_get_hb_font (font);
-  blob = hb_face_reference_blob (hb_font_get_face (hb_font));
+  hbface = hb_font_get_face (hb_font);
+  blob = face_get_blob (hbface);
   blob_data = hb_blob_get_data (blob, &blob_length);
 
   if ((error = FT_New_Memory_Face (ft_library,
