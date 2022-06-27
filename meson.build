@@ -35,6 +35,7 @@ endif
 
 pango_interface_age = pango_minor_version.is_odd() ? 0 : pango_micro_version
 pango_binary_age = api_minor * 100 + pango_micro_version
+pango_current_age = pango_binary_age - pango_interface_age + 1
 
 pango_api_version = '@0@.0'.format(api_major)
 pango_api_name = 'pango2-@0@'.format(pango_api_version)
@@ -42,7 +43,9 @@ pango_api_path = join_paths(pango_api_name, 'pango2')
 
 pango_conf = configuration_data()
 
+pango_conf.set('PANGO2_API_VERSION', pango_api_version)
 pango_conf.set('PANGO2_BINARY_AGE', pango_binary_age)
+pango_conf.set('PANGO_CURRENT_MINUS_AGE', pango_current_age)
 pango_conf.set('PANGO2_INTERFACE_AGE', pango_interface_age)
 pango_conf.set('PANGO2_VERSION_MAJOR', pango_major_version)
 pango_conf.set('PANGO2_VERSION_MINOR', pango_minor_version)
@@ -51,8 +54,7 @@ pango_conf.set('PANGO2_VERSION_MICRO', pango_micro_version)
 # Maintain version scheme with libtool
 pango_soversion = 0
 pango_libversion = '@0@.@1@.@2@'.format(pango_soversion, (pango_binary_age - pango_interface_age), pango_interface_age)
-osx_current = pango_binary_age - pango_interface_age + 1
-pango_osxversion = [osx_current, '@0@.@1@.0'.format(osx_current, pango_interface_age)]
+pango_osxversion = [pango_current_age, '@0@.@1@.0'.format(pango_current_age, pango_interface_age)]
 
 cc = meson.get_compiler('c')
 cxx = meson.get_compiler('cpp')
