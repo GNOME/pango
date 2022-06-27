@@ -78,7 +78,7 @@ create_cairo_font_face (Pango2Font *font)
 #endif
 
 #ifdef HAVE_DIRECT_WRITE
-  cairo_face = create_dwrite_font_face (font);
+  cairo_face = create_cairo_dwrite_font_face (font);
   if (cairo_face)
     return cairo_face;
 #endif
