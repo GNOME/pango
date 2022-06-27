@@ -331,17 +331,14 @@ endif
 if get_option('cairo').disabled()
   cairo_dep = disabler()
   cairo_xlib_dep = disabler()
-  cairo_ft_dep = disabler()
 else
   cairo_dep = dependency(cairo_pkg, version: cairo_req_version,
                          fallback: ['cairo', 'libcairo_dep'], required: get_option('cairo'))
   cairo_xlib_dep = dependency('cairo-xlib', required: false)
-  cairo_ft_dep = dependency('cairo-ft', required: false)
 endif
 
 pango_conf.set('HAVE_CAIRO', cairo_dep.found ())
 pango_conf.set('HAVE_CAIRO_XLIB', cairo_dep.found() and cairo_xlib_dep.found())
-pango_conf.set('HAVE_CAIRO_FT', cairo_dep.found() and cairo_xlib_dep.found())
 
 if cairo_dep.found()
   pango_deps += cairo_dep
