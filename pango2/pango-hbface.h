@@ -66,6 +66,13 @@ gboolean                pango2_hb_face_get_embolden      (Pango2HbFace          
 PANGO2_AVAILABLE_IN_ALL
 const Pango2Matrix *    pango2_hb_face_get_transform     (Pango2HbFace                *self);
 
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_hb_face_set_palette_name (Pango2HbFace                 *self,
+                                                         const char                   *name,
+                                                         unsigned int                  index);
+PANGO2_AVAILABLE_IN_ALL
+const char *            pango2_hb_face_get_palette_name  (Pango2HbFace                *self,
+                                                          unsigned int                 index);
 
 typedef struct _Pango2HbFaceBuilder Pango2HbFaceBuilder;
 

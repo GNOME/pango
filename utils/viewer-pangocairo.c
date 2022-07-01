@@ -34,6 +34,7 @@
 static int opt_annotate = 0;
 static gboolean opt_userfont = 0;
 static char **opt_font_file = NULL;
+static char *opt_palette = NULL;
 
 typedef struct
 {
@@ -44,6 +45,7 @@ typedef struct
   Pango2FontMap *fontmap;
   cairo_font_options_t *font_options;
   gboolean subpixel_positions;
+  const char *palette;
 } CairoViewer;
 
 static gpointer
@@ -66,8 +68,8 @@ pangocairo_view_create (const Pango2Viewer *klass G_GNUC_UNUSED)
           Pango2FontFace *face;
 
           face = PANGO2_FONT_FACE (pango2_hb_face_new_from_file (opt_font_file[i],
-                                                               0, -1,
-                                                               NULL, NULL));
+                                                                 0, -1,
+                                                                 NULL, NULL));
 
           pango2_font_map_add_face (instance->fontmap, face);
 
@@ -119,6 +121,7 @@ pangocairo_view_create (const Pango2Viewer *klass G_GNUC_UNUSED)
     cairo_font_options_set_antialias (instance->font_options, (cairo_antialias_t)opt_antialias);
 
   instance->subpixel_positions = opt_subpixel_positions;
+  instance->palette = opt_palette;
 
   return instance;
 }
@@ -146,6 +149,7 @@ pangocairo_view_get_context (gpointer instance)
   context = pango2_context_new_with_font_map (c->fontmap);
   pango2_cairo_context_set_font_options (context, c->font_options);
   pango2_context_set_round_glyph_positions (context, !c->subpixel_positions);
+  pango2_context_set_palette (context, c->palette);
 
   return context;
 }
@@ -973,6 +977,7 @@ pangocairo_view_get_option_group (const Pango2Viewer *klass G_GNUC_UNUSED)
     {"annotate", 0, 0, G_OPTION_ARG_CALLBACK, parse_annotate_arg, annotate_arg_help, "FLAGS"},
     { "font-file", 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &opt_font_file, "Create a fontmap with this font", "FILE" },
     { "userfont", 0, 0, G_OPTION_ARG_NONE, &opt_userfont, "Add userfont" },
+    { "palette", 0, 0, G_OPTION_ARG_STRING, &opt_palette, "Preferred palette", "PALETTE" },
     {NULL}
   };
   GOptionGroup *group;

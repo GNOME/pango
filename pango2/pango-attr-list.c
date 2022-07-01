@@ -1253,6 +1253,17 @@ pango2_attr_list_from_string (const char *text)
           INT_ATTR(line_spacing, int);
           break;
 
+        case PANGO2_ATTR_PALETTE:
+          p++;
+          endp = strchr (p, '"');
+          if (!endp) goto fail;
+          str = g_strndup (p, endp - p);
+          attr = pango2_attr_palette_new (str);
+          g_free (str);
+          endp++;
+          if (!is_valid_end_char (*endp)) goto fail;
+          break;
+
         case PANGO2_ATTR_SHAPE:
         default:
           g_assert_not_reached ();

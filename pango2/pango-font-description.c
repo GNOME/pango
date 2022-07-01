@@ -39,6 +39,8 @@ struct _Pango2FontDescription
   char *variations;
   char *faceid;
 
+  GQuark palette;
+
   guint16 mask;
   guint static_family : 1;
   guint static_variations : 1;
@@ -61,6 +63,7 @@ static const Pango2FontDescription pfd_defaults = {
   0,                    /* size */
   NULL,                 /* variations */
   NULL,                 /* faceid */
+  0,                    /* palette */
 
   0,                    /* mask */
   0,                    /* static_family */
@@ -872,7 +875,8 @@ pango2_font_description_equal (const Pango2FontDescription *desc1,
          (desc1->family_name == desc2->family_name ||
           (desc1->family_name && desc2->family_name && g_ascii_strcasecmp (desc1->family_name, desc2->family_name) == 0)) &&
          (g_strcmp0 (desc1->variations, desc2->variations) == 0) &&
-         (g_strcmp0 (desc1->faceid, desc2->faceid) == 0);
+         (g_strcmp0 (desc1->faceid, desc2->faceid) == 0) &&
+         desc1->palette == desc2->palette;
 }
 
 #define TOLOWER(c) \
@@ -924,6 +928,7 @@ pango2_font_description_hash (const Pango2FontDescription *desc)
   hash ^= desc->weight << 16;
   hash ^= desc->stretch << 26;
   hash ^= desc->gravity << 28;
+  hash ^= desc->palette;
 
   return hash;
 }
@@ -1185,6 +1190,24 @@ parse_size (const char *word,
 }
 
 static gboolean
+parse_faceid (const char  *word,
+              size_t       wordlen,
+              char       **faceid)
+{
+  const char *p, *q;
+
+  if (!g_str_has_prefix (word, "@faceid="))
+    return FALSE;
+
+  p = word + strlen ("@faceid=");
+  q = word + wordlen;
+
+  *faceid = g_strndup (p, q - p);
+
+  return TRUE;
+}
+
+static gboolean
 parse_variations (const char  *word,
                   size_t       wordlen,
                   char       **variations)
@@ -1201,40 +1224,6 @@ parse_variations (const char  *word,
   return TRUE;
 }
 
-static void
-faceid_from_variations (Pango2FontDescription *desc)
-{
-  const char *p, *q;
-
-  p = desc->variations;
-
-  if (g_str_has_prefix (p, "faceid="))
-    {
-      p += strlen ("faceid=");
-      q = strchr (p, ',');
-      if (q)
-        {
-          desc->faceid = g_strndup (p, q - p);
-          p = q + 1;
-        }
-      else
-        {
-          desc->faceid = g_strdup (p);
-          p = NULL;
-        }
-      desc->mask |= PANGO2_FONT_MASK_FACEID;
-    }
-
-  if (p != desc->variations)
-    {
-      char *variations = g_strdup (p);
-      g_free (desc->variations);
-      desc->variations = variations;
-      if (variations == NULL || *variations == '\0')
-        desc->mask &= ~PANGO2_FONT_MASK_VARIATIONS;
-    }
-}
-
 /**
  * pango2_font_description_from_string:
  * @str: string representation of a font description.
@@ -1243,15 +1232,24 @@ faceid_from_variations (Pango2FontDescription *desc)
  *
  * The string must have the form
  *
- *     "\[FAMILY-LIST] \[STYLE-OPTIONS] \[SIZE] \[VARIATIONS]",
+ *     "\[FAMILY-LIST] \[STYLE-OPTIONS] \[SIZE] \[VARIATIONS] \[FACEID]",
  *
  * where FAMILY-LIST is a comma-separated list of families optionally
  * terminated by a comma, STYLE_OPTIONS is a whitespace-separated list
  * of words where each word describes one of style, variant, weight,
  * stretch, or gravity, and SIZE is a decimal number (size in points)
  * or optionally followed by the unit modifier "px" for absolute size.
+ *
  * VARIATIONS is a comma-separated list of font variation
- * specifications of the form "\@axis=value" (the = sign is optional).
+ * specifications of the form "\@axis=value" (the = sign is optional),
+ * where "axis" is a 3-character name of an OpenType variation axis
+ * like "wght", "wdth" or "opsz".
+ *
+ * FACEID must have the form "\@faceid=string" with the literal string
+ * "faceid".
+ *
+ * The VARIATION, FACEID parts can appear in any order,
+ * as long as they are at the end.
  *
  * The following words are understood as styles:
  * "Normal", "Roman", "Oblique", "Italic".
@@ -1304,18 +1302,30 @@ pango2_font_description_from_string (const char *str)
 
   len = strlen (str);
   last = str + len;
-  p = getword (str, last, &wordlen, "");
-  /* Look for variations at the end of the string */
-  if (wordlen != 0)
+
+  do
     {
-      if (parse_variations (p, wordlen, &desc->variations))
+      p = getword (str, last, &wordlen, "");
+
+      if (wordlen == 0 || p[0] != '@')
+        break;
+
+      /* Look for faceid and variations at the end of the string */
+      if (parse_faceid (p, wordlen, &desc->faceid))
+        {
+          desc->mask |= PANGO2_FONT_MASK_FACEID;
+          last = p;
+        }
+      else if (parse_variations (p, wordlen, &desc->variations))
         {
           desc->mask |= PANGO2_FONT_MASK_VARIATIONS;
           last = p;
-
-          faceid_from_variations (desc);
         }
+      else
+        break;
     }
+  while ((desc->mask & (PANGO2_FONT_MASK_FACEID | PANGO2_FONT_MASK_VARIATIONS)) !=
+                       (PANGO2_FONT_MASK_FACEID | PANGO2_FONT_MASK_VARIATIONS));
 
   p = getword (str, last, &wordlen, ",");
   /* Look for a size */
@@ -1428,7 +1438,6 @@ char *
 pango2_font_description_to_string (const Pango2FontDescription *desc)
 {
   GString *result;
-  gboolean in_variations = FALSE;
 
   g_return_val_if_fail (desc != NULL, NULL);
 
@@ -1488,7 +1497,6 @@ pango2_font_description_to_string (const Pango2FontDescription *desc)
 
   if (desc->mask & PANGO2_FONT_MASK_FACEID)
     {
-      in_variations = TRUE;
       g_string_append (result, " @");
       g_string_append_printf (result, "faceid=%s", desc->faceid);
     }
@@ -1496,10 +1504,7 @@ pango2_font_description_to_string (const Pango2FontDescription *desc)
   if ((desc->variations && desc->mask & PANGO2_FONT_MASK_VARIATIONS) &&
       desc->variations[0] != '\0')
     {
-      if (!in_variations)
-        g_string_append (result, " @");
-      else
-        g_string_append (result, ",");
+      g_string_append (result, " @");
       g_string_append (result, desc->variations);
     }
 
@@ -1740,4 +1745,18 @@ pango2_font_description_get_faceid (const Pango2FontDescription *desc)
   g_return_val_if_fail (desc != NULL, NULL);
 
   return desc->faceid;
+}
+
+/*< private >
+ * pango2_font_description_get_palette_quark:
+ * @desc: a `Pango2FontDescription
+ *
+ * Gets the palette field as a `GQuark`.
+ *
+ * Return value: the palette field as a quark
+ */
+GQuark
+pango2_font_description_get_palette_quark (const Pango2FontDescription *desc)
+{
+  return desc->palette;
 }

@@ -1341,6 +1341,7 @@ span_parse_func (MarkupData            *md G_GNUC_UNUSED,
   const char *gravity = NULL;
   const char *gravity_hint = NULL;
   const char *font_features = NULL;
+  const char *palette = NULL;
   const char *allow_breaks = NULL;
   const char *insert_hyphens = NULL;
   const char *show = NULL;
@@ -1406,6 +1407,10 @@ span_parse_func (MarkupData            *md G_GNUC_UNUSED,
 
         CHECK_ATTRIBUTE (font_features);
         break;
+      case 'p':
+        CHECK_ATTRIBUTE (palette);
+        break;
+
       case 's':
         CHECK_ATTRIBUTE (show);
         CHECK_ATTRIBUTE (size);
@@ -1839,6 +1844,11 @@ span_parse_func (MarkupData            *md G_GNUC_UNUSED,
   if (G_UNLIKELY (font_features))
     {
       add_attribute (tag, pango2_attr_font_features_new (font_features));
+    }
+
+  if (G_UNLIKELY (palette))
+    {
+      add_attribute (tag, pango2_attr_palette_new (palette));
     }
 
   if (G_UNLIKELY (allow_breaks))

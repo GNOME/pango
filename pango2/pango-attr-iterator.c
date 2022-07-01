@@ -306,8 +306,7 @@ pango2_attr_iterator_get (Pango2AttrIterator *iterator,
  *   order to free this value, you must call
  *   [method@Pango2.Attribute.destroy] on each member.
  *
- * Get the font and other attributes at the current
- * iterator position.
+ * Get the font and other attributes at the current iterator position.
  */
 void
 pango2_attr_iterator_get_font (Pango2AttrIterator     *iterator,

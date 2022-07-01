@@ -48,6 +48,10 @@
 
  /* {{{ Utilities */
 
+static GQuark quark_default_palette;
+static GQuark quark_light_palette;
+static GQuark quark_dark_palette;
+
 static void
 get_name_from_hb_face (hb_face_t       *face,
                        hb_ot_name_id_t  name_id,
@@ -314,6 +318,8 @@ pango2_hb_face_finalize (GObject *object)
 {
   Pango2HbFace *self = PANGO2_HB_FACE (object);
 
+  if (self->palettes)
+    g_array_unref (self->palettes);
   g_free (self->faceid);
   if (self->face)
     hb_face_destroy (self->face);
@@ -483,6 +489,10 @@ pango2_hb_face_class_init (Pango2HbFaceClass *class)
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   Pango2FontFaceClass *face_class = PANGO2_FONT_FACE_CLASS (class);
 
+  quark_default_palette = g_quark_from_static_string (PANGO2_COLOR_PALETTE_DEFAULT);
+  quark_light_palette = g_quark_from_static_string (PANGO2_COLOR_PALETTE_LIGHT);
+  quark_dark_palette = g_quark_from_static_string (PANGO2_COLOR_PALETTE_DARK);
+
   object_class->finalize = pango2_hb_face_finalize;
   object_class->get_property = pango2_hb_face_get_property;
 
@@ -625,6 +635,73 @@ pango2_hb_face_set_matrix (Pango2HbFace       *self,
 
   pango2_matrix_get_font_scale_factors (self->transform, &self->x_scale, &self->y_scale);
   pango2_matrix_scale (self->transform, 1./self->x_scale, 1./self->y_scale);
+}
+
+static unsigned int
+find_palette_index_by_flag (hb_face_t                   *hbface,
+                            hb_ot_color_palette_flags_t  flag)
+{
+  unsigned int n_palettes;
+
+  n_palettes = hb_ot_color_palette_get_count (hbface);
+  for (unsigned int i = 0; i < n_palettes; i++)
+    {
+      if (hb_ot_color_palette_get_flags (hbface, i) & flag)
+        return i;
+    }
+
+  return 0;
+}
+
+unsigned int
+pango2_hb_face_get_palette_index (Pango2HbFace *self,
+                                  GQuark        palette)
+{
+  const char *name;
+
+  if (palette == 0)
+    return 0;
+
+  if (self->palettes)
+    {
+      for (unsigned int i = 0; i < self->palettes->len; i++)
+        {
+          PaletteMapEntry *entry = &g_array_index (self->palettes, PaletteMapEntry, i);
+
+          if (entry->name == palette)
+            return entry->index;
+        }
+    }
+
+  if (palette == quark_default_palette)
+    return 0;
+
+  ensure_hb_face (self);
+
+  if (!hb_ot_color_has_palettes (self->face))
+    return 0;
+
+  /* look for a name of the form "paletteN" */
+  name = g_quark_to_string (palette);
+  if (g_str_has_prefix (name, "palette") && g_ascii_isdigit (name[strlen ("palette")]))
+    {
+      const char *p;
+      char *end;
+      unsigned int index;
+
+      p = name + strlen ("palette");
+      index = (unsigned int) g_ascii_strtoull (p, &end, 10);
+      if (*end == '\0')
+        return index;
+    }
+
+  /* look for "light", "dark" */
+  if (palette == quark_light_palette)
+    return find_palette_index_by_flag (self->face, HB_OT_COLOR_PALETTE_FLAG_USABLE_WITH_LIGHT_BACKGROUND);
+  else if (palette == quark_dark_palette)
+    return find_palette_index_by_flag (self->face, HB_OT_COLOR_PALETTE_FLAG_USABLE_WITH_DARK_BACKGROUND);
+
+  return 0;
 }
 
 /* }}} */
@@ -877,6 +954,104 @@ pango2_hb_face_get_transform (Pango2HbFace *self)
   return self->transform;
 }
 
+static gboolean
+name_is_valid (const char *name)
+{
+  if (!name)
+    return FALSE;
+
+  /* First character must be a letter. */
+  if ((name[0] < 'A' || name[0] > 'Z') &&
+      (name[0] < 'a' || name[0] > 'z'))
+    return FALSE;
+
+  for (const char *p = name; *p != 0; p++)
+    {
+      const char c = *p;
+
+      if (c != '-' && c != '_' &&
+          (c < '0' || c > '9') &&
+          (c < 'A' || c > 'Z') &&
+          (c < 'a' || c > 'z'))
+        return FALSE;
+    }
+
+  return TRUE;
+}
+
+/**
+ * pango2_hb_face_set_palette_name:
+ * @self: a `Pango2HbFace`
+ * @name: the palette name to set
+ * @index: index of the palette
+ *
+ * Sets up a palette name for one of the palettes of the `PangoHbFace`.
+ *
+ * After this call, using the name with a palette attribute
+ * or with [method@Pango2.Context.set_palette] will use the
+ * given palette index for @self.
+ */
+void
+pango2_hb_face_set_palette_name (Pango2HbFace *self,
+                                 const char   *name,
+                                 unsigned int  index)
+{
+  PaletteMapEntry add;
+
+  g_return_if_fail (PANGO2_IS_HB_FACE (self));
+  g_return_if_fail (name_is_valid (name));
+
+  add.name = g_quark_from_string (name);
+  add.index = index;
+
+  if (self->palettes == NULL)
+    self->palettes = g_array_new (FALSE, FALSE, sizeof (PaletteMapEntry));
+
+  for (int i = 0; i < self->palettes->len; i++)
+    {
+      PaletteMapEntry *entry = &g_array_index (self->palettes, PaletteMapEntry, i);
+      if (entry->index == add.index)
+        {
+          entry->name = add.name;
+          return;
+        }
+    }
+
+  g_array_append_val (self->palettes, add);
+}
+
+/**
+ * pango2_hb_face_get_palette_name:
+ * @self: a `PangoHbFace`
+ * @index: index of the palette
+ *
+ * Gets the name for the palette with the given index in @self.
+ *
+ * Note that this function only returns names that have been
+ * set up by a prior call of [method@Pang2.HbFace.set_palette_name].
+ * It does not return the predefined "paletteN" names.
+ *
+ * Returns: (nullable): the palette name
+ */
+const char *
+pango2_hb_face_get_palette_name (Pango2HbFace *self,
+                                 unsigned int  index)
+{
+  g_return_val_if_fail (PANGO2_IS_HB_FACE (self), NULL);
+
+  if (self->palettes == NULL)
+    return NULL;
+
+  for (int i = 0; i < self->palettes->len; i++)
+    {
+      PaletteMapEntry *entry = &g_array_index (self->palettes, PaletteMapEntry, i);
+      if (entry->index == index)
+        return g_quark_to_string (entry->name);
+    }
+
+  return NULL;
+}
+
 /* }}} */
 /* {{{ Pango2HbFaceBuilder */
 
@@ -1025,6 +1200,7 @@ pango2_hb_face_builder_new (Pango2HbFace *face)
   builder->n_variations = face->n_variations;
   builder->name = g_strdup (font_face->name);
   builder->description = pango2_font_description_copy_static (font_face->description);
+  pango2_font_description_unset_fields (builder->description, PANGO2_FONT_MASK_FACEID);
 
   return builder;
 }
@@ -1043,6 +1219,7 @@ pango2_hb_face_builder_get_face (Pango2HbFaceBuilder *builder)
   Pango2HbFace *self;
 
   self = g_object_new (PANGO2_TYPE_HB_FACE, NULL);
+
   if (builder->face)
     {
       self->file = g_strdup (builder->face->file);
@@ -1051,6 +1228,9 @@ pango2_hb_face_builder_get_face (Pango2HbFaceBuilder *builder)
       if (builder->face->face)
         self->face = hb_face_reference (builder->face->face);
       pango2_hb_face_set_language_set (self, builder->face->languages);
+
+      if (builder->face->palettes)
+        self->palettes = g_array_copy (builder->face->palettes);
     }
   else if (builder->hb_face)
     {

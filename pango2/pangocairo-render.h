@@ -28,6 +28,11 @@ PANGO2_AVAILABLE_IN_ALL
 void    pango2_cairo_show_glyph_string           (cairo_t           *cr,
                                                   Pango2Font        *font,
                                                   Pango2GlyphString *glyphs);
+PANGO2_AVAILABLE_IN_ALL
+void    pango2_cairo_show_color_glyph_string     (cairo_t           *cr,
+                                                  Pango2Font        *font,
+                                                  GQuark             palette,
+                                                  Pango2GlyphString *glyphs);
 
 PANGO2_AVAILABLE_IN_ALL
 void    pango2_cairo_show_run                    (cairo_t           *cr,

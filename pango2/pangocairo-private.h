@@ -41,6 +41,7 @@ struct _Pango2CairoFontPrivate
 
   Pango2CairoFontPrivateScaledFontData *data;
 
+  GQuark palette;
   cairo_scaled_font_t *scaled_font;
   Pango2CairoFontHexBoxInfo *hbi;
 
@@ -50,9 +51,11 @@ struct _Pango2CairoFontPrivate
   Pango2Rectangle font_extents;
 };
 
-gboolean _pango2_cairo_font_install (Pango2Font *font,
-                                     cairo_t    *cr);
-Pango2CairoFontHexBoxInfo *_pango2_cairo_font_get_hex_box_info (Pango2Font *font);
+gboolean                _pango2_cairo_font_install                      (Pango2Font     *font,
+                                                                         GQuark          palette,
+                                                                         cairo_t        *cr);
+Pango2CairoFontHexBoxInfo *
+                        _pango2_cairo_font_get_hex_box_info             (Pango2Font     *font);
 
 #define PANGO2_TYPE_CAIRO_RENDERER            (pango2_cairo_renderer_get_type())
 #define PANGO2_CAIRO_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO2_TYPE_CAIRO_RENDERER, Pango2CairoRenderer))
@@ -61,27 +64,23 @@ Pango2CairoFontHexBoxInfo *_pango2_cairo_font_get_hex_box_info (Pango2Font *font
 typedef struct _Pango2CairoRenderer Pango2CairoRenderer;
 
 _PANGO2_EXTERN
-GType pango2_cairo_renderer_get_type    (void) G_GNUC_CONST;
+GType                   pango2_cairo_renderer_get_type                  (void) G_GNUC_CONST;
 
 const cairo_font_options_t *
-         pango2_cairo_context_get_merged_font_options (Pango2Context *context);
+                        pango2_cairo_context_get_merged_font_options    (Pango2Context  *context);
 
-cairo_font_face_t *
-create_cairo_user_font_face (Pango2Font *font);
+cairo_font_face_t *     create_cairo_user_font_face                     (Pango2Font     *font);
 
 #ifdef CAIRO_HAS_FT_FONT
-cairo_font_face_t *
-create_cairo_ft_font_face (Pango2Font *font);
+cairo_font_face_t *     create_cairo_ft_font_face                       (Pango2Font     *font);
 #endif
 
 #ifdef HAVE_CORE_TEXT
-cairo_font_face_t *
-create_cairo_core_text_font_face (Pango2Font *font);
+cairo_font_face_t *     create_cairo_core_text_font_face                (Pango2Font     *font);
 #endif
 
 #ifdef HAVE_DIRECT_WRITE
-cairo_font_face_t *
-create_cairo_dwrite_font_face (Pango2Font *font);
+cairo_font_face_t *     create_cairo_dwrite_font_face                   (Pango2Font     *font);
 #endif
 
 G_END_DECLS

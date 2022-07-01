@@ -99,4 +99,12 @@ void                     pango2_context_set_round_glyph_positions (Pango2Context
 PANGO2_AVAILABLE_IN_ALL
 gboolean                 pango2_context_get_round_glyph_positions (Pango2Context                 *context);
 
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_context_set_palette               (Pango2Context                 *context,
+                                                                   const char                    *palette);
+PANGO2_AVAILABLE_IN_ALL
+const char *             pango2_context_get_palette               (Pango2Context                 *context);
+
+
+
 G_END_DECLS

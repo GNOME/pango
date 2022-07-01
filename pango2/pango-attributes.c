@@ -564,7 +564,7 @@ pango2_attr_gravity_hint_new (Pango2GravityHint hint)
 /**
  * pango2_attr_font_features_new:
  * @features: a string with OpenType font features, with the syntax of the [CSS
- * font-feature-settings property](https://www.w3.org/TR/css-fonts-4/#font-rend-desc)
+ *   font-feature-settings property](https://www.w3.org/TR/css-fonts-4/#font-rend-desc)
  *
  * Create a new font features tag attribute.
  *
@@ -581,6 +581,27 @@ pango2_attr_font_features_new (const char *features)
   g_return_val_if_fail (features != NULL, NULL);
 
   return pango2_attr_string_new (PANGO2_ATTR_FONT_FEATURES, features);
+}
+
+/**
+ * pango2_attr_palette_new:
+ * @palette : name of palette to use
+ *
+ * Create a new palette attribute.
+ *
+ * You can use this attribute to select font color palettes
+ * by name, like "light", "dark" or "palette3".
+ *
+ * Return value: (transfer full): the newly allocated
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
+ */
+Pango2Attribute *
+pango2_attr_palette_new (const char *palette)
+{
+  g_return_val_if_fail (palette != NULL, NULL);
+
+  return pango2_attr_string_new (PANGO2_ATTR_PALETTE, palette);
 }
 
 /**

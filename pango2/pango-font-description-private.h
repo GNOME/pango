@@ -28,6 +28,8 @@ gboolean pango2_font_description_is_similar       (const Pango2FontDescription *
 int      pango2_font_description_compute_distance (const Pango2FontDescription *a,
                                                    const Pango2FontDescription *b);
 
+GQuark   pango2_font_description_get_palette_quark (const Pango2FontDescription *desc);
+
 gboolean pango2_parse_style              (const char    *str,
                                           Pango2Style   *style,
                                           gboolean       warn);

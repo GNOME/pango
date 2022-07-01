@@ -57,6 +57,7 @@ G_BEGIN_DECLS
  * @PANGO2_ATTR_GRAVITY: base text gravity
  * @PANGO2_ATTR_GRAVITY_HINT: gravity hint
  * @PANGO2_ATTR_FONT_FEATURES: OpenType font features
+ * @PANGO2_ATTR_PALETTE: Color palette name
  * @PANGO2_ATTR_ALLOW_BREAKS: whether line breaks are allowed
  * @PANGO2_ATTR_SHOW: how to render invisible characters
  * @PANGO2_ATTR_INSERT_HYPHENS: whether to insert hyphens at intra-word line breaks
@@ -105,6 +106,7 @@ typedef enum
   PANGO2_ATTR_GRAVITY              = PANGO2_ATTR_TYPE (INT, ITEMIZATION, OVERRIDES),
   PANGO2_ATTR_GRAVITY_HINT         = PANGO2_ATTR_TYPE (INT, ITEMIZATION, OVERRIDES),
   PANGO2_ATTR_FONT_FEATURES        = PANGO2_ATTR_TYPE (STRING, SHAPING, ACCUMULATES),
+  PANGO2_ATTR_PALETTE              = PANGO2_ATTR_TYPE (STRING, ITEMIZATION, OVERRIDES),
   PANGO2_ATTR_ALLOW_BREAKS         = PANGO2_ATTR_TYPE (BOOLEAN, BREAKING, OVERRIDES),
   PANGO2_ATTR_SHOW                 = PANGO2_ATTR_TYPE (INT, SHAPING, OVERRIDES),
   PANGO2_ATTR_INSERT_HYPHENS       = PANGO2_ATTR_TYPE (BOOLEAN, SHAPING, OVERRIDES),
@@ -244,6 +246,8 @@ PANGO2_AVAILABLE_IN_ALL
 Pango2Attribute *        pango2_attr_gravity_hint_new             (Pango2GravityHint            hint);
 PANGO2_AVAILABLE_IN_ALL
 Pango2Attribute *        pango2_attr_font_features_new            (const char                  *features);
+PANGO2_AVAILABLE_IN_ALL
+Pango2Attribute *        pango2_attr_palette_new                  (const char                  *palette);
 PANGO2_AVAILABLE_IN_ALL
 Pango2Attribute *        pango2_attr_allow_breaks_new             (gboolean                     allow_breaks);
 PANGO2_AVAILABLE_IN_ALL

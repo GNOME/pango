@@ -25,6 +25,11 @@
 #include "pango-language-set-private.h"
 #include <hb.h>
 
+typedef struct {
+  GQuark name;
+  unsigned int index;
+} PaletteMapEntry;
+
 struct _Pango2HbFace
 {
   Pango2FontFace parent_instance;
@@ -41,6 +46,7 @@ struct _Pango2HbFace
   Pango2LanguageSet *languages;
   gboolean embolden;
   gboolean synthetic;
+  GArray *palettes;
 };
 
 Pango2LanguageSet *     pango2_hb_face_get_language_set  (Pango2HbFace          *self);
@@ -50,3 +56,6 @@ void                    pango2_hb_face_set_language_set  (Pango2HbFace          
 
 void                    pango2_hb_face_set_matrix        (Pango2HbFace          *self,
                                                           const Pango2Matrix    *matrix);
+
+unsigned int            pango2_hb_face_get_palette_index (Pango2HbFace          *self,
+                                                          GQuark                 palette);

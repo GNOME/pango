@@ -24,6 +24,8 @@
 #include <math.h>
 #include <string.h>
 
+#include <hb-ot.h>
+
 #include "pangocairo.h"
 #include "pangocairo-private.h"
 #include "pango-font-private.h"
@@ -36,7 +38,8 @@
 #include "pango-font-private.h"
 
 static Pango2CairoFontPrivate * _pango2_font_get_cairo_font_private (Pango2Font *font);
-static cairo_scaled_font_t * _pango2_font_get_scaled_font (Pango2Font *font);
+static cairo_scaled_font_t * _pango2_font_get_scaled_font (Pango2Font *font,
+                                                           GQuark      palette);
 static void _pango2_cairo_font_private_initialize (Pango2CairoFontPrivate     *cf_priv,
                                                    Pango2Font                 *font,
                                                    Pango2Gravity               gravity,
@@ -92,32 +95,74 @@ create_cairo_font_face (Pango2Font *font)
   return NULL;
 }
 
+#ifdef CAIRO_COLOR_PALETTE_DEFAULT
+
+static int
+find_palette_index_for_font (Pango2Font *font,
+                             GQuark      palette)
+{
+  Pango2FontFace *face = pango2_font_get_face (font);
+
+  if (PANGO2_IS_HB_FACE (face))
+    return pango2_hb_face_get_palette_index (PANGO2_HB_FACE (face), palette);
+
+  return CAIRO_COLOR_PALETTE_DEFAULT;
+}
+
+#endif
+
 static cairo_scaled_font_t *
-_pango2_cairo_font_private_get_scaled_font (Pango2CairoFontPrivate *cf_priv)
+_pango2_cairo_font_private_get_scaled_font (Pango2CairoFontPrivate *cf_priv,
+                                            GQuark                  palette)
 {
   cairo_font_face_t *font_face;
+  cairo_font_options_t *options;
+  cairo_matrix_t _font_matrix, *font_matrix;
+  cairo_matrix_t _ctm, *ctm;
 
-  if (G_LIKELY (cf_priv->scaled_font))
+  if (G_LIKELY (cf_priv->palette == palette && cf_priv->scaled_font))
     return cf_priv->scaled_font;
+
+  if (!cf_priv->data && !cf_priv->scaled_font)
+    return NULL;
 
   /* need to create it */
 
-  if (G_UNLIKELY (cf_priv->data == NULL))
+  if (cf_priv->scaled_font)
     {
-      /* we have tried to create and failed before */
-      return NULL;
-    }
+      font_face = cairo_scaled_font_get_font_face (cf_priv->scaled_font);
+      cairo_font_face_reference (font_face);
 
-  font_face = create_cairo_font_face (cf_priv->cfont);
+      options = cairo_font_options_create ();
+      cairo_scaled_font_get_font_options (cf_priv->scaled_font, options);
+      cairo_scaled_font_get_font_matrix (cf_priv->scaled_font, &_font_matrix);
+      font_matrix = &_font_matrix;
+      cairo_scaled_font_get_ctm (cf_priv->scaled_font, &_ctm);
+      ctm = &_ctm;
+
+      cairo_scaled_font_destroy (cf_priv->scaled_font);
+      cf_priv->scaled_font = NULL;
+    }
+  else
+    {
+      font_face = create_cairo_font_face (cf_priv->cfont);
+      options = cairo_font_options_copy (cf_priv->data->options);
+      font_matrix = &cf_priv->data->font_matrix;
+      ctm = &cf_priv->data->ctm;
+    }
 
   if (G_UNLIKELY (font_face == NULL))
     goto done;
 
-  cf_priv->scaled_font = cairo_scaled_font_create (font_face,
-                                                   &cf_priv->data->font_matrix,
-                                                   &cf_priv->data->ctm,
-                                                   cf_priv->data->options);
+#ifdef CAIRO_COLOR_PALETTE_DEFAULT
+  cairo_font_options_set_color_palette (options,
+                                        find_palette_index_for_font (cf_priv->cfont, palette));
+#endif
 
+  cf_priv->palette = palette;
+  cf_priv->scaled_font = cairo_scaled_font_create (font_face, font_matrix, ctm, options);
+
+  cairo_font_options_destroy (options);
   cairo_font_face_destroy (font_face);
 
 done:
@@ -168,8 +213,9 @@ done:
   return cf_priv->scaled_font;
 }
 
-cairo_scaled_font_t *
-_pango2_font_get_scaled_font (Pango2Font *font)
+static cairo_scaled_font_t *
+_pango2_font_get_scaled_font (Pango2Font *font,
+                              GQuark      palette)
 {
   Pango2CairoFontPrivate *cf_priv;
 
@@ -178,12 +224,13 @@ _pango2_font_get_scaled_font (Pango2Font *font)
   if (G_UNLIKELY (!cf_priv))
     return NULL;
 
-  return _pango2_cairo_font_private_get_scaled_font (cf_priv);
+  return _pango2_cairo_font_private_get_scaled_font (cf_priv, palette);
 }
 
 /**
  * _pango2_cairo_font_install:
  * @font: a `Pango2CairoFont`
+ * @palette: a palette
  * @cr: a #cairo_t
  *
  * Makes @font the current font for rendering in the specified
@@ -193,11 +240,12 @@ _pango2_font_get_scaled_font (Pango2Font *font)
  */
 gboolean
 _pango2_cairo_font_install (Pango2Font *font,
+                            GQuark      palette,
                             cairo_t    *cr)
 {
   cairo_scaled_font_t *scaled_font;
 
-  scaled_font = _pango2_font_get_scaled_font (font);
+  scaled_font = _pango2_font_get_scaled_font (font, palette);
 
   if (G_UNLIKELY (scaled_font == NULL || cairo_scaled_font_status (scaled_font) != CAIRO_STATUS_SUCCESS))
     return FALSE;
@@ -239,7 +287,7 @@ _pango2_cairo_font_private_get_hex_box_info (Pango2CairoFontPrivate *cf_priv)
   if (cf_priv->hbi)
     return cf_priv->hbi;
 
-  scaled_font = _pango2_cairo_font_private_get_scaled_font (cf_priv);
+  scaled_font = _pango2_cairo_font_private_get_scaled_font (cf_priv, 0);
   if (G_UNLIKELY (scaled_font == NULL || cairo_scaled_font_status (scaled_font) != CAIRO_STATUS_SUCCESS))
     return NULL;
 
@@ -352,7 +400,7 @@ _pango2_cairo_font_private_get_hex_box_info (Pango2CairoFontPrivate *cf_priv)
   pango2_font_description_free (desc);
   cairo_font_options_destroy (font_options);
 
-  scaled_mini_font = _pango2_font_get_scaled_font (mini_font);
+  scaled_mini_font = _pango2_font_get_scaled_font (mini_font, 0);
   if (G_UNLIKELY (scaled_mini_font == NULL || cairo_scaled_font_status (scaled_mini_font) != CAIRO_STATUS_SUCCESS))
     return NULL;
 

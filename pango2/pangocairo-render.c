@@ -31,6 +31,9 @@
 #include "pango-run-private.h"
 #include "pango-impl-utils.h"
 #include "pango-hbfont-private.h"
+#include "pango-attr-private.h"
+#include "pango-context-private.h"
+
 
 typedef struct _Pango2CairoRendererClass Pango2CairoRendererClass;
 
@@ -46,6 +49,7 @@ struct _Pango2CairoRenderer
   gboolean do_path;
   gboolean has_show_text_glyphs;
   double x_offset, y_offset;
+  GQuark palette;
 
   /* house-keeping options */
   gboolean is_cached_renderer;
@@ -253,7 +257,7 @@ _pango2_cairo_renderer_draw_unknown_glyph (Pango2CairoRenderer *crenderer,
     hbi = PANGO2_HB_FONT (font)->hex_box_info;
   else
     hbi = _pango2_cairo_font_get_hex_box_info (font);
-  if (!hbi || !_pango2_cairo_font_install ((Pango2Font *)(hbi->font), crenderer->cr))
+  if (!hbi || !_pango2_cairo_font_install ((Pango2Font *)(hbi->font), 0, crenderer->cr))
     {
       _pango2_cairo_renderer_draw_box_glyph (crenderer, gi, cx, cy, invalid_input);
       goto done;
@@ -413,11 +417,11 @@ pango2_cairo_renderer_show_text_glyphs (Pango2Renderer       *renderer,
                                         int                   num_clusters,
                                         gboolean              backward,
                                         Pango2Font           *font,
+                                        GQuark                palette,
                                         int                   x,
                                         int                   y)
 {
   Pango2CairoRenderer *crenderer = (Pango2CairoRenderer *) (renderer);
-
   int i, count;
   int x_position = 0;
   cairo_glyph_t *cairo_glyphs;
@@ -429,7 +433,7 @@ pango2_cairo_renderer_show_text_glyphs (Pango2Renderer       *renderer,
   if (!crenderer->do_path)
     set_color (crenderer, PANGO2_RENDER_PART_FOREGROUND);
 
-  if (!_pango2_cairo_font_install (font, crenderer->cr))
+  if (!_pango2_cairo_font_install (font, palette, crenderer->cr))
     {
       for (i = 0; i < glyphs->num_glyphs; i++)
         {
@@ -511,7 +515,8 @@ pango2_cairo_renderer_draw_glyphs (Pango2Renderer     *renderer,
                                    int                 x,
                                    int                 y)
 {
-  pango2_cairo_renderer_show_text_glyphs (renderer, NULL, 0, glyphs, NULL, 0, FALSE, font, x, y);
+  Pango2CairoRenderer *crenderer = (Pango2CairoRenderer *) (renderer);
+  pango2_cairo_renderer_show_text_glyphs (renderer, NULL, 0, glyphs, NULL, 0, FALSE, font, crenderer->palette, x, y);
 }
 
 static void
@@ -534,7 +539,7 @@ pango2_cairo_renderer_draw_run (Pango2Renderer *renderer,
 
   if (!crenderer->has_show_text_glyphs || crenderer->do_path)
     {
-      pango2_cairo_renderer_show_text_glyphs (renderer, NULL, 0, glyphs, NULL, 0, FALSE, font, x, y);
+      pango2_cairo_renderer_show_text_glyphs (renderer, NULL, 0, glyphs, NULL, 0, FALSE, font, crenderer->palette, x, y);
       return;
     }
 
@@ -581,6 +586,7 @@ pango2_cairo_renderer_draw_run (Pango2Renderer *renderer,
                                           cairo_clusters, num_clusters,
                                           backward,
                                           font,
+                                          crenderer->palette,
                                           x, y);
 
   if (cairo_clusters != stack_clusters)
@@ -816,6 +822,35 @@ pango2_cairo_renderer_draw_styled_line (Pango2Renderer   *renderer,
     }
 }
 
+static GQuark
+find_palette (Pango2Context *context,
+              Pango2Item    *item)
+{
+  GSList *l;
+
+  for (l = item->analysis.extra_attrs; l; l = l->next)
+    {
+      Pango2Attribute *attr = l->data;
+
+      if (attr->type == PANGO2_ATTR_PALETTE)
+        return g_quark_from_string (attr->str_value);
+    }
+
+  return context->palette;
+}
+
+static void
+pango2_cairo_renderer_prepare_run (Pango2Renderer *renderer,
+                                   Pango2Run      *run)
+{
+  Pango2CairoRenderer *crenderer = (Pango2CairoRenderer *) (renderer);
+
+  PANGO2_RENDERER_CLASS (pango2_cairo_renderer_parent_class)->prepare_run (renderer, run);
+
+  crenderer->palette = find_palette (pango2_renderer_get_context (renderer),
+                                     pango2_run_get_item (run));
+}
+
 static void
 pango2_cairo_renderer_init (Pango2CairoRenderer *renderer G_GNUC_UNUSED)
 {
@@ -831,6 +866,7 @@ pango2_cairo_renderer_class_init (Pango2CairoRendererClass *klass)
   renderer_class->draw_rectangle = pango2_cairo_renderer_draw_rectangle;
   renderer_class->draw_styled_line = pango2_cairo_renderer_draw_styled_line;
   renderer_class->draw_trapezoid = pango2_cairo_renderer_draw_trapezoid;
+  renderer_class->prepare_run = pango2_cairo_renderer_prepare_run;
 }
 
 static Pango2CairoRenderer *cached_renderer = NULL; /* MT-safe */
@@ -903,6 +939,7 @@ restore_current_point (Pango2CairoRenderer *renderer)
 static void
 _pango2_cairo_do_glyph_string (cairo_t           *cr,
                                Pango2Font        *font,
+                               GQuark             palette,
                                Pango2GlyphString *glyphs,
                                gboolean           do_path)
 {
@@ -911,6 +948,7 @@ _pango2_cairo_do_glyph_string (cairo_t           *cr,
 
   crenderer->cr = cr;
   crenderer->do_path = do_path;
+  crenderer->palette = palette;
   save_current_point (crenderer);
 
   if (!do_path)
@@ -1057,7 +1095,32 @@ pango2_cairo_show_glyph_string (cairo_t           *cr,
   g_return_if_fail (cr != NULL);
   g_return_if_fail (glyphs != NULL);
 
-  _pango2_cairo_do_glyph_string (cr, font, glyphs, FALSE);
+  _pango2_cairo_do_glyph_string (cr, font, 0, glyphs, FALSE);
+}
+
+/**
+ * pango2_cairo_show_color_glyph_string:
+ * @cr: a Cairo context
+ * @font: a `Pango2Font` from a `Pango2CairoFontMap`
+ * @palette: a palette name, as quark
+ * @glyphs: a `Pango2GlyphString`
+ *
+ * Draws the glyphs in @glyphs in the specified cairo context,
+ * and with the given palette name.
+ *
+ * This is a variation of [func@Pango2.cairo_show_glyph_string]
+ * for use with fonts that have color palettes.
+ */
+void
+pango2_cairo_show_color_glyph_string (cairo_t           *cr,
+                                      Pango2Font        *font,
+                                      GQuark             palette,
+                                      Pango2GlyphString *glyphs)
+{
+  g_return_if_fail (cr != NULL);
+  g_return_if_fail (glyphs != NULL);
+
+  _pango2_cairo_do_glyph_string (cr, font, palette, glyphs, FALSE);
 }
 
 /**
@@ -1169,7 +1232,7 @@ pango2_cairo_glyph_string_path (cairo_t           *cr,
   g_return_if_fail (cr != NULL);
   g_return_if_fail (glyphs != NULL);
 
-  _pango2_cairo_do_glyph_string (cr, font, glyphs, TRUE);
+  _pango2_cairo_do_glyph_string (cr, font, 0, glyphs, TRUE);
 }
 
 /**

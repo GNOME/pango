@@ -26,7 +26,9 @@
 #include "pango-fontset-cached-private.h"
 #include "pango-font-private.h"
 #include "pango-font-face-private.h"
+#include "pango-font-description-private.h"
 #include "pango-generic-family-private.h"
+#include "pango-context.h"
 
 #ifdef HAVE_CAIRO
 #include "pangocairo-font.h"
@@ -82,6 +84,23 @@ find_font_for_face (Pango2FontsetCached *self,
 }
 
 static Pango2Font *
+create_font_for_face (Pango2FontsetCached *self,
+                      Pango2FontFace      *face)
+{
+  Pango2Font *font;
+
+  font = pango2_font_face_create_font (face,
+                                       self->description,
+                                       self->dpi,
+                                       self->ctm);
+#ifdef HAVE_CAIRO
+  pango2_cairo_font_set_font_options (font, self->font_options);
+#endif
+
+  return font;
+}
+
+static Pango2Font *
 pango2_fontset_cached_get_font (Pango2Fontset *fontset,
                                 guint          wc)
 {
@@ -129,19 +148,9 @@ pango2_fontset_cached_get_font (Pango2Fontset *fontset,
 
               font = find_font_for_face (self, face);
               if (font)
-                {
-                  retval = g_object_ref (font);
-                }
+                retval = g_object_ref (font);
               else
-                {
-                  retval = pango2_font_face_create_font (face,
-                                                         self->description,
-                                                         self->dpi,
-                                                         self->ctm);
-#ifdef HAVE_CAIRO
-                  pango2_cairo_font_set_font_options (retval, self->font_options);
-#endif
-                }
+                retval = create_font_for_face (self, face);
               break;
             }
         }
@@ -175,15 +184,7 @@ pango2_fontset_cached_get_first_font (Pango2FontsetCached *self)
       if (font)
         g_object_ref (font);
       else
-        {
-          font = pango2_font_face_create_font (face,
-                                               self->description,
-                                               self->dpi,
-                                               self->ctm);
-#ifdef HAVE_CAIRO
-          pango2_cairo_font_set_font_options (font, self->font_options);
-#endif
-        }
+        font = create_font_for_face (self, face);
 
       return font;
     }
@@ -249,15 +250,7 @@ pango2_fontset_cached_foreach (Pango2Fontset            *fontset,
           if (font)
             g_object_ref (font);
           else
-            {
-              font = pango2_font_face_create_font (face,
-                                                   self->description,
-                                                   self->dpi,
-                                                   self->ctm);
-#ifdef HAVE_CAIRO
-              pango2_cairo_font_set_font_options (font, self->font_options);
-#endif
-            }
+            font = create_font_for_face (self, face);
         }
 
       if ((*func) (fontset, font, data))
@@ -304,16 +297,7 @@ void
 pango2_fontset_cached_add_face (Pango2FontsetCached *self,
                                 Pango2FontFace      *face)
 {
-  Pango2Font *font;
-
-  font = pango2_font_face_create_font (face,
-                                       self->description,
-                                       self->dpi,
-                                       self->ctm);
-#ifdef HAVE_CAIRO
-  pango2_cairo_font_set_font_options (font, self->font_options);
-#endif
-  g_ptr_array_add (self->items, font);
+  g_ptr_array_add (self->items, create_font_for_face (self, face));
 }
 
 void
