@@ -499,7 +499,39 @@ test_set_gravity (void)
 static void
 test_faceid (void)
 {
-  const char *test = "Cantarell Bold Italic 32 @faceid=Cantarell-Regular:0:-1:0,wght=600";
+  const char *test = "Cantarell Bold Italic 32 @faceid=Cantarell-Regular:0:-1:0 @wght=600";
+  Pango2FontDescription *desc;
+  char *s;
+
+  desc = pango2_font_description_from_string (test);
+  g_assert_cmpint (pango2_font_description_get_set_fields (desc), ==, PANGO2_FONT_MASK_FAMILY|
+                                                                     PANGO2_FONT_MASK_STYLE|
+                                                                     PANGO2_FONT_MASK_WEIGHT|
+                                                                     PANGO2_FONT_MASK_VARIANT|
+                                                                     PANGO2_FONT_MASK_STRETCH|
+                                                                     PANGO2_FONT_MASK_SIZE|
+                                                                     PANGO2_FONT_MASK_FACEID|
+                                                                     PANGO2_FONT_MASK_VARIATIONS);
+  g_assert_cmpstr (pango2_font_description_get_family (desc), ==, "Cantarell");
+  g_assert_cmpint (pango2_font_description_get_size (desc), ==, 32 * PANGO2_SCALE);
+  g_assert_cmpint (pango2_font_description_get_style (desc), ==, PANGO2_STYLE_ITALIC);
+  g_assert_cmpint (pango2_font_description_get_variant (desc), ==, PANGO2_VARIANT_NORMAL);
+  g_assert_cmpint (pango2_font_description_get_weight (desc), ==, PANGO2_WEIGHT_BOLD);
+  g_assert_cmpint (pango2_font_description_get_stretch (desc), ==, PANGO2_STRETCH_NORMAL);
+  g_assert_cmpstr (pango2_font_description_get_faceid (desc), ==, "Cantarell-Regular:0:-1:0");
+  g_assert_cmpstr (pango2_font_description_get_variations (desc), ==, "wght=600");
+
+  s = pango2_font_description_to_string (desc);
+  g_assert_cmpstr (s, ==, test);
+  g_free (s);
+
+  pango2_font_description_free (desc);
+}
+
+static void
+test_all (void)
+{
+  const char *test = "Cantarell Bold Italic 32 @faceid=Cantarell-Regular:0:-1:0 @wght=600";
   Pango2FontDescription *desc;
   char *s;
 
@@ -657,6 +689,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/fontdescription/empty-variations", test_empty_variations);
   g_test_add_func ("/pango/fontdescription/set-gravity", test_set_gravity);
   g_test_add_func ("/pango/fontdescription/faceid", test_faceid);
+  g_test_add_func ("/pango/fontdescription/all", test_all);
   g_test_add_func ("/pango/font/metrics", test_metrics);
   g_test_add_func ("/pango/font/extents", test_extents);
   g_test_add_func ("/pango/font/glyph-extents", test_glyph_extents);

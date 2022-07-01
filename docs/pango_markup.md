@@ -108,6 +108,9 @@ font_features
 : A comma-separated list of OpenType font feature settings, in the same syntax as
   accepted by CSS. E.g: `font_features='dlig=1, -kern, afrc on'`.
 
+palette
+: The name of a palette to use.
+
 foreground
 fgcolor
 color

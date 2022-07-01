@@ -48,6 +48,8 @@ struct _Pango2Context
 
   gboolean round_glyph_positions;
 
+  GQuark palette;
+
 #ifdef HAVE_CAIRO
   gboolean set_options_explicit;
 

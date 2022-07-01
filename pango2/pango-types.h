@@ -319,6 +319,29 @@ typedef enum
  */
 #define PANGO2_LEADING_TRIM_BOTH (PANGO2_LEADING_TRIM_START|PANGO2_LEADING_TRIM_END)
 
+/**
+ * PANGO2_COLOR_PALETTE_DEFAULT:
+ *
+ * The name for the default color palette.
+ */
+#define PANGO2_COLOR_PALETTE_DEFAULT "default"
+
+/**
+ * PANGO2_COLOR_PALETTE_LIGHT:
+ *
+ * The name for a color palette suitable for use on
+ * a light background.
+ */
+#define PANGO2_COLOR_PALETTE_LIGHT  "light"
+
+/**
+ * PANGO2_COLOR_PALETTE_DARK:
+ *
+ * The name for a color palette suitable for use on
+ * a dark background.
+ */
+#define PANGO2_COLOR_PALETTE_DARK   "dark"
+
 /*
  * PANGO2_DECLARE_INTERNAL_TYPE:
  * @ModuleObjName: The name of the new type, in camel case (like GtkWidget)

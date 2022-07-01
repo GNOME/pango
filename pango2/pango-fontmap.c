@@ -34,7 +34,7 @@
 #include "pango-fontset.h"
 #include "pango-font-face-private.h"
 #include "pango-trace-private.h"
-#include "pango-context.h"
+#include "pango-context-private.h"
 
 #ifdef HAVE_CORE_TEXT
 #include "pangocoretext-fontmap.h"
@@ -558,6 +558,7 @@ pango2_font_map_default_load_fontset (Pango2FontMap               *self,
   lookup.language = language;
   lookup.description = (Pango2FontDescription *)description;
   lookup.ctm = ctm;
+
 #ifdef HAVE_CAIRO
   lookup.font_options = (cairo_font_options_t *)pango2_cairo_context_get_merged_font_options (context);
 #endif

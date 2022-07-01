@@ -215,7 +215,7 @@ count_variations (const char *string)
 
   n = 1;
   p = string;
-  while ((p = strchr (p, ',')) != NULL)
+  while ((p = strchr (p + 1, ',')) != NULL)
     n++;
 
   return n;

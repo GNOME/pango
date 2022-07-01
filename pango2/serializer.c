@@ -1053,6 +1053,12 @@ attr_for_type (GtkJsonParser *parser,
       g_free (str);
       break;
 
+    case PANGO2_ATTR_PALETTE:
+      str = gtk_json_parser_get_string (parser);
+      attr = pango2_attr_palette_new (str);
+      g_free (str);
+      break;
+
     case PANGO2_ATTR_ALLOW_BREAKS:
       attr = pango2_attr_allow_breaks_new (gtk_json_parser_get_boolean (parser));
       break;

@@ -114,12 +114,6 @@ void     pango2_font_get_scale_factors (Pango2Font  *font,
 void     pango2_font_get_transform     (Pango2Font  *font,
                                        Pango2Matrix *matrix);
 
-gboolean pango2_font_description_is_similar       (const Pango2FontDescription *a,
-                                                   const Pango2FontDescription *b);
-
-int      pango2_font_description_compute_distance (const Pango2FontDescription *a,
-                                                   const Pango2FontDescription *b);
-
 /* We use these values in a few places as a fallback size for an
  * unknown glyph, if we have no better information.
  */

@@ -69,6 +69,7 @@ enum {
   PROP_GRAVITY_HINT,
   PROP_MATRIX,
   PROP_ROUND_GLYPH_POSITIONS,
+  PROP_PALETTE,
   N_PROPERTIES
 };
 
@@ -88,6 +89,7 @@ pango2_context_init (Pango2Context *context)
   context->language = pango2_language_get_default ();
   context->font_map = NULL;
   context->round_glyph_positions = TRUE;
+  context->palette = g_quark_from_static_string (PANGO2_COLOR_PALETTE_DEFAULT);
 
   context->font_desc = pango2_font_description_new ();
   pango2_font_description_set_family_static (context->font_desc, "serif");
@@ -140,6 +142,10 @@ pango2_context_set_property (GObject      *object,
       pango2_context_set_round_glyph_positions (context, g_value_get_boolean (value));
       break;
 
+    case PROP_PALETTE:
+      pango2_context_set_palette (context, g_value_get_string (value));
+      break;
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     }
@@ -187,6 +193,10 @@ pango2_context_get_property (GObject    *object,
       g_value_set_boolean (value, pango2_context_get_round_glyph_positions (context));
       break;
 
+    case PROP_PALETTE:
+      g_value_set_string (value, pango2_context_get_palette (context));
+      break;
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     }
@@ -196,6 +206,10 @@ static void
 pango2_context_class_init (Pango2ContextClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+  g_intern_static_string (PANGO2_COLOR_PALETTE_DEFAULT);
+  g_intern_static_string (PANGO2_COLOR_PALETTE_LIGHT);
+  g_intern_static_string (PANGO2_COLOR_PALETTE_DARK);
 
   object_class->finalize = pango2_context_finalize;
   object_class->set_property = pango2_context_set_property;
@@ -303,15 +317,22 @@ pango2_context_class_init (Pango2ContextClass *klass)
     g_param_spec_boolean ("round-glyph-positions", NULL, NULL, TRUE,
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+  /**
+   * Pango2Context:palette: (attributes org.gtk.Property.get=pango2_context_get_palette org.gtk.Property.set=pango2_context_set_palette)
+   *
+   * The name of the color palette to use for color fonts.
+   */
+  properties[PROP_PALETTE] =
+    g_param_spec_string ("palette", NULL, NULL, "default",
+                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);
 }
 
 static void
 pango2_context_finalize (GObject *object)
 {
-  Pango2Context *context;
-
-  context = PANGO2_CONTEXT (object);
+  Pango2Context *context = PANGO2_CONTEXT (object);
 
   if (context->font_map)
     g_object_unref (context->font_map);
@@ -1043,4 +1064,58 @@ gboolean
 pango2_context_get_round_glyph_positions (Pango2Context *context)
 {
   return context->round_glyph_positions;
+}
+
+/**
+ * pango2_context_set_palette:
+ * @context: a `Pango2Context`
+ * @palette: the name of the palette to use
+ *
+ * Sets the default palette to use for color fonts.
+ *
+ * This can either be one of the predefined names
+ * "default", "light" or "dark", a name referring
+ * to a palette by index ("palette0", "palette1", …),
+ * or a custom name.
+ *
+ * Some color fonts include metadata that indicates
+ * the default palette, as well as palettes that work
+ * well on light or dark backgrounds. The predefined
+ * names select those.
+ *
+ * To associate custom names with palettes in fonts,
+ * use [method@Pango2.HbFace.set_palette_name].
+ */
+void
+pango2_context_set_palette (Pango2Context *context,
+                            const char    *palette)
+{
+  GQuark quark;
+
+  g_return_if_fail (PANGO2_IS_CONTEXT (context));
+
+  quark = g_quark_from_string (palette);
+  if (context->palette == quark)
+    return;
+
+  context->palette = quark;
+  g_object_notify_by_pspec (G_OBJECT (context), properties[PROP_PALETTE]);
+}
+
+/**
+ * pango2_context_get_palette:
+ * @context: a `Pango2Context`
+ *
+ * Returns the default palette to use for color fonts.
+ *
+ * See [method@Pango2.Context.set_palette].
+ *
+ * Return value: (nullable): the palette name
+ */
+const char *
+pango2_context_get_palette (Pango2Context *context)
+{
+  g_return_val_if_fail (PANGO2_IS_CONTEXT (context), PANGO2_COLOR_PALETTE_DEFAULT);
+
+  return g_quark_to_string (context->palette);
 }
