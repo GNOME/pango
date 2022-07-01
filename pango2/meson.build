@@ -170,6 +170,7 @@ if host_system == 'windows'
 
   pango_sources += [
     'pangodwrite-fontmap.cpp',
+    'pangowin32-utils.c',
   ]
 
   if cairo_dep.found()
