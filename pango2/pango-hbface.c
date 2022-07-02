@@ -279,38 +279,6 @@ ensure_faceid (Pango2HbFace *self)
   g_free (str);
 }
 
-static const char *
-style_from_font_description (const Pango2FontDescription *desc)
-{
-  Pango2Style style = pango2_font_description_get_style (desc);
-  Pango2Weight weight = pango2_font_description_get_weight (desc);
-
-  switch (style)
-    {
-    case PANGO2_STYLE_ITALIC:
-      if (weight == PANGO2_WEIGHT_BOLD)
-        return "Bold Italic";
-      else
-        return "Italic";
-      break;
-    case PANGO2_STYLE_OBLIQUE:
-      if (weight == PANGO2_WEIGHT_BOLD)
-        return "Bold Oblique";
-      else
-        return "Oblique";
-      break;
-    case PANGO2_STYLE_NORMAL:
-      if (weight == PANGO2_WEIGHT_BOLD)
-        return "Bold";
-      else
-        return "Regular";
-      break;
-    default: ;
-    }
-
-  return NULL;
-}
-
 /* }}} */
 /* {{{ Pango2FontFace implementation */
 
@@ -660,7 +628,7 @@ pango2_hb_face_set_matrix (Pango2HbFace       *self,
 }
 
 /* }}} */
- /* {{{ Public API */
+  /* {{{ Public API */
 
 /**
  * pango2_hb_face_new_from_hb_face:
@@ -778,179 +746,6 @@ pango2_hb_face_new_from_file (const char                  *file,
   self->instance_id = instance_id;
 
   set_name_and_description (self, name, description);
-
-  return self;
-}
-
-/**
- * pango2_hb_face_new_synthetic:
- * @face: a `Pango2HbFace`
- * @transform: (nullable): the transform to apply
- * @embolden: `TRUE` to render the font bolder
- * @name: (nullable): name for the face
- * @description: a `Pango2FontDescription` to override fields from @face's description
- *
- * Creates a new `Pango2HbFace` that is a synthetic variant of @face.
- *
- * Here, 'synthetic' means that the variant is implemented by rendering
- * the glyphs differently, not by using data from the original @face.
- * See [method@Pango2.HbFace.new_instance] for that.
- *
- * @transform can be used to specify a non-trivial font matrix for creating
- * synthetic italics or synthetic condensed variants of an existing face.
- *
- * If @embolden is `TRUE`, Pango will render the glyphs bolder, creating
- * a synthetic bold variant of the face.
- *
- * If a @name is not specified, the name for the face will be derived
- * from the @description.
- *
- * Apart from setting the style that this face will be used for,
- * @description can provide an alternative family name. This can
- * be used to create generic aliases such as 'sans' or 'monospace'.
- *
- * Note that only the following fields in @description should be set:
- *
- * + style or stretch, to indicate a transformed style
- * + weight, to indicate a bolder weight
- * + family, to provide an alternative family name
- *
- * [method@Pango2.FontFace.is_synthesized] will return `TRUE` for objects
- * created by this function.
- *
- * Returns: (transfer full): a newly created `Pango2HbFace`
- */
-Pango2HbFace *
-pango2_hb_face_new_synthetic (Pango2HbFace                *face,
-                              const Pango2Matrix          *transform,
-                              gboolean                     embolden,
-                              const char                  *name,
-                              const Pango2FontDescription *description)
-{
-  Pango2HbFace *self;
-  Pango2FontDescription *desc;
-
-  g_return_val_if_fail (PANGO2_IS_HB_FACE (face), NULL);
-  g_return_val_if_fail (description != NULL, NULL);
-  g_return_val_if_fail ((pango2_font_description_get_set_fields (description) &
-                         ~(PANGO2_FONT_MASK_FAMILY|
-                           PANGO2_FONT_MASK_STYLE|
-                           PANGO2_FONT_MASK_STRETCH|
-                           PANGO2_FONT_MASK_WEIGHT)) == 0, NULL);
-
-  self = g_object_new (PANGO2_TYPE_HB_FACE, NULL);
-
-  self->file = g_strdup (face->file);
-  if (face->face)
-    self->face = hb_face_reference (face->face);
-
-  self->index = face->index;
-  self->instance_id = face->instance_id;
-  self->variations = g_memdup2 (face->variations, sizeof (hb_variation_t) * face->n_variations);
-  self->n_variations = face->n_variations;
-
-  if (transform)
-    pango2_hb_face_set_matrix (self, transform);
-
-  self->embolden = embolden;
-  self->synthetic = self->embolden || (self->transform != NULL);
-
-  desc = pango2_font_description_copy (PANGO2_FONT_FACE (face)->description);
-  pango2_font_description_merge (desc, description, TRUE);
-
-  if (!name)
-    name = style_from_font_description (desc);
-
-  set_name_and_description (self, name, desc);
-
-  pango2_hb_face_set_language_set (self, face->languages);
-
-  pango2_font_description_free (desc);
-
-  return self;
-}
-
-/**
- * pango2_hb_face_new_instance:
- * @face: a `Pango2HbFace`
- * @variations: (nullable) (array length=n_variations): font variations to apply
- * @n_variations: length of @variations
- * @name: (nullable): name for the face
- * @description: a `Pango2FontDescription` to override fields from @face's description
- *
- * Creates a new `Pango2HbFace` that is a variant of @face.
- *
- * The @variations provide values for variation axes of @face. Axes that
- * are not included in @variations will keep the values they have in @face.
- * @variations that refer to axes that the face does not have are ignored.
- *
- * Conceptually, this is similar to a named instance of the face, except
- * that the mapping of the name to a set of coordinates on the variation
- * axes is provided externally, and not by the face itself.
- *
- * If a @name is not specified, the name for the face will be derived
- * from the @description.
- *
- * Apart from setting the style that this face will be used for,
- * @description can provide an alternative family name. This can
- * be used to create generic aliases such as 'sans' or 'monospace'.
- *
- * Note that only the following fields in @description should be set:
- * - style or stretch, to indicate a transformed style
- * - weight, to indicate a bolder weight
- * - family, to provide an alternative family name
- *
- * Returns: (transfer full): a newly created `Pango2HbFace`
- */
-Pango2HbFace *
-pango2_hb_face_new_instance (Pango2HbFace                *face,
-                             const hb_variation_t        *variations,
-                             unsigned int                 n_variations,
-                             const char                  *name,
-                             const Pango2FontDescription *description)
-{
-  Pango2HbFace *self;
-  Pango2FontDescription *desc;
-
-  g_return_val_if_fail (PANGO2_IS_HB_FACE (face), NULL);
-  g_return_val_if_fail (description != NULL, NULL);
-  g_return_val_if_fail ((pango2_font_description_get_set_fields (description) &
-                         ~(PANGO2_FONT_MASK_FAMILY|
-                           PANGO2_FONT_MASK_STYLE|
-                           PANGO2_FONT_MASK_STRETCH|
-                           PANGO2_FONT_MASK_WEIGHT)) == 0, NULL);
-
-  self = g_object_new (PANGO2_TYPE_HB_FACE, NULL);
-
-  self->file = g_strdup (face->file);
-  if (face->face)
-    self->face = hb_face_reference (face->face);
-
-  self->index = face->index;
-  self->instance_id = face->instance_id;
-
-  if (face->transform)
-    {
-      self->transform = g_memdup2 (face->transform, sizeof (Pango2Matrix));
-      self->x_scale = face->x_scale;
-      self->y_scale = face->y_scale;
-    }
-
-  self->embolden = face->embolden;
-  self->synthetic = self->embolden || (self->transform != NULL);
-
-  self->variations = g_memdup2 (variations, sizeof (hb_variation_t) * n_variations);
-  self->n_variations = n_variations;
-
-  desc = pango2_font_description_copy (PANGO2_FONT_FACE (face)->description);
-  pango2_font_description_merge (desc, description, TRUE);
-
-  if (!name)
-    name = style_from_font_description (desc);
-
-  set_name_and_description (self, name, desc);
-
-  pango2_font_description_free (desc);
 
   return self;
 }
@@ -1080,6 +875,318 @@ pango2_hb_face_get_transform (Pango2HbFace *self)
   g_return_val_if_fail (PANGO2_IS_HB_FACE (self), NULL);
 
   return self->transform;
+}
+
+/* }}} */
+/* {{{ Pango2HbFaceBuilder */
+
+/**
+ * Pango2HbFaceBuilder:
+ *
+ * An auxiliary object to build `Pango2HbFace` objects.
+ */
+
+struct _Pango2HbFaceBuilder {
+  hb_face_t *hb_face;
+  Pango2HbFace *face;
+  Pango2Matrix *transform;
+  gboolean embolden;
+  int instance_id;
+  hb_variation_t *variations;
+  unsigned int n_variations;
+  char *name;
+  Pango2FontDescription *description;
+};
+
+G_DEFINE_BOXED_TYPE (Pango2HbFaceBuilder, pango2_hb_face_builder,
+                     pango2_hb_face_builder_copy,
+                     pango2_hb_face_builder_free);
+
+static Pango2HbFaceBuilder *
+face_builder_new (void)
+{
+  Pango2HbFaceBuilder *builder;
+
+  builder = g_new (Pango2HbFaceBuilder, 1);
+  builder->hb_face = NULL;
+  builder->face = NULL;
+  builder->transform = NULL;
+  builder->embolden = FALSE;
+  builder->instance_id = 0;
+  builder->variations = NULL;
+  builder->n_variations = 0;
+  builder->name = NULL;
+  builder->description = NULL;
+
+  return builder;
+}
+
+/**
+ * pango2_hb_face_builder_copy:
+ * @src: a `Pango2HbFaceBuilder`
+ *
+ * Copy a `Pango2HbFaceBuilder`.
+ *
+ * Returns: (transfer full): a copy of @src
+ */
+Pango2HbFaceBuilder *
+pango2_hb_face_builder_copy (const Pango2HbFaceBuilder *src)
+{
+  Pango2HbFaceBuilder *builder;
+
+  builder = face_builder_new ();
+  if (src->face)
+    builder->face = g_object_ref (src->face);
+  if (src->hb_face)
+    builder->hb_face = hb_face_reference (src->hb_face);
+  builder->transform = g_memdup2 (src->transform, sizeof (Pango2Matrix));
+  builder->embolden = src->embolden;
+  builder->instance_id = src->instance_id;
+  builder->variations = g_memdup2 (src->variations, sizeof (hb_variation_t) * src->n_variations);
+  builder->n_variations = src->n_variations;
+  builder->name = g_strdup (src->name);
+  if (src->description)
+    builder->description = pango2_font_description_copy_static (src->description);
+
+  return builder;
+}
+
+/**
+ * pango2_hb_face_builder_free:
+ * @builder: a `Pango2HbFaceBuilder`
+ *
+ * Frees the `PangoHbFaceBuilder`.
+ */
+void
+pango2_hb_face_builder_free (Pango2HbFaceBuilder *builder)
+{
+  if (builder->hb_face)
+    hb_face_destroy (builder->hb_face);
+  if (builder->face)
+    g_object_unref (builder->face);
+  g_free (builder->transform);
+  g_free (builder->variations);
+  g_free (builder->name);
+  if (builder->description)
+    pango2_font_description_free (builder->description);
+
+  g_free (builder);
+}
+
+/**
+ * pango2_hb_face_builder_new_for_hb_face:
+ * @hb_face: a `hb_face_t`
+ *
+ * Creates a new `Pango2HbFaceBuilder` that will
+ * produce `Pango2HbFace` objects wrapping @hb_face.
+ *
+ * Returns: (transfer full): a new `Pango2HbFaceBuilder`
+ */
+Pango2HbFaceBuilder *
+pango2_hb_face_builder_new_for_hb_face (hb_face_t *hb_face)
+{
+  Pango2HbFaceBuilder *builder;
+
+  g_return_val_if_fail (hb_face_is_immutable (hb_face), NULL);
+
+  builder = face_builder_new ();
+  builder->hb_face = hb_face_reference (hb_face);
+
+  return builder;
+}
+
+/**
+ * pango2_hb_face_builder_new:
+ * @face: a `Pango2HbFace`
+ *
+ * Creates a new `Pango2HbFaceBuilder` that will
+ * produce `Pango2HbFace` objects wrapping @face.
+ *
+ * Returns: (transfer full): a new `Pango2HbFaceBuilder`
+ */
+Pango2HbFaceBuilder *
+pango2_hb_face_builder_new (Pango2HbFace *face)
+{
+  Pango2FontFace *font_face = PANGO2_FONT_FACE (face);
+  Pango2HbFaceBuilder *builder;
+
+  g_return_val_if_fail (PANGO2_IS_HB_FACE (face), NULL);
+
+  builder = face_builder_new ();
+  builder->face = g_object_ref (face);
+  if (face->transform)
+    {
+      builder->transform = g_memdup2 (face->transform, sizeof (Pango2Matrix));
+      pango2_matrix_scale (builder->transform, face->x_scale, face->y_scale);
+    }
+  builder->embolden = face->embolden;
+  builder->instance_id = face->instance_id;
+  builder->variations = g_memdup2 (face->variations, sizeof (hb_variation_t) * face->n_variations);
+  builder->n_variations = face->n_variations;
+  builder->name = g_strdup (font_face->name);
+  builder->description = pango2_font_description_copy_static (font_face->description);
+
+  return builder;
+}
+
+/**
+ * pango2_hb_face_builder_get_face:
+ * @builder: a `Pango2HbFaceBuilder`
+ *
+ * Gets a new `Pango2HbFace` instance with the current builder data.
+ *
+ * Returns: (transfer full): a new `Pango2HbFace`
+ */
+Pango2HbFace *
+pango2_hb_face_builder_get_face (Pango2HbFaceBuilder *builder)
+{
+  Pango2HbFace *self;
+
+  self = g_object_new (PANGO2_TYPE_HB_FACE, NULL);
+  if (builder->face)
+    {
+      self->file = g_strdup (builder->face->file);
+      self->index = builder->face->index;
+      self->instance_id = builder->face->instance_id;
+      if (builder->face->face)
+        self->face = hb_face_reference (builder->face->face);
+      pango2_hb_face_set_language_set (self, builder->face->languages);
+    }
+  else if (builder->hb_face)
+    {
+       self->face = hb_face_reference (builder->hb_face);
+    }
+
+  self->instance_id = builder->instance_id;
+
+  if (builder->transform)
+    pango2_hb_face_set_matrix (self, builder->transform);
+
+  self->embolden = builder->embolden;
+  self->synthetic = self->embolden || (self->transform != NULL);
+
+  self->variations = g_memdup2 (builder->variations, sizeof (hb_variation_t) * builder->n_variations);
+  self->n_variations = builder->n_variations;
+
+  set_name_and_description (self, builder->name, builder->description);
+
+  return self;
+}
+
+/**
+ * pango2_hb_face_builder_set_instance_id:
+ * @builder: a `Pango2HbFaceBuilder`
+ * @instance_id: named instance id, or -1 for the default instance
+ *   or -2 for no instance
+ *
+ * Sets the instance ID to use for the face.
+ */
+void
+pango2_hb_face_builder_set_instance_id  (Pango2HbFaceBuilder *builder,
+                                         int                  instance_id)
+{
+  g_return_if_fail (instance_id >= -2);
+
+  builder->instance_id = instance_id;
+}
+
+/**
+ * pango2_hb_face_builder_set_name:
+ * @builder: a `Pango2HbFaceBuilder`
+ * @name: (nullable): name for the face
+ *
+ * Sets the name to use for the face.
+ *
+ * If @name is `NULL`, the name of the underlying object is used.
+ */
+void
+pango2_hb_face_builder_set_name (Pango2HbFaceBuilder *builder,
+                                 const char          *name)
+{
+  g_free (builder->name);
+  builder->name = g_strdup (name);
+}
+
+/**
+ * pango2_hb_face_builder_set_description:
+ * @builder: a `Pango2HbFaceBuilder`
+ * @desc: (nullable): `Pango2FontDescription` for the face
+ *
+ * Sets the description to use for the face.
+ *
+ * If @desc is `NULL`, the description of the underlying object is used.
+ */
+void
+pango2_hb_face_builder_set_description (Pango2HbFaceBuilder         *builder,
+                                        const Pango2FontDescription *desc)
+{
+  g_return_if_fail (desc == NULL ||
+                    (pango2_font_description_get_set_fields (desc) &
+                         ~(PANGO2_FONT_MASK_FAMILY|
+                           PANGO2_FONT_MASK_STYLE|
+                           PANGO2_FONT_MASK_STRETCH|
+                           PANGO2_FONT_MASK_WEIGHT)) == 0);
+
+  if (builder->description)
+    pango2_font_description_free (builder->description);
+
+  if (builder->face)
+    builder->description = pango2_font_description_copy (PANGO2_FONT_FACE (builder->face)->description);
+
+  if (desc)
+    {
+      if (builder->description)
+        pango2_font_description_merge (builder->description, desc, TRUE);
+      else
+        builder->description = pango2_font_description_copy (desc);
+    }
+}
+
+/**
+ * pango2_hb_face_builder_set_transform:
+ * @builder: a `Pango2HbFaceBuilder`
+ * @transform: (nullable): `Pango2Matrix` for the font matrix
+ *
+ * Sets the font matrix to use for the face.
+ */
+void
+pango2_hb_face_builder_set_transform (Pango2HbFaceBuilder *builder,
+                                      const Pango2Matrix  *transform)
+{
+  g_free (builder->transform);
+  builder->transform = g_memdup2 (transform, sizeof (Pango2Matrix));
+}
+
+/**
+ * pango2_hb_face_builder_set_embolden:
+ * @builder: a `Pango2HbFaceBuilder`
+ * @embolden: `TRUE` to render the font bolder
+ *
+ * Sets whether the face should be artificially emboldened.
+ */
+void
+pango2_hb_face_builder_set_embolden (Pango2HbFaceBuilder *builder,
+                                     gboolean             embolden)
+{
+  builder->embolden = embolden;
+}
+
+/**
+ * pango2_hb_face_builder_set_variations:
+ * @builder: a `Pango2HbFaceBuilder`
+ * @variations: (nullable) (array length=n_variations): font variations to apply
+ * @n_variations: length of @variations
+ *
+ * Sets variations to use for the face.
+ */
+void
+pango2_hb_face_builder_set_variations (Pango2HbFaceBuilder  *builder,
+                                       const hb_variation_t *variations,
+                                       unsigned int          n_variations)
+{
+  g_free (builder->variations);
+  builder->variations = g_memdup2 (variations, sizeof (hb_variation_t) * n_variations);
+  builder->n_variations = n_variations;
 }
 
 /* }}} */

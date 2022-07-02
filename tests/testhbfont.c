@@ -73,6 +73,7 @@ test_hbface_roundtrip (void)
   Pango2FontDescription *desc;
   const int NO_FACEID = ~PANGO2_FONT_MASK_FACEID;
   hb_variation_t v;
+  Pango2HbFaceBuilder *builder;
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
 
@@ -93,7 +94,12 @@ test_hbface_roundtrip (void)
 
   desc = pango2_font_description_new ();
   pango2_font_description_set_style (desc, PANGO2_STYLE_OBLIQUE);
-  face2 = pango2_hb_face_new_synthetic (face, &(Pango2Matrix){ 1, 0.2, 0, 1, 0, 0 }, FALSE, NULL, desc);
+  builder = pango2_hb_face_builder_new (face);
+  pango2_hb_face_builder_set_transform (builder, &(Pango2Matrix){ 1, 0.2, 0, 1, 0, 0 });
+  pango2_hb_face_builder_set_description (builder, desc);
+  pango2_hb_face_builder_set_name (builder, "Oblique");
+  face2 = pango2_hb_face_builder_get_face (builder);
+  pango2_hb_face_builder_free (builder);
   pango2_font_description_free (desc);
 
   g_assert_true (PANGO2_IS_HB_FACE (face2));
@@ -113,7 +119,12 @@ test_hbface_roundtrip (void)
 
   desc = pango2_font_description_new ();
   pango2_font_description_set_weight (desc, PANGO2_WEIGHT_BOLD);
-  face2 = pango2_hb_face_new_synthetic (face, NULL, TRUE, NULL, desc);
+  builder = pango2_hb_face_builder_new (face);
+  pango2_hb_face_builder_set_embolden (builder, TRUE);
+  pango2_hb_face_builder_set_description (builder, desc);
+  pango2_hb_face_builder_set_name (builder, "Bold");
+  face2 = pango2_hb_face_builder_get_face (builder);
+  pango2_hb_face_builder_free (builder);
   pango2_font_description_free (desc);
 
   g_assert_true (PANGO2_IS_HB_FACE (face2));
@@ -133,7 +144,10 @@ test_hbface_roundtrip (void)
 
   desc = pango2_font_description_new ();
   pango2_font_description_set_family (desc, "Cantarellagain");
-  face2 = pango2_hb_face_new_synthetic (face, NULL, FALSE, NULL, desc);
+  builder = pango2_hb_face_builder_new (face);
+  pango2_hb_face_builder_set_description (builder, desc);
+  face2 = pango2_hb_face_builder_get_face (builder);
+  pango2_hb_face_builder_free (builder);
   pango2_font_description_free (desc);
 
   g_assert_true (PANGO2_IS_HB_FACE (face2));
@@ -158,7 +172,12 @@ test_hbface_roundtrip (void)
   v.tag = HB_OT_TAG_VAR_AXIS_WEIGHT;
   v.value = 768.;
 
-  face2 = pango2_hb_face_new_instance (face, &v, 1, "Fat", desc);
+  builder = pango2_hb_face_builder_new (face);
+  pango2_hb_face_builder_set_variations (builder, &v, 1);
+  pango2_hb_face_builder_set_name (builder, "Fat");
+  pango2_hb_face_builder_set_description (builder, desc);
+  face2 = pango2_hb_face_builder_get_face (builder);
+  pango2_hb_face_builder_free (builder);
   pango2_font_description_free (desc);
 
   g_assert_true (PANGO2_IS_HB_FACE (face2));
@@ -261,6 +280,7 @@ test_hbfont_describe_variation (void)
   Pango2HbFont *font;
   Pango2FontDescription *desc;
   hb_variation_t v;
+  Pango2HbFaceBuilder *builder;
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
 
@@ -290,7 +310,12 @@ test_hbfont_describe_variation (void)
 
   v.tag = HB_OT_TAG_VAR_AXIS_WEIGHT;
   v.value = 512.;
-  face2 = pango2_hb_face_new_instance (face, &v, 1, "Medium", desc);
+  builder = pango2_hb_face_builder_new (face);
+  pango2_hb_face_builder_set_variations (builder, &v, 1);
+  pango2_hb_face_builder_set_name (builder, "Medium");
+  pango2_hb_face_builder_set_description (builder, desc);
+  face2 = pango2_hb_face_builder_get_face (builder);
+  pango2_hb_face_builder_free (builder);
   g_assert_true (PANGO2_IS_HB_FACE (face));
   pango2_font_description_free (desc);
 
@@ -332,6 +357,7 @@ test_hbfont_faceid (void)
   char *path;
   Pango2HbFace *face, *face2, *face3;
   Pango2FontDescription *desc, *desc2, *desc3;
+  Pango2HbFaceBuilder *builder;
 
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
 
@@ -339,7 +365,11 @@ test_hbfont_faceid (void)
   face2 = pango2_hb_face_new_from_file (path, 0, 2, NULL, NULL);
   desc = pango2_font_description_new ();
   pango2_font_description_set_weight (desc, PANGO2_WEIGHT_BOLD);
-  face3 = pango2_hb_face_new_synthetic (face, NULL, TRUE, NULL, desc);
+  builder = pango2_hb_face_builder_new (face);
+  pango2_hb_face_builder_set_embolden (builder, TRUE);
+  pango2_hb_face_builder_set_description (builder, desc);
+  face3 = pango2_hb_face_builder_get_face (builder);
+  pango2_hb_face_builder_free (builder);
   pango2_font_description_free (desc);
 
   desc = pango2_font_face_describe (PANGO2_FONT_FACE (face));
@@ -443,6 +473,7 @@ test_hbfont_load_variation (void)
   hb_font_t *hb_font;
   const float *coords;
   unsigned int length;
+  Pango2HbFaceBuilder *builder;
 
   /* Make a Cat family, with the two faces Fat and Wild */
   map = pango2_font_map_new ();
@@ -461,7 +492,12 @@ test_hbfont_load_variation (void)
   pango2_font_description_set_family (desc, "Cat");
   v.tag = HB_OT_TAG_VAR_AXIS_WEIGHT;
   v.value = 624.;
-  face_wild = pango2_hb_face_new_instance (face_fat, &v, 1, "Wild", desc);
+  builder = pango2_hb_face_builder_new (face_fat);
+  pango2_hb_face_builder_set_variations (builder, &v, 1);
+  pango2_hb_face_builder_set_name (builder,  "Wild");
+  pango2_hb_face_builder_set_description (builder,  desc);
+  face_wild = pango2_hb_face_builder_get_face (builder);
+  pango2_hb_face_builder_free (builder);
   pango2_font_description_free (desc);
 
   pango2_font_map_add_face (map, PANGO2_FONT_FACE (face_wild));
@@ -473,7 +509,7 @@ test_hbfont_load_variation (void)
   pango2_font_description_set_size (desc, 12 * PANGO2_SCALE);
 
   s = pango2_font_description_to_string (desc);
-  g_assert_cmpstr (s, ==, "Cat 12 @faceid=hb:Cantarell-Regular:0:-1:0:1:1:0:wght_624,wght=624");
+  g_assert_cmpstr (s, ==, "Cat 12 @faceid=hb:Cantarell-Regular:0:-1:0:1:1:0:wght_624 @wght=624");
   g_free (s);
 
   font = pango2_font_map_load_font (PANGO2_FONT_MAP (map), context, desc);

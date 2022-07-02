@@ -274,19 +274,44 @@ add_style_variation (Pango2HbFamily *family,
 {
   Pango2Matrix italic_matrix = { 1, 0.2, 0, 1, 0, 0 };
   Pango2FontDescription *desc;
+  Pango2HbFaceBuilder *builder;
   Pango2HbFace *variation;
+  struct {
+    Pango2Style style;
+    Pango2Weight weight;
+    const char *name;
+  } names[] = {
+    { PANGO2_STYLE_ITALIC, PANGO2_WEIGHT_BOLD, "Bold Italic" },
+    { PANGO2_STYLE_ITALIC, PANGO2_WEIGHT_NORMAL, "Italic" },
+    { PANGO2_STYLE_OBLIQUE, PANGO2_WEIGHT_BOLD, "Bold Oblique" },
+    { PANGO2_STYLE_OBLIQUE, PANGO2_WEIGHT_NORMAL, "Oblique" },
+    { PANGO2_STYLE_NORMAL, PANGO2_WEIGHT_BOLD, "Bold" },
+    { PANGO2_STYLE_NORMAL, PANGO2_WEIGHT_NORMAL, "Regular" },
+  };
 
   desc = pango2_font_description_new ();
   pango2_font_description_set_family (desc, pango2_font_family_get_name (PANGO2_FONT_FAMILY (family)));
   pango2_font_description_set_style (desc, style);
   pango2_font_description_set_weight (desc, weight);
 
-  variation = pango2_hb_face_new_synthetic (face,
-                                            style == PANGO2_STYLE_ITALIC ? &italic_matrix : NULL,
-                                            weight == PANGO2_WEIGHT_BOLD,
-                                            NULL,
-                                            desc);
+  builder = pango2_hb_face_builder_new (face);
+  pango2_hb_face_builder_set_transform (builder, style == PANGO2_STYLE_ITALIC ? &italic_matrix : NULL);
+  pango2_hb_face_builder_set_embolden (builder, weight == PANGO2_WEIGHT_BOLD);
+  pango2_hb_face_builder_set_description (builder, desc);
+  for (int i = 0; i < G_N_ELEMENTS (names); i++)
+    {
+      if (names[i].style == style && names[i].weight == weight)
+        {
+          pango2_hb_face_builder_set_name (builder, names[i].name);
+          break;
+        }
+    }
+
+  variation = pango2_hb_face_builder_get_face (builder);
+
   pango2_hb_family_add_face (family, PANGO2_FONT_FACE (variation));
+
+  pango2_hb_face_builder_free (builder);
 
   pango2_font_description_free (desc);
 }
@@ -913,7 +938,7 @@ pango2_font_map_new (void)
  * Adds a face to the fontmap.
  *
  * This is most useful for creating transformed faces or aliases.
- * See [method@Pango2.HbFace.new_synthetic] and [method@Pango2.HbFace.new_instance].
+ * See [struct@Pango2.HbFaceBuilder].
  */
 void
 pango2_font_map_add_face (Pango2FontMap  *self,

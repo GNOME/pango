@@ -45,20 +45,6 @@ Pango2HbFace *          pango2_hb_face_new_from_file     (const char            
                                                           const Pango2FontDescription *description);
 
 PANGO2_AVAILABLE_IN_ALL
-Pango2HbFace *          pango2_hb_face_new_synthetic     (Pango2HbFace                *face,
-                                                          const Pango2Matrix          *transform,
-                                                          gboolean                     embolden,
-                                                          const char                  *name,
-                                                          const Pango2FontDescription *description);
-
-PANGO2_AVAILABLE_IN_ALL
-Pango2HbFace *          pango2_hb_face_new_instance      (Pango2HbFace                *face,
-                                                          const hb_variation_t        *variations,
-                                                          unsigned int                 n_variations,
-                                                          const char                  *name,
-                                                          const Pango2FontDescription *description);
-
-PANGO2_AVAILABLE_IN_ALL
 hb_face_t *             pango2_hb_face_get_hb_face       (Pango2HbFace                *self);
 
 PANGO2_AVAILABLE_IN_ALL
@@ -79,5 +65,48 @@ gboolean                pango2_hb_face_get_embolden      (Pango2HbFace          
 
 PANGO2_AVAILABLE_IN_ALL
 const Pango2Matrix *    pango2_hb_face_get_transform     (Pango2HbFace                *self);
+
+
+typedef struct _Pango2HbFaceBuilder Pango2HbFaceBuilder;
+
+#define PANGO2_TYPE_HB_FACE_BUILDER (pango2_hb_face_builder_get_type ())
+
+PANGO2_AVAILABLE_IN_ALL
+GType                   pango2_hb_face_builder_get_type         (void) G_GNUC_CONST;
+
+PANGO2_AVAILABLE_IN_ALL
+Pango2HbFaceBuilder *   pango2_hb_face_builder_copy             (const Pango2HbFaceBuilder   *src);
+
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_hb_face_builder_free             (Pango2HbFaceBuilder         *builder);
+
+PANGO2_AVAILABLE_IN_ALL
+Pango2HbFaceBuilder *   pango2_hb_face_builder_new              (Pango2HbFace                *face);
+
+PANGO2_AVAILABLE_IN_ALL
+Pango2HbFaceBuilder *   pango2_hb_face_builder_new_for_hb_face  (hb_face_t                   *hb_face);
+
+PANGO2_AVAILABLE_IN_ALL
+Pango2HbFace *          pango2_hb_face_builder_get_face         (Pango2HbFaceBuilder         *builder);
+
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_hb_face_builder_set_instance_id  (Pango2HbFaceBuilder         *builder,
+                                                                 int                          instance_id);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_hb_face_builder_set_name         (Pango2HbFaceBuilder         *builder,
+                                                                 const char                  *name);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_hb_face_builder_set_description  (Pango2HbFaceBuilder         *builder,
+                                                                 const Pango2FontDescription *desc);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_hb_face_builder_set_transform    (Pango2HbFaceBuilder         *builder,
+                                                                 const Pango2Matrix          *transform);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_hb_face_builder_set_embolden     (Pango2HbFaceBuilder         *builder,
+                                                                 gboolean                     embolden);
+PANGO2_AVAILABLE_IN_ALL
+void                    pango2_hb_face_builder_set_variations   (Pango2HbFaceBuilder         *builder,
+                                                                 const hb_variation_t        *variations,
+                                                                 unsigned int                 n_variations);
 
 G_END_DECLS
