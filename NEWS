@@ -1,3 +1,8 @@
+Overview of changes in 1.50.8, 02-07-2022
+=========================================
+- Add some properties to fontmap and family
+- Fix handling of ligature carets in mixed directions
+
 Overview of changes in 1.50.7, 14-04-2022
 =========================================
 - coretext: Fix the build
