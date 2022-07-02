@@ -351,6 +351,7 @@ add_synthetic_faces (Pango2FontMap *map,
   Pango2Matrix italic_matrix = { 1, 0.2, 0, 1, 0, 0 };
   Pango2HbFace *newface;
   GSList *newfaces, *l;
+  Pango2HbFaceBuilder *builder;
 
   g_assert (g_str_has_suffix (name, ".synthetic"));
 
@@ -391,8 +392,13 @@ add_synthetic_faces (Pango2FontMap *map,
                                                        PANGO2_FONT_MASK_STYLE|
                                                        PANGO2_FONT_MASK_STRETCH|
                                                        PANGO2_FONT_MASK_WEIGHT));
-          newface = pango2_hb_face_new_synthetic (face, &italic_matrix, FALSE, name, desc);
+          builder = pango2_hb_face_builder_new (face);
+          pango2_hb_face_builder_set_transform (builder, &italic_matrix);
+          pango2_hb_face_builder_set_name (builder, name);
+          pango2_hb_face_builder_set_description (builder, desc);
+          newface = pango2_hb_face_builder_get_face (builder);
           newfaces = g_slist_prepend (newfaces, newface);
+          pango2_hb_face_builder_free (builder);
 
           g_free (name);
           pango2_font_description_free (desc);
