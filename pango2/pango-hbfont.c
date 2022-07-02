@@ -366,7 +366,7 @@ create_hex_box_info (Pango2HbFont *self)
    */
 
   /* We should rotate the box, not glyphs */
-  pango2_font_description_unset_fields (desc, PANGO2_FONT_MASK_GRAVITY);
+  pango2_font_description_unset_fields (desc, PANGO2_FONT_MASK_GRAVITY|PANGO2_FONT_MASK_FACEID);
 
   pango2_font_description_set_family_static (desc, "monospace");
 
@@ -388,11 +388,10 @@ create_hex_box_info (Pango2HbFont *self)
 
   mini_font = pango2_font_map_load_font (map, context, desc);
 
-  g_object_unref (context);
-
-  pango2_font_description_free (desc);
-
   get_max_char_size (mini_font, hexdigits, &width, &height);
+
+  g_object_unref (context);
+  pango2_font_description_free (desc);
 
   hb_font_get_extents_for_direction (hb_font, HB_DIRECTION_LTR, &font_extents);
   font_ascent = font_extents.ascender / (double) PANGO2_SCALE;
