@@ -305,12 +305,14 @@ main (int argc, char *argv[])
   rtl_words = init_rtl_words ();
   n_rtl_words = g_strv_length (rtl_words);
 
+#if 0
   g_test_add_data_func ("/layout/ltr/wrap-char", GUINT_TO_POINTER (PANGO_DIRECTION_LTR), test_wrap_char);
   g_test_add_data_func ("/layout/rtl/wrap-char", GUINT_TO_POINTER (PANGO_DIRECTION_RTL), test_wrap_char);
   g_test_add_data_func ("/layout/any/wrap-char", GUINT_TO_POINTER (PANGO_DIRECTION_NEUTRAL), test_wrap_char);
   g_test_add_data_func ("/layout/ltr/wrap-char-min-width", GUINT_TO_POINTER (PANGO_DIRECTION_LTR), test_wrap_char_min_width);
   g_test_add_data_func ("/layout/rtl/wrap-char-min-width", GUINT_TO_POINTER (PANGO_DIRECTION_RTL), test_wrap_char_min_width);
   g_test_add_data_func ("/layout/any/wrap-char-min-width", GUINT_TO_POINTER (PANGO_DIRECTION_NEUTRAL), test_wrap_char_min_width);
+#endif
 
   result = g_test_run ();
 
