@@ -6186,6 +6186,23 @@ add_missing_hyphen (PangoLayoutLine *line,
     }
 }
 
+static PangoShowFlags
+find_show_flags (const PangoAnalysis *analysis)
+{
+  GSList *l;
+  PangoShowFlags flags = 0;
+
+  for (l = analysis->extra_attrs; l; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+
+      if (attr->klass->type == PANGO_ATTR_SHOW)
+        flags |= ((PangoAttrInt*)attr)->value;
+    }
+
+  return flags;
+}
+
 static void
 zero_line_final_space (PangoLayoutLine *line,
                        ParaBreakState  *state,
@@ -6201,8 +6218,15 @@ zero_line_final_space (PangoLayoutLine *line,
 
   if (glyphs->glyphs[glyph].glyph == PANGO_GET_UNKNOWN_GLYPH (0x2028))
     {
-      DEBUG1 ("zero final space: visible space");
-      return; /* this LS is visible */
+      PangoShowFlags show_flags;
+
+      show_flags = find_show_flags (&item->analysis);
+
+      if ((show_flags & PANGO_SHOW_LINE_BREAKS) != 0)
+        {
+          DEBUG1 ("zero final space: visible space");
+          return; /* this LS is visible */
+        }
     }
 
   /* if the final char of line forms a cluster, and it's
