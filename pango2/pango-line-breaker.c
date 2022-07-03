@@ -16,7 +16,7 @@
 
 #include <hb-ot.h>
 
-#if 0
+#if 1
 # define DEBUG1(...) g_debug (__VA_ARGS__)
 #else
 # define DEBUG1(...) do { } while (0)
@@ -1700,6 +1700,23 @@ add_missing_hyphen (Pango2LineBreaker *self,
   line->hyphenated = (item->analysis.flags & PANGO2_ANALYSIS_FLAG_NEED_HYPHEN) != 0;
 }
 
+static Pango2ShowFlags
+find_show_flags (const Pango2Analysis *analysis)
+{
+  GSList *l;
+  Pango2ShowFlags flags = 0;
+
+  for (l = analysis->extra_attrs; l; l = l->next)
+    {
+      Pango2Attribute *attr = l->data;
+
+      if (attr->type == PANGO2_ATTR_SHOW)
+        flags |= attr->int_value;
+    }
+
+  return flags;
+}
+
 static void
 zero_line_final_space (Pango2LineBreaker *self,
                        Pango2Line        *line)
@@ -1720,8 +1737,13 @@ zero_line_final_space (Pango2LineBreaker *self,
 
   if (glyphs->glyphs[glyph].glyph == PANGO2_GET_UNKNOWN_GLYPH (0x2028))
     {
-      DEBUG1 ("zero final space: visible space");
-      return; /* this LS is visible */
+      Pango2ShowFlags show_flags = find_show_flags (&item->analysis);
+
+      if ((show_flags & PANGO2_SHOW_LINE_BREAKS) != 0)
+        {
+          DEBUG1 ("zero final space: visible LS");
+          return; /* this LS is visible */
+        }
     }
 
   /* if the final char of line forms a cluster, and it's
