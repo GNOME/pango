@@ -65,6 +65,13 @@ void                    pango2_lines_get_extents     (Pango2Lines        *lines,
                                                       Pango2Rectangle    *logical_rect);
 
 PANGO2_AVAILABLE_IN_ALL
+void                    pango2_lines_get_trimmed_extents
+                                                     (Pango2Lines        *lines,
+                                                      Pango2LeadingTrim   trim,
+                                                      Pango2Rectangle    *ink_rect,
+                                                      Pango2Rectangle    *logical_rect);
+
+PANGO2_AVAILABLE_IN_ALL
 void                    pango2_lines_get_size        (Pango2Lines        *lines,
                                                       int                *width,
                                                       int                *height);

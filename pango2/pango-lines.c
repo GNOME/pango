@@ -491,12 +491,13 @@ pango2_lines_is_hyphenated (Pango2Lines *lines)
 /* {{{ Extents */
 
 /**
- * pango2_lines_get_extents:
+ * pango2_lines_get_trimmd_extents:
  * @lines: a `Pango2Lines` object
+ * @trim: `Pango2LeadingTrim` flags
  * @ink_rect: (out) (optional): return location for the ink extents
  * @logical_rect: (out) (optional): return location for the logical extents
  *
- * Computes the extents of the lines.
+ * Computes the extents of the lines, trimmed according to `trim`.
  *
  * Logical extents are usually what you want for positioning things. Note
  * that the extents may have non-zero x and y. You may want to use those
@@ -508,9 +509,10 @@ pango2_lines_is_hyphenated (Pango2Lines *lines)
  * coordinates begin at the top left corner.
  */
 void
-pango2_lines_get_extents (Pango2Lines     *lines,
-                          Pango2Rectangle *ink_rect,
-                          Pango2Rectangle *logical_rect)
+pango2_lines_get_trimmed_extents (Pango2Lines       *lines,
+                                  Pango2LeadingTrim  trim,
+                                  Pango2Rectangle   *ink_rect,
+                                  Pango2Rectangle   *logical_rect)
 {
   for (int i = 0; i < lines->lines->len; i++)
     {
@@ -518,15 +520,15 @@ pango2_lines_get_extents (Pango2Lines     *lines,
       Position *pos = &g_array_index (lines->positions, Position, i);
       Pango2Rectangle line_ink;
       Pango2Rectangle line_logical;
-      Pango2LeadingTrim trim = PANGO2_LEADING_TRIM_NONE;
+      Pango2LeadingTrim line_trim = PANGO2_LEADING_TRIM_NONE;
 
       if (line->starts_paragraph)
-        trim |= PANGO2_LEADING_TRIM_START;
+        line_trim |= PANGO2_LEADING_TRIM_START;
       if (line->ends_paragraph)
-        trim |= PANGO2_LEADING_TRIM_END;
+        line_trim |= PANGO2_LEADING_TRIM_END;
 
       pango2_line_get_extents (line, &line_ink, NULL);
-      pango2_line_get_trimmed_extents (line, trim, &line_logical);
+      pango2_line_get_trimmed_extents (line, trim & line_trim, &line_logical);
 
       line_ink.x += pos->x;
       line_ink.y += pos->y;
@@ -566,6 +568,31 @@ pango2_lines_get_extents (Pango2Lines     *lines,
            }
        }
     }
+}
+
+/**
+ * pango2_lines_get_extents:
+ * @lines: a `Pango2Lines` object
+ * @ink_rect: (out) (optional): return location for the ink extents
+ * @logical_rect: (out) (optional): return location for the logical extents
+ *
+ * Computes the extents of the lines.
+ *
+ * Logical extents are usually what you want for positioning things. Note
+ * that the extents may have non-zero x and y. You may want to use those
+ * to offset where you render the layout. Not doing that is a very typical
+ * bug that shows up as right-to-left layouts not being correctly positioned
+ * in a layout with a set width.
+ *
+ * The extents are given in layout coordinates and in Pango units; layout
+ * coordinates begin at the top left corner.
+ */
+void
+pango2_lines_get_extents (Pango2Lines     *lines,
+                          Pango2Rectangle *ink_rect,
+                          Pango2Rectangle *logical_rect)
+{
+  pango2_lines_get_trimmed_extents (lines, PANGO2_LEADING_TRIM_NONE, ink_rect, logical_rect);
 }
 
 /**
