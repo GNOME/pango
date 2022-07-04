@@ -56,6 +56,7 @@ struct _Pango2DirectWriteFontMap
   Pango2FontMap parent_instance;
 
   IDWriteFactory *dwrite_factory;
+  IDWriteGdiInterop *gdi_interop;
 };
 
 struct _Pango2DirectWriteFontMapClass
@@ -352,6 +353,14 @@ pango2_direct_write_font_map_init (Pango2DirectWriteFontMap *self)
   if (FAILED (hr) || !self->dwrite_factory)
     g_error ("DWriteCreateFactory failed with error code %x", (unsigned)hr);
 
+  if (self->dwrite_factory)
+    {
+      hr = self->dwrite_factory->GetGdiInterop (&self->gdi_interop);
+
+      if (FAILED (hr) || !self->gdi_interop)
+        g_error ("GdiInterop failed with error code %x", (unsigned)hr);
+    }
+
   pango2_font_map_repopulate (PANGO2_FONT_MAP (self), TRUE);
 }
 
@@ -359,6 +368,12 @@ static void
 pango2_direct_write_font_map_finalize (GObject *object)
 {
   Pango2DirectWriteFontMap *dwrite_map = PANGO2_DIRECT_WRITE_FONT_MAP (object);
+
+  if (dwrite_map->gdi_interop != NULL)
+    {
+      dwrite_map->gdi_interop->Release ();
+      dwrite_map->gdi_interop = NULL;
+    }
 
   dwrite_map->dwrite_factory->Release ();
   dwrite_map->dwrite_factory = NULL;
