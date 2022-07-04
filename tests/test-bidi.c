@@ -20,7 +20,7 @@
  */
 
 #include <locale.h>
-#include <pango/pango.h>
+#include <pango2/pango.h>
 
 static Pango2Context *context;
 

@@ -28,7 +28,7 @@
 #endif
 
 #include "config.h"
-#include <pango/pango.h>
+#include <pango2/pango.h>
 #include "test-common.h"
 #include "validate-log-attrs.h"
 

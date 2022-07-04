@@ -23,7 +23,7 @@
 #include "viewer-render.h"
 #include "viewer-x.h"
 
-#include <pango/pangoxft.h>
+#include <pango2/pangoxft.h>
 
 static void
 default_substitute (FcPattern *pattern,

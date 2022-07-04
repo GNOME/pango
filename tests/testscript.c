@@ -58,7 +58,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "pango/pango-script.h"
+#include "pango2/pango-script.h"
 
 typedef struct
 {

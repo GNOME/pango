@@ -25,7 +25,7 @@
 
 G_BEGIN_DECLS
 
-#include <pango/pango-item.h>
+#include <pango2/pango-item.h>
 
 #define PANGO2_VALIDATE_ERROR (pango2_validate_error_quark ())
 

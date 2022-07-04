@@ -25,8 +25,8 @@
 #include "viewer-cairo.h"
 #include "userfont.h"
 
-#include <pango/pangocairo.h>
-#include <pango/pango-run.h>
+#include <pango2/pango.h>
+#include <pango2/pangocairo.h>
 
 #include <hb-ot.h>
 

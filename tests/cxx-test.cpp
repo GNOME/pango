@@ -2,10 +2,10 @@
  * and compiled in a C++ program.
  */
 
-#include <pango/pango.h>
+#include <pango2/pango.h>
 
 #if PANGO_RENDERING_CAIRO
-#include <pango/pangocairo.h>
+#include <pango2/pangocairo.h>
 #endif
 
 int

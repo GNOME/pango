@@ -20,10 +20,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <pango/pango.h>
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
+#include <pango2/pango.h>
 
 static gboolean failed = FALSE;
 

@@ -1,5 +1,5 @@
 #include <math.h>
-#include <pango/pangocairo.h>
+#include <pango2/pangocairo.h>
 
 #define RADIUS 150
 #define N_WORDS 10

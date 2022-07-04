@@ -26,9 +26,9 @@
 #include <string.h>
 #include <time.h>
 
-#include <pango/pango-enum-types.h>
-#include <pango/pango-script.h>
-#include <pango/pango-types.h>
+#include <pango2/pango-enum-types.h>
+#include <pango2/pango-script.h>
+#include <pango2/pango-types.h>
 
 #include <fontconfig/fontconfig.h>
 

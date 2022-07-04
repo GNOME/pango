@@ -24,9 +24,9 @@
 #include <locale.h>
 
 #include <gio/gio.h>
-#include <pango/pango.h>
-#include <pango/pango-item-private.h>
-#include <pango/pango-font-private.h>
+#include <pango2/pango.h>
+#include <pango2/pango-item-private.h>
+#include <pango2/pango-font-private.h>
 
 #include "test-common.h"
 

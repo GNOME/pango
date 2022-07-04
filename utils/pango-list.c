@@ -21,8 +21,8 @@
  */
 
 #include "config.h"
-#include <pango/pango.h>
-#include <pango/pango-hbface-private.h>
+#include <pango2/pango.h>
+#include <pango2/pango-hbface-private.h>
 #include <hb-ot.h>
 #include <glib/gstdio.h>
 #include <gio/gio.h>

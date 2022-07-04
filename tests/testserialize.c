@@ -21,7 +21,7 @@
 #include "config.h"
 
 #include <glib.h>
-#include <pango/pango.h>
+#include <pango2/pango.h>
 #include <gio/gio.h>
 
 #include "test-common.h"

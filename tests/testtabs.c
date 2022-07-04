@@ -20,7 +20,7 @@
  */
 
 #include <glib.h>
-#include <pango/pango.h>
+#include <pango2/pango.h>
 
 static void
 test_tabs_basic (void)

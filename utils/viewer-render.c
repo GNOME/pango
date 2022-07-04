@@ -28,7 +28,7 @@
 
 #include <glib.h>
 #include <glib/gprintf.h>
-#include <pango/pango.h>
+#include <pango2/pango.h>
 
 #include "viewer-render.h"
 

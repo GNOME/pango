@@ -20,7 +20,7 @@
  */
 
 #include <glib.h>
-#include <pango/pango.h>
+#include <pango2/pango.h>
 #include <math.h>
 
 #define matrix_equal(m1, m2) \

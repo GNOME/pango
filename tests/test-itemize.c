@@ -29,11 +29,11 @@
 #endif
 
 #include "config.h"
-#include <pango/pango.h>
+#include <pango2/pango.h>
 #include "test-common.h"
 
-#include "pango/pango-attr-private.h"
-#include "pango/pango-item-private.h"
+#include "pango2/pango-attr-private.h"
+#include "pango2/pango-item-private.h"
 
 
 static Pango2Context *context;

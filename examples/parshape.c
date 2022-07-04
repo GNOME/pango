@@ -1,5 +1,4 @@
-#include <pango/pango.h>
-#include <pango/pangocairo.h>
+#include <pango2/pangocairo.h>
 
 static Pango2Lines *
 format_text (const char *text)

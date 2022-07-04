@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include <pango/pango.h>
-#include <pango/pangocairo.h>
+#include <pango2/pangocairo.h>
 
 #include "test-common.h"
 

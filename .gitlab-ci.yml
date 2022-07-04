@@ -121,7 +121,7 @@ reference:
     - meson ${COMMON_MESON_FLAGS} ${EXTRA_MESON_FLAGS} -Ddocumentation=true _build
     - ninja -C _build
     - mkdir -p _reference/
-    - mv _build/docs/Pango/ _reference/
+    - mv _build/docs/Pango2/ _reference/
   artifacts:
     paths:
       - _reference

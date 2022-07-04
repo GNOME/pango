@@ -1,5 +1,4 @@
-#include <pango/pango.h>
-#include <pango/pangocairo.h>
+#include <pango2/pangocairo.h>
 
 int
 main (int argc, char *argv[])
