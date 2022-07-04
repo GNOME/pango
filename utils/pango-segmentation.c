@@ -20,7 +20,7 @@
  */
 
 #include <glib.h>
-#include <pango/pango.h>
+#include <pango2/pango.h>
 #include <string.h>
 #include <stdlib.h>
 #include <locale.h>

@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <pango/pangocairo.h>
+#include <pango2/pangocairo.h>
 
 static Pango2FontMap *fontmap;
 

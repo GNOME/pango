@@ -11,7 +11,7 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <pango/pangocairo.h>
+#include <pango2/pangocairo.h>
 
 void fancy_cairo_stroke (cairo_t *cr);
 void fancy_cairo_stroke_preserve (cairo_t *cr);

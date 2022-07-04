@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include <pango/pango.h>
+#include <pango2/pango.h>
 
 #define CHFORMAT "%0#6x"
 

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <pango/pangocairo.h>
+#include <pango2/pangocairo.h>
 #include "userfont.h"
 
 #define END_GLYPH 0

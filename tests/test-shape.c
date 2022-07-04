@@ -30,7 +30,7 @@
 #endif
 
 #include "config.h"
-#include <pango/pangocairo.h>
+#include <pango2/pangocairo.h>
 #include "test-common.h"
 
 

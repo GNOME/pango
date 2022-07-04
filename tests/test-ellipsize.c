@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <pango/pango.h>
+#include <pango2/pango.h>
 #include "test-common.h"
 
 static Pango2Context *context;

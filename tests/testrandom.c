@@ -23,7 +23,7 @@
 
 #include <locale.h>
 #include <gio/gio.h>
-#include <pango/pango.h>
+#include <pango2/pango.h>
 
 #define N_SENTENCES 20
 

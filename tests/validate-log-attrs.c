@@ -21,7 +21,7 @@
 #include "config.h"
 
 #include "validate-log-attrs.h"
-#include "pango.h"
+#include <pango2/pango.h>
 #include <string.h>
 
 /* {{{ Validation */

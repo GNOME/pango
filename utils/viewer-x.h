@@ -21,7 +21,7 @@
 #ifndef VIEWER_X_H
 #define VIEWER_X_H
 
-#include <pango/pango.h>
+#include <pango2/pango.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

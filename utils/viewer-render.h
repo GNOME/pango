@@ -21,7 +21,7 @@
 #ifndef VIEWER_RENDER_H
 #define VIEWER_RENDER_H
 
-#include <pango/pango-layout.h>
+#include <pango2/pango.h>
 
 #include "viewer.h"
 

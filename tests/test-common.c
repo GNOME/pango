@@ -32,7 +32,7 @@
 #include <unistd.h>
 #endif
 
-#include <pango/pangocairo.h>
+#include <pango2/pangocairo.h>
 #include "test-common.h"
 
 #include <hb-ot.h>

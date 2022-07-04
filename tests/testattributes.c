@@ -19,8 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <pango/pango.h>
-#include <pango/pango-attr-private.h>
+#include <pango2/pango.h>
+#include <pango2/pango-attr-private.h>
 
 static void
 test_copy (Pango2Attribute *attr)

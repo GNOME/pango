@@ -24,7 +24,7 @@
 #include <stdio.h>
 
 #include <glib.h>
-#include <pango/pango.h>
+#include <pango2/pango.h>
 
 #ifndef G_OS_WIN32
 #include <unistd.h>

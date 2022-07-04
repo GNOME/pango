@@ -30,7 +30,7 @@
 
 #include <glib.h>
 
-#include <pango/pango.h>
+#include <pango2/pango.h>
 
 static void verbose (const char *format, ...) G_GNUC_PRINTF (1, 2);
 static void

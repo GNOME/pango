@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <pango/pangocairo.h>
+#include <pango2/pangocairo.h>
 
 #define BULLET "•"
 #define HEART "♥"
