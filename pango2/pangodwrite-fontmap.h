@@ -21,6 +21,9 @@
 
 #pragma once
 
+#define WIN32_LEAN_AND_MEAN 1
+
+#include <windows.h>
 #include <pango2/pango.h>
 
 G_BEGIN_DECLS
@@ -34,7 +37,13 @@ PANGO2_DECLARE_INTERNAL_TYPE (Pango2DirectWriteFontMap,
                               Pango2FontMap)
 
 PANGO2_AVAILABLE_IN_ALL
-Pango2DirectWriteFontMap * pango2_direct_write_font_map_new (void);
+Pango2DirectWriteFontMap *pango2_direct_write_font_map_new                          (void);
 
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontDescription    *pango2_direct_write_get_font_description_from_dwrite_font (gpointer       dwrite_font);
+
+PANGO2_AVAILABLE_IN_ALL
+Pango2FontDescription    *pango2_direct_write_get_font_description_from_logfontw    (LOGFONTW      *lfw,
+                                                                                     Pango2FontMap *font_map);
 
 G_END_DECLS

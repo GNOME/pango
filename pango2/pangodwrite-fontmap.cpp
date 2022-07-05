@@ -341,25 +341,52 @@ pango2_direct_write_font_map_populate (Pango2FontMap *map)
 
 G_DEFINE_FINAL_TYPE (Pango2DirectWriteFontMap, pango2_direct_write_font_map, PANGO2_TYPE_FONT_MAP)
 
-static void
-pango2_direct_write_font_map_init (Pango2DirectWriteFontMap *self)
+struct DirectWriteItems
+{
+  IDWriteFactory *dwrite_factory;
+  IDWriteGdiInterop *gdi_interop;
+};
+
+static struct DirectWriteItems
+init_direct_write (void)
 {
   HRESULT hr;
+  struct DirectWriteItems dwrite_items = {NULL, NULL};
+  IDWriteFactory *dwrite_factory = NULL;
+  IDWriteGdiInterop *gdi_interop = NULL;
 
   hr = DWriteCreateFactory (DWRITE_FACTORY_TYPE_SHARED,
                             UUID_OF_IDWriteFactory,
-                            reinterpret_cast<IUnknown**> (&self->dwrite_factory));
+                            reinterpret_cast<IUnknown**> (&dwrite_factory));
 
-  if (FAILED (hr) || !self->dwrite_factory)
+  if (FAILED (hr) || !dwrite_factory)
     g_error ("DWriteCreateFactory failed with error code %x", (unsigned)hr);
-
-  if (self->dwrite_factory)
+  else
     {
-      hr = self->dwrite_factory->GetGdiInterop (&self->gdi_interop);
+      hr = dwrite_factory->GetGdiInterop (&gdi_interop);
 
-      if (FAILED (hr) || !self->gdi_interop)
-        g_error ("GdiInterop failed with error code %x", (unsigned)hr);
+      if (FAILED (hr) || !gdi_interop)
+        {
+          dwrite_factory->Release ();
+          g_error ("GdiInterop failed with error code %x", (unsigned)hr);
+        }
+      else
+        {
+          dwrite_items.dwrite_factory = dwrite_factory;
+          dwrite_items.gdi_interop = gdi_interop;
+        }
     }
+
+  return dwrite_items;
+}
+
+static void
+pango2_direct_write_font_map_init (Pango2DirectWriteFontMap *self)
+{
+  struct DirectWriteItems dwrite_items = init_direct_write ();
+
+  self->dwrite_factory = dwrite_items.dwrite_factory;
+  self->gdi_interop = dwrite_items.gdi_interop;
 
   pango2_font_map_repopulate (PANGO2_FONT_MAP (self), TRUE);
 }
@@ -408,6 +435,103 @@ pango2_direct_write_font_map_new (void)
   return (Pango2DirectWriteFontMap *) g_object_new (PANGO2_TYPE_DIRECT_WRITE_FONT_MAP, NULL);
 }
 
+/**
+ * pango2_direct_write_get_font_description_from_dwrite_font:
+ * @dwrite_font: the `IDWriteFont` to query the font description
+ *
+ * Returns a `Pango2FontDescription` that corresonds to the `IDWriteFont`,
+ * this API is normally used from C++ as `IDWriteFont`'s are created or
+ * obtained via the Windows DirectWrite APIs, which are normally only
+ * accessible via C++.
+ *
+ * Return value: the `Pango2FontDescription` corresonding to @dwrite_font,
+ * the returned value should be freed with [method@Pango2.FontDescription.free]
+ */
+Pango2FontDescription *
+pango2_direct_write_get_font_description_from_dwrite_font (gpointer dwrite_font)
+{
+  HRESULT hr;
+  IDWriteFont *font = NULL;
+  IDWriteFontFamily *family = NULL;
+  Pango2FontDescription *desc = NULL;
+
+  g_return_val_if_fail (dwrite_font != NULL, NULL);
+
+  font = static_cast<IDWriteFont*>(dwrite_font);
+
+  hr = font->GetFontFamily (&family);
+
+  if (SUCCEEDED (hr) && family != NULL)
+    {
+      char *family_name = util_dwrite_get_font_family_name (family);
+
+      if (family_name != NULL)
+        desc = util_get_pango2_font_description (font, family_name);
+
+      family->Release ();
+    }
+  else
+    g_error ("IDWriteFont::GetFontFamily failed with error code %x\n", (unsigned)hr);
+
+  return desc;
+}
+
+/**
+ * pango2_direct_write_get_font_description_from_logfontw:
+ * @lfw: the `LOGFONTW` to query the font description
+ * @font_map: (nullable): the `Pango2FontMap` to use
+ *
+ * Returns a `Pango2FontDescription` that corresonds to the `LOGFONTW`.  An optional
+ * `Pango2FontMap` of type `Pango2DirectWriteFontMap` may be passed in to indicate
+ * DirectWrite has been set up through Pango, to optimize things.
+ *
+ * Return value: the `Pango2FontDescription` corresonding to @lfw,
+ * the returned value should be freed with [method@Pango2.FontDescription.free]
+ */
+Pango2FontDescription *
+pango2_direct_write_get_font_description_from_logfontw (LOGFONTW      *lfw,
+                                                        Pango2FontMap *font_map)
+{
+  HRESULT hr;
+  IDWriteFont *dwrite_font = NULL;
+  Pango2DirectWriteFontMap *dwrite_fontmap = NULL;
+  Pango2FontDescription *desc = NULL;
+  struct DirectWriteItems dwrite_items = {NULL, NULL};
+  IDWriteFactory *dwrite_factory = NULL;
+  IDWriteGdiInterop *gdi_interop = NULL;
+
+  if (PANGO2_IS_DIRECT_WRITE_FONT_MAP (font_map))
+    gdi_interop = PANGO2_DIRECT_WRITE_FONT_MAP (font_map)->gdi_interop;
+  else
+    {
+      struct DirectWriteItems dwrite_items = init_direct_write ();
+
+      dwrite_factory = dwrite_items.dwrite_factory;
+      gdi_interop = dwrite_items.gdi_interop;
+
+      if (dwrite_factory == NULL || gdi_interop == NULL)
+        return NULL;
+    }
+
+  hr = gdi_interop->CreateFontFromLOGFONT (lfw, &dwrite_font);
+
+  if (FAILED (hr) || dwrite_font == NULL)
+    {
+      g_error ("IDWriteFactory::GdiInterop::CreateFontFromLOGFONT failed with error code %x\n", (unsigned)hr);
+      return NULL;
+    }
+
+  desc = pango2_direct_write_get_font_description_from_dwrite_font (dwrite_font);
+  dwrite_font->Release ();
+
+  if (dwrite_factory != NULL)
+    {
+      gdi_interop->Release ();
+      dwrite_factory->Release ();
+    }
+
+  return desc;
+}
 /* }}} */
 
 /* vim:set foldmethod=marker expandtab: */
