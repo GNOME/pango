@@ -424,6 +424,7 @@ if host_system == 'windows'
     'pangowin32.c',
     'pangowin32-fontcache.c',
     'pangowin32-fontmap.c',
+    'pangowin32-dwrite-fontmap.cpp',
   ]
 
   pangowin32_deps = pango_deps + [

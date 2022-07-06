@@ -809,6 +809,7 @@ _pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
                                           (GEqualFunc)alias_equal,
                                           (GDestroyNotify)alias_free,
                                           NULL);
+
 #ifdef HAVE_CAIRO_WIN32
   read_windows_fallbacks (class->aliases);
   read_builtin_aliases (class->aliases);

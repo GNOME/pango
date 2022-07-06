@@ -57,6 +57,8 @@
 #include "pango-fontset.h"
 #include "pango-fontmap-private.h"
 
+G_BEGIN_DECLS
+
 #define PANGO_TYPE_WIN32_FONT_MAP             (_pango_win32_font_map_get_type ())
 #define PANGO_WIN32_FONT_MAP(object)          (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_WIN32_FONT_MAP, PangoWin32FontMap))
 #define PANGO_WIN32_IS_FONT_MAP(object)       (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_WIN32_FONT_MAP))
@@ -73,6 +75,7 @@
 
 typedef struct _PangoWin32FontMap      PangoWin32FontMap;
 typedef struct _PangoWin32FontMapClass PangoWin32FontMapClass;
+typedef struct _PangoWin32DWriteItems  PangoWin32DWriteItems;
 typedef struct _PangoWin32Font         PangoWin32Font;
 typedef struct _PangoWin32FontClass    PangoWin32FontClass;
 typedef struct _PangoWin32Face         PangoWin32Face;
@@ -280,5 +283,13 @@ gpointer        _pango_win32_copy_cmap (gpointer cmap,
                                         guint16 cmap_format);
 
 extern gboolean _pango_win32_debug;
+
+PangoWin32DWriteItems *pango_win32_init_direct_write          (void);
+
+PangoWin32DWriteItems *pango_win32_get_direct_write_items     (void);
+
+void                   pango_win32_dwrite_items_destroy       (PangoWin32DWriteItems *items);
+
+G_END_DECLS
 
 #endif /* __PANGOWIN32_PRIVATE_H__ */

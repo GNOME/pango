@@ -126,11 +126,13 @@ _pango_win32_font_init (PangoWin32Font *win32font)
 }
 
 static GPrivate display_dc_key = G_PRIVATE_INIT ((GDestroyNotify) DeleteDC);
+static GPrivate dwrite_items = G_PRIVATE_INIT ((GDestroyNotify) pango_win32_dwrite_items_destroy);
 
 HDC
 _pango_win32_get_display_dc (void)
 {
   HDC hdc = g_private_get (&display_dc_key);
+  PangoWin32DWriteItems *items;
 
   if (hdc == NULL)
     {
@@ -151,7 +153,20 @@ _pango_win32_get_display_dc (void)
 #endif
     }
 
+  items = g_private_get (&dwrite_items);
+  if (items == NULL)
+    {
+      items = pango_win32_init_direct_write ();
+      g_private_set (&dwrite_items, items);
+    }
+
   return hdc;
+}
+
+PangoWin32DWriteItems *
+pango_win32_get_direct_write_items (void)
+{
+  return g_private_get (&dwrite_items);
 }
 
 /**
