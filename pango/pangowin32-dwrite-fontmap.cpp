@@ -84,3 +84,108 @@ pango_win32_dwrite_items_destroy (PangoWin32DWriteItems *dwrite_items)
 
   g_free (dwrite_items);
 }
+
+void
+pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
+{
+  IDWriteFontCollection *collection = NULL;
+  UINT32 count;
+  HRESULT hr;
+  gboolean failed = FALSE;
+  PangoWin32DWriteItems *dwrite_items = pango_win32_get_direct_write_items ();
+
+  hr = dwrite_items->dwrite_factory->GetSystemFontCollection (&collection, FALSE);
+  if (FAILED (hr) || collection == NULL)
+    {
+      g_error ("IDWriteFactory::GetSystemFontCollection failed with error code %x\n", (unsigned)hr);
+      return;
+    }
+
+  count = collection->GetFontFamilyCount ();
+
+  for (UINT32 i = 0; i < count; i++)
+    {
+      IDWriteFontFamily *family = NULL;
+      UINT32 font_count;
+
+      hr = collection->GetFontFamily (i, &family);
+      if G_UNLIKELY (FAILED (hr) || family == NULL)
+        {
+          g_warning ("IDWriteFontCollection::GetFontFamily failed with error code %x\n", (unsigned)hr);
+          continue;
+        }
+
+      font_count = family->GetFontCount ();
+
+      for (UINT32 j = 0; j < font_count; j++)
+        {
+          IDWriteFont *font = NULL;
+          IDWriteFontFace *face = NULL;
+          DWRITE_FONT_FACE_TYPE font_face_type;
+
+          hr = family->GetFont (j, &font);
+          if (FAILED (hr) || font == NULL)
+            {
+              g_warning ("IDWriteFontFamily::GetFont failed with error code %x\n", (unsigned)hr);
+              break;
+            }
+
+          hr = font->CreateFontFace (&face);
+          if (FAILED (hr) || face == NULL)
+            {
+              g_warning ("IDWriteFont::CreateFontFace failed with error code %x\n", (unsigned)hr);
+              font->Release ();
+              continue;
+            }
+
+          font_face_type = face->GetType ();
+
+          /* don't include Type-1 fonts */
+          if (font_face_type != DWRITE_FONT_FACE_TYPE_TYPE1)
+            {
+              LOGFONTW lfw;
+              BOOL is_sys_font;
+
+              hr = dwrite_items->gdi_interop->ConvertFontToLOGFONT (font, &lfw, &is_sys_font);
+
+              if (SUCCEEDED (hr))
+                pango_win32_insert_font (map, &lfw, font, FALSE);
+              else
+                g_warning ("GDIInterop::ConvertFontToLOGFONT failed with error code %x\n",
+                           (unsigned)hr);
+            }
+
+         face->Release ();
+        }
+
+      family->Release ();
+    }
+
+  collection->Release ();
+  collection = NULL;
+}
+
+gpointer
+pango_win32_logfontw_get_dwrite_font (LOGFONTW *logfontw)
+{
+  PangoWin32DWriteItems *dwrite_items = pango_win32_get_direct_write_items ();
+  IDWriteFont *font = NULL;
+  HRESULT hr;
+
+  hr = dwrite_items->gdi_interop->CreateFontFromLOGFONT (logfontw, &font);
+
+  if (FAILED (hr) || font == NULL)
+    g_warning ("IDWriteFactory::GdiInterop::CreateFontFromLOGFONT failed with error %x\n",
+               (unsigned)hr);
+
+  return font;
+}
+
+void
+pango_win32_dwrite_font_release (gpointer dwrite_font)
+{
+  IDWriteFont *font = static_cast<IDWriteFont *>(dwrite_font);
+
+  if (font != NULL)
+    font->Release ();
+}

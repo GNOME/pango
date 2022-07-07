@@ -99,6 +99,11 @@ struct _PangoWin32FontMap
    */
   GHashTable *fonts;
 
+  /* Map LOGFONTWs to IDWriteFonts corresponding to actual fonts
+   * installed, if applicable.
+   */
+  GHashTable *dwrite_fonts;
+
   /* keeps track of the system font aliases that we might have */
   GHashTable *aliases;
 
@@ -284,11 +289,22 @@ gpointer        _pango_win32_copy_cmap (gpointer cmap,
 
 extern gboolean _pango_win32_debug;
 
+void                   pango_win32_insert_font                (PangoWin32FontMap     *win32fontmap,
+                                                               LOGFONTW              *lfp,
+                                                               gpointer               dwrite_font,
+                                                               gboolean               is_synthetic);
+
 PangoWin32DWriteItems *pango_win32_init_direct_write          (void);
 
 PangoWin32DWriteItems *pango_win32_get_direct_write_items     (void);
 
+void                   pango_win32_dwrite_font_map_populate   (PangoWin32FontMap     *map);
+
 void                   pango_win32_dwrite_items_destroy       (PangoWin32DWriteItems *items);
+
+void                   pango_win32_dwrite_font_release        (gpointer               dwrite_font);
+
+gpointer               pango_win32_logfontw_get_dwrite_font   (LOGFONTW *logfontw);
 
 G_END_DECLS
 

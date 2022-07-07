@@ -101,10 +101,6 @@ static PangoFont *pango_win32_font_map_real_find_font (PangoWin32FontMap        
 
 static void       pango_win32_fontmap_cache_clear    (PangoWin32FontMap            *win32fontmap);
 
-static void       pango_win32_insert_font            (PangoWin32FontMap            *fontmap,
-                                                      LOGFONTW                     *lfp,
-                                                      gboolean                      is_synthetic);
-
 static PangoWin32Family *pango_win32_get_font_family (PangoWin32FontMap            *win32fontmap,
                                                       const char                   *family_name);
 
@@ -197,7 +193,7 @@ pango_win32_inner_enum_proc (LOGFONTW    *lfp,
    * Asian fonts with @ prepended to their name, ignore them.
    */
   if (lfp->lfFaceName[0] != '@')
-    pango_win32_insert_font (win32fontmap, lfp, FALSE);
+    pango_win32_insert_font (win32fontmap, lfp, NULL, FALSE);
 
   return 1;
 }
@@ -282,7 +278,7 @@ synthesize_foreach (gpointer key,
       lf = variant[NORMAL]->logfontw;
       lf.lfWeight = FW_BOLD;
       
-      pango_win32_insert_font (win32fontmap, &lf, TRUE);
+      pango_win32_insert_font (win32fontmap, &lf, NULL, TRUE);
     }
 
   if (variant[NORMAL] != NULL && variant[SLANTED] == NULL)
@@ -290,7 +286,7 @@ synthesize_foreach (gpointer key,
       lf = variant[NORMAL]->logfontw;
       lf.lfItalic = 255;
       
-      pango_win32_insert_font (win32fontmap, &lf, TRUE);
+      pango_win32_insert_font (win32fontmap, &lf, NULL, TRUE);
     }
 
   if (variant[NORMAL] != NULL &&
@@ -300,7 +296,7 @@ synthesize_foreach (gpointer key,
       lf.lfWeight = FW_BOLD;
       lf.lfItalic = 255;
 
-      pango_win32_insert_font (win32fontmap, &lf, TRUE);
+      pango_win32_insert_font (win32fontmap, &lf, NULL, TRUE);
     }
   else if (variant[BOLDER] != NULL &&
            variant[BOLDER+SLANTED] == NULL)
@@ -308,7 +304,7 @@ synthesize_foreach (gpointer key,
       lf = variant[BOLDER]->logfontw;
       lf.lfItalic = 255;
 
-      pango_win32_insert_font (win32fontmap, &lf, TRUE);
+      pango_win32_insert_font (win32fontmap, &lf, NULL, TRUE);
     }
   else if (variant[SLANTED] != NULL &&
            variant[BOLDER+SLANTED] == NULL)
@@ -316,7 +312,7 @@ synthesize_foreach (gpointer key,
       lf = variant[SLANTED]->logfontw;
       lf.lfWeight = FW_BOLD;
 
-      pango_win32_insert_font (win32fontmap, &lf, TRUE);
+      pango_win32_insert_font (win32fontmap, &lf, NULL, TRUE);
     }
 }
 
@@ -705,7 +701,7 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 {
   LOGFONTW logfont;
   HDC hdc = _pango_win32_get_display_dc ();
-  struct EnumProcData enum_proc_data;
+  struct EnumProcData enum_proc_data = {hdc, win32fontmap};
 
   win32fontmap->families =
     g_hash_table_new_full ((GHashFunc) case_insensitive_str_hash,
@@ -713,6 +709,11 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
   win32fontmap->fonts =
     g_hash_table_new_full ((GHashFunc) logfontw_nosize_hash,
                            (GEqualFunc) logfontw_nosize_equal, NULL, g_free);
+  win32fontmap->dwrite_fonts =
+    g_hash_table_new_full ((GHashFunc) logfontw_nosize_hash,
+                           (GEqualFunc) logfontw_nosize_equal,
+                           NULL,
+                           pango_win32_dwrite_font_release);
 
   win32fontmap->font_cache = pango_win32_font_cache_new ();
   win32fontmap->freed_fonts = g_queue_new ();
@@ -721,6 +722,9 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
                                                       g_free,
                                                       NULL);
 
+  pango_win32_dwrite_font_map_populate (win32fontmap);
+
+#if 0 /* XXX: Implement fallback mode to GDI? */
   memset (&logfont, 0, sizeof (logfont));
   logfont.lfCharSet = DEFAULT_CHARSET;
 
@@ -730,6 +734,7 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
   EnumFontFamiliesExW (hdc, &logfont,
                        (FONTENUMPROCW) pango_win32_enum_proc,
                        (LPARAM) &enum_proc_data, 0);
+#endif
 
   g_hash_table_foreach (win32fontmap->families, synthesize_foreach, win32fontmap);
 
@@ -865,6 +870,7 @@ pango_win32_font_map_finalize (GObject *object)
 
   pango_win32_font_cache_free (win32fontmap->font_cache);
 
+  g_hash_table_destroy (win32fontmap->dwrite_fonts);
   g_hash_table_destroy (win32fontmap->warned_fonts);
   g_hash_table_destroy (win32fontmap->fonts);
   g_hash_table_destroy (win32fontmap->families);
@@ -1651,9 +1657,10 @@ ff_name (int ff, char* num)
     }
 }
 
-static void
+void
 pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
                          LOGFONTW          *lfp,
+                         gpointer           dwrite_font,
                          gboolean           is_synthetic)
 {
   LOGFONTW *lfp2 = NULL;
@@ -1690,7 +1697,11 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   PING (("not found"));
   lfp2 = g_new (LOGFONTW, 1);
   *lfp2 = *lfp;
+  if (dwrite_font == NULL)
+    dwrite_font = pango_win32_logfontw_get_dwrite_font (lfp2);
+
   g_hash_table_insert (win32fontmap->fonts, lfp2, lfp2);
+  g_hash_table_insert (win32fontmap->dwrite_fonts, lfp2, dwrite_font);
 
   description = pango_win32_font_description_from_logfontw (lfp2);
 
