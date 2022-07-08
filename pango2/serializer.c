@@ -260,6 +260,13 @@ static const char *ellipsize_names[] = {
   NULL
 };
 
+static const char *tab_unit_names[] = {
+  "default",
+  "pixels",
+  "spaces",
+  NULL
+};
+
 /* }}} */
 /* {{{ Serialization */
 
@@ -434,7 +441,8 @@ add_tab_array (GtkJsonPrinter *printer,
 
   gtk_json_printer_start_object (printer, "tabs");
 
-  gtk_json_printer_add_boolean (printer, "positions-in-pixels", pango2_tab_array_get_positions_in_pixels (tabs));
+  gtk_json_printer_add_string (printer, "position-units", tab_unit_names[pango2_tab_array_get_positions (tabs)]);
+
   gtk_json_printer_start_array (printer, "positions");
   for (int i = 0; i < pango2_tab_array_get_size (tabs); i++)
     {
@@ -1274,12 +1282,12 @@ json_parser_fill_tabs (GtkJsonParser *parser,
 }
 
 enum {
-  TABS_POSITIONS_IN_PIXELS,
+  TABS_POSITION_UNITS,
   TABS_POSITIONS
 };
 
 static const char *tabs_members[] = {
-  "positions-in-pixels",
+  "position-units",
   "positions",
   NULL
 };
@@ -1294,8 +1302,8 @@ json_parser_fill_tab_array (GtkJsonParser *parser,
     {
       switch (gtk_json_parser_select_member (parser, tabs_members))
         {
-        case TABS_POSITIONS_IN_PIXELS:
-          pango2_tab_array_set_positions_in_pixels (tabs, gtk_json_parser_get_boolean (parser));
+        case TABS_POSITION_UNITS:
+          pango2_tab_array_set_positions (tabs, (Pango2TabPositions) parser_select_string (parser, tab_unit_names));
           break;
 
         case TABS_POSITIONS:

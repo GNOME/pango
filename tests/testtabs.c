@@ -29,9 +29,9 @@ test_tabs_basic (void)
   Pango2TabAlign align;
   int location;
 
-  tabs = pango2_tab_array_new (1, TRUE);
+  tabs = pango2_tab_array_new (1, PANGO2_TAB_POSITIONS_DEFAULT);
 
-  g_assert_true (pango2_tab_array_get_positions_in_pixels (tabs));
+  g_assert_true (pango2_tab_array_get_positions (tabs) == PANGO2_TAB_POSITIONS_DEFAULT);
   g_assert_true (pango2_tab_array_get_size (tabs) == 1);
 
   pango2_tab_array_set_tab (tabs, 0, PANGO2_TAB_LEFT, 10);
@@ -49,7 +49,7 @@ test_tabs_copy (void)
   Pango2TabAlign *alignments;
   int *locations;
 
-  tabs = pango2_tab_array_new_with_positions (2, TRUE,
+  tabs = pango2_tab_array_new_with_positions (2, PANGO2_TAB_POSITIONS_DEFAULT,
                                              PANGO2_TAB_LEFT, 10,
                                              PANGO2_TAB_LEFT, 20);
 
@@ -74,7 +74,7 @@ test_tabs_resize (void)
   Pango2TabAlign *alignments;
   int *locations;
 
-  tabs = pango2_tab_array_new (1, TRUE);
+  tabs = pango2_tab_array_new (1, PANGO2_TAB_POSITIONS_DEFAULT);
 
   pango2_tab_array_set_tab (tabs, 0, PANGO2_TAB_LEFT, 10);
 
