@@ -47,17 +47,31 @@ typedef enum
   PANGO2_TAB_DECIMAL
 } Pango2TabAlign;
 
+/**
+ * Pango2TabPositions:
+ * @PANGO2_TAB_POSITIONS_DEFAULT: Positions are in Pango units
+ * @PANGO2_TAB_POSITIONS_PIXELS: Positions are in pixls
+ * @PANGO2_TAB_POSITIONS_SPACES: Positions are in spaces
+ *
+ * `Pango2TabPositions` specifies the unit for tab positions.
+ */
+typedef enum {
+  PANGO2_TAB_POSITIONS_DEFAULT,
+  PANGO2_TAB_POSITIONS_PIXELS,
+  PANGO2_TAB_POSITIONS_SPACES,
+} Pango2TabPositions;
+
 #define PANGO2_TYPE_TAB_ARRAY (pango2_tab_array_get_type ())
 
 PANGO2_AVAILABLE_IN_ALL
 GType                   pango2_tab_array_get_type                (void) G_GNUC_CONST;
 
 PANGO2_AVAILABLE_IN_ALL
-Pango2TabArray *        pango2_tab_array_new                     (int              initial_size,
-                                                                  gboolean         positions_in_pixels);
+Pango2TabArray *        pango2_tab_array_new                     (int                 initial_size,
+                                                                  Pango2TabPositions  positions);
 PANGO2_AVAILABLE_IN_ALL
 Pango2TabArray *        pango2_tab_array_new_with_positions      (int              size,
-                                                                  gboolean         positions_in_pixels,
+                                                                  Pango2TabPositions positions,
                                                                   Pango2TabAlign   first_alignment,
                                                                   int              first_position,
                                                                   ...);
@@ -86,11 +100,11 @@ void                    pango2_tab_array_get_tabs                (Pango2TabArray
                                                                   int            **locations);
 
 PANGO2_AVAILABLE_IN_ALL
-gboolean                pango2_tab_array_get_positions_in_pixels (Pango2TabArray  *tab_array);
+Pango2TabPositions      pango2_tab_array_get_positions           (Pango2TabArray  *tab_array);
 
 PANGO2_AVAILABLE_IN_ALL
-void                    pango2_tab_array_set_positions_in_pixels (Pango2TabArray  *tab_array,
-                                                                  gboolean         positions_in_pixels);
+void                    pango2_tab_array_set_positions           (Pango2TabArray  *tab_array,
+                                                                  Pango2TabPositions positions);
 
 PANGO2_AVAILABLE_IN_ALL
 char *                  pango2_tab_array_to_string               (Pango2TabArray  *tab_array);

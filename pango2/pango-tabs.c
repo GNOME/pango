@@ -47,7 +47,7 @@ struct _Pango2TabArray
 {
   int size;
   int allocated;
-  gboolean positions_in_pixels;
+  Pango2TabPositions positions;
   Pango2Tab *tabs;
 };
 
@@ -66,19 +66,19 @@ init_tabs (Pango2TabArray *array, int start, int end)
 /**
  * pango2_tab_array_new:
  * @initial_size: Initial number of tab stops to allocate, can be 0
- * @positions_in_pixels: whether positions are in pixel units
+ * @positions: the unit positions are specified in
  *
  * Creates an array of @initial_size tab stops.
  *
- * Tab stops are specified in pixel units if @positions_in_pixels is %TRUE,
- * otherwise in Pango units. All stops are initially at position 0.
+ * Tab stops are specified in units according to @position.
+ * All stops are initially at position 0.
  *
  * Return value: the newly allocated `Pango2TabArray`, which should
  *   be freed with [method@Pango2.TabArray.free].
  */
 Pango2TabArray*
-pango2_tab_array_new (int     initial_size,
-                      gboolean positions_in_pixels)
+pango2_tab_array_new (int                 initial_size,
+                      Pango2TabPositions  positions)
 {
   Pango2TabArray *array;
 
@@ -100,7 +100,7 @@ pango2_tab_array_new (int     initial_size,
   else
     array->tabs = NULL;
 
-  array->positions_in_pixels = positions_in_pixels;
+  array->positions = positions;
 
   return array;
 }
@@ -108,7 +108,7 @@ pango2_tab_array_new (int     initial_size,
 /**
  * pango2_tab_array_new_with_positions:
  * @size: number of tab stops in the array
- * @positions_in_pixels: whether positions are in pixel units
+ * @positions: unit for positions
  * @first_alignment: alignment of first tab stop
  * @first_position: position of first tab stop
  * @...: additional alignment/position pairs
@@ -122,10 +122,10 @@ pango2_tab_array_new (int     initial_size,
  *   be freed with [method@Pango2.TabArray.free].
  */
 Pango2TabArray  *
-pango2_tab_array_new_with_positions (int             size,
-                                     gboolean        positions_in_pixels,
-                                     Pango2TabAlign  first_alignment,
-                                     int             first_position,
+pango2_tab_array_new_with_positions (int                size,
+                                     Pango2TabPositions positions,
+                                     Pango2TabAlign     first_alignment,
+                                     int                first_position,
                                      ...)
 {
   Pango2TabArray *array;
@@ -134,7 +134,7 @@ pango2_tab_array_new_with_positions (int             size,
 
   g_return_val_if_fail (size >= 0, NULL);
 
-  array = pango2_tab_array_new (size, positions_in_pixels);
+  array = pango2_tab_array_new (size, positions);
 
   if (size == 0)
     return array;
@@ -186,7 +186,7 @@ pango2_tab_array_copy (Pango2TabArray *src)
 
   g_return_val_if_fail (src != NULL, NULL);
 
-  copy = pango2_tab_array_new (src->size, src->positions_in_pixels);
+  copy = pango2_tab_array_new (src->size, src->positions);
 
   if (copy->tabs)
     memcpy (copy->tabs, src->tabs, sizeof(Pango2Tab) * src->size);
@@ -354,37 +354,35 @@ pango2_tab_array_get_tabs (Pango2TabArray  *tab_array,
 }
 
 /**
- * pango2_tab_array_get_positions_in_pixels:
+ * pango2_tab_array_get_positions:
  * @tab_array: a `Pango2TabArray`
  *
- * Returns %TRUE if the tab positions are in pixels,
- * %FALSE if they are in Pango units.
+ * Returns the unit used for tab positions.
  *
- * Return value: whether positions are in pixels.
+ * Return value: the unit for tab positions
  */
-gboolean
-pango2_tab_array_get_positions_in_pixels (Pango2TabArray *tab_array)
+Pango2TabPositions
+pango2_tab_array_get_positions (Pango2TabArray *tab_array)
 {
   g_return_val_if_fail (tab_array != NULL, FALSE);
 
-  return tab_array->positions_in_pixels;
+  return tab_array->positions;
 }
 
 /**
- * pango2_tab_array_set_positions_in_pixels:
+ * pango2_tab_array_set_positions:
  * @tab_array: a `Pango2TabArray`
- * @positions_in_pixels: whether positions are in pixels
+ * @positions: unit for tab postions
  *
- * Sets whether positions in this array are specified in
- * pixels.
+ * Sets the unit to use for positions in this array.
  */
 void
-pango2_tab_array_set_positions_in_pixels (Pango2TabArray *tab_array,
-                                          gboolean        positions_in_pixels)
+pango2_tab_array_set_positions (Pango2TabArray     *tab_array,
+                                Pango2TabPositions  positions)
 {
   g_return_if_fail (tab_array != NULL);
 
-  tab_array->positions_in_pixels = positions_in_pixels;
+  tab_array->positions = positions;
 }
 
 /**
@@ -422,8 +420,20 @@ pango2_tab_array_to_string (Pango2TabArray *tab_array)
         g_string_append (s, "decimal:");
 
       g_string_append_printf (s, "%d", tab_array->tabs[i].location);
-      if (tab_array->positions_in_pixels)
-        g_string_append (s, "px");
+      switch (tab_array->positions)
+        {
+        case PANGO2_TAB_POSITIONS_DEFAULT:
+          break;
+        case PANGO2_TAB_POSITIONS_PIXELS:
+          g_string_append (s, "px");
+          break;
+        case PANGO2_TAB_POSITIONS_SPACES:
+          g_string_append (s, "sp");
+          break;
+        default:
+          g_assert_not_reached ();
+          break;
+        }
 
       if (tab_array->tabs[i].decimal_point != 0)
         g_string_append_printf (s, ":%d", tab_array->tabs[i].decimal_point);
@@ -455,13 +465,18 @@ Pango2TabArray *
 pango2_tab_array_from_string (const char *text)
 {
   Pango2TabArray *array;
-  gboolean pixels;
   const char *p;
   int i;
+  Pango2TabPositions positions;
 
-  pixels = strstr (text, "px") != NULL;
+  if (strstr (text, "px"))
+    positions = PANGO2_TAB_POSITIONS_PIXELS;
+  else if (strstr (text, "sp"))
+    positions = PANGO2_TAB_POSITIONS_SPACES;
+  else
+    positions = PANGO2_TAB_POSITIONS_DEFAULT;
 
-  array = pango2_tab_array_new (0, pixels);
+  array = pango2_tab_array_new (0, positions);
 
   p = skip_whitespace (text);
 
@@ -499,15 +514,21 @@ pango2_tab_array_from_string (const char *text)
 
       pos = g_ascii_strtoll (p, &endp, 10);
       if (pos < 0 ||
-          (pixels && *endp != 'p') ||
-          (!pixels && !g_ascii_isspace (*endp) && *endp != ':' && *endp != '\0')) goto fail;
+          (positions == PANGO2_TAB_POSITIONS_PIXELS && *endp != 'p') ||
+          (positions == PANGO2_TAB_POSITIONS_SPACES && *endp != 's') ||
+          ((positions == PANGO2_TAB_POSITIONS_DEFAULT) && !g_ascii_isspace (*endp) && *endp != ':' && *endp != '\0')) goto fail;
 
       pango2_tab_array_set_tab (array, i, align, pos);
 
       p = (const char *)endp;
-      if (pixels)
+      if (positions == PANGO2_TAB_POSITIONS_PIXELS)
         {
           if (p[0] != 'p' || p[1] != 'x') goto fail;
+          p += 2;
+        }
+      else if (positions == PANGO2_TAB_POSITIONS_SPACES)
+        {
+          if (p[0] != 's' || p[1] != 'p') goto fail;
           p += 2;
         }
 

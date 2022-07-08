@@ -678,31 +678,41 @@ get_tab_pos (Pango2LineBreaker *self,
              gboolean          *is_default)
 {
   int n_tabs;
-  gboolean in_pixels;
   int offset = 0;
+  int tab_unit;
 
   offset = self->line_x;
 
   if (self->tabs)
     {
       n_tabs = pango2_tab_array_get_size (self->tabs);
-      in_pixels = pango2_tab_array_get_positions_in_pixels (self->tabs);
+      switch (pango2_tab_array_get_positions (self->tabs))
+        {
+        case PANGO2_TAB_POSITIONS_DEFAULT:
+          tab_unit = PANGO2_SCALE;
+          break;
+        case PANGO2_TAB_POSITIONS_PIXELS:
+          tab_unit = 1;
+          break;
+        case PANGO2_TAB_POSITIONS_SPACES:
+          tab_unit = self->tab_width / 8;
+          break;
+        default:
+          g_assert_not_reached ();
+        }
       *is_default = FALSE;
     }
   else
     {
       n_tabs = 0;
-      in_pixels = FALSE;
+       tab_unit = PANGO2_SCALE;
       *is_default = TRUE;
     }
 
   if (index < n_tabs)
     {
       pango2_tab_array_get_tab (self->tabs, index, alignment, tab_pos);
-
-      if (in_pixels)
-        *tab_pos *= PANGO2_SCALE;
-
+      *tab_pos *= tab_unit;
       *decimal = pango2_tab_array_get_decimal_point (self->tabs, index);
     }
   else if (n_tabs > 0)
@@ -720,11 +730,8 @@ get_tab_pos (Pango2LineBreaker *self,
       else
         next_to_last_pos = 0;
 
-      if (in_pixels)
-        {
-          next_to_last_pos *= PANGO2_SCALE;
-          last_pos *= PANGO2_SCALE;
-        }
+      next_to_last_pos *= tab_unit;
+      last_pos *= tab_unit;
 
       if (last_pos > next_to_last_pos)
         tab_width = last_pos - next_to_last_pos;
