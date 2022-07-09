@@ -1707,7 +1707,7 @@ pango2_font_description_set_faceid_static (Pango2FontDescription *desc,
  *
  * Sets the faceid field of a font description.
  *
- * The faceid is mainly for internal use by Pango2, to ensure
+ * The faceid is mainly for internal use by Pango, to ensure
  * that font -> description -> font roundtrips end up with
  * the same font they started with, if possible.
  *
