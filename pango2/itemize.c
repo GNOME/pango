@@ -884,18 +884,31 @@ itemize_state_update_for_new_run (ItemizeState *state)
 
   if (!state->current_fonts)
     {
-      gboolean is_emoji = pango2_emoji_iter_get (&state->emoji_iter, state->preferred) == EMOJI_PRESENTATION_EMOJI;
+      Pango2FontDescription *font_desc = state->font_desc;
+      Pango2Language *lang = state->derived_lang;
+      EmojiPresentation presentation = pango2_emoji_iter_get (&state->emoji_iter, state->preferred);
 
-      if (is_emoji && !state->emoji_font_desc)
+      if (presentation == EMOJI_PRESENTATION_EMOJI)
         {
-          state->emoji_font_desc = pango2_font_description_copy_static (state->font_desc);
-          pango2_font_description_set_family_static (state->emoji_font_desc, "emoji");
+          if (!state->emoji_font_desc)
+            {
+              state->emoji_font_desc = pango2_font_description_copy_static (state->font_desc);
+              pango2_font_description_set_family_static (state->emoji_font_desc, "emoji");
+            }
+
+          font_desc = state->emoji_font_desc;
+          lang = pango2_language_from_string ("und-zsye");
+        }
+      else if (presentation  == EMOJI_PRESENTATION_TEXT)
+        {
+          font_desc = state->font_desc;
+          lang = pango2_language_from_string ("und-zsye");
         }
 
       state->current_fonts = pango2_font_map_load_fontset (state->context->font_map,
                                                            state->context,
-                                                           is_emoji ? state->emoji_font_desc : state->font_desc,
-                                                           state->derived_lang);
+                                                           font_desc,
+                                                           lang);
       state->cache = get_font_cache (state->current_fonts);
     }
 
