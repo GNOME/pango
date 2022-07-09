@@ -73,6 +73,7 @@ G_BEGIN_DECLS
  * @PANGO2_ATTR_LINE_SPACING: space to add to the leading from the
  *   font metrics (if not overridden by a line height attribute)
  * @PANGO2_ATTR_SHAPE: override glyph shapes (requires renderer support)
+ * @PANGO2_ATTR_EMOJI_PRESENTATION: override Emoji presentation
  *
  * `Pango2AttrType` contains predefined attribute types.
  *
@@ -122,6 +123,7 @@ typedef enum
   PANGO2_ATTR_FONT_SCALE           = PANGO2_ATTR_TYPE (INT, ITEMIZATION, ACCUMULATES),
   PANGO2_ATTR_LINE_SPACING         = PANGO2_ATTR_TYPE (INT, ITEMIZATION, OVERRIDES),
   PANGO2_ATTR_SHAPE                = PANGO2_ATTR_TYPE (POINTER, ITEMIZATION, OVERRIDES),
+  PANGO2_ATTR_EMOJI_PRESENTATION   = PANGO2_ATTR_TYPE (INT, ITEMIZATION, OVERRIDES),
 } Pango2AttrType;
 
 #undef PANGO2_ATTR_TYPE
@@ -318,5 +320,8 @@ Pango2Attribute *        pango2_attr_shape_new                    (Pango2Rectang
                                                                    gpointer                data,
                                                                    Pango2AttrDataCopyFunc  copy,
                                                                    GDestroyNotify          destroy);
+
+PANGO2_AVAILABLE_IN_ALL
+Pango2Attribute *        pango2_attr_emoji_presentation_new       (Pango2EmojiPresentation presentation);
 
 G_END_DECLS

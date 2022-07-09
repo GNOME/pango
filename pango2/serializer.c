@@ -267,6 +267,13 @@ static const char *tab_unit_names[] = {
   NULL
 };
 
+static const char *emoji_presentation_names[] = {
+  "auto",
+  "text",
+  "emoji",
+  NULL
+};
+
 /* }}} */
 /* {{{ Serialization */
 
@@ -1122,6 +1129,10 @@ attr_for_type (GtkJsonParser *parser,
 
     case PANGO2_ATTR_PARAGRAPH:
       attr = pango2_attr_paragraph_new ();
+      break;
+
+    case PANGO2_ATTR_EMOJI_PRESENTATION:
+      attr = pango2_attr_emoji_presentation_new ((Pango2EmojiPresentation) parser_select_string (parser, emoji_presentation_names));
       break;
 
     }

@@ -105,6 +105,11 @@ void                     pango2_context_set_palette               (Pango2Context
 PANGO2_AVAILABLE_IN_ALL
 const char *             pango2_context_get_palette               (Pango2Context                 *context);
 
+PANGO2_AVAILABLE_IN_ALL
+void                     pango2_context_set_emoji_presentation    (Pango2Context                 *context,
+                                                                   Pango2EmojiPresentation        presentation);
+PANGO2_AVAILABLE_IN_ALL
+Pango2EmojiPresentation  pango2_context_get_emoji_presentation    (Pango2Context                 *context);
 
 
 G_END_DECLS

@@ -1264,6 +1264,10 @@ pango2_attr_list_from_string (const char *text)
           if (!is_valid_end_char (*endp)) goto fail;
           break;
 
+        case PANGO2_ATTR_EMOJI_PRESENTATION:
+          ENUM_ATTR(emoji_presentation, Pango2EmojiPresentation, PANGO2_EMOJI_PRESENTATION_AUTO, PANGO2_EMOJI_PRESENTATION_EMOJI);
+          break;
+
         case PANGO2_ATTR_SHAPE:
         default:
           g_assert_not_reached ();

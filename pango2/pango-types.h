@@ -342,6 +342,30 @@ typedef enum
  */
 #define PANGO2_COLOR_PALETTE_DARK   "dark"
 
+/**
+ * Pango2EmojiPresentation:
+ * @PANGO2_EMOJI_PRESENTATION_AUTO: Present Emoji with to their
+ *   default presentation according to Unicode
+ * @PANGO2_EMOJI_PRESENTATION_TEXT: Prefer text presentation
+ * @PANGO2_EMOJI_PRESENTATION_EMOJI: Prefer Emoji presentation
+ *
+ * `Pango2EmojiPresentation` describes a preference for Emoji
+ * presentation style.
+ *
+ * See [method@Pango2.Context.set_emoji_presentation] or
+ * [func@Pango2.attr_emoji_presentation_new] for ways to communicate
+ * Emoji presentation style preferences to Pango.
+ *
+ * Note that even with such a preference, Pango will respect
+ * Emoji presentation style if it has been explicitly selected
+ * with a Unicode [variation selector](https://unicode.org/reports/tr51/#Emoji_Variation_Sequences).
+ */
+typedef enum {
+  PANGO2_EMOJI_PRESENTATION_AUTO,
+  PANGO2_EMOJI_PRESENTATION_TEXT,
+  PANGO2_EMOJI_PRESENTATION_EMOJI
+} Pango2EmojiPresentation;
+
 /*
  * PANGO2_DECLARE_INTERNAL_TYPE:
  * @ModuleObjName: The name of the new type, in camel case (like GtkWidget)

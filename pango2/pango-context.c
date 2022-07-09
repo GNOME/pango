@@ -70,6 +70,7 @@ enum {
   PROP_MATRIX,
   PROP_ROUND_GLYPH_POSITIONS,
   PROP_PALETTE,
+  PROP_EMOJI_PRESENTATION,
   N_PROPERTIES
 };
 
@@ -90,6 +91,7 @@ pango2_context_init (Pango2Context *context)
   context->font_map = NULL;
   context->round_glyph_positions = TRUE;
   context->palette = g_quark_from_static_string (PANGO2_COLOR_PALETTE_DEFAULT);
+  context->presentation = PANGO2_EMOJI_PRESENTATION_AUTO;
 
   context->font_desc = pango2_font_description_new ();
   pango2_font_description_set_family_static (context->font_desc, "serif");
@@ -146,6 +148,10 @@ pango2_context_set_property (GObject      *object,
       pango2_context_set_palette (context, g_value_get_string (value));
       break;
 
+    case PROP_EMOJI_PRESENTATION:
+      pango2_context_set_emoji_presentation (context, g_value_get_enum (value));
+      break;
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     }
@@ -195,6 +201,10 @@ pango2_context_get_property (GObject    *object,
 
     case PROP_PALETTE:
       g_value_set_string (value, pango2_context_get_palette (context));
+      break;
+
+    case PROP_EMOJI_PRESENTATION:
+      g_value_set_enum (value, pango2_context_get_emoji_presentation (context));
       break;
 
     default:
@@ -325,6 +335,17 @@ pango2_context_class_init (Pango2ContextClass *klass)
   properties[PROP_PALETTE] =
     g_param_spec_string ("palette", NULL, NULL, "default",
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * Pango2Context:emoji-presentation: (attributes org.gtk.Property.get=pango2_context_get_emoji_presentation org.gtk.Property.set=pango2_context_set_emoji_presentation)
+   *
+   * The preferred Emoji presentation style.
+   */
+  properties[PROP_EMOJI_PRESENTATION] =
+    g_param_spec_enum ("emoji-presentation", NULL, NULL,
+                       PANGO2_TYPE_EMOJI_PRESENTATION,
+                       PANGO2_EMOJI_PRESENTATION_AUTO,
+                       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);
 }
@@ -1118,4 +1139,25 @@ pango2_context_get_palette (Pango2Context *context)
   g_return_val_if_fail (PANGO2_IS_CONTEXT (context), PANGO2_COLOR_PALETTE_DEFAULT);
 
   return g_quark_to_string (context->palette);
+}
+
+void
+pango2_context_set_emoji_presentation (Pango2Context           *context,
+                                       Pango2EmojiPresentation  presentation)
+{
+  g_return_if_fail (PANGO2_IS_CONTEXT (context));
+
+  if (context->presentation == presentation)
+    return;
+
+  context->presentation = presentation;
+  g_object_notify_by_pspec (G_OBJECT (context), properties[PROP_EMOJI_PRESENTATION]);
+}
+
+Pango2EmojiPresentation
+pango2_context_get_emoji_presentation (Pango2Context *context)
+{
+  g_return_val_if_fail (PANGO2_IS_CONTEXT (context), PANGO2_EMOJI_PRESENTATION_AUTO);
+
+  return context->presentation;
 }

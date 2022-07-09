@@ -50,6 +50,8 @@ struct _Pango2Context
 
   GQuark palette;
 
+  Pango2EmojiPresentation presentation;
+
 #ifdef HAVE_CAIRO
   gboolean set_options_explicit;
 
