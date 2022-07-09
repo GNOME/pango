@@ -450,6 +450,7 @@ pango2_fc_font_map_populate (Pango2FontMap *map)
           int index;
           FcLangSet *langs;
           int spacing;
+          gboolean color;
           const char *family_name;
 
           pat = ret->fonts[j];
@@ -460,16 +461,20 @@ pango2_fc_font_map_populate (Pango2FontMap *map)
           if (FcPatternGetLangSet (pat, FC_LANG, 0, &langs) != FcResultMatch)
             continue;
 
+          if (FcPatternGetBool (pat, FC_COLOR, 0, &color) != FcResultMatch)
+            color = FALSE;
+
           if (FcLangSetEqual (langs, no_langs))
             continue;
 
-          if ((strcmp (generic_names[i], "emoji") == 0) != FcLangSetEqual (langs, emoji_langs))
+          /* No color Emoji here, please */
+          if (FcLangSetEqual (langs, emoji_langs) && color)
             continue;
 
           if (FcPatternGetInteger (pat, FC_SPACING, 0, &spacing) != FcResultMatch)
             spacing = FC_PROPORTIONAL;
 
-          if (strcmp (generic_names[i], "monospace") == 0 && spacing != FC_MONO)
+          if (strcmp (generic_names[i], "Monospace") == 0 && spacing != FC_MONO)
             continue;
 
           if (FcPatternGetString (pat, FC_FAMILY, 0, (FcChar8 **)(void*)&family_name) != FcResultMatch)
@@ -505,7 +510,6 @@ pango2_fc_font_map_populate (Pango2FontMap *map)
     }
 
   FcLangSetDestroy (no_langs);
-  FcLangSetDestroy (emoji_langs);
 
   FcObjectSetDestroy (os);
 
