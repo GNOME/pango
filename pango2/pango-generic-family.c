@@ -234,6 +234,16 @@ pango2_generic_family_find_face (Pango2GenericFamily   *self,
         break;
     }
 
+  /* Try without language */
+  for (int i = 0; i < self->families->len; i++)
+    {
+      Pango2HbFamily *family = g_ptr_array_index (self->families, i);
+
+      face = pango2_hb_family_find_face (family, description, NULL, wc);
+      if (face)
+        break;
+    }
+
   /* last resort */
   if (!face && self->families->len > 0)
     {
