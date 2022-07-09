@@ -20,6 +20,7 @@
 #pragma once
 
 #include "pango-font.h"
+#include <gio/gio.h>
 
 G_BEGIN_DECLS
 
@@ -34,5 +35,8 @@ Pango2GenericFamily *    pango2_generic_family_new                (const char   
 PANGO2_AVAILABLE_IN_ALL
 void                     pango2_generic_family_add_family         (Pango2GenericFamily     *self,
                                                                    Pango2FontFamily        *family);
+
+PANGO2_AVAILABLE_IN_ALL
+GListModel *            pango2_generic_family_get_families        (Pango2GenericFamily     *self);
 
 G_END_DECLS
