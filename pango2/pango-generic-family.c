@@ -94,6 +94,78 @@ pango2_generic_family_list_model_init (GListModelInterface *iface)
   iface->get_item = pango2_generic_family_get_item;
 }
 
+ /* }}} */
+/* {{{ Family list model implementation */
+
+G_DECLARE_FINAL_TYPE (Pango2FamilyModel, pango2_family_model, PANGO2, FAMILY_MODEL, GObject)
+
+struct _Pango2FamilyModel {
+  GObject parent;
+  Pango2GenericFamily *family;
+};
+
+struct _Pango2FamilyModelClass {
+  GObjectClass parent_class;
+};
+
+static GType
+pango2_family_model_get_item_type (GListModel *list)
+{
+  return PANGO2_TYPE_FONT_FAMILY;
+}
+
+static guint
+pango2_family_model_get_n_items (GListModel *list)
+{
+  Pango2FamilyModel *self = PANGO2_FAMILY_MODEL (list);
+
+  return self->family->families->len;
+}
+
+static gpointer
+pango2_family_model_get_item (GListModel *list,
+                              guint       position)
+{
+  Pango2FamilyModel *self = PANGO2_FAMILY_MODEL (list);
+
+  if (position < self->family->families->len)
+    return g_object_ref (g_ptr_array_index (self->family->families, position));
+
+  return NULL;
+}
+
+static void
+pango2_family_model_list_model_init (GListModelInterface *iface)
+{
+  iface->get_item_type = pango2_family_model_get_item_type;
+  iface->get_n_items = pango2_family_model_get_n_items;
+  iface->get_item = pango2_family_model_get_item;
+}
+
+G_DEFINE_TYPE_WITH_CODE (Pango2FamilyModel, pango2_family_model, G_TYPE_OBJECT,
+                         G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango2_family_model_list_model_init))
+
+static void
+pango2_family_model_init (Pango2FamilyModel *self)
+{
+}
+
+static void
+pango2_family_model_finalize (GObject *object)
+{
+  Pango2FamilyModel *self = PANGO2_FAMILY_MODEL (object);
+
+  g_object_unref (self->family);
+
+  G_OBJECT_CLASS (pango2_family_model_parent_class)->finalize (object);
+}
+
+static void
+pango2_family_model_class_init (Pango2FamilyModelClass *class)
+{
+  G_OBJECT_CLASS (class)->finalize = pango2_family_model_finalize;
+}
+
 /* }}} */
 /* {{{ Pango2FontFamily implementation */
 
@@ -219,6 +291,25 @@ pango2_generic_family_add_family (Pango2GenericFamily *self,
   g_return_if_fail (PANGO2_IS_FONT_FAMILY (family));
 
   g_ptr_array_add (self->families, g_object_ref (family));
+}
+
+/**
+ * pango2_generic_family_get_families:
+ * @self: a `Pango2GenericFamily`
+ *
+ * Returns a list model of the families contained in the generic family.
+ *
+ * Returns: (transfer full): a list model of families
+ */
+GListModel *
+pango2_generic_family_get_families (Pango2GenericFamily *self)
+{
+  Pango2FamilyModel *model;
+
+  model = g_object_new (pango2_family_model_get_type (), NULL);
+  model->family = g_object_ref (self);
+
+  return G_LIST_MODEL (model);
 }
 
 /* }}} */
