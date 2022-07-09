@@ -126,7 +126,7 @@ pango2_font_map_get_item (GListModel *list,
   if (position < self->families->len)
     return g_object_ref (g_ptr_array_index (self->families, position));
   else if (self->fallback)
-    return g_list_model_get_item (G_LIST_MODEL (self->fallback), position);
+    return g_list_model_get_item (G_LIST_MODEL (self->fallback), position - self->families->len);
 
   return NULL;
 }
@@ -1138,14 +1138,23 @@ void
 pango2_font_map_set_fallback (Pango2FontMap *self,
                               Pango2FontMap *fallback)
 {
+  guint removed, added;
+
   g_return_if_fail (PANGO2_IS_FONT_MAP (self));
   g_return_if_fail (fallback == NULL || PANGO2_IS_FONT_MAP (fallback));
+
+  removed = g_list_model_get_n_items (G_LIST_MODEL (self));
 
   if (!g_set_object (&self->fallback, fallback))
     return;
 
+  added = g_list_model_get_n_items (G_LIST_MODEL (self));
+
   clear_caches (self);
+
+  g_list_model_items_changed (G_LIST_MODEL (self), 0, removed, added);
   g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_FALLBACK]);
+  g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_N_ITEMS]);
 }
 
 /**
