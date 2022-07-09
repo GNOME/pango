@@ -49,6 +49,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "pango-types.h"
 #include "pango-emoji-private.h"
 #include "pango-emoji-table.h"
 
@@ -200,21 +201,21 @@ _pango2_EmojiSegmentationCategory (gunichar codepoint)
   return kMaxEmojiScannerCategory;
 }
 
-
 typedef gboolean bool;
 enum { false = FALSE, true = TRUE };
 typedef unsigned char *emoji_text_iter_t;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch-default"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 #include "emoji_presentation_scanner.c"
 #pragma GCC diagnostic pop
 
 
 Pango2EmojiIter *
-_pango2_emoji_iter_init (Pango2EmojiIter *iter,
-			const char     *text,
-			int             length)
+pango2_emoji_iter_init (Pango2EmojiIter *iter,
+                        const char      *text,
+                        int              length)
 {
   unsigned int n_chars = g_utf8_strlen (text, length);
   unsigned char *types = g_malloc (n_chars);
@@ -233,28 +234,29 @@ _pango2_emoji_iter_init (Pango2EmojiIter *iter,
     iter->text_end = text + length;
   else
     iter->text_end = text + strlen (text);
-  iter->is_emoji = FALSE;
+  iter->state = EMOJI_PRESENTATION_NONE;
 
   iter->types = types;
   iter->n_chars = n_chars;
   iter->cursor = 0;
 
-  _pango2_emoji_iter_next (iter);
+  pango2_emoji_iter_next (iter);
 
   return iter;
 }
 
 void
-_pango2_emoji_iter_fini (Pango2EmojiIter *iter)
+pango2_emoji_iter_fini (Pango2EmojiIter *iter)
 {
   g_free (iter->types);
 }
 
 gboolean
-_pango2_emoji_iter_next (Pango2EmojiIter *iter)
+pango2_emoji_iter_next (Pango2EmojiIter *iter)
 {
   unsigned int old_cursor, cursor;
-  gboolean is_emoji;
+  EmojiPresentation state;
+  gboolean explicit;
 
   if (iter->end >= iter->text_end)
     return FALSE;
@@ -263,27 +265,54 @@ _pango2_emoji_iter_next (Pango2EmojiIter *iter)
 
   old_cursor = cursor = iter->cursor;
   cursor = scan_emoji_presentation (iter->types + cursor,
-				    iter->types + iter->n_chars,
-				    &is_emoji) - iter->types;
+                                    iter->types + iter->n_chars,
+                                    &state, &explicit) - iter->types;
   do
   {
     iter->cursor = cursor;
-    iter->is_emoji = is_emoji;
+    iter->state = state;
+    iter->explicit = explicit;
 
     if (cursor == iter->n_chars)
       break;
 
     cursor = scan_emoji_presentation (iter->types + cursor,
-				      iter->types + iter->n_chars,
-				      &is_emoji) - iter->types;
+                                      iter->types + iter->n_chars,
+                                      &state, &explicit) - iter->types;
   }
-  while (iter->is_emoji == is_emoji);
+  while (iter->state == state && iter->explicit == explicit);
 
   iter->end = g_utf8_offset_to_pointer (iter->start, iter->cursor - old_cursor);
 
   return TRUE;
 }
 
+EmojiPresentation
+pango2_emoji_iter_get (Pango2EmojiIter         *iter,
+                       Pango2EmojiPresentation  preferred)
+{
+  gboolean explicit;
+
+  if (preferred == PANGO2_EMOJI_PRESENTATION_AUTO)
+    explicit = TRUE;
+  else
+    explicit = iter->explicit;
+
+  switch (iter->state)
+    {
+    case EMOJI_PRESENTATION_NONE:
+      return EMOJI_PRESENTATION_NONE;
+      break;
+    case EMOJI_PRESENTATION_TEXT:
+      return explicit ? EMOJI_PRESENTATION_TEXT : (EmojiPresentation)preferred;
+      break;
+    case EMOJI_PRESENTATION_EMOJI:
+      return explicit ? EMOJI_PRESENTATION_EMOJI : (EmojiPresentation)preferred;
+      break;
+    default:
+      g_assert_not_reached ();
+    }
+}
 
 /**********************************************************
  * End of code from Chromium

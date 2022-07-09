@@ -321,6 +321,7 @@ struct _ItemizeState
 
   Pango2WidthIter width_iter;
   Pango2EmojiIter emoji_iter;
+  Pango2EmojiPresentation preferred;
 
   Pango2Language *derived_lang;
 
@@ -366,6 +367,7 @@ update_attr_iterator (ItemizeState *state)
   Pango2Language *old_lang;
   Pango2Attribute *attr;
   int end_index;
+  Pango2EmojiPresentation old_preferred;
 
   pango2_attr_iterator_range (state->attr_iter, NULL, &end_index);
   if (end_index < state->end - state->text)
@@ -404,9 +406,15 @@ update_attr_iterator (ItemizeState *state)
   attr = find_attribute (state->extra_attrs, PANGO2_ATTR_GRAVITY_HINT);
   state->gravity_hint = attr == NULL ? state->context->gravity_hint : (Pango2GravityHint)attr->int_value;
 
+  old_preferred = state->preferred;
+  attr = find_attribute (state->extra_attrs, PANGO2_ATTR_EMOJI_PRESENTATION);
+  state->preferred = attr ? attr->int_value : state->context->presentation;
+
   state->changed |= FONT_CHANGED;
   if (state->lang != old_lang)
     state->changed |= LANG_CHANGED;
+  if (state->preferred != old_preferred)
+    state->changed |= EMOJI_CHANGED;
 }
 
 static void
@@ -460,6 +468,8 @@ itemize_state_init (ItemizeState                *state,
   state->gravity_hint = state->context->gravity_hint;
   state->resolved_gravity = PANGO2_GRAVITY_AUTO;
 
+  state->preferred = context->presentation;
+
   /* Initialize the attribute iterator
    */
   if (cached_iter)
@@ -505,11 +515,11 @@ itemize_state_init (ItemizeState                *state,
                                &state->script_end, &state->script);
 
   width_iter_init (&state->width_iter, text + start_index, length);
-  _pango2_emoji_iter_init (&state->emoji_iter, text + start_index, length);
+  pango2_emoji_iter_init (&state->emoji_iter, text + start_index, length);
 
   if (!PANGO2_GRAVITY_IS_VERTICAL (state->context->resolved_gravity))
     state->width_iter.end = state->end;
-  else if (state->emoji_iter.is_emoji)
+  else if (pango2_emoji_iter_get (&state->emoji_iter, state->preferred) == EMOJI_PRESENTATION_EMOJI)
     state->width_iter.end = MAX (state->width_iter.end, state->emoji_iter.end);
 
   update_end (state);
@@ -557,10 +567,10 @@ itemize_state_next (ItemizeState *state)
     }
   if (state->run_end == state->emoji_iter.end)
     {
-      _pango2_emoji_iter_next (&state->emoji_iter);
+      pango2_emoji_iter_next (&state->emoji_iter);
       state->changed |= EMOJI_CHANGED;
 
-      if (state->emoji_iter.is_emoji)
+      if (pango2_emoji_iter_get (&state->emoji_iter, state->preferred) == EMOJI_PRESENTATION_EMOJI)
         state->width_iter.end = MAX (state->width_iter.end, state->emoji_iter.end);
     }
   if (state->run_end == state->width_iter.end)
@@ -874,16 +884,18 @@ itemize_state_update_for_new_run (ItemizeState *state)
 
   if (!state->current_fonts)
     {
-      gboolean is_emoji = state->emoji_iter.is_emoji;
+      gboolean is_emoji = pango2_emoji_iter_get (&state->emoji_iter, state->preferred) == EMOJI_PRESENTATION_EMOJI;
+
       if (is_emoji && !state->emoji_font_desc)
         {
           state->emoji_font_desc = pango2_font_description_copy_static (state->font_desc);
           pango2_font_description_set_family_static (state->emoji_font_desc, "emoji");
         }
+
       state->current_fonts = pango2_font_map_load_fontset (state->context->font_map,
-                                                          state->context,
-                                                          is_emoji ? state->emoji_font_desc : state->font_desc,
-                                                          state->derived_lang);
+                                                           state->context,
+                                                           is_emoji ? state->emoji_font_desc : state->font_desc,
+                                                           state->derived_lang);
       state->cache = get_font_cache (state->current_fonts);
     }
 
@@ -1022,7 +1034,7 @@ itemize_state_finish (ItemizeState *state)
   pango2_font_description_free (state->font_desc);
   pango2_font_description_free (state->emoji_font_desc);
   width_iter_fini (&state->width_iter);
-  _pango2_emoji_iter_fini (&state->emoji_iter);
+  pango2_emoji_iter_fini (&state->emoji_iter);
 
   if (state->current_fonts)
     g_object_unref (state->current_fonts);

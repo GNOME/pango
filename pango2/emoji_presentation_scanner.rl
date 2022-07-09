@@ -5,7 +5,7 @@
 %%{
   machine emoji_presentation;
   alphtype unsigned char;
-  write data noerror nofinal noentry;
+  write data noerror nofinal;
 }%%
 
 %%{
@@ -64,15 +64,18 @@ emoji_presentation = EMOJI_EMOJI_PRESENTATION | TAG_BASE | EMOJI_MODIFIER_BASE |
 
 emoji_run = emoji_presentation;
 
+text_emoji = EMOJI_TEXT_PRESENTATION;
 text_presentation_emoji = any_emoji VS15;
 text_run = any;
 
 text_and_emoji_run := |*
 # In order to give the the VS15 sequences higher priority than detecting
 # emoji sequences they are listed first as scanner token here.
-text_presentation_emoji => { *is_emoji = false; return te; };
-emoji_run => { *is_emoji = true; return te; };
-text_run => { *is_emoji = false; return te; };
+text_presentation_emoji => { *state = EMOJI_PRESENTATION_TEXT; *explicit = TRUE; return te; };
+text_emoji => { *state = EMOJI_PRESENTATION_TEXT; *explicit = FALSE; return te; };
+emoji_presentation_sequence => { *state = EMOJI_PRESENTATION_EMOJI; *explicit = TRUE; return te; };
+emoji_run => { *state = EMOJI_PRESENTATION_EMOJI; *explicit = FALSE; return te; };
+text_run => { *state = EMOJI_PRESENTATION_NONE; *explicit = TRUE; return te; };
 *|;
 
 }%%
@@ -80,7 +83,8 @@ text_run => { *is_emoji = false; return te; };
 static emoji_text_iter_t
 scan_emoji_presentation (emoji_text_iter_t p,
     const emoji_text_iter_t pe,
-    bool* is_emoji)
+    EmojiPresentation *state,
+    gboolean *explicit)
 {
   emoji_text_iter_t ts, te;
   const emoji_text_iter_t eof = pe;
@@ -94,6 +98,7 @@ scan_emoji_presentation (emoji_text_iter_t p,
   }%%
 
   /* Should not be reached. */
-  *is_emoji = false;
+  *state = EMOJI_PRESENTATION_NONE;
+  *explicit = FALSE;
   return pe;
 }

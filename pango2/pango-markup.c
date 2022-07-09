@@ -1349,6 +1349,7 @@ span_parse_func (MarkupData            *md G_GNUC_UNUSED,
   const char *text_transform = NULL;
   const char *segment = NULL;
   const char *font_scale = NULL;
+  const char *emoji_presentation = NULL;
 
   g_markup_parse_context_get_position (context,
                                        &line_number, &char_number);
@@ -1387,6 +1388,9 @@ span_parse_func (MarkupData            *md G_GNUC_UNUSED,
         break;
       case 'c':
         CHECK_ATTRIBUTE2 (foreground, "color");
+        break;
+      case 'e':
+        CHECK_ATTRIBUTE (emoji_presentation);
         break;
       case 'f':
         CHECK_ATTRIBUTE (fallback);
@@ -1890,6 +1894,16 @@ span_parse_func (MarkupData            *md G_GNUC_UNUSED,
                        line_number, segment);
           goto error;
         }
+    }
+
+  if (G_UNLIKELY (emoji_presentation))
+    {
+      Pango2EmojiPresentation ep;
+
+      if (!span_parse_enum ("emoji_presentation", emoji_presentation, PANGO2_TYPE_EMOJI_PRESENTATION, (int*)(void*)&ep, line_number, error))
+        goto error;
+
+      add_attribute (tag, pango2_attr_emoji_presentation_new (ep));
     }
 
   return TRUE;

@@ -20,6 +20,7 @@
 #pragma once
 
 #include <glib.h>
+#include "pango-types.h"
 
 gboolean
 _pango2_Is_Emoji_Base_Character (gunichar ch);
@@ -29,13 +30,21 @@ _pango2_Is_Emoji_Extended_Pictographic (gunichar ch);
 
 typedef struct _Pango2EmojiIter Pango2EmojiIter;
 
+typedef enum {
+  EMOJI_PRESENTATION_NONE,
+  EMOJI_PRESENTATION_TEXT,
+  EMOJI_PRESENTATION_EMOJI,
+} EmojiPresentation;
+
 struct _Pango2EmojiIter
 {
   const char *text_start;
   const char *text_end;
   const char *start;
   const char *end;
-  gboolean is_emoji;
+
+  gboolean explicit;
+  EmojiPresentation state;
 
   unsigned char *types;
   unsigned int n_chars;
@@ -43,12 +52,17 @@ struct _Pango2EmojiIter
 };
 
 Pango2EmojiIter *
-_pango2_emoji_iter_init (Pango2EmojiIter *iter,
-                         const char      *text,
-                         int              length);
+pango2_emoji_iter_init (Pango2EmojiIter *iter,
+                        const char      *text,
+                        int              length);
 
 gboolean
-_pango2_emoji_iter_next (Pango2EmojiIter *iter);
+pango2_emoji_iter_next (Pango2EmojiIter *iter);
+
 
 void
-_pango2_emoji_iter_fini (Pango2EmojiIter *iter);
+pango2_emoji_iter_fini (Pango2EmojiIter *iter);
+
+EmojiPresentation
+pango2_emoji_iter_get (Pango2EmojiIter         *iter,
+                       Pango2EmojiPresentation  preferred);

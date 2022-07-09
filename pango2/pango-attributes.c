@@ -864,6 +864,25 @@ pango2_attr_shape_new (Pango2Rectangle        *ink_rect,
   return attr;
 }
 
+/**
+ * pango2_attr_emoji_presentation_new:
+ * @presentation: a `Pango2EmojiPresentation` value
+ *
+ * Creates a new Emoji presentation attribute.
+ *
+ * Emoji presentation attributes override the preference for
+ * whether Emoji should be presented a text or as color Emoji.
+ *
+ * Return value: (transfer full): the newly allocated
+ *   `Pango2Attribute`, which should be freed with
+ *   [method@Pango2.Attribute.destroy]
+ */
+Pango2Attribute *
+pango2_attr_emoji_presentation_new (Pango2EmojiPresentation presentation)
+{
+  return pango2_attr_int_new (PANGO2_ATTR_EMOJI_PRESENTATION, presentation);
+}
+
 /* }}} */
 /* {{{ Private API */
 
