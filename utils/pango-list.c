@@ -9,7 +9,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -160,10 +160,33 @@ main (int    argc,
 
       if (opt_verbose)
         {
-          if (PANGO2_IS_GENERIC_FAMILY (family))
-            g_print ("(generic)");
+          unsigned int n;
 
-          g_print (" (%d faces)", g_list_model_get_n_items (G_LIST_MODEL (family)));
+          if (PANGO2_IS_GENERIC_FAMILY (family))
+            {
+              GListModel *fams = pango2_generic_family_get_families (PANGO2_GENERIC_FAMILY (family));
+              n = g_list_model_get_n_items (fams);
+              g_print (" (generic, %d %s)", n, n == 1 ? "family" : "families");
+              g_object_unref (fams);
+            }
+
+          n = g_list_model_get_n_items (G_LIST_MODEL (family));
+          g_print (" (%d %s)", n, n == 1 ? "face" : "faces");
+
+          if (PANGO2_IS_GENERIC_FAMILY (family))
+            {
+              GListModel *fams = pango2_generic_family_get_families (PANGO2_GENERIC_FAMILY (family));
+
+              for (int i = 0; i < g_list_model_get_n_items (fams); i++)
+                {
+                  Pango2FontFamily *f = PANGO2_FONT_FAMILY (g_list_model_get_item (fams, i));
+                  g_print ("\n\t%s", pango2_font_family_get_name (f));
+
+                  g_object_unref (f);
+                }
+
+              g_object_unref (fams);
+            }
         }
 
       g_print ("\n");
@@ -173,12 +196,12 @@ main (int    argc,
 
       width = 0;
       for (j = 0; j < g_list_model_get_n_items (G_LIST_MODEL (family)); j++)
-	{
+        {
           Pango2FontFace *face = g_list_model_get_item (G_LIST_MODEL (family), j);
-	  const char *face_name = pango2_font_face_get_name (face);
-	  gboolean is_synth = pango2_font_face_is_synthesized (face);
-	  const char *synth_str = is_synth ? "*" : "";
-	  const char *variable_str = "";
+          const char *face_name = pango2_font_face_get_name (face);
+          gboolean is_synth = pango2_font_face_is_synthesized (face);
+          const char *synth_str = is_synth ? "*" : "";
+          const char *variable_str = "";
           width = MAX (width, strlen (synth_str) + strlen (variable_str) + strlen (face_name));
           g_object_unref (face);
         }
