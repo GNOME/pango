@@ -115,7 +115,7 @@ typedef enum {
  * @PANGO_WEIGHT_SEMILIGHT: the semilight weight (= 350) Since: 1.36.7
  * @PANGO_WEIGHT_BOOK: the book weight (= 380) Since: 1.24)
  * @PANGO_WEIGHT_NORMAL: the default weight (= 400)
- * @PANGO_WEIGHT_MEDIUM: the normal weight (= 500) Since: 1.24
+ * @PANGO_WEIGHT_MEDIUM: the medium weight (= 500) Since: 1.24
  * @PANGO_WEIGHT_SEMIBOLD: the semibold weight (= 600)
  * @PANGO_WEIGHT_BOLD: the bold weight (= 700)
  * @PANGO_WEIGHT_ULTRABOLD: the ultrabold weight (= 800)
