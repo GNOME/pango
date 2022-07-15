@@ -302,6 +302,9 @@ void                   pango_win32_dwrite_font_map_populate   (PangoWin32FontMap
 
 void                   pango_win32_dwrite_items_destroy       (PangoWin32DWriteItems *items);
 
+gboolean               pango_win32_dwrite_font_is_monospace   (gpointer               dwrite_font,
+                                                               gboolean              *is_monospace);
+
 void                   pango_win32_dwrite_font_release        (gpointer               dwrite_font);
 
 gpointer               pango_win32_logfontw_get_dwrite_font   (LOGFONTW *logfontw);

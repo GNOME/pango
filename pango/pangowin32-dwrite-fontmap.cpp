@@ -23,7 +23,7 @@
 #include "config.h"
 
 #include <initguid.h>
-#include <dwrite.h>
+#include <dwrite_1.h>
 
 #ifdef STRICT
 #undef STRICT
@@ -32,8 +32,10 @@
 
 #ifdef _MSC_VER
 # define UUID_OF_IDWriteFactory __uuidof (IDWriteFactory)
+# define UUID_OF_IDWriteFont1 __uuidof (IDWriteFont1)
 #else
 # define UUID_OF_IDWriteFactory IID_IDWriteFactory
+# define UUID_OF_IDWriteFont1 IID_IDWriteFont1
 #endif
 
 struct _PangoWin32DWriteItems
@@ -179,6 +181,27 @@ pango_win32_logfontw_get_dwrite_font (LOGFONTW *logfontw)
                (unsigned)hr);
 
   return font;
+}
+
+gboolean
+pango_win32_dwrite_font_is_monospace (gpointer  dwrite_font,
+                                      gboolean *is_monospace)
+{
+  IDWriteFont *font = static_cast<IDWriteFont *>(dwrite_font);
+  IDWriteFont1 *font1 = NULL;
+  gboolean result = FALSE;
+
+  if (SUCCEEDED (font->QueryInterface(UUID_OF_IDWriteFont1,
+                                      reinterpret_cast<void**>(&font1))))
+    {
+      *is_monospace = font1->IsMonospacedFont ();
+      font1->Release ();
+      result = TRUE;
+    }
+  else
+    *is_monospace = FALSE;
+
+  return result;
 }
 
 void

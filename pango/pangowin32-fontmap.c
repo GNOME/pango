@@ -1736,8 +1736,12 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   win32face->family = win32family =
     pango_win32_get_font_family (win32fontmap,
                                  pango_font_description_get_family (win32face->description));
-  if ((lfp->lfPitchAndFamily & 0xF0) == FF_MODERN)
-    win32family->is_monospace = TRUE;
+
+  if (!pango_win32_dwrite_font_is_monospace (dwrite_font, &win32family->is_monospace))
+    {
+      if ((lfp->lfPitchAndFamily & 0xF0) == FF_MODERN)
+        win32family->is_monospace = TRUE;
+    }
 
   win32family->faces = g_slist_append (win32family->faces, win32face);
 
