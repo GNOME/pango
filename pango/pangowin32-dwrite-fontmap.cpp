@@ -204,6 +204,222 @@ pango_win32_dwrite_font_is_monospace (gpointer  dwrite_font,
   return result;
 }
 
+static PangoStretch
+util_to_pango_stretch (DWRITE_FONT_STRETCH stretch)
+{
+  PangoStretch pango_stretch = PANGO_STRETCH_NORMAL;
+
+  switch (stretch)
+    {
+      case DWRITE_FONT_STRETCH_ULTRA_CONDENSED:
+        pango_stretch = PANGO_STRETCH_ULTRA_CONDENSED;
+        break;
+      case DWRITE_FONT_STRETCH_EXTRA_CONDENSED:
+        pango_stretch = PANGO_STRETCH_EXTRA_CONDENSED;
+        break;
+     case DWRITE_FONT_STRETCH_CONDENSED:
+        pango_stretch = PANGO_STRETCH_CONDENSED;
+        break;
+      case DWRITE_FONT_STRETCH_SEMI_CONDENSED:
+        pango_stretch = PANGO_STRETCH_SEMI_CONDENSED;
+        break;
+      case DWRITE_FONT_STRETCH_NORMAL:
+        /* also DWRITE_FONT_STRETCH_MEDIUM */
+        pango_stretch = PANGO_STRETCH_NORMAL;
+        break;
+      case DWRITE_FONT_STRETCH_SEMI_EXPANDED:
+        pango_stretch = PANGO_STRETCH_SEMI_EXPANDED;
+        break;
+      case DWRITE_FONT_STRETCH_EXPANDED:
+        pango_stretch = PANGO_STRETCH_EXPANDED;
+        break;
+      case DWRITE_FONT_STRETCH_EXTRA_EXPANDED:
+        pango_stretch = PANGO_STRETCH_EXTRA_EXPANDED;
+        break;
+      case DWRITE_FONT_STRETCH_ULTRA_EXPANDED:
+        pango_stretch = PANGO_STRETCH_ULTRA_EXPANDED;
+        break;
+      case DWRITE_FONT_STRETCH_UNDEFINED:
+      default:
+        pango_stretch = PANGO_STRETCH_NORMAL;
+    }
+
+  return pango_stretch;
+}
+
+static PangoStyle
+util_to_pango_style (DWRITE_FONT_STYLE style)
+{
+  switch (style)
+    {
+    case DWRITE_FONT_STYLE_NORMAL:
+      return PANGO_STYLE_NORMAL;
+    case DWRITE_FONT_STYLE_OBLIQUE:
+      return PANGO_STYLE_OBLIQUE;
+    case DWRITE_FONT_STYLE_ITALIC:
+      return PANGO_STYLE_ITALIC;
+    default:
+      g_assert_not_reached ();
+      return PANGO_STYLE_NORMAL;
+    }
+}
+
+static int
+util_map_weight (int weight)
+{
+  if G_UNLIKELY (weight < 100)
+    weight = 100;
+
+  if G_UNLIKELY (weight > 1000)
+    weight = 1000;
+
+  return weight;
+}
+
+static PangoWeight
+util_to_pango_weight (DWRITE_FONT_WEIGHT weight)
+{
+  /* DirectWrite weight values range from 1 to 999, Pango weight values
+   * range from 100 to 1000. */
+
+  return (PangoWeight) util_map_weight (weight);
+}
+
+static PangoVariant
+util_to_pango_variant (IDWriteFont *font)
+{
+  PangoVariant variant = PANGO_VARIANT_NORMAL;
+
+  return variant;
+}
+
+static PangoFontDescription*
+util_get_pango_font_description (IDWriteFont *font,
+                                 const char *family_name)
+{
+  DWRITE_FONT_STRETCH stretch = font->GetStretch ();
+  DWRITE_FONT_STYLE style = font->GetStyle ();
+  DWRITE_FONT_WEIGHT weight = font->GetWeight ();
+  PangoFontDescription *description;
+
+  description = pango_font_description_new ();
+  pango_font_description_set_family (description, family_name);
+
+  pango_font_description_set_stretch (description, util_to_pango_stretch (stretch));
+  pango_font_description_set_variant (description, util_to_pango_variant (font));
+  pango_font_description_set_style (description, util_to_pango_style (style));
+  pango_font_description_set_weight (description, util_to_pango_weight (weight));
+
+  return description;
+}
+
+static char*
+util_free_to_string (IDWriteLocalizedStrings *strings)
+{
+  char *string = NULL;
+  HRESULT hr;
+
+  if (strings->GetCount() > 0)
+    {
+      UINT32 index = 0;
+      BOOL exists = FALSE;
+      UINT32 length = 0;
+
+      hr = strings->FindLocaleName (L"en-us", &index, &exists);
+      if (FAILED (hr) || !exists || index == UINT32_MAX)
+        index = 0;
+
+      hr = strings->GetStringLength (index, &length);
+      if (SUCCEEDED (hr) && length > 0)
+        {
+          gunichar2 *string_utf16 = g_new (gunichar2, length + 1);
+
+          hr = strings->GetString (index, (wchar_t*) string_utf16, length + 1);
+          if (SUCCEEDED (hr))
+            string = g_utf16_to_utf8 (string_utf16, -1, NULL, NULL, NULL);
+
+          g_free (string_utf16);
+        }
+    }
+
+  strings->Release ();
+
+  return string;
+}
+
+static char*
+util_dwrite_get_font_family_name (IDWriteFontFamily *family)
+{
+  IDWriteLocalizedStrings *strings = NULL;
+  HRESULT hr;
+
+  hr = family->GetFamilyNames (&strings);
+  if (FAILED (hr) || strings == NULL)
+    {
+      g_warning ("IDWriteFontFamily::GetFamilyNames failed with error code %x", (unsigned) hr);
+      return NULL;
+    }
+
+  return util_free_to_string (strings);
+}
+
+static char*
+util_dwrite_get_font_variant_name (IDWriteFont *font)
+{
+  IDWriteLocalizedStrings *strings = NULL;
+  HRESULT hr;
+
+  hr = font->GetFaceNames (&strings);
+  if (FAILED (hr) || strings == NULL)
+    {
+      g_warning ("IDWriteFont::GetFaceNames failed with error code %x", (unsigned) hr);
+      return NULL;
+    }
+
+  return util_free_to_string (strings);
+}
+
+PangoFontDescription *
+pango_win32_font_description_from_logfontw_dwrite (const LOGFONTW *logfontw)
+{
+  PangoFontDescription *desc = NULL;
+  IDWriteFont *font = NULL;
+  HRESULT hr;
+  gchar *family;
+  PangoStyle style;
+  PangoVariant variant;
+  PangoWeight weight;
+  PangoStretch stretch;
+  PangoWin32DWriteItems *dwrite_items;
+
+  dwrite_items = pango_win32_init_direct_write ();
+  if (dwrite_items == NULL)
+    return NULL;
+
+  hr = dwrite_items->gdi_interop->CreateFontFromLOGFONT (logfontw, &font);
+
+  if (SUCCEEDED (hr) && font != NULL)
+    {
+      IDWriteFontFamily *family = NULL;
+
+      hr = font->GetFontFamily (&family);
+
+      if (SUCCEEDED (hr) && family != NULL)
+        {
+          char *family_name = util_dwrite_get_font_family_name (family);
+
+          if (family_name != NULL)
+            desc = util_get_pango_font_description (font, family_name);
+
+          family->Release ();
+        }
+
+      font->Release ();
+    }
+
+  return desc;
+}
+
 void
 pango_win32_dwrite_font_release (gpointer dwrite_font)
 {
