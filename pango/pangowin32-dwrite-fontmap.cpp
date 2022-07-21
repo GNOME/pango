@@ -420,6 +420,89 @@ pango_win32_font_description_from_logfontw_dwrite (const LOGFONTW *logfontw)
   return desc;
 }
 
+/* macros to help parse the 'gasp' font table, referring to FreeType2 */
+#define DWRITE_UCHAR_USHORT( p, i, s ) ( (unsigned short)( ((const unsigned char *)(p))[(i)] ) << (s) )
+
+#define DWRITE_PEEK_USHORT( p ) (unsigned short)( DWRITE_UCHAR_USHORT( p, 0, 8 ) | DWRITE_UCHAR_USHORT( p, 1, 0 ) )
+
+#define DWRITE_NEXT_USHORT( buffer ) ( (unsigned short)( buffer += 2, DWRITE_PEEK_USHORT( buffer - 2 ) ) )
+
+/* values to indicate that grid fit (hinting) is supported by the font */
+#define GASP_GRIDFIT 0x0001
+#define GASP_SYMMETRIC_GRIDFIT 0x0004
+
+gboolean
+pango_win32_dwrite_font_check_is_hinted (PangoWin32Font *font)
+{
+  IDWriteFont *dwrite_font = NULL;
+  IDWriteFontFace *dwrite_font_face = NULL;
+  gboolean failed = FALSE;
+  gboolean result = FALSE;
+  gboolean dwrite_font_release = FALSE;
+
+  gboolean succeeded = FALSE;
+  PangoWin32DWriteItems *dwrite_items = pango_win32_get_direct_write_items ();
+  dwrite_font = (IDWriteFont *) g_hash_table_lookup (PANGO_WIN32_FONT_MAP (font->fontmap)->dwrite_fonts,
+                                                    &font->logfontw);
+
+  /* create the IDWriteFont from the logfont underlying the PangoWin32Font if needed */
+  if (dwrite_font == NULL)
+    {
+      if (FAILED (dwrite_items->gdi_interop->CreateFontFromLOGFONT (&font->logfontw,
+                                                                    &dwrite_font)) ||
+                  dwrite_font == NULL)
+        failed = TRUE;
+      else
+        dwrite_font_release = TRUE;
+    }
+
+  if (!failed && SUCCEEDED (dwrite_font->CreateFontFace (&dwrite_font_face)) && dwrite_font_face != NULL)
+    {
+      UINT32 gasp_tag = DWRITE_MAKE_OPENTYPE_TAG ('g', 'a', 's', 'p');
+      UINT32 table_size;
+      const unsigned short *table_data;
+      void *table_ctx;
+      gboolean exists;
+
+      /* The 'gasp' table may not exist for the font, so no 'gasp' == no hinting */
+      if (SUCCEEDED (dwrite_font_face->TryGetFontTable (gasp_tag,
+                                                        (const void **)(&table_data),
+                                                       &table_size,
+                                                       &table_ctx,
+                                                       &exists)))
+        {
+          if (exists)
+            {
+              guint16 version = DWRITE_NEXT_USHORT (table_data);
+
+              if (version == 0 || version == 1)
+                {
+                  guint16 num_ranges = DWRITE_NEXT_USHORT (table_data);
+                  guint16 i;
+
+                  for (i = 0; !result && i < num_ranges && i < (table_size / sizeof (guint16)); i ++)
+                    {
+                      guint16 ppem = DWRITE_NEXT_USHORT (table_data);
+                      guint16 behavior = DWRITE_NEXT_USHORT (table_data);
+
+                      if (behavior & (GASP_GRIDFIT | GASP_SYMMETRIC_GRIDFIT))
+                        result = TRUE;
+                    }
+                }
+            }
+
+          dwrite_font_face->ReleaseFontTable (table_ctx);
+        }
+
+      dwrite_font_face->Release ();
+    }
+
+  if (dwrite_font_release)
+    dwrite_font->Release ();
+
+  return result;
+}
+
 void
 pango_win32_dwrite_font_release (gpointer dwrite_font)
 {

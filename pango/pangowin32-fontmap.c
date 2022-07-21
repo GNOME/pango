@@ -1147,6 +1147,7 @@ pango_win32_font_neww (PangoFontMap   *fontmap,
 
   result->size = size;
   _pango_win32_make_matching_logfontw (fontmap, lfp, size, &result->logfontw);
+  result->is_hinted = pango_win32_dwrite_font_check_is_hinted (result);
 
   return result;
 }

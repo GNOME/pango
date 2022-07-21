@@ -56,6 +56,7 @@ static gboolean pango_win32_font_real_select_font      (PangoFont *font,
 							HDC        hdc);
 static void     pango_win32_font_real_done_font        (PangoFont *font);
 static double   pango_win32_font_real_get_metrics_factor (PangoFont *font);
+static gboolean pango_win32_font_is_hinted             (PangoFont *font);
 
 static void                  pango_win32_get_item_properties    (PangoItem        *item,
 								 PangoUnderline   *uline,
@@ -202,6 +203,7 @@ _pango_win32_font_class_init (PangoWin32FontClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontClass *font_class = PANGO_FONT_CLASS (class);
+  PangoFontClassPrivate *pclass;
 
   object_class->finalize = pango_win32_font_finalize;
   object_class->dispose = pango_win32_font_dispose;
@@ -217,6 +219,9 @@ _pango_win32_font_class_init (PangoWin32FontClass *class)
   class->select_font = pango_win32_font_real_select_font;
   class->done_font = pango_win32_font_real_done_font;
   class->get_metrics_factor = pango_win32_font_real_get_metrics_factor;
+
+  pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT);
+  pclass->is_hinted = pango_win32_font_is_hinted;
 
   _pango_win32_get_display_dc ();
 }
@@ -660,6 +665,14 @@ static double
 pango_win32_font_real_get_metrics_factor (PangoFont *font)
 {
   return PANGO_SCALE;
+}
+
+static gboolean
+pango_win32_font_is_hinted (PangoFont *font)
+{
+  g_return_val_if_fail (PANGO_WIN32_IS_FONT (font), FALSE);
+
+  return PANGO_WIN32_FONT (font)->is_hinted;
 }
 
 /**

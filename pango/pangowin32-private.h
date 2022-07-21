@@ -142,6 +142,9 @@ struct _PangoWin32Font
    */
   gboolean in_cache;
   GHashTable *glyph_info;
+
+  /* whether the font supports hinting */
+  gboolean is_hinted;
 };
 
 struct _PangoWin32FontClass
@@ -283,6 +286,9 @@ HDC             _pango_win32_get_display_dc                 (void);
 _PANGO_EXTERN
 gpointer        _pango_win32_copy_cmap (gpointer cmap,
                                         guint16 cmap_format);
+
+_PANGO_EXTERN
+gboolean        pango_win32_dwrite_font_check_is_hinted       (PangoWin32Font    *font);
 
 extern gboolean _pango_win32_debug;
 

@@ -268,6 +268,7 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
 				       win32font->size,
 				       &win32font->logfontw);
 
+  win32font->is_hinted = pango_win32_dwrite_font_check_is_hinted (win32font);
   cairo_matrix_init_identity (&font_matrix);
 
   cairo_matrix_scale (&font_matrix, size, size);
