@@ -51,8 +51,8 @@
   "output" : {
     "is-wrapped" : true,
     "is-ellipsized" : false,
-    "unknown-glyphs" : 1,
-    "width" : 179200,
+    "unknown-glyphs" : 0,
+    "width" : 161792,
     "height" : 38912,
     "log-attrs" : [
       {
@@ -473,8 +473,8 @@
             "end-x-offset" : 0,
             "glyphs" : [
               {
-                "glyph" : 268443688,
-                "width" : 17408,
+                "glyph" : 268435455,
+                "width" : 0,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
               }
