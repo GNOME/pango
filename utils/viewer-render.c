@@ -279,6 +279,9 @@ output_body (PangoLayout    *layout,
 	}
 
       pango_layout_get_pixel_extents (layout, NULL, &logical_rect);
+      if (logical_rect.x < 0) {
+        x = -logical_rect.x;
+      }
 
       if (render_cb)
 	(*render_cb) (layout, x, y+*height, cb_context, cb_data);
@@ -351,6 +354,11 @@ do_output (PangoContext     *context,
 
       width = MAX (width, PANGO_PIXELS (rect.width));
       height += PANGO_PIXELS (rect.height);
+
+      if (rect.x < 0) {
+        x = -rect.x;
+        rect.x = 0;
+      }
 
       if (render_cb)
 	(*render_cb) (layout, x, y, cb_context, cb_data);

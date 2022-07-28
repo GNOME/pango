@@ -3138,11 +3138,23 @@ pango_layout_get_pixel_extents (PangoLayout    *layout,
                                 PangoRectangle *ink_rect,
                                 PangoRectangle *logical_rect)
 {
+  PangoRectangle i_rect;
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
-
+  if (ink_rect == NULL) {
+    ink_rect = &i_rect;
+  }
   pango_layout_get_extents (layout, ink_rect, logical_rect);
   pango_extents_to_pixels (ink_rect, NULL);
   pango_extents_to_pixels (logical_rect, NULL);
+  if (logical_rect != NULL) {
+    logical_rect->x = ink_rect->x;
+    if (ink_rect->width > logical_rect->width) {
+      logical_rect->width = ink_rect->width;
+    }
+    if (ink_rect->height > logical_rect->height) {
+      logical_rect->height = ink_rect->height;
+    }
+  }
 }
 
 /**
