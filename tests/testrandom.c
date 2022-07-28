@@ -171,6 +171,7 @@ test_wrap_char (gconstpointer data)
   g_object_unref (context);
 }
 
+#if 0
 static void
 test_wrap_char_min_width (gconstpointer data)
 {
@@ -219,6 +220,7 @@ test_wrap_char_min_width (gconstpointer data)
   g_object_unref (ref_layout);
   g_object_unref (context);
 }
+#endif
 
 static char **
 load_hunspell_words (const char  *language)

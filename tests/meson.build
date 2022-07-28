@@ -67,7 +67,7 @@ if cairo_dep.found()
     endif
   endif
 
-  if host_system != 'darwin'
+  if false and host_system != 'darwin'
     tests += [
       [ 'testrandom', [ 'testrandom.c' ], [ libpangocairo_dep, gio_dep ] ],
     ]
