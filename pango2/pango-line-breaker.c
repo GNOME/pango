@@ -689,10 +689,10 @@ get_tab_pos (Pango2LineBreaker *self,
       switch (pango2_tab_array_get_positions (self->tabs))
         {
         case PANGO2_TAB_POSITIONS_DEFAULT:
-          tab_unit = PANGO2_SCALE;
+          tab_unit = 1;
           break;
         case PANGO2_TAB_POSITIONS_PIXELS:
-          tab_unit = 1;
+          tab_unit = PANGO2_SCALE;
           break;
         case PANGO2_TAB_POSITIONS_SPACES:
           tab_unit = self->tab_width / 8;
@@ -705,7 +705,7 @@ get_tab_pos (Pango2LineBreaker *self,
   else
     {
       n_tabs = 0;
-       tab_unit = PANGO2_SCALE;
+       tab_unit = 1;
       *is_default = TRUE;
     }
 
