@@ -240,16 +240,17 @@ pango_font_get_hb_font_for_context (PangoFont           *font,
 
   hb_font = pango_font_get_hb_font (font);
 
-  if (G_UNLIKELY (!funcs))
+  if (G_UNLIKELY (g_once_init_enter (&funcs)))
     {
-      funcs = hb_font_funcs_create ();
+      hb_font_funcs_t *f = hb_font_funcs_create ();
 
-      hb_font_funcs_set_nominal_glyph_func (funcs, pango_hb_font_get_nominal_glyph, NULL, NULL);
-      hb_font_funcs_set_glyph_h_advance_func (funcs, pango_hb_font_get_glyph_h_advance, NULL, NULL);
-      hb_font_funcs_set_glyph_v_advance_func (funcs, pango_hb_font_get_glyph_v_advance, NULL, NULL);
-      hb_font_funcs_set_glyph_extents_func (funcs, pango_hb_font_get_glyph_extents, NULL, NULL);
+      hb_font_funcs_set_nominal_glyph_func (f, pango_hb_font_get_nominal_glyph, NULL, NULL);
+      hb_font_funcs_set_glyph_h_advance_func (f, pango_hb_font_get_glyph_h_advance, NULL, NULL);
+      hb_font_funcs_set_glyph_v_advance_func (f, pango_hb_font_get_glyph_v_advance, NULL, NULL);
+      hb_font_funcs_set_glyph_extents_func (f, pango_hb_font_get_glyph_extents, NULL, NULL);
 
-      hb_font_funcs_make_immutable (funcs);
+      hb_font_funcs_make_immutable (f);
+      g_once_init_leave (&funcs, f);
     }
 
   context->font = font;
