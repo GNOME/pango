@@ -50,7 +50,7 @@ typedef enum
 /**
  * Pango2TabPositions:
  * @PANGO2_TAB_POSITIONS_DEFAULT: Positions are in Pango units
- * @PANGO2_TAB_POSITIONS_PIXELS: Positions are in pixls
+ * @PANGO2_TAB_POSITIONS_PIXELS: Positions are in pixels
  * @PANGO2_TAB_POSITIONS_SPACES: Positions are in spaces
  *
  * `Pango2TabPositions` specifies the unit for tab positions.
