@@ -1,3 +1,8 @@
+Overview of changes in 1.50.9, 09-08-2022
+=========================================
+- Apply show flags to line separators
+- Fix a thread-safety problem
+
 Overview of changes in 1.50.8, 02-07-2022
 =========================================
 - Add some properties to fontmap and family
