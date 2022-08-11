@@ -357,6 +357,7 @@ util_dwrite_get_font_family_name (IDWriteFontFamily *family)
   if (FAILED (hr) || strings == NULL)
     {
       g_warning ("IDWriteFontFamily::GetFamilyNames failed with error code %x", (unsigned) hr);
+
       return NULL;
     }
 
@@ -420,6 +421,30 @@ pango_win32_font_description_from_logfontw_dwrite (const LOGFONTW *logfontw)
   return desc;
 }
 
+static IDWriteFont *
+get_dwrite_font_from_pango_win32_font (PangoWin32Font *font,
+                                       gboolean       *is_cleanup_dwrite_font)
+{
+  PangoWin32DWriteItems *dwrite_items = pango_win32_get_direct_write_items ();
+  IDWriteFont *dwrite_font = NULL;
+
+  dwrite_font = (IDWriteFont *) g_hash_table_lookup (PANGO_WIN32_FONT_MAP (font->fontmap)->dwrite_fonts,
+                                                    &font->logfontw);
+
+  /* create the IDWriteFont from the logfont underlying the PangoWin32Font if needed */
+  if (dwrite_font == NULL)
+    {
+      if (SUCCEEDED (dwrite_items->gdi_interop->CreateFontFromLOGFONT (&font->logfontw,
+                                                                       &dwrite_font)) &&
+          dwrite_font != NULL)
+        *is_cleanup_dwrite_font = TRUE;
+      else
+        dwrite_font = NULL;
+    }
+
+  return dwrite_font;
+}
+
 /* macros to help parse the 'gasp' font table, referring to FreeType2 */
 #define DWRITE_UCHAR_USHORT( p, i, s ) ( (unsigned short)( ((const unsigned char *)(p))[(i)] ) << (s) )
 
@@ -440,23 +465,16 @@ pango_win32_dwrite_font_check_is_hinted (PangoWin32Font *font)
   gboolean result = FALSE;
   gboolean dwrite_font_release = FALSE;
 
-  gboolean succeeded = FALSE;
-  PangoWin32DWriteItems *dwrite_items = pango_win32_get_direct_write_items ();
-  dwrite_font = (IDWriteFont *) g_hash_table_lookup (PANGO_WIN32_FONT_MAP (font->fontmap)->dwrite_fonts,
-                                                    &font->logfontw);
+  dwrite_font = get_dwrite_font_from_pango_win32_font (font, &dwrite_font_release);
 
-  /* create the IDWriteFont from the logfont underlying the PangoWin32Font if needed */
   if (dwrite_font == NULL)
     {
-      if (FAILED (dwrite_items->gdi_interop->CreateFontFromLOGFONT (&font->logfontw,
-                                                                    &dwrite_font)) ||
-                  dwrite_font == NULL)
-        failed = TRUE;
-      else
-        dwrite_font_release = TRUE;
+      g_warning ("Failed to retrieve IDWriteFont from PangoWin32Font");
+
+      return FALSE;
     }
 
-  if (!failed && SUCCEEDED (dwrite_font->CreateFontFace (&dwrite_font_face)) && dwrite_font_face != NULL)
+  if (SUCCEEDED (dwrite_font->CreateFontFace (&dwrite_font_face)) && dwrite_font_face != NULL)
     {
       UINT32 gasp_tag = DWRITE_MAKE_OPENTYPE_TAG ('g', 'a', 's', 'p');
       UINT32 table_size;
