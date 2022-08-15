@@ -290,6 +290,9 @@ gpointer        _pango_win32_copy_cmap (gpointer cmap,
 _PANGO_EXTERN
 gboolean        pango_win32_dwrite_font_check_is_hinted       (PangoWin32Font    *font);
 
+_PANGO_EXTERN
+void           *pango_win32_font_get_dwrite_font_face         (PangoWin32Font    *font);
+
 extern gboolean _pango_win32_debug;
 
 void                   pango_win32_insert_font                (PangoWin32FontMap     *win32fontmap,

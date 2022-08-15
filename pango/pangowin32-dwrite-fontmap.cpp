@@ -87,6 +87,38 @@ pango_win32_dwrite_items_destroy (PangoWin32DWriteItems *dwrite_items)
   g_free (dwrite_items);
 }
 
+static IDWriteFontFace *
+_pango_win32_get_dwrite_font_face_from_dwrite_font (IDWriteFont *font)
+{
+  IDWriteFontFace *face = NULL;
+  HRESULT hr;
+
+  g_return_val_if_fail (font != NULL, NULL);
+
+  hr = font->CreateFontFace (&face);
+  if (SUCCEEDED (hr) && face != NULL)
+    return face;
+
+  g_warning ("IDWriteFont::CreateFontFace failed with error code %x\n", (unsigned)hr);
+  return NULL;
+}
+
+void *
+pango_win32_font_get_dwrite_font_face (PangoWin32Font *font)
+{
+  PangoWin32Font *win32font = PANGO_WIN32_FONT (font);
+  PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (win32font->fontmap);
+  IDWriteFont *dwrite_font = NULL;
+  IDWriteFontFace *face = NULL;
+
+  dwrite_font = (IDWriteFont *) g_hash_table_lookup (win32fontmap->dwrite_fonts, &win32font->logfontw);
+
+  if (dwrite_font != NULL)
+    return (void *)_pango_win32_get_dwrite_font_face_from_dwrite_font (dwrite_font);
+
+  return NULL;
+}
+
 void
 pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
 {
@@ -132,10 +164,9 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
               break;
             }
 
-          hr = font->CreateFontFace (&face);
-          if (FAILED (hr) || face == NULL)
+          face = _pango_win32_get_dwrite_font_face_from_dwrite_font (font);
+          if (face == NULL)
             {
-              g_warning ("IDWriteFont::CreateFontFace failed with error code %x\n", (unsigned)hr);
               font->Release ();
               continue;
             }
@@ -465,16 +496,23 @@ pango_win32_dwrite_font_check_is_hinted (PangoWin32Font *font)
   gboolean result = FALSE;
   gboolean dwrite_font_release = FALSE;
 
-  dwrite_font = get_dwrite_font_from_pango_win32_font (font, &dwrite_font_release);
+  dwrite_font_face = (IDWriteFontFace *)pango_win32_font_get_dwrite_font_face (font);
 
-  if (dwrite_font == NULL)
+  if (dwrite_font_face == NULL)
     {
-      g_warning ("Failed to retrieve IDWriteFont from PangoWin32Font");
+      dwrite_font = get_dwrite_font_from_pango_win32_font (font, &dwrite_font_release);
 
-      return FALSE;
+      if (dwrite_font != NULL)
+        dwrite_font_face = _pango_win32_get_dwrite_font_face_from_dwrite_font (dwrite_font);
+      else
+        {
+          g_warning ("Failed to retrieve IDWriteFont from PangoWin32Font");
+
+          return FALSE;
+        }
     }
 
-  if (SUCCEEDED (dwrite_font->CreateFontFace (&dwrite_font_face)) && dwrite_font_face != NULL)
+  if (dwrite_font_face != NULL)
     {
       UINT32 gasp_tag = DWRITE_MAKE_OPENTYPE_TAG ('g', 'a', 's', 'p');
       UINT32 table_size;
