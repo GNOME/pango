@@ -567,3 +567,12 @@ pango_win32_dwrite_font_release (gpointer dwrite_font)
   if (font != NULL)
     font->Release ();
 }
+
+void
+pango_win32_dwrite_font_face_release (gpointer dwrite_font_face)
+{
+  IDWriteFontFace *face = static_cast<IDWriteFontFace *>(dwrite_font_face);
+
+  if (face != NULL)
+    face->Release ();
+}

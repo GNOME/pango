@@ -313,6 +313,9 @@ gboolean               pango_win32_dwrite_font_is_monospace   (gpointer         
 
 void                   pango_win32_dwrite_font_release        (gpointer               dwrite_font);
 
+_PANGO_EXTERN
+void                   pango_win32_dwrite_font_face_release   (gpointer               dwrite_font_face);
+
 gpointer               pango_win32_logfontw_get_dwrite_font   (LOGFONTW              *logfontw);
 
 PangoFontDescription *
