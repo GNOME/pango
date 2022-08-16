@@ -1195,6 +1195,8 @@ pango_win32_font_map_real_find_font (PangoWin32FontMap          *win32fontmap,
   return (PangoFont *)win32font;
 }
 
+#if 0
+/* XXX: Add fallback for using GDI? */
 static gboolean
 _pango_win32_get_name_header (HDC                 hdc,
 			      struct name_header *header)
@@ -1355,6 +1357,7 @@ get_family_nameA (const LOGFONTA *lfp)
  fail0:
   return g_locale_to_utf8 (lfp->lfFaceName, -1, NULL, NULL, NULL);
 }
+#endif
 
 /**
  * pango_win32_font_description_from_logfont:
@@ -1378,6 +1381,34 @@ get_family_nameA (const LOGFONTA *lfp)
 PangoFontDescription *
 pango_win32_font_description_from_logfont (const LOGFONT *lfp)
 {
+  LOGFONTW lfw;
+  PangoFontDescription *desc = NULL;
+  gchar *facename_utf8 = g_locale_to_utf8 (lfp->lfFaceName, -1, NULL, NULL, NULL);
+  wchar_t *facename_utf16 = g_utf8_to_utf16 (facename_utf8, -1, NULL, NULL, NULL);
+
+  lfw.lfHeight = lfp->lfHeight;
+  lfw.lfWidth = lfp->lfWidth;
+  lfw.lfEscapement = lfp->lfEscapement;
+  lfw.lfOrientation = lfp->lfOrientation;
+  lfw.lfWeight = lfp->lfWeight;
+  lfw.lfItalic = lfp->lfItalic;
+  lfw.lfUnderline = lfp->lfUnderline;
+  lfw.lfStrikeOut = lfp->lfStrikeOut;
+  lfw.lfCharSet = lfp->lfCharSet;
+  lfw.lfOutPrecision = lfp->lfOutPrecision;
+  lfw.lfClipPrecision = lfp->lfClipPrecision;
+  lfw.lfQuality = lfp->lfQuality;
+  lfw.lfPitchAndFamily = lfp->lfPitchAndFamily;
+  wcscpy (lfw.lfFaceName, facename_utf16);
+
+  desc = pango_win32_font_description_from_logfontw_dwrite (&lfw);
+  g_free (facename_utf16);
+  g_free (facename_utf8);
+
+  return desc;
+
+#if 0
+/* XXX: Add fallback for using GDI? */
   PangoFontDescription *description;
   gchar *family;
   PangoStyle style;
@@ -1412,8 +1443,12 @@ pango_win32_font_description_from_logfont (const LOGFONT *lfp)
   pango_font_description_set_variant (description, variant);
 
   return description;
+#endif
 }
 
+#if 0
+
+/* XXX: Add fallback for using GDI? */
 static gchar *
 get_family_nameW (const LOGFONTW *lfp)
 {
@@ -1540,6 +1575,7 @@ get_family_nameW (const LOGFONTW *lfp)
  fail0:
   return g_utf16_to_utf8 (lfp->lfFaceName, -1, NULL, NULL, NULL);
 }
+#endif
 
 /**
  * pango_win32_font_description_from_logfontw:
