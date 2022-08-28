@@ -24,6 +24,7 @@
 #include "pango-font-private.h"
 #include "pangofc-font-private.h"
 #include "pangofc-fontmap.h"
+#include "pangofc-fontmap-private.h"
 #include "pangofc-private.h"
 #include "pango-layout.h"
 #include "pango-impl-utils.h"
@@ -172,8 +173,8 @@ pango_fc_font_finalize (GObject *object)
       g_object_unref (fontmap);
     }
 
-  FcPatternDestroy (fcfont->font_pattern);
   pango_font_description_free (fcfont->description);
+  FcPatternDestroy (fcfont->font_pattern);
 
   if (priv->decoder)
     _pango_fc_font_set_decoder (fcfont, NULL);
@@ -209,9 +210,9 @@ pattern_is_transformed (FcPattern *pattern)
 
 static void
 pango_fc_font_set_property (GObject       *object,
-			    guint          prop_id,
-			    const GValue  *value,
-			    GParamSpec    *pspec)
+                            guint          prop_id,
+                            const GValue  *value,
+                            GParamSpec    *pspec)
 {
   PangoFcFont *fcfont = PANGO_FC_FONT (object);
 
@@ -219,25 +220,25 @@ pango_fc_font_set_property (GObject       *object,
     {
     case PROP_PATTERN:
       {
-	FcPattern *pattern = g_value_get_pointer (value);
+        FcPattern *pattern = g_value_get_pointer (value);
 
-	g_return_if_fail (pattern != NULL);
-	g_return_if_fail (fcfont->font_pattern == NULL);
+        g_return_if_fail (pattern != NULL);
+        g_return_if_fail (fcfont->font_pattern == NULL);
 
-	FcPatternReference (pattern);
-	fcfont->font_pattern = pattern;
-	fcfont->description = pango_fc_font_description_from_pattern (pattern, TRUE);
-	fcfont->is_hinted = pattern_is_hinted (pattern);
-	fcfont->is_transformed = pattern_is_transformed (pattern);
+        FcPatternReference (pattern);
+        fcfont->font_pattern = pattern;
+        fcfont->description = font_description_from_pattern (pattern, TRUE, TRUE);
+        fcfont->is_hinted = pattern_is_hinted (pattern);
+        fcfont->is_transformed = pattern_is_transformed (pattern);
       }
       goto set_decoder;
 
     case PROP_FONTMAP:
       {
-	PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (g_value_get_object (value));
+        PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (g_value_get_object (value));
 
-	g_return_if_fail (fcfont->fontmap == NULL);
-	g_weak_ref_set ((GWeakRef *) &fcfont->fontmap, fcfontmap);
+        g_return_if_fail (fcfont->fontmap == NULL);
+        g_weak_ref_set ((GWeakRef *) &fcfont->fontmap, fcfontmap);
       }
       goto set_decoder;
 

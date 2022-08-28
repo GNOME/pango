@@ -191,6 +191,9 @@ struct _PangoFcFontMapClass
   void (*_pango_reserved4) (void);
 };
 
+PangoFontDescription *font_description_from_pattern (FcPattern *pattern,
+                                                     gboolean   include_size,
+                                                     gboolean   shallow);
 
 G_END_DECLS
 
