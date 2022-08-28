@@ -1296,17 +1296,10 @@ variant_supported (PangoItem    *item,
 static PangoVariant
 get_font_variant (PangoItem *item)
 {
-  PangoFontDescription *desc;
-  PangoVariant variant = PANGO_VARIANT_NORMAL;
-
   if (item->analysis.font)
-    {
-      desc = pango_font_describe (item->analysis.font);
-      variant = pango_font_description_get_variant (desc);
-      pango_font_description_free (desc);
-    }
+    return pango_font_get_variant (item->analysis.font);
 
-  return variant;
+  return PANGO_VARIANT_NORMAL;
 }
 
 static PangoTextTransform
