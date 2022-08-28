@@ -24,6 +24,7 @@
 #include "pango-font-private.h"
 #include "pangofc-font-private.h"
 #include "pangofc-fontmap.h"
+#include "pangofc-fontmap-private.h"
 #include "pangofc-private.h"
 #include "pango-layout.h"
 #include "pango-impl-utils.h"
@@ -78,6 +79,7 @@ static void                 _pango_fc_font_get_scale_factors (PangoFont     *fon
 static void                 pango_fc_font_get_matrix      (PangoFont        *font,
                                                            PangoMatrix      *matrix);
 static int                  pango_fc_font_get_absolute_size (PangoFont        *font);
+static PangoVariant         pango_fc_font_get_variant       (PangoFont        *font);
 
 #define PANGO_FC_FONT_LOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->lock_face (font))
 #define PANGO_FC_FONT_UNLOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->unlock_face (font))
@@ -114,6 +116,7 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   pclass->get_scale_factors = _pango_fc_font_get_scale_factors;
   pclass->get_matrix = pango_fc_font_get_matrix;
   pclass->get_absolute_size = pango_fc_font_get_absolute_size;
+  pclass->get_variant = pango_fc_font_get_variant;
 
   /**
    * PangoFcFont:pattern:
@@ -172,8 +175,8 @@ pango_fc_font_finalize (GObject *object)
       g_object_unref (fontmap);
     }
 
-  FcPatternDestroy (fcfont->font_pattern);
   pango_font_description_free (fcfont->description);
+  FcPatternDestroy (fcfont->font_pattern);
 
   if (priv->decoder)
     _pango_fc_font_set_decoder (fcfont, NULL);
@@ -209,9 +212,9 @@ pattern_is_transformed (FcPattern *pattern)
 
 static void
 pango_fc_font_set_property (GObject       *object,
-			    guint          prop_id,
-			    const GValue  *value,
-			    GParamSpec    *pspec)
+                            guint          prop_id,
+                            const GValue  *value,
+                            GParamSpec    *pspec)
 {
   PangoFcFont *fcfont = PANGO_FC_FONT (object);
 
@@ -219,25 +222,25 @@ pango_fc_font_set_property (GObject       *object,
     {
     case PROP_PATTERN:
       {
-	FcPattern *pattern = g_value_get_pointer (value);
+        FcPattern *pattern = g_value_get_pointer (value);
 
-	g_return_if_fail (pattern != NULL);
-	g_return_if_fail (fcfont->font_pattern == NULL);
+        g_return_if_fail (pattern != NULL);
+        g_return_if_fail (fcfont->font_pattern == NULL);
 
-	FcPatternReference (pattern);
-	fcfont->font_pattern = pattern;
-	fcfont->description = pango_fc_font_description_from_pattern (pattern, TRUE);
-	fcfont->is_hinted = pattern_is_hinted (pattern);
-	fcfont->is_transformed = pattern_is_transformed (pattern);
+        FcPatternReference (pattern);
+        fcfont->font_pattern = pattern;
+        fcfont->description = font_description_from_pattern (pattern, TRUE, TRUE);
+        fcfont->is_hinted = pattern_is_hinted (pattern);
+        fcfont->is_transformed = pattern_is_transformed (pattern);
       }
       goto set_decoder;
 
     case PROP_FONTMAP:
       {
-	PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (g_value_get_object (value));
+        PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (g_value_get_object (value));
 
-	g_return_if_fail (fcfont->fontmap == NULL);
-	g_weak_ref_set ((GWeakRef *) &fcfont->fontmap, fcfontmap);
+        g_return_if_fail (fcfont->fontmap == NULL);
+        g_weak_ref_set ((GWeakRef *) &fcfont->fontmap, fcfontmap);
       }
       goto set_decoder;
 
@@ -312,6 +315,13 @@ pango_fc_font_get_absolute_size (PangoFont *font)
     return (int) (size * PANGO_SCALE);
 
   return 0;
+}
+
+static PangoVariant
+pango_fc_font_get_variant (PangoFont *font)
+{
+  PangoFcFont *fcfont = (PangoFcFont *)font;
+  return pango_font_description_get_variant (fcfont->description);
 }
 
 static PangoCoverage *

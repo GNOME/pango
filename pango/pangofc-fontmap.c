@@ -2774,6 +2774,14 @@ pango_fc_convert_width_to_pango (int fc_stretch)
 PangoFontDescription *
 pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_size)
 {
+  return font_description_from_pattern (pattern, include_size, FALSE);
+}
+
+PangoFontDescription *
+font_description_from_pattern (FcPattern *pattern,
+                               gboolean   include_size,
+                               gboolean   shallow)
+{
   PangoFontDescription *desc;
   PangoStyle style;
   PangoWeight weight;
@@ -2782,8 +2790,7 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
   PangoGravity gravity;
   PangoVariant variant;
   gboolean all_caps;
-
-  FcChar8 *s;
+  const char *s;
   int i;
   double d;
   FcResult res;
@@ -2793,7 +2800,10 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
   res = FcPatternGetString (pattern, FC_FAMILY, 0, (FcChar8 **) &s);
   g_assert (res == FcResultMatch);
 
-  pango_font_description_set_family (desc, (gchar *)s);
+  if (shallow)
+    pango_font_description_set_family_static (desc, s);
+  else
+    pango_font_description_set_family (desc, s);
 
   if (FcPatternGetInteger (pattern, FC_SLANT, 0, &i) == FcResultMatch)
     style = pango_fc_convert_slant_to_pango (i);
@@ -2821,8 +2831,6 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
 
   for (int i = 0; i < 32; i++)
     {
-      const char *s;
-
       if (FcPatternGetString (pattern, FC_FONT_FEATURES, i, (FcChar8 **)&s) == FcResultMatch)
         {
           if (strcmp (s, "smcp=1") == 0)
@@ -2907,7 +2915,12 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
   if (include_size && FcPatternGetString (pattern, FC_FONT_VARIATIONS, 0, (FcChar8 **)&s) == FcResultMatch)
     {
       if (s && *s)
-        pango_font_description_set_variations (desc, (char *)s);
+        {
+          if (shallow)
+            pango_font_description_set_variations_static (desc, s);
+          else
+            pango_font_description_set_variations (desc, s);
+        }
     }
 
   return desc;
