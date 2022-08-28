@@ -79,6 +79,7 @@ static void                 _pango_fc_font_get_scale_factors (PangoFont     *fon
 static void                 pango_fc_font_get_matrix      (PangoFont        *font,
                                                            PangoMatrix      *matrix);
 static int                  pango_fc_font_get_absolute_size (PangoFont        *font);
+static PangoVariant         pango_fc_font_get_variant       (PangoFont        *font);
 
 #define PANGO_FC_FONT_LOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->lock_face (font))
 #define PANGO_FC_FONT_UNLOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->unlock_face (font))
@@ -115,6 +116,7 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   pclass->get_scale_factors = _pango_fc_font_get_scale_factors;
   pclass->get_matrix = pango_fc_font_get_matrix;
   pclass->get_absolute_size = pango_fc_font_get_absolute_size;
+  pclass->get_variant = pango_fc_font_get_variant;
 
   /**
    * PangoFcFont:pattern:
@@ -313,6 +315,13 @@ pango_fc_font_get_absolute_size (PangoFont *font)
     return (int) (size * PANGO_SCALE);
 
   return 0;
+}
+
+static PangoVariant
+pango_fc_font_get_variant (PangoFont *font)
+{
+  PangoFcFont *fcfont = (PangoFcFont *)font;
+  return pango_font_description_get_variant (fcfont->description);
 }
 
 static PangoCoverage *
