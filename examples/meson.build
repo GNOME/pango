@@ -8,6 +8,7 @@ examples += [
   'parshape',
   'columns',
   'userfont',
+  'optical-margins',
 ]
 
 examples_deps = [ libpango_dep ]
