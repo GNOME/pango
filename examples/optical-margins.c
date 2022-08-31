@@ -1,8 +1,9 @@
 #include <pango2/pangocairo.h>
+#include <hb-ot.h>
 
 static int
-get_bound (Pango2Font  *font,
-           gunichar     ch)
+get_fallback_bound (Pango2Font  *font,
+                    gunichar     ch)
 {
   float f;
   hb_codepoint_t glyph;
@@ -62,23 +63,44 @@ get_bound (Pango2Font  *font,
   hb_font_get_nominal_glyph (pango2_font_get_hb_font (font), ch, &glyph);
   pango2_font_get_glyph_extents (font, glyph, &ink_rect, NULL);
 
-  return (int) (ink_rect.width * f);
+  return - (int) (ink_rect.width * f);
 }
 
 static int
-get_left_bound (Pango2Font *font,
-                gunichar    ch)
+get_bound (Pango2Font     *font,
+           gunichar        ch,
+           hb_direction_t  direction)
 {
-  /* here is where we would use font-specific information from lfbd */
-  return get_bound (font, ch);
-}
+  hb_codepoint_t glyph;
+  hb_font_t *hb_font;
+  hb_set_t *lookups;
+  int res;
 
-static int
-get_right_bound (Pango2Font *font,
-                 gunichar    ch)
-{
-  /* here is where we would use font-specific information from rtbd */
-  return get_bound (font, ch);
+  hb_font = pango2_font_get_hb_font (font);
+
+  hb_font_get_nominal_glyph (hb_font, ch, &glyph);
+  lookups = hb_set_create ();
+
+  hb_ot_layout_collect_lookups (hb_font_get_face (hb_font),
+                                HB_OT_TAG_GPOS,
+                                NULL, NULL,
+                                (hb_tag_t[]) { direction == HB_DIRECTION_LTR
+                                                 ? HB_TAG ('l','f','b','d')
+                                                 : HB_TAG ('r','t','b','d'),
+                                               HB_TAG_NONE },
+                                lookups);
+
+  if (hb_set_is_empty (lookups))
+    res = get_fallback_bound (font, ch);
+  else
+    res = hb_ot_layout_get_optical_bound (hb_font,
+                                          hb_set_get_min (lookups),
+                                          direction,
+                                          glyph);
+
+  hb_set_destroy (lookups);
+
+  return res;
 }
 
 static void
@@ -93,6 +115,8 @@ get_optical_bounds (Pango2Line *line,
   Pango2Run *run;
   Pango2Item *item;
   Pango2Font *font;
+
+  /* No attempt is made to handle rtl here */
 
   *left = *right = 0;
 
@@ -109,14 +133,16 @@ get_optical_bounds (Pango2Line *line,
   item = pango2_run_get_item (run);
   font = pango2_analysis_get_font (pango2_item_get_analysis (item));
 
-  *left = get_left_bound (font, ch);
+  *left = get_bound (font, ch, HB_DIRECTION_LTR);
 
+  /* Note: the hyphen isn't present in the text */
   if (pango2_line_is_hyphenated (line))
     ch = 0x2010;
   else
     {
       char *p = g_utf8_prev_char (text + start + length);
       ch = g_utf8_get_char (p);
+      /* We need to avoid a possible zeroed out space at the end */
       if (g_unichar_isspace (ch))
         {
           p = g_utf8_prev_char (p);
@@ -128,15 +154,17 @@ get_optical_bounds (Pango2Line *line,
   item = pango2_run_get_item (run);
   font = pango2_analysis_get_font (pango2_item_get_analysis (item));
 
-  *right = get_right_bound (font, ch);
+  *right = get_bound (font, ch, HB_DIRECTION_RTL);
 }
 
 int
 main (int argc, char *argv[])
 {
   gboolean opt_show_margins = FALSE;
+  const char *opt_font = NULL;
   GOptionEntry option_entries[] = {
   { "show-margins", 0, 0, G_OPTION_ARG_NONE, &opt_show_margins, "Show margins", NULL },
+  { "font", 0, 0, G_OPTION_ARG_STRING, &opt_font, "Font to use", NULL },
   { NULL, }
   };
   GOptionContext *option_context;
@@ -204,9 +232,17 @@ main (int argc, char *argv[])
 
   breaker = pango2_line_breaker_new (context);
 
-  g_print ("Using %s\n", G_OBJECT_TYPE_NAME (breaker));
-
   attrs = pango2_attr_list_new ();
+
+  if (opt_font)
+    {
+      Pango2FontDescription *desc;
+
+      g_print ("Using %s\n", opt_font);
+      desc = pango2_font_description_from_string (opt_font);
+      pango2_attr_list_insert (attrs, pango2_attr_font_desc_new (desc));
+      pango2_font_description_free (desc);
+    }
 
   pango2_line_breaker_add_text (breaker, text, -1, attrs);
 
@@ -231,11 +267,11 @@ main (int argc, char *argv[])
       get_optical_bounds (line, &left, &right);
 
       if (!pango2_line_is_paragraph_end (line))
-        line = pango2_line_justify (line, width + left + right);
+        line = pango2_line_justify (line, width - left - right);
 
       pango2_line_get_extents (line, NULL, &ext);
 
-      pango2_lines_add_line (lines, line, x - left, y - ext.y);
+      pango2_lines_add_line (lines, line, x + left, y - ext.y);
 
       y += ext.height;
     }
