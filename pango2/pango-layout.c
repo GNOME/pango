@@ -641,6 +641,7 @@ ensure_lines (Pango2Layout *layout)
   Pango2AttrList *attrs;
   int x, y, width;
   int line_no;
+  gboolean at_paragraph_start;
 
   check_context_changed (layout);
 
@@ -664,6 +665,7 @@ ensure_lines (Pango2Layout *layout)
 
   x = y = 0;
   line_no = 0;
+  at_paragraph_start = TRUE;
   while (pango2_line_breaker_has_line (breaker))
     {
       Pango2Line *line;
@@ -672,10 +674,13 @@ ensure_lines (Pango2Layout *layout)
       Pango2EllipsizeMode ellipsize = PANGO2_ELLIPSIZE_NONE;
       Pango2LeadingTrim trim = PANGO2_LEADING_TRIM_NONE;
 
-      if ((line_no == 0) == (layout->indent > 0))
+      if (at_paragraph_start == (layout->indent > 0))
         {
           x = abs (layout->indent);
-          width = layout->width - x;
+          if (layout->width == -1)
+            width = -1;
+          else
+            width = layout->width - x;
         }
       else
         {
@@ -688,6 +693,8 @@ ensure_lines (Pango2Layout *layout)
 
 retry:
       line = pango2_line_breaker_next_line (breaker, x, width, layout->wrap, ellipsize);
+
+      at_paragraph_start = line->ends_paragraph;
 
       if (line->starts_paragraph)
         trim |= PANGO2_LEADING_TRIM_START;
