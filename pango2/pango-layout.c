@@ -317,18 +317,20 @@ pango2_layout_class_init (Pango2LayoutClass *class)
    *
    * The context for the `Pango2Layout`.
    */
-  props[PROP_CONTEXT] = g_param_spec_object ("context", "context", "context",
-                                             PANGO2_TYPE_CONTEXT,
-                                             G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+  props[PROP_CONTEXT] =
+      g_param_spec_object ("context", NULL, NULL,
+                           PANGO2_TYPE_CONTEXT,
+                           G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Layout:text: (attributes org.gtk.Property.get=pango2_layout_get_text org.gtk.Property.set=pango2_layout_set_text)
    *
    * The text of the `Pango2Layout`.
    */
-  props[PROP_TEXT] = g_param_spec_string ("text", "text", "text",
-                                          "",
-                                          G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
+  props[PROP_TEXT] =
+      g_param_spec_string ("text", NULL, NULL,
+                           "",
+                           G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Layout:attributes: (attributes org.gtk.Property.get=pango2_layout_get_attributes org.gtk.Property.set=pango2_layout_set_attributes)
@@ -337,18 +339,20 @@ pango2_layout_class_init (Pango2LayoutClass *class)
    *
    * Attributes can affect how the text is formatted.
    */
-  props[PROP_ATTRIBUTES] = g_param_spec_boxed ("attributes", "attributes", "attributes",
-                                               PANGO2_TYPE_ATTR_LIST,
-                                               G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
+  props[PROP_ATTRIBUTES] =
+      g_param_spec_boxed ("attributes", NULL, NULL,
+                          PANGO2_TYPE_ATTR_LIST,
+                          G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Layout:font-description: (attributes org.gtk.Property.get=pango2_layout_get_font_description org.gtk.Property.set=pango2_layout_set_font_description)
    *
    * The font description of the `Pango2Layout`.
    */
-  props[PROP_FONT_DESCRIPTION] = g_param_spec_boxed ("font-description", "font-description", "font-description",
-                                                     PANGO2_TYPE_FONT_DESCRIPTION,
-                                                     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
+  props[PROP_FONT_DESCRIPTION] =
+      g_param_spec_boxed ("font-description", NULL, NULL,
+                          PANGO2_TYPE_FONT_DESCRIPTION,
+                          G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Layout:line-height: (attributes org.gtk.Property.get=pango2_layout_get_line_height org.gtk.Property.set=pango2_layout_set_line_height)
@@ -360,9 +364,10 @@ pango2_layout_class_init (Pango2LayoutClass *class)
    *
    * The default value is 0.
    */
-  props[PROP_LINE_HEIGHT] = g_param_spec_float ("line-height", "line-height", "line-height",
-                                                0., G_MAXFLOAT, 0.,
-                                                G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
+  props[PROP_LINE_HEIGHT] =
+      g_param_spec_float ("line-height", NULL, NULL,
+                          0., G_MAXFLOAT, 0.,
+                          G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Layout:spacing: (attributes org.gtk.Property.get=pango2_layout_get_spacing org.gtk.Property.set=pango2_layout_set_spacing)
@@ -373,9 +378,10 @@ pango2_layout_class_init (Pango2LayoutClass *class)
    *
    * The default value is 0.
    */
-  props[PROP_SPACING] = g_param_spec_int ("spacing", "spacing", "spacing",
-                                        0, G_MAXINT, 0,
-                                        G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
+  props[PROP_SPACING] =
+      g_param_spec_int ("spacing", NULL, NULL,
+                        0, G_MAXINT, 0,
+                        G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Layout:width: (attributes org.gtk.Property.get=pango2_layout_get_width org.gtk.Property.set=pango2_layout_set_width)
@@ -386,9 +392,10 @@ pango2_layout_class_init (Pango2LayoutClass *class)
    *
    * The default value is -1.
    */
-  props[PROP_WIDTH] = g_param_spec_int ("width", "width", "width",
-                                        -1, G_MAXINT, -1,
-                                        G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
+  props[PROP_WIDTH] =
+      g_param_spec_int ("width", NULL, NULL,
+                        -1, G_MAXINT, -1,
+                        G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Layout:height: (attributes org.gtk.Property.get=pango2_layout_get_height org.gtk.Property.set=pango2_layout_set_height)
@@ -417,9 +424,10 @@ pango2_layout_class_init (Pango2LayoutClass *class)
    *
    * The default value is -1.
    */
-  props[PROP_HEIGHT] = g_param_spec_int ("height", "height", "height",
-                                         -G_MAXINT, G_MAXINT, -1,
-                                         G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
+  props[PROP_HEIGHT] =
+      g_param_spec_int ("height", NULL, NULL,
+                        -G_MAXINT, G_MAXINT, -1,
+                        G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Layout:tabs: (attributes org.gtk.Property.get=pango2_layout_get_tabs org.gtk.Property.set=pango2_layout_set_tabs)
@@ -429,9 +437,10 @@ pango2_layout_class_init (Pango2LayoutClass *class)
    * `Pango2Layout` will place content at the next tab position
    * whenever it meets a Tab character (U+0009).
    */
-  props[PROP_TABS] = g_param_spec_boxed ("tabs", "tabs", "tabs",
-                                         PANGO2_TYPE_TAB_ARRAY,
-                                         G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
+  props[PROP_TABS] =
+      g_param_spec_boxed ("tabs", NULL, NULL,
+                          PANGO2_TYPE_TAB_ARRAY,
+                          G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Layout:single-paragraph: (attributes org.gtk.Property.get=pango2_layout_get_single_paragraph org.gtk.Property.set=pango2_layout_set_single_paragraph)
@@ -446,9 +455,10 @@ pango2_layout_class_init (Pango2LayoutClass *class)
    *
    * The default value is `FALSE`.
    */
-  props[PROP_SINGLE_PARAGRAPH] = g_param_spec_boolean ("single-paragraph", "single-paragraph", "single-paragraph",
-                                                       FALSE,
-                                                       G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
+  props[PROP_SINGLE_PARAGRAPH] =
+      g_param_spec_boolean ("single-paragraph", NULL, NULL,
+                            FALSE,
+                            G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Layout:wrap: (attributes org.gtk.Property.get=pango2_layout_get_wrap org.gtk.Property.set=pango2_layout_set_wrap)
@@ -460,10 +470,11 @@ pango2_layout_class_init (Pango2LayoutClass *class)
    *
    * The default value is `PANGO2_WRAP_WORD`.
    */
-  props[PROP_WRAP] = g_param_spec_enum ("wrap", "wrap", "wrap",
-                                        PANGO2_TYPE_WRAP_MODE,
-                                        PANGO2_WRAP_WORD,
-                                        G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
+  props[PROP_WRAP] =
+      g_param_spec_enum ("wrap", NULL, NULL,
+                         PANGO2_TYPE_WRAP_MODE,
+                         PANGO2_WRAP_WORD,
+                         G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Layout:indent: (attributes org.gtk.Property.get=pango2_layout_get_indent org.gtk.Property.set=pango2_layout_set_indent)
@@ -478,9 +489,10 @@ pango2_layout_class_init (Pango2LayoutClass *class)
    *
    * The default value is 0.
    */
-  props[PROP_INDENT] = g_param_spec_int ("indent", "indent", "indent",
-                                         G_MININT, G_MAXINT, 0,
-                                         G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
+  props[PROP_INDENT] =
+      g_param_spec_int ("indent", NULL, NULL,
+                        G_MININT, G_MAXINT, 0,
+                        G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Layout:alignment: (attributes org.gtk.Property.get=pango2_layout_get_alignment org.gtk.Property.set=pango2_layout_set_alignment)
@@ -489,10 +501,11 @@ pango2_layout_class_init (Pango2LayoutClass *class)
    *
    * The default value is `PANGO2_ALIGN_NATURAL`.
    */
-  props[PROP_ALIGNMENT] = g_param_spec_enum ("alignment", "alignment", "alignment",
-                                             PANGO2_TYPE_ALIGNMENT,
-                                             PANGO2_ALIGN_NATURAL,
-                                             G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
+  props[PROP_ALIGNMENT] =
+      g_param_spec_enum ("alignment", NULL, NULL,
+                         PANGO2_TYPE_ALIGNMENT,
+                         PANGO2_ALIGN_NATURAL,
+                         G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Layout:ellipsize: (attributes org.gtk.Property.get=pango2_layout_get_ellipsize org.gtk.Property.set=pango2_layout_set_ellipsize)
@@ -501,10 +514,11 @@ pango2_layout_class_init (Pango2LayoutClass *class)
    *
    * The default value is `PANGO2_ELLIPSIZE_NONE`.
    */
-  props[PROP_ELLIPSIZE] = g_param_spec_enum ("ellipsize", "ellipsize", "ellipsize",
-                                             PANGO2_TYPE_ELLIPSIZE_MODE,
-                                             PANGO2_ELLIPSIZE_NONE,
-                                             G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
+  props[PROP_ELLIPSIZE] =
+      g_param_spec_enum ("ellipsize", NULL, NULL,
+                         PANGO2_TYPE_ELLIPSIZE_MODE,
+                         PANGO2_ELLIPSIZE_NONE,
+                         G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Layout:auto-dir: (attributes org.gtk.Property.get=pango2_layout_get_auto_dir org.gtk.Property.set=pango2_layout_set_auto_dir)
@@ -514,18 +528,20 @@ pango2_layout_class_init (Pango2LayoutClass *class)
    *
    * The default value is `TRUE`.
    */
-  props[PROP_AUTO_DIR] = g_param_spec_boolean ("auto-dir", "auto-dir", "auto-dir",
-                                               TRUE,
-                                               G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY);
+  props[PROP_AUTO_DIR] =
+      g_param_spec_boolean ("auto-dir", NULL, NULL,
+                            TRUE,
+                            G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Layout:lines: (attributes org.gtk.Property.get=pango2_layout_get_lines)
    *
    * The `Pango2Lines` object holding the formatted lines.
    */
-  props[PROP_LINES] = g_param_spec_object ("lines", "lines", "lines",
-                                           PANGO2_TYPE_LINES,
-                                           G_PARAM_READABLE);
+  props[PROP_LINES] =
+      g_param_spec_object ("lines", NULL, NULL,
+                           PANGO2_TYPE_LINES,
+                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, NUM_PROPERTIES, props);
 }

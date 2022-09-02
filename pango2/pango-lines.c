@@ -123,8 +123,9 @@ pango2_lines_class_init (Pango2LinesClass *class)
    * The number of unknown glyphs in the `Pango2Lines`.
    */
   properties[PROP_UNKNOWN_GLYPHS_COUNT] =
-    g_param_spec_uint ("unknown-glyphs-count", NULL, NULL, 0, G_MAXUINT, 0,
-                       G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+      g_param_spec_uint ("unknown-glyphs-count", NULL, NULL,
+                         0, G_MAXUINT, 0,
+                         G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Lines:wrapped: (attributes org.gtk.Property.get=pango2_lines_is_wrapped)
@@ -132,8 +133,9 @@ pango2_lines_class_init (Pango2LinesClass *class)
    * `TRUE` if the `Pango2Lines` contains any wrapped lines.
    */
   properties[PROP_WRAPPED] =
-    g_param_spec_boolean ("wrapped", NULL, NULL, FALSE,
-                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+      g_param_spec_boolean ("wrapped", NULL, NULL,
+                            FALSE,
+                            G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Lines:ellipsized: (attributes org.gtk.Property.get=pango2_lines_is_ellipsized)
@@ -141,8 +143,9 @@ pango2_lines_class_init (Pango2LinesClass *class)
    * `TRUE` if the `Pango2Lines` contains any ellipsized lines.
    */
   properties[PROP_ELLIPSIZED] =
-    g_param_spec_boolean ("ellipsized", NULL, NULL, FALSE,
-                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+      g_param_spec_boolean ("ellipsized", NULL, NULL,
+                            FALSE,
+                            G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2Lines:hyphenated: (attributes org.gtk.Property.get=pango2_lines_is_hyphenated)
@@ -150,8 +153,9 @@ pango2_lines_class_init (Pango2LinesClass *class)
    * `TRUE` if the `Pango2Lines` contains any hyphenated lines.
    */
   properties[PROP_HYPHENATED] =
-    g_param_spec_boolean ("hyphenated", NULL, NULL, FALSE,
-                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+      g_param_spec_boolean ("hyphenated", NULL, NULL,
+                            FALSE,
+                            G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);
 }

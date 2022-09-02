@@ -163,7 +163,8 @@ pango2_font_family_class_init (Pango2FontFamilyClass *class)
    * The name of the family.
    */
   properties[PROP_NAME] =
-      g_param_spec_string ("name", NULL, NULL, NULL,
+      g_param_spec_string ("name", NULL, NULL,
+                           NULL,
                            G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
@@ -172,7 +173,8 @@ pango2_font_family_class_init (Pango2FontFamilyClass *class)
    * The type of objects that the family contains.
    */
   properties[PROP_ITEM_TYPE] =
-      g_param_spec_gtype ("item-type", NULL, NULL, PANGO2_TYPE_FONT_FACE,
+      g_param_spec_gtype ("item-type", NULL, NULL,
+                          PANGO2_TYPE_FONT_FACE,
                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
@@ -181,7 +183,8 @@ pango2_font_family_class_init (Pango2FontFamilyClass *class)
    * The number of faces contained in the family.
    */
   properties[PROP_N_ITEMS] =
-      g_param_spec_uint ("n-items", "", "", 0, G_MAXUINT, 0,
+      g_param_spec_uint ("n-items", NULL, NULL,
+                         0, G_MAXUINT, 0,
                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);

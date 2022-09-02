@@ -915,7 +915,8 @@ pango2_hb_font_class_init (Pango2HbFontClass *class)
    * This property contains a string representation of the variations.
    */
   properties[PROP_VARIATIONS] =
-      g_param_spec_string ("variations", NULL, NULL, NULL,
+      g_param_spec_string ("variations", NULL, NULL,
+                           NULL,
                            G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);

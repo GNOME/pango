@@ -231,27 +231,30 @@ pango2_context_class_init (Pango2ContextClass *klass)
    * The font map to be searched when fonts are looked up
    * in this context.
    */
-  properties[PROP_FONT_MAP] =
-    g_param_spec_object ("font-map", NULL, NULL, PANGO2_TYPE_FONT_MAP,
-                         G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  properties[PROP_FONT_MAP] = g_param_spec_object ("font-map", NULL, NULL,
+                                                   PANGO2_TYPE_FONT_MAP,
+                                                   G_PARAM_READWRITE |
+                                                   G_PARAM_STATIC_NAME);
 
   /**
    * Pango2Context:font-description: (attributes org.gtk.Property.get=pango2_context_get_font_description org.gtk.Property.set=pango2_context_set_font_description)
    *
    * The default font description for the context.
    */
-  properties[PROP_FONT_DESCRIPTION] =
-    g_param_spec_boxed ("font-description", NULL, NULL, PANGO2_TYPE_FONT_DESCRIPTION,
-                        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  properties[PROP_FONT_DESCRIPTION] = g_param_spec_boxed ("font-description", NULL, NULL,
+                                                          PANGO2_TYPE_FONT_DESCRIPTION,
+                                                          G_PARAM_READWRITE |
+                                                          G_PARAM_STATIC_NAME);
 
   /**
    * Pango2Context:language: (attributes org.gtk.Property.get=pango2_context_get_language org.gtk.Property.set=pango2_context_set_language)
    *
    * The global language for the context.
    */
-  properties[PROP_LANGUAGE] =
-    g_param_spec_boxed ("language", NULL, NULL, PANGO2_TYPE_LANGUAGE,
-                        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  properties[PROP_LANGUAGE] = g_param_spec_boxed ("language", NULL, NULL,
+                                                  PANGO2_TYPE_LANGUAGE,
+                                                  G_PARAM_READWRITE |
+                                                  G_PARAM_STATIC_NAME);
 
   /**
    * Pango2Context:base-direction: (attributes org.gtk.Property.get=pango2_context_get_base_dir org.gtk.Property.set=pango2_context_set_base_dir)
@@ -265,10 +268,11 @@ pango2_context_class_init (Pango2ContextClass *klass)
    * `PANGO2_DIRECTION_WEAK_LTR` or `PANGO2_DIRECTION_WEAK_RTL` is used only
    * for paragraphs that do not contain any strong characters themselves.
    */
-  properties[PROP_BASE_DIR] =
-    g_param_spec_enum ("base-direction", NULL, NULL, PANGO2_TYPE_DIRECTION,
-                       PANGO2_DIRECTION_LTR,
-                       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  properties[PROP_BASE_DIR] = g_param_spec_enum ("base-direction", NULL, NULL,
+                                                 PANGO2_TYPE_DIRECTION,
+                                                 PANGO2_DIRECTION_LTR,
+                                                 G_PARAM_READWRITE |
+                                                 G_PARAM_STATIC_NAME);
 
   /**
    * Pango2Context:base-gravity: (attributes org.gtk.Property.get=pango2_context_get_base_gravity org.gtk.Property.set=pango2_context_set_base_gravity)
@@ -277,10 +281,11 @@ pango2_context_class_init (Pango2ContextClass *klass)
    *
    * The base gravity is used in laying vertical text out.
    */
-  properties[PROP_BASE_GRAVITY] =
-    g_param_spec_enum ("base-gravity", NULL, NULL, PANGO2_TYPE_GRAVITY,
-                       PANGO2_GRAVITY_SOUTH,
-                       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  properties[PROP_BASE_GRAVITY] = g_param_spec_enum ("base-gravity", NULL, NULL,
+                                                     PANGO2_TYPE_GRAVITY,
+                                                     PANGO2_GRAVITY_SOUTH,
+                                                     G_PARAM_READWRITE |
+                                                     G_PARAM_STATIC_NAME);
 
   /**
    * Pango2Context:gravity-hint: (attributes org.gtk.Property.get=pango2_context_get_gravity_hint org.gtk.Property.set=pango2_context_set_gravity_hint)
@@ -292,10 +297,11 @@ pango2_context_class_init (Pango2ContextClass *klass)
    * [method@Pango2.Context.get_gravity] is set to `PANGO2_GRAVITY_EAST`
    * or `PANGO2_GRAVITY_WEST`.
    */
-  properties[PROP_GRAVITY_HINT] =
-    g_param_spec_enum ("gravity-hint", NULL, NULL, PANGO2_TYPE_GRAVITY_HINT,
-                       PANGO2_GRAVITY_HINT_NATURAL,
-                       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  properties[PROP_GRAVITY_HINT] = g_param_spec_enum ("gravity-hint", NULL, NULL,
+                                                     PANGO2_TYPE_GRAVITY_HINT,
+                                                     PANGO2_GRAVITY_HINT_NATURAL,
+                                                     G_PARAM_READWRITE |
+                                                     G_PARAM_STATIC_NAME);
 
   /**
    * Pango2Context:matrix: (attributes org.gtk.Property.get=pango2_context_get_matrix org.gtk.Property.set=pango2_context_set_matrix)
@@ -309,9 +315,10 @@ pango2_context_class_init (Pango2ContextClass *klass)
    * hinting that depends on knowing the position of text with respect to
    * the pixel grid.
    */
-  properties[PROP_MATRIX] =
-    g_param_spec_boxed ("matrix", NULL, NULL, PANGO2_TYPE_MATRIX,
-                        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  properties[PROP_MATRIX] = g_param_spec_boxed ("matrix", NULL, NULL,
+                                                PANGO2_TYPE_MATRIX,
+                                                G_PARAM_READWRITE |
+                                                G_PARAM_STATIC_NAME);
 
   /**
    * Pango2Context:round-glyph-positions: (attributes org.gtk.Property.get=pango2_context_get_round_glyph_positions org.gtk.Property.set=pango2_context_set_round_glyph_positions)
@@ -323,29 +330,31 @@ pango2_context_class_init (Pango2ContextClass *klass)
    * This is useful when the renderer can't handle subpixel
    * positioning of glyphs.
    */
-  properties[PROP_ROUND_GLYPH_POSITIONS] =
-    g_param_spec_boolean ("round-glyph-positions", NULL, NULL, TRUE,
-                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  properties[PROP_ROUND_GLYPH_POSITIONS] = g_param_spec_boolean ("round-glyph-positions", NULL, NULL,
+                                                                 TRUE,
+                                                                 G_PARAM_READWRITE |
+                                                                 G_PARAM_STATIC_NAME);
 
   /**
    * Pango2Context:palette: (attributes org.gtk.Property.get=pango2_context_get_palette org.gtk.Property.set=pango2_context_set_palette)
    *
    * The name of the color palette to use for color fonts.
    */
-  properties[PROP_PALETTE] =
-    g_param_spec_string ("palette", NULL, NULL, "default",
-                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  properties[PROP_PALETTE] = g_param_spec_string ("palette", NULL, NULL,
+                                                  "default",
+                                                  G_PARAM_READWRITE |
+                                                  G_PARAM_STATIC_NAME);
 
   /**
    * Pango2Context:emoji-presentation: (attributes org.gtk.Property.get=pango2_context_get_emoji_presentation org.gtk.Property.set=pango2_context_set_emoji_presentation)
    *
    * The preferred Emoji presentation style.
    */
-  properties[PROP_EMOJI_PRESENTATION] =
-    g_param_spec_enum ("emoji-presentation", NULL, NULL,
-                       PANGO2_TYPE_EMOJI_PRESENTATION,
-                       PANGO2_EMOJI_PRESENTATION_AUTO,
-                       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  properties[PROP_EMOJI_PRESENTATION] = g_param_spec_enum ("emoji-presentation", NULL, NULL,
+                                                           PANGO2_TYPE_EMOJI_PRESENTATION,
+                                                           PANGO2_EMOJI_PRESENTATION_AUTO,
+                                                           G_PARAM_READWRITE |
+                                                           G_PARAM_STATIC_NAME);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);
 }

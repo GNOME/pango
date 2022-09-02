@@ -511,7 +511,8 @@ pango2_hb_face_class_init (Pango2HbFaceClass *class)
    * A `hb_face_t` object backing this face.
    */
   properties[PROP_HB_FACE] =
-      g_param_spec_boxed ("hb-face", NULL, NULL, HB_GOBJECT_TYPE_FACE,
+      g_param_spec_boxed ("hb-face", NULL, NULL,
+                          HB_GOBJECT_TYPE_FACE,
                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
@@ -520,8 +521,9 @@ pango2_hb_face_class_init (Pango2HbFaceClass *class)
    * The file that this face was created from, if any.
    */
   properties[PROP_FILE] =
-      g_param_spec_string ("file", NULL, NULL, NULL,
-                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+      g_param_spec_string ("file", NULL, NULL,
+                           NULL,
+                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2HbFace:face-index: (attributes org.gtk.Property.get=pango2_hb_face_get_face_index)
@@ -530,8 +532,9 @@ pango2_hb_face_class_init (Pango2HbFaceClass *class)
    * from a file containing data for multiple faces.
    */
   properties[PROP_FACE_INDEX] =
-      g_param_spec_uint ("face-index", NULL, NULL, 0, G_MAXUINT, 0,
-                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+      g_param_spec_uint ("face-index", NULL, NULL,
+                         0, G_MAXUINT, 0,
+                         G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2HbFace:instance-id: (attributes org.gtk.Property.get=pango2_hb_face_get_instance_id)
@@ -543,7 +546,8 @@ pango2_hb_face_class_init (Pango2HbFaceClass *class)
    *  be variable.
    */
   properties[PROP_INSTANCE_ID] =
-      g_param_spec_int ("instance-id", NULL, NULL, -2, G_MAXINT, -1,
+      g_param_spec_int ("instance-id", NULL, NULL,
+                        -2, G_MAXINT, -1,
                         G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
@@ -554,7 +558,8 @@ pango2_hb_face_class_init (Pango2HbFaceClass *class)
    * This property contains a string representation of the variations.
    */
   properties[PROP_VARIATIONS] =
-      g_param_spec_string ("variations", NULL, NULL, NULL,
+      g_param_spec_string ("variations", NULL, NULL,
+                           NULL,
                            G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
@@ -563,7 +568,8 @@ pango2_hb_face_class_init (Pango2HbFaceClass *class)
    * `TRUE` if the face is using synthetic emboldening.
    */
   properties[PROP_EMBOLDEN] =
-      g_param_spec_boolean ("embolden", NULL, NULL, FALSE,
+      g_param_spec_boolean ("embolden", NULL, NULL,
+                            FALSE,
                             G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
@@ -576,7 +582,8 @@ pango2_hb_face_class_init (Pango2HbFaceClass *class)
    * sythetic italics and width variations.
    */
   properties[PROP_TRANSFORM] =
-      g_param_spec_boxed ("transform", NULL, NULL, PANGO2_TYPE_MATRIX,
+      g_param_spec_boxed ("transform", NULL, NULL,
+                          PANGO2_TYPE_MATRIX,
                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);
