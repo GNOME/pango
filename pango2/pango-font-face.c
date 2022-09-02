@@ -203,7 +203,8 @@ pango2_font_face_class_init (Pango2FontFaceClass *class)
    * A name representing the style of this face.
    */
   properties[PROP_NAME] =
-      g_param_spec_string ("name", NULL, NULL, NULL,
+      g_param_spec_string ("name", NULL, NULL,
+                           NULL,
                            G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
@@ -240,7 +241,8 @@ pango2_font_face_class_init (Pango2FontFaceClass *class)
    * lightening or modifying it in some other way.
    */
   properties[PROP_SYNTHESIZED] =
-      g_param_spec_boolean ("synthesized", NULL, NULL, FALSE,
+      g_param_spec_boolean ("synthesized", NULL, NULL,
+                            FALSE,
                             G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
@@ -250,7 +252,8 @@ pango2_font_face_class_init (Pango2FontFaceClass *class)
    * characters form a regular grid.
    */
   properties[PROP_MONOSPACE] =
-      g_param_spec_boolean ("monospace", NULL, NULL, FALSE,
+      g_param_spec_boolean ("monospace", NULL, NULL,
+                            FALSE,
                             G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
@@ -260,7 +263,8 @@ pango2_font_face_class_init (Pango2FontFaceClass *class)
    * to produce variations.
    */
   properties[PROP_VARIABLE] =
-      g_param_spec_boolean ("variable", NULL, NULL, FALSE,
+      g_param_spec_boolean ("variable", NULL, NULL,
+                            FALSE,
                             G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);

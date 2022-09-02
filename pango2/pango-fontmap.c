@@ -707,7 +707,8 @@ pango2_font_map_class_init (Pango2FontMapClass *class)
    * (10 * 96. / 72. = 13.3).
    */
   properties[PROP_RESOLUTION] =
-      g_param_spec_float ("resolution", NULL, NULL, 0, G_MAXFLOAT, 96.0,
+      g_param_spec_float ("resolution", NULL, NULL,
+                          0, G_MAXFLOAT, 96.0,
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
   /**
@@ -717,8 +718,9 @@ pango2_font_map_class_init (Pango2FontMapClass *class)
    * this map does not have itself.
    */
   properties[PROP_FALLBACK] =
-      g_param_spec_object ("fallback", NULL, NULL, PANGO2_TYPE_FONT_MAP,
-                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+      g_param_spec_object ("fallback", NULL, NULL,
+                           PANGO2_TYPE_FONT_MAP,
+                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2FontMap:item-type:
@@ -726,8 +728,9 @@ pango2_font_map_class_init (Pango2FontMapClass *class)
    * The type of items contained in this list.
    */
   properties[PROP_ITEM_TYPE] =
-    g_param_spec_gtype ("item-type", "", "", G_TYPE_OBJECT,
-                        G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+      g_param_spec_gtype ("item-type", NULL, NULL,
+                          G_TYPE_OBJECT,
+                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2FontMap:n-items:
@@ -735,8 +738,9 @@ pango2_font_map_class_init (Pango2FontMapClass *class)
    * The number of items contained in this list.
    */
   properties[PROP_N_ITEMS] =
-    g_param_spec_uint ("n-items", "", "", 0, G_MAXUINT, 0,
-                       G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+      g_param_spec_uint ("n-items", NULL, NULL,
+                         0, G_MAXUINT, 0,
+                         G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);
 }

@@ -142,7 +142,8 @@ pango2_font_class_init (Pango2FontClass *class G_GNUC_UNUSED)
    * The face to which the font belongs.
    */
   properties[PROP_FACE] =
-      g_param_spec_object ("face", NULL, NULL, PANGO2_TYPE_FONT_FACE,
+      g_param_spec_object ("face", NULL, NULL,
+                           PANGO2_TYPE_FONT_FACE,
                            G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
@@ -151,7 +152,8 @@ pango2_font_class_init (Pango2FontClass *class G_GNUC_UNUSED)
    * A `hb_font_t` object backing this font.
    */
   properties[PROP_HB_FONT] =
-      g_param_spec_boxed ("hb-font", NULL, NULL, HB_GOBJECT_TYPE_FONT,
+      g_param_spec_boxed ("hb-font", NULL, NULL,
+                          HB_GOBJECT_TYPE_FONT,
                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
@@ -160,7 +162,8 @@ pango2_font_class_init (Pango2FontClass *class G_GNUC_UNUSED)
    * The size of the font, scaled by `PANGO2_SCALE`.
    */
   properties[PROP_SIZE] =
-      g_param_spec_int ("size", NULL, NULL, 0, G_MAXINT, 0,
+      g_param_spec_int ("size", NULL, NULL,
+                        0, G_MAXINT, 0,
                         G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
@@ -173,7 +176,8 @@ pango2_font_class_init (Pango2FontClass *class G_GNUC_UNUSED)
    *     size * dpi / 72.
    */
   properties[PROP_DPI] =
-      g_param_spec_float ("dpi", NULL, NULL, 0, G_MAXFLOAT, 96.0,
+      g_param_spec_float ("dpi", NULL, NULL,
+                          0, G_MAXFLOAT, 96.0,
                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
@@ -182,7 +186,8 @@ pango2_font_class_init (Pango2FontClass *class G_GNUC_UNUSED)
    * The gravity of the font.
    */
   properties[PROP_GRAVITY] =
-      g_param_spec_enum ("gravity", NULL, NULL, PANGO2_TYPE_GRAVITY,
+      g_param_spec_enum ("gravity", NULL, NULL,
+                         PANGO2_TYPE_GRAVITY,
                          PANGO2_GRAVITY_AUTO,
                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 

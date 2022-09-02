@@ -2261,9 +2261,10 @@ pango2_line_breaker_class_init (Pango2LineBreakerClass *class)
    * The context for the `Pango2LineBreaker`.
    */
   properties[PROP_CONTEXT] =
-    g_param_spec_object ("context", "context", "context",
-                         PANGO2_TYPE_CONTEXT,
-                         G_PARAM_READWRITE|G_PARAM_CONSTRUCT_ONLY|G_PARAM_EXPLICIT_NOTIFY);
+      g_param_spec_object ("context", NULL, NULL,
+                           PANGO2_TYPE_CONTEXT,
+                           G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+                           G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2LineBreaker:base-dir: (attributes org.gtk.Property.get=pango2_line_breaker_get_base_dir org.gtk.Property.set=pango2_line_breaker_set_base_dir)
@@ -2273,10 +2274,10 @@ pango2_line_breaker_class_init (Pango2LineBreakerClass *class)
    * The default value is `PANGO2_DIRECTION_NEUTRAL`.
    */
   properties[PROP_BASE_DIR] =
-    g_param_spec_enum ("base-dir", "base-dir", "base-dir",
-                       PANGO2_TYPE_DIRECTION,
-                       PANGO2_DIRECTION_NEUTRAL,
-                       G_PARAM_READWRITE|G_PARAM_EXPLICIT_NOTIFY);
+      g_param_spec_enum ("base-dir", NULL, NULL,
+                         PANGO2_TYPE_DIRECTION,
+                         PANGO2_DIRECTION_NEUTRAL,
+                         G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   /**
    * Pango2LineBreaker:tabs: (attributes org.gtk.Property.get=pango2_line_breaker_get_tabs org.gtk.Property.set=pango2_line_breaker_set_tabs)
@@ -2287,9 +2288,9 @@ pango2_line_breaker_class_init (Pango2LineBreakerClass *class)
    * whenever it meets a Tab character (U+0009).
    */
   properties[PROP_TABS] =
-    g_param_spec_boxed ("tabs", "tabs", "tabs",
-                        PANGO2_TYPE_TAB_ARRAY,
-                        G_PARAM_READWRITE|G_PARAM_EXPLICIT_NOTIFY);
+      g_param_spec_boxed ("tabs", NULL, NULL,
+                          PANGO2_TYPE_TAB_ARRAY,
+                          G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, N_PROPERTIES, properties);
 }
