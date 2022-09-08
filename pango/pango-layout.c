@@ -5695,21 +5695,26 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
       if (pango_analysis_get_size_font (&run->item->analysis))
         {
           PangoFontMetrics *height_metrics;
+          double xscale, yscale;
 
           height_metrics = pango_font_get_metrics (pango_analysis_get_size_font (&run->item->analysis),
                                                    run->item->analysis.language);
 
-          *height = pango_font_metrics_get_height (height_metrics);
+          pango_font_get_scale_factors (pango_analysis_get_size_font (&run->item->analysis), &xscale, &yscale);
+          *height = pango_font_metrics_get_height (height_metrics) * MAX (xscale, yscale);
 
           pango_font_metrics_unref (height_metrics);
         }
       else
         {
+          double xscale, yscale;
+
           if (!metrics)
             metrics = pango_font_get_metrics (run->item->analysis.font,
                                               run->item->analysis.language);
 
-          *height = pango_font_metrics_get_height (metrics);
+          pango_font_get_scale_factors (run->item->analysis.font, &xscale, &yscale);
+          *height = pango_font_metrics_get_height (metrics) * MAX (xscale, yscale);
         }
     }
 
