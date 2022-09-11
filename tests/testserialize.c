@@ -252,7 +252,7 @@ test_serialize_layout_valid (void)
     "  ],\n"
     "  \"font\" : \"Sans Bold 32\",\n"
     "  \"tabs\" : {\n"
-    "    \"positions-in-pixels\" : true,\n"
+    "    \"position-units\" : \"default\",\n"
     "    \"positions\" : [\n"
     "      {\n"
     "        \"position\" : 0,\n"
