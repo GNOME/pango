@@ -639,15 +639,21 @@ ensure_lines (Pango2Layout *layout)
 {
   Pango2LineBreaker *breaker;
   Pango2AttrList *attrs;
+  int layout_width;
   int x, y, width;
   int line_no;
   gboolean at_paragraph_start;
+  Pango2Alignment alignment;
+  Pango2Alignment natural_alignment;
 
   check_context_changed (layout);
 
   if (layout->lines)
     return;
 
+  layout_width = layout->width;
+
+start_over:
   breaker = pango2_line_breaker_new (layout->context);
 
   pango2_line_breaker_set_tabs (breaker, layout->tabs);
@@ -663,6 +669,16 @@ ensure_lines (Pango2Layout *layout)
 
   layout->lines = pango2_lines_new ();
 
+  if (pango2_line_breaker_get_direction (breaker) == PANGO2_DIRECTION_LTR)
+    natural_alignment = PANGO2_ALIGN_LEFT;
+  else
+    natural_alignment = PANGO2_ALIGN_RIGHT;
+
+  if (layout->alignment == PANGO2_ALIGN_NATURAL)
+    alignment = natural_alignment;
+  else
+    alignment = layout->alignment;
+
   x = y = 0;
   line_no = 0;
   at_paragraph_start = TRUE;
@@ -674,18 +690,49 @@ ensure_lines (Pango2Layout *layout)
       Pango2EllipsizeMode ellipsize = PANGO2_ELLIPSIZE_NONE;
       Pango2LeadingTrim trim = PANGO2_LEADING_TRIM_NONE;
 
-      if (at_paragraph_start == (layout->indent > 0))
+      switch (alignment)
         {
-          x = abs (layout->indent);
-          if (layout->width == -1)
-            width = -1;
+        case PANGO2_ALIGN_LEFT:
+        case PANGO2_ALIGN_JUSTIFY:
+          if (at_paragraph_start == (layout->indent > 0))
+            {
+              x = abs (layout->indent);
+              if (layout_width == -1)
+                width = -1;
+              else
+                width = layout_width - x;
+            }
           else
-            width = layout->width - x;
-        }
-      else
-        {
+            {
+              x = 0;
+              width = layout_width;
+            }
+          break;
+
+        case PANGO2_ALIGN_RIGHT:
+          if (at_paragraph_start == (layout->indent > 0))
+            {
+              x = 0;
+              if (layout_width == -1)
+                width = -1;
+              else
+                width = layout_width - abs (layout->indent);
+            }
+          else
+            {
+              x = 0;
+              width = layout_width;
+            }
+          break;
+
+        case PANGO2_ALIGN_CENTER:
           x = 0;
-          width = layout->width;
+          width = layout_width;
+          break;
+
+        case PANGO2_ALIGN_NATURAL:
+        default:
+          g_assert_not_reached ();
         }
 
       if (layout->height < 0 && line_no + 1 == - layout->height)
@@ -714,52 +761,54 @@ retry:
             }
         }
 
-      /* Handle alignment and justification */
       offset = 0;
-      switch (layout->alignment)
+      if (width > 0)
         {
-
-        case PANGO2_ALIGN_LEFT:
-          break;
-
-        case PANGO2_ALIGN_CENTER:
-          if (ext.width < width)
-            offset = (width - ext.width) / 2;
-          break;
-
-        case PANGO2_ALIGN_JUSTIFY:
-          if (!pango2_line_is_paragraph_end (line))
+          /* Handle alignment and justification */
+          switch (alignment)
             {
-              line = pango2_line_justify (line, width);
+
+            case PANGO2_ALIGN_LEFT:
               break;
+
+            case PANGO2_ALIGN_CENTER:
+              if (ext.width < width)
+                offset = (width - ext.width) / 2;
+              break;
+
+            case PANGO2_ALIGN_JUSTIFY:
+              if (!pango2_line_is_paragraph_end (line))
+                {
+                  line = pango2_line_justify (line, width);
+                  break;
+                }
+              G_GNUC_FALLTHROUGH;
+
+            case PANGO2_ALIGN_RIGHT:
+              if (ext.width < width)
+                offset = width - ext.width;
+              break;
+
+            case PANGO2_ALIGN_NATURAL:
+            default:
+              g_assert_not_reached ();
             }
-          G_GNUC_FALLTHROUGH;
-
-        case PANGO2_ALIGN_NATURAL:
-          {
-            Pango2Line *first_line;
-            if (pango2_lines_get_line_count (layout->lines) > 0)
-              first_line = pango2_lines_get_lines (layout->lines)[0];
-            else
-              first_line = line;
-            if (pango2_line_get_resolved_direction (first_line) == PANGO2_DIRECTION_LTR)
-              break;
-          }
-          G_GNUC_FALLTHROUGH;
-
-        case PANGO2_ALIGN_RIGHT:
-          if (ext.width < width)
-            offset = width - ext.width;
-          break;
-
-        default:
-          g_assert_not_reached ();
         }
 
       pango2_lines_add_line (layout->lines, line, x + offset, y - ext.y);
 
       y += ext.height;
       line_no++;
+    }
+
+  if (width < 0 && alignment != PANGO2_ALIGN_LEFT)
+    {
+      /* Not the most efficient, but it works */
+      pango2_lines_get_size (layout->lines, &layout_width, NULL);
+      g_clear_object (&layout->lines);
+      g_clear_object (&breaker);
+
+      goto start_over;
     }
 
   /* Append an empty line if we end with a newline.
