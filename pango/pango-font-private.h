@@ -69,7 +69,7 @@ static inline PangoVariant
 pango_font_get_variant (PangoFont *font)
 {
   GTypeClass *klass = (GTypeClass *) PANGO_FONT_GET_CLASS (font);
-  PangoFontClassPrivate *priv = g_type_class_get_private (klass, PANGO_TYPE_FONT);
+  PangoFontClassPrivate *priv = (PangoFontClassPrivate *) g_type_class_get_private (klass, PANGO_TYPE_FONT);
   if (priv->get_variant)
     return priv->get_variant (font);
   else
