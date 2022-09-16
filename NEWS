@@ -1,3 +1,8 @@
+Overview of changes in 1.50.9, 16-09-2022
+=========================================
+- Avoid some unnecessary strdups
+- Fix line height computations with a non-trivial CTM
+
 Overview of changes in 1.50.9, 09-08-2022
 =========================================
 - Apply show flags to line separators
