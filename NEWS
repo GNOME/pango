@@ -1,4 +1,4 @@
-Overview of changes in 1.50.9, 16-09-2022
+Overview of changes in 1.50.10, 16-09-2022
 =========================================
 - Avoid some unnecessary strdups
 - Fix line height computations with a non-trivial CTM
