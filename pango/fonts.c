@@ -2871,5 +2871,11 @@ pango_font_get_scale_factors (PangoFont *font,
                               double    *x_scale,
                               double    *y_scale)
 {
+  if (G_UNLIKELY (!font))
+    {
+      *x_scale = *y_scale = .1;
+      return;
+    }
+
   PANGO_FONT_GET_CLASS_PRIVATE (font)->get_scale_factors (font, x_scale, y_scale);
 }

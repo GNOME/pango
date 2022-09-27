@@ -63,6 +63,7 @@ if cairo_dep.found()
       tests += [
         [ 'test-layout', [ 'test-layout.c', 'test-common.c' ], [ libpangocairo_dep, libpangoft2_dep ] ],
         [ 'test-fonts', [ 'test-fonts.c', 'test-common.c' ], [ libpangocairo_dep, libpangoft2_dep ] ],
+        [ 'test-no-fonts', [ 'test-no-fonts.c' ], [ libpangocairo_dep, libpangoft2_dep ] ],
       ]
     endif
   endif

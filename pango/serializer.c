@@ -653,7 +653,8 @@ add_run (GtkJsonPrinter *printer,
   gtk_json_printer_add_string (printer, "language", pango_language_to_string (run->item->analysis.language));
   gtk_json_printer_add_string (printer, "script", get_script_name (run->item->analysis.script));
 
-  add_font (printer, "font", run->item->analysis.font);
+  if (run->item->analysis.font)
+    add_font (printer, "font", run->item->analysis.font);
 
   gtk_json_printer_add_integer (printer, "flags", run->item->analysis.flags & ANALYSIS_FLAGS);
 
