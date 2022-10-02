@@ -404,7 +404,7 @@ pango_hb_shape (const char          *item_text,
 
       hyphen_index = item_offset + item_length - last_char_len;
 
-      if (log_attrs[num_chars].break_removes_preceding)
+      if (log_attrs && log_attrs[num_chars].break_removes_preceding)
         item_length -= last_char_len;
     }
 
@@ -444,7 +444,7 @@ pango_hb_shape (const char          *item_text,
               break;
 
             case PANGO_TEXT_TRANSFORM_CAPITALIZE:
-              if (log_attrs[i].is_word_start)
+              if (log_attrs && log_attrs[i].is_word_start)
                 ch = g_unichar_totitle (ch);
               break;
 
@@ -785,6 +785,10 @@ pango_shape_internal (const char          *item_text,
  * that API allows for shaping interaction happening across text item
  * boundaries.
  *
+ * Some aspects of hyphen insertion and text transformation (in particular,
+ * capitalization) require log attrs, and thus can only be handled by
+ * [func@Pango.shape_item].
+ *
  * Note that the extra attributes in the @analyis that is returned from
  * [func@Pango.itemize] have indices that are relative to the entire paragraph,
  * so you need to subtract the item offset from their indices before
@@ -819,6 +823,10 @@ pango_shape (const char          *text,
  * certain cross-item shaping interactions. If you have access to the broader
  * text of which @item_text is part of, provide the broader text as
  * @paragraph_text. If @paragraph_text is %NULL, item text is used instead.
+ *
+ * Some aspects of hyphen insertion and text transformation (in particular,
+ * capitalization) require log attrs, and thus can only be handled by
+ * [func@Pango.shape_item].
  *
  * Note that the extra attributes in the @analyis that is returned from
  * [func@Pango.itemize] have indices that are relative to the entire paragraph,
@@ -864,6 +872,10 @@ pango_shape_full (const char          *item_text,
  * This is similar to [func@Pango.shape_full], except it also takes flags
  * that can influence the shaping process.
  *
+ * Some aspects of hyphen insertion and text transformation (in particular,
+ * capitalization) require log attrs, and thus can only be handled by
+ * [func@Pango.shape_item].
+ *
  * Note that the extra attributes in the @analyis that is returned from
  * [func@Pango.itemize] have indices that are relative to the entire paragraph,
  * so you do not pass the full paragraph text as @paragraph_text, you need
@@ -901,8 +913,9 @@ pango_shape_with_flags (const char          *item_text,
  *
  * This is similar to [func@Pango.shape_with_flags], except it takes a
  * `PangoItem` instead of separate @item_text and @analysis arguments.
- * It also takes @log_attrs, which may be used in implementing text
- * transforms.
+ *
+ * It also takes @log_attrs, which are needed for implementing some aspects
+ * of hyphen insertion and text transforms (in particular, capitalization).
  *
  * Note that the extra attributes in the @analyis that is returned from
  * [func@Pango.itemize] have indices that are relative to the entire paragraph,
