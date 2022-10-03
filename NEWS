@@ -1,3 +1,8 @@
+Overview of changes in 1.50.11, 03-10-2022
+==========================================
+- Don't crash for lack of fonts
+- Avoid a crash in shaping
+
 Overview of changes in 1.50.10, 16-09-2022
 =========================================
 - Avoid some unnecessary strdups
