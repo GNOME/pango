@@ -328,7 +328,7 @@ ct_font_descriptor_get_weight (CTFontDescriptorRef desc)
     if (!(value >= ct_weight_min && value <= ct_weight_max))
       {
         i = value > ct_weight_max ? G_N_ELEMENTS (ct_weight_map) - 1 : 0;
-        weight = ct_weight_map[i].ct_weight;
+        weight = ct_weight_map[i].pango_weight;
       }
     else
       {
