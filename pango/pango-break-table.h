@@ -6,22 +6,22 @@
  *
  * on files with these headers:
  *
- * # SentenceBreakProperty-14.0.0.txt
- * # Date: 2021-08-12, 23:13:21 GMT
- * # © 2021 Unicode®, Inc.
+ * # SentenceBreakProperty-15.0.0.txt
+ * # Date: 2022-08-05, 22:17:35 GMT
+ * # © 2022 Unicode®, Inc.
  * # Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
- * # For terms of use, see http://www.unicode.org/terms_of_use.html
+ * # For terms of use, see https://www.unicode.org/terms_of_use.html
  * #
  * # Unicode Character Database
- * #   For documentation, see http://www.unicode.org/reports/tr44/
- * # IndicSyllabicCategory-14.0.0.txt
- * # Date: 2021-05-22, 01:01:00 GMT [KW, RP]
- * # © 2021 Unicode®, Inc.
+ * #   For documentation, see https://www.unicode.org/reports/tr44/
+ * # IndicSyllabicCategory-15.0.0.txt
+ * # Date: 2022-05-26, 02:18:00 GMT [KW, RP]
+ * # © 2022 Unicode®, Inc.
  * # Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
- * # For terms of use, see http://www.unicode.org/terms_of_use.html
+ * # For terms of use, see https://www.unicode.org/terms_of_use.html
  * #
  * # For documentation, see UAX #44: Unicode Character Database,
- * # at http://www.unicode.org/reports/tr44/
+ * # at https://www.unicode.org/reports/tr44/
  * #
  * # This file defines the following property:
  * #
@@ -53,7 +53,7 @@
  * #
  * # Ahom, Balinese, Batak, Bengali, Bhaiksuki, Brahmi, Buginese, Buhid,
  * # Chakma, Cham, Devanagari, Dives Akuru, Dogra, Grantha, Gujarati,
- * # Gunjala Gondi, Gurmukhi, Hanunoo, Javanese, Kaithi, Kannada,
+ * # Gunjala Gondi, Gurmukhi, Hanunoo, Javanese, Kaithi, Kannada, Kawi,
  * # Kayah Li, Kharoshthi, Khmer, Khojki, Khudawadi, Lao, Lepcha, Limbu,
  * # Mahajani, Makasar, Malayalam, Marchen, Masaram Gondi, Meetei Mayek,
  * # Modi, Multani, Myanmar, Nandinagari, Newa, New Tai Lue, Oriya,
@@ -66,9 +66,9 @@
  * # take the default value for this property, unless they
  * # are individually listed in this data file.
  * #
- * # EastAsianWidth-14.0.0.txt
- * # Date: 2021-07-06, 09:58:53 GMT [KW, LI]
- * # © 2021 Unicode®, Inc.
+ * # EastAsianWidth-15.0.0.txt
+ * # Date: 2022-05-24, 17:40:20 GMT [KW, LI]
+ * # © 2022 Unicode®, Inc.
  * # Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
  * # For terms of use, see https://www.unicode.org/terms_of_use.html
  * #
@@ -229,33 +229,49 @@ _pango_is_STerm (gunichar wc)
     }
   if ((wc >= 0x112A9 && wc <= 0x1DA88))
     {
-      if (wc == 0x112A9 ||
-	  (wc >= 0x1144B && wc <= 0x1144C) ||
-	  (wc >= 0x115C2 && wc <= 0x115C3) ||
-	  (wc >= 0x115C9 && wc <= 0x115D7))
-	return TRUE;
-      if ((wc >= 0x11641 && wc <= 0x11A43))
+      if ((wc >= 0x112A9 && wc <= 0x11642))
 	{
-	  if ((wc >= 0x11641 && wc <= 0x11642))
+	  if (wc == 0x112A9)
 	    return TRUE;
+	  if ((wc >= 0x1144B && wc <= 0x1144C))
+	    return TRUE;
+	  if ((wc >= 0x115C2 && wc <= 0x115C3))
+	    return TRUE;
+	  if ((wc >= 0x115C9 && wc <= 0x115D7) ||
+	      (wc >= 0x11641 && wc <= 0x11642))
+	    return TRUE;
+	  return FALSE;
+	}
+      if ((wc >= 0x1173C && wc <= 0x11A9C))
+	{
 	  if ((wc >= 0x1173C && wc <= 0x1173E))
 	    return TRUE;
 	  if (wc == 0x11944)
 	    return TRUE;
-	  if (wc == 0x11946 || (wc >= 0x11A42 && wc <= 0x11A43))
+	  if (wc == 0x11946)
+	    return TRUE;
+	  if ((wc >= 0x11A42 && wc <= 0x11A43) ||
+	      (wc >= 0x11A9B && wc <= 0x11A9C))
 	    return TRUE;
 	  return FALSE;
 	}
-      if ((wc >= 0x11A9B && wc <= 0x11A9C) ||
-	  (wc >= 0x11C41 && wc <= 0x11C42) ||
-	  (wc >= 0x11EF7 && wc <= 0x11EF8) ||
-	  (wc >= 0x16A6E && wc <= 0x16A6F))
-	return TRUE;
-      if ((wc >= 0x16AF5 && wc <= 0x1DA88))
+      if ((wc >= 0x11C41 && wc <= 0x16AF5))
 	{
-	  if (wc == 0x16AF5)
+	  if ((wc >= 0x11C41 && wc <= 0x11C42))
 	    return TRUE;
-	  if ((wc >= 0x16B37 && wc <= 0x16B38) || wc == 0x16B44)
+	  if ((wc >= 0x11EF7 && wc <= 0x11EF8))
+	    return TRUE;
+	  if ((wc >= 0x11F43 && wc <= 0x11F44))
+	    return TRUE;
+	  if ((wc >= 0x16A6E && wc <= 0x16A6F) || wc == 0x16AF5)
+	    return TRUE;
+	  return FALSE;
+	}
+      if ((wc >= 0x16B37 && wc <= 0x1DA88))
+	{
+	  if ((wc >= 0x16B37 && wc <= 0x16B38))
+	    return TRUE;
+	  if (wc == 0x16B44)
 	    return TRUE;
 	  if (wc == 0x16E98)
 	    return TRUE;
@@ -325,7 +341,7 @@ _pango_is_Virama (gunichar wc)
 static inline gboolean
 _pango_is_Vowel_Dependent (gunichar wc)
 {
-  if ((wc >= 0x093A && wc <= 0x0CC8))
+  if ((wc >= 0x093A && wc <= 0x0CCC))
     {
       if ((wc >= 0x093A && wc <= 0x09CC))
 	{
@@ -343,7 +359,7 @@ _pango_is_Vowel_Dependent (gunichar wc)
 	    return TRUE;
 	  return FALSE;
 	}
-      if ((wc >= 0x09D7 && wc <= 0x0ACC))
+      if ((wc >= 0x09D7 && wc <= 0x0AE3))
 	{
 	  if (wc == 0x09D7 || (wc >= 0x09E2 && wc <= 0x09E3))
 	    return TRUE;
@@ -354,143 +370,142 @@ _pango_is_Vowel_Dependent (gunichar wc)
 	      (wc >= 0x0ABE && wc <= 0x0AC5))
 	    return TRUE;
 	  if ((wc >= 0x0AC7 && wc <= 0x0AC9) ||
-	      (wc >= 0x0ACB && wc <= 0x0ACC))
+	      (wc >= 0x0ACB && wc <= 0x0ACC) ||
+	      (wc >= 0x0AE2 && wc <= 0x0AE3))
 	    return TRUE;
 	  return FALSE;
 	}
-      if ((wc >= 0x0AE2 && wc <= 0x0BC8))
+      if ((wc >= 0x0B3E && wc <= 0x0BCC))
 	{
-	  if ((wc >= 0x0AE2 && wc <= 0x0AE3) ||
-	      (wc >= 0x0B3E && wc <= 0x0B44))
+	  if ((wc >= 0x0B3E && wc <= 0x0B44) ||
+	      (wc >= 0x0B47 && wc <= 0x0B48))
 	    return TRUE;
-	  if ((wc >= 0x0B47 && wc <= 0x0B48) ||
-	      (wc >= 0x0B4B && wc <= 0x0B4C))
+	  if ((wc >= 0x0B4B && wc <= 0x0B4C) ||
+	      (wc >= 0x0B55 && wc <= 0x0B57))
 	    return TRUE;
-	  if ((wc >= 0x0B55 && wc <= 0x0B57) ||
-	      (wc >= 0x0B62 && wc <= 0x0B63))
+	  if ((wc >= 0x0B62 && wc <= 0x0B63) ||
+	      (wc >= 0x0BBE && wc <= 0x0BC2))
 	    return TRUE;
-	  if ((wc >= 0x0BBE && wc <= 0x0BC2) ||
-	      (wc >= 0x0BC6 && wc <= 0x0BC8))
+	  if ((wc >= 0x0BC6 && wc <= 0x0BC8) ||
+	      (wc >= 0x0BCA && wc <= 0x0BCC))
 	    return TRUE;
 	  return FALSE;
 	}
-      if ((wc >= 0x0BCA && wc <= 0x0CC8))
+      if ((wc >= 0x0BD7 && wc <= 0x0CCC))
 	{
-	  if ((wc >= 0x0BCA && wc <= 0x0BCC) || wc == 0x0BD7)
+	  if (wc == 0x0BD7 || (wc >= 0x0C3E && wc <= 0x0C44))
 	    return TRUE;
-	  if ((wc >= 0x0C3E && wc <= 0x0C44) ||
-	      (wc >= 0x0C46 && wc <= 0x0C48))
+	  if ((wc >= 0x0C46 && wc <= 0x0C48) ||
+	      (wc >= 0x0C4A && wc <= 0x0C4C))
 	    return TRUE;
-	  if ((wc >= 0x0C4A && wc <= 0x0C4C) ||
-	      (wc >= 0x0C55 && wc <= 0x0C56))
+	  if ((wc >= 0x0C55 && wc <= 0x0C56) ||
+	      (wc >= 0x0C62 && wc <= 0x0C63))
 	    return TRUE;
-	  if ((wc >= 0x0C62 && wc <= 0x0C63) ||
-	      (wc >= 0x0CBE && wc <= 0x0CC4) ||
-	      (wc >= 0x0CC6 && wc <= 0x0CC8))
-	    return TRUE;
-	  return FALSE;
-	}
-      return FALSE;
-    }
-  if ((wc >= 0x0CCA && wc <= 0x1928))
-    {
-      if ((wc >= 0x0CCA && wc <= 0x0D63))
-	{
-	  if ((wc >= 0x0CCA && wc <= 0x0CCC) ||
-	      (wc >= 0x0CD5 && wc <= 0x0CD6))
-	    return TRUE;
-	  if ((wc >= 0x0CE2 && wc <= 0x0CE3) ||
-	      (wc >= 0x0D3E && wc <= 0x0D44))
-	    return TRUE;
-	  if ((wc >= 0x0D46 && wc <= 0x0D48) ||
-	      (wc >= 0x0D4A && wc <= 0x0D4C))
-	    return TRUE;
-	  if (wc == 0x0D57 || (wc >= 0x0D62 && wc <= 0x0D63))
-	    return TRUE;
-	  return FALSE;
-	}
-      if ((wc >= 0x0DCF && wc <= 0x0EBB))
-	{
-	  if ((wc >= 0x0DCF && wc <= 0x0DD4) || wc == 0x0DD6)
-	    return TRUE;
-	  if ((wc >= 0x0DD8 && wc <= 0x0DDF) ||
-	      (wc >= 0x0DF2 && wc <= 0x0DF3))
-	    return TRUE;
-	  if ((wc >= 0x0E30 && wc <= 0x0E39) ||
-	      (wc >= 0x0E40 && wc <= 0x0E45))
-	    return TRUE;
-	  if (wc == 0x0E47 || (wc >= 0x0EB0 && wc <= 0x0EB9) || wc == 0x0EBB)
-	    return TRUE;
-	  return FALSE;
-	}
-      if ((wc >= 0x0EC0 && wc <= 0x1074))
-	{
-	  if ((wc >= 0x0EC0 && wc <= 0x0EC4) ||
-	      (wc >= 0x0F71 && wc <= 0x0F7D))
-	    return TRUE;
-	  if ((wc >= 0x0F80 && wc <= 0x0F81) ||
-	      (wc >= 0x102B && wc <= 0x1035))
-	    return TRUE;
-	  if ((wc >= 0x1056 && wc <= 0x1059) || wc == 0x1062)
-	    return TRUE;
-	  if ((wc >= 0x1067 && wc <= 0x1068) ||
-	      (wc >= 0x1071 && wc <= 0x1074))
-	    return TRUE;
-	  return FALSE;
-	}
-      if ((wc >= 0x1083 && wc <= 0x1928))
-	{
-	  if ((wc >= 0x1083 && wc <= 0x1086) ||
-	      (wc >= 0x109C && wc <= 0x109D))
-	    return TRUE;
-	  if ((wc >= 0x1712 && wc <= 0x1713) ||
-	      (wc >= 0x1732 && wc <= 0x1733))
-	    return TRUE;
-	  if ((wc >= 0x1752 && wc <= 0x1753) ||
-	      (wc >= 0x1772 && wc <= 0x1773))
-	    return TRUE;
-	  if ((wc >= 0x17B6 && wc <= 0x17C5) ||
-	      wc == 0x17C8 || (wc >= 0x1920 && wc <= 0x1928))
+	  if ((wc >= 0x0CBE && wc <= 0x0CC4) ||
+	      (wc >= 0x0CC6 && wc <= 0x0CC8) ||
+	      (wc >= 0x0CCA && wc <= 0x0CCC))
 	    return TRUE;
 	  return FALSE;
 	}
       return FALSE;
     }
-  if ((wc >= 0x193A && wc <= 0x112E8))
+  if ((wc >= 0x0CD5 && wc <= 0x193A))
     {
-      if ((wc >= 0x193A && wc <= 0x1C2C))
+      if ((wc >= 0x0CD5 && wc <= 0x0DD4))
 	{
-	  if (wc == 0x193A || (wc >= 0x19B0 && wc <= 0x19C0))
+	  if ((wc >= 0x0CD5 && wc <= 0x0CD6) ||
+	      (wc >= 0x0CE2 && wc <= 0x0CE3))
 	    return TRUE;
-	  if ((wc >= 0x1A17 && wc <= 0x1A1B) ||
-	      (wc >= 0x1A61 && wc <= 0x1A73))
+	  if ((wc >= 0x0D3E && wc <= 0x0D44) ||
+	      (wc >= 0x0D46 && wc <= 0x0D48))
 	    return TRUE;
-	  if ((wc >= 0x1B35 && wc <= 0x1B43) ||
-	      (wc >= 0x1BA4 && wc <= 0x1BA9))
+	  if ((wc >= 0x0D4A && wc <= 0x0D4C) || wc == 0x0D57)
 	    return TRUE;
-	  if ((wc >= 0x1BE7 && wc <= 0x1BEF) ||
-	      (wc >= 0x1C26 && wc <= 0x1C2C))
+	  if ((wc >= 0x0D62 && wc <= 0x0D63) ||
+	      (wc >= 0x0DCF && wc <= 0x0DD4))
 	    return TRUE;
 	  return FALSE;
 	}
-      if ((wc >= 0xA802 && wc <= 0xAA32))
+      if ((wc >= 0x0DD6 && wc <= 0x0EC4))
 	{
-	  if (wc == 0xA802 || (wc >= 0xA823 && wc <= 0xA827))
+	  if (wc == 0x0DD6 || (wc >= 0x0DD8 && wc <= 0x0DDF))
 	    return TRUE;
-	  if ((wc >= 0xA8B5 && wc <= 0xA8C3) || wc == 0xA8FF)
+	  if ((wc >= 0x0DF2 && wc <= 0x0DF3) ||
+	      (wc >= 0x0E30 && wc <= 0x0E39))
 	    return TRUE;
-	  if ((wc >= 0xA947 && wc <= 0xA94E) ||
-	      (wc >= 0xA9B4 && wc <= 0xA9BC))
+	  if ((wc >= 0x0E40 && wc <= 0x0E45) || wc == 0x0E47)
 	    return TRUE;
-	  if (wc == 0xA9E5 || (wc >= 0xAA29 && wc <= 0xAA32))
+	  if ((wc >= 0x0EB0 && wc <= 0x0EB9) ||
+	      wc == 0x0EBB || (wc >= 0x0EC0 && wc <= 0x0EC4))
 	    return TRUE;
 	  return FALSE;
 	}
-      if ((wc >= 0xAAB0 && wc <= 0x11074))
+      if ((wc >= 0x0F71 && wc <= 0x1086))
 	{
-	  if ((wc >= 0xAAB0 && wc <= 0xAABE) ||
+	  if ((wc >= 0x0F71 && wc <= 0x0F7D) ||
+	      (wc >= 0x0F80 && wc <= 0x0F81))
+	    return TRUE;
+	  if ((wc >= 0x102B && wc <= 0x1035) ||
+	      (wc >= 0x1056 && wc <= 0x1059))
+	    return TRUE;
+	  if (wc == 0x1062 || (wc >= 0x1067 && wc <= 0x1068))
+	    return TRUE;
+	  if ((wc >= 0x1071 && wc <= 0x1074) ||
+	      (wc >= 0x1083 && wc <= 0x1086))
+	    return TRUE;
+	  return FALSE;
+	}
+      if ((wc >= 0x109C && wc <= 0x193A))
+	{
+	  if ((wc >= 0x109C && wc <= 0x109D) ||
+	      (wc >= 0x1712 && wc <= 0x1713))
+	    return TRUE;
+	  if ((wc >= 0x1732 && wc <= 0x1733) ||
+	      (wc >= 0x1752 && wc <= 0x1753))
+	    return TRUE;
+	  if ((wc >= 0x1772 && wc <= 0x1773) ||
+	      (wc >= 0x17B6 && wc <= 0x17C5))
+	    return TRUE;
+	  if (wc == 0x17C8 || (wc >= 0x1920 && wc <= 0x1928) || wc == 0x193A)
+	    return TRUE;
+	  return FALSE;
+	}
+      return FALSE;
+    }
+  if ((wc >= 0x19B0 && wc <= 0x11344))
+    {
+      if ((wc >= 0x19B0 && wc <= 0xA802))
+	{
+	  if ((wc >= 0x19B0 && wc <= 0x19C0) ||
+	      (wc >= 0x1A17 && wc <= 0x1A1B))
+	    return TRUE;
+	  if ((wc >= 0x1A61 && wc <= 0x1A73) ||
+	      (wc >= 0x1B35 && wc <= 0x1B43))
+	    return TRUE;
+	  if ((wc >= 0x1BA4 && wc <= 0x1BA9) ||
+	      (wc >= 0x1BE7 && wc <= 0x1BEF))
+	    return TRUE;
+	  if ((wc >= 0x1C26 && wc <= 0x1C2C) || wc == 0xA802)
+	    return TRUE;
+	  return FALSE;
+	}
+      if ((wc >= 0xA823 && wc <= 0xAAEF))
+	{
+	  if ((wc >= 0xA823 && wc <= 0xA827) ||
+	      (wc >= 0xA8B5 && wc <= 0xA8C3))
+	    return TRUE;
+	  if (wc == 0xA8FF || (wc >= 0xA947 && wc <= 0xA94E))
+	    return TRUE;
+	  if ((wc >= 0xA9B4 && wc <= 0xA9BC) || wc == 0xA9E5)
+	    return TRUE;
+	  if ((wc >= 0xAA29 && wc <= 0xAA32) ||
+	      (wc >= 0xAAB0 && wc <= 0xAABE) ||
 	      (wc >= 0xAAEB && wc <= 0xAAEF))
 	    return TRUE;
+	  return FALSE;
+	}
+      if ((wc >= 0xABE3 && wc <= 0x110C2))
+	{
 	  if ((wc >= 0xABE3 && wc <= 0xABEA) ||
 	      (wc >= 0x10A01 && wc <= 0x10A03))
 	    return TRUE;
@@ -500,85 +515,89 @@ _pango_is_Vowel_Dependent (gunichar wc)
 	  if ((wc >= 0x11038 && wc <= 0x11045) ||
 	      (wc >= 0x11073 && wc <= 0x11074))
 	    return TRUE;
-	  return FALSE;
-	}
-      if ((wc >= 0x110B0 && wc <= 0x112E8))
-	{
 	  if ((wc >= 0x110B0 && wc <= 0x110B8) || wc == 0x110C2)
 	    return TRUE;
+	  return FALSE;
+	}
+      if ((wc >= 0x11127 && wc <= 0x11344))
+	{
 	  if ((wc >= 0x11127 && wc <= 0x11132) ||
 	      (wc >= 0x11145 && wc <= 0x11146))
 	    return TRUE;
 	  if ((wc >= 0x111B3 && wc <= 0x111BF) ||
 	      (wc >= 0x111CB && wc <= 0x111CC))
 	    return TRUE;
-	  if (wc == 0x111CE ||
-	      (wc >= 0x1122C && wc <= 0x11233) ||
-	      (wc >= 0x112E0 && wc <= 0x112E8))
+	  if (wc == 0x111CE || (wc >= 0x1122C && wc <= 0x11233))
+	    return TRUE;
+	  if (wc == 0x11241 ||
+	      (wc >= 0x112E0 && wc <= 0x112E8) ||
+	      (wc >= 0x1133E && wc <= 0x11344))
 	    return TRUE;
 	  return FALSE;
 	}
       return FALSE;
     }
-  if ((wc >= 0x1133E && wc <= 0x11EF6))
+  if ((wc >= 0x11347 && wc <= 0x11F40))
     {
-      if ((wc >= 0x1133E && wc <= 0x115B5))
+      if ((wc >= 0x11347 && wc <= 0x115BB))
 	{
-	  if ((wc >= 0x1133E && wc <= 0x11344) ||
-	      (wc >= 0x11347 && wc <= 0x11348))
+	  if ((wc >= 0x11347 && wc <= 0x11348) ||
+	      (wc >= 0x1134B && wc <= 0x1134C))
 	    return TRUE;
-	  if ((wc >= 0x1134B && wc <= 0x1134C) || wc == 0x11357)
+	  if (wc == 0x11357 || (wc >= 0x11362 && wc <= 0x11363))
 	    return TRUE;
-	  if ((wc >= 0x11362 && wc <= 0x11363) ||
-	      (wc >= 0x11435 && wc <= 0x11441))
+	  if ((wc >= 0x11435 && wc <= 0x11441) ||
+	      (wc >= 0x114B0 && wc <= 0x114BE))
 	    return TRUE;
-	  if ((wc >= 0x114B0 && wc <= 0x114BE) ||
-	      (wc >= 0x115AF && wc <= 0x115B5))
+	  if ((wc >= 0x115AF && wc <= 0x115B5) ||
+	      (wc >= 0x115B8 && wc <= 0x115BB))
 	    return TRUE;
 	  return FALSE;
 	}
-      if ((wc >= 0x115B8 && wc <= 0x11938))
+      if ((wc >= 0x115DC && wc <= 0x119D7))
 	{
-	  if ((wc >= 0x115B8 && wc <= 0x115BB) ||
-	      (wc >= 0x115DC && wc <= 0x115DD))
+	  if ((wc >= 0x115DC && wc <= 0x115DD) ||
+	      (wc >= 0x11630 && wc <= 0x1163C))
 	    return TRUE;
-	  if ((wc >= 0x11630 && wc <= 0x1163C) || wc == 0x11640)
+	  if (wc == 0x11640 || (wc >= 0x116AD && wc <= 0x116B5))
 	    return TRUE;
-	  if ((wc >= 0x116AD && wc <= 0x116B5) ||
-	      (wc >= 0x11720 && wc <= 0x1172A))
+	  if ((wc >= 0x11720 && wc <= 0x1172A) ||
+	      (wc >= 0x1182C && wc <= 0x11836))
 	    return TRUE;
-	  if ((wc >= 0x1182C && wc <= 0x11836) ||
-	      (wc >= 0x11930 && wc <= 0x11935) ||
-	      (wc >= 0x11937 && wc <= 0x11938))
+	  if ((wc >= 0x11930 && wc <= 0x11935) ||
+	      (wc >= 0x11937 && wc <= 0x11938) ||
+	      (wc >= 0x119D1 && wc <= 0x119D7))
 	    return TRUE;
 	  return FALSE;
 	}
-      if ((wc >= 0x119D1 && wc <= 0x11CB4))
+      if ((wc >= 0x119DA && wc <= 0x11D36))
 	{
-	  if ((wc >= 0x119D1 && wc <= 0x119D7) ||
-	      (wc >= 0x119DA && wc <= 0x119DD))
+	  if ((wc >= 0x119DA && wc <= 0x119DD) || wc == 0x119E4)
 	    return TRUE;
-	  if (wc == 0x119E4 || (wc >= 0x11A01 && wc <= 0x11A0A))
+	  if ((wc >= 0x11A01 && wc <= 0x11A0A) ||
+	      (wc >= 0x11A51 && wc <= 0x11A5B))
 	    return TRUE;
-	  if ((wc >= 0x11A51 && wc <= 0x11A5B) ||
-	      (wc >= 0x11C2F && wc <= 0x11C36))
+	  if ((wc >= 0x11C2F && wc <= 0x11C36) ||
+	      (wc >= 0x11C38 && wc <= 0x11C3B))
 	    return TRUE;
-	  if ((wc >= 0x11C38 && wc <= 0x11C3B) ||
-	      (wc >= 0x11CB0 && wc <= 0x11CB4))
+	  if ((wc >= 0x11CB0 && wc <= 0x11CB4) ||
+	      (wc >= 0x11D31 && wc <= 0x11D36))
 	    return TRUE;
 	  return FALSE;
 	}
-      if ((wc >= 0x11D31 && wc <= 0x11EF6))
+      if ((wc >= 0x11D3A && wc <= 0x11F40))
 	{
-	  if ((wc >= 0x11D31 && wc <= 0x11D36) || wc == 0x11D3A)
+	  if (wc == 0x11D3A || (wc >= 0x11D3C && wc <= 0x11D3D))
 	    return TRUE;
-	  if ((wc >= 0x11D3C && wc <= 0x11D3D) || wc == 0x11D3F)
-	    return TRUE;
-	  if (wc == 0x11D43 || (wc >= 0x11D8A && wc <= 0x11D8E))
+	  if (wc == 0x11D3F ||
+	      wc == 0x11D43 || (wc >= 0x11D8A && wc <= 0x11D8E))
 	    return TRUE;
 	  if ((wc >= 0x11D90 && wc <= 0x11D91) ||
-	      (wc >= 0x11D93 && wc <= 0x11D94) ||
-	      (wc >= 0x11EF3 && wc <= 0x11EF6))
+	      (wc >= 0x11D93 && wc <= 0x11D94))
+	    return TRUE;
+	  if ((wc >= 0x11EF3 && wc <= 0x11EF6) ||
+	      (wc >= 0x11F34 && wc <= 0x11F3A) ||
+	      (wc >= 0x11F3E && wc <= 0x11F40))
 	    return TRUE;
 	  return FALSE;
 	}
@@ -599,7 +618,7 @@ _pango_is_Consonant_Prefixed (gunichar wc)
 static inline gboolean
 _pango_is_Consonant_Preceding_Repha (gunichar wc)
 {
-  if (wc == 0x0D4E || wc == 0x11941 || wc == 0x11D46)
+  if (wc == 0x0D4E || wc == 0x11941 || wc == 0x11D46 || wc == 0x11F02)
     return TRUE;
   return FALSE;
 }
@@ -727,7 +746,7 @@ _pango_is_EastAsianWide (gunichar wc)
 	}
       return FALSE;
     }
-  if ((wc >= 0xFFDA && wc <= 0x1F3F4))
+  if ((wc >= 0xFFDA && wc <= 0x1F3D3))
     {
       if ((wc >= 0xFFDA && wc <= 0x18D08))
 	{
@@ -745,7 +764,7 @@ _pango_is_EastAsianWide (gunichar wc)
 	    return TRUE;
 	  return FALSE;
 	}
-      if ((wc >= 0x1AFF0 && wc <= 0x1F004))
+      if ((wc >= 0x1AFF0 && wc <= 0x1B167))
 	{
 	  if ((wc >= 0x1AFF0 && wc <= 0x1AFF3) ||
 	      (wc >= 0x1AFF5 && wc <= 0x1AFFB))
@@ -753,15 +772,16 @@ _pango_is_EastAsianWide (gunichar wc)
 	  if ((wc >= 0x1AFFD && wc <= 0x1AFFE) ||
 	      (wc >= 0x1B000 && wc <= 0x1B122))
 	    return TRUE;
-	  if ((wc >= 0x1B150 && wc <= 0x1B152) ||
-	      (wc >= 0x1B164 && wc <= 0x1B167))
+	  if (wc == 0x1B132 || (wc >= 0x1B150 && wc <= 0x1B152))
 	    return TRUE;
-	  if ((wc >= 0x1B170 && wc <= 0x1B2FB) || wc == 0x1F004)
+	  if (wc == 0x1B155 || (wc >= 0x1B164 && wc <= 0x1B167))
 	    return TRUE;
 	  return FALSE;
 	}
-      if ((wc >= 0x1F0CF && wc <= 0x1F265))
+      if ((wc >= 0x1B170 && wc <= 0x1F248))
 	{
+	  if ((wc >= 0x1B170 && wc <= 0x1B2FB) || wc == 0x1F004)
+	    return TRUE;
 	  if (wc == 0x1F0CF || wc == 0x1F18E)
 	    return TRUE;
 	  if ((wc >= 0x1F191 && wc <= 0x1F19A) ||
@@ -770,13 +790,13 @@ _pango_is_EastAsianWide (gunichar wc)
 	  if ((wc >= 0x1F210 && wc <= 0x1F23B) ||
 	      (wc >= 0x1F240 && wc <= 0x1F248))
 	    return TRUE;
+	  return FALSE;
+	}
+      if ((wc >= 0x1F250 && wc <= 0x1F3D3))
+	{
 	  if ((wc >= 0x1F250 && wc <= 0x1F251) ||
 	      (wc >= 0x1F260 && wc <= 0x1F265))
 	    return TRUE;
-	  return FALSE;
-	}
-      if ((wc >= 0x1F300 && wc <= 0x1F3F4))
-	{
 	  if ((wc >= 0x1F300 && wc <= 0x1F320) ||
 	      (wc >= 0x1F32D && wc <= 0x1F335))
 	    return TRUE;
@@ -786,16 +806,16 @@ _pango_is_EastAsianWide (gunichar wc)
 	  if ((wc >= 0x1F3A0 && wc <= 0x1F3CA) ||
 	      (wc >= 0x1F3CF && wc <= 0x1F3D3))
 	    return TRUE;
-	  if ((wc >= 0x1F3E0 && wc <= 0x1F3F0) || wc == 0x1F3F4)
-	    return TRUE;
 	  return FALSE;
 	}
       return FALSE;
     }
-  if ((wc >= 0x1F3F8 && wc <= 0x3FFFD))
+  if ((wc >= 0x1F3E0 && wc <= 0x3FFFD))
     {
-      if ((wc >= 0x1F3F8 && wc <= 0x1F596))
+      if ((wc >= 0x1F3E0 && wc <= 0x1F567))
 	{
+	  if ((wc >= 0x1F3E0 && wc <= 0x1F3F0) || wc == 0x1F3F4)
+	    return TRUE;
 	  if ((wc >= 0x1F3F8 && wc <= 0x1F43E) || wc == 0x1F440)
 	    return TRUE;
 	  if ((wc >= 0x1F442 && wc <= 0x1F4FC) ||
@@ -804,12 +824,12 @@ _pango_is_EastAsianWide (gunichar wc)
 	  if ((wc >= 0x1F54B && wc <= 0x1F54E) ||
 	      (wc >= 0x1F550 && wc <= 0x1F567))
 	    return TRUE;
-	  if (wc == 0x1F57A || (wc >= 0x1F595 && wc <= 0x1F596))
-	    return TRUE;
 	  return FALSE;
 	}
-      if ((wc >= 0x1F5A4 && wc <= 0x1F6EC))
+      if ((wc >= 0x1F57A && wc <= 0x1F6D7))
 	{
+	  if (wc == 0x1F57A || (wc >= 0x1F595 && wc <= 0x1F596))
+	    return TRUE;
 	  if (wc == 0x1F5A4 || (wc >= 0x1F5FB && wc <= 0x1F64F))
 	    return TRUE;
 	  if ((wc >= 0x1F680 && wc <= 0x1F6C5) || wc == 0x1F6CC)
@@ -817,13 +837,13 @@ _pango_is_EastAsianWide (gunichar wc)
 	  if ((wc >= 0x1F6D0 && wc <= 0x1F6D2) ||
 	      (wc >= 0x1F6D5 && wc <= 0x1F6D7))
 	    return TRUE;
-	  if ((wc >= 0x1F6DD && wc <= 0x1F6DF) ||
-	      (wc >= 0x1F6EB && wc <= 0x1F6EC))
-	    return TRUE;
 	  return FALSE;
 	}
-      if ((wc >= 0x1F6F4 && wc <= 0x1FA7C))
+      if ((wc >= 0x1F6DC && wc <= 0x1F9FF))
 	{
+	  if ((wc >= 0x1F6DC && wc <= 0x1F6DF) ||
+	      (wc >= 0x1F6EB && wc <= 0x1F6EC))
+	    return TRUE;
 	  if ((wc >= 0x1F6F4 && wc <= 0x1F6FC) ||
 	      (wc >= 0x1F7E0 && wc <= 0x1F7EB))
 	    return TRUE;
@@ -832,23 +852,20 @@ _pango_is_EastAsianWide (gunichar wc)
 	  if ((wc >= 0x1F93C && wc <= 0x1F945) ||
 	      (wc >= 0x1F947 && wc <= 0x1F9FF))
 	    return TRUE;
-	  if ((wc >= 0x1FA70 && wc <= 0x1FA74) ||
-	      (wc >= 0x1FA78 && wc <= 0x1FA7C))
-	    return TRUE;
 	  return FALSE;
 	}
-      if ((wc >= 0x1FA80 && wc <= 0x3FFFD))
+      if ((wc >= 0x1FA70 && wc <= 0x3FFFD))
 	{
-	  if ((wc >= 0x1FA80 && wc <= 0x1FA86) ||
-	      (wc >= 0x1FA90 && wc <= 0x1FAAC))
+	  if ((wc >= 0x1FA70 && wc <= 0x1FA7C) ||
+	      (wc >= 0x1FA80 && wc <= 0x1FA88))
 	    return TRUE;
-	  if ((wc >= 0x1FAB0 && wc <= 0x1FABA) ||
-	      (wc >= 0x1FAC0 && wc <= 0x1FAC5))
+	  if ((wc >= 0x1FA90 && wc <= 0x1FABD) ||
+	      (wc >= 0x1FABF && wc <= 0x1FAC5))
 	    return TRUE;
-	  if ((wc >= 0x1FAD0 && wc <= 0x1FAD9) ||
-	      (wc >= 0x1FAE0 && wc <= 0x1FAE7))
+	  if ((wc >= 0x1FACE && wc <= 0x1FADB) ||
+	      (wc >= 0x1FAE0 && wc <= 0x1FAE8))
 	    return TRUE;
-	  if ((wc >= 0x1FAF0 && wc <= 0x1FAF6) ||
+	  if ((wc >= 0x1FAF0 && wc <= 0x1FAF8) ||
 	      (wc >= 0x20000 && wc <= 0x2FFFD) ||
 	      (wc >= 0x30000 && wc <= 0x3FFFD))
 	    return TRUE;
