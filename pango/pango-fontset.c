@@ -55,7 +55,7 @@ pango_fontset_class_init (PangoFontsetClass *class)
  * Returns the font in the fontset that contains the best
  * glyph for a Unicode character.
  *
- * Return value: (transfer full): a `PangoFont`
+ * Returns: (transfer full): a `PangoFont`
  */
 PangoFont *
 pango_fontset_get_font (PangoFontset  *fontset,
@@ -73,7 +73,7 @@ pango_fontset_get_font (PangoFontset  *fontset,
  *
  * Get overall metric information for the fonts in the fontset.
  *
- * Return value: a `PangoFontMetrics` object
+ * Returns: (transfer full): a `PangoFontMetrics` object
  */
 PangoFontMetrics *
 pango_fontset_get_metrics (PangoFontset  *fontset)
