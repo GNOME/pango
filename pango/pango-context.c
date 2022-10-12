@@ -123,8 +123,8 @@ pango_context_finalize (GObject *object)
  * For instance, the GTK toolkit has, among others,
  * `gtk_widget_get_pango_context()`. Use those instead.
  *
- * Return value: the newly allocated `PangoContext`, which should
- *   be freed with g_object_unref().
+ * Returns: (transfer full) (nullable): the newly allocated `PangoContext`,
+ *   which should be freed with g_object_unref().
  */
 PangoContext *
 pango_context_new (void)
@@ -190,9 +190,10 @@ pango_context_set_matrix (PangoContext      *context,
  *
  * See [method@Pango.Context.set_matrix].
  *
- * Return value: (nullable): the matrix, or %NULL if no matrix has
- *   been set (which is the same as the identity matrix). The returned
- *   matrix is owned by Pango and must not be modified or freed.
+ * Returns: (transfer none) (nullable): the matrix, or %NULL if no
+ *   matrix has been set (which is the same as the identity matrix).
+ *   The returned matrix is owned by Pango and must not be modified
+ *   or freed.
  *
  * Since: 1.6
  */
@@ -207,7 +208,7 @@ pango_context_get_matrix (PangoContext *context)
 /**
  * pango_context_set_font_map:
  * @context: a `PangoContext`
- * @font_map: the `PangoFontMap` to set.
+ * @font_map: (nullable): the `PangoFontMap` to set.
  *
  * Sets the font map to be searched when fonts are looked-up
  * in this context.
@@ -244,8 +245,9 @@ pango_context_set_font_map (PangoContext *context,
  *
  * Gets the `PangoFontMap` used to look up fonts for this context.
  *
- * Return value: (transfer none): the font map for the `PangoContext`.
- *   This value is owned by Pango and should not be unreferenced.
+ * Returns: (transfer none) (nullable): the font map for the.
+ *   `PangoContext` This value is owned by Pango and should not be
+ *   unreferenced.
  *
  * Since: 1.6
  */
@@ -336,7 +338,7 @@ pango_context_load_fontset (PangoContext               *context,
 /**
  * pango_context_set_font_description:
  * @context: a `PangoContext`
- * @desc: the new pango font description
+ * @desc: (nullable): the new pango font description
  *
  * Set the default font description for the context
  */
@@ -363,7 +365,7 @@ pango_context_set_font_description (PangoContext               *context,
  *
  * Retrieve the default font description for the context.
  *
- * Return value: (transfer none): a pointer to the context's default font
+ * Returns: (transfer none) (nullable): a pointer to the context's default font
  *   description. This value must not be modified or freed.
  */
 PangoFontDescription *
@@ -377,7 +379,7 @@ pango_context_get_font_description (PangoContext *context)
 /**
  * pango_context_set_language:
  * @context: a `PangoContext`
- * @language: the new language tag.
+ * @language: (nullable): the new language tag.
  *
  * Sets the global language tag for the context.
  *
@@ -406,7 +408,7 @@ pango_context_set_language (PangoContext  *context,
  *
  * Retrieves the global language tag for the context.
  *
- * Return value: the global language tag.
+ * Returns: (transfer none): the global language tag.
  */
 PangoLanguage *
 pango_context_get_language (PangoContext *context)
@@ -450,7 +452,7 @@ pango_context_set_base_dir (PangoContext   *context,
  *
  * See [method@Pango.Context.set_base_dir].
  *
- * Return value: the base direction for the context.
+ * Returns: the base direction for the context.
  */
 PangoDirection
 pango_context_get_base_dir (PangoContext *context)
@@ -493,7 +495,7 @@ pango_context_set_base_gravity (PangoContext *context,
  *
  * See [method@Pango.Context.set_base_gravity].
  *
- * Return value: the base gravity for the context.
+ * Returns: the base gravity for the context.
  *
  * Since: 1.16
  */
@@ -516,7 +518,7 @@ pango_context_get_base_gravity (PangoContext *context)
  * which [func@Pango.Gravity.get_for_matrix] is used to return the
  * gravity from the current context matrix.
  *
- * Return value: the resolved gravity for the context.
+ * Returns: the resolved gravity for the context.
  *
  * Since: 1.16
  */
@@ -562,7 +564,7 @@ pango_context_set_gravity_hint (PangoContext     *context,
  *
  * See [method@Pango.Context.set_gravity_hint] for details.
  *
- * Return value: the gravity hint for the context.
+ * Returns: the gravity hint for the context.
  *
  * Since: 1.16
  */
@@ -681,8 +683,8 @@ update_metrics_from_items (PangoFontMetrics *metrics,
  * the returned fonts would be a composite of the metrics for the fonts loaded
  * for the individual families.
  *
- * Return value: a `PangoFontMetrics` object. The caller must call
- *   [method@Pango.FontMetrics.unref] when finished using the object.
+ * Returns: (transfer full) (nullable): a `PangoFontMetrics` object. The caller
+ *   must call [method@Pango.FontMetrics.unref] when finished using the object.
  */
 PangoFontMetrics *
 pango_context_get_metrics (PangoContext               *context,
@@ -793,7 +795,7 @@ check_fontmap_changed (PangoContext *context)
  * and is only useful when implementing objects that need update when their
  * `PangoContext` changes, like `PangoLayout`.
  *
- * Return value: The current serial number of @context.
+ * Returns: The current serial number of @context.
  *
  * Since: 1.32.4
  */
