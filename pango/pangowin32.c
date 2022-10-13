@@ -29,6 +29,10 @@
 #include <glib.h>
 #include <hb.h>
 
+#if defined (HAVE_HARFBUZZ_GDI)
+#include <hb-gdi.h>
+#endif
+
 #include "pango-impl-utils.h"
 #include "pangowin32.h"
 #include "pangowin32-private.h"
@@ -56,6 +60,7 @@ static gboolean pango_win32_font_real_select_font      (PangoFont *font,
 							HDC        hdc);
 static void     pango_win32_font_real_done_font        (PangoFont *font);
 static double   pango_win32_font_real_get_metrics_factor (PangoFont *font);
+static gboolean pango_win32_font_is_hinted             (PangoFont *font);
 
 static void                  pango_win32_get_item_properties    (PangoItem        *item,
 								 PangoUnderline   *uline,
@@ -126,11 +131,13 @@ _pango_win32_font_init (PangoWin32Font *win32font)
 }
 
 static GPrivate display_dc_key = G_PRIVATE_INIT ((GDestroyNotify) DeleteDC);
+static GPrivate dwrite_items = G_PRIVATE_INIT ((GDestroyNotify) pango_win32_dwrite_items_destroy);
 
 HDC
 _pango_win32_get_display_dc (void)
 {
   HDC hdc = g_private_get (&display_dc_key);
+  PangoWin32DWriteItems *items;
 
   if (hdc == NULL)
     {
@@ -151,7 +158,20 @@ _pango_win32_get_display_dc (void)
 #endif
     }
 
+  items = g_private_get (&dwrite_items);
+  if (items == NULL)
+    {
+      items = pango_win32_init_direct_write ();
+      g_private_set (&dwrite_items, items);
+    }
+
   return hdc;
+}
+
+PangoWin32DWriteItems *
+pango_win32_get_direct_write_items (void)
+{
+  return g_private_get (&dwrite_items);
 }
 
 /**
@@ -187,6 +207,7 @@ _pango_win32_font_class_init (PangoWin32FontClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontClass *font_class = PANGO_FONT_CLASS (class);
+  PangoFontClassPrivate *pclass;
 
   object_class->finalize = pango_win32_font_finalize;
   object_class->dispose = pango_win32_font_dispose;
@@ -202,6 +223,9 @@ _pango_win32_font_class_init (PangoWin32FontClass *class)
   class->select_font = pango_win32_font_real_select_font;
   class->done_font = pango_win32_font_real_done_font;
   class->get_metrics_factor = pango_win32_font_real_get_metrics_factor;
+
+  pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT);
+  pclass->is_hinted = pango_win32_font_is_hinted;
 
   _pango_win32_get_display_dc ();
 }
@@ -645,6 +669,14 @@ static double
 pango_win32_font_real_get_metrics_factor (PangoFont *font)
 {
   return PANGO_SCALE;
+}
+
+static gboolean
+pango_win32_font_is_hinted (PangoFont *font)
+{
+  g_return_val_if_fail (PANGO_WIN32_IS_FONT (font), FALSE);
+
+  return PANGO_WIN32_FONT (font)->is_hinted;
 }
 
 /**
@@ -1257,20 +1289,45 @@ hfont_reference_table (hb_face_t *face, hb_tag_t tag, void *user_data)
 static hb_font_t *
 pango_win32_font_create_hb_font (PangoFont *font)
 {
-  PangoWin32Font *win32font = (PangoWin32Font *)font;
-  HFONT hfont;
+  PangoWin32Font *win32font = PANGO_WIN32_FONT (font);
+  HFONT hfont = NULL;
   hb_face_t *face = NULL;
   hb_font_t *hb_font = NULL;
+  static const hb_user_data_key_t key;
+  hb_destroy_func_t destroy_func = NULL;
+  void *destroy_obj = NULL;
+  gpointer dwrite_font_face = NULL;
 
   g_return_val_if_fail (font != NULL, NULL);
 
-  hfont = _pango_win32_font_get_hfont (font);
+#ifdef HAVE_HARFBUZZ_DIRECT_WRITE
+  dwrite_font_face = pango_win32_font_get_dwrite_font_face (win32font);
 
-  /* We are *not* allowed to destroy the HFONT here ! */
-  face = hb_face_create_for_tables (hfont_reference_table, (void *)hfont, NULL);
+  if (dwrite_font_face != NULL)
+    {
+      face = pango_win32_dwrite_font_face_create_hb_face (dwrite_font_face);
+      destroy_func = pango_win32_dwrite_font_face_release;
+      destroy_obj = dwrite_font_face;
+    }
+#endif
+  if (face == NULL)
+    {
+      hfont = _pango_win32_font_get_hfont (font);
+
+#ifdef HAVE_HARFBUZZ_GDI
+      face = hb_gdi_face_create (hfont);
+#else
+      face = hb_face_create_for_tables (hfont_reference_table, (void *)hfont, NULL);
+#endif
+    }
 
   hb_font = hb_font_create (face);
   hb_font_set_scale (hb_font, win32font->size, win32font->size);
+
+  /* We are supposed to destroy the IDWriteFontFace, but *not* the HFONT! */
+  if (destroy_func != NULL && destroy_obj != NULL)
+    hb_font_set_user_data (hb_font, &key, destroy_obj, destroy_func, TRUE);
+
   hb_face_destroy (face);
 
   return hb_font;

@@ -75,6 +75,32 @@ pango_cairo_win32_font_create_font_face (PangoCairoFont *font)
 {
   PangoCairoWin32Font *cwfont = PANGO_CAIRO_WIN32_FONT (font);
   PangoWin32Font *win32font =  &cwfont->font;
+  void *dwrite_font_face = NULL;
+  gpointer dwrite_font = NULL;
+
+#ifdef HAVE_CAIRO_WIN32_DIRECTWRITE
+  dwrite_font_face = pango_win32_font_get_dwrite_font_face (win32font);
+  if (dwrite_font_face != NULL)
+    {
+      cairo_font_face_t *cairo_face = cairo_dwrite_font_face_create_for_dwrite_fontface (dwrite_font_face);
+
+      if (cairo_face != NULL)
+        {
+          static const cairo_user_data_key_t key;
+
+          cairo_font_face_set_user_data (cairo_face, &key,
+                                         dwrite_font_face,
+                                         (cairo_destroy_func_t) pango_win32_dwrite_font_face_release);
+
+          return cairo_face;
+        }
+      else
+        {
+          g_warning ("cairo_font_face creation failed with DirectWrite, fallback to GDI");
+          pango_win32_dwrite_font_face_release (dwrite_font_face);
+        }
+    }
+#endif
 
   return cairo_win32_font_face_create_for_logfontw (&win32font->logfontw);
 }
@@ -268,6 +294,7 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
 				       win32font->size,
 				       &win32font->logfontw);
 
+  win32font->is_hinted = pango_win32_dwrite_font_check_is_hinted (win32font);
   cairo_matrix_init_identity (&font_matrix);
 
   cairo_matrix_scale (&font_matrix, size, size);

@@ -61,7 +61,7 @@ void     pango_font_get_matrix        (PangoFont   *font,
 static inline int pango_font_get_absolute_size (PangoFont *font)
 {
   GTypeClass *klass = (GTypeClass *) PANGO_FONT_GET_CLASS (font);
-  PangoFontClassPrivate *priv = g_type_class_get_private (klass, PANGO_TYPE_FONT);
+  PangoFontClassPrivate *priv = (PangoFontClassPrivate *) g_type_class_get_private (klass, PANGO_TYPE_FONT);
   return priv->get_absolute_size (font);
 }
 
@@ -69,7 +69,7 @@ static inline PangoVariant
 pango_font_get_variant (PangoFont *font)
 {
   GTypeClass *klass = (GTypeClass *) PANGO_FONT_GET_CLASS (font);
-  PangoFontClassPrivate *priv = g_type_class_get_private (klass, PANGO_TYPE_FONT);
+  PangoFontClassPrivate *priv = (PangoFontClassPrivate *) g_type_class_get_private (klass, PANGO_TYPE_FONT);
   if (priv->get_variant)
     return priv->get_variant (font);
   else

@@ -57,6 +57,8 @@
 #include "pango-fontset.h"
 #include "pango-fontmap-private.h"
 
+G_BEGIN_DECLS
+
 #define PANGO_TYPE_WIN32_FONT_MAP             (_pango_win32_font_map_get_type ())
 #define PANGO_WIN32_FONT_MAP(object)          (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_WIN32_FONT_MAP, PangoWin32FontMap))
 #define PANGO_WIN32_IS_FONT_MAP(object)       (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_WIN32_FONT_MAP))
@@ -73,6 +75,7 @@
 
 typedef struct _PangoWin32FontMap      PangoWin32FontMap;
 typedef struct _PangoWin32FontMapClass PangoWin32FontMapClass;
+typedef struct _PangoWin32DWriteItems  PangoWin32DWriteItems;
 typedef struct _PangoWin32Font         PangoWin32Font;
 typedef struct _PangoWin32FontClass    PangoWin32FontClass;
 typedef struct _PangoWin32Face         PangoWin32Face;
@@ -96,11 +99,13 @@ struct _PangoWin32FontMap
    */
   GHashTable *fonts;
 
+  /* Map LOGFONTWs to IDWriteFonts corresponding to actual fonts
+   * installed, if applicable.
+   */
+  GHashTable *dwrite_fonts;
+
   /* keeps track of the system font aliases that we might have */
   GHashTable *aliases;
-
-  /* keeps track of the warned fonts that we might have */
-  GHashTable *warned_fonts;
 
   double resolution;		/* (points / pixel) * PANGO_SCALE */
 };
@@ -137,6 +142,9 @@ struct _PangoWin32Font
    */
   gboolean in_cache;
   GHashTable *glyph_info;
+
+  /* whether the font supports hinting */
+  gboolean is_hinted;
 };
 
 struct _PangoWin32FontClass
@@ -279,6 +287,42 @@ _PANGO_EXTERN
 gpointer        _pango_win32_copy_cmap (gpointer cmap,
                                         guint16 cmap_format);
 
+_PANGO_EXTERN
+gboolean        pango_win32_dwrite_font_check_is_hinted       (PangoWin32Font    *font);
+
+_PANGO_EXTERN
+void           *pango_win32_font_get_dwrite_font_face         (PangoWin32Font    *font);
+
 extern gboolean _pango_win32_debug;
+
+void                   pango_win32_insert_font                (PangoWin32FontMap     *win32fontmap,
+                                                               LOGFONTW              *lfp,
+                                                               gpointer               dwrite_font,
+                                                               gboolean               is_synthetic);
+
+PangoWin32DWriteItems *pango_win32_init_direct_write          (void);
+
+PangoWin32DWriteItems *pango_win32_get_direct_write_items     (void);
+
+void                   pango_win32_dwrite_font_map_populate   (PangoWin32FontMap     *map);
+
+void                   pango_win32_dwrite_items_destroy       (PangoWin32DWriteItems *items);
+
+gboolean               pango_win32_dwrite_font_is_monospace   (gpointer               dwrite_font,
+                                                               gboolean              *is_monospace);
+
+void                   pango_win32_dwrite_font_release        (gpointer               dwrite_font);
+
+_PANGO_EXTERN
+void                   pango_win32_dwrite_font_face_release   (gpointer               dwrite_font_face);
+
+gpointer               pango_win32_logfontw_get_dwrite_font   (LOGFONTW              *logfontw);
+
+PangoFontDescription *
+pango_win32_font_description_from_logfontw_dwrite             (const LOGFONTW        *logfontw);
+
+hb_face_t      *pango_win32_dwrite_font_face_create_hb_face   (gpointer               face);
+
+G_END_DECLS
 
 #endif /* __PANGOWIN32_PRIVATE_H__ */

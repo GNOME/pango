@@ -46,6 +46,7 @@ osx_current = pango_binary_age - pango_interface_age + 1
 pango_osxversion = [osx_current, '@0@.@1@.0'.format(osx_current, pango_interface_age)]
 
 cc = meson.get_compiler('c')
+cpp = meson.get_compiler('cpp')
 host_system = host_machine.system()
 
 # Compiler and linker flags
@@ -277,6 +278,24 @@ harfbuzz_dep = dependency('harfbuzz',
                           fallback: ['harfbuzz', 'libharfbuzz_dep'],
                           default_options: ['coretext=enabled'])
 
+if host_system == 'windows'
+  if cpp.has_header_symbol(
+      'hb-directwrite.h',
+      'hb_directwrite_face_create',
+      dependencies: harfbuzz_dep,
+      prefix: '#include <dwrite.h>',
+    )
+    pango_conf.set('HAVE_HARFBUZZ_DIRECT_WRITE', 1)
+  endif
+  if cc.has_header_symbol(
+      'hb-gdi.h',
+      'hb_gdi_face_create',
+      dependencies: harfbuzz_dep,
+    )
+    pango_conf.set('HAVE_HARFBUZZ_GDI', 1)
+  endif
+endif
+
 pango_deps += harfbuzz_dep
 
 # If option is 'auto' or 'enabled' it is not required to find fontconfig on the
@@ -390,9 +409,13 @@ endif
 
 cairo_found_type = ''
 cairo_dep = dependency('cairo', version: cairo_req_version, required: cairo_option)
+cairo_dwrite_dep = disabler() # Only for Windows
 
 if cairo_dep.found()
   cairo_found_type = cairo_dep.type_name()
+  if host_system == 'windows'
+    cairo_dwrite_dep = dependency('cairo-win32-dwrite-font', version: cairo_req_version, required: false)
+  endif
 else
   if cc.get_id() == 'msvc' and cc.has_header('cairo.h')
     cairo_dep = cc.find_library('cairo', required: cairo_option)
@@ -564,6 +587,10 @@ if cairo_dep.found()
   if pango_font_backends.contains('win32')
     pangocairo_requires += 'pangowin32 '
   endif
+endif
+
+if cairo_dwrite_dep.found()
+  pango_conf.set('HAVE_CAIRO_WIN32_DIRECTWRITE', 1)
 endif
 
 # libsysprof-capture support
