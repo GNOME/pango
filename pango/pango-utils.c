@@ -76,7 +76,7 @@ pango_version (void)
  * This is similar to the macro %PANGO_VERSION_STRING except that the
  * macro returns the version available at compile-time.
  *
- * Returns: A string containing the version of Pango library available
+ * Returns: (transfer none): A string containing the version of Pango library available
  *   at run time. The returned string is owned by Pango and should not
  *   be modified or freed.
  *
@@ -112,7 +112,7 @@ pango_version_string (void)
  *
  * For compile-time version checking use PANGO_VERSION_CHECK().
  *
- * Return value: (nullable): %NULL if the Pango library is compatible
+ * Returns: (transfer none) (nullable): %NULL if the Pango library is compatible
  *   with the given version, or a string describing the version
  *   mismatch.  The returned string is owned by Pango and should not
  *   be modified or freed.
@@ -144,7 +144,7 @@ pango_version_check (int required_major,
  *
  * Trims leading and trailing whitespace from a string.
  *
- * Return value: A newly-allocated string that must be freed with g_free()
+ * Returns: (transfer full): A newly-allocated string that must be freed with g_free()
  *
  * Deprecated: 1.38
  */
@@ -178,7 +178,7 @@ _pango_trim_string (const char *str)
  * Splits a %G_SEARCHPATH_SEPARATOR-separated list of files, stripping
  * white space and substituting ~/ with $HOME/.
  *
- * Return value: (transfer full) (array zero-terminated=1): a list of
+ * Returns: (transfer full) (array zero-terminated=1): a list of
  *   strings to be freed with g_strfreev()
  *
  * Deprecated: 1.38
@@ -251,7 +251,7 @@ pango_split_file_list (const char *str)
  * any other character is ignored and written into the output buffer
  * unmodified.
  *
- * Return value: 0 if the stream was already at an %EOF character,
+ * Returns: 0 if the stream was already at an %EOF character,
  *   otherwise the number of lines read (this is useful for maintaining
  *   a line number counter which doesn't combine lines with '\')
  *
@@ -356,7 +356,7 @@ pango_read_line (FILE *stream, GString *str)
  *
  * Skips 0 or more characters of white space.
  *
- * Return value: %FALSE if skipping the white space leaves
+ * Returns: %FALSE if skipping the white space leaves
  *   the position at a '\0' character.
  *
  * Deprecated: 1.38
@@ -384,7 +384,7 @@ pango_skip_space (const char **pos)
  * A word consists of [A-Za-z_] followed by zero or more
  * [A-Za-z_0-9]. Leading white space is skipped.
  *
- * Return value: %FALSE if a parse error occurred
+ * Returns: %FALSE if a parse error occurred
  *
  * Deprecated: 1.38
  */
@@ -430,7 +430,7 @@ pango_scan_word (const char **pos, GString *out)
  * or a quoted string with '"'. Instead a quoted string, '\"' represents
  * a literal quote. Leading white space outside of quotes is skipped.
  *
- * Return value: %FALSE if a parse error occurred
+ * Returns: %FALSE if a parse error occurred
  *
  * Deprecated: 1.38
  */
@@ -521,7 +521,7 @@ pango_scan_string (const char **pos, GString *out)
  *
  * Leading white space is skipped.
  *
- * Return value: %FALSE if a parse error occurred
+ * Returns: %FALSE if a parse error occurred
  *
  * Deprecated: 1.38
  */
@@ -562,7 +562,7 @@ _pango_scan_int (const char **pos, int *out)
  *
  * Do not use.  Does not do anything.
  *
- * Return value: %NULL
+ * Returns: (nullable): %NULL
  *
  * Deprecated: 1.38
  */
@@ -578,7 +578,7 @@ pango_config_key_get_system (const char *key)
  *
  * Do not use.  Does not do anything.
  *
- * Return value: %NULL
+ * Returns: (nullable): %NULL
  *
  * Deprecated: 1.38
  */
@@ -594,7 +594,7 @@ pango_config_key_get (const char *key)
  * Returns the name of the "pango" subdirectory of SYSCONFDIR
  * (which is set at compile time).
  *
- * Return value: the Pango sysconf directory. The returned string should
+ * Returns: (transfer none): the Pango sysconf directory. The returned string should
  * not be freed.
  *
  * Deprecated: 1.38
@@ -623,7 +623,7 @@ pango_get_sysconf_subdirectory (void)
  * Returns the name of the "pango" subdirectory of LIBDIR
  * (which is set at compile time).
  *
- * Return value: the Pango lib directory. The returned string should
+ * Returns: (transfer none): the Pango lib directory. The returned string should
  * not be freed.
  *
  * Deprecated: 1.38
@@ -692,7 +692,7 @@ parse_int (const char *word,
  * If failed and @possible_values is not %NULL, returned string should
  * be freed using g_free().
  *
- * Return value: %TRUE if @str was successfully parsed
+ * Returns: %TRUE if @str was successfully parsed
  *
  * Deprecated: 1.38
  *
@@ -858,7 +858,7 @@ pango_lookup_aliases (const char   *fontname,
  * Searches a string the first character that has a strong
  * direction, according to the Unicode bidirectional algorithm.
  *
- * Return value: The direction corresponding to the first strong character.
+ * Returns: The direction corresponding to the first strong character.
  *   If no such character is found, then %PANGO_DIRECTION_NEUTRAL is returned.
  *
  * Since: 1.4
@@ -901,7 +901,7 @@ pango_find_base_dir (const gchar *text,
  *
  * This is totally different from [func@GLib.unichar_iszerowidth] and is at best misnamed.
  *
- * Return value: %TRUE if @ch is a zero-width character, %FALSE otherwise
+ * Returns: %TRUE if @ch is a zero-width character, %FALSE otherwise
  *
  * Since: 1.10
  */
@@ -997,7 +997,7 @@ pango_quantize_line_geometry (int *thickness,
  * The conversion is done by multiplying @d by %PANGO_SCALE and
  * rounding the result to nearest integer.
  *
- * Return value: the value in Pango units.
+ * Returns: the value in Pango units.
  *
  * Since: 1.16
  */
@@ -1015,7 +1015,7 @@ pango_units_from_double (double d)
  *
  * The conversion is done by dividing @i by %PANGO_SCALE.
  *
- * Return value: the double value.
+ * Returns: the double value.
  *
  * Since: 1.16
  */

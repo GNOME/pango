@@ -47,8 +47,8 @@
  * This function is similar in function to pango_item_split() (and uses
  * it internally.)
  *
- * Return value: the newly allocated item representing text before
- *   @split_index, which should be freed
+ * Returns: (transfer full) (nullable): the newly allocated item
+ *   representing text before @split_index, which should be freed
  *   with pango_glyph_item_free().
  *
  * Since: 1.2
@@ -142,7 +142,7 @@ pango_glyph_item_split (PangoGlyphItem *orig,
  *
  * Make a deep copy of an existing `PangoGlyphItem` structure.
  *
- * Return value: (nullable): the newly allocated `PangoGlyphItem`
+ * Returns: (transfer full) (nullable): the newly allocated `PangoGlyphItem`
  *
  * Since: 1.20
  */
@@ -198,7 +198,7 @@ G_DEFINE_BOXED_TYPE (PangoGlyphItem, pango_glyph_item,
  *
  * Make a shallow copy of an existing `PangoGlyphItemIter` structure.
  *
- * Return value: (nullable): the newly allocated `PangoGlyphItemIter`
+ * Returns: (transfer full) (nullable): the newly allocated `PangoGlyphItemIter`
  *
  * Since: 1.22
  */
@@ -246,7 +246,7 @@ G_DEFINE_BOXED_TYPE (PangoGlyphItemIter, pango_glyph_item_iter,
  *
  * See `PangoGlyphItemIter` for details of cluster orders.
  *
- * Return value: %TRUE if the iterator was advanced,
+ * Returns: %TRUE if the iterator was advanced,
  *   %FALSE if we were already on the  last cluster.
  *
  * Since: 1.22
@@ -336,7 +336,7 @@ pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter)
  * Moves the iterator to the preceding cluster in the glyph item.
  * See `PangoGlyphItemIter` for details of cluster orders.
  *
- * Return value: %TRUE if the iterator was moved,
+ * Returns: %TRUE if the iterator was moved,
  *   %FALSE if we were already on the first cluster.
  *
  * Since: 1.22
@@ -433,7 +433,7 @@ pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter)
  *
  * See `PangoGlyphItemIter` for details of cluster orders.
  *
- * Return value: %FALSE if there are no clusters in the glyph item
+ * Returns: %FALSE if there are no clusters in the glyph item
  *
  * Since: 1.22
  */
@@ -472,7 +472,7 @@ pango_glyph_item_iter_init_start (PangoGlyphItemIter  *iter,
  *
  * See `PangoGlyphItemIter` for details of cluster orders.
  *
- * Return value: %FALSE if there are no clusters in the glyph item
+ * Returns: %FALSE if there are no clusters in the glyph item
  *
  * Since: 1.22
  */
@@ -582,7 +582,7 @@ split_before_cluster_start (ApplyAttrsState *state)
  * This function takes ownership of @glyph_item; it will be reused
  * as one of the elements in the list.
  *
- * Return value: (transfer full) (element-type Pango.GlyphItem): a
+ * Returns: (transfer full) (element-type Pango.GlyphItem): a
  *   list of glyph items resulting from splitting @glyph_item. Free
  *   the elements using [method@Pango.GlyphItem.free], the list using
  *   g_slist_free().

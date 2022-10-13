@@ -280,7 +280,7 @@ pango_layout_finalize (GObject *object)
  * Create a new `PangoLayout` object with attributes initialized to
  * default values for a particular `PangoContext`.
  *
- * Return value: the newly allocated `PangoLayout`
+ * Returns: (transfer full): the newly allocated `PangoLayout`
  */
 PangoLayout *
 pango_layout_new (PangoContext *context)
@@ -307,7 +307,7 @@ pango_layout_new (PangoContext *context)
  * The attribute list, tab array, and text from the original layout
  * are all copied by value.
  *
- * Return value: (transfer full): the newly allocated `PangoLayout`
+ * Returns: (transfer full): the newly allocated `PangoLayout`
  */
 PangoLayout*
 pango_layout_copy (PangoLayout *src)
@@ -342,7 +342,7 @@ pango_layout_copy (PangoLayout *src)
  *
  * Retrieves the `PangoContext` used for this layout.
  *
- * Return value: (transfer none): the `PangoContext` for the layout
+ * Returns: (transfer none): the `PangoContext` for the layout
  */
 PangoContext *
 pango_layout_get_context (PangoLayout *layout)
@@ -385,7 +385,7 @@ pango_layout_set_width (PangoLayout *layout,
  *
  * Gets the width to which the lines of the `PangoLayout` should wrap.
  *
- * Return value: the width in Pango units, or -1 if no width set.
+ * Returns: the width in Pango units, or -1 if no width set.
  */
 int
 pango_layout_get_width (PangoLayout    *layout)
@@ -457,7 +457,7 @@ pango_layout_set_height (PangoLayout *layout,
  *
  * See [method@Pango.Layout.set_height] for details.
  *
- * Return value: the height, in Pango units if positive,
+ * Returns: the height, in Pango units if positive,
  *   or number of lines if negative.
  *
  * Since: 1.20
@@ -506,7 +506,7 @@ pango_layout_set_wrap (PangoLayout   *layout,
  * Use [method@Pango.Layout.is_wrapped] to query whether
  * any paragraphs were actually wrapped.
  *
- * Return value: active wrap mode.
+ * Returns: active wrap mode.
  */
 PangoWrapMode
 pango_layout_get_wrap (PangoLayout *layout)
@@ -527,7 +527,7 @@ pango_layout_get_wrap (PangoLayout *layout)
  * and there are paragraphs exceeding the layout width that have
  * to be wrapped.
  *
- * Return value: %TRUE if any paragraphs had to be wrapped, %FALSE
+ * Returns: %TRUE if any paragraphs had to be wrapped, %FALSE
  *   otherwise
  *
  * Since: 1.16
@@ -579,7 +579,7 @@ pango_layout_set_indent (PangoLayout *layout,
  *
  * A negative value indicates a hanging indentation.
  *
- * Return value: the indent in Pango units
+ * Returns: the indent in Pango units
  */
 int
 pango_layout_get_indent (PangoLayout *layout)
@@ -629,7 +629,7 @@ pango_layout_set_spacing (PangoLayout *layout,
  *
  * Gets the amount of spacing between the lines of the layout.
  *
- * Return value: the spacing in Pango units
+ * Returns: the spacing in Pango units
  */
 int
 pango_layout_get_spacing (PangoLayout *layout)
@@ -740,7 +740,7 @@ pango_layout_set_attributes (PangoLayout   *layout,
  *
  * Gets the attribute list for the layout, if any.
  *
- * Return value: (transfer none) (nullable): a `PangoAttrList`
+ * Returns: (transfer none) (nullable): a `PangoAttrList`
  */
 PangoAttrList*
 pango_layout_get_attributes (PangoLayout *layout)
@@ -786,7 +786,7 @@ pango_layout_set_font_description (PangoLayout                *layout,
  *
  * Gets the font description for the layout, if any.
  *
- * Return value: (transfer none) (nullable): a pointer to the
+ * Returns: (transfer none) (nullable): a pointer to the
  *   layout's font description, or %NULL if the font description
  *   from the layout's context is inherited.
  *
@@ -847,7 +847,7 @@ pango_layout_set_justify (PangoLayout *layout,
  * Gets whether each complete line should be stretched to fill the entire
  * width of the layout.
  *
- * Return value: the justify value
+ * Returns: the justify value
  */
 gboolean
 pango_layout_get_justify (PangoLayout *layout)
@@ -893,7 +893,7 @@ pango_layout_set_justify_last_line (PangoLayout *layout,
  * Gets whether the last line should be stretched
  * to fill the entire width of the layout.
  *
- * Return value: the justify value
+ * Returns: the justify value
  *
  * Since: 1.50
  */
@@ -953,7 +953,7 @@ pango_layout_set_auto_dir (PangoLayout *layout,
  *
  * See [method@Pango.Layout.set_auto_dir].
  *
- * Return value: %TRUE if the bidirectional base direction
+ * Returns: %TRUE if the bidirectional base direction
  *   is computed from the layout's contents, %FALSE otherwise
  *
  * Since: 1.4
@@ -996,7 +996,7 @@ pango_layout_set_alignment (PangoLayout   *layout,
  * Gets the alignment for the layout: how partial lines are
  * positioned within the horizontal space available.
  *
- * Return value: the alignment
+ * Returns: the alignment
  */
 PangoAlignment
 pango_layout_get_alignment (PangoLayout *layout)
@@ -1057,7 +1057,7 @@ pango_layout_set_tabs (PangoLayout   *layout,
  *
  * The return value should be freed with [method@Pango.TabArray.free].
  *
- * Return value: (transfer full) (nullable): a copy of the tabs for this layout
+ * Returns: (transfer full) (nullable): a copy of the tabs for this layout
  */
 PangoTabArray*
 pango_layout_get_tabs (PangoLayout *layout)
@@ -1107,7 +1107,7 @@ pango_layout_set_single_paragraph_mode (PangoLayout *layout,
  *
  * See [method@Pango.Layout.set_single_paragraph_mode].
  *
- * Return value: %TRUE if the layout does not break paragraphs
+ * Returns: %TRUE if the layout does not break paragraphs
  *   at paragraph separator characters, %FALSE otherwise
  */
 gboolean
@@ -1167,7 +1167,7 @@ pango_layout_set_ellipsize (PangoLayout        *layout,
  * Use [method@Pango.Layout.is_ellipsized] to query whether any
  * paragraphs were actually ellipsized.
  *
- * Return value: the current ellipsization mode for @layout
+ * Returns: the current ellipsization mode for @layout
  *
  * Since: 1.6
  */
@@ -1190,7 +1190,7 @@ pango_layout_get_ellipsize (PangoLayout *layout)
  * and there are paragraphs exceeding that width that have to be
  * ellipsized.
  *
- * Return value: %TRUE if any paragraphs had to be ellipsized,
+ * Returns: %TRUE if any paragraphs had to be ellipsized,
  *   %FALSE otherwise
  *
  * Since: 1.16
@@ -1297,7 +1297,7 @@ pango_layout_set_text (PangoLayout *layout,
  *
  * The returned text should not be freed or modified.
  *
- * Return value: (transfer none): the text in the @layout
+ * Returns: (transfer none): the text in the @layout
  */
 const char*
 pango_layout_get_text (PangoLayout *layout)
@@ -1319,7 +1319,7 @@ pango_layout_get_text (PangoLayout *layout)
  * Returns the number of Unicode characters in the
  * the text of @layout.
  *
- * Return value: the number of Unicode characters
+ * Returns: the number of Unicode characters
  *   in the text of @layout
  *
  * Since: 1.30
@@ -1423,7 +1423,7 @@ pango_layout_set_markup_with_accel (PangoLayout *layout,
  * used in combination with %PANGO_ATTR_FALLBACK, to check if a
  * certain font supports all the characters in the string.
  *
- * Return value: The number of unknown glyphs in @layout
+ * Returns: The number of unknown glyphs in @layout
  *
  * Since: 1.16
  */
@@ -1525,7 +1525,7 @@ pango_layout_context_changed (PangoLayout *layout)
  * To force the serial to be increased, use
  * [method@Pango.Layout.context_changed].
  *
- * Return value: The current serial number of @layout.
+ * Returns: The current serial number of @layout.
  *
  * Since: 1.32.4
  */
@@ -1615,7 +1615,7 @@ pango_layout_get_log_attrs_readonly (PangoLayout *layout,
  *
  * Retrieves the count of lines for the @layout.
  *
- * Return value: the line count
+ * Returns: the line count
  */
 int
 pango_layout_get_line_count (PangoLayout   *layout)
@@ -1635,7 +1635,7 @@ pango_layout_get_line_count (PangoLayout   *layout)
  * Use the faster [method@Pango.Layout.get_lines_readonly] if you do not
  * plan to modify the contents of the lines (glyphs, glyph widths, etc.).
  *
- * Return value: (element-type Pango.LayoutLine) (transfer none): a `GSList`
+ * Returns: (element-type Pango.LayoutLine) (transfer none): a `GSList`
  *   containing the lines in the layout. This points to internal data of the
  *   `PangoLayout` and must be used with care. It will become invalid on any
  *   change to the layout's text or properties.
@@ -1670,7 +1670,7 @@ pango_layout_get_lines (PangoLayout *layout)
  * but the user is not expected to modify the contents of the lines
  * (glyphs, glyph widths, etc.).
  *
- * Return value: (element-type Pango.LayoutLine) (transfer none): a `GSList`
+ * Returns: (element-type Pango.LayoutLine) (transfer none): a `GSList`
  *   containing the lines in the layout. This points to internal data of the
  *   `PangoLayout` and must be used with care. It will become invalid on any
  *   change to the layout's text or properties. No changes should be made to
@@ -1697,7 +1697,7 @@ pango_layout_get_lines_readonly (PangoLayout *layout)
  * Use the faster [method@Pango.Layout.get_line_readonly] if you do not
  * plan to modify the contents of the line (glyphs, glyph widths, etc.).
  *
- * Return value: (transfer none) (nullable): the requested `PangoLayoutLine`,
+ * Returns: (transfer none) (nullable): the requested `PangoLayoutLine`,
  *   or %NULL if the index is out of range. This layout line can be ref'ed
  *   and retained, but will become invalid if changes are made to the
  *   `PangoLayout`.
@@ -1739,7 +1739,7 @@ pango_layout_get_line (PangoLayout *layout,
  * but the user is not expected to modify the contents of the line
  * (glyphs, glyph widths, etc.).
  *
- * Return value: (transfer none) (nullable): the requested `PangoLayoutLine`,
+ * Returns: (transfer none) (nullable): the requested `PangoLayoutLine`,
  *   or %NULL if the index is out of range. This layout line can be ref'ed
  *   and retained, but will become invalid if changes are made to the
  *   `PangoLayout`. No changes should be made to the line.
@@ -2291,7 +2291,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
  * the X or Y positions were not inside the layout, then the function returns
  * %FALSE; on an exact hit, it returns %TRUE.
  *
- * Return value: %TRUE if the coordinates were inside text, %FALSE otherwise
+ * Returns: %TRUE if the coordinates were inside text, %FALSE otherwise
  */
 gboolean
 pango_layout_xy_to_index (PangoLayout *layout,
@@ -2385,7 +2385,7 @@ pango_layout_xy_to_index (PangoLayout *layout,
  * Converts from an index within a `PangoLayout` to the onscreen position
  * corresponding to the grapheme at that index.
  *
- * The return value is represented as rectangle. Note that `pos->x` is
+ * The returns is represented as rectangle. Note that `pos->x` is
  * always the leading edge of the grapheme and `pos->x + pos->width` the
  * trailing edge of the grapheme. If the directionality of the grapheme
  * is right-to-left, then `pos->width` will be negative.
@@ -3206,7 +3206,7 @@ pango_layout_get_pixel_size (PangoLayout *layout,
  *
  * Gets the Y position of baseline of the first line in @layout.
  *
- * Return value: baseline of first line, from top of @layout
+ * Returns: baseline of first line, from top of @layout
  *
  * Since: 1.22
  */
@@ -4986,7 +4986,7 @@ pango_layout_check_lines (PangoLayout *layout)
  *
  * Increase the reference count of a `PangoLayoutLine` by one.
  *
- * Return value: the line passed in.
+ * Returns: (transfer full) (nullable): the line passed in.
  *
  * Since: 1.10
  */
@@ -5121,7 +5121,7 @@ pango_layout_line_get_resolved_direction (PangoLayoutLine *line)
  * in the line and @trailing being set to the number of characters in that
  * grapheme. The reverse is true for a left-to-right line.
  *
- * Return value: %FALSE if @x_pos was outside the line, %TRUE if inside
+ * Returns: %FALSE if @x_pos was outside the line, %TRUE if inside
  */
 gboolean
 pango_layout_line_x_to_index (PangoLayoutLine *line,
@@ -7124,7 +7124,7 @@ update_run (PangoLayoutIter *iter,
  *
  * Copies a `PangoLayoutIter`.
  *
- * Return value: (nullable): the newly allocated `PangoLayoutIter`
+ * Returns: (transfer full) (nullable): the newly allocated `PangoLayoutIter`
  *
  * Since: 1.20
  */
@@ -7184,7 +7184,7 @@ G_DEFINE_BOXED_TYPE (PangoLayoutIter, pango_layout_iter,
  *
  * Returns an iterator to iterate over the visual extents of the layout.
  *
- * Return value: the new `PangoLayoutIter`
+ * Returns: (transfer full): the new `PangoLayoutIter`
  */
 PangoLayoutIter*
 pango_layout_get_iter (PangoLayout *layout)
@@ -7290,7 +7290,7 @@ pango_layout_iter_free (PangoLayoutIter *iter)
  * the index may be equal to the length of the text in the
  * layout, if on the %NULL run (see [method@Pango.LayoutIter.get_run]).
  *
- * Return value: current byte index
+ * Returns: current byte index
  */
 int
 pango_layout_iter_get_index (PangoLayoutIter *iter)
@@ -7315,7 +7315,7 @@ pango_layout_iter_get_index (PangoLayoutIter *iter)
  * Use the faster [method@Pango.LayoutIter.get_run_readonly] if you do not
  * plan to modify the contents of the run (glyphs, glyph widths, etc.).
  *
- * Return value: (transfer none) (nullable): the current run
+ * Returns: (transfer none) (nullable): the current run
  */
 PangoLayoutRun*
 pango_layout_iter_get_run (PangoLayoutIter *iter)
@@ -7343,7 +7343,7 @@ pango_layout_iter_get_run (PangoLayoutIter *iter)
  * but the user is not expected to modify the contents of the run (glyphs,
  * glyph widths, etc.).
  *
- * Return value: (transfer none) (nullable): the current run, that
+ * Returns: (transfer none) (nullable): the current run, that
  *   should not be modified
  *
  * Since: 1.16
@@ -7382,7 +7382,7 @@ _pango_layout_iter_get_run (PangoLayoutIter *iter)
  * you do not plan to modify the contents of the line (glyphs,
  * glyph widths, etc.).
  *
- * Return value: (transfer none): the current line
+ * Returns: (transfer none) (nullable): the current line
  */
 PangoLayoutLine*
 pango_layout_iter_get_line (PangoLayoutIter *iter)
@@ -7405,7 +7405,7 @@ pango_layout_iter_get_line (PangoLayoutIter *iter)
  * but the user is not expected to modify the contents of the line
  * (glyphs, glyph widths, etc.).
  *
- * Return value: (transfer none): the current line, that should not be
+ * Returns: (transfer none) (nullable): the current line, that should not be
  *   modified
  *
  * Since: 1.16
@@ -7425,7 +7425,7 @@ pango_layout_iter_get_line_readonly (PangoLayoutIter *iter)
  *
  * Determines whether @iter is on the last line of the layout.
  *
- * Return value: %TRUE if @iter is on the last line
+ * Returns: %TRUE if @iter is on the last line
  */
 gboolean
 pango_layout_iter_at_last_line (PangoLayoutIter *iter)
@@ -7442,7 +7442,7 @@ pango_layout_iter_at_last_line (PangoLayoutIter *iter)
  *
  * Gets the layout associated with a `PangoLayoutIter`.
  *
- * Return value: (transfer none): the layout associated with @iter
+ * Returns: (transfer none) (nullable): the layout associated with @iter
  *
  * Since: 1.20
  */
@@ -7566,7 +7566,7 @@ next_cluster_internal (PangoLayoutIter *iter,
  *
  * If @iter was already at the end of the layout, returns %FALSE.
  *
- * Return value: whether motion was possible
+ * Returns: whether motion was possible
  */
 gboolean
 pango_layout_iter_next_char (PangoLayoutIter *iter)
@@ -7611,7 +7611,7 @@ pango_layout_iter_next_char (PangoLayoutIter *iter)
  *
  * If @iter was already at the end of the layout, returns %FALSE.
  *
- * Return value: whether motion was possible
+ * Returns: whether motion was possible
  */
 gboolean
 pango_layout_iter_next_cluster (PangoLayoutIter *iter)
@@ -7627,7 +7627,7 @@ pango_layout_iter_next_cluster (PangoLayoutIter *iter)
  *
  * If @iter was already at the end of the layout, returns %FALSE.
  *
- * Return value: whether motion was possible
+ * Returns: whether motion was possible
  */
 gboolean
 pango_layout_iter_next_run (PangoLayoutIter *iter)
@@ -7672,7 +7672,7 @@ pango_layout_iter_next_run (PangoLayoutIter *iter)
  *
  * If @iter is already on the last line, returns %FALSE.
  *
- * Return value: whether motion was possible
+ * Returns: whether motion was possible
  */
 gboolean
 pango_layout_iter_next_line (PangoLayoutIter *iter)
@@ -7991,7 +7991,7 @@ pango_layout_iter_get_line_yrange (PangoLayoutIter *iter,
  *
  * Layout coordinates have the origin at the top left of the entire layout.
  *
- * Return value: baseline of current line
+ * Returns: baseline of current line
  */
 int
 pango_layout_iter_get_baseline (PangoLayoutIter *iter)
