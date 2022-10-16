@@ -123,8 +123,8 @@ pango_context_finalize (GObject *object)
  * For instance, the GTK toolkit has, among others,
  * `gtk_widget_get_pango_context()`. Use those instead.
  *
- * Returns: (transfer full) (nullable): the newly allocated `PangoContext`,
- *   which should be freed with g_object_unref().
+ * Returns: (transfer full): the newly allocated `PangoContext`, which should
+ *   be freed with g_object_unref().
  */
 PangoContext *
 pango_context_new (void)
@@ -683,8 +683,8 @@ update_metrics_from_items (PangoFontMetrics *metrics,
  * the returned fonts would be a composite of the metrics for the fonts loaded
  * for the individual families.
  *
- * Returns: (transfer full) (nullable): a `PangoFontMetrics` object. The caller
- *   must call [method@Pango.FontMetrics.unref] when finished using the object.
+ * Returns: (transfer full): a `PangoFontMetrics` object. The caller must call
+ *   [method@Pango.FontMetrics.unref] when finished using the object.
  */
 PangoFontMetrics *
 pango_context_get_metrics (PangoContext               *context,
