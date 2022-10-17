@@ -84,8 +84,8 @@ break_thai (const char          *text,
   G_LOCK (thai_brk);
 #ifdef HAVE_TH_BRK_FIND_BREAKS
   if (thai_brk == NULL)
-    thai_brk = th_brk_new(NULL);
-  len = th_brk_find_breaks(thai_brk, tis_text, brk_pnts, cnt);
+    thai_brk = th_brk_new (NULL);
+  len = th_brk_find_breaks (thai_brk, tis_text, brk_pnts, cnt);
 #else
   len = th_brk (tis_text, brk_pnts, cnt);
 #endif
