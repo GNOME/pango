@@ -29,10 +29,6 @@
 #include <glib.h>
 #include <hb.h>
 
-#if defined (HAVE_HARFBUZZ_GDI)
-#include <hb-gdi.h>
-#endif
-
 #include "pango-impl-utils.h"
 #include "pangowin32.h"
 #include "pangowin32-private.h"
@@ -1289,45 +1285,20 @@ hfont_reference_table (hb_face_t *face, hb_tag_t tag, void *user_data)
 static hb_font_t *
 pango_win32_font_create_hb_font (PangoFont *font)
 {
-  PangoWin32Font *win32font = PANGO_WIN32_FONT (font);
-  HFONT hfont = NULL;
+  PangoWin32Font *win32font = (PangoWin32Font *)font;
+  HFONT hfont;
   hb_face_t *face = NULL;
   hb_font_t *hb_font = NULL;
-  static const hb_user_data_key_t key;
-  hb_destroy_func_t destroy_func = NULL;
-  void *destroy_obj = NULL;
-  gpointer dwrite_font_face = NULL;
 
   g_return_val_if_fail (font != NULL, NULL);
 
-#ifdef HAVE_HARFBUZZ_DIRECT_WRITE
-  dwrite_font_face = pango_win32_font_get_dwrite_font_face (win32font);
+  hfont = _pango_win32_font_get_hfont (font);
 
-  if (dwrite_font_face != NULL)
-    {
-      face = pango_win32_dwrite_font_face_create_hb_face (dwrite_font_face);
-      destroy_func = pango_win32_dwrite_font_face_release;
-      destroy_obj = dwrite_font_face;
-    }
-#endif
-  if (face == NULL)
-    {
-      hfont = _pango_win32_font_get_hfont (font);
-
-#ifdef HAVE_HARFBUZZ_GDI
-      face = hb_gdi_face_create (hfont);
-#else
-      face = hb_face_create_for_tables (hfont_reference_table, (void *)hfont, NULL);
-#endif
-    }
+  /* We are *not* allowed to destroy the HFONT here ! */
+  face = hb_face_create_for_tables (hfont_reference_table, (void *)hfont, NULL);
 
   hb_font = hb_font_create (face);
   hb_font_set_scale (hb_font, win32font->size, win32font->size);
-
-  /* We are supposed to destroy the IDWriteFontFace, but *not* the HFONT! */
-  if (destroy_func != NULL && destroy_obj != NULL)
-    hb_font_set_user_data (hb_font, &key, destroy_obj, destroy_func, TRUE);
-
   hb_face_destroy (face);
 
   return hb_font;
