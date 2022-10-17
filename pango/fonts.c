@@ -1298,7 +1298,7 @@ parse_variations (const char  *word,
  *
  *     "Cantarell Italic Light 15 \@wght=200"
  *
- * Returns: (transfer full) a new `PangoFontDescription`.
+ * Returns: (transfer full): a new `PangoFontDescription`.
  */
 PangoFontDescription *
 pango_font_description_from_string (const char *str)

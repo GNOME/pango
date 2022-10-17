@@ -181,33 +181,6 @@ if host_machine.system() == 'linux'
   common_ldflags += cc.get_supported_link_arguments([ '-Wl,-Bsymbolic', '-Wl,-z,relro', '-Wl,-z,now', ])
 endif
 
-# Functions
-checked_funcs = [
-  'sysconf',
-  'getpagesize',
-  'flockfile',
-  'strtok_r',
-]
-
-foreach f: checked_funcs
-  if cc.has_function(f)
-    pango_conf.set('HAVE_' + f.underscorify().to_upper(), 1)
-  endif
-endforeach
-
-# Headers
-checked_headers = [
-  'unistd.h',
-  'sys/mman.h',
-  'dirent.h',
-]
-
-foreach h: checked_headers
-  if cc.has_header(h)
-    pango_conf.set('HAVE_' + h.underscorify().to_upper(), 1)
-  endif
-endforeach
-
 # Use debug/optimization flags to determine whether to enable debug or disable
 # cast checks
 pango_debug_cflags = []
