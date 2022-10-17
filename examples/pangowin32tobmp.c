@@ -31,7 +31,7 @@
 
 #include <errno.h>
 #include <string.h>
-#ifdef HAVE_UNISTD_H
+#ifndef G_OS_WIN32
 #include <unistd.h>
 #endif
 #include <stdio.h>
