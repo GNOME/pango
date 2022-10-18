@@ -251,24 +251,6 @@ harfbuzz_dep = dependency('harfbuzz',
                           fallback: ['harfbuzz', 'libharfbuzz_dep'],
                           default_options: ['coretext=enabled'])
 
-if host_system == 'windows'
-  if cpp.has_header_symbol(
-      'hb-directwrite.h',
-      'hb_directwrite_face_create',
-      dependencies: harfbuzz_dep,
-      prefix: '#include <dwrite.h>',
-    )
-    pango_conf.set('HAVE_HARFBUZZ_DIRECT_WRITE', 1)
-  endif
-  if cc.has_header_symbol(
-      'hb-gdi.h',
-      'hb_gdi_face_create',
-      dependencies: harfbuzz_dep,
-    )
-    pango_conf.set('HAVE_HARFBUZZ_GDI', 1)
-  endif
-endif
-
 pango_deps += harfbuzz_dep
 
 # If option is 'auto' or 'enabled' it is not required to find fontconfig on the

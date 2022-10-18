@@ -25,10 +25,6 @@
 #include <initguid.h>
 #include <dwrite_1.h>
 
-#ifdef HAVE_HARFBUZZ_DIRECT_WRITE
-#include <hb-directwrite.h>
-#endif
-
 #ifdef STRICT
 #undef STRICT
 #endif
@@ -562,14 +558,6 @@ pango_win32_dwrite_font_check_is_hinted (PangoWin32Font *font)
 
   return result;
 }
-
-#ifdef HAVE_HARFBUZZ_DIRECT_WRITE
-hb_face_t *
-pango_win32_dwrite_font_face_create_hb_face (gpointer face)
-{
-  return hb_directwrite_face_create ((IDWriteFontFace *)face);
-}
-#endif
 
 void
 pango_win32_dwrite_font_release (gpointer dwrite_font)
