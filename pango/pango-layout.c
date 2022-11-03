@@ -3466,7 +3466,13 @@ static void
 ensure_decimal (PangoLayout *layout)
 {
   if (layout->decimal == 0)
-    layout->decimal = g_utf8_get_char (localeconv ()->decimal_point);
+    {
+#ifndef __BIONIC__
+      layout->decimal = g_utf8_get_char (localeconv ()->decimal_point);
+#else
+      layout->decimal = g_utf8_get_char (".");
+#endif
+    }
 }
 
 struct _LastTabState {
