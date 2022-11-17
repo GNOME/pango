@@ -1091,8 +1091,8 @@ done:
  * The returned array is only valid as long as the font
  * and its fontmap are valid.
  *
- * Returns: (transfer none) (nullable): a %NULL-terminated
- *   array of `PangoLanguage`*
+ * Returns: (transfer none) (nullable) (array zero-terminated=1): a
+ *   %NULL-terminated array of `PangoLanguage`*
  *
  * Since: 1.48
  * Deprecated: 1.50: Use pango_font_get_language()

@@ -617,8 +617,7 @@ pango_language_get_sample_string (PangoLanguage *language)
 /**
  * pango_language_get_scripts:
  * @language: (nullable): a `PangoLanguage`
- * @num_scripts: (out caller-allocates) (optional): location to
- *   return number of scripts
+ * @num_scripts: (out) (optional): location to return number of scripts
  *
  * Determines the scripts used to to write @language.
  *
@@ -853,7 +852,7 @@ out:
  * you should first try the default language, followed by the
  * languages returned by this function.
  *
- * Returns: (transfer none) (nullable): a %NULL-terminated array
+ * Returns: (transfer none) (nullable) (array zero-terminated=1): a %NULL-terminated array
  *   of `PangoLanguage`*
  *
  * Since: 1.48
