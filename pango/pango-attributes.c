@@ -2644,7 +2644,11 @@ attr_print (GString        *str,
            attr->klass->type == PANGO_ATTR_FALLBACK)
     g_string_append (str, ((PangoAttrInt *)attr)->value ? " true" : " false");
   else if ((string = pango_attribute_as_string (attr)) != NULL)
-    g_string_append_printf (str, " %s", string->value);
+    {
+      char *s = g_strescape (string->value, NULL);
+      g_string_append_printf (str, " \"%s\"", s);
+      g_free (s);
+    }
   else if ((lang = pango_attribute_as_language (attr)) != NULL)
     g_string_append_printf (str, " %s", pango_language_to_string (lang->value));
   else if ((integer = pango_attribute_as_int (attr)) != NULL)
@@ -2658,7 +2662,9 @@ attr_print (GString        *str,
   else if ((font = pango_attribute_as_font_desc (attr)) != NULL)
     {
       char *s = pango_font_description_to_string (font->desc);
-      g_string_append_printf (str, " \"%s\"", s);
+      char *s2 = g_strescape (s, NULL);
+      g_string_append_printf (str, " \"%s\"", s2);
+      g_free (s2);
       g_free (s);
     }
   else if ((color = pango_attribute_as_color (attr)) != NULL)
@@ -2683,12 +2689,38 @@ attr_print (GString        *str,
  *
  * Serializes a `PangoAttrList` to a string.
  *
- * No guarantees are made about the format of the string,
- * it may change between Pango versions.
+ * In the resulting string, serialized attributes are separated by newlines or commas.
+ * Individual attributes are serialized to a string of the form
  *
- * The intended use of this function is testing and
- * debugging. The format is not meant as a permanent
- * storage format.
+ *   START END TYPE VALUE
+ *
+ * Where START and END are the indices (with -1 being accepted in place
+ * of MAXUINT), TYPE is the nickname of the attribute value type, e.g.
+ * _weight_ or _stretch_, and the value is serialized according to its type:
+ *
+ * - enum values as nick or numeric value
+ * - boolean values as _true_ or _false_
+ * - integers and floats as numbers
+ * - strings as string, optionally quoted
+ * - font features as quoted string
+ * - PangoLanguage as string
+ * - PangoFontDescription as serialized by [method@Pango.FontDescription.to_string], quoted
+ * - PangoColor as serialized by [method@Pango.Color.to_string]
+ *
+ * Examples:
+ *
+ * ```
+ * 0 10 foreground red, 5 15 weight bold, 0 200 font-desc "Sans 10"
+ * ```
+ *
+ * ```
+ * 0 -1 weight 700
+ * 0 100 family Times
+ * ```
+ *
+ * To parse the returned value, use [func@Pango.AttrList.from_string].
+ *
+ * Note that shape attributes can not be serialized.
  *
  * Returns: (transfer full): a newly allocated string
  * Since: 1.50
@@ -2807,6 +2839,7 @@ pango_attr_list_from_string (const char *text)
       PangoFontDescription *desc;
       PangoColor color;
       double num;
+      int len;
 
       start_index = g_ascii_strtoll (p, &endp, 10);
       if (*endp != ' ')
@@ -2852,7 +2885,10 @@ pango_attr_list_from_string (const char *text)
 
 #define ENUM_ATTR(name, type, min, max) \
           endp = (char *)p + strcspn (p, ",\n"); \
-          integer = get_attr_value (attr_type, p, endp - p); \
+          len = endp - p; \
+          while (len > 0 && p[len - 1] == ' ') \
+            len--; \
+          integer = get_attr_value (attr_type, p, len); \
           attr = pango_attr_##name##_new ((type) CLAMP (integer, min, max));
 
 #define FLOAT_ATTR(name) \
@@ -2890,7 +2926,22 @@ pango_attr_list_from_string (const char *text)
         case PANGO_ATTR_FAMILY:
           endp = (char *)p + strcspn (p, ",\n");
           if (!is_valid_end_char (*endp)) goto fail;
-          str = g_strndup (p, endp - p);
+          if (p[0] == '"')
+            {
+              char *str2;
+
+              len = endp - p;
+              while (len > 0 && p[len - 1] == ' ')
+                len--;
+
+              if (p[len - 1] != '"') goto fail;
+
+              str2 = g_strndup (p + 1, len - 2);
+              str = g_strcompress (str2);
+              g_free (str2);
+            }
+          else
+            str = g_strndup (p, endp - p);
           attr = pango_attr_family_new (str);
           g_free (str);
           break;
@@ -2916,6 +2967,7 @@ pango_attr_list_from_string (const char *text)
           break;
 
         case PANGO_ATTR_FONT_DESC:
+          if (*p != '"') goto fail;
           p++;
           endp = strchr (p, '"');
           if (!endp) goto fail;

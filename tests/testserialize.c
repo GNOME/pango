@@ -30,6 +30,11 @@ test_serialize_attr_list (void)
 {
   const char *valid[] = {
     "5 16 style italic",
+    "    5     16     style      italic     ",
+    "0 -1 language    de    ",
+    "0 1 family    Times",
+    "0 1 family    \"Times\"    ",
+    "0 1 family    \"Times\\n\\\"New\\\" Roman\"    ",
     "0 10 foreground red, 5 15 weight bold, 0 200 font-desc \"Sans Small-Caps 10\"",
     "0 10 foreground red\n5 15 weight bold\n0 200 font-desc \"Sans Small-Caps 10\"",
     "  0   10   fallback  false,\n 5 15 weight semilight\n\n \n \n",
@@ -37,18 +42,23 @@ test_serialize_attr_list (void)
     "0 -1 size 10",
     "0 1 weight 700, 2 4 weight book",
     "0 200 rise 100\n5 15 family Times\n10 11 size 10240\n11 100 fallback 0\n30 60 stretch 2\n",
-    ""
+    "",
   };
   const char *roundtripped[] = {
     "5 16 style italic",
+    "5 16 style italic",
+    "0 4294967295 language de",
+    "0 1 family \"Times\"",
+    "0 1 family \"Times\"",
+    "0 1 family \"Times\\n\\\"New\\\" Roman\"",
     "0 10 foreground #ffff00000000\n5 15 weight bold\n0 200 font-desc \"Sans Small-Caps 10\"",
     "0 10 foreground #ffff00000000\n5 15 weight bold\n0 200 font-desc \"Sans Small-Caps 10\"",
     "0 10 fallback false\n5 15 weight semilight",
     "0 100 font-desc \"Cantarell,Sans Ultra-Light Italic 64\"\n10 11 weight thin",
     "0 4294967295 size 10",
     "0 1 weight bold\n2 4 weight book",
-    "0 200 rise 100\n5 15 family Times\n10 11 size 10240\n11 100 fallback false\n30 60 stretch condensed",
-    ""
+    "0 200 rise 100\n5 15 family \"Times\"\n10 11 size 10240\n11 100 fallback false\n30 60 stretch condensed",
+    "",
   };
   const char *invalid[] = {
     "not an attr list",
