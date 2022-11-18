@@ -1495,13 +1495,14 @@ handle_variants (const char   *text,
 
 static GList *
 reorder_items (PangoContext *context,
-               GList        *items)
+               GList        *items,
+               int           initial_offset)
 {
-  int char_offset = 0;
+  int char_offset = initial_offset;
 
   items = g_list_reverse (items);
 
-  /* Also cmpute the char offset for each item here */
+  /* Also compute the char offset for each item here */
   for (GList *l = items; l; l = l->next)
     {
       PangoItemPrivate *item = l->data;
@@ -1544,6 +1545,7 @@ pango_itemize_with_font (PangoContext               *context,
                          const PangoFontDescription *desc)
 {
   ItemizeState state;
+  int initial_offset;
 
   g_return_val_if_fail (context->font_map != NULL, NULL);
 
@@ -1559,7 +1561,9 @@ pango_itemize_with_font (PangoContext               *context,
 
   itemize_state_finish (&state);
 
-  return reorder_items (context, state.result);
+  initial_offset = g_utf8_strlen (text, start_index);
+
+  return reorder_items (context, state.result, initial_offset);
 }
 
 /* Apply post-processing steps that may require log attrs.
