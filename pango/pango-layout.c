@@ -4913,7 +4913,7 @@ pango_layout_check_lines (PangoLayout *layout)
 
       state.items = pango_itemize_post_process_items (layout->context,
                                                       layout->text,
-                                                      layout->log_attrs + start_offset,
+                                                      layout->log_attrs,
                                                       state.items);
 
       state.base_dir = base_dir;
