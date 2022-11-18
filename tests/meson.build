@@ -250,6 +250,10 @@ foreach d: test_items_data
   installed_test_items_data += d + '.expected'
 endforeach
 
+installed_test_nofonts_data = [
+  'nofonts/fonts.conf',
+]
+
 installed_test_datadir = join_paths(pango_datadir, 'installed-tests', 'pango')
 installed_test_bindir = join_paths(pango_libexecdir, 'installed-tests', 'pango')
 
@@ -261,6 +265,7 @@ if get_option('install-tests')
   install_data(installed_test_breaks_data, install_dir: join_paths(installed_test_bindir, 'breaks'))
   install_data(installed_test_items_data, install_dir: join_paths(installed_test_bindir, 'itemize'))
   install_data(installed_test_fontsets_data, install_dir: join_paths(installed_test_bindir, 'fontsets'))
+  install_data(installed_test_nofonts_data, install_dir: join_paths(installed_test_bindir, 'nofonts'))
 endif
 
 gen_installed_test = files([ 'gen-installed-test.py' ])
