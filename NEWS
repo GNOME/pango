@@ -1,5 +1,11 @@
 Overview of changes in 1.50.12, xx-xx-xxxx
 ==========================================
+- Fix weight conversion on MacOS
+- Update to Unicode 15
+- Some introspection annotation fixes
+- Improve PangoAttrList serialization
+- Fix char offset calculatiosn in multi-paragraph
+  layouts
 
 Overview of changes in 1.50.11, 03-10-2022
 ==========================================
