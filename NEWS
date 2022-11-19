@@ -1,4 +1,7 @@
-Overview of changes in 1.50.12, xx-xx-xxxx
+Overview of changes in 1.50.13, xx-xx-xxxx
+==========================================
+
+Overview of changes in 1.50.12, 18-11-2022
 ==========================================
 - Fix weight conversion on MacOS
 - Update to Unicode 15
