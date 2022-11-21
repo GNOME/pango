@@ -1363,7 +1363,7 @@ pango_layout_set_markup (PangoLayout *layout,
  * @length: length of marked-up text in bytes, or -1 if @markup is
  *   `NUL`-terminated
  * @accel_marker: marker for accelerators in the text
- * @accel_char: (out caller-allocates) (optional): return location
+ * @accel_char: (out) (optional): return location
  *   for first located accelerator
  *
  * Sets the layout text and attribute list from marked-up text.
