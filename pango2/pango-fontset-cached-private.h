@@ -40,7 +40,7 @@ struct _Pango2FontsetCached
   Pango2Language *language;
   Pango2FontDescription *description;
   float dpi;
-  const Pango2Matrix *ctm;
+  Pango2Matrix *ctm;
   GList cache_link;
   GHashTable *cache;
 

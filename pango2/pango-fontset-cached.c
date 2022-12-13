@@ -59,6 +59,8 @@ pango2_fontset_cached_finalize (GObject *object)
   if (self->font_options)
     cairo_font_options_destroy (self->font_options);
 #endif
+  if (self->ctm)
+    pango2_matrix_free (self->ctm);
 
   G_OBJECT_CLASS (pango2_fontset_cached_parent_class)->finalize (object);
 }
@@ -288,7 +290,7 @@ pango2_fontset_cached_new (const Pango2FontDescription *description,
   self->language = language;
   self->description = pango2_font_description_copy (description);
   self->dpi = dpi;
-  self->ctm = ctm;
+  self->ctm = pango2_matrix_copy (ctm);
 
   return self;
 }

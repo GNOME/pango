@@ -557,7 +557,7 @@ pango2_font_map_default_load_fontset (Pango2FontMap               *self,
 
   lookup.language = language;
   lookup.description = (Pango2FontDescription *)description;
-  lookup.ctm = ctm;
+  lookup.ctm = (Pango2Matrix *)ctm;
 
 #ifdef HAVE_CAIRO
   lookup.font_options = (cairo_font_options_t *)pango2_cairo_context_get_merged_font_options (context);
