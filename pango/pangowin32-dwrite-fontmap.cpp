@@ -23,7 +23,7 @@
 #include "config.h"
 
 #include <initguid.h>
-#include <dwrite_1.h>
+#include <dwrite_2.h>
 
 #ifdef STRICT
 #undef STRICT
@@ -33,15 +33,19 @@
 #ifdef _MSC_VER
 # define UUID_OF_IDWriteFactory __uuidof (IDWriteFactory)
 # define UUID_OF_IDWriteFont1 __uuidof (IDWriteFont1)
+# define UUID_OF_IDWriteTextAnalyzer2 __uuidof (IDWriteTextAnalyzer2)
 #else
 # define UUID_OF_IDWriteFactory IID_IDWriteFactory
 # define UUID_OF_IDWriteFont1 IID_IDWriteFont1
+# define UUID_OF_IDWriteTextAnalyzer2 IID_IDWriteTextAnalyzer2
 #endif
 
 struct _PangoWin32DWriteItems
 {
-  IDWriteFactory    *dwrite_factory;
-  IDWriteGdiInterop *gdi_interop;
+  IDWriteFactory       *dwrite_factory;
+  IDWriteGdiInterop    *gdi_interop;
+  IDWriteTextAnalyzer  *text_analyzer;
+  IDWriteTextAnalyzer2 *text_analyzer2;
 };
 
 PangoWin32DWriteItems *
@@ -64,6 +68,33 @@ pango_win32_init_direct_write (void)
           dwrite_items->dwrite_factory->Release ();
           failed = TRUE;
         }
+
+      /*
+       * Set up the IDWriteTextAnalyzer2 interface for our DirectWrite instance, and
+       * make it ready for use if it is available.  If it's not available, we have a
+       * reduced feature set, i.e. what we support currently.
+       */
+      if (!failed)
+        {
+           IDWriteTextAnalyzer *text_analyzer;
+           IDWriteTextAnalyzer2 *text_analyzer2;
+
+           hr = dwrite_items->dwrite_factory->CreateTextAnalyzer(&text_analyzer);
+           if (SUCCEEDED (hr) && text_analyzer != NULL)
+             {
+               if (SUCCEEDED (text_analyzer->QueryInterface(UUID_OF_IDWriteTextAnalyzer2,
+                                                            reinterpret_cast<void**>(&text_analyzer2))))
+                 {
+                   if (text_analyzer2 != NULL)
+                     {
+                       dwrite_items->text_analyzer = text_analyzer;
+                       dwrite_items->text_analyzer2 = text_analyzer2;
+                     }
+                 }
+               else
+                 text_analyzer->Release ();
+             }
+        }
     }
   else
     {
@@ -81,6 +112,12 @@ pango_win32_init_direct_write (void)
 void
 pango_win32_dwrite_items_destroy (PangoWin32DWriteItems *dwrite_items)
 {
+  if (dwrite_items->text_analyzer2 != NULL)
+    {
+      dwrite_items->text_analyzer2->Release ();
+      dwrite_items->text_analyzer->Release ();
+    }
+
   dwrite_items->gdi_interop->Release ();
   dwrite_items->dwrite_factory->Release ();
 
