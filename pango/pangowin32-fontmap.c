@@ -193,7 +193,10 @@ pango_win32_inner_enum_proc (LOGFONTW    *lfp,
    * Asian fonts with @ prepended to their name, ignore them.
    */
   if (lfp->lfFaceName[0] != '@')
-    pango_win32_insert_font (win32fontmap, lfp, NULL, FALSE);
+    {
+      gpointer dwrite_font = pango_win32_logfontw_get_dwrite_font (lfp);
+      pango_win32_insert_font (win32fontmap, lfp, dwrite_font, FALSE);
+    }
 
   return 1;
 }
@@ -212,17 +215,24 @@ pango_win32_enum_proc (LOGFONTW       *lfp,
 {
   LOGFONTW lf;
   struct EnumProcData *data = (struct EnumProcData *) lParam;
+  PangoWin32FontMap *map = data->font_map;
 
   PING (("%S: %lu %lx", lfp->lfFaceName, fontType, metrics->ntmFlags));
 
-  /* Do not enum Type-1 fonts */
-  if (fontType == TRUETYPE_FONTTYPE || metrics->ntmFlags & NTM_PS_OPENTYPE)
+  /* Do not enum Type-1 fonts, and ignore any fonts in the system font
+   * collection that was previously picked up by DirectWrite
+   * (IDWriteFactory->GetSystemFontCollection() via
+   * pango_win32_dwrite_font_map_populate())
+   */
+
+  if (!g_hash_table_lookup (map->fonts, lfp) &&
+      (fontType == TRUETYPE_FONTTYPE || metrics->ntmFlags & NTM_PS_OPENTYPE))
     {
       lf = *lfp;
 
       EnumFontFamiliesExW (data->hdc, &lf,
                            (FONTENUMPROCW) pango_win32_inner_enum_proc,
-                           (LPARAM) data->font_map, 0);
+                           (LPARAM) map, 0);
     }
 
   return 1;
@@ -720,7 +730,6 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 
   pango_win32_dwrite_font_map_populate (win32fontmap);
 
-#if 0 /* XXX: Implement fallback mode to GDI? */
   memset (&logfont, 0, sizeof (logfont));
   logfont.lfCharSet = DEFAULT_CHARSET;
 
@@ -730,7 +739,6 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
   EnumFontFamiliesExW (hdc, &logfont,
                        (FONTENUMPROCW) pango_win32_enum_proc,
                        (LPARAM) &enum_proc_data, 0);
-#endif
 
   g_hash_table_foreach (win32fontmap->families, synthesize_foreach, win32fontmap);
 

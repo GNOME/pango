@@ -208,8 +208,12 @@ pango_win32_logfontw_get_dwrite_font (LOGFONTW *logfontw)
   hr = dwrite_items->gdi_interop->CreateFontFromLOGFONT (logfontw, &font);
 
   if (FAILED (hr) || font == NULL)
-    g_warning ("IDWriteFactory::GdiInterop::CreateFontFromLOGFONT failed with error %x\n",
-               (unsigned)hr);
+    {
+      g_warning ("IDWriteFactory::GdiInterop::CreateFontFromLOGFONT failed with error %x\n",
+                 (unsigned)hr);
+      if (hr == DWRITE_E_NOFONT)
+        g_message ("Did you create your LOGFONTW using AddFontResource() instead of AddFontResourceEx()?");
+    }
 
   return font;
 }
