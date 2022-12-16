@@ -424,7 +424,7 @@ pango_win32_font_description_from_logfontw_dwrite (const LOGFONTW *logfontw)
   PangoStretch stretch;
   PangoWin32DWriteItems *dwrite_items;
 
-  dwrite_items = pango_win32_init_direct_write ();
+  dwrite_items = pango_win32_get_direct_write_items ();
   if (dwrite_items == NULL)
     return NULL;
 
