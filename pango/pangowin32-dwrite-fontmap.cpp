@@ -379,13 +379,115 @@ util_to_pango_weight (DWRITE_FONT_WEIGHT weight)
   return (PangoWeight) util_map_weight (weight);
 }
 
+/* macros to help parse the font feature tables, referring to FreeType2 */
+#define DWRITE_UCHAR_ULONG( p, i, s )  ((UINT32)( ((const unsigned char *)(p))[(i)] ) << (s) )
+
+#define DWRITE_PEEK_ULONG( p )  (UINT32)( DWRITE_UCHAR_ULONG( p, 0, 24 ) | \
+                                          DWRITE_UCHAR_ULONG( p, 1, 16 ) | \
+                                          DWRITE_UCHAR_ULONG( p, 2,  8 ) | \
+                                          DWRITE_UCHAR_ULONG( p, 3,  0 ) )
+
+#define DWRITE_NEXT_ULONG( buffer ) ( (unsigned long)( buffer += 4, DWRITE_PEEK_ULONG( buffer - 4 ) ) )
+
+gboolean
+pango_win32_dwrite_font_face_check_feature_enabled (IDWriteFontFace *face,
+                                                    UINT32           dwrite_feature_tag)
+{
+  UINT32 table_size;
+  const unsigned int *table_data;
+  void *table_ctx;
+  gboolean exists;
+  gboolean result;
+
+  if (SUCCEEDED (face->TryGetFontTable (dwrite_feature_tag,
+                                        (const void **)(&table_data),
+                                       &table_size,
+                                       &table_ctx,
+                                       &exists)) && exists)
+    {
+      result = (DWRITE_NEXT_ULONG (table_data) != 0);
+      face->ReleaseFontTable (table_ctx);
+    }
+
+  return result;
+}
+
+#define MAX_NUM_FEATURES 255
+
 static PangoVariant
 util_to_pango_variant (IDWriteFont *font)
 {
   PangoVariant variant = PANGO_VARIANT_NORMAL;
+  PangoWin32DWriteItems *items = pango_win32_get_direct_write_items ();
+
+  if (items->text_analyzer2 != NULL)
+    {
+      const DWRITE_SCRIPT_SHAPES default_script_shapes = DWRITE_SCRIPT_SHAPES_DEFAULT;
+      const DWRITE_SCRIPT_ANALYSIS analysis = {0, default_script_shapes};
+      IDWriteFontFace *face = _pango_win32_get_dwrite_font_face_from_dwrite_font (font);
+      unsigned int num_features, i;
+      DWRITE_FONT_FEATURE_TAG tags[MAX_NUM_FEATURES];
+      gboolean all_caps = FALSE;
+	  HRESULT hr;
+
+      hr = items->text_analyzer2->GetTypographicFeatures (face,
+                                                          analysis,
+                                                          NULL,
+                                                          MAX_NUM_FEATURES,
+                                                         &num_features,
+                                                          tags);
+      if (SUCCEEDED (hr))
+        {
+          for (i = 0; i < num_features; i ++)
+            {
+              if (tags[i] == DWRITE_FONT_FEATURE_TAG_SMALL_CAPITALS ||
+                  tags[i] == DWRITE_FONT_FEATURE_TAG_SMALL_CAPITALS_FROM_CAPITALS ||
+                  tags[i] == DWRITE_FONT_FEATURE_TAG_PETITE_CAPITALS ||
+                  tags[i] == DWRITE_FONT_FEATURE_TAG_PETITE_CAPITALS_FROM_CAPITALS ||
+                  tags[i] == DWRITE_FONT_FEATURE_TAG_UNICASE ||
+                  tags[i] == DWRITE_FONT_FEATURE_TAG_TITLING)
+                {
+                  gboolean enabled = pango_win32_dwrite_font_face_check_feature_enabled (face, tags[i]);
+
+                  if (enabled)
+                    {
+                      switch (tags[i])
+                        {
+                          case DWRITE_FONT_FEATURE_TAG_SMALL_CAPITALS:
+                            variant = all_caps ? PANGO_VARIANT_ALL_SMALL_CAPS : PANGO_VARIANT_SMALL_CAPS;
+                            break;
+                          case DWRITE_FONT_FEATURE_TAG_SMALL_CAPITALS_FROM_CAPITALS:
+                            if (variant == PANGO_VARIANT_SMALL_CAPS)
+                              variant = PANGO_VARIANT_ALL_SMALL_CAPS;
+                            else
+                              all_caps = TRUE;
+                            break;
+                          case DWRITE_FONT_FEATURE_TAG_PETITE_CAPITALS:
+                            variant = all_caps ? PANGO_VARIANT_ALL_PETITE_CAPS : PANGO_VARIANT_PETITE_CAPS;
+                            break;
+                          case DWRITE_FONT_FEATURE_TAG_PETITE_CAPITALS_FROM_CAPITALS:
+                            if (variant == PANGO_VARIANT_PETITE_CAPS)
+                              variant = PANGO_VARIANT_ALL_PETITE_CAPS;
+                            else
+                              all_caps = TRUE;
+                            break;
+                          case DWRITE_FONT_FEATURE_TAG_UNICASE:
+                            variant = PANGO_VARIANT_UNICASE;
+                            break;
+                          case DWRITE_FONT_FEATURE_TAG_TITLING:
+                            variant = PANGO_VARIANT_TITLE_CAPS;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
 
   return variant;
 }
+
+#undef MAX_NUM_FEATURES
 
 static PangoFontDescription*
 util_get_pango_font_description (IDWriteFont *font,
