@@ -1960,11 +1960,10 @@ pango_win32_font_map_load_fontset (PangoFontMap                 *fontmap,
                                    const PangoFontDescription   *desc,
                                    PangoLanguage                *language)
 {
-  /* This "adds" a load_fontset() for the Win32 backend */
-  /* which is needed to make sure we use an appropriate */
-  /* font for various texts when we are on Windows */
-  /* (Copied directly from pango-fontmap.c) */
-  PangoFontDescription *tmp_desc = pango_font_description_copy_static (desc);
+  const unsigned int MAX_WARNED_FONTS_CACHE = 50;
+  static GHashTable *warned_fonts = NULL; /* MT-safe */
+  G_LOCK_DEFINE_STATIC (warned_fonts);
+  PangoFontDescription *tmp_desc;
   const char *family;
   char **families;
   int i;
@@ -1974,6 +1973,8 @@ pango_win32_font_map_load_fontset (PangoFontMap                 *fontmap,
 
   family = pango_font_description_get_family (desc);
   families = g_strsplit (family ? family : "", ",", -1);
+
+  tmp_desc = pango_font_description_copy_static (desc);
 
   fonts = pango_fontset_simple_new (language);
 
@@ -1986,7 +1987,88 @@ pango_win32_font_map_load_fontset (PangoFontMap                 *fontmap,
 
   g_strfreev (families);
 
+  if (!warned_fonts)
+    warned_fonts = g_hash_table_new (g_str_hash, g_str_equal);
+
+  /* The font description was completely unloadable, try with
+   * family == "Sans"
+   */
+  if (pango_fontset_simple_size (fonts) == 0)
+    {
+      char *ctmp1, *ctmp2;
+
+      pango_font_description_set_family_static (tmp_desc,
+                                                pango_font_description_get_family (desc));
+
+      ctmp1 = pango_font_description_to_string (desc);
+      pango_font_description_set_family_static (tmp_desc, "Sans");
+
+      G_LOCK (warned_fonts);
+      if (!g_hash_table_lookup (warned_fonts, ctmp1))
+        {
+          if (g_hash_table_size (warned_fonts) >= MAX_WARNED_FONTS_CACHE)
+            g_hash_table_remove_all (warned_fonts);
+
+          g_hash_table_insert (warned_fonts, g_strdup (ctmp1), GINT_TO_POINTER (1));
+
+          ctmp2 = pango_font_description_to_string (tmp_desc);
+          g_warning ("couldn't load font \"%s\", falling back to \"%s\", "
+                     "expect ugly output.", ctmp1, ctmp2);
+          g_free (ctmp2);
+        }
+      G_UNLOCK (warned_fonts);
+      g_free (ctmp1);
+
+      pango_win32_font_map_fontset_add_fonts (fontmap,
+                                              context,
+                                              fonts,
+                                              tmp_desc,
+                                              "Sans");
+    }
+
+  /* We couldn't try with Sans and the specified style. Try Sans Normal */
+  if (pango_fontset_simple_size (fonts) == 0)
+    {
+      char *ctmp1, *ctmp2;
+
+      pango_font_description_set_family_static (tmp_desc, "Sans");
+      ctmp1 = pango_font_description_to_string (tmp_desc);
+      pango_font_description_set_style (tmp_desc, PANGO_STYLE_NORMAL);
+      pango_font_description_set_weight (tmp_desc, PANGO_WEIGHT_NORMAL);
+      pango_font_description_set_variant (tmp_desc, PANGO_VARIANT_NORMAL);
+      pango_font_description_set_stretch (tmp_desc, PANGO_STRETCH_NORMAL);
+
+      G_LOCK (warned_fonts);
+      if (!g_hash_table_lookup (warned_fonts, ctmp1))
+        {
+          if (g_hash_table_size (warned_fonts) >= MAX_WARNED_FONTS_CACHE)
+            g_hash_table_remove_all (warned_fonts);
+
+          g_hash_table_insert (warned_fonts, g_strdup (ctmp1), GINT_TO_POINTER (1));
+
+          ctmp2 = pango_font_description_to_string (tmp_desc);
+
+          g_warning ("couldn't load font \"%s\", falling back to \"%s\", "
+                     "expect ugly output.", ctmp1, ctmp2);
+          g_free (ctmp2);
+        }
+      G_UNLOCK (warned_fonts);
+      g_free (ctmp1);
+
+      pango_win32_font_map_fontset_add_fonts (fontmap,
+                                              context,
+                                              fonts,
+                                              tmp_desc,
+                                              "Sans");
+    }
+
   pango_font_description_free (tmp_desc);
+
+  /* Everything failed, we are screwed, there is no way to continue,
+   * but lets just not crash here.
+   */
+  if (pango_fontset_simple_size (fonts) == 0)
+      g_warning ("All font fallbacks failed!!!!");
 
   return PANGO_FONTSET (fonts);
 }
