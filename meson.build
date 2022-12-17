@@ -263,9 +263,7 @@ if not fontconfig_option.disabled() or fontconfig_required
 endif
 
 fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version, required: fontconfig_option)
-if fontconfig_dep.found()
-  fontconfig_pc = 'fontconfig'
-else
+if not fontconfig_dep.found()
   if cc.get_id() == 'msvc' and cc.has_header('fontconfig/fontconfig.h')
     # Look for the Visual Studio-style import library if FontConfig's .pc file cannot be
     # found on Visual Studio
@@ -283,6 +281,10 @@ if not fontconfig_dep.found()
 endif
 
 if fontconfig_dep.found()
+  if fontconfig_dep.type_name() in ['pkgconfig', 'internal']
+    fontconfig_pc = 'fontconfig'
+  endif
+
   pango_deps += fontconfig_dep
 
   if fontconfig_dep.type_name() != 'library'
@@ -319,7 +321,7 @@ freetype_dep = dependency(freetype_package_name,
                           required: freetype_option,
                           fallback: ['freetype2', 'freetype_dep'])
 
-if freetype_dep.found() and freetype_dep.type_name() == 'pkgconfig'
+if freetype_dep.found() and freetype_dep.type_name() in ['pkgconfig', 'internal']
   freetype2_pc = 'freetype2'
 endif
 
@@ -389,7 +391,7 @@ endif
 pango_font_backends = []
 pango_cairo_backends = []
 
-if ['pkgconfig', 'internal'].contains(cairo_found_type)
+if cairo_found_type in ['pkgconfig', 'internal']
   # Check the following Cairo font backends
   # - dependency
   # - version
