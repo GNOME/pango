@@ -212,16 +212,12 @@ mathlib_dep = cc.find_library('m', required: false)
 pango_deps += mathlib_dep
 
 # gobject
-glib_dep = dependency('glib-2.0', version: glib_req_version,
-                      fallback: ['glib', 'libglib_dep'])
-gobject_dep = dependency('gobject-2.0', version: glib_req_version,
-                         fallback: ['glib', 'libgobject_dep'])
-gio_dep = dependency('gio-2.0', version: glib_req_version,
-                         fallback: ['glib', 'libgio_dep'])
+glib_dep = dependency('glib-2.0', version: glib_req_version)
+gobject_dep = dependency('gobject-2.0', version: glib_req_version)
+gio_dep = dependency('gio-2.0', version: glib_req_version)
 pango_deps += [glib_dep, gobject_dep, gio_dep]
 
 fribidi_dep = dependency('fribidi', version: fribidi_req_version,
-                         fallback: ['fribidi', 'libfribidi_dep'],
                          default_options: ['docs=false'])
 pango_deps += fribidi_dep
 
@@ -247,8 +243,6 @@ fontconfig_pc=''
 
 harfbuzz_dep = dependency('harfbuzz',
                           version: harfbuzz_req_version,
-                          required: true,
-                          fallback: ['harfbuzz', 'libharfbuzz_dep'],
                           default_options: ['coretext=enabled'])
 
 pango_deps += harfbuzz_dep
@@ -262,7 +256,9 @@ if not fontconfig_option.disabled() or fontconfig_required
   fontconfig_option = false
 endif
 
-fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version, required: fontconfig_option)
+# Try pkgconfig and cmake, no fallback
+fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version,
+                            required: fontconfig_option, allow_fallback: false)
 if not fontconfig_dep.found()
   if cc.get_id() == 'msvc' and cc.has_header('fontconfig/fontconfig.h')
     # Look for the Visual Studio-style import library if FontConfig's .pc file cannot be
@@ -276,7 +272,7 @@ endif
 fontconfig_option = fontconfig_required ? true : get_option('fontconfig')
 if not fontconfig_dep.found()
   fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version,
-                              fallback: ['fontconfig', 'fontconfig_dep'],
+                              allow_fallback: true,
                               required: fontconfig_option)
 endif
 
@@ -315,8 +311,7 @@ endif
 # The first version of freetype with a pkg-config file is 2.1.5,
 # CMake uses 'freetype' rather than 'freetype2' for the package name
 freetype_dep = dependency('freetype2', 'freetype',
-                          required: freetype_option,
-                          fallback: ['freetype2', 'freetype_dep'])
+                          required: freetype_option)
 
 if freetype_dep.found() and freetype_dep.type_name() in ['pkgconfig', 'internal']
   freetype2_pc = 'freetype2'
@@ -381,7 +376,7 @@ endif
 # in a declarative way
 if not cairo_dep.found()
   cairo_dep = dependency('cairo', version: cairo_req_version,
-                         fallback: ['cairo', 'libcairo_dep'], required: get_option('cairo'))
+                         required: get_option('cairo'))
   cairo_found_type = cairo_dep.type_name()
 endif
 
@@ -559,14 +554,9 @@ libsysprof_capture_dep = dependency('sysprof-capture-4',
     'with_sysprofd=none',
     'help=false',
   ],
-  fallback: ['sysprof', 'libsysprof_capture_dep'],
 )
 pango_conf.set('HAVE_SYSPROF', libsysprof_capture_dep.found())
 pango_deps += libsysprof_capture_dep
-
-gidocgen_dep = dependency('gi-docgen', version: '>= 2021.1',
-                          fallback: ['gi-docgen', 'dummy_dep'],
-                          required: get_option('gtk_doc'))
 
 gnome = import('gnome')
 pkgconfig = import('pkgconfig')
