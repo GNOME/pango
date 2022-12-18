@@ -8,7 +8,7 @@ project('pango', 'c', 'cpp',
           # https://github.com/mesonbuild/meson/issues/2289
           'c_std=gnu99',
         ],
-        meson_version : '>= 0.55.3')
+        meson_version : '>= 0.60.0')
 
 add_project_arguments([ '-D_POSIX_C_SOURCE=200809L', '-D_POSIX_THREAD_SAFE_FUNCTIONS', '-D_GNU_SOURCE', ], language: 'c')
 
@@ -314,10 +314,7 @@ endif
 
 # The first version of freetype with a pkg-config file is 2.1.5,
 # CMake uses 'freetype' rather than 'freetype2' for the package name
-freetype_package_name = cc.get_argument_syntax() == 'msvc' ? \
-                        'freetype' : 'freetype2'
-
-freetype_dep = dependency(freetype_package_name,
+freetype_dep = dependency('freetype2', 'freetype',
                           required: freetype_option,
                           fallback: ['freetype2', 'freetype_dep'])
 
