@@ -573,7 +573,7 @@ if cairo_dep.found()
 
   # Create pangocairo.pc according to whether we found Cairo
   # manually
-  if ['pkgconfig', 'internal'].contains(cairo_found_type)
+  if cairo_found_type in ['pkgconfig', 'internal']
     pango_cairo_requires = [ 'pango', cairo_pc ]
   else
     pango_cairo_requires = [ 'pango' ]
