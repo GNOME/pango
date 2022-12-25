@@ -162,6 +162,7 @@ _pango2_cairo_font_private_get_scaled_font (Pango2CairoFontPrivate *cf_priv,
     goto done;
 
 #ifdef CAIRO_COLOR_PALETTE_DEFAULT
+  printf ("set palette %u\n", find_palette_index_for_font (cf_priv->cfont, palette));
   cairo_font_options_set_color_palette (options,
                                         find_palette_index_for_font (cf_priv->cfont, palette));
 #endif
