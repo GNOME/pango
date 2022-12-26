@@ -25,6 +25,7 @@
 #include <string.h>
 
 #include <hb-ot.h>
+#include <hb-cairo.h>
 
 #include "pangocairo.h"
 #include "pangocairo-private.h"
@@ -36,6 +37,7 @@
 #include "pango-userfont-private.h"
 #include "pango-userface-private.h"
 #include "pango-font-private.h"
+
 
 static Pango2CairoFontPrivate * _pango2_font_get_cairo_font_private (Pango2Font *font);
 static cairo_scaled_font_t * _pango2_font_get_scaled_font (Pango2Font *font,
@@ -69,37 +71,13 @@ _pango2_cairo_font_private_scaled_font_data_destroy (Pango2CairoFontPrivateScale
 static cairo_font_face_t *
 create_cairo_font_face (Pango2Font *font)
 {
-  cairo_font_face_t *cairo_face;
-
   if (PANGO2_IS_USER_FONT (font))
     return create_cairo_user_font_face (font);
-
-#if 0
-/*
- * XXX: Acquiring the cairo_face_t via native CoreText/DirectWrite
- *      disabled for now until https://github.com/harfbuzz/harfbuzz/issues/3683
- *      is resolved.  Currently, only using cairo-ft is supported.
- */
-#ifdef HAVE_CORE_TEXT
-  cairo_face = create_cairo_core_text_font_face (font);
-  if (cairo_face)
-    return cairo_face;
-#endif
-
-#ifdef HAVE_DIRECT_WRITE
-  cairo_face = create_cairo_dwrite_font_face (font);
-  if (cairo_face)
-    return cairo_face;
-#endif
-#endif
-
-#ifdef CAIRO_HAS_FT_FONT
-  cairo_face = create_cairo_ft_font_face (font);
-  if (cairo_face)
-    return cairo_face;
-#endif
-
-  return NULL;
+  else
+    {
+      hb_font_t *hbfont = pango2_font_get_hb_font (font);
+      return hb_cairo_font_face_create_for_font (hbfont);
+    }
 }
 
 #ifdef CAIRO_COLOR_PALETTE_DEFAULT
@@ -162,7 +140,7 @@ _pango2_cairo_font_private_get_scaled_font (Pango2CairoFontPrivate *cf_priv,
     goto done;
 
 #ifdef CAIRO_COLOR_PALETTE_DEFAULT
-  printf ("set palette %u\n", find_palette_index_for_font (cf_priv->cfont, palette));
+  cairo_font_options_set_color_mode (options, CAIRO_COLOR_MODE_COLOR);
   cairo_font_options_set_color_palette (options,
                                         find_palette_index_for_font (cf_priv->cfont, palette));
 #endif

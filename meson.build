@@ -285,8 +285,12 @@ harfbuzz_gobj_dep = dependency('harfbuzz-gobject',
                                version: harfbuzz_req_version,
                                required: true,
                                fallback: ['harfbuzz', 'libharfbuzz_gobject_dep'])
+harfbuzz_cairo_dep = dependency('harfbuzz-cairo',
+                                version: harfbuzz_req_version,
+                                required: true,
+                                fallback: ['harfbuzz', 'libharfbuzz_cairo_dep'])
 
-pango_deps += [ harfbuzz_dep, harfbuzz_gobj_dep]
+pango_deps += [ harfbuzz_dep, harfbuzz_gobj_dep, harfbuzz_cairo_dep ]
 
 if host_system == 'linux'
   fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version, required: true)
