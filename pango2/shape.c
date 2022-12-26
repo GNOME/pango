@@ -312,6 +312,10 @@ glyph_has_color (hb_font_t      *font,
   if (hb_ot_color_glyph_get_layers (face, glyph, 0, NULL, NULL) > 0)
     return TRUE;
 
+  /* FIXME: get per-glyph info */
+  if (hb_ot_color_has_paint (face))
+    return TRUE;
+
   if (hb_ot_color_has_png (face))
     {
       blob = hb_ot_color_glyph_reference_png (font, glyph);
