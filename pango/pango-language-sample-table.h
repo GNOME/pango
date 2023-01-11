@@ -76,6 +76,12 @@ LANGUAGE(
 	 /* Tale under the full moon: the chief chemamull and the clay old woman at the lake/sea. */
 	)
 LANGUAGE(
+	 as	/* Assamese */,
+	 WP,
+	 "সুপ্ৰভাত আপোনাক লগ পাই ভাল লাগিল।"
+	 /* Good morning, nice to meet you. */
+	)
+LANGUAGE(
 	 bar	/* Bavarian */,
 	 GLASS,
 	 "I koh Glos esa, und es duard ma ned wei."
@@ -146,6 +152,12 @@ LANGUAGE(
 	 WP-SFD,
 	 "Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich."
 	 /* Twelve boxing fighters drive Viktor over the great. */
+	)
+LANGUAGE(
+	 doi	/* Dogri */,
+	 WP,
+	 "अ'ऊं बमार आँ, मिगी डॉक्टर दी लोड़ ऐ।"
+	 /* I'm sick, I need a doctor. */
 	)
 LANGUAGE(
          dv     /* Maldivian */,
@@ -348,6 +360,12 @@ LANGUAGE(
 	 /* I Wanna ride on the chipmunk's old hamster wheel. */
 	)
 LANGUAGE(
+	 ks	/* Kashmiri */,
+	 WP,
+	 "ब’ छस न’ ज़ानान, तोहय हेकिवा दुबार’ वॅनिथ ।"
+	 /* I don't understand, Please say that again. */
+	)
+LANGUAGE(
 	 kw	/* Cornish */,
 	 GLASS,
 	 "Mý a yl dybry gwéder hag éf ny wra ow ankenya."
@@ -375,6 +393,12 @@ LANGUAGE(
 	 WP-SFD,
 	 "Sarkanās jūrascūciņas peld pa jūru."
 	 /* Red seapigs swim in the sea. */
+	)
+LANGUAGE(
+	 mai	/* Maithili */,
+	 WP,
+	 "हम अहाँ के बिना कुछ नै छिय"
+	 /* I am nothing without you */
 	)
 LANGUAGE(
 	 map	/* Marquesan */,
@@ -428,6 +452,12 @@ LANGUAGE(
 	 nb	/* Norwegian Bokmål */,
 	 GSPECI,
 	 "Vår sære Zulu fra badeøya spilte jo whist og quickstep i min taxi."
+	)
+LANGUAGE(
+	 ne	/* Nepali */,
+	 WP,
+	 "के तपाईँ मसँग नाच्न चाहनुहुन्छ ?"
+	 /* Would you like to dance with me? */
 	)
 LANGUAGE(
 	 nl	/* Dutch */,
@@ -517,6 +547,12 @@ LANGUAGE(
 	 GLASS,
 	 "Puotsu mangiari u vitru, nun mi fa mali."
 	 /* I can eat glass and it doesn't hurt me. */
+	)
+LANGUAGE(
+	 sd	/* Sindhi */,
+	 WP,
+	 "توهان ملي ڏاڍو سٺو لڳو"
+	 /* Pleased to meet you */
 	)
 LANGUAGE(
          si     /* Sinhalese */,
