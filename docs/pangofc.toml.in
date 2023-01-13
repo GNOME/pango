@@ -18,7 +18,7 @@ search_index = true
   docs_url = "../Pango/"
 
   [dependencies."fontconfig-2.0"]
-  name = "Fontconfig"
+  name = "fontconfig"
   description = "A font configuration and enumeration library"
   docs_url = "https://www.fontconfig.org"
 

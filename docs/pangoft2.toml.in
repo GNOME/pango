@@ -18,7 +18,7 @@ search_index = true
   docs_url = "../Pango/"
 
   [dependencies."freetype2-2.0"]
-  name = "Freetype"
+  name = "freetype2"
   description = "A font loading and rendering library"
   docs_url = "https://www.freetype.org"
 

@@ -18,7 +18,7 @@ search_index = true
   docs_url = "../Pango/"
 
   [dependencies."cairo-1.0"]
-  name = "Cairo"
+  name = "cairo"
   description = "A vector graphics library"
   docs_url = "https://www.cairographics.org/manual/"
 
