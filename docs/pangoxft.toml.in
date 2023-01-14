@@ -18,7 +18,7 @@ search_index = true
   docs_url = "../Pango/"
 
   [dependencies."xft-2.0"]
-  name = "Xft"
+  name = "xft"
   description = "X11 client-side font rendering library"
   docs_url = "https://x.org"
 
