@@ -32,8 +32,10 @@
 typedef enum {
   GRAPHEME,
   WORD,
+  WORD_START_END,
   LINE,
-  SENTENCE
+  SENTENCE,
+  SENTENCE_START_END,
 } BreakKind;
 
 static BreakKind
@@ -43,16 +45,27 @@ kind_from_string (const char *str)
     return GRAPHEME;
   else if (strcmp (str, "word") == 0)
     return WORD;
+  else if (strcmp (str, "words") == 0)
+    return WORD_START_END;
   else if (strcmp (str, "line") == 0)
     return LINE;
   else if (strcmp (str, "sentence") == 0)
     return SENTENCE;
+  else if (strcmp (str, "sentences") == 0)
+    return SENTENCE_START_END;
   else
     {
       g_printerr ("Not a segmentation: %s", str);
       return 0;
     }
 }
+
+enum {
+  NONE,
+  BREAK,
+  START,
+  END
+};
 
 static gboolean
 show_segmentation (const char *input,
@@ -89,37 +102,71 @@ show_segmentation (const char *input,
   for (i = 0, p = text; i < len; i++, p = g_utf8_next_char (p))
     {
       PangoLogAttr log = attrs[i];
-      gboolean is_break = FALSE;
+      int indicator = NONE;
 
       switch (kind)
         {
         case GRAPHEME:
-          is_break = log.is_cursor_position;
+          if (log.is_cursor_position)
+            indicator = BREAK;
           break;
         case WORD:
-          is_break = log.is_word_boundary;
+          if (log.is_word_boundary)
+            indicator = BREAK;
+          break;
+        case WORD_START_END:
+          if (log.is_word_start && log.is_word_end)
+            indicator = BREAK;
+          else if (log.is_word_start)
+            indicator = START;
+          else if (log.is_word_end)
+            indicator = END;
           break;
         case LINE:
-          is_break = log.is_line_break;
+          if (log.is_line_break)
+            indicator = BREAK;
           break;
         case SENTENCE:
-          is_break = log.is_sentence_boundary;
+          if (log.is_sentence_boundary)
+            indicator = BREAK;
+          break;
+        case SENTENCE_START_END:
+          if (log.is_sentence_start && log.is_sentence_end)
+            indicator = BREAK;
+          else if (log.is_sentence_start)
+            indicator = START;
+          else if (log.is_sentence_end)
+            indicator = END;
           break;
         default:
           g_assert_not_reached ();
         }
 
-      if (is_break)
-        g_string_append (string, "|");
+      switch (indicator)
+        {
+        case BREAK:
+          g_string_append (string, "|");
+          break;
+        case START:
+          g_string_append (string, "⌊");
+          break;
+        case END:
+          g_string_append (string, "⌋");
+          break;
+        case NONE:
+        default:
+          break;
+        }
 
       if (i < len - 1)
         {
           gunichar ch = g_utf8_get_char (p);
           if (ch == 0x20)
             g_string_append (string, " ");
-          else if (g_unichar_isgraph (ch) &&
-                   !(g_unichar_type (ch) == G_UNICODE_LINE_SEPARATOR ||
-                     g_unichar_type (ch) == G_UNICODE_PARAGRAPH_SEPARATOR))
+          else if (g_unichar_isgraph (ch) ||
+                   ch == '\n' ||
+                   g_unichar_type (ch) == G_UNICODE_LINE_SEPARATOR ||
+                   g_unichar_type (ch) == G_UNICODE_PARAGRAPH_SEPARATOR)
             g_string_append_unichar (string, ch);
           else
             g_string_append_printf (string, "[%#04x]", ch);
@@ -145,7 +192,7 @@ main (int argc, char *argv[])
   const char *opt_text = NULL;
   gboolean opt_version = FALSE;
   GOptionEntry entries[] = {
-    { "kind", 0, 0, G_OPTION_ARG_STRING, &opt_kind, "Kind of boundary (grapheme/word/line/sentence)", "KIND" },
+    { "kind", 0, 0, G_OPTION_ARG_STRING, &opt_kind, "Boundary (grapheme/word/words/line/sentence/sentences)", "KIND" },
     { "text", 0, 0, G_OPTION_ARG_STRING, &opt_text, "Text to display", "STRING" },
     { "version", 0, 0, G_OPTION_ARG_NONE, &opt_version, "Show version" },
     { NULL, },
@@ -161,7 +208,13 @@ main (int argc, char *argv[])
   context = g_option_context_new ("[FILE]");
   g_option_context_add_main_entries (context, entries, NULL);
   g_option_context_set_description (context,
-      "Show text segmentation as determined by Pango.");
+      "Show text segmentation as determined by Pango:\n"
+      "  grapheme  - Cursor positions\n"
+      "  word      - Word boundaries\n"
+      "  words     - Word starts and ends\n"
+      "  line      - Possible line breaks\n"
+      "  sentence  - Sentence boundaries\n"
+      "  sentences - Sentence starts and ends");
   if (!g_option_context_parse (context, &argc, &argv, &error))
     {
       g_printerr ("%s\n", error->message);
