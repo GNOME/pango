@@ -1482,7 +1482,10 @@ default_break (const char    *text,
 			   !JAPANESE (wc)) ||
 			  (!JAPANESE (last_word_letter) &&
 			   JAPANESE (wc)))
-			attrs[i].is_word_end = TRUE;
+			{
+			  attrs[i].is_word_start = TRUE;
+			  attrs[i].is_word_end = TRUE;
+			}
 		    }
 		}
 	      last_word_letter = wc;
