@@ -103,6 +103,32 @@ _pango_win32_get_dwrite_font_face_from_dwrite_font (IDWriteFont *font)
   return NULL;
 }
 
+static IDWriteFont *
+get_dwrite_font_from_pango_win32_font (PangoWin32Font *font)
+{
+  PangoWin32DWriteItems *dwrite_items = pango_win32_get_direct_write_items ();
+  IDWriteFont *dwrite_font = NULL;
+  PangoWin32FontMap *fontmap = PANGO_WIN32_FONT_MAP (font->fontmap);
+
+  dwrite_font = (IDWriteFont *) g_hash_table_lookup (fontmap->dwrite_fonts,
+                                                    &font->logfontw);
+
+  /* create the IDWriteFont from the logfont underlying the PangoWin32Font if needed */
+  if (dwrite_font == NULL)
+    {
+      if (SUCCEEDED (dwrite_items->gdi_interop->CreateFontFromLOGFONT (&font->logfontw,
+                                                                       &dwrite_font)) &&
+          dwrite_font != NULL)
+        {
+          g_hash_table_insert (fontmap->dwrite_fonts,
+                              &font->logfontw,
+                               dwrite_font);
+        }
+    }
+
+  return dwrite_font;
+}
+
 void *
 pango_win32_font_get_dwrite_font_face (PangoWin32Font *font)
 {
@@ -111,7 +137,7 @@ pango_win32_font_get_dwrite_font_face (PangoWin32Font *font)
   IDWriteFont *dwrite_font = NULL;
   IDWriteFontFace *face = NULL;
 
-  dwrite_font = (IDWriteFont *) g_hash_table_lookup (win32fontmap->dwrite_fonts, &win32font->logfontw);
+  dwrite_font = get_dwrite_font_from_pango_win32_font (font);
 
   if (dwrite_font != NULL)
     return (void *)_pango_win32_get_dwrite_font_face_from_dwrite_font (dwrite_font);
@@ -424,7 +450,7 @@ pango_win32_font_description_from_logfontw_dwrite (const LOGFONTW *logfontw)
   PangoStretch stretch;
   PangoWin32DWriteItems *dwrite_items;
 
-  dwrite_items = pango_win32_init_direct_write ();
+  dwrite_items = pango_win32_get_direct_write_items ();
   if (dwrite_items == NULL)
     return NULL;
 
@@ -452,30 +478,6 @@ pango_win32_font_description_from_logfontw_dwrite (const LOGFONTW *logfontw)
   return desc;
 }
 
-static IDWriteFont *
-get_dwrite_font_from_pango_win32_font (PangoWin32Font *font,
-                                       gboolean       *is_cleanup_dwrite_font)
-{
-  PangoWin32DWriteItems *dwrite_items = pango_win32_get_direct_write_items ();
-  IDWriteFont *dwrite_font = NULL;
-
-  dwrite_font = (IDWriteFont *) g_hash_table_lookup (PANGO_WIN32_FONT_MAP (font->fontmap)->dwrite_fonts,
-                                                    &font->logfontw);
-
-  /* create the IDWriteFont from the logfont underlying the PangoWin32Font if needed */
-  if (dwrite_font == NULL)
-    {
-      if (SUCCEEDED (dwrite_items->gdi_interop->CreateFontFromLOGFONT (&font->logfontw,
-                                                                       &dwrite_font)) &&
-          dwrite_font != NULL)
-        *is_cleanup_dwrite_font = TRUE;
-      else
-        dwrite_font = NULL;
-    }
-
-  return dwrite_font;
-}
-
 /* macros to help parse the 'gasp' font table, referring to FreeType2 */
 #define DWRITE_UCHAR_USHORT( p, i, s ) ( (unsigned short)( ((const unsigned char *)(p))[(i)] ) << (s) )
 
@@ -490,27 +492,10 @@ get_dwrite_font_from_pango_win32_font (PangoWin32Font *font,
 gboolean
 pango_win32_dwrite_font_check_is_hinted (PangoWin32Font *font)
 {
-  IDWriteFont *dwrite_font = NULL;
   IDWriteFontFace *dwrite_font_face = NULL;
-  gboolean failed = FALSE;
   gboolean result = FALSE;
-  gboolean dwrite_font_release = FALSE;
 
   dwrite_font_face = (IDWriteFontFace *)pango_win32_font_get_dwrite_font_face (font);
-
-  if (dwrite_font_face == NULL)
-    {
-      dwrite_font = get_dwrite_font_from_pango_win32_font (font, &dwrite_font_release);
-
-      if (dwrite_font != NULL)
-        dwrite_font_face = _pango_win32_get_dwrite_font_face_from_dwrite_font (dwrite_font);
-      else
-        {
-          g_warning ("Failed to retrieve IDWriteFont from PangoWin32Font");
-
-          return FALSE;
-        }
-    }
 
   if (dwrite_font_face != NULL)
     {
@@ -552,9 +537,6 @@ pango_win32_dwrite_font_check_is_hinted (PangoWin32Font *font)
 
       dwrite_font_face->Release ();
     }
-
-  if (dwrite_font_release)
-    dwrite_font->Release ();
 
   return result;
 }

@@ -76,7 +76,6 @@ pango_cairo_win32_font_create_font_face (PangoCairoFont *font)
   PangoCairoWin32Font *cwfont = PANGO_CAIRO_WIN32_FONT (font);
   PangoWin32Font *win32font =  &cwfont->font;
   void *dwrite_font_face = NULL;
-  gpointer dwrite_font = NULL;
 
 #ifdef HAVE_CAIRO_WIN32_DIRECTWRITE
   dwrite_font_face = pango_win32_font_get_dwrite_font_face (win32font);
