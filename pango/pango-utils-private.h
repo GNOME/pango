@@ -54,6 +54,13 @@ const char *   pango_get_sysconf_subdirectory (void) G_GNUC_PURE;
 PANGO_DEPRECATED
 const char *   pango_get_lib_subdirectory (void) G_GNUC_PURE;
 
+void pango_log2vis_fill_embedding_levels (const char     *text,
+                                          int             length,
+                                          unsigned int    n_chars,
+                                          guint8         *embedding_levels,
+                                          PangoDirection *pbase_dir);
+
+
 G_END_DECLS
 
 #endif /* __PANGO_UTILS_PRIATE_H__ */
