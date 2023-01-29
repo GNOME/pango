@@ -626,7 +626,10 @@ _pango_is_Consonant_Preceding_Repha (gunichar wc)
 static inline gboolean
 _pango_is_EastAsianWide (gunichar wc)
 {
-  if ((wc >= 0x1100 && wc <= 0x27B0))
+  if (wc < 0x1100)
+    return FALSE;
+
+  if (wc <= 0x27B0)
     {
       if ((wc >= 0x1100 && wc <= 0x25FE))
 	{
