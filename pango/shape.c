@@ -299,6 +299,34 @@ find_text_transform (const PangoAnalysis *analysis)
   return transform;
 }
 
+static inline gboolean
+face_has_layers (hb_face_t *face)
+{
+#ifdef HAVE_HB_OT_COLOR_HAS_LAYERS
+  return hb_ot_color_has_layers (face);
+#else
+  hb_blob_t *blob;
+  gboolean ret;
+
+  blob = hb_face_reference_table (face, HB_TAG ('C','O','L','R'));
+  ret = blob != hb_blob_get_empty ();
+
+  hb_blob_destroy (blob);
+
+  return ret;
+#endif
+}
+
+static gboolean
+font_has_color (hb_font_t *font)
+{
+  hb_face_t *face;
+
+  face = hb_font_get_face (font);
+
+  return face_has_layers (face) || hb_ot_color_has_png (face) || hb_ot_color_has_svg (face);
+}
+
 static gboolean
 glyph_has_color (hb_font_t      *font,
                  hb_codepoint_t  glyph)
@@ -367,6 +395,7 @@ pango_hb_shape (const char          *item_text,
   PangoGlyphInfo *infos;
   PangoTextTransform transform;
   int hyphen_index;
+  gboolean font_is_color;
 
   g_return_if_fail (analysis != NULL);
   g_return_if_fail (analysis->font != NULL);
@@ -497,13 +526,14 @@ pango_hb_shape (const char          *item_text,
   pango_glyph_string_set_size (glyphs, num_glyphs);
   infos = glyphs->glyphs;
   last_cluster = -1;
+  font_is_color = font_has_color (hb_font);
 
   for (i = 0; i < num_glyphs; i++)
     {
       infos[i].glyph = hb_glyph->codepoint;
       glyphs->log_clusters[i] = hb_glyph->cluster - item_offset;
       infos[i].attr.is_cluster_start = glyphs->log_clusters[i] != last_cluster;
-      infos[i].attr.is_color = glyph_has_color (hb_font, hb_glyph->codepoint);
+      infos[i].attr.is_color = font_is_color && glyph_has_color (hb_font, hb_glyph->codepoint);
       hb_glyph++;
       last_cluster = glyphs->log_clusters[i];
     }
