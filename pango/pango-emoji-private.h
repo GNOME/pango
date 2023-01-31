@@ -41,14 +41,16 @@ struct _PangoEmojiIter
   gboolean is_emoji;
 
   unsigned char *types;
+  unsigned char types_[64];
   unsigned int n_chars;
   unsigned int cursor;
 };
 
 PangoEmojiIter *
 _pango_emoji_iter_init (PangoEmojiIter *iter,
-			const char     *text,
-			int             length);
+                        const char     *text,
+                        int             length,
+                        unsigned int    n_chars);
 
 gboolean
 _pango_emoji_iter_next (PangoEmojiIter *iter);

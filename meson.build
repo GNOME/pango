@@ -247,6 +247,12 @@ harfbuzz_dep = dependency('harfbuzz',
 
 pango_deps += harfbuzz_dep
 
+if harfbuzz_dep.type_name() != 'internal'
+  if cc.has_function('hb_ot_color_has_layers', dependencies: harfbuzz_dep)
+    pango_conf.set('HAVE_HB_OT_COLOR_HAS_LAYERS', 1)
+  endif
+endif
+
 # If option is 'auto' or 'enabled' it is not required to find fontconfig on the
 # system because a fallback is done at the end. Override 'disabled' option on
 # platforms that requires it.

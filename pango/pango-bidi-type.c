@@ -29,6 +29,7 @@
 
 #include "pango-bidi-type.h"
 #include "pango-utils.h"
+#include "pango-utils-private.h"
 
 /**
  * pango_bidi_type_for_unichar:
@@ -109,15 +110,37 @@ pango_bidi_type_for_unichar (gunichar ch)
  */
 guint8 *
 pango_log2vis_get_embedding_levels (const gchar    *text,
-				    int             length,
-				    PangoDirection *pbase_dir)
+                                    int             length,
+                                    PangoDirection *pbase_dir)
 {
-  glong n_chars, i;
-  guint8 *embedding_levels_list;
+  unsigned int n_chars;
+  guint8 *embedding_levels;
+
+  if (length < 0)
+    length = strlen (text);
+
+  n_chars = g_utf8_strlen (text, length);
+  embedding_levels = g_new (guint8, n_chars);
+
+  pango_log2vis_fill_embedding_levels (text, length, n_chars, embedding_levels, pbase_dir);
+
+  return embedding_levels;
+}
+
+void
+pango_log2vis_fill_embedding_levels (const gchar    *text,
+                                    int             length,
+                                    unsigned int    n_chars,
+                                    guint8         *embedding_levels_list,
+                                    PangoDirection *pbase_dir)
+{
+  glong i;
   const gchar *p;
   FriBidiParType fribidi_base_dir;
   FriBidiCharType *bidi_types;
+  FriBidiCharType bidi_types_[64];
   FriBidiBracketType *bracket_types;
+  FriBidiBracketType bracket_types_[64];
   FriBidiLevel max_level;
   FriBidiCharType ored_types = 0;
   FriBidiCharType anded_strongs = FRIBIDI_TYPE_RLE;
@@ -145,14 +168,16 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
       break;
     }
 
-  if (length < 0)
-    length = strlen (text);
-
-  n_chars = g_utf8_strlen (text, length);
-
-  bidi_types = g_new (FriBidiCharType, n_chars);
-  bracket_types = g_new (FriBidiBracketType, n_chars);
-  embedding_levels_list = g_new (guint8, n_chars);
+  if (n_chars < 64)
+    {
+      bidi_types = bidi_types_;
+      bracket_types = bracket_types_;
+    }
+  else
+    {
+      bidi_types = g_new (FriBidiCharType, n_chars);
+      bracket_types = g_new (FriBidiBracketType, n_chars);
+    }
 
   for (i = 0, p = text; p < text + length; p = g_utf8_next_char(p), i++)
     {
@@ -232,12 +257,13 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
     }
 
 resolved:
-  g_free (bidi_types);
-  g_free (bracket_types);
+  if (n_chars >= 64)
+    {
+      g_free (bidi_types);
+      g_free (bracket_types);
+    }
 
   *pbase_dir = (fribidi_base_dir == FRIBIDI_PAR_LTR) ?  PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL;
-
-  return embedding_levels_list;
 }
 
 /**
