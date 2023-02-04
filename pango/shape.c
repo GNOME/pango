@@ -299,24 +299,6 @@ find_text_transform (const PangoAnalysis *analysis)
   return transform;
 }
 
-static inline gboolean
-face_has_layers (hb_face_t *face)
-{
-#ifdef HAVE_HB_OT_COLOR_HAS_LAYERS
-  return hb_ot_color_has_layers (face);
-#else
-  hb_blob_t *blob;
-  gboolean ret;
-
-  blob = hb_face_reference_table (face, HB_TAG ('C','O','L','R'));
-  ret = blob != hb_blob_get_empty ();
-
-  hb_blob_destroy (blob);
-
-  return ret;
-#endif
-}
-
 static gboolean
 font_has_color (hb_font_t *font)
 {
@@ -324,7 +306,9 @@ font_has_color (hb_font_t *font)
 
   face = hb_font_get_face (font);
 
-  return face_has_layers (face) || hb_ot_color_has_png (face) || hb_ot_color_has_svg (face);
+  return hb_ot_color_has_layers (face) ||
+         hb_ot_color_has_png (face) ||
+         hb_ot_color_has_svg (face);
 }
 
 static gboolean
