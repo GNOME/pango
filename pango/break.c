@@ -127,7 +127,8 @@ static const CharJamoProps HangulJamoProps[] = {
 #define KANA(wc) ((wc) >= 0x3040 && (wc) <= 0x30FF)
 #define HANGUL(wc) ((wc) >= 0xAC00 && (wc) <= 0xD7A3)
 #define EMOJI(wc) (_pango_Is_Emoji_Base_Character (wc))
-#define BACKSPACE_DELETES_CHARACTER(wc) (!LATIN (wc) && !CYRILLIC (wc) && !GREEK (wc) && !KANA (wc) && !HANGUL (wc) && !EMOJI (wc))
+#define MATH(wc) ((wc) >= 0x2200 && (wc) <= 0x22FF)
+#define BACKSPACE_DELETES_CHARACTER(wc) (!LATIN (wc) && !CYRILLIC (wc) && !GREEK (wc) && !KANA (wc) && !HANGUL (wc) && !EMOJI (wc) && !MATH (wc))
 
 /* Previously "123foo" was two words. But in UAX 29 of Unicode, 
  * we know don't break words between consecutive letters and numbers
