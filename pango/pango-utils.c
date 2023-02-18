@@ -749,9 +749,9 @@ _pango_parse_enum (GType       type,
 		       s->str);
 
 	  if (possible_values)
-	    *possible_values = s->str;
-
-	  g_string_free (s, possible_values ? FALSE : TRUE);
+	    *possible_values = g_string_free (s, FALSE);
+          else
+	    g_string_free (s, TRUE);
 	}
     }
 
@@ -811,9 +811,7 @@ pango_parse_flags (GType        type,
               g_string_append (s, v->value_nick);
             }
 
-          *possible_values = s->str;
-
-          g_string_free (s, FALSE);
+          *possible_values = g_string_free (s, FALSE);
 	}
     }
 
