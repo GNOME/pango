@@ -646,7 +646,7 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
 
       italic_faces = g_hash_table_new (g_direct_hash, g_direct_equal);
 
-      count = CFArrayGetCount (ctfaces);
+      count = ctfaces ? CFArrayGetCount (ctfaces) : 0;
       for (i = 0; i < count; i++)
         {
           PangoCoreTextFace *face;
@@ -666,7 +666,7 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
 
       CFRelease (font_descriptors);
       CFRelease (attributes);
-      CFRelease (ctfaces);
+      if (ctfaces) CFRelease (ctfaces);
 
       /* For all fonts for which a non-synthetic italic variant does
        * not exist on the system, we create synthesized versions here.
