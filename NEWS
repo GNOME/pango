@@ -1,5 +1,12 @@
-Overview of changes in 1.50.13, xx-xx-xxxx
+Overview of changes in 1.50.13, 20-02-2023
 ==========================================
+- win32: Add back fallback for empty fontsets
+- win32: Improve DirectWrite support
+- Fix word segmentation for Japanese
+- Don't set backspace-deletes-char for math symbols
+- coretext: Fix a crash
+- cairo: Apply metrics hinting to underlines too
+- Treat COLRv1 fonts as color fonts
 
 Overview of changes in 1.50.12, 18-11-2022
 ==========================================
