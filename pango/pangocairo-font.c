@@ -248,9 +248,6 @@ _pango_cairo_font_get_metrics (PangoFont     *font,
       PangoRectangle extents;
       PangoFontDescription *desc;
       cairo_scaled_font_t *scaled_font;
-      cairo_matrix_t cairo_matrix;
-      PangoMatrix pango_matrix;
-      PangoMatrix identity = PANGO_MATRIX_INIT;
       glong sample_str_width;
 
       int height, shift;
@@ -278,32 +275,6 @@ _pango_cairo_font_get_metrics (PangoFont     *font,
       cairo_font_options_destroy (font_options);
 
       info->metrics = (* PANGO_CAIRO_FONT_GET_IFACE (font)->create_base_metrics_for_context) (cfont, context);
-
-      /* We now need to adjust the base metrics for ctm */
-      cairo_scaled_font_get_ctm (scaled_font, &cairo_matrix);
-      pango_matrix.xx = cairo_matrix.xx;
-      pango_matrix.yx = cairo_matrix.yx;
-      pango_matrix.xy = cairo_matrix.xy;
-      pango_matrix.yy = cairo_matrix.yy;
-      pango_matrix.x0 = 0;
-      pango_matrix.y0 = 0;
-      if (G_UNLIKELY (0 != memcmp (&identity, &pango_matrix, 4 * sizeof (double))))
-        {
-	  double xscale = pango_matrix_get_font_scale_factor (&pango_matrix);
-	  if (xscale) xscale = 1 / xscale;
-
-	  info->metrics->ascent *= xscale;
-	  info->metrics->descent *= xscale;
-	  info->metrics->height *= xscale;
-	  info->metrics->underline_position *= xscale;
-	  info->metrics->underline_thickness *= xscale;
-	  info->metrics->strikethrough_position *= xscale;
-	  info->metrics->strikethrough_thickness *= xscale;
-	}
-
-      /* Set the matrix on the context so we don't have to adjust the derived
-       * metrics. */
-      pango_context_set_matrix (context, &pango_matrix);
 
       /* Ugly. We need to prevent recursion when we call into
        * PangoLayout to determine approximate char width.
