@@ -194,20 +194,20 @@ test_matrix_slant_ratio (void)
   double r;
 
   r = pango_matrix_get_slant_ratio (&m);
-  g_assert_cmphex (r, ==, 0.2);
+  g_assert_cmpfloat (r, ==, 0.2);
 
   pango_matrix_rotate (&m, 45);
 
   r = pango_matrix_get_slant_ratio (&m);
-  g_assert_cmphex (r, ==, 0.2);
+  g_assert_cmpfloat (r, ==, 0.2);
 
   pango_matrix_scale (&m, 2, 3);
 
   r = pango_matrix_get_slant_ratio (&m);
-  g_assert_cmphex (r, ==, 0.2);
+  g_assert_cmpfloat (r, ==, 0.2);
 
   r = pango_matrix_get_slant_ratio (&m2);
-  g_assert_cmphex (r, ==, 0.4);
+  g_assert_cmpfloat (r, ==, 0.4);
 }
 
 int
