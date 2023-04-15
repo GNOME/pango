@@ -363,7 +363,11 @@ cairo_dwrite_dep = disabler() # Only for Windows
 if cairo_dep.found()
   cairo_found_type = cairo_dep.type_name()
   if host_system == 'windows'
-    cairo_dwrite_dep = dependency('cairo-win32-dwrite-font', version: cairo_req_version, required: false)
+    cairo_dwrite_dep = dependency('cairo-dwrite-font', version: cairo_req_version, required: false)
+    # cairo < 1.17.8 used a different name
+    if not cairo_dwrite_dep.found()
+      cairo_dwrite_dep = dependency('cairo-win32-dwrite-font', version: cairo_req_version, required: false)
+    endif
   endif
 else
   if cc.get_id() == 'msvc' and cc.has_header('cairo.h')
