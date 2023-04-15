@@ -2778,7 +2778,7 @@ pango_font_has_char (PangoFont *font,
  * pango_font_get_features:
  * @font: a `PangoFont`
  * @features: (out caller-allocates) (array length=len): Array to features in
- * @len: the length of @features
+ * @len: (in): the length of @features
  * @num_features: (inout): the number of used items in @features
  *
  * Obtain the OpenType features that are provided by the font.
