@@ -512,22 +512,30 @@ pango_win32_dwrite_font_check_is_hinted (PangoWin32Font *font)
                                                        &table_ctx,
                                                        &exists)))
         {
-          if (exists)
+          if (exists && table_size > 4)
             {
               guint16 version = DWRITE_NEXT_USHORT (table_data);
 
               if (version == 0 || version == 1)
                 {
                   guint16 num_ranges = DWRITE_NEXT_USHORT (table_data);
-                  guint16 i;
+                  UINT32 max_ranges = (table_size - 4) / (sizeof (guint16) * 2);
+                  guint16 i = 0;
 
-                  for (i = 0; !result && i < num_ranges && i < (table_size / sizeof (guint16)); i ++)
+                  if (num_ranges > max_ranges)
+                    num_ranges = max_ranges;
+
+                  for (i = 0; i < num_ranges; i++)
                     {
+                      G_GNUC_UNUSED
                       guint16 ppem = DWRITE_NEXT_USHORT (table_data);
                       guint16 behavior = DWRITE_NEXT_USHORT (table_data);
 
                       if (behavior & (GASP_GRIDFIT | GASP_SYMMETRIC_GRIDFIT))
-                        result = TRUE;
+                        {
+                          result = TRUE;
+                          break;
+                        }
                     }
                 }
             }
