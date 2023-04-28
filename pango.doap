@@ -12,8 +12,8 @@
 
   <homepage
   rdf:resource="http://www.pango.org/" />
-  <mailing-list
-  rdf:resource="http://mail.gnome.org/mailman/listinfo/gtk-i18n-list" />
+  <developer-forum
+  rdf:resource="https://discourse.gnome.org/tag/pango" />
   <download-page
   rdf:resource="http://download.gnome.org/sources/pango/"/>
   <bug-database
@@ -30,7 +30,7 @@
     <foaf:Person>
       <foaf:name>Behdad Esfahbod</foaf:name>
       <foaf:mbox rdf:resource="mailto:behdad@gnome.org" />
-      <gnome:userid>behdad</gnome:userid>
+<!--      <gnome:userid>behdad</gnome:userid> -->
     </foaf:Person>
   </maintainer>
   <maintainer>
