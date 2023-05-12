@@ -32,6 +32,19 @@
 
 #include <cairo-win32.h>
 
+#if defined (HAVE_CAIRO_WIN32_DIRECTWRITE) && \
+    ((CAIRO_VERSION_MAJOR > 1) || \
+     (CAIRO_VERSION_MAJOR == 1 && CAIRO_VERSION_MINOR > 17) || \
+     (CAIRO_VERSION_MAJOR == 1 && CAIRO_VERSION_MINOR == 17 && CAIRO_VERSION_MICRO > 6))
+/*
+ * We are using C here, so use a workaround as cairo-dwrite.h from 1.17.8
+ * can only be used in C++, which replaces the C-friendly version of
+ * cairo_dwrite_font_face_create_for_dwrite_fontface()
+ */
+extern cairo_font_face_t *
+cairo_dwrite_font_face_create_for_dwrite_fontface (void *dwrite_font_face);
+#endif
+
 #define PANGO_TYPE_CAIRO_WIN32_FONT           (pango_cairo_win32_font_get_type ())
 #define PANGO_CAIRO_WIN32_FONT(object)        (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_WIN32_FONT, PangoCairoWin32Font))
 #define PANGO_CAIRO_WIN32_FONT_CLASS(klass)   (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_CAIRO_WIN32_FONT, PangoCairoWin32FontClass))
