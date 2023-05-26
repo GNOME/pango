@@ -126,7 +126,15 @@ _pango_win32_font_init (PangoWin32Font *win32font)
   win32font->glyph_info = g_hash_table_new_full (NULL, NULL, NULL, g_free);
 }
 
-static GPrivate display_dc_key = G_PRIVATE_INIT ((GDestroyNotify) DeleteDC);
+static void
+_delete_dc (HDC dc)
+{
+  /* Don't pass DeleteDC func pointer to the GDestroyNotify.
+   * 32bit build requires matching calling convention (__cdecl vs __stdcall) */
+  DeleteDC (dc);
+}
+
+static GPrivate display_dc_key = G_PRIVATE_INIT ((GDestroyNotify) _delete_dc);
 static GPrivate dwrite_items = G_PRIVATE_INIT ((GDestroyNotify) pango_win32_dwrite_items_destroy);
 
 HDC
