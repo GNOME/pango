@@ -350,7 +350,8 @@ _pango_ft2_font_map_default_substitute (PangoFcFontMap *fcfontmap,
   PangoFT2FontMap *ft2fontmap = PANGO_FT2_FONT_MAP (fcfontmap);
   FcValue v;
 
-  FcConfigSubstitute (NULL, pattern, FcMatchPattern);
+  FcConfigSubstitute (pango_fc_font_map_get_config (fcfontmap),
+                      pattern, FcMatchPattern);
 
   if (fcfontmap->substitute_func)
     fcfontmap->substitute_func (pattern, fcfontmap->substitute_data);
