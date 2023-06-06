@@ -390,7 +390,9 @@ pango_xft_font_map_default_substitute (PangoFcFontMap *fcfontmap,
   PangoXftFontMap *xftfontmap = PANGO_XFT_FONT_MAP (fcfontmap);
   double d;
 
-  FcConfigSubstitute (NULL, pattern, FcMatchPattern);
+  FcConfigSubstitute (pango_fc_font_map_get_config (fcfontmap),
+                      pattern, FcMatchPattern);
+
   if (fcfontmap->substitute_func)
     fcfontmap->substitute_func (pattern, fcfontmap->substitute_data);
   XftDefaultSubstitute (xftfontmap->display, xftfontmap->screen, pattern);
