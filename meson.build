@@ -245,32 +245,37 @@ harfbuzz_dep = dependency('harfbuzz',
 
 pango_deps += harfbuzz_dep
 
-# If option is 'auto' or 'enabled' it is not required to find fontconfig on the
-# system because a fallback is done at the end. Override 'disabled' option on
-# platforms that requires it.
-fontconfig_option = get_option('fontconfig')
+# Platforms where fontconfig is required
 fontconfig_required = host_system not in ['windows', 'darwin']
-if not fontconfig_option.disabled() or fontconfig_required
-  fontconfig_option = false
+# Disable fontconfig by default on platforms where it is optional
+fontconfig_option = get_option('fontconfig').disable_auto_if(not fontconfig_required)
+# In meson 1.1.0, this check can be replaced with .enable_if() to simplify the
+# logic in the fallback handling.
+if fontconfig_option.disabled() and fontconfig_required
+  error('Fontconfig support cannot be disabled on this platform')
 endif
+
+# If option is 'enabled' or 'auto', set required: false (equivalent to auto).
+# This also prevents meson from using fallbacks.
+fontconfig_nofallback_option = fontconfig_option.allowed() ? false : fontconfig_option
 
 # Try pkgconfig and cmake, no fallback
 fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version,
-                            required: fontconfig_option, allow_fallback: false)
+                            required: fontconfig_nofallback_option)
 if not fontconfig_dep.found()
   if cc.get_id() == 'msvc' and cc.has_header('fontconfig/fontconfig.h')
     # Look for the Visual Studio-style import library if FontConfig's .pc file cannot be
     # found on Visual Studio
-    fontconfig_dep = cc.find_library('fontconfig', required: fontconfig_option)
+    fontconfig_dep = cc.find_library('fontconfig', required: fontconfig_nofallback_option)
   endif
 endif
 
-# Do the fallback now if fontconfig has not been found on the system. Override
-# user option on platforms that always require fontconfig.
-fontconfig_option = fontconfig_required ? true : get_option('fontconfig')
+# Recheck without disabling fallback if fontconfig has not been found on the
+# system. Override user option 'auto' to 'enabled' on platforms that always
+# require fontconfig.
+fontconfig_option = fontconfig_required ? true : fontconfig_option
 if not fontconfig_dep.found()
   fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version,
-                              allow_fallback: true,
                               required: fontconfig_option)
 endif
 
