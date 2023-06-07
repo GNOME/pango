@@ -29,7 +29,7 @@
 #include <windows.h>
 #include <dwrite.h>
 #include <hb-directwrite.h>
-#include <cairo-win32.h>
+#include <cairo-dwrite.h>
 
 cairo_font_face_t *
 create_cairo_dwrite_font_face (Pango2Font *font)

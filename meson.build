@@ -242,7 +242,7 @@ fribidi_req_version = '>= 1.0.6'
 libthai_req_version = '>= 0.1.9'
 harfbuzz_req_version = '>= 4.4.1'
 fontconfig_req_version = '>= 2.13.0'
-cairo_req_version = '>= 1.12.10'
+cairo_req_version = host_system == 'windows' ? '>= 1.17.8' : '>= 1.12.10'
 
 # libm
 mathlib_dep = cc.find_library('m', required: false)
@@ -325,7 +325,7 @@ if host_system == 'windows'
     cc.find_library('dwrite'),
   ]
 
-  cairo_pkg = 'cairo-win32-dwrite-font'
+  cairo_pkg = 'cairo-dwrite-font'
 endif
 
 if get_option('cairo').disabled()
