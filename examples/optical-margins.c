@@ -93,10 +93,10 @@ get_bound (Pango2Font     *font,
   if (hb_set_is_empty (lookups))
     res = get_fallback_bound (font, ch);
   else
-    res = hb_ot_layout_get_optical_bound (hb_font,
-                                          hb_set_get_min (lookups),
-                                          direction,
-                                          glyph);
+    res = hb_ot_layout_lookup_get_optical_bound (hb_font,
+                                                 hb_set_get_min (lookups),
+                                                 direction,
+                                                 glyph);
 
   hb_set_destroy (lookups);
 
