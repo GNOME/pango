@@ -297,7 +297,7 @@ else
   fontconfig_dep = disabler()
 endif
 
-cairo_pkg = 'cairo-ft'
+cairo_font_packages = ['cairo-ft']
 
 if host_system == 'darwin'
   if not cc.links('''#include <CoreText/CoreText.h>
@@ -314,7 +314,7 @@ if host_system == 'darwin'
 
   pango_deps += dependency('appleframeworks', modules: [ 'CoreFoundation', 'ApplicationServices' ])
 
-  cairo_pkg = 'cairo-quartz-font'
+  cairo_font_packages += 'cairo-quartz-font'
 endif
 
 if host_system == 'windows'
@@ -325,14 +325,14 @@ if host_system == 'windows'
     cc.find_library('dwrite'),
   ]
 
-  cairo_pkg = 'cairo-dwrite-font'
+  cairo_font_packages += 'cairo-dwrite-font'
 endif
 
 if get_option('cairo').disabled()
   cairo_dep = disabler()
   cairo_xlib_dep = disabler()
 else
-  cairo_dep = dependency(cairo_pkg, version: cairo_req_version,
+  cairo_dep = dependency('cairo', version: cairo_req_version,
                          fallback: ['cairo', 'libcairo_dep'], required: get_option('cairo'))
   cairo_xlib_dep = dependency('cairo-xlib', required: false)
 endif
@@ -342,6 +342,9 @@ pango_conf.set('HAVE_CAIRO_XLIB', cairo_dep.found() and cairo_xlib_dep.found())
 
 if cairo_dep.found()
   pango_deps += cairo_dep
+  foreach pkg : cairo_font_packages
+    pango_deps += dependency(pkg, version: cairo_req_version)
+  endforeach
 endif
 
 # libsysprof-capture support
