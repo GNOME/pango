@@ -21,7 +21,7 @@
 
 #include "config.h"
 
-/* Freetype has undefined macros in its header */
+/* FreeType has undefined macros in its header */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wundef"
 #include <cairo-ft.h>

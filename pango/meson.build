@@ -314,7 +314,7 @@ if build_pangoft2
 
   pkgconfig.generate(libpangoft2,
     name: 'Pango FT2 and Pango Fc',
-    description: 'Freetype 2.0 and fontconfig font support for Pango',
+    description: 'FreeType 2.0 and fontconfig font support for Pango',
     filebase: 'pangoft2',
     subdirs: pango_api_name,
     requires: [ 'pango', freetype2_pc, fontconfig_pc ],

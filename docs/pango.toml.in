@@ -38,7 +38,7 @@ search_index = true
 
   [related."PangoFT2-1.0"]
   name = "PangoFT2"
-  description = "Freetype support for Pango"
+  description = "FreeType support for Pango"
   docs_url = "../PangoFT2/"
 
   [related."PangoOT-1.0"]
