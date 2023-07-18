@@ -23,6 +23,23 @@
 #include "config.h"
 
 #include <initguid.h>
+
+#ifdef HAVE_DWRITE_3_H
+/* we need dwrite_3.h for IDWriteFactory[3|5] */
+#include <dwrite_3.h>
+
+# ifdef _MSC_VER
+#  define UUID_OF_IDWriteFactory3 __uuidof (IDWriteFactory3)
+#  define UUID_OF_IDWriteFactory5 __uuidof (IDWriteFactory5)
+# else
+#  define UUID_OF_IDWriteFactory3 IID_IDWriteFactory3
+#  define UUID_OF_IDWriteFactory5 IID_IDWriteFactory5
+# endif
+#else
+/* stub, for simplicity reasons, if we don't have IDWriteFactory[3|5] */
+# define IDWriteFactory3 IUnknown
+# define IDWriteFactory5 IUnknown
+#endif
 #include <dwrite_1.h>
 
 #ifdef STRICT
@@ -44,8 +61,12 @@
 
 struct _PangoWin32DWriteItems
 {
+  IDWriteFactory5   *dwrite_factory5;
+  IDWriteFactory3   *dwrite_factory3;
   IDWriteFactory    *dwrite_factory;
   IDWriteGdiInterop *gdi_interop;
+  guint              have_idwritefactory5 : 1;
+  guint              have_idwritefactory3 : 1;
 };
 
 PangoWin32DWriteItems *
@@ -53,28 +74,73 @@ pango_win32_init_direct_write (void)
 {
   PangoWin32DWriteItems *dwrite_items = g_new0 (PangoWin32DWriteItems, 1);
   HRESULT hr;
+  IDWriteFactory5 *factory5 = NULL;
+  IDWriteFactory3 *factory3 = NULL;
+  IDWriteFactory *factory = NULL;
   gboolean failed = FALSE;
+  gboolean have_idwritefactory3 = FALSE;
+  gboolean have_idwritefactory5 = FALSE;
 
+#ifdef HAVE_DWRITE_3_H
+  /* Try to create a IDWriteFactory3 first, which is available on Windows 10+ */
   hr = DWriteCreateFactory (DWRITE_FACTORY_TYPE_SHARED,
-                            UUID_OF_IDWriteFactory,
-                            reinterpret_cast<IUnknown**> (&dwrite_items->dwrite_factory));
-
-  if (SUCCEEDED (hr) && dwrite_items->dwrite_factory != NULL)
+                            UUID_OF_IDWriteFactory3,
+                            reinterpret_cast<IUnknown**> (&factory3));
+  if (SUCCEEDED(hr))
     {
-      hr = dwrite_items->dwrite_factory->GetGdiInterop (&dwrite_items->gdi_interop);
-      if (FAILED (hr) || dwrite_items->gdi_interop == NULL)
+      /*
+       * Try to acquire a IDWriteFactory5 object from the IDWriteFactory3 object,
+       * which is only available on or after Windows 10 Creators' Update
+       */
+      have_idwritefactory3 = TRUE;
+      hr = factory3->QueryInterface (UUID_OF_IDWriteFactory5,
+                                     reinterpret_cast<void**> (&factory5));
+      if (SUCCEEDED (hr))
+        have_idwritefactory5 = TRUE;
+
+      hr = factory3->QueryInterface (UUID_OF_IDWriteFactory,
+                                     reinterpret_cast<void**> (&factory));
+    }
+  else
+#endif
+    hr = DWriteCreateFactory (DWRITE_FACTORY_TYPE_SHARED,
+                              UUID_OF_IDWriteFactory,
+                              reinterpret_cast<IUnknown**> (&factory));
+
+  if (SUCCEEDED (hr) && factory != NULL)
+    {
+      IDWriteGdiInterop *gdi_interop = NULL;
+
+      hr = factory->GetGdiInterop (&gdi_interop);
+      if (FAILED (hr) || gdi_interop == NULL)
         {
-          g_error ("DWriteCreateFactory::GetGdiInterop failed with error code %x", (unsigned)hr);
-          dwrite_items->dwrite_factory->Release ();
+          g_error ("DWriteFactory::GetGdiInterop failed with error code %x", (unsigned)hr);
+          factory->Release ();
+
+          if (have_idwritefactory5)
+            factory5->Release ();
+
+          if (have_idwritefactory3)
+            factory3->Release ();
+
           failed = TRUE;
         }
+
+      if (have_idwritefactory3)
+        dwrite_items->dwrite_factory3 = factory3;
+      if (have_idwritefactory5)
+        dwrite_items->dwrite_factory5 = factory5;
+
+      dwrite_items->have_idwritefactory3 = have_idwritefactory3;
+      dwrite_items->have_idwritefactory5 = have_idwritefactory5;
+      dwrite_items->gdi_interop = gdi_interop;
+      dwrite_items->dwrite_factory = factory;
     }
   else
     {
       g_error ("DWriteCreateFactory failed with error code %x", (unsigned)hr);
       failed = TRUE;
     }
-
 
   if (failed)
     g_free (dwrite_items);
@@ -87,6 +153,12 @@ pango_win32_dwrite_items_destroy (PangoWin32DWriteItems *dwrite_items)
 {
   dwrite_items->gdi_interop->Release ();
   dwrite_items->dwrite_factory->Release ();
+
+  if (dwrite_items->have_idwritefactory5)
+    dwrite_items->dwrite_factory5->Release ();
+
+  if (dwrite_items->have_idwritefactory3)
+    dwrite_items->dwrite_factory3->Release ();
 
   g_free (dwrite_items);
 }
