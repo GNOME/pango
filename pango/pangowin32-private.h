@@ -108,6 +108,12 @@ struct _PangoWin32FontMap
   GHashTable *aliases;
 
   double resolution;		/* (points / pixel) * PANGO_SCALE */
+
+  /* IDWriteFontSetBuilder for loading custom fonts on Windows 10+ */
+  void *font_set_builder;
+
+  /* IDWriteFontSetBuilder1 for loading custom fonts on Windows 10 Creator Update+ */
+  void *font_set_builder1;
 };
 
 struct _PangoWin32FontMapClass
