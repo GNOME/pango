@@ -35,10 +35,20 @@
 #  define UUID_OF_IDWriteFactory3 IID_IDWriteFactory3
 #  define UUID_OF_IDWriteFactory5 IID_IDWriteFactory5
 # endif
+
+struct _PangoWin32DWriteFontSetBuilder
+{
+  IDWriteFontSetBuilder1 *font_set_builder1;
+  IDWriteFontSetBuilder *font_set_builder;
+};
+
 #else
 /* stub, for simplicity reasons, if we don't have IDWriteFactory[3|5] */
 # define IDWriteFactory3 IUnknown
 # define IDWriteFactory5 IUnknown
+# define IDWriteFontSet IUnknown
+# define IDWriteFontSetBuilder IUnknown
+# define IDWriteFontSetBuilder1 IUnknown
 #endif
 #include <dwrite_1.h>
 
@@ -54,9 +64,11 @@
 #ifdef _MSC_VER
 # define UUID_OF_IDWriteFactory __uuidof (IDWriteFactory)
 # define UUID_OF_IDWriteFont1 __uuidof (IDWriteFont1)
+# define UUID_OF_IDWriteFontCollection __uuidof (IDWriteFontCollection)
 #else
 # define UUID_OF_IDWriteFactory IID_IDWriteFactory
 # define UUID_OF_IDWriteFont1 IID_IDWriteFont1
+# define UUID_OF_IDWriteFontCollection IID_IDWriteFontCollection
 #endif
 
 struct _PangoWin32DWriteItems
@@ -221,21 +233,13 @@ pango_win32_font_get_dwrite_font_face (PangoWin32Font *font)
   return NULL;
 }
 
-void
-pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
+static void
+pango_win32_dwrite_font_map_populate_with_collection (PangoWin32FontMap     *map,
+                                                      IDWriteFontCollection *collection)
 {
-  IDWriteFontCollection *collection = NULL;
   UINT32 count;
   HRESULT hr;
-  gboolean failed = FALSE;
   PangoWin32DWriteItems *dwrite_items = pango_win32_get_direct_write_items ();
-
-  hr = dwrite_items->dwrite_factory->GetSystemFontCollection (&collection, FALSE);
-  if (FAILED (hr) || collection == NULL)
-    {
-      g_error ("IDWriteFactory::GetSystemFontCollection failed with error code %x\n", (unsigned)hr);
-      return;
-    }
 
   count = collection->GetFontFamilyCount ();
 
@@ -295,9 +299,79 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
 
       family->Release ();
     }
+}
 
-  collection->Release ();
-  collection = NULL;
+void
+pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
+{
+  UINT32 count;
+  HRESULT hr = S_OK;
+  IDWriteFontCollection *sys_collection = NULL;
+  IDWriteFontSet *fontset = NULL;
+  PangoWin32DWriteItems *dwrite_items = pango_win32_get_direct_write_items ();
+  PangoWin32DWriteFontSetBuilder *win10_font_set_builder = NULL;
+
+  hr = dwrite_items->dwrite_factory->GetSystemFontCollection (&sys_collection, FALSE);
+  if (FAILED (hr) || sys_collection == NULL)
+    {
+      g_error ("IDWriteFactory::GetSystemFontCollection failed with error code %x\n", (unsigned)hr);
+      return;
+    }
+
+  pango_win32_dwrite_font_map_populate_with_collection (map, sys_collection);
+
+#ifdef HAVE_DWRITE_3_H
+  /* the following code requires items from dwrite_3.h */
+  if (dwrite_items->have_idwritefactory5 || dwrite_items->have_idwritefactory3)
+    {
+      if (map->font_set_builder == NULL)
+        map->font_set_builder = g_new0 (PangoWin32DWriteFontSetBuilder, 1);
+
+      win10_font_set_builder = map->font_set_builder;
+
+      if (dwrite_items->have_idwritefactory5 &&
+          win10_font_set_builder->font_set_builder1 != NULL)
+       {
+         hr = win10_font_set_builder->font_set_builder1->CreateFontSet (&fontset);
+       }
+      else if (dwrite_items->have_idwritefactory3 &&
+          win10_font_set_builder->font_set_builder != NULL)
+       {
+         hr = win10_font_set_builder->font_set_builder->CreateFontSet (&fontset);
+       }
+    }
+
+  if (SUCCEEDED (hr) && fontset != NULL)
+    {
+      if (fontset->GetFontCount () > 0)
+        {
+          IDWriteFontCollection *custom_collection = NULL;
+          IDWriteFontCollection1 *custom_collection1 = NULL;
+
+          if (dwrite_items->have_idwritefactory5)
+            dwrite_items->dwrite_factory5->CreateFontCollectionFromFontSet (fontset,
+                                                                           &custom_collection1);
+          else if  (dwrite_items->have_idwritefactory3)
+            dwrite_items->dwrite_factory3->CreateFontCollectionFromFontSet (fontset,
+                                                                           &custom_collection1);
+
+          if (SUCCEEDED (hr) && custom_collection1 != NULL)
+            {
+              custom_collection1->QueryInterface (UUID_OF_IDWriteFontCollection,
+                                                  reinterpret_cast<void **>(&custom_collection));
+
+              pango_win32_dwrite_font_map_populate_with_collection (map, custom_collection);
+
+              custom_collection->Release ();
+              custom_collection1->Release ();
+            }
+        }
+
+      fontset->Release ();
+    }
+#endif /* HAVE_DWRITE_3_H */
+
+  sys_collection->Release ();
 }
 
 gpointer

@@ -866,6 +866,9 @@ pango_win32_font_map_finalize (GObject *object)
 
   pango_win32_font_cache_free (win32fontmap->font_cache);
 
+  if (win32fontmap->font_set_builder != NULL)
+    g_free (win32fontmap->font_set_builder);
+
   g_hash_table_destroy (win32fontmap->dwrite_fonts);
   g_hash_table_destroy (win32fontmap->fonts);
   g_hash_table_destroy (win32fontmap->families);

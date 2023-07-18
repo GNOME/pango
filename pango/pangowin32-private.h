@@ -83,6 +83,8 @@ typedef PangoFontFaceClass             PangoWin32FaceClass;
 typedef struct _PangoWin32GlyphInfo    PangoWin32GlyphInfo;
 typedef struct _PangoWin32MetricsInfo  PangoWin32MetricsInfo;
 
+typedef struct _PangoWin32DWriteFontSetBuilder PangoWin32DWriteFontSetBuilder;
+
 struct _PangoWin32FontMap
 {
   PangoFontMap parent_instance;
@@ -108,6 +110,9 @@ struct _PangoWin32FontMap
   GHashTable *aliases;
 
   double resolution;		/* (points / pixel) * PANGO_SCALE */
+
+  /* IDWriteFontSetBuilder for loading custom fonts on Windows 10+ */
+  PangoWin32DWriteFontSetBuilder *font_set_builder;
 };
 
 struct _PangoWin32FontMapClass
