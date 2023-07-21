@@ -89,6 +89,7 @@ struct _PangoWin32FontMap
 
   PangoWin32FontCache *font_cache;
   GQueue *freed_fonts;
+  guint serial;
 
   /* Map Pango family names to PangoWin32Family structs */
   GHashTable *families;

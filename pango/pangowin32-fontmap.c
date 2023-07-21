@@ -792,6 +792,24 @@ pango_win32_font_map_get_face (PangoFontMap *fontmap,
   return PANGO_FONT_FACE (win32font->win32face);
 }
 
+static guint
+pango_win32_font_map_get_serial (PangoFontMap *fontmap)
+{
+  PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (fontmap);
+
+  return win32fontmap->serial;
+}
+
+static void
+pango_win32_font_map_changed (PangoFontMap *fontmap)
+{
+  PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (fontmap);
+
+  win32fontmap->serial++;
+  if (win32fontmap->serial == 0)
+    win32fontmap->serial++;
+}
+
 static void
 _pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
 {
@@ -806,6 +824,8 @@ _pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
   fontmap_class->list_families = pango_win32_font_map_list_families;
   fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_WIN32;
   fontmap_class->get_face = pango_win32_font_map_get_face;
+  fontmap_class->get_serial = pango_win32_font_map_get_serial;
+  fontmap_class->changed = pango_win32_font_map_changed;
   class->aliases = g_hash_table_new_full ((GHashFunc)alias_hash,
                                           (GEqualFunc)alias_equal,
                                           (GDestroyNotify)alias_free,
