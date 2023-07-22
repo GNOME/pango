@@ -6899,7 +6899,7 @@ pango_layout_get_item_properties (PangoItem      *item,
       switch ((int) attr->klass->type)
         {
         case PANGO_ATTR_UNDERLINE:
-          switch (((PangoAttrInt *)attr)->value)
+          switch ((PangoUnderline)(((PangoAttrInt *)attr)->value))
             {
             case PANGO_UNDERLINE_NONE:
               break;
@@ -6925,8 +6925,10 @@ pango_layout_get_item_properties (PangoItem      *item,
           break;
 
         case PANGO_ATTR_OVERLINE:
-          switch (((PangoAttrInt *)attr)->value)
+          switch ((PangoOverline)(((PangoAttrInt *)attr)->value))
             {
+            case PANGO_OVERLINE_NONE:
+              break;
             case PANGO_OVERLINE_SINGLE:
               properties->oline_single = TRUE;
               break;
