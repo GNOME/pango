@@ -20,7 +20,7 @@
  */
 #include "config.h"
 
-/* Freetype has undefined macros in its headers */
+/* FreeType has undefined macros in its headers */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wundef"
 #include <cairo-ft.h>

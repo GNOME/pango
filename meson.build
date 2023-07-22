@@ -592,7 +592,7 @@ summary('Font backends', pango_font_backends)
 
 summary('Cairo support', cairo_dep.found(), section: 'Features')
 summary('Fontconfig support', fontconfig_dep.found(), section: 'Features')
-summary('Freetype support', freetype_dep.found(), section: 'Features')
+summary('FreeType support', freetype_dep.found(), section: 'Features')
 summary('Thai support', thai_dep.found(), section: 'Features')
 summary('Sysprof support', libsysprof_capture_dep.found(), section: 'Features')
 

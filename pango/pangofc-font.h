@@ -26,7 +26,7 @@
 #include <pango/pango-font.h>
 #include <pango/pango-glyph.h>
 
-/* Freetype has undefined macros in its header */
+/* FreeType has undefined macros in its header */
 #ifdef PANGO_COMPILATION
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wundef"
