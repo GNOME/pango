@@ -1726,6 +1726,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   PangoFontDescription *description;
   PangoWin32Family *win32family;
   PangoWin32Face *win32face;
+  gboolean use_logfont_for_desc = FALSE;
 
   char tmp_for_charset_name[10];
   char tmp_for_ff_name[10];
@@ -1756,13 +1757,20 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   PING (("not found"));
   lfp2 = g_new (LOGFONTW, 1);
   *lfp2 = *lfp;
+
   if (dwrite_font == NULL)
-    dwrite_font = pango_win32_logfontw_get_dwrite_font (lfp2);
+    {
+      use_logfont_for_desc = TRUE;
+      dwrite_font = pango_win32_logfontw_get_dwrite_font (lfp2);
+    }
 
   g_hash_table_insert (win32fontmap->fonts, lfp2, lfp2);
   g_hash_table_insert (win32fontmap->dwrite_fonts, lfp2, dwrite_font);
 
-  description = pango_win32_font_description_from_logfontw (lfp2);
+  if (use_logfont_for_desc)
+    description = pango_win32_font_description_from_logfontw (lfp2);
+  else
+    description = pango_win32_font_description_from_dwrite_font (dwrite_font);
 
   /* In some cases, extracting a name for a font can fail; such fonts
    * aren't usable for us

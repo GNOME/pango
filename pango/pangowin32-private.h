@@ -330,6 +330,9 @@ pango_win32_font_description_from_logfontw_dwrite             (const LOGFONTW   
 hb_face_t *
 pango_win32_font_create_hb_face_dwrite                        (PangoWin32Font        *font);
 
+PangoFontDescription *
+pango_win32_font_description_from_dwrite_font                 (void                  *dwrite_font);
+
 G_END_DECLS
 
 #endif /* __PANGOWIN32_PRIVATE_H__ */
