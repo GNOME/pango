@@ -279,7 +279,6 @@ pango_win32_dwrite_font_map_populate_with_collection (PangoWin32FontMap     *map
               BOOL is_sys_font;
 
               hr = dwrite_items->gdi_interop->ConvertFontToLOGFONT (font, &lfw, &is_sys_font);
-
               if (SUCCEEDED (hr))
                 pango_win32_insert_font (map, &lfw, font, FALSE);
               else
@@ -566,6 +565,32 @@ util_dwrite_get_font_variant_name (IDWriteFont *font)
 }
 
 PangoFontDescription *
+pango_win32_font_description_from_dwrite_font (void *dwrite_font)
+{
+  IDWriteFont *font = NULL;
+  IDWriteFontFamily *family = NULL;
+  PangoFontDescription *desc = NULL;
+  HRESULT hr;
+
+  g_return_val_if_fail (dwrite_font != NULL, NULL);
+
+  font = static_cast<IDWriteFont *>(dwrite_font);
+  hr = font->GetFontFamily (&family);
+
+  if (SUCCEEDED (hr) && family != NULL)
+    {
+      char *family_name = util_dwrite_get_font_family_name (family);
+      if (family_name != NULL)
+        desc = util_get_pango_font_description (font, family_name);
+
+      g_free (family_name);
+      family->Release ();
+    }
+
+  return desc;
+}
+
+PangoFontDescription *
 pango_win32_font_description_from_logfontw_dwrite (const LOGFONTW *logfontw)
 {
   PangoFontDescription *desc = NULL;
@@ -586,20 +611,7 @@ pango_win32_font_description_from_logfontw_dwrite (const LOGFONTW *logfontw)
 
   if (SUCCEEDED (hr) && font != NULL)
     {
-      IDWriteFontFamily *family = NULL;
-
-      hr = font->GetFontFamily (&family);
-
-      if (SUCCEEDED (hr) && family != NULL)
-        {
-          char *family_name = util_dwrite_get_font_family_name (family);
-
-          if (family_name != NULL)
-            desc = util_get_pango_font_description (font, family_name);
-
-          family->Release ();
-        }
-
+      desc = pango_win32_font_description_from_dwrite_font (font);
       font->Release ();
     }
 
