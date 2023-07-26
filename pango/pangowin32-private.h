@@ -59,7 +59,7 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_TYPE_WIN32_FONT_MAP             (_pango_win32_font_map_get_type ())
+#define PANGO_TYPE_WIN32_FONT_MAP             (pango_win32_font_map_get_type ())
 #define PANGO_WIN32_FONT_MAP(object)          (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_WIN32_FONT_MAP, PangoWin32FontMap))
 #define PANGO_WIN32_IS_FONT_MAP(object)       (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_WIN32_FONT_MAP))
 #define PANGO_WIN32_FONT_MAP_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_WIN32_FONT_MAP, PangoWin32FontMapClass))
@@ -277,7 +277,7 @@ void            _pango_win32_make_matching_logfontw (PangoFontMap   *fontmap,
 						     LOGFONTW       *out);
 
 _PANGO_EXTERN
-GType           _pango_win32_font_map_get_type      (void) G_GNUC_CONST;
+GType           pango_win32_font_map_get_type      (void) G_GNUC_CONST;
 
 _PANGO_EXTERN
 void            _pango_win32_fontmap_cache_remove   (PangoFontMap   *fontmap,
