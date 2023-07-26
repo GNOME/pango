@@ -807,6 +807,8 @@ pango_win32_font_map_changed (PangoFontMap *fontmap)
   win32fontmap->serial++;
   if (win32fontmap->serial == 0)
     win32fontmap->serial++;
+
+  pango_win32_font_map_cache_clear (fontmap);
 }
 
 static void
@@ -881,6 +883,7 @@ pango_win32_font_map_finalize (GObject *object)
   PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (object);
 
   pango_win32_font_map_fini (win32fontmap);
+  pango_win32_dwrite_release_font_set_builders (win32fontmap);
 
   G_OBJECT_CLASS (pango_win32_font_map_parent_class)->finalize (object);
 }
@@ -2124,4 +2127,29 @@ pango_win32_font_map_cache_clear (PangoFontMap *font_map)
 
   if (removed != added)
     g_object_notify (G_OBJECT (font_map), "n-items");
+}
+
+/**
+ * pango_win32_font_map_add_font_file:
+ * @font_map: a `PangoWin32FontMap`
+ * @font_file_path: Path to the actual font file
+ * @error: return location for an error
+ *
+ * Loads a font file with one or more fonts into the `PangoWin32FontMap` specified
+ * by the path. The font file must be in a format that is supported by the system's
+ * DirectWrite APIs.
+ *
+ * Return value: TRUE if the font file is successfully loaded into the `PangoWin32FontMap`;
+ *   otherwise FALSE.
+ *
+ * Since: 1.52.0
+ */
+gboolean
+pango_win32_font_map_add_font_file (PangoFontMap *font_map,
+                                    const char   *font_file_path,
+                                    GError      **error)
+{
+  g_return_val_if_fail (PANGO_WIN32_IS_FONT_MAP (font_map), FALSE);
+
+  return pango_win32_dwrite_add_font_file (font_map, font_file_path, error);
 }

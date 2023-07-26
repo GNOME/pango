@@ -168,6 +168,21 @@ pango_win32_dwrite_items_destroy (PangoWin32DWriteItems *dwrite_items)
   g_free (dwrite_items);
 }
 
+void
+pango_win32_dwrite_release_font_set_builders (PangoWin32FontMap *win32fontmap)
+{
+  if (win32fontmap->font_set_builder1 != NULL)
+    {
+      static_cast<IDWriteFontSetBuilder1 *>(win32fontmap->font_set_builder1)->Release ();
+      win32fontmap->font_set_builder1 = NULL;
+    }
+  if (win32fontmap->font_set_builder != NULL)
+    {
+      static_cast<IDWriteFontSetBuilder *>(win32fontmap->font_set_builder)->Release ();
+      win32fontmap->font_set_builder = NULL;
+    }
+}
+
 static IDWriteFontFace *
 _pango_win32_get_dwrite_font_face_from_dwrite_font (IDWriteFont *font)
 {
@@ -718,6 +733,229 @@ pango_win32_font_create_hb_face_dwrite (PangoWin32Font *font)
   return hb_face;
 }
 #endif
+
+#ifdef HAVE_DWRITE_3_H
+/* the following items require items from dwrite_3.h */
+static gboolean
+add_custom_font_factory5 (PangoFontMap     *font_map,
+                          IDWriteFactory5  *factory5,
+                          const char       *filepath,
+                          GError          **error)
+{
+  HRESULT hr = S_OK;
+  IDWriteFontFile *font_file = NULL;
+  gboolean collection_failed = FALSE;
+  PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (font_map);
+  wchar_t *filepath_w = reinterpret_cast<wchar_t*> (g_utf8_to_utf16 (filepath, -1, NULL, NULL, error));
+
+  if (filepath_w == NULL)
+    return FALSE;
+
+  if (win32fontmap->font_set_builder1 == NULL)
+    {
+      IDWriteFontSetBuilder1 *font_set_builder = NULL;
+
+      hr = factory5->CreateFontSetBuilder (&font_set_builder);
+      if (SUCCEEDED (hr) && font_set_builder != NULL)
+        win32fontmap->font_set_builder1 = font_set_builder;
+    }
+
+  if (FAILED (hr) || win32fontmap->font_set_builder1 == NULL)
+    g_set_error (error,
+                 G_FILE_ERROR,
+                 G_FILE_ERROR_FAILED,
+                 "Setup for IDWriteFontSetBuilder1 failed with error code %x\n", (unsigned)hr);
+
+  hr = factory5->CreateFontFileReference (filepath_w, nullptr, &font_file);
+
+  if (FAILED (hr) || font_file == NULL)
+    g_set_error (error,
+                 G_FILE_ERROR,
+                 G_FILE_ERROR_FAILED,
+                 "DirectWrite setup for custom font file failed with error code %x\n", (unsigned)hr);
+
+  if (*error == NULL)
+    hr = static_cast<IDWriteFontSetBuilder1 *>(win32fontmap->font_set_builder1)->AddFontFile (font_file);
+
+  if (FAILED (hr))
+    {
+      if (hr == DWRITE_E_FILEFORMAT)
+        g_set_error (error,
+                     G_FILE_ERROR,
+                     G_FILE_ERROR_INVAL,
+                     "Specified font file '%s' is not supported by DirectWrite",
+                     filepath);
+      else
+        g_set_error (error,
+                     G_FILE_ERROR,
+                     G_FILE_ERROR_FAILED,
+                     "Loading custom font '%s' file failed with error code %x\n", (unsigned)hr);
+    }
+
+  g_free (filepath_w);
+
+  return *error == NULL;
+}
+
+static gboolean
+add_custom_font_factory3 (PangoFontMap     *font_map,
+                          IDWriteFactory3  *factory3,
+                          const char       *filepath,
+                          GError          **error)
+{
+  HRESULT hr = S_OK;
+  IDWriteFontFile *font_file = NULL;
+  gboolean collection_failed = FALSE;
+  PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (font_map);
+  wchar_t *filepath_w = reinterpret_cast<wchar_t*> (g_utf8_to_utf16 (filepath, -1, NULL, NULL, error));
+
+  if (filepath_w == NULL)
+    return FALSE;
+
+  if (win32fontmap->font_set_builder == NULL)
+    {
+      IDWriteFontSetBuilder *font_set_builder = NULL;
+
+      hr = factory3->CreateFontSetBuilder (&font_set_builder);
+
+      if (SUCCEEDED (hr) && font_set_builder != NULL)
+        win32fontmap->font_set_builder = font_set_builder;
+    }
+
+  if (FAILED (hr) || win32fontmap->font_set_builder == NULL)
+    g_set_error (error,
+                 G_FILE_ERROR,
+                 G_FILE_ERROR_FAILED,
+                 "Setup for IDWriteFontSetBuilder failed with error code %x\n", (unsigned)hr);
+
+  if (*error == NULL)
+     hr = factory3->CreateFontFileReference (filepath_w, nullptr, &font_file);
+
+  if (FAILED (hr) || font_file == NULL)
+    g_set_error (error,
+                 G_FILE_ERROR,
+                 G_FILE_ERROR_FAILED,
+                 "DirectWrite setup for custom font file failed with error code %x\n", (unsigned)hr);
+
+  if (*error == NULL)
+    {
+      gboolean supported;
+      DWRITE_FONT_FILE_TYPE file_type;
+      UINT32 num_fonts, i;
+
+      hr = font_file->Analyze (&supported, &file_type, nullptr, &num_fonts);
+
+      if (FAILED (hr))
+        g_set_error (error,
+                     G_FILE_ERROR,
+                     G_FILE_ERROR_FAILED,
+                     "Loading custom font file failed with error code %x\n", (unsigned)hr);
+      else
+        {
+          if (!supported)
+            g_set_error (error,
+                         G_FILE_ERROR,
+                         G_FILE_ERROR_INVAL,
+                         "Specified font file '%s' is not supported by DirectWrite",
+                         filepath);
+
+          if (*error == NULL)
+            {
+              for (i = 0; i < num_fonts; i ++)
+                {
+                  IDWriteFontFaceReference* ref = NULL;
+                  gboolean collection_failed = FALSE;
+
+                  hr = factory3->CreateFontFaceReference (filepath_w,
+                                                          nullptr,
+                                                          i,
+                                                          DWRITE_FONT_SIMULATIONS_NONE,
+                                                         &ref);
+
+                  if (SUCCEEDED (hr))
+                    static_cast<IDWriteFontSetBuilder *>(win32fontmap->font_set_builder)->AddFontFaceReference (ref);
+                  else
+                    g_set_error (error,
+                                 G_FILE_ERROR,
+                                 G_FILE_ERROR_FAILED,
+                                 "Setting up IDWriteFontFaceReference with error code %x", (unsigned)hr);
+
+                  if (ref != NULL)
+                    ref->Release ();
+
+                  if (*error != NULL)
+                    break;
+                }
+            }
+        }
+    }
+
+  g_free (filepath_w);
+
+  return *error == NULL;
+}
+#endif /* HAVE_DWRITE_3_H */
+
+gboolean
+pango_win32_dwrite_add_font_file (PangoFontMap *font_map,
+                                  const char   *font_file_path,
+                                  GError      **error)
+{
+  gboolean succeeded;
+  PangoWin32DWriteItems *dwrite_items;
+
+  g_return_val_if_fail (font_file_path != NULL, FALSE);
+
+  if (!g_file_test (font_file_path, G_FILE_TEST_EXISTS))
+    {
+      g_set_error (error,
+                   G_FILE_ERROR,
+                   G_FILE_ERROR_NOENT,
+                   "Specified font file '%s' does not exist",
+                   font_file_path);
+
+      return FALSE;
+    }
+
+  dwrite_items = pango_win32_get_direct_write_items ();
+
+#ifdef HAVE_DWRITE_3_H
+  /* we don't support custom font loading yet for pre-Windows 10 */
+  if (!dwrite_items->have_idwritefactory3)
+    {
+      g_message ("Loading custom fonts is currently only available in Windows 10 and later");
+      return FALSE;
+    }
+
+  if (dwrite_items->have_idwritefactory5)
+    succeeded = add_custom_font_factory5 (font_map,
+                                          dwrite_items->dwrite_factory5,
+                                          font_file_path,
+                                          error);
+  else
+    succeeded = add_custom_font_factory3 (font_map,
+                                          dwrite_items->dwrite_factory5,
+                                          font_file_path,
+                                          error);
+
+  if (succeeded)
+    {
+      pango_font_map_changed (font_map);
+
+#if defined (HAVE_CAIRO_WIN32_DIRECTWRITE) && !defined (USE_HB_DWRITE)
+      g_warning ("Cairo-DirectWrite enabled but HarfBuzz does not have"
+                 "DirectWrite enabled, possible ugly results for custom fonts.");
+#endif
+    }
+
+  return succeeded;
+#else
+  /* We must have dwrite_3.h to go on here, for now */
+  g_message ("This build of Pango did not include Windows 10+-specific support");
+  g_message ("Loading of custom fonts is not yet supported with this build of of PangoWin32");
+  return FALSE;
+#endif
+}
 
 void
 pango_win32_dwrite_font_release (gpointer dwrite_font)

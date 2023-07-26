@@ -338,6 +338,13 @@ pango_win32_font_description_from_dwrite_font                 (void             
 _PANGO_EXTERN
 void                  pango_win32_font_map_cache_clear        (PangoFontMap          *font_map);
 
+gboolean              pango_win32_dwrite_add_font_file        (PangoFontMap          *font_map,
+                                                               const char            *font_file_path,
+                                                               GError               **error);
+
+void
+pango_win32_dwrite_release_font_set_builders                  (PangoWin32FontMap     *win32fontmap);
+
 G_END_DECLS
 
 #endif /* __PANGOWIN32_PRIVATE_H__ */
