@@ -2101,3 +2101,36 @@ pango_win32_font_map_load_fontset (PangoFontMap                 *fontmap,
 
   return PANGO_FONTSET (fonts);
 }
+
+/*<private>
+ * pango_win32_font_map_cache_clear:
+ * @font_map: a `PangoWin32FontMap`
+ *
+ * Clear all cached information and fontsets for this font map.
+ *
+ * This should be called whenever the application wishes to add an
+ * `IDirectWriteFontSet` for the @font_map; this is automatically called
+ * when using the `pango_win32_font_map_add_font_file()` function.
+ *
+ * Since: 1.52
+ */
+void
+pango_win32_font_map_cache_clear (PangoFontMap *font_map)
+{
+  PangoWin32FontMap *win32fontmap;
+  int removed, added;
+
+  g_return_if_fail (PANGO_WIN32_IS_FONT_MAP (font_map));
+
+  win32fontmap = PANGO_WIN32_FONT_MAP (font_map);
+
+  removed = g_list_model_get_n_items (G_LIST_MODEL (font_map));
+  pango_win32_font_map_fini (win32fontmap);
+  pango_win32_font_map_init (win32fontmap);
+  added = g_list_model_get_n_items (G_LIST_MODEL (font_map));
+
+  g_list_model_items_changed (G_LIST_MODEL (font_map), 0, removed, added);
+
+  if (removed != added)
+    g_object_notify (G_OBJECT (font_map), "n-items");
+}

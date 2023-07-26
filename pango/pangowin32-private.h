@@ -333,6 +333,10 @@ pango_win32_font_create_hb_face_dwrite                        (PangoWin32Font   
 PangoFontDescription *
 pango_win32_font_description_from_dwrite_font                 (void                  *dwrite_font);
 
+/* This needs to be called from PangoCairo as well */
+_PANGO_EXTERN
+void                  pango_win32_font_map_cache_clear        (PangoFontMap          *font_map);
+
 G_END_DECLS
 
 #endif /* __PANGOWIN32_PRIVATE_H__ */
