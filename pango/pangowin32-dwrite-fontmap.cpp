@@ -30,6 +30,10 @@
 #endif
 #include "pangowin32-private.h"
 
+#ifdef USE_HB_DWRITE
+#include <hb-directwrite.h>
+#endif
+
 #ifdef _MSC_VER
 # define UUID_OF_IDWriteFactory __uuidof (IDWriteFactory)
 # define UUID_OF_IDWriteFont1 __uuidof (IDWriteFont1)
@@ -548,6 +552,36 @@ pango_win32_dwrite_font_check_is_hinted (PangoWin32Font *font)
 
   return result;
 }
+
+#ifdef USE_HB_DWRITE
+/* Sadly, hb-directwrite.h stuff has to be done via C++... */
+hb_face_t *
+pango_win32_font_create_hb_face_dwrite (PangoWin32Font *font)
+{
+  hb_face_t *hb_face = NULL;
+  IDWriteFontFace *face = NULL;
+
+  g_return_val_if_fail (PANGO_WIN32_IS_FONT (font), NULL);
+
+  face = static_cast<IDWriteFontFace *>(pango_win32_font_get_dwrite_font_face (font));
+
+  if (face != NULL)
+    hb_face = hb_directwrite_face_create (face);
+
+  if (hb_face != NULL)
+    {
+      static hb_user_data_key_t key;
+
+      hb_face_set_user_data (hb_face,
+                            &key,
+                             face,
+                             (hb_destroy_func_t) pango_win32_dwrite_font_face_release,
+                             TRUE);
+    }
+
+  return hb_face;
+}
+#endif
 
 void
 pango_win32_dwrite_font_release (gpointer dwrite_font)
