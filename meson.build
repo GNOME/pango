@@ -241,7 +241,11 @@ fontconfig_pc=''
 
 harfbuzz_dep = dependency('harfbuzz',
                           version: harfbuzz_req_version,
-                          default_options: ['coretext=enabled'])
+                          default_options: [
+                            'coretext=enabled',
+                            'directwrite=enabled',
+                            'gdi=enabled',
+                          ])
 
 pango_deps += harfbuzz_dep
 
@@ -370,6 +374,17 @@ if cairo_dep.found()
     # cairo < 1.17.8 used a different name
     if not cairo_dwrite_dep.found()
       cairo_dwrite_dep = dependency('cairo-win32-dwrite-font', version: cairo_req_version, required: false)
+    endif
+    if cairo_dwrite_dep.found()
+      if harfbuzz_dep.type_name() == 'internal' or \
+         cpp.has_function('hb_directwrite_face_create', dependencies: harfbuzz_dep)
+        pango_conf.set('USE_HB_DWRITE', 1)
+      endif
+    else
+      if harfbuzz_dep.type_name() == 'internal' or \
+         cc.has_function('hb_gdi_face_create', dependencies: harfbuzz_dep)
+        pango_conf.set('USE_HB_GDI', 1)
+      endif
     endif
   endif
 else
