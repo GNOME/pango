@@ -1486,7 +1486,11 @@ pango_font_description_to_string (const PangoFontDescription *desc)
       if (result->len > 0 || result->str[result->len -1] != ' ')
         g_string_append_c (result, ' ');
 
-      g_ascii_dtostr (buf, sizeof (buf), (double)desc->size / PANGO_SCALE);
+      if (desc->size_is_absolute)
+        g_ascii_dtostr (buf, sizeof (buf), (double)desc->size / PANGO_SCALE);
+      else
+        g_ascii_dtostr (buf, sizeof (buf), round ((double)desc->size / PANGO_SCALE));
+
       g_string_append (result, buf);
 
       if (desc->size_is_absolute)
