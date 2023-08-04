@@ -43,7 +43,7 @@
 # define IDWriteFontSetBuilder IUnknown
 # define IDWriteFontSetBuilder1 IUnknown
 #endif
-#include <dwrite_1.h>
+#include "pangowin32-dwrite-utils.h"
 
 #ifdef STRICT
 #undef STRICT
