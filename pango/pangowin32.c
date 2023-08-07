@@ -24,6 +24,7 @@
 
 #include "config.h"
 
+#include <math.h>
 #include <string.h>
 #include <stdlib.h>
 #include <glib.h>
@@ -889,7 +890,7 @@ pango_win32_font_describe (PangoFont *font)
   PangoWin32Font *win32font = PANGO_WIN32_FONT (font);
 
   desc = pango_font_description_copy (win32font->win32face->description);
-  pango_font_description_set_size (desc, win32font->size / (PANGO_SCALE / PANGO_WIN32_FONT_MAP (win32font->fontmap)->resolution));
+  pango_font_description_set_size (desc, round (win32font->size / (PANGO_SCALE / PANGO_WIN32_FONT_MAP (win32font->fontmap)->resolution)));
 
   return desc;
 }
