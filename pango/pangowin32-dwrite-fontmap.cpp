@@ -342,17 +342,106 @@ util_to_pango_weight (DWRITE_FONT_WEIGHT weight)
   return (PangoWeight) util_map_weight (weight);
 }
 
+typedef struct _dwrite_font_table_info dwrite_font_table_info;
+struct _dwrite_font_table_info
+{
+  const unsigned short *table_data;
+  UINT32 table_size;
+};
+
+static gboolean
+get_dwrite_font_table (IDWriteFontFace        *face,
+                       const UINT32            font_table_tag,
+                       dwrite_font_table_info *output_data)
+{
+  void *table_ctx;
+  HRESULT hr;
+  gboolean exists, result;
+  const unsigned short *table_data;
+  UINT32 table_size;
+
+  if (face == NULL)
+    return FALSE;
+
+  hr = face->TryGetFontTable (font_table_tag,
+                              (const void **)&table_data,
+                             &table_size,
+                             &table_ctx,
+                             &exists);
+
+  result = (SUCCEEDED (hr) && exists);
+
+  if (SUCCEEDED (hr))
+    {
+      if (output_data != NULL)
+        {
+          output_data->table_data = table_data;
+          output_data->table_size = table_size;
+        }
+
+      face->ReleaseFontTable (table_ctx);
+    }
+
+  return result;
+}
+
+static gboolean
+_pango_win32_font_check_font_feature_with_data (IDWriteFontFace        *face,
+                                                const char             *feature,
+                                                dwrite_font_table_info *output_data)
+{
+  IDWriteFontFace *dwrite_font_face = NULL;
+  gboolean result = FALSE;
+  UINT32 tag;
+
+  tag = DWRITE_MAKE_OPENTYPE_TAG (feature[0], feature[1], feature[2], feature[3]);
+
+  return get_dwrite_font_table (face, tag, output_data);
+}
+
 static PangoVariant
 util_to_pango_variant (IDWriteFont *font)
 {
+  gboolean is_small_caps, is_small_caps_from_caps;
+  gboolean is_petite_caps, is_petite_caps_from_caps;
+  gboolean is_unicase;
+  gboolean is_titling;
   PangoVariant variant = PANGO_VARIANT_NORMAL;
+
+  IDWriteFontFace *face = _pango_win32_get_dwrite_font_face_from_dwrite_font (font);
+
+  if (face == NULL)
+    return PANGO_VARIANT_NORMAL;
+
+  is_small_caps = _pango_win32_font_check_font_feature_with_data (face, "smcp", NULL);
+  is_small_caps_from_caps = _pango_win32_font_check_font_feature_with_data (face, "c2sc", NULL);
+  is_petite_caps = _pango_win32_font_check_font_feature_with_data (face, "pcap", NULL);
+  is_petite_caps_from_caps = _pango_win32_font_check_font_feature_with_data (face, "c2pc", NULL);
+  is_unicase = _pango_win32_font_check_font_feature_with_data (face, "unic", NULL);
+  is_titling = _pango_win32_font_check_font_feature_with_data (face, "titl", NULL);
+
+  if (is_small_caps)
+    variant = (is_small_caps_from_caps || is_petite_caps_from_caps) ?
+              PANGO_VARIANT_ALL_SMALL_CAPS :
+              PANGO_VARIANT_SMALL_CAPS;
+  else if (is_petite_caps)
+    variant = (is_small_caps_from_caps || is_petite_caps_from_caps) ?
+              PANGO_VARIANT_ALL_PETITE_CAPS :
+              PANGO_VARIANT_PETITE_CAPS;
+  else if (is_unicase)
+    variant = PANGO_VARIANT_UNICASE;
+  else if (is_titling)
+    variant = PANGO_VARIANT_TITLE_CAPS;
+
+  g_message ("variant: %d", variant);
+  face->Release ();
 
   return variant;
 }
 
 static PangoFontDescription*
 util_get_pango_font_description (IDWriteFont *font,
-                                 const char *family_name)
+                                 const char  *family_name)
 {
   DWRITE_FONT_STRETCH stretch = font->GetStretch ();
   DWRITE_FONT_STYLE style = font->GetStyle ();
@@ -488,63 +577,6 @@ pango_win32_font_description_from_logfontw_dwrite (const LOGFONTW *logfontw)
 /* values to indicate that grid fit (hinting) is supported by the font */
 #define GASP_GRIDFIT 0x0001
 #define GASP_SYMMETRIC_GRIDFIT 0x0004
-
-typedef struct _dwrite_font_table_info dwrite_font_table_info;
-struct _dwrite_font_table_info
-{
-  const unsigned short *table_data;
-  UINT32 table_size;
-};
-
-static gboolean
-get_dwrite_font_table (IDWriteFontFace        *face,
-                       const UINT32            font_table_tag,
-                       dwrite_font_table_info *output_data)
-{
-  void *table_ctx;
-  HRESULT hr;
-  gboolean exists, result;
-  const unsigned short *table_data;
-  UINT32 table_size;
-
-  if (face == NULL)
-    return FALSE;
-
-  hr = face->TryGetFontTable (font_table_tag,
-                              (const void **)&table_data,
-                             &table_size,
-                             &table_ctx,
-                             &exists);
-
-  result = (SUCCEEDED (hr) && exists);
-
-  if (SUCCEEDED (hr))
-    {
-      if (output_data != NULL)
-        {
-          output_data->table_data = table_data;
-          output_data->table_size = table_size;
-        }
-
-      face->ReleaseFontTable (table_ctx);
-    }
-
-  return result;
-}
-
-static gboolean
-_pango_win32_font_check_font_feature_with_data (IDWriteFontFace        *face,
-                                                const char             *feature,
-                                                dwrite_font_table_info *output_data)
-{
-  IDWriteFontFace *dwrite_font_face = NULL;
-  gboolean result = FALSE;
-  UINT32 tag;
-
-  tag = DWRITE_MAKE_OPENTYPE_TAG (feature[0], feature[1], feature[2], feature[3]);
-
-  return get_dwrite_font_table (face, tag, output_data);
-}
 
 gboolean
 pango_win32_dwrite_font_check_is_hinted (PangoWin32Font *font)
