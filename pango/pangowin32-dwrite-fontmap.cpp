@@ -489,63 +489,124 @@ pango_win32_font_description_from_logfontw_dwrite (const LOGFONTW *logfontw)
 #define GASP_GRIDFIT 0x0001
 #define GASP_SYMMETRIC_GRIDFIT 0x0004
 
+typedef struct _dwrite_font_table_info dwrite_font_table_info;
+struct _dwrite_font_table_info
+{
+  const unsigned short *table_data;
+  UINT32 table_size;
+};
+
+static gboolean
+get_dwrite_font_table (IDWriteFontFace        *face,
+                       const UINT32            font_table_tag,
+                       dwrite_font_table_info *output_data)
+{
+  void *table_ctx;
+  HRESULT hr;
+  gboolean exists, result;
+  const unsigned short *table_data;
+  UINT32 table_size;
+
+  if (face == NULL)
+    return FALSE;
+
+  hr = face->TryGetFontTable (font_table_tag,
+                              (const void **)&table_data,
+                             &table_size,
+                             &table_ctx,
+                             &exists);
+
+  result = (SUCCEEDED (hr) && exists);
+
+  if (SUCCEEDED (hr))
+    {
+      if (output_data != NULL)
+        {
+          output_data->table_data = table_data;
+          output_data->table_size = table_size;
+        }
+
+      face->ReleaseFontTable (table_ctx);
+    }
+
+  return result;
+}
+
+static gboolean
+_pango_win32_font_check_font_feature_with_data (IDWriteFontFace        *face,
+                                                const char             *feature,
+                                                dwrite_font_table_info *output_data)
+{
+  IDWriteFontFace *dwrite_font_face = NULL;
+  gboolean result = FALSE;
+  UINT32 tag;
+
+  tag = DWRITE_MAKE_OPENTYPE_TAG (feature[0], feature[1], feature[2], feature[3]);
+
+  return get_dwrite_font_table (face, tag, output_data);
+}
+
 gboolean
 pango_win32_dwrite_font_check_is_hinted (PangoWin32Font *font)
 {
   IDWriteFontFace *dwrite_font_face = NULL;
   gboolean result = FALSE;
+  dwrite_font_table_info table_output;
 
   dwrite_font_face = (IDWriteFontFace *)pango_win32_font_get_dwrite_font_face (font);
-
   if (dwrite_font_face != NULL)
     {
-      UINT32 gasp_tag = DWRITE_MAKE_OPENTYPE_TAG ('g', 'a', 's', 'p');
-      UINT32 table_size;
-      const unsigned short *table_data;
-      void *table_ctx;
-      gboolean exists;
-
       /* The 'gasp' table may not exist for the font, so no 'gasp' == no hinting */
-      if (SUCCEEDED (dwrite_font_face->TryGetFontTable (gasp_tag,
-                                                        (const void **)(&table_data),
-                                                       &table_size,
-                                                       &table_ctx,
-                                                       &exists)))
+      if (_pango_win32_font_check_font_feature_with_data (dwrite_font_face, "gasp", &table_output) &&
+          table_output.table_size > 4)
         {
-          if (exists && table_size > 4)
+          guint16 version = DWRITE_NEXT_USHORT (table_output.table_data);
+
+          if (version == 0 || version == 1)
             {
-              guint16 version = DWRITE_NEXT_USHORT (table_data);
+              guint16 num_ranges = DWRITE_NEXT_USHORT (table_output.table_data);
+              UINT32 max_ranges = (table_output.table_size - 4) / (sizeof (guint16) * 2);
+              guint16 i = 0;
 
-              if (version == 0 || version == 1)
+              if (num_ranges > max_ranges)
+                num_ranges = max_ranges;
+
+              for (i = 0; i < num_ranges; i++)
                 {
-                  guint16 num_ranges = DWRITE_NEXT_USHORT (table_data);
-                  UINT32 max_ranges = (table_size - 4) / (sizeof (guint16) * 2);
-                  guint16 i = 0;
+                  G_GNUC_UNUSED
+                  guint16 ppem = DWRITE_NEXT_USHORT (table_output.table_data);
+                  guint16 behavior = DWRITE_NEXT_USHORT (table_output.table_data);
 
-                  if (num_ranges > max_ranges)
-                    num_ranges = max_ranges;
-
-                  for (i = 0; i < num_ranges; i++)
+                  if (behavior & (GASP_GRIDFIT | GASP_SYMMETRIC_GRIDFIT))
                     {
-                      G_GNUC_UNUSED
-                      guint16 ppem = DWRITE_NEXT_USHORT (table_data);
-                      guint16 behavior = DWRITE_NEXT_USHORT (table_data);
-
-                      if (behavior & (GASP_GRIDFIT | GASP_SYMMETRIC_GRIDFIT))
-                        {
-                          result = TRUE;
-                          break;
-                        }
+                      result = TRUE;
+                      break;
                     }
                 }
             }
-
-          dwrite_font_face->ReleaseFontTable (table_ctx);
         }
 
       dwrite_font_face->Release ();
     }
 
+  return result;
+}
+
+gboolean
+_pango_win32_font_check_font_feature (PangoWin32Font *font,
+                                      const char*     feature)
+{
+  IDWriteFontFace *face = NULL;
+  UINT32 tag;
+  gboolean result;
+
+  face = (IDWriteFontFace *)pango_win32_font_get_dwrite_font_face (font);
+
+  if (face == NULL)
+    return FALSE;
+
+  result = _pango_win32_font_check_font_feature_with_data (face, feature, NULL);
+  face->Release ();
   return result;
 }
 
