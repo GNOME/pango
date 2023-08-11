@@ -1,5 +1,9 @@
-Overview of changes in main, xx-xx-xxxx
-==========================================
+Overview of changes in 1.51.0, 11-08-2023
+=========================================
+- itemize: Improve script itemization
+- build: Check for cairo DWrite dependency
+- win32: Fix various issues and crashes
+- layout: Add a missing switch case
 
 Overview of changes in 1.50.14, 02-03-2023
 ==========================================
