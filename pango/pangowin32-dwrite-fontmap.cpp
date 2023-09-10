@@ -383,7 +383,7 @@ util_free_to_string (IDWriteLocalizedStrings *strings)
       UINT32 length = 0;
 
       hr = strings->FindLocaleName (L"en-us", &index, &exists);
-      if (FAILED (hr) || !exists || index == UINT32_MAX)
+      if (FAILED (hr) || !exists || index == G_MAXUINT32)
         index = 0;
 
       hr = strings->GetStringLength (index, &length);
