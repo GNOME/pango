@@ -29,6 +29,10 @@
 #include <glib.h>
 #include <hb.h>
 
+#ifdef USE_HB_GDI
+#include <hb-gdi.h>
+#endif
+
 #include "pango-impl-utils.h"
 #include "pangowin32.h"
 #include "pangowin32-private.h"
@@ -1250,7 +1254,12 @@ static inline guint32 hb_gdi_uint32_swap (const guint32 v)
 /*
  * Adapted from https://www.mail-archive.com/harfbuzz@lists.freedesktop.org/msg06538.html
  * by Konstantin Ritt.
+ *
+ * HarfBuzz added GDI support after this code was done, and may not have been enabled
+ * in the build, so this now becomes the fallback method used to create a hb_face_t if
+ * HarfBuzz was neither built with DirectWrite nor GDI support.
  */
+#if !defined (USE_HB_DWRITE) && !defined (USE_HB_GDI)
 static hb_blob_t *
 hfont_reference_table (hb_face_t *face, hb_tag_t tag, void *user_data)
 {
@@ -1292,6 +1301,7 @@ hfont_reference_table (hb_face_t *face, hb_tag_t tag, void *user_data)
   SelectObject (hdc, old_hfont);
   return hb_blob_create (buf, size, HB_MEMORY_MODE_READONLY, buf, g_free);
 }
+#endif
 
 static hb_font_t *
 pango_win32_font_create_hb_font (PangoFont *font)
@@ -1300,13 +1310,24 @@ pango_win32_font_create_hb_font (PangoFont *font)
   HFONT hfont;
   hb_face_t *face = NULL;
   hb_font_t *hb_font = NULL;
+  static hb_user_data_key_t key;
 
   g_return_val_if_fail (font != NULL, NULL);
 
+#ifdef USE_HB_DWRITE
+  face = pango_win32_font_create_hb_face_dwrite (win32font);
+#else
   hfont = _pango_win32_font_get_hfont (font);
 
   /* We are *not* allowed to destroy the HFONT here ! */
+#ifdef USE_HB_GDI
+  face = hb_gdi_face_create (hfont);
+
+  hb_face_set_user_data (face, &key, hfont, g_free, TRUE);
+#else
   face = hb_face_create_for_tables (hfont_reference_table, (void *)hfont, NULL);
+#endif
+#endif
 
   hb_font = hb_font_create (face);
   hb_font_set_scale (hb_font, win32font->size, win32font->size);

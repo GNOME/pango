@@ -321,6 +321,9 @@ gpointer               pango_win32_logfontw_get_dwrite_font   (LOGFONTW         
 PangoFontDescription *
 pango_win32_font_description_from_logfontw_dwrite             (const LOGFONTW        *logfontw);
 
+hb_face_t *
+pango_win32_font_create_hb_face_dwrite                        (PangoWin32Font        *font);
+
 G_END_DECLS
 
 #endif /* __PANGOWIN32_PRIVATE_H__ */
