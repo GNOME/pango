@@ -62,3 +62,15 @@ License
 -------
 Most of the code of Pango is licensed under the terms of the
 GNU Lesser Public License (LGPL) - see the file COPYING for details.
+
+Versioning
+----------
+
+Historically, Pango was following the traditionally even/odd library
+versioning scheme where stable releases are marked by even minor
+and development releases by an odd minor.
+
+In recent years, Pango development has slowed down so much that it
+no longer makes sense to have unstable cycles, or even unstable releases.
+Going forward, pango versions will simply be increasing triples, with
+no particular significance to the parity of the minor version.
