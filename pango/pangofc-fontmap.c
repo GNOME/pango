@@ -932,8 +932,6 @@ fc_thread_func (gpointer data)
   GAsyncQueue *queue = data;
   gboolean done = FALSE;
 
-  g_async_queue_ref (queue);
-
   while (!done)
     {
       ThreadData *td = g_async_queue_pop (queue);
@@ -1442,7 +1440,7 @@ start_fontconfig_thread (PangoFcFontMap *fcfontmap)
 
   g_mutex_lock (&fc_init_mutex);
 
-  thread = g_thread_new ("[pango] fontconfig", fc_thread_func, fcfontmap->priv->queue);
+  thread = g_thread_new ("[pango] fontconfig", fc_thread_func, g_async_queue_ref (fcfontmap->priv->queue));
   g_thread_unref (thread);
 
   if (fc_initialized == DEFAULT_CONFIG_NOT_INITIALIZED)
