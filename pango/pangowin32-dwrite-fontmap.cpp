@@ -55,7 +55,7 @@ struct _PangoWin32DWriteFontSetBuilder
 #ifdef STRICT
 #undef STRICT
 #endif
-#include "pangowin32-private.h"
+#include "pangowin32-private.hpp"
 
 #ifdef USE_HB_DWRITE
 #include <hb-directwrite.h>
@@ -70,16 +70,6 @@ struct _PangoWin32DWriteFontSetBuilder
 # define UUID_OF_IDWriteFont1 IID_IDWriteFont1
 # define UUID_OF_IDWriteFontCollection IID_IDWriteFontCollection
 #endif
-
-struct _PangoWin32DWriteItems
-{
-  IDWriteFactory5   *dwrite_factory5;
-  IDWriteFactory3   *dwrite_factory3;
-  IDWriteFactory    *dwrite_factory;
-  IDWriteGdiInterop *gdi_interop;
-  guint              have_idwritefactory5 : 1;
-  guint              have_idwritefactory3 : 1;
-};
 
 PangoWin32DWriteItems *
 pango_win32_init_direct_write (void)
