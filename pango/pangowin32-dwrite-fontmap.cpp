@@ -362,7 +362,7 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
                                                                            &custom_collection1);
           else if  (dwrite_items->have_idwritefactory3)
             dwrite_items->dwrite_factory3->CreateFontCollectionFromFontSet (fontset,
-                                                                           &custom_collection1);
+                                                                             &custom_collection1);
 
           if (SUCCEEDED (hr) && custom_collection1 != NULL)
             {
@@ -378,7 +378,17 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
 
       fontset->Release ();
     }
+  else
 #endif /* HAVE_DWRITE_3_H */
+  if (map->custom_fonts_legacy != NULL &&
+      map->custom_fonts_legacy->font_collection_temp != NULL)
+    {
+      IDWriteFontCollection *collection = map->custom_fonts_legacy->font_collection_temp;
+
+      pango_win32_dwrite_font_map_populate_with_collection (map, collection);
+      collection->Release ();
+	  map->custom_fonts_legacy->font_collection_temp = NULL;
+    }
 
   sys_collection->Release ();
 }
@@ -915,6 +925,33 @@ add_custom_font_factory3 (PangoFontMap     *font_map,
 }
 #endif /* HAVE_DWRITE_3_H */
 
+static gboolean
+add_custom_font_legacy (PangoFontMap    *font_map,
+                        IDWriteFactory  *factory,
+                        const char      *filepath,
+                        GError         **error)
+{
+  HRESULT hr = S_OK;
+  PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (font_map);
+  IDWriteFontCollection *collection;
+
+  hr = pango_win32_create_legacy_font_collection (win32fontmap,
+                                                  factory,
+                                                  filepath,
+                                                  &collection);
+
+  if (SUCCEEDED (hr))
+    win32fontmap->custom_fonts_legacy->font_collection_temp = collection;
+  else
+    g_set_error (error,
+                 G_FILE_ERROR,
+                 G_FILE_ERROR_FAILED,
+                 "Loading custom font file failed with error code %x\n", (unsigned)hr);
+
+
+  return (SUCCEEDED (hr));
+}
+
 gboolean
 pango_win32_dwrite_add_font_file (PangoFontMap *font_map,
                                   const char   *font_file_path,
@@ -940,22 +977,22 @@ pango_win32_dwrite_add_font_file (PangoFontMap *font_map,
 
 #ifdef HAVE_DWRITE_3_H
   /* we don't support custom font loading yet for pre-Windows 10 */
-  if (!dwrite_items->have_idwritefactory3)
-    {
-      g_message ("Loading custom fonts is currently only available in Windows 10 and later");
-      return FALSE;
-    }
-
   if (dwrite_items->have_idwritefactory5)
     succeeded = add_custom_font_factory5 (font_map,
                                           dwrite_items->dwrite_factory5,
                                           font_file_path,
                                           error);
-  else
+  else if (dwrite_items->have_idwritefactory3)
     succeeded = add_custom_font_factory3 (font_map,
                                           dwrite_items->dwrite_factory3,
                                           font_file_path,
                                           error);
+  else
+#endif
+    succeeded = add_custom_font_legacy (font_map,
+                                        dwrite_items->dwrite_factory,
+                                        font_file_path,
+                                        error);
 
   if (succeeded)
     {
@@ -968,12 +1005,6 @@ pango_win32_dwrite_add_font_file (PangoFontMap *font_map,
     }
 
   return succeeded;
-#else
-  /* We must have dwrite_3.h to go on here, for now */
-  g_message ("This build of Pango did not include Windows 10+-specific support");
-  g_message ("Loading of custom fonts is not yet supported with this build of of PangoWin32");
-  return FALSE;
-#endif
 }
 
 void
