@@ -4102,7 +4102,10 @@ process_item (PangoLayout     *layout,
           processing_new_item = FALSE;
         }
 
-      extra_width = find_break_extra_width (layout, state, item->num_chars);
+      if (!is_last_item)
+        extra_width = find_break_extra_width (layout, state, item->num_chars);
+      else
+        extra_width = 0;
     }
   else
     extra_width = 0;
@@ -4162,7 +4165,10 @@ retry_break:
 
   for (num_chars = 0, width = 0; num_chars < (no_break_at_end ? item->num_chars : (item->num_chars + 1)); num_chars++)
     {
-      extra_width = find_break_extra_width (layout, state, num_chars);
+      if (!is_last_item || num_chars != item->num_chars)
+        extra_width = find_break_extra_width (layout, state, num_chars);
+      else
+        extra_width = 0;
 
       /* We don't want to walk the entire item if we can help it, but
        * we need to keep going at least until we've found a breakpoint
