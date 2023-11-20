@@ -127,6 +127,7 @@ installed_test_layouts_data = [
   'layouts/no-space.layout',
   'layouts/aaa.layout',
   'layouts/letterspacing.layout',
+  'layouts/screaming.layout',
 ]
 
 installed_test_fontsets_data = [
