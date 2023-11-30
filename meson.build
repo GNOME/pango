@@ -238,7 +238,6 @@ cairo_pc = ''
 cairo_lib = ''
 freetype2_pc = ''
 freetype_lib = []
-fontconfig_pc=''
 
 harfbuzz_dep = dependency('harfbuzz',
                           version: harfbuzz_req_version,
@@ -260,42 +259,16 @@ if fontconfig_option.disabled() and fontconfig_required
   error('Fontconfig support cannot be disabled on this platform')
 endif
 
-# If option is 'enabled' or 'auto', set required: false (equivalent to auto).
-# This also prevents meson from using fallbacks.
-fontconfig_nofallback_option = fontconfig_option.allowed() ? false : fontconfig_option
-
-# Try pkgconfig and cmake, no fallback
-fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version,
-                            required: fontconfig_nofallback_option)
-if not fontconfig_dep.found()
-  if cc.get_id() == 'msvc' and cc.has_header('fontconfig/fontconfig.h')
-    # Look for the Visual Studio-style import library if FontConfig's .pc file cannot be
-    # found on Visual Studio
-    fontconfig_dep = cc.find_library('fontconfig', required: fontconfig_nofallback_option)
-  endif
-endif
-
-# Recheck without disabling fallback if fontconfig has not been found on the
-# system. Override user option 'auto' to 'enabled' on platforms that always
+# Override user option 'auto' to 'enabled' on platforms that always
 # require fontconfig.
 fontconfig_option = fontconfig_required ? true : fontconfig_option
-if not fontconfig_dep.found()
-  fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version,
-                              required: fontconfig_option)
-endif
+fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version,
+                            required: fontconfig_option)
 
 if fontconfig_dep.found()
-  if fontconfig_dep.type_name() in ['pkgconfig', 'internal']
-    fontconfig_pc = 'fontconfig'
-  endif
-
   pango_deps += fontconfig_dep
 
-  if fontconfig_dep.type_name() != 'library'
-    if fontconfig_dep.version().version_compare('>=2.12.92')
-      pango_conf.set('HAVE_FCWEIGHTFROMOPENTYPEDOUBLE', 1)
-    endif
-  elif cc.has_function('FcWeightFromOpenTypeDouble', dependencies: fontconfig_dep)
+  if fontconfig_dep.version().version_compare('>=2.12.92')
     pango_conf.set('HAVE_FCWEIGHTFROMOPENTYPEDOUBLE', 1)
   endif
 endif

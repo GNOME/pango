@@ -315,7 +315,7 @@ if build_pangoft2
     filebase: 'pangoft2',
     subdirs: pango_api_name,
     libraries: freetype_lib,
-    requires: [ 'pango', freetype2_pc, fontconfig_pc ],
+    requires: [ 'pango', freetype2_pc, 'fontconfig' ],
   )
 
   # Since we split the introspection data, we also need a split pkg-config
