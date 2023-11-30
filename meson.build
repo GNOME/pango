@@ -236,7 +236,8 @@ endif
 # pkg-config files for them
 cairo_pc = ''
 cairo_lib = ''
-freetype2_pc=''
+freetype2_pc = ''
+freetype_lib = []
 fontconfig_pc=''
 
 harfbuzz_dep = dependency('harfbuzz',
@@ -317,11 +318,13 @@ endif
 
 # The first version of freetype with a pkg-config file is 2.1.5,
 # CMake uses 'freetype' rather than 'freetype2' for the package name
-freetype_dep = dependency('freetype2', 'freetype',
+freetype_dep = dependency(['freetype2', 'freetype'],
                           required: freetype_option)
 
 if freetype_dep.found() and freetype_dep.type_name() in ['pkgconfig', 'internal']
   freetype2_pc = 'freetype2'
+else
+  freetype_lib = freetype_dep
 endif
 
 # To build pangoft2, we need HarfBuzz, FontConfig and FreeType

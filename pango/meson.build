@@ -314,6 +314,7 @@ if build_pangoft2
     description: 'FreeType 2.0 and fontconfig font support for Pango',
     filebase: 'pangoft2',
     subdirs: pango_api_name,
+    libraries: freetype_lib,
     requires: [ 'pango', freetype2_pc, fontconfig_pc ],
   )
 
