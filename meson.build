@@ -234,8 +234,6 @@ endif
 # for those non-GNOME dependencies, or when we find them manually
 # for MSVC builds, as their MSVC build systems do not generate
 # pkg-config files for them
-cairo_pc = ''
-cairo_lib = ''
 freetype2_pc = ''
 freetype_lib = []
 
@@ -339,56 +337,55 @@ if host_system == 'windows'
   endif
 endif
 
-# If option is 'auto' or 'enabled' it is not required to find cairo on the
-# system because a fallback is done at the end.
-cairo_option = get_option('cairo')
-if not cairo_option.disabled()
-  cairo_option = false
+# Enable cairo-ft with FreeType and FontConfig support if
+# building as a subproject and FontConfig support is required
+# or requested
+cairo_fallback_options = []
+if fontconfig_required or fontconfig_option.enabled()
+  cairo_fallback_options = [
+    'freetype=enabled',
+    'fontconfig=enabled',
+  ]
 endif
 
-cairo_found_type = ''
-cairo_dep = dependency('cairo', version: cairo_req_version, required: cairo_option)
+cairo_dep = dependency(
+  'cairo',
+  version: cairo_req_version,
+  required: get_option('cairo'),
+  default_options: cairo_fallback_options,
+)
 cairo_dwrite_dep = disabler() # Only for Windows
+cairo_found_type = cairo_dep.type_name()
 
-if cairo_dep.found()
-  cairo_found_type = cairo_dep.type_name()
-  if host_system == 'windows'
-    cairo_dwrite_dep = dependency('cairo-dwrite-font', version: cairo_req_version, required: false)
+# Check for Windows-only features from HarfBuzz
+if host_system == 'windows'
+  if cairo_dep.found()
     # cairo < 1.17.8 used a different name
-    if not cairo_dwrite_dep.found()
-      cairo_dwrite_dep = dependency('cairo-win32-dwrite-font', version: cairo_req_version, required: false)
-    endif
-    if cairo_dwrite_dep.found()
-      if harfbuzz_dep.type_name() == 'internal' or \
-         cpp.has_function('hb_directwrite_face_create', dependencies: harfbuzz_dep)
-        pango_conf.set('USE_HB_DWRITE', 1)
-      endif
-    else
-      if harfbuzz_dep.type_name() == 'internal' or \
-         cc.has_function('hb_gdi_face_create', dependencies: harfbuzz_dep)
-        pango_conf.set('USE_HB_GDI', 1)
-      endif
-    endif
+    cairo_dwrite_dep = dependency(
+      ['cairo-dwrite-font', 'cairo-win32-dwrite-font'],
+      version: cairo_req_version,
+      required: false
+    )
   endif
-else
-  if cc.get_id() == 'msvc' and cc.has_header('cairo.h')
-    cairo_dep = cc.find_library('cairo', required: cairo_option)
-    cairo_found_type = 'library'
-  endif
-endif
 
-# Remove once Meson gains capability to declare dependencies
-# in a declarative way
-if not cairo_dep.found()
-  cairo_dep = dependency('cairo', version: cairo_req_version,
-                         required: get_option('cairo'))
-  cairo_found_type = cairo_dep.type_name()
+  # Use hb-directwrite if we are also using cairo-dwrite-font
+  if cairo_dwrite_dep.found()
+    if harfbuzz_dep.type_name() == 'internal' or \
+       cpp.has_function('hb_directwrite_face_create', dependencies: harfbuzz_dep)
+      pango_conf.set('USE_HB_DWRITE', 1)
+    endif
+  else
+    if harfbuzz_dep.type_name() == 'internal' or \
+       cc.has_function('hb_gdi_face_create', dependencies: harfbuzz_dep)
+      pango_conf.set('USE_HB_GDI', 1)
+    endif
+  endif
 endif
 
 pango_font_backends = []
 pango_cairo_backends = []
 
-if cairo_found_type in ['pkgconfig', 'internal']
+if cairo_dep.found()
   # Check the following Cairo font backends
   # - dependency
   # - version
@@ -419,8 +416,26 @@ if cairo_found_type in ['pkgconfig', 'internal']
       endforeach
     endif
     if dep.found()
-      if b[0] == 'cairo-ft' and not build_pangoft2
-        continue
+      if b[0] == 'cairo-ft'
+        if not build_pangoft2
+          continue
+        else
+          # Check external cairo-ft has the required FontConfig support
+          if dep.type_name() != 'internal'
+            cairo_fc_test = '''
+#include <cairo-ft.h>
+int main() {
+  FcPattern *p = NULL;
+  cairo_ft_font_face_create_for_pattern (p);
+  return 0;
+}'''
+            if not cc.links(cairo_fc_test,
+                            dependencies: dep,
+                            name : 'Cairo is built with FreeType and FontConfig support')
+              error('@0@ does not have the required FontConfig support'.format(b[0]))
+            endif
+          endif
+        endif
       endif
       if b[0] == 'cairo-quartz' and not pango_conf.has('HAVE_CORE_TEXT')
         continue
@@ -463,69 +478,6 @@ if cairo_found_type in ['pkgconfig', 'internal']
       pango_cairo_backends += b[3]
     endif
   endforeach
-
-  # This is to set up pangocairo.pc so that things that refer to
-  # it will link correctly
-  cairo_pc = 'cairo'
-elif cairo_found_type == 'library'
-  # Fallback: Look for Cairo items manually
-  # We need to check for headers for some
-  cairo_headers = [ 'win32', 'quartz', 'ps', 'pdf', 'xlib' ]
-
-  foreach header : cairo_headers
-    if cc.has_header('cairo-@0@.h'.format(header))
-      pango_conf.set('HAVE_CAIRO_@0@'.format(header.underscorify().to_upper()), 1)
-      if header == 'win32'
-        pango_font_backends += header
-      elif header == 'quartz'
-        if pango_conf.has('HAVE_CORE_TEXT')
-          pango_font_backends += header
-        endif
-      else
-        pango_cairo_backends += header
-      endif
-    endif
-  endforeach
-
-  # Other cairo features that we need to check for symbols
-  # Note that Cairo with FreeType support can be without FontConfig
-  # support, so we must check for FontConfig support in Cairo
-  if cc.links('''#include <cairo-ft.h>
-                 int main() {
-                   FcPattern *p = NULL;
-                   cairo_ft_font_face_create_for_pattern (p);
-                   return 0;
-                 }''',
-                 dependencies: cairo_dep,
-                 name : 'Cairo is built with FreeType and FontConfig support')
-    if build_pangoft2
-      pango_conf.set('HAVE_CAIRO_FREETYPE', 1)
-      pango_font_backends += 'freetype'
-    endif
-  endif
-
-  if pango_font_backends.length() == 0
-    error('Cairo found, but no Cairo font backends found')
-  endif
-
-  # Check for Cairo's libpng output surface support
-  if cc.links('''#include <cairo.h>
-                 #include <stdio.h>
-                 int main() {
-                   cairo_surface_t *s = NULL;
-                   const char *f = "abc.png";
-                   cairo_surface_write_to_png (s, f);
-                   return 0;
-                 }''',
-                 dependencies: cairo_dep,
-                 name : 'Cairo is built with PNG output surface support')
-    pango_conf.set('HAVE_CAIRO_PNG', 1)
-    pango_cairo_backends += 'png'
-  endif
-
-  # This is to set up pangocairo.pc so that things that refer to
-  # it will link correctly, when we don't have pkg-config files for cairo
-  cairo_lib = '-lcairo'
 endif
 
 if cairo_dep.found()

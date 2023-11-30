@@ -569,14 +569,7 @@ if cairo_dep.found()
     sources: pangocairo_dep_sources,
   )
   meson.override_dependency('pangocairo', libpangocairo_dep)
-
-  # Create pangocairo.pc according to whether we found Cairo
-  # manually
-  if cairo_found_type in ['pkgconfig', 'internal']
-    pango_cairo_requires = [ 'pango', cairo_pc ]
-  else
-    pango_cairo_requires = [ 'pango' ]
-  endif
+  pango_cairo_requires = [ 'pango', 'cairo' ]
 
   pkgconfig.generate(libpangocairo,
     name: 'Pango Cairo',
