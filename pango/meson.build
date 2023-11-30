@@ -170,10 +170,7 @@ libpango_dep = declare_dependency(
 )
 meson.override_dependency('pango', libpango_dep)
 
-pango_pkg_requires = ['gobject-2.0']
-if harfbuzz_dep.type_name() == 'pkgconfig'
-  pango_pkg_requires += 'harfbuzz'
-endif
+pango_pkg_requires = ['gobject-2.0', 'harfbuzz']
 
 pkgconfig.generate(libpango,
   name: 'Pango',
