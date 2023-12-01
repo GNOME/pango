@@ -368,8 +368,9 @@ if host_system == 'windows'
     )
   endif
 
-  # Use hb-directwrite if we are also using cairo-dwrite-font
-  if cairo_dwrite_dep.found()
+  # Use hb-directwrite if we are also using cairo-dwrite-font,
+  # or if we are (unlikely) not enabling Cairo support
+  if not cairo_dep.found() or cairo_dwrite_dep.found()
     if harfbuzz_dep.type_name() == 'internal' or \
        cpp.has_function('hb_directwrite_face_create', dependencies: harfbuzz_dep)
       pango_conf.set('USE_HB_DWRITE', 1)
