@@ -237,20 +237,28 @@ endif
 freetype2_pc = ''
 freetype_lib = []
 
-harfbuzz_dep = dependency('harfbuzz',
-                          version: harfbuzz_req_version,
-                          default_options: [
-                            'coretext=enabled',
-                            'directwrite=enabled',
-                            'gdi=enabled',
-                          ])
-
-pango_deps += harfbuzz_dep
-
 # Platforms where fontconfig is required
 fontconfig_required = host_system not in ['windows', 'darwin']
 # Disable fontconfig by default on platforms where it is optional
 fontconfig_option = get_option('fontconfig').disable_auto_if(not fontconfig_required)
+
+harfbuzz_fallback_options = [
+  'coretext=enabled',
+  'directwrite=enabled',
+  'gdi=enabled'
+]
+
+# Enable FreeType support in HarfBuzz if building it as a
+# subproject and FontConfig support is required or requested
+if fontconfig_required or fontconfig_option.enabled()
+  harfbuzz_fallback_options += 'freetype=enabled'
+endif
+
+harfbuzz_dep = dependency('harfbuzz',
+                          version: harfbuzz_req_version,
+                          default_options: harfbuzz_fallback_options)
+
+pango_deps += harfbuzz_dep
 # In meson 1.1.0, this check can be replaced with .enable_if() to simplify the
 # logic in the fallback handling.
 if fontconfig_option.disabled() and fontconfig_required
@@ -289,8 +297,15 @@ endif
 
 # The first version of freetype with a pkg-config file is 2.1.5,
 # CMake uses 'freetype' rather than 'freetype2' for the package name
+# Disable HarfBuzz support in FreeType if HarfBuzz *and* FreeType are
+# being built as subprojects
+freetype_fallback_options = []
+if harfbuzz_dep.type_name() == 'internal'
+  freetype_fallback_options = ['harfbuzz=disabled']
+endif
 freetype_dep = dependency(['freetype2', 'freetype'],
-                          required: freetype_option)
+                          required: freetype_option,
+                          default_options: freetype_fallback_options)
 
 if freetype_dep.found() and freetype_dep.type_name() in ['pkgconfig', 'internal']
   freetype2_pc = 'freetype2'
