@@ -49,6 +49,8 @@ pango_cairo_win32_font_map_changed (PangoFontMap *fontmap)
   cwfontmap->serial++;
   if (cwfontmap->serial == 0)
     cwfontmap->serial++;
+
+  pango_win32_font_map_cache_clear (fontmap);
 }
 
 static void

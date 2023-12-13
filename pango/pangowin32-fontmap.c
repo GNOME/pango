@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <glib/gstdio.h>
+#include <gio/gio.h>
 
 #include "pango-fontmap.h"
 #include "pango-impl-utils.h"
@@ -108,7 +108,7 @@ static const char *pango_win32_face_get_face_name    (PangoFontFace *face);
 
 static PangoWin32FontMap *default_fontmap = NULL; /* MT-safe */
 
-G_DEFINE_TYPE (PangoWin32FontMap, _pango_win32_font_map, PANGO_TYPE_FONT_MAP)
+G_DEFINE_TYPE (PangoWin32FontMap, pango_win32_font_map, PANGO_TYPE_FONT_MAP)
 
 #define TOLOWER(c) \
   (((c) >= 'A' && (c) <= 'Z') ? (c) - 'A' + 'a' : (c))
@@ -697,11 +697,9 @@ create_standard_family (PangoWin32FontMap *win32fontmap,
 }
 
 static void
-_pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
+pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 {
-  LOGFONTW logfont;
   HDC hdc = _pango_win32_get_display_dc ();
-  struct EnumProcData enum_proc_data = {hdc, win32fontmap};
 
   win32fontmap->families =
     g_hash_table_new_full ((GHashFunc) case_insensitive_str_hash,
@@ -720,18 +718,6 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 
   pango_win32_dwrite_font_map_populate (win32fontmap);
 
-#if 0 /* XXX: Implement fallback mode to GDI? */
-  memset (&logfont, 0, sizeof (logfont));
-  logfont.lfCharSet = DEFAULT_CHARSET;
-
-  enum_proc_data.hdc = hdc;
-  enum_proc_data.font_map = win32fontmap;
-
-  EnumFontFamiliesExW (hdc, &logfont,
-                       (FONTENUMPROCW) pango_win32_enum_proc,
-                       (LPARAM) &enum_proc_data, 0);
-#endif
-
   g_hash_table_foreach (win32fontmap->families, synthesize_foreach, win32fontmap);
 
   /* Create synthetic "Sans", "Sans-Serif", "Serif", "Monospace", "Cursive", "Fantasy" and "System-ui" families */
@@ -744,6 +730,19 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
   create_standard_family (win32fontmap, "System-ui");
 
   win32fontmap->resolution = (PANGO_SCALE / (double) GetDeviceCaps (hdc, LOGPIXELSY)) * 72.0;
+}
+
+static void
+pango_win32_font_map_fini (PangoWin32FontMap *win32fontmap)
+{
+  g_list_foreach (win32fontmap->freed_fonts->head, (GFunc)g_object_unref, NULL);
+  g_queue_free (win32fontmap->freed_fonts);
+
+  pango_win32_font_cache_free (win32fontmap->font_cache);
+
+  g_hash_table_destroy (win32fontmap->dwrite_fonts);
+  g_hash_table_destroy (win32fontmap->fonts);
+  g_hash_table_destroy (win32fontmap->families);
 }
 
 static void
@@ -792,8 +791,28 @@ pango_win32_font_map_get_face (PangoFontMap *fontmap,
   return PANGO_FONT_FACE (win32font->win32face);
 }
 
+static guint
+pango_win32_font_map_get_serial (PangoFontMap *fontmap)
+{
+  PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (fontmap);
+
+  return win32fontmap->serial;
+}
+
 static void
-_pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
+pango_win32_font_map_changed (PangoFontMap *fontmap)
+{
+  PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (fontmap);
+
+  win32fontmap->serial++;
+  if (win32fontmap->serial == 0)
+    win32fontmap->serial++;
+
+  pango_win32_font_map_cache_clear (fontmap);
+}
+
+static void
+pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontMapClass *fontmap_class = PANGO_FONT_MAP_CLASS (class);
@@ -806,6 +825,8 @@ _pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
   fontmap_class->list_families = pango_win32_font_map_list_families;
   fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_WIN32;
   fontmap_class->get_face = pango_win32_font_map_get_face;
+  fontmap_class->get_serial = pango_win32_font_map_get_serial;
+  fontmap_class->changed = pango_win32_font_map_changed;
   class->aliases = g_hash_table_new_full ((GHashFunc)alias_hash,
                                           (GEqualFunc)alias_equal,
                                           (GDestroyNotify)alias_free,
@@ -861,16 +882,19 @@ pango_win32_font_map_finalize (GObject *object)
 {
   PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (object);
 
-  g_list_foreach (win32fontmap->freed_fonts->head, (GFunc)g_object_unref, NULL);
-  g_queue_free (win32fontmap->freed_fonts);
+  pango_win32_font_map_fini (win32fontmap);
+  pango_win32_dwrite_release_font_set_builders (win32fontmap);
 
   pango_win32_font_cache_free (win32fontmap->font_cache);
+
+  if (win32fontmap->font_set_builder != NULL)
+    g_free (win32fontmap->font_set_builder);
 
   g_hash_table_destroy (win32fontmap->dwrite_fonts);
   g_hash_table_destroy (win32fontmap->fonts);
   g_hash_table_destroy (win32fontmap->families);
 
-  G_OBJECT_CLASS (_pango_win32_font_map_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango_win32_font_map_parent_class)->finalize (object);
 }
 
 /*
@@ -1703,6 +1727,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   PangoFontDescription *description;
   PangoWin32Family *win32family;
   PangoWin32Face *win32face;
+  gboolean use_logfont_for_desc = FALSE;
 
   char tmp_for_charset_name[10];
   char tmp_for_ff_name[10];
@@ -1733,13 +1758,20 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   PING (("not found"));
   lfp2 = g_new (LOGFONTW, 1);
   *lfp2 = *lfp;
+
   if (dwrite_font == NULL)
-    dwrite_font = pango_win32_logfontw_get_dwrite_font (lfp2);
+    {
+      use_logfont_for_desc = TRUE;
+      dwrite_font = pango_win32_logfontw_get_dwrite_font (lfp2);
+    }
 
   g_hash_table_insert (win32fontmap->fonts, lfp2, lfp2);
   g_hash_table_insert (win32fontmap->dwrite_fonts, lfp2, dwrite_font);
 
-  description = pango_win32_font_description_from_logfontw (lfp2);
+  if (use_logfont_for_desc)
+    description = pango_win32_font_description_from_logfontw (lfp2);
+  else
+    description = pango_win32_font_description_from_dwrite_font (dwrite_font);
 
   /* In some cases, extracting a name for a font can fail; such fonts
    * aren't usable for us
@@ -2071,4 +2103,62 @@ pango_win32_font_map_load_fontset (PangoFontMap                 *fontmap,
       g_warning ("All font fallbacks failed!!!!");
 
   return PANGO_FONTSET (fonts);
+}
+
+/*<private>
+ * pango_win32_font_map_cache_clear:
+ * @font_map: a `PangoWin32FontMap`
+ *
+ * Clear all cached information and fontsets for this font map.
+ *
+ * This should be called whenever the application wishes to add an
+ * `IDirectWriteFontSet` for the @font_map; this is automatically called
+ * when using the `pango_win32_font_map_add_font_file()` function.
+ *
+ * Since: 1.52
+ */
+void
+pango_win32_font_map_cache_clear (PangoFontMap *font_map)
+{
+  PangoWin32FontMap *win32fontmap;
+  int removed, added;
+
+  g_return_if_fail (PANGO_WIN32_IS_FONT_MAP (font_map));
+
+  win32fontmap = PANGO_WIN32_FONT_MAP (font_map);
+
+  removed = g_list_model_get_n_items (G_LIST_MODEL (font_map));
+  pango_win32_font_map_fini (win32fontmap);
+  pango_win32_font_map_init (win32fontmap);
+  added = g_list_model_get_n_items (G_LIST_MODEL (font_map));
+
+  g_list_model_items_changed (G_LIST_MODEL (font_map), 0, removed, added);
+
+  if (removed != added)
+    g_object_notify (G_OBJECT (font_map), "n-items");
+}
+
+/**
+ * pango_win32_font_map_add_font_file:
+ * @font_map: a `PangoWin32FontMap`
+ * @font_file_path: Path to the actual font file
+ * @error: return location for an error
+ *
+ * Loads a font file with one or more fonts into the `PangoWin32FontMap` specified
+ * by the path. The font file must be in a format that is supported by the system's
+ * DirectWrite APIs.
+ *
+ * Return value: TRUE if the font file is successfully loaded into the `PangoWin32FontMap`;
+ *   otherwise FALSE.
+ *
+ * Since: 1.52.0
+ */
+gboolean
+pango_win32_font_map_add_font_file (PangoFontMap *font_map,
+                                    const char   *font_file_path,
+                                    GError      **error)
+{
+  g_return_val_if_fail (PANGO_WIN32_IS_FONT_MAP (font_map), FALSE);
+
+  return pango_win32_dwrite_add_font_file (font_map, font_file_path, error);
 }
