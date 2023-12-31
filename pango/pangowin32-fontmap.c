@@ -883,6 +883,9 @@ pango_win32_font_map_finalize (GObject *object)
   PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (object);
 
   pango_win32_font_map_fini (win32fontmap);
+  if (!pango_win32_release_legacy_font_loader  (win32fontmap))
+    g_warning ("Custom COM objects for the custom font loader were not successfully released");
+
   pango_win32_dwrite_release_font_set_builders (win32fontmap);
 
   pango_win32_font_cache_free (win32fontmap->font_cache);
