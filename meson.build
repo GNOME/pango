@@ -25,6 +25,11 @@ if cc.get_id() != 'msvc'
   add_project_arguments('-D_GNU_SOURCE', language: 'c')
 endif
 
+if cc.get_id() == 'gcc'
+  # FIXME: https://discourse.llvm.org/t/why-doesnt-clang-have-a-static-libc-option/69536/3
+  add_project_arguments('-static-libstdc++', language: 'cpp')
+endif
+
 pango_prefix = get_option('prefix')
 pango_libdir = join_paths(pango_prefix, get_option('libdir'))
 pango_sysconfdir = join_paths(pango_prefix, get_option('sysconfdir'))
