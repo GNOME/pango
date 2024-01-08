@@ -1191,7 +1191,8 @@ default_break (const char     *text,
             break_op = BREAK_PROHIBITED;
 
           if ((prev_break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION ||
-               prev_break_type == G_UNICODE_BREAK_HYPHEN) &&
+               prev_break_type == G_UNICODE_BREAK_HYPHEN ||
+               prev_break_type == G_UNICODE_BREAK_INFIX_SEPARATOR) &&
               break_type == G_UNICODE_BREAK_NUMERIC)
             break_op = BREAK_PROHIBITED;
 
