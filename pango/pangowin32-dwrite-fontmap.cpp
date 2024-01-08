@@ -25,8 +25,10 @@
 #include <initguid.h>
 
 #ifdef HAVE_DWRITE_3_H
-/* we need dwrite_3.h for IDWriteFactory[3|5] */
 #include <dwrite_3.h>
+#else
+#include "sdk/win32/dwrite_3.h"
+#endif
 
 # ifdef _MSC_VER
 #  define UUID_OF_IDWriteFactory3 __uuidof (IDWriteFactory3)
@@ -41,16 +43,6 @@ struct _PangoWin32DWriteFontSetBuilder
   IDWriteFontSetBuilder1 *font_set_builder1;
   IDWriteFontSetBuilder *font_set_builder;
 };
-
-#else
-/* stub, for simplicity reasons, if we don't have IDWriteFactory[3|5] */
-# define IDWriteFactory3 IUnknown
-# define IDWriteFactory5 IUnknown
-# define IDWriteFontSet IUnknown
-# define IDWriteFontSetBuilder IUnknown
-# define IDWriteFontSetBuilder1 IUnknown
-#endif
-#include <dwrite_1.h>
 
 #ifdef STRICT
 #undef STRICT
@@ -83,7 +75,6 @@ pango_win32_init_direct_write (void)
   gboolean have_idwritefactory3 = FALSE;
   gboolean have_idwritefactory5 = FALSE;
 
-#ifdef HAVE_DWRITE_3_H
   /* Try to create a IDWriteFactory3 first, which is available on Windows 10+ */
   hr = DWriteCreateFactory (DWRITE_FACTORY_TYPE_SHARED,
                             UUID_OF_IDWriteFactory3,
@@ -104,7 +95,7 @@ pango_win32_init_direct_write (void)
                                      reinterpret_cast<void**> (&factory));
     }
   else
-#endif
+
     hr = DWriteCreateFactory (DWRITE_FACTORY_TYPE_SHARED,
                               UUID_OF_IDWriteFactory,
                               reinterpret_cast<IUnknown**> (&factory));
@@ -329,8 +320,6 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
 
   pango_win32_dwrite_font_map_populate_with_collection (map, sys_collection);
 
-#ifdef HAVE_DWRITE_3_H
-  /* the following code requires items from dwrite_3.h */
   if (dwrite_items->have_idwritefactory5 || dwrite_items->have_idwritefactory3)
     {
       if (map->font_set_builder == NULL)
@@ -378,10 +367,8 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
 
       fontset->Release ();
     }
-  else
-#endif /* HAVE_DWRITE_3_H */
-  if (map->custom_fonts_legacy != NULL &&
-      map->custom_fonts_legacy->font_collection_temp != NULL)
+  else if (map->custom_fonts_legacy != NULL &&
+           map->custom_fonts_legacy->font_collection_temp != NULL)
     {
       IDWriteFontCollection *collection = map->custom_fonts_legacy->font_collection_temp;
 
@@ -761,8 +748,6 @@ pango_win32_font_create_hb_face_dwrite (PangoWin32Font *font)
 }
 #endif
 
-#ifdef HAVE_DWRITE_3_H
-/* the following items require items from dwrite_3.h */
 static gboolean
 add_custom_font_factory5 (PangoFontMap     *font_map,
                           IDWriteFactory5  *factory5,
@@ -923,7 +908,6 @@ add_custom_font_factory3 (PangoFontMap     *font_map,
 
   return *error == NULL;
 }
-#endif /* HAVE_DWRITE_3_H */
 
 static gboolean
 add_custom_font_legacy (PangoFontMap    *font_map,
@@ -975,8 +959,6 @@ pango_win32_dwrite_add_font_file (PangoFontMap *font_map,
 
   dwrite_items = pango_win32_get_direct_write_items ();
 
-#ifdef HAVE_DWRITE_3_H
-  /* we don't support custom font loading yet for pre-Windows 10 */
   if (dwrite_items->have_idwritefactory5)
     succeeded = add_custom_font_factory5 (font_map,
                                           dwrite_items->dwrite_factory5,
@@ -988,7 +970,6 @@ pango_win32_dwrite_add_font_file (PangoFontMap *font_map,
                                           font_file_path,
                                           error);
   else
-#endif
     succeeded = add_custom_font_legacy (font_map,
                                         dwrite_items->dwrite_factory,
                                         font_file_path,

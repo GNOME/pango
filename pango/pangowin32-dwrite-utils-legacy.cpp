@@ -30,16 +30,10 @@
 #include <string>
 #include <vector>
 
-/* stub, for simplicity reasons, if we don't have IDWriteFactory[3|5] */
 #ifdef HAVE_DWRITE_3_H
 # include <dwrite_3.h>
 #else
-# include <dwrite_1.h>
-# define IDWriteFactory3 IUnknown
-# define IDWriteFactory5 IUnknown
-# define IDWriteFontSet IUnknown
-# define IDWriteFontSetBuilder IUnknown
-# define IDWriteFontSetBuilder1 IUnknown
+# include "sdk/win32/dwrite_3.h"
 #endif
 
 #include "pangowin32-private.hpp"
