@@ -57,6 +57,12 @@
 #include "pango-fontset.h"
 #include "pango-fontmap-private.h"
 
+#if defined (_MSC_VER) && defined (__cplusplus)
+#  define uuidof(iface) (__uuidof (iface))
+#else
+#  define uuidof(iface) (IID_##iface)
+#endif
+
 G_BEGIN_DECLS
 
 #define PANGO_TYPE_WIN32_FONT_MAP             (pango_win32_font_map_get_type ())

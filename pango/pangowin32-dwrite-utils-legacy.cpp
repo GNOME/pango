@@ -38,14 +38,6 @@
 
 #include "pangowin32-private.hpp"
 
-#ifdef _MSC_VER
-# define UUID_OF_IDWRITE_FONT_COLLECTION_LOADER __uuidof (IDWriteFontCollectionLoader)
-# define UUID_OF_IDWRITE_FONT_FILE_ENUMERATOR   __uuidof (IDWriteFontFileEnumerator)
-#else
-# define UUID_OF_IDWRITE_FONT_COLLECTION_LOADER IID_IDWriteFontCollectionLoader
-# define UUID_OF_IDWRITE_FONT_FILE_ENUMERATOR   IID_IDWriteFontFileEnumerator
-#endif
-
 /* COM-derived class for loading custom fonts on systems without IDWriteFactory[3|5] */
 class pango_win32_font_collection_loader_legacy : public IDWriteFontCollectionLoader
 {
@@ -113,7 +105,7 @@ private:
 HRESULT STDMETHODCALLTYPE
 pango_win32_font_collection_loader_legacy::QueryInterface (REFIID iid, void **obj_ptr)
 {
-  if (iid == IID_IUnknown || iid == UUID_OF_IDWRITE_FONT_COLLECTION_LOADER)
+  if (iid == IID_IUnknown || iid == uuidof (IDWriteFontCollectionLoader))
     {
       *obj_ptr = this;
       AddRef();
@@ -146,7 +138,7 @@ pango_win32_font_collection_loader_legacy::Release ()
 HRESULT STDMETHODCALLTYPE
 pango_win32_font_file_enumerator_legacy::QueryInterface (REFIID iid, void **obj_ptr)
 {
-  if (iid == IID_IUnknown || iid == UUID_OF_IDWRITE_FONT_FILE_ENUMERATOR)
+  if (iid == IID_IUnknown || iid == uuidof (IDWriteFontFileEnumerator))
     {
       *obj_ptr = this;
       AddRef ();

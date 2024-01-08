@@ -30,14 +30,6 @@
 #include "sdk/win32/dwrite_3.h"
 #endif
 
-# ifdef _MSC_VER
-#  define UUID_OF_IDWriteFactory3 __uuidof (IDWriteFactory3)
-#  define UUID_OF_IDWriteFactory5 __uuidof (IDWriteFactory5)
-# else
-#  define UUID_OF_IDWriteFactory3 IID_IDWriteFactory3
-#  define UUID_OF_IDWriteFactory5 IID_IDWriteFactory5
-# endif
-
 struct _PangoWin32DWriteFontSetBuilder
 {
   IDWriteFontSetBuilder1 *font_set_builder1;
@@ -51,16 +43,6 @@ struct _PangoWin32DWriteFontSetBuilder
 
 #ifdef USE_HB_DWRITE
 #include <hb-directwrite.h>
-#endif
-
-#ifdef _MSC_VER
-# define UUID_OF_IDWriteFactory __uuidof (IDWriteFactory)
-# define UUID_OF_IDWriteFont1 __uuidof (IDWriteFont1)
-# define UUID_OF_IDWriteFontCollection __uuidof (IDWriteFontCollection)
-#else
-# define UUID_OF_IDWriteFactory IID_IDWriteFactory
-# define UUID_OF_IDWriteFont1 IID_IDWriteFont1
-# define UUID_OF_IDWriteFontCollection IID_IDWriteFontCollection
 #endif
 
 PangoWin32DWriteItems *
@@ -77,7 +59,7 @@ pango_win32_init_direct_write (void)
 
   /* Try to create a IDWriteFactory3 first, which is available on Windows 10+ */
   hr = DWriteCreateFactory (DWRITE_FACTORY_TYPE_SHARED,
-                            UUID_OF_IDWriteFactory3,
+                            uuidof (IDWriteFactory3),
                             reinterpret_cast<IUnknown**> (&factory3));
   if (SUCCEEDED(hr))
     {
@@ -86,18 +68,18 @@ pango_win32_init_direct_write (void)
        * which is only available on or after Windows 10 Creators' Update
        */
       have_idwritefactory3 = TRUE;
-      hr = factory3->QueryInterface (UUID_OF_IDWriteFactory5,
+      hr = factory3->QueryInterface (uuidof (IDWriteFactory5),
                                      reinterpret_cast<void**> (&factory5));
       if (SUCCEEDED (hr))
         have_idwritefactory5 = TRUE;
 
-      hr = factory3->QueryInterface (UUID_OF_IDWriteFactory,
+      hr = factory3->QueryInterface (uuidof (IDWriteFactory),
                                      reinterpret_cast<void**> (&factory));
     }
   else
 
     hr = DWriteCreateFactory (DWRITE_FACTORY_TYPE_SHARED,
-                              UUID_OF_IDWriteFactory,
+                              uuidof (IDWriteFactory),
                               reinterpret_cast<IUnknown**> (&factory));
 
   if (SUCCEEDED (hr) && factory != NULL)
@@ -355,7 +337,7 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
 
           if (SUCCEEDED (hr) && custom_collection1 != NULL)
             {
-              custom_collection1->QueryInterface (UUID_OF_IDWriteFontCollection,
+              custom_collection1->QueryInterface (uuidof (IDWriteFontCollection),
                                                   reinterpret_cast<void **>(&custom_collection));
 
               pango_win32_dwrite_font_map_populate_with_collection (map, custom_collection);
@@ -404,7 +386,7 @@ pango_win32_dwrite_font_is_monospace (gpointer  dwrite_font,
   IDWriteFont1 *font1 = NULL;
   gboolean result = FALSE;
 
-  if (SUCCEEDED (font->QueryInterface(UUID_OF_IDWriteFont1,
+  if (SUCCEEDED (font->QueryInterface(uuidof (IDWriteFont1),
                                       reinterpret_cast<void**>(&font1))))
     {
       *is_monospace = font1->IsMonospacedFont ();
