@@ -10,7 +10,18 @@ project('pango', 'c', 'cpp',
         ],
         meson_version : '>= 0.60.0')
 
-add_project_arguments([ '-D_POSIX_C_SOURCE=200809L', '-D_POSIX_THREAD_SAFE_FUNCTIONS', '-D_GNU_SOURCE', ], language: 'c')
+cc = meson.get_compiler('c')
+cpp = meson.get_compiler('cpp')
+host_system = host_machine.system()
+
+if host_system != 'windows'
+  add_project_arguments([ '-D_POSIX_C_SOURCE=200809L',
+                          '-D_POSIX_THREAD_SAFE_FUNCTIONS'], language: 'c')
+endif
+
+if cc.get_id() != 'msvc'
+  add_project_arguments('-D_GNU_SOURCE', language: 'c')
+endif
 
 pango_prefix = get_option('prefix')
 pango_libdir = join_paths(pango_prefix, get_option('libdir'))
@@ -44,10 +55,6 @@ pango_soversion = 0
 pango_libversion = '@0@.@1@.@2@'.format(pango_soversion, (pango_binary_age - pango_interface_age), pango_interface_age)
 osx_current = pango_binary_age - pango_interface_age + 1
 pango_osxversion = [osx_current, '@0@.@1@.0'.format(osx_current, pango_interface_age)]
-
-cc = meson.get_compiler('c')
-cpp = meson.get_compiler('cpp')
-host_system = host_machine.system()
 
 # Compiler and linker flags
 common_cflags = []
