@@ -54,8 +54,6 @@ pango_win32_init_direct_write (void)
   IDWriteFactory3 *factory3 = NULL;
   IDWriteFactory *factory = NULL;
   gboolean failed = FALSE;
-  gboolean have_idwritefactory3 = FALSE;
-  gboolean have_idwritefactory5 = FALSE;
 
   /* Try to create a IDWriteFactory3 first, which is available on Windows 10+ */
   hr = DWriteCreateFactory (DWRITE_FACTORY_TYPE_SHARED,
@@ -67,20 +65,17 @@ pango_win32_init_direct_write (void)
        * Try to acquire a IDWriteFactory5 object from the IDWriteFactory3 object,
        * which is only available on or after Windows 10 Creators' Update
        */
-      have_idwritefactory3 = TRUE;
       hr = factory3->QueryInterface (uuidof (IDWriteFactory5),
                                      reinterpret_cast<void**> (&factory5));
-      if (SUCCEEDED (hr))
-        have_idwritefactory5 = TRUE;
-
       hr = factory3->QueryInterface (uuidof (IDWriteFactory),
                                      reinterpret_cast<void**> (&factory));
     }
   else
-
-    hr = DWriteCreateFactory (DWRITE_FACTORY_TYPE_SHARED,
-                              uuidof (IDWriteFactory),
-                              reinterpret_cast<IUnknown**> (&factory));
+    {
+      hr = DWriteCreateFactory (DWRITE_FACTORY_TYPE_SHARED,
+                                uuidof (IDWriteFactory),
+                                reinterpret_cast<IUnknown**> (&factory));
+    }
 
   if (SUCCEEDED (hr) && factory != NULL)
     {
@@ -90,26 +85,15 @@ pango_win32_init_direct_write (void)
       if (FAILED (hr) || gdi_interop == NULL)
         {
           g_error ("DWriteFactory::GetGdiInterop failed with error code %x", (unsigned)hr);
-          factory->Release ();
-
-          if (have_idwritefactory5)
-            factory5->Release ();
-
-          if (have_idwritefactory3)
-            factory3->Release ();
-
           failed = TRUE;
         }
-
-      if (have_idwritefactory3)
-        dwrite_items->dwrite_factory3 = factory3;
-      if (have_idwritefactory5)
-        dwrite_items->dwrite_factory5 = factory5;
-
-      dwrite_items->have_idwritefactory3 = have_idwritefactory3;
-      dwrite_items->have_idwritefactory5 = have_idwritefactory5;
-      dwrite_items->gdi_interop = gdi_interop;
-      dwrite_items->dwrite_factory = factory;
+      else
+        {
+          dwrite_items->dwrite_factory3 = factory3;
+          dwrite_items->dwrite_factory5 = factory5;
+          dwrite_items->gdi_interop = gdi_interop;
+          dwrite_items->dwrite_factory = factory;
+        }
     }
   else
     {
@@ -118,7 +102,12 @@ pango_win32_init_direct_write (void)
     }
 
   if (failed)
-    g_free (dwrite_items);
+    {
+      SAFE_RELEASE (factory);
+      SAFE_RELEASE (factory5);
+      SAFE_RELEASE (factory3);
+      g_free (dwrite_items);
+    }
 
   return failed ? NULL : dwrite_items;
 }
@@ -129,10 +118,10 @@ pango_win32_dwrite_items_destroy (PangoWin32DWriteItems *dwrite_items)
   dwrite_items->gdi_interop->Release ();
   dwrite_items->dwrite_factory->Release ();
 
-  if (dwrite_items->have_idwritefactory5)
+  if (dwrite_items->dwrite_factory5 != NULL)
     dwrite_items->dwrite_factory5->Release ();
 
-  if (dwrite_items->have_idwritefactory3)
+  if (dwrite_items->dwrite_factory3!= NULL)
     dwrite_items->dwrite_factory3->Release ();
 
   g_free (dwrite_items);
@@ -302,20 +291,21 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
 
   pango_win32_dwrite_font_map_populate_with_collection (map, sys_collection);
 
-  if (dwrite_items->have_idwritefactory5 || dwrite_items->have_idwritefactory3)
+  if (dwrite_items->dwrite_factory5 != NULL ||
+      dwrite_items->dwrite_factory3 != NULL)
     {
       if (map->font_set_builder == NULL)
         map->font_set_builder = g_new0 (PangoWin32DWriteFontSetBuilder, 1);
 
       win10_font_set_builder = map->font_set_builder;
 
-      if (dwrite_items->have_idwritefactory5 &&
+      if (dwrite_items->dwrite_factory5 != NULL &&
           win10_font_set_builder->font_set_builder1 != NULL)
        {
          hr = win10_font_set_builder->font_set_builder1->CreateFontSet (&fontset);
        }
-      else if (dwrite_items->have_idwritefactory3 &&
-          win10_font_set_builder->font_set_builder != NULL)
+      else if (dwrite_items->dwrite_factory3 != NULL &&
+               win10_font_set_builder->font_set_builder != NULL)
        {
          hr = win10_font_set_builder->font_set_builder->CreateFontSet (&fontset);
        }
@@ -328,12 +318,12 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
           IDWriteFontCollection *custom_collection = NULL;
           IDWriteFontCollection1 *custom_collection1 = NULL;
 
-          if (dwrite_items->have_idwritefactory5)
+          if (dwrite_items->dwrite_factory5 != NULL)
             dwrite_items->dwrite_factory5->CreateFontCollectionFromFontSet (fontset,
-                                                                           &custom_collection1);
-          else if  (dwrite_items->have_idwritefactory3)
+                                                                            &custom_collection1);
+          else if (dwrite_items->dwrite_factory3 != NULL)
             dwrite_items->dwrite_factory3->CreateFontCollectionFromFontSet (fontset,
-                                                                             &custom_collection1);
+                                                                            &custom_collection1);
 
           if (SUCCEEDED (hr) && custom_collection1 != NULL)
             {
@@ -941,12 +931,12 @@ pango_win32_dwrite_add_font_file (PangoFontMap *font_map,
 
   dwrite_items = pango_win32_get_direct_write_items ();
 
-  if (dwrite_items->have_idwritefactory5)
+  if (dwrite_items->dwrite_factory5 != NULL)
     succeeded = add_custom_font_factory5 (font_map,
                                           dwrite_items->dwrite_factory5,
                                           font_file_path,
                                           error);
-  else if (dwrite_items->have_idwritefactory3)
+  else if (dwrite_items->dwrite_factory3 != NULL)
     succeeded = add_custom_font_factory3 (font_map,
                                           dwrite_items->dwrite_factory3,
                                           font_file_path,

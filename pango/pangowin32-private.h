@@ -63,6 +63,17 @@
 #  define uuidof(iface) (IID_##iface)
 #endif
 
+#define SAFE_RELEASE(iface) \
+do                          \
+  {                         \
+    if (iface != NULL)      \
+      {                     \
+        iface->Release ();  \
+        iface = NULL;       \
+      }                     \
+  }                         \
+while (0)
+
 G_BEGIN_DECLS
 
 #define PANGO_TYPE_WIN32_FONT_MAP             (pango_win32_font_map_get_type ())

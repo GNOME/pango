@@ -31,8 +31,6 @@ struct _PangoWin32DWriteItems
   IDWriteFactory3   *dwrite_factory3;
   IDWriteFactory    *dwrite_factory;
   IDWriteGdiInterop *gdi_interop;
-  guint              have_idwritefactory5 : 1;
-  guint              have_idwritefactory3 : 1;
 };
 
 struct _PangoWin32CustomFontsLegacy
