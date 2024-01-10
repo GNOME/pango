@@ -43,6 +43,7 @@ RUN dnf -y install \
     python3-toml \
     python3-typogrify \
     python3-wheel \
+    python3-packaging \
     redhat-rpm-config \
     thai-scalable-waree-fonts \
  && dnf clean all
