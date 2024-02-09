@@ -2388,6 +2388,9 @@ pango_font_family_default_list_faces (PangoFontFamily   *family,
 enum {
   PROP_ITEM_TYPE = 1,
   PROP_N_ITEMS,
+  PROP_NAME,
+  PROP_IS_MONOSPACE,
+  PROP_IS_VARIABLE,
   N_PROPERTIES
 };
 
@@ -2409,6 +2412,18 @@ pango_font_family_get_property (GObject    *object,
       g_value_set_uint (value, pango_font_family_get_n_items (G_LIST_MODEL (object)));
       break;
 
+    case PROP_NAME:
+      g_value_set_string (value, pango_font_family_get_name (PANGO_FONT_FAMILY (object)));
+      break;
+
+    case PROP_IS_MONOSPACE:
+      g_value_set_boolean (value, pango_font_family_is_monospace (PANGO_FONT_FAMILY (object)));
+      break;
+
+    case PROP_IS_VARIABLE:
+      g_value_set_boolean (value, pango_font_family_is_variable (PANGO_FONT_FAMILY (object)));
+      break;
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     }
@@ -2425,6 +2440,39 @@ pango_font_family_class_init (PangoFontFamilyClass *class)
   class->is_variable = pango_font_family_default_is_variable;
   class->get_face = pango_font_family_real_get_face;
   class->list_faces = pango_font_family_default_list_faces;
+
+  /**
+   * PangoFontFamily:name: (attributes org.gtk.Property.get=pango_font_family_get_name)
+   *
+   * The name of the family
+   * 
+   * Since: 1.52
+   */
+  font_family_properties[PROP_NAME] =
+    g_param_spec_string ("name", "", "", NULL,
+                         G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoFontFamily:is-monospace: (attributes org.gtk.Property.get=pango_font_family_is_monospace)
+   *
+   * Is this a monospace font
+   * 
+   * Since: 1.52
+   */
+  font_family_properties[PROP_IS_MONOSPACE] =
+    g_param_spec_boolean ("is-monospace", "", "", FALSE,
+                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+  /**
+   * PangoFontFamily:is-variable: (attributes org.gtk.Property.get=pango_font_family_is_variable)
+   *
+   * Is this a variable font
+   * 
+   * Since: 1.52
+   */
+  font_family_properties[PROP_IS_VARIABLE] =
+    g_param_spec_boolean ("is-variable", "", "", FALSE,
+                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
    * PangoFontFamily:item-type:
