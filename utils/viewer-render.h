@@ -51,8 +51,8 @@ typedef enum {
 
 typedef enum {
   HINT_METRICS_DEFAULT,
-  HINT_METRICS_ON,
-  HINT_METRICS_OFF
+  HINT_METRICS_OFF,
+  HINT_METRICS_ON
 } HintMetrics;
 
 typedef void (*RenderCallback) (PangoLayout *layout,
