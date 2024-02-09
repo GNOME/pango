@@ -170,10 +170,7 @@ libpango_dep = declare_dependency(
 )
 meson.override_dependency('pango', libpango_dep)
 
-pango_pkg_requires = ['gobject-2.0']
-if harfbuzz_dep.type_name() == 'pkgconfig'
-  pango_pkg_requires += 'harfbuzz'
-endif
+pango_pkg_requires = ['gobject-2.0', 'harfbuzz']
 
 pkgconfig.generate(libpango,
   name: 'Pango',
@@ -317,7 +314,8 @@ if build_pangoft2
     description: 'FreeType 2.0 and fontconfig font support for Pango',
     filebase: 'pangoft2',
     subdirs: pango_api_name,
-    requires: [ 'pango', freetype2_pc, fontconfig_pc ],
+    libraries: freetype_lib,
+    requires: [ 'pango', freetype2_pc, 'fontconfig' ],
   )
 
   # Since we split the introspection data, we also need a split pkg-config
@@ -571,14 +569,7 @@ if cairo_dep.found()
     sources: pangocairo_dep_sources,
   )
   meson.override_dependency('pangocairo', libpangocairo_dep)
-
-  # Create pangocairo.pc according to whether we found Cairo
-  # manually
-  if cairo_found_type in ['pkgconfig', 'internal']
-    pango_cairo_requires = [ 'pango', cairo_pc ]
-  else
-    pango_cairo_requires = [ 'pango' ]
-  endif
+  pango_cairo_requires = [ 'pango', 'cairo' ]
 
   pkgconfig.generate(libpangocairo,
     name: 'Pango Cairo',

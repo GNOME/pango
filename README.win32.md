@@ -87,24 +87,19 @@ is located should be towards the end of your `%PATH%`).
 ## Additional notes on building PangoFt2
 Please take note of the following items when attempting to build with PangoFt2 on
 Windows, in addition to the things mentioned [here](#dependencies), when invoking
-Meson to configure the build:
+Meson to configure the build (builds of Cairo, HarfBuzz and FreeType as subprojects
+will be built consistent with the descriptions below):
 * Pango: You need to pass in `-Dfontconfig=enabled -Dfreetype=enabled` when
 building Pango itself, as FontConfig/FreeType support needs to be explicitly
 enabled for Windows builds, that is used to build PangoFt2.
 * Cairo: Cairo needs to be built with FreeType *and* FontConfig support, which
 must be explicitly enabled as they are disabled by default, in particular when
 building Cairo 1.17.x or later, which is also done by Meson. Pass in
-`-Dfontconfig=enabled -Dfreetype=enabled` when building Cairo (or
-`-Dcairo:fontconfig=enabled -Dcairo:freetype=enabled` if building Pango without
-Cairo being found)
+`-Dfontconfig=enabled -Dfreetype=enabled` when building Cairo.
 * HarfBuzz: HarfBuzz needs to be built with FreeType support enabled, so ensure
-that is true by using `-Dfreetype=enabled` when building HarfBuzz (or
-`-Dharfbuzz:freetype=enabled` if building Pango without HarfBuzz being found)
-* FreeType: If Pango is being built without FreeType *and* HarfBuzz found, you may
-need to use `-Dfreetype2:harfbuzz=disabled` so that things will link, because the
-build system may assume that HarfBuzz is found but the build will actually build
-FreeType first before proceeding to build HarfBuzz as HarfBuzz will depend on
-FreeType, causing linker errors when linking FreeType. In this case, if building
+that is true by using `-Dfreetype=enabled`.
+* FreeType: If Pango is being built without FreeType *and* HarfBuzz
+found, FreeType will be built without HarfBuzz support. In this case, if building
 FreeType with HarfBuzz is desired, first build and install PangoFt2 along with
 FreeType and HarfBuzz, and then do a separate standalone build of FreeType against
 that PangoFt2 build, and you will have your FreeType build with HarfBuzz enabled.
