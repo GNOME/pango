@@ -85,6 +85,22 @@ _pango_cairo_font_private_get_scaled_font (PangoCairoFontPrivate *cf_priv)
 						   &cf_priv->data->ctm,
 						   cf_priv->data->options);
 
+  if (cairo_font_options_get_hint_style (cf_priv->data->options) != CAIRO_HINT_STYLE_NONE &&
+      cairo_font_options_get_hint_metrics (cf_priv->data->options) != CAIRO_HINT_METRICS_OFF)
+    {
+      cairo_font_options_t *options = cairo_font_options_copy (cf_priv->data->options);
+      cairo_font_options_set_hint_metrics (options, CAIRO_HINT_METRICS_OFF);
+      cf_priv->font_for_metrics = cairo_scaled_font_create (font_face,
+                                                            &cf_priv->data->font_matrix,
+                                                            &cf_priv->data->ctm,
+                                                            options);
+      cairo_font_options_destroy (options);
+    }
+  else
+    {
+      cf_priv->font_for_metrics = cairo_scaled_font_reference (cf_priv->scaled_font);
+    }
+
   cairo_font_face_destroy (font_face);
 
 done:
@@ -133,6 +149,13 @@ done:
   cf_priv->data = NULL;
 
   return cf_priv->scaled_font;
+}
+
+cairo_scaled_font_t *
+_pango_cairo_font_private_get_font_for_metrics (PangoCairoFontPrivate *cf_priv)
+{
+  _pango_cairo_font_private_get_scaled_font (cf_priv);
+  return cf_priv->font_for_metrics;
 }
 
 /**
@@ -623,6 +646,9 @@ _pango_cairo_font_private_finalize (PangoCairoFontPrivate *cf_priv)
   if (cf_priv->scaled_font)
     cairo_scaled_font_destroy (cf_priv->scaled_font);
   cf_priv->scaled_font = NULL;
+  if (cf_priv->font_for_metrics)
+    cairo_scaled_font_destroy (cf_priv->font_for_metrics);
+  cf_priv->font_for_metrics = NULL;
 
   _pango_cairo_font_hex_box_info_destroy (cf_priv->hbi);
   cf_priv->hbi = NULL;
@@ -804,6 +830,7 @@ compute_glyph_extents (PangoCairoFontPrivate  *cf_priv,
 		       PangoGlyph              glyph,
 		       PangoCairoFontGlyphExtentsCacheEntry *entry)
 {
+  cairo_scaled_font_t *scaled_font;
   cairo_text_extents_t extents;
   cairo_glyph_t cairo_glyph;
 
@@ -811,8 +838,8 @@ compute_glyph_extents (PangoCairoFontPrivate  *cf_priv,
   cairo_glyph.x = 0;
   cairo_glyph.y = 0;
 
-  cairo_scaled_font_glyph_extents (_pango_cairo_font_private_get_scaled_font (cf_priv),
-				   &cairo_glyph, 1, &extents);
+  scaled_font = _pango_cairo_font_private_get_font_for_metrics (cf_priv);
+  cairo_scaled_font_glyph_extents (scaled_font, &cairo_glyph, 1, &extents);
 
   entry->glyph = glyph;
   if (PANGO_GRAVITY_IS_VERTICAL (cf_priv->gravity))
