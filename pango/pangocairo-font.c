@@ -833,23 +833,43 @@ compute_glyph_extents (PangoCairoFontPrivate  *cf_priv,
   cairo_scaled_font_t *scaled_font;
   cairo_text_extents_t extents;
   cairo_glyph_t cairo_glyph;
+  cairo_surface_t *surface;
+  cairo_t *cr;
+  double x1, y1, x2, y2;
 
   cairo_glyph.index = glyph;
   cairo_glyph.x = 0;
   cairo_glyph.y = 0;
 
   scaled_font = _pango_cairo_font_private_get_font_for_metrics (cf_priv);
+
   cairo_scaled_font_glyph_extents (scaled_font, &cairo_glyph, 1, &extents);
+
+  surface = cairo_recording_surface_create (CAIRO_CONTENT_ALPHA, NULL);
+  cr = cairo_create (surface);
+
+  cairo_set_scaled_font (cr, scaled_font);
+  cairo_glyph_path (cr, &cairo_glyph, 1);
+  cairo_path_extents (cr, &x1, &y1, &x2, &y2);
+
+  cairo_destroy (cr);
+  cairo_surface_destroy (surface);
 
   entry->glyph = glyph;
   if (PANGO_GRAVITY_IS_VERTICAL (cf_priv->gravity))
     entry->width = pango_units_from_double (extents.y_advance);
   else
     entry->width = pango_units_from_double (extents.x_advance);
-  entry->ink_rect.x = pango_units_from_double (extents.x_bearing);
-  entry->ink_rect.y = pango_units_from_double (extents.y_bearing);
-  entry->ink_rect.width = pango_units_from_double (extents.width);
-  entry->ink_rect.height = pango_units_from_double (extents.height);
+
+  x1 = MIN (extents.x_bearing, x1);
+  y1 = MIN (extents.y_bearing, y1);
+  x2 = MAX (extents.x_bearing + extents.width, x2);
+  y2 = MAX (extents.y_bearing + extents.height, y2);
+
+  entry->ink_rect.x = pango_units_from_double (x1);
+  entry->ink_rect.y = pango_units_from_double (y1);
+  entry->ink_rect.width = pango_units_from_double (x2 - x1);
+  entry->ink_rect.height = pango_units_from_double (y2 - y1);
 }
 
 static PangoCairoFontGlyphExtentsCacheEntry *
