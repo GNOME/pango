@@ -27,6 +27,7 @@
 #include "pango-fontset-simple.h"
 #include "pango-impl-utils.h"
 #include <stdlib.h>
+#include <math.h>
 
 static PangoFontset *pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
                                                        PangoContext               *context,
@@ -38,6 +39,12 @@ static PangoFontFamily *pango_font_map_real_get_family (PangoFontMap *fontmap,
                                                         const char   *name);
 
 static void pango_font_map_real_changed (PangoFontMap *fontmap);
+
+static PangoFont *pango_font_map_real_reload_font (PangoFontMap *fontmap,
+                                                   PangoFont    *font,
+                                                   double        scale,
+                                                   PangoContext *context,
+                                                   const char   *variations);
 
 static guint pango_font_map_get_n_items (GListModel *list);
 
@@ -59,6 +66,7 @@ static GParamSpec *properties[N_PROPERTIES] = { NULL, };
 
 G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFontMap, pango_font_map, G_TYPE_OBJECT,
                                   G_ADD_PRIVATE (PangoFontMap)
+                                  g_type_add_class_private (g_define_type_id, sizeof (PangoFontMapClassPrivate));
                                   G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango_font_map_list_model_init))
 
 static void
@@ -86,12 +94,17 @@ static void
 pango_font_map_class_init (PangoFontMapClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
+  PangoFontMapClassPrivate *pclass;
 
   object_class->get_property = pango_font_map_get_property;
 
   class->load_fontset = pango_font_map_real_load_fontset;
   class->get_family = pango_font_map_real_get_family;
   class->changed = pango_font_map_real_changed;
+
+  pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT_MAP);
+
+  pclass->reload_font = pango_font_map_real_reload_font;
 
   /**
    * PangoFontMap:item-type:
@@ -484,6 +497,76 @@ pango_font_map_get_family (PangoFontMap *fontmap,
   g_return_val_if_fail (PANGO_IS_FONT_MAP (fontmap), NULL);
 
   return PANGO_FONT_MAP_GET_CLASS (fontmap)->get_family (fontmap, name);
+}
+
+static PangoFont *
+pango_font_map_real_reload_font (PangoFontMap *fontmap,
+                                 PangoFont    *font,
+                                 double        scale,
+                                 PangoContext *context,
+                                 const char   *variations)
+{
+  PangoFontDescription *desc;
+  PangoContext *freeme = NULL;
+  PangoFont *scaled;
+
+  desc = pango_font_describe (font);
+
+  if (scale != 1.0)
+    {
+      int size = pango_font_description_get_size (desc);
+
+      if (pango_font_description_get_size_is_absolute (desc))
+        pango_font_description_set_absolute_size (desc, size * scale);
+      else
+        pango_font_description_set_size (desc, (int) round (size * scale));
+    }
+
+  if (!context)
+    freeme = context = pango_font_map_create_context (fontmap);
+
+  if (variations)
+    pango_font_description_set_variations_static (desc, variations);
+
+  scaled = pango_font_map_load_font (fontmap, context, desc);
+
+  g_clear_object (&freeme);
+
+  pango_font_description_free (desc);
+
+  return scaled;
+}
+
+/**
+ * pango_font_map_reload_font:
+ * @fontmap: a `PangoFontMap`
+ * @font: a font in @fontmap
+ * @scale: the scale factor to apply
+ * @context: (nullable): a `PangoContext`
+ * @variations: (nullable): font variations to use
+ *
+ * Returns a new font that is like @font, except that its size
+ * is multiplied by @scale, its backend-dependent configuration
+ * (e.g. cairo font options) is replaced by the one in @context,
+ * and its variations are replaced by @variations.
+ *
+ * Returns: (transfer full): the modified font
+ *
+ * Since: 1.52
+ */
+PangoFont *
+pango_font_map_reload_font (PangoFontMap *fontmap,
+                            PangoFont    *font,
+                            double        scale,
+                            PangoContext *context,
+                            const char   *variations)
+{
+  PangoFontMapClassPrivate *pclass;
+
+  pclass = g_type_class_get_private ((GTypeClass *) PANGO_FONT_MAP_GET_CLASS (fontmap),
+                                     PANGO_TYPE_FONT_MAP);
+
+  return pclass->reload_font (fontmap, font, scale, context, variations);
 }
 
 static GType

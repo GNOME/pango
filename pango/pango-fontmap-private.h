@@ -28,6 +28,15 @@
 
 G_BEGIN_DECLS
 
+typedef struct {
+  PangoFont * (* reload_font) (PangoFontMap *fontmap,
+                               PangoFont    *font,
+                               double        scale,
+                               PangoContext *context,
+                               const char   *variations);
+
+} PangoFontMapClassPrivate;
+
 PANGO_DEPRECATED_IN_1_38
 const char   *pango_font_map_get_shape_engine_type (PangoFontMap *fontmap);
 
