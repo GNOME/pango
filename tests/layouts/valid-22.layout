@@ -236,7 +236,7 @@
             "language" : "en-us",
             "script" : "latin",
             "font" : {
-              "description" : "Cantarell 7.1484375",
+              "description" : "Cantarell 7.148",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
               "variations" : {
                 "wght" : 0
@@ -340,7 +340,7 @@
             "language" : "en-us",
             "script" : "latin",
             "font" : {
-              "description" : "Cantarell 7.1484375",
+              "description" : "Cantarell 7.148",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
               "variations" : {
                 "wght" : 0
@@ -390,7 +390,7 @@
             "language" : "en-us",
             "script" : "latin",
             "font" : {
-              "description" : "Cantarell 4.646484375",
+              "description" : "Cantarell 4.646",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
               "variations" : {
                 "wght" : 0
@@ -452,7 +452,7 @@
             "language" : "en-us",
             "script" : "latin",
             "font" : {
-              "description" : "Cantarell 3.0205078125",
+              "description" : "Cantarell 3.0205",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
               "variations" : {
                 "wght" : 0
@@ -526,7 +526,7 @@
             "language" : "en-us",
             "script" : "latin",
             "font" : {
-              "description" : "Cantarell 1.962890625",
+              "description" : "Cantarell 1.963",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
               "variations" : {
                 "wght" : 0
@@ -612,7 +612,7 @@
             "language" : "en-us",
             "script" : "latin",
             "font" : {
-              "description" : "Cantarell 1.2763671875",
+              "description" : "Cantarell 1.276",
               "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2",
               "variations" : {
                 "wght" : 0
