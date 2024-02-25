@@ -124,6 +124,13 @@ PANGO_AVAILABLE_IN_1_46
 PangoFontFamily *pango_font_map_get_family (PangoFontMap                 *fontmap,
                                             const char                   *name);
 
+PANGO_AVAILABLE_IN_1_52
+PangoFont *   pango_font_map_reload_font   (PangoFontMap                 *fontmap,
+                                            PangoFont                    *font,
+                                            double                        scale,
+                                            PangoContext                 *context,
+                                            const char                   *variations);
+
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFontMap, g_object_unref)
 

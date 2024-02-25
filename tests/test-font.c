@@ -557,6 +557,91 @@ test_match (void)
   pango_font_description_free (desc2);
 }
 
+static void
+test_font_scale (void)
+{
+  PangoFontMap *fontmap;
+  PangoContext *context;
+  PangoFontDescription *desc;
+  PangoFont *font;
+  PangoFont *scaled_font;
+  PangoFontDescription *scaled_desc;
+  char *str;
+  cairo_font_options_t *options;
+  cairo_scaled_font_t *sf;
+  cairo_font_options_t *options2;
+
+  fontmap = pango_cairo_font_map_get_default ();
+  context = pango_font_map_create_context (fontmap);
+
+  options = cairo_font_options_create ();
+  cairo_font_options_set_antialias (options, CAIRO_ANTIALIAS_NONE);
+  cairo_font_options_set_hint_style (options, CAIRO_HINT_STYLE_FULL);
+  cairo_font_options_set_hint_metrics (options, CAIRO_HINT_METRICS_ON);
+
+  pango_cairo_context_set_font_options (context, options);
+
+  desc = pango_font_description_from_string ("Cantarell Small-Caps 11 @wght=444");
+
+  font = pango_font_map_load_font (fontmap, context, desc);
+
+  scaled_font = pango_font_map_reload_font (fontmap, font, 1.5, NULL, NULL);
+
+  scaled_desc = pango_font_describe (scaled_font);
+  str = pango_font_description_to_string (scaled_desc);
+  g_assert_cmpstr (str, ==, "Cantarell Small-Caps 16.5 @wght=444");
+
+  /* check that we also preserve font options */
+  options2 = cairo_font_options_create ();
+  sf = pango_cairo_font_get_scaled_font (PANGO_CAIRO_FONT (scaled_font));
+  cairo_scaled_font_get_font_options (sf, options2);
+  g_assert_true (cairo_font_options_equal (options, options2));
+
+  g_object_unref (scaled_font);
+  pango_font_description_free (scaled_desc);
+  g_free (str);
+
+  /* Try again, this time with different font options */
+
+  cairo_font_options_set_hint_style (options, CAIRO_HINT_STYLE_NONE);
+  cairo_font_options_set_hint_metrics (options, CAIRO_HINT_METRICS_OFF);
+
+  pango_cairo_context_set_font_options (context, options);
+
+  scaled_font = pango_font_map_reload_font (fontmap, font, 1, context, NULL);
+
+  scaled_desc = pango_font_describe (scaled_font);
+  str = pango_font_description_to_string (scaled_desc);
+  g_assert_cmpstr (str, ==, "Cantarell Small-Caps 11 @wght=444");
+
+  sf = pango_cairo_font_get_scaled_font (PANGO_CAIRO_FONT (scaled_font));
+  cairo_scaled_font_get_font_options (sf, options2);
+  g_assert_true (cairo_font_options_equal (options, options2));
+
+  cairo_font_options_destroy (options);
+  cairo_font_options_destroy (options2);
+
+  g_object_unref (scaled_font);
+  pango_font_description_free (scaled_desc);
+  g_free (str);
+
+  /* Try again, this time with different variations */
+
+  scaled_font = pango_font_map_reload_font (fontmap, font, 1, NULL, "wght=666");
+
+  scaled_desc = pango_font_describe (scaled_font);
+  str = pango_font_description_to_string (scaled_desc);
+  g_assert_cmpstr (str, ==, "Cantarell Small-Caps 11 @wght=666");
+
+  g_object_unref (scaled_font);
+  pango_font_description_free (scaled_desc);
+  g_free (str);
+
+  g_object_unref (font);
+  pango_font_description_free (desc);
+  g_object_unref (context);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -582,6 +667,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/font/models", test_font_models);
   g_test_add_func ("/pango/font/glyph-extents", test_glyph_extents);
   g_test_add_func ("/pango/font/font-metrics", test_font_metrics);
+  g_test_add_func ("/pango/font/scale-font", test_font_scale);
 
   return g_test_run ();
 }
