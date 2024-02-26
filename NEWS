@@ -1,3 +1,7 @@
+Overview of changes in 1.52.0, 25-02-2024
+=========================================
+- Add pango_font_map_reload_font
+- Improve formatting of font sizes
 Overview of changes in 1.51.2, 10-02-2024
 =========================================
 - Build improvements on Windows
