@@ -708,7 +708,7 @@ _pango_cairo_font_private_get_glyph_extents_missing (PangoCairoFontPrivate *cf_p
     {
       ink_rect->x = PANGO_SCALE * hbi->pad_x;
       ink_rect->y = PANGO_SCALE * (hbi->box_descent - hbi->box_height);
-      ink_rect->width = PANGO_SCALE * (3 * hbi->pad_x + cols * (hbi->digit_width + hbi->pad_x));
+      ink_rect->width = PANGO_SCALE * (4 * hbi->pad_x + cols * (hbi->digit_width + hbi->pad_x));
       ink_rect->height = PANGO_SCALE * hbi->box_height;
     }
 
