@@ -73,7 +73,8 @@ struct _PangoFcFont
   PangoFont parent_instance;
 
   FcPattern *font_pattern;          /* fully resolved pattern */
-  PangoFontMap *fontmap;            /* associated map */
+  PangoFontMap *fontmap;            /* associated map (no strong reference is held,
+                                     * but a g_object_add_weak_pointer() guards it) */
   gpointer priv;                    /* used internally */
   PangoMatrix matrix;               /* unused */
   PangoFontDescription *description;
