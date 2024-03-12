@@ -1164,7 +1164,12 @@ pango_win32_font_neww (PangoFontMap   *fontmap,
 
   if (G_UNLIKELY(result->fontmap))
     return result;
-  g_weak_ref_set ((GWeakRef *)&result->fontmap, fontmap);
+
+  if (fontmap)
+    {
+      result->fontmap = fontmap;
+      g_object_add_weak_pointer (G_OBJECT (fontmap), (gpointer *) &result->fontmap);
+    }
 
   result->size = size;
   _pango_win32_make_matching_logfontw (fontmap, lfp, size, &result->logfontw);

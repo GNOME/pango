@@ -287,8 +287,12 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
   win32font = PANGO_WIN32_FONT (cwfont);
 
   g_assert (win32font->fontmap == NULL);
-  win32font->fontmap = (PangoFontMap *) cwfontmap;
-  g_object_add_weak_pointer (G_OBJECT (win32font->fontmap), (gpointer *) (gpointer) &win32font->fontmap);
+
+  if (cwfontmap)
+    {
+      win32font->fontmap = (PangoFontMap *) cwfontmap;
+      g_object_add_weak_pointer (G_OBJECT (win32font->fontmap), (gpointer *) &win32font->fontmap);
+    }
 
   win32font->win32face = face;
 
