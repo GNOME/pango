@@ -863,7 +863,6 @@ pango_win32_font_finalize (GObject *object)
 {
   PangoWin32Font *win32font = (PangoWin32Font *)object;
   PangoWin32FontCache *cache = pango_win32_font_map_get_font_cache (win32font->fontmap);
-  PangoWin32Font *fontmap;
 
   if (cache != NULL && win32font->hfont != NULL)
     pango_win32_font_cache_unload (cache, win32font->hfont);
@@ -876,12 +875,8 @@ pango_win32_font_finalize (GObject *object)
 
   g_hash_table_destroy (win32font->glyph_info);
 
-  fontmap = g_weak_ref_get ((GWeakRef *) &win32font->fontmap);
-  if (fontmap)
-  {
-    g_object_remove_weak_pointer (G_OBJECT (win32font->fontmap), (gpointer *) (gpointer) &win32font->fontmap);
-    g_object_unref (fontmap);
-  }
+  if (win32font->fontmap)
+    g_object_remove_weak_pointer (G_OBJECT (win32font->fontmap), (gpointer *) &win32font->fontmap);
 
   G_OBJECT_CLASS (_pango_win32_font_parent_class)->finalize (object);
 }
