@@ -45,12 +45,9 @@ pango_core_text_font_finalize (GObject *object)
 {
   PangoCoreTextFont *ctfont = (PangoCoreTextFont *)object;
   PangoCoreTextFontPrivate *priv = ctfont->priv;
-  PangoCoreTextFontMap* fontmap = g_weak_ref_get ((GWeakRef *)&priv->fontmap);
-  if (fontmap)
-    {
-      g_weak_ref_clear ((GWeakRef *)&priv->fontmap);
-      g_object_unref (fontmap);
-    }
+
+  if (priv->fontmap)
+    g_object_remove_weak_pointer (G_OBJECT (priv->fontmap), (gpointer *) &priv->fontmap);
 
   if (priv->coverage)
     g_object_unref (priv->coverage);
@@ -215,7 +212,10 @@ _pango_core_text_font_set_font_map (PangoCoreTextFont    *font,
   PangoCoreTextFontPrivate *priv = font->priv;
 
   g_return_if_fail (priv->fontmap == NULL);
-  g_weak_ref_set((GWeakRef *) &priv->fontmap, fontmap);
+
+  priv->fontmap = fontmap;
+  if (fontmap)
+    g_object_add_weak_pointer (G_OBJECT (fontmap), (gpointer *) &priv->fontmap);
 }
 
 PangoCoreTextFace *
