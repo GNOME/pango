@@ -563,6 +563,11 @@ pango_font_map_reload_font (PangoFontMap *fontmap,
 {
   PangoFontMapClassPrivate *pclass;
 
+  g_return_val_if_fail (PANGO_IS_FONT (font), NULL);
+  g_return_val_if_fail (fontmap == pango_font_get_font_map (font), NULL);
+  g_return_val_if_fail (scale > 0, NULL);
+  g_return_val_if_fail (context == NULL || PANGO_IS_CONTEXT (context), NULL);
+
   pclass = g_type_class_get_private ((GTypeClass *) PANGO_FONT_MAP_GET_CLASS (fontmap),
                                      PANGO_TYPE_FONT_MAP);
 
