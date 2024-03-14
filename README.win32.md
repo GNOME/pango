@@ -109,4 +109,4 @@ HarfBuzz enabled, from scratch.
 See the following GNOME Live! page for a more detailed description of building
 Pango's dependencies with Visual Studio:
 
-https://live.gnome.org/GTK%2B/Win32/MSVCCompilationOfGTKStack
+https://wiki.gnome.org/Projects/GTK/Win32/MSVCCompilationOfGTKStack
