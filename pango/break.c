@@ -191,6 +191,15 @@ default_break (const char    *text,
   GraphemeBreakType prev_GB_type = GB_Other;
   gboolean met_Extended_Pictographic = FALSE;
 
+  /* Rule GB9c */
+  typedef enum
+  {
+    InCB_None,
+    InCB_Consonant,
+    InCB_Consonant_Linker,
+  } Indic_Conjunct_Break;
+  Indic_Conjunct_Break InCB_state = InCB_None;
+
   /* See Word_Break Property Values table of UAX#29 */
   typedef enum
   {
@@ -498,31 +507,61 @@ default_break (const char    *text,
 	/* Grapheme Cluster Boundary Rules */
 	is_grapheme_boundary = TRUE; /* Rule GB999 */
 
-	/* We apply Rules GB1 and GB2 at the end of the function */
-	if (wc == '\n' && prev_wc == '\r')
-          is_grapheme_boundary = FALSE; /* Rule GB3 */
-	else if (prev_GB_type == GB_ControlCRLF || GB_type == GB_ControlCRLF)
-	  is_grapheme_boundary = TRUE; /* Rules GB4 and GB5 */
-	else if (GB_type == GB_InHangulSyllable)
-	  is_grapheme_boundary = FALSE; /* Rules GB6, GB7, GB8 */
-	else if (GB_type == GB_Extend)
-	  is_grapheme_boundary = FALSE; /* Rule GB9 */
-        else if (GB_type == GB_ZWJ)
-	  is_grapheme_boundary = FALSE; /* Rule GB9 */
-	else if (GB_type == GB_SpacingMark)
-	  is_grapheme_boundary = FALSE; /* Rule GB9a */
-	else if (prev_GB_type == GB_Prepend)
-	  is_grapheme_boundary = FALSE; /* Rule GB9b */
-	else if (is_Extended_Pictographic)
+	if (prev_GB_type == GB_RI_Odd && GB_type == GB_RI_Even)
+	  is_grapheme_boundary = FALSE; /* Rule GB12 and GB13 */
+
+	if (is_Extended_Pictographic)
 	  { /* Rule GB11 */
 	    if (prev_GB_type == GB_ZWJ && met_Extended_Pictographic)
 	      is_grapheme_boundary = FALSE;
 	  }
-	else if (prev_GB_type == GB_RI_Odd && GB_type == GB_RI_Even)
-	  is_grapheme_boundary = FALSE; /* Rule GB12 and GB13 */
+
+	if (InCB_state == InCB_Consonant ||
+	    InCB_state == InCB_Consonant_Linker)
+	  { /* Rule GB9c */
+	    if (InCB_state == InCB_Consonant_Linker &&
+		_pango_is_Indic_Conjunct_Break_Consonant(wc))
+	      {
+		InCB_state = InCB_Consonant;
+		is_grapheme_boundary = FALSE;
+	      }
+
+	    if (_pango_is_Indic_Conjunct_Break_Extend(wc) &&
+		!_pango_is_Indic_Conjunct_Break_Linker(next_wc))
+	      InCB_state = InCB_None;
+	  }
+
+	if (prev_GB_type == GB_Prepend)
+	  is_grapheme_boundary = FALSE; /* Rule GB9b */
+
+	if (GB_type == GB_SpacingMark)
+	  is_grapheme_boundary = FALSE; /* Rule GB9a */
+
+	if (GB_type == GB_Extend || GB_type == GB_ZWJ)
+	  is_grapheme_boundary = FALSE; /* Rule GB9 */
+
+	if (GB_type == GB_InHangulSyllable)
+	  is_grapheme_boundary = FALSE; /* Rules GB6, GB7, GB8 */
+
+	if (prev_GB_type == GB_ControlCRLF || GB_type == GB_ControlCRLF)
+	  is_grapheme_boundary = TRUE; /* Rules GB4 and GB5 */
+
+	if (wc == '\n' && prev_wc == '\r')
+          is_grapheme_boundary = FALSE; /* Rule GB3 */
+
+	/* We apply Rules GB1 and GB2 at the end of the function */
 
 	if (is_Extended_Pictographic)
 	  met_Extended_Pictographic = TRUE;
+
+	if (InCB_state == InCB_Consonant &&
+	    !_pango_is_Indic_Conjunct_Break_Extend(prev_wc) &&
+	    _pango_is_Indic_Conjunct_Break_Linker(wc))
+	      InCB_state = InCB_Consonant_Linker; /* Rule GB9c */
+
+	if (InCB_state == InCB_None &&
+	    _pango_is_Indic_Conjunct_Break_Consonant(wc))
+	      InCB_state = InCB_Consonant; /* Rule GB9c */
 
 	attrs[i].is_cursor_position = is_grapheme_boundary;
 	/* If this is a grapheme boundary, we have to decide if backspace
