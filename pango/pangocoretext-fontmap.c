@@ -1036,6 +1036,20 @@ pango_core_text_font_key_init (PangoCoreTextFontKey    *key,
   key->context_key = pango_core_text_fontset_key_get_context_key (fontset_key);
 }
 
+static void
+pango_core_text_font_key_init_from_key (PangoCoreTextFontKey       *key,
+                                        const PangoCoreTextFontKey *orig)
+{
+  key->fontmap = orig->fontmap;
+  key->ctfontdescriptor = orig->ctfontdescriptor;
+  key->matrix = orig->matrix;
+  key->pointsize = orig->pointsize;
+  key->resolution = orig->resolution;
+  key->synthetic_italic = orig->synthetic_italic;
+  key->gravity = orig->gravity;
+  key->context_key = orig->context_key;
+}
+
 static PangoCoreTextFontKey *
 pango_core_text_font_key_copy (const PangoCoreTextFontKey *old)
 {
@@ -1165,32 +1179,37 @@ pango_core_text_font_map_add (PangoCoreTextFontMap *ctfontmap,
 }
 
 static PangoCoreTextFont *
+pango_core_text_font_map_new_font_from_key (PangoCoreTextFontMap *fontmap,
+                                            PangoCoreTextFontKey *key)
+{
+  PangoCoreTextFont *font;
+
+  font = g_hash_table_lookup (fontmap->font_hash, key);
+  if (font)
+    return g_object_ref (font);
+
+  font = PANGO_CORE_TEXT_FONT_MAP_GET_CLASS (fontmap)->create_font (fontmap, key);
+
+  if (!font)
+    return NULL;
+
+  pango_core_text_font_map_add (fontmap, key, font);
+
+  return g_object_ref (font);
+}
+
+static PangoCoreTextFont *
 pango_core_text_font_map_new_font (PangoCoreTextFontMap    *fontmap,
                                    PangoCoreTextFontsetKey *fontset_key,
                                    CTFontDescriptorRef      ctfontdescriptor,
                                    gboolean                 synthetic_italic)
 {
-  PangoCoreTextFontMapClass *klass;
-  PangoCoreTextFont *font;
   PangoCoreTextFontKey key;
 
   pango_core_text_font_key_init (&key, fontmap, fontset_key, ctfontdescriptor,
                                  synthetic_italic);
 
-  font = g_hash_table_lookup (fontmap->font_hash, &key);
-  if (font)
-    return g_object_ref (font);
-
-  /* Call create_font */
-  klass = PANGO_CORE_TEXT_FONT_MAP_GET_CLASS (fontmap);
-  font = klass->create_font (fontmap, &key);
-
-  if (!font)
-    return NULL;
-
-  pango_core_text_font_map_add (fontmap, &key, font);
-
-  return font;
+  return pango_core_text_font_map_new_font_from_key (fontmap, &key);
 }
 
 static gboolean
@@ -1530,11 +1549,44 @@ pango_core_text_font_map_get_face (PangoFontMap *fontmap,
   return PANGO_FONT_FACE (_pango_core_text_font_get_face (cfont));
 }
 
+static PangoFont *
+pango_core_text_font_map_reload_font (PangoFontMap *fontmap,
+                                      PangoFont    *font,
+                                      double        scale,
+                                      PangoContext *context,
+                                      const char   *variations)
+{
+  PangoCoreTextFontMap *ctfontmap = PANGO_CORE_TEXT_FONT_MAP (fontmap);
+  PangoCoreTextFont *ctfont = PANGO_CORE_TEXT_FONT (font);
+  PangoCoreTextFontKey key;
+  PangoFont *scaled;
+
+  pango_core_text_font_key_init_from_key (&key, _pango_core_text_font_get_font_key (ctfont));
+
+  if (scale != 1.0)
+    key.pointsize *= scale;
+
+  if (context)
+    {
+      get_context_matrix (context, &key.matrix);
+      if (context && PANGO_CORE_TEXT_FONT_MAP_GET_CLASS (fontmap)->context_key_get)
+        key.context_key = (gpointer) PANGO_CORE_TEXT_FONT_MAP_GET_CLASS (fontmap)->context_key_get (ctfontmap, context);
+    }
+
+  if (variations)
+    g_warning_once ("pango_core_text_font_map_reload_font: variations are ignored");
+
+  scaled = (PangoFont *)pango_core_text_font_map_new_font_from_key (ctfontmap, &key);
+
+  return scaled;
+}
+
 static void
 pango_core_text_font_map_class_init (PangoCoreTextFontMapClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontMapClass *fontmap_class = PANGO_FONT_MAP_CLASS (class);
+  PangoFontMapClassPrivate *pclass;
 
   object_class->finalize = pango_core_text_font_map_finalize;
 
@@ -1545,6 +1597,10 @@ pango_core_text_font_map_class_init (PangoCoreTextFontMapClass *class)
   fontmap_class->get_serial = pango_core_text_font_map_get_serial;
   fontmap_class->changed = pango_core_text_font_map_changed;
   fontmap_class->get_face = pango_core_text_font_map_get_face;
+
+  pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT_MAP);
+
+  pclass->reload_font = pango_core_text_font_map_reload_font;
 }
 
 /*

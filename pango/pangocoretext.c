@@ -258,6 +258,14 @@ _pango_core_text_font_set_font_key (PangoCoreTextFont    *font,
     }
 }
 
+PangoCoreTextFontKey *
+_pango_core_text_font_get_font_key (PangoCoreTextFont *font)
+{
+  PangoCoreTextFontPrivate *priv = font->priv;
+
+  return priv->key;
+}
+
 void
 _pango_core_text_font_set_ctfont (PangoCoreTextFont *font,
                                   CTFontRef          font_ref)

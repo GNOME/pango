@@ -127,6 +127,7 @@ void                  _pango_core_text_font_set_context_key      (PangoCoreTextF
                                                                   gpointer           context_key);
 void                  _pango_core_text_font_set_font_key         (PangoCoreTextFont    *font,
                                                                   PangoCoreTextFontKey *key);
+PangoCoreTextFontKey *_pango_core_text_font_get_font_key         (PangoCoreTextFont    *font);
 void                  _pango_core_text_font_set_ctfont           (PangoCoreTextFont    *font,
                                                                   CTFontRef         font_ref);
 
