@@ -303,34 +303,6 @@ cf_font_descriptor_copy_with_traits (CTFontDescriptorRef        desc,
   return new_desc;
 }
 
-static CTFontDescriptorRef
-ct_font_descriptor_copy_with_scale (CTFontDescriptorRef desc,
-                                    float               scale)
-{
-  CFMutableDictionaryRef dict;
-  CTFontDescriptorRef new_desc;
-  CFDictionaryRef tmp;
-  CFNumberRef cf_number;
-  CGFloat value;
-
-  tmp = CTFontDescriptorCopyAttributes (desc);
-  dict = CFDictionaryCreateMutableCopy (kCFAllocatorDefault, 0, tmp);
-  CFRelease (tmp);
-
-  cf_number = CTFontDescriptorCopyAttribute (desc, kCTFontSizeAttribute);
-  if (cf_number != NULL && CFNumberGetValue (cf_number, kCFNumberCGFloatType, &value))
-    {
-      value = value * scale;
-      CFDictionarySetValue (dict, (CFTypeRef) kCTFontSizeAttribute,
-                            CFNumberCreate (kCFAllocatorDefault, kCFNumberCGFloatType, &value));
-    }
-
-  new_desc = CTFontDescriptorCreateCopyWithAttributes (desc, dict);
-  CFRelease (dict);
-
-  return new_desc;
-}
-
 static int
 lerp(float x, float x1, float x2, int y1, int y2) {
   float dx = x2 - x1;
@@ -1592,7 +1564,7 @@ pango_core_text_font_map_reload_font (PangoFontMap *fontmap,
   pango_core_text_font_key_init_from_key (&key, _pango_core_text_font_get_font_key (ctfont));
 
   if (scale != 1.0)
-    key.ctfontdescriptor = ct_font_descriptor_copy_with_scale (key.ctfontdescriptor, scale);
+    key.pointsize *= scale;
 
   if (context)
     {
@@ -1605,9 +1577,6 @@ pango_core_text_font_map_reload_font (PangoFontMap *fontmap,
     g_warning_once ("pango_core_text_font_map_reload_font: variations are ignored");
 
   scaled = (PangoFont *)pango_core_text_font_map_new_font_from_key (ctfontmap, &key);
-
-  if (scale != 1.0)
-    CFRelease (key.ctfontdescriptor);
 
   return scaled;
 }
