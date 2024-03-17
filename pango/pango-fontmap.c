@@ -510,16 +510,13 @@ pango_font_map_real_reload_font (PangoFontMap *fontmap,
   PangoContext *freeme = NULL;
   PangoFont *scaled;
 
-  desc = pango_font_describe (font);
+  desc = pango_font_describe_with_absolute_size (font);
 
   if (scale != 1.0)
     {
       int size = pango_font_description_get_size (desc);
 
-      if (pango_font_description_get_size_is_absolute (desc))
-        pango_font_description_set_absolute_size (desc, size * scale);
-      else
-        pango_font_description_set_size (desc, (int) round (size * scale));
+      pango_font_description_set_absolute_size (desc, size * scale);
     }
 
   if (!context)
