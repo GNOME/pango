@@ -39,7 +39,7 @@ test_parse (void)
   descs[0] = desc = pango_font_description_from_string ("Cantarell 14");
 
   g_assert_cmpstr (pango_font_description_get_family (desc), ==, "Cantarell");
-  g_assert (!pango_font_description_get_size_is_absolute (desc));
+  g_assert_false (pango_font_description_get_size_is_absolute (desc));
   g_assert_cmpint (pango_font_description_get_size (desc), ==, 14 * PANGO_SCALE);
   g_assert_cmpint (pango_font_description_get_style (desc), ==, PANGO_STYLE_NORMAL);
   g_assert_cmpint (pango_font_description_get_variant (desc), ==, PANGO_VARIANT_NORMAL);
@@ -51,7 +51,7 @@ test_parse (void)
   descs[1] = desc = pango_font_description_from_string ("Sans Bold Italic Condensed 22.5px");
 
   g_assert_cmpstr (pango_font_description_get_family (desc), ==, "Sans");
-  g_assert (pango_font_description_get_size_is_absolute (desc)); 
+  g_assert_true (pango_font_description_get_size_is_absolute (desc));
   g_assert_cmpint (pango_font_description_get_size (desc), ==, 225 * PANGO_SCALE / 10);
   g_assert_cmpint (pango_font_description_get_style (desc), ==, PANGO_STYLE_ITALIC);
   g_assert_cmpint (pango_font_description_get_variant (desc), ==, PANGO_VARIANT_NORMAL); 
@@ -89,30 +89,30 @@ test_variations (void)
   gchar *str;
 
   desc1 = pango_font_description_from_string ("Cantarell 14");
-  g_assert (desc1 != NULL);
-  g_assert ((pango_font_description_get_set_fields (desc1) & PANGO_FONT_MASK_VARIATIONS) == 0);
-  g_assert (pango_font_description_get_variations (desc1) == NULL);
+  g_assert_nonnull (desc1);
+  g_assert_cmpint (pango_font_description_get_set_fields (desc1) & PANGO_FONT_MASK_VARIATIONS, ==, 0);
+  g_assert_null (pango_font_description_get_variations (desc1));
 
   str = pango_font_description_to_string (desc1);
   g_assert_cmpstr (str, ==, "Cantarell 14");
   g_free (str);
 
   desc2 = pango_font_description_from_string ("Cantarell 14 @wght=100,wdth=235");
-  g_assert (desc2 != NULL);
-  g_assert ((pango_font_description_get_set_fields (desc2) & PANGO_FONT_MASK_VARIATIONS) != 0);
+  g_assert_nonnull (desc2);
+  g_assert_cmpint (pango_font_description_get_set_fields (desc2) & PANGO_FONT_MASK_VARIATIONS, !=, 0);
   g_assert_cmpstr (pango_font_description_get_variations (desc2), ==, "wght=100,wdth=235");
 
   str = pango_font_description_to_string (desc2);
   g_assert_cmpstr (str, ==, "Cantarell 14 @wght=100,wdth=235");
   g_free (str);
 
-  g_assert (!pango_font_description_equal (desc1, desc2));
+  g_assert_false (pango_font_description_equal (desc1, desc2));
 
   pango_font_description_set_variations (desc1, "wght=100,wdth=235");
-  g_assert ((pango_font_description_get_set_fields (desc1) & PANGO_FONT_MASK_VARIATIONS) != 0);
+  g_assert_cmpint (pango_font_description_get_set_fields (desc1) & PANGO_FONT_MASK_VARIATIONS, !=, 0);
   g_assert_cmpstr (pango_font_description_get_variations (desc1), ==, "wght=100,wdth=235");
 
-  g_assert (pango_font_description_equal (desc1, desc2));
+  g_assert_true (pango_font_description_equal (desc1, desc2));
 
   pango_font_description_free (desc1);
   pango_font_description_free (desc2);
